@@ -72,7 +72,7 @@ fl_DocListener::~fl_DocListener()
 /*!
  */
 bool fl_DocListener::populate(PL_StruxFmtHandle sfh,
-								 const PX_ChangeRecord * pcr)
+							  const PX_ChangeRecord * pcr)
 {
 	UT_ASSERT(m_pLayout);
 	//UT_DEBUGMSG(("fl_DocListener::populate\n"));
@@ -142,7 +142,7 @@ bool fl_DocListener::populate(PL_StruxFmtHandle sfh,
 		return false;
 	}
 
-finish_up:
+ finish_up:
 	if (0 == m_iGlobCounter)
 	{
 #ifndef UPDATE_LAYOUT_ON_SIGNAL
@@ -156,8 +156,8 @@ finish_up:
 /*!
  */
 bool fl_DocListener::populateStrux(PL_StruxDocHandle sdh,
-									  const PX_ChangeRecord * pcr,
-									  PL_StruxFmtHandle * psfh)
+								   const PX_ChangeRecord * pcr,
+								   PL_StruxFmtHandle * psfh)
 {
 	UT_ASSERT(m_pLayout);
 	//UT_DEBUGMSG(("fl_DocListener::populateStrux\n"));
@@ -307,7 +307,7 @@ bool fl_DocListener::populateStrux(PL_StruxDocHandle sdh,
 /*!
  */
 bool fl_DocListener::change(PL_StruxFmtHandle sfh,
-							   const PX_ChangeRecord * pcr)
+							const PX_ChangeRecord * pcr)
 {
 	//UT_DEBUGMSG(("fl_DocListener::change\n"));
 	bool bResult = false;
@@ -685,12 +685,12 @@ bool fl_DocListener::change(PL_StruxFmtHandle sfh,
 /*!
  */
 bool fl_DocListener::insertStrux(PL_StruxFmtHandle sfh,
-									const PX_ChangeRecord * pcr,
-									PL_StruxDocHandle sdh,
-									PL_ListenerId lid,
-									void (* pfnBindHandles)(PL_StruxDocHandle sdhNew,
-															PL_ListenerId lid,
-															PL_StruxFmtHandle sfhNew))
+								 const PX_ChangeRecord * pcr,
+								 PL_StruxDocHandle sdh,
+								 PL_ListenerId lid,
+								 void (* pfnBindHandles)(PL_StruxDocHandle sdhNew,
+														 PL_ListenerId lid,
+														 PL_StruxFmtHandle sfhNew))
 {
 	UT_DEBUGMSG(("fl_DocListener::insertStrux\n"));
 
@@ -826,7 +826,3 @@ bool fl_DocListener::signal(UT_uint32 iSignal)
 
 	return true;
 }
-
-
-
-

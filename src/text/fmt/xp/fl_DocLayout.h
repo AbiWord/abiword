@@ -100,13 +100,13 @@ public:
 							 const PP_AttrProp * pBlockAP,
 							 const PP_AttrProp * pSectionAP,
 							 UT_sint32 iUseLayoutResolution
-							);
+		);
 	GR_Font*		findFont(const PP_AttrProp * pSpanAP,
 							 const PP_AttrProp * pBlockAP,
 							 const PP_AttrProp * pSectionAP,
-					 UT_sint32 iUseLayoutResolution,
-					 bool isField
-							);
+							 UT_sint32 iUseLayoutResolution,
+							 bool isField
+		);
 	
 	fp_Page*	addNewPage(fl_DocSectionLayout* pOwner);
 	fp_Page*	getFirstPage();
@@ -122,8 +122,8 @@ public:
 
 	bool		isPendingWordForSpell(void) const;
 	bool		touchesPendingWordForSpell(fl_BlockLayout *pBlock, 
-								   UT_uint32 iOffset, 
-								   UT_sint32 chg) const;
+										   UT_uint32 iOffset, 
+										   UT_sint32 chg) const;
 	void		setPendingWordForSpell(fl_BlockLayout *pBlock, fl_PartOfBlock* pWord);
 	bool		checkPendingWordForSpell(void);
 	
@@ -158,7 +158,7 @@ public:
 	// to get the namespace protection.
 	enum backgroundCheckReason
 	{
-	        bgcrNone         = 0,
+		bgcrNone         = 0,
 		bgcrDebugFlash   = (1 <<  0),
 		bgcrSpelling     = (1 <<  1),
 		bgcrSmartQuotes  = (1 <<  2)   // ha!  we're not using background checks for this after all
@@ -207,7 +207,7 @@ protected:
 	bool				m_bSpellCheckCaps;
 	bool				m_bSpellCheckNumbers;
 	bool				m_bSpellCheckInternet;
-        UT_uint32                       m_uDocBackgroundCheckReasons;
+	UT_uint32                       m_uDocBackgroundCheckReasons;
 	bool                         m_bStopSpellChecking; // Handshaking
 	bool                         m_bImSpellCheckingNow; // Variables
 	// smart quote latent instance

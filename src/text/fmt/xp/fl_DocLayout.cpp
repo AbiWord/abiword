@@ -45,7 +45,7 @@
 #define REDRAW_UPDATE_MSECS	500
 
 FL_DocLayout::FL_DocLayout(PD_Document* doc, GR_Graphics* pG)
-:	m_hashFontCache(19)
+	:	m_hashFontCache(19)
 {
 	m_pDoc = doc;
 	m_pG = pG;
@@ -104,7 +104,7 @@ FL_DocLayout::~FL_DocLayout()
 
 	if (m_pBackgroundCheckTimer)
 	{
-	        m_bStopSpellChecking = true;
+		m_bStopSpellChecking = true;
 		m_pBackgroundCheckTimer->stop();
 		while(m_bImSpellCheckingNow == true)
 		{
@@ -251,9 +251,9 @@ GR_Font* FL_DocLayout::findFont(const PP_AttrProp * pSpanAP,
 		// TODO -- not a list.  This is broken.
 
 		if(iUseLayoutResolution)
-			{
+		{
 			m_pG->setLayoutResolutionMode(true);
-			}
+		}
 		pFont = m_pG->findFont(pszFamily, pszStyle, pszVariant, pszWeight, pszStretch, pszSize);
 		m_pG->setLayoutResolutionMode(false);
 		UT_ASSERT(pFont);
@@ -300,7 +300,7 @@ GR_Font* FL_DocLayout::findFont(const PP_AttrProp * pSpanAP,
 	char key[500];
 	if(pszField!="NULL" && pszField != NULL && isField==true)
 	{
-	        pszFamily = pszField;
+		pszFamily = pszField;
 	}
 	sprintf(key,"%s;%s;%s;%s;%s;%s,%i",pszFamily, pszStyle, pszVariant, pszWeight, pszStretch, pszSize, iUseLayoutResolution);
 	UT_HashEntry* pEntry = m_hashFontCache.findEntry(key);
@@ -310,9 +310,9 @@ GR_Font* FL_DocLayout::findFont(const PP_AttrProp * pSpanAP,
 		// TODO -- not a list.  This is broken.
 
 		if(iUseLayoutResolution)
-			{
+		{
 			m_pG->setLayoutResolutionMode(true);
-			}
+		}
 		pFont = m_pG->findFont(pszFamily, pszStyle, pszVariant, pszWeight, pszStretch, pszSize);
 		m_pG->setLayoutResolutionMode(false);
 		UT_ASSERT(pFont);
@@ -595,7 +595,7 @@ void FL_DocLayout::_toggleAutoSpell(bool bSpell)
 			fl_BlockLayout* b = pSL->getFirstBlock();
 			while (b)
 			{
-			        b->removeBackgroundCheckReason(bgcrSpelling);
+				b->removeBackgroundCheckReason(bgcrSpelling);
 				b->_purgeSquiggles();
 				b = b->getNext();
 			}
@@ -643,15 +643,15 @@ void FL_DocLayout::_backgroundCheck(UT_Timer * pTimer)
 		return;
 	}
 
-        if(pDocLayout->m_bStopSpellChecking == true || pDocLayout->m_bImSpellCheckingNow == true)
+	if(pDocLayout->m_bStopSpellChecking == true || pDocLayout->m_bImSpellCheckingNow == true)
 	{
-	        return;
+		return;
 	}
 	// Code added to hold spell checks during block insertions
 
 	if(pDocLayout->m_pDoc->isPieceTableChanging() == true)
 	{
-	        return;
+		return;
 	}
 	pDocLayout->m_bImSpellCheckingNow = true;
 
@@ -686,7 +686,7 @@ void FL_DocLayout::_backgroundCheck(UT_Timer * pTimer)
 					switch (mask)
 					{
 					case bgcrNone:
-					        break;
+						break;
 					case bgcrDebugFlash:
 						pB->debugFlashing();
 						break;
@@ -710,7 +710,7 @@ void FL_DocLayout::_backgroundCheck(UT_Timer * pTimer)
 	if (i != 0 && pDocLayout->m_bStopSpellChecking == false)
 	{
 		// restart timer unless it's not needed any more
-	  //pDocLayout->m_pBackgroundCheckTimer->start();
+		//pDocLayout->m_pBackgroundCheckTimer->start();
 	}
 	pDocLayout->m_bImSpellCheckingNow = false;
 }
@@ -718,9 +718,9 @@ void FL_DocLayout::_backgroundCheck(UT_Timer * pTimer)
 void FL_DocLayout::queueBlockForBackgroundCheck(UT_uint32 reason, fl_BlockLayout *pBlock, bool bHead)
 {
 	/*
-		This routine queues up blocks for timer-driven spell checking, etc.  
-		By default, this is a FIFO queue, but it can be explicitly 
-		reprioritized by setting bHead == true.  
+	  This routine queues up blocks for timer-driven spell checking, etc.  
+	  By default, this is a FIFO queue, but it can be explicitly 
+	  reprioritized by setting bHead == true.  
 	*/
 	if (!m_pBackgroundCheckTimer)
 	{
@@ -730,8 +730,8 @@ void FL_DocLayout::queueBlockForBackgroundCheck(UT_uint32 reason, fl_BlockLayout
 	}
 	else
 	{
-	  //		m_pBackgroundCheckTimer->stop();
-	        m_bStopSpellChecking = false;
+		//		m_pBackgroundCheckTimer->stop();
+		m_bStopSpellChecking = false;
 		m_pBackgroundCheckTimer->start();
 	}
 
@@ -771,13 +771,13 @@ void FL_DocLayout::dequeueBlockForBackgroundCheck(fl_BlockLayout *pBlock)
 	// when queue is empty, kill timer
 	if (m_vecUncheckedBlocks.getItemCount() == 0)
 	{
-	        m_bStopSpellChecking = true;
-                if(m_pBackgroundCheckTimer)
+		m_bStopSpellChecking = true;
+		if(m_pBackgroundCheckTimer)
 		{
-		         m_pBackgroundCheckTimer->stop();
-		         while(m_bImSpellCheckingNow == true)
-		         {
-		         }
+			m_pBackgroundCheckTimer->stop();
+			while(m_bImSpellCheckingNow == true)
+			{
+			}
 		}
 	}
 }
@@ -811,7 +811,7 @@ bool FL_DocLayout::checkPendingWordForSpell(void)
 
 	if(m_pDoc->isPieceTableChanging() == true)
 	{
-	        return bUpdate;
+		return bUpdate;
 	}
 
 	// check pending word
@@ -832,8 +832,8 @@ bool FL_DocLayout::isPendingWordForSpell(void) const
 }
 
 bool	FL_DocLayout::touchesPendingWordForSpell(fl_BlockLayout *pBlock, 
-										 UT_uint32 iOffset, 
-										 UT_sint32 chg) const
+												 UT_uint32 iOffset, 
+												 UT_sint32 chg) const
 {
 	UT_uint32 len = (chg < 0) ? -chg : 0;
 
@@ -961,7 +961,7 @@ fl_DocSectionLayout* FL_DocLayout::findSectionForHdrFtr(const char* pszHdrFtrID)
 	XAP_Prefs			*pPrefs,
 	UT_AlphaHashTable	* /*phChanges*/,  // not used
 	void				*data
-) 
+	) 
 {
 	bool b;
 	FL_DocLayout *pDocLayout = (FL_DocLayout *)data;
@@ -1039,31 +1039,31 @@ void FL_DocLayout::_redrawUpdate(UT_Timer * pTimer)
 	}
 
 /*
-	UT_Vector* vecToCheck = &pDocLayout->m_vecUncheckedBlocks;
-	UT_ASSERT(vecToCheck);
+  UT_Vector* vecToCheck = &pDocLayout->m_vecUncheckedBlocks;
+  UT_ASSERT(vecToCheck);
 
-	UT_uint32 i = vecToCheck->getItemCount();
+  UT_uint32 i = vecToCheck->getItemCount();
 
-	if (i > 0)
-	{
-		fl_BlockLayout *pB = (fl_BlockLayout *) vecToCheck->getFirstItem();
+  if (i > 0)
+  {
+  fl_BlockLayout *pB = (fl_BlockLayout *) vecToCheck->getFirstItem();
 
-		if (pB != NULL)
-		{
-			vecToCheck->deleteNthItem(0);
-			i--;
+  if (pB != NULL)
+  {
+  vecToCheck->deleteNthItem(0);
+  i--;
 
-			//	note that we remove this block from queue before checking it
-			//	(otherwise asserts could trigger redundant recursive calls)
-			pB->checkSpelling();
-		}
-	}
+  //	note that we remove this block from queue before checking it
+  //	(otherwise asserts could trigger redundant recursive calls)
+  pB->checkSpelling();
+  }
+  }
 
-	if (i == 0)
-	{
-		// timer not needed any more, so suspend it
-		pDocLayout->m_pSpellCheckTimer->stop();
-	}
+  if (i == 0)
+  {
+  // timer not needed any more, so suspend it
+  pDocLayout->m_pSpellCheckTimer->stop();
+  }
 */
 }
 
@@ -1512,17 +1512,17 @@ void FL_DocLayout::considerSmartQuoteCandidateAt(fl_BlockLayout *block, UT_uint3
 }
 
 void FL_DocLayout::notifyBlockIsBeingDeleted(fl_BlockLayout *pBlock)
-	{
+{
 	if(pBlock == m_pPendingBlockForSpell)
-		{
+	{
 		m_pPendingBlockForSpell = NULL;
-		}
+	}
 
 	if(pBlock == m_pPendingBlockForSmartQuote)
-		{
+	{
 		m_pPendingBlockForSmartQuote = NULL;
-		}
 	}
+}
 
 inline fl_AutoNum * FL_DocLayout::getListByID(UT_uint32 id) const
 {

@@ -46,7 +46,7 @@ public:
 			FV_View*,
 			const fp_PageSize& pageSize,
 			fl_DocSectionLayout* pOwner
-			);
+		);
 	~fp_Page();
 
 	UT_sint32			getWidth(void) const;
@@ -83,8 +83,8 @@ public:
 	bool				isEmpty(void) const;
 	void                            removeHeader(void);
 	void                            removeFooter(void);
-        fp_HdrFtrContainer*             getHeaderP(void) const { return m_pHeader;}
-        fp_HdrFtrContainer*             getFooterP(void) const { return m_pFooter;}
+	fp_HdrFtrContainer*             getHeaderP(void) const { return m_pHeader;}
+	fp_HdrFtrContainer*             getFooterP(void) const { return m_pFooter;}
 	fp_HdrFtrContainer*	getHeaderContainer(fl_HdrFtrSectionLayout*);
 	fp_HdrFtrContainer*	getFooterContainer(fl_HdrFtrSectionLayout*);
 	

@@ -41,7 +41,7 @@ class FG_Graphic
 {
 public:
 	static FG_Graphic*	createFromChangeRecord(const fl_Layout *pFL,
-										const PX_ChangeRecord_Object* pcro);
+											   const PX_ChangeRecord_Object* pcro);
 
 	virtual ~FG_Graphic();
 
@@ -56,7 +56,7 @@ public:
 
 	//  Insert the object at the specified point in a document
 	virtual UT_Error   	insertIntoDocument(PD_Document* pDoc, double fDPI,
-									   UT_uint32 iPos, const char* szName) = 0;
+										   UT_uint32 iPos, const char* szName) = 0;
 };
 
 #endif /* FG_GRAPHIC_H */

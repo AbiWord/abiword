@@ -73,26 +73,26 @@ fp_Run::fp_Run(fl_BlockLayout* pBL,
 			   UT_uint32 iOffsetFirst,
 			   UT_uint32 iLen,
 			   FP_RUN_TYPE iType)
-:	m_iType (iType),
-	m_pLine(0),
-	m_pBL(pBL),
-	m_pNext(0),
-	m_pPrev(0),
-	m_iX(0),
-	m_iY(0),
-	m_iHeight(0),
-	m_iHeightLayoutUnits(0),
-	m_iWidth(0),
-	m_iWidthLayoutUnits(0),
-	m_iOffsetFirst(iOffsetFirst),
-	m_iLen(iLen),
-	m_iAscent(0),
-	m_iDescent(0),
-	m_iAscentLayoutUnits(0),
-	m_iDescentLayoutUnits(0),
-	m_pG(pG),
-	m_bDirty(true),	// a run which has just been created is not onscreen, therefore it is dirty
-	m_pField(0)
+	:	m_iType (iType),
+		m_pLine(0),
+		m_pBL(pBL),
+		m_pNext(0),
+		m_pPrev(0),
+		m_iX(0),
+		m_iY(0),
+		m_iHeight(0),
+		m_iHeightLayoutUnits(0),
+		m_iWidth(0),
+		m_iWidthLayoutUnits(0),
+		m_iOffsetFirst(iOffsetFirst),
+		m_iLen(iLen),
+		m_iAscent(0),
+		m_iDescent(0),
+		m_iAscentLayoutUnits(0),
+		m_iDescentLayoutUnits(0),
+		m_pG(pG),
+		m_bDirty(true),	// a run which has just been created is not onscreen, therefore it is dirty
+		m_pField(0)
 {
 	// set a default background color
 	UT_setColor(m_colorBG, 255, 255, 255);
@@ -428,7 +428,7 @@ void fp_TabRun::lookupProperties(void)
 	
 	m_pBL->getSpanAttrProp(m_iOffsetFirst,false,&pSpanAP);
 	m_pBL->getAttrProp(&pBlockAP);
-        m_pBL->getField(m_iOffsetFirst,m_pField);
+	m_pBL->getField(m_iOffsetFirst,m_pField);
 
 
 	// look for fonts in this DocLayout's font cache
@@ -454,16 +454,16 @@ void fp_TabRun::lookupProperties(void)
 	//#TF need to retrieve the direction of this run
 	//check the preferences to see whether to use Unicode direction of text
 	/*XAP_App * pApp = XAP_App::getApp();
-	bool bAppDirection;
-	pApp->getPrefsValueBool((XML_Char *) AP_PREF_KEY_UseUnicodeDirection, &bAppDirection);
+	  bool bAppDirection;
+	  pApp->getPrefsValueBool((XML_Char *) AP_PREF_KEY_UseUnicodeDirection, &bAppDirection);
 	
-	if(!bAppDirection)
-	{
-	    const XML_Char * pszDirection = PP_evalProperty("dir",pSpanAP,pBlockAP,pSectionAP, pDoc, true);
-	    if(!UT_stricmp(pszDirection, "rtl"))  m_iDirection = 1;
-	    else                                  m_iDirection = 0;
-	}
-	else m_iDirection = -1;      */
+	  if(!bAppDirection)
+	  {
+	  const XML_Char * pszDirection = PP_evalProperty("dir",pSpanAP,pBlockAP,pSectionAP, pDoc, true);
+	  if(!UT_stricmp(pszDirection, "rtl"))  m_iDirection = 1;
+	  else                                  m_iDirection = 0;
+	  }
+	  else m_iDirection = -1;      */
 	m_iDirection = -1;
 #endif
 }
@@ -563,8 +563,8 @@ void fp_TabRun::findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y, U
 
 void fp_TabRun::setWidth(UT_sint32 iWidth)
 {
-  clearScreen();
-  m_iWidth = iWidth;
+	clearScreen();
+	m_iWidth = iWidth;
 }
 
 void fp_TabRun::_clearScreen(bool /* bFullLineHeightRect */)
@@ -585,7 +585,7 @@ void fp_TabRun::_drawArrow(UT_uint32 iLeft,UT_uint32 iTop,UT_uint32 iWidth, UT_u
         return;
     }
 
-    #define NPOINTS 6
+#define NPOINTS 6
 
     UT_Point points[NPOINTS];
 
@@ -826,7 +826,7 @@ void fp_FieldStartRun::_draw(dg_DrawArgs* pDA)
 
 fp_FieldEndRun::fp_FieldEndRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen) : fp_Run(pBL, pG, iOffsetFirst, iLen, FPRUN_FIELDENDRUN)
 {
-        lookupProperties();
+	lookupProperties();
 }
 
 void fp_FieldEndRun::lookupProperties(void)
@@ -884,8 +884,8 @@ void fp_FieldEndRun::_draw(dg_DrawArgs* pDA)
 //////////////////////////////////////////////////////////////////
 
 fp_EndOfParagraphRun::fp_EndOfParagraphRun(fl_BlockLayout* pBL, 
-								 GR_Graphics* pG, UT_uint32 iOffsetFirst, 
-								 UT_uint32 iLen)
+										   GR_Graphics* pG, UT_uint32 iOffsetFirst, 
+										   UT_uint32 iLen)
 	: fp_Run(pBL, pG, iOffsetFirst, iLen, FPRUN_ENDOFPARAGRAPH)
 {
 	
@@ -1236,7 +1236,7 @@ fp_FieldTypeData fp_FieldTypes[] = {
 
 #include "fp_Fields.h"
 
-{FPFIELDTYPE_END, NULL, 0} };
+	{FPFIELDTYPE_END, NULL, 0} };
 
 #undef  _FIELD
 #undef  _FIELDTYPE
@@ -1251,7 +1251,7 @@ fp_FieldData fp_FieldFmts[] = {
 
 #include "fp_Fields.h"
 
-{FPFIELDTYPE_END, FPFIELD_end, NULL, NULL, 0} };
+	{FPFIELDTYPE_END, FPFIELD_end, NULL, NULL, 0} };
 
 #undef  xstr2
 #undef  xstr
@@ -1259,10 +1259,10 @@ fp_FieldData fp_FieldFmts[] = {
 #undef  _FIELDTYPE
 
 fp_FieldRun::fp_FieldRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen)
-:	fp_Run(pBL, pG, iOffsetFirst, iLen, FPRUN_FIELD),
-	m_pFont(0),
-	m_pFontLayout(0),
-	m_iFieldType(FPFIELD_start)
+	:	fp_Run(pBL, pG, iOffsetFirst, iLen, FPRUN_FIELD),
+		m_pFont(0),
+		m_pFontLayout(0),
+		m_iFieldType(FPFIELD_start)
 {
 	m_sFieldValue[0] = 0;
 }
@@ -1359,7 +1359,7 @@ void fp_FieldRun::lookupProperties(void)
 	}
 	else
 	{
-		 m_fPosition = TEXT_POSITION_NORMAL;
+		m_fPosition = TEXT_POSITION_NORMAL;
 	}
 
 	pSpanAP->getAttribute("type", pszType);
@@ -1417,7 +1417,7 @@ bool fp_FieldRun::letPointPass(void) const
 }
 
 bool        fp_FieldRun::findMaxLeftFitSplitPointInLayoutUnits(UT_sint32 /*
-iMaxLeftWidth */, fp_RunSplitInfo& /* si */, bool /* bForce */)
+																		   iMaxLeftWidth */, fp_RunSplitInfo& /* si */, bool /* bForce */)
 {
 	return false;
 }
@@ -1482,12 +1482,12 @@ void fp_FieldRun::findPointCoords(UT_uint32 iOffset, UT_sint32& x,
 
 bool fp_FieldRun::calculateValue(void)
 {
-  //
-  // Code for the Piece Table Fields Calculation
-  // Get size of the field from the following runs
-  //
-  //      return m_pField->update();
-  //        UT_ASSERT(m_pField);
+	//
+	// Code for the Piece Table Fields Calculation
+	// Get size of the field from the following runs
+	//
+	//      return m_pField->update();
+	//        UT_ASSERT(m_pField);
 
   /*        UT_sint32 count = 0;
         fp_Run* pNext = getNext();
@@ -1543,11 +1543,11 @@ void fp_FieldRun::_defaultDraw(dg_DrawArgs* pDA)
 	
 	if (m_fPosition == TEXT_POSITION_SUPERSCRIPT)
 	{
-	        iYdraw -= getAscent() * 1/2;
+		iYdraw -= getAscent() * 1/2;
 	}
-        else if (m_fPosition == TEXT_POSITION_SUBSCRIPT)
+	else if (m_fPosition == TEXT_POSITION_SUBSCRIPT)
 	{
-	        iYdraw +=  getDescent(); // * 3/2
+		iYdraw +=  getDescent(); // * 3/2
 	}
 
 	//if (m_pG->queryProperties(GR_Graphics::DGP_SCREEN))
@@ -2402,29 +2402,29 @@ UT_uint32 fp_Run::getOffsetLog(UT_uint32 iVisOff)
 
 void fp_Run::setDirection(UT_sint32 iDir)
 {
-     //this function should be called with -1,0,1; if it is called
-     //with -2, which is used in the derived classes that can handle
-     //Unicode as an indication that direction should be worked out
-     //from Unicode, we will treat this a whitespace
+	//this function should be called with -1,0,1; if it is called
+	//with -2, which is used in the derived classes that can handle
+	//Unicode as an indication that direction should be worked out
+	//from Unicode, we will treat this a whitespace
 
-     UT_sint32 iDirection = iDir != -2 ? iDir : -1;
-     if(m_iDirection != iDirection)
-     {
-         m_iDirection = iDirection;
-         clearScreen();
+	UT_sint32 iDirection = iDir != -2 ? iDir : -1;
+	if(m_iDirection != iDirection)
+	{
+		m_iDirection = iDirection;
+		clearScreen();
 		/*
-			if this run belongs to a line we have to notify the line that
-			that it now contains a run of this direction, if it does not belong
-			to a line this will be taken care of by the fp_Line:: member function
-			used to add the run to the line (generally, we set it here if this
-			is a run that is being typed in and it gets set in the member
-			functions when the run is loaded from a document on the disk.)
+		  if this run belongs to a line we have to notify the line that
+		  that it now contains a run of this direction, if it does not belong
+		  to a line this will be taken care of by the fp_Line:: member function
+		  used to add the run to the line (generally, we set it here if this
+		  is a run that is being typed in and it gets set in the member
+		  functions when the run is loaded from a document on the disk.)
 		*/
 	
 		if(m_pLine)
 			m_pLine->addDirectionUsed(m_iDirection);
 
-   }
+	}
 }
 
 // returns the direction with which the run is displayed, converting the direction of white
@@ -2518,10 +2518,10 @@ void fp_Run::setDirectionProperty(UT_sint32 dir)
 	
 	switch(dir)
 	{
-	   case 0:  prop[1] = (XML_Char*) &ltr;     break;
-	   case 1:  prop[1] = (XML_Char*) &rtl;     break;
-	   case -1: prop[1] = (XML_Char*) &neutral; break;
-	   default: UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+	case 0:  prop[1] = (XML_Char*) &ltr;     break;
+	case 1:  prop[1] = (XML_Char*) &rtl;     break;
+	case -1: prop[1] = (XML_Char*) &neutral; break;
+	default: UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 	};
 	
 	//pView->setCharFormat(prop);
@@ -2531,8 +2531,3 @@ void fp_Run::setDirectionProperty(UT_sint32 dir)
 }
 
 #endif //BIDI_ENABLED
-
-
-
-
-

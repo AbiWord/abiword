@@ -37,7 +37,7 @@
 
 class fp_TextRun : public fp_Run
 {
- public:
+public:
 	fp_TextRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen, bool bLookupProperties=true);
 	virtual ~fp_TextRun();
 
@@ -108,9 +108,9 @@ class fp_TextRun : public fp_Run
     void					setDirection(UT_sint32 dir);
 
 	/* needed for handling BiDi text, static because we need only one buffer
-	for all the instances, public so that we could inicialised them in the cpp file outside of the
-	constructor in order that the constructor can decide whether it is creating the first instance
-	or not*/
+	   for all the instances, public so that we could inicialised them in the cpp file outside of the
+	   constructor in order that the constructor can decide whether it is creating the first instance
+	   or not*/
 	static UT_UCSChar * s_pSpanBuff;
 	static UT_uint32    s_iSpanBuffSize;
 	static UT_uint32    s_iClassInstanceCount;	
@@ -185,21 +185,12 @@ protected:
 		JUSTIFICATION_NOT_USED = -1
 	};
 	UT_sint32				m_iSpaceWidthBeforeJustification;
-        UT_sint32                               m_iLinethickness;
-        UT_sint32                               m_iUnderlineXoff;
-        UT_sint32                               m_imaxUnderline;
-        UT_sint32                               m_iminOverline;
-        UT_sint32                               m_iOverlineXoff;
+	UT_sint32                               m_iLinethickness;
+	UT_sint32                               m_iUnderlineXoff;
+	UT_sint32                               m_imaxUnderline;
+	UT_sint32                               m_iminOverline;
+	UT_sint32                               m_iOverlineXoff;
 
 };
 
 #endif /* FP_TEXTRUN_H */
-
-
-
-
-
-
-
-
-

@@ -39,14 +39,14 @@ bool fp_FieldListLabelRun::calculateValue(void)
 	}
 	else
 	{
-	  //
-	  // This code is here because UT_UCS_copy_char is broken
-	  //
+		//
+		// This code is here because UT_UCS_copy_char is broken
+		//
 		i = 0;
 		UT_uint32 len = UT_MIN(strlen(listlabel),FPFIELD_MAX_LENGTH + 1)  ;
 		for(i=0; i<=len;i++)
 		{
-		        sz_ucs_FieldValue[i] = (UT_UCSChar) (unsigned char) *listlabel++;
+			sz_ucs_FieldValue[i] = (UT_UCSChar) (unsigned char) *listlabel++;
 		}
 		sz_ucs_FieldValue[len] = 0;
 		m_sFieldValue[0] =  0; // Force an update!!!
@@ -58,4 +58,3 @@ void fp_FieldListLabelRun::_draw(dg_DrawArgs* pDA)
 {
 	_defaultDraw(pDA);
 }
-

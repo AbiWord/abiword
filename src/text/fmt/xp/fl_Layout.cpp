@@ -29,7 +29,7 @@
 
 fl_Layout::fl_Layout(PTStruxType type, PL_StruxDocHandle sdh)
 {
-  //UT_ASSERT(sdh); Sevior this assert screws up my fake fl_layout code
+	//UT_ASSERT(sdh); Sevior this assert screws up my fake fl_layout code
 
 	m_type = type;
 	m_sdh = sdh;
@@ -45,7 +45,7 @@ fl_Layout::~fl_Layout()
 
 PL_StruxDocHandle fl_Layout::getStruxDocHandle(void)
 {
-        return m_sdh;
+	return m_sdh;
 }
 
 
@@ -83,5 +83,3 @@ void fl_Layout::setAutoNum(fl_AutoNum * pAutoNum)
 {
 	m_pAutoNum = pAutoNum;
 }
-
-

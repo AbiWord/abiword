@@ -31,7 +31,7 @@
 #include "fg_GraphicRaster.h"
 
 FG_Graphic* FG_GraphicRaster::createFromChangeRecord(const fl_Layout* pFL, 
-											const PX_ChangeRecord_Object* pcro)
+													 const PX_ChangeRecord_Object* pcro)
 {
 	FG_GraphicRaster* pFG = new FG_GraphicRaster();
 
@@ -45,7 +45,7 @@ FG_Graphic* FG_GraphicRaster::createFromChangeRecord(const fl_Layout* pFL,
 	  dataItem should be a PNG image.
 	*/
 	bool bFoundSpanAP = pFL->getSpanAttrProp(blockOffset, false,
-												&pFG->m_pSpanAP);
+											 &pFG->m_pSpanAP);
 	if (bFoundSpanAP && pFG->m_pSpanAP)
 	{
 		bool bFoundDataID = pFG->m_pSpanAP->getAttribute("dataid", pFG->m_pszDataID);
@@ -171,7 +171,7 @@ GR_Image* FG_GraphicRaster::generateImage(GR_Graphics* pG)
 //  is discarded.
 //
 UT_Error FG_GraphicRaster::insertIntoDocument(PD_Document* pDoc, double fDPI,
-										 UT_uint32 iPos, const char* szName)
+											  UT_uint32 iPos, const char* szName)
 {
 	UT_ASSERT(pDoc);
 	UT_ASSERT(szName);

@@ -42,15 +42,15 @@ fp_Page::fp_Page(FL_DocLayout* pLayout,
 				 FV_View* pView,
 				 const fp_PageSize& pageSize,
 				 fl_DocSectionLayout* pOwner)
-:	m_pLayout(pLayout),
-	m_pView(pView),
-	m_pNext(0),
-	m_pPrev(0),
-	m_pageSize(pageSize),
-	m_bNeedsRedraw(true),
-	m_pOwner(pOwner),
-	m_pFooter(0),
-	m_pHeader(0)
+	:	m_pLayout(pLayout),
+		m_pView(pView),
+		m_pNext(0),
+		m_pPrev(0),
+		m_pageSize(pageSize),
+		m_bNeedsRedraw(true),
+		m_pOwner(pOwner),
+		m_pFooter(0),
+		m_pHeader(0)
 {
 	UT_ASSERT(pLayout);
 	UT_ASSERT(pOwner);
@@ -522,8 +522,8 @@ const fp_PageSize&	fp_Page::getPageSize(void) const
 
 void fp_Page::removeHeader(void)
 {
-        if(m_pHeader == NULL)
-	        return;
+	if(m_pHeader == NULL)
+		return;
 	delete m_pHeader;
 	m_pHeader = NULL;
 }
@@ -531,8 +531,8 @@ void fp_Page::removeHeader(void)
 
 void fp_Page::removeFooter(void)
 {
-        if(m_pFooter == NULL)
-	        return;
+	if(m_pFooter == NULL)
+		return;
 	delete m_pFooter;
 	m_pFooter = NULL;
 }
@@ -549,7 +549,7 @@ fp_HdrFtrContainer* fp_Page::getHeaderContainer(fl_HdrFtrSectionLayout* pHFSL)
 	// headerMargin is the height from the top of the page.
 	//
 	m_pHeader = new fp_HdrFtrContainer(m_pOwner->getLeftMargin(),
-					  m_pOwner->getHeaderMargin(),
+									   m_pOwner->getHeaderMargin(),
 									   getWidth() - (m_pOwner->getLeftMargin() + m_pOwner->getRightMargin()),
 									   m_pOwner->getTopMargin() - m_pOwner->getHeaderMargin(),
 									   getWidthInLayoutUnits() - (m_pOwner->getLeftMarginInLayoutUnits() + m_pOwner->getRightMarginInLayoutUnits()),
@@ -587,4 +587,3 @@ fp_HdrFtrContainer* fp_Page::getFooterContainer(fl_HdrFtrSectionLayout* pHFSL)
 
 	return m_pFooter;
 }
-

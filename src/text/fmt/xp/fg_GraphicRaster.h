@@ -29,7 +29,7 @@ class FG_GraphicRaster : public FG_Graphic
 {
 public:
 	static FG_Graphic*	createFromChangeRecord(const fl_Layout *pFL, 
-										const PX_ChangeRecord_Object* pcro);
+											   const PX_ChangeRecord_Object* pcro);
 
 	FG_GraphicRaster();
 	virtual ~FG_GraphicRaster();

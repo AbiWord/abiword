@@ -37,20 +37,20 @@
   \param pSectionLayout Section layout type used for this container
  */
 fp_Container::fp_Container(UT_uint32 iType, fl_SectionLayout* pSectionLayout)
-:       m_iType(iType),
-        m_pPage(0),
-        m_iWidth(0),
-        m_iWidthLayoutUnits(0),
-        m_iHeight(0),
-        m_iMaxHeight(0),
-        m_iHeightLayoutUnits(0),
-        m_iMaxHeightLayoutUnits(0),
-        m_iX(0),
-        m_iY(0),
-        m_pSectionLayout(pSectionLayout)
+	:       m_iType(iType),
+			m_pPage(0),
+			m_iWidth(0),
+			m_iWidthLayoutUnits(0),
+			m_iHeight(0),
+			m_iMaxHeight(0),
+			m_iHeightLayoutUnits(0),
+			m_iMaxHeightLayoutUnits(0),
+			m_iX(0),
+			m_iY(0),
+			m_pSectionLayout(pSectionLayout)
 {
-        UT_ASSERT(pSectionLayout);
-        m_pG = m_pSectionLayout->getDocLayout()->getGraphics();
+	UT_ASSERT(pSectionLayout);
+	m_pG = m_pSectionLayout->getDocLayout()->getGraphics();
 }
 
 /*!
@@ -172,7 +172,7 @@ void fp_Container::getOffsets(fp_Line* pLine, UT_sint32& xoff, UT_sint32& yoff)
  \retval yoff Line's Y offset relative the screen
  */
 void fp_Container::getScreenOffsets(fp_Line* pLine,
-							   UT_sint32& xoff, UT_sint32& yoff)
+									UT_sint32& xoff, UT_sint32& yoff)
 {
 	UT_sint32 my_xoff;
 	UT_sint32 my_yoff;
@@ -193,7 +193,7 @@ void fp_Container::removeLine(fp_Line* pLine)
 {
 	UT_sint32 iCount = m_vecLines.getItemCount();
 	if(iCount == 0)
-	      return;
+		return;
 	UT_sint32 ndx = m_vecLines.findItem(pLine);
 	UT_ASSERT(ndx >= 0);
 
@@ -349,7 +349,7 @@ void fp_Container::draw(dg_DrawArgs* pDA)
  \retval bEOL True if position is at end of line, otherwise false
  */
 void fp_Container::mapXYToPosition(UT_sint32 x, UT_sint32 y, PT_DocPosition& pos,
-							  bool& bBOL, bool& bEOL)
+								   bool& bBOL, bool& bEOL)
 {
 	int count = m_vecLines.getItemCount();
 
@@ -707,7 +707,7 @@ void fp_HdrFtrContainer::layout(void)
 		iY += iLineHeight;
 		iY += iLineMarginAfter;
 		if(iY >= m_iHeight)
-		        break;
+			break;
 	}
 
 	// note that the height of a HdrFtr container never changes.
@@ -756,4 +756,3 @@ void fp_HdrFtrContainer::draw(dg_DrawArgs* pDA)
 	}
 
 }
-

@@ -45,8 +45,8 @@ public:
 	fp_Container(UT_uint32 iType, fl_SectionLayout* pSectionLayout);
 	~fp_Container();
 	/*!
-  		Return container type
-  		\return Type
+	  Return container type
+	  \return Type
 	*/
 	inline UT_uint32	getType(void) const { return m_iType; }
 	
@@ -62,69 +62,69 @@ public:
 	void				setX(UT_sint32);
 	void				setY(UT_sint32);
 	/*!
-  		Get container's max height
-  		\return Max height
-	 */
+	  Get container's max height
+	  \return Max height
+	*/
 	inline UT_sint32	getMaxHeight(void) const
  		{ return m_iMaxHeight; }
 	/*!
-  		Get container's max height in layout units
-  		\return Max height in layout units
-	 */
+	  Get container's max height in layout units
+	  \return Max height in layout units
+	*/
 	inline UT_sint32	getMaxHeightInLayoutUnits(void) const
 		{ return m_iMaxHeightLayoutUnits; }
 	/*!
-  		Get container's width
-  		\return Width
-	 */
+	  Get container's width
+	  \return Width
+	*/
 	inline UT_sint32	getWidth(void) const
 		{ return m_iWidth; }
 	/*!
-  		Get container's width in layout units
-  		\return Width in layout units
-	 */
+	  Get container's width in layout units
+	  \return Width in layout units
+	*/
 	inline UT_sint32	getWidthInLayoutUnits(void) const
 		{ UT_ASSERT(m_iWidthLayoutUnits); return m_iWidthLayoutUnits; }
 	/*!
-  		Get container's X position
-  		\return X position
-	 */
+	  Get container's X position
+	  \return X position
+	*/
 	inline UT_sint32	getX(void) const
 		{ return m_iX; }
 	/*!
-  		Get container's Y position
-  		\return Y position
-	 */
+	  Get container's Y position
+	  \return Y position
+	*/
 	inline UT_sint32	getY(void) const
 		{ return m_iY; }
 	/*!
-  		Get page container is located on
-  		\return Page
-	 */
+	  Get page container is located on
+	  \return Page
+	*/
 	inline fp_Page*		getPage(void) const
 		{ return m_pPage; }
 	/*!
-  		Get section container is contained in
-  		\return Section
-	 */
+	  Get section container is contained in
+	  \return Section
+	*/
 	inline fl_SectionLayout* getSectionLayout(void) const
 		{ return m_pSectionLayout; }
 	/*!
-  		Get container's height
-  		\return Height
-	 */
+	  Get container's height
+	  \return Height
+	*/
 	inline UT_sint32	getHeight(void) const
 		{ return m_iHeight; }
 	/*!
-  		Get container's height in layout units
-  		\return Height in layout units
-	 */
+	  Get container's height in layout units
+	  \return Height in layout units
+	*/
 	inline UT_sint32	getHeightInLayoutUnits(void) const
 		{ return m_iHeightLayoutUnits; }
 	/*!
-  		Get column gap from page the container is located on
-  		\return Column gap
-	 */
+	  Get column gap from page the container is located on
+	  \return Column gap
+	*/
 	inline UT_sint32	getColumnGap(void) const
 		{ return m_pPage->getColumnGap(); }
 	
@@ -157,57 +157,57 @@ public:
 
 protected:
 	/*!
-  		Container type
-  		\bug Surely this should be an enum?!?
-	 */
+	  Container type
+	  \bug Surely this should be an enum?!?
+	*/
 	UT_uint32				m_iType;
 	/*!
-  		Page this container is located on
-	 */
+	  Page this container is located on
+	*/
 	fp_Page*				m_pPage;
 	/*!
-  		Width of the container
-	 */
+	  Width of the container
+	*/
 	UT_sint32 				m_iWidth;
 	/*!
-  		Width in layout units of the container
-	 */
+	  Width in layout units of the container
+	*/
 	UT_sint32 				m_iWidthLayoutUnits;
 	/*!
-  		Height of the container
-	 */
+	  Height of the container
+	*/
 	UT_sint32 				m_iHeight;
 	/*!
-  		Maximum height of the container
-	 */
+	  Maximum height of the container
+	*/
 	UT_sint32				m_iMaxHeight;
 	/*!
-  		Height in layout units of the container
-	 */
+	  Height in layout units of the container
+	*/
 	UT_sint32 				m_iHeightLayoutUnits;
 	/*!
-  		Maximum height in layout units of the container
-	 */
+	  Maximum height in layout units of the container
+	*/
 	UT_sint32				m_iMaxHeightLayoutUnits;
 	/*!
-  		X coordinate of container
-	 */
+	  X coordinate of container
+	*/
 	UT_sint32				m_iX;
 	/*!
-  		Y coordinate of container
-	 */
+	  Y coordinate of container
+	*/
 	UT_sint32				m_iY;
 	/*!
-  		Vector of lines (fp_Line) in containter
-	 */
+	  Vector of lines (fp_Line) in containter
+	*/
 	UT_Vector				m_vecLines;
 	/*!
-  		Section layout type used for this container
-	 */
+	  Section layout type used for this container
+	*/
 	fl_SectionLayout*		m_pSectionLayout;
 	/*!
-  		GR_Graphics this container is drawn on
-	 */
+	  GR_Graphics this container is drawn on
+	*/
 	GR_Graphics*			m_pG;
 
     void                    _drawBoundaries(dg_DrawArgs* pDA);
@@ -250,9 +250,9 @@ class fp_HdrFtrContainer : public fp_Container
 {
 public:
 	fp_HdrFtrContainer(UT_sint32 iX, UT_sint32 iY, 
-							UT_sint32 iWidth, UT_sint32 iHeight,
-							UT_sint32 iWidthLayout, UT_sint32 iHeightLayout, 
-							fl_SectionLayout* pSL);
+					   UT_sint32 iWidth, UT_sint32 iHeight,
+					   UT_sint32 iWidthLayout, UT_sint32 iHeightLayout, 
+					   fl_SectionLayout* pSL);
 	~fp_HdrFtrContainer();
 
 	fl_HdrFtrSectionLayout*	getHdrFtrSectionLayout(void) const;

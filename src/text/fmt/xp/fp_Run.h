@@ -243,7 +243,7 @@ private:
 
 class fp_TabRun : public fp_Run
 {
- public:
+public:
 	fp_TabRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen);
 
 	virtual void			lookupProperties(void);
@@ -265,7 +265,7 @@ protected:
 
 class fp_ForcedLineBreakRun : public fp_Run
 {
- public:
+public:
 	fp_ForcedLineBreakRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen);
 
 	virtual void			lookupProperties(void);
@@ -283,7 +283,7 @@ protected:
 
 class fp_FieldStartRun : public fp_Run
 {
- public:
+public:
 	fp_FieldStartRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen);
 
 	virtual void			lookupProperties(void);
@@ -301,7 +301,7 @@ protected:
 
 class fp_FieldEndRun : public fp_Run
 {
- public:
+public:
 	fp_FieldEndRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen);
 
 	virtual void			lookupProperties(void);
@@ -319,7 +319,7 @@ protected:
 
 class fp_ForcedColumnBreakRun : public fp_Run
 {
- public:
+public:
 	fp_ForcedColumnBreakRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen);
 
 	virtual void			lookupProperties(void);
@@ -337,7 +337,7 @@ protected:
 
 class fp_ForcedPageBreakRun : public fp_Run
 {
- public:
+public:
 	fp_ForcedPageBreakRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen);
 
 	virtual void			lookupProperties(void);
@@ -356,7 +356,7 @@ protected:
 
 class fp_EndOfParagraphRun : public fp_Run
 {
- public:
+public:
 	fp_EndOfParagraphRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen);
 
 	virtual void			lookupProperties(void);
@@ -407,7 +407,7 @@ enum fp_FieldTypesEnum { FPFIELDTYPE_START,
 
 #include "fp_Fields.h"
 
-FPFIELDTYPE_END };
+						 FPFIELDTYPE_END };
 
 #undef  _FIELD
 #undef  _FIELDTYPE
@@ -419,7 +419,7 @@ enum fp_FieldsEnum { FPFIELD_start,
 
 #include "fp_Fields.h"
 
-FPFIELD_end };
+					 FPFIELD_end };
 
 #undef  _FIELD
 #undef  _FIELDTYPE
@@ -519,8 +519,8 @@ public:
 
 class fp_FieldDateRun : public fp_FieldRun
 {
- public:
-        fp_FieldDateRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen);
+public:
+	fp_FieldDateRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen);
 
 	virtual bool			calculateValue(void);
 	virtual void			_draw(dg_DrawArgs* pDA) { _defaultDraw(pDA); }
@@ -534,8 +534,8 @@ class fp_FieldDateRun : public fp_FieldRun
 // including white spaces
 class fp_FieldCharCountRun : public fp_FieldRun
 {
- public:
-  fp_FieldCharCountRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen);
+public:
+	fp_FieldCharCountRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen);
 
 	virtual bool			calculateValue(void);
 	virtual void			_draw(dg_DrawArgs* pDA) { _defaultDraw(pDA); }
@@ -545,8 +545,8 @@ class fp_FieldCharCountRun : public fp_FieldRun
 // in the document
 class fp_FieldNonBlankCharCountRun : public fp_FieldRun
 {
- public:
-  fp_FieldNonBlankCharCountRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen);
+public:
+	fp_FieldNonBlankCharCountRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen);
 
 	virtual bool			calculateValue(void);
 	virtual void			_draw(dg_DrawArgs* pDA) { _defaultDraw(pDA); }
@@ -555,8 +555,8 @@ class fp_FieldNonBlankCharCountRun : public fp_FieldRun
 // count of the #lines in the document
 class fp_FieldLineCountRun : public fp_FieldRun
 {
- public:
-  fp_FieldLineCountRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen);
+public:
+	fp_FieldLineCountRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen);
 
 	virtual bool			calculateValue(void);
 	virtual void			_draw(dg_DrawArgs* pDA) { _defaultDraw(pDA); }
@@ -565,8 +565,8 @@ class fp_FieldLineCountRun : public fp_FieldRun
 // count of the #para in the document
 class fp_FieldParaCountRun : public fp_FieldRun
 {
- public:
-  fp_FieldParaCountRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen);
+public:
+	fp_FieldParaCountRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen);
 
 	virtual bool			calculateValue(void);
 	virtual void			_draw(dg_DrawArgs* pDA) { _defaultDraw(pDA); }
@@ -575,8 +575,8 @@ class fp_FieldParaCountRun : public fp_FieldRun
 // count of #words in the document
 class fp_FieldWordCountRun : public fp_FieldRun
 {
- public:
-  fp_FieldWordCountRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen);
+public:
+	fp_FieldWordCountRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen);
 
 	virtual bool			calculateValue(void);
 	virtual void			_draw(dg_DrawArgs* pDA) { _defaultDraw(pDA); }
@@ -588,8 +588,8 @@ class fp_FieldWordCountRun : public fp_FieldRun
 // Americans - mm/dd/yy
 class fp_FieldMMDDYYRun : public fp_FieldRun
 {
- public:
-  fp_FieldMMDDYYRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen);
+public:
+	fp_FieldMMDDYYRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen);
 
 	virtual bool			calculateValue(void);
 	virtual void			_draw(dg_DrawArgs* pDA) { _defaultDraw(pDA); }
@@ -598,8 +598,8 @@ class fp_FieldMMDDYYRun : public fp_FieldRun
 // most of the world - dd/mm/yy
 class fp_FieldDDMMYYRun : public fp_FieldRun
 {
- public:
-  fp_FieldDDMMYYRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen);
+public:
+	fp_FieldDDMMYYRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen);
 
 	virtual bool			calculateValue(void);
 	virtual void			_draw(dg_DrawArgs* pDA) { _defaultDraw(pDA); }
@@ -608,8 +608,8 @@ class fp_FieldDDMMYYRun : public fp_FieldRun
 // April 18, 1979
 class fp_FieldMonthDayYearRun : public fp_FieldRun
 {
-  public:
-  fp_FieldMonthDayYearRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen);
+public:
+	fp_FieldMonthDayYearRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen);
 
 	virtual bool			calculateValue(void);
 	virtual void			_draw(dg_DrawArgs* pDA) { _defaultDraw(pDA); }
@@ -618,8 +618,8 @@ class fp_FieldMonthDayYearRun : public fp_FieldRun
 // Apr. 18, 1979
 class fp_FieldMthDayYearRun : public fp_FieldRun
 {
- public:
-  fp_FieldMthDayYearRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen);
+public:
+	fp_FieldMthDayYearRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen);
 
 	virtual bool			calculateValue(void);
 	virtual void			_draw(dg_DrawArgs* pDA) { _defaultDraw(pDA); }
@@ -628,8 +628,8 @@ class fp_FieldMthDayYearRun : public fp_FieldRun
 // default representation for your locale. includes time too
 class fp_FieldDefaultDateRun : public fp_FieldRun
 {
- public:
-  fp_FieldDefaultDateRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen);
+public:
+	fp_FieldDefaultDateRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen);
 
 	virtual bool			calculateValue(void);
 	virtual void			_draw(dg_DrawArgs* pDA) { _defaultDraw(pDA); }
@@ -638,8 +638,8 @@ class fp_FieldDefaultDateRun : public fp_FieldRun
 // default for your locale, not appending the time
 class fp_FieldDefaultDateNoTimeRun : public fp_FieldRun
 {
- public:
-  fp_FieldDefaultDateNoTimeRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen);
+public:
+	fp_FieldDefaultDateNoTimeRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen);
 
 	virtual bool			calculateValue(void);
 	virtual void			_draw(dg_DrawArgs* pDA) { _defaultDraw(pDA); }
@@ -648,8 +648,8 @@ class fp_FieldDefaultDateNoTimeRun : public fp_FieldRun
 // day of the week (Wednesday)
 class fp_FieldWkdayRun : public fp_FieldRun
 {
- public:
-  fp_FieldWkdayRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen);
+public:
+	fp_FieldWkdayRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen);
 
 	virtual bool			calculateValue(void);
 	virtual void			_draw(dg_DrawArgs* pDA) { _defaultDraw(pDA); }
@@ -658,8 +658,8 @@ class fp_FieldWkdayRun : public fp_FieldRun
 // day of year (i.e. 72)
 class fp_FieldDOYRun : public fp_FieldRun
 {
- public:
-  fp_FieldDOYRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen);
+public:
+	fp_FieldDOYRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen);
 
 	virtual bool			calculateValue(void);
 	virtual void			_draw(dg_DrawArgs* pDA) { _defaultDraw(pDA); }
@@ -668,8 +668,8 @@ class fp_FieldDOYRun : public fp_FieldRun
 // military (zulu) time
 class fp_FieldMilTimeRun : public fp_FieldRun
 {
- public:
-  fp_FieldMilTimeRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen);
+public:
+	fp_FieldMilTimeRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen);
 
 	virtual bool			calculateValue(void);
 	virtual void			_draw(dg_DrawArgs* pDA) { _defaultDraw(pDA); }
@@ -678,8 +678,8 @@ class fp_FieldMilTimeRun : public fp_FieldRun
 // prints am or pm
 class fp_FieldAMPMRun : public fp_FieldRun
 {
- public:
-  fp_FieldAMPMRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen);
+public:
+	fp_FieldAMPMRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen);
 
 	virtual bool			calculateValue(void);
 	virtual void			_draw(dg_DrawArgs* pDA) { _defaultDraw(pDA); }
@@ -688,8 +688,8 @@ class fp_FieldAMPMRun : public fp_FieldRun
 // milliseconds since the epoch, for you geeks out there :-)
 class fp_FieldTimeEpochRun : public fp_FieldRun
 {
- public:
-  fp_FieldTimeEpochRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen);
+public:
+	fp_FieldTimeEpochRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen);
 
 	virtual bool			calculateValue(void);
 	virtual void			_draw(dg_DrawArgs* pDA) { _defaultDraw(pDA); }
@@ -698,8 +698,8 @@ class fp_FieldTimeEpochRun : public fp_FieldRun
 // your time zone (EST, for example)
 class fp_FieldTimeZoneRun : public fp_FieldRun
 {
- public:
-  fp_FieldTimeZoneRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen);
+public:
+	fp_FieldTimeZoneRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen);
 
 	virtual bool			calculateValue(void);
 	virtual void			_draw(dg_DrawArgs* pDA) { _defaultDraw(pDA); }
@@ -710,8 +710,8 @@ class fp_FieldTimeZoneRun : public fp_FieldRun
 // build id
 class fp_FieldBuildIdRun : public fp_FieldRun
 {
- public:
-  fp_FieldBuildIdRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen);
+public:
+	fp_FieldBuildIdRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen);
 
 	virtual bool			calculateValue(void);
 	virtual void			_draw(dg_DrawArgs* pDA) { _defaultDraw(pDA); }
@@ -720,8 +720,8 @@ class fp_FieldBuildIdRun : public fp_FieldRun
 // build version (i.e. 0.7.13)
 class fp_FieldBuildVersionRun : public fp_FieldRun
 {
- public:
-  fp_FieldBuildVersionRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen);
+public:
+	fp_FieldBuildVersionRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen);
 
 	virtual bool			calculateValue(void);
 	virtual void			_draw(dg_DrawArgs* pDA) { _defaultDraw(pDA); }
@@ -758,9 +758,3 @@ protected:
 };
 
 #endif /* FP_RUN_H */
-
-
-
-
-
-

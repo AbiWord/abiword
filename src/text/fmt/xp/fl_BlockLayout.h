@@ -82,53 +82,53 @@ typedef enum {
 
 class fl_CharWidths
 {
-	public:
-		fl_CharWidths()	: m_gbCharWidths(256), m_gbCharWidthsLayoutUnits(256)
-			{
-			}
+public:
+	fl_CharWidths()	: m_gbCharWidths(256), m_gbCharWidthsLayoutUnits(256)
+		{
+		}
 
-	private:
+private:
 
-		UT_GrowBuf m_gbCharWidths;
-		UT_GrowBuf m_gbCharWidthsLayoutUnits;
+	UT_GrowBuf m_gbCharWidths;
+	UT_GrowBuf m_gbCharWidthsLayoutUnits;
 
-	public:
+public:
 
-		bool ins(UT_uint32 position, UT_uint32 length)
-			{
+	bool ins(UT_uint32 position, UT_uint32 length)
+		{
 			m_gbCharWidths.ins(position, length);
 			return m_gbCharWidthsLayoutUnits.ins(position, length);
-			}
+		}
 
-		bool del(UT_uint32 position, UT_uint32 amount)
-			{
+	bool del(UT_uint32 position, UT_uint32 amount)
+		{
 			m_gbCharWidths.del(position, amount);
 			return m_gbCharWidthsLayoutUnits.del(position, amount);
-			}
-		UT_uint32 getLength(void) const
-			{
+		}
+	UT_uint32 getLength(void) const
+		{
 			UT_ASSERT(m_gbCharWidths.getLength() == m_gbCharWidthsLayoutUnits.getLength());
 			return m_gbCharWidths.getLength();
-			}
-		bool ins(UT_uint32 position, const fl_CharWidths &Other, UT_uint32 offset, UT_uint32 length)
-			{
+		}
+	bool ins(UT_uint32 position, const fl_CharWidths &Other, UT_uint32 offset, UT_uint32 length)
+		{
 			m_gbCharWidths.ins(position, Other.m_gbCharWidths.getPointer(offset), length);
 			return m_gbCharWidthsLayoutUnits.ins(position, Other.m_gbCharWidthsLayoutUnits.getPointer(offset), length);
-			}
-		void truncate(UT_uint32 position)
-			{
+		}
+	void truncate(UT_uint32 position)
+		{
 			m_gbCharWidths.truncate(position);
 			m_gbCharWidthsLayoutUnits.truncate(position);
-			}
+		}
 
-		UT_GrowBuf *getCharWidths()
-			{
+	UT_GrowBuf *getCharWidths()
+		{
 			return &m_gbCharWidths;
-			}
-		UT_GrowBuf *getCharWidthsLayoutUnits()
-			{
+		}
+	UT_GrowBuf *getCharWidthsLayoutUnits()
+		{
 			return &m_gbCharWidthsLayoutUnits;
-			}
+		}
 
 
 };
@@ -202,7 +202,7 @@ public:
 	virtual void listUpdate(void);
 	void resumeList( fl_BlockLayout * prevList);
 	void prependList( fl_BlockLayout * nextList);
-        List_Type decodeListType(char * listformat);
+	List_Type decodeListType(char * listformat);
 	List_Type getListType(void);
 	XML_Char* getListStyleString( List_Type iListType);
 	List_Type getListTypeFromStyle( const XML_Char * style);
@@ -219,8 +219,8 @@ public:
 	UT_uint32 getLevel(void);
 	void setStarting( bool bValue);
 	void setStopping( bool bValue);
-        fl_BlockLayout * getPreviousList(UT_uint32 id);
-        fl_BlockLayout * getPreviousList(void);
+	fl_BlockLayout * getPreviousList(UT_uint32 id);
+	fl_BlockLayout * getPreviousList(void);
 	inline fl_BlockLayout * getParentItem(void);
 	
 	void findSquigglesForRun(fp_Run* pRun);
@@ -266,12 +266,12 @@ public:
 	void checkSpelling(void);
 	void debugFlashing(void);
  	bool	findNextTabStop(UT_sint32 iStartX, UT_sint32 iMaxX,
-				UT_sint32& iPosition, eTabType& iType, 
-				eTabLeader &iLeader );
+							UT_sint32& iPosition, eTabType& iType, 
+							eTabLeader &iLeader );
  	bool	findNextTabStopInLayoutUnits(UT_sint32 iStartX, UT_sint32 iMaxX,
-					     UT_sint32& iPosition, 
-					     eTabType& iType, 
-					     eTabLeader &iLeader);
+										 UT_sint32& iPosition, 
+										 eTabType& iType, 
+										 eTabLeader &iLeader);
 
 	inline UT_sint32 getDefaultTabInterval(void) const { return m_iDefaultTabInterval; }
 	inline UT_sint32 getTabsCount(void) const { return (UT_sint32) m_vecTabs.getItemCount(); }
@@ -285,23 +285,23 @@ public:
 	bool doclistener_deleteStrux(const PX_ChangeRecord_Strux * pcrx);
 	bool doclistener_changeStrux(const PX_ChangeRecord_StruxChange * pcrxc);
 	bool doclistener_insertFirstBlock(const PX_ChangeRecord_Strux * pcrx,
-										 PL_StruxDocHandle sdh,
-										 PL_ListenerId lid,
-										 void (* pfnBindHandles)(PL_StruxDocHandle sdhNew,
-																 PL_ListenerId lid,
-																 PL_StruxFmtHandle sfhNew));
-	bool doclistener_insertBlock(const PX_ChangeRecord_Strux * pcrx,
-									PL_StruxDocHandle sdh,
-									PL_ListenerId lid,
-									void (* pfnBindHandles)(PL_StruxDocHandle sdhNew,
-															PL_ListenerId lid,
-															PL_StruxFmtHandle sfhNew));
-	bool doclistener_insertSection(const PX_ChangeRecord_Strux * pcrx,
 									  PL_StruxDocHandle sdh,
 									  PL_ListenerId lid,
 									  void (* pfnBindHandles)(PL_StruxDocHandle sdhNew,
 															  PL_ListenerId lid,
 															  PL_StruxFmtHandle sfhNew));
+	bool doclistener_insertBlock(const PX_ChangeRecord_Strux * pcrx,
+								 PL_StruxDocHandle sdh,
+								 PL_ListenerId lid,
+								 void (* pfnBindHandles)(PL_StruxDocHandle sdhNew,
+														 PL_ListenerId lid,
+														 PL_StruxFmtHandle sfhNew));
+	bool doclistener_insertSection(const PX_ChangeRecord_Strux * pcrx,
+								   PL_StruxDocHandle sdh,
+								   PL_ListenerId lid,
+								   void (* pfnBindHandles)(PL_StruxDocHandle sdhNew,
+														   PL_ListenerId lid,
+														   PL_StruxFmtHandle sfhNew));
 	bool doclistener_insertObject(const PX_ChangeRecord_Object * pcro);
 	bool doclistener_deleteObject(const PX_ChangeRecord_Object * pcro);
 	bool doclistener_changeObject(const PX_ChangeRecord_ObjectChange * pcroc);
@@ -384,9 +384,9 @@ protected:
 										   fl_BlockLayout* pBlock=NULL);
 	void					_recalcPendingWord(UT_uint32 iOffset, UT_sint32 chg);
 	bool					_checkMultiWord(const UT_UCSChar* pBlockText,
-									 UT_uint32 iStart, 
-									 UT_uint32 eor,
-									 bool bToggleIP);
+											UT_uint32 iStart, 
+											UT_uint32 eor,
+											bool bToggleIP);
 
 	UT_uint32				_getLastChar();
 	void					_stuffAllRunsOnALine(void);
@@ -404,7 +404,7 @@ protected:
 	bool					m_bNeedsReformat;
 	bool					m_bNeedsRedraw;
 	bool					m_bFixCharWidths;
-        bool                                 m_bCursorErased;
+	bool                                 m_bCursorErased;
 
 	fl_CharWidths			m_gbCharWidths;
 
@@ -498,13 +498,13 @@ public:
 	void			setOffset(UT_uint32 value) { iOffset = value;}
 
 	void operator = (const fl_TabStop &Other)
-	{
-		iPosition = Other.iPosition;
-		iPositionLayoutUnits = Other.iPositionLayoutUnits;
-		iType = Other.iType;
-		iLeader = Other.iLeader;
-		iOffset = Other.iOffset;
-	}
+		{
+			iPosition = Other.iPosition;
+			iPositionLayoutUnits = Other.iPositionLayoutUnits;
+			iType = Other.iType;
+			iLeader = Other.iLeader;
+			iOffset = Other.iOffset;
+		}
 
 protected:
 

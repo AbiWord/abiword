@@ -258,10 +258,10 @@ void fl_SectionLayout::_purgeLayout()
 
 bool fl_SectionLayout::bl_doclistener_populateSpan(fl_BlockLayout* pBL, const PX_ChangeRecord_Span * pcrs, PT_BlockOffset blockOffset, UT_uint32 len)
 {
-        if(pBL->getPrev()!= NULL && pBL->getPrev()->getLastLine()==NULL)
-        {
-	        UT_DEBUGMSG(("In bl_doclistner_pop no LastLine \n"));
-	        UT_DEBUGMSG(("getPrev = %d this = %d \n",pBL->getPrev(),pBL));
+	if(pBL->getPrev()!= NULL && pBL->getPrev()->getLastLine()==NULL)
+	{
+		UT_DEBUGMSG(("In bl_doclistner_pop no LastLine \n"));
+		UT_DEBUGMSG(("getPrev = %d this = %d \n",pBL->getPrev(),pBL));
 		//  UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 	}
 
@@ -299,11 +299,11 @@ bool fl_SectionLayout::bl_doclistener_changeStrux(fl_BlockLayout* pBL, const PX_
 }
 
 bool fl_SectionLayout::bl_doclistener_insertBlock(fl_BlockLayout* pBL, const PX_ChangeRecord_Strux * pcrx,
-									PL_StruxDocHandle sdh,
-									PL_ListenerId lid,
-									void (* pfnBindHandles)(PL_StruxDocHandle sdhNew,
-															PL_ListenerId lid,
-															PL_StruxFmtHandle sfhNew))
+												  PL_StruxDocHandle sdh,
+												  PL_ListenerId lid,
+												  void (* pfnBindHandles)(PL_StruxDocHandle sdhNew,
+																		  PL_ListenerId lid,
+																		  PL_StruxFmtHandle sfhNew))
 {
 	if (pBL)
 	{
@@ -325,11 +325,11 @@ bool fl_SectionLayout::bl_doclistener_insertBlock(fl_BlockLayout* pBL, const PX_
 }
 
 bool fl_SectionLayout::bl_doclistener_insertSection(fl_BlockLayout* pBL, const PX_ChangeRecord_Strux * pcrx,
-									  PL_StruxDocHandle sdh,
-									  PL_ListenerId lid,
-									  void (* pfnBindHandles)(PL_StruxDocHandle sdhNew,
-															  PL_ListenerId lid,
-															  PL_StruxFmtHandle sfhNew))
+													PL_StruxDocHandle sdh,
+													PL_ListenerId lid,
+													void (* pfnBindHandles)(PL_StruxDocHandle sdhNew,
+																			PL_ListenerId lid,
+																			PL_StruxFmtHandle sfhNew))
 {
 	return pBL->doclistener_insertSection(pcrx, sdh, lid, pfnBindHandles);
 }
@@ -431,12 +431,12 @@ void fl_DocSectionLayout::setHdrFtr(UT_uint32 /*iType*/, fl_HdrFtrSectionLayout*
 
 fl_HdrFtrSectionLayout*   fl_DocSectionLayout::getHeader(void)
 {
-        return m_pHeaderSL;
+	return m_pHeaderSL;
 }
 
 fl_HdrFtrSectionLayout*   fl_DocSectionLayout::getFooter(void)
 {
-        return m_pFooterSL;
+	return m_pFooterSL;
 }
 
 fp_Container* fl_DocSectionLayout::getFirstContainer()
@@ -482,13 +482,13 @@ fp_Container* fl_DocSectionLayout::getNewContainer(void)
 		fl_DocSectionLayout* pPrevSL = getPrevDocSection();
 		if (pPrevSL)
 		{
-		  //
-		  // Sevior this code should not be needed!
-		  //
-		        fp_Column * pPrevCol = (fp_Column *) pPrevSL->getLastContainer();
+			//
+			// Sevior this code should not be needed!
+			//
+			fp_Column * pPrevCol = (fp_Column *) pPrevSL->getLastContainer();
 			if(pPrevCol == NULL)
 			{
-			        UT_DEBUGMSG(("BUG! BUG! Prev section has no last container! Attempting to fix this \n"));
+				UT_DEBUGMSG(("BUG! BUG! Prev section has no last container! Attempting to fix this \n"));
 				pPrevSL->format();
 			}
 			fp_Page* pTmpPage = pPrevSL->getLastContainer()->getPage();
@@ -591,14 +591,14 @@ void fl_DocSectionLayout::format(void)
 		UT_sint32 count = 0;
 		while(pBL->getLastLine() == NULL || pBL->getFirstLine()==NULL)
 		{
-		       UT_DEBUGMSG(("Error formatting a block try again \n"));
-		       count = count + 1;
-		       pBL->format();
-		       if(count > 3)
-		       {
-		              UT_DEBUGMSG(("Give up trying to format. Hope for the best :-( \n"));
-		              break;
-		       }
+			UT_DEBUGMSG(("Error formatting a block try again \n"));
+			count = count + 1;
+			pBL->format();
+			if(count > 3)
+			{
+				UT_DEBUGMSG(("Give up trying to format. Hope for the best :-( \n"));
+				break;
+			}
 		}
 		pBL = pBL->getNext();
 	}
@@ -696,9 +696,9 @@ bool fl_DocSectionLayout::doclistener_changeStrux(const PX_ChangeRecord_StruxCha
 	// Clear the header/footers first
 	//
   	if(m_pHeaderSL)
-  	        m_pHeaderSL->collapse();
+		m_pHeaderSL->collapse();
   	if(m_pFooterSL)
-  	        m_pFooterSL->collapse();
+		m_pFooterSL->collapse();
 
 	m_pFirstColumn = NULL;
 	m_pLastColumn = NULL;
@@ -715,9 +715,9 @@ bool fl_DocSectionLayout::doclistener_changeStrux(const PX_ChangeRecord_StruxCha
 	// Clear the header/footers too
 	//
 	if(m_pHeaderSL)
-	        m_pHeaderSL->clearScreen();
+		m_pHeaderSL->clearScreen();
 	if(m_pFooterSL)
-	        m_pFooterSL->clearScreen();
+		m_pFooterSL->clearScreen();
 
 	// remove all the columns from their pages
 	pCol = m_pFirstColumn;
@@ -1166,46 +1166,46 @@ void fl_DocSectionLayout::addOwnedPage(fp_Page* pPage)
 {
 	// TODO do we really need the vecOwnedPages member? YES!!!
 
-        if(m_pFirstOwnedPage == NULL)
-	        m_pFirstOwnedPage = pPage;
+	if(m_pFirstOwnedPage == NULL)
+		m_pFirstOwnedPage = pPage;
 	fp_Page * pPrev = m_pFirstOwnedPage;
 
 	if (m_pHeaderSL)
 	{
-	        if(pPrev && pPrev->getOwningSection() == this && pPrev->getHeaderP() == NULL )
-	                prependOwnedHeaderPage(pPrev);
+		if(pPrev && pPrev->getOwningSection() == this && pPrev->getHeaderP() == NULL )
+			prependOwnedHeaderPage(pPrev);
 
 		m_pHeaderSL->addPage(pPage);
 	}
 
 	if (m_pFooterSL)
 	{
-	        if(pPrev && pPrev->getOwningSection() == this && pPrev->getFooterP() == NULL)
-	                prependOwnedFooterPage(pPrev);
+		if(pPrev && pPrev->getOwningSection() == this && pPrev->getFooterP() == NULL)
+			prependOwnedFooterPage(pPrev);
 		m_pFooterSL->addPage(pPage);
 	}
 }
 
 void fl_DocSectionLayout::prependOwnedHeaderPage(fp_Page* pPage)
 {
-  //
-  // Skip back through the pages until the first owned page of this section
-  //
-        fp_Page * pPrev = pPage->getPrev();
+	//
+	// Skip back through the pages until the first owned page of this section
+	//
+	fp_Page * pPrev = pPage->getPrev();
 	if(pPrev && pPrev->getOwningSection() == this && pPrev->getHeaderP() == NULL)
-	        prependOwnedHeaderPage(pPrev);
-       	m_pHeaderSL->addPage(pPage);
+		prependOwnedHeaderPage(pPrev);
+	m_pHeaderSL->addPage(pPage);
 }
 
 
 void fl_DocSectionLayout::prependOwnedFooterPage(fp_Page* pPage)
 {
-  //
-  // Skip back through the pages until the first owned page of this section
-  //
-        fp_Page * pPrev = pPage->getPrev();
+	//
+	// Skip back through the pages until the first owned page of this section
+	//
+	fp_Page * pPrev = pPage->getPrev();
 	if(pPrev && pPrev->getOwningSection() == this && pPrev->getFooterP() == NULL)
-	        prependOwnedFooterPage(pPrev);
+		prependOwnedFooterPage(pPrev);
 	m_pFooterSL->addPage(pPage);
 }
 
@@ -1530,13 +1530,13 @@ void fl_HdrFtrSectionLayout::collapse(void)
 		struct _PageHdrFtrShadowPair* pPair = (struct _PageHdrFtrShadowPair*) m_vecPages.getNthItem(i);
 		fp_Page * ppPage = pPair->pPage;
 		delete pPair->pShadow;
-	        if (getHFType() == FL_HDRFTR_HEADER)
+		if (getHFType() == FL_HDRFTR_HEADER)
 		{
-		       ppPage->removeHeader();
+			ppPage->removeHeader();
 		}
 		else 
 		{
-		       ppPage->removeFooter();
+			ppPage->removeFooter();
 		}
 		UT_DEBUGMSG(("SEVIOR: Removing page %x \n",ppPage));
 		delete pPair;
@@ -1566,8 +1566,8 @@ fl_HdrFtrShadow * fl_HdrFtrSectionLayout::getFirstShadow(void)
 	UT_uint32 iCount = m_vecPages.getItemCount();
 	if(iCount != 0)
 	{
-	        struct _PageHdrFtrShadowPair* pPair = (struct _PageHdrFtrShadowPair*) m_vecPages.getNthItem(0);
-	        return pPair->pShadow;
+		struct _PageHdrFtrShadowPair* pPair = (struct _PageHdrFtrShadowPair*) m_vecPages.getNthItem(0);
+		return pPair->pShadow;
 	}
 	return NULL;
 }
@@ -1577,8 +1577,8 @@ fp_Container* fl_HdrFtrSectionLayout::getFirstContainer()
 	UT_uint32 iCount = m_vecPages.getItemCount();
 	if(iCount != 0)
 	{
-	        struct _PageHdrFtrShadowPair* pPair = (struct _PageHdrFtrShadowPair*) m_vecPages.getNthItem(0);
-	        return pPair->pShadow->getFirstContainer();
+		struct _PageHdrFtrShadowPair* pPair = (struct _PageHdrFtrShadowPair*) m_vecPages.getNthItem(0);
+		return pPair->pShadow->getFirstContainer();
 	}
 	return NULL;
 }
@@ -1620,7 +1620,7 @@ UT_sint32 fl_HdrFtrSectionLayout::_findShadow(fp_Page* pPage)
 //
 void fl_HdrFtrSectionLayout::changeStrux( fl_DocSectionLayout * pSL)
 {
-        fl_DocSectionLayout* pPrevSL = pSL->getPrevDocSection();
+	fl_DocSectionLayout* pPrevSL = pSL->getPrevDocSection();
 	UT_ASSERT(pPrevSL);
 	// clear all the columns
 	fp_Column* pCol =NULL;
@@ -1697,7 +1697,7 @@ void fl_HdrFtrSectionLayout::addPage(fp_Page* pPage)
 {
 	UT_ASSERT(0 > _findShadow(pPage));
 	if(_findShadow(pPage) > 0)
-	       return;
+		return;
 	struct _PageHdrFtrShadowPair* pPair = new _PageHdrFtrShadowPair;
 	// TODO outofmem
 
@@ -1729,7 +1729,7 @@ void fl_HdrFtrSectionLayout::deletePage(fp_Page* pPage)
 	UT_sint32 iShadow = _findShadow(pPage);
 	UT_ASSERT(iShadow >= 0);
 	if(iShadow <= 0)
-	        return;
+		return;
 	struct _PageHdrFtrShadowPair* pPair = (struct _PageHdrFtrShadowPair*) m_vecPages.getNthItem(iShadow);
 	UT_ASSERT(pPair);
 
@@ -1740,11 +1740,11 @@ void fl_HdrFtrSectionLayout::deletePage(fp_Page* pPage)
 	delete pPair->pShadow;
 	if (getHFType() == FL_HDRFTR_HEADER)
 	{
-	        ppPage->removeHeader();
+		ppPage->removeHeader();
 	}
 	else 
 	{
-        	ppPage->removeFooter();
+		ppPage->removeFooter();
 	}
 
 	delete pPair;
@@ -1755,39 +1755,39 @@ void fl_HdrFtrSectionLayout::deletePage(fp_Page* pPage)
 
 void fl_HdrFtrSectionLayout::format(void)
 {
-  //
-  // Just format the shadow block since the HdrFtrSectionLayout blocks 
-  // have no containers for lines.
-  // 
+	//
+	// Just format the shadow block since the HdrFtrSectionLayout blocks 
+	// have no containers for lines.
+	// 
 	UT_uint32 iCount = m_vecPages.getItemCount();
 	//
 	// See if this hdrFtr section has any pages, if not add them
 	//
 	if(iCount == 0)
 	{
-	  // OK now add all the pages this header/footer is associated with
-	  // We have to extract this information from m_pDocSL
-	  // Loop through all the columns in m_pDocSl and find the pages owned
-	  // by m_pDocSL
-	  //
+		// OK now add all the pages this header/footer is associated with
+		// We have to extract this information from m_pDocSL
+		// Loop through all the columns in m_pDocSl and find the pages owned
+		// by m_pDocSL
+		//
 
-	       fp_Column * pCol = (fp_Column *) m_pDocSL->getFirstContainer();
-	       fp_Page * pOldPage = NULL;
-	       fp_Page * pNewPage = NULL;
-	       while(pCol)
-	       {
-	              pNewPage = pCol->getPage();
-		      if(pNewPage != NULL && pNewPage != pOldPage)
-		      {
-		              fl_DocSectionLayout* pDocSec = pNewPage->getOwningSection();
-			      if(pDocSec == m_pDocSL && _findShadow(pNewPage) < 0)
-			      {
-			               addPage(pNewPage);
-			      }
-		      }
-		      pCol = pCol->getNext();
-	       }
-	       iCount = m_vecPages.getItemCount();
+		fp_Column * pCol = (fp_Column *) m_pDocSL->getFirstContainer();
+		fp_Page * pOldPage = NULL;
+		fp_Page * pNewPage = NULL;
+		while(pCol)
+		{
+			pNewPage = pCol->getPage();
+			if(pNewPage != NULL && pNewPage != pOldPage)
+			{
+				fl_DocSectionLayout* pDocSec = pNewPage->getOwningSection();
+				if(pDocSec == m_pDocSL && _findShadow(pNewPage) < 0)
+				{
+					addPage(pNewPage);
+				}
+			}
+			pCol = pCol->getNext();
+		}
+		iCount = m_vecPages.getItemCount();
 	}
 	
 	for (UT_uint32 i=0; i<iCount; i++)
@@ -1800,9 +1800,9 @@ void fl_HdrFtrSectionLayout::format(void)
 
 void fl_HdrFtrSectionLayout::updateLayout(void)
 {
-  //
-  // update Just the  blocks in the shadowlayouts
-  //
+	//
+	// update Just the  blocks in the shadowlayouts
+	//
   	UT_uint32 iCount = m_vecPages.getItemCount();
 	for (UT_uint32 i=0; i<iCount; i++)
 	{
@@ -1815,9 +1815,9 @@ void fl_HdrFtrSectionLayout::updateLayout(void)
 
 void fl_HdrFtrSectionLayout::clearScreen(void)
 {
-  //
-  // update Just the  blocks in the shadowlayouts
-  //
+	//
+	// update Just the  blocks in the shadowlayouts
+	//
   	UT_uint32 iCount = m_vecPages.getItemCount();
 	for (UT_uint32 i=0; i<iCount; i++)
 	{
@@ -1829,9 +1829,9 @@ void fl_HdrFtrSectionLayout::clearScreen(void)
 
 void fl_HdrFtrSectionLayout::redrawUpdate(void)
 {
-  //
-  // Don't need to draw here since this is never displayed on the screen?
-  // 
+	//
+	// Don't need to draw here since this is never displayed on the screen?
+	// 
 	UT_uint32 iCount = m_vecPages.getItemCount();
 	for (UT_uint32 i=0; i<iCount; i++)
 	{
@@ -1874,7 +1874,7 @@ bool fl_HdrFtrSectionLayout::bl_doclistener_populateSpan(fl_BlockLayout* pBL, co
 	}
 	// Update the overall block too.
 	bResult = pBL->doclistener_populateSpan(pcrs,blockOffset,len)
-			&& bResult;
+		&& bResult;
 	return bResult;
 }
 
@@ -1891,9 +1891,9 @@ bool fl_HdrFtrSectionLayout::bl_doclistener_populateObject(fl_BlockLayout* pBL, 
 		bResult = pShadowBL->doclistener_populateObject(blockOffset,pcro)
 			&& bResult;
 	}
-        // Update the overall block too.
+	// Update the overall block too.
 	bResult = pBL->doclistener_populateObject(blockOffset,pcro)
-			&& bResult;
+		&& bResult;
 	return bResult;
 }
 	
@@ -1912,7 +1912,7 @@ bool fl_HdrFtrSectionLayout::bl_doclistener_insertSpan(fl_BlockLayout* pBL, cons
 	}
 	// Update the overall block too.
 	bResult = pBL->doclistener_insertSpan(pcrs)
-				&& bResult;
+		&& bResult;
 	return bResult;
 }
 
@@ -1931,7 +1931,7 @@ bool fl_HdrFtrSectionLayout::bl_doclistener_deleteSpan(fl_BlockLayout* pBL, cons
 	}
 	// Update the overall block too.
 	bResult = pBL->doclistener_deleteSpan(pcrs)
-			&& bResult;
+		&& bResult;
 	return bResult;
 }
 
@@ -1950,7 +1950,7 @@ bool fl_HdrFtrSectionLayout::bl_doclistener_changeSpan(fl_BlockLayout* pBL, cons
 	}
 	// Update the overall block too.
 	bResult = pBL->doclistener_changeSpan(pcrsc)
-	        && bResult;
+		&& bResult;
 	return bResult;
 }
 
@@ -1969,7 +1969,7 @@ bool fl_HdrFtrSectionLayout::bl_doclistener_deleteStrux(fl_BlockLayout* pBL, con
 	}
 	// Update the overall block too.
 	bResult = pBL->doclistener_deleteStrux(pcrx)
-			&& bResult;
+		&& bResult;
 	return bResult;
 }
 
@@ -1988,16 +1988,16 @@ bool fl_HdrFtrSectionLayout::bl_doclistener_changeStrux(fl_BlockLayout* pBL, con
 	}
 	// Update the overall block too.
 	bResult = pBL->doclistener_changeStrux(pcrxc)
-			&& bResult;
+		&& bResult;
 	return bResult;
 }
 
 bool fl_HdrFtrSectionLayout::bl_doclistener_insertBlock(fl_BlockLayout* pBL, const PX_ChangeRecord_Strux * pcrx,
-									PL_StruxDocHandle sdh,
-									PL_ListenerId lid,
-									void (* pfnBindHandles)(PL_StruxDocHandle sdhNew,
-															PL_ListenerId lid,
-															PL_StruxFmtHandle sfhNew))
+														PL_StruxDocHandle sdh,
+														PL_ListenerId lid,
+														void (* pfnBindHandles)(PL_StruxDocHandle sdhNew,
+																				PL_ListenerId lid,
+																				PL_StruxFmtHandle sfhNew))
 {
 	bool bResult = true;
 	fl_BlockLayout * pShadowBL = NULL;
@@ -2012,16 +2012,16 @@ bool fl_HdrFtrSectionLayout::bl_doclistener_insertBlock(fl_BlockLayout* pBL, con
 	}
 	// Update the overall block too.
 	bResult = pBL->doclistener_insertBlock(pcrx,sdh,lid,pfnBindHandles)
-			&& bResult;
+		&& bResult;
 	return bResult;
 }
 
 bool fl_HdrFtrSectionLayout::bl_doclistener_insertSection(fl_BlockLayout* pBL, const PX_ChangeRecord_Strux * pcrx,
-									  PL_StruxDocHandle sdh,
-									  PL_ListenerId lid,
-									  void (* pfnBindHandles)(PL_StruxDocHandle sdhNew,
-															  PL_ListenerId lid,
-															  PL_StruxFmtHandle sfhNew))
+														  PL_StruxDocHandle sdh,
+														  PL_ListenerId lid,
+														  void (* pfnBindHandles)(PL_StruxDocHandle sdhNew,
+																				  PL_ListenerId lid,
+																				  PL_StruxFmtHandle sfhNew))
 {
 	// TODO this should NEVER happen, right?
 	
@@ -2053,7 +2053,7 @@ bool fl_HdrFtrSectionLayout::bl_doclistener_insertObject(fl_BlockLayout* pBL, co
 	}
 	// Update the overall block too.
 	bResult = pBL->doclistener_insertObject(pcro)
-			&& bResult;
+		&& bResult;
 	return bResult;
 }
 
@@ -2072,7 +2072,7 @@ bool fl_HdrFtrSectionLayout::bl_doclistener_deleteObject(fl_BlockLayout* pBL, co
 	}
 	// Update the overall block too.
 	bResult = pBL->doclistener_deleteObject(pcro)
-			&& bResult;
+		&& bResult;
 	return bResult;
 }
 
@@ -2091,7 +2091,7 @@ bool fl_HdrFtrSectionLayout::bl_doclistener_changeObject(fl_BlockLayout* pBL, co
 	}
 	// Update the overall block too.
 	bResult = pBL->doclistener_changeObject(pcroc)
-			&& bResult;
+		&& bResult;
 	return bResult;
 }
 
@@ -2110,7 +2110,7 @@ bool fl_HdrFtrSectionLayout::bl_doclistener_insertFmtMark(fl_BlockLayout* pBL, c
 	}
 	// Update the overall block too.
 	bResult = pBL->doclistener_insertFmtMark(pcrfm)
-			&& bResult;
+		&& bResult;
 	return bResult;
 }
 
@@ -2129,7 +2129,7 @@ bool fl_HdrFtrSectionLayout::bl_doclistener_deleteFmtMark(fl_BlockLayout* pBL, c
 	}
 	// Update the overall block too.
 	bResult = pBL->doclistener_deleteFmtMark(pcrfm)
-			&& bResult;
+		&& bResult;
 	return bResult;
 }
 
@@ -2148,7 +2148,7 @@ bool fl_HdrFtrSectionLayout::bl_doclistener_changeFmtMark(fl_BlockLayout* pBL, c
 	}
 	// Update the overall block too.
 	bResult = pBL->doclistener_changeFmtMark(pcrfmc)
-			&& bResult;
+		&& bResult;
 	return bResult;
 }
 
@@ -2166,7 +2166,7 @@ fl_HdrFtrShadow::fl_HdrFtrShadow(FL_DocLayout* pLayout, fp_Page* pPage, fl_HdrFt
 	}
 	else if (m_pHdrFtrSL->getHFType() == FL_HDRFTR_FOOTER)
 	{
-	        m_pContainer =  m_pPage->getFooterContainer(m_pHdrFtrSL);
+		m_pContainer =  m_pPage->getFooterContainer(m_pHdrFtrSL);
 	}
 }
 
@@ -2207,13 +2207,13 @@ fp_Container* fl_HdrFtrShadow::getNewContainer(void)
 
 fl_BlockLayout* fl_HdrFtrShadow::findMatchingBlock(fl_BlockLayout* pBL)
 {
-  // This routine returns the matching block within this shadow of the
-  // hdrftrSectionlayout. 
-  //
-        fl_BlockLayout* ppBL = m_pFirstBlock;
+	// This routine returns the matching block within this shadow of the
+	// hdrftrSectionlayout. 
+	//
+	fl_BlockLayout* ppBL = m_pFirstBlock;
 	while(ppBL && (ppBL->getStruxDocHandle() != pBL->getStruxDocHandle()))
-        {
-	      ppBL = ppBL->getNext();
+	{
+		ppBL = ppBL->getNext();
 	}
 	UT_ASSERT(ppBL);
 	return ppBL;
@@ -2246,9 +2246,9 @@ void fl_HdrFtrShadow::updateLayout(void)
 
 void fl_HdrFtrShadow::clearScreen(void)
 {
-        UT_ASSERT(m_pContainer);
-        if(m_pContainer)
-                m_pContainer->clearScreen();
+	UT_ASSERT(m_pContainer);
+	if(m_pContainer)
+		m_pContainer->clearScreen();
 }
 
 void fl_HdrFtrShadow::redrawUpdate(void)
@@ -2298,7 +2298,7 @@ fl_ShadowListener::~fl_ShadowListener()
 }
 
 bool fl_ShadowListener::populate(PL_StruxFmtHandle sfh,
-									const PX_ChangeRecord * pcr)
+								 const PX_ChangeRecord * pcr)
 {
 	if (!m_bListening)
 	{
@@ -2316,87 +2316,87 @@ bool fl_ShadowListener::populate(PL_StruxFmtHandle sfh,
 	//
 	if(pView != NULL)
 	{
-	        oldPos = pView->getPoint();
+		oldPos = pView->getPoint();
 	}
 	switch (pcr->getType())
 	{
 	case PX_ChangeRecord::PXT_InsertSpan:
-		{
-			const PX_ChangeRecord_Span * pcrs = static_cast<const PX_ChangeRecord_Span *> (pcr);
+	{
+		const PX_ChangeRecord_Span * pcrs = static_cast<const PX_ChangeRecord_Span *> (pcr);
 
-			{
-				fl_Layout * pL = (fl_Layout *)sfh;
-				UT_ASSERT(pL->getType() == PTX_Block);
-				UT_ASSERT(m_pCurrentBL == (static_cast<fl_BlockLayout *>(pL)));
-			}
-			PT_BlockOffset blockOffset = pcrs->getBlockOffset();
-			UT_uint32 len = pcrs->getLength();
+		{
+			fl_Layout * pL = (fl_Layout *)sfh;
+			UT_ASSERT(pL->getType() == PTX_Block);
+			UT_ASSERT(m_pCurrentBL == (static_cast<fl_BlockLayout *>(pL)));
+		}
+		PT_BlockOffset blockOffset = pcrs->getBlockOffset();
+		UT_uint32 len = pcrs->getLength();
 
 // sterwill -- is this call to getSectionLayout() needed?  pBLSL is not used.
 			
 //			fl_SectionLayout* pBLSL = m_pCurrentBL->getSectionLayout();
-			bResult = m_pCurrentBL->doclistener_populateSpan(pcrs, blockOffset, len);
-			goto finish_up;
-		}
+		bResult = m_pCurrentBL->doclistener_populateSpan(pcrs, blockOffset, len);
+		goto finish_up;
+	}
 
 	case PX_ChangeRecord::PXT_InsertObject:
-		{
-			const PX_ChangeRecord_Object * pcro = static_cast<const PX_ChangeRecord_Object *>(pcr);
+	{
+		const PX_ChangeRecord_Object * pcro = static_cast<const PX_ChangeRecord_Object *>(pcr);
 
-			{
-				fl_Layout * pL = (fl_Layout *)sfh;
-				UT_ASSERT(pL->getType() == PTX_Block);
-				UT_ASSERT(m_pCurrentBL == (static_cast<fl_BlockLayout *>(pL)));
-			}
-			PT_BlockOffset blockOffset = pcro->getBlockOffset();
+		{
+			fl_Layout * pL = (fl_Layout *)sfh;
+			UT_ASSERT(pL->getType() == PTX_Block);
+			UT_ASSERT(m_pCurrentBL == (static_cast<fl_BlockLayout *>(pL)));
+		}
+		PT_BlockOffset blockOffset = pcro->getBlockOffset();
 
 // sterwill -- is this call to getSectionLayout() needed?  pBLSL is not used.
 
 //			fl_SectionLayout* pBLSL = m_pCurrentBL->getSectionLayout();
-			bResult = m_pCurrentBL->doclistener_populateObject(blockOffset,pcro);
-			goto finish_up;
-		}
+		bResult = m_pCurrentBL->doclistener_populateObject(blockOffset,pcro);
+		goto finish_up;
+	}
 	
 	case PX_ChangeRecord::PXT_InsertFmtMark:
-                {
-		  //	const PX_ChangeRecord_FmtMark * pcrfm = static_cast<const PX_ChangeRecord_FmtMark *>(pcr);
+	{
+		//	const PX_ChangeRecord_FmtMark * pcrfm = static_cast<const PX_ChangeRecord_FmtMark *>(pcr);
 
-			{
-				fl_Layout * pL = (fl_Layout *)sfh;
-				UT_ASSERT(pL->getType() == PTX_Block);
-				UT_ASSERT(m_pCurrentBL == (static_cast<fl_BlockLayout *>(pL)));
-			}
-			bResult = m_pCurrentBL->doclistener_insertFmtMark( (const PX_ChangeRecord_FmtMark *) pcr);
-			goto finish_up;
+		{
+			fl_Layout * pL = (fl_Layout *)sfh;
+			UT_ASSERT(pL->getType() == PTX_Block);
+			UT_ASSERT(m_pCurrentBL == (static_cast<fl_BlockLayout *>(pL)));
 		}
+		bResult = m_pCurrentBL->doclistener_insertFmtMark( (const PX_ChangeRecord_FmtMark *) pcr);
+		goto finish_up;
+	}
 
 	default:
-	        UT_DEBUGMSG(("Unknown Change record = %d \n",pcr->getType())); 
+		UT_DEBUGMSG(("Unknown Change record = %d \n",pcr->getType())); 
 		UT_ASSERT(0);
 		//
 		// We're not printing
 		//
 		if(pView != NULL)
 		{
-		        pView->setPoint(oldPos);
+			pView->setPoint(oldPos);
 		}
 		return false;
 	}
 
-finish_up:
+ finish_up:
 	//
 	// We're not printing
 	//
 	if(pView != NULL)
 	{
-	        pView->setPoint(oldPos);
+		pView->setPoint(oldPos);
 	}
 	return bResult;
 }
 
 bool fl_ShadowListener::populateStrux(PL_StruxDocHandle sdh,
-										 const PX_ChangeRecord * pcr,
-										 PL_StruxFmtHandle * psfh)
+									  const PX_ChangeRecord * pcr,
+									  PL_StruxFmtHandle * psfh)
 {
 	UT_ASSERT(m_pShadow);
 	//	UT_DEBUGMSG(("fl_ShadowListener::populateStrux\n"));
@@ -2408,7 +2408,7 @@ bool fl_ShadowListener::populateStrux(PL_StruxDocHandle sdh,
 	PT_DocPosition oldPos = 0;
 	if(pView != NULL)
 	{
-               oldPos = pView->getPoint();
+		oldPos = pView->getPoint();
 	}
 
 	switch (pcrx->getStruxType())
@@ -2486,7 +2486,7 @@ bool fl_ShadowListener::populateStrux(PL_StruxDocHandle sdh,
 		//
 		if(pView != NULL)
 		{
-		       pView->setPoint(oldPos);
+			pView->setPoint(oldPos);
 		}
 		return false;
 	}
@@ -2495,13 +2495,13 @@ bool fl_ShadowListener::populateStrux(PL_StruxDocHandle sdh,
 	//
 	if(pView != NULL)
 	{
-	        pView->setPoint(oldPos);
+		pView->setPoint(oldPos);
 	}
 	return true;
 }
 
 bool fl_ShadowListener::change(PL_StruxFmtHandle /*sfh*/,
-								  const PX_ChangeRecord * /*pcr*/)
+							   const PX_ChangeRecord * /*pcr*/)
 {
 	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 	
@@ -2509,12 +2509,12 @@ bool fl_ShadowListener::change(PL_StruxFmtHandle /*sfh*/,
 }
 
 bool fl_ShadowListener::insertStrux(PL_StruxFmtHandle /*sfh*/,
-									   const PX_ChangeRecord * /*pcr*/,
-									   PL_StruxDocHandle /*sdh*/,
-									   PL_ListenerId /*lid*/,
-									   void (* /*pfnBindHandles*/)(PL_StruxDocHandle sdhNew,
-															   PL_ListenerId lid,
-															   PL_StruxFmtHandle sfhNew))
+									const PX_ChangeRecord * /*pcr*/,
+									PL_StruxDocHandle /*sdh*/,
+									PL_ListenerId /*lid*/,
+									void (* /*pfnBindHandles*/)(PL_StruxDocHandle sdhNew,
+																PL_ListenerId lid,
+																PL_StruxFmtHandle sfhNew))
 {
 	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 	
@@ -2527,4 +2527,3 @@ bool fl_ShadowListener::signal(UT_uint32 /*iSignal*/)
 
 	return false;
 }
-

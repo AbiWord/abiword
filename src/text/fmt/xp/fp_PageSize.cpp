@@ -23,7 +23,7 @@ struct private_pagesize_sizes
 };
 
 const private_pagesize_sizes
-	pagesizes[fp_PageSize::_last_predefined_pagesize_dont_use_] =
+pagesizes[fp_PageSize::_last_predefined_pagesize_dont_use_] =
 {
 	{ 841.0, 1189.0, fp_PageSize::mm,	"A0"		},
 	{ 594.0,  841.0, fp_PageSize::mm,	"A1"		},
@@ -56,7 +56,7 @@ const double ScaleFactors[fp_PageSize::_last_predefined_unit_dont_use_] =
 
 fp_PageSize::fp_PageSize(Predefined preDef)
 {
-        m_bisPortrait = true;
+	m_bisPortrait = true;
 	Set(preDef);
 	m_scale = 1.0;
 	m_unit = inch;
@@ -64,7 +64,7 @@ fp_PageSize::fp_PageSize(Predefined preDef)
 
 fp_PageSize::fp_PageSize(const char *name)
 {
-        m_bisPortrait = true;
+	m_bisPortrait = true;
 	m_scale = 1.0;
 	Set(name);
 	m_unit = inch;
@@ -73,7 +73,7 @@ fp_PageSize::fp_PageSize(const char *name)
 fp_PageSize::fp_PageSize(double w, double h, Unit u)
 {
 	UT_ASSERT(u >= 0 && u < _last_predefined_unit_dont_use_);
-        m_bisPortrait = true;
+	m_bisPortrait = true;
 	m_scale = 1.0;
 	Set(w, h, u);
 	m_unit = u;
@@ -88,15 +88,15 @@ void fp_PageSize::Set(double w, double h, Unit u)
 	// calculate which predefined this represents
 
 	for (int i = 0; i < (int)_last_predefined_pagesize_dont_use_; i++)
-	  {
+	{
 	    if ((pagesizes [i].w == w) && 
-		(pagesizes [i].h == h) && 
-		(pagesizes [i].u == u))
-	      {
-		m_predefined = (char *)pagesizes [i].name;
-		break;
-	      }
-	  }
+			(pagesizes [i].h == h) && 
+			(pagesizes [i].u == u))
+		{
+			m_predefined = (char *)pagesizes [i].name;
+			break;
+		}
+	}
 }
 
 void fp_PageSize::Set(Predefined preDef)
@@ -116,30 +116,30 @@ void fp_PageSize::Set(const char *name)
 
 void fp_PageSize::setPortrait(void)
 {
-        m_bisPortrait = true;
+	m_bisPortrait = true;
 }
 
 void fp_PageSize::setLandscape(void)
 {
-        m_bisPortrait = false;
+	m_bisPortrait = false;
 }
 
 double fp_PageSize::Width(Unit u) const
 {
 	UT_ASSERT(u >= 0 && u < _last_predefined_unit_dont_use_);
 	if(m_bisPortrait == true)
-	       return m_scale * m_iWidth / ScaleFactors[u];
+		return m_scale * m_iWidth / ScaleFactors[u];
 	else
-	       return m_scale * m_iHeight / ScaleFactors[u];
+		return m_scale * m_iHeight / ScaleFactors[u];
 }
 
 double fp_PageSize::Height(Unit u) const
 {
 	UT_ASSERT(u >= 0 && u < _last_predefined_unit_dont_use_);
 	if(m_bisPortrait == true)
-	       return m_scale * m_iHeight / ScaleFactors[u];
+		return m_scale * m_iHeight / ScaleFactors[u];
 	else
-	       return m_scale * m_iWidth / ScaleFactors[u];
+		return m_scale * m_iWidth / ScaleFactors[u];
 }
 
 bool fp_PageSize::IsPredefinedName(const char* szPageSizeName)
@@ -160,10 +160,10 @@ fp_PageSize::Predefined fp_PageSize::NameToPredefined(const char *name)
 	// determine the predefined layout the name represents
 
 	if(!name)
-	  {
+	{
 	    UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 	    return fp_PageSize::Letter;
-	  }
+	}
 
 	for(preDef=0;
 	    preDef < static_cast<int>(_last_predefined_pagesize_dont_use_);
@@ -188,6 +188,3 @@ const char * fp_PageSize::PredefinedToName(Predefined preDef)
 
 	return pagesizes[preDef].name;
 }
-
-
-

@@ -8,9 +8,9 @@ class fp_PageSize
 {
 public:
 
-        enum Unit
+	enum Unit
 	{
-                mm,
+		mm,
 		cm,
 		inch,
 		PaperUnit,		//  100 per inch
@@ -62,15 +62,3 @@ private:
 };
 
 #endif	// FP_PAGESIZE_H
-
-
-
-
-
-
-
-
-
-
-
-

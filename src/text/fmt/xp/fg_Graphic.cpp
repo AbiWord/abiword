@@ -28,36 +28,35 @@
 #include "pp_AttrProp.h"
 
 FG_Graphic* FG_Graphic::createFromChangeRecord(const fl_Layout* pFL,
-					       const PX_ChangeRecord_Object* pcro)
+											   const PX_ChangeRecord_Object* pcro)
 {
-   PT_BlockOffset blockOffset = pcro->getBlockOffset();
+	PT_BlockOffset blockOffset = pcro->getBlockOffset();
    
-   // Get the attribute list for this offset.
-   const PP_AttrProp* pSpanAP;
-   bool bFoundSpanAP = pFL->getSpanAttrProp(blockOffset, false, &pSpanAP);
-   if (bFoundSpanAP && pSpanAP)
-   {
-      const XML_Char *pszDataID;
-      bool bFoundDataID = pSpanAP->getAttribute("dataid", pszDataID);
+	// Get the attribute list for this offset.
+	const PP_AttrProp* pSpanAP;
+	bool bFoundSpanAP = pFL->getSpanAttrProp(blockOffset, false, &pSpanAP);
+	if (bFoundSpanAP && pSpanAP)
+	{
+		const XML_Char *pszDataID;
+		bool bFoundDataID = pSpanAP->getAttribute("dataid", pszDataID);
       
-      if (bFoundDataID && pszDataID)
-      {
-	   char * pszMimeType = NULL;
-	   bFoundDataID = pFL->getDocument()->getDataItemDataByName((char*)pszDataID, NULL, (void**)&pszMimeType, NULL);
+		if (bFoundDataID && pszDataID)
+		{
+			char * pszMimeType = NULL;
+			bFoundDataID = pFL->getDocument()->getDataItemDataByName((char*)pszDataID, NULL, (void**)&pszMimeType, NULL);
 	   
-	   // figure out what type to create
+			// figure out what type to create
 	   
-	   if (!bFoundDataID || !pszMimeType || UT_strcmp(pszMimeType, "image/svg-xml") != 0) {
-	      return FG_GraphicRaster::createFromChangeRecord(pFL, pcro);
-	   } else {
-	      return FG_GraphicVector::createFromChangeRecord(pFL, pcro);
-	   }
-      }
-   }
-   return NULL;
+			if (!bFoundDataID || !pszMimeType || UT_strcmp(pszMimeType, "image/svg-xml") != 0) {
+				return FG_GraphicRaster::createFromChangeRecord(pFL, pcro);
+			} else {
+				return FG_GraphicVector::createFromChangeRecord(pFL, pcro);
+			}
+		}
+	}
+	return NULL;
 }
 
 FG_Graphic::~FG_Graphic() {
 	// do nothing for now.
 }
-

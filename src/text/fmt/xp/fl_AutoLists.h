@@ -25,7 +25,7 @@
 ///////////////////////////////////////////////////////////////////////
 typedef enum 
 {
-        NUMBERED_LIST,
+	NUMBERED_LIST,
 	LOWERCASE_LIST,
 	UPPERCASE_LIST,
 	LOWERROMAN_LIST,
@@ -42,7 +42,7 @@ typedef enum
 	HAND_LIST,
 	HEART_LIST,
 	NOT_A_LIST
-}       List_Type;
+} List_Type;
 
 #define IS_NUMBERED_LIST_TYPE(x) ((x) >= NUMBERED_LIST && (x) < BULLETED_LIST)
 #define IS_BULLETED_LIST_TYPE(x) ((x) >= BULLETED_LIST && (x) < NOT_A_LIST)
@@ -85,4 +85,3 @@ typedef enum
 
 
 #endif
-

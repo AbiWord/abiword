@@ -65,6 +65,3 @@ _FIELDTYPE(PIECETABLE, "Piece Table")
 _FIELD(PIECETABLE,"Kevins Test",test)
 _FIELD(PIECETABLE,"Martins Test",martin_test)
 #endif
-
-
-
