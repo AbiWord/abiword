@@ -144,11 +144,13 @@ void AP_Preview_Paragraph_Block::setText(const UT_UCSChar * text)
 
 #define SCALE_TO_PIXELS(s) ((UT_uint32) (UT_convertToInches(s) * (double) DIMENSION_INCH_SCALE_FACTOR))
 
-void AP_Preview_Paragraph_Block::setFormat(AP_Dialog_Paragraph::tAlignState align,
+void AP_Preview_Paragraph_Block::setFormat(const XML_Char * pageLeftMargin,
+										   const XML_Char * pageRightMargin,
+										   AP_Dialog_Paragraph::tAlignState align,
 										   const XML_Char * firstLineIndent,
 										   AP_Dialog_Paragraph::tIndentState indent,
-										   const XML_Char * leftMargin,
-										   const XML_Char * rightMargin,
+										   const XML_Char * leftIndent,
+										   const XML_Char * rightIndent,
 										   const XML_Char * beforeSpacing,
 										   const XML_Char * afterSpacing,
 										   const XML_Char * lineSpacing,
@@ -157,41 +159,55 @@ void AP_Preview_Paragraph_Block::setFormat(AP_Dialog_Paragraph::tAlignState alig
 	// align is always set
 	m_align = align;
 
-	// left margins are in or out from the default stop
-	if (leftMargin)
+	if(pageLeftMargin)
 	{
-		m_leftStop = DEFAULT_LEFT_STOP + SCALE_TO_PIXELS(leftMargin);
-		// NOTE : if we recomputed the leftMargin, we have to recompute
+		m_leftStop = SCALE_TO_PIXELS(pageLeftMargin);
+	}
+	else
+	{
+		m_leftStop = DEFAULT_LEFT_STOP;
+	}
+
+	// left margins are in or out from the default stop
+	if (leftIndent)
+	{
+		m_leftStop += SCALE_TO_PIXELS(leftIndent);
+		// NOTE : if we recomputed the leftIndent, we have to recompute
 		// NOTE : the firstLineLeftStop below
 	}
 	
+	if(pageRightMargin)
+	{
+		m_rightStop = SCALE_TO_PIXELS(pageRightMargin);
+	}
+	else
+	{
+		m_rightStop = DEFAULT_LEFT_STOP;
+	}
+
 	// right margins are in or out from the default stop
-	if (rightMargin)
-		m_rightStop = DEFAULT_RIGHT_STOP + SCALE_TO_PIXELS(rightMargin);
+	if (rightIndent)
+		m_rightStop += SCALE_TO_PIXELS(rightIndent);
 
 	STORE_CONVERTED(m_beforeSpacing, beforeSpacing);
 	STORE_CONVERTED(m_afterSpacing, afterSpacing);
 
-	// if leftMargin or firstLineIndent changed, we have to recompute
-	if (leftMargin || firstLineIndent)
+	m_indent = indent;
+	switch (m_indent)
 	{
-		m_indent = indent;
-		switch (m_indent)
-		{
-			// the signage for these two is handled in the conversion through
-			// UT_convertToInches()
-		case AP_Dialog_Paragraph::indent_FIRSTLINE:
-			m_firstLineLeftStop = m_leftStop + SCALE_TO_PIXELS(firstLineIndent);
-			break;
-		case AP_Dialog_Paragraph::indent_HANGING:
-			m_firstLineLeftStop = m_leftStop - SCALE_TO_PIXELS(firstLineIndent);
-			break;
-		case AP_Dialog_Paragraph::indent_NONE:
-			m_firstLineLeftStop = m_leftStop;
-			break;
-		default:
-			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-		}
+		// the signage for these two is handled in the conversion through
+		// UT_convertToInches()
+	case AP_Dialog_Paragraph::indent_FIRSTLINE:
+		m_firstLineLeftStop = m_leftStop + SCALE_TO_PIXELS(firstLineIndent);
+		break;
+	case AP_Dialog_Paragraph::indent_HANGING:
+		m_firstLineLeftStop = m_leftStop - SCALE_TO_PIXELS(firstLineIndent);
+		break;
+	case AP_Dialog_Paragraph::indent_NONE:
+		m_firstLineLeftStop = m_leftStop;
+		break;
+	default:
+		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 	}
 
 	if (lineSpacing)
@@ -262,11 +278,13 @@ AP_Preview_Paragraph::AP_Preview_Paragraph(GR_Graphics * gc,
 														 m_gc,
 														 AP_Dialog_Paragraph::align_LEFT,
 														 m_fontHeight);
-		m_previousBlock->setFormat(AP_Dialog_Paragraph::align_LEFT,
-								   NULL,
-								   AP_Dialog_Paragraph::indent_NONE,
-								   NULL,NULL,NULL,NULL,NULL,
-								   AP_Dialog_Paragraph::spacing_SINGLE);
+		m_previousBlock->setFormat(NULL,
+									NULL,
+									AP_Dialog_Paragraph::align_LEFT,
+									NULL,
+									AP_Dialog_Paragraph::indent_NONE,
+									NULL,NULL,NULL,NULL,NULL,
+									AP_Dialog_Paragraph::spacing_SINGLE);
 	}
 	
 	{
@@ -277,15 +295,17 @@ AP_Preview_Paragraph::AP_Preview_Paragraph(GR_Graphics * gc,
 													   m_fontHeight);
 		// read these from the dialog's members
 #if 0
-		m_activeBlock->setFormat((AP_Dialog_Paragraph::tAlignState) dlg->_getMenuItemValue(AP_Dialog_Paragraph::id_MENU_ALIGNMENT),
-								 dlg->_getSpinItemValue(AP_Dialog_Paragraph::id_SPIN_SPECIAL_INDENT),
-								 (AP_Dialog_Paragraph::tIndentState) dlg->_getMenuItemValue(AP_Dialog_Paragraph::id_MENU_SPECIAL_INDENT),
-								 dlg->_getSpinItemValue(AP_Dialog_Paragraph::id_SPIN_LEFT_INDENT),
-								 dlg->_getSpinItemValue(AP_Dialog_Paragraph::id_SPIN_RIGHT_INDENT),								 
-								 dlg->_getSpinItemValue(AP_Dialog_Paragraph::id_SPIN_BEFORE_SPACING),
-								 dlg->_getSpinItemValue(AP_Dialog_Paragraph::id_SPIN_AFTER_SPACING),
-								 dlg->_getSpinItemValue(AP_Dialog_Paragraph::id_SPIN_SPECIAL_SPACING),
-								 (AP_Dialog_Paragraph::tSpacingState) dlg->_getMenuItemValue(AP_Dialog_Paragraph::id_MENU_SPECIAL_SPACING));
+		m_activeBlock->setFormat(NULL,
+									NULL,
+									(AP_Dialog_Paragraph::tAlignState) dlg->_getMenuItemValue(AP_Dialog_Paragraph::id_MENU_ALIGNMENT),
+									dlg->_getSpinItemValue(AP_Dialog_Paragraph::id_SPIN_SPECIAL_INDENT),
+									(AP_Dialog_Paragraph::tIndentState) dlg->_getMenuItemValue(AP_Dialog_Paragraph::id_MENU_SPECIAL_INDENT),
+									dlg->_getSpinItemValue(AP_Dialog_Paragraph::id_SPIN_LEFT_INDENT),
+									dlg->_getSpinItemValue(AP_Dialog_Paragraph::id_SPIN_RIGHT_INDENT),								 
+									dlg->_getSpinItemValue(AP_Dialog_Paragraph::id_SPIN_BEFORE_SPACING),
+									dlg->_getSpinItemValue(AP_Dialog_Paragraph::id_SPIN_AFTER_SPACING),
+									dlg->_getSpinItemValue(AP_Dialog_Paragraph::id_SPIN_SPECIAL_SPACING),
+									(AP_Dialog_Paragraph::tSpacingState) dlg->_getMenuItemValue(AP_Dialog_Paragraph::id_MENU_SPECIAL_SPACING));
 #endif
 	}
 	
@@ -295,7 +315,9 @@ AP_Preview_Paragraph::AP_Preview_Paragraph(GR_Graphics * gc,
 														  m_gc,
 														  AP_Dialog_Paragraph::align_LEFT,
 														  m_fontHeight);
-		m_followingBlock->setFormat(AP_Dialog_Paragraph::align_LEFT,
+		m_followingBlock->setFormat(NULL,
+									NULL,
+									AP_Dialog_Paragraph::align_LEFT,
 									NULL,
 									AP_Dialog_Paragraph::indent_NONE,
 									NULL,NULL,NULL,NULL,NULL,
@@ -344,11 +366,13 @@ AP_Preview_Paragraph::AP_Preview_Paragraph(GR_Graphics * gc,
 														 m_gc,
 														 AP_Dialog_Paragraph::align_LEFT,
 														 m_fontHeight);
-		m_previousBlock->setFormat(AP_Dialog_Paragraph::align_LEFT,
-								   NULL,
-								   AP_Dialog_Paragraph::indent_NONE,
-								   NULL,NULL,NULL,NULL,NULL,
-								   AP_Dialog_Paragraph::spacing_SINGLE);
+		m_previousBlock->setFormat(dlg->m_pageLeftMargin,
+									dlg->m_pageRightMargin,
+									AP_Dialog_Paragraph::align_LEFT,
+									NULL,
+									AP_Dialog_Paragraph::indent_NONE,
+									NULL,NULL,NULL,NULL,NULL,
+									AP_Dialog_Paragraph::spacing_SINGLE);
 	}
 	
 	{
@@ -358,15 +382,17 @@ AP_Preview_Paragraph::AP_Preview_Paragraph(GR_Graphics * gc,
 													   AP_Dialog_Paragraph::align_LEFT,
 													   m_fontHeight);
 		// read these from the dialog's members
-		m_activeBlock->setFormat((AP_Dialog_Paragraph::tAlignState) dlg->_getMenuItemValue(AP_Dialog_Paragraph::id_MENU_ALIGNMENT),
-								 dlg->_getSpinItemValue(AP_Dialog_Paragraph::id_SPIN_SPECIAL_INDENT),
-								 (AP_Dialog_Paragraph::tIndentState) dlg->_getMenuItemValue(AP_Dialog_Paragraph::id_MENU_SPECIAL_INDENT),
-								 dlg->_getSpinItemValue(AP_Dialog_Paragraph::id_SPIN_LEFT_INDENT),
-								 dlg->_getSpinItemValue(AP_Dialog_Paragraph::id_SPIN_RIGHT_INDENT),								 
-								 dlg->_getSpinItemValue(AP_Dialog_Paragraph::id_SPIN_BEFORE_SPACING),
-								 dlg->_getSpinItemValue(AP_Dialog_Paragraph::id_SPIN_AFTER_SPACING),
-								 dlg->_getSpinItemValue(AP_Dialog_Paragraph::id_SPIN_SPECIAL_SPACING),
-								 (AP_Dialog_Paragraph::tSpacingState) dlg->_getMenuItemValue(AP_Dialog_Paragraph::id_MENU_SPECIAL_SPACING));
+		m_activeBlock->setFormat(dlg->m_pageLeftMargin,
+									dlg->m_pageRightMargin,
+									(AP_Dialog_Paragraph::tAlignState) dlg->_getMenuItemValue(AP_Dialog_Paragraph::id_MENU_ALIGNMENT),
+									dlg->_getSpinItemValue(AP_Dialog_Paragraph::id_SPIN_SPECIAL_INDENT),
+									(AP_Dialog_Paragraph::tIndentState) dlg->_getMenuItemValue(AP_Dialog_Paragraph::id_MENU_SPECIAL_INDENT),
+									dlg->_getSpinItemValue(AP_Dialog_Paragraph::id_SPIN_LEFT_INDENT),
+									dlg->_getSpinItemValue(AP_Dialog_Paragraph::id_SPIN_RIGHT_INDENT),								 
+									dlg->_getSpinItemValue(AP_Dialog_Paragraph::id_SPIN_BEFORE_SPACING),
+									dlg->_getSpinItemValue(AP_Dialog_Paragraph::id_SPIN_AFTER_SPACING),
+									dlg->_getSpinItemValue(AP_Dialog_Paragraph::id_SPIN_SPECIAL_SPACING),
+									(AP_Dialog_Paragraph::tSpacingState) dlg->_getMenuItemValue(AP_Dialog_Paragraph::id_MENU_SPECIAL_SPACING));
 	}
 	
 	{
@@ -375,7 +401,9 @@ AP_Preview_Paragraph::AP_Preview_Paragraph(GR_Graphics * gc,
 														  m_gc,
 														  AP_Dialog_Paragraph::align_LEFT,
 														  m_fontHeight);
-		m_followingBlock->setFormat(AP_Dialog_Paragraph::align_LEFT,
+		m_followingBlock->setFormat(dlg->m_pageLeftMargin,
+									dlg->m_pageRightMargin,
+									AP_Dialog_Paragraph::align_LEFT,
 									NULL,
 									AP_Dialog_Paragraph::indent_NONE,
 									NULL,NULL,NULL,NULL,NULL,
@@ -412,20 +440,23 @@ AP_Preview_Paragraph::~AP_Preview_Paragraph()
 	DELETEP(m_followingBlock);	
 }
 
-void AP_Preview_Paragraph::setFormat(AP_Dialog_Paragraph::tAlignState align,
-									 const XML_Char * firstLineIndent,
-									 AP_Dialog_Paragraph::tIndentState indent,
-									 const XML_Char * leftMargin,
-									 const XML_Char * rightMargin,
-									 const XML_Char * beforeSpacing,
-									 const XML_Char * afterSpacing,
-									 const XML_Char * lineSpacing,
-									 AP_Dialog_Paragraph::tSpacingState spacing)
+void AP_Preview_Paragraph::setFormat(const XML_Char * pageLeftMargin,
+										const XML_Char * pageRightMargin,
+										AP_Dialog_Paragraph::tAlignState align,
+										const XML_Char * firstLineIndent,
+										AP_Dialog_Paragraph::tIndentState indent,
+										const XML_Char * leftIndent,
+										const XML_Char * rightIndent,
+										const XML_Char * beforeSpacing,
+										const XML_Char * afterSpacing,
+										const XML_Char * lineSpacing,
+										AP_Dialog_Paragraph::tSpacingState spacing)
 {
 	UT_ASSERT(m_activeBlock);
-	m_activeBlock->setFormat(align, firstLineIndent, indent, leftMargin,
-							 rightMargin, beforeSpacing, afterSpacing,
-							 lineSpacing, spacing);
+	m_activeBlock->setFormat(pageLeftMargin, pageRightMargin,
+								align, firstLineIndent, indent, leftIndent,
+								rightIndent, beforeSpacing, afterSpacing,
+								lineSpacing, spacing);
 }
 
 void AP_Preview_Paragraph::draw(void)
@@ -479,8 +510,6 @@ void AP_Preview_Paragraph::_drawPageBorder(void)
 	m_gc->drawLine(0, getWindowHeight() - 1, 0, 0);
 }
 
-// width of space character in pixels
-#define SPACE_CHAR_WIDTH 3
 
 void AP_Preview_Paragraph::_appendBlock(AP_Preview_Paragraph_Block * block)
 {
@@ -570,14 +599,17 @@ UT_uint32 AP_Preview_Paragraph::_appendLine(UT_Vector * words,
 
 	UT_ASSERT(words && widths);
 
+	// width of space character in pixels
+	UT_sint32 spaceCharWidth = 3;
+
 	UT_uint32 i = 0;
 	UT_uint32 totalWords = words->getItemCount();
 	
-	UT_uint32 pixelsForThisLine = 0;
+	UT_sint32 pixelsForThisLine = 0;
 	
 	// max length of first line is the diff between the (special)
 	// left stop and the (normal) right stop
-	UT_uint32 maxPixelsForThisLine = getWindowWidth() - left - right;
+	UT_sint32 maxPixelsForThisLine = getWindowWidth() - left - right;
 
 	// negative or zero makes no sense
 	UT_ASSERT(maxPixelsForThisLine > 0);
@@ -590,7 +622,15 @@ UT_uint32 AP_Preview_Paragraph::_appendLine(UT_Vector * words,
 	while ((i < totalWords) &&
 		   (pixelsForThisLine + (UT_uint32) widths->getNthItem(i) <= maxPixelsForThisLine))
 	{
-		pixelsForThisLine += (UT_uint32) widths->getNthItem(i) + SPACE_CHAR_WIDTH;
+		pixelsForThisLine += (UT_uint32) widths->getNthItem(i) + spaceCharWidth;
+		i++;
+	}
+
+	if(i == startWithWord)
+	{
+		// HACK: Make sure we have at least one word.
+
+		pixelsForThisLine += (UT_uint32) widths->getNthItem(i) + spaceCharWidth;
 		i++;
 	}
 
@@ -598,6 +638,7 @@ UT_uint32 AP_Preview_Paragraph::_appendLine(UT_Vector * words,
 
 	// TODO : maybe rework following code to remove this variable for more speed
 	UT_uint32 willDrawAt = left;
+	spaceCharWidth <<= 8;	// Calculate spacing at 256 times the resolution
 		
 	// obey alignment requests
 	switch(align)
@@ -611,19 +652,25 @@ UT_uint32 AP_Preview_Paragraph::_appendLine(UT_Vector * words,
 		willDrawAt = left + (maxPixelsForThisLine - pixelsForThisLine) / 2;
 		break;
 	case AP_Dialog_Paragraph::align_JUSTIFIED:
-		// TODO : IMPLEMENT THIS ONE!  Will probably require a reworking of the next
-		// TODO : for() loop (that plots words with fixed space of SPACE_CHAR_WIDTH)
+		if(i < totalWords)
+		{
+			spaceCharWidth += (UT_sint32)((double)(maxPixelsForThisLine - pixelsForThisLine) / 
+														(i - startWithWord) * 256);
+		}
+		break;
 	default:
 		// aligh_LEFT is caught here
 		break;
 	}
 
+	willDrawAt <<= 8;
+
 	UT_uint32 k;
 	for (k = startWithWord; k < i; k++)
 	{
 		m_gc->drawChars((UT_UCSChar *) words->getNthItem(k), 0,
-						UT_UCS_strlen((UT_UCSChar *) words->getNthItem(k)), willDrawAt, y);
-		willDrawAt += (UT_uint32) widths->getNthItem(k) + SPACE_CHAR_WIDTH;
+						UT_UCS_strlen((UT_UCSChar *) words->getNthItem(k)), willDrawAt >> 8, y);
+		willDrawAt += (((UT_uint32) widths->getNthItem(k)) << 8) + spaceCharWidth;
 	}
 
 	// return number of words drawn

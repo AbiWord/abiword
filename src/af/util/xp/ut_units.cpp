@@ -258,6 +258,22 @@ const char * UT_formatDimensionString(UT_Dimension dim, double value, const char
 	return buf;
 }
 
+const char * UT_reformatDimensionString(UT_Dimension dim, const char *sz, const char * szPrecision)
+{
+	double d = UT_convertDimensionless(sz);
+
+	// if needed, switch unit systems and round off
+	UT_Dimension dimOld = UT_determineDimension(sz, dim);
+
+	if (dimOld != dim)
+	{
+		double dInches = UT_convertToInches(sz);
+		d = UT_convertInchesToDimension(dInches, dim); 
+	}
+
+	return UT_formatDimensionString(dim, d);
+}
+
 
 double UT_convertToInches(const char* s)
 {
@@ -487,4 +503,23 @@ const char * UT_formatDimensionedValue(double value,
 	sprintf(buf,"%s%s",szValue,szUnits);
 
 	return buf;
+}
+
+double UT_convertToDimension(const char* s, UT_Dimension dim)
+{
+	double d;
+
+	// if needed, switch unit systems and round off
+
+	if (UT_determineDimension(s, dim) != dim)
+	{
+		double dInches = UT_convertToInches(s);
+		d = UT_convertInchesToDimension(dInches, dim); 
+	}
+	else
+	{
+		d = UT_convertDimensionless(s);
+	}
+
+	return d;
 }

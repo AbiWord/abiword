@@ -3400,6 +3400,14 @@ static UT_Bool s_doParagraphDlg(FV_View * pView)
 		return UT_FALSE;
 
 	FREEP(props);
+
+	if (!pView->getSectionFormat(&props))
+		return UT_FALSE;
+
+	if (!pDialog->setDialogData(props))
+		return UT_FALSE;
+
+	FREEP(props);
 	
 	// run the dialog
 	pDialog->runModal(pFrame);

@@ -73,7 +73,10 @@ AP_Dialog_Paragraph::AP_Dialog_Paragraph(XAP_DialogFactory * pDlgFactory, XAP_Di
 	m_bufBeforeSpacing[0] = 0;
 	m_bufAfterSpacing[0] = 0;
 	m_bufSpecialSpacing[0] = 0;
-	
+
+	m_pageLeftMargin = NULL;
+	m_pageRightMargin = NULL;
+
 	// initialize vector of control/value/changed items
 
 	ADD_PROPERTY_ITEM(id_MENU_ALIGNMENT, align_LEFT);
@@ -98,6 +101,9 @@ AP_Dialog_Paragraph::AP_Dialog_Paragraph(XAP_DialogFactory * pDlgFactory, XAP_Di
 
 AP_Dialog_Paragraph::~AP_Dialog_Paragraph(void)
 {
+	FREEP(m_pageLeftMargin);
+	FREEP(m_pageRightMargin);
+
 	DELETEP(m_paragraphPreview);
 
 	// This macro will remove all the sControlData items in
@@ -287,6 +293,18 @@ UT_Bool AP_Dialog_Paragraph::setDialogData(const XML_Char ** pProps)
 		}
 		else
 			_setCheckItemValue(id_CHECK_KEEP_NEXT, check_INDETERMINATE, op_INIT);
+
+		sz = UT_getAttribute("page-margin-left", pProps);
+		if (sz)
+		{
+			UT_XML_cloneString(m_pageLeftMargin, sz);
+		}
+			
+		sz = UT_getAttribute("page-margin-right", pProps);
+		if (sz)
+		{
+			UT_XML_cloneString(m_pageRightMargin, sz);
+		}
 			
 		// TODO : add these to PP_Property (pp_Property.cpp) !!!
 		// TODO : and to FV_View::getBlockFormat (or else they won't come in)
@@ -704,6 +722,25 @@ AP_Dialog_Paragraph::tCheckState AP_Dialog_Paragraph::_getCheckItemValue(tContro
 	return (tCheckState) tmp;
 }
 
+const XML_Char * AP_Dialog_Paragraph::_makeAbsolute(const XML_Char * value)
+{
+	UT_uint32 i = 0;
+	const XML_Char * tempstring = value;
+
+	// from the start of the string, if a character is a space, walk on.
+	// when we hit a '-', we leave the pointer at value + i + 1
+	while (value[i] && value[i] == ' ')
+	{
+		tempstring++;
+		i++;
+	}
+
+	// we're at a non-space
+	if (value[i] == '-')
+		tempstring++;
+
+	return tempstring;
+}
 void AP_Dialog_Paragraph::_setSpinItemValue(tControl item, const XML_Char * value,
 											tOperation op /* = op_UICHANGE */)
 {
@@ -718,35 +755,29 @@ void AP_Dialog_Paragraph::_setSpinItemValue(tControl item, const XML_Char * valu
 	UT_ASSERT(pItem->pData && value);
 	
 	// some spinbuttons have special data requirements
-	UT_uint32 i = 0;
-	const XML_Char * tempstring = value;
 	switch(item)
 	{
+	case id_SPIN_LEFT_INDENT:
+	case id_SPIN_RIGHT_INDENT:
+		{
+		UT_XML_strncpy((XML_Char *) pItem->pData, SPIN_BUF_TEXT_SIZE, UT_reformatDimensionString(m_dim, value));
+		}
+		break;
+
 	case id_SPIN_SPECIAL_INDENT:
 		// NOTE : special indent doesn't mean anything as a negative number.
 		// NOTE : we flip the sign and apply the resultant magnitude to
 		// NOTE : the current indent type
+
+		UT_XML_strncpy((XML_Char *) pItem->pData, SPIN_BUF_TEXT_SIZE, UT_reformatDimensionString(m_dim, _makeAbsolute(value)));			
+		break;
 		
-		// fallthrough to number conversion from spacings
 	case id_SPIN_BEFORE_SPACING:
 	case id_SPIN_AFTER_SPACING:
 	case id_SPIN_SPECIAL_SPACING:
-		// NOTE : line spacing can't be negative, so we walk on past any
-		// NOTE : minus chars
+		// NOTE : line spacing can't be negative, so make absolut
 
-		// from the start of the string, if a character is a space, walk on.
-		// when we hit a '-', we leave the pointer at value + i + 1
-		while (value[i] && value[i] == ' ')
-		{
-			tempstring++;
-			i++;
-		}
-
-		// we're at a non-space
-		if (value[i] == '-')
-			tempstring++;
-		
-		UT_XML_strncpy((XML_Char *) pItem->pData, SPIN_BUF_TEXT_SIZE, tempstring);			
+		UT_XML_strncpy((XML_Char *) pItem->pData, SPIN_BUF_TEXT_SIZE, UT_reformatDimensionString(DIM_PT, _makeAbsolute(value)));			
 
 		break;
 
@@ -870,6 +901,8 @@ void AP_Dialog_Paragraph::_doSpin(tControl edit, UT_sint32 amt)
 		(dimSpin == DIM_PI))
 		szPrecision = ".0";
 
+
+
 	// if needed, switch unit systems and round off
 	UT_Dimension dimOld = UT_determineDimension(szOld, dimSpin);
 
@@ -909,6 +942,38 @@ void AP_Dialog_Paragraph::_doSpin(tControl edit, UT_sint32 amt)
 
 void AP_Dialog_Paragraph::_syncControls(tControl changed, UT_Bool bAll /* = UT_FALSE */)
 {
+	if(changed == id_SPIN_LEFT_INDENT)
+	{
+		// need to check the limits
+		// cannot go past left page margin.
+
+		double leftPageMargin = UT_convertToDimension(m_pageLeftMargin, m_dim);
+
+		if(-UT_convertToDimension(_getSpinItemValue(id_SPIN_LEFT_INDENT), m_dim) > 
+					leftPageMargin)
+		{
+			_setSpinItemValue(id_SPIN_LEFT_INDENT, 
+									UT_formatDimensionString(m_dim, -leftPageMargin), 
+									op_SYNC);
+		}
+	}
+
+	if(changed == id_SPIN_RIGHT_INDENT)
+	{
+		// need to check the limits
+		// cannot go past right page margin.
+
+		double rightPageMargin = UT_convertToDimension(m_pageRightMargin, m_dim);
+
+		if(-UT_convertToDimension(_getSpinItemValue(id_SPIN_RIGHT_INDENT), m_dim) > 
+					rightPageMargin)
+		{
+			_setSpinItemValue(id_SPIN_RIGHT_INDENT, 
+									UT_formatDimensionString(m_dim, -rightPageMargin), 
+									op_SYNC);
+		}
+	}
+
 	if (changed == id_SPIN_SPECIAL_INDENT)
 	{
 		switch(_getMenuItemValue(id_MENU_SPECIAL_INDENT))
@@ -1017,15 +1082,17 @@ void AP_Dialog_Paragraph::_syncControls(tControl changed, UT_Bool bAll /* = UT_F
 
 	// the preview needs to suck in the changed data (to cache it
 	// for subsequent draws)
-	m_paragraphPreview->setFormat((AP_Dialog_Paragraph::tAlignState) _getMenuItemValue(id_MENU_ALIGNMENT),
-								  ((changed == id_MENU_SPECIAL_INDENT) || (changed == id_SPIN_SPECIAL_INDENT)) ? _getSpinItemValue(id_SPIN_SPECIAL_INDENT) : NULL,
-								  (AP_Dialog_Paragraph::tIndentState) _getMenuItemValue(id_MENU_SPECIAL_INDENT),
-								  (changed == id_SPIN_LEFT_INDENT) ? _getSpinItemValue(id_SPIN_LEFT_INDENT) : NULL,
-								  (changed == id_SPIN_RIGHT_INDENT) ? _getSpinItemValue(id_SPIN_RIGHT_INDENT) : NULL,
-								  (changed == id_SPIN_BEFORE_SPACING) ? _getSpinItemValue(id_SPIN_BEFORE_SPACING) : NULL,
-								  (changed == id_SPIN_AFTER_SPACING) ? _getSpinItemValue(id_SPIN_AFTER_SPACING) : NULL,
-								  ((changed == id_MENU_SPECIAL_SPACING) || (changed == id_SPIN_SPECIAL_SPACING)) ? _getSpinItemValue(id_SPIN_SPECIAL_SPACING) : NULL,
-								  (AP_Dialog_Paragraph::tSpacingState) _getMenuItemValue(id_MENU_SPECIAL_SPACING));
+	m_paragraphPreview->setFormat(m_pageLeftMargin,
+									m_pageRightMargin,
+									(AP_Dialog_Paragraph::tAlignState) _getMenuItemValue(id_MENU_ALIGNMENT),
+									_getSpinItemValue(id_SPIN_SPECIAL_INDENT),
+									(AP_Dialog_Paragraph::tIndentState) _getMenuItemValue(id_MENU_SPECIAL_INDENT),
+									_getSpinItemValue(id_SPIN_LEFT_INDENT),
+									_getSpinItemValue(id_SPIN_RIGHT_INDENT),
+									_getSpinItemValue(id_SPIN_BEFORE_SPACING),
+									_getSpinItemValue(id_SPIN_AFTER_SPACING),
+									_getSpinItemValue(id_SPIN_SPECIAL_SPACING),
+									(AP_Dialog_Paragraph::tSpacingState) _getMenuItemValue(id_MENU_SPECIAL_SPACING));
 	
 	m_paragraphPreview->draw();
 }

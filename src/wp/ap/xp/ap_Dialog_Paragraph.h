@@ -87,6 +87,7 @@ class AP_Dialog_Paragraph : public XAP_Dialog_NonPersistent
 	tCheckState 		_getCheckItemValue(tControl item);
 	void 				_setSpinItemValue(tControl item, const XML_Char * value, tOperation = op_UICHANGE);
 	const XML_Char * 	_getSpinItemValue(tControl item);
+	const XML_Char *	_makeAbsolute(const XML_Char * value);
 
 	void				_doSpin(tControl edit, UT_sint32 amt);
 	virtual void		_syncControls(tControl changed, UT_Bool bAll = UT_FALSE);
@@ -105,6 +106,9 @@ class AP_Dialog_Paragraph : public XAP_Dialog_NonPersistent
 	XML_Char				m_bufBeforeSpacing[SPIN_BUF_TEXT_SIZE];
 	XML_Char				m_bufAfterSpacing[SPIN_BUF_TEXT_SIZE];
 	XML_Char				m_bufSpecialSpacing[SPIN_BUF_TEXT_SIZE];
+
+	XML_Char *				m_pageLeftMargin;
+	XML_Char *				m_pageRightMargin;
 	
 	// store a pointer to our preview control
 	AP_Preview_Paragraph *	m_paragraphPreview;

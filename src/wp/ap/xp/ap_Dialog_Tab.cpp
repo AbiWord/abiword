@@ -416,18 +416,7 @@ void AP_Dialog_Tab::buildTab( char *buffer, UT_uint32 /*bufflen*/ )
 {
 	// get current value from member
 	const XML_Char* szOld = _gatherTabEdit();
-	double d = UT_convertDimensionless(szOld);
-
-	// if needed, switch unit systems and round off
-	UT_Dimension dimOld = UT_determineDimension(szOld, m_dim);
-
-	if (dimOld != m_dim)
-	{
-		double dInches = UT_convertToInches(szOld);
-		d = UT_convertInchesToDimension(dInches, m_dim); 
-	}
-
-	const XML_Char* szNew = UT_formatDimensionString(m_dim, d); 
+	const XML_Char* szNew = UT_reformatDimensionString(m_dim, szOld); 
 
 	// TODO - use snprintf
 

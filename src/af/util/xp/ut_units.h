@@ -35,6 +35,7 @@ typedef enum _ut_dimension { DIM_IN, DIM_CM, DIM_MM, DIM_PI, DIM_PT, DIM_PX, DIM
 
 double UT_convertToInches(const char* s);
 double UT_convertToPoints(const char* s);
+double UT_convertToDimension(const char* s, UT_Dimension dim);
 UT_sint32 UT_convertToLayoutUnits(const char* s);
 double UT_convertDimensionless(const char * sz);
 double UT_convertInchesToDimension(double inches, UT_Dimension dim);
@@ -48,10 +49,12 @@ UT_Dimension UT_determineDimension(const char * sz, UT_Dimension fallback = DIM_
 const char * UT_dimensionName(UT_Dimension dim);
 const char * UT_convertInchesToDimensionString(UT_Dimension, double valueInInches, const char * szPrecision = NULL);
 const char * UT_formatDimensionString(UT_Dimension, double value, const char * szPrecision = NULL);
+const char * UT_reformatDimensionString(UT_Dimension dim, const char *sz, const char * szPrecision = NULL);
 const char * UT_convertToDimensionlessString(double value, const char * szPrecision = NULL);
 const char * UT_formatDimensionedValue(double value, const char * szUnits, const char * szPrecision = NULL);
 
 UT_Bool UT_hasDimensionComponent(const char * sz);
+
 
 UT_END_EXTERN_C
 
