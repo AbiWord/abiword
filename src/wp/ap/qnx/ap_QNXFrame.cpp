@@ -960,7 +960,7 @@ void AP_QNXFrame::toggleLeftRuler(bool bRulerOn)
 
 	if (bRulerOn) {
 		PtRealizeWidget(m_leftRuler);
-		_reflowLayout(0, 0, 0, - (*width));
+//		_reflowLayout(0, 0, 0, - (*width));
 	} else {
 		PtRealizeWidget(m_leftRuler);		
 		PtSetResource(m_leftRuler, Pt_ARG_FLAGS, Pt_DELAY_REALIZE, Pt_DELAY_REALIZE);
