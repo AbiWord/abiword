@@ -83,6 +83,11 @@ void AP_Dialog_Replace::useEnd(void)
 	UT_DEBUGMSG(("AP_Dialog_Replace::useEnd(void) I've been called\n"));
 	AP_Dialog_FramePersistent::useEnd();
 
+	// Let the view know it doens't need to maintain it's
+	// "find" or "replace" session-oriented counters
+	UT_ASSERT(m_pView);
+	m_pView->findReset();
+	
 	// persistent dialogs don't destroy this data
 	if (m_didSomething)
 	{
@@ -199,16 +204,16 @@ UT_Bool AP_Dialog_Replace::findNext()
 	// so we save our attributes to persistent storage
 	m_didSomething = UT_TRUE;
 
-	UT_Bool bWrapped = UT_FALSE;
+	UT_Bool bDoneEntireDocument = UT_FALSE;
 
 	// update the view's automatic "find next" string
 	m_pView->findSetNextString(m_findString);
 	
 	// call view to do the work
-	UT_Bool result = m_pView->findNext(m_findString, UT_TRUE, &bWrapped);
+	UT_Bool result = m_pView->findNext(m_findString, UT_TRUE, NULL, &bDoneEntireDocument);
 
-	if (bWrapped == UT_TRUE)
-		_messageBoxWrapped();
+	if (bDoneEntireDocument == UT_TRUE)
+		_messageFinishedFind();
 
 	return result;
 }
@@ -223,16 +228,16 @@ UT_Bool AP_Dialog_Replace::findReplace()
 	// so we save our attributes to persistent storage
 	m_didSomething = UT_TRUE;
 
-	UT_Bool bWrapped = UT_FALSE;
-
+	UT_Bool bDoneEntireDocument = UT_FALSE;
+	
 	// update the view's automatic "find next" string
 	m_pView->findSetNextString(m_findString);
 	
 	// call view to do the work
-	UT_Bool result = m_pView->findReplace(m_findString, m_replaceString, &bWrapped);
+	UT_Bool result = m_pView->findReplace(m_findString, m_replaceString, NULL, &bDoneEntireDocument);
 
-	if (bWrapped == UT_TRUE)
-		_messageBoxWrapped();
+	if (bDoneEntireDocument == UT_TRUE)
+		_messageFinishedFind();
 
 	return result;
 }
@@ -247,25 +252,35 @@ UT_Bool AP_Dialog_Replace::findReplaceAll()
 	// so we save our attributes to persistent storage
 	m_didSomething = UT_TRUE;
 
-	UT_Bool bWrapped = UT_FALSE;
+	UT_Bool bDoneEntireDocument = UT_FALSE;
 	
 	// update the view's automatic "find next" string
 	m_pView->findSetNextString(m_findString);
 	
 	// call view to do the work
-	UT_Bool result = m_pView->findReplaceAll(m_findString, m_replaceString, &bWrapped);
+	UT_uint32 numReplaced = m_pView->findReplaceAll(m_findString, m_replaceString, NULL, &bDoneEntireDocument);
 
-	// Do we want "you got wrapped" dialogs for a "replace all?"
-	if (bWrapped == UT_TRUE)
-		_messageBoxWrapped();
+	if (bDoneEntireDocument == UT_TRUE)
+		_messageFinishedReplace(numReplaced);
 
-	return result;
+	return UT_TRUE;
 }
 
-void AP_Dialog_Replace::_messageBoxWrapped()
+void AP_Dialog_Replace::_messageFinishedFind(void)
 {
-	UT_DEBUGMSG(("Wrapped around end of search area.\n"));
+	_messageBox("AbiWord has finished searching the document.");
+}
 
+void AP_Dialog_Replace::_messageFinishedReplace(UT_uint32 numReplaced)
+{
+	char message[512];
+
+	sprintf(message, "AbiWord has finished its search of the document and has made %ld replacements.", numReplaced);
+	_messageBox(message);
+}
+
+void AP_Dialog_Replace::_messageBox(char * message)
+{
 	AP_DialogFactory * pDialogFactory
 		= (AP_DialogFactory *)(m_pFrame->getDialogFactory());
 
@@ -273,16 +288,11 @@ void AP_Dialog_Replace::_messageBoxWrapped()
 		= (AP_Dialog_MessageBox *)(pDialogFactory->requestDialog(XAP_DIALOG_ID_MESSAGE_BOX));
 	UT_ASSERT(pDialog);
 
-	pDialog->setMessage("The search has reached the end of the searchable region.");
+	pDialog->setMessage(message);
 	pDialog->setButtons(AP_Dialog_MessageBox::b_O);
 	pDialog->setDefaultAnswer(AP_Dialog_MessageBox::a_OK);
 
 	pDialog->runModal(m_pFrame);
 
-	// we might want an answer for some messages ("do you want to continue ... ?")
-	//AP_Dialog_MessageBox::tAnswer ans = pDialog->getAnswer();
-
 	pDialogFactory->releaseDialog(pDialog);
-
-	//return (ans == AP_Dialog_MessageBox::a_YES);	
 }

@@ -1701,6 +1701,10 @@ void FV_View::findReset()
 		m_iFindCur = m_iFindPosStart;
 	}
 
+	m_bWrappedEndBuffer = UT_FALSE;
+	m_cycleBeganAtBlock = 0;
+	m_cycleBeganAtOffset = 0;
+	
 	m_bDoneFind = UT_FALSE;
 }
 
@@ -1749,7 +1753,7 @@ UT_Bool FV_View::findSetNextString(UT_UCSChar * string)
   It's a mess, but so is Find UI logic.  
 */
 
-UT_Bool FV_View::findNext(const UT_UCSChar * string, UT_Bool bSelect, UT_Bool * bWrappedEnd)
+UT_Bool FV_View::findNext(const UT_UCSChar * string, UT_Bool bSelect, UT_Bool * bWrappedEnd, UT_Bool * bDoneEntireDocument)
 {
 	UT_ASSERT(string);
 
@@ -1759,11 +1763,6 @@ UT_Bool FV_View::findNext(const UT_UCSChar * string, UT_Bool bSelect, UT_Bool * 
 	UT_GrowBuf buffer;
 	fl_BlockLayout * block;
 
-	// Hold a local "started at which block" so we can bail on
-	// one full rotation.  This may have to change; right now
-	// it depends on a document block never starting at 0.  
-	PT_DocPosition cycleBeganAt = 0;	// magic number
-
 	// magic number, -1 means we didn't find in the block,
 	// since 0 is a valid position
 	UT_sint32 foundAt = -1;
@@ -1772,10 +1771,29 @@ UT_Bool FV_View::findNext(const UT_UCSChar * string, UT_Bool bSelect, UT_Bool * 
 	block = _findGetCurrentBlock();
 
     // search it
-	while (block && (cycleBeganAt != block->getPosition(UT_FALSE)) )
+	while (block)
 	{
-		if (!cycleBeganAt)
-			cycleBeganAt = block->getPosition(UT_FALSE);
+		// this was in the while() test, but we need to set the "done everything"
+		// boolean and return for this case
+		if (m_bWrappedEndBuffer)
+		{
+			if (m_cycleBeganAtBlock == block->getPosition(UT_FALSE) &&
+				m_iFindBufferOffset >= m_cycleBeganAtOffset)
+			{
+				if (bDoneEntireDocument)
+					*bDoneEntireDocument = UT_TRUE;
+				// restart the wrapper so we can do another pass
+				m_bWrappedEndBuffer = UT_FALSE;
+				return UT_FALSE;
+			}
+		}
+	
+		// If we didn't act, do the test for the next round
+		if (!m_cycleBeganAtBlock)
+		{
+			m_cycleBeganAtBlock = block->getPosition(UT_FALSE);
+			m_cycleBeganAtOffset = m_iFindBufferOffset;
+		}
 		
 		UT_DEBUGMSG(("Got a block at cursor position [%d].\n", m_iFindCur));
 
@@ -1859,8 +1877,12 @@ UT_Bool FV_View::findNext(const UT_UCSChar * string, UT_Bool bSelect, UT_Bool * 
 			else
 			{
 			FetchNextBlock:				
-				block = _findGetNextBlock(bWrappedEnd);
+				block = _findGetNextBlock(&m_bWrappedEndBuffer);
 
+				// copy to pointer var for outisde use
+				if (bWrappedEnd)
+					*bWrappedEnd = m_bWrappedEndBuffer;
+				
 				if (!block)
 				{
 					UT_DEBUGMSG(("The Find mechanism lost a block in its DocLayout.  This means something\n"
@@ -1926,7 +1948,8 @@ UT_Bool FV_View::findAgain(void)
   simply did a search to mimic the behavior of popular find/replace dialogs.
 */
 
-UT_Bool	FV_View::findReplace(const UT_UCSChar * find, const UT_UCSChar * replace, UT_Bool * bWrappedEnd)
+UT_Bool	FV_View::findReplace(const UT_UCSChar * find, const UT_UCSChar * replace,
+							 UT_Bool * bWrappedEnd, UT_Bool * bDoneEntireDocument)
 {
 	
 	// if we have done a find, and there is a selection, then replace what's in the
@@ -1948,9 +1971,7 @@ UT_Bool	FV_View::findReplace(const UT_UCSChar * find, const UT_UCSChar * replace
 		// a replace, but account for the 1 that the find advanced.
 		m_iFindBufferOffset += (UT_UCS_strlen(replace) - 1);
 
-		// we find the next occurance after our insertion.
-		findNext(find, UT_TRUE, bWrappedEnd);
-		
+		findNext(find, UT_TRUE, bWrappedEnd, bDoneEntireDocument);
 		return result;
 	}
 
@@ -1958,14 +1979,14 @@ UT_Bool	FV_View::findReplace(const UT_UCSChar * find, const UT_UCSChar * replace
 	// but no replace
 	if (m_bDoneFind == UT_TRUE && isSelectionEmpty() == UT_TRUE)
 	{
-		findNext(find, UT_TRUE);
+		findNext(find, UT_TRUE, bWrappedEnd, bDoneEntireDocument);
 		return UT_FALSE;
 	}
 	
 	// if we haven't done a find yet, do a find for them
 	if (m_bDoneFind == UT_FALSE)
 	{
-		findNext(find, UT_TRUE);
+		findNext(find, UT_TRUE, bWrappedEnd, bDoneEntireDocument);
 		return UT_FALSE;
 	}
 
@@ -1974,37 +1995,48 @@ UT_Bool	FV_View::findReplace(const UT_UCSChar * find, const UT_UCSChar * replace
 }
 
 /*
-  This function replaces all occurances of the word until the end of the
-  document, then raises a dialog.  If coaxed into operation again, it
-  procedes until where the last was started.
+  This function replaces all occurances of the word throughout
+  the entire document, not stopping to prompt the user at the end
+  off the search region (it does an automatic wrap-around and
+  raises a dialog when you've done the entire document).
+
+  This is what Microsoft Word does, whereas Word Perfect 7
+  does all it can until the end of the document, then just stops.
+  Clicking "Replace All" again finishes the rest of the document.
 
   It also does globbing of the edits so that they can be undone with
   a single keystroke.
 */
-UT_Bool FV_View::findReplaceAll(const UT_UCSChar * find, const UT_UCSChar * replace, UT_Bool * bWrappedEnd)
+
+UT_uint32 FV_View::findReplaceAll(const UT_UCSChar * find, const UT_UCSChar * replace,
+								  UT_Bool * bWrappedEnd, UT_Bool * bDoneEntireDocument)
 {
+	UT_uint32 numReplaced = 0;
 	m_pDoc->beginUserAtomicGlob();
 		
 	// prime it with a find
-	if (!findNext(find, UT_TRUE, bWrappedEnd))
+	if (!findNext(find, UT_TRUE, NULL, bDoneEntireDocument))
 	{
+		// can't find a single thing, we're done
 		m_pDoc->endUserAtomicGlob();
-		return UT_FALSE;
+		return numReplaced;
 	}
 	
 	// while we've still got buffer
-	while (*bWrappedEnd == UT_FALSE)
+	while (*bDoneEntireDocument == UT_FALSE)
 	{
-		// if it returns false, it found nothing
-		if (!findReplace(find, replace, bWrappedEnd))
+		// if it returns false, it found nothing more before
+		// it hit the end of the document
+		if (!findReplace(find, replace, NULL, bDoneEntireDocument))
 		{
 			m_pDoc->endUserAtomicGlob();
-			return UT_FALSE;
+			return numReplaced;
 		}
+		numReplaced++;
 	}
 
 	m_pDoc->endUserAtomicGlob();
-	return UT_TRUE;
+	return numReplaced;
 }
 
 fl_BlockLayout * FV_View::_findGetCurrentBlock(void)

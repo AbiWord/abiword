@@ -242,6 +242,16 @@ void UNIXGraphics::setColor(UT_RGBColor& clr)
 	XChangeGC(pgc->xdisplay, pgc->xgc, GCForeground | GCFunction, &gcv);
 }
 
+/*
+  This function might work on some X stations.  :)  It does a 3
+  level font matching, where it just does its best to match font
+  family names, but should be re-worked to use lists set outside
+  of this class (perhaps by a font substitution setting).
+
+  This logic will probably only work for Latin-1 text now,
+  or at the most single byte character encodings (8-bit).
+  Unicode fonts aren't considered yet.
+*/
 DG_Font* UNIXGraphics::findFont(const char* pszFontFamily, 
 								const char* pszFontStyle, 
 								const char* /*pszFontVariant*/, 
@@ -414,7 +424,13 @@ void UNIXGraphics::polyLine(UT_Point * pts, UT_uint32 nPoints)
 	for (UT_uint32 i = 0; i < nPoints; i++)
 	{
 		points[i].x = pts[i].x;
-		points[i].y = pts[i].y;
+		// It seems that Windows draws each pixel along the the Y axis
+		// one pixel beyond where GDK draws it (even though both coordinate
+		// systems start at 0,0 (???)).  Subtracting one clears this up so
+		// that the poly line is in the correct place relative to where
+		// the rest of UNIXGraphics:: does things (drawing text, clearing
+		// areas, etc.).
+		points[i].y = pts[i].y - 1;	
 	}
 
 	gdk_draw_lines(m_pWin, m_pGC, points, nPoints);

@@ -131,11 +131,15 @@ public:
 	void 			findReset();
 	
 	UT_Bool			findSetExtents(PT_DocPosition start, PT_DocPosition end);
+	
 	UT_Bool 		findSetNextString(UT_UCSChar * string);
-	UT_Bool 		findNext(const UT_UCSChar * string, UT_Bool bSelect = UT_TRUE, UT_Bool * bWrappedEnd = NULL);
+	UT_Bool			findNext(const UT_UCSChar * string, UT_Bool bSelect,
+							 UT_Bool * bWrappedEnd = NULL, UT_Bool * bDoneEntireDocument = NULL);
 	UT_Bool			findAgain(void);
-	UT_Bool			findReplace(const UT_UCSChar * find, const UT_UCSChar * replace, UT_Bool * bWrappedEnd = NULL);
-	UT_Bool			findReplaceAll(const UT_UCSChar * find, const UT_UCSChar * replace, UT_Bool * bWrappedEnd = NULL);	
+	UT_Bool			findReplace(const UT_UCSChar * find, const UT_UCSChar * replace,
+								UT_Bool * bWrappedEnd, UT_Bool * bDoneEntireDocument);
+	UT_uint32		findReplaceAll(const UT_UCSChar * find, const UT_UCSChar * replace,
+								   UT_Bool * bWrappedEnd = NULL, UT_Bool * bDoneEntireDocument = NULL);
 		
 // ----------------------
 
@@ -233,6 +237,10 @@ protected:
 	fl_BlockLayout * 	_findGetNextBlock(UT_Bool * wrapped);
 
 	UT_UCSChar * 		_m_findNextString;
+
+	UT_Bool 			m_bWrappedEndBuffer;
+	PT_DocPosition 		m_cycleBeganAtBlock;
+	PT_DocPosition 		m_cycleBeganAtOffset;
 	
 	// search routines (these return values will fall short of an
 	// extremely large document - fix them)

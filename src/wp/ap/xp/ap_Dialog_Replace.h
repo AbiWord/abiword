@@ -97,7 +97,10 @@ public:
 
 	// Message boxes for events during search
 	AP_Frame *				m_pFrame;
-	void					_messageBoxWrapped(void);
+
+	void					_messageFinishedFind(void);
+	void					_messageFinishedReplace(UT_uint32 numReplaced = 0);
+	void 					_messageBox(char * message);
 	
 	// is this used in a non-persistent dialog like this?
 	tAnswer					m_answer;
