@@ -150,11 +150,6 @@ PLATFORM_FLAGS		+= $(ARM_ARCH_FLAGS)
 OS_ENDIAN		= LittleEndian32
 endif
 
-ifeq ($(OS_ARCH), arm)
-PLATFORM_FLAGS         += $(ARM_ARCH_FLAGS)
-OS_ENDIAN              = LittleEndian32
-endif
-
 # Endian for M68K from Roman Hodek <Roman.Hodek@informatik.uni-erlangen.de>
 ifeq ($(OS_ARCH), m68k)
 PLATFORM_FLAGS		+= $(M68K_ARCH_FLAGS)
