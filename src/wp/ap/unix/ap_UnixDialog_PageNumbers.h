@@ -38,24 +38,26 @@ class AP_UnixDialog_PageNumbers : public AP_Dialog_PageNumbers
 
   void event_OK(void);
   void event_Cancel(void);
-  void event_WindowDelete(void);
   void event_PreviewExposed(void);
   void event_AlignChanged(AP_Dialog_PageNumbers::tAlign);
   void event_HdrFtrChanged(AP_Dialog_PageNumbers::tControl);
 
  protected:
 
+	typedef enum
+		{
+			BUTTON_OK,
+			BUTTON_CANCEL
+		} ResponseId ;
+	
   // private construction functions
   virtual GtkWidget * _constructWindow (void);
   virtual void _constructWindowContents (GtkWidget * container);
-  virtual void _connectSignals (void);
 
   // caches of the last known values for alignment and hdr/footer/both
   AP_Dialog_PageNumbers::tAlign m_recentAlign;
   AP_Dialog_PageNumbers::tControl m_recentControl;
 
-  GtkWidget * m_buttonOK;
-  GtkWidget * m_buttonCancel;
   GtkWidget * m_window;
 
   GtkWidget * m_previewArea;

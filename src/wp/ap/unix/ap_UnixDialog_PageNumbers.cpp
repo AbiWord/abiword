@@ -39,27 +39,6 @@
 #include "ap_Strings.h"
 #include "ap_UnixDialog_PageNumbers.h"
 
-// static event callbacks
-static void s_ok_clicked (GtkWidget * w, AP_UnixDialog_PageNumbers *dlg)
-{
-  UT_ASSERT(dlg);
-  dlg->event_OK();
-}
-
-static void s_cancel_clicked (GtkWidget * w, AP_UnixDialog_PageNumbers *dlg)
-{
-  UT_ASSERT(dlg);
-  dlg->event_Cancel();
-}
-
-static void s_delete_clicked(GtkWidget * w,
-			     gpointer data,
-			     AP_UnixDialog_PageNumbers * dlg)
-{
-  UT_ASSERT(dlg);
-  dlg->event_WindowDelete();
-}
-
 static gint s_preview_exposed(GtkWidget * w,
 			      GdkEventExpose * e,
 			      AP_UnixDialog_PageNumbers * dlg)
@@ -109,19 +88,11 @@ void AP_UnixDialog_PageNumbers::event_OK(void)
 	// set the align and control data
 	m_align   = m_recentAlign;
 	m_control = m_recentControl;
-
-	gtk_main_quit();
 }
 
 void AP_UnixDialog_PageNumbers::event_Cancel(void)
 {
 	m_answer = AP_Dialog_PageNumbers::a_CANCEL;
-	gtk_main_quit();
-}
-
-void AP_UnixDialog_PageNumbers::event_WindowDelete(void)
-{
-        event_Cancel();
 }
 
 void AP_UnixDialog_PageNumbers::event_PreviewExposed(void)
@@ -148,28 +119,7 @@ void AP_UnixDialog_PageNumbers::runModal(XAP_Frame * pFrame)
     GtkWidget * mainWindow = _constructWindow();
     UT_ASSERT(mainWindow);
 
-    connectFocus(GTK_WIDGET(mainWindow), pFrame);
-
-    // save for use with event
-    m_pFrame = pFrame;
-
-    // To center the dialog, we need the frame of its parent.
-    XAP_UnixFrame * pUnixFrame = static_cast<XAP_UnixFrame *>(pFrame);
-    UT_ASSERT(pUnixFrame);
-    
-    // Get the GtkWindow of the parent frame
-    GtkWidget * parentWindow = pUnixFrame->getTopLevelWindow();
-    UT_ASSERT(parentWindow);
-    
-    // Center our new dialog in its parent and make it a transient
-    // so it won't get lost underneath
-    centerDialog(parentWindow, mainWindow);
-
-    // Show the top level dialog,
-    gtk_widget_show(mainWindow);
-
-    // Make it modal, and stick it up top
-    gtk_grab_add(mainWindow);
+	gtk_widget_show ( mainWindow ) ;
 
     // *** this is how we add the gc ***
     {
@@ -205,24 +155,18 @@ void AP_UnixDialog_PageNumbers::runModal(XAP_Frame * pFrame)
 
     _updatePreview(m_align, m_control);
     
-    // Run into the GTK event loop for this window.
-    gtk_main();
+	switch ( abiRunModalDialog ( GTK_DIALOG(mainWindow), pFrame, this,
+								 BUTTON_CANCEL, false ) )
+	{
+		case BUTTON_OK:
+			event_OK () ; break ;
+		default:
+			event_Cancel () ; break ;
+	}
 
-    DELETEP (m_unixGraphics);
+	DELETEP (m_unixGraphics);
 
-    if(mainWindow && GTK_IS_WIDGET(mainWindow))
-      gtk_widget_destroy(mainWindow);
-}
-
-void AP_UnixDialog_PageNumbers::_connectSignals()
-{
-  	// the control buttons
-	g_signal_connect(G_OBJECT(m_buttonOK), "clicked", G_CALLBACK(s_ok_clicked), (gpointer)this);
-    g_signal_connect(G_OBJECT(m_buttonCancel), "clicked", G_CALLBACK(s_cancel_clicked), (gpointer)this);
-	
-	// the catch-alls
-    g_signal_connect(G_OBJECT(m_window), "delete_event", G_CALLBACK(s_delete_clicked), (gpointer)this);
-	g_signal_connect_after(G_OBJECT(m_window), "destroy", NULL, NULL);
+	abiDestroyWidget ( mainWindow ) ;
 }
 
 void AP_UnixDialog_PageNumbers::_constructWindowContents (GtkWidget *box)
@@ -430,29 +374,12 @@ GtkWidget * AP_UnixDialog_PageNumbers::_constructWindow (void)
 {
   const XAP_StringSet * pSS = m_pApp->getStringSet();
 
-  m_window = gtk_dialog_new ();
-  gtk_window_set_title (GTK_WINDOW (m_window), pSS->getValue(AP_STRING_ID_DLG_PageNumbers_Title));
+  m_window = abiDialogNew ( true, pSS->getValue(AP_STRING_ID_DLG_PageNumbers_Title)) ;
 
   _constructWindowContents (GTK_DIALOG(m_window)->vbox);
 
-  GtkWidget* buttonBox = gtk_hbutton_box_new();
-  gtk_button_box_set_layout(GTK_BUTTON_BOX(buttonBox), GTK_BUTTONBOX_END);
-  gtk_button_box_set_spacing(GTK_BUTTON_BOX(buttonBox), 5);
-  gtk_button_box_set_child_size(GTK_BUTTON_BOX(buttonBox), 85, 24);
-  gtk_button_box_set_child_ipadding(GTK_BUTTON_BOX(buttonBox), 0, 0);
-  gtk_widget_show(buttonBox); 
-
-  m_buttonOK = gtk_button_new_with_label (pSS->getValue (XAP_STRING_ID_DLG_OK));
-  m_buttonCancel = gtk_button_new_with_label (pSS->getValue (XAP_STRING_ID_DLG_Cancel));
-  gtk_widget_show(m_buttonOK);
-  gtk_widget_show(m_buttonCancel);
+  abiAddStockButton ( GTK_DIALOG(m_window), GTK_STOCK_OK, BUTTON_OK ) ;
+  abiAddStockButton ( GTK_DIALOG(m_window), GTK_STOCK_CANCEL, BUTTON_CANCEL ) ;
   
-  gtk_container_add(GTK_CONTAINER(buttonBox), m_buttonOK);
-  gtk_container_add(GTK_CONTAINER(buttonBox), m_buttonCancel);
-  
-  gtk_container_add (GTK_CONTAINER (GTK_DIALOG(m_window)->action_area), buttonBox);
-
-  _connectSignals ();
-
   return m_window;
 }
