@@ -47,6 +47,7 @@
 #include "gr_Graphics.h"
 #include "xap_UnixDialogHelper.h"
 #include "xap_Strings.h"
+#include "xap_Prefs.h"
 
 #include "fv_View.h"
 
