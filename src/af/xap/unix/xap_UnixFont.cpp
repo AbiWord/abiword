@@ -577,10 +577,9 @@ ABIFontInfo * XAP_UnixFont::getMetricsData(void)
 		memset (m_uniWidths, 0, m_metricsData->numOfChars * sizeof(uniWidth)); // Clear array - i would hope that sizeof(UT_uint16) == 16
 		UT_AdobeEncoding *ae = 0;
 
-		if (loadEncodingFile() && (XAP_EncodingManager::instance->isUnicodeLocale() || XAP_EncodingManager::instance->try_nativeToU(0xa1)==0xa1))
+		if (loadEncodingFile() && !XAP_EncodingManager::instance->cjk_locale())
 		{
 			/*
-				iso8859-1 or cp1252 encoding or utf-8 locale -
 				map glyphs by name.
 			*/
 			UT_DEBUGMSG(("Creating AdobeEncoding with %d entries\n", m_iEncodingTableSize));
