@@ -1346,12 +1346,18 @@ Defun1(toolbarNew)
  * to see the document as soon as possible and updates the size of the scroll
  * bars as the document is loaded.
  */
-static bool s_bFirstDrawDone = false;
+static bool      s_bFirstDrawDone = false;
+static UT_sint32 s_iLastYScrollOffset = -1;
+static UT_sint32 s_iLastXScrollOffset = -1;
+static bool      s_bFreshDraw = false;
+
 static void s_LoadingCursorCallback(UT_Worker * pTimer )
 {
 	UT_ASSERT(pTimer);
-	UT_DEBUGMSG(("Update Screen on load Frame %x \n",s_pLoadingFrame));
+	xxx_UT_DEBUGMSG(("Update Screen on load Frame %x \n",s_pLoadingFrame));
 	XAP_Frame * pFrame = s_pLoadingFrame;
+	UT_uint32 iPageCount = 0;
+	
 	if(pFrame == NULL)
 	{
 		s_bFirstDrawDone = false;
@@ -1371,6 +1377,8 @@ static void s_LoadingCursorCallback(UT_Worker * pTimer )
 		if(pView->getPoint() > 0)
 		{
 			pLayout->updateLayout();
+			iPageCount = pLayout->countPages();
+
 			if(!s_bFirstDrawDone)
 			{
 				pView->draw();
@@ -1378,12 +1386,41 @@ static void s_LoadingCursorCallback(UT_Worker * pTimer )
 			}
 			else
 			{
-				if(pView->getLayout()->countPages() > 1)
+				// we only want to draw if we need to:
+				//   (1) if the scroller position has changed
+				//   (2) if the previous draw was due to a scroll change
+				//
+				// This way each change of scroller position will
+				// result in two draws, the second of which will
+				// ensure that anything from the current vieport that
+				// was not yet laid out when the first draw was made
+				// is drawn
+				if(iPageCount > 1)
 				{
-					pView->updateScreen(true);
+					if(pView->getYScrollOffset() != s_iLastYScrollOffset ||
+					   pView->getXScrollOffset() != s_iLastXScrollOffset)
+					{
+						pView->updateScreen(true);
+						s_iLastYScrollOffset = pView->getYScrollOffset();
+						s_iLastXScrollOffset = pView->getXScrollOffset();
+						s_bFreshDraw = true;
+						xxx_UT_DEBUGMSG(("Incr. loader: primary draw\n"));
+					}
+					else if(s_bFreshDraw)
+					{
+						pView->updateScreen(true);
+						s_bFreshDraw = false;
+						xxx_UT_DEBUGMSG(("Incr. loader: secondary draw\n"));
+					}
+					else
+					{
+						xxx_UT_DEBUGMSG(("Incr. loader: draw not needed\n"));
+					}
 				}
+			
 			}
-			if(pView->getLayout()->countPages() >1)
+
+			if(iPageCount > 1)
 			{
 				UT_String msg = pSS->getValue(XAP_STRING_ID_MSG_BuildingDoc);
 				pFrame->setStatusMessage ( static_cast<const XML_Char *>(msg.c_str()) );
@@ -1434,7 +1471,7 @@ static void s_StartStopLoadingCursor( bool bStartStop, XAP_Frame * pFrame)
 			s_pToUpdateCursor = UT_Timer::static_constructor(s_LoadingCursorCallback,NULL,pG);
 		}
 		s_bFirstDrawDone = false;
-		s_pToUpdateCursor->set(500);
+		s_pToUpdateCursor->set(1000);
 		s_pToUpdateCursor->start();
 //		s_pLoadingFrame = XAP_App::getApp()->getLastFocussedFrame();
 	}
