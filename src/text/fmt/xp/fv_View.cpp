@@ -4219,8 +4219,7 @@ PT_DocPosition FV_View::getDocPositionFromXY(UT_sint32 xpos, UT_sint32 ypos)
 	PT_DocPosition iNewPoint;
 	bool bBOL = false;
 	bool bEOL = false;
-	fl_HdrFtrShadow * pShadow = NULL;
-	pPage->mapXYToPositionClick(xClick, yClick, iNewPoint,pShadow, bBOL, bEOL);
+	pPage->mapXYToPosition(xClick, yClick, iNewPoint, bBOL, bEOL, true);
 	return iNewPoint;
 }
 
@@ -4234,8 +4233,7 @@ void FV_View::extSelToXY(UT_sint32 xPos, UT_sint32 yPos, bool bDrag)
 	PT_DocPosition iNewPoint;
 	bool bBOL = false;
 	bool bEOL = false;
-	fl_HdrFtrShadow * pShadow = NULL;
-	pPage->mapXYToPositionClick(xClick, yClick, iNewPoint,pShadow, bBOL, bEOL);
+	pPage->mapXYToPosition(xClick, yClick, iNewPoint, bBOL, bEOL, true);
 
 	bool bPostpone = false;
 
@@ -4302,8 +4300,7 @@ void FV_View::extSelToXYword(UT_sint32 xPos, UT_sint32 yPos, bool bDrag)
 	bool bBOL, bEOL;
 
 	bBOL = bEOL = false;
-	fl_HdrFtrShadow * pShadow = NULL;
-	pPage->mapXYToPositionClick(xClick, yClick, iNewPoint,pShadow, bBOL, bEOL);
+	pPage->mapXYToPosition(xClick, yClick, iNewPoint, bBOL, bEOL, true);
 
 	//UT_ASSERT(!isSelectionEmpty());
 
@@ -4914,10 +4911,7 @@ void FV_View::warpInsPtToXY(UT_sint32 xPos, UT_sint32 yPos, bool bClick = false)
 	bool bBOL = false;
 	bool bEOL = false;
 	fl_HdrFtrShadow * pShadow=NULL;
-	if(bClick)
-			pPage->mapXYToPositionClick(xClick, yClick, pos, pShadow, bBOL, bEOL);
-	else
-			pPage->mapXYToPosition(xClick, yClick, pos, bBOL, bEOL);
+	pPage->mapXYToPosition(xClick, yClick, pos, bBOL, bEOL, true, &pShadow);
 	if(bClick)
 	{
 		getEditableBounds(true,posEnd,true);
@@ -5178,8 +5172,7 @@ bool FV_View::isLeftMargin(UT_sint32 xPos, UT_sint32 yPos)
 	PT_DocPosition iNewPoint;
 	bool bBOL = false;
 	bool bEOL = false;
-	fl_HdrFtrShadow * pShadow=NULL;
-	pPage->mapXYToPositionClick(xClick, yClick, iNewPoint,pShadow, bBOL, bEOL);
+	pPage->mapXYToPosition(xClick, yClick, iNewPoint, bBOL, bEOL, true);
 	return bBOL;
 }
 
@@ -5729,8 +5722,7 @@ bool FV_View::isXYSelected(UT_sint32 xPos, UT_sint32 yPos) const
 
 	PT_DocPosition pos;
 	bool bBOL, bEOL;
-	fl_HdrFtrShadow * pShadow=NULL;
-	pPage->mapXYToPositionClick(xClick, yClick, pos, pShadow, bBOL, bEOL);
+	pPage->mapXYToPosition(xClick, yClick, pos, bBOL, bEOL, true);
 
 	return isPosSelected(pos);
 }
@@ -5766,7 +5758,7 @@ EV_EditMouseContext FV_View::getMouseContext(UT_sint32 xPos, UT_sint32 yPos)
 		return EV_EMC_UNKNOWN;
 	}
 
-	pPage->mapXYToPosition(xClick, yClick, pos, bBOL, bEOL);
+	pPage->mapXYToPosition(xClick, yClick, pos, bBOL, bEOL, true);
 	fl_BlockLayout* pBlock;
 	fp_Run* pRun;
 	_findPositionCoords(pos, bEOL, xPoint, yPoint, xPoint2, yPoint2, iPointHeight, bDirection, &pBlock, &pRun);
@@ -6128,11 +6120,19 @@ UT_uint32 FV_View::getCurrentPageNumForStatusBar(void) const
 UT_UCSChar * FV_View::getContextSuggest(UT_uint32 ndx)
 {
 	// locate the squiggle
-	PT_DocPosition pos = getPoint();
-	fl_BlockLayout* pBL = _findBlockAtPosition(pos);
+	PT_DocPosition pos = 0 ;
+	fl_BlockLayout* pBL = NULL ;
+	fl_PartOfBlock* pPOB = NULL ;
+
+	pos = getPoint();
+	pBL = _findBlockAtPosition(pos);
 	UT_ASSERT(pBL);
-	fl_PartOfBlock* pPOB = pBL->getSquiggles()->get(pos - pBL->getPosition());
-	UT_ASSERT(pPOB);
+	
+	PT_DocPosition epos = 0;
+	getDocument()->getBounds(true, epos);
+	UT_DEBUGMSG(("end bound is %d\n", epos));
+	pPOB = pBL->getSquiggles()->get(pos - pBL->getPosition());
+	UT_return_val_if_fail(pPOB, NULL);
 
 	// grab the suggestion
 	return _lookupSuggestion(pBL, pPOB, ndx);

@@ -1239,7 +1239,7 @@ void FV_View::_moveInsPtNextPrevLine(bool bNext)
 //
 	if(isHdrFtrEdit())
 	{
-		pPage->mapXYToPositionClick(xClick, yClick, iNewPoint,pShadow, bBOL, bEOL);
+		pPage->mapXYToPosition(xClick, yClick, iNewPoint, bBOL, bEOL, true, &pShadow);
 	}
 	else
 	{
