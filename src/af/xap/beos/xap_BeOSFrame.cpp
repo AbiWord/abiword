@@ -52,7 +52,6 @@ TFScrollBar::TFScrollBar(XAP_BeOSFrame *pFrame, BRect frame, const char *name,
 }
 
 void TFScrollBar::ValueChanged(float newValue) {
-        printf("FRAME: Scrollbar changed \n");
         AV_View * pView = m_pBeOSFrame->getCurrentView();
         if (pView && Orientation() == B_VERTICAL) {
                 pView->setYScrollOffset((UT_sint32) newValue);
@@ -181,7 +180,6 @@ AP_DialogFactory * XAP_BeOSFrame::getDialogFactory(void)
 void XAP_BeOSFrame::_createTopLevelWindow(void)
 {
 	// create a top-level window for us.
-
 	UT_Bool bResult;
 
 	m_pBeWin = new be_Window(m_pBeOSApp, this, 
@@ -338,7 +336,6 @@ bool be_Window::_createWindow(const char *szMenuLayoutName,
 	UT_uint32 nrToolbars = m_pBeOSFrame->VecToolbarLayoutNames()->getItemCount();
 	for (UT_uint32 k=0; k < nrToolbars; k++)
 	{
-		DPRINTF(printf("FRAME: Attaching toolbar # %d\n", k));
 		EV_BeOSToolbar * pBeOSToolbar
 			= new EV_BeOSToolbar(m_pBeOSApp, 
 					 m_pBeOSFrame,
@@ -351,36 +348,26 @@ bool be_Window::_createWindow(const char *szMenuLayoutName,
 	}
 	//printf("After Adding Toolbars: "); m_winRectAvailable.PrintToStream();
 
-	//Set up some scrollbars 
-	printf("Setting up scroll bars \n");
-	r = m_winRectAvailable;
-	r.bottom -= B_H_SCROLL_BAR_HEIGHT;
-	r.left = r.right - B_V_SCROLL_BAR_WIDTH;
-	m_vScroll = new TFScrollBar(m_pBeOSFrame, r, 
-				    "VertScroll", NULL, 0, 100, B_VERTICAL);
-	r = m_winRectAvailable;
-	r.top = r.bottom - B_H_SCROLL_BAR_HEIGHT;
-	r.right -= B_V_SCROLL_BAR_WIDTH;
-	m_hScroll = new TFScrollBar(m_pBeOSFrame, r, 
-				    "HortScroll", NULL, 0, 100, B_HORIZONTAL);
-	AddChild(m_hScroll);
-	AddChild(m_vScroll);
-	m_pBeOSFrame->setScrollBars(m_hScroll, m_vScroll);	
-	m_winRectAvailable.bottom -= B_H_SCROLL_BAR_HEIGHT +1;
-	m_winRectAvailable.right -= B_V_SCROLL_BAR_WIDTH +1;
-	printf("Finished with scroll bars \n");
 
-	//Add the document view in the remaining space
-	m_winRectAvailable.PrintToStream();
-	m_pbe_DocView = new be_DocView(m_winRectAvailable, "MainDocView", 
-				       B_FOLLOW_ALL, B_WILL_DRAW);
-	//m_pbe_DocView->SetViewColor(0,120, 255);
-	//Add the view to both frameworks (Be and Abi)
-	AddChild(m_pbe_DocView);
-	m_pBeOSFrame->setBeDocView(m_pbe_DocView);	
-	
-	//Without this we never get any key inputs
-  	m_pbe_DocView->MakeFocus(true);   
+	// Let the app-specific frame code create the contents of
+        // the child area of the window (between the toolbars and
+        // the status bar).
+
+        _createDocumentWindow();
+
+#if 0
+
+        // Let the app-specific frame code create the status bar
+        // if it wants to.  we will put it below the document
+        // window (a peer with toolbars and the overall sunkenbox)
+        // so that it will appear outside of the scrollbars.
+	m_wStatusBar = _createStatusBarWindow();
+        if (m_wStatusBar) {
+                gtk_widget_show(m_wStatusBar);
+                gtk_box_pack_end(GTK_BOX(m_wVBox), m_wStatusBar, FALSE, FALSE, 0
+);
+        }                    
+#endif
 
 	return(true);	
 }
@@ -420,8 +407,6 @@ void be_DocView::Draw(BRect updateRect) {
 	if (!pBWin || !pBWin->m_pBeOSFrame)
 		return;
 	
-	//DPRINTF(printf("FRAME: Draw "); updateRect.PrintToStream());
-
 #if defined(USE_BACKING_BITMAP)
 	GR_BEOSGraphics 	*pG;
 	BBitmap 		*pBitmap;	
@@ -440,3 +425,4 @@ void be_DocView::Draw(BRect updateRect) {
 	}
 #endif
 }
+

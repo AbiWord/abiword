@@ -33,6 +33,8 @@ CPPSRCS=		xap_BeOSApp.cpp				\
 			xap_BeOSFrame.cpp			\
 			xap_BeOSToolbar_Icons.cpp
 
+CPPSRCS+=		be_GRDrawView.cpp
+
 TARGETS=		$(OBJS)
 
 include $(ABI_DEPTH)/config/abi_rules.mk

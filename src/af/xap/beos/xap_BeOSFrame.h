@@ -73,6 +73,9 @@ class be_Window: public BWindow {
 		bool _createWindow(const char *szMenuLayoutName,
 				   const char *szMenuLabelSetName);
 
+		//Located in the app specific code
+		be_DocView *		_createDocumentWindow(void);
+
 		//Be Function overrides
 		virtual bool QuitRequested(void);
 
