@@ -31,6 +31,7 @@
 #include "ut_wctomb.h"
 #include "ut_mbtowc.h"
 #include "xap_App.h"
+#include "xap_EncodingManager.h"
 #endif
 
 /*****************************************************************/
@@ -67,8 +68,12 @@ EV_Toolbar_Label::EV_Toolbar_Label(XAP_Toolbar_Id id,
         UT_uint32 iOldLen = 0;
         FriBidiChar *fbdStr = 0, *fbdStr2 = 0;
 
-		UT_Mbtowc mbtowc_conv;
-		UT_Wctomb wctomb_conv;
+		const char * encoding = (XAP_EncodingManager::get_instance()->getNativeSystemEncodingName()) ?
+		  XAP_EncodingManager::get_instance()->getNativeSystemEncodingName() :
+		  XAP_EncodingManager::get_instance()->getNativeEncodingName();
+
+		UT_Mbtowc mbtowc_conv(encoding);
+		UT_Wctomb wctomb_conv(encoding);
 		wchar_t wc;
 
 		char letter_buf[20];
