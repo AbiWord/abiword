@@ -93,16 +93,6 @@ static const char * imgszFormatsAccepted[] = {
   AP_CLIPBOARD_IMAGE_SVG_XML,
   0 } ;
 
-/*
-static const char * txtszFormatsAccepted[] = {
-  AP_CLIPBOARD_TEXT_UTF8_STRING,
-  AP_CLIPBOARD_TEXT,
-  AP_CLIPBOARD_TEXT_STRING,
-  AP_CLIPBOARD_TEXT_PLAIN,
-  AP_CLIPBOARD_TEXT_COMPOUND,
-  0 } ;
-*/
-
 AP_UnixClipboard::AP_UnixClipboard(AP_UnixApp * pApp)
   : XAP_UnixClipboard(pApp)
 {
@@ -218,7 +208,7 @@ bool AP_UnixClipboard::isTextTag ( const char * tag )
 {
   if ( !tag || !strlen(tag) )
     return false ;
-  
+
   if ( !UT_stricmp( tag, AP_CLIPBOARD_TEXT_PLAIN ) ||
 	   !UT_stricmp( tag, AP_CLIPBOARD_TEXT_UTF8_STRING ) ||
        !UT_stricmp( tag, AP_CLIPBOARD_TEXT ) ||
