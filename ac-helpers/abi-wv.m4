@@ -73,7 +73,7 @@ else
 	if test "x$abi_epath" = "xyes"; then
 		WV_LIBS="-L${abspath} -lwv"
 	else
-		WV_LIBS="${abspath}/libwv.a"
+		WV_LIBS="\$(top_builddir)/../wv/libwv.a"
 	fi
 	WV_PEERDIR="${abspath}"
 

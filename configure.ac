@@ -398,23 +398,11 @@ float setenv (int);
 fi
 
 if test $peerconfig = "true"; then
-	dnl other configure scripts
-	# AC_CONFIG_SUBDIRS($PEERDIRS) won't work :-(
 	for i in . $PEERDIRS; do
-	    if test $i != . ; then
-		echo "Running configure in ${i}"
-		config_flags='--disable-shared --enable-static'
-		if test `basename "$i"` = wv; then
-		    config_flags="$config_flags --with-exporter --with-glib=glib2"
-		    config_flags="$config_flags $abi_wv_xml $abi_wv_iconv $abi_wv_png $abi_wv_zlib"
-		    (cd $i; CPPFLAGS="$CPPFLAGS $abi_wv_cppflags" ./configure $config_flags)
-		elif test `basename "$i"` = libiconv; then
-		    config_flags="$config_flags --enable-extra-encodings"
-		    (cd $i; ./configure $config_cflags)
-		else
-		    (cd $i; ./configure $config_flags)
+		if test $i != . ; then
+			j=`basename $i`
+			ABI_PEER_CONFIG($j,$i)
 		fi
-	    fi
 	done
 fi
 

@@ -1,11 +1,11 @@
 
 SUBDIRS = src
 
-expat_peerdir=@EXPAT_PEERDIR@
-wv_peerdir=@WV_PEERDIR@
-libiconv_peerdir=@LIBICONV_PEERDIR@
+expat_peerdir=$(top_builddir)/../expat
+wv_peerdir=$(top_builddir)/../wv
+libiconv_peerdir=$(top_builddir)/../libiconv
 libpng_peerdir=@LIBPNG_PEERDIR@
-libpopt_peerdir=@LIBPOPT_PEERDIR@
+libpopt_peerdir=$(top_builddir)/../popt
 
 # Hack: make sure that the PEERS stuff is build first
 # We can not use the all target, because on parallel builds there is no
