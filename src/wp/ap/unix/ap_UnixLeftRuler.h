@@ -52,6 +52,7 @@ public:
 	
 protected:
 	GtkWidget *		m_wLeftRuler;
+	GtkWidget *		m_wVruler;
 	GdkWindowPrivate *	m_rootWindow;
     guint            m_iBackgroundRedrawID;
 protected:

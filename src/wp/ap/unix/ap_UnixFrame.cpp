@@ -116,7 +116,6 @@ UT_Error AP_UnixFrame::_showDocument(UT_uint32 iZoom)
 		point = ((FV_View *) m_pView)->getPoint();
 	}
   
-//	pDocLayout->formatAll();
 
 	pView = new FV_View(getApp(), this, pDocLayout);
 	ENSUREP(pView);
@@ -1013,7 +1012,14 @@ void AP_UnixFrame::toggleLeftRuler(bool bRulerOn)
 		     bRulerOn, pFrameData->m_pLeftRuler));
 
 	if (bRulerOn)
-	  {
+	{
+//
+// if there is an old ruler just return.
+//
+		if(m_leftRuler)
+		{
+			return;
+		}
 		pUnixLeftRuler = new AP_UnixLeftRuler(this);
 		UT_ASSERT(pUnixLeftRuler);
 		m_leftRuler = pUnixLeftRuler->createWidget();
@@ -1023,15 +1029,16 @@ void AP_UnixFrame::toggleLeftRuler(bool bRulerOn)
 				 (GtkAttachOptions)(GTK_EXPAND | GTK_FILL),
 				 0,0);
 		pUnixLeftRuler->setView(m_pView);
-	  }
+		setYScrollRange();
+	}
 	else
-	  {
+	{
 	    if (m_leftRuler && GTK_IS_OBJECT(m_leftRuler))
 		gtk_object_destroy( GTK_OBJECT(m_leftRuler) );
 	    
 	    DELETEP(((AP_FrameData*)m_pData)->m_pLeftRuler);
 	    m_leftRuler = NULL;
-	  }
+	}
 
 	((AP_FrameData*)m_pData)->m_pLeftRuler = pUnixLeftRuler;
 }

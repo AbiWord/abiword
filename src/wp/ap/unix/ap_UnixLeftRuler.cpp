@@ -90,6 +90,7 @@ AP_UnixLeftRuler::AP_UnixLeftRuler(XAP_Frame * pFrame)
 							  "client_event",
 							  GTK_SIGNAL_FUNC(ruler_style_changed),
 							  (gpointer)this);
+	m_wVruler = NULL;
 }
 
 AP_UnixLeftRuler::~AP_UnixLeftRuler(void)
@@ -101,6 +102,7 @@ AP_UnixLeftRuler::~AP_UnixLeftRuler(void)
 		UT_usleep(100);
 	}
 	DELETEP(m_pG);
+	m_wVruler = NULL;
 }
 
 void AP_UnixLeftRuler::_ruler_style_changed (void)
@@ -171,8 +173,8 @@ void AP_UnixLeftRuler::setView(AV_View * pView)
 	m_pG = pG;
 	UT_ASSERT(m_pG);
 
-	GtkWidget * ruler = gtk_vruler_new ();
-	pG->init3dColors(get_ensured_style (ruler));
+	m_wVruler = gtk_vruler_new ();
+	pG->init3dColors(get_ensured_style (m_wVruler));
 }
 
 void AP_UnixLeftRuler::getWidgetPosition(gint * x, gint * y)

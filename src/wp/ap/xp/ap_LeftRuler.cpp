@@ -137,7 +137,8 @@ void AP_LeftRuler::setView(AV_View * pView)
 
 void AP_LeftRuler::_refreshView(void)
 {
-	setView(m_pView);
+	if(m_pView != NULL)
+		setView(m_pView);
 }
 
 void AP_LeftRuler::setHeight(UT_uint32 iHeight)
@@ -654,7 +655,7 @@ void AP_LeftRuler::_scrollFuncY(void * pData, UT_sint32 yoff, UT_sint32 ylimit)
 	AP_LeftRuler * pLeftRuler = (AP_LeftRuler *)(pData);
 
 	// let non-static member function do all the work.
-	
+
 	pLeftRuler->scrollRuler(yoff,ylimit);
 	return;
 }
@@ -663,7 +664,6 @@ void AP_LeftRuler::_scrollFuncY(void * pData, UT_sint32 yoff, UT_sint32 ylimit)
 
 void AP_LeftRuler::scrollRuler(UT_sint32 yoff, UT_sint32 ylimit)
 {
-	xxx_UT_DEBUGMSG(("Sevior: LeftRuler:: scroll [y %d] gc= %x \n",yoff,m_pG));
 	UT_Rect rClip;
 	UT_Rect * prClip;
 
@@ -674,9 +674,9 @@ void AP_LeftRuler::scrollRuler(UT_sint32 yoff, UT_sint32 ylimit)
 		yoff = m_yScrollLimit;
 	
 	UT_sint32 dy = yoff - m_yScrollOffset;
+
 	if (!dy)
 		return;
-
 	AP_LeftRulerInfo lfi;
 	(static_cast<FV_View *>(m_pView))->getLeftRulerInfo(&lfi);
 

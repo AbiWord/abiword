@@ -209,7 +209,6 @@ void AV_View::sendVerticalScrollEvent(UT_sint32 yoff, UT_sint32 ylimit)
 	for (UT_sint32 i = 0; i < count; i++)
 	{
 		AV_ScrollObj* pObj = (AV_ScrollObj*) m_scrollListeners.getNthItem(i);
-
 		pObj->m_pfnY(pObj->m_pData, yoff, ylimit);
 	}
 }
