@@ -34,6 +34,12 @@
 #include "xap_UnixFrame.h"
 #include "xap_Strings.h"
 
+/*
+  TODO these aren't really XAP-ish.  fix this.
+*/
+#include "../../wp/impexp/xp/ie_imp.h"
+#include "../../wp/impexp/xp/ie_exp.h"
+
 #define FREEP(p)	do { if (p) free(p); (p)=NULL; } while (0)
 
 /*****************************************************************/
@@ -320,7 +326,6 @@ void XAP_UnixDialog_FileOpenSaveAs::_notifyError_OKOnly(XAP_Frame * pFrame,
 	pDialogFactory->releaseDialog(pDialog);
 }
 
-
 /*****************************************************************/
 
 void XAP_UnixDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
@@ -339,7 +344,7 @@ void XAP_UnixDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 	// this, open/import will not.
 
 	UT_Bool bCheckWritePermission;
-	
+
 	const XML_Char * szTitle;
 	switch (m_id)
 	{
@@ -372,9 +377,75 @@ void XAP_UnixDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 	// NOTE: buttons and labels on the FileSelection dialog.
 	
 	GtkFileSelection *pFS = (GtkFileSelection *)gtk_file_selection_new(szTitle);
-	
-	/* Connect the signals for OK and CANCEL and the requisite clean-close signals*/
 
+	/*
+	  To facilitate a file-types selection, we dig around in some
+	  private data for the dialog layout, and add a drop-down list
+	  of known types.
+	*/
+	{
+		GtkWidget * main_vbox = pFS->main_vbox;
+		UT_ASSERT(main_vbox);
+
+		// hbox for our pulldown menu (GTK does its pulldown this way */
+		GtkWidget * pulldown_hbox = gtk_hbox_new(TRUE, 10);
+		gtk_box_pack_start(GTK_BOX(main_vbox), pulldown_hbox, FALSE, FALSE, 0);
+		gtk_widget_show(pulldown_hbox);
+
+		// pulldown label
+		GtkWidget * filetypes_label = gtk_label_new(pSS->getValue(XAP_STRING_ID_DLG_FOSA_FileTypeLabel));
+		gtk_label_set_justify(GTK_LABEL(filetypes_label), GTK_JUSTIFY_RIGHT);
+		gtk_misc_set_alignment(GTK_MISC(filetypes_label), 1.0, 0.5);
+		gtk_widget_show(filetypes_label);
+		gtk_box_pack_start(GTK_BOX(pulldown_hbox), filetypes_label, FALSE, TRUE, 0);
+		
+		// pulldown menu
+		GtkWidget * filetypes_pulldown = gtk_option_menu_new();
+		gtk_widget_show(filetypes_pulldown);
+		gtk_box_pack_end(GTK_BOX(pulldown_hbox), filetypes_pulldown, FALSE, TRUE, 0);
+
+		// put it in the right spot.  3 might not be the right spot
+		// in the future, near or far.  Oh well.
+		gtk_box_reorder_child(GTK_BOX(main_vbox), pulldown_hbox, 3);
+
+		// do filters
+		{
+			GtkWidget * menu = gtk_menu_new();
+			UT_ASSERT(menu);
+
+			GtkWidget * thismenuitem = NULL;
+			
+			const char * szDesc = NULL;
+			const char * szSuffixList = NULL;
+			UT_uint32 k = 0;
+
+			char buffer[1024];
+
+			// auto detect is always an option
+			g_snprintf(buffer, 1024, pSS->getValue(XAP_STRING_ID_DLG_FOSA_TypeAutoDetect));
+			thismenuitem = gtk_menu_item_new_with_label(buffer);
+			gtk_object_set_user_data(GTK_OBJECT(thismenuitem), (gpointer) "*");	// pattern is all files
+			gtk_widget_show(thismenuitem);
+			gtk_menu_append(GTK_MENU(menu), thismenuitem);
+
+			// add registered extras
+			while (IE_Imp::enumerateDlgLabels(k++,&szDesc,&szSuffixList))
+			{
+				g_snprintf(buffer, 1024, "%s", szDesc);
+				thismenuitem = gtk_menu_item_new_with_label(buffer);
+				gtk_object_set_user_data(GTK_OBJECT(thismenuitem), (gpointer) szSuffixList);
+				gtk_widget_show(thismenuitem);
+				gtk_menu_append(GTK_MENU(menu), thismenuitem);
+			}
+
+			gtk_widget_show(menu);
+			
+			// add menu to the option menu widget
+			gtk_option_menu_set_menu(GTK_OPTION_MENU(filetypes_pulldown), menu);
+		}
+	}
+	
+	// connect the signals for OK and CANCEL and the requisite clean-close signals
 	gtk_signal_connect_after(GTK_OBJECT(pFS),
 							 "destroy",
 							 NULL,
