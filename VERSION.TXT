@@ -1,9 +1,13 @@
 AbiWord:0.7.4
+
 $Date$
 $Id$
 ---------------------------------------------------------------------------
 ---------------------------------------------------------------------------
 $Log$
+Revision 1.2  1999/08/02 21:03:00  jeff
+CHECKPOINT FOR BUILD #0.7.4
+
 Revision 1.1  1999/07/30 16:37:32  jeff
 removed date and version number from the user/wp/readme file
 create a version.txt file in the abi directory.
