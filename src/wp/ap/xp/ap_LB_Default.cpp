@@ -60,14 +60,14 @@ struct _iMouse
 static struct _iMouse s_MouseTable[] =
 {
 //  {   button w/modifiers,     { click				doubleclick		drag			release		}},
-	{	EV_EMB_BUTTON1,			{ "singleClick",	"doubleClick",	"extSelToXY",	""			}},
-	{	EV_EMB_BUTTON1 _S,		{ "extSelToXY",		"",				"extSelToXY",	""			}},
-	{	EV_EMB_BUTTON1 _C,		{ "selectWord",		"",				"",				""			}},
-//	{	EV_EMB_BUTTON1 _A,		{ "",				"",				"",				""			}},
-//	{	EV_EMB_BUTTON1 _S _C,	{ "",				"",				"",				""			}},
-//	{	EV_EMB_BUTTON1 _S _A,	{ "",				"",				"",				""			}},
-//	{	EV_EMB_BUTTON1 _C _A,	{ "",				"",				"",				""			}},
-//	{	EV_EMB_BUTTON1 _S _C _A,{ "",				"",				"",				""			}},
+	{	EV_EMB_BUTTON1,			{ "singleClick",	"doubleClick",	"dragToXY",		"endDrag"	}},
+	{	EV_EMB_BUTTON1 _S,		{ "extSelToXY",		"",				"dragToXY",		"endDrag"	}},
+	{	EV_EMB_BUTTON1 _C,		{ "selectWord",		"",				"",				"endDrag"	}},
+	{	EV_EMB_BUTTON1 _A,		{ "",				"",				"",				"endDrag"	}},
+	{	EV_EMB_BUTTON1 _S _C,	{ "",				"",				"",				"endDrag"	}},
+	{	EV_EMB_BUTTON1 _S _A,	{ "",				"",				"",				"endDrag"	}},
+	{	EV_EMB_BUTTON1 _C _A,	{ "",				"",				"",				"endDrag"	}},
+	{	EV_EMB_BUTTON1 _S _C _A,{ "",				"",				"",				"endDrag"	}},
 
 // TODO fill in missing bindings for mouse-1
 // TODO add bindings for mouse-2, mouse-3, ...

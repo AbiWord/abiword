@@ -92,6 +92,8 @@ public:
 	static EV_EditMethod_Fn warpInsPtPrevLine;
 	static EV_EditMethod_Fn warpInsPtNextLine;
 
+	static EV_EditMethod_Fn dragToXY;
+	static EV_EditMethod_Fn endDrag;
 	static EV_EditMethod_Fn extSelToXY;
 	static EV_EditMethod_Fn extSelLeft;
 	static EV_EditMethod_Fn extSelRight;
@@ -242,6 +244,8 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(warpInsPtPrevLine),	_M_,	""),
 	EV_EditMethod(NF(warpInsPtNextLine),	_M_,	""),
 
+	EV_EditMethod(NF(dragToXY),				_M_,	""),
+	EV_EditMethod(NF(endDrag),				_M_,	""),
 	EV_EditMethod(NF(extSelToXY),			_M_,	""),
 	EV_EditMethod(NF(extSelLeft),			_M_,	""),
 	EV_EditMethod(NF(extSelRight),			_M_,	""),
@@ -1081,12 +1085,27 @@ Defun1(warpInsPtNextLine)
 	return UT_TRUE;
 }
 
+Defun(dragToXY)
+{
+	ABIWORD_VIEW;
+	pView->extSelToXY(pCallData->m_xPos, pCallData->m_yPos, UT_TRUE);
+	return UT_TRUE;
+}
+
+Defun(endDrag)
+{
+	ABIWORD_VIEW;
+	pView->endDrag(pCallData->m_xPos, pCallData->m_yPos);
+	return UT_TRUE;
+}
+
 Defun(extSelToXY)
 {
 	ABIWORD_VIEW;
-	pView->extSelToXY(pCallData->m_xPos, pCallData->m_yPos);
+	pView->extSelToXY(pCallData->m_xPos, pCallData->m_yPos, UT_FALSE);
 	return UT_TRUE;
 }
+
 Defun1(extSelLeft)
 {
 	ABIWORD_VIEW;

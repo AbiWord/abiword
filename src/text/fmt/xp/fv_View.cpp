@@ -25,6 +25,7 @@
 #include "ut_debugmsg.h"
 #include "ut_misc.h"
 #include "ut_string.h"
+#include "ut_timer.h"
 
 #include "xav_View.h"
 #include "fv_View.h"
@@ -76,6 +77,7 @@ FV_View::FV_View(void* pParentData, FL_DocLayout* pLayout)
 	m_bPointEOL = UT_FALSE;
 	m_bSelection = UT_FALSE;
 	m_bPointAP = UT_FALSE;
+	m_pAutoScrollTimer = NULL;
 
 	// initialize change cache
 	m_chg.bUndo = UT_FALSE;
@@ -95,6 +97,8 @@ FV_View::FV_View(void* pParentData, FL_DocLayout* pLayout)
 
 FV_View::~FV_View()
 {
+	DELETEP(m_pAutoScrollTimer);
+
 	FREEP(m_chg.propsChar);
 	FREEP(m_chg.propsBlock);
 }
@@ -1419,7 +1423,26 @@ void FV_View::extSelTo(FV_DocPos dp)
 	notifyListeners(AV_CHG_MOTION);
 }
 
-void FV_View::extSelToXY(UT_sint32 xPos, UT_sint32 yPos)
+#define AUTO_SCROLL_MSECS	100
+
+void FV_View::_autoScroll(UT_Timer * pTimer)
+{
+	UT_ASSERT(pTimer);
+
+	// this is a static callback method and does not have a 'this' pointer.
+
+	FV_View * pView = (FV_View *) pTimer->getInstanceData();
+	UT_ASSERT(pView);
+
+	// do the autoscroll
+	if (!pView->_ensureThatInsertionPointIsOnScreen())
+	{
+		pView->_fixInsertionPointCoords();
+//		pView->_drawInsertionPoint();
+	}
+}
+
+void FV_View::extSelToXY(UT_sint32 xPos, UT_sint32 yPos, UT_Bool bDrag)
 {
 	/*
 	  Figure out which page we clicked on.
@@ -1443,15 +1466,77 @@ void FV_View::extSelToXY(UT_sint32 xPos, UT_sint32 yPos)
 		pPage = pPage->getNext();
 	}
 
-	UT_ASSERT(pPage);
+	if (!pPage)
+	{
+		// we're below the last page
+		pPage = m_pLayout->getLastPage();
+
+		UT_sint32 iPageHeight = pPage->getHeight();
+		yClick += iPageHeight;
+	}
 
 	PT_DocPosition iNewPoint;
 	UT_Bool bBOL, bEOL;
 	pPage->mapXYToPosition(xPos + m_xScrollOffset, yClick, iNewPoint, bBOL, bEOL);
 
 	_extSelToPos(iNewPoint);
+
+	if (bDrag)
+	{
+		// figure out whether we're still on screen 
+		UT_Bool bOnScreen = UT_TRUE;
+
+		if ((xPos < 0 || xPos > m_iWindowWidth) || 
+			(yPos < 0 || yPos > m_iWindowHeight))
+			bOnScreen = UT_FALSE;
+		
+		// is autoscroll timer set properly?
+		if (bOnScreen) 
+		{
+			if (m_pAutoScrollTimer)
+			{
+				// timer not needed any more, so clear it
+				DELETEP(m_pAutoScrollTimer);
+				m_pAutoScrollTimer = NULL;
+			}
+		}
+		else
+		{
+			// offscreen ==> make sure it's set
+			if (!m_pAutoScrollTimer)
+			{
+				m_pAutoScrollTimer = UT_Timer::static_constructor(_autoScroll, this);
+
+				if (m_pAutoScrollTimer)
+					m_pAutoScrollTimer->set(AUTO_SCROLL_MSECS);
+			}
+		}
+	}
 	
 	notifyListeners(AV_CHG_MOTION);
+}
+
+void FV_View::endDrag(UT_sint32 xPos, UT_sint32 yPos)
+{
+	if (!m_pAutoScrollTimer)
+		return;
+
+	// figure out whether we're still on screen 
+	UT_Bool bOnScreen = UT_TRUE;
+
+	if ((xPos < 0 || xPos > m_iWindowWidth) || 
+		(yPos < 0 || yPos > m_iWindowHeight))
+		bOnScreen = UT_FALSE;
+	
+	if (!bOnScreen) 
+	{
+		// finish pending autoscroll
+		m_pAutoScrollTimer->fire();
+	}
+
+	// timer not needed any more, so clear it
+	DELETEP(m_pAutoScrollTimer);
+	m_pAutoScrollTimer = NULL;
 }
 
 void FV_View::_extSelToPos(PT_DocPosition iNewPoint)

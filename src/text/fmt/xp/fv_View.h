@@ -37,6 +37,7 @@ class fp_Page;
 class fp_Run;
 class PD_Document;
 class DG_Graphics;
+class UT_Timer;
 
 typedef enum _FVDocPos
 {
@@ -114,9 +115,10 @@ public:
 	void			moveInsPtTo(FV_DocPos dp);
 	void			warpInsPtNextPrevLine(UT_Bool bNext);
 	void			extSelHorizontal(UT_Bool bForward, UT_uint32 count);
-	void			extSelToXY(UT_sint32 xPos, UT_sint32 yPos);
+	void			extSelToXY(UT_sint32 xPos, UT_sint32 yPos, UT_Bool bDrag);
 	void			extSelTo(FV_DocPos dp);
 	void			extSelNextPrevLine(UT_Bool bNext);
+	void			endDrag(UT_sint32 xPos, UT_sint32 yPos);
 	
 #if defined(PT_TEST) || defined(FMT_TEST)
 	void			Test_Dump(void);
@@ -153,6 +155,8 @@ protected:
 	void				_swapSelectionOrientation(void);
 	void				_extSelToPos(PT_DocPosition pos);
 
+	static void			_autoScroll(UT_Timer * pTimer);
+
 	// localize handling of insertion point logic
 	UT_uint32			_getPoint(void);
 	void				_setPoint(UT_uint32 pt, UT_Bool bEOL = UT_FALSE);
@@ -180,6 +184,7 @@ protected:
 
 	PT_DocPosition		m_iSelectionAnchor;
 	UT_Bool				m_bSelection;
+	UT_Timer *			m_pAutoScrollTimer;
 
 	fv_ChangeState		m_chg;
 };
