@@ -117,7 +117,7 @@ void ISpellChecker::ignoreWord (const UT_UCSChar *pWord, size_t len)
 	key[len] = 0;
 	copy[len] = 0;
 
-	if (!isIgnore(pWord, len))
+	if (!isIgnored(pWord, len))
 	{
 		// If it's already on the ignored word list, don't add it again.
 		// This can happen if you are looking at a longish document.  You
@@ -158,7 +158,7 @@ bool ISpellChecker::isIgnored(const UT_UCSChar * pWord, UT_uint32 len) const
 		return false;  
 }
 
-bool ISpellChecker::clearIgnores()
+void ISpellChecker::clearIgnores()
 {
 	UT_ASSERT(m_pIgnoreList);
 
@@ -178,8 +178,6 @@ bool ISpellChecker::clearIgnores()
    
 	m_pIgnoreList = new UT_StringPtrMap(11);
 	UT_ASSERT(m_pIgnoreList);
-   
-	return true;
 }
 
 ISpellChecker::ISpellChecker()
@@ -255,7 +253,7 @@ ISpellChecker::~ISpellChecker()
 		UT_iconv_close(m_translate_out);
 	m_translate_out = UT_ICONV_INVALID;
 
-	clearIgnores()
+	clearIgnores();
 	DELETEP(m_pIgnoreList);
 }
 
