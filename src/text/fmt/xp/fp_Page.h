@@ -81,6 +81,8 @@ public:
 	bool				insertColumnLeader(fp_Column* pLeader, fp_Column* pAfter);
 	void				removeColumnLeader(fp_Column* pLeader);
 	bool				isEmpty(void) const;
+	void                            removeHeader(void);
+	void                            removeFooter(void);
         fp_HdrFtrContainer*             getHeaderP(void) const { return m_pHeader;}
         fp_HdrFtrContainer*             getFooterP(void) const { return m_pFooter;}
 	fp_HdrFtrContainer*	getHeaderContainer(fl_HdrFtrSectionLayout*);

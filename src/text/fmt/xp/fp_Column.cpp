@@ -687,7 +687,6 @@ fp_HdrFtrContainer::fp_HdrFtrContainer(UT_sint32 iX,
 
 fp_HdrFtrContainer::~fp_HdrFtrContainer()
 {
-
 }
 
 void fp_HdrFtrContainer::layout(void)
@@ -707,6 +706,8 @@ void fp_HdrFtrContainer::layout(void)
 		pLine->setY(iY);
 		iY += iLineHeight;
 		iY += iLineMarginAfter;
+		if(iY >= m_iHeight)
+		        break;
 	}
 
 	// note that the height of a HdrFtr container never changes.
@@ -718,5 +719,41 @@ fl_HdrFtrSectionLayout* fp_HdrFtrContainer::getHdrFtrSectionLayout(void) const
 	UT_ASSERT(m_pSectionLayout->getType() == FL_SECTION_HDRFTR);
 
 	return (fl_HdrFtrSectionLayout*) m_pSectionLayout;
+}
+
+
+/*!
+  Clear container content from screen.
+*/
+
+void fp_HdrFtrContainer::clearScreen(void)
+{
+	int count = m_vecLines.getItemCount();
+	for (int i = 0; i<count; i++)
+	{
+		fp_Line* pLine = (fp_Line*) m_vecLines.getNthItem(i);
+
+		pLine->clearScreen();
+	}
+}
+
+
+/*!
+ Draw container content
+ \param pDA Draw arguments
+ */
+void fp_HdrFtrContainer::draw(dg_DrawArgs* pDA)
+{
+	int count = m_vecLines.getItemCount();
+	for (int i = 0; i<count; i++)
+	{
+		fp_Line* pLine = (fp_Line*) m_vecLines.getNthItem(i);
+
+		dg_DrawArgs da = *pDA;
+		da.xoff += pLine->getX();
+		da.yoff += pLine->getY();
+		pLine->draw(&da);
+	}
+
 }
 

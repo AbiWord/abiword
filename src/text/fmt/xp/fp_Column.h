@@ -256,8 +256,11 @@ public:
 	~fp_HdrFtrContainer();
 
 	fl_HdrFtrSectionLayout*	getHdrFtrSectionLayout(void) const;
-	
+
+	void				draw(dg_DrawArgs*);
 	void				layout(void);
+	void				clearScreen(void);
+	inline UT_sint32	        getY(void) const { return m_iY; }
 	
 protected:
 

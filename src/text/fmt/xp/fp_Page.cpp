@@ -271,6 +271,7 @@ void fp_Page::_reformat(void)
 	UT_sint32 iTopMargin = pFirstSectionLayout->getTopMargin();
 	UT_sint32 iBottomMargin = pFirstSectionLayout->getBottomMargin();
 
+
 	UT_sint32 iLeftMarginLayoutUnits = pFirstSectionLayout->getLeftMarginInLayoutUnits();
 	UT_sint32 iRightMarginLayoutUnits = pFirstSectionLayout->getRightMarginInLayoutUnits();
 	UT_sint32 iTopMarginLayoutUnits = pFirstSectionLayout->getTopMarginInLayoutUnits();
@@ -519,6 +520,23 @@ const fp_PageSize&	fp_Page::getPageSize(void) const
 	return m_pageSize;
 }
 
+void fp_Page::removeHeader(void)
+{
+        if(m_pHeader == NULL)
+	        return;
+	delete m_pHeader;
+	m_pHeader = NULL;
+}
+
+
+void fp_Page::removeFooter(void)
+{
+        if(m_pFooter == NULL)
+	        return;
+	delete m_pFooter;
+	m_pFooter = NULL;
+}
+
 fp_HdrFtrContainer* fp_Page::getHeaderContainer(fl_HdrFtrSectionLayout* pHFSL)
 {
 	if (m_pHeader)
@@ -526,13 +544,16 @@ fp_HdrFtrContainer* fp_Page::getHeaderContainer(fl_HdrFtrSectionLayout* pHFSL)
 		return m_pHeader;
 	}
 
-	// TODO fix these coordinates
+	// TODO fix these coordinates - Done!
+	//
+	// headerMargin is the height from the top of the page.
+	//
 	m_pHeader = new fp_HdrFtrContainer(m_pOwner->getLeftMargin(),
-									   0,
+					  m_pOwner->getHeaderMargin(),
 									   getWidth() - (m_pOwner->getLeftMargin() + m_pOwner->getRightMargin()),
-									   m_pOwner->getTopMargin(),
+									   m_pOwner->getTopMargin() - m_pOwner->getHeaderMargin(),
 									   getWidthInLayoutUnits() - (m_pOwner->getLeftMarginInLayoutUnits() + m_pOwner->getRightMarginInLayoutUnits()),
-									   m_pOwner->getTopMarginInLayoutUnits(),
+									   m_pOwner->getTopMarginInLayoutUnits() - m_pOwner->getHeaderMarginInLayoutUnits(),
 									   pHFSL);
 	// TODO outofmem
 
@@ -548,13 +569,17 @@ fp_HdrFtrContainer* fp_Page::getFooterContainer(fl_HdrFtrSectionLayout* pHFSL)
 		return m_pFooter;
 	}
 
-	// TODO fix these coordinates
+	// TODO fix these coordinates -Done !
+	//
+	// footerMargin is the distance from the bottom of the text to the
+	// top of the footer
+	//
 	m_pFooter = new fp_HdrFtrContainer(m_pOwner->getLeftMargin(),
-									   getHeight() - m_pOwner->getBottomMargin(),
+									   getHeight() - m_pOwner->getBottomMargin() + m_pOwner->getFooterMargin(),
 									   getWidth() - (m_pOwner->getLeftMargin() + m_pOwner->getRightMargin()),
 									   m_pOwner->getBottomMargin(),
 									   getWidthInLayoutUnits() - (m_pOwner->getLeftMarginInLayoutUnits() + m_pOwner->getRightMarginInLayoutUnits()),
-									   m_pOwner->getBottomMarginInLayoutUnits(),
+									   m_pOwner->getBottomMarginInLayoutUnits() - m_pOwner->getFooterMarginInLayoutUnits(),
 									   pHFSL);
 	// TODO outofmem
 

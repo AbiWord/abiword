@@ -2369,6 +2369,8 @@ bool FV_View::getSectionFormat(const XML_Char ***pProps)
 	v.addItem(new _fmtPair((XML_Char*)"page-margin-top",NULL,pBlockAP,pSectionAP,m_pDoc,false));
 	v.addItem(new _fmtPair((XML_Char*)"page-margin-right",NULL,pBlockAP,pSectionAP,m_pDoc,false));
 	v.addItem(new _fmtPair((XML_Char*)"page-margin-bottom",NULL,pBlockAP,pSectionAP,m_pDoc,false));
+	v.addItem(new _fmtPair((XML_Char*)"page-margin-footer",NULL,pBlockAP,pSectionAP,m_pDoc,false));
+	v.addItem(new _fmtPair((XML_Char*)"page-margin-header",NULL,pBlockAP,pSectionAP,m_pDoc,false));
 
 	// 2. prune 'em as they vary across selection
 	if (!isSelectionEmpty())

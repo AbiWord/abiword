@@ -270,7 +270,9 @@ public:
         void                                    changeStrux( fl_DocSectionLayout * pSL);
 	void						addPage(fp_Page*);
 	void						deletePage(fp_Page*);
-	
+	void                            clearScreen(void);
+	void                            collapse(void);
+
 	virtual bool bl_doclistener_populateSpan(fl_BlockLayout*, const PX_ChangeRecord_Span * pcrs, PT_BlockOffset blockOffset, UT_uint32 len);
 	virtual bool bl_doclistener_populateObject(fl_BlockLayout*, PT_BlockOffset blockOffset, const PX_ChangeRecord_Object * pcro);
 	virtual bool bl_doclistener_insertSpan(fl_BlockLayout*, const PX_ChangeRecord_Span * pcrs);
@@ -321,7 +323,7 @@ public:
 	fl_BlockLayout *                findMatchingBlock(fl_BlockLayout * pBL);
 	virtual void				format(void);
 	virtual void				updateLayout(void);
-
+        void                                    clearScreen(void);
 	virtual void				redrawUpdate(void);
 	
 	virtual fp_Container*		getNewContainer();

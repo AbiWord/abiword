@@ -692,6 +692,13 @@ bool fl_DocSectionLayout::doclistener_changeStrux(const PX_ChangeRecord_StruxCha
 
 		pCol = pCol->getNext();
 	}
+	//
+	// Clear the header/footers too
+	//
+	if(m_pHeaderSL)
+	        m_pHeaderSL->clearScreen();
+	if(m_pFooterSL)
+	        m_pFooterSL->clearScreen();
 
 	// remove all the columns from their pages
 	pCol = m_pFirstColumn;
@@ -724,6 +731,13 @@ bool fl_DocSectionLayout::doclistener_changeStrux(const PX_ChangeRecord_StruxCha
 
 		pCol = pNext;
 	}
+	//
+	// Clear the header/footers too
+	///  /
+  	if(m_pHeaderSL)
+  	        m_pHeaderSL->collapse();
+  	if(m_pFooterSL)
+  	        m_pFooterSL->collapse();
 
 	m_pFirstColumn = NULL;
 	m_pLastColumn = NULL;
@@ -871,7 +885,6 @@ void fl_DocSectionLayout::_lookupProperties(void)
 		m_iLeftMargin = m_pLayout->getGraphics()->convertDimension(pszLeftMargin);
 		m_iLeftMarginLayoutUnits = UT_convertToLayoutUnits(pszLeftMargin);
 		m_dLeftMarginUserUnits = UT_convertDimensionless(pszLeftMargin);
-		UT_DEBUGMSG(("SEVIOR leftmargin = %s \n",pszLeftMargin));
 	}
 	else
 	{
@@ -885,7 +898,6 @@ void fl_DocSectionLayout::_lookupProperties(void)
 		m_iTopMargin = m_pLayout->getGraphics()->convertDimension(pszTopMargin);
 		m_iTopMarginLayoutUnits = UT_convertToLayoutUnits(pszTopMargin);
 		m_dTopMarginUserUnits = UT_convertDimensionless(pszTopMargin);
-		UT_DEBUGMSG(("SEVIOR topmargin = %s \n",pszTopMargin));
 	}
 	else
 	{
@@ -899,7 +911,6 @@ void fl_DocSectionLayout::_lookupProperties(void)
 		m_iRightMargin = m_pLayout->getGraphics()->convertDimension(pszRightMargin);
 		m_iRightMarginLayoutUnits = UT_convertToLayoutUnits(pszRightMargin);
 		m_dRightMarginUserUnits = UT_convertDimensionless(pszRightMargin);
-		UT_DEBUGMSG(("SEVIOR rightmargin = %s \n",pszRightMargin));
 	}
 	else
 	{
@@ -913,7 +924,6 @@ void fl_DocSectionLayout::_lookupProperties(void)
 		m_iBottomMargin = m_pLayout->getGraphics()->convertDimension(pszBottomMargin);
 		m_iBottomMarginLayoutUnits = UT_convertToLayoutUnits(pszBottomMargin);
 		m_dBottomMarginUserUnits = UT_convertDimensionless(pszBottomMargin);
-		UT_DEBUGMSG(("SEVIOR bottommargin = %s \n",pszBottomMargin));
 	}
 	else
 	{
@@ -934,7 +944,6 @@ void fl_DocSectionLayout::_lookupProperties(void)
 		m_iFooterMarginLayoutUnits = UT_convertToLayoutUnits("0.0in");
 		m_dFooterMarginUserUnits = UT_convertDimensionless("0.0in");
 	}
-	
 
 	if(pszHeaderMargin && pszHeaderMargin[0])
 	{
@@ -1502,6 +1511,28 @@ fl_HdrFtrSectionLayout::~fl_HdrFtrSectionLayout()
 	UT_VECTOR_PURGEALL(struct _PageHdrFtrShadowPair*, m_vecPages);
 }
 
+
+void fl_HdrFtrSectionLayout::collapse(void)
+{
+	UT_uint32 iCount = m_vecPages.getItemCount();
+	for (UT_uint32 i=0; i<iCount; i++)
+	{
+		struct _PageHdrFtrShadowPair* pPair = (struct _PageHdrFtrShadowPair*) m_vecPages.getNthItem(i);
+		fp_Page * ppPage = pPair->pPage;
+		delete pPair->pShadow;
+	        if (getHFType() == FL_HDRFTR_HEADER)
+		{
+		       ppPage->removeHeader();
+		}
+		else 
+		{
+		       ppPage->removeFooter();
+		}
+		delete pPair;
+		m_vecPages.deleteNthItem(i);
+	}
+}
+
 bool fl_HdrFtrSectionLayout::recalculateFields(void)
 {
 	bool bResult = false;
@@ -1630,29 +1661,9 @@ void fl_HdrFtrSectionLayout::changeStrux( fl_DocSectionLayout * pSL)
 
 	m_pLayout->removeSection(pSL);
 	DELETEP(pSL); // Old Section layout is totally gone
-
-	// OK now add all the pages this header/footer is associated with
-	// We have to extract this information from m_pDocSL
-	// Loop through all the columns in m_pDocSl and find the pages owned
-	// by m_pDocSL
 	//
-
-	pCol = (fp_Column *) m_pDocSL->getFirstContainer();
-	fp_Page * pOldPage = NULL;
-	fp_Page * pNewPage = NULL;
-	while(pCol)
-	{
-	       pNewPage = pCol->getPage();
-	       if(pNewPage != NULL && pNewPage != pOldPage)
-	       {
-		      fl_DocSectionLayout* pDocSec = pNewPage->getOwningSection();
-		      if(pDocSec == m_pDocSL && _findShadow(pNewPage) < 0)
-		      {
-			      addPage(pNewPage);
-		      }
-	       }
-	       pCol = pCol->getNext();
-	}
+	// Create and Format the shadows
+	//
 	format();
 
 	// OK set the insertion point at the beginning of the last block
@@ -1698,7 +1709,7 @@ void fl_HdrFtrSectionLayout::deletePage(fp_Page* pPage)
 {
 	UT_sint32 iShadow = _findShadow(pPage);
 	UT_ASSERT(iShadow >= 0);
-	if(iShadow == 0)
+	if(iShadow <= 0)
 	        return;
 	struct _PageHdrFtrShadowPair* pPair = (struct _PageHdrFtrShadowPair*) m_vecPages.getNthItem(iShadow);
 	UT_ASSERT(pPair);
@@ -1718,6 +1729,36 @@ void fl_HdrFtrSectionLayout::format(void)
   // have no containers for lines.
   // 
 	UT_uint32 iCount = m_vecPages.getItemCount();
+	//
+	// See if this hdrFtr section has any pages, if not add them
+	//
+	if(iCount == 0)
+	{
+	  // OK now add all the pages this header/footer is associated with
+	  // We have to extract this information from m_pDocSL
+	  // Loop through all the columns in m_pDocSl and find the pages owned
+	  // by m_pDocSL
+	  //
+
+	       fp_Column * pCol = (fp_Column *) m_pDocSL->getFirstContainer();
+	       fp_Page * pOldPage = NULL;
+	       fp_Page * pNewPage = NULL;
+	       while(pCol)
+	       {
+	              pNewPage = pCol->getPage();
+		      if(pNewPage != NULL && pNewPage != pOldPage)
+		      {
+		              fl_DocSectionLayout* pDocSec = pNewPage->getOwningSection();
+			      if(pDocSec == m_pDocSL && _findShadow(pNewPage) < 0)
+			      {
+			               addPage(pNewPage);
+			      }
+		      }
+		      pCol = pCol->getNext();
+	       }
+	       iCount = m_vecPages.getItemCount();
+	}
+	
 	for (UT_uint32 i=0; i<iCount; i++)
 	{
 		struct _PageHdrFtrShadowPair* pPair = (struct _PageHdrFtrShadowPair*) m_vecPages.getNthItem(i);
@@ -1737,6 +1778,21 @@ void fl_HdrFtrSectionLayout::updateLayout(void)
 		struct _PageHdrFtrShadowPair* pPair = (struct _PageHdrFtrShadowPair*) m_vecPages.getNthItem(i);
 
 		pPair->pShadow->updateLayout();
+	}
+}
+
+
+void fl_HdrFtrSectionLayout::clearScreen(void)
+{
+  //
+  // update Just the  blocks in the shadowlayouts
+  //
+  	UT_uint32 iCount = m_vecPages.getItemCount();
+	for (UT_uint32 i=0; i<iCount; i++)
+	{
+		struct _PageHdrFtrShadowPair* pPair = (struct _PageHdrFtrShadowPair*) m_vecPages.getNthItem(i);
+
+		pPair->pShadow->clearScreen();
 	}
 }
 
@@ -2073,7 +2129,14 @@ fl_HdrFtrShadow::fl_HdrFtrShadow(FL_DocLayout* pLayout, fp_Page* pPage, fl_HdrFt
 {
 	m_pHdrFtrSL = pHdrFtrSL;
 	m_pPage = pPage;
-	m_pContainer = NULL;
+	if (m_pHdrFtrSL->getHFType() == FL_HDRFTR_HEADER)
+	{
+		m_pContainer = m_pPage->getHeaderContainer(m_pHdrFtrSL);
+	}
+	else if (m_pHdrFtrSL->getHFType() == FL_HDRFTR_FOOTER)
+	{
+	        m_pContainer =  m_pPage->getFooterContainer(m_pHdrFtrSL);
+	}
 }
 
 fl_HdrFtrShadow::~fl_HdrFtrShadow()
@@ -2147,6 +2210,14 @@ void fl_HdrFtrShadow::updateLayout(void)
 		
 		pBL = pBL->getNext();
 	}
+}
+
+
+void fl_HdrFtrShadow::clearScreen(void)
+{
+        UT_ASSERT(m_pContainer);
+        if(m_pContainer)
+                m_pContainer->clearScreen();
 }
 
 void fl_HdrFtrShadow::redrawUpdate(void)
