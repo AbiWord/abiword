@@ -2,9 +2,16 @@
 #ifndef UT_ENDIAN_H
 #define UT_ENDIAN_H
 
-#ifdef __hpux
+#if defined(__hpux)
 
-#elif __FreeBSD__
+#elif defined(__QNXNTO__)
+	#include <sys/platform.h>
+	#if defined(__LITTLENDIAN__)
+		#define UT_LITTLE_ENDIAN
+	#else
+		#define UT_BIG_ENDIAN
+	#endif
+#elif defined(__FreeBSD__)
 	#include <machine/endian.h>
 	#if __BYTE_ORDER == __LITTLE_ENDIAN		
 		#define UT_LITTLE_ENDIAN
