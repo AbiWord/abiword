@@ -29,7 +29,7 @@
 
 fl_Layout::fl_Layout(PTStruxType type, PL_StruxDocHandle sdh)
 {
-	UT_ASSERT(sdh);
+  //UT_ASSERT(sdh); Sevior this assert screws up my fake fl_layout code
 
 	m_type = type;
 	m_sdh = sdh;

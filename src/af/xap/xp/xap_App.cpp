@@ -20,6 +20,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <signal.h>
+#include <time.h>
 
 #include "ut_types.h"
 #include "ut_assert.h"
@@ -112,7 +113,11 @@ UT_Bool XAP_App::initialize(void)
 
 	// TODO use m_pArgs->{argc,argv} to process any command-line
 	// TODO options that we need.
-
+	//
+	// Need to initialize the random number generator. 
+	//
+	UT_uint32 t = (UT_uint32) time( NULL);
+	srand(t);
 	return UT_TRUE;
 }
 

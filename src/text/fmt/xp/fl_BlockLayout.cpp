@@ -71,7 +71,16 @@ static const XML_Char * xml_Lists[] = { XML_NUMBERED_LIST,
 			   XML_UPPERROMAN_LIST,
 			   XML_LOWERROMAN_LIST,
 			   XML_BULLETED_LIST,
-			   XML_DASHED_LIST };
+			   XML_DASHED_LIST,
+			   XML_SQUARE_LIST,
+			   XML_TRIANGLE_LIST,
+			   XML_DIAMOND_LIST,
+			   XML_STAR_LIST,
+			   XML_IMPLIES_LIST,
+			   XML_TICK_LIST,
+			   XML_BOX_LIST,
+			   XML_HAND_LIST,
+			   XML_HEART_LIST };
 
 
 static const char     * fmt_Lists[] = { fmt_NUMBERED_LIST, 
@@ -458,7 +467,7 @@ void fl_BlockLayout::_lookupProperties(void)
 
 	fl_BlockLayout * prevBlockInList = NULL;
 	fl_BlockLayout * nextBlockInList = NULL;
-	if(getAutoNum() != NULL)
+	if(id !=0 && getAutoNum() != NULL)
 	{
 		// This block has a list item.
 
@@ -497,7 +506,7 @@ void fl_BlockLayout::_lookupProperties(void)
 			}
 		}
 	}
-	
+
 	// Get the last list level.
 
 	if (prevBlockInList != NULL)
@@ -512,7 +521,6 @@ void fl_BlockLayout::_lookupProperties(void)
 	{
 		last_level = 0;
 	}
-
 
 	//
 	// OK finally the business end of the set up. Put in autonum stuff, stat/stop lists etc
@@ -543,7 +551,7 @@ void fl_BlockLayout::_lookupProperties(void)
 			}
 			while (curr_level < level)
 			{
-			  UT_DEBUGMSG(("SEVIOR: Calling _startlist, level, curr_level, last_level  \n",level,curr_level,last_level));
+			  UT_DEBUGMSG(("SEVIOR: Calling _startlist, level, curr_level, last_level  %d %d %d \n",level,curr_level,last_level));
 				_startList(id);
 				curr_level++;
 			}
@@ -4198,6 +4206,22 @@ XML_Char* fl_BlockLayout::getListStyleString( List_Type iListType)
 	return style;
 }
 
+List_Type fl_BlockLayout::getListTypeFromStyle( const XML_Char* style)
+{
+        List_Type lType = NOT_A_LIST;
+	UT_uint32 j;
+	UT_uint32 size_xml_lists = sizeof(xml_Lists)/sizeof(xml_Lists[0]);
+	for(j=0; j < size_xml_lists; j++)
+	{
+	      if( UT_XML_strcmp(style,xml_Lists[j])==0)
+		     break;
+	}
+	if(j < size_xml_lists)
+	      lType = (List_Type) j;
+        return lType;
+}
+
+
 char *  fl_BlockLayout::getFormatFromListType( List_Type iListType)
 {
         UT_uint32 nlisttype = (UT_uint32) iListType;
@@ -4212,7 +4236,7 @@ List_Type fl_BlockLayout::decodeListType(char * listformat)
 {
         List_Type iType = NOT_A_LIST;
 	UT_uint32 j;
-	UT_uint32 size_fmt_lists = sizeof(fmt_Lists);
+	UT_uint32 size_fmt_lists = sizeof(fmt_Lists)/sizeof(fmt_Lists[0]);
 	for(j=0; j < size_fmt_lists; j++)
 	{
 	      if( strstr(listformat,fmt_Lists[j])!=NULL)
@@ -4231,18 +4255,27 @@ List_Type fl_BlockLayout::getListType(void)
 	}
 	else
 	{
-	      return decodeListType(getAutoNum()->getType());
+	      return getAutoNum()->getType();
 	}
 }
 
 void fl_BlockLayout::_startList(UT_uint32 id)
 {
-	const XML_Char * format = getProperty((XML_Char*)"format",UT_TRUE);
+	const XML_Char * style = NULL;
+	const PP_AttrProp * pBlockAP = NULL;
+	getAttrProp(&pBlockAP);
+	pBlockAP->getAttribute(PT_STYLE_ATTRIBUTE_NAME,style);
 	UT_uint32 start = atoi(getProperty((XML_Char*)"start-value",UT_TRUE));
-	m_pAutoNum = new fl_AutoNum(id, start, format, this,  m_pAutoNum);
+        const XML_Char * lDelim =  getProperty((XML_Char*)"list-delim",UT_TRUE);
+        const XML_Char * lDecimal =  getProperty((XML_Char*)"list-decimal",UT_TRUE);
+	List_Type lType = getListTypeFromStyle( style);
+	UT_DEBUGMSG(("SEVIOR: Starting List with style = %s listype = %d start value = %d Delimeter value = %s \n",style,lType,start,lDelim));
+
+	m_pAutoNum = new fl_AutoNum(id, start, this,  m_pAutoNum,lDelim,lDecimal, lType);
 	m_bListItem = UT_TRUE;
 	m_bStartList = UT_TRUE;
 }
+
 
 void fl_BlockLayout::_stopList()
 {
@@ -4255,15 +4288,15 @@ void fl_BlockLayout::_stopList()
 	//	UT_sint32 loc = m_pAutoNum->getPositionInList(this);
 
 	m_pAutoNum->removeItem(this);
-	if (m_pAutoNum->getParent() != NULL)
-	{
-		pAutoNum = m_pAutoNum->getParent();
-		if (pAutoNum->isItem(this) == UT_FALSE)
-		{
-			pAutoNum->insertItem(this, m_pAutoNum->getFirstItem());
-		}
-	}
-	else
+	//	if (m_pAutoNum->getParent() != NULL)
+	//{
+	//	pAutoNum = m_pAutoNum->getParent();
+	//	if (pAutoNum->isItem(this) == UT_FALSE)
+	//	{
+	//		pAutoNum->insertItem(this, m_pAutoNum->getFirstItem());
+	//	}
+	//}
+	//else
 	{
 		if (m_bListLabelCreated)
 			_deleteListLabel();
@@ -4292,6 +4325,7 @@ void fl_BlockLayout::remItemFromList(void)
 	XML_Char lid[15], buf[5];
 	UT_uint32 id;
 	UT_Bool bRet;
+	UT_Vector vp;
         if( m_bListLabelCreated == UT_TRUE)
         {
 	        m_bListLabelCreated = UT_FALSE;
@@ -4302,27 +4336,64 @@ void fl_BlockLayout::remItemFromList(void)
 
 		UT_uint32 currLevel = getLevel();
 		UT_ASSERT(currLevel > 0);
-		currLevel--;
+		currLevel = 0; // was currLevel--;
 		sprintf(buf, "%i", currLevel);
 		setStopping(UT_FALSE);
 		pView->_eraseInsertionPoint();
-		format();
+		fl_BlockLayout * pNext = getNext();
 		if (currLevel == 0)
 		{
-		       id = 0;
-		       sprintf(lid, "%i", id);
-		       const XML_Char * attribs[] = { 	"listid", lid,
-						"level", buf,"style","Normal", 0 };
-		       bRet = m_pDoc->changeStruxFmt(PTC_AddFmt, getPosition(), getPosition(), attribs, NULL, PTX_Block);
+		        id = 0;
+		}
+		else
+		{
+		        id = getAutoNum()->getParent()->getID();
+			pNext = getPreviousList( id);
+		}
+		sprintf(lid, "%i", id);
+
+		setStopping(UT_FALSE);
+		pView->_eraseInsertionPoint();
+		format();
+		//
+		// Set formatiing to match the next paragraph if it exists
+		//
+		const XML_Char ** props = NULL;
+	
+		if(pNext != NULL)
+		{
+	               pNext->getListPropertyVector( &vp);
+		       UT_uint32 countp = vp.getItemCount() + 1;
+		       UT_uint32 i;
+		       props = (const XML_Char **) calloc(countp, sizeof(XML_Char *));
+		       for(i=0; i<vp.getItemCount();i++)
+		       {
+		               if( i > 0 && 
+				   UT_XML_strcmp(props[i-1], 
+						 (XML_Char *) "text-indent")==0)
+			       {
+				        props[i] = (XML_Char *) "0.0000in";
+			       }
+			       else
+			       {
+			                props[i] = (XML_Char *) vp.getNthItem(i);
+			       }
+		       }
+		       props[i] = (XML_Char *) NULL;
+	  
+		}
+		if (currLevel == 0)
+		{
+	               const XML_Char * attribs[] = { 	"listid", lid,
+							"level", buf,"style","Normal", 0 };
+		       bRet = m_pDoc->changeStruxFmt(PTC_AddFmt, getPosition(), getPosition(), attribs, props, PTX_Block);
 		       m_bListItem = UT_FALSE;
 		}
 		else
 		{
-		       id = getAutoNum()->getParent()->getID();
-		       sprintf(lid, "%i", id);
-		       const XML_Char * attribs[] = { 	"listid", lid,
-						"level", buf, 0 };
-		       bRet = m_pDoc->changeStruxFmt(PTC_AddFmt, getPosition(), getPosition(), attribs, NULL, PTX_Block);
+	               const XML_Char * attribs[] = { 	"listid", lid,
+							"level", buf,0 };
+		       bRet = m_pDoc->changeStruxFmt(PTC_AddFmt,getPosition(), getPosition(), attribs, props, PTX_Block);
 		       listUpdate();
 		}
        		//format();
@@ -4332,39 +4403,197 @@ void fl_BlockLayout::remItemFromList(void)
 		pView->_fixInsertionPointCoords();
 		pView->_generalUpdate();
 		pView->_drawInsertionPoint();
+		DELETEP(props);
+
 	}
 }
 
 void    fl_BlockLayout::StartList( const XML_Char * style)
 {
   //
-  // Starts a new list at the current block
+  // Starts a new list at the current block with style style all other 
+  // attributes and properties are the default values
   //
-	XML_Char lid[15], buf[5];
+	List_Type lType;
+	const XML_Char * lDelim = "%L";
+	const XML_Char font[30],lDecimal[10];
+	UT_uint32 level = 1;
+	UT_uint32 startv = 1;
+	float fAlign = 0.25;
+	float fIndent = -0.25;
+	lType = getListTypeFromStyle(style);
+	if(lType < BULLETED_LIST)
+	{   
+               UT_XML_strncpy((XML_Char *) font,30,(const XML_Char *) "NULL");
+               UT_XML_strncpy((XML_Char *) lDecimal, 20, (const XML_Char *) ".");
+       }
+       else
+       {
+               UT_XML_strncpy((XML_Char *)font,20,(const XML_Char *) "NULL");
+               UT_XML_strncpy((XML_Char *)lDecimal, 10, (const XML_Char *) "NULL");
+       }	       
+       if(lType == BULLETED_LIST)
+       {
+               UT_XML_strncpy((XML_Char *)font,30, (const XML_Char *)"Symbol");
+       }
+       StartList( lType, startv,lDelim, lDecimal, font, fAlign, fIndent,level);
+}
+
+void    fl_BlockLayout::getListAttributesVector( UT_Vector * va)
+{
+  //
+  // This function fills the vector va with list attributes
+  //
+        UT_uint32 count=0;
+	const XML_Char * style = NULL;
+	const XML_Char * lid = NULL;
+	const XML_Char * buf = NULL;
+
+	const PP_AttrProp * pBlockAP = NULL;
+	getAttrProp(&pBlockAP);
+	pBlockAP->getAttribute(PT_STYLE_ATTRIBUTE_NAME,style);
+	pBlockAP->getAttribute("listid",lid);
+	pBlockAP->getAttribute("level",buf);
+	if(lid != NULL)
+	{
+	        va->addItem( (void *) "listid");  va->addItem( (void *) lid);
+		count++;
+	}
+	if(buf != NULL)
+	{
+	        va->addItem( (void *) "level");	va->addItem( (void *) buf);
+		count++;
+	}
+	if(style != NULL)
+	{
+	        va->addItem( (void *) "style");	va->addItem( (void *) style);
+		count++;
+	}
+	if(count == 0)
+	{
+	      va->addItem( NULL);
+	}
+}
+
+
+void    fl_BlockLayout::getListPropertyVector( UT_Vector * vp)
+{
+  //
+  // This function fills the vector vp with list properties. All vector 
+  // quantities are const XML_Char *
+  //
+        UT_uint32 count=0;
+	const XML_Char * pszStart = getProperty((XML_Char*)"start-value",UT_TRUE);
+        const XML_Char * lDelim =  getProperty((XML_Char*)"list-delim",UT_TRUE);
+        const XML_Char * lDecimal =  getProperty((XML_Char*)"list-decimal",UT_TRUE);
+        const XML_Char * pszAlign =  getProperty((XML_Char*)"margin-left",UT_TRUE);
+        const XML_Char * pszIndent =  getProperty((XML_Char*)"text-indent",UT_TRUE);
+        const XML_Char * fFont =  getProperty((XML_Char*)"field-font",UT_TRUE);
+	if(pszStart != NULL)
+	{
+	       vp->addItem( (void *) "start-value");	vp->addItem( (void *) pszStart);
+	}
+	if(pszAlign != NULL)
+	{
+	      vp->addItem( (void *) "margin-left");	vp->addItem( (void *) pszAlign);
+	      count++;
+	}
+	if(pszIndent != NULL)
+	{    
+	      vp->addItem( (void *) "text-indent");	vp->addItem( (void *) pszIndent);
+	      count++;
+	}
+	if(lDelim != NULL)
+	{
+	      vp->addItem( (void *) "list-delim"); vp->addItem( (void *) lDelim);
+	      count++;
+	}
+	if(lDecimal != NULL) 
+	{
+	      vp->addItem( (void *) "list-decimal"); vp->addItem( (void *) lDecimal);
+	      count++;
+	}
+	if(fFont != NULL)
+	{
+	      vp->addItem( (void *) "field-font"); vp->addItem( (void *) fFont);
+	      count++;
+	}
+	if(count == 0)
+	{
+	      vp->addItem( NULL);
+	}
+}
+
+
+void    fl_BlockLayout::StartList( List_Type lType, UT_uint32 start,const XML_Char * lDelim, const XML_Char * lDecimal, const XML_Char * fFont, float Align, float indent, UT_uint32 curlevel )
+{
+  //
+  // Starts a new list at the current block with all the options
+  //
+	XML_Char lid[15], buf[5],pszStart[15], pszAlign[20],pszIndent[20];
+	XML_Char * style = getListStyleString(lType);
 	UT_Bool bRet;
 	UT_uint32 id;
+	UT_Vector vp,va;
+
 	FV_View* pView = m_pLayout->getView();
 	UT_ASSERT(pView);
+        pView->_eraseInsertionPoint();
 
 	id = rand();
 	sprintf(lid, "%i", id);
-        pView->_eraseInsertionPoint();
 
-	UT_uint32 currLevel = getLevel();
-	currLevel++;
-	sprintf(buf, "%i", currLevel);
+	sprintf(buf, "%i", curlevel);
+	sprintf(pszStart,"%i",start);
+	sprintf(pszAlign,"%fin",Align);
+	sprintf(pszIndent,"%fin",indent);
 
-	const XML_Char * attribs[] = {  "listid", lid,
-					"level", buf,
-					"style", style, 0 };
+	va.addItem( (void *) "listid");  va.addItem( (void *) lid);
+	va.addItem( (void *) "level");	va.addItem( (void *) buf);
+	vp.addItem( (void *) "start-value");	vp.addItem( (void *) pszStart);
+	vp.addItem( (void *) "margin-left");	vp.addItem( (void *) pszAlign);
+	vp.addItem( (void *) "text-indent");	vp.addItem( (void *) pszIndent);
+
+	if(lDelim != NULL)
+	{
+	        vp.addItem( (void *) "list-delim"); vp.addItem( (void *) lDelim);
+	}
+	if(lDecimal != NULL)
+	{
+	        vp.addItem( (void *) "list-decimal"); vp.addItem( (void *) lDecimal);
+	}
+	if(fFont != NULL)
+	{
+	        vp.addItem( (void *) "field-font"); vp.addItem( (void *) fFont);
+	}
+	va.addItem( (void *) "style");	va.addItem( (void *) style);
+	UT_uint32 counta = va.getItemCount() + 1;
+	UT_uint32 countp = vp.getItemCount() + 1;
+	UT_uint32 i;
+	const XML_Char ** attribs = (const XML_Char **) calloc(counta, sizeof(XML_Char *));
+	for(i=0; i<va.getItemCount();i++)
+	{
+		attribs[i] = (XML_Char *) va.getNthItem(i);
+	}
+	attribs[i] = (XML_Char *) NULL;
+
+	const XML_Char ** props = (const XML_Char **) calloc(countp, sizeof(XML_Char *));
+	for(i=0; i<vp.getItemCount();i++)
+	{
+		props[i] = (XML_Char *) vp.getNthItem(i);
+	}
+	props[i] = (XML_Char *) NULL;
+
 	setStarting( UT_FALSE);
-	bRet = m_pDoc->changeStruxFmt(PTC_AddFmt, getPosition(), getPosition(), attribs, NULL, PTX_Block);
+	bRet = m_pDoc->changeStruxFmt(PTC_AddFmt, getPosition(), getPosition(), attribs,props, PTX_Block);
 	pView->_ensureThatInsertionPointIsOnScreen();
 	pView->_eraseInsertionPoint();
 
 	listUpdate();
 	pView->_generalUpdate();
 	pView->_ensureThatInsertionPointIsOnScreen();
+	DELETEP(attribs);
+	DELETEP(props);
 }
 
 void    fl_BlockLayout::StopList(void)
@@ -4375,41 +4604,74 @@ void    fl_BlockLayout::StopList(void)
 	XML_Char lid[15], buf[5];
 	UT_Bool bRet;
 	UT_uint32 id;
+	UT_Vector vp;
 	FV_View* pView = m_pLayout->getView();
 	UT_ASSERT(pView);
 
 	UT_uint32 currLevel = getLevel();
 
 	UT_ASSERT(currLevel > 0);
-	currLevel--;
+	currLevel=0; // was currlevel--
 	sprintf(buf, "%i", currLevel);
 	PT_DocPosition offset = pView->getPoint() - getPosition();
-
+	fl_BlockLayout * pNext = getNext();
 	if (currLevel == 0)
 	{
 		id = 0;
+		//      if(pNext != NULL && pNext->isListItem()!= UT_TRUE)
+		//	{
+		//        pNext = NULL;
+		//	}
 	}
 	else
 	{
 		id = getAutoNum()->getParent()->getID();
+		pNext = getPreviousList( id);
 	}
 	sprintf(lid, "%i", id);
 
 	setStopping(UT_FALSE);
 	pView->_eraseInsertionPoint();
 	format();
+	//
+	// Set formatiing to match the next paragraph if it exists
+	//
+	const XML_Char ** props = NULL;
+	
+	if(pNext != NULL)
+	{
+	        pNext->getListPropertyVector( &vp);
+		UT_uint32 countp = vp.getItemCount() + 1;
+		UT_uint32 i;
+		props = (const XML_Char **) calloc(countp, sizeof(XML_Char *));
+		for(i=0; i<vp.getItemCount();i++)
+		{
+		       if( i > 0 && 
+			   UT_XML_strcmp(props[i-1], 
+					 (XML_Char *) "text-indent")==0)
+		       {
+			       props[i] = (XML_Char *) "0.0000in";
+		       }
+		       else
+		       {
+			       props[i] = (XML_Char *) vp.getNthItem(i);
+		       }
+		}
+		props[i] = (XML_Char *) NULL;
+	  
+	}
 	if (currLevel == 0)
 	{
 	        const XML_Char * attribs[] = { 	"listid", lid,
 					"level", buf,"style","Normal", 0 };
-		bRet = m_pDoc->changeStruxFmt(PTC_AddFmt, getPosition(), getPosition(), attribs, NULL, PTX_Block);
+		bRet = m_pDoc->changeStruxFmt(PTC_AddFmt, getPosition(), getPosition(), attribs, props, PTX_Block);
 		m_bListItem = UT_FALSE;
 	}
 	else
 	{
 	        const XML_Char * attribs[] = { 	"listid", lid,
 					"level", buf,0 };
-		bRet = m_pDoc->changeStruxFmt(PTC_AddFmt,getPosition(), getPosition(), attribs, NULL, PTX_Block);
+		bRet = m_pDoc->changeStruxFmt(PTC_AddFmt,getPosition(), getPosition(), attribs, props, PTX_Block);
 		listUpdate();
 	}
 	// format();
@@ -4422,6 +4684,7 @@ void    fl_BlockLayout::StopList(void)
 		pView->_fixInsertionPointCoords();
 		pView->_drawInsertionPoint();
 	}
+	DELETEP(props);
 }
 
 fl_BlockLayout * fl_BlockLayout::getPreviousList(UT_uint32 id)
@@ -4489,28 +4752,38 @@ void  fl_BlockLayout::prependList( fl_BlockLayout * nextList)
   // Make the current block an element of the list before in the block nextList
   //
         UT_ASSERT(nextList);
-	XML_Char lid[15], buf[5];
+	UT_Vector va,vp;
+	
+	nextList->getListPropertyVector( &vp);
+	nextList->getListAttributesVector( &va);
+	UT_uint32 counta = va.getItemCount() + 1;
+	UT_uint32 countp = vp.getItemCount() + 1;
+	UT_uint32 i;
+	const XML_Char ** attribs = (const XML_Char **) calloc(counta, sizeof(XML_Char *));
+	for(i=0; i<va.getItemCount();i++)
+	{
+		attribs[i] = (XML_Char *) va.getNthItem(i);
+	}
+	attribs[i] = (XML_Char *) NULL;
 
-	List_Type rType = nextList->getListType();
-	XML_Char * style = getListStyleString(rType);
-	UT_uint32 id = nextList->getAutoNum()->getID();
-
-	UT_uint32 currLevel = nextList->getLevel();
-	sprintf(buf, "%i", currLevel);
-	sprintf(lid, "%i", id);
-	const XML_Char * attribs[] = {  "listid", lid,
-					"level", buf,
-					"style", style, 0 };
+	const XML_Char ** props = (const XML_Char **) calloc(countp, sizeof(XML_Char *));
+	for(i=0; i<vp.getItemCount();i++)
+	{
+		props[i] = (XML_Char *) vp.getNthItem(i);
+	}
+	props[i] = (XML_Char *) NULL;
 	m_bStartList =  UT_FALSE;
         m_bStopList = UT_FALSE; 
 	FV_View* pView = m_pLayout->getView();
 	UT_ASSERT(pView);
         pView->_eraseInsertionPoint();
         m_bListLabelCreated = UT_FALSE;
-	m_pDoc->changeStruxFmt(PTC_AddFmt, getPosition(), getPosition(), attribs, NULL, PTX_Block);
+	m_pDoc->changeStruxFmt(PTC_AddFmt, getPosition(), getPosition(), attribs, props, PTX_Block);
         m_bListItem = UT_TRUE;
         listUpdate();
         pView->_generalUpdate();
+	DELETEP(attribs);
+	DELETEP(props);
 }
 
 void  fl_BlockLayout::resumeList( fl_BlockLayout * prevList)
@@ -4519,28 +4792,38 @@ void  fl_BlockLayout::resumeList( fl_BlockLayout * prevList)
   // Make the current block the next element of the list in the block prevList
   //
         UT_ASSERT(prevList);
-	XML_Char lid[15], buf[5];
+	UT_Vector va,vp;
+	
+	prevList->getListPropertyVector( &vp);
+	prevList->getListAttributesVector( &va);
+	UT_uint32 counta = va.getItemCount() + 1;
+	UT_uint32 countp = vp.getItemCount() + 1;
+	UT_uint32 i;
+	const XML_Char ** attribs = (const XML_Char **) calloc(counta, sizeof(XML_Char *));
+	for(i=0; i<va.getItemCount();i++)
+	{
+		attribs[i] = (XML_Char *) va.getNthItem(i);
+	}
+	attribs[i] = (XML_Char *) NULL;
 
-	List_Type rType = prevList->getListType();
-	XML_Char * style = getListStyleString(rType);
-	UT_uint32 id = prevList->getAutoNum()->getID();
-
-	UT_uint32 currLevel = prevList->getLevel();
-	sprintf(buf, "%i", currLevel);
-	sprintf(lid, "%i", id);
-	const XML_Char * attribs[] = {  "listid", lid,
-					"level", buf,
-					"style", style, 0 };
+	const XML_Char ** props = (const XML_Char **) calloc(countp, sizeof(XML_Char *));
+	for(i=0; i<vp.getItemCount();i++)
+	{
+		props[i] = (XML_Char *) vp.getNthItem(i);
+	}
+	props[i] = (XML_Char *) NULL;
 	m_bStartList =  UT_FALSE;
         m_bStopList = UT_FALSE; 
 	FV_View* pView = m_pLayout->getView();
 	UT_ASSERT(pView);
         pView->_eraseInsertionPoint();
         m_bListLabelCreated = UT_FALSE;
-	m_pDoc->changeStruxFmt(PTC_AddFmt, getPosition(), getPosition(), attribs, NULL, PTX_Block);
+	m_pDoc->changeStruxFmt(PTC_AddFmt, getPosition(), getPosition(), attribs, props, PTX_Block);
         m_bListItem = UT_TRUE;
         listUpdate();
         pView->_generalUpdate();
+	DELETEP(attribs);
+	DELETEP(props);
 }
 
 void fl_BlockLayout::listUpdate(void)

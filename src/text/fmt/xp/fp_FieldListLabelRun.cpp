@@ -20,6 +20,7 @@
 
 #include "fp_FieldListLabelRun.h"
 #include "fl_BlockLayout.h"
+#include "ut_debugmsg.h"
 
 fp_FieldListLabelRun::fp_FieldListLabelRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen) : fp_FieldRun(pBL, pG, iOffsetFirst, iLen)
 {
@@ -28,18 +29,26 @@ fp_FieldListLabelRun::fp_FieldListLabelRun(fl_BlockLayout* pBL, GR_Graphics* pG,
 UT_Bool fp_FieldListLabelRun::calculateValue(void)
 {
 	UT_UCSChar sz_ucs_FieldValue[FPFIELD_MAX_LENGTH + 1];
-
-	char * listlabel =  m_pBL->getListLabel();
+	UT_uint32 i = 0;
+	XML_Char *  listlabel = (XML_Char *) m_pBL->getListLabel();
 	if(listlabel == NULL)
 	{
 		sz_ucs_FieldValue[0] = NULL;
 	}
 	else
 	{
-		UT_UCS_strcpy_char(sz_ucs_FieldValue, listlabel);
+	  //
+	  // This code is here because UT_UCS_copy_char is broken
+	  //
+		i = 0;
+		UT_uint32 len = UT_MIN(strlen(listlabel),FPFIELD_MAX_LENGTH + 1)  ;
+		for(i=0; i<=len;i++)
+		{
+		        sz_ucs_FieldValue[i] = (UT_UCSChar) *listlabel++;
+		}
+		sz_ucs_FieldValue[len] = NULL;
 		m_sFieldValue[0] =  NULL; // Force an update!!!
 	}
-
 	return _setValue(sz_ucs_FieldValue);
 }
 

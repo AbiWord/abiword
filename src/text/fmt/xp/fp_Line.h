@@ -91,7 +91,7 @@ public:
 	inline	UT_Bool		isEmpty(void) const				{ return ((m_vecRuns.getItemCount()) == 0); }
 	inline	int 		countRuns(void) const			{ return m_vecRuns.getItemCount(); }
 	inline	fp_Run*     getFirstRun(void) const			{ return ((fp_Run*) m_vecRuns.getFirstItem()); }
-	inline	fp_Run*     getLastRun(void) const			{ return ((fp_Run*) m_vecRuns.getLastItem()); }
+        fp_Run*     getLastRun(void) const ;
 
 	inline	UT_Bool 	isFirstLineInBlock(void) const	{ return (m_pBlock->getFirstLine() == this); }
 	inline	UT_Bool 	isLastLineInBlock(void) const	{ return (m_pBlock->getLastLine() == this); }

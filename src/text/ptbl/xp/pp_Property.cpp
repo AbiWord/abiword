@@ -64,6 +64,8 @@ static PP_Property _props[] =
 
 	{ "start-value",			"1",				1},
 	{ "format",				"%*%d.",			1},
+	{ "list-delim",				"%L", 			1},
+	{ "list-decimal",			".",     			1},
 
 	{ "width",					"",					0},
 	{ "height",					"",					0},

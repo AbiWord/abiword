@@ -24,6 +24,7 @@
 #include "ut_types.h"
 #include "ut_misc.h"
 #include "ut_vector.h"
+#include "fl_BlockLayout.h"
 
 class fl_BlockLayout;
 class fl_Layout;
@@ -31,15 +32,17 @@ class fl_Layout;
 class fl_AutoNum
 {
 public:
-	fl_AutoNum(UT_uint32 id, UT_uint32 start, const XML_Char * format, fl_Layout * pItem, fl_AutoNum * pParent);
+	fl_AutoNum(UT_uint32 id, UT_uint32 start, fl_Layout * pItem, fl_AutoNum * pParent, const XML_Char * lDelim, const XML_Char * lDecimal, List_Type lType);
 	~fl_AutoNum();
 
 	XML_Char *				getLabel(fl_Layout *) const;
-	XML_Char *				getType(void);
+	List_Type				getType(void);
 	UT_uint32				getValue(fl_Layout *) const;
 	UT_uint32				getLevel(void) const { return m_iLevel; }
 	UT_sint32				getPositionInList( fl_Layout * pItem);
-	void					setFormat(const XML_Char * format);
+	void					setListType(List_Type lType);
+	void					setDelim(const XML_Char * pszDelim);
+	void					setDecimal(const XML_Char * pszDecimal);
 
 	UT_uint16				getStartValue(void) const { return m_iStartValue; }
 
@@ -59,32 +62,35 @@ public:
 	UT_Bool					isLastOnLevel(fl_Layout * pItem) const;
 
 	fl_AutoNum *			getParent(void) const { return m_pParent; }
-	void					setParent(fl_AutoNum *);
-	void					setAsciiOffset(UT_uint32 new_asciioffset);
+	void				setParent(fl_AutoNum *);
+	void			      	setAsciiOffset(UT_uint32 new_asciioffset);
 
 	void					update(UT_uint32 start);
 	inline UT_Bool			isUpdating(void) const { return m_bUpdatingItems; }
-
 	inline UT_uint32		getID(void) const { return m_iID; }
-	char *                          dec2roman(UT_sint32 value, UT_Bool lower);
+	char *                          dec2roman(UT_sint32 value, UT_Bool lower) const;
  
 protected:
-	void					_calculateLabelStr(UT_uint32 depth);
-	inline void				_updateItems(UT_uint32 start);
+
+	void				_calculateLabelStr(UT_uint32 depth);
+	void                            _getLabelstr( XML_Char labelStr[], UT_uint32 * insPoint, UT_uint32 depth, fl_Layout * pLayout) const;
+	inline void		       	_updateItems(UT_uint32 start);
 	inline UT_uint32		_getLevelValue(fl_AutoNum * pAutoNum); 
 
 	fl_AutoNum *			m_pParent;
 
 	UT_Vector				m_pItems;
 
+	List_Type                               m_List_Type;
 	UT_uint32				m_iID;
 	UT_uint32				m_iLevel;
-	const XML_Char *		m_pszFormat;
-	XML_Char *				m_pszLabelStr;
 	UT_uint32				m_iStartValue;
 	UT_uint16				m_iAsciiOffset;
 	UT_Bool					m_bUpdatingItems;
 	UT_sint32				m_ioffset;
+	XML_Char                                m_pszDecimal[80];
+	XML_Char                                m_pszDelim[80];
+	XML_Char                                m_pszIndent[80];
 };
 
 #endif

@@ -816,6 +816,20 @@ UT_Bool fp_Line::recalculateFields(void)
 	return bResult;
 }
 
+fp_Run* fp_Line::getLastRun(void) const
+{ 
+        UT_sint32 i = m_vecRuns.getItemCount();
+	if( i <= 0 )
+	{    
+	        fp_Run * pRun = getBlock()->getFirstRun();
+		return (const) pRun;
+	}
+	else
+	{
+                return ((const fp_Run*) m_vecRuns.getLastItem()); 
+	}
+}
+
 UT_Bool	fp_Line::findNextTabStop(UT_sint32 iStartX, UT_sint32& iPosition, eTabType & iType, eTabLeader & iLeader )
 {
 	UT_sint32	iTabStopPosition = 0;
@@ -944,7 +958,7 @@ fp_Line*	fp_Line::getPrevLineInSection(void) const
 	return NULL;
 }
 
-UT_Bool	fp_Line::containsForcedColumnBreak(void) const
+UT_Bool	fp_Line::containsForcedColumnBreak(void) const 
 {
 	if(!isEmpty())
 	{

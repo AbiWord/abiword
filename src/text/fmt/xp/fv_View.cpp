@@ -1891,22 +1891,98 @@ UT_Bool FV_View::cmdStartList(const XML_Char * style)
 	return UT_TRUE;
 }
 
-void    FV_View::changeListStyle( fl_AutoNum * pAuto, XML_Char * style)
+void    FV_View::changeListStyle( fl_AutoNum * pAuto, List_Type lType, UT_uint32 startv, XML_Char * pszDelim, XML_Char * pszDecimal, XML_Char * pszFont, float Align, float Indent)
 {
 	UT_Bool bRet;
- 	const XML_Char * attrib_list[] = {"style", style, 0 };
 	UT_uint32 i=0;
+	XML_Char pszStart[80],pszAlign[20],pszIndent[20];
+	UT_Vector va,vp,vb;
 	fl_BlockLayout * pBlock = (fl_BlockLayout *) pAuto->getNthBlock(i);
+	if(lType == NOT_A_LIST)
+	{
+	  // Stop lists in all elements
+	       i = 0;
+	       pBlock =   (fl_BlockLayout *) pAuto->getNthBlock(i);
+	       while(pBlock != NULL)
+               {
+		      vb.addItem((void *) pBlock);
+	              i++;
+		      pBlock = (fl_BlockLayout *) pAuto->getNthBlock(i);
+	       }
+	       for(i=0; i< vb.getItemCount(); i++)
+	       {
+	              fl_BlockLayout * pBlock =  (fl_BlockLayout *) vb.getNthItem(i);
+	              pBlock->listUpdate();
+	              pBlock->StopList();
+		}
+	       return;
+	}
+
+	XML_Char * style = pBlock->getListStyleString(lType);
+	_eraseInsertionPoint();
+	va.addItem( (void *) "style");	va.addItem( (void *) style);
+
+	pAuto->setListType(lType);
+	sprintf(pszStart, "%i" , startv);
+	sprintf(pszAlign, "%fin" , Align);
+	sprintf(pszIndent, "%fin" , Indent);
+
+	vp.addItem( (void *) "start-value");	vp.addItem( (void *) pszStart);
+	vp.addItem( (void *) "margin-left");	vp.addItem( (void *) pszAlign);
+	vp.addItem( (void *) "text-indent");	vp.addItem( (void *) pszIndent);
+	pAuto->setStartValue(startv);
+	if(pszDelim != NULL)
+	{
+	        vp.addItem( (void *) "list-delim"); vp.addItem( (void *) pszDelim);
+		pAuto->setDelim(pszDelim);
+	}
+	if(pszDecimal != NULL)
+	{
+	        vp.addItem( (void *) "list-decimal"); vp.addItem( (void *) pszDecimal);
+		pAuto->setDecimal(pszDecimal);
+	}
+	if(pszFont != NULL)
+	{
+	        vp.addItem( (void *) "field-font"); vp.addItem( (void *) pszFont);
+	}
+	//
+	// Assemble the List attributes
+	//
+	UT_uint32 counta = va.getItemCount() + 1;
+	const XML_Char ** attribs = (const XML_Char **) calloc(counta, sizeof(XML_Char *));
+	for(i=0; i<va.getItemCount();i++)
+	{
+		attribs[i] = (XML_Char *) va.getNthItem(i);
+	}
+	attribs[i] = (XML_Char *) NULL;
+	//
+	// Now assemble the list properties
+	//
+	UT_uint32 countp = vp.getItemCount() + 1;
+	const XML_Char ** props = (const XML_Char **) calloc(countp, sizeof(XML_Char *));
+	for(i=0; i<vp.getItemCount();i++)
+	{
+		props[i] = (XML_Char *) vp.getNthItem(i);
+	}
+	props[i] = (XML_Char *) NULL;
+
+ 	//const XML_Char * attrib_list[] = {"style", style, 0 };
         _eraseInsertionPoint();
+	i = 0;
+	pBlock =   (fl_BlockLayout *) pAuto->getNthBlock(i);
 	while(pBlock != NULL)
         {
                PT_DocPosition iPos = pBlock->getPosition();
-	       bRet = m_pDoc->changeStruxFmt(PTC_AddFmt, iPos, iPos, attrib_list, NULL, PTX_Block);  
+	       bRet = m_pDoc->changeStruxFmt(PTC_AddFmt, iPos, iPos, attribs, props, PTX_Block);  
 	       i++;
 	       pBlock =   (fl_BlockLayout *) pAuto->getNthBlock(i);
+	       _generalUpdate();
 	}
-	_generalUpdate();
-
+	pBlock =   (fl_BlockLayout *) pAuto->getNthBlock(0);
+	pBlock->listUpdate();
+	_ensureThatInsertionPointIsOnScreen();
+	DELETEP(attribs);
+	DELETEP(props);
 }
 
 UT_Bool FV_View::cmdStopList(void)

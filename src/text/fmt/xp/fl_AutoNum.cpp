@@ -33,131 +33,28 @@
 
 
 
-fl_AutoNum::fl_AutoNum(UT_uint32 id, UT_uint32 start, const XML_Char * format, fl_Layout * pFirst, fl_AutoNum * pParent)
+fl_AutoNum::fl_AutoNum(UT_uint32 id, UT_uint32 start,  fl_Layout * pFirst, fl_AutoNum * pParent, const XML_Char * lDelim, const XML_Char * lDecimal, List_Type lType)
 {
+        UT_uint32 i;
 	m_iID = id;
 	m_iStartValue = start;
-	m_pszFormat = format;
 	m_iAsciiOffset = 0;
 	m_bUpdatingItems = UT_FALSE;
 	m_ioffset = 0;
-
+        i =  UT_XML_strncpy( m_pszDelim, 80, lDelim);
+	i =  UT_XML_strncpy( m_pszDecimal, 80, lDecimal);
 	m_pParent = pParent;
-	if (m_pParent) {
+	if (m_pParent) 
+	{
 		m_iLevel = m_pParent->getLevel() + 1;
-	} else {
+	} 
+	else 
+	{
 		m_iLevel = 1;
 	}
 
 	m_pItems.addItem(pFirst);	
-
-	_calculateLabelStr( 0 );
-	UT_DEBUGMSG(("SEVIOR: Made a new autonum \n"));
-}
-
-void fl_AutoNum::_calculateLabelStr(UT_uint32 depth)
-{
-	UT_ASSERT(m_pszFormat);
-	
-	UT_uint32 num_fchars, i;
-	num_fchars = 0;
-	UT_ASSERT( m_pParent != this);
-	if (m_pParent)
-	{
-	UT_DEBUGMSG(("SEVIOR: Going to depth %d in autonum \n",depth));
-		m_pParent->_calculateLabelStr(depth + 1);
-	}
-
-	for (i = 0; i < UT_XML_strlen(m_pszFormat); i++)
-		if (m_pszFormat[i] == '%')
-			num_fchars++;
-	XML_Char * p;
-	// this writes m_pszFormat into p and hence into curr_str
-	if (!UT_cloneString((char *&)p, m_pszFormat))
-	{
-		// TODO out of mem
-	} 
-	UT_ASSERT(p);
-	
-	fl_AutoNum * pCurr = this;
-	
-	i = 0;
-	XML_Char ** f_strs = new XML_Char * [num_fchars];
-	XML_Char * curr_str = strtok(p, "%");
-	
-	while (curr_str)
-	{
-		f_strs[i] = curr_str;
-		curr_str = strtok(NULL, "%");
-		i++;
-	}
-	UT_ASSERT(i == num_fchars);
-	
-	curr_str = new XML_Char[30];
-	while (pCurr)
-	{
-		i--;
-		sprintf(curr_str, "%%%s", f_strs[i]);
-		switch(curr_str[1])
-		{
-		case 'd':
-			curr_str[1] = 'i';
-			if (pCurr != this)
-				sprintf(curr_str, curr_str, _getLevelValue(pCurr));
-			break;
-		case 'b':
-			XML_Char * tmp;
-			UT_XML_cloneString(*&tmp, curr_str);
-			tmp[1] = 'c';
-			//			sprintf(curr_str, tmp, UCS_BULLET);
-			sprintf(curr_str,tmp,0xb7);
-			free(tmp);
-			break;
-		case 'A':
-			curr_str[1] = 'c';
-			if (pCurr != this)
-				sprintf(curr_str, curr_str, _getLevelValue(pCurr) + 64);
-			else
-				m_iAsciiOffset = 64;
-			break;
-		case 'a':
-			curr_str[1] = 'c';
-			if (pCurr != this)
-				sprintf(curr_str, curr_str, _getLevelValue(pCurr) + 96);
-			else
-				m_iAsciiOffset = 96;
-			break;
-		case '*':
-			curr_str[1] = 's';
-			UT_ASSERT(pCurr == getParent());
-			curr_str = pCurr->getLabel(getFirstItem());
-			m_ioffset = 0;
-			pCurr = NULL;
-			break;
-		}
-		if (pCurr)
-			pCurr = pCurr->getParent();
-		UT_ASSERT(curr_str);
-		UT_XML_cloneString(*&f_strs[i], curr_str);
-	}
-	free(p); 
-	
-	XML_Char buf[100] = { "" };
-
-	if (!getParent())
-	{
-	        sprintf(buf, "%s", f_strs[num_fchars - 1]);
-	}
-	else
-	{
-		for (i = 0; i < num_fchars; i++)
-		{
-			sprintf(buf, "%s%s", buf, f_strs[i]);
-		}
-	}
-	
-	UT_XML_cloneString(*&m_pszLabelStr, buf);
-	UT_DEBUGMSG(("[fl_AutoNum::_calculateLabelStr] List Label: %s depth = %d \n", m_pszLabelStr,depth));
+        m_List_Type = lType;
 }
 
 fl_AutoNum::~fl_AutoNum()
@@ -166,24 +63,164 @@ fl_AutoNum::~fl_AutoNum()
 		DELETEP(m_pParent);
 }
 
+
+void    fl_AutoNum::_getLabelstr( XML_Char labelStr[], UT_uint32 * insPoint, 
+				  UT_uint32 depth, fl_Layout * pLayout) const 
+{
+  // This method recursively calculates a label based on the type of label
+  // of the AutoNum Class. This is output to the label string labelStr.
+  //
+  // insPoint is the position in the string where the new text goes. It starts
+  // Pointing to the byte == 0
+  // depth is the level of recursion
+  // pLayout is a pointer to the Layout item containing the current list item
+  //
+        XML_Char p[100];
+	UT_uint32 i,psz;
+	//
+	// Only get the next level if the list type is not bullet or similar
+	//
+        if(m_List_Type == NOT_A_LIST)
+	{
+	       *insPoint = 0;
+	       return;
+	}
+        if(m_pParent != NULL  && m_List_Type < BULLETED_LIST)
+	{
+	       m_pParent->_getLabelstr( labelStr, insPoint, depth+1,getFirstItem());
+	       if(*insPoint != 0)
+	       {
+		        psz = UT_XML_strlen(m_pszDecimal);
+			for(i=0; i<=psz;i++)
+			{
+		               labelStr[(*insPoint)++] = m_pszDecimal[i];
+			}
+			(*insPoint)--;
+	       }	       
+	}
+	UT_sint32 place = m_pItems.findItem(pLayout);
+	if(place == -1)
+	{
+	       labelStr[0] = NULL;
+	       (*insPoint) = 0;
+	       return;
+	}
+
+	place = place + m_iStartValue;
+	switch( m_List_Type)
+	{ 
+	        case NUMBERED_LIST:
+		        sprintf(p,"%i",place);
+			psz = UT_XML_strlen( p);
+			for(i=0; i<psz; i++)
+			{
+			         labelStr[(*insPoint)++] = p[i];
+			}
+			labelStr[(*insPoint)] = NULL;
+	                break;
+	        case UPPERCASE_LIST:
+		        sprintf(p,"%c",place+64);
+			psz = UT_XML_strlen( p);
+			for(i=0; i<psz; i++)
+			{
+			         labelStr[(*insPoint)++] = p[i];
+			}
+			labelStr[(*insPoint)] = NULL;
+	                break;
+	        case LOWERCASE_LIST:
+		        sprintf(p,"%c",place+96);
+			psz = UT_XML_strlen( p);
+			for(i=0; i<psz; i++)
+			{
+			         labelStr[(*insPoint)++] = p[i];
+			}
+			labelStr[(*insPoint)] = NULL;
+	                break;
+	        case UPPERROMAN_LIST:
+		        sprintf(p,"%s",dec2roman(place,UT_FALSE));
+			psz = UT_XML_strlen( p);
+			for(i=0; i<psz; i++)
+			{
+			         labelStr[(*insPoint)++] = p[i];
+			}
+			labelStr[(*insPoint)] = NULL;
+	                break;
+	        case LOWERROMAN_LIST:
+		        sprintf(p,"%s",dec2roman(place,UT_TRUE));
+			psz = UT_XML_strlen( p);
+			for(i=0; i<psz; i++)
+			{
+			         labelStr[(*insPoint)++] = p[i];
+			}
+			labelStr[(*insPoint)] = NULL;
+	                break;
+	        case BULLETED_LIST:
+	    	        labelStr[(*insPoint)++] = (XML_Char) 0xb7;
+			labelStr[(*insPoint)] = NULL;
+			break;
+	        case DASHED_LIST:
+		        labelStr[(*insPoint)++] = (XML_Char) '-';
+			labelStr[(*insPoint)] = NULL;
+			break;
+	        case SQUARE_LIST:
+		        labelStr[(*insPoint)++] = (XML_Char) 0x6E;
+			labelStr[(*insPoint)] = NULL;
+			break;
+	        case TRIANGLE_LIST:
+		        labelStr[(*insPoint)++] = (XML_Char) 0x73;
+			labelStr[(*insPoint)] = NULL;
+			break;
+	        case DIAMOND_LIST:
+		        labelStr[(*insPoint)++] = (XML_Char) 0xA9;
+			labelStr[(*insPoint)] = NULL;
+			break;
+	        case STAR_LIST:
+		        labelStr[(*insPoint)++] = (XML_Char) 0x53;
+			labelStr[(*insPoint)] = NULL;
+			break;
+	        case IMPLIES_LIST:
+		        labelStr[(*insPoint)++] = (XML_Char) 0xDE;
+			labelStr[(*insPoint)] = NULL;
+			break;
+	        case TICK_LIST:
+		        labelStr[(*insPoint)++] = (XML_Char) 0x33;
+			labelStr[(*insPoint)] = NULL;
+			break;
+	        case BOX_LIST:
+		        labelStr[(*insPoint)++] = (XML_Char) 0x72;
+			labelStr[(*insPoint)] = NULL;
+			break;
+	        case HAND_LIST:
+		        labelStr[(*insPoint)++] = (XML_Char) 0x2B;
+			labelStr[(*insPoint)] = NULL;
+			break;
+	        case HEART_LIST:
+		        labelStr[(*insPoint)++] = (XML_Char) 0xAA;
+			labelStr[(*insPoint)] = NULL;
+			break;
+	        default:
+		        UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+			break;
+	}
+	return;
+}
+
 XML_Char * fl_AutoNum::getLabel(fl_Layout * pItem) const
 {
 
-	XML_Char * format = new XML_Char [100];
-	XML_Char * label = new XML_Char [100];
-	UT_ASSERT(m_pszLabelStr);
-	UT_XML_cloneString(*&format, m_pszLabelStr);
-	
-	UT_sint32 place = m_pItems.findItem(pItem);
-	//UT_ASSERT(place != -1);
-	if(place != -1)
+	XML_Char label[100];
+	UT_uint32  insPoint=0;
+	UT_uint32 depth;
+	depth = 0;
+
+	_getLabelstr( label, &insPoint, depth , pItem);
+	if(insPoint == 0 )
 	{
-		sprintf(label, format, place + m_iStartValue + m_iAsciiOffset + m_ioffset);
-		return label;
+	        return (XML_Char *) NULL;
 	}
 	else
 	{
-		return NULL;
+	        return (XML_Char *) label;
 	}
 }
 
@@ -193,19 +230,27 @@ UT_uint32 fl_AutoNum::getValue(fl_Layout * pItem) const
 }
 
 
-void fl_AutoNum::setFormat(const XML_Char * format)
+void fl_AutoNum::setListType(List_Type lType)
 {
-	UT_ASSERT(format);
-	m_pszFormat = format;
-	UT_DEBUGMSG(("SEVIOR: Formatting autonum \n"));
-	_calculateLabelStr(0);
-	_updateItems(0);
+        m_List_Type = lType;
 }
 
-XML_Char * fl_AutoNum::getType(void)
+
+void fl_AutoNum::setDelim(const XML_Char * lDelim)
 {
-		//TF NOTE: These casts can't be good!
-        return (XML_Char *)m_pszFormat;
+	UT_uint32 i;
+	i =  UT_XML_strncpy( m_pszDelim, 80, lDelim);
+}
+
+void fl_AutoNum::setDecimal(const XML_Char * lDecimal)
+{
+	UT_uint32 i;
+	i =  UT_XML_strncpy( m_pszDecimal, 80, lDecimal);
+}
+
+List_Type fl_AutoNum::getType(void)
+{
+        return m_List_Type;
 }
 
 void fl_AutoNum::setStartValue(UT_uint32 start)
@@ -329,10 +374,9 @@ void fl_AutoNum::setParent(fl_AutoNum * pParent)
 
 void fl_AutoNum::update(UT_uint32 start)
 {
-	UT_DEBUGMSG(("SEVIOR: in autonum update start =\n",start));
 	if(isUpdating())
 	        return;
-	_calculateLabelStr(0);
+	//_calculateLabelStr(0);
 	_updateItems(start);
 	if (m_pParent && !m_pParent->isUpdating())
 	{
@@ -346,7 +390,6 @@ inline void fl_AutoNum::_updateItems(UT_uint32 start)
 	m_bUpdatingItems = UT_TRUE;
 	for (UT_uint32 i = start; i < m_pItems.getItemCount(); i++)
 	{
-	UT_DEBUGMSG(("SEVIOR: in autonum calling list update for item %i \n",i));
 		fl_Layout * pTmp = (fl_Layout *)m_pItems.getNthItem(i);
 		pTmp->listUpdate();
 	}
@@ -390,7 +433,7 @@ inline UT_uint32 fl_AutoNum::_getLevelValue(fl_AutoNum * pAutoNum)
 	return pAutoNum->getValue(pBlock);
 }
 
-char *  fl_AutoNum::dec2roman(UT_sint32 value, UT_Bool lower) 
+char *  fl_AutoNum::dec2roman(UT_sint32 value, UT_Bool lower) const
 {
 	char roman[80];		//Pretty big number if you ask me
 
@@ -470,7 +513,7 @@ char *  fl_AutoNum::dec2roman(UT_sint32 value, UT_Bool lower)
 		{
 		        UT_sint32 r = (UT_sint32) roman[len];
 		        if( (r >= (UT_sint32) 'A') && (r <= (UT_sint32) 'Z'))
-			       r = r + 64;
+			       r = r + 32;
 			roman[len] = (char) r;
 		}
 	}

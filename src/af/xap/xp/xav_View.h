@@ -82,7 +82,8 @@ public:
 	void			setWindowSize(UT_sint32, UT_sint32);
 	virtual void	setXScrollOffset(UT_sint32) = 0;
 	virtual void	setYScrollOffset(UT_sint32) = 0;
-
+	UT_uint32               getTick(void);
+	void                    incTick(void);
 	inline XAP_App *	getApp(void) const { return m_pApp; };
 	inline UT_sint32	getWindowWidth(void) const { return m_iWindowWidth; };
 	inline UT_sint32	getWindowHeight(void) const { return m_iWindowHeight; };
@@ -120,7 +121,7 @@ protected:
 	UT_sint32			m_iWindowHeight;
 	UT_sint32			m_iWindowWidth;
 	AV_Focus			m_focus;
-
+	UT_uint32                       m_iTick; // Count changes
 	UT_Bool				m_bInsertMode;
 
 	UT_Vector			m_scrollListeners;

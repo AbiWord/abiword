@@ -22,6 +22,8 @@
 
 #include "ap_Dialog_Lists.h"
 #include "ut_timer.h"
+#include "gr_UnixGraphics.h"
+
 class XAP_UnixFrame;
 
 /*****************************************************************/
@@ -41,13 +43,13 @@ public:
 	
 	/* CALLBACKS */
 
-        void                            startChanged(void);
-        void                            stopChanged(void);
+        void                            customChanged(void);
 	void                            applyClicked(void);
-        void                            startvChanged(void);
-
+	void                            typeChanged( gint type);
+	void                            previewExposed(void);
+	void                            setMemberVariables(void);
 	/* Just Plain Useful Functions */
-
+	void                            fillWidgetFromDialog(void);
 	void                            setAllSensitivity(void);
 	void                            updateDialog(void);
 	static void                     autoupdateLists(UT_Timer * pTimer);
@@ -56,38 +58,67 @@ protected:
 	GtkWidget *				_constructWindowContents(void);
 	void					_populateWindowData(void);
 	void					_connectSignals(void);
-	void                            _fillListTypeMenu( GtkWidget *listmenu);
+	void                            _fillNumberedStyleMenu( GtkWidget *listmenu);
+	void                            _fillBulletedStyleMenu( GtkWidget *listmenu);
+	void                            _fillNoneStyleMenu( GtkWidget *listmenu);
+	void                            _setData(void);
+        void                            _gatherData(void);
+	GList *                         _getGlistFonts (void);
+
+
+	GList *                         m_glFonts;
+
+	GR_UnixGraphics *               m_pPreviewWidget;
 
 	UT_Bool                         m_bDestroy_says_stopupdating;
 	UT_Bool                         m_bAutoUpdate_happening_now;
-	UT_Timer *                      m_pAutoUpdateLists;
+	UT_Bool                         m_bisCustomFrameHidden;
+		UT_Timer *                      m_pAutoUpdateLists;
 
 	GtkWidget *				m_wMainWindow;
 
 	GtkWidget * m_wApply;
 	GtkWidget * m_wClose;
 	GtkWidget * m_wContents;
-	GtkWidget * m_wCheckstartlist;
-	GtkWidget * m_wCheckstoplist;
-	GtkWidget * m_wCheckresumelist;
-	GtkWidget * m_wNewlisttypel;
-        GtkWidget * m_wOption_types;
-        GtkWidget * m_wOption_types_menu;
-	GtkWidget * m_wNew_startingvaluel;
-	GtkWidget * m_wNew_startingvaluev;
-	GtkWidget * m_wCur_listtype;
-	GtkWidget * m_wCur_listtypev;
-	GtkWidget * m_wCur_listlabel;
-	GtkWidget * m_wCur_listlabelv;
-        GtkWidget * m_wCur_changestart_button;
-        GtkWidget * m_wCur_Option_types;
-        GtkWidget * m_wCur_Option_types_menu;
-	GtkWidget * m_wCur_startingvaluel;
-	GtkWidget * m_wCur_startingvaluev;
-
+	GtkWidget * m_wStartNewList;
+	GtkWidget * m_wApplyCurrent;
+	GtkWidget * m_wStartSubList;
+	GtkWidget * m_wResumeList;
+        GSList    * m_wRadioGroup;
+	GtkWidget * m_wPreviewArea;
+	GtkWidget * m_wDelimEntry;
+	GtkObject * m_oAlignList_adj;
+	GtkWidget * m_wAlignListSpin;
+	GtkObject * m_oIndentAlign_adj;
+	GtkWidget * m_wIndentAlignSpin;
+	GtkObject * m_oLevelSpin_adj;
+	GtkWidget * m_wLevelSpin;
+	GtkWidget * m_wFontOptions;
+	GtkWidget * m_wFontOptions_menu;
+	GtkWidget * m_wCustomFrame;
+	GtkWidget * m_wCustomArrow;
+	GtkWidget * m_wCustomLabel;
+	GtkWidget * m_wListStyleBox;
+	GtkWidget * m_wListStyleNumbered_menu;
+	GtkWidget * m_wListStyleBulleted_menu;
+	GtkWidget * m_wListStyleNone_menu;
+        GtkWidget * m_wListStyle_menu;
+	GtkWidget * m_wListTypeBox;
+	GtkWidget * m_wListType_menu;
+	GtkObject * m_oStartSpin_adj;
+	GtkWidget * m_wStartSpin;
+	GtkWidget * m_wMenu_None;
+	GtkWidget * m_wMenu_Bull;
+	GtkWidget * m_wMenu_Num;
+	GtkWidget * m_wStartSub_label;
+	GtkWidget * m_wStartNew_label;
 };
 
 #endif /* AP_UNIXDIALOG_LISTS_H */
+
+
+
+
 
 
 

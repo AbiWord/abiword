@@ -198,6 +198,8 @@ public:
 
 	inline UT_Bool isListItem(void) const { return m_bListItem; }
 	inline fl_AutoNum * getAutoNum(void) const { return m_pAutoNum; }
+	void    getListAttributesVector( UT_Vector * va);
+	void  getListPropertyVector( UT_Vector * vp);
 
 	char *  getFormatFromListType(List_Type iListType);
 	void remItemFromList(void);
@@ -207,10 +209,13 @@ public:
         List_Type decodeListType(char * listformat);
 	List_Type getListType(void);
 	XML_Char* getListStyleString( List_Type iListType);
-
+	List_Type getListTypeFromStyle( const XML_Char * style);
 	fl_BlockLayout * getNextList(UT_uint32 id);
 	UT_Bool isListLabelInBlock(void); 
 	void StartList( const XML_Char * style);
+
+	void StartList( List_Type lType, UT_uint32 start,const XML_Char * lDelim, const XML_Char * lDecimal, const XML_Char * fFont, float Align, float Indent, UT_uint32 curlevel );
+
 	void StopList(void);
 	void deleteListLabel(void);
 	XML_Char * getListLabel(void);

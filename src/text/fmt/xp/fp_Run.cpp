@@ -835,10 +835,11 @@ fp_FieldRun::fp_FieldRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffset
 
 UT_Bool fp_FieldRun::_setValue(UT_UCSChar *p_new_value)
 {
+
 	if (0 != UT_UCS_strcmp(p_new_value, m_sFieldValue))
 	{
 		clearScreen();
-		
+
 		UT_UCS_strcpy(m_sFieldValue, p_new_value);
 
 		{

@@ -32,6 +32,7 @@ AV_View::AV_View(XAP_App * pApp, void* pParentData)
 	m_yScrollOffset = 0;
 	m_iWindowHeight = 0;
 	m_iWindowWidth = 0;
+	m_iTick = 0;
 	m_focus=AV_FOCUS_NONE;
 }
 
@@ -104,6 +105,8 @@ UT_Bool AV_View::notifyListeners(const AV_ChangeMask hint)
 		toolbar button state.  
 	*/
 
+	m_iTick++;
+
 	// make sure there's something left
 
 	if (hint == AV_CHG_NONE)
@@ -128,6 +131,16 @@ UT_Bool AV_View::notifyListeners(const AV_ChangeMask hint)
 	}
 
 	return UT_TRUE;
+}
+
+UT_uint32 AV_View::getTick(void)
+{
+        return m_iTick;
+}
+
+void   AV_View::incTick(void)
+{
+        m_iTick++;
 }
 
 void AV_View::setInsertMode(UT_Bool bInsert)
@@ -189,3 +202,9 @@ void AV_View::sendHorizontalScrollEvent(UT_sint32 xoff, UT_sint32 xlimit)
 		pObj->m_pfnX(pObj->m_pData, xoff, xlimit);
 	}
 }
+
+
+
+
+
+
