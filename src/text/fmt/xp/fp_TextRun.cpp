@@ -1786,7 +1786,8 @@ void fp_TextRun::_draw(dg_DrawArgs* pDA)
 	UT_BidiCharType iVisDir = getVisDirection();
 	if(iVisDir == UT_BIDI_RTL)
 	{
-		iX += getWidth();
+		// iX += getWidth();
+		iX += iWidth;
 	}
 	UT_ASSERT(iSegmentCount > 0);
 	for(UT_uint32 iSegment = 0; iSegment < iSegmentCount; iSegment++)
