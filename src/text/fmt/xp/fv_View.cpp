@@ -10315,7 +10315,7 @@ bool FV_View::isInTableForSure(PT_DocPosition pos)
  */
 bool FV_View::isInTable( PT_DocPosition pos)
 {
-	UT_DEBUGMSG(("Look in table at pos %d \n",pos));
+	xxx_UT_DEBUGMSG(("Look in table at pos %d \n",pos));
 	if(m_pDoc->isTableAtPos(pos))
 	{
 		xxx_UT_DEBUGMSG(("As Table pos this char will actuall right before the table %d \n",pos));
@@ -10345,6 +10345,17 @@ bool FV_View::isInTable( PT_DocPosition pos)
 	if(pCL->getContainerType() == FL_CONTAINER_CELL)
 	{
 		xxx_UT_DEBUGMSG(("Inside Table cell pos %d this pos %d \n",pCL->getPosition(),pos));
+		fl_TableLayout * pTL = static_cast<fl_TableLayout *>(pCL->myContainingLayout());
+		PL_StruxDocHandle sdhTable = pTL->getStruxDocHandle();
+		PL_StruxDocHandle sdhEnd = m_pDoc->getEndTableStruxFromTableSDH(sdhTable);
+		if(sdhEnd != NULL)
+		{
+			PT_DocPosition posEnd =  m_pDoc->getStruxPosition(sdhEnd);
+			if(posEnd < pos)
+			{
+				return false;
+			}
+		}
 		return true;
 	}
 	pCL = pBL->getNext();
