@@ -137,7 +137,7 @@ GtkWidget * AP_UnixDialog_Download_File::_constructWindow(void)
 	
 	vboxMain = GTK_DIALOG(windowDL)->vbox;
 	
-	sprintf(buf, pSS->getValueUTF8(AP_STRING_ID_DLG_DlFile_Status).c_str(), getDescription(), getURL());
+	g_snprintf(buf, 4096, pSS->getValueUTF8(AP_STRING_ID_DLG_DlFile_Status).c_str(), getDescription(), getURL());
 	label = gtk_label_new (buf);
 	g_object_set_data (G_OBJECT (vboxMain), "label", label);
 	gtk_misc_set_padding (GTK_MISC(label), 10, 10);
