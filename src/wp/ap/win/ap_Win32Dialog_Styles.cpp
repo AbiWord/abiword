@@ -509,22 +509,11 @@ BOOL AP_Win32Dialog_Styles::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
 				PD_Style * pStyle = NULL;
 				getDoc()->getStyle(m_selectedStyle.c_str(), &pStyle);
 
-				// Verify that it isn't a builtin style
-				if( !pStyle->isUserDefined() )
-				{
-					const XAP_StringSet * pSS = m_pApp->getStringSet();
-					getFrame()->showMessageBox( pSS->getValue(AP_STRING_ID_DLG_Styles_ErrStyleBuiltin),
-											XAP_Dialog_MessageBox::b_O,
-											XAP_Dialog_MessageBox::a_OK);                       
-					m_answer = AP_Dialog_Styles::a_CANCEL;
-					return 1;
-				}
-
 				m_bisNewStyle = false;
-				//_win32Dialog.showWindow(SW_HIDE);
 				XAP_Frame* pFrame = getFrame();
+			
 				_win32DialogNewModify.runModal(pFrame, AP_DIALOG_ID_STYLES, AP_RID_DIALOG_STYLES_NEWMODIFY, this);
-
+				
 				if(m_answer == AP_Dialog_Styles::a_OK)
 				{
 					applyModifiedStyleToDoc();
@@ -534,7 +523,6 @@ BOOL AP_Win32Dialog_Styles::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
 
 				destroyAbiPreview();
 				DELETEP(m_pAbiPreviewWidget);
-				//_win32Dialog.showWindow(SW_SHOW);
 			}
 		}
 		return 1;
