@@ -999,12 +999,12 @@ void s_HTML_Listener::_openSpan(PT_AttrPropIndex api)
 		{
 		  if (!span)
 		    {
-		      m_pie->write("<span style=\"text-position: ");
+		      m_pie->write("<span style=\"vertical-align: ");
 		      span = true;
 		    }
 		  else
 		    {
-		      m_pie->write("; text-position: ");
+		      m_pie->write("; vertical-align: ");
 		    }
 
 			if (!UT_strcmp("superscript", szValue))
