@@ -87,6 +87,7 @@ _ZLIB_:
 	      -o -r /usr/local/lib/libz.so			\
 	      -o -r ${X11BASE}/lib/libz.so			\
 	      -o -r /usr/X11R6/lib/libz.so			\
+	      -o -r /opt/zlib/lib/libz.a			\
 	    ]; then						\
 		echo Found zlib in system directories;		\
 	else							\
@@ -105,6 +106,7 @@ _LIBPNG_:
 	      -o -r /usr/local/lib/libpng.a			\
 	      -o -r ${X11BASE}/lib/libpng.a			\
 	      -o -r /usr/X11R6/lib/libpng.a			\
+	      -o -r /opt/libpng/lib/libpng.a			\
 	    ]; then						\
 		echo Found libpng in system directories;	\
 	else							\
