@@ -49,6 +49,11 @@
 
 #define AP_PREF_KEY_StringSet						"StringSet"
 #define AP_PREF_DEFAULT_StringSet					"EnUS"						/* name of dialog/msgbox strings */
+#define AP_PREF_KEY_BeOSISpellDirectory				"BeOSISpellDirectory"
+#define AP_PREF_DEFAULT_BeOSISpellDirectory			"/usr/lib/ispell" 			/* where we find hash files */ /* TODO DECIDE WHERE THIS SHOULD BE */
+
+#define AP_PREF_KEY_BeOSStringSetDirectory			"BeOSStringSetDirectory"
+#define AP_PREF_DEFAULT_BeOSStringSetDirectory		"/boot/home/config/settings/AbiSuite/AbiWord/lib"	/* where we find StringSets */ /* TODO DECIDE WHERE THIS SHOULD BE */
 
 #define AP_PREF_KEY_UnixISpellDirectory				"UnixISpellDirectory"
 #define AP_PREF_DEFAULT_UnixISpellDirectory			"/usr/lib/ispell" 			/* where we find hash files */ /* TODO DECIDE WHERE THIS SHOULD BE */
