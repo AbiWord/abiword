@@ -40,12 +40,12 @@ pf_Frag_Text::~pf_Frag_Text()
 {
 }
 
-PT_BufIndex pf_Frag_Text::getBufIndex(void) const
+inline PT_BufIndex pf_Frag_Text::getBufIndex(void) const
 {
 	return m_bufIndex;
 }
 
-PT_AttrPropIndex pf_Frag_Text::getIndexAP(void) const
+inline PT_AttrPropIndex pf_Frag_Text::getIndexAP(void) const
 {
 	return m_indexAP;
 }

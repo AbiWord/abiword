@@ -167,17 +167,6 @@ UT_Bool pt_VarSet::storeAP(const UT_Vector * pVecAttributes, PT_AttrPropIndex * 
 	return UT_FALSE;
 }
 
-const UT_UCSChar * pt_VarSet::getPointer(PT_BufIndex bi) const
-{
-	return m_buffer[_varsetFromBufIndex(bi)].getPointer(_subscriptFromBufIndex(bi));
-}
-
-PT_BufIndex pt_VarSet::getBufIndex(PT_BufIndex bi, UT_uint32 offset) const
-{
-	return _makeBufIndex(_varsetFromBufIndex(bi),
-						 _subscriptFromBufIndex(bi)+offset);
-}
-
 UT_Bool pt_VarSet::isContiguous(PT_BufIndex bi, UT_uint32 length, PT_BufIndex bi2) const
 {
 	return ((getPointer(bi)+length) == getPointer(bi2));
@@ -188,32 +177,32 @@ const PP_AttrProp * pt_VarSet::getAP(PT_AttrPropIndex api) const
 	return m_tableAttrProp[_varsetFromAPIndex(api)].getAP(_subscriptFromAPIndex(api));
 }
 
-UT_uint32 pt_VarSet::_subscriptFromBufIndex(PT_BufIndex bi) const
+inline UT_uint32 pt_VarSet::_subscriptFromBufIndex(PT_BufIndex bi) const
 {
 	return (bi & 0x7fffffff);
 }
 
-UT_uint32 pt_VarSet::_subscriptFromAPIndex(PT_AttrPropIndex api) const
+inline UT_uint32 pt_VarSet::_subscriptFromAPIndex(PT_AttrPropIndex api) const
 {
 	return (api & 0x7fffffff);
 }
 
-UT_uint32 pt_VarSet::_varsetFromBufIndex(PT_BufIndex bi) const
+inline UT_uint32 pt_VarSet::_varsetFromBufIndex(PT_BufIndex bi) const
 {
 	return (bi >> 31);
 }
 
-UT_uint32 pt_VarSet::_varsetFromAPIndex(PT_AttrPropIndex api) const
+inline UT_uint32 pt_VarSet::_varsetFromAPIndex(PT_AttrPropIndex api) const
 {
 	return (api >> 31);
 }
 
-PT_BufIndex pt_VarSet::_makeBufIndex(UT_uint32 varset, UT_uint32 subscript) const
+inline PT_BufIndex pt_VarSet::_makeBufIndex(UT_uint32 varset, UT_uint32 subscript) const
 {
 	return ((varset<<31)|subscript);
 }
 
-PT_AttrPropIndex pt_VarSet::_makeAPIndex(UT_uint32 varset, UT_uint32 subscript) const
+inline PT_AttrPropIndex pt_VarSet::_makeAPIndex(UT_uint32 varset, UT_uint32 subscript) const
 {
 	return ((varset<<31)|subscript);
 }
