@@ -101,8 +101,6 @@ There are several ways to build and run AbiWord:
     UNIX_CAN_BUILD_DYNAMIC=[1,0]	Link to libraries in Operating System
     ABI_OPT_GNOME=[1,0]		enable Gnome or Gnome-2 support
     ABI_OPT_LIBJPEG=[1,0]		enable LibJPEG support
-    ABI_OPT_BIDI_ENABLED=[1,0]		enable Bidirectional text support
-    ABI_OPT_BIDI_RTL_DOMINANT=[1,0]	enable Right-to-Left Bidirectional support
     ABI_OPT_PERL=[1,0]			enable Perl scripting
     ABI_OPT_OPTIMIZE=[1,0]
     ABI_OPT_PSPELL=[1,0]		enable Pspell
