@@ -163,8 +163,8 @@ public:
 	virtual UT_uint32		getFontDescent(GR_Font *);
 	virtual UT_uint32		getFontHeight(GR_Font *);
 	virtual UT_sint32       getScreenResolution(void){return s_iScreenResolution;};
-	virtual void		  saveRectangle(UT_Rect & r);
-	virtual void		  restoreRectangle();
+	virtual void		  saveRectangle(UT_Rect & r, UT_uint32 iIndx);
+	virtual void		  restoreRectangle(UT_uint32 iIndx);
 	
 	void setBrush(HBRUSH hBrush){ m_hClearBrush = hBrush;};
 
@@ -216,8 +216,8 @@ private:
 #endif
 
 	UT_RGBColor				m_curColor;
-	UT_Rect *				m_saveRect;
-	COLORREF *				m_saveRectBuf;
+	UT_Vector				m_vSaveRect;
+	UT_Vector 				m_vSaveRectBuf;
 	HBRUSH					m_hClearBrush;
 };
 

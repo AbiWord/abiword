@@ -83,6 +83,7 @@ private:
 	bool		m_bCursorIsOn;
 	bool		m_bPositionSet;
 	bool		m_bRecursiveDraw;
+	bool        m_bSplitCaret;
 };
 
 class GR_CaretDisabler

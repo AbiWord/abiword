@@ -159,8 +159,6 @@ void GR_Win32Graphics::_constructorCommonCode(HDC hdc)
 	s_iInstanceCount++;	
 #endif
 
-	m_saveRect = NULL;
-	m_saveRectBuf = NULL;
 	setBrush((HBRUSH) GetStockObject(WHITE_BRUSH));	// Default brush
 }
 
@@ -181,8 +179,8 @@ GR_Win32Graphics::GR_Win32Graphics(HDC hdc, const DOCINFO * pDocInfo, XAP_App * 
 
 GR_Win32Graphics::~GR_Win32Graphics()
 {
-	DELETEP(m_saveRect);
-	DELETEP(m_saveRectBuf);
+	UT_VECTOR_PURGEALL(UT_Rect*, m_vSaveRect);
+	UT_VECTOR_PURGEALL(COLORREF*, m_vSaveRectBuf);
 	DELETEP(m_pFontGUI);
 	if (m_hXorPen) {
 		DeleteObject(m_hXorPen);
@@ -1467,27 +1465,28 @@ bool GR_Win32Graphics::_setTransform(const GR_Transform & tr)
 }
 
 
-void GR_Win32Graphics::saveRectangle(UT_Rect & r) {
-
-	static UT_Rect prevRect;
+void GR_Win32Graphics::saveRectangle(UT_Rect & r, UT_uint32 iIndx) {
 	
-	if (m_saveRect && 
-		prevRect.left == r.left &&
-		prevRect.top == r.top &&
-		prevRect.width == r.width && 
-		prevRect.height == r.height) {
+	
+	if (m_vSaveRect.getItemCount()>iIndx && m_vSaveRect.getNthItem(iIndx) && 
+		((UT_Rect *)(m_vSaveRect.getNthItem(iIndx)))->left == r.left &&
+		((UT_Rect *)(m_vSaveRect.getNthItem(iIndx)))->top == r.top &&
+		((UT_Rect *)(m_vSaveRect.getNthItem(iIndx)))->width == r.width && 
+		((UT_Rect *)(m_vSaveRect.getNthItem(iIndx)))->height == r.height) {
 		return;
 		}
 		
-	prevRect = r;	
-	
-	DELETEP(m_saveRect);
-	m_saveRect = new UT_Rect(r);
+	void * oldR = NULL;
+	m_vSaveRect.setNthItem(iIndx, (void*)new UT_Rect(r),&oldR);
+	if(oldR)
+		delete (UT_Rect*)oldR;
 
-	DELETEP(m_saveRectBuf);
-	m_saveRectBuf = new COLORREF[r.width * r.height];
-	
-	COLORREF *p = m_saveRectBuf;
+	void * oldC = NULL;
+	m_vSaveRectBuf.setNthItem(iIndx, (void*) new COLORREF[r.width * r.height], &oldC);
+	if(oldC)
+		delete (COLORREF*)oldC;
+		
+	COLORREF *p = (COLORREF *)m_vSaveRectBuf.getNthItem(iIndx);
 	for (int x = 0; x < r.width; x++) {
 		for (int y = 0; y < r.height; y++) {
 			*(p++) = GetPixel(m_hdc, r.left + x, r.top + y);
@@ -1495,12 +1494,14 @@ void GR_Win32Graphics::saveRectangle(UT_Rect & r) {
 		}
 	}
 
-void GR_Win32Graphics::restoreRectangle() {
-	if (m_saveRect && m_saveRectBuf) {
-		COLORREF *p = m_saveRectBuf;
-		for (int x = 0; x < m_saveRect->width; x++) {
-			for (int y = 0; y < m_saveRect->height; y++) {
-				SetPixel(m_hdc, m_saveRect->left + x, m_saveRect->top + y, *(p++));
+void GR_Win32Graphics::restoreRectangle(UT_uint32 iIndx) {
+	UT_Rect * r = (UT_Rect*)m_vSaveRect.getNthItem(iIndx);
+	COLORREF *p = (COLORREF *)m_vSaveRectBuf.getNthItem(iIndx);
+	
+	if ( r && p) {
+		for (int x = 0; x < r->width; x++) {
+			for (int y = 0; y < r->height; y++) {
+				SetPixel(m_hdc, r->left + x, r->top + y, *(p++));
 				}
 			}
 		}
