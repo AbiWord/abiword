@@ -155,6 +155,7 @@ BOOL XAP_Win32Dialog_Zoom::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam
 	m_pPreviewWidget->getWindowSize(&w,&h);
 	
 	_createPreviewFromGC(m_pPreviewWidget->getGraphics(),w,h);
+	m_pPreviewWidget->getGraphics()->init3dColors();
 	m_pPreviewWidget->setPreview(m_zoomPreview); // we need this to call draw() on WM_PAINTs
 	_updatePreviewZoomPercent(getZoomPercent());
 	
