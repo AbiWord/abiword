@@ -56,7 +56,7 @@ AP_QNXDialog_MailMerge::~AP_QNXDialog_MailMerge(void)
 {
 }
 
-void AP_QNXDialog_MailMerge::runModal(XAP_Frame * pFrame)
+void AP_QNXDialog_MailMerge::runModeless(XAP_Frame * pFrame)
 {
 	UT_ASSERT(pFrame);
 

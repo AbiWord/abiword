@@ -90,7 +90,7 @@ AP_UnixDialog_MailMerge::~AP_UnixDialog_MailMerge(void)
 /*****************************************************************/
 /*****************************************************************/
 
-void AP_UnixDialog_MailMerge::runModal(XAP_Frame * pFrame)
+void AP_UnixDialog_MailMerge::runModeless(XAP_Frame * pFrame)
 {
 	UT_return_if_fail(pFrame);
 	
@@ -100,24 +100,46 @@ void AP_UnixDialog_MailMerge::runModal(XAP_Frame * pFrame)
 	_constructWindow();
 	UT_return_if_fail(m_windowMain);
 
-	switch ( abiRunModalDialog ( GTK_DIALOG(m_windowMain),
-								 pFrame, this, GTK_RESPONSE_CANCEL, false ) )
-	{
-		case GTK_RESPONSE_OK:
-			setAnswer(AP_Dialog_MailMerge::a_OK);
-			break;
-		default:
-			setAnswer(AP_Dialog_MailMerge::a_CANCEL);
-			break;
-	}
-
-	if (getAnswer() == AP_Dialog_MailMerge::a_OK)
-		setMergeField (gtk_entry_get_text (GTK_ENTRY(m_entry)));
-	
-	abiDestroyWidget ( m_windowMain ) ;
+	abiSetupModelessDialog(GTK_DIALOG(m_windowMain),
+						   pFrame, this, GTK_RESPONSE_CANCEL);
+	gtk_widget_show_all(m_windowMain);
 }
 
 /*****************************************************************/
+
+void AP_UnixDialog_MailMerge::event_Close()
+{
+	destroy();
+}
+
+static void s_destroy_clicked(GtkWidget * widget,
+							  AP_UnixDialog_MailMerge * dlg)
+{
+	dlg->event_Close();
+}
+
+static void s_delete_clicked(GtkWidget * widget,
+							 gpointer,
+							 gpointer * dlg)
+{
+	abiDestroyWidget(widget);
+}
+
+static void s_response_triggered(GtkWidget * widget, gint resp, AP_UnixDialog_MailMerge * dlg)
+{
+	UT_return_if_fail(widget && dlg);
+	
+	if ( resp == GTK_RESPONSE_OK )
+	  dlg->event_AddClicked();
+	else
+	  abiDestroyWidget ( widget ) ; // will trigger other events
+}
+
+void AP_UnixDialog_MailMerge::event_AddClicked ()
+{
+	setMergeField (gtk_entry_get_text (GTK_ENTRY(m_entry)));
+	addClicked();
+}
 
 void AP_UnixDialog_MailMerge::_constructWindow(void)
 {
@@ -150,6 +172,19 @@ void AP_UnixDialog_MailMerge::_constructWindow(void)
 						   "cursor-changed",
 						   G_CALLBACK(s_types_clicked),
 						   static_cast<gpointer>(this));
+
+	g_signal_connect(G_OBJECT(m_windowMain), "response", 
+					 G_CALLBACK(s_response_triggered), this);
+	// the catch-alls
+	// Dont use gtk_signal_connect_after for modeless dialogs
+	gtk_signal_connect(GTK_OBJECT(m_windowMain),
+			   "destroy",
+			   GTK_SIGNAL_FUNC(s_destroy_clicked),
+			   (gpointer) this);
+	gtk_signal_connect(GTK_OBJECT(m_windowMain),
+			   "delete_event",
+			   GTK_SIGNAL_FUNC(s_delete_clicked),
+			   (gpointer) this);
 }
 
 void AP_UnixDialog_MailMerge::setFieldList()

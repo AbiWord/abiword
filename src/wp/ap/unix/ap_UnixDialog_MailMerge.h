@@ -32,11 +32,16 @@ public:
 	AP_UnixDialog_MailMerge(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
 	virtual ~AP_UnixDialog_MailMerge(void);
 
-	virtual void			runModal(XAP_Frame * pFrame);
+	virtual void			runModeless(XAP_Frame * pFrame);
+	virtual void activate(void) {gdk_window_raise (m_windowMain->window);}
+	virtual void destroy(void) {modeless_cleanup();}
 
 	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
 
 	void fieldClicked(UT_uint32 index);
+
+	void event_AddClicked ();
+	void event_Close();
 
 protected:
 	virtual void setFieldList();

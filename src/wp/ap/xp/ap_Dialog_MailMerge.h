@@ -27,34 +27,34 @@
 
 class XAP_Frame;
 
-class AP_Dialog_MailMerge : public XAP_Dialog_NonPersistent
+class AP_Dialog_MailMerge : public XAP_Dialog_Modeless
 {
 public:
 	AP_Dialog_MailMerge(XAP_DialogFactory * pDlgFactory,
 						XAP_Dialog_Id id);
 	virtual ~AP_Dialog_MailMerge(void);
 
-	virtual void  runModal(XAP_Frame * pFrame) = 0;
-
-	typedef enum { a_OK=0, a_CANCEL=1 } tAnswer;
-
-	tAnswer	      getAnswer(void) const;
 	const UT_UTF8String& getMergeField() const;
 
 	void eventOpen ();
 
+	virtual void setActiveFrame(XAP_Frame *pFrame) { m_pFrame = pFrame; }
+
+	virtual void			destroy(void) {}
+	virtual void			activate(void) {}
+
 protected:
-	void          setAnswer(tAnswer a);
 	void          setMergeField(const UT_UTF8String & name);
 
 	virtual void setFieldList();
+
+	void addClicked();
 
 	XAP_Frame * m_pFrame;
 	UT_Vector m_vecFields;
 
 private:
 	UT_UTF8String m_mergeField;
-	AP_Dialog_MailMerge::tAnswer	m_answer;
 };
 
 #endif /* AP_DIALOG_MARKREVISIONS_H */

@@ -77,7 +77,6 @@ AP_UnixDialog_Replace::~AP_UnixDialog_Replace(void)
 
 void AP_UnixDialog_Replace::s_response_triggered(GtkWidget * widget, gint resp, AP_UnixDialog_Replace * dlg)
 {
-  UT_DEBUGMSG(("DOM: %d response\n", resp));
 	UT_return_if_fail(widget && dlg);
 
 	if ( resp == BUTTON_FIND )

@@ -53,7 +53,7 @@ AP_Win32Dialog_MailMerge::~AP_Win32Dialog_MailMerge(void)
 {
 }
 
-void AP_Win32Dialog_MailMerge::runModal(XAP_Frame * pFrame)
+void AP_Win32Dialog_MailMerge::runModeless(XAP_Frame * pFrame)
 {
 	UT_return_if_fail(pFrame);
 

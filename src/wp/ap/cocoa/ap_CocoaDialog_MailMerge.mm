@@ -55,7 +55,7 @@ AP_CocoaDialog_MailMerge::~AP_CocoaDialog_MailMerge(void)
 {
 }
 
-void AP_CocoaDialog_MailMerge::runModal(XAP_Frame * pFrame)
+void AP_CocoaDialog_MailMerge::runModeless(XAP_Frame * pFrame)
 {
 	UT_ASSERT(pFrame);
 

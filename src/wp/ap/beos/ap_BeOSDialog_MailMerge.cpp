@@ -51,7 +51,7 @@ AP_BeOSDialog_MailMerge::~AP_BeOSDialog_MailMerge(void)
 {
 }
 
-void AP_BeOSDialog_MailMerge::runModal(XAP_Frame * pFrame)
+void AP_BeOSDialog_MailMerge::runModeless(XAP_Frame * pFrame)
 {
 	UT_ASSERT(pFrame);
 

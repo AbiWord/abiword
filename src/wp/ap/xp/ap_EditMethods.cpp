@@ -8201,23 +8201,16 @@ Defun1(insMailMerge)
 	if (!pDialog)
 		return false;
 
-	pDialog->runModal(pFrame);
-
-	if (pDialog->getAnswer() == AP_Dialog_MailMerge::a_OK)
+	if(pDialog->isRunning())
 	{
-		const XML_Char * pParam = pDialog->getMergeField().utf8_str();
-		const XML_Char * pAttr[3];
-		const XML_Char param_name[] = "param";
-		pAttr[0] = static_cast<const XML_Char *>(&param_name[0]);
-		pAttr[1] = pParam;
-		pAttr[2] = 0;
-
-		pView->cmdInsertField("mail_merge",static_cast<const XML_Char **>(&pAttr[0]));
+		pDialog->activate();
 	}
-
-	pDialogFactory->releaseDialog(pDialog);
-
-	return true;
+	else
+	{
+		pDialog->runModeless(pFrame);
+	}
+	bool bOK = true;
+	return bOK;
 }
 
 Defun1(insFile)

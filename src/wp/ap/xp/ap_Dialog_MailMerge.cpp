@@ -24,27 +24,18 @@
 #include "xap_Dlg_FileOpenSaveAs.h"
 #include "ie_mailmerge.h"
 #include "xap_Frame.h"
+#include "fv_View.h"
 #include "ut_assert.h"
 
 AP_Dialog_MailMerge::AP_Dialog_MailMerge(XAP_DialogFactory * pDlgFactory,
 					   XAP_Dialog_Id id)
-	: XAP_Dialog_NonPersistent(pDlgFactory,id),  m_pFrame(0), m_answer(a_CANCEL)
+	: XAP_Dialog_Modeless(pDlgFactory,id),  m_pFrame(0)
 {
 }
 
 AP_Dialog_MailMerge::~AP_Dialog_MailMerge(void)
 {
 	UT_VECTOR_PURGEALL(UT_UTF8String*, m_vecFields);
-}
-
-void AP_Dialog_MailMerge::setAnswer(AP_Dialog_MailMerge::tAnswer a)
-{
-  m_answer = a;
-}
-
-AP_Dialog_MailMerge::tAnswer AP_Dialog_MailMerge::getAnswer(void) const
-{
-  return m_answer;
 }
 
 void AP_Dialog_MailMerge::setMergeField(const UT_UTF8String & name)
@@ -119,4 +110,21 @@ void AP_Dialog_MailMerge::setFieldList()
 {
 	// subclasses must override this
 	UT_ASSERT_NOT_REACHED();
+}
+
+void AP_Dialog_MailMerge::addClicked()
+{
+	XAP_Frame * pFrame = m_pFrame;
+	UT_ASSERT(pFrame);
+
+	FV_View * pView = static_cast<FV_View*>(pFrame->getCurrentView());
+
+	const XML_Char * pParam = getMergeField().utf8_str();
+	const XML_Char * pAttr[3];
+	const XML_Char param_name[] = "param";
+	pAttr[0] = static_cast<const XML_Char *>(&param_name[0]);
+	pAttr[1] = pParam;
+	pAttr[2] = 0;
+	
+	pView->cmdInsertField("mail_merge",static_cast<const XML_Char **>(&pAttr[0]));
 }
