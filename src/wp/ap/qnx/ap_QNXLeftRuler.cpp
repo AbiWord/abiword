@@ -255,8 +255,7 @@ int AP_QNXLeftRuler::_fe::expose(PtWidget_t * w, PhTile_t * damage)
 	PtArg_t args[1];
 	PhRect_t rect;
 	UT_Rect rClip;
-	//This will draw the basic widget
-	PtSuperClassDraw(PtBasic, w, damage);
+	
 	PtBasicWidgetCanvas(w, &rect);
 
 	AP_QNXLeftRuler ** ppQNXRuler = NULL, *pQNXRuler = NULL;

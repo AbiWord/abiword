@@ -306,8 +306,6 @@ int AP_QNXTopRuler::_fe::expose(PtWidget_t * w, PhTile_t *damage)
 {
 	PtArg_t args[1];
 	PhRect_t rect;
-
-	PtSuperClassDraw(PtBasic, w, damage);
 	PtBasicWidgetCanvas(w, &rect);
 
 	AP_QNXTopRuler ** ppQNXRuler = NULL, *pQNXRuler = NULL;
