@@ -787,6 +787,10 @@ IE_Imp_MsWord_97::~IE_Imp_MsWord_97()
 
 	UT_VECTOR_PURGEALL(ListIdLevelPair *, m_vLists);
 	UT_VECTOR_PURGEALL(emObject *, m_vecEmObjects);
+	UT_VECTOR_PURGEALL(textboxPos *, m_vecTextboxPos);
+
+	if(m_pTextboxes)
+		delete [] m_pTextboxes;
 
 	if(m_pFootnotes)
 		delete [] m_pFootnotes;
@@ -815,7 +819,9 @@ IE_Imp_MsWord_97::IE_Imp_MsWord_97(PD_Document * pDocument)
 	m_iFootnotesCount(0),
 	m_pEndnotes(NULL),
 	m_iEndnotesCount(0),
-	m_iMSWordListId(0),
+	m_pTextboxes(NULL),
+	m_iTextboxCount(0),
+    m_iMSWordListId(0),
     m_bEncounteredRevision(false),
     m_bInTable(false),
 	m_iRowsRemaining(0),
@@ -851,15 +857,19 @@ IE_Imp_MsWord_97::IE_Imp_MsWord_97(PD_Document * pDocument)
 	m_dim(DIM_IN),
 	m_iLeft(0),
 	m_iRight(0),
-	m_iTextBoxesStart(0xffffffff),
-	m_iTextBoxesEnd(0xffffffff),
+	m_iTextboxesStart(0xffffffff),
+	m_iTextboxesEnd(0xffffffff),
+	m_iNextTextbox(0),
 	m_iPrevHeaderPosition(0xffffffff),
 	m_bEvenOddHeaders(false),
 	m_bInTOC(false),
-	m_bTOCsupported(false)
+	m_bTOCsupported(false),
+	m_bInTextboxes(false),
+	m_pTextboxEndSection(NULL)
 {
   for(UT_uint32 i = 0; i < 9; i++)
 	  m_iListIdIncrement[i] = 0;
+  m_vecTextboxPos.clear();
 }
 
 /****************************************************************************/
@@ -1455,12 +1465,12 @@ int IE_Imp_MsWord_97::_docProc (wvParseStruct * ps, UT_uint32 tag)
 		if(m_iEndnotesEnd == 0xffffffff)
 			m_iEndnotesEnd = m_iEndnotesStart;
 		
-		m_iTextBoxesStart = m_iEndnotesEnd;
-		m_iTextBoxesEnd = m_iTextBoxesStart + ps->fib.ccpTxbx;
-		UT_DEBUGMSG(("Size of text in textboxze %d \n", ps->fib.ccpTxbx));
+		m_iTextboxesStart = m_iEndnotesEnd;
+		m_iTextboxesEnd = m_iTextboxesStart + ps->fib.ccpTxbx;
+		UT_DEBUGMSG(("Size of all text in all textboxes %d \n", ps->fib.ccpTxbx));
 
-		if(m_iTextBoxesEnd == 0xffffffff)
-			m_iTextBoxesEnd = m_iTextBoxesStart;
+		if(m_iTextboxesEnd == 0xffffffff)
+			m_iTextboxesEnd = m_iTextboxesStart;
 		UT_DEBUGMSG(("  Found %d Positioned TextBoxes \n",ps->nooffspa));
 		// now retrieve the note info ...
 		_handleNotes(ps);
@@ -1580,9 +1590,9 @@ int IE_Imp_MsWord_97::_charProc (wvParseStruct *ps, U16 eachchar, U8 chartype, U
 {
 	// make sure we are not past the end of the document ...
 	// this can happen with some complex documents
-	if(ps->currentcp >= m_iEndnotesEnd)
+	if(ps->currentcp >= m_iTextboxesEnd)
 	{
-		UT_DEBUGMSG(("IE_Imp_MsWord_97::_charProc: processing past end of document !!!\n"));
+		UT_DEBUGMSG(("IE_Imp_MsWord_97::_charProc: processing past end of document !!! %d \n",ps->currentcp ));
 		return 0;
 	}
 	
@@ -1600,6 +1610,8 @@ int IE_Imp_MsWord_97::_charProc (wvParseStruct *ps, U16 eachchar, U8 chartype, U
 	if(!_handleHeadersText(ps->currentcp,true))
 		return 0;
 	if(!_handleNotesText(ps->currentcp))
+		return 0;
+	if(!_handleTextboxesText(ps->currentcp))
 		return 0;
 
 	// insert any required bookmarks, but only if we are not in a
@@ -1712,6 +1724,9 @@ int IE_Imp_MsWord_97::_specCharProc (wvParseStruct *ps, U16 eachchar, CHP *achp)
 		return 0;
 
 	if(!_handleNotesText(ps->currentcp))
+		return 0;
+
+	if(!_handleTextboxesText(ps->currentcp))
 		return 0;
 
 	// insert any required bookmarks, but only if we are not in a
@@ -1828,7 +1843,15 @@ int IE_Imp_MsWord_97::_specCharProc (wvParseStruct *ps, U16 eachchar, CHP *achp)
 					UT_DEBUGMSG(("No fspa! Panic and Insanity Abounds!\n"));
 					return 0;
 				}
-
+				UT_DEBUGMSG(("Found a psfa! \n"));
+				double dLeft,dRight,dTop,dBottom = 0.0;
+				dLeft = static_cast<double>(fspa->xaLeft)/1440.0;
+				dRight = static_cast<double>(fspa->xaRight)/1440.0;
+				dTop = static_cast<double>(fspa->yaTop)/1440.0;
+				dBottom = static_cast<double>(fspa->yaBottom)/1440.0;
+				UT_DEBUGMSG(("Left %f Right %f Top %f Bottom %f \n",dLeft,dRight,dTop,dBottom));
+				UT_DEBUGMSG(("spid %d cTxbx %d \n",fspa->spid,fspa->cTxbx));
+				UT_DEBUGMSG(("fHdr %d bx %d by %d wr %d wrk %d fRcaSimple %d fBelowText %d fAnchorLock %d \n",fspa->fHdr,fspa->bx,fspa->by,fspa->wr,fspa->wrk,fspa->fRcaSimple,fspa->fBelowText,fspa->fAnchorLock));
 				if (wv0x08(&blip, fspa->spid, ps))
 				{
 					this->_handleImage(&blip, fspa->xaRight-fspa->xaLeft,
@@ -1836,8 +1859,65 @@ int IE_Imp_MsWord_97::_specCharProc (wvParseStruct *ps, U16 eachchar, CHP *achp)
 				}
 				else
 				{
-					UT_DEBUGMSG(("Dom: no graphic data!\n"));
-					return 0;
+					UT_DEBUGMSG(("Dom: no graphic data! Assume Text box!\n"));
+					const char * atts[] = {"props",NULL,NULL,NULL};
+					UT_String sProps;
+					UT_String sVal;
+					sProps.clear();
+					sProps = "frame-type:";
+					sProps += "textbox; ";
+					sProps += "position-to:";
+					if(fspa->by ==2)
+					{
+						sVal = "block-above-text; ";
+					}
+					else if(fspa->by ==0)
+					{
+						sVal = "column-above-text; ";
+					}
+					else if(fspa->by ==1)
+					{
+						sVal = "column-above-text; "; // should be page-above-text
+					}
+					sProps += sVal;
+					sProps += "xpos:";
+					UT_String_sprintf(sVal,"%f",dLeft);
+					sVal += "in; ";
+
+					sProps += sVal;
+					sProps += "ypos:";
+					UT_String_sprintf(sVal,"%f",dTop);
+					sVal += "in; ";
+
+					sProps += sVal;
+					sProps += "frame-col-xpos:";
+					UT_String_sprintf(sVal,"%f",dLeft);
+					sVal += "in; ";
+
+					sProps += sVal;
+					sProps += "frame-col-ypos:";
+					UT_String_sprintf(sVal,"%f",dTop);
+					sVal += "in; ";
+					sProps += sVal;
+
+					sProps += "frame-width:";
+					UT_String_sprintf(sVal,"%f",dRight-dLeft);
+					sVal += "in; ";
+					sProps += sVal;
+
+					UT_DEBUGMSG(("Inserting Frame of width %s \n",sVal.c_str()));
+					sProps += "frame-height:";
+					UT_String_sprintf(sVal,"%f",dBottom-dTop);
+					sVal += "in";
+					sProps += sVal;
+					atts[1] = sProps.c_str();
+					_appendStrux(PTX_SectionFrame,atts);
+					_appendStrux(PTX_EndFrame,atts);
+					textboxPos * pPos = new textboxPos;
+					pPos->lid = fspa->spid;
+					pPos->endFrame = getDoc()->getLastFrag();
+					m_vecTextboxPos.addItem(pPos);
+					return true;
 				}
 			}
 			else
@@ -1880,9 +1960,9 @@ int IE_Imp_MsWord_97::_eleProc(wvParseStruct *ps, UT_uint32 tag,
 {
 	// make sure we are not past the end of the document ...
 	// this can happen with some complex documents
-	if(ps->currentcp >= m_iEndnotesEnd)
+	if(ps->currentcp >= m_iTextboxesEnd)
 	{
-		UT_DEBUGMSG(("IE_Imp_MsWord_97::_eleProc: processing past end of document !!!\n"));
+		UT_DEBUGMSG(("IE_Imp_MsWord_97::_eleProc: processing past end of document !!! %d \n",ps->currentcp >= m_iTextboxesEnd));
 		return 0;
 	}
 	
@@ -2410,7 +2490,8 @@ int IE_Imp_MsWord_97::_beginPara (wvParseStruct *ps, UT_uint32 tag,
 	{
 		bDoNotInsertStrux = true;
 	}
-	 
+	
+
 	// the header section requires even more special care; since we
 	// need to insert the HdrFtr strux for each header before we can
 	// insert the block, we do not want a strux inserted at the start
@@ -5259,16 +5340,60 @@ void IE_Imp_MsWord_97::_handleTextBoxes(const wvParseStruct *ps)
 	UT_uint32 *pPLCF_dgg = NULL;
 	UT_uint32 *pPLCF_txt = NULL;
 
-	bool bNoteError = false;
+	if(m_pTextboxes)
+	{
+		delete [] m_pTextboxes;
+		m_pTextboxes = NULL;
+	}
 
+	bool bTextboxError = false;
+	m_iTextboxCount = 0;
+	UT_uint32 i = 0;
 	if(ps->fib.ccpTxbx > 0)
 	{
+		m_iTextboxCount = ps->nooffspa;
+		m_pTextboxes = new textbox [m_iTextboxCount];
+
+		
+		// this is really quite straight forward; we retrieve the PLCF
+		// chunks that describe the references/text of the textboxes, and
+		// then use those to init our textbox stucts
+		// for n textboxes the reference PLCF is a sequnce of (n+1) doc
+		// positions (UT_uint32) followed by n type flags (UT_uint16)
+		// the text PLCF is a sequence of n+2 positions (UT_uint32) of the 
+        // textbox
+		// text in its data stream
+
+// This appears to be identical to how footnotes/endnotes are handled.
+
 		if(wvGetPLCF((void **) &pPLCF_dgg, ps->fib.fcDggInfo, ps->fib.lcbDggInfo, ps->tablefd))
 		{
-			bNoteError = true;
+			bTextboxError = true;
 		}
-
 		UT_DEBUGMSG(("IE_Imp_MsWord_97::_handleTextBoxes: dgginfo size %d bytes\n", ps->fib.ccpTxbx));
+		
+		UT_DEBUGMSG(("IE_Imp_MsWord_97::_handleTextBoxes: fib.lid %d \n", ps->fib.lid));
+		if(!bTextboxError && 		   
+		   wvGetPLCF((void **) &pPLCF_txt, ps->fib.fcPlcftxbxTxt, ps->fib.lcbPlcftxbxTxt, ps->tablefd))
+		{
+			bTextboxError = true;
+		}
+		if(!bTextboxError)
+		{
+			UT_return_if_fail(pPLCF_dgg && pPLCF_txt);
+			for(i = 0; i < m_iTextboxCount; i++)
+			{
+				m_pTextboxes[i].ref_pos = pPLCF_dgg[i];
+				m_pTextboxes[i].txt_pos = pPLCF_txt[i] + m_iTextboxesStart;
+				m_pTextboxes[i].txt_len = pPLCF_txt[i+1] - pPLCF_txt[i];
+				UT_DEBUGMSG(("IE_Imp_MsWord_97::_handleTextbox: Tbox %d, rpos %d, tpos %d len %d \n",
+							 i, m_pTextboxes[i].ref_pos, m_pTextboxes[i].txt_pos,m_pTextboxes[i].txt_len));
+			}
+
+			wvFree(pPLCF_dgg);
+			wvFree(pPLCF_txt);
+
+		}
 	}
 	
 }
@@ -5617,6 +5742,93 @@ bool IE_Imp_MsWord_97::_handleNotesText(UT_uint32 iDocPosition)
 	return true;
 }
 
+
+
+/*!
+    This function makes sure that the insert is happening at the
+    correct place if we are in a segment which belongs to one of the
+    set of Textboxes
+
+    \parameter UT_uint32 iDocPosition: character position in the Word
+                                       document stream
+    \return returns false if the present character is to be skipped,
+            true otherwise
+*/
+bool IE_Imp_MsWord_97::_handleTextboxesText(UT_uint32 iDocPosition)
+{
+	if(iDocPosition >= m_iTextboxesStart && iDocPosition < m_iTextboxesEnd)
+	{
+		// upon entry into the Textland-land, we will need to search for
+		// the first Textbox section in our document, note that we are
+		// in a Textbox section, note at what doc position the current
+		// textbox will end, and then let things run until we reach
+		// the end of the textbox; then we need to search for the next
+		// doc section, etc.
+
+
+		// when in a Text box section, all the functions that normally
+		// use append methods will need to use insert methods instead
+
+		if(!m_bInTextboxes)
+		{
+			UT_DEBUGMSG(("In Textbox territory: pos %d\n", iDocPosition));
+			m_bInTextboxes = true;
+			m_bInFNotes = false;
+			m_bInHeaders = false;
+			
+			// we will reuse the m_iNextTextbox variable, noting it
+			// refers to the CURRENT textbox
+
+			m_iNextTextbox = 0;
+			_findNextTextboxSection();
+			_endSect(NULL,0,NULL,0);
+			m_bInSect = true;
+		}
+
+		// the current footnote will end at pos
+		// f.txt_pos + f.txt_len, 
+		if(iDocPosition == m_pTextboxes[m_iNextTextbox].txt_pos +
+		                   m_pTextboxes[m_iNextTextbox].txt_len)
+		{
+			m_iNextTextbox++;
+
+			// after the last footnote there is an extra paragraph
+			// marker that is still a part of the footnote section --
+			// we do not want that marker imported
+			if(m_iNextTextbox < m_iTextboxCount)
+				_findNextTextboxSection();
+			else
+			{
+				UT_DEBUGMSG(("End of Textbox marker at pos %d\n", iDocPosition));
+				return false;
+			}
+		}
+
+		if(iDocPosition == m_pTextboxes[m_iNextTextbox].txt_pos)
+		{
+			const XML_Char * attribsB[] = {"props", NULL,
+											"style", NULL,
+											NULL};
+
+			attribsB[1] = m_paraProps.c_str();
+			attribsB[3] = m_paraStyle.c_str();
+
+			_appendStrux(PTX_Block,attribsB);
+			m_bInPara = true;
+			return true;
+		}
+		
+		UT_DEBUGMSG(("In Textbox %d, on pos %d\n", m_iNextTextbox, iDocPosition));
+	}
+	else if(m_bInTextboxes)
+	{
+		m_bInTextboxes = false;
+		UT_DEBUGMSG(("Leaving Textbox territory\n"));
+	}
+	
+	return true;
+}
+
 bool IE_Imp_MsWord_97::_findNextFNoteSection()
 {
 	if(!m_iNextFNote)
@@ -5640,6 +5852,53 @@ bool IE_Imp_MsWord_97::_findNextFNoteSection()
 	if(!m_pNotesEndSection)
 	{
 		UT_DEBUGMSG(("Error: footnote section not found!!!\n"));
+		return false;
+	}
+
+	return true;
+}
+
+
+///////////////////////////////////////////////////////////////////////
+/*!
+ * s_cmp_lids This function is used to sort the textboxPos lids in order
+ * of their lid values. This matches the order of the text sort in the
+ * in the out-of-stream table.
+ * Used by theqsort method on UT_Vector.
+\params const void * P1  - pointer to a textboxPos pointer
+\params const void * P2  - pointer to a textboxPos pointer
+\returns -ve if sz1 < sz2, 0 if sz1 == sz2, +ve if sz1 > sz2
+*/
+static UT_sint32 s_cmp_lids(const void * P1, const void * P2)
+{
+	const textboxPos ** pP1 = (const textboxPos **) P1;
+	const textboxPos ** pP2 = (const textboxPos **) P2;
+	UT_uint32 lid1 = (*pP1)->lid;
+	UT_uint32 lid2 = (*pP2)->lid;
+	return static_cast<UT_sint32>(lid1) - static_cast<UT_sint32>(lid2);
+}
+
+bool IE_Imp_MsWord_97::_findNextTextboxSection()
+{
+	if(m_iNextTextbox == 0)
+	{
+		// move to the start of the doc first
+		m_pTextboxEndSection = NULL;
+		m_vecTextboxPos.qsort(s_cmp_lids);
+		
+	}
+	if(m_iNextTextbox >= m_vecTextboxPos.getItemCount())
+	{
+		UT_DEBUGMSG(("Error: Textbox section not found!!!\n"));
+		return false;
+	}
+
+	textboxPos * pPos = m_vecTextboxPos.getNthItem(m_iNextTextbox);
+	m_pTextboxEndSection = pPos->endFrame;
+
+	if(!m_pTextboxEndSection)
+	{
+		UT_DEBUGMSG(("Error: Textbox section not found!!!\n"));
 		return false;
 	}
 
@@ -5676,7 +5935,7 @@ bool IE_Imp_MsWord_97::_findNextENoteSection()
 
 bool IE_Imp_MsWord_97::_shouldUseInsert() const
 {
-	return ((m_bInFNotes || m_bInENotes) && !m_bInHeaders);
+	return ((m_bInFNotes || m_bInENotes) && !m_bInHeaders && !m_bInTextboxes);
 }
 
 bool IE_Imp_MsWord_97::_appendStrux(PTStruxType pts, const XML_Char ** attributes)
@@ -5688,6 +5947,10 @@ bool IE_Imp_MsWord_97::_appendStrux(PTStruxType pts, const XML_Char ** attribute
 	else if(_shouldUseInsert() && m_pNotesEndSection)
 	{
 		return getDoc()->insertStruxBeforeFrag(m_pNotesEndSection, pts, attributes);
+	}
+	else if(m_bInTextboxes && m_pTextboxEndSection)
+	{
+		return getDoc()->insertStruxBeforeFrag(m_pTextboxEndSection, pts, attributes);
 	}
 
 	return getDoc()->appendStrux(pts, attributes);
@@ -5702,6 +5965,10 @@ bool IE_Imp_MsWord_97::_appendObject(PTObjectType pto, const XML_Char ** attribu
 	else if(_shouldUseInsert() && m_pNotesEndSection)
 	{
 		return getDoc()->insertObjectBeforeFrag(m_pNotesEndSection, pto, attributes);
+	}
+	else if(m_bInTextboxes && m_pTextboxEndSection)
+	{
+		return getDoc()->insertObjectBeforeFrag(m_pTextboxEndSection, pto, attributes);
 	}
 	if(!m_bInPara)
 	{
@@ -5721,7 +5988,10 @@ bool IE_Imp_MsWord_97::_appendSpan(const UT_UCSChar * p, UT_uint32 length)
 	{
 		return getDoc()->insertSpanBeforeFrag(m_pNotesEndSection, p, length);
 	}
-
+	else if(m_bInTextboxes && m_pTextboxEndSection)
+	{
+		return getDoc()->insertSpanBeforeFrag(m_pTextboxEndSection, p, length);
+	}
 	return getDoc()->appendSpan(p, length);
 }
 

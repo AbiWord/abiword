@@ -1936,7 +1936,7 @@ bool fl_BlockLayout::setFramesOnPage(fp_Line * pLastLine)
 				}
 			}
 		}
-		if(pFrame->getFramePositionTo() == FL_FRAME_POSITIONED_TO_COLUMN_ABOVE_TEXT)
+		else if(pFrame->getFramePositionTo() == FL_FRAME_POSITIONED_TO_COLUMN_ABOVE_TEXT)
 		{
 			fp_FrameContainer * pFrameCon = getNthFrameContainer(i);
 			//
