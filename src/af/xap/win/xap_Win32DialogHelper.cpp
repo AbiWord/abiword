@@ -58,51 +58,6 @@ void XAP_Win32DialogHelper::runModal(XAP_Frame * pFrame, XAP_Dialog_Id dialog_id
 }
 
 
-/*
-
-*/
-bool XAP_Win32DialogHelper::_findIconDataByName(const char * szName, const char *** pIconData, UT_uint32 * pSizeofData) 
-{
-	if (!szName || !*szName || (UT_stricmp(szName,"NoIcon")==0))
-		return false;
-
-	UT_uint32 kLimit = NrElements(s_itTable);
-	UT_uint32 k;
-
-	for (k=0; k < kLimit; k++)
-		if (UT_stricmp(szName,s_itTable[k].m_name) == 0)
-		{
-			*pIconData = s_itTable[k].m_staticVariable;
-			*pSizeofData = s_itTable[k].m_sizeofVariable;
-			return true;
-		}
-
-	return false;
-}
-
-/*
-
-*/
-bool XAP_Win32DialogHelper::getBitmapForIcon(HWND hwnd, UT_uint32 maxWidth, UT_uint32 maxHeight,UT_RGBColor * pColor, const char * szIconName, HBITMAP * pBitmap) 
-{
-	UT_ASSERT(hwnd);
-	UT_ASSERT(szIconName && *szIconName);
-	UT_ASSERT(pBitmap);
-	*pBitmap = NULL;
-	
-	const char ** pIconData = NULL;
-	UT_uint32 sizeofIconData = 0;		// number of cells in the array
-	
-	bool bFound = _findIconDataByName(szIconName, &pIconData, &sizeofIconData);
-	if (!bFound)
-		return false;
-
-	HDC hdc = GetDC(hwnd);
-	bool bCreated = UT_Xpm2Bmp(maxWidth,maxHeight,pIconData,sizeofIconData,hdc,pColor,pBitmap);
-	ReleaseDC(hwnd,hdc);
-
-	return bCreated;
-}
 
 void XAP_Win32DialogHelper::runModeless(XAP_Frame * pFrame, XAP_Dialog_Id dialog_id, UT_sint32 resource_id, XAP_Dialog_Modeless *p_dialog)
 {

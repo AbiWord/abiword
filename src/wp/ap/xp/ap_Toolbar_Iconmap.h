@@ -92,8 +92,12 @@ toolbariconmap(DELETE_ROW, tb_delete_row_xpm)
 toolbariconmap(DELETE_COLUMN, tb_delete_column_xpm)
 toolbariconmap(MERGE_CELLS, tb_merge_cells_xpm)
 toolbariconmap(SPLIT_CELLS, tb_split_cells_xpm)
-toolbariconmap(_BOGUS2__,NoIcon)
+toolbariconmap(MERGELEFT, tb_MergeLeft_xpm)
+toolbariconmap(MERGERIGHT, tb_MergeRight_xpm)
+toolbariconmap(MERGEABOVE, tb_MergeAbove_xpm)
+toolbariconmap(MERGEBELOW, tb_MergeBelow_xpm)
 // Add new default icons here		
+toolbariconmap(_BOGUS2__,NoIcon)
 		
 // Mappings to ID_LANG to non-default icons
 toolbariconmap(FMT_BOLD_ca-ES,tb_text_bold_N_xpm)

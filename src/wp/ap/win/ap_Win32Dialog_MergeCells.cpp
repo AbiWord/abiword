@@ -26,14 +26,14 @@
 #include "xap_App.h"
 #include "xap_Win32App.h"
 #include "xap_Win32Frame.h"
+#include "xap_Win32Toolbar_Icons.h"
+#include "xap_Win32DialogHelper.h"
 
 #include "ap_Strings.h"
 #include "ap_Dialog_Id.h"
 #include "ap_Dialog_MergeCells.h"
 #include "ap_Win32Dialog_MergeCells.h"
 #include "ap_Win32Resources.rc2"
-#include "xap_Win32DialogHelper.h"
-
 
 
 #define GWL(hwnd)		(AP_Win32Dialog_MergeCells*)GetWindowLong((hwnd), DWL_USER)
@@ -109,7 +109,7 @@ HBITMAP AP_Win32Dialog_MergeCells::_loadBitmap(HWND hWnd, UINT nId, char* pName,
 {
 	HBITMAP hBitmap = NULL;
 	
-	XAP_Win32DialogHelper::getBitmapForIcon(hWnd, x,y, &color,	pName,	&hBitmap);	
+	AP_Win32Toolbar_Icons::getBitmapForIcon(hWnd, x,y, &color,	pName,	&hBitmap);	
 				
 	SendDlgItemMessage(hWnd,  nId, 
         	            BM_SETIMAGE,  IMAGE_BITMAP, (LPARAM) hBitmap);				
@@ -147,10 +147,10 @@ BOOL AP_Win32Dialog_MergeCells::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM l
 	y = rect.bottom - rect.top,
 	
 	// Load the bitmaps into the dialog box								
-    m_hBitmapLeft = _loadBitmap(hWnd,AP_RID_DIALOG_MERGECELLS_BMP_LEFT, "tb_MergeLeft_xpm",  x, y, Color);
-    m_hBitmapRight = _loadBitmap(hWnd,AP_RID_DIALOG_MERGECELLS_BMP_RIGHT, "tb_MergeRight_xpm", x, y, Color);
-    m_hBitmapAbove = _loadBitmap(hWnd,AP_RID_DIALOG_MERGECELLS_BMP_ABOVE, "tb_MergeAbove_xpm", x, y, Color);
-    m_hBitmapBelow = _loadBitmap(hWnd,AP_RID_DIALOG_MERGECELLS_BMP_BELOW, "tb_MergeBelow_xpm", x, y, Color);
+    m_hBitmapLeft = _loadBitmap(hWnd,AP_RID_DIALOG_MERGECELLS_BMP_LEFT, "MERGELEFT",  x, y, Color);
+    m_hBitmapRight = _loadBitmap(hWnd,AP_RID_DIALOG_MERGECELLS_BMP_RIGHT, "MERGERIGHT", x, y, Color);
+    m_hBitmapAbove = _loadBitmap(hWnd,AP_RID_DIALOG_MERGECELLS_BMP_ABOVE, "MERGEABOVE", x, y, Color);
+    m_hBitmapBelow = _loadBitmap(hWnd,AP_RID_DIALOG_MERGECELLS_BMP_BELOW, "MERGEBELOW", x, y, Color);
 	
 	setAllSensitivities();
 	XAP_Win32DialogHelper::s_centerDialog(hWnd);	

@@ -109,6 +109,9 @@ toolbaritem(DELETE_ROW)
 toolbaritem(DELETE_COLUMN)
 toolbaritem(MERGE_CELLS)
 toolbaritem(SPLIT_CELLS)
-
+toolbaritem(MERGELEFT)
+toolbaritem(MERGERIGHT)
+toolbaritem(MERGEABOVE)
+toolbaritem(MERGEBELOW)
 
 

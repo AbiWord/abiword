@@ -30,30 +30,9 @@
 
 #include <commctrl.h>
 
-#include "xap_Win32Toolbar_Icons.h"
-#include "ap_Toolbar_Icons_All.h"
-
-
-#define DefineToolbarIcon(name)		{ #name, (const char **) name, sizeof(name)/sizeof(name[0]) },
-
-struct _it
-{
-	const char *				m_name;
-	const char **				m_staticVariable;
-	UT_uint32					m_sizeofVariable;
-};
-
-static struct _it s_itTable[] =
-{
-	#include "ap_Toolbar_Icons_All.h"	
-};
-
-
 /*****************************************************************/
-
 #include "XAP_Win32Frame.h"
 #include "ut_Xpm2Bmp.h"
-
 
 class XAP_Win32Dialog
 {
@@ -139,10 +118,6 @@ public:
 	void 				centerDialog();
 	static void			s_centerDialog(HWND hWnd);
 	void				setHandle(HWND hWnd){m_hDlg=hWnd;};
-	
-	// XPM Icon conversion
-	static bool				 _findIconDataByName(const char * szName, const char *** pIconData, UT_uint32 * pSizeofData);
-	static bool 				getBitmapForIcon(HWND hwnd, UT_uint32 maxWidth, UT_uint32 maxHeight,UT_RGBColor * pColor, const char * szIconName, HBITMAP * pBitmap);
 	
 private:
 	XAP_Win32Dialog	*			m_pDialog;
