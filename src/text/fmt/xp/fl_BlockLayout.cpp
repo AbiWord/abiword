@@ -4362,8 +4362,9 @@ bool fl_BlockLayout::doclistener_insertSection(const PX_ChangeRecord_Strux * pcr
 		if(pszNewID)
 		{
 		  // plam mystery code
+			// plam, MES here, I need this code for inserting headers/footers.
 		  UT_DEBUGMSG(("new id: tell plam if you see this message\n"));
-		  UT_ASSERT(0);
+//		  UT_ASSERT(0);
 			fl_DocSectionLayout* pDocSL = m_pLayout->findSectionForHdrFtr((char*)pszNewID);
 			UT_ASSERT(pDocSL);
 //

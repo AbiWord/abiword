@@ -6880,37 +6880,16 @@ bool FV_View::insertHeaderFooter(const XML_Char ** props, HdrFtrType hfType, fl_
 	m_pDoc->changeStruxFmt(PTC_AddFmt, posSec, posSec, sec_attributes2, NULL, PTX_Section);
 
 
-	moveInsPtTo(FV_DOCPOS_EOD); // Move to the end, where we will create the page numbers
+	moveInsPtTo(FV_DOCPOS_EOD); // Move to the end, where we will create the header/footer
 
 
 // insert the Header/Footer
-	PT_DocPosition dpBefore = getPoint();
-	m_pDoc->insertStrux(getPoint(), PTX_SectionHdrFtr);
+	PT_DocPosition posBlock = getPoint() +1;
+	m_pDoc->insertStrux(getPoint(), PTX_SectionHdrFtr,sec_attributes1, NULL);
+
 // Now the block strux for the content
 
-	_setPoint(m_iInsPoint+1);
-	m_pDoc->insertStrux(getPoint(), PTX_Block);
-//
-// Have to do this coz of the funny state the block is in until the change strux
-//
-	_setPoint(m_iInsPoint+1);
-
-//
-// Give the Footer section the properties it needs to attach itself to the
-// correct DocSectionLayout.
-//
-	// This song and dance is needed to prevent the bkgd spell
-	// checker from asserting about a bad docposition (no block).  Ugh.
-	PT_DocPosition dpAfter = getPoint(); 
-	_setPoint(dpBefore);
- 	m_pDoc->changeStruxFmt(PTC_AddFmt, dpAfter, dpAfter,
-						   sec_attributes1, NULL, PTX_SectionHdrFtr);
-
-	// Change the formatting of the new footer appropriately
-	//(currently just center it)
-
-	m_pDoc->changeStruxFmt(PTC_AddFmt, dpAfter, dpAfter, NULL, props, PTX_Block);
-	_setPoint(dpAfter);
+	m_pDoc->insertStrux(posBlock, PTX_Block,NULL, props);
 
 // OK it's in!
  	m_pDoc->signalListeners(PD_SIGNAL_REFORMAT_LAYOUT);

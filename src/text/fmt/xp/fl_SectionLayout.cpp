@@ -3280,7 +3280,7 @@ fl_HdrFtrShadow::fl_HdrFtrShadow(FL_DocLayout* pLayout, fp_Page* pPage, fl_HdrFt
 	m_pPage->getHdrFtrContainer(m_pHdrFtrSL);
 	UT_DEBUGMSG(("check that m_iType is indeed FL_SECTION_SHADOW"));
 	UT_ASSERT(m_iType == FL_SECTION_SHADOW);
-	UT_ASSERT(0);
+//	UT_ASSERT(0);
 	fl_Layout::setType(PTX_Section); // Set the type of this strux
 }
 
@@ -3421,20 +3421,20 @@ void fl_HdrFtrShadow::updateLayout(void)
 	if(bredraw)
 	{
 		//    clearScreen();
-		m_pContainer->layout();
+		static_cast<fp_ShadowContainer *>(getFirstContainer())->layout();
  	}
 }
 
 void fl_HdrFtrShadow::layout(void)
 {
-	m_pContainer->layout();
+	static_cast<fp_ShadowContainer *>(getFirstContainer())->layout();
 }
 
 void fl_HdrFtrShadow::clearScreen(void)
 {
-	UT_ASSERT(m_pContainer);
-	if(m_pContainer)
-		m_pContainer->clearScreen();
+	UT_ASSERT(getFirstContainer());
+	if(getFirstContainer())
+		static_cast<fp_ShadowContainer *>(getFirstContainer())->clearScreen();
 }
 
 void fl_HdrFtrShadow::redrawUpdate(void)
@@ -3457,7 +3457,7 @@ void fl_HdrFtrShadow::redrawUpdate(void)
 		}
 		pBL = pBL->getNext();
 	}
-	m_pContainer->layout();
+	static_cast<fp_ShadowContainer *>(getFirstContainer())->layout();
 }
 bool fl_HdrFtrShadow::doclistener_changeStrux(const PX_ChangeRecord_StruxChange * pcrxc)
 {
@@ -3602,12 +3602,6 @@ bool fl_ShadowListener::populateStrux(PL_StruxDocHandle sdh,
 	const PX_ChangeRecord_Strux * pcrx = static_cast<const PX_ChangeRecord_Strux *> (pcr);
 
 	FV_View* pView = m_pHFSL->getDocLayout()->getView();
-	PT_DocPosition oldPos = 0;
-	if(pView != NULL)
-	{
-		oldPos = pView->getPoint();
-	}
-
 	switch (pcrx->getStruxType())
 	{
 	case PTX_Section:
@@ -3720,22 +3714,11 @@ bool fl_ShadowListener::populateStrux(PL_StruxDocHandle sdh,
 
 	default:
 		UT_ASSERT(0);
-		//
-		// We're not printing
-		//
-		if(pView != NULL)
-		{
-			pView->setPoint(oldPos);
-		}
 		return false;
 	}
 	//
 	// We're not printing
 	//
-	if(pView != NULL)
-	{
-		pView->setPoint(oldPos);
-	}
 	return true;
 }
 
