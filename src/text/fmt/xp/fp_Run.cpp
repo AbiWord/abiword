@@ -118,7 +118,8 @@ fp_Run::fp_Run(fl_BlockLayout* pBL,
 		m_iOverlineXoff(0),
 		m_pHyperlink(0),
 		m_pRevisions(NULL),
-		m_eHidden(FP_VISIBLE)
+		m_eHidden(FP_VISIBLE),
+		m_bIsCleared(true)
 {
         // set the default background color and the paper color of the
 	    // section owning the run.
@@ -696,6 +697,16 @@ bool fp_Run::isFirstVisRunOnLine(void) const
 	return (getLine()->getFirstVisRun() == this);
 }
 
+void fp_Run::markAsDirty(void)
+{
+	m_bDirty = true;
+}
+
+void fp_Run::setCleared(void)
+{
+	m_bIsCleared = true;
+}
+
 bool fp_Run::isOnlyRunOnLine(void) const
 {
 	if (getLine()->countRuns() == 1)
@@ -734,7 +745,7 @@ void fp_Run::clearScreen(bool bFullLineHeightRect)
 		return;
 	}
 
-	if (isDirty())
+	if (m_bIsCleared)
 	{
 		// no need to clear if we've already done so.
 		return;
@@ -764,6 +775,7 @@ void fp_Run::clearScreen(bool bFullLineHeightRect)
 			// make sure we only get erased once
 			_setDirty(true);
 			markAsDirty();
+			m_bIsCleared = true;
 		}
 		else
 		{
@@ -820,6 +832,7 @@ void fp_Run::draw(dg_DrawArgs* pDA)
 		xxx_UT_DEBUGMSG(("fp_Run::Run %x not dirty returning \n",this));
 		return;
 	}
+	m_bIsCleared = false;
 	if (getLine())
 		getLine()->setScreenCleared(false);
 
@@ -1511,7 +1524,7 @@ eTabType fp_TabRun::getTabType(void) const
 
 void fp_TabRun::_clearScreen(bool /* bFullLineHeightRect */)
 {
-	UT_ASSERT(!isDirty());
+	//	UT_ASSERT(!isDirty());
 	UT_ASSERT(getGraphics()->queryProperties(GR_Graphics::DGP_SCREEN));
 
 	UT_sint32 xoff = 0, yoff = 0;
@@ -1838,7 +1851,7 @@ void fp_ForcedLineBreakRun::findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_
 
 void fp_ForcedLineBreakRun::_clearScreen(bool /* bFullLineHeightRect */)
 {
-	UT_ASSERT(!isDirty());
+	//	UT_ASSERT(!isDirty());
 	UT_ASSERT(getGraphics()->queryProperties(GR_Graphics::DGP_SCREEN));
 }
 
@@ -1996,7 +2009,7 @@ void fp_FieldStartRun::findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint3
 
 void fp_FieldStartRun::_clearScreen(bool /* bFullLineHeightRect */)
 {
-	UT_ASSERT(!isDirty());
+	//	UT_ASSERT(!isDirty());
 	UT_ASSERT(getGraphics()->queryProperties(GR_Graphics::DGP_SCREEN));
 }
 
@@ -2054,7 +2067,7 @@ void fp_FieldEndRun::findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32&
 
 void fp_FieldEndRun::_clearScreen(bool /* bFullLineHeightRect */)
 {
-	UT_ASSERT(!isDirty());
+	//	UT_ASSERT(!isDirty());
 	UT_ASSERT(getGraphics()->queryProperties(GR_Graphics::DGP_SCREEN));
 }
 
@@ -2465,9 +2478,12 @@ void fp_EndOfParagraphRun::findPointCoords(UT_uint32 iOffset,
 
 void fp_EndOfParagraphRun::_clearScreen(bool /* bFullLineHeightRect */)
 {
-	UT_ASSERT(!isDirty());
+	//	UT_ASSERT(!isDirty());
 	UT_ASSERT(getGraphics()->queryProperties(GR_Graphics::DGP_SCREEN));
-
+	if(m_iDrawWidth == 0 )
+	{
+		return;
+	}
 	UT_sint32 xoff = 0, yoff = 0;
 	getLine()->getScreenOffsets(this, xoff, yoff);
 
@@ -2790,7 +2806,7 @@ void fp_ImageRun::findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y,
 
 void fp_ImageRun::_clearScreen(bool  bFullLineHeightRect )
 {
-	UT_ASSERT(!isDirty());
+	//	UT_ASSERT(!isDirty());
 
 	UT_ASSERT(getGraphics()->queryProperties(GR_Graphics::DGP_SCREEN));
 
@@ -3442,7 +3458,7 @@ bool fp_FieldRun::calculateValue(void)
 
 void fp_FieldRun::_clearScreen(bool /* bFullLineHeightRect */)
 {
-	UT_ASSERT(!isDirty());
+	//	UT_ASSERT(!isDirty());
 
 	UT_ASSERT(getGraphics()->queryProperties(GR_Graphics::DGP_SCREEN));
 	UT_sint32 xoff = 0, yoff = 0;
@@ -4732,7 +4748,7 @@ void fp_ForcedColumnBreakRun::findPointCoords(UT_uint32 iOffset, UT_sint32& x, U
 
 void fp_ForcedColumnBreakRun::_clearScreen(bool /* bFullLineHeightRect */)
 {
-	UT_ASSERT(!isDirty());
+	//	UT_ASSERT(!isDirty());
 	UT_ASSERT(getGraphics()->queryProperties(GR_Graphics::DGP_SCREEN));
 
     UT_sint32 xoff = 0, yoff = 0;
@@ -4852,7 +4868,7 @@ void fp_ForcedPageBreakRun::findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_
 
 void fp_ForcedPageBreakRun::_clearScreen(bool /* bFullLineHeightRect */)
 {
-	UT_ASSERT(!isDirty());
+	//	UT_ASSERT(!isDirty());
 	UT_ASSERT(getGraphics()->queryProperties(GR_Graphics::DGP_SCREEN));
 
     UT_sint32 xoff = 0, yoff = 0;

@@ -190,7 +190,8 @@ public:
 	void					markDrawBufferDirty() {m_bRefreshDrawBuffer = true;}
 	void					draw(dg_DrawArgs*);
 	void            		clearScreen(bool bFullLineHeightRect = false);
-	void					markAsDirty(void)	{ m_bDirty = true; }
+	void					markAsDirty(void);
+	void                    setCleared(void);
 	bool					isDirty(void) const { return m_bDirty; }
 	bool			        canContainPoint(void) const;
 	virtual const PP_AttrProp* getAP(void) const;
@@ -383,6 +384,7 @@ private:
 	UT_RGBColor       		m_pColorPG;
 	UT_RGBColor 			m_pColorFG;
 	FPVisibility            m_eHidden;
+	bool                    m_bIsCleared;
 };
 
 class ABI_EXPORT fp_TabRun : public fp_Run
