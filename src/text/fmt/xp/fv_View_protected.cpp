@@ -3142,13 +3142,10 @@ void FV_View::_generalUpdate(void)
 //
 	if(isPreview())
 		return;
-	if(!isPointLegal() && bOK)
-	{
 //
 // If we're in an illegal position move forward till we're safe.
 //
-		bOK = _charMotion(true,1);
-	}
+	_makePointLegal();
 	/*
 	  TODO note that we are far too heavy handed with the mask we
 	  send here.  I ripped out all the individual calls to notifyListeners
@@ -5682,9 +5679,15 @@ void FV_View::_adjustDeletePosition(UT_uint32 &iDocPos, UT_uint32 &iCount)
 	// delete offsets.
 	//
 
-	fl_BlockLayout * pBlock = _findBlockAtPosition(iDocPos);
+	//
+	// Also use this code to deal with attempts to delete across hdrftr 
+	// boundaries
+	
+	fl_BlockLayout * pBlock = NULL;
+	pBlock = _findBlockAtPosition(iDocPos);
 
 	UT_return_if_fail( pBlock );
+
 	if(static_cast<UT_uint32>(pBlock->getLength()) <  iDocPos - pBlock->getPosition())
 	{
 		return;

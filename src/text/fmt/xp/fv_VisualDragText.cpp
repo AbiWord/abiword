@@ -672,6 +672,15 @@ void FV_VisualDragText::mouseRelease(UT_sint32 x, UT_sint32 y)
 	}
 	PT_DocPosition posAtXY = getPosFromXY(x,y);
 	m_pView->setPoint(posAtXY);
+	fl_BlockLayout * pCurB = m_pView->getCurrentBlock();
+	if(pCurB)
+	{
+	    fl_ContainerLayout * pCL = pCurB->myContainingLayout();
+	    if(pCL && pCL->getContainerType() == FL_CONTAINER_SHADOW)
+	    {
+	         m_pView->setHdrFtrEdit(static_cast<fl_HdrFtrShadow *>(pCL));
+	    }
+	}
 	getGraphics()->setClipRect(&m_recCurFrame);
 	m_pView->updateScreen(false);
 	getGraphics()->setClipRect(NULL);
