@@ -374,15 +374,15 @@ void IE_Exp_PalmDoc::_compress( buffer *b )
     delete (original);
 }
 
-void IE_Exp_PalmDoc::_zero_fill( register char *p, register int len )
+void IE_Exp_PalmDoc::_zero_fill(  char *p,  int len )
 {
     while ( len-- > 0 )
         *p++ = '\0';
 }
 
-Byte* IE_Exp_PalmDoc::_mem_find( register Byte *t, int t_len, register Byte *m, int m_len )
+Byte* IE_Exp_PalmDoc::_mem_find(  Byte *t, int t_len,  Byte *m, int m_len )
 {
-    register int i;
+     int i;
     for ( i = t_len - m_len + 1; i > 0; --i, ++t )
         if ( *t == *m && !memcmp( t, m, m_len ) )
             return t;

@@ -40,7 +40,7 @@
 */
 
 static void
-_zero_fill( register Byte *p, register int len )
+_zero_fill(  Byte *p,  int len )
 {
     while ( len-- > 0 )
         *p++ = '\0';
