@@ -25,6 +25,7 @@
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
 #include "ut_string.h"
+#include "ut_string_class.h"
 #include "ie_imp_XHTML.h"
 #include "ie_types.h"
 #include "pd_Document.h"
@@ -179,7 +180,10 @@ bool	IE_Imp_XHTML_Sniffer::getDlgLabels(const char ** pszDesc,
     "level", "1",
     "listid", "1",
     "parentid", "0",
-    "props", "list-style:Numbered List; color:000000; font-family:Times New Roman; font-size:12pt; font-style:normal; font-weight:normal; margin-left:0.4000in; start-value:1; text-decoration:none; text-indent:-0.4000in; text-position:normal",
+    "props", "list-style:Numbered List; color:000000; font-family:Times New Roman; font-size:12pt; font-style:normal; font-weight:normal; start-value:1; text-decoration:none; text-indent:-0.3in; text-position:normal;",
+	/* margin-left is purposefully left out of the props.  It is computed
+	   based on the depth of the list, and appended to this list of
+	   attributes. */
     NULL, NULL
   };
 
@@ -199,13 +203,18 @@ bool	IE_Imp_XHTML_Sniffer::getDlgLabels(const char ** pszDesc,
     "level", "1",
     "listid", "2",
     "parentid", "0",
-    "props", "list-style:Bullet List;color:000000; font-family:Times New Roman; font-size:12pt; font-style:normal; font-weight:normal; margin-left:0.4000in; start-value:0; text-decoration:none; text-indent:-0.4000in; text-position:normal",
+    "props", "list-style:Bullet List;color:000000; font-family:Times New Roman; font-size:12pt; font-style:normal; font-weight:normal; start-value:0; text-decoration:none; text-indent:-0.3in; text-position:normal;",
+	/* margin-left is purposefully left out of the props.  It is computed
+	   based on the depth of the list, and appended to this list of
+	   attributes. */
     NULL, NULL
   };
 
 IE_Imp_XHTML::IE_Imp_XHTML(PD_Document * pDocument)
   : IE_Imp_XML(pDocument, false), m_listType(L_NONE)
 {
+	m_iListID = 0;
+	m_iNewListID = 0;
 }
 
 IE_Imp_XHTML::~IE_Imp_XHTML()
@@ -335,6 +344,7 @@ static struct xmlToIdMapping s_Tokens[] =
 
 #define X_CheckError(v)			do {  if (!(v))								\
 									  {  m_error = UT_ERROR;			\
+									     UT_DEBUGMSG(("JOHN: X_CheckError\n")); \
 										 return; } } while (0)
 
 #define	X_EatIfAlreadyError()	do {  if (m_error) return; } while (0)
@@ -504,7 +514,7 @@ static void convertFontColor(char *szDest, const char *szFrom)
 
 void IE_Imp_XHTML::_startElement(const XML_Char *name, const XML_Char **atts)
 {
-	UT_DEBUGMSG(("startElement: %s\n", name));
+	UT_DEBUGMSG(("startElement: %s, parseState: %u, listType: %u\n", name, m_parseState, m_listType));
 
 	X_EatIfAlreadyError();				// xml parser keeps running until buffer consumed
 	                                                // this just avoids all the processing if there is an error
@@ -516,6 +526,7 @@ void IE_Imp_XHTML::_startElement(const XML_Char *name, const XML_Char **atts)
 	for(int i = 0; i < NEW_ATTR_SZ; i++)
 	  new_atts[i] = NULL;
 #undef NEW_ATTR_SZ
+	UT_uint16 *parentID;
 
 	UT_uint32 tokenIndex = _mapNameToToken (name, s_Tokens, TokenTableSize);
 
@@ -530,13 +541,6 @@ void IE_Imp_XHTML::_startElement(const XML_Char *name, const XML_Char **atts)
 	case TT_BODY:
 	  //UT_DEBUGMSG(("Doc %d\n", m_parseState));
 		X_VerifyParseState(_PS_Doc);
-
-		// append the two lists to the document
-		getDoc()->appendList (ol_atts);
-		getDoc()->appendList (ul_atts);
-		UT_DEBUGMSG(("DOM: appended lists\n"));
-
-		//UT_DEBUGMSG(("%d atts: %s\n", i, atts[i]));
 		return;		
 
 	case TT_DIV:
@@ -552,6 +556,7 @@ void IE_Imp_XHTML::_startElement(const XML_Char *name, const XML_Char **atts)
 	case TT_KBD:
 	case TT_ADDRESS:
 	case TT_CITE:
+	case TT_EM:
 	case TT_I:
 	  //UT_DEBUGMSG(("B %d\n", m_parseState));
 		X_VerifyParseState(_PS_Block);
@@ -566,7 +571,6 @@ void IE_Imp_XHTML::_startElement(const XML_Char *name, const XML_Char **atts)
 	case TT_CODE:
 	case TT_DFN:
 	case TT_STRONG:
-	case TT_EM:
 	case TT_B:
 	  //UT_DEBUGMSG(("B %d\n", m_parseState));
 		X_VerifyParseState(_PS_Block);
@@ -596,7 +600,7 @@ void IE_Imp_XHTML::_startElement(const XML_Char *name, const XML_Char **atts)
 	  UT_XML_cloneString(sz, PT_PROPS_ATTRIBUTE_NAME);
 	  new_atts[0]=sz;
 	  sz = NULL;
-	  if(s_Tokens[tokenIndex].m_type==TT_SUP)    
+	  if(tokenIndex == TT_SUP)    
 	    UT_XML_cloneString(sz, "text-position:superscript");
 	  else
 	    UT_XML_cloneString(sz, "text-position:subscript");
@@ -681,11 +685,11 @@ void IE_Imp_XHTML::_startElement(const XML_Char *name, const XML_Char **atts)
 		new_atts[0]=sz;
 		sz = NULL;
 
-		if(s_Tokens[tokenIndex].m_type == TT_H1)
+		if(tokenIndex == TT_H1)
 		  UT_XML_cloneString(sz, "Heading 1");
-		else if(s_Tokens[tokenIndex].m_type ==TT_H2)
+		else if(tokenIndex == TT_H2)
 		  UT_XML_cloneString(sz, "Heading 2");
-		else if(s_Tokens[tokenIndex].m_type == TT_H3)
+		else if(tokenIndex == TT_H3)
 		  UT_XML_cloneString(sz, "Heading 3");
 		else
 		  UT_XML_cloneString(sz, "Block Text");
@@ -697,6 +701,7 @@ void IE_Imp_XHTML::_startElement(const XML_Char *name, const XML_Char **atts)
 
 	case TT_OL:	  
 	case TT_UL:
+	{
 		if(tokenIndex == TT_OL)
 	  		m_listType = L_OL;
 	  	else m_listType = L_UL;
@@ -705,50 +710,97 @@ void IE_Imp_XHTML::_startElement(const XML_Char *name, const XML_Char **atts)
 		{
 			_endElement("li");
 			m_parseState = _PS_Sec;
+			m_bWasSpace = false;
+			/* this sort of tag shuffling can mess up the space tracking */
 		}
+
+		parentID = new UT_uint16(m_iListID);
+		m_utsParents.push(parentID);
+
+		/* new list, increment list depth */
+		m_iNewListID++;
+		m_iListID = m_iNewListID;
+
+		const XML_Char** listAtts;
+		listAtts = (tokenIndex == TT_OL ? ol_atts : ul_atts);
+
+		char szListID[6], szParentID[6];
+		sprintf(szListID, "%u", m_iNewListID);
+		sprintf(szParentID, "%u", *parentID);
+
+		const int IDpos = 1;
+		const int parentIDpos = 3;
+
+		listAtts[IDpos] = szListID;
+		listAtts[parentIDpos] = szParentID;
+
+		X_CheckError(getDoc()->appendList (listAtts));
 
 		return;
-
+	}
 	case TT_LI:
-	  X_VerifyParseState(_PS_Sec);
-	  m_parseState = _PS_Block;
+	{
+		X_VerifyParseState(_PS_Sec);
+		m_parseState = _PS_Block;
 
-	  XML_Char *sz;
+		XML_Char *sz;
 
-	  if (m_listType != L_NONE)
-	    {
-
-	      if (m_listType == L_OL)
+		if (m_listType != L_NONE)
 		{
-		  X_CheckError(getDoc()->appendStrux(PTX_Block, ol_p_atts));
+			UT_uint16 thisID = m_iListID;
+			m_utsParents.viewTop((void**) &parentID);
+
+			const XML_Char** listAtts;
+			listAtts = (m_listType == L_OL ? ol_p_atts : ul_p_atts);
+
+			/* assign the appropriate list ID, parent ID, and level
+			   to this list item's attributes */
+
+			char szListID[6], szParentID[6], szLevel[6], szMarginLeft[28];
+			sprintf(szListID, "%u", thisID);
+			sprintf(szParentID, "%u", *parentID);
+			sprintf(szLevel, "%u", m_utsParents.getDepth());
+			sprintf(szMarginLeft, " margin-left: %.2fin", 
+				m_utsParents.getDepth() * 0.5);
+
+			const int LevelPos = 1;
+			const int IDpos = 3;
+			const int parentIDpos = 5;
+			const int propsPos = 7;
+
+			UT_String props = listAtts[propsPos];
+			props += szMarginLeft;
+
+			listAtts[LevelPos] = szLevel;
+			listAtts[IDpos] = szListID;
+			listAtts[parentIDpos] = szParentID;
+
+			XML_Char* temp = (XML_Char*) listAtts[propsPos];
+			listAtts[propsPos] = props.c_str();
+
+			X_CheckError(getDoc()->appendStrux(PTX_Block, listAtts));
+
+			listAtts[propsPos] = temp;
+
+			// append a field
+			UT_XML_cloneString(sz, "type");
+			new_atts[0] = sz;
+			UT_XML_cloneString(sz, "list_label");
+			new_atts[1] = sz;
+			X_CheckError(getDoc()->appendObject(PTO_Field, new_atts));
+
+			// append the character run
+			UT_XML_cloneString(sz, "type");
+			new_atts[0] = sz;
+			UT_XML_cloneString(sz, "list_label");
+			new_atts[1] = sz;
+			X_CheckError(getDoc()->appendFmt(new_atts));
 		}
-	      else
-		{
-		  X_CheckError(getDoc()->appendStrux(PTX_Block, ul_p_atts));
-		}
-
-	      // append a field
-	      UT_XML_cloneString(sz, "type");
-	      new_atts[0] = sz;
-	      UT_XML_cloneString(sz, "list_label");
-	      new_atts[1] = sz;
-	      X_CheckError(getDoc()->appendObject(PTO_Field, new_atts));
-
-	      // append the character run
-	      UT_XML_cloneString(sz, "type");
-	      new_atts[0] = sz;
-	      UT_XML_cloneString(sz, "list_label");
-	      new_atts[1] = sz;
-	      X_CheckError(getDoc()->appendFmt(new_atts));
-
-	      // finally, append a tab
-	      UT_UCSChar c = '\t';
-	      X_CheckError(getDoc()->appendSpan(&c, 1));
-	      return;
-	    }
-	  break;
+		return;
+	}
 
 	case TT_P:
+	case TT_PRE:
 	case TT_TR:
 	case TT_H4:
 	case TT_H5:
@@ -757,6 +809,11 @@ void IE_Imp_XHTML::_startElement(const XML_Char *name, const XML_Char **atts)
 	  {
 		X_VerifyParseState(_PS_Sec);
 		m_parseState = _PS_Block;
+
+		if(tokenIndex == TT_PRE)
+		{
+			m_bWhiteSignificant = true;
+		}
 		
 		const XML_Char *p_val;
 
@@ -820,11 +877,6 @@ void IE_Imp_XHTML::_startElement(const XML_Char *name, const XML_Char **atts)
 	  // these tags are ignored for the time being
 	  return;
 
-	case TT_PRE:
-		X_VerifyParseState(_PS_Sec);
-		m_bWhiteSignificant = true;
-		return;
-
 	case TT_OTHER:
 	default:
 		UT_DEBUGMSG(("Unknown tag [%s]\n",name));
@@ -837,7 +889,7 @@ void IE_Imp_XHTML::_startElement(const XML_Char *name, const XML_Char **atts)
 
 void IE_Imp_XHTML::_endElement(const XML_Char *name)
 {
-	UT_DEBUGMSG(("endElement: %s\n", name));
+	UT_DEBUGMSG(("endElement: %s, parseState: %u, listType: %u\n", name, m_parseState, m_listType));
 	X_EatIfAlreadyError();				// xml parser keeps running until buffer consumed
 
 	
@@ -865,7 +917,18 @@ void IE_Imp_XHTML::_endElement(const XML_Char *name)
 
 	case TT_OL:
 	case TT_UL:
-		m_listType = L_NONE; return;
+		UT_uint16 *temp;
+
+		if(m_utsParents.pop((void**) &temp))
+		{
+			m_iListID = *temp;
+			DELETEP(temp);
+		}
+
+		if(m_utsParents.getDepth() == 0)
+			m_listType = L_NONE; 
+			
+		return;
 
 	case TT_LI:
 	case TT_P:
@@ -877,8 +940,8 @@ void IE_Imp_XHTML::_endElement(const XML_Char *name)
 	case TT_H5:
 	case TT_H6:
 	case TT_BLOCKQUOTE:
-	  UT_ASSERT(m_lenCharDataSeen==0);
-	  //UT_DEBUGMSG(("B %d\n", m_parseState));
+		UT_ASSERT(m_lenCharDataSeen==0);
+		//UT_DEBUGMSG(("B %d\n", m_parseState));
 	  	if(m_parseState != _PS_Block) return;
 		m_parseState = _PS_Sec;
 		X_CheckDocument(_getInlineDepth()==0);
@@ -944,7 +1007,7 @@ void IE_Imp_XHTML::_endElement(const XML_Char *name)
 
 	case TT_OTHER:
 	default:
-	  //UT_DEBUGMSG(("Unknown end tag [%s]\n",name));
+	  	UT_DEBUGMSG(("Unknown end tag [%s]\n",name));
 		return;
 	}
 }

@@ -21,6 +21,7 @@
 #define IE_IMP_XHTML_1_H
 
 #include "ie_imp_XML.h"
+#include "ut_stack.h"
 
 class PD_Document;
 
@@ -55,9 +56,13 @@ public:
 								  const XML_Char **atts);
     void			_endElement(const XML_Char *name);
 
- private:
+protected:
     
-    enum listType {L_NONE = 0, L_OL = 1, L_UL = 2 } m_listType;
+	enum listType {L_NONE = 0, L_OL = 1, L_UL = 2 } m_listType;
+	UT_uint16	m_iListID;
+	UT_uint16	m_iNewListID;
+
+	UT_Stack	m_utsParents;
 };
 
 #endif /* IE_IMP_XHTML_H */

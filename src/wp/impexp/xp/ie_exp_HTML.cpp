@@ -422,22 +422,48 @@ void s_HTML_Listener::_openTag(PT_AttrPropIndex api)
 					 _inherits((const char*) szStyleType, "BulletList"))) ) )
 				{						/* list type switched */
 					m_pie->write("</li>\n");
-					if(m_iBlockType == BT_NUMBEREDLIST)
-					{
-						m_iBlockType = BT_BULLETLIST;
-						m_pie->write("</ol>\n<ul class=\"");
+
+					m_iBlockType = (m_iBlockType == BT_NUMBEREDLIST ?
+						BT_BULLETLIST : BT_NUMBEREDLIST);
+
+					while(m_utsListType.pop((void**) &popped))
+					{				/* handle the switch, including depths */
+						if(m_iPrevListDepth == m_iListDepth &&
+							*popped == m_iBlockType)
+						{
+							m_pie->write("<li>\n");
+							break;
+						}
+						else if(m_iPrevListDepth == m_iListDepth)
+						{
+							if(m_iBlockType == BT_BULLETLIST)
+							{
+								m_pie->write("</ol>\n<ul class=\"");
+							}
+							else
+							{
+								m_pie->write("</ul>\n<ol class=\"");
+							}
+
+							_outputInheritanceLine((const char*) szValue);
+							m_pie->write("\">\n");
+							pushed = new UT_uint16(m_iBlockType);
+							m_utsListType.push(pushed);
+
+							break;
+						}
+						else if(*popped == BT_NUMBEREDLIST)
+						{
+							m_pie->write("</ol>\n");
+						}
+						else if(*popped == BT_BULLETLIST)
+						{
+							m_pie->write("</ul>\n");
+						}
+
+						if(--m_iPrevListDepth > 0) m_pie->write("</li>\n");
 					}
-					else
-					{
-						m_iBlockType = BT_NUMBEREDLIST;
-						m_pie->write("</ul>\n<ol class=\"");
-					}
-					_outputInheritanceLine((const char*) szValue);
-					m_pie->write("\">\n");
-					m_utsListType.pop((void**) &popped);
-					DELETEP(popped);
-					pushed = new UT_uint16(m_iBlockType);
-					m_utsListType.push(pushed);
+							
 				}
 				else
 				{
@@ -616,61 +642,79 @@ void s_HTML_Listener::_openTag(PT_AttrPropIndex api)
 				|| pAP->getProperty("margin-right", szValue)
 				|| pAP->getProperty("text-indent", szValue)) )
 		{
-			m_pie->write(" style=\"");
-
+			bool validProp = false;
 			if(pAP->getProperty("text-align", szValue))
 			{
-				m_pie->write("text-align: ");
+				validProp = true;
+				m_pie->write(" style=\"text-align: ");
 				m_pie->write((char*)szValue);
 				css = true;
 			}
 			if(pAP->getProperty("margin-bottom", szValue))
 			{
-			        if (css)
-				     m_pie->write("; margin-bottom: ");
+				validProp = true;
+				if (css)
+					m_pie->write("; margin-bottom: ");
 				else 
-			             m_pie->write("margin-bottom: ");
+					m_pie->write(" style=\"margin-bottom: ");
 				m_pie->write((char*)szValue);
 				css = true;
 			}
 			if(pAP->getProperty("margin-top", szValue))
 			{
-			        if (css)
+				validProp = true;
+			    if (css)
 				     m_pie->write("; margin-top: ");
 				else
-				     m_pie->write("margin-top: ");
-				m_pie->write((char*)szValue);
-				css = true;
-			}
-			if(pAP->getProperty("margin-left", szValue))
-			{
-				if(css)
-					m_pie->write("; margin-left: ");
-				else
-					m_pie->write("margin-left: ");
+				     m_pie->write(" style=\"margin-top: ");
 				m_pie->write((char*)szValue);
 				css = true;
 			}
 			if(pAP->getProperty("margin-right", szValue))
 			{
+				validProp = true;
 				if(css)
 					m_pie->write("; margin-right: ");
 				else
-					m_pie->write("margin-right: ");
+					m_pie->write(" style=\"margin-right: ");
 				m_pie->write((char*)szValue);
 				css = true;
 			}
-			if(pAP->getProperty("text-indent", szValue))
-			{
+			/* NOTE: For both "margin-left" and "text-indent" for lists,
+			   Abi's behaviour and HTML's do not match.
+			   Furthermore, it seems like all blocks have a "margin-left"
+			   and "text-indent", even if they are zero, which adds
+			   significant clutter.  These are all manually taken care of
+			   below.  I think that the computation of these attributes
+			   needs to be rethought. - John */
+			if(pAP->getProperty("margin-left", szValue) 
+				&& (!pAP->getAttribute("listid", szListID) ||
+					0 == UT_strcmp(szListID, "0")) && 
+					strstr(szValue, "0.0000") == 0)
+			{	// HACK: extra cond ensures that we're not in a list
+				validProp = true;
+				if(css)
+					m_pie->write("; margin-left: ");
+				else
+					m_pie->write(" style=\"margin-left: ");
+				m_pie->write((char*)szValue);
+				css = true;
+			}
+			if(pAP->getProperty("text-indent", szValue)
+				&& (!pAP->getAttribute("listid", szListID) ||
+					0 == UT_strcmp(szListID, "0")) && 
+					strstr(szValue, "0.0000") == 0)
+			{	// HACK: extra cond ensures that we're not in a list
+				validProp = true;
 				if(css)
 					m_pie->write("; text-indent: ");
 				else
-					m_pie->write("text-indent: ");
+					m_pie->write(" style=\"text-indent: ");
 				m_pie->write((char*)szValue);
 				css = true;
 			}
 
-			m_pie->write("\"");
+			if(validProp) m_pie->write("\"");
 		}
 	}
 	else 
@@ -1222,8 +1266,7 @@ void s_HTML_Listener::_outputData(const UT_UCSChar * data, UT_uint32 length)
 		case ' ':
 		case '\t':
 		  // try to honor multiple spaces
-		  // tabs get treated as a single space
-		  //
+
 		  if(m_bNextIsSpace)
 		    {
 				sBuf += "&nbsp;";
@@ -1231,8 +1274,7 @@ void s_HTML_Listener::_outputData(const UT_UCSChar * data, UT_uint32 length)
 		    }
 		  else
 		    {
-		      // just tack on a single space to the textrun
-				sBuf += " ";
+				sBuf += *pData;
 				pData++;
 		    }
 		  break;
@@ -1483,7 +1525,7 @@ void s_HTML_Listener::_outputBegin(PT_AttrPropIndex api)
 		if (*szValue != '#')
 			m_pie->write("#");
 		m_pie->write(szValue);
-		m_pie->write(";\n}\n\n@print\n{\n\tbody\n\t{\n\t\t");
+		m_pie->write(";\n}\n\n@media print\n{\n\tbody\n\t{\n\t\t");
 		
 		szValue = PP_evalProperty("page-margin-top",
 								  NULL, NULL, pAP, m_pDocument, true);
