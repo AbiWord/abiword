@@ -1105,7 +1105,6 @@ EV_EditMethodContainer * AP_GetEditMethods(void)
 #define EX(fn)		F(fn)(pAV_View, pCallData)
 
 // forward declaration
-static bool _helpOpenURL(AV_View* pAV_View, const char* helpURL);
 static bool _openURL(AV_View* pAV_View, const char* url);
 
 static UT_Timer * s_pToUpdateCursor = NULL;
@@ -2834,12 +2833,6 @@ static bool _openURL(AV_View* pAV_View, const char* url)
 	XAP_Frame* pFrame = static_cast<XAP_Frame*> (pAV_View->getParentData());
 	pFrame->openURL (url);
 	return true;
-}
-
-static bool _helpOpenURL(AV_View* pAV_View, const char* helpURL)
-{
-	XAP_Frame* pFrame = static_cast<XAP_Frame*> (pAV_View->getParentData());
-	return _helpOpenURL ( pFrame, helpURL ) ;
 }
 
 bool helpLocalizeAndOpenURL(XAP_Frame * pFrame, bool bLocal, const char* pathBeforeLang, const char* pathAfterLang)
