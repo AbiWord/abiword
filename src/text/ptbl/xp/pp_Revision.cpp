@@ -44,6 +44,11 @@ PP_Revision::PP_Revision(UT_uint32 Id, PP_RevisionType eType, const XML_Char * p
 		while(p)
 		{
 			char * n = p;
+
+			// skip over spaces ...
+			while(n && *n == ' ')
+				++n;
+			
 			p = strtok(NULL, ";");
 
 			// if we have no p, that means the property is being removed ...
