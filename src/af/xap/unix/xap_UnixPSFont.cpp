@@ -47,10 +47,12 @@ PSFont::PSFont(XAP_UnixFont * pFont, UT_uint32 size)
 	m_hFont = pFont;
 	m_pointSize = size;
 	m_index = 0;
+	xxx_UT_DEBUGMSG(("Creating PS font %x \n",this));
 }
 
 PSFont::~PSFont(void)
 {
+	xxx_UT_DEBUGMSG(("Deleting PS font %x \n",this));
 }
 
 XAP_UnixFont * PSFont::getUnixFont(void)

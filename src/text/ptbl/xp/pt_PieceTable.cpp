@@ -499,18 +499,18 @@ bool pt_PieceTable::getFragFromPosition(PT_DocPosition docPos,
 // Sevior do a binary search here now
 //
 	pf_Frag * pfLast = m_fragments.findFirstFragBeforePos(docPos);
-
-	// why not just:
-	// UT_ASSERT(pfLast); *ppf = pfLast; if (pFragOffset) *pFragOffset = docPos - pfLast->getPos();
 	if(pfLast)
 	{
-		while(pfLast->getNext() && docPos >= pfLast->getPos() + pfLast->getLength())
+		xxx_UT_DEBUGMSG(("_findFrag: docPos %d pfLast->getPos %d pfLast->getLength %d \n",docPos,pfLast->getPos(),pfLast->getLength()));
+		while(pfLast->getNext() && docPos >= (pfLast->getPos() + pfLast->getLength()))
 		{
+			xxx_UT_DEBUGMSG(("_findFrag: docPos %d pfLast->getPos %d pfLast->getLength %d \n",docPos,pfLast->getPos(),pfLast->getLength()));
 			pfLast = pfLast->getNext();
 		}
+		xxx_UT_DEBUGMSG(("_findFrag: docPos %d pfLast->getPos %d pfLast->getLength %d offset %d Frag Type %d \n",docPos,pfLast->getPos(),pfLast->getLength(),docPos - pfLast->getPos(),pfLast->getType()));
 		if (pFragOffset)
 			*pFragOffset = docPos - pfLast->getPos();
-		*ppf = pfLast;
+		*ppf = pfLast;       
 		return true;
 		xxx_UT_DEBUGMSG(("SEVIOR: I found frag %d \n",getFragNumber(pfLast)));
 	}

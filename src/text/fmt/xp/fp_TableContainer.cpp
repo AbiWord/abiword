@@ -1590,8 +1590,8 @@ fp_CellContainer * fp_TableContainer::getCellAtRowColumn(UT_sint32 row, UT_sint3
 	{
 		pCell = (fp_CellContainer *) getNthCon(i);
 		xxx_UT_DEBUGMSG(("getCellAtRowColumn: left %d ,right %d, top %d, bot %d \n",pCell->getLeftAttach(),pCell->getRightAttach(),pCell->getTopAttach(),pCell->getBottomAttach()));
-		if(pCell->getLeftAttach() >= col && pCell->getRightAttach() > col &&
-		   pCell->getTopAttach() >= row && pCell->getBottomAttach() > row)
+		if(pCell->getLeftAttach() <= col && pCell->getRightAttach() > col &&
+		   pCell->getTopAttach() <= row && pCell->getBottomAttach() > row)
 		{
 			bFound = true;
 			if(pSmall == NULL)

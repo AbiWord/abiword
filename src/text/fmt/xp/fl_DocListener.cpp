@@ -1255,7 +1255,7 @@ bool fl_DocListener::insertStrux(PL_StruxFmtHandle sfh,
 			   // because a section cannot contain content.
 			
 			   fl_ContainerLayout * pCL = static_cast<fl_ContainerLayout *>(pL);
-			   xxx_UT_DEBUGMSG(("Doing Insert Section Correctly \n"));
+			   xxx_UT_DEBUGMSG(("Doing Insert Strux Section Into Prev Block \n"));
 			   fl_SectionLayout* pCLSL = pCL->getSectionLayout();
 			   bool bResult = pCLSL->bl_doclistener_insertSection(pCL, FL_SECTION_DOC, pcrx,sdh,lid,pfnBindHandles);
 	
@@ -1266,6 +1266,7 @@ bool fl_DocListener::insertStrux(PL_StruxFmtHandle sfh,
 		   {
 			   // The immediately prior strux is also a block.  Insert the new
 			   // block and split the content between the two blocks.
+			   UT_DEBUGMSG(("InsertBlock into Block \n"));
 			   fl_ContainerLayout * pCL = static_cast<fl_ContainerLayout *>(pL);
 			   fl_SectionLayout* pCLSL = pCL->getSectionLayout();
 			   bool bResult = true;
@@ -1290,6 +1291,7 @@ bool fl_DocListener::insertStrux(PL_StruxFmtHandle sfh,
 			   // because a section cannot contain content.
 			
 			   fl_ContainerLayout * pCL = static_cast<fl_ContainerLayout *>(pL);
+			   xxx_UT_DEBUGMSG(("Doing Insert Strux HdrFtr Into Prev Block \n"));
 			   fl_SectionLayout* pCLSL = pCL->getSectionLayout();
 			   bool bResult = pCLSL->bl_doclistener_insertSection(pCL, FL_SECTION_HDRFTR, pcrx,sdh,lid,pfnBindHandles);
 			   return bResult;
@@ -1307,8 +1309,10 @@ bool fl_DocListener::insertStrux(PL_StruxFmtHandle sfh,
 		   {
 			   // The immediately prior strux is a block.  
 			   // OK this creates a table in the document.
+			   UT_DEBUGMSG(("Insert Table into Block \n"));
 			
 			   fl_ContainerLayout * pCL = static_cast<fl_ContainerLayout *>(pL);
+			   UT_DEBUGMSG(("Doing Insert Strux Table Into Prev Block \n"));
 			   xxx_UT_DEBUGMSG(("Doing Insert Table Correctly \n"));
 			   fl_SectionLayout* pCLSL = pCL->getSectionLayout();
 			   bool bResult = (pCLSL->bl_doclistener_insertTable(pCL,FL_SECTION_TABLE, pcrx,sdh,lid,pfnBindHandles) != 0);
@@ -1329,12 +1333,17 @@ bool fl_DocListener::insertStrux(PL_StruxFmtHandle sfh,
 			   // The immediately prior strux is a block.  
 			   // OK this finishes a cell in the table
 
+			   UT_DEBUGMSG(("Insert endCell into Block \n"));
 			   fl_ContainerLayout * pCL = static_cast<fl_ContainerLayout *>(pL);
-			   UT_DEBUGMSG(("Doing Insert EndCell Correctly \n"));
+			   UT_DEBUGMSG(("Doing Insert Strux EndCell Into Prev Block \n"));
 //
 // This gets us a fl_SectionCell.
 //
 			   fl_CellLayout* pCLSL = (fl_CellLayout *) pCL->myContainingLayout();
+			   if(pCLSL->getContainerType() != FL_CONTAINER_CELL)
+			   {
+				   m_pDoc->miniDump(pL->getStruxDocHandle(),6);
+			   }
 			   UT_ASSERT(pCLSL->getContainerType() == FL_CONTAINER_CELL);
 			   bool bResult = pCLSL->bl_doclistener_insertEndCell(pCL, pcrx,sdh,lid,pfnBindHandles);
 			   return bResult;
@@ -1355,6 +1364,7 @@ bool fl_DocListener::insertStrux(PL_StruxFmtHandle sfh,
 		  {
 			   // The immediately prior strux is a Table.  
 			   // OK this creates a table in the document.
+			   UT_DEBUGMSG(("Insert Cell into Table \n"));
 			
 			   fl_TableLayout * pTL = static_cast<fl_TableLayout *>(pL);
 			   xxx_UT_DEBUGMSG(("Doing Insert Cell Correctly \n"));
@@ -1366,6 +1376,7 @@ bool fl_DocListener::insertStrux(PL_StruxFmtHandle sfh,
 			   // The immediately prior strux is a EndTable.  
 			   // This isnerts a block after that. This happens on undo after
                // deleting a table.
+			   UT_DEBUGMSG(("Insert Block into Table/EndTable \n"));
 			
 			   fl_TableLayout * pTL = static_cast<fl_TableLayout *>(pL);
 			   xxx_UT_DEBUGMSG(("Doing Insert Block after EndTable \n"));
@@ -1395,7 +1406,12 @@ bool fl_DocListener::insertStrux(PL_StruxFmtHandle sfh,
 			   // OK this creates a table in the document.
 			   // The end cell layout is actually a pointer to the cell it ends.
 
+			   UT_DEBUGMSG(("Insert Cell into EndCell \n"));
 			  fl_ContainerLayout * pConL = (fl_ContainerLayout *) pL;
+			   if(pConL->getContainerType() != FL_CONTAINER_CELL)
+			   {
+				   m_pDoc->miniDump(pL->getStruxDocHandle(),6);
+			   }
 			  UT_ASSERT(pConL->getContainerType() == FL_CONTAINER_CELL);
 			  fl_TableLayout * pTL = static_cast<fl_TableLayout *>(pConL->myContainingLayout());
 			  UT_ASSERT(pTL->getContainerType() == FL_CONTAINER_TABLE);
@@ -1410,7 +1426,14 @@ bool fl_DocListener::insertStrux(PL_StruxFmtHandle sfh,
 			   // OK this creates a table in the document.
 			   // The end cell layout
 
+			   UT_DEBUGMSG(("Insert EndTable into EndCell \n"));
+
 			  fl_ContainerLayout * pConL = (fl_ContainerLayout *) pL;
+			   if(pConL->getContainerType() != FL_CONTAINER_CELL)
+			   {
+				   m_pDoc->miniDump(pL->getStruxDocHandle(),6);
+			   }
+
 			  UT_ASSERT(pConL->getContainerType() == FL_CONTAINER_CELL);
 			  fl_TableLayout * pTL = static_cast<fl_TableLayout *>(pConL->myContainingLayout());
 			  UT_ASSERT(pTL->getContainerType() == FL_CONTAINER_TABLE);
@@ -1450,9 +1473,15 @@ bool fl_DocListener::insertStrux(PL_StruxFmtHandle sfh,
 			   // OK this creates a table in the document.
 			   // The end cell layout
 
+			   UT_DEBUGMSG(("Insert EndTable into Cell/EndCell \n"));
+
 			  fl_ContainerLayout * pConL = (fl_ContainerLayout *) pL;
 			  UT_ASSERT(pConL->getContainerType() == FL_CONTAINER_CELL);
 			  fl_TableLayout * pTL = static_cast<fl_TableLayout *>(pConL->myContainingLayout());
+			   if(pTL->getContainerType() != FL_CONTAINER_TABLE)
+			   {
+				   m_pDoc->miniDump(pL->getStruxDocHandle(),6);
+			   }
 			  UT_ASSERT(pTL->getContainerType() == FL_CONTAINER_TABLE);
 			  fl_CellLayout * pCL = static_cast<fl_CellLayout *>(pL);
 			  UT_DEBUGMSG(("Doing Insert EndTable Correctly \n"));
@@ -1466,7 +1495,13 @@ bool fl_DocListener::insertStrux(PL_StruxFmtHandle sfh,
 			   // OK this insertes a cell in the table.
 			   // The end cell layout is actually a pointer to the cell it ends.
 
+			   UT_DEBUGMSG(("Insert Cell into Cell/EndCell \n"));
+
 			  fl_ContainerLayout * pConL = (fl_ContainerLayout *) pL;
+			   if(pConL->getContainerType() != FL_CONTAINER_CELL)
+			   {
+				   m_pDoc->miniDump(pL->getStruxDocHandle(),6);
+			   }
 			  UT_ASSERT(pConL->getContainerType() == FL_CONTAINER_CELL);
 			  fl_TableLayout * pTL = static_cast<fl_TableLayout *>(pConL->myContainingLayout());
 			  UT_ASSERT(pTL->getContainerType() == FL_CONTAINER_TABLE);
@@ -1489,6 +1524,7 @@ bool fl_DocListener::insertStrux(PL_StruxFmtHandle sfh,
 //
 	default:
 	{	
+		m_pDoc->miniDump(pL->getStruxDocHandle(),6);
 		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 		return false;
 	} // finish the overall switch

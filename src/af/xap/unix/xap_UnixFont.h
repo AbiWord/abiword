@@ -150,6 +150,7 @@ protected:
 
 	// a cache of GdkFont * at a given size
 	mutable UT_Vector		m_allocFonts;
+//    UT_Vector		m_allocFonts;
 	
 	char * 					m_name;
 	XAP_UnixFont::style		m_style;

@@ -1528,12 +1528,18 @@ bool pt_PieceTable::_realDeleteSpan(PT_DocPosition dpos1,
 			PT_DocPosition dp;
 			if(bDeleteTableStruxes || prevDepthReached )
 			{
-				PT_DocPosition myPos = pfs->getPos();
 				if(!prevDepthReached)
-				{
+				{				
+					_deleteFormatting(dpos1 - pfs->getLength(), dpos1);
+//
+// FIXME this code should be removed if undo/redo on table manipulations
+//       works fine.
+#if 0
 //					_deleteFormatting(myPos - pfs->getLength(), myPos);
 //					bSuccess = _deleteStruxWithNotify(myPos - pfs->getLength(), pfs,
 //													  &pf, &dp);
+#endif
+					PT_DocPosition myPos = pfs->getPos();
 					bSuccess = _deleteStruxWithNotify(myPos, pfs, &pf, &dp);
 				}
 				else

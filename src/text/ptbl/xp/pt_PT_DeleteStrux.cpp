@@ -42,6 +42,21 @@
 bool pt_PieceTable::_unlinkStrux(pf_Frag_Strux * pfs,
 									pf_Frag ** ppfEnd, UT_uint32 * pfragOffsetEnd)
 {
+#if 1
+	if(pfs->getStruxType() == PTX_SectionCell)
+	{
+		UT_DEBUGMSG(("_unlink Strux Cell %x \n",pfs));
+	}
+	else if(pfs->getStruxType() == PTX_EndCell)
+	{
+		UT_DEBUGMSG(("_unlink Strux EndCell %x \n",pfs));
+	}
+	else if(pfs->getStruxType() == PTX_Block)
+	{
+		UT_DEBUGMSG(("_unlink Strux Block %x \n",pfs));
+	}
+//	m_pDocument->miniDump((PL_StruxDocHandle) pfs, 1);
+#endif
 	switch (pfs->getStruxType())
 	{
 	case PTX_Section:

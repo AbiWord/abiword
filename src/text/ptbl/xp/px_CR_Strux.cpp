@@ -19,6 +19,7 @@
 
 
 #include "ut_types.h"
+#include "ut_debugmsg.h"
 #include "px_CR_Strux.h"
 #include "px_ChangeRecord.h"
 
@@ -28,6 +29,7 @@ PX_ChangeRecord_Strux::PX_ChangeRecord_Strux(PXType type,
 											 PTStruxType struxType)
 	: PX_ChangeRecord(type, position, indexAP)
 {
+	xxx_UT_DEBUGMSG(("PX_ChangeRecord_Strux pos = %d \n",position));
 	m_struxType = struxType;
 }
 

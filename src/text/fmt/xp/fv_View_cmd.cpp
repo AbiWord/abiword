@@ -490,6 +490,8 @@ bool FV_View::cmdMergeCells(PT_DocPosition posSource, PT_DocPosition posDestinat
 	posDestination = findCellPosAt(posTable,dTop,dLeft) +2;
 	setPoint(posDestination);
 //	_charMotion(true,1);
+	notifyListeners(AV_CHG_MOTION);
+
 	_ensureInsertionPointOnScreen();
 	return true;
 }
@@ -934,7 +936,7 @@ bool FV_View::cmdInsertCol(PT_DocPosition posCol, bool bBefore)
 
 	// Signal PieceTable Changes have finished
 	_restorePieceTableState();
-
+	notifyListeners(AV_CHG_MOTION);
 	_ensureInsertionPointOnScreen();
 	return true;
 }
@@ -1204,7 +1206,7 @@ bool FV_View::cmdInsertRow(PT_DocPosition posRow, bool bBefore)
     
     // Signal PieceTable Changes have finished
     _restorePieceTableState();
-    
+    notifyListeners(AV_CHG_MOTION);
     _ensureInsertionPointOnScreen();
     return true;
 }
@@ -1408,6 +1410,7 @@ bool FV_View::cmdDeleteCol(PT_DocPosition posCol)
 
 	// Signal PieceTable Changes have finished
 	_restorePieceTableState();
+    notifyListeners(AV_CHG_MOTION);
 
 	_ensureInsertionPointOnScreen();
 	return true;
@@ -1466,6 +1469,7 @@ bool FV_View::cmdDeleteTable(PT_DocPosition posTable)
 
 	// Signal PieceTable Changes have finished
 	_restorePieceTableState();
+    notifyListeners(AV_CHG_MOTION);
 	_ensureInsertionPointOnScreen();
 
 	return true;
@@ -1669,6 +1673,7 @@ bool FV_View::cmdDeleteRow(PT_DocPosition posRow)
 
 	// Signal PieceTable Changes have finished
 	_restorePieceTableState();
+    notifyListeners(AV_CHG_MOTION);
 
 	_ensureInsertionPointOnScreen();
 	return true;
@@ -1740,6 +1745,7 @@ bool FV_View::cmdDeleteCell(PT_DocPosition cellPos)
 
 	// Signal PieceTable Changes have finished
 	_restorePieceTableState();
+    notifyListeners(AV_CHG_MOTION);
 
 	_ensureInsertionPointOnScreen();
 	return true;
@@ -1842,7 +1848,7 @@ UT_Error FV_View::cmdInsertTable(UT_sint32 numRows, UT_sint32 numCols, const XML
 
 	// Signal PieceTable Changes have finished
 	_restorePieceTableState();
-
+	notifyListeners(AV_CHG_MOTION);
 	_ensureInsertionPointOnScreen();
 	setPoint(pointTable);
 	notifyListeners (AV_CHG_ALL);

@@ -328,34 +328,44 @@ bool FV_View::_MergeCells( PT_DocPosition posDestination,PT_DocPosition posSourc
 		return false;
 	}
 	endDestSDH = m_pDoc->getEndCellStruxFromCellSDH(destinationSDH);
-	PT_DocPosition posEndDestCell = m_pDoc->getStruxPosition(endSourceSDH)-1;
-	if(!bBefore)
-	{
-		posDestination = posEndDestCell;
-	}
+	PT_DocPosition posEndDestCell = m_pDoc->getStruxPosition(endDestSDH);
+//	if(!bBefore)
+//	{
+//		posDestination = posEndDestCell;
+//	}
+	m_pDoc->beginUserAtomicGlob();
 	if(posEndCell > posSource)
 	{
 //
 // OK got the doc range for the source. Set it and copy it.
 //
-		dr_source.set(m_pDoc,posSource,posEndCell);
+		dr_source.set(m_pDoc,posSource,posEndCell+1);
 //
 // Copy to and from clipboard to populate the destination cell
 //
 		UT_DEBUGMSG(("SEVIOR: Copy to clipboard merging cells \n"));
 		m_pApp->copyToClipboard(&dr_source);
-		PD_DocumentRange dr_dest(m_pDoc,posDestination,posDestination);
+	}
+//
+// Now delete the source cell. We can use the old source position since it
+// just needs to point inside the table. 
+//
+	_deleteCellAt(posSource,sTop,sLeft);
+	if(posEndCell > posSource)
+	{
+//
+// Now paste in the text from the source cell.
+//
+		PD_DocumentRange dr_dest(m_pDoc,posEndDestCell,posEndDestCell);
 		UT_DEBUGMSG(("SEVIOR: Pasting from clipboard merging cells \n"));
 		m_pApp->pasteFromClipboard(&dr_dest,true,true);
 	}
 //
-// Now delete the source cell
-//
-	_deleteCellAt(posSource,sTop,sLeft);
-//
 // Expand the destination cell into the source cell
 //
 	_changeCellTo(posDestination,dTop,dLeft,fLeft,fRight,fTop,fBot);
+	m_pDoc->endUserAtomicGlob();
+
 //
 // We're done!
 //

@@ -413,7 +413,7 @@ void fl_TableLayout::redrawUpdate(void)
 bool fl_TableLayout::doclistener_changeStrux(const PX_ChangeRecord_StruxChange * pcrxc)
 {
 	UT_ASSERT(pcrxc->getType()==PX_ChangeRecord::PXT_ChangeStrux);
-	UT_DEBUGMSG(("SEVIOR: getNext() %x getPrev() %x \n",getNext(),getPrev()));
+	xxx_UT_DEBUGMSG(("changeStrux: getNext() %x getPrev() %x \n",getNext(),getPrev()));
 	if(getPrev())
 	{
 		UT_ASSERT(getPrev()->getNext() == this);
@@ -1616,7 +1616,7 @@ void fl_CellLayout::_lookupProperties(void)
 	pSectionAP->getProperty("right-attach", (const XML_Char *&)pszRightAttach);
 	pSectionAP->getProperty("top-attach", (const XML_Char *&)pszTopAttach);
 	pSectionAP->getProperty("bot-attach", (const XML_Char *&)pszBottomAttach);
-	UT_DEBUGMSG(("CellLayout _lookupProps top %s bot %s left %s right %s \n",pszTopAttach,pszBottomAttach,pszLeftAttach,pszRightAttach)); 
+	xxx_UT_DEBUGMSG(("CellLayout _lookupProps top %s bot %s left %s right %s \n",pszTopAttach,pszBottomAttach,pszLeftAttach,pszRightAttach)); 
 	if(pszLeftAttach && pszLeftAttach[0])
 	{
 		m_iLeftAttach = atoi(pszLeftAttach);
