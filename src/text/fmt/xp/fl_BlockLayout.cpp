@@ -479,6 +479,9 @@ void fl_BlockLayout::_lookupProperties(void)
 	{
 #ifdef BIDI_ENABLED
 		const char * dir = getProperty("dom-dir", true);
+#ifdef DEBUG		
+		FriBidiCharType iOldDirection = m_iDomDirection;
+#endif
 		if(!UT_stricmp(dir,"rtl"))
 		{
 			m_iDomDirection = FRIBIDI_TYPE_RTL;
@@ -487,7 +490,7 @@ void fl_BlockLayout::_lookupProperties(void)
 			m_iDomDirection = FRIBIDI_TYPE_LTR;
 			
 		//m_iDomDirection = !UT_stricmp(getProperty("dom-dir", true), "rtl");
-		//UT_DEBUGMSG(("Block: _lookupProperties, m_bDomDirection=%d (%s)\n", m_bDomDirection, getProperty("dom-dir", true)));
+		xxx_UT_DEBUGMSG(("Block: _lookupProperties, m_bDomDirection=%d (%s), iOldDirection=%d\n", m_iDomDirection, dir, iOldDirection));
 #endif
 		const PP_PropertyTypeInt *pOrphans = (const PP_PropertyTypeInt *)getPropertyType("orphans", Property_type_int);
 		UT_ASSERT(pOrphans);
@@ -552,25 +555,43 @@ void fl_BlockLayout::_lookupProperties(void)
 	{
 		const char* pszAlign = getProperty("text-align");
 
-		DELETEP(m_pAlignment);
+		// we will only delete and reallocate the alignment if it is different
+		// than the current one
+		//DELETEP(m_pAlignment);
 		
 		//UT_DEBUGMSG(("block: _lookupProperties, text-align=%s\n", pszAlign));
 
 		if (0 == UT_strcmp(pszAlign, "left"))
 		{
-			m_pAlignment = new fb_Alignment_left;
+			if(!m_pAlignment || m_pAlignment->getType() != FB_ALIGNMENT_LEFT)
+			{
+			    DELETEP(m_pAlignment);
+				m_pAlignment = new fb_Alignment_left;
+			}
 		}
 		else if (0 == UT_strcmp(pszAlign, "center"))
 		{
-			m_pAlignment = new fb_Alignment_center;
+			if(!m_pAlignment || m_pAlignment->getType() != FB_ALIGNMENT_CENTER)
+			{
+			    DELETEP(m_pAlignment);
+				m_pAlignment = new fb_Alignment_center;
+			}
 		}
 		else if (0 == UT_strcmp(pszAlign, "right"))
 		{
-			m_pAlignment = new fb_Alignment_right;
+			if(!m_pAlignment || m_pAlignment->getType() != FB_ALIGNMENT_RIGHT)
+			{
+			    DELETEP(m_pAlignment);
+				m_pAlignment = new fb_Alignment_right;
+			}
 		}
 		else if (0 == UT_strcmp(pszAlign, "justify"))
 		{
-			m_pAlignment = new fb_Alignment_justify;
+			if(!m_pAlignment || m_pAlignment->getType() != FB_ALIGNMENT_JUSTIFY)
+			{
+			    DELETEP(m_pAlignment);
+				m_pAlignment = new fb_Alignment_justify;
+			}
 		}
 		else
 		{
@@ -806,7 +827,7 @@ fl_BlockLayout::~fl_BlockLayout()
 /*!
  * This method returns the DocSectionLayout that this block is associated with
  */
-fl_DocSectionLayout * fl_BlockLayout::getDocSectionLayout(void)
+fl_DocSectionLayout * fl_BlockLayout::getDocSectionLayout(void) const
 {
 	fl_DocSectionLayout * pDSL = NULL;
 	if(getSectionLayout()->getType() == FL_SECTION_DOC ||
@@ -1505,6 +1526,14 @@ const char*	fl_BlockLayout::getProperty(const XML_Char * pszName, bool bExpandSt
 	const PP_AttrProp * pSectionAP = NULL;
 	
 	getAttrProp(&pBlockAP);
+
+	// at the moment this is only needed in the bidi build, where dom-dir property
+	// can be inherited from the section; however, it the future this might need to
+	// be added for the normal build too.
+#ifdef BIDI_ENABLED
+
+	m_pSectionLayout->getAttrProp(&pSectionAP);
+#endif	
 	
 	return PP_evalProperty(pszName,pSpanAP,pBlockAP,pSectionAP,m_pDoc,bExpandStyles);
 }
@@ -3919,6 +3948,7 @@ bool fl_BlockLayout::doclistener_changeStrux(const PX_ChangeRecord_StruxChange *
 #ifdef BIDI_ENABLED
 		if(m_iDomDirection != iOldDomDirection)
 		{
+			xxx_UT_DEBUGMSG(("block listener: change of direction\n"));
 			pLine->setMapOfRunsDirty();
 		}
 #endif

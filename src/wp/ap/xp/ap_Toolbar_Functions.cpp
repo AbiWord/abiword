@@ -508,6 +508,7 @@ Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_BlockFmt)
 	case AP_TOOLBAR_ID_FMT_DOM_DIRECTION:
 		prop = "dom-dir";
 		val = "rtl";
+		xxx_UT_DEBUGMSG(("ap_ToolbarGetState_BlockFmt: dom-dir\n"));
 		break;
 #endif
 

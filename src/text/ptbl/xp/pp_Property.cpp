@@ -72,7 +72,7 @@ static PP_Property _props[] =
 	{ "column-gap",	"0.25in", false, NULL},
 	{ "column-line", "off",	false, NULL},
 #ifdef BIDI_ENABLED
-	{ "column-order", default_dominant_direction, false, NULL},
+	//{ "column-order", default_dominant_direction, false, NULL},
 #endif	
 	{ "columns", "1", false, NULL},
 
@@ -84,9 +84,9 @@ static PP_Property _props[] =
 		set basically for each word and each chunk of whitespace, inflating
 		the ABW file
 	*/
-	{ "dir", default_direction,              true, NULL},  //the direction of the present text, prossible values ltr, rtl,ntrl	
-	{ "dir-override", "off",              true, NULL},  //the direction of the present text, prossible values ltr, rtl,ntrl	
-	{ "dom-dir", default_dominant_direction,              false, NULL},  //added by #TF, dominant direction of writing in a paragraph, can be either ltr or rtl (i.e., left-to-right, right-to-left)
+	{ "dir", default_direction, true, NULL},  //the direction of the present text, prossible values ltr, rtl,ntrl	
+	{ "dir-override", "off", true, NULL},  //the direction of the present text, prossible values ltr, rtl,ntrl	
+	{ "dom-dir", default_dominant_direction, true, NULL},  //added by #TF, dominant direction of writing in a paragraph, can be either ltr or rtl (i.e., left-to-right, right-to-left)
 #endif
 
 	{ "field-color", "dcdcdc", true, NULL},

@@ -594,6 +594,14 @@ void s_RTF_ListenerWriteDoc::_rtf_open_section(PT_AttrPropIndex api)
 												 pSpanAP,pBlockAP,pSectionAP,
 												 m_pDocument,true);
 
+#ifdef BIDI_ENABLED
+	const XML_Char * szDomDir = PP_evalProperty("dom-dir",
+												 pSpanAP,pBlockAP,pSectionAP,
+												 m_pDocument,true);
+	
+	bool bSectRTL = UT_strcmp (szDomDir,"rtl") == 0;
+#endif
+
 	bool bColLine = false;
 	if (szColumnLine && !UT_strcmp (szColumnLine, "on"))
 		bColLine = true;
@@ -618,6 +626,13 @@ void s_RTF_ListenerWriteDoc::_rtf_open_section(PT_AttrPropIndex api)
 
 	m_pie->_rtf_keyword_ifnotdefault_twips("headery", (char*)szHeaderY, 720);
 	m_pie->_rtf_keyword_ifnotdefault_twips("footery", (char*)szFooterY, 720);
+
+#ifdef BIDI_ENABLED
+	if (bSectRTL)
+		m_pie->_rtf_keyword("rtlsect");
+	else
+		m_pie->_rtf_keyword("ltrsect");
+#endif
 }
 
 //////////////////////////////////////////////////////////////////

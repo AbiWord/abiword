@@ -1040,7 +1040,7 @@ void fp_Line::layout(void)
 	bool bLineErased		= false;
 	UT_uint32 iIndxToEraseFrom = 0;
 
-#ifdef DEBUG
+#if 0 //def DEBUG
 
 	//some extra but lengthy degug stuff
 	char *al;

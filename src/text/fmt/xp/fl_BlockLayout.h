@@ -257,8 +257,8 @@ public:
 	inline UT_sint32	getBottomMarginInLayoutUnits(void) const { return m_iBottomMarginLayoutUnits; }
 	inline fb_Alignment *		getAlignment(void) const { return m_pAlignment; }
 	inline FL_DocLayout* 		getDocLayout(void) const { return m_pLayout; }
-	inline fl_SectionLayout* 	getSectionLayout(void) { return m_pSectionLayout; }
-	fl_DocSectionLayout * getDocSectionLayout(void);
+	inline fl_SectionLayout* 	getSectionLayout(void) const { return m_pSectionLayout;}
+	fl_DocSectionLayout * getDocSectionLayout(void) const;
 
 	void setSectionLayout(fl_SectionLayout* pSectionLayout);
 

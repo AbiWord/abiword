@@ -1095,14 +1095,14 @@ void fl_DocSectionLayout::_lookupProperties(void)
 		m_bColumnLineBetween = false;
 	}
 
-#ifdef BIDI_ENABLED	
+#ifdef BIDI_ENABLED	  /* column-order */
 	//we use the mechanism used by BlockLayout, since otherwise we
 	//cannot recode the default value
 	const PP_AttrProp * pSpanAP = NULL;
 	const PP_AttrProp * pBlockAP = NULL;
 	
-	const char * pszColumnOrder = PP_evalProperty("column-order",pSpanAP,pBlockAP,pSectionAP,m_pDoc,false);
-    UT_DEBUGMSG(("column-order: %s\n", pszColumnOrder));
+	const char * pszColumnOrder = PP_evalProperty("dom-dir",pSpanAP,pBlockAP,pSectionAP,m_pDoc,false);
+    UT_DEBUGMSG(("column order: %s\n", pszColumnOrder));
 	if (pszColumnOrder && pszColumnOrder[0])
 	{
 		m_iColumnOrder = strcmp(pszColumnOrder, "ltr")	? 1 : 0;

@@ -3633,7 +3633,7 @@ void fp_Run::setDirectionProperty(FriBidiCharType dir)
 	const XML_Char direction[] = "dir";
 	const XML_Char rtl[] = "rtl";
 	const XML_Char ltr[] = "ltr";
-	const XML_Char neutral[] = "ntrl";
+	XML_Char other[20];
 	
 	prop[0] = (XML_Char*) &direction;
 	
@@ -3641,7 +3641,16 @@ void fp_Run::setDirectionProperty(FriBidiCharType dir)
 	{
 		case FRIBIDI_TYPE_LTR:  prop[1] = (XML_Char*) &ltr;     break;
 		case FRIBIDI_TYPE_RTL:  prop[1] = (XML_Char*) &rtl;     break;
-		default: prop[1] = (XML_Char*) &neutral; break;
+		default:
+		 {
+		 	// for anything other we will print the FriBidiCharType value
+		 	// this will allow us to coallesce runs of same type without
+		 	// having to list here tons of possible strings
+		 	// (we could do this for rtl and ltr as well, but "rtl" and "ltr"
+		 	// are much more informative.)
+		 	sprintf(other,"fbt%d",(UT_uint32)dir);
+		 	prop[1] = (XML_Char*) &other; break;
+		 }
 	};
 	
 	UT_uint32 offset = m_pBL->getPosition() + m_iOffsetFirst;

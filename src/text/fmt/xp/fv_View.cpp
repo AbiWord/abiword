@@ -3355,7 +3355,10 @@ bool FV_View::getSectionFormat(const XML_Char ***pProps)
 	v.addItem(new _fmtPair("section-space-after",NULL,pBlockAP,pSectionAP,m_pDoc,false));
 	v.addItem(new _fmtPair("section-max-column-height",NULL,pBlockAP,pSectionAP,m_pDoc,false));
 #ifdef BIDI_ENABLED
-	v.addItem(new _fmtPair("column-order",NULL,pBlockAP,pSectionAP,m_pDoc,false));
+	//v.addItem(new _fmtPair("column-order",NULL,pBlockAP,pSectionAP,m_pDoc,false));
+	//N.B. we do not want this property to propagate up from the block formating
+	v.addItem(new _fmtPair("dom-dir",NULL,NULL,pSectionAP,m_pDoc,false));
+	v.addItem(new _fmtPair("text-align",NULL,NULL,pSectionAP,m_pDoc,false));
 #endif
 	v.addItem(new _fmtPair("page-margin-left",NULL,pBlockAP,pSectionAP,m_pDoc,false));
 	v.addItem(new _fmtPair("page-margin-top",NULL,pBlockAP,pSectionAP,m_pDoc,false));
@@ -3455,7 +3458,8 @@ bool FV_View::getSectionFormat(const XML_Char ***pProps)
 bool FV_View::getBlockFormat(const XML_Char *** pProps,bool bExpandStyles)
 {
 	const PP_AttrProp * pBlockAP = NULL;
-	const PP_AttrProp * pSectionAP = NULL; // TODO do we care about section-level inheritance?
+	const PP_AttrProp * pSectionAP = NULL; 	// TODO do we care about section-level inheritance?
+											// we do in the bidi version
 	UT_Vector v;
 	UT_uint32 i;
 	_fmtPair * f = NULL;
@@ -3480,6 +3484,11 @@ bool FV_View::getBlockFormat(const XML_Char *** pProps,bool bExpandStyles)
 	// 1. assemble complete set at insertion point
 	fl_BlockLayout* pBlock = _findBlockAtPosition(posStart);
 	pBlock->getAttrProp(&pBlockAP);
+
+#ifdef BIDI_ENABLED
+	fl_SectionLayout* pSection = pBlock->getSectionLayout();
+	pSection->getAttrProp(&pSectionAP);
+#endif	
 
 	f = new _fmtPair("text-align",NULL,pBlockAP,pSectionAP,m_pDoc,bExpandStyles);
 	if(f->m_val != NULL)
@@ -6257,7 +6266,7 @@ void FV_View::_fixInsertionPointCoords()
 {
 	_eraseInsertionPoint();
 	_findPositionCoords(getPoint(), m_bPointEOL, m_xPoint, m_yPoint, m_xPoint2, m_yPoint2, m_iPointHeight, m_bPointDirection, NULL, NULL);
-	UT_DEBUGMSG(("SEVIOR: m_yPoint = %d m_iPointHeight = %d \n",m_yPoint,m_iPointHeight));
+	xxx_UT_DEBUGMSG(("SEVIOR: m_yPoint = %d m_iPointHeight = %d \n",m_yPoint,m_iPointHeight));
 	_saveCurrentPoint();
 	// hang onto this for _moveInsPtNextPrevLine()
 	m_xPointSticky = m_xPoint + m_xScrollOffset - getPageViewLeftMargin();

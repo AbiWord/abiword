@@ -143,7 +143,7 @@ EV_Toolbar_ActionSet * AP_CreateToolbarActionSet(void)
 #ifdef BIDI_ENABLED
 	_s(AP_TOOLBAR_ID_FMT_DIR_OVERRIDE_LTR,	EV_TBIT_ToggleButton,	"toggleDirOverrideLTR",	AV_CHG_FMTCHAR | AV_CHG_DIRECTIONMODE,		ap_ToolbarGetState_CharFmt);
 	_s(AP_TOOLBAR_ID_FMT_DIR_OVERRIDE_RTL,	EV_TBIT_ToggleButton,	"toggleDirOverrideRTL",	AV_CHG_FMTCHAR | AV_CHG_DIRECTIONMODE,		ap_ToolbarGetState_CharFmt);
-	_s(AP_TOOLBAR_ID_FMT_DOM_DIRECTION,	EV_TBIT_ToggleButton,	"toggleDomDirection",	AV_CHG_FMTBLOCK,		ap_ToolbarGetState_BlockFmt);
+	_s(AP_TOOLBAR_ID_FMT_DOM_DIRECTION,	EV_TBIT_ToggleButton,	"toggleDomDirection",	AV_CHG_FMTBLOCK | AV_CHG_FMTSECTION,		ap_ToolbarGetState_BlockFmt);
 #endif
 	
 	_s(AP_TOOLBAR_ID__BOGUS2__,		EV_TBIT_BOGUS,			NULL,			0,					NULL);

@@ -805,12 +805,28 @@ void IE_Exp_RTF::_write_charfmt(const s_RTF_AttrPropAdapter & apa)
 #ifdef BIDI_ENABLED
 
 	const XML_Char * szDir = apa.getProperty("dir");
-
-	if (szDir)
+	const XML_Char * szDirOvrr = apa.getProperty("dir-override");
+	
+	bool bProceed = true;
+	if (szDirOvrr)
+	{
+		if (!UT_strcmp (szDirOvrr, "ltr"))
+		{
+			_rtf_keyword ("ltrch");
+			bProceed = false;
+		}
+		else if (!UT_strcmp (szDirOvrr, "rtl"))
+		{
+			_rtf_keyword ("rtlch");
+			bProceed  = false;
+		}
+	}
+	
+	if (bProceed || szDir)
 	{
 		if (!UT_strcmp (szDir, "ltr"))
 			_rtf_keyword ("ltrch");
-		else
+		else if (!UT_strcmp (szDir, "rtl"))
 			_rtf_keyword ("rtlch");
 	}
 
