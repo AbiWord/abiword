@@ -112,7 +112,8 @@ public:
 	UT_Bool			cmdCharInsert(UT_UCSChar * text, UT_uint32 count);
 	void			cmdCharDelete(UT_Bool bForward, UT_uint32 count);
 	void			delTo(FV_DocPos dp);
-
+	UT_UCSChar * 	getSelectionText(void);
+		
 	void			warpInsPtToXY(UT_sint32 xPos, UT_sint32 yPos);
 	void			moveInsPtTo(FV_DocPos dp);
 	void 			moveInsPtTo(PT_DocPosition dp);
@@ -224,7 +225,8 @@ protected:
 	fl_BlockLayout * 	_findGetCurrentBlock(void);
 	fl_BlockLayout * 	_findGetNextBlock(UT_Bool * wrapped);
 
-	// search routines
+	// search routines (these return values will fall short of an
+	// extremely large document - fix them)
 	UT_sint32 			_findBlockSearchDumb(const UT_UCSChar * haystack, const UT_UCSChar * needle);
 	UT_sint32			_findBlockSearchRegexp(const UT_UCSChar * haystack, const UT_UCSChar * needle);
 	

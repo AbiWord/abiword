@@ -1428,10 +1428,17 @@ static UT_Bool s_doReplaceDlg(FV_View * pView)
 		= (AP_Dialog_Replace *)(pDialogFactory->requestDialog(id));
 	UT_ASSERT(pDialog);
 
-	// if they have a selection, set the persistent class
-	// "find" data to be the selection
-	
-	
+	// prime the dialog with a "find" string if there's a
+	// current selection.
+	if (!pView->isSelectionEmpty())
+	{
+		UT_UCSChar * buffer = pView->getSelectionText();
+		
+		pDialog->setFindString(buffer);
+
+		FREEP(buffer);
+	}
+		
 	// run the dialog
 	pDialog->runModal(pFrame);
 

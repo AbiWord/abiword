@@ -1178,6 +1178,62 @@ void FV_View::delTo(FV_DocPos dp)
 	_drawInsertionPoint();
 }
 
+/*
+  This function is somewhat of a compromise.  It will return a new
+  range of memory (destroy with free()) full of what's in the selection,
+  but it will not cross block boundaries.  This is for convenience
+  in implementation, but could probably be accomplished without
+  too much more effort.  However, since an edit entry in a dialog
+  box (1) only allows a bit of text and (2) has no concept of a
+  block break anyway, I don't see a reason to make this behave
+  differently.
+*/
+UT_UCSChar * FV_View::getSelectionText(void)
+{
+	UT_ASSERT(!isSelectionEmpty());
+
+	UT_GrowBuf buffer;	
+
+	UT_uint32 selLength = labs(m_iInsPoint - m_iSelectionAnchor);
+
+	PT_DocPosition low;
+	if (m_iInsPoint > m_iSelectionAnchor)
+	{
+		low = m_iSelectionAnchor;
+	}
+	else
+	{
+		low = m_iInsPoint;
+	}
+	
+	// get the current block the insertion point is in
+	fl_BlockLayout * block = m_pLayout->findBlockAtPosition(low);
+
+	if (block)
+	{
+		block->getBlockBuf(&buffer);
+
+		UT_UCSChar * bufferSegment = NULL;
+
+		PT_DocPosition offset = low - block->getPosition(UT_FALSE);
+
+		// allow no more than the rest of the block
+		if (offset + selLength > buffer.getLength())
+			selLength = buffer.getLength() - offset;
+		
+		// give us space for our new chunk of selected text, add 1 so it
+		// terminates itself
+		bufferSegment = (UT_UCSChar *) calloc(selLength + 1, sizeof(UT_UCSChar));
+
+		// copy it out
+		memmove(bufferSegment, buffer.getPointer(offset), selLength * sizeof(UT_UCSChar));
+
+		return bufferSegment;
+	}
+
+	return NULL;
+}
+
 void FV_View::cmdCharDelete(UT_Bool bForward, UT_uint32 count)
 {
 	if (!isSelectionEmpty())
@@ -1874,10 +1930,10 @@ fl_BlockLayout * FV_View::_findGetNextBlock(UT_Bool * wrapped)
 			return nextBlock;
 		else
 		{
-			// the end of the doc would have a NULL nextBlock,
-			// but that case should be covered by the m_iFindPosEnd
-			// check above
-			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+			// if the block changes underneath us, then
+			// our counter may be off, so we ignore it if
+			// we don't get a good block
+			UT_DEBUGMSG(("Could not get next block of [%p].\n", block));
 		}
 	}
 
