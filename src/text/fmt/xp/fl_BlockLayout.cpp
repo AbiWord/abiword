@@ -3833,17 +3833,17 @@ bool fl_BlockLayout::doclistener_insertBlock(const PX_ChangeRecord_Strux * pcrx,
 
 	if (pFirstNewRun)
 	{
-	        if (pFirstNewRun->getPrev())
-	        {
-		        // Break doubly-linked list of runs into two distinct lists.
-	 	        // But remember the last Run in this block.
+		if (pFirstNewRun->getPrev())
+		{
+			// Break doubly-linked list of runs into two distinct lists.
+			// But remember the last Run in this block.
 
-		        pLastRun = pFirstNewRun->getPrev();
-		        pFirstNewRun->getPrev()->setNext(NULL);
-		        pFirstNewRun->setPrev(NULL);
+			pLastRun = pFirstNewRun->getPrev();
+			pFirstNewRun->getPrev()->setNext(NULL);
+			pFirstNewRun->setPrev(NULL);
 		}
 		else
-		        pLastRun = NULL;
+			pLastRun = NULL;
 	}
 	// else the old value of pLastRun is what we want.
 
