@@ -47,7 +47,7 @@ ABI_APPLIBDEP=		$(LoadOrder)
 # libdl flags go into the process later
 ABI_LIBS=		png z 
 ifdef __FreeBSD__
-ABI_LIBS=		$(ABI_LIBS) iconv
+ABI_LIBS+=		iconv
 endif
 
 # include both dynamic and static binaries
