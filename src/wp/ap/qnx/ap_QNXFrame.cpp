@@ -995,11 +995,6 @@ void AP_QNXFrame::toggleStatusBar(bool bStatusBarOn) {
 void AP_QNXFrame::setDocumentFocus() {
 	PtContainerGiveFocus(m_dArea, NULL);
 }
-void XAP_QNXFrame::setCursor(GR_Graphics::Cursor c)
-{
-//XXX: gotta add content.
-}
-
 
 
 /*** THIS CODE WILL GO AWAY WITH AN INTELLIGENT LAYOUT THINGY ***/

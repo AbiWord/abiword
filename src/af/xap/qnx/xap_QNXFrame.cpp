@@ -33,8 +33,10 @@
 #include "ev_QNXToolbar.h"
 #include "ev_EditMethod.h"
 #include "xav_View.h"
+#include "fv_View.h"
 #include "xad_Document.h"
 #include "ut_qnxHelper.h"
+#include "gr_Graphics.h"
 
 /* This is required for dynamic zoom implimentation */
 #include "fv_View.h"
@@ -60,6 +62,7 @@ int XAP_QNXFrame::_fe::focus_in_event(PtWidget_t *w, void *data, PtCallbackInfo_
 	//I don't understand the AV_FOCUS_HERE vs NEARBY
         if (pFrame->getCurrentView())
             pFrame->getCurrentView()->focusChange(AV_FOCUS_HERE/*AV_FOCUS_NEARBY*/);
+					
 	return Pt_CONTINUE;
 }
 
@@ -371,6 +374,95 @@ bool XAP_QNXFrame::initialize(const char * szKeyBindingsKey, const char * szKeyB
 
 	return true;
 }
+
+void XAP_QNXFrame::setCursor(GR_Graphics::Cursor c)
+{
+unsigned short cursor_number=0;
+
+if(getTopLevelWindow() == NULL || (m_iFrameMode != XAP_NormalFrame))
+	return;
+	switch (c)
+	{
+	default:
+		UT_ASSERT(UT_NOT_IMPLEMENTED);
+		/*FALLTHRU*/
+	case GR_Graphics::GR_CURSOR_DEFAULT:
+		cursor_number = Ph_CURSOR_POINTER;
+		break;
+
+	case GR_Graphics::GR_CURSOR_IBEAM:
+		cursor_number = Ph_CURSOR_POINTER; //XXX: Wtf is IBEAM ?
+		break;
+
+	case GR_Graphics::GR_CURSOR_RIGHTARROW:
+		cursor_number = Ph_CURSOR_DRAG_RIGHT;
+		break;
+
+	case GR_Graphics::GR_CURSOR_LEFTARROW:
+		cursor_number = Ph_CURSOR_DRAG_LEFT; //GDK_ARROW;
+		break;
+
+	case GR_Graphics::GR_Graphics::GR_CURSOR_IMAGE:
+		cursor_number = Ph_CURSOR_POINTER; //XXX: ???
+		break;
+
+	case GR_Graphics::GR_CURSOR_IMAGESIZE_NW:
+		cursor_number = Ph_CURSOR_DRAG_TL;
+		break;
+
+	case GR_Graphics::GR_CURSOR_IMAGESIZE_N:
+		cursor_number = Ph_CURSOR_DRAG_TOP;
+		break;
+
+	case GR_Graphics::GR_CURSOR_IMAGESIZE_NE:
+		cursor_number = Ph_CURSOR_DRAG_TR;
+		break;
+
+	case GR_Graphics::GR_Graphics::GR_CURSOR_IMAGESIZE_E:
+		cursor_number = Ph_CURSOR_DRAG_RIGHT;
+		break;
+
+	case GR_Graphics::GR_CURSOR_IMAGESIZE_SE:
+		cursor_number = Ph_CURSOR_DRAG_BR;
+		break;
+
+	case GR_Graphics::GR_CURSOR_IMAGESIZE_S:
+		cursor_number = Ph_CURSOR_DRAG_BOTTOM;
+		break;
+
+	case GR_Graphics::GR_CURSOR_IMAGESIZE_SW:
+		cursor_number = Ph_CURSOR_DRAG_BL;
+		break;
+
+	case GR_Graphics::GR_Graphics::GR_CURSOR_IMAGESIZE_W:
+		cursor_number = Ph_CURSOR_DRAG_LEFT;
+		break;
+
+	case GR_Graphics::GR_CURSOR_LEFTRIGHT:
+		cursor_number=Ph_CURSOR_DRAG_HORIZONTAL;
+		break;
+	case GR_Graphics::GR_CURSOR_UPDOWN:
+		cursor_number=Ph_CURSOR_DRAG_VERTICAL;
+		break;
+	case GR_Graphics::GR_CURSOR_EXCHANGE:
+		cursor_number=Ph_CURSOR_POINTER;
+		break;
+	case GR_Graphics::GR_CURSOR_GRAB:
+		cursor_number=Ph_CURSOR_MOVE;
+		break;
+	case GR_Graphics::GR_CURSOR_LINK:
+		cursor_number=Ph_CURSOR_FINGER;
+		break;
+	case GR_Graphics::GR_CURSOR_WAIT:
+		cursor_number= Ph_CURSOR_WAIT;
+		break;
+	}
+
+	PtSetResource(getTopLevelWindow(),Pt_ARG_CURSOR_TYPE,cursor_number,0);
+	PtSetResource(m_wSunkenBox,Pt_ARG_CURSOR_TYPE,cursor_number,0);
+	PtSetResource(m_wStatusBar,Pt_ARG_CURSOR_TYPE,cursor_number,0);
+}
+
 
 UT_sint32 XAP_QNXFrame::setInputMode(const char * szName)
 {
