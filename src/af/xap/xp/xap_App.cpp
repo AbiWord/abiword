@@ -655,6 +655,36 @@ bool XAP_App::getGeometry(UT_sint32 *x, UT_sint32 *y, UT_uint32 *width, UT_uint3
 	return prefs->getGeometry(x, y, width, height, flags);
 }
 
+void XAP_App::parseAndSetGeometry(const char *string) {
+	UT_uint32 nw, nh, nflags;
+    UT_sint32 nx, ny;
+    char *next;
+
+	nw = nh = nflags = 0;
+	nx = ny = 0;
+
+    next = (char *)string;
+    if (*next != '+' && *next != '-') {
+        nw = strtoul(next, &next, 10);
+        if(*next == 'x' || *next == 'X') {
+            nh = strtoul(++next, &next, 10);
+            nflags |= PREF_FLAG_GEOMETRY_SIZE;
+        }
+    }
+    if (*next == '+' || *next == '-') {
+        nx = strtoul(next, &next, 10);
+        if(*next == '+' || *next == '-') {
+            ny = strtoul(next, &next, 10);
+            nflags |= PREF_FLAG_GEOMETRY_POS;
+        }
+    }
+
+	//Don't update the geometry from the file
+	if(nflags) {
+		nflags |= PREF_FLAG_GEOMETRY_NOUPDATE;
+		setGeometry(nx, ny, nw, nh, nflags);
+	}
+} 
 
 void XAP_App::_printUsage(void)
 {

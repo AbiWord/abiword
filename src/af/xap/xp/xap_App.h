@@ -139,6 +139,7 @@ public:
 												    UT_uint32 width, UT_uint32 height, UT_uint32 flags = 0);
 		virtual	bool					getGeometry(UT_sint32 *x, UT_sint32 *y, 
 													UT_uint32 *width, UT_uint32 *height, UT_uint32 *flags = 0);
+		virtual void 					parseAndSetGeometry(const char *string);
 
 
 protected:

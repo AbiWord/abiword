@@ -326,6 +326,8 @@ XAP_Prefs::XAP_Prefs(XAP_App * pApp)
 	m_iMaxRecent = atoi(XAP_PREF_DEFAULT_MaxRecent);
 	m_bInChangeBlock = false;
 
+	memset(&m_geom, 0, sizeof(m_geom));
+
 	// NOTE: since constructors cannot report malloc
 	// NOTE: failures (and since it is virtual back
 	// NOTE: to the application), our creator must call
@@ -698,7 +700,8 @@ void XAP_Prefs::_startElement(const XML_Char *name, const XML_Char **atts)
 
 		_pruneRecent();
 	}
-	else if (UT_strcmp(name, "Geometry") == 0)
+	else if (UT_strcmp(name, "Geometry") == 0 && 
+             !(m_geom.m_flags &  PREF_FLAG_GEOMETRY_NOUPDATE))
 	{
 		m_parserState.m_bFoundGeometry = true;
 		
@@ -731,7 +734,7 @@ void XAP_Prefs::_startElement(const XML_Char *name, const XML_Char **atts)
 			}
 			else if (UT_strcmp(a[0], "flags") == 0)
 			{
-				m_geom.m_flags = atoi(a[1]);
+				m_geom.m_flags = atoi(a[1]) & ~PREF_FLAG_GEOMETRY_NOUPDATE;
 			}
 
 
