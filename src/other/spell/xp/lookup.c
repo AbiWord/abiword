@@ -42,6 +42,15 @@
 
 /*
  * $Log$
+ * Revision 1.10  2002/09/17 03:03:30  hippietrail
+ * After seeking permission on the developer list I've reformatted all the
+ * spelling source which seemed to have parts which used 2, 3, 4, and 8
+ * spaces for tabs.  It should all look good with our standard 4-space
+ * tabs now.
+ * I've concentrated just on indentation in the actual code.  More prettying
+ * could be done.
+ * * NO code changes were made *
+ *
  * Revision 1.9  2002/09/13 17:20:13  mpritchett
  * Fix more warnings for Linux build
  *
@@ -173,8 +182,8 @@ int linit (FIRST_ARG(istate) char *hashname)
 #if 0
 char *hashname; /* name of the hash file (dictionary) */
 #endif
-    {
-		FILE*	fpHash;
+{
+	FILE*	fpHash;
 		
     register int	i;
     register struct dent * dp;
@@ -186,79 +195,79 @@ char *hashname; /* name of the hash file (dictionary) */
 
     if ((fpHash = fopen (hashname, "rb")) == NULL)
 	{
-/*	(void) fprintf (stderr, CANT_OPEN, hashname);*/
-	return (-1);
+/*		(void) fprintf (stderr, CANT_OPEN, hashname);*/
+		return (-1);
 	}
 
     DEREF(istate, hashsize) = fread ((char *) &DEREF(istate, hashheader), 1, sizeof DEREF(istate, hashheader), fpHash);
     if (DEREF(istate, hashsize) < (int)sizeof(DEREF(istate, hashheader)))
 	{
-	if (DEREF(istate, hashsize) < 0)
-	    (void) fprintf (stderr, LOOKUP_C_CANT_READ, hashname);
-	else if (DEREF(istate, hashsize) == 0)
-	    (void) fprintf (stderr, LOOKUP_C_NULL_HASH, hashname);
-	else
-	    (void) fprintf (stderr,
-	      LOOKUP_C_SHORT_HASH (DEREF(istate, hashname), DEREF(istate, hashsize),
-	        (int) sizeof DEREF(istate, hashheader)));
-	return (-1);
+		if (DEREF(istate, hashsize) < 0)
+			(void) fprintf (stderr, LOOKUP_C_CANT_READ, hashname);
+		else if (DEREF(istate, hashsize) == 0)
+			(void) fprintf (stderr, LOOKUP_C_NULL_HASH, hashname);
+		else
+			(void) fprintf (stderr,
+			  LOOKUP_C_SHORT_HASH (DEREF(istate, hashname), DEREF(istate, hashsize),
+				(int) sizeof DEREF(istate, hashheader)));
+		return (-1);
 	}
     else if (DEREF(istate, hashheader.magic) != MAGIC)
 	{
-	(void) fprintf (stderr,
-	  LOOKUP_C_BAD_MAGIC (hashname, (unsigned int) MAGIC,
-	    (unsigned int) DEREF(istate, hashheader.magic)));
-	return (-1);
+		(void) fprintf (stderr,
+		  LOOKUP_C_BAD_MAGIC (hashname, (unsigned int) MAGIC,
+			(unsigned int) DEREF(istate, hashheader.magic)));
+		return (-1);
 	}
     else if (DEREF(istate, hashheader.magic2) != MAGIC)
 	{
-	(void) fprintf (stderr,
-	  LOOKUP_C_BAD_MAGIC2 (hashname, (unsigned int) MAGIC,
-	    (unsigned int) DEREF(istate, hashheader.magic2)));
-	return (-1);
+		(void) fprintf (stderr,
+		  LOOKUP_C_BAD_MAGIC2 (hashname, (unsigned int) MAGIC,
+			(unsigned int) DEREF(istate, hashheader.magic2)));
+		return (-1);
 	}
-/*    else if (hashheader.compileoptions != COMPILEOPTIONS*/
+/*  else if (hashheader.compileoptions != COMPILEOPTIONS*/
     else if ( 1 != 1
       ||  DEREF(istate, hashheader.maxstringchars) != MAXSTRINGCHARS
       ||  DEREF(istate, hashheader.maxstringcharlen) != MAXSTRINGCHARLEN)
 	{
-	(void) fprintf (stderr,
-	  LOOKUP_C_BAD_OPTIONS ((unsigned int) DEREF(istate, hashheader.compileoptions),
-	    DEREF(istate, hashheader.maxstringchars), DEREF(istate, hashheader.maxstringcharlen),
-	    (unsigned int) COMPILEOPTIONS, MAXSTRINGCHARS, MAXSTRINGCHARLEN));
-	return (-1);
+		(void) fprintf (stderr,
+		  LOOKUP_C_BAD_OPTIONS ((unsigned int) DEREF(istate, hashheader.compileoptions),
+			DEREF(istate, hashheader.maxstringchars), DEREF(istate, hashheader.maxstringcharlen),
+			(unsigned int) COMPILEOPTIONS, MAXSTRINGCHARS, MAXSTRINGCHARLEN));
+		return (-1);
 	}
 #if 0 /* DELETE_ME */
     if (nodictflag)
 	{
-	/*
-	 * Dictionary is not needed - create an empty dummy table.  We
-	 * actually have to have one entry since the hash
-	 * algorithm involves a divide by the table size
-	 * (actually modulo, but zero is still unacceptable).
-	 * So we create an empty entry.
-	 */
-	hashsize = 1;		/* This prevents divides by zero */
-	hashtbl = (struct dent *) calloc (1, sizeof (struct dent));
-	if (hashtbl == NULL)
-	    {
-	    (void) fprintf (stderr, LOOKUP_C_NO_HASH_SPACE);
-	    return (-1);
-	    }
-	hashtbl[0].word = NULL;
-	hashtbl[0].next = NULL;
-	hashtbl[0].flagfield &= ~(USED | KEEP);
-	/* The flag bits don't matter, but calloc cleared them. */
-	hashstrings = (char *) malloc ((unsigned) hashheader.lstringsize);
+		/*
+		 * Dictionary is not needed - create an empty dummy table.  We
+		 * actually have to have one entry since the hash
+		 * algorithm involves a divide by the table size
+		 * (actually modulo, but zero is still unacceptable).
+		 * So we create an empty entry.
+		 */
+		hashsize = 1;		/* This prevents divides by zero */
+		hashtbl = (struct dent *) calloc (1, sizeof (struct dent));
+		if (hashtbl == NULL)
+		{
+			(void) fprintf (stderr, LOOKUP_C_NO_HASH_SPACE);
+			return (-1);
+		}
+		hashtbl[0].word = NULL;
+		hashtbl[0].next = NULL;
+		hashtbl[0].flagfield &= ~(USED | KEEP);
+		/* The flag bits don't matter, but calloc cleared them. */
+		hashstrings = (char *) malloc ((unsigned) hashheader.lstringsize);
 	}
     else
 #endif /* DELETE_ME */
 	{
-	DEREF(istate, hashtbl) =
-	 (struct dent *)
-	    calloc ((unsigned) DEREF(istate, hashheader.tblsize), sizeof (struct dent));
-	DEREF(istate, hashsize) = DEREF(istate, hashheader.tblsize);
-	DEREF(istate, hashstrings) = (char *) malloc ((unsigned) DEREF(istate, hashheader.stringsize));
+		DEREF(istate, hashtbl) =
+		 (struct dent *)
+			calloc ((unsigned) DEREF(istate, hashheader.tblsize), sizeof (struct dent));
+		DEREF(istate, hashsize) = DEREF(istate, hashheader.tblsize);
+		DEREF(istate, hashstrings) = (char *) malloc ((unsigned) DEREF(istate, hashheader.stringsize));
 	}
     DEREF(istate, numsflags) = DEREF(istate, hashheader.stblsize);
     DEREF(istate, numpflags) = DEREF(istate, hashheader.ptblsize);
@@ -266,8 +275,8 @@ char *hashname; /* name of the hash file (dictionary) */
       malloc ((DEREF(istate, numsflags) + DEREF(istate, numpflags)) * sizeof (struct flagent));
     if (DEREF(istate, hashtbl) == NULL  ||  DEREF(istate, hashstrings) == NULL  ||  DEREF(istate, sflaglist) == NULL)
 	{
-	(void) fprintf (stderr, LOOKUP_C_NO_HASH_SPACE);
-	return (-1);
+		(void) fprintf (stderr, LOOKUP_C_NO_HASH_SPACE);
+		return (-1);
 	}
     DEREF(istate, pflaglist) = DEREF(istate, sflaglist) + DEREF(istate, numsflags);
 
@@ -305,8 +314,8 @@ char *hashname; /* name of the hash file (dictionary) */
 	(unsigned) (DEREF(istate, numsflags) + DEREF(istate, numpflags)) * sizeof (struct flagent), fpHash)
       != (DEREF(istate, numsflags) + DEREF(istate, numpflags)) * sizeof (struct flagent))
 	{
-	(void) fprintf (stderr, LOOKUP_C_BAD_FORMAT);
-	return (-1);
+		(void) fprintf (stderr, LOOKUP_C_BAD_FORMAT);
+		return (-1);
 	}
     (void) fclose (fpHash);
 
@@ -314,29 +323,29 @@ char *hashname; /* name of the hash file (dictionary) */
     if (!nodictflag)
 #endif /* DELETE_ME */
 	{
-	for (i = DEREF(istate, hashsize), dp = DEREF(istate, hashtbl);  --i >= 0;  dp++)
-	    {
-	    if (dp->word == (char *) -1)
-		dp->word = NULL;
-	    else
-		dp->word = &DEREF(istate, hashstrings [ (int)(dp->word) ]);
-	    if (dp->next == (struct dent *) -1)
-		dp->next = NULL;
-	    else
-		dp->next = &DEREF(istate, hashtbl [ (int)(dp->next) ]);
+		for (i = DEREF(istate, hashsize), dp = DEREF(istate, hashtbl);  --i >= 0;  dp++)
+		{
+			if (dp->word == (char *) -1)
+				dp->word = NULL;
+			else
+				dp->word = &DEREF(istate, hashstrings [ (int)(dp->word) ]);
+			if (dp->next == (struct dent *) -1)
+				dp->next = NULL;
+			else
+				dp->next = &DEREF(istate, hashtbl [ (int)(dp->next) ]);
 	    }
 	}
 
     for (i = DEREF(istate, numsflags) + DEREF(istate, numpflags), entry = DEREF(istate, sflaglist); --i >= 0; entry++)
 	{
-	if (entry->stripl)
-	    entry->strip = (ichar_t *) &DEREF(istate, hashstrings[(int) entry->strip]);
-	else
-	    entry->strip = NULL;
-	if (entry->affl)
-	    entry->affix = (ichar_t *) &DEREF(istate, hashstrings[(int) entry->affix]);
-	else
-	    entry->affix = NULL;
+		if (entry->stripl)
+			entry->strip = (ichar_t *) &DEREF(istate, hashstrings[(int) entry->strip]);
+		else
+			entry->strip = NULL;
+		if (entry->affl)
+			entry->affix = (ichar_t *) &DEREF(istate, hashstrings[(int) entry->affix]);
+		else
+			entry->affix = NULL;
 	}
     /*
     ** Warning - 'entry' and 'i' are reset in the body of the loop
@@ -345,61 +354,61 @@ char *hashname; /* name of the hash file (dictionary) */
     */
     for (i = DEREF(istate, numsflags), entry = DEREF(istate, sflaglist);  i > 0;  i--, entry++)
 	{
-	if (entry->affl == 0)
-	    {
-	    cp = NULL;
-	    ind = &DEREF(istate, sflagindex[0]);
-	    viazero = 1;
-	    }
-	else
-	    {
-	    cp = entry->affix + entry->affl - 1;
-	    ind = &DEREF(istate, sflagindex[*cp]);
-	    viazero = 0;
-	    while (ind->numents == 0  &&  ind->pu.fp != NULL)
+		if (entry->affl == 0)
 		{
-		if (cp == entry->affix)
-		    {
-		    ind = &ind->pu.fp[0];
-		    viazero = 1;
-		    }
+			cp = NULL;
+			ind = &DEREF(istate, sflagindex[0]);
+			viazero = 1;
+		}
 		else
-		    {
-		    ind = &ind->pu.fp[*--cp];
-		    viazero = 0;
-		    }
-		}
-	    }
-	if (ind->numents == 0)
-	    ind->pu.ent = entry;
-	ind->numents++;
-	/*
-	** If this index entry has more than MAXSEARCH flags in
-	** it, we will split it into subentries to reduce the
-	** searching.  However, the split doesn't make sense in
-	** two cases:  (a) if we are already at the end of the
-	** current affix, or (b) if all the entries in the list
-	** have identical affixes.  Since the list is sorted, (b)
-	** is true if the first and last affixes in the list
-	** are identical.
-	*/
-	if (!viazero  &&  ind->numents >= MAXSEARCH
-	  &&  icharcmp (entry->affix, ind->pu.ent->affix) != 0)
-	    {
-	    /* Sneaky trick:  back up and reprocess */
-	    entry = ind->pu.ent - 1; /* -1 is for entry++ in loop */
-	    i = DEREF(istate, numsflags) - (entry - DEREF(istate, sflaglist));
-	    ind->pu.fp =
-	      (struct flagptr *)
-		calloc ((unsigned) (SET_SIZE + DEREF(istate, hashheader.nstrchars)),
-		  sizeof (struct flagptr));
-	    if (ind->pu.fp == NULL)
 		{
-		(void) fprintf (stderr, LOOKUP_C_NO_LANG_SPACE);
-		return (-1);
+			cp = entry->affix + entry->affl - 1;
+			ind = &DEREF(istate, sflagindex[*cp]);
+			viazero = 0;
+			while (ind->numents == 0  &&  ind->pu.fp != NULL)
+			{
+				if (cp == entry->affix)
+				{
+					ind = &ind->pu.fp[0];
+					viazero = 1;
+				}
+				else
+				{
+					ind = &ind->pu.fp[*--cp];
+					viazero = 0;
+				}
+			}
 		}
-	    ind->numents = 0;
-	    }
+		if (ind->numents == 0)
+			ind->pu.ent = entry;
+		ind->numents++;
+		/*
+		** If this index entry has more than MAXSEARCH flags in
+		** it, we will split it into subentries to reduce the
+		** searching.  However, the split doesn't make sense in
+		** two cases:  (a) if we are already at the end of the
+		** current affix, or (b) if all the entries in the list
+		** have identical affixes.  Since the list is sorted, (b)
+		** is true if the first and last affixes in the list
+		** are identical.
+		*/
+		if (!viazero  &&  ind->numents >= MAXSEARCH
+		  &&  icharcmp (entry->affix, ind->pu.ent->affix) != 0)
+		{
+			/* Sneaky trick:  back up and reprocess */
+			entry = ind->pu.ent - 1; /* -1 is for entry++ in loop */
+			i = DEREF(istate, numsflags) - (entry - DEREF(istate, sflaglist));
+			ind->pu.fp =
+			  (struct flagptr *)
+			calloc ((unsigned) (SET_SIZE + DEREF(istate, hashheader.nstrchars)),
+			  sizeof (struct flagptr));
+			if (ind->pu.fp == NULL)
+			{
+				(void) fprintf (stderr, LOOKUP_C_NO_LANG_SPACE);
+				return (-1);
+			}
+			ind->numents = 0;
+		}
 	}
     /*
     ** Warning - 'entry' and 'i' are reset in the body of the loop
@@ -408,60 +417,60 @@ char *hashname; /* name of the hash file (dictionary) */
     */
     for (i = DEREF(istate, numpflags), entry = DEREF(istate, pflaglist);  i > 0;  i--, entry++)
 	{
-	if (entry->affl == 0)
+		if (entry->affl == 0)
 	    {
-	    cp = NULL;
-	    ind = &DEREF(istate, pflagindex[0]);
-	    viazero = 1;
+			cp = NULL;
+			ind = &DEREF(istate, pflagindex[0]);
+			viazero = 1;
 	    }
-	else
-	    {
-	    cp = entry->affix;
-	    ind = &DEREF(istate, pflagindex[*cp++]);
-	    viazero = 0;
-	    while (ind->numents == 0  &&  ind->pu.fp != NULL)
-		{
-		if (*cp == 0)
-		    {
-		    ind = &ind->pu.fp[0];
-		    viazero = 1;
-		    }
 		else
-		    {
-		    ind = &ind->pu.fp[*cp++];
-		    viazero = 0;
-		    }
-		}
-	    }
-	if (ind->numents == 0)
-	    ind->pu.ent = entry;
-	ind->numents++;
-	/*
-	** If this index entry has more than MAXSEARCH flags in
-	** it, we will split it into subentries to reduce the
-	** searching.  However, the split doesn't make sense in
-	** two cases:  (a) if we are already at the end of the
-	** current affix, or (b) if all the entries in the list
-	** have identical affixes.  Since the list is sorted, (b)
-	** is true if the first and last affixes in the list
-	** are identical.
-	*/
-	if (!viazero  &&  ind->numents >= MAXSEARCH
-	  &&  icharcmp (entry->affix, ind->pu.ent->affix) != 0)
-	    {
-	    /* Sneaky trick:  back up and reprocess */
-	    entry = ind->pu.ent - 1; /* -1 is for entry++ in loop */
-	    i = DEREF(istate, numpflags) - (entry - DEREF(istate, pflaglist));
-	    ind->pu.fp =
-	      (struct flagptr *) calloc (SET_SIZE + DEREF(istate, hashheader.nstrchars),
-	        sizeof (struct flagptr));
-	    if (ind->pu.fp == NULL)
 		{
-		(void) fprintf (stderr, LOOKUP_C_NO_LANG_SPACE);
-		return (-1);
+			cp = entry->affix;
+			ind = &DEREF(istate, pflagindex[*cp++]);
+			viazero = 0;
+			while (ind->numents == 0  &&  ind->pu.fp != NULL)
+			{
+				if (*cp == 0)
+				{
+					ind = &ind->pu.fp[0];
+					viazero = 1;
+				}
+				else
+				{
+					ind = &ind->pu.fp[*cp++];
+					viazero = 0;
+				}
+			}
 		}
-	    ind->numents = 0;
-	    }
+		if (ind->numents == 0)
+			ind->pu.ent = entry;
+		ind->numents++;
+		/*
+		** If this index entry has more than MAXSEARCH flags in
+		** it, we will split it into subentries to reduce the
+		** searching.  However, the split doesn't make sense in
+		** two cases:  (a) if we are already at the end of the
+		** current affix, or (b) if all the entries in the list
+		** have identical affixes.  Since the list is sorted, (b)
+		** is true if the first and last affixes in the list
+		** are identical.
+		*/
+		if (!viazero  &&  ind->numents >= MAXSEARCH
+		  &&  icharcmp (entry->affix, ind->pu.ent->affix) != 0)
+		{
+			/* Sneaky trick:  back up and reprocess */
+			entry = ind->pu.ent - 1; /* -1 is for entry++ in loop */
+			i = DEREF(istate, numpflags) - (entry - DEREF(istate, pflaglist));
+			ind->pu.fp =
+			  (struct flagptr *) calloc (SET_SIZE + DEREF(istate, hashheader.nstrchars),
+				sizeof (struct flagptr));
+			if (ind->pu.fp == NULL)
+			{
+				(void) fprintf (stderr, LOOKUP_C_NO_LANG_SPACE);
+				return (-1);
+			}
+			ind->numents = 0;
+		}
 	}
 #ifdef INDEXDUMP
     (void) fprintf (stderr, "Prefix index table:\n");
@@ -470,35 +479,35 @@ char *hashname; /* name of the hash file (dictionary) */
     dumpindex (DEREF(istate, sflagindex), 0);
 #endif
     if (DEREF(istate, hashheader.nstrchartype) == 0)
-	DEREF(istate, chartypes) = NULL;
+		DEREF(istate, chartypes) = NULL;
     else
 	{
-	DEREF(istate, chartypes) = (struct strchartype *)
-	  malloc (DEREF(istate, hashheader.nstrchartype) * sizeof (struct strchartype));
-	if (DEREF(istate, chartypes) == NULL)
-	    {
-	    (void) fprintf (stderr, LOOKUP_C_NO_LANG_SPACE);
-	    return (-1);
-	    }
-	for (i = 0, nextchar = DEREF(istate, hashheader.strtypestart);
-	  i < DEREF(istate, hashheader.nstrchartype);
-	  i++)
-	    {
-	    DEREF(istate, chartypes[i].name) = &DEREF(istate, hashstrings[nextchar]);
-	    nextchar += strlen (DEREF(istate, chartypes[i].name)) + 1;
-	    DEREF(istate, chartypes[i].deformatter) = &DEREF(istate, hashstrings[nextchar]);
-	    nextchar += strlen (DEREF(istate, chartypes[i].deformatter)) + 1;
-	    DEREF(istate, chartypes[i].suffixes) = &DEREF(istate, hashstrings[nextchar]);
-	    while (DEREF(istate, hashstrings[nextchar]) != '\0')
-		nextchar += strlen (&DEREF(istate, hashstrings[nextchar])) + 1;
-	    nextchar++;
-	    }
+		DEREF(istate, chartypes) = (struct strchartype *)
+		  malloc (DEREF(istate, hashheader.nstrchartype) * sizeof (struct strchartype));
+		if (DEREF(istate, chartypes) == NULL)
+		{
+			(void) fprintf (stderr, LOOKUP_C_NO_LANG_SPACE);
+			return (-1);
+		}
+		for (i = 0, nextchar = DEREF(istate, hashheader.strtypestart);
+		  i < DEREF(istate, hashheader.nstrchartype);
+		  i++)
+		{
+			DEREF(istate, chartypes[i].name) = &DEREF(istate, hashstrings[nextchar]);
+			nextchar += strlen (DEREF(istate, chartypes[i].name)) + 1;
+			DEREF(istate, chartypes[i].deformatter) = &DEREF(istate, hashstrings[nextchar]);
+			nextchar += strlen (DEREF(istate, chartypes[i].deformatter)) + 1;
+			DEREF(istate, chartypes[i].suffixes) = &DEREF(istate, hashstrings[nextchar]);
+			while (DEREF(istate, hashstrings[nextchar]) != '\0')
+				nextchar += strlen (&DEREF(istate, hashstrings[nextchar])) + 1;
+			nextchar++;
+		}
 	}
 
     initckch(DEREF_FIRST_ARG(istate) NULL);   
        
     return (0);
-    }
+}
 
 #ifndef FREEP
 #define FREEP(p)	do { if (p) free(p); } while (0)
@@ -509,84 +518,84 @@ static void initckch (FIRST_ARG(istate) char *wchars)
 char *              wchars;         /* Characters in -w option, if any */
 #endif
 {
-   register ichar_t    c;
-   char                num[4];
-   
-   for (c = 0; c < (ichar_t) (SET_SIZE + DEREF(istate, hashheader.nstrchars)); ++c)
-     {
-	if (iswordch (DEREF_FIRST_ARG(istate) c))
-	  {
-	     if (!mylower (DEREF_FIRST_ARG(istate) c))
-	       {
-		  DEREF(istate, Try[DEREF(istate, Trynum)]) = c;
-		  ++DEREF(istate, Trynum);
-	       }
-	  }
-	else if (isboundarych (DEREF_FIRST_ARG(istate) c))
-	  {
-	     DEREF(istate, Try[DEREF(istate, Trynum)]) = c;
-	     ++DEREF(istate, Trynum);
-	  }
-     }
-   if (wchars != NULL)
-     {
-	while (DEREF(istate, Trynum) < SET_SIZE  &&  *wchars != '\0')
-	  {
-	     if (*wchars != 'n'  &&  *wchars != '\\')
-	       {
-		  c = *wchars;
-		  ++wchars;
-	       }
-	     else
-	       {
-		  ++wchars;
-		  num[0] = '\0';
-		  num[1] = '\0';
-		  num[2] = '\0';
-		  num[3] = '\0';
-		  if (isdigit (wchars[0]))
-		    {
-		       num[0] = wchars[0];
-		       if (isdigit (wchars[1]))
-			 {
-			    num[1] = wchars[1];
-			    if (isdigit (wchars[2]))
-				num[2] = wchars[2];
-			 }
-		    }
-		  if (wchars[-1] == 'n')
-		    {
-		       wchars += strlen (num);
-		       c = atoi (num);
-		    }
-		  else
-		    {
-		       wchars += strlen (num);
-		       c = 0;
-		       if (num[0])
-			   c = num[0] - '0';
-		       if (num[1])
-			 {
-			    c <<= 3;
-			    c += num[1] - '0';
-			 }
-		       if (num[2])
-			 {
-			    c <<= 3;
-			    c += num[2] - '0';
-			 }
-		    }
-	       }
-/*	     c &= NOPARITY;*/
-	     if (!DEREF(istate, hashheader.wordchars[c]))
-	       {
-		  DEREF(istate, hashheader.wordchars[c]) = 1;
-		  DEREF(istate, hashheader.sortorder[c]) = DEREF(istate, hashheader.sortval++);
-		  DEREF(istate, Try[DEREF(istate, Trynum)]) = c;
-		  ++DEREF(istate, Trynum);
-	       }
-	  }
-     }
+	register ichar_t    c;
+	char                num[4];
+
+	for (c = 0; c < (ichar_t) (SET_SIZE + DEREF(istate, hashheader.nstrchars)); ++c)
+    {
+		if (iswordch (DEREF_FIRST_ARG(istate) c))
+		{
+			if (!mylower (DEREF_FIRST_ARG(istate) c))
+			{
+				DEREF(istate, Try[DEREF(istate, Trynum)]) = c;
+				++DEREF(istate, Trynum);
+			}
+		}
+		else if (isboundarych (DEREF_FIRST_ARG(istate) c))
+		{
+			DEREF(istate, Try[DEREF(istate, Trynum)]) = c;
+			++DEREF(istate, Trynum);
+		}
+	}
+	if (wchars != NULL)
+    {
+		while (DEREF(istate, Trynum) < SET_SIZE  &&  *wchars != '\0')
+		{
+			if (*wchars != 'n'  &&  *wchars != '\\')
+			{
+				c = *wchars;
+				++wchars;
+			}
+			else
+			{
+			    ++wchars;
+			    num[0] = '\0';
+			    num[1] = '\0';
+			    num[2] = '\0';
+			    num[3] = '\0';
+			    if (isdigit (wchars[0]))
+				{
+				    num[0] = wchars[0];
+				    if (isdigit (wchars[1]))
+				    {
+						num[1] = wchars[1];
+						if (isdigit (wchars[2]))
+							num[2] = wchars[2];
+					}
+				}
+				if (wchars[-1] == 'n')
+				{
+				    wchars += strlen (num);
+				    c = atoi (num);
+				}
+				else
+				{
+				    wchars += strlen (num);
+				    c = 0;
+				    if (num[0])
+						c = num[0] - '0';
+				    if (num[1])
+				    {
+						c <<= 3;
+						c += num[1] - '0';
+					}
+					if (num[2])
+					{
+						c <<= 3;
+						c += num[2] - '0';
+					}
+				}
+			}
+/*	    	c &= NOPARITY;*/
+			if (!DEREF(istate, hashheader.wordchars[c]))
+			{
+				DEREF(istate, hashheader.wordchars[c]) = 1;
+				DEREF(istate, hashheader.sortorder[c]) = DEREF(istate, hashheader.sortval++);
+				DEREF(istate, Try[DEREF(istate, Trynum)]) = c;
+				++DEREF(istate, Trynum);
+			}
+		}
+    }
 }
 
 void lcleanup(ONLY_ARG(istate))
@@ -620,7 +629,7 @@ static void clearindex (FIRST_ARG(istate) struct flagptr *indexp)
 static void dumpindex (indexp, depth)
     register struct flagptr *	indexp;
     register int		depth;
-    {
+{
     register int		i;
     int				j;
     int				k;
@@ -628,48 +637,48 @@ static void dumpindex (indexp, depth)
 
     for (i = 0;  i < SET_SIZE + hashheader.nstrchars;  i++, indexp++)
 	{
-	if (indexp->numents == 0  &&  indexp->pu.fp != NULL)
+		if (indexp->numents == 0  &&  indexp->pu.fp != NULL)
 	    {
-	    for (j = depth;  --j >= 0;  )
-		(void) putc (' ', stderr);
-	    if (i >= ' '  &&  i <= '~')
-		(void) putc (i, stderr);
-	    else
-		(void) fprintf (stderr, "0x%x", i);
-	    (void) putc ('\n', stderr);
-	    dumpindex (indexp->pu.fp, depth + 1);
+			for (j = depth;  --j >= 0;  )
+				(void) putc (' ', stderr);
+			if (i >= ' '  &&  i <= '~')
+				(void) putc (i, stderr);
+			else
+				(void) fprintf (stderr, "0x%x", i);
+			(void) putc ('\n', stderr);
+			dumpindex (indexp->pu.fp, depth + 1);
 	    }
-	else if (indexp->numents)
-	    {
-	    for (j = depth;  --j >= 0;  )
-		(void) putc (' ', stderr);
-	    if (i >= ' '  &&  i <= '~')
-		(void) putc (i, stderr);
-	    else
-		(void) fprintf (stderr, "0x%x", i);
-	    (void) fprintf (stderr, " -> %d entries\n", indexp->numents);
-	    for (k = 0;  k < indexp->numents;  k++)
+		else if (indexp->numents)
 		{
-		for (j = depth;  --j >= 0;  )
-		    (void) putc (' ', stderr);
-		if (indexp->pu.ent[k].stripl)
-		    {
-		    (void) ichartostr (stripbuf, indexp->pu.ent[k].strip,
-		      sizeof stripbuf, 1);
-		    (void) fprintf (stderr, "     entry %d (-%s,%s)\n",
-		      &indexp->pu.ent[k] - sflaglist,
-		      stripbuf,
-		      indexp->pu.ent[k].affl
-			? ichartosstr (indexp->pu.ent[k].affix, 1) : "-");
-		    }
-		else
-		    (void) fprintf (stderr, "     entry %d (%s)\n",
-		      &indexp->pu.ent[k] - sflaglist,
-		      ichartosstr (indexp->pu.ent[k].affix, 1));
+			for (j = depth;  --j >= 0;  )
+				(void) putc (' ', stderr);
+			if (i >= ' '  &&  i <= '~')
+				(void) putc (i, stderr);
+			else
+				(void) fprintf (stderr, "0x%x", i);
+			(void) fprintf (stderr, " -> %d entries\n", indexp->numents);
+			for (k = 0;  k < indexp->numents;  k++)
+			{
+				for (j = depth;  --j >= 0;  )
+					(void) putc (' ', stderr);
+				if (indexp->pu.ent[k].stripl)
+				{
+					(void) ichartostr (stripbuf, indexp->pu.ent[k].strip,
+					  sizeof stripbuf, 1);
+					(void) fprintf (stderr, "     entry %d (-%s,%s)\n",
+					  &indexp->pu.ent[k] - sflaglist,
+					  stripbuf,
+					  indexp->pu.ent[k].affl
+						? ichartosstr (indexp->pu.ent[k].affix, 1) : "-");
+				}
+				else
+					(void) fprintf (stderr, "     entry %d (%s)\n",
+					  &indexp->pu.ent[k] - sflaglist,
+					  ichartosstr (indexp->pu.ent[k].affix, 1));
+			}
 		}
-	    }
 	}
-    }
+}
 #endif
 
 /* n is length of s */
@@ -678,38 +687,39 @@ struct dent * ispell_lookup (FIRST_ARG(istate) ichar_t *s, int dotree)
     register ichar_t *		s;
     int				dotree;
 #endif
-    {
+{
     register struct dent *	dp;
     register char *		s1;
     char			schar[INPUTWORDLEN + MAXAFFIXLEN];
 
     dp = &DEREF(istate, hashtbl[hash (DEREF_FIRST_ARG(istate) s, DEREF(istate, hashsize))]);
     if (ichartostr (DEREF_FIRST_ARG(istate) schar, s, sizeof schar, 1))
-	(void) fprintf (stderr, WORD_TOO_LONG (schar));
+		(void) fprintf (stderr, WORD_TOO_LONG (schar));
     for (  ;  dp != NULL;  dp = dp->next)
 	{
-	/* quick strcmp, but only for equality */
-	s1 = dp->word;
-	if (s1  &&  s1[0] == schar[0]  &&  strcmp (s1 + 1, schar + 1) == 0)
-	    return dp;
+		/* quick strcmp, but only for equality */
+		s1 = dp->word;
+		if (s1  &&  s1[0] == schar[0]  &&  strcmp (s1 + 1, schar + 1) == 0)
+			return dp;
 #ifndef NO_CAPITALIZATION_SUPPORT
-	while (dp->flagfield & MOREVARIANTS)	/* Skip variations */
-	    dp = dp->next;
+		while (dp->flagfield & MOREVARIANTS)	/* Skip variations */
+			dp = dp->next;
 #endif
 	}
 #if 0 /* NO PERSONAL DICTIONARY LOOKUP NOW 12/98 */
     if (dotree)
 	{
-	dp = treelookup (s);
-	return dp;
+		dp = treelookup (s);
+		return dp;
 	}
     else
 #endif /* NO PERSONAL DICTIONARY LOOKUP NOW 12/98 */
 	return NULL;
-    }
+}
 
 #if defined(DONT_USE_GLOBALS) 
-ispell_state_t *alloc_ispell_struct() {
+ispell_state_t *alloc_ispell_struct()
+{
 	ispell_state_t *ret;
 	ret = (ispell_state_t *)calloc(1, sizeof(ispell_state_t));
 	ret->translate_in = 
@@ -718,14 +728,16 @@ ispell_state_t *alloc_ispell_struct() {
 	return ret;
 }
 
-void free_ispell_struct(ispell_state_t *istate) {
-	if(istate) {
-	  if (UT_iconv_isValid(istate->translate_in))
-	    UT_iconv_close (istate->translate_in);
-	  if (UT_iconv_isValid(istate->translate_out))
-	    UT_iconv_close (istate->translate_out);
+void free_ispell_struct(ispell_state_t *istate)
+{
+	if (istate)
+	{
+		if (UT_iconv_isValid(istate->translate_in))
+			UT_iconv_close (istate->translate_in);
+		if (UT_iconv_isValid(istate->translate_out))
+			UT_iconv_close (istate->translate_out);
 	  
-	  free(istate);
+		free(istate);
 	}
 }
 #endif

@@ -47,6 +47,15 @@
 
 /*
  * $Log$
+ * Revision 1.8  2002/09/17 03:03:29  hippietrail
+ * After seeking permission on the developer list I've reformatted all the
+ * spelling source which seemed to have parts which used 2, 3, 4, and 8
+ * spaces for tabs.  It should all look good with our standard 4-space
+ * tabs now.
+ * I've concentrated just on indentation in the actual code.  More prettying
+ * could be done.
+ * * NO code changes were made *
+ *
  * Revision 1.7  2002/03/22 14:31:57  dom
  * fix mg's compile problem
  *
@@ -377,11 +386,11 @@ typedef unsigned short	ichar_t;	/* Internal character */
  * are used in the ins_root_cap routine to produce correct capitalizations.
  */
 struct success
-    {
-    struct dent *	dictent;	/* Header of dict entry chain for wd */
+{
+    struct dent *		dictent;	/* Header of dict entry chain for wd */
     struct flagent *	prefix;		/* Prefix flag used, or NULL */
     struct flagent *	suffix;		/* Suffix flag used, or NULL */
-    };
+};
 
 ichar_t* icharcpy (ichar_t* out, ichar_t* in);
 int icharlen (ichar_t* in);
@@ -391,14 +400,14 @@ int icharncmp (ichar_t* s1, ichar_t* s2, int n);
 #endif
 
 struct dent
-    {
+{
     struct dent *	next;
-    char *		word;
+    char *			word;
     MASKTYPE		mask[2];
 #ifdef FULLMASKSET
-    char		flags;
+    char			flags;
 #endif
-    };
+};
 
 /*
 ** Flags in the directory entry.  If FULLMASKSET is undefined, these are
@@ -490,16 +499,16 @@ struct dent
  * Language tables used to encode prefix and suffix information.
  */
 struct flagent
-    {
-    ichar_t *		strip;			/* String to strip off */
-    ichar_t *		affix;			/* Affix to append */
+{
+    ichar_t *		strip;		/* String to strip off */
+    ichar_t *		affix;		/* Affix to append */
     short		flagbit;		/* Flag bit this ent matches */
     short		stripl;			/* Length of strip */
     short		affl;			/* Length of affix */
     short		numconds;		/* Number of char conditions */
     short		flagflags;		/* Modifiers on this flag */
     char		conds[SET_SIZE + MAXSTRINGCHARS]; /* Adj. char conds */
-    };
+};
 
 /*
  * Bits in flagflags
@@ -508,52 +517,52 @@ struct flagent
 #define FF_COMPOUNDONLY	(1 << 1)		/* Afx works in compounds */
 
 union ptr_union					/* Aid for building flg ptrs */
-    {
+{
     struct flagptr *	fp;			/* Pointer to more indexing */
-    struct flagent *	ent;			/* First of a list of ents */
-    };
+    struct flagent *	ent;		/* First of a list of ents */
+};
 
 struct flagptr
-    {
+{
     union ptr_union	pu;			/* Ent list or more indexes */
     int			numents;		/* If zero, pu.fp is valid */
-    };
+};
 
 /*
  * Description of a single string character type.
  */
 struct strchartype
-    {
+{
     char *		name;			/* Name of the type */
-    char *		deformatter;		/* Deformatter to use */
+    char *		deformatter;	/* Deformatter to use */
     char *		suffixes;		/* File suffixes, null seps */
-    };
+};
 
 /*
  * Header placed at the beginning of the hash file.
  */
 struct hashheader
-    {
+{
     unsigned short magic;    	    	    	/* Magic number for ID */
-    unsigned short compileoptions;		/* How we were compiled */
-    short maxstringchars;			/* Max # strchrs we support */
-    short maxstringcharlen;			/* Max strchr len supported */
-    short compoundmin;				/* Min lth of compound parts */
-    short compoundbit;				/* Flag 4 compounding roots */
-    int stringsize;				/* Size of string table */
-    int lstringsize;				/* Size of lang. str tbl */
-    int tblsize;				/* No. entries in hash tbl */
-    int stblsize;				/* No. entries in sfx tbl */
-    int ptblsize;				/* No. entries in pfx tbl */
-    int sortval;				/* Largest sort ID assigned */
-    int nstrchars;				/* No. strchars defined */
-    int nstrchartype;				/* No. strchar types */
-    int strtypestart;				/* Start of strtype table */
-    char nrchars[5];				/* Nroff special characters */
-    char texchars[13];				/* TeX special characters */
-    char compoundflag;				/* Compund-word handling */
-    char defhardflag;				/* Default tryveryhard flag */
-    char flagmarker;				/* "Start-of-flags" char */
+    unsigned short compileoptions;				/* How we were compiled */
+    short maxstringchars;						/* Max # strchrs we support */
+    short maxstringcharlen;						/* Max strchr len supported */
+    short compoundmin;							/* Min lth of compound parts */
+    short compoundbit;							/* Flag 4 compounding roots */
+    int stringsize;								/* Size of string table */
+    int lstringsize;							/* Size of lang. str tbl */
+    int tblsize;								/* No. entries in hash tbl */
+    int stblsize;								/* No. entries in sfx tbl */
+    int ptblsize;								/* No. entries in pfx tbl */
+    int sortval;								/* Largest sort ID assigned */
+    int nstrchars;								/* No. strchars defined */
+    int nstrchartype;							/* No. strchar types */
+    int strtypestart;							/* Start of strtype table */
+    char nrchars[5];							/* Nroff special characters */
+    char texchars[13];							/* TeX special characters */
+    char compoundflag;							/* Compund-word handling */
+    char defhardflag;							/* Default tryveryhard flag */
+    char flagmarker;							/* "Start-of-flags" char */
     unsigned short sortorder[SET_SIZE + MAXSTRINGCHARS]; /* Sort ordering */
     ichar_t lowerconv[SET_SIZE + MAXSTRINGCHARS]; /* Lower-conversion table */
     ichar_t upperconv[SET_SIZE + MAXSTRINGCHARS]; /* Upper-conversion table */
@@ -566,7 +575,7 @@ struct hashheader
     unsigned int stringdups[MAXSTRINGCHARS];	/* No. of "base" char */
     int dupnos[MAXSTRINGCHARS];			/* Dup char ID # */
     unsigned short magic2;			/* Second magic for dbl chk */
-    };
+};
 
 /* hash table magic number */
 #define MAGIC			0x9602
@@ -602,11 +611,11 @@ struct hashheader
 /*
 ** Offsets into the nroff special-character array
 */
-#define NRLEFTPAREN	hashheader.nrchars[0]
+#define NRLEFTPAREN		hashheader.nrchars[0]
 #define NRRIGHTPAREN	hashheader.nrchars[1]
-#define NRDOT		hashheader.nrchars[2]
-#define NRBACKSLASH	hashheader.nrchars[3]
-#define NRSTAR		hashheader.nrchars[4]
+#define NRDOT			hashheader.nrchars[2]
+#define NRBACKSLASH		hashheader.nrchars[3]
+#define NRSTAR			hashheader.nrchars[4]
 
 /*
 ** Offsets into the TeX special-character array
@@ -620,10 +629,10 @@ struct hashheader
 #define TEXLEFTANGLE	hashheader.texchars[6]
 #define TEXRIGHTANGLE	hashheader.texchars[7]
 #define TEXBACKSLASH	hashheader.texchars[8]
-#define TEXDOLLAR	hashheader.texchars[9]
-#define TEXSTAR		hashheader.texchars[10]
-#define TEXDOT		hashheader.texchars[11]
-#define TEXPERCENT	hashheader.texchars[12]
+#define TEXDOLLAR		hashheader.texchars[9]
+#define TEXSTAR			hashheader.texchars[10]
+#define TEXDOT			hashheader.texchars[11]
+#define TEXPERCENT		hashheader.texchars[12]
 
 /*
 ** Values for compoundflag

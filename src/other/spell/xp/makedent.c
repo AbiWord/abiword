@@ -38,6 +38,15 @@
 
 /*
  * $Log$
+ * Revision 1.5  2002/09/17 03:03:30  hippietrail
+ * After seeking permission on the developer list I've reformatted all the
+ * spelling source which seemed to have parts which used 2, 3, 4, and 8
+ * spaces for tabs.  It should all look good with our standard 4-space
+ * tabs now.
+ * I've concentrated just on indentation in the actual code.  More prettying
+ * could be done.
+ * * NO code changes were made *
+ *
  * Revision 1.4  2002/09/13 17:20:13  mpritchett
  * Fix more warnings for Linux build
  *
@@ -179,48 +188,48 @@ long whatcap (FIRST_ARG(istate) ichar_t *word)
 #if 0
     register ichar_t *	word;
 #endif
-    {
+{
     register ichar_t *	p;
 
     for (p = word;  *p;  p++)
 	{
-	if (mylower (DEREF_FIRST_ARG(istate) *p))
-	    break;
+		if (mylower (DEREF_FIRST_ARG(istate) *p))
+			break;
 	}
     if (*p == '\0')
-	return ALLCAPS;
+		return ALLCAPS;
     else
 	{
-	for (  ;  *p;  p++)
+		for (  ;  *p;  p++)
 	    {
-	    if (myupper (DEREF_FIRST_ARG(istate) *p))
-		break;
+			if (myupper (DEREF_FIRST_ARG(istate) *p))
+				break;
 	    }
-	if (*p == '\0')
+		if (*p == '\0')
 	    {
-	    /*
-	    ** No uppercase letters follow the lowercase ones.
-	    ** If there is more than one uppercase letter, it's
-	    ** "followcase". If only the first one is capitalized,
-	    ** it's "capitalize".  If there are no capitals
-	    ** at all, it's ANYCASE.
-	    */
-	    if (myupper (DEREF_FIRST_ARG(istate) word[0]))
-		{
-		for (p = word + 1;  *p != '\0';  p++)
-		    {
-		    if (myupper (DEREF_FIRST_ARG(istate) *p))
-			return FOLLOWCASE;
-		    }
-		return CAPITALIZED;
-		}
-	    else
-		return ANYCASE;
+			/*
+			** No uppercase letters follow the lowercase ones.
+			** If there is more than one uppercase letter, it's
+			** "followcase". If only the first one is capitalized,
+			** it's "capitalize".  If there are no capitals
+			** at all, it's ANYCASE.
+			*/
+			if (myupper (DEREF_FIRST_ARG(istate) word[0]))
+			{
+				for (p = word + 1;  *p != '\0';  p++)
+				{
+					if (myupper (DEREF_FIRST_ARG(istate) *p))
+						return FOLLOWCASE;
+				}
+				return CAPITALIZED;
+			}
+			else
+				return ANYCASE;
 	    }
-	else
-	    return FOLLOWCASE;	/* .../lower/upper */
+		else
+			return FOLLOWCASE;	/* .../lower/upper */
 	}
-    }
+}
 
 /*
 ** Add a variant-capitalization header to a word.  This routine may be
@@ -232,7 +241,7 @@ int addvheader (FIRST_ARG(istate)  struct dent *dp)
 #if 0
     register struct dent *	dp;	/* Entry to update */
 #endif
-    {
+{
     register struct dent *	tdent; /* Copy of entry */
 
     /*
@@ -242,30 +251,30 @@ int addvheader (FIRST_ARG(istate)  struct dent *dp)
     tdent = (struct dent *) malloc (sizeof (struct dent));
     if (tdent == NULL)
 	{
-	(void) fprintf (stderr, MAKEDENT_C_NO_WORD_SPACE, dp->word);
-	return -1;
+		(void) fprintf (stderr, MAKEDENT_C_NO_WORD_SPACE, dp->word);
+		return -1;
 	}
     *tdent = *dp;
     if (captype (tdent->flagfield) != FOLLOWCASE)
-	tdent->word = NULL;
+		tdent->word = NULL;
     else
 	{
-	/* Followcase words need a copy of the capitalization */
-	tdent->word = malloc ((unsigned int) strlen (tdent->word) + 1);
-	if (tdent->word == NULL)
+		/* Followcase words need a copy of the capitalization */
+		tdent->word = malloc ((unsigned int) strlen (tdent->word) + 1);
+		if (tdent->word == NULL)
 	    {
-	    (void) fprintf (stderr, MAKEDENT_C_NO_WORD_SPACE, dp->word);
-	    free ((char *) tdent);
-	    return -1;
+			(void) fprintf (stderr, MAKEDENT_C_NO_WORD_SPACE, dp->word);
+			free ((char *) tdent);
+			return -1;
 	    }
-	(void) strcpy (tdent->word, dp->word);
+		(void) strcpy (tdent->word, dp->word);
 	}
     chupcase (DEREF_FIRST_ARG(istate) dp->word);
     dp->next = tdent;
     dp->flagfield &= ~CAPTYPEMASK;
     dp->flagfield |= (ALLCAPS | MOREVARIANTS);
     return 0;
-    }
+}
 #endif /* NO_CAPITALIZATION_SUPPORT */
 
 /*
@@ -344,27 +353,27 @@ void upcase (FIRST_ARG(istate) ichar_t *s)
 #if 0
     register ichar_t *	s;
 #endif
-    {
+{
 
     while (*s)
 	{
-	*s = mytoupper (DEREF_FIRST_ARG(istate) *s);
-	s++;
+		*s = mytoupper (DEREF_FIRST_ARG(istate) *s);
+		s++;
 	}
-    }
+}
 
 void lowcase (FIRST_ARG(istate) ichar_t *s)
 #if 0
     register ichar_t *	s;
 #endif
-    {
+{
 
     while (*s)
 	{
-	*s = mytolower (DEREF_FIRST_ARG(istate) *s);
-	s++;
+		*s = mytolower (DEREF_FIRST_ARG(istate) *s);
+		s++;
 	}
-    }
+}
 
 /*
  * Upcase variant that works on normal strings.  Note that it is a lot
@@ -374,13 +383,13 @@ void chupcase (FIRST_ARG(istate) char *s)
 #if 0
     char *	s;
 #endif
-    {
+{
     ichar_t *	is;
 
     is = strtosichar (DEREF_FIRST_ARG(istate) s, 1);
     upcase (DEREF_FIRST_ARG(istate) is);
     (void) ichartostr (DEREF_FIRST_ARG(istate) s, is, strlen (s) + 1, 1);
-    }
+}
 
 /*
 ** See if one affix field is a subset of another.  Returns NZ if ent1
@@ -414,7 +423,7 @@ int stringcharlen (FIRST_ARG(istate) char *bufp, int canonical)
     char *		bufp;
     int			canonical;	/* NZ if input is in canonical form */
 #endif
-    {
+{
 #ifdef SLOWMULTIPLY
     static char *	sp[MAXSTRINGCHARS];
     static int		inited = 0;
@@ -429,9 +438,9 @@ int stringcharlen (FIRST_ARG(istate) char *bufp, int canonical)
 #ifdef SLOWMULTIPLY
     if (!inited)
 	{
-	inited = 1;
-	for (stringno = 0;  stringno < MAXSTRINGCHARS;  stringno++)
-	    sp[stringno] = &hashheader.stringchars[stringno][0];
+		inited = 1;
+		for (stringno = 0;  stringno < MAXSTRINGCHARS;  stringno++)
+			sp[stringno] = &hashheader.stringchars[stringno][0];
 	}
 #endif /* SLOWMULTIPLY */
     lowstringno = 0;
@@ -439,62 +448,62 @@ int stringcharlen (FIRST_ARG(istate) char *bufp, int canonical)
     dupwanted = canonical ? 0 : DEREF(istate, defdupchar);
     while (lowstringno <= highstringno)
 	{
-	stringno = (lowstringno + highstringno) >> 1;
+		stringno = (lowstringno + highstringno) >> 1;
 #ifdef SLOWMULTIPLY
-	stringcur = sp[stringno];
+		stringcur = sp[stringno];
 #else /* SLOWMULTIPLY */
-	stringcur = &DEREF(istate, hashheader.stringchars[stringno][0]);
+		stringcur = &DEREF(istate, hashheader.stringchars[stringno][0]);
 #endif /* SLOWMULTIPLY */
-	bufcur = bufp;
-	while (*stringcur)
+		bufcur = bufp;
+		while (*stringcur)
 	    {
 #ifdef NO8BIT
-	    if (((*bufcur++ ^ *stringcur) & 0x7F) != 0)
+			if (((*bufcur++ ^ *stringcur) & 0x7F) != 0)
 #else /* NO8BIT */
-	    if (*bufcur++ != *stringcur)
+			if (*bufcur++ != *stringcur)
 #endif /* NO8BIT */
-		break;
-	    /*
-	    ** We can't use autoincrement above because of the
-	    ** test below.
-	    */
-	    stringcur++;
+				break;
+			/*
+			** We can't use autoincrement above because of the
+			** test below.
+			*/
+			stringcur++;
 	    }
-	if (*stringcur == '\0')
+		if (*stringcur == '\0')
 	    {
-	    if (DEREF(istate, hashheader.dupnos[stringno]) == dupwanted)
-		{
-		/* We have a match */
-		DEREF(istate, laststringch) = DEREF(istate, hashheader.stringdups[stringno]);
+			if (DEREF(istate, hashheader.dupnos[stringno]) == dupwanted)
+			{
+				/* We have a match */
+				DEREF(istate, laststringch) = DEREF(istate, hashheader.stringdups[stringno]);
 #ifdef SLOWMULTIPLY
-		return stringcur - sp[stringno];
+				return stringcur - sp[stringno];
 #else /* SLOWMULTIPLY */
-		return stringcur - &DEREF(istate, hashheader.stringchars[stringno][0]);
+				return stringcur - &DEREF(istate, hashheader.stringchars[stringno][0]);
 #endif /* SLOWMULTIPLY */
-		}
-	    else
-		--stringcur;
+			}
+			else
+				--stringcur;
 	    }
-	/* No match - choose which side to search on */
+		/* No match - choose which side to search on */
 #ifdef NO8BIT
-	if ((*--bufcur & 0x7F) < (*stringcur & 0x7F))
-	    highstringno = stringno - 1;
-	else if ((*bufcur & 0x7F) > (*stringcur & 0x7F))
-	    lowstringno = stringno + 1;
+		if ((*--bufcur & 0x7F) < (*stringcur & 0x7F))
+			highstringno = stringno - 1;
+		else if ((*bufcur & 0x7F) > (*stringcur & 0x7F))
+			lowstringno = stringno + 1;
 #else /* NO8BIT */
-	if (*--bufcur < *stringcur)
-	    highstringno = stringno - 1;
-	else if (*bufcur > *stringcur)
-	    lowstringno = stringno + 1;
+		if (*--bufcur < *stringcur)
+			highstringno = stringno - 1;
+		else if (*bufcur > *stringcur)
+			lowstringno = stringno + 1;
 #endif /* NO8BIT */
-	else if (dupwanted < DEREF(istate, hashheader.dupnos[stringno]))
-	    highstringno = stringno - 1;
-	else
-	    lowstringno = stringno + 1;
+		else if (dupwanted < DEREF(istate, hashheader.dupnos[stringno]))
+			highstringno = stringno - 1;
+		else
+			lowstringno = stringno + 1;
 	}
     DEREF(istate, laststringch) = -1;
     return 0;			/* Not a string character */
-    }
+}
 
 /* MACROS CONVERTED TO FUNCTIONS
 ** These macros are similar to the ones above, but they take into account
@@ -557,20 +566,20 @@ int strtoichar (FIRST_ARG(istate) ichar_t *out, char *in, int outlen, int canoni
     int			outlen;		/* Size of output buffer, *BYTES* */
     int			canonical;	/* NZ if input is in canonical form */
 #endif
-    {
+{
     register int	len;		/* Length of next character */
 
     outlen /= sizeof (ichar_t);		/* Convert to an ichar_t count */
     for (  ;  --outlen > 0  &&  *in != '\0';  in += len)
 	{
-	if (l1_isstringch (DEREF_FIRST_ARG(istate) in, len, canonical))
-	    *out++ = SET_SIZE + DEREF(istate, laststringch);
-	else
-	    *out++ = (unsigned char)( *in );
+		if (l1_isstringch (DEREF_FIRST_ARG(istate) in, len, canonical))
+			*out++ = SET_SIZE + DEREF(istate, laststringch);
+		else
+			*out++ = (unsigned char)( *in );
 	}
     *out = 0;
     return outlen <= 0;
-    }
+}
 
 /*
  * Convert an ichar_t string to an external string.
@@ -589,39 +598,39 @@ int ichartostr (FIRST_ARG(istate)  char *out, ichar_t *in, int outlen, int canon
     int			outlen;		/* Size of output buffer, bytes */
     int			canonical;	/* NZ for canonical form */
 #endif
-    {
+{
     register int	ch;		/* Next character to store */
     register int	i;		/* Index into duplicates list */
     register char *	scharp;		/* Pointer into a string char */
 
     while (--outlen > 0  &&  (ch = *in++) != 0)
 	{
-	if (ch < SET_SIZE)
-	    *out++ = (char) ch;
-	else
-	    {
-	    ch -= SET_SIZE;
-	    if (!canonical)
+		if (ch < SET_SIZE)
+			*out++ = (char) ch;
+		else
 		{
-		for (i = DEREF(istate, hashheader.nstrchars);  --i >= 0;  )
-		    {
-		    if (DEREF(istate, hashheader.dupnos[i]) == DEREF(istate, defdupchar)
-		      &&  ((int) (DEREF(istate, hashheader.stringdups[i]))) == ch)
+			ch -= SET_SIZE;
+			if (!canonical)
 			{
-			ch = i;
-			break;
+				for (i = DEREF(istate, hashheader.nstrchars);  --i >= 0;  )
+				{
+					if (DEREF(istate, hashheader.dupnos[i]) == DEREF(istate, defdupchar)
+					  &&  ((int) (DEREF(istate, hashheader.stringdups[i]))) == ch)
+					{
+						ch = i;
+						break;
+					}
+				}
 			}
-		    }
-		}
-	    scharp = DEREF(istate, hashheader.stringchars[(unsigned) ch]);
-	    while ((*out++ = *scharp++) != '\0')
-		;
-	    out--;
+			scharp = DEREF(istate, hashheader.stringchars[(unsigned) ch]);
+			while ((*out++ = *scharp++) != '\0')
+				;
+			out--;
 	    }
 	}
     *out = '\0';
     return outlen <= 0;
-    }
+}
 
 /*
  * Convert a string to an ichar_t, storing the result in a static area.
@@ -631,13 +640,13 @@ ichar_t * strtosichar (FIRST_ARG(istate)  char *in, int canonical)
     char *		in;		/* String to convert */
     int			canonical;	/* NZ if input is in canonical form */
 #endif
-    {
+{
     static ichar_t	out[STRTOSICHAR_SIZE / sizeof (ichar_t)];
 
     if (strtoichar (DEREF_FIRST_ARG(istate) out, in, sizeof out, canonical))
-	(void) fprintf (stderr, WORD_TOO_LONG (in));
+		(void) fprintf (stderr, WORD_TOO_LONG (in));
     return out;
-    }
+}
 
 /*
  * Convert an ichar_t to a string, storing the result in a static area.
@@ -647,13 +656,13 @@ char * ichartosstr (FIRST_ARG(istate) ichar_t *in, int canonical)
     ichar_t *		in;		/* Internal string to convert */
     int			canonical;	/* NZ for canonical conversion */
 #endif
-    {
+{
     static char		out[ICHARTOSSTR_SIZE];
 
     if (ichartostr (DEREF_FIRST_ARG(istate) out, in, sizeof out, canonical))
-	(void) fprintf (stderr, WORD_TOO_LONG (out));
+		(void) fprintf (stderr, WORD_TOO_LONG (out));
     return out;
-    }
+}
 
 /*
  * Convert a single ichar to a printable string, storing the result in
@@ -663,18 +672,18 @@ char * printichar (FIRST_ARG(istate) int in)
 #if 0
     int			in;
 #endif
-    {
+{
     static char		out[MAXSTRINGCHARLEN + 1];
 
     if (in < SET_SIZE)
 	{
-	out[0] = (char) in;
-	out[1] = '\0';
+		out[0] = (char) in;
+		out[1] = '\0';
 	}
     else
-	(void) strcpy (out, DEREF(istate, hashheader.stringchars[(unsigned) in - SET_SIZE]));
+		(void) strcpy (out, DEREF(istate, hashheader.stringchars[(unsigned) in - SET_SIZE]));
     return out;
-    }
+}
 
 #ifndef ICHAR_IS_CHAR
 /*
@@ -683,27 +692,27 @@ char * printichar (FIRST_ARG(istate) int in)
 ichar_t * icharcpy (out, in)
     register ichar_t *	out;		/* Destination */
     register ichar_t *	in;		/* Source */
-    {
+{
     ichar_t *		origout;	/* Copy of destination for return */
 
     origout = out;
     while ((*out++ = *in++) != 0)
-	;
+		;
     return origout;
-    }
+}
 
 /*
  * Return the length of an ichar_t.
  */
 int icharlen (in)
     register ichar_t *	in;		/* String to count */
-    {
+{
     register int	len;		/* Length so far */
 
     for (len = 0;  *in++ != 0;  len++)
-	;
+		;
     return len;
-    }
+}
 
 /*
  * Compare two ichar_t's.
@@ -711,15 +720,15 @@ int icharlen (in)
 int icharcmp (s1, s2)
     register ichar_t *	s1;
     register ichar_t *	s2;
-    {
+{
 
     while (*s1 != 0)
 	{
-	if (*s1++ != *s2++)
-	    return *--s1 - *--s2;
+		if (*s1++ != *s2++)
+			return *--s1 - *--s2;
 	}
     return *s1 - *s2;
-    }
+}
 
 /*
  * Strncmp for two ichar_t's.
@@ -728,23 +737,23 @@ int icharncmp (s1, s2, n)
     register ichar_t *	s1;
     register ichar_t *	s2;
     register int	n;
-    {
+{
 
     while (--n >= 0  &&  *s1 != 0)
 	{
-	if (*s1++ != *s2++)
-	    return *--s1 - *--s2;
+		if (*s1++ != *s2++)
+			return *--s1 - *--s2;
 	}
     if (n < 0)
-	return 0;
+		return 0;
     else
-	return *s1 - *s2;
-    }
+		return *s1 - *s2;
+}
 
 #endif /* ICHAR_IS_CHAR */
 
 int findfiletype (FIRST_ARG(istate) const char *name, int searchnames, int *deformatter)
-    {
+{
     char *		cp;		/* Pointer into suffix list */
     int			cplen;		/* Length of current suffix */
     register int	i;		/* Index into type table */
@@ -758,33 +767,33 @@ int findfiletype (FIRST_ARG(istate) const char *name, int searchnames, int *defo
     len = strlen (name);
     if (searchnames)
 	{
-	for (i = 0;  i < DEREF(istate, hashheader.nstrchartype);  i++)
+		for (i = 0;  i < DEREF(istate, hashheader.nstrchartype);  i++)
 	    {
-	    if (strcmp (name, DEREF(istate, chartypes[i].name)) == 0)
-		{
-		if (deformatter != NULL)
-		    *deformatter =
-		      (strcmp (DEREF(istate, chartypes[i].deformatter), "tex") == 0);
-		return i;
-		}
+			if (strcmp (name, DEREF(istate, chartypes[i].name)) == 0)
+			{
+				if (deformatter != NULL)
+					*deformatter =
+					  (strcmp (DEREF(istate, chartypes[i].deformatter), "tex") == 0);
+				return i;
+			}
 	    }
 	}
     for (i = 0;  i < DEREF(istate, hashheader.nstrchartype);  i++)
 	{
-	for (cp = DEREF(istate, chartypes[i].suffixes);  *cp != '\0';  cp += cplen + 1)
-	    {
-	    cplen = strlen (cp);
-	    if (len >= cplen  &&  strcmp (&name[len - cplen], cp) == 0)
+		for (cp = DEREF(istate, chartypes[i].suffixes);  *cp != '\0';  cp += cplen + 1)
 		{
-		if (deformatter != NULL)
-		    *deformatter =
-		      (strcmp (DEREF(istate, chartypes[i].deformatter), "tex") == 0);
-		return i;
-		}
+			cplen = strlen (cp);
+			if (len >= cplen  &&  strcmp (&name[len - cplen], cp) == 0)
+			{
+				if (deformatter != NULL)
+					*deformatter =
+					  (strcmp (DEREF(istate, chartypes[i].deformatter), "tex") == 0);
+				return i;
+			}
 	    }
 	}
     return -1;
-    }
+}
 
 /*
  * The following routines are all dummies for the benefit of lint.

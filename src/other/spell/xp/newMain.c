@@ -121,8 +121,8 @@ static void try_autodetect_charset(char* hashname)
 		*p = '\0';
 		if (!*start) /* empty enc */
 			return;
-        	translate_in = iconv_open(start, UCS_2_INTERNAL);
-        	translate_out = iconv_open(UCS_2_INTERNAL, start);
+		translate_in = iconv_open(start, UCS_2_INTERNAL);
+		translate_out = iconv_open(UCS_2_INTERNAL, start);
 	}
 	
 }
@@ -238,18 +238,18 @@ int SpellCheckNWord16(const unsigned short *word16, int length)
 		/* TF CHANGE: Use the right types 
         unsigned int len_in, len_out; 
 		*/
-	size_t len_in, len_out;
+		size_t len_in, len_out;
         const char *In = (const char *)ucs2;
         char *Out = word8;
 
-	toucs2(word16,length);
+		toucs2(word16,length);
         len_in = length * 2;
         len_out = sizeof( word8 ) - 1;
         iconv(translate_in, (ICONV_CONST char **)&In, &len_in, &Out, &len_out);
         *Out = '\0';
     }
     
-/*UT_ASSERT(0);*/
+	/*UT_ASSERT(0);*/
     if( !strtoichar(iWord, word8, sizeof(iWord), 0) )
         retVal = good(iWord, 0, 0, 1, 0);
     else
@@ -290,7 +290,7 @@ int SpellCheckSuggestNWord16(const unsigned short *word16, int length, sp_sugges
         size_t len_in, len_out; 
         const char *In = (const char *)ucs2;
         char *Out = word8;
-	toucs2(word16,length);	
+		toucs2(word16,length);	
         len_in = length * 2;
         len_out = sizeof( word8 ) - 1;
         iconv(translate_in, (ICONV_CONST char **)&In, &len_in, &Out, &len_out);
@@ -350,7 +350,7 @@ int SpellCheckSuggestNWord16(const unsigned short *word16, int length, sp_sugges
             len_out = sizeof(unsigned short) * l;
             iconv(translate_out, (ICONV_CONST char **)&In, &len_in, &Out, &len_out);	    
             *((unsigned short *)Out) = 0;
-	    fromucs2(sg->word[c], (unsigned short*)Out-ucs2);
+			fromucs2(sg->word[c], (unsigned short*)Out-ucs2);
         }
     }
 

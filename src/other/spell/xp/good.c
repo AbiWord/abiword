@@ -43,6 +43,15 @@
 
 /*
  * $Log$
+ * Revision 1.4  2002/09/17 03:03:29  hippietrail
+ * After seeking permission on the developer list I've reformatted all the
+ * spelling source which seemed to have parts which used 2, 3, 4, and 8
+ * spaces for tabs.  It should all look good with our standard 4-space
+ * tabs now.
+ * I've concentrated just on indentation in the actual code.  More prettying
+ * could be done.
+ * * NO code changes were made *
+ *
  * Revision 1.3  2002/09/13 17:20:12  mpritchett
  * Fix more warnings for Linux build
  *
@@ -167,7 +176,7 @@ int good (FIRST_ARG(istate) ichar_t *w, int ignoreflagbits, int dummy, int pfxop
     int			sfxopts;	/* Options to apply to suffixes */
 #endif
 #endif
-    {
+{
     ichar_t		nword[INPUTWORDLEN + MAXAFFIXLEN];
     register ichar_t *	p;
     register ichar_t *	q;
@@ -178,7 +187,7 @@ int good (FIRST_ARG(istate) ichar_t *w, int ignoreflagbits, int dummy, int pfxop
     ** Make an uppercase copy of the word we are checking.
     */
     for (p = w, q = nword;  *p;  )
-	*q++ = mytoupper (DEREF_FIRST_ARG(istate) *p++);
+		*q++ = mytoupper (DEREF_FIRST_ARG(istate) *p++);
     *q = 0;
     n = q - nword;
 
@@ -187,38 +196,38 @@ int good (FIRST_ARG(istate) ichar_t *w, int ignoreflagbits, int dummy, int pfxop
 #if 0 /* DELETE_ME */
     if (cflag)
 	{
-	(void) printf ("%s", ichartosstr (w, 0));
-	orig_word = w;
+		(void) printf ("%s", ichartosstr (w, 0));
+		orig_word = w;
 	}
     else 
 #endif /* DELETE_ME */
     if ((dp = ispell_lookup (DEREF_FIRST_ARG(istate) nword, 1)) != NULL)
 	{
-	DEREF(istate, hits[0].dictent) = dp;
-	DEREF(istate, hits[0].prefix) = NULL;
-	DEREF(istate, hits[0].suffix) = NULL;
+		DEREF(istate, hits[0].dictent) = dp;
+		DEREF(istate, hits[0].prefix) = NULL;
+		DEREF(istate, hits[0].suffix) = NULL;
 #ifndef NO_CAPITALIZATION_SUPPORT
-	if (allhits  ||  cap_ok (DEREF_FIRST_ARG(istate) w, &DEREF(istate, hits[0]), n))
-	    DEREF(istate, numhits) = 1;
+		if (allhits  ||  cap_ok (DEREF_FIRST_ARG(istate) w, &DEREF(istate, hits[0]), n))
+			DEREF(istate, numhits) = 1;
 #else
-	DEREF(istate, numhits) = 1;
+		DEREF(istate, numhits) = 1;
 #endif
-	/*
-	 * If we're looking for compounds, and this root doesn't
-	 * participate in compound formation, undo the hit.
-	 */
+		/*
+		 * If we're looking for compounds, and this root doesn't
+		 * participate in compound formation, undo the hit.
+		 */
 
 #if 0 /*  DELETE_ME */
-	if (compoundflag == COMPOUND_CONTROLLED
-	  &&  ((pfxopts | sfxopts) & FF_COMPOUNDONLY) != 0
-	  &&  hashheader.compoundbit >= 0
-	  &&  TSTMASKBIT (dp->mask, hashheader.compoundbit) == 0)
-	    numhits = 0;
+		if (compoundflag == COMPOUND_CONTROLLED
+		  &&  ((pfxopts | sfxopts) & FF_COMPOUNDONLY) != 0
+		  &&  hashheader.compoundbit >= 0
+		  &&  TSTMASKBIT (dp->mask, hashheader.compoundbit) == 0)
+			numhits = 0;
 #endif /* DELETE_ME */
 	}
 
     if (DEREF(istate, numhits)  &&  !allhits)
-	return 1;
+		return 1;
 
     /* try stripping off affixes */
 
@@ -226,9 +235,9 @@ int good (FIRST_ARG(istate) ichar_t *w, int ignoreflagbits, int dummy, int pfxop
     numchars = icharlen (nword);
     if (numchars < 4)
 	{
-	if (cflag)
-	    (void) putchar ('\n');
-	return numhits  ||  (numchars == 1);
+		if (cflag)
+			(void) putchar ('\n');
+		return numhits  ||  (numchars == 1);
 	}
 #endif
 
@@ -236,12 +245,12 @@ int good (FIRST_ARG(istate) ichar_t *w, int ignoreflagbits, int dummy, int pfxop
 
 #if 0 /* DELETE_ME */
     if (cflag)
-	(void) putchar ('\n');
+		(void) putchar ('\n');
 
 #endif /* DELETE_ME */
 
     return DEREF(istate, numhits);
-    }
+}
 
 #ifndef NO_CAPITALIZATION_SUPPORT
 int cap_ok (FIRST_ARG(istate) ichar_t *word, struct success *hit, int len)
@@ -250,7 +259,7 @@ int cap_ok (FIRST_ARG(istate) ichar_t *word, struct success *hit, int len)
     register struct success *	hit;
     int				len;
 #endif
-    {
+{
     register ichar_t *		dword;
     register ichar_t *		w;
     register struct dent *	dent;
@@ -258,7 +267,7 @@ int cap_ok (FIRST_ARG(istate) ichar_t *word, struct success *hit, int len)
     int				preadd;
     int				prestrip;
     int				sufadd;
-    ichar_t *			limit;
+    ichar_t *		limit;
     long			thiscap;
     long			dentcap;
 
@@ -268,18 +277,18 @@ int cap_ok (FIRST_ARG(istate) ichar_t *word, struct success *hit, int len)
     */
     preadd = prestrip = sufadd = 0;
     if (thiscap == ALLCAPS)
-	return 1;
+		return 1;
     else if (thiscap == FOLLOWCASE)
 	{
-	/* Set up some constants for the while(1) loop below */
-	if (hit->prefix)
-	    {
-	    preadd = hit->prefix->affl;
-	    prestrip = hit->prefix->stripl;
-	    }
-	else
-	    preadd = prestrip = 0;
-	sufadd = hit->suffix ? hit->suffix->affl : 0;
+		/* Set up some constants for the while(1) loop below */
+		if (hit->prefix)
+		{
+			preadd = hit->prefix->affl;
+			prestrip = hit->prefix->stripl;
+		}
+		else
+			preadd = prestrip = 0;
+		sufadd = hit->suffix ? hit->suffix->affl : 0;
 	}
     /*
     ** Search the variants for one that matches what we have.  Note
@@ -289,90 +298,90 @@ int cap_ok (FIRST_ARG(istate) ichar_t *word, struct success *hit, int len)
     dent = hit->dictent;
     for (  ;  ;  )
 	{
-	dentcap = captype (dent->flagfield);
-	if (dentcap != thiscap)
-	    {
-	    if (dentcap == ANYCASE  &&  thiscap == CAPITALIZED
-	     &&  entryhasaffixes (dent, hit))
-		return 1;
-	    }
-	else				/* captypes match */
-	    {
-	    if (thiscap != FOLLOWCASE)
+		dentcap = captype (dent->flagfield);
+		if (dentcap != thiscap)
 		{
-		if (entryhasaffixes (dent, hit))
-		    return 1;
+			if (dentcap == ANYCASE  &&  thiscap == CAPITALIZED
+			 &&  entryhasaffixes (dent, hit))
+				return 1;
 		}
-	    else
+		else				/* captypes match */
 		{
-		/*
-		** Make sure followcase matches exactly.
-		** Life is made more difficult by the
-		** possibility of affixes.  Start with
-		** the prefix.
-		*/
-		(void) strtoichar (DEREF_FIRST_ARG(istate) dentword, dent->word, INPUTWORDLEN, 1);
-		dword = dentword;
-		limit = word + preadd;
-		if (myupper (DEREF_FIRST_ARG(istate) dword[prestrip]))
-		    {
-		    for (w = word;  w < limit;  w++)
+			if (thiscap != FOLLOWCASE)
 			{
-			if (mylower (DEREF_FIRST_ARG(istate) *w))
-			    goto doublecontinue;
+				if (entryhasaffixes (dent, hit))
+					return 1;
 			}
-		    }
-		else
-		    {
-		    for (w = word;  w < limit;  w++)
+			else
 			{
-			if (myupper (DEREF_FIRST_ARG(istate) *w))
-			    goto doublecontinue;
+				/*
+				** Make sure followcase matches exactly.
+				** Life is made more difficult by the
+				** possibility of affixes.  Start with
+				** the prefix.
+				*/
+				(void) strtoichar (DEREF_FIRST_ARG(istate) dentword, dent->word, INPUTWORDLEN, 1);
+				dword = dentword;
+				limit = word + preadd;
+				if (myupper (DEREF_FIRST_ARG(istate) dword[prestrip]))
+				{
+					for (w = word;  w < limit;  w++)
+					{
+						if (mylower (DEREF_FIRST_ARG(istate) *w))
+							goto doublecontinue;
+					}
+				}
+				else
+				{
+					for (w = word;  w < limit;  w++)
+					{
+						if (myupper (DEREF_FIRST_ARG(istate) *w))
+							goto doublecontinue;
+					}
+				}
+				dword += prestrip;
+				/* Do root part of word */
+				limit = dword + len - preadd - sufadd;
+				while (dword < limit)
+				{
+					if (*dword++ != *w++)
+						goto doublecontinue;
+				}
+				/* Do suffix */
+				dword = limit - 1;
+				if (myupper (DEREF_FIRST_ARG(istate) *dword))
+				{
+					for (  ;  *w;  w++)
+					{
+						if (mylower (DEREF_FIRST_ARG(istate) *w))
+							goto doublecontinue;
+					}
+				}
+				else
+				{
+					for (  ;  *w;  w++)
+					{
+						if (myupper (DEREF_FIRST_ARG(istate) *w))
+							goto doublecontinue;
+					}
+				}
+				/*
+				** All failure paths go to "doublecontinue,"
+				** so if we get here it must match.
+				*/
+				if (entryhasaffixes (dent, hit))
+					return 1;
+				doublecontinue:	;
 			}
-		    }
-		dword += prestrip;
-		/* Do root part of word */
-		limit = dword + len - preadd - sufadd;
-		while (dword < limit)
-		    {
-		    if (*dword++ != *w++)
-		      goto doublecontinue;
-		    }
-		/* Do suffix */
-		dword = limit - 1;
-		if (myupper (DEREF_FIRST_ARG(istate) *dword))
-		    {
-		    for (  ;  *w;  w++)
-			{
-			if (mylower (DEREF_FIRST_ARG(istate) *w))
-			    goto doublecontinue;
-			}
-		    }
-		else
-		    {
-		    for (  ;  *w;  w++)
-			{
-			if (myupper (DEREF_FIRST_ARG(istate) *w))
-			    goto doublecontinue;
-			}
-		    }
-		/*
-		** All failure paths go to "doublecontinue,"
-		** so if we get here it must match.
-		*/
-		if (entryhasaffixes (dent, hit))
-		    return 1;
-doublecontinue:	;
 		}
-	    }
-	if ((dent->flagfield & MOREVARIANTS) == 0)
-	    break;
-	dent = dent->next;
+		if ((dent->flagfield & MOREVARIANTS) == 0)
+			break;
+		dent = dent->next;
 	}
 
     /* No matches found */
     return 0;
-    }
+}
 
 /*
 ** See if this particular capitalization (dent) is legal with these
@@ -381,13 +390,13 @@ doublecontinue:	;
 static int entryhasaffixes (dent, hit)
     register struct dent *	dent;
     register struct success *	hit;
-    {
+{
 
     if (hit->prefix  &&  !TSTMASKBIT (dent->mask, hit->prefix->flagbit))
-	return 0;
+		return 0;
     if (hit->suffix  &&  !TSTMASKBIT (dent->mask, hit->suffix->flagbit))
-	return 0;
+		return 0;
     return 1;			/* Yes, these affixes are legal */
-    }
+}
 #endif
 

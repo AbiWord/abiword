@@ -81,9 +81,9 @@ SpellManager::~SpellManager ()
 /* static */ SpellManager &
 SpellManager::instance ()
 {
-  // Singleton implementation
-  static SpellManager s_instance;
-  return s_instance;
+	// Singleton implementation
+	static SpellManager s_instance;
+	return s_instance;
 }
 
 /*!

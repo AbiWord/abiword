@@ -73,38 +73,38 @@ check_obj (BonoboObjectClient *obj, const gchar *id)
  */
 int SpellCheckInit (char *unused_ispell_hashfile_name)
 {
-  char *checker_id, *dictionary_id;
+	char *checker_id, *dictionary_id;
 
-  checker_id    = "OAFIID:GNOME_Spell_Checker:0.1";
-  dictionary_id = "OAFIID:GNOME_Spell_Dictionary:0.1";
+	checker_id    = "OAFIID:GNOME_Spell_Checker:0.1";
+	dictionary_id = "OAFIID:GNOME_Spell_Dictionary:0.1";
 
-  checker_client = bonobo_object_activate (checker_id, 0);
-  dictionary_client = bonobo_object_activate (dictionary_id, 0);
+	checker_client = bonobo_object_activate (checker_id, 0);
+	dictionary_client = bonobo_object_activate (dictionary_id, 0);
 
-  if (check_obj (checker_client, checker_id) || 
-      check_obj (dictionary_client, dictionary_id))
-    return -1;
+	if (check_obj (checker_client, checker_id) || 
+	  check_obj (dictionary_client, dictionary_id))
+		return -1;
 
-  CORBA_exception_init (&ev);
+	CORBA_exception_init (&ev);
 
-  checker = bonobo_object_corba_objref (BONOBO_OBJECT (checker_client));
-  dict    = bonobo_object_corba_objref (BONOBO_OBJECT (dictionary_client));
+	checker = bonobo_object_corba_objref (BONOBO_OBJECT (checker_client));
+	dict    = bonobo_object_corba_objref (BONOBO_OBJECT (dictionary_client));
 
-  GNOME_Spell_Dictionary_setTag (dict, "language-tag",
+	GNOME_Spell_Dictionary_setTag (dict, "language-tag",
 				 xap_encoding_manager_get_language_iso_name (),
 				 &ev);
 
-  successful_init = TRUE;
+	successful_init = TRUE;
 }
 
 void SpellCheckCleanup (void)
 {
-  if (!successful_init) 
-    return;
+	if (!successful_init) 
+		return;
 
-  CORBA_exception_free (&ev);
-  bonobo_object_unref (BONOBO_OBJECT (checker_client));
-  bonobo_object_unref (BONOBO_OBJECT (dictionary_client));
+	CORBA_exception_free (&ev);
+	bonobo_object_unref (BONOBO_OBJECT (checker_client));
+	bonobo_object_unref (BONOBO_OBJECT (dictionary_client));
 }
 
 /*
@@ -113,17 +113,17 @@ void SpellCheckCleanup (void)
  */
 int SpellCheckNWord16 (const unsigned short *word16, int length)
 {
-  unsigned char word8[WORD_SIZE];
+	unsigned char word8[WORD_SIZE];
 
-  if (!successful_init)
-    return -1;
+	if (!successful_init)
+		return -1;
 
-  /* trying to spell-check a 0 length word will (rightly) cause pspell to segfault */
-  if (word16 == NULL || length == 0)
-    return 0;
-  
-  UT_UCS_strcpy_to_char (word8, word16);
-  return GNOME_Spell_Dictionary_checkWord (dict, (char*)word8, &ev);
+	/* trying to spell-check a 0 length word will (rightly) cause pspell to segfault */
+	if (word16 == NULL || length == 0)
+		return 0;
+
+	UT_UCS_strcpy_to_char (word8, word16);
+	return GNOME_Spell_Dictionary_checkWord (dict, (char*)word8, &ev);
 }
 
 #define SPELL_ERROR_CLEANUP() { \
@@ -135,50 +135,50 @@ int SpellCheckNWord16 (const unsigned short *word16, int length)
 int SpellCheckSuggestNWord16 (const unsigned short *word16, 
 			      int length, sp_suggestions *sg)
 {
-  GNOME_Spell_StringSeq *seq;
-  unsigned char word8[WORD_SIZE];
-  int count = 0, i = 0;
+	GNOME_Spell_StringSeq *seq;
+	unsigned char word8[WORD_SIZE];
+	int count = 0, i = 0;
 
-  if (!successful_init || sg == NULL)
-      return -1;
+	if (!successful_init || sg == NULL)
+		return -1;
 
-  if (word16 == NULL || length == 0)
-    {
-      sg->count = 0;
-      return 0;
-    }
+	if (word16 == NULL || length == 0)
+	{
+		sg->count = 0;
+		return 0;
+	}
 
-  UT_UCS_strcpy_to_char (word8, word16);
+	UT_UCS_strcpy_to_char (word8, word16);
 
-  seq = GNOME_Spell_Dictionary_getSuggestions (dict, (char*)word8, &ev);
-  count = seq->_length;
+	seq = GNOME_Spell_Dictionary_getSuggestions (dict, (char*)word8, &ev);
+	count = seq->_length;
 
-  if (count == 0)
-    SPELL_ERROR_CLEANUP ();
+	if (count == 0)
+		SPELL_ERROR_CLEANUP ();
 
-  sg->score = (short *)malloc (sizeof(short) * count);
-  sg->word = (U16**)malloc (sizeof(U16**) * count);
-  if (sg->score == NULL || sg->word == NULL) 
-    SPELL_ERROR_CLEANUP ();
+	sg->score = (short *)malloc (sizeof(short) * count);
+	sg->word = (U16**)malloc (sizeof(U16**) * count);
+	if (sg->score == NULL || sg->word == NULL) 
+		SPELL_ERROR_CLEANUP ();
 
-  for (i = 0; i < count; i++)
-    {
-      char * new_word = seq->_buffer [i];
-      int len = strlen (new_word);
-      sg->word[i] = (U16*)malloc (sizeof (U16) * len + 2);
-      if (sg->word[i] == NULL) 
-        {
-	  /* out of memory, but return what was copied so far */
-	  sg->count = i;
-	  CORBA_free (seq);
-	  return i;
-        }
+	for (i = 0; i < count; i++)
+	{
+		char * new_word = seq->_buffer [i];
+		int len = strlen (new_word);
+		sg->word[i] = (U16*)malloc (sizeof (U16) * len + 2);
+		if (sg->word[i] == NULL) 
+		{
+			/* out of memory, but return what was copied so far */
+			sg->count = i;
+			CORBA_free (seq);
+			return i;
+		}
 
-      UT_UCS_strcpy_char (sg->word[i], new_word);
-      sg->score[i] = 1000;
-    }
+		UT_UCS_strcpy_char (sg->word[i], new_word);
+		sg->score[i] = 1000;
+	}
 
-  sg->count = count;
-  CORBA_free (seq);
-  return count;
+	sg->count = count;
+	CORBA_free (seq);
+	return count;
 }
