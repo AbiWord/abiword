@@ -817,3 +817,17 @@ PP_RevisionType PP_RevisionAttr::getType() const
 	return r->getType();
 }
 
+/*! get properties associated with revision level iId */
+const UT_Vector * PP_RevisionAttr::getProps(UT_uint32 iId) const
+{
+	const PP_Revision * r = getGreatestLesserOrEqualRevision(iId);
+	return r->getPropsVector();
+}
+
+/*! get properties associated with last revision */
+const UT_Vector * PP_RevisionAttr::getProps() const
+{
+	const PP_Revision * r = getLastRevision();
+	return r->getPropsVector();
+}
+

@@ -68,7 +68,7 @@ class PP_Revision
 
 
 /*! PP_RevisionAttr is class that represent a revision attribute; it
-  is initialized by an attribute string:
+    is initialized by an attribute string:
 
       <c revision="R1[,R2,R3,...]">some text</>
                    ^^^^^^^^^^^^^^
@@ -86,7 +86,7 @@ class PP_Revision
 
 
   The class provides methods for adding and removing individual
-  revisions and evaluating how a particular revised string should be
+  revisions and evaluating how a particular revised fragment should be
   displayed in the document
 */
 
@@ -106,17 +106,23 @@ class PP_RevisionAttr
 
 	const PP_Revision *   getGreatestLesserOrEqualRevision(UT_uint32 id) const;
 	const PP_Revision *   getLastRevision() const;
+
+	/*! please not that the following are convenience functions; if
+	    you need to make repeated enqueries, it is better to call
+	    getGreatestLesserOrEqualRevision() or getLastRevision() and
+	    querie the returned PP_Revision object.
+    */
 	bool                  isVisible(UT_uint32 id) const;
 	bool                  isVisible() const;
-	bool                  isFragmentSuperfluous() const;
 	bool                  hasProperty(UT_uint32 iId, const XML_Char * pName, const XML_Char * &pValue) const;
 	bool                  hasProperty(const XML_Char * pName, const XML_Char * &pValue) const;
-
-	const XML_Char *      getXMLstring();
-
 	PP_RevisionType       getType(UT_uint32 iId) const;
 	PP_RevisionType       getType() const;
+	const UT_Vector *     getProps(UT_uint32 iId) const;
+	const UT_Vector *     getProps() const;
 
+	const XML_Char *      getXMLstring();
+	bool                  isFragmentSuperfluous() const;
 
 	bool operator == (const PP_RevisionAttr &op2) const;
 
