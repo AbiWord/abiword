@@ -49,13 +49,13 @@ BeginSetEnc(nn,NO,true,"iso-8859-1")
 
 	//          (id, 		                    szLabel,		IconName,		szToolTip,      szStatusMsg)
 
-	ToolbarLabel(AP_TOOLBAR_ID_FILE_NEW,		"Ny", 			tb_new_xpm,		NULL, "Opprettar eit nytt dokument")
-	ToolbarLabel(AP_TOOLBAR_ID_FILE_OPEN,		"Opn",			tb_open_xpm,		NULL, "Opnar eit eksisterande dokument")
-	ToolbarLabel(AP_TOOLBAR_ID_FILE_SAVE,		"Lagr", 		tb_save_xpm,		NULL, "Lagrar dokumentet")
-	ToolbarLabel(AP_TOOLBAR_ID_FILE_SAVEAS,		"Lagr som", 		tb_save_as_xpm,		NULL, "Lagrar dokumentet med eit anna namn")
+	ToolbarLabel(AP_TOOLBAR_ID_FILE_NEW,		"Ny", 			tb_new_xpm,		NULL, "Opprett eit nytt dokument")
+	ToolbarLabel(AP_TOOLBAR_ID_FILE_OPEN,		"Opna",			tb_open_xpm,		NULL, "Opna eit eksisterande dokument")
+	ToolbarLabel(AP_TOOLBAR_ID_FILE_SAVE,		"Lagra", 		tb_save_xpm,		NULL, "Lagra dokumentet")
+	ToolbarLabel(AP_TOOLBAR_ID_FILE_SAVEAS,		"Lagra som", 		tb_save_as_xpm,		NULL, "Lagra dokumentet med eit anna namn")
 	ToolbarLabel(AP_TOOLBAR_ID_FILE_PRINT,		"Skriv ut",		tb_print_xpm,		NULL, "Skriv ut heile eller delar av dokumentet")
-        ToolbarLabel(AP_TOOLBAR_ID_FILE_PRINT_PREVIEW,  "Førehandsvising",	tb_print_preview_xpm,	NULL, "Viser dokumentet slik det blir skrive ut")
-	ToolbarLabel(AP_TOOLBAR_ID_EDIT_UNDO,		"Angr",			tb_undo_xpm,		NULL, "Angrar siste handling")
+        ToolbarLabel(AP_TOOLBAR_ID_FILE_PRINT_PREVIEW,  "Førehandsvising",	tb_print_preview_xpm,	NULL, "Vis dokumentet slik det blir skrive ut")
+	ToolbarLabel(AP_TOOLBAR_ID_EDIT_UNDO,		"Angra",			tb_undo_xpm,		NULL, "Angra siste handling")
 	ToolbarLabel(AP_TOOLBAR_ID_EDIT_REDO,		"Gjer om",		tb_redo_xpm,		NULL, "Gjer om siste angra handling")
 	ToolbarLabel(AP_TOOLBAR_ID_EDIT_CUT,		"Klipp ut",		tb_cut_xpm,		NULL, "Klipp ut")
 	ToolbarLabel(AP_TOOLBAR_ID_EDIT_COPY,		"Kopier",		tb_copy_xpm,		NULL, "Kopier")
@@ -65,9 +65,11 @@ BeginSetEnc(nn,NO,true,"iso-8859-1")
 	ToolbarLabel(AP_TOOLBAR_ID_EDIT_REMOVEHEADER, "Fjern topptekst",		tb_edit_removeheader_xpm,			NULL, "Fjern topptekst")
 	ToolbarLabel(AP_TOOLBAR_ID_EDIT_REMOVEFOOTER, "Fjern botntekst",		tb_edit_removefooter_xpm,			NULL, "Fjern botntekst")
         ToolbarLabel(AP_TOOLBAR_ID_SPELLCHECK,		"Stavekontroll",	tb_spellcheck_xpm, 	NULL, "Stavekontrollerer dokumentet")
-	ToolbarLabel(AP_TOOLBAR_ID_IMG,			"Sett inn bilde",	tb_insert_graphic_xpm, 	NULL, "Sett inn eit bilde i dokumentet")
+	ToolbarLabel(AP_TOOLBAR_ID_IMG,			"Sett inn bilete",	tb_insert_graphic_xpm, 	NULL, "Sett inn eit bilete i dokumentet")
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_STYLE,		"Stil",			NoIcon,			NULL, "Stil")
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_FONT,		"Skrift",		NoIcon,			NULL, "Skrift")
+     ToolbarLabel(AP_TOOLBAR_ID_FMT_HYPERLINK, "Sett inn lenkje", tb_hyperlink, NULL, "Sett inn ei lenkje i dokumentet")
+     ToolbarLabel(AP_TOOLBAR_ID_FMT_BOOKMARK, "Sett inn bokmerke", tb_anchor, NULL, "Sett inn eit bokmerke i dokumentet")
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_SIZE,		"Skriftstorleik",	NoIcon,			NULL, "Skriftstorleik")
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_BOLD,		"Halvfeit",		tb_text_bold_xpm,	NULL, "Halvfeit")
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_ITALIC,		"Kursiv",		tb_text_italic_xpm,	NULL, "Kursiv")
@@ -109,10 +111,12 @@ BeginSetEnc(nn,NO,true,"iso-8859-1")
 
 	ToolbarLabel(AP_TOOLBAR_ID_SCRIPT_PLAY,		"Kjør skript",	tb_script_play_xpm,		NULL, "Kjør skript")
 
-     // ... add others here ...
+     ToolbarLabel(AP_TOOLBAR_ID_FMTPAINTER, "Bruk format", tb_stock_paint_xpm, NULL, "Brukar tidlegare kopiert formatering på merkt tekst")
+
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_DIR_OVERRIDE_LTR,	"Tving VTH-retning",		tb_text_direction_ltr_xpm,	NULL, "Tvingar venstre til høgre-retning for tekst")
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_DIR_OVERRIDE_RTL,	"Tving HTV-retning",		tb_text_direction_rtl_xpm,	NULL, "Tvingar høgre til venstre-retning for tekst")
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_DOM_DIRECTION,		"Avsnittsretning",	tb_text_dom_direction_rtl_xpm,	NULL, "Endrar hovudtekstretning for avsnitt")
-	ToolbarLabel(AP_TOOLBAR_ID__BOGUS2__,		NULL,		NoIcon,			NULL,NULL)
+
+     // ... add others here ...
 
 EndSet()
