@@ -6,9 +6,9 @@
 # @(#) $Revision$
 ########
 #
-#  HP-UX abiword configure script, written by Kevin Vajk
+#  HP-UX abiword SD configure script, written by Kevin Vajk
 #
-#  This script adds /usr/local/AbiSuite/fonts to /etc/X11/fs/config
+#  This script adds ${TARGET}/fonts to /etc/X11/fs/config
 #  and edits /usr/lib/nls/iconv/config.iconv to add an alias for
 #  ISO-8859-1 (iso81) and UCS-2 (ucs2)
 #  (I don't like editing config.iconv, but abiword doesn't seem to work
@@ -16,22 +16,33 @@
 #
 ########
 
+#  This next line (defining $TARGET) is edited by hpux.abiword.mkdepot.sh
+#  automatically, so please don't change its format.  (I know this is
+#  hackish, but it works well enough for now.)
+#  Where abiword is installed:
+TARGET=/usr/local/AbiSuite
+
+#  Make sure we can find everything we'll need:
+PATH=/usr/sbin:/sbin:/usr/bin:${PATH} ; export PATH
+
 ###############################################################################
 
-fontdir=/usr/local/AbiSuite/fonts
-
+FONTDIR=${TARGET}/fonts
 FILE=/etc/X11/fs/config
+
 if [ ! -f "$FILE" ] ; then
     echo "WARNING: $FILE not found"
+elif [ ! -d "$FONTDIR" ] ; then
+    echo "WARNING: $FONTDIR not found"
 else
     [ -f "${FILE}.abisave" ] || cp -p $FILE ${FILE}.abisave
-    grep '^[[:space:]]*catalogue[[:space:]]*=' $FILE | grep -q "$fontdir"
+    grep '^[[:space:]]*catalogue[[:space:]]*=' $FILE | grep -q "$FONTDIR"
     if [ $? -ne 0 ] ; then
         rm -rf /tmp/config.$$ ; mkdir /tmp/config.$$
-        sed 's@\(^[[:space:]]*catalogue[[:space:]]*=.*\)$@\1,'${fontdir}'@' < $FILE > /tmp/config.$$/config
+        sed 's@\(^[[:space:]]*catalogue[[:space:]]*=.*\)$@\1,'${FONTDIR}'@' < $FILE > /tmp/config.$$/config
         cat < /tmp/config.$$/config > $FILE
         rm -rf /tmp/config.$$
-        echo "NOTE:    Added entry for $fontdir to ${FILE}."
+        echo "NOTE:    Added entry for $FONTDIR to ${FILE}."
         echo "         You may need to run \"/sbin/init.d/xfs restart\"."
         echo "         You may also need to re-start the X Window System."
     fi

@@ -1,14 +1,6 @@
 #!/bin/sh
 
 #
-#  Check that we're on HP-UX:
-#
-if [ "`uname -s`" != "HP-UX" ] ; then
-    echo "$0: Error: This is intended for HP-UX systems only"  >&2
-    exit 1
-fi
-
-#
 # Get command-line arguments:
 #
 if [ $# -ne 2 ] ; then
@@ -20,16 +12,25 @@ ABIWORDREVISION="$1"
 ABIWORDDEPOT="$2"
 
 #
-#  Set $TARGET and $BINDIR, if they're not already set:
+#  Check that we're on HP-UX:
+#
+if [ "`uname -s`" != "HP-UX" ] ; then
+    echo "$0: Error: This is intended for HP-UX systems only"  >&2
+    exit 1
+fi
+
+#
+#  Miscellaneous variables:
+#
+PATH=/usr/sbin:/sbin:/usr/bin:${PATH} ; export PATH
+TMPABIWORDPSF=`mktemp -c` || exit 1  # Note: HP-UX-specific mktemp command
+HPUXCONFIGURE=hpux.abiword.configure
+
+#
+#  Set $TARGET and $BINDIR, if they're not already set (they should be!):
 #
 : ${TARGET:=/usr/local/AbiSuite}
 : ${BINDIR:=/usr/local/bin}
-
-#
-#  Other variables:
-#
-TMPABIWORDPSF=`mktemp -c` || exit 1
-HPUXCONFIGURE=hpux.abiword.configure
 
 #
 #  Check that the files to be packaged have been installed:
@@ -44,6 +45,22 @@ fi
 #
 if [ ! -x "$HPUXCONFIGURE" ] ; then
     echo "$0: Error: Cannot find package configure script $HPUXCONFIGURE"  >&2
+    exit 1
+fi
+
+#
+#  Edit the configure script to set $TARGET properly:
+#  (Yes, this is rather hackish...)
+#
+if grep -q '^TARGET=' "$HPUXCONFIGURE"
+then
+    (
+    echo '/^TARGET='
+    echo 's,=.*$,='${TARGET}','
+    echo 'wq!'
+    ) | ex "$HPUXCONFIGURE" >/dev/null 2>&1
+else
+    echo "$0: Error: Cannot find TARGET= line to edit in $HPUXCONFIGURE"  >&2
     exit 1
 fi
 
@@ -113,13 +130,14 @@ product
   os_name       HP-UX
   fileset
     tag           AbiWord
+    revision      $ABIWORDREVISION
     #  The name of the configure script:
     configure     $HPUXCONFIGURE
     file_permissions -o root -g root
-    file /usr/local/bin/AbiWord
-    file /usr/local/bin/abiword
+    file ${BINDIR}/AbiWord
+    file ${BINDIR}/abiword
     # Note: "file *" isn't really a glob pattern, despite appearances.
-    directory /usr/local/AbiSuite
+    directory $TARGET
     file *
   end
 end
@@ -128,7 +146,6 @@ EOF
 #
 #  Make the package:
 #
-PATH=/usr/sbin:/sbin:${PATH} ; export PATH
 rm -f -- $ABIWORDDEPOT
 swpackage -x create_target_acls=false -x target_type=tape  \
                -d $ABIWORDDEPOT -s $TMPABIWORDPSF

@@ -55,10 +55,26 @@ ifneq ($(findstring tbz,$(ABI_DIST_TARGET)),)
         DIST_DEPS += tbz
 endif
 
+# If depot is inside $ABI_DIST_TARGET
+ifneq ($(findstring depot,$(ABI_DIST_TARGET)),)
+        DIST_DEPS += depot
+endif
+
+
 # Tgz target is provided by a common Unix makefile
 
 include $(ABI_ROOT)/src/pkg/common/unix/tgz.mk
 include $(ABI_ROOT)/src/pkg/common/unix/tbz.mk
+
+depot: install
+	@echo "Creating native HP-UX SD depot..."
+	@echo "Creating package at $(DIST)/abiword-$(ABI_BUILD_VERSION).depot"
+	@mkdir -p $(DIST)
+	@( cd $(ABI_ROOT)/src/pkg/hpux/scripts/ ;                         \
+		TARGET=$(prefix)/AbiSuite BINDIR=$(prefix)/bin            \
+			./hpux.abiword.mkdepot.sh                         \
+				$(ABI_BUILD_VERSION)                      \
+				$(DIST)/abiword-$(ABI_BUILD_VERSION).depot )
 
 ########################################################################
 

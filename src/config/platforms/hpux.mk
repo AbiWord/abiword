@@ -78,7 +78,10 @@ MKSHLIB			= $(LD) $(DSO_LDOPTS) -b -o $(@:$(OBJDIR)/%.sl=%.sl)
 
 # Which links can this platform create.  Define one or
 # both of these options.
-UNIX_CAN_BUILD_DYNAMIC=1
+# (On HP-UX, we *can* build dynamic, but it's safer not to, since other
+# systems we distribute HP-UX packages to may not have all the shared
+# libraries in the same locations.)
+UNIX_CAN_BUILD_DYNAMIC=0
 UNIX_CAN_BUILD_STATIC=1
 
 # Compiler options for static and dynamic linkage
