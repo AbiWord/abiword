@@ -28,7 +28,7 @@
 #### NOTE: the Makefiles use 'ifdef' rather than 'ifeq' so setting
 #### NOTE: this to **any** value will enable it.
 ####
-ABI_OPT_DEBUG=1
+#### ABI_OPT_DEBUG=1
 ####
 
 #### To get a GNOME build:  add the following line back to the
