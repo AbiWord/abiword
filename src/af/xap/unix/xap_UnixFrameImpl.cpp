@@ -399,13 +399,13 @@ XAP_UnixFrameImpl::XAP_UnixFrameImpl(XAP_Frame *pFrame, XAP_UnixApp * pApp) :
 XAP_UnixFrameImpl::~XAP_UnixFrameImpl() 
 { 	
 	if(m_bDoZoomUpdate) {
-		gtk_timeout_remove(m_iZoomUpdateID);
+		g_source_remove(m_iZoomUpdateID);
 	}
 
 	// only delete the things we created...
 	if(m_iAbiRepaintID)
 	{
-		gtk_timeout_remove(m_iAbiRepaintID);
+		g_source_remove(m_iAbiRepaintID);
 	}
 
 	DELETEP(m_pUnixMenu);
@@ -871,11 +871,11 @@ void XAP_UnixFrameImpl::_initialize()
 	//
 #if 0
 	if(m_iAbiRepaintID == 0)
-		m_iAbiRepaintID = gtk_timeout_add(100,static_cast<GtkFunction>(XAP_UnixFrameImpl::_fe::abi_expose_repaint), static_cast<gpointer>(this));
+		m_iAbiRepaintID = g_timeout_add_full(0,100,static_cast<GtkFunction>(XAP_UnixFrameImpl::_fe::abi_expose_repaint), static_cast<gpointer>(this),NULL);
 	else
 	{
-		gtk_timeout_remove(m_iAbiRepaintID);
-		m_iAbiRepaintID = gtk_timeout_add(100,static_cast<GtkFunction>(XAP_UnixFrameImpl::_fe::abi_expose_repaint), static_cast<gpointer>(this));
+		g_source_remove(m_iAbiRepaintID);
+		m_iAbiRepaintID = g_timeout_add_full(0, 100,static_cast<GtkFunction>(XAP_UnixFrameImpl::_fe::abi_expose_repaint), static_cast<gpointer>(this), NULL);
 	}
 #endif
 }
