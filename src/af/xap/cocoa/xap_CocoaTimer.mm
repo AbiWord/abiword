@@ -22,16 +22,42 @@
 #import "xap_CocoaTimer.h"
 
 #include "ut_assert.h"
+#include "ut_map.h"
+#include "ut_mutex.h"
+#include "ut_pair.h"
 
-/*
+static UT_Mutex s_timerMutex;
+static UT_Map s_timerIds;
+static int s_lastTimerId = 0;
+
 @interface XAP_TimerInvocation: NSInvocation {
 	int (*proc)(void *);
 	void * param;
 }
-
++(XAP_TimerInvocation *)createWithProc:(int (*)(void *))pr param:(void*)p;
+-(void)invoke;
+-(void)retainArguments;
 @end
-*/
 
+@implementation XAP_TimerInvocation
++(XAP_TimerInvocation *)createWithProc:(int (*)(void *))pr param:(void*)p
+{
+  XAP_TimerInvocation * obj = [XAP_TimerInvocation alloc];
+  obj->proc = pr;
+  obj->param = p; 
+  return obj;
+}
+
+-(void)invoke
+{
+  proc(param);
+}
+
+-(void)retainArguments
+{
+  // don't need.
+}
+@end
 
 UT_uint32 XAP_newCocoaTimer (UT_uint32 time, int (*proc)(void *), void *p)
 {
@@ -42,27 +68,38 @@ UT_uint32 XAP_newCocoaTimer (UT_uint32 time, int (*proc)(void *), void *p)
 	else {
 		dTime = time / 1000;
 	}
-	UT_ASSERT(UT_NOT_IMPLEMENTED);
-/*	
+
 	NSTimer *timer = [NSTimer scheduledTimerWithTimeInterval:dTime
 		invocation:[XAP_TimerInvocation createWithProc:proc param:p] 
 		repeats:TRUE];
 
+	int tid = -1;
+	{
+		UT_MutexAcquirer acq(s_timerMutex);
+		tid = s_lastTimerId;
+		s_timerIds.insert((const void *)s_lastTimerId++, 
+				  (const void *)timer);
+	}
+
 	[timer retain];
-*/
+	return tid;
 }
 
 
 
-void XAP_stopCocoaTimer (UT_uint32 timer)
+void XAP_stopCocoaTimer (UT_uint32 timerId)
 {
-	UT_ASSERT(UT_NOT_IMPLEMENTED);
-/*
-	NSTimer *pTimer = (NSTimer *)timer;
+	NSTimer *pTimer;
+	{
+		UT_MutexAcquirer acq (s_timerMutex);
+		const void * p = (const void *)timerId;
+		UT_Pair *pr = (UT_Pair*)s_timerIds.find(p).value();
+		pTimer = (NSTimer*)pr->second();
+		s_timerIds.erase(pr);
+	}
 	
 	[pTimer invalidate];
-	[timer release];
-*/
+	[*pTimer release];
 }
 
 

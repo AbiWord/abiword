@@ -446,7 +446,8 @@ void AP_CocoaFrame::	refillToolbarsInFrameData(void)
 // Idem.
 void AP_CocoaFrame::_showOrHideStatusbar()
 {
-	bool bShowStatusBar = static_cast<AP_FrameData*> (m_pData)->m_bShowStatusBar;
+	// XXX PLAM QUACK QUACK QUACK
+	bool bShowStatusBar = static_cast<AP_FrameData*> (m_pData)->m_bShowStatusBar && false;
 	toggleStatusBar(bShowStatusBar);
 }
 

@@ -22,6 +22,7 @@
 
 #include <sys/types.h>
 #include <pthread.h>
+#include <string.h>
 
 /*!
  * Unix pthread impl of a mutex class

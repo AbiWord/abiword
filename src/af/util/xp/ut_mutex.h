@@ -20,6 +20,7 @@
 #define UT_MUTEX_H
 
 class UT_MutexImpl;
+class UT_MutexAcquirer;
 
 /*!
  * Cross-platform mutex class, with brain-dead simple
@@ -32,17 +33,17 @@ class UT_MutexImpl;
 class UT_Mutex
 {
   friend class UT_MutexImpl;
-  
+
  public:
   UT_Mutex ();
   ~UT_Mutex ();
 
- private:
-  
+  // HACK HACK HACK
   // only called by UT_MutexImpl
   void lock ();
   void unlock ();
 
+ private:
   // no impls
   UT_Mutex (const UT_Mutex & other);
   UT_Mutex & operator=(const UT_Mutex & other);
