@@ -5427,7 +5427,7 @@ bool IE_Imp_MsWord_97::_handleHeadersText(UT_uint32 iDocPosition)
 			}
 			
 			// some headers can be 0-length, skip them ... (0-length:  len <=2)
-			while(m_pHeaders[m_iCurrentHeader].len <= 2 && m_iCurrentHeader < m_iHeadersCount)
+			while(m_iCurrentHeader < m_iHeadersCount && m_pHeaders[m_iCurrentHeader].len <= 2)
 			{
 				m_iCurrentHeader++;
 			}
