@@ -340,7 +340,7 @@ void AP_UnixDialog_Replace::runModal(XAP_Frame * pFrame)
 						   this);
 	}
 	
-	cancelButton = gtk_button_new_with_label(pSS->getValue(AP_STRING_ID_DLG_FR_CancelButton));
+	cancelButton = gtk_button_new_with_label(pSS->getValue(XAP_STRING_ID_DLG_Cancel));
 	gtk_widget_set_usize(cancelButton, DEFAULT_BUTTON_WIDTH, 0);
 	gtk_box_pack_start(GTK_BOX(buttonBox), cancelButton, FALSE, FALSE, 0);
 	gtk_widget_show(cancelButton);

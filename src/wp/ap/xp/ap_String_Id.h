@@ -43,7 +43,6 @@ dcl(DLG_FR_MatchCase,			"&Match case")
 dcl(DLG_FR_FindNextButton,		"&Find Next")
 dcl(DLG_FR_ReplaceButton,		"&Replace")
 dcl(DLG_FR_ReplaceAllButton,	"Replace &All")
-dcl(DLG_FR_CancelButton,		"Cancel")
 
 /* Break dialog */
 dcl(DLG_Break_BreakTitle,		"Break")

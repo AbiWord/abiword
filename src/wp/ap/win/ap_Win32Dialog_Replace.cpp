@@ -125,6 +125,7 @@ void AP_Win32Dialog_Replace::_initButtons(HWND hWnd)
 }
 
 #define _DS(c,s)	SetDlgItemText(hWnd,AP_RID_DIALOG_##c,pSS->getValue(AP_STRING_ID_##s))
+#define _DSX(c,s)	SetDlgItemText(hWnd,AP_RID_DIALOG_##c,pSS->getValue(XAP_STRING_ID_##s))
 
 BOOL AP_Win32Dialog_Replace::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam)
 {
@@ -137,9 +138,10 @@ BOOL AP_Win32Dialog_Replace::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lPar
 
 	// localize controls shared across dialogs
 	_DS(REPLACE_BTN_FINDNEXT,		DLG_FR_FindNextButton);
-	_DS(REPLACE_BTN_CLOSE,			DLG_FR_CancelButton);
 	_DS(REPLACE_TEXT_FIND,			DLG_FR_FindLabel);
 	_DS(REPLACE_CHECK_MATCHCASE,	DLG_FR_MatchCase);
+
+	_DSX(REPLACE_BTN_CLOSE,			DLG_Cancel);
 
 	{
 		UT_UCSChar * bufferUnicode = getFindString();
