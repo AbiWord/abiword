@@ -250,7 +250,7 @@ GtkWidget * AP_UnixDialog_SplitCells::_constructWindowContents(void)
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
 	UT_UTF8String s;
 	pSS->getValueUTF8(AP_STRING_ID_DLG_SplitCells_Frame,s);
-	frame1 = gtk_frame_new (a.utf8_str());
+	frame1 = gtk_frame_new (s.utf8_str());
 	gtk_widget_show (frame1);
 	gtk_container_add (GTK_CONTAINER (wContents), frame1);
 	gtk_container_set_border_width (GTK_CONTAINER (frame1), 3);
