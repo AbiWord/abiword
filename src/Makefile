@@ -18,14 +18,14 @@
 ## Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
 ## 02111-1307, USA.
 
-ifneq ($(OS_NAME), WIN32)
-PS_DIRS=	ps
-endif
-
 ABI_DEPTH=.
 include $(ABI_DEPTH)/config/abi_defs.mk
 
 T=abiword
+
+ifneq ($(OS_NAME), WIN32)
+PS_DIRS=	ps
+endif
 
 ifeq ($(T), all)
 DIRS=		ver other util $(PS_DIRS) ev wp calc
