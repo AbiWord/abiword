@@ -76,12 +76,14 @@ fp_Line::fp_Line(fl_SectionLayout * pSectionLayout) :
 	m_iDescent(0),
 	m_iX(0),
 	m_iY(-2000000), // So setY(0) triggers a clearscreen and redraw!
+		            // I do not like this at all; we have no business
+		            // of clearing at fictional coordinances
 #ifndef WITH_PANGO
 	m_iWidthLayoutUnits(0),
 	m_iMaxWidthLayoutUnits(0),
 	m_iHeightLayoutUnits(0),
 	m_iXLayoutUnits(0),
-	m_iYLayoutUnits(-20000000),
+		m_iYLayoutUnits(-20000000),
 #endif
 	//m_bRedoLayout(true),
 	m_bNeedsRedraw(false),
@@ -1071,8 +1073,17 @@ void fp_Line::setNeedsRedraw(void)
 	m_pBlock->setNeedsRedraw();
 }
 
-void fp_Line::redrawUpdate(void)
+/*! returns true if the line is on screen, false otherwise
+    the caller can use this to test whether further processing is
+    necessary, for instance inside a loop if the return value changes
+    from true to false then no more visible lines are forthcoming and
+    the loop can be terminated
+ */
+bool fp_Line::redrawUpdate(void)
 {
+	if(!isOnScreen())
+		return false;
+	
 	UT_sint32 count = m_vecRuns.getItemCount();
 	if(count)
 	{
@@ -1080,7 +1091,7 @@ void fp_Line::redrawUpdate(void)
 	}
 
 	m_bNeedsRedraw = false;
-
+	return true;
 }
 
 

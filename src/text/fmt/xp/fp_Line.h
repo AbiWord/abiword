@@ -208,7 +208,7 @@ public:
 	void		setNeedsRedraw(void);
 	//void		setRedoLayout(void){ m_bRedoLayout = true; }
 	bool		needsRedraw(void) { return m_bNeedsRedraw; }
-	void		redrawUpdate(void);
+	bool		redrawUpdate(void);
 	fp_Run *	getLastVisRun();
 	fp_Run *	getFirstVisRun();
 	UT_uint32	getVisIndx(fp_Run* pRun);

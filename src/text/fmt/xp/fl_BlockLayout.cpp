@@ -1183,6 +1183,7 @@ fl_BlockLayout::_insertEndOfParagraphRun(void)
 	if (!getFirstContainer())
 	{
 		getNewContainer();
+		m_bIsCollapsed = false;
 	}
 	fp_Line * pFirst = (fp_Line *) getFirstContainer();
 	UT_ASSERT(pFirst && pFirst->countRuns() == 0);
@@ -1328,6 +1329,14 @@ void fl_BlockLayout::updateBackgroundColor(void)
 int
 fl_BlockLayout::formatLocal(fp_Line * pLineToStartAt)
 {
+	// do not format if we are not on the screen
+#if 0
+	if(!isOnScreen())
+	{
+		return 1;
+		UT_DEBUGMSG(("block 0x%08x not on screen\n",this));
+	}
+#endif
 	_assertRunListIntegrity();
 	fp_Run *pRunToStartAt = pLineToStartAt ? pLineToStartAt->getFirstRun() : NULL;
 	// Remember state of cursor
@@ -1464,6 +1473,10 @@ void fl_BlockLayout::redrawUpdate()
 	FV_View* pView = getView();
 	UT_ASSERT (pView);
 
+	bool bFirstLineOn = false;
+	bool bLineOff = false;
+	
+
 	// TODO -- is this really needed ??
 	// we should not need to lookup properties on redraw,
 	// _lookupProperties() gets explicitely called by our listeners
@@ -1484,9 +1497,16 @@ void fl_BlockLayout::redrawUpdate()
 				pView->eraseInsertionPoint();
 				m_bCursorErased = true;
 			}
-			pLine->redrawUpdate();
+			bLineOff = pLine->redrawUpdate();
+			bFirstLineOn |= bLineOff;
 		}
 
+		if(bFirstLineOn && !bLineOff)
+		{
+			// we are past all visible lines
+			break;
+		}
+		
 		pLine = (fp_Line *)pLine->getNext();
 	}
 
@@ -4988,7 +5008,7 @@ bool fl_BlockLayout::recalculateFields(UT_uint32 iUpdateCount)
 				|| !(iUpdateCount % pFieldRun->needsFrequentUpdates())))
 			{
 				const bool bSizeChanged = pFieldRun->calculateValue();
-				bResult = bResult || bSizeChanged;
+				bResult |= bSizeChanged;
 			}
 		}
 		//				else if(pRun->isField() == true)
@@ -7136,7 +7156,5 @@ void fl_BlockLayout::insertFirstLineIntoVerticalContainer()
 		pContainer->insertContainer((fp_Container *) pFirstLine);
 	else
 		pContainer->insertContainerAfter((fp_Container *)pFirstLine, (fp_Container *) pPrevLine);
-	
-
 }
 
