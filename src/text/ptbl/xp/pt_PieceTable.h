@@ -264,7 +264,8 @@ protected:
 	UT_Bool					_getStruxFromFrag(pf_Frag * pfStart, pf_Frag_Strux ** ppfs) const;
 	UT_uint32				_computeBlockOffset(pf_Frag_Strux * pfs,pf_Frag * pfTarget) const;
 
-	UT_Bool					_createBuiltinStyle(const char * szName, PT_AttrPropIndex indexAP);
+	UT_Bool					_loadBuiltinStyles(void);
+	UT_Bool					_createBuiltinStyle(const char * szName, const XML_Char ** attributes);
 
 	PTState					m_pts;		/* are we loading or editing */
 	pt_VarSet				m_varset;

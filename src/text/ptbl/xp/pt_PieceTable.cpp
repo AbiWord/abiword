@@ -49,10 +49,10 @@
 pt_PieceTable::pt_PieceTable(PD_Document * pDocument) 
 	: m_hashStyles(11)
 {
-	m_pts = PTS_Loading;
+	m_pts = PTS_Create;
 	m_pDocument = pDocument;
 
-	setPieceTableState(PTS_Loading);
+	setPieceTableState(PTS_Create);
 	loading.m_indexCurrentInlineAP = 0;
 }
 
@@ -64,6 +64,13 @@ pt_PieceTable::~pt_PieceTable()
 void pt_PieceTable::setPieceTableState(PTState pts)
 {
 	UT_ASSERT(pts >= m_pts);
+
+	if ((m_pts==PTS_Create) && (pts==PTS_Loading))
+	{
+		// transition from create to loading.
+		// populate the builtin styles
+		_loadBuiltinStyles();
+	}
 
 	if ((m_pts==PTS_Loading) && (pts==PTS_Editing))
 	{

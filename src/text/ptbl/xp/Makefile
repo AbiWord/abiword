@@ -50,6 +50,7 @@ CPPSRCS=		pd_Document.cpp			\
 			pt_PT_InsertSpan.cpp	\
 			pt_PT_InsertStrux.cpp	\
 			pt_PT_Listener.cpp	\
+			pt_PT_Styles.cpp	\
 			pt_PT_TempFmt.cpp	\
 			pt_PT_TestRoutines.cpp	\
 			pt_PT_Undo.cpp		\

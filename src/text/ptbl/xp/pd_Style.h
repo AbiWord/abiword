@@ -62,7 +62,7 @@ public:
 	PD_BuiltinStyle(pt_PieceTable * pPT, PT_AttrPropIndex indexAP);
 	virtual ~PD_BuiltinStyle();
 
-	virtual UT_Bool			isUserDefined(void) const { return (m_indexAP == m_indexAPOrig); };
+	virtual UT_Bool			isUserDefined(void) const { return (m_indexAP != m_indexAPOrig); };
 
 protected:
 	PT_AttrPropIndex		m_indexAPOrig;	// the builtin one

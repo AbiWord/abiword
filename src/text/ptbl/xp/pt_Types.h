@@ -36,7 +36,7 @@ typedef UT_uint32 PT_BlockOffset;		/* block-relative document position */
 typedef enum _PTStruxType { PTX_Section, PTX_Block } PTStruxType;
 typedef enum _PTObjectType { PTO_Image, PTO_Field } PTObjectType;
 
-typedef enum _PTState { PTS_Loading=0, PTS_Editing=1 } PTState;
+typedef enum _PTState { PTS_Create=0, PTS_Loading=1, PTS_Editing=2 } PTState;
 typedef enum _PTChangeFmt { PTC_AddFmt=0, PTC_RemoveFmt=1 } PTChangeFmt;
 
 typedef UT_uint32 PL_ListenerId;
