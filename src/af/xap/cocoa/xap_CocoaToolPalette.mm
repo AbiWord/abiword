@@ -1038,6 +1038,10 @@ static XAP_CocoaToolPalette * s_instance = 0;
 	[oFontName removeAllItems];
 	[oFontName addItemsWithTitles:m_pFontFamilies];
 
+	[[oFontName menu] setAutoenablesItems:NO];
+
+	[[oDocumentStyle menu] setAutoenablesItems:NO];
+
 	if (m_Properties_DataSource = [[XAP_PaletteProperties_DataSource alloc] initWithOutlineView:oProperties])
 		{
 			[oProperties setIndentationPerLevel:10.0f];

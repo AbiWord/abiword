@@ -86,15 +86,19 @@ void AP_CocoaLeftRuler::setView(AV_View * pView)
 
 	GR_CocoaAllocInfo ai(m_wLeftRuler, m_pFrame->getApp());
 	GR_CocoaGraphics * pG = static_cast<GR_CocoaGraphics*>(XAP_App::getApp()->newGraphics(ai));
+	UT_ASSERT(pG);
 	m_pG = pG;
-	UT_ASSERT(m_pG);
+
 	m_delegate = [[AP_CocoaLeftRulerDelegate alloc] init];
 	[m_wLeftRuler setEventDelegate:m_delegate];
 	[m_delegate setXAPOwner:this];
 	[[NSNotificationCenter defaultCenter] addObserver:m_delegate
 			selector:@selector(viewDidResize:) 
 			name:NSViewFrameDidChangeNotification object:m_wLeftRuler];
-	static_cast<GR_CocoaGraphics *>(m_pG)->_setUpdateCallback (&_graphicsUpdateCB, (void *)this);
+
+	pG->_setUpdateCallback(&_graphicsUpdateCB, (void *)this);
+	pG->setGrabCursor(GR_Graphics::GR_CURSOR_UPDOWN);
+
 	NSRect bounds = [m_wLeftRuler bounds];
 	setWidth(lrintf(bounds.size.width));
 	setHeight(lrintf(bounds.size.height));
