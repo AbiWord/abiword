@@ -7567,29 +7567,33 @@ bool FV_View::isDontChangeInsPoint(void)
 	return !m_pDoc->getAllowChangeInsPoint();
 }
 
-void FV_View::_checkPendingWordForSpell(void)
+/*!
+ Spell-check pending word
+ If the IP does not touch the pending word, spell-check it.
+*/
+void
+FV_View::_checkPendingWordForSpell(void)
 {
 	if(m_pDoc->isPieceTableChanging())
 	{
 		return;
 	}
 	// deal with pending word, if any
-	if (m_pLayout->isPendingWordForSpell())
-	{
-		fl_BlockLayout* pBL = _findBlockAtPosition(m_iInsPoint);
-		if (pBL)
-		{
-			UT_uint32 iOffset = m_iInsPoint - pBL->getPosition();
+	if (!m_pLayout->isPendingWordForSpell()) return;
 
-			if (!m_pLayout->touchesPendingWordForSpell(pBL, iOffset, 0))
+	fl_BlockLayout* pBL = _findBlockAtPosition(m_iInsPoint);
+	if (pBL)
+	{
+		UT_uint32 iOffset = m_iInsPoint - pBL->getPosition();
+
+		if (!m_pLayout->touchesPendingWordForSpell(pBL, iOffset, 0))
+		{
+			// no longer there, so check it
+			if (m_pLayout->checkPendingWordForSpell())
 			{
-				// no longer there, so check it
-				if (m_pLayout->checkPendingWordForSpell())
-				{
-					_eraseInsertionPoint();
-					updateScreen();
-					_drawInsertionPoint();
-				}
+				_eraseInsertionPoint();
+				updateScreen();
+				_drawInsertionPoint();
 			}
 		}
 	}
@@ -7661,33 +7665,17 @@ bool FV_View::_charMotion(bool bForward,UT_uint32 countChars)
 
 	UT_ASSERT(bRes);
 
+	bRes = true;
+
 	if ((UT_sint32) m_iInsPoint < (UT_sint32) posBOD)
 	{
 		m_iInsPoint = posBOD;
-		if (m_iInsPoint != posOld)
-		{
-			m_pLayout->considerPendingSmartQuoteCandidate();
-			_checkPendingWordForSpell();
-			_clearIfAtFmtMark(posOld);
-			notifyListeners(AV_CHG_MOTION);
-		}
-		
-		return false;
+		bRes = false;
 	}
-
-	if ((UT_sint32) m_iInsPoint > (UT_sint32) posEOD)
+	else if ((UT_sint32) m_iInsPoint > (UT_sint32) posEOD)
 	{
 		m_iInsPoint = posEOD;
-
-		if (m_iInsPoint != posOld)
-		{
-			m_pLayout->considerPendingSmartQuoteCandidate();
-			_checkPendingWordForSpell();
-			_clearIfAtFmtMark(posOld);
-			notifyListeners(AV_CHG_MOTION);
-		}
-
-		return false;
+		bRes = false;
 	}
 
 	if (m_iInsPoint != posOld)
@@ -7698,7 +7686,7 @@ bool FV_View::_charMotion(bool bForward,UT_uint32 countChars)
 		notifyListeners(AV_CHG_MOTION);
 	}
 
-	return true;
+	return bRes;
 }
 // -------------------------------------------------------------------------
 
