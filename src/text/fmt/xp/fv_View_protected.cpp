@@ -3164,21 +3164,27 @@ void FV_View::_extSelToPos(PT_DocPosition iNewPoint)
 		fp_CellContainer * pHighCell = NULL;
 		if(isInTable(posLow))
 		{
-			pLowCell = getCellAtPos(posLow);
+			pLowCell = getCellAtPos(posLow+1);
 			pHighCell =  getCellAtPos(getPoint());
 			if((pLowCell != NULL) && (pLowCell != pHighCell))
 			{
 				fl_CellLayout * pCell = static_cast<fl_CellLayout *>(pLowCell->getSectionLayout());
 				PT_DocPosition posCell = pCell->getPosition(true);
-				if(posCell + 1 == posLow)
+				xxx_UT_DEBUGMSG(("posCell %d posLow %d \n",posCell,posLow));
+				if(posCell == posLow)
 				{
 					m_Selection.setSelectionAnchor(posCell-1);
 					_drawBetweenPositions(posCell-1, getPoint());
 				}
-				else if(posCell + 2 == posLow)
+				else if((posCell + 1) == posLow)
 				{
 					m_Selection.setSelectionAnchor(posCell-1);
-					_drawBetweenPositions(posCell, getPoint());
+					_drawBetweenPositions(posCell-1, getPoint());
+				}
+				else if((posCell + 2) == posLow)
+				{
+					m_Selection.setSelectionAnchor(posCell-1);
+					_drawBetweenPositions(posCell-1, getPoint());
 				}
 //
 // FIXME look to see if we've selected a whole row.
