@@ -115,6 +115,9 @@ const char * ucs2Internal ()
   // we special-case the win32 build, otherwise spelling and other stuff
   // just doesn't work
   return "UCS-2LE";
+#elif defined(__FreeBSD__) || defined(__OpenBSD__)
+  // we special case the BSDs since spelling just doesn't work
+  return "UCS2";
 #else
   // general case, found by hub and dom
   if (XAP_EncodingManager__swap_stou)
