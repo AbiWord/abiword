@@ -165,20 +165,13 @@ void    AP_QNXDialog_WordCount::setUpdateCounter( void )
 	m_bDestroy_says_stopupdating = false;
 	m_bAutoUpdate_happening_now = false;
 
-/*
-	float f_Update_rate = ((float) m_Update_rate)/ 1000.0;
-	gtk_adjustment_set_value( m_Spinrange, f_Update_rate );
-	gtk_spin_button_set_adjustment(GTK_SPIN_BUTTON( m_pAutospin), m_Spinrange);
-*/
 	if(m_bAutoWC == true)
 	{
 		m_pAutoUpdateWC->stop();
 		m_pAutoUpdateWC->set(m_Update_rate);
-//		gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (m_pAutocheck), TRUE);
 	}
 	else
 	{
-//		gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (m_pAutocheck), FALSE);
 	}
 //	set_sensitivity();
 }         
@@ -215,39 +208,10 @@ void AP_QNXDialog_WordCount::event_Update(void)
 
 void AP_QNXDialog_WordCount::event_Checkbox(void)
 {
-#if 0
-	if(m_pAutocheck->active)
-	{
-		m_pAutoUpdateWC->stop();
-		// This actually does gtk_timer_add...
-		m_pAutoUpdateWC->set(m_Update_rate);
-		m_bAutoWC = true;
-	}
-	else
-	{
-		m_pAutoUpdateWC->stop();
-		m_bAutoWC = false;
-	}
-	set_sensitivity();
-#endif
 }
 
 void AP_QNXDialog_WordCount::event_Spin(void)
 {
-#if 0
-	float update_rate =  1000.0*gtk_spin_button_get_value_as_float(GTK_SPIN_BUTTON(m_pAutospin));
-	m_Update_rate = (guint) update_rate;
-
-	// We need this because calling adds a new timer to the gtk list!
-	// So we have to stop the timer to remove it from the gtk list before
-	// changing the speed of the timer.
-
-	m_pAutoUpdateWC->stop();
-
-	// This actually does gtk_timer_add...
-
-	m_pAutoUpdateWC->set(m_Update_rate);
-#endif
 }
 
 

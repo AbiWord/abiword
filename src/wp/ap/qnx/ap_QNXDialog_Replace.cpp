@@ -517,8 +517,6 @@ void AP_QNXDialog_Replace::_populateWindowData(void)
 	// match case button
 	PtSetResource(m_checkbuttonMatchCase, Pt_ARG_FLAGS, (getMatchCase()) ? Pt_SET : 0, Pt_SET); 
 
-	// Find entry should have focus, for immediate typing
-	//gtk_widget_grab_focus(m_entryFind);	
 }
 
 void AP_QNXDialog_Replace::_storeWindowData(void)

@@ -312,7 +312,6 @@ add = pSS->getValueUTF8(AP_STRING_ID_DLG_PageNumbers_Center).c_str();
 	UT_QNXComboSetPos(combo2, 3);
 
 	//Create the preview area
-//frame1 = gtk_frame_new (pSS->getValueUTF8(AP_STRING_ID_DLG_PageNumbers_Preview ).c_str();
 	n = 0;
 	PtWidget_t *rgroup = PtCreateWidget(PtGroup, hgroup, n, args);
 	n = 0;

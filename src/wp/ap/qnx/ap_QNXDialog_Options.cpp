@@ -304,14 +304,6 @@ void AP_QNXDialog_Options::event_WindowDelete(void)
 
 void AP_QNXDialog_Options::event_AllowTransparentColor(void)
 {
-#if 0
-	if(!GTK_TOGGLE_BUTTON (m_checkbuttonTransparentIsWhite)->active) {
-		strncpy(m_CurrentTransparentColor,(const XML_Char *) "ffffff",9);
-		gtk_widget_set_sensitive(m_pushbuttonNewTransparentColor,FALSE);
-	}
-	else
-		gtk_widget_set_sensitive(m_pushbuttonNewTransparentColor,TRUE);
-#endif
 	strcpy(m_CurrentTransparentColor, (const XML_Char *)"ffffff");
 }
 
@@ -323,16 +315,6 @@ void AP_QNXDialog_Options::event_ChooseTransparentColor(void)
 
 void AP_QNXDialog_Options::initializeTransperentToggle(void)
 {
-#if 0
-	if(UT_strcmp(m_CurrentTransparentColor,"ffffff") == 0)
-	{
-		gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (m_checkbuttonTransparentIsWhite), FALSE);
-	}
-	else
-	{
-		gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (m_checkbuttonTransparentIsWhite), TRUE);
-	}
-#endif
 	PtSetResource(m_wCheckWhiteTransparent, Pt_ARG_FLAGS, Pt_SET, Pt_SET);
 }
 

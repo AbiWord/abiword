@@ -574,7 +574,6 @@ _(AP,DLG_Styles_StylesTitle), 0);
 	/* Left pane is a list of styles and types */
 	n = 0;
 	hgroup = PtCreateWidget(PtGroup, vgroup, n, args);
-//frameStyles = gtk_frame_new(pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_Available ).c_str();
 
 	PtWidget_t *top_vgrouplist, *top_vgroupshow;
 
@@ -593,7 +592,6 @@ _(AP,DLG_Styles_StylesTitle), 0);
 	n = 0;
 	PtSetArg(&args[n++], Pt_ARG_WIDTH, PREVIEW_WIDTH, 0);
 	comboList = PtCreateWidget(PtComboBox, top_vgrouplist, n, args);
-//frameList = gtk_frame_new( pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_List ).c_str();
 	const char *items[3];
 	items[0] = pSS->getValueUTF8 (AP_STRING_ID_DLG_Styles_LBL_InUse).c_str();
 items[1] = pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_LBL_All).c_str();
@@ -637,12 +635,6 @@ items[2] = pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_LBL_UserDefined).c_str();
 	PtSetArg(&args[n++], Pt_ARG_HEIGHT, 60, 0);
 	PtSetArg(&args[n++], Pt_ARG_SCROLLBAR_Y_DISPLAY, Pt_AS_REQUIRED, Pt_AS_REQUIRED);
 	DescriptionArea = PtCreateWidget(PtMultiText, frameDescription, n, args);
-
-	//gtk_label_set_line_wrap (GTK_LABEL(DescriptionArea), TRUE);
-	//gtk_label_set_justify (GTK_LABEL(DescriptionArea), GTK_JUSTIFY_LEFT);
-	//gtk_container_add(GTK_CONTAINER(frameDescription), DescriptionArea);
-	//gtk_misc_set_alignment(GTK_MISC(DescriptionArea), 0, 0);
-	//gtk_misc_set_padding(GTK_MISC(DescriptionArea), 8, 6);
 
 	/* These buttons are above the normal buttons */
 	n = 0;
@@ -948,20 +940,6 @@ PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, _(AP,DLG_Styles_RemoveButton), 0);
 	deletePropButton = PtCreateWidget(PtButton, hgroup, n, args);
 	PtAddCallback(deletePropButton, Pt_CB_ACTIVATE, s_remove_property, this);
 
-#if 0
-	checkBoxRow = gtk_hbox_new (FALSE, 3);
-	gtk_box_pack_start (GTK_BOX (OverallVbox), checkBoxRow, TRUE, TRUE, 0);
-	gtk_container_set_border_width (GTK_CONTAINER (checkBoxRow), 2);
-
-checkAddTo = gtk_check_button_new_with_label (pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_ModifyTemplate ).c_str();
-	gtk_widget_show (checkAddTo);
-	gtk_box_pack_start (GTK_BOX (checkBoxRow), checkAddTo, TRUE, TRUE, 0);
-
-checkAutoUpdate = gtk_check_button_new_with_label (pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_ModifyAutomatic ).c_str();
-	gtk_widget_show (checkAutoUpdate);
-	gtk_box_pack_start (GTK_BOX (checkBoxRow), checkAutoUpdate, TRUE, TRUE, 0);
-#endif
-
 	/* Add the bottom group of buttons */
 	PtWidget_t *buttonOK;
 	PtWidget_t *buttonCancel;
@@ -1144,23 +1122,6 @@ void AP_QNXDialog_Styles::event_RemoveProperty(void)
 
 void AP_QNXDialog_Styles::rebuildDeleteProps(void)
 {
-#if 0
-	GtkCombo* delCombo = GTK_COMBO(m_wDeletePropCombo);
-	GtkList * oldList = GTK_LIST(delCombo->list);
-	if(oldList != NULL)
-	{
-		gtk_list_clear_items(oldList,0,-1);
-	}
-	UT_sint32 count = m_vecAllProps.getItemCount();
-	UT_sint32 i= 0;
-	for(i=0; i< count; i+=2)
-	{
-		gchar * sz = (gchar *) m_vecAllProps.getNthItem(i);
-		PtWidget_t * li = gtk_list_item_new_with_label(sz);
-		gtk_widget_show(li);
-		gtk_container_add(GTK_CONTAINER(delCombo->list),li);
-	}
-#endif
 }
 
 /*!
@@ -1311,67 +1272,6 @@ void AP_QNXDialog_Styles::event_ModifyPreviewExposed(void)
 
 void AP_QNXDialog_Styles::event_ModifyClicked(void)
 {
-#if 0
-	PD_Style * pStyle = NULL;
-	const char * szCurrentStyle = getCurrentStyle ();
-	
-	if(szCurrentStyle)
-		getDoc()->getStyle(szCurrentStyle, &pStyle);
-	
-	if (!pStyle)
-	{
-		// TODO: error message - nothing selected
-		return;
-	}
-
-	if (!pStyle->isUserDefined ())
-	{
-		// can't change builtin, error message
-		const XAP_StringSet * pSS = m_pApp->getStringSet();
-		const XML_Char * msg = pSS->getValue (AP_STRING_ID_DLG_Styles_ErrStyleBuiltin);
-		
-		getFrame()->showMessageBox ((const char *)msg,
-									XAP_Dialog_MessageBox::b_O,
-									XAP_Dialog_MessageBox::a_OK);
-		return;
-	}
-	
-	
-#ifndef HAVE_GNOME
-//
-// Hide the old window
-//
-    gtk_widget_hide(m_windowMain);
-#endif
-//
-// fill the data structures needed for the Modify dialog
-//
-	setIsNew(false);
-	
-	modifyRunModal();
-	if(m_answer == AP_Dialog_Styles::a_OK)
-	{
-		applyModifiedStyleToDoc();
-		getDoc()->updateDocForStyleChange(getCurrentStyle(),true);
-		getDoc()->signalListeners(PD_SIGNAL_UPDATE_LAYOUT);
-	}
-	else
-	{
-//
-// Do other stuff
-//
-	}
-//  
-// Restore the values in the main dialog
-//
-	
-#ifndef HAVE_GNOME
-//
-// Reveal main window again
-//
-	gtk_widget_show( m_windowMain);
-#endif
-#endif
 }
 
 void  AP_QNXDialog_Styles::setModifyDescription( const char * desc)
@@ -1404,16 +1304,9 @@ bool  AP_QNXDialog_Styles::_populateModify(void)
 			return false;
 		}
 		_combo_or_text_entry(m_wStyleNameEntry, getCurrentStyle());
-/*
-		gtk_entry_set_text (GTK_ENTRY(m_wStyleNameEntry), getCurrentStyle());
-		gtk_entry_set_editable( GTK_ENTRY(m_wStyleNameEntry),FALSE );
-*/
 	}
 	else
 	{
-/*
-		gtk_entry_set_editable( GTK_ENTRY(m_wStyleNameEntry),TRUE );
-*/
 	}
 
 	//
@@ -1547,137 +1440,23 @@ _combo_or_text_entry(m_wStyleTypeEntry, pSS->getValueUTF8(AP_STRING_ID_DLG_Style
 
 void   AP_QNXDialog_Styles::event_ModifyParagraph()
 {
-#if 0
-#ifndef HAVE_GNOME
-//
-// Hide this window
-//
-    gtk_widget_hide(m_wModifyDialog);
-#endif
-
-//
-// Can do all this in XP land.
-//
-	ModifyParagraph();
-	rebuildDeleteProps();
-#ifndef HAVE_GNOME
-//
-// Restore this window
-//
-    gtk_widget_show(m_wModifyDialog);
-#endif
-
-//
-// This applies the changes to current style and displays them
-//
-	updateCurrentStyle();
-#endif
 }
 
 void   AP_QNXDialog_Styles::event_ModifyFont()
 {
-#if 0
-#ifndef HAVE_GNOME
-//
-// Hide this window
-//
-    gtk_widget_hide(m_wModifyDialog);
-#endif
-
-//
-// Can do all this in XP land.
-//
-	ModifyFont();
-	rebuildDeleteProps();
-#ifndef HAVE_GNOME
-//
-// Restore this window
-//
-    gtk_widget_show(m_wModifyDialog);
-#endif
-
-//
-// This applies the changes to current style and displays them
-//
-	updateCurrentStyle();
-#endif
 }
 
 void AP_QNXDialog_Styles::event_ModifyLanguage()
 {
-#if 0
-#ifndef HAVE_GNOME
-	gtk_widget_hide (m_wModifyDialog);
-#endif
-
-	ModifyLang();
-	rebuildDeleteProps();
-#ifndef HAVE_GNOME
-	gtk_widget_show (m_wModifyDialog);
-#endif
-
-	updateCurrentStyle();
-#endif
 }
 
 void   AP_QNXDialog_Styles::event_ModifyNumbering()
 {
-#if 0
-#ifndef HAVE_GNOME
-//
-// Hide this window
-//
-    gtk_widget_hide(m_wModifyDialog);
-#endif
-
-//
-// Can do all this in XP land.
-//
-	ModifyLists();
-	rebuildDeleteProps();
-#ifndef HAVE_GNOME
-//
-// Restore this window
-//
-    gtk_widget_show(m_wModifyDialog);
-#endif
-
-//
-// This applies the changes to current style and displays them
-//
-	updateCurrentStyle();
-
-#endif
 }
 
 
 void   AP_QNXDialog_Styles::event_ModifyTabs()
 {
-#if 0
-#ifndef HAVE_GNOME
-//
-// Hide this window
-//
-    gtk_widget_hide(m_wModifyDialog);
-#endif
-
-//
-// Can do all this in XP land.
-//
-	ModifyTabs();
-	rebuildDeleteProps();
-#ifndef HAVE_GNOME
-//
-// Restore this window
-//
-    gtk_widget_show(m_wModifyDialog);
-#endif
-
-//
-// This applies the changes to current style and displays them
-//
-	updateCurrentStyle();
-#endif
 }
 
 bool  AP_QNXDialog_Styles::isModifySignalBlocked(void) const

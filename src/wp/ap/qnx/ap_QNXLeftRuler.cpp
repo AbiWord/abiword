@@ -116,25 +116,6 @@ void * AP_QNXLeftRuler::getRootWindow(void)
 }
 
 
-/*****************************************************************/
-#if 0
-int AP_QNXLeftRuler::_fe::key_press_event(GtkWidget* w, GdkEventKey* /* e */)
-{
-	// a static function
-	AP_QNXLeftRuler * pQNXLeftRuler = (AP_QNXLeftRuler *)gtk_object_get_user_data(G_OBJECT(w));
-	UT_DEBUGMSG(("QNXLeftRuler: [p %p] received key_press_event\n",pQNXLeftRuler));
-	return 1;
-}
-	
-int AP_QNXLeftRuler::_fe::delete_event(GtkWidget * /* w */, GdkEvent * /*event*/, gpointer /*data*/)
-{
-	// a static function
-	// AP_QNXLeftRuler * pQNXLeftRuler = (AP_QNXLeftRuler *)gtk_object_get_user_data(G_OBJECT(w));
-	// UT_DEBUGMSG(("QNXLeftRuler: [p %p] received delete_event\n",pQNXLeftRuler));
-	return 1;
-}
-#endif
-
 /* Both the left and the top ruler hve this same function */
 static int get_stuff(PtCallbackInfo_t *info, EV_EditModifierState *ems, 
 									EV_EditMouseButton *emb, int *x, int *y) {

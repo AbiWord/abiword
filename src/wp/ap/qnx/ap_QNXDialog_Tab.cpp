@@ -562,10 +562,6 @@ void AP_QNXDialog_Tab::_spinChanged(void)
 	UT_ASSERT(widget && dlg); 
 
 	// we're only interested in "i'm not toggled"
-/*
-	if ( dlg->m_bInSetCall || gtk_toggle_button_get_active( GTK_TOGGLE_BUTTON(widget)) == FALSE ) 
-		return;
-*/
 	PtGetResource(widget, Pt_ARG_FLAGS, &flags, 0);
 	if (!(*flags & Pt_SET)) {
 		return Pt_CONTINUE;
@@ -595,11 +591,6 @@ void AP_QNXDialog_Tab::_spinChanged(void)
 	AP_QNXDialog_Tab * dlg = (AP_QNXDialog_Tab *)data;
 	UT_ASSERT(widget && dlg); 
 
-/*
-	// we're only interested in "i'm not toggled"
-	if ( dlg->m_bInSetCall || gtk_toggle_button_get_active( GTK_TOGGLE_BUTTON(widget)) == FALSE ) 
-		return;
-*/	
 
 	id = NULL;
 	PtGetResource(widget, Pt_ARG_USER_DATA, &id, 0);

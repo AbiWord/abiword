@@ -748,10 +748,6 @@ void AP_QNXDialog_Lists::_setRadioButtonLabels(void)
 	// Button 0 is Start New List, button 2 is resume list
 PtSetResource(m_wStartNewList, Pt_ARG_TEXT_STRING, pSS->getValueUTF8(AP_STRING_ID_DLG_Lists_Start_New).c_str(), 0);
 PtSetResource(m_wStartSubList, Pt_ARG_TEXT_STRING, pSS->getValueUTF8(AP_STRING_ID_DLG_Lists_Resume).c_str(), 0);
-/*
-gtk_label_set_text( GTK_LABEL(m_wStartNew_label), pSS->getValueUTF8(AP_STRING_ID_DLG_Lists_Start_New ).c_str();
-gtk_label_set_text( GTK_LABEL(m_wStartSub_label), pSS->getValueUTF8(AP_STRING_ID_DLG_Lists_Resume ).c_str();
-*/
 }
 
 //
@@ -781,31 +777,6 @@ void AP_QNXDialog_Lists::_loadXPDataIntoLocal(void)
 		PtSetResource(m_wIndentAlignSpin, Pt_ARG_NUMERIC_VALUE, &d, 0);
 	}
 
-	//
-	// Code to work out which is active Font
-	//
-#if 0
-	if(strcmp((char *) m_pszFont,"NULL") == 0 )
-	{
-		gtk_option_menu_set_history (GTK_OPTION_MENU (m_wFontOptions), 0 );
-	}
-	else
-	{
-		for(i=0; i < (gint) g_list_length(m_glFonts);i++)
-		{
-			if(strcmp((char *) m_pszFont,(char *) g_list_nth_data(m_glFonts,i)) == 0)
-				break;
-		}
-		if(i < (gint) g_list_length(m_glFonts))
-		{
-			gtk_option_menu_set_history (GTK_OPTION_MENU (m_wFontOptions), i+ 1 );
-		}
-		else
-		{
-			gtk_option_menu_set_history (GTK_OPTION_MENU (m_wFontOptions), 0 );
-		}
-	}
-#endif
 
 	PtSetResource(m_wStartSpin, Pt_ARG_NUMERIC_VALUE, getiStartValue(), 0);
 
@@ -879,21 +850,7 @@ void AP_QNXDialog_Lists::_gatherData(void)
 		PtSetResource(m_wIndentAlignSpin, Pt_ARG_NUMERIC_VALUE, &indent, sizeof(indent));
 	}
 
-#if 0
-	PtWidget_t * wfont = gtk_menu_get_active(GTK_MENU(m_wFontOptions_menu));
-	gint ifont =  GPOINTER_TO_INT(gtk_object_get_user_data(G_OBJECT(wfont)));
-	if(ifont == 0)
-	{
-                 UT_XML_strncpy( (XML_Char *) m_pszFont, 80, (const XML_Char *)  "NULL");
-	}
-	else
-	{
-                 UT_XML_strncpy( (XML_Char *) m_pszFont, 80, (const XML_Char *)  g_list_nth_data(m_glFonts, ifont-1));
-	}
-#else
-	//UT_XML_strncpy( (XML_Char *) m_pszFont, 80, (const XML_Char *)  "NULL");
 	copyCharToFont( "NULL");
-#endif
 
 
 	PtGetResource(m_wStartSpin, Pt_ARG_NUMERIC_VALUE, &idata, 0);
