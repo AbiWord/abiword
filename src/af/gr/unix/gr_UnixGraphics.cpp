@@ -102,6 +102,9 @@ GR_UNIXGraphics::GR_UNIXGraphics(GdkWindow * win, AP_UnixFontManager * fontManag
 	gdk_gc_set_exposures(m_pXORGC,1);
 	
 	memset(m_aCharWidths, 0, 256 * sizeof(int));
+
+	m_cursor = GR_CURSOR_INVALID;
+	setCursor(GR_CURSOR_DEFAULT);
 }
 
 GR_UNIXGraphics::~GR_UNIXGraphics()
@@ -630,3 +633,35 @@ void GR_UNIXGraphics::flush(void)
 {
 	gdk_flush();
 }
+
+void GR_UNIXGraphics::setCursor(GR_Graphics::Cursor c)
+{
+	if (m_cursor == c)
+		return;
+	
+	m_cursor = c;
+	
+	enum GdkCursorType cursor_number;
+	
+	switch (c)
+	{
+	default:
+	case GR_CURSOR_DEFAULT:
+		cursor_number = GDK_TOP_LEFT_ARROW;
+		break;
+		
+	case GR_CURSOR_IBEAM:
+		cursor_number = GDK_XTERM;
+		break;
+	}
+
+	GdkCursor * cursor = gdk_cursor_new(cursor_number);
+	gdk_window_set_cursor(m_pWin, cursor);
+	gdk_cursor_destroy(cursor);
+}
+
+GR_Graphics::Cursor GR_UNIXGraphics::getCursor(void) const
+{
+	return m_cursor;
+}
+

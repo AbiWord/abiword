@@ -63,6 +63,9 @@ void GR_Win32Graphics::_constructorCommonCode(HDC hdc)
 	memset(m_aABCs, 0, 256*sizeof(ABC));
 	memset(m_aCharWidths, 0, 256*sizeof(int));
 	m_defaultCharWidth = 0;
+
+	m_cursor = GR_CURSOR_INVALID;
+	setCursor(GR_CURSOR_DEFAULT);
 }
 
 GR_Win32Graphics::GR_Win32Graphics(HDC hdc, HWND hwnd)
@@ -595,3 +598,35 @@ HWND GR_Win32Graphics::getHwnd(void) const
 {
 	return m_hwnd;
 }
+
+void GR_Win32Graphics::setCursor(GR_Graphics::Cursor c)
+{
+	if (m_cursor == c)
+		return;
+	
+	m_cursor = c;
+	
+	switch (c)
+	{
+	default:
+	case GR_CURSOR_DEFAULT:
+//		cursor_number = GDK_TOP_LEFT_ARROW;
+		break;
+		
+	case GR_CURSOR_IBEAM:
+//		cursor_number = GDK_XTERM;
+		break;
+	}
+
+	// TODO set the window cursor
+	// 
+	// TODO because of the weird way Win32 cursors are handled
+	// TODO we may need to add code to the WinProc() to catch
+	// TODO WM_SETCURSOR or whatever its called....
+}
+
+GR_Graphics::Cursor GR_Win32Graphics::getCursor(void) const
+{
+	return m_cursor;
+}
+

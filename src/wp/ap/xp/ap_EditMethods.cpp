@@ -97,8 +97,8 @@ public:
 	static EV_EditMethod_Fn warpInsPtPrevLine;
 	static EV_EditMethod_Fn warpInsPtNextLine;
 
+	static EV_EditMethod_Fn cursorDefault;
 	static EV_EditMethod_Fn cursorIBeam;
-	static EV_EditMethod_Fn cursorFoo;	// TODO remove this
 
 	static EV_EditMethod_Fn dragToXY;
 	static EV_EditMethod_Fn dragToXYword;
@@ -276,8 +276,8 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(warpInsPtPrevLine),	0,	""),
 	EV_EditMethod(NF(warpInsPtNextLine),	0,	""),
 
+	EV_EditMethod(NF(cursorDefault),		0,	""),
 	EV_EditMethod(NF(cursorIBeam),			0,	""),
-	EV_EditMethod(NF(cursorFoo),			0,	""), // TODO remove this
 
 	EV_EditMethod(NF(dragToXY),				0,	""),
 	EV_EditMethod(NF(dragToXYword),			0,	""),
@@ -1339,15 +1339,27 @@ Defun1(warpInsPtNextLine)
 	return UT_TRUE;
 }
 
-Defun0(cursorIBeam)
+/*****************************************************************/
+
+Defun1(cursorDefault)
 {
+	ABIWORD_VIEW;
+	GR_Graphics * pG = pView->getGraphics();
+	if (pG)
+		pG->setCursor(GR_Graphics::GR_CURSOR_DEFAULT);
 	return UT_TRUE;
 }
 
-Defun0(cursorFoo)						// TODO remove this
+Defun1(cursorIBeam)
 {
+	ABIWORD_VIEW;
+	GR_Graphics * pG = pView->getGraphics();
+	if (pG)
+		pG->setCursor(GR_Graphics::GR_CURSOR_IBEAM);
 	return UT_TRUE;
 }
+
+/*****************************************************************/
 
 Defun(dragToXY)
 {

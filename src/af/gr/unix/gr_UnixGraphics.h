@@ -104,6 +104,9 @@ public:
   virtual UT_Bool endPrint(void);
 
   virtual void flush(void);
+
+  virtual void setCursor(GR_Graphics::Cursor c);
+  virtual GR_Graphics::Cursor getCursor(void) const;
   
 protected:
   AP_UnixFontManager * 	m_pFontManager;
@@ -116,6 +119,7 @@ protected:
   int					m_aCharWidths[256];
   int          			m_iWindowHeight, m_iWindowWidth;
   UT_sint32				m_iLineWidth;
+  GR_Graphics::Cursor	m_cursor;
 };
 
 #endif /* GR_UNIXGRAPHICS_H */

@@ -100,7 +100,7 @@ public:
 	
 	virtual UT_Bool queryProperties(GR_Graphics::Properties gp) const = 0;
 
-	/* the following are only used for printing */
+	/* the following 3 are only used for printing */
 	
 	virtual UT_Bool startPrint(void) = 0;
 	virtual UT_Bool startPage(const char * szPageLabel, UT_uint32 pageNumber,
@@ -108,6 +108,17 @@ public:
 	virtual UT_Bool endPrint(void) = 0;
 
 	virtual void flush(void);
+
+	/* multiple cursor support */
+	
+	typedef enum { GR_CURSOR_INVALID=0,
+				   GR_CURSOR_DEFAULT,
+				   GR_CURSOR_IBEAM
+	} Cursor;
+
+	virtual void setCursor(GR_Graphics::Cursor c) = 0;
+	virtual GR_Graphics::Cursor getCursor(void) const = 0;
+	
 };
 
 #endif /* GR_GRAPHICS_H */

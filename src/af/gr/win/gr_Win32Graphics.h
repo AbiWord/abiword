@@ -86,6 +86,9 @@ public:
 
 	virtual HWND getHwnd(void) const;
 
+	virtual void setCursor(GR_Graphics::Cursor c);
+	virtual GR_Graphics::Cursor getCursor(void) const;
+
 protected:
 	UT_RGBColor			m_clr;
 	HDC					m_hdc;
@@ -100,6 +103,7 @@ protected:
 	int					m_aCharWidths[256];
 	int					m_defaultCharWidth;
 	UT_sint32			m_iLineWidth;
+	GR_Graphics::Cursor	m_cursor;
 
 private:
 	void 				_constructorCommonCode(HDC);

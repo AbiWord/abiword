@@ -63,7 +63,7 @@ static struct ap_bs_Mouse s_MouseTable[] =
 //	Button-0 (no buttons pressed)
 //  { context	{ click	dblclick	drag,			dbldrag,	release,	doublerelease	}},
 	{_CT _B0,	{ "",	"",			"cursorIBeam",	"",			"",			""				}},
-	{_CL _B0,	{ "",	"",			"cursorFoo",	"",			"",			""				}},
+	{_CL _B0,	{ "",	"",			"cursorDefault","",			"",			""				}},
 
 //	Button-1, Text-context
 //  { context	{ click				doubleclick		drag,		dbldrag,		release, doublerelease }},
