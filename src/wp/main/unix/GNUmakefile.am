@@ -18,6 +18,8 @@
 
 include $(top_srcdir)/includes.mk
 
+CLEANFILES = abi_ver.cpp
+
 if WITH_GNOME
 SUBDIRS=gnome
 else

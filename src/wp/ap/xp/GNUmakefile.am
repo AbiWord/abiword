@@ -18,6 +18,8 @@
 
 include $(top_srcdir)/includes.mk
 
+CLEANFILES=ap_wp_splash.cpp ap_wp_sidebar.cpp
+
 INCLUDES= $(AF_INCLUDES) $(WP_INCLUDES) $(TEXT_INCLUDES) \
 	  $(OTHER_INCLUDES) $(ICONV_INCLUDES)
 
