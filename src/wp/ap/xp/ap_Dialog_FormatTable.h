@@ -100,7 +100,8 @@ public:
 	void								applyChanges(void);
 	void                                toggleLineType(toggle_button btn, bool enabled);
 	void								setBorderColor(UT_RGBColor clr);
-	void								setBGColor(UT_RGBColor clr);
+	void								setBackgroundColor(UT_RGBColor clr);
+	virtual void						setBackgroundColorInGUI(UT_RGBColor clr) = 0;	
 	void                                setBorderThickness(UT_UTF8String & sThick);
 	virtual void                        setBorderThicknessInGUI(UT_UTF8String & sThick) = 0;
 	void                                clearImage(void);

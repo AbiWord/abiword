@@ -351,15 +351,51 @@ void AP_Dialog_FormatTable::setCurCellProps(void)
 		
 		m_iOldPos = pView->getPoint();
 
+		/*
+		 * update the border colors
+		 */
+		
+		XML_Char * color = NULL;
+		
+		if (pView->getCellProperty("left-color", color))
+			m_vecProps.addOrReplaceProp("left-color", color);
+		else
+			m_vecProps.removeProp("left-color");
+
+		if (pView->getCellProperty("right-color", color))
+			m_vecProps.addOrReplaceProp("right-color", color);
+		else
+			m_vecProps.removeProp("right-color");
+
+		if (pView->getCellProperty("top-color", color))
+			m_vecProps.addOrReplaceProp("top-color", color);
+		else
+			m_vecProps.removeProp("top-color");
+		
+		if (pView->getCellProperty("bot-color", color))
+			m_vecProps.addOrReplaceProp("bot-color", color);
+		else
+			m_vecProps.removeProp("bot-color");
+		
+		/*
+		 * update the background color
+		 */
+
+		UT_RGBColor clr;
 		XML_Char * bgColor = NULL;
-		if (pView->getCellBGColor (bgColor))
+		if (pView->getCellProperty("background-color", bgColor))
 		{
 			m_vecProps.addOrReplaceProp("background-color", bgColor);
+			clr.setColor(bgColor);
+			setBackgroundColorInGUI(clr);
 		}
 		else
 		{
 			m_vecProps.removeProp("background-color");
+			setBackgroundColorInGUI(UT_RGBColor(255,255,255)); // No color == white for now - MARCM
 		}
+		
+		
 		if(pView->isImageAtStrux(m_iOldPos,PTX_SectionCell))
 		{
 			if(pView->isInTable())
@@ -425,6 +461,7 @@ void AP_Dialog_FormatTable::setCurCellProps(void)
 
 		UT_String bstmp = UT_String_sprintf("%d", FS_FILL);
 		m_vecProps.addOrReplaceProp("bg-style", bstmp.c_str());
+		
 		// draw the preview with the changed properties
 		if(m_pFormatTablePreview)
 			m_pFormatTablePreview->draw();
@@ -554,12 +591,12 @@ void AP_Dialog_FormatTable::clearImage(void)
 
 }
 
-void AP_Dialog_FormatTable::setBGColor(UT_RGBColor clr)
+void AP_Dialog_FormatTable::setBackgroundColor(UT_RGBColor clr)
 {
 	UT_String bgcol = UT_String_sprintf("%02x%02x%02x", clr.m_red, clr.m_grn, clr.m_blu);
 
 	m_vecProps.removeProp ("bg-style");
-	m_vecProps.removeProp ("bgcolor");
+	m_vecProps.removeProp ("bgcolor"); // this is only here for backward compatibility with AbiWord < 2.0. Could be removed as far as I can see - MARCM
 
 	if (clr.isTransparent ())
 		m_vecProps.removeProp ("background-color");

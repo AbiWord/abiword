@@ -7533,11 +7533,11 @@ bool FV_View::setCellFormat(const XML_Char * properties[], FormatTable applyTo, 
 }
 
 /*!
- Get the background color of the cell containing the current cursor position
- \param col will be set to the cell background color, if the background color exists
- \return True if succesful (ie. the background color is set), false otherwise
+ Get the a particular property, such as the background color, of the cell containing the current cursor position
+ \param col will be set to the cell to the property value, if the requested property exists
+ \return True if succesful (ie. the property value is set), false otherwise
  */
-bool FV_View::getCellBGColor(XML_Char * &color)
+bool FV_View::getCellProperty(XML_Char * szPropName, XML_Char * &szPropValue)
 {
 	PT_DocPosition posCell = getPoint();
 	if (!isSelectionEmpty())
@@ -7558,8 +7558,8 @@ bool FV_View::getCellBGColor(XML_Char * &color)
 	{
 		return false;
 	}
-	m_pDoc->getPropertyFromSDH(cellSDH,isShowRevisions(),getRevisionLevel(),"background-color",const_cast<const char **>(&color));
-	if(color && *color)
+	m_pDoc->getPropertyFromSDH(cellSDH,isShowRevisions(),getRevisionLevel(),szPropName,const_cast<const char **>(&szPropValue));
+	if(szPropValue && *szPropValue)
 	{
 		return true;
 	}

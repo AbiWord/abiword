@@ -146,7 +146,7 @@ PtColorSelect(PtGetParent(w,PtWindow),"Select Background color",&colorinfo);
 
 if(colorinfo.flags & Pt_COLORSELECT_ACCEPT)
 {
-dlg->setBGColor(UT_RGBColor(PgRedValue(colorinfo.rgb),PgGreenValue(colorinfo.rgb),PgBlueValue(colorinfo.rgb)));
+dlg->setBackgroundColor(UT_RGBColor(PgRedValue(colorinfo.rgb),PgGreenValue(colorinfo.rgb),PgBlueValue(colorinfo.rgb)));
 PtSetResource(w,Pt_ARG_FILL_COLOR,colorinfo.rgb,0);
 dlg->event_previewExposed();
 }

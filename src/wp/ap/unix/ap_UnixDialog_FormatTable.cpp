@@ -115,7 +115,7 @@ static void s_background_color(GtkWidget *widget, gpointer data)
 	
 	guint8 r, g, b, a;
 	gtk_color_picker_get_i8 (GTK_COLOR_PICKER(widget), &r, &g, &b, &a);
-	dlg->setBGColor(UT_RGBColor(r,g,b));
+	dlg->setBackgroundColor(UT_RGBColor(r,g,b));
 	dlg->event_previewExposed();
 }
 
@@ -287,6 +287,11 @@ void AP_UnixDialog_FormatTable::setBorderThicknessInGUI(UT_UTF8String & sThick)
 	gtk_option_menu_set_history (GTK_OPTION_MENU(m_wBorderThickness),
 							  closest);
 	g_signal_handler_unblock(G_OBJECT(m_wBorderThickness),m_iBorderThicknessConnect);
+}
+
+void AP_UnixDialog_FormatTable::setBackgroundColorInGUI(UT_RGBColor clr)
+{
+	gtk_color_picker_set_i8(GTK_COLOR_PICKER(m_wBackgroundColorButton), clr.m_red, clr.m_grn, clr.m_blu, 0 /* unused */);
 }
 
 void AP_UnixDialog_FormatTable::event_BorderThicknessChanged(void)

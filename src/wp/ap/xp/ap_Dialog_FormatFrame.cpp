@@ -348,7 +348,7 @@ void AP_Dialog_FormatFrame::setCurFrameProps(void)
 		m_iOldPos = pView->getPoint();
 
 		XML_Char * bgColor = NULL;
-		if (pView->getCellBGColor (bgColor))
+		if (pView->getCellProperty ("background-color", bgColor)) // erm, getCELLPropery? shouldn't that function be renamed in fv_View then ? - MARCM
 		{
 			m_vecProps.addOrReplaceProp("background-color", bgColor);
 		}

@@ -62,24 +62,6 @@
 		<dict>
 			<key>CFBundleTypeExtensions</key>
 			<array>
-				<string>bak~</string>
-				<string>CRASHED</string>
-			</array>
-			<key>CFBundleTypeIconFile</key>
-			<string>AbiStops.icns</string>
-			<key>CFBundleTypeName</key>
-			<string>AbiWord Auto-Save Document</string>
-			<key>CFBundleTypeOSTypes</key>
-			<array>
-				<string>TEXT</string>
-				<string>AbiW</string>
-			</array>
-			<key>CFBundleTypeRole</key>
-			<string>Editor</string>
-		</dict>
-		<dict>
-			<key>CFBundleTypeExtensions</key>
-			<array>
 				<string>rtf</string>
 				<string>RTF</string>
 			</array>

@@ -43,6 +43,7 @@ public:
 	void					event_ApplyToChanged(void);
 	void                    event_BorderThicknessChanged(void);
 	virtual void            setBorderThicknessInGUI(UT_UTF8String & sThick);
+	virtual void			setBackgroundColorInGUI(UT_RGBColor clr);
 	virtual void            setSensitivity(bool bsens);
 	virtual void            destroy(void);
 	virtual void            activate(void);
@@ -57,7 +58,7 @@ protected:
 	virtual GtkWidget *		_constructWindow(void);
 	void					_populateWindowData(void);
 	void					_storeWindowData(void);
-	void                     _connectSignals(void);
+	void					_connectSignals(void);
 	
 	GR_UnixGraphics	* 		m_pPreviewWidget;	
 	
