@@ -94,6 +94,80 @@ protected:
 /*****************************************************************/
 /*****************************************************************/
 
+#ifdef ENABLE_PLUGINS
+
+// completely generic code to allow this to be a plugin
+
+#include "xap_Module.h"
+
+#define SUPPORTS_ABI_VERSION(a,b,c) (((a==0)&&(b==7)&&(c==15)) ? 1 : 0)
+
+// we use a reference-counted sniffer
+static IE_Exp_WML_Sniffer * m_sniffer = 0;
+static UT_sint32 m_refs = 0;
+
+ABI_FAR extern "C"
+int abi_plugin_register (XAP_ModuleInfo * mi)
+{
+
+	if (!m_refs && !m_sniffer)
+	{
+		m_sniffer = new IE_Exp_WML_Sniffer ();
+		m_refs++;
+	}
+	else if (m_refs && m_sniffer)
+	{
+		m_refs++;
+	}
+	else
+	{
+		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+	}
+
+	mi->name = "WML Exporter";
+	mi->desc = "Export WML Documents";
+	mi->version = "0.7.15";
+	mi->author = "Abi the Ant";
+	mi->usage = "No Usage";
+
+	IE_Exp::registerExporter (m_sniffer);
+	return 1;
+}
+
+ABI_FAR extern "C"
+int abi_plugin_unregister (XAP_ModuleInfo * mi)
+{
+	mi->name = 0;
+	mi->desc = 0;
+	mi->version = 0;
+	mi->author = 0;
+	mi->usage = 0;
+
+	UT_ASSERT (m_refs && m_sniffer);
+
+	m_refs--;
+	IE_Exp::unregisterExporter (m_sniffer);
+	if (!m_refs)
+	{
+		delete m_sniffer;
+		m_sniffer = 0;
+	}
+
+	return 1;
+}
+
+ABI_FAR extern "C"
+int abi_plugin_supports_version (UT_uint32 major, UT_uint32 minor, 
+								 UT_uint32 release)
+{
+	return SUPPORTS_ABI_VERSION(major, minor, release);
+}
+
+#endif
+
+/*****************************************************************/
+/*****************************************************************/
+
 IE_Exp_WML::IE_Exp_WML(PD_Document * pDocument)
 	: IE_Exp(pDocument)
 {
@@ -113,7 +187,7 @@ bool IE_Exp_WML_Sniffer::recognizeSuffix(const char * szSuffix)
 	return (!UT_stricmp(szSuffix,".wml"));
 }
 
-UT_Error IE_Exp_WML_Sniffer::constructImporter(PD_Document * pDocument,
+UT_Error IE_Exp_WML_Sniffer::constructExporter(PD_Document * pDocument,
 											   IE_Exp ** ppie)
 {
 	IE_Exp_WML * p = new IE_Exp_WML(pDocument);

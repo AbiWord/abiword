@@ -52,8 +52,88 @@
 #include "ie_imp_Psion.h"
 #include <psiconv/parse.h>
 
-// The style combo box does not support new styles yet... 
-#undef ENABLE_STYLES
+// The style combo box supports new styles now
+#define ENABLE_STYLES 1
+
+/*****************************************************************/
+/*****************************************************************/
+
+#ifdef ENABLE_PLUGINS
+
+// completely generic code to allow this to be a plugin
+
+#include "xap_Module.h"
+
+#define SUPPORTS_ABI_VERSION(a,b,c) (((a==0)&&(b==7)&&(c==15)) ? 1 : 0)
+
+// we use a reference-counted sniffer
+static IE_Imp_Psion_Word_Sniffer * m_word_sniffer = 0;
+static IE_Imp_Psion_TextEd_Sniffer * m_texted_sniffer = 0;
+static UT_sint32 m_refs = 0;
+
+ABI_FAR extern "C"
+int abi_plugin_register (XAP_ModuleInfo * mi)
+{
+
+	if (!m_refs && !m_word_sniffer && !m_texted_sniffer)
+	{
+		m_word_sniffer = new IE_Imp_Psion_Word_Sniffer ();
+		m_texted_sniffer = new IE_Imp_Psion_TextEd_Sniffer ();
+		m_refs++;
+	}
+	else if (m_refs && m_word_sniffer && m_texted_sniffer)
+	{
+		m_refs++;
+	}
+	else
+	{
+		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+	}
+
+	mi->name = "Psion Importer";
+	mi->desc = "Import Psion Documents";
+	mi->version = "0.7.15";
+	mi->author = "Abi the Ant";
+	mi->usage = "No Usage";
+
+	IE_Imp::registerImporter (m_word_sniffer);
+	IE_Imp::registerImporter (m_texted_sniffer);
+	return 1;
+}
+
+ABI_FAR extern "C"
+int abi_plugin_unregister (XAP_ModuleInfo * mi)
+{
+	mi->name = 0;
+	mi->desc = 0;
+	mi->version = 0;
+	mi->author = 0;
+	mi->usage = 0;
+
+	UT_ASSERT (m_refs && m_word_sniffer && m_texted_sniffer);
+
+	m_refs--;
+	IE_Imp::unregisterImporter (m_word_sniffer);
+	IE_Imp::unregisterImporter (m_texted_sniffer);
+	if (!m_refs)
+	{
+		delete m_word_sniffer;
+		delete m_texted_sniffer;
+		m_word_sniffer = 0;
+		m_texted_sniffer = 0;
+	}
+
+	return 1;
+}
+
+ABI_FAR extern "C"
+int abi_plugin_supports_version (UT_uint32 major, UT_uint32 minor, 
+								 UT_uint32 release)
+{
+	return SUPPORTS_ABI_VERSION(major, minor, release);
+}
+
+#endif
 
 /*****************************************************************/
 /*****************************************************************/

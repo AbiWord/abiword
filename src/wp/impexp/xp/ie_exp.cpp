@@ -335,7 +335,7 @@ UT_Error IE_Exp::constructExporter(PD_Document * pDocument,
 		IE_ExpSniffer * s = (IE_ExpSniffer*) m_sniffers.getNthItem (k);
 		if (s->supportsFileType(ieft))
 		{
-			return s->constructImporter (pDocument, ppie);
+			return s->constructExporter (pDocument, ppie);
 		}
 	}
 

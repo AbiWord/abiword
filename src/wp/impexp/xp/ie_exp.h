@@ -57,7 +57,7 @@ public:
 	virtual bool getDlgLabels (const char ** szDesc,
 							   const char ** szSuffixList,
 							   IEFileType * ft) = 0;
-	virtual UT_Error constructImporter (PD_Document * pDocument,
+	virtual UT_Error constructExporter (PD_Document * pDocument,
 										IE_Exp ** ppie) = 0;
 	
 private:

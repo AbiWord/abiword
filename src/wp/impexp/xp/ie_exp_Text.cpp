@@ -100,7 +100,7 @@ bool IE_Exp_Text_Sniffer::recognizeSuffix(const char * szSuffix)
 	return (!UT_stricmp(szSuffix,".txt") || !UT_stricmp(szSuffix, ".text"));
 }
 
-UT_Error IE_Exp_Text_Sniffer::constructImporter(PD_Document * pDocument,
+UT_Error IE_Exp_Text_Sniffer::constructExporter(PD_Document * pDocument,
 											   IE_Exp ** ppie)
 {
 	IE_Exp_Text * p = new IE_Exp_Text(pDocument);

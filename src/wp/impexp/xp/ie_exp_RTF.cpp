@@ -87,7 +87,7 @@ bool IE_Exp_RTF_Sniffer::recognizeSuffix(const char * szSuffix)
 	return (!UT_stricmp(szSuffix,".rtf"));
 }
 
-UT_Error IE_Exp_RTF_Sniffer::constructImporter(PD_Document * pDocument,
+UT_Error IE_Exp_RTF_Sniffer::constructExporter(PD_Document * pDocument,
 											   IE_Exp ** ppie)
 {
 	IE_Exp_RTF * p = new IE_Exp_RTF(pDocument);
@@ -112,7 +112,7 @@ bool IE_Exp_RTF_attic_Sniffer::recognizeSuffix(const char * szSuffix)
 	return (!UT_stricmp(szSuffix,".rtf"));
 }
 
-UT_Error IE_Exp_RTF_attic_Sniffer::constructImporter(PD_Document * pDocument,
+UT_Error IE_Exp_RTF_attic_Sniffer::constructExporter(PD_Document * pDocument,
 											   IE_Exp ** ppie)
 {
 	IE_Exp_RTF * p = new IE_Exp_RTF(pDocument,1);
