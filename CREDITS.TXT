@@ -61,6 +61,7 @@ Jarmo Karvonen <jarmo@dawn.joensuu.fi>          Finnish
 Edouard Lafargue <Edouard.Lafargue@bigfoot.com> Norwegian
 Birger Langkjer <birger.langkjer@image.dk>      Danish
 Jordi Mas <jmas@softcatala.org>                 Catalan
+Zbynek Miksa <xmiksa@informatics.muni.cz>	Czech
 Rui Silva <rms@ssi.aaum.pt>                     Portugese
 Christian Terboven <cterboven@gmx.net>          German
 Javier Yáñez <javier@cibal.es>                  Spanish
