@@ -174,6 +174,12 @@ void s_RTF_ListenerWriteDoc::_outputData(const UT_UCSChar * data, UT_uint32 leng
 			{
 				// changing from rtl to ltr
 				FlushBuffer();
+
+// when reading this rtf back into AW, we do not want
+// the ltrch converted into an override -- issue
+// custom abinodiroverride keyword
+
+				m_pie->_rtf_keyword("abinodiroverride"); 
 				m_pie->_rtf_keyword("ltrch");
 				m_pie->setCharRTL(FRIBIDI_TYPE_LTR);
 			}
@@ -181,6 +187,12 @@ void s_RTF_ListenerWriteDoc::_outputData(const UT_UCSChar * data, UT_uint32 leng
 			{
 				// changing from ltr to rtl
 				FlushBuffer();
+
+// when reading this rtf back into AW, we do not want
+// the ltrch converted into an override -- issue
+// custom abinodiroverride keyword
+
+				m_pie->_rtf_keyword("abinodiroverride"); 
 				m_pie->_rtf_keyword("rtlch");
 				m_pie->setCharRTL(FRIBIDI_TYPE_RTL);
 			}

@@ -2013,7 +2013,7 @@ int IE_Imp_MsWord_97::_beginSect (wvParseStruct *ps, UT_uint32 tag,
 		// columns gap
 		UT_String_sprintf(propBuffer,"column-gap:%s;",
 			UT_convertInchesToDimensionString(m_dim,
-											  (static_cast<float>(asep->dxaColumns) / 1440)));
+											  (static_cast<double>(asep->dxaColumns) / 1440)));
 		props += propBuffer;
 	}
 
@@ -2026,7 +2026,7 @@ int IE_Imp_MsWord_97::_beginSect (wvParseStruct *ps, UT_uint32 tag,
 	// space after section (gutter)
 	UT_String_sprintf(propBuffer,"section-space-after:%s;",
 			UT_convertInchesToDimensionString(m_dim,
-											  (static_cast<float>(asep->dzaGutter) / 1440)));
+											  (static_cast<double>(asep->dzaGutter) / 1440)));
 	props += propBuffer;
 
 	//
@@ -2036,42 +2036,45 @@ int IE_Imp_MsWord_97::_beginSect (wvParseStruct *ps, UT_uint32 tag,
 	// page-margin-left
 	UT_String_sprintf(propBuffer, "page-margin-left:%s;",
 			UT_convertInchesToDimensionString(m_dim,
-											  (static_cast<float>(asep->dxaLeft) / 1440)));
+											  (static_cast<double>(asep->dxaLeft) / 1440)));
 	props += propBuffer;
 
 	// page-margin-right
 	UT_String_sprintf(propBuffer, "page-margin-right:%s;",
 			UT_convertInchesToDimensionString(m_dim,
-											  (static_cast<float>(asep->dxaRight) / 1440)));
+											  (static_cast<double>(asep->dxaRight) / 1440)));
 	props += propBuffer;
 
 	// page-margin-top
 	UT_String_sprintf(propBuffer, "page-margin-top:%s;",
 			UT_convertInchesToDimensionString(m_dim,
-											  (static_cast<float>(asep->dyaTop) / 1440)));
+											  (static_cast<double>(asep->dyaTop) / 1440)));
 	props += propBuffer;
 
 	// page-margin-bottom
 	UT_String_sprintf(propBuffer, "page-margin-bottom:%s;",
 			UT_convertInchesToDimensionString(m_dim,
-											  (static_cast<float>(asep->dyaBottom)/1440)));
+											  (static_cast<double>(asep->dyaBottom)/1440)));
 	props += propBuffer;
 
 	// page-margin-header
 	UT_String_sprintf(propBuffer, "page-margin-header:%s;",
 			UT_convertInchesToDimensionString(m_dim,
-											  (static_cast<float>(asep->dyaHdrTop)/1440)));
+											  (static_cast<double>(asep->dyaHdrTop)/1440)));
 	props += propBuffer;
 
 	// page-margin-footer (word's footer is measured from the bottom
 	// edge of the page -- contrary to the docs -- our's from the
 	// bottom margin of the page)
+	double dFooter = static_cast<double>(asep->dyaBottom) - static_cast<double>(asep->dyaHdrBottom);
+	if(dFooter < 0)
+	{
+		dFooter = -dFooter;
+	}
+	dFooter = dFooter/1440.;
 	UT_String_sprintf(propBuffer, "page-margin-footer:%s",
-			UT_convertInchesToDimensionString(m_dim,
-							(static_cast<float>(asep->dyaBottom - asep->dyaHdrBottom)/1440)));
-	
+					  UT_convertInchesToDimensionString(m_dim,dFooter));
 	props += propBuffer;
-
 	xxx_UT_DEBUGMSG (("DOM:SEVIOR the section properties are: '%s'\n", props.c_str()));
 
 	
@@ -3727,7 +3730,7 @@ void IE_Imp_MsWord_97::_table_close (const wvParseStruct *ps, const PAP *apap)
 		  {
 			  UT_String_sprintf(propBuffer,"%s/",
 							UT_convertInchesToDimensionString(m_dim,
-															  (static_cast<float>(colWidths.getNthItem(i)))/1440.0));
+															  (static_cast<double>(colWidths.getNthItem(i)))/1440.0));
 	  
 			  props += propBuffer;
 		  }
@@ -4157,7 +4160,7 @@ void IE_Imp_MsWord_97::_generateParaProps(UT_String &s, const PAP * apap, wvPars
 	if (apap->lspd.fMultLinespace) {
 		UT_String_sprintf(propBuffer,
 						  "line-height:%s;",
-						  UT_convertToDimensionlessString( (static_cast<float>(apap->lspd.dyaLine) / 240), "1.1"));
+						  UT_convertToDimensionlessString( (static_cast<double>(apap->lspd.dyaLine) / 240), "1.1"));
 		s += propBuffer;
 	} else {
 		// TODO: handle exact line heights
@@ -4171,7 +4174,7 @@ void IE_Imp_MsWord_97::_generateParaProps(UT_String &s, const PAP * apap, wvPars
 	if (apap->dxaRight) {
 		UT_String_sprintf(propBuffer,
 						  "margin-right:%s;",
-						  UT_convertInchesToDimensionString(m_dim, (static_cast<float>(apap->dxaRight) / 1440)));
+						  UT_convertInchesToDimensionString(m_dim, (static_cast<double>(apap->dxaRight) / 1440)));
 		s += propBuffer;
 	}
 
@@ -4179,7 +4182,7 @@ void IE_Imp_MsWord_97::_generateParaProps(UT_String &s, const PAP * apap, wvPars
 	if (apap->dxaLeft) {
 		UT_String_sprintf(propBuffer,
 						  "margin-left:%s;",
-						  UT_convertInchesToDimensionString(m_dim, (static_cast<float>(apap->dxaLeft) / 1440)));
+						  UT_convertInchesToDimensionString(m_dim, (static_cast<double>(apap->dxaLeft) / 1440)));
 		s += propBuffer;
 	}
 
@@ -4187,7 +4190,7 @@ void IE_Imp_MsWord_97::_generateParaProps(UT_String &s, const PAP * apap, wvPars
 	if (apap->dxaLeft1) {
 		UT_String_sprintf(propBuffer,
 						  "text-indent:%s;",
-						  UT_convertInchesToDimensionString(m_dim, (static_cast<float>(apap->dxaLeft1) / 1440)));
+						  UT_convertInchesToDimensionString(m_dim, (static_cast<double>(apap->dxaLeft1) / 1440)));
 		s += propBuffer;
 	}
 
@@ -4211,7 +4214,7 @@ void IE_Imp_MsWord_97::_generateParaProps(UT_String &s, const PAP * apap, wvPars
 		for (int iTab = 0; iTab < apap->itbdMac; iTab++) {
 			propBuffer += UT_String_sprintf("%s/",
 						UT_convertInchesToDimensionString(m_dim,
-										((static_cast<float>(apap->rgdxaTab[iTab])) / 1440)));
+										((static_cast<double>(apap->rgdxaTab[iTab])) / 1440)));
 			
 			switch (apap->rgtbd[iTab].jc) {
 				case 1:

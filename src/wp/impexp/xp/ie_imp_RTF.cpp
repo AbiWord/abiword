@@ -3854,7 +3854,31 @@ bool IE_Imp_RTF::TranslateKeyword(unsigned char* pKeyword, long param, bool fPar
 		{
 			return HandleBotline(true);
 		}
-		else if (strcmp(reinterpret_cast<char*>(pKeyword), "ansi") == 0)
+		else if (strcmp(reinterpret_cast<char*>(pKeyword), "abinodiroverride") == 0)
+		{
+// this keyword will be immediately followed by either the
+// ltrch or rtlch keyword, which we need to eat up ...
+			unsigned char kwrd[MAX_KEYWORD_LEN];
+			long par = 0;
+			bool parUsed = false;
+			bool ok = true;
+			unsigned char c;
+
+// swallow "\" first
+			ok = ReadCharFromFileWithCRLF(&c);
+			if (ReadKeyword(kwrd, &par, &parUsed, MAX_KEYWORD_LEN))
+			{
+				if(!(0 == strncmp((const char*)&kwrd[0],"rtlch",MAX_KEYWORD_LEN) ||
+					 0 == strncmp((const char*)&kwrd[0],"ltrch",MAX_KEYWORD_LEN)))
+				{
+					UT_DEBUGMSG(("RTF import: keyword \\%s found where \\ltrch"
+								 " or \\rtlch expected\n", kwrd));
+				}
+			}
+			xxx_UT_DEBUGMSG(("abinoveride found - swallowed keyword %s \n",kwrd));
+			return true;
+		}
+ 		else if (strcmp(reinterpret_cast<char*>(pKeyword), "ansi") == 0)
 		{
 			// this is charset Windows-1252
 			const char *szEncoding = XAP_EncodingManager::get_instance()->charsetFromCodepage(1252);
