@@ -1021,6 +1021,16 @@ bool EV_UnixMenu::_refreshMenu(AV_View * pView, GtkWidget * wMenuRoot)
 			GtkWidget * item = (GtkWidget *) m_vecMenuWidgets.getNthItem(k);
 			UT_ASSERT(item);
 
+			bool bEnable = true;
+			if (pAction->hasGetStateFunction())
+			{
+				EV_Menu_ItemState mis = pAction->getMenuItemState(pView);
+				if (mis & EV_MIS_Gray)
+					bEnable = false;
+			}
+			gtk_widget_set_sensitive((GtkWidget *) item, bEnable);
+
+			// must have an entry for each and every layout item in the vector
 			stack.push(item);
 			break;
 		}

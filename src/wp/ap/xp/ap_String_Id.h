@@ -94,6 +94,8 @@ dcl(DLG_FR_MatchCase,			"&Match case")
 dcl(DLG_FR_FindNextButton,		"&Find Next")
 dcl(DLG_FR_ReplaceButton,		"&Replace")
 dcl(DLG_FR_ReplaceAllButton,	"Replace &All")
+dcl(DLG_FR_FinishedFind, "AbiWord has finished searching the document.")
+dcl(DLG_FR_FinishedReplace, "AbiWord has finished its search of the document and has made %d replacements.")
 
 /* Break dialog */
 dcl(DLG_Break_BreakTitle,		"Break")

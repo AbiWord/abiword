@@ -102,7 +102,7 @@ public:
 
 	void					_messageFinishedFind(void);
 	void					_messageFinishedReplace(UT_uint32 numReplaced = 0);
-	void 					_messageBox(char * message);
+	void 					_messageBox(const char * message);
 	
 	// is this used in a modeless dialog like this?
 	tAnswer					m_answer;

@@ -89,6 +89,7 @@ Kenneth MacDonald <kenny@holyrood.ed.ac.uk>     Color Printing patch
 David Mandelin <mandelin@cs.wisc.edu>
 Brian Marick <marick@rstcorp.com>       
 Lalo Martins <lalo@webcom.com>
+Marc Maurer <j.m.maurer@student.utwente.nl>
 Vincent McIntyre <Vince.McIntyre@atnf.CSIRO.AU> autoconf on Solaris 2.6
 Caolan McNamara <Caolan.McNamara@ul.ie>         Word import
 Anders Melchiorsen <postmaster@and.nospam.kampsax.k-net.dk>  GTK Window Autosize

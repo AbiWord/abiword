@@ -223,36 +223,32 @@ UT_Error PD_Document::newDocument(void)
   UT_String global_normal_awt (XAP_App::getApp()->getAbiSuiteLibDir());
   global_normal_awt += "/templates/normal.awt";
 
-  if ( UT_OK == importFile ( users_normal_awt.c_str(), IEFT_Unknown, true ) )
+  if ( UT_OK != importFile ( users_normal_awt.c_str(), IEFT_Unknown, true ) )
   {
-    return UT_OK;
-  }
-  else if (UT_OK == importFile ( global_normal_awt.c_str(), IEFT_Unknown, true ) )
-  {
-    return UT_OK;
-  }
-  else
-  {
-    UT_DEBUGMSG(("Could not load normal.awt, defaulting to a blank document\n"));
-	setDefaultPageSize();
+    if (UT_OK != importFile ( global_normal_awt.c_str(), IEFT_Unknown, true ) )
+      {
+	UT_DEBUGMSG(("Could not load normal.awt, defaulting to a blank document\n"));
 	m_pPieceTable = new pt_PieceTable(this);
 	if (!m_pPieceTable)
-	{
-		UT_DEBUGMSG(("PD_Document::newDocument -- could not construct piece table\n"));
-		return UT_NOPIECETABLE;
-	}
-
+	  {
+	    UT_DEBUGMSG(("PD_Document::newDocument -- could not construct piece table\n"));
+	    return UT_NOPIECETABLE;
+	  }
+	
 	m_pPieceTable->setPieceTableState(PTS_Loading);
-
+	
 	// add just enough structure to empty document so we can edit
-
+	
 	appendStrux(PTX_Section,NULL);
 	appendStrux(PTX_Block,NULL);
-
+	
 	m_pPieceTable->setPieceTableState(PTS_Editing);
-	_setClean();							// mark the document as not-dirty
-	return UT_OK;
-    }
+      }
+  }
+
+  setDefaultPageSize(); // set the default page size from preferences, regardless of template values
+  _setClean();							// mark the document as not-dirty
+  return UT_OK;
 }
 
 UT_Error PD_Document::saveAs(const char * szFilename, int ieft)

@@ -255,9 +255,9 @@ Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_CharFmt)
 
 	EV_Toolbar_ItemState s = EV_TIS_ZERO;
 
-        if(pView->getDocument()->areStylesLocked()) {
-            return EV_TIS_Gray;
-        }
+	if(pView->getDocument()->areStylesLocked()) {
+	  return EV_TIS_Gray;
+	}
 
 	switch (id)
 	{

@@ -277,8 +277,6 @@ bool AP_Dialog_Replace::findReplaceAll()
 	// so we save our attributes to persistent storage
 	m_didSomething = true;
 
-	bool bDoneEntireDocument = false;
-	
 	// update the view's automatic "find next" string
 	getFvView()->findSetNextString(m_findString, m_matchCase);
 	
@@ -287,26 +285,27 @@ bool AP_Dialog_Replace::findReplaceAll()
 													m_replaceString,
 													m_matchCase);
 
-	if (bDoneEntireDocument == true)
-		_messageFinishedReplace(numReplaced);
+	_messageFinishedReplace(numReplaced);
 
 	return true;
 }
 
 void AP_Dialog_Replace::_messageFinishedFind(void)
 {
-	_messageBox("AbiWord has finished searching the document.");
+  const XAP_StringSet * pSS = m_pApp->getStringSet();
+	_messageBox(pSS->getValue(AP_STRING_ID_DLG_FR_FinishedFind));
 }
 
 void AP_Dialog_Replace::_messageFinishedReplace(UT_uint32 numReplaced)
 {
 	char message[512];
-
-	sprintf(message, "AbiWord has finished its search of the document and has made %d replacements.", numReplaced);
+	const XAP_StringSet * pSS = m_pApp->getStringSet();
+	sprintf(message, pSS->getValue(AP_STRING_ID_DLG_FR_FinishedReplace), 
+		numReplaced);
 	_messageBox(message);
 }
 
-void AP_Dialog_Replace::_messageBox(char * message)
+void AP_Dialog_Replace::_messageBox(const char * message)
 {
 	getActiveFrame()->showMessageBox(message,
 								XAP_Dialog_MessageBox::b_O,

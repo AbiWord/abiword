@@ -733,7 +733,6 @@ bool EV_UnixToolbar::synthesize(void)
 					
 			case EV_TBIT_BOGUS:
 			default:
-				UT_DEBUGMSG(("FIXME: Need GTK color picker for the toolbar \n"));
 //				UT_ASSERT(0);
 				break;
 			}
@@ -914,6 +913,19 @@ bool EV_UnixToolbar::refreshToolbar(AV_View * pView, AV_ChangeMask mask)
 					//			 ((bGrayed) ? "disabled" : "enabled"),
 					//			 ((bString) ? szState : "no state")));
 				}
+				break;
+
+                case EV_TBIT_ColorFore:
+                case EV_TBIT_ColorBack:
+                {
+					bool bGrayed = EV_TIS_ShouldBeGray(tis);
+					
+					_wd * wd = (_wd *) m_vecToolbarWidgets.getNthItem(k);
+					UT_ASSERT(wd);
+					GtkCombo * item = GTK_COMBO(wd->m_widget);
+					UT_ASSERT(item);
+					gtk_widget_set_sensitive(GTK_WIDGET(item), !bGrayed);   // Disable/enable toolbar item
+                }
 				break;
 
 				case EV_TBIT_StaticLabel:

@@ -5382,7 +5382,6 @@ static bool s_doPageSetupDlg (FV_View * pView)
 	// Set first page of the dialog properties.
 	//
 	pDialog->setPageSize(pSize);
-	pDialog->setPageSize(orig_def);
 	AP_Dialog_PageSetup::Orientation orig_ori,final_ori;
 	orig_ori =  AP_Dialog_PageSetup::PORTRAIT;
 	if(pDoc->m_docPageSize.isPortrait() == false)

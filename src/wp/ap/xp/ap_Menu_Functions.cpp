@@ -624,7 +624,7 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_CharFmt)
 	const XML_Char * val  = NULL;
 
 	if(pView->getDocument()->areStylesLocked()) {
-	    return EV_MIS_Gray;
+          return EV_MIS_Gray;
 	}
 
 	switch(id)

@@ -9,7 +9,7 @@ echo ""
 ./abi-extract.pl -N hu-HU
 ./abi-extract.pl -N uk-UA 
 ./abi-extract.pl -N ca-ES 
-./abi-extract.pl -N du-NL 
+./abi-extract.pl -N nl-NL 
 ./abi-extract.pl -N id-ID 
 ./abi-extract.pl -N pl-PL 
 ./abi-extract.pl -N zh-CN 
