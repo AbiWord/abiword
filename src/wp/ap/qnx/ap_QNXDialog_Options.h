@@ -90,6 +90,9 @@ public:
 	SET_GATHER			(OtherDirectionRtl, bool);
 	SET_GATHER			(AutoSaveFile, bool);
 
+	SET_GATHER			(OtherUseContextGlyphs, bool);
+	SET_GATHER			(OtherSaveContextGlyphs, bool);
+	SET_GATHER			(OtherHebrewContextGlyphs, bool);
 	virtual void _gatherAutoSaveFilePeriod(UT_String &stRetVal);
 	virtual void _setAutoSaveFilePeriod(const UT_String &stPeriod);
 	virtual void _gatherAutoSaveFileExt(UT_String &stRetVal);
@@ -161,7 +164,10 @@ public:
 	PtWidget_t * m_wCheckWhiteTransparent;
 	PtWidget_t * m_checkbuttonShowSplash;
 
-    PtWidget_t * m_checkbuttonOtherDirectionRtl;
+        PtWidget_t * m_checkbuttonOtherDirectionRtl;
+	PtWidget_t * m_checkbuttonOtherUseContextGlyphs;
+	PtWidget_t * m_checkbuttonOtherSaveContextGlyphs;
+	PtWidget_t * m_checkbuttonOtherHebrewContextGlyphs;
 
 
 	PtWidget_t * m_buttonSave;
@@ -169,6 +175,7 @@ public:
 	PtWidget_t * m_buttonApply;
 	PtWidget_t * m_buttonOK;
 	PtWidget_t * m_buttonCancel;
+
 
 	UT_Vector	 m_vecUnits;
 

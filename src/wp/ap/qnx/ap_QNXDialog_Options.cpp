@@ -381,6 +381,13 @@ PtWidget_t* AP_QNXDialog_Options::_constructWindow ()
 	PtWidget_t *checkbuttonViewAll;
 	PtWidget_t *checkbuttonViewHidden;
 	PtWidget_t *checkbuttonViewUnprintable;
+	PtWidget_t *checkbuttonOtherUseContextGlyphs;
+	PtWidget_t *checkbuttonOtherDirectionRtl;
+	PtWidget_t *checkbuttonOtherSaveContextGlyphs;
+	PtWidget_t *checkbuttonOtherHebrewContextGlyphs;
+
+
+
 
 	PtArg_t args[10];
 	const char *item;
@@ -722,7 +729,22 @@ PtWidget_t* AP_QNXDialog_Options::_constructWindow ()
 	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING,
 		TR(pSS->getValue(AP_STRING_ID_DLG_Options_Label_DirectionRtl)), 0);
 	PtSetArg(&args[n++], Pt_ARG_WIDTH,  2 * ABI_DEFAULT_BUTTON_WIDTH, 0);
-	PtWidget_t *rtl_dominant = PtCreateWidget(PtToggleButton, vmiscgroup, n, args);
+	checkbuttonOtherDirectionRtl = PtCreateWidget(PtToggleButton, vmiscgroup, n, args);
+
+	n = 0;
+	PtSetArg(&args[n++],Pt_ARG_TEXT_STRING,
+	      TR(pSS->getValue(AP_STRING_ID_DLG_Options_Label_UseContextGlyphs)),0);
+      PtSetArg(&args[n++],Pt_ARG_WIDTH,2 * ABI_DEFAULT_BUTTON_WIDTH,0);
+      checkbuttonOtherUseContextGlyphs = PtCreateWidget(PtToggleButton,vmiscgroup,n,args);
+	n = 0;
+	PtSetArg(&args[n++],Pt_ARG_TEXT_STRING,TR(pSS->getValue(AP_STRING_ID_DLG_Options_Label_SaveContextGlyphs)),0);
+	PtSetArg(&args[n++],Pt_ARG_WIDTH,2*ABI_DEFAULT_BUTTON_WIDTH,0);
+	checkbuttonOtherSaveContextGlyphs = PtCreateWidget(PtToggleButton,vmiscgroup,n,args);
+
+	n = 0;
+	PtSetArg(&args[n++],Pt_ARG_TEXT_STRING,TR(pSS->getValue(AP_STRING_ID_DLG_Options_Label_HebrewContextGlyphs)),0);
+	PtSetArg(&args[n++],Pt_ARG_WIDTH, 2* ABI_DEFAULT_BUTTON_WIDTH,0);
+	checkbuttonOtherHebrewContextGlyphs=PtCreateWidget(PtToggleButton,vmiscgroup,n,args);
 
 
 	/*** Create the horizontal button group ***/
@@ -765,44 +787,48 @@ PtWidget_t* AP_QNXDialog_Options::_constructWindow ()
 	PtAddCallback(buttonSpellDictionary, Pt_CB_ACTIVATE, s_dict_edit_clicked, this);
 
 
-    m_windowMain = windowOptions;
-	m_notebook = notebook1 = NULL;
-	m_checkbuttonOtherDirectionRtl = rtl_dominant;
+  m_windowMain = windowOptions;
+  m_notebook = notebook1 = NULL;
 
-    m_checkbuttonSpellCheckAsType	= checkbuttonSpellCheckAsType;
-    m_checkbuttonSpellHideErrors	= checkbuttonSpellHideErrors;
-    m_checkbuttonSpellSuggest		= checkbuttonSpellSuggest;
-    m_checkbuttonSpellMainOnly		= checkbuttonSpellMainOnly;
-    m_checkbuttonSpellUppercase		= checkbuttonSpellUppercase;
-    m_checkbuttonSpellNumbers		= checkbuttonSpellNumbers;
-    m_checkbuttonSpellInternet		= checkbuttonSpellInternet;
-	m_listSpellDicts				= listSpellDicts;
-	m_listSpellDicts_menu			= listSpellDicts_menu = NULL;
-	m_buttonSpellDictionary			= buttonSpellDictionary;
-	m_buttonSpellIgnoreEdit			= buttonSpellIgnoreEdit;
-	m_buttonSpellIgnoreReset		= buttonSpellIgnoreReset;
+  m_checkbuttonOtherDirectionRtl = checkbuttonOtherDirectionRtl;
+  m_checkbuttonOtherUseContextGlyphs = checkbuttonOtherUseContextGlyphs;
+  m_checkbuttonOtherSaveContextGlyphs = checkbuttonOtherSaveContextGlyphs;
+  m_checkbuttonOtherHebrewContextGlyphs = checkbuttonOtherHebrewContextGlyphs;
 
-    m_checkbuttonPrefsAutoSave		= checkbuttonPrefsAutoSave;
-	m_comboPrefsScheme				= comboPrefsSchemes;
+  m_checkbuttonSpellCheckAsType	= checkbuttonSpellCheckAsType;
+  m_checkbuttonSpellHideErrors	= checkbuttonSpellHideErrors;
+  m_checkbuttonSpellSuggest		= checkbuttonSpellSuggest;
+  m_checkbuttonSpellMainOnly		= checkbuttonSpellMainOnly;
+  m_checkbuttonSpellUppercase		= checkbuttonSpellUppercase;
+  m_checkbuttonSpellNumbers		= checkbuttonSpellNumbers;
+  m_checkbuttonSpellInternet		= checkbuttonSpellInternet;
+  m_listSpellDicts				= listSpellDicts;
+  m_listSpellDicts_menu			= listSpellDicts_menu = NULL;
+  m_buttonSpellDictionary			= buttonSpellDictionary;
+  m_buttonSpellIgnoreEdit			= buttonSpellIgnoreEdit;
+  m_buttonSpellIgnoreReset		= buttonSpellIgnoreReset;
 
-    m_checkbuttonViewShowRuler		= checkbuttonViewRuler;
-    m_listViewRulerUnits			= listViewRulerUnit;
-    m_checkbuttonViewCursorBlink	= checkbuttonViewCursorBlink;
-    m_checkbuttonViewShowStandardBar	= checkbuttonViewStandard;
-    m_checkbuttonViewShowFormatBar	= checkbuttonViewFormat;
-    m_checkbuttonViewShowExtraBar	= checkbuttonViewExtra;
-    m_checkbuttonViewShowStatusBar	= checkbuttonViewStatusBar;
-    m_checkbuttonViewAll			= checkbuttonViewAll;
-    m_checkbuttonViewHiddenText		= checkbuttonViewHidden;
-    m_checkbuttonViewUnprintable	= checkbuttonViewUnprintable;
+  m_checkbuttonPrefsAutoSave		= checkbuttonPrefsAutoSave;
+  m_comboPrefsScheme				= comboPrefsSchemes;
 
-	m_checkbuttonShowSplash = check_splash;
+  m_checkbuttonViewShowRuler		= checkbuttonViewRuler;
+  m_listViewRulerUnits			= listViewRulerUnit;
+  m_checkbuttonViewCursorBlink	= checkbuttonViewCursorBlink;
+  m_checkbuttonViewShowStandardBar	= checkbuttonViewStandard;
+  m_checkbuttonViewShowFormatBar	= checkbuttonViewFormat;
+  m_checkbuttonViewShowExtraBar	= checkbuttonViewExtra;
+  m_checkbuttonViewShowStatusBar	= checkbuttonViewStatusBar;
+  m_checkbuttonViewAll			= checkbuttonViewAll;
+  m_checkbuttonViewHiddenText		= checkbuttonViewHidden;
+  m_checkbuttonViewUnprintable	= checkbuttonViewUnprintable;
 
-    m_buttonSave					= buttonSave;
-    m_buttonDefaults				= buttonDefaults;
-    m_buttonApply					= buttonApply;
-    m_buttonOK						= buttonOk;
-    m_buttonCancel					= buttonCancel;
+  m_checkbuttonShowSplash = check_splash;
+
+  m_buttonSave					= buttonSave;
+  m_buttonDefaults				= buttonDefaults;
+  m_buttonApply					= buttonApply;
+  m_buttonOK						= buttonOk;
+  m_buttonCancel					= buttonCancel;
 
     return windowOptions;
 }
@@ -887,6 +913,12 @@ PtWidget_t *AP_QNXDialog_Options::_lookupWidget ( tControl id )
 
 	case id_CHECK_OTHER_DEFAULT_DIRECTION_RTL:
 		return m_checkbuttonOtherDirectionRtl;
+	case id_CHECK_OTHER_USE_CONTEXT_GLYPHS:
+		return m_checkbuttonOtherUseContextGlyphs;
+	case id_CHECK_OTHER_SAVE_CONTEXT_GLYPHS:
+		return m_checkbuttonOtherSaveContextGlyphs;
+	case id_CHECK_OTHER_HEBREW_CONTEXT_GLYPHS:
+		return m_checkbuttonOtherHebrewContextGlyphs;
 
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	// prefs
@@ -1009,13 +1041,17 @@ DEFINE_GET_SET_BOOL(SpellUppercase);
 DEFINE_GET_SET_BOOL(SpellNumbers);
 DEFINE_GET_SET_BOOL(SpellInternet);
 DEFINE_GET_SET_BOOL(SmartQuotesEnable);
-DEFINE_GET_SET_BOOL(OtherDirectionRtl);
 DEFINE_GET_SET_BOOL(PrefsAutoSave);
 DEFINE_GET_SET_BOOL(ViewShowRuler);
 DEFINE_GET_SET_BOOL(ViewShowStandardBar);
 DEFINE_GET_SET_BOOL(ViewShowFormatBar);
 DEFINE_GET_SET_BOOL(ViewShowExtraBar);
 DEFINE_GET_SET_BOOL(ViewShowStatusBar);
+
+DEFINE_GET_SET_BOOL(OtherDirectionRtl);
+DEFINE_GET_SET_BOOL(OtherUseContextGlyphs);
+DEFINE_GET_SET_BOOL(OtherSaveContextGlyphs);
+DEFINE_GET_SET_BOOL(OtherHebrewContextGlyphs);
 
 /* File save options related stuff */
 DEFINE_GET_SET_BOOL(AutoSaveFile);
