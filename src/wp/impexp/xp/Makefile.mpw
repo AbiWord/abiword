@@ -38,6 +38,7 @@ TARGETS = "ie_exp.o" ¶
 		   "ie_exp_Text.o" ¶
 		   "ie_exp_UTF8.o" ¶
 		   "ie_exp_WML.o" ¶
+		   "ie_exp_ISCII.o" ¶
 		   "ie_imp.o" ¶
 		   "ie_imp_AbiWord_1.o" ¶
 		   "ie_imp_ClarisWorks.o" ¶
@@ -53,6 +54,7 @@ TARGETS = "ie_exp.o" ¶
 		   "ie_imp_WML.o" ¶
 		   "ie_imp_XHTML.o" ¶
 		   "ie_imp_XML.o" ¶
+		   "ie_imp_ISCII.o" ¶
 		   "ie_impexp_MSWrite.o" ¶
 		   "ie_impGraphic.o" ¶
 		   "ie_impGraphic_BMP.o" ¶

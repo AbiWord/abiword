@@ -17,24 +17,41 @@
  * 02111-1307, USA.
  */
 
+#ifndef IE_IMP_ISCII_H
+#define IE_IMP_ISCII_H
 
-#ifndef IE_IMP_MIF_H
-#define IE_IMP_MIF_H
+#include "ie_imp_Text.h"
 
-#include <stdio.h>
-#include "ie_imp.h"
-#include"ut_mbtowc.h"
+#define ISCII_INV	0xD9	// Invisible character - acts like Unicode ZWJ
+#define ISCII_NUKTA	0xE9	// A Nukta following a character can modify its meaning
+#define ISCII_ATTR	0xEF	// Attribute - meaning?
+#define ISCII_EXT	0xF0	// EXT preceeding a character can modify its meaning
+
 class PD_Document;
 
-// The importer/reader for MIF files
+// ISCII file stream class
 
-class IE_Imp_MIF_Sniffer : public IE_ImpSniffer
+class ImportISCIIStreamFile : public ImportStreamFile
+{
+public:
+	ImportISCIIStreamFile(FILE *pFile);
+	~ImportISCIIStreamFile() {}
+protected:
+	virtual bool getRawChar(UT_UCSChar &b);
+private:
+	unsigned char m_cLookAhead;
+	bool m_bNeedByte;
+};
+
+// The importer/reader for ISCII files.
+
+class IE_Imp_ISCII_Sniffer : public IE_ImpSniffer
 {
 	friend class IE_Imp;
 
 public:
-	IE_Imp_MIF_Sniffer() {}
-	virtual ~IE_Imp_MIF_Sniffer() {}
+	IE_Imp_ISCII_Sniffer() {}
+	virtual ~IE_Imp_ISCII_Sniffer() {}
 
 	virtual bool recognizeContents (const char * szBuf, 
 									UT_uint32 iNumbytes);
@@ -47,29 +64,14 @@ public:
 
 };
 
-class IE_Imp_MIF : public IE_Imp
+class IE_Imp_ISCII : public IE_Imp_Text
 {
 public:
-	IE_Imp_MIF(PD_Document * pDocument);
-	~IE_Imp_MIF();
+	IE_Imp_ISCII(PD_Document * pDocument);
+	virtual ~IE_Imp_ISCII() {};
 
-	virtual UT_Error	importFile(const char * szFilename);
-	virtual void		pasteFromBuffer(PD_DocumentRange * pDocRange,
-										unsigned char * pData, UT_uint32 lenData, const char * szEncoding = 0);
-
-	static bool		RecognizeContents(const char * szBuf, UT_uint32 iNumbytes);
-	static bool		RecognizeSuffix(const char * szSuffix);
-	static UT_Error		StaticConstructor(PD_Document * pDocument,
-										  IE_Imp ** ppie);
-	static bool		GetDlgLabels(const char ** pszDesc,
-									 const char ** pszSuffixList,
-									 IEFileType * ft);
-	static bool 		SupportsFileType(IEFileType ft);
-	
 protected:
-	UT_Error			_parseFile(FILE * fp);
-	UT_Error			_writeHeader(FILE * fp);
-	UT_Mbtowc 		m_Mbtowc;
+	virtual UT_Error	_constructStream(ImportStream *& pStream, FILE * fp);
 };
 
-#endif /* IE_IMP_MIF_H */
+#endif /* IE_IMP_ISCII_H */

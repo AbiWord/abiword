@@ -66,6 +66,8 @@ public:
 	bool handleModelessDialogMessage( MSG * msg );
 
 protected:
+	bool					_pasteFormatFromClipboard(PD_DocumentRange * pDocRange, const char * szFormat,
+													 const char * szType, bool bWide);
 	XAP_StringSet *			m_pStringSet;
 	AP_Win32Clipboard *		m_pClipboard;
 };

@@ -41,7 +41,8 @@
  */
 ImportStream::ImportStream() :
 	m_ucsLookAhead(0),
-	m_bEOF(false)
+	m_bEOF(false),
+	m_bRaw(false)
 {
 }
 
@@ -49,12 +50,16 @@ ImportStream::ImportStream() :
   Initialize ImportStream
  \param szEncoding Text encoding to convert from
 
- Sets encoding and prefetches lookahead character
+ Sets encoding and prefetches lookahead character.
+ Set to 0 to handle raw bytes.
  */
 bool ImportStream::init(const char *szEncoding)
 {
-	UT_ASSERT(szEncoding);
-	m_Mbtowc.setInCharset(szEncoding);
+	if (szEncoding)
+		m_Mbtowc.setInCharset(szEncoding);
+	else
+		m_bRaw = true;
+
 	UT_UCSChar dummy;
 	return getChar(dummy);
 }
@@ -93,6 +98,11 @@ bool ImportStream::getRawChar(UT_UCSChar &ucs)
 		if (!_getByte(b))
 		{
 			m_bEOF = true;
+			break;
+		}
+		else if (m_bRaw)
+		{
+			wc = b;
 			break;
 		}
 
@@ -146,21 +156,6 @@ bool ImportStreamClipboard::_getByte(unsigned char &b)
 	b = *m_p++;
 	return true;
 }
-
-// Helper class so we can parse files and clipboard with same code
-
-class Inserter
-{
-public:
-	Inserter(PD_Document * pDocument);
-	Inserter(PD_Document * pDocument, PT_DocPosition dPos);
-	bool insertBlock();
-	bool insertSpan(UT_GrowBuf &b);
-private:
-	PD_Document * m_pDocument;
-	bool m_bClipboard;
-	PT_DocPosition m_dPos;
-};
 
 /*!
   Construct Inserter helper class
@@ -245,13 +240,9 @@ bool IE_Imp_Text_Sniffer::recognizeContents(const char * szBuf,
 	bSuccess = _recognizeUTF8(szBuf, iNumbytes);
 
 	if (bSuccess == false)
-	{
 		if (_recognizeUCS2(szBuf, iNumbytes, false) != UE_NotUCS)
-		{
 			bSuccess = true;
-		}
-	}
-	
+
 	return bSuccess;
 }
 
@@ -487,10 +478,11 @@ UT_Error IE_Imp_Text::importFile(const char * szFilename)
 	// Call encoding dialog
 	if (!m_bIsEncoded || _doEncodingDialog(m_szEncoding))
 	{
-		ImportStreamFile stream(fp);
+		ImportStream *pStream = 0;
+		X_CleanupIfError(error,_constructStream(pStream,fp));
 		Inserter ins(m_pDocument);
 		X_CleanupIfError(error,_writeHeader(fp));
-		X_CleanupIfError(error,_parseStream(stream,ins));
+		X_CleanupIfError(error,_parseStream(pStream,ins));
 		error = UT_OK;
 	}
 	else
@@ -562,9 +554,7 @@ UT_Error IE_Imp_Text::_recognizeEncoding(FILE * fp)
 UT_Error IE_Imp_Text::_recognizeEncoding(const char *szBuf, UT_uint32 iNumbytes)
 {
 	if (IE_Imp_Text_Sniffer::_recognizeUTF8(szBuf, iNumbytes))
-	{
 		_setEncoding("UTF-8");
-	}
 	else
 	{
 		IE_Imp_Text_Sniffer::UCS2_Endian eUcs2 = IE_Imp_Text_Sniffer::UE_NotUCS;
@@ -578,6 +568,18 @@ UT_Error IE_Imp_Text::_recognizeEncoding(const char *szBuf, UT_uint32 iNumbytes)
 	}
 
 	return UT_OK;
+}
+
+/*!
+  Create a stream of the appropriate type
+ \param pStream Pointer to created stream
+ \param fp File to construct stream from
+
+ Override this virtual function to derive from the text importer
+ */
+UT_Error IE_Imp_Text::_constructStream(ImportStream *& pStream, FILE * fp)
+{
+	return (pStream = new ImportStreamFile(fp)) ? UT_OK : UT_IE_NOMEMORY;
 }
 
 /*!
@@ -600,14 +602,16 @@ UT_Error IE_Imp_Text::_writeHeader(FILE * /* fp */)
 
  This code is used for both files and the clipboard
  */
-UT_Error IE_Imp_Text::_parseStream(ImportStream & stream, Inserter & ins)
+UT_Error IE_Imp_Text::_parseStream(ImportStream * pStream, Inserter & ins)
 {
+	UT_ASSERT(pStream);
+
 	UT_GrowBuf gbBlock(1024);
 	UT_UCSChar c;
 
-	stream.init(m_szEncoding);
+	pStream->init(m_szEncoding);
 
-	while (stream.getChar(c))
+	while (pStream->getChar(c))
 	{
 		// TODO We should switch fonts when we encounter
 		// TODO characters from different scripts
@@ -631,7 +635,7 @@ UT_Error IE_Imp_Text::_parseStream(ImportStream & stream, Inserter & ins)
 			X_ReturnNoMemIfError(gbBlock.append(&c,1));
 			break;
 		}
-	} 
+	}
 
 	if (gbBlock.getLength() > 0)
 		X_ReturnNoMemIfError(ins.insertSpan(gbBlock));
@@ -686,20 +690,20 @@ bool IE_Imp_Text::_doEncodingDialog(const char *szEncoding)
 }
 
 /*!
-  Set exporter's encoding and related members
+  Set importer's encoding and related members
  \param szEncoding Encoding to export file into
 
- Decides endian and BOM policy based on encoding
+ Decides endian and BOM policy based on encoding.
+ Set to 0 to handle raw bytes.
+ This function should be identical to the one in IE_Exp_Text.
  */
 void IE_Imp_Text::_setEncoding(const char *szEncoding)
 {
-	UT_ASSERT(szEncoding);
-
 	m_szEncoding = szEncoding;
 
 	// TODO Should BOM use be a user pref?
 	// TODO Does Mac OSX prefer BOMs?
-	if (!strcmp(m_szEncoding,XAP_EncodingManager::get_instance()->getUCS2LEName()))
+	if (szEncoding && !strcmp(szEncoding,XAP_EncodingManager::get_instance()->getUCS2LEName()))
 	{
 		m_bIs16Bit = true;
 		m_bBigEndian = false;
@@ -709,7 +713,7 @@ void IE_Imp_Text::_setEncoding(const char *szEncoding)
 		m_bUseBOM = false;
 #endif
 	}
-	else if (!strcmp(m_szEncoding,XAP_EncodingManager::get_instance()->getUCS2BEName()))
+	else if (szEncoding && !strcmp(szEncoding,XAP_EncodingManager::get_instance()->getUCS2BEName()))
 	{
 		m_bIs16Bit = true;
 		m_bBigEndian = true;
@@ -740,17 +744,21 @@ void IE_Imp_Text::_setEncoding(const char *szEncoding)
 // TODO always interpreted using the system default encoding which can be wrong.
 
 void IE_Imp_Text::pasteFromBuffer(PD_DocumentRange * pDocRange,
-								  unsigned char * pData, UT_uint32 lenData)
+								  unsigned char * pData, UT_uint32 lenData,
+								  const char *szEncoding)
 {
 	UT_ASSERT(m_pDocument == pDocRange->m_pDoc);
 	UT_ASSERT(pDocRange->m_pos1 == pDocRange->m_pos2);
 
 	// Attempt to guess whether we're pasting 8 bit or unicode text
-	_recognizeEncoding((const char *)pData, lenData);
+	if (szEncoding)
+		_setEncoding(szEncoding);
+	else
+		_recognizeEncoding((const char *)pData, lenData);
 
 	ImportStreamClipboard stream(pData, lenData);
 	Inserter ins(m_pDocument, pDocRange->m_pos1);
 
-	_parseStream(stream,ins);
+	_parseStream(&stream, ins);
 }
 

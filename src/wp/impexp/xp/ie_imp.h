@@ -97,7 +97,7 @@ public:
 	virtual ~IE_Imp();
 	virtual UT_Error	importFile(const char * szFilename) = 0;
 	virtual void		pasteFromBuffer(PD_DocumentRange * pDocRange,
-						unsigned char * pData, UT_uint32 lenData) = 0;
+						unsigned char * pData, UT_uint32 lenData, const char * szEncoding = 0) = 0;
 
 protected:
 	PD_Document *		m_pDocument;

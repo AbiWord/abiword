@@ -49,7 +49,8 @@ public:
     virtual UT_Error	importFile(const char * szFilename);
     virtual void	pasteFromBuffer(PD_DocumentRange * pDocRange,
 					unsigned char * pData, 
-					UT_uint32 lenData);
+					UT_uint32 lenData,
+					const char * szEncoding = 0);
 
     // the following are public only so that the
     // XML parser callback routines can access them.

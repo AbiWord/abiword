@@ -60,38 +60,15 @@
 #include "fp_Run.h"
 #include "ut_Win32OS.h"
 
+#include "ie_impexp_Register.h"
+
 #include "ie_exp.h"
-#include "ie_exp_AbiWord_1.h"
-#include "ie_exp_AWT.h"
-#include "ie_exp_GZipAbiWord.h"
-#include "ie_exp_MsWord_97.h"
-#include "ie_exp_MIF.h"
 #include "ie_exp_RTF.h"
 #include "ie_exp_Text.h"
-#include "ie_exp_HRText.h"
-#include "ie_exp_HTML.h"
-#include "ie_exp_LaTeX.h"
-#include "ie_exp_PalmDoc.h"
-#include "ie_exp_WML.h"
-#include "ie_exp_DocBook.h"
-#include "ie_exp_Psion.h"
-#include "ie_exp_Applix.h"
-#include "ie_exp_XSL-FO.h"
 
 #include "ie_imp.h"
-#include "ie_imp_AbiWord_1.h"
-#include "ie_imp_GZipAbiWord.h"
-#include "ie_imp_MsWord_97.h"
 #include "ie_imp_RTF.h"
 #include "ie_imp_Text.h"
-#include "ie_imp_WML.h"
-#include "ie_imp_GraphicAsDocument.h"
-#include "ie_imp_XHTML.h"
-#include "ie_imp_DocBook.h"
-#include "ie_imp_PalmDoc.h"
-#include "ie_imp_Psion.h"
-#include "ie_imp_XSL-FO.h"
-#include "ie_imp_Applix.h"
 
 /*****************************************************************/
 
@@ -177,43 +154,7 @@ bool AP_Win32App::initialize(void)
 	//////////////////////////////////////////////////////////////////
 	// Initialize the importers/exporters
 	//////////////////////////////////////////////////////////////////
-	{
-		IE_Imp::registerImporter(new IE_Imp_AbiWord_1_Sniffer ());
-		IE_Imp::registerImporter(new IE_Imp_Applix_Sniffer ());
-		IE_Imp::registerImporter(new IE_Imp_DocBook_Sniffer ());
-		IE_Imp::registerImporter(new IE_Imp_MsWord_97_Sniffer ());
-		IE_Imp::registerImporter(new IE_Imp_XSL_FO_Sniffer ());
-		IE_Imp::registerImporter(new IE_Imp_XHTML_Sniffer ());
-		IE_Imp::registerImporter(new IE_Imp_PalmDoc_Sniffer ());
-		IE_Imp::registerImporter(new IE_Imp_Psion_TextEd_Sniffer ());
-		IE_Imp::registerImporter(new IE_Imp_Psion_Word_Sniffer ());
-		IE_Imp::registerImporter(new IE_Imp_RTF_Sniffer ());
-		IE_Imp::registerImporter(new IE_Imp_Text_Sniffer ());
-		IE_Imp::registerImporter(new IE_Imp_EncodedText_Sniffer ());
-		IE_Imp::registerImporter(new IE_Imp_WML_Sniffer ());
-		IE_Imp::registerImporter(new IE_Imp_GZipAbiWord_Sniffer ());
-
-		IE_Exp::registerExporter(new IE_Exp_AbiWord_1_Sniffer ());
-		IE_Exp::registerExporter(new IE_Exp_AWT_Sniffer ());
-		IE_Exp::registerExporter(new IE_Exp_Applix_Sniffer ());
-		IE_Exp::registerExporter(new IE_Exp_DocBook_Sniffer ());
-#ifdef DEBUG
-		IE_Exp::registerExporter(new IE_Exp_MsWord_97_Sniffer ());
-#endif	
-		IE_Exp::registerExporter(new IE_Exp_XSL_FO_Sniffer ());
-		IE_Exp::registerExporter(new IE_Exp_HTML_Sniffer ());
-		IE_Exp::registerExporter(new IE_Exp_LaTeX_Sniffer ());
-		IE_Exp::registerExporter(new IE_Exp_PalmDoc_Sniffer ());
-		IE_Exp::registerExporter(new IE_Exp_Psion_TextEd_Sniffer ());
-		IE_Exp::registerExporter(new IE_Exp_Psion_Word_Sniffer ());
-		IE_Exp::registerExporter(new IE_Exp_RTF_Sniffer ());
-		IE_Exp::registerExporter(new IE_Exp_RTF_attic_Sniffer ());
-		IE_Exp::registerExporter(new IE_Exp_Text_Sniffer ());
-		IE_Exp::registerExporter(new IE_Exp_EncodedText_Sniffer ());
-		IE_Exp::registerExporter(new IE_Exp_HRText_Sniffer ());
-		IE_Exp::registerExporter(new IE_Exp_WML_Sniffer ());
-		IE_Exp::registerExporter(new IE_Exp_GZipAbiWord_Sniffer ());
-	}
+	IE_ImpExp_RegisterXP ();
 
 	//////////////////////////////////////////////////////////////////
 	// initializes the spell checker.
@@ -500,77 +441,59 @@ void AP_Win32App::pasteFromClipboard(PD_DocumentRange * pDocRange, bool bUseClip
 	// right.  Oh, and the value returned by GlobalSize() varies
 	// from call-to-call on the same object.... sigh.
 
-	// TODO These macros should probably be functions now...
-
-#define TRY_TO_PASTE_IN_FORMAT(fmt,type)							\
-	do {															\
-		HANDLE hData;												\
-		hData = m_pClipboard->getHandleInFormat( fmt );				\
-		if (hData)													\
-		{															\
-			unsigned char * pData = (unsigned char *)GlobalLock(hData);				\
-			UT_DEBUGMSG(("Paste: [fmt %s][hdata 0x%08lx][pData 0x%08lx]\n",			\
-						 ##fmt, hData, pData));						\
-			UT_uint32 iSize = GlobalSize(hData);					\
-			UT_uint32 iStrLen = strlen((const char *)pData);		\
-			UT_uint32 iLen = MyMin(iSize,iStrLen);					\
-																	\
-			type * pImp = new type (pDocRange->m_pDoc);				\
-			if (pImp)												\
-			{														\
-				pImp->pasteFromBuffer(pDocRange,pData,iLen);		\
-				delete pImp;										\
-			}														\
-																	\
-			GlobalUnlock(hData);									\
-			goto MyEnd;												\
-		}															\
-	} while (0)
-
-#define TRY_TO_PASTE_IN_FORMAT_WIDE(fmt,type)						\
-	do {															\
-		HANDLE hData;												\
-		hData = m_pClipboard->getHandleInFormat( fmt );				\
-		if (hData)													\
-		{															\
-			unsigned char * pData = (unsigned char *)GlobalLock(hData);				\
-			UT_DEBUGMSG(("Paste: [fmt %s][hdata 0x%08lx][pData 0x%08lx]\n",			\
-						 ##fmt, hData, pData));						\
-			UT_uint32 iSize = GlobalSize(hData);					\
-			UT_uint32 iStrLen = wcslen((const wchar_t *)pData) * 2;	\
-			UT_uint32 iLen = MyMin(iSize,iStrLen);					\
-																	\
-			type * pImp = new type (pDocRange->m_pDoc);				\
-			if (pImp)												\
-			{														\
-				pImp->pasteFromBuffer(pDocRange,pData,iLen);		\
-				delete pImp;										\
-			}														\
-																	\
-			GlobalUnlock(hData);									\
-			goto MyEnd;												\
-		}															\
-	} while (0)
-
-
 	if (!m_pClipboard->openClipboard())			// try to lock the clipboard
 		return;
 	
 	{
 		// TODO Paste the most detailed version unless user overrides.
 		// TODO decide if we need to support .ABW on the clipboard.
-		if (bHonorFormatting)
-			TRY_TO_PASTE_IN_FORMAT(AP_CLIPBOARD_RTF, IE_Imp_RTF);
-		TRY_TO_PASTE_IN_FORMAT_WIDE(AP_CLIPBOARD_TEXTPLAIN_UCS2, IE_Imp_Text);
-		TRY_TO_PASTE_IN_FORMAT(AP_CLIPBOARD_TEXTPLAIN_8BIT, IE_Imp_Text);
-		
-		// TODO figure out what to do with an image and other formats....
-		UT_DEBUGMSG(("PasteFromClipboard: TODO support this format..."));
+		if (!((bHonorFormatting && _pasteFormatFromClipboard(pDocRange, AP_CLIPBOARD_RTF, ".rtf", false)) ||
+			_pasteFormatFromClipboard(pDocRange, AP_CLIPBOARD_TEXTPLAIN_UCS2, ".txt", true) ||
+			_pasteFormatFromClipboard(pDocRange, AP_CLIPBOARD_TEXTPLAIN_8BIT, ".txt", false)))
+		{
+			// TODO figure out what to do with an image and other formats....
+			UT_DEBUGMSG(("PasteFromClipboard: TODO support this format..."));
+		}
 	}
 
-MyEnd:
 	m_pClipboard->closeClipboard();				// release clipboard lock
 	return;
+}
+
+bool AP_Win32App::_pasteFormatFromClipboard(PD_DocumentRange * pDocRange, const char * szFormat,
+											const char * szType, bool bWide)
+{
+	HANDLE hData;
+	bool bSuccess = false;
+
+	if (hData = m_pClipboard->getHandleInFormat(szFormat))
+	{
+		unsigned char * pData = static_cast<unsigned char *>(GlobalLock(hData));
+		UT_DEBUGMSG(("Paste: [fmt %s][hdata 0x%08lx][pData 0x%08lx]\n",
+					 szFormat, hData, pData));
+		UT_uint32 iSize = GlobalSize(hData);
+		UT_uint32 iStrLen = bWide
+			? wcslen(reinterpret_cast<const wchar_t *>(pData)) * 2
+			: strlen(reinterpret_cast<const char *>(pData));
+		UT_uint32 iLen = MyMin(iSize,iStrLen);
+
+		IE_Imp * pImp = 0;
+		IE_Imp::constructImporter(pDocRange->m_pDoc, 0, IE_Imp::fileTypeForSuffix(szType), &pImp, 0);
+		if (pImp)
+		{
+			const char * szEncoding = 0;
+			if (bWide)
+				szEncoding = XAP_EncodingManager::get_instance()->getUCS2LEName();
+			else
+				; // TODO Get code page using CF_LOCALE
+			pImp->pasteFromBuffer(pDocRange,pData,iLen,szEncoding);
+			delete pImp;
+		}
+
+		GlobalUnlock(hData);
+		bSuccess = true;
+	}
+	return bSuccess;
 }
 
 bool AP_Win32App::canPasteFromClipboard(void)

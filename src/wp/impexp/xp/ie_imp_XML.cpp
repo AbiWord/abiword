@@ -499,7 +499,7 @@ const XML_Char * IE_Imp_XML::_getXMLPropValue(const XML_Char *name,
 }
 
 void IE_Imp_XML::pasteFromBuffer(PD_DocumentRange * pDocRange,
-				       unsigned char * pData, UT_uint32 lenData)
+				       unsigned char * pData, UT_uint32 lenData, const char * szEncoding)
 {
 	UT_ASSERT(UT_NOT_IMPLEMENTED);
 }

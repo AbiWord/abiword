@@ -98,6 +98,7 @@ PLATFORM_OBJS +=	$(OBJDIR)/xap_$(ABI_FE)$(ABI_GNOME_PREFIX)App.$(OBJ_SUFFIX)		\
 			$(OBJDIR)/xap_$(ABI_FE)$(ABI_GNOME_PREFIX)Dlg_PrintPreview.$(OBJ_SUFFIX) \
 			$(OBJDIR)/xap_$(ABI_FE)$(ABI_GNOME_PREFIX)Dlg_Language.$(OBJ_SUFFIX)    \
 			$(OBJDIR)/xap_$(ABI_FE)$(ABI_GNOME_PREFIX)Dlg_Zoom.$(OBJ_SUFFIX)	\
+			$(OBJDIR)/xap_$(ABI_FE)$(ABI_GNOME_PREFIX)Dlg_Encoding.$(OBJ_SUFFIX)    \
 			$(OBJDIR)/xap_$(ABI_FE)$(ABI_GNOME_PREFIX)Frame.$(OBJ_SUFFIX)           \
 			$(OBJDIR)/xap_$(ABI_FE)$(ABI_GNOME_PREFIX)PrintGraphics.$(OBJ_SUFFIX)
 

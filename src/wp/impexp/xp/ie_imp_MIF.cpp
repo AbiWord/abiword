@@ -197,7 +197,7 @@ UT_Error IE_Imp_MIF::_parseFile(FILE * fp)
 /*****************************************************************/
 
 void IE_Imp_MIF::pasteFromBuffer(PD_DocumentRange * pDocRange,
-								  unsigned char * pData, UT_uint32 lenData)
+								  unsigned char * pData, UT_uint32 lenData, const char * szEncoding)
 {
 	return;
 }

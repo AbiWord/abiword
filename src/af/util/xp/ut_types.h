@@ -130,6 +130,7 @@ typedef	UT_sint32		UT_Error;
 #define UCS_LINESEP		((UT_UCSChar)0x2028)			/* Unicode line separator */
 #define UCS_PARASEP		((UT_UCSChar)0x2029)			/* Unicode paragraph separator */
 #define UCS_BOM			((UT_UCSChar)0xFEFF)			/* Byte order mark */
+#define UCS_REPLACECHAR	((UT_UCSChar)0xFFFD)
 
 /* Note: the following are our interpretations, not Unicode's */
 #define UCS_FIELDSTART		((UT_UCSChar)0xFFFE)

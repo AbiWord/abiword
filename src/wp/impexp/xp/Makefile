@@ -42,6 +42,7 @@ CPPSRCS=		ie_impexp_Register.cpp			\
 			ie_exp_Psion.cpp			\
 			ie_exp_MIF.cpp				\
 			ie_exp_XSL-FO.cpp			\
+			ie_exp_ISCII.cpp			\
 			ie_imp.cpp				\
 			ie_imp_XML.cpp				\
 			ie_imp_AbiWord_1.cpp			\
@@ -61,7 +62,8 @@ CPPSRCS=		ie_impexp_Register.cpp			\
 			ie_impGraphic_PNG.cpp			\
 			ie_impGraphic_SVG.cpp			\
 			ie_impGraphic_BMP.cpp			\
-			ie_imp_Psion.cpp
+			ie_imp_Psion.cpp				\
+			ie_imp_ISCII.cpp
 
 
 LIBRARY_NAME=		AbiImpExp

@@ -438,7 +438,7 @@ UT_Error IE_Imp_MsWord_97::importFile(const char * szFilename)
 }
 
 void IE_Imp_MsWord_97::pasteFromBuffer (PD_DocumentRange *, 
-										unsigned char *, unsigned int)
+										unsigned char *, unsigned int, const char *)
 {
 	// nada
 }

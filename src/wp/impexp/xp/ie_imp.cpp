@@ -160,25 +160,34 @@ IEFileType IE_Imp::fileTypeForSuffix(const char * szSuffix)
 	
 }
 
+/*! 
+  Construct an importer of the right type.
+ \param pDocument Document
+ \param szFilename Name of file - optional
+ \param ieft Desired filetype - pass IEFT_Unknown for best guess
+ \param ppie Pointer to return importer in
+ \param pieft Pointer to fill in actual filetype
+
+ Caller is responsible for deleting the importer object
+ when finished with it.
+*/
 UT_Error IE_Imp::constructImporter(PD_Document * pDocument,
 								   const char * szFilename,
 								   IEFileType ieft,
 								   IE_Imp ** ppie,
 								   IEFileType * pieft)
 {
-	// construct an importer of the right type.
-	// caller is responsible for deleting the importer object
-	// when finished with it.
+	bool bUseGuesswork = (ieft != IEFT_Unknown);
 	
 	UT_ASSERT(pDocument);
-	UT_ASSERT(szFilename && *szFilename);
+	UT_ASSERT(ieft != IEFT_Unknown || (szFilename && *szFilename));
 	UT_ASSERT(ppie);
 
 	// no filter will support IEFT_Unknown, so we try to detect
 	// from the contents of the file or the filename suffix
 	// the importer to use and assign that back to ieft.
 	// Give precedence to the file contents
-	if (ieft == IEFT_Unknown)
+	if (ieft == IEFT_Unknown && szFilename && *szFilename)
 	{
 		char szBuf[4096];  // 4096 ought to be enough
 		int iNumbytes;
@@ -191,7 +200,7 @@ UT_Error IE_Imp::constructImporter(PD_Document * pDocument,
 			ieft = IE_Imp::fileTypeForContents(szBuf, iNumbytes);
 		}
 	}
-	if (ieft == IEFT_Unknown)
+	if (ieft == IEFT_Unknown && szFilename && *szFilename)
 	{
 		ieft = IE_Imp::fileTypeForSuffix(UT_pathSuffix(szFilename));
 	}
@@ -243,8 +252,13 @@ UT_Error IE_Imp::constructImporter(PD_Document * pDocument,
 	// type of file we're supposed to be reading.
 	// assume it is our format and try to read it.
 	// if that fails, just give up.
-	*ppie = new IE_Imp_AbiWord_1(pDocument);
-	return ((*ppie) ? UT_OK : UT_IE_NOMEMORY);
+	if (bUseGuesswork)
+	{
+		*ppie = new IE_Imp_AbiWord_1(pDocument);
+		return ((*ppie) ? UT_OK : UT_IE_NOMEMORY);
+	}
+	else
+		return UT_ERROR;
 }
 
 bool IE_Imp::enumerateDlgLabels(UT_uint32 ndx,

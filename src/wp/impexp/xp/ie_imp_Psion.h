@@ -42,7 +42,8 @@ public:
 	virtual UT_Error	importFile(const char * szFilename);
 	virtual void        pasteFromBuffer(PD_DocumentRange * pDocRange,
 	                                    unsigned char * pData, 
-	                                    UT_uint32 lenData);
+	                                    UT_uint32 lenData,
+										const char * szEncoding = 0);
 
 protected:
 		bool			getCharacterAttributes(psiconv_character_layout layout, UT_ByteBuf *props);

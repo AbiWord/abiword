@@ -353,7 +353,7 @@ UT_Error IE_Imp_PalmDoc::_parseFile(FILE * m_pdfp)
 /*****************************************************************/
 
 void IE_Imp_PalmDoc::pasteFromBuffer(PD_DocumentRange * pDocRange,
-				     unsigned char * pData, UT_uint32 lenData)
+				     unsigned char * pData, UT_uint32 lenData, const char * szEncoding)
 {
 }
 

@@ -4148,7 +4148,7 @@ bool IE_Imp_RTF::_appendField (const XML_Char *xmlField)
 //////////////////////////////////////////////////////////////////
 
 void IE_Imp_RTF::pasteFromBuffer(PD_DocumentRange * pDocRange,
-								 unsigned char * pData, UT_uint32 lenData)
+								 unsigned char * pData, UT_uint32 lenData, const char * /* szEncoding */)
 {
 	UT_ASSERT(m_pDocument == pDocRange->m_pDoc);
 	UT_ASSERT(pDocRange->m_pos1 == pDocRange->m_pos2);

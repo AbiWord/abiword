@@ -913,7 +913,7 @@ UT_Error IE_Imp_Psion::readParagraphs(psiconv_text_and_layout psiontext,
 }
 
 void IE_Imp_Psion::pasteFromBuffer(PD_DocumentRange * pDocRange,
-                                   unsigned char * pData, UT_uint32 lenData)
+                                   unsigned char * pData, UT_uint32 lenData, const char * szEncoding)
 {
 	UT_ASSERT(UT_NOT_IMPLEMENTED);
 }

@@ -61,7 +61,8 @@ public:
 	virtual UT_Error	importFile(const char * szFilename);
 	virtual void		pasteFromBuffer(PD_DocumentRange * pDocRange,
 						unsigned char * pData, 
-						UT_uint32 lenData);
+						UT_uint32 lenData,
+						const char * szEncoding = 0);
 	
 protected:
 	UT_Error			_parseFile(FILE * fp);

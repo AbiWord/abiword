@@ -710,7 +710,7 @@ void IE_Imp_Applix::_applixPageBreak (const char * /*buf*/, size_t /*len*/)
 /*****************************************************************/
 
 void IE_Imp_Applix::pasteFromBuffer(PD_DocumentRange * pDocRange,
-				    unsigned char * pData, UT_uint32 lenData)
+				    unsigned char * pData, UT_uint32 lenData, const char * szEncoding)
 {
 	return;
 }

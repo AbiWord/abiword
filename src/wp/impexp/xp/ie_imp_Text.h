@@ -23,8 +23,71 @@
 
 #include <stdio.h>
 #include "ie_imp.h"
-#include"ut_mbtowc.h"
-class PD_Document;
+#include "ut_mbtowc.h"
+#include "pd_Document.h"
+
+// Stream class can be File or Clipboard
+
+class ImportStream
+{
+public:
+	ImportStream();
+	virtual ~ImportStream() {}
+	bool init(const char *szEncoding);
+	bool getChar(UT_UCSChar &b);
+	UT_UCSChar peekChar() { return m_ucsLookAhead; }
+protected:
+	virtual bool _getByte(unsigned char &b) = 0;
+	virtual bool getRawChar(UT_UCSChar &b);
+	UT_Mbtowc m_Mbtowc;
+	UT_UCSChar m_ucsLookAhead;
+	bool m_bEOF;
+	bool m_bRaw;
+};
+
+// File stream class
+
+class ImportStreamFile : public ImportStream
+{
+public:
+	ImportStreamFile(FILE *pFile);
+	~ImportStreamFile() {}
+	bool getChar();
+protected:
+	bool _getByte(unsigned char &b);
+private:
+	FILE *m_pFile;
+};
+
+// Clipboard stream class
+
+class ImportStreamClipboard : public ImportStream
+{
+public:
+	ImportStreamClipboard(unsigned char *pClipboard, UT_uint32 iLength);
+	~ImportStreamClipboard() {};
+	bool getChar();
+protected:
+	bool _getByte(unsigned char &b);
+private:
+	unsigned char *m_p;
+	unsigned char *m_pEnd;
+};
+
+// Helper class so we can parse files and clipboard with same code
+
+class Inserter
+{
+public:
+	Inserter(PD_Document * pDocument);
+	Inserter(PD_Document * pDocument, PT_DocPosition dPos);
+	bool insertBlock();
+	bool insertSpan(UT_GrowBuf &b);
+private:
+	PD_Document * m_pDocument;
+	bool m_bClipboard;
+	PT_DocPosition m_dPos;
+};
 
 // The importer/reader for Plain Text Files.
 
@@ -37,7 +100,7 @@ public:
 	IE_Imp_Text_Sniffer() {}
 	virtual ~IE_Imp_Text_Sniffer() {}
 
-	virtual bool recognizeContents (const char * szBuf, 
+	virtual bool recognizeContents (const char * szBuf,
 									UT_uint32 iNumbytes);
 	virtual bool recognizeSuffix (const char * szSuffix);
 	virtual bool getDlgLabels (const char ** szDesc,
@@ -54,51 +117,6 @@ protected:
 	static UCS2_Endian _recognizeUCS2 (const char * szBuf,
 									   UT_uint32 iNumbytes,
 									   bool bDeep);
-};
-
-// Stream class can be File or Clipboard
-
-class ImportStream
-{
-public:
-	ImportStream();
-	virtual ~ImportStream() {};
-	bool init(const char *szEncoding);
-	bool getChar(UT_UCSChar &b);
-	UT_UCSChar peekChar() { return m_ucsLookAhead; }
-private:
-	virtual bool _getByte(unsigned char &b) = 0;
-	bool getRawChar(UT_UCSChar &b);
-	UT_Mbtowc m_Mbtowc;
-	UT_UCSChar m_ucsLookAhead;
-	bool m_bEOF;
-};
-
-// File stream class
-
-class ImportStreamFile : public ImportStream
-{
-public:
-	ImportStreamFile(FILE *pFile);
-	~ImportStreamFile() {};
-	bool getChar();
-private:
-	bool _getByte(unsigned char &b);
-	FILE *m_pFile;
-};
-
-// Clipboard stream class
-
-class ImportStreamClipboard : public ImportStream
-{
-public:
-	ImportStreamClipboard(unsigned char *pClipboard, UT_uint32 iLength);
-	~ImportStreamClipboard() {};
-	bool getChar();
-private:
-	bool _getByte(unsigned char &b);
-	unsigned char *m_p;
-	unsigned char *m_pEnd;
 };
 
 // The importer/reader for Plain Text Files with selectable encoding.
@@ -130,13 +148,14 @@ public:
 
 	virtual UT_Error	importFile(const char * szFilename);
 	virtual void		pasteFromBuffer(PD_DocumentRange * pDocRange,
-										unsigned char * pData, UT_uint32 lenData);
-	
+										unsigned char * pData, UT_uint32 lenData, const char * szEncoding = 0);
+
 protected:
 	UT_Error			_recognizeEncoding(FILE * fp);
 	UT_Error			_recognizeEncoding(const char *szBuf, UT_uint32 iNumbytes);
-	UT_Error			_parseStream(ImportStream & stream, class Inserter & ins);
+	virtual UT_Error	_constructStream(ImportStream *& pStream, FILE * fp);
 	UT_Error			_writeHeader(FILE * fp);
+	UT_Error			_parseStream(ImportStream * pStream, class Inserter & ins);
 	bool				_doEncodingDialog(const char *szEncoding);
 	void				_setEncoding(const char *szEncoding);
 
