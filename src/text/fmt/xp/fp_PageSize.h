@@ -18,9 +18,12 @@ public:
 
 	enum Predefined
 	{
+		// If you append a predefined pagesize here, don't forget
+		// to update the cpp accordingly.
 		A0, A1, A2, A3, A4, A5, A6,
 		B0, B1, B2, B3, B4, B5, B6,
 		Legal, Folio, Letter,
+		// append new pagesizes here
 		_last_predefined_pagesize_dont_use_
 	};
 
