@@ -1,7 +1,7 @@
 #! gmake
 
 ## AbiSource Application Framework
-## Copyright (C) 1998 AbiSource, Inc.
+## Copyright (C) 1998-2000 AbiSource, Inc.
 ##
 ## This program is free software; you can redistribute it and/or
 ## modify it under the terms of the GNU General Public License
@@ -35,7 +35,7 @@ CPPSRCS=		xap_Win32App.cpp			\
 			xap_Win32PreviewWidget.cpp		\
 			xap_Win32Slurp.cpp			\
 			xap_Win32Toolbar_Icons.cpp              \
-			xap_Win32_Insert_Symbol.cpp
+			xap_Win32Dlg_Insert_Symbol.cpp
 
 TARGETS=		$(OBJS)
 
