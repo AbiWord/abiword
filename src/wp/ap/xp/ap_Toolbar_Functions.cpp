@@ -112,14 +112,14 @@ Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_Changes)
 	ABIWORD_VIEW;
 	CHECK_INC_LOAD;
 
+	EV_Toolbar_ItemState s = EV_TIS_ZERO;
+	
 	if(!pView)
 	{
-		return;
+		return s;
 	}
 	if (pszState)
 		*pszState = NULL;
-
-	EV_Toolbar_ItemState s = EV_TIS_ZERO;
 
 	switch (id)
 	{

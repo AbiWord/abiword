@@ -188,6 +188,7 @@ UT_Error AP_Win32Frame::_showDocument(UT_uint32 iZoom)
 	AV_ListenerId				lid;
 	AV_ListenerId				lidScrollbarViewListener;
 	UT_uint32					point					= 0;
+	const XML_Char * doc_locale = NULL;
 	HWND hwnd = m_hwndDocument;
 
 	pG = new GR_Win32Graphics(GetDC(hwnd), hwnd, getApp());
@@ -198,13 +199,8 @@ UT_Error AP_Win32Frame::_showDocument(UT_uint32 iZoom)
 	pDocLayout = new FL_DocLayout(static_cast<PD_Document *>(m_pDoc), pG);
 	ENSUREP(pDocLayout);
 
-//	pDocLayout->formatAll();
-
 	pView = new FV_View(getApp(), this, pDocLayout);
 	ENSUREP(pView);
-
-//	pDocLayout->fillLayouts();
-
 
 	// The "AV_ScrollObj pScrollObj" receives
 	// send{Vertical,Horizontal}ScrollEvents
@@ -320,6 +316,30 @@ UT_Error AP_Win32Frame::_showDocument(UT_uint32 iZoom)
 	updateTitle();
 
 	pDocLayout->fillLayouts();
+
+	// WHY would we want to do this ??? (either we have loading an
+	// existing document, and then the text in it has its own lang
+	// property or we are creating a new one, in which case this has
+	// already been taken care of when the document was created) Tomas
+
+	// what we want to do here is to set the default language
+	// that we're editing in
+	
+	// 27/10/2002 - If we do not have this piece of code, Abiword does not honor the documentlocale
+	// setting under win32 
+
+	if (m_pView && XAP_App::getApp()->getPrefs()->getPrefsValue(XAP_PREF_KEY_DocumentLocale,&doc_locale))
+	{
+		if (doc_locale)
+		{
+			const XML_Char * props[3];
+			props[0] = "lang";
+			props[1] = doc_locale;
+			props[2] = 0;
+			((FV_View *)m_pView)->setCharFormat(props);
+		}
+		((FV_View *)m_pView)->notifyListeners(AV_CHG_ALL);
+	}	
 
 	// we cannot do this before we fill the layout, because if we are
 	// running in default RTL mode, the X scroll needs to be able to
