@@ -22,7 +22,7 @@
 %define enable_gdict 0
 %define enable_gdkpixbuf 1
 %define enable_html 1
-%define enable_imagemagick 0
+%define enable_imagemagick 1
 %define enable_openwriter 1
 %define enable_shell 1
 %define enable_urldict 1
@@ -171,8 +171,8 @@ BuildRequires: pspell-devel >= 0.11.1
 %endif
 
 %if %{enable_xml2}
-Requires: libxml >= 2.0
-BuildRequires: libxml-devel >= 2.0
+Requires: libxml2 >= 2.4.2
+BuildRequires: libxml2-devel >= 2.4.2
 %else
 Requires: expat >= 1.95.1
 BuildRequires: expat-devel >= 1.95.1
@@ -436,6 +436,13 @@ cp $RPM_BUILD_DIR/%{name}-%{version}/abidistfiles/icons/abiword_48.png $RPM_BUIL
 cp $RPM_BUILD_DIR/%{name}-%{version}/abi/src/pkg/linux/rpm/data/abiword.desktop $RPM_BUILD_ROOT%{prefix}/share/gnome/apps/Applications/abiword.desktop
 %endif
 
+%if %{enable_gnome}
+# Copies oaf files
+%__mkdir_p $RPM_BUILD_ROOT/%{prefix}/share/oaf
+%__cp $RPM_BUILD_DIR/%{name}-%{version}/abidistfiles/*.oaf $RPM_BUILD_ROOT/%{prefix}/share/oaf
+%__cp $RPM_BUILD_DIR/%{name}-%{version}/abidistfiles/nautilus-abiword-content-view-ui.xml $RPM_BUILD_ROOT/%{prefix}/share/oaf
+%endif
+
 # Copies all clipart
 %__cp $RPM_BUILD_DIR/%{name}-%{version}/abidistfiles/clipart/*.png $RPM_BUILD_ROOT%{ABIPREFIX}/AbiSuite/clipart/
 
@@ -471,7 +478,6 @@ cp $RPM_BUILD_DIR/%{name}-%{version}/abi/src/pkg/linux/rpm/data/abiword.desktop 
 %{ABIPREFIX}/AbiSuite/icons
 %{ABIPREFIX}/AbiSuite/templates
 %attr(644,root,root) %{prefix}/share/pixmaps/abiword_48.png
-/naoexiste
 %if %{enable_gnome}
 %attr(644,root,root) %{prefix}/share/gnome/apps/Applications/abiword.desktop
 %attr(644,root,root) %{ABIPREFIX}/AbiSuite/AbiWord/plugins/libAbiGdkPixbuf.*
@@ -592,6 +598,9 @@ if test ! -e %{ABIPREFIX}/AbiSuite/fonts/fonts.dir ; then
 fi
 
 %changelog
+* Wed May 14 2002 J.M. Maurer <j.m.maurer@student.utwente.nl>
+- Require libxml2 instead of libxml for the XML build
+  
 * Sat Apr 6 2002 Joaquín Cuenca Abela <cuenca@ie2.u-psud.fr>
                  Rui M. Silva Seabra <rms@1407.org>
 - Add %post fonts and %postun fonts to use (if found) redhat's chkfontpath
