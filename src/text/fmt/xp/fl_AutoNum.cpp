@@ -372,7 +372,87 @@ inline UT_uint32 fl_AutoNum::_getLevelValue(fl_AutoNum * pAutoNum)
 	return pAutoNum->getValue(pBlock);
 }
 
+char *  fl_AutoNum::dec2roman(UT_sint32 value, UT_Bool lower) 
+{
+	char roman[80];		//Pretty big number if you ask me
 
+	roman[0] = '\0';
 
+	while( value >= 1000 )
+	{
+                strcat( roman, "M" );
+		value -= 1000;
+	}
+	if( value >= 900 )
+	{
+                strcat( roman, "CM" );
+		value -= 900;
+	}
+	while( value >= 500 )
+        {
+                strcat( roman, "D" );
+		value -= 500;
+	}
+	if( value >= 400 )
+	{
+                strcat( roman, "CD" );
+		value -= 400;
+	}
+	while( value >= 100 )
+	{
+	        strcat( roman, "C" );
+                value -= 100;
+	}
+	if( value >= 90 )
+        {
+                strcat( roman, "XC" );
+		value -= 90;
+	}
+	while( value >= 50 )
+	{
+                 strcat( roman, "L" );
+		 value -= 50;
+	}
+	if( value >= 40 )
+        {
+	         strcat( roman, "XL" );
+                 value -= 40;
+        }
+	while( value >= 10 )
+        {
+                 strcat( roman, "X" );
+                 value -= 10;
+	}
+	if( value >= 9 )
+	{
+	         strcat( roman, "IX" );
+		 value -= 9;
+	}
+	while( value >= 5 )
+	{
+                 strcat( roman, "V" );
+		 value -= 5;
+	}
+        if( value >= 4 )
+	{
+	         strcat( roman, "IV" );
+		 value -= 4;
+	}
+	while( value > 0 )
+        {
+	         strcat( roman, "I" );
+		 value--;
+        }
 
+	if (lower == UT_TRUE) 
+	{
+		int len;
+		len = strlen(roman);
+		while (--len >= 0) 
+		{
+			roman[len] = tolower(roman[len]);
+		}
+	}
 
+	return strdup(roman);
+}

@@ -65,7 +65,8 @@ public:
 	inline UT_Bool			isUpdating(void) const { return m_bUpdatingItems; }
 
 	inline UT_uint32		getID(void) const { return m_iID; }
-
+	char *                          dec2roman(UT_sint32 value, UT_Bool lower);
+ 
 protected:
 	void					_calculateLabelStr(UT_uint32 depth);
 	inline void				_updateItems(UT_uint32 start);

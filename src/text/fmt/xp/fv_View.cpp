@@ -1149,8 +1149,9 @@ UT_Bool FV_View::isCurrentListBlockEmpty(void)
   // If the current block is a list and is otherwise empty return true
   //
         fl_BlockLayout * pBlock = getCurrentBlock(); 
+	fl_BlockLayout * nBlock = pBlock->getNext();
 	UT_Bool bEmpty = UT_TRUE;
-	if(pBlock->isListItem() == UT_FALSE)
+	if(pBlock->isListItem() == UT_FALSE || (nBlock!= NULL && nBlock->isListItem()==UT_TRUE))
 	{
 	         return UT_FALSE;
 	}
@@ -1160,7 +1161,7 @@ UT_Bool FV_View::isCurrentListBlockEmpty(void)
 	  //
 	fp_Run * pRun = pBlock->getFirstRun();
 	UT_uint32 ifield =0;
-	while((bEmpty == UT_TRUE) && (pRun != NULL))//sevior here
+	while((bEmpty == UT_TRUE) && (pRun != NULL))
 	{
 	         FP_RUN_TYPE runtype = (FP_RUN_TYPE) pRun->getType();	
 		 if((runtype == FPRUN_TAB) || 
@@ -1186,10 +1187,48 @@ UT_Bool FV_View::isCurrentListBlockEmpty(void)
 	return bEmpty;
 }
 
+UT_Bool FV_View::isPointBeforeListLabel(void)
+{
+  //
+  // If the current point is in a list block and the point is before the list label
+  // return true
+  //
+        fl_BlockLayout * pBlock = getCurrentBlock(); 
+	UT_Bool bBefore = UT_TRUE;
+	if(pBlock->isListItem() == UT_FALSE)
+	{
+	         return UT_FALSE;
+	}
+	
+	  //
+	  // Now look to see if the point is before the list label
+	  //
+	PT_DocPosition pos = getPoint();
+	UT_sint32 xPoint;
+	UT_sint32 yPoint;
+	UT_sint32 iPointHeight;
+	fp_Run* pRun = pBlock->findPointCoords(pos, m_bPointEOL, xPoint, yPoint, iPointHeight);
+	pRun = pRun->getPrev();
+	while(pRun != NULL && bBefore == UT_TRUE)
+	{
+	        if(pRun->getType()== FPRUN_FIELD)
+		{
+		        fp_FieldRun * pFRun = (fp_FieldRun *) pRun;
+			if(pFRun->getFieldType() == FPFIELD_list_label)
+			        bBefore = UT_FALSE;
+		}
+		else
+		{
+		        pRun = pRun->getPrev();
+		}
+	}
+	return bBefore;
+}
+
 void FV_View::insertParagraphBreak(void)
 {
 	UT_Bool bDidGlob = UT_FALSE;
-
+	UT_Bool bBefore = UT_FALSE;
 	m_pDoc->beginUserAtomicGlob();
 
 	if (!isSelectionEmpty())
@@ -1214,14 +1253,35 @@ void FV_View::insertParagraphBreak(void)
 	// otherwise blank.
 	//
 	fl_BlockLayout * pBlock = getCurrentBlock();
+	fl_BlockLayout * pPrevListBlock;
 	if(isCurrentListBlockEmpty() == UT_TRUE)
 	{
 	         pBlock->StopList();
 	}
+	else if(isPointBeforeListLabel() == UT_TRUE)
+	{
+	  //
+	  // Now deal with the case of entering a line before a list label
+	  // We remember the position in the list, stop the list then restore it
+          // after the line break. TODO Doesn't work on the first list  item
+	  //
+	         pPrevListBlock =  (fl_BlockLayout *) pBlock->getAutoNum()->getPrevInList(pBlock);
+		 if(pPrevListBlock != NULL && (pPrevListBlock != pBlock))//todo handle this case, ignore for now
+		 {
+	                  pBlock->StopList();
+			  bBefore = UT_TRUE;
+		 }
+	}
+
 	m_pDoc->insertStrux(getPoint(), PTX_Block);
-	_findGetCurrentBlock()->listUpdate();
-	//	if (bDidGlob)
-	//	m_pDoc->endUserAtomicGlob();
+	_generalUpdate();
+	getCurrentBlock()->format();
+	getCurrentBlock()->listUpdate();
+	if(bBefore == UT_TRUE)
+	{
+	        getCurrentBlock()->resumeList(pPrevListBlock);
+	        getCurrentBlock()->listUpdate();
+	}
 	m_pDoc->endUserAtomicGlob();
 
 	_generalUpdate();

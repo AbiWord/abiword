@@ -158,6 +158,7 @@ public:
 	UT_Bool setBlockFormat(const XML_Char * properties[]);
 	UT_Bool getBlockFormat(const XML_Char *** properties,UT_Bool bExpandStyles=UT_TRUE);
 
+	UT_Bool isPointBeforeListLabel(void);
 	UT_Bool isCurrentListBlockEmpty(void);
 	UT_Bool cmdStartList(const XML_Char * style);
 	UT_Bool cmdStopList(void);
