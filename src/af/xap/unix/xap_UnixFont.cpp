@@ -97,8 +97,6 @@ XftFaceLocker & XftFaceLocker::operator=(const XftFaceLocker & other)
 }
 #endif
 
-#define ASSERT_MEMBERS	do { UT_ASSERT(m_name); UT_ASSERT(m_fontfile); UT_ASSERT(m_metricfile); } while (0)
-
 /*******************************************************************/
 
 XAP_UnixFontHandle::XAP_UnixFontHandle():m_font(NULL), m_size(0)
@@ -469,7 +467,6 @@ void XAP_UnixFont::setName(const char *name)
 
 const char *XAP_UnixFont::getName(void) const
 {
-	ASSERT_MEMBERS;
 	return m_name;
 }
 
@@ -480,20 +477,16 @@ void XAP_UnixFont::setStyle(XAP_UnixFont::style s)
 
 XAP_UnixFont::style XAP_UnixFont::getStyle(void) const
 {
-	ASSERT_MEMBERS;
 	return m_style;
 }
 
 const char *XAP_UnixFont::getFontfile(void) const
 {
-	ASSERT_MEMBERS;
-
 	return m_fontfile;
 }
 
 const char *XAP_UnixFont::getMetricfile(void) const
 {
-	ASSERT_MEMBERS;
 	return m_metricfile;
 }
 
@@ -505,7 +498,6 @@ void XAP_UnixFont::setXLFD(const char *xlfd)
 
 const char *XAP_UnixFont::getXLFD(void) const
 {
-	ASSERT_MEMBERS;
 	return m_xlfd;
 }
 
@@ -1094,7 +1086,6 @@ bool XAP_UnixFont::embedInto(ps_Generate & ps)
 
 bool XAP_UnixFont::openPFA(void)
 {
-	ASSERT_MEMBERS;
 	int peeked;
 	const char *extension = NULL;
 	size_t sFontfile;
@@ -1230,8 +1221,7 @@ char XAP_UnixFont::_getPFBChar(void)
 
 const char *XAP_UnixFont::getFontKey(void)
 {
-	ASSERT_MEMBERS;
-	return m_fontKey;
+  	return m_fontKey;
 }
 
 /*!
@@ -1482,8 +1472,6 @@ GdkFont *XAP_UnixFont::getGdkFont(UT_uint32 pixelsize)
 
 void XAP_UnixFont::_makeFontKey()
 {
-	ASSERT_MEMBERS;
-
 	// if we already have a key, free it
 	FREEP(m_fontKey);
 
