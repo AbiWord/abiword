@@ -72,6 +72,11 @@ static const char * rtfszFormatsAccepted[] = {
   AP_CLIPBOARD_APPLICATION_RTF,
   0 } ;
 
+static const char * htmlszFormatsAccepted[] = {
+  AP_CLIPBOARD_TXT_HTML,
+  AP_CLIPBOARD_APPLICATION_XHTML,
+  0 } ;
+
 static const char * imgszFormatsAccepted[] = {
   AP_CLIPBOARD_IMAGE_PNG,
   AP_CLIPBOARD_IMAGE_JPEG,
@@ -107,13 +112,6 @@ AP_UnixClipboard::AP_UnixClipboard(AP_UnixApp * pApp)
   AddFmt(AP_CLIPBOARD_TXT_RTF);
   AddFmt(AP_CLIPBOARD_APPLICATION_RTF);
   
-  // plain text types
-  AddFmt(AP_CLIPBOARD_TEXT_UTF8_STRING);
-  AddFmt(AP_CLIPBOARD_TEXT);
-  AddFmt(AP_CLIPBOARD_TEXT_STRING);
-  AddFmt(AP_CLIPBOARD_TEXT_PLAIN);
-  AddFmt(AP_CLIPBOARD_TEXT_COMPOUND);
-  
   // hypertext types
   AddFmt ( AP_CLIPBOARD_TXT_HTML ) ; // actually XHTML, but who's counting?
   AddFmt ( AP_CLIPBOARD_APPLICATION_XHTML ) ;
@@ -134,6 +132,13 @@ AP_UnixClipboard::AP_UnixClipboard(AP_UnixApp * pApp)
   AddFmt ( AP_CLIPBOARD_IMAGE_WMF ) ;
   AddFmt ( AP_CLIPBOARD_IMAGE_SVG ) ;
   AddFmt ( AP_CLIPBOARD_IMAGE_SVG_XML ) ;
+
+  // plain text types
+  AddFmt(AP_CLIPBOARD_TEXT_UTF8_STRING);
+  AddFmt(AP_CLIPBOARD_TEXT);
+  AddFmt(AP_CLIPBOARD_TEXT_STRING);
+  AddFmt(AP_CLIPBOARD_TEXT_PLAIN);
+  AddFmt(AP_CLIPBOARD_TEXT_COMPOUND);  
 }
 
 bool AP_UnixClipboard::addTextData(T_AllowGet tTo, void* pData, UT_sint32 iNumBytes)
@@ -172,11 +177,13 @@ bool  AP_UnixClipboard::getSupportedData(T_AllowGet tFrom,
 					 const void ** ppData, UT_uint32 * pLen,
 					 const char **pszFormatFound)
 {
-  // give priority to rich text, then images, then text
+  // give priority to rich text, html, then images, then text
   if (getData(tFrom, rtfszFormatsAccepted, ppData, pLen, pszFormatFound))
     return true;
+  else if (getData (tFrom, htmlszFormatsAccepted, ppData, pLen, pszFormatFound))
+	  return true;
   else if (getData(tFrom, imgszFormatsAccepted, ppData, pLen, pszFormatFound))
-    return true;
+    return true;  
   else if (getTextData (tFrom, ppData, pLen, pszFormatFound))
     return true;
 

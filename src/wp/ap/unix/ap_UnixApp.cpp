@@ -459,6 +459,8 @@ const XAP_StringSet * AP_UnixApp::getStringSet(void) const
 //////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////
 
+#define CLIPBOARD_IS_HTML4 false
+
 /*!
   copy the given subset of the given document to the
   system clipboard in a variety of formats.
@@ -489,7 +491,7 @@ void AP_UnixApp::copyToClipboard(PD_DocumentRange * pDocRange, bool bUseClipboar
     IE_Exp_HTML * pExpHtml = new IE_Exp_HTML(pDocRange->m_pDoc);
     if ( pExpHtml )
     {
-	pExpHtml->set_HTML4(true);
+		pExpHtml->set_HTML4(CLIPBOARD_IS_HTML4);
         pExpHtml->copyToBuffer(pDocRange, &bufHTML);
         DELETEP(pExpHtml);
     }
@@ -1635,7 +1637,7 @@ save_document_to_stream (BonoboPersistStream *ps,
 	  ext = ".txt" ;
 	else if ( !strcmp ( "text/html", type ) )
 	  ext = ".html" ;
-	else if ( !strcmp ( "text/xhtml+xml", type ) )
+	else if ( !strcmp ( "application/xhtml+xml", type ) )
 	  ext = ".xhtml" ;
 	else if ( !strcmp ( "application/x-applix-word", type ) )
 	  ext = ".aw";
@@ -1747,7 +1749,7 @@ pstream_get_content_types (BonoboPersistStream *ps, void *closure,
 						   CORBA_Environment *ev)
 {
 	return bonobo_persist_generate_content_types (12, "application/x-abiword", "text/abiword", "application/msword", 
-												  "application/rtf", "text/rtf", "text/richtext", "text/plain", "text/html", "text/xhtml+xml",
+												  "application/rtf", "text/rtf", "text/richtext", "text/plain", "text/html", "application/xhtml+xml",
 												  "application/x-applix-word", "appplication/vnd.palm", "text/vnd.wap.wml");
 }
 
