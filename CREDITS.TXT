@@ -108,6 +108,7 @@ Jesus Bravo Alvarez <jba@pobox.com>             Galician
 Henrik Berg <henrik@lansen.se>                  Swedish
 Frédéric CELLA <fcella@mahj.org>                French
 Mauro Colorio <macolori@tin.it>                 Italian
+Jesús Corrius <jesus@softcatala.org>            Catalan
 Tamas Decsi <tamas@pressflex.com>               Hungarian
 Philippe Duperron <duperron@mail.dotcom.fr>     French
 Gro Elin Hansen  <Gro.Hansen@student.uib.no>    Norwegian (Bokmål)
