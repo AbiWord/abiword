@@ -17,27 +17,25 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
  * 02111-1307, USA.
  */
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <math.h> // for rint (font size)
 
-#include "xap_EncodingManager.h"
-
-#include "ut_string_class.h"
-#include "ut_string.h"
-#include "pd_Document.h"
-#include "ut_string.h"
-#include "ut_units.h"
 #include "ut_types.h"
+#include "ut_string.h"
+#include "ut_string_class.h"
+#include "ut_units.h"
 #include "ut_growbuf.h"
-#include "pt_Types.h"
-
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
+#include "ut_math.h" // for rint (font size)
 
 #include "xap_Frame.h"
+#include "xap_EncodingManager.h"
+
+#include "pd_Document.h"
+#include "pt_Types.h"
+
 #include "ap_Strings.h"
 
 #include "ie_imp_WordPerfect.h"
