@@ -21,6 +21,7 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "ut_debugmsg.h"
 #include "ut_string.h"
 #include "ut_bytebuf.h"
 #include "ut_base64.h"
@@ -573,7 +574,9 @@ void s_LaTeX_Listener::_openSpan(PT_AttrPropIndex api)
 		}
 		
 		if (pAP->getProperty("color", szValue))
-			; // TODO
+		{
+			UT_DEBUGMSG (("Latex export: TODO: 'color' property\n"));
+		}
 
 		if (pAP->getProperty("font-size", szValue))
 		{
@@ -588,7 +591,9 @@ void s_LaTeX_Listener::_openSpan(PT_AttrPropIndex api)
 		}
 		
 		if (pAP->getProperty("font-family", szValue))
-			; // TODO
+		{
+			UT_DEBUGMSG (("Latex export: TODO: 'font-family' property\n"));
+		}
 
 		m_bInSpan = true;
 		m_pAP_Span = pAP;

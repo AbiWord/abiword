@@ -477,7 +477,7 @@ PP_PropertyTypeColor::PP_PropertyTypeColor(const XML_Char *p_init)
 
 PP_PropertyTypeBool::PP_PropertyTypeBool(const XML_Char *p_init)
 {
-	State = UT_strcmp("yes", p_init);
+	State = (UT_strcmp("yes", p_init) != 0);
 }
 
 PP_PropertyTypeInt::PP_PropertyTypeInt(const XML_Char *p_init)

@@ -211,7 +211,9 @@ pf_Frag * pf_Fragments::findFirstFragBeforePos( PT_DocPosition pos) const
 	}
 	xxx_UT_DEBUGMSG(("SEVIOR: Found at pos %d Looking for pos %d \n",curFrag->getPos(),pos));
 	if(curFrag && curFrag->getPrev() && curFrag->getNext())
+	{
 		xxx_UT_DEBUGMSG(("SEVIOR Frag pos before = %d Frag Pos After %d Looking for pos %d \n",curFrag->getPrev()->getPos(),curFrag->getPos(),curFrag->getNext()->getPos(),pos));
+	}
 	return curFrag;
 }
 

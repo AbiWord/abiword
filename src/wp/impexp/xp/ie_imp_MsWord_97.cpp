@@ -570,11 +570,13 @@ int IE_Imp_MsWord_97::_charProc (wvParseStruct *ps, U16 eachchar, U8 chartype, U
 int IE_Imp_MsWord_97::_specCharProc (wvParseStruct *ps, U16 eachchar, CHP *achp)
 {
 	Blip blip;
-	wvStream *fil;	
 	long pos;
 	FSPA * fspa;
-	PICF picf;
 	FDOA * fdoa;
+#ifdef SUPPORTS_OLD_IMAGES
+	wvStream *fil;	
+	PICF picf;
+#endif
 
 	//
 	// This next bit of code is to handle fields
