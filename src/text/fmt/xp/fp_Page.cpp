@@ -241,8 +241,8 @@ fp_Container * fp_Page::updatePageForWrapping(fp_Column *& pNextCol)
 								{
 									bLoop = true;
 									pFirst = pBL;
-									pBL = static_cast<fl_BlockLayout *>(pBL->getPrev());
 								}
+								pBL = static_cast<fl_BlockLayout *>(pBL->getPrev());
 							}
 							else
 							{
