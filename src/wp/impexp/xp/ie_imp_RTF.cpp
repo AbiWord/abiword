@@ -7911,11 +7911,13 @@ bool IE_Imp_RTF::ReadOneFontFromTable(bool bNested)
 	}
 
 	keyword[count] = 0;
+#ifndef XP_TARGET_COCOA
 	/*work around "helvetica" font name -replace it with "Helvetic"*/
 	if (!UT_stricmp(reinterpret_cast<char*>(&keyword[0]),"helvetica"))
 	{
 		strcpy(reinterpret_cast<char*>(&keyword[0]),"Helvetic");
 	}
+#endif /* ! XP_TARGET_COCOA */
 
 	if (!UT_cloneString(pFontName, reinterpret_cast<char*>(&keyword[0])))
 	{
