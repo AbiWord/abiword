@@ -72,6 +72,10 @@
 #include "ie_imp_RTF.h"
 #include "ie_imp_Text.h"
 
+#ifdef HAVE_CURLHASH	
+#include "ap_Win32HashDownloader.h"
+#endif
+
 // extern prototype - this is defined in ap_EditMethods.cpp
 extern XAP_Dialog_MessageBox::tAnswer s_CouldNotLoadFileMessage(XAP_Frame * pFrame, const char * pNewFile, UT_Error errorCode);
 /*****************************************************************/
@@ -81,10 +85,17 @@ AP_Win32App::AP_Win32App(HINSTANCE hInstance, XAP_Args * pArgs, const char * szA
 {
 	m_pStringSet = NULL;
 	m_pClipboard = NULL;
+#ifdef HAVE_CURLHASH	
+	m_pHashDownloader = (XAP_HashDownloader *)(new AP_Win32HashDownloader());
+#endif
 }
 
 AP_Win32App::~AP_Win32App(void)
 {
+#ifdef HAVE_CURLHASH	
+	DELETEP(m_pHashDownloader);
+#endif
+
 	DELETEP(m_pStringSet);
 	DELETEP(m_pClipboard);
 
