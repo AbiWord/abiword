@@ -1192,12 +1192,21 @@ void FV_View::_moveInsPtNextPrevLine(bool bNext)
 	UT_sint32 xOldSticky = m_xPointSticky;
 
 	// first, find the line we are on now
-	UT_uint32 iOldPoint = getPoint();
+	PT_DocPosition iOldPoint = getPoint();
 
 	fl_BlockLayout* pOldBlock;
 	fp_Run* pOldRun;
 	_findPositionCoords(iOldPoint, m_bPointEOL, xPoint, yPoint, xPoint2, yPoint2, iPointHeight, bDirection, &pOldBlock, &pOldRun);
-
+	if(pOldRun == NULL)
+	{
+		PT_DocPosition posEOD;
+		getEditableBounds(true,posEOD);
+		if(posEOD <= iOldPoint)
+		{
+			setPoint(posEOD);
+			return;
+		}
+	}
 	UT_return_if_fail(pOldRun);
 
 	fl_SectionLayout* pOldSL = pOldBlock->getSectionLayout();
@@ -2559,7 +2568,10 @@ void FV_View::_findPositionCoords(PT_DocPosition pos,
 	UT_sint32 xPoint2 = 0;
 	UT_sint32 yPoint2 = 0;
 	UT_sint32 iPointHeight;
-
+	if(ppRun)
+	{
+		*ppRun = NULL;
+	}
 	// Get the previous block in the document. _findBlockAtPosition
 	// will iterate forwards until it actually find a block if there
 	// isn't one previous to pos.
@@ -2620,7 +2632,7 @@ void FV_View::_findPositionCoords(PT_DocPosition pos,
 	if(bEOL && pRun && posEOD == getPoint())
 	{
 		bool bBack = true;
-		while(pRun && !pRun->isField() && pRun->getWidth() == 0)
+		while(pRun && pRun->getPrev() && !pRun->isField() && pRun->getWidth() == 0)
 		{
 			bBack = false;
 			pRun = pRun->getPrev();
@@ -2631,6 +2643,15 @@ void FV_View::_findPositionCoords(PT_DocPosition pos,
 			static_cast<fp_FieldRun *>(pRun)->recalcWidth();
 			xPoint += pRun->getWidth();
 			xPoint2 += pRun->getWidth();
+		}
+	}
+	else if( (pRun == NULL) && (posEOD <= getPoint()))
+	{
+		pRun = pBlock->getFirstRun();
+		UT_DEBUGMSG(("SEVIOR: POs 2 -pRun %x getNext %x \n",pRun,pRun->getNext()));
+		while(pRun && (pRun->getNext() != NULL))
+		{
+			pRun = pRun->getNext();
 		}
 	}
 
@@ -3240,7 +3261,7 @@ bool FV_View::_charMotion(bool bForward,UT_uint32 countChars)
 		_setPoint(posBOD);
 		bRes = false;
 	}
-	else if ((UT_sint32) m_iInsPoint > (UT_sint32) posEOD)
+	else if ((UT_sint32) m_iInsPoint >= (UT_sint32) posEOD)
 	{
 		m_bPointEOL = true;
 		_setPoint(posEOD);
