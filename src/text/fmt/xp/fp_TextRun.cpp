@@ -531,9 +531,8 @@ bool	fp_TextRun::findMaxLeftFitSplitPoint(UT_sint32 iMaxLeftWidth, fp_RunSplitIn
 	
 	for(UT_uint32 i = 0; i < getLength() && text.getStatus() == UTIter_OK; i++, ++text)
 	{
-		UT_uint32 k = bReverse ? getLength() - i - 1: i;
-		//UT_sint32 iCW = RI.m_pWidths[k] > 0 ? RI.m_pWidths[k] : 0;
-		m_pRenderInfo->m_iOffset = k;
+		// getTextWidth() takes LOGICAL offset
+		m_pRenderInfo->m_iOffset = i;
 		m_pRenderInfo->m_iLength = 1;
 		UT_sint32 iCW = getGraphics()->getTextWidth(*m_pRenderInfo);
 		iLeftWidth += iCW;
@@ -585,9 +584,8 @@ bool	fp_TextRun::findMaxLeftFitSplitPoint(UT_sint32 iMaxLeftWidth, fp_RunSplitIn
 						  && text2.getStatus() == UTIter_OK
 						  && text2.getChar() == UCS_SPACE)
 					{
-						UT_uint32 l = bReverse ? getLength() - j - 1: j;
-						//iSpaceW += RI.m_pWidths[l];
-						m_pRenderInfo->m_iOffset = l;
+						// getTextWidth() takes LOGICAL offset
+						m_pRenderInfo->m_iOffset = j;
 						m_pRenderInfo->m_iLength = 1;
 						iSpaceW += getGraphics()->getTextWidth(*m_pRenderInfo);
 						j--;
@@ -617,9 +615,8 @@ bool	fp_TextRun::findMaxLeftFitSplitPoint(UT_sint32 iMaxLeftWidth, fp_RunSplitIn
 			// already
 			for(UT_uint32 n = i+1; n < (UT_uint32)iNext; ++n)
 			{
-				UT_uint32 m = bReverse ? getLength() - n - 1: n;
-				//UT_sint32 iCW = RI.m_pWidths[k] > 0 ? RI.m_pWidths[k] : 0;
-				m_pRenderInfo->m_iOffset = m;
+				// getTextWidth() takes LOGICAL offset
+				m_pRenderInfo->m_iOffset = n;
 				m_pRenderInfo->m_iLength = 1;
 				UT_sint32 iCW = getGraphics()->getTextWidth(*m_pRenderInfo);
 				iLeftWidth += iCW;
@@ -742,7 +739,9 @@ void fp_TextRun::mapXYToPosition(UT_sint32 x, UT_sint32 y,
 		// for (UT_uint32 i=getBlockOffset(); i<(getBlockOffset() + getLength()); i++)
 		for (UT_uint32 i = 0; i < getLength(); i++)
 		{
-			// i represents VISUAL offset but the CharWidths array uses logical order of indexing
+			// i represents VISUAL offset, CharWidths array now also uses logical
+			// order of indexing
+ 
 			// UT_uint32 iLog = getOffsetLog(i);
 			// UT_uint32 iCW = pCharWidths[iLog] > 0 ? pCharWidths[iLog] : 0;
 			UT_uint32 iCW = RI.m_pWidths[i] > 0 ? RI.m_pWidths[i] : 0;
@@ -1342,6 +1341,8 @@ void fp_TextRun::_clearScreen(bool /* bFullLineHeightRect */)
 
 		if(thisLine != NULL)
 		{
+			// TODO -- this needs to be done in vis. space !!!
+			
 			while(pPrev != NULL && pPrev->getLine() == thisLine &&
 				   (pPrev->getLength() == 0 || iCumWidth > 0))
 			{
@@ -1673,7 +1674,8 @@ void fp_TextRun::_draw(dg_DrawArgs* pDA)
 
 			if(pT->m_bIsOverhanging)
 			{
-				bool bSel = (iSel1 != iSel2) && ((iRunBase + getLength()) < iSel1);
+				UT_uint32 iDocOffset = pT->getBlock()->getPosition() + pT->getBlockOffset();
+				bool bSel = (iSel1 <= iDocOffset && iSel2 > iDocOffset);
 
 				UT_ASSERT( pT->m_pRenderInfo );
 				if(pT->m_pRenderInfo)
@@ -1702,7 +1704,8 @@ void fp_TextRun::_draw(dg_DrawArgs* pDA)
 
  			if(pT->m_bIsOverhanging)
 			{
-				bool bSel = (iSel1 != iSel2) && (iRunBase > iSel1);
+				UT_uint32 iDocOffset = pT->getBlock()->getPosition() + pT->getBlockOffset() + pT->getLength() - 1;
+				bool bSel = (iSel1 <= iDocOffset && iSel2 > iDocOffset);
 
 				UT_ASSERT( pT->m_pRenderInfo );
 				if(pT->m_pRenderInfo)
@@ -1844,7 +1847,7 @@ void fp_TextRun::_getPartRect(UT_Rect* pRect,
 	}
 	
 	UT_return_if_fail(m_pRenderInfo);
-	
+
 	if(iStart > getBlockOffset())
 	{
 		m_pRenderInfo->m_iOffset = 0;
@@ -1862,7 +1865,8 @@ void fp_TextRun::_getPartRect(UT_Rect* pRect,
 	pRect->width = getGraphics()->getTextWidth(*m_pRenderInfo);
 
 	//in case of rtl we are now in the position to calculate the position of the the left corner
-	if(getVisDirection() == UT_BIDI_RTL) pRect->left = xoff + getWidth() - pRect->left - pRect->width;
+	if(getVisDirection() == UT_BIDI_RTL)
+		pRect->left = xoff + getWidth() - pRect->left - pRect->width;
 }
 
 /*!
@@ -1959,32 +1963,24 @@ void fp_TextRun::_drawLastChar(bool bSelection)
 	else
 		pG->setColor(getFGColor());
 
-	UT_BidiCharType iVisDirection = getVisDirection();
-
 	GR_Painter painter(pG);
 
-	UT_uint32 iPos = iVisDirection == UT_BIDI_LTR ? getLength() - 1 : 0;
 	PD_StruxIterator text(getBlock()->getStruxDocHandle(),
 						  getBlockOffset() + fl_BLOCK_STRUX_OFFSET);
 
 	m_pRenderInfo->m_pText = &text;
 
-	if(!s_bBidiOS)
-	{
-		// m_pSpanBuff is in visual order, so we just draw the last char
-		m_pRenderInfo->m_iOffset = getLength() - 1;
-		text.setPosition(getBlockOffset() + fl_BLOCK_STRUX_OFFSET + getLength() - 1);
-	}
-	else
-	{
-		UT_uint32 iPos = iVisDirection == UT_BIDI_LTR ? getLength() - 1 : 0;
-		m_pRenderInfo->m_iOffset = iPos;
-		text.setPosition(getBlockOffset() + fl_BLOCK_STRUX_OFFSET + iPos);
-	}
+	// getTextWidth() takes LOGICAL offset
+	m_pRenderInfo->m_iOffset = getLength() - 1;
+	text.setPosition(getBlockOffset() + fl_BLOCK_STRUX_OFFSET + getLength() - 1);
 
 	m_pRenderInfo->m_iLength = 1;
 	m_pRenderInfo->m_xoff -= getGraphics()->getTextWidth(*m_pRenderInfo);
 
+	// renderChars() takes VISUAL offset
+	UT_BidiCharType iVisDirection = getVisDirection();
+	UT_uint32 iVisOffset = iVisDirection == UT_BIDI_LTR ? getLength() - 1 : 0;
+	m_pRenderInfo->m_iOffset = iVisOffset;
 	pG->prepareToRenderChars(*m_pRenderInfo);
 	painter.renderChars(*m_pRenderInfo);
 	
@@ -2020,6 +2016,8 @@ void fp_TextRun::_drawFirstChar(bool bSelection)
 						  getBlockOffset() + fl_BLOCK_STRUX_OFFSET);
 
 	m_pRenderInfo->m_pText = &text;
+	UT_BidiCharType iVisDirection = getVisDirection();
+	UT_uint32 iVisOffset = iVisDirection == UT_BIDI_LTR ? 0 : getLength() - 1;
 	
 	if(!s_bBidiOS)
 	{
@@ -2028,13 +2026,15 @@ void fp_TextRun::_drawFirstChar(bool bSelection)
 	}
 	else
 	{
-		UT_uint32 iPos = getVisDirection() == UT_BIDI_RTL ? getLength() - 1 : 0;
+		// UT_uint32 iPos = getVisDirection() == UT_BIDI_RTL ? getLength() - 1 : 0;
+		UT_uint32 iPos = 0;
 		m_pRenderInfo->m_iOffset = iPos;
 		text.setPosition(getBlockOffset() + fl_BLOCK_STRUX_OFFSET + iPos);
 	}
 
 	m_pRenderInfo->m_iLength = 1;
 	
+	m_pRenderInfo->m_iOffset = iVisOffset;
 	pG->prepareToRenderChars(*m_pRenderInfo);
 	painter.renderChars(*m_pRenderInfo);
 }
@@ -2274,11 +2274,12 @@ UT_sint32 fp_TextRun::findTrailingSpaceDistance(void) const
 
 		for (i = getLength() - 1; i >= 0 && text.getStatus() == UTIter_OK; i--, --text)
 		{
-			UT_sint32 k = bReverse ? getLength() - i - 1: i;
+			// getTextWidth() takes LOGICAL offset
+			
 			if(UCS_SPACE == text.getChar())
 			{
 				xxx_UT_DEBUGMSG(("For i %d char is |%c| trail %d \n",i,c,iTrailingDistance));
-				m_pRenderInfo->m_iOffset = k;
+				m_pRenderInfo->m_iOffset = i;
 				m_pRenderInfo->m_iLength = 1;
 				iTrailingDistance += getGraphics()->getTextWidth(*m_pRenderInfo);
 			}
