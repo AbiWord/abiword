@@ -408,19 +408,49 @@ void fl_BlockLayout::_lookupProperties(void)
 		szLid = NULL;
 	if (szLid)
 		id = atoi(szLid);
-	else id = 0;
-	if (m_pPrev && m_pPrev->isListItem())
-		last_id = m_pPrev->getAutoNum()->getID();
-	else last_id = 0;
-	
+	else 
+	        id = 0;
 	if (!pBlockAP || !pBlockAP->getAttribute(PT_LEVEL_ATTRIBUTE_NAME, szLevel))
 		szLevel = NULL;
 	if (szLevel)
 		level = atoi(szLevel);
 	else 
 	        level = 0;
-	if (m_pPrev)
-		last_level = m_pPrev->getLevel();
+        fl_BlockLayout * prevBlockInList = NULL;
+        if(getAutoNum() != NULL)
+	{
+	        prevBlockInList = (fl_BlockLayout *) getAutoNum()->getPrevInList(this);
+	        if(prevBlockInList != NULL)
+		         last_id = getAutoNum()->getID();
+	}
+	else 
+	{
+	        fl_BlockLayout * pPrev = getPrev();
+		UT_Bool bmatchLevel =  UT_FALSE;
+		if( pPrev != NULL && pPrev->isListItem())
+		{
+		         bmatchLevel = (UT_Bool) (level == pPrev->getLevel());
+		}
+	        while(pPrev != NULL && bmatchLevel == UT_FALSE) 
+		{ 
+		         pPrev = pPrev->getPrev() ;
+			 if( pPrev != NULL && pPrev->isListItem())
+			 {
+		               bmatchLevel = (UT_Bool) (level == pPrev->getLevel());
+			 }
+		}
+                if (pPrev != NULL)
+		{
+		         prevBlockInList = pPrev;
+			 last_id = prevBlockInList->getAutoNum()->getID();
+		}
+		else 
+		{ 
+	                 last_id = 0;
+		}
+	}
+	if (prevBlockInList != NULL)
+		last_level = prevBlockInList->getLevel();
 	else 
 	        last_level = 0;
 
@@ -429,7 +459,7 @@ void fl_BlockLayout::_lookupProperties(void)
 		if ((level > last_level) && !m_bStartList)
 		{
 			if (last_level > 0 && !m_bListItem && !m_bStopList)
-				_addBlockToPrevList();
+				_addBlockToPrevList(prevBlockInList);
 		
 			if (m_pAutoNum)
 				curr_level = m_pAutoNum->getLevel();
@@ -447,7 +477,7 @@ void fl_BlockLayout::_lookupProperties(void)
 			if (!m_bStopList)
 			{
 				if (!m_pAutoNum)
-					_addBlockToPrevList();
+					_addBlockToPrevList(prevBlockInList);
 				_stopList();
 			}
 			_startList(id);
@@ -455,7 +485,7 @@ void fl_BlockLayout::_lookupProperties(void)
 		else if ((level < last_level) && (!m_bStopList))
 		{
 			if (!m_pAutoNum)
-				_addBlockToPrevList();
+				_addBlockToPrevList(prevBlockInList);
 		
 			if (m_pAutoNum)
 				curr_level = m_pAutoNum->getLevel();
@@ -470,7 +500,7 @@ void fl_BlockLayout::_lookupProperties(void)
 	}
 	else if ((id > 0) && !m_bListItem)
 	{
-		_addBlockToPrevList();
+		_addBlockToPrevList(prevBlockInList);
 		m_bListItem = UT_TRUE;
 	}
 }
@@ -3405,6 +3435,14 @@ UT_Bool fl_BlockLayout::doclistener_deleteObject(const PX_ChangeRecord_Object * 
 		UT_DEBUGMSG(("Edit:DeleteObject:Field:\n"));
 		blockOffset = pcro->getBlockOffset();
 		_delete(blockOffset, 1);
+		if(m_pAutoNum)
+		{
+		       if(m_pAutoNum->doesItemHaveLabel(this)==UT_FALSE)
+		       {
+			     UT_DEBUGMSG(("SEVIOR: List item has no label \n"));
+			     remItemFromList();
+		       }
+		}
 		break;
 	}		
 
@@ -3998,6 +4036,14 @@ void fl_BlockLayout::_stopList()
 	m_pAutoNum = pAutoNum;	
 }
 
+void fl_BlockLayout::remItemFromList(void)
+{
+        m_bListLabelCreated = NULL;
+	FV_View* pView = m_pLayout->getView();
+	UT_ASSERT(pView);
+	pView->cmdStopList();
+}
+
 void fl_BlockLayout::listUpdate(void)
 {
 	if (!m_pAutoNum)
@@ -4075,12 +4121,11 @@ XML_Char * fl_BlockLayout::getListLabel(void)
 	       return NULL;
 }
 
-inline void fl_BlockLayout::_addBlockToPrevList(void)
+inline void fl_BlockLayout::_addBlockToPrevList( fl_BlockLayout * prevBlockInList)
 {
-	
-	UT_ASSERT(m_pPrev->getAutoNum());
-	m_pAutoNum = m_pPrev->getAutoNum();
-	m_pAutoNum->insertItem(this, m_pPrev);
+        UT_ASSERT(prevBlockInList);
+	m_pAutoNum = prevBlockInList->getAutoNum();
+	m_pAutoNum->insertItem(this, prevBlockInList);
 }
 
 UT_uint32 fl_BlockLayout::getLevel(void)

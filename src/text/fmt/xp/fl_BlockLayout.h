@@ -165,6 +165,7 @@ public:
 	inline UT_Bool isListItem(void) const { return m_bListItem; }
 	inline fl_AutoNum * getAutoNum(void) const { return m_pAutoNum; }
 
+	void remItemFromList(void);
 	virtual void listUpdate(void); 
 	XML_Char * getListLabel(void);
 	void transferListFlags(void);
@@ -330,7 +331,7 @@ protected:
 	void 					_stopList(void);
 	void					_createListLabel(void);
 	void					_deleteListLabel(void);
-	inline void				_addBlockToPrevList();	
+	inline void				_addBlockToPrevList( fl_BlockLayout * prevBlockInList);	
 
 	UT_Bool					m_bNeedsReformat;
 	UT_Bool					m_bNeedsRedraw;

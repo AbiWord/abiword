@@ -1030,6 +1030,12 @@ void fp_FieldRun::lookupProperties(void)
 	}
 }
 
+
+fp_FieldsEnum fp_FieldRun::getFieldType(void) const
+{
+        return m_iFieldType;
+}
+
 UT_Bool fp_FieldRun::canBreakAfter(void) const
 {
 	return UT_TRUE;

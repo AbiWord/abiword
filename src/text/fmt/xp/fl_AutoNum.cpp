@@ -23,10 +23,15 @@
 
 #include "fl_AutoNum.h"
 #include "fl_Layout.h"
+#include "fl_BlockLayout.h"
+#include "fp_Run.h"
+#include "fp_Line.h"
 
 #include "ut_string.h"
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
+
+
 
 fl_AutoNum::fl_AutoNum(UT_uint32 id, UT_uint32 start, const XML_Char * format, fl_Layout * pFirst, fl_AutoNum * pParent)
 {
@@ -254,6 +259,27 @@ UT_Bool fl_AutoNum::isEmpty() const
 		return UT_TRUE;
 }
 
+UT_Bool fl_AutoNum::doesItemHaveLabel( fl_BlockLayout * pItem)
+{
+        fp_Run * pRun = pItem->getFirstRun();
+	while(pRun->getType() == FPRUN_FMTMARK)
+	{
+	        pRun = pRun->getNext();
+		if(pRun == NULL)
+		{
+		         return UT_FALSE;
+		}
+	}
+	if(pRun->getType() == FPRUN_FIELD)
+	{
+	        fp_FieldRun * pFRun = (fp_FieldRun *) pRun;
+	        if(pFRun->getFieldType() == FPFIELD_list_label)
+	        {
+	                return UT_TRUE;
+		}
+	}
+	return UT_FALSE;
+}
 
 UT_Bool fl_AutoNum::isLastOnLevel(fl_Layout * pItem) const
 {
@@ -302,6 +328,13 @@ fl_Layout * fl_AutoNum::getNthBlock( UT_uint32 list_num)
 	        return (fl_Layout *) m_pItems.getNthItem(list_num);
 }
 
+fl_Layout * fl_AutoNum::getPrevInList( fl_Layout * pItem)
+{
+        UT_sint32 itemloc = m_pItems.findItem(pItem);
+	if (itemloc == -1 || itemloc == 0)
+		return NULL;
+        return (fl_Layout *) m_pItems.getNthItem( (UT_uint32) itemloc - 1);
+}
 
 inline UT_uint32 fl_AutoNum::_getLevelValue(fl_AutoNum * pAutoNum)
 {
@@ -323,6 +356,8 @@ inline UT_uint32 fl_AutoNum::_getLevelValue(fl_AutoNum * pAutoNum)
 
 	return pAutoNum->getValue(pBlock);
 }
+
+
 
 
 

@@ -25,6 +25,7 @@
 #include "ut_misc.h"
 #include "ut_vector.h"
 
+class fl_BlockLayout;
 class fl_Layout;
 
 class fl_AutoNum
@@ -47,8 +48,10 @@ public:
 	void 		insertItem(fl_Layout * pItem, fl_Layout * pBefore);
 	void 		removeItem(fl_Layout * pItem);
 	fl_Layout *     getNthBlock(UT_uint32 i);
+	fl_Layout *     getPrevInList(fl_Layout * pItem);
 
 	UT_Bool		isItem(fl_Layout * pItem) const;
+	UT_Bool         doesItemHaveLabel( fl_BlockLayout * pItem);
 	UT_Bool		isEmpty(void) const;
 	inline fl_Layout * getFirstItem(void) const { return (fl_Layout *)m_pItems.getFirstItem(); }	
 	UT_Bool         isLastOnLevel(fl_Layout * pItem) const;
