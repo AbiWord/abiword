@@ -25,13 +25,8 @@
 #include "gr_Image.h"
 #include "ut_misc.h"
 
-#include "xap_UnixFont.h"
-#include "xap_UnixPSGraphics.h"
-#include "xap_UnixFontManager.h"
-
-#include "xap_UnixPSFont.h"
-#include "xap_UnixPSGenerate.h"
-
+class PSFont;
+class XAP_UnixFontManager;
 class UT_ByteBuf;
 
 /*****************************************************************/
