@@ -37,6 +37,11 @@
 #pragma warning(disable:4355)	// 'this' used in base member initializer list
 #endif
 
+#ifdef UNICODE
+char XAP_Win32App::m_buffer[MAX_CONVBUFFER] = "";
+WCHAR XAP_Win32App::m_wbuffer[MAX_CONVBUFFER] = L"";
+#endif
+
 
 /*****************************************************************/
 
@@ -73,7 +78,7 @@ bool XAP_Win32App::initialize(void)
 	m_pSlurp = new XAP_Win32Slurp(this);
 	m_pSlurp->connectSlurper();
 	char bufExePathname[4096];
-	GetModuleFileName(NULL,bufExePathname,NrElements(bufExePathname));
+	GetModuleFileNameA(NULL,bufExePathname,NrElements(bufExePathname)); //!TODO Using ANSI function
 
 	// TODO these are Application-Specific values.  Move them out of here.
 	m_pSlurp->stuffRegistry(".abw",getApplicationName(),bufExePathname,"application/abiword");
@@ -99,9 +104,9 @@ XAP_Toolbar_ControlFactory * XAP_Win32App::getControlFactory(void)
 	return &m_controlFactory;
 }
 
-UT_uint32 XAP_Win32App::_getExeDir(char* pDirBuf, UT_uint32 iBufLen)
+UT_uint32 XAP_Win32App::_getExeDir(char* pDirBuf, UT_uint32 iBufLen) // ansi only dirs for now
 {
-	UT_uint32 iResult = GetModuleFileName(NULL, pDirBuf, iBufLen);
+	UT_uint32 iResult = GetModuleFileNameA(NULL, pDirBuf, iBufLen); //!TODO Using ANSI function
 
 	if (iResult > 0)
 	{
@@ -118,7 +123,7 @@ UT_uint32 XAP_Win32App::_getExeDir(char* pDirBuf, UT_uint32 iBufLen)
 	return iResult;
 }
 
-const char * XAP_Win32App::getUserPrivateDirectory(void)
+const char * XAP_Win32App::getUserPrivateDirectory(void) // ansi only dirs for now
 {
 	/* return a pointer to a static buffer */
 
@@ -136,7 +141,7 @@ const char * XAP_Win32App::getUserPrivateDirectory(void)
 	// On NT, USERPROFILE seems to be set to the directory containing per-user
 	// information.  we'll try that first.
 
-	len = GetEnvironmentVariable("USERPROFILE",buf,PATH_MAX);
+	len = GetEnvironmentVariableA("USERPROFILE",buf,PATH_MAX); //!TODO Using ANSI function
 	if (len)
 	{
 		UT_DEBUGMSG(("Getting preferences directory from USERPROFILE [%s].\n",buf));
@@ -147,8 +152,8 @@ const char * XAP_Win32App::getUserPrivateDirectory(void)
 		// is mentioned in the GetWindowsDirectory() documentation at least.
 		// These may be set if the SysAdmin did so in the Admin tool....
 
-		len1 = GetEnvironmentVariable("HOMEDRIVE",buf,PATH_MAX);
-		len2 = GetEnvironmentVariable("HOMEPATH",&buf[len1],PATH_MAX-len1);
+		len1 = GetEnvironmentVariableA("HOMEDRIVE",buf,PATH_MAX); //!TODO Using ANSI function
+		len2 = GetEnvironmentVariableA("HOMEPATH",&buf[len1],PATH_MAX-len1); //!TODO Using ANSI function
 		if (len1 && len2)
 		{
 			UT_DEBUGMSG(("Getting preferences directory from HOMEDRIVE and HOMEPATH [%s].\n",buf));
@@ -157,7 +162,7 @@ const char * XAP_Win32App::getUserPrivateDirectory(void)
 		{
 			// If that doesn't work, let's just stick it in the WINDOWS directory.
 
-			len = GetWindowsDirectory(buf,PATH_MAX);
+			len = GetWindowsDirectoryA(buf,PATH_MAX); //!TODO Using ANSI function
 			if (len)
 			{
 				UT_DEBUGMSG(("Getting preferences directory from GetWindowsDirectory() [%s].\n",buf));
@@ -226,7 +231,7 @@ void XAP_Win32App::_setAbiSuiteLibDir(void)
 
 	// if not, see if ABISUITE_HOME was set in the environment
 
-	if (GetEnvironmentVariable("ABISUITE_HOME",buf,sizeof(buf)) > 0)
+	if (GetEnvironmentVariableA("ABISUITE_HOME",buf,sizeof(buf)) > 0) //!TODO Using ANSI function
 	{
 		char * p = buf;
 		int len = strlen(p);
@@ -445,6 +450,61 @@ void XAP_Win32App::_setBidiOS(void)
 
 const char * XAP_Win32App::getDefaultEncoding () const
 {
+	#ifdef UNICODE
+	return "UTF-8";
+	#else
 	XAP_EncodingManager * pEncodingManager = XAP_EncodingManager::get_instance();
 	return pEncodingManager->getNativeSystemEncodingName();
+	#endif
+	
 }
+
+#ifdef UNICODE
+const WCHAR * XAP_Win32App::getWideString (const char * utf8input)
+{
+	int wlen = MultiByteToWideChar(CP_UTF8, 0, utf8input, -1, NULL, 0);
+	UT_ASSERT(wlen);
+	if (wlen && (wlen < MAX_CONVBUFFER)) {
+		wlen = MultiByteToWideChar(CP_UTF8, 0, utf8input, -1, m_wbuffer, MAX_CONVBUFFER);
+		UT_ASSERT(wlen);
+		return m_wbuffer;
+	}
+	else 
+	{
+		UT_ASSERT(wlen < MAX_CONVBUFFER);
+		UT_DEBUGMSG(("getWideString:converted string too long %d", wlen));
+		return NULL;
+	}
+}
+
+const char * XAP_Win32App::getUTF8String (const WCHAR * p_str)
+{
+	int len = WideCharToMultiByte(CP_UTF8, 0, p_str, -1, NULL, 0, NULL, NULL);
+	UT_ASSERT(len);
+	if (len && (len < MAX_CONVBUFFER)) {
+		len = WideCharToMultiByte(CP_UTF8, 0, p_str, -1, m_buffer, MAX_CONVBUFFER, NULL, NULL);
+		UT_ASSERT(len);
+		return m_buffer;
+	}
+	else 
+	{
+		UT_ASSERT(len < MAX_CONVBUFFER);
+		UT_DEBUGMSG(("getUTF8String:converted string too long %d", len));
+		return NULL;
+	}
+}
+
+#else
+const char * XAP_Win32App::getWideString (const char * utf8input)
+{
+	return utf8input;
+}
+
+const char * XAP_Win32App::getUTF8String (const char * p_str)
+{
+	return p_str;
+}
+
+#endif
+
+

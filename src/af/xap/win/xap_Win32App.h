@@ -23,10 +23,13 @@
 #define XAP_WIN32APP_H
 
 #include <windows.h>
+#include <tchar.h>
 #include "xap_App.h"
 #include "xap_Win32DialogFactory.h"
 #include "xap_Win32_TB_CFactory.h"
 #include "xap_Strings.h"
+
+#define MAX_CONVBUFFER 256
 
 class XAP_Win32Slurp;
 class XAP_Args;
@@ -45,6 +48,14 @@ public:
 	virtual ~XAP_Win32App(void);
 
 	virtual const char * getDefaultEncoding () const;
+#ifdef UNICODE
+	static const WCHAR * getWideString (const char * p_str);
+	static const char * getUTF8String (const WCHAR * p_str);
+#else
+	static const char * getWideString (const char * p_str);
+	static const char * getUTF8String (const char * p_str);
+#endif
+	
 	
 	virtual bool							initialize(void);
 	virtual XAP_Frame *						newFrame(void) = 0;
@@ -82,6 +93,10 @@ protected:
 	AP_Win32Toolbar_ControlFactory			m_controlFactory;
 
 	XAP_Win32Slurp *						m_pSlurp;
+	#ifdef UNICODE
+	static char m_buffer[MAX_CONVBUFFER];
+	static WCHAR m_wbuffer[MAX_CONVBUFFER];
+	#endif
 private:
 	XAP_App::BidiSupportType		        m_eBidiOS;
 };
