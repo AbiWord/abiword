@@ -38,6 +38,7 @@
 #include "ut_string.h"
 #include "ut_bytebuf.h"
 #include "ut_units.h"
+#include "ut_math.h"
 
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
@@ -195,6 +196,74 @@ s_mapPageIdToString (UT_uint16 id)
 	default:
 		return 0;
 	}
+}
+
+/*!
+  Surprise, surprise, there are more list numerical formats than the 5 the
+  MS documentation states happens to mention, so here I will put what I found 
+  out (latter we will move it to some better place)
+  
+  enum wordListNumberFormat { WLNF_EUROPEAN_ARABIC = 0,
+  WLNF_UPPER_ROMAN = 1,
+  WLNF_LOWER_ROMAN = 2,
+  WLNF_UPPER_LETTER = 3,
+  WLNF_LOWER_LETTER = 4,
+  WLNF_ORDINAL = 5,
+  WLNF_BULLETS = 23,  // the actual bullet shape is stored elsewhere
+  WLNF_HEBREW_NUMBERS = 45,
+  WLNF_ARABIC_ARABIC = ???
+  } ;
+*/
+static const char *
+s_mapDocToAbiListId (UT_uint16 id)
+{
+  switch (id)
+    {
+    case 1: // upper roman
+      return "4";
+
+    case 2: // lower roman
+      return "3";
+
+    case 3: // upper letter
+      return "2";
+
+    case 4: // lower letter
+      return "1";
+
+    case 23: // bullet list
+      return "5";
+
+    default:
+    case 5: // ordinal
+      return "0";
+    }
+}
+
+static const char *
+s_mapDocToAbiListStyle (UT_uint16 id)
+{
+  switch (id)
+    {
+    case 1: // upper roman
+      return "Upper Roman List";
+
+    case 2: // lower roman
+      return "Lower Roman List";
+
+    case 3: // upper letter
+      return "Upper Case List";
+
+    case 4: // lower letter
+      return "Lower Case List";
+
+    case 23: // bullet list
+      return "Bullet List";
+
+    default:
+    case 5: // ordinal
+      return "Numbered List";
+    }
 }
 
 /****************************************************************************/
@@ -1177,9 +1246,6 @@ int IE_Imp_MsWord_97::_beginSect (wvParseStruct *ps, UT_uint32 tag,
 		double page_height = 0.0;
 		double page_scale  = 1.0;
 
-		// TODO: paper type is currently unhandled
-		const char * paper_name = 0;
-
 		if (asep->dmOrientPage == 1)
 			getDoc()->m_docPageSize.setLandscape ();
 		else
@@ -1191,17 +1257,20 @@ int IE_Imp_MsWord_97::_beginSect (wvParseStruct *ps, UT_uint32 tag,
 		UT_DEBUGMSG(("DOM: pagesize: (landscape: %d) (width: %f) (height: %f) (paper-type: %d)\n",
 					 asep->dmOrientPage, page_width, page_height, asep->dmPaperReq));
 
-		paper_name = s_mapPageIdToString (asep->dmPaperReq);
+		const char * paper_name = s_mapPageIdToString (asep->dmPaperReq);
 
-		if (paper_name) {
-			// we found a paper name
-			getDoc()->m_docPageSize.Set (paper_name);
-		}
-		else {
-			// this can cause us to SEGV, so I'm not sure if we even want to set it...
-			// TODO: make more mappings for s_MapPageIdToString as I discover them
-			getDoc()->m_docPageSize.Set (page_width, page_height, fp_PageSize::inch);
-		}
+		if (paper_name) 
+		  {
+		    // we found a paper name, let's use it
+		    getDoc()->m_docPageSize.Set (paper_name);
+		  }
+		else
+		  {
+		    getDoc()->m_docPageSize.Set ("Custom");
+		  }
+
+		// always use the passed size
+		getDoc()->m_docPageSize.Set (page_width, page_height, fp_PageSize::inch);
 		getDoc()->m_docPageSize.setScale(page_scale);
 	}
 
@@ -1291,7 +1360,6 @@ int IE_Imp_MsWord_97::_beginPara (wvParseStruct *ps, UT_uint32 tag,
 {
 	PAP *apap = static_cast <PAP *>(prop);
 
-	XML_Char * propsArray[3];
 	XML_Char propBuffer [DOC_PROPBUFFER_SIZE];
 	UT_String props;
 
@@ -1455,13 +1523,13 @@ int IE_Imp_MsWord_97::_beginPara (wvParseStruct *ps, UT_uint32 tag,
 		props += propBuffer;
 	}
 
-#ifdef DEBUG
-	// precursor to list handling
+	UT_uint32 myListId = 0;
 
 	/*
-		the following code at the moment is merely intended to print debug messages
-		to see what information we can get from the lists and how, since the MS
-		documentation is very poor
+	  The MS documentation on lists really sucks, but we've been able to decipher
+	  some meaning from it and get simple lists to sorta work. This code mostly prints out
+	  debug messages with useful information in them, but it will also append a list
+	  and add a given paragraph to a given list
 	*/
 
 	if ( apap->ilfo )
@@ -1484,8 +1552,6 @@ int IE_Imp_MsWord_97::_beginPara (wvParseStruct *ps, UT_uint32 tag,
 
 		PAPX myPAPX;
 		CHPX myCHPX;
-
-		UT_uint32 myListId;
 
 		// first, get the LFO, and then find the lfovl for this paragraph
 		myLFO = &ps->lfo[apap->ilfo - 1];
@@ -1669,44 +1735,115 @@ int IE_Imp_MsWord_97::_beginPara (wvParseStruct *ps, UT_uint32 tag,
 					 myLVLF->ixchFollow - what character stands between the number and the para
 										  [0:= tab, 1: spc, 2: none]
 
-		   Surprise, surprise, there are more list numerical formats than the 5 the
-		   MS documentation states happens to mention, so here I will put what I found out
-		   (latter we will move it to some better place)
-
-		   enum wordListNumberFormat { WLNF_EUROPEAN_ARABIC = 0,
-									   WLNF_UPPER_ROMAN = 1,
-									   WLNF_LOWER_ROMAN = 2,
-									   WLNF_UPPER_LETTER = 3,
-									   WLNF_LOWER_LETTER = 4,
-									   WLNF_ORDINAL = 5,
-									   WLNF_BULLETS = 23,  // the actual bullet shape is stored elsewhere
-									   WLNF_HEBREW_NUMBERS = 45,
-									   WLNF_ARABIC_ARABIC = ???
-									 } ;
 		*/
 		UT_DEBUGMSG(("list: id %d \n",myListId));
 		UT_DEBUGMSG(("list: iStartAt %d\n", myStartAt));
 		UT_DEBUGMSG(("list: lvlf: format %d\n",myLVLF->nfc)); // see the comment above for nfc values
 		UT_DEBUGMSG(("list: lvlf: number align %d [0: lft, 1: rght, 2: cntr]\n",myLVLF->jc));
 		UT_DEBUGMSG(("list: lvlf: ixchFollow %d [0:= tab, 1: spc, 2: none]\n",myLVLF->ixchFollow));
+
+	// If a given list id has already been defined, appending a new list with
+	// same values will have a harmless effect
+
+	// id, parentid, type, start value, list-delim, NULL
+	const XML_Char * list_atts[11];
+
+	// list id number
+	list_atts[0] = "id";
+	sprintf(propBuffer, "%d", myListId);
+	UT_String szListId ( propBuffer );
+	list_atts[1] = szListId.c_str();
+
+	// parent id
+	list_atts[2] = "parentid";
+	list_atts[3] = "0";
+
+	// list type
+	list_atts[4] = "type";
+	list_atts[5] = s_mapDocToAbiListId (myLVLF->nfc);
+
+	// start value
+	list_atts[6] = "start-value";
+	sprintf(propBuffer, "%d", myStartAt);
+	UT_String szStartValue ( propBuffer );
+	list_atts[7] = szStartValue.c_str();
+
+	// list delimiter
+	list_atts[8] = "list-delim";
+	list_atts[9] = "%L";
+
+	// NULL
+	list_atts[10] = 0;
+
+	getDoc()->appendList(list_atts);
+	UT_DEBUGMSG(("DOM: appended a list\n"));
 	}
+	// TODO: merge in list properties and such here with the variable 'props', 
+	// such as list-style, field-font, ...
+
 list_error:
-#endif
 
 	// remove the trailing semi-colon
 	props [props.size()-1] = 0;
 
 	xxx_UT_DEBUGMSG(("Dom: the paragraph properties are: '%s'\n",props.c_str()));
-	
+
+	//props, level, listid, parentid, style (TODO), NULL
+	const XML_Char * propsArray[11];
+
+	// props
 	propsArray[0] = (XML_Char *)"props";
 	propsArray[1] = (XML_Char *)props.c_str();
-	propsArray[2] = 0;
+
+	// level, or 0 for default, normal level
+	propsArray[2] = "level";
+	if (myListId)
+	  {
+	    sprintf(propBuffer, "%d", apap->ilvl+1);
+	  }
+	else
+	  {
+	    sprintf(propBuffer, "0");
+	  }
+	UT_String szLevel ( propBuffer );
+	propsArray[3] = szLevel.c_str();
+
+	// list id - may be 0 which means no list
+	propsArray[4] = "listid";
+	sprintf(propBuffer, "%d", myListId);
+	UT_String szListId ( propBuffer );
+	propsArray[5] = szListId.c_str();
+
+	// parent id - no parent at the moment
+	propsArray[6] = "parentid";
+	propsArray[7] = "0";
+
+	// style: TODO - we could easily get the char and para style name
+	propsArray[8] = 0;
+	propsArray[9] = 0;
+
+	// NULL
+	propsArray[10] = 0;
 	
 	if (!getDoc()->appendStrux(PTX_Block, (const XML_Char **)propsArray))
 	{
 		UT_DEBUGMSG(("DOM: error appending paragraph block\n"));
 		return 1;
 	}
+
+	if (myListId)
+	  {
+	    // TODO: honor more props
+	    const XML_Char *list_field_fmt[3];
+	    list_field_fmt[0] = "type";
+	    list_field_fmt[1] = "list_label";
+	    list_field_fmt[2] = 0;
+	    getDoc()->appendObject(PTO_Field, (const XML_Char**)list_field_fmt);
+
+	    // append a tab
+	    UT_UCSChar tab = UCS_TAB;
+	    getDoc()->appendSpan(&tab, 1);
+	  }
 	
 	m_bInPara = true;
 	return 0;
@@ -1727,10 +1864,6 @@ int IE_Imp_MsWord_97::_beginChar (wvParseStruct *ps, UT_uint32 tag,
 								  void *prop, int dirty)
 {
 	CHP *achp = static_cast <CHP *>(prop);
-
-#ifdef DEBUG
-	//s_dump_chp(achp);
-#endif
 	
 	XML_Char * propsArray[3];
 	XML_Char propBuffer [DOC_PROPBUFFER_SIZE];
