@@ -414,7 +414,9 @@ private:
 	PT_DocPosition		m_dposPaste;
 	UT_uint32		deflangid;
 	UT_Mbtowc		m_mbtowc;
+	bool                m_parsingHdrFtr;
 
+	void _appendHdrFtr ();
 	XML_Char *_parseFldinstBlock (UT_ByteBuf & buf, XML_Char *xmlField);
 };
 

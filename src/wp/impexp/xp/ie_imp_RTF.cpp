@@ -528,6 +528,7 @@ IE_Imp_RTF::IE_Imp_RTF(PD_Document * pDocument)
 	m_numLists = 0;
 	m_currentHdrID = 0;
 	m_currentFtrID = 0;
+	m_parsingHdrFtr = false;
 	if(m_vecAbiListTable.getItemCount() != 0)
 	{
 		UT_VECTOR_PURGEALL(_rtfAbiListTable *,m_vecAbiListTable);
@@ -573,6 +574,7 @@ UT_Error IE_Imp_RTF::importFile(const char * szFilename)
 	if (!error)
 	{
 		error = _parseFile(fp);
+		_appendHdrFtr ();
 	}
 
 	fclose(fp);
@@ -1126,6 +1128,10 @@ bool IE_Imp_RTF::StuffCurrentGroup(UT_ByteBuf & buf)
 {
 	int nesting = 1;
 	unsigned char ch;
+
+	// add an intial bracket as it is supposed to have a final
+	ch = '{';
+	buf.append(&ch, 1);
 
 	do {
 		if (!ReadCharFromFileWithCRLF(&ch))
@@ -1819,10 +1825,7 @@ bool IE_Imp_RTF::HandleHeaderFooter(RTFHdrFtr::HdrFtrType hftype, UT_uint32 & he
 
 	// read the whole group content and put it into a buffer to 
 	// decode it later, when appending footer to the document.
-	StuffCurrentGroup (header->m_buf);
-
-	//return SkipCurrentGroup();
-	return true;
+	return StuffCurrentGroup (header->m_buf);
 }
 
 
@@ -1937,7 +1940,22 @@ bool IE_Imp_RTF::TranslateKeyword(unsigned char* pKeyword, long param, bool fPar
 		else if (strcmp((char*)pKeyword, "footer") == 0) 
 		{
 			UT_uint32 footerID = 0;
-			return HandleHeaderFooter (RTFHdrFtr::hftHeader,footerID);
+			return HandleHeaderFooter (RTFHdrFtr::hftFooter, footerID);
+		}
+		else if (strcmp((char*)pKeyword, "footerf") == 0) 
+		{
+			// TODO handle this
+			return SkipCurrentGroup ();
+		}
+		else if (strcmp((char*)pKeyword, "footerr") == 0) 
+		{
+			// TODO handle this
+			return SkipCurrentGroup ();
+		}
+		else if (strcmp((char*)pKeyword, "footerl") == 0) 
+		{
+			// TODO handle this
+			return SkipCurrentGroup ();
 		}
 		break;
 	case 'h':
@@ -1945,6 +1963,21 @@ bool IE_Imp_RTF::TranslateKeyword(unsigned char* pKeyword, long param, bool fPar
 		{
 			UT_uint32 headerID = 0;
 			return HandleHeaderFooter (RTFHdrFtr::hftHeader, headerID);
+		}
+		else if (strcmp((char*)pKeyword, "headerf") == 0) 
+		{
+			// TODO handle this
+			return SkipCurrentGroup ();
+		}
+		else if (strcmp((char*)pKeyword, "headerr") == 0) 
+		{
+			// TODO handle this
+			return SkipCurrentGroup ();
+		}
+		else if (strcmp((char*)pKeyword, "headerl") == 0) 
+		{
+			// TODO handle this
+			return SkipCurrentGroup ();
 		}
 		break;
 	case 'i':
@@ -2439,7 +2472,7 @@ bool IE_Imp_RTF::ApplyCharacterAttributes()
 	propsArray[2] = NULL;
 
 	bool ok;
-	if (m_pImportFile)					// if we are reading from a file
+	if ((m_pImportFile) || (m_parsingHdrFtr))	// if we are reading from a file or parsing headers and footers
 	{
 		ok = (   m_pDocument->appendFmt(propsArray)
 			  && m_pDocument->appendSpan(m_gbBlock.getPointer(0), m_gbBlock.getLength()) );
@@ -2762,7 +2795,7 @@ bool IE_Imp_RTF::ApplyParagraphAttributes()
 	propsArray[1] = propBuffer;
 	propsArray[2] = NULL;
 
-	if (m_pImportFile)					// if we are reading a file
+	if ((m_pImportFile) || (m_parsingHdrFtr)) // if we are reading a file or parsing header and footers
 	{
 		if(bPasteList )
 		{
@@ -2936,6 +2969,8 @@ bool IE_Imp_RTF::ApplySectionAttributes()
 	XML_Char* pProps = "props";
 	XML_Char propBuffer[1024];	//TODO is this big enough?  better to make it a member and stop running all over the stack
 	XML_Char tempBuffer[128];
+	XML_Char szHdrID[128];
+	XML_Char szFtrID[128];
 	short paramIndex = 0;
 
 	propBuffer[0] = 0;
@@ -2953,8 +2988,8 @@ bool IE_Imp_RTF::ApplySectionAttributes()
 		UT_DEBUGMSG (("Applying header\n"));
 		propsArray [paramIndex] = "header";
 		paramIndex++;
-		sprintf (tempBuffer, "hdr%u", m_currentHdrID);
-		propsArray [paramIndex] = tempBuffer;
+		sprintf (szHdrID, "hdr%u", m_currentHdrID);
+		propsArray [paramIndex] = szHdrID;
 		paramIndex++;
 	}
 	if (m_currentFtrID != 0) 
@@ -2962,15 +2997,17 @@ bool IE_Imp_RTF::ApplySectionAttributes()
 		UT_DEBUGMSG (("Applying footer\n"));
 		propsArray [paramIndex] = "footer";
 		paramIndex++;
-		sprintf (tempBuffer, "ftr%u", m_currentFtrID);
-		propsArray [paramIndex] = tempBuffer;
+		sprintf (szFtrID, "ftr%u", m_currentFtrID);
+		propsArray [paramIndex] = szFtrID;
 		paramIndex++;
 	}
 	UT_ASSERT (paramIndex < 7);
 	propsArray [paramIndex] = NULL;
 
-	if (m_pImportFile)					// if we are reading a file
+	if ((m_pImportFile) || (m_parsingHdrFtr)) // if we are reading a file or parsing a header and footer
+	{
 		return m_pDocument->appendStrux(PTX_Section, propsArray);
+	}
 	else
 	{
 		// Add a block before the section so there's something content
@@ -4004,6 +4041,68 @@ IE_Imp_RTF::RTFTokenType IE_Imp_RTF::NextToken (unsigned char *pKeyword, long* p
 }
 
 
+
+void IE_Imp_RTF::_appendHdrFtr ()
+{
+	UT_uint32 i;
+	UT_uint32 numHdrFtr;
+	const RTFHdrFtr * header;
+	XML_Char tempBuffer[128];
+	const XML_Char* szType;
+
+	
+	numHdrFtr = m_hdrFtrTable.getItemCount();
+
+	for (i = 0; i < numHdrFtr; i++)
+	{ 
+		header = (const RTFHdrFtr *)m_hdrFtrTable[i];
+
+		m_pPasteBuffer = (unsigned char *)header->m_buf.getPointer (0);
+		m_lenPasteBuffer = header->m_buf.getLength ();
+		m_pCurrentCharInPasteBuffer = m_pPasteBuffer;
+		m_dposPaste = FV_DOCPOS_EOD;
+
+
+
+		const XML_Char* propsArray[9];
+		switch (header->m_type)
+		{
+		case RTFHdrFtr::hftHeader:
+			sprintf (tempBuffer, "hdr%u", header->m_id);
+			szType = "header";
+			break;
+		case RTFHdrFtr::hftFooter:
+			sprintf (tempBuffer, "ftr%u", header->m_id);
+			szType = "footer";
+			break;
+		default:
+			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		}
+		UT_DEBUGMSG (("id is %s\n", tempBuffer));
+		propsArray[0] = "type";
+		propsArray[1] = szType;
+		propsArray[2] = "id";
+		propsArray[3] = tempBuffer;
+		propsArray[4] = "listid";
+		propsArray[5] = "0";
+		propsArray[6] = "parentid";
+		propsArray[7] = "0";
+		propsArray[8] = NULL;
+
+		m_pDocument->appendStrux (PTX_SectionHdrFtr, propsArray);
+		propsArray[0] = NULL;
+		// actually it appears that we have to append a block for some cases.
+		m_pDocument->appendStrux(PTX_Block, propsArray);
+
+		// tell that we are parsing headers and footers
+		m_parsingHdrFtr = true;
+		_parseFile (NULL);
+		m_parsingHdrFtr = false;
+#ifdef PT_TEST
+		m_pDocument->__dump(stderr);
+#endif
+	}
+}
 
 //////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////
