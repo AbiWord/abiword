@@ -1611,6 +1611,14 @@ void fl_BlockLayout::_stuffAllRunsOnALine(void)
 	{
 		pTempRun->lookupProperties();
 		pLine->addRun(pTempRun);
+
+		if(pTempRun->getType() == FPRUN_TEXT && !UT_BIDI_IS_STRONG(pTempRun->getDirection()))
+		{
+			// if the runs is not of a strong type, we have to ensure its visual direction gets
+			// recalculated and buffer refreshed ...
+			pTempRun->setVisDirection(UT_BIDI_UNSET);
+		}
+		   
 		pTempRun = pTempRun->getNextRun();
 	}
 	UT_ASSERT(pLine->getContainer());

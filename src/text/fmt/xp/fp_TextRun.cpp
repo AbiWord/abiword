@@ -2487,6 +2487,16 @@ void fp_TextRun::setDirection(UT_BidiCharType dir, UT_BidiCharType dirOverride)
 			//getLine()->setNeedsRedraw();
 		}
 	}
+	else
+	{
+		if(!UT_BIDI_IS_STRONG(curDir) && getLine())
+		{
+			getLine()->setMapOfRunsDirty();
+			clearScreen();
+			markDrawBufferDirty();
+		}
+	}
+	
 }
 
 /*

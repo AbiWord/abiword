@@ -3281,12 +3281,12 @@ fp_Run * fp_Line::getFirstVisRun()
 
 void fp_Line::addDirectionUsed(UT_BidiCharType dir, bool bRefreshMap)
 {
-	if(FRIBIDI_IS_RTL(dir))
+	if(UT_BIDI_IS_RTL(dir))
 	{
 		m_iRunsRTLcount++;
 		xxx_UT_DEBUGMSG(("fp_Line::addDirectionUsed: increased RTL run count [%d, this=0x%x, bRefresh=%d]\n", m_iRunsRTLcount, this, bRefreshMap));
 	}
-	else if(!FRIBIDI_IS_NEUTRAL(dir))
+	else if(!UT_BIDI_IS_NEUTRAL(dir))
 	{
 		m_iRunsLTRcount++;
 		xxx_UT_DEBUGMSG(("fp_Line::addDirectionUsed: increased LTR run count [%d, this=0x%x, bRefresh=%d]\n", m_iRunsLTRcount, this, bRefreshMap));
@@ -3301,12 +3301,12 @@ void fp_Line::addDirectionUsed(UT_BidiCharType dir, bool bRefreshMap)
 
 void fp_Line::removeDirectionUsed(UT_BidiCharType dir, bool bRefreshMap)
 {
-	if(FRIBIDI_IS_RTL(dir))
+	if(UT_BIDI_IS_RTL(dir))
 	{
 		m_iRunsRTLcount--;
 		xxx_UT_DEBUGMSG(("fp_Line::removeDirectionUsed: increased RTL run count [%d, this=0x%x, bRefresh=%d]\n", m_iRunsRTLcount, this, bRefreshMap));
 	}
-	else if(!FRIBIDI_IS_NEUTRAL(dir))
+	else if(!UT_BIDI_IS_NEUTRAL(dir))
 	{
 		m_iRunsLTRcount--;
 		xxx_UT_DEBUGMSG(("fp_Line::removeDirectionUsed: increased LTR run count [%d, this=0x%x, bRefresh=%d]\n", m_iRunsLTRcount, this, bRefreshMap));
@@ -3324,23 +3324,23 @@ void fp_Line::changeDirectionUsed(UT_BidiCharType oldDir, UT_BidiCharType newDir
 	if(oldDir == newDir)
 		return;
 	
-	if(FRIBIDI_IS_RTL(newDir))
+	if(UT_BIDI_IS_RTL(newDir))
 	{
 		m_iRunsRTLcount++;
 		xxx_UT_DEBUGMSG(("fp_Line::changeDirectionUsed: increased RTL run count [%d, this=0x%x, bRefresh=%d]\n", m_iRunsRTLcount, this, bRefreshMap));
 	}
-	else if(!FRIBIDI_IS_NEUTRAL(newDir))
+	else if(!UT_BIDI_IS_NEUTRAL(newDir))
 	{
 		m_iRunsLTRcount++;
 		xxx_UT_DEBUGMSG(("fp_Line::changeDirectionUsed: increased LTR run count [%d, this=0x%x, bRefresh=%d]\n", m_iRunsLTRcount, this, bRefreshMap));
 	}
 	
-	if(FRIBIDI_IS_RTL(oldDir))
+	if(UT_BIDI_IS_RTL(oldDir))
 	{
 		m_iRunsRTLcount--;
 		xxx_UT_DEBUGMSG(("fp_Line::changeDirectionUsed: increased RTL run count [%d, this=0x%x, bRefresh=%d]\n", m_iRunsRTLcount, this, bRefreshMap));
 	}
-	else if(!FRIBIDI_IS_NEUTRAL(oldDir))
+	else if(!UT_BIDI_IS_NEUTRAL(oldDir))
 	{
 		m_iRunsLTRcount--;
 		xxx_UT_DEBUGMSG(("fp_Line::changeDirectionUsed: increased LTR run count [%d, this=0x%x, bRefresh=%d]\n", m_iRunsLTRcount, this, bRefreshMap));
