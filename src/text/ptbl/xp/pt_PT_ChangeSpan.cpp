@@ -138,7 +138,20 @@ UT_Bool pt_PieceTable::_fmtChangeSpanWithNotify(PTChangeFmt ptc,
 {
 	// create a change record for this change and put it in the history.
 
+#if 1
+	// TODO when we add length to strux (and remove the bLeftSide
+	// TODO stuff) we probably won't need this.
+	if (length == 0)
+	{
+		if (ppfNewEnd)
+			*ppfNewEnd = pft->getNext();
+		if (pfragOffsetNewEnd)
+			*pfragOffsetNewEnd = 0;
+		return UT_TRUE;
+	}
+#else	
 	UT_ASSERT(length > 0);
+#endif
 
 	PT_AttrPropIndex indexNewAP;
 	PT_AttrPropIndex indexOldAP = pft->getIndexAP();

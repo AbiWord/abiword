@@ -100,7 +100,21 @@ UT_Bool pt_PieceTable::_deleteSpanWithNotify(PT_DocPosition dpos, UT_Bool bLeftS
 											 pf_Frag_Strux * pfs,
 											 pf_Frag ** ppfEnd, UT_uint32 * pfragOffsetEnd)
 {
+
+#if 1
+	// TODO when we add length to strux (and remove the bLeftSide
+	// TODO stuff) we probably won't need this.
+	if (length == 0)
+	{
+		if (ppfEnd)
+			*ppfEnd = pft->getNext();
+		if (pfragOffsetEnd)
+			*pfragOffsetEnd = 0;
+		return UT_TRUE;
+	}
+#else	
 	UT_ASSERT(length > 0);
+#endif
 	
 	// create a change record for this change and put it in the history.
 	// we do this before the actual change because various fields that
