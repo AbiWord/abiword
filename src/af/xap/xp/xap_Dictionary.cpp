@@ -471,9 +471,6 @@ UT_uint32 XAP_Dictionary::countCommonChars( UT_UCSChar *pszHaystack,UT_UCSChar *
 
 bool XAP_Dictionary::isWord(const UT_UCSChar * pWord, UT_uint32 len) const
 {
-//
-// This original code does not work. I believe it is a bug in the hash table.
-//
 	char * key = (char*) calloc(len+1, sizeof(char));
 	if (!key)
 	{

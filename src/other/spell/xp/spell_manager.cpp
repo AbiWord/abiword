@@ -60,8 +60,6 @@ typedef ISpellChecker SpellCheckerClass;
   : m_map (NBUCKETS), m_lastDict(0), m_nLoadedDicts(0)
 {
 	m_missingHashs += "-none-";
-	m_vecKeys.clear();
-	m_vecDics.clear();
 }
 
 /*!
@@ -71,18 +69,8 @@ SpellManager::~SpellManager ()
 {
 	UT_Vector * pVec = m_map.enumerate();
 	UT_ASSERT(pVec);
-#if 0
 	UT_VECTOR_PURGEALL (SpellCheckerClass *, (*pVec));
 	DELETEP(pVec);
-#else
-	UT_uint32 i =0;
-	for(i=0; i < m_vecKeys.getItemCount();i++)
-	{
-		char * psz = (char *) m_vecKeys.getNthItem(i);
-		delete [] psz;
-		delete ((SpellCheckerClass *) m_vecDics.getNthItem(i));
-	}
-#endif
 }
 
 /*!
@@ -114,43 +102,18 @@ SpellManager::requestDictionary (const char * szLang)
 	if (strstr(m_missingHashs.c_str(), szLang))
 		return 0;
 
-//
-// The contains method is buggy as hell. Please fix this code!!
-//
-// work around from sevior...
-//
-#if 0
 	// first look up the entry in the hashtable
 	if (m_map.contains (szLang, 0))
 	{
 		return (SpellCheckerClass *)m_map.pick (szLang);
 	}
-#else
-
-	UT_uint32 size = m_vecKeys.size();
-	bool bFound = false;
-	UT_uint32 i =0;
-	for (i = 0; (i < size) && !bFound; i++)
-	{
-		const char * pKey = (const char *) m_vecKeys.getNthItem(i);
-		bFound = (strcmp(szLang,pKey) == 0); 
-	}
-	i--;
-	if(bFound)
-	{
-		SpellCheckerClass * pDic2 = (SpellCheckerClass *) m_vecDics.getNthItem(i);
-		return pDic2;
-	}
-#endif
-
 
 	// not found, so insert it
 	checker = new SpellCheckerClass ();
 	
 	if (checker->requestDictionary (szLang))
-    {      
-		m_vecDics.addItem((void *)checker);
-	    m_vecKeys.addItem((void *) UT_strdup(szLang));
+    {
+		m_map.insert (szLang, (void *)checker);
 		m_lastDict = checker;
 		m_nLoadedDicts++;
 		return checker;
