@@ -699,6 +699,19 @@ void s_RTF_ListenerWriteDoc::_rtf_open_block(PT_AttrPropIndex api)
 	
 	m_pie->_rtf_keyword("pard");		// restore all defaults for this paragraph
 
+#ifdef BIDI_ENABLED
+		const XML_Char * szBidiDir = PP_evalProperty("dom-dir",pSpanAP,pBlockAP,pSectionAP,m_pDocument,true);
+		xxx_UT_DEBUGMSG(("bidi paragraph: pSectionAp 0x%x, pBlockAP 0x%x, dom-dir\"%s\"\n",pSectionAP,pBlockAP,szBidiDir));
+		if (szBidiDir)
+		{
+			if (!UT_strcmp (szBidiDir, "ltr"))
+				m_pie->_rtf_keyword ("ltrpar");
+			else
+				m_pie->_rtf_keyword ("rtlpar");
+		}
+
+#endif
+	
 	const XML_Char * szStyle = NULL;
 	if (pBlockAP->getAttribute("style", szStyle)) 
 	{
@@ -776,20 +789,6 @@ void s_RTF_ListenerWriteDoc::_rtf_open_block(PT_AttrPropIndex api)
 		m_pie->_rtf_keyword_ifnotdefault_twips("ri",(char*)szRightIndent,0);
 		m_pie->_rtf_keyword_ifnotdefault_twips("sb",(char*)szTopMargin,0);
 		m_pie->_rtf_keyword_ifnotdefault_twips("sa",(char*)szBottomMargin,0);
-
-#ifdef BIDI_ENABLED
-
-		const XML_Char * szBidiDir = PP_evalProperty("dom-dir",pSpanAP,pBlockAP,pSectionAP,m_pDocument,true);
-
-		if (szBidiDir)
-		{
-			if (!UT_strcmp (szBidiDir, "ltr"))
-				m_pie->_rtf_keyword ("ltrpar");
-			else
-				m_pie->_rtf_keyword ("rtlpar");
-		}
-
-#endif
 
 		fl_AutoNum * pAuto = m_pDocument->getListByID(id);
 		UT_ASSERT(pAuto);

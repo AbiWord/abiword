@@ -36,6 +36,10 @@
 #include "fl_AutoNum.h"
 #include "fl_BlockLayout.h"
 
+#ifdef BIDI_ENABLED
+#include "fribidi.h"
+#endif
+
 class IE_Imp_RTF;
 class RTF_msword97_list;
 
@@ -87,6 +91,10 @@ public:
 	UT_sint32  m_styleNumber ; //index into the style table
 	UT_uint32  m_listTag; // tag for lists to hang off
 	const char * m_szLang;
+#ifdef BIDI_ENABLED
+	FriBidiCharType m_dir;     // direction of text
+#endif
+	
 };                  
 
 class ABI_EXPORT RTFProps_bCharProps
@@ -114,6 +122,9 @@ public:
 	bool bm_hasBgColour; // if false, ignore colour number
 	bool bm_bgcolourNumber; // index into colour table
 	bool bm_listTag; // tag for lists to hanfg off
+#ifdef BIDI_ENABLED
+	bool bm_dir;     // direction of text
+#endif
 };
 
 struct ABI_EXPORT _rtfListTable
@@ -180,6 +191,9 @@ struct ABI_EXPORT RTFProps_ParaProps
 	UT_uint32       m_iOverideLevel;     // 0's index to the level
 	_rtfListTable   m_rtfListTable; 
 	UT_sint32  m_styleNumber ; //index into the style table
+#ifdef BIDI_ENABLED
+	FriBidiCharType m_dom_dir;
+#endif
 };                  
 
 // These are set true if changed in list definitions.
@@ -203,7 +217,10 @@ public:
 	bool        bm_curTabType;        // Current Tab type
 	bool        bm_curTabLeader;       // Current Tab Leader
 	bool        bm_rtfListTable; 
-};                  
+#ifdef BIDI_ENABLED
+	bool bm_dom_dir;
+#endif
+};
 
 
 //typedef struct sect_prop
@@ -335,6 +352,9 @@ struct ABI_EXPORT RTFProps_SectionProps
 	UT_uint32		m_numCols;
 	SectionBreak	m_breakType;
 	PageNumber		m_pageNumFormat;
+#ifdef BIDI_ENABLED
+	FriBidiCharType m_dir;
+#endif
 };
 
 

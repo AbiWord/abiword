@@ -711,4 +711,6 @@ ifeq ($(ABI_NATIVE),unix)
 CFLAGS += -DSUPPORTS_UT_IDLE=1
 endif
 
-EXTRA_LIBS+=-lfribidi
+ifdef ABI_OPT_BIDI_ENABLED
+EXTRA_LIBS+=-lAbi_fribidi
+endif
