@@ -3904,6 +3904,9 @@ void FV_View::cmdHyperlinkCopyLocation(PT_DocPosition pos)
 
 	const XML_Char * pTarget = pH->getTarget();
 
+	if(strcmp(pTarget,"#")==0)
+		return;
+
 	//skip over internal anchors
 	if(*pTarget == '#')
 		pTarget++;
