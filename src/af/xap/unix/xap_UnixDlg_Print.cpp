@@ -48,17 +48,22 @@ AP_UnixDialog_Print::~AP_UnixDialog_Print(void)
 DG_Graphics * AP_UnixDialog_Print::getPrinterGraphicsContext(void)
 {
 	UT_ASSERT(m_answer == a_OK);
-
+#if 0
 	UnixGraphics * pGraphics = NULL;	// TODO.....
 	
 	return pGraphics;
+#else
+	return 0;
+#endif
 }
 
 void AP_UnixDialog_Print::releasePrinterGraphicsContext(DG_Graphics * pGraphics)
 {
+#if 0
 	UnixGraphics * pUnixGraphics = (UnixGraphics *)pGraphics;
 	if (pGraphics)
 		delete pGraphics;
+#endif
 }
 
 /*****************************************************************/
