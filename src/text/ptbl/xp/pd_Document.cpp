@@ -1446,7 +1446,7 @@ bool PD_Document::_syncFileTypes(bool bOpenedFromSaved)
 	  szSuffixes = IE_Exp::suffixesForFileType(m_lastSavedAsType);
 
 	if (!szSuffixes)
-	  return IEFT_Bogus;
+	  return false;
 
 	// Pull first suffix from the file dialog pattern string
 	UT_String suffix;
