@@ -1,3 +1,4 @@
+
 <HTML>
 
 <HEAD>
@@ -7,132 +8,110 @@
 <BODY>
 <H2 align=Center>AbiWord Roadmap</H2>
 
-<ul>
-<li>Last updated:  9 April 1999, the current tarball is 0.5.3
+<P>The current version of this roadmap reflects a proposal which does
+not yet have much consensus around it.  Specifically, the proposal is
+to redefine version 1.0 as having a very limited feature set, in order
+to finish it much more quickly.  The idea here is that we need to get
+at least some limited level of functionality 'finished' and then move
+on to fill in the missing features.  "Release Early, release often."
+Comments, questions, or concerns about this approach should be sent to
+the abiword-dev mailing list. --EWS</p>
 
-<li>Please see the <a href="#notes">notes</a> at the bottom of this list.
+<ul>
+<li>Last updated:  25 May 1999, the current tarball is 0.7.0
+
+<li>Please see the explanatory <a href="#notes">notes</a> at the bottom of this list.
 </ul>
 
 <hr>
 
 <TABLE WIDTH=100% BORDER=1>
 <TR ALIGN=CENTER>
-  <TD WIDTH=25%><B>0.7.0</B></TD>
-  <TD WIDTH=25%><B>0.9.0/1.0.0</B></TD>
+  <TD WIDTH=25%><B>0.9/1.0</B></TD>
+  <TD WIDTH=25%><B>1.1/1.2</B></TD>
   <TD WIDTH=25%><B>Unknown</B></TD>
   <TD WIDTH=25%><B>Future</B></TD>
   </TR>
 
 <tr>
 <td>
-
-<P>The primary goal of the 0.7.0 release is to introduce the
-availability of compiled binaries.  Accordingly, we're investing
-effort in polishing the user experience.</p>
-
-<P>We're also trying to be as sure as we can that the file format
-implemented in this release is the not going to change again.  The
-expectation is that with this release, people may start to <b>use</b>
-AbiWord more, and we want to take steps to ensure document
-compatibility.</p>
-
-</td>
-
-<td><P>We'll call AbiWord 0.9.0 when it has [substantially] all of the
+<P>We'll consider AbiWord to be at version 0.9 when it has [substantially] all of the
 features we want in our "1.0" release.  Accordingly, the list below
 represents our current plan for the "1.0" feature set.  This
 list is still subject to a certain amount of change.</P>
 
-<P>After sufficient bug fixing on the 0.9.0 code base,
+<P>Note that our target feature set for version 1.0 is very basic.  <i>"Version 1.0 is the beginning, not the end."</i></P>
+
+<P>After sufficient bug fixing on the 0.9 code base,
 we'll call it 1.0.0 and consider it to be a maintenance tree.  When
 we're ready to start adding post-1.0 features, we'll fork a new
-development tree.</p></td>
+development tree for the 1.1/1.2 series releases.</p></td>
+
+<td><P>User feedback from the 1.0 release will be used to determine priorities for the 1.2 release.  The following list is extremely tentative right now.</td>
 
 <td><p>We're not quite sure where these features go yet.</p></td>
-
-<td><p>We believe these features are NOT going to be in 1.0.</p></td>
 
 </tr>
 
 <TR>
   <!-- ********************** column 1 ********************** -->
-
-  <TD VALIGN=top>
-  <UL>
-<hr><b>File format stability</b><br>
-    <li>define file format for tables (jeff@abisource.com, eric@abisource.com)
-<hr><b>Bugs</b><br>
-    <li>bugs 94, 218, 241, 242, 243, 260 (all of which may be related; specially requested by Bob) (jeff@abisource.com)
-    <li>bug:  spaces should not wrap to the beginning of a line (362) (eric@abisource.com)
-    <LI>fix bug 7 (character overhang redraw problems) (eric@abisource.com)
-    <LI>add code to coalesce runs on the fly during text insertion (eric@abisource.com)
-<hr><b>Features</b><br>
-    <LI>headers and footers (eric@abisource.com)
-    <LI>lists (eric@abisource.com)
-    <LI>finish code to insert, delete section breaks
-    <LI>add ability to manipulate page margins, size, orientation 
-<hr><b>Tree</b><br>
-    <li>Abstract ptbl and fmt code into a XAP text layout library for use by multiple AbiSuite apps (eric@abisource.com)
-<hr><b>Other</b><br>
-    <li>figure out memory usage issues on long text file import (eric@abisource.com)
-<hr><b>Binaries</b> (AbiSource staff will take care of all of these)<br>
-    <li>Define locations of necessary support files in a user installation (dictionaries, sample documents, strings files, Unix fonts)
-    <li>Define sample documents and design of Help menu.  Implement menu and write documents.
-    <li>installer for Win32
-    <li>packaging and install scripts for Linux.  RPM, DEB, tar/script, etc. (shaw@abisource.com)
-    <li>setup production builds process, automated builds, version numbering
-    <li>artwork for splash screen, about box, icon (scott@abisource.com)
-
-    </UL>
-    </TD>
-    
-  <!-- ********************** column 2 ********************** -->
 <TD VALIGN=top>
     <UL>
-<hr><b>Misc GUI work</b><br>
-    <LI>DLOG:  goto
-    <LI>DLOG:  word count
+<hr><b>Features</b><br>
+    <LI>finish headers and footers (eric@abisource.com)
     <li>DLOG:  Format/Paragraph
     <li>DLOG:  Format/Tabs
-    <li>DLOG:  File/Page Setup (aka Format/Section)
+    <li>DLOG:  File/Page Setup (aka Format/Section) (with page margins, size, orientation)
     <li>DLOG:  Format/Columns
     <li>DLOG:  Insert/Break
     <li>DLOG:  Insert/Page Numbers
     <li>DLOG:  Insert Date,Time
     <li>DLOG:  Insert Field
     <li>DLOG:  Insert Symbol
-    <li>DLOG:  spell check
+    <li>DLOG:  Spell check
     <LI>DLOG:  Options, with tabs for various kinds of options
+    <LI>Clipboard support for formatted text.  (Define/implement interaction of clipboard with import/export APIs to allow for copy/paste of formatted text.  Support copy/paste of RTF in this manner, verifying that it interoperates with Microsoft Word on Win32 systems.)
+    <li>Context menu for spell, with suggestions for mis-spelled words.
+    <LI>RTF export
+    <li>Replace Word97 import code with a more maintainable code base. (sterwill@abisource.com, justin@ukans.edu)
+<hr><b>Other</b><br>
+    <li>Design and implement a consistent scheme for moving documents between systems (including between differing platforms) and preserving as much of the font information as possible.
+    <LI>paragraph full justification  
+
+<hr><b>Notable Bugs</b><br>
+    <li>bug:  spaces should not wrap to the beginning of a line (362) (eric@abisource.com)
+    <LI>fix bug 7 (character overhang redraw problems) (eric@abisource.com)
+    </UL>
+    </TD>
+
+  <!-- ********************** column 2 ********************** -->
+<TD VALIGN=top>
+    <UL>
+
+    <li>Gnome-ify
+    <LI>show invisibles 
+    <LI>lists
+    <LI>horizontal rules
+    <li>tabs:  center, right
     <li>View/Toolbars
     <li>View/Ruler
     <li>View/Status Bar
-    <li>context menu for images
-    <li>Context cursors for image and image size
-    <LI>image resize.  Involves the addition of "handles" on the corners and edges of the image, when it's selected for resize.  Requires mouse interaction and drag code.  This should be possible to do entirely in XP code.
-<hr><b>Features</b><br>
-    <LI>superscripts/subscripts 
-    <LI>vertical keeps (partially done, in fb_ColumnBreaker.cpp)
-    <LI>horizontal keeps 
-    <LI>horizontal rules
-    <LI>Define/implement interaction of clipboard with import/export APIs to allow for copy/paste of formatted text.  Support copy/paste of RTF in this manner, verifying that it interoperates with Microsoft Word on Win32 systems.
-<hr><b>Spell</b><br>
-    <li>Tag by language so spell checker can use the right dictionary
-    <li>Figure out whether to change dictionary file format (ispell file format is completely dependent upon compiler and platform)
-    <li>context menu for spell
-<hr><b>Import/Export</b><br>
-    <LI>RTF export
-    <li>import/export WordPerfect (lansdoct@screech.cs.alfred.edu, shannonw@cygnus.com)
-    <li>Replace Word97 import code with a more maintainable code base. (justin@ukans.edu)
-<hr><b>Layout engine work</b><br>
-    <LI>show invisibles 
-    <LI>paragraph full justification  
-    <LI>tables
-    <li>tabs:  center, right
-<hr><b>Other</b><br>
+    <li>Context menu for images
+    <li>Context cursors for image
+    <LI>DLOG:  goto
+    <LI>DLOG:  word count
     <li>switch to UTF-8 encoding for internal piece table storage (jeff@abisource.com, eric@abisource.com)
     <li>Cleanup mapping of Unicode encodings to font encodings, focusing on: bullets, dashes, fancy quotation marks, symbols, dingbats (eric@abisource.com)
     <LI>online help (in HTML?)
-    <li>Design and implement a consistent scheme for moving documents between systems (including between differing platforms) and preserving as much of the font information as possible.
+    <LI>tables
+    <li>import/export WordPerfect (lansdoct@screech.cs.alfred.edu, shannonw@cygnus.com)
+    <li>Tag by language so spell checker can use the right dictionary
+    <li>Figure out whether to change dictionary file format (ispell file format is completely dependent upon compiler and platform)
+    <LI>image resize.  Involves the addition of "handles" on the corners and edges of the image, when it's selected for resize.  Requires mouse interaction and drag code.  This should be possible to do entirely in XP code.
+    <LI>superscripts/subscripts 
+    <LI>vertical keeps (partially done, in fb_ColumnBreaker.cpp)
+    <LI>horizontal keeps 
+
     </UL>
     </TD>
 
@@ -140,7 +119,6 @@ development tree.</p></td>
 <TD VALIGN=top>
     <UL>
 
-    <li>Gnome-ify
     <li>Qt port, anyone?  <tt>:-)</tt>
     <li>MacOS port, anyone?  John Brewer (jbrewer@jera.com) has checked in a start on this.
     <li>HTML import (michael@surfnetcity.com.au)
@@ -160,7 +138,7 @@ development tree.</p></td>
 <TD VALIGN=top>
 <UL>
     <LI>print preview (zoom works as a nice substitute)
-    <li>SVG graphics
+    <li>SVG graphics (currently being investigated by Matt Kimball)
     <LI>normal view 
     <LI>drop caps 
     <li>paragraph borders and shading
@@ -168,7 +146,7 @@ development tree.</p></td>
     <LI>outline mode 
     <li>decimal-aligned tabs
     <LI>Table of contents
-    <LI>JavaScript macros
+    <LI>macros and scripting
     <LI>Multilingual document support for CJKV, Hebrew, Arabic
     <LI>Background color
     <LI>Threads
