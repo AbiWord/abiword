@@ -49,8 +49,6 @@ static const char * s_CRNames[] = {
 	"ChngPnt ",
 	"UpdList ",
 	"StopList",
-	"DChngIP ",
-	"AChngIP ",
 	"UpdField",
 	"RemList ",
 	"UpdLayot"
