@@ -3,15 +3,15 @@
         {CLASS = FirstResponder; LANGUAGE = ObjC; SUPERCLASS = NSObject; }, 
         {
             ACTIONS = {okBtnAction = id; webBtnAction = id; }; 
-            CLASS = XAP_CocoaDlg_AboutController; 
+            CLASS = "XAP_CocoaDlg_AboutController"; 
             LANGUAGE = ObjC; 
             OUTLETS = {
-                m_appName = NSTextField; 
-                m_imageView = NSImageView; 
-                m_licenseText = NSTextField; 
-                m_okBtn = NSButton; 
-                m_versionLabel = NSTextField; 
-                m_webBtn = NSButton; 
+                "m_appName" = NSTextField; 
+                "m_imageView" = NSImageView; 
+                "m_licenseText" = NSTextField; 
+                "m_okBtn" = NSButton; 
+                "m_versionLabel" = NSTextField; 
+                "m_webBtn" = NSButton; 
             }; 
             SUPERCLASS = NSWindowController; 
         }
