@@ -73,9 +73,9 @@ include $(ABI_ROOT)/src/pkg/common/unix/tbz.mk
 # This target should build all packages 
 distribution: $(DIST_DEPS)
 	sed "s|ABI_BUILD_VERSION|$(ABI_BUILD_VERSION)|g; s|OUTDIR|$(OUTDIR)|g" package.qpg > abipackage.qpg
-	@rm *.qp[rmk]
+	@rm -f *.qp[rmk]
 	packager  abipackage.qpg
-	tar -cvzf abiword-$(ABI_BUILD_VERSION).qpr *.qp[mk]
-	rm *.qp[mk]
+	@tar -cvzf abiword-$(ABI_BUILD_VERSION).qpr *.qp[mk]
+	@rm -f *.qp[mk]
 	@echo "Finished building distributions"
 	
