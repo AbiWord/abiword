@@ -194,6 +194,7 @@ AC_ARG_ENABLE(extra-optimization,
        *) AC_MSG_ERROR(bad value ${enableval} for --enable-extra-optimization) ;;
      esac],[OPTIMIZE_CFLAGS=""])
 
+
 AC_ARG_ENABLE(debug,[  --enable-debug    Turn on debugging],[
 	case "${enableval}" in
 	   yes)	debug=true ;
@@ -207,6 +208,19 @@ AC_ARG_ENABLE(debug,[  --enable-debug    Turn on debugging],[
 	DEBUG_CFLAGS="-DNDEBUG"
 ])
 AM_CONDITIONAL(DEBUG, test x$debug = xtrue)
+
+if test $debug = false; then
+AC_ARG_ENABLE(symbols,[  --enable-symbols   Debugging symbols, but not debug-specific code],[
+	case "${enableval}" in
+	   yes)	symbols=true ;
+		DEBUG_CFLAGS="-DFMT_TEST -DUT_TEST -DPT_TEST -g" ;
+		OPTIMIZE_CFLAGS="" ;;
+	    no)	symbols=false ;;
+	     *)	AC_MSG_ERROR(bad value ${enableval} for --enable-symbols) ;;
+	esac
+],[	symbols=false])
+AM_CONDITIONAL(DEBUG, test x$symbols = xtrue)
+fi
 
 ## see which freetype we have, 2.0.3 vs. 2.0.4
 abi_save_cppflags="$CPPFLAGS"  

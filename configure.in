@@ -125,6 +125,7 @@ dnl   --with-libxml2
 dnl The defined values are used mostly in includes.mk, but also in
 dnl some other places
 
+
 AC_ARG_ENABLE(debug,[  --enable-debug    Turn on debugging],[
 	case "${enableval}" in
 	   yes)	debug=true ;
@@ -137,6 +138,19 @@ AC_ARG_ENABLE(debug,[  --enable-debug    Turn on debugging],[
 	DEBUG_CFLAGS="-DNDEBUG"
 ])
 AM_CONDITIONAL(DEBUG, test x$debug = xtrue)
+
+if test $debug = false; then
+AC_ARG_ENABLE(symbols,[  --enable-symbols   Debugging symbols, but not debug-specific code],[
+	case "${enableval}" in
+	   yes)	symbols=true ;
+		DEBUG_CFLAGS="-DFMT_TEST -DUT_TEST -DPT_TEST -g" ;
+		OPTIMIZE_CFLAGS="" ;;
+	    no)	symbols=false ;;
+	     *)	AC_MSG_ERROR(bad value ${enableval} for --enable-symbols) ;;
+	esac
+],[	symbols=false])
+AM_CONDITIONAL(DEBUG, test x$symbols = xtrue)
+fi
 
 ABI_GNOME_QUICK
 
