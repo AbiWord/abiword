@@ -3,7 +3,9 @@
 #define PL_LISTENER_H
 
 #include "ut_types.h"
-#include "pt_types.h"
+#include "pt_Types.h"
+class PX_ChangeRecord;
+
 
 // PL_Listener -- A layout registers a listener with the
 //                PD_Document in order to be notified of

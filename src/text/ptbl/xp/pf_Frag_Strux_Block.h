@@ -17,6 +17,8 @@ public:
 						pt_AttrPropIndex indexAP);
 	virtual ~pf_Frag_Strux_Block();
 
+	virtual UT_Bool			createSpecialChangeRecord(PX_ChangeRecord ** ppcr) const;
+
 	virtual void			dump(FILE * fp) const;
 	
 protected:

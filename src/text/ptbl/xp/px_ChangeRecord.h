@@ -3,6 +3,7 @@
 #define PX_CHANGERECORD_H
 
 #include "ut_types.h"
+#include "pt_Types.h"
 #include "pd_Document.h"
 
 // PX_ChangeRecord describes a change made to the document.
@@ -23,14 +24,18 @@
 class PX_ChangeRecord
 {
 public:
-	PX_ChangeRecord();
-	virtual ~PX_ChangeRecord();
-	
 	typedef enum _PXType { PXT_InsertSpan, PXT_DeleteSpan,
 						   PXT_InsertFmt, PXT_DeleteFmt,
 						   PXT_InsertStrux, PXT_DeleteStrux,
 						   PXT_InsertObject, PXT_DeleteObject } PXType;
 
+	PX_ChangeRecord(PXType type,
+					UT_Bool bMultiStepStart,
+					UT_Bool bMultiStepEnd,
+					PT_DocPosition position,
+					UT_uint32 vsIndex);
+	virtual ~PX_ChangeRecord();
+	
 protected:
 	UT_Bool					m_bMultiStepStart;
 	UT_Bool					m_bMultiStepEnd;

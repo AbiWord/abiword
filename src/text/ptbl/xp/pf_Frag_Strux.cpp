@@ -32,9 +32,9 @@ UT_Bool pf_Frag_Strux::setFmtHandle(PL_ListenerId lid, PL_StruxFmtHandle sfh)
 {
 	UT_uint32 kLimit = m_vecFmtHandle.getItemCount();
 	if (lid < kLimit)
-		return m_vecFmtHandle.setNthItem(lid,sfh,NULL);
+		return (m_vecFmtHandle.setNthItem(lid,(void *)sfh,NULL) == 0);
 	else if (lid == kLimit)
-		return m_vecFmtHandle.addItem(sfh);
+		return (m_vecFmtHandle.addItem((void *)sfh) == 0);
 
 	// TODO we need to fix the vector class so that i can do a setNthItem
 	// TODO and have it automatically grow the vector -- or we need to do

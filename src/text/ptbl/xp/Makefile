@@ -31,6 +31,7 @@ EXPORT_HEADERS=		pc_Column.h			\
 			pd_Document.h			\
 			pp_AttrProp.h			\
 			pp_Property.h			\
+			pt_Types.h			\
 			px_ChangeRecord.h		\
 			px_ChangeRecord_Fmt.h		\
 			px_ChangeRecord_Span.h		\
@@ -46,9 +47,9 @@ HEADERS=		$(EXPORT_HEADERS)		\
 			pf_Frag_Strux_Section.h		\
 			pf_Frag_Text.h			\
 			pf_Fragments.h			\
+			pl_Listener.h			\
 			pp_TableAttrProp.h		\
 			pt_PieceTable.h			\
-			pt_Types.h			\
 			px_ChangeHistory.h
 
 RELEASE_HEADERS=	$(EXPORT_HEADERS)

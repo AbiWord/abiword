@@ -162,14 +162,14 @@ void* UT_Vector::getNthItem(UT_uint32 n) const
 	return m_pEntries[n];
 }
 
-UT_Bool UT_Vector::setNthItem(UT_uint32 ndx, void * pNew, void ** ppOld)
+UT_sint32 UT_Vector::setNthItem(UT_uint32 ndx, void * pNew, void ** ppOld)
 {
 	if (ndx >= m_iCount)
-		return UT_FALSE;
+		return -1;
 	if (ppOld)
 		*ppOld = m_pEntries[ndx];
 	m_pEntries[ndx] = pNew;
-	return UT_TRUE;
+	return 0;
 }
 
 void* UT_Vector::getLastItem() const

@@ -14,6 +14,8 @@ public:
 	pf_Frag_Object();
 	virtual ~pf_Frag_Object();
 	
+	virtual UT_Bool			createSpecialChangeRecord(PX_ChangeRecord ** ppcr) const;
+
 	virtual void			dump(FILE * fp) const;
 
 protected:

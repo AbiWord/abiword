@@ -38,6 +38,12 @@ void pf_Fragments::appendFrag(pf_Frag * pf)
 	return;
 }
 
+pf_Frag * pf_Fragments::getFirst(void) const
+{
+	return m_pFirst;
+}
+
+
 void pf_Fragments::dump(FILE * fp) const
 {
 	pf_Frag * p;

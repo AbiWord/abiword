@@ -8,11 +8,11 @@
 #include "ut_types.h"
 #include "ut_vector.h"
 #include "xmlparse.h"
+#include "pt_Types.h"
+#include "pl_Listener.h"
 class pt_PieceTable;
-class PL_Listener;
 
-typedef UT_uint32 PT_DocPosition;		/* absolute document position */
-typedef enum _PTStruxType { PTX_Section, PTX_ColumnSet, PTX_Column, PTX_Block } PTStruxType;
+
 
 // PD_Document is the representation for a document.
 

@@ -209,6 +209,49 @@ UT_Bool pt_PieceTable::appendSpan(UT_UCSChar * pbuf, UT_uint32 length)
 	return UT_TRUE;
 }
 
+UT_Bool pt_PieceTable::addListener(PL_Listener * pListener,
+								   PL_ListenerId listenerId)
+{
+	// walk document and for each fragment, send a notification
+	// to each layout.
+
+	for (pf_Frag * pf = m_fragments.getFirst(); (pf); pf=pf->getNext())
+	{
+		switch (pf->getType())
+		{
+		case pf_Frag::PFT_Text:
+			{
+				pf_Frag_Text * pft = static_cast<pf_Frag_Text *> (pf);
+				// TODO
+			}
+			break;
+			
+		case pf_Frag::PFT_Strux:
+			{
+				pf_Frag_Strux * pfs = static_cast<pf_Frag_Strux *> (pf);
+				PL_StruxDocHandle sdh = (PL_StruxDocHandle)pf;
+				PL_StruxFmtHandle sfh = 0;
+				PX_ChangeRecord * pcr = 0;
+				UT_Bool bStatus = (   pfs->createSpecialChangeRecord(&pcr)
+								   && pListener->populate(sdh,pcr,&sfh)
+								   && pfs->setFmtHandle(listenerId,sfh));
+				if (pcr)
+					delete pcr;
+				if (!bStatus)
+					return UT_FALSE;
+			}
+			break;
+			
+		default:
+			UT_ASSERT(0);
+			return UT_FALSE;
+		}
+	}
+
+	return UT_TRUE;
+}
+
+
 void pt_PieceTable::dump(FILE * fp) const
 {
 	fprintf(fp,"  PieceTable: State %d\n",(int)m_pts);

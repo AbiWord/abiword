@@ -21,13 +21,20 @@
 class PX_ChangeRecord_Strux : public PX_ChangeRecord
 {
 public:
-	PX_ChangeRecord_Strux();
+	PX_ChangeRecord_Strux(PXType type,
+						  UT_Bool bMultiStepStart,
+						  UT_Bool bMultiStepEnd,
+						  PT_DocPosition position,
+						  UT_uint32 vsIndex,
+						  UT_Bool bLeftSide,
+						  pt_AttrPropIndex indexAP,
+						  PTStruxType struxType);
 	~PX_ChangeRecord_Strux();
 	
 protected:
 	UT_Bool					m_bLeftSide;
-	pt_AttrPropIndex		m_indexAP;	/* index in VS[].m_tableAttrProp to our A/P */
-	PT_PieceTable::PTStrux	m_type;		/* our type (paragraph, section) */
+	pt_AttrPropIndex		m_indexAP;		/* index in VS[].m_tableAttrProp to our A/P */
+	PTStruxType				m_struxType;	/* our type (paragraph, section) */
 };
 
 #endif /* PX_CHANGERECORD_STRUX_H */

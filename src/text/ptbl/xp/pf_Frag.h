@@ -5,6 +5,8 @@
 #include <stdio.h>
 #include "ut_types.h"
 class pt_PieceTable;
+class PX_ChangeRecord;
+
 
 // pf_Frag represents a fragment of the document.  This may
 // be text, an inline object (such as an image), or structure
@@ -28,6 +30,13 @@ public:
 	pf_Frag *				setNext(pf_Frag * pNext);
 	pf_Frag *				setPrev(pf_Frag * pPrev);
 
+	// createSpecialChangeRecord() constructs a change
+	// record which describes the fragment itself and
+	// not an actual change (editing) operation.  the
+	// is used to initialize the listeners.
+	
+	virtual UT_Bool			createSpecialChangeRecord(PX_ChangeRecord ** ppcr) const = 0;
+	
 	virtual void			dump(FILE * fp) const = 0;
 
 protected:

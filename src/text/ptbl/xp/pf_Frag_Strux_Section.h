@@ -17,11 +17,12 @@ public:
 						  UT_uint32 vsIndex,
 						  pt_AttrPropIndex indexAP);
 	virtual ~pf_Frag_Strux_Section();
+
+	virtual UT_Bool			createSpecialChangeRecord(PX_ChangeRecord ** ppcr) const;
 	
 	virtual void			dump(FILE * fp) const;
 
 protected:
-//	pb_CallbackList			m_cbList;	/* TODO */
 };
 
 #endif /* PF_FRAG_STRUX_SECTION_H */

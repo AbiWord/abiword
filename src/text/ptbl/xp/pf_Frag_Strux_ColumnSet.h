@@ -19,6 +19,8 @@ public:
 							UT_uint32 vsIndex,
 							pt_AttrPropIndex indexAP);
 	virtual ~pf_Frag_Strux_ColumnSet();
+
+	virtual UT_Bool			createSpecialChangeRecord(PX_ChangeRecord ** ppcr) const;
 	
 	virtual void			dump(FILE * fp) const;
 

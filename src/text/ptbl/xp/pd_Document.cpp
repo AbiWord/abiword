@@ -196,7 +196,7 @@ UT_Bool PD_Document::addListener(PL_Listener * pListener,
 	for (k=0; k<kLimit; k++)
 		if (m_vecListeners.getNthItem(k) == 0)
 		{
-			m_vecListeners.setNthItem(k,pListener,NULL);
+			(void)m_vecListeners.setNthItem(k,pListener,NULL);
 			goto ClaimThisK;
 		}
 
@@ -220,5 +220,5 @@ UT_Bool PD_Document::addListener(PL_Listener * pListener,
 
 UT_Bool PD_Document::removeListener(PL_ListenerId listenerId)
 {
-	return m_vecListeners.setNthItem(listenerId,NULL,NULL);
+	return (m_vecListeners.setNthItem(listenerId,NULL,NULL) == 0);
 }
