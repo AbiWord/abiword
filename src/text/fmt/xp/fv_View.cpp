@@ -2768,11 +2768,15 @@ void FV_View::insertParagraphBreak(void)
 	//
 	_saveAndNotifyPieceTableChange();
 
-	if (!isSelectionEmpty())
+	if (!isSelectionEmpty() && !m_FrameEdit.isActive())
 	{
 		bDidGlob = true;
 		//	m_pDoc->beginUserAtomicGlob();
 		_deleteSelection();
+	}
+	else if(m_FrameEdit.isActive())
+	{
+	       m_FrameEdit.setPointInside();
 	}
 
 	// insert a new paragraph with the same attributes/properties
@@ -6747,10 +6751,14 @@ void FV_View::insertSymbol(UT_UCSChar c, XML_Char * symfont)
 	// if so delete it then get the current font
 	m_pDoc->beginUserAtomicGlob();
 
-	if (!isSelectionEmpty())
+	if (!isSelectionEmpty() && !m_FrameEdit.isActive())
 	{
 		_deleteSelection();
 		_generalUpdate();
+	}
+	else if(m_FrameEdit.isActive())
+	{
+	       m_FrameEdit.setPointInside();
 	}
 	// We have to determine the current font so we can put it back after
 	// Inserting the Symbol
@@ -10496,7 +10504,10 @@ bool FV_View::insertFootnote(bool bFootnote)
 	{
 		return false;
 	}
-
+	if(m_FrameEdit.isActive())
+	{
+	        return false;
+	}
 //
 // Do this first
 //
@@ -10542,9 +10553,13 @@ bool FV_View::insertFootnote(bool bFootnote)
 
 	_saveAndNotifyPieceTableChange();
 	m_pDoc->beginUserAtomicGlob();
-	if (!isSelectionEmpty())
+	if (!isSelectionEmpty() && !m_FrameEdit.isActive())
 	{
 		_deleteSelection();
+	}
+	else if(m_FrameEdit.isActive())
+	{
+	       m_FrameEdit.setPointInside();
 	}
 	bool bCreatedFootnoteSL = false;
 

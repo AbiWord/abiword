@@ -69,6 +69,18 @@ FV_FrameEdit::~FV_FrameEdit()
 	}
 }
 
+void FV_FrameEdit::setPointInside(void)
+{
+  fl_FrameLayout * pFL = getFrameLayout();
+  if(pFL == NULL)
+  {
+    return;
+  }
+  PT_DocPosition pos = pFL->getPosition(true) + pFL->getLength()-1;
+  setMode(FV_FrameEdit_NOT_ACTIVE);
+  m_pView->_setPoint(pos);
+}
+
 bool FV_FrameEdit::isActive(void) const
 {
 	return (FV_FrameEdit_NOT_ACTIVE != m_iFrameEditMode);
