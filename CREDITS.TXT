@@ -13,15 +13,15 @@ contributors
 ------------
 Peter Arnold <petera@intrinsica.co.uk>          RTF import
 Darren Benham <gecko@benham.net>                Debian package
-Scott Boesch <scott@abisource.com>		artist, trade shows
+Scott Boesch <scott@abisource.com>              artist, trade shows
 Justin Bradford <justin@ukans.edu>              Word8 import
 John Brewer <jbrewer@jera.com>                  started MacOS port
 Andy Burnett <andy@abisource.com>
 Heath D. Carr <heath@abisource.com>
-Philippe Defert <Philippe.Defert@cern.ch>	AIX, HPUX, IRIX64, OSF1
+Philippe Defert <Philippe.Defert@cern.ch>       AIX, HPUX, IRIX64, OSF1
 Ryan Dooley <ryan@coe.missouri.edu>             started IRIX port
 Albert Fluegel <albert.fluegel@hl.siemens.de>   Solaris
-Ming-I Hsieh <mihs@wm28.csie.ncu.edu.tw>	FreeBSD tools detection
+Ming-I Hsieh <mihs@wm28.csie.ncu.edu.tw>        FreeBSD tools detection
 Matt Kimball <robozapp@xmission.com>            layout fixes
 Larry Kollar <kollar@stc.net>                   MkLinux
 Tuomas Kuosmanen <tigert@gimp.org>              artist
@@ -34,12 +34,13 @@ Nigel Stepp <stepp@mithril.res.cmu.edu>         VI keybindings
 Dave Thompson <thompson@pdnt.com>           
 Robert G. Werner <rwerner@lx1.microbsys.com>    VI keybindings
 John Wood <jyonw@asu.edu>                       NetBSD
+Alan Young <ayoung@teleport.com>                Alpha/NT
 
 translators
 -----------
 Albi <albi@linuxfan.com> <onderste@casema.net>  Dutch
-Frédéric CELLA <fcella@mahj.org>		French
-Philippe Duperron <duperron@mail.dotcom.fr>	French
+Frédéric CELLA <fcella@mahj.org>                French
+Philippe Duperron <duperron@mail.dotcom.fr>     French
 Martin Willemoes Hansen <mwh@stampede.org>      Danish
 Jarmo Karvonen <jarmo@dawn.joensuu.fi>          Finnish
 Christian Terboven <cterboven@gmx.net>          German

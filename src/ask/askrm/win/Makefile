@@ -26,7 +26,7 @@ CSRCS=			askrm_Win32.c
 
 PROGRAM=		$(BINDIR)/askrm.exe
 
-ABI_LDFLAGS=		/nologo /subsystem:windows /incremental:no /machine:I386 /profile
+ABI_LDFLAGS=		/nologo /subsystem:windows /incremental:no /machine:$(LINK_ARCH) /profile
 ABI_APPLIBS=		AbiSetup_Small 
 
 ABI_OTHLIBS=		

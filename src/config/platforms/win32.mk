@@ -50,6 +50,19 @@ LIB_SUFFIX = lib
 DLL_SUFFIX = dll
 EXE_SUFFIX = .exe
 
+# Architecture-specific flags
+ifeq ($(OS_ARCH), i386)
+ARCH_FLAGS	= -D_X86_
+OPTIMIZER	= -O2 -Ob1
+LINK_ARCH	= IX86
+endif
+
+ifeq ($(OS_ARCH), alpha)
+ARCH_FLAGS	= -D_ALPHA_
+OPTIMIZER	= -Oib3 -QAtuneEV56 -QAarchEV4 -QAgq -QAOu0 -QAieee0
+LINK_ARCH	= ALPHA
+endif
+
 # Compiler and shared library flags 
 
 ifdef ABI_OPT_DEBUG
@@ -57,22 +70,23 @@ ifdef ABI_OPT_DEBUG
 OPTIMIZER 	= -Od -Z7 -Ob1
 DEFINES 	= -DDEBUG -D_DEBUG -UNDEBUG -D_CRTDBG_MAP_ALLOC
 OBJ_DIR_SFX	= DBG
-OS_CFLAGS 	= -W3 -nologo -GF -Gy -MDd -DWIN32 -D_X86_
+OS_CFLAGS 	= -W3 -nologo -GF -Gy -MDd -DWIN32
 DLLFLAGS 	= -DEBUG -DEBUGTYPE:CV -OUT:"$@"
 LDFLAGS 	= -DEBUG -DEBUGTYPE:CV
 OS_DLLFLAGS 	= -nologo -DLL -SUBSYSTEM:WINDOWS -PDB:NONE
 
 else
 
-OPTIMIZER	= -O2 -Ob1
 DEFINES		= -UDEBUG -U_DEBUG -DNDEBUG
 OBJ_DIR_SFX	= OBJ
-OS_CFLAGS 	= -W3 -nologo -GF -Gy -MD -DWIN32 -D_X86_
+OS_CFLAGS 	= -W3 -nologo -GF -Gy -MD -DWIN32
 DLLFLAGS 	= -OUT:"$@"
 LDFLAGS 	=
 OS_DLLFLAGS 	= -nologo -DLL -SUBSYSTEM:WINDOWS -PDB:NONE
 
 endif
+
+OS_CFLAGS 	+= $(OPTIMIZER) $(ARCH_FLAGS)
 
 ABI_NATIVE	= win
 ABI_FE		= Win32

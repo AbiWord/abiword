@@ -30,7 +30,7 @@ PROGRAM=		$(BINDIR)/AbiWord.exe
 ## TODO should /profile be on the following line ??  does this
 ## TODO enable linking with profile-libraries and thus bloat us.
 
-ABI_LDFLAGS=		/nologo /subsystem:windows /incremental:no /machine:I386 /profile
+ABI_LDFLAGS=		/nologo /subsystem:windows /incremental:no /machine:$(LINK_ARCH) /profile
 ABI_APPLIBS=		AbiWordVer AbiUtil AbiImpExp MsWordView AbiPTbl AbiFmt AbiEv \
 			AbiXAp AbiGr AbiWPAp AbiSpell Abi_libpng Abi_zlib Abi_expat
 ABI_APPLIBDEP=		$(ABI_APPLIBS)

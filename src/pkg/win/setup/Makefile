@@ -30,7 +30,7 @@ RCSRCS=			setup.rc
 
 PROGRAM=		$(BINDIR)/setup.exe
 
-ABI_LDFLAGS=		/nologo /subsystem:windows /incremental:no /machine:I386 /profile
+ABI_LDFLAGS=		/nologo /subsystem:windows /incremental:no /machine:$(LINK_ARCH) /profile
 ABI_APPLIBS=		AbiSetup Abi_zlib Abi_libpng
 
 ABI_OTHLIBS=		

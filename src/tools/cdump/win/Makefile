@@ -26,7 +26,7 @@ OBJS=			$(OBJDIR)/cdump.$(OBJ_SUFFIX)
 
 PROGRAM=		$(BINDIR)/cdump$(EXE_SUFFIX)
 
-ABI_LDFLAGS=		/nologo /subsystem:console /incremental:no /machine:I386 /profile
+ABI_LDFLAGS=		/nologo /subsystem:console /incremental:no /machine:$(LINK_ARCH) /profile
 ABI_APPLIBS=		
 
 ABI_OTHLIBS=		
