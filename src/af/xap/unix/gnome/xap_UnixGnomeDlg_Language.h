@@ -1,5 +1,5 @@
-/* AbiWord
- * Copyright (C) 2000 AbiSource, Inc.
+/* AbiSource Application Framework
+ * Copyright (C) 1998 AbiSource, Inc.
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -17,27 +17,24 @@
  * 02111-1307, USA.
  */
 
-#ifndef XAP_UNIXGNOMEDIALOG_STUB_H
-#define XAP_UNIXGNOMEDIALOG_STUB_H
+#ifndef XAP_UNIXGNOMEDIALOG_LANG_H
+#define XAP_UNIXGNOMEDIALOG_LANG_H
 
-#include "xap_Dlg_Language.h"
-
-class XAP_UnixGnomeFrame;
+#include "xap_UnixDlg_Language.h"
 
 /*****************************************************************/
 
-class XAP_UnixGnomeDialog_Language: public XAP_Dialog_Language
+class XAP_UnixGnomeDialog_Language: public XAP_UnixDialog_Language
 {
-public:
+ public:
 	XAP_UnixGnomeDialog_Language(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
 	virtual ~XAP_UnixGnomeDialog_Language(void);
 
-	virtual void			runModal(XAP_Frame * pFrame);
-
 	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
-	
-protected:
 
+ protected:
+	virtual GtkWidget * constructWindow(void);
+ private:
 };
 
-#endif /* XAP_UNIXGNOMEDIALOG_STUB_H */
+#endif /* XAP_UNIXGNOMEDIALOG_LANG_H */

@@ -110,7 +110,7 @@ BeginSet(en,US,true)
 	MenuLabel(AP_MENU_ID_FMT_SUBSCRIPT,		"&Subscript",		"Make the selection subscript (toggle)")
 
 	MenuLabel(AP_MENU_ID_TOOLS,				"&Tools",			NULL)   
-        MenuLabel(AP_MENU_ID_TOOLS_SPELLING, "&Spelling", NULL)
+        MenuLabel(AP_MENU_ID_TOOLS_SPELLING, "&Spelling and Language", NULL)
 	MenuLabel(AP_MENU_ID_TOOLS_SPELL,		"Spe&lling",		"Check the document for incorrect spelling")
         MenuLabel(AP_MENU_ID_TOOLS_AUTOSPELL, "&Auto Spellcheck", "Automatically spell-check the document")
 	MenuLabel(AP_MENU_ID_TOOLS_WORDCOUNT,	"&Word Count",		"Count the number of words in the document")

@@ -200,7 +200,7 @@ void fp_TextRun::lookupProperties(void)
 
 	//set the language member
 	UT_Language *lls = new UT_Language;
-	const XML_Char * pszLanguage = PP_evalProperty("language",pSpanAP,pBlockAP,pSectionAP, pDoc, true);
+	const XML_Char * pszLanguage = PP_evalProperty("lang",pSpanAP,pBlockAP,pSectionAP, pDoc, true);
 	m_iLanguage = lls->getIdFromProperty(pszLanguage);
 	//UT_DEBUGMSG(("fp_TextRun::lookupProperties: m_iLanguage = %d\n", m_iLanguage));
 	delete lls;

@@ -96,7 +96,7 @@ static PP_Property _props[] =
 	{ "keep-together", "", 0},
 	{ "keep-with-next", "",	0},
 
-	{ "language", "English (US)", 1},
+	{ "lang", "en-US", 1},
 	
 	{ "line-height", "1.0", 0},
 	{ "list-decimal", ".", 1},

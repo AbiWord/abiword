@@ -3304,8 +3304,8 @@ static bool s_doLangDlg(FV_View * pView)
 	const XML_Char ** props_in = NULL;
 	if (pView->getCharFormat(&props_in))
 	{
-		pDialog->setLanguageProperty(UT_getAttribute("language", props_in));
-		free(props_in);
+		pDialog->setLanguageProperty(UT_getAttribute("lang", props_in));
+		FREEP(props_in);
 	}
 
 	// run the dialog
@@ -3327,7 +3327,7 @@ static bool s_doLangDlg(FV_View * pView)
 		{
 			//UT_DEBUGMSG(("some change\n"));
 			
-			props_out[k++] = "language";
+			props_out[k++] = "lang";
 			props_out[k++] = s;
 		}
 
@@ -3705,7 +3705,7 @@ Defun1(dlgLanguage)
 Defun(language)
 {
 	ABIWORD_VIEW;
-	const XML_Char * properties[] =	{ "language", NULL, 0};
+	const XML_Char * properties[] =	{ "lang", NULL, 0};
 	properties[1] = (const XML_Char *) pCallData->m_pData;
 	pView->setCharFormat(properties);
 	return true;

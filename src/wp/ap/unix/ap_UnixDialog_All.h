@@ -70,6 +70,7 @@
 #       include "xap_UnixGnomeDlg_Print.h"
 #       include "xap_UnixGnomeDlg_PrintPreview.h"
 #	include "xap_UnixGnomeDlg_Zoom.h"
+#       include "xap_UnixGnomeDlg_Language.h"
 
 #       include "ap_UnixGnomeDialog_Break.h"
 #	include "ap_UnixGnomeDialog_Replace.h"
@@ -130,6 +131,7 @@
 	DeclareDialog(AP_DIALOG_ID_LISTS,		     AP_UnixGnomeDialog_Lists)
 	DeclareDialog(AP_DIALOG_ID_COLUMNS,			AP_UnixGnomeDialog_Columns)
 	DeclareDialog(AP_DIALOG_ID_TAB,				AP_UnixGnomeDialog_Tab)
+        DeclareDialog(XAP_DIALOG_ID_LANGUAGE,		XAP_UnixGnomeDialog_Language)
 
 	// ... also add new dialogs here ...
 #   else

@@ -5,8 +5,8 @@
 #include <stdlib.h>
 
 
-// Please keep the list below alphabetised; even though this is not required
-// for it to work, it will make it easier to maintain.
+// Please keep the list below alphabetised by the lang; even though 
+// this is not required for it to work, it will make it easier to maintain.
 
 // to add a new language:
 // (1) check on this list it is not already there;
@@ -14,26 +14,25 @@
 // (3) add it here, using the ID corresponding to the one
 //     from xap_String_Id.h
 
-
 static lang_entry s_Table[] = 
 {
 	//the property value, the localised translation, the numerical id
-	{"-none-",			NULL, XAP_STRING_ID_LANG_0},
-	{"Czech",			NULL, XAP_STRING_ID_LANG_4},
-	{"Danish",			NULL, XAP_STRING_ID_LANG_13},
-	{"Dutch (Netherlands)",		NULL, XAP_STRING_ID_LANG_14},
-	{"English (AU)",		NULL, XAP_STRING_ID_LANG_1},
-	{"English (GB)",		NULL, XAP_STRING_ID_LANG_2},
-	{"English (US)",		NULL, XAP_STRING_ID_LANG_3},
-	{"Finnish",			NULL, XAP_STRING_ID_LANG_15},
-	{"French (France)",		NULL, XAP_STRING_ID_LANG_7},
-	{"German (Austria)",		NULL, XAP_STRING_ID_LANG_5},
-	{"German (Germany)",		NULL, XAP_STRING_ID_LANG_6},
-	{"Hebrew",			NULL, XAP_STRING_ID_LANG_8},
-	{"Italian (Italy)",		NULL, XAP_STRING_ID_LANG_9},
-	{"Portuguese (Portugal)",	NULL, XAP_STRING_ID_LANG_11},
-	{"Russian (Russia)",		NULL, XAP_STRING_ID_LANG_12},
-	{"Spanish (Spain)",		NULL, XAP_STRING_ID_LANG_10},
+        {"-none-",	        NULL, XAP_STRING_ID_LANG_0},
+	{"cs-CZ",		NULL, XAP_STRING_ID_LANG_4},
+	{"da-DK",		NULL, XAP_STRING_ID_LANG_13},
+	{"da-NL",		NULL, XAP_STRING_ID_LANG_14},
+	{"de-AU",		NULL, XAP_STRING_ID_LANG_5},
+	{"de-DE",		NULL, XAP_STRING_ID_LANG_6},
+	{"en-AU",		NULL, XAP_STRING_ID_LANG_1},
+	{"en-GB",		NULL, XAP_STRING_ID_LANG_2},
+	{"en-US",		NULL, XAP_STRING_ID_LANG_3},
+	{"es-ES",		NULL, XAP_STRING_ID_LANG_10},
+	{"fi-FI",			NULL, XAP_STRING_ID_LANG_15},
+	{"fr-FR",		NULL, XAP_STRING_ID_LANG_7},
+	//{"Hebrew",			NULL, XAP_STRING_ID_LANG_8},
+	{"it-IT",		NULL, XAP_STRING_ID_LANG_9},
+	{"pt-PT",	NULL, XAP_STRING_ID_LANG_11},
+	{"ru-RU",		NULL, XAP_STRING_ID_LANG_12}
 };
 
 static int s_compareQ(const void * a, const void *b)
