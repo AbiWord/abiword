@@ -154,6 +154,9 @@ char * UT_strdup(const char * szSource)
 
 UT_sint32 UT_stricmp(const char * s1, const char * s2)
 {
+ UT_return_val_if_fail(s1, 1);
+ UT_return_val_if_fail(s2, -1);
+
 #if defined(HAVE_STRCASECMP)
 
   return strcasecmp(s1,s2);
@@ -163,8 +166,6 @@ UT_sint32 UT_stricmp(const char * s1, const char * s2)
   return stricmp(s1,s2);
 
 #else
-  UT_return_val_if_fail(s1, 1);
-  UT_return_val_if_fail(s2, -1);
 
   // Lifted from glibc.  Looks better (in a constant-factor sort of way)
   // than what we had before.  Ideally this should be per-platform.
