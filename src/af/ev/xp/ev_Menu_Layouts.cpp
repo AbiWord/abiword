@@ -93,7 +93,8 @@ bool EV_Menu_Layout::setLayoutItem(UT_uint32 indexLayoutItem, XAP_Menu_Id id, EV
 	m_iMaxId = max(m_iMaxId, id);
 	void *old;
 	m_layoutTable.setNthItem(indexLayoutItem, new EV_Menu_LayoutItem(id, flags), &old);
-	DELETEP(static_cast<EV_Menu_LayoutItem *> (old));
+	EV_Menu_LayoutItem * pOld = static_cast<EV_Menu_LayoutItem *> (old);
+	DELETEP(pOld);
 	return (m_layoutTable[indexLayoutItem] != NULL);
 }
 
