@@ -507,7 +507,7 @@ UT_Bool IE_Imp_RTF::ParseChar(UT_UCSChar ch)
 				return UT_TRUE;
 			}
 			// Insert a character into the story
-			if ((ch >= 32  ||  ch == 9)  &&  !m_currentRTFState.m_charProps.m_deleted)
+            if ((ch >= 32  ||  ch == 9 || ch == UCS_FF || ch == UCS_LF)  &&  !m_currentRTFState.m_charProps.m_deleted)
 			{
 				return AddChar(ch);
 			}
@@ -757,6 +757,10 @@ UT_Bool IE_Imp_RTF::TranslateKeyword(unsigned char* pKeyword, long param, UT_Boo
 		{
 			m_currentRTFState.m_paraProps.m_indentLeft = param;
 		}
+		else if (strcmp((char*)pKeyword, "line") == 0)
+		{
+			return ParseChar(UCS_LF);
+		}	
 		break;
 	case 'o': 
 	        if (strcmp((char*)pKeyword,"ol") == 0)
@@ -780,7 +784,11 @@ UT_Bool IE_Imp_RTF::TranslateKeyword(unsigned char* pKeyword, long param, UT_Boo
 			// reset paragraph attributes
 			return ResetParagraphAttributes();
 		}
-		break;
+	        else if (strcmp((char*)pKeyword, "page") == 0)
+       		{
+           	 return ParseChar(UCS_FF);
+        	}
+			break;
 
 	case 'q':
 		if (strcmp((char*)pKeyword, "ql") == 0)
