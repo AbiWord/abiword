@@ -3089,11 +3089,20 @@ bool FV_View::setBlockIndents(bool doLists, double indentChange, double page_siz
 		getAllBlocksInList(&v);
 	else
 		getBlocksInSelection(&v);
-	const XML_Char * props[] = {"margin-left","0.0in",NULL,NULL};
+	const XML_Char * props[] = {NULL,"0.0in",NULL,NULL};
+	const XML_Char ind_left [] = "margin-left";
+	const XML_Char ind_right[] = "margin-right";
+	const XML_Char * indent;
+	
 	for(i = 0; i<v.getItemCount();i++)
 	{
 		pBlock = static_cast<fl_BlockLayout *>(v.getNthItem(i));
-		szAlign = pBlock->getProperty("margin-left");
+		if(pBlock->getDominantDirection() == FRIBIDI_TYPE_RTL)
+			indent = ind_right;
+		else
+			indent = ind_left;
+		
+		szAlign = pBlock->getProperty(indent);
 		dim = UT_determineDimension(szAlign.c_str());
 		fAlign = static_cast<double>(UT_convertToInches(szAlign.c_str()));
 		szIndent = pBlock->getProperty("text-indent");
@@ -3113,6 +3122,7 @@ bool FV_View::setBlockIndents(bool doLists, double indentChange, double page_siz
 		UT_String szNewAlign = UT_convertInchesToDimensionString (dim, fAlign);
 		PL_StruxDocHandle sdh = pBlock->getStruxDocHandle();
 		PT_DocPosition iPos = m_pDoc->getStruxPosition(sdh)+fl_BLOCK_STRUX_OFFSET;
+		props[0] = indent;
 		props[1] = static_cast<const XML_Char *>(szNewAlign.c_str());
 		bRet = m_pDoc->changeStruxFmt(PTC_AddFmt, iPos, iPos, NULL, props, PTX_Block);
 	}
