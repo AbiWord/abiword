@@ -63,7 +63,7 @@
 
 #define CG_CONTEXT__ (CGContextRef)[[NSGraphicsContext currentContext] graphicsPort]
 
-
+#define TDUX(x) (_tduX(x)+1.0)
 
 // create a stack object like that to lock a NSView, then it will be unlocked on scope exit.
 // never do a new
@@ -126,7 +126,7 @@ GR_CocoaGraphics::GR_CocoaGraphics(NSView * win, XAP_App * app)
 	m_pFont (NULL),
 	m_fontForGraphics (nil),
 	m_pFontGUI(NULL),
-	m_iLineWidth(1),
+	m_fLineWidth(1.0),
 	m_joinStyle(JOIN_MITER),
 	m_capStyle(CAP_BUTT),
 	m_lineStyle(LINE_SOLID),
@@ -250,12 +250,12 @@ void GR_CocoaGraphics::setLineProperties ( double    inWidth,
 				      CapStyle  inCapStyle,
 				      LineStyle inLineStyle )
 {
-	m_iLineWidth = tduD(inWidth);
+	m_fLineWidth = tduD(inWidth);
 	m_joinStyle = inJoinStyle;
 	m_capStyle = inCapStyle;
 	m_lineStyle = inLineStyle;
 	if (m_viewLocker) {
-		::CGContextSetLineWidth (m_CGContext, m_iLineWidth);
+		::CGContextSetLineWidth (m_CGContext, m_fLineWidth);
 		_setCapStyle(m_capStyle);
 		_setJoinStyle(m_joinStyle);
 		_setLineStyle(m_lineStyle);	
@@ -346,7 +346,7 @@ void GR_CocoaGraphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
 	::CGContextSetShouldAntialias (m_CGContext, true);
 
 	if (!pCharWidths) {
-		NSPoint point = NSMakePoint (_tduX(xoff), yoff);
+		NSPoint point = NSMakePoint (TDUX(xoff), yoff);
 		unichar * uniString = (unichar*)malloc((iLength + 1) * sizeof (unichar));
 		for (int i = 0; i < iLength; i++) {
 			uniString[i] = pChars[i + iCharOffset];
@@ -390,7 +390,7 @@ void GR_CocoaGraphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
 				[attributedString release];
 				[string release];
 		
-				NSPoint point = NSMakePoint (_tduX(xoff), yoff);
+				NSPoint point = NSMakePoint (TDUX(xoff), yoff);
 		
 				[m_fontMetricsLayoutManager drawGlyphsForGlyphRange:NSMakeRange(0, len) atPoint:point];
 				xoff += currentRunLen;	
@@ -504,7 +504,7 @@ NSColor	*GR_CocoaGraphics::_utRGBColorToNSColor (const UT_RGBColor& clr)
 	g = (float)clr.m_grn / 255.0f;
 	b = (float)clr.m_blu / 255.0f;
 	UT_DEBUGMSG (("converting color r=%f, g=%f, b=%f from %d, %d, %d\n", r, g, b, clr.m_red, clr.m_grn, clr.m_blu));
-	NSColor *c = [NSColor colorWithDeviceRed:r green:g blue:b alpha:(clr.m_bIsTransparent ? 0.0 : 1.0)];
+	NSColor *c = [NSColor colorWithDeviceRed:r green:g blue:b alpha:1.0/*(clr.m_bIsTransparent ? 0.0 : 1.0)*/];
 	return c;
 }
 
@@ -522,7 +522,7 @@ void GR_CocoaGraphics::_utNSColorToRGBColor (NSColor *c, UT_RGBColor &clr)
 	clr.m_red = static_cast<unsigned char>(r * 255.0f);
 	clr.m_grn = static_cast<unsigned char>(g * 255.0f);
 	clr.m_blu = static_cast<unsigned char>(b * 255.0f);
-	clr.m_bIsTransparent = (a == 0.0f);
+	clr.m_bIsTransparent = false /*(a == 0.0f)*/;
 }
 
 
@@ -654,21 +654,20 @@ void GR_CocoaGraphics::drawLine(UT_sint32 x1, UT_sint32 y1,
 {
 	LOCK_CONTEXT__;
 	UT_DEBUGMSG (("GR_CocoaGraphics::drawLine(%ld, %ld, %ld, %ld) width=%f\n", x1, y1, x2, y2,
-	              [NSBezierPath defaultLineWidth]));
+	              m_fLineWidth));
 	::CGContextBeginPath(m_CGContext);
-	// TODO set the line width according to m_iLineWidth
-	::CGContextMoveToPoint (m_CGContext, _tduX(x1), _tduY(y1));
-	::CGContextAddLineToPoint (m_CGContext, _tduX(x2), _tduY(y2));
+	::CGContextMoveToPoint (m_CGContext, TDUX(x1), _tduY(y1));
+	::CGContextAddLineToPoint (m_CGContext, TDUX(x2), _tduY(y2));
 	[m_currentColor set];
 	::CGContextStrokePath (m_CGContext);
 }
 
 void GR_CocoaGraphics::setLineWidth(UT_sint32 iLineWidth)
 {
-	UT_DEBUGMSG (("GR_CocoaGraphics::setLineWidth(%ld) was %f\n", iLineWidth, [NSBezierPath defaultLineWidth]));
-	m_iLineWidth = tduD(iLineWidth);
+	UT_DEBUGMSG (("GR_CocoaGraphics::setLineWidth(%ld) was %f\n", iLineWidth, m_fLineWidth));
+	m_fLineWidth = tduD(iLineWidth);
 	if (m_viewLocker) {
-		::CGContextSetLineWidth (m_CGContext, m_iLineWidth);
+		::CGContextSetLineWidth (m_CGContext, m_fLineWidth);
 	}
 }
 
@@ -678,18 +677,18 @@ void GR_CocoaGraphics::xorLine(UT_sint32 x1, UT_sint32 y1, UT_sint32 x2,
 	// TODO use XOR mode NSCompositeXOR
 	float x = UT_MIN(x1,x2);		// still layout unit
 	float y = UT_MIN(y1,y2);		// still layout unit
-	NSRect newBounds = NSMakeRect (tduD(x), tduD(y), tduD(UT_MAX(UT_MAX(x1,x2) - x,1.0)), 
-													tduD(UT_MAX(UT_MAX(y1,y2) - y,1.0)));
+	NSRect newBounds = NSMakeRect (TDUX(x), _tduY(y), UT_MAX(TDUX(UT_MAX(x1,x2) - x),1.0), 
+													UT_MAX(_tduY(UT_MAX(y1,y2) - y),1.0));
 	[m_xorCache setSize:newBounds.size];
 	{
 		StNSImageLocker locker(m_pWin, m_xorCache);
 		CGContextRef context = (CGContextRef)[[NSGraphicsContext currentContext] graphicsPort];
 
 
-		::CGContextSetLineWidth (context, m_iLineWidth);
+		::CGContextSetLineWidth (context, m_fLineWidth);
 		/* since we are in the image coordinate space, we should offset it with the origin */
-		::CGContextMoveToPoint (context, tduD(x1 - x), tduD(y1 - y));
-		::CGContextAddLineToPoint (context, tduD(x2 - x), tduD(y2 - y));
+		::CGContextMoveToPoint (context, TDUX(x1 - x), _tduY(y1 - y));
+		::CGContextAddLineToPoint (context, TDUX(x2 - x), _tduY(y2 - y));
 		::CGContextSaveGState(context);
 		[m_currentColor set];	
 		::CGContextStrokePath (context);
@@ -702,7 +701,7 @@ void GR_CocoaGraphics::xorLine(UT_sint32 x1, UT_sint32 y1, UT_sint32 x2,
 
 void GR_CocoaGraphics::polyLine(UT_Point * pts, UT_uint32 nPoints)
 {
-	UT_DEBUGMSG (("GR_CocoaGraphics::polyLine() width=%f\n", [NSBezierPath defaultLineWidth]));
+	UT_DEBUGMSG (("GR_CocoaGraphics::polyLine() width=%f\n", m_fLineWidth));
 	
 	LOCK_CONTEXT__;
 	::CGContextBeginPath(m_CGContext);
@@ -710,10 +709,10 @@ void GR_CocoaGraphics::polyLine(UT_Point * pts, UT_uint32 nPoints)
 	for (UT_uint32 i = 0; i < nPoints; i++)
 	{
 		if (i == 0) {
-			::CGContextMoveToPoint(m_CGContext, _tduX(pts[i].x), _tduY(pts[i].y));
+			::CGContextMoveToPoint(m_CGContext, TDUX(pts[i].x), _tduY(pts[i].y));
 		}
 		else {
-			::CGContextAddLineToPoint(m_CGContext, _tduX(pts[i].x), _tduY(pts[i].y));
+			::CGContextAddLineToPoint(m_CGContext, TDUX(pts[i].x), _tduY(pts[i].y));
 		}
 	}
 	::CGContextStrokePath(m_CGContext);
@@ -727,7 +726,7 @@ void GR_CocoaGraphics::invertRect(const UT_Rect* pRect)
 	LOCK_CONTEXT__;
 	// TODO handle invert. this is highlight.
 
-	NSHighlightRect (NSMakeRect (_tduX(pRect->left), _tduY(pRect->top), _tduR(pRect->width), _tduR(pRect->height)));
+	NSHighlightRect (NSMakeRect (TDUX(pRect->left), _tduY(pRect->top), _tduR(pRect->width), _tduR(pRect->height)));
 }
 
 void GR_CocoaGraphics::setClipRect(const UT_Rect* pRect)
@@ -747,7 +746,7 @@ void GR_CocoaGraphics::_setClipRectImpl(const UT_Rect*)
 	if (m_pRect) {
 		UT_DEBUGMSG (("ClipRect set\n"));
 		::CGContextClipToRect (m_CGContext, 
-				::CGRectMake (_tduX(m_pRect->left), _tduY(m_pRect->top), _tduR(m_pRect->width), _tduR(m_pRect->height)));
+				::CGRectMake (TDUX(m_pRect->left), _tduY(m_pRect->top), _tduR(m_pRect->width), _tduR(m_pRect->height)));
 	}
 	else {
 		UT_DEBUGMSG (("ClipRect reset!!\n"));
@@ -764,7 +763,7 @@ void GR_CocoaGraphics::fillRect(const UT_RGBColor& clr, UT_sint32 x, UT_sint32 y
 	LOCK_CONTEXT__;
 	::CGContextSaveGState(m_CGContext);
 	[c set];	
-	::CGContextFillRect(m_CGContext, ::CGRectMake (_tduX(x), _tduY(y), _tduR(w), _tduR(h)));
+	::CGContextFillRect(m_CGContext, ::CGRectMake (TDUX(x), _tduY(y), _tduR(w), _tduR(h)));
 	::CGContextRestoreGState(m_CGContext);
 }
 
@@ -776,7 +775,7 @@ void GR_CocoaGraphics::fillRect(GR_Color3D c, UT_sint32 x, UT_sint32 y, UT_sint3
 	LOCK_CONTEXT__;
 	::CGContextSaveGState(m_CGContext);
 	[m_3dColors[c] set];
-	::CGContextFillRect (m_CGContext, ::CGRectMake (_tduX(x), _tduY(y), _tduR(w), _tduR(h)));
+	::CGContextFillRect (m_CGContext, ::CGRectMake (TDUX(x), _tduY(y), _tduR(w), _tduR(h)));
 	::CGContextRestoreGState(m_CGContext);
 }
 
@@ -822,7 +821,7 @@ void GR_CocoaGraphics::clearArea(UT_sint32 x, UT_sint32 y,
 		LOCK_CONTEXT__;
 		::CGContextSaveGState(m_CGContext);
 		[[NSColor whiteColor] set];
-		::CGContextFillRect (m_CGContext, ::CGRectMake(_tduX(x), _tduY(y), 
+		::CGContextFillRect (m_CGContext, ::CGRectMake(TDUX(x), _tduY(y), 
 														_tduR(width), _tduR(height)));
 		::CGContextRestoreGState(m_CGContext);
 	}
@@ -865,7 +864,7 @@ void GR_CocoaGraphics::drawImage(GR_Image* pImg, UT_sint32 xDest, UT_sint32 yDes
 	UT_ASSERT(pImg);
 
    	if (pImg->getType() != GR_Image::GRT_Raster) {
-	   	pImg->render(this, _tduX(xDest), _tduY(yDest));
+	   	pImg->render(this, TDUX(xDest), _tduY(yDest));
 	   	return;
 	}
 
@@ -884,7 +883,7 @@ void GR_CocoaGraphics::drawImage(GR_Image* pImg, UT_sint32 xDest, UT_sint32 yDes
 	NSSize size = [image size];
 
 	LOCK_CONTEXT__;
-	[image drawInRect:NSMakeRect(_tduX(xDest), _tduY(yDest), pCocoaImage->getDisplayWidth(), iImageHeight)
+	[image drawInRect:NSMakeRect(TDUX(xDest), _tduY(yDest), pCocoaImage->getDisplayWidth(), iImageHeight)
 	           fromRect:NSMakeRect(0, 0, size.width, size.height) operation:NSCompositeCopy fraction:1.0f];
 //	[image compositeToPoint:NSMakePoint(xDest, yDest + iImageHeight) operation:NSCompositeCopy fraction:1.0f];
 }
@@ -1034,10 +1033,10 @@ void GR_CocoaGraphics::polygon(UT_RGBColor& clr,UT_Point *pts,UT_uint32 nPoints)
 	for (UT_uint32 i = 0; i < nPoints; i++)
 	{
 		if (i == 0) {
-			::CGContextMoveToPoint(m_CGContext, _tduX(pts[i].x), _tduY(pts[i].y));
+			::CGContextMoveToPoint(m_CGContext, TDUX(pts[i].x), _tduY(pts[i].y));
 		}
 		else {
-			::CGContextAddLineToPoint(m_CGContext, _tduX(pts[i].x), _tduY(pts[i].y));
+			::CGContextAddLineToPoint(m_CGContext, TDUX(pts[i].x), _tduY(pts[i].y));
 		}
 	}
 	::CGContextSaveGState(m_CGContext);
@@ -1130,7 +1129,7 @@ void GR_Font::s_getGenericFontProperties(const char * szFontName,
 GR_Image * GR_CocoaGraphics::genImageFromRectangle(const UT_Rect & r)
 {
 	GR_CocoaImage *img = new GR_CocoaImage("ScreenShot");
-	NSRect rect = NSMakeRect(_tduX(r.left), _tduY(r.top), 
+	NSRect rect = NSMakeRect(TDUX(r.left), _tduY(r.top), 
 						  _tduR(r.width), _tduR(r.height));
     NSBitmapImageRep *imageRep;
 	{
@@ -1146,7 +1145,7 @@ GR_Image * GR_CocoaGraphics::genImageFromRectangle(const UT_Rect & r)
 void GR_CocoaGraphics::saveRectangle(UT_Rect & rect,  UT_uint32 iIndx)
 {
 	NSRect* cacheRect = new NSRect;
-	*cacheRect = NSMakeRect(_tduX(rect.left), _tduY(rect.top), 
+	*cacheRect = NSMakeRect(TDUX(rect.left), _tduY(rect.top), 
 						  _tduR(rect.width), _tduR(rect.height));
     NSBitmapImageRep *imageRep;
 	{
@@ -1191,7 +1190,7 @@ void GR_CocoaGraphics::_resetContext()
 {
 	// TODO check that we properly reset parameters according to what has been saved.
 	m_CGContext = CG_CONTEXT__;
-	::CGContextSetLineWidth (m_CGContext, m_iLineWidth);
+	::CGContextSetLineWidth (m_CGContext, m_fLineWidth);
 	_setCapStyle(m_capStyle);
 	_setJoinStyle(m_joinStyle);
 	_setLineStyle(m_lineStyle);

@@ -173,7 +173,7 @@ private:
 	XAP_CocoaFont*	m_pFontGUI;
 	static UT_uint32		s_iInstanceCount;
   
-	UT_sint32				m_iLineWidth;			// device unit
+	float					m_fLineWidth;			// device unit
 	// line properties
 	JoinStyle m_joinStyle;
 	CapStyle m_capStyle;
