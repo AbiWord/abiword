@@ -22,7 +22,7 @@ include $(top_srcdir)/includes.mk
 
 INCLUDES = $(AF_INCLUDES)
 
-bin_PROGRAMS = ttftool
+noinst_PROGRAMS = ttftool
 
 ttftool_SOURCES = ttftool.c ps.c parse.c ttfutils.c
 

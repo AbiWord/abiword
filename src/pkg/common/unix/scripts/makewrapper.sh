@@ -4,15 +4,17 @@
 # binaries.  One should pass it the _base_ name of the program
 # to wrap (one would pass "AbiWord" to wrap "AbiWord_s" and 
 # "AbiWord_d"), the install base of the tree and, optionally, the location
-# of the machine-dependent binaries and scripts.
+# of the machine-dependent binaries and scripts, and, optionally, an
+# installation-only prefix.
 
 # Examples:
-#     makewrapper.sh AbiWord /usr/local/AbiSuite /usr/local/libexec/AbiSuite
+#     makewrapper.sh AbiWord /usr/local/AbiSuite /usr/local/libexec/AbiSuite /tmp/package_root
 #     makewrapper.sh AbiCalc /usr/local/AbiSuite /usr/local/libexec/AbiSuite
 
 PROGRAM_NAME=$1
 INSTALL_BASE=$2
 LIBEXECDIR=$3
+DESTDIR=$4
 
 # Did they supply any arguments?
 if [ -z "$PROGRAM_NAME" ]
@@ -35,9 +37,9 @@ then
 fi
 
 # Make directory path up to program we're creating
-mkdir -p $LIBEXECDIR
+mkdir -p ${DESTDIR}${LIBEXECDIR}
 
-cat >$LIBEXECDIR/$PROGRAM_NAME<<EOF
+cat >${DESTDIR}${LIBEXECDIR}/${PROGRAM_NAME} <<EOF
 #!/bin/sh
 #
 # AbiSuite program wrapper script, dynamically generated
@@ -118,6 +120,6 @@ then
 fi
 EOF
 
-chmod 755 ${LIBEXECDIR}/$PROGRAM_NAME
+chmod 755 ${DESTDIR}${LIBEXECDIR}/$PROGRAM_NAME
 
 

@@ -35,5 +35,37 @@ realrealclean: realclean
 	@find ./ -name GNUmakefile.in | xargs rm -f
 	@rm -f aclocal.m4 configure install-sh missing mkinstalldirs INSTALL
 
-
-
+# Install the datafiles. This is quick-and-dirty.
+install-data-local:
+	if test -d $(top_srcdir)/../unixfonts/fonts ; then \
+	  $(mkinstalldirs) $(DESTDIR)$(pkglibdir)/fonts ;\
+	  for file in $(top_srcdir)/../unixfonts/fonts/* ; do \
+	    if test -f $$file ; then \
+	      $(INSTALL_DATA) $$file $(DESTDIR)$(pkglibdir)/fonts; \
+	    fi ;\
+	  done; \
+	else \
+	  echo "Warning: unixfonts package not found." ;\
+	fi
+	if test -d $(top_srcdir)/../abidistfiles/dictionary ; then \
+	  $(mkinstalldirs) $(DESTDIR)$(pkglibdir)/dictionary ;\
+	  for file in $(top_srcdir)/../unixfonts/dictionary/* ; do \
+	    if test -f $$file ; then \
+	      $(INSTALL_DATA) $$file $(DESTDIR)$(pkglibdir)/dictionary; \
+	    fi ; \
+	  done; \
+	else \
+	  echo "Warning: abidistfiles package not found." ;\
+	fi
+	if test -d $(top_srcdir)/../abidistfiles/icons ; then \
+	  $(mkinstalldirs) $(DESTDIR)$(pkglibdir)/icons ;\
+	  for file in $(top_srcdir)/../unixfonts/icons/* ; do \
+	    if test -f $$file ; then \
+	      $(INSTALL_DATA) $$file $(DESTDIR)$(pkglibdir)/icons; \
+	    fi ; \
+	  done; \
+	else \
+	  echo "Warning: abidistfiles package not found." ;\
+	fi
+	$(mkinstalldirs) $(DESTDIR)$(pkglibdir)/AbiWord
+	cp -r $(top_srcdir)/user/wp/* $(DESTDIR)$(pkglibdir)/AbiWord

@@ -22,7 +22,8 @@ if WITH_GNOME
 SUBDIRS=gnome
 else
 
-bin_PROGRAMS = AbiWord_d AbiWord_s
+indirectdir=$(pkglibdir)/bin
+indirect_PROGRAMS = AbiWord_d AbiWord_s
 
 INCLUDES=\
 	 -DABIWORD_APP_NAME="\"$(ABIWORD_APP_NAME)\"" \
@@ -44,14 +45,8 @@ abi_ver.cpp:
 
 endif
 
-
-
-
-
-
-
-
-
-
-
-
+# Install the wrapper and a sane link
+install-exec-local:
+	$(top_srcdir)/src/pkg/common/unix/scripts/makewrapper.sh AbiWord $(pkglibdir) $(pkglibdir)/bin $(DESTDIR)
+	$(mkinstalldirs) $(bindir)
+	ln -f $(DESTDIR)$(pkglibdir)/bin/AbiWord $(bindir)/AbiWord
