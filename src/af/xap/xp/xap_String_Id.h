@@ -124,11 +124,11 @@ dcl(DLG_UFS_StyleBold,			"Bold")
 dcl(DLG_UFS_StyleBoldItalic,	"Bold Italic")
 dcl(DLG_UFS_ToplineCheck,		"Topline")
 dcl(DLG_UFS_BottomlineCheck,	"Bottomline")
-dcl(DLG_UFS_SmallCapsCheck, 	"Small Caps")
 dcl(DLG_UFS_ColorLabel, 		"Color:")
 dcl(DLG_UFS_ScriptLabel,		"Script:")
 dcl(DLG_UFS_SampleFrameLabel,	"Sample")
-
+dcl(DLG_UFS_SuperScript, 		"Superscript")
+dcl(DLG_UFS_SubScript, 			"Subscript")
 
 /* Unix FileOpenSaveAs dialog */
 dcl(DLG_FOSA_OpenTitle, 				"Open File")

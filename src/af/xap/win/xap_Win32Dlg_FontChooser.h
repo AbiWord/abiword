@@ -42,13 +42,15 @@ protected:
 	BOOL					_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam);
 	BOOL					_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam);
 
-	XAP_Frame *			m_pWin32Frame;
+	XAP_Frame *				m_pWin32Frame;
 	XAP_Win32PreviewWidget* m_pPreviewWidget;
 
 	bool					m_bWin32Overline;
 	bool					m_bWin32Topline;
 	bool					m_bWin32Bottomline;
 	bool                    m_bWin32Hidden;
+	bool					m_bWin32SuperScript;
+	bool					m_bWin32SubScript;
 };
 
 #endif /* XAP_WIN32DIALOG_FONTCHOOSER_H */

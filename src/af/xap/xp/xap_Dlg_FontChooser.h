@@ -112,6 +112,8 @@ public:
 	void							setBGColor(const XML_Char * pBGColor);
 	void							setFontDecoration(bool bUnderline, bool bOverline, bool bStrikeOut, bool bTopline, bool bBottomline);
 	void                            setHidden(bool bHidden);
+	void                            setSuperScript(bool bSuperScript);
+	void                            setSubScript(bool bSubScript);
 	void                            setBackGroundColor (const XML_Char * pBackGroundColor);
 
 
@@ -135,6 +137,8 @@ public:
 	bool							getChangedTopline(bool * pbTopline) const;
 	bool							getChangedBottomline(bool * pbBottomline) const;
 	bool							getChangedHidden(bool * pbHidden) const;
+	bool							getChangedSuperScript(bool * pbSuperScript) const;
+	bool							getChangedSubScript(bool * pbSubScript) const;
 
 protected:
 	void                            _createFontPreviewFromGC(GR_Graphics * gc,
@@ -155,7 +159,9 @@ protected:
 	bool							m_bStrikeout;			/* input/output */
 	bool							m_bTopline;		 	    /* input/output */
 	bool							m_bBottomline;			/* input/output */
-	bool                            m_bHidden;
+	bool                            m_bHidden;				/* input/output */
+	bool                            m_bSuperScript;			/* input/output */
+	bool                            m_bSubScript;			/* input/output */
 
 	UT_Vector                       m_vecProps; // Holds the current
 	XAP_Preview_FontPreview *       m_pFontPreview;
@@ -171,7 +177,9 @@ protected:
 	bool							m_bChangedStrikeOut;	/* output */
 	bool							m_bChangedTopline;	    /* output */
 	bool							m_bChangedBottomline;	/* output */
-	bool                            m_bChangedHidden;
+	bool                            m_bChangedHidden;		/* output */
+	bool                            m_bChangedSuperScript;	/* output */
+	bool                            m_bChangedSubScript;	/* output */
 
 	UT_UCSChar *                    m_drawString;
 };

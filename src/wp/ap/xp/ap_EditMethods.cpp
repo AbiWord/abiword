@@ -5512,6 +5512,7 @@ static bool s_doFontDlg(FV_View * pView)
 		pDialog->setFontStyle(UT_getAttribute("font-style", props_in));
 		pDialog->setColor(UT_getAttribute("color", props_in));
 		pDialog->setBGColor(UT_getAttribute("bgcolor", props_in));
+		
 //
 // Set the background color for the preview
 //
@@ -5550,6 +5551,22 @@ static bool s_doFontDlg(FV_View * pView)
 			bHidden = (strstr(h, "none") != NULL);
 		}
 		pDialog->setHidden(bHidden);
+		
+		bool bSuperScript = false;
+		h = UT_getAttribute("text-position", props_in);
+		if(h)
+		{
+			bSuperScript = (strstr(h, "superscript") != NULL);
+		}
+		pDialog->setSuperScript(bSuperScript);
+		
+		bool bSubScript = false;
+		h = UT_getAttribute("text-position", props_in);
+		if(h)
+		{
+			bSubScript = (strstr(h, "subscript") != NULL);
+		}
+		pDialog->setSuperScript(bSubScript);
 
 		FREEP(props_in);
 	}
@@ -5656,6 +5673,42 @@ static bool s_doFontDlg(FV_View * pView)
 			else
 			{
 				props_out[k++] = "display";
+				props_out[k++] ="";
+			}
+		}
+		
+		bool bSuperScript = false;
+		bool bChangedSuperScript = pDialog->getChangedSuperScript(&bSuperScript);
+
+		if (bChangedSuperScript)
+		{
+			if(bSuperScript)
+			{
+				props_out[k++] = "text-position";
+				props_out[k++] = "superscript";
+				
+			}
+			else
+			{
+				props_out[k++] = "text-position";
+				props_out[k++] ="";
+			}
+		}
+		
+		bool bSubScript = false;
+		bool bChangedSubScript = pDialog->getChangedSubScript(&bSubScript);
+
+		if (bChangedSubScript)
+		{
+			if(bSubScript)
+			{
+				props_out[k++] = "text-position";
+				props_out[k++] = "subscript";
+				
+			}
+			else
+			{
+				props_out[k++] = "text-position";
 				props_out[k++] ="";
 			}
 		}

@@ -50,6 +50,8 @@ XAP_Dialog_FontChooser::XAP_Dialog_FontChooser(XAP_DialogFactory * pDlgFactory, 
 	m_bTopline		    	= false;
 	m_bBottomline			= false;
 	m_bHidden               = false;
+	m_bSuperScript			= false;
+	m_bSubScript			= false;
 	m_bChangedFontFamily	= false;
 	m_bChangedFontSize		= false;
 	m_bChangedFontWeight	= false;
@@ -62,6 +64,8 @@ XAP_Dialog_FontChooser::XAP_Dialog_FontChooser(XAP_DialogFactory * pDlgFactory, 
 	m_bChangedTopline		= false;
 	m_bChangedBottomline   	= false;
 	m_bChangedHidden        = false;
+	m_bChangedSuperScript	= false;
+	m_bChangedSubScript		= false;
 
 	if(m_vecProps.getItemCount() > 0)
 		m_vecProps.clear();
@@ -203,6 +207,10 @@ void XAP_Dialog_FontChooser::setAllPropsFromVec(UT_Vector * vProps)
 
 	s = getVal("display");
 	m_bHidden = !UT_strcmp(s,"none");
+	
+	s = getVal("text-position");
+	m_bSuperScript = UT_strcmp(s,"superscript")==0;
+	m_bSubScript = UT_strcmp(s,"subscript")==0;
 }
 
 void XAP_Dialog_FontChooser::setFontFamily(const XML_Char * pFontFamily)
@@ -240,6 +248,41 @@ void XAP_Dialog_FontChooser::setBGColor(const XML_Char * pBGColor)
 	CLONEP((char *&)m_pBGColor, pBGColor);
 	addOrReplaceVecProp("bgcolor",pBGColor);
 }
+
+void XAP_Dialog_FontChooser::setSuperScript(bool bSuperScript)
+{
+	static char none[] = "superscript";
+	static char empty[]  = "";
+
+	if(bSuperScript)
+	{
+		addOrReplaceVecProp("text-position",none);
+	}
+	else
+	{
+		addOrReplaceVecProp("text-position",empty);
+	}
+	m_bSuperScript = bSuperScript;
+	
+}
+
+void XAP_Dialog_FontChooser::setSubScript(bool bSubScript)
+{
+	static char none[] = "subscript";
+	static char empty[]  = "";
+
+	if(bSubScript)
+	{
+		addOrReplaceVecProp("text-position",none);
+	}
+	else
+	{
+		addOrReplaceVecProp("text-position",empty);
+	}
+	m_bSubScript = bSubScript;
+	
+}
+
 
 void XAP_Dialog_FontChooser::setHidden(bool bHidden)
 {
@@ -378,6 +421,20 @@ bool XAP_Dialog_FontChooser::getChangedHidden(bool * pbHidden) const
 	if (pbHidden)
 		*pbHidden = m_bHidden;
 	return m_bChangedHidden;
+}
+
+bool XAP_Dialog_FontChooser::getChangedSuperScript(bool * pbSuperScript) const
+{
+	if (pbSuperScript)
+		*pbSuperScript = m_bSuperScript;
+	return m_bChangedSuperScript;
+}
+
+bool XAP_Dialog_FontChooser::getChangedSubScript(bool * pbSubScript) const
+{
+	if (pbSubScript)
+		*pbSubScript = m_bSubScript;
+	return m_bChangedSubScript;
 }
 
 bool XAP_Dialog_FontChooser::getChangedUnderline(bool * pbUnderline) const

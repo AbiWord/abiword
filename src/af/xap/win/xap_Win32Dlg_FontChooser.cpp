@@ -83,6 +83,9 @@ void XAP_Win32Dialog_FontChooser::runModal(XAP_Frame * pFrame)
 	m_bWin32Topline    = m_bTopline;
 	m_bWin32Bottomline = m_bBottomline;
 	m_bWin32Hidden     = m_bHidden;
+	m_bWin32SuperScript = m_bSuperScript;
+	m_bWin32SubScript = m_bSubScript;
+	
 
 	/*
 	   WARNING: any changes to this function should be closely coordinated
@@ -115,8 +118,13 @@ void XAP_Win32Dialog_FontChooser::runModal(XAP_Frame * pFrame)
 	{
 		UT_ASSERT(sizeof(char) == sizeof(XML_Char));
 		UT_ASSERT(m_pGraphics);
-		const char * szSize = (const char *)m_pFontSize;
-		lf.lfHeight = -(m_pGraphics->convertDimension(szSize));
+
+		// This fixes bug 4494
+		UT_uint32 ioldPer = m_pGraphics->getZoomPercentage();
+		m_pGraphics->setZoomPercentage(100);
+		lf.lfHeight = -(m_pGraphics->convertDimension(m_pFontSize));
+		m_pGraphics->setZoomPercentage(ioldPer);
+		
 	}
 	else
 		cf.Flags |= CF_NOSIZESEL;
@@ -244,11 +252,17 @@ void XAP_Win32Dialog_FontChooser::runModal(XAP_Frame * pFrame)
                                 m_bWin32Bottomline );
 
 		m_bChangedHidden = (m_bWin32Hidden != m_bHidden);
-
+		m_bChangedSuperScript = (m_bWin32SuperScript != m_bSuperScript);
+		m_bChangedSubScript = (m_bWin32SubScript != m_bSubScript);
+		
 		if(m_bChangedHidden)
 			setHidden(m_bWin32Hidden);
-		
-
+			
+		if(m_bChangedSuperScript)
+			setSuperScript(m_bWin32SuperScript);
+			
+		if(m_bChangedSubScript)
+			setSubScript(m_bWin32SubScript);			
 	}
 
 	UT_DEBUGMSG(("FontChooserEnd: Family[%s%s] Size[%s%s] Weight[%s%s] Style[%s%s] Color[%s%s] Underline[%d%s] StrikeOut[%d%s]\n",
@@ -311,15 +325,15 @@ BOOL XAP_Win32Dialog_FontChooser::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM
 	_DS(FONT_BTN_UNDERLINE,		DLG_UFS_UnderlineCheck);
 	_DS(FONT_CHK_OVERLINE,		DLG_UFS_OverlineCheck);
 	_DS(FONT_CHK_TOPLINE,		DLG_UFS_ToplineCheck);
-	_DS(FONT_CHK_BOTTOMLINE,	DLG_UFS_BottomlineCheck);
-	_DS(FONT_CHK_SMALLCAPS,		DLG_UFS_SmallCapsCheck);
+	_DS(FONT_CHK_BOTTOMLINE,	DLG_UFS_BottomlineCheck);	
 	_DS(FONT_TEXT_COLOR,		DLG_UFS_ColorLabel);
 	_DS(FONT_TEXT_SCRIPT,		DLG_UFS_ScriptLabel);
 	_DS(FONT_TEXT_SAMPLE,		DLG_UFS_SampleFrameLabel);
 	_DS(FONT_BTN_OK,			DLG_OK);
 	_DS(FONT_BTN_CANCEL,		DLG_Cancel);
 	_DS(FONT_CHK_HIDDEN,        DLG_UFS_HiddenCheck);
-
+	_DS(FONT_CHK_SUPERSCRIPT,	DLG_UFS_SuperScript);
+	_DS(FONT_CHK_SUBSCRIPT,		DLG_UFS_SubScript);
 
 	// set initial state
 	if( m_bWin32Overline )
@@ -333,7 +347,13 @@ BOOL XAP_Win32Dialog_FontChooser::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM
 
 	if( m_bWin32Hidden )
 		CheckDlgButton( hWnd, XAP_RID_DIALOG_FONT_CHK_HIDDEN, BST_CHECKED );
-
+		
+	if( m_bWin32SuperScript)
+		CheckDlgButton(hWnd, XAP_RID_DIALOG_FONT_CHK_SUPERSCRIPT, BST_CHECKED );		
+		
+	if( m_bWin32SubScript)
+		CheckDlgButton(hWnd, XAP_RID_DIALOG_FONT_CHK_SUBSCRIPT, BST_CHECKED );				
+		
 	// use the owner-draw-control dialog-item (aka window) specified in the
 	// dialog resource file as a parent to the window/widget that we create
 	// here and thus have complete control of.
@@ -376,9 +396,17 @@ BOOL XAP_Win32Dialog_FontChooser::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lP
 		m_bWin32Hidden = (IsDlgButtonChecked(hWnd,XAP_RID_DIALOG_FONT_CHK_HIDDEN)==BST_CHECKED);
 		return 1;
 
-	case XAP_RID_DIALOG_FONT_CHK_SMALLCAPS:
-		// TODO impliment this feature
+	case XAP_RID_DIALOG_FONT_CHK_SUPERSCRIPT:		
+		m_bWin32SuperScript = (IsDlgButtonChecked(hWnd,XAP_RID_DIALOG_FONT_CHK_SUPERSCRIPT)==BST_CHECKED);		
+		/* It makes no sense to have subscript and superscript at the same time, Word behaves this way also*/
+		if (m_bWin32SuperScript) CheckDlgButton(hWnd, XAP_RID_DIALOG_FONT_CHK_SUBSCRIPT, BST_UNCHECKED);		
 		return 1;
+		
+	case XAP_RID_DIALOG_FONT_CHK_SUBSCRIPT:
+		m_bWin32SubScript = (IsDlgButtonChecked(hWnd,XAP_RID_DIALOG_FONT_CHK_SUBSCRIPT)==BST_CHECKED);
+		/* It makes no sense to have subscript and superscript at the same time, Word behaves this way also*/
+		if (m_bWin32SubScript) CheckDlgButton(hWnd, XAP_RID_DIALOG_FONT_CHK_SUPERSCRIPT, BST_UNCHECKED);
+		return 1;		
 
 	default:							// we did not handle this notification
 		UT_DEBUGMSG(("WM_Command for id %ld\n",wId));
