@@ -10,6 +10,7 @@
 #include "../../text/fmt/xp/fv_View.h"
 #include "../../text/fmt/xp/fp_PageSize.h"
 #include "../../af/util/xp/ut_string.h"
+#include "../../af/util/xp/ut_units.h"
 #include "../../af/util/xp/ut_PerlBindings.h"
 #include "../../af/ev/xp/ev_EditMethod.h"
 
