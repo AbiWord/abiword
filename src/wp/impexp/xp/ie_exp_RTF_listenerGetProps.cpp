@@ -480,7 +480,7 @@ void s_RTF_ListenerGetProps::_check_revs_for_color(const PP_AttrProp * pAP1,
 		if(!pAP)
 			continue;
 
-		XML_Char * pRev;
+		const XML_Char * pRev;
 		char *pDup  = NULL;
 
 		if(pAP->getAttribute("revision", pRev))
