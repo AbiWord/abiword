@@ -113,6 +113,7 @@ bool PS_Graphics::queryProperties(GR_Graphics::Properties gp) const
 	switch (gp)
 	{
 	case DGP_SCREEN:
+	case DGP_OPAQUEOVERLAY:
 		return false;
 	case DGP_PAPER:
 		return true;

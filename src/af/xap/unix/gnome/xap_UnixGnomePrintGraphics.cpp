@@ -637,6 +637,7 @@ bool XAP_UnixGnomePrintGraphics::queryProperties(GR_Graphics::Properties gp) con
 	switch (gp)
 	{
 	case DGP_SCREEN:
+	case DGP_OPAQUEOVERLAY:
 		return false;
 	case DGP_PAPER:
 		return true;

@@ -101,9 +101,9 @@ bool GR_CocoaGraphics::queryProperties(GR_Graphics::Properties gp) const
 	switch (gp)
 	{
 	case DGP_SCREEN:
+	case DGP_OPAQUEOVERLAY:
 		return true;
 	case DGP_PAPER:
-	     DGP_POSTSCRIPT:   
 		return false;
 	default:
 		UT_ASSERT(0);

@@ -28,6 +28,7 @@
 #include "gr_Win32Graphics.h"
 #include "gr_Win32Image.h"
 #include <xap_Win32App.h>
+
 #include <xap_Win32Res_Cursors.rc2>
 
 #include "ut_debugmsg.h"
@@ -133,8 +134,8 @@ bool GR_Win32Graphics::queryProperties(GR_Graphics::Properties gp) const
 		return !m_bPrint;
 	case DGP_PAPER:
 		return m_bPrint;
-    case DGP_POSTSCRIPT:
-        return false;
+	case DGP_OPAQUEOVERLAY:
+		return true;
 	default:
 		UT_ASSERT(0);
 		return false;
@@ -706,6 +707,7 @@ void GR_Win32Graphics::scroll(UT_sint32 x_dest, UT_sint32 y_dest,
 
 void GR_Win32Graphics::clearArea(UT_sint32 x, UT_sint32 y, UT_sint32 width, UT_sint32 height)
 {
+
 //	UT_ASSERT((x + width) < 800);
 	
 	HBRUSH hBrush = (HBRUSH) GetStockObject(WHITE_BRUSH);

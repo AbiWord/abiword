@@ -175,10 +175,10 @@ bool GR_BeOSGraphics::queryProperties(GR_Graphics::Properties gp) const
 {
 	switch (gp)
 	{
+	case DGP_OPAQUEOVERLAY:
 	case DGP_SCREEN:
 		return true;
 	case DGP_PAPER:			//Not sure what this does
-	case DGP_POSTSCRIPT:
 		return false;
 	default:
 		UT_ASSERT(0);

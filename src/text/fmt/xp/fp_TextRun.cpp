@@ -1518,7 +1518,7 @@ void fp_TextRun::_draw(dg_DrawArgs* pDA)
 		the sreen, a Windows printer can behave like this).
 	*/
 
-	if(!m_pG->queryProperties(GR_Graphics::DGP_POSTSCRIPT))
+	if(m_pG->queryProperties(GR_Graphics::DGP_OPAQUEOVERLAY))
 	{
 #ifdef BIDI_ENABLED
 		fp_Run * pNext = getNextVisual();
