@@ -34,6 +34,7 @@
 #include "xap_Win32DialogHelper.h"
 #include "ap_Win32App.h"
 #include "ap_Win32Resources.rc2"
+#include "pt_PieceTable.h"
 
 #if defined(STRICT)
 #define WHICHPROC	WNDPROC
@@ -308,7 +309,7 @@ void AP_Win32Dialog_Stylist::_fillTree(void)
 	tvi.stateMask =0;
 
 	UT_sint32 row, col;
-	UT_UTF8String sTmp("");
+	UT_UTF8String sTmp(""), str_loc;
 	UT_String str;		   		 
 
 	//int iter = 0; // Unique key for each item in the treeview
@@ -319,8 +320,9 @@ void AP_Win32Dialog_Stylist::_fillTree(void)
 			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 			break;
 		}
-
-		str = AP_Win32App::s_fromUTF8ToWinLocale (sTmp.utf8_str());
+		
+		pt_PieceTable::s_getLocalisedStyleName (sTmp.utf8_str(), str_loc);
+		str = AP_Win32App::s_fromUTF8ToWinLocale (str_loc.utf8_str());
 
 		xxx_UT_DEBUGMSG(("Adding Heading %s at row %d \n",sTmp.utf8_str(),row));
 
@@ -351,7 +353,9 @@ void AP_Win32Dialog_Stylist::_fillTree(void)
 				}
 				xxx_UT_DEBUGMSG(("Adding style %s at row %d col %d \n",sTmp.utf8_str(),row,col+1));
 
-				str = AP_Win32App::s_fromUTF8ToWinLocale (sTmp.utf8_str());
+				pt_PieceTable::s_getLocalisedStyleName (sTmp.utf8_str(), str_loc);
+				str = AP_Win32App::s_fromUTF8ToWinLocale (str_loc.utf8_str());
+
 
 				// Insert the item into the treeview
 				tvi.pszText = (LPTSTR)str.c_str();
