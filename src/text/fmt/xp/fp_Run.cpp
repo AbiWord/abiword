@@ -2010,7 +2010,7 @@ bool fp_FieldWkdayRun::calculateValue(void)
 
 	strftime(szFieldValue, FPFIELD_MAX_LENGTH, "%A", pTime);
 	if (m_pField)
-	  m_pField->setValue((XML_Char*) strdup(szFieldValue));
+	  m_pField->setValue((XML_Char*) UT_strdup(szFieldValue));
 	
 	UT_UCS_strcpy_char(sz_ucs_FieldValue, szFieldValue);
 
