@@ -2879,7 +2879,6 @@ void FV_View::cmdCharDelete(UT_Bool bForward, UT_uint32 count)
 				{
 				        m_pDoc->StopList(sdh);
 					PT_DocPosition listPoint,posEOD;
-					UT_Bool bRes = m_pDoc->getBounds(UT_TRUE, posEOD);
 					listPoint = getPoint();
 					fl_AutoNum * pAuto = nBlock->getAutoNum();
 					if(pAuto != NULL)
@@ -6892,16 +6891,6 @@ UT_Bool FV_View::insertHeaderFooter(const XML_Char ** props, UT_Bool ftr)
 	m_pDoc->changeStruxFmt(PTC_AddFmt, getPoint(), getPoint(), sec_attributes2, NULL, PTX_Section);
 
 	UT_DEBUGMSG(("EOD: %d\n", FV_DOCPOS_EOD));
-
-	// Sevior: I don't think this is needed	UT_uint32 iPoint = FV_DOCPOS_EOD;
-
-	UT_uint32 oldPos = getPoint(); // Save the old position in the document for later
-
-	//
-	// 
-	//	fl_BlockLayout* pOldBlock = _findBlockAtPosition(getPoint());
-	//fl_SectionLayout* pSL = pOldBlock->getSectionLayout();
-
 
 	moveInsPtTo(FV_DOCPOS_EOD);	// Move to the end, where we will create the page numbers
 
