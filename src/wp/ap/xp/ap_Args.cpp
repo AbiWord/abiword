@@ -57,16 +57,15 @@ struct poptOption * AP_Args::options = NULL;
 int  AP_Args::m_iAbiControl = 0;
 
 AP_Args::AP_Args(XAP_Args * pArgs, const char * szAppName, AP_App * pApp)
-	: XArgs (pArgs), m_bShowSplash(true), m_pApp(pApp)
+	: XArgs (pArgs), poptcon(NULL), m_bShowSplash(true), m_pApp(pApp)
 {
 	pApp->initPopt (this);
 }
 
 AP_Args::~AP_Args()
 {
-#ifndef HAVE_GNOME
-	poptFreeContext(poptcon);
-#endif
+	if (poptcon != NULL)
+		poptFreeContext(poptcon);
 	FREEP(options);
 }
 
@@ -81,7 +80,6 @@ AP_Args::~AP_Args()
 void AP_Args::parsePoptOpts ()
 {
 	int nextopt;
-
 	poptcon = poptGetContext("AbiWord", 
 				       XArgs->m_argc, XArgs->m_argv, 
 				       options, 0);

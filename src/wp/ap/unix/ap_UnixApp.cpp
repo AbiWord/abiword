@@ -1210,6 +1210,10 @@ int AP_UnixApp::main(const char * szAppName, int argc, const char ** argv)
 	  // GNOME handles 'parsePoptOpts'.  Isn't it grand?
 #endif
     }
+	else {
+		// no display, but we still need to at least parse our own arguments, damnit, for --to, --to-png, and --print
+		Args.parsePoptOpts();
+	}
 
     // if the initialize fails, we don't have icons, fonts, etc.
     if (!pMyUnixApp->initialize(have_display))
