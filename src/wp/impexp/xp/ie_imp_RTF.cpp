@@ -8718,20 +8718,22 @@ bool IE_Imp_RTF::HandleAbiTable(void)
 					getDoc()->getPropertyFromSDH(sdhCell,"top-attach",&szTop);
 					UT_return_val_if_fail(szTop,false);
 					UT_sint32 iOldTop = atoi(szTop); 
-					b = false;
+					PT_DocPosition posCell = getDoc()->getStruxPosition(sdhCell);
+					b = true;
 					bool atEnd = false;
 					while(b)
 					{
 						b = getDoc()->getNextStruxOfType(sdhCell,PTX_SectionCell,&sdhCell);
-						UT_return_val_if_fail(b,false);
-						UT_return_val_if_fail(sdhCell,false);
-						PT_DocPosition posCell = getDoc()->getStruxPosition(sdhCell);
-						if(posCell > posEndTable)
+						if(b && sdhCell)
+						{
+							posCell = getDoc()->getStruxPosition(sdhCell);
+						}
+						if(!b || (posCell > posEndTable))
 						{
 							atEnd = true;
 							b = false;
 						}
-						else
+						else if(b)
 						{
 							getDoc()->getPropertyFromSDH(sdhCell,"top-attach",&szTop);
 							UT_return_val_if_fail(szTop,false);
@@ -8743,11 +8745,9 @@ bool IE_Imp_RTF::HandleAbiTable(void)
 					if(atEnd)
 					{
 //
-// At end of Table. Position just after
+// At end of Table. Position just after last encCell strux
 //
-						PL_StruxDocHandle sdhEndCell = NULL;
-						b = getDoc()->getNextStruxOfType(sdhCell,PTX_EndCell,&sdhEndCell);
-						m_dposPaste = getDoc()->getStruxPosition(sdhEndCell)+1;
+						m_dposPaste = posEndTable;
 					}
 					else
 					{
@@ -8960,7 +8960,7 @@ bool IE_Imp_RTF::HandleAbiCell(void)
 	UT_sint32 iMyBot = atoi(sBot.c_str());
 	if(pPaste->m_bPasteAfterRow)
 	{
-		UT_sint32 idiff = pPaste->m_iRowNumberAtPaste - iMyTop;
+		UT_sint32 idiff = pPaste->m_iRowNumberAtPaste - iMyTop +1;
 		iMyTop += idiff;
 		sTop = UT_String_sprintf("%d",iMyTop);
 		iMyBot += idiff;
