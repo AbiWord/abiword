@@ -50,10 +50,14 @@ public:
 
 	GtkWidget * m_windowMain;
 
-	GtkWidget * m_buttonOK;
-	GtkWidget * m_buttonCancel;
-
  private:
+
+	enum
+	  {
+	    BUTTON_OK,
+	    BUTTON_CANCEL
+	  } ResponseId ;
+
 	//GtkWidget * m_comboEntry;
 	//GtkWidget * m_comboHyperlink;
 	GtkWidget * m_clist;
