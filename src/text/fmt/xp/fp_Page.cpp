@@ -2174,6 +2174,11 @@ fp_FootnoteContainer* fp_Page::getNthFootnoteContainer(UT_sint32 n) const
 bool fp_Page::insertFootnoteContainer(fp_FootnoteContainer * pFC)
 {
 	UT_uint32 i =0;
+	UT_sint32 j = findFootnoteContainer(pFC);
+	if(j >= 0)
+	{
+		return false;
+	}
 	UT_uint32 loc =0;
 	UT_sint32 fVal = pFC->getValue();
 	fp_FootnoteContainer * pFTemp = NULL;
