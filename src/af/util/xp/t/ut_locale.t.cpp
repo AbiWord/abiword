@@ -19,6 +19,7 @@
 
 
 
+#include <stdio.h>
 #include <string.h>
 #include "tf_test.h"
 
@@ -27,14 +28,22 @@
 
 TFTEST_MAIN("UT_LocaleTransactor")
 {
+	char msg[128];
 	setlocale(LC_ALL, "fr_FR");
+	
+	sprintf(msg, "%f", 1.0f);
+	TFPASS(strstr(msg, "1,0") == msg);
 	
 	TFPASS(strcmp(setlocale(LC_NUMERIC, NULL), "fr_FR") == 0);
 
 	{
 		UT_LocaleTransactor(LC_NUMERIC, "C");
 		TFFAIL(strcmp(setlocale(LC_NUMERIC, NULL), "fr_FR") == 0);
+		sprintf(msg, "%f", 1.0f);
+		TFPASS(strstr(msg, "1.0") == msg);
 		TFPASS(strcmp(setlocale(LC_NUMERIC, NULL), "C") == 0);
 	}
 	TFPASS(strcmp(setlocale(LC_NUMERIC, NULL), "fr_FR") == 0);
+	sprintf(msg, "%f", 1.0f);
+	TFPASS(strstr(msg, "1,0") == msg);
 }
