@@ -175,90 +175,11 @@ void AP_QNXDialog_Insert_DateTime::event_WindowDelete(void)
 }
 
 /*****************************************************************/
-#if 0
 PtWidget_t * AP_QNXDialog_Insert_DateTime::_constructWindow(void)
 {
 	PtWidget_t *windowMain;
-	PtWidget_t *labelFormats;
-	PtWidget_t *listFormats;
-	PtWidget_t *buttonOK;
-	PtWidget_t *buttonCancel;
-
-	PtArg_t args[10];
-	int     n;
-	PhArea_t area;
-
-	const XAP_StringSet * pSS = m_pApp->getStringSet();
-	XML_Char * unixstr = NULL;	// used for conversions
-
-
-#define WIN_HEIGHT 100
-#define WIN_WIDTH  200
-	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_WINDOW_TITLE, pSS->getValue(AP_STRING_ID_DLG_DateTime_DateTimeTitle), 0);
-	area.size.w = WIN_WIDTH; 
-	area.size.h = WIN_HEIGHT;
-	PtSetArg(&args[n++], Pt_ARG_DIM, &area.size, 0);
-    PtSetArg(&args[n++], Pt_ARG_WINDOW_RENDER_FLAGS, 0, ABI_MODAL_WINDOW_RENDER_FLAGS);
-    PtSetArg(&args[n++], Pt_ARG_WINDOW_MANAGED_FLAGS, 0, ABI_MODAL_WINDOW_MANAGE_FLAGS);
-	windowMain = PtCreateWidget(PtWindow, NULL, n, args);
-	PtAddCallback(windowMain, Pt_CB_WINDOW_CLOSING, s_delete_clicked, this);
-
-#define LABEL_HEIGHT 15
-	n = 0;
-	UT_XML_cloneNoAmpersands(unixstr, pSS->getValue(AP_STRING_ID_DLG_DateTime_AvailableFormats));
-	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, unixstr, 0);
-	area.pos.x = 10; area.pos.y = 10;
-	PtSetArg(&args[n++], Pt_ARG_POS, &area.pos, 0);
-	labelFormats = PtCreateWidget(PtLabel, windowMain, n, args);
-	FREEP(unixstr);
-
-
-	//Add in a list with the formats
-#define COMBO_HEIGHT LABEL_HEIGHT
-	n = 0;
-	area.pos.y += LABEL_HEIGHT + 10;
-	PtSetArg(&args[n++], Pt_ARG_POS, &area.pos, 0);
-	PtSetArg(&args[n++], Pt_ARG_WIDTH, WIN_WIDTH - 10, 0);
-	PtSetArg(&args[n++], Pt_ARG_CBOX_MAX_VISIBLE_COUNT, 3, 0);
-	PtSetArg(&args[n++], Pt_ARG_TEXT_FLAGS, 0, Pt_EDITABLE);
-	listFormats = PtCreateWidget(PtComboBox, windowMain, n, args);
-	PtAddCallback(listFormats, Pt_CB_SELECTION, s_item_selected, this);
-
-#define BUTTON_HEIGHT 24
-	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, pSS->getValue(XAP_STRING_ID_DLG_Cancel), 0);
-	area.pos.y += COMBO_HEIGHT + 20;
-	area.pos.x = WIN_WIDTH - BUTTON_WIDTH - 5;
-	PtSetArg(&args[n++], Pt_ARG_POS, &area.pos, 0);
-	PtSetArg(&args[n++], Pt_ARG_WIDTH, ABI_DEFAULT_BUTTON_WIDTH, 0);
-	buttonCancel = PtCreateWidget(PtButton, windowMain, n, args);
-	PtAddCallback(buttonCancel, Pt_CB_ACTIVATE, s_cancel_clicked, this);
-
-	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, pSS->getValue(XAP_STRING_ID_DLG_OK), 0);
-	area.pos.x -= BUTTON_WIDTH + 10;
-	PtSetArg(&args[n++], Pt_ARG_POS, &area.pos, 0);
-	PtSetArg(&args[n++], Pt_ARG_WIDTH, ABI_DEFAULT_BUTTON_WIDTH, 0);
-	buttonOK = PtCreateWidget(PtButton, windowMain, n, args);
-	PtAddCallback(buttonOK, Pt_CB_ACTIVATE, s_ok_clicked, this);
-
-	// Update member variables with the important widgets that
-	// might need to be queried or altered later.
-
-	m_windowMain = windowMain;
-
-	m_buttonOK = buttonOK;
-	m_buttonCancel = buttonCancel;
-	m_listFormats = listFormats;
-
-	return windowMain;
-}
-#else
-PtWidget_t * AP_QNXDialog_Insert_DateTime::_constructWindow(void)
-{
-	PtWidget_t *windowMain;
-	PtWidget_t *labelFormats;
+	PtWidget_t *vboxMain;
+	PtWidget_t *vboxGroup, *hboxGroup;
 	PtWidget_t *listFormats;
 	PtWidget_t *buttonOK;
 	PtWidget_t *buttonCancel;
@@ -270,62 +191,54 @@ PtWidget_t * AP_QNXDialog_Insert_DateTime::_constructWindow(void)
 	XML_Char * unixstr = NULL;	// used for conversions
 
 	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_WINDOW_TITLE, pSS->getValue(AP_STRING_ID_DLG_DateTime_DateTimeTitle), 0);
+	PtSetArg(&args[n++], Pt_ARG_WINDOW_TITLE, UT_XML_transNoAmpersands(pSS->getValue(AP_STRING_ID_DLG_DateTime_DateTimeTitle)), 0);
     PtSetArg(&args[n++], Pt_ARG_WINDOW_RENDER_FLAGS, 0, ABI_MODAL_WINDOW_RENDER_FLAGS);
     PtSetArg(&args[n++], Pt_ARG_WINDOW_MANAGED_FLAGS, 0, ABI_MODAL_WINDOW_MANAGE_FLAGS);
 	windowMain = PtCreateWidget(PtWindow, NULL, n, args);
 	PtAddCallback(windowMain, Pt_CB_WINDOW_CLOSING, s_delete_clicked, this);
 
+#define MARGIN_SIZE 10 
 
 	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_GROUP_ORIENTATION, Pt_GROUP_HORIZONTAL, 0);
-	PtSetArg(&args[n++], Pt_ARG_GROUP_ROWS_COLS, 2, 0);
-	PtSetArg(&args[n++], Pt_ARG_MARGIN_HEIGHT, 10, 0);
-	PtSetArg(&args[n++], Pt_ARG_MARGIN_WIDTH, 10, 0);
-	PtSetArg(&args[n++], Pt_ARG_GROUP_SPACING_X, 10, 0);
-	PtWidget_t *hgroup = PtCreateWidget(PtGroup, windowMain, n, args);
+	PtSetArg(&args[n++], Pt_ARG_GROUP_ORIENTATION, Pt_GROUP_VERTICAL, 0);
+	PtSetArg(&args[n++], Pt_ARG_MARGIN_HEIGHT, MARGIN_SIZE, 0); 
+	PtSetArg(&args[n++], Pt_ARG_MARGIN_WIDTH, MARGIN_SIZE, 0); 
+	PtSetArg(&args[n++], Pt_ARG_GROUP_SPACING_Y, MARGIN_SIZE, 0); 
+	PtSetArg(&args[n++], Pt_ARG_GROUP_FLAGS, 
+					Pt_GROUP_EQUAL_SIZE_HORIZONTAL,
+					Pt_GROUP_EQUAL_SIZE_HORIZONTAL); 
+	vboxMain = PtCreateWidget(PtGroup, windowMain, n, args);
 
 	n = 0;
 	PtSetArg(&args[n++], Pt_ARG_GROUP_ORIENTATION, Pt_GROUP_VERTICAL, 0);
 	PtSetArg(&args[n++], Pt_ARG_GROUP_FLAGS, 
-			 Pt_GROUP_EQUAL_SIZE_HORIZONTAL, Pt_GROUP_EQUAL_SIZE_HORIZONTAL);
-	PtWidget_t *vlist = PtCreateWidget(PtGroup, hgroup, n, args);
+				Pt_GROUP_STRETCH_VERTICAL | Pt_GROUP_STRETCH_HORIZONTAL,
+				Pt_GROUP_STRETCH_VERTICAL | Pt_GROUP_STRETCH_HORIZONTAL);
+	vboxGroup =  PtCreateWidget(PtGroup, vboxMain, n, args);
+  	pretty_group(vboxGroup, pSS->getValue(AP_STRING_ID_DLG_DateTime_AvailableFormats));
 
-	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_GROUP_ORIENTATION, Pt_GROUP_VERTICAL, 0);
-	PtSetArg(&args[n++], Pt_ARG_GROUP_SPACING_Y, 5, 0);
-	PtWidget_t *vbuttons = PtCreateWidget(PtGroup, hgroup, n, args);
-
-	n = 0;
-	UT_XML_cloneNoAmpersands(unixstr, pSS->getValue(AP_STRING_ID_DLG_DateTime_AvailableFormats));
-	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, unixstr, 0);
-	labelFormats = PtCreateWidget(PtLabel, vlist, n, args);
-	FREEP(unixstr);
-
-
-#define LIST_HEIGHT 150
-#define LIST_WIDTH 	175 
-	//Add in a list with the formats
 	n = 0;
 	PtSetArg(&args[n++], Pt_ARG_TEXT_FLAGS, 0, Pt_EDITABLE);
-	PtSetArg(&args[n++], Pt_ARG_HEIGHT, LIST_HEIGHT, Pt_EDITABLE);
-	PtSetArg(&args[n++], Pt_ARG_WIDTH, LIST_WIDTH, Pt_EDITABLE);
-	listFormats = PtCreateWidget(PtList, vlist, n, args);
+	PtSetArg(&args[n++], Pt_ARG_GROUP_ORIENTATION, Pt_GROUP_VERTICAL, 0);
+	PtSetArg(&args[n++], Pt_ARG_WIDTH, ABI_DEFAULT_BUTTON_WIDTH, 0);
+	PtSetArg(&args[n++], Pt_ARG_HEIGHT, 2 * ABI_DEFAULT_BUTTON_WIDTH, 0);
+	listFormats = PtCreateWidget(PtList, vboxGroup, n, args);
 	PtAddCallback(listFormats, Pt_CB_SELECTION, s_item_selected, this);
 
-#define BUTTON_HEIGHT 24
+	/* Buttons on the bottom */
 	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, pSS->getValue(XAP_STRING_ID_DLG_OK), 0);
+	hboxGroup =  PtCreateWidget(PtGroup, vboxMain, n, args);
+
+	n = 0;
 	PtSetArg(&args[n++], Pt_ARG_WIDTH, ABI_DEFAULT_BUTTON_WIDTH, 0);
-	PtSetArg(&args[n++], Pt_ARG_HEIGHT, BUTTON_HEIGHT, 0);
-	buttonOK = PtCreateWidget(PtButton, vbuttons, n, args);
+	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING,  pSS->getValue(XAP_STRING_ID_DLG_OK), 0);
+	buttonOK = PtCreateWidget(PtButton, hboxGroup, n, args);
 	PtAddCallback(buttonOK, Pt_CB_ACTIVATE, s_ok_clicked, this);
 
 	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, pSS->getValue(XAP_STRING_ID_DLG_Cancel), 0);
 	PtSetArg(&args[n++], Pt_ARG_WIDTH, ABI_DEFAULT_BUTTON_WIDTH, 0);
-	PtSetArg(&args[n++], Pt_ARG_HEIGHT, BUTTON_HEIGHT, 0);
-	buttonCancel = PtCreateWidget(PtButton, vbuttons, n, args);
+	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING,  pSS->getValue(XAP_STRING_ID_DLG_Cancel), 0);
+	buttonCancel = PtCreateWidget(PtButton, hboxGroup, n, args);
 	PtAddCallback(buttonCancel, Pt_CB_ACTIVATE, s_cancel_clicked, this);
 
 
@@ -340,7 +253,6 @@ PtWidget_t * AP_QNXDialog_Insert_DateTime::_constructWindow(void)
 
 	return windowMain;
 }
-#endif
 
 void AP_QNXDialog_Insert_DateTime::_populateWindowData(void)
 {
