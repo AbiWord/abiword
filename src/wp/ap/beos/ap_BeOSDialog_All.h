@@ -59,6 +59,7 @@
 #include "ap_BeOSDialog_HdrFtr.h"
 #include "ap_BeOSDialog_InsertBookmark.h"
 #include "ap_BeOSDialog_InsertHyperlink.h"
+#include "ap_BeOSDialog_Background.h"
 
 	// ... add new dialogs here ...
 
@@ -98,6 +99,8 @@
 	DeclareDialog(AP_DIALOG_ID_INSERTHYPERLINK,	AP_BeOSDialog_InsertHyperlink)
 	DeclareDialog(AP_DIALOG_ID_HDRFTR,          AP_BeOSDialog_HdrFtr)
 	DeclareDialog(AP_DIALOG_ID_FILE_NEW, AP_BeOSDialog_New)
+	DeclareDialog(AP_DIALOG_ID_BACKGROUND,		AP_BeOSDialog_Background)
+
 	// ... also add new dialogs here ...
 
 #endif
