@@ -699,6 +699,8 @@ UT_Error IE_Imp_WordPerfect::_handleEndOfLineGroup()
 	   case 9: // hard EOP
 	   case 28: // deletable hard EOP
 	     { 
+	       X_CheckWordPerfectError(_flushText());
+	       _appendCurrentParagraphProperties();
 	       UT_UCSChar ucs = UCS_FF;
 	       X_CheckDocumentError(getDoc()->appendSpan(&ucs,1));
 	     }
