@@ -185,7 +185,7 @@ void XAP_Prefs::addRecent(const char * szRecent)
 void XAP_Prefs::removeRecent(UT_uint32 k)
 {
 	UT_ASSERT(k>0);
-	UT_ASSERT(k<getRecentCount());
+	UT_ASSERT(k<=getRecentCount());
 
 	char * sz = (char *) m_vecRecent.getNthItem(k-1);
 	FREEP(sz);
