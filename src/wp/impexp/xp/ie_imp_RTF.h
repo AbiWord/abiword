@@ -739,7 +739,7 @@ private:
 	UT_uint32             m_iLastFootnoteId;
 	UT_String             m_hyperlinkBase;
 	UT_uint32             m_iHyperlinkOpen;
-	bool                  m_bBidiDocument;
+	bool                  m_bBidiMode;
 	UT_Stack              m_pasteTableStack;
 };
 

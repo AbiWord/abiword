@@ -592,7 +592,7 @@ IE_Imp_MsWord_97::IE_Imp_MsWord_97(PD_Document * pDocument)
 	m_bLTRCharContext(true),
 	m_bLTRParaContext(true),
 	m_iOverrideIssued(FRIBIDI_TYPE_UNSET),
-	m_bBidiDocument(false),
+	m_bBidiMode(false),
 	m_pBookmarks(NULL),
 	m_iBookmarksCount(0),
 	m_pFootnotes(NULL),
@@ -914,7 +914,7 @@ void IE_Imp_MsWord_97::_flush ()
 	  // extra processing
 	  // Tomas, May 8, 2003
 	  
-	  if(m_bBidiDocument)
+	  if(m_bBidiMode)
 	  {
 		  const XML_Char* pProps = "props";
 		  UT_String prop_basic = m_charProps;
@@ -1175,14 +1175,14 @@ int IE_Imp_MsWord_97::_docProc (wvParseStruct * ps, UT_uint32 tag)
 
 		// test the bidi nature of this document
 #ifdef BIDI_DEBUG
-		m_bBidiDocument = wvIsBidiDocument(ps);
+		m_bBidiMode = wvIsBidiDocument(ps);
 		UT_DEBUGMSG(("IE_Imp_MsWord_97::_docProc: complex %d, bidi %d\n",
-					 ps->fib.fComplex,m_bBidiDocument));
+					 ps->fib.fComplex,m_bBidiMode));
 #else
 		// for now we will assume that all documents are bidi
 		// documents (Tomas, Apr 12, 2003)
 		
-		m_bBidiDocument = false;
+		m_bBidiMode = false;
 #endif
 		// import styles
 		_handleStyleSheet(ps);
@@ -2000,7 +2000,7 @@ int IE_Imp_MsWord_97::_beginPara (wvParseStruct *ps, UT_uint32 tag,
 		m_bLTRParaContext = true;
 	}
 
-	m_bBidiDocument = false;
+	m_bBidiMode = false;
 
 	// break before paragraph?
 	if (apap->fPageBreakBefore)
@@ -2416,7 +2416,11 @@ int IE_Imp_MsWord_97::_beginChar (wvParseStruct *ps, UT_uint32 tag,
 	else
 		m_bLTRCharContext = false;
 
-	m_bBidiDocument = m_bLTRCharContext ^ m_bLTRParaContext;
+	// we enter bidi mode if we encounter a character
+	// formatting inconsistent with the base direction of the
+	// paragraph; once in bidi mode, we have to stay there
+	// until the end of the current pragraph
+	m_bBidiMode = m_bBidiMode || (m_bLTRCharContext ^ m_bLTRParaContext);
 
 	propsArray[propsOffset++] = static_cast<const XML_Char *>("props");
 	propsArray[propsOffset++] = static_cast<const XML_Char *>(m_charProps.c_str());

@@ -205,7 +205,7 @@ private:
 	bool m_bLTRCharContext;
 	bool m_bLTRParaContext;
 	FriBidiCharType  m_iOverrideIssued;
-	bool m_bBidiDocument;
+	bool m_bBidiMode;
 	bookmark * m_pBookmarks;
 	UT_uint32  m_iBookmarksCount;
 	footnote * m_pFootnotes;

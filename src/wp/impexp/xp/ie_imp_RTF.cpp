@@ -1319,7 +1319,7 @@ IE_Imp_RTF::IE_Imp_RTF(PD_Document * pDocument)
 	m_iDepthAtFootnote(0),
 	m_iLastFootnoteId(0),
 	m_iHyperlinkOpen(0),
-	m_bBidiDocument(false)
+	m_bBidiMode(false)
 {
 	if(m_vecAbiListTable.getItemCount() != 0)
 	{
@@ -1811,7 +1811,7 @@ UT_Error IE_Imp_RTF::_parseText()
 }
 
 /*
-   Scans the entire document for any rtl tokens and set m_bBidiDocument
+   Scans the entire document for any rtl tokens and set m_bBidiMode
    accordingly. Please note that this results in a minimal performance
    loss (a fraction of a second on a 30 page doc), and saves us much
    work and time if the document is LTR-only.
@@ -1849,12 +1849,12 @@ UT_Error IE_Imp_RTF::_isBidiDocument()
 	if(token)
 	{
 		UT_DEBUGMSG(("IE_Imp_RTF::_isBidiDocument: found rtl token [%s]\n", token));
-		m_bBidiDocument = true;
+		m_bBidiMode = true;
 	}
 	else
 	{
 		UT_DEBUGMSG(("IE_Imp_RTF::_isBidiDocument: no rtl token found\n"));
-		m_bBidiDocument = false;
+		m_bBidiMode = false;
 	}
 	
 	
@@ -3852,7 +3852,7 @@ bool IE_Imp_RTF::TranslateKeyword(unsigned char* pKeyword, long param, bool fPar
 			xxx_UT_DEBUGMSG(("rtf imp.: ltrpar\n"));
 			m_currentRTFState.m_paraProps.m_RTL = false;
 			//reset doc bidi attribute
-			m_bBidiDocument = false;
+			m_bBidiMode = false;
 			return true;
 		}
 		else if (strcmp(reinterpret_cast<char*>(pKeyword), "ltrsect") == 0)
@@ -3865,7 +3865,13 @@ bool IE_Imp_RTF::TranslateKeyword(unsigned char* pKeyword, long param, bool fPar
 		{
 			xxx_UT_DEBUGMSG(("rtf imp.: ltrch\n"));
 			m_currentRTFState.m_charProps.m_RTL = false;
-			m_bBidiDocument = m_currentRTFState.m_charProps.m_RTL ^ m_currentRTFState.m_paraProps.m_RTL;
+
+			// we enter bidi mode if we encounter a character
+			// formatting inconsistent with the base direction of the
+			// paragraph; once in bidi mode, we have to stay there
+			// until the end of the current pragraph
+			m_bBidiMode = m_bBidiMode ||
+				(m_currentRTFState.m_charProps.m_RTL ^ m_currentRTFState.m_paraProps.m_RTL);
 			return true;
 		}
 		break;
@@ -4071,7 +4077,7 @@ bool IE_Imp_RTF::TranslateKeyword(unsigned char* pKeyword, long param, bool fPar
 			xxx_UT_DEBUGMSG(("rtf imp.: rtlpar\n"));
 			m_currentRTFState.m_paraProps.m_RTL = true;
 			// reset the doc bidi attribute
-			m_bBidiDocument = false;
+			m_bBidiMode = false;
 			return true;
 		}
 		else if (strcmp(reinterpret_cast<char*>(pKeyword), "rtlsect") == 0)
@@ -4084,7 +4090,12 @@ bool IE_Imp_RTF::TranslateKeyword(unsigned char* pKeyword, long param, bool fPar
 		{
 			xxx_UT_DEBUGMSG(("rtf imp.: rtlch\n"));
 			m_currentRTFState.m_charProps.m_RTL = true;
-			m_bBidiDocument = 	m_currentRTFState.m_charProps.m_RTL ^ m_currentRTFState.m_paraProps.m_RTL;
+			// we enter bidi mode if we encounter a character
+			// formatting inconsistent with the base direction of the
+			// paragraph; once in bidi mode, we have to stay there
+			// until the end of the current pragraph
+			m_bBidiMode = m_bBidiMode ||
+				(m_currentRTFState.m_charProps.m_RTL ^ m_currentRTFState.m_paraProps.m_RTL);
 			return true;
 		}
 		else if(strcmp(reinterpret_cast<char*>(pKeyword), "row") == 0)
@@ -4759,7 +4770,7 @@ bool IE_Imp_RTF::_appendSpan()
 	UT_UCS4Char * p;
 	UT_uint32 iLen = m_gbBlock.getLength();
 
-	if(m_bBidiDocument)
+	if(m_bBidiMode)
 	{
 		FriBidiCharType iOverride = FRIBIDI_TYPE_UNSET, cType, cLastType = FRIBIDI_TYPE_UNSET, cNextType;
 		UT_uint32 iLast = 0;
@@ -4899,7 +4910,7 @@ bool IE_Imp_RTF::_insertSpan()
 		propsArray[3] = static_cast<const char *>(m_styleTable[m_currentRTFState.m_charProps.m_styleNumber]);
 	}
 	
-	if(m_bBidiDocument)
+	if(m_bBidiMode)
 	{
 		FriBidiCharType iOverride = FRIBIDI_TYPE_UNSET, cType, cLastType = FRIBIDI_TYPE_UNSET, cNextType;
 		UT_uint32 iLast = 0;
