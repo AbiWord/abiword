@@ -200,23 +200,28 @@ void XAP_UnixGnomeFrame::_createTopLevelWindow(void)
 	static GtkTargetEntry drag_types[] =
 	{
 #if 0
-		// why won't these work?
-		{"text/abiword", TARGET_URI_LIST},
-		{"text/plain", TARGET_URI_LIST},
-		{"text/richtext", TARGET_URI_LIST},
-		{"text/xml", TARGET_URI_LIST},
-		{"application/msword", TARGET_URI_LIST},
-		{"application/rtf", TARGET_URI_LIST},
-		{"application/x-palm-database", TARGET_URI_LIST},
-		{"application/x-applix-word", TARGET_URI_LIST},
+		// i'm concerned that DND doesn't work for mime-types other
+		// than text/uri-list. i can't get this to behave well with
+        // nautilus or gmc
+		{"application/rtf", 0, TARGET_URI_LIST},
+		{"application/msword", 0, TARGET_URI_LIST},
+		{"application/x-applix-word", 0, TARGET_URI_LIST},
+		{"application/x-palm-database", 0, TARGET_URI_LIST},
+		{"application/vnd.palm", 0, TARGET_URI_LIST},
+		{"image/png", 0, TARGET_PNG},
+		{"image/bmp", 0, TARGET_BMP},
+		{"image/svg-xml", 0, TARGET_SVG},
+		{"text/plain", 0, TARGET_URI_LIST},
+		{"text/abiword", 0, TARGET_URI_LIST},
+		{"text/html", 0, TARGET_URI_LIST},
+		{"text/xml", 0, TARGET_URI_LIST},
+		{"text/vnd.wap.wml", 0, TARGET_URI_LIST},
+		{"text/richtext", 0, TARGET_URI_LIST},
+		{"text/rtf", 0, TARGET_URI_LIST},
+		{"_NETSCAPE_URL", 0, TARGET_URL}
 #else
-		{ "text/uri-list", 0, TARGET_URI_LIST},
+		{"text/uri-list", 0, TARGET_URI_LIST}
 #endif
-		// why don't these work? everything gets sent as TARGET_URI_LIST
-		{ "image/png", 0, TARGET_PNG},
-		{ "image/bmp", 0, TARGET_BMP},
-		{ "image/svg-xml", 0, TARGET_SVG},
-		{ "_NETSCAPE_URL", 0, TARGET_URL }
 	};
 	static gint n_drag_types = sizeof(drag_types)/sizeof(drag_types[0]);
 
@@ -230,13 +235,20 @@ void XAP_UnixGnomeFrame::_createTopLevelWindow(void)
 						   m_pUnixApp->getApplicationName(),
 						   m_pUnixApp->getApplicationName());
 
-	//(GtkDestDefaults)(GTK_DEST_DEFAULT_MOTION|GTK_DEST_DEFAULT_DROP),
 	gtk_drag_dest_set (m_wTopLevelWindow,
 					   GTK_DEST_DEFAULT_ALL,
-					   drag_types, n_drag_types, GDK_ACTION_COPY);
+					   drag_types, 
+					   n_drag_types, 
+					   GDK_ACTION_COPY);
 
-	gtk_signal_connect(GTK_OBJECT(m_wTopLevelWindow), "drag_data_received",
-                       GTK_SIGNAL_FUNC(_dnd_drop_event), (gpointer)this);
+	gtk_signal_connect (GTK_OBJECT (m_wTopLevelWindow),
+						"drag_data_get",
+						GTK_SIGNAL_FUNC (_dnd_drop_event), 
+						(gpointer)this);
+	gtk_signal_connect(GTK_OBJECT(m_wTopLevelWindow), 
+					   "drag_data_received",
+                       GTK_SIGNAL_FUNC(_dnd_drop_event), 
+					   (gpointer)this);
 
 	gtk_signal_connect(GTK_OBJECT(m_wTopLevelWindow), "delete_event",
 					   GTK_SIGNAL_FUNC(_fe::delete_event), NULL);
