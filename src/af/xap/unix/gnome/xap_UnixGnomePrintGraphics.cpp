@@ -587,42 +587,23 @@ UT_uint32 XAP_UnixGnomePrintGraphics::getFontHeight(GR_Font *fnt)
 
 GR_Font* XAP_UnixGnomePrintGraphics::findFont(const char* pszFontFamily, 
 											  const char* pszFontStyle, 
-											  const char* /* pszFontVariant */,
+											  const char* pszFontVariant,
 											  const char* pszFontWeight, 
-											  const char* /* pszFontStretch */,
+											  const char* pszFontStretch,
 											  const char* pszFontSize)
 {
-	XAP_UnixFont::style s = XAP_UnixFont::STYLE_NORMAL;
+	XAP_UnixFont* pUnixFont = m_fm->findNearestFont(pszFontFamily, pszFontStyle, 
+													pszFontVariant, pszFontWeight,
+													pszFontStretch, pszFontSize);
 
-	// TODO: this is kind of sloppy
-	if (!UT_strcmp(pszFontStyle, "normal") &&
-		!UT_strcmp(pszFontWeight, "normal"))
-		s = XAP_UnixFont::STYLE_NORMAL;
-	else if (!UT_strcmp(pszFontStyle, "normal") &&
-			 !UT_strcmp(pszFontWeight, "bold"))
-		s = XAP_UnixFont::STYLE_BOLD;
-	else if (!UT_strcmp(pszFontStyle, "italic") &&
-			 !UT_strcmp(pszFontWeight, "normal"))
-		s = XAP_UnixFont::STYLE_ITALIC;
-	else if (!UT_strcmp(pszFontStyle, "italic") &&
-			 !UT_strcmp(pszFontWeight, "bold"))
-		s = XAP_UnixFont::STYLE_BOLD_ITALIC;
-	else {
-		UT_ASSERT_NOT_REACHED ();
-	}
-	
-	// Request the appropriate XAP_UnixFont::, and bury it in an
-	// instance of a UnixFont:: with the correct size.
-	XAP_UnixFont * unixfont = m_fm->getFont(pszFontFamily, s);
-	XAP_UnixFontHandle * item = NULL;
-	
 	UT_uint32 iSize = static_cast<UT_uint32>(UT_convertToPoints(pszFontSize));
 
-	// end up burying a pointer to the unix font, but first we need a handle
-	item = new XAP_UnixFontHandle(unixfont,iSize);
+	XAP_UnixFontHandle* item = new XAP_UnixFontHandle(pUnixFont, iSize);
+	UT_ASSERT(item);
 
 	PSFont * pFont = new PSFont(item->getUnixFont(), iSize);
-    delete item;
+	UT_ASSERT(pFont);
+	delete item;
 
 	return pFont;
 }
