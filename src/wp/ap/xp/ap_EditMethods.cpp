@@ -4000,7 +4000,7 @@ Defun1(dlgParagraph)
 	return s_doParagraphDlg(pView);
 }
 
-
+#ifndef NDEBUG
 static UT_Bool s_doBullets(FV_View *pView)
 {
 	XAP_Frame * pFrame = (XAP_Frame *) pView->getParentData();
@@ -4025,6 +4025,8 @@ static UT_Bool s_doBullets(FV_View *pView)
 	return UT_TRUE;
 }
 
+#endif
+
 Defun1(dlgBullets)
 {
   //
@@ -4035,6 +4037,7 @@ Defun1(dlgBullets)
 
 	return s_doBullets(pView);
 #else
+	XAP_Frame * pFrame = (XAP_Frame *) pAV_View->getParentData();
 	s_TellNotImplemented(pFrame, "Numbering and Bullets dialog", __LINE__);
 
 #endif
