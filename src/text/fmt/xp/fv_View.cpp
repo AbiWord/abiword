@@ -122,7 +122,8 @@ FV_View::FV_View(XAP_App * pApp, void* pParentData, FL_DocLayout* pLayout)
 
 	m_wrappedEnd = UT_FALSE;
 	m_startPosition = 0;
-    m_bShowPara = UT_FALSE;
+	m_bShowPara = UT_FALSE;
+	_saveCurrentPoint();
 }
 
 FV_View::~FV_View()
@@ -2777,6 +2778,14 @@ UT_Bool FV_View::gotoTarget(AP_JumpTarget type, UT_UCSChar *data)
 	UT_ASSERT(numberString);
 	
 	UT_UCS_strcpy_to_char(numberString, data);
+        if (!isSelectionEmpty())
+	{
+		_clearSelection();
+	}
+	else
+	{
+		_eraseInsertionPoint();
+	}
 
 	switch (numberString[0])
 	{
@@ -3831,6 +3840,32 @@ void FV_View::_updateInsertionPoint()
 	}
 }
 
+UT_Bool FV_View::_hasPointMoved(void)
+{
+        if( m_xPoint == m_oldxPoint && m_yPoint == m_oldyPoint && m_iPointHeight ==  m_oldiPointHeight)
+	{
+	        return UT_FALSE;
+	}
+        else
+        {
+	        return UT_TRUE;
+        }
+}
+
+void  FV_View::_saveCurrentPoint(void)
+{
+        m_oldxPoint = m_xPoint;
+	m_oldyPoint = m_yPoint;
+	m_oldiPointHeight = m_iPointHeight;
+}      
+
+void  FV_View::_clearOldPoint(void)
+{
+        m_oldxPoint = -1;
+	m_oldyPoint = -1;
+	m_oldiPointHeight = 0;
+}
+
 void FV_View::_xorInsertionPoint()
 {
 	if (m_iPointHeight > 0)
@@ -3840,11 +3875,25 @@ void FV_View::_xorInsertionPoint()
 		m_pG->setColor(clr);
 		m_pG->xorLine(m_xPoint-1, m_yPoint, m_xPoint-1, m_yPoint + m_iPointHeight);
 		m_pG->xorLine(m_xPoint, m_yPoint, m_xPoint, m_yPoint + m_iPointHeight);
+		m_bCursorIsOn = !m_bCursorIsOn;
 	}
+	if(_hasPointMoved() == UT_TRUE)
+	{
+	        m_bCursorIsOn = UT_TRUE;
+	}
+	_saveCurrentPoint();
 }
 
 void FV_View::_eraseInsertionPoint()
 {
+        if(_hasPointMoved() == UT_TRUE)
+	{
+	        UT_DEBUGMSG(("Insertion Point has moved before erasing \n"));
+		//		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		m_bCursorIsOn = UT_FALSE;
+                return;
+	}
+
 	if (m_pAutoCursorTimer) 
 		m_pAutoCursorTimer->stop();
 	
@@ -3852,8 +3901,8 @@ void FV_View::_eraseInsertionPoint()
 	{
 		return;
 	}
-
 	_xorInsertionPoint();
+        m_bCursorIsOn = UT_FALSE;
 }
 
 void FV_View::_drawInsertionPoint()
@@ -3865,12 +3914,11 @@ void FV_View::_drawInsertionPoint()
 		if (m_pAutoCursorTimer == NULL) {
 			m_pAutoCursorTimer = UT_Timer::static_constructor(_autoDrawPoint, this, m_pG);
 			m_pAutoCursorTimer->set(AUTO_DRAW_POINT);
+			m_bCursorIsOn = UT_FALSE;
 		}
-
+		m_pAutoCursorTimer->stop();
 		m_pAutoCursorTimer->start();
 	}
-
-	m_bCursorIsOn = UT_TRUE;
 
 	if (m_iWindowHeight <= 0)
 	{
@@ -3881,8 +3929,8 @@ void FV_View::_drawInsertionPoint()
 	{
 		return;
 	}
-	
-	_xorInsertionPoint();
+	if(m_bCursorIsOn == UT_FALSE)
+        	_xorInsertionPoint();
 }
 
 void FV_View::_autoDrawPoint(UT_Timer * pTimer)
@@ -3902,7 +3950,7 @@ void FV_View::_autoDrawPoint(UT_Timer * pTimer)
 		return;
 	}
 	pView->_xorInsertionPoint();
-	pView->m_bCursorIsOn = !pView->m_bCursorIsOn;
+	//	pView->m_bCursorIsOn = !pView->m_bCursorIsOn;
 }
 
 void FV_View::setXScrollOffset(UT_sint32 v)
