@@ -1902,7 +1902,7 @@ UT_Bool FV_View::findNext(const UT_UCSChar * string, UT_Bool bSelect, UT_Bool * 
 				}
 						
 				// this could get ugly, and should be optimized out
-				draw(UT_FALSE);
+				draw();
 
 				// Here's where Word does performs some tricks with
 				// the cursor.  If we're doing a "Find", then we
