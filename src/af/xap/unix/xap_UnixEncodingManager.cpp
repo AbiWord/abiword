@@ -471,14 +471,15 @@ void  XAP_UnixEncodingManager::initialize()
 				// we want to get the encoding that would be used for the given
 				// language/territory if the utf-8 encoding was not specified
 				// by LANG
-				char MYLANG[40];
+				char MYLANG[45];
 				char OLDLANG[40];
 				strcpy(OLDLANG,getenv("LANG"));
 				
-				strcpy(MYLANG,LanguageISOName);
+				strcpy(MYLANG,"LANG=");
+				strcat(MYLANG,LanguageISOName);
 				strcat(MYLANG,"_");
 				strcat(MYLANG,LanguageISOTerritory);
-				setenv("LANG", MYLANG,1);
+				putenv(MYLANG);
 				
 				xxx_UT_DEBUGMSG(("xap_UnixEncodingManager::initialize: prev LANG=%s new LANG=%s\n"
 							 , OLDLANG,getenv("LANG")));
@@ -504,7 +505,9 @@ void  XAP_UnixEncodingManager::initialize()
 				
 				}
 
-				setenv("LANG",OLDLANG,1);
+				strcpy(MYLANG,"LANG=");
+				strcat(MYLANG,OLDLANG);
+				putenv(MYLANG);
 			
 			}
 		}
