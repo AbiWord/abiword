@@ -336,12 +336,31 @@ void XAP_Win32DialogHelper::centerDialog()
 
 void XAP_Win32DialogHelper::s_centerDialog(HWND hWnd)
 {
-	RECT rc;
-
+	RECT 	rc, rcParent;
+	int 	nWidth, nHeight;
+	POINT 	pt;
+	
     GetWindowRect(hWnd, &rc);
+    
+   	if (!GetParent(hWnd))
+	  GetWindowRect (GetDesktopWindow(), &rcParent);
+	else
+	  GetClientRect (GetParent(hWnd), &rcParent);	  
+	  
+	nWidth = rc.right - rc.left;
+	nHeight = rc.bottom - rc.top;
+	
+	pt.x = (rcParent.right - rcParent.left) / 2;
+	pt.y = (rcParent.bottom - rcParent.top) / 2;
+	
+	if (!GetParent(hWnd))
+	  ClientToScreen (GetDesktopWindow(), &pt);
+	else
+	  ClientToScreen (GetParent(hWnd), &pt);
 
-    SetWindowPos(hWnd, NULL,
-       ((GetSystemMetrics(SM_CXSCREEN) - (rc.right - rc.left)) / 2),
-       ((GetSystemMetrics(SM_CYSCREEN) - (rc.bottom - rc.top)) / 2),
-       0, 0, SWP_NOSIZE | SWP_NOACTIVATE);	
+	pt.x -= nWidth / 2;
+	pt.y -= nHeight / 2;
+
+	// Move your arse...
+	MoveWindow (hWnd, pt.x, pt.y, nWidth, nHeight, TRUE);
 }
