@@ -353,6 +353,7 @@ public:
 	static EV_EditMethod_Fn toggleInsertMode;
 
 	static EV_EditMethod_Fn viCmd_A;
+	static EV_EditMethod_Fn viCmd_C;
 	static EV_EditMethod_Fn viCmd_I;
 	static EV_EditMethod_Fn viCmd_J;
 	static EV_EditMethod_Fn viCmd_O;
@@ -656,6 +657,7 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(toggleInsertMode),         0,  ""),
 
 	EV_EditMethod(NF(viCmd_A),		0,	""),
+	EV_EditMethod(NF(viCmd_C),		0,	""),
 	EV_EditMethod(NF(viCmd_I),		0,	""),
 	EV_EditMethod(NF(viCmd_J),		0,	""),
 	EV_EditMethod(NF(viCmd_O),		0,	""),
@@ -5382,6 +5384,12 @@ Defun(viCmd_A)
 {
 	// insert after the end of the current line
 	return ( EX(warpInsPtEOL) && EX(setInputVI) );
+}
+
+Defun(viCmd_C)
+{
+	// Select to the end of the line for modification
+	return ( EX(extSelEOL) && EX(setInputVI) );
 }
 
 Defun(viCmd_I)
