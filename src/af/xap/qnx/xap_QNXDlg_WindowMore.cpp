@@ -231,11 +231,13 @@ PtWidget_t * XAP_QNXDialog_WindowMore::_constructWindow(void)
 
 	n = 0;
 	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, pSS->getValue(XAP_STRING_ID_DLG_OK), 0);
+	PtSetArg(&args[n++], Pt_ARG_WIDTH, ABI_DEFAULT_BUTTON_WIDTH, 0);
 	buttonOK = PtCreateWidget(PtButton, windowMain, n, args);
 	PtAddCallback(windowMain, Pt_CB_ACTIVATE, s_ok_clicked, this);
 
 	n = 0;
 	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, pSS->getValue(XAP_STRING_ID_DLG_Cancel), 0);
+	PtSetArg(&args[n++], Pt_ARG_WIDTH, ABI_DEFAULT_BUTTON_WIDTH, 0);
 	buttonCancel = PtCreateWidget(PtButton, windowMain, n, args);
 	PtAddCallback(windowMain, Pt_CB_ACTIVATE, s_cancel_clicked, this);
 

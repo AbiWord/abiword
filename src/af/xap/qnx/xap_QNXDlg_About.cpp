@@ -279,16 +279,15 @@ PtWidget_t * XAP_QNXDialog_About::_constructWindow(void)
 	PtSetArg(&args[n++], Pt_ARG_GROUP_HORZ_ALIGN, Pt_GROUP_HORZ_RIGHT, 0);
 	hbox2 = PtCreateWidget(PtGroup, vboxInfo, n, args);
 
-#define BUTTON_WIDTH 80
 	n = 0;
 	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, "www.abisource.com", 0);
-	PtSetArg(&args[n++], Pt_ARG_WIDTH, BUTTON_WIDTH, 0);
+	PtSetArg(&args[n++], Pt_ARG_WIDTH, ABI_DEFAULT_BUTTON_WIDTH, 0);
 	buttonURL = PtCreateWidget(PtButton, hbox2, n, args);
 	PtAddCallback(buttonURL, Pt_CB_ACTIVATE, s_url_clicked, this);
 
 	n = 0;
 	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, pSS->getValue(XAP_STRING_ID_DLG_OK), 0);
-	PtSetArg(&args[n++], Pt_ARG_WIDTH, BUTTON_WIDTH, 0);
+	PtSetArg(&args[n++], Pt_ARG_WIDTH, ABI_DEFAULT_BUTTON_WIDTH, 0);
 	buttonOK = PtCreateWidget(PtButton, hbox2, n, args);
 	PtAddCallback(buttonOK, Pt_CB_ACTIVATE, s_ok_clicked, this);
 

@@ -38,19 +38,6 @@ public:
 
 protected:
 
-#if 0
-	UT_Bool					_run_gtk_main(XAP_Frame * pFrame, void * pFSvoid,
-										  UT_Bool bCheckWritePermission,
-										  GtkWidget * filetypes_pulldown);
-#endif
-	void 					_notifyError_OKOnly(XAP_Frame * pFrame,
-												XAP_String_Id sid);
-	void 					_notifyError_OKOnly(XAP_Frame * pFrame,
-												XAP_String_Id sid,
-												const char * sz1);
-	UT_Bool 				_askOverwrite_YesNo(XAP_Frame * pFrame,
-												const char * fileName);
-
 	XAP_QNXFrame *			m_pQNXFrame;
 	char * 					m_szFinalPathnameCandidate;
 

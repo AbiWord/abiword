@@ -145,6 +145,7 @@ static int s_radio_Percent_clicked(PtWidget_t *w, void *data, PtCallbackInfo_t *
 }
 static int s_spin_Percent_changed(PtWidget_t *w, void *data, PtCallbackInfo_t *info)
 {
+	printf("Spin changed! \n");
 	XAP_QNXDialog_Zoom *dlg = (XAP_QNXDialog_Zoom *)data;
 	UT_ASSERT(dlg);
 	dlg->event_SpinPercentChanged();
@@ -250,6 +251,7 @@ void XAP_QNXDialog_Zoom::event_Radio200Clicked(void)
 	m_zoomType = z_200;
 	_enablePercentSpin(UT_FALSE);
 	_updatePreviewZoomPercent(200);
+	PtDamageWidget(m_previewArea);
 }
 
 void XAP_QNXDialog_Zoom::event_Radio100Clicked(void)
@@ -258,6 +260,7 @@ void XAP_QNXDialog_Zoom::event_Radio100Clicked(void)
 	m_zoomType = z_100;
 	_enablePercentSpin(UT_FALSE);
 	_updatePreviewZoomPercent(100);
+	PtDamageWidget(m_previewArea);
 }
 
 void XAP_QNXDialog_Zoom::event_Radio75Clicked(void)
@@ -265,6 +268,7 @@ void XAP_QNXDialog_Zoom::event_Radio75Clicked(void)
 	m_zoomType = z_75;
 	_enablePercentSpin(UT_FALSE);
 	_updatePreviewZoomPercent(75);
+	PtDamageWidget(m_previewArea);
 }
 
 void XAP_QNXDialog_Zoom::event_RadioPageWidthClicked(void)
@@ -272,6 +276,7 @@ void XAP_QNXDialog_Zoom::event_RadioPageWidthClicked(void)
 	m_zoomType = z_PAGEWIDTH;
 	_enablePercentSpin(UT_FALSE);
 	// TODO : figure out the dimensions
+	PtDamageWidget(m_previewArea);
 }
 
 void XAP_QNXDialog_Zoom::event_RadioWholePageClicked(void)
@@ -279,6 +284,7 @@ void XAP_QNXDialog_Zoom::event_RadioWholePageClicked(void)
 	m_zoomType = z_WHOLEPAGE;
 	_enablePercentSpin(UT_FALSE);
 	// TODO : figure out the dimensions
+	PtDamageWidget(m_previewArea);
 }
 
 void XAP_QNXDialog_Zoom::event_RadioPercentClicked(void)
@@ -287,6 +293,7 @@ void XAP_QNXDialog_Zoom::event_RadioPercentClicked(void)
 	_enablePercentSpin(UT_TRUE);
 	// call event_SpinPercentChanged() to do the fetch and update work
 	event_SpinPercentChanged();
+	PtDamageWidget(m_previewArea);
 }
 
 static int get_numeric_value(PtWidget_t *w) {
@@ -301,10 +308,7 @@ static int get_numeric_value(PtWidget_t *w) {
 void XAP_QNXDialog_Zoom::event_SpinPercentChanged(void)
 {
 	m_zoomPercent = get_numeric_value(m_spinPercent);
-#if 0
-	_updatePreviewZoomPercent((UT_uint32) gtk_spin_button_get_value_as_int(
-		GTK_SPIN_BUTTON(m_spinPercent)));
-#endif
+	_updatePreviewZoomPercent(m_zoomPercent);
 }
 
 void XAP_QNXDialog_Zoom::event_PreviewAreaExposed(void)
@@ -378,8 +382,6 @@ PtWidget_t * XAP_QNXDialog_Zoom::_constructWindow(void)
 	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, "Preview", 0); 
 	vboxZoomPreview = PtCreateWidget(PtGroup, hboxFrames, n, args);
 
-#define BUTTON_WIDTH    80
-
 	n = 0;
 	UT_XML_cloneNoAmpersands(unixstr, pSS->getValue(XAP_STRING_ID_DLG_Zoom_RadioFrameCaption));
 	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, unixstr, 0);
@@ -441,7 +443,7 @@ PtWidget_t * XAP_QNXDialog_Zoom::_constructWindow(void)
 	FREEP(unixstr);
 
 	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_FLAGS, 0, Pt_GETS_FOCUS);
+	//PtSetArg(&args[n++], Pt_ARG_FLAGS, 0, Pt_GETS_FOCUS);
 	PtSetArg(&args[n++], Pt_ARG_NUMERIC_MAX, 500, 0);
 	PtSetArg(&args[n++], Pt_ARG_NUMERIC_MIN,   1, 0);
 	spinbuttonPercent = PtCreateWidget(PtNumericInteger, vboxZoomTo, n, args);
@@ -460,24 +462,34 @@ PtWidget_t * XAP_QNXDialog_Zoom::_constructWindow(void)
 	n = 0;
 	PtSetArg(&args[n++], Pt_ARG_WIDTH, 150, 0);
 	PtSetArg(&args[n++], Pt_ARG_HEIGHT, 150, 0);
-	PtSetArg(&args[n++], Pt_ARG_COLOR, Pg_PURPLE, 0);
+	PtSetArg(&args[n++], Pt_ARG_GROUP_ORIENTATION, Pt_GROUP_HORIZONTAL, Pt_GROUP_HORIZONTAL); 
+#define _VS_ANCHOR_ (Pt_LEFT_ANCHORED_RIGHT | Pt_RIGHT_ANCHORED_RIGHT | \
+		     Pt_TOP_ANCHORED_TOP | Pt_BOTTOM_ANCHORED_BOTTOM)
+	PtSetArg(&args[n++], Pt_ARG_ANCHOR_FLAGS, _VS_ANCHOR_, _VS_ANCHOR_); 
+#define _VS_STRETCH_ (Pt_GROUP_STRETCH_HORIZONTAL | Pt_GROUP_STRETCH_VERTICAL)
+	PtSetArg(&args[n++], Pt_ARG_GROUP_FLAGS, _VS_STRETCH_, _VS_STRETCH_); 
+	PtWidget_t *rawgroup = PtCreateWidget(PtGroup, vboxZoomPreview, n, args);
+
+	n = 0;
 	void *data = (void *)this;
+	PtSetArg(&args[n++], Pt_ARG_WIDTH, 150, 0);
+	PtSetArg(&args[n++], Pt_ARG_HEIGHT, 150, 0);
 	PtSetArg(&args[n++], Pt_ARG_USER_DATA, &data, sizeof(this)); 
 	PtSetArg(&args[n++], Pt_ARG_RAW_DRAW_F, &s_preview_exposed, 1); 
-	drawingareaPreview = PtCreateWidget(PtRaw, vboxZoomPreview, n, args);
+	drawingareaPreview = PtCreateWidget(PtRaw, rawgroup, n, args);
 
 	n = 0;
 	PtSetArg(&args[n++], Pt_ARG_GROUP_ORIENTATION, Pt_GROUP_HORIZONTAL, Pt_GROUP_HORIZONTAL); 
 	PtWidget_t *vboxButtons = PtCreateWidget(PtGroup, vboxZoomPreview, n, args);
 
 	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_WIDTH, BUTTON_WIDTH, 0);
+	PtSetArg(&args[n++], Pt_ARG_WIDTH, ABI_DEFAULT_BUTTON_WIDTH, 0);
 	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, pSS->getValue(XAP_STRING_ID_DLG_OK), 0);
 	buttonOK = PtCreateWidget(PtButton, vboxButtons, n, args);
 	PtAddCallback(buttonOK, Pt_CB_ACTIVATE, s_ok_clicked, this);
 
 	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_WIDTH, BUTTON_WIDTH, 0);
+	PtSetArg(&args[n++], Pt_ARG_WIDTH, ABI_DEFAULT_BUTTON_WIDTH, 0);
 	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, pSS->getValue(XAP_STRING_ID_DLG_Cancel), 0);
 	buttonCancel = PtCreateWidget(PtButton, vboxButtons, n, args);
 	PtAddCallback(buttonCancel, Pt_CB_ACTIVATE, s_cancel_clicked, this);
@@ -513,6 +525,7 @@ void XAP_QNXDialog_Zoom::_enablePercentSpin(UT_Bool enable) {
 	else {
 		PtSetArg(&arg, Pt_ARG_FLAGS, 0, Pt_BLOCKED | Pt_GHOST);	
 		PtSetResources(m_spinPercent, 1, &arg);
+		PtWidgetShowFocus(m_spinPercent);
 	}
 }
 

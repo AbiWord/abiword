@@ -438,6 +438,9 @@ void XAP_QNXFrame::_createTopLevelWindow(void)
 	
 	//Set the icon for the window
 	_setWindowIcon();
+
+	//Center the window (or put it below existing ones?)
+	UT_QNXCenterWindow(NULL, m_wTopLevelWindow);
 }
 
 UT_Bool XAP_QNXFrame::close()
