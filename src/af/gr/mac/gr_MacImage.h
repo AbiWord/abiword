@@ -1,6 +1,5 @@
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
- * Copyright (C) 1999 John Brewer DBA Jera Design
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -18,19 +17,28 @@
  * 02111-1307, USA.
  */
 
+#ifndef GR_MACIMAGE_H
+#define GR_MACIMAGE_H
 
-#include "gr_MacGraphics.h"
+#include "gr_Image.h"
 
-#include "ut_debugmsg.h"
-#include "ut_assert.h"
-
-
-
-MacGraphics::MacGraphics(GrafPtr grafPort, XAP_App * app)
-      : GR_Graphics ()
+class GR_MacImage : public GR_RasterImage
 {
-      UT_ASSERT (grafPort != NULL);
+public:
+	GR_MacImage(const char* pszName);
+	~GR_MacImage();
 
-      m_GrafPort = grafPort;
-}
+	virtual UT_sint32	getDisplayWidth(void) const;
+	virtual UT_sint32	getDisplayHeight(void) const;
+	virtual UT_Bool		convertToBuffer(UT_ByteBuf** ppBB) const;
+	virtual UT_Bool		convertFromBuffer(const UT_ByteBuf* pBB, UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight);
 
+//	void			setData(BBitmap * image) { m_image = image; }
+//  	BBitmap *		getData(void) const { return m_image; }
+	
+protected:
+
+//	BBitmap *m_image;
+};
+
+#endif /* GR_MACIMAGE_H */

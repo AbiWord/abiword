@@ -20,8 +20,10 @@
 
 
 
-#ifndef MAC_TT_h
-#define MAC_TT_h
+#ifndef GR_MACGRAPHICS_h
+#define GR_MACGRAPHICS_h
+
+#include <QuickDraw.h>
 
 #include "ut_misc.h"
 #include "gr_Graphics.h"
@@ -39,7 +41,7 @@ private:
 class MacGraphics : public GR_Graphics
 {
 public:
-	MacGraphics(XAP_App * app);					/* for screen */
+	MacGraphics(GrafPtr grafPort, XAP_App * app);					/* for screen */
 	~MacGraphics();
 
 	virtual void drawChars(const UT_UCSChar* pChars, 
@@ -95,8 +97,10 @@ public:
 	virtual UT_Bool endPrint(void);
 	
 protected:
-	virtual UT_uint32 _getResolution(void) const;
+	virtual UT_uint32 _getResolution(void) const { return 72; };
+
+        GrafPtr m_GrafPort;
 	
 };
 
-#endif /* MAC_TT_h */
+#endif /* GR_MACGRAPHICS_h */
