@@ -66,8 +66,8 @@ Prefix: %{prefix}
 Packager: __ABI_BUILD_PACKAGER__
 Distribution: RedHat 7.x Contrib
 # Basic requirements
-Requires: gtk2 >= 2.0.0
-Requires: glib2 >= 2.0.0
+Requires: gtk2 >= 2.0.0 glib2 >= 2.0.0 libfribidi0 >= 0.10.4 fontconfig >= 2.1 libtool
+BuildRequires: gtk2-devel >= 2.0.0 glib2 >= 2.0.0 fontconfig-devel >= 2.1
 
 %if %{enable_jpeg}
 Requires: libjpeg
@@ -87,8 +87,6 @@ Requires: libxml2 >= 2.4.2
 BuildRequires: libxml2-devel >= 2.4.2
 %endif
 
-Requires: fontconfig
-BuildRequires: fontconfig-devel
 
 # Requirements for GNOME build
 %if %{enable_gnome}
@@ -160,7 +158,8 @@ ScriptHappy: Run other programs in a shell and direct the output to AbiWord.
 Summary: Plugins to import and export otherwise unsupported formats.
 Group: Applications/Productivity
 Requires: abiword
-BuildRequires: bzip2-devel, librsvg-devel
+BuildRequires: bzip2, librsvg2
+BuildRequires: bzip2-devel, librsvg2-devel
 %{?_with_libgsf:Requires: libgsf}
 %{?_with_libgsf:BuildRequires: libgsf-devel}
 %{?_with_libwpd:Requires: libwpd}
