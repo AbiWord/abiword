@@ -25,7 +25,7 @@
 #include <OS.h>
 
 /*
- TF Note:
+ TF Note: (early 1999)
   I'm not sure that this class actually behaves the
   way that it is intended.  I'm trying to reduce the
   amount of extra calls, and that seems to happen
@@ -33,7 +33,13 @@
   seems right since the start() call will actually
   create a new thread.
 */
-
+/* 
+ DB Note (written way after TF Note): (03/11/1999)
+ This class now should behave the way it's intended.
+ I modified the thing to start a new timer only if we 
+ change the timeout value using set, or we haven't 
+ started one yet. Otherwise, we can just suspend/resume. 
+ */
 /*****************************************************************/
 	
 UT_Timer* UT_Timer::static_constructor(UT_TimerCallback pCallback, void* pData, GR_Graphics * /*pG*/)
@@ -55,7 +61,15 @@ UT_BeOSTimer::UT_BeOSTimer(UT_TimerCallback pCallback, void* pData)
 UT_BeOSTimer::~UT_BeOSTimer()
 {
 	UT_DEBUGMSG(("ut_BeOSTimer.cpp:  timer destructor\n"));
-	stop();
+	if (getIdentifier()!=-1)
+	{
+		UT_DEBUGMSG("Killing off thread\n");
+		kill_thread(getIdentifier());
+	}
+	else
+	{
+		UT_DEBUGMSG("No thread to kill off, me thinks\n");
+	}
 }
 
 /*****************************************************************/
@@ -64,6 +78,8 @@ static int32 _Timer_Proc(void *p)
 {
 	UT_BeOSTimer* pTimer = (UT_BeOSTimer*) p;
 	UT_ASSERT(pTimer);
+	while(UT_TRUE)
+	{
 
 	/*
 	 Sleep for the desired amount of time (micro seconds) 
@@ -78,21 +94,14 @@ static int32 _Timer_Proc(void *p)
 	  timer was designed to emulate the semantics of Win32 timers,
 	  which continually fire until they are killed.
 	*/
-	pTimer->resetIfStarted();
-
-	/* 
-	 This seems like a waste, we should just stay cycling in a 
-	 loop within this thread waiting to either be killed or
- 	 stopped, rather than spawn off a new thread all the time.
-	 Use this temporarily until we determine a new course of action
- 	*/
-	return 0;
+	}
 }
 
 void UT_BeOSTimer::resetIfStarted(void)
 {
-	if (m_bStarted)
-		set(m_iMilliseconds);
+	/*if (m_bStarted)
+		set(m_iMilliseconds);*/
+	UT_DEBUGMSG("resetIfStarted called\n");
 }
 
 UT_sint32 UT_BeOSTimer::set(UT_uint32 iMilliseconds)
@@ -108,11 +117,16 @@ UT_sint32 UT_BeOSTimer::set(UT_uint32 iMilliseconds)
 	  will work for other platforms.
 	*/
 	UT_DEBUGMSG(("ut_BeOSTimer.cpp: timer set %d ms\n", iMilliseconds));
+	if (m_bStarted) 
+	{
+		UT_DEBUGMSG("Killing off old timer, starting new\n");
+		kill_thread(getIdentifier());
+	}
+	UT_DEBUGMSG("Timer set\n");
 	m_iMilliseconds = iMilliseconds;
 	m_bStarted = UT_TRUE;
-	//UT_sint32 idTimer = gtk_timeout_add(iMilliseconds, _Timer_Proc, this);
 	thread_id idTimer = spawn_thread(_Timer_Proc, "Timer", 
-					 B_NORMAL_PRIORITY, this);
+									 B_NORMAL_PRIORITY, this);
 	setIdentifier(idTimer);
 	resume_thread(idTimer);
 	return 0;
@@ -122,12 +136,16 @@ void UT_BeOSTimer::stop(void)
 {
 	// stop the delivery of timer events.
 	// stop the OS timer from firing, but do not delete the class.
-	//Should I just kill that thread here?
-	m_bStarted = UT_FALSE;
 	thread_id id;
-	if ((id = getIdentifier()) == -1) {
+	if ((id = getIdentifier()) !=-1 ) 
+	{
+		UT_DEBUGMSG("Timer stopped:%d\n",id);
 		UT_DEBUGMSG(("ut_BeOSTimer.cpp: timer stopped\n"));
-		kill_thread(id); 
+		m_bStarted=UT_FALSE;
+		suspend_thread(id); 
+	}
+	else {
+		UT_DEBUGMSG("Stopping non-existant timer \n");
 	}
 }
 
@@ -135,7 +153,16 @@ void UT_BeOSTimer::start(void)
 {
 	// resume the delivery of events.
 	UT_ASSERT(m_iMilliseconds > 0);
-	if (!m_bStarted)
+	if (getIdentifier()==-1)
+	{
+		UT_DEBUGMSG("Creating new timer in start()\n");
 		set(m_iMilliseconds);
+	}
+	else if (!m_bStarted)
+	{
+		UT_DEBUGMSG("Restarted old timer\n");
+		m_bStarted=UT_TRUE;
+		resume_thread(getIdentifier());
+	}
 }
 
