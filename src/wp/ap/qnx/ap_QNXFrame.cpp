@@ -304,14 +304,18 @@ void AP_QNXFrame::toggleLeftRuler(bool bRulerOn)
 	PtGetResource(static_cast<AP_QNXFrameImpl *>(getFrameImpl())->m_leftRuler, Pt_ARG_WIDTH, &width, 0);
 
 	if (bRulerOn) {
-			PtRealizeWidget(static_cast<AP_QNXFrameImpl *>(getFrameImpl())->m_leftRuler);
-			static_cast<AP_QNXFrameImpl *>(getFrameImpl())->_reflowLayout(0, 0, 0, - (*width));
+			if(PtWidgetIsRealized(static_cast<AP_QNXFrameImpl *>(getFrameImpl())->m_leftRuler)==0) {
+				PtRealizeWidget(static_cast<AP_QNXFrameImpl *>(getFrameImpl())->m_leftRuler);
+				static_cast<AP_QNXFrameImpl *>(getFrameImpl())->_reflowLayout(0, 0, 0, - (*width));
+			}	
 			pLeftRuler->setView(m_pView);
 			setYScrollRange();
 	} else {
-			PtUnrealizeWidget(static_cast<AP_QNXFrameImpl *>(getFrameImpl())->m_leftRuler);		
-			PtSetResource(static_cast<AP_QNXFrameImpl *>(getFrameImpl())->m_leftRuler, Pt_ARG_FLAGS, Pt_DELAY_REALIZE, Pt_DELAY_REALIZE);
-			static_cast<AP_QNXFrameImpl *>(getFrameImpl())->_reflowLayout(0, 0, 0, (*width));
+			if(PtWidgetIsRealized(static_cast<AP_QNXFrameImpl *>(getFrameImpl())->m_leftRuler)) {
+				PtUnrealizeWidget(static_cast<AP_QNXFrameImpl *>(getFrameImpl())->m_leftRuler);		
+				PtSetResource(static_cast<AP_QNXFrameImpl *>(getFrameImpl())->m_leftRuler, Pt_ARG_FLAGS, Pt_DELAY_REALIZE, Pt_DELAY_REALIZE);
+				static_cast<AP_QNXFrameImpl *>(getFrameImpl())->_reflowLayout(0, 0, 0, (*width));
+			}
 	}
 }
 
