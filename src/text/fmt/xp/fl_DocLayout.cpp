@@ -660,13 +660,19 @@ fl_DocSectionLayout* FL_DocLayout::findSectionForHdrFtr(const char* pszHdrFtrID)
 	while (pDocSL)
 	{
 		pszAtt = pDocSL->getAttribute("header");
-		if (0 == UT_stricmp(pszAtt, pszHdrFtrID))
+		if (
+			pszAtt
+			&& (0 == UT_stricmp(pszAtt, pszHdrFtrID))
+			)
 		{
 			return pDocSL;
 		}
 		
 		pszAtt = pDocSL->getAttribute("footer");
-		if (0 == UT_stricmp(pszAtt, pszHdrFtrID))
+		if (
+			pszAtt
+			&& (0 == UT_stricmp(pszAtt, pszHdrFtrID))
+			)
 		{
 			return pDocSL;
 		}

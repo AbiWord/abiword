@@ -158,7 +158,25 @@ UT_Bool fl_DocListener::populateStrux(PL_StruxDocHandle sdh,
 			{
 				if (0 == UT_stricmp(pszSectionType, "header"))
 				{
-					UT_ASSERT(UT_TODO);
+					const XML_Char* pszID = NULL;
+					pAP->getAttribute("id", pszID);
+
+					fl_DocSectionLayout* pDocSL = m_pLayout->findSectionForHdrFtr(pszID);
+					UT_ASSERT(pDocSL);
+			
+					// append a HdrFtrSectionLayout to this DocLayout
+					fl_HdrFtrSectionLayout* pSL = new fl_HdrFtrSectionLayout(FL_HDRFTR_HEADER, m_pLayout, pDocSL, sdh, pcr->getIndexAP());
+					if (!pSL)
+					{
+						UT_DEBUGMSG(("no memory for SectionLayout"));
+						return UT_FALSE;
+					}
+			
+					pDocSL->setHdrFtr(FL_HDRFTR_HEADER, pSL);
+
+					*psfh = (PL_StruxFmtHandle)pSL;
+					
+					m_pCurrentSL = pSL;
 				}
 				else if (0 == UT_stricmp(pszSectionType, "footer"))
 				{
@@ -169,14 +187,14 @@ UT_Bool fl_DocListener::populateStrux(PL_StruxDocHandle sdh,
 					UT_ASSERT(pDocSL);
 			
 					// append a HdrFtrSectionLayout to this DocLayout
-					fl_HdrFtrSectionLayout* pSL = new fl_HdrFtrSectionLayout(m_pLayout, pDocSL, sdh, pcr->getIndexAP());
+					fl_HdrFtrSectionLayout* pSL = new fl_HdrFtrSectionLayout(FL_HDRFTR_FOOTER, m_pLayout, pDocSL, sdh, pcr->getIndexAP());
 					if (!pSL)
 					{
 						UT_DEBUGMSG(("no memory for SectionLayout"));
 						return UT_FALSE;
 					}
 			
-					pDocSL->setHdrFtr(pSL);
+					pDocSL->setHdrFtr(FL_HDRFTR_FOOTER, pSL);
 
 					*psfh = (PL_StruxFmtHandle)pSL;
 					

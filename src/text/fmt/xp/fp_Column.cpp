@@ -504,14 +504,16 @@ fl_DocSectionLayout* fp_Column::getDocSectionLayout(void) const
 	return (fl_DocSectionLayout*) m_pSectionLayout;
 }
 
-/*
-  TODO hdrftr container needs to be able to multiplex itself as
-  if owned by multiple pages.
-*/
-
-fp_HdrFtrContainer::fp_HdrFtrContainer(fl_SectionLayout* pSectionLayout) : fp_Container(FP_CONTAINER_HDRFTR, pSectionLayout)
+fp_HdrFtrContainer::fp_HdrFtrContainer(UT_sint32 iX,
+									   UT_sint32 iY,
+									   UT_sint32 iWidth,
+									   UT_sint32 iHeight,
+									   fl_SectionLayout* pSectionLayout) : fp_Container(FP_CONTAINER_HDRFTR, pSectionLayout)
 {
-	// TODO fix height and width and position
+	m_iX = iX;
+	m_iY = iY;
+	m_iWidth = iWidth;
+	m_iHeight = iHeight;
 }
 
 fp_HdrFtrContainer::~fp_HdrFtrContainer()

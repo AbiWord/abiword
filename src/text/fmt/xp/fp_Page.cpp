@@ -53,6 +53,9 @@ fp_Page::fp_Page(FL_DocLayout* pLayout, FV_View* pView,
 	m_pNext = NULL;
 	m_pPrev = NULL;
 
+	m_pHeader = NULL;
+	m_pFooter = NULL;
+
 	m_bNeedsRedraw = UT_TRUE;
 
 	m_pOwner = pOwner;
@@ -65,6 +68,9 @@ fp_Page::~fp_Page()
 	UT_ASSERT(m_pOwner);
 	
 	m_pOwner->deleteOwnedPage(this);
+
+	DELETEP(m_pHeader);
+	DELETEP(m_pFooter);
 }
 
 UT_Bool fp_Page::isEmpty(void) const
@@ -156,6 +162,22 @@ void fp_Page::draw(dg_DrawArgs* pDA)
 		}
 	}
 
+	if (m_pHeader)
+	{
+		dg_DrawArgs da = *pDA;
+		da.xoff += m_pHeader->getX();
+		da.yoff += m_pHeader->getY();
+		m_pHeader->draw(&da);
+	}
+	
+	if (m_pFooter)
+	{
+		dg_DrawArgs da = *pDA;
+		da.xoff += m_pFooter->getX();
+		da.yoff += m_pFooter->getY();
+		m_pFooter->draw(&da);
+	}
+	
 	m_bNeedsRedraw = UT_FALSE;
 }
 
@@ -374,4 +396,38 @@ void fp_Page::setView(FV_View* pView)
 	m_pView = pView;
 }
 
+fp_HdrFtrContainer* fp_Page::getHeaderContainer(fl_HdrFtrSectionLayout* pHFSL)
+{
+	if (m_pHeader)
+	{
+		return m_pHeader;
+	}
 
+	// TODO fix these coordinates
+	m_pHeader = new fp_HdrFtrContainer(m_pOwner->getLeftMargin(),
+									   0,
+									   getWidth() - (m_pOwner->getLeftMargin() + m_pOwner->getRightMargin()),
+									   m_pOwner->getTopMargin(),
+									   pHFSL);
+	// TODO outofmem
+
+	return m_pHeader;
+}
+
+fp_HdrFtrContainer* fp_Page::getFooterContainer(fl_HdrFtrSectionLayout* pHFSL)
+{
+	if (m_pFooter)
+	{
+		return m_pFooter;
+	}
+
+	// TODO fix these coordinates
+	m_pFooter = new fp_HdrFtrContainer(m_pOwner->getLeftMargin(),
+									   getHeight() - m_pOwner->getBottomMargin(),
+									   getWidth() - (m_pOwner->getLeftMargin() + m_pOwner->getRightMargin()),
+									   m_pOwner->getBottomMargin(),
+									   pHFSL);
+	// TODO outofmem
+
+	return m_pFooter;
+}

@@ -1,8 +1,6 @@
-<awml>
-<section PROPS="columns:1;section-space-after:0.25in">
+<abiword>
+<section PROPS="columns:1;section-space-after:0.25in" FOOTER="ftr01">
 <p PROPS="line-height:1.0; margin-top:12pt; text-align:center"><c PROPS="font-size:18pt; font-weight:bold">Interview with AbiSource Founder Eric Sink</c></p>
-</section>
-<section PROPS="column-gap:0.25in; columns:2">
 <p PROPS="line-height:1.0; margin-left:0.25in; margin-top:12pt; text-indent:-0.25in"><c PROPS="font-weight:bold">Dale: Eric, tell me a bit about yourself and how you were involved with Mosaic development at Spyglass?</c></p>
 <p PROPS="line-height:1.0; margin-left:0.25in; margin-top:12pt; text-indent:-0.25in">Eric: I was with Spyglass early on, before it was an Internet company. In the spring of 1994, I helped launch the Spyglass web browser project, first as the primary engineer, and later as the Project Lead. Anyway, Mosaic turned out to be a string of great technical successes, interleaved with a string of great marketing failures. Both were excellent learning experiences for me.</p>
 <p PROPS="line-height:1.0; margin-left:0.25in; margin-top:12pt; text-indent:-0.25in"><c PROPS="font-weight:bold">Dale: So, tell me about your new company.</c></p>
@@ -28,4 +26,9 @@
 <p PROPS="line-height:1.0; margin-left:0.25in; margin-top:12pt; text-indent:-0.25in"><c PROPS="font-weight:bold">Dale: How will you know that your products are catching on? What will be the signs of success that you are looking for?</c></p>
 <p PROPS="line-height:1.0; margin-left:0.25in; margin-top:12pt; text-indent:-0.25in">Eric: There are lots of signs that I'm looking forward to. I'm kind of focused on AbiWord right now, since it will be our first product. First of all, AbiWord will have reached a very small measure of success when my Mom starts using it. I'll be very encouraged when I see the first magazine review which we didn't know about in advance. Later, I'm looking forward to the day I go to the bookstore and see 5 books about AbiWord on the shelf. Most of all, I can't wait for the day that I'm making small talk with some stranger at a party, and they don't know who I am, and they start telling me how great AbiWord is. I think I'll probably just listen.</p>
 </section>
-</awml>
+<section type="footer" id="ftr01">
+<p PROPS="text-align:center">
+(Footer)
+</p>
+</section>
+</abiword>

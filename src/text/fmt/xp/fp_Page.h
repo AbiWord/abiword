@@ -28,6 +28,8 @@
 class FL_DocLayout;
 class fp_Column;
 class fp_Container;
+class fp_HdrFtrContainer;
+class fl_HdrFtrSectionLayout;
 class fl_DocSectionLayout;
 class FV_View;
 class GR_Graphics;
@@ -69,11 +71,11 @@ class fp_Page
 	UT_uint32 		countColumnLeaders(void) const;
 	fp_Column*		getNthColumnLeader(UT_sint32 n) const;
 	UT_Bool			insertColumnLeader(fp_Column* pLeader, fp_Column* pAfter);
-#if 0
-	UT_Bool			addColumnLeader(fp_Column* pLeader);
-#endif
 	void			removeColumnLeader(fp_Column* pLeader);
 	UT_Bool			isEmpty(void) const;
+
+	fp_HdrFtrContainer*	getHeaderContainer(fl_HdrFtrSectionLayout*);
+	fp_HdrFtrContainer*	getFooterContainer(fl_HdrFtrSectionLayout*);
 	
 #ifdef FMT_TEST
 	void			__dump(FILE * fp) const;
@@ -95,6 +97,9 @@ protected:
 	UT_Vector			m_vecColumnLeaders;
 
 	fl_DocSectionLayout*	m_pOwner;
+
+	fp_HdrFtrContainer* m_pFooter;
+	fp_HdrFtrContainer* m_pHeader;
 };
 
 #endif /* PAGE_H */

@@ -47,6 +47,9 @@ class fl_HdrFtrSectionLayout;
 #define FL_SECTION_HDRFTR		2
 #define FL_SECTION_SHADOW		3
 
+#define FL_HDRFTR_HEADER		1
+#define FL_HDRFTR_FOOTER		2
+
 class fl_SectionLayout : public fl_Layout
 {
 	friend class fl_DocListener;
@@ -155,7 +158,7 @@ public:
 	virtual UT_Bool 	doclistener_changeStrux(const PX_ChangeRecord_StruxChange * pcrxc);
 	UT_Bool				doclistener_deleteStrux(const PX_ChangeRecord_Strux * pcrx);
 
-	void				setHdrFtr(fl_HdrFtrSectionLayout* pHFSL);
+	void				setHdrFtr(UT_uint32 iType, fl_HdrFtrSectionLayout* pHFSL);
 
 	void				addOwnedPage(fp_Page*);
 	void				deleteOwnedPage(fp_Page*);
@@ -191,10 +194,11 @@ class fl_HdrFtrSectionLayout : public fl_SectionLayout
 	friend class fl_DocListener;
 
 public:
-	fl_HdrFtrSectionLayout(FL_DocLayout* pLayout, fl_DocSectionLayout* pDocSL, PL_StruxDocHandle sdh, PT_AttrPropIndex ap);
+	fl_HdrFtrSectionLayout(UT_uint32 iHFType, FL_DocLayout* pLayout, fl_DocSectionLayout* pDocSL, PL_StruxDocHandle sdh, PT_AttrPropIndex ap);
 	virtual ~fl_HdrFtrSectionLayout();
 	
 	inline fl_DocSectionLayout*	getDocSectionLayout(void) const { return m_pDocSL; }
+	inline UT_uint32			getHFType(void) const { return m_iHFType; }
 
 	virtual void				format(void);
 	virtual void				updateLayout(void);
@@ -236,6 +240,7 @@ protected:
 	virtual void				_lookupProperties(void);
 	
 	fl_DocSectionLayout*		m_pDocSL;
+	UT_uint32					m_iHFType;
 
 	UT_Vector					m_vecPages;
 };
@@ -295,8 +300,11 @@ public:
 	virtual UT_Bool		signal(UT_uint32 iSignal);
 
 protected:
-	fl_HdrFtrSectionLayout*	m_pHFSL;
-	fl_HdrFtrShadow* m_pShadow;
+	PD_Document*				m_pDoc;
+	fl_HdrFtrSectionLayout*		m_pHFSL;
+	fl_HdrFtrShadow* 			m_pShadow;
+	UT_Bool						m_bListening;
+	fl_BlockLayout*				m_pCurrentBL;
 };
 
 #endif /* SECTIONLAYOUT_H */

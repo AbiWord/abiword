@@ -17,8 +17,6 @@
  * 02111-1307, USA.
  */
  
-
-
 #ifndef UTVECTOR_H
 #define UTVECTOR_H
 

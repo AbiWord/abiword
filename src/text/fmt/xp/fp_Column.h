@@ -136,7 +136,7 @@ protected:
 class fp_HdrFtrContainer : public fp_Container
 {
 public:
-	fp_HdrFtrContainer(fl_SectionLayout* pSL);
+	fp_HdrFtrContainer(UT_sint32 iX, UT_sint32 iY, UT_sint32 iWidth, UT_sint32 iHeight, fl_SectionLayout* pSL);
 	~fp_HdrFtrContainer();
 
 	fl_HdrFtrSectionLayout*	getHdrFtrSectionLayout(void) const;
