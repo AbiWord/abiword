@@ -4261,7 +4261,7 @@ Defun1(insertColsBefore)
 //
 	if(!pView->isInTable())
 		return true;
-//	pView->cmdInsertColumn(pView->getPoint(),true) // is before
+	pView->cmdInsertCol(pView->getPoint(),true); // is before
 	return true;
 }
 
@@ -4275,7 +4275,7 @@ Defun1(insertColsAfter)
 //
 	if(!pView->isInTable())
 		return true;
-//	pView->cmdInsertColumn(pView->getPoint(),false) // is before
+	pView->cmdInsertCol(pView->getPoint(),false); // is After
 	return true;
 }
 

@@ -217,6 +217,7 @@ class ABI_EXPORT fl_CellLayout : public fl_SectionLayout
 {
 	friend class fl_DocListener;
 	friend class fp_TableContainer;
+	friend class fp_CellContainer;
 public:
 	fl_CellLayout(FL_DocLayout* pLayout, PL_StruxDocHandle sdh, PT_AttrPropIndex ap, fl_ContainerLayout * pMyContainerLayout);
 	virtual ~fl_CellLayout();

@@ -325,7 +325,7 @@ void fp_CellContainer::setWidth(UT_sint32 iWidth)
 	static_cast<fl_TableLayout *>(pSL)->setDirty();
 	fl_CellLayout * pCellL = (fl_CellLayout *) getSectionLayout();
 	pCellL->setNeedsReformat();
-	pCellL->localCollapse();
+	pCellL->_localCollapse();
 	pCellL->format();
 	UT_sint32 i = 0;
 	for(i =0; i< (UT_sint32) countCons(); i++)

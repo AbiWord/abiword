@@ -468,7 +468,7 @@ public:
 	bool                _getCellParams(PT_DocPosition posCol, UT_sint32 *iLeft, 
 									   UT_sint32 *iRight,UT_sint32 *iTop, UT_sint32 *iBot);
 	bool                cmdInsertRow(PT_DocPosition posTable, UT_sint32 row, bool bBfore);
-	bool                cmdInsertCol(PT_DocPosition posTable, UT_sint32 col, bool bBefore);
+	bool                cmdInsertCol(PT_DocPosition posTable, bool bBefore);
 	bool                cmdMergeCells(PT_DocPosition posTable, UT_sint32 row1, UT_sint32 col1,
 								   UT_sint32 row2, UT_sint32 col2);
 	bool	            setTableFormat(const XML_Char * properties[]);
