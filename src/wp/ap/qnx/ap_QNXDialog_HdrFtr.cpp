@@ -67,6 +67,32 @@ UT_ASSERT(widget && dlg);
 dlg->done=1;
 }
 
+int ph_event_activate_updown(PtWidget_t *widget,AP_QNXDialog_HdrFtr *dlg,PtCallbackInfo_t *info)
+{
+dlg->UpDown(info->reason_subtype);
+}
+void AP_QNXDialog_HdrFtr::UpDown(int updown)
+{
+char *textstr;
+char strnew[10];
+int number;
+
+if(updown==Pt_UPDOWN_UP)
+{
+	PtGetResource(m_RestartText,Pt_ARG_TEXT_STRING,&textstr,0);
+	number=atoi(textstr);
+	number++;
+	snprintf((char*)&strnew,10,"%d",number);
+	PtSetResource(m_RestartText,Pt_ARG_TEXT_STRING,&strnew,0);
+}else
+{
+	PtGetResource(m_RestartText,Pt_ARG_TEXT_STRING,&textstr,0);
+	number=atoi(textstr);
+	number--;
+	snprintf((char*)&strnew,10,"%d",number);
+	PtSetResource(m_RestartText,Pt_ARG_TEXT_STRING,&strnew,0);
+}
+}
 int ph_activate_restart( PtWidget_t *widget, AP_QNXDialog_HdrFtr * dlg, PtCallbackInfo_t *info)
 {
 UT_ASSERT(widget && dlg);
@@ -230,7 +256,7 @@ PtWidget_t *RestartLabel;
 		Pt_ARG( Pt_ARG_TEXT_STRING,pSS->getValue(AP_STRING_ID_DLG_HdrFtr_FooterFrame) , 0 ),
 		};
  	/*PtPane  Footer*/
-	 PhArea_t area8 = { { 3, 159 }, { 486, 110 } };
+	 PhArea_t area8 = { { 3, 159 }, { 486, 95 } };
 	 PtArg_t args8[] = {
 		Pt_ARG( Pt_ARG_AREA, &area8, 0 ),
 		Pt_ARG( Pt_ARG_FLAGS, 256,256 ),
@@ -331,7 +357,7 @@ PtWidget_t *RestartLabel;
 	PtAddCallback(toggleFootEven,Pt_CB_ACTIVATE,ph_FtrEven,this);
 	PtAddCallback(toggleFootFirst,Pt_CB_ACTIVATE,ph_FtrFirst,this);
 	PtAddCallback(toggleFootLast,Pt_CB_ACTIVATE,ph_FtrLast,this);
-
+	PtAddCallback(UpDown,Pt_CB_ACTIVATE,ph_event_activate_updown,this);
 
 	m_wHdrFtr[HdrEven]= toggleHeadEven;
 	m_wHdrFtr[HdrFirst]= toggleHeadFirst;
