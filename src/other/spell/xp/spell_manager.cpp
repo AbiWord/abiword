@@ -63,7 +63,7 @@ SpellChecker::SpellCheckResult SpellChecker::checkWord(const UT_UCSChar* word, s
 
 	m_bIsBarbarism = false;
 	m_bIsDictionaryWord = false;
-
+	
     if (m_BarbarismChecker.checkWord (word, len))
 	{
 		UT_DEBUGMSG(("SPELL:  spell %lx %s barb \"%s\"\n", this, getLanguage().c_str(), UT_UTF8String (word, len).utf8_str()));
@@ -183,7 +183,7 @@ SpellManager::requestDictionary (const char * szLang)
 	{
 		return static_cast<SpellCheckerClass *>(const_cast<void *>(m_map.pick (szLang)));
 	}
-
+	
 	// not found, so insert it
 	checker = new SpellCheckerClass ();
 
@@ -195,15 +195,16 @@ SpellManager::requestDictionary (const char * szLang)
 		m_lastDict = checker;
 		m_nLoadedDicts++;
 		checker->setDictionaryFound(true);
-		return checker;
     }
 	else
     {
 		checker->setDictionaryFound(false);
 		m_missingHashs += szLang;
 		delete checker;
-		return 0;
+		checker = NULL;
     }
+
+	return checker;
 }
 
 /*!
