@@ -241,6 +241,9 @@ void AP_LeftRuler::scrollRuler(UT_sint32 yoff, UT_sint32 ylimit)
 
 void AP_LeftRuler::draw(const UT_Rect * pClipRect)
 {
+	if (!m_pView)
+		return;
+	
 	AP_LeftRulerInfo lfi;
 	(static_cast<FV_View *>(m_pView))->getLeftRulerInfo(&lfi);
 	
