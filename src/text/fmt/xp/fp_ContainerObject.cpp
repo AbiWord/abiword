@@ -429,6 +429,7 @@ void  fp_Container::deleteNthCon(UT_sint32 i)
 		pCon->setContainer(NULL);
 	}
 	m_vecContainers.deleteNthItem(i);
+	xxx_UT_DEBUGMSG(("AFter deleting item %d in %x there are %d cons left \n",i,this,countCons()));
 }
 
 bool fp_Container::isOnScreen() const

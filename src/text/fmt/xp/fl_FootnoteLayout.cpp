@@ -748,6 +748,7 @@ fp_Container* fl_EndnoteLayout::getNewContainer(fp_Container *)
 void fl_EndnoteLayout::_insertEndnoteContainer(fp_Container * pNewEC)
 {
 	UT_DEBUGMSG(("inserting endnote container into DocLayout list\n"));
+
 	m_pLayout->insertEndnoteContainer(static_cast<fp_EndnoteContainer *>(pNewEC));
 	m_bIsOnPage = true;
 }

@@ -3018,24 +3018,37 @@ fp_Container* fl_BlockLayout::getNewContainer(fp_Container * /* pCon*/)
 				}
 			}
 		}
-		else if (getNext() && getNext()->getFirstContainer() && getNext()->getFirstContainer()->getContainer())
+		else 
 		{
-			pContainer = static_cast<fp_VerticalContainer *>(getNext()->getFirstContainer()->getContainer());
-			UT_return_val_if_fail(pContainer, NULL);
-			UT_ASSERT_HARMLESS(pContainer->getWidth() >0);
-		}
-		else if (m_pSectionLayout->getFirstContainer())
-		{
+			//
+			// Skip any footnotes or endnotes
+			//
+			fl_ContainerLayout * pCL = getNext();
+			while(pCL && ((pCL->getContainerType() == FL_CONTAINER_ENDNOTE)
+						  || (pCL->getContainerType() == FL_CONTAINER_FOOTNOTE))
+				  )
+			{
+				pCL = pCL->getNext();
+			}
+			if (pCL && pCL->getFirstContainer() && pCL->getFirstContainer()->getContainer())
+			{
+				pContainer = static_cast<fp_VerticalContainer *>(pCL->getFirstContainer()->getContainer());
+				UT_return_val_if_fail(pContainer, NULL);
+				UT_ASSERT_HARMLESS(pContainer->getWidth() >0);
+			}
+			else if (myContainingLayout()->getFirstContainer())
+			{
 			// TODO assert something here about what's in that container
-			pContainer = static_cast<fp_VerticalContainer *>(m_pSectionLayout->getFirstContainer());
-			UT_return_val_if_fail(pContainer, NULL);
-			UT_ASSERT_HARMLESS(pContainer->getWidth() >0);
-		}
-		else
-		{
-			pContainer = static_cast<fp_VerticalContainer *>(m_pSectionLayout->getNewContainer());
-			UT_return_val_if_fail(pContainer, NULL);
-			UT_ASSERT_HARMLESS(pContainer->getWidth() >0);
+				pContainer = static_cast<fp_VerticalContainer *>(myContainingLayout()->getFirstContainer());
+				UT_return_val_if_fail(pContainer, NULL);
+				UT_ASSERT_HARMLESS(pContainer->getWidth() >0);
+			}
+			else
+			{
+				pContainer = static_cast<fp_VerticalContainer *>(myContainingLayout()->getNewContainer());
+				UT_return_val_if_fail(pContainer, NULL);
+				UT_ASSERT_HARMLESS(pContainer->getWidth() >0);
+			}
 		}
 		if(pContainer == NULL)
 		{
@@ -6150,7 +6163,7 @@ bool fl_BlockLayout::doclistener_changeStrux(const PX_ChangeRecord_StruxChange *
 
 	collapse();
 	setAttrPropIndex(pcrxc->getIndexAP());
-	UT_DEBUGMSG(("SEVIOR: In changeStrux in fl_BlockLayout \n"));
+	UT_DEBUGMSG(("SEVIOR: In changeStrux in fl_BlockLayout %x \n",this));
 //
 // Not sure if we'll ever need this. We don't need this now I'll comment it out.
 //	const XML_Char * szOldStyle = m_szStyle;
@@ -6215,7 +6228,7 @@ bool fl_BlockLayout::doclistener_changeStrux(const PX_ChangeRecord_StruxChange *
 	//
 	// Need this to find where to break section in the document.
 	//
-	fl_ContainerLayout * pPrevCL = getPrev();
+	fl_ContainerLayout * pPrevCL = getPrevBlockInDocument();
 	fp_Page * pPrevP = NULL;
 	if(pPrevCL)
 	{

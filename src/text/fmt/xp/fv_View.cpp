@@ -9851,7 +9851,7 @@ bool FV_View::insertFootnote(bool bFootnote)
 		setStyleAtPos("Endnote Reference", FrefStart, FrefEnd,true);
 
 		// setStyleAtPos() creates a selection, clear it before adding an fmt mark
-		_resetSelection();
+		_clearSelection();
 //
 // Put the character format back to it previous value
 //
