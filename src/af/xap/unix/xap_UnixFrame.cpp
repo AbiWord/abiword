@@ -46,6 +46,9 @@ gint XAP_UnixFrame::_fe::button_press_event(GtkWidget * w, GdkEventButton * e)
 	XAP_UnixFrame * pUnixFrame = (XAP_UnixFrame *)gtk_object_get_user_data(GTK_OBJECT(w));
 	AV_View * pView = pUnixFrame->getCurrentView();
 	EV_UnixMouse * pUnixMouse = pUnixFrame->getUnixMouse();
+
+	UT_DEBUGMSG(("Grabbing mouse.\n"));
+	gtk_grab_add(w);
 	
 	if (pView)
 		pUnixMouse->mouseClick(pView,e);
@@ -57,7 +60,10 @@ gint XAP_UnixFrame::_fe::button_release_event(GtkWidget * w, GdkEventButton * e)
 	XAP_UnixFrame * pUnixFrame = (XAP_UnixFrame *)gtk_object_get_user_data(GTK_OBJECT(w));
 	AV_View * pView = pUnixFrame->getCurrentView();
 	EV_UnixMouse * pUnixMouse = pUnixFrame->getUnixMouse();
-		
+
+	UT_DEBUGMSG(("Ungrabbing mouse.\n"));
+	gtk_grab_remove(w);
+	
 	if (pView)
 		pUnixMouse->mouseUp(pView,e);
 	return 1;
