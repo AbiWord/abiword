@@ -1493,7 +1493,8 @@ bool  AP_UnixDialog_Styles::_populateModify(void)
 			gtk_entry_set_text (GTK_ENTRY(m_wFollowingEntry),szFollowedBy);
 		else
 			gtk_entry_set_text (GTK_ENTRY(m_wFollowingEntry), pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_DefCurrent).utf8_str());
-		if(strstr(getAttsVal("type"),"P") != 0)
+		const char * pszType = getAttsVal(PT_TYPE_ATTRIBUTE_NAME);
+		if(pszType && strstr(pszType,"P") != 0)
 		{
 			gtk_entry_set_text (GTK_ENTRY(m_wStyleTypeEntry),
 								pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_ModifyParagraph).utf8_str());

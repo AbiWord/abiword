@@ -1076,7 +1076,7 @@ void fp_Line::_doClearScreenFromRunToEnd(UT_sint32 runIndex)
 		{
 			return;
 		}
-		UT_ASSERT((m_iClearToPos + leftClear - (xoff-xoffLine)) <= getPage()->getWidth());
+//		UT_ASSERT((m_iClearToPos + leftClear - (xoff-xoffLine)) <= getPage()->getWidth());
 		xxx_UT_DEBUGMSG(("Clear from runindex to end height %d \n",getHeight()));
 
 		// now we do the clearing

@@ -154,6 +154,7 @@ static gboolean s_update (void)
 
 void AP_UnixDialog_Lists::closeClicked(void)
 {
+	setAnswer(AP_Dialog_Lists::a_QUIT);	
 	abiDestroyWidget(m_wMainWindow); // emit the correct signals
 }
 
@@ -195,9 +196,10 @@ void AP_UnixDialog_Lists::runModal( XAP_Frame * pFrame)
 	setNewListType(savedListType);
 	
 	abiRunModalDialog ( GTK_DIALOG(mainWindow), pFrame, this, BUTTON_CANCEL, false );
-	
+	AP_Dialog_Lists::tAnswer res = getAnswer();
 	g_list_free( m_glFonts);
 	abiDestroyWidget ( mainWindow ) ;
+	setAnswer(res);
 	DELETEP (m_pPreviewWidget);
 }
 
@@ -454,6 +456,7 @@ void  AP_UnixDialog_Lists::applyClicked(void)
 	if(isModal())
 	{
 		setAnswer(AP_Dialog_Lists::a_OK);
+		
 	}
 }
 
@@ -1122,6 +1125,7 @@ static void s_destroy_clicked(GtkWidget * /* widget */,
 			      AP_UnixDialog_Lists * dlg)
 {
 	UT_ASSERT(dlg);
+	dlg->setAnswer(AP_Dialog_Lists::a_QUIT);
 	dlg->destroy();
 }
 

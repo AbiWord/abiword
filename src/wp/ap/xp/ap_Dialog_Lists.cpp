@@ -269,6 +269,7 @@ void AP_Dialog_Lists::Apply(void)
 		m_OutProps.addItem((void *) "text-indent");
 		m_Output[3] = UT_convertInchesToDimensionString(DIM_IN, m_fIndent, 0);
 		m_OutProps.addItem((void *) m_Output[3].c_str());
+		m_Answer = a_OK;
 		return;
 	}
 /*!

@@ -278,15 +278,6 @@ void AP_Dialog_Styles::fillVecWithProps(const XML_Char * szStyle, bool bReplaceA
 	UT_DEBUGMSG(("Looking at Style %s \n",szStyle));
 	UT_Vector vecAllProps;
 	vecAllProps.clear();
-	pStyle->getAllProperties(&vecAllProps,0);
-	for(i=0; i < vecAllProps.getItemCount(); i +=2)
-	{
-		const XML_Char * szName = static_cast<const XML_Char *>(vecAllProps.getNthItem(i));
-		const XML_Char * szValue = static_cast<const XML_Char *>(vecAllProps.getNthItem(i+1));
-		UT_DEBUGMSG(("Prop %d name %s val %s \n",i,szName,szValue));
-		addOrReplaceVecProp(szName, szValue);
-	}
-#if 0
 //
 // Loop through all Paragraph properties and add those with non-null values
 //
@@ -312,32 +303,26 @@ void AP_Dialog_Styles::fillVecWithProps(const XML_Char * szStyle, bool bReplaceA
 			addOrReplaceVecProp(szName, szValue);
 		}
 	}
-#endif
 //
 // Loop through all the attributes and add those with non-null values
 //
+	UT_DEBUGMSG(("Replace Attributes %d \n",bReplaceAttributes));
 	if(bReplaceAttributes)
 	{
 		UT_Vector vecAllAtts;
 		vecAllAtts.clear();
-		pStyle->getAllAttributes(&vecAllProps,0);
-		for(i=0; i < vecAllAtts.getItemCount(); i +=2)
-		{
-			const XML_Char * szName = static_cast<const XML_Char  *>(vecAllAtts.getNthItem(i));
-			const XML_Char * szValue = static_cast<const XML_Char *>(vecAllAtts.getNthItem(i+1));
-			UT_DEBUGMSG(("Att %d name %s val %s \n",i,szName,szValue));
-			addOrReplaceVecAttribs(szName, szValue);
-		}
-#if 0
 		for(i = 0; i < nattribs; i++)
 		{
 			const XML_Char * szName = attribs[i];
 			const XML_Char * szValue = NULL;
-			pStyle->getAttribute(szName,szValue);
+			pStyle->getAttributeExpand(szName,szValue);
 			if(szValue)
 				addOrReplaceVecAttribs(szName, szValue);
 		}
-#endif
+	}
+	else
+	{
+		UT_DEBUGMSG(("Attributes NOT updated \n"));
 	}
 }
 
@@ -939,6 +924,7 @@ void AP_Dialog_Styles::updateCurrentStyle(void)
 		if(i+2<countp)
 			m_curStyleDesc += "; ";
 	}
+	UT_DEBUGMSG(("New props of style %s \n",m_curStyleDesc.c_str()));
 //
 // Update the description in the Modify Dialog.
 //
@@ -946,7 +932,13 @@ void AP_Dialog_Styles::updateCurrentStyle(void)
 
 	if( pStyle == NULL)
 	{
-		const XML_Char * attrib[] = {PT_NAME_ATTRIBUTE_NAME,"tmp",PT_TYPE_ATTRIBUTE_NAME,"P","basedon","Normal","followedby","Normal","props",m_curStyleDesc.c_str(),NULL,NULL};
+		const XML_Char * attrib[] = {PT_NAME_ATTRIBUTE_NAME,"tmp",
+									 PT_TYPE_ATTRIBUTE_NAME,"P",
+									 "basedon",getAttsVal("basedon"),
+									 "followedby","Normal",
+									 "props",m_curStyleDesc.c_str(),
+									 NULL,NULL};
+		
 		getLDoc()->appendStyle(attrib);
 	}
 	else
@@ -1332,6 +1324,20 @@ void AP_Dialog_Styles::_populateAbiPreview(bool isNew)
 // Second Paragraph in focus. Our Vectors containing the current settings have
 // been filled from calls in the platform layer.
 //
+// Attributes
+//
+	UT_uint32 counta = m_vecAllAttribs.getItemCount()+1;
+	const XML_Char ** latt = NULL;
+	latt = (const XML_Char **) UT_calloc(counta, sizeof(XML_Char *));
+	counta--;
+	for(i=0; i<counta; i++)
+	{
+		latt[i] = (const XML_Char *) m_vecAllAttribs.getNthItem(i);
+	}
+	latt[i] = NULL;
+//
+// Now properties
+//
 	UT_uint32 countp = m_vecAllProps.getItemCount()+1;
 	const XML_Char ** lprop = NULL;
 	lprop = (const XML_Char **) UT_calloc(countp, sizeof(XML_Char *));
@@ -1365,12 +1371,24 @@ void AP_Dialog_Styles::_populateAbiPreview(bool isNew)
 	{
 		if(strlen(m_curStyleDesc.c_str()) == 0)
 			m_curStyleDesc += "font-style:normal";
-		const XML_Char * attrib[] = {PT_NAME_ATTRIBUTE_NAME,"tmp",PT_TYPE_ATTRIBUTE_NAME,"P","basedon","None","followedby","Current Settings","props",m_curStyleDesc.c_str(),NULL,NULL};
+		const XML_Char * attrib[] = {PT_NAME_ATTRIBUTE_NAME,"tmp",
+									 PT_TYPE_ATTRIBUTE_NAME,"P",
+									 "basedon","None",
+									 "followedby","Current Settings",
+									 "props",m_curStyleDesc.c_str(),
+									 NULL,NULL};
+		if(!isNew)
+		{
+			attrib[3] = getAttsVal(PT_TYPE_ATTRIBUTE_NAME);
+			attrib[5] = getAttsVal("basedon");
+			attrib[7] = getAttsVal("followedby");
+		}
 		getLDoc()->appendStyle(attrib);
 	}
 	else
 	{
 		getLDoc()->addStyleProperties("tmp",lprop);
+		getLDoc()->addStyleAttributes("tmp",latt);
 	}
 
 	getLView()->setStyle("tmp");
@@ -1560,11 +1578,11 @@ void AP_Dialog_Styles::_populatePreviews(bool isModify)
 		for(i = 0; i < nParaFlds; i++)
 		{
 			const XML_Char * szName = paraFields[i];
-			const XML_Char * szValue = getPropsVal(szName);
+			const XML_Char * szValue = NULL;
 			
 			if (szValue == NULL)
 			{
-				szValue = getAttsVal(szName);
+				pStyle->getPropertyExpand(szName,szValue);
 				if (szValue == NULL)
 				{
 					paraValues[i] = 0;
@@ -1588,13 +1606,14 @@ void AP_Dialog_Styles::_populatePreviews(bool isModify)
 		for(i = 0; i < nCharFlds; i++)
 		{
 			const XML_Char * szName = charFields[i];
-			const XML_Char * szValue = getPropsVal(szName);
-
+			const XML_Char * szValue = NULL;
+			
 			if (szValue == NULL)
 			{
-				szValue = getAttsVal(szName);
+				pStyle->getPropertyExpand(szName,szValue);
 				if (szValue == NULL)
 				{
+					UT_DEBUGMSG(("Char prop %s unmatched \n",szName));
 					charValues[i] = 0;
 					continue;
 				}

@@ -76,6 +76,7 @@ public:
 	} tAnswer;
 
 	AP_Dialog_Lists::tAnswer	getAnswer(void) const;
+	void                        setAnswer(AP_Dialog_Lists::tAnswer ans ) {m_Answer = ans;}
 	void						ConstructWindowName(void);
 	void						StartList(void);
 	void						StopList(void);
@@ -146,7 +147,6 @@ protected:
 	const char * getDecimal( void)  { return static_cast<const char *>(m_pszDecimal);}
     void copyCharToFont(const char* pszFont) { sprintf(m_pszFont,"%s",pszFont);}
 	const char * getFont( void) { return static_cast<const char *>(m_pszFont);}
-	void                        setAnswer(AP_Dialog_Lists::tAnswer ans ) {m_Answer = ans;}
     void copyCharToWindowName(const char* pszName) { sprintf(m_WindowName,"%s",pszName);}
     const char * getWindowName( void) { return static_cast<const char *>(m_WindowName);}  
 	AP_Lists_preview* getListsPreview() { return m_pListsPreview; }
