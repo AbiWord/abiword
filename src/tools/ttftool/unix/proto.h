@@ -34,7 +34,14 @@ void syserror(char *string);
 size_t surely_read(int fildes, void *buf, size_t nbyte);
 char *unistrncpy(char *dst, char *str, size_t length);
 void fputpss(char *s, FILE *stream);
-off_t surely_lseek(int fildes, off_t offset, int whence);
+
+/* gcc on Solaris has a funny trick of using a struct to
+ * represent off_t, which screws up constant values and
+ * arithmetic, so I'm replacing off_t in/from surely_lseek
+ * with long - fjf
+ */
+long surely_lseek(int fildes, long offset, int whence);
+
 unsigned hash(char *string);
 struct hashtable *make_hashtable(int size);
 int puthash(struct hashtable *t, char *key, int value);

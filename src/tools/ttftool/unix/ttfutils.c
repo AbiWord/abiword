@@ -301,13 +301,42 @@ myrealloc(void *ptr, size_t size)
   return p;
 }
 
-off_t
-surely_lseek(int fildes, off_t offset, int whence)
+/* gcc on Solaris has a funny trick of using a struct to
+ * represent off_t, which screws up constant values and
+ * arithmetic, so I'm replacing off_t in/from surely_lseek
+ * with long - fjf
+ */
+long
+surely_lseek(int fildes, long long_offset, int whence)
 {
+  off_t offset;
+#if defined(SunOS)
+#if __STDC__ - 0 == 0 && !defined(_NO_LONGLONG)
+  offset = long_offset;
+#else
+  /* TODO: Check - is this the correct way round?
+   */
+  offset._l[0] = 0;
+  offset._l[1] = long_offset;
+#endif
+#else
+  offset = long_offset;
+#endif
   off_t result;
   if((result=lseek(fildes,offset,whence))<0)
     ttf_fail("Bad TTF file");
-  return result;
+
+#if defined(SunOS)
+#if __STDC__ - 0 == 0 && !defined(_NO_LONGLONG)
+  return offset;
+#else
+  /* TODO: Check - is this the correct way round?
+   */
+  return offset._l[1];
+#endif
+#else
+  return offset;
+#endif
 }
 
 
