@@ -277,7 +277,8 @@ Daniel Yacob <locales@geez.org>				Amharic
 Pierre Abbat <phma@webjockey.net>			Lojban
 Alfredo Barrainkua Zallo <alfredobz@euskalnet.net>	Basque
 Mugurel Tudor <mugurelu@go.ro>				Romanian
-
+Ivica Bogosavljevic <ivica84@ptt.yu>			Serbian
+pclouds <pclouds@users.sourceforge.net>			Vietnamese
 
 unsung heroes
 -------------
