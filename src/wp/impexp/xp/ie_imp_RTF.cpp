@@ -4211,6 +4211,16 @@ bool IE_Imp_RTF::TranslateKeyword(unsigned char* pKeyword, long param, bool fPar
 			}
 			return true;
 		}
+		else if(strcmp(reinterpret_cast<char *>(pKeyword), "trleft") == 0)
+		{
+			if(getTable())
+			{
+				double dLeftPos = static_cast<double>(param)/1440.0;
+				UT_String sLeftPos = UT_formatDimensionString(DIM_IN,dLeftPos,NULL);
+				getTable()->setProp("table-column-leftpos",sLeftPos);
+			}
+			return true;
+		}
 		else if (strcmp(reinterpret_cast<char*>(pKeyword), "tlul") == 0)
 		{
 			m_currentRTFState.m_paraProps.m_curTabLeader = FL_LEADER_UNDERLINE;
@@ -7532,6 +7542,19 @@ bool IE_Imp_RTF::HandleAbiTable(void)
 	return true;
 }
 
+bool IE_Imp_RTF:: HandleAbiEndTable(void)
+{
+	getDoc()->insertStrux(m_dposPaste,PTX_EndTable);
+	m_dposPaste++;	
+	return true;
+}
+
+bool IE_Imp_RTF:: HandleAbiEndCell(void)
+{
+	getDoc()->insertStrux(m_dposPaste,PTX_EndCell);
+	m_dposPaste++;	
+	return true;
+}
 
 bool IE_Imp_RTF::HandleAbiCell(void)
 {
@@ -7560,19 +7583,6 @@ bool IE_Imp_RTF::HandleAbiCell(void)
 	return true;
 }
 
-bool IE_Imp_RTF:: HandleAbiEndTable(void)
-{
-	getDoc()->insertStrux(m_dposPaste,PTX_EndTable);
-	m_dposPaste++;	
-	return true;
-}
-
-bool IE_Imp_RTF:: HandleAbiEndCell(void)
-{
-	getDoc()->insertStrux(m_dposPaste,PTX_EndCell);
-	m_dposPaste++;	
-	return true;
-}
 
 //////////////////////////////////////////////////////////////////////////////
 // AbiList table reader

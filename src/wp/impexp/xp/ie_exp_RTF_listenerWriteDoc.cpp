@@ -1284,7 +1284,7 @@ void s_RTF_ListenerWriteDoc::_newRow(void)
 		cellLeftPos = UT_convertToInches(szColumnLeftPos);
 	}
 	UT_sint32 iLeftTwips = 0;
-	iLeftTwips =  (UT_sint32) (cellLeftPos*720.0);
+	iLeftTwips =  (UT_sint32) (cellLeftPos*1440.0);
 	m_pie->_rtf_keyword("trleft",iLeftTwips);
 	UT_Vector vecColProps;
 	vecColProps.clear();
@@ -2190,7 +2190,7 @@ void s_RTF_ListenerWriteDoc::_rtf_docfmt(void)
 	const XML_Char * szDefaultTabs = PP_evalProperty("default-tab-interval",
 													 pSpanAP,pBlockAP,pSectionAP,
 													 m_pDocument,true);
-	m_pie->_rtf_keyword_ifnotdefault_twips("deftab",static_cast<const char*>(szDefaultTabs),720);
+	m_pie->_rtf_keyword_ifnotdefault_twips("deftab",static_cast<const char*>(szDefaultTabs),1440);
 
 	// <docfmt> -- document views and zoom level
 

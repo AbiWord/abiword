@@ -992,11 +992,11 @@ void ie_imp_table::writeTablePropsInDoc(void)
 	{
 		sLeftPos = "0.0in";
 	}
-	double dLeftPos = UT_convertToInches(sLeftPos.c_str());
 	double dColSpace = UT_convertToInches(sColSpace.c_str());
+	double dLeftPos = UT_convertToInches(sLeftPos.c_str());
 	setProp("table-col-spacing",sColSpace.c_str());
 	setProp("table-column-leftpos",sLeftPos.c_str());
-	UT_sint32 iPrev = 0;
+	UT_sint32 iPrev = static_cast<UT_sint32>(dLeftPos*1440.0);
 	if(!m_bAutoFit)
 	{
 //
@@ -1007,18 +1007,16 @@ void ie_imp_table::writeTablePropsInDoc(void)
 		for(i=0; i< static_cast<UT_sint32>(m_vecCellX.getItemCount()); i++)
 		{
 			UT_sint32 iCellx = reinterpret_cast<UT_sint32>(m_vecCellX.getNthItem(i));
+			UT_DEBUGMSG(("final cellx import cellx %d iPrev %x \n",iCellx,iPrev));
 			UT_sint32 iDiffCellx = iCellx - iPrev;
 			double dCellx = static_cast<double>(iDiffCellx)/1440.0 -dColSpace;
-			if(i == 0)
-			{
-				dCellx = dCellx - dLeftPos;
-			}
 			iPrev = iCellx;
-			sColWidth += UT_formatDimensionString(DIM_IN,dCellx,NULL);
+			UT_String sWidth = UT_formatDimensionString(DIM_IN,dCellx,NULL);
+			UT_DEBUGMSG(("sWidth is %s \n",sWidth.c_str()));
+			sColWidth += sWidth;
 			sColWidth += "/";
 		}
 		setProp("table-column-props",sColWidth.c_str());
-		UT_DEBUGMSG(("SEVIOR: table-column-props: %s \n",sColWidth.c_str()));
 	}
 	UT_DEBUGMSG(("SEVIOR: props: %s \n",m_sTableProps.c_str()));
 	m_pDoc->changeStruxAttsNoUpdate(m_tableSDH,"props",m_sTableProps.c_str());
