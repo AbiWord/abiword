@@ -34,7 +34,7 @@ LoadOrder=              AbiGr AbiFmt AbiPTbl AbiImpExp AbiXAp AbiWPAp \
 ## TODO verify that we still need stdc++ for BeOS since we got rid of c++ iostreams
 
 ABI_APPLIBS=		$(LoadOrder)
-ABI_LIBS=		translation be tracker png z
+ABI_LIBS=		translation be tracker png z textencoding
 
 ifeq ($(OS_ARCH), x86)
 ABI_APPLIBS+=		$(LoadOrder) $(LoadOrder)
