@@ -98,7 +98,7 @@ protected:
 // when adding something onto the frame code
 
 // WL: ONLY ENABLE NEW FRAME CODE ON UNIX/GTK FOR NOW AND Cocoa (Hub)
-#if defined(XP_UNIX_TARGET_GTK) || (defined(__APPLE__) && defined(__MACH__)) || defined(WIN32)
+#if defined(XP_UNIX_TARGET_GTK) || (defined(__APPLE__) && defined(__MACH__)) || defined(WIN32) || defined(__QNXNTO__)
 #include "xap_FrameImpl.h"
 
 class ABI_EXPORT XAP_Frame

@@ -19,6 +19,7 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
  * 02111-1307, USA.
  */
+#if defined(XP_UNIX_TARGET_GTK)  || (defined(__APPLE__) && defined(__MACH__)) || defined(WIN32)
 
 #include "xap_Frame.h"
 #include "xap_FrameImpl.h"
@@ -119,3 +120,4 @@ bool XAP_FrameImpl::_updateTitle()
 
 	return true;
 }
+#endif
