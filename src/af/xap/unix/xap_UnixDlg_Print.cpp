@@ -158,6 +158,24 @@ static void entry_toggle_enable (GtkWidget *checkbutton, GtkWidget *entry)
 	gtk_widget_grab_focus (entry);
 }
 
+
+static const gchar* entry_text;
+
+static gboolean entry_focus_in (GtkWidget *entry)
+{
+        entry_text = strdup(gtk_entry_get_text(GTK_ENTRY(entry)));
+        return 0;
+}
+
+static gboolean entry_focus_out (GtkWidget *entry, const void* ignore,
+ GtkWidget *check)
+{
+        const gchar* tmp = gtk_entry_get_text(GTK_ENTRY(entry));
+        if(strcmp(entry_text, tmp) != 0)
+          gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(check), 1);
+        return 0;
+}
+
 void XAP_UnixDialog_Print::_raisePrintDialog(XAP_Frame * pFrame)
 {
 	// raise the actual dialog and wait for an answer.
@@ -284,15 +302,25 @@ void XAP_UnixDialog_Print::_raisePrintDialog(XAP_Frame * pFrame)
 	gtk_box_pack_start (GTK_BOX (hbox), entryFrom, TRUE, TRUE, 0);
 	gtk_widget_show (entryFrom);
 	
+	g_signal_connect(G_OBJECT(entryFrom), "focus-in-event",
+			 G_CALLBACK(entry_focus_in), NULL);
+	g_signal_connect(G_OBJECT(entryFrom), "focus-out-event",
+			 G_CALLBACK(entry_focus_out), buttonRange);
+	
 	label = gtk_label_new(pSS->getValueUTF8(XAP_STRING_ID_DLG_UP_To).utf8_str());
 	//gtk_misc_set_padding (GTK_MISC (label), 5,5);
 	gtk_box_pack_start (GTK_BOX (hbox), label, FALSE, FALSE, 0);
 	gtk_widget_show (label);
-	
+
 	entryTo = gtk_entry_new();
 	gtk_entry_set_max_length (GTK_ENTRY(entryTo), 4);
 	gtk_box_pack_start (GTK_BOX (hbox), entryTo, TRUE, TRUE, 0);
 	gtk_widget_show (entryTo);
+	
+	g_signal_connect(G_OBJECT(entryTo), "focus-in-event",
+			 G_CALLBACK(entry_focus_in), NULL);
+	g_signal_connect(G_OBJECT(entryTo), "focus-out-event",
+			 G_CALLBACK(entry_focus_out), buttonRange);
 	
 	group = gtk_radio_button_get_group (GTK_RADIO_BUTTON (buttonRange));
 	
