@@ -23,9 +23,9 @@ ABI_ROOT:=$(shell pwd)/..
 include $(ABI_ROOT)/src/config/abi_defs.mk
 
 DIRS=		config tools other af text wp ask
-REQUIRECLEAN=		clean_PSICONV_ clean_EXPAT_
+REQUIRECLEAN=		clean_EXPAT_
 REQUIREREALCLEAN=		clean_ABI_ clean_ZLIB_ clean_LIBPNG_ \
-clean_LIBWV_ clean_LIBICONV_ realclean_PSICONV_ realclean_EXPAT_
+clean_LIBWV_ clean_LIBICONV_ realclean_EXPAT_
 
 
 include $(ABI_ROOT)/src/config/abi_rules.mk
