@@ -360,12 +360,12 @@ UT_Bool EV_UnixGnomeToolbar::synthesize(void)
 				UT_ASSERT(pControl);
 
 				// default, shouldn't be used for well-defined controls
-				int iWidth = 100;
+				int iWidth = 0;
 
 				// populate it
 				if (pControl)
 				{
-				        iWidth = pControl->getPixelWidth();
+				  // iWidth = pControl->getPixelWidth();
 					pControl->populate();
 
 					const UT_Vector * v = pControl->getContents();
@@ -396,17 +396,21 @@ UT_Bool EV_UnixGnomeToolbar::synthesize(void)
 						gtk_container_set_border_width (GTK_CONTAINER (comboBox), 0);
 						
 				                // set the size of the entry to set the total combo size
-						gtk_widget_set_usize(entry, iWidth, 0);
-					       
-				                // give a final show
-						gtk_widget_show(comboBox);
+						// gtk_widget_set_usize(entry, iWidth, 0);					     
 
 						// populate it
 						for (UT_uint32 m=0; m < items; m++)
 						{
 						  char * sz = (char *)v->getNthItem(m);
+						  iWidth = MAX(iWidth, gdk_string_measure (entry->style->font, sz));
 						  gtk_combo_text_add_item(GTK_COMBO_TEXT (comboBox), sz, sz);
 						}
+
+						/* Set a reasonable default width */
+						gtk_widget_set_usize (entry, iWidth + 15, 0);
+
+						// give a final show
+						gtk_widget_show(comboBox);
 
 						gtk_signal_connect (GTK_OBJECT (entry), "changed",
 								    GTK_SIGNAL_FUNC (s_combo_changed), wd);
@@ -426,38 +430,31 @@ UT_Bool EV_UnixGnomeToolbar::synthesize(void)
 			break;
 				
 			case EV_TBIT_ColorFore:
+			case EV_TBIT_ColorBack:
 			  {
-			    GtkWidget * fore_combo;
-			    fore_combo = color_combo_new (font_xpm, szToolTip, NULL, NULL);
+			    GtkWidget * combo;
+			    
+			    if (pAction->getItemType() == EV_TBIT_ColorFore)
+			      combo = color_combo_new (font_xpm, szToolTip, NULL, NULL);
+			    else
+			      combo = color_combo_new (bucket_xpm, szToolTip, NULL, NULL);
+
+			    if (!gnome_preferences_get_toolbar_relief_btn ())
+			      gtk_combo_box_set_arrow_relief (GTK_COMBO_BOX (combo), GTK_RELIEF_NONE);
+
 			    _wd * wd = new _wd (this, id);
-			    wd->m_widget = fore_combo;
-			    gtk_combo_box_set_title (GTK_COMBO_BOX (fore_combo),
+			    wd->m_widget = combo;
+			    gtk_combo_box_set_title (GTK_COMBO_BOX (combo),
 						     szToolTip);
 			    toolbar_append_with_eventbox(GTK_TOOLBAR(m_wToolbar),
-							 fore_combo,
+							 combo,
 							 szToolTip,
 							 (const char *)NULL);
-			    gtk_signal_connect (GTK_OBJECT (fore_combo), "changed",
+			    gtk_signal_connect (GTK_OBJECT (combo), "changed",
 						GTK_SIGNAL_FUNC (s_color_changed), wd);
 			    break;
 			  }
 
-			case EV_TBIT_ColorBack:
-			  {
-			    GtkWidget * back_combo;
-			    back_combo = color_combo_new (bucket_xpm, szToolTip, NULL, NULL);
-			    _wd * wd = new _wd (this, id);
-			    wd->m_widget = back_combo;
-			    gtk_combo_box_set_title (GTK_COMBO_BOX (back_combo),
-						     szToolTip);
-			    toolbar_append_with_eventbox(GTK_TOOLBAR(m_wToolbar),
-							 back_combo,
-							 szToolTip,
-							 (const char *)NULL);
-			    gtk_signal_connect (GTK_OBJECT (back_combo), "changed",
-						GTK_SIGNAL_FUNC (s_color_changed), wd);
-			    break;
-			  }
 
 			case EV_TBIT_StaticLabel:
 				// TODO do these...
