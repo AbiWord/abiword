@@ -325,6 +325,8 @@ public:
     pf_Fragments &          getFragments(void) {return m_fragments;};
 
 	bool                    purgeFmtMarks();
+	bool                    isDoingTheDo(void) const
+	{	return m_bDoingTheDo;}
 
 #ifdef PT_TEST
 	UT_TestStatus			__test_VerifyCoalescedFrags(FILE * fp) const;
@@ -566,7 +568,8 @@ protected:
 
 	PD_Document *			m_pDocument; /* back pointer to our document */
 
-	UT_uint32 m_atomicGlobCount;
+	UT_uint32               m_atomicGlobCount;
+	bool                    m_bDoingTheDo;
 };
 
 #endif /* PT_PIECETABLE_H */

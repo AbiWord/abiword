@@ -23,6 +23,8 @@
 #include "px_ChangeRecord.h"
 #include "px_ChangeHistory.h"
 #include "px_CR_Span.h"
+#include "pt_PieceTable.h"
+#include "ut_debugmsg.h"
 
 
 // m_undoPosition is the position of the undo pointer.
@@ -30,7 +32,7 @@
 // the first undo item is at ...[m_undoPosition-1]
 // the first redo item is at ...[m_undoPosition] if present.
 
-px_ChangeHistory::px_ChangeHistory()
+px_ChangeHistory::px_ChangeHistory(pt_PieceTable * pPT): m_pPT(pPT)
 {
 	m_undoPosition = 0;
 	m_savePosition = 0;
@@ -81,12 +83,24 @@ bool px_ChangeHistory::addChangeRecord(PX_ChangeRecord * pcr)
 {
 	// add a change record to the history.
 	// blow away any redo, since it is now invalid.
-
-	_invalidateRedo();
+	xxx_UT_DEBUGMSG(("CR Pos %d \n",pcr->getPosition()));
+	if(!m_pPT->isDoingTheDo())
+	{
+		_invalidateRedo();
 	
-	bool bResult = (m_vecChangeRecords.insertItemAt(pcr,m_undoPosition++) == 0);
-	UT_ASSERT_HARMLESS(bResult);
-	return bResult;
+		bool bResult = (m_vecChangeRecords.insertItemAt(pcr,m_undoPosition++) == 0);
+		UT_ASSERT_HARMLESS(bResult);
+		return bResult;
+	}
+	else
+	{
+//
+// Just save the cr for later deletion with the PT
+//
+		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		m_vecChangeRecords.addItem(pcr);
+		return true;
+	}
 }
 
 bool px_ChangeHistory::canDo(bool bUndo) const
@@ -147,17 +161,22 @@ bool px_ChangeHistory::getRedo(PX_ChangeRecord ** ppcr) const
 
 bool px_ChangeHistory::didUndo(void)
 {
+	UT_DEBUGMSG((" Doing Undo void in PT undopos %d savePos pos %d \n",m_undoPosition,m_savePosition));
 	if (m_undoPosition == 0)
 		return false;
 	m_undoPosition--;
 	PX_ChangeRecord * pcr = (PX_ChangeRecord *)m_vecChangeRecords.getNthItem(m_undoPosition);
 	if (pcr && !pcr->getPersistance())
+	{
+		UT_return_val_if_fail(m_savePosition > 0,false);
 		m_savePosition--;
+	}
 	return true;
 }
 
 bool px_ChangeHistory::didRedo(void)
 {
+	UT_DEBUGMSG((" Doing Redo void in PT undopos %d savePos pos %d \n",m_undoPosition,m_savePosition));
 	if (m_undoPosition >= m_vecChangeRecords.getItemCount())
 		return false;
 	PX_ChangeRecord * pcr = (PX_ChangeRecord *)m_vecChangeRecords.getNthItem(m_undoPosition);

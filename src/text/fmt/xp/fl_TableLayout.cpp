@@ -1923,6 +1923,10 @@ fp_Container* fl_CellLayout::getNewContainer(fp_Container * pPrev)
 	return static_cast<fp_Container *>(getLastContainer());
 }
 
+bool fl_CellLayout::isDoingFormat(void) const
+{
+	return m_bDoingFormat;
+}
 
 void fl_CellLayout::format(void)
 {
@@ -1935,6 +1939,7 @@ void fl_CellLayout::format(void)
 	{
 		getNewContainer(NULL);
 	}
+	m_bDoingFormat = true;
 	UT_sint32 iOldHeight = getFirstContainer()->getHeight();
 	fl_ContainerLayout * pPrevCL = myContainingLayout()->getPrev();
 	fp_Page * pPrevP = NULL;
@@ -1984,6 +1989,7 @@ void fl_CellLayout::format(void)
 	}
 	m_bNeedsReformat = false;
 	checkAndAdjustCellSize();
+	m_bDoingFormat = false;
 }
 
 void fl_CellLayout::markAllRunsDirty(void)

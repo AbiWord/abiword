@@ -2850,7 +2850,11 @@ void fl_BlockLayout::format()
 				// Can speed up things by doing an immediate format on the
 				// the cell.
 				//
-				getSectionLayout()->format();
+				fl_CellLayout * pCL = static_cast<fl_CellLayout *>(getSectionLayout());
+				if(!pCL->isDoingFormat())
+				{
+					getSectionLayout()->format();
+				}
 			}
 		}
 		getDocSectionLayout()->setNeedsSectionBreak(true,pPrevP);
@@ -8154,7 +8158,6 @@ void fl_BlockLayout::remItemFromList(void)
 		FV_View* pView = getView();
 		UT_ASSERT(pView);
 
-		m_pDoc->beginUserAtomicGlob();
 
 		UT_uint32 currLevel = getLevel();
 		UT_ASSERT(currLevel > 0);
@@ -8234,7 +8237,10 @@ void fl_BlockLayout::remItemFromList(void)
 			attribs [1] = lid;
 			attribs [3] = buf;
 #endif
+
 			bRet = m_pDoc->changeStruxFmt(PTC_AddFmt, getPosition(), getPosition(), attribs, props, PTX_Block);
+
+
 			m_bListItem = false;
 		}
 		else
@@ -8248,11 +8254,13 @@ void fl_BlockLayout::remItemFromList(void)
 			attribs [1] = lid;
 			attribs [3] = buf;
 #endif
+
 			bRet = m_pDoc->changeStruxFmt(PTC_AddFmt,getPosition(), getPosition(), attribs, props, PTX_Block);
+
+
 			m_pDoc->listUpdate(getStruxDocHandle());
 		}
 		//format();
-		m_pDoc->endUserAtomicGlob();
 
 		//		pView->AV_View::notifyListeners(AV_CHG_FMTBLOCK);
 		// pView->_fixInsertionPointCoords();
@@ -8595,7 +8603,9 @@ void	fl_BlockLayout::StartList( FL_ListType lType, UT_uint32 start,const XML_Cha
 	}
 	props[i] = static_cast<XML_Char *>(NULL);
 	setStarting( false);
+
 	bRet = m_pDoc->changeStruxFmt(PTC_AddFmt, getPosition(), getPosition(), attribs, props, PTX_Block);
+
 
 	m_pDoc->listUpdate(getStruxDocHandle());
 	FREEP(attribs);
@@ -8817,6 +8827,7 @@ void	fl_BlockLayout::StopListInBlock(void)
 //
 // Remove all the list related properties
 //
+
 		bRet = m_pDoc->changeStruxFmt(PTC_RemoveFmt, getPosition(), getPosition(), pListAttrs, pListProps, PTX_Block);
 		fp_Run * pRun = getFirstRun();
 		while(pRun->getNextRun())
@@ -8829,6 +8840,8 @@ void	fl_BlockLayout::StopListInBlock(void)
 // Set the indents to match.
 //
 		bRet = m_pDoc->changeStruxFmt(PTC_AddFmt, getPosition(), getPosition(), NULL, props, PTX_Block);
+
+
 		m_bListItem = false;
 	}
 	else
@@ -8836,7 +8849,10 @@ void	fl_BlockLayout::StopListInBlock(void)
 		const XML_Char * attribs[] = {	"listid", NULL,"level",NULL, NULL,NULL };
 		attribs [1] = lid;
 		attribs [3] = pszlevel;
+
 		bRet = m_pDoc->changeStruxFmt(PTC_AddFmt,getPosition(), getPosition(), attribs, props, PTX_Block);
+
+
 		m_pDoc->listUpdate(getStruxDocHandle());
 	}
 	// format();
@@ -9041,7 +9057,9 @@ void  fl_BlockLayout::prependList( fl_BlockLayout * nextList)
 	FV_View* pView = getView();
 	UT_ASSERT(pView);
 	m_bListLabelCreated = false;
+
 	m_pDoc->changeStruxFmt(PTC_AddFmt, getPosition(), getPosition(), attribs, props, PTX_Block);
+
 	m_bListItem = true;
 	m_pDoc->listUpdate(getStruxDocHandle());
 	FREEP(attribs);
@@ -9084,7 +9102,9 @@ void  fl_BlockLayout::resumeList( fl_BlockLayout * prevList)
 	FV_View* pView = getView();
 	UT_ASSERT(pView);
 	m_bListLabelCreated = false;
+
 	m_pDoc->changeStruxFmt(PTC_AddFmt, getPosition(), getPosition(), attribs, props, PTX_Block);
+
 	m_bListItem = true;
 	m_pDoc->listUpdate(getStruxDocHandle());
 	FREEP(attribs);

@@ -48,8 +48,12 @@
 /*****************************************************************/
 
 pt_PieceTable::pt_PieceTable(PD_Document * pDocument)
-  : m_pts(PTS_Create), m_hashStyles(11), m_pDocument(pDocument),
-    m_atomicGlobCount(0)
+  : m_pts(PTS_Create), 
+	m_history(this),
+	m_hashStyles(11), 
+	m_pDocument(pDocument),
+    m_atomicGlobCount(0),
+	m_bDoingTheDo(false)
 {
 
 	setPieceTableState(PTS_Create);

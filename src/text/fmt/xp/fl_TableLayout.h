@@ -292,6 +292,7 @@ public:
 	virtual void		     updateLayout(void);
 	virtual void             collapse(void);
 	bool                     isLayedOut(void) const;
+	bool                     isDoingFormat(void) const;
 	virtual bool             needsReformat(void) const;
 	virtual void             markAllRunsDirty(void);
 	virtual fl_SectionLayout *  getSectionLayout(void)  const;
@@ -356,6 +357,7 @@ private:
 	void                   _updateCell(void);
 	void                   _localCollapse();
 	UT_sint32              m_iNumNestedTables;
+	bool                   m_bDoingFormat;
 };
 
 ///

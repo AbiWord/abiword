@@ -572,7 +572,6 @@ bool FV_View::_restoreCellParams(PT_DocPosition posTable, UT_sint32 iLineType)
 // OK finish everything off with the various parameters which allow the formatter to
 // be updated.
 //
-	m_pDoc->endUserAtomicGlob();
 	m_pDoc->allowChangeInsPoint();
 
 
@@ -585,6 +584,7 @@ bool FV_View::_restoreCellParams(PT_DocPosition posTable, UT_sint32 iLineType)
 	// Signal PieceTable Changes have finished
 	_restorePieceTableState();
 	_generalUpdate();
+	m_pDoc->endUserAtomicGlob();
 	return true;
 }
 

@@ -86,6 +86,7 @@ void pt_PieceTable::beginUserAtomicGlob(void)
 	// we do not notify the listeners.
 	
   m_atomicGlobCount++;
+  xxx_UT_DEBUGMSG(("Begin Glob count %d \n", m_atomicGlobCount));
   if (m_atomicGlobCount > 1)
     {
       // allow this call to be nested
@@ -104,6 +105,7 @@ void pt_PieceTable::beginUserAtomicGlob(void)
 void pt_PieceTable::endUserAtomicGlob(void)
 {
   m_atomicGlobCount--;
+  xxx_UT_DEBUGMSG(("End Glob count %d \n", m_atomicGlobCount));
   if (m_atomicGlobCount != 0)
     {
       // allow this call to be nested

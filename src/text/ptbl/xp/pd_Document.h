@@ -195,6 +195,7 @@ public:
 	virtual UT_uint32		undoCount(bool bUndo) const;
 	virtual bool			undoCmd(UT_uint32 repeatCount);
 	virtual bool			redoCmd(UT_uint32 repeatCount);
+	bool                    isDoingTheDo(void) const;
 
 	void					beginUserAtomicGlob(void);
 	void					endUserAtomicGlob(void);

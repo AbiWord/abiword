@@ -749,6 +749,10 @@ bool	PD_Document::insertObject(PT_DocPosition dpos,
 								  const XML_Char ** attributes,
 								  const XML_Char ** properties)
 {
+	if(isDoingTheDo())
+	{
+		return false;
+	}
 	return m_pPieceTable->insertObject(dpos, pto, attributes, properties);
 }
 
@@ -757,6 +761,10 @@ bool	PD_Document::insertObject(PT_DocPosition dpos,
 								  const XML_Char ** attributes,
 								  const XML_Char ** properties, fd_Field ** pField)
 {
+	if(isDoingTheDo())
+	{
+		return false;
+	}
 	pf_Frag_Object * pfo = NULL;
 	bool bres =  m_pPieceTable->insertObject(dpos, pto, attributes, properties, &pfo);
 	*pField = pfo->getField();
@@ -768,6 +776,10 @@ bool PD_Document::insertSpan(PT_DocPosition dpos,
 							 UT_uint32 length,
 							 PP_AttrProp *p_AttrProp)
 {
+	if(isDoingTheDo())
+	{
+		return false;
+	}
 	if(p_AttrProp)
 	{
 		m_pPieceTable->insertFmtMark(PTC_AddFmt, dpos, p_AttrProp);
@@ -869,6 +881,10 @@ bool PD_Document::deleteSpan(PT_DocPosition dpos1,
 							 UT_uint32 &iRealDeleteCount,
 							 bool bDeleteTableStruxes)
 {
+	if(isDoingTheDo())
+	{
+		return false;
+	}
 	return m_pPieceTable->deleteSpanWithTable(dpos1, dpos2, p_AttrProp_Before,iRealDeleteCount, bDeleteTableStruxes );
 }
 
@@ -878,6 +894,10 @@ bool PD_Document::changeSpanFmt(PTChangeFmt ptc,
 								const XML_Char ** attributes,
 								const XML_Char ** properties)
 {
+	if(isDoingTheDo())
+	{
+		return false;
+	}
 	bool f;
 	deferNotifications();
 	f = m_pPieceTable->changeSpanFmt(ptc,dpos1,dpos2,attributes,properties);
@@ -890,6 +910,10 @@ bool PD_Document::changeSpanFmt(PTChangeFmt ptc,
 bool PD_Document::insertStrux(PT_DocPosition dpos,
 							  PTStruxType pts, pf_Frag_Strux ** ppfs_ret)
 {
+	if(isDoingTheDo())
+	{
+		return false;
+	}
 	return m_pPieceTable->insertStrux(dpos,pts,ppfs_ret);
 }
 
@@ -899,6 +923,10 @@ bool PD_Document::insertStrux(PT_DocPosition dpos,
 							  const XML_Char ** attributes,
 							  const XML_Char ** properties, pf_Frag_Strux ** ppfs_ret)
 {
+	if(isDoingTheDo())
+	{
+		return false;
+	}
 	return m_pPieceTable->insertStrux(dpos,pts, attributes,properties,ppfs_ret);
 }
 
@@ -920,6 +948,10 @@ bool PD_Document::changeStruxFmt(PTChangeFmt ptc,
 								 const XML_Char ** properties,
 								 PTStruxType pts)
 {
+	if(isDoingTheDo())
+	{
+		return false;
+	}
 	return m_pPieceTable->changeStruxFmt(ptc,dpos1,dpos2,attributes,properties,pts);
 }
 
@@ -944,6 +976,10 @@ bool PD_Document::changeStruxFmt(PTChangeFmt ptc,
 								 const XML_Char ** attributes,
 								 const XML_Char ** properties)
 {
+	if(isDoingTheDo())
+	{
+		return false;
+	}
 	return m_pPieceTable->changeStruxFmt(ptc,dpos1,dpos2,attributes,properties);
 }
 
@@ -958,6 +994,10 @@ bool PD_Document::changeStruxForLists(PL_StruxDocHandle sdh, const char * pszPar
 
 bool PD_Document::insertFmtMark(PTChangeFmt ptc, PT_DocPosition dpos, PP_AttrProp *p_AttrProp)
 {
+	if(isDoingTheDo())
+	{
+		return false;
+	}
 	return m_pPieceTable->insertFmtMark(ptc, dpos, p_AttrProp);
 }
 
@@ -3229,6 +3269,12 @@ bool PD_Document::redoCmd(UT_uint32 repeatCount)
 	return true;
 }
 
+
+bool  PD_Document::isDoingTheDo(void) const
+{
+	return m_pPieceTable->isDoingTheDo();
+}
+
 ///////////////////////////////////////////////////////////////////
 // DataItems represent opaque (and probably binary) data found in
 // the data-section of the document.  These are used, for example,
@@ -4257,7 +4303,6 @@ void  PD_Document::clearDoingPaste(void)
 {
          m_bDoingPaste = false;
 }
-
 
 bool  PD_Document::isDoingPaste(void)
 {

@@ -49,11 +49,12 @@
 /****************************************************************/
 
 #define DONE()  (bUndo ? m_history.didUndo() : m_history.didRedo());
+#define UNDO_return_val_if_fail(cond,val) if (!(cond)) { UT_ASSERT(cond); m_bDoingTheDo = false; return (val); }
 
 bool pt_PieceTable::_doTheDo(const PX_ChangeRecord * pcr, bool bUndo)
 {
 	// actually do the work of the undo or redo.
-
+	m_bDoingTheDo = true;
 	switch (pcr->getType())
 	{
 
@@ -62,6 +63,7 @@ bool pt_PieceTable::_doTheDo(const PX_ChangeRecord * pcr, bool bUndo)
 
 	case PX_ChangeRecord::PXT_GlobMarker:
 		DONE();
+		m_bDoingTheDo = false;
 		return true;
 		
 	//////////////////////////////////////////////////////////////////
@@ -73,15 +75,15 @@ bool pt_PieceTable::_doTheDo(const PX_ChangeRecord * pcr, bool bUndo)
 			pf_Frag * pf = NULL;
 			PT_BlockOffset fragOffset = 0;
 			bool bFound = getFragFromPosition(pcrSpan->getPosition(),&pf,&fragOffset);
-			UT_return_val_if_fail (bFound,false);
+			UNDO_return_val_if_fail (bFound,false);
 
 			pf_Frag_Strux * pfs = NULL;
 			bool bFoundStrux = _getStruxFromFrag(pf,&pfs);
-			UT_return_val_if_fail (bFoundStrux,false);
+			UNDO_return_val_if_fail (bFoundStrux,false);
 			if(isEndFootnote(static_cast<pf_Frag *>(pfs)))
 			{
 				bFoundStrux = _getStruxFromFragSkip(static_cast<pf_Frag *>(pfs),&pfs);
-				UT_return_val_if_fail (bFoundStrux,false);
+				UNDO_return_val_if_fail (bFoundStrux,false);
 			}
 			if (!_insertSpan(pf,pcrSpan->getBufIndex(),fragOffset,
 							 pcrSpan->getLength(),pcrSpan->getIndexAP(),
@@ -91,6 +93,7 @@ bool pt_PieceTable::_doTheDo(const PX_ChangeRecord * pcr, bool bUndo)
 			DONE();
 			m_pDocument->notifyListeners(pfs,pcr);
 		}
+		m_bDoingTheDo = false;
 		return true;
 		
 	case PX_ChangeRecord::PXT_DeleteSpan:
@@ -105,28 +108,29 @@ bool pt_PieceTable::_doTheDo(const PX_ChangeRecord * pcr, bool bUndo)
 			pf_Frag * pf = NULL;
 			PT_BlockOffset fragOffset = 0;
 			bool bFound = getFragFromPosition(pcrSpan->getPosition(),&pf,&fragOffset);
-			UT_return_val_if_fail (bFound,false);
-			UT_return_val_if_fail (pf->getType() == pf_Frag::PFT_Text,false);
+			UNDO_return_val_if_fail (bFound,false);
+			UNDO_return_val_if_fail (pf->getType() == pf_Frag::PFT_Text,false);
 
 			pf_Frag_Strux * pfs = NULL;
 			bool bFoundStrux = _getStruxFromFrag(pf,&pfs);
-			UT_return_val_if_fail (bFoundStrux, false);
+			UNDO_return_val_if_fail (bFoundStrux, false);
 			if(isEndFootnote(static_cast<pf_Frag *>(pfs)))
 			{
 				bFoundStrux = _getStruxFromFragSkip(static_cast<pf_Frag *>(pfs),&pfs);
-				UT_return_val_if_fail (bFoundStrux, false);
+				UNDO_return_val_if_fail (bFoundStrux, false);
 			}
-			UT_return_val_if_fail (bFoundStrux, false);
+			UNDO_return_val_if_fail (bFoundStrux, false);
 
 			pf_Frag_Text * pft = static_cast<pf_Frag_Text *> (pf);
-			UT_return_val_if_fail (pft->getIndexAP() == pcrSpan->getIndexAP(),false);
-			UT_DEBUGMSG(("deletespan in _doTheDo length %d \n",pcrSpan->getLength()));
+			UNDO_return_val_if_fail (pft->getIndexAP() == pcrSpan->getIndexAP(),false);
+			xxx_UT_DEBUGMSG(("deletespan in _doTheDo length %d \n",pcrSpan->getLength()));
 			_deleteSpan(pft,fragOffset,pcrSpan->getBufIndex(),pcrSpan->getLength(),NULL,NULL);
 
 			m_pDocument->notifyListeners(pfs,pcr);
 
 			DONE();
 		}
+		m_bDoingTheDo = false;
 		return true;
 
 	case PX_ChangeRecord::PXT_ChangeSpan:
@@ -140,8 +144,8 @@ bool pt_PieceTable::_doTheDo(const PX_ChangeRecord * pcr, bool bUndo)
 			pf_Frag * pf = NULL;
 			PT_BlockOffset fragOffset = 0;
 			bool bFound = getFragFromPosition(pcrs->getPosition(),&pf,&fragOffset);
-			UT_return_val_if_fail (bFound, false);
-			UT_return_val_if_fail (pf->getType() == pf_Frag::PFT_Text, false);
+			UNDO_return_val_if_fail (bFound, false);
+			UNDO_return_val_if_fail (pf->getType() == pf_Frag::PFT_Text, false);
 
 			pf_Frag_Text * pft = static_cast<pf_Frag_Text *> (pf);
 
@@ -150,9 +154,9 @@ bool pt_PieceTable::_doTheDo(const PX_ChangeRecord * pcr, bool bUndo)
 			if(isEndFootnote(static_cast<pf_Frag *>(pfs)))
 			{
 				bFoundStrux = _getStruxFromFragSkip(static_cast<pf_Frag *>(pfs),&pfs);
-				UT_return_val_if_fail (bFoundStrux, false);
+				UNDO_return_val_if_fail (bFoundStrux, false);
 			}
-			UT_return_val_if_fail (bFoundStrux, false);
+			UNDO_return_val_if_fail (bFoundStrux, false);
 
 			// we need to loop here, because even though we have a simple (atomic) change,
 			// the document may be fragmented slightly differently (or rather, it may not
@@ -172,7 +176,7 @@ bool pt_PieceTable::_doTheDo(const PX_ChangeRecord * pcr, bool bUndo)
 				if (length == 0)
 					break;
 
-				UT_return_val_if_fail (pfEnd->getType() == pf_Frag::PFT_Text, false);
+				UNDO_return_val_if_fail (pfEnd->getType() == pf_Frag::PFT_Text, false);
 				pft = static_cast<pf_Frag_Text *> (pfEnd);
 				fragOffset = fragOffsetEnd;
 			}
@@ -180,6 +184,7 @@ bool pt_PieceTable::_doTheDo(const PX_ChangeRecord * pcr, bool bUndo)
 			DONE();
 			m_pDocument->notifyListeners(pfs,pcr);
 		}
+		m_bDoingTheDo = false;
 		return true;
 			
 	//////////////////////////////////////////////////////////////////
@@ -195,18 +200,18 @@ bool pt_PieceTable::_doTheDo(const PX_ChangeRecord * pcr, bool bUndo)
 			pf_Frag * pf = NULL;
 			PT_BlockOffset fragOffset = 0;
 			bool bFoundFrag = getFragFromPosition(pcrStrux->getPosition(),&pf,&fragOffset);
-			UT_return_val_if_fail (bFoundFrag, false);
+			UNDO_return_val_if_fail (bFoundFrag, false);
 
 			// get the strux containing the given position.
 	
 // TODO see if we can avoid this call to _getStruxFromPosition ??
 			pf_Frag_Strux * pfsContainer = NULL;
 			bool bFoundContainer = _getStruxFromPosition(pcrStrux->getPosition(),&pfsContainer);
-			UT_return_val_if_fail (bFoundContainer,false);
+			UNDO_return_val_if_fail (bFoundContainer,false);
 			if(isEndFootnote(static_cast<pf_Frag *>(pfsContainer)))
 			{
 				bool bFoundStrux = _getStruxFromFragSkip(static_cast<pf_Frag *>(pfsContainer),&pfsContainer);
-				UT_return_val_if_fail (bFoundStrux, false);
+				UNDO_return_val_if_fail (bFoundStrux, false);
 			}
 			_insertStrux(pf,fragOffset,pfsNew);
 			DONE();
@@ -220,18 +225,19 @@ bool pt_PieceTable::_doTheDo(const PX_ChangeRecord * pcr, bool bUndo)
 			pf_Frag * pf = NULL;
 			PT_BlockOffset fragOffset = 0;
 			bool bFoundFrag = getFragFromPosition(pcrStrux->getPosition(),&pf,&fragOffset);
-			UT_return_val_if_fail (bFoundFrag,false);
-			UT_return_val_if_fail (pf->getType() == pf_Frag::PFT_Strux,false);
+			UNDO_return_val_if_fail (bFoundFrag,false);
+			UNDO_return_val_if_fail (pf->getType() == pf_Frag::PFT_Strux,false);
 
 			pf_Frag_Strux * pfs = static_cast<pf_Frag_Strux *> (pf);
-			UT_return_val_if_fail (pcrStrux->getStruxType() == pfs->getStruxType(),false);
+			UNDO_return_val_if_fail (pcrStrux->getStruxType() == pfs->getStruxType(),false);
 			bool bResult = _unlinkStrux(pfs,NULL,NULL);
 			m_pDocument->notifyListeners(pfs,pcr);
-			UT_return_val_if_fail (bResult,false);
+			UNDO_return_val_if_fail (bResult,false);
 			DONE();
 			
 			delete pfs;
 		}
+		m_bDoingTheDo = false;
 		return true;
 
 	case PX_ChangeRecord::PXT_ChangeStrux:
@@ -241,12 +247,13 @@ bool pt_PieceTable::_doTheDo(const PX_ChangeRecord * pcr, bool bUndo)
 			const PX_ChangeRecord_StruxChange * pcrs = static_cast<const PX_ChangeRecord_StruxChange *>(pcr);
 			pf_Frag_Strux * pfs;
 			bool bFound = _getStruxFromPosition(pcrs->getPosition(),&pfs);
-			UT_return_val_if_fail (bFound,false);
+			UNDO_return_val_if_fail (bFound,false);
 			bool bResult = _fmtChangeStrux(pfs,pcrs->getIndexAP());
-			UT_return_val_if_fail (bResult,false);
+			UNDO_return_val_if_fail (bResult,false);
 			DONE();
 			m_pDocument->notifyListeners(pfs,pcr);
 		}
+		m_bDoingTheDo = false;
 		return true;
 
 	//////////////////////////////////////////////////////////////////
@@ -258,21 +265,21 @@ bool pt_PieceTable::_doTheDo(const PX_ChangeRecord * pcr, bool bUndo)
 			pf_Frag * pf = NULL;
 			PT_BlockOffset fragOffset = 0;
 			bool bFound = getFragFromPosition(pcrObject->getPosition(),&pf,&fragOffset);
-			UT_return_val_if_fail (bFound, false);
+			UNDO_return_val_if_fail (bFound, false);
 
 			pf_Frag_Strux * pfs = NULL;
 			bool bFoundStrux = _getStruxFromFrag(pf,&pfs);
-			UT_return_val_if_fail (bFoundStrux, false);
+			UNDO_return_val_if_fail (bFoundStrux, false);
 			if(isEndFootnote(static_cast<pf_Frag *>(pfs)))
 			{
 				bool bFoundStrux = _getStruxFromFragSkip(static_cast<pf_Frag *>(pfs),&pfs);
-				UT_return_val_if_fail (bFoundStrux,false);
+				UNDO_return_val_if_fail (bFoundStrux,false);
 			}
             pf_Frag_Object * pfo = NULL;
 			if (!_insertObject(pf,fragOffset,pcrObject->getObjectType(),
                                pcrObject->getIndexAP(),pfo))
 				return false;
-            UT_return_val_if_fail (pfo,false);
+            UNDO_return_val_if_fail (pfo,false);
             
             // need to set field pointers to values of new pointer
             // as old field doesn't exist
@@ -289,6 +296,7 @@ bool pt_PieceTable::_doTheDo(const PX_ChangeRecord * pcr, bool bUndo)
 			m_pDocument->notifyListeners(pfs,pcr);
             // don't update field until all of changes have been made
 		}
+		m_bDoingTheDo = false;
 		return true;
 		
 	case PX_ChangeRecord::PXT_DeleteObject:
@@ -297,26 +305,27 @@ bool pt_PieceTable::_doTheDo(const PX_ChangeRecord * pcr, bool bUndo)
 			pf_Frag * pf = NULL;
 			PT_BlockOffset fragOffset = 0;
 			bool bFound = getFragFromPosition(pcrObject->getPosition(),&pf,&fragOffset);
-			UT_return_val_if_fail (bFound, false);
-			UT_return_val_if_fail (pf->getType() == pf_Frag::PFT_Object,false);
-			UT_return_val_if_fail (fragOffset == 0,false);
+			UNDO_return_val_if_fail (bFound, false);
+			UNDO_return_val_if_fail (pf->getType() == pf_Frag::PFT_Object,false);
+			UNDO_return_val_if_fail (fragOffset == 0,false);
 			
 			pf_Frag_Strux * pfs = NULL;
 			bool bFoundStrux = _getStruxFromFrag(pf,&pfs);
-			UT_return_val_if_fail (bFoundStrux,false);
+			UNDO_return_val_if_fail (bFoundStrux,false);
 			if(isEndFootnote(static_cast<pf_Frag *>(pfs)))
 			{
 				bool bFoundStrux = _getStruxFromFragSkip(static_cast<pf_Frag *>(pfs),&pfs);
-				UT_return_val_if_fail (bFoundStrux,false);
+				UNDO_return_val_if_fail (bFoundStrux,false);
 			}
 
 			pf_Frag_Object * pfo = static_cast<pf_Frag_Object *> (pf);
-			UT_return_val_if_fail (pfo->getIndexAP() == pcrObject->getIndexAP(),false);
+			UNDO_return_val_if_fail (pfo->getIndexAP() == pcrObject->getIndexAP(),false);
 			_deleteObject(pfo,NULL,NULL);
 
 			DONE();
 			m_pDocument->notifyListeners(pfs,pcr);
 		}
+		m_bDoingTheDo = false;
 		return true;
 
 	case PX_ChangeRecord::PXT_ChangeObject:
@@ -328,17 +337,17 @@ bool pt_PieceTable::_doTheDo(const PX_ChangeRecord * pcr, bool bUndo)
 			pf_Frag * pf = NULL;
 			PT_BlockOffset fragOffset = 0;
 			bool bFound = getFragFromPosition(pcro->getPosition(),&pf,&fragOffset);
-			UT_return_val_if_fail (bFound,false);
-			UT_return_val_if_fail (pf->getType() == pf_Frag::PFT_Object,false);
-			UT_return_val_if_fail (fragOffset == 0, false);
+			UNDO_return_val_if_fail (bFound,false);
+			UNDO_return_val_if_fail (pf->getType() == pf_Frag::PFT_Object,false);
+			UNDO_return_val_if_fail (fragOffset == 0, false);
 
 			pf_Frag_Strux * pfs = NULL;
 			bool bFoundStrux = _getStruxFromFrag(pf,&pfs);
-			UT_return_val_if_fail (bFoundStrux,false);
+			UNDO_return_val_if_fail (bFoundStrux,false);
 			if(isEndFootnote(static_cast<pf_Frag *>(pfs)))
 			{
 				bool bFoundStrux = _getStruxFromFragSkip(static_cast<pf_Frag *>(pfs),&pfs);
-				UT_return_val_if_fail (bFoundStrux,false);
+				UNDO_return_val_if_fail (bFoundStrux,false);
 			}
 
 			pf_Frag_Object * pfo = static_cast<pf_Frag_Object *> (pf);
@@ -348,6 +357,7 @@ bool pt_PieceTable::_doTheDo(const PX_ChangeRecord * pcr, bool bUndo)
 			DONE();
 			m_pDocument->notifyListeners(pfs,pcr);
 		}
+		m_bDoingTheDo = false;
 		return true;
 
 	///////////////////////////////////////////////////////////////////
@@ -359,15 +369,15 @@ bool pt_PieceTable::_doTheDo(const PX_ChangeRecord * pcr, bool bUndo)
 			pf_Frag * pf = NULL;
 			PT_BlockOffset fragOffset = 0;
 			bool bFound = getFragFromPosition(pcrFM->getPosition(),&pf,&fragOffset);
-			UT_return_val_if_fail (bFound, false);
+			UNDO_return_val_if_fail (bFound, false);
 
 			pf_Frag_Strux * pfs = NULL;
 			bool bFoundStrux = _getStruxFromFrag(pf,&pfs);
-			UT_return_val_if_fail (bFoundStrux, false);
+			UNDO_return_val_if_fail (bFoundStrux, false);
 			if(isEndFootnote(static_cast<pf_Frag *>(pfs)))
 			{
 				bool bFoundStrux = _getStruxFromFragSkip(static_cast<pf_Frag *>(pfs),&pfs);
-				UT_return_val_if_fail (bFoundStrux,false);
+				UNDO_return_val_if_fail (bFoundStrux,false);
 			}
 
 			if (!_insertFmtMark(pf,fragOffset,pcrFM->getIndexAP()))
@@ -376,6 +386,7 @@ bool pt_PieceTable::_doTheDo(const PX_ChangeRecord * pcr, bool bUndo)
 			DONE();
 			m_pDocument->notifyListeners(pfs,pcr);
 		}
+		m_bDoingTheDo = false;
 		return true;
 	 
 	case PX_ChangeRecord::PXT_DeleteFmtMark:
@@ -384,26 +395,27 @@ bool pt_PieceTable::_doTheDo(const PX_ChangeRecord * pcr, bool bUndo)
 			pf_Frag * pf = NULL;
 			PT_BlockOffset fragOffset = 0;
 			bool bFound = getFragFromPosition(pcrFM->getPosition(),&pf,&fragOffset);
-			UT_return_val_if_fail (bFound, false);
+			UNDO_return_val_if_fail (bFound, false);
 
 			// we backup one because we have zero length and getFragFromPosition()
 			// returns the right-most thing with this document position.
 			pf = pf->getPrev();
 
-			UT_return_val_if_fail (pf->getType() == pf_Frag::PFT_FmtMark,false);
-			UT_return_val_if_fail (fragOffset == 0,false);
+			UNDO_return_val_if_fail (pf->getType() == pf_Frag::PFT_FmtMark,false);
+			UNDO_return_val_if_fail (fragOffset == 0,false);
 			
 			pf_Frag_Strux * pfs = NULL;
 			bool bFoundStrux = _getStruxFromFragSkip(pf,&pfs);
-			UT_return_val_if_fail (bFoundStrux,false);
+			UNDO_return_val_if_fail (bFoundStrux,false);
 
 			pf_Frag_FmtMark * pffm = static_cast<pf_Frag_FmtMark *> (pf);
-			UT_return_val_if_fail (pffm->getIndexAP() == pcrFM->getIndexAP(),false);
+			UNDO_return_val_if_fail (pffm->getIndexAP() == pcrFM->getIndexAP(),false);
 			_deleteFmtMark(pffm,NULL,NULL);
 
 			DONE();
 			m_pDocument->notifyListeners(pfs,pcr);
 		}
+		m_bDoingTheDo = false;
 		return true;
 
 	case PX_ChangeRecord::PXT_ChangeFmtMark:
@@ -415,24 +427,25 @@ bool pt_PieceTable::_doTheDo(const PX_ChangeRecord * pcr, bool bUndo)
 			pf_Frag * pf = NULL;
 			PT_BlockOffset fragOffset = 0;
 			bool bFound = getFragFromPosition(pcrFMC->getPosition(),&pf,&fragOffset);
-			UT_return_val_if_fail (bFound,false);
+			UNDO_return_val_if_fail (bFound,false);
 
 			// we backup one because we have zero length and getFragFromPosition()
 			// returns the right-most thing with this document position.
 			pf = pf->getPrev();
 
-			UT_return_val_if_fail (pf->getType() == pf_Frag::PFT_FmtMark,false);
-			UT_return_val_if_fail (fragOffset == 0,false);
+			UNDO_return_val_if_fail (pf->getType() == pf_Frag::PFT_FmtMark,false);
+			UNDO_return_val_if_fail (fragOffset == 0,false);
 
 			pf_Frag_Strux * pfs = NULL;
 			bool bFoundStrux = _getStruxFromFragSkip(pf,&pfs);
-			UT_return_val_if_fail (bFoundStrux,false);
+			UNDO_return_val_if_fail (bFoundStrux,false);
 
 			pf_Frag_FmtMark * pffm = static_cast<pf_Frag_FmtMark *> (pf);
 
 			_fmtChangeFmtMark(pffm,pcrFMC->getIndexAP(),NULL,NULL);
 
 			DONE();
+			m_bDoingTheDo = false;
 			m_pDocument->notifyListeners(pfs,pcr);
 		}
 		return true;
@@ -444,10 +457,12 @@ bool pt_PieceTable::_doTheDo(const PX_ChangeRecord * pcr, bool bUndo)
 		DONE();
 		m_pDocument->notifyListeners(NULL, pcr);
 
+		m_bDoingTheDo = false;
 		return true;
 
 	default:
 		UT_ASSERT_HARMLESS(0);
+		m_bDoingTheDo = false;
 		return false;
 	}
 }

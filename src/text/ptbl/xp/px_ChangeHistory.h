@@ -35,10 +35,12 @@
 // (and thus invalidating what needs to be redone).  A redo command will
 // re-apply the ChangeRecord and advance the undo position.
 
+class pt_PieceTable;
+
 class ABI_EXPORT px_ChangeHistory
 {
 public:
-	px_ChangeHistory();
+	px_ChangeHistory(pt_PieceTable * pT);
 	~px_ChangeHistory();
 
 	// addChangeRecord -- append the given cr to the history
@@ -86,6 +88,7 @@ protected:
 	UT_Vector				m_vecChangeRecords;
 	UT_uint32				m_undoPosition;
 	UT_sint32				m_savePosition;
+	pt_PieceTable *         m_pPT;
 };
 
 #endif /* PX_CHANGEHISTORY_H */
