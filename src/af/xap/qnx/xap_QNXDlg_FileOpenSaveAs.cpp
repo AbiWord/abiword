@@ -57,7 +57,7 @@ XAP_QNXDialog_FileOpenSaveAs::~XAP_QNXDialog_FileOpenSaveAs(void)
 
 void XAP_QNXDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 {
-	char file_filter[1024];		//Huge!
+	char file_filter[70];	
 	m_pQNXFrame = (XAP_QNXFrame *)pFrame;
 	UT_ASSERT(m_pQNXFrame);
 
@@ -193,7 +193,7 @@ void XAP_QNXDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 				break;
 			}
 			*/
-			if (strlen(file_filter) + strlen(m_szSuffixes[i]) > sizeof(file_filter)) {
+			if (strlen(file_filter) + strlen(m_szSuffixes[i]) + 3 > sizeof(file_filter)) {
 				printf("Not enough room for filter! \n");
 				break;
 			}
