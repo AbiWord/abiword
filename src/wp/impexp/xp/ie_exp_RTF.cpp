@@ -33,7 +33,6 @@
 #include "px_CR_Object.h"
 #include "px_CR_Span.h"
 #include "px_CR_Strux.h"
-#include "xap_App.h"
 #include "pd_Style.h"
 #include "gr_Graphics.h"
 

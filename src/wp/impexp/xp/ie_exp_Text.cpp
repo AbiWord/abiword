@@ -34,7 +34,6 @@
 #include "ut_wctomb.h"
 #include "xap_EncodingManager.h"
 #include "ap_Dialog_Id.h"
-#include "xap_App.h"
 #include "xap_DialogFactory.h"
 #include "xap_Dlg_Encoding.h"
 #include "ap_Prefs.h"

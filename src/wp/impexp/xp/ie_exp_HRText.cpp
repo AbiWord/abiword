@@ -34,7 +34,6 @@
 #include "px_CR_Object.h"
 #include "px_CR_Span.h"
 #include "px_CR_Strux.h"
-#include "xap_App.h"
 #include "xap_EncodingManager.h"
 
 #include "ut_debugmsg.h"

@@ -45,8 +45,6 @@
 #include "ut_bytebuf.h"
 #include "ut_rand.h"
 #include "pd_Style.h"
-
-#include "xap_App.h"
 #include "fv_View.h"
 
 #include "wv.h" // for wvLIDToLangConverter

@@ -35,7 +35,6 @@
 #include "px_CR_Span.h"
 #include "px_CR_Strux.h"
 #include "pp_Property.h"
-#include "xap_App.h"
 #include "ap_Prefs.h"
 #include "pd_Style.h"
 #include "fd_Field.h"

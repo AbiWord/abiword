@@ -36,7 +36,6 @@
 #include "px_CR_Object.h"
 #include "px_CR_Span.h"
 #include "px_CR_Strux.h"
-#include "xap_App.h"
 #include "xap_EncodingManager.h"
 
 #include "ut_string_class.h"
@@ -901,45 +900,6 @@ s_LaTeX_Listener::s_LaTeX_Listener(PD_Document * pDocument,
 	m_pie->write("%% ================================================================================\n");
 	m_pie->write("\n");
 
-	if (XAP_App::s_szBuild_ID && XAP_App::s_szBuild_ID[0])
-	{
-		m_pie->write("%%         Build_ID          = ");
-		m_pie->write(XAP_App::s_szBuild_ID);
-		m_pie->write("\n");
-	}
-	if (XAP_App::s_szBuild_Version && XAP_App::s_szBuild_Version[0])
-	{
-		m_pie->write("%%         Build_Version     = ");
-		m_pie->write(XAP_App::s_szBuild_Version);
-		m_pie->write("\n");
-	}
-	if (XAP_App::s_szBuild_Options && XAP_App::s_szBuild_Options[0])
-	{
-		m_pie->write("%%         Build_Options     = ");
-		m_pie->write(XAP_App::s_szBuild_Options);
-		m_pie->write("\n");
-	}
-	if (XAP_App::s_szBuild_Target && XAP_App::s_szBuild_Target[0])
-	{
-		m_pie->write("%%         Build_Target      = ");
-		m_pie->write(XAP_App::s_szBuild_Target);
-		m_pie->write("\n");
-	}
-	if (XAP_App::s_szBuild_CompileTime && XAP_App::s_szBuild_CompileTime[0])
-	{
-		m_pie->write("%%         Build_CompileTime = ");
-		m_pie->write(XAP_App::s_szBuild_CompileTime);
-		m_pie->write("\n");
-	}
-	if (XAP_App::s_szBuild_CompileDate && XAP_App::s_szBuild_CompileDate[0])
-	{
-		m_pie->write("%%         Build_CompileDate = ");
-		m_pie->write(XAP_App::s_szBuild_CompileDate);
-		m_pie->write("\n");
-	}
-	
-	m_pie->write("\n");
-	
 	m_pie->write("\\documentclass[12pt]{article}\n");
 	m_pie->write("\\usepackage[T1]{fontenc}\n");
 	m_pie->write("\\usepackage{calc}\n");
