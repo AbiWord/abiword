@@ -439,17 +439,31 @@ void fp_Run::setBlock(fl_BlockLayout * pBL)
 	m_pBL = pBL;
 }
 
-void fp_Run::setNext(fp_Run* p)
+/*
+	In the BIDI build, changing runs next or previous can result in
+	change of visual appearance of the run or a run immediately adjucent
+	(say deleting last character of a word may require that the new
+	last character is displayed using a final-form glyph which).
+	Consequently we need to mark the width and draw buffer as dirty,
+	and that is what happens when the bRefresh is true (which is the
+	default value). However, the refresh is very expensive, and sometimes
+	we know that it is not needed (e.g. simply merging neigbouring runs
+	does not change context, merely the way we store the stuff) -- in that
+	case we specify bRefresh false
+
+*/
+
+void fp_Run::setNext(fp_Run* p, bool bRefresh)
 {
 #ifdef BIDI_ENABLED
 	if(p != m_pNext)
 	{
-		m_bRefreshDrawBuffer = true;
-		m_bRecalcWidth = true;
+		m_bRefreshDrawBuffer |= bRefresh;
+		m_bRecalcWidth |= bRefresh;
 		// because we support 2-char ligatures, the change of next
 		// can also influence the run ahead of us
 		// we will just mark it
-		if(m_pPrev)
+		if(m_pPrev && bRefresh)
 		{
 			m_pPrev->markDrawBufferDirty();
 			m_pPrev->markWidthDirty();
@@ -461,17 +475,17 @@ void fp_Run::setNext(fp_Run* p)
 #endif
 }
 
-void fp_Run::setPrev(fp_Run* p)
+void fp_Run::setPrev(fp_Run* p, bool bRefresh)
 {
 #ifdef BIDI_ENABLED
 	if(p != m_pPrev)
 	{
-		m_bRefreshDrawBuffer = true;
-		m_bRecalcWidth = true;
+		m_bRefreshDrawBuffer |= bRefresh;
+		m_bRecalcWidth |= bRefresh;
 		// because we support 2-char ligatures, the change of prev
 		// can also influence the run that follows us
 		// we will just mark it
-		if(m_pNext)
+		if(m_pNext && bRefresh)
 		{
 			m_pNext->markDrawBufferDirty();
 			m_pNext->markWidthDirty();

@@ -501,25 +501,40 @@ bool	fp_TextRun::findMaxLeftFitSplitPointInLayoutUnits(UT_sint32 iMaxLeftWidth, 
 void fp_TextRun::mapXYToPosition(UT_sint32 x, UT_sint32 /*y*/,
 								 PT_DocPosition& pos, bool& bBOL, bool& bEOL)
 {
+#ifdef BIDI_ENABLED
+	FriBidiCharType iVisDirection = getVisDirection();
+	FriBidiCharType iDomDirection = m_pBL->getDominantDirection();
+#endif
+	
 	if (x <= 0)
 	{
 #ifdef BIDI_ENABLED
-		if(m_pBL->getDominantDirection() == FRIBIDI_TYPE_RTL)
+		if(iVisDirection == FRIBIDI_TYPE_RTL)
 		{
 			pos = m_pBL->getPosition() + m_iOffsetFirst + m_iLen;
-			bEOL = true;
-			bBOL = false;
+			if(iDomDirection == FRIBIDI_TYPE_RTL)
+			{
+				bEOL = true;
+				bBOL = false;
+			}
+			else
+			{
+				bEOL = false;
+				bBOL = true;
+			}
 		}
 		else
+#endif
 		{
 			pos = m_pBL->getPosition() + m_iOffsetFirst;
+			// don't set bBOL to false here
 			bEOL = false;
-			bBOL = true;
 		}
-#else		
-		pos = m_pBL->getPosition() + m_iOffsetFirst;
-		// don't set bBOL to false here
-		bEOL = false;
+
+#if 0//def BIDI_ENABLED
+		// if we are in rtl run, we want to move past this character
+		if(iVisDirection == FRIBIDI_TYPE_RTL)
+			pos++;
 #endif
 		return;
 	}
@@ -527,24 +542,35 @@ void fp_TextRun::mapXYToPosition(UT_sint32 x, UT_sint32 /*y*/,
 	if (x >= m_iWidth)
 	{
 #ifdef BIDI_ENABLED
-		if(m_pBL->getDominantDirection() == FRIBIDI_TYPE_RTL)
+		if(iVisDirection == FRIBIDI_TYPE_RTL)
 		{
 			pos = m_pBL->getPosition() + m_iOffsetFirst;
-			bEOL = false;
-			bBOL = true;
+			
+			if(iDomDirection == FRIBIDI_TYPE_RTL)
+			{
+				bEOL = false;
+				bBOL = true;
+			}
+			else
+			{
+				bEOL = true;
+				bBOL = false;
+			}
 		}
 		else
+#endif
 		{
 			pos = m_pBL->getPosition() + m_iOffsetFirst + m_iLen;
+			// Setting bEOL fixes bug 1149. But bEOL has been set in the
+			// past - probably somewhere else, so this is not necessarily
+			// the correct place to do it.  2001.02.25 jskov
 			bEOL = true;
-			bBOL = false;
 		}
-#else
-		pos = m_pBL->getPosition() + m_iOffsetFirst + m_iLen;
-		// Setting bEOL fixes bug 1149. But bEOL has been set in the
-		// past - probably somewhere else, so this is not necessarily
-		// the correct place to do it.  2001.02.25 jskov
-		bEOL = true;
+
+#if 0 //def BIDI_ENABLED
+		// if we are in rtl run, we want to move before this character
+		if(iVisDirection == FRIBIDI_TYPE_RTL && pos > 0)
+			pos--;
 #endif
 		return;
 	}
@@ -557,6 +583,11 @@ void fp_TextRun::mapXYToPosition(UT_sint32 x, UT_sint32 /*y*/,
 	{
 #ifdef BIDI_ENABLED
 		pos = m_pBL->getPosition() + getOffsetFirstVis();
+
+		// if this character is RTL then clicking on the left side
+		// means the user wants to postion the caret _after_ this char
+		if(iVisDirection == FRIBIDI_TYPE_RTL)
+			pos++;
 #else
 		pos = m_pBL->getPosition() + m_iOffsetFirst;
 #endif
@@ -570,24 +601,29 @@ void fp_TextRun::mapXYToPosition(UT_sint32 x, UT_sint32 /*y*/,
 	{
 #ifdef BIDI_ENABLED
 		// i represents VISUAL offset but the CharWidths array uses logical order of indexing
-		iWidth += pCharWidths[getOffsetLog(i)];
+		UT_uint32 iLog = getOffsetLog(i);
 #else
-		iWidth += pCharWidths[i];
+		UT_uint32 iLog = i;
 #endif
+		
+		iWidth += pCharWidths[iLog];
+		
 		if (iWidth > x)
 		{
-			if ((iWidth - x) <= (pCharWidths[i] / 2))
+			if (((iWidth - x) <= (pCharWidths[iLog] / 2)
+#ifdef BIDI_ENABLED
+			&& (iVisDirection == FRIBIDI_TYPE_LTR))
+			|| (((iWidth - x) > (pCharWidths[iLog] / 2)
+			&& (iVisDirection == FRIBIDI_TYPE_RTL))
+#endif
+			))
 			{
-				i++;
+				iLog++;
 			}
 
 			// NOTE: this allows inserted text to be coalesced in the PT
 			bEOL = true;
-#ifdef BIDI_ENABLED
-			pos = m_pBL->getPosition() + getOffsetLog(i);
-#else
-			pos = m_pBL->getPosition() + i;
-#endif
+			pos = m_pBL->getPosition() + iLog;
 			return;
 		}
 	}
@@ -770,20 +806,71 @@ void fp_TextRun::mergeWithNext(void)
 	m_pField = pNext->m_pField; 	
     m_iWidth += pNext->m_iWidth;
 	m_iWidthLayoutUnits += pNext->m_iWidthLayoutUnits;
+
+#ifdef BIDI_ENABLED
+	// join the two span buffers; this will save us refreshing the draw buffer
+	// which is very expensive
+	
+	// we need to take into consideration whether this run has been reversed
+	// in which case the order of the concating needs to be reversed too
+	FriBidiCharType iVisDirection = getVisDirection();
+	bool bReverse = (!s_bBidiOS && iVisDirection == FRIBIDI_TYPE_RTL)
+		  || (s_bBidiOS && m_iDirOverride == FRIBIDI_TYPE_LTR && m_iDirection == FRIBIDI_TYPE_RTL);
+		
+	if((m_iSpanBuffSize <= m_iLen + pNext->m_iLen) || (bReverse && (m_iLen > pNext->m_iLen)))
+	{
+		UT_DEBUGMSG(("fp_TextRun::mergeWithNext: reallocating span buffer\n"));
+		m_iSpanBuffSize = m_iLen + pNext->m_iLen + 1;
+		UT_UCSChar * pSB = new UT_UCSChar[m_iSpanBuffSize];
+		UT_ASSERT(pSB);
+		if(bReverse)
+		{
+			UT_UCS_strncpy(pSB, pNext->m_pSpanBuff, pNext->m_iLen);
+			UT_UCS_strncpy(pSB + pNext->m_iLen,m_pSpanBuff, m_iLen);
+		}
+		else
+		{
+			UT_UCS_strncpy(pSB,m_pSpanBuff, m_iLen);
+			UT_UCS_strncpy(pSB + m_iLen, pNext->m_pSpanBuff, pNext->m_iLen);
+		}
+		
+		*(pSB + m_iLen + pNext->m_iLen) = 0;
+		delete [] m_pSpanBuff;
+		m_pSpanBuff = pSB;
+	}
+	else
+	{
+		UT_DEBUGMSG(("fp_TextRun::mergeWithNext: reusing existin span buffer\n"));
+		if(bReverse)
+		{
+			// can only shift the text directly in the existing buffer if
+			// m_iLen <= pNext->m_iLen
+			UT_ASSERT(m_iLen <= pNext->m_iLen);
+			UT_UCS_strncpy(m_pSpanBuff + pNext->m_iLen, m_pSpanBuff, m_iLen);
+			UT_UCS_strncpy(m_pSpanBuff, pNext->m_pSpanBuff, pNext->m_iLen);
+		}
+		else
+		{
+			UT_UCS_strncpy(m_pSpanBuff + m_iLen, pNext->m_pSpanBuff, pNext->m_iLen);
+		}
+		*(m_pSpanBuff + m_iLen + pNext->m_iLen) = 0;
+	}
+	
+#endif	
+	
 	m_iLen += pNext->m_iLen;
 	m_bDirty = m_bDirty || pNext->m_bDirty;
 	m_pNext = pNext->getNext();
 	if (m_pNext)
 	{
-		m_pNext->setPrev(this);
+		// do not mark anything dirty
+		m_pNext->setPrev(this, false);
 	}
 
 	pNext->getLine()->removeRun(pNext, false);
 
 	delete pNext;
-#ifdef BIDI_ENABLED
-	m_bRefreshDrawBuffer = true;
-#endif
+	
 	m_bRecalcWidth = true;
 	recalcWidth();
 }
@@ -821,7 +908,8 @@ bool fp_TextRun::split(UT_uint32 iSplitOffset)
 	pNew->m_pNext = this->m_pNext;
 	if (m_pNext)
 	{
-		m_pNext->setPrev(pNew);
+		// do not mark anything dirty
+		m_pNext->setPrev(pNew, false);
 	}
 	m_pNext = pNew;
 
@@ -830,13 +918,41 @@ bool fp_TextRun::split(UT_uint32 iSplitOffset)
 	m_pLine->insertRunAfter(pNew, this);
 
 #ifdef BIDI_ENABLED
+	// first of all, split the span buffer, this will save us refreshing it
+	// which is very expensive (see notes on the mergeWithNext())
+	FriBidiCharType iVisDirection = getVisDirection();
+    UT_UCSChar * pSB = new UT_UCSChar[m_iLen + 1];
+	
+	if((!s_bBidiOS && iVisDirection == FRIBIDI_TYPE_RTL)
+	  || (s_bBidiOS && m_iDirOverride == FRIBIDI_TYPE_LTR && m_iDirection == FRIBIDI_TYPE_RTL)
+  	)
+  	{
+	    UT_UCS_strncpy(pSB, m_pSpanBuff + pNew->m_iLen, m_iLen);
+	    UT_UCS_strncpy(pNew->m_pSpanBuff, m_pSpanBuff, pNew->m_iLen);
+  	}
+  	else
+  	{
+	    UT_UCS_strncpy(pSB, m_pSpanBuff, m_iLen);
+	    UT_UCS_strncpy(pNew->m_pSpanBuff, m_pSpanBuff + m_iLen, pNew->m_iLen);
+  	}
+	
+    pSB[m_iLen] = 0;
+    pNew->m_pSpanBuff[pNew->m_iLen] = 0;
+
+    delete[] m_pSpanBuff;
+    m_pSpanBuff = pSB;
+	
 	// recalcWidth is much more efficient in the bidi build than two
 	// separate calls to simpleRecalc
 	recalcWidth();
+	pNew->recalcWidth();
 #else
 	m_iWidth = simpleRecalcWidth(Width_type_display);
 	m_iWidthLayoutUnits = simpleRecalcWidth(Width_type_layout_units);
+	pNew->m_iWidth = pNew->simpleRecalcWidth(Width_type_display);
+	pNew->m_iWidthLayoutUnits = pNew->simpleRecalcWidth(Width_type_layout_units);
 #endif
+
 
 #ifdef BIDI_ENABLED
 	//bool bDomDirection = m_pBL->getDominantDirection();
@@ -855,14 +971,6 @@ bool fp_TextRun::split(UT_uint32 iSplitOffset)
 #endif
 	pNew->m_iY = m_iY;
 
-#ifdef BIDI_ENABLED
-	// recalcWidth is much more efficient in the bidi build than two
-	// separate calls to simpleRecalc
-	pNew->recalcWidth();
-#else
-	pNew->m_iWidth = pNew->simpleRecalcWidth(Width_type_display);
-	pNew->m_iWidthLayoutUnits = pNew->simpleRecalcWidth(Width_type_layout_units);
-#endif	
 	return true;
 }
 
@@ -1091,16 +1199,25 @@ bool fp_TextRun::recalcWidth(void)
 	
 		m_iWidth = 0;
 		m_iWidthLayoutUnits = 0;
+
+		FriBidiCharType iVisDirection = getVisDirection();
 		
+		bool bReverse = (!s_bBidiOS && iVisDirection == FRIBIDI_TYPE_RTL)
+	  		|| (s_bBidiOS && m_iDirOverride == FRIBIDI_TYPE_LTR && m_iDirection == FRIBIDI_TYPE_RTL);
+		 	
+	 	UT_sint32 j;
+	 	
 		for (UT_uint32 i = 0; i < m_iLen; i++)
 		{
+			j = bReverse ? m_iLen - i - 1 : i;
+		
 			if(s_bUseContextGlyphs)
 			{
 				m_pG->setFont(m_pLayoutFont);
-				m_pG->measureString(m_pSpanBuff + i, 0, 1, (UT_uint16*)pCharWidthsLayout + m_iOffsetFirst + i);
+				m_pG->measureString(m_pSpanBuff + j, 0, 1, (UT_uint16*)pCharWidthsLayout + m_iOffsetFirst + i);
 					
 				m_pG->setFont(m_pScreenFont);
-				m_pG->measureString(m_pSpanBuff + i, 0, 1, (UT_uint16*)pCharWidthsDisplay + m_iOffsetFirst + i);
+				m_pG->measureString(m_pSpanBuff + j, 0, 1, (UT_uint16*)pCharWidthsDisplay + m_iOffsetFirst + i);
 				
 			}
 				m_iWidth += pCharWidthsDisplay[i + m_iOffsetFirst];
@@ -1569,20 +1686,7 @@ void fp_TextRun::_refreshDrawBuffer()
 					
 				    // NB: _getContext requires block offset
 					_getContext(pSpan,lenSpan,len,offset+m_iOffsetFirst,&prev[0],&next[0]);
-#if 0					
-					for(UT_uint32 k =0; k < iTrueLen; k++)
-					{
-						m_pSpanBuff[offset + k] = _getContextGlyph(pSpan,iTrueLen,k,&prev[0],&next[0]);
-
-						if(s_bSaveContextGlyphs)
-						{
-							UT_UCSChar* pS = ((UT_UCSChar*) pSpan) + k;
-							*pS = m_pSpanBuff[offset + k];
-						}
-					}
-#else
 					cg.renderString(pSpan, &m_pSpanBuff[offset],iTrueLen,&prev[0],&next[0]);
-#endif			
 				}
 				else //do not use context glyphs
 				{
@@ -1607,7 +1711,11 @@ void fp_TextRun::_refreshDrawBuffer()
 
 		} // for(;;)
 
-		if(iVisDir == FRIBIDI_TYPE_RTL && !s_bBidiOS)
+		// if we are on a non-bidi OS, we have to reverse any RTL runs
+		// if we are on bidi OS, we have to reverse RTL runs that have direction
+		// override set to LTR, to preempty to OS reversal of such text
+		if((!s_bBidiOS && iVisDir == FRIBIDI_TYPE_RTL)
+		  || (s_bBidiOS && m_iDirOverride == FRIBIDI_TYPE_LTR && m_iDirection == FRIBIDI_TYPE_RTL))
 			UT_UCS_strnrev(m_pSpanBuff, m_iLen);
 			
 	} //if(m_bRefreshDrawBuffer)	
@@ -1660,20 +1768,23 @@ void fp_TextRun::_drawPart(UT_sint32 xoff,
 	// in the bidi build we keep a cache of the visual span of this run
 	// this speeds things up
 	// (the cache is refreshed by _refreshDrawBuff, it is the responsibility
-	// of caller of _drawPart to ensure that the chace is uptodate)
-	FriBidiCharType iVisDir = getVisDirection();
-	
-	if(iVisDir == FRIBIDI_TYPE_RTL) //rtl: determine the width of the text we are to print
+	// of caller of _drawPart to ensure that the chache is uptodate)
+	FriBidiCharType iVisDirection = getVisDirection();
+
+	bool bReverse = (!s_bBidiOS && iVisDirection == FRIBIDI_TYPE_RTL)
+		  || (s_bBidiOS && m_iDirOverride == FRIBIDI_TYPE_LTR && m_iDirection == FRIBIDI_TYPE_RTL);
+		
+	if(iVisDirection == FRIBIDI_TYPE_RTL) //rtl: determine the width of the text we are to print
 	{
-		for (; i < iLen + m_iOffsetFirst; i++)
+		for (; i < iLen + iStart; i++)
 		{
 			iLeftWidth += pCharWidths[i];
 		}
 	}
 					
-	if(iVisDir == FRIBIDI_TYPE_RTL)
+	if(bReverse)
 		// since the draw buffer is reversed, we need to calculate the position
-		// of the last characte in this fragement in it, for that is where we
+		// of the last character in this fragement in it, for that is where we
 		// start drawing from
 		m_pG->drawChars(m_pSpanBuff + (m_iLen + m_iOffsetFirst - iStart) - iLen, 0, iLen, xoff + m_iWidth - iLeftWidth, yoff);
 	else
@@ -2347,4 +2458,53 @@ void fp_TextRun::_refreshPrefs(UT_Worker * /*pWorker*/)
 	XAP_App::getApp()->getPrefsValueBool((XML_Char*)XAP_PREF_KEY_SaveContextGlyphs, &s_bSaveContextGlyphs);
 	xxx_UT_DEBUGMSG(("fp_TextRun::_refreshPrefs: new values %d, %d\n", s_bUseContextGlyphs, s_bSaveContextGlyphs));
 }
+
+/*
+	NB !!!
+	This function will set the m_iDirOverride member and change the properties
+	in the piece table correspondingly; because it does not do any updates, etc.,
+	its usability is limited -- its main purpose is to allow to set this property
+	in response to inserting a Unicode direction token in fl_BlockLayout _immediately_
+	after the run is created. For all other purposes one of the standard
+	edit methods should be used
+*/
+void fp_TextRun::setDirOverride(FriBidiCharType dir)
+{
+	if(dir == m_iDirOverride)
+		return;
+		
+	const XML_Char * prop[] = {NULL, NULL, 0};
+	const XML_Char direction[] = "dir-override";
+	const XML_Char rtl[] = "rtl";
+	const XML_Char ltr[] = "ltr";
+	
+	prop[0] = (XML_Char*) &direction;
+	
+	switch(dir)
+	{
+		case FRIBIDI_TYPE_LTR:
+			prop[1] = (XML_Char*) &ltr;
+			break;
+		case FRIBIDI_TYPE_RTL:
+			prop[1] = (XML_Char*) &rtl;
+			break;
+		case FRIBIDI_TYPE_UNSET:
+			// leave the NULL in place
+			break;
+		default:
+			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+	};
+	
+	UT_uint32 offset = m_pBL->getPosition() + m_iOffsetFirst;
+	if(m_iDirOverride == FRIBIDI_TYPE_UNSET)
+	{
+		getBlock()->getDocument()->changeSpanFmt(PTC_RemoveFmt,offset,offset + m_iLen,NULL,prop);
+	}
+	else
+	{
+		getBlock()->getDocument()->changeSpanFmt(PTC_AddFmt,offset,offset + m_iLen,NULL,prop);
+	}
+	UT_DEBUGMSG(("fp_TextRun::setDirOverride: offset=%d, len=%d, dir=\"%s\"\n", offset,m_iLen,prop[1]));
+}
+
 #endif

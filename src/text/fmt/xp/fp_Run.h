@@ -156,8 +156,8 @@ public:
 	void					setY(UT_sint32);
 	void					setBlockOffset(UT_uint32);
 	void					setLength(UT_uint32);
-	void					setNext(fp_Run*);
-	void					setPrev(fp_Run*);
+	void					setNext(fp_Run*, bool bRefresh = true);
+	void					setPrev(fp_Run*, bool bRefresh = true);
 	void					setHyperlink(fp_HyperlinkRun * pH);
 	void					markWidthDirty() {m_bRecalcWidth = true;}
 	bool					isFirstRunOnLine(void) const;

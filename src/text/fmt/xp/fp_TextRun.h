@@ -104,6 +104,8 @@ public:
 	//bool                 setUnicodeDirection();
     void					setDirection(FriBidiCharType dir);
     static bool				getUseContextGlyphs(){return s_bUseContextGlyphs;};
+    // the usability of the following function is *very* limited, see the note in cpp file
+    void					setDirOverride(FriBidiCharType dir);
 
 	/* needed for handling BiDi text, static because we need only one buffer
 	   for all the instances, public so that we could inicialised them in the cpp file outside of the
