@@ -1130,3 +1130,66 @@ const XML_Char ** UT_setPropsToValue(const XML_Char ** props, const XML_Char * v
 
 	return props2;
 }
+
+/*!
+   splits the xml property string (font-size:24pt;font-face:Arial') into names and values
+   and stores them in an array
+
+   the caller has to delete[] the array; the process is destructive to props
+*/
+const XML_Char ** UT_splitPropsToArray(XML_Char * pProps)
+{
+		UT_return_val_if_fail( pProps, NULL);
+	
+		UT_uint32 iLen = strlen(pProps);
+	
+		UT_uint32 i = 1; // *props != 0 => at least one
+		if(pProps[iLen-1] == ';')
+		{
+			// trailing ;
+			--i;
+		}
+
+		char * semi = NULL;
+		const char * p = pProps;
+		while(semi = strchr(p, ';'))
+		{
+			*semi = 0;
+			p = semi + 1;
+			i++;
+		}
+	
+	
+		UT_uint32 iPropCount = i;
+		UT_uint32 j = 0;
+		const XML_Char ** pPropsArray = new const XML_Char *[2 * iPropCount + 1];
+		UT_return_val_if_fail( pPropsArray, NULL );
+	
+		const char * pStart = pProps;
+
+		// we want to include the 0-terminator
+		for(i = 0; i <= iLen; i++)
+		{
+			if(pProps[i] == 0)
+			{
+				pPropsArray[j++] = pStart;
+				char * colon = strchr(pStart, ':');
+				UT_return_val_if_fail( colon,NULL );
+				*colon = 0;
+				pPropsArray[j++] = colon + 1;
+
+				if(i == iLen)
+					break;
+				
+				pStart = pProps + i + 1;
+				while(isspace(*pStart))
+					pStart++;
+			}
+		}
+	
+		UT_return_val_if_fail( j == 2 * iPropCount, NULL );
+
+		pPropsArray[j] = NULL;
+		return pPropsArray;
+}
+
