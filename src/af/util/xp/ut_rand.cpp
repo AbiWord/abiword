@@ -30,7 +30,7 @@
 #include "ut_types.h"
 #include "ut_rand.h"
 
-struct random_data
+struct UT_random_data
   {
     UT_sint32 *fptr;              /* Front pointer.  */
     UT_sint32 *rptr;              /* Rear pointer.  */
@@ -42,18 +42,18 @@ struct random_data
   };
 
 static int
-srandom_r__ (unsigned int seed, struct random_data *buf);
+srandom_r__ (unsigned int seed, struct UT_random_data *buf);
 
 static int
-random_r__ (struct random_data *buf, UT_sint32 *result);
+random_r__ (struct UT_random_data *buf, UT_sint32 *result);
 
 #if 0
 static int
-setstate_r__ (char *arg_state, struct random_data *buf);
+setstate_r__ (char *arg_state, struct UT_random_data *buf);
 
 static int
 initstate_r__ (unsigned int seed, char *arg_state, size_t n, 
-	       struct random_data *buf);
+	       struct UT_random_data *buf);
 #endif
 
 /* An improved random number generation package.  In addition to the standard
@@ -155,7 +155,7 @@ static UT_sint32 randtbl[DEG_3 + 1] =
   };
 
 
-static struct random_data unsafe_state =
+static struct UT_random_data unsafe_state =
   {
 /* FPTR and RPTR are two pointers into the state info, a front and a rear
    pointer.  These two pointers are always rand_sep places aparts, as they
@@ -167,8 +167,9 @@ static struct random_data unsafe_state =
    in the initialization of randtbl) because the state table pointer is set
    to point to randtbl[1] (as explained below).)  */
 
-    fptr : &randtbl[SEP_3 + 1],
-    rptr : &randtbl[1],
+	  /* Sigh.  MSVC5 sucks. */
+	  /*fptr :*/ &randtbl[SEP_3 + 1],
+	  /*rptr :*/ &randtbl[1],
 
 /* The following things are the pointer to the state information table,
    the type of the current generator, the degree of the current polynomial
@@ -180,13 +181,13 @@ static struct random_data unsafe_state =
    indexing every time to find the address of the last element to see if
    the front and rear pointers have wrapped.  */
 
-    state : &randtbl[1],
+	  /*state :*/ &randtbl[1],
 
-    rand_type : TYPE_3,
-    rand_deg : DEG_3,
-    rand_sep : SEP_3,
+	  /*rand_type :*/ TYPE_3,
+	  /*rand_deg :*/ DEG_3,
+	  /*rand_sep :*/ SEP_3,
 
-    end_ptr : &randtbl[sizeof (randtbl) / sizeof (randtbl[0])]
+	  /*end_ptr :*/ &randtbl[sizeof (randtbl) / sizeof (randtbl[0])]
 };
 
 /* POSIX.1c requires that there is mutual exclusion for the `rand' and
@@ -385,7 +386,7 @@ static const struct random_poly_info random_poly_info =
    introduced by the L.C.R.N.G.  Note that the initialization of randtbl[]
    for default usage relies on values produced by this routine.  */
 static int
-srandom_r__ (unsigned int seed, struct random_data *buf)
+srandom_r__ (unsigned int seed, struct UT_random_data *buf)
 {
   int type;
   UT_sint32 *state;
@@ -455,7 +456,7 @@ srandom_r__ (unsigned int seed, struct random_data *buf)
 #if 0
 static int
 initstate_r__ (unsigned int seed, char *arg_state, size_t n, 
-	       struct random_data *buf)
+	       struct UT_random_data *buf)
 {
   int type;
   int degree;
@@ -516,7 +517,7 @@ initstate_r__ (unsigned int seed, char *arg_state, size_t n,
    Returns a pointer to the old state information.  */
 #if 0
 static int
-setstate_r__ (char *arg_state, struct random_data *buf)
+setstate_r__ (char *arg_state, struct UT_random_data *buf)
 {
   UT_sint32 *new_state = 1 + (UT_sint32 *) arg_state;
   int type;
@@ -574,7 +575,7 @@ setstate_r__ (char *arg_state, struct random_data *buf)
    pointer if the front one has wrapped.  Returns a 31-bit random number.  */
 
 static int
-random_r__ (struct random_data *buf, UT_sint32 *result)
+random_r__ (struct UT_random_data *buf, UT_sint32 *result)
 {
   UT_sint32 *state;
 
