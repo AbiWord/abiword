@@ -157,8 +157,7 @@ void XAP_CocoaDialog_Language::runModal(XAP_Frame * pFrame)
 	LocalizeControl(oCancel,           pSS, XAP_STRING_ID_DLG_Cancel);
 	LocalizeControl(oOK,               pSS, XAP_STRING_ID_DLG_OK);
 
-//	LocalizeControl(oApplyToDocument,  pSS, XAP_STRING_ID_DLG_ ?? ); // TODO
-//	LocalizeControl(oApplyToSelection, pSS, XAP_STRING_ID_DLG_ ?? ); // TODO
+	LocalizeControl(oDocumentDefault,  pSS, XAP_STRING_ID_DLG_ULANG_DefaultLangLabel);
 
 	if (_xap)
 		{
@@ -186,8 +185,6 @@ void XAP_CocoaDialog_Language::runModal(XAP_Frame * pFrame)
 				{
 					[oLanguageTable selectRow:current_index byExtendingSelection:NO];
 				}
-
-			// m_bApplyToDocument // TODO
 		}
 }
 
@@ -220,15 +217,9 @@ void XAP_CocoaDialog_Language::runModal(XAP_Frame * pFrame)
 
 - (IBAction)aOK:(id)sender
 {
-	[NSApp stopModal];
-}
+	m_bApplyToDocument = ([oDocumentDefault state] == NSOnState) ? YES : NO;
 
-- (IBAction)aApplyTo:(id)sender
-{
-	if (NSButtonCell * cell = (NSButtonCell *) [oApplyTo selectedCell])
-		{
-			m_bApplyToDocument = ([cell tag] == 0) ? NO : YES;
-		}
+	[NSApp stopModal];
 }
 
 - (IBAction)aLanguageTable:(id)sender

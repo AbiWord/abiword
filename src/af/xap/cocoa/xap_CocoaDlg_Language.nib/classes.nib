@@ -2,14 +2,12 @@
     IBClasses = (
         {CLASS = FirstResponder; LANGUAGE = ObjC; SUPERCLASS = NSObject; }, 
         {
-            ACTIONS = {aApplyTo = id; aCancel = id; aLanguageTable = id; aOK = id; }; 
+            ACTIONS = {aCancel = id; aLanguageTable = id; aOK = id; }; 
             CLASS = "XAP_CocoaDlg_Language_Controller"; 
             LANGUAGE = ObjC; 
             OUTLETS = {
-                oApplyTo = NSMatrix; 
-                oApplyToDocument = NSButtonCell; 
-                oApplyToSelection = NSButtonCell; 
                 oCancel = NSButton; 
+                oDocumentDefault = NSButton; 
                 oLanguageTable = NSTableView; 
                 oOK = NSButton; 
             }; 

@@ -59,11 +59,7 @@ private:
 {
 	IBOutlet NSButton *		oCancel;
 	IBOutlet NSButton *		oOK;
-
-	IBOutlet NSButtonCell *	oApplyToDocument;
-	IBOutlet NSButtonCell *	oApplyToSelection;
-
-	IBOutlet NSMatrix *		oApplyTo;
+	IBOutlet NSButton *		oDocumentDefault;
 
 	IBOutlet NSTableView *	oLanguageTable;
 
@@ -89,7 +85,6 @@ private:
 
 - (IBAction)aCancel:(id)sender;
 - (IBAction)aOK:(id)sender;
-- (IBAction)aApplyTo:(id)sender;
 - (IBAction)aLanguageTable:(id)sender;
 
 /* NSTableViewDataSource methods
