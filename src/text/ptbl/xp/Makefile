@@ -60,19 +60,23 @@ CPPSRCS=		pc_ColumnSet.cpp		\
 			pd_Document.cpp			\
 			pf_Frag.cpp			\
 			pf_Frag_Strux.cpp		\
+			pf_Frag_Strux_Block.cpp		\
+			pf_Frag_Strux_Column.cpp	\
+			pf_Frag_Strux_ColumnSet.cpp	\
 			pf_Frag_Strux_Section.cpp	\
 			pf_Frag_Text.cpp		\
 			pf_Fragments.cpp		\
 			pp_AttrProp.cpp			\
 			pp_Property.cpp			\
 			pp_TableAttrProp.cpp		\
-			pt_PieceTable.cpp
+			pt_PieceTable.cpp		\
+			px_ChangeHistory.cpp
 
-INCLUDES=		-I$(DIST)/include -I.
+INCLUDES=		-I$(DIST)/include -I. -DUT_DEBUG
 
-LIBRARY_NAME=		AbiPTbl
+LIBRARY_NAME=		AbiDocStrux
 LIBRARY_VERSION=	$(ABI_VERSION)
-TARGETS=			$(LIBRARY)
+TARGETS=		$(LIBRARY)
 
 include $(ABI_DEPTH)/config/abi_rules.mk
 

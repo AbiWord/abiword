@@ -10,6 +10,7 @@
 // We may need to add a tree structure on top of it, if we
 // need to do various types of searches.
 
+#include <stdio.h>
 #include "pf_Frag.h"
 
 class pf_Fragments
@@ -19,6 +20,8 @@ public:
 	~pf_Fragments();
 
 	void					appendFrag(pf_Frag * pf);
+
+	void					dump(FILE * fp) const;
 	
 protected:
 	pf_Frag *				m_pFirst;

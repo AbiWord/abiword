@@ -2,6 +2,7 @@
 #ifndef PT_PIECETABLE_H
 #define PT_PIECETABLE_H
 
+#include <stdio.h>
 #include "ut_types.h"
 #include "ut_growbuf.h"
 #include "pt_Types.h"
@@ -20,8 +21,8 @@ public:
 	~pt_PieceTable();
 
 	typedef enum _PTState { PTS_Invalid=-1, PTS_Loading=0, PTS_Editing=1 } PTState;
-
 	void					setPieceTableState(PTState pts);
+	UT_GrowBuf *			getBuffer(UT_uint32 vsIndex);
 
 	UT_Bool					insertSpan(PT_DocPosition dpos,
 									   UT_Bool bLeftSide,
@@ -54,6 +55,8 @@ public:
 	UT_Bool					appendSpan(UT_UCSChar * p, UT_uint32 length);
 	
 	// TODO add stuff for objects like in-line images.
+
+	void					dump(FILE * fp) const;
 	
 protected:
 	typedef struct _VarSet

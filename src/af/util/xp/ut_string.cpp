@@ -56,3 +56,26 @@ UT_Bool UT_replaceString(char *& rszDest, const char * szSource)
 
 	return UT_cloneString(rszDest,szSource);
 }
+
+UT_uint32 UT_XML_strlen(const XML_Char * sz)
+{
+	if (!sz || !*sz)
+		return 0;
+
+	UT_uint32 k = 0;
+	while (sz[k])
+		k++;
+
+	return k;
+}
+
+UT_Bool UT_XML_cloneString(XML_Char *& rszDest, const XML_Char * szSource)
+{
+	UT_uint32 length = UT_XML_strlen(szSource) + 1;
+	rszDest = (XML_Char *)calloc(length,sizeof(XML_Char));
+	if (!rszDest)
+		return UT_FALSE;
+	memmove(rszDest,szSource,length*sizeof(XML_Char));
+	return UT_TRUE;
+}
+

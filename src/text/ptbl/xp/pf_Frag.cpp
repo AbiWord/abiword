@@ -1,12 +1,14 @@
 
 #include "ut_types.h"
 #include "pf_Frag.h"
+#include "pt_PieceTable.h"
 
-pf_Frag::pf_Frag(PFType type)
+pf_Frag::pf_Frag(pt_PieceTable * pPT, PFType type)
 {
 	m_type = type;
 	m_next = NULL;
 	m_prev = NULL;
+	m_pPieceTable = pPT;
 }
 
 pf_Frag::~pf_Frag()

@@ -2,6 +2,7 @@
 #include "ut_types.h"
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
+#include "ut_growbuf.h"
 #include "pt_PieceTable.h"
 #include "pf_Frag.h"
 #include "pf_Frag_Strux.h"
@@ -51,6 +52,14 @@ void pt_PieceTable::setPieceTableState(PTState pts)
 		break;
 	}
 }
+
+UT_GrowBuf * pt_PieceTable::getBuffer(UT_uint32 vsIndex)
+{
+	UT_ASSERT(vsIndex < NrElements(m_vs));
+	
+	return &m_vs[vsIndex].m_buffer;
+}
+
 
 UT_Bool pt_PieceTable::insertSpan(PT_DocPosition dpos,
 								  UT_Bool bLeftSide,
@@ -102,28 +111,29 @@ UT_Bool pt_PieceTable::appendStrux(PTStruxType pts, const XML_Char ** attributes
 
 	// create a new structure fragment at the current end of the document.
 	
-	pt_AttrPropIndex indexAP;
-	
-	if (!m_vs[m_vsIndex].m_tableAttrProp.createAP(attributes,NULL,&indexAP))
-		return UT_FALSE;
+	pt_AttrPropIndex indexAP = 0;
+
+	if (attributes && *attributes)
+		if (!m_vs[m_vsIndex].m_tableAttrProp.createAP(attributes,NULL,&indexAP))
+			return UT_FALSE;
 
 	pf_Frag_Strux * pfs = 0;
 	switch (pts)
 	{
 	case PTX_Section:
-		pfs = new pf_Frag_Strux_Section(m_vsIndex,indexAP);
+		pfs = new pf_Frag_Strux_Section(this,m_vsIndex,indexAP);
 		break;
 		
 	case PTX_ColumnSet:
-		pfs = new pf_Frag_Strux_ColumnSet(m_vsIndex,indexAP);
+		pfs = new pf_Frag_Strux_ColumnSet(this,m_vsIndex,indexAP);
 		break;
 		
 	case PTX_Column:
-		pfs = new pf_Frag_Strux_Column(m_vsIndex,indexAP);
+		pfs = new pf_Frag_Strux_Column(this,m_vsIndex,indexAP);
 		break;
 		
 	case PTX_Block:
-		pfs = new pf_Frag_Strux_Block(m_vsIndex,indexAP);
+		pfs = new pf_Frag_Strux_Block(this,m_vsIndex,indexAP);
 		break;
 	}
 	if (!pfs)
@@ -148,10 +158,12 @@ UT_Bool pt_PieceTable::appendFmt(const XML_Char ** attributes)
 	// attributes/properties.  becase we are loading, we do not
 	// create a Fragment or a ChangeRecord.  (Formatting changes
 	// are implicit at this point in time.)
-	
-	if (!m_vs[m_vsIndex].m_tableAttrProp.createAP(attributes,NULL,
-												  &loading.m_indexCurrentInlineAP))
-		return UT_FALSE;
+
+	loading.m_indexCurrentInlineAP = 0;
+	if (attributes && *attributes)
+		if (!m_vs[m_vsIndex].m_tableAttrProp.createAP(attributes,NULL,
+													  &loading.m_indexCurrentInlineAP))
+			return UT_FALSE;
 
 	return UT_TRUE;
 }
@@ -161,8 +173,10 @@ UT_Bool pt_PieceTable::appendFmt(const UT_Vector * pVecAttributes)
 	// can only be used while loading the document
 	UT_ASSERT(m_pts==PTS_Loading);
 
-	if (!m_vs[m_vsIndex].m_tableAttrProp.createAP(pVecAttributes,
-												  &loading.m_indexCurrentInlineAP))
+	loading.m_indexCurrentInlineAP = 0;
+	if (pVecAttributes && (pVecAttributes->getItemCount() > 0))
+		if (!m_vs[m_vsIndex].m_tableAttrProp.createAP(pVecAttributes,
+													  &loading.m_indexCurrentInlineAP))
 		return UT_FALSE;
 
 	return UT_TRUE;
@@ -186,11 +200,20 @@ UT_Bool pt_PieceTable::appendSpan(UT_UCSChar * pbuf, UT_uint32 length)
 	if (!pvs->m_buffer.ins(offset,pbuf,length))
 		return UT_FALSE;
 	
-	pf_Frag_Text * pft = new pf_Frag_Text(m_vsIndex,offset,length,
+	pf_Frag_Text * pft = new pf_Frag_Text(this,m_vsIndex,offset,length,
 										  loading.m_indexCurrentInlineAP);
 	if (!pft)
 		return UT_FALSE;
 
 	m_fragments.appendFrag(pft);
 	return UT_TRUE;
+}
+
+void pt_PieceTable::dump(FILE * fp) const
+{
+	fprintf(fp,"  PieceTable: State %d\n",(int)m_pts);
+	fprintf(fp,"  PieceTable: vsIndex %d\n",m_vsIndex);
+	fprintf(fp,"  PieceTable: Fragments:\n");
+
+	m_fragments.dump(fp);
 }

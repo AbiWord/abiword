@@ -28,6 +28,9 @@ PP_AttrProp::~PP_AttrProp()
 
 UT_Bool	PP_AttrProp::setAttributes(const XML_Char ** attributes)
 {
+	if (!attributes)
+		return UT_TRUE;
+
 	const XML_Char ** pp = attributes;
 	while (*pp)
 	{
@@ -40,6 +43,9 @@ UT_Bool	PP_AttrProp::setAttributes(const XML_Char ** attributes)
 
 UT_Bool	PP_AttrProp::setProperties(const XML_Char ** properties)
 {
+	if (!properties)
+		return UT_TRUE;
+
 	const XML_Char ** pp = properties;
 	while (*pp)
 	{
@@ -52,6 +58,8 @@ UT_Bool	PP_AttrProp::setProperties(const XML_Char ** properties)
 
 UT_Bool	PP_AttrProp::setAttribute(const XML_Char * szName, const XML_Char * szValue)
 {
+	UT_ASSERT(sizeof(char)==sizeof(XML_Char)); // TODO when this fails, switch this file to use UT_XML_ version of str*() functions.
+	
 	if (0 == UT_stricmp(szName, "STYLE"))			// STYLE -- cut value up into properties
 	{
 		char *pOrig = strdup(szValue);
@@ -109,6 +117,7 @@ UT_Bool	PP_AttrProp::setAttribute(const XML_Char * szName, const XML_Char * szVa
 		}
 
 		free(pOrig);
+		return UT_TRUE;
 	}
 	else								// not "STYLE" -- add to attribute list
 	{
@@ -122,11 +131,8 @@ UT_Bool	PP_AttrProp::setAttribute(const XML_Char * szName, const XML_Char * szVa
 			}
 		}
 
-		if (!m_pAttributes->addEntry(szName, szValue, NULL))
-			return UT_FALSE;
+		return (m_pAttributes->addEntry(szName, szValue, NULL) == 0);
 	}
-	
-	return UT_TRUE;
 }
 
 UT_Bool	PP_AttrProp::setProperty(const XML_Char * szName, const XML_Char * szValue)

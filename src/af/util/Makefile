@@ -35,6 +35,7 @@ TARGETS=		$(LIBRARY)
 # note: the $(DIST)/bin directory on Windows.
 
 OBJS=		$(ABI_NATIVE)/$(OBJDIR)/ut_debugmsg.$(OBJ_SUFFIX)	\
+		xp/$(OBJDIR)/ut_growbuf.$(OBJ_SUFFIX)			\
 		xp/$(OBJDIR)/ut_hash.$(OBJ_SUFFIX)			\
 		xp/$(OBJDIR)/ut_misc.$(OBJ_SUFFIX)			\
 		xp/$(OBJDIR)/ut_pool.$(OBJ_SUFFIX)			\

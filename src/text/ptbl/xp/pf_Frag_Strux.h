@@ -18,10 +18,15 @@
 class pf_Frag_Strux : public pf_Frag
 {
 public:
-	pf_Frag_Strux(PTStruxType struxType, UT_uint32 vsIndex, pt_AttrPropIndex indexAP);
+	pf_Frag_Strux(pt_PieceTable * pPT,
+				  PTStruxType struxType,
+				  UT_uint32 vsIndex,
+				  pt_AttrPropIndex indexAP);
 	virtual ~pf_Frag_Strux();
 
 	PTStruxType				getStruxType(void) const;
+
+	virtual void			dump(FILE * fp) const = 0;
 	
 protected:
 	PTStruxType				m_struxType;

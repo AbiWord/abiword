@@ -1,8 +1,11 @@
 
 #include "pf_Frag_Strux.h"
 
-pf_Frag_Strux::pf_Frag_Strux(PTStruxType struxType, UT_uint32 vsIndex, pt_AttrPropIndex indexAP)
-	: pf_Frag(pf_Frag::PFT_Strux)
+pf_Frag_Strux::pf_Frag_Strux(pt_PieceTable * pPT,
+							 PTStruxType struxType,
+							 UT_uint32 vsIndex,
+							 pt_AttrPropIndex indexAP)
+	: pf_Frag(pPT, pf_Frag::PFT_Strux)
 {
 	m_struxType = struxType;
 	m_vsIndex = vsIndex;

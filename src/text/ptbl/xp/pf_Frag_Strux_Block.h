@@ -12,8 +12,12 @@
 class pf_Frag_Strux_Block : public pf_Frag_Strux
 {
 public:
-	pf_Frag_Strux_Block(UT_uint32 vsIndex, pt_AttrPropIndex indexAP);
+	pf_Frag_Strux_Block(pt_PieceTable * pPT,
+						UT_uint32 vsIndex,
+						pt_AttrPropIndex indexAP);
 	virtual ~pf_Frag_Strux_Block();
+
+	virtual void			dump(FILE * fp) const;
 	
 protected:
 //	pb_CallbackList			m_cbList;	/* TODO */

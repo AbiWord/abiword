@@ -14,19 +14,19 @@
 ******************************************************************
 *****************************************************************/
 
-void startElement(void *userData, const XML_Char *name, const XML_Char **atts)
+static void startElement(void *userData, const XML_Char *name, const XML_Char **atts)
 {
 	IE_Imp_AbiWord_1* pDocReader = (IE_Imp_AbiWord_1*) userData;
 	pDocReader->_startElement(name, atts);
 }
 
-void endElement(void *userData, const XML_Char *name)
+static void endElement(void *userData, const XML_Char *name)
 {
 	IE_Imp_AbiWord_1* pDocReader = (IE_Imp_AbiWord_1*) userData;
 	pDocReader->_endElement(name);
 }
 
-void charData(void* userData, const XML_Char *s, int len)
+static void charData(void* userData, const XML_Char *s, int len)
 {
 	IE_Imp_AbiWord_1* pDocReader = (IE_Imp_AbiWord_1*) userData;
 	pDocReader->_charData(s, len);
@@ -141,7 +141,7 @@ static UT_uint32 s_mapNameToToken(const XML_Char * name)
 
 #define X_TestParseState(ps)	((m_parseState==(ps)))
 
-#define X_VerifyParseState(ps)	do {  if (X_TestParseState(ps))						\
+#define X_VerifyParseState(ps)	do {  if (!(X_TestParseState(ps)))					\
 									  {  m_iestatus = IE_Imp::IES_BogusDocument;	\
 										 return; } } while (0)
 
@@ -153,6 +153,8 @@ static UT_uint32 s_mapNameToToken(const XML_Char * name)
 									  {  m_iestatus = IE_Imp::IES_Error;			\
 										 return; } } while (0)
 
+#define	X_EatIfAlreadyError()	do {  if (m_iestatus != IE_Imp::IES_OK) return; } while (0)
+
 /*****************************************************************/
 /*****************************************************************/
 
@@ -160,6 +162,8 @@ void IE_Imp_AbiWord_1::_startElement(const XML_Char *name, const XML_Char **atts
 {
 	UT_DEBUGMSG(("startElement: %s\n", name));
 
+	X_EatIfAlreadyError();				// xml parser keeps running until buffer consumed
+	
 	UT_uint32 tokenIndex = s_mapNameToToken(name);
 	switch (s_Tokens[tokenIndex].m_type)
 	{
@@ -208,6 +212,8 @@ void IE_Imp_AbiWord_1::_startElement(const XML_Char *name, const XML_Char **atts
 
 void IE_Imp_AbiWord_1::_endElement(const XML_Char *name)
 {
+	X_EatIfAlreadyError();				// xml parser keeps running until buffer consumed
+	
 	UT_uint32 tokenIndex = s_mapNameToToken(name);
 
 	switch (s_Tokens[tokenIndex].m_type)
@@ -254,6 +260,8 @@ void IE_Imp_AbiWord_1::_endElement(const XML_Char *name)
 
 void IE_Imp_AbiWord_1::_charData(const XML_Char *s, int len)
 {
+	X_EatIfAlreadyError();				// xml parser keeps running until buffer consumed
+	
 	if (!X_TestParseState(_PS_Block))
 	{
 		UT_DEBUGMSG(("charData DISCARDED [length %d]\n",len));

@@ -31,6 +31,7 @@ UT_sint32 UT_stricmp(const char *s1, const char *s2);
 UT_Bool UT_cloneString(char *& rszDest, const char * szSource);
 UT_Bool UT_replaceString(char *& rszDest, const char * szSource);
 
+UT_uint32 UT_XML_strlen(const XML_Char * sz);
 UT_Bool UT_XML_cloneString(XML_Char *& rszDest, const XML_Char * szSource);
 
 UT_END_EXTERN_C

@@ -30,6 +30,7 @@ void pf_Fragments::appendFrag(pf_Frag * pf)
 	}
 	else
 	{
+		m_pLast->setNext(pf);
 		pf->setPrev(m_pLast);
 		m_pLast = pf;
 		pf->setNext(NULL);
@@ -37,3 +38,10 @@ void pf_Fragments::appendFrag(pf_Frag * pf)
 	return;
 }
 
+void pf_Fragments::dump(FILE * fp) const
+{
+	pf_Frag * p;
+
+	for (p=m_pFirst; (p); p=p->getNext())
+		p->dump(fp);
+}

@@ -36,9 +36,9 @@ RELEASE_HEADERS_DEST=	$(RELEASE_INCLUDE_DIR)
 CPPSRCS=		ie_imp.cpp		\
 			ie_imp_AbiWord_1.cpp
 
-INCLUDES=		-I$(DIST)/include -I.
+INCLUDES=		-I$(DIST)/include -I. -DUT_DEBUG
 
-LIBRARY_NAME=		AbiReaders
+LIBRARY_NAME=		AbiImpExp
 LIBRARY_VERSION=	$(ABI_VERSION)
 TARGETS=		$(LIBRARY)
 
