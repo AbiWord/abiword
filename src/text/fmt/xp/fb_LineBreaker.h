@@ -43,7 +43,7 @@ public:
 protected:
 	void		_breakTheLineAtLastRunToKeep(fp_Line *pLine, fl_BlockLayout *pBlock);
 	UT_sint32	_moveBackToFirstNonBlankData(fp_Run *pCurrentRun, fp_Run **pOffendingRun);
-	bool		_splitAtOrBeforeThisRun(fp_Run *pCurrentRun);
+	bool		_splitAtOrBeforeThisRun(fp_Run *pCurrentRun, UT_sint32 iTrailSpace);
 	bool		_splitAtNextNonBlank(fp_Run *pCurrentRun);
 	void		_splitRunAt(fp_Run *pCurrentRun, fp_RunSplitInfo &splitInfo);
 

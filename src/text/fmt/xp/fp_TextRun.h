@@ -70,7 +70,7 @@ public:
 	virtual bool			canContainPoint(void) const;
 	bool					canMergeWithNext(void);
 	void					mergeWithNext(void);
-
+	bool                    findFirstNonBlankSplitPoint(fp_RunSplitInfo & splitInfo);
 	enum
 	{
 		Calculate_full_width = -1
@@ -165,6 +165,11 @@ protected:
 	void					_drawFirstChar(UT_sint32 xoff,
 										   UT_sint32 yoff,
 										   bool bSelection);
+
+	UT_sint32               _getPrevContSpace(UT_sint32 i,
+											  UT_sint32 offset,
+											  const UT_UCSChar* pSpan,	
+											  UT_GrowBufElement* pCharWidths);
 
 	void					_fillRect(UT_RGBColor& clr,
 									  UT_sint32 xoff,

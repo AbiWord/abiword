@@ -1617,6 +1617,7 @@ void fl_BlockLayout::format()
 		UT_DEBUGMSG(("block 0x%08x not on screen\n",this));
 	}
 #endif
+	bool bJustifyStuff = false;
 	xxx_UT_DEBUGMSG(("Format block %x needsreformat %d m_pFirstRun %x \n",this,m_iNeedsReformat,m_pFirstRun));
 	//
 	// If block hasn't changed don't format it.
@@ -1624,6 +1625,15 @@ void fl_BlockLayout::format()
 	if(m_iNeedsReformat == -1)
 	{
 		return;
+	}
+	//
+	// Should be ablke to get away with just formatting from the first line 
+	// containing m_iNeedsReformat
+	//
+	if(m_pAlignment && m_pAlignment->getType() == FB_ALIGNMENT_JUSTIFY)
+	{
+		m_iNeedsReformat = 0;
+		bJustifyStuff = true;
 	}
 	//
 	// Save the old height of the block. We compare to the new height after
@@ -1674,7 +1684,15 @@ void fl_BlockLayout::format()
 			UT_ASSERT( pR );
 			pRunToStartAt = pR;
 		}
-	
+		//
+		// Reset justification before we recalc width of runs
+		//
+		fp_Line* pLine = static_cast<fp_Line *>(getFirstContainer());
+		while(pLine && 	bJustifyStuff)
+		{
+			pLine->resetJustification();
+			pLine = static_cast<fp_Line *>(pLine->getNext());
+		}
 
 		// Recalculate widths of Runs if necessary.
 		m_bFixCharWidths = true; // Kludge from sevior to fix layout bugs
@@ -1695,9 +1713,9 @@ void fl_BlockLayout::format()
 				if(pRunToStartAt && pRun == pRunToStartAt)
 					bDoit = true;
 
-				if((m_iNeedsReformat == 0) || (bDoit && (pRun->getType() != FPRUN_ENDOFPARAGRAPH)))
+				if((m_iNeedsReformat == 0) || bJustifyStuff || (bDoit && (pRun->getType() != FPRUN_ENDOFPARAGRAPH)))
 				{
-					if(m_iNeedsReformat == 0)
+					if(m_iNeedsReformat == 0  || bJustifyStuff)
 					{
 						pRun->forceRecalcWidth();
 						pRun->forceRefreshDrawBuffer();
@@ -1747,6 +1765,14 @@ void fl_BlockLayout::format()
 		m_bListLabelCreated =true;
 	}
 	_assertRunListIntegrity();
+	fp_Line* pLastLine = static_cast<fp_Line *>(getLastContainer());
+	if(pLastLine->getContainerType() == FP_CONTAINER_LINE)
+	{
+		if(	bJustifyStuff)
+		{
+			pLastLine->resetJustification();
+		}
+	}
 	m_bIsCollapsed = false;
 	//
 	// Only break section if the height of the block changes.
@@ -4584,7 +4610,7 @@ bool fl_BlockLayout::doclistener_changeSpan(const PX_ChangeRecord_SpanChange * p
 	//
 	// maybe able to remove this once the rest of bug 5240 is fixed.
 	//
-	for(i=0; i< vecLines.getItemCount(); i++)
+   	for(i=0; i< vecLines.getItemCount(); i++)
 	{
 		fp_Line * pLine = static_cast<fp_Line *>(vecLines.getNthItem(i));
 		pLine->clearScreen();

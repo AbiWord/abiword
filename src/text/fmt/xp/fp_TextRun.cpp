@@ -33,6 +33,7 @@
 #include "pd_Style.h"
 #include "gr_DrawArgs.h"
 #include "fv_View.h"
+#include "fb_Alignment.h"
 
 #include "ut_debugmsg.h"
 #include "ut_assert.h"
@@ -477,6 +478,74 @@ bool fp_TextRun::alwaysFits(void) const
 	return true;
 }
 
+bool fp_TextRun::findFirstNonBlankSplitPoint(fp_RunSplitInfo& si)
+{
+	return false;
+#if 0
+	UT_GrowBuf * pgbCharWidths = getBlock()->getCharWidths()->getCharWidths();
+	UT_sint32 iRightWidth = getWidth();
+	UT_GrowBufElement* pCharWidths = pgbCharWidths->getPointer(0);
+	if(pCharWidths == NULL)
+	{
+		return false;
+	}
+	UT_sint32 iLeftWidth = 0;
+
+	si.iOffset = -1;
+
+	const UT_UCSChar* pSpan;
+	UT_uint32 lenSpan;
+	UT_uint32 offset = getBlockOffset();
+	UT_uint32 len = getLength();
+	bool bContinue = true;
+	bool bFound = false;
+	while (bContinue)
+	{
+		bContinue = getBlock()->getSpanPtr(offset, &pSpan, &lenSpan);
+
+		if(!bContinue)
+		{
+			// this block has got a text run but no span in the PT,
+			// this is clearly a bug
+			UT_ASSERT( UT_SHOULD_NOT_HAPPEN );
+			return false;
+		}
+
+		UT_ASSERT(lenSpan>0);
+
+		if (lenSpan > len)
+		{
+			lenSpan = len;
+		}
+
+		for (UT_uint32 i=0; i<lenSpan; i++)
+		{
+			UT_sint32 iCW = pCharWidths[i + offset] > 0 ? pCharWidths[i + offset] : 0;
+			iLeftWidth += iCW;
+			iRightWidth -= iCW;
+			if (
+				(!XAP_EncodingManager::get_instance()->can_break_at(pSpan[i])
+					&& ((i + offset) != (getBlockOffset() + getLength() - 1))
+					)
+				)
+			{
+				si.iLeftWidth = iLeftWidth-iCW;
+				si.iRightWidth = iRightWidth + iCW;
+				si.iOffset = i + offset -1;
+				if((i + offset - 1) < 0)
+				{
+					si.iOffset = 0;
+				}
+				bFound = true;
+				break;
+			}
+		}
+		bContinue = false;
+	}
+	return bFound;
+#endif
+}
+
 /*
  Determine best split point in Run
  \param iMaxLeftWidth Width to split at
@@ -552,8 +621,20 @@ bool	fp_TextRun::findMaxLeftFitSplitPoint(UT_sint32 iMaxLeftWidth, fp_RunSplitIn
 				}
 				else
 				{
-					bContinue = false;
-					break;
+//
+// Ignore trailing space when chosing break points
+//
+					if((pSpan[i] == UCS_SPACE) && ((iLeftWidth - _getPrevContSpace(i,offset,pSpan,pCharWidths)) <= iMaxLeftWidth ))
+					{
+						si.iLeftWidth = iLeftWidth;
+						si.iRightWidth = iRightWidth;
+						si.iOffset = i + offset;
+					}
+					else
+					{
+						bContinue = false;
+						break;
+					}
 				}
 			}
 		}
@@ -582,6 +663,20 @@ bool	fp_TextRun::findMaxLeftFitSplitPoint(UT_sint32 iMaxLeftWidth, fp_RunSplitIn
 	return true;
 }
 
+/*!
+ * This method returns the space associated with contiguous space 
+ * characters at and before the point in pchars given.
+ */
+UT_sint32 fp_TextRun::_getPrevContSpace(UT_sint32 i,UT_sint32 offset,const UT_UCSChar* pSpan,	UT_GrowBufElement* pCharWidths)
+{
+	UT_sint32 width = 0;
+	while(i>=0 && pSpan[i] == UCS_SPACE)
+	{
+		width += pCharWidths[offset + i];
+		i--;
+	}
+	return width;
+}
 
 void fp_TextRun::mapXYToPosition(UT_sint32 x, UT_sint32 /*y*/,
 								 PT_DocPosition& pos, bool& bBOL, bool& bEOL)
@@ -1319,7 +1414,14 @@ void fp_TextRun::_clearScreen(bool /* bFullLineHeightRect */)
 {
 	UT_ASSERT(!isDirty());
 	UT_ASSERT(getGR()->queryProperties(GR_Graphics::DGP_SCREEN));
-
+//
+// For justfied lines we have to clear the entire line
+//
+	if(	getBlock()->getAlignment()->getType() == FB_ALIGNMENT_JUSTIFY)
+	{
+		getLine()->clearScreen();
+		return;
+	}
 	if(!getLine()->isEmpty() && getLine()->getLastVisRun() == this)   //#TF must be last visual run
 	{
 		// Last run on the line so clear to end.
@@ -2453,7 +2555,8 @@ UT_sint32 fp_TextRun::findTrailingSpaceDistance(void) const
 
 void fp_TextRun::resetJustification()
 {
-
+	UT_sint32 iAccumDiff = 0;
+	UT_sint32 iWidth = getWidth();
 	if(m_bIsJustified)
 	{
 		UT_sint32 iSpaceWidthBefore = _getSpaceWidthBeforeJustification();
@@ -2475,9 +2578,8 @@ void fp_TextRun::resetJustification()
 			// width before we reach the start of the line
 			if(pCharWidths[i] != iSpaceWidthBefore)
 			{
-				_setWidth(getWidth() - (pCharWidths[i] - iSpaceWidthBefore));
+				iAccumDiff += iSpaceWidthBefore - pCharWidths[i];
 				pCharWidths[i] = iSpaceWidthBefore;
-
 				_setRecalcWidth(true);
 
 			}
@@ -2487,6 +2589,10 @@ void fp_TextRun::resetJustification()
 		}
 
 		m_bIsJustified = false;
+	}
+	if(iAccumDiff != 0)
+	{
+		_setWidth(iWidth + iAccumDiff);
 	}
 }
 

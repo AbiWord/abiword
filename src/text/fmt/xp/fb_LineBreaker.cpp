@@ -69,21 +69,23 @@ fb_LineBreaker::breakParagraph(fl_BlockLayout* pBlock, fp_Line * pLineToStartAt)
 	//	 o Also see fix me at end of loop
 	fp_Line* pLine = static_cast<fp_Line *>(pBlock->getFirstContainer());
 	UT_ASSERT(pLine);
+	xxx_UT_DEBUGMSG(("In LineBreaker max line width is %d pLineToStart %x \n",m_iMaxLineWidth,pLineToStartAt));
+	while(pLine)
+	{
+		pLine->resetJustification();
+		pLine = static_cast<fp_Line *>(pLine->getNext());
+	}
+	pLine = static_cast<fp_Line *>(pBlock->getFirstContainer());
+
 	if(pLineToStartAt)
 	{
-		while(pLine && pLine != pLineToStartAt)
-		{
-			pLine = static_cast<fp_Line *>(pLine->getNext());
-#if DEBUG
-			pLine->assertLineListIntegrity();
-#endif
-		}
+		pLine = pLineToStartAt;
 	}
 
 	while (pLine)
 	{
 #if DEBUG
-		pLine->assertLineListIntegrity();
+//		pLine->assertLineListIntegrity();
 #endif
 		UT_uint32 iIndx = 0;
 		if (pLine->countRuns() > 0)
@@ -91,8 +93,6 @@ fb_LineBreaker::breakParagraph(fl_BlockLayout* pBlock, fp_Line * pLineToStartAt)
 
 			fp_Run *pOriginalFirstOnLine = pLine->getFirstRun();
 			fp_Run *pOriginalLastOnLine = pLine->getLastRun();
-
-			pLine->resetJustification();
 
 			m_pFirstRunToKeep = pLine->getFirstRun();
 			m_pLastRunToKeep = NULL;
@@ -130,7 +130,6 @@ fb_LineBreaker::breakParagraph(fl_BlockLayout* pBlock, fp_Line * pLineToStartAt)
 					// end of the line
 
 					UT_sint32 iTrailingSpace = 0;
-
 					fp_Run * pArun = (pPreviousRun ? pPreviousRun : pCurrentRun);
 					iTrailingSpace = _moveBackToFirstNonBlankData(pArun,
 											  &pOffendingRun);
@@ -139,15 +138,16 @@ fb_LineBreaker::breakParagraph(fl_BlockLayout* pBlock, fp_Line * pLineToStartAt)
 					if (m_iWorkingLineWidth > m_iMaxLineWidth)
 					{
 						// This run needs splitting.
-
+						xxx_UT_DEBUGMSG(("Break at 1 Trailing Space %d Wording width %d \n",iTrailingSpace,m_iWorkingLineWidth));
 						UT_ASSERT(pOffendingRun);
-						_splitAtOrBeforeThisRun(pOffendingRun);
+						_splitAtOrBeforeThisRun(pOffendingRun, iTrailingSpace);
 						goto done_with_run_loop;
 					}
 					else
 					{
 						if(pCurrentRun)
 						{
+							xxx_UT_DEBUGMSG(("Break at 2 Trailing Space %d \n",iTrailingSpace));
 							_splitAtNextNonBlank(pCurrentRun);
 						}
 						goto done_with_run_loop;
@@ -222,7 +222,7 @@ fb_LineBreaker::breakParagraph(fl_BlockLayout* pBlock, fp_Line * pLineToStartAt)
 								pRun = pRun->getNext();
 							}
 #if DEBUG
-							pLine->assertLineListIntegrity();
+//							pLine->assertLineListIntegrity();
 #endif
 						}
 					}
@@ -296,7 +296,10 @@ fb_LineBreaker::breakParagraph(fl_BlockLayout* pBlock, fp_Line * pLineToStartAt)
 			// FIXME: This should go in the block above. But only when
 			// we are guaranteed a full re-layout on block changes.
 			pLine->layout();
-
+#if DEBUG
+			pLine->assertLineListIntegrity();
+			xxx_UT_DEBUGMSG(("Max width of line %d \n",pLine->getMaxWidth()));
+#endif
 			pLine = static_cast<fp_Line *>(pLine->getNext());
 		} // if countruns > 0
 		else
@@ -348,7 +351,7 @@ UT_sint32 fb_LineBreaker::_moveBackToFirstNonBlankData(fp_Run *pCurrentRun, fp_R
 }
 
 
-bool fb_LineBreaker::_splitAtOrBeforeThisRun(fp_Run *pCurrentRun)
+bool fb_LineBreaker::_splitAtOrBeforeThisRun(fp_Run *pCurrentRun, UT_sint32 iTrailSpace)
 {
 
 	// This run is past the end of the line.
@@ -356,7 +359,7 @@ bool fb_LineBreaker::_splitAtOrBeforeThisRun(fp_Run *pCurrentRun)
 	// Reminder: m_iWorkingLineWidth = Length including this run minus any trailing spaces in this run.
 
 	// Set m_iWorkingLineWidth to length including this run.
-	m_iWorkingLineWidth += pCurrentRun->findTrailingSpaceDistance();
+	m_iWorkingLineWidth += iTrailSpace;
 	m_iWorkingLineWidth -= pCurrentRun->getWidth();
 
 	fp_Run *pOffendingRun = pCurrentRun;
@@ -364,14 +367,17 @@ bool fb_LineBreaker::_splitAtOrBeforeThisRun(fp_Run *pCurrentRun)
 	fp_TextRun *pRunToSplit = NULL;
 
 	bool bFoundBreakAfter = false;
+	xxx_UT_DEBUGMSG((" findMaxLeftFitSplitPoint space given %d \n",m_iMaxLineWidth - m_iWorkingLineWidth));
 	bool bFoundSplit = pOffendingRun->findMaxLeftFitSplitPoint(m_iMaxLineWidth - m_iWorkingLineWidth, splitInfo);
 	if (bFoundSplit)
 	{
 		UT_ASSERT(pOffendingRun->getType() == FPRUN_TEXT);
 		pRunToSplit = static_cast<fp_TextRun*>(pOffendingRun);
+		xxx_UT_DEBUGMSG(("FOund split !\n"));
 	}
 	else
 	{
+		xxx_UT_DEBUGMSG(("Did not Find split !\n"));
 
 		/*
 		  The run we wanted to split (the one which pushes
@@ -535,8 +541,11 @@ void fb_LineBreaker::_breakTheLineAtLastRunToKeep(fp_Line *pLine,
 	*/
 
 	fp_Run *pCurrentRun = m_pFirstRunToKeep;
+	fp_Run *pPrevRun = pCurrentRun;
+	UT_sint32 width = 0;
 	while (pCurrentRun)
 	{
+		width += pCurrentRun->getWidth();
 		if (pCurrentRun->getLine() != pLine)
 		{
 			fp_Line* pOtherLine = pCurrentRun->getLine();
@@ -551,6 +560,7 @@ void fb_LineBreaker::_breakTheLineAtLastRunToKeep(fp_Line *pLine,
 		}
 		else
 		{
+			pPrevRun = pCurrentRun;
 			pCurrentRun = pCurrentRun->getNext();
 		}
 	}

@@ -160,11 +160,15 @@ fp_Line::~fp_Line()
 bool fp_Line::assertLineListIntegrity(void)
 {
 	UT_sint32 k =0;
+	UT_sint32 width = 0;
+	xxx_UT_DEBUGMSG(("For line %x \n",this));
 	fp_Run * pRunBlock = getFirstRun();
 	fp_Run * pRunLine = NULL;
 	for(k=0;k<getNumRunsInLine();k++)
 	{
 		pRunLine = getRunFromIndex(k);
+		xxx_UT_DEBUGMSG(("Width of run %d pointer %x width %d \n",k,pRunLine,pRunLine->getWidth()));
+		width += pRunLine->getWidth();
 		if(pRunLine != pRunBlock)
 		{
 			UT_DEBUGMSG(("Whoops! bug in Line at run %d %x offset %d Type %d \n",k,pRunLine,pRunLine->getBlockOffset(),pRunLine->getType()));
@@ -180,6 +184,7 @@ bool fp_Line::assertLineListIntegrity(void)
 		}
 		pRunBlock = pRunBlock->getNext();
 	}
+	xxx_UT_DEBUGMSG(("Line %x Width of line is %d num runs is %d \n",this,width,k)); //   UT_ASSERT(width < getMaxWidth());
 	return true;
 }
 #else
@@ -804,6 +809,11 @@ void fp_Line::clearScreen(void)
 			// assigned a height. Call it robustness, if you want.
 
 			UT_sint32 height = getHeight();
+			UT_sint32 sHeight = m_iScreenHeight;
+			if(sHeight > height)
+			{
+				height = sHeight;
+			}
 			// I have added the +1 to clear dirt after squiggles and
 			// revision underlines
 			if(getPage() == NULL)
