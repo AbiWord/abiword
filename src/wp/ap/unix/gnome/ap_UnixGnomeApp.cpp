@@ -21,7 +21,7 @@
 ** Only one of these is created by the application.
 *****************************************************************/
 
-#define ABIWORD_INTERNAL
+#define ABIWORD_INTERNAL 1
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -85,6 +85,8 @@
 #include <bonobo.h>
 #include <liboaf/liboaf.h>
 #include "abiwidget.h"
+#include "ap_NautilusView.h"
+#include <libnautilus/nautilus-view-standard-main.h>
 
 // quick hack - this is defined in ap_EditMethods.cpp
 extern XAP_Dialog_MessageBox::tAnswer s_CouldNotLoadFileMessage(XAP_Frame * pFrame, const char * pNewFile, UT_Error errorCode);
@@ -98,6 +100,10 @@ static BonoboObject*
 
 static BonoboControl* 	AbiControl_construct(BonoboControl * control, AbiWidget * abi);
 static BonoboControl * AbiWidget_control_new(AbiWidget * abi);
+
+static int NautilusMain(int argc, char *argv[]);
+FILE * logfile;
+
 
 /*****************************************************************/
 
@@ -132,6 +138,7 @@ int AP_UnixGnomeApp::main(const char * szAppName, int argc, const char ** argv)
 	      }
 
 	// running under bonobo
+
 	
 	if(bControlFactory)
 	  {
@@ -157,6 +164,49 @@ int AP_UnixGnomeApp::main(const char * szAppName, int argc, const char ** argv)
 	    delete pMyUnixApp;
 	    return 0;
 	  }
+
+	//
+	// Check to see if we've been activated as a Nautilus view
+	//
+
+	logfile = fopen("/home/msevior/abilog","w");
+	bool bNautilusFactory = false;
+  	for (UT_uint32 k = 1; k < XArgs.m_argc; k++)
+	{
+	  fprintf(logfile," command passed %s \n",XArgs.m_argv[k]);
+	  if (*XArgs.m_argv[k] == '-')
+	    if (strstr(XArgs.m_argv[k],"nautilus_abiword_view_factory") != 0)
+		{
+			bNautilusFactory = true;
+			break;
+		}
+	}
+	fprintf(logfile,"AbiWord activated by nautilus %d \n",bNautilusFactory);
+	fclose(logfile);
+	if(bNautilusFactory)
+	{
+	    
+	    AP_UnixGnomeApp * pMyUnixApp = new AP_UnixGnomeApp(&XArgs, szAppName);
+	    pMyUnixApp->setBonoboRunning();
+	    
+	    /* intialize gnome - need this before initialize method */
+	    gtk_set_locale();
+	    gnome_init_with_popt_table ("nautilus_abiword_view_factory",  "0.0",
+					argc, const_cast<char**>(argv), oaf_popt_options, 0, NULL);
+
+	    if (!pMyUnixApp->initialize())
+		{
+			delete pMyUnixApp;
+			return -1;	// make this something standard?
+		}
+	    NautilusMain(argc,const_cast<char**>(argv));
+	    
+	    // destroy the App.  It should take care of deleting all frames.
+	    
+	    pMyUnixApp->shutdown();
+	    delete pMyUnixApp;
+	    return 0;
+	}
 
 	// not running as a bonobo app
 
@@ -369,7 +419,6 @@ load_document_from_stream (BonoboPersistStream *ps,
 	Bonobo_Stream_iobuf *buffer;
 	CORBA_long len_read;
     FILE * tmpfile;
-	gboolean bMapToScreen = false;
 
 	g_return_if_fail (data != NULL);
 	g_return_if_fail (IS_ABI_WIDGET (data));
@@ -436,7 +485,6 @@ save_document_to_stream (BonoboPersistStream *ps,
 	CORBA_octet buffer [ 32768 ] = "" ;
 	CORBA_long len_read = 0;
 	FILE * tmpfile = NULL;
-	gboolean bMapToScreen = false;
 
 	g_return_if_fail (data != NULL);
 	g_return_if_fail (IS_ABI_WIDGET (data));
@@ -559,7 +607,6 @@ load_document_from_file(BonoboPersistFile *pf, const CORBA_char *filename,
 				   CORBA_Environment *ev, void *data)
 {
 	AbiWidget *abiwidget;
-	gboolean bMapToScreen = false;
 
 	g_return_val_if_fail (data != NULL,-1);
 	g_return_val_if_fail (IS_ABI_WIDGET (data),-1);
@@ -578,7 +625,6 @@ save_document_to_file(BonoboPersistFile *pf, const CORBA_char *filename,
 		      CORBA_Environment *ev, void *data)
 {
   AbiWidget *abiwidget;
-  gboolean bMapToScreen = false;
   
   g_return_val_if_fail (data != NULL,-1);
   g_return_val_if_fail (IS_ABI_WIDGET (data),-1);
@@ -969,3 +1015,46 @@ static int mainBonobo(int argc, char * argv[])
 	bonobo_main ();
 	return 0;
 }
+
+
+static int NautilusMain(int argc, char *argv[])
+{
+	int ires =0;
+
+    // Setup signal handlers, primarily for segfault
+    // If we segfaulted before here, we *really* blew it
+#if 1    
+    struct sigaction sa;
+    
+    sa.sa_handler = signalWrapper;
+    
+    sigfillset(&sa.sa_mask);  // We don't want to hear about other signals
+    sigdelset(&sa.sa_mask, SIGABRT); // But we will call abort(), so we can't ignore that
+/* #ifndef AIX - I presume these are always #define not extern... -fjf */
+#if defined (SA_NODEFER) && defined (SA_RESETHAND)
+    sa.sa_flags = SA_NODEFER | SA_RESETHAND; // Don't handle nested signals
+#else
+    sa.sa_flags = 0;
+#endif
+   
+    sigaction(SIGSEGV, &sa, NULL);
+    sigaction(SIGBUS, &sa, NULL);
+    sigaction(SIGILL, &sa, NULL);
+    sigaction(SIGQUIT, &sa, NULL);
+    sigaction(SIGFPE, &sa, NULL);
+#endif
+	ires = nautilus_view_standard_main ("/home/msevior/abidir/AbiSuite/bin/AbiWord",
+					    "1.0.6",
+					    NULL,	/* Could be PACKAGE */
+					    NULL,	/* Could be GNOMELOCALEDIR */
+					    argc,
+					    argv,
+					    "OAFIID:nautilus_abiword_view_factory",
+					    "OAFIID:nautilus_abiword_view",
+					    nautilus_view_create_from_get_type_function,
+					    NULL,
+					    (void *)nautilus_abiword_content_view_get_type);
+	return ires;
+}
+
+

@@ -43,6 +43,9 @@ endif
 ifneq ($(ABI_OPT_GNOME),1)
 ABI_OPT_GNOME=0
 endif
+ifneq ($(ABI_OPT_NAUTILUS),1)
+ABI_OPT_NAUTILUS=0
+endif
 ifneq ($(ABI_OPT_PERL),1)
 ABI_OPT_PERL=0
 endif

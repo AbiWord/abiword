@@ -298,11 +298,13 @@ ABI_XAP_INCS=	/config						\
                 /wp/impexp/xp \
                 /wp/ap/xp/ToolbarIcons
 
+
 ifeq ($(ABI_OPT_GNOME),1)
 ABI_OPT_GNOMEVFS := 1
 ABI_XAP_INCS+=	/af/xap/$(ABI_NATIVE)/$(ABI_GNOME_DIR)	\
 		/af/ev/$(ABI_NATIVE)/$(ABI_GNOME_DIR) 
 endif
+
 
 # consider adding some UNIX native includes because MacOS X is really hybrid.
 ifeq ($(OS_NAME), MACOSX)
@@ -622,6 +624,11 @@ GNOME_CFLAGS += -DHAVE_GNOMEVFS
 GNOME_LIBS   += $(shell gnome-vfs-config --libs)
 ABI_OPTIONS  +=GnomeVFS:On
 endif
+
+
+GNOME_CFLAGS += $(shell nautilus-config --cflags)
+GNOME_CFLAGS += -DHAVE_NAUTILUS
+GNOME_LIBS   += $(shell nautilus-config --libs) 
 
 GNOME_CFLAGS += $(shell $(GLIB_CONFIG) --cflags)
 
