@@ -167,6 +167,8 @@ protected:
 	void		_drawMarginProperties(const UT_Rect * pClipRect,
 									  AP_TopRulerInfo * pInfo, UT_RGBColor &clr);
 
+	void		_xorGuide(UT_Bool bClear=UT_FALSE);
+
 	void		_ignoreEvent(UT_RGBColor &clrBlack, UT_RGBColor &clrWhite, UT_Bool bDone);
 	double		_scalePixelDistanceToUnits(UT_sint32 xColRel, ap_RulerTicks & tick);
 	UT_sint32	_getFirstPixelInColumn(AP_TopRulerInfo * pInfo, UT_uint32 kCol);
@@ -216,6 +218,9 @@ protected:
 	UT_Bool				m_bBeforeFirstMotion;
 
 	unsigned char		m_iDefaultTabType;
+
+	UT_Bool				m_bGuide;	// UT_TRUE ==> guide line XORed onscreen
+	UT_sint32			m_xGuide;	// valid iff m_bGuide
 	
 	/* static const*/ UT_uint32	s_iFixedHeight /* =32 */;	/* size we draw stuff w/o regard to window size */
 	/* static const*/ UT_uint32	s_iFixedWidth  /* =32 */;	/* minimum width of non-scrolling area on left */

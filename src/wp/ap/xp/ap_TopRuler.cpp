@@ -68,6 +68,9 @@ AP_TopRuler::AP_TopRuler(XAP_Frame * pFrame)
 	m_bValidMouseClick = UT_FALSE;
 	m_draggingWhat = DW_NOTHING;
 	m_iDefaultTabType = FL_TAB_LEFT;
+
+	m_bGuide = UT_FALSE;
+	m_xGuide = 0;
 	
 	// i wanted these to be "static const x = 32;" in the
 	// class declaration, but MSVC5 can't handle it....
@@ -931,6 +934,43 @@ void AP_TopRuler::_draw(const UT_Rect * pClipRect, AP_TopRulerInfo * pUseInfo)
 
 /*****************************************************************/
 
+void AP_TopRuler::_xorGuide(UT_Bool bClear)
+{
+	UT_uint32 xFixed = (UT_sint32)MyMax(m_iLeftRulerWidth,s_iFixedWidth);
+	UT_sint32 x = m_draggingCenter - xFixed;
+	UT_ASSERT(x>=0);
+
+	GR_Graphics * pG = (static_cast<FV_View *>(m_pView))->getGraphics();
+	UT_ASSERT(pG);
+
+	UT_RGBColor clrWhite(255,255,255);
+	pG->setColor(clrWhite);
+
+	UT_sint32 h = m_pView->getWindowHeight();
+	
+	if (m_bGuide)
+	{
+		if (!bClear && (x == m_xGuide))
+			return;		// avoid flicker
+
+		// erase old guide
+		pG->xorLine(m_xGuide, 0, m_xGuide, h);
+		m_bGuide = UT_FALSE;
+	}
+
+	if (!bClear)
+	{
+		UT_ASSERT(m_bValidMouseClick);
+		pG->xorLine(x, 0, x, h);
+
+		// remember this for next time
+		m_xGuide = x;
+		m_bGuide = UT_TRUE;
+	}
+}
+
+/*****************************************************************/
+
 void AP_TopRuler::mousePress(EV_EditModifierState ems, EV_EditMouseButton emb, UT_uint32 x, UT_uint32 y)
 {
 	//UT_DEBUGMSG(("mousePress: [ems 0x%08lx][emb 0x%08lx][x %ld][y %ld]\n",ems,emb,x,y));
@@ -1081,6 +1121,7 @@ void AP_TopRuler::mousePress(EV_EditModifierState ems, EV_EditMouseButton emb, U
 		if (!m_bBeforeFirstMotion && (m_draggingCenter != oldDraggingCenter))
 			draw(&oldDraggingRect,&m_infoCache);
 		_drawTabProperties(NULL,&m_infoCache,UT_FALSE);
+		_xorGuide();
 
 		m_bBeforeFirstMotion = UT_FALSE;
 	}
@@ -1156,6 +1197,7 @@ void AP_TopRuler::mouseRelease(EV_EditModifierState ems, EV_EditMouseButton emb,
 			properties[2] = 0;
 			UT_DEBUGMSG(("TopRuler: ColumnGap [%s]\n",properties[1]));
 
+			_xorGuide(UT_TRUE);
 			m_draggingWhat = DW_NOTHING;
 			(static_cast<FV_View *>(m_pView))->setSectionFormat(properties);
 		}
@@ -1191,6 +1233,7 @@ void AP_TopRuler::mouseRelease(EV_EditModifierState ems, EV_EditMouseButton emb,
 			UT_DEBUGMSG(("TopRuler: LeftIndent [%s] TextIndent [%s]\n",
 						 properties[1],properties[3]));
 
+			_xorGuide(UT_TRUE);
 			m_draggingWhat = DW_NOTHING;
 			(static_cast<FV_View *>(m_pView))->setBlockFormat(properties);
 		}
@@ -1211,6 +1254,7 @@ void AP_TopRuler::mouseRelease(EV_EditModifierState ems, EV_EditMouseButton emb,
 			properties[2] = 0;
 			UT_DEBUGMSG(("TopRuler: LeftIndent [%s]\n",properties[1]));
 
+			_xorGuide(UT_TRUE);
 			m_draggingWhat = DW_NOTHING;
 			(static_cast<FV_View *>(m_pView))->setBlockFormat(properties);
 		}
@@ -1228,6 +1272,7 @@ void AP_TopRuler::mouseRelease(EV_EditModifierState ems, EV_EditMouseButton emb,
 			properties[2] = 0;
 			UT_DEBUGMSG(("TopRuler: RightIndent [%s]\n",properties[1]));
 
+			_xorGuide(UT_TRUE);
 			m_draggingWhat = DW_NOTHING;
 			(static_cast<FV_View *>(m_pView))->setBlockFormat(properties);
 		}
@@ -1244,6 +1289,7 @@ void AP_TopRuler::mouseRelease(EV_EditModifierState ems, EV_EditMouseButton emb,
 			properties[2] = 0;
 			UT_DEBUGMSG(("TopRuler: FirstLineIndent [%s]\n",properties[1]));
 
+			_xorGuide(UT_TRUE);
 			m_draggingWhat = DW_NOTHING;
 			(static_cast<FV_View *>(m_pView))->setBlockFormat(properties);
 		}
@@ -1261,6 +1307,7 @@ void AP_TopRuler::mouseRelease(EV_EditModifierState ems, EV_EditMouseButton emb,
 				return;
 			}
 
+			_xorGuide(UT_TRUE);
 			_setTabStops(tick, iTab, UT_FALSE);
 		}
 		return;
@@ -1393,6 +1440,7 @@ void AP_TopRuler::mouseMotion(EV_EditModifierState ems, UT_uint32 x, UT_uint32 y
 				draw(((oldDraggingRect.width > m_draggingRect.width ) ? &oldDraggingRect : &m_draggingRect),
 					 &m_infoCache);
 			_drawColumnProperties(NULL,&m_infoCache,0);
+			_xorGuide();
 		}
 		m_bBeforeFirstMotion = UT_FALSE;
 		return;
@@ -1422,6 +1470,7 @@ void AP_TopRuler::mouseMotion(EV_EditModifierState ems, UT_uint32 x, UT_uint32 y
 				draw(((oldDraggingRect.width > m_draggingRect.width ) ? &oldDraggingRect : &m_draggingRect),
 					 &m_infoCache);
 			_drawColumnProperties(NULL,&m_infoCache,0);
+			_xorGuide();
 		}
 		m_bBeforeFirstMotion = UT_FALSE;
 		return;
@@ -1448,6 +1497,7 @@ void AP_TopRuler::mouseMotion(EV_EditModifierState ems, UT_uint32 x, UT_uint32 y
 			if (!m_bBeforeFirstMotion && (m_draggingCenter != oldDraggingCenter))
 				draw(&oldDraggingRect,&m_infoCache);
 			_drawParagraphProperties(NULL,&m_infoCache,UT_FALSE);
+			_xorGuide();
 		}
 		m_bBeforeFirstMotion = UT_FALSE;
 		return;
@@ -1481,6 +1531,7 @@ void AP_TopRuler::mouseMotion(EV_EditModifierState ems, UT_uint32 x, UT_uint32 y
 				draw(&oldDragging2Rect,&m_infoCache);
 			}
 			_drawParagraphProperties(NULL,&m_infoCache,UT_FALSE);
+			_xorGuide();
 		}
 		m_bBeforeFirstMotion = UT_FALSE;
 		return;
@@ -1502,6 +1553,7 @@ void AP_TopRuler::mouseMotion(EV_EditModifierState ems, UT_uint32 x, UT_uint32 y
 			if (!m_bBeforeFirstMotion && (m_draggingCenter != oldDraggingCenter))
 				draw(&oldDraggingRect,&m_infoCache);
 			_drawParagraphProperties(NULL,&m_infoCache,UT_FALSE);
+			_xorGuide();
 		}
 		m_bBeforeFirstMotion = UT_FALSE;
 		return;
@@ -1527,6 +1579,7 @@ void AP_TopRuler::mouseMotion(EV_EditModifierState ems, UT_uint32 x, UT_uint32 y
 			_drawParagraphProperties(NULL,&m_infoCache,UT_FALSE);
 			UT_DEBUGMSG(("FirstLineIndent: r [%ld %ld %ld %ld]]n",
 						 m_draggingRect.left,m_draggingRect.top,m_draggingRect.width,m_draggingRect.height));
+			_xorGuide();
 		}
 		m_bBeforeFirstMotion = UT_FALSE;
 		return;
@@ -1547,6 +1600,7 @@ void AP_TopRuler::mouseMotion(EV_EditModifierState ems, UT_uint32 x, UT_uint32 y
 			if (!m_bBeforeFirstMotion && (m_draggingCenter != oldDraggingCenter))
 				draw(&oldDraggingRect,&m_infoCache);
 			_drawTabProperties(NULL,&m_infoCache,UT_FALSE);
+			_xorGuide();
 		}
 		m_bBeforeFirstMotion = UT_FALSE;
 		return;
@@ -1611,6 +1665,10 @@ void AP_TopRuler::_ignoreEvent(UT_RGBColor &clrBlack, UT_RGBColor &clrWhite, UT_
 	m_draggingWhat = DW_NOTHING;
 	
 	draw(&m_draggingRect, &m_infoCache);
+
+	// clear the guide line
+
+	_xorGuide(UT_TRUE);
 
 	// redraw the widget we are dragging at its original location
 	
