@@ -116,6 +116,12 @@ bool UT_getISO3166Country(char *szCountry)
 
 	if (GetLocaleInfo(LOCALE_USER_DEFAULT,LOCALE_SISO3166CTRYNAME,szCountry,3))
 	{
+		// Fix Serbia
+		if (!UT_stricmp(szCountry, "SP"))
+		{
+			strcpy(szCountry, "SR");
+		}
+
 		bSuccess = true;
 	}
 	else if (GetLocaleInfo(LOCALE_USER_DEFAULT,LOCALE_SABBREVCTRYNAME,szTmp,4))
