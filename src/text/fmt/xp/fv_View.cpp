@@ -9835,12 +9835,12 @@ UT_uint32 FV_View::calculateZoomPercentForPageWidth()
 		}
 		return getGraphics()->getZoomPercentage();
 	}
-	if ( ( iWindowWidth - 2 * getPageViewLeftMargin() ) <= 0 )
+	if ( ( iWindowWidth - (2 * getPageViewLeftMargin()) ) <= 0 )
 		return getGraphics()->getZoomPercentage();
 
-	double scale = (getWindowWidth() - 2 * getPageViewLeftMargin()) /
-		(pageWidth * static_cast<double>(getGraphics()->getResolution() / 
-								   getGraphics()->getZoomPercentage() * 100.0));
+	double scale = (getWindowWidth() - (2 * getPageViewLeftMargin())) /
+		(pageWidth * (static_cast<double>(getGraphics()->getResolution()) / 
+								   static_cast<double>(getGraphics()->getZoomPercentage()) * 100.0));
 
 	// Don't do the change if it's less than 3% from current percentage - PL
 	if (abs(static_cast<int>(scale * 100.0) - 
