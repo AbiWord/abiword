@@ -33,6 +33,8 @@
 #include "xap_Strings.h"
 #include <gtk/gtk.h>
 #include <glib.h>
+#include "xap_Prefs_SchemeIds.h"
+#include "xap_Prefs.h"
 
 /*****************************************************************/
 
@@ -57,6 +59,7 @@ XAP_UnixDialog_Print::XAP_UnixDialog_Print(XAP_DialogFactory * pDlgFactory,
 	: XAP_Dialog_Print(pDlgFactory,id)
 {
 	memset(&m_persistPrintDlg, 0, sizeof(m_persistPrintDlg));
+	m_bEmbedFonts = false;
 }
 
 XAP_UnixDialog_Print::~XAP_UnixDialog_Print(void)
@@ -197,6 +200,8 @@ void XAP_UnixDialog_Print::_raisePrintDialog(XAP_Frame * pFrame)
 	GtkWidget *buttonSelection;
 	GtkWidget *button;
 	GtkWidget *buttonCollate;
+	GtkWidget *buttonEmbedFonts;
+	
 	GtkWidget *spinCopies;
 
 	GtkWidget *label;
@@ -346,6 +351,10 @@ void XAP_UnixDialog_Print::_raisePrintDialog(XAP_Frame * pFrame)
 			buttonCollate = gtk_check_button_new_with_label (pSS->getValue(XAP_STRING_ID_DLG_UP_Collate));
 			gtk_box_pack_start (GTK_BOX (hbox), buttonCollate, TRUE, TRUE, 0);
 			gtk_widget_show (buttonCollate);
+			
+			buttonEmbedFonts = gtk_check_button_new_with_label (pSS->getValue(XAP_STRING_ID_DLG_UP_EmbedFonts));
+			gtk_box_pack_start (GTK_BOX (hbox), buttonEmbedFonts, TRUE, TRUE, 0);
+			gtk_widget_show (buttonEmbedFonts);
 
 			label = gtk_label_new(pSS->getValue(XAP_STRING_ID_DLG_UP_Copies));
 			gtk_misc_set_padding (GTK_MISC (label), 5,5);
@@ -481,6 +490,8 @@ void XAP_UnixDialog_Print::_raisePrintDialog(XAP_Frame * pFrame)
 		gtk_entry_set_text (GTK_ENTRY (entryTo), str);
 
 		gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (buttonCollate), m_persistPrintDlg.bDoCollate);
+		XAP_App::getApp()->getPrefsValueBool((const XML_Char *)XAP_PREF_KEY_EmbedFontsInPS, &m_bEmbedFonts);
+		gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (buttonEmbedFonts), m_bEmbedFonts);
 		gtk_spin_button_set_value (GTK_SPIN_BUTTON(spinCopies), m_persistPrintDlg.nCopies);
 
 
@@ -505,8 +516,18 @@ void XAP_UnixDialog_Print::_raisePrintDialog(XAP_Frame * pFrame)
 		m_bDoPrintSelection = GTK_TOGGLE_BUTTON(buttonSelection)->active;
 		m_bDoPrintToFile	= GTK_TOGGLE_BUTTON(buttonFile)->active;
 		m_bCollate			= GTK_TOGGLE_BUTTON(buttonCollate)->active;
+		bool bEmbedFonts 	= m_bEmbedFonts;
+		m_bEmbedFonts		= GTK_TOGGLE_BUTTON(buttonEmbedFonts)->active;
 		m_nCopies			= gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(spinCopies));
 
+		
+		if(bEmbedFonts != m_bEmbedFonts)
+		{
+			XAP_Prefs * pPrefs = XAP_App::getApp()->getPrefs();
+			UT_ASSERT(pPrefs);
+			pPrefs->getCurrentScheme()->setValueBool((const XML_Char *)XAP_PREF_KEY_EmbedFontsInPS, m_bEmbedFonts);
+		}
+			
 		// TODO check for valid entries
 
 		if (m_bDoPrintRange)

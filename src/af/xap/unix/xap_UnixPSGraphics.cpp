@@ -43,6 +43,9 @@
 #include "ut_OverstrikingChars.h"
 #endif
 
+#include "xap_Prefs.h"
+#include "xap_App.h"
+
 // the resolution that we report to the application (pixels per inch).
 #define PS_RESOLUTION		7200
 
@@ -1094,8 +1097,11 @@ void PS_Graphics::_emit_IncludeResource(void)
 		// TODO we want to have a checkbox in the Preferences that would allow
 		// to disable splating of the fonts into the output, since people who
 		// use Ghostscript my simply register their fonts with GS and do not
-		// need them in the document		
-		if(unixfont->is_CJK_font() /*|| unixfont->is_TTF_font() || XAP_EncodingManager::instance->isUnicodeLocale()*/)
+		// need them in the document
+		bool bEmbedFonts;
+		XAP_App::getApp()->getPrefsValueBool((const XML_Char *)XAP_PREF_KEY_EmbedFontsInPS, &bEmbedFonts);
+		//UT_DEBUGMSG(("bEmbedFonts: %d\n",bEmbedFonts));
+		if(unixfont->is_CJK_font() || !bEmbedFonts)
 		  continue;
 		int match=0;
 		for(int i=0;i<fontKeyCount;++i)
