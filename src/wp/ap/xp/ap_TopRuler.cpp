@@ -2586,7 +2586,7 @@ void AP_TopRuler::mouseRelease(EV_EditModifierState /* ems */, EV_EditMouseButto
 			UT_sint32 i;
 			bool bDragRightMost = false;
 			UT_sint32 leftDrag = -100000;
-			if(m_draggingCell == m_infoCache.m_vecTableColInfo->getItemCount())
+			if(m_draggingCell == (UT_sint32) m_infoCache.m_vecTableColInfo->getItemCount())
 			{
 				bDragRightMost = true;
 			}
@@ -2596,7 +2596,7 @@ void AP_TopRuler::mouseRelease(EV_EditModifierState /* ems */, EV_EditMouseButto
 				leftDrag = pTInfo->m_iLeftCellPos ;
 			}
 			
-			for(i=1; i <= m_infoCache.m_vecFullTable->getItemCount();i++)
+			for(i=1; i <= (UT_sint32) m_infoCache.m_vecFullTable->getItemCount();i++)
 			{
 				UT_sint32 left =0;
 				UT_sint32 right = 0;
@@ -2613,7 +2613,7 @@ void AP_TopRuler::mouseRelease(EV_EditModifierState /* ems */, EV_EditMouseButto
 				{
 					left =  m_draggingCenter;
 				}
-				if(i < m_infoCache.m_vecFullTable->getItemCount())
+				if(i < (UT_sint32) m_infoCache.m_vecFullTable->getItemCount())
 				{
 					pTInfo = (AP_TopRulerTableInfo *) m_infoCache.m_vecFullTable->getNthItem(i);
 					bOnDraggingRight = (leftDrag == pTInfo->m_iLeftCellPos);
@@ -2621,7 +2621,7 @@ void AP_TopRuler::mouseRelease(EV_EditModifierState /* ems */, EV_EditMouseButto
 //
 // Now set the right marker
 //
-				if(i != m_infoCache.m_vecFullTable->getItemCount() && !bOnDraggingRight)
+				if(i != (UT_sint32) m_infoCache.m_vecFullTable->getItemCount() && !bOnDraggingRight)
 				{
 					pTInfo = (AP_TopRulerTableInfo *) m_infoCache.m_vecFullTable->getNthItem(i);
 					right = pTInfo->m_iLeftCellPos + xAbsLeft + pTInfo->m_iLeftSpacing;
@@ -2631,7 +2631,7 @@ void AP_TopRuler::mouseRelease(EV_EditModifierState /* ems */, EV_EditMouseButto
 					pTInfo = (AP_TopRulerTableInfo *) m_infoCache.m_vecFullTable->getNthItem(i-1);
 					right = pTInfo->m_iRightCellPos + xAbsLeft + pTInfo->m_iLeftSpacing;
 				}
-				else if(i == m_infoCache.m_vecFullTable->getItemCount() && bDragRightMost )
+				else if(i == (UT_sint32) m_infoCache.m_vecFullTable->getItemCount() && bDragRightMost )
 				{
 					right =   m_draggingCenter;
 				}

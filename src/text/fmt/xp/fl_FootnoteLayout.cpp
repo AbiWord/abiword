@@ -213,7 +213,7 @@ void fl_FootnoteLayout::_insertFootnoteContainer(fp_Container * pNewFC)
 {
 	UT_DEBUGMSG(("inserting footnote container into container list\n"));
 	fl_ContainerLayout * pUPCL = myContainingLayout();
-	fl_ContainerLayout * pPrevL = (fl_ContainerLayout *) getPrev();
+	fl_ContainerLayout * pPrevL = (fl_ContainerLayout *) m_pLayout->findBlockAtPosition(getDocPosition()-1);
 	fp_Container * pPrevCon = NULL;
 	fp_Container * pUpCon = NULL;
 	fp_Page * pPage = NULL;
@@ -224,7 +224,22 @@ void fl_FootnoteLayout::_insertFootnoteContainer(fp_Container * pNewFC)
 		pPrevCon = pPrevL->getLastContainer();
 		if(pPrevL->getContainerType() == FL_CONTAINER_BLOCK)
 		{
-			pPrevCon = (fp_Container *) static_cast<fl_BlockLayout *>(pPrevL)->findLineWithFootnotePID(getFootnotePID());
+//
+// Code to find the Line that contains the footnote reference
+//
+			PT_DocPosition posFL = getDocPosition() - 1;
+			UT_ASSERT(pPrevL->getContainerType() == FL_CONTAINER_BLOCK);
+			fl_BlockLayout * pBL = (fl_BlockLayout *) pPrevL;
+			fp_Run * pRun = pBL->getFirstRun();
+			PT_DocPosition posBL = pBL->getPosition();
+			while(pRun && ((posBL + pRun->getBlockOffset() + pRun->getLength()) < posFL))
+			{
+				pRun = pRun->getNext();
+			}
+			if(pRun && pRun->getLine())
+			{
+				pPrevCon = (fp_Container *) pRun->getLine();
+			}
 		}
 		if(pPrevCon == NULL)
 		{
@@ -248,11 +263,7 @@ void fl_FootnoteLayout::_insertFootnoteContainer(fp_Container * pNewFC)
 
 	// need to put onto page as well, in the appropriate place.
 	UT_ASSERT(pPage);
-	if (pPage->countFootnoteContainers() == 0)
-		pPage->insertFootnoteContainer((fp_FootnoteContainer*)pNewFC, NULL);
-	else
-		pPage->insertFootnoteContainer((fp_FootnoteContainer*)pNewFC,
-									   pPage->getNthFootnoteContainer(pPage->countFootnoteContainers()-1));
+	pPage->insertFootnoteContainer((fp_FootnoteContainer*)pNewFC);
 }
 
 

@@ -151,9 +151,9 @@ UT_sint32 fb_ColumnBreaker::breakSection(fl_DocSectionLayout * pSL)
 				fl_BlockLayout * pBL = static_cast<fl_BlockLayout *> (pFootL->getFirstLayout());
 
 				// now, check out its height and add that to stuff.
-				fp_ContainerObject * pFC = pBL->getFirstContainer();
+				fp_ContainerObject * pFC = pFootL->getFirstContainer();
 				int iFootnoteHeight = 0;
-				while (pFC)
+				while (pFC && pFC->getContainerType()==FP_CONTAINER_FOOTNOTE)
 				{
 #if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
 					iFootnoteHeight += pFC->getHeightInLayoutUnits();

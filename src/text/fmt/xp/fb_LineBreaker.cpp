@@ -608,7 +608,8 @@ void fb_LineBreaker::_breakTheLineAtLastRunToKeep(fp_Line *pLine,
 		}
 
 		fp_Run* pRunToBump = pLine->getLastRun();
-		while (pLine->getNumRunsInLine() && pLine->getLastRun() != m_pLastRunToKeep)
+		UT_ASSERT(pRunToBump);
+		while (pRunToBump && pLine->getNumRunsInLine() && pLine->getLastRun() != m_pLastRunToKeep)
 		{
 			UT_ASSERT(pRunToBump->getLine() == pLine);
 			pLine->removeRun(pRunToBump);

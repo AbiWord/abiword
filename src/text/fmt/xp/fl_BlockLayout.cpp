@@ -4763,6 +4763,7 @@ bool fl_BlockLayout::doclistener_insertSection(const PX_ChangeRecord_Strux * pcr
 		// BlockLayout. -PL
 		PT_AttrPropIndex indexAP = pcrx->getIndexAP();
 		pSL = (fl_SectionLayout *) static_cast<fl_ContainerLayout *>(getSectionLayout())->insert(sdh,this,indexAP, FL_CONTAINER_FOOTNOTE);
+//		UT_ASSERT(this == (fl_BlockLayout *) pSL->getPrev());
 //
 // Need to find the DocSectionLayout associated with this.
 //

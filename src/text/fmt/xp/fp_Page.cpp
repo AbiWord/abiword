@@ -1493,8 +1493,7 @@ fp_FootnoteContainer* fp_Page::getNthFootnoteContainer(UT_sint32 n) const
 	return (fp_FootnoteContainer*)m_vecFootnotes.getNthItem(n);
 } 
 
-bool fp_Page::insertFootnoteContainer(fp_FootnoteContainer * pFC, 
-											fp_FootnoteContainer * pAfter)
+bool fp_Page::insertFootnoteContainer(fp_FootnoteContainer * pFC)
 {
 	UT_uint32 i =0;
 	UT_uint32 loc =0;
@@ -1527,24 +1526,6 @@ bool fp_Page::insertFootnoteContainer(fp_FootnoteContainer * pFC,
 	}
 	_reformat();
 	return true;
-#if 0
-	if (pAfter)
-	{
-		UT_sint32 ndx = m_vecFootnotes.findItem(pAfter);
-		UT_ASSERT(ndx >= 0);
-		m_vecFootnotes.insertItemAt(pFC, ndx+1);
-	}
-	else
-	{
-		m_vecFootnotes.insertItemAt(pFC, 0);
-	}
-	if(pFC)
-	{
-		pFC->setPage(this);
-	}
-
-	return true;
-#endif
 }
 
 void fp_Page::removeFootnoteContainer(fp_FootnoteContainer * pFC)

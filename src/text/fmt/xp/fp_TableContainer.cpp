@@ -3305,7 +3305,7 @@ void  fp_TableContainer::_size_allocate_pass2(void)
   const UT_Vector * pVecColProps = pTL->getVecColProps();
   if(pVecColProps->getItemCount() > 0)
   {
-	  for (col = 0; (col < pVecColProps->getItemCount()) && (col <getNumCols()); col++)
+	  for (col = 0; (col < (UT_sint32) pVecColProps->getItemCount()) && (col <getNumCols()); col++)
 	  {
 		  fl_ColProps * pColProp = (fl_ColProps *) pVecColProps->getNthItem(col);
 		  getNthCol(col)->allocation = pColProp->m_iColWidth - getNthCol(col)->spacing;
@@ -3429,7 +3429,7 @@ void fp_TableContainer::sizeRequest(fp_Requisition * pRequisition)
   m_iCols = m_vecColumns.getItemCount();
   for (col = 0; col < m_iCols; col++)
   {
-	  if(bDefinedColWidth && (col < pVecColProps->getItemCount()) )
+	  if(bDefinedColWidth && (col < (UT_sint32) pVecColProps->getItemCount()) )
 	  {
 		  fl_ColProps * pColProp = (fl_ColProps *) pVecColProps->getNthItem(col);
 		  getNthCol(col)->requisition = pColProp->m_iColWidth;

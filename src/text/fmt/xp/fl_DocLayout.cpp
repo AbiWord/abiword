@@ -283,7 +283,8 @@ void FL_DocLayout::addFootnote(fl_FootnoteLayout * pFL)
  */
 fl_FootnoteLayout * FL_DocLayout::getNthFootnote(UT_sint32 i)
 {
-	if(i >= m_vecFootnotes.getItemCount())
+	UT_ASSERT(i>=0);
+	if(i >= (UT_sint32) m_vecFootnotes.getItemCount())
 	{
 		return NULL;
 	}

@@ -108,8 +108,7 @@ public:
 	// Footnote functions.
 	UT_uint32			countFootnoteContainers(void) const;
 	fp_FootnoteContainer* getNthFootnoteContainer(UT_sint32 n) const; 
-	bool				insertFootnoteContainer(fp_FootnoteContainer * pFC, 
-												fp_FootnoteContainer * pAfter);
+	bool				insertFootnoteContainer(fp_FootnoteContainer * pFC);
 	void				removeFootnoteContainer(fp_FootnoteContainer * pFC);
 	UT_sint32           findFootnoteContainer(fp_FootnoteContainer * pFC);
 	void                clearScreenFootnotes(void);
