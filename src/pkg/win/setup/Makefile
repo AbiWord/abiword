@@ -28,7 +28,7 @@ GENCSRCS=		$(OBJDIR)/data.c
 
 RCSRCS=			setup.rc
 
-PROGRAM=		$(BINDIR)/setup.exe
+PROGRAM=		$(BINDIR)/setup_abiword.exe
 
 ABI_LDFLAGS=		/nologo /subsystem:windows /incremental:no /machine:$(LINK_ARCH) /profile
 ABI_APPLIBS=		AbiSetup Abi_zlib Abi_libpng
@@ -60,10 +60,14 @@ endif
 
 $(OBJDIR)/data.c:	abisuite.ask $(BINDIR)/ask_gendata.exe $(BINDIR)/askrm.exe
 	rm -f $(OBJDIR)/_tmp_.ask
-	sed -e 's|__CANONDIR__|$(CANONDIR)|g' abisuite.ask > $(OBJDIR)/_tmp1_.ask
-	sed -e 's|__BINDIR__|$(BINDIR)|g' $(OBJDIR)/_tmp1_.ask > $(OBJDIR)/_tmp2_.ask
-	sed -e 's|__GRAPHICNAME__|$(GRAPHICNAME)|g' $(OBJDIR)/_tmp2_.ask > $(OBJDIR)/_tmp3_.ask
-	$(BINDIR)/ask_gendata.exe $(OBJDIR)/_tmp3_.ask \
+	sed -e 's|__CANONDIR__|$(shell echo $(CANONDIR) | $(TRANSFORM_TO_DOS_PATH) | sed 's|\\\\|/|g')|g' \
+	  abisuite.ask > $(OBJDIR)/_tmp1_.ask
+	sed -e 's|__BINDIR__|$(shell echo $(BINDIR) | $(TRANSFORM_TO_DOS_PATH) | sed 's|\\\\|/|g')|g' \
+	  $(OBJDIR)/_tmp1_.ask > $(OBJDIR)/_tmp2_.ask
+	sed -e 's|__GRAPHICNAME__|$(shell echo $(GRAPHICNAME) | $(TRANSFORM_TO_DOS_PATH) | sed 's|\\\\|/|g')|g' \
+	  $(OBJDIR)/_tmp2_.ask > $(OBJDIR)/_tmp3_.ask
+	$(BINDIR)/ask_gendata.exe \
+	     $(shell echo $(OBJDIR)/_tmp3_.ask | $(TRANSFORM_TO_DOS_PATH)) \
 		 $(shell echo $(OBJDIR)/_tmp_.c | $(TRANSFORM_TO_DOS_PATH))
 	(cd $(OBJDIR); mv _tmp_.c data.c)
 
