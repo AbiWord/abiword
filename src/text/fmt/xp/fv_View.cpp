@@ -9359,17 +9359,71 @@ EV_EditMouseContext FV_View::getInsertionPointContext(UT_sint32 * pxPos, UT_sint
 	// this is to allow a keyboard binding to raise
 	// a context menu.
 
-	EV_EditMouseContext emc = EV_EMC_TEXT;
-
-	// TODO compute the correct context based upon the
-	// TODO current insertion point and/or the current
-	// TODO selection region.
-	
 	if (pxPos)
 		*pxPos = m_xPoint;
 	if (pyPos)
 		*pyPos = m_yPoint + m_iPointHeight;
-	return emc;
+	
+	fl_BlockLayout* pBlock = _findBlockAtPosition(m_iInsPoint);
+
+	if (!pBlock)
+	{
+		xxx_UT_DEBUGMSG(("fv_View::getMouseContext: (5)\n"));
+		return EV_EMC_UNKNOWN;
+	}
+
+	UT_sint32 x, y, x2, y2, h;
+	bool b;
+	
+	fp_Run* pRun = pBlock->findPointCoords(m_iInsPoint, false, x, y, x2, y2, h, b);
+	
+	if (!pRun)
+	{
+		return EV_EMC_UNKNOWN;
+	}
+
+	if(pRun->getHyperlink() != NULL)
+	{
+		return EV_EMC_HYPERLINK;
+	}
+		
+	switch (pRun->getType())
+	{
+	case FPRUN_TEXT:
+		if (!isPosSelected(m_iInsPoint))
+			if (pBlock->getSquiggles()->get(m_iInsPoint - pBlock->getPosition()))
+			{
+				return EV_EMC_MISSPELLEDTEXT;
+			}
+		return EV_EMC_TEXT;
+		
+	case FPRUN_IMAGE:
+		// TODO see if the image is selected and current x,y
+		// TODO is over the image border or the border handles.
+		// TODO if so, return EV_EMC_IMAGESIZE
+		return EV_EMC_IMAGE;
+		
+	case FPRUN_TAB:
+	case FPRUN_FORCEDLINEBREAK:
+	case FPRUN_FORCEDCOLUMNBREAK:
+	case FPRUN_FORCEDPAGEBREAK:
+	case FPRUN_FMTMARK:
+	case FPRUN_ENDOFPARAGRAPH:
+	case FPRUN_BOOKMARK:
+	case FPRUN_HYPERLINK:
+		return EV_EMC_TEXT;
+		
+	case FPRUN_FIELD:
+		return EV_EMC_FIELD;
+		
+	default:
+		UT_ASSERT(UT_NOT_IMPLEMENTED);
+		return EV_EMC_UNKNOWN;
+	}
+
+	/*NOTREACHED*/
+	UT_ASSERT(0);
+	return EV_EMC_UNKNOWN;
 }
 
 fp_Page* FV_View::getCurrentPage(void) const
