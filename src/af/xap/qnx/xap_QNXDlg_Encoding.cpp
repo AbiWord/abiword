@@ -131,6 +131,7 @@ void XAP_QNXDialog_Encoding::runModal(XAP_Frame * pFrame)
 	if(mainWindow && GTK_IS_WIDGET(mainWindow))
 		gtk_widget_destroy(mainWindow);
 #else
+		UT_ASSERT(UT_NOT_IMPLEMENTED);
 	_setAnswer (XAP_Dialog_Encoding::a_CANCEL);
 #endif
 }

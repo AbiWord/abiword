@@ -34,9 +34,19 @@ public:
 	virtual void			runModal(XAP_Frame * pFrame);
 
 	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
-	
-protected:
+	int done;
+	void event_OK(void);
+	void event_Cancel(void);
+	void CheckChanged(HdrFtr_Control which);
+	void RestartChanged(void);
 
+protected:
+	PtWidget_t * m_wHdrFtr[6];
+	PtWidget_t * m_RestartLabel;
+	PtWidget_t * m_RestartUpDown;
+	PtWidget_t * m_RestartText;
+	PtWidget_t * m_RestartToggle;
+	PtWidget_t * _constructWindow(void);
 };
 
 #endif /* AP_QNXDIALOG_HDRFTR_H */

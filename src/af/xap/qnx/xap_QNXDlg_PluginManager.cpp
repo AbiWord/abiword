@@ -379,7 +379,7 @@ PtWidget_t * XAP_QNXDialog_PluginManager::_constructWindow ()
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
 
 	PtArg_t args[10];
-	int n;
+	int n=0;
 
 	PtSetArg(&args[n++], Pt_ARG_WINDOW_TITLE, pSS->getValue(XAP_STRING_ID_DLG_PLUGIN_MANAGER_TITLE) , 0);
 	PtSetArg(&args[n++], Pt_ARG_WINDOW_RENDER_FLAGS, 0, ABI_MODAL_WINDOW_RENDER_FLAGS);

@@ -339,118 +339,56 @@ const XAP_StringSet * AP_QNXApp::getStringSet(void) const
 
 //////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////
-#define CLIP_FORMAT_COUNT 2
-#define Ph_CLIPBOARD_TYPE_RTF "RTF"
+#define Ph_CLIPBOARD_RTF "RTF"
+#define Ph_CLIPBOARD_TEXT "TEXT"
 
 void AP_QNXApp::copyToClipboard(PD_DocumentRange * pDocRange)
 {
-	PhClipHeader clip[CLIP_FORMAT_COUNT];		//RTF and 8 bit text
 	UT_ByteBuf rtfbuf, txtbuf;
-	int			format_count;
 
-	// copy the given subset of the given document to the
-	// system clipboard in a variety of formats.
-	//
-	m_pClipboard->clearClipboard();
-	
-	// also put RTF on the clipboard
-	format_count = 0;
-	
 	IE_Exp_RTF * pExpRtf = new IE_Exp_RTF(pDocRange->m_pDoc);
 	if (pExpRtf)
 	{
-		UT_Error status;
-		status = pExpRtf->copyToBuffer(pDocRange,&rtfbuf);
+		pExpRtf->copyToBuffer(pDocRange,&rtfbuf);
 		UT_Byte b = 0;
 		rtfbuf.append(&b,1);			// null terminate string
 		UT_DEBUGMSG(("CopyToClipboard: copying %d bytes in RTF format.",rtfbuf.getLength()));
-#if defined(USE_ABI_CLIPBOARD)
-		m_pClipboard->addData(AP_CLIPBOARD_RTF,(UT_Byte *)rtfbuf.getPointer(0),rtfbuf.getLength());
-#else
-		strcpy(clip[format_count].type, Ph_CLIPBOARD_TYPE_RTF);
-		clip[format_count].length = rtfbuf.getLength();
-		clip[format_count].data = (void *)rtfbuf.getPointer(0);
-		format_count++;
-#endif
 		DELETEP(pExpRtf);
 	}
-
 	// put raw 8bit text on the clipboard
-		
 	IE_Exp_Text * pExpText = new IE_Exp_Text(pDocRange->m_pDoc);
 	if (pExpText)
 	{
-		UT_Error status;
-		status = pExpText->copyToBuffer(pDocRange,&txtbuf);
+		pExpText->copyToBuffer(pDocRange,&txtbuf);
 		UT_Byte b = 0;
 		txtbuf.append(&b,1);			// null terminate string
 		UT_DEBUGMSG(("CopyToClipboard: copying %d bytes in TEXTPLAIN format.\n",txtbuf.getLength()));
-#if defined(USE_ABI_CLIPBOARD)
-		m_pClipboard->addData(AP_CLIPBOARD_TEXTPLAIN_8BIT,(UT_Byte *)txtbuf.getPointer(0),txtbuf.getLength());
-#else
-		strcpy(clip[format_count].type, Ph_CLIPBOARD_TYPE_TEXT);
-		clip[format_count].length = txtbuf.getLength();
-		clip[format_count].data = (void *)txtbuf.getPointer(0);
-		format_count++;
-#endif
 		DELETEP(pExpText);
 	}
+	if(rtfbuf.getLength() > 0)
+		m_pClipboard->addData(Ph_CLIPBOARD_RTF,(UT_Byte *)rtfbuf.getPointer(0),rtfbuf.getLength());
+	if(txtbuf.getLength() > 0)
+		m_pClipboard->addData(Ph_CLIPBOARD_TEXT,(UT_Byte *)txtbuf.getPointer(0),txtbuf.getLength());		
 
-#if !defined(USE_ABI_CLIPBOARD)
-	PhClipboardCopy(PhInputGroup(NULL), format_count, clip);
-#endif
+	return;
 }
 
 void AP_QNXApp::pasteFromClipboard(PD_DocumentRange * pDocRange, bool bUseClipboard, 
 									bool bHonorFormatting)
 {
-	PhClipHeader *clip;
-	void *handle;
-
 	// paste from the system clipboard using the best-for-us format
 	// that is present.
+	unsigned char * pData = NULL;
+	UT_uint32 iLen=0;
 
-
-	handle = PhClipboardPasteStart(PhInputGroup(NULL));
-
-	if (handle && (clip = PhClipboardPasteType(handle, Ph_CLIPBOARD_TYPE_RTF)) && bHonorFormatting) {
-		unsigned char * pData = (unsigned char *)clip->data;
-		UT_uint32 iLen = clip->length;
+	if (bHonorFormatting && m_pClipboard->getClipboardData(AP_CLIPBOARD_RTF,(void**)&pData,&iLen)) {
 		iLen = MyMin(iLen,strlen((const char *) pData));
 		UT_DEBUGMSG(("PasteFromClipboard: pasting %d bytes in RTF format.\n",iLen));
 		IE_Imp_RTF * pImpRTF = new IE_Imp_RTF(pDocRange->m_pDoc);
 		pImpRTF->pasteFromBuffer(pDocRange,pData,iLen);
 		DELETEP(pImpRTF);
 	}
-	else if (handle && (clip = PhClipboardPasteType(handle, Ph_CLIPBOARD_TYPE_TEXT))) {
-		unsigned char * pData = (unsigned char *)clip->data;
-		UT_uint32 iLen = clip->length;
-		iLen = MyMin(iLen,strlen((const char *) pData));
-		UT_DEBUGMSG(("PasteFromClipboard: pasting %d bytes in TEXTPLAIN format.\n",iLen));
-		IE_Imp_Text * pImpText = new IE_Imp_Text(pDocRange->m_pDoc);
-		pImpText->pasteFromBuffer(pDocRange,pData,iLen);
-		DELETEP(pImpText);
-	}
-	else if (m_pClipboard->hasFormat(AP_CLIPBOARD_RTF))
-	{
-		unsigned char * pData = NULL;
-		UT_uint32 iLen = 0;
-		bool bResult;
-		bResult = m_pClipboard->getClipboardData(AP_CLIPBOARD_RTF,(void**)&pData,&iLen);
-		UT_ASSERT(bResult);
-		iLen = MyMin(iLen,strlen((const char *) pData));
-		UT_DEBUGMSG(("PasteFromClipboard: pasting %d bytes in RTF format.\n",iLen));
-		IE_Imp_RTF * pImpRTF = new IE_Imp_RTF(pDocRange->m_pDoc);
-		pImpRTF->pasteFromBuffer(pDocRange,pData,iLen);
-		DELETEP(pImpRTF);
-	}
-	else if (m_pClipboard->hasFormat(AP_CLIPBOARD_TEXTPLAIN_8BIT))
-	{
-		unsigned char * pData = NULL;
-		UT_uint32 iLen = 0;
-		bool bResult;
-		bResult = m_pClipboard->getClipboardData(AP_CLIPBOARD_TEXTPLAIN_8BIT,(void**)&pData,&iLen);
-		UT_ASSERT(bResult);
+	else if (m_pClipboard->getClipboardData(AP_CLIPBOARD_TEXTPLAIN_8BIT,(void**)&pData,&iLen)) {
 		iLen = MyMin(iLen,strlen((const char *) pData));
 		UT_DEBUGMSG(("PasteFromClipboard: pasting %d bytes in TEXTPLAIN format.\n",iLen));
 		IE_Imp_Text * pImpText = new IE_Imp_Text(pDocRange->m_pDoc);
@@ -459,36 +397,15 @@ void AP_QNXApp::pasteFromClipboard(PD_DocumentRange * pDocRange, bool bUseClipbo
 	}
 	else {
 		// TODO figure out what to do with an image....
-		UT_DEBUGMSG(("PasteFromClipboard: TODO support this format..."));
+		UT_DEBUGMSG(("PasteFromClipboard: No TEXT or RTF data in clipboard. TODO: Add Image support"));
 	}
 	
-	if (handle) {
-		PhClipboardPasteFinish(handle);
-	}
-
 	return;
 }
 
 bool AP_QNXApp::canPasteFromClipboard(void)
 {
-	void *handle;
-
-	handle = PhClipboardPasteStart(PhInputGroup(NULL));
-	if (handle) {
-		if (PhClipboardPasteType(handle, Ph_CLIPBOARD_TYPE_RTF) ||
-		    PhClipboardPasteType(handle, Ph_CLIPBOARD_TYPE_TEXT)) {
-			PhClipboardPasteFinish(handle);
-			return true;
-		}
-		PhClipboardPasteFinish(handle);
-	}
-
-	if (m_pClipboard->hasFormat(AP_CLIPBOARD_RTF))
-		return true;
-	if (m_pClipboard->hasFormat(AP_CLIPBOARD_TEXTPLAIN_8BIT))
-		return true;
-
-	return false;
+	return true; 
 }
 
 /*****************************************************************/

@@ -486,6 +486,7 @@ UT_uint32 GR_QNXGraphics::getFontHeight(GR_Font * fnt)
 //////////////////////////////////////////////////////////////////
 void GR_Font::s_getGenericFontProperties(const char *szFontName, FontFamilyEnum * pff, FontPitchEnum * pfp, bool * pbTrueType)
 {
+
 #if 0
    switch (xx & 0xf0)
    {
@@ -506,9 +507,10 @@ void GR_Font::s_getGenericFontProperties(const char *szFontName, FontFamilyEnum 
    *pbTrueType = ((xx & TMPF_TRUETYPE) == TMPF_TRUETYPE);
 #endif
 	printf("SET GENERIC FONT ... WHY HERE?\n");
-	*pff = FF_Unknown;
+	*pff = FF_Roman;
 	*pfp = FP_Variable;
 	*pbTrueType = 0;
+//XXX.
 }
 
 
@@ -824,81 +826,92 @@ GR_Graphics::ColorSpace GR_QNXGraphics::getColorSpace(void) const
 
 void GR_QNXGraphics::setCursor(GR_Graphics::Cursor c)
 {
-#if 0
+unsigned short cursor_number=0;
 	if (m_cursor == c)
 		return;
 	
 	m_cursor = c;
-	
-	GdkCursorType cursor_number;
-	
+
 	switch (c)
 	{
 	default:
 		UT_ASSERT(UT_NOT_IMPLEMENTED);
 		/*FALLTHRU*/
 	case GR_CURSOR_DEFAULT:
-		cursor_number = GDK_TOP_LEFT_ARROW;
+		cursor_number = Ph_CURSOR_POINTER;
 		break;
 		
 	case GR_CURSOR_IBEAM:
-		cursor_number = GDK_XTERM;
+		cursor_number = Ph_CURSOR_POINTER; //XXX: Wtf is IBEAM ?
 		break;
 
 	case GR_CURSOR_RIGHTARROW:
-		cursor_number = GDK_SB_RIGHT_ARROW; //GDK_ARROW;
+		cursor_number = Ph_CURSOR_DRAG_RIGHT; 
 		break;
 		
 #ifdef BIDI_ENABLED
-//#error choose a suitable cursor; this is just a placeholder !!!		
 	case GR_CURSOR_LEFTARROW:
-		cursor_number = GDK_SB_LEFT_ARROW; //GDK_ARROW;
+		cursor_number = Ph_CURSOR_DRAG_LEFT; //GDK_ARROW;
 		break;
 #endif
 
 	case GR_CURSOR_IMAGE:
-		cursor_number = GDK_FLEUR;
+		cursor_number = Ph_CURSOR_POINTER; //XXX: ???
 		break;
 		
 	case GR_CURSOR_IMAGESIZE_NW:
-		cursor_number = GDK_TOP_LEFT_CORNER;
+		cursor_number = Ph_CURSOR_DRAG_TL;
 		break;
 		
 	case GR_CURSOR_IMAGESIZE_N:
-		cursor_number = GDK_TOP_SIDE;
+		cursor_number = Ph_CURSOR_DRAG_TOP;
 		break;
 		
 	case GR_CURSOR_IMAGESIZE_NE:
-		cursor_number = GDK_TOP_RIGHT_CORNER;
+		cursor_number = Ph_CURSOR_DRAG_TR;
 		break;
 		
 	case GR_CURSOR_IMAGESIZE_E:
-		cursor_number = GDK_RIGHT_SIDE;
+		cursor_number = Ph_CURSOR_DRAG_RIGHT;
 		break;
 		
 	case GR_CURSOR_IMAGESIZE_SE:
-		cursor_number = GDK_BOTTOM_RIGHT_CORNER;
+		cursor_number = Ph_CURSOR_DRAG_BR;
 		break;
 		
 	case GR_CURSOR_IMAGESIZE_S:
-		cursor_number = GDK_BOTTOM_SIDE;
+		cursor_number = Ph_CURSOR_DRAG_BOTTOM;
 		break;
 		
 	case GR_CURSOR_IMAGESIZE_SW:
-		cursor_number = GDK_BOTTOM_LEFT_CORNER;
+		cursor_number = Ph_CURSOR_DRAG_BL;
 		break;
 		
 	case GR_CURSOR_IMAGESIZE_W:
-		cursor_number = GDK_LEFT_SIDE;
+		cursor_number = Ph_CURSOR_DRAG_LEFT;
+		break;
+
+	case GR_CURSOR_LEFTRIGHT:
+		cursor_number=Ph_CURSOR_DRAG_HORIZONTAL;
+		break;
+	case GR_CURSOR_UPDOWN:
+		cursor_number=Ph_CURSOR_DRAG_VERTICAL;
+		break;
+	case GR_CURSOR_EXCHANGE:
+		cursor_number=Ph_CURSOR_POINTER;
+		break;
+	case GR_CURSOR_GRAB:
+		cursor_number=Ph_CURSOR_MOVE;
+		break;
+	case GR_CURSOR_LINK:
+		cursor_number=Ph_CURSOR_FINGER;
+		break;	
+	case GR_CURSOR_WAIT:
+		cursor_number= Ph_CURSOR_WAIT;
 		break;
 	}
 
-	GdkCursor * cursor = gdk_cursor_new(cursor_number);
-	gdk_window_set_cursor(m_pWin, cursor);
-	gdk_cursor_destroy(cursor);
-#else
-	UT_DEBUGMSG(("TODO: Set the cursor type "));
-#endif
+	PtSetResource(m_pWin,Pt_ARG_CURSOR_TYPE,cursor_number,0);
 }
 
 GR_Graphics::Cursor GR_QNXGraphics::getCursor(void) const

@@ -18,6 +18,7 @@
  */
 
 #include <string.h>
+#include <Ph.h>
 
 #include "ut_debugmsg.h"
 #include "ut_string.h"
@@ -50,14 +51,31 @@ void XAP_QNXClipboard::initialize(void)
 //////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////
 
+#define Ph_CLIPBOARD_RTF "RTF"
+#define Ph_CLIPBOARD_TEXT "TEXT"
+
 bool XAP_QNXClipboard::addData(const char* format, void* pData, UT_sint32 iNumBytes)
 {
-	return XAP_FakeClipboard::addData(format, pData, iNumBytes);
+
+	if(strcmp(Ph_CLIPBOARD_TEXT,format)==0){
+		PhClipboardCopyString(PhInputGroup(0),(char*)pData);
+	}
+	else if(strcmp(Ph_CLIPBOARD_RTF,format)==0) {
+	PhClipHeader clip = {Ph_CLIPBOARD_RTF,iNumBytes,0,pData};
+	PhClipboardCopy(PhInputGroup(0),1,&clip);
+	}
+	else
+		XAP_FakeClipboard::addData(format, pData, iNumBytes);
 }
 
 bool XAP_QNXClipboard::hasFormat(const char *format)
 {
-	return XAP_FakeClipboard::hasFormat(format);
+	void *cbdata;
+	cbdata=PhClipboardPasteStart(PhInputGroup(0));
+	if(!PhClipboardPasteType(cbdata,(char*)format)|| (XAP_FakeClipboard::hasFormat(format)==false))
+	return false;
+PhClipboardPasteFinish(cbdata);
+return true;
 }
 
 bool XAP_QNXClipboard::clearClipboard()
@@ -67,7 +85,15 @@ bool XAP_QNXClipboard::clearClipboard()
 
 bool XAP_QNXClipboard::getClipboardData(const char* format, void ** ppData, UT_uint32 * pLen)
 {
-	return XAP_FakeClipboard::getClipboardData(format, ppData, pLen);
-}
-	
+	void *cbdata;
+	PhClipHeader *clip;
+	cbdata=PhClipboardPasteStart(PhInputGroup(0));
+	clip=PhClipboardPasteType(cbdata,(char*)format);	
+if(clip){
+	(char*)*ppData=strdup((char*)clip->data);
 
+	*pLen=strlen((char*)*ppData);
+	return true;
+} 
+return	XAP_FakeClipboard::getClipboardData(format, ppData, pLen);
+}

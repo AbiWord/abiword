@@ -43,7 +43,11 @@
 #	include "xap_QNXDlg_Zoom.h"
 #	include "xap_QNXDlg_Insert_Symbol.h"
 #	include "xap_QNXDlg_Language.h"
-#   include "xap_QNXDlg_PluginManager.h"
+# include "xap_QNXDlg_PluginManager.h"
+# include  "xap_QNXDlg_Password.h"
+# include  "xap_QNXDlg_ClipArt.h"
+# include  "xap_QNXDlg_Encoding.h"
+# include  "xap_QNXDlg_Image.h"
 
 #	include "ap_QNXDialog_Replace.h"
 #	include "ap_QNXDialog_Break.h"
@@ -66,7 +70,6 @@
 #   include "ap_QNXDialog_HdrFtr.h"
 #	include "ap_QNXDialog_InsertBookmark.h"
 #	include "ap_QNXDialog_InsertHyperlink.h"
-
 	// ... add new dialogs here ...
 
 #else
@@ -83,8 +86,12 @@
 	DeclareDialog(XAP_DIALOG_ID_INSERT_SYMBOL,	XAP_QNXDialog_Insert_Symbol)
 	DeclareDialog(XAP_DIALOG_ID_INSERT_PICTURE,	XAP_QNXDialog_FileOpenSaveAs)
 	DeclareDialog(XAP_DIALOG_ID_PLUGIN_MANAGER, XAP_QNXDialog_PluginManager)
-
 	DeclareDialog(XAP_DIALOG_ID_ABOUT,			XAP_QNXDialog_About)
+	DeclareDialog(XAP_DIALOG_ID_PASSWORD,	XAP_QNXDialog_Password)
+	DeclareDialog(XAP_DIALOG_ID_CLIPART,XAP_QNXDialog_ClipArt)
+	DeclareDialog(XAP_DIALOG_ID_ENCODING,XAP_QNXDialog_Encoding)
+	DeclareDialog(XAP_DIALOG_ID_IMAGE,XAP_QNXDialog_Image)
+
 
 	DeclareDialog(AP_DIALOG_ID_REPLACE,			AP_QNXDialog_Replace)
 	DeclareDialog(AP_DIALOG_ID_FIND,			AP_QNXDialog_Replace)

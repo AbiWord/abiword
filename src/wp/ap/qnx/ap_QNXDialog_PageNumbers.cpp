@@ -309,7 +309,7 @@ PtWidget_t * AP_QNXDialog_PageNumbers::_constructWindow (void)
 	m_vecalign.addItem((void *)AP_Dialog_PageNumbers::id_LALIGN);
 	m_vecalign.addItem((void *)AP_Dialog_PageNumbers::id_CALIGN);
 	PtAddCallback(combo2, Pt_CB_SELECTION, s_alignment_changed, this);
-	UT_QNXComboSetPos(combo2, 1);
+	UT_QNXComboSetPos(combo2, 3);
 
 	//Create the preview area
 	//frame1 = gtk_frame_new (pSS->getValue(AP_STRING_ID_DLG_PageNumbers_Preview));

@@ -43,6 +43,12 @@ public:
 
 protected:
 	PtWidget_t * m_windowMain;
+	PtWidget_t * m_clist;
+	PtWidget_t * m_name;
+	PtWidget_t * m_author;
+	PtWidget_t * m_version;
+	PtWidget_t * m_desc;
+
 
 	void _constructWindowContents (PtWidget_t * container);
 	virtual PtWidget_t * _constructWindow ();
@@ -51,12 +57,6 @@ private:
 	void _refreshAll ();
 	void _refreshTab1 ();
 	void _refreshTab2 ();
-
-	PtWidget_t * m_clist;
-	PtWidget_t * m_name;
-	PtWidget_t * m_author;
-	PtWidget_t * m_version;
-	PtWidget_t * m_desc;
 
 	XAP_Frame * m_pFrame;
 	int 		done;

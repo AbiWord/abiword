@@ -36,6 +36,18 @@
 
 /*****************************************************************/
 
+int pass_validate( XAP_QNXDialog_Password *dlg,
+              char const *password_entered )
+{
+dlg->SetPassword((char*)password_entered);
+return Pt_PWD_ACCEPT;
+}
+
+void * XAP_QNXDialog_Password::SetPassword(char* pass)
+{
+m_pass=strdup(pass);
+}
+
 XAP_Dialog * XAP_QNXDialog_Password::static_constructor(XAP_DialogFactory * pFactory,
 													 XAP_Dialog_Id id)
 {
@@ -47,40 +59,52 @@ XAP_QNXDialog_Password::XAP_QNXDialog_Password(XAP_DialogFactory * pDlgFactory,
 											   XAP_Dialog_Id id)
 	: XAP_Dialog_Password(pDlgFactory,id)
 {
+m_pass=0;
 }
 
 XAP_QNXDialog_Password::~XAP_QNXDialog_Password(void)
 {
+if(m_pass)
+	free(m_pass);
 }
 
 void XAP_QNXDialog_Password::runModal(XAP_Frame * pFrame)
-{
+{	
 	UT_ASSERT(pFrame);
+	int pwdreturn;
+	const XAP_StringSet * pSS = m_pApp->getStringSet();
+	char **buttons=(char**)calloc(2,sizeof(char*));
+	buttons[0]= (char*) pSS->getValue(XAP_STRING_ID_DLG_Cancel);
+	buttons[1]=(char*)pSS->getValue(XAP_STRING_ID_DLG_OK);
+    
 
-/*
-	NOTE: This template can be used to create a working stub for a 
-	new dialog on this platform.  To do so:
+  // To center the dialog, we need the frame of its parent.
+   XAP_QNXFrame * pQNXFrame = static_cast<XAP_QNXFrame *>(pFrame);
+   UT_ASSERT(pQNXFrame);
+     
+	// Get the Window of the parent frame
+  PtWidget_t * parentWindow = pQNXFrame->getTopLevelWindow();
+  UT_ASSERT(parentWindow);
 	
-	1.  Copy this file (and its associated header file) and rename 
-		them accordingly. 
-
-	2.  Do a case sensitive global replace on the words Stub and STUB
-		in both files. 
-
-	3.  Add stubs for any required methods expected by the XP class. 
-		If the build fails because you didn't do this step properly,
-		you've just broken the donut rule.  
-
-	4.	Replace this useless comment with specific instructions to 
-		whoever's porting your dialog so they know what to do.
-		Skipping this step may not cost you any donuts, but it's 
-		rude.  
-
-	This file should *only* be used for stubbing out platforms which 
-	you don't know how to implement.  When implementing a new dialog 
-	for your platform, you're probably better off starting with code
-	from another working dialog.  
-*/	
-
-	UT_ASSERT(UT_NOT_IMPLEMENTED);
+	pwdreturn=PtPassword(parentWindow, /* Parent */
+						  NULL, /* Location */
+							pSS->getValue(XAP_STRING_ID_DLG_Password_Title), /* Title*/
+							NULL, /* Image*/
+							pSS->getValue(XAP_STRING_ID_DLG_Password_Title), /* Msg */
+							NULL, /* font*/
+							(const char **)buttons, /* button strings */
+							NULL, /* font*/
+							NULL, /* font*/
+							pass_validate,		/* fake validation.*/
+							this, /* validate data.*/
+							"*",
+							Pt_CENTER|Pt_BLOCK_ALL);
+	if(pwdreturn == Pt_PWD_CANCEL)
+		  setAnswer(XAP_Dialog_Password::a_Cancel);
+	if(pwdreturn == Pt_PWD_ACCEPT) {
+		setPassword(m_pass);
+		setAnswer(XAP_Dialog_Password::a_OK);
+	}
+	free(buttons);
 }
+
