@@ -508,6 +508,15 @@ public:
 	virtual void			_draw(dg_DrawArgs* pDA) { _defaultDraw(pDA); }
 };
 
+class fp_FieldDateRun : public fp_FieldRun
+{
+ public:
+        fp_FieldDateRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen);
+
+	virtual bool			calculateValue(void);
+	virtual void			_draw(dg_DrawArgs* pDA) { _defaultDraw(pDA); }
+};
+
 
 class fp_FmtMarkRun : public fp_Run
 {

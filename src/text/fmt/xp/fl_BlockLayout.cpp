@@ -2593,6 +2593,10 @@ bool	fl_BlockLayout::_doInsertFieldRun(PT_BlockOffset blockOffset, const PX_Chan
 	{
 		pNewRun = new fp_FieldPageCountRun(this, m_pLayout->getGraphics(), blockOffset, 1);
 	}
+	else if(UT_strcmp(pszType, "date") == 0)
+	{
+	        pNewRun = new fp_FieldDateRun(this, m_pLayout->getGraphics(), blockOffset, 1);
+	}
 	else
 	{
 	  //		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);

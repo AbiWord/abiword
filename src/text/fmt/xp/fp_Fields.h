@@ -19,6 +19,7 @@
 
 _FIELDTYPE(DATETIME, AP_STRING_ID_FIELD_Type_Datetime)
 _FIELD(DATETIME, AP_STRING_ID_FIELD_Datetime_CurrentTime, time)
+_FIELD(DATETIME, AP_STRING_ID_FIELD_Datetime_CurrentDate, date)
 _FIELDTYPE(NUMBERS, AP_STRING_ID_FIELD_Type_Numbers)
 _FIELD(NUMBERS, AP_STRING_ID_FIELD_Numbers_PageNumber, page_number)
 _FIELD(NUMBERS, AP_STRING_ID_FIELD_Numbers_PagesCount, page_count)

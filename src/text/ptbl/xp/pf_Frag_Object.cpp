@@ -68,6 +68,14 @@ pf_Frag_Object::pf_Frag_Object(pt_PieceTable * pPT,
         {
             fieldType = fd_Field::FD_ListLabel;
         }
+	else if (0 == UT_strcmp(pszType, "file_name"))
+	  {
+	    fieldType == fd_Field::FD_FileName;
+	  }
+	else if (0 == UT_strcmp(pszType, "date"))
+	  {
+	    fieldType == fd_Field::FD_Date;
+	  }
         else
         { 
             UT_ASSERT(UT_SHOULD_NOT_HAPPEN);

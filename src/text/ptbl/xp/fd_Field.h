@@ -43,7 +43,9 @@ class fd_Field
 		FD_Time, 
 		FD_PageNumber, 
 		FD_PageCount,
-		FD_ListLabel
+		FD_ListLabel,
+		FD_FileName,
+		FD_Date
 	} FieldType;
     fd_Field(pf_Frag_Object& fO, pt_PieceTable * pt, FieldType fieldType);
     virtual                              ~fd_Field(void);
