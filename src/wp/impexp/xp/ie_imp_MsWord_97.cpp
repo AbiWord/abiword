@@ -649,12 +649,12 @@ UT_Error IE_Imp_MsWord_97::importFile(const char * szFilename)
       // comments
       prop_str = ms_ole_summary_get_string (summary, MS_OLE_SUMMARY_COMMENTS, &found);
       if (found && prop_str)
-	getDoc()->setMetaDataProp ( PD_META_KEY_COMMENTS, prop_str ) ;
+	getDoc()->setMetaDataProp ( PD_META_KEY_DESCRIPTION, prop_str ) ;
 
       // category
       prop_str = ms_ole_summary_get_string (summary, MS_OLE_SUMMARY_CATEGORY, &found);
       if (found && prop_str)
-	getDoc()->setMetaDataProp ( PD_META_KEY_CATEGORY, prop_str ) ;
+	getDoc()->setMetaDataProp ( PD_META_KEY_TYPE, prop_str ) ;
 
       // organization
       prop_str = ms_ole_summary_get_string (summary, MS_OLE_SUMMARY_COMPANY, &found);

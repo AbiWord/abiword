@@ -44,7 +44,7 @@
 #include "ut_string_class.h"
 
 // our currently used DTD
-#define ABIWORD_FILEFORMAT "fileformat=\"1.0\""
+#define ABIWORD_FILEFORMAT_VERSION "fileformat=\"1.1\""
 
 /*****************************************************************/
 /*****************************************************************/
@@ -474,7 +474,7 @@ s_AbiWord_1_Listener::s_AbiWord_1_Listener(PD_Document * pDocument,
 		m_pie->write(XAP_App::s_szBuild_Version);
 	}
 	m_pie->write("\" ");
-	m_pie->write(ABIWORD_FILEFORMAT);
+	m_pie->write(ABIWORD_FILEFORMAT_VERSION);
 
 	if (m_bIsTemplate) {
 		m_pie->write (" template=\"true\"");
@@ -894,9 +894,9 @@ void s_AbiWord_1_Listener::_handleMetaData(void)
 	{
 	  UT_String *stringval = (UT_String* ) val;
 	  m_pie->write( "<m key=\"" ) ;
-	  m_pie->write ( cursor.key().c_str() ) ;
+	  _outputXMLChar ( cursor.key().c_str(), cursor.key().size() ) ;
 	  m_pie->write ( "\">" ) ;
-	  m_pie->write ( stringval->c_str() ) ;
+	  _outputXMLChar ( stringval->c_str(), stringval->size() ) ;
 	  m_pie->write ( "</m>\n" ) ;
 	}
     }
