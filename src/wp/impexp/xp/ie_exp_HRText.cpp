@@ -268,7 +268,6 @@ void s_HRText_Listener::_openTag(PT_AttrPropIndex api)
 		//const XML_Char * szLevel;
 		const XML_Char * szListID;
 		const XML_Char * szProps;
-		char buff[20];
 
 		if (
 		   (pAP->getAttribute((XML_Char*)PT_STYLE_ATTRIBUTE_NAME, szValue))
@@ -290,9 +289,8 @@ void s_HRText_Listener::_openTag(PT_AttrPropIndex api)
 						m_pList->insert((const char *)szListID,(void *) piVal);
 					}
 					UT_uint16 * pTemp = (UT_uint16 *) m_pList->pick((const char *)szListID);
-					sprintf(buff,"%d ",*pTemp);	
+					m_pie->write(UT_String_sprintf("%d", *pTemp).c_str());
 					*pTemp = *pTemp + 1;
-					m_pie->write(buff);
 				}
 				else
 				{

@@ -53,20 +53,14 @@
 UT_String&
 operator<< (UT_String& st, int i)
 {
-	char tmp[16];
-	int nb = sprintf(tmp, "%d", i);
-	UT_ASSERT(nb < 15);
-	return (st += tmp);
+  return (st += UT_String_sprintf ("%d", i));
 }
  
 UT_UCS2String&
 operator<< (UT_UCS2String& st, int i)
 {
-	char tmp[16];
 	UT_UCSChar tmp2[16];
-	int nb = sprintf(tmp, "%d", i);
-	UT_ASSERT(nb < 15);
-	UT_UCS_strcpy_char(tmp2, tmp);
+	UT_UCS_strcpy_char(tmp2, UT_String_sprintf("%d", i).c_str());
 	return (st += tmp2);
 }
 
@@ -440,12 +434,7 @@ bool s_XSL_FO_Listener::populate(PL_StruxFmtHandle /*sfh*/,
 			{
 			case PTO_Image:
 			{
-				char buf[16];
-				sprintf(buf, "-%d.png", m_iImgCnt++);
-				m_pie->write("<fo:external-graphic src=\"");
-				m_pie->write(m_pie->getFileName());
-				m_pie->write(buf);
-				m_pie->write("\"/>\n");
+			        m_pie->write(UT_String_sprintf("<fo:external-graphic src=\"%s-%d.png\"/>\n", m_pie->getFileName(), m_iImgCnt++));
 				return true;
 			}
 
@@ -645,18 +634,9 @@ void s_XSL_FO_Listener::_handlePageSize(PT_AttrPropIndex api)
 		UT_Dimension docUnit = m_pDocument->m_docPageSize.getDims(); 
 		char buf[20];
 
-		m_pie->write( " page-width=\"");
-		sprintf((char *) buf,"%f",m_pDocument->m_docPageSize.Width(docUnit));
-		m_pie->write((char *)buf);
-		m_pie->write(UT_dimensionName(docUnit));
-		m_pie->write("\"");
+		m_pie->write( UT_String_sprintf(" page-width=\"%f%s\"", m_pDocument->m_docPageSize.Width(docUnit), UT_dimensionName(docUnit)) );
 
-		m_pie->write(" page-height=\"");
-		sprintf((char *) buf,"%f",m_pDocument->m_docPageSize.Height(docUnit));
-		m_pie->write((char *)buf);
-		m_pie->write(UT_dimensionName(docUnit));
-		m_pie->write("\"");
-		
+		m_pie->write(UT_String_sprintf(" page-height=\"%f%s\"", m_pDocument->m_docPageSize.Height(docUnit), UT_dimensionName(docUnit)) );
 	}
 	// page-width, page-height
 
@@ -682,16 +662,16 @@ void s_XSL_FO_Listener::_handleDataItems()
 	for (UT_uint32 k=0; (m_pDocument->enumDataItems(k,NULL,&szName,&pByteBuf,(void**)&szMimeType)); k++)
 	{	  	  
 	  FILE *fp;
-	  char fname [1024]; // FIXME EVIL EVIL bad hardcoded buffer size
+	  UT_String fname;
 	  
 	  if (!UT_strcmp(szMimeType, "image/svg-xml"))
-	      sprintf(fname, "%s-%d.svg", m_pie->getFileName(), k);
+	    UT_String_sprintf(fname, "%s-%d.svg", m_pie->getFileName(), k);
 	  if (!UT_strcmp(szMimeType, "text/mathml"))
-	    sprintf(fname, "%s-%d.mathml", m_pie->getFileName(), k);
+	    UT_String_sprintf(fname, "%s-%d.mathml", m_pie->getFileName(), k);
 	  else // PNG Image
-	    sprintf(fname, "%s-%d.png", m_pie->getFileName(), k);
+	    UT_String_sprintf(fname, "%s-%d.png", m_pie->getFileName(), k);
 	  
-	  fp = fopen (fname, "wb+");
+	  fp = fopen (fname.c_str(), "wb+");
 	  
 	  if(!fp)
 	    continue;
@@ -999,10 +979,7 @@ void s_XSL_FO_Listener::_outputData(const UT_UCSChar * data, UT_uint32 length)
 					UT_UCSChar c = XAP_EncodingManager::get_instance()->try_UToNative(*pData);
 					if (c==0 || c>255)
 					{
-						char localBuf[20];
-						char * plocal = localBuf;
-						sprintf(localBuf,"&#x%x;",*pData++);
-						sBuf += plocal;
+					  sBuf += UT_String_sprintf("&#x%x;",*pData++);
 					}
 					else
 					{

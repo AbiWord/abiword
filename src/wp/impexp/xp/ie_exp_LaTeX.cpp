@@ -205,8 +205,8 @@ protected:
 	void				_openSpan(PT_AttrPropIndex api);
 	void				_outputData(const UT_UCSChar * p, UT_uint32 length);
 	void				_handleDataItems(void);
-	void				_convertFontSize(char* szDest, const char* pszFontSize);
-	void				_convertColor(char* szDest, const char* pszColor);
+	void				_convertFontSize(UT_String& szDest, const char* pszFontSize);
+	void				_convertColor(UT_String& szDest, const char* pszColor);
 	
 	PD_Document *		m_pDocument;
 	IE_Exp_LaTeX *		m_pie;
@@ -449,7 +449,7 @@ void s_LaTeX_Listener::_openSection(PT_AttrPropIndex api)
 	}
 }
 
-void s_LaTeX_Listener::_convertColor(char* szDest, const char* pszColor)
+void s_LaTeX_Listener::_convertColor(UT_String& szDest, const char* pszColor)
 {
 	char colors[3][3];
 	for (int i=0;i<3;++i)
@@ -458,57 +458,56 @@ void s_LaTeX_Listener::_convertColor(char* szDest, const char* pszColor)
 		colors[i][2]=0;
 	}
 	setlocale (LC_NUMERIC, "C");
-	//FIXME: should use std_size_string here
-	sprintf (szDest, "%.3f,%.3f,%.3f",
-					strtol (&colors[0][0],NULL,16)/255.,
-					strtol (&colors[1][0],NULL,16)/255.,
-					strtol (&colors[2][0],NULL,16)/255.);
+	UT_String_sprintf (szDest, "%.3f,%.3f,%.3f",
+			   strtol (&colors[0][0],NULL,16)/255.,
+			   strtol (&colors[1][0],NULL,16)/255.,
+			   strtol (&colors[2][0],NULL,16)/255.);
 	setlocale (LC_NUMERIC, "");
 }
 
-void s_LaTeX_Listener::_convertFontSize(char* szDest, const char* pszFontSize)
+void s_LaTeX_Listener::_convertFontSize(UT_String& szDest, const char* pszFontSize)
 {
 	double fSizeInPoints = UT_convertToPoints(pszFontSize);
 
 	if (fSizeInPoints <= 6)
 	{
-		strcpy(szDest, "tiny");
+		szDest = "tiny";
 	}
 	else if (fSizeInPoints <= 8)
 	{
-		strcpy(szDest, "scriptsize");
+		szDest = "scriptsize";
 	}
 	else if (fSizeInPoints <= 10)
 	{
-		strcpy(szDest, "footnotesize");
+		szDest = "footnotesize";
 	}
 	else if (fSizeInPoints <= 11)
 	{
-		strcpy(szDest, "small");
+		szDest = "small";
 	}
 	else if (fSizeInPoints <= 12)
 	{
-		strcpy(szDest, "normalsize");
+		szDest = "normalsize";
 	}
 	else if (fSizeInPoints <= 14)
 	{
-		strcpy(szDest, "large");
+		szDest = "large";
 	}
 	else if (fSizeInPoints <= 17)
 	{
-		strcpy(szDest, "Large");
+		szDest = "Large";
 	}
 	else if (fSizeInPoints <= 20)
 	{
-		strcpy(szDest, "LARGE");
+		szDest = "LARGE";
 	}
 	else if (fSizeInPoints <= 25)
 	{
-		strcpy(szDest, "huge");
+		szDest = "huge";
 	}
 	else
 	{
-		strcpy(szDest, "Huge");
+		szDest = "Huge";
 	}
 }
 
@@ -597,7 +596,7 @@ void s_LaTeX_Listener::_openSpan(PT_AttrPropIndex api)
 		pAP->getProperty("color", pszColor);
 		if (pszColor)
 		{
-			char szColor[18];
+		  UT_String szColor;
 			_convertColor(szColor,(char*)pszColor);
 			m_pie->write("\\textcolor[rgb]{");
 			m_pie->write(szColor);
@@ -608,7 +607,7 @@ void s_LaTeX_Listener::_openSpan(PT_AttrPropIndex api)
 		pAP->getProperty("bgcolor", pszBgColor);
 		if (pszBgColor)
 		{
-			char szColor[18];
+		  UT_String szColor;
 			_convertColor(szColor,(char*)pszBgColor);
 			m_pie->write("\\colorbox[rgb]{");
 			m_pie->write(szColor);
@@ -620,7 +619,7 @@ void s_LaTeX_Listener::_openSpan(PT_AttrPropIndex api)
 			if (!UT_strcmp (DEFAULT_SIZE, szValue))
 			{
 				m_pie->write("{\\");
-				char szSize[16];
+				UT_String szSize;
 				_convertFontSize(szSize, (char*)szValue);
 				m_pie->write(szSize);
 				m_pie->write("{}");

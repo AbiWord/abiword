@@ -402,10 +402,7 @@ void s_AbiWord_1_Listener::_outputData(const UT_UCSChar * data, UT_uint32 length
 					UT_UCSChar c = XAP_EncodingManager::get_instance()->try_UToNative(*pData);
 					if (c==0 || c>255)
 					{
-						char localBuf[20];
-						char * plocal = localBuf;
-						sprintf(localBuf,"&#x%x;",*pData++);
-						sBuf += plocal;
+						sBuf += UT_String_sprintf("&#x%x;",*pData++);
 					}
 					else
 					{
@@ -463,7 +460,7 @@ s_AbiWord_1_Listener::s_AbiWord_1_Listener(PD_Document * pDocument,
 	// TODO: write out a DOCTYPE description after we update the DTD
 	m_pie->write ("<!DOCTYPE abiword PUBLIC \"-//ABISOURCE//DTD AWML 1.0 Strict//EN\" \"http://www.abisource.com/awml.dtd\">\n");
 
-	m_pie->write("<abiword xmlns:awml=\"http://www.abisource.com/awml.dtd\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" xmlns:svg=\"http://www.w3.org/2000/svg\" xmlns:fo=\"http://www.w3.org/1999/XSL/Format\" xmlns:math=\"http://www.w3.org/1998/Math/MathML\" xmlns:dc=\"http://purl.org/dc/elements/1.1/\"");
+	m_pie->write("<abiword xmlns=\"http://www.abisource.com/awml.dtd\" xmlns:awml=\"http://www.abisource.com/awml.dtd\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" xmlns:svg=\"http://www.w3.org/2000/svg\" xmlns:fo=\"http://www.w3.org/1999/XSL/Format\" xmlns:math=\"http://www.w3.org/1998/Math/MathML\" xmlns:dc=\"http://purl.org/dc/elements/1.1/\"");
 	m_pie->write(" version=\"");
 	if (XAP_App::s_szBuild_Version && XAP_App::s_szBuild_Version[0])
 	{
@@ -873,8 +870,6 @@ void s_AbiWord_1_Listener::_handlePageSize(void)
   // 
 	char *old_locale;
 
-	char buf[20];
-
 	old_locale = setlocale (LC_NUMERIC, "C");
         m_pie->write("<pagesize pagetype=\"");
 	m_pie->write(m_pDocument->m_docPageSize.getPredefinedName());
@@ -885,24 +880,13 @@ void s_AbiWord_1_Listener::_handlePageSize(void)
 	        m_pie->write("portrait\"");
 	else
 	        m_pie->write("landscape\"");
-	m_pie->write( " width=\"");
 	UT_Dimension docUnit = m_pDocument->m_docPageSize.getDims();
-	sprintf((char *) buf,"%f",m_pDocument->m_docPageSize.Width(docUnit));
-	m_pie->write( (char *) buf);
-	m_pie->write("\"");
-	m_pie->write(" height=\"");
-	sprintf((char *) buf,"%f",m_pDocument->m_docPageSize.Height(docUnit));
-	m_pie->write( (char *) buf);
-	m_pie->write("\"");
+	m_pie->write( UT_String_sprintf(" width=\"%f\"", m_pDocument->m_docPageSize.Width(docUnit)).c_str() );
+	m_pie->write( UT_String_sprintf(" height=\"%f\"",m_pDocument->m_docPageSize.Height(docUnit)).c_str() );
 	m_pie->write(" units=\"");
 	m_pie->write(UT_dimensionName(docUnit));
 	m_pie->write("\"");
-	m_pie->write(" page-scale=\"");
-	sprintf((char *) buf,"%f",m_pDocument->m_docPageSize.getScale());
-	m_pie->write( (char *) buf);
-	m_pie->write("\"");
-
-	m_pie->write("/>\n");
+	m_pie->write( UT_String_sprintf(" page-scale=\"%f\"/>\n",m_pDocument->m_docPageSize.getScale()).c_str() );
 	setlocale (LC_NUMERIC, old_locale);
 	return;
 }

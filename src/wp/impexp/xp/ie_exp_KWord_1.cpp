@@ -312,12 +312,6 @@ bool s_KWord_1_Listener::populate(PL_StruxFmtHandle /*sfh*/,
 			{
 			case PTO_Image:
 			{
-				//char buf[16];
-				//sprintf(buf, "%d.png", m_iImgCnt++);
-				//m_pie->write("<fo:external-graphic src=\"");
-				//m_pie->write(m_pie->getFileName());
-				//m_pie->write(buf);
-				//m_pie->write("\"/>\n");
 				return true;
 			}
 
@@ -536,17 +530,17 @@ abiPageSizeToKoPageFormat (fp_PageSize abi_page_size)
 
 void s_KWord_1_Listener::_writeMarginSize(PT_AttrPropIndex api, char * name)
 {
-	char buf[20]; 
+        UT_String buf;
 	const XML_Char * szValue;
 	const PP_AttrProp * pAP = NULL;
 	bool bHaveProp = m_pDocument->getAttrProp(api,&pAP);
 	UT_ASSERT((bHaveProp));
 
-	sprintf(buf, "page-margin-%s", name);
-	szValue = PP_evalProperty(buf, 
-							  NULL, NULL, pAP, m_pDocument, true);
-	sprintf((char *) buf," %s=\"%f",name, UT_convertToDimension(szValue, kword_1_unit));
-	m_pie->write((char *)buf);
+	UT_String_sprintf(buf, "page-margin-%s", name);
+	szValue = PP_evalProperty(buf.c_str(), 
+				  NULL, NULL, pAP, m_pDocument, true);
+	UT_String_sprintf(buf," %s=\"%f",name, UT_convertToDimension(szValue, kword_1_unit));
+	m_pie->write(buf);
 	m_pie->write("\"");
 
 }
@@ -582,15 +576,15 @@ void s_KWord_1_Listener::_handlePageSize(PT_AttrPropIndex api)
 	// FIXME: put something useful here
 	m_pie->write(" columnspacing=\"0\"");
 	
-	char buf[20]; 
+	UT_String buf;
 	m_pie->write(" width=\"");
-	sprintf((char *) buf,"%f",m_pDocument->m_docPageSize.Width(kword_1_unit));
-	m_pie->write((char *)buf);
+	UT_String_sprintf(buf,"%f",m_pDocument->m_docPageSize.Width(kword_1_unit));
+	m_pie->write(buf);
 	m_pie->write("\"");
 
 	m_pie->write(" height=\"");
-	sprintf((char *) buf,"%f",m_pDocument->m_docPageSize.Height(kword_1_unit));
-	m_pie->write((char *)buf);
+	UT_String_sprintf(buf,"%f",m_pDocument->m_docPageSize.Height(kword_1_unit));
+	m_pie->write(buf);
 	m_pie->write("\"");
 	
 	m_pie->write(">\n");
@@ -635,16 +629,16 @@ void s_KWord_1_Listener::_handleDataItems(void)
 	for (UT_uint32 k=0; (m_pDocument->enumDataItems(k,NULL,&szName,&pByteBuf,(void**)&szMimeType)); k++)
 	{	  	  
 	  FILE *fp;
-	  char fname [1024]; // FIXME EVIL EVIL bad hardcoded buffer size
+	  UT_String fname;	  
 	  
 	  if (!UT_strcmp(szMimeType, "image/svg-xml"))
-	      sprintf(fname, "%s-%d.svg", m_pie->getFileName(), k);
+	      UT_String_sprintf(fname, "%s-%d.svg", m_pie->getFileName(), k);
 	  if (!UT_strcmp(szMimeType, "text/mathml"))
-	    sprintf(fname, "%s-%d.mathml", m_pie->getFileName(), k);
+	    UT_String_sprintf(fname, "%s-%d.mathml", m_pie->getFileName(), k);
 	  else // PNG Image
-	    sprintf(fname, "%s-%d.png", m_pie->getFileName(), k);
+	    UT_String_sprintf(fname, "%s-%d.png", m_pie->getFileName(), k);
 	  
-	  fp = fopen (fname, "wb+");
+	  fp = fopen (fname.c_str(), "wb+");
 	  
 	  if(!fp)
 	    continue;
@@ -653,7 +647,6 @@ void s_KWord_1_Listener::_handleDataItems(void)
 	  
 	  while (cnt < len)
 	    {
-	      xxx_UT_DEBUGMSG(("DOM: len: %d cnt: %d\n", len, cnt));
 	      cnt += fwrite (pByteBuf->getPointer(cnt), sizeof(UT_Byte), len-cnt, fp);
 	    }
 	  
@@ -1017,12 +1010,15 @@ void s_KWord_1_Listener::_openSpan(PT_AttrPropIndex api, PT_BlockOffset pos, UT_
 	// closeBlock is called
 	m_sFormats += "<FORMAT id=\"1\""; // id="1" means normal text
 	m_sFormats += " pos=\""; // current cursor position
-	char buf[100]; // FIXME: bad! hard-coded buffer size
-	sprintf(buf,"%ld", (long) pos);
+
+	UT_String buf;
+
+	UT_String_sprintf(buf,"%ld", (long) pos);
 	m_sFormats += buf;
 	m_sFormats += "\"";
 	m_sFormats += " len=\""; // length of span
-	sprintf(buf,"%ld", (long) len);
+
+	UT_String_sprintf(buf,"%ld", (long) len);
 	m_sFormats += buf;
 	m_sFormats += "\"";
 	m_sFormats += ">\n";
@@ -1037,20 +1033,16 @@ void s_KWord_1_Listener::_openSpan(PT_AttrPropIndex api, PT_BlockOffset pos, UT_
 
 		if (pAP->getProperty("color", szValue))
 		{
-		  char red[4], green[4], blue[4];
+		  UT_String red, green, blue;
 		  UT_RGBColor rgb;
 
 		  // convert from hex/decimal
 
 		  UT_parseColor(szValue, rgb);
 
-		  memset(red, 0, sizeof(red));
-		  memset(green, 0, sizeof(green));
-		  memset(blue, 0, sizeof(blue));
-		  
-		  sprintf(red, "%d", rgb.m_red);
-		  sprintf(green, "%d", rgb.m_grn);
-		  sprintf(blue, "%d", rgb.m_blu);
+		  UT_String_sprintf(red, "%d", rgb.m_red);
+		  UT_String_sprintf(green, "%d", rgb.m_grn);
+		  UT_String_sprintf(blue, "%d", rgb.m_blu);
 
 		  m_sFormats += "<COLOR red=\"";
 		  m_sFormats += red;
@@ -1090,10 +1082,10 @@ void s_KWord_1_Listener::_openSpan(PT_AttrPropIndex api, PT_BlockOffset pos, UT_
 		// <SIZE value="12"/> size in pt
 		if (pAP->getProperty("font-size", szValue))
 		{
-			char buf[100]; // FIXME: bad! hard-coded buffer size
+		  UT_String buf;
 
 			m_sFormats += "<SIZE value=\"";
-			sprintf(buf,"%d", (int) UT_convertToDimension(szValue, DIM_PT));
+			UT_String_sprintf(buf,"%d", (int) UT_convertToDimension(szValue, DIM_PT));
 			m_sFormats += buf;
 			m_sFormats += "\"/>\n";
 		}		
@@ -1297,10 +1289,7 @@ void s_KWord_1_Listener::_outputData(const UT_UCSChar * data, UT_uint32 length)
 					UT_UCSChar c = XAP_EncodingManager::get_instance()->try_UToNative(*pData);
 					if (c==0 || c>255)
 					{
-						char localBuf[20];
-						char * plocal = localBuf;
-						sprintf(localBuf,"&#x%x;",*pData++);
-						sBuf += plocal;
+					  sBuf += UT_String_sprintf("&#x%x;",*pData++);
 					}
 					else
 					{

@@ -1091,28 +1091,20 @@ void s_HTML_Listener::_openSpan(PT_AttrPropIndex api)
 	
 			}
 			
-			char szSize[16];
-
 			if (pszFontSize)
 			{
 				if (!span)
 				{
-					m_pie->write("<span style=\"font-size: ");	
 					setlocale (LC_NUMERIC, "C");
-					sprintf(szSize, "%f", UT_convertToPoints(pszFontSize));
+					m_pie->write(UT_String_sprintf("<span style=\"font-size: %fpt", UT_convertToPoints(pszFontSize)));
 					setlocale (LC_NUMERIC, "");
-					m_pie->write(szSize);
-					m_pie->write("pt");
 					span = true;
 				}
 				else 
 				{
-					m_pie->write("; font-size: ");	
 					setlocale (LC_NUMERIC, "C");
-					sprintf(szSize, "%f", UT_convertToPoints(pszFontSize));
+					m_pie->write(UT_String_sprintf("; font-size: %fpt", UT_convertToPoints(pszFontSize)));
 					setlocale (LC_NUMERIC, "");
-					m_pie->write(szSize);
-					m_pie->write("pt");
 				}
 			}
 			
@@ -1424,10 +1416,7 @@ void s_HTML_Listener::_outputData(const UT_UCSChar * data, UT_uint32 length)
 					UT_UCSChar c = XAP_EncodingManager::get_instance()->try_UToNative(*pData);
 					if (c==0 || c>255)
 					{
-						char localBuf[20];
-						char * plocal = localBuf;
-						sprintf(localBuf,"&#x%x;",*pData++);
-						sBuf += plocal;
+					  sBuf += UT_String_sprintf("&#x%x;",*pData++);
 					}
 					else
 					{
@@ -1809,7 +1798,7 @@ bool s_HTML_Listener::populate(PL_StruxFmtHandle /*sfh*/,
 			const PX_ChangeRecord_Object * pcro = 
 				static_cast<const PX_ChangeRecord_Object *> (pcr);
 			const XML_Char* szValue;
-			char buf[16];
+			UT_String buf;
 
 			fd_Field* field;
 			PT_AttrPropIndex api = pcr->getIndexAP();
@@ -1832,7 +1821,7 @@ bool s_HTML_Listener::populate(PL_StruxFmtHandle /*sfh*/,
 					char * temp = _stripSuffix(UT_basename(szValue), '_');
 					char * fstripped = _stripSuffix(temp, '.');
 					FREEP(temp);
-					sprintf(buf, "%s.png", fstripped);
+					UT_String_sprintf(buf, "%s.png", fstripped);
 					FREEP(fstripped);
 					
 					m_pie->write("<img alt=\"AbiWord Image ");
@@ -1851,14 +1840,14 @@ bool s_HTML_Listener::populate(PL_StruxFmtHandle /*sfh*/,
 					  {
 					    if(szWidth)
 					      {
-						sprintf(buf, "%d", (int) UT_convertToPoints(szWidth));
+						UT_String_sprintf(buf, "%d", (int) UT_convertToPoints(szWidth));
 						m_pie->write (" width=\"");
 						m_pie->write (buf);
 						m_pie->write ("\" ");
 					      }
 					    if(szHeight)
 					      {
-						sprintf(buf, "%d", (int) UT_convertToPoints(szHeight));
+						UT_String_sprintf(buf, "%d", (int) UT_convertToPoints(szHeight));
 						m_pie->write (" height=\"");
 						m_pie->write (buf);
 						m_pie->write ("\" ");
@@ -2096,27 +2085,27 @@ void s_HTML_Listener::_handleDataItems(void)
 		if(loc > -1)
 		{
 			FILE *fp;
-			char fname [1024]; // EVIL EVIL bad hardcoded buffer size
+			UT_String fname; // EVIL EVIL bad hardcoded buffer size
 			
-			sprintf(fname, "%s_data", m_pie->getFileName());
-			int result = m_pDocument->getApp()->makeDirectory(fname, 0750);
+			UT_String_sprintf(fname, "%s_data", m_pie->getFileName());
+			int result = m_pDocument->getApp()->makeDirectory(fname.c_str(), 0750);
 			
 			if (!UT_strcmp(szMimeType, "image/svg-xml"))
-				sprintf(fname, "%s/%s_%d.svg", fname, szName, loc);
+				UT_String_sprintf(fname, "%s/%s_%d.svg", fname.c_str(), szName, loc);
 			if (!UT_strcmp(szMimeType, "text/mathml"))
-				sprintf(fname, "%s/%s_%d.mathml", fname, szName, loc);
+				UT_String_sprintf(fname, "%s/%s_%d.mathml", fname.c_str(), szName, loc);
 			else // PNG Image
 			{  
 				char * temp = _stripSuffix(UT_basename(szName), '_');
 				char * fstripped = _stripSuffix(temp, '.');
 				FREEP(temp);
-				sprintf(fname, "%s/%s.png", fname, fstripped);
+				UT_String_sprintf(fname, "%s/%s.png", fname.c_str(), fstripped);
 				FREEP(fstripped);
 			}
 			
-			if (!UT_isRegularFile(fname))
+			if (!UT_isRegularFile(fname.c_str()))
 			{
-			    fp = fopen (fname, "wb+");
+			    fp = fopen (fname.c_str(), "wb+");
 			
 			    if(!fp)
 				    continue;

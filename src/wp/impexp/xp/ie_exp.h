@@ -25,6 +25,7 @@
 #include "ut_types.h"
 #include "ie_types.h"
 
+#include "ut_string_class.h"
 #include "ut_AbiObject.h"
 
 class PD_Document;
@@ -102,6 +103,11 @@ public:
 	virtual UT_Error	copyToBuffer(PD_DocumentRange * pDocRange, UT_ByteBuf * pBuf);
 	virtual void		write(const char * sz);
 	virtual void		write(const char * sz, UT_uint32 length);
+
+	void write (const UT_String & inStr)
+	  {
+	    write ( inStr.c_str(), inStr.size() ) ;
+	  }
 
 	virtual char *          getFileName(void) {return m_szFileName;}
 
