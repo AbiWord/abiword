@@ -3919,7 +3919,7 @@ void AP_TopRuler::_displayStatusMessage(XAP_String_Id messageID, const ap_RulerT
 {
 	const XML_Char * pText = m_pG->invertDimension(tick.dimType, dValue);
 	char temp[100];
-	const XML_Char *pzMessageFormat = m_pFrame->getApp()->getStringSet()->getValue(messageID);
+	const XML_Char *pzMessageFormat = m_pFrame->getApp()->getStringSet()->getValue(messageID, XAP_App::getApp()->getDefaultEncoding()).c_str();
 	sprintf(temp, pzMessageFormat, pText);
 
 	AP_FrameData * pFrameData = (AP_FrameData *)m_pFrame->getFrameData();
@@ -3934,7 +3934,7 @@ void AP_TopRuler::_displayStatusMessage(XAP_String_Id messageID, const ap_RulerT
 	pText = m_pG->invertDimension(tick.dimType, dValue2);
 
 	char temp[100];
-	const XML_Char *pzMessageFormat = m_pFrame->getApp()->getStringSet()->getValue(messageID);
+	const XML_Char *pzMessageFormat = m_pFrame->getApp()->getStringSet()->getValue(messageID, XAP_App::getApp()->getDefaultEncoding()).c_str();
 	sprintf(temp, pzMessageFormat, buf1, pText);
 
 	AP_FrameData * pFrameData = (AP_FrameData *)m_pFrame->getFrameData();
@@ -3943,7 +3943,7 @@ void AP_TopRuler::_displayStatusMessage(XAP_String_Id messageID, const ap_RulerT
 
 void AP_TopRuler::_displayStatusMessage(XAP_String_Id FormatMessageID, UT_sint32 iCol, const char * format)
 {
-	const XML_Char *pzMessageFormat = m_pFrame->getApp()->getStringSet()->getValue(FormatMessageID);
+	const XML_Char *pzMessageFormat = m_pFrame->getApp()->getStringSet()->getValue(FormatMessageID, XAP_App::getApp()->getDefaultEncoding()).c_str();
 	static UT_String sCell;
 	UT_String_sprintf(sCell,format,pzMessageFormat,iCol);
 
@@ -3954,7 +3954,7 @@ void AP_TopRuler::_displayStatusMessage(XAP_String_Id FormatMessageID, UT_sint32
 
 void AP_TopRuler::_displayStatusMessage(XAP_String_Id FormatMessageID)
 {
-	const XML_Char *pzMessageFormat = m_pFrame->getApp()->getStringSet()->getValue(FormatMessageID);
+	const XML_Char *pzMessageFormat = m_pFrame->getApp()->getStringSet()->getValue(FormatMessageID, XAP_App::getApp()->getDefaultEncoding()).c_str();
 
 	AP_FrameData * pFrameData = (AP_FrameData *)m_pFrame->getFrameData();
 	pFrameData->m_pStatusBar->setStatusMessage(pzMessageFormat);
