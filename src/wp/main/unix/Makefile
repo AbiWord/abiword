@@ -61,12 +61,7 @@ ABI_LIBS=		png z
 #ABI_LIBS+=		iconv intl
 #endif # OpenBSD
 
-# include both dynamic and static binaries
-ifeq ($(UNIX_CAN_BUILD_STATIC),1)
-TARGETS=		$(PROGRAM_S)
-else
 TARGETS=		$(PROGRAM)
-endif
 
 include $(ABI_ROOT)/src/config/abi_rules.mk
 
@@ -84,20 +79,17 @@ EXTRA_LIBS +=
 #EXTRA_LIBS += -lefence
 # we override the $(PROGRAM) rule.
 
-$(PROGRAM): $(OBJS) $(EXTRA_LIBDEP)
 ifeq ($(UNIX_CAN_BUILD_DYNAMIC),1)
+$(PROGRAM): $(OBJS) $(EXTRA_LIBDEP)
 	@$(MAKE_OBJDIR)
 	@echo Linking dynamic $(PROGRAM)
 	@echo $(CCC) -o $@ $(CFLAGS) $(OBJS) $(DYNAMIC_LDFLAGS) $(LDFLAGS) $(EXTRA_LIBS) $(XLDFLAGS)
 	@$(CCC) -o $@ $(CFLAGS) $(OBJS) $(DYNAMIC_LDFLAGS) $(LDFLAGS) $(EXTRA_LIBS) $(OS_LIBS) $(XLDFLAGS)
-
 else
 	@echo "Not linking dynamic $(PROGRAM)"
 	@echo "    UNIX_CAN_BUILD_DYNAMIC not defined for this platform."
-endif
-
-$(PROGRAM_S): $(OBJS) $(EXTRA_LIBDEP)
 ifeq ($(UNIX_CAN_BUILD_STATIC),1)
+$(PROGRAM_S): $(OBJS) $(EXTRA_LIBDEP)
 	@$(MAKE_OBJDIR)
 	@echo Linking static $(PROGRAM_S)
 	@$(CCC) -o $@ $(CFLAGS) $(OBJS) $(STATIC_LDFLAGS) -L/usr/local/lib $(LDFLAGS) $(EXTRA_LIBS) $(OS_LIBS) $(XLDFLAGS)
@@ -105,5 +97,7 @@ else
 	@echo "Not linking static $(PROGRAM_S)"
 	@echo "    UNIX_CAN_BUILD_STATIC not true for this platform."
 endif
+endif
+
 
 build:: $(TARGETS)
