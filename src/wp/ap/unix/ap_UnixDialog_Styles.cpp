@@ -386,12 +386,13 @@ void AP_UnixDialog_Styles::runModal(XAP_Frame * pFrame)
 	DELETEP (m_pParaPreviewWidget);
 	DELETEP (m_pCharPreviewWidget);
 	
-	if(mainWindow && GTK_IS_WIDGET(mainWindow)) 
-	    gtk_widget_destroy(mainWindow);
 	if(m_answer == AP_Dialog_Styles::a_OK)
 	{
-		getView()->updateScreen();
+		getDoc()->updateDocForStyleChange(getCurrentStyle(),true);
+		getDoc()->signalListeners(PD_SIGNAL_UPDATE_LAYOUT);
 	}
+	if(mainWindow && GTK_IS_WIDGET(mainWindow)) 
+	    gtk_widget_destroy(mainWindow);
 }
 
 /*****************************************************************/
@@ -453,6 +454,7 @@ void AP_UnixDialog_Styles::event_NewClicked(void)
 	if(m_answer == AP_Dialog_Styles::a_OK)
 	{
 		createNewStyle(getNewStyleName());
+		_populateCList();
 	}
 }
 
@@ -1313,7 +1315,8 @@ void AP_UnixDialog_Styles::event_ModifyClicked(void)
 	if(m_answer == AP_Dialog_Styles::a_OK)
 	{
 		applyModifiedStyleToDoc();
-		getView()->updateScreen();
+		getDoc()->updateDocForStyleChange(getCurrentStyle(),true);
+		getDoc()->signalListeners(PD_SIGNAL_UPDATE_LAYOUT);
 	}
 	else
 	{
