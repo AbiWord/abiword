@@ -345,7 +345,7 @@ void XAP_UnixApp::_setAbiSuiteLibDir()
 	}
 
 	// otherwise, use the hard-coded value
-	XAP_App::_setAbiSuiteLibDir(getAbiSuite_Home());
+	XAP_App::_setAbiSuiteLibDir(ABISUITE_HOME);
 
 	return;
 }

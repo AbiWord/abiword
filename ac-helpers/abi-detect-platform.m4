@@ -223,12 +223,29 @@ esac
 # huge nasty case statement to actually pick the platform
 
 case "$OS_NAME" in 
-	WIN32) PLATFORM="win" ;;
-	Linux|AIX|*BSD|IRIX*|HP|OSF1|SunOS) PLATFORM="unix" ;;
-	QNX|procnto) PLATFORM="qnx" ;;
-	MACOSX) PLATFORM=$abi_gui ;;
-	BeOS) PLATFORM="beos" ;;
+	WIN32)
+		PLATFORM="win"
+		ABISUITE_HOME="\$(pkgdatadir)"
+		;;
+	Linux|AIX|*BSD|IRIX*|HP|OSF1|SunOS)
+		PLATFORM="unix"
+		ABISUITE_HOME="\$(pkgdatadir)"
+		;;
+	QNX|procnto)
+		PLATFORM="qnx"
+		ABISUITE_HOME="\$(pkgdatadir)"
+		;;
+	MACOSX)
+		PLATFORM=$abi_gui
+		ABISUITE_HOME="\$(pkgdatadir)"
+		;;
+	BeOS)
+		PLATFORM="beos"
+		ABISUITE_HOME="\$(pkgdatadir)"
+		;;
 esac
+
+AC_SUBST(ABISUITE_HOME)
 
 if test "$PLATFORM" = "cocoa"; then
 	BE_PLATFORM="unix"
