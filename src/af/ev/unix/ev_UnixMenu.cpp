@@ -686,7 +686,7 @@ bool EV_UnixMenu::synthesizeMenu(GtkWidget * wMenuRoot)
 				if ((keyCode != GDK_VoidSymbol))
 				{
 					gtk_widget_add_accelerator(w,
-											   "activate",
+											   "activate-item",
 											   GTK_MENU(wParent)->accel_group,
 											   keyCode,
 											   (GdkModifierType)0,
@@ -810,7 +810,7 @@ bool EV_UnixMenu::synthesizeMenu(GtkWidget * wMenuRoot)
 						if (wParent == wMenuRoot)
 						{
 							gtk_widget_add_accelerator(w,
-													   "activate",
+													   "activate-item",
 													   m_accelGroup,
 													   keyCode,
 													   GDK_MOD1_MASK,
@@ -820,7 +820,7 @@ bool EV_UnixMenu::synthesizeMenu(GtkWidget * wMenuRoot)
 						{
 							// just bind to be triggered by parent
 							gtk_widget_add_accelerator(w,
-													   "activate",
+													   "activate-item",
 													   GTK_MENU(wParent)->accel_group,
 													   keyCode,
 													   (GdkModifierType)0,
@@ -1098,7 +1098,7 @@ bool EV_UnixMenu::_refreshMenu(AV_View * pView, GtkWidget * wMenuRoot)
 #if ABI_GTK_DEPRECATED
 				// unbind all accelerators
 				gtk_widget_remove_accelerators(item,
-											   "activate",
+											   "activate-item",
 											   FALSE);
 #endif
 				// wipe it out
@@ -1144,7 +1144,7 @@ bool EV_UnixMenu::_refreshMenu(AV_View * pView, GtkWidget * wMenuRoot)
 #ifdef ABI_GTK_DEPRECATED
 					// unbind all accelerators
 					gtk_widget_remove_accelerators(item,
-												   "activate",
+												   "activate-item",
 												   FALSE);
 #endif
 						
@@ -1176,7 +1176,7 @@ bool EV_UnixMenu::_refreshMenu(AV_View * pView, GtkWidget * wMenuRoot)
 				if ((keyCode != GDK_VoidSymbol))// && parent_accel_group)
 				{
 					gtk_widget_add_accelerator(item,
-											   "activate",
+											   "activate-item",
 											   GTK_MENU(item->parent)->accel_group,
 											   keyCode,
 											   (GdkModifierType)0,

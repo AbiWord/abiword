@@ -29,16 +29,34 @@
 #include "xap_UnixClipboard.h"
 class AP_UnixApp;
 
-#define	AP_CLIPBOARD_TEXTPLAIN_8BIT 		"TEXT"
-#define AP_CLIPBOARD_STRING					"STRING"
-#define AP_CLIPBOARD_COMPOUND_TEXT			"COMPOUND_TEXT"
-#define AP_CLIPBOARD_RTF 					"text/rtf"
-
-
 class AP_UnixClipboard : public XAP_UnixClipboard
 {
 public:
 	AP_UnixClipboard(AP_UnixApp * pUnixApp);
+
+	bool addTextData(void* pData, UT_sint32 iNumBytes);
+	bool addRichTextData(void* pData, UT_sint32 iNumBytes);
+
+	bool getSupportedData(T_AllowGet tFrom,
+			      void ** ppData, UT_uint32 * pLen,
+			      const char **pszFormatFound);
+
+	bool  getTextData(T_AllowGet tFrom,
+			  void ** ppData, UT_uint32 * pLen,
+			  const char **pszFormatFound);
+
+	bool  getRichTextData(T_AllowGet tFrom,
+			      void ** ppData, UT_uint32 * pLen,
+			      const char **pszFormatFound);
+
+	bool getImageData(T_AllowGet tFrom,
+			  void ** ppData, UT_uint32 * pLen,
+			  const char **pszFormatFound);
+
+	static bool isTextTag ( const char * tag ) ;
+	static bool isRichTextTag ( const char * tag ) ;
+	static bool isHTMLTag ( const char * tag ) ;
+	static bool isImageTag ( const char * tag ) ;
 };
 
 #endif /* AP_UNIXCLIPBOARD_H */

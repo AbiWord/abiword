@@ -107,6 +107,9 @@
 
 #include <popt.h>
 
+#include "ie_impGraphic.h"
+#include "ut_math.h"
+
 // quick hack - this is defined in ap_EditMethods.cpp
 extern XAP_Dialog_MessageBox::tAnswer s_CouldNotLoadFileMessage(XAP_Frame * pFrame, const char * pNewFile, UT_Error errorCode);
 
@@ -484,26 +487,12 @@ void AP_UnixApp::copyToClipboard(PD_DocumentRange * pDocRange)
     // m_pClipboard->clearData(true,false);
 	
     if (bufRTF.getLength() > 0)
-		m_pClipboard->addData(AP_CLIPBOARD_RTF,(UT_Byte *)bufRTF.getPointer(0),bufRTF.getLength());
+		m_pClipboard->addRichTextData((UT_Byte *)bufRTF.getPointer(0),bufRTF.getLength());
     if (bufTEXT.getLength() > 0)
-		m_pClipboard->addData(AP_CLIPBOARD_TEXTPLAIN_8BIT,(UT_Byte *)bufTEXT.getPointer(0),bufTEXT.getLength());
+		m_pClipboard->addTextData((UT_Byte *)bufTEXT.getPointer(0),bufTEXT.getLength());
 
     return;
 }
-
-/*
-  I've reordered AP_CLIPBOARD_STRING and AP_CLIPBOARD_TEXTPLAIN_8BIT
-  since for non-Latin1 text the data in AP_CLIPBOARD_TEXTPLAIN_8BIT
-  format has name of encoding as prefix, and AP_CLIPBOARD_STRING
-  doesn't - hvv.
-*/
-static const char * aszFormatsAccepted[] = { AP_CLIPBOARD_RTF,
-											 AP_CLIPBOARD_STRING,
-											 AP_CLIPBOARD_TEXTPLAIN_8BIT,
-											 0 /* must be last */ };
-static const char * txtszFormatsAccepted[] = { AP_CLIPBOARD_STRING,
-											   AP_CLIPBOARD_TEXTPLAIN_8BIT,
-											   0 };
 
 /*!
   paste from the system clipboard using the best-for-us format
@@ -528,14 +517,20 @@ void AP_UnixApp::pasteFromClipboard(PD_DocumentRange * pDocRange, bool bUseClipb
     unsigned char * pData = NULL;
     UT_uint32 iLen = 0;
 
-    bool bFoundOne = m_pClipboard->getData(tFrom,aszFormatsAccepted,(void**)&pData,&iLen,&szFormatFound);
+    bool bFoundOne = false;
+    
+    if ( bHonorFormatting )
+      bFoundOne = m_pClipboard->getSupportedData(tFrom,(void**)&pData,&iLen,&szFormatFound);
+    else
+      bFoundOne = m_pClipboard->getTextData(tFrom,(void**)&pData,&iLen,&szFormatFound);
+
     if (!bFoundOne)
     {
 		UT_DEBUGMSG(("PasteFromClipboard: did not find anything to paste.\n"));
 		return;
     }
 	
-    if (strcmp(szFormatFound,AP_CLIPBOARD_RTF) == 0 && bHonorFormatting)
+    if (AP_UnixClipboard::isRichTextTag(szFormatFound))
     {
 		iLen = MyMin(iLen,strlen((const char *)pData));
 		UT_DEBUGMSG(("PasteFromClipboard: pasting %d bytes in format [%s].\n",iLen,szFormatFound));
@@ -546,17 +541,54 @@ void AP_UnixApp::pasteFromClipboard(PD_DocumentRange * pDocRange, bool bUseClipb
 
 		return;
     }
+    else if (AP_UnixClipboard::isImageTag(szFormatFound))
+      {
+	UT_DEBUGMSG(("DOM: got image data\n" ));
 
-	bFoundOne = m_pClipboard->getData(tFrom,txtszFormatsAccepted,(void**)&pData,&iLen,&szFormatFound);	
+	IE_ImpGraphic * pIEG = NULL;
+	FG_Graphic * pFG = NULL;
+	IEGraphicFileType iegft = IEGFT_Unknown;
+	UT_Error error = UT_OK;
 
-	if (!bFoundOne)
-	{
-		UT_DEBUGMSG(("PasteFromClipboard: did not find anything to paste.\n"));
-		return;
-	}
+	XAP_Frame * pFrame = getLastFocussedFrame ();
 
-    if (   (strcmp(szFormatFound,AP_CLIPBOARD_TEXTPLAIN_8BIT) == 0)
-		   || (strcmp(szFormatFound,AP_CLIPBOARD_STRING) == 0))
+	UT_ByteBuf bytes ;
+
+	bytes.append (pData, iLen);
+
+	error = IE_ImpGraphic::constructImporter(&bytes, iegft, &pIEG);
+	if(error)
+	  {
+	    UT_DEBUGMSG(("DOM: could not construct importer (%d)\n", 
+			 error));
+	    return;
+	  }
+	
+	error = pIEG->importGraphic(&bytes, &pFG);
+	if(error)
+	  {
+	    UT_DEBUGMSG(("DOM: could not import graphic (%d)\n", error));
+	    DELETEP(pIEG);
+	    return;
+	  }
+	
+	DELETEP(pIEG);
+	
+	FV_View * pView = static_cast<FV_View*>(pFrame->getCurrentView());
+	
+	UT_String newName = UT_String_sprintf ( "paste_image_%d", UT_newNumber() ) ;
+
+	error = pView->cmdInsertGraphic(pFG, newName.c_str());
+	if (error)
+	  {
+	    UT_DEBUGMSG(("DOM: could not insert graphic (%d)\n", error));
+	    DELETEP(pFG);
+	    return;
+	  }
+	
+	DELETEP(pFG);       
+      }
+    else // ( AP_UnixClipboard::isTextTag(szFormatFound) )
     {
 		iLen = MyMin(iLen,strlen((const char *)pData));
 		UT_DEBUGMSG(("PasteFromClipboard: pasting %d bytes in format [%s].\n",iLen,szFormatFound));
@@ -921,7 +953,7 @@ bool AP_UnixApp::getCurrentSelection(const char** formatList,
     {
 		UT_DEBUGMSG(("Clipboard::getCurrentSelection: considering format [%s]\n",formatList[j]));
 
-		if (strcmp(formatList[j],AP_CLIPBOARD_RTF) == 0)
+		if ( AP_UnixClipboard::isRichTextTag(formatList[j]) )
 		{
 			IE_Exp_RTF * pExpRtf = new IE_Exp_RTF(dr.m_pDoc);
 			if (!pExpRtf)
@@ -932,8 +964,7 @@ bool AP_UnixApp::getCurrentSelection(const char** formatList,
 			goto ReturnThisBuffer;
 		}
 			
-		if (   (strcmp(formatList[j],AP_CLIPBOARD_TEXTPLAIN_8BIT) == 0)
-			   || (strcmp(formatList[j],AP_CLIPBOARD_STRING) == 0))
+		if ( AP_UnixClipboard::isTextTag(formatList[j]) )
 		{
 			IE_Exp_Text * pExpText = new IE_Exp_Text(dr.m_pDoc);
 			if (!pExpText)
