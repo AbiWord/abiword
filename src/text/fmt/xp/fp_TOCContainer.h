@@ -1,5 +1,5 @@
 /* AbiWord
- * Copyright (C) 2002 Patrick Lam <plam@mit.edu>
+ * Copyright (C) 2004 Martin Sevior <msevior@physics.unimelb.edu.au>
  * Copyright (C) 1998 AbiSource, Inc.
  *
  * This program is free software; you can redistribute it and/or
@@ -19,8 +19,8 @@
  *
  */
 
-#ifndef FOOTNOTECONTAINER_H
-#define FOOTNOTECONTAINER_H
+#ifndef TOCCONTAINER_H
+#define TOCCONTAINER_H
 
 #ifdef FMT_TEST
 #include <stdio.h>
@@ -35,14 +35,13 @@
 #include "fp_Column.h"
 #include "gr_Graphics.h"
 
-class fl_TableLayout;
 class fl_DocSectionLayout;
 
-class ABI_EXPORT fp_FootnoteContainer : public fp_VerticalContainer
+class ABI_EXPORT fp_TOCContainer : public fp_VerticalContainer
 {
 public:
-	fp_FootnoteContainer(fl_SectionLayout* pSectionLayout);
-	virtual ~fp_FootnoteContainer();
+	fp_TOCContainer(fl_SectionLayout* pSectionLayout);
+	virtual ~fp_TOCContainer();
 	UT_sint32           getValue(void);
 	void				layout(void);
 	virtual void		clearScreen(void);
@@ -51,40 +50,14 @@ public:
 	virtual void        setContainer(fp_Container * pContainer);
 	virtual fp_Container * getNextContainerInSection(void) const;
 	virtual fp_Container * getPrevContainerInSection(void) const;
-	virtual fp_Page *   getPage(void) { return m_pPage;}
-	void                setPage(fp_Page * pPage);
+	virtual bool        isVBreakable(void);
+	virtual bool        isHBreakable(void) {return false;}
+	virtual UT_sint32   wantVBreakAt(UT_sint32);
+	virtual UT_sint32   wantHBreakAt(UT_sint32) {return 0;}
+	virtual fp_ContainerObject * VBreakAt(UT_sint32);
+	virtual fp_ContainerObject * HBreakAt(UT_sint32) {return NULL;}
 	fl_DocSectionLayout * getDocSectionLayout(void);
 private:
-	fp_Page * m_pPage;
 };
 
-
-class ABI_EXPORT fp_EndnoteContainer : public fp_VerticalContainer
-{
-public:
-	fp_EndnoteContainer(fl_SectionLayout* pSectionLayout);
-	virtual ~fp_EndnoteContainer();
-	UT_sint32           getValue(void);
-	void				layout(void);
-	virtual void		clearScreen(void);
-	virtual void		draw(dg_DrawArgs*);
-	virtual void		draw(GR_Graphics*) {}
-	virtual void        setContainer(fp_Container * pContainer);
-	virtual fp_Container * getNextContainerInSection(void) const;
-	virtual fp_Container * getPrevContainerInSection(void) const;
-	virtual fp_Page *   getPage(void) { return fp_Container::getPage();}
-	fp_EndnoteContainer * getLocalNext(void);
-	fp_EndnoteContainer * getLocalPrev(void);
-	fl_DocSectionLayout * getDocSectionLayout(void);
-	virtual void        setY(UT_sint32 iY);
-	virtual UT_sint32   getY(void) const;
-	
-private:
-	fp_EndnoteContainer * m_pLocalNext;
-	fp_EndnoteContainer * m_pLocalPrev;
-	UT_sint32             m_iY;
-	bool                  m_bOnPage;
-	bool                  m_bCleared;
-};
-
-#endif /* FOOTNOTECONTAINER_H */
+#endif /* TOCCONTAINER_H */

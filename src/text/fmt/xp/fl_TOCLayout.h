@@ -51,7 +51,7 @@ public:
 	virtual bool 	doclistener_changeStrux(const PX_ChangeRecord_StruxChange * pcrxc);
 	virtual bool    doclistener_deleteStrux(const PX_ChangeRecord_Strux * pcrx);
 	virtual bool    doclistener_deleteEndTOC(const PX_ChangeRecord_Strux * pcrx);
-	virtual bool    bl_doclistener_insertTOC(fl_ContainerLayout*,
+	virtual bool    bl_doclistener_insertEndTOC(fl_ContainerLayout*,
 											  const PX_ChangeRecord_Strux * pcrx,
 											  PL_StruxDocHandle sdh,
 											  PL_ListenerId lid,
@@ -66,20 +66,21 @@ public:
 	virtual fl_SectionLayout *  getSectionLayout(void)  const;
 	bool                     recalculateFields(UT_uint32 iUpdateCount);
 	virtual void		     redrawUpdate(void);
-	virtual fp_Container*	 getNewContainer(fp_Container* = NULL) =0;
+	virtual fp_Container*	 getNewContainer(fp_Container* = NULL);
 	fl_DocSectionLayout*	 getDocSectionLayout(void) const { return m_pDocSL; }
 	bool                     isEndTOCIn(void) const
 		{return m_bHasEndTOC;}
 	void                     setTOCEndIn(void)
-		{ m_bHasEndFootnote = true;}
+		{ m_bHasEndTOC = true;}
 	PT_DocPosition           getDocPosition(void);
 	UT_uint32                getLength(void);
+	UT_uint32                getTOCPID(void) const
+		{ return m_iTOCPID;}
 private:
-	virtual void		     _lookupProperties(void) = 0;
 	virtual void             _purgeLayout(void);
 	virtual void		     _lookupProperties(void);
-	void                     _createFootnoteContainer(void);
-	void                     _insertFootnoteContainer(fp_Container * pNewFC);
+	void                     _createTOCContainer(void);
+	void                     _insertTOCContainer(fp_Container * pNewFC);
 	void                     _localCollapse();
 	bool                     m_bNeedsRebuild;
 	bool                     m_bNeedsFormat;

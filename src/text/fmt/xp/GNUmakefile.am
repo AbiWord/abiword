@@ -35,6 +35,7 @@ libFmt_a_SOURCES= \
 	fl_DocListener.cpp		\
 	fl_Layout.cpp			\
 	fl_FootnoteLayout.cpp           \
+	fl_TOCLayout.cpp           \
 	fl_FrameLayout.cpp              \
 	fl_SectionLayout.cpp		\
 	fl_TableLayout.cpp		\
@@ -48,6 +49,7 @@ libFmt_a_SOURCES= \
 	fp_Page.cpp			\
 	fp_PageSize.cpp			\
 	fp_TableContainer.cpp           \
+	fp_TOCContainer.cpp        \
 	fp_FootnoteContainer.cpp        \
 	fp_Run.cpp			\
 	fp_FmtMarkRun.cpp		\
