@@ -1105,7 +1105,7 @@ void IE_Imp_MsWord_97::_flush ()
   pf_Frag * pF = getDoc()->getLastFrag();
   if (pF && pF->getType() == pf_Frag::PFT_Strux) {
 	  pf_Frag_Strux * pFS = (pf_Frag_Strux*)pF;
-	  if (pFS->getStruxType() != PTX_Block)
+	  if ((pFS->getStruxType() != PTX_Block) && (pFS->getStruxType() != PTX_EndFootnote) && (pFS->getStruxType() != PTX_EndEndnote))
 		  m_bInPara = false;
   }
 
