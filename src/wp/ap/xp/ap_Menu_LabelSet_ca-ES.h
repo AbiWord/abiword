@@ -135,7 +135,7 @@ BeginSet(ca,ES,UT_TRUE)
 	MenuLabel(AP_MENU_ID_HELP_CONTENTS,		"&Continguts",			"Mostra el contingut de l'ajuda")
 	MenuLabel(AP_MENU_ID_HELP_INDEX,		"&Índex",			"Mostra l'índex de l'ajuda")
 	MenuLabel(AP_MENU_ID_HELP_CHECKVER,		"&Versió",			"Mostra el número de versió del programa")
-	MenuLabel(AP_MENU_ID_HELP_SEARCH,		"&Busca ajuda",			"Mostra informació del programa, el número de versió i el copyright")
+	MenuLabel(AP_MENU_ID_HELP_SEARCH,		"&Busca ajuda",			"Busca ajuda sobre...")
 	MenuLabel(AP_MENU_ID_HELP_ABOUT,		"&Quant a l'%s",		"Mostra informació del programa, versió i drets d'autor")
 	MenuLabel(AP_MENU_ID_HELP_ABOUTOS,		"Quant al programari &lliure",	"Mostra informació sobre el programari lliure")
 
