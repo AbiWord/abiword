@@ -241,20 +241,6 @@ dcl(DLG_ABOUT_Title,					"About %s")
 	 dcl(DLG_Image_Height, "Height:")
 	 dcl(DLG_Image_Aspect, "Preserve aspect ratio")
 
-/* HashDownloader dialogs */
-dcl(DLG_HashDownloader_AskDownload, 		"I could not find a dictionary for %s.\nWould you like me to try downloading it from the internet?")
-dcl(DLG_HashDownloader_AskFirstTryFailed, 	"Download failed!\nWould you like me to try again?\nIf yes, please make sure you are connected to the internet.")
-dcl(DLG_HashDownloader_AskInstallGlobal, 	"You seem to have permission to install the dictionary system-wide.\nWould you like to do that?\nIf yes, I will install the dictionary in %s")
-dcl(DLG_HashDownloader_DictlistDLFail, 		"Sorry! I seem unable to download the dictionary-list.")
-dcl(DLG_HashDownloader_DictDLFail, 			"Sorry! I seem unable to download the dictionary.")
-dcl(DLG_HashDownloader_DictInstallFail, 	"Sorry! I seem unable to install the dictionary.")
-dcl(DLG_HashDownloader_DictNotAvailable, 	"I'm sorry. The wanted dictionary is not available for download.")
-dcl(DLG_HashDownloader_DictNotForThis, 		"I'm sorry. The wanted dictionary is not available for this release.\nPlease consider upgrading AbiWord.")
-dcl(DLG_HashDownloader_FeatureDisabled, 	"I'm sorry. This feature is not available anymore.")
-dcl(DLG_HashDownloader_FeatureDisabledForThis, 	"I'm sorry. This feature is disabled for this release.\nPlease consider upgrading AbiWord.")
-dcl(DLG_HashDownloader_DictList,			"the dictionary-list")
-dcl(DLG_HashDownloader_Dict, 				"the dictionary")
-dcl(DLG_HashDownloader_Dlg_Title, 			"New dictionary installation")
 
 /*
 For insert Table widget
