@@ -395,25 +395,12 @@ XAP_UnixFont* XAP_UnixFontManager::findNearestFont(const char* pszFontFamily,
 	g_snprintf(keyBuffer, 512, "%s@%d", pszFontFamily, pszFontStyle);
 	UT_upperString(keyBuffer);
 		
-	
-	// check if a font with this description is already in our cache
-	/*for (UT_sint32 k = 0; k < static_cast<UT_sint32>(m_vecFontCache.getItemCount())-1; k+=2)
-	{		
-		if (!strcmp(st.c_str(), reinterpret_cast<const char *>(m_vecFontCache.getNthItem(k))))
-		{
-			UT_DEBUGMSG(("MARCM: Yes! We have a font cache HIT for font: %s\n", st.c_str()));
-			return static_cast<XAP_UnixFont *>(m_vecFontCache.getNthItem(k+1));
-		}
-	}*/
-		
 	// find the font the hard way
 	XAP_UnixFont * pFont = searchFont(st.c_str());
 
 	// add the font to our cache as well
 	char * font_key = NULL;
 	CLONEP(font_key, pFont->getFontKey());
-	//m_vecFontCache.addItem(font_key);
-	//m_vecFontCache.addItem(pFont);
 	
 	return pFont;
 }
