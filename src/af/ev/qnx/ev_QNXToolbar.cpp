@@ -648,4 +648,5 @@ void EV_QNXToolbar::show(void) {
 void EV_QNXToolbar::hide(void) {
     UT_ASSERT(m_wToolbarGroup && m_wToolbar);
     PtUnrealizeWidget(m_wToolbar);
+	PtSetResource(m_wToolbar, Pt_ARG_FLAGS, Pt_DELAY_REALIZE, Pt_DELAY_REALIZE);
 }
