@@ -250,10 +250,10 @@ ABI_EXPORT UT_UCS4Char       UT_UCS4_toupper(UT_UCS4Char c);
 */
 ABI_EXPORT const char*  std_size_string(float f);
 
-// for now we do this to match def. of FriBidiCharType; after 2.2, we will migrate to platform specific definitions ...
-typedef long UT_BidiCharType;
 
 #include <fribidi.h>
+
+typedef FriBidiCharType UT_BidiCharType;
 
 #define UT_BIDI_LTR FRIBIDI_TYPE_LTR
 #define UT_BIDI_RTL FRIBIDI_TYPE_RTL
