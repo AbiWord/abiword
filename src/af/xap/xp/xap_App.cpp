@@ -17,10 +17,6 @@
  * 02111-1307, USA.
  */
 
-#ifdef ABI_OPT_JS
-#include <js.h>
-#endif /* ABI_OPT_JS */
-
 #include <stdio.h>	// for sprintf
 
 #include "ut_types.h"
@@ -64,13 +60,6 @@ XAP_App::~XAP_App(void)
 	DELETEP(m_pBindingSet);
 	DELETEP(m_pMenuActionSet);
 	DELETEP(m_pToolbarActionSet);
-	
-#ifdef ABI_OPT_JS
-	if (m_pJSInterp)
-	{
-		js_destroy_interp (m_pJSInterp);
-	}
-#endif /* ABI_OPT_JS */
 }
 
 UT_Bool XAP_App::initialize(void)
@@ -94,28 +83,8 @@ UT_Bool XAP_App::initialize(void)
 	// TODO use m_pArgs->{argc,argv} to process any command-line
 	// TODO options that we need.
 
-#ifdef ABI_OPT_JS
-	// Create our app-global JavaScript interpreter
-	js_init_default_options (&m_JSOptions);
-
-	m_JSOptions.verbose = 2; // TODO change this later.
-	m_JSOptions.s_context = this;
-
-	m_pJSInterp = js_create_interp (&m_JSOptions);
-
-	// TODO initialize the interp with our object model.
-
-#endif /* ABI_OPT_JS */
-
 	return UT_TRUE;
 }
-
-#ifdef ABI_OPT_JS
-JSInterpPtr XAP_App::getInterp(void) const
-{
-	return m_pJSInterp;
-}
-#endif /* ABI_OPT_JS */
 
 const char * XAP_App::getApplicationTitleForTitleBar(void) const
 {

@@ -67,7 +67,7 @@ else
 OPTIMIZER	= -O2 -Ob1
 DEFINES		= -UDEBUG -U_DEBUG -DNDEBUG
 OBJ_DIR_SFX	= OBJ
-OS_CFLAGS 	= -W3 -nologo -GF -Gy -MD -DWIN32 -D_X86_
+OS_CFLAGS 	= -W3 -nologo -GF -Gy -MD -DWIN32 -D_X86_ -Zm1000
 DLLFLAGS 	= -OUT:"$@"
 LDFLAGS 	=
 OS_DLLFLAGS 	= -nologo -DLL -SUBSYSTEM:WINDOWS -PDB:NONE
@@ -76,5 +76,12 @@ endif
 
 ABI_NATIVE	= win
 ABI_FE		= Win32
+
+##################################################################
+## ABIPKGDIR defines the directory containing the Makefile to use to
+## build a set of distribution archives (.deb, .rpm, .tgz, .exe, etc)
+## This is relative to $(ABI_DEPTH)/pkg
+
+ABIPKGDIR	= win/setup
 
 # End of win32 defs

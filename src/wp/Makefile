@@ -45,6 +45,7 @@ canonical:
 	@$(subst xxxx,$(CANON_AppDir)/strings,$(VERIFY_DIRECTORY))
 	@$(subst xxxx,$(CANON_AppDir)/help,$(VERIFY_DIRECTORY))
 	@$(subst xxxx,$(CANON_AppDir)/sample,$(VERIFY_DIRECTORY))
+	@$(ABICOPY) $(USERDIR)/wp/readme.txt $(CANON_AppDir)
 	@$(ABICOPY) $(USERDIR)/wp/strings/*.strings $(CANON_AppDir)/strings
 	(cd $(USERDIR)/wp/help; tar -cf - $(CANON_Lang)/*.*) | (cd $(CANON_AppDir)/help; tar -xf -)
 	(cd $(USERDIR)/wp/sample; tar -cf - $(CANON_Lang)/*.*) | (cd $(CANON_AppDir)/sample; tar -xf -)

@@ -23,7 +23,7 @@ ABI_DEPTH=.
 
 include $(ABI_DEPTH)/config/abi_defs.mk
 
-DIRS=		config other af text wp
+DIRS=		config other af text wp ask
 
 include $(ABI_DEPTH)/config/abi_rules.mk
 

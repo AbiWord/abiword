@@ -21,10 +21,6 @@
 #ifndef XAP_APP_H
 #define XAP_APP_H
 
-#ifdef ABI_OPT_JS
-#include <js.h>
-#endif /* ABI_OPT_JS */
-
 #include "ut_types.h"
 #include "ut_vector.h"
 #include "ut_hash.h"
@@ -111,15 +107,6 @@ protected:
 
 	UT_Vector						m_vecFrames;
 	UT_HashTable					m_hashClones;
-
-#ifdef ABI_OPT_JS	
-public:
-	JSInterpPtr			   			getInterp(void) const;
-
-protected:	
-	JSInterpPtr 					m_pJSInterp;
-	JSInterpOptions 				m_JSOptions;
-#endif /* ABI_OPT_JS */
 
 	// TODO give this a s_ prefix like all other static variables
 	static AP_Clipboard*			_pClipboard;
