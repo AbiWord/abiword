@@ -356,7 +356,7 @@ public:
 
 protected:
 
-	bool                    _spellCheckWord(const UT_UCSChar * word, UT_uint32 len);
+	bool                    _spellCheckWord(const UT_UCSChar * word, UT_uint32 len, UT_uint32 blockPos);
 
 	bool					_truncateLayout(fp_Run* pTruncRun);
 

@@ -209,7 +209,11 @@ void fp_TextRun::lookupProperties(void)
 	//set the language member
 	UT_Language *lls = new UT_Language;
 	const XML_Char * pszLanguage = PP_evalProperty("lang",pSpanAP,pBlockAP,pSectionAP, pDoc, true);
+	
+	const XML_Char * pszOldLanguage = m_pLanguage;
 	m_pLanguage = lls->getPropertyFromProperty(pszLanguage);
+	if(pszOldLanguage && m_pLanguage != pszOldLanguage)
+		m_pBL->getDocLayout()->queueBlockForBackgroundCheck((UT_uint32) FL_DocLayout::bgcrSpelling, m_pBL);
 	//UT_DEBUGMSG(("fp_TextRun::lookupProperties: m_pLanguage = %s\n", m_pLanguage));
 	delete lls;
 
@@ -525,7 +529,6 @@ void fp_TextRun::mapXYToPosition(UT_sint32 x, UT_sint32 /*y*/,
 
 void fp_TextRun::findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y, UT_sint32& x2, UT_sint32& y2, UT_sint32& height, bool& bDirection)
 {
-	//UT_DEBUGMSG(("fintPointCoords: TextRun\n"));	
 	UT_sint32 xoff;
 	UT_sint32 yoff;
 #ifdef BIDI_ENABLED
@@ -608,6 +611,8 @@ void fp_TextRun::findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y, 
 #endif
 	y = yoff;
 	height = m_iHeight;
+	//UT_DEBUGMSG(("fintPointCoords: TextRun x,y,x2,y2=[%d, %d, %d, %d]\n", x,y,x2,y2));	
+
 }
 
 bool fp_TextRun::canMergeWithNext(void)

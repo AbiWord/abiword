@@ -119,22 +119,21 @@ static const char     * fmt_Lists[] = { fmt_NUMBERED_LIST,
 
 
 bool 
-fl_BlockLayout::_spellCheckWord (const UT_UCSChar * word, UT_uint32 len)
+fl_BlockLayout::_spellCheckWord (const UT_UCSChar * word, UT_uint32 len, UT_uint32 blockPos)
 {
 	SpellChecker * checker = NULL;
-	const char * szLang = NULL;
-
-	const XML_Char ** props_in = NULL;
-
-	FV_View* pView = m_pLayout->getView();
-	if (pView && pView->getCharFormat(&props_in))
-	{
-		szLang = UT_getAttribute("lang", props_in);
-		FREEP(props_in);
-	}
-
+	
+	const PP_AttrProp * pSpanAP = NULL;
+	const PP_AttrProp * pBlockAP = NULL;
+	
+	getSpanAttrProp(blockPos, false, &pSpanAP);
+	getAttrProp(&pBlockAP);
+	
+	const char * szLang = (const char * ) PP_evalProperty("lang",pSpanAP,pBlockAP,NULL,m_pDoc,true);
+	
 	if (szLang)
 	{
+		//UT_DEBUGMSG(("fl_BlockLaout::_spellCheckWord: lang = %s\n", szLang));
 		// we get smart and request the proper dictionary
 		checker = SpellManager::instance().requestDictionary(szLang);
 	}
@@ -1455,7 +1454,6 @@ fl_BlockLayout::findPointCoords(PT_DocPosition iPos,
 
 	// find the run which has this offset inside it.
 	PT_DocPosition dPos = getPosition();
-	//UT_DEBUGMSG(("BlockLayout::FindPointCoords: iPos=%d, dPos=%d\n", iPos, dPos));
 	//UT_ASSERT(iPos >= dPos);
 	const UT_uint32 iRelOffset = iPos - dPos;
 
@@ -1478,7 +1476,7 @@ fl_BlockLayout::findPointCoords(PT_DocPosition iPos,
 	fp_Run* pRun = m_pFirstRun;
 	while (pRun && pRun->getBlockOffset() < iRelOffset)
 		pRun = pRun->getNext();
-
+	
 	// Now scan farther if necessary - the block may contain Runs
 	// with zero length. This is only a problem when empty Runs
 	// appear for no good reason (i.e., an empty Run on an empty
@@ -1497,20 +1495,21 @@ fl_BlockLayout::findPointCoords(PT_DocPosition iPos,
 	// above loops scan past what we're looking for since it's
 	// faster).
 	fp_Run* pPrevRun = pRun->getPrev();
+	
 	if (pPrevRun &&
 	    pPrevRun->getBlockOffset() + pPrevRun->getLength() > iRelOffset)
 	{
 	    pRun = pPrevRun;
 	    bCoordOfPrevRun = false;
 	}
-
+	
 	// Since the requested offset may be a page break (or similar
 	// Runs) which cannot contain the point, now work backwards
 	// while looking for a Run which can contain the point.
 	while (pRun && !pRun->canContainPoint())
 	{
-	    pRun = pRun->getPrev();
-	    bCoordOfPrevRun = false;
+		pRun = pRun->getPrev();
+		bCoordOfPrevRun = false;
 	}
 
 	// Assert if there have been no Runs which can hold the point
@@ -2348,7 +2347,7 @@ bool fl_BlockLayout::_checkMultiWord(const UT_UCSChar* pBlockText,
 					theWord[ldex - (wordLength - newLength)] = currentChar;
 				}
 
-			   	if (!_spellCheckWord(theWord, newLength) &&
+			   	if (!_spellCheckWord(theWord, newLength, wordBeginning) &&
 					!pApp->isWordInDict(theWord, newLength))
 				{
 					bool bIsIgnored = pDoc->isIgnore(theWord, newLength);
@@ -2447,7 +2446,7 @@ bool fl_BlockLayout::checkWord(fl_PartOfBlock* pPOB)
 		    theWord[ldex - (wordLength - newLength)] = currentChar;
 		  }
 
-		if (!_spellCheckWord(theWord, newLength) &&
+		if (!_spellCheckWord(theWord, newLength,wordBeginning) &&
 			!pApp->isWordInDict(theWord, newLength))
 		{
 			// squiggle it
@@ -4815,7 +4814,7 @@ void fl_BlockLayout::recheckIgnoredWords()
 			(!bHasNumeric || !m_pLayout->getSpellCheckNumbers()) &&		// can these two lines be simplified?
 			(newLength < INPUTWORDLEN) &&
 
-			(!_spellCheckWord(theWord, newLength)) &&
+			(!_spellCheckWord(theWord, newLength, wordBeginning)) &&
 			(!pApp->isWordInDict(theWord, newLength)))
 		{
 			// squiggle it
