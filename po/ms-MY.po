@@ -6,8 +6,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: ms-MY\n"
-"POT-Creation-Date: 2004-01-25 19:21+0800\n"
-"PO-Revision-Date: 2004-02-05 22:39+0800\n"
+"POT-Creation-Date: 2004-03-02 23:50+0800\n"
+"PO-Revision-Date: 2004-04-02 21:03+0800\n"
 "Last-Translator: Sharuzzaman Ahmat Raslan <sharuzzaman@myrealbox.com>\n"
 "Language-Team: Malay <translation-team-ms@lists.sourceforge.net>\n"
 "MIME-Version: 1.0\n"
@@ -307,7 +307,7 @@ msgstr "P&ada:"
 #. MENU_LABEL_TOOLS_AUTOSPELL
 #: po/tmp/ap_String_Id.h.h:179
 msgid "&Auto Spellcheck"
-msgstr "&Auto Semakejaan"
+msgstr "&Auto Semakeja"
 
 #. MENU_LABEL_TABLE_AUTOFIT
 #: po/tmp/ap_String_Id.h.h:181
@@ -393,7 +393,7 @@ msgstr "&Putus lajur"
 #. MENU_LABEL_FMT_COLUMNS
 #: po/tmp/ap_String_Id.h.h:214
 msgid "&Columns"
-msgstr "&Lajur-Lajur"
+msgstr "&Lajur"
 
 #. MENU_LABEL_EDIT_COPY
 #: po/tmp/ap_String_Id.h.h:216
@@ -438,7 +438,7 @@ msgstr "&Dokumen"
 #. MENU_LABEL_WINDOW
 #: po/tmp/ap_String_Id.h.h:232
 msgid "&Documents"
-msgstr "&Dokumen-dokumen"
+msgstr "&Dokumen"
 
 #. DLG_Para_PushNoHyphenate
 #: po/tmp/ap_String_Id.h.h:234
@@ -474,7 +474,7 @@ msgstr "&Medan"
 #. DLG_Field_Fields_No_Colon
 #: po/tmp/ap_String_Id.h.h:247
 msgid "&Fields"
-msgstr "&Medan-medan"
+msgstr "&Medan"
 
 #. DLG_Field_Fields
 #: po/tmp/ap_String_Id.h.h:249
@@ -519,17 +519,17 @@ msgstr "Dari &Fail"
 #. MENU_LABEL_EDIT_GOTO
 #: po/tmp/ap_String_Id.h.h:265
 msgid "&Go To"
-msgstr "Per&gi Ke"
+msgstr "Per&gi"
 
 #. MENU_LABEL_VIEW_HEADFOOT
 #: po/tmp/ap_String_Id.h.h:267
 msgid "&Header and Footer"
-msgstr "&Header dan Footer"
+msgstr "&Pengepala dan Footer"
 
 #. DLG_PageSetup_Header
 #: po/tmp/ap_String_Id.h.h:269
 msgid "&Header:"
-msgstr "&Header:"
+msgstr "&Pengepala:"
 
 #. DLG_PageSetup_Height
 #: po/tmp/ap_String_Id.h.h:271
@@ -592,7 +592,7 @@ msgstr "&Italik"
 #. MENU_LABEL_ALIGN_JUSTIFY
 #: po/tmp/ap_String_Id.h.h:295
 msgid "&Justify"
-msgstr "&Justify"
+msgstr "&Justifi"
 
 #. DLG_Para_PushKeepLinesTogether
 #: po/tmp/ap_String_Id.h.h:297
@@ -663,7 +663,7 @@ msgstr "&Padan huruf"
 #. MENU_LABEL_TABLE_MERGE_CELLS
 #: po/tmp/ap_String_Id.h.h:324
 msgid "&Merge Cells"
-msgstr "&Gabung Sel"
+msgstr "&Gabung sel"
 
 #. MENU_LABEL_WINDOW_MORE
 #: po/tmp/ap_String_Id.h.h:326
@@ -688,7 +688,7 @@ msgstr "&Tetingkap Baru"
 #. DLG_Break_NextPage
 #: po/tmp/ap_String_Id.h.h:334
 msgid "&Next page"
-msgstr "Halama&n berikut"
+msgstr "&Berikut"
 
 #. MENU_LABEL_VIEW_NORMAL
 #: po/tmp/ap_String_Id.h.h:336
@@ -728,7 +728,7 @@ msgstr "&Lebar Halaman"
 #. DLG_Break_PageBreak
 #: po/tmp/ap_String_Id.h.h:350
 msgid "&Page break"
-msgstr "&Putus halaman"
+msgstr "&Putus laman"
 
 #. MENU_LABEL_FMT_PARAGRAPH
 #: po/tmp/ap_String_Id.h.h:352
@@ -808,24 +808,24 @@ msgstr "&Semakan"
 #. MENU_LABEL_ALIGN_RIGHT
 #: po/tmp/ap_String_Id.h.h:382
 msgid "&Right"
-msgstr "Kanan"
+msgstr "K&anan"
 
 #. MENU_LABEL_FMT_DIRECTION_DO_RTL
 #: po/tmp/ap_String_Id.h.h:384
 msgid "&Right-to-left text"
-msgstr "Teks kanan-ke-kiri"
+msgstr "Teks kanan-ke-ki&ri"
 
 #. DLG_Para_LabelRight
 #. DLG_PageSetup_Right
 #: po/tmp/ap_String_Id.h.h:387
 msgid "&Right:"
-msgstr "Kanan:"
+msgstr "K&anan:"
 
 #. MENU_LABEL_TABLE_DELETE_ROWS
 #. MENU_LABEL_TABLE_SELECT_ROW
 #: po/tmp/ap_String_Id.h.h:390
 msgid "&Row"
-msgstr "Ba&ris"
+msgstr "&Baris"
 
 #. DLG_Options_Label_ViewRuler
 #: po/tmp/ap_String_Id.h.h:392
@@ -855,7 +855,7 @@ msgstr "&Cari Bantuan"
 #. MENU_LABEL_TABLE_SELECT
 #: po/tmp/ap_String_Id.h.h:402
 msgid "&Select"
-msgstr "Pilih"
+msgstr "&Pilih"
 
 #. MENU_LABEL_TOOLS_REVISIONS_SET_VIEW_LEVEL
 #: po/tmp/ap_String_Id.h.h:404
@@ -875,7 +875,7 @@ msgstr "I&stimewa:"
 #. MENU_LABEL_TOOLS_SPELLING
 #: po/tmp/ap_String_Id.h.h:410
 msgid "&Spelling"
-msgstr "Ejaan"
+msgstr "&Ejaan"
 
 #. DLG_Options_Label_ViewStatusBar
 #: po/tmp/ap_String_Id.h.h:412
@@ -1355,7 +1355,7 @@ msgstr "Medan yang Ada  "
 #. DLG_DateTime_AvailableFormats_Capital
 #: po/tmp/ap_String_Id.h.h:600
 msgid "Available Formats"
-msgstr "Format yang Ada"
+msgstr "Format yang ada"
 
 #. DLG_Styles_Available
 #: po/tmp/ap_String_Id.h.h:602
@@ -1543,7 +1543,7 @@ msgstr "SULIT"
 #. MSG_NoBreakInsideTable
 #: po/tmp/ap_String_Id.h.h:677
 msgid "Can not insert a Break inside a table"
-msgstr "Tidak dapat memasukkan Pemutus dalam jadual"
+msgstr "Tidak dapat memasukkan Pecahan dalam jadual"
 
 #. DLG_Styles_ErrStyleCantDelete
 #: po/tmp/ap_String_Id.h.h:679
@@ -1755,7 +1755,7 @@ msgstr "Pilih Warna Skrin"
 #. DLG_Options_Label_ColorChooserLabel
 #: po/tmp/ap_String_Id.h.h:768
 msgid "Choose screen color for AbiWord"
-msgstr "Pilih warna skrin untuk AbiWord"
+msgstr "Pilih warna skrin untuk Abiword"
 
 #. MENU_STATUSLINE_TOOLS_REVISIONS_SET_VIEW_LEVEL
 #: po/tmp/ap_String_Id.h.h:770
@@ -2375,7 +2375,7 @@ msgstr "Sunting Footer"
 #. TOOLBAR_TOOLTIP_EDIT_HEADER
 #: po/tmp/ap_String_Id.h.h:1024
 msgid "Edit Header"
-msgstr "Sunting Header"
+msgstr "Sunting Pengepala"
 
 #. MENU_STATUSLINE_VIEW_HEADFOOT
 #: po/tmp/ap_String_Id.h.h:1026
@@ -2390,7 +2390,7 @@ msgstr "Sunting Footer pada halaman semasa"
 #. MENU_STATUSLINE_EDIT_EDITHEADER
 #: po/tmp/ap_String_Id.h.h:1030
 msgid "Edit the Header on the current page"
-msgstr "Edit Header pada halaman semasa"
+msgstr "Edit Pengepala pada halaman semasa"
 
 #. MENU_LABEL_AUTOTEXT_EMAIL
 #: po/tmp/ap_String_Id.h.h:1032
@@ -2713,7 +2713,7 @@ msgstr "Format Notakaki dan Notaakhir"
 #. DLG_HdrFtr_Title
 #: po/tmp/ap_String_Id.h.h:1161
 msgid "Format Header/Footers"
-msgstr "Format Header/Footer"
+msgstr "Format Pengepala/Footer"
 
 #. TOOLBAR_LABEL_FMTPAINTER
 #: po/tmp/ap_String_Id.h.h:1163
@@ -2781,18 +2781,18 @@ msgstr "Tergantung"
 #. DLG_PageNumbers_Header
 #: po/tmp/ap_String_Id.h.h:1189
 msgid "Header"
-msgstr "Header"
+msgstr "Pengepala"
 
 #. DLG_HdrFtr_HeaderFrame
 #: po/tmp/ap_String_Id.h.h:1191
 msgid "Header Properties"
-msgstr "Ciri-ciri Header"
+msgstr "Ciri-ciri Pengepala"
 
 #. HeaderStatus
 #: po/tmp/ap_String_Id.h.h:1193
 #, c-format
 msgid "Header [%s]"
-msgstr "Header [%s]"
+msgstr "Pengepala [%s]"
 
 #. MENU_LABEL_FMT_HDRFTR
 #: po/tmp/ap_String_Id.h.h:1195
@@ -2806,7 +2806,7 @@ msgid ""
 " To enter this mode choose View then Print Layout from the Menus. \n"
 " Would you like to enter Print Layout mode right now?"
 msgstr ""
-"Header dan Footer hanya boleh dicipta dan disunting ketika didalam Mod Lihat Cetakan.\n"
+"Pengepala dan Footer hanya boleh dicipta dan disunting ketika didalam Mod Lihat Cetakan.\n"
 " Untuk memasuki mod ini pilih Lihat kemudian Susunatur Cetakan daripada Menu. \n"
 " Adakah anda hendak memasuki mod Susunatur Cetakan sekarang?"
 
@@ -2953,7 +2953,7 @@ msgstr "Selit Lajur"
 #. MENU_LABEL_TABLE_INSERTROW
 #: po/tmp/ap_String_Id.h.h:1258
 msgid "Insert &Rows"
-msgstr "Selit Baris"
+msgstr "Selit Ba&ris"
 
 #. MENU_LABEL_TABLE_INSERTTABLE
 #: po/tmp/ap_String_Id.h.h:1260
@@ -3027,7 +3027,7 @@ msgstr "Selit Jadual"
 #. MENU_STATUSLINE_INSERT_DIRECTIONMARKER
 #: po/tmp/ap_String_Id.h.h:1290
 msgid "Insert Unicode direction marker into the document"
-msgstr "Selit penanda arah Unicode kedalam dokumen"
+msgstr "Selit penanda arah Unicode ke dalam dokumen"
 
 #. MENU_STATUSLINE_INSERT_INSERTFOOTER
 #: po/tmp/ap_String_Id.h.h:1292
@@ -3327,7 +3327,7 @@ msgstr "Jajaran kiri"
 #. MENU_STATUSLINE_ALIGN_LEFT
 #: po/tmp/ap_String_Id.h.h:1418
 msgid "Left-align the paragraph"
-msgstr "Jajar kiri perenggan"
+msgstr "Jajar-kiri perenggan"
 
 #. DLG_Lists_DelimiterString
 #: po/tmp/ap_String_Id.h.h:1420
@@ -4284,7 +4284,7 @@ msgstr "Ulangmula nombor pada:"
 #. DLG_FormatFootnotes_FootRestartPage
 #: po/tmp/ap_String_Id.h.h:1823
 msgid "Restart on each page"
-msgstr "Mula semula pada setiap halaman"
+msgstr "Ulangmula pada setiap halaman"
 
 #. DLG_FormatFootnotes_FootRestartSec
 #. DLG_FormatFootnotes_EndRestartSec
@@ -4357,7 +4357,7 @@ msgstr "Jajaran kanan"
 #. MENU_STATUSLINE_ALIGN_RIGHT
 #: po/tmp/ap_String_Id.h.h:1854
 msgid "Right-align the paragraph"
-msgstr "Jajar kanan perenggan"
+msgstr "Jajar-kanan perenggan"
 
 #. DLG_Para_DomDirection
 #: po/tmp/ap_String_Id.h.h:1856
@@ -4367,7 +4367,7 @@ msgstr "&Dominan kanan-ke-kiri"
 #. FIELD_Document_Rights
 #: po/tmp/ap_String_Id.h.h:1858
 msgid "Rights"
-msgstr "Kebenaran"
+msgstr "Kanan"
 
 #. DLG_MetaData_Rights_LBL
 #: po/tmp/ap_String_Id.h.h:1860
@@ -5934,7 +5934,7 @@ msgstr "Masuk Font"
 #. DLG_HTMLOPT_ExpEmbedImages
 #: po/tmp/xap_String_Id.h.h:215
 msgid "Embed images in URLs (Base64-encoded)"
-msgstr "Masukkan imej dalam URL (enkod Asas64)"
+msgstr "Masukkan imej dalam URL (enkod-Asas64)"
 
 #. DLG_UENC_EncTitle
 #: po/tmp/xap_String_Id.h.h:217
