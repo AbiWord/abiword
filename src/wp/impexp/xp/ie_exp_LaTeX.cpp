@@ -40,6 +40,13 @@
 
 #define DEFAULT_SIZE "12pt"
 
+enum JustificationTypes {
+	JUSTIFIED,
+	CENTER,
+	RIGHT,
+	LEFT
+};
+
 IE_Exp_LaTeX::IE_Exp_LaTeX(PD_Document * pDocument)
 	: IE_Exp(pDocument)
 {
@@ -138,6 +145,7 @@ protected:
 	UT_Bool				m_bInSpan;
 	const PP_AttrProp*	m_pAP_Span;
 	UT_Bool             m_bMultiCols;
+	JustificationTypes  m_eJustification;
 
 	// Need to look up proper type, and place to stick #defines...
 
@@ -170,6 +178,20 @@ void s_LaTeX_Listener::_closeBlock(void)
 	switch (m_iBlockType)
 	{
 	case BT_NORMAL:
+		switch (m_eJustification)
+		{
+		case JUSTIFIED:
+			break;
+		case CENTER:
+			m_pie->write("\n\\end{center}");
+			break;
+		case RIGHT:
+			m_pie->write("\n\\end{flushright}");
+			break;
+		case LEFT:
+			m_pie->write("\n\\end{flushleft}");
+			break;
+		}
 		m_pie->write("\n\n");
 		break;
 	case BT_HEADING1:
@@ -193,6 +215,8 @@ void s_LaTeX_Listener::_closeBlock(void)
 
 void s_LaTeX_Listener::_openParagraph(PT_AttrPropIndex api)
 {
+	m_eJustification = JUSTIFIED;
+
 	if (!m_bInSection)
 	{
 		return;
@@ -245,13 +269,23 @@ void s_LaTeX_Listener::_openParagraph(PT_AttrPropIndex api)
 		
 		/* Assumption: never get property set with h1-h3, block text, plain text. Probably true. */
 		
-		if (
-			m_iBlockType == BT_NORMAL && (pAP->getProperty("text-align", szValue))
-			)
+		if (m_iBlockType == BT_NORMAL && (pAP->getProperty("text-align", szValue)))
 		{
-// 			m_pie->write(" ALIGN=\"");
-// 			m_pie->write(szValue);
-// 			m_pie->write("\"");
+			if (0 == UT_stricmp(szValue, "center"))
+			{
+				m_pie->write("\\begin{center}\n");
+				m_eJustification = CENTER;
+			}
+			if (0 == UT_stricmp(szValue, "right"))
+			{
+				m_pie->write("\\begin{flushright}\n");
+				m_eJustification = RIGHT;
+			}
+			if (0 == UT_stricmp(szValue, "left"))
+			{
+				m_pie->write("\\begin{flushleft}\n");
+				m_eJustification = LEFT;
+			}
 		}
 	}
 	else 
@@ -765,6 +799,7 @@ s_LaTeX_Listener::s_LaTeX_Listener(PD_Document * pDocument,
 	m_pie->write("\\documentclass[12pt]{article}\n");
 	m_pie->write("\\usepackage[T1]{fontenc}\n");
 	m_pie->write("\\usepackage{calc}\n");
+	m_pie->write("%\\usepackage{doublespace}\n");
 	m_pie->write("\\usepackage{multicol}\t% TODO: I don't need this package if the document is a single column one.\n");
 	m_pie->write("\n");
 	//	m_pie->write("\\begin{document}\n");  // I've to leave this step to the openSection, and that implies
