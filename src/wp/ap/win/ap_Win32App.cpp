@@ -34,6 +34,7 @@
 #include "ut_bytebuf.h"
 #include "ut_string.h"
 #include "xap_Args.h"
+#include "ap_Convert.h"
 #include "ap_Win32Frame.h"
 #include "ap_Win32App.h"
 #include "sp_spell.h"
@@ -532,6 +533,30 @@ static GR_Image * _showSplash(HINSTANCE hInstance, XAP_Args * pArgs, const char 
 	int k;
 	
 	// scan args for splash-related stuff
+    for (k=nFirstArg; (k<pArgs->m_argc); k++)
+	{
+		if (*pArgs->m_argv[k] == '-')
+		{
+			if (UT_stricmp(pArgs->m_argv[k],"-to") == 0)
+			{
+				bShowSplash = UT_FALSE;
+				break;
+			}
+		}
+	}	
+	
+    for (k=nFirstArg; (k<pArgs->m_argc); k++)
+	{
+		if (*pArgs->m_argv[k] == '-')
+		{
+			if (UT_stricmp(pArgs->m_argv[k],"-show") == 0)
+			{
+				bShowSplash = UT_TRUE;
+				break;
+			}
+		}
+	}	
+
 	for (k=nFirstArg; (k<pArgs->m_argc); k++)
 	{
 		if (*pArgs->m_argv[k] == '-')
@@ -640,6 +665,8 @@ typedef BOOL __declspec(dllimport) (CALLBACK *InitCommonControlsEx_fn)(LPINITCOM
 int AP_Win32App::WinMain(const char * szAppName, HINSTANCE hInstance, 
 						 HINSTANCE hPrevInstance, PSTR szCmdLine, int iCmdShow)
 {
+	UT_Bool bShowApp = UT_TRUE;
+
 	// this is a static function and doesn't have a 'this' pointer.
 	MSG msg;
 
@@ -700,15 +727,39 @@ int AP_Win32App::WinMain(const char * szAppName, HINSTANCE hInstance,
 	_hideSplash();
 #endif
 	
-	while (GetMessage(&msg, NULL, 0, 0))
-	{
-		// Note: we do not call TranslateMessage() because
-		// Note: the keybinding mechanism is responsible
-		// Note: for deciding if/when to do this.
-			
-		DispatchMessage(&msg);
-	}
+	// Win32 does not put the program name in argv[0], so [0] is the first argument
+	int nFirstArg = 0;
+	int k;
 	
+	// quick & dirty check to make sure we didn't do a command-line conversion
+   for (k=nFirstArg; (k<Args.m_argc); k++) {
+		if (*Args.m_argv[k] == '-') {
+			if (UT_stricmp(Args.m_argv[k],"-to") == 0) {
+ 				bShowApp = UT_FALSE;
+			}
+		}
+	}	
+
+    for (k=nFirstArg; (k<Args.m_argc); k++) {
+		if (*Args.m_argv[k] == '-') {
+			if (UT_stricmp(Args.m_argv[k],"-show") == 0) {
+ 				bShowApp = UT_TRUE;
+			}
+		}
+	}	
+
+	if (bShowApp)
+	{
+		while (GetMessage(&msg, NULL, 0, 0))
+		{
+			// Note: we do not call TranslateMessage() because
+			// Note: the keybinding mechanism is responsible
+			// Note: for deciding if/when to do this.
+				
+			DispatchMessage(&msg);
+		}
+	}
+
 	// destroy the App.  It should take care of deleting all frames.
 
 	pMyWin32App->shutdown();
@@ -734,6 +785,9 @@ void AP_Win32App::ParseCommandLine(int iCmdShow)
 	int nFirstArg = 0;
 	int k;
 	int kWindowsOpened = 0;
+	char *to = NULL;
+	int verbose = 1;
+	UT_Bool show = UT_FALSE;
 	
 	for (k=nFirstArg; (k<m_pArgs->m_argc); k++)
 	{
@@ -765,6 +819,20 @@ void AP_Win32App::ParseCommandLine(int iCmdShow)
 			{
 				// we've alrady processed this before we initialized the App class
 			}
+			else if (UT_stricmp (m_pArgs->m_argv[k],"-to") == 0)
+			{
+				k++;
+				to = m_pArgs->m_argv[k];
+			}
+			else if (UT_stricmp (m_pArgs->m_argv[k], "-show") == 0)
+			{
+				show = UT_TRUE;
+			}
+			else if (UT_stricmp (m_pArgs->m_argv[k], "-verbose") == 0)
+			{
+				k++;
+				verbose = atoi (m_pArgs->m_argv[k]);
+			}
 			else
 			{
 				UT_DEBUGMSG(("Unknown command line option [%s]\n",m_pArgs->m_argv[k]));
@@ -774,39 +842,52 @@ void AP_Win32App::ParseCommandLine(int iCmdShow)
 		else
 		{
 			// [filename]
-			
-			AP_Win32Frame * pFirstWin32Frame = new AP_Win32Frame(this);
-			pFirstWin32Frame->initialize();
-
-			UT_Error error = pFirstWin32Frame->loadDocument(m_pArgs->m_argv[k], IEFT_Unknown);
-			if (!error)
+			if (to) 
 			{
-				kWindowsOpened++;
-
-				HWND hwnd = pFirstWin32Frame->getTopLevelWindow();
-				ShowWindow(hwnd, iCmdShow);
-				UpdateWindow(hwnd);
+				AP_Convert * conv = new AP_Convert();
+				conv->setVerbose(verbose);
+				conv->convertTo(m_pArgs->m_argv[k], to);
+				delete conv;
 			}
 			else
 			{
-				// TODO: warn user that we couldn't open that file
+				AP_Win32Frame * pFirstWin32Frame = new AP_Win32Frame(this);
+				pFirstWin32Frame->initialize();
+
+				UT_Error error = pFirstWin32Frame->loadDocument(m_pArgs->m_argv[k], IEFT_Unknown);
+				if (!error)
+				{
+					kWindowsOpened++;
+
+					HWND hwnd = pFirstWin32Frame->getTopLevelWindow();
+					ShowWindow(hwnd, iCmdShow);
+					UpdateWindow(hwnd);
+				}
+				else
+				{
+					// TODO: warn user that we couldn't open that file
 
 #if 1
-				// TODO we crash if we just delete this without putting something
-				// TODO in it, so let's go ahead and open an untitled document
-				// TODO for now.  this would cause us to get 2 untitled documents
-				// TODO if the user gave us 2 bogus pathnames....
-				kWindowsOpened++;
-				pFirstWin32Frame->loadDocument(NULL, IEFT_Unknown);
-				HWND hwnd = pFirstWin32Frame->getTopLevelWindow();
-				ShowWindow(hwnd, iCmdShow);
-				UpdateWindow(hwnd);
+					// TODO we crash if we just delete this without putting something
+					// TODO in it, so let's go ahead and open an untitled document
+					// TODO for now.  this would cause us to get 2 untitled documents
+					// TODO if the user gave us 2 bogus pathnames....
+					kWindowsOpened++;
+					pFirstWin32Frame->loadDocument(NULL, IEFT_Unknown);
+					HWND hwnd = pFirstWin32Frame->getTopLevelWindow();
+					ShowWindow(hwnd, iCmdShow);
+					UpdateWindow(hwnd);
 #else
-				delete pFirstWin32Frame;
+					delete pFirstWin32Frame;
 #endif
+				}
 			}
 		}
 	}
+					
+	// command-line conversion may not open any windows at all
+	if (to && !show)
+		return;
 
 	if (kWindowsOpened == 0)
 	{

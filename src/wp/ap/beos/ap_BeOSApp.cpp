@@ -36,6 +36,16 @@
 #include "xap_Args.h"
 #include "ap_BeOSFrame.h"
 #include "ap_BeOSApp.h"
+
+// HACK: set this symbol to 0 to turn off command-line conversion
+// TODO: if it works, remove it entirely
+#ifndef CONVERT
+#define CONVERT 1	
+#endif
+
+#if	CONVERT
+#include "ap_Convert.h"
+#endif
 #include "sp_spell.h"
 #include "ap_Strings.h"
 
@@ -113,20 +123,42 @@ void SplashWin::DispatchMessage(BMessage *msg, BHandler *handler) {
 void _showSplash(XAP_Args * pArgs, const char * /*szAppName*/) {
 	// Unix does put the program name in argv[0], 
 	// unlike Win32, so [1] is the first argument
-        int nFirstArg = 1;
-        int k;
+	int nFirstArg = 1;
+	int k;
+	UT_Bool bShowSplash = UT_TRUE;
 
-        // scan args for splash-related stuff
-        for (k=nFirstArg; (k<pArgs->m_argc); k++) {
-                if (*pArgs->m_argv[k] == '-') {
-                        if (UT_stricmp(pArgs->m_argv[k],"-nosplash") == 0) {
-				return;
-                        }
-                }                                   
-	}
+	// scan args for splash-related stuff
+#if CONVERT
+	for (k=nFirstArg; (k<pArgs->m_argc); k++) {
+		if (*pArgs->m_argv[k] == '-') {
+			if (UT_stricmp(pArgs->m_argv[k],"-to") == 0) {
+				bShowSplash = UT_FALSE;
+			}
+		}
+	}	
+
+	for (k=nFirstArg; (k<pArgs->m_argc); k++) {
+		if (*pArgs->m_argv[k] == '-') {
+			if (UT_stricmp(pArgs->m_argv[k],"-show") == 0) {
+ 				bShowSplash = UT_TRUE;
+			}
+		}
+	}	
+#endif
+
+	for (k=nFirstArg; (k<pArgs->m_argc); k++) {
+		if (*pArgs->m_argv[k] == '-') {
+			if (UT_stricmp(pArgs->m_argv[k],"-nosplash") == 0)
+				bShowSplash = UT_FALSE;
+		}
+	}                                   
+
+	if (bShowSplash == UT_FALSE)
+		return;
+
 	BMessage *msg = new BMessage();
         if (RehydrateWindow("SplashWindow", msg)) {
-		//Automatically shows and hides itself
+				//Automatically shows and hides itself
                 SplashWin *nwin = new SplashWin(msg);
         }                                        	
 }                                             
@@ -453,7 +485,9 @@ ReturnTrue:
 
 int AP_BeOSApp::local_main(const char * szAppName, int argc, char ** argv) {
 	// This is a static function.
-		   
+#if CONVERT
+	UT_Bool bShowApp = UT_TRUE;
+#endif
 	UT_DEBUGMSG(("Build ID:\t%s\n", XAP_App::s_szBuild_ID));
 	UT_DEBUGMSG(("Version:\t%s\n", XAP_App::s_szBuild_Version));
 	UT_DEBUGMSG(("Build Options: \t%s\n", XAP_App::s_szBuild_Options));
@@ -478,12 +512,35 @@ int AP_BeOSApp::local_main(const char * szAppName, int argc, char ** argv) {
 
 	pMyBeOSApp->ParseCommandLine();
 
-	// Turn control over to the runtime (don't return until done)
-	pMyBeOSApp->m_BApp.Run();
+#if CONVERT
+	for (k=nFirstArg; (k<Args.m_argc); k++) {
+		if (*Args.m_argv[k] == '-') {
+			if (UT_stricmp(Args.m_argv[k],"-to") == 0) {
+				bShowApp = UT_FALSE;
+			}
+		}
+	}	
+
+	for (k=nFirstArg; (k<Args.m_argc); k++) {
+		if (*Args.m_argv[k] == '-') {
+			if (UT_stricmp(Args.m_argv[k],"-show") == 0) {
+				bShowApp = UT_TRUE;
+			}
+		}
+	}	
+
+	if (bShowApp)
+	{
+#endif
+		// Turn control over to the runtime (don't return until done)
+		pMyBeOSApp->m_BApp.Run();
 	
-	// destroy the App.  It should take care of deleting all frames.
-	pMyBeOSApp->shutdown();
-	sleep(1);
+		// destroy the App.  It should take care of deleting all frames.
+		pMyBeOSApp->shutdown();
+		sleep(1);
+#if CONVERT
+	}
+#endif
 
 	delete pMyBeOSApp;
 	return 0;
@@ -504,7 +561,12 @@ void AP_BeOSApp::ParseCommandLine(void)
 	int nFirstArg = 1;
 	int k;
 	int kWindowsOpened = 0;
-	
+#if CONVERT
+	char *to = NULL;
+	int verbose = 1;
+	UT_Bool show = UT_FALSE;
+#endif
+
 	for (k=nFirstArg; (k<m_pArgs->m_argc); k++)
 	{
 		if (*m_pArgs->m_argv[k] == '-')
@@ -531,6 +593,22 @@ void AP_BeOSApp::ParseCommandLine(void)
 				delete pBuiltinStringSet;
 #endif
 			}
+#if CONVERT
+			else if (UT_stricmp (m_pArgs->m_argv[k],"-to") == 0)
+			{
+				k++;
+				to = m_pArgs->m_argv[k];
+			}
+			else if (UT_stricmp (m_pArgs->m_argv[k], "-show") == 0)
+			{
+				show = UT_TRUE;
+			}
+			else if (UT_stricmp (m_pArgs->m_argv[k], "-verbose") == 0)
+			{
+				k++;
+				verbose = atoi (m_pArgs->m_argv[k]);
+			}
+#endif
 			else
 			{
 				UT_DEBUGMSG(("Unknown command line option [%s]\n",m_pArgs->m_argv[k]));
@@ -540,31 +618,48 @@ void AP_BeOSApp::ParseCommandLine(void)
 		else
 		{
 			// [filename]
-			
-			AP_BeOSFrame * pFirstBeOSFrame = new AP_BeOSFrame(this);
-			pFirstBeOSFrame->initialize();
-			UT_Error error = pFirstBeOSFrame->loadDocument(m_pArgs->m_argv[k], IEFT_Unknown);
-			if (!error)
+#if CONVERT
+			if (to)
 			{
-				kWindowsOpened++;
+				AP_Convert * conv = new AP_Convert();
+				conv->setVerbose(verbose);
+				conv->convertTo(m_pArgs->m_argv[k], to);
+				delete conv;
 			}
 			else
 			{
-				// TODO: warn user that we couldn't open that file
+#endif			
+				AP_BeOSFrame * pFirstBeOSFrame = new AP_BeOSFrame(this);
+				pFirstBeOSFrame->initialize();
+				UT_Error error = pFirstBeOSFrame->loadDocument(m_pArgs->m_argv[k], IEFT_Unknown);
+				if (!error)
+				{
+					kWindowsOpened++;
+				}
+				else
+				{
+					// TODO: warn user that we couldn't open that file
 
 #if 1
-				// TODO we crash if we just delete this without putting something
-				// TODO in it, so let's go ahead and open an untitled document
-				// TODO for now.  this would cause us to get 2 untitled documents
-				// TODO if the user gave us 2 bogus pathnames....
-				kWindowsOpened++;
-				pFirstBeOSFrame->loadDocument(NULL, IEFT_Unknown);
+					// TODO we crash if we just delete this without putting something
+					// TODO in it, so let's go ahead and open an untitled document
+					// TODO for now.  this would cause us to get 2 untitled documents
+					// TODO if the user gave us 2 bogus pathnames....
+					kWindowsOpened++;
+					pFirstBeOSFrame->loadDocument(NULL, IEFT_Unknown);
 #else
-				delete pFirstBeOSFrame;
+					delete pFirstBeOSFrame;
 #endif
+				}
+#if CONVERT
 			}
+#endif
 		}
 	}
+						
+	// command-line conversion may not open any windows at all
+	if (to && !show)
+		return;
 
 	if (kWindowsOpened == 0)
 	{

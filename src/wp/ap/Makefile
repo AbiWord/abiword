@@ -1,7 +1,7 @@
 #! gmake
 
 ## AbiWord
-## Copyright (C) 1998 AbiSource, Inc.
+## Copyright (C) 1998-2000 AbiSource, Inc.
 ##
 ## This program is free software; you can redistribute it and/or
 ## modify it under the terms of the GNU General Public License
@@ -30,7 +30,7 @@ PLATFORM_OBJS=	$(OBJDIR)/ap_$(ABI_FE)App.$(OBJ_SUFFIX)			\
 		$(OBJDIR)/ap_$(ABI_FE)Clipboard.$(OBJ_SUFFIX)		\
 		$(OBJDIR)/ap_$(ABI_FE)DialogFactory.$(OBJ_SUFFIX)	\
 		$(OBJDIR)/ap_$(ABI_FE)Dialog_Break.$(OBJ_SUFFIX)	\
-                $(OBJDIR)/ap_$(ABI_FE)Dialog_WordCount.$(OBJ_SUFFIX)        \
+		$(OBJDIR)/ap_$(ABI_FE)Dialog_WordCount.$(OBJ_SUFFIX)	\
 		$(OBJDIR)/ap_$(ABI_FE)Dialog_Field.$(OBJ_SUFFIX)	\
 		$(OBJDIR)/ap_$(ABI_FE)Dialog_Insert_DateTime.$(OBJ_SUFFIX)	\
 		$(OBJDIR)/ap_$(ABI_FE)Dialog_Options.$(OBJ_SUFFIX)	\
@@ -74,8 +74,9 @@ PLATFORM_OBJS+=	$(OBJDIR)/ap_$(ABI_FE)$(ABI_GNOME_PREFIX)App.$(OBJ_SUFFIX)			\
 endif
 
 OBJS=		$(PLATFORM_OBJS)				\
+		$(OBJDIR)/ap_Convert.$(OBJ_SUFFIX)		\
 		$(OBJDIR)/ap_Dialog_Break.$(OBJ_SUFFIX)		\
-                $(OBJDIR)/ap_Dialog_WordCount.$(OBJ_SUFFIX)        \
+		$(OBJDIR)/ap_Dialog_WordCount.$(OBJ_SUFFIX)	\
 		$(OBJDIR)/ap_Dialog_Field.$(OBJ_SUFFIX)		\
 		$(OBJDIR)/ap_Dialog_Insert_DateTime.$(OBJ_SUFFIX)		\
 		$(OBJDIR)/ap_Dialog_Options.$(OBJ_SUFFIX)	\

@@ -36,6 +36,7 @@
 #include "ut_misc.h"
 
 #include "xap_Args.h"
+#include "ap_Convert.h"
 #include "ap_UnixFrame.h"
 #include "ap_UnixApp.h"
 #include "ap_UnixGnomeApp.h"
@@ -91,6 +92,9 @@ UT_Bool	AP_UnixGnomeApp::initialize(void)
 #ifdef DEBUG
 	 {"dumpstrings", 'd', POPT_ARG_NONE, NULL, 0, "Dump strings to file", NULL},
 #endif
+	 {"to", 't', POPT_ARG_STRING, NULL, 0, "The target format of the file (abw, zabw, rtf, txt, utf8, html, latex)", "FORMAT"},
+	 {"verbose", 'v', POPT_ARG_INT, NULL, 0, "The verbosity level (0, 1, 2)", "LEVEL"},
+	 {"show", '\0', POPT_ARG_NONE, NULL, 0, "If you really want to start the GUI (even if you use the --to option)", ""},
 	 {NULL, '\0', 0, NULL, 0, NULL, NULL} /* end the list */
 	};
 	gnomelib_register_popt_table (options, "Abiword Options");
@@ -112,8 +116,33 @@ int AP_UnixGnomeApp::main(const char * szAppName, int argc, char ** argv)
 	// initialize our application.
 
 	XAP_Args Args = XAP_Args(argc,argv);
-
-	// Do a quick and dirty find for "-nosplash"
+  
+ 	AP_UnixGnomeApp * pMyUnixApp = new AP_UnixGnomeApp(&Args, szAppName);
+ 
+ 	// Do a quick and dirty find for "--to"
+  	UT_Bool bShowSplash = UT_TRUE;
+ 	UT_Bool bShowApp = UT_TRUE;
+  	for (int k = 1; k < Args.m_argc; k++)
+  		if (*Args.m_argv[k] == '-')
+  			if ((UT_stricmp(Args.m_argv[k],"--to") == 0) ||
+ 				(UT_stricmp(Args.m_argv[k],"-t") == 0))
+  			{
+ 				bShowApp = UT_FALSE;
+  				bShowSplash = UT_FALSE;
+  				break;
+  			}
+ 
+ 	// Do a quick and dirty find for "--show"
+  	for (int k = 1; k < Args.m_argc; k++)
+  		if (*Args.m_argv[k] == '-')
+  			if (UT_stricmp(Args.m_argv[k],"--show") == 0)
+  			{
+ 				bShowApp = UT_TRUE;
+  				bShowSplash = UT_TRUE;
+  				break;
+  			}
+ 
+ 	// Do a quick and dirty find for "--nosplash"
  	UT_Bool bShowSplash = UT_TRUE;
  	for (int k = 1; k < Args.m_argc; k++)
  		if (*Args.m_argv[k] == '-')
@@ -135,8 +164,6 @@ int AP_UnixGnomeApp::main(const char * szAppName, int argc, char ** argv)
 	if (bShowSplash)
 		_showSplash(2000);
 			
-	AP_UnixGnomeApp * pMyUnixApp = new AP_UnixGnomeApp(&Args, szAppName);
-
 	// if the initialize fails, we don't have icons, fonts, etc.
 	if (!pMyUnixApp->initialize())
 	{
@@ -147,7 +174,7 @@ int AP_UnixGnomeApp::main(const char * szAppName, int argc, char ** argv)
 	// this function takes care of all the command line args.
 	// if some args are botched, it returns false and we should
 	// continue out the door.
-	if (pMyUnixApp->parseCommandLine())
+	if (pMyUnixApp->parseCommandLine() && bShowApp)
 	{
 		// turn over control to gtk
 		gtk_main();
@@ -163,15 +190,23 @@ int AP_UnixGnomeApp::main(const char * szAppName, int argc, char ** argv)
 UT_Bool AP_UnixGnomeApp::parseCommandLine(void)
 {
 	// parse the command line
-	// <app> [-script <scriptname>]* [-dumpstrings] [<documentname>]*
+	// <app> [--script <scriptname>]* [--dumpstrings] [--to <format>] [--geometry <format>] [<documentname>]*
 	
 	// TODO when we refactor the App classes, consider moving
 	// TODO this to app-specific, cross-platform.
 	
 	int kWindowsOpened = 0;
- 	char *script = NULL, *geometry = NULL;
+#ifdef ABI_OPT_JS
+ 	char *script = NULL;
+#endif
+	char *geometry = NULL;
 	char *file = NULL;
+	char *to = NULL;
+	int verbose = 1;
+	int show = 0;
+#ifdef DEBUG
  	gboolean dumpstrings = FALSE;
+#endif
 	poptContext poptcon;
  	static const struct poptOption options[] =
  	{{"geometry", 'g', POPT_ARG_STRING, &geometry, 0, "HACK", "HACK"},
@@ -179,12 +214,15 @@ UT_Bool AP_UnixGnomeApp::parseCommandLine(void)
 	 {"lib",      'l', POPT_ARG_STRING, NULL, 0, "HACK", "HACK"},
 #ifdef ABI_OPT_JS
 	 {"script", 's', POPT_ARG_STRING, &script, 0,
-	  N_("Execute the specified script"), N_("SCRIPT")},
+	  "HACK", "HACK"},
 #endif
 #ifdef DEBUG
 	 {"dumpstrings", 'd', POPT_ARG_NONE, &dumpstrings, 0,
-	  N_("Dump strings for translation purposes"), NULL},
+	  "HACK", NULL},
 #endif
+	 {"to", 't', POPT_ARG_STRING, &to, 0, "HACK", "HACK"},
+	 {"verbose", 'v', POPT_ARG_INT, &verbose, 0, "HACK", "HACK"},
+	 {"show", '\0', POPT_ARG_NONE, &show, 0, "HACK", NULL},
 	 {NULL, '\0', 0, NULL, 0, NULL, NULL} /* end the list */
 	};
 	
@@ -239,6 +277,20 @@ UT_Bool AP_UnixGnomeApp::parseCommandLine(void)
 		setGeometry(x, y, width, height, f);
 	}
 	
+	if (to) {
+		AP_Convert * conv = new AP_Convert();
+		conv->setVerbose(verbose);
+
+		while ((file = poptGetArg (poptcon)) != NULL) {
+			conv->convertTo(file, to);
+		}
+
+		delete conv;
+
+		if (!show)
+			return UT_TRUE;
+	}
+
 	while ((file = poptGetArg (poptcon)) != NULL) {
 		AP_UnixFrame * pFirstUnixFrame = new AP_UnixFrame(this);
 		pFirstUnixFrame->initialize();

@@ -37,6 +37,7 @@
 #include "ut_misc.h"
 
 #include "xap_Args.h"
+#include "ap_Convert.h"
 #include "ap_UnixFrame.h"
 #include "ap_UnixApp.h"
 #include "sp_spell.h"
@@ -774,8 +775,29 @@ int AP_UnixApp::main(const char * szAppName, int argc, char ** argv)
 
 	XAP_Args Args = XAP_Args(argc,argv);
 
+	// Do a quick and dirty find for "-to"
+ 	UT_Bool bShowSplash = UT_TRUE;
+	UT_Bool bShowApp = UT_TRUE;
+ 	for (int k = 1; k < Args.m_argc; k++)
+ 		if (*Args.m_argv[k] == '-')
+ 			if (UT_stricmp(Args.m_argv[k],"-to") == 0)
+ 			{
+				bShowApp = UT_FALSE;
+ 				bShowSplash = UT_FALSE;
+ 				break;
+ 			}
+
+	// Do a quick and dirty find for "-show"
+ 	for (int k = 1; k < Args.m_argc; k++)
+ 		if (*Args.m_argv[k] == '-')
+ 			if (UT_stricmp(Args.m_argv[k],"-show") == 0)
+ 			{
+				bShowApp = UT_TRUE;
+ 				bShowSplash = UT_TRUE;
+ 				break;
+ 			}
+
 	// Do a quick and dirty find for "-nosplash"
-	UT_Bool bShowSplash = UT_TRUE;
 	for (int k = 1; k < Args.m_argc; k++)
 		if (*Args.m_argv[k] == '-')
 			if (UT_stricmp(Args.m_argv[k],"-nosplash") == 0)
@@ -805,7 +827,7 @@ int AP_UnixApp::main(const char * szAppName, int argc, char ** argv)
 	// this function takes care of all the command line args.
 	// if some args are botched, it returns false and we should
 	// continue out the door.
-	if (pMyUnixApp->parseCommandLine())
+	if (pMyUnixApp->parseCommandLine() && bShowApp)
 	{
 		// turn over control to gtk
 		gtk_main();
@@ -833,7 +855,10 @@ UT_Bool AP_UnixApp::parseCommandLine(void)
 	int nFirstArg = 1;
 	int k;
 	int kWindowsOpened = 0;
-        
+	char *to = NULL;
+	int verbose = 1;
+	UT_Bool show = UT_FALSE;
+
 	for (k=nFirstArg; (k<m_pArgs->m_argc); k++)
 	{
 		if (*m_pArgs->m_argv[k] == '-')
@@ -896,6 +921,20 @@ UT_Bool AP_UnixApp::parseCommandLine(void)
 				// set the xap-level geometry for future frame use
 				setGeometry(x, y, width, height, f);
 			}
+			else if (UT_stricmp (m_pArgs->m_argv[k],"-to") == 0)
+			{
+				k++;
+				to = m_pArgs->m_argv[k];
+			}
+			else if (UT_stricmp (m_pArgs->m_argv[k], "-show") == 0)
+			{
+				show = UT_TRUE;
+			}
+			else if (UT_stricmp (m_pArgs->m_argv[k], "-verbose") == 0)
+			{
+				k++;
+				verbose = atoi (m_pArgs->m_argv[k]);
+			}
 			else
 			{
 				UT_DEBUGMSG(("Unknown command line option [%s]\n",m_pArgs->m_argv[k]));
@@ -908,31 +947,44 @@ UT_Bool AP_UnixApp::parseCommandLine(void)
 		else
 		{
 			// [filename]
-                        
-			AP_UnixFrame * pFirstUnixFrame = new AP_UnixFrame(this);
-			pFirstUnixFrame->initialize();
-			UT_Error error = pFirstUnixFrame->loadDocument(m_pArgs->m_argv[k], IEFT_Unknown);
-			if (!error)
+ 			if (to) 
 			{
-				kWindowsOpened++;
-			}
-			else
-			{
-				// TODO: warn user that we couldn't open that file
+ 				AP_Convert * conv = new AP_Convert();
+ 				conv->setVerbose(verbose);
+ 				conv->convertTo(m_pArgs->m_argv[k], to);
+ 				delete conv;
+  			}
+  			else
+  			{
+				AP_UnixFrame * pFirstUnixFrame = new AP_UnixFrame(this);
+				pFirstUnixFrame->initialize();
+				UT_Error error = pFirstUnixFrame->loadDocument(m_pArgs->m_argv[k], IEFT_Unknown);
+				if (!error)
+				{
+					kWindowsOpened++;
+				}
+				else
+				{
+					// TODO: warn user that we couldn't open that file
 
 #if 1
-				// TODO we crash if we just delete this without putting something
-				// TODO in it, so let's go ahead and open an untitled document
-				// TODO for now.  this would cause us to get 2 untitled documents
-				// TODO if the user gave us 2 bogus pathnames....
-				kWindowsOpened++;
-				pFirstUnixFrame->loadDocument(NULL, IEFT_Unknown);
+					// TODO we crash if we just delete this without putting something
+					// TODO in it, so let's go ahead and open an untitled document
+					// TODO for now.  this would cause us to get 2 untitled documents
+					// TODO if the user gave us 2 bogus pathnames....
+					kWindowsOpened++;
+					pFirstUnixFrame->loadDocument(NULL, IEFT_Unknown);
 #else
-				delete pFirstUnixFrame;
+					delete pFirstUnixFrame;
 #endif
+				}
 			}
 		}
 	}
+						
+	// command-line conversion may not open any windows at all
+	if (to && !show)
+		return UT_TRUE;
 
 	if (kWindowsOpened == 0)
 	{
@@ -948,14 +1000,16 @@ UT_Bool AP_UnixApp::parseCommandLine(void)
 
 // TODO : MOVE THIS TO XP CODE!  This is a cut & paste job since each
 // TODO : platform _can_ have different options, and we didn't sort
-// TODO : out how to honor them correclty yet.  There is a copy of
+// TODO : out how to honor them correctly yet.  There is a copy of
 // TODO : this function in other platforms.
 
 void AP_UnixApp::_printUsage(void)
 {
 	// just print to stdout, not stderr
 	printf("\nUsage: %s [option]... [file]...\n\n", m_pArgs->m_argv[0]);
-
+	printf("  -to               The target format of the file (abw, zabw, rtf, txt, utf8, html, latex)");
+	printf("  -verbose          The verbosity level (0, 1, 2)");
+	printf("  -show             If you really want to start the GUI (even if you use the --to option)");
 #ifdef DEBUG
 	printf("  -dumpstrings      dump strings strings to file\n");
 #endif

@@ -1,7 +1,7 @@
 #! gmake
 
 ## AbiWord
-## Copyright (C) 1998 AbiSource, Inc.
+## Copyright (C) 1998-2000 AbiSource, Inc.
 ##
 ## This program is free software; you can redistribute it and/or
 ## modify it under the terms of the GNU General Public License
@@ -24,7 +24,8 @@ include $(ABI_ROOT)/src/config/abi_defs_wp.mk
 
 ABI_WP_INCS+=	/wp/ap/xp	/wp/ap/$(ABI_NATIVE)
 
-CPPSRCS=	ap_Dialog_Break.cpp		\
+CPPSRCS=	ap_Convert.cpp			\
+		ap_Dialog_Break.cpp		\
 		ap_Dialog_Field.cpp		\
 		ap_Dialog_Goto.cpp		\
 		ap_Dialog_Insert_DateTime.cpp	\
