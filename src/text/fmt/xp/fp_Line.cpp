@@ -822,11 +822,11 @@ fp_Run* fp_Line::getLastRun(void) const
 	if( i <= 0 )
 	{    
 	        fp_Run * pRun = getBlock()->getFirstRun();
-		return (const) pRun;
+		return pRun;
 	}
 	else
 	{
-                return ((const fp_Run*) m_vecRuns.getLastItem()); 
+                return ((fp_Run*) m_vecRuns.getLastItem()); 
 	}
 }
 
