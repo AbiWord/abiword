@@ -43,7 +43,7 @@
 #include "ap_Dialog_FormatTable.h"
 
 AP_Dialog_FormatTable::AP_Dialog_FormatTable(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id)
-	: XAP_Dialog_Modeless(pDlgFactory,id,"interface/dialogwordcount.html"),
+	: XAP_Dialog_Modeless(pDlgFactory,id),
 	
 	m_lineStyle(LS_NORMAL),
 	m_bgFillStyle(NULL),

@@ -25,7 +25,7 @@
 
 AP_Dialog_PageSetup::AP_Dialog_PageSetup (XAP_DialogFactory * pDlgFactory,
 					  XAP_Dialog_Id id)
-:	XAP_Dialog_NonPersistent(pDlgFactory,id, "interface/dialogpagesetup.html"),
+:	XAP_Dialog_NonPersistent(pDlgFactory,id, "interface/dialogpagesetup"),
 	m_answer(a_OK),
 	m_PageSize(fp_PageSize::psLetter), // isn't this leaked when setPageSize called?
 	m_PageUnits(DIM_IN),

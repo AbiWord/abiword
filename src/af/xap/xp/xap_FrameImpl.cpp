@@ -144,6 +144,7 @@ UT_String XAP_FrameImpl::_localizeHelpUrl (bool bLocal, const char * pathBeforeL
 		_catPath(url, pathAfterLang);
 	}
 
+	url += ".html";
 	return url;
 }
 

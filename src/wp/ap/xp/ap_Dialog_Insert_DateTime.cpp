@@ -96,7 +96,7 @@ const char *InsertDateTimeFmts[] = {
 #endif
 
 AP_Dialog_Insert_DateTime::AP_Dialog_Insert_DateTime(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id)
-  : XAP_Dialog_NonPersistent(pDlgFactory,id, "interface/dialogdateandtime.html")
+  : XAP_Dialog_NonPersistent(pDlgFactory,id, "interface/dialogdateandtime")
 {
     m_answer = a_OK;
     m_iFormatIndex = 0;

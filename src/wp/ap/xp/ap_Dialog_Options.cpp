@@ -41,7 +41,7 @@
 #include "ap_FrameData.h"
 
 AP_Dialog_Options::AP_Dialog_Options(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id)
-	: XAP_Dialog_NonPersistent(pDlgFactory,id, "interface/dialogpreferences.html"),
+	: XAP_Dialog_NonPersistent(pDlgFactory,id, "interface/dialogpreferences"),
 	  m_answer(a_OK),
 	  m_pFrame(0),	// needs to be set from runModal for some of the event_'s to work
 	  m_pageNum(-1)

@@ -1575,7 +1575,9 @@ UT_String XAP_UnixFrameImpl::_localizeHelpUrl (bool bLocal, const char * pathBef
 											   const char * pathAfter)
 {
 #if 0 //def HAVE_GNOME
-	return UT_String (pathAfter);
+	UT_String path (pathAfter);
+	path += ".dbk";
+	return path;
 #else
 	return XAP_FrameImpl::_localizeHelpUrl (bLocal, pathBefore, pathAfter);
 #endif

@@ -27,7 +27,7 @@
 #include "ap_Dialog_Background.h"
 
 AP_Dialog_Background::AP_Dialog_Background(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id)
-  : XAP_Dialog_NonPersistent(pDlgFactory,id, "interface/dialogbackgroundcolor.html"), m_answer(a_OK)
+  : XAP_Dialog_NonPersistent(pDlgFactory,id, "interface/dialogbackgroundcolor"), m_answer(a_OK)
 {
 	sprintf(m_pszColor,"%s","transparent");
 	UT_setColor(m_color, 0xff, 0xff, 0xff);

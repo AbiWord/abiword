@@ -34,7 +34,7 @@
 #include "xav_View.h"
 
 XAP_Dialog_Zoom::XAP_Dialog_Zoom(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id)
-	: XAP_Dialog_NonPersistent(pDlgFactory,id, "interface/dialogzoom.html")
+	: XAP_Dialog_NonPersistent(pDlgFactory,id, "interface/dialogzoom")
 {
 	m_answer = a_OK;
 

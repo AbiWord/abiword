@@ -23,7 +23,7 @@
 
 AP_Dialog_InsertBookmark::AP_Dialog_InsertBookmark(XAP_DialogFactory * pDlgFactory,
 					   XAP_Dialog_Id id)
-  : XAP_Dialog_NonPersistent(pDlgFactory,id, "interface/dialogbookmark.html"), m_answer(a_CANCEL)
+  : XAP_Dialog_NonPersistent(pDlgFactory,id, "interface/dialogbookmark"), m_answer(a_CANCEL)
 {
 	m_pBookmark[0] = 0;
 }

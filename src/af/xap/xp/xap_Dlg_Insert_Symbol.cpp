@@ -36,7 +36,7 @@
 #include "xap_Frame.h"
 
 XAP_Dialog_Insert_Symbol::XAP_Dialog_Insert_Symbol(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id)
-	: XAP_Dialog_Modeless(pDlgFactory,id, "interface/dialogsymbol.html")
+	: XAP_Dialog_Modeless(pDlgFactory,id, "interface/dialogsymbol")
 {
 	m_Inserted_Symbol = ' ';
 	m_answer = a_CANCEL;

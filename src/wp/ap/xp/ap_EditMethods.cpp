@@ -2859,13 +2859,13 @@ static bool _helpLocalizeAndOpenURL(AV_View* pAV_View, bool bLocal, const char* 
 Defun1(helpContents)
 {
 	CHECK_FRAME;
-	return _helpLocalizeAndOpenURL(pAV_View, true, "AbiWord/help", "index.html");
+	return _helpLocalizeAndOpenURL(pAV_View, true, "AbiWord/help", "index");
 }
 
 Defun1(helpIndex)
 {
 	CHECK_FRAME;
-	return _helpLocalizeAndOpenURL(pAV_View, true, "AbiWord/help", "introduction.html");
+	return _helpLocalizeAndOpenURL(pAV_View, true, "AbiWord/help", "introduction");
 }
 
 Defun1(helpCheckVer)
@@ -2893,13 +2893,13 @@ Defun1(helpReportBug)
 Defun1(helpSearch)
 {
 	CHECK_FRAME;
-	return _helpLocalizeAndOpenURL(pAV_View, true, "AbiWord/help", "search.html");
+	return _helpLocalizeAndOpenURL(pAV_View, true, "AbiWord/help", "search");
 }
 
 Defun1(helpCredits)
 {
 	CHECK_FRAME;
-	return _helpLocalizeAndOpenURL(pAV_View, true, "AbiWord/help", "credits.html");
+	return _helpLocalizeAndOpenURL(pAV_View, true, "AbiWord/help", "credits");
 }
 
 Defun1(helpAboutGnu)
@@ -2917,7 +2917,7 @@ Defun1(helpAboutGnomeOffice)
 Defun1(helpAboutOS)
 {
 	CHECK_FRAME;
-	return _helpLocalizeAndOpenURL(pAV_View, true, "AbiWord/help", "aboutos.html");
+	return _helpLocalizeAndOpenURL(pAV_View, true, "AbiWord/help", "aboutos");
 }
 
 Defun1(cycleWindows)

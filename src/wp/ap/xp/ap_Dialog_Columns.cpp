@@ -32,7 +32,7 @@
 #include "ap_Dialog_Columns.h"
 
 AP_Dialog_Columns::AP_Dialog_Columns(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id)
-	: XAP_Dialog_NonPersistent(pDlgFactory,id, "interface/dialogcolumns.html")
+	: XAP_Dialog_NonPersistent(pDlgFactory,id, "interface/dialogcolumns")
 {
 
 	m_answer = a_OK;

@@ -38,7 +38,7 @@ static int s_compareQ(const void * a, const void * b)
 }
 
 XAP_Dialog_Language::XAP_Dialog_Language(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id)
-	: XAP_Dialog_NonPersistent(pDlgFactory,id, "interface/dialoglanguage.html")
+	: XAP_Dialog_NonPersistent(pDlgFactory,id, "interface/dialoglanguage")
 {
 	m_answer		= a_CANCEL;
 	m_pLanguage		= NULL;

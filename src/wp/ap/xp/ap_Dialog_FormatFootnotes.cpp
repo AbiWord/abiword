@@ -23,7 +23,7 @@
 
 AP_Dialog_FormatFootnotes::AP_Dialog_FormatFootnotes(XAP_DialogFactory * pDlgFactory,
 					   XAP_Dialog_Id id)
-  : XAP_Dialog_NonPersistent(pDlgFactory,id, "interface/dialogformatfootnotes.html"), m_answer(a_CANCEL)
+  : XAP_Dialog_NonPersistent(pDlgFactory,id), m_answer(a_CANCEL)
 {
 }
 

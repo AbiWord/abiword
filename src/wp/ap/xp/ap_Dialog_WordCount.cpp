@@ -32,7 +32,7 @@
 #include "ap_Dialog_WordCount.h"
 
 AP_Dialog_WordCount::AP_Dialog_WordCount(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id)
-	: XAP_Dialog_Modeless(pDlgFactory,id, "interface/dialogwordcount.html")
+	: XAP_Dialog_Modeless(pDlgFactory,id, "interface/dialogwordcount")
 {
 	m_answer = a_OK;
 	memset(&m_count,0,sizeof(m_count));

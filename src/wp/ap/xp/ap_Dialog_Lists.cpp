@@ -42,7 +42,7 @@
 #include <fribidi/fribidi.h>
 
 AP_Dialog_Lists::AP_Dialog_Lists(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id)
-:	XAP_Dialog_Modeless(pDlgFactory, id, "interface/dialoglists.html"),
+:	XAP_Dialog_Modeless(pDlgFactory, id, "interface/dialoglists"),
 	m_pView(0),
 	m_Answer(a_CLOSE),
 	m_isListAtPoint(false),

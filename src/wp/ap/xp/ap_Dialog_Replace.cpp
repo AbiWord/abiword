@@ -37,7 +37,7 @@
 
 
 AP_Dialog_Replace::AP_Dialog_Replace(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id)
-	: XAP_Dialog_Modeless(pDlgFactory,id, "interface/dialogreplace.html")
+	: XAP_Dialog_Modeless(pDlgFactory,id, "interface/dialogreplace")
 {
 	persist_findString = NULL;
 	persist_replaceString = NULL;

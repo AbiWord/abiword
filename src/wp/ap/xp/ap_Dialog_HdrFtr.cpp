@@ -27,7 +27,7 @@
 #include "ap_Dialog_HdrFtr.h"
 
 AP_Dialog_HdrFtr::AP_Dialog_HdrFtr(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id)
-  : XAP_Dialog_NonPersistent(pDlgFactory,id, "interface/dialogformatheaderfooters.html"), m_answer(a_OK)
+  : XAP_Dialog_NonPersistent(pDlgFactory,id, "interface/dialogformatheaderfooters"), m_answer(a_OK)
 {
 	UT_sint32 i = 0;
 	for(i=0; i< 6; i++)
