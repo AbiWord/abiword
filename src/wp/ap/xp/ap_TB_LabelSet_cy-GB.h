@@ -61,20 +61,35 @@ BeginSet(cy,GB,true)
 	ToolbarLabel(AP_TOOLBAR_ID_EDIT_CUT,		"Torri",			tb_cut_xpm,				NULL, "Torri")
 	ToolbarLabel(AP_TOOLBAR_ID_EDIT_COPY,		"Copio",			tb_copy_xpm,			NULL, "Copio")
 	ToolbarLabel(AP_TOOLBAR_ID_EDIT_PASTE,		"Gludo",		tb_paste_xpm,			NULL, "Gludo")
-	ToolbarLabel(AP_TOOLBAR_ID_SPELLCHECK,		"Gwirio'r sillafu",	tb_spellcheck_xpm,		NULL, "Gwirio sillafu'r ddogfen")
+	
+ToolbarLabel(AP_TOOLBAR_ID_EDIT_HEADER,	 "Golygu'r Pennawd",		tb_edit_editheader_xpm,			NULL, "Golygu'r Pennawd")
+	ToolbarLabel(AP_TOOLBAR_ID_EDIT_FOOTER,	 "Golygu'r Troedyn",		tb_edit_editfooter_xpm,			NULL, "Golygu'r Troedyn")
+	ToolbarLabel(AP_TOOLBAR_ID_EDIT_REMOVEHEADER, "Tynnu'r Pennawd",		tb_edit_removeheader_xpm,			NULL, "Tynnu'r Pennawd")
+	ToolbarLabel(AP_TOOLBAR_ID_EDIT_REMOVEFOOTER, "Tynnu'r Troedyn",		tb_edit_removefooter_xpm,			NULL, "Tynnu'r Troedyn")
+	T
+ToolbarLabel(AP_TOOLBAR_ID_SPELLCHECK,		"Gwirio'r sillafu",	tb_spellcheck_xpm,		NULL, "Gwirio sillafu'r ddogfen")
 	ToolbarLabel(AP_TOOLBAR_ID_IMG,				"Mewnosod delwedd",	tb_insert_graphic_xpm,	NULL, "Mewnosod delwedd i'r ddogfen")
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_STYLE,		"Arddull",		NoIcon,					NULL, "Arddull")
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_FONT,		"Ffont",			NoIcon,					NULL, "Ffont")
-	ToolbarLabel(AP_TOOLBAR_ID_FMT_SIZE,		"Maint Ffont",	NoIcon,					NULL, "Maint Ffont")
+	
+ToolbarLabel(AP_TOOLBAR_ID_FMT_HYPERLINK, "Insert Hyperlink", tb_hyperlink, NULL, "Insert a hyperlink into the document")
+     ToolbarLabel(AP_TOOLBAR_ID_FMT_BOOKMARK, "Insert Bookmark", tb_anchor, NULL, "Insert a bookmark into the document")
+	
+ToolbarLabel(AP_TOOLBAR_ID_FMT_SIZE,		"Maint Ffont",	NoIcon,					NULL, "Maint Ffont")
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_BOLD,		"Trwm",			tb_text_bold_xpm,		NULL, "Trwm")
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_ITALIC,		"Italig",		tb_text_italic_xpm,		NULL, "Italig")
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_UNDERLINE,	"Tanlinellu",	tb_text_underline_xpm,	NULL, "Tanlinellu")
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_OVERLINE,	"Gosod linell uwchben",		tb_text_overline_xpm,	NULL, "Gosod llinell uwchben")
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_STRIKE,		"Llinell drwy",		tb_text_strikeout_xpm,	NULL, "Llinell allan")
-	ToolbarLabel(AP_TOOLBAR_ID_HELP,			"Cymorth",			tb_help_xpm,			NULL, "Cymorth")
+	
+ToolbarLabel(AP_TOOLBAR_ID_FMT_TOPLINE,		"Llinell uchaf",		tb_text_topline_xpm,	NULL, "Topline")
+	ToolbarLabel(AP_TOOLBAR_ID_FMT_BOTTOMLINE,		"Llinell isaf",		tb_text_bottomline_xpm,	NULL, "Bottomline")
+	
+ToolbarLabel(AP_TOOLBAR_ID_HELP,			"Cymorth",			tb_help_xpm,			NULL, "Cymorth")
 
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_SUPERSCRIPT,	"Uwchysgrif",	tb_text_superscript_xpm,	NULL, "Uwchysgrif")
-	ToolbarLabel(AP_TOOLBAR_ID_FMT_SUBSCRIPT,	"Isysgrif",	tb_text_subscript_xpm,		NULL, "Isysgrif")
+	ToolbarLabel(AP_TOOLBAR_ID_FMT_SUBSCRIPT,	"Isysgrif",
+tb_text_subscript_xpm,		NULL, "Isysgrif")
 	ToolbarLabel(AP_TOOLBAR_ID_INSERT_SYMBOL,	"Symbol",		tb_symbol_xpm,				NULL, "Mewnosod symbol")
 
 	ToolbarLabel(AP_TOOLBAR_ID_ALIGN_LEFT,		"Chwith",			tb_text_align_left_xpm,		NULL, "Alinio i'r chwith")
@@ -102,12 +117,18 @@ BeginSet(cy,GB,true)
 	ToolbarLabel(AP_TOOLBAR_ID_INDENT,			"Cynyddu'r mewnoliad",	tb_text_indent_xpm, 	NULL, "Cynyddu'r mewnoliad")
 	ToolbarLabel(AP_TOOLBAR_ID_UNINDENT,		"Lleihau'r mewnoliad",	tb_text_unindent_xpm,	NULL, "Lleihau'r mewnoliad")
 
-     // ... add others here ...
+ 
+ToolbarLabel(AP_TOOLBAR_ID_SCRIPT_PLAY,		"Gw. sgript",	tb_script_play_xpm,		NULL, "Gweithredu'r sgript")
+
+     ToolbarLabel(AP_TOOLBAR_ID_FMTPAINTER, "Fformatio'r  Peintiwr", tb_stock_paint_xpm, NULL, "Gosodwch fformat y paragraff fformatiwyd ynghynt i'r darn yma o destun")
+
 #ifdef BIDI_ENABLED
-	ToolbarLabel(AP_TOOLBAR_ID_FMT_DIR_OVERRIDE_LTR,	"Gorfodi cyfeiriad chwith/de i'r testun",		tb_text_direction_ltr_xpm,	NULL, "Gorfodi cyfeiriad chwith/de i'r testun")
+	
+ToolbarLabel(AP_TOOLBAR_ID_FMT_DIR_OVERRIDE_LTR,	"Gorfodi cyfeiriad chwith/de i'r testun",		tb_text_direction_ltr_xpm,	NULL, "Gorfodi cyfeiriad chwith/de i'r testun")
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_DIR_OVERRIDE_RTL,	"Gorfodi cyfeiriad de/chwith i'r testun",		tb_text_direction_rtl_xpm,	NULL, "Gorfodi cyfeiriad de/chwith i'r testun")
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_DOM_DIRECTION,		"Cyfeiriad y paragraff",	tb_text_dom_direction_rtl_xpm,	NULL, "Newid prif gyfeiriad y paragraff")
 #endif
 	ToolbarLabel(AP_TOOLBAR_ID__BOGUS2__,		NULL,			NoIcon,			NULL,NULL)
 
 EndSet()
+ 
