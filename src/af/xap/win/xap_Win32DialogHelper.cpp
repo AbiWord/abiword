@@ -94,7 +94,7 @@ BOOL CALLBACK XAP_Win32DialogHelper::s_dlgProc(HWND hWnd,UINT msg,WPARAM wParam,
 		if(pThis)
 			return pThis->m_pDialog->_onCommand(hWnd,wParam,lParam);
 		else
-			return 1;
+			return 0;
 
 	case WM_NOTIFY:
 		pThis = (XAP_Win32DialogHelper *)GetWindowLong(hWnd,DWL_USER);
