@@ -33,6 +33,8 @@
 #include "config.h"
 #endif
 
+#include "abi_config.h"
+
 /* The `emacs' switch turns on certain matching commands
    that make sense only in Emacs. */
 #ifdef emacs
@@ -48,7 +50,7 @@
 
 /* We used to test for `BSTRING' here, but only GCC and Emacs define
    `BSTRING', as far as I know, and neither of them use this code.  */
-#if HAVE_STRING_H || STDC_HEADERS || WIN32
+#if HAVE_STRING_H || STDC_HEADERS
 #include <string.h>
 #ifndef bcmp
 #define bcmp(s1, s2, n)	memcmp ((s1), (s2), (n))
@@ -66,8 +68,6 @@
 #else
 char *malloc ();
 char *realloc ();
-void free( void *memblock );
-void abort( void );
 #endif
 
 
@@ -185,6 +185,10 @@ init_syntax_once ()
 #define REGEX_REALLOCATE(source, osize, nsize) realloc (source, nsize)
 
 #else /* not REGEX_MALLOC  */
+
+#ifdef WIN32
+#define alloca _alloca
+#endif /* WIN32 */
 
 /* Emacs already defines alloca, sometimes.  */
 #ifndef alloca
