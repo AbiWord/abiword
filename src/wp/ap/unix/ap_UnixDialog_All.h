@@ -71,6 +71,7 @@
 #	include "ap_UnixDialog_InsertHyperlink.h"
 #   include "ap_UnixDialog_MetaData.h"
 #   include "ap_UnixDialog_MarkRevisions.h"
+#   include "ap_UnixDialog_ListRevisions.h"
 
 #ifdef HAVE_GNOME
 #	include "xap_UnixGnomeDlg_About.h"
@@ -217,6 +218,7 @@
      DeclareDialog(XAP_DIALOG_ID_IMAGE, XAP_UnixDialog_Image)
      DeclareDialog(AP_DIALOG_ID_METADATA,		AP_UnixDialog_MetaData)
      DeclareDialog(AP_DIALOG_ID_MARK_REVISIONS,		AP_UnixDialog_MarkRevisions)
+     DeclareDialog(AP_DIALOG_ID_MARK_REVISIONS,		AP_UnixDialog_ListRevisions)
  	// ... also add new dialogs here ...
 #   endif
 

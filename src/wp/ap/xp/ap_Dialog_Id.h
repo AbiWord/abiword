@@ -53,6 +53,7 @@ enum _AP_Dialog_Id
 	AP_DIALOG_ID_INSERTHYPERLINK,
 	AP_DIALOG_ID_METADATA,
 	AP_DIALOG_ID_MARK_REVISIONS,
+	AP_DIALOG_ID_LIST_REVISIONS,
 	/* ... add others here ... */
 
 	AP_DIALOG_ID__LAST__				/* must be last */

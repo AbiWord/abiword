@@ -60,6 +60,7 @@ CPPSRCS=		ap_$(ABI_FE)App.cpp			\
 			ap_$(ABI_FE)Dialog_Background.cpp	\
 			ap_$(ABI_FE)Dialog_HdrFtr.cpp	\
 			ap_$(ABI_FE)Dialog_MarkRevisions.cpp	\
+			ap_$(ABI_FE)Dialog_ListRevisions.cpp	\
 			ap_$(ABI_FE)TopRuler.cpp
 
 ifeq ($(ABI_OPT_CURLHASH),1)

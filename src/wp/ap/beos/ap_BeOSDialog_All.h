@@ -58,6 +58,7 @@
 #include "ap_BeOSDialog_InsertBookmark.h"
 #include "ap_BeOSDialog_InsertHyperlink.h"
 #include "ap_BeOSDialog_MarkRevisions.h"
+#include "ap_BeOSDialog_ListRevisions.h"
 	// ... add new dialogs here ...
 
 #else
@@ -94,6 +95,7 @@
  	DeclareDialog(AP_DIALOG_ID_INSERTBOOKMARK,	AP_BeOSDialog_InsertBookmark)
  	DeclareDialog(AP_DIALOG_ID_INSERTHYPERLINK,	AP_BeOSDialog_InsertHyperlink)
  	DeclareDialog(AP_DIALOG_ID_MARK_REVISIONS,	AP_BeOSDialog_MarkRevisions)
+ 	DeclareDialog(AP_DIALOG_ID_LIST_REVISIONS,	AP_BeOSDialog_ListRevisions)
 	// ... also add new dialogs here ...
 
 #endif

@@ -71,6 +71,7 @@
 #	include "ap_QNXDialog_InsertBookmark.h"
 #	include "ap_QNXDialog_InsertHyperlink.h"
 #	include "ap_QNXDialog_MarkRevisions.h"
+#	include "ap_QNXDialog_ListRevisions.h"
 	// ... add new dialogs here ...
 
 #else
@@ -119,6 +120,7 @@
  	DeclareDialog(AP_DIALOG_ID_INSERTBOOKMARK,	AP_QNXDialog_InsertBookmark)
  	DeclareDialog(AP_DIALOG_ID_INSERTHYPERLINK,	AP_QNXDialog_InsertHyperlink)
  	DeclareDialog(AP_DIALOG_ID_MarkRevisions,	AP_QNXDialog_MarkRevisions)
+ 	DeclareDialog(AP_DIALOG_ID_ListRevisions,	AP_QNXDialog_ListRevisions)
 	// ... also add new dialogs here ...
 
 #endif

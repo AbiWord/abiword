@@ -1,20 +1,20 @@
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
  * Copyright (C) 2001-2002 Hubert Figuiere
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
  * 02111-1307, USA.
  */
 
@@ -70,6 +70,8 @@
 #   include "ap_CocoaDialog_HdrFtr.h"
 #	include "ap_CocoaDialog_InsertBookmark.h"
 #	include "ap_CocoaDialog_InsertHyperlink.h"
+#	include "ap_CocoaDialog_MarkRevisions.h"
+#	include "ap_CocoaDialog_ListRevisions.h"
 
 	// ... add new dialogs here ...
 
@@ -98,8 +100,8 @@
 //PORT	DeclareDialog(AP_DIALOG_ID_SPELL,			AP_CocoaDialog_Spell)
 //PORT	DeclareDialog(AP_DIALOG_ID_STYLES,			AP_CocoaDialog_Styles)
 //PORT    DeclareDialog(AP_DIALOG_ID_PAGE_NUMBERS,    AP_CocoaDialog_PageNumbers)
-//PORT	DeclareDialog(AP_DIALOG_ID_PARAGRAPH,		AP_CocoaDialog_Paragraph)	
-//PORT	DeclareDialog(AP_DIALOG_ID_OPTIONS,			AP_CocoaDialog_Options)	
+//PORT	DeclareDialog(AP_DIALOG_ID_PARAGRAPH,		AP_CocoaDialog_Paragraph)
+//PORT	DeclareDialog(AP_DIALOG_ID_OPTIONS,			AP_CocoaDialog_Options)
 //PORT	DeclareDialog(AP_DIALOG_ID_TAB,				AP_CocoaDialog_Tab)
 //PORT	DeclareDialog(AP_DIALOG_ID_INSERT_DATETIME,	AP_CocoaDialog_Insert_DateTime)
 //PORT	DeclareDialog(AP_DIALOG_ID_WORDCOUNT,		AP_CocoaDialog_WordCount)
@@ -118,8 +120,10 @@
 	DeclareDialog(XAP_DIALOG_ID_INSERT_FILE, XAP_CocoaDialog_FileOpenSaveAs)
 //PORT	DeclareDialog(XAP_DIALOG_ID_PASSWORD, XAP_CocoaDialog_Password)
 //PORT 	DeclareDialog(AP_DIALOG_ID_INSERTBOOKMARK,	AP_CocoaDialog_InsertBookmark)
-//PORT 	DeclareDialog(AP_DIALOG_ID_INSERTHYPERLINK,	AP_CocoaDialog_InsertHyperlink)	
+//PORT 	DeclareDialog(AP_DIALOG_ID_INSERTHYPERLINK,	AP_CocoaDialog_InsertHyperlink)
 //PORT	DeclareDialog(XAP_DIALOG_ID_IMAGE, XAP_CocoaDialog_Image)
+//PORT 	DeclareDialog(AP_DIALOG_ID_MARK_REVISIONS,	AP_CocoaDialog_MarkRevisions)
+//PORT 	DeclareDialog(AP_DIALOG_ID_LIST_REVISIONS,	AP_CocoaDialog_ListRevisions)
  	// ... also add new dialogs here ...
 
 #endif

@@ -58,6 +58,8 @@
 #define AP_RID_DIALOG_INSERTHYPERLINK			228
 #define AP_RID_DIALOG_NEW						229
 #define AP_RID_DIALOG_MARK_REVISIONS            230
+#define AP_RID_DIALOG_LIST_REVISIONS            231
+
 
 #include "ap_Win32Res_DlgPageSetup.rc2"
 #include "ap_Win32Resources_DialogReplace.rc2"
@@ -82,4 +84,4 @@
 #include "ap_Win32Res_DlgInsertHyperlink.rc2"
 #include "ap_Win32Res_DlgNew.rc2"
 #include "ap_Win32Res_DlgMarkRevisions.rc2"
-
+#include "ap_Win32Res_DlgListRevisions.rc2"

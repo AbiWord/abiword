@@ -45,7 +45,8 @@ CPPSRCS=		ap_$(ABI_FE)App.cpp			\
 			ap_$(ABI_FE)Dialog_ToggleCase.cpp	\
 			ap_$(ABI_FE)Dialog_WordCount.cpp	\
 			ap_$(ABI_FE)Dialog_InsertBookmark.cpp	\
-			ap_$(ABI_FE)Dialog_MakeRevisions	\
+			ap_$(ABI_FE)Dialog_MarkRevisions	\
+			ap_$(ABI_FE)Dialog_ListRevisions	\
 			ap_$(ABI_FE)Dialog_InsertHyperlink.cpp	\
 			ap_$(ABI_FE)Dialog_MetaData.cpp		\
 			ap_$(ABI_FE)LeftRuler.cpp		\

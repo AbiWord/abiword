@@ -2373,7 +2373,7 @@ void fp_EndOfParagraphRun::_clearScreen(bool /* bFullLineHeightRect */)
 	{
 		xoff -= m_iDrawWidth;
 	}
-	m_pG->fillRect(m_colorPG, xoff, yoff, m_iDrawWidth, m_pLine->getHeight());
+	m_pG->fillRect(m_colorPG, xoff, yoff+1, m_iDrawWidth, m_pLine->getHeight()+1);
 }
 
 /*!

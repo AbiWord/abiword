@@ -75,6 +75,7 @@
 #include "ap_Dialog_InsertHyperlink.h"
 #include "ap_Dialog_MetaData.h"
 #include "ap_Dialog_MarkRevisions.h"
+#include "ap_Dialog_ListRevisions.h"
 
 #include "xap_App.h"
 #include "xap_DialogFactory.h"
@@ -9487,11 +9488,47 @@ Defun(revisionReject)
 	return true;
 }
 
+static bool s_doListRevisions(XAP_Frame * pFrame, PD_Document * pDoc, FV_View * pView)
+{
+	UT_ASSERT(pFrame);
+
+	pFrame->raise();
+
+	XAP_DialogFactory * pDialogFactory
+		= (XAP_DialogFactory *)(pFrame->getDialogFactory());
+
+	AP_Dialog_ListRevisions * pDialog
+		= (AP_Dialog_ListRevisions *)(pDialogFactory->requestDialog(AP_DIALOG_ID_LIST_REVISIONS));
+	UT_ASSERT(pDialog);
+	if (!pDialog)
+		return false;
+
+	pDialog->setDocument(pDoc);
+	pDialog->runModal(pFrame);
+	bool bOK = (pDialog->getAnswer() == AP_Dialog_ListRevisions::a_OK);
+
+	if (bOK)
+	{
+		pView->cmdSetRevisionLevel(pDialog->getSelectedId());
+	}
+
+
+	pDialogFactory->releaseDialog(pDialog);
+
+	return bOK;
+}
+
 Defun1(revisionSetViewLevel)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
-	// TODO -- this is just a dummy -- this will need a dialogue
-	pView->cmdSetRevisionLevel(0);
+	PD_Document * pDoc = pView->getDocument();
+	UT_return_val_if_fail(pDoc,false);
+
+	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
+	UT_return_val_if_fail(pFrame,false);
+
+	s_doListRevisions(pFrame, pDoc, pView);
+
 	return true;
 }

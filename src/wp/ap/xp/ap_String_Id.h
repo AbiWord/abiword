@@ -575,6 +575,13 @@ dcl(DLG_MarkRevisions_Check1Label, "Contiue previous revision (number %d)")
 dcl(DLG_MarkRevisions_Check2Label, "Start a new revision")
 dcl(DLG_MarkRevisions_Comment2Label, "Comment to be associated with the revision:")
 
+	/* List revisions dialog */
+dcl(DLG_ListRevisions_Title, "Select Revision")
+dcl(DLG_ListRevisions_Column1Label, "Revision ID")
+dcl(DLG_ListRevisions_Column2Label, "Comment")
+dcl(DLG_ListRevisions_Label1, "Existing revisions:")
+
+
 dcl(WORD_PassRequired, "Password required, this is an encrypted document")
 dcl(WORD_PassInvalid, "Incorrect Password")
 	 dcl(SCRIPT_NOSCRIPTS, "No scripts found")
