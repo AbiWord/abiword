@@ -1384,6 +1384,10 @@ void fp_Page::mapXYToPosition(bool bNotFrames,UT_sint32 x, UT_sint32 y, PT_DocPo
 				}
 				
 				iDist = pFrameC->distanceFromPoint(x, y);
+				if(iDist > m_pLayout->getGraphics()->tlu(3))
+				{
+					iDist += 200000;
+				}
 				if (iDist < iMinDist)
 				{
 					iMinDist = iDist;

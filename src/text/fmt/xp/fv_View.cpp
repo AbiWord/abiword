@@ -10209,6 +10209,9 @@ void FV_View:: getVisibleDocumentPagesAndRectangles(UT_GenericVector<UT_Rect*> &
 		curY += iPageHeight + getPageViewSep();
 
 		pPage = pPage->getNext();
+		UT_sint32 iPage = m_pLayout->findPage(pPage);
+		if(iPage < 0)
+			break;
 	}
 }
 

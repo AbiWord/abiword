@@ -1332,7 +1332,7 @@ void fp_Line::draw(dg_DrawArgs* pDA)
 	if(count <= 0)
 		return;
 
-	xxx_UT_DEBUGMSG(("SEVIOR: Drawing line %x in line pDA, width %d \n",this,getWidth()));
+	UT_DEBUGMSG(("SEVIOR: Drawing line %x in line pDA, width %d \n",this,getWidth()));
 	pDA->yoff += m_iAscent;
 	const UT_Rect* pRect = pDA->pG->getClipRect();
 
@@ -1375,8 +1375,13 @@ void fp_Line::draw(dg_DrawArgs* pDA)
 		UT_Rect runRect(da.xoff, da.yoff - pRun->getAscent(), pRun->getWidth(), pRun->getHeight());
 
 		if (pRect == NULL || pRect->intersectsRect(&runRect))
+		{
 			pRun->draw(&da);
-
+		}
+		else
+		{
+			UT_DEBUGMSG(("Run not in clip, pRect top %d height %d run top %d height %d \n",pRect->top,pRect->height,runRect.top,runRect.height));
+		}
 		da.yoff -= pRun->getY();
 	}
 //
