@@ -251,33 +251,31 @@ UT_Vector *
 PSpellChecker::_suggestWord (const UT_UCSChar *ucszWord, size_t len)
 {
 	// Check validity
+	UT_return_val_if_fail ( m_pPSpellManager, 0);
 	UT_return_val_if_fail ( ucszWord && len, 0 );
 
 	UT_Vector * pvSugg = new UT_Vector ();
 
-	if (m_pPSpellManager)
+	const PspellWordList	*word_list;
+	PspellStringEmulation	*suggestions;
+	
+	word_list = pspell_manager_suggest(m_pPSpellManager,
+									   const_cast<char*>(UT_UTF8String(ucszWord, len).utf8_str()));
+	
+	// Normal spell checker suggests words second
+	if (!m_bIsDictionaryWord && ((suggestions = pspell_word_list_elements(word_list)) != 0))
 	{
-		const PspellWordList	*word_list;
-		PspellStringEmulation	*suggestions;
-
-		word_list = pspell_manager_suggest(m_pPSpellManager,
-										   const_cast<char*>(UT_UTF8String(ucszWord, len).utf8_str()));
-
-		// Normal spell checker suggests words second
-		if (!m_bIsDictionaryWord && ((suggestions = pspell_word_list_elements(word_list)) != 0))
+		int count = pspell_word_list_size(word_list);
+		const char *szSugg;
+		
+		int sugn = 0;
+		while ((szSugg = pspell_string_emulation_next(suggestions)) != NULL)
 		{
-			int count = pspell_word_list_size(word_list);
-			const char *szSugg;
-
-			int sugn = 0;
-			while ((szSugg = pspell_string_emulation_next(suggestions)) != NULL)
-			{
-				UT_UCSChar *ucszSugg = utf8_to_utf32(szSugg);
-				if (ucszSugg)
-					pvSugg->addItem (static_cast<void *>(ucszSugg));
-			}
-			delete_pspell_string_emulation (suggestions);
+			UT_UCSChar *ucszSugg = utf8_to_utf32(szSugg);
+			if (ucszSugg)
+				pvSugg->addItem (static_cast<void *>(ucszSugg));
 		}
+		delete_pspell_string_emulation (suggestions);
 	}
 
 	return pvSugg;
@@ -299,8 +297,8 @@ PSpellChecker::correctWord (const UT_UCSChar *toCorrect, size_t toCorrectLen,
 							const UT_UCSChar *correct, size_t correctLen)
 {
 	UT_return_if_fail (m_pPSpellManager);
-	UT_return_if_fail (toCorrect || toCorrectLen);
-	UT_return_if_fail (correct || correctLen);
+	UT_return_if_fail (toCorrect && toCorrectLen);
+	UT_return_if_fail (correct && correctLen);
 
 	UT_UTF8String bad (toCorrect, toCorrectLen);
 	UT_UTF8String good (correct, correctLen);
