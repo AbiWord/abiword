@@ -1975,7 +1975,7 @@ UT_Bool fl_BlockLayout::_checkMultiWord(const UT_UCSChar* pBlockText,
 
 				UT_UCSChar theWord[101];
 				// convert smart quote apostrophe to ASCII single quote to be compatible with ispell
-				for (int ldex=0; ldex<wordLength; ++ldex)
+				for (unsigned int ldex=0; ldex<wordLength; ++ldex)
 				{
 					UT_UCSChar currentChar;
 					currentChar = pBlockText[wordBeginning + ldex];
@@ -2066,7 +2066,7 @@ UT_Bool fl_BlockLayout::checkWord(fl_PartOfBlock* pPOB)
 
 		UT_UCSChar theWord[101];
 		// convert smart quote apostrophe to ASCII single quote to be compatible with ispell
-		for (int ldex=0; ldex<wordLength; ++ldex)
+		for (unsigned int ldex=0; ldex<wordLength; ++ldex)
 		{
 			UT_UCSChar currentChar;
 			currentChar = pBlockText[wordBeginning + ldex];
@@ -3909,7 +3909,7 @@ void fl_BlockLayout::recheckIgnoredWords()
 		if (wordLength < 100)
 		{
 			// convert smart quote apostrophe to ASCII single quote to be compatible with ispell
-			for (int ldex=0; ldex<wordLength; ++ldex)
+			for (unsigned int ldex=0; ldex<wordLength; ++ldex)
 			{
 				UT_UCSChar currentChar;
 				currentChar = pBlockText[wordBeginning + ldex];
