@@ -552,6 +552,7 @@ int AP_QNXApp::main(const char * szAppName, int argc, const char ** argv)
 	ApAddClass("PtLabel",&PtLabel);
 	ApAddClass("PtButton",&PtButton);
 	ApAddClass("PtPane",&PtPane);
+	ApAddClass("PtPanelGroup",&PtPanelGroup);
 	ApAddClass("PtNumericFloat",&PtNumericFloat);
 	ApAddClass("PtNumericInteger",&PtNumericInteger);
 	ApAddClass("PtToggleButton",&PtToggleButton);
