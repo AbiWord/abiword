@@ -26,6 +26,12 @@ REQUIRE=		_ZLIB_ _LIBPNG_ _LIBICONV_ _LIBWV_ _ABIDISTFILES_
 REQUIRECLEAN=		clean_ZLIB_ clean_LIBPNG_ clean_LIBICONV clean_LIBWV_
 REQUIREREALCLEAN=	$(REQUIRECLEAN) 
 
+ifeq ($(ABI_OPT_PEER_EXPAT),1)
+	XML_OPTION=--with-expat=peer
+else
+	XML_OPTION=--with-libxml2
+endif
+
 TARGET=		build
 
 include $(ABI_ROOT)/src/config/abi_rules.mk
@@ -66,7 +72,7 @@ _LIBWV_:
 		echo Found libwv in peer directory;		\
 		if [ ! -r $(ABI_ROOT)/../wv/config.h ]; then	\
 			cd $(ABI_ROOT)/../wv; 			\
-			./configure --with-peer-iconv=abi;	\
+			./configure --with-peer-iconv=abi $(XML_OPTION);	\
 		fi;						\
 		$(MAKE) -f Makefile.abi -C $(ABI_ROOT)/../wv;  	\
 	else							\
