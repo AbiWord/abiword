@@ -31,8 +31,6 @@
 #include "xap_Win32App.h"
 #include "xap_Win32Slurp.h"
 #include "xap_Prefs.h"
-#include "ie_types.h"
-#include "ap_EditMethods.h"
 
 //////////////////////////////////////////////////////////////////
 // "Slurp" (aka "Leech") refers to the ability of an application
@@ -217,8 +215,8 @@ void XAP_Win32Slurp::processCommand(HDDEDATA hData)
 
 			// ask the application to load this document into a window....
 
-			XAP_App *p_app = XAP_App::getApp();
-			UT_Error error = fileOpen(p_app->getLastFocussedFrame(), pathname, IEFT_Unknown);
+			XAP_Win32App *p_app = (XAP_Win32App *)XAP_App::getApp();
+			UT_Error error = p_app->fileOpen(p_app->getLastFocussedFrame(), pathname);
 			
 			if(error != UT_OK)
 			{

@@ -60,6 +60,8 @@ public:
 
 	virtual HICON							getIcon(void);
 	virtual HICON							getSmallIcon(void);
+
+	virtual UT_Error						fileOpen(XAP_Frame * pFrame, const char * pNewFile);
 	
 protected:
 	XAP_StringSet *			m_pStringSet;

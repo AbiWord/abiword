@@ -53,6 +53,7 @@
 #include "ie_exp_HTML.h"
 #include "ie_imp_Text.h"
 #include "ie_imp_RTF.h"
+#include "ap_EditMethods.h"
 
 /*****************************************************************/
 
@@ -903,4 +904,9 @@ void AP_Win32App::ParseCommandLine(int iCmdShow)
 	}
 
 	return;
+}
+
+UT_Error AP_Win32App::fileOpen(XAP_Frame * pFrame, const char * pNewFile)
+{
+	return ::fileOpen(pFrame, pNewFile, IEFT_Unknown);
 }

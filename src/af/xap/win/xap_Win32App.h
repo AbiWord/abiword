@@ -61,6 +61,8 @@ public:
 
 	virtual HICON							getIcon(void) = 0;
 	virtual HICON							getSmallIcon(void) = 0;
+	
+	virtual UT_Error						fileOpen(XAP_Frame * pFrame, const char * pNewFile) = 0;
 
 	void									enableAllTopLevelWindows(UT_Bool);
 
