@@ -959,6 +959,12 @@ void s_HTML_Listener::tagPop ()
 				tagClose (TT_SPAN, m_utf8_1);
 			}
 			break;
+		case TT_BDO:
+			{
+				m_utf8_1 = "bdo";
+				tagClose (TT_BDO, m_utf8_1);
+			}
+			break;
 
 		default:
 			{
@@ -2634,39 +2640,40 @@ void s_HTML_Listener::_openSpan (PT_AttrPropIndex api)
 			bInSpan = true;
 		}
 	
-	/* if the dir-override is set, or dir is 'rtl' or 'ltr', we will output
-	 * the dir property; however, this property cannot be within a style 
-	 * sheet, so anything that needs to be added to this code and belongs 
-	 * within a style property must be above us; further it should be noted 
-	 * that there is a good chance that the html browser will not handle it 
-	 * correctly. For instance IE will take dir=rtl as an indication that 
-	 * the span should have rtl placement on a line, but it will ignore this 
-	 * value when printing the actual span.
-	 */
-	const XML_Char * szP_DirOverride = 0;
-
-	pAP->getProperty ("dir-override", szP_DirOverride);
-
-	if (szP_DirOverride)
-		if ((*szP_DirOverride == 'l') || (*szP_DirOverride == 'r'))
-		{
-			m_utf8_1 += " dir=\"";
-			m_utf8_1 += szP_DirOverride;
-			m_utf8_1 += "\"";
-			bInSpan = true;
-		}
-
 	if (bInSpan)
 	{
 		if (m_bInSpan)
 		{
-			if (m_utf8_span == m_utf8_1) return; // this span same as last...
-			m_utf8_span = m_utf8_1;
 			_closeSpan ();
 		}
-		else m_utf8_span = m_utf8_1;
+		
+		m_utf8_span = m_utf8_1;
 
 		tagOpen (TT_SPAN, m_utf8_span, ws_None);
+
+		/* if the dir-override is set, or dir is 'rtl' or 'ltr', we will output
+		 * the dir property; however, this property cannot be within a style 
+		 * sheet, so anything that needs to be added to this code and belongs 
+		 * within a style property must be above us; further it should be noted 
+		 * that there is a good chance that the html browser will not handle it 
+		 * correctly. For instance IE will take dir=rtl as an indication that 
+		 * the span should have rtl placement on a line, but it will ignore this 
+		 * value when printing the actual span.
+		 */
+		const XML_Char * szP_DirOverride = 0;
+		
+		pAP->getProperty ("dir-override", szP_DirOverride);
+		
+		if (szP_DirOverride)
+			if (/* (*szP_DirOverride == 'l') || */(*szP_DirOverride == 'r'))
+				{
+					m_utf8_1 = "bdo dir=\"";
+					m_utf8_1 += szP_DirOverride;
+					m_utf8_1 += "\"";
+
+					tagOpen (TT_BDO, m_utf8_1, ws_None);
+				}
+
 		m_bInSpan = true;
 	}
 	else if (m_bInSpan) _closeSpan ();
@@ -2678,6 +2685,11 @@ void s_HTML_Listener::_closeSpan ()
 	{
 		m_utf8_1 = "a";
 		tagClose (TT_A, m_utf8_1, ws_None);
+	}
+	if (tagTop () == TT_BDO)
+	{
+		m_utf8_1 = "bdo";
+		tagClose (TT_BDO, m_utf8_1, ws_None);
 	}
 	if (tagTop () == TT_SPAN)
 	{
@@ -3742,7 +3754,7 @@ void s_HTML_Listener::_outputData (const UT_UCSChar * data, UT_uint32 length)
 
 					if (isspace (static_cast<int>(static_cast<unsigned char>(c))))
 					{
-						if (prev_space)
+						if (prev_space || (length == 1))
 							m_utf8_1 += "&nbsp;";
 						else
 #ifdef HTML_UCS4
