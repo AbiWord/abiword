@@ -4221,6 +4221,30 @@ UT_Error FV_View::cmdInsertTOC(void)
 	if (!isSelectionEmpty())
 	{
 		_deleteSelection();
+		_generalUpdate();
+		fl_BlockLayout * pBL = _findBlockAtPosition(getPoint());
+		if(pBL != NULL)
+		{
+			fl_ContainerLayout * pCL = pBL->myContainingLayout();
+			if(pCL->getContainerType() != FL_CONTAINER_DOCSECTION)
+			{
+				m_pDoc->endUserAtomicGlob();
+
+				// Signal piceTable is stable again
+				_restorePieceTableState();
+				_generalUpdate();
+				notifyListeners(AV_CHG_MOTION | AV_CHG_ALL);
+			}
+		}
+		else
+		{
+			m_pDoc->endUserAtomicGlob();
+			
+			// Signal piceTable is stable again
+			_restorePieceTableState();
+			_generalUpdate();
+			notifyListeners(AV_CHG_MOTION | AV_CHG_ALL);
+		}
 	}
 //
 // Close off the current block
