@@ -31,6 +31,9 @@
 #include "ut_debugmsg.h"
 #include "ut_growbuf.h"
 
+#ifdef BIDI_ENABLED
+#include "fribidi.h"
+#endif
 /*
     If WITHOUT_MB is defined, UT_Mbtowc and UT_Wctomb won't be used.
     I don't there there could be reason for defining WITHOUT_MB, since
@@ -1058,6 +1061,10 @@ bool UT_UCS_isspace(UT_UCSChar c)
 
 bool UT_UCS_isalpha(UT_UCSChar c)
 {
+#ifdef BIDI_ENABLED
+    FriBidiCharType type = fribidi_get_type(c);
+    return FRIBIDI_IS_LETTER(type);
+#else
 	UT_UCSChar local = XAP_EncodingManager::get_instance()->try_UToNative(c);
     if(!local)
         return true;
@@ -1066,6 +1073,7 @@ bool UT_UCS_isalpha(UT_UCSChar c)
 	return local && local < 0xff ? 
 		isalpha(local)!=0 : 
 		local > 0xff /* we consider it alpha if it's > 0xff */;
+#endif
 };
 
 bool UT_UCS_isSentenceSeparator(UT_UCSChar c)
