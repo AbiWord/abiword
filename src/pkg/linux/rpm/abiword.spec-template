@@ -22,7 +22,7 @@
 # Does not appear to be used, at least not everywhere it could be
 %define AbiWord AbiWord
 %define version_flag ABI_BUILD_VERSION=%{version}
-%define ABIPREFIX %{_libdir}/%{AbiWord}
+%define ABIPREFIX %{_libdir}/%{AbiWord}-2.2
 
 # PLUGIN OPTIONS: 1 for yes, 0 for no
 %define enable_tools __ABI_PLUGINS_TOOLS__
@@ -152,6 +152,9 @@ Requires: abiword
 %{?_with_aiksaurus:BuildRequires: aiksaurus,aiksaurus-gtk}
 %{?_with_ots:Requires: ots}
 %{?_with_ots:BuildRequires: ots-devel}
+%{?_with_gda:Requires: libgda}
+%{?_with_gda:BuildRequires: libgda-devel}
+
 
 %description plugins-tools
 This is a set of plugins for AbiWord.  It includes
@@ -240,6 +243,11 @@ cd ../abi
 %__mkdir_p $RPM_BUILD_ROOT/%{_prefix}/share/applications/
 %__cp $RPM_BUILD_DIR/%{name}-%{version}/abi/abiword.desktop $RPM_BUILD_ROOT/%{_datadir}/applications/abiword.desktop
 %__perl -p -i -e "s|Exec=abiword|Exec=abiword-2.2|" $RPM_BUILD_ROOT/%{_datadir}/applications/abiword.desktop
+%__cp $RPM_BUILD_DIR/%{name}-%{version}/abi/COPYING $RPM_BUILD_ROOT/%{_datadir}/%{AbiSuite}/COPYING
+%__cp $RPM_BUILD_DIR/%{name}-%{version}/abi/README.TXT $RPM_BUILD_ROOT/%{_datadir}/%{AbiSuite}/README
+%if %{enable_gnome}
+  %__cp $RPM_BUILD_DIR/%{name}-%{version}/abidistfiles/abi-nautilus-view-file.xml $RPM_BUILD_ROOT/%{_datadir}/%{AbiSuite}/
+%endif
 
 # Copies oaf files
 %__mkdir_p $RPM_BUILD_ROOT/%{_libdir}/bonobo/servers
@@ -254,8 +262,8 @@ cd ../abi
 %__rm -f $RPM_BUILD_ROOT/%{_datadir}/%{AbiSuite}/nautilus-abiword-content-view-ui.xml
 %__rm -f $RPM_BUILD_ROOT/%{_bindir}/abiword
 
-%__rm -f $RPM_BUILD_ROOT/%{_libdir}/%{AbiWord}/plugins/*.la
-%__rm -f $RPM_BUILD_ROOT/%{_libdir}/%{AbiWord}/plugins/*.a
+%__rm -f $RPM_BUILD_ROOT/%{ABIPREFIX}/plugins/*.la
+%__rm -f $RPM_BUILD_ROOT/%{ABIPREFIX}/plugins/*.a
 
 %__rm -f $RPM_BUILD_ROOT/%{_datadir}/%{AbiSuite}/AbiWord.exe.MANIFEST
 
@@ -267,13 +275,15 @@ cd ../abi
 %{_bindir}/*
 %{_datadir}/%{AbiSuite}/AbiWord/scripts/*
 %defattr(644,root,root,755)
-%{_datadir}/%{AbiSuite}/abi-nautilus-view-file.xml
+%if %{enable_gnome}
+  %{_datadir}/%{AbiSuite}/abi-nautilus-view-file.xml
+%endif
 %{_datadir}/%{AbiSuite}/COPYING
 %{_datadir}/%{AbiSuite}/README
 %{_datadir}/%{AbiSuite}/AbiWord/readme.txt
 #%{_datadir}/%{AbiSuite}/AbiWord/help/en-US
 %{_datadir}/%{AbiSuite}/AbiWord/glade
-%{_datadir}/%{AbiSuite}/AbiWord/strings
+%{_datadir}/%{AbiSuite}/AbiWord/strings/*
 %{_datadir}/%{AbiSuite}/AbiWord/system.profile*
 %if !%{enable_pspell}
 %{!?_with_enchant:%{_datadir}/%{AbiSuite}/dictionary/*american*.hash*}
@@ -283,7 +293,7 @@ cd ../abi
 %{_datadir}/%{AbiSuite}/templates
 %{_datadir}/icons/*
 %{_datadir}/applications/abiword.desktop
-%{_libdir}/%{AbiWord}/plugins/libAbiGdkPixbuf.so
+%{ABIPREFIX}/plugins/libAbiGdkPixbuf.so
 
 
 %files embeddable
@@ -296,51 +306,54 @@ cd ../abi
 %files plugins-tools
 %defattr(644,root,root,755)
 # comment if not working
-%{_libdir}/%{AbiWord}/plugins/libAbiCommand.so
-%{?_with_aiksaurus:%{_libdir}/%{AbiWord}/plugins/libAbiAikSaurus.so}
-%{_libdir}/%{AbiWord}/plugins/libAbiBabelfish.so
-%{_libdir}/%{AbiWord}/plugins/libAbiFreeTranslation.so
-%{_libdir}/%{AbiWord}/plugins/libAbiGdict.so
-%{_libdir}/%{AbiWord}/plugins/libAbiGimp.so
-%{_libdir}/%{AbiWord}/plugins/libAbiGoogle.so
-%{_libdir}/%{AbiWord}/plugins/libAbiURLDict.so
-%{_libdir}/%{AbiWord}/plugins/libAbiWikipedia.so
-%{?_with_ots:%{_libdir}/%{AbiWord}/plugins/libAbiOTS.so}
-%{?_with_ots:%{_libdir}/%{AbiWord}/plugins/AbiWord/glade/ots.glade}
-%{_libdir}/%{AbiWord}/plugins/libAbiReferee.so
-%{_libdir}/%{AbiWord}/plugins/libAbiScriptHappy.so
-%{_libdir}/%{AbiWord}/plugins/libAbiCAPI.so
+%{ABIPREFIX}/plugins/libAbiCommand.so
+%{?_with_aiksaurus:%{ABIPREFIX}/plugins/libAbiAikSaurus.so}
+%{ABIPREFIX}/plugins/libAbiBabelfish.so
+%{ABIPREFIX}/plugins/libAbiFreeTranslation.so
+%{ABIPREFIX}/plugins/libAbiGdict.so
+%{ABIPREFIX}/plugins/libAbiGimp.so
+%{ABIPREFIX}/plugins/libAbiGoogle.so
+%{ABIPREFIX}/plugins/libAbiURLDict.so
+%{ABIPREFIX}/plugins/libAbiWikipedia.so
+%{?_with_ots:%{ABIPREFIX}/plugins/libAbiOTS.so}
+%{?_with_ots:%{ABIPREFIX}/plugins/AbiWord/glade/ots.glade}
+%{ABIPREFIX}/plugins/libAbiReferee.so
+%{ABIPREFIX}/plugins/libAbiScriptHappy.so
+%{ABIPREFIX}/plugins/libAbiCAPI.so
+%{ABIPREFIX}/plugins/libAbiDash.so
+%{_with_gda:%{ABIPREFIX}/plugins/libAbiGDA.so}
+%{ABIPREFIX}/plugins/libAbiGypsython.so
 %endif
 
 %if %{enable_impexp}
 %files plugins-impexp
 %defattr(644,root,root,755)
-%{_libdir}/%{AbiWord}/plugins/libAbiApplix.so
-%{_libdir}/%{AbiWord}/plugins/libAbiBMP.so
-%{_libdir}/%{AbiWord}/plugins/libAbiBZ2.so
-%{_libdir}/%{AbiWord}/plugins/libAbiClarisWorks.so
-%{_libdir}/%{AbiWord}/plugins/libAbiDocBook.so
-%{_libdir}/%{AbiWord}/plugins/libAbiEML.so
-%{_libdir}/%{AbiWord}/plugins/libAbiHancom.so
-%{_libdir}/%{AbiWord}/plugins/libAbiHRText.so
-%{?_with_libwpd:%{_libdir}/%{AbiWord}/plugins/libAbiWordPerfect.so}
-%{_libdir}/%{AbiWord}/plugins/libAbiISCII.so
-%{_libdir}/%{AbiWord}/plugins/libAbiJPEG.so
-%{_libdir}/%{AbiWord}/plugins/libAbiKWord.so
-%{_libdir}/%{AbiWord}/plugins/libAbiLaTeX.so
-%{_libdir}/%{AbiWord}/plugins/libAbiMIF.so
-%{_libdir}/%{AbiWord}/plugins/libAbiMSWrite.so
-%{_libdir}/%{AbiWord}/plugins/libAbiNroff.so
-%{?_with_libgsf:%{_libdir}/%{AbiWord}/plugins/libAbiOpenWriter.so}
-#%{_libdir}/%{AbiWord}/plugins/libAbiPW.so
-%{_libdir}/%{AbiWord}/plugins/libAbiPalmDoc.so
-%{_libdir}/%{AbiWord}/plugins/libAbiPassepartout.so
-%{_libdir}/%{AbiWord}/plugins/libAbiRSVG.so
-%{?_with_libgsf:%{_libdir}/%{AbiWord}/plugins/libAbiSDW.so}
-%{_libdir}/%{AbiWord}/plugins/libAbiT602.so
-%{_libdir}/%{AbiWord}/plugins/libAbiWML.so
-%{_libdir}/%{AbiWord}/plugins/libAbiXHTML.so
-%{_libdir}/%{AbiWord}/plugins/libAbiXSLFO.so
+%{ABIPREFIX}/plugins/libAbiApplix.so
+%{ABIPREFIX}/plugins/libAbiBMP.so
+%{ABIPREFIX}/plugins/libAbiBZ2.so
+%{ABIPREFIX}/plugins/libAbiClarisWorks.so
+%{ABIPREFIX}/plugins/libAbiDocBook.so
+%{ABIPREFIX}/plugins/libAbiEML.so
+%{ABIPREFIX}/plugins/libAbiHancom.so
+%{ABIPREFIX}/plugins/libAbiHRText.so
+%{?_with_libwpd:%{ABIPREFIX}/plugins/libAbiWordPerfect.so}
+%{ABIPREFIX}/plugins/libAbiISCII.so
+%{ABIPREFIX}/plugins/libAbiJPEG.so
+%{ABIPREFIX}/plugins/libAbiKWord.so
+%{ABIPREFIX}/plugins/libAbiLaTeX.so
+%{ABIPREFIX}/plugins/libAbiMIF.so
+%{ABIPREFIX}/plugins/libAbiMSWrite.so
+%{ABIPREFIX}/plugins/libAbiNroff.so
+%{?_with_libgsf:%{ABIPREFIX}/plugins/libAbiOpenWriter.so}
+#%{ABIPREFIX}/plugins/libAbiPW.so
+%{ABIPREFIX}/plugins/libAbiPalmDoc.so
+%{ABIPREFIX}/plugins/libAbiPassepartout.so
+%{ABIPREFIX}/plugins/libAbiRSVG.so
+%{?_with_libgsf:%{ABIPREFIX}/plugins/libAbiSDW.so}
+%{ABIPREFIX}/plugins/libAbiT602.so
+%{ABIPREFIX}/plugins/libAbiWML.so
+%{ABIPREFIX}/plugins/libAbiXHTML.so
+%{ABIPREFIX}/plugins/libAbiXSLFO.so
 %endif
 
 %files clipart
