@@ -158,3 +158,28 @@ void GR_Graphics::flush(void)
 {
 	// default implementation does nothing
 }
+
+void GR_Graphics::drawImage(GR_Image* pImg, UT_sint32 xDest, UT_sint32 yDest)
+{
+   if (pImg)
+     pImg->render(this, xDest, yDest);
+}
+
+GR_Image* GR_Graphics::createNewImage(const char* pszName, const UT_ByteBuf* pBB, UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight, GR_Image::GRType iType)
+{
+   GR_VectorImage * vectorImage = NULL;
+   
+   if (iType == GR_Image::GRT_Unknown) {
+      if (GR_Image::getBufferType(pBB) == GR_Image::GRT_Vector)
+	vectorImage = new GR_VectorImage(pszName);
+   }
+   else if (iType == GR_Image::GRT_Vector) {
+      vectorImage = new GR_VectorImage(pszName);
+   }
+   
+   if (vectorImage) {
+      vectorImage->convertFromBuffer(pBB, iDisplayWidth, iDisplayHeight);
+   }
+   
+   return vectorImage;
+}

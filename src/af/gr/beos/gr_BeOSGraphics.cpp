@@ -789,13 +789,19 @@ UT_Bool GR_BeOSGraphics::endPrint(void) {
 }
 
 GR_Image* GR_BeOSGraphics::createNewImage(const char* pszName, 
-					  const UT_ByteBuf* pBBPNG, 
+					  const UT_ByteBuf* pBB,
 					  UT_sint32 iDisplayWidth, 
-					  UT_sint32 iDisplayHeight)
+					  UT_sint32 iDisplayHeight,
+					  GR_Image::GRType iType)
 {
 	DPRINTF(printf("GR: Create new image %s \n", pszName));
-	GR_BeOSImage* pImg = new GR_BeOSImage(NULL, pszName);
-	pImg->convertFromPNG(pBBPNG, iDisplayWidth, iDisplayHeight);
+	GR_Image* pImg = NULL;
+   	if (iType == GR_Image::GRT_Raster)
+	   	pImg = new GR_BeOSImage(pszName);
+   	else
+     		pImg = new GR_VectorImage(pszName);
+   
+	pImg->convertFromBuffer(pBB, iDisplayWidth, iDisplayHeight);
 	return pImg;
 }
 
@@ -803,6 +809,11 @@ void GR_BeOSGraphics::drawImage(GR_Image* pImg, UT_sint32 xDest, UT_sint32 yDest
 {
 	UT_ASSERT(pImg);
 	
+   	if (pImg->getType != GR_Image::GRT_Raster) {
+      		pImg->render(this, xDest, yDest);
+      		return;
+   	}
+   
 	GR_BeOSImage * pBeOSImage = static_cast<GR_BeOSImage *>(pImg);
 	BBitmap* image = pBeOSImage->getData();
 	if (!image)

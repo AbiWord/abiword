@@ -695,19 +695,27 @@ void GR_QNXGraphics::clearArea(UT_sint32 x, UT_sint32 y,
 	fillRect(clrWhite, x, y, width, height);
 }
 
-GR_Image* GR_QNXGraphics::createNewImage(const char* pszName, const UT_ByteBuf* pBBPNG, UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight)
+GR_Image* GR_QNXGraphics::createNewImage(const char* pszName, const UT_ByteBuf* pBBPNG, UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight, GR_Image::GRType iType)
 {
-	GR_QNXImage* pImg = new GR_QNXImage(NULL, pszName);
-
-	pImg->convertFromPNG(pBBPNG, iDisplayWidth, iDisplayHeight);
-
+	GR_QNXImage* pImg = NULL;
+   	if (iType == GR_Image::GRT_Raster)
+     		pImg = new GR_QNXImage(pszName);
+   	else
+     		pImg = new GR_VectorImage(pszName);
+   
+	pImg->convertFromBuffer(pBBPNG, iDisplayWidth, iDisplayHeight);
 	return pImg;
 }
 
 void GR_QNXGraphics::drawImage(GR_Image* pImg, UT_sint32 xDest, UT_sint32 yDest)
 {
 	UT_ASSERT(pImg);
-	
+
+   	if (pImg->getType() != GR_Image::GRT_Raster) {
+      		pImg->render(this, xDest, Ydest);
+      		return;
+   	}
+   
 	GR_QNXImage * pQNXImage = (GR_QNXImage *)(pImg);
 	Fatmap * image = pQNXImage->getData();
 	PhPoint_t pos;

@@ -31,7 +31,7 @@ UT_BEGIN_EXTERN_C
 #define UT_LAYOUT_UNITS						1440
 
 
-typedef enum _ut_dimension { DIM_IN, DIM_CM, DIM_PI, DIM_PT, DIM_none } UT_Dimension;
+typedef enum _ut_dimension { DIM_IN, DIM_CM, DIM_MM, DIM_PI, DIM_PT, DIM_PX, DIM_none } UT_Dimension;
 
 double UT_convertToInches(const char* s);
 double UT_convertToPoints(const char* s);
@@ -42,6 +42,7 @@ double UT_convertInchesToDimension(double inches, UT_Dimension dim);
 UT_sint32 UT_paperUnits(const char * sz);
 UT_sint32 UT_docUnitsFromPaperUnits(GR_Graphics * pG, UT_sint32 iPaperUnits);
 UT_sint32 UT_layoutUnitsFromPaperUnits(UT_sint32 iPaperUnits);
+UT_sint32 UT_paperUnitsFromLayoutUnits(UT_sint32 iLayoutUnits);
 
 UT_Dimension UT_determineDimension(const char * sz, UT_Dimension fallback = DIM_IN);
 const char * UT_dimensionName(UT_Dimension dim);

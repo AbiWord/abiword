@@ -1,5 +1,5 @@
-/* AbiWord
- * Copyright (C) 1998 AbiSource, Inc.
+/* AbiSource Program Utilities
+ * Copyright (C) 2000 AbiSource, Inc.
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -16,28 +16,16 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
  * 02111-1307, USA.
  */
+ 
 
-#ifndef GR_WIN32IMAGE_H
-#define GR_WIN32IMAGE_H
 
-#include <windows.h>
+#ifndef UT_SVG_H
+#define UT_SVG_H
 
-#include "gr_Image.h"
+#include "ut_types.h"
 
-class GR_Win32Image : public GR_RasterImage
-{
-public:
-	GR_Win32Image(const char* szName);
-	~GR_Win32Image();
+class UT_ByteBuf;
 
-	virtual UT_Bool		convertToPNG(UT_ByteBuf** ppBB) const;
-	virtual UT_Bool		convertFromPNG(const UT_ByteBuf* pBB, UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight);
-	
-	void 			setDIB(BITMAPINFO *pDIB) { m_pDIB = pDIB; }
-   	inline BITMAPINFO*	getDIB(void) const { return m_pDIB; }
+UT_Bool UT_SVG_getDimensions(const UT_ByteBuf* pBB, UT_Byte** ppszWidth, UT_Byte** ppszHeight);
 
-protected:
-    BITMAPINFO*		m_pDIB;
-};
-
-#endif /* GR_WIN32IMAGE_H */
+#endif /* UT_SVG_H */

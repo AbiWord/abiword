@@ -24,9 +24,9 @@
 #include "ut_assert.h"
 #include "ut_bytebuf.h"
 
-PS_Image::PS_Image(PSFatmap * image, const char* szName)
+PS_Image::PS_Image(const char* szName)
 {
-	m_image = image;
+	m_image = NULL;
 	
 	if (szName)
 	{
@@ -68,16 +68,16 @@ PS_Image::~PS_Image()
 	}
 }
 
-UT_Bool PS_Image::convertToPNG(UT_ByteBuf ** /* ppBB */) const
+UT_Bool PS_Image::convertToBuffer(UT_ByteBuf ** /* ppBB */) const
 {
 	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 	
 	return UT_FALSE;
 }
 
-UT_Bool PS_Image::convertFromPNG(const UT_ByteBuf* pBB, UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight)
+UT_Bool PS_Image::convertFromBuffer(const UT_ByteBuf* pBB, UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight)
 {
-	png_structp png_ptr;
+   	png_structp png_ptr;
 	png_infop info_ptr;
 	png_uint_32 width, height;
 	int bit_depth, color_type, interlace_type;
@@ -197,4 +197,3 @@ UT_Bool PS_Image::convertFromPNG(const UT_ByteBuf* pBB, UT_sint32 iDisplayWidth,
 
 	return UT_TRUE;
 }
-

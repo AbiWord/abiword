@@ -37,7 +37,8 @@ OBJS=		$(PLATFORM_OBJS)					\
 		$(OBJDIR)/gr_CharWidths.$(OBJ_SUFFIX)			\
 		$(OBJDIR)/gr_DrawArgs.$(OBJ_SUFFIX)			\
 		$(OBJDIR)/gr_Graphics.$(OBJ_SUFFIX)			\
-		$(OBJDIR)/gr_Image.$(OBJ_SUFFIX)
+		$(OBJDIR)/gr_Image.$(OBJ_SUFFIX)			\
+		$(OBJDIR)/gr_VectorImage.$(OBJ_SUFFIX)
 
 include $(ABI_ROOT)/src/config/abi_rules.mk
 

@@ -763,31 +763,41 @@ void PS_Graphics::_emit_SetColor(void)
 	m_ps->writeBytes(buf);
 }
 
-GR_Image* PS_Graphics::createNewImage(const char* pszName, const UT_ByteBuf* pBBPNG, UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight)
+ GR_Image* PS_Graphics::createNewImage(const char* pszName, const UT_ByteBuf* pBB, UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight, GR_Image::GRType iType)
 {
-	PS_Image* pImg = new PS_Image(NULL, pszName);
-
-	pImg->convertFromPNG(pBBPNG, iDisplayWidth, iDisplayHeight);
+	GR_Image* pImg = NULL;
+   
+   	if (iType == GR_Image::GRT_Raster)
+     		pImg = new PS_Image(pszName);
+   	else if (iType == GR_Image::GRT_Vector)
+     		pImg = new GR_VectorImage(pszName);
+   
+	pImg->convertFromBuffer(pBB, iDisplayWidth, iDisplayHeight);
 
 	return pImg;
 }
 
 void PS_Graphics::drawImage(GR_Image* pImg, UT_sint32 xDest, UT_sint32 yDest)
 {
-	switch(m_cs)
-	{
-	case GR_Graphics::GR_COLORSPACE_COLOR:
+   	if (pImg->getType() != GR_Image::GRT_Raster) {
+	   pImg->render(this, xDest, yDest);
+	   return;
+	}
+   
+   	switch(m_cs)
+     	{
+       	case GR_Graphics::GR_COLORSPACE_COLOR:
 		drawRGBImage(pImg, xDest, yDest);
 		break;
-	case GR_Graphics::GR_COLORSPACE_GRAYSCALE:
+      	case GR_Graphics::GR_COLORSPACE_GRAYSCALE:
 		drawGrayImage(pImg, xDest, yDest);
 		break;
-	case GR_Graphics::GR_COLORSPACE_BW:
+      	case GR_Graphics::GR_COLORSPACE_BW:
 		drawBWImage(pImg, xDest, yDest);
 		break;
-	default:
+      	default:
 		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-	}
+     }
 }
 	
 void PS_Graphics::drawRGBImage(GR_Image* pImg, UT_sint32 xDest, UT_sint32 yDest)

@@ -31,6 +31,7 @@ CPPSRCS=	ut_alphahash.cpp	\
 		ut_math.cpp		\
 		ut_misc.cpp		\
 		ut_png.cpp		\
+		ut_svg.cpp		\
 		ut_pool.cpp		\
 		ut_stack.cpp		\
 		ut_string.cpp		\

@@ -24,6 +24,7 @@
 
 #define	GR_IMAGE_MAX_NAME_LEN	63
 
+class GR_Graphics;
 class UT_ByteBuf;
 
 class GR_Image
@@ -32,47 +33,50 @@ public:
 	GR_Image();
 	virtual ~GR_Image();
 	
-	virtual UT_sint32	getDisplayWidth(void) const = 0;
-	virtual UT_sint32	getDisplayHeight(void) const = 0;
-
-
-	virtual UT_Bool		convertToPNG(UT_ByteBuf** ppBB) const = 0;
-	virtual UT_Bool		convertFromPNG(const UT_ByteBuf* pBB, UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight) = 0;
-
-	void				getName(char* szName) const;
-
-	void				setLayoutSize(UT_sint32 iLayoutWidth, UT_sint32 iLayoutHeight);
-	UT_sint32			getLayoutWidth(void) const { return m_iLayoutWidth;}
-	UT_sint32			getLayoutHeight(void) const	{ return m_iLayoutHeight;}
-								
-		
-	
-protected:
-	char				m_szName[GR_IMAGE_MAX_NAME_LEN+1];
-	UT_sint32			m_iLayoutWidth;
-	UT_sint32			m_iLayoutHeight;
-};
-
-class GR_StretchableImage : public GR_Image
-{
-public:
-	GR_StretchableImage();
-	virtual ~GR_StretchableImage();
-
-	void				setDisplaySize(UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight);
+   	virtual void		setDisplaySize(UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight) { m_iDisplayWidth = iDisplayWidth; m_iDisplayHeight = iDisplayHeight; }
 	
 	virtual UT_sint32	getDisplayWidth(void) const { return m_iDisplayWidth; }
 	virtual UT_sint32	getDisplayHeight(void) const { return m_iDisplayHeight; }
 
+   	virtual UT_Bool		convertToBuffer(UT_ByteBuf** ppBB) const { return UT_FALSE; }
+	virtual UT_Bool		convertFromBuffer(const UT_ByteBuf* pBB, UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight) { return UT_FALSE; }
+
+	void				getName(char* szName) const;
+
+	virtual void		setLayoutSize(UT_sint32 iLayoutWidth, UT_sint32 iLayoutHeight) { m_iLayoutWidth = iLayoutWidth; m_iLayoutHeight = iLayoutHeight; }
+	UT_sint32			getLayoutWidth(void) const { return m_iLayoutWidth;}
+	UT_sint32			getLayoutHeight(void) const { return m_iLayoutHeight;}
+								
+   	enum GRType {
+	   GRT_Unknown,
+	   GRT_Raster,
+	   GRT_Vector
+	};
+   
+	static GRType		getBufferType(const UT_ByteBuf* pBB);
+   	virtual GRType		getType() { return GRT_Unknown; }
+   	virtual UT_Bool		render(GR_Graphics *pGR, UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight) { return UT_FALSE; }
+
 protected:
+   	char			m_szName[GR_IMAGE_MAX_NAME_LEN+1];
+	UT_sint32		m_iLayoutWidth;
+	UT_sint32		m_iLayoutHeight;
 	UT_sint32			m_iDisplayWidth;
 	UT_sint32			m_iDisplayHeight;
+};
+
+class GR_RasterImage : public GR_Image
+{
+public:
+   	virtual GRType		getType() { return GRT_Raster; }
 };
 
 class GR_ImageFactory
 {
 public:
-	virtual GR_Image*	createNewImage(const char* pszName) = 0;
+   	virtual GR_Image*	createNewImage(const char* pszName, GR_Image::GRType iType = GR_Image::GRT_Raster) = 0;
 };
+
+#include "gr_VectorImage.h"
 
 #endif /* GR_IMAGE */

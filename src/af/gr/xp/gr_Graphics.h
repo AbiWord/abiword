@@ -94,8 +94,8 @@ public:
 				UT_sint32 * piLeft,
 				UT_uint32 * piWidth) const;
 
-	virtual void drawImage(GR_Image* pImg, UT_sint32 xDest, UT_sint32 yDest) = 0;
-	virtual GR_Image* createNewImage(const char* pszName, const UT_ByteBuf* pBBPNG, UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight) = 0;
+	virtual void drawImage(GR_Image* pImg, UT_sint32 xDest, UT_sint32 yDest);
+   	virtual GR_Image* createNewImage(const char* pszName, const UT_ByteBuf* pBB, UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight, GR_Image::GRType iType = GR_Image::GRT_Raster);
 	
 	/* For drawLine() and xorLine():
 	**   x0,y0 give the starting pixel.

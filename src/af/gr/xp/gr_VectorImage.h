@@ -17,39 +17,42 @@
  * 02111-1307, USA.
  */
 
-#ifndef GR_UNIXIMAGE_H
-#define GR_UNIXIMAGE_H
+#ifndef GR_VECTORIMAGE_H
+#define GR_VECTORIMAGE_H
 
-#include <gdk/gdk.h>
-
+#include "ut_types.h"
 #include "gr_Image.h"
 
-struct Fatmap
-{
-	gint width;
-	gint height;
+#include "xmlparse.h"
+#include "ut_stack.h"
+#include "ut_vector.h"
 
-	// Always 24-bit pixel data
-	guchar * data;
-};
+class GR_Graphics;
 
-class GR_UnixImage : public GR_RasterImage
+class GR_VectorImage : public GR_Image
 {
 public:
-	GR_UnixImage(const char* pszName);
-	~GR_UnixImage();
-
-	virtual UT_sint32	getDisplayWidth(void) const;
-	virtual UT_sint32	getDisplayHeight(void) const;
-	virtual UT_Bool		convertToBuffer(UT_ByteBuf** ppBB) const;
+	GR_VectorImage(const char* szName);
+	virtual ~GR_VectorImage();
+	
+   	virtual void		setDisplaySize(UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight);
+	
+   	virtual UT_Bool		convertToBuffer(UT_ByteBuf** ppBB) const;
 	virtual UT_Bool		convertFromBuffer(const UT_ByteBuf* pBB, UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight);
 
-	void			setData(Fatmap * image) { m_image = image; }
-   	Fatmap *			getData(void) const { return m_image; }
+   	virtual GRType		getType() { return GRT_Vector; }
+   	virtual UT_Bool		render(GR_Graphics *pGR, UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight);
 
+   	void _startElement(const XML_Char* name, const XML_Char **atts);
+   	void _endElement(const XML_Char* name);
+   	void _charData(const XML_Char* text, int len);
+   
 protected:
 
-	Fatmap * m_image;
+   	UT_Bool m_status;
+   	UT_Stack *m_context;
+	UT_Vector m_elements;  
+   
 };
 
-#endif /* GR_UNIXIMAGE_H */
+#endif /* GR_VECTORIMAGE */

@@ -76,6 +76,7 @@ OBJS=		$(PLATFORM_OBJS)						\
 		$(OBJDIR)/ut_hash.$(OBJ_SUFFIX)			\
 		$(OBJDIR)/ut_misc.$(OBJ_SUFFIX)			\
 		$(OBJDIR)/ut_png.$(OBJ_SUFFIX)			\
+		$(OBJDIR)/ut_svg.$(OBJ_SUFFIX)			\
 		$(OBJDIR)/ut_pool.$(OBJ_SUFFIX)			\
 		$(OBJDIR)/ut_stack.$(OBJ_SUFFIX)			\
 		$(OBJDIR)/ut_string.$(OBJ_SUFFIX)		\

@@ -23,9 +23,9 @@
 #include "ut_assert.h"
 #include "ut_bytebuf.h"
 
-GR_Win32Image::GR_Win32Image(BITMAPINFO* pDIB, const char* szName)
+GR_Win32Image::GR_Win32Image(const char* szName)
 {
-	m_pDIB = pDIB;
+	m_pDIB = NULL;
 
 	if (m_pDIB)
 	{
@@ -57,7 +57,7 @@ static void _png_read(png_structp png_ptr, png_bytep data, png_size_t length)
 	p->iCurPos += length;
 }
 
-UT_Bool GR_Win32Image::convertFromPNG(const UT_ByteBuf* pBB, UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight)
+UT_Bool GR_Win32Image::convertFromBuffer(const UT_ByteBuf* pBB, UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight)
 {
 	png_structp png_ptr;
 	png_infop info_ptr;
@@ -209,7 +209,7 @@ static void _png_error(png_structp png_ptr, png_const_charp message)
 {
 }
 
-UT_Bool GR_Win32Image::convertToPNG(UT_ByteBuf** ppBB) const
+UT_Bool GR_Win32Image::convertToBuffer(UT_ByteBuf** ppBB) const
 {
 	/*
 	  The purpose of this routine is to convert our DIB (m_pDIB)

@@ -34,17 +34,18 @@ struct PSFatmap
 	guchar * data;
 };
 
-class PS_Image : public GR_StretchableImage
+class PS_Image : public GR_RasterImage
 {
 public:
-	PS_Image(PSFatmap * image, const char* pszName);
+	PS_Image(const char* pszName);
 	~PS_Image();
 
-	virtual UT_Bool		convertToPNG(UT_ByteBuf** ppBB) const;
-	virtual UT_Bool		convertFromPNG(const UT_ByteBuf* pBB, UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight);
+	virtual UT_Bool		convertToBuffer(UT_ByteBuf** ppBB) const;
+	virtual UT_Bool		convertFromBuffer(const UT_ByteBuf* pBB, UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight);
 
+   	void			setData(PSFatmap * image) { m_image = image; }
 	PSFatmap *			getData(void) const { return m_image; }
-	
+
 protected:
 
 	PSFatmap * m_image;

@@ -99,8 +99,8 @@ public:
 	virtual void			clearArea(UT_sint32, UT_sint32, UT_sint32, UT_sint32);
 
 	virtual void			drawImage(GR_Image* pImg, UT_sint32 xDest, UT_sint32 yDest);
-	virtual GR_Image*		createNewImage(const char* pszName, const UT_ByteBuf* pBBPNG,
-										   UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight);
+	virtual GR_Image*		createNewImage(const char* pszName, const UT_ByteBuf* pBB,
+						       UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight, GR_Image::GRType iType = GR_Image::GRT_Raster);
 	
 	virtual UT_Bool			queryProperties(GR_Graphics::Properties gp) const;
 

@@ -342,8 +342,8 @@ void XAP_UnixDialog_About::_preparePicture(void)
 		
 	UT_PNG_getDimensions(pBB, iImageWidth, iImageHeight);
 	
-	m_pGrImageSidebar = new GR_UnixImage(NULL,NULL);
-	m_pGrImageSidebar->convertFromPNG(pBB, iImageWidth, iImageHeight);
+	m_pGrImageSidebar = new GR_UnixImage(NULL);
+	m_pGrImageSidebar->convertFromBuffer(pBB, iImageWidth, iImageHeight);
 
 	DELETEP(pBB);
 }

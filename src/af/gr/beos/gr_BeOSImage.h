@@ -22,18 +22,19 @@
 
 #include "gr_Image.h"
 
-class GR_BeOSImage : public GR_Image
+class GR_BeOSImage : public GR_RasterImage
 {
 public:
-	GR_BeOSImage(BBitmap *bitmap, const char* pszName);
+	GR_BeOSImage(const char* pszName);
 	~GR_BeOSImage();
 
 	virtual UT_sint32	getDisplayWidth(void) const;
 	virtual UT_sint32	getDisplayHeight(void) const;
-	virtual UT_Bool		convertToPNG(UT_ByteBuf** ppBB) const;
-	virtual UT_Bool		convertFromPNG(const UT_ByteBuf* pBB, UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight);
+	virtual UT_Bool		convertToBuffer(UT_ByteBuf** ppBB) const;
+	virtual UT_Bool		convertFromBuffer(const UT_ByteBuf* pBB, UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight);
 
-	BBitmap *		getData(void) const { return m_image; }
+	void			setData(BBitmap * image) { m_image = image; }
+   	BBitmap *		getData(void) const { return m_image; }
 	
 protected:
 

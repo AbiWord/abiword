@@ -448,12 +448,17 @@ void GR_Win32Graphics::setClipRect(const UT_Rect* pRect)
 	UT_ASSERT(res != ERROR);
 }
 
-GR_Image* GR_Win32Graphics::createNewImage(const char* pszName, const UT_ByteBuf* pBBPNG,
-										   UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight)
+GR_Image* GR_Win32Graphics::createNewImage(const char* pszName, const UT_ByteBuf* pBB,
+					   UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight,
+					   GR_Image::GRType iType)
 {
-	GR_Win32Image* pImg = new GR_Win32Image(NULL, pszName);
-
-	pImg->convertFromPNG(pBBPNG, iDisplayWidth, iDisplayHeight);
+	GR_Image* pImg = NULL;
+   	if (iType == GR_Image::GRT_Raster)
+     		pImg = new GR_Win32Image(pszName);
+   	else
+     		pImg = new GR_VectorImage(pszName);
+   
+	pImg->convertFromBuffer(pBB, iDisplayWidth, iDisplayHeight);
 
 	return pImg;
 }
@@ -462,6 +467,11 @@ void GR_Win32Graphics::drawImage(GR_Image* pImg, UT_sint32 xDest, UT_sint32 yDes
 {
 	UT_ASSERT(pImg);
 	
+   	if (pImg->getType() != GR_Image::GRT_Raster) {
+	   	pImg->render(this, xDest, yDest);
+	   	return;
+	}
+   
 	GR_Win32Image* pWin32Img = static_cast<GR_Win32Image*>(pImg);
 
 	BITMAPINFO* pDIB = pWin32Img->getDIB();

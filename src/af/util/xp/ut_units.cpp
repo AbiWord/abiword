@@ -46,12 +46,18 @@ const char * UT_dimensionName(UT_Dimension dim)
 	case DIM_CM:
 		return "cm";
 
+	case DIM_MM:
+	   	return "mm";
+	   
 	case DIM_PI:
 		return "pi";
 
 	case DIM_PT:
 		return "pt";
 
+	case DIM_PX:
+	   	return "px";
+	   
 	case DIM_none:
 		return "";
 
@@ -77,12 +83,18 @@ UT_Dimension UT_determineDimension(const char * sz, UT_Dimension fallback)
 
 		if (UT_stricmp(p,"cm") == 0)
 			return DIM_CM;
-		
+
+	   	if (UT_stricmp(p,"mm") == 0)
+			return DIM_MM;
+
 		if (UT_stricmp(p,"pi") == 0)
 			return DIM_PI;
 
 		if (UT_stricmp(p,"pt") == 0)
 			return DIM_PT;
+
+	   	if (UT_stricmp(p,"px") == 0)
+			return DIM_PX;
 
 		UT_ASSERT(UT_TODO);
 	}
@@ -98,6 +110,7 @@ double UT_convertInchesToDimension(double inches, UT_Dimension dim)
 	{
 	case DIM_IN:	valueScaled = inches;			break;
 	case DIM_CM:	valueScaled = (inches * 2.54);	break;
+	case DIM_MM:    valueScaled = (inches * 25.4);  break;
 	case DIM_PI:	valueScaled = (inches * 6);		break;
 	case DIM_PT:	valueScaled = (inches * 72);	break;
 	default:
@@ -138,6 +151,11 @@ const char * UT_convertToDimensionString(UT_Dimension dim, double value, const c
 		sprintf(bufFormat,"%%%sfcm",((szPrecision && *szPrecision) ? szPrecision : ".1"));
 		break;
 
+	case DIM_MM:
+		valueScaled = (value * 25.4);
+		sprintf(bufFormat,"%%%sfmm",((szPrecision && *szPrecision) ? szPrecision : ".1"));
+		break;
+
 	case DIM_PI:
 		valueScaled = (value * 6);
 		sprintf(bufFormat,"%%%sfpi",((szPrecision && *szPrecision) ? szPrecision : ".0"));
@@ -148,7 +166,8 @@ const char * UT_convertToDimensionString(UT_Dimension dim, double value, const c
 		sprintf(bufFormat,"%%%sfpt",((szPrecision && *szPrecision) ? szPrecision : ".0"));
 		break;
 
-	case DIM_none:
+	case DIM_PX:
+ 	case DIM_none:
 		valueScaled = value;
 		sprintf(bufFormat,"%%%sf",((szPrecision && *szPrecision) ? szPrecision : ""));
 		break;
@@ -160,7 +179,7 @@ const char * UT_convertToDimensionString(UT_Dimension dim, double value, const c
 		break;
 	}
 	setlocale(LC_NUMERIC,"C");
-	sprintf(buf,bufFormat,valueScaled);
+	sprintf(buf,bufFormat,value);
 	//UT_DEBUGMSG(("ConvertToDimensionString: [%g] --> [%s]\n",valueScaled,buf));
 	setlocale(LC_NUMERIC,""); // restore original locale
 	
@@ -207,6 +226,10 @@ double UT_convertToInches(const char* s)
 		{
 			result = f / 2.54;
 		}
+		else if (0 == UT_stricmp(p, "mm"))
+		{
+			result = f / 25.4;
+		}
 		else
 		{
 			UT_ASSERT(0);
@@ -250,6 +273,10 @@ double UT_convertToPoints(const char* s)
 		else if (0 == UT_stricmp(p, "cm"))
 		{
 			result = f * 72 / 2.54;
+		}
+		else if (0 == UT_stricmp(p, "mm"))
+		{
+			result = f * 72 / 25.4;
 		}
 		else
 		{
@@ -360,6 +387,13 @@ UT_sint32 UT_layoutUnitsFromPaperUnits(UT_sint32 iPaperUnits)
 	// "layout" units.
 
 	return (UT_LAYOUT_UNITS * iPaperUnits / UT_PAPER_UNITS_PER_INCH);
+}
+
+UT_sint32 UT_paperUnitsFromLayoutUnits(UT_sint32 iLayoutUnits)
+{
+	// convert number in layout units into paper units (loss of precision)    
+	
+   	return (UT_PAPER_UNITS_PER_INCH * iLayoutUnits / UT_LAYOUT_UNITS);
 }
 
 const char * UT_formatDimensionedValue(double value,

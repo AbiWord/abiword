@@ -576,36 +576,45 @@ UT_Bool GR_UnixGraphics::endPrint(void)
 	return UT_FALSE;
 }
 
-GR_Image* GR_UnixGraphics::createNewImage(const char* pszName, const UT_ByteBuf* pBBPNG, UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight)
+GR_Image* GR_UnixGraphics::createNewImage(const char* pszName, const UT_ByteBuf* pBB, UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight, GR_Image::GRType iType)
 {
-	GR_UnixImage* pImg = new GR_UnixImage(NULL, pszName);
-
-	pImg->convertFromPNG(pBBPNG, iDisplayWidth, iDisplayHeight);
-
-	return pImg;
+   	GR_Image* pImg = NULL;
+   	if (iType == GR_Image::GRT_Raster)
+   		pImg = new GR_UnixImage(pszName);
+   	else
+	   	pImg = new GR_VectorImage(pszName);
+	     
+	pImg->convertFromBuffer(pBB, iDisplayWidth, iDisplayHeight);
+   	return pImg;
 }
 
 void GR_UnixGraphics::drawImage(GR_Image* pImg, UT_sint32 xDest, UT_sint32 yDest)
 {
 	UT_ASSERT(pImg);
-	
-	GR_UnixImage * pUnixImage = static_cast<GR_UnixImage *>(pImg);
 
-	Fatmap * image = pUnixImage->getData();
+   	if (pImg->getType() != GR_Image::GRT_Raster) {
+	   	pImg->render(this, xDest, yDest);
+	   	return;
+	}
+	   
+   	GR_UnixImage * pUnixImage = static_cast<GR_UnixImage *>(pImg);
 
-	UT_sint32 iImageWidth = pUnixImage->getDisplayWidth();
-	UT_sint32 iImageHeight = pUnixImage->getDisplayHeight();
+   	Fatmap * image = pUnixImage->getData();
 
-	gdk_draw_rgb_image(m_pWin,
-					   m_pGC,
-					   xDest,
-					   yDest,
-					   iImageWidth,
-					   iImageHeight,
-					   GDK_RGB_DITHER_NORMAL,
-					   image->data,
-					   image->width * 3); // This parameter is the total bytes across one row,
-	                                      // which is pixels * 3 (we use 3 bytes per pixel).
+   	UT_sint32 iImageWidth = pUnixImage->getDisplayWidth();
+   	UT_sint32 iImageHeight = pUnixImage->getDisplayHeight();
+
+   	gdk_draw_rgb_image(m_pWin,
+			   m_pGC,
+			   xDest,
+			   yDest,
+			   iImageWidth,
+			   iImageHeight,
+			   GDK_RGB_DITHER_NORMAL,
+			   image->data,
+			   image->width * 3); // This parameter is the total bytes across one row,
+                                              // which is pixels * 3 (we use 3 bytes per pixel).
+
 }
 
 void GR_UnixGraphics::flush(void)

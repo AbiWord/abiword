@@ -25,9 +25,9 @@
 #include "ut_assert.h"
 #include "ut_bytebuf.h"
 
-GR_QNXImage::GR_QNXImage(Fatmap * image, const char* szName)
+GR_QNXImage::GR_QNXImage(const char* szName)
 {
-	m_image = image;
+	m_image = NULL;
 	
 	if (szName)
 	{
@@ -90,7 +90,7 @@ UT_sint32	GR_QNXImage::getDisplayHeight(void) const
 	return m_image->height;
 }
 
-UT_Bool		GR_QNXImage::convertToPNG(UT_ByteBuf** ppBB) const
+UT_Bool		GR_QNXImage::convertToBuffer(UT_ByteBuf** ppBB) const
 {
 	/*
 	  The purpose of this routine is to convert our internal 24-bit
@@ -196,7 +196,7 @@ UT_Bool		GR_QNXImage::convertToPNG(UT_ByteBuf** ppBB) const
 	return UT_TRUE;
 }
 
-UT_Bool	GR_QNXImage::convertFromPNG(const UT_ByteBuf* pBB, UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight)
+UT_Bool	GR_QNXImage::convertFromBuffer(const UT_ByteBuf* pBB, UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight)
 {
 	png_structp png_ptr;
 	png_infop info_ptr;

@@ -30,9 +30,9 @@
 #include <TranslationUtils.h>
 #include <DataIO.h>
 
-GR_BeOSImage::GR_BeOSImage(BBitmap * image, const char* szName)
+GR_BeOSImage::GR_BeOSImage(const char* szName)
 {
-	m_image = image;
+	m_image = NULL;
 	
 	if (szName) {
 		strcpy(m_szName, szName);
@@ -57,7 +57,7 @@ UT_sint32 GR_BeOSImage::getDisplayHeight(void) const {
 	return (m_image) ? m_image->Bounds().Height() : 0;
 }
 
-UT_Bool	GR_BeOSImage::convertToPNG(UT_ByteBuf** ppBB) const {
+UT_Bool	GR_BeOSImage::convertToBuffer(UT_ByteBuf** ppBB) const {
 	/*
 	  The purpose of this routine is to convert our internal bitmap
 	  into a PNG image, storing it in a ByteBuf and returning it
@@ -97,7 +97,7 @@ UT_Bool	GR_BeOSImage::convertToPNG(UT_ByteBuf** ppBB) const {
 #endif
 }
 
-UT_Bool	GR_BeOSImage::convertFromPNG(const UT_ByteBuf* pBB, UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight)
+UT_Bool	GR_BeOSImage::convertFromBuffer(const UT_ByteBuf* pBB, UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight)
 {
 	BBitmap 	*image;
 	BMemoryIO	memio(pBB->getPointer(0), pBB->getLength());

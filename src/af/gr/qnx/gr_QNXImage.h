@@ -31,17 +31,18 @@ struct Fatmap
 	unsigned char * data;
 };
 
-class GR_QNXImage : public GR_Image
+class GR_QNXImage : public GR_RasterImage
 {
 public:
-	GR_QNXImage(Fatmap * image, const char* pszName);
+	GR_QNXImage(const char* pszName);
 	~GR_QNXImage();
 
 	virtual UT_sint32	getDisplayWidth(void) const;
 	virtual UT_sint32	getDisplayHeight(void) const;
-	virtual UT_Bool		convertToPNG(UT_ByteBuf** ppBB) const;
-	virtual UT_Bool		convertFromPNG(const UT_ByteBuf* pBB, UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight);
+	virtual UT_Bool		convertToBuffer(UT_ByteBuf** ppBB) const;
+	virtual UT_Bool		convertFromBuffer(const UT_ByteBuf* pBB, UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight);
 
+   	void			setData(Fatmap * image) { m_image = image; }
 	Fatmap *			getData(void) const { return m_image; }
 	
 protected:
