@@ -111,6 +111,7 @@ typedef	UT_sint32		UT_Error;
 #define UT_SAVE_NAMEERROR       ((UT_Error) -202)
 #define UT_SAVE_EXPORTERROR     ((UT_Error) -203)
 #define UT_EXTENSIONERROR       ((UT_Error) -204)
+#define UT_SAVE_CANCELLED       ((UT_Error) -205)
 #define UT_SAVE_OTHERERROR      ((UT_Error) -200) 	/* This should eventually dissapear. */
 #define UT_IE_FILENOTFOUND      ((UT_Error) -301)
 #define UT_IE_NOMEMORY          ((UT_Error) -302)

@@ -136,6 +136,8 @@ protected:
 	virtual bool		_closeFile(void);
 	virtual void		_abortFile(void);
 
+	void				_cancelExport () { m_bCancelled = true; }
+
 	PD_Document * getDoc() const;
 	PD_DocumentRange * getDocRange() const;
 
@@ -147,6 +149,8 @@ protected:
 	UT_ByteBuf *		m_pByteBuf;
 	char *                  m_szFileName;
 	FILE *				m_fp;
+
+	bool				m_bCancelled;
 };
 
 

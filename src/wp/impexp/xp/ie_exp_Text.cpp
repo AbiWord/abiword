@@ -236,7 +236,10 @@ bool IE_Exp_Text::_openFile(const char * szFilename)
 	if (!m_bIsEncoded || m_bExplicitlySetEncoding || _doEncodingDialog(m_szEncoding))
 		return IE_Exp::_openFile(szFilename);
 	else
+	{
+		_cancelExport ();
 		return false;
+	}
 }
 
 /*!

@@ -1527,6 +1527,9 @@ static void s_TellOpenFailed(XAP_Frame * pFrame, const char * fileName, UT_Error
 
 static void s_TellSaveFailed(XAP_Frame * pFrame, const char * fileName, UT_Error errorCode)
 {
+	if (errorCode == UT_SAVE_CANCELLED) // We actually don't have a write error
+	  return;
+
 	XAP_String_Id String_id;
 
 	if (errorCode == -201) // We have a write error

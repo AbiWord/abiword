@@ -189,8 +189,10 @@ UT_Error IE_Exp::writeFile(const char * szFilename)
 	UT_return_val_if_fail(m_pDocument, UT_IE_COULDNOTWRITE);
 	UT_return_val_if_fail(szFilename && *szFilename, UT_IE_COULDNOTWRITE);
 
+	m_bCancelled = false;
+
 	if (!_openFile(szFilename))
-		return UT_IE_COULDNOTWRITE;
+		return m_bCancelled ? UT_SAVE_CANCELLED : UT_IE_COULDNOTWRITE;
 
 	UT_Error error = _writeDocument();
 

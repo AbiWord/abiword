@@ -4556,7 +4556,11 @@ bool IE_Exp_HTML::_openFile (const char * szFilename)
 
 	pDialogFactory->releaseDialog (pDialog);
 
-	if (!bSave) return false;
+	if (!bSave)
+		{
+			_cancelExport ();
+			return false;
+		}
 #endif
 	return IE_Exp::_openFile (szFilename);
 }
