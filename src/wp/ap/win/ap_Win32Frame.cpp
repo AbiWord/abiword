@@ -136,6 +136,7 @@ UT_Bool AP_Win32Frame::_showDocument(UT_uint32 iZoom)
 	ap_Scrollbar_ViewListener * pScrollbarViewListener = NULL;
 	AV_ListenerId lid;
 	AV_ListenerId lidScrollbarViewListener;
+	UT_uint32 point = 0;
 	
 	UT_uint32 nrToolbars, k;
 	HWND hwnd = m_hwndDocument;
@@ -150,6 +151,10 @@ UT_Bool AP_Win32Frame::_showDocument(UT_uint32 iZoom)
 //	pDocLayout->formatAll();
 	
 	pView = new FV_View(getApp(), this, pDocLayout);
+	if (m_pView != NULL)
+	{
+		point = ((FV_View *) m_pView)->getPoint();
+	}
 	ENSUREP(pView);
 
 	// The "AV_ScrollObj pScrollObj" receives
@@ -254,6 +259,9 @@ UT_Bool AP_Win32Frame::_showDocument(UT_uint32 iZoom)
 	setYScrollRange();
 	
 	updateTitle();
+
+	if (point != 0)
+		((FV_View *) m_pView)->moveInsPtTo(point);
 
 	((AP_FrameData*)m_pData)->m_pTopRuler->draw(NULL);
 	((AP_FrameData*)m_pData)->m_pLeftRuler->draw(NULL);

@@ -87,6 +87,7 @@ UT_Bool AP_UnixFrame::_showDocument(UT_uint32 iZoom)
 	AV_ListenerId lid;
 	AV_ListenerId lidScrollbarViewListener;
 	UT_uint32 nrToolbars;
+	UT_uint32 point = 0;
 
 	XAP_UnixFontManager * fontManager = ((XAP_UnixApp *) getApp())->getFontManager();
 	
@@ -100,6 +101,10 @@ UT_Bool AP_UnixFrame::_showDocument(UT_uint32 iZoom)
 //	pDocLayout->formatAll();
 
 	pView = new FV_View(getApp(), this, pDocLayout);
+	if (m_pView != NULL)
+	{
+		point = ((FV_View *) m_pView)->getPoint();
+	}
 	ENSUREP(pView);
 
 	// The "AV_ScrollObj pScrollObj" receives
@@ -202,6 +207,8 @@ UT_Bool AP_UnixFrame::_showDocument(UT_uint32 iZoom)
 	setYScrollRange();
 	updateTitle();
 
+	if (point != 0)
+		((FV_View *) m_pView)->moveInsPtTo(point);
 #if 1
 	/*
 	  UPDATE:  this code is back, but I'm leaving these comments as

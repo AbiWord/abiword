@@ -817,22 +817,14 @@ void FV_View::moveInsPtTo(FV_DocPos dp)
 
 void FV_View::moveInsPtTo(PT_DocPosition dp)
 {
-	if (!isSelectionEmpty())
-		_clearSelection();
-	else
-		_eraseInsertionPoint();
-	
 	if (dp != getPoint())
 		_clearIfAtFmtMark(getPoint());
 
 	_setPoint(dp, /* (dp == FV_DOCPOS_EOL) */ UT_FALSE);  // is this bool correct?
-
-	if (!_ensureThatInsertionPointIsOnScreen())
-	{
-		_fixInsertionPointCoords();
-		_drawInsertionPoint();
-	}
-
+	
+	_fixInsertionPointCoords();
+	cmdScroll(AV_SCROLLCMD_LINEDOWN, (UT_uint32) (m_yPoint + m_iPointHeight/2 - m_iWindowHeight/2));
+	cmdScroll(AV_SCROLLCMD_LINERIGHT, (UT_uint32) (m_xPoint - m_iWindowWidth/2));
 	notifyListeners(AV_CHG_MOTION);
 }
 

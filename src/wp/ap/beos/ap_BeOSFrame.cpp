@@ -83,7 +83,7 @@ UT_Bool AP_BeOSFrame::_showDocument(UT_uint32 iZoom)
 	AV_ListenerId lid;
 	AV_ListenerId lidScrollbarViewListener;
 	UT_uint32 nrToolbars;
-
+	UT_uint32 point = 0;
 	
 	//pG = new GR_BEOSGraphics(m_dArea->window, fontManager);
 	pG = new GR_BEOSGraphics(getBeDocView());
@@ -96,6 +96,10 @@ UT_Bool AP_BeOSFrame::_showDocument(UT_uint32 iZoom)
 //	pDocLayout->formatAll();
 
 	pView = new FV_View(getApp(), this, pDocLayout);
+	if (m_pView != NULL)
+	{
+		point = ((FV_View *) m_pView)->getPoint();
+	}
 	ENSUREP(pView);
 
 	// The "AV_ScrollObj pScrollObj" receives
@@ -199,6 +203,9 @@ UT_Bool AP_BeOSFrame::_showDocument(UT_uint32 iZoom)
 	setXScrollRange();
 	setYScrollRange();
 	updateTitle();
+
+	if (point != 0)
+		((FV_View *) m_pView)->moveInsPtTo(point);
 
 #if 1
 	/*
