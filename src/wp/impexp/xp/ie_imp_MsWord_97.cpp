@@ -3719,8 +3719,7 @@ bool IE_Imp_MsWord_97::_insertTOC(field *f)
 		{
 			UT_UTF8String_sprintf(sTemp, "toc-dest-style%d:TOC %d", i, i);
 			sProps += sTemp;
-			if(i < 9)
-				sProps += ";";
+			sProps += ";";
 
 			if(sLeader.size())
 			{
@@ -3735,8 +3734,7 @@ bool IE_Imp_MsWord_97::_insertTOC(field *f)
 		{
 			UT_UTF8String_sprintf(sTemp, "toc-dest-style%d:nonexistentstyle", i);
 			sProps += sTemp;
-			if(i < 9)
-				sProps += ";";
+			sProps += ";";
 		}
 	}
 
@@ -3787,7 +3785,7 @@ bool IE_Imp_MsWord_97::_insertTOC(field *f)
 			sProps += sTemp;
 			sProps += ";";
 
-			sProps += "tod-dest-style";
+			sProps += "toc-dest-style";
 			sProps += t1;
 			sProps += ":TOC ";
 			sProps += t1;
