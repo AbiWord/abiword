@@ -528,6 +528,8 @@ public:
 	UT_Vector &             getRevisions() {return m_vRevisions;}
 	UT_uint32               getHighestRevisionId() const;
 	const PD_Revision *     getHighestRevision() const;
+	void                    purgeRevisionTable();
+	
 	void					notifyPieceTableChangeStart(void);
 	void					notifyPieceTableChangeEnd(void);
 

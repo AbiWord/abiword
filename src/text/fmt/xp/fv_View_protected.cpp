@@ -4787,6 +4787,7 @@ void FV_View::_acceptRejectRevision(bool bReject, PT_DocPosition iStart, PT_DocP
 	const PP_Revision * pRev = pRevAttr->getGreatestLesserOrEqualRevision(m_iViewRevision,
 																		  &pSpecial);
 
+	bool bDeletePRev = false;
 	// pRev == NULL means that the text contains no revision with
 	// id <= m_iViewRevision. In this case, we should not be asked to
 	// accept or reject the revision, hence the assert (I suspect that
@@ -4858,7 +4859,7 @@ void FV_View::_acceptRejectRevision(bool bReject, PT_DocPosition iStart, PT_DocP
 					// need to set a new revision attribute
 					// first remove current revision from pRevAttr
 					pRevAttr->removeRevision(pRev);
-					delete pRev;
+					bDeletePRev = true;
 
 					ppAttr2[2*i] = rev;
 					ppAttr2[2*i + 1] = pRevAttr->getXMLstring();
@@ -4897,6 +4898,9 @@ void FV_View::_acceptRejectRevision(bool bReject, PT_DocPosition iStart, PT_DocP
 				delete ppProps;
 				delete ppAttr2;
 
+				if(bDeletePRev)
+					delete pRev;
+				
 				break;
 
 			default:

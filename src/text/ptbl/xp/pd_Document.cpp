@@ -407,6 +407,22 @@ UT_Error PD_Document::importFile(const char * szFilename, int ieft,
 
 	if (strstr(szFilename, "normal.awt") == NULL)
 		XAP_App::getApp()->getPrefs()->addRecent(szFilename);
+
+
+	// show warning if document contains revisions and they are hidden
+	// from view ...
+	XAP_Frame * pFrame = XAP_App::getApp()->getLastFocussedFrame();
+
+	bool bHidden = (isMarkRevisions() && (getHighestRevisionId() <= getShowRevisionId()));
+	bHidden |= (!isMarkRevisions() && !isShowRevisions());
+
+	if(pFrame && bHidden)
+	{
+		pFrame->showMessageBox(AP_STRING_ID_MSG_HiddenRevisions, 
+						       XAP_Dialog_MessageBox::b_O, 
+							   XAP_Dialog_MessageBox::a_OK);
+	}
+	
 	return UT_OK;
 }
 
@@ -507,6 +523,21 @@ UT_Error PD_Document::readFromFile(const char * szFilename, int ieft,
 
 	if (strstr(szFilename, "normal.awt") == NULL)
 		XAP_App::getApp()->getPrefs()->addRecent(szFilename);
+
+	// show warning if document contains revisions and they are hidden
+	// from view ...
+	XAP_Frame * pFrame = XAP_App::getApp()->getLastFocussedFrame();
+
+	bool bHidden = (isMarkRevisions() && (getHighestRevisionId() <= getShowRevisionId()));
+	bHidden |= (!isMarkRevisions() && !isShowRevisions());
+
+	if(pFrame && bHidden)
+	{
+		pFrame->showMessageBox(AP_STRING_ID_MSG_HiddenRevisions, 
+						       XAP_Dialog_MessageBox::b_O, 
+							   XAP_Dialog_MessageBox::a_OK);
+	}
+
 	return UT_OK;
 }
 
@@ -663,6 +694,9 @@ UT_Error PD_Document::saveAs(const char * szFilename, int ieft, bool cpy,
 	// order of these calls matters
 	_adjustHistoryOnSave();
 	_adjustEditTimeOnSave();
+
+	// see if revisions table is still needed ...
+	purgeRevisionTable();
 	
 	errorCode = pie->writeFile(szFilename);
 	delete pie;
@@ -711,6 +745,9 @@ UT_Error PD_Document::save(void)
 
 	_adjustHistoryOnSave();
 	_adjustEditTimeOnSave();
+
+	// see if revisions table is still needed ...
+	purgeRevisionTable();
 	
 	errorCode = pie->writeFile(m_szFilename);
 	delete pie;
@@ -4503,6 +4540,58 @@ bool PD_Document::areDocumentStylesheetsEqual(const PD_Document &d) const
 	
 	return true;
 }
+
+/*!
+    Clears out the revisions table if no revisions are left in the document
+*/
+void PD_Document::purgeRevisionTable()
+{
+	if(m_vRevisions.getItemCount() == 0)
+		return;
+
+	UT_String sAPI;
+	UT_StringPtrMap hAPI;
+	
+	PD_DocIterator t(*this);
+
+	// work our way thought the document looking for frags with
+	// revisions attributes ...
+	while(t.getStatus() == UTIter_OK)
+	{
+		const pf_Frag * pf = t.getFrag();
+		UT_return_if_fail(pf);
+
+		PT_AttrPropIndex api = pf->getIndexAP();
+
+		UT_String_sprintf(sAPI, "%08x", api);
+
+		if(!hAPI.contains(sAPI, NULL))
+		{
+			const PP_AttrProp * pAP;
+			UT_return_if_fail(getAttrProp(api, &pAP));
+			UT_return_if_fail(pAP);
+
+			const XML_Char * pVal;
+
+			if(pAP->getAttribute(PT_REVISION_ATTRIBUTE_NAME, pVal))
+				return;
+
+			// cache this api so we do not need to do this again if we
+			// come across it
+			hAPI.insert(sAPI,NULL);
+		}
+
+		t += pf->getLength();
+	}
+	
+
+	// if we got this far, we have not found any revisions in the
+	// whole doc, clear out the table
+	UT_DEBUGMSG(("PD_Document::purgeRevisionTable(): clearing\n"));
+	UT_VECTOR_PURGEALL(PD_Revision*, m_vRevisions);
+	m_vRevisions.clear();
+}
+
 
 void PD_Document::diffIntoRevisions(const PD_Document &d)
 {

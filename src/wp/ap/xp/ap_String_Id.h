@@ -643,6 +643,7 @@ dcl(MSG_BookmarkNotFound, "Bookmark \"%s\" was not found in this document.")
 dcl(MSG_HyperlinkNoSelection, "You must select a portion of the document before inserting a hyperlink.")
 dcl(MSG_HyperlinkNoBookmark, "Warning: the bookmark you provided [%s] does not exist.")
 dcl(MSG_HyperlinkCrossesBoundaries, "The text to which the hyperlink is to be attached must be within a single paragraph.")
+dcl(MSG_HiddenRevisions, "This document contains revisions which are currently hidden from view. Please see AbiWord documentation for information on working with revisions.")
 
 dcl(DLG_ToggleCase_Title, "Change Case")
 dcl(DLG_ToggleCase_SentenceCase, "Sentence case")
