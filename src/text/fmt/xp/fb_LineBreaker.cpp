@@ -78,6 +78,7 @@ fb_LineBreaker::breakParagraph(fl_BlockLayout* pBlock)
 			
 			m_iMaxLineWidth = pLine->getMaxWidthInLayoutUnits();
 			m_iWorkingLineWidth = 0;
+			UT_DEBUGMSG(("SEVIOR: Max line width = %d \n",m_iMaxLineWidth));
 			
 //			bool bFoundBreakAfter = false;
 //			bool bFoundSplit = false;
@@ -102,7 +103,6 @@ fb_LineBreaker::breakParagraph(fl_BlockLayout* pBlock)
 						bRunIsNonBlank = false;
 					}
 				}
-				
 				if (bRunIsNonBlank && (m_iWorkingLineWidth  > m_iMaxLineWidth))
 				{
 					// This is the first run which will start past the
@@ -134,7 +134,6 @@ fb_LineBreaker::breakParagraph(fl_BlockLayout* pBlock)
 				}
 				if(!pCurrentRun)
 					break;
-
 				m_iWorkingLineWidth += pCurrentRun->getWidthInLayoutUnits();
 			
 				unsigned char iCurRunType = pCurrentRun->getType();
@@ -341,7 +340,6 @@ fb_LineBreaker::breakParagraph(fl_BlockLayout* pBlock)
 			} // the run loop
 
 		done_with_run_loop:
-			
 			/*
 			  OK, we've gone through the run loop.  If a run was to
 			  be split, it has already been split.  m_pLastRunToKeep

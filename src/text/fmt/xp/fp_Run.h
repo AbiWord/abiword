@@ -398,7 +398,9 @@ public:
 	virtual bool			canBreakAfter(void) const;
 	virtual bool			canBreakBefore(void) const;
 	virtual bool			letPointPass(void) const;
-	virtual bool			doesContainNonBlankData(void) const { return false; }	// Things like text whould return false if it is all spaces.
+//
+// Tomas this breaks line breaking.... 
+//	virtual bool			doesContainNonBlankData(void) const { return false; }	// Things like text whould return false if it is all spaces.
 	
 protected:
 	virtual void			_draw(dg_DrawArgs*);
