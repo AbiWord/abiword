@@ -846,6 +846,10 @@ bool AD_Document::_restoreVersion(XAP_Frame * pFrame, UT_uint32 iVersion)
 	m_bDoNotAdjustHistory = true;
 	saveAs(s1.c_str(), getLastSavedAsType());
 	m_bDoNotAdjustHistory = false;
+
+	// step out of revision mode ...
+	_setMarkRevisions(false);
+	m_bAutoRevisioning = false;
 	
 	if(rejectAllHigherRevisions(iVersion))
 	{
