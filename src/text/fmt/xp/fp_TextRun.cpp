@@ -2270,32 +2270,6 @@ void fp_TextRun::justify(UT_sint32 iAmount, UT_uint32 iSpacesInRun)
 	
 }
 
-UT_uint32 fp_TextRun::countTrailingSpaces(void) const
-{
-	UT_uint32 iCount = 0;
-
-	if(getLength() > 0)
-	{
-		UT_sint32 i;
-
-		PD_StruxIterator text(getBlock()->getStruxDocHandle(),
-							  getBlockOffset() + fl_BLOCK_STRUX_OFFSET + getLength() - 1);
-
-		for (i = getLength() - 1; i >= 0 && text.getStatus() == UTIter_OK; i--, --text)
-		{
-			if(UCS_SPACE == text.getChar())
-			{
-				iCount++;
-			}
-			else
-			{
-				break;
-			}
-		}
-	}
-
-	return iCount;
-}
 
 /*
    if this run contains only spaces, we will return the count

@@ -178,6 +178,9 @@ class GR_GraphicsFactory
 								const char *  (*descriptor)(void),
 								UT_uint32 iClassId);
 
+	bool          registerDefaultClass(GR_Graphics * (*allocator)(void*),
+									   const char *  (*descriptor)(void));
+	
 	UT_uint32     registerPluginClass(GR_Graphics * (*allocator)(void*),
 									  const char *  (*descriptor)(void));
 	

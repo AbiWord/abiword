@@ -49,7 +49,6 @@ public:
 	virtual bool			alwaysFits(void) const;
 	virtual bool			findMaxLeftFitSplitPoint(UT_sint32 iMaxLeftWidth, fp_RunSplitInfo& si, bool bForce=false);
 	virtual UT_sint32		findTrailingSpaceDistance(void) const;
-	UT_uint32				countTrailingSpaces(void) const;
 	void					drawSquiggle(UT_uint32, UT_uint32);
 
 	bool					split(UT_uint32 iSplitOffset);
