@@ -121,13 +121,13 @@ pagesizes[fp_PageSize::_last_predefined_pagesize_dont_use_] =
 	{ 70.0, 148.0, DIM_MM, "1/3 A5",
 	  MARGIN_UNKNOWN, MARGIN_UNKNOWN, MARGIN_UNKNOWN, MARGIN_UNKNOWN },
 	{ 110.0, 220.0, DIM_MM, "DL Envelope",
-	  MARGIN_UNKNOWN, MARGIN_UNKNOWN, MARGIN_UNKNOWN, MARGIN_UNKNOWN },
+	  1.8, 1.8, 1.8, 1.8 },
 	{ 114.0, 229.0, DIM_MM, "C6/C5 Envelope",
-	  MARGIN_UNKNOWN, MARGIN_UNKNOWN, MARGIN_UNKNOWN, MARGIN_UNKNOWN },
+	  1.8, 1.8, 1.8, 1.8 },
 	{ 104.8, 241.3, DIM_MM, "Envelope No10",
-	  MARGIN_UNKNOWN, MARGIN_UNKNOWN, MARGIN_UNKNOWN, MARGIN_UNKNOWN },
+	  1.8, 1.8, 1.8, 1.8 },
 	{ 6.00, 9.00, DIM_IN, "Envelope 6x9",
-	  MARGIN_UNKNOWN, MARGIN_UNKNOWN, MARGIN_UNKNOWN, MARGIN_UNKNOWN },
+	  1.0, 1.0, 1.0, 1.0 },
 
 	// Custom, same size as A4
 	{ 210.0,  297.0, DIM_MM,	"Custom", 28.0, 28.0, 28.0, 28.0 }
