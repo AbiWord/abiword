@@ -24,6 +24,7 @@ Andy Burnett <andy@abisource.com>
 Heath D. Carr <heath@abisource.com>
 Philippe Defert <Philippe.Defert@cern.ch>       AIX, HPUX, IRIX64, OSF1
 Ryan Dooley <ryan@coe.missouri.edu>             started IRIX port
+Harald Fernengel <harry@bnro.de>		RTF compatability fixes
 Albert Fluegel <albert.fluegel@hl.siemens.de>   Solaris
 Stephen Hack <shack@uiuc.edu>                   options dialog
 Martin Willemoes Hansen <mwh@stampede.org>
