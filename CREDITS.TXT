@@ -13,6 +13,11 @@ current maintainer
 -----------------------------
 Dom Lachowicz <dominicl@seas.upenn.edu>
 
+stable branch maintainers
+-------------------------
+Hubert Figuiere <hfiguiere@teaser.fr>
+Mark Gilbert <webmaster@dofty.zzn.com>
+
 contributors
 ------------
 Pierre Abbat <phma@webjockey.net>			LaTeX Testing,
