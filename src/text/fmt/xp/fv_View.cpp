@@ -637,6 +637,11 @@ void FV_View::moveInsPtTo(FV_DocPos dp)
 	
 	PT_DocPosition iPos = _getDocPos(dp);
 
+	if (iPos != _getPoint())
+	{
+		_clearPointAP(UT_TRUE);
+	}
+
 	_setPoint(iPos, (dp == FV_DOCPOS_EOL));
 
 	if (!_ensureThatInsertionPointIsOnScreen())
@@ -711,6 +716,8 @@ void FV_View::insertParagraphBreak()
 
 	// insert a new paragraph with the same attributes/properties
 	// as the previous (or none if the first paragraph in the section).
+
+	// ==>: we *don't* call _clearPointAP() in this case 
 
 	m_pDoc->insertStrux(_getPoint(), PTX_Block);
 	
@@ -1427,7 +1434,9 @@ void FV_View::_extSelToPos(PT_DocPosition iNewPoint)
 	{
 		return;
 	}
-	
+
+	_clearPointAP(UT_TRUE);
+
 	if (isSelectionEmpty())
 	{
 		_eraseInsertionPoint();
@@ -1553,6 +1562,8 @@ void FV_View::warpInsPtToXY(UT_sint32 xPos, UT_sint32 yPos)
 	}
 
 	UT_ASSERT(pPage);
+
+	_clearPointAP(UT_TRUE);
 
 	if (!isSelectionEmpty())
 	{
@@ -2265,7 +2276,8 @@ UT_Bool FV_View::_charMotion(UT_Bool bForward,UT_uint32 countChars)
 	// advance(backup) the current insertion point by count characters.
 	// return UT_FALSE if we ran into an end (or had an error).
 
-	_clearPointAP(UT_TRUE);
+	PT_DocPosition posOld = m_iInsPoint;
+
 	m_bPointEOL = UT_FALSE;
 	
 	if (bForward)
@@ -2287,6 +2299,10 @@ UT_Bool FV_View::_charMotion(UT_Bool bForward,UT_uint32 countChars)
 	if ((UT_sint32) m_iInsPoint < (UT_sint32) posBOD)
 	{
 		m_iInsPoint = posBOD;
+
+		if (m_iInsPoint != posOld)
+			_clearPointAP(UT_TRUE);
+
 		return UT_FALSE;
 	}
 
@@ -2296,9 +2312,14 @@ UT_Bool FV_View::_charMotion(UT_Bool bForward,UT_uint32 countChars)
 	if ((UT_sint32) m_iInsPoint > (UT_sint32) posEOD)
 	{
 		m_iInsPoint = posEOD;
+
+		if (m_iInsPoint != posOld)
+			_clearPointAP(UT_TRUE);
+
 		return UT_FALSE;
 	}
 
+	_clearPointAP(UT_TRUE);
 	return UT_TRUE;
 }
 // -------------------------------------------------------------------------
