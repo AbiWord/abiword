@@ -150,27 +150,23 @@ fl_Squiggles::_findFirstAfter(UT_sint32 iOffset, UT_sint32& iIndex) const
 UT_sint32
 fl_Squiggles::_find(UT_sint32 iOffset) const
 {
-	UT_sint32 iIndex;
-
-	_findFirstAfter(iOffset, iIndex);
-	// Note that the return value is not checked: either there is no
-	// POBs at all, in which case we'll catch it in the statement
-	// below (no previous POB). Otherwise we want to look at the last
-	// POB on the line since it may span past iOffset.
-
-	// If no previous POB, return
-	if (0 == iIndex) return -1;
-
-	// Load up with previous POB
-	fl_PartOfBlock* pPOB = getNth(--iIndex);
-
-	UT_ASSERT(pPOB->getOffset() <= iOffset);
-
-	// Check if offset is within the found POB.
-	if (iOffset <= (pPOB->getOffset() + pPOB->getLength()))
-		return iIndex;
-	
-	return -1;
+	UT_sint32 i = 0;
+	UT_sint32 iSquiggles = _getCount();
+	fl_PartOfBlock* pPOB;
+	for(i=0;i<iSquiggles;i++)
+	{
+		pPOB = getNth(i);
+		xxx_UT_DEBUGMSG((" i %d pob->offset %d pob->length %d offset %d \n",i,pPOB->getOffset(),pPOB->getLength(),iOffset));
+		if((pPOB->getOffset() <= iOffset) && (iOffset <= (pPOB->getOffset() + pPOB->getLength())))
+		{
+			break;
+		}
+	}
+	if(i>=iSquiggles)
+	{
+		return -1;
+	}
+	return i;
 }
 
 /*!

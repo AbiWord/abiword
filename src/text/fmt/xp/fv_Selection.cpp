@@ -248,8 +248,17 @@ void FV_Selection::setSelectionRightAnchor(PT_DocPosition pos)
 
 bool FV_Selection::isPosSelected(PT_DocPosition pos) const
 {
+	if(m_iSelectionMode == FV_SelectionMode_NONE)
+	{
+		return false;
+	}
 	if(m_iSelectionMode < FV_SelectionMode_Multiple)
 	{
+		if(m_iSelectAnchor == m_pView->getPoint())
+		{
+			return false;
+		}
+		xxx_UT_DEBUGMSG(("m_iSelectAnchor %d \n",m_iSelectAnchor));
 		PT_DocPosition posLow = m_iSelectAnchor;
 		PT_DocPosition posHigh = m_pView->getPoint();
 		if(posHigh < posLow)
@@ -257,7 +266,7 @@ bool FV_Selection::isPosSelected(PT_DocPosition pos) const
 			posHigh = m_iSelectAnchor;
 			posLow = m_pView->getPoint();
 		}
-		return (pos >= posLow) && (pos <=posHigh);
+		return ((pos >= posLow) && (pos <=posHigh));
 	}
 	UT_sint32 i =0;
 	for(i=0; i < static_cast<UT_sint32>(m_vecSelRanges.getItemCount()); i++)

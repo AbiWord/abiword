@@ -3997,7 +3997,7 @@ static bool s_doContextMenu_no_move( EV_EditMouseContext emc,
 											XAP_Frame * pFrame)
 {
 	const char * szContextMenuName =  XAP_App::getApp()->getMenuFactory()->FindContextMenu(emc);
-	xxx_UT_DEBUGMSG(("Context Menu Name is........ %s \N",szContextMenuName));
+	UT_DEBUGMSG(("Context Menu Name is........ %s \N",szContextMenuName));
 	if (!szContextMenuName)
 		return false;
 	bool res =	pFrame->runModalContextMenu(pView,szContextMenuName,
@@ -4052,6 +4052,7 @@ Defun(contextMisspellText)
 	ABIWORD_VIEW;
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> (pView->getParentData());
 	UT_ASSERT(pFrame);
+	UT_DEBUGMSG(("Doing Misspelt text \n"));
 	return s_doContextMenu(EV_EMC_MISSPELLEDTEXT,pCallData->m_xPos, pCallData->m_yPos,pView,pFrame);
 }
 

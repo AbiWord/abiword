@@ -7689,13 +7689,19 @@ EV_EditMouseContext FV_View::getMouseContext(UT_sint32 xPos, UT_sint32 yPos)
 	{
 	case FPRUN_TEXT:
 		if (!isPosSelected(pos))
+		{
 			if (pBlock->getSquiggles()->get(pos - pBlock->getPosition()))
 			{
-				xxx_UT_DEBUGMSG(("fv_View::getMouseContext: (8)\n"));
+				xxx_UT_DEBUGMSG(("fv_View::getMouseContext: (8) misspelt pos %d \n",pos));
 				m_prevMouseContext = EV_EMC_MISSPELLEDTEXT;
 				return EV_EMC_MISSPELLEDTEXT;
 			}
-		xxx_UT_DEBUGMSG(("fv_View::getMouseContext: (9)\n"));
+		}
+		else
+		{
+			xxx_UT_DEBUGMSG(("pos selected \n"));
+		}
+		xxx_UT_DEBUGMSG(("fv_View::getMouseContext: (9) text pos %d \n",pos));
 		m_prevMouseContext = EV_EMC_TEXT;
 		return EV_EMC_TEXT;
 

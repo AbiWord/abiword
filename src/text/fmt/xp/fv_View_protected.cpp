@@ -3481,10 +3481,11 @@ void FV_View::_fixInsertionPointCoords()
 		return;
 
 	fp_Page * pPage = NULL;
-
+	fl_BlockLayout * pBlock = NULL;
+	fp_Run * pRun = NULL;
 	if ((getPoint() > 0) && !isLayoutFilling())
 	{
-		_findPositionCoords(getPoint(), m_bPointEOL, m_xPoint, m_yPoint, m_xPoint2, m_yPoint2, m_iPointHeight, m_bPointDirection, NULL, NULL);
+		_findPositionCoords(getPoint(), m_bPointEOL, m_xPoint, m_yPoint, m_xPoint2, m_yPoint2, m_iPointHeight, m_bPointDirection, &pBlock, &pRun);
 		pPage = getCurrentPage();
 		UT_RGBColor * pClr = NULL;
 		if (pPage)
@@ -3510,6 +3511,13 @@ void FV_View::_fixInsertionPointCoords()
 	xxx_UT_DEBUGMSG(("SEVIOR: m_yPoint = %d m_iPointHeight = %d \n",m_yPoint,m_iPointHeight));
 	// hang onto this for _moveInsPtNextPrevLine()
 	m_xPointSticky = m_xPoint + m_xScrollOffset - getPageViewLeftMargin();
+	if(pBlock && pBlock->getSquiggles()->get(getPoint() - pBlock->getPosition()))
+	{
+		if(m_prevMouseContext == EV_EMC_TEXT)
+		{
+			m_prevMouseContext = EV_EMC_MISSPELLEDTEXT;
+		}
+	}
 }
 
 void FV_View::_draw(UT_sint32 x, UT_sint32 y,
