@@ -44,29 +44,33 @@ public:
 	void					appendFrag(pf_Frag * pf);
 	void					insertFrag(pf_Frag * pfPlace, pf_Frag * pfNew);
 	void					unlinkFrag(pf_Frag * pf);
-	void                    cleanFrags(void);
-	void                    cleanFragsConst(void) const;
-	pf_Frag *               getNthFrag( UT_uint32 nthFrag) const;
+	void                    cleanFrags(pf_Frag* pFrom = 0);
+	void                    cleanFragsConst() const;
+	pf_Frag *               getNthFrag(UT_uint32 nthFrag) const;
 	pf_Frag *               findFirstFragBeforePos(PT_DocPosition pos) const;
-	UT_uint32               getNumberOfFrags( void) const;
-	UT_uint32               getFragNumber( const pf_Frag * pf) const;
-	pf_Frag *				getFirst(void) const;
-	pf_Frag *				getLast(void) const;
-	void                    setFragsDirty(void) {m_bFragsClean = false;}
-	bool                    areFragsDirty( void) const { return !m_bFragsClean;}
+	UT_uint32               getNumberOfFrags() const;
+	UT_uint32               getFragNumber(const pf_Frag * pf) const;
+	pf_Frag *				getFirst() const;
+	pf_Frag *				getLast() const;
+	void                    setFragsDirty(pf_Frag* pFrom = 0) { pFrom ? m_pLastFragClean = pFrom : m_pLastFragClean = m_pFirst; }
+	bool                    areFragsDirty() const { return m_pLastFragClean != m_pLast; }
 
 #ifdef PT_TEST
 	void					__dump(FILE * fp) const;
 #endif
 	
-protected:
 private:
+	inline pf_Frag*			getCache() const { return m_pCache; }
+	inline void				setCache(pf_Frag* pf) const { m_pCache = pf; }
+
 	pf_Frag *				m_pFirst;
 	pf_Frag *				m_pLast;
 	UT_Vector               m_vecFrags;
-	bool                    m_bFragsClean;
-
-
+	pf_Frag *				m_pLastFragClean;
+	mutable pf_Frag*		m_pCache;
+#ifdef DEBUG
+	double					m_rStat; // % of lookups served by the cache
+#endif
 };
 
 #endif /* PF_FRAGMENTS_H */

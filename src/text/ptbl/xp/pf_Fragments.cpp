@@ -26,9 +26,10 @@
 #include "ut_debugmsg.h"
 
 pf_Fragments::pf_Fragments()
-	: m_pFirst(NULL),
-	m_pLast(NULL),
-	m_bFragsClean(false)
+	: m_pFirst(0),
+	  m_pLast(0),
+	  m_pLastFragClean(0),
+	  m_pCache(0)
 {
 }
 
@@ -49,7 +50,6 @@ void pf_Fragments::appendFrag(pf_Frag * pf)
 	// append a frag to the end of the list
 	
 	UT_ASSERT(pf);
-	setFragsDirty();
 	if (!m_pLast)
 	{
 		UT_ASSERT(!m_pFirst);
@@ -67,15 +67,17 @@ void pf_Fragments::appendFrag(pf_Frag * pf)
 		m_pLast = pf;
 		pf->setNext(NULL);
 	}
+	setFragsDirty(pf);
+	
 	return;
 }
 
-pf_Frag * pf_Fragments::getFirst(void) const
+pf_Frag * pf_Fragments::getFirst() const
 {
 	return m_pFirst;
 }
 
-pf_Frag * pf_Fragments::getLast(void) const
+pf_Frag * pf_Fragments::getLast() const
 {
 	return m_pLast;
 }
@@ -83,7 +85,6 @@ pf_Frag * pf_Fragments::getLast(void) const
 void pf_Fragments::insertFrag(pf_Frag * pfPlace, pf_Frag * pfNew)
 {
 	// insert the new fragment after the given fragment.
-	setFragsDirty();
 	UT_ASSERT(pfPlace);
 	UT_ASSERT(pfNew);
 
@@ -96,6 +97,7 @@ void pf_Fragments::insertFrag(pf_Frag * pfPlace, pf_Frag * pfNew)
 	pfPlace->setNext(pfNew);
 	if (m_pLast == pfPlace)
 		m_pLast = pfNew;
+	setFragsDirty(pfNew);
 }
 
 void pf_Fragments::unlinkFrag(pf_Frag * pf)
@@ -103,12 +105,14 @@ void pf_Fragments::unlinkFrag(pf_Frag * pf)
 	// NOTE:  it is the caller's responsibility to delete pf if appropriate.
 	
 	UT_ASSERT(pf->getType() != pf_Frag::PFT_EndOfDoc);
-	setFragsDirty();
 	pf_Frag * pn = pf->getNext();
 	pf_Frag * pp = pf->getPrev();
 
 	if (pn)
+	{
 		pn->setPrev(pp);
+		setFragsDirty(pn);
+	}
 	if (pp)
 		pp->setNext(pn);
 
@@ -117,16 +121,22 @@ void pf_Fragments::unlinkFrag(pf_Frag * pf)
 
 	if (m_pLast == pf)
 		m_pLast = pp;
+	if (getCache() == pf)
+		setCache(pp);
 }
 
 /*!
  * This method clears out and repopulates the vectore of pointers to fragments.
  * It also sets the doc Positions of all the fragments.
  */
-void pf_Fragments::cleanFrags(void)
+void pf_Fragments::cleanFrags(pf_Frag* pFrom)
 {
-	if(m_vecFrags.getItemCount() > 0)
+	if (!pFrom) // pFrom is not yet used
+		pFrom = m_pFirst;
+
+	if (m_vecFrags.getItemCount() > 0)
 		m_vecFrags.clear();
+
 	pf_Frag * pfLast = NULL;
 	PT_DocPosition sum = 0;
 	for (pf_Frag * pf = getFirst(); (pf); pf=pf->getNext())
@@ -138,10 +148,10 @@ void pf_Fragments::cleanFrags(void)
 	}
 	UT_ASSERT(pfLast && (pfLast->getType() == pf_Frag::PFT_EndOfDoc));
 	xxx_UT_DEBUGMSG(("SEVIOR: Found %d Frags dopos at end = %d \n",m_vecFrags.getItemCount(),getLast()->getPos()));
-	m_bFragsClean = true;
+	m_pLastFragClean = pfLast;
 }
 
-static void pf_fragments_clean_frags( void * p)
+static void pf_fragments_clean_frags(void * p)
 {
 	pf_Fragments * pFragments = static_cast<pf_Fragments *>(p);
 	pFragments->cleanFrags();
@@ -157,82 +167,114 @@ void pf_Fragments::cleanFragsConst(void) const
 
 pf_Frag * pf_Fragments::getNthFrag(UT_uint32 nthFrag) const
 {
-	if(areFragsDirty())
+	if (areFragsDirty())
 	{
+		xxx_UT_DEBUGMSG(("JCA: getNthFrag (%d): Cleanning fragments ( O(n) complexity! )\n", nthFrag));
 		cleanFragsConst();
 	}
-	if(m_vecFrags.getItemCount() > 0)
+	else
+		xxx_UT_DEBUGMSG(("JCA: getNthFrag (%d): Don't need to clean fragments\n", nthFrag));
+	
+	if (m_vecFrags.getItemCount() > 0)
 	{
+		xxx_UT_DEBUGMSG(("JCA: getNthFrag (%d): returning frag %p\n", nthFrag, m_vecFrags.getNthItem(nthFrag)));
 		return (pf_Frag *) m_vecFrags.getNthItem(nthFrag);
 	}
+
 	return NULL;
 }
 
 /*!
  * Binary search to find the first frag at position before pos
-\param PT_DocPosition we want to find for.
-\returns pf_Frag * pointer to the Frag with position immediately before pos
+ * @param PT_DocPosition we want to find for.
+ * @returns pf_Frag * pointer to the Frag with position immediately before pos
 */
-pf_Frag * pf_Fragments::findFirstFragBeforePos( PT_DocPosition pos) const
+pf_Frag * pf_Fragments::findFirstFragBeforePos(PT_DocPosition pos) const
 {
 	UT_uint32 numFrags = getNumberOfFrags();
-	if(numFrags  < 1)
+#ifdef DEBUG
+	UT_uint32 numIters = 0;
+#endif
+	xxx_UT_DEBUGMSG(("JCA: findFirstFragBeforePos (%d).  NbFrags = %d...\n", pos, numFrags));
+
+	if (numFrags  < 1)
 		return NULL;
-	if(pos >= getLast()->getPos())
+
+	if (pos >= getLast()->getPos())
 	{
-		xxx_UT_DEBUGMSG(("SEVIOR: Found last Frag= pos %d Looking for pos %d \n",getLast()->getPos(),pos));
+		xxx_UT_DEBUGMSG(("JCA: Found last Frag[%p] @ pos %d Looking for pos %d \n", getLast(), getLast()->getPos(), pos));
 		return getLast();
 	}
-	UT_sint32 diff = numFrags/2;
+
+	pf_Frag* cache = getCache();
+	if (cache && pos >= cache->getPos() && pos < cache->getPos() + cache->getLength())
+	{
+		xxx_UT_DEBUGMSG(("JCA: Value cached\n"));
+		return cache;
+	}
+	else
+		xxx_UT_DEBUGMSG(("JCA: Value not cached\n"));
+	
+	UT_sint32 diff = numFrags / 2;
 	UT_sint32 curFragNo = diff;
 	pf_Frag * curFrag = m_pLast;
 
-	while(diff > 1)
+	while (diff > 1)
 	{
+#ifdef DEBUG
+		++numIters;
+#endif
 		curFrag = (pf_Frag *) m_vecFrags.getNthItem(curFragNo);
-		if(pos < curFrag->getPos())
+		if (pos < curFrag->getPos())
 		{
-			diff = diff/2;
+			diff = diff / 2;
 			curFragNo -= diff;
 		}
 		else
 		{
-			diff = diff/2;
+			diff = diff / 2;
 			curFragNo += diff;
 		}
 	}
-	while( curFrag && pos > curFrag->getPos())
+	while (curFrag && pos > curFrag->getPos())
 	{
+#ifdef DEBUG
+		++numIters;
+#endif
 		curFrag = curFrag->getNext();
 	}
-	while( curFrag && pos < curFrag->getPos())
+	while (curFrag && pos < curFrag->getPos())
 	{
+#ifdef DEBUG
+		++numIters;
+#endif
 		curFrag = curFrag->getPrev();
 	}
-	xxx_UT_DEBUGMSG(("SEVIOR: Found at pos %d Looking for pos %d \n",curFrag->getPos(),pos));
-	if(curFrag && curFrag->getPrev() && curFrag->getNext())
+
+	xxx_UT_DEBUGMSG(("JCA: Found Frag[%p] at pos %d Looking for pos %d with [%d] iterations\n",
+				 curFrag, curFrag->getPos(), pos, numIters));
+	if (curFrag && curFrag->getPrev() && curFrag->getNext())
 	{
-		xxx_UT_DEBUGMSG(("SEVIOR Frag pos before = %d Frag Pos After %d Looking for pos %d \n",curFrag->getPrev()->getPos(),curFrag->getPos(),curFrag->getNext()->getPos(),pos));
+		xxx_UT_DEBUGMSG(("JCA: Frag pos before = %d Frag Pos After %d Looking for pos %d \n",
+						 curFrag->getPrev()->getPos(), curFrag->getPos(), curFrag->getNext()->getPos(), pos));
 	}
+	setCache(curFrag);
 	return curFrag;
 }
 
-UT_uint32 pf_Fragments::getFragNumber( const pf_Frag * pf) const
+UT_uint32 pf_Fragments::getFragNumber(const pf_Frag * pf) const
 {
-	if(areFragsDirty())
-	{
+	if (areFragsDirty())
 		cleanFragsConst();
-	}
-	return m_vecFrags.findItem( (void *) pf);
+
+	return m_vecFrags.findItem((void *) pf);
 }
 
-
-UT_uint32 pf_Fragments::getNumberOfFrags(void) const
+UT_uint32 pf_Fragments::getNumberOfFrags() const
 {
-	if(areFragsDirty())
-	{
+	if (areFragsDirty())
 		cleanFragsConst();
-	}
+
 	return m_vecFrags.getItemCount();
 }
 

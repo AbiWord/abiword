@@ -58,7 +58,7 @@ public:
 	pt_PieceTable *			getPieceTable(void) { return m_pPieceTable;}
 	fd_Field *				getField(void);
 	PT_DocPosition          getPos(void) const { return m_docPos;}
-	void                    setPos(PT_DocPosition pos) { m_docPos = pos;}
+	void                    setPos(PT_DocPosition pos) const { m_docPos = pos;}
 	// createSpecialChangeRecord() constructs a change
 	// record which describes the fragment itself and
 	// not an actual change (editing) operation.  the
@@ -79,8 +79,9 @@ protected:
 	
     fd_Field *              m_pField;
 	pt_PieceTable *			m_pPieceTable;
+
 private:
-	PT_DocPosition          m_docPos;
+	mutable PT_DocPosition  m_docPos;
 };
 
 #endif /* PF_FRAG_H */

@@ -438,9 +438,11 @@ bool pt_PieceTable::getFragFromPosition(PT_DocPosition docPos,
 //
 	pf_Frag * pfLast = m_fragments.findFirstFragBeforePos(docPos);
 
+	// why not just:
+	// UT_ASSERT(pfLast); *ppf = pfLast; if (pFragOffset) *pFragOffset = docPos - pfLast->getPos();
 	if(pfLast)
 	{
-		while(pfLast->getNext() && docPos >= pfLast->getPos()+pfLast->getLength())
+		while(pfLast->getNext() && docPos >= pfLast->getPos() + pfLast->getLength())
 		{
 			pfLast = pfLast->getNext();
 		}
