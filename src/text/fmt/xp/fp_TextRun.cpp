@@ -1396,10 +1396,24 @@ void fp_TextRun::_clearScreen(bool /* bFullLineHeightRect */)
 	if(thisLine != NULL)
 	{
 		// TODO -- this needs to be done in vis. space !!!
+
+		// because of rounding errors, we need to mark one run beyond what the math tells us
+		bool bOneMore = false;
+		
 		while(pPrev != NULL && pPrev->getLine() == thisLine &&
-			  (pPrev->getLength() == 0 || iCumWidth > 0))
+			  (pPrev->getLength() == 0 || iCumWidth > 0 || bOneMore))
 		{
 			iCumWidth -= pPrev->getWidth();
+
+			if(!bOneMore && iCumWidth <= 0)
+			{
+				bOneMore = true;
+			}
+			else
+			{
+				bOneMore = false;
+			}
+			
 			if(!isSelectionDraw())
 			{
 				pPrev->markAsDirty();
@@ -1408,10 +1422,22 @@ void fp_TextRun::_clearScreen(bool /* bFullLineHeightRect */)
 		}
 		
 		iCumWidth = rightClear;
+		bOneMore = false;
+		
 		while(pNext != NULL && pNext->getLine() == thisLine &&
-			  (pNext->getLength() == 0 || iCumWidth > 0))
+			  (pNext->getLength() == 0 || iCumWidth >= 0  || bOneMore))
 		{
 			iCumWidth -= pNext->getWidth();
+
+			if(!bOneMore && iCumWidth <= 0)
+			{
+				bOneMore = true;
+			}
+			else
+			{
+				bOneMore = false;
+			}
+			
 			if(!isSelectionDraw())
 			{
 				pNext->markAsDirty();
