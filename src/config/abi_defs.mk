@@ -314,46 +314,55 @@ ABI_ALL_INCS=	$(ABI_XAP_INCS) $(ABI_PEER_INCS) $(ABI_AP_INCS) $(ABI_OTH_INCS) $(
 
 ifeq ($(OS_NAME), WIN32)
 include $(ABI_ROOT)/src/config/platforms/win32.mk
+HAVEPLAT=1
 endif
 
 ifeq ($(OS_NAME), CYGWIN)
 include $(ABI_ROOT)/src/config/platforms/cygwin.mk
+HAVEPLAT=1
 endif
 
 ifeq ($(ABI_OPT_WINELIB), 1)
 include $(ABI_ROOT)/src/config/platforms/winelib.mk
+HAVEPLAT=1
 else
 ifeq ($(OS_NAME), MINGW32)
 include $(ABI_ROOT)/src/config/platforms/mingw32.mk
+HAVEPLAT=1
 endif
 endif
 
 ifeq ($(OS_NAME), MACOSX)
 include $(ABI_ROOT)/src/config/platforms/macosx.mk
+HAVEPLAT=1
 endif
 
 # DOS (via WxWindows)
 ifeq ($(OS_NAME), WXWIN)
 include $(ABI_ROOT)/src/config/platforms/wxwin.mk
+HAVEPLAT=1
 endif
  
 ifeq ($(OS_NAME), BeOS)
 include $(ABI_ROOT)/src/config/platforms/beos.mk
+HAVEPLAT=1
 endif
 
 ifeq ($(OS_NAME), procnto)
 include $(ABI_ROOT)/src/config/platforms/nto.mk
+HAVEPLAT=1
 endif
 ifeq ($(OS_NAME), QNX)
 ifeq (,$(suffix $(OS_RELEASE)))
 # QNX 4 not supported
 else
 include $(ABI_ROOT)/src/config/platforms/nto.mk
+HAVEPLAT=1
 endif
 endif
 
 # Catch all for undefined platform (CC will always be defined on a working platform)
-ifndef CC
+ifeq (,$(HAVEPLAT))
 fake-target::
 	@echo
 	@echo "    I can't seem to figure out which platform you are using."
