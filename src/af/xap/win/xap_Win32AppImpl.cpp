@@ -44,13 +44,20 @@ bool XAP_Win32AppImpl::openURL(const char * szURL)
 		if (sURL.substr(0, 2) == "/\\")
 			sURL = sURL.substr(2, sURL.size() - 2);
 
-		// Enclose in double-quotes, incase there's a space in the path
-		if ((sURL.substr(0, 1) != "\"") && (sURL.substr(sURL.size() -1, 1) != "\""))
-			sURL = "\"" + sURL + "\"";
-
 		// Convert all forwardslashes to backslashes
 		for (unsigned int i=0; i<sURL.length();i++)	
 			if (sURL[i]=='/')	sURL[i]='\\';
+
+		// Convert from longpath to 8.3 shortpath, in case of spaces in the path
+		char* longpath = NULL;
+		char* shortpath = NULL;
+		longpath = new char[MAX_PATH];
+		shortpath = new char[MAX_PATH];
+		strcpy(longpath, sURL.c_str());
+		GetShortPathName(longpath, shortpath, MAX_PATH);
+		sURL = shortpath;
+		DELETEP(longpath);
+		DELETEP(shortpath);
 	}
 
 	// Query the registry for the default browser so we can directly invoke it
@@ -95,11 +102,15 @@ bool XAP_Win32AppImpl::openURL(const char * szURL)
 	// Check for a %1 passed in from the registry.  If we find it,
 	// substitute our URL for %1.  Otherwise, just append sURL to params.
 	char *pdest = strstr(sParams.c_str(), "%1");
-	int i = pdest - sParams.c_str() + 1;
 	if (pdest != NULL)
+	{
+		int i = pdest - sParams.c_str() + 1;
 		sParams = sParams.substr(0, i-1) + sURL + sParams.substr(i+1, sParams.length()-i+1);
+	}
 	else
+	{
 		sParams = sParams + " " + sURL;
+	}
 
 	// Win95 doesn't like the Browser command to be quoted, so strip em off.
 	if (sBrowser.substr(0, 1) == "\"")
