@@ -88,8 +88,13 @@ void GR_Caret::s_enable(UT_Worker * _w)
 
 	c->m_worker->stop();
 	c->_blink(true);
-	if (c->m_bCursorIsOn)
+	if (!c->m_bCursorIsOn)
 		c->_blink(true); // blink again
+	else
+	{
+		c->_blink(true);
+		c->_blink(true);
+	}
 	c->m_worker->start();
 	c->m_enabler->stop();
 }
