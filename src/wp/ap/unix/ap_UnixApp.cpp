@@ -598,6 +598,7 @@ void AP_UnixApp::pasteFromClipboard(PD_DocumentRange * pDocRange, bool bUseClipb
     UT_uint32 iLen = 0;
 
     bool bFoundOne = false;
+	bool bSuccess = false;
     
     if ( bHonorFormatting )
       bFoundOne = m_pClipboard->getSupportedData(tFrom,reinterpret_cast<const void **>(&pData),&iLen,&szFormatFound);
@@ -613,58 +614,29 @@ void AP_UnixApp::pasteFromClipboard(PD_DocumentRange * pDocRange, bool bUseClipb
     if (AP_UnixClipboard::isRichTextTag(szFormatFound))
     {
 		iLen = UT_MIN(iLen,strlen(reinterpret_cast<const char *>(pData)));
-		UT_DEBUGMSG(("PasteFromClipboard: pasting %d bytes in format [%s].\n",iLen,szFormatFound));
 
 		IE_Imp_RTF * pImpRTF = new IE_Imp_RTF(pDocRange->m_pDoc);
-		pImpRTF->pasteFromBuffer(pDocRange,pData,iLen);
+		bSuccess = pImpRTF->pasteFromBuffer(pDocRange,pData,iLen);
 		DELETEP(pImpRTF);
     }
 	else if (AP_UnixClipboard::isHTMLTag (szFormatFound))
 	{
-		UT_DEBUGMSG(("iLen = %d \n",iLen));
 		IE_Imp_Text_Sniffer SniffBuf;
 		const char * szRes = SniffBuf.recognizeContentsType(reinterpret_cast<const char *>(pData),iLen);
-		bool bres = false;
 		if(UT_strcmp(szRes,"none") != 0)
 		{
-			UT_DEBUGMSG(("Data is type %s \n",szRes));
-
-		//		iLen = UT_MIN(iLen,strlen(reinterpret_cast<const char *>(pData)));
-			UT_DEBUGMSG(("PasteFromClipboard: pasting %d bytes in format [%s].\n",iLen,szFormatFound));
 			UT_uint32 iread,iwritten = 0;
 			const char * szutf8= static_cast<const char *>(UT_convert(reinterpret_cast<const char *>(pData),iLen,szRes,"UTF-8",&iread,&iwritten));
-			xxx_UT_DEBUGMSG(("Char is %s \n",szutf8));
 			IE_Imp_XHTML * pImpHTML = new IE_Imp_XHTML(pDocRange->m_pDoc);
-			bres = pImpHTML->pasteFromBuffer(pDocRange,reinterpret_cast<const unsigned char *>(szutf8),iwritten,"UTF-8");
+			bSuccess = pImpHTML->pasteFromBuffer(pDocRange,reinterpret_cast<const unsigned char *>(szutf8),iwritten,"UTF-8");
 			free(const_cast<char *>(szutf8));
 			DELETEP(pImpHTML);
 		}
 		else
 		{
-			UT_DEBUGMSG(("PasteFromClipboard: pasting %d bytes in format [%s].\n",iLen,szFormatFound));
 			IE_Imp_XHTML * pImpHTML = new IE_Imp_XHTML(pDocRange->m_pDoc);
-			bres = pImpHTML->pasteFromBuffer(pDocRange,reinterpret_cast<const unsigned char *>(pData),iLen);
+			bSuccess = pImpHTML->pasteFromBuffer(pDocRange,reinterpret_cast<const unsigned char *>(pData),iLen);
 			DELETEP(pImpHTML);
-		}
-		if(!bres)
-		{
-			//
-			// Try plain text.
-			//
-			UT_DEBUGMSG(("DOing text paste not HTML  type %s \n",szRes));
-			bFoundOne = m_pClipboard->getTextData(tFrom,reinterpret_cast<const void **>(&pData),&iLen, &szFormatFound);
-			if(bFoundOne)
-			{
-		
-				IE_Imp_Text * pImpText = new IE_Imp_Text(pDocRange->m_pDoc,"UTF-8");
-				pImpText->pasteFromBuffer(pDocRange,pData,iLen);
-				DELETEP(pImpText);
-			}
-			else
-			{
-				UT_DEBUGMSG(("PasteFromClipboard: did not find anything to paste.\n"));
-				return;
-			}
 		}
 	}
     else if (AP_UnixClipboard::isImageTag(szFormatFound))
@@ -673,8 +645,6 @@ void AP_UnixApp::pasteFromClipboard(PD_DocumentRange * pDocRange, bool bUseClipb
 		  FG_Graphic * pFG = NULL;
 		  IEGraphicFileType iegft = IEGFT_Unknown;
 		  UT_Error error = UT_OK;
-		  
-		  XAP_Frame * pFrame = getLastFocussedFrame ();
 		  
 		  UT_ByteBuf * bytes = new UT_ByteBuf( iLen );
 		  
@@ -686,7 +656,7 @@ void AP_UnixApp::pasteFromClipboard(PD_DocumentRange * pDocRange, bool bUseClipb
 			  UT_DEBUGMSG(("DOM: could not construct importer (%d)\n", 
 						   error));
 			  DELETEP(bytes);
-			  return;
+			  goto retry_text;
 		  }
 		  
 		  error = pIEG->importGraphic(bytes, &pFG);
@@ -695,33 +665,40 @@ void AP_UnixApp::pasteFromClipboard(PD_DocumentRange * pDocRange, bool bUseClipb
 			  UT_DEBUGMSG(("DOM: could not import graphic (%d)\n", error));
 			  DELETEP(bytes);
 			  DELETEP(pIEG);
-			  return;
+			  goto retry_text;
 		  }
 		  
 		  // at this point, 'bytes' is owned by pFG
-		  FV_View * pView = static_cast<FV_View*>(pFrame->getCurrentView());
+		  FV_View * pView = static_cast<FV_View*>(getLastFocussedFrame ()->getCurrentView());
 		  
 		  DELETEP(pIEG);
 		  
 		  error = pView->cmdInsertGraphic(pFG);
-		  if (error)
-		  {
-			  UT_DEBUGMSG(("DOM: could not insert graphic (%d)\n", error));
-			  DELETEP(pFG);
-			  return;
-		  }
-		  
 		  DELETEP(pFG);
+		  if (!error)
+			  bSuccess = true;
       }
     else // ( AP_UnixClipboard::isTextTag(szFormatFound) )
     {
 		iLen = UT_MIN(iLen,strlen(reinterpret_cast<const char *>(pData)));
-		UT_DEBUGMSG(("PasteFromClipboard: pasting %d bytes in format [%s].\n",iLen,szFormatFound));
 		
 		IE_Imp_Text * pImpText = new IE_Imp_Text(pDocRange->m_pDoc,"UTF-8");
-		pImpText->pasteFromBuffer(pDocRange,pData,iLen);
+		bSuccess = pImpText->pasteFromBuffer(pDocRange,pData,iLen);
 		DELETEP(pImpText);
     }
+
+ retry_text:
+
+	// we failed to paste *anything.* try plaintext as a last-ditch effort
+	if(!bSuccess && m_pClipboard->getTextData(tFrom,reinterpret_cast<const void **>(&pData),&iLen, &szFormatFound)) {
+		UT_DEBUGMSG(("DOM: pasting text as an absolute fallback (bug 7666)\n"));
+		
+		iLen = UT_MIN(iLen,strlen(reinterpret_cast<const char *>(pData)));
+		
+		IE_Imp_Text * pImpText = new IE_Imp_Text(pDocRange->m_pDoc,"UTF-8");
+		bSuccess = pImpText->pasteFromBuffer(pDocRange,pData,iLen);
+		DELETEP(pImpText);
+	}
 }
 
 bool AP_UnixApp::canPasteFromClipboard(void)
@@ -731,7 +708,7 @@ bool AP_UnixApp::canPasteFromClipboard(void)
 
 extern "C" {
 
-	// return > 0 for directory entries ending in ".so"
+	// return > 0 for directory entries ending in ".so" ".sl" and the like
 #if defined (__APPLE__) || defined (__FreeBSD__) || defined (__OpenBSD__) \
 	|| defined(_AIX) || defined(__sgi)
 	static int so_only (struct dirent *d)
@@ -747,8 +724,8 @@ extern "C" {
 			
 			if (len >= 3)
 			{
-				if(!strcmp(name+(len-3), ".so"))
-	    return 1;
+				if(!strcmp(name+(len-3), "."G_MODULE_SUFFIX))
+					return 1;
 			}
 		}
 		return 0;
@@ -804,7 +781,7 @@ void AP_UnixApp::loadAllPlugins ()
 				  free(namelist[n]);
 				  continue;
 			  }
-			  if(strcmp (namelist[n]->d_name+(len-3), ".so") != 0)
+			  if(strcmp (namelist[n]->d_name+(len-3), "."G_MODULE_SUFFIX) != 0)
 			  {
 				  UT_DEBUGMSG(("FJF: not really a plugin?\n"));
 				  free(namelist[n]);
