@@ -22,7 +22,11 @@
 
 #include <unistd.h>
 
+#ifdef AIX
+#include <sys/time.h>
+#else 
 #define UT_usleep usleep
+#endif
 
 #endif
 
