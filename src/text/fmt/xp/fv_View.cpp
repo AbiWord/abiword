@@ -748,6 +748,7 @@ void FV_View::focusChange(AV_Focus focus)
 			_eraseInsertionPoint();
 			_saveCurrentPoint();
 		}
+		break;
 	}
 }
 
@@ -6269,11 +6270,7 @@ FV_View::findNext(const UT_UCSChar* pFind, bool bMatchCase,
 
 	if (isSelectionEmpty())
 	{
-		if (!_ensureThatInsertionPointIsOnScreen())
-		{
-			_fixInsertionPointCoords();
-			_drawInsertionPoint();
-		}
+		_updateInsertionPoint();
 	}
 	else
 	{
@@ -6725,11 +6722,7 @@ FV_View::findReplace(const UT_UCSChar* pFind, const UT_UCSChar* pReplace,
 	
 	if (isSelectionEmpty())
 	{
-		if (!_ensureThatInsertionPointIsOnScreen())
-		{
-			_fixInsertionPointCoords();
-			_drawInsertionPoint();
-		}
+		_updateInsertionPoint();
 	}
 	else
 	{
@@ -6776,11 +6769,7 @@ FV_View::findReplaceAll(const UT_UCSChar* pFind, const UT_UCSChar* pReplace,
 	
 	if (isSelectionEmpty())
 	{
-		if (!_ensureThatInsertionPointIsOnScreen())
-		{
-			_fixInsertionPointCoords();
-			_drawInsertionPoint();
-		}
+		_updateInsertionPoint();
 	}
 	else
 	{
@@ -7108,11 +7097,7 @@ void FV_View::warpInsPtToXY(UT_sint32 xPos, UT_sint32 yPos, bool bClick = false)
 	_restorePieceTableState();
 
 	_setPoint(pos, bEOL);
-	if (!_ensureThatInsertionPointIsOnScreen())
-	{
-		_fixInsertionPointCoords();
-		_drawInsertionPoint();
-	}
+	_updateInsertionPoint();
 	notifyListeners(AV_CHG_MOTION | AV_CHG_HDRFTR ); // Sevior Put this in
 //	notifyListeners(AV_CHG_HDRFTR );
 
@@ -7539,7 +7524,7 @@ void FV_View::_fixInsertionPointCoords()
 void FV_View::_updateInsertionPoint()
 {
 	if (isSelectionEmpty())
-	{
+ 	{
 		if (!_ensureThatInsertionPointIsOnScreen())
 		{
 			_fixInsertionPointCoords();
@@ -8601,15 +8586,8 @@ void FV_View::cmdUndo(UT_uint32 count)
 	m_pDoc->enableListUpdates();
 	m_pDoc->updateDirtyLists();
 
+	_updateInsertionPoint();
 
-	if (isSelectionEmpty())
-	{
-		if (!_ensureThatInsertionPointIsOnScreen())
-		{
-			_fixInsertionPointCoords();
-			_drawInsertionPoint();
-		}
-	}
 	// Signal PieceTable Changes have finished
 	m_pDoc->notifyPieceTableChangeEnd();
 	m_iPieceTableState = 0;
@@ -8653,16 +8631,9 @@ void FV_View::cmdRedo(UT_uint32 count)
 // Do a complete update coz who knows what happened in the undo!
 //
 	notifyListeners(AV_CHG_ALL);
-
 	
-	if (isSelectionEmpty())
-	{
-		if (!_ensureThatInsertionPointIsOnScreen())
-		{
-			_fixInsertionPointCoords();
-			_drawInsertionPoint();
-		}
-	}
+	_updateInsertionPoint();
+
 	// Signal PieceTable Changes have finished
 	m_pDoc->notifyPieceTableChangeEnd();
 	m_iPieceTableState = 0;
@@ -8836,11 +8807,7 @@ void FV_View::_doPaste(bool bUseClipboard, bool bHonorFormatting)
 
 	_generalUpdate();
 	
-	if (!_ensureThatInsertionPointIsOnScreen())
-	{
-		_fixInsertionPointCoords();
-		_drawInsertionPoint();
-	}
+	_updateInsertionPoint();
 }
 
 bool FV_View::setSectionFormat(const XML_Char * properties[])
@@ -9700,11 +9667,7 @@ UT_Error FV_View::cmdInsertGraphic(FG_Graphic* pFG, const char* pszName)
 	_generalUpdate();
 
 	_restorePieceTableState();
-	if (!_ensureThatInsertionPointIsOnScreen())
-	{
-		_fixInsertionPointCoords();
-		_drawInsertionPoint();
-	}
+	_updateInsertionPoint();
 
 	delete [] szName;
 
@@ -10699,11 +10662,7 @@ void FV_View::RestoreSavedPieceTableState(void)
 	m_pDoc->endUserAtomicGlob(); // End the big undo block
 	setScreenUpdateOnGeneralUpdate(true);	
 	_generalUpdate();
-	if (!_ensureThatInsertionPointIsOnScreen())
-	{
-		_fixInsertionPointCoords();
-		_drawInsertionPoint();
-	}
+	_updateInsertionPoint();
 }
 
 
@@ -10782,11 +10741,7 @@ void FV_View::removeThisHdrFtr(HdrFtrType hfType, bool bSkipPTSaves)
 		_restorePieceTableState();
 		updateScreen (); // fix 1803, force screen update/redraw
 
-		if (!_ensureThatInsertionPointIsOnScreen())
-		{
-			_fixInsertionPointCoords();
-			_drawInsertionPoint();
-		}
+		_updateInsertionPoint();
 		m_pDoc->endUserAtomicGlob();
 	}
 	clearCursorWait();
@@ -10848,11 +10803,7 @@ void FV_View::createThisHdrFtr(HdrFtrType hfType, bool bSkipPTSaves)
 	if(!bSkipPTSaves)
 	{
 		_generalUpdate();
-		if (!_ensureThatInsertionPointIsOnScreen())
-		{
-			_fixInsertionPointCoords();
-			_drawInsertionPoint();
-		}
+		_updateInsertionPoint();
 	}
 	clearCursorWait();
 }
@@ -10947,11 +10898,7 @@ void FV_View::populateThisHdrFtr(HdrFtrType hfType, bool bSkipPTSaves)
 		m_iPieceTableState = 0;
 		m_pDoc->endUserAtomicGlob(); // End the big undo block
 		_generalUpdate();
-		if (!_ensureThatInsertionPointIsOnScreen())
-		{
-			_fixInsertionPointCoords();
-			_drawInsertionPoint();
-		}
+		_updateInsertionPoint();
 	}
 	clearCursorWait();
 }
@@ -11104,11 +11051,7 @@ void FV_View::cmdRemoveHdrFtr( bool isHeader)
 	_restorePieceTableState();
 	updateScreen (); // fix 1803, force screen update/redraw
 
-	if (!_ensureThatInsertionPointIsOnScreen())
-	{
-		_fixInsertionPointCoords();
-		_drawInsertionPoint();
-	}
+	_updateInsertionPoint();
 	m_pDoc->endUserAtomicGlob();
 	clearCursorWait();
 }
@@ -11416,11 +11359,7 @@ void FV_View::cmdEditHeader(void)
 //
 	setHdrFtrEdit(pShadow);
 	_generalUpdate();
-	if (!_ensureThatInsertionPointIsOnScreen())
-	{
-		_fixInsertionPointCoords();
-		_drawInsertionPoint();
-	}
+	_updateInsertionPoint();
 }
 
 /*!
@@ -11460,11 +11399,7 @@ void FV_View::cmdEditFooter(void)
 //
 	setHdrFtrEdit(pShadow);
 	_generalUpdate();
-	if (!_ensureThatInsertionPointIsOnScreen())
-	{
-		_fixInsertionPointCoords();
-		_drawInsertionPoint();
-	}
+	_updateInsertionPoint();
 }
 
 /*	the problem with using bool to store the PT state is that
@@ -11557,11 +11492,7 @@ void FV_View::insertHeaderFooter(HdrFtrType hfType)
 	setHdrFtrEdit(pShadow);
 
 	_generalUpdate();
-	if (!_ensureThatInsertionPointIsOnScreen())
-	{
-		_fixInsertionPointCoords();
-		_drawInsertionPoint();
-	}
+	_updateInsertionPoint();
 	clearCursorWait();
 }
 
@@ -12025,11 +11956,7 @@ bool FV_View::insertEndnoteSection(const XML_Char * enpid)
 	// Signal PieceTable Changes have Ended
 	//UT_DEBUGMSG(("insertEndnoteSection: about to restore\n"));
 	_restorePieceTableState();
-	if (!_ensureThatInsertionPointIsOnScreen())
-	{
-		_fixInsertionPointCoords();
-		_drawInsertionPoint();
-	}
+	_updateInsertionPoint();
 
 	return true;
 }
@@ -12185,11 +12112,7 @@ bool FV_View::insertPageNum(const XML_Char ** props, HdrFtrType hfType)
 
 	// Signal PieceTable Changes have Ended
 	_restorePieceTableState();
-	if (!_ensureThatInsertionPointIsOnScreen())
-	{
-		_fixInsertionPointCoords();
-		_drawInsertionPoint();
-	}
+	_updateInsertionPoint();
 	return bResult;
 }
 
