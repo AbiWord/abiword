@@ -371,6 +371,23 @@ void AP_CocoaDialog_Options::runModal(XAP_Frame * pFrame)
 	[oPopUp_Units addItemsWithTitles:m_UnitsList];
 
 	[self sync];
+
+	switch (m_xap->getInitialPageNum())
+		{
+		default:
+		case 1:
+			[oTabView selectTabViewItemWithIdentifier:@"General"];
+			break;
+		case 2:
+			[oTabView selectTabViewItemWithIdentifier:@"Interface"];
+			break;
+		case 3:
+			[oTabView selectTabViewItemWithIdentifier:@"Documents"];
+			break;
+		case 4:
+			[oTabView selectTabViewItemWithIdentifier:@"Spelling"];
+			break;
+		}
 }
 
 - (IBAction)aButton:(id)sender
