@@ -61,6 +61,7 @@ public:
 	SET_GATHER			(ViewShowStandardBar,UT_Bool );      
 	SET_GATHER			(ViewShowFormatBar,	UT_Bool );      
 	SET_GATHER			(ViewShowExtraBar,	UT_Bool );
+	SET_GATHER			(ViewShowStatusBar,	UT_Bool );
 	SET_GATHER			(ViewRulerUnits,	UT_Dimension);		
 	SET_GATHER			(ViewCursorBlink,	UT_Bool);
  
