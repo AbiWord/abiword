@@ -557,6 +557,9 @@ dcl(DLG_HdrFtr_RestartNumbers, "Restart numbering at:")
      dcl(DLG_MetaData_Relation_LBL, "Relation:")
      dcl(DLG_MetaData_Coverage_LBL, "Coverage:")
      dcl(DLG_MetaData_Rights_LBL, "Rights:")
+     dcl(DLG_MetaData_TAB_Permission, "Permissions")
+     dcl(DLG_MetaData_TAB_Summary, "Summary")
+     dcl(DLG_MetaData_TAB_General,"General")
 
 dcl(MSG_EmptySelection, "Current Selection is Empty")
 

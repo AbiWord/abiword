@@ -196,7 +196,8 @@ GtkWidget * AP_UnixDialog_MetaData::_constructWindow ()
 
 void AP_UnixDialog_MetaData::_constructWindowContents ( GtkWidget * dialog_vbox1 )
 {
-  GtkWidget *vbox1;
+  GtkWidget *notebook1;
+  GtkWidget *notebook_lbl;
   GtkWidget *table2;
   GtkWidget *title_lbl;
   GtkWidget *subject_lbl;
@@ -208,7 +209,6 @@ void AP_UnixDialog_MetaData::_constructWindowContents ( GtkWidget * dialog_vbox1
   GtkWidget *author_entry;
   GtkWidget *publisher_entry;
   GtkWidget *coauthor_entry;
-  GtkWidget *hseparator1;
   GtkWidget *table3;
   GtkWidget *category_lbl;
   GtkWidget *keywords_lbl;
@@ -219,7 +219,6 @@ void AP_UnixDialog_MetaData::_constructWindowContents ( GtkWidget * dialog_vbox1
   GtkWidget *scrolledwindow1;
   GtkWidget *description_txt;
   GtkWidget *category_entry;
-  GtkWidget *hseparator2;
   GtkWidget *table4;
   GtkWidget *source_lbl;
   GtkWidget *relation_lbl;
@@ -232,13 +231,14 @@ void AP_UnixDialog_MetaData::_constructWindowContents ( GtkWidget * dialog_vbox1
 
   const XAP_StringSet * pSS = XAP_App::getApp()->getStringSet();
 
-  vbox1 = gtk_vbox_new (FALSE, 5);
-  gtk_widget_show (vbox1);
-  gtk_box_pack_start (GTK_BOX (dialog_vbox1), vbox1, TRUE, TRUE, 0);
+  notebook1 = gtk_notebook_new ();
+  gtk_widget_show (notebook1);
+
+  gtk_container_add(GTK_CONTAINER(dialog_vbox1), notebook1);
 
   table2 = gtk_table_new (5, 2, FALSE);
   gtk_widget_show (table2);
-  gtk_box_pack_start (GTK_BOX (vbox1), table2, TRUE, TRUE, 3);
+  gtk_container_add(GTK_CONTAINER(notebook1), table2);
   gtk_container_set_border_width (GTK_CONTAINER (table2), 3);
   gtk_table_set_row_spacings (GTK_TABLE (table2), 3);
   gtk_table_set_col_spacings (GTK_TABLE (table2), 3);
@@ -308,13 +308,9 @@ void AP_UnixDialog_MetaData::_constructWindowContents ( GtkWidget * dialog_vbox1
                     (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
                     (GtkAttachOptions) (0), 0, 0);
 
-  hseparator1 = gtk_hseparator_new ();
-  gtk_widget_show (hseparator1);
-  gtk_box_pack_start (GTK_BOX (vbox1), hseparator1, TRUE, TRUE, 0);
-
   table3 = gtk_table_new (4, 2, FALSE);
   gtk_widget_show (table3);
-  gtk_box_pack_start (GTK_BOX (vbox1), table3, TRUE, TRUE, 3);
+  gtk_container_add(GTK_CONTAINER(notebook1), table3);
   gtk_container_set_border_width (GTK_CONTAINER (table3), 3);
   gtk_table_set_row_spacings (GTK_TABLE (table3), 3);
   gtk_table_set_col_spacings (GTK_TABLE (table3), 3);
@@ -377,13 +373,9 @@ void AP_UnixDialog_MetaData::_constructWindowContents ( GtkWidget * dialog_vbox1
                     (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
                     (GtkAttachOptions) (0), 0, 0);
 
-  hseparator2 = gtk_hseparator_new ();
-  gtk_widget_show (hseparator2);
-  gtk_box_pack_start (GTK_BOX (vbox1), hseparator2, TRUE, TRUE, 0);
-
   table4 = gtk_table_new (4, 2, FALSE);
   gtk_widget_show (table4);
-  gtk_box_pack_start (GTK_BOX (vbox1), table4, TRUE, TRUE, 3);
+  gtk_container_add(GTK_CONTAINER(notebook1), table4);
   gtk_container_set_border_width (GTK_CONTAINER (table4), 3);
   gtk_table_set_row_spacings (GTK_TABLE (table4), 3);
   gtk_table_set_col_spacings (GTK_TABLE (table4), 3);
@@ -439,6 +431,20 @@ void AP_UnixDialog_MetaData::_constructWindowContents ( GtkWidget * dialog_vbox1
   gtk_table_attach (GTK_TABLE (table4), rights_entry, 1, 2, 3, 4,
                     (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
                     (GtkAttachOptions) (0), 0, 0);
+
+  // assign tab names
+
+  notebook_lbl = gtk_label_new (pSS->getValue(AP_STRING_ID_DLG_MetaData_TAB_General));
+  gtk_widget_show(notebook_lbl);
+  gtk_notebook_set_tab_label (GTK_NOTEBOOK (notebook1), gtk_notebook_get_nth_page (GTK_NOTEBOOK (notebook1), 0), notebook_lbl); 
+
+  notebook_lbl = gtk_label_new (pSS->getValue(AP_STRING_ID_DLG_MetaData_TAB_Summary));
+  gtk_widget_show(notebook_lbl);
+  gtk_notebook_set_tab_label (GTK_NOTEBOOK (notebook1), gtk_notebook_get_nth_page (GTK_NOTEBOOK (notebook1), 1), notebook_lbl);
+
+  notebook_lbl = gtk_label_new (pSS->getValue(AP_STRING_ID_DLG_MetaData_TAB_Permission));
+  gtk_widget_show(notebook_lbl);
+  gtk_notebook_set_tab_label (GTK_NOTEBOOK (notebook1), gtk_notebook_get_nth_page (GTK_NOTEBOOK (notebook1), 2), notebook_lbl);
 
   // assign member variables
 
