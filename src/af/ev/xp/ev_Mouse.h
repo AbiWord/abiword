@@ -35,8 +35,8 @@ public:
 	UT_Bool invokeMouseMethod(AV_View * pView,
 							  EV_EditMethod * pEM,
 							  UT_uint32 iPrefixCount,
-							  UT_uint32 xPos,
-							  UT_uint32 yPos);
+							  UT_sint32 xPos,
+							  UT_sint32 yPos);
 
 protected:
 	EV_EditEventMapper *	m_pEEM;

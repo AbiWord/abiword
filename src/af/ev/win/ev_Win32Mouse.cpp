@@ -66,13 +66,16 @@ void EV_Win32Mouse::onButtonDown(AV_View * pView,
 		ems |= EV_EMS_ALT;
 
 	UT_DEBUGMSG(("onButtonDown: %p [b=%d m=%d]\n",EV_EMO_SINGLECLICK|emb|ems,emb,ems));
-	
+		
+	short x = (unsigned short) xPos;
+	short y = (unsigned short) yPos;
+
 	result = m_pEEM->Mouse(EV_EMO_SINGLECLICK|emb|ems, &pEM,&iPrefix);
 	switch (result)
 	{
 	case EV_EEMR_COMPLETE:
 		UT_ASSERT(pEM);
-		invokeMouseMethod(pView,pEM,iPrefix,xPos,yPos);
+		invokeMouseMethod(pView,pEM,iPrefix,x,y);
 		return;
 	case EV_EEMR_INCOMPLETE:
 		// I'm not sure this makes any sense, but we allow it.
@@ -110,12 +113,15 @@ void EV_Win32Mouse::onButtonMove(AV_View * pView,
 
 	UT_DEBUGMSG(("onButtonMove: %p [b=%d m=%d]\n",EV_EMO_DRAG|m_embCaptured|ems, m_embCaptured, ems));
 	
+	short x = (unsigned short) xPos;
+	short y = (unsigned short) yPos;
+
 	result = m_pEEM->Mouse(EV_EMO_DRAG|m_embCaptured|ems, &pEM,&iPrefix);
 	switch (result)
 	{
 	case EV_EEMR_COMPLETE:
 		UT_ASSERT(pEM);
-		invokeMouseMethod(pView,pEM,iPrefix,xPos,yPos);
+		invokeMouseMethod(pView,pEM,iPrefix,x,y);
 		return;
 	case EV_EEMR_INCOMPLETE:
 		// I'm not sure this makes any sense, but we allow it.
@@ -155,13 +161,16 @@ void EV_Win32Mouse::onButtonUp(AV_View * pView,
 		ems |= EV_EMS_ALT;
 
 	UT_DEBUGMSG(("onButtonUp  : %p [b=%d m=%d]\n",EV_EMO_RELEASE|m_embCaptured|ems, m_embCaptured, ems));
+	
+	short x = (unsigned short) xPos;
+	short y = (unsigned short) yPos;
 
 	result = m_pEEM->Mouse(EV_EMO_RELEASE|m_embCaptured|ems, &pEM,&iPrefix);
 	switch (result)
 	{
 	case EV_EEMR_COMPLETE:
 		UT_ASSERT(pEM);
-		invokeMouseMethod(pView,pEM,iPrefix,xPos,yPos);
+		invokeMouseMethod(pView,pEM,iPrefix,x,y);
 		return;
 	case EV_EEMR_INCOMPLETE:
 		// I'm not sure this makes any sense, but we allow it.
@@ -203,12 +212,15 @@ void EV_Win32Mouse::onDoubleClick(AV_View * pView,
 
 	UT_DEBUGMSG(("onDoubleClick: %p [b=%d m=%d]\n",EV_EMO_DOUBLECLICK|emb|ems,emb,ems));
 	
+	short x = (unsigned short) xPos;
+	short y = (unsigned short) yPos;
+
 	result = m_pEEM->Mouse(EV_EMO_DOUBLECLICK|emb|ems, &pEM,&iPrefix);
 	switch (result)
 	{
 	case EV_EEMR_COMPLETE:
 		UT_ASSERT(pEM);
-		invokeMouseMethod(pView,pEM,iPrefix,xPos,yPos);
+		invokeMouseMethod(pView,pEM,iPrefix,x,y);
 		return;
 	case EV_EEMR_INCOMPLETE:
 		// I'm not sure this makes any sense, but we allow it.

@@ -42,8 +42,8 @@ EV_Mouse::EV_Mouse(EV_EditEventMapper * pEEM)
 UT_Bool EV_Mouse::invokeMouseMethod(AV_View * pView,
 									EV_EditMethod * pEM,
 									UT_uint32 iPrefixCount,
-									UT_uint32 xPos,
-									UT_uint32 yPos)
+									UT_sint32 xPos,
+									UT_sint32 yPos)
 {
 	UT_ASSERT(pView);
 	UT_ASSERT(pEM);
