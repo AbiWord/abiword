@@ -88,15 +88,30 @@ _LIBPNG_:
 	fi
 
 _FONTS_:
-	@if [   -d $(ABI_DEPTH)/wp/lib/unix/fonts									\
-	     -a -f $(ABI_DEPTH)/wp/lib/unix/fonts/fonts.dir								\
-	     -a ls `grep \.pfa $(ABI_DEPTH)/wp/lib/unix/fonts/fonts.dir|awk '{print $1}'>/dev/null 2>&1` ]; then	\
-		echo Found AbiWord fonts;										\
-	else														\
-		echo AbiWord fonts not found.										\
-		echo TODO provide a nicer error message;	\
-		echo TODO with instructions for obtaining it;	\
-		exit 1;						\
+	@if [ !   -d $(ABI_DEPTH)/wp/lib/unix/fonts							\
+	     -o ! -f $(ABI_DEPTH)/wp/lib/unix/fonts/fonts.dir				\
+		];																\
+	then																\
+		echo Missing font directory.;									\
+		exit 1;															\
+	else																\
+		xxx=`grep \.pfa $(ABI_DEPTH)/wp/lib/unix/fonts/fonts.dir | awk '{print $$1}'`;	\
+		for k in $$xxx;													\
+		do																\
+			if [ ! -f $(ABI_DEPTH)/wp/lib/unix/fonts/$$k ];				\
+			then														\
+				echo ***AbiWord FONT NOT FOUND***;						\
+				echo;													\
+				echo AbiWord has a collection of font metrics that;		\
+				echo need to be downloaded separately.  Please see;		\
+				echo http://www.abisource.com/dev_download.phtml#type1;	\
+				echo for information.;									\
+				echo;													\
+				echo ***STOP***;										\
+				exit 1;													\
+			fi;															\
+		done;															\
+		echo AbiWord fonts found.;										\
 	fi
 
 #################################################################
