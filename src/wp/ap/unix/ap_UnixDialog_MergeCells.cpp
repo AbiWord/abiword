@@ -206,7 +206,7 @@ GtkWidget * AP_UnixDialog_MergeCells::_constructWindowContents(void)
 	GtkWidget *wMergeAbove;
 	GtkWidget *wMergeBelow;
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
-	frame1 = gtk_frame_new (pSS->getValue(AP_STRING_ID_DLG_MergeCells_Frame));
+	frame1 = gtk_frame_new (pSS->getValueUTF8(AP_STRING_ID_DLG_MergeCells_Frame).c_str());
 	gtk_widget_show (frame1);
 	gtk_container_add (GTK_CONTAINER (wContents), frame1);
 	gtk_container_set_border_width (GTK_CONTAINER (frame1), 3);
@@ -216,27 +216,27 @@ GtkWidget * AP_UnixDialog_MergeCells::_constructWindowContents(void)
 	gtk_container_add (GTK_CONTAINER (frame1), table1);
 	gtk_table_set_col_spacings (GTK_TABLE (table1), 2);
 
-	wlMergeLeft = gtk_label_new (pSS->getValue(AP_STRING_ID_DLG_MergeCells_Left));
+	wlMergeLeft = gtk_label_new (pSS->getValueUTF8(AP_STRING_ID_DLG_MergeCells_Left).c_str());
 	gtk_widget_show (wlMergeLeft);
 	gtk_table_attach (GTK_TABLE (table1), wlMergeLeft, 0, 1, 0, 1,
 					  (GtkAttachOptions) (GTK_FILL),
 					  (GtkAttachOptions) (0), 0, 0);
 	gtk_misc_set_alignment (GTK_MISC (wlMergeLeft), 0, 0.5);
-	wlMergeRight = gtk_label_new (pSS->getValue(AP_STRING_ID_DLG_MergeCells_Right));
+	wlMergeRight = gtk_label_new (pSS->getValueUTF8(AP_STRING_ID_DLG_MergeCells_Right).c_str());
 	gtk_widget_show (wlMergeRight);
 	gtk_table_attach (GTK_TABLE (table1), wlMergeRight, 0, 1, 1, 2,
 					  (GtkAttachOptions) (GTK_FILL),
 					  (GtkAttachOptions) (0), 0, 0);
 	gtk_misc_set_alignment (GTK_MISC (wlMergeRight), 0, 0.5);
 
-	wlMergeAbove = gtk_label_new (pSS->getValue(AP_STRING_ID_DLG_MergeCells_Above));
+	wlMergeAbove = gtk_label_new (pSS->getValueUTF8(AP_STRING_ID_DLG_MergeCells_Above).c_str());
 	gtk_widget_show (wlMergeAbove);
 	gtk_table_attach (GTK_TABLE (table1), wlMergeAbove, 0, 1, 2, 3,
 					  (GtkAttachOptions) (GTK_FILL),
 					  (GtkAttachOptions) (0), 0, 0);
 	gtk_misc_set_alignment (GTK_MISC (wlMergeAbove), 0, 0.5);
 
-	wlMergeBelow = gtk_label_new (pSS->getValue(AP_STRING_ID_DLG_MergeCells_Below));
+	wlMergeBelow = gtk_label_new (pSS->getValueUTF8(AP_STRING_ID_DLG_MergeCells_Below).c_str());
 	gtk_widget_show (wlMergeBelow);
 	gtk_table_attach (GTK_TABLE (table1), wlMergeBelow, 0, 1, 3, 4,
                     (GtkAttachOptions) (GTK_FILL),

@@ -127,7 +127,7 @@ GtkWidget * AP_UnixDialog_Insert_DateTime::_constructWindow(void)
 
   const XAP_StringSet * pSS = m_pApp->getStringSet();
 
-  m_windowMain = abiDialogNew ( true, pSS->getValue(AP_STRING_ID_DLG_DateTime_DateTimeTitle));
+  m_windowMain = abiDialogNew ( true, pSS->getValueUTF8(AP_STRING_ID_DLG_DateTime_DateTimeTitle).c_str());
   
   vbox = GTK_DIALOG(m_windowMain)->vbox;
   contents = _constructWindowContents();
@@ -152,7 +152,7 @@ GtkWidget * AP_UnixDialog_Insert_DateTime::_constructWindowContents(void)
 	vboxFormats = gtk_vbox_new (FALSE, 0);
 	gtk_widget_show (vboxFormats);
 
-	UT_XML_cloneNoAmpersands(unixstr, pSS->getValue(AP_STRING_ID_DLG_DateTime_AvailableFormats));
+	UT_XML_cloneNoAmpersands(unixstr, pSS->getValueUTF8(AP_STRING_ID_DLG_DateTime_AvailableFormats).c_str());
 	labelFormats = gtk_label_new (unixstr);
 	FREEP(unixstr);
 	gtk_widget_show (labelFormats);

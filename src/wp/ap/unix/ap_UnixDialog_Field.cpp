@@ -228,7 +228,7 @@ GtkWidget * AP_UnixDialog_Field::_constructWindow(void)
     GtkWidget* contents;
 	GtkWidget* vbox ;
 	
-	m_windowMain = abiDialogNew ( true, pSS->getValue(AP_STRING_ID_DLG_Field_FieldTitle) ) ;
+	m_windowMain = abiDialogNew ( true, pSS->getValueUTF8(AP_STRING_ID_DLG_Field_FieldTitle).c_str() ) ;
 	abiAddStockButton ( GTK_DIALOG(m_windowMain), GTK_STOCK_OK, BUTTON_OK ) ;
 	abiAddStockButton ( GTK_DIALOG(m_windowMain), GTK_STOCK_CANCEL, BUTTON_CANCEL ) ;
 
@@ -270,7 +270,7 @@ GtkWidget *AP_UnixDialog_Field::_constructWindowContents (void)
 	gtk_box_pack_start (GTK_BOX (hbox), vboxTypes, TRUE, TRUE, 0);
 
 	// Label the Types Box
-	UT_XML_cloneNoAmpersands(unixstr, pSS->getValue(AP_STRING_ID_DLG_Field_Types));
+	UT_XML_cloneNoAmpersands(unixstr, pSS->getValueUTF8(AP_STRING_ID_DLG_Field_Types).c_str());
 	labelTypes = gtk_label_new (unixstr);
 	FREEP(unixstr);
 	gtk_box_pack_start (GTK_BOX (vboxTypes), labelTypes, FALSE, FALSE, 0);
@@ -291,7 +291,7 @@ GtkWidget *AP_UnixDialog_Field::_constructWindowContents (void)
 	gtk_box_pack_start (GTK_BOX (hbox), vboxFields, TRUE, TRUE, 4); // aiken: up spcg 0->4
 
 	// Label the Fields Box
-	UT_XML_cloneNoAmpersands(unixstr, pSS->getValue(AP_STRING_ID_DLG_Field_Fields));
+	UT_XML_cloneNoAmpersands(unixstr, pSS->getValueUTF8(AP_STRING_ID_DLG_Field_Fields).c_str());
 	labelFields = gtk_label_new (unixstr);
 	FREEP(unixstr);
 	gtk_box_pack_start (GTK_BOX (vboxFields), labelFields, FALSE, FALSE, 0);
@@ -309,7 +309,7 @@ GtkWidget *AP_UnixDialog_Field::_constructWindowContents (void)
 	gtk_container_add (GTK_CONTAINER (scrolledwindowFields), m_listFields);
 
 	// add the entry for optional parameter
-	UT_XML_cloneNoAmpersands(unixstr, pSS->getValue(AP_STRING_ID_DLG_Field_Parameters));
+	UT_XML_cloneNoAmpersands(unixstr, pSS->getValueUTF8(AP_STRING_ID_DLG_Field_Parameters).c_str());
 	labelParam = gtk_label_new (unixstr);
 	FREEP(unixstr);
 	gtk_box_pack_start (GTK_BOX (vboxFields), labelParam, FALSE, FALSE, 0);

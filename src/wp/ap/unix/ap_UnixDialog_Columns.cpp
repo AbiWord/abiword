@@ -423,7 +423,7 @@ GtkWidget * AP_UnixDialog_Columns::_constructWindow(void)
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
 	//	XML_Char * unixstr = NULL;	// used for conversions
 
-	windowColumns = abiDialogNew ( true, pSS->getValue(AP_STRING_ID_DLG_Column_ColumnTitle) ) ;
+	windowColumns = abiDialogNew ( true, pSS->getValueUTF8(AP_STRING_ID_DLG_Column_ColumnTitle).c_str() ) ;
 
 	_constructWindowContents(GTK_DIALOG(windowColumns)->vbox);
 
@@ -460,7 +460,7 @@ void AP_UnixDialog_Columns::_constructWindowContents(GtkWidget * windowColumns)
 	gtk_widget_show (tableTop);
 	gtk_box_pack_start (GTK_BOX (windowColumns), tableTop, FALSE, FALSE, 6);
 
-	wColumnFrame = gtk_frame_new ( pSS->getValue(AP_STRING_ID_DLG_Column_Number));
+	wColumnFrame = gtk_frame_new ( pSS->getValueUTF8(AP_STRING_ID_DLG_Column_Number).c_str());
 	gtk_widget_show(wColumnFrame);
 	gtk_table_attach (GTK_TABLE (tableTop), wColumnFrame, 0, 1, 0, 1,
 				  (GtkAttachOptions) (GTK_EXPAND | GTK_FILL), (GtkAttachOptions) (GTK_EXPAND | GTK_FILL), 6, 0);
@@ -481,7 +481,7 @@ void AP_UnixDialog_Columns::_constructWindowContents(GtkWidget * windowColumns)
 	gtk_table_attach (GTK_TABLE (tableColumns), wToggleOne, 0, 1, 0, 1,
 				  (GtkAttachOptions) (0), (GtkAttachOptions) (GTK_EXPAND | GTK_FILL), 6, 0);
 
-	wLabelOne = gtk_label_new ( pSS->getValue(AP_STRING_ID_DLG_Column_One));
+	wLabelOne = gtk_label_new ( pSS->getValueUTF8(AP_STRING_ID_DLG_Column_One).c_str());
 	gtk_widget_show(wLabelOne );
 	gtk_table_attach (GTK_TABLE (tableColumns), wLabelOne, 1, 2, 0, 1,
 				  (GtkAttachOptions) (GTK_EXPAND | GTK_FILL), (GtkAttachOptions) (GTK_EXPAND | GTK_FILL), 0, 0);
@@ -494,7 +494,7 @@ void AP_UnixDialog_Columns::_constructWindowContents(GtkWidget * windowColumns)
 	gtk_table_attach (GTK_TABLE (tableColumns), wToggleTwo, 0, 1, 1, 2,
 				  (GtkAttachOptions) (0), (GtkAttachOptions) (GTK_EXPAND | GTK_FILL), 6, 0);
 
-	wLabelTwo = gtk_label_new( pSS->getValue(AP_STRING_ID_DLG_Column_Two));
+	wLabelTwo = gtk_label_new( pSS->getValueUTF8(AP_STRING_ID_DLG_Column_Two).c_str());
 	gtk_widget_show(wLabelTwo );
 	gtk_table_attach (GTK_TABLE (tableColumns), wLabelTwo, 1, 2, 1, 2,
 				  (GtkAttachOptions) (GTK_EXPAND | GTK_FILL), (GtkAttachOptions) (GTK_EXPAND | GTK_FILL), 0, 0);	
@@ -507,13 +507,13 @@ void AP_UnixDialog_Columns::_constructWindowContents(GtkWidget * windowColumns)
 	gtk_table_attach (GTK_TABLE (tableColumns), wToggleThree, 0, 1, 2, 3,
 				  (GtkAttachOptions) (0), (GtkAttachOptions) (GTK_EXPAND | GTK_FILL), 6, 0);
 
-	wLabelThree = gtk_label_new ( pSS->getValue(AP_STRING_ID_DLG_Column_Three));
+	wLabelThree = gtk_label_new ( pSS->getValueUTF8(AP_STRING_ID_DLG_Column_Three).c_str());
 	gtk_widget_show(wLabelThree);
 	gtk_table_attach (GTK_TABLE (tableColumns), wLabelThree, 1, 2, 2, 3,
 				  (GtkAttachOptions) (GTK_EXPAND | GTK_FILL), (GtkAttachOptions) (GTK_EXPAND | GTK_FILL), 0, 0);	
 	gtk_misc_set_alignment (GTK_MISC (wLabelThree), 0, 0.5);
 
-	wPreviewFrame = gtk_frame_new ( pSS->getValue(AP_STRING_ID_DLG_Column_Preview));
+	wPreviewFrame = gtk_frame_new ( pSS->getValueUTF8(AP_STRING_ID_DLG_Column_Preview).c_str());
 	gtk_widget_show(wPreviewFrame);
 	gtk_table_attach (GTK_TABLE (tableTop), wPreviewFrame, 1, 2, 0, 1,
 				  (GtkAttachOptions) (GTK_EXPAND | GTK_FILL), (GtkAttachOptions) (GTK_EXPAND | GTK_FILL), 6, 0);
@@ -560,12 +560,12 @@ void AP_UnixDialog_Columns::_constructWindowContents(GtkWidget * windowColumns)
 	gtk_widget_show (table);
 	gtk_box_pack_start (GTK_BOX (windowColumns), table, FALSE, FALSE, 0);
 
-	wLineBtween = gtk_check_button_new_with_label (pSS->getValue(AP_STRING_ID_DLG_Column_Line_Between));
+	wLineBtween = gtk_check_button_new_with_label (pSS->getValueUTF8(AP_STRING_ID_DLG_Column_Line_Between).c_str());
 	gtk_widget_show(wLineBtween);
 	gtk_table_attach (GTK_TABLE (table), wLineBtween, 0, 2, 0, 1,
 				  (GtkAttachOptions) (GTK_EXPAND | GTK_FILL), (GtkAttachOptions) (GTK_EXPAND | GTK_FILL), 6, 0);
 
-	GtkWidget * checkOrder = gtk_check_button_new_with_label (pSS->getValue(AP_STRING_ID_DLG_Column_RtlOrder));
+	GtkWidget * checkOrder = gtk_check_button_new_with_label (pSS->getValueUTF8(AP_STRING_ID_DLG_Column_RtlOrder).c_str());
 	gtk_widget_show (checkOrder);
 	gtk_table_attach (GTK_TABLE (table), checkOrder, 0, 2, 1, 2,
 				  (GtkAttachOptions) (GTK_SHRINK | GTK_FILL), (GtkAttachOptions) (GTK_EXPAND | GTK_FILL), 6, 0);
@@ -581,7 +581,7 @@ void AP_UnixDialog_Columns::_constructWindowContents(GtkWidget * windowColumns)
 	gtk_table_attach (GTK_TABLE (table), hseparator, 0, 3, 2, 3,
 				  (GtkAttachOptions) (GTK_SHRINK | GTK_FILL), (GtkAttachOptions) (GTK_EXPAND | GTK_FILL), 0, 6);
 	
-	SpinLabel = gtk_label_new ( pSS->getValue(AP_STRING_ID_DLG_Column_Number_Cols));
+	SpinLabel = gtk_label_new ( pSS->getValueUTF8(AP_STRING_ID_DLG_Column_Number_Cols).c_str());
 	gtk_widget_show(SpinLabel);
 	gtk_table_attach (GTK_TABLE (table), SpinLabel, 0, 1, 3, 4,
 				  (GtkAttachOptions) (GTK_SHRINK | GTK_FILL), (GtkAttachOptions) (GTK_EXPAND | GTK_FILL), 6, 0);
@@ -597,7 +597,7 @@ void AP_UnixDialog_Columns::_constructWindowContents(GtkWidget * windowColumns)
 // Spin Button for Space After
 /////////////////////////////////////////////////////////
 
-	GtkWidget * SpinLabelAfter = gtk_label_new ( pSS->getValue(AP_STRING_ID_DLG_Column_Space_After));
+	GtkWidget * SpinLabelAfter = gtk_label_new ( pSS->getValueUTF8(AP_STRING_ID_DLG_Column_Space_After).c_str());
 	gtk_widget_show(SpinLabelAfter);
 	gtk_table_attach (GTK_TABLE (table), SpinLabelAfter, 0, 1, 4, 5,
 				  (GtkAttachOptions) (GTK_SHRINK | GTK_FILL), (GtkAttachOptions) (GTK_EXPAND | GTK_FILL), 6, 3);
@@ -619,7 +619,7 @@ void AP_UnixDialog_Columns::_constructWindowContents(GtkWidget * windowColumns)
 // Spin Button for Column Height
 /////////////////////////////////////////////////////////
 
-	GtkWidget * SpinLabelColumnSize = gtk_label_new ( pSS->getValue(AP_STRING_ID_DLG_Column_Size));
+	GtkWidget * SpinLabelColumnSize = gtk_label_new ( pSS->getValueUTF8(AP_STRING_ID_DLG_Column_Size).c_str());
 	gtk_widget_show(SpinLabelColumnSize);
 	gtk_table_attach (GTK_TABLE (table), SpinLabelColumnSize, 0, 1, 5, 6,
 				  (GtkAttachOptions) (GTK_SHRINK | GTK_FILL), (GtkAttachOptions) (GTK_EXPAND | GTK_FILL), 6, 7);

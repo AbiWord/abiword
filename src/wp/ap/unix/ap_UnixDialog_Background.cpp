@@ -113,15 +113,15 @@ GtkWidget * AP_UnixDialog_Background::_constructWindow (void)
 	
 	if(isForeground())
 	{
-		dlg = abiDialogNew ( true, pSS->getValue(AP_STRING_ID_DLG_Background_TitleFore)) ;
+		dlg = abiDialogNew ( true, pSS->getValueUTF8(AP_STRING_ID_DLG_Background_TitleFore).c_str()) ;
 	}
 	else if(isHighlight())
 	{
-		dlg = abiDialogNew ( true, pSS->getValue(AP_STRING_ID_DLG_Background_TitleHighlight)) ;
+		dlg = abiDialogNew ( true, pSS->getValueUTF8(AP_STRING_ID_DLG_Background_TitleHighlight).c_str()) ;
 	}
 	else
 	{
-		dlg = abiDialogNew ( true, pSS->getValue(AP_STRING_ID_DLG_Background_Title)) ;
+		dlg = abiDialogNew ( true, pSS->getValueUTF8(AP_STRING_ID_DLG_Background_Title).c_str()) ;
 	}
 
 	abiAddStockButton ( GTK_DIALOG(dlg), GTK_STOCK_OK, BUTTON_OK ) ;
@@ -168,11 +168,11 @@ void AP_UnixDialog_Background::_constructWindowContents (GtkWidget * parent)
 		const XAP_StringSet * pSS = m_pApp->getStringSet();
 		if(isHighlight())
 		{
-			clearColor = gtk_button_new_with_label (pSS->getValue (AP_STRING_ID_DLG_Background_ClearHighlight));
+			clearColor = gtk_button_new_with_label (pSS->getValueUTF8 (AP_STRING_ID_DLG_Background_ClearHighlight).c_str());
 		}
 		else
 		{
-			clearColor = gtk_button_new_with_label (pSS->getValue (AP_STRING_ID_DLG_Background_ClearClr));
+			clearColor = gtk_button_new_with_label (pSS->getValueUTF8 (AP_STRING_ID_DLG_Background_ClearClr).c_str());
 		}
 		gtk_widget_show(clearColor);
 	

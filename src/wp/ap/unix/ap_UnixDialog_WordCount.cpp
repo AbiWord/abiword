@@ -366,13 +366,13 @@ GtkWidget * AP_UnixDialog_WordCount::_constructWindowContents(void)
 	tophbox = gtk_hbox_new(FALSE, 0);
 	gtk_box_pack_start(GTK_BOX(m_wContent), tophbox,TRUE,TRUE,0);
 
-	m_pAutocheck = gtk_check_button_new_with_label(pSS->getValue(AP_STRING_ID_DLG_WordCount_Auto_Update));
+	m_pAutocheck = gtk_check_button_new_with_label(pSS->getValueUTF8(AP_STRING_ID_DLG_WordCount_Auto_Update).c_str());
 	gtk_box_pack_start(GTK_BOX(tophbox),m_pAutocheck,TRUE,TRUE,0);
         
 	m_Spinrange = (GtkAdjustment *) gtk_adjustment_new(1.0, 0.1, 10.0, 0.1, 1.0, 0.0);
 	m_pAutospin = gtk_spin_button_new (m_Spinrange, 1.0, 1);
 	gtk_box_pack_start (GTK_BOX (tophbox), m_pAutospin, TRUE, TRUE, 0);
-	m_pAutospinlabel = gtk_label_new (pSS->getValue (AP_STRING_ID_DLG_WordCount_Update_Rate));
+	m_pAutospinlabel = gtk_label_new (pSS->getValueUTF8 (AP_STRING_ID_DLG_WordCount_Update_Rate).c_str());
 	gtk_label_set_justify (GTK_LABEL (m_pAutospinlabel), GTK_JUSTIFY_LEFT );
 	gtk_box_pack_start (GTK_BOX (tophbox), m_pAutospinlabel, FALSE, TRUE, 0);
 
@@ -433,7 +433,7 @@ GtkWidget * AP_UnixDialog_WordCount::_constructWindowContents(void)
 	gtk_misc_set_alignment (GTK_MISC (m_labelPgCount), 1.0, 0.5);
 	
 	// The labels
-	UT_XML_cloneNoAmpersands(unixstr,  pSS->getValue(AP_STRING_ID_DLG_WordCount_Words));	
+	UT_XML_cloneNoAmpersands(unixstr,  pSS->getValueUTF8(AP_STRING_ID_DLG_WordCount_Words).c_str());	
 	labelWords = gtk_label_new (unixstr);
 	FREEP(unixstr);
 	gtk_label_set_justify (GTK_LABEL (labelWords), GTK_JUSTIFY_LEFT);
@@ -442,35 +442,35 @@ GtkWidget * AP_UnixDialog_WordCount::_constructWindowContents(void)
 					  (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
 					  (GtkAttachOptions) (0), 0, 0);
 	gtk_misc_set_alignment (GTK_MISC (labelWords), 0, 0.5);
-	UT_XML_cloneNoAmpersands(unixstr,  pSS->getValue(AP_STRING_ID_DLG_WordCount_Paragraphs));	
+	UT_XML_cloneNoAmpersands(unixstr,  pSS->getValueUTF8(AP_STRING_ID_DLG_WordCount_Paragraphs).c_str());	
 	labelPara = gtk_label_new (unixstr);
 	FREEP(unixstr);
 	gtk_table_attach (GTK_TABLE (dataTable), labelPara, 0, 1, 1, 2,
 					  (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
 					  (GtkAttachOptions) (0), 0, 0);
 	gtk_misc_set_alignment (GTK_MISC (labelPara), 0, 0.5);
-	UT_XML_cloneNoAmpersands(unixstr,  pSS->getValue(AP_STRING_ID_DLG_WordCount_Characters_Sp));	
+	UT_XML_cloneNoAmpersands(unixstr,  pSS->getValueUTF8(AP_STRING_ID_DLG_WordCount_Characters_Sp).c_str());	
 	labelChar = gtk_label_new (unixstr);
 	FREEP(unixstr);
 	gtk_table_attach (GTK_TABLE (dataTable), labelChar, 0, 1, 2, 3,
 					  (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
 					  (GtkAttachOptions) (0), 0, 0);
 	gtk_misc_set_alignment (GTK_MISC (labelChar), 0, 0.5);
-	UT_XML_cloneNoAmpersands(unixstr,  pSS->getValue(AP_STRING_ID_DLG_WordCount_Characters_No));	
+	UT_XML_cloneNoAmpersands(unixstr,  pSS->getValueUTF8(AP_STRING_ID_DLG_WordCount_Characters_No).c_str());	
 	labelCharNo = gtk_label_new (unixstr);
 	FREEP(unixstr);
 	gtk_table_attach (GTK_TABLE (dataTable), labelCharNo, 0, 1, 3, 4,
 					  (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
 					  (GtkAttachOptions) (0), 0, 0);
 	gtk_misc_set_alignment (GTK_MISC (labelCharNo), 0, 0.5);
-	UT_XML_cloneNoAmpersands(unixstr,  pSS->getValue(AP_STRING_ID_DLG_WordCount_Lines));	
+	UT_XML_cloneNoAmpersands(unixstr,  pSS->getValueUTF8(AP_STRING_ID_DLG_WordCount_Lines).c_str());	
 	labelLine = gtk_label_new (unixstr);
 	FREEP(unixstr);
 	gtk_table_attach (GTK_TABLE (dataTable), labelLine, 0, 1, 4, 5,
 					  (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
 					  (GtkAttachOptions) (0), 0, 0);
 	gtk_misc_set_alignment (GTK_MISC (labelLine), 0, 0.5);
-	UT_XML_cloneNoAmpersands(unixstr,  pSS->getValue(AP_STRING_ID_DLG_WordCount_Pages));	
+	UT_XML_cloneNoAmpersands(unixstr,  pSS->getValueUTF8(AP_STRING_ID_DLG_WordCount_Pages).c_str());	
 	labelPage = gtk_label_new (unixstr);
 	FREEP(unixstr);
 	gtk_table_attach (GTK_TABLE (dataTable), labelPage, 0, 1, 5, 6,

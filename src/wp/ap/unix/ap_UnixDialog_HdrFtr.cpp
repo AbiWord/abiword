@@ -183,7 +183,7 @@ GtkWidget * AP_UnixDialog_HdrFtr::_constructWindow (void)
 
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
 
-	HdrFtrDialog = abiDialogNew ( true, pSS->getValue(AP_STRING_ID_DLG_HdrFtr_Title)) ;
+	HdrFtrDialog = abiDialogNew ( true, pSS->getValueUTF8(AP_STRING_ID_DLG_HdrFtr_Title).c_str()) ;
 
 	vbox1 = GTK_DIALOG(HdrFtrDialog)->vbox ;
 
@@ -220,7 +220,7 @@ void AP_UnixDialog_HdrFtr::_constructWindowContents (GtkWidget * parent)
 
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
 
-	HeaderFrame = gtk_frame_new (pSS->getValue(AP_STRING_ID_DLG_HdrFtr_HeaderFrame));
+	HeaderFrame = gtk_frame_new (pSS->getValueUTF8(AP_STRING_ID_DLG_HdrFtr_HeaderFrame).c_str());
 	gtk_widget_show (HeaderFrame);
 	gtk_box_pack_start (GTK_BOX (parent), HeaderFrame, TRUE, TRUE, 0);
 	gtk_container_set_border_width (GTK_CONTAINER (HeaderFrame), 6);
@@ -230,20 +230,20 @@ void AP_UnixDialog_HdrFtr::_constructWindowContents (GtkWidget * parent)
 	gtk_widget_show (vbox2);
 	gtk_container_add (GTK_CONTAINER (HeaderFrame), vbox2);
 
-	HeaderEven = gtk_check_button_new_with_label (pSS->getValue(AP_STRING_ID_DLG_HdrFtr_HeaderEven));
+	HeaderEven = gtk_check_button_new_with_label (pSS->getValueUTF8(AP_STRING_ID_DLG_HdrFtr_HeaderEven).c_str());
 	gtk_widget_show (HeaderEven);
 	gtk_box_pack_start (GTK_BOX (vbox2), HeaderEven, FALSE, TRUE, 0);
 	gtk_container_set_border_width (GTK_CONTAINER (HeaderEven), 1);
 
-	HeaderFirst = gtk_check_button_new_with_label (pSS->getValue(AP_STRING_ID_DLG_HdrFtr_HeaderFirst));
+	HeaderFirst = gtk_check_button_new_with_label (pSS->getValueUTF8(AP_STRING_ID_DLG_HdrFtr_HeaderFirst).c_str());
 	gtk_widget_show (HeaderFirst);
 	gtk_box_pack_start (GTK_BOX (vbox2), HeaderFirst, FALSE, TRUE, 0);
 
-	HeaderLast = gtk_check_button_new_with_label (pSS->getValue(AP_STRING_ID_DLG_HdrFtr_HeaderLast));
+	HeaderLast = gtk_check_button_new_with_label (pSS->getValueUTF8(AP_STRING_ID_DLG_HdrFtr_HeaderLast).c_str());
 	gtk_widget_show (HeaderLast);
 	gtk_box_pack_start (GTK_BOX (vbox2), HeaderLast, FALSE, TRUE, 0);
 
-	FooterFrame = gtk_frame_new (pSS->getValue(AP_STRING_ID_DLG_HdrFtr_FooterFrame));
+	FooterFrame = gtk_frame_new (pSS->getValueUTF8(AP_STRING_ID_DLG_HdrFtr_FooterFrame).c_str());
 	gtk_widget_show (FooterFrame);
 	gtk_box_pack_start (GTK_BOX (parent), FooterFrame, TRUE, TRUE, 0);
 	gtk_container_set_border_width (GTK_CONTAINER (FooterFrame), 5);
@@ -253,15 +253,15 @@ void AP_UnixDialog_HdrFtr::_constructWindowContents (GtkWidget * parent)
 	gtk_widget_show (vbox3);
 	gtk_container_add (GTK_CONTAINER (FooterFrame), vbox3);
 
-	FooterEven = gtk_check_button_new_with_label (pSS->getValue(AP_STRING_ID_DLG_HdrFtr_FooterEven));
+	FooterEven = gtk_check_button_new_with_label (pSS->getValueUTF8(AP_STRING_ID_DLG_HdrFtr_FooterEven).c_str());
 	gtk_widget_show (FooterEven);
 	gtk_box_pack_start (GTK_BOX (vbox3), FooterEven, FALSE, TRUE, 0);
 
-	FooterFirst = gtk_check_button_new_with_label (pSS->getValue(AP_STRING_ID_DLG_HdrFtr_FooterFirst));
+	FooterFirst = gtk_check_button_new_with_label (pSS->getValueUTF8(AP_STRING_ID_DLG_HdrFtr_FooterFirst).c_str());
 	gtk_widget_show (FooterFirst);
 	gtk_box_pack_start (GTK_BOX (vbox3), FooterFirst, FALSE, TRUE, 0);
 
-	FooterLast = gtk_check_button_new_with_label (pSS->getValue(AP_STRING_ID_DLG_HdrFtr_FooterLast));
+	FooterLast = gtk_check_button_new_with_label (pSS->getValueUTF8(AP_STRING_ID_DLG_HdrFtr_FooterLast).c_str());
 	gtk_widget_show (FooterLast);
 	gtk_box_pack_start (GTK_BOX (vbox3), FooterLast, FALSE, FALSE, 0);
 
@@ -270,11 +270,11 @@ void AP_UnixDialog_HdrFtr::_constructWindowContents (GtkWidget * parent)
 	gtk_box_pack_start (GTK_BOX (parent), hbox1, TRUE, TRUE, 2);
 	gtk_container_set_border_width (GTK_CONTAINER (hbox1), 3);
 
-	ReStartButton = gtk_check_button_new_with_label (pSS->getValue(AP_STRING_ID_DLG_HdrFtr_RestartCheck));
+	ReStartButton = gtk_check_button_new_with_label (pSS->getValueUTF8(AP_STRING_ID_DLG_HdrFtr_RestartCheck).c_str());
 	gtk_widget_show (ReStartButton);
 	gtk_box_pack_start (GTK_BOX (hbox1), ReStartButton, FALSE, FALSE, 0);
 
-	restartLabel = gtk_label_new (pSS->getValue(AP_STRING_ID_DLG_HdrFtr_RestartNumbers));
+	restartLabel = gtk_label_new (pSS->getValueUTF8(AP_STRING_ID_DLG_HdrFtr_RestartNumbers).c_str());
 	gtk_widget_show (restartLabel);
 	gtk_box_pack_start (GTK_BOX (hbox1), restartLabel, TRUE, TRUE, 0);
 	gtk_label_set_justify (GTK_LABEL (restartLabel), GTK_JUSTIFY_RIGHT);

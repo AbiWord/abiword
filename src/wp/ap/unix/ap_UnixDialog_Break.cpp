@@ -121,7 +121,7 @@ GtkWidget * AP_UnixDialog_Break::_constructWindow(void)
 	XML_Char * unixstr = NULL;	// used for conversions
 
 
-	windowBreak = abiDialogNew ( true, pSS->getValue(AP_STRING_ID_DLG_Break_BreakTitle));
+	windowBreak = abiDialogNew ( true, pSS->getValueUTF8(AP_STRING_ID_DLG_Break_BreakTitle).c_str());
 	
 	vboxMain = GTK_DIALOG(windowBreak)->vbox ;
 	gtk_container_set_border_width (GTK_CONTAINER (vboxMain), 10);
@@ -130,7 +130,7 @@ GtkWidget * AP_UnixDialog_Break::_constructWindow(void)
 	gtk_widget_show (tableInsert);
 	gtk_box_pack_start (GTK_BOX (vboxMain), tableInsert, FALSE, FALSE, 0);
 
-	UT_XML_cloneNoAmpersands(unixstr, pSS->getValue(AP_STRING_ID_DLG_Break_Insert));
+	UT_XML_cloneNoAmpersands(unixstr, pSS->getValueUTF8(AP_STRING_ID_DLG_Break_Insert).c_str());
 	labelInsert = gtk_label_new (unixstr);
 	FREEP(unixstr);
 	gtk_widget_show (labelInsert);
@@ -140,7 +140,7 @@ GtkWidget * AP_UnixDialog_Break::_constructWindow(void)
 	gtk_label_set_justify (GTK_LABEL (labelInsert), GTK_JUSTIFY_LEFT);
 	gtk_misc_set_alignment (GTK_MISC (labelInsert), 0, 0.5);
 	
-	UT_XML_cloneNoAmpersands(unixstr, pSS->getValue(AP_STRING_ID_DLG_Break_PageBreak));	
+	UT_XML_cloneNoAmpersands(unixstr, pSS->getValueUTF8(AP_STRING_ID_DLG_Break_PageBreak).c_str());	
 	radiobuttonPageBreak = gtk_radio_button_new_with_label (tableInsert_group, unixstr);
 	FREEP(unixstr);
 	tableInsert_group = gtk_radio_button_group (GTK_RADIO_BUTTON (radiobuttonPageBreak));
@@ -149,7 +149,7 @@ GtkWidget * AP_UnixDialog_Break::_constructWindow(void)
 	gtk_table_attach (GTK_TABLE (tableInsert), radiobuttonPageBreak, 0, 1, 1, 2,
 					  (GtkAttachOptions) GTK_FILL, (GtkAttachOptions) (GTK_EXPAND | GTK_FILL), 6, 0);
 	
-	UT_XML_cloneNoAmpersands(unixstr, pSS->getValue(AP_STRING_ID_DLG_Break_NextPage));	
+	UT_XML_cloneNoAmpersands(unixstr, pSS->getValueUTF8(AP_STRING_ID_DLG_Break_NextPage).c_str());	
 	radiobuttonNextPage = gtk_radio_button_new_with_label (tableInsert_group, unixstr);
 	FREEP(unixstr);
 	tableInsert_group = gtk_radio_button_group (GTK_RADIO_BUTTON (radiobuttonNextPage));
@@ -158,7 +158,7 @@ GtkWidget * AP_UnixDialog_Break::_constructWindow(void)
 	gtk_table_attach (GTK_TABLE (tableInsert), radiobuttonNextPage, 0, 1, 4, 5,
 					  (GtkAttachOptions) GTK_FILL, (GtkAttachOptions) (GTK_EXPAND | GTK_FILL), 6, 0);
 	
-	UT_XML_cloneNoAmpersands(unixstr, pSS->getValue(AP_STRING_ID_DLG_Break_Continuous));	
+	UT_XML_cloneNoAmpersands(unixstr, pSS->getValueUTF8(AP_STRING_ID_DLG_Break_Continuous).c_str());	
 	radiobuttonContinuous = gtk_radio_button_new_with_label (tableInsert_group, unixstr);
 	FREEP(unixstr);
 	tableInsert_group = gtk_radio_button_group (GTK_RADIO_BUTTON (radiobuttonContinuous));
@@ -167,7 +167,7 @@ GtkWidget * AP_UnixDialog_Break::_constructWindow(void)
 	gtk_table_attach (GTK_TABLE (tableInsert), radiobuttonContinuous, 0, 1, 5, 6,
 					  (GtkAttachOptions) GTK_FILL, (GtkAttachOptions) (GTK_EXPAND | GTK_FILL), 6, 0);
 	
-	UT_XML_cloneNoAmpersands(unixstr, pSS->getValue(AP_STRING_ID_DLG_Break_ColumnBreak));	
+	UT_XML_cloneNoAmpersands(unixstr, pSS->getValueUTF8(AP_STRING_ID_DLG_Break_ColumnBreak).c_str());	
 	radiobuttonColumnBreak = gtk_radio_button_new_with_label (tableInsert_group, unixstr);
 	FREEP(unixstr);
 	tableInsert_group = gtk_radio_button_group (GTK_RADIO_BUTTON (radiobuttonColumnBreak));
@@ -176,7 +176,7 @@ GtkWidget * AP_UnixDialog_Break::_constructWindow(void)
 	gtk_table_attach (GTK_TABLE (tableInsert), radiobuttonColumnBreak, 1, 2, 1, 2,
 					  (GtkAttachOptions) GTK_FILL, (GtkAttachOptions) (GTK_EXPAND | GTK_FILL), 6, 0);
 	
-	UT_XML_cloneNoAmpersands(unixstr, pSS->getValue(AP_STRING_ID_DLG_Break_EvenPage));	
+	UT_XML_cloneNoAmpersands(unixstr, pSS->getValueUTF8(AP_STRING_ID_DLG_Break_EvenPage).c_str());	
 	radiobuttonEvenPage = gtk_radio_button_new_with_label (tableInsert_group, unixstr);
 	FREEP(unixstr);
 	tableInsert_group = gtk_radio_button_group (GTK_RADIO_BUTTON (radiobuttonEvenPage));
@@ -185,7 +185,7 @@ GtkWidget * AP_UnixDialog_Break::_constructWindow(void)
 	gtk_table_attach (GTK_TABLE (tableInsert), radiobuttonEvenPage, 1, 2, 4, 5,
 					  (GtkAttachOptions) (GTK_EXPAND | GTK_FILL), (GtkAttachOptions) (GTK_EXPAND | GTK_FILL), 6, 0);
 	
-	UT_XML_cloneNoAmpersands(unixstr, pSS->getValue(AP_STRING_ID_DLG_Break_OddPage));	
+	UT_XML_cloneNoAmpersands(unixstr, pSS->getValueUTF8(AP_STRING_ID_DLG_Break_OddPage).c_str());	
 	radiobuttonOddPage = gtk_radio_button_new_with_label (tableInsert_group, unixstr);
 	FREEP(unixstr);
 	tableInsert_group = gtk_radio_button_group (GTK_RADIO_BUTTON (radiobuttonOddPage));
@@ -194,7 +194,7 @@ GtkWidget * AP_UnixDialog_Break::_constructWindow(void)
 	gtk_table_attach (GTK_TABLE (tableInsert), radiobuttonOddPage, 1, 2, 5, 6,
 					  (GtkAttachOptions) (GTK_EXPAND | GTK_FILL), (GtkAttachOptions) (GTK_EXPAND | GTK_FILL), 6, 0);
 	
-	UT_XML_cloneNoAmpersands(unixstr, pSS->getValue(AP_STRING_ID_DLG_Break_SectionBreaks));	
+	UT_XML_cloneNoAmpersands(unixstr, pSS->getValueUTF8(AP_STRING_ID_DLG_Break_SectionBreaks).c_str());	
 	labelSectionBreaks = gtk_label_new (unixstr);
 	FREEP(unixstr);
 	gtk_widget_show (labelSectionBreaks);

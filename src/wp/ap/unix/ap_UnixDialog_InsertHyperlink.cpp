@@ -126,7 +126,7 @@ void AP_UnixDialog_InsertHyperlink::_constructWindowContents ( GtkWidget * vbox2
 
   GtkWidget *label1;
 
-  label1 = gtk_label_new (pSS->getValue(AP_STRING_ID_DLG_InsertHyperlink_Msg));
+  label1 = gtk_label_new (pSS->getValueUTF8(AP_STRING_ID_DLG_InsertHyperlink_Msg).c_str());
   gtk_widget_show (label1);
   gtk_box_pack_start (GTK_BOX (vbox2), label1, TRUE, FALSE, 3);
 
@@ -180,7 +180,7 @@ GtkWidget*  AP_UnixDialog_InsertHyperlink::_constructWindow(void)
 
   const XAP_StringSet * pSS = m_pApp->getStringSet();
 
-  m_windowMain = abiDialogNew(true, pSS->getValue(AP_STRING_ID_DLG_InsertHyperlink_Title));
+  m_windowMain = abiDialogNew(true, pSS->getValueUTF8(AP_STRING_ID_DLG_InsertHyperlink_Title).c_str());
 
   frame1 = gtk_frame_new (NULL);
   gtk_widget_show (frame1);
