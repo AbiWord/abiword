@@ -4486,6 +4486,9 @@ int decode_letter(int letter,int flag,pap *apap, chp * achp,field_info *magic_fi
 					error(erroroutput,"\n");
 					newline=1;
 					break;
+				case 0x2A:
+					spewString("&amp;");
+					break;
 				case 0x96:
 				case 0x2013:
 					spewString("-");
@@ -4524,52 +4527,71 @@ int decode_letter(int letter,int flag,pap *apap, chp * achp,field_info *magic_fi
 							expand this in the ranges that we will have to handle 
 							ourselves, just for my own benefit for now, i might be
 							able to build a table with some word macros and luck*/
-							if (letter == 0x2122)
-								decode_symbol(0xf0e4);
-							else if (letter != 0)
-								for(i=0;i<len;i++)
+
+							if (letter > 255)
+							{
+								/* non Latin-1, not supported */
+								spewString(" ");
+							}
+							else
+							{
+								if (letter == 0x2122)
+									decode_symbol(0xf0e4);
+								else if (letter != 0)
+									for(i=0;i<len;i++)
 									{
-									if ( (achp->fSmallCaps || achp->fCaps) && use_fontfacequery(achp) && (len == 1) )
+										if ( (achp->fSmallCaps || achp->fCaps) && use_fontfacequery(achp) && (len == 1) )
 										{
-										if  ( isupper(target[i]) && achp->fSmallCaps)
-												{
+											if  ( isupper(target[i]) && achp->fSmallCaps)
+											{
 												temp = achp->fontsize;
 												achp->fontsize+=2;
 												decode_e_chp(achp);
 												decode_s_chp(achp,fontnamelist);
 												achp->fontsize = temp;
-												}
-										target[i] = toupper(target[i]);
+											}
+											target[i] = toupper(target[i]);
 										}
-									spewString("%c",target[i]);
-									error(erroroutput,"letter2: %c, silent is %d",target[i],silent);
+										spewString("%c",target[i]);
+										error(erroroutput,"letter2: %c, silent is %d",target[i],silent);
 									}
-							else
-								error(erroroutput,"given 0 as a letter !\n");
+								else
+									error(erroroutput,"given 0 as a letter !\n");
+							}
+							
 							}
 						else
 							{
-							if (letter == 0xae)
-								decode_symbol(61666);
-							else if (letter != 0)
+							if (letter > 255)
+							{
+								/* non Latin-1, not supported */
+								spewString(" ");
+							}
+							else
+							{
+								if (letter == 0xae)
+									decode_symbol(61666);
+								else if (letter != 0)
 								{
-								if ( (achp->fSmallCaps || achp->fCaps) && (use_fontfacequery(achp)) )
+									if ( (achp->fSmallCaps || achp->fCaps) && (use_fontfacequery(achp)) )
 									{
-									if  ( isupper(letter) && achp->fSmallCaps)
-											{
+										if  ( isupper(letter) && achp->fSmallCaps)
+										{
 											temp = achp->fontsize;
 											achp->fontsize+=2;
 											decode_e_chp(achp);
 											decode_s_chp(achp,fontnamelist);
 											achp->fontsize = temp;
-											}
-									letter = toupper(letter);
+										}
+										letter = toupper(letter);
 									}
-								spewString("%c",letter);
+									spewString("%c",letter);
 								}
-							else
-								error(erroroutput,"silly 0 found\n");
-							error(erroroutput,"letter2: %c %d %x silent is %d",letter,letter,letter,silent);
+								else
+									error(erroroutput,"silly 0 found\n");
+							}
+							
+/*								error(erroroutput,"letter2: %c %d %x silent is %d",letter,letter,letter,silent); */
 							}
 						}
 					else
