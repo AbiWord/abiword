@@ -901,21 +901,23 @@ void AP_LeftRuler::_drawCellProperties(AP_LeftRulerInfo * pInfo)
 	}
 
 	UT_sint32 nrows = pInfo->m_iNumRows;
-	UT_sint32 i =0;
+	UT_sint32 i = 0;
 	for(i=0;i <= nrows; i++)
 	{
 		UT_Rect rCell;
 		_getCellMarkerRects(pInfo,i,rCell);
-		if(rCell.width != 0)
+		if(rCell.height >= 0)
 		{
 			UT_Rect tCell, bCell;
+			UT_sint32 gap = ((rCell.height == 1) ? _UL(1) : _UL(2));
 
-			tCell.set(rCell.left, rCell.top, rCell.width, _UL(2));
-			bCell.set(rCell.left, rCell.top + rCell.height - _UL(2), rCell.width, _UL(2));
-			rCell.set(rCell.left, rCell.top + _UL(2), rCell.width, rCell.height - _UL(2));
+			tCell.set(rCell.left, rCell.top, rCell.width, gap);
+			bCell.set(rCell.left, rCell.top + rCell.height - gap, rCell.width, gap);
+			rCell.set(rCell.left, rCell.top + gap, rCell.width, rCell.height - gap * 2);
 
 			m_pG->fillRect(GR_Graphics::CLR3D_Background, tCell);
-			m_pG->fillRect(GR_Graphics::CLR3D_BevelDown, rCell);
+			if (rCell.height > 0)
+				m_pG->fillRect(GR_Graphics::CLR3D_BevelDown, rCell);
 			m_pG->fillRect(GR_Graphics::CLR3D_Background, bCell);
 		}
 	}

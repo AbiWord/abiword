@@ -1733,13 +1733,19 @@ void AP_TopRuler::_drawCellGap(AP_TopRulerInfo * pInfo, UT_sint32 iCell)
 		top = s_iFixedHeight / 4;
 		height =  s_iFixedHeight / 2;
 		
-		lCell.set(left, top, 2, height);
-		cCell.set(left + 2, top, right - left - 2 * 2,height);
-		rCell.set(right - 2, top, 2, height);
+		if(cCell.width >= 0)
+		{	
+			UT_sint32 gap = ((cCell.width == 1) ? _UL(1) : _UL(2));
 		
-		m_pG->fillRect(GR_Graphics::CLR3D_Background, lCell);
-		m_pG->fillRect(GR_Graphics::CLR3D_BevelDown, cCell);
-		m_pG->fillRect(GR_Graphics::CLR3D_Background, rCell);
+			lCell.set(left, top, gap, height);
+			cCell.set(left + gap, top, right - left - gap * 2, height);
+			rCell.set(right - gap, top, gap, height);
+			
+			m_pG->fillRect(GR_Graphics::CLR3D_Background, lCell);
+			if (cCell.width > 0)
+				m_pG->fillRect(GR_Graphics::CLR3D_BevelDown, cCell);
+			m_pG->fillRect(GR_Graphics::CLR3D_Background, rCell);
+		}
 	}
 }
 
