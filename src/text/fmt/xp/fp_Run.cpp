@@ -1082,6 +1082,53 @@ void fp_TabRun::_drawArrow(UT_uint32 iLeft,UT_uint32 iTop,UT_uint32 iWidth, UT_u
     UT_uint32 iMaxWidth = UT_MIN(iWidth / 10 * 6, (UT_uint32) cur_linewidth * 9);
     UT_uint32 ixGap = (iWidth - iMaxWidth) / 2;
 
+#ifdef BIDI_ENABLED
+    UT_uint32 iLeftAdj = iLeft;
+
+	if(m_iVisDirection == FRIBIDI_TYPE_LTR)
+	{
+	    points[0].x = /*iLeft*/iLeftAdj + ixGap + iMaxWidth - cur_linewidth * 4;
+    	points[0].y = iyAxis - cur_linewidth * 2;
+
+	    points[1].x = points[0].x + cur_linewidth;
+	    points[1].y = points[0].y;
+
+	    points[2].x = /*iLeft*/iLeftAdj + iWidth - ixGap;
+	    points[2].y = iyAxis;
+	}
+	else
+	{
+		//iLeftAdj -= m_iWidth;
+	
+	    points[0].x = /*iLeft*/iLeftAdj - ixGap - iMaxWidth + cur_linewidth * 4;
+    	points[0].y = iyAxis - cur_linewidth * 2;
+
+	    points[1].x = points[0].x - cur_linewidth;
+	    points[1].y = points[0].y;
+
+	    points[2].x = /*iLeft*/iLeftAdj - iWidth + ixGap;
+	    points[2].y = iyAxis;
+
+	}
+	
+    points[3].x = points[1].x;
+    points[3].y = iyAxis + cur_linewidth * 2;
+
+    points[4].x = points[0].x;
+    points[4].y = points[3].y;
+
+    points[5].x = points[0].x;
+    points[5].y = points[0].y;
+
+    UT_RGBColor clrShowPara(127,127,127);
+    m_pG->polygon(clrShowPara,points,NPOINTS);
+
+    if(m_iVisDirection == FRIBIDI_TYPE_LTR)
+	    m_pG->fillRect(clrShowPara,/*iLeft*/iLeftAdj + ixGap,iyAxis - cur_linewidth / 2,iMaxWidth - cur_linewidth * 4,cur_linewidth);
+	else
+	    m_pG->fillRect(clrShowPara,/*iLeft*/iLeftAdj - ixGap - iMaxWidth + cur_linewidth * 4,iyAxis - cur_linewidth / 2,iMaxWidth - cur_linewidth * 4,cur_linewidth);
+
+#else
     points[0].x = iLeft + ixGap + iMaxWidth - cur_linewidth * 4;
     points[0].y = iyAxis - cur_linewidth * 2;
 
@@ -1103,6 +1150,7 @@ void fp_TabRun::_drawArrow(UT_uint32 iLeft,UT_uint32 iTop,UT_uint32 iWidth, UT_u
     UT_RGBColor clrShowPara(127,127,127);
     m_pG->polygon(clrShowPara,points,NPOINTS);
     m_pG->fillRect(clrShowPara,iLeft + ixGap,iyAxis - cur_linewidth / 2,iMaxWidth - cur_linewidth * 4,cur_linewidth);
+#endif
 }
 
 void fp_TabRun::_draw(dg_DrawArgs* pDA)
@@ -1112,7 +1160,8 @@ void fp_TabRun::_draw(dg_DrawArgs* pDA)
 	UT_RGBColor clrSelBackground(192, 192, 192);
 	UT_RGBColor clrNormalBackground(m_colorHL.m_red,m_colorHL.m_grn,m_colorHL.m_blu);
 	// need to draw to the full height of line to join with line above.
-	UT_sint32 xoff= 0, yoff=0;
+	UT_sint32 xoff= 0, yoff=0, DA_xoff = pDA->xoff;
+	
 	getLine()->getScreenOffsets(this, xoff, yoff);
 
 	UT_sint32 iFillHeight = m_pLine->getHeight();
@@ -1129,6 +1178,11 @@ void fp_TabRun::_draw(dg_DrawArgs* pDA)
 	
 #ifdef BIDI_ENABLED
 	UT_uint32 iRunBase = m_pBL->getPosition() + getOffsetFirstVis(); //m_iOffsetFirst;
+	if(getVisDirection() == FRIBIDI_TYPE_RTL)
+	{
+		DA_xoff -= m_iWidth;
+		xoff -= m_iWidth;
+	}	
 #else
 	UT_uint32 iRunBase = m_pBL->getPosition() + m_iOffsetFirst;
 #endif
@@ -1183,7 +1237,7 @@ void fp_TabRun::_draw(dg_DrawArgs* pDA)
 
 		i = (i>=3) ? i - 2 : 1;
 		m_pG->setColor(clrFG);
-		m_pG->drawChars(tmp, 1, i, pDA->xoff, iFillTop);
+		m_pG->drawChars(tmp, 1, i, /*pDA->xoff*/DA_xoff, iFillTop);
 	}
 	else
 	if (
@@ -1192,16 +1246,16 @@ void fp_TabRun::_draw(dg_DrawArgs* pDA)
 		&& (iSel2 > iRunBase)
 		)
 	{
-		m_pG->fillRect(clrSelBackground, pDA->xoff, iFillTop, m_iWidth, iFillHeight);
+		m_pG->fillRect(clrSelBackground, /*pDA->xoff*/DA_xoff, iFillTop, m_iWidth, iFillHeight);
         if(pView->getShowPara()){
-            _drawArrow(pDA->xoff, iFillTop, m_iWidth, iFillHeight);
+            _drawArrow(/*pDA->xoff*/DA_xoff, iFillTop, m_iWidth, iFillHeight);
         }
 	}
 	else
 	{
-		m_pG->fillRect(clrNormalBackground, pDA->xoff, iFillTop, m_iWidth, iFillHeight);
+		m_pG->fillRect(clrNormalBackground, /*pDA->xoff*/DA_xoff, iFillTop, m_iWidth, iFillHeight);
         if(pView->getShowPara()){
-            _drawArrow(pDA->xoff, iFillTop, m_iWidth, iFillHeight);
+            _drawArrow(/*pDA->xoff*/DA_xoff, iFillTop, m_iWidth, iFillHeight);
         }
 	}
 //
@@ -1221,7 +1275,7 @@ void fp_TabRun::_draw(dg_DrawArgs* pDA)
 // Scale the vertical line thickness for printers
 //
 		UT_sint32 ithick =  getToplineThickness();
-		m_pG->fillRect(clrFG, pDA->xoff+getWidth()-ithick, iFillTop, ithick, iFillHeight);
+		m_pG->fillRect(clrFG, /*pDA->xoff*/DA_xoff+getWidth()-ithick, iFillTop, ithick, iFillHeight);
 	}
 }
 
@@ -3505,7 +3559,22 @@ void fp_Run::setDirection(FriBidiCharType iDir)
 // returns the direction with which the run is displayed,
 FriBidiCharType fp_Run::getVisDirection()
 {
-	return m_iVisDirection;
+	if(m_iVisDirection == FRIBIDI_TYPE_UNSET)
+	{
+		if(m_pBL)
+			return m_pBL->getDominantDirection();
+		else
+		{
+			bool b;	
+			XAP_App::getApp()->getPrefsValueBool((XML_Char*)AP_PREF_KEY_DefaultDirectionRtl, &b);
+			if(b)
+				return FRIBIDI_TYPE_RTL;
+			else
+				return FRIBIDI_TYPE_LTR;
+		}
+	}
+	else
+		return m_iVisDirection;
 }
 
 void fp_Run::setVisDirection(FriBidiCharType iDir)
