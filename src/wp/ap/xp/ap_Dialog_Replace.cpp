@@ -119,9 +119,8 @@ UT_Bool AP_Dialog_Replace::setView(AV_View * view)
 	
 	m_pView = static_cast<FV_View *>(view);
 
-	// Must reset the view's search so that it can size its regions
-	// to the proper document size (as it is when this dialog is
-	// raised.
+	// must resize doc positions so we're within bounds
+	// for the whole find
 	m_pView->findReset();
 
 	return UT_TRUE;

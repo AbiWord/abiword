@@ -1681,7 +1681,25 @@ void FV_View::findReset()
 	bRes = m_pDoc->getBounds(UT_TRUE, m_iFindPosEnd);
 	UT_ASSERT(bRes);
 
-	m_iFindCur = m_iFindPosStart;
+	// Find the block at the current point
+	m_iFindCur = m_iInsPoint;
+
+	// we start the find at n characters into the current block
+	fl_BlockLayout * block = _findGetCurrentBlock();
+
+	// there might not be a block
+	if (block)
+	{
+        // Now reset the search to the beginning of the block, plus...
+		m_iFindCur = block->getPosition(UT_FALSE);
+
+		// ... plus the offset here (casting here loses high end data).
+		m_iFindBufferOffset = ((long) m_iInsPoint - (long) block->getPosition(UT_FALSE));
+	}
+	else
+	{
+		m_iFindCur = m_iFindPosStart;
+	}
 
 	m_bDoneFind = UT_FALSE;
 }
@@ -1809,9 +1827,6 @@ UT_Bool FV_View::findNext(const UT_UCSChar * string, UT_Bool bSelect, UT_Bool * 
 				UT_DEBUGMSG(("Moving cursor to document position [%d], offset in buffer [%d] characters.\n",
 							 newPoint, newPoint - m_iFindCur));
 
-				// erase current cursor
-//				_eraseInsertionPoint();
-				
 				// update document cursor
 				moveInsPtTo(newPoint);
 
@@ -1834,7 +1849,7 @@ UT_Bool FV_View::findNext(const UT_UCSChar * string, UT_Bool bSelect, UT_Bool * 
 				m_iFindBufferOffset++;
 
 				// wipe the old buffer, since we're done with it
-				buffer.truncate(0);//(0, buffer.getLength());
+				buffer.truncate(0);
 
 				// we also have done something, so set the boolean
 				m_bDoneFind = UT_TRUE;
@@ -1862,7 +1877,7 @@ UT_Bool FV_View::findNext(const UT_UCSChar * string, UT_Bool bSelect, UT_Bool * 
 				
 				// wipe the old buffer, since we fetch new contents into it
 				// for the next block
-				buffer.truncate(0);//(0, buffer.getLength());
+				buffer.truncate(0);
 			}
 		}
 
@@ -1887,7 +1902,7 @@ UT_Bool FV_View::findAgain(void)
 		// must resize doc positions so we're within bounds
 		// for the whole find
 		findReset();
-
+/*
 		// Find the block at the current point
 		m_iFindCur = m_iInsPoint;
 		
@@ -1900,7 +1915,7 @@ UT_Bool FV_View::findAgain(void)
 
 		// ... plus the offset here (casting here loses high end data).
 		m_iFindBufferOffset = ((long) m_iInsPoint - (long) block->getPosition(UT_FALSE));
-		
+*/		
 		return findNext(_m_findNextString, UT_TRUE, NULL);
 	}
 	return UT_FALSE;
@@ -1962,9 +1977,17 @@ UT_Bool	FV_View::findReplace(const UT_UCSChar * find, const UT_UCSChar * replace
 
 UT_Bool FV_View::findReplaceAll(const UT_UCSChar * find, const UT_UCSChar * replace, UT_Bool * bWrapped)
 {
+	// prime it with a find
+	if (!findNext(find, UT_TRUE, bWrapped))
+		return UT_FALSE;
+	
 	// while we've still got buffer
 	while (*bWrapped == UT_FALSE)
-		findReplace(find, replace, bWrapped);
+	{
+		// if it returns false, it found nothing
+		if (!findReplace(find, replace, bWrapped))
+			return UT_FALSE;
+	}
 
 	return UT_TRUE;
 }
