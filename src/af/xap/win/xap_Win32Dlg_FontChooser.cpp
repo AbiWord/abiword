@@ -1,5 +1,5 @@
 /* AbiSource Application Framework
- * Copyright (C) 1998 AbiSource, Inc.
+ * Copyright (C) 1998,1999 AbiSource, Inc.
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -188,7 +188,7 @@ void XAP_Win32Dialog_FontChooser::runModal(XAP_Frame * pFrame)
 		m_bChangedUnderline = (lf.lfUnderline != m_bUnderline);
 		m_bChangedStrikeOut = (lf.lfStrikeOut != m_bStrikeOut);
 		if (m_bChangedUnderline || m_bChangedStrikeOut)
-			setFontDecoration(lf.lfUnderline,lf.lfStrikeOut);
+			setFontDecoration(lf.lfUnderline,0,lf.lfStrikeOut);
 	}
 	
 	UT_DEBUGMSG(("FontChooserEnd: Family[%s%s] Size[%s%s] Weight[%s%s] Style[%s%s] Color[%s%s] Underline[%d%s] StrikeOut[%d%s]\n",
