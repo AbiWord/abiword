@@ -264,9 +264,12 @@ bool	PP_AttrProp::setAttribute(const XML_Char * szName, const XML_Char * szValue
 		}
 
 		UT_lowerString(copy);
-			
-		m_pAttributes->insert(copy, (void *)(UT_strdup(szValue)));
 
+		char * szDupValue = UT_strdup(szValue);
+		
+		if(!m_pAttributes->insert(copy, (void *)szDupValue))
+			FREEP(szDupValue);
+		
 		FREEP(copy);
 
 		return true;
