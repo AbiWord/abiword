@@ -35,6 +35,7 @@ class AP_UnixFrameImpl : public XAP_UnixFrameImpl
 {
  public:
 	AP_UnixFrameImpl(AP_UnixFrame *pUnixFrame, XAP_UnixApp *pUnixApp); 
+	virtual XAP_FrameImpl * createInstance(XAP_Frame *pFrame, XAP_App *pApp);
 
  protected:
 	friend class AP_UnixFrame;

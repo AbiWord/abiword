@@ -32,14 +32,39 @@ class AP_Frame : public XAP_Frame
 	AP_Frame(XAP_FrameImpl *pFrameImpl, XAP_App *pApp) : XAP_Frame(pFrameImpl, pApp) {}
 	AP_Frame(AP_Frame *pFrame) : XAP_Frame(static_cast<XAP_Frame *>(pFrame)) {}
 	virtual ~AP_Frame();
+
+	virtual bool				initialize(XAP_FrameMode frameMode=XAP_NormalFrame) = 0;
+	virtual	XAP_Frame *			buildFrame(XAP_Frame * pFrame);
+	virtual UT_Error   			loadDocument(const char * szFilename, int ieft);
+	virtual UT_Error                        loadDocument(const char * szFilename, int ieft, bool createNew);
+	virtual UT_Error                        importDocument(const char * szFilename, int ieft, bool markClean);
+	virtual bool				initFrameData(void);
+	virtual void				killFrameData(void);
   
  protected:
+
+	UT_Error _loadDocument(const char * szFilename, IEFileType ieft, bool createNew);
+	virtual UT_Error _importDocument(const char * szFilename, int ieft, bool markClean);
+	UT_Error _replaceDocument(AD_Document * pDoc);
+	virtual UT_Error _showDocument(UT_uint32 iZoom = 100);
+
+	// helper methods for _showDocument
+	virtual bool _createViewGraphics(GR_Graphics *& pG, UT_uint32 iZoom) = 0;
 	void _replaceView(GR_Graphics * pG, FL_DocLayout *pDocLayout,
 			  AV_View *pView, AV_ScrollObj * pScrollObj,
 			  ap_ViewListener *pViewListener, AD_Document *pOldDoc,
 			  ap_Scrollbar_ViewListener *pScrollbarViewListener,
 			  AV_ListenerId lid, AV_ListenerId lidScrollbarViewListener,
 			  UT_uint32 iZoom);
+	virtual bool _createScrollBarListeners(AV_View * pView, AV_ScrollObj *& pScrollObj, 
+				       ap_ViewListener *& pViewListener, 
+				       ap_Scrollbar_ViewListener *& pScrollbarViewListener,
+				       AV_ListenerId &lid, 
+				       AV_ListenerId &lidScrollbarViewListener) = 0;	
+	virtual void _bindToolbars(AV_View *pView) = 0;
+	virtual void _setViewFocus(AV_View *pView) = 0;
+
+	// helper methods for helper methods for _showDocument (meta-helper-methods?) :-)
 	virtual UT_sint32 _getDocumentAreaWidth() = 0;
 	virtual UT_sint32 _getDocumentAreaHeight() = 0;
 

@@ -22,6 +22,13 @@ AP_UnixFrameImpl::AP_UnixFrameImpl(AP_UnixFrame *pUnixFrame, XAP_UnixApp *pUnixA
 {
 }
 
+XAP_FrameImpl * AP_UnixFrameImpl::createInstance(XAP_Frame *pFrame, XAP_App *pApp)
+{
+	XAP_FrameImpl *pFrameImpl = new AP_UnixFrameImpl(static_cast<AP_UnixFrame *>(pFrame), static_cast<XAP_UnixApp *>(pApp));
+
+	return pFrameImpl;
+}
+
 void AP_UnixFrameImpl::_bindToolbars(AV_View * pView)
 {
 	int nrToolbars = m_vecToolbarLayoutNames.getItemCount();

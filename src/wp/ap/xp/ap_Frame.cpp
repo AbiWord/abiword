@@ -23,6 +23,7 @@
 #if defined(ANY_UNIX) || (defined(__APPLE__) && defined(__MACH__))
 #include "ap_FrameData.h"
 #include "fv_View.h"
+#include "xav_View.h"
 #include "xad_Document.h"
 #include "pd_Document.h"
 #include "xap_ViewListener.h"
@@ -31,8 +32,339 @@
 #include "ap_LeftRuler.h"
 #include "ap_StatusBar.h"
 
+/*****************************************************************/
+
+#define ENSUREP_C(p)		do { UT_ASSERT(p); if (!p) goto Cleanup; } while (0)
+
+/*****************************************************************/
+
 AP_Frame::~AP_Frame()
 {
+}
+
+
+bool AP_Frame::initFrameData()
+{
+	UT_ASSERT(!((AP_FrameData*)m_pData));
+
+	AP_FrameData* pData = new AP_FrameData(static_cast<XAP_App *>(m_pApp));
+
+	m_pData = (void*)pData;
+	return (pData ? true : false);
+}
+
+void AP_Frame::killFrameData()
+{
+	AP_FrameData* pData = (AP_FrameData*) m_pData;
+	DELETEP(pData);
+	m_pData = NULL;
+}
+
+UT_Error AP_Frame::_loadDocument(const char * szFilename, IEFileType ieft,
+				     bool createNew)
+{
+#ifdef DEBUG
+	if (szFilename) {
+		UT_DEBUGMSG(("DOM: trying to load %s (%d, %d)\n", szFilename, ieft, createNew));
+	}
+	else {
+		UT_DEBUGMSG(("DOM: trying to load %s (%d, %d)\n", "(NULL)", ieft, createNew));
+	}
+#endif
+
+	// are we replacing another document?
+	if (m_pDoc)
+	{
+		// yep.  first make sure it's OK to discard it, 
+		// TODO: query user if dirty...
+	}
+
+	// load a document into the current frame.
+	// if no filename, create a new document.
+
+	AD_Document * pNewDoc = new PD_Document(getApp());
+	UT_ASSERT(pNewDoc);
+	
+	if (!szFilename || !*szFilename)
+	{
+		pNewDoc->newDocument();
+		m_iUntitled = _getNextUntitledNumber();
+		goto ReplaceDocument;
+	}
+	UT_Error errorCode;
+	errorCode = pNewDoc->readFromFile(szFilename, ieft);
+	if (!errorCode)
+		goto ReplaceDocument;
+
+	if (createNew)
+	  {
+	    // we have a file name but couldn't load it
+	    pNewDoc->newDocument();
+
+	    // here, we want to open a new document if it doesn't exist.
+	    // errorCode could also take several other values, indicating
+	    // that the document exists but for some reason we could not
+	    // open it. in those cases, we do not wish to overwrite the
+	    // existing documents, but instead open a new blank document. 
+	    // this fixes bug 1668 - DAL
+	    if ( UT_IE_FILENOTFOUND == errorCode )
+	      errorCode = pNewDoc->saveAs(szFilename, ieft);
+	  }
+	if (!errorCode)
+	  goto ReplaceDocument;
+	
+	UT_DEBUGMSG(("ap_Frame: could not open the file [%s]\n",szFilename));
+	UNREFP(pNewDoc);
+	return errorCode;
+
+ReplaceDocument:
+	getApp()->forgetClones(this);
+
+	// NOTE: prior document is discarded in _showDocument()
+	m_pDoc = pNewDoc;
+	return UT_OK;
+}
+	
+UT_Error AP_Frame::_importDocument(const char * szFilename, int ieft,
+									  bool markClean)
+{
+	UT_DEBUGMSG(("DOM: trying to import %s (%d, %d)\n", szFilename, ieft, markClean));
+
+	// load a document into the current frame.
+	// if no filename, create a new document.
+	AD_Document * pNewDoc = new PD_Document(getApp());
+	UT_ASSERT(pNewDoc);
+
+	if (!szFilename || !*szFilename)
+	{
+		pNewDoc->newDocument();
+		goto ReplaceDocument;
+	}
+	UT_Error errorCode;
+	errorCode = pNewDoc->importFile(szFilename, ieft, markClean);
+	if (!errorCode)
+		goto ReplaceDocument;
+
+	UT_DEBUGMSG(("ap_Frame: could not open the file [%s]\n",szFilename));
+
+	UNREFP(pNewDoc);
+	return errorCode;
+
+ReplaceDocument:
+	getApp()->forgetClones(this);
+
+	m_iUntitled = _getNextUntitledNumber();
+
+	// NOTE: prior document is discarded in _showDocument()
+	m_pDoc = pNewDoc;
+	return UT_OK;
+}
+
+XAP_Frame * AP_Frame::buildFrame(XAP_Frame * pF)
+{
+	UT_Error error = UT_OK;
+	AP_Frame * pClone = static_cast<AP_Frame *>(pF);
+	ENSUREP_C(pClone);
+	if (!pClone->initialize())
+		goto Cleanup;
+
+	error = pClone->_showDocument();
+	if (error)
+		goto Cleanup;
+
+	pClone->show();
+	return static_cast<XAP_Frame *>(pClone);
+
+ Cleanup:
+	// clean up anything we created here
+	if (pClone)
+	{
+		static_cast<XAP_App *>(m_pApp)->forgetFrame(pClone);
+		delete pClone;
+	}
+	return NULL;
+}
+
+UT_Error AP_Frame::loadDocument(const char * szFilename, int ieft, bool createNew)
+{
+	bool bUpdateClones;
+	UT_Vector vClones;
+	XAP_App * pApp = getApp();
+
+	bUpdateClones = (getViewNumber() > 0);
+	if (bUpdateClones)
+	{
+		pApp->getClones(&vClones, this);
+	}
+	UT_Error errorCode;
+	errorCode =  _loadDocument(szFilename, (IEFileType) ieft, createNew);
+	if (errorCode)
+	{
+		// we could not load the document.
+		// we cannot complain to the user here, we don't know
+		// if the app is fully up yet.  we force our caller
+		// to deal with the problem.
+		return errorCode;
+	}
+
+	pApp->rememberFrame(this);
+	if (bUpdateClones)
+	{
+		for (UT_uint32 i = 0; i < vClones.getItemCount(); i++)
+		{
+			AP_Frame * pFrame = (AP_Frame *) vClones.getNthItem(i);
+			if(pFrame != this)
+			{
+				pFrame->_replaceDocument(m_pDoc);
+				pApp->rememberFrame(pFrame, this);
+			}
+		}
+	}
+
+	return _showDocument();
+}
+
+UT_Error AP_Frame::loadDocument(const char * szFilename, int ieft)
+{
+  return loadDocument(szFilename, ieft, false);
+}
+
+UT_Error AP_Frame::importDocument(const char * szFilename, int ieft, bool markClean)
+{
+	bool bUpdateClones;
+	UT_Vector vClones;
+	XAP_App * pApp = getApp();
+
+	bUpdateClones = (getViewNumber() > 0);
+	if (bUpdateClones)
+	{
+		pApp->getClones(&vClones, this);
+	}
+	UT_Error errorCode;
+	errorCode =  _importDocument(szFilename, (IEFileType) ieft, markClean);
+	if (errorCode)
+	{
+		return errorCode;
+	}
+
+	pApp->rememberFrame(this);
+	if (bUpdateClones)
+	{
+		for (UT_uint32 i = 0; i < vClones.getItemCount(); i++)
+		{
+			AP_Frame * pFrame = (AP_Frame *) vClones.getNthItem(i);
+			if(pFrame != this)
+			{
+				pFrame->_replaceDocument(m_pDoc);
+				pApp->rememberFrame(pFrame, this);
+			}
+		}
+	}
+
+	return _showDocument();
+}
+
+UT_Error AP_Frame::_replaceDocument(AD_Document * pDoc)
+{
+	// NOTE: prior document is discarded in _showDocument()
+	m_pDoc = REFP(pDoc);
+
+	return _showDocument();
+}
+
+UT_Error AP_Frame::_showDocument(UT_uint32 iZoom)
+{
+	if (!m_pDoc)
+	{
+		UT_DEBUGMSG(("Can't show a non-existent document\n"));
+		return UT_IE_FILENOTFOUND;
+	}
+
+	if (!((AP_FrameData*)m_pData))
+	{
+		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		return UT_IE_IMPORTERROR;
+	}
+
+//         if(static_cast<XAP_FrameImpl *>(m_pFrameImpl)->getShowDocLocked())
+//         {
+//                 UT_DEBUGMSG(("Evil race condition detected. Fix this!!! \n"));
+//                 UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+//                 return  UT_IE_ADDLISTENERERROR;
+//         }                                                                       
+// 	static_cast<XAP_FrameImpl *>(m_pFrameImpl)->setShowDocLocked(true);
+
+	GR_Graphics * pG = NULL;
+	FL_DocLayout * pDocLayout = NULL;
+	AV_View * pView = NULL;
+	AV_ScrollObj * pScrollObj = NULL;
+	ap_ViewListener * pViewListener = NULL;
+	AD_Document * pOldDoc = NULL;
+	ap_Scrollbar_ViewListener * pScrollbarViewListener = NULL;
+	AV_ListenerId lid;
+	AV_ListenerId lidScrollbarViewListener;
+
+	xxx_UT_DEBUGMSG(("_showDocument: Initial m_pView %x \n",m_pView));
+
+	if (!_createViewGraphics(pG, iZoom))
+		goto Cleanup;
+
+	pDocLayout = new FL_DocLayout(static_cast<PD_Document *>(m_pDoc), pG);
+	ENSUREP_C(pDocLayout);  
+
+	pView = new FV_View(getApp(), this, pDocLayout);
+	ENSUREP_C(pView);
+
+	_setViewFocus(pView);
+
+	if (!_createScrollBarListeners(pView, pScrollObj, pViewListener, pScrollbarViewListener,
+				       lid, lidScrollbarViewListener))
+		goto Cleanup;
+
+	_bindToolbars(pView);	
+
+	_replaceView(pG, pDocLayout, pView, pScrollObj, pViewListener, pOldDoc, 
+		     pScrollbarViewListener, lid, lidScrollbarViewListener, iZoom);
+
+	setXScrollRange();
+	setYScrollRange();
+
+	m_pView->draw();
+
+	if ( ((AP_FrameData*)m_pData)->m_bShowRuler  ) 
+	{
+		if ( ((AP_FrameData*)m_pData)->m_pTopRuler )
+			((AP_FrameData*)m_pData)->m_pTopRuler->draw(NULL);
+
+		if ( ((AP_FrameData*)m_pData)->m_pLeftRuler )
+			((AP_FrameData*)m_pData)->m_pLeftRuler->draw(NULL);
+	}
+	if(isStatusBarShown())
+	{
+		((AP_FrameData*)m_pData)->m_pStatusBar->notify(m_pView, AV_CHG_ALL);
+	}
+
+	m_pView->notifyListeners(AV_CHG_ALL);
+	m_pView->focusChange(AV_FOCUS_HERE);
+
+	//static_cast<XAP_FrameImpl *>(m_pFrameImpl)->setShowDocLocked(false);
+
+	return UT_OK;
+
+Cleanup:
+	// clean up anything we created here
+	DELETEP(pG);
+	DELETEP(pDocLayout);
+	DELETEP(pView);
+	DELETEP(pViewListener);
+	DELETEP(pScrollObj);
+	DELETEP(pScrollbarViewListener);
+
+	// change back to prior document
+	UNREFP(m_pDoc);
+	m_pDoc = ((AP_FrameData*)m_pData)->m_pDocLayout->getDocument();
+	//static_cast<XAP_FrameImpl *>(m_pFrameImpl)->setShowDocLocked(false);
+	return UT_IE_ADDLISTENERERROR;
 }
 
 void AP_Frame::_replaceView(GR_Graphics * pG, FL_DocLayout *pDocLayout,
@@ -111,8 +443,6 @@ void AP_Frame::_resetInsertionPoint()
 			(static_cast<FV_View *>(m_pView))->moveInsPtTo(posEOD);
 	}		
 }
-
-
 #else
 AP_Frame::~AP_Frame()
 {

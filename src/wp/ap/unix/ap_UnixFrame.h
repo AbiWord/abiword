@@ -39,16 +39,9 @@ public:
 	AP_UnixFrame(AP_UnixFrame * f);
 	virtual ~AP_UnixFrame(void);
 
-	virtual bool				initialize(XAP_FrameMode frameMode=XAP_NormalFrame);
 	virtual	XAP_Frame *			cloneFrame(void);
-	virtual	XAP_Frame *			buildFrame(XAP_Frame * pFrame);
-	virtual UT_Error   			loadDocument(const char * szFilename, int ieft);
-	virtual UT_Error                        loadDocument(const char * szFilename, int ieft, bool createNew);
-	virtual UT_Error            importDocument(const char * szFilename, int ieft, bool markClean);
-	virtual bool				initFrameData(void);
-	virtual void				killFrameData(void);
+	virtual bool				initialize(XAP_FrameMode frameMode=XAP_NormalFrame);
 
-	// WL_REFACTOR: the implementation of these functions (e.g.: the widget stuff) to the frame helper
 	virtual void				setXScrollRange(void);
 	virtual void				setYScrollRange(void);
 	virtual void				translateDocumentToScreen(UT_sint32 &x, UT_sint32 &y);
@@ -64,14 +57,21 @@ public:
 	
 protected:
 	friend class AP_UnixFrameImpl;
-	UT_Error   					_loadDocument(const char * szFilename, IEFileType ieft, bool createNew);
-	virtual UT_Error            _importDocument(const char * szFilename, int ieft, bool markClean);
-	UT_Error   					_showDocument(UT_uint32 iZoom=100);
-	static void					_scrollFuncX(void * pData, UT_sint32 xoff, UT_sint32 xlimit);
-	static void					_scrollFuncY(void * pData, UT_sint32 yoff, UT_sint32 ylimit);
-	UT_Error					_replaceDocument(AD_Document * pDoc);
+
+	// implementation of helper methods for AP_Frame::_showDocument
+	virtual bool _createViewGraphics(GR_Graphics *& pG, UT_uint32 iZoom);
+	virtual void _bindToolbars(AV_View *pView);
+	virtual void _setViewFocus(AV_View *pView);
+	virtual bool _createScrollBarListeners(AV_View * pView, AV_ScrollObj *& pScrollObj, 
+					       ap_ViewListener *& pViewListener, ap_Scrollbar_ViewListener *& pScrollbarViewListener,
+					       AV_ListenerId &lid, AV_ListenerId &lidScrollbarViewListener);
 	virtual UT_sint32 _getDocumentAreaWidth();
 	virtual UT_sint32 _getDocumentAreaHeight();
+
+	// scrolling function
+	static void _scrollFuncX(void * pData, UT_sint32 xoff, UT_sint32 xlimit);
+	static void _scrollFuncY(void * pData, UT_sint32 yoff, UT_sint32 ylimit);
+
 };
 
 #endif /* AP_UNIXFRAME_H */

@@ -51,7 +51,8 @@
 
 /*****************************************************************/
 
-#define ENSUREP(p)		do { UT_ASSERT(p); if (!p) goto Cleanup; } while (0)
+#define ENSUREP_RF(p)            do { UT_ASSERT(p); if (!p) return false; } while (0)
+#define ENSUREP_C(p)		do { UT_ASSERT(p); if (!p) goto Cleanup; } while (0)
 
 /*****************************************************************/
 #include "ap_UnixApp.h"
@@ -64,145 +65,6 @@ void AP_UnixFrame::setZoomPercentage(UT_uint32 iZoom)
 UT_uint32 AP_UnixFrame::getZoomPercentage(void)
 {
 	return ((AP_FrameData*)m_pData)->m_pG->getZoomPercentage();
-}
-
-UT_Error AP_UnixFrame::_showDocument(UT_uint32 iZoom)
-{
-	if (!m_pDoc)
-	{
-		UT_DEBUGMSG(("Can't show a non-existent document\n"));
-		return UT_IE_FILENOTFOUND;
-	}
-
-	if (!((AP_FrameData*)m_pData))
-	{
-		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-		return UT_IE_IMPORTERROR;
-	}
-
-        if(static_cast<XAP_UnixFrameImpl *>(m_pFrameImpl)->getShowDocLocked())
-        {
-                UT_DEBUGMSG(("Evil race condition detected. Fix this!!! \n"));
-                UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-                return  UT_IE_ADDLISTENERERROR;
-        }                                                                       
-	static_cast<XAP_UnixFrameImpl *>(m_pFrameImpl)->setShowDocLocked(true);
-
-	GR_UnixGraphics * pG = NULL;
-	FL_DocLayout * pDocLayout = NULL;
-	AV_View * pView = NULL;
-	AV_ScrollObj * pScrollObj = NULL;
-	ap_ViewListener * pViewListener = NULL;
-	AD_Document * pOldDoc = NULL;
-	ap_Scrollbar_ViewListener * pScrollbarViewListener = NULL;
-	AV_ListenerId lid;
-	AV_ListenerId lidScrollbarViewListener;
-
-	xxx_UT_DEBUGMSG(("_showDocument: Initial m_pView %x \n",m_pView));
-	gboolean bFocus;
-	XAP_UnixFontManager * fontManager = ((XAP_UnixApp *) getApp())->getFontManager();
-	gtk_widget_show(static_cast<AP_UnixFrameImpl *>(m_pFrameImpl)->m_dArea);
-	pG = new GR_UnixGraphics(static_cast<AP_UnixFrameImpl *>(m_pFrameImpl)->m_dArea->window, fontManager, getApp());
-	ENSUREP(pG);
-
-	pG->setZoomPercentage(iZoom);
-
-	pDocLayout = new FL_DocLayout(static_cast<PD_Document *>(m_pDoc), pG);
-	ENSUREP(pDocLayout);  
-
-	pView = new FV_View(getApp(), this, pDocLayout);
-	ENSUREP(pView);
-
-	bFocus=GPOINTER_TO_INT(g_object_get_data(G_OBJECT(static_cast<XAP_UnixFrameImpl *>(m_pFrameImpl)->getTopLevelWindow()),
-						 "toplevelWindowFocus"));
-	pView->setFocus(bFocus && (gtk_grab_get_current()==NULL || gtk_grab_get_current()==static_cast<XAP_UnixFrameImpl *>(m_pFrameImpl)->getTopLevelWindow()) ? AV_FOCUS_HERE : !bFocus && gtk_grab_get_current()!=NULL && isTransientWindow(GTK_WINDOW(gtk_grab_get_current()),GTK_WINDOW(static_cast<XAP_UnixFrameImpl *>(m_pFrameImpl)->getTopLevelWindow())) ?  AV_FOCUS_NEARBY : AV_FOCUS_NONE);
-	// The "AV_ScrollObj pScrollObj" receives
-	// send{Vertical,Horizontal}ScrollEvents
-	// from both the scroll-related edit methods
-	// and from the UI callbacks.
-	// 
-	// The "ap_ViewListener pViewListener" receives
-	// change notifications as the document changes.
-	// This ViewListener is responsible for keeping
-	// the title-bar up to date (primarily title
-	// changes, dirty indicator, and window number).
-	// ON UNIX ONLY: we subclass this with ap_UnixViewListener
-	// ON UNIX ONLY: so that we can deal with X-Selections.
-	//
-	// The "ap_Scrollbar_ViewListener pScrollbarViewListener"
-	// receives change notifications as the doucment changes.
-	// This ViewListener is responsible for recalibrating the
-	// scrollbars as pages are added/removed from the document.
-	//
-	// Each Toolbar will also get a ViewListener so that
-	// it can update toggle buttons, and other state-indicating
-	// controls on it.
-	//
-	// TODO we ***really*** need to re-do the whole scrollbar thing.
-	// TODO we have an addScrollListener() using an m_pScrollObj
-	// TODO and a View-Listener, and a bunch of other widget stuff.
-	// TODO and its very confusing.
-	
-	pScrollObj = new AV_ScrollObj(this,_scrollFuncX,_scrollFuncY);
-	ENSUREP(pScrollObj);
-	pViewListener = new ap_UnixViewListener(this);
-	ENSUREP(pViewListener);
-	pScrollbarViewListener = new ap_Scrollbar_ViewListener(this,pView);
-	ENSUREP(pScrollbarViewListener);
-
-	if (!pView->addListener(static_cast<AV_Listener *>(pViewListener),&lid))
-		goto Cleanup;
-
-	if (!pView->addListener(static_cast<AV_Listener *>(pScrollbarViewListener),
-							&lidScrollbarViewListener))
-		goto Cleanup;
-	
-	static_cast<AP_UnixFrameImpl *>(m_pFrameImpl)->_bindToolbars(pView);
-
-	_replaceView(pG, pDocLayout, pView, pScrollObj, pViewListener, pOldDoc, 
-		     pScrollbarViewListener, lid, lidScrollbarViewListener, iZoom);
-
-	setXScrollRange();
-	setYScrollRange();
-
-	m_pView->draw();
-
-	if ( ((AP_FrameData*)m_pData)->m_bShowRuler  ) 
-	{
-		if ( ((AP_FrameData*)m_pData)->m_pTopRuler )
-			((AP_FrameData*)m_pData)->m_pTopRuler->draw(NULL);
-
-		if ( ((AP_FrameData*)m_pData)->m_pLeftRuler )
-			((AP_FrameData*)m_pData)->m_pLeftRuler->draw(NULL);
-	}
-	if(isStatusBarShown())
-	{
-		((AP_FrameData*)m_pData)->m_pStatusBar->notify(m_pView, AV_CHG_ALL);
-	}
-	if(m_pView)
-	{
-		m_pView->notifyListeners(AV_CHG_ALL);
-		m_pView->focusChange(AV_FOCUS_HERE);
-	}
-
-	static_cast<XAP_UnixFrameImpl *>(m_pFrameImpl)->setShowDocLocked(false);
-
-	return UT_OK;
-
-Cleanup:
-	// clean up anything we created here
-	DELETEP(pG);
-	DELETEP(pDocLayout);
-	DELETEP(pView);
-	DELETEP(pViewListener);
-	DELETEP(pScrollObj);
-	DELETEP(pScrollbarViewListener);
-
-	// change back to prior document
-	UNREFP(m_pDoc);
-	m_pDoc = ((AP_FrameData*)m_pData)->m_pDocLayout->getDocument();
-	static_cast<XAP_UnixFrameImpl *>(m_pFrameImpl)->setShowDocLocked(false);
-	return UT_IE_ADDLISTENERERROR;
 }
 
 void AP_UnixFrame::setXScrollRange(void)
@@ -264,13 +126,28 @@ AP_UnixFrame::AP_UnixFrame(XAP_UnixApp * pApp)
 AP_UnixFrame::AP_UnixFrame(AP_UnixFrame * f)
 	: AP_Frame(static_cast<AP_Frame *>(f))
 {
-	m_pFrameImpl = new AP_UnixFrameImpl(this, static_cast<XAP_UnixApp *>(f->m_pApp));
 	m_pData = NULL;
 }
 
 AP_UnixFrame::~AP_UnixFrame()
 {
 	killFrameData();
+}
+
+XAP_Frame * AP_UnixFrame::cloneFrame()
+{
+	AP_Frame * pClone = new AP_UnixFrame(this);
+	ENSUREP_C(pClone);
+	return static_cast<XAP_Frame *>(pClone);
+
+ Cleanup:
+	// clean up anything we created here
+	if (pClone)
+	{
+		static_cast<XAP_App *>(m_pApp)->forgetFrame(pClone);
+		delete pClone;
+	}
+	return NULL;
 }
 
 bool AP_UnixFrame::initialize(XAP_FrameMode frameMode)
@@ -297,254 +174,9 @@ bool AP_UnixFrame::initialize(XAP_FrameMode frameMode)
 	return true;
 }
 
+
+
 /*****************************************************************/
-
-bool AP_UnixFrame::initFrameData()
-{
-	UT_ASSERT(!((AP_FrameData*)m_pData));
-
-	AP_FrameData* pData = new AP_FrameData(static_cast<XAP_App *>(m_pApp));
-
-	m_pData = (void*)pData;
-	return (pData ? true : false);
-}
-
-void AP_UnixFrame::killFrameData()
-{
-	AP_FrameData* pData = (AP_FrameData*) m_pData;
-	DELETEP(pData);
-	m_pData = NULL;
-}
-
-UT_Error AP_UnixFrame::_loadDocument(const char * szFilename, IEFileType ieft,
-				     bool createNew)
-{
-#ifdef DEBUG
-	if (szFilename) {
-		UT_DEBUGMSG(("DOM: trying to load %s (%d, %d)\n", szFilename, ieft, createNew));
-	}
-	else {
-		UT_DEBUGMSG(("DOM: trying to load %s (%d, %d)\n", "(NULL)", ieft, createNew));
-	}
-#endif
-
-	// are we replacing another document?
-	if (m_pDoc)
-	{
-		// yep.  first make sure it's OK to discard it, 
-		// TODO: query user if dirty...
-	}
-
-	// load a document into the current frame.
-	// if no filename, create a new document.
-
-	AD_Document * pNewDoc = new PD_Document(getApp());
-	UT_ASSERT(pNewDoc);
-	
-	if (!szFilename || !*szFilename)
-	{
-		pNewDoc->newDocument();
-		m_iUntitled = _getNextUntitledNumber();
-		goto ReplaceDocument;
-	}
-	UT_Error errorCode;
-	errorCode = pNewDoc->readFromFile(szFilename, ieft);
-	if (!errorCode)
-		goto ReplaceDocument;
-
-	if (createNew)
-	  {
-	    // we have a file name but couldn't load it
-	    pNewDoc->newDocument();
-
-	    // here, we want to open a new document if it doesn't exist.
-	    // errorCode could also take several other values, indicating
-	    // that the document exists but for some reason we could not
-	    // open it. in those cases, we do not wish to overwrite the
-	    // existing documents, but instead open a new blank document. 
-	    // this fixes bug 1668 - DAL
-	    if ( UT_IE_FILENOTFOUND == errorCode )
-	      errorCode = pNewDoc->saveAs(szFilename, ieft);
-	  }
-	if (!errorCode)
-	  goto ReplaceDocument;
-	
-	UT_DEBUGMSG(("ap_Frame: could not open the file [%s]\n",szFilename));
-	UNREFP(pNewDoc);
-	return errorCode;
-
-ReplaceDocument:
-	getApp()->forgetClones(this);
-
-	// NOTE: prior document is discarded in _showDocument()
-	m_pDoc = pNewDoc;
-	return UT_OK;
-}
-	
-UT_Error AP_UnixFrame::_importDocument(const char * szFilename, int ieft,
-									  bool markClean)
-{
-	UT_DEBUGMSG(("DOM: trying to import %s (%d, %d)\n", szFilename, ieft, markClean));
-
-	// are we replacing another document?
-	if (m_pDoc)
-	{
-		// yep.  first make sure it's OK to discard it, 
-		// TODO: query user if dirty...
-	}
-
-	// load a document into the current frame.
-	// if no filename, create a new document.
-
-	AD_Document * pNewDoc = new PD_Document(getApp());
-	UT_ASSERT(pNewDoc);
-
-	if (!szFilename || !*szFilename)
-	{
-		pNewDoc->newDocument();
-		goto ReplaceDocument;
-	}
-	UT_Error errorCode;
-	errorCode = pNewDoc->importFile(szFilename, ieft, markClean);
-	if (!errorCode)
-		goto ReplaceDocument;
-
-	UT_DEBUGMSG(("ap_Frame: could not open the file [%s]\n",szFilename));
-
-	UNREFP(pNewDoc);
-	return errorCode;
-
-ReplaceDocument:
-	getApp()->forgetClones(this);
-
-	m_iUntitled = _getNextUntitledNumber();
-
-	// NOTE: prior document is discarded in _showDocument()
-	m_pDoc = pNewDoc;
-	return UT_OK;
-}
-
-XAP_Frame * AP_UnixFrame::cloneFrame()
-{
-	AP_UnixFrame * pClone = new AP_UnixFrame(this);
-	ENSUREP(pClone);
-	return static_cast<XAP_Frame *>(pClone);
-
- Cleanup:
-	// clean up anything we created here
-	if (pClone)
-	{
-		static_cast<XAP_App *>(m_pApp)->forgetFrame(pClone);
-		delete pClone;
-	}
-	return NULL;
-}
-
-
-XAP_Frame * AP_UnixFrame::buildFrame(XAP_Frame * pF)
-{
-	UT_Error error = UT_OK;
-	AP_UnixFrame * pClone =	static_cast<AP_UnixFrame *>(pF);
-	ENSUREP(pClone);
-	if (!pClone->initialize())
-		goto Cleanup;
-
-	error = pClone->_showDocument();
-	if (error)
-		goto Cleanup;
-
-	pClone->show();
-	return static_cast<XAP_Frame *>(pClone);
-
- Cleanup:
-	// clean up anything we created here
-	if (pClone)
-	{
-		static_cast<XAP_App *>(m_pApp)->forgetFrame(pClone);
-		delete pClone;
-	}
-	return NULL;
-}
-
-UT_Error AP_UnixFrame::loadDocument(const char * szFilename, int ieft, bool createNew)
-{
-	bool bUpdateClones;
-	UT_Vector vClones;
-	XAP_App * pApp = getApp();
-
-	bUpdateClones = (getViewNumber() > 0);
-	if (bUpdateClones)
-	{
-		pApp->getClones(&vClones, this);
-	}
-	UT_Error errorCode;
-	errorCode =  _loadDocument(szFilename, (IEFileType) ieft, createNew);
-	if (errorCode)
-	{
-		// we could not load the document.
-		// we cannot complain to the user here, we don't know
-		// if the app is fully up yet.  we force our caller
-		// to deal with the problem.
-		return errorCode;
-	}
-
-	pApp->rememberFrame(this);
-	if (bUpdateClones)
-	{
-		for (UT_uint32 i = 0; i < vClones.getItemCount(); i++)
-		{
-			AP_UnixFrame * pFrame = (AP_UnixFrame *) vClones.getNthItem(i);
-			if(pFrame != this)
-			{
-				pFrame->_replaceDocument(m_pDoc);
-				pApp->rememberFrame(pFrame, this);
-			}
-		}
-	}
-
-	return _showDocument();
-}
-
-UT_Error AP_UnixFrame::loadDocument(const char * szFilename, int ieft)
-{
-  return loadDocument(szFilename, ieft, false);
-}
-
-UT_Error AP_UnixFrame::importDocument(const char * szFilename, int ieft,
-									  bool markClean)
-{
-	bool bUpdateClones;
-	UT_Vector vClones;
-	XAP_App * pApp = getApp();
-
-	bUpdateClones = (getViewNumber() > 0);
-	if (bUpdateClones)
-	{
-		pApp->getClones(&vClones, this);
-	}
-	UT_Error errorCode;
-	errorCode =  _importDocument(szFilename, (IEFileType) ieft, markClean);
-	if (errorCode)
-	{
-		return errorCode;
-	}
-
-	pApp->rememberFrame(this);
-	if (bUpdateClones)
-	{
-		for (UT_uint32 i = 0; i < vClones.getItemCount(); i++)
-		{
-			AP_UnixFrame * pFrame = (AP_UnixFrame *) vClones.getNthItem(i);
-			if(pFrame != this)
-			{
-				pFrame->_replaceDocument(m_pDoc);
-				pApp->rememberFrame(pFrame, this);
-			}
-		}
-	}
-
-	return _showDocument();
-}
 
 // WL_REFACTOR: Put this in the helper
 void AP_UnixFrame::_scrollFuncY(void * pData, UT_sint32 yoff, UT_sint32 /*yrange*/)
@@ -600,14 +232,6 @@ void AP_UnixFrame::translateDocumentToScreen(UT_sint32 &x, UT_sint32 &y)
 void AP_UnixFrame::setStatusMessage(const char * szMsg)
 {
 	((AP_FrameData *)m_pData)->m_pStatusBar->setStatusMessage(szMsg);
-}
-
-UT_Error AP_UnixFrame::_replaceDocument(AD_Document * pDoc)
-{
-	// NOTE: prior document is discarded in _showDocument()
-	m_pDoc = REFP(pDoc);
-
-	return _showDocument();
 }
 
 void AP_UnixFrame::toggleTopRuler(bool bRulerOn)
@@ -736,6 +360,79 @@ void AP_UnixFrame::toggleStatusBar(bool bStatusBarOn)
 	else	// turning status bar off
 		pFrameData->m_pStatusBar->hide();
 }
+
+bool AP_UnixFrame::_createViewGraphics(GR_Graphics *& pG, UT_uint32 iZoom)
+{
+	XAP_UnixFontManager * fontManager = ((XAP_UnixApp *) getApp())->getFontManager();
+	//WL: experimentally hiding this
+	//gtk_widget_show(static_cast<AP_UnixFrameImpl *>(m_pFrameImpl)->m_dArea);
+	pG = new GR_UnixGraphics(static_cast<AP_UnixFrameImpl *>(m_pFrameImpl)->m_dArea->window, fontManager, getApp());
+	ENSUREP_RF(pG);
+	pG->setZoomPercentage(iZoom);
+
+	return true;
+}
+
+void AP_UnixFrame::_setViewFocus(AV_View *pView)
+{
+	bool bFocus=GPOINTER_TO_INT(g_object_get_data(G_OBJECT(static_cast<XAP_UnixFrameImpl *>(m_pFrameImpl)->getTopLevelWindow()),
+						 "toplevelWindowFocus"));
+	pView->setFocus(bFocus && (gtk_grab_get_current()==NULL || gtk_grab_get_current()==static_cast<XAP_UnixFrameImpl *>(m_pFrameImpl)->getTopLevelWindow()) ? AV_FOCUS_HERE : !bFocus && gtk_grab_get_current()!=NULL && isTransientWindow(GTK_WINDOW(gtk_grab_get_current()),GTK_WINDOW(static_cast<XAP_UnixFrameImpl *>(m_pFrameImpl)->getTopLevelWindow())) ?  AV_FOCUS_NEARBY : AV_FOCUS_NONE);
+}
+
+void AP_UnixFrame::_bindToolbars(AV_View *pView)
+{
+	static_cast<AP_UnixFrameImpl *>(m_pFrameImpl)->_bindToolbars(pView);
+}
+
+bool AP_UnixFrame::_createScrollBarListeners(AV_View * pView, AV_ScrollObj *& pScrollObj, 
+					     ap_ViewListener *& pViewListener, ap_Scrollbar_ViewListener *& pScrollbarViewListener,
+					     AV_ListenerId &lid, AV_ListenerId &lidScrollbarViewListener)
+{
+	// The "AV_ScrollObj pScrollObj" receives
+	// send{Vertical,Horizontal}ScrollEvents
+	// from both the scroll-related edit methods
+	// and from the UI callbacks.
+	// 
+	// The "ap_ViewListener pViewListener" receives
+	// change notifications as the document changes.
+	// This ViewListener is responsible for keeping
+	// the title-bar up to date (primarily title
+	// changes, dirty indicator, and window number).
+	// ON UNIX ONLY: we subclass this with ap_UnixViewListener
+	// ON UNIX ONLY: so that we can deal with X-Selections.
+	//
+	// The "ap_Scrollbar_ViewListener pScrollbarViewListener"
+	// receives change notifications as the doucment changes.
+	// This ViewListener is responsible for recalibrating the
+	// scrollbars as pages are added/removed from the document.
+	//
+	// Each Toolbar will also get a ViewListener so that
+	// it can update toggle buttons, and other state-indicating
+	// controls on it.
+	//
+	// TODO we ***really*** need to re-do the whole scrollbar thing.
+	// TODO we have an addScrollListener() using an m_pScrollObj
+	// TODO and a View-Listener, and a bunch of other widget stuff.
+	// TODO and its very confusing.
+
+	pScrollObj = new AV_ScrollObj(this,_scrollFuncX,_scrollFuncY);
+	ENSUREP_RF(pScrollObj);
+
+	pViewListener = new ap_UnixViewListener(this);
+	ENSUREP_RF(pViewListener);
+	pScrollbarViewListener = new ap_Scrollbar_ViewListener(this,pView);
+	ENSUREP_RF(pScrollbarViewListener);
+	
+	if (!pView->addListener(static_cast<AV_Listener *>(pViewListener),&lid))
+		return false;
+	if (!pView->addListener(static_cast<AV_Listener *>(pScrollbarViewListener),
+							&lidScrollbarViewListener))
+		return false;
+
+	return true;
+}
+
 
 UT_sint32 AP_UnixFrame::_getDocumentAreaWidth()
 {
