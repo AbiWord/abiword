@@ -154,7 +154,7 @@ bool pt_PieceTable::appendSpan(const UT_UCSChar * pbuf, UT_uint32 length)
 	// (perhaps the parser was a bit lazy in chunking up the data).
 
 	pf_Frag * pfLast = m_fragments.getLast();
-	if (pfLast->getType() == pf_Frag::PFT_Text)
+	if ((pfLast != NULL) && (pfLast->getType() == pf_Frag::PFT_Text))
 	{
 		pf_Frag_Text * pfLastText = static_cast<pf_Frag_Text *>(pfLast);
 		if (   (pfLastText->getIndexAP() == loading.m_indexCurrentInlineAP)
