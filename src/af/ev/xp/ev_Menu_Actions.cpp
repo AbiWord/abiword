@@ -135,7 +135,9 @@ bool EV_Menu_ActionSet::setAction(XAP_Menu_Id id,
 	EV_Menu_Action *pAction = new EV_Menu_Action(id,bHoldsSubMenu,bRaisesDialog,bCheckable,
 												 szMethodName,pfnGetState,pfnGetLabel);
 	UT_uint32 error = m_actionTable.setNthItem(index, pAction, &tmp);
-	DELETEP(static_cast<EV_Menu_Action *> (tmp));
+
+	EV_Menu_Action * pTmpAction = static_cast<EV_Menu_Action *> (tmp);
+	DELETEP(pTmpAction);
 	return (error == 0);
 }
 
