@@ -80,7 +80,8 @@ else
 	else #/* OPTIMIZE*/	
 
 	ifeq ($(ABI_OPT_DEBUG),1)
-	OPTIMIZER	= -g -Wall -ansi -pedantic 
+#	OPTIMIZER	= -g -Wall -ansi -pedantic 
+	OPTIMIZER	= -g -Wall -pedantic -Wno-long-long 
 	DEFINES		= -DDEBUG -UNDEBUG
 	OBJ_DIR_SFX	= DBG
 		ifeq ($(ABI_OPT_GNOME),1)

@@ -181,7 +181,7 @@ RTF_msword97_level::RTF_msword97_level(RTF_msword97_list * pmsword97List, UT_uin
 }
 
 // Static data members must be initialized at file scope.
-UT_uint32 RTF_msword97_level::m_sLastAssignedLevelID = 100;
+UT_uint32 RTF_msword97_level::m_sLastAssignedLevelID = 100000;
 UT_uint32 RTF_msword97_level::m_sPreviousLevel =0;
 
 
@@ -389,11 +389,14 @@ bool RTF_msword97_level::ParseLevelText(const UT_String szLevelText,const UT_Str
 		}
 		pText++;
 	}
-	UT_ASSERT(ilength == icurrent);
+	if(ilength != icurrent)
+	{
+		ilength = icurrent;
+	}
 	// Find the occurance of a previous level place holder
 	for (icurrent = ilength-1; icurrent>=0; icurrent--)
 	{
-		if(-iLevelText[icurrent] > (UT_sint32)iLevel)
+		if(-iLevelText[icurrent] >= 0 && (-iLevelText[icurrent] < (UT_sint32)iLevel))
 		{
 			break;
 		}
@@ -401,27 +404,44 @@ bool RTF_msword97_level::ParseLevelText(const UT_String szLevelText,const UT_Str
 	if (icurrent < 0)
 	{
 		// No previous level place holder
+		UT_DEBUGMSG(("RTF Import: No previous level - restart list \n"));
 		m_bStartNewList = true;
 	}
 	else
 	{
 		//TODO - find the end of the previous level place holder label
 	}
-	// Stuff the rest of the string
+	// Stuff the rest of the string in JUST this level in listDelim
+
 	m_listDelim = "";
+	bool bFound = false;
 	for (icurrent++; icurrent < ilength; icurrent++)
 	{
-		if (iLevelText[icurrent]<=0)
+		if (iLevelText[icurrent]<=0 && !bFound)
 		{
+
+#if 0 
+// Matti's code
 			m_listDelim += "%L";
 			UT_ASSERT(-iLevelText[icurrent] == (UT_sint32)iLevel);
+#endif
+			if(-iLevelText[icurrent] == (UT_sint32) iLevel)
+			{
+				m_listDelim += "%L";
+				bFound = true;
+				continue;
+			}
 		}
-		else
+		else if ( bFound && (iLevelText[icurrent] >= 0))
 		{
 			m_listDelim += (char)iLevelText[icurrent];
 		}
+		else if(bFound && iLevelText[icurrent] < 0)
+		{
+			break;
+		}
 	}
-
+	UT_ASSERT(bFound);
 	return true;
 }
 /////////////////////////////////////////////////////////////////////////////////////////
@@ -3723,13 +3743,13 @@ bool IE_Imp_RTF::ApplyParagraphAttributes()
 // Now get the properties we've painstakingly put together.
 //
 		if ( iOveride > 0 && iOveride <= m_vecWord97ListOveride.size () )
-			{
-				pOver = (RTF_msword97_listOveride *) m_vecWord97ListOveride.getNthItem(iOveride - 1);
-			}
+		{
+			pOver = (RTF_msword97_listOveride *) m_vecWord97ListOveride.getNthItem(iOveride - 1);
+		}
 		else
-			{
-				UT_ASSERT(UT_SHOULD_NOT_HAPPEN); //wtf is going on here? see bug 2173
-			}
+		{
+			UT_ASSERT(UT_SHOULD_NOT_HAPPEN); //wtf is going on here? see bug 2173
+		}
 	}
 
 	// tabs
@@ -3999,6 +4019,7 @@ bool IE_Imp_RTF::ApplyParagraphAttributes()
 		{
 			sprintf(tempBuffer, " font-size:%spt;", std_size_string((float)pOver->getFontSize(iLevel)));	
 			strcat(propBuffer, tempBuffer);
+			UT_DEBUGMSG(("RTF: IMPORT!!!!! font sized changed in overide %d \n",pOver->getFontSize(iLevel)));
 		}
 		// typeface
 		if(pOver->isFontNumberChanged(iLevel))

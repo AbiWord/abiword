@@ -6910,6 +6910,7 @@ void FV_View::setYScrollOffset(UT_sint32 v)
 
 	if (dy == 0)
 		return;
+
 	_fixInsertionPointCoords();
 	m_pG->scroll(0, dy);
 	m_yScrollOffset = v;
@@ -7333,7 +7334,7 @@ void FV_View::cmdScroll(AV_ScrollCmd cmd, UT_uint32 iPos)
 	}
 
 	bool bRedrawPoint = true;
-
+		
 	if (bVertical && (yoff != m_yScrollOffset))
 	{
 		sendVerticalScrollEvent(yoff);
@@ -9261,21 +9262,21 @@ void FV_View::cmdContextAdd(void)
 
 		pView->m_bCursorBlink = b;
 
-			   if ( pView->m_bCursorBlink ) 
-		 {
-		   // start the cursor blinking
-		   pView->_eraseInsertionPoint();
-		   pView->_drawInsertionPoint();
-		 }
-		   else
-		 {
-					   // stop blinking and make sure the cursor is drawn
-					   if ( pView->m_pAutoCursorTimer )
-							   pView->m_pAutoCursorTimer->stop();
+		if ( pView->m_bCursorBlink ) 
+		{
+			// start the cursor blinking
+			pView->_eraseInsertionPoint();
+			pView->_drawInsertionPoint();
+		}
+		else
+		{
+			// stop blinking and make sure the cursor is drawn
+			if ( pView->m_pAutoCursorTimer )
+				pView->m_pAutoCursorTimer->stop();
 
-					   if ( !pView->m_bCursorIsOn )
-							   pView->_drawInsertionPoint();
-		 }
+			if ( !pView->m_bCursorIsOn )
+				pView->_drawInsertionPoint();
+		}
 	}
 #ifdef BIDI_ENABLED 
 	if (( pPrefs->getPrefsValueBool((XML_Char*)AP_PREF_KEY_DefaultDirectionRtl, &b) && b != pView->m_bDefaultDirectionRtl)
