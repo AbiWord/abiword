@@ -406,6 +406,7 @@ void fl_TableLayout::format(void)
 			isBroken = true;
 		}
 	}
+	fl_ContainerLayout * myL = myContainingLayout();
 	if((iNewHeight != iOldHeight)  || !isBroken)
 	{
 		//
@@ -425,7 +426,21 @@ void fl_TableLayout::format(void)
 				pPrevP = pPrevCon->getPage();
 			}
 		}
-		getDocSectionLayout()->setNeedsSectionBreak(true,pPrevP);
+		if(myL && (myL->getContainerType() != FL_CONTAINER_SHADOW) &&
+		   (myL->getContainerType() != FL_CONTAINER_HDRFTR))
+		{
+			getDocSectionLayout()->setNeedsSectionBreak(true,pPrevP);
+		}
+	}
+	if(myL && (myL->getContainerType() == FL_CONTAINER_SHADOW))
+	{
+		m_bNeedsReformat = false;
+		myL->format();
+		fp_ShadowContainer * pSC = static_cast<fp_ShadowContainer *>(myL->getFirstContainer());
+		if(pSC)
+		{
+			pSC->layout(true);
+		}
 	}
 	m_bRecursiveFormat = false;
 }
@@ -1758,16 +1773,6 @@ void fl_CellLayout::format(void)
 	}
 	m_bNeedsReformat = false;
 	checkAndAdjustCellSize();
-	if(myL->getContainerType() == FL_CONTAINER_SHADOW)
-	{
-		m_bNeedsReformat = false;
-		myL->format();
-		fp_ShadowContainer * pSC = static_cast<fp_ShadowContainer *>(myL->getFirstContainer());
-		if(pSC)
-		{
-			pSC->layout();
-		}
-	}
 }
 
 void fl_CellLayout::markAllRunsDirty(void)

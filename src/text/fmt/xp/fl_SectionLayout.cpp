@@ -4487,7 +4487,7 @@ fl_ContainerLayout * fl_HdrFtrShadow::findBlockAtPosition(PT_DocPosition pos)
 void fl_HdrFtrShadow::updateLayout(void)
 {
 	bool bredraw = false;
-	UT_DEBUGMSG(("Doing Update layout in shadow %x \n",this));
+	xxx_UT_DEBUGMSG(("Doing Update layout in shadow %x \n",this));
 	fl_ContainerLayout*	pBL = getFirstLayout();
 	while (pBL)
 	{
