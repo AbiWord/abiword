@@ -402,7 +402,10 @@ bool pt_PieceTable::_realChangeSpanFmt(PTChangeFmt ptc,
 	pf_Frag * pfEndDum = m_fragments.findFirstFragBeforePos(dpos2);
 	if(isEndFootnote(pfEndDum))
 	{
-		dpos2--;
+		if(dpos2 > dpos1)
+		{
+			dpos2--;
+		}
 	}
 //
 // Deal with addStyle

@@ -9824,9 +9824,9 @@ bool FV_View::insertFootnote(bool bFootnote)
 	setScreenUpdateOnGeneralUpdate( true);
 	_restorePieceTableState(); // clean up remaining measures
 	_updateInsertionPoint();
-	_ensureInsertionPointOnScreen();
 	_generalUpdate();
 	_fixInsertionPointCoords();
+	_ensureInsertionPointOnScreen();
 	notifyListeners(AV_CHG_MOTION | AV_CHG_ALL);
 //
 // Lets have a peek at the doc structure, shall we?
