@@ -732,6 +732,11 @@ void fl_BlockLayout::_insertFakeTextRun(void)
 // are both valid in the sense of being able to contain the point.
 void fl_BlockLayout::_breakLineAfterRun(fp_Run* pRun)
 {
+	// When loading a document, there may not have been created
+	// lines yet. Get a first one created and hope for the best...
+	if (!m_pFirstLine)
+		_stuffAllRunsOnALine();
+
 	// First make sure the old line can contain the point
 	fp_Line* pLine = pRun->getLine();
 	// (This is a sloppy check - may have to loop between the two Runs
