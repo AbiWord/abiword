@@ -1161,11 +1161,13 @@ rms:  I'm adding something here to get a localized splash screen
 		size.height = iSplashHeight;
 		[theWindow setContentSize:size];
 
+#ifdef DEBUG
 		NSImage *theImage;
 		NSString *theFileName = [NSString stringWithCString:buf];	// autoreleased 
 		theImage = [[NSImage alloc] initWithContentsOfFile:theFileName];
 		[[splash getImageView] setImage:theImage];
 		[theImage release];
+#endif
 #if 0
 		// create a drawing area
 		GtkWidget * da = createDrawingArea ();
