@@ -58,13 +58,6 @@ class ap_Scrollbar_ViewListener;
 class UT_Worker;
 class UT_Timer;
 
-typedef enum _FrameModes
-{
-	XAP_NormalFrame,	// Normal Frame
-	XAP_NoMenusWindowLess,	// No toplevel window or menus
-	XAP_WindowLess // No toplevel window but menus are OK.
-} XAP_FrameMode;
-
 /*****************************************************************
 ******************************************************************
 ** This file defines the base class for the cross-platform 
@@ -97,7 +90,7 @@ protected:
 
 //////////////////////////////////////////////////////////////////
 
-// FOR FUTURE REFERENCE: XAP_FrameHelper defines services that are quite specific
+// FOR FUTURE REFERENCE: XAP_FrameImpl defines services that are quite specific
 // to the _implementation_ of the frame, and involve platform specific code
 // XAP_Frame defines services that are specific to public interface (from the
 // point of view of abi code) of the visible frame and not the implementation
@@ -105,61 +98,8 @@ protected:
 // when adding something onto the frame code
 
 // WL: ONLY ENABLE NEW FRAME CODE ON UNIX/GTK FOR NOW AND Cocoa (Hub)
-#if defined(ANY_UNIX)  || (defined(__APPLE__) && defined(__MACH__))
-class ABI_EXPORT XAP_FrameHelper
-{
-public:
-
-protected:
-	XAP_FrameHelper();
-	virtual ~XAP_FrameHelper();
-
-	friend class XAP_Frame;
-	XAP_Frame * m_pFrame;
-
-    void _startViewAutoUpdater(void);
-	static void viewAutoUpdater(UT_Worker *wkr);
-
-	virtual bool _updateTitle();
-
-	virtual void _initialize() = 0;
-	virtual bool _close() = 0;
-	virtual bool _raise() = 0;
-	virtual bool _show() = 0;
-
-	virtual XAP_DialogFactory *	_getDialogFactory() = 0;
-	virtual EV_Toolbar * _newToolbar(XAP_App *app, XAP_Frame *frame, const char *szLayout, const char *szLanguage) = 0;
-	virtual EV_Menu* _getMainMenu() = 0;
-	virtual void _createToolbars();
-	virtual void _refillToolbarsInFrameData() = 0;
-	virtual void _rebuildToolbar(UT_uint32 ibar) = 0;
-	// Useful to refresh the size of the Frame.  For instance,
-	// when the user selects hide statusbar, the Frame has to be
-	// resized in order to fill the gap leaved by the statusbar
-	virtual void _queue_resize() = 0;
-
-	virtual bool _runModalContextMenu(AV_View * pView, const char * szMenuName,
-									  UT_sint32 x, UT_sint32 y) = 0;
-	virtual void _setFullScreen(bool isFullScreen) = 0;
-	virtual bool _openURL(const char * szURL) = 0;
-	virtual void _nullUpdate () const = 0;
-	virtual void _setCursor(GR_Graphics::Cursor cursor) = 0;
-
-	EV_Mouse *		 		  	m_pMouse;
-	EV_Keyboard *				m_pKeyboard;
-	XAP_FrameMode               m_iFrameMode;
-
-	UT_uint32                   m_ViewAutoUpdaterID;
-	UT_Timer *                  m_ViewAutoUpdater;
-
-	UT_Vector					m_vecToolbarLayoutNames;
-	const char *				m_szToolbarLabelSetName;	/* language for toolbars */
-	const char *				m_szToolbarAppearance;
-	UT_Vector                   m_vecToolbars;
-
-	const char *				m_szMenuLayoutName;
-	const char *				m_szMenuLabelSetName;		/* language for menus */
-};
+#if defined(ANY_UNIX) || (defined(__APPLE__) && defined(__MACH__))
+#include "xap_FrameImpl.h"
 
 class ABI_EXPORT XAP_Frame
 {
@@ -181,25 +121,24 @@ public:
 	virtual UT_Error importDocument (const char * szFilename, int ieft, bool markClean = false) = 0;
 
 	// thin interface functions to facilities provided by the helper
-	bool close() { return m_pFrameHelper->_close(); }
-	bool raise() { return m_pFrameHelper->_raise(); }
-	bool show() { return m_pFrameHelper->_show(); }
-	bool updateTitle() { return m_pFrameHelper->_updateTitle(); }
-	void setCursor(GR_Graphics::Cursor cursor) { m_pFrameHelper->_setCursor(cursor); }
-	virtual void queue_resize() { m_pFrameHelper->_queue_resize(); }
-	void setFullScreen(bool isFullScreen) { m_pFrameHelper->_setFullScreen(isFullScreen); }
-	bool openURL(const char * szURL) { return m_pFrameHelper->_openURL(szURL); }
+	bool close() { return m_pFrameImpl->_close(); }
+	bool raise() { return m_pFrameImpl->_raise(); }
+	bool show() { return m_pFrameImpl->_show(); }
+	bool updateTitle() { return m_pFrameImpl->_updateTitle(); }
+	void setCursor(GR_Graphics::Cursor cursor) { m_pFrameImpl->_setCursor(cursor); }
+	virtual void queue_resize() { m_pFrameImpl->_queue_resize(); }
+	void setFullScreen(bool isFullScreen) { m_pFrameImpl->_setFullScreen(isFullScreen); }
+	bool openURL(const char * szURL) { return m_pFrameImpl->_openURL(szURL); }
 
-	virtual XAP_DialogFactory * getDialogFactory() { return m_pFrameHelper->_getDialogFactory(); }
-	virtual EV_Toolbar * _newToolbar(XAP_App *app, XAP_Frame *frame, const char *szLayout, const char *szLanguage) { return m_pFrameHelper->_newToolbar(app, frame, szLayout, szLanguage); }
-	virtual EV_Menu* getMainMenu() { return m_pFrameHelper->_getMainMenu(); }
+	virtual XAP_DialogFactory * getDialogFactory() { return m_pFrameImpl->_getDialogFactory(); }
+	virtual EV_Toolbar * _newToolbar(XAP_App *app, XAP_Frame *frame, const char *szLayout, const char *szLanguage) { return m_pFrameImpl->_newToolbar(app, frame, szLayout, szLanguage); }
+	virtual EV_Menu* getMainMenu() { return m_pFrameImpl->_getMainMenu(); }
 
-
-	XAP_FrameHelper * getFrameHelper() { return m_pFrameHelper; }
+	XAP_FrameImpl * getFrameImpl() { return m_pFrameImpl; }
 
 	virtual UT_sint32			setInputMode(const char * szName);
 	const char *				getInputMode() const;
-	void                        nullUpdate () const { m_pFrameHelper->_nullUpdate(); }
+	void                        nullUpdate () const { m_pFrameImpl->_nullUpdate(); }
 	EV_EditEventMapper *		getEditEventMapper() const;
 	XAP_App *					getApp() const;
 	AV_View *		       		getCurrentView() const;
@@ -224,7 +163,7 @@ public:
 	virtual void				setYScrollRange() = 0;
 
 	bool runModalContextMenu(AV_View * pView, const char * szMenuName,
-		UT_sint32 x, UT_sint32 y) { return m_pFrameHelper->_runModalContextMenu(pView, szMenuName, x, y); }
+		UT_sint32 x, UT_sint32 y) { return m_pFrameImpl->_runModalContextMenu(pView, szMenuName, x, y); }
 
 	typedef enum { z_200, z_100, z_75, z_PAGEWIDTH, z_WHOLEPAGE, z_PERCENT } tZoomType;
 	virtual void				setZoomPercentage(UT_uint32 iZoom);
@@ -242,8 +181,8 @@ public:
 	virtual void				toggleStatusBar(bool /* bStatusBarOn */) { }
 	virtual bool				getBarVisibility(UT_uint32 iBarNb) { return true; }
 
-   	EV_Mouse *					getMouse() { return m_pFrameHelper->m_pMouse; }
-	EV_Keyboard *				getKeyboard() { return m_pFrameHelper->m_pKeyboard; }
+   	EV_Mouse *					getMouse() { return m_pFrameImpl->m_pMouse; }
+	EV_Keyboard *				getKeyboard() { return m_pFrameImpl->m_pKeyboard; }
 
 	EV_Toolbar *                getToolbar(UT_uint32 ibar);
 	UT_sint32                   findToolbarNr(EV_Toolbar * pTB);
@@ -251,7 +190,7 @@ public:
 	bool                        repopulateCombos();
 
 	void                        rebuildAllToolbars(void);
-	void                        refillToolbarsInFrameData(void) { return m_pFrameHelper->_refillToolbarsInFrameData(); }
+	void                        refillToolbarsInFrameData(void) { return m_pFrameImpl->_refillToolbarsInFrameData(); }
 	void                        dragBegin(XAP_Toolbar_Id srcId, 
 										  EV_Toolbar * pTBsrc);
 	void                        dragDropToIcon(XAP_Toolbar_Id srcId,
@@ -297,8 +236,8 @@ public:
 	UT_uint32                   getTimeSinceSave() const;
 
 protected:
-	friend class XAP_FrameHelper;
-	XAP_FrameHelper *           m_pFrameHelper; /* set by platform specific code */
+	friend class XAP_FrameImpl;
+	XAP_FrameImpl *           m_pFrameImpl; /* set by platform specific code */
 
 	XAP_App *					m_pApp;			/* handle to application-specific data */
 	AD_Document *				m_pDoc;			/* to our in-memory representation of a document */
@@ -321,8 +260,9 @@ protected:
 private:
 	void						_createAutoSaveTimer();
 
-	char						m_szTitle[512];				/* TODO need #define for this number */
-	char						m_szNonDecoratedTitle[512]; /* TODO need #define for this number */
+	UT_String					m_sTitle;
+	UT_String					m_sNonDecoratedTitle;
+
 	UT_uint32					m_iIdAutoSaveTimer;
 	UT_uint32					m_iAutoSavePeriod;
 	UT_String					m_stAutoSaveExt;

@@ -45,7 +45,7 @@ CPPSRCS=		xap_UnixApp.cpp				\
 			xap_UnixFont.cpp			\
 			xap_UnixFontPreview.cpp			\
 			xap_UnixPSFont.cpp			\
-			xap_UnixFrame.cpp			\
+			xap_UnixFrameImpl.cpp			\
 			xap_UnixToolbar_Icons.cpp		\
 			xap_UnixModule.cpp                      \
 			xap_UnixPSImage.cpp			\

@@ -31,6 +31,8 @@
 #include "ut_Encoding.h"
 #include "xap_Dlg_Encoding.h"
 
+class XAP_Frame;
+
 class XAP_UnixDialog_Encoding : public XAP_Dialog_Encoding
 {
 public:

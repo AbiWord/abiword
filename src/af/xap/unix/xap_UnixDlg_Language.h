@@ -26,7 +26,7 @@
 #include "xap_Dlg_Language.h"
 //#include "ut_misc.h"
 
-class XAP_UnixFrame;
+class XAP_Frame;
 
 /*****************************************************************/
 

@@ -21,9 +21,10 @@
 #define XAP_UNIXDIALOG_ABOUT_H
 
 #include "xap_Dlg_About.h"
-#include "xap_UnixFrame.h"
 #include "gr_UnixGraphics.h"
 #include "gr_UnixImage.h"
+
+class XAP_Frame;
 
 /*****************************************************************/
 

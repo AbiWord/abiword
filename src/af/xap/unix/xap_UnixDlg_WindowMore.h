@@ -21,7 +21,7 @@
 #define XAP_UNIXDIALOG_WINDOWMORE_H
 
 #include "xap_Dlg_WindowMore.h"
-class XAP_UnixFrame;
+class XAP_Frame;
 
 /*****************************************************************/
 

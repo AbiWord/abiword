@@ -22,7 +22,7 @@
 
 #include "xap_Dlg_Image.h"
 
-class XAP_UnixFrame;
+class XAP_Frame;
 
 /*****************************************************************/
 

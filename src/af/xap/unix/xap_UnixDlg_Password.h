@@ -23,7 +23,7 @@
 #include <gtk/gtk.h>
 #include "xap_Dlg_Password.h"
 
-class XAP_UnixFrame;
+class XAP_Frame;
 
 /*****************************************************************/
 

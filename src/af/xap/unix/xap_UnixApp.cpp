@@ -39,7 +39,6 @@
 #include "xap_UnixApp.h"
 #include "xap_FakeClipboard.h"
 #include "gr_UnixImage.h"
-#include "xap_UnixFrame.h"
 #include "xap_UnixToolbar_Icons.h"
 #include "xap_Unix_TB_CFactory.h"
 #include "xap_Prefs.h"

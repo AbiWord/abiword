@@ -26,7 +26,8 @@
 #include "xap_UnixDialogHelper.h"
 #include "xap_UnixDlg_MessageBox.h"
 #include "xap_UnixApp.h"
-#include "xap_UnixFrame.h"
+#include "xap_Frame.h"
+#include "xap_UnixFrameImpl.h"
 
 /*****************************************************************/
 XAP_Dialog * XAP_UnixDialog_MessageBox::static_constructor(XAP_DialogFactory * pFactory,
@@ -50,14 +51,14 @@ XAP_UnixDialog_MessageBox::~XAP_UnixDialog_MessageBox(void)
 
 void XAP_UnixDialog_MessageBox::runModal(XAP_Frame * pFrame)
 {
-	XAP_UnixFrameHelper * pUnixFrameHelper = static_cast<XAP_UnixFrameHelper *>(pFrame->getFrameHelper());
-	UT_return_if_fail(pUnixFrameHelper);
+	XAP_UnixFrameImpl * pUnixFrameImpl = static_cast<XAP_UnixFrameImpl *>(pFrame->getFrameImpl());
+	UT_return_if_fail(pUnixFrameImpl);
 
 	XAP_UnixApp * pApp = (XAP_UnixApp *)pFrame->getApp();
 	UT_return_if_fail(pApp);
 
 	GtkWidget * message ;
-	GtkWindow * toplevel = GTK_WINDOW(pUnixFrameHelper->getTopLevelWindow());
+	GtkWindow * toplevel = GTK_WINDOW(pUnixFrameImpl->getTopLevelWindow());
 	GtkWidget * label;
 	GtkWidget * hbox;
 

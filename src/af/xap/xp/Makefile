@@ -43,8 +43,9 @@ CPPSRCS=	xad_Document.cpp		\
 		xap_Dlg_Insert_Symbol.cpp	\
 		xap_Dlg_Image.cpp		\
 		xap_FakeClipboard.cpp		\
-		xap_FontPreview.cpp			\
+		xap_FontPreview.cpp		\
 		xap_Frame.cpp			\
+		xap_FrameImpl.cpp		\
 		xap_LoadBindings.cpp		\
 		xap_Log.cpp			\
 		xap_Prefs.cpp			\

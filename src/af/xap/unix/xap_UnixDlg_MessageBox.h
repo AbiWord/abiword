@@ -20,7 +20,7 @@
 #ifndef XAP_UNIXDIALOG_MESSAGEBOX_H
 #define XAP_UNIXDIALOG_MESSAGEBOX_H
 
-#include "xap_UnixFrame.h"
+#include "xap_Frame.h"
 #include "xap_Dlg_MessageBox.h"
 #include <glib.h>
 class XAP_UnixFrame;

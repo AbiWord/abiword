@@ -23,7 +23,7 @@
 #include "xap_Dlg_Zoom.h"
 #include "xap_UnixFontManager.h"
 
-class XAP_UnixFrame;
+class XAP_Frame;
 
 /*****************************************************************/
 

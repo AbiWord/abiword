@@ -26,7 +26,7 @@
 #include "ev_UnixToolbar.h"
 #include "xap_Types.h"
 #include "xap_UnixApp.h"
-#include "xap_UnixFrame.h"
+#include "xap_UnixFrameImpl.h"
 #include "ev_Toolbar_Actions.h"
 #include "ev_Toolbar_Layouts.h"
 #include "ev_Toolbar_Labels.h"
@@ -439,7 +439,7 @@ bool EV_UnixToolbar::toolbarEvent(_wd * wd,
  */
 UT_sint32 EV_UnixToolbar::destroy(void)
 {
-	GtkWidget * wVBox = static_cast<XAP_UnixFrameHelper *>(m_pFrame->getFrameHelper())->getVBoxWidget();
+	GtkWidget * wVBox = static_cast<XAP_UnixFrameImpl *>(m_pFrame->getFrameImpl())->getVBoxWidget();
 	UT_sint32  pos = 0;
 //
 // Code gratutiously stolen from gtkbox.c
@@ -485,7 +485,7 @@ void EV_UnixToolbar::rebuildToolbar(UT_sint32 oldpos)
   // the frame.
   //
     synthesize();
-	GtkWidget * wVBox = static_cast<XAP_UnixFrameHelper *>(m_pFrame->getFrameHelper())->getVBoxWidget();
+	GtkWidget * wVBox = static_cast<XAP_UnixFrameImpl *>(m_pFrame->getFrameImpl())->getVBoxWidget();
 	gtk_box_reorder_child(GTK_BOX(wVBox), m_wHandleBox,oldpos);
 //
 // bind  view listener
@@ -583,8 +583,8 @@ bool EV_UnixToolbar::synthesize(void)
 	UT_uint32 nrLabelItemsInLayout = m_pToolbarLayout->getLayoutItemCount();
 	UT_ASSERT(nrLabelItemsInLayout > 0);
 
-	GtkWidget * wTLW = static_cast<XAP_UnixFrameHelper *>(m_pFrame->getFrameHelper())->getTopLevelWindow();
-	GtkWidget * wVBox = static_cast<XAP_UnixFrameHelper *>(m_pFrame->getFrameHelper())->getVBoxWidget();
+	GtkWidget * wTLW = static_cast<XAP_UnixFrameImpl *>(m_pFrame->getFrameImpl())->getTopLevelWindow();
+	GtkWidget * wVBox = static_cast<XAP_UnixFrameImpl *>(m_pFrame->getFrameImpl())->getVBoxWidget();
 
 	m_wHandleBox = gtk_handle_box_new();
 	UT_ASSERT(m_wHandleBox);

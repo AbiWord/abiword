@@ -26,7 +26,8 @@
 #include "ut_string.h"
 #include "xap_UnixDialogHelper.h"
 #include "xap_UnixApp.h"
-#include "xap_UnixFrame.h"
+#include "xap_Frame.h"
+#include "xap_UnixFrameImpl.h"
 
 #include "xap_Dialog_Id.h"
 #include "xap_UnixDlg_PluginManager.h"

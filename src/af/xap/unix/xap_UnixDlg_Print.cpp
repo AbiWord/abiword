@@ -28,7 +28,8 @@
 #include "xap_UnixDlg_Print.h"
 #include "xap_UnixDlg_MessageBox.h"
 #include "xap_UnixApp.h"
-#include "xap_UnixFrame.h"
+#include "xap_Frame.h"
+#include "xap_UnixFrameImpl.h"
 #include "xap_UnixPSGraphics.h"
 #include "xap_Strings.h"
 #include <gtk/gtk.h>

@@ -31,6 +31,7 @@
 #include "ut_timer.h"
 #include "xap_App.h"
 #include "xap_Frame.h"
+#include "xap_FrameImpl.h"
 #include "xap_Prefs.h"
 #include "xap_ViewListener.h"
 #include "ev_EditBinding.h"
@@ -54,108 +55,11 @@
 #include "xap_Toolbar_Layouts.h"
 #include "ut_sleep.h"
 
-// WL: ONLY ENABLE NEW FRAME CODE ON UNIX/GTK FOR NOW AND Cocoa (Hub)
+// WL: ONLY ENABLE NEW FRAME CODE ON UNIX/GTK FOR NOW (AND MACOSX, HUB)
 #if defined(ANY_UNIX)  || (defined(__APPLE__) && defined(__MACH__))
-/*****************************************************************/
-XAP_FrameHelper::XAP_FrameHelper() :
-	m_pMouse(0),
-	m_pKeyboard(0),
-	m_iFrameMode(XAP_NormalFrame),
-	m_ViewAutoUpdaterID(0),
-	m_ViewAutoUpdater(NULL),
-	m_szToolbarLabelSetName(0),
-	m_szToolbarAppearance(0),
-	m_szMenuLayoutName(0),
-	m_szMenuLabelSetName(0)
-{
-}
-
-XAP_FrameHelper::~XAP_FrameHelper()
-{
-  	DELETEP(m_pKeyboard);
-	DELETEP(m_pMouse);
-
-	if(m_ViewAutoUpdaterID != 0) {
-		m_ViewAutoUpdater->stop();
-	}
-
-	DELETEP(m_ViewAutoUpdater);
-
-	FREEP(m_szMenuLayoutName);
-	FREEP(m_szMenuLabelSetName);
-
-	UT_VECTOR_FREEALL(char *,m_vecToolbarLayoutNames);	
-	FREEP(m_szToolbarLabelSetName);
-	FREEP(m_szToolbarAppearance);
-	UT_VECTOR_PURGEALL(EV_Toolbar *, m_vecToolbars);
-
-}
-
-// void * XAP_FrameHelper::getFrameData()
-// { 
-// 	return m_pFrame->m_pData; 
-// }
-
-// WL_REFACTOR: replace this code with UT_String, and remove the silly comments	
-#define MAX_TITLE_LENGTH 256
-bool XAP_FrameHelper::_updateTitle()
-{
-	/*
-		The document title for this window has changed, so we need to:
-
-		1. Update m_szTitle accordingly.	(happens here)
-		2. Update the window title.		(happens in subclass)
-
-		Note that we don't need to update the contents of the Window menu, 
-		because that happens dynamically at menu pop-up time.  
-	*/
-
-	const char* szName = m_pFrame->m_pDoc->getFilename();
-
-	if (szName && *szName) {
-		if (strlen(szName) <= MAX_TITLE_LENGTH) {
-			strcpy(m_pFrame->m_szTitle, szName); 
-		}
-		else {
-			// copy the tail of the pathname, the useful part.
-			// would be a bit more useful to break it at a	
-			// pathname component separator.
-			strcpy(m_pFrame->m_szTitle, szName + (strlen(szName) - MAX_TITLE_LENGTH));
-		}
-	}
-	else
-	{
-		UT_ASSERT(m_pFrame->m_iUntitled);
-		const XAP_StringSet * pSS = m_pFrame->m_pApp->getStringSet();
-		
-		sprintf(m_pFrame->m_szTitle, pSS->getValue(XAP_STRING_ID_UntitledDocument, m_pFrame->m_pApp->getDefaultEncoding()).c_str(), m_pFrame->m_iUntitled);
-	}
-
-	strcpy(m_pFrame->m_szNonDecoratedTitle, m_pFrame->m_szTitle);
-	
-	if (m_pFrame->m_nView)
-	{
-		// multiple top-level views, so append : & view number
-		char buf[6];
-		UT_ASSERT(m_pFrame->m_nView < 10000);
-		sprintf(buf, ":%d", m_pFrame->m_nView);
-		strcat(m_pFrame->m_szTitle, buf);
-	}
-
-	// only for non-untitled documents
-	if (m_pFrame->m_pDoc->isDirty())
-	{
-		// append " *"
-		strcat(m_pFrame->m_szTitle, " *");
-	}
-
-	return true;
-}
-
-/*****************************************************************/
-
 XAP_Frame::XAP_Frame(XAP_App * pApp)
-	: m_pApp(pApp),
+	: m_pFrameImpl(0),
+	  m_pApp(pApp),
 	  m_pDoc(0),
 	  m_pView(0),
 	  m_pViewListener(0),
@@ -184,12 +88,11 @@ XAP_Frame::XAP_Frame(XAP_App * pApp)
 	  m_bShowMenubar(true)
 {
 	m_pApp->rememberFrame(this);
-	memset(m_szTitle,0,sizeof(m_szTitle));
-	memset(m_szNonDecoratedTitle,0,sizeof(m_szNonDecoratedTitle));
 }
 
 XAP_Frame::XAP_Frame(XAP_Frame * f)
-	: m_pApp(f->m_pApp),
+	: m_pFrameImpl(0),
+	m_pApp(f->m_pApp),
 	m_pDoc(REFP(f->m_pDoc)),
 	m_pView(0),
 	m_pViewListener(0),
@@ -214,8 +117,6 @@ XAP_Frame::XAP_Frame(XAP_Frame * f)
 	m_bFirstDraw(false)
 {
 	m_pApp->rememberFrame(this, f);
-	memset(m_szTitle,0,sizeof(m_szTitle));
-	memset(m_szNonDecoratedTitle,0,sizeof(m_szNonDecoratedTitle));
 }
 
 XAP_Frame::~XAP_Frame(void)
@@ -260,7 +161,7 @@ XAP_Frame::~XAP_Frame(void)
 		}
 	}
 
-	DELETEP(m_pFrameHelper);
+	DELETEP(m_pFrameImpl);
 }
 
 /*****************************************************************/
@@ -321,7 +222,7 @@ bool XAP_Frame::initialize(const char * szKeyBindingsKey, const char * szKeyBind
 		;
 	else
 		szMenuLayoutName = szMenuLayoutDefaultValue;
-	UT_cloneString((char *&)m_pFrameHelper->m_szMenuLayoutName,szMenuLayoutName);
+	UT_cloneString((char *&)m_pFrameImpl->m_szMenuLayoutName,szMenuLayoutName);
 	
 	//////////////////////////////////////////////////////////////////
 	// select language for menu labels
@@ -334,7 +235,7 @@ bool XAP_Frame::initialize(const char * szKeyBindingsKey, const char * szKeyBind
 		;
 	else
 		szMenuLabelSetName = szMenuLabelSetDefaultValue;
-	UT_cloneString((char *&)m_pFrameHelper->m_szMenuLabelSetName,szMenuLabelSetName);
+	UT_cloneString((char *&)m_pFrameImpl->m_szMenuLabelSetName,szMenuLabelSetName);
 	
 	//////////////////////////////////////////////////////////////////
 	// select which toolbars we should display
@@ -358,7 +259,7 @@ bool XAP_Frame::initialize(const char * szKeyBindingsKey, const char * szKeyBind
 		{
 			char * szTempName;
 			UT_cloneString(szTempName,p);
-			m_pFrameHelper->m_vecToolbarLayoutNames.addItem(szTempName);
+			m_pFrameImpl->m_vecToolbarLayoutNames.addItem(szTempName);
 		}
 		free(szTemp);
 	}
@@ -378,7 +279,7 @@ bool XAP_Frame::initialize(const char * szKeyBindingsKey, const char * szKeyBind
 		;
 	else
 		szToolbarLabelSetName = szToolbarLabelSetDefaultValue;
-	UT_cloneString((char *&)m_pFrameHelper->m_szToolbarLabelSetName,szToolbarLabelSetName);
+	UT_cloneString((char *&)m_pFrameImpl->m_szToolbarLabelSetName,szToolbarLabelSetName);
 	
 	//////////////////////////////////////////////////////////////////
 	// select the appearance of the toolbar buttons
@@ -388,7 +289,7 @@ bool XAP_Frame::initialize(const char * szKeyBindingsKey, const char * szKeyBind
 	pApp->getPrefsValue(XAP_PREF_KEY_ToolbarAppearance,
 			    (const XML_Char**)&szToolbarAppearance);
 	UT_ASSERT((szToolbarAppearance) && (*szToolbarAppearance));
-	UT_cloneString((char *&)m_pFrameHelper->m_szToolbarAppearance,szToolbarAppearance);
+	UT_cloneString((char *&)m_pFrameImpl->m_szToolbarAppearance,szToolbarAppearance);
 
 	//////////////////////////////////////////////////////////////////
 	// select the auto save options
@@ -442,7 +343,7 @@ bool XAP_Frame::initialize(const char * szKeyBindingsKey, const char * szKeyBind
 	//////////////////////////////////////////////////////////////////
 
 	// initialize our helper
-	m_pFrameHelper->_initialize();
+	m_pFrameImpl->_initialize();
 
 	return true;
 }
@@ -488,7 +389,7 @@ void XAP_Frame::_createAutoSaveTimer()
 /*!
  * This starts the auto Updater for the view
  */
-void XAP_FrameHelper::_startViewAutoUpdater(void)
+void XAP_FrameImpl::_startViewAutoUpdater(void)
 {
 	if(m_ViewAutoUpdaterID == 0)
 	{
@@ -504,56 +405,56 @@ void XAP_FrameHelper::_startViewAutoUpdater(void)
  * This static function updates the current view in frame while the layout
  * is filling.
  */
-void /* static*/ XAP_FrameHelper::viewAutoUpdater(UT_Worker *wkr)
+void /* static*/ XAP_FrameImpl::viewAutoUpdater(UT_Worker *wkr)
 {
-	XAP_FrameHelper *pFrameHelper = static_cast<XAP_FrameHelper *> (wkr->getInstanceData());
-	XAP_App *pApp = pFrameHelper->m_pFrame->getApp(); // WL_REFACTOR: may be redundant
-	const XAP_StringSet * pSS = pFrameHelper->m_pFrame->getApp()->getStringSet();
+	XAP_FrameImpl *pFrameImpl = static_cast<XAP_FrameImpl *> (wkr->getInstanceData());
+	XAP_App *pApp = pFrameImpl->m_pFrame->getApp(); // WL_REFACTOR: may be redundant
+	const XAP_StringSet * pSS = pFrameImpl->m_pFrame->getApp()->getStringSet();
 	UT_String msg = pSS->getValue(XAP_STRING_ID_MSG_BuildingDoc, pApp->getDefaultEncoding());
-	pFrameHelper->_setCursor(GR_Graphics::GR_CURSOR_WAIT);
-	AV_View * pView = pFrameHelper->m_pFrame->getCurrentView();
+	pFrameImpl->_setCursor(GR_Graphics::GR_CURSOR_WAIT);
+	AV_View * pView = pFrameImpl->m_pFrame->getCurrentView();
 	UT_DEBUGMSG(("SEVIOR: frame view updater \n"));
 	if(!pView)
 	{
-		pFrameHelper->m_pFrame->setCursor(GR_Graphics::GR_CURSOR_DEFAULT);
-		pFrameHelper->m_ViewAutoUpdater->stop();
-		pFrameHelper->m_ViewAutoUpdaterID = 0;
-		DELETEP(pFrameHelper->m_ViewAutoUpdater);
+		pFrameImpl->m_pFrame->setCursor(GR_Graphics::GR_CURSOR_DEFAULT);
+		pFrameImpl->m_ViewAutoUpdater->stop();
+		pFrameImpl->m_ViewAutoUpdaterID = 0;
+		DELETEP(pFrameImpl->m_ViewAutoUpdater);
 		return;
 	}
 	if(!pView->isLayoutFilling() && (pView->getPoint() > 0))
 	{
 		GR_Graphics * pG = pView->getGraphics();
 		pG->setCursor(GR_Graphics::GR_CURSOR_DEFAULT);
-		pFrameHelper->m_pFrame->setCursor(GR_Graphics::GR_CURSOR_DEFAULT);
+		pFrameImpl->m_pFrame->setCursor(GR_Graphics::GR_CURSOR_DEFAULT);
 		pView->setCursorToContext();
-		pFrameHelper->m_ViewAutoUpdater->stop();
-		pFrameHelper->m_ViewAutoUpdaterID = 0;
-		DELETEP(pFrameHelper->m_ViewAutoUpdater);
+		pFrameImpl->m_ViewAutoUpdater->stop();
+		pFrameImpl->m_ViewAutoUpdaterID = 0;
+		DELETEP(pFrameImpl->m_ViewAutoUpdater);
 		pView->draw();
 
 		return;
 	}
-	if(!pView->isLayoutFilling() && !pFrameHelper->m_pFrame->m_bFirstDraw)
+	if(!pView->isLayoutFilling() && !pFrameImpl->m_pFrame->m_bFirstDraw)
 	{
 		GR_Graphics * pG = pView->getGraphics();
 		pG->setCursor(GR_Graphics::GR_CURSOR_WAIT);
-		pFrameHelper->_setCursor(GR_Graphics::GR_CURSOR_WAIT);
-		pFrameHelper->m_pFrame->setStatusMessage ( (XML_Char *) msg.c_str());
+		pFrameImpl->_setCursor(GR_Graphics::GR_CURSOR_WAIT);
+		pFrameImpl->m_pFrame->setStatusMessage ( (XML_Char *) msg.c_str());
 		return;
 	}
 	GR_Graphics * pG = pView->getGraphics();
 	pG->setCursor(GR_Graphics::GR_CURSOR_WAIT);
-	pFrameHelper->_setCursor(GR_Graphics::GR_CURSOR_WAIT);
-	pFrameHelper->m_pFrame->setStatusMessage ( (XML_Char *) msg.c_str());
+	pFrameImpl->_setCursor(GR_Graphics::GR_CURSOR_WAIT);
+	pFrameImpl->m_pFrame->setStatusMessage ( (XML_Char *) msg.c_str());
 
 	if(pView->getPoint() > 0)
 	{
 		pView->updateLayout();
-		if(!pFrameHelper->m_pFrame->m_bFirstDraw)
+		if(!pFrameImpl->m_pFrame->m_bFirstDraw)
 		{
 			pView->draw();
-			pFrameHelper->m_pFrame->m_bFirstDraw = true;
+			pFrameImpl->m_pFrame->m_bFirstDraw = true;
 		}
 		else
 		{
@@ -673,19 +574,19 @@ const char * XAP_Frame::getTitle(int len) const
 	// '*' adornments), if all that fits. If it doesn't fit,
 	// returns the tail of the string that does fit. Would be
 	// better to chop it at a pathname separator boundary.
-	if ((int)strlen(m_szTitle) <= len)
+	if ((int)strlen(m_sTitle.c_str()) <= len)
 	{
-		return m_szTitle;
+		return m_sTitle.c_str();
 	}
-	else
+	else 
 	{
-		return m_szTitle + (strlen(m_szTitle)-len);
+		return m_sTitle.c_str() + (strlen(m_sTitle.c_str())-len);
 	}
 }
 
 const char * XAP_Frame::getNonDecoratedTitle() const
 {
-	return m_szNonDecoratedTitle;
+	return m_sNonDecoratedTitle.c_str();
 }
 
 void XAP_Frame::setZoomPercentage(UT_uint32 /* iZoom */)
@@ -700,9 +601,9 @@ UT_uint32 XAP_Frame::getZoomPercentage(void)
 
 EV_Toolbar *  XAP_Frame::getToolbar(UT_uint32 ibar)
 {
-	if(ibar >= m_pFrameHelper->m_vecToolbars.getItemCount())
+	if(ibar >= m_pFrameImpl->m_vecToolbars.getItemCount())
 		return NULL;
-	return (EV_Toolbar *) m_pFrameHelper->m_vecToolbars.getNthItem(ibar);
+	return (EV_Toolbar *) m_pFrameImpl->m_vecToolbars.getNthItem(ibar);
 }
 
 bool XAP_Frame::repopulateCombos(void)
@@ -722,7 +623,7 @@ bool XAP_Frame::repopulateCombos(void)
 	return true;
 }
 
-void XAP_FrameHelper::_createToolbars(void)
+void XAP_FrameImpl::_createToolbars(void)
 {
 	bool bResult;
 	UT_uint32 nrToolbars = m_vecToolbarLayoutNames.getItemCount();
@@ -743,7 +644,7 @@ UT_sint32 XAP_Frame::findToolbarNr(EV_Toolbar * pTB)
 {
 	UT_uint32 i = 0;
 	bool bFound =  false;
-	for(i =0; !bFound && (i < m_pFrameHelper->m_vecToolbars.getItemCount()); i++)
+	for(i =0; !bFound && (i < m_pFrameImpl->m_vecToolbars.getItemCount()); i++)
 	{
 		EV_Toolbar * pTmp = getToolbar(i);
 		if(pTmp == pTB)
@@ -940,11 +841,11 @@ void XAP_Frame::updateZoom(void)
  */
 void XAP_Frame::rebuildAllToolbars(void)
 {
-	UT_uint32 count = m_pFrameHelper->m_vecToolbars.getItemCount();
+	UT_uint32 count = m_pFrameImpl->m_vecToolbars.getItemCount();
 	UT_uint32 i =0;
 	for(i=0; i< count; i++)
 	{
-		m_pFrameHelper->_rebuildToolbar(i);
+		m_pFrameImpl->_rebuildToolbar(i);
 	}
 }
 
@@ -1006,14 +907,14 @@ void XAP_Frame::dragEnd(XAP_Toolbar_Id srcId)
 	{
 		if(m_isrcId != m_idestId)
 		{
-			const char * szTBSrcName = (const char *) m_pFrameHelper->m_vecToolbarLayoutNames.getNthItem(m_isrcTBNr);
+			const char * szTBSrcName = (const char *) m_pFrameImpl->m_vecToolbarLayoutNames.getNthItem(m_isrcTBNr);
 			getApp()->getToolbarFactory()->removeIcon(szTBSrcName,m_isrcId);
-			const char * szTBDestName = (const char *) m_pFrameHelper->m_vecToolbarLayoutNames.getNthItem(m_idestTBNr);
+			const char * szTBDestName = (const char *) m_pFrameImpl->m_vecToolbarLayoutNames.getNthItem(m_idestTBNr);
 			getApp()->getToolbarFactory()->addIconBefore(szTBDestName,m_isrcId,m_idestId);
-			m_pFrameHelper->_rebuildToolbar(m_isrcTBNr);
+			m_pFrameImpl->_rebuildToolbar(m_isrcTBNr);
 			if(m_isrcTBNr != m_idestTBNr)
 			{
-				m_pFrameHelper->_rebuildToolbar(m_idestTBNr);
+				m_pFrameImpl->_rebuildToolbar(m_idestTBNr);
 			}
 		}
 	}
@@ -1022,14 +923,14 @@ void XAP_Frame::dragEnd(XAP_Toolbar_Id srcId)
 //
 	if(m_bisDragging && m_bHasDroppedTB)
 	{
-		const char * szTBSrcName = (const char *) m_pFrameHelper->m_vecToolbarLayoutNames.getNthItem(m_isrcTBNr);
+		const char * szTBSrcName = (const char *) m_pFrameImpl->m_vecToolbarLayoutNames.getNthItem(m_isrcTBNr);
 		getApp()->getToolbarFactory()->removeIcon(szTBSrcName,m_isrcId);
-		const char * szTBDestName = (const char *) m_pFrameHelper->m_vecToolbarLayoutNames.getNthItem(m_idestTBNr);
+		const char * szTBDestName = (const char *) m_pFrameImpl->m_vecToolbarLayoutNames.getNthItem(m_idestTBNr);
 		getApp()->getToolbarFactory()->addIconAtEnd(szTBDestName,m_isrcId);
-		m_pFrameHelper->_rebuildToolbar(m_isrcTBNr);
+		m_pFrameImpl->_rebuildToolbar(m_isrcTBNr);
 		if(m_isrcTBNr != m_idestTBNr)
 		{
-			m_pFrameHelper->_rebuildToolbar(m_idestTBNr);
+			m_pFrameImpl->_rebuildToolbar(m_idestTBNr);
 		}
 	}
 //
@@ -1042,9 +943,9 @@ void XAP_Frame::dragEnd(XAP_Toolbar_Id srcId)
 //
 		if(XAP_Dialog_MessageBox::a_YES == showMessageBox(XAP_STRING_ID_DLG_Remove_Icon,XAP_Dialog_MessageBox::b_YN,XAP_Dialog_MessageBox::a_NO))
 		{
-			const char * szTBSrcName = (const char *) m_pFrameHelper->m_vecToolbarLayoutNames.getNthItem(m_isrcTBNr);
+			const char * szTBSrcName = (const char *) m_pFrameImpl->m_vecToolbarLayoutNames.getNthItem(m_isrcTBNr);
 			getApp()->getToolbarFactory()->removeIcon(szTBSrcName,m_isrcId);
-			m_pFrameHelper->_rebuildToolbar(m_isrcTBNr);
+			m_pFrameImpl->_rebuildToolbar(m_isrcTBNr);
 		}
 	}
 	m_isrcId = 0;
@@ -1063,11 +964,11 @@ UT_uint32 XAP_Frame::getTimeSinceSave() const
 
 XAP_FrameMode XAP_Frame::getFrameMode()
 {
-	return m_pFrameHelper->m_iFrameMode;
+	return m_pFrameImpl->m_iFrameMode;
 }
 void XAP_Frame::setFrameMode(XAP_FrameMode iFrameMode)
 {
-	m_pFrameHelper->m_iFrameMode = iFrameMode;
+	m_pFrameImpl->m_iFrameMode = iFrameMode;
 }
 
 //////////////////////////////////////////////////////////////////

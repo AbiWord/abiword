@@ -30,7 +30,6 @@
 #include "gr_UnixGraphics.h"
 #include "gr_UnixImage.h"
 #include "ut_sleep.h"
-#include "xap_UnixFrame.h"
 #include "xap_Strings.h"
 
 #include "ut_debugmsg.h"

@@ -32,7 +32,8 @@
 #include "ut_assert.h"
 #include "ut_string.h"
 #include "xav_View.h"
-#include "xap_UnixFrame.h"
+#include "xap_Frame.h"
+#include "xap_UnixFrameImpl.h"
 #include "xap_App.h"
 #include "xap_UnixDialogHelper.h"
 #include "xap_Dialog.h"
@@ -593,10 +594,10 @@ void centerDialog(GtkWidget * parent, GtkWidget * child)
 void abiSetupModalDialog(GtkDialog * me, XAP_Frame *pFrame, XAP_Dialog * pDlg, gint dfl_response)
 {
 	// To center the dialog, we need the frame of its parent.
-	XAP_UnixFrameHelper * pUnixFrameHelper = static_cast<XAP_UnixFrameHelper *>(pFrame->getFrameHelper());
+	XAP_UnixFrameImpl * pUnixFrameImpl = static_cast<XAP_UnixFrameImpl *>(pFrame->getFrameImpl());
 	
 	// Get the GtkWindow of the parent frame
-	GtkWidget * parentWindow = pUnixFrameHelper->getTopLevelWindow();
+	GtkWidget * parentWindow = pUnixFrameImpl->getTopLevelWindow();
 	
 	// connect focus to our parent frame
 	connectFocus(GTK_WIDGET(me),pFrame);
@@ -664,13 +665,13 @@ void abiSetupModelessDialog(GtkDialog * me, XAP_Frame * pFrame, XAP_Dialog * pDl
 			    gint dfl_response )
 {
 	// To center the dialog, we need the frame of its parent.
-	XAP_UnixFrameHelper * pUnixFrameHelper = static_cast<XAP_UnixFrameHelper *>(pFrame->getFrameHelper());
+	XAP_UnixFrameImpl * pUnixFrameImpl = static_cast<XAP_UnixFrameImpl *>(pFrame->getFrameImpl());
 
 	// remember the modeless id
 	XAP_App::getApp()->rememberModelessId( pDlg->getDialogId(), (XAP_Dialog_Modeless *) pDlg);
 	
 	// Get the GtkWindow of the parent frame
-	GtkWidget * parentWindow = pUnixFrameHelper->getTopLevelWindow();
+	GtkWidget * parentWindow = pUnixFrameImpl->getTopLevelWindow();
 	
 	// connect focus to our parent frame
 	connectFocusModeless(GTK_WIDGET(me), XAP_App::getApp());

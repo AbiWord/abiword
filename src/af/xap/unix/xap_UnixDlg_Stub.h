@@ -22,7 +22,7 @@
 
 #include "xap_Dlg_Stub.h"
 
-class XAP_UnixFrame;
+class XAP_Frame;
 
 /*****************************************************************/
 

@@ -27,7 +27,7 @@
 
 class AV_View;
 class XAP_UnixApp;
-class XAP_UnixFrameHelper;
+class XAP_UnixFrameImpl;
 class XAP_Frame;
 
 /*****************************************************************/
@@ -54,7 +54,6 @@ protected:
 
 protected: // FIXME! These variables should be private.
 	XAP_UnixApp *		m_pUnixApp;
-	XAP_UnixFrameHelper *		m_pUnixFrameHelper;
 	XAP_Frame *  	m_pFrame;
 
 	// Menu accelerator group, dynamically filled on synth()

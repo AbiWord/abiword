@@ -32,7 +32,8 @@
 #include "xap_Dlg_MessageBox.h"
 #include "xap_UnixDlg_FileOpenSaveAs.h"
 #include "xap_UnixApp.h"
-#include "xap_UnixFrame.h"
+#include "xap_Frame.h"
+#include "xap_UnixFrameImpl.h"
 #include "xap_Strings.h"
 #include "xap_Prefs.h"
 #include "ut_debugmsg.h"
@@ -437,9 +438,6 @@ void XAP_UnixDialog_FileOpenSaveAs::_notifyError_OKOnly(XAP_Frame * pFrame,
 
 void XAP_UnixDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 {
-	m_pUnixFrame = (XAP_UnixFrame *)pFrame;
-	UT_ASSERT(m_pUnixFrame);
-
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
 
 	// do we want to let this function handle stating the Unix
@@ -717,9 +715,9 @@ void XAP_UnixDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 	}
 
 	// get top level window and its GtkWidget *
-	XAP_UnixFrameHelper * pUnixFrameHelper = static_cast<XAP_UnixFrameHelper *>(pFrame->getFrameHelper());
-	UT_ASSERT(pUnixFrameHelper);
-	GtkWidget * parent = pUnixFrameHelper->getTopLevelWindow();
+	XAP_UnixFrameImpl * pUnixFrameImpl = static_cast<XAP_UnixFrameImpl *>(pFrame->getFrameImpl());
+	UT_ASSERT(pUnixFrameImpl);
+	GtkWidget * parent = pUnixFrameImpl->getTopLevelWindow();
 	UT_ASSERT(parent);
 
 	// center it
@@ -749,7 +747,6 @@ void XAP_UnixDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 	  gtk_widget_destroy (GTK_WIDGET(pFS));
 
 	FREEP(szPersistDirectory);
-	m_pUnixFrame = NULL;
 
 	return;
 }

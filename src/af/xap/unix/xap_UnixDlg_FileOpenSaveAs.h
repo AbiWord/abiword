@@ -23,7 +23,7 @@
 #include <gtk/gtkfilesel.h>
 #include "xap_Dlg_FileOpenSaveAs.h"
 #include "xap_Strings.h"
-class XAP_UnixFrame;
+class XAP_Frame;
 
 /*****************************************************************/
 
@@ -53,7 +53,7 @@ protected:
 
 	GtkFileSelection * m_FS;
 	GtkWidget * m_preview;
-	XAP_UnixFrame *			m_pUnixFrame;
+	XAP_Frame *			m_pFrame;
 	char * 					m_szFinalPathnameCandidate;
 
 };

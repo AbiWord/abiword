@@ -23,6 +23,7 @@
 #include "xap_Dlg_PrintPreview.h"
 #include "gr_Graphics.h"
 
+class XAP_Frame;
 /*****************************************************************/
 
 class XAP_UnixDialog_PrintPreview : public XAP_Dialog_PrintPreview

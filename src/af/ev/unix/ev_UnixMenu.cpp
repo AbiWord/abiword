@@ -36,7 +36,8 @@
 #include "ev_UnixMenuBar.h"
 #include "ev_UnixMenuPopup.h"
 #include "xap_UnixApp.h"
-#include "xap_UnixFrame.h"
+#include "xap_Frame.h"
+#include "xap_UnixFrameImpl.h"
 #include "ev_UnixKeyboard.h"
 #include "ev_Menu_Layouts.h"
 #include "ev_Menu_Actions.h"
@@ -296,7 +297,6 @@ EV_UnixMenu::EV_UnixMenu(XAP_UnixApp * pUnixApp,
 						 const char * szMenuLabelSetName)
 	: EV_Menu(pUnixApp, pUnixApp->getEditMethodContainer(), szMenuLayoutName, szMenuLabelSetName),
 	  m_pUnixApp(pUnixApp),
-	  m_pUnixFrameHelper(static_cast<XAP_UnixFrameHelper *>(pFrame->getFrameHelper())),
       m_pFrame(pFrame)
 {
 	m_accelGroup = gtk_accel_group_new();
@@ -820,7 +820,7 @@ bool EV_UnixMenu::synthesizeMenu(GtkWidget * wMenuRoot)
 	// we also have to bind the top level window to our
 	// accelerator group for this menu... it needs to join in
 	// on the action.
-	gtk_window_add_accel_group(GTK_WINDOW(m_pUnixFrameHelper->getTopLevelWindow()), m_accelGroup);
+	gtk_window_add_accel_group(GTK_WINDOW(static_cast<XAP_UnixFrameImpl *>(m_pFrame->getFrameImpl())->getTopLevelWindow()), m_accelGroup);
 	gtk_accel_group_lock(m_accelGroup);
 	
 	return true;
@@ -1105,7 +1105,7 @@ void  EV_UnixMenuBar::destroy(void)
 
 bool EV_UnixMenuBar::synthesizeMenuBar()
 {
-	GtkWidget * wVBox = m_pUnixFrameHelper->getVBoxWidget();
+	GtkWidget * wVBox = static_cast<XAP_UnixFrameImpl *>(m_pFrame->getFrameImpl())->getVBoxWidget();
 
 	// Just create, don't show the menu bar yet.  It is later added and shown
 	m_wMenuBar = gtk_menu_bar_new();
@@ -1120,7 +1120,7 @@ bool EV_UnixMenuBar::synthesizeMenuBar()
 
 bool EV_UnixMenuBar::rebuildMenuBar()
 {
-	GtkWidget * wVBox = m_pUnixFrameHelper->getVBoxWidget();
+	GtkWidget * wVBox = static_cast<XAP_UnixFrameImpl *>(m_pFrame->getFrameImpl())->getVBoxWidget();
 
 	// Just create, don't show the menu bar yet.  It is later added
 	// to a 3D handle box and shown

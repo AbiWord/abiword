@@ -34,7 +34,8 @@
 
 #include "xap_App.h"
 #include "xap_UnixApp.h"
-#include "xap_UnixFrame.h"
+#include "xap_Frame.h"
+#include "xap_UnixFrameImpl.h"
 
 #include "xap_UnixFont.h"
 #include "xap_UnixFontManager.h"

@@ -20,9 +20,8 @@
 #ifndef XAP_UNIXDIALOG_PRINT_H
 #define XAP_UNIXDIALOG_PRINT_H
 
-#include "xap_UnixFrame.h"
 #include "xap_Dlg_Print.h"
-class XAP_UnixFrame;
+class XAP_Frame;
 class PS_Graphics;
 
 /*****************************************************************/

@@ -26,7 +26,7 @@
 
 #define DEFAULT_UNIX_SYMBOL_FONT "Symbol"
 
-class XAP_UnixFrame;
+class XAP_Frame;
 
 /*****************************************************************/
 

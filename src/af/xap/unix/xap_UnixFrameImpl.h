@@ -1,6 +1,7 @@
 /* AbiSource Application Framework
  * Copyright (C) 1998 AbiSource, Inc.
- * 
+ * Copyright (C) 2002 William Lachance 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
@@ -18,13 +19,13 @@
  */
 
 
-#ifndef XAP_UNIXFRAME_H
-#define XAP_UNIXFRAME_H
+#ifndef XAP_UNIXFRAMEIMPL_H
+#define XAP_UNIXFRAMEIMPL_H
 
 #include <gtk/gtkwidget.h>
 #include <gtk/gtkadjustment.h>
 #include <gdk/gdktypes.h>
-#include "xap_Frame.h"
+#include "xap_FrameImpl.h"
 #include "ut_vector.h"
 #include "xap_UnixDialogFactory.h"
 #include "xap_UnixApp.h"
@@ -41,12 +42,12 @@ class EV_UnixMenuPopup;
 *********************************************************************
 ********************************************************************/
 
-class XAP_UnixFrameHelper : public XAP_FrameHelper
+class XAP_UnixFrameImpl : public XAP_FrameImpl
 {
  public:
-	XAP_UnixFrameHelper(XAP_Frame *pFrame, XAP_UnixApp *pUnixApp);
+	XAP_UnixFrameImpl(XAP_Frame *pFrame, XAP_UnixApp *pUnixApp);
 	friend class XAP_Frame;
-	virtual ~XAP_UnixFrameHelper();
+	virtual ~XAP_UnixFrameImpl();
 
 	GtkWidget * getTopLevelWindow() const;
 	void setTopLevelWindow(GtkWidget * window) { m_wTopLevelWindow = window; }
