@@ -41,6 +41,8 @@ public:
 	void event_Delete(void);
 	void refreshVals(void);
 	void event_MenuChange(GtkWidget * widget);
+	void event_MenuStyleFootnoteChange(GtkWidget * widget);
+	void event_MenuStyleEndnoteChange(GtkWidget * widget);
 	void event_FootInitialValueChange(void);
 	void event_EndInitialValueChange(void);
 	void event_EndRestartSection();

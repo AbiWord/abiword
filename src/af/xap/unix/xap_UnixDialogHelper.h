@@ -80,6 +80,7 @@ GtkWidget* abiAddButton(GtkDialog * me, const gchar * btn_id,
 GtkWidget * abiDialogNew(const char * role, gboolean resizable = FALSE);
 GtkWidget * abiDialogNew(const char * role, gboolean resizable, const char * title, ...);
 GladeXML * abiDialogNewFromXML(const char * glade_file);
+GtkWidget * abiGtkMenuFromCStrVector(const UT_Vector & vec, GCallback cb, gpointer data);
 
 void abiDialogSetTitle(GtkWidget * dlg, const char * title, ...);
 

@@ -72,36 +72,6 @@ AP_UnixDialog_FormatFootnotes::AP_UnixDialog_FormatFootnotes(XAP_DialogFactory *
 	m_wEndnoteSpin = NULL;
 	m_oEndnoteSpinAdj = NULL;
 
-	m_wEnd123 = NULL;
-	m_wEnd123Brack = NULL;
-	m_wEnd123Paren = NULL;
-	m_wEnd123OpenParen = NULL;
-	m_wEndLower = NULL;
-	m_wEndLowerParen = NULL;
-	m_wEndLowerOpenParen = NULL;
-	m_wEndUpper = NULL;
-	m_wEndUpperParen = NULL;
-	m_wEndUpperOpenParen = NULL;
-	m_wEndRomanLower = NULL;
-	m_wEndRomanLowerParen = NULL;
-	m_wEndRomanUpper = NULL;
-	m_wEndRomanUpperParen = NULL;
-
-	m_wFoot123 = NULL;
-	m_wFoot123Brack = NULL;
-	m_wFoot123Paren  = NULL;
-	m_wFoot123OpenParen  = NULL;
-	m_wFootLower  = NULL;
-	m_wFootLowerParen = NULL;
-	m_wFootLowerOpenParen = NULL;
-	m_wFootUpper = NULL;
-	m_wFootUpperParen = NULL;
-	m_wFootUpperOpenParen = NULL;
-	m_wFootRomanLower = NULL;
-	m_wFootRomanLowerParen = NULL;
-	m_wFootRomanUpper = NULL;
-	m_wFootRomanUpperParen = NULL;
-
 	m_FootnoteSpinHanderID= 0;
 	m_EndnoteSpinHanderID =0;
 	m_FootRestartPageID = 0;
@@ -120,6 +90,20 @@ AP_UnixDialog_FormatFootnotes::~AP_UnixDialog_FormatFootnotes(void)
 /****************************************************************/
 /* Static Callbacks for event handling */
 /****************************************************************/
+
+static void s_menu_item_endnote_style(GtkWidget * widget, AP_UnixDialog_FormatFootnotes * dlg)
+{
+	UT_ASSERT(widget && dlg);
+
+	dlg->event_MenuStyleEndnoteChange(widget);
+}
+
+static void s_menu_item_footnote_style(GtkWidget * widget, AP_UnixDialog_FormatFootnotes * dlg)
+{
+	UT_ASSERT(widget && dlg);
+
+	dlg->event_MenuStyleFootnoteChange(widget);
+}
 
 static void s_menu_item_activate(GtkWidget * widget, AP_UnixDialog_FormatFootnotes * dlg)
 {
@@ -229,6 +213,26 @@ void AP_UnixDialog_FormatFootnotes::event_EndRestartSection(void)
 	}
 }
 
+void AP_UnixDialog_FormatFootnotes::event_MenuStyleFootnoteChange(GtkWidget * widget)
+{
+	/* note to typecast facist: rebuild on every platform before even thinking committing a change
+	 * to the cast below */
+	FootnoteType iType = (FootnoteType)reinterpret_cast<int>(g_object_get_data(G_OBJECT(widget), "user_data"));
+	setFootnoteType(iType);
+	refreshVals();
+}
+
+
+void AP_UnixDialog_FormatFootnotes::event_MenuStyleEndnoteChange(GtkWidget * widget)
+{
+	/* note to typecast facist: rebuild on every platform before even thinking committing a change
+	 * to the cast below */
+	FootnoteType iType = (FootnoteType)reinterpret_cast<int>(g_object_get_data(G_OBJECT(widget), "user_data"));
+	setEndnoteType(iType);
+	refreshVals();
+}
+
+
 void AP_UnixDialog_FormatFootnotes::event_MenuChange(GtkWidget * widget)
 {
 	UT_ASSERT(m_windowMain);
@@ -272,148 +276,6 @@ void AP_UnixDialog_FormatFootnotes::event_MenuChange(GtkWidget * widget)
 	}
 
 
-	bool bIsFootnote = true;
-	UT_DEBUGMSG(("event Menu Change \n"));
-	FootnoteType iType = FOOTNOTE_TYPE_NUMERIC_SQUARE_BRACKETS;
-	if (widget == m_wEnd123)
-	{
-		iType = FOOTNOTE_TYPE_NUMERIC;
-		bIsFootnote = false;
-	}
-	else if (widget == m_wEnd123Brack )
-	{
-		iType = FOOTNOTE_TYPE_NUMERIC_SQUARE_BRACKETS;
-		bIsFootnote = false;
-	}
-	else if (widget ==m_wEnd123Paren  )
-	{
-		iType =FOOTNOTE_TYPE_NUMERIC_PAREN ;
-		bIsFootnote = false;
-	}
-	else if (widget == m_wEnd123OpenParen )
-	{
-		iType = FOOTNOTE_TYPE_NUMERIC_OPEN_PAREN;
-		bIsFootnote = false;
-	}
-	else if (widget == m_wEndLower )
-	{
-		iType = FOOTNOTE_TYPE_LOWER;
-		bIsFootnote = false;
-	}
-	else if (widget == m_wEndLowerParen )
-	{
-		iType = FOOTNOTE_TYPE_LOWER_PAREN;
-		bIsFootnote = false;
-	}
-	else if (widget == m_wEndLowerOpenParen )
-	{
-		iType =FOOTNOTE_TYPE_LOWER_OPEN_PAREN ;
-		bIsFootnote = false;
-	}
-	else if (widget == m_wEndUpper )
-	{
-		iType = FOOTNOTE_TYPE_UPPER;
-		bIsFootnote = false;
-	}
-	else if (widget == m_wEndUpperParen )
-	{
-		iType = FOOTNOTE_TYPE_UPPER_PAREN;
-		bIsFootnote = false;
-	}
-	else if (widget == m_wEndUpperOpenParen)
-	{
-		iType = FOOTNOTE_TYPE_UPPER_OPEN_PAREN;
-		bIsFootnote = false;
-	}
-	else if (widget == m_wEndRomanLower)
-	{
-		iType = FOOTNOTE_TYPE_LOWER_ROMAN ;
-		bIsFootnote = false;
-	}
-	else if (widget == m_wEndRomanLowerParen )
-	{
-		iType = FOOTNOTE_TYPE_LOWER_ROMAN_PAREN;
-		bIsFootnote = false;
-	}
-	else if (widget ==  m_wEndRomanUpper)
-	{
-		iType =FOOTNOTE_TYPE_UPPER_ROMAN ;
-		bIsFootnote = false;
-	}
-	else if (widget == m_wEndRomanUpperParen )
-	{
-		iType =FOOTNOTE_TYPE_UPPER_ROMAN ;
-		bIsFootnote = false;
-	}
-	else if (widget == m_wFoot123)
-	{
-		iType = FOOTNOTE_TYPE_NUMERIC;
-	}
-	else if (widget == m_wFoot123Brack )
-	{
-		iType = FOOTNOTE_TYPE_NUMERIC_SQUARE_BRACKETS;
-	}
-	else if (widget ==m_wFoot123Paren  )
-	{
-		iType =FOOTNOTE_TYPE_NUMERIC_PAREN ;
-	}
-	else if (widget == m_wFoot123OpenParen )
-	{
-		iType = FOOTNOTE_TYPE_NUMERIC_OPEN_PAREN;
-	}
-	else if (widget == m_wFootLower )
-	{
-		iType = FOOTNOTE_TYPE_LOWER;
-	}
-	else if (widget == m_wFootLowerParen )
-	{
-		iType = FOOTNOTE_TYPE_LOWER_PAREN;
-	}
-	else if (widget == m_wFootLowerOpenParen )
-	{
-		iType =FOOTNOTE_TYPE_LOWER_OPEN_PAREN ;
-	}
-	else if (widget == m_wFootUpper )
-	{
-		iType = FOOTNOTE_TYPE_UPPER;
-	}
-	else if (widget == m_wFootUpperParen )
-	{
-		iType = FOOTNOTE_TYPE_UPPER_PAREN;
-	}
-	else if (widget == m_wFootUpperOpenParen)
-	{
-		iType = FOOTNOTE_TYPE_UPPER_OPEN_PAREN;
-	}
-	else if (widget == m_wFootRomanLower)
-	{
-		iType = FOOTNOTE_TYPE_LOWER_ROMAN ;
-	}
-	else if (widget == m_wFootRomanLowerParen )
-	{
-		iType = FOOTNOTE_TYPE_LOWER_ROMAN_PAREN;
-	}
-	else if (widget ==  m_wFootRomanUpper)
-	{
-		iType = FOOTNOTE_TYPE_UPPER_ROMAN;
-	}
-	else if (widget == m_wFootRomanUpperParen )
-	{
-		iType =FOOTNOTE_TYPE_UPPER_ROMAN ;
-	}
-	else
-	{
-		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-		return;
-	}
-	if(bIsFootnote)
-	{
-		setFootnoteType(iType);
-	}
-	else
-	{
-		setEndnoteType(iType);
-	}
 	refreshVals();
 }
 
@@ -612,67 +474,25 @@ GtkWidget * AP_UnixDialog_FormatFootnotes::_constructWindow(void)
 //
 // Now extract widgets from the menu items
 //
+
+	UT_Vector *footnoteTypeList = AP_Dialog_FormatFootnotes::getFootnoteTypeLabelList();
+
+	
+		
 	m_wFootnotesStyleMenu = glade_xml_get_widget(xml, "omFootnoteStyle");
 	UT_ASSERT(m_wFootnotesStyleMenu );
-	m_wFoot123 = glade_xml_get_widget(xml, "foot123");
-	UT_ASSERT(m_wFoot123 );
-	m_wFoot123Brack = glade_xml_get_widget(xml, "foot123Brack");
-	UT_ASSERT(m_wFoot123Brack );
-	m_wFoot123Paren = glade_xml_get_widget(xml, "foot123Paren");
-	UT_ASSERT(m_wFoot123Paren );
-	m_wFoot123OpenParen = glade_xml_get_widget(xml, "foot123OpenParen");
-	UT_ASSERT(m_wFoot123OpenParen );
-	m_wFootLower =  glade_xml_get_widget(xml, "footLower");
-	UT_ASSERT(m_wFootLower );
-	m_wFootLowerParen =  glade_xml_get_widget(xml, "footLowerParen");
-	UT_ASSERT(m_wFootLowerParen );
-	m_wFootLowerOpenParen =  glade_xml_get_widget(xml, "footLowerOpenParen");
-	UT_ASSERT(m_wFootLowerOpenParen );
-	m_wFootUpper =  glade_xml_get_widget(xml, "footUpper");
-	UT_ASSERT(m_wFootUpper );
-	m_wFootUpperParen =  glade_xml_get_widget(xml, "footUpperParen");
-	UT_ASSERT(m_wFootUpperParen );
-	m_wFootUpperOpenParen =  glade_xml_get_widget(xml, "footUpperOpenParen");
-	UT_ASSERT(m_wFootUpperOpenParen );
-	m_wFootRomanLower =  glade_xml_get_widget(xml, "footRomanLower");
-	UT_ASSERT(m_wFootRomanLower );
-	m_wFootRomanLowerParen =  glade_xml_get_widget(xml, "footRomanLowerParen");
-	UT_ASSERT(m_wFootRomanLowerParen );
-	m_wFootRomanUpper =  glade_xml_get_widget(xml, "footRomanUpper");
-	UT_ASSERT(m_wFootRomanUpper );
-	m_wFootRomanUpperParen =  glade_xml_get_widget(xml, "footRomanUpperParen");
-	UT_ASSERT(m_wFootRomanUpperParen );
+	gtk_option_menu_set_menu(GTK_OPTION_MENU(m_wFootnotesStyleMenu), 
+							 abiGtkMenuFromCStrVector(*footnoteTypeList, G_CALLBACK(s_menu_item_footnote_style), 
+													  reinterpret_cast<gpointer>(this)));
+	gtk_option_menu_set_history(GTK_OPTION_MENU(m_wFootnotesStyleMenu), 0);
 
 	m_wEndnotesStyleMenu = glade_xml_get_widget(xml, "omEndnoteStyle");
-	UT_ASSERT(m_wEndnotesStyleMenu );
-	m_wEnd123 = glade_xml_get_widget(xml, "end123");
-	UT_ASSERT(m_wEnd123 );
-	m_wEnd123Brack = glade_xml_get_widget(xml, "end123Brack");
-	UT_ASSERT(m_wEnd123Brack );
-	m_wEnd123Paren = glade_xml_get_widget(xml, "end123Paren");
-	UT_ASSERT(m_wEnd123Paren );
-	m_wEnd123OpenParen = glade_xml_get_widget(xml, "end123OpenParen");
-	UT_ASSERT(m_wEnd123OpenParen );
-	m_wEndLower =  glade_xml_get_widget(xml, "endLower");
-	UT_ASSERT(m_wEndLower );
-	m_wEndLowerParen =  glade_xml_get_widget(xml, "endLowerParen");
-	UT_ASSERT(m_wEndLowerParen );
-	m_wEndLowerOpenParen =  glade_xml_get_widget(xml, "endLowerOpenParen");
-	UT_ASSERT(m_wEndLowerOpenParen );
-	m_wEndUpper =  glade_xml_get_widget(xml, "endUpper");
-	UT_ASSERT(m_wEndUpper );
-	m_wEndUpperParen =  glade_xml_get_widget(xml, "endUpperParen");
-	UT_ASSERT(m_wEndUpperParen );
-	m_wEndUpperOpenParen =  glade_xml_get_widget(xml, "endUpperOpenParen");
-	UT_ASSERT(m_wEndUpperOpenParen );
-	m_wEndRomanLower =  glade_xml_get_widget(xml, "endRomanLower");
-	UT_ASSERT(m_wEndRomanLower );
-	m_wEndRomanLowerParen =  glade_xml_get_widget(xml, "endRomanLowerParen");
-	UT_ASSERT(m_wEndRomanLowerParen );
-	m_wEndRomanUpper =  glade_xml_get_widget(xml, "endRomanUpper");
-	UT_ASSERT(m_wEndRomanUpper );
-	m_wEndRomanUpperParen =  glade_xml_get_widget(xml, "endRomanUpperParen");
-	UT_ASSERT(m_wEndRomanUpperParen );
+	UT_ASSERT(m_wEndnotesStyleMenu);
+	gtk_option_menu_set_menu(GTK_OPTION_MENU(m_wEndnotesStyleMenu), 
+							 abiGtkMenuFromCStrVector(*footnoteTypeList, G_CALLBACK(s_menu_item_endnote_style), 
+													  reinterpret_cast<gpointer>(this)));
+	gtk_option_menu_set_history(GTK_OPTION_MENU(m_wEndnotesStyleMenu), 0);
+
 //
 // Footnotes number menu
 //
@@ -764,36 +584,4 @@ void AP_UnixDialog_FormatFootnotes::_connectSignals(void)
 										  "clicked",
 										  G_CALLBACK(s_EndRestartSection),
 										  reinterpret_cast<gpointer>(this));
-									
-	CONNECT_MENU_ITEM_SIGNAL_ACTIVATE(m_wEnd123);
-	CONNECT_MENU_ITEM_SIGNAL_ACTIVATE(m_wEnd123Brack);
-	CONNECT_MENU_ITEM_SIGNAL_ACTIVATE(m_wEnd123Paren);
-	CONNECT_MENU_ITEM_SIGNAL_ACTIVATE(m_wEnd123OpenParen);
-	CONNECT_MENU_ITEM_SIGNAL_ACTIVATE(m_wEndLower);
-	CONNECT_MENU_ITEM_SIGNAL_ACTIVATE(m_wEndLowerParen);
-	CONNECT_MENU_ITEM_SIGNAL_ACTIVATE(m_wEndLowerOpenParen);
-	CONNECT_MENU_ITEM_SIGNAL_ACTIVATE(m_wEndUpper);
-	CONNECT_MENU_ITEM_SIGNAL_ACTIVATE(m_wEndUpperParen);
-	CONNECT_MENU_ITEM_SIGNAL_ACTIVATE(m_wEndUpperOpenParen);
-	CONNECT_MENU_ITEM_SIGNAL_ACTIVATE(m_wEndRomanLower);
-	CONNECT_MENU_ITEM_SIGNAL_ACTIVATE(m_wEndRomanLowerParen);
-	CONNECT_MENU_ITEM_SIGNAL_ACTIVATE(m_wEndRomanUpper);
-	CONNECT_MENU_ITEM_SIGNAL_ACTIVATE(m_wEndRomanUpperParen);
-
-									
-	CONNECT_MENU_ITEM_SIGNAL_ACTIVATE(m_wFoot123);
-	CONNECT_MENU_ITEM_SIGNAL_ACTIVATE(m_wFoot123Brack);
-	CONNECT_MENU_ITEM_SIGNAL_ACTIVATE(m_wFoot123Paren);
-	CONNECT_MENU_ITEM_SIGNAL_ACTIVATE(m_wFoot123OpenParen);
-	CONNECT_MENU_ITEM_SIGNAL_ACTIVATE(m_wFootLower);
-	CONNECT_MENU_ITEM_SIGNAL_ACTIVATE(m_wFootLowerParen);
-	CONNECT_MENU_ITEM_SIGNAL_ACTIVATE(m_wFootLowerOpenParen);
-	CONNECT_MENU_ITEM_SIGNAL_ACTIVATE(m_wFootUpper);
-	CONNECT_MENU_ITEM_SIGNAL_ACTIVATE(m_wFootUpperParen);
-	CONNECT_MENU_ITEM_SIGNAL_ACTIVATE(m_wFootUpperOpenParen);
-	CONNECT_MENU_ITEM_SIGNAL_ACTIVATE(m_wFootRomanLower);
-	CONNECT_MENU_ITEM_SIGNAL_ACTIVATE(m_wFootRomanLowerParen);
-	CONNECT_MENU_ITEM_SIGNAL_ACTIVATE(m_wFootRomanUpper);
-	CONNECT_MENU_ITEM_SIGNAL_ACTIVATE(m_wFootRomanUpperParen);
-
 }

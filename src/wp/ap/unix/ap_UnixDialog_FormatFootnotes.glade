@@ -2,7 +2,6 @@
 <!DOCTYPE glade-interface SYSTEM "http://glade.gnome.org/glade-2.0.dtd">
 
 <glade-interface>
-<requires lib="gnome"/>
 
 <widget class="GtkDialog" id="ap_UnixDialog_FormatFootnotes">
   <property name="border_width">5</property>
@@ -209,122 +208,10 @@
 		    <widget class="GtkOptionMenu" id="omFootnoteStyle">
 		      <property name="visible">True</property>
 		      <property name="can_focus">True</property>
-		      <property name="history">0</property>
+		      <property name="history">-1</property>
 
 		      <child>
 			<widget class="GtkMenu" id="menFootnoteStyle">
-
-			  <child>
-			    <widget class="GtkMenuItem" id="foot123">
-			      <property name="visible">True</property>
-			      <property name="label" translatable="yes">&quot;1, 2, 3,... &quot;</property>
-			      <property name="use_underline">True</property>
-			    </widget>
-			  </child>
-
-			  <child>
-			    <widget class="GtkMenuItem" id="foot123Brack">
-			      <property name="visible">True</property>
-			      <property name="label" translatable="yes">&quot;[1], [2], [3],...&quot;</property>
-			      <property name="use_underline">True</property>
-			    </widget>
-			  </child>
-
-			  <child>
-			    <widget class="GtkMenuItem" id="foot123Paren">
-			      <property name="visible">True</property>
-			      <property name="label" translatable="yes">&quot;(1), (2), (3),...&quot;</property>
-			      <property name="use_underline">True</property>
-			    </widget>
-			  </child>
-
-			  <child>
-			    <widget class="GtkMenuItem" id="foot123OpenParen">
-			      <property name="visible">True</property>
-			      <property name="label" translatable="yes">&quot;1), 2), 3),...&quot;</property>
-			      <property name="use_underline">True</property>
-			    </widget>
-			  </child>
-
-			  <child>
-			    <widget class="GtkMenuItem" id="footLower">
-			      <property name="visible">True</property>
-			      <property name="label" translatable="yes">&quot;a, b, c,...&quot;</property>
-			      <property name="use_underline">True</property>
-			    </widget>
-			  </child>
-
-			  <child>
-			    <widget class="GtkMenuItem" id="footLowerParen">
-			      <property name="visible">True</property>
-			      <property name="label" translatable="yes">(a), (b), (c),...&quot;</property>
-			      <property name="use_underline">True</property>
-			    </widget>
-			  </child>
-
-			  <child>
-			    <widget class="GtkMenuItem" id="footLowerOpenParen">
-			      <property name="visible">True</property>
-			      <property name="label" translatable="yes">&quot;a), b), c)...&quot;</property>
-			      <property name="use_underline">True</property>
-			    </widget>
-			  </child>
-
-			  <child>
-			    <widget class="GtkMenuItem" id="footUpper">
-			      <property name="visible">True</property>
-			      <property name="label" translatable="yes">&quot;A, B, C,...&quot;</property>
-			      <property name="use_underline">True</property>
-			    </widget>
-			  </child>
-
-			  <child>
-			    <widget class="GtkMenuItem" id="footUpperParen">
-			      <property name="visible">True</property>
-			      <property name="label" translatable="yes">&quot;(A), (B), (C)...&quot;</property>
-			      <property name="use_underline">True</property>
-			    </widget>
-			  </child>
-
-			  <child>
-			    <widget class="GtkMenuItem" id="footUpperOpenParen">
-			      <property name="visible">True</property>
-			      <property name="label" translatable="yes">&quot;A), B), C),...&quot;</property>
-			      <property name="use_underline">True</property>
-			    </widget>
-			  </child>
-
-			  <child>
-			    <widget class="GtkMenuItem" id="footRomanLower">
-			      <property name="visible">True</property>
-			      <property name="label" translatable="yes">&quot;i, ii, iii,... &quot;</property>
-			      <property name="use_underline">True</property>
-			    </widget>
-			  </child>
-
-			  <child>
-			    <widget class="GtkMenuItem" id="footRomanLowerParen">
-			      <property name="visible">True</property>
-			      <property name="label" translatable="yes">&quot;(i), (ii), (iii),...&quot;</property>
-			      <property name="use_underline">True</property>
-			    </widget>
-			  </child>
-
-			  <child>
-			    <widget class="GtkMenuItem" id="footRomanUpper">
-			      <property name="visible">True</property>
-			      <property name="label" translatable="yes">&quot;I, II, III,... &quot;</property>
-			      <property name="use_underline">True</property>
-			    </widget>
-			  </child>
-
-			  <child>
-			    <widget class="GtkMenuItem" id="footRomanUpperParen">
-			      <property name="visible">True</property>
-			      <property name="label" translatable="yes">&quot;(I), (II), (III),... &quot;</property>
-			      <property name="use_underline">True</property>
-			    </widget>
-			  </child>
 			</widget>
 		      </child>
 		    </widget>
@@ -593,122 +480,10 @@
 		    <widget class="GtkOptionMenu" id="omEndnoteStyle">
 		      <property name="visible">True</property>
 		      <property name="can_focus">True</property>
-		      <property name="history">0</property>
+		      <property name="history">-1</property>
 
 		      <child>
 			<widget class="GtkMenu" id="menEndnoteStyle">
-
-			  <child>
-			    <widget class="GtkMenuItem" id="end123">
-			      <property name="visible">True</property>
-			      <property name="label" translatable="yes">&quot;1, 2, 3,... &quot;</property>
-			      <property name="use_underline">True</property>
-			    </widget>
-			  </child>
-
-			  <child>
-			    <widget class="GtkMenuItem" id="end123Brack">
-			      <property name="visible">True</property>
-			      <property name="label" translatable="yes">&quot;[1], [2], [3],...&quot;</property>
-			      <property name="use_underline">True</property>
-			    </widget>
-			  </child>
-
-			  <child>
-			    <widget class="GtkMenuItem" id="end123Paren">
-			      <property name="visible">True</property>
-			      <property name="label" translatable="yes">&quot;(1), (2), (3),...&quot;</property>
-			      <property name="use_underline">True</property>
-			    </widget>
-			  </child>
-
-			  <child>
-			    <widget class="GtkMenuItem" id="end123OpenParen">
-			      <property name="visible">True</property>
-			      <property name="label" translatable="yes">&quot;1), 2), 3),...&quot;</property>
-			      <property name="use_underline">True</property>
-			    </widget>
-			  </child>
-
-			  <child>
-			    <widget class="GtkMenuItem" id="endLower">
-			      <property name="visible">True</property>
-			      <property name="label" translatable="yes">&quot;a, b, c,...&quot;</property>
-			      <property name="use_underline">True</property>
-			    </widget>
-			  </child>
-
-			  <child>
-			    <widget class="GtkMenuItem" id="endLowerParen">
-			      <property name="visible">True</property>
-			      <property name="label" translatable="yes">(a), (b), (c),...&quot;</property>
-			      <property name="use_underline">True</property>
-			    </widget>
-			  </child>
-
-			  <child>
-			    <widget class="GtkMenuItem" id="endLowerOpenParen">
-			      <property name="visible">True</property>
-			      <property name="label" translatable="yes">&quot;a), b), c)...&quot;</property>
-			      <property name="use_underline">True</property>
-			    </widget>
-			  </child>
-
-			  <child>
-			    <widget class="GtkMenuItem" id="endUpper">
-			      <property name="visible">True</property>
-			      <property name="label" translatable="yes">&quot;A, B, C,...&quot;</property>
-			      <property name="use_underline">True</property>
-			    </widget>
-			  </child>
-
-			  <child>
-			    <widget class="GtkMenuItem" id="endUpperParen">
-			      <property name="visible">True</property>
-			      <property name="label" translatable="yes">&quot;(A), (B), (C)...&quot;</property>
-			      <property name="use_underline">True</property>
-			    </widget>
-			  </child>
-
-			  <child>
-			    <widget class="GtkMenuItem" id="endUpperOpenParen">
-			      <property name="visible">True</property>
-			      <property name="label" translatable="yes">&quot;A), B), C),...&quot;</property>
-			      <property name="use_underline">True</property>
-			    </widget>
-			  </child>
-
-			  <child>
-			    <widget class="GtkMenuItem" id="endRomanLower">
-			      <property name="visible">True</property>
-			      <property name="label" translatable="yes">&quot;i, ii, iii,... &quot;</property>
-			      <property name="use_underline">True</property>
-			    </widget>
-			  </child>
-
-			  <child>
-			    <widget class="GtkMenuItem" id="endRomanLowerParen">
-			      <property name="visible">True</property>
-			      <property name="label" translatable="yes">&quot;(i), (ii), (iii),...&quot;</property>
-			      <property name="use_underline">True</property>
-			    </widget>
-			  </child>
-
-			  <child>
-			    <widget class="GtkMenuItem" id="endRomanUpper">
-			      <property name="visible">True</property>
-			      <property name="label" translatable="yes">&quot;I, II, III,... &quot;</property>
-			      <property name="use_underline">True</property>
-			    </widget>
-			  </child>
-
-			  <child>
-			    <widget class="GtkMenuItem" id="endRomanUpperParen">
-			      <property name="visible">True</property>
-			      <property name="label" translatable="yes">&quot;(I), (II), (III),... &quot;</property>
-			      <property name="use_underline">True</property>
-			    </widget>
-			  </child>
 			</widget>
 		      </child>
 		    </widget>
