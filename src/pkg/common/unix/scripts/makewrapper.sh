@@ -123,16 +123,16 @@ else
     exit
 fi
 
-#Check to make sure we don't stomp on anything
-#if [ -z "\$currentFonts" ]
-#then
-#    # Set post run-time font path
-#    if [ -d "\$ABISUITE_FONT_HOME" ]
-#    then
-#	xset fp- \$ABISUITE_FONT_PATH 1>/dev/null 2>/dev/null
-#	xset fp rehash 1>/dev/null 2>/dev/null
-#    fi
-#fi
+Check to make sure we don't stomp on anything
+if [ -z "\$currentFonts" ]
+then
+    # Set post run-time font path
+    if [ -d "\$ABISUITE_FONT_HOME" ]
+    then
+	xset fp- \$ABISUITE_FONT_PATH 1>/dev/null 2>/dev/null
+	xset fp rehash 1>/dev/null 2>/dev/null
+    fi
+fi
 EOF
 
 chmod 755 ${DESTDIR}${LIBEXECDIR}/$PROGRAM_NAME
