@@ -202,7 +202,7 @@ please post them to the developer list and we'll discuss it.
 <li> Always add input/output details for a function: \\param,
      \\retval (return value via pointer parameter), \\return (actual
      function return value).
-<li> Add \\fixme, \\note, \\bug, etc as you feel necessary.
+<li> Add \\fixme, \\note, \\bug, \\see, etc as you feel necessary.
 </ol>
 
 A list of quick hints about doxygen syntax. Please see <a
