@@ -36,41 +36,45 @@ include $(ABI_ROOT)/src/config/abi_rules.mk
 ## everything below here must *FOLLOW* abi_rules
 ##################################################################
 
+# MinGW needs to escape NSIS's parameter switch, but not for Cygwin make (MSVC build)
+# but only sometimes, sometimes it doesn't matter, sometimes using it fails, I'm so confused...
+ifeq ($(OS_NAME),MINGW32)
+NSIS_DEF = "//D"
+else
+NSIS_DEF = "/D"
+endif
+
+
 ifeq ($(ABI_OPT_NSIS_20),1)
+
 NSIS_SRC =  ./NSISv2/*.ns*
-NSIS_OPT =  /DVERSION=$(ABI_BUILD_VERSION) /DVERSION_MAJOR=$(ABI_BUILD_VERSION_MAJOR)
-NSIS_OPT += /DVERSION_MINOR=$(ABI_BUILD_VERSION_MINOR) /DVERSION_MICRO=$(ABI_BUILD_VERSION_MICRO)
+NSIS_OPT =  $(NSIS_DEF)VERSION=$(ABI_BUILD_VERSION) $(NSIS_DEF)VERSION_MAJOR=$(ABI_BUILD_VERSION_MAJOR)
+NSIS_OPT += $(NSIS_DEF)VERSION_MINOR=$(ABI_BUILD_VERSION_MINOR) $(NSIS_DEF)VERSION_MICRO=$(ABI_BUILD_VERSION_MICRO)
 #e.g. NSIS_CRTL_URL=http://abiword.pchasm.org/microsoft/ NSIS_CRTL_FILENAME=msvcr70.dll
 #or   NSIS_CRTL_LOCAL=\MS\REDIST\ NSIS_CRTL_FILENAME=msvcrt.dll NSIS_CRTL_WIN95ONLY
+
 ifdef NSIS_CRTL_LOCAL
-NSIS_OPT += /DOPT_CRTL_LOCAL=$(NSIS_CRTL_LOCAL)
+NSIS_OPT += $(NSIS_DEF)OPT_CRTL_LOCAL=$(NSIS_CRTL_LOCAL)
 endif
 ifdef NSIS_CRTL_URL
 NSIS_OPT += /DOPT_CRTL_URL=$(NSIS_CRTL_URL)
 endif
 ifdef NSIS_CRTL_FILENAME
-NSIS_OPT += /DOPT_CRTL_FILENAME=$(NSIS_CRTL_FILENAME)
+NSIS_OPT += $(NSIS_DEF)OPT_CRTL_FILENAME=$(NSIS_CRTL_FILENAME)
 else
-NSIS_OPT += /DOPT_CRTL_FILENAME=msvcrt.dll
+NSIS_OPT += $(NSIS_DEF)OPT_CRTL_FILENAME=msvcrt.dll
 endif
-ifdef NSIS_CRTL_WIN95ONLY
-NSIS_OPT += /DOPT_CRTL_WIN95ONLY
+ifeq ($(NSIS_CRTL_WIN95ONLY),1)
+NSIS_OPT += $(NSIS_DEF)OPT_CRTL_WIN95ONLY
 endif
-else
+
+else #($(ABI_OPT_NSIS_20),1)
 NSIS_SRC = ./AbiWord.nsi
 NSIS_OPT = 
 endif
 
 ifeq ($(OS_NAME),MINGW32)
-NSIS_OPT += //DMINGW32=1
-endif
-
-ifneq ($(wildcard $(ABI_ROOT)/../abiword-plugins/wp/impexp/graphics/win32native),)
-ifeq ($(OS_NAME),MINGW32)
-NSIS_OPT += //DHAVEWIN32NATIVE=1
-else
-NSIS_OPT += /DHAVEWIN32NATIVE=1
-endif
+NSIS_OPT += $(NSIS_DEF)MINGW32=1
 endif
 
 $(PROGRAM): $(BINDIR)/makensis$(EXE_SUFFIX)
@@ -99,6 +103,7 @@ _W32NATIVE_PLUGIN_:
 		echo WARNING: win32native graphic file filter plugin NOT found;	\
 		echo Please download the peer abiword-plugins directory \
 		echo Document import and cut-n-paste will not support standard image formats!;	\
+		exit 1;	\
 	fi
 
 ifeq ($(ABI_OPT_DEBUG),1)

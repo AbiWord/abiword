@@ -2,14 +2,10 @@
 ;FileDesc       Language Strings, descriptions for Sections and SubSections
 ; English ${LANG_English}
 
-!undef LANG_X
-!define LANG_X ${LANG_English}
-
 ; Section titles, what user sees to select components for installation
 ${LSTR} TITLE_ssection_core                 "Primary components"
 ${LSTR} TITLE_section_abi                   "${PROGRAMEXE} (required)"
 ${LSTR} TITLE_section_abi_req               "${PRODUCT} support files (required)"
-${LSTR} TITLE_section_shellupdate           "Update Registry Settings"
 ${LSTR} TITLE_ssection_shortcuts            "Shortcuts"
 ${LSTR} TITLE_ssection_shortcuts_cu         "Shortcuts (Current User)"
 ${LSTR} TITLE_section_sm_shortcuts_cu       "Start Menu Shortcuts (Current User)"
@@ -17,7 +13,10 @@ ${LSTR} TITLE_section_desktop_shortcuts_cu  "Desktop Shortcut (Current User)"
 ${LSTR} TITLE_ssection_shortcuts_au         "Shortcuts (All Users)"
 ${LSTR} TITLE_section_sm_shortcuts_au       "Start Menu Shortcuts (All Users)"
 ${LSTR} TITLE_section_desktop_shortcuts_au  "Desktop Shortcut (All Users)"
-${LSTR} TITLE_ssection_gen_file_assoc       "General file associations"
+${LSTR} TITLE_ssection_fa_shellupdate       "Update shell file associations"
+${LSTR} TITLE_section_fa_abw                "Associate .abw with AbiWord"
+${LSTR} TITLE_section_fa_awt                "Associate .awt with AbiWord"
+${LSTR} TITLE_section_fa_zabw               "Associate .zabw with AbiWord"
 ${LSTR} TITLE_section_fa_doc                "Associate .doc with AbiWord"
 ${LSTR} TITLE_section_fa_rtf                "Associate .rtf with AbiWord"
 ${LSTR} TITLE_ssection_helper_files         "Helper files"
@@ -44,11 +43,13 @@ ${LSTR} TITLE_ssection_plugins              "Plugins"
 ${LSTR} DESC_ssection_core            "Primary (core) set of components for AbiWord to run well."
 ${LSTR} DESC_section_abi              "Required.  Installs the actual ${PROGRAMEXE} program."
 ${LSTR} DESC_section_abi_req          "Required.  Installs the basic support files, e.g. stringsets, BMP clipboard support, etc."
-${LSTR} DESC_section_shellupdate      "Adds entries to the Windows registry to allow the shell (Explorer) to handle supported file formats."
 ${LSTR} DESC_ssection_shortcuts       "Installs shortcuts in various places to allow starting AbiWord through additional locations."
 ${LSTR} DESC_ssection_shortcuts_cu    "Installs shortcuts for the currently logged on user."
 ${LSTR} DESC_ssection_shortcuts_au    "Installs shortcuts for all users (or current user on systems without multiple users)."
-${LSTR} DESC_ssection_gen_file_assoc  "Associates various documents with AbiWord, so AbiWord will be used to open them."
+${LSTR} DESC_ssection_fa_shellupdate  "Adds entries to the registry to allow the Explorer shell to use AbiWord to open various document formats."
+${LSTR} DESC_section_fa_abw           "Specifies that AbiWord should be used to open documents in its native format.  (Recommended)"
+${LSTR} DESC_section_fa_awt           "Specifies that AbiWord should be used to open templates in its native format.  (Recommended)"
+${LSTR} DESC_section_fa_zabw          "Specifies that AbiWord should be used to open compressed documents in its native format.  (Recommended)"
 ${LSTR} DESC_section_fa_doc           "Specifies that AbiWord should be used to open Microsoft Word (R) native format documents."
 ${LSTR} DESC_section_fa_rtf           "Specifies that AbiWord should be used to open Rich Text Files, a 'standard' format for WordProcessors."
 ${LSTR} DESC_ssection_helper_files    "Installs various optional files to aid in using AbiWord."
@@ -69,8 +70,11 @@ ${LSTR} DESC_ssection_plugins         "Installs various optional plugins."
 ; Error messages and other text displayed in Detail Window or in MessageBoxes
 
 ; in the main section
-${LSTR} PROMPT_OVERWRITE              "Overwrite Existing ${PRODUCT}?"
-${LSTR} MSG_ABORT                     "Quitting the install process"
+${LSTR} PROMPT_OVERWRITE                      "Overwrite Existing ${PRODUCT}?"
+${LSTR} PROMPT_NOMAINPROGRAM_CONTINUEANYWAY   "${PRODUCT} does not appear installed correctly!$\r$\n\
+                                               Failed to find ${MAINPROGRAM}, it will be reinstalled.$\r$\n\
+                                               Continue to modify installation?"
+${LSTR} MSG_ABORT                             "Quitting the install process"
 
 ; sections involving additional downloads
 !ifndef NODOWNLOADS
@@ -96,9 +100,41 @@ ${LSTR} MSG_ERROR_SELECTING_DL_MIRROR "Error obtaining user choice, using defaul
 ${LSTR} SM_PRODUCT_GROUP              "${PRODUCT} Word Processor"
 ${LSTR} SHORTCUT_NAME                 "${PRODUCT} v${VERSION_MAJOR}"
 ${LSTR} SHORTCUT_NAME_UNINSTALL       "Uninstall ${PRODUCT} v${VERSION_MAJOR}"
+${LSTR} SHORTCUT_NAME_HELP            "(English) Help for ${PRODUCT}"
 
 ; Uninstall Strings
 ${LSTR} UNINSTALL_WARNING       "This will delete $INSTDIR and all subdirectories and files?"
+
+
+; Localized Dictionary names (language supported by dictionary, not dictionary filename)
+${LSTR} dict_Catalan       "Catalan"
+${LSTR} dict_Czech         "Czech"
+${LSTR} dict_Danish        "Danish"
+${LSTR} dict_Swiss         "Swiss"
+${LSTR} dict_Deutsch       "German"
+${LSTR} dict_Ellhnika      "Greek"
+${LSTR} dict_English       "English (GB)"
+${LSTR} dict_American      "English (US)"
+${LSTR} dict_Esperanto     "Esperanto"
+${LSTR} dict_Español       "Spanish"
+${LSTR} dict_Finnish       "Finnish"
+${LSTR} dict_Français      "French"
+${LSTR} dict_Hungarian     "Hungarian"
+${LSTR} "dict_Irish gaelic""Irish gaelic"
+${LSTR} dict_Galician      "Galician"
+${LSTR} dict_Italian       "Italian"
+${LSTR} dict_Latin         "Latin"
+${LSTR} dict_Lietuviu      "Lithuanian"
+${LSTR} dict_Dutch         "Dutch"
+${LSTR} dict_Norsk         "Norwegian Bokmål"
+${LSTR} dict_Nynorsk       "Norwegian Nynorsk"
+${LSTR} dict_Polish        "Polish"
+${LSTR} dict_Portugues     "Portuguese"
+${LSTR} dict_Brazilian     "Brazilian"
+${LSTR} dict_Russian       "Russian"
+${LSTR} dict_Slovensko     "Slovenian"
+${LSTR} dict_Svenska       "Swedish"
+${LSTR} dict_Ukrainian     "Ukrainian"
 
 
 ; End Language descriptions

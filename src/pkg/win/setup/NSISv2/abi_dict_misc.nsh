@@ -10,6 +10,8 @@
 ; English dictionary if included within the installer, but placed in their own
 ; subsection when referenced as downloads, hence the SubSection within the !ifndef chunk.
 
+!include "abi_util_dl.nsh"
+
 ; WARNING: ${ssection_dl_opt_dict}+1 is assumed to be 1st section of downloadable dictionaries
 SubSection /e "$(TITLE_ssection_dl_opt_dict)" ssection_dl_opt_dict
 
@@ -82,13 +84,9 @@ Function getDLMirror
   Call createDLIni ; sets $R0 to inifilename
 
   ; create the dialog and wait for user's response
-!ifndef CLASSIC_UI
   ; for now manually call, as the macro doesn't work as expected
   ;  !insertmacro MUI_INSTALLOPTIONS_DISPLAY "$R0"
   InstallOptions::dialog $R0
-!else
-  InstallOptions::dialog $R0
-!endif
 
   ; pop return status and use default value on anything other than success
   ; else read back user's choice
@@ -141,17 +139,8 @@ Function getDictionary
 
 !ifndef NODOWNLOADS
 	; download the file
-	Call ConnectInternet	; try to establish connection if not connected
-	StrCmp $0 "online" 0 Finish
-	DetailPrint "NSISdl::download '${DICTIONARY_BASE}/${DICT_FILENAME}' '$TEMP\${DICT_FILENAME}'"
-	NSISdl::download "${DICTIONARY_BASE}/${DICT_FILENAME}" "$TEMP\${DICT_FILENAME}"
-	Pop $0 ;Get the return value
-	StrCmp $0 "success" doDictInst
-		; Couldn't download the file
-		DetailPrint "Could not download requested dictionary:"
-		DetailPrint "  ${DICTIONARY_BASE}/${DICT_FILENAME}"
-		MessageBox MB_OK|MB_ICONEXCLAMATION|MB_DEFBUTTON1 "Failed to download ${DICTIONARY_BASE}/${DICT_FILENAME}"
-	Goto Finish
+	${dlFile} "${DICTIONARY_BASE}/${DICT_FILENAME}" "$TEMP\${DICT_FILENAME}" "Failed to download requested dictionary ${DICTIONARY_BASE}/${DICT_FILENAME}"
+	StrCmp $0 "success" doDictInst Finish
 !endif
 
 	doDictInst:
@@ -174,7 +163,7 @@ FunctionEnd
 
 ; used to define a section containing an optional dictionary for downloading/installation
 !macro SectionDict DICT_NAME DICT_LANG DICT_LOCALE DICT_ARCH DICT_SIZE
-Section '${DICT_LANG}-${DICT_LOCALE}  ${DICT_NAME}' section_dl_opt_dict_${DICT_LANG}_${DICT_LOCALE}
+Section '${DICT_LANG}-${DICT_LOCALE}  $(dict_${DICT_NAME})' section_dl_opt_dict_${DICT_LANG}_${DICT_LOCALE}
 !ifdef NODOWNLOADS
 	SectionIn 2	${DLSECT}	; Full [and Full with downloads] only
 	SetOutPath $TEMP
@@ -184,7 +173,7 @@ Section '${DICT_LANG}-${DICT_LOCALE}  ${DICT_NAME}' section_dl_opt_dict_${DICT_L
 	AddSize ${DICT_SIZE}
 !endif
 
-	DetailPrint "Installing dictionary for: '${DICT_LANG}-${DICT_LOCALE}  ${DICT_NAME}'"
+	DetailPrint "Installing dictionary for: '${DICT_LANG}-${DICT_LOCALE}  $(dict_${DICT_NAME})'"
 
 	StrCpy $R0 ${DICT_LANG}
 	StrCpy $R1 ${DICT_LOCALE}

@@ -10,7 +10,6 @@
 ; Include user settable values (compile time options)
 !include "abi_options.nsh"
 
-
 ; Some checks of user defines
 !ifdef NODOWNLOADS & OPT_CRTL_URL
 !warning "OPT_CRTL_URL and NODOWNLOADS both defined, ignoring OPT_CRTL_URL"
@@ -22,41 +21,26 @@
 !undef OPT_CRTL_URL
 !endif
 
-
-; Declarations
-!define PRODUCT "AbiWord"
-
-!ifndef VERSION_MAJOR
-!define VERSION_MAJOR "2"
+; Print out GPL warning
+!ifdef OPT_CRTL_LOCAL
+!warning "Including a non-GPL compatibly licensed Runtime is probably a violation of GPL!"
+!warning "Do NOT distribute installers that included Microsoft's (R) C Runtime DLL!"
 !endif
-!ifndef VERSION_MINOR
-!define VERSION_MINOR "1"
-!endif
-!ifndef VERSION_MICRO
-!define VERSION_MICRO "0"
-!endif
-!ifdef VERSION
-!undef VERSION
-!endif
-!define VERSION "${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_MICRO}"
 
-!define INSTALLERNAME "setup_abiword.${VERSION_MAJOR}-${VERSION_MINOR}-${VERSION_MICRO}.exe"
 
-!define APPSET  "AbiSuite"
-!define PROGRAMEXE "AbiWord.exe"
-!define MAINPROGRAM "AbiWord\bin\${PROGRAMEXE}"
-
+; set application defines, i.e. app name/main executable name/...
+!include "abi_appdef.nsh"
 
 ; Do a Cyclic Redundancy Check to make sure the installer
 ; was not corrupted by the download.  
 CRCCheck on
 
-; set the compression algorithm used, zlib | bzip2
-SetCompressor bzip2
+; set the compression algorithm used, zlib | bzip2 | lzma
+SetCompressor lzma
 
 ; where to look for NSIS plugins during setup creation
 ; default includes ./plugins, but we also want to check current directory
-!addplugindir .
+;!addplugindir .
 
 ; compresses the header
 !ifdef HAVE_UPX
@@ -77,9 +61,6 @@ SetCompressor bzip2
 ; Specify the bitmap to use
 !define MUI_CHECKBITMAP "..\..\pkg\win\setup\modern.bmp"
 
-; Specify the license text to use
-!define MUI_LICENSEDATA "..\AbiSuite\Copying"
-
 ; Specify filename of resulting installer
 OutFile "${INSTALLERNAME}"
 
@@ -94,94 +75,26 @@ InstallDirRegKey HKLM SOFTWARE\${APPSET}\${PRODUCT}\v${VERSION_MAJOR} "Install_D
 
 
 ; Useful inclusions
-!include Sections.nsh
+!include "Sections.nsh"
+!include "LogicLib.nsh"
+!include "abi_util_winver.nsh"
+!include "abi_util_ifexists.nsh"
+!include "abi_util_startmenu.nsh"
+!include "abi_util_addremove.nsh"
+!include "abi_util_deldir.nsh"
+!include "abi_parsecmdline.nsh"
 
+; Support 'Modern' UI
+!include "abi_mui.nsh"
 
-; Support 'Modern' UI and multiple languages
-!ifndef CLASSIC_UI
-
-  ; include the Modern UI support
-  !include "Mui.nsh"
-
-  ; specify where to get resources from for UI elements (default)
-  !define MUI_UI "${NSISDIR}\Contrib\UIs\modern.exe"
-
-  ; specify the pages and order to show to user
-
-  ; introduce ourselves
-  !insertmacro MUI_PAGE_WELCOME
-  ; including the license of AbiWord  (license could be localized, but we don't)
-  !insertmacro MUI_PAGE_LICENSE '${MUI_LICENSEDATA}'
-  ; allow user to select what parts to install
-  !define MUI_COMPONENTSPAGE_SMALLDESC  ; but put the description below choices
-  !insertmacro MUI_PAGE_COMPONENTS
-  ; and where to install to
-  !insertmacro MUI_PAGE_DIRECTORY
-  ; where to put in the start menu
-    !define MUI_STARTMENUPAGE_DEFAULTFOLDER "$(SM_PRODUCT_GROUP)"
-    !define MUI_STARTMENUPAGE_REGISTRY_ROOT HKLM
-    !define MUI_STARTMENUPAGE_REGISTRY_KEY "Software\${APPSET}\${PRODUCT}\v${VERSION_MAJOR}"
-    !define MUI_STARTMENUPAGE_REGISTRY_VALUENAME "StartMenu Name"
-  !insertmacro MUI_PAGE_STARTMENU
-  ; allow insertion of our custom pages
-  !define MUI_CUSTOMPAGECOMMANDS
-  ; query user for download mirror to use (only if dl item was selected though)
-  !ifndef NODOWNLOADS
-    !ifdef OPT_DICTIONARIES
-      Page custom getDLMirror ; Custom page to get DL mirror
-    !endif
-  !endif
-  ; actually install the files
-  !insertmacro MUI_PAGE_INSTFILES
-  ; specify Finish Page settings
-    ; prompt to run AbiWord (start with readme.txt)
-    !define MUI_FINISHPAGE_RUN "$INSTDIR\${MAINPROGRAM}"
-    !define MUI_FINISHPAGE_RUN_PARAMETERS  $\"$INSTDIR\readme.txt$\"
-    ; or uncomment to allow viewing readme with default text editor
-    ;!define MUI_FINISHPAGE_SHOWREADME "$INSTDIR\readme.txt"
-    ; force user to close so they can see install done & not start readme
-    !define MUI_FINISHPAGE_NOAUTOCLOSE
-  !insertmacro MUI_PAGE_FINISH
-
-  ; warn user if they try to quit the install before it completes
-  !define MUI_ABORTWARNING
-
-  ; create an uninstaller and specify the pages it should have
-  !insertmacro MUI_UNPAGE_CONFIRM
-  !insertmacro MUI_UNPAGE_INSTFILES
-
-
-  ; Languages
-  ; some are presently commented out as they lack some translations (hence fail to build)
-;  !insertmacro MUI_LANGUAGE "Bulgarian"
-;  !insertmacro MUI_LANGUAGE "Czech"
-  !insertmacro MUI_LANGUAGE "Dutch"
-  !insertmacro MUI_LANGUAGE "English"
-  !insertmacro MUI_LANGUAGE "French"
-  !insertmacro MUI_LANGUAGE "German"
-  !insertmacro MUI_LANGUAGE "Greek"
-  !insertmacro MUI_LANGUAGE "Italian"
-  !insertmacro MUI_LANGUAGE "Japanese"
-  !insertmacro MUI_LANGUAGE "Polish"
-  !insertmacro MUI_LANGUAGE "Russian"
-  !insertmacro MUI_LANGUAGE "PortugueseBR"
-  !insertmacro MUI_LANGUAGE "SimpChinese"
-  !insertmacro MUI_LANGUAGE "Spanish"
-  !insertmacro MUI_LANGUAGE "TradChinese"
-;  !insertmacro MUI_LANGUAGE "Ukrainian"
-
-  ;Remember the installer language
-  !define MUI_LANGDLL_REGISTRY_ROOT "HKLM"
-  !define MUI_LANGDLL_REGISTRY_KEY "Software\${APPSET}\${PRODUCT}\v${VERSION_MAJOR}"
-  !define MUI_LANGDLL_REGISTRY_VALUENAME "Installer Language"
+; support for multiple languages within installer
+!include "abi_lng_list.nsh"
 
 
 !ifdef RESERVE_PLUGINS
   ; Reserve Files to possibly aid in starting faster
   !insertmacro MUI_RESERVEFILE_LANGDLL
-  !insertmacro MUI_RESERVEFILE_INSTALLOPTIONS
-  !insertmacro MUI_RESERVEFILE_SPECIALINI
-  !insertmacro MUI_RESERVEFILE_SPECIALBITMAP
+  !insertmacro MUI_RESERVEFILE_INSTALLOPTIONS ;InstallOptions plug-in
 
   ; reserve room at start of compressed archive for plugins (not already reserved by Modern UI)
   ; ReserveFile [/nonfatal] [/r] file [file...]
@@ -194,57 +107,6 @@ InstallDirRegKey HKLM SOFTWARE\${APPSET}\${PRODUCT}\v${VERSION_MAJOR} "Install_D
   !endif
 !endif ; RESERVE_PLUGINS
 
-
-!else ; CLASSIC_UI
-
-  Caption "${PRODUCT} ${VERSION} Setup"
-
-  ; no WindowsXP manifest stuff
-  XPStyle off
-  
-  ; The text to prompt the user to enter a directory
-  DirText "Choose a directory to install in to:"
-
-  ; set the icons to use
-  Icon ${MUI_ICON}
-  UninstallIcon ${MUI_UNICON}
-
-  ; set the checkmark bitmaps to use
-  CheckBitmap ${MUI_CHECKBITMAP}
-
-  ; The text to prompt the user to select options for installation
-  ComponentText "This will install Abiword on your computer. Select which optional components you want installed."
-
-  ; License Information
-  LicenseText "This program is Licensed under the GNU General Public License (GPL)."
-  LicenseData ${MUI_LICENSEDATA}
-
-!endif
-
-
-; Localized Installer Messages (Language Strings)
-!macro LSTR sectID sectDesc
-  LangString "${sectID}" "${LANG_X}" "${sectDesc}"
-!macroend
-!define LSTR "!insertmacro LSTR"
-!define LANG_X					; used to prevent a warning about not being defined
-
-;!include "abi_lng_Bulgarian.nsh"
-;!include "abi_lng_Czech.nsh"
-!include "abi_lng_Dutch.nsh"
-!include "abi_lng_English.nsh"
-!include "abi_lng_French.nsh"
-!include "abi_lng_German.nsh"
-!include "abi_lng_Greek.nsh"
-!include "abi_lng_Italian.nsh"
-!include "abi_lng_Japanese.nsh"
-!include "abi_lng_Polish.nsh"
-!include "abi_lng_PortugueseBR.nsh"
-!include "abi_lng_Russian.nsh"
-!include "abi_lng_SimpChinese.nsh"
-!include "abi_lng_Spanish.nsh"
-!include "abi_lng_TradChinese.nsh"
-;!include "abi_lng_Ukrainian.nsh"
 
 
 ; add a version resource to installer corresponding to version of app we're installing
@@ -265,64 +127,6 @@ InstType "Full plus Downloads"		;Section 5
 ; any other combination is "Custom"
 
 
-!ifdef CLASSIC_UI
-  ;Page declaration [optional, just specifies default behavior]
-  Page license
-  Page components
-  Page directory
-  !ifndef NODOWNLOADS
-    !ifdef OPT_DICTIONARIES
-      Page custom getDLMirror ; Custom page to get DL mirror
-    !endif
-  !endif
-  Page instfiles
-!endif
-
-
-
-; Associate file extension and content type with an application entry
-!macro CreateFileAssociation extension appType contentType
-	WriteRegStr HKCR "${extension}" "" "${appType}"
-	WriteRegStr HKCR "${extension}" "Content Type" "${contentType}"
-!macroend
-!define CreateFileAssociation "!insertmacro CreateFileAssociation"
-
-
-; Create a language localized Start Menu group
-!macro lngCreateSMGroup group
-	push $0
-	StrCpy $0 "${group}"
-	CreateDirectory "$SMPROGRAMS\$0"
-	pop $0
-!macroend
-!define lngCreateSMGroup "!insertmacro lngcreateSMGroup"
-
-; Create a language localized Start Menu ShortCut
-; we split the link.lnk up so we can use localized components without confusing NSIS
-!macro lngCreateShortCut basedir group linkname target.file parameters icon.file icon_index_number
-	push $0
-	push $1
-	push $2
-	StrCpy $0 "${basedir}"
-	StrCpy $0 "$0\"
-	; if group is empty skip past it
-	StrCpy $1 "${group}"
-	StrLen $2 "$1"
-	IntCmp $2 0 +3
-	StrCpy $0 "$0$1"
-	StrCpy $0 "$0\"
-	;skipGroup:
-	StrCpy $1 ${linkname}
-	StrCpy $0 "$0$1"
-	StrCpy $0 "$0.lnk"
-	CreateShortCut $0 "${target.file}" "${parameters}" "${icon.file}" ${icon_index_number}
-	pop $2
-	pop $1
-	pop $0
-!macroend
-!define lngCreateShortCut "!insertmacro lngCreateShortCut"
-
-
 ; *********************************************************************
 
 
@@ -331,34 +135,74 @@ SubSection /e "$(TITLE_ssection_core)" ssection_core
 ; The stuff that must be installed
 Section "$(TITLE_section_abi)" section_abi
 	SectionIn 1 2 3 4 ${DLSECT} RO	; included in Typical, Full, Minimal, Required
-	;;
-	; Testing clause to Overwrite Existing Version - if exists
-	IfFileExists "$INSTDIR\${MAINPROGRAM}" 0 DoInstall
-	
-	MessageBox MB_YESNO "$(PROMPT_OVERWRITE)" IDYES DoInstall
-	
-	Abort "$(MSG_ABORT)"
 
-	DoInstall:
+	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+	; Display installer command line options
+	Call GetParameters
+	pop $0
+	StrCmp $0 "" +2  ; but only if some actually given
+	DetailPrint "Installer command line parameters are ($0)"
+
+
 	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 	; Set output path to the installation directory.
 	SetOutPath $INSTDIR\${PRODUCT}\bin
-	File "${PROGRAMEXE}"
 
-	!ifdef MINGW32
-		File "libAbiWord.dll"
-	!endif
+
+	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+	; Determine if primary executable exists,
+	; If we are in modify mode then we expect it to exist
+	; (where Not existing is a possible error condition)
+	; Else in normal install mode, we expect it to NOT exist
+	; (where existing is the a possible error condition)
+	StrCpy $R0 1	; flag we want to install main program
+	${If} ${FileExists} "$INSTDIR\${MAINPROGRAM}"
+		${If} $v_modifyinstall == 1 
+			DetailPrint "Modify mode: successfully found $INSTDIR\${MAINPROGRAM}"
+			StrCpy $R0 0	; skip extraction if already there
+		${Else}
+			DetailPrint "Install mode: Warning found $INSTDIR\${MAINPROGRAM}"
+			MessageBox MB_YESNO "$(PROMPT_OVERWRITE)" /SD IDYES IDYES +2
+				Abort "$(MSG_ABORT)"
+		${EndIf}
+	${Else}	; we need to install the main program
+		${If} $v_modifyinstall == 1 
+			DetailPrint "Modify mode: Warning failed to find $INSTDIR\${MAINPROGRAM}"
+			MessageBox MB_YESNO "$(PROMPT_NOMAINPROGRAM_CONTINUEANYWAY)" /SD IDYES IDYES +2
+				Abort "$(MSG_ABORT)"
+		${Else}
+			DetailPrint "Install mode: "
+		${EndIf}
+	${EndIf}
+
+	; Actually peform the installation
+	${If} $R0 == 1
+		; Install main executable
+		File "${PROGRAMEXE}"
+
+		; only for MinGW builds
+		${IfExists} "libAbiWord.dll"
+			File "libAbiWord.dll"
+		${IfExistsEnd}
+	${EndIf}
 SectionEnd
+!macro Remove_${section_abi}
+	;Removes this component
+	DetailPrint "*** Removing Main Component..."
+	Delete "$INSTDIR\${MAINPROGRAM}"
+
+	; only for MinGW builds
+	${IfExists} "$INSTDIR\${PRODUCT}\bin\libAbiWord.dll"
+		Delete "$INSTDIR\${PRODUCT}\bin\libAbiWord.dll"
+	${IfExistsEnd}
+!macroend
 
 
-Section "" ; invisible section that must also be installed, sets installer information
+Section "" section_core_inv ; invisible section that must also be installed, sets installer information
 	SectionIn 1 2 3 4 ${DLSECT} RO	; included in Typical, Full, Minimal, Required
 
 	; TODO: determine if we should be using HKCU instead of HKLM for some of these
 	; or see if user has permission and ask them...
-
-	; Write the language used during installation into the registry for uninstall to use
-	WriteRegStr HKLM SOFTWARE\${APPSET}\${PRODUCT}\v${VERSION_MAJOR} "Installer Language" "$LANGUAGE"
 
 	; Write the installation path into the registry
 	WriteRegStr HKLM SOFTWARE\${APPSET}\${PRODUCT}\v${VERSION_MAJOR} "Install_Dir" "$INSTDIR"
@@ -368,15 +212,20 @@ Section "" ; invisible section that must also be installed, sets installer infor
 	WriteRegStr HKLM SOFTWARE\${APPSET}\${PRODUCT}\v${VERSION_MAJOR} "Version" "${VERSION}"
 
 	; Write the uninstall keys for Windows
-	; N.B. This needs to include a version number or unique identifier.  
-	; More than one version of Abiword but only one Control Panel.  
-	WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCT}${VERSION_MAJOR}" "DisplayName" "${PRODUCT} ${VERSION} (remove only)"
-	WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCT}${VERSION_MAJOR}" "UninstallString" '"$INSTDIR\Uninstall${PRODUCT}${VERSION_MAJOR}.exe"'
-
-	; New Uninstaller
-	WriteUninstaller "Uninstall${PRODUCT}${VERSION_MAJOR}.exe"
+	!include "abi_util_reg_uninst.nsh"
 
 SectionEnd
+!macro Remove_${section_core_inv}
+	; remove registry keys
+	DetailPrint "*** Removing Primary Registry Keys..."
+
+	; removes all the uninstaller info we added
+	DeleteRegKey HKLM "${REG_UNINSTALL_KEY}"
+
+	; removes all the stuff we store concerning this major revision of AbiWord
+	DeleteRegKey HKLM SOFTWARE\${APPSET}\${PRODUCT}\v${VERSION_MAJOR}
+
+!macroend
 
 
 Section "$(TITLE_section_abi_req)" section_abi_req
@@ -404,112 +253,66 @@ Section "$(TITLE_section_abi_req)" section_abi_req
 	Delete $TEMP\Dingbats.ttf
   
 	; Write the start menu entry (if user selected to do so)
-	!ifndef CLASSIC_UI
-	  !insertmacro MUI_STARTMENU_WRITE_BEGIN
+	!insertmacro MUI_STARTMENU_WRITE_BEGIN Application
 		;SetShellVarContext current|all???
-		${lngCreateSMGroup}  "$MUI_STARTMENU_FOLDER"
-		${lngCreateShortCut} "$SMPROGRAMS" "$MUI_STARTMENU_FOLDER" "$(SHORTCUT_NAME)" "$INSTDIR\${MAINPROGRAM}" "" "$INSTDIR\${MAINPROGRAM}" 0
-		${lngCreateShortCut} "$SMPROGRAMS" "$MUI_STARTMENU_FOLDER" "$(SHORTCUT_NAME_UNINSTALL)" "$INSTDIR\Uninstall${PRODUCT}${VERSION_MAJOR}.exe" "" "$INSTDIR\Uninstall${PRODUCT}${VERSION_MAJOR}.exe" 0
-	  !insertmacro MUI_STARTMENU_WRITE_END
-	!endif
+		${lngCreateSMGroup}  "$STARTMENU_FOLDER"
+		${lngCreateShortCut} "$SMPROGRAMS" "$STARTMENU_FOLDER" "$(SHORTCUT_NAME)" "$INSTDIR\${MAINPROGRAM}" "" "$INSTDIR\${MAINPROGRAM}" 0
+		${lngCreateShortCut} "$SMPROGRAMS" "$STARTMENU_FOLDER" "$(SHORTCUT_NAME_UNINSTALL)" "$INSTDIR\Uninstall${PRODUCT}${VERSION_MAJOR}.exe" "" "$INSTDIR\Uninstall${PRODUCT}${VERSION_MAJOR}.exe" 0
+	!insertmacro MUI_STARTMENU_WRITE_END
 
 SectionEnd
+!macro Remove_${section_abi_req}
+	;Removes this component
+	DetailPrint "*** Removing Support Files and Start Menu Entry..."
 
-; OPTIONAL Registry Settings
-Section "$(TITLE_section_shellupdate)" section_shellupdate
-	SectionIn 1 2 3 ${DLSECT}
-	; Write the AbiSuite.AbiWord Keys
-	WriteRegStr HKCR "${APPSET}.${PRODUCT}" "" "${PRODUCT} Document"
-	WriteRegStr HKCR "${APPSET}.${PRODUCT}\DefaultIcon" "" "$INSTDIR\${MAINPROGRAM},2"
-	WriteRegStr HKCR "${APPSET}.${PRODUCT}\shell\open\command" "" '"$INSTDIR\${MAINPROGRAM}" "%1"'
-;	WriteRegStr HKCR "${APPSET}.${PRODUCT}\shell\open\command" "" "$INSTDIR\${MAINPROGRAM}"
-;	WriteRegStr HKCR "${APPSET}.${PRODUCT}\shell\open\ddeexec" "" '[Open("%1")]'
-;	WriteRegStr HKCR "${APPSET}.${PRODUCT}\shell\open\ddeexec\application" "" "${PRODUCT}"
-;	WriteRegStr HKCR "${APPSET}.${PRODUCT}\shell\open\ddeexec\topic" "" "System"
+	; remove start menu shortcuts. (tries to get folder name from registry)
+	;Delete "$SMPROGRAMS\${SM_PRODUCT_GROUP}\*.*"
+	!insertmacro MUI_STARTMENU_GETFOLDER Application $0
+	StrCmp "$0" "" +2			; don't accidently delete all start menu entries
+      RMDir /r "$SMPROGRAMS\$0"
 
-	; Write File Associations
-	${CreateFileAssociation} ".abw"  "${APPSET}.${PRODUCT}" "application/abiword"
-	${CreateFileAssociation} ".awt"  "${APPSET}.${PRODUCT}" "application/abiword-template"
-	${CreateFileAssociation} ".zabw" "${APPSET}.${PRODUCT}" "application/abiword-compressed"
+	; remove desktop shortcut.
+	StrCpy $0 "$(SHORTCUT_NAME)"
+	Delete "$DESKTOP\$0.lnk"
 
-SectionEnd
+	; don't bother removing Dingbats font
+	; it shouldn't hurt to leave installed and user may now rely on it
+	; as its in the System directory
+
+	; remove files we installed in $INSTDIR
+	Delete "$INSTDIR\copying.txt"
+	Delete "$INSTDIR\readme.txt"
+
+	; remove string sets
+	Delete "$INSTDIR\${PRODUCT}\strings\*.strings"
+	${DeleteDirIfEmpty} "$INSTDIR\${PRODUCT}\strings"
+
+	; remove profile sets
+	Delete "$INSTDIR\${PRODUCT}\system.profile*"
+
+	; remove always (for interoperability) installed plugins 
+	Delete "$INSTDIR\${PRODUCT}\plugins\libAbi_IEG_Win32Native.dll"
+!macroend
 
 SubSectionEnd ; core
+!macro Remove_${ssection_core}
+	; Note: subsection removes called unless every section contained is selected
+	;       so do not actually remove anything that may be necessary
+	;       if subsection is only partially selected
+	DetailPrint "*** ssection_core"
+!macroend
+!macro Keeping_${ssection_core}
+	; Note: subsection removes called unless every section contained is selected
+	;       so do not actually remove anything that may be necessary
+	;       if subsection is only partially selected
+	DetailPrint "*** ssection_core"
+!macroend
 
 
 ; *********************************************************************
-!ifdef CLASSIC_UI
 
-
-SubSection /e "$(TITLE_ssection_shortcuts)" ssection_shortcuts
-
-SubSection /e "$(TITLE_ssection_shortcuts_cu)" ssection_shortcuts_cu
-
-; OPTIONAL Start Menu Shortcut for the current user profile
-Section "$(TITLE_section_sm_shortcuts_cu)" section_sm_shortcuts_cu
-	SectionIn 1 2 3 ${DLSECT}
-	SetShellVarContext current  	; This is probably overkill, but playing it safe
-	${lngCreateSMGroup}  "$(SM_PRODUCT_GROUP)"
-	${lngCreateShortCut} "$SMPROGRAMS" "$(SM_PRODUCT_GROUP)" "$(SHORTCUT_NAME)" "$INSTDIR\${MAINPROGRAM}" "" "$INSTDIR\${MAINPROGRAM}" 0
-	${lngCreateShortCut} "$SMPROGRAMS" "$(SM_PRODUCT_GROUP)" "$(SHORTCUT_NAME_UNINSTALL)" "$INSTDIR\Uninstall${PRODUCT}${VERSION_MAJOR}.exe" "" "$INSTDIR\Uninstall${PRODUCT}${VERSION_MAJOR}.exe" 0
-SectionEnd
-
-; OPTIONAL Desktop Shortcut for the current user profile
-Section "$(TITLE_section_desktop_shortcuts_cu)" section_desktop_shortcuts_cu
-	SectionIn 1 2 3 ${DLSECT}
-	SetShellVarContext current  	; This is probably overkill, but playing it safe
-	${lngCreateShortCut} "$DESKTOP" "" "$(SHORTCUT_NAME)" "$INSTDIR\${MAINPROGRAM}" "" "$INSTDIR\${MAINPROGRAM}" 0
-SectionEnd
-
-
-SubSectionEnd ; Shortcuts (Current User)
-SubSection /e "$(TITLE_ssection_shortcuts_au)" ssection_shortcuts_au
-
-
-; OPTIONAL Start Menu Shortcut for the special All User profile (not used in win9x) 
-Section "$(TITLE_section_sm_shortcuts_au)" section_sm_shortcuts_au
-	SectionIn 2	${DLSECT}	; off by default, included in 2 Full Install
-	SetShellVarContext all  	; set to all, reset at end of section
-	${lngCreateSMGroup}  "$(SM_PRODUCT_GROUP)"
-	${lngCreateShortCut} "$SMPROGRAMS" "$(SM_PRODUCT_GROUP)" "$(SHORTCUT_NAME)" "$INSTDIR\${MAINPROGRAM}" "" "$INSTDIR\${MAINPROGRAM}" 0
-	${lngCreateShortCut} "$SMPROGRAMS" "$(SM_PRODUCT_GROUP)" "$(SHORTCUT_NAME_UNINSTALL)" "$INSTDIR\Uninstall${PRODUCT}${VERSION_MAJOR}.exe" "" "$INSTDIR\Uninstall${PRODUCT}${VERSION_MAJOR}.exe" 0
-	SetShellVarContext current  	; This is pro'ly overkill
-SectionEnd
-
-
-; OPTIONAL Desktop Shortcut for All Users
-Section "$(TITLE_section_desktop_shortcuts_au)" section_desktop_shortcuts_au
-	SectionIn 2	${DLSECT}	; not in default, included in 2 Full Install
-	SetShellVarContext all  	;  All users 
-	${lngCreateShortCut} "$DESKTOP" "" "$(SHORTCUT_NAME)" "$INSTDIR\${MAINPROGRAM}" "" "$INSTDIR\${MAINPROGRAM}" 0
-	SetShellVarContext current  	; reset to current user
-SectionEnd
-
-SubSectionEnd ; Shortcuts (All Users)"
-
-SubSectionEnd ; Shortcuts
-
-
-!endif ;CLASSIC_UI
-; *********************************************************************
-
-
-SubSection /e "$(TITLE_ssection_gen_file_assoc)" ssection_gen_file_assoc
-
-; OPTIONAL 
-Section "$(TITLE_section_fa_doc)" section_fa_doc
-	SectionIn 2 ${DLSECT}
-	${CreateFileAssociation} ".doc"  "${APPSET}.${PRODUCT}" "application/abiword"
-SectionEnd
-
-; OPTIONAL 
-Section "$(TITLE_section_fa_rtf)" section_fa_rtf
-	SectionIn 2 ${DLSECT}
-	${CreateFileAssociation} ".rtf"  "${APPSET}.${PRODUCT}" "application/abiword"
-SectionEnd
-
-SubSectionEnd ; general file associations
-
+; OPTIONAL File associations
+!include "abi_section_opt_fileassoc.nsh"
 
 ; *********************************************************************
 
@@ -519,237 +322,108 @@ SubSection /e "$(TITLE_ssection_helper_files)" ssection_helper_files
 ; MORE OPTIONS
 ; language packs, clipart, help docs, templates etc.   
 
-; OPTIONAL Installation of Help Files
-Section "$(TITLE_section_help)" section_help
-	SectionIn 1 2 ${DLSECT}
-	SetOutPath $INSTDIR\AbiWord
-	; help documents may not be created if peer abiword-docs not found
-	File /nonfatal /r "..\abisuite\abiword\help"
-SectionEnd
+; optional help section
+!include "abi_section_opt_help.nsh"
 
-; OPTIONAL Installation of Templates
-Section "$(TITLE_section_templates)" section_templates
-	SectionIn 1 2 ${DLSECT}
-	SetOutPath $INSTDIR
-	File /r "..\AbiSuite\templates"
-SectionEnd
+; optional template section
+!include "abi_section_opt_templates.nsh"
 
-; OPTIONAL Installation of Samples - REMOVED
-;Section "$(TITLE_section_samples)" section_samples
-;	SectionIn 1 2 ${DLSECT}
-;	SetOutPath $INSTDIR\AbiWord
-;	File /r "..\AbiSuite\AbiWord\sample"
-;SectionEnd
+; optional clipart section
+!include "abi_section_opt_clipart.nsh"
 
-; OPTIONAL Installation of Clipart
-Section "$(TITLE_section_clipart)" section_clipart
-	SectionIn 1 2 ${DLSECT}
-	SetOutPath $INSTDIR
-	File /r "..\AbiSuite\clipart"
-SectionEnd
+; optional sections for redistributable compontents, e.g. CRTL dll
+!include "abi_section_opt_redist.nsh"
 
-
-; include function to determine if user is connected to Internet/has networking enabled computer
-!include "abi_util_connected.nsh"
-
-
-!ifdef OPT_CRTL_LOCAL
-; OPTIONAL Installation of c runtime library dll
-; Hidden if for Win95 only (e.g msvcrt.dll)
-Section "$(TITLE_section_crtlib_local)" section_crtlib_local
-	SectionIn 2 ${DLSECT}	; select if full installation choosen
-	SetOutPath $INSTDIR\${PRODUCT}\bin
-
-	File "${OPT_CRTL_LOCAL}${OPT_CRTL_FILENAME}"
-
-	!ifdef OPT_CPPL_FILENAME
-	File "${OPT_CRTL_LOCAL}${OPT_CPPL_FILENAME}"
-	!endif
-SectionEnd
-!endif ; OPT_CRTL_LOCAL
-
-; we only enable this option if a url to connect to was
-; specified during installation building; this should
-; only be enabled for release builds if your server (where
-; the url points) can handle the load and you need
-; a crtlib other than msvcrt.dll (or to support Win95)
-!ifdef OPT_CRTL_URL
-; OPTIONAL Installation of c runtime library dll
-; Hidden if for Win95 only (e.g msvcrt.dll)
-Section "$(TITLE_section_crtlib_dl)" section_crtlib_dl
-	SectionIn 2	${DLSECT}	; select if full installation choosen
-	Call ConnectInternet	; try to establish connection if not connected
-	StrCmp $0 "online" 0 dlDone
-	NSISdl::download "${OPT_CRTL_URL}${OPT_CRTL_FILENAME}" "$INSTDIR\${PRODUCT}\bin\${OPT_CRTL_FILENAME}"
-	Pop $0 ;Get the return value
-	StrCmp $0 "success" dlDone
-		; Couldn't download the file
-		DetailPrint "$(PROMPT_CRTL_DL_FAILED)"
-		DetailPrint "NSISdl::download return $0"
-		MessageBox MB_OK|MB_ICONEXCLAMATION|MB_DEFBUTTON1 "$(PROMPT_CRTL_DL_FAILED)"
-
-	!ifdef OPT_CPPL_FILENAME
-	NSISdl::download "${OPT_CRTL_URL}${OPT_CRTL_FILENAME}" "$INSTDIR\${PRODUCT}\bin\${OPT_CPPL_FILENAME}"
-	Pop $0 ;Get the return value
-	StrCmp $0 "success" dlDone
-		; Couldn't download the file
-		DetailPrint "*$(PROMPT_CRTL_DL_FAILED)"
-		DetailPrint "NSISdl::download return $0"
-		MessageBox MB_OK|MB_ICONEXCLAMATION|MB_DEFBUTTON1 "$(PROMPT_CRTL_DL_FAILED)"
-	!endif
-
-	dlDone:
-SectionEnd
-!endif ; OPT_CRTL_URL
-
-
-SubSection /e "$(TITLE_ssection_dictionary)" ssection_dictionary
-
-; OPTIONAL Installation of Default Dictionary
-Section "$(TITLE_section_dictinary_def_English)" section_dictinary_def_English
-	SectionIn 1 2 ${DLSECT}
-	SetOutPath $INSTDIR
-	File /r "..\AbiSuite\dictionary"
-SectionEnd
-
-
-!ifdef OPT_DICTIONARIES
-!include "abi_dict_misc.nsh"
-!endif ; OPT_DICTIONARIES
-
-
-SubSectionEnd ; Dictionaries
+; optional sections for dictionaries
+!include "abi_section_opt_dictionaries.nsh"
 
 SubSectionEnd ; helper files
+!macro Remove_${ssection_helper_files}
+	; Note: subsection removes called unless every section contained is selected
+	;       so do not actually remove anything that may be necessary
+	;       if subsection is only partially selected
+	DetailPrint "*** ssection_helper_files"
+!macroend
 
 
 ; *********************************************************************
 
+; OPTIONAL plugins
+${IfExists} system.dll.log
+!error exists
+${IfExistsEnd}
 
-!include "abi_util_winver.nsh"
-
-
-!macro SectionDisable SECTIONID
-  !insertmacro UnselectSection ${SECTIONID}	; mark section as unselected
-  SectionSetText ${SECTIONID} ""	; and make invisible so user doesn't see it
-!macroend
-!define SectionDisable "!insertmacro SectionDisable"
-
-Function .onInit
-
-!ifndef CLASSIC_UI
-  ;Language selection
-  !insertmacro MUI_LANGDLL_DISPLAY
-!endif
+; *********************************************************************
 
 
-!ifndef NODOWNLOADS
-  ; Disable all downloads if not connected
-  Call ConnectInternet	; try to establish connection if not connected
-  StrCmp $0 "online" connected
-  !ifdef OPT_DICTIONARIES
-	${SectionDisable} ${ssection_dl_opt_dict}
-	!insertmacro cycle_over_dictionary_sections "${SectionDisable} $R1"
-  !endif
-  !ifdef OPT_CRTL_URL
-  	${SectionDisable} ${section_crtlib_dl}
-  !endif
-  connected:
-!endif ;NODOWNLOADS
+;--- Add/Remove callback functions: ---
+!define MarkSubSectionStart "DetailPrint"
 
-; Disable Windows 95 specific sections
-!ifdef OPT_CRTL_WIN95ONLY
-Call GetWindowsVersion
-Pop $R0
-StrCmp $R0 '95' skipDisableW95dl 0	; disable for all but Windows 95
-  !ifdef OPT_CRTL_URL
-     ${SectionDisable} ${section_crtlib_dl}
-  !endif
-  !ifdef OPT_CRTL_LOCAL
-     ${SectionDisable} ${section_crtlib_local}
-  !endif
-skipDisableW95dl:
-!endif ;OPT_CRTL_WIN95ONLY
+!macro SectionList MacroName
+  ;This macro used to perform operation on multiple sections.
+  ;List all of your components in following manner here.
+  ;  use ${MarkSubSectionStart} to indicate start of a subsection
+  ;  then list all sections (and nested subsections) 
+  ;  lastly list the subsection (so it can remove any contents
+  ;  shared by multiple sections contained within).
 
-FunctionEnd
+  ${MarkSubSectionStart} "*** ssection_core:"
+  !insertmacro "${MacroName}" "section_abi"
+  !insertmacro "${MacroName}" "section_core_inv"
+  !insertmacro "${MacroName}" "section_abi_req"
+  !insertmacro "${MacroName}" "ssection_core"
 
+  ${MarkSubSectionStart} "*** ssection_fa_shellupdate:"
+  !insertmacro "${MacroName}" "section_fa_shellupdate_inv"
+  !insertmacro "${MacroName}" "section_fa_abw"
+  !insertmacro "${MacroName}" "section_fa_awt"
+  !insertmacro "${MacroName}" "section_fa_zabw"
+  !insertmacro "${MacroName}" "section_fa_doc"
+  !insertmacro "${MacroName}" "section_fa_rtf"
+  !insertmacro "${MacroName}" "ssection_fa_shellupdate"
 
-!ifndef CLASSIC_UI
-	; section and subsection descriptions (scroll over text)
-	!define MUI_DESCRIPTION_TEXT "!insertmacro MUI_DESCRIPTION_TEXT"
-	!insertmacro MUI_FUNCTION_DESCRIPTION_BEGIN
-		${MUI_DESCRIPTION_TEXT} ${section_abi} $(DESC_section_abi)
-		${MUI_DESCRIPTION_TEXT} ${section_abi_req} $(DESC_section_abi_req)
-		${MUI_DESCRIPTION_TEXT} ${section_shellupdate} $(DESC_section_shellupdate)
-
-		!ifdef CLASSIC_UI
-		${MUI_DESCRIPTION_TEXT} ${ssection_shortcuts} $(DESC_ssection_shortcuts)
-		${MUI_DESCRIPTION_TEXT} ${ssection_shortcuts_cu} $(DESC_ssection_shortcuts_cu)
-		${MUI_DESCRIPTION_TEXT} ${section_sm_shortcuts_cu} $(DESC_ssection_shortcuts_cu)
-		${MUI_DESCRIPTION_TEXT} ${section_desktop_shortcuts_cu} $(DESC_ssection_shortcuts_cu)
-		${MUI_DESCRIPTION_TEXT} ${ssection_shortcuts_au} $(DESC_ssection_shortcuts_au)
-		${MUI_DESCRIPTION_TEXT} ${section_sm_shortcuts_au} $(DESC_ssection_shortcuts_au)
-		${MUI_DESCRIPTION_TEXT} ${section_desktop_shortcuts_au} $(DESC_ssection_shortcuts_au)
-		!endif
-
-		${MUI_DESCRIPTION_TEXT} ${ssection_core} $(DESC_ssection_core)
-		${MUI_DESCRIPTION_TEXT} ${ssection_gen_file_assoc} $(DESC_ssection_gen_file_assoc)
-		${MUI_DESCRIPTION_TEXT} ${section_fa_doc} $(DESC_section_fa_doc)
-		${MUI_DESCRIPTION_TEXT} ${section_fa_rtf} $(DESC_section_fa_rtf)
-		${MUI_DESCRIPTION_TEXT} ${ssection_helper_files} $(DESC_ssection_helper_files)
-		${MUI_DESCRIPTION_TEXT} ${section_help} $(DESC_section_help)
-		${MUI_DESCRIPTION_TEXT} ${section_templates} $(DESC_section_templates)
-;		${MUI_DESCRIPTION_TEXT} ${section_samples} $(DESC_section_samples)
-		${MUI_DESCRIPTION_TEXT} ${section_clipart} $(DESC_section_clipart)
-
+  ${MarkSubSectionStart} "*** ssection_helper_files:"
+  !insertmacro "${MacroName}" "section_help"
+  !insertmacro "${MacroName}" "section_templates"
+  !insertmacro "${MacroName}" "section_clipart"
 !ifdef OPT_CRTL_LOCAL
-		${MUI_DESCRIPTION_TEXT} ${section_crtlib_local} $(DESC_section_crtlib)
+  !insertmacro "${MacroName}" "section_crtlib_local"
 !endif
-
-!ifndef NODOWNLOADS
 !ifdef OPT_CRTL_URL
-		${MUI_DESCRIPTION_TEXT} ${section_crtlib_dl} $(DESC_section_crtlib)
+  !insertmacro "${MacroName}" "section_crtlib_dl"
 !endif
+  ${MarkSubSectionStart} "*** ssection_dictionary:"
+  !insertmacro "${MacroName}" "section_dictinary_def_English"
+  !ifdef OPT_DICTIONARIES
+  ;TODO handle dl dictionaries
+  !endif ; OPT_DICTIONARIES
+  !insertmacro "${MacroName}" "ssection_dictionary"
+  !insertmacro "${MacroName}" "ssection_helper_files"
 
-		${MUI_DESCRIPTION_TEXT} ${ssection_dictionary} $(DESC_ssection_dictionary)
-		${MUI_DESCRIPTION_TEXT} ${section_dictinary_def_English} $(DESC_ssection_dictionary)
-!ifdef OPT_DICTIONARIES
-		${MUI_DESCRIPTION_TEXT} ${ssection_dl_opt_dict} $(DESC_ssection_dictionary)
-!endif ; OPT_DICTIONARIES
-!endif ; NODOWNLOADS
+!macroend
 
-!ifdef OPT_DICTIONARIES
-		!insertmacro cycle_over_dictionary_sections "${MUI_DESCRIPTION_TEXT} $R1 $(DESC_ssection_dictionary)"
-!endif
+Section -FinishComponents
+  ;Removes unselected components and writes component status to registry
+  !insertmacro SectionList "FinishSection"
+SectionEnd
+;--- End of Add/Remove callback functions ---
 
-
-	!insertmacro MUI_FUNCTION_DESCRIPTION_END
+; Perform one time steps done at installer startup, e.g. get installer language, 
+; check internet connection/OS/etc and enable/disable options as appropriate
+!include "abi_onInit.nsh"
 
 
-!ifndef NODOWNLOADS
-!endif
-
-!endif
-
+; add descriptions to the component sections
+!include "abi_mui_sectdesc.nsh"
 
 
 ; uninstall stuff
-!ifdef CLASSIC_UI
-	UninstallText "This will uninstall ${PRODUCT} v${VERSION_MAJOR}. Hit next to continue."
-!endif
 
-
-; check if a file extension is associated with us and if so delete it
-!macro un.RemoveFileAssociation extension appType
-	push $0
-	ReadRegStr $0 HKCR "${extension}" ""
-	StrCmp $0 "${appType}" 0 Skip_Del_File_Assoc.${extension}
-		; actually remove file assoications
-		DeleteRegKey HKCR "${extension}"
-	Skip_Del_File_Assoc.${extension}:
-	pop $0
-!macroend
-!define un.RemoveFileAssociation "!insertmacro un.RemoveFileAssociation"
+;Uninstaller Functions
+Function un.onInit
+  ;Restore Language selection
+  !insertmacro MUI_UNGETLANGUAGE
+FunctionEnd
 
 
 ; special uninstall section.
@@ -760,47 +434,16 @@ Section "Uninstall"
 	Abort "Quitting the uninstall process"
 
 	DoUnInstall:
-	; remove registry keys
-	DeleteRegKey HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCT}${VERSION_MAJOR}"
-	DeleteRegKey HKLM SOFTWARE\${APPSET}\${PRODUCT}\v${VERSION_MAJOR}
 
-	; remove file assoications
-	; our native ones
-	${un.RemoveFileAssociation} ".abw"  "${APPSET}.${PRODUCT}"
-	${un.RemoveFileAssociation} ".awt"  "${APPSET}.${PRODUCT}"
-	${un.RemoveFileAssociation} ".zabw" "${APPSET}.${PRODUCT}"
-	; other common ones
-	${un.RemoveFileAssociation} ".doc"  "${APPSET}.${PRODUCT}"
-	${un.RemoveFileAssociation} ".rtf"  "${APPSET}.${PRODUCT}"
+	; removes all optional components
+	!insertmacro SectionList "RemoveSection"
 
-	; actual apptype entry
-	DeleteRegKey HKCR "${APPSET}.${PRODUCT}"
+	; attempt to remove actual product directory
+	${DeleteDirIfEmpty} "$INSTDIR\AbiWord"
 
-	; remove start menu shortcuts.
-	;Delete "$SMPROGRAMS\${SM_PRODUCT_GROUP}\*.*"
-        !ifndef CLASSIC_UI
-                !insertmacro MUI_STARTMENU_GETFOLDER $0
-                RMDir /r "$0"
-        !else
-             StrCpy $0 "$(SM_PRODUCT_GROUP)"
-	     RMDir /r "$SMPROGRAMS\$0"
-        !endif
-
-	; remove desktop shortcut.
-	StrCpy $0 "$(SHORTCUT_NAME)"
-	Delete "$DESKTOP\$0.lnk"
-
-	; remove directories used (and any files in them)
-	RMDir /r "$INSTDIR"
+	; attempt to remove install directory
+	${DeleteDirIfEmpty} "$INSTDIR"
 
 SectionEnd
-
-!ifndef CLASSIC_UI
-;Uninstaller Functions
-Function un.onInit
-  ;Restore Language selection
-  !insertmacro MUI_UNGETLANGUAGE
-FunctionEnd
-!endif
 
 ; End of File
