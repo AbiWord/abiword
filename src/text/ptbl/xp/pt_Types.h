@@ -30,6 +30,22 @@ typedef UT_uint32 PT_AttrPropIndex;		/* index to Attribute/Property Tables */
 typedef UT_uint32 PT_DocPosition;		/* absolute document position */
 typedef UT_uint32 PT_BlockOffset;		/* block-relative document position */
 
+class PD_Document;
+class PD_DocumentRange
+{
+public:
+	PD_DocumentRange(PD_Document * pDoc, PT_DocPosition k1, PT_DocPosition k2)
+		{
+			m_pDoc = pDoc;
+			m_pos1 = k1;
+			m_pos2 = k2;
+		}
+	
+	PD_Document *		m_pDoc;
+	PT_DocPosition		m_pos1;
+	PT_DocPosition		m_pos2;
+};
+
 // PTStruxType tells the sub-type of a FragStrux.
 // PTObjectType tells the sub-type of an FragObject.
 
