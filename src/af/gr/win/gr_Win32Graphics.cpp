@@ -1586,25 +1586,14 @@ bool GR_Win32Graphics::_setTransform(const GR_Transform & tr)
 #endif
 }
 
-<<<<<<< gr_Win32Graphics.cpp
+#if 0
+
 GR_Image * GR_Win32Graphics::genImageFromRectangle(const UT_Rect & r)
 {
-	UT_uint32 iWidth = tdu(r.width);
-	UT_uint32 iHeight = tdu(r.height);
-	UT_sint32 x = tdu(r.left);
-	UT_sint32 y = tdu(r.top);	 
-=======
-void GR_Win32Graphics::saveRectangle(UT_Rect & r, UT_uint32 iIndx) 
-{		
-	UT_Rect * oldR = NULL;
-	m_vSaveRect.setNthItem(iIndx, (void*)new UT_Rect(r),(void **)&oldR);
-	DELETEP(oldR);
-
 	UT_uint32 iWidth = _tduR(r.width);
 	UT_uint32 iHeight = _tduR(r.height);
-	UT_sint32 x = _tduX(r.left);
-	UT_sint32 y = _tduY(r.top);	 
->>>>>>> 1.170
+	UT_sint32 x = _tduR(r.left);
+	UT_sint32 y = _tduR(r.top);	 
 
 	#ifdef GR_GRAPHICS_DEBUG	
 	UT_DEBUGMSG(("GR_Win32Graphics::saveRectangle %u, %u %u %u %u\n", iIndx,
@@ -1635,6 +1624,8 @@ void GR_Win32Graphics::saveRectangle(UT_Rect & r, UT_uint32 iIndx)
 	hBit =  (HBITMAP)SelectObject(hMemDC, hOld);
 	DeleteDC(hMemDC);
 }
+
+#endif
 
 void GR_Win32Graphics::saveRectangle(UT_Rect & r, UT_uint32 iIndx) 
 {		

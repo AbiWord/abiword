@@ -175,7 +175,9 @@ public:
 	virtual UT_uint32		getFontDescent(GR_Font *);
 	virtual UT_uint32		getFontHeight(GR_Font *);
 
+#if 0
     virtual GR_Image * genImageFromRectangle(const UT_Rect & r);
+#endif
 
 	virtual void		  saveRectangle(UT_Rect & r, UT_uint32 iIndx);
 	virtual void		  restoreRectangle(UT_uint32 iIndx);
