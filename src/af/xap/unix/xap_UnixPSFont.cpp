@@ -92,6 +92,36 @@ UT_sint32 PSFont::measureUnremappedCharForCache(UT_UCSChar cChar) const
 	return width;
 }
 
+
+//
+// UT_Rect of glyph in Logical units.
+// rec.left = bearing Left (distance from origin to start)
+// rec.width = widht of the glyph
+// rec.top = distance from the origin to the top of the glyph
+// rec.height = total height of the glyph
+//
+bool  PSFont::glyphBox(UT_UCS4Char glyph_index,UT_Rect & rec) const
+{
+	XftFaceLocker locker(m_hFont->getLayoutXftFont(GR_CharWidthsCache::CACHE_FONT_SIZE));
+	FT_Face pFace = locker.getFace();
+
+	FT_Error error =
+		FT_Load_Glyph(pFace, glyph_index,
+					FT_LOAD_LINEAR_DESIGN |
+					FT_LOAD_IGNORE_TRANSFORM |
+					FT_LOAD_NO_BITMAP | FT_LOAD_NO_SCALE);
+	if (error) {
+		return false;
+	}
+	rec.left = pFace->glyph->metrics.horiBearingX;
+	rec.width = pFace->glyph->metrics.width;
+	rec.top = pFace->glyph->metrics.horiBearingY;
+	rec.height = pFace->glyph->metrics.height;
+
+
+	return true;
+}
+
 float PSFont::measureUnRemappedChar(const UT_UCSChar c, UT_uint32 iSize) const
 {
 	XftFaceLocker locker(m_hFont->getLayoutXftFont(12));

@@ -145,6 +145,36 @@ bool XAP_UnixFontHandle::doesGlyphExist(UT_UCS4Char g)
 	return m_font->doesGlyphExist(g);
 }
 
+//
+// UT_Rect of glyph in Logical units.
+// rec.left = bearing Left (distance from origin to start)
+// rec.width = widht of the glyph
+// rec.top = distance from the origin to the top of the glyph
+// rec.height = total height of the glyph
+//
+bool  XAP_UnixFontHandle::glyphBox(UT_UCS4Char g, UT_Rect & rec) const
+{
+	XftFaceLocker locker(m_font->getLayoutXftFont(GR_CharWidthsCache::CACHE_FONT_SIZE));
+	FT_Face pFace = locker.getFace();
+
+	UT_UCS4Char cChar = g;
+	if(m_font->isSymbol()) cChar = static_cast<UT_UCS4Char>(adobeToUnicode(g));
+	FT_UInt glyph_index = FT_Get_Char_Index(pFace, cChar);
+	FT_Error error =
+		FT_Load_Glyph(pFace, glyph_index,
+					FT_LOAD_LINEAR_DESIGN |
+					FT_LOAD_IGNORE_TRANSFORM |
+					FT_LOAD_NO_BITMAP | FT_LOAD_NO_SCALE);
+	if (error) {
+		return false;
+	}
+	rec.left = pFace->glyph->metrics.horiBearingX;
+	rec.width = pFace->glyph->metrics.width;
+	rec.top = pFace->glyph->metrics.horiBearingY;
+	rec.height = pFace->glyph->metrics.height;
+	xxx_UT_DEBUGMSG((" left %d width %d top %d height %d \n",rec.left,rec.width,rec.top,rec.height));
+	return true;
+}
 /*******************************************************************/
 
 XAP_UnixFont::XAP_UnixFont(XAP_UnixFontManager * pFM)
