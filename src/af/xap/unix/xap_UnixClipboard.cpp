@@ -25,7 +25,7 @@
 //////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////
 
-static GtkClipboard* gtkClipboardForTarget(XAP_UnixClipboard::_T_AllowGet get)
+static GtkClipboard * gtkClipboardForTarget(XAP_UnixClipboard::_T_AllowGet get)
 {
   if (XAP_UnixClipboard::TAG_ClipboardOnly == get)
       return gtk_clipboard_get(GDK_SELECTION_CLIPBOARD);
@@ -46,7 +46,7 @@ static AV_View * viewFromApp(XAP_App * pApp)
 //////////////////////////////////////////////////////////////////
 
 XAP_UnixClipboard::XAP_UnixClipboard(XAP_UnixApp * pUnixApp)
-  : m_pUnixApp(pUnixApp), m_Targets(0), m_nTargets(0)
+	: m_pUnixApp(pUnixApp), m_Targets(0), m_nTargets(0), m_bWaitingForContents(false)
 {
 }
 
@@ -68,7 +68,6 @@ void XAP_UnixClipboard::AddFmt(const char * szFormat)
 
 void XAP_UnixClipboard::initialize()
 {
-  // now setup the primary stuff
   m_nTargets = m_vecFormat_AP_Name.getItemCount();
   m_Targets  = g_new0(GtkTargetEntry, m_nTargets);
   
@@ -168,7 +167,6 @@ bool XAP_UnixClipboard::addData(T_AllowGet tFrom, const char* format, void* pDat
     }
   else 
     {
-        // setup clipboard selection, delay primary until assertSelection()
         gtk_clipboard_set_with_data (gtkClipboardForTarget(TAG_ClipboardOnly),
 				     m_Targets,
 				     m_nTargets,
@@ -238,32 +236,38 @@ bool XAP_UnixClipboard::_getDataFromServer(T_AllowGet tFrom, const char** format
 					   void ** ppData, UT_uint32 * pLen,
 					   const char **pszFormatFound)
 {
-  // walk desired formats list and find first one that server also has
-  GtkClipboard * clipboard = gtkClipboardForTarget (tFrom);
+  if (!m_bWaitingForContents) {
+    // walk desired formats list and find first one that server also has
+    GtkClipboard * clipboard = gtkClipboardForTarget (tFrom);
 
-  UT_Vector atoms ;
-  for(int atomCounter = 0; formatList[atomCounter]; atomCounter++)
-      atoms.addItem((void *) gdk_atom_intern(formatList[atomCounter],FALSE));
+    UT_Vector atoms ;
+    for(int atomCounter = 0; formatList[atomCounter]; atomCounter++)
+        atoms.addItem((void *) gdk_atom_intern(formatList[atomCounter],FALSE));
 
-  int len = atoms.size () ;
+    int len = atoms.size () ;
 
-  for(int i = 0; i < len; i++)
-    {
-      GdkAtom atom = (GdkAtom)atoms.getNthItem(i);
-      GtkSelectionData* selection = gtk_clipboard_wait_for_contents (clipboard, atom);
-      if(selection)
-	{
-	  m_databuf.truncate(0);
-	  m_databuf.append((UT_Byte *)selection->data, (UT_uint32)selection->length );
-	  *pLen = selection->length;
-	  *ppData = (void*)m_databuf.getPointer(0);
-	  *pszFormatFound = formatList[i];
-	  gtk_selection_data_free(selection);
-	  return true;
-	}
-    }
+    for(int i = 0; i < len; i++)
+      {
+        GdkAtom atom = (GdkAtom)atoms.getNthItem(i);
 
-  return false;
+        m_bWaitingForContents = true;
+        GtkSelectionData* selection = gtk_clipboard_wait_for_contents (clipboard, atom);
+        m_bWaitingForContents = false;
+
+        if(selection)
+	  {
+	    m_databuf.truncate(0);
+	    m_databuf.append((UT_Byte *)selection->data, (UT_uint32)selection->length );
+     	    *pLen = selection->length;
+	    *ppData = (void*)m_databuf.getPointer(0);
+	    *pszFormatFound = formatList[i];
+	    gtk_selection_data_free(selection);
+	    return true;
+ 	  }
+      }
+  }
+
+   return false;
 }
 
 //////////////////////////////////////////////////////////////////

@@ -122,6 +122,7 @@ public:
 	XAP_FakeClipboard       m_fakePrimaryClipboard;
 	GtkTargetEntry * m_Targets ;
 	UT_uint32 m_nTargets;
+	bool m_bWaitingForContents;
 };
 
 #endif /* XAP_UNIXCLIPBOARD_H */

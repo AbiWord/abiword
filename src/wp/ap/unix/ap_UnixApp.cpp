@@ -635,8 +635,7 @@ bool AP_UnixApp::canPasteFromClipboard(void)
     unsigned char * pData = NULL;
     UT_uint32 iLen = 0;
 
-    XAP_UnixClipboard::T_AllowGet tFrom = XAP_UnixClipboard::TAG_ClipboardOnly;
-    return m_pClipboard->getSupportedData(XAP_UnixClipboard::TAG_ClipboardOnly,(void**)&pData,&iLen,&szFormatFound);
+    return (m_pClipboard->getSupportedData(XAP_UnixClipboard::TAG_ClipboardOnly,(void**)&pData,&iLen,&szFormatFound) && iLen > 0);
 #else
     return true;
 #endif
