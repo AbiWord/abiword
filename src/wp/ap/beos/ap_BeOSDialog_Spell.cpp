@@ -275,6 +275,9 @@ void SpellWin::_showMisspelledWord(void)
     p = m_pWordIterator->getPreWord(iLength);
 	if (0 < iLength)
 	{
+// FIXME: this is broken - should take iLength characters from p
+// and convert them to char. I.e., first substr p, then
+// convert. But output length is not necessarily related to iLength!
 		buf = new char [iLength + 1];
 		UT_UCS4_strncpy_to_char(buf, p, iLength);
 		buf[iLength] = '\0';
@@ -288,6 +291,9 @@ void SpellWin::_showMisspelledWord(void)
     p = m_pWordIterator->getCurrentWord(iLength);
 	if (0 < iLength)
 	{
+// FIXME: this is broken - should take iLength characters from p
+// and convert them to char. I.e., first substr p, then
+// convert. But output length is not necessarily related to iLength!
 		buf = new char [iLength + 1];
 		UT_UCS4_strncpy_to_char(buf, p, iLength);
 		buf[iLength] = '\0';
@@ -301,6 +307,9 @@ void SpellWin::_showMisspelledWord(void)
     p = m_pWordIterator->getPostWord(iLength);
 	if (0 < iLength)
 	{
+// FIXME: this is broken - should take iLength characters from p
+// and convert them to char. I.e., first substr p, then
+// convert. But output length is not necessarily related to iLength!
 		buf = new char [iLength + 1];
 		UT_UCS4_strncpy_to_char(buf, p, iLength);
 		buf[iLength] = '\0';
