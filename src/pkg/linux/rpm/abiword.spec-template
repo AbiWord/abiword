@@ -553,7 +553,7 @@ fi
 - Add %post fonts and %postun fonts to use (if found) redhat's chkfontpath
   program to add abiword's font path on install and remove it on uninstall
 
-* Sun Mar c31 2002 Rui M. Silva Seabra <rms@1407.org>
+* Sun Mar 31 2002 Rui M. Silva Seabra <rms@1407.org>
 - Partially solve bug http://bugzilla.abisource.com/show_bug.cgi?id=1938
   Added postun to remove the symlink
 
