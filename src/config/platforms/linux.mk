@@ -112,7 +112,7 @@ else
 WARNFLAGS	=
 endif
 
-ifneq ($(ABI_OPT_PACIFY_COMPILER),1)
+ifeq ($(ABI_OPT_PACIFY_COMPILER),1)
 WARNFLAGS	+= -Wall -ansi -pedantic
 endif
 
