@@ -64,101 +64,101 @@ msgstr ""
 #: po/tmp/ap_String_Id.h.h:19
 #, c-format
 msgid "&1 %s"
-msgstr "&amp;1 %s"
+msgstr "&1 %s"
 
 #. DLG_Tab_Radio_None
 #: po/tmp/ap_String_Id.h.h:21
 msgid "&1 None"
-msgstr "&amp;1 なし"
+msgstr "&1 なし"
 
 #. MENU_LABEL_WINDOW_2
 #: po/tmp/ap_String_Id.h.h:23
 #, c-format
 msgid "&2 %s"
-msgstr "&amp;2 %s"
+msgstr "&2 %s"
 
 #. DLG_Tab_Radio_Dot
 #: po/tmp/ap_String_Id.h.h:25
 msgid "&2 .........."
-msgstr "&amp;2 .........."
+msgstr "&2 .........."
 
 #. MENU_LABEL_WINDOW_3
 #: po/tmp/ap_String_Id.h.h:27
 #, c-format
 msgid "&3 %s"
-msgstr "&amp;3 %s"
+msgstr "&3 %s"
 
 #. DLG_Tab_Radio_Dash
 #: po/tmp/ap_String_Id.h.h:29
 msgid "&3 ----------"
-msgstr "&amp;3 ----------"
+msgstr "&3 ----------"
 
 #. MENU_LABEL_WINDOW_4
 #: po/tmp/ap_String_Id.h.h:31
 #, c-format
 msgid "&4 %s"
-msgstr "&amp;4 %s"
+msgstr "&4 %s"
 
 #. DLG_Tab_Radio_Underline
 #: po/tmp/ap_String_Id.h.h:33
 msgid "&4 __________"
-msgstr "&amp;4 __________"
+msgstr "&4 __________"
 
 #. MENU_LABEL_WINDOW_5
 #: po/tmp/ap_String_Id.h.h:35
 #, c-format
 msgid "&5 %s"
-msgstr "&amp;5 %s"
+msgstr "&5 %s"
 
 #. MENU_LABEL_WINDOW_6
 #: po/tmp/ap_String_Id.h.h:37
 #, c-format
 msgid "&6 %s"
-msgstr "&amp;6 %s"
+msgstr "&6 %s"
 
 #. MENU_LABEL_WINDOW_7
 #: po/tmp/ap_String_Id.h.h:39
 #, c-format
 msgid "&7 %s"
-msgstr "&amp;7 %s"
+msgstr "&7 %s"
 
 #. MENU_LABEL_WINDOW_8
 #: po/tmp/ap_String_Id.h.h:41
 #, c-format
 msgid "&8 %s"
-msgstr "&amp;8 %s"
+msgstr "&8 %s"
 
 #. MENU_LABEL_WINDOW_9
 #: po/tmp/ap_String_Id.h.h:43
 #, c-format
 msgid "&9 %s"
-msgstr "&amp;9 %s"
+msgstr "&9 %s"
 
 #. MENU_LABEL_HELP_ABOUT
 #: po/tmp/ap_String_Id.h.h:45
 #, c-format
 msgid "&About %s"
-msgstr "%s について(&amp;A)"
+msgstr "%s について(&A)"
 
 #. MENU_LABEL_SPELL_ADD
 #: po/tmp/ap_String_Id.h.h:47
 msgid "&Add"
-msgstr "追加(&amp;A)"
+msgstr "追加(&A)"
 
 #. DLG_PageSetup_Adjust
 #: po/tmp/ap_String_Id.h.h:49
 msgid "&Adjust to:"
-msgstr "以下に調整(&amp;A):"
+msgstr "以下に調整(&A):"
 
 #. MENU_LABEL_ALIGN
 #: po/tmp/ap_String_Id.h.h:51
 msgid "&Align"
-msgstr "整列(&amp;A)"
+msgstr "整列(&A)"
 
 #. DLG_Options_Label_ViewAll
 #: po/tmp/ap_String_Id.h.h:53
 msgid "&All"
-msgstr "すべて(&amp;A)"
+msgstr "すべて(&A)"
 
 #. DLG_Para_LabelAt
 #: po/tmp/ap_String_Id.h.h:55
@@ -168,117 +168,117 @@ msgstr ""
 #. MENU_LABEL_TOOLS_AUTOSPELL
 #: po/tmp/ap_String_Id.h.h:57
 msgid "&Auto Spellcheck"
-msgstr "自動スペルチェック(&amp;A)"
+msgstr "自動スペルチェック(&A)"
 
 #. DLG_Options_Label_PrefsAutoSave
 #: po/tmp/ap_String_Id.h.h:59
 msgid "&Automatically save this Scheme"
-msgstr "このスキームを自動的に保存(&amp;A)"
+msgstr "このスキームを自動的に保存(&A)"
 
 #. MENU_LABEL_INSERT_AUTOTEXT
 #: po/tmp/ap_String_Id.h.h:61
 msgid "&Autotext"
-msgstr "自動テキスト(&amp;A)"
+msgstr "自動テキスト(&A)"
 
 #. DLG_DateTime_AvailableFormats
 #: po/tmp/ap_String_Id.h.h:63
 msgid "&Available formats:"
-msgstr "利用可能な形式(&amp;A):"
+msgstr "利用可能な形式(&A):"
 
 #. DLG_Para_LabelBefore
 #: po/tmp/ap_String_Id.h.h:65
 msgid "&Before:"
-msgstr "以前(&amp;B):"
+msgstr "以前(&B):"
 
 #. MENU_LABEL_FMT_BOLD
 #: po/tmp/ap_String_Id.h.h:67
 msgid "&Bold"
-msgstr "太字(&amp;B)"
+msgstr "太字(&B)"
 
 #. DLG_PageSetup_Bottom
 #: po/tmp/ap_String_Id.h.h:69
 msgid "&Bottom:"
-msgstr "下部(&amp;B):"
+msgstr "下部(&B):"
 
 #. MENU_LABEL_INSERT_BREAK
 #: po/tmp/ap_String_Id.h.h:71
 msgid "&Break"
-msgstr "ブレーク(&amp;B)"
+msgstr "ブレーク(&B)"
 
 #. MENU_LABEL_ALIGN_CENTER
 #: po/tmp/ap_String_Id.h.h:73
 msgid "&Center"
-msgstr "中央(&amp;C)"
+msgstr "中央(&C)"
 
 #. DLG_Spell_Change
 #: po/tmp/ap_String_Id.h.h:75
 msgid "&Change"
-msgstr "変更(&amp;C)"
+msgstr "変更(&C)"
 
 #. MENU_LABEL_INSERT_CLIPART
 #: po/tmp/ap_String_Id.h.h:77
 msgid "&Clip Art"
-msgstr "クリップアート(&amp;C)"
+msgstr "クリップアート(&C)"
 
 #. MENU_LABEL_FILE_CLOSE
 #: po/tmp/ap_String_Id.h.h:79
 msgid "&Close"
-msgstr "閉じる(&amp;C)"
+msgstr "閉じる(&C)"
 
 #. DLG_Break_ColumnBreak
 #: po/tmp/ap_String_Id.h.h:81
 msgid "&Column break"
-msgstr "列ブレーク(&amp;C)"
+msgstr "列ブレーク(&C)"
 
 #. MENU_LABEL_FMT_COLUMNS
 #: po/tmp/ap_String_Id.h.h:83
 msgid "&Columns"
-msgstr "列(&amp;C)"
+msgstr "列(&C)"
 
 #. MENU_LABEL_EDIT_COPY
 #: po/tmp/ap_String_Id.h.h:85
 msgid "&Copy"
-msgstr "コピー(&amp;C)"
+msgstr "コピー(&C)"
 
 #. DLG_Options_Label_PrefsCurrentScheme
 #: po/tmp/ap_String_Id.h.h:87
 msgid "&Current Preferences Scheme"
-msgstr "現在の設定スキーム(&amp;C)"
+msgstr "現在の設定スキーム(&C)"
 
 #. MENU_LABEL_INSERT_DELETE_HYPERLINK
 #: po/tmp/ap_String_Id.h.h:89
 msgid "&Delete hyperlink"
-msgstr "ハイパーリンクを削除(&amp;D)"
+msgstr "ハイパーリンクを削除(&D)"
 
 #. DLG_Options_Btn_CustomDict
 #: po/tmp/ap_String_Id.h.h:91
 msgid "&Dictionary..."
-msgstr "辞書(&amp;D)..."
+msgstr "辞書(&D)..."
 
 #. MENU_LABEL_FMT_DOCUMENT
 #: po/tmp/ap_String_Id.h.h:93
 msgid "&Document"
-msgstr "文書(&amp;D)"
+msgstr "文書(&D)"
 
 #. DLG_Para_PushNoHyphenate
 #: po/tmp/ap_String_Id.h.h:95
 msgid "&Don't hyphenate"
-msgstr "ハイフネートしない(&amp;D)"
+msgstr "ハイフネートしない(&D)"
 
 #. MENU_LABEL_EDIT
 #: po/tmp/ap_String_Id.h.h:97
 msgid "&Edit"
-msgstr "編集(&amp;E)"
+msgstr "編集(&E)"
 
 #. DLG_Options_Label_SmartQuotesEnable
 #: po/tmp/ap_String_Id.h.h:99
 msgid "&Enable smart quotes"
-msgstr "スマート引用を利用(&amp;E)"
+msgstr "スマート引用を利用(&E)"
 
 #. MENU_LABEL_INSERT_ENDNOTE
 #: po/tmp/ap_String_Id.h.h:101
 msgid "&Endnote"
-msgstr "章末注(&amp;E)"
+msgstr "章末注(&E)"
 
 #. DLG_Break_EvenPage
 #: po/tmp/ap_String_Id.h.h:103
@@ -293,42 +293,42 @@ msgstr ""
 #. MENU_LABEL_INSERT_FIELD
 #: po/tmp/ap_String_Id.h.h:107
 msgid "&Field"
-msgstr "フィールド(&amp;F)"
+msgstr "フィールド(&F)"
 
 #. DLG_Field_Fields
 #: po/tmp/ap_String_Id.h.h:109
 msgid "&Fields:"
-msgstr "フィールド(&amp;F):"
+msgstr "フィールド(&F):"
 
 #. MENU_LABEL_FILE
 #: po/tmp/ap_String_Id.h.h:111
 msgid "&File"
-msgstr "ファイル(&amp;F)"
+msgstr "ファイル(&F)"
 
 #. MENU_LABEL_EDIT_FIND
 #: po/tmp/ap_String_Id.h.h:113
 msgid "&Find"
-msgstr "検索(&amp;F)"
+msgstr "検索(&F)"
 
 #. DLG_FR_FindNextButton
 #: po/tmp/ap_String_Id.h.h:115
 msgid "&Find Next"
-msgstr "次を検索(&amp;F)"
+msgstr "次を検索(&F)"
 
 #. MENU_LABEL_FMT_FONT
 #: po/tmp/ap_String_Id.h.h:117
 msgid "&Font"
-msgstr "フォント(&amp;F)"
+msgstr "フォント(&F)"
 
 #. DLG_PageSetup_Footer
 #: po/tmp/ap_String_Id.h.h:119
 msgid "&Footer:"
-msgstr "フッタ(&amp;F):"
+msgstr "フッタ(&F):"
 
 #. MENU_LABEL_VIEW_TB_FORMAT
 #: po/tmp/ap_String_Id.h.h:121
 msgid "&Formatting"
-msgstr "フォーマッティング(&amp;F)"
+msgstr "フォーマッティング(&F)"
 
 #. MENU_LABEL_INSERT_GRAPHIC
 #: po/tmp/ap_String_Id.h.h:123
@@ -343,42 +343,42 @@ msgstr ""
 #. MENU_LABEL_VIEW_HEADFOOT
 #: po/tmp/ap_String_Id.h.h:127
 msgid "&Header and Footer"
-msgstr "ヘッダとフッタ(&amp;H)"
+msgstr "ヘッダとフッタ(&H)"
 
 #. DLG_PageSetup_Header
 #: po/tmp/ap_String_Id.h.h:129
 msgid "&Header:"
-msgstr "ヘッダ(&amp;H):"
+msgstr "ヘッダ(&H):"
 
 #. DLG_PageSetup_Height
 #: po/tmp/ap_String_Id.h.h:131
 msgid "&Height:"
-msgstr "高さ(&amp;H):"
+msgstr "高さ(&H):"
 
 #. MENU_LABEL_HELP
 #: po/tmp/ap_String_Id.h.h:133
 msgid "&Help"
-msgstr "ヘルプ(&amp;H)"
+msgstr "ヘルプ(&H)"
 
 #. DLG_Options_Label_ViewHiddenText
 #: po/tmp/ap_String_Id.h.h:135
 msgid "&Hidden Text"
-msgstr "隠蔽テキスト(&amp;H)"
+msgstr "隠蔽テキスト(&H)"
 
 #. MENU_LABEL_INSERT_HYPERLINK
 #: po/tmp/ap_String_Id.h.h:137
 msgid "&Hyperlink"
-msgstr "ハイパーリンク(&amp;H)"
+msgstr "ハイパーリンク(&H)"
 
 #. DLG_Spell_Ignore
 #: po/tmp/ap_String_Id.h.h:139
 msgid "&Ignore"
-msgstr "無視(&amp;I)"
+msgstr "無視(&I)"
 
 #. MENU_LABEL_SPELL_IGNOREALL
 #: po/tmp/ap_String_Id.h.h:141
 msgid "&Ignore All"
-msgstr "すべて無視(&amp;I)"
+msgstr "すべて無視(&I)"
 
 #. DLG_Para_TabLabelIndentsAndSpacing
 #: po/tmp/ap_String_Id.h.h:143
@@ -388,17 +388,17 @@ msgstr ""
 #. MENU_LABEL_INSERT
 #: po/tmp/ap_String_Id.h.h:145 po/tmp/xap_String_Id.h.h:17
 msgid "&Insert"
-msgstr "挿入(&amp;I)"
+msgstr "挿入(&I)"
 
 #. MENU_LABEL_INSERT_FILE
 #: po/tmp/ap_String_Id.h.h:147
 msgid "&Insert File"
-msgstr "ファイルを挿入(&amp;I)"
+msgstr "ファイルを挿入(&I)"
 
 #. MENU_LABEL_FMT_ITALIC
 #: po/tmp/ap_String_Id.h.h:149
 msgid "&Italic"
-msgstr "イタリック(&amp;I)"
+msgstr "イタリック(&I)"
 
 #. MENU_LABEL_ALIGN_JUSTIFY
 #: po/tmp/ap_String_Id.h.h:151
@@ -418,22 +418,22 @@ msgstr ""
 #. MENU_LABEL_TOOLS_LANGUAGE
 #: po/tmp/ap_String_Id.h.h:157
 msgid "&Language"
-msgstr "言語(&amp;L)"
+msgstr "言語(&L)"
 
 #. MENU_LABEL_ALIGN_LEFT
 #: po/tmp/ap_String_Id.h.h:159
 msgid "&Left"
-msgstr "左(&amp;L)"
+msgstr "左(&L)"
 
 #. DLG_PageSetup_Left
 #: po/tmp/ap_String_Id.h.h:161
 msgid "&Left:"
-msgstr "左(&amp;L):"
+msgstr "左(&L):"
 
 #. DLG_PageSetup_Margin
 #: po/tmp/ap_String_Id.h.h:163
 msgid "&Margin"
-msgstr "余白(&amp;M)"
+msgstr "余白(&M)"
 
 #. DLG_FR_MatchCase
 #: po/tmp/ap_String_Id.h.h:165
@@ -448,12 +448,12 @@ msgstr ""
 #. DLG_Goto_Label_Name
 #: po/tmp/ap_String_Id.h.h:169
 msgid "&Name:"
-msgstr "名前(&amp;N):"
+msgstr "名前(&N):"
 
 #. MENU_LABEL_FILE_NEW
 #: po/tmp/ap_String_Id.h.h:171
 msgid "&New"
-msgstr "新規(&amp;N)"
+msgstr "新規(&N)"
 
 #. MENU_LABEL_WINDOW_NEW
 #: po/tmp/ap_String_Id.h.h:173
@@ -463,7 +463,7 @@ msgstr ""
 #. DLG_Break_NextPage
 #: po/tmp/ap_String_Id.h.h:175
 msgid "&Next page"
-msgstr "次のページ(&amp;N)"
+msgstr "次のページ(&N)"
 
 #. MENU_LABEL_VIEW_NORMAL
 #: po/tmp/ap_String_Id.h.h:177
@@ -478,12 +478,12 @@ msgstr ""
 #. DLG_Break_OddPage
 #: po/tmp/ap_String_Id.h.h:181
 msgid "&Odd page"
-msgstr "奇数ページ(&amp;O)"
+msgstr "奇数ページ(&O)"
 
 #. MENU_LABEL_FILE_OPEN
 #: po/tmp/ap_String_Id.h.h:183
 msgid "&Open"
-msgstr "開く(&amp;O)"
+msgstr "開く(&O)"
 
 #. MENU_LABEL_FMT_OVERLINE
 #: po/tmp/ap_String_Id.h.h:185
@@ -498,17 +498,17 @@ msgstr ""
 #. MENU_LABEL_FMT_PARAGRAPH
 #: po/tmp/ap_String_Id.h.h:189
 msgid "&Paragraph"
-msgstr "段落(&amp;P)"
+msgstr "段落(&P)"
 
 #. MENU_LABEL_EDIT_PASTE
 #: po/tmp/ap_String_Id.h.h:191
 msgid "&Paste"
-msgstr "貼り付け(&amp;P)"
+msgstr "貼り付け(&P)"
 
 #. MENU_LABEL_INSERT_PICTURE
 #: po/tmp/ap_String_Id.h.h:193
 msgid "&Picture"
-msgstr "画像(&amp;P)"
+msgstr "画像(&P)"
 
 #. DLG_PageSetup_Portrait
 #: po/tmp/ap_String_Id.h.h:195
@@ -518,32 +518,32 @@ msgstr ""
 #. MENU_LABEL_TOOLS_OPTIONS
 #: po/tmp/ap_String_Id.h.h:197
 msgid "&Preferences"
-msgstr "設定(&amp;P)"
+msgstr "設定(&P)"
 
 #. MENU_LABEL_FILE_PRINT
 #: po/tmp/ap_String_Id.h.h:199
 msgid "&Print"
-msgstr "印刷(&amp;P)"
+msgstr "印刷(&P)"
 
 #. MENU_LABEL_VIEW_PRINT
 #: po/tmp/ap_String_Id.h.h:201
 msgid "&Print Layout"
-msgstr "印刷レイアウト(&amp;P)"
+msgstr "印刷レイアウト(&P)"
 
 #. MENU_LABEL_EDIT_REDO
 #: po/tmp/ap_String_Id.h.h:203
 msgid "&Redo"
-msgstr "リドゥ(&amp;R)"
+msgstr "リドゥ(&R)"
 
 #. DLG_FR_ReplaceButton
 #: po/tmp/ap_String_Id.h.h:205
 msgid "&Replace"
-msgstr "置換(&amp;R)"
+msgstr "置換(&R)"
 
 #. DLG_Options_Btn_IgnoreReset
 #: po/tmp/ap_String_Id.h.h:207
 msgid "&Reset"
-msgstr "リセット(&amp;R)"
+msgstr "リセット(&R)"
 
 #. MENU_LABEL_FILE_REVERT
 #: po/tmp/ap_String_Id.h.h:209
@@ -553,82 +553,82 @@ msgstr ""
 #. MENU_LABEL_ALIGN_RIGHT
 #: po/tmp/ap_String_Id.h.h:211
 msgid "&Right"
-msgstr "右(&amp;R)"
+msgstr "右(&R)"
 
 #. DLG_PageSetup_Right
 #: po/tmp/ap_String_Id.h.h:213
 msgid "&Right:"
-msgstr "右(&amp;R):"
+msgstr "右(&R):"
 
 #. DLG_Options_Label_ViewRuler
 #: po/tmp/ap_String_Id.h.h:215
 msgid "&Ruler"
-msgstr "ルーラー(&amp;R)"
+msgstr "ルーラー(&R)"
 
 #. MENU_LABEL_FILE_SAVE
 #: po/tmp/ap_String_Id.h.h:217
 msgid "&Save"
-msgstr "保存(&amp;S)"
+msgstr "保存(&S)"
 
 #. MENU_LABEL_HELP_SEARCH
 #: po/tmp/ap_String_Id.h.h:219
 msgid "&Search for Help"
-msgstr "ヘルプを検索(&amp;S)"
+msgstr "ヘルプを検索(&S)"
 
 #. MENU_LABEL_VIEW_STATUSBAR
 #: po/tmp/ap_String_Id.h.h:221
 msgid "&Show Status Bar"
-msgstr "ステータスバーを表示(&amp;S)"
+msgstr "ステータスバーを表示(&S)"
 
 #. DLG_Para_LabelSpecial
 #: po/tmp/ap_String_Id.h.h:223
 msgid "&Special:"
-msgstr "スペシャル(&amp;S):"
+msgstr "スペシャル(&S):"
 
 #. MENU_LABEL_TOOLS_SPELLING
 #: po/tmp/ap_String_Id.h.h:225
 msgid "&Spelling"
-msgstr "スペリング(&amp;S)"
+msgstr "スペリング(&S)"
 
 #. MENU_LABEL_VIEW_TB_STD
 #: po/tmp/ap_String_Id.h.h:227
 msgid "&Standard"
-msgstr "標準(&amp;S)"
+msgstr "標準(&S)"
 
 #. DLG_Options_Label_ViewStatusBar
 #: po/tmp/ap_String_Id.h.h:229
 msgid "&Status bar"
-msgstr "ステータスバー(&amp;S)"
+msgstr "ステータスバー(&S)"
 
 #. MENU_LABEL_FMT_SUBSCRIPT
 #: po/tmp/ap_String_Id.h.h:231
 msgid "&Subscript"
-msgstr "下付(&amp;S)"
+msgstr "下付(&S)"
 
 #. DLG_Para_PushSuppressLineNumbers
 #: po/tmp/ap_String_Id.h.h:233
 msgid "&Suppress line numbers"
-msgstr "行番号を表示しない(&amp;S)"
+msgstr "行番号を表示しない(&S)"
 
 #. MENU_LABEL_FMT_TABS
 #: po/tmp/ap_String_Id.h.h:235
 msgid "&Tabs"
-msgstr "タブ(&amp;T)"
+msgstr "タブ(&T)"
 
 #. DLG_Para_ButtonTabs
 #: po/tmp/ap_String_Id.h.h:237
 msgid "&Tabs..."
-msgstr "タブ(&amp;T)..."
+msgstr "タブ(&T)..."
 
 #. MENU_LABEL_VIEW_TOOLBARS
 #: po/tmp/ap_String_Id.h.h:239
 msgid "&Toolbars"
-msgstr "ツールバー(&amp;T)"
+msgstr "ツールバー(&T)"
 
 #. MENU_LABEL_TOOLS
 #: po/tmp/ap_String_Id.h.h:241
 msgid "&Tools"
-msgstr "ツール(&amp;T)"
+msgstr "ツール(&T)"
 
 #. DLG_PageSetup_Top
 #: po/tmp/ap_String_Id.h.h:243
@@ -643,17 +643,17 @@ msgstr ""
 #. MENU_LABEL_FMT_UNDERLINE
 #: po/tmp/ap_String_Id.h.h:247
 msgid "&Underline"
-msgstr "下線(&amp;U)"
+msgstr "下線(&U)"
 
 #. MENU_LABEL_EDIT_UNDO
 #: po/tmp/ap_String_Id.h.h:249
 msgid "&Undo"
-msgstr "アンドゥ(&amp;U)"
+msgstr "アンドゥ(&U)"
 
 #. DLG_PageSetup_Units
 #: po/tmp/ap_String_Id.h.h:251
 msgid "&Units:"
-msgstr "単位(&amp;U):"
+msgstr "単位(&U):"
 
 #. MENU_LABEL_VIEW
 #: po/tmp/ap_String_Id.h.h:253
@@ -663,7 +663,7 @@ msgstr ""
 #. MENU_LABEL_VIEW_WEB
 #: po/tmp/ap_String_Id.h.h:255
 msgid "&Web Layout"
-msgstr "Web レイアウト(&amp;L)"
+msgstr "Web レイアウト(&L)"
 
 #. DLG_Para_PushWidowOrphanControl
 #: po/tmp/ap_String_Id.h.h:257
@@ -673,22 +673,22 @@ msgstr ""
 #. DLG_PageSetup_Width
 #: po/tmp/ap_String_Id.h.h:259
 msgid "&Width:"
-msgstr "幅(&amp;W):"
+msgstr "幅(&W):"
 
 #. MENU_LABEL_WINDOW
 #: po/tmp/ap_String_Id.h.h:261
 msgid "&Window"
-msgstr "ウィンドウ(&amp;W)"
+msgstr "ウィンドウ(&W)"
 
 #. MENU_LABEL_TOOLS_WORDCOUNT
 #: po/tmp/ap_String_Id.h.h:263
 msgid "&Word Count"
-msgstr "単語を数える(&amp;W)"
+msgstr "単語を数える(&W)"
 
 #. MENU_LABEL_VIEW_ZOOM
 #: po/tmp/ap_String_Id.h.h:265
 msgid "&Zoom"
-msgstr "ズーム(&amp;Z)"
+msgstr "ズーム(&Z)"
 
 #. DLG_Spell_NoSuggestions
 #: po/tmp/ap_String_Id.h.h:267
