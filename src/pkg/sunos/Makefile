@@ -25,18 +25,9 @@ include $(ABI_ROOT)/src/config/abi_rules.mk
 ##################################################################
 ## This makefile serves two purposes.  It exposes an "install" 
 ## target, wherein it installs AbiSuite applications.  The
-## eventual layout of these files is contained within the 
-## $(prefix)/AbiSuite directory, save two symbolic links in 
-## $(prefix/bin.  /usr/local is a good value to use for $(prefix),
-## and it is the default.
-## 
-## If you're looking to build distribution packages, this Makefile
-## also provides the "distribution" target, which depends on 
-## installation targets specific to the distribution layouts
-## it will build.  These targets might be named "install_redhat"
-## or "install_debian"; they place the program components into places
-## their respective distributions would expect to find them.  These
-## targets will be called by package tools like RPM.
+## eventual layout of these files is $(prefix)/AbiSuite, except
+## for symbolic links in $(prefix/bin.  /usr/local is a good value
+##  to use for $(prefix), and it is the default.
 
 # The plain "install" common to all Unix targets
 install:
@@ -44,4 +35,18 @@ install:
 		SCRIPTDIR=$(ABI_ROOT)/src/pkg/common/unix/scripts \
 		$(ABI_ROOT)/src/pkg/common/unix/scripts/install.sh 
 
-# TODO : add Solaris PKG format here
+########################################################################
+
+# Native Solaris pkg format
+pkg:
+	@echo TODO
+########################################################################
+
+# Tgz target is provided by a common Unix makefile
+
+include $(ABI_ROOT)/src/pkg/common/unix/tgz.mk
+
+########################################################################
+
+# This target should build all packages 
+distribution: tgz pkg

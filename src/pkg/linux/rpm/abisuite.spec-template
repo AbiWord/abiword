@@ -44,3 +44,7 @@ rm -f /usr/bin/X11/AbiWord
 rm -f /usr/bin/X11/abiword
 rm -f /usr/lib/menu/abiword
 rm -rf $RPM_BUILD_DIR/abisuite-%{version}
+# are there better ways to get these paths?
+rm -f $RPM_SOURCE_DIR/abisuite-%{version}.tar
+rm -f $RPM_SOURCE_DIR/../SRPMS/abisuite-%{version}-%{release}.src.rpm
+rm -f $RPM_SOURCE_DIR/../SPECS/abisuite-%{version}.spec

@@ -95,6 +95,19 @@ else
 endif
 endif
 
+# If rpm was NOT in the dist target list, but deb _or_ slp was,
+# we wipe the RPM so it will not conflict with the RPM generated
+# by another machine (which was explicitly told to create one).
+
+ifeq ($(findstring rpm,$(ABI_DIST_TARGET)),)
+ifneq ($(findstring deb,$(ABI_DIST_TARGET)),)
+	WIPE_RPM=1
+endif
+ifneq ($(findstring slp,$(ABI_DIST_TARGET)),)
+	WIPE_RPM=1
+endif
+endif
+
 ########################################################################
 
 # This target builds a huge tarball of EVERY component from CVS needed
@@ -124,7 +137,7 @@ pack_rpm:
 
 # These targets actually do all the heavy lifting of packaging.
 
-rpm: $(RPM_DEPS) 
+rpm: pack_rpm
 # A tarball is already sitting in /usr/src/redhat/SOURCES (or thereabouts)
 # so rip the spec template through some sed magic and run with it.
 	@echo "Exporting spec file to [$(RPM_SOURCE_DIR)/SPECS]..."
@@ -151,3 +164,6 @@ include $(ABI_ROOT)/src/pkg/common/unix/tgz.mk
 
 # This target should build all packages 
 distribution: $(DIST_DEPS)
+ifeq ($(WIPE_RPM),1)
+	@rm $(DIST)/abisuite-$(ABI_BUILD_VERSION)-$(ABI_RELEASE_NUMBER).$(OS_ARCH).rpm
+endif
