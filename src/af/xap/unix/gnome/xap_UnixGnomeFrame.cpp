@@ -278,8 +278,7 @@ UT_Bool XAP_UnixGnomeFrame::openURL(const char * szURL)
 
 /*****************************************************************/
 
-UT_Bool XAP_UnixGnomeFrame::runModalContextMenu(AV_View * /* pView */, const char * szMenuName,
- 												UT_sint32 x, UT_sint32 y)
+UT_Bool XAP_UnixGnomeFrame::runModalContextMenu(AV_View *  pView, const char * szMenuName,	UT_sint32 x, UT_sint32 y)
 {
  	UT_Bool bResult = UT_TRUE;
  	UT_ASSERT(!m_pUnixPopup);
@@ -300,6 +299,7 @@ UT_Bool XAP_UnixGnomeFrame::runModalContextMenu(AV_View * /* pView */, const cha
  		// button_release_event and we won't know to release our
  		// grab.  so let's do it here.  (when raised from a keyboard
  		// context menu, we may not have a grab, but that should be ok.
+                pUnixPopup->refreshMenu(pView);
 		gnome_popup_menu_do_popup_modal (GTK_WIDGET (pUnixPopup->getMenuHandle ()),
 										 NULL, NULL, NULL, NULL);
  	}
