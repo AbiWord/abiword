@@ -2920,7 +2920,7 @@ UT_Error FV_View::cmdInsertHyperlink(const char * szName)
 
 	if(bRet)
 	{
-		const XML_Char ** pAttrs = static_cast<const XML_Char **>(pAttr);
+		const XML_Char ** pAttrs = const_cast<const XML_Char **>(pAttr);
 		const XML_Char ** pProps = 0;
 		bRet = m_pDoc->insertObject(posStart, PTO_Hyperlink, pAttrs, pProps);
 	}
@@ -2994,7 +2994,7 @@ UT_Error FV_View::cmdInsertBookmark(const char * szName)
 
 	UT_DEBUGMSG(("fv_View::cmdInsertBookmark: szName \"%s\"\n", szName));
 
-	const XML_Char ** pAttrs = static_cast<const XML_Char **>(pAttr);
+	const XML_Char ** pAttrs = const_cast<const XML_Char **>(pAttr);
 	const XML_Char ** pProps = 0;
 	bRet = m_pDoc->insertObject(posStart, PTO_Bookmark, pAttrs, pProps);
 
