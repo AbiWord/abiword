@@ -858,7 +858,9 @@ void GR_UnixGraphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
 	UT_sint32 idy = _tduY(yoff);
 	UT_sint32 idx = _tduX(xoff);
 
-	UT_sint32 iAscent = m_pXftFontL->ascent * getResolution() / s_getDeviceResolution();
+	//	UT_sint32 iAscent = m_pXftFontL->ascent * getResolution() / s_getDeviceResolution();
+	UT_sint32 iAscent = getFontAscent();
+
 	if (!pCharWidths)
 	{
 		if(!isSymbol() && !isDingbat())
@@ -1237,7 +1239,7 @@ UT_uint32 GR_UnixGraphics::getFontAscent(GR_Font * fnt)
 	// FIXME we should really be getting stuff fromt he font in layout units,
 	// FIXME but we're not smart enough to do that yet
     // we call s_getDeviceResolution() to avoid zoom
-	return static_cast<UT_uint32>(hndl->getUnixFont()->getAscender(hndl->getSize()) * getResolution() / s_getDeviceResolution() + 0.5);
+	return static_cast<UT_uint32>(hndl->getUnixFont()->getAscender(hndl->getSize()) * getResolution() / s_getDeviceResolution() ); // +0.5);
 }
 
 UT_uint32 GR_UnixGraphics::getFontAscent()
@@ -1255,7 +1257,7 @@ UT_uint32 GR_UnixGraphics::getFontDescent(GR_Font * fnt)
 	XAP_UnixFont* pFont = hndl->getUnixFont();
 	// FIXME we should really be getting stuff fromt he font in layout units,
 	// FIXME but we're not smart enough to do that yet
-	return static_cast<UT_uint32>(pFont->getDescender(hndl->getSize()) * getResolution() / getDeviceResolution() + 0.5);
+	return static_cast<UT_uint32>(pFont->getDescender(hndl->getSize()) * getResolution() / getDeviceResolution() );  // +0.5);
 }
 
 UT_uint32 GR_UnixGraphics::getFontDescent()
