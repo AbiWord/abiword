@@ -20,7 +20,7 @@ include $(top_srcdir)/includes.mk
 
 CLEANFILES = abi_ver.cpp
 
-noinst_PROGRAMS = AbiWord-2.0
+noinst_PROGRAMS = AbiWord-2.2
 
 bin_SCRIPTS = AbiWord
 
@@ -33,22 +33,22 @@ INCLUDES = \
 
 REPEAT_LIBS = $(ABI_LIBS) $(ABI_LIBS) $(ABI_LIBS) $(ABI_LIBS)
 
-AbiWord_2_0_LDADD = @PLUGIN_LIST@ $(REPEAT_LIBS) $(PLATFORM_LIBS) $(OTHER_LIBS) 
+AbiWord_2_2_LDADD = @PLUGIN_LIST@ $(REPEAT_LIBS) $(PLATFORM_LIBS) $(OTHER_LIBS) 
 
-AbiWord_2_0_SOURCES = abi_ver.cpp QNXMain.cpp
+AbiWord_2_2_SOURCES = abi_ver.cpp QNXMain.cpp
 
 abi_ver.cpp:	@PLUGIN_LIST@
 	cp $(srcdir)/../xp/abi_ver.cpp .
 
-AbiWord:	AbiWord-2.0
-	ln -fs AbiWord-2.0 AbiWord
+AbiWord:	AbiWord-2.2
+	ln -fs AbiWord-2.2 AbiWord
 	bindres -q AbiWord Icon.wgti $(top_srcdir)/src/wp/ap/qnx/dialogs/wgt/*.wgtd $(top_srcdir)/src/af/xap/qnx/dialogs/wgt/*.wgtd	
 
 install-exec-local:	
 	@if test -f $(DESTDIR)/$(bindir)/abiword; then \
 	  echo "$(DESTDIR)/$(bindir)/abiword is a regular file - I'm not going to create a link."; \
 	else \
-	  (cd $(DESTDIR)/$(bindir) && ln -sf AbiWord-2.0 abiword); \
+	  (cd $(DESTDIR)/$(bindir) && ln -sf AbiWord-2.2 abiword); \
 	fi
 
 abiword_plugins = ../../../../../abiword-plugins

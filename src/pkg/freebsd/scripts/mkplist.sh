@@ -1,6 +1,6 @@
 #!/bin/sh
 ls -Flags $prefix/AbiSuite/bin
-strip $prefix/AbiSuite/bin/AbiWord-2.0
+strip $prefix/AbiSuite/bin/AbiWord-2.2
 
 # check and list the depend package
 echo "@cwd $prefix" > $OUTFILE

@@ -39,14 +39,14 @@ include $(ABI_ROOT)/src/config/abi_rules.mk
 
 # The plain "install" common to all Unix targets
 install:
-	@TARGET=$(prefix)/share/AbiSuite-2.0 BINDIR=$(prefix)/bin SRCDIR=$(OUTDIR) \
+	@TARGET=$(prefix)/share/AbiSuite-2.2 BINDIR=$(prefix)/bin SRCDIR=$(OUTDIR) \
 		SCRIPTDIR=$(ABI_ROOT)/src/pkg/common/unix/scripts \
 		$(ABI_ROOT)/src/pkg/common/unix/scripts/install.sh 
 
 ########################################################################
 
 install_redhat:
-	@strip $(OUTDIR)/bin/AbiWord-2.0
+	@strip $(OUTDIR)/bin/AbiWord-2.2
 	@TARGET=/usr/share/abisuite BINDIR=/usr/bin SRCDIR=$(OUTDIR) \
 		DOCDIR=/usr/doc LIBDIR=/usr/lib \
 		SCRIPTDIR=$(ABI_ROOT)/src/pkg/common/unix/scripts \
@@ -205,15 +205,15 @@ deb::
 	@install -m 755 deb/AbiWord $(DEB_ROOT)/usr/bin/.
 	@ln -s AbiWord $(DEB_ROOT)/usr/bin/abiword
 #install the documentation
-	@install -m 644 deb/AbiWord-2.0.1 $(DEB_ROOT)/usr/share/man/man1/.
-	@ln -s AbiWord-2.0.1.gz $(DEB_ROOT)/usr/share/man/man1/AbiWord.1.gz
-	@ln -s AbiWord-2.0.1.gz $(DEB_ROOT)/usr/share/man/man1/abiword.1.gz
+	@install -m 644 deb/AbiWord-2.1.0 $(DEB_ROOT)/usr/share/man/man1/.
+	@ln -s AbiWord-2.1.0.gz $(DEB_ROOT)/usr/share/man/man1/AbiWord.1.gz
+	@ln -s AbiWord-2.1.0.gz $(DEB_ROOT)/usr/share/man/man1/abiword.1.gz
 	@install -m 644 deb/copyright $(DEB_ROOT)/usr/share/doc/abiword/.
 	@install -m 644 deb/changelog $(DEB_ROOT)/usr/share/doc/abiword/changelog.Debian
 	@install -m 644 $(OUTDIR)/AbiSuite/readme.txt $(DEB_ROOT)/usr/share/doc/abiword/README
 	@gzip -9 $(DEB_ROOT)/usr/share/doc/abiword/README
 	@gzip -9 $(DEB_ROOT)/usr/share/doc/abiword/changelog.Debian
-	@gzip -9 $(DEB_ROOT)/usr/share/man/man1/AbiWord-2.0.1
+	@gzip -9 $(DEB_ROOT)/usr/share/man/man1/AbiWord-2.1.0
 #install the share stuff
 	@cp -R $(OUTDIR)/AbiSuite/icons/* $(DEB_ROOT)/usr/share/abisuite/icons/.
 	@cp -R $(OUTDIR)/AbiSuite/fonts/* $(DEB_ROOT)/usr/share/abisuite/fonts/.

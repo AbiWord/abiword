@@ -27,7 +27,7 @@ The principal build system on Unix systems (including Linux, Solaris, etc.) is b
 
 GTK+-2.0
 
-AbiWord-2.0's Unix GUI is GTK+-2.0 based, which means that AbiWord on Unix does its drawing using the excellent GTK+ and GDK graphical tools. Therefore you will need GTK+-2.0 and its prerequisites installed, and their ancillary development packages. A list of the required packages and the packages themselves can be found at http://www.gtk.org/. Alternately, your OS provider might have pre-built packages for you, or they might be available from some trusted third party (collectively referred to as a "distribution") . We always recommend going with the tools your distribution provides, but you are in no means required to do so.
+AbiWord-2.2's Unix GUI is GTK+-2.0 based, which means that AbiWord on Unix does its drawing using the excellent GTK+ and GDK graphical tools. Therefore you will need GTK+-2.0 and its prerequisites installed, and their ancillary development packages. A list of the required packages and the packages themselves can be found at http://www.gtk.org/. Alternately, your OS provider might have pre-built packages for you, or they might be available from some trusted third party (collectively referred to as a "distribution") . We always recommend going with the tools your distribution provides, but you are in no means required to do so.
 
 
 zlib

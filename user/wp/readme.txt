@@ -31,7 +31,7 @@ collaborating together via the Internet.
 There is some documentation at <http://www.abisource.com/support/>.
 However, due to the lack of time and people to contribute to the
 documentation effort, it is far from complete, and does not cover all
-features, including many of the new features available in the 2.0
+features, including many of the new features available in the 2.x
 release series.
 
 Another, sometimes more useful place to get help is the AbiWord user
@@ -79,7 +79,7 @@ Windows 95 through Windows XP), MacOS (see note below), Linux, a
 variety of other UNIX-like systems (including everything from Solaris
 to *BSD to RTEMS), and QNX (though beware that there is currently only
 one active QNX-port developer).  The BeOS port is no longer actively
-maintained in AbiWord 2.0, but there are external parties that submit
+maintained in AbiWord 2.x, but there are external parties that submit
 patches from time to time, so it may still be usable on BeOS.  If you
 can help us with any of these ports or provide and maintain a new one,
 you are more than welcome to.

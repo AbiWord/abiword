@@ -13,8 +13,8 @@
  %define build_pspell no
 %endif
 
-%define AbiSuite AbiSuite-2.0
-%define AbiWord AbiWord-2.0
+%define AbiSuite AbiSuite-2.2
+%define AbiWord AbiWord-2.2
 %define version_flag ABI_BUILD_VERSION=%{version}
 %define ABIPREFIX %{_libdir}/%{AbiWord}
 
@@ -216,14 +216,14 @@ cd ../abi
 %__make DESTDIR=$RPM_BUILD_ROOT install
 
 # Manual fixes to Abi package
-%__ln_s -f %{_bindir}/AbiWord-2.0 $RPM_BUILD_ROOT/%{_bindir}/abiword-2.0
+%__ln_s -f %{_bindir}/AbiWord-2.2 $RPM_BUILD_ROOT/%{_bindir}/abiword-2.2
 
 # Creates GNOME menu entries
 %__mkdir_p $RPM_BUILD_ROOT/%{_prefix}/share/pixmaps
 %__cp $RPM_BUILD_DIR/%{name}-%{version}/abidistfiles/icons/abiword_48.png $RPM_BUILD_ROOT/%{_prefix}/share/pixmaps/abiword_48.png
 %__mkdir_p $RPM_BUILD_ROOT/%{_prefix}/share/applications/
 %__cp $RPM_BUILD_DIR/%{name}-%{version}/abi/abiword.desktop $RPM_BUILD_ROOT/%{_datadir}/applications/abiword.desktop
-%__perl -p -i -e "s|Exec=abiword|Exec=abiword-2.0|" $RPM_BUILD_ROOT/%{_datadir}/applications/abiword.desktop
+%__perl -p -i -e "s|Exec=abiword|Exec=abiword-2.2|" $RPM_BUILD_ROOT/%{_datadir}/applications/abiword.desktop
 
 # Copies oaf files
 %__mkdir_p $RPM_BUILD_ROOT/%{_libdir}/bonobo/servers
