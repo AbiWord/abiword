@@ -1,0 +1,108 @@
+# Top-level script fragment to build everything for MPW.
+
+Set savedir "`Directory`"
+
+#Set Echo 1
+
+Set ThisScript "{0}"
+
+Set objdir ":MPW_OBJ_PPC"
+
+Set verify 0
+
+Set BuildTarget "none"
+
+# Parse arguments.
+
+Loop
+        Break If {#} == 0
+                If "{BuildTarget}" =~ /none/
+                        Set BuildTarget "{1}"
+                Else
+                        Echo Only one build target allowed, ignoring "{1}"
+                End If
+        Shift 1
+End Loop
+
+If "{BuildTarget}" =~ /none/
+        Set BuildTarget "all"
+End If
+
+If {verify} == 1
+        Echo "#" Doing "{ThisScript}" "{BuildTarget}" in "`Directory`" ... 
+End If
+
+Set ranmake 0
+
+If "`Exists Makefile.MPW`" != ""
+        Echo "Set Echo 1" >{BuildTarget}.makeout
+        Make -f Makefile.mpw {BuildTarget} >>{BuildTarget}.makeout
+        {BuildTarget}.makeout
+        Delete {BuildTarget}.makeout
+        Set ranmake 1
+End If
+
+
+#only PPC is supported
+#
+#If "`Exists Makefile.PPC.mpw`" != ""
+#        Echo "Set Echo 1" >{BuildTarget}.makeout.ppc
+#        Make -f Makefile.PPC.mpw {BuildTarget} >>{BuildTarget}.makeout.ppc
+#        {BuildTarget}.makeout.ppc
+#        Delete {BuildTarget}.makeout.ppc
+#        Set ranmake 1
+#End If
+
+If {ranmake} == 1
+        Exit
+End If
+
+# ABI_ROOT is the initial directory
+Set ABI_ROOT {savedir}
+Export ABI_ROOT
+
+# Dispatch on various pseudo-targets.
+
+
+If "{BuildTarget}" =~ /all/
+        Echo Started `Date`
+        "{ThisScript}" do-all
+        Echo Finished `Date`
+Else If "{BuildTarget}" =~ /do-all/
+        SetDirectory :src:af:ev:xp
+        {savedir}{ThisScript} build
+        SetDirectory :src:af:ev:mac
+        {savedir}{ThisScript} build
+        SetDirectory :src:af:gr:xp
+        {savedir}{ThisScript} build
+        SetDirectory :src:af:gr:mac
+        {savedir}{ThisScript} build
+        SetDirectory :src:af:util:xp
+        {savedir}{ThisScript} build
+        SetDirectory :src:af:util:mac
+        {savedir}{ThisScript} build
+        SetDirectory :src:af:xap:xp
+        {savedir}{ThisScript} build
+        SetDirectory :src:af:xap:mac
+        {savedir}{ThisScript} build
+        SetDirectory :src:text:fmt:xp
+        {savedir}{ThisScript} build
+        SetDirectory :src:text:ptbl:xp
+        {savedir}{ThisScript} build
+        SetDirectory :src:wp:ap:xp
+        {savedir}{ThisScript} build
+        SetDirectory :src:wp:ap:mac
+        {savedir}{ThisScript} build
+		SetDirectory :src:other:spell
+        {savedir}{ThisScript} build
+        SetDirectory :src:wp:impexp:xp
+        {savedir}{ThisScript} build
+        SetDirectory :src:wp:main:xp
+        {savedir}{ThisScript} build
+        SetDirectory :src:wp:main:mac
+        {savedir}{ThisScript} build
+Else
+        Echo {BuildTarget} not understood, ignoring
+End If
+
+SetDirectory "{savedir}"

@@ -1,0 +1,82 @@
+## AbiWord
+## Copyright (C) 1998 AbiSource, Inc.
+##
+## This program is free software; you can redistribute it and/or
+## modify it under the terms of the GNU General Public License
+## as published by the Free Software Foundation; either version 2
+## of the License, or (at your option) any later version.
+## 
+## This program is distributed in the hope that it will be useful,
+## but WITHOUT ANY WARRANTY; without even the implied warranty of
+## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+## GNU General Public License for more details.
+## 
+## You should have received a copy of the GNU General Public License
+## along with this program; if not, write to the Free Software
+## Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+## 02111-1307, USA.
+
+
+!include "{ABI_ROOT}src:config:abi_defs.mk.mpw"
+
+TARGETS = ap_Convert.cpp.o ¶
+		   ap_Dialog_Break.cpp.o ¶
+		   ap_Dialog_Columns.cpp.o ¶
+		   ap_Dialog_Field.cpp.o ¶
+		   ap_Dialog_Goto.cpp.o ¶
+		   ap_Dialog_Insert_DateTime.cpp.o ¶
+		   ap_Dialog_Lists.cpp.o ¶
+		   ap_Dialog_Options.cpp.o ¶
+		   ap_Dialog_PageNumbers.cpp.o ¶
+		   ap_Dialog_PageSetup.cpp.o ¶
+		   ap_Dialog_Paragraph.cpp.o ¶
+		   ap_Dialog_Replace.cpp.o ¶
+		   ap_Dialog_Spell.cpp.o ¶
+		   ap_Dialog_Tab.cpp.o ¶
+		   ap_Dialog_WordCount.cpp.o ¶
+		   ap_EditMethods.cpp.o ¶
+		   ap_FrameData.cpp.o ¶
+		   ap_LB_DeadAbovedot.cpp.o ¶
+		   ap_LB_DeadAcute.cpp.o ¶
+		   ap_LB_DeadBreve.cpp.o ¶
+		   ap_LB_DeadCaron.cpp.o ¶
+		   ap_LB_DeadCedilla.cpp.o ¶
+		   ap_LB_DeadCircumflex.cpp.o ¶
+		   ap_LB_DeadDiaeresis.cpp.o ¶
+		   ap_LB_DeadDoubleacute.cpp.o ¶
+		   ap_LB_DeadGrave.cpp.o ¶
+		   ap_LB_DeadMacron.cpp.o ¶
+		   ap_LB_DeadOgonek.cpp.o ¶
+		   ap_LB_DeadTilde.cpp.o ¶
+		   ap_LB_Default.cpp.o ¶
+		   ap_LB_Emacs.cpp.o ¶
+		   ap_LB_EmacsCtrlX.cpp.o ¶
+		   ap_LB_viEdit.cpp.o ¶
+		   ap_LB_viEdit_c.cpp.o ¶
+		   ap_LB_viEdit_colon.cpp.o ¶
+		   ap_LB_viEdit_d.cpp.o ¶
+		   ap_LB_viEdit_r.cpp.o ¶
+		   ap_LB_viEdit_y.cpp.o ¶
+		   ap_LB_viInput.cpp.o ¶
+		   ap_LeftRuler.cpp.o ¶
+		   ap_LoadBindings.cpp.o ¶
+		   ap_Menu_ActionSet.cpp.o ¶
+		   ap_Menu_Functions.cpp.o ¶
+		   ap_Menu_LabelSet.cpp.o ¶
+		   ap_Menu_Layouts.cpp.o ¶
+		   ap_Prefs.cpp.o ¶
+		   ap_Preview_Paragraph.cpp.o ¶
+		   ap_Ruler.cpp.o ¶
+		   ap_StatusBar.cpp.o ¶
+		   ap_Strings.cpp.o ¶
+		   ap_Toolbar_ActionSet.cpp.o ¶
+		   ap_Toolbar_Functions.cpp.o ¶
+		   ap_Toolbar_Icons.cpp.o ¶
+		   ap_Toolbar_LabelSet.cpp.o ¶
+		   ap_Toolbar_Layouts.cpp.o ¶
+		   ap_TopRuler.cpp.o
+
+
+!include "{ABI_ROOT}src:config:abi_rules.mk.mpw"
+
+build ÄÄ {TARGETS}

@@ -1,0 +1,46 @@
+## AbiWord
+## Copyright (C) 1998 AbiSource, Inc.
+##
+## This program is free software; you can redistribute it and/or
+## modify it under the terms of the GNU General Public License
+## as published by the Free Software Foundation; either version 2
+## of the License, or (at your option) any later version.
+## 
+## This program is distributed in the hope that it will be useful,
+## but WITHOUT ANY WARRANTY; without even the implied warranty of
+## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+## GNU General Public License for more details.
+## 
+## You should have received a copy of the GNU General Public License
+## along with this program; if not, write to the Free Software
+## Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+## 02111-1307, USA.
+
+
+!include "{ABI_ROOT}src:config:abi_defs.mk.mpw"
+
+TARGETS = "ut_alphahash.cpp.o" ¶
+			"ut_base64.cpp.o" ¶
+			"ut_bytebuf.cpp.o" ¶
+			"ut_growbuf.cpp.o" ¶
+			"ut_hash.cpp.o" ¶
+			"ut_math.cpp.o" ¶
+			"ut_mbtowc.cpp.o" ¶
+			"ut_misc.cpp.o" ¶
+			"ut_pair.cpp.o" ¶
+			"ut_png.cpp.o" ¶
+			"ut_pool.cpp.o" ¶
+			"ut_regex.c.o" ¶
+			"ut_stack.cpp.o" ¶
+			"ut_string.cpp.o" ¶
+			"ut_svg.cpp.o" ¶
+			"ut_test.cpp.o" ¶
+			"ut_timer.cpp.o" ¶
+			"ut_units.cpp.o" ¶
+			"ut_vector.cpp.o" ¶
+			"ut_wctomb.cpp.o"
+
+
+!include "{ABI_ROOT}src:config:abi_rules.mk.mpw"
+
+build ÄÄ {TARGETS}

@@ -1,0 +1,69 @@
+## AbiWord
+## Copyright (C) 1998 AbiSource, Inc.
+##
+## This program is free software; you can redistribute it and/or
+## modify it under the terms of the GNU General Public License
+## as published by the Free Software Foundation; either version 2
+## of the License, or (at your option) any later version.
+## 
+## This program is distributed in the hope that it will be useful,
+## but WITHOUT ANY WARRANTY; without even the implied warranty of
+## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+## GNU General Public License for more details.
+## 
+## You should have received a copy of the GNU General Public License
+## along with this program; if not, write to the Free Software
+## Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+## 02111-1307, USA.
+
+
+!include "{ABI_ROOT}src:config:abi_defs.mk.mpw"
+
+TARGETS = "fd_Field.cpp.o" ¶
+			"pd_Document.cpp.o" ¶
+			"pd_Style.cpp.o" ¶
+			"pf_Frag.cpp.o" ¶
+			"pf_Frag_FmtMark.cpp.o" ¶
+			"pf_Frag_Object.cpp.o" ¶
+			"pf_Frag_Strux.cpp.o" ¶
+			"pf_Frag_Strux_Block.cpp.o" ¶
+			"pf_Frag_Strux_Section.cpp.o" ¶
+			"pf_Frag_TestRoutines.cpp.o" ¶
+			"pf_Frag_Text.cpp.o" ¶
+			"pf_Fragments.cpp.o" ¶
+			"pp_AttrProp.cpp.o" ¶
+			"pp_Property.cpp.o" ¶
+			"pp_TableAttrProp.cpp.o" ¶
+			"pt_PieceTable.cpp.o" ¶
+			"pt_PT_Append.cpp.o" ¶
+			"pt_PT_ChangeObject.cpp.o" ¶
+			"pt_PT_ChangeSpan.cpp.o" ¶
+			"pt_PT_ChangeStrux.cpp.o" ¶
+			"pt_PT_DeleteObject.cpp.o" ¶
+			"pt_PT_DeleteSpan.cpp.o" ¶
+			"pt_PT_DeleteStrux.cpp.o" ¶
+			"pt_PT_FmtMark.cpp.o" ¶
+			"pt_PT_Glob.cpp.o" ¶
+			"pt_PT_InsertObject.cpp.o" ¶
+			"pt_PT_InsertSpan.cpp.o" ¶
+			"pt_PT_InsertStrux.cpp.o" ¶
+			"pt_PT_Listener.cpp.o" ¶
+			"pt_PT_Styles.cpp.o" ¶
+			"pt_PT_Undo.cpp.o" ¶
+			"pt_VarSet.cpp.o" ¶
+			"px_ChangeHistory.cpp.o" ¶
+			"px_ChangeRecord.cpp.o" ¶
+			"px_CR_FmtMark.cpp.o" ¶
+			"px_CR_FmtMarkChange.cpp.o" ¶
+			"px_CR_Glob.cpp.o" ¶
+			"px_CR_Object.cpp.o" ¶
+			"px_CR_ObjectChange.cpp.o" ¶
+			"px_CR_Span.cpp.o" ¶
+			"px_CR_SpanChange.cpp.o" ¶
+			"px_CR_Strux.cpp.o" ¶
+			"px_CR_StruxChange.cpp.o"
+			
+			
+!include "{ABI_ROOT}src:config:abi_rules.mk.mpw"
+
+build ÄÄ {TARGETS}

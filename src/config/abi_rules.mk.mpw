@@ -1,0 +1,102 @@
+## AbiSource Program Utilities
+## Copyright (C) 1998 AbiSource, Inc.
+##
+## This program is free software; you can redistribute it and:or
+## modify it under the terms of the GNU General Public License
+## as published by the Free Software Foundation; either version 2
+## of the License, or (at your option) any later version.
+## 
+## This program is distributed in the hope that it will be useful,
+## but WITHOUT ANY WARRANTY; without even the implied warranty of
+## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+## GNU General Public License for more details.
+## 
+## You should have received a copy of the GNU General Public License
+## along with this program; if not, write to the Free Software
+## Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+## 02111-1307, USA.
+
+##################################################################
+##################################################################
+## abi_rules.mk.mpw --  Makefile definitions for building AbiSource software.
+## This is a MPW makefile include.  It should be included before any
+## other rules are defined.
+##
+## The general structure of an AbiSource Makefile should be:
+##
+##        !include "{ABI_ROOT}src:config:abi_defs.mk"
+##        <local declarations>
+##        !include "{ABI_ROOT}src:config:abi_rules.mk"
+##        <local rules>
+##
+##################################################################
+##################################################################
+
+
+
+
+################################################################################
+
+
+################################################################################
+
+
+################################################################################
+
+
+################################################################################
+
+
+################################################################################
+
+# resource creation
+
+###############################################################################
+## Rule for building .cpp sources in the current directory into .o's in {OBJDIR)
+###############################################################################
+
+.cpp.o Ä .cpp {MAKEFILE} "{ABI_ROOT}src:config:abi_rules.mk.mpw" "{ABI_ROOT}src:config:abi_defs.mk.mpw"
+	{CPP} "{Default}.cpp" -o "{OBJDIR}{Targ}"  {CPPOptions} 
+
+###############################################################################
+## Rule for building generated .cpp sources (in {OBJDIR)) into .o's in {OBJDIR)
+###############################################################################
+
+
+###############################################################################
+## Rule for building .c sources in the current directory into .o's in {OBJDIR)
+###############################################################################
+
+.c.o Ä .c {MAKEFILE} "{ABI_ROOT}src:config:abi_rules.mk.mpw" "{ABI_ROOT}src:config:abi_defs.mk.mpw"
+	{C} "{DepDir}{Default}.c" -o "{OBJDIR}{Targ}" {COptions}
+
+
+###############################################################################
+## Rule for building generated .c sources (in {OBJDIR)) into .o's in {OBJDIR)
+###############################################################################
+
+#{OBJDIR):%.{OBJ_SUFFIX): {OBJDIR):%.c
+#	@{MAKE_OBJDIR)
+#	@echo $<:
+#	@{CC) -o $@ -c {CFLAGS) $<
+
+################################################################################
+# Special gmake rules.
+################################################################################
+
+#
+# Re-define the list of default suffixes, so gmake won't have to churn through
+# hundreds of built-in suffix rules for stuff we don't need.
+#
+#.SUFFIXES:
+#.SUFFIXES: .a .{OBJ_SUFFIX) .c .cpp .s .h .i .pl
+
+#
+# Fake targets.  Always run these rules, even if a file/directory with that
+# name already exists.
+#
+#.PHONY: all alltags clean export install libs realclean release abiclean
+
+##################################################################
+##################################################################
+

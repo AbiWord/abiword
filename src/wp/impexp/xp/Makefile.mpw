@@ -1,0 +1,60 @@
+## AbiWord
+## Copyright (C) 1998 AbiSource, Inc.
+##
+## This program is free software; you can redistribute it and/or
+## modify it under the terms of the GNU General Public License
+## as published by the Free Software Foundation; either version 2
+## of the License, or (at your option) any later version.
+## 
+## This program is distributed in the hope that it will be useful,
+## but WITHOUT ANY WARRANTY; without even the implied warranty of
+## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+## GNU General Public License for more details.
+## 
+## You should have received a copy of the GNU General Public License
+## along with this program; if not, write to the Free Software
+## Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+## 02111-1307, USA.
+
+
+!include "{ABI_ROOT}src:config:abi_defs.mk.mpw"
+
+TARGETS = ie_exp.cpp.o ¶
+		   ie_exp_AbiWord_1.cpp.o ¶
+		   ie_exp_DocBook.cpp.o ¶
+		   ie_exp_GZipAbiWord.cpp.o ¶
+		   ie_exp_HTML.cpp.o ¶
+		   ie_exp_LaTeX.cpp.o ¶
+		   ie_exp_MsWord_97.cpp.o ¶
+		   ie_exp_PalmDoc.cpp.o ¶
+		   ie_exp_Psion.cpp.o ¶
+		   ie_exp_RTF.cpp.o ¶
+		   ie_exp_RTF_listenerGetProps.cpp.o ¶
+		   ie_exp_RTF_listenerWriteDoc.cpp.o ¶
+		   ie_exp_Text.cpp.o ¶
+		   ie_exp_UTF8.cpp.o ¶
+		   ie_exp_WML.cpp.o ¶
+		   ie_imp.cpp.o ¶
+		   ie_imp_AbiWord_1.cpp.o ¶
+		   ie_imp_ClarisWorks.cpp.o ¶
+		   ie_imp_DocBook.cpp.o ¶
+		   ie_imp_GraphicAsDocument.cpp.o ¶
+		   ie_imp_GZipAbiWord.cpp.o ¶
+		   ie_imp_MsWord_97.cpp.o ¶
+		   ie_imp_MSWrite.cpp.o ¶
+		   ie_imp_Psion.cpp.o ¶
+		   ie_imp_RTF.cpp.o ¶
+		   ie_imp_Text.cpp.o ¶
+		   ie_imp_UTF8.cpp.o ¶
+		   ie_imp_WML.cpp.o ¶
+		   ie_imp_XHTML.cpp.o ¶
+		   ie_imp_XML.cpp.o ¶
+		   ie_impexp_MSWrite.cpp.o ¶
+		   ie_impGraphic.cpp.o ¶
+		   ie_impGraphic_BMP.cpp.o ¶
+		   ie_impGraphic_PNG.cpp.o ¶
+		   ie_impGraphic_SVG.cpp.o
+
+!include "{ABI_ROOT}src:config:abi_rules.mk.mpw"
+
+build ÄÄ {TARGETS}
