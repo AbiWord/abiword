@@ -161,7 +161,7 @@ AC_ARG_WITH(libjpeg,
 AM_CONDITIONAL(WITH_LIBJPEG, test x$libjpeg = xtrue)
 
 AC_ARG_WITH(libwmf,
-    [  --with-libwmf    Turn on libwmf ],
+    [  --with-libwmf    Turn on libwmf (warning: experimental)],
      [case "${withval}" in
        yes) LIBWMF_DIR="" ;;
        no)  LIBWMF_DIR="" ;
@@ -178,7 +178,7 @@ AC_ARG_WITH(libwmf,
            LIBWMF_CFLAGS="`$LIBWMF_CONFIG --cflags` -DHAVE_LIBWMF=1"
            LIBWMF_LIBS="`$LIBWMF_CONFIG --libs`"
         else
-           AC_MSG_ERROR(* * * unable to find libwmf-config; unable to continue * * *)
+           AC_MSG_ERROR([* * * unable to find libwmf-config; unable to continue * * *])
         fi
         wmf_save_CPPFLAGS="$CPPFLAGS"
         wmf_save_LDFLAGS="$LDFLAGS"
@@ -186,8 +186,8 @@ AC_ARG_WITH(libwmf,
         LDFLAGS="$LDFLAGS $LIBWMF_LIBS"
         AC_CHECK_HEADER(libwmf/gd.h,[
            AC_CHECK_LIB(wmf,wmf_size,libwmf=true,[
-              AC_MSG_ERROR(* * * libwmf version 0.2.1 or later is required * * *)
-           ])
+              AC_MSG_ERROR([* * * libwmf version 0.2.1 or later is required * * *])
+           ],$LIBWMF_LIBS)
         ])
         CPPFLAGS="$wmf_save_CPPFLAGS"
         LDFLAGS="$wmf_save_LDFLAGS"
