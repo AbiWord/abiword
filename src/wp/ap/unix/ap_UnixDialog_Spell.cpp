@@ -316,6 +316,14 @@ void AP_UnixDialog_Spell::_showMisspelledWord(void)
 		gtk_text_buffer_insert(buffer, &iter, postword, -1);
 		FREEP(postword);
 	}
+    else
+    {
+        // Insert space to make gtk_text_buffer understand that it
+        // really should highlight the selected word. This is a
+        // workaround for bug 5459. It really should be fixed in GTK.
+        gtk_text_buffer_get_end_iter(buffer, &iter);
+		gtk_text_buffer_insert(buffer, &iter, " ", -1);
+    }
     // TODO: set scroll position so misspelled word is centered
 
     gtk_clist_freeze( GTK_CLIST(m_clistSuggestions) );   
