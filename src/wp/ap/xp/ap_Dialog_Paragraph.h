@@ -117,6 +117,9 @@ class AP_Dialog_Paragraph : public XAP_Dialog_NonPersistent
 
 	// which dimension system we're using as "native" for this document
 	UT_Dimension			m_dim;
+
+private:
+	void _addPropertyItem(UT_uint32 index, void* pValue);
 };
 
 #endif /* AP_DIALOG_PARAGRAPH_H */

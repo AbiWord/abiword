@@ -40,18 +40,8 @@
 #include "ap_Dialog_Paragraph.h"
 #include "ap_Prefs_SchemeIds.h"
 
-#define ADD_PROPERTY_ITEM(index, value)							\
-	do	{	sControlData * pItem = new sControlData;			\
-            UT_ASSERT(pItem);									\
-            pItem->bChanged = UT_FALSE;							\
-            pItem->pData = (void *) value;						\
-            void * pTmp;									   	\
-            m_vecProperties.setNthItem(index, (void *) pItem,	\
-									   &pTmp);					\
-	} while (0)
 
-
-AP_Dialog_Paragraph::AP_Dialog_Paragraph(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id)
+AP_Dialog_Paragraph::AP_Dialog_Paragraph(XAP_DialogFactory* pDlgFactory, XAP_Dialog_Id id)
 	: XAP_Dialog_NonPersistent(pDlgFactory,id)
 {
 	m_answer = a_OK;
@@ -61,10 +51,14 @@ AP_Dialog_Paragraph::AP_Dialog_Paragraph(XAP_DialogFactory * pDlgFactory, XAP_Di
 	// determine unit system to use in this dialog
 	const XML_Char * szRulerUnits;
 	UT_ASSERT(m_pApp);
-	if (m_pApp->getPrefs()->getPrefsValue((XML_Char*)AP_PREF_KEY_RulerUnits, &szRulerUnits))
-		m_dim = UT_determineDimension(szRulerUnits);
-	else
-		m_dim = DIM_IN;
+	
+	XAP_Prefs* pPrefs = m_pApp->getPrefs();
+	UT_ASSERT(pPrefs);
+	
+	const UT_Bool bHasRulerUnits =
+		pPrefs->getPrefsValue((XML_Char*)AP_PREF_KEY_RulerUnits, &szRulerUnits);
+
+	m_dim = bHasRulerUnits ? UT_determineDimension(szRulerUnits) : DIM_IN;
 
 	// terminate the static buffers for cleanliness
 	m_bufLeftIndent[0] = 0;
@@ -78,25 +72,34 @@ AP_Dialog_Paragraph::AP_Dialog_Paragraph(XAP_DialogFactory * pDlgFactory, XAP_Di
 	m_pageRightMargin = NULL;
 
 	// initialize vector of control/value/changed items
+	struct id_val_pair
+	{
+		UT_uint32	index;
+		void*		pValue;
+	};
+	const id_val_pair rgPairs[] =
+	{
+		id_MENU_ALIGNMENT,			(void*)align_LEFT,
+		id_SPIN_LEFT_INDENT,		&m_bufLeftIndent,
+		id_SPIN_RIGHT_INDENT,		&m_bufRightIndent,
+		id_MENU_SPECIAL_INDENT,		(void*)indent_NONE,
+		id_SPIN_SPECIAL_INDENT,		&m_bufSpecialIndent,
+		id_SPIN_BEFORE_SPACING,		&m_bufBeforeSpacing,
+		id_SPIN_AFTER_SPACING,		&m_bufAfterSpacing,
+		id_MENU_SPECIAL_SPACING,	(void*)spacing_SINGLE,
+		id_SPIN_SPECIAL_SPACING,	&m_bufSpecialSpacing,
+		id_CHECK_WIDOW_ORPHAN,		(void*)check_INDETERMINATE,
+		id_CHECK_KEEP_LINES,		(void*)check_INDETERMINATE,
+		id_CHECK_PAGE_BREAK,		(void*)check_INDETERMINATE,
+		id_CHECK_SUPPRESS,			(void*)check_INDETERMINATE,
+		id_CHECK_NO_HYPHENATE,		(void*)check_INDETERMINATE,
+		id_CHECK_KEEP_NEXT,			(void*)check_INDETERMINATE
+	};
 
-	ADD_PROPERTY_ITEM(id_MENU_ALIGNMENT, align_LEFT);
-
-	ADD_PROPERTY_ITEM(id_SPIN_LEFT_INDENT, &m_bufLeftIndent);
-	ADD_PROPERTY_ITEM(id_SPIN_RIGHT_INDENT, &m_bufRightIndent);
-	ADD_PROPERTY_ITEM(id_MENU_SPECIAL_INDENT, indent_NONE);
-	ADD_PROPERTY_ITEM(id_SPIN_SPECIAL_INDENT, &m_bufSpecialIndent);	
-
-	ADD_PROPERTY_ITEM(id_SPIN_BEFORE_SPACING, &m_bufBeforeSpacing);
-	ADD_PROPERTY_ITEM(id_SPIN_AFTER_SPACING, &m_bufAfterSpacing);
-	ADD_PROPERTY_ITEM(id_MENU_SPECIAL_SPACING, spacing_SINGLE);
-	ADD_PROPERTY_ITEM(id_SPIN_SPECIAL_SPACING, &m_bufSpecialSpacing);	
-
-	ADD_PROPERTY_ITEM(id_CHECK_WIDOW_ORPHAN, check_INDETERMINATE);
-	ADD_PROPERTY_ITEM(id_CHECK_KEEP_LINES, check_INDETERMINATE);
-	ADD_PROPERTY_ITEM(id_CHECK_PAGE_BREAK, check_INDETERMINATE);
-	ADD_PROPERTY_ITEM(id_CHECK_SUPPRESS, check_INDETERMINATE);
-	ADD_PROPERTY_ITEM(id_CHECK_NO_HYPHENATE, check_INDETERMINATE);
-	ADD_PROPERTY_ITEM(id_CHECK_KEEP_NEXT, check_INDETERMINATE);
+	for (int i = 0; i < NrElements(rgPairs); ++i)
+	{
+		_addPropertyItem(rgPairs[i].index, rgPairs[i].pValue);
+	}
 }
 
 AP_Dialog_Paragraph::~AP_Dialog_Paragraph(void)
@@ -1105,5 +1108,16 @@ UT_Bool AP_Dialog_Paragraph::_wasChanged(tControl item)
 	UT_ASSERT(pItem);
 	
 	return pItem->bChanged;
+}
+
+void AP_Dialog_Paragraph::_addPropertyItem(UT_uint32 index, void* pValue)
+{
+	typedef AP_Dialog_Paragraph::sControlData sControlData;
+	sControlData* pItem = new sControlData;
+    UT_ASSERT(pItem);
+    pItem->bChanged = UT_FALSE;
+    pItem->pData = pValue;
+    void* pTmp;
+    m_vecProperties.setNthItem(index, pItem, &pTmp);
 }
 
