@@ -175,16 +175,6 @@ GR_Win32Image::~GR_Win32Image()
 	delete m_pDIB;
 }
 
-UT_sint32	GR_Win32Image::getDisplayWidth(void) const
-{
-	return m_pDIB->bmiHeader.biWidth;
-}
-
-UT_sint32	GR_Win32Image::getDisplayHeight(void) const
-{
-	return m_pDIB->bmiHeader.biHeight;
-}
-
 static void _png_write(png_structp png_ptr, png_bytep data, png_size_t length)
 {
 	UT_ByteBuf* pBB = (UT_ByteBuf*) png_ptr->io_ptr;
