@@ -169,7 +169,7 @@
 <p props="text-align:left"></p>
 <p props="text-align:left"><c props="font-size:12pt; font-style:normal; font-weight:normal">The dataid is a reference to a named Data Item in the Data section of the file.</c></p>
 <p props="text-align:left"></p>
-<p props="text-align:left"><c props="font-size:12pt; font-style:normal; font-weight:normal">The &lt;image/&gt; tag has the following properties that may appear in the value of the PROPS attribute:</c></p>
+<p props="text-align:left"><c props="font-size:12pt; font-style:normal; font-weight:normal">The &lt;image/&gt; tag has the following properties that may appear in the value of the props attribute:</c></p>
 <p props="text-align:left"></p>
 <p props="text-align:left"><c props="font-family:Courier New; font-size:12pt; font-style:normal; font-weight:normal">	width: ...;</c></p>
 <p props="text-align:left"><c props="font-family:Courier New; font-size:12pt; font-style:normal; font-weight:normal">	height: ...;</c></p>

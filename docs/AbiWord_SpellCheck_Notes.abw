@@ -1,40 +1,40 @@
 <awml>
 <section>
-<p><c PROPS="font-size:18pt; font-weight:bold">THIS DOCUMENT IS OUT OF SYNC WI</c><c PROPS="font-size:18pt; font-weight:bold">TH THE CODE.  PLEASE IGNORE FOR NOW.</c></p>
+<p><c props="font-size:18pt; font-weight:bold">THIS DOCUMENT IS OUT OF SYNC WI</c><c props="font-size:18pt; font-weight:bold">TH THE CODE.  PLEASE IGNORE FOR NOW.</c></p>
 <p></p>
-<p><c PROPS="font-family:courier; font-size:11pt">$Id$</c></p>
-<p PROPS="text-align:center"><c PROPS="font-size:24pt; font-weight:bold">AbiWord SpellCheck Design Notes</c></p>
-<p PROPS="text-align:center"><c PROPS="font-size:11pt">Copyright (C) 1998 AbiSource, Inc. All Rights Reserved.</c></p>
-<p PROPS="text-align:center"><c PROPS="font-style:italic">Jeff Hostetler</c>, <c PROPS="font-family:courier">jeff@abisource.com</c></p>
-<p PROPS="text-align:center">AbiSource, Inc.</p>
-<p PROPS="text-align:center"><c PROPS="font-family:courier">$Date$</c></p>
+<p><c props="font-family:courier; font-size:11pt">$Id$</c></p>
+<p props="text-align:center"><c props="font-size:24pt; font-weight:bold">AbiWord SpellCheck Design Notes</c></p>
+<p props="text-align:center"><c props="font-size:11pt">Copyright (C) 1998 AbiSource, Inc. All Rights Reserved.</c></p>
+<p props="text-align:center"><c props="font-style:italic">Jeff Hostetler</c>, <c props="font-family:courier">jeff@abisource.com</c></p>
+<p props="text-align:center">AbiSource, Inc.</p>
+<p props="text-align:center"><c props="font-family:courier">$Date$</c></p>
 <p></p>
-<p PROPS="margin-top:12pt"><c PROPS="font-weight:bold">Introduction</c></p>
-<p PROPS="margin-top:12pt">This document provides preliminary design notes for SpellChecker integration into AbiWord.</p>
-<p PROPS="margin-top:12pt"><c PROPS="font-weight:bold">Overview</c></p>
-<p PROPS="margin-top:12pt">AbiWord will integrate a third-party GPL'd spelling checker. It will be built as a library and linked with AbiWord; it will not use a separate executable or process. The source for this library will be located in a directory under the <c PROPS="font-family:courier">abi/src/other/</c> directory.</p>
-<p PROPS="margin-top:12pt">Conceptually, the SpellChecker may be divided into the following parts:</p>
-<p PROPS="margin-top:12pt">1. Code which resides in the Format/View code that determines which portions of the document are unchecked and either performs the check or schedules them for checking. (VIEW)</p>
-<p PROPS="margin-top:12pt">2. Code which draws squiggly red lines under incorrect words, and provides various GUI interaction with the user, such as a context-menu to suggest alternatives and any dialogs. (GUI)</p>
-<p PROPS="margin-top:12pt">3. Code which implements the dictionary lookup and composes alternatives for misspelled words. This code will be adapted from existing third-party GPL sources. (LOOKUP)</p>
-<p PROPS="margin-top:12pt">4. Code which updates the document for ignoring words on an individual-instance and document-instance basis. (DOC)</p>
-<p PROPS="margin-top:12pt">5. Code which updates the user's document-independent ignore list. (PREF)</p>
-<p PROPS="margin-top:12pt"><c PROPS="font-weight:bold">VIEW Details</c></p>
-<p PROPS="margin-top:12pt">The VIEW-related code will execute in the <c PROPS="font-style:italic">Main UI Thread</c>[1] and be periodically invoked (by a timer) during idle times. It will directly interact with Format/View data structures and be synchronized with them. It will not have a thread of its own. <c PROPS="font-style:italic">The LOOKUP-related code may need a thread of its own, depending upon its speed and design, but we won't make that decision at this time.</c></p>
-<p PROPS="margin-top:12pt">The VIEW will maintain a series of data structures identifying the <c PROPS="font-style:italic">unchecked </c>pieces of the document; this will consist of a beginning and ending DocPosition. It will contain a priority indication, such as: Change, OnScreen, and Document. Each time that the SpellCheck timer code runs, it will attempt to do a <c PROPS="font-style:italic">little bit</c> of the spell checking, beginning with the highest-priority, and return. In this manner, we will appear to be quite responsive and able to keep the area around the user's typing and the area exposed on the screen up-to-date; as additional idle time is available we will do pieces of the rest of the document so that it will be ready if/when the user scrolls.</p>
-<p PROPS="margin-top:12pt">(Handwave) The VIEW will also make use of the existing Block and Run data structures to record the results of previous spell checks. This includes: Correct, IgnoreThisInstance, IgnoreInThisDocument, Wrong, etc.</p>
-<p PROPS="margin-top:12pt"><c PROPS="font-weight:bold">GUI Details</c></p>
-<p PROPS="margin-top:12pt">The GUI for SpellCheck should include:</p>
-<p PROPS="margin-top:12pt">1. Variations on the red squiggly line.</p>
-<p PROPS="margin-top:12pt">2. Context menu listing alternatives or to ignore this instance.</p>
-<p PROPS="margin-top:12pt">3. Various dialogs.</p>
-<p PROPS="margin-top:12pt"><c PROPS="font-weight:bold">LOOKUP Details</c></p>
-<p PROPS="margin-top:12pt">The LOOKUP engine should provide an API to allow the timer code to request a spell-check on a passage. Whether this executes in-thread or uses its own thread is a detail we can address after we choose and port a third-party engine.</p>
-<p PROPS="margin-top:12pt"><c PROPS="font-weight:bold">DOC Details</c></p>
-<p PROPS="margin-top:12pt">The AbiWord Document Format[2] will need to augmented to remember span-level attributes for text marked IgnoreThisInstance and to remember document-level attributes for text marked IgnoreInThisDocument.</p>
-<p PROPS="margin-top:12pt"><c PROPS="font-weight:bold">PREF Details</c></p>
-<p PROPS="margin-top:12pt">(Handwave) The AbiWord User Preference Mechanism[3] will need to be augmented to remember words that should always be ignored.</p>
-<p PROPS="margin-top:12pt"><c PROPS="font-weight:bold">References</c></p>
+<p props="margin-top:12pt"><c props="font-weight:bold">Introduction</c></p>
+<p props="margin-top:12pt">This document provides preliminary design notes for SpellChecker integration into AbiWord.</p>
+<p props="margin-top:12pt"><c props="font-weight:bold">Overview</c></p>
+<p props="margin-top:12pt">AbiWord will integrate a third-party GPL'd spelling checker. It will be built as a library and linked with AbiWord; it will not use a separate executable or process. The source for this library will be located in a directory under the <c props="font-family:courier">abi/src/other/</c> directory.</p>
+<p props="margin-top:12pt">Conceptually, the SpellChecker may be divided into the following parts:</p>
+<p props="margin-top:12pt">1. Code which resides in the Format/View code that determines which portions of the document are unchecked and either performs the check or schedules them for checking. (VIEW)</p>
+<p props="margin-top:12pt">2. Code which draws squiggly red lines under incorrect words, and provides various GUI interaction with the user, such as a context-menu to suggest alternatives and any dialogs. (GUI)</p>
+<p props="margin-top:12pt">3. Code which implements the dictionary lookup and composes alternatives for misspelled words. This code will be adapted from existing third-party GPL sources. (LOOKUP)</p>
+<p props="margin-top:12pt">4. Code which updates the document for ignoring words on an individual-instance and document-instance basis. (DOC)</p>
+<p props="margin-top:12pt">5. Code which updates the user's document-independent ignore list. (PREF)</p>
+<p props="margin-top:12pt"><c props="font-weight:bold">VIEW Details</c></p>
+<p props="margin-top:12pt">The VIEW-related code will execute in the <c props="font-style:italic">Main UI Thread</c>[1] and be periodically invoked (by a timer) during idle times. It will directly interact with Format/View data structures and be synchronized with them. It will not have a thread of its own. <c props="font-style:italic">The LOOKUP-related code may need a thread of its own, depending upon its speed and design, but we won't make that decision at this time.</c></p>
+<p props="margin-top:12pt">The VIEW will maintain a series of data structures identifying the <c props="font-style:italic">unchecked </c>pieces of the document; this will consist of a beginning and ending DocPosition. It will contain a priority indication, such as: Change, OnScreen, and Document. Each time that the SpellCheck timer code runs, it will attempt to do a <c props="font-style:italic">little bit</c> of the spell checking, beginning with the highest-priority, and return. In this manner, we will appear to be quite responsive and able to keep the area around the user's typing and the area exposed on the screen up-to-date; as additional idle time is available we will do pieces of the rest of the document so that it will be ready if/when the user scrolls.</p>
+<p props="margin-top:12pt">(Handwave) The VIEW will also make use of the existing Block and Run data structures to record the results of previous spell checks. This includes: Correct, IgnoreThisInstance, IgnoreInThisDocument, Wrong, etc.</p>
+<p props="margin-top:12pt"><c props="font-weight:bold">GUI Details</c></p>
+<p props="margin-top:12pt">The GUI for SpellCheck should include:</p>
+<p props="margin-top:12pt">1. Variations on the red squiggly line.</p>
+<p props="margin-top:12pt">2. Context menu listing alternatives or to ignore this instance.</p>
+<p props="margin-top:12pt">3. Various dialogs.</p>
+<p props="margin-top:12pt"><c props="font-weight:bold">LOOKUP Details</c></p>
+<p props="margin-top:12pt">The LOOKUP engine should provide an API to allow the timer code to request a spell-check on a passage. Whether this executes in-thread or uses its own thread is a detail we can address after we choose and port a third-party engine.</p>
+<p props="margin-top:12pt"><c props="font-weight:bold">DOC Details</c></p>
+<p props="margin-top:12pt">The AbiWord Document Format[2] will need to augmented to remember span-level attributes for text marked IgnoreThisInstance and to remember document-level attributes for text marked IgnoreInThisDocument.</p>
+<p props="margin-top:12pt"><c props="font-weight:bold">PREF Details</c></p>
+<p props="margin-top:12pt">(Handwave) The AbiWord User Preference Mechanism[3] will need to be augmented to remember words that should always be ignored.</p>
+<p props="margin-top:12pt"><c props="font-weight:bold">References</c></p>
 <p>[1] AbiWord Thread Design Notes....</p>
 <p>[2] AbiWord Document Format ....</p>
 <p>[3] AbiWord User Preference Mechanism ....</p>
