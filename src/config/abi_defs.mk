@@ -668,9 +668,10 @@ ABI_OPTIONS  +=GnomeVFS:On
 endif
 
 
-GNOME_CFLAGS += $(shell nautilus-config --cflags)
+GNOME_CFLAGS += $(shell if test "x`which nautilus-config 2> /dev/null`" == "x" ; then echo ; else nautilus-config --cflags ; fi)
 GNOME_CFLAGS += -DHAVE_NAUTILUS
-GNOME_LIBS   += $(shell nautilus-config --libs)
+GNOME_LIBS   += $(shell if test "x`which nautilus-config 2> /dev/null`" == "x" ; then echo ; else nautilus-config --libs ; fi)
+
 
 GNOME_CFLAGS += $(shell $(GLIB_CONFIG) --cflags)
 
