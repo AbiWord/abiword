@@ -981,26 +981,43 @@ GR_Image * AP_UnixApp::_showSplash(UT_uint32 delay)
       use that instead of the standard splash image on startup.
       The only use for this that I can see would be testing new
       images.  
+
+rms:  I'm adding something here to get a localized splash screen
     */
 
 #ifdef DEBUG
     const char * szDirectory = _getUserPrivateDirectory();
 
     const char * szFile = "splash.png";
+    //const char * szFile = "splash"; // remove .png so I can add lang if exists
 
+    //const char * sLANG = getenv("LANG");
+    const char * sLANG = NULL;
+    const short  iLANGsize = sLANG ? strlen(sLANG) : 0;
+
+    // rms: I got tired of reading/writing this more than once
+    const unsigned short iSplashPathSize = strlen(szDirectory) +
+    					   strlen(szFile) + iLANGsize + 4 + 2;
     char * buf;
 
-    if (strlen(szDirectory) + strlen(szFile) + 2 >= PATH_MAX)
+    if (iSplashPathSize >= PATH_MAX)
 		buf = NULL;
     else
     {
-		buf = (char *)malloc(strlen(szDirectory) + strlen(szFile) + 2);
+		buf = (char *)malloc(iSplashPathSize);
 		memset(buf,0,sizeof(buf));
+		/* rms: I think the following LOC equals the next 5
+		      remember that having multiple / in a path equals
+		      having just one. So this is faster.
+		*/
+		snprintf(buf, iSplashPathSize, "%s/%s", szDirectory, szFile);
+		/*
 		strcpy(buf,szDirectory);
 		int len = strlen(buf);
 		if ( (len == 0) || (buf[len-1] != '/') )
 			strcat(buf,"/");
 		strcat(buf,szFile);
+		*/
     }
 #endif
 		
