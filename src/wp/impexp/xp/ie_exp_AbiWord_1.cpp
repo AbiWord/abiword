@@ -148,7 +148,7 @@ protected:
 	bool				m_bInTag;
 	bool				m_bInHyperlink;
 	UT_sint32           m_iInTable;
-	bool                m_bInCell;
+	UT_sint32           m_iInCell;
 	PT_AttrPropIndex	m_apiLastSpan;
     fd_Field *          m_pCurrentField;
 	bool                m_bOpenChar;
@@ -183,11 +183,11 @@ void s_AbiWord_1_Listener::_closeTable(void)
 
 void s_AbiWord_1_Listener::_closeCell(void)
 {
-	if (!m_bInCell)
+	if (m_iInCell == 0)
 		return;
 
 	m_pie->write("</cell>\n");
-	m_bInCell = false;
+	m_iInCell--;
 	return;
 }
 
@@ -476,7 +476,8 @@ s_AbiWord_1_Listener::s_AbiWord_1_Listener(PD_Document * pDocument,
 	m_bOpenChar = false;
 	m_apiLastSpan = 0;
 	m_pCurrentField = 0;
-
+	m_iInTable = 0;
+	m_iInCell = 0;
 	// Be nice to XML apps.  See the notes in _outputData() for more
 	// details on the charset used in our documents.  By not declaring
 	// any encoding, XML assumes we're using UTF-8.  Note that US-ASCII
@@ -718,7 +719,7 @@ bool s_AbiWord_1_Listener::populateStrux(PL_StruxDocHandle /*sdh*/,
             _closeHyperlink();
 			_closeBlock();
 			_openTag("cell","",true,pcr->getIndexAP());
-			m_bInCell = true;
+			m_iInCell++;
 			return true;
 		}
 	case PTX_SectionFootnote:
