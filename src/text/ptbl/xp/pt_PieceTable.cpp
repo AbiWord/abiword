@@ -273,6 +273,52 @@ UT_Bool pt_PieceTable::getAttrProp(PT_VarSetIndex vsIndex, PT_AttrPropIndex inde
 	return UT_TRUE;
 }
 
+const UT_UCSChar * pt_PieceTable::getPointer(PT_VarSetIndex vsIndex, pt_BufPosition bufPos) const
+{
+	UT_ASSERT(vsIndex < NrElements(m_vs));
+	
+	return m_vs[vsIndex].m_buffer.getPointer(bufPos);
+}
+
+UT_Bool pt_PieceTable::getSpanPtr(PL_StruxDocHandle sdh, UT_uint32 offset,
+								  const UT_UCSChar ** ppSpan, UT_uint32 * pLength) const
+{
+	pf_Frag * pf = (pf_Frag *)sdh;
+	UT_ASSERT(pf->getType() == pf_Frag::PFT_Strux);
+	pf_Frag_Strux * pfsBlock = static_cast<pf_Frag_Strux *> (pf);
+	UT_ASSERT(pfsBlock->getStruxType() == PTX_Block);
+
+	UT_uint32 cumOffset = 0;
+	for (pf_Frag * pfTemp=pfsBlock->getNext(); (pfTemp); pfTemp=pfTemp->getNext())
+	{
+		if (pfTemp->getType() != pf_Frag::PFT_Text)
+			continue;
+
+		pf_Frag_Text * pfText = static_cast<pf_Frag_Text *> (pfTemp);
+		
+		// TODO consider moving the guts of this loop to pf_Frag_Text.cpp
+		
+		if (offset == cumOffset)
+		{
+			*ppSpan = getPointer(pfText->getVSindex(),pfText->getOffset());
+			*pLength = pfText->getLength();
+			return UT_TRUE;
+		}
+		if (offset < cumOffset+pfText->getLength())
+		{
+			const UT_UCSChar * p = getPointer(pfText->getVSindex(),pfText->getOffset());
+			UT_uint32 delta = offset - cumOffset;
+			*ppSpan = p + delta;
+			*pLength = pfText->getLength() - delta;
+			return UT_TRUE;
+		}
+
+		cumOffset += pfText->getLength();
+	}
+	return UT_FALSE;
+}
+
+
 void pt_PieceTable::dump(FILE * fp) const
 {
 	fprintf(fp,"  PieceTable: State %d\n",(int)m_pts);

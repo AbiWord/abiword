@@ -22,6 +22,9 @@ public:
 	virtual ~pf_Frag_Text();
 	
 	virtual UT_Bool			createSpecialChangeRecord(PX_ChangeRecord ** ppcr) const;
+	pt_BufPosition			getOffset(void) const;
+	UT_uint32				getLength(void) const;
+	PT_VarSetIndex			getVSindex(void) const;
 
 	virtual void			dump(FILE * fp) const;
 
