@@ -26,9 +26,7 @@
 #include "xap_Frame.h"
 #include "xav_View.h"
 
-#ifdef HAVE_THREADS
 #include "ut_thread.h"
-#endif
 
 class AP_Dialog_Download_File_Thread;
 
@@ -131,10 +129,7 @@ private:
 	UT_uint32		m_dialogRemoved;
 };
 
-class ABI_EXPORT AP_Dialog_Download_File_Thread
-#ifdef HAVE_THREADS
- : public UT_Thread
-#endif
+class ABI_EXPORT AP_Dialog_Download_File_Thread : public UT_Thread
 {
  public:
 	AP_Dialog_Download_File_Thread(const char *szFName, int dataPipe[2], AP_Dialog_Download_File::tProgressData *pd);

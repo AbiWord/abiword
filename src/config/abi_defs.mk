@@ -540,7 +540,7 @@ ABI_BUILD_VERSION_MICRO= 0
 ABI_BUILD_VERSION	= $(ABI_BUILD_VERSION_MAJOR).$(ABI_BUILD_VERSION_MINOR).$(ABI_BUILD_VERSION_MICRO)
 ABI_BUILD_ID		=
 
-CFLAGS  += -DABI_BUILD_VERSION=\"$(ABI_BUILD_VERSION)\" -DHAVE_THREADS
+CFLAGS  += -DABI_BUILD_VERSION=\"$(ABI_BUILD_VERSION)\"
 
 ##################################################################
 ##################################################################

@@ -95,24 +95,12 @@ AP_Dialog_Download_File_Thread::event_Progress(UT_sint32 total, UT_sint32 progre
 	} else {
 		_setProgress(progress);
 		_setFileSize(total);
-
-#ifndef HAVE_THREADS
-		XAP_Frame *pFrame = XAP_App::getApp()->getLastFocussedFrame();
-		UT_ASSERT(pFrame);
-		AP_FrameData *pFrameData = static_cast<AP_FrameData *> (pFrame->getFrameData());
-		UT_ASSERT(pFrameData);
-
-		pFrameData->m_pStatusBar->setStatusProgressType(0, total, PROGRESS_START | PROGRESS_SHOW_PERCENT);
-		pFrameData->m_pStatusBar->setStatusProgressValue(progress);
-#endif
 	}
 	return 0;
 }
 
 AP_Dialog_Download_File_Thread::AP_Dialog_Download_File_Thread(const char *szFName, int dataPipe[2], AP_Dialog_Download_File::tProgressData *pd)
-#ifdef HAVE_THREADS
 	: UT_Thread(UT_Thread::PRI_NORMAL)
-#endif
 {
 	m_szFName = UT_strdup(szFName);
 	m_dataPipe[0] = dataPipe[0];
@@ -170,14 +158,12 @@ AP_Dialog_Download_File_Thread::run()
 	_setDLResult(ret);
 	_setDLDone(1);
 	
-#ifdef HAVE_THREADS	
 	if (!ret) {
 		/* Feed the main-thread with the filedata through this pipe */
 		write(m_dataPipe[1], m_data.data, m_data.s);
 	}
 
 	UT_DEBUGMSG(("Download thread is now exiting\n"));
-#endif
 }
 
 
@@ -255,7 +241,6 @@ AP_Dialog_Download_File::runModal(XAP_Frame * pFrame)
 
 	th = new AP_Dialog_Download_File_Thread(getURL(), dataPipe, m_pd);
 
-#ifdef HAVE_THREADS	
 	/* Timer that checks if download is done and updates the progressmeeter */
 	tim = UT_Timer::static_constructor(AP_Dialog_Download_File_timerCallback, this);
 	tim->set(100);
@@ -281,30 +266,6 @@ AP_Dialog_Download_File::runModal(XAP_Frame * pFrame)
 		}
 		read(dataPipe[0], m_data.data, m_data.s);
 	}
-#else
-	/* Init graphical progressmeeter on the statusbar */
-	if (getShowProgress())
-		_showProgressStart(pFrame);
-
-	/* Runs download method directly, without creating a new thread */
-	th->run();
-
-	if (getShowProgress())
-		_showProgressStop(pFrame);
-
-	/* 
-	 * If everything went OK, get filedata from other "thread"
-	 * Well, just copy the internal buffer of the "thread"
-	 */
-	if (getDLDone() && !getDLResult()) {
-		m_data.s = getFileSize();
-		if (!(m_data.data = (char *)malloc(m_data.s))) {
-			_setDLResult(-1);
-			return;
-		}
-		memcpy(m_data.data, th->_getFileData(), m_data.s);
-	}
-#endif	
 }
 
 void 
