@@ -609,8 +609,19 @@ void GR_Win32USPGraphics::_setupFontOnDC(GR_Win32USPFont *pFont, bool bZoomMe)
 	}
 	else if (bZoomMe)
 	{
+		// this branch gets only executed for screen draw
 		zoom = getZoomPercentage();
-		pixels = (UT_uint32)((double)pFont->getUnscaledHeight()* (double)zoom/100.0 + 0.5) ;
+		double dZoom = (double)zoom;
+		if(zoom < 100)
+		{
+			// we want to use slightly smaller font in order to counter the GDI's habit of
+			// using bigger fonts which causes text to be drawn outwith its rectangle
+			// (8216, et al.)
+			// The numerical constant is heuristic
+			dZoom /= 1.05;
+		}
+		
+		pixels = (UT_uint32)((double)pFont->getUnscaledHeight()* dZoom/100.0 + 0.5) ;
 	}
 	else if(getPrintDC())
 	{
