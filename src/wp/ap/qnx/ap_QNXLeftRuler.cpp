@@ -266,13 +266,15 @@ int AP_QNXLeftRuler::_fe::expose(PtWidget_t * w, PhTile_t * damage)
 	if (!pQNXRuler)
 		return 0;
 
+		PhPoint_t shift;
+		PtWidgetOffset(w, &shift);
+		PhDeTranslateRect(&damage->rect, &shift);
+
    rClip.left = damage->rect.ul.x;
    rClip.top = damage->rect.ul.y;
    rClip.width = damage->rect.lr.x - damage->rect.ul.x;
    rClip.height = damage->rect.lr.y - damage->rect.ul.y;
-//   pQNXRuler->draw(&rClip);
-	pQNXRuler->draw(0);
-
+   pQNXRuler->draw(&rClip);
 	return 0;
 }
 	

@@ -322,25 +322,19 @@ int AP_QNXTopRuler::_fe::expose(PtWidget_t * w, PhTile_t *damage)
 			{
 				return 0;
 			}
-#if 0
-    if (damage->next) {
-        damage = damage->next;
-    }
-    while (damage) {
+				UT_Rect rClip;
+				PhPoint_t shift;
+
+
+				PtWidgetOffset(w, &shift);
+				PhDeTranslateRect(&damage->rect, &shift);
+
         rClip.left = damage->rect.ul.x;
         rClip.top = damage->rect.ul.y;
         rClip.width = damage->rect.lr.x - damage->rect.ul.x;
         rClip.height = damage->rect.lr.y - damage->rect.ul.y;
-        damage = damage->next;
 
-        UT_DEBUGMSGr(("Clip to Rect %d,%d %d/%d ",
-            rClip.left, rClip.top, rClip.width, rClip.height));
 		pQNXRuler->draw(&rClip);
-		//pQNXRuler->draw(NULL);
-    }
-#else
-	pQNXRuler->draw(NULL);
-#endif
 
 	return 0;
 }
