@@ -620,7 +620,7 @@ UT_uint32 AP_Preview_Paragraph::_appendLine(UT_Vector * words,
 	// NOTE : we don't evaluate space widths in the while() condition so we don't
 	// NOTE : wrap on one (which would be silly)
 	while ((i < totalWords) &&
-		   (pixelsForThisLine + (UT_uint32) widths->getNthItem(i) <= maxPixelsForThisLine))
+		   (pixelsForThisLine + (UT_uint32) widths->getNthItem(i) <= (UT_uint32)maxPixelsForThisLine))
 	{
 		pixelsForThisLine += (UT_uint32) widths->getNthItem(i) + spaceCharWidth;
 		i++;

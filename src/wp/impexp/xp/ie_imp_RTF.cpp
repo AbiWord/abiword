@@ -1078,7 +1078,7 @@ UT_Bool IE_Imp_RTF::ApplyCharacterAttributes()
 	}
 
 	// font size
-	sprintf(tempBuffer, "; font-size:%spt", std_size_string(m_currentRTFState.m_charProps.m_fontSize));	
+	sprintf(tempBuffer, "; font-size:%spt", std_size_string((float)m_currentRTFState.m_charProps.m_fontSize));	
 	strcat(propBuffer, tempBuffer);
 	// typeface
 	RTFFontTableItem* pFont = GetNthTableFont(m_currentRTFState.m_charProps.m_fontNumber);

@@ -602,9 +602,9 @@ UT_sint32 fp_TextRun::simpleRecalcWidth(UT_sint32 iWidthType, UT_sint32 iLength)
 	}
 	UT_ASSERT(iLength >= 0);
 
-	UT_ASSERT(iLength <= m_iLen);
-	if(iLength > m_iLen)
-		iLength = m_iLen;
+	UT_ASSERT((UT_uint32)iLength <= m_iLen);
+	if((UT_uint32)iLength > m_iLen)
+		iLength = (UT_sint32)m_iLen;
 
 	if (iLength == 0)
 		return 0;

@@ -229,8 +229,8 @@ void AP_Win32Dialog_Lists::_onApply()
 		}
 		else
 		{
-			int newStartValue = _win32Dialog.getControlInt(AP_RID_DIALOG_LIST_EDIT_CURRENT_STARTING_VALUE);
-			int newListType = _win32Dialog.getComboSelectedIndex(AP_RID_DIALOG_LIST_COMBO_NEW_LIST_TYPE);
+			UT_uint32 newStartValue = (UT_uint32)_win32Dialog.getControlInt(AP_RID_DIALOG_LIST_EDIT_CURRENT_STARTING_VALUE);
+			UT_uint32 newListType = (UT_uint32)_win32Dialog.getComboSelectedIndex(AP_RID_DIALOG_LIST_COMBO_NEW_LIST_TYPE);
 
 			if(newStartValue != m_curStartValue && newListType != (UT_uint32) m_iListType)
 			{

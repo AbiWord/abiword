@@ -4452,13 +4452,13 @@ void    fl_BlockLayout::StartList( const XML_Char * style)
 		else 
 			startv = 1;
 		if (szAlign)
-			fAlign = atof(szAlign);
+			fAlign = (float)atof(szAlign);
 		else
-			fAlign = 0.25;
+			fAlign = (float)0.25;
 		if (szIndent)
-			fIndent = atof(szIndent);
+			fIndent = (float)atof(szIndent);
 		else
-			fIndent = -0.25;
+			fIndent = (float)-0.25;
 	}
 	else
 	{

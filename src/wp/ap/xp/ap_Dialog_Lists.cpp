@@ -304,7 +304,7 @@ void  AP_Dialog_Lists::fillUncustomizedValues(void)
 	        m_iLevel = 1;
        }
        UT_XML_strncpy( (XML_Char *) m_pszDelim, 80, (const XML_Char *) "%L");
-       m_fAlign = 0.25 *(float) m_iLevel;
+       m_fAlign = (float)(0.25 *(float) m_iLevel);
        m_fIndent = -0.25;
        if( m_newListType < BULLETED_LIST)
        {   
@@ -439,21 +439,21 @@ void  AP_Dialog_Lists::fillDialogFromBlock(void)
 		i = findVecItem(&vp,"margin-left");
 		if(i>=0)
 		{
-	                 m_fAlign = atof((const XML_Char *) vp.getNthItem(i+1));
+	                 m_fAlign = (float)atof((const XML_Char *) vp.getNthItem(i+1));
 		}
 		else
 		{
-                         m_fAlign = 0.25;
+                         m_fAlign = (float)0.25;
 		}
 
 		i = findVecItem(&vp,"text-indent");
 		if(i >= 0)
 		{
-                         m_fIndent = atof((const XML_Char *) vp.getNthItem(i+1));
+                         m_fIndent = (float)atof((const XML_Char *) vp.getNthItem(i+1));
 		}
 		else
 		{
-	                 m_fIndent = -0.25;
+	                 m_fIndent = (float)-0.25;
 		}
 
 		if(getAutoNum() != NULL)
@@ -713,7 +713,7 @@ void AP_Lists_preview::draw(void)
 	
 	// todo 8.5 should be the page width in inches
 
-	z = (fwidth - 2.0*static_cast<float>(xoff)) /8.5;
+	z = (float)((fwidth - 2.0*static_cast<float>(xoff)) /(float)8.5);
         UT_sint32 indent = static_cast<UT_sint32>( z*(m_fAlign+m_fIndent));
 	if(indent < 0)
 	        indent = 0;
@@ -751,7 +751,7 @@ void AP_Lists_preview::draw(void)
 	
 	// todo 6.5 should be the page width in inches
         // UT_sint32 vspace = (iHeight - 2*yoff -iFont)*i/16;
-	z = (fwidth - 2.0*static_cast<float>(xoff)) /6.5;
+	z = (float)((fwidth - 2.0*static_cast<float>(xoff)) /(float)6.5);
         UT_sint32 ialign = static_cast<UT_sint32>( z*m_fAlign);
         xx = xoff + maxw + ialign;
         if(xx < (xoff + maxw + indent))

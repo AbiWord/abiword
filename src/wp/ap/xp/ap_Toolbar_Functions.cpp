@@ -281,7 +281,7 @@ Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_CharFmt)
 			if (bSize)
 			{	
 				static char buf[7];
-				sprintf(buf, "%s", std_size_string(UT_convertToPoints(sz)));
+				sprintf(buf, "%s", std_size_string((float)UT_convertToPoints(sz)));
 				*pszState = buf;
 				s = EV_TIS_UseString;
 			}
