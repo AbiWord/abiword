@@ -78,7 +78,6 @@ fb_LineBreaker::breakParagraph(fl_BlockLayout* pBlock)
 			
 			m_iMaxLineWidth = pLine->getMaxWidthInLayoutUnits();
 			m_iWorkingLineWidth = 0;
-			UT_DEBUGMSG(("SEVIOR: Max line width = %d \n",m_iMaxLineWidth));
 			
 //			bool bFoundBreakAfter = false;
 //			bool bFoundSplit = false;

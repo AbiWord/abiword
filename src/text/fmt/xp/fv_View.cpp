@@ -1864,6 +1864,21 @@ void FV_View::insertParagraphBreak(void)
 	m_pDoc->disableListUpdates();
 	fl_BlockLayout * pBlock = getCurrentBlock();
 	PL_StruxDocHandle sdh = pBlock->getStruxDocHandle();
+//
+// If we're at the end of the block set new style to followed-by. Look for this
+// condition before we do insertStrux
+//
+	bool bAtEnd = false;
+	PT_DocPosition posEOD = 0;
+	getEditableBounds(true, posEOD);
+	if(getPoint() != posEOD)
+	{
+		bAtEnd = _findBlockAtPosition(getPoint()+1) != _findBlockAtPosition(getPoint());
+	}
+	else
+	{
+		bAtEnd = true;
+	}
 	if(isCurrentListBlockEmpty() == true)
 	{
 		m_pDoc->StopList(sdh);
@@ -1892,7 +1907,7 @@ void FV_View::insertParagraphBreak(void)
 
 	const XML_Char* style = NULL;
 	PD_Style* pStyle = NULL;
-	if(getStyle(&style))
+	if(getStyle(&style) && bAtEnd)
 	{
 		m_pDoc->getStyle((char*) style, &pStyle);
 		if(pStyle != NULL  && !bBefore)
@@ -3964,9 +3979,9 @@ void FV_View::_moveInsPtNextPrevLine(bool bNext)
 	bool bDirection;
 
 //
-// No need to to do background updates for 0.5 seconds.
+// No need to to do background updates for 1 seconds.
 //
-	m_pLayout->setSkipUpdates(5);
+	m_pLayout->setSkipUpdates(2);
 	UT_sint32 xOldSticky = m_xPointSticky;
 
 	// first, find the line we are on now
@@ -4004,12 +4019,12 @@ void FV_View::_moveInsPtNextPrevLine(bool bNext)
 	{
 		if (pOldLine != pOldContainer->getLastLine())
 		{
-			// just move off this line
-			yPoint += (iLineHeight + pOldLine->getMarginAfter()+1);
+			UT_sint32 iAfter = 1;
+			yPoint += (iLineHeight + iAfter);
 		}
 		else if (bDocSection && (((fp_Column*) (pOldSL->getLastContainer()))->getLeader() == pOldLeader))
 		{
-			// move to next section
+			// move to next container
 			fl_SectionLayout* pSL = pOldSL->getNext();
 			if (pSL)
 			{
