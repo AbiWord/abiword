@@ -195,16 +195,9 @@ void XAP_QNXDialog_Zoom::runModal(XAP_Frame * pFrame)
 	_populateWindowData();
 	
 	m_qnxGraphics = new GR_QNXGraphics(mainWindow, m_previewArea);
-	PtArg_t args[2];
-	PtExtentWidget(mainWindow);	
-	PtExtentWidget(m_previewArea);	
-	PtSetArg(&args[0], Pt_ARG_WIDTH, 0, 0);
-	PtSetArg(&args[1], Pt_ARG_HEIGHT, 0, 0);
-	PtGetResources(m_previewArea, 2, args);
-	printf("Width %d height %d \n", args[0].value, args[1].value);
-	_createPreviewFromGC(m_qnxGraphics,
-						 args[0].value,	/* Width */
-						 args[1].value);/* Height */
+	unsigned short w, h;
+	UT_QNXGetWidgetArea(m_previewArea, NULL, NULL, &w, &h);
+	_createPreviewFromGC(m_qnxGraphics, w, h);
 
 	UT_QNXCenterWindow(parentWindow, mainWindow);
 	UT_QNXBlockWidget(parentWindow, 1);
@@ -380,6 +373,7 @@ PtWidget_t * XAP_QNXDialog_Zoom::_constructWindow(void)
 	n = 0;
 	PtSetArg(&args[n++], Pt_ARG_GROUP_ORIENTATION, Pt_GROUP_VERTICAL, Pt_GROUP_VERTICAL); 
 	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, "Preview", 0); 
+	PtSetArg(&args[n++], Pt_ARG_GROUP_SPACING_Y, 10, 0); 
 	vboxZoomPreview = PtCreateWidget(PtGroup, hboxFrames, n, args);
 
 	n = 0;

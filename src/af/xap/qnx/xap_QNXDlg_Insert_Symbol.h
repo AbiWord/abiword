@@ -26,7 +26,7 @@ static UT_uint32 xap_QNXDlg_Insert_Symbol_first = 0;
 static UT_UCSChar m_CurrentSymbol;
 static UT_UCSChar m_PreviousSymbol;
 
-#define DEFAULT_QNX_SYMBOL_FONT "Standard Symbols"
+#define DEFAULT_QNX_SYMBOL_FONT "Symbol"
 
 class XAP_QNXFrame;
 
@@ -48,7 +48,7 @@ public:
 	virtual void			event_Cancel(void);
 	virtual void			SymbolMap_exposed( void);
 	virtual void			Symbolarea_exposed( void);
-	virtual void			SymbolMap_clicked(void * event);
+	virtual void			SymbolMap_clicked(PtCallbackInfo_t * event);
 	virtual void			Key_Pressed(void * e);
 	virtual void            New_Font( void);
 	virtual void			event_WindowDelete(void);
@@ -56,8 +56,8 @@ public:
 	
 protected:
 
-	GR_QNXGraphics	* 		m_unixGraphics;
-	GR_QNXGraphics *       m_unixarea;
+	GR_QNXGraphics	* 	m_qnxGraphics;
+	GR_QNXGraphics *    m_qnxarea;
 
 	// private construction functions
 	PtWidget_t * _constructWindow(void);
@@ -77,6 +77,7 @@ protected:
 	gchar * m_fontlist[100];
 #endif
 	UT_uint32 m_Insert_Symbol_no_fonts;
+	int       done;
 };
 
 #endif /* XAP_QNXDIALOG_INSERT_SYMBOL_H */
