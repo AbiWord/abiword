@@ -18,8 +18,6 @@
 %define version_flag ABI_BUILD_VERSION=%{version}
 %define ABIPREFIX %{_libdir}/%{AbiWord}
 
-%define enable_xft __ABI_OPT_XFT__
-
 # PLUGIN OPTIONS: 1 for yes, 0 for no
 %define enable_tools __ABI_PLUGINS_TOOLS__
 %define enable_impexp __ABI_PLUGINS_IMPEXP__
@@ -33,12 +31,6 @@
 %define gnome --enable-gnome
 %else
 %define gnome --disable-gnome
-%endif
-
-%if %{enable_xft}
-%define xft --enable-xft
-%else
-%define xft --disable-xft
 %endif
 
 %if %{enable_debug}
@@ -76,9 +68,6 @@ Distribution: RedHat 7.x Contrib
 # Basic requirements
 Requires: gtk2 >= 2.0.0
 Requires: glib2 >= 2.0.0
-%if !%{enable_xft}
-Requires: %{name}-fonts
-%endif
 
 %if %{enable_jpeg}
 Requires: libjpeg
@@ -98,10 +87,8 @@ Requires: libxml2 >= 2.4.2
 BuildRequires: libxml2-devel >= 2.4.2
 %endif
 
-%if %{enable_xft}
 Requires: fontconfig
 BuildRequires: fontconfig-devel
-%endif
 
 # Requirements for GNOME build
 %if %{enable_gnome}
@@ -187,15 +174,15 @@ bzipped AbiWord, and (x)html document formats.  Additionally, it adds support
 for certain image types to AbiWord builds that were not gnome-enabled.
 %endif
 
-%if !%{enable_xft}
-%package fonts
-Summary: AbiWord Fonts
-Group: Applications/Productivity
-Epoch: 1
-
-%description fonts
-These are the basic fonts used by AbiWord.
-%endif
+#%if !%{enable_xft}
+#%package fonts
+#Summary: AbiWord Fonts
+#Group: Applications/Productivity
+#Epoch: 1
+#
+#%description fonts
+#These are the basic fonts used by AbiWord.
+#%endif
 
 %package clipart
 Summary: AbiWord Clipart
@@ -211,7 +198,7 @@ This is the clipart portfolio used by AbiWord.
 
 %build
 ./autogen.sh
-./configure %{gnome} %{xft} %{debug} --prefix=%{_prefix} --exec-prefix=%{_prefix} --with-pspell=%{build_pspell}
+./configure %{gnome} --enable-xft %{debug} --prefix=%{_prefix} --exec-prefix=%{_prefix} --with-pspell=%{build_pspell}
 %__make
 
 %if %{enable_tools} || %{enable_impexp}
@@ -258,9 +245,9 @@ cd ../abi
 %__mv $RPM_BUILD_ROOT/%{_datadir}/%{AbiSuite}/GNOME_AbiWord_Control_2_0.server $RPM_BUILD_ROOT/%{_libdir}/bonobo/servers/
 
 # Fix for wrong file rights on fonts,icons,clipart
-%if !%{enable_xft}
-%__chmod 644 $RPM_BUILD_ROOT%{ABIPREFIX}/fonts/*
-%endif
+#%if !%{enable_xft}
+#%__chmod 644 $RPM_BUILD_ROOT%{ABIPREFIX}/fonts/*
+#%endif
 %__chmod 644 $RPM_BUILD_ROOT/%{_datadir}/%{AbiSuite}/icons/*
 %__chmod 644 $RPM_BUILD_ROOT/%{_datadir}/%{AbiSuite}/clipart/*
 %__chmod 644 $RPM_BUILD_ROOT/%{_datadir}/%{AbiSuite}/templates/*
@@ -357,17 +344,17 @@ cd ../abi
 %defattr(644,root,root,755)
 %{_datadir}/%{AbiSuite}/clipart
 
-%if !%{enable_xft}
-%files fonts
-%defattr(644,root,root,755)
-%config(noreplace) %{_datadir}/%{AbiSuite}/fonts/fonts.dir
-%config(noreplace) %{_datadir}/%{AbiSuite}/fonts/fonts.scale
-%{_datadir}/%{AbiSuite}/fonts/*.afm
-%{_datadir}/%{AbiSuite}/fonts/*.pfa
-%{_datadir}/%{AbiSuite}/fonts/*.pfb
-%{_datadir}/%{AbiSuite}/fonts/*.e2u
-%{_datadir}/%{AbiSuite}/fonts/*.u2g
-%endif
+#%if !%{enable_xft}
+#%files fonts
+#%defattr(644,root,root,755)
+#%config(noreplace) %{_datadir}/%{AbiSuite}/fonts/fonts.dir
+#%config(noreplace) %{_datadir}/%{AbiSuite}/fonts/fonts.scale
+#%{_datadir}/%{AbiSuite}/fonts/*.afm
+#%{_datadir}/%{AbiSuite}/fonts/*.pfa
+#%{_datadir}/%{AbiSuite}/fonts/*.pfb
+#%{_datadir}/%{AbiSuite}/fonts/*.e2u
+#%{_datadir}/%{AbiSuite}/fonts/*.u2g
+#%endif
 
 %changelog
 * Fri Feb 28 2003 Rui M. Seabra <rms@1407.org>
