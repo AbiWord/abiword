@@ -2650,7 +2650,7 @@ bool _helpLocalizeAndOpenURL(AV_View* pAV_View, bool bLocal, const char* pathBef
 		UT_String localized_path(path);
 		_catPath(localized_path, abiSuiteLocString);
 
-		if (!UT_directoryExists(localized_path.c_str()))
+		if (UT_directoryExists(localized_path.c_str()))
 		{
 			// the localised help exists, so use it
 			path = localized_path;
