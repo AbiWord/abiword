@@ -37,11 +37,11 @@ AC_DEFUN([ABI_GLIB2],[
 	AM_CONDITIONAL(HAVE_THREADS, test $abi_gthread2 = yes)
 ])
 
-# test for gtk2
+# test for gtk2 and libglade-2.0
 AC_DEFUN([ABI_GTK2],[
 	ABI_GLIB2
 
-	PKG_CHECK_MODULES(GTK,gtk+-2.0 >= 2.0,[
+	PKG_CHECK_MODULES(GTK,gtk+-2.0 >= 2.0 libglade-2.0 >= 2.0.0,[
 		abi_gtk2=yes
 	],[	abi_gtk2=no
 	])
