@@ -58,6 +58,7 @@
 # a Pentium Pro, you will see your bins in a "...i386" directory.
 # This doesn't mean it didn't use your optimizations.
 
+# this makes HP-UX look like "HP" (sed turns "HP-UX" into "HP" with the -.* pattern)
 OS_NAME		:= $(shell uname -s | sed "s/\//-/" | sed "s/_/-/" | sed "s/-.*//g")
 OS_RELEASE	:= $(shell uname -r | sed "s/\//-/" | sed "s/ .*//g")
 ####OS_ARCH is now set in platform/*.mk
@@ -186,6 +187,23 @@ endif
 
 ifeq ($(OS_NAME), IRIX)
 include $(ABI_ROOT)/src/config/platforms/irix.mk
+endif
+
+ifeq ($(OS_NAME), IRIX64)
+include $(ABI_DEPTH)/config/platforms/irix64.mk
+endif
+
+# not HP-UX since sed applies s/-.*// to uname
+ifeq ($(OS_NAME), HP)
+include $(ABI_DEPTH)/config/platforms/hpux.mk
+endif
+
+ifeq ($(OS_NAME), AIX)
+include $(ABI_DEPTH)/config/platforms/aix.mk
+endif
+
+ifeq ($(OS_NAME), OSF1)
+include $(ABI_DEPTH)/config/platforms/osf1.mk
 endif
 
 # Catch all for undefined platform (CC will always be defined on a working platform)
