@@ -163,6 +163,8 @@ void FV_VisualInlineImage::_autoScroll(UT_Worker * pWorker)
 
 void FV_VisualInlineImage::mouseDrag(UT_sint32 x, UT_sint32 y)
 {
+	GR_Graphics * pG = getGraphics();
+
   if(m_iDraggingWhat == FV_Inline_DragWholeImage)
   {
         if(m_iInlineDragMode  == FV_InlineDrag_NOT_ACTIVE)
@@ -184,7 +186,7 @@ void FV_VisualInlineImage::mouseDrag(UT_sint32 x, UT_sint32 y)
 	{
           float diff = sqrt((static_cast<float>(x) - static_cast<float>(m_iFirstEverX))*(static_cast<float>(x) - static_cast<float>(m_iFirstEverX)) +
                               (static_cast<float>(y) - static_cast<float>(m_iFirstEverY))*(static_cast<float>(y) - static_cast<float>(m_iFirstEverY)));
-          if(diff < static_cast<float>(getGraphics()->tlu(MIN_DRAG_PIXELS)))
+          if(diff < static_cast<float>(pG->tlu(MIN_DRAG_PIXELS)))
           {
 	    xxx_UT_DEBUGMSG(("Not yet dragged enough.%f \n", diff));
             //
@@ -238,7 +240,7 @@ void FV_VisualInlineImage::mouseDrag(UT_sint32 x, UT_sint32 y)
 		{
 			return;
 		}
-		m_pAutoScrollTimer = UT_Timer::static_constructor(_autoScroll, this, getGraphics());
+		m_pAutoScrollTimer = UT_Timer::static_constructor(_autoScroll, this, pG);
 		m_pAutoScrollTimer->set(AUTO_SCROLL_MSECS);
 		m_pAutoScrollTimer->start();
 		return;
@@ -247,7 +249,7 @@ void FV_VisualInlineImage::mouseDrag(UT_sint32 x, UT_sint32 y)
 	UT_sint32 dy = 0;
 	UT_Rect expX(0,m_recCurFrame.top,0,m_recCurFrame.height);
 	UT_Rect expY(m_recCurFrame.left,0,m_recCurFrame.width,0);
-	UT_sint32 iext = getGraphics()->tlu(3);
+	UT_sint32 iext = pG->tlu(3);
 	dx = x - m_iLastX;
 	dy = y - m_iLastY;
 	m_recCurFrame.left += dx;
@@ -297,19 +299,19 @@ void FV_VisualInlineImage::mouseDrag(UT_sint32 x, UT_sint32 y)
 
 	if(expX.width > 0)
 	{
-		getGraphics()->setClipRect(&expX);
+		pG->setClipRect(&expX);
 		m_pView->updateScreen(false);
 	}
 	if(expY.height > 0)
 	{
-		getGraphics()->setClipRect(&expY);
+		pG->setClipRect(&expY);
 		m_pView->updateScreen(false);
 	}
-	getGraphics()->setClipRect(NULL);
+	pG->setClipRect(NULL);
 	drawImage();
 	m_iLastX = x;
 	m_iLastY = y;
-	getGraphics()->setClipRect(NULL);
+	pG->setClipRect(NULL);
 	PT_DocPosition posAtXY = getPosFromXY(x,y);
 	m_pView->_setPoint(posAtXY);
 //	m_pView->_fixInsertionPointCoords();
@@ -331,7 +333,7 @@ void FV_VisualInlineImage::mouseDrag(UT_sint32 x, UT_sint32 y)
 	UT_Rect prevRect = m_recCurFrame;
 	UT_Rect expX(0,m_recCurFrame.top,0,m_recCurFrame.height);
 	UT_Rect expY(m_recCurFrame.left,0,m_recCurFrame.width,0);
-	UT_sint32 iext = getGraphics()->tlu(3);
+	UT_sint32 iext = pG->tlu(3);
 	m_xLastMouse = x;
 	m_yLastMouse = y;
 	switch (m_iDraggingWhat)
@@ -369,14 +371,14 @@ void FV_VisualInlineImage::mouseDrag(UT_sint32 x, UT_sint32 y)
 		{
 			m_recCurFrame.left = x;
 			m_recCurFrame.width = -m_recCurFrame.width;
-			getGraphics()->setCursor(GR_Graphics::GR_CURSOR_IMAGESIZE_NE);
+			pG->setCursor(GR_Graphics::GR_CURSOR_IMAGESIZE_NE);
 			m_iDraggingWhat =  FV_Inline_DragTopRightCorner;
 		}
 		if(m_recCurFrame.height < 0)
 		{
 			m_recCurFrame.top = y;
 			m_recCurFrame.height = -m_recCurFrame.height;
-			getGraphics()->setCursor(GR_Graphics::GR_CURSOR_IMAGESIZE_SW);
+			pG->setCursor(GR_Graphics::GR_CURSOR_IMAGESIZE_SW);
 			m_iDraggingWhat =  FV_Inline_DragBotLeftCorner;
 		}
 		break;
@@ -411,14 +413,14 @@ void FV_VisualInlineImage::mouseDrag(UT_sint32 x, UT_sint32 y)
 		{
 			m_recCurFrame.left = x;
 			m_recCurFrame.width = -m_recCurFrame.width;
-			getGraphics()->setCursor(GR_Graphics::GR_CURSOR_IMAGESIZE_NW);
+			pG->setCursor(GR_Graphics::GR_CURSOR_IMAGESIZE_NW);
 			m_iDraggingWhat =  FV_Inline_DragTopLeftCorner;
 		}
 		if(m_recCurFrame.height < 0)
 		{
 			m_recCurFrame.top = y;
 			m_recCurFrame.height = -m_recCurFrame.height;
-			getGraphics()->setCursor(GR_Graphics::GR_CURSOR_IMAGESIZE_SE);
+			pG->setCursor(GR_Graphics::GR_CURSOR_IMAGESIZE_SE);
 			m_iDraggingWhat =  FV_Inline_DragBotRightCorner;
 		}
 		break;
@@ -453,7 +455,7 @@ void FV_VisualInlineImage::mouseDrag(UT_sint32 x, UT_sint32 y)
 		{
 			m_recCurFrame.left = x;
 			m_recCurFrame.width = -m_recCurFrame.width;
-			getGraphics()->setCursor(GR_Graphics::GR_CURSOR_IMAGESIZE_SE);
+			pG->setCursor(GR_Graphics::GR_CURSOR_IMAGESIZE_SE);
 			m_iDraggingWhat =  FV_Inline_DragBotRightCorner;
 
 		}
@@ -461,7 +463,7 @@ void FV_VisualInlineImage::mouseDrag(UT_sint32 x, UT_sint32 y)
 		{
 			m_recCurFrame.top = y;
 			m_recCurFrame.height = -m_recCurFrame.height;
-			getGraphics()->setCursor(GR_Graphics::GR_CURSOR_IMAGESIZE_NW);
+			pG->setCursor(GR_Graphics::GR_CURSOR_IMAGESIZE_NW);
 			m_iDraggingWhat =  FV_Inline_DragTopLeftCorner;
 		}
 		break;
@@ -494,14 +496,14 @@ void FV_VisualInlineImage::mouseDrag(UT_sint32 x, UT_sint32 y)
 		{
 			m_recCurFrame.left = x;
 			m_recCurFrame.width = -m_recCurFrame.width;
-			getGraphics()->setCursor(GR_Graphics::GR_CURSOR_IMAGESIZE_SW);
+			pG->setCursor(GR_Graphics::GR_CURSOR_IMAGESIZE_SW);
 			m_iDraggingWhat =  FV_Inline_DragBotLeftCorner;
 		}
 		if(m_recCurFrame.height < 0)
 		{
 			m_recCurFrame.top = y;
 			m_recCurFrame.height = -m_recCurFrame.height;
-			getGraphics()->setCursor(GR_Graphics::GR_CURSOR_IMAGESIZE_NE);
+			pG->setCursor(GR_Graphics::GR_CURSOR_IMAGESIZE_NE);
 			m_iDraggingWhat =  FV_Inline_DragTopRightCorner;
 		}
 		break;
@@ -521,7 +523,7 @@ void FV_VisualInlineImage::mouseDrag(UT_sint32 x, UT_sint32 y)
 		{
 			m_recCurFrame.left = x;
 			m_recCurFrame.width = -m_recCurFrame.width;
-			getGraphics()->setCursor(GR_Graphics::GR_CURSOR_IMAGESIZE_W);
+			pG->setCursor(GR_Graphics::GR_CURSOR_IMAGESIZE_W);
 			m_iDraggingWhat =  FV_Inline_DragRightEdge;
 		}
 		break;
@@ -539,7 +541,7 @@ void FV_VisualInlineImage::mouseDrag(UT_sint32 x, UT_sint32 y)
 		{
 			m_recCurFrame.left = x;
 			m_recCurFrame.width = -m_recCurFrame.width;
-			getGraphics()->setCursor(GR_Graphics::GR_CURSOR_IMAGESIZE_E);
+			pG->setCursor(GR_Graphics::GR_CURSOR_IMAGESIZE_E);
 			m_iDraggingWhat =  FV_Inline_DragLeftEdge;
 		}
 		break;
@@ -559,7 +561,7 @@ void FV_VisualInlineImage::mouseDrag(UT_sint32 x, UT_sint32 y)
 		{
 			m_recCurFrame.top = y;
 			m_recCurFrame.height = -m_recCurFrame.height;
-			getGraphics()->setCursor(GR_Graphics::GR_CURSOR_IMAGESIZE_S);
+			pG->setCursor(GR_Graphics::GR_CURSOR_IMAGESIZE_S);
 			m_iDraggingWhat =  FV_Inline_DragBotEdge;
 		}
 		break;
@@ -578,7 +580,7 @@ void FV_VisualInlineImage::mouseDrag(UT_sint32 x, UT_sint32 y)
 		{
 			m_recCurFrame.top = y;
 			m_recCurFrame.height = -m_recCurFrame.height;
-			getGraphics()->setCursor(GR_Graphics::GR_CURSOR_IMAGESIZE_N);
+			pG->setCursor(GR_Graphics::GR_CURSOR_IMAGESIZE_N);
 			m_iDraggingWhat =  FV_Inline_DragTopEdge;
 		}
 		break;
@@ -601,24 +603,24 @@ void FV_VisualInlineImage::mouseDrag(UT_sint32 x, UT_sint32 y)
 	}
 	if(expX.width > 0)
 	{
-	        getGraphics()->setClipRect(&expX);
+	        pG->setClipRect(&expX);
 		m_pView->updateScreen(false);
 	}
 	if(expY.height > 0)
 	{
-	        getGraphics()->setClipRect(&expY);
+	        pG->setClipRect(&expY);
 		xxx_UT_DEBUGMSG(("expY.top %d expY.height %d \n",expY.top,expY.height));
 		m_pView->updateScreen(false);
 	}
-	getGraphics()->setClipRect(NULL);
-	GR_Painter painter(getGraphics());
+	pG->setClipRect(NULL);
+	GR_Painter painter(pG);
 	//
 	// Clear the previous line.
 	//
 	if(m_screenCache != NULL)
 	{
-	  prevRect.left -= getGraphics()->tlu(1);
-	  prevRect.top -= getGraphics()->tlu(1);
+	  prevRect.left -= pG->tlu(1);
+	  prevRect.top -= pG->tlu(1);
 	  painter.drawImage(m_screenCache,prevRect.left,prevRect.top);
 	  DELETEP(m_screenCache);
 	}
@@ -626,25 +628,15 @@ void FV_VisualInlineImage::mouseDrag(UT_sint32 x, UT_sint32 y)
 	// Save the current screen
 	//
 	UT_Rect rCache = m_recCurFrame;
-	rCache.left -= getGraphics()->tlu(1);
-	rCache.top -= getGraphics()->tlu(1);
-	rCache.width += getGraphics()->tlu(2);
-	rCache.height += getGraphics()->tlu(2);
+	rCache.left -= pG->tlu(1);
+	rCache.top -= pG->tlu(1);
+	rCache.width += pG->tlu(2);
+	rCache.height += pG->tlu(2);
 	m_screenCache = painter.genImageFromRectangle(rCache);
-	//
+
 	// Draw new image box
-	//
-	getGraphics()->setColor(UT_RGBColor(0, 0, 0));
-	getGraphics()->setLineProperties(getGraphics()->tlu(1), GR_Graphics::JOIN_MITER, GR_Graphics::CAP_PROJECTING, GR_Graphics::LINE_DOTTED); // MARCM: setting the line style to DOTTED doesn't seem to work with GTK2
-	UT_sint32 bot, right;
-	UT_Rect r = m_recCurFrame;
-	bot = r.top + r.height;
-	right =  r.left + r.width;
-	painter.drawLine(r.left, r.top, right, r.top);
-	painter.drawLine(right, r.top, right, bot);
-	painter.drawLine(right, bot, r.left, bot);
-	painter.drawLine(r.left, bot, r.left, r.top);
-	getGraphics()->setLineProperties(getGraphics()->tlu(1), GR_Graphics::JOIN_MITER, GR_Graphics::CAP_PROJECTING, GR_Graphics::LINE_SOLID);
+	UT_Rect box(m_recCurFrame.left, m_recCurFrame.top - pG->tlu(1), m_recCurFrame.width - pG->tlu(1), m_recCurFrame.height - pG->tlu(1));
+	m_pView->drawSelectionBox(box, false);
   }
 }
 

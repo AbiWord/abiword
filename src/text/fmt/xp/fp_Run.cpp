@@ -3458,37 +3458,6 @@ const char * fp_ImageRun::getDataId(void) const
 	return m_pFGraphic->getDataId();
 }
 
-void fp_ImageRun::_drawResizeBox(UT_Rect box)
-{
-	GR_Graphics * pG = getGraphics();
-	UT_sint32 left = box.left;
-	UT_sint32 top = box.top;
-	UT_sint32 right = box.left + box.width - pG->tlu(1);
-	UT_sint32 bottom = box.top + box.height - pG->tlu(1);
-	
-	GR_Painter painter(pG);
-	
-	pG->setLineProperties(pG->tluD(1.0),
-								 GR_Graphics::JOIN_MITER,
-								 GR_Graphics::CAP_PROJECTING,
-								 GR_Graphics::LINE_SOLID);	
-	
-	// draw some really fancy box here
-	pG->setColor(UT_RGBColor(98,129,131));
-	painter.drawLine(left, top, right, top);
-	painter.drawLine(left, top, left, bottom);
-	pG->setColor(UT_RGBColor(230,234,238));
-	painter.drawLine(box.left+pG->tlu(1), box.top + pG->tlu(1), right - pG->tlu(1), top+pG->tlu(1));
-	painter.drawLine(box.left+pG->tlu(1), box.top + pG->tlu(1), left + pG->tlu(1), bottom - pG->tlu(1));
-	pG->setColor(UT_RGBColor(98,129,131));
-	painter.drawLine(right - pG->tlu(1), top + pG->tlu(1), right - pG->tlu(1), bottom - pG->tlu(1));
-	painter.drawLine(left + pG->tlu(1), bottom - pG->tlu(1), right - pG->tlu(1), bottom - pG->tlu(1));
-	pG->setColor(UT_RGBColor(49,85,82));
-	painter.drawLine(right, top, right, bottom);
-	painter.drawLine(left, bottom, right, bottom);
-	painter.fillRect(UT_RGBColor(156,178,180),box.left + pG->tlu(2), box.top + pG->tlu(2), box.width - pG->tlu(4), box.height - pG->tlu(4));
-}
-
 void fp_ImageRun::_draw(dg_DrawArgs* pDA)
 {
 	GR_Graphics *pG = pDA->pG;
@@ -3615,24 +3584,14 @@ void fp_ImageRun::_draw(dg_DrawArgs* pDA)
 				(iSel1 <= iRunBase)
 				&& (iSel2 > iRunBase)
 				)
-			{
+			{				
 				UT_uint32 top = yoff;
 				UT_uint32 left = xoff;
 				UT_uint32 right = xoff + getWidth() - pG->tlu(1);
 				UT_uint32 bottom = yoff + getHeight() - pG->tlu(1);
 
-				UT_sint32 boxSize = pView->getImageSelInfo();
-			
-				// now, draw the resize boxes around the image
-	
-				_drawResizeBox(UT_Rect(left, top, boxSize, boxSize));
-				_drawResizeBox(UT_Rect(left + (right - left)/2 - boxSize/2, top, boxSize, boxSize)); 				// North
-				_drawResizeBox(UT_Rect(right-boxSize+pG->tlu(1), top, boxSize, boxSize)); 									// North East
-				_drawResizeBox(UT_Rect(right-boxSize+pG->tlu(1), top + ((bottom - top) / 2) - boxSize/2, boxSize, boxSize)); // East
-				_drawResizeBox(UT_Rect(right-boxSize+pG->tlu(1), bottom - boxSize + pG->tlu(1), boxSize, boxSize)); 					// South East
-				_drawResizeBox(UT_Rect(left + (right - left)/2 - boxSize/2, bottom - boxSize + pG->tlu(1), boxSize, boxSize));// South
-				_drawResizeBox(UT_Rect(left, bottom - boxSize + pG->tlu(1), boxSize, boxSize)); 								// South West
-				_drawResizeBox(UT_Rect(left, top + ((bottom - top) / 2) - boxSize/2, boxSize, boxSize)); 			// West
+				UT_Rect box(left, top, right - left, bottom - top);
+				pView->drawSelectionBox(box, true);
 			}
 		}
 

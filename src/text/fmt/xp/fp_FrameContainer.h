@@ -103,7 +103,6 @@ private:
 									  UT_sint32 left, UT_sint32 top, 
 									  UT_sint32 right, UT_sint32 bot,
 									  GR_Graphics * pGr);
-	void                   _drawHandleBox(UT_Rect box); 
 	fp_Page * m_pPage;
 	UT_sint32 m_iXpad;
 	UT_sint32 m_iYpad;

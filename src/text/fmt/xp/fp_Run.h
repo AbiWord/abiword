@@ -781,7 +781,6 @@ protected:
 											  GR_Graphics * pG = NULL);
 
 	virtual void			_draw(dg_DrawArgs*);
-	virtual void			_drawResizeBox(UT_Rect box);
 	virtual void			_clearScreen(bool bFullLineHeightRect);
 	virtual bool			_letPointPass(void) const;
 

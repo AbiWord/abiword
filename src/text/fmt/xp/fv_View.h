@@ -174,7 +174,11 @@ public:
 	void			cmdHyperlinkCopyLocation(PT_DocPosition pos);
 
 	virtual void	draw(const UT_Rect* pRect=static_cast<UT_Rect*>(NULL));
-
+	virtual void 	drawSelectionBox(UT_Rect & box, bool drawHandles);
+private: 
+	inline void 	_drawResizeHandle(UT_Rect & box);
+	
+public:
 	const PP_AttrProp * getAttrPropForPoint();
 
 	virtual bool	notifyListeners(const AV_ChangeMask hint);
@@ -375,8 +379,6 @@ public:
 	void            dragVisualText(UT_sint32 x, UT_sint32 y);
 	void            pasteVisualText(UT_sint32 x, UT_sint32 y);
 	void            btn0VisualDrag(UT_sint32 x, UT_sint32 y);
-	FV_VisualDragText * getVisualText(void)
-	  { return &m_VisualDragText;}
 
 //---------
 //Visual Inline Image Drag stuff
