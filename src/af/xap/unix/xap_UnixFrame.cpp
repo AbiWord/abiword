@@ -122,11 +122,16 @@ gint XAP_UnixFrame::_fe::key_press_event(GtkWidget* w, GdkEventKey* e)
 	// HACK : What we do is let ONLY Alt-modified keys through to GTK.
 
 	// If a modifier is down, return to let GTK catch
+
+	// don't let GTK handle keys when mod2 (numlock) or mod5 (scroll lock) are down
+
+	// What's "LOCK_MASK"?  I can't seem to trigger it with caps lock, scroll lock, or
+	// num lock.
+//		(e->state & GDK_LOCK_MASK))		// catch all keys with "num lock" down for now
+	
 	if ((e->state & GDK_MOD1_MASK) ||
-		(e->state & GDK_MOD2_MASK) ||
 		(e->state & GDK_MOD3_MASK) ||
-		(e->state & GDK_MOD4_MASK) ||
-		(e->state & GDK_MOD5_MASK))
+		(e->state & GDK_MOD4_MASK))
 	{
 		return 0;
 	}
