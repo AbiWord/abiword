@@ -29,7 +29,6 @@
 
 #include "xap_Strings.h"
 #include "xap_Dialog_Id.h"
-#include "xap_Dlg_Encoding.h"
 #include "xap_Win32Dlg_Encoding.h"
 
 #include "xap_Win32Resources.rc2"
@@ -56,50 +55,19 @@ XAP_Win32Dialog_Encoding::~XAP_Win32Dialog_Encoding(void)
 void XAP_Win32Dialog_Encoding::runModal(XAP_Frame * pFrame)
 {
 	UT_ASSERT(pFrame);
-	XAP_Win32App * pWin32App = static_cast<XAP_Win32App *>(m_pApp);
-	
-	LPCTSTR lpTemplate = NULL;
-
 	UT_ASSERT(m_id == XAP_DIALOG_ID_ENCODING);
 
-	lpTemplate = MAKEINTRESOURCE(XAP_RID_DIALOG_ENCODING);
-
-	int result = DialogBoxParam(pWin32App->getInstance(),
-						lpTemplate,
-						static_cast<XAP_Win32FrameImpl*>(pFrame->getFrameImpl())->getTopLevelWindow(),
-						(DLGPROC)s_dlgProc,
-						(LPARAM)this );
-	UT_ASSERT((result != -1));
+	setDialog(this);
+	createModal(pFrame, MAKEINTRESOURCE(XAP_RID_DIALOG_ENCODING));
 }
 
-BOOL CALLBACK XAP_Win32Dialog_Encoding::s_dlgProc(HWND hWnd,UINT msg,WPARAM wParam,LPARAM lParam)
-{
-	// This is a static function.
-	XAP_Win32Dialog_Encoding * pThis;
-	
-	switch (msg)
-	{
-	case WM_INITDIALOG:
-		pThis = (XAP_Win32Dialog_Encoding *)lParam;
-		SetWindowLong(hWnd,DWL_USER,lParam);
-		return pThis->_onInitDialog(hWnd,wParam,lParam);
-		
-	case WM_COMMAND:
-		pThis = (XAP_Win32Dialog_Encoding *)GetWindowLong(hWnd,DWL_USER);
-		return pThis->_onCommand(hWnd,wParam,lParam);
-		
-	default:
-		return 0;
-	}
-}
-
-#define _DS(c,s)	SetDlgItemText(hWnd,XAP_RID_DIALOG_##c,pSS->getValue(XAP_STRING_ID_##s))
+#define _DS(c,s)	setControlText(XAP_RID_DIALOG_##c,pSS->getValue(XAP_STRING_ID_##s))
 
 BOOL XAP_Win32Dialog_Encoding::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam)
 {
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
 	
-	SetWindowText(hWnd, pSS->getValue(XAP_STRING_ID_DLG_UENC_EncTitle));
+	setDialogTitle(pSS->getValue(XAP_STRING_ID_DLG_UENC_EncTitle));
 
 	// localize controls
 	_DS(ENCODING_BTN_OK,			DLG_OK);
@@ -108,20 +76,20 @@ BOOL XAP_Win32Dialog_Encoding::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lP
 	
 	// Load Initial Data into Listbox
 	{
-		HWND hwndList = GetDlgItem(hWnd, XAP_RID_DIALOG_ENCODING_LBX_ENCODING);  
+		resetContent(XAP_RID_DIALOG_ENCODING_LBX_ENCODING);
 
 		// load each string name into the list
 		for ( UT_uint32 i=0; i < _getEncodingsCount();  i++ )
 		{
 			const XML_Char* s = _getAllEncodings()[i];
-
-            SendMessage(hwndList, LB_ADDSTRING, 0, (LPARAM) s); 
-            SendMessage(hwndList, LB_SETITEMDATA, i, (LPARAM) i);  
+			addItemToList(XAP_RID_DIALOG_ENCODING_LBX_ENCODING, (LPCSTR) s);
+			setListDataItem(XAP_RID_DIALOG_ENCODING_LBX_ENCODING, i, (DWORD) i);
         }
+
 		// Set to default or guessed encoding
-		SendMessage(hwndList, LB_SETCURSEL, _getSelectionIndex(), 0);
+		selectListItem(XAP_RID_DIALOG_ENCODING_LBX_ENCODING, _getSelectionIndex());
 		
-		SetFocus(hwndList);
+		SetFocus(GetDlgItem(hWnd, XAP_RID_DIALOG_ENCODING_LBX_ENCODING));
 	}		
 	
 	return 0;							// 1 == we did not call SetFocus()
@@ -145,7 +113,7 @@ BOOL XAP_Win32Dialog_Encoding::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lPara
 				return 0;
 
 			case LBN_DBLCLK:
-				nItem = SendMessage(hWndCtrl, LB_GETCURSEL, 0, 0);
+				nItem = getListSelectedIndex(wId);
 				_setEncoding( _getAllEncodings()[nItem] );
 				_setAnswer(a_OK);
 				EndDialog(hWnd,0);
@@ -162,8 +130,7 @@ BOOL XAP_Win32Dialog_Encoding::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lPara
 		return 1;
 
 	case IDOK:							// also XAP_RID_DIALOG_ENCODING_BTN_OK
-		hWndList = GetDlgItem(hWnd, XAP_RID_DIALOG_ENCODING_LBX_ENCODING);
-		nItem = SendMessage(hWndList, LB_GETCURSEL, 0, 0);
+		nItem = getListSelectedIndex(XAP_RID_DIALOG_ENCODING_LBX_ENCODING);
 		if( nItem != LB_ERR)
 		{
 			_setEncoding( _getAllEncodings()[nItem] );
@@ -180,4 +147,12 @@ BOOL XAP_Win32Dialog_Encoding::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lPara
 		UT_DEBUGMSG(("WM_Command for id %ld\n",wId));
 		return 0;						// return zero to let windows take care of it.
 	}
+}
+
+BOOL XAP_Win32Dialog_Encoding::_onDeltaPos(NM_UPDOWN * pnmud)
+{
+	// respond to WM_NOTIFY/UDN_DELTAPOS message
+	// return TRUE to prevent the change from happening
+	// return FALSE to allow it to occur
+	return FALSE;
 }

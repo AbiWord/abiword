@@ -172,7 +172,7 @@ BOOL XAP_Win32Dialog_Zoom::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
 	WORD wNotifyCode = HIWORD(wParam);
 	WORD wId = LOWORD(wParam);
 	HWND hWndCtrl = (HWND)lParam;
-	UT_sint32 n, newValue;
+	UT_sint32 newValue;
 
 	m_bEditPctEnabled = (isChecked(XAP_RID_DIALOG_ZOOM_RADIO_PCT)==BST_CHECKED);
 	enableControl(XAP_RID_DIALOG_ZOOM_EDIT_PCT,m_bEditPctEnabled);

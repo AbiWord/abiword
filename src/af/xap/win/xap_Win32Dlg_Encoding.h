@@ -21,11 +21,13 @@
 #define XAP_WIN32DIALOG_ENCODING_H
 
 #include "xap_Dlg_Encoding.h"
-#include "xap_Frame.h"
+#include "xap_Win32DialogBase.h"
+
+class XAP_Frame;
 
 /*****************************************************************/
 
-class XAP_Win32Dialog_Encoding: public XAP_Dialog_Encoding
+class XAP_Win32Dialog_Encoding: public XAP_Win32DialogBase, public XAP_Dialog_Encoding
 {
 public:
 	XAP_Win32Dialog_Encoding(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
@@ -35,10 +37,10 @@ public:
 
 	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
 	
-	static BOOL CALLBACK	s_dlgProc(HWND,UINT,WPARAM,LPARAM);
 protected:
-	BOOL					_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam);
-	BOOL					_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam);
+	BOOL _onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam);
+	BOOL _onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam);
+	BOOL _onDeltaPos(NM_UPDOWN * pnmud);
 };
 
 #endif /* XAP_WIN32DIALOG_ENCODING_H */
