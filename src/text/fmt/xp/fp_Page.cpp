@@ -392,7 +392,15 @@ fp_Container * fp_Page::updatePageForWrapping(fp_Column *& pNextCol)
 	}
 	UT_VECTOR_PURGEALL(_BL *, vecBL);
 	pNextCol = getNthColumnLeader(0);
-	fp_Container * pNewFirstCon = pFirstBL->getFirstContainer();
+	fp_Container * pNewFirstCon = NULL;
+	if(pFirstBL)
+	{
+		pNewFirstCon = pFirstBL->getFirstContainer();
+	}
+	else
+	{
+		return pFirst;
+	}
 	while(pNewFirstCon && pNewFirstCon->getPage() != NULL && pNewFirstCon->getPage() != this)
 	{
 		pNewFirstCon = static_cast<fp_Container *>(pNewFirstCon->getNext());

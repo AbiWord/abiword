@@ -337,6 +337,7 @@ void fp_CellContainer::_getBrokenRect(fp_TableContainer * pBroke, fp_Page * &pPa
 	}
 	UT_sint32 offx = 0;
 	UT_sint32 offy = 0;
+	bool bFrame = false;
 	if(pBroke)
 	{
 		pPage = pBroke->getPage();
@@ -347,8 +348,12 @@ void fp_CellContainer::_getBrokenRect(fp_TableContainer * pBroke, fp_Page * &pPa
 				fp_FrameContainer * pFC = static_cast<fp_FrameContainer *>(pBroke->getContainer())
 ;
 				getView()->getPageScreenOffsets(pPage,col_x,col_y);
+				//
+				// Use col_x, col_y later.
+				//
 				offx = pFC->getX();
 				offy = pFC->getY();
+				bFrame = true;
 			}
 			else
 			{
@@ -359,7 +364,14 @@ void fp_CellContainer::_getBrokenRect(fp_TableContainer * pBroke, fp_Page * &pPa
 			{
 				if(pBroke->getMasterTable()->getFirstBrokenTable() == pBroke)
 				{
-					offy = pBroke->getMasterTable()->getY();
+					if(!bFrame)
+					{
+						offy = pBroke->getMasterTable()->getY();
+					}
+					else
+					{
+						offy += pBroke->getMasterTable()->getY();
+					}
 					if(iBot > pBroke->getYBottom())
 					{
 						iBot = pBroke->getYBottom();
@@ -503,11 +515,8 @@ void fp_CellContainer::_getBrokenRect(fp_TableContainer * pBroke, fp_Page * &pPa
 			{
 				UT_sint32 iTmpX,iTmpY;
 				pPage->getScreenOffsets(pCol,iTmpX,iTmpY);
-				col_x -= iTmpX;
-				col_y -= iTmpY;
-				getView()->getPageScreenOffsets(pPage,iTmpX,iTmpY);
-				col_x += iTmpX;
-				col_y += iTmpY;
+				iLeft -= iTmpX;
+				iTop -= iTmpY;
 			}
 		}
 	}
