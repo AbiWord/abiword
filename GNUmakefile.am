@@ -20,8 +20,8 @@ libiconv:
 	$(MAKE) -C $(libiconv_peerdir)
 popt:
 	$(MAKE) -C $(libpopt_peerdir)
-# libpng:
-# 	$(MAKE) -C $(libpng_peerdir)
+libpng:
+	$(MAKE) -C $(libpng_peerdir)
 
 # Hack: don't allow distclean; it will delete Makefile, which is not what
 # we want at all.

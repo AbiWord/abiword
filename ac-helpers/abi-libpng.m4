@@ -71,11 +71,11 @@ LIBPNG_PEERDIR="`cd ..; pwd`/libpng"
 if test $abi_png = peer; then
 	AC_MSG_CHECKING(for libpng in peer directory)
 	if test -d ../libpng; then
-		if test -r ../libpng/libpng.a; then
+		if test -r ../libpng/pngconf.h; then
 			AC_MSG_RESULT(yes)
 		else
 			AC_MSG_RESULT(no)
-			AC_MSG_ERROR([unable to use peer libpng - libpng/libpng.a not found])
+			AC_MSG_ERROR([unable to use peer libpng - libpng/pngconf.h not found])
 		fi
 	else
 		AC_MSG_RESULT(no)
@@ -86,8 +86,8 @@ if test $abi_png = peer; then
 	LIBPNG_CFLAGS='-I$(top_srcdir)/../libpng'
 	LIBPNG_LIBS='$(top_srcdir)/../libpng/libpng.a'
 
-dnl	PEERDIRS="${PEERDIRS} ${LIBPNG_PEERDIR}"
-dnl	PEERS="${PEERS} libpng"
+	PEERDIRS="${PEERDIRS} ${LIBPNG_PEERDIR}"
+	PEERS="${PEERS} libpng"
 
 	dnl abi_wv_cppflags is add to CPPFLAGS for configuring wv
 	dnl 
