@@ -556,6 +556,11 @@ void fp_Run::setBlockOffset(UT_uint32 offset)
 void fp_Run::clearScreen(bool bFullLineHeightRect)
 {
 
+	if(!m_pG->queryProperties(GR_Graphics::DGP_SCREEN))
+	{
+		return;
+	}
+	
 	if (m_bDirty)
 	{
 		// no need to clear if we've already done so.
@@ -568,8 +573,6 @@ void fp_Run::clearScreen(bool bFullLineHeightRect)
 		return;
 	}
 	
-	UT_ASSERT(m_pG->queryProperties(GR_Graphics::DGP_SCREEN));
-
 	_clearScreen(bFullLineHeightRect);
 	
 	// make sure we only get erased once

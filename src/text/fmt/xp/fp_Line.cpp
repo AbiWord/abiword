@@ -590,6 +590,11 @@ void fp_Line::clearScreen(void)
 		bool bNeedsClearing = false;
 
 		UT_uint32 i;
+		
+		pRun = (fp_Run*) m_vecRuns.getNthItem(0);
+		if(!pRun->getGraphics()->queryProperties(GR_Graphics::DGP_SCREEN))
+			return;
+			
 		for (i = 0; i < count; i++)
 		{
 			pRun = (fp_Run*) m_vecRuns.getNthItem(i);
@@ -637,6 +642,10 @@ void fp_Line::clearScreenFromRunToEnd(fp_Run * ppRun)
 	UT_uint32 count =  m_vecRuns.getItemCount();
 	if(count > 0)
 	{
+		pRun = (fp_Run*) m_vecRuns.getNthItem(0);
+		if(!pRun->getGraphics()->queryProperties(GR_Graphics::DGP_SCREEN))
+			return;
+
 		UT_sint32 k = m_vecRuns.findItem((void *) ppRun);
 		if(k>=0)
 		{
@@ -715,6 +724,10 @@ void fp_Line::clearScreenFromRunToEnd(UT_uint32 runIndex)
 	fp_Run* pRun; //#TF initialization not needed
 	UT_uint32 count = m_vecRuns.getItemCount();
 
+	pRun = (fp_Run*) m_vecRuns.getNthItem(0);
+	if(count && !pRun->getGraphics()->queryProperties(GR_Graphics::DGP_SCREEN))
+		return;
+	
 	// Find the first none dirty run.
 
 	UT_uint32 i;
