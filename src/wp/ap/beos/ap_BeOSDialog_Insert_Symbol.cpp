@@ -17,7 +17,6 @@
  * 02111-1307, USA.
  */
 
-#include <windows.h>
 
 #include "ut_string.h"
 #include "ut_assert.h"
@@ -32,7 +31,6 @@
 #include "ap_Dialog_Insert_Symbol.h"
 #include "ap_BeOSDialog_Insert_Symbol.h"
 
-#include "xap_BeOSResources.rc2"
 
 /*****************************************************************/
 
@@ -76,7 +74,7 @@ static void s_Symbolarea_exposed(GtkWidget * widget,...
 static void s_SymbolMap_clicked(GtkWidget * widget,...
 static void s_new_font(GtkWidget * widget,...
 static gboolean s_keypressed(GtkWidget * widget,...
-static void s_delete_clicked(GtkWidget * /* widget */,...
+static void s_delete_clicked(GtkWidget * widget,...
 
 I hope their use is obvious from there names. 
 Your platform may need these too.I know nothing but gtk/gnome though.
