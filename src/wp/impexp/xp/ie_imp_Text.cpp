@@ -132,6 +132,8 @@ IEStatus IE_Imp_Text::_parseFile(FILE * fp)
 			// deal with plain character.
 			// this cast is OK.  we have US-ASCII (actually Latin-1) character
 			// data, so we can do this.
+
+			// TODO consider scanning for UTF8...
 			
 			UT_UCSChar uc = (UT_UCSChar) c;
 			X_ReturnNoMemIfError(gbBlock.ins(gbBlock.getLength(),&uc,1));

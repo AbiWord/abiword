@@ -244,9 +244,6 @@ void s_AbiWord_1_Listener::_outputData(const UT_UCSChar * data, UT_uint32 length
 			pBuf = buf;
 		}
 
-		// TODO deal with unicode.  for now we assume latin-1.
-
-		UT_ASSERT(*pData < 256);
 		switch (*pData)
 		{
 		case '<':
@@ -306,14 +303,28 @@ void s_AbiWord_1_Listener::_outputData(const UT_UCSChar * data, UT_uint32 length
 		default:
 			if (*pData > 0x007f)
 			{
+#if 1
 				// convert non us-ascii into numeric entities.
-				// we could convert them into UTF-8 multi-byte
-				// sequences, but i prefer these.
+				// this has the advantage that our file format is
+				// 7bit clean and safe for email and other network
+				// transfers....
 				char localBuf[20];
 				char * plocal = localBuf;
 				sprintf(localBuf,"&#x%x;",*pData++);
 				while (*plocal)
 					*pBuf++ = (UT_Byte)*plocal++;
+#else
+				// convert to UTF8
+				// TODO if we choose this, do we have to put the ISO header in
+				// TODO like we did for the strings files.... i hesitate to
+				// TODO make such a change to our file format.
+				XML_Char * pszUTF8 = UT_encodeUTF8char(*pData);
+				while (*pszUTF8)
+				{
+					*pBuf++ = (UT_Byte)*pszUTF8;
+					pszUTF8++;
+				}
+#endif
 			}
 			else
 			{

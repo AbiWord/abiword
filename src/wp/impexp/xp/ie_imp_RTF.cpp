@@ -153,6 +153,8 @@ RTFStateStore::RTFStateStore()
 {
 	m_destinationState = rdsNorm;
 	m_internalState = risNorm;
+	m_unicodeAlternateSkipCount = 1;
+	m_unicodeInAlternate = 0;
 }
 
 
@@ -468,6 +470,8 @@ UT_Bool IE_Imp_RTF::PopRTFState(void)
 		m_currentRTFState = *pState;
 		delete pState;
 
+		m_currentRTFState.m_unicodeInAlternate = 0;
+		
 		return ok;
 	}
 	else
@@ -494,6 +498,11 @@ UT_Bool IE_Imp_RTF::ParseChar(UT_UCSChar ch)
 			// Toss this character.
 			return UT_TRUE;
 		case RTFStateStore::rdsNorm:
+			if (m_currentRTFState.m_unicodeInAlternate > 0)
+			{
+				m_currentRTFState.m_unicodeInAlternate--;
+				return UT_TRUE;
+			}
 			// Insert a character into the story
 			if ((ch >= 32  ||  ch == 9)  &&  !m_currentRTFState.m_charProps.m_deleted)
 			{
@@ -852,10 +861,10 @@ UT_Bool IE_Imp_RTF::TranslateKeyword(unsigned char* pKeyword, long param, UT_Boo
 		break;
 
 	case 'u':
-		if (strcmp((char*)pKeyword, "ul") == 0  ||  strcmp((char*)pKeyword, "uld") == 0  ||
-			strcmp((char*)pKeyword, "uldash") == 0  ||  strcmp((char*)pKeyword, "uldashd") == 0  ||
+		if (strcmp((char*)pKeyword, "ul") == 0        ||  strcmp((char*)pKeyword, "uld") == 0  ||
+			strcmp((char*)pKeyword, "uldash") == 0    ||  strcmp((char*)pKeyword, "uldashd") == 0  ||
 			strcmp((char*)pKeyword, "uldashdd") == 0  ||  strcmp((char*)pKeyword, "uldb") == 0  ||
-			strcmp((char*)pKeyword, "ulth") == 0  ||  strcmp((char*)pKeyword, "ulw") == 0  ||
+			strcmp((char*)pKeyword, "ulth") == 0      ||  strcmp((char*)pKeyword, "ulw") == 0  ||
 			strcmp((char*)pKeyword, "ulwave") == 0)
 		{
 			return HandleUnderline(fParam ? param : 1);
@@ -863,6 +872,32 @@ UT_Bool IE_Imp_RTF::TranslateKeyword(unsigned char* pKeyword, long param, UT_Boo
 		else if (strcmp((char*)pKeyword, "ulnone") == 0)
 		{
 			return HandleUnderline(0);
+		}
+		else if (strcmp((char*)pKeyword,"uc") == 0)
+		{
+			// "\uc<n>" defines the number of chars immediately following
+			// any "\u<u>" unicode character that are needed to represent
+			// a reasonable approximation for the unicode character.
+			// generally, this is done by stripping off accents from latin-n
+			// characters so that they fold into latin1.
+			//
+			// the spec says that we need to allow any arbitrary length
+			// of chars for this and that we need to maintain a stack of
+			// these lengths (as content is nested within {} groups) so
+			// that different 'destinations' can have different approximations
+			// or have a local diversion for a hard-to-represent character
+			// or something like that.
+			//
+			// this is bullshit (IMHO) -- jeff
+			
+			m_currentRTFState.m_unicodeAlternateSkipCount = param;
+			m_currentRTFState.m_unicodeInAlternate = 0;
+		}
+		else if (strcmp((char*)pKeyword,"u") == 0)
+		{
+			UT_Bool bResult = ParseChar((UT_UCSChar)param);
+			m_currentRTFState.m_unicodeInAlternate = m_currentRTFState.m_unicodeAlternateSkipCount;
+			return bResult;
 		}
 		break;
 

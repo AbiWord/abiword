@@ -137,6 +137,9 @@ public:
 	RTFProps_CharProps		m_charProps;			// Character properties
 	RTFProps_ParaProps		m_paraProps;			// Paragraph properties
 	RTFProps_SectionProps	m_sectionProps;			// Section properties
+
+	UT_uint32				m_unicodeAlternateSkipCount;	// value of N in "\ucN"
+	UT_uint32				m_unicodeInAlternate;			// chars left in alternate "\u<u><A>"
 };
 
 

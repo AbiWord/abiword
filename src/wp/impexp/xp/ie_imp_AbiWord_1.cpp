@@ -669,4 +669,5 @@ const XML_Char * IE_Imp_AbiWord_1::_getDataItemName(const XML_Char ** atts)
 void IE_Imp_AbiWord_1::pasteFromBuffer(PD_DocumentRange * pDocRange,
 									   unsigned char * pData, UT_uint32 lenData)
 {
+	UT_ASSERT(UT_NOT_IMPLEMENTED);
 }

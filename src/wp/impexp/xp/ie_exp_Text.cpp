@@ -156,9 +156,6 @@ void s_Text_Listener::_closeBlock(void)
 
 void s_Text_Listener::_outputData(const UT_UCSChar * data, UT_uint32 length)
 {
-	// TODO deal with unicode.
-	// TODO for now, just squish it into ascii.
-	
 #define MY_BUFFER_SIZE		1024
 #define MY_HIGHWATER_MARK	20
 	char buf[MY_BUFFER_SIZE];
@@ -173,13 +170,30 @@ void s_Text_Listener::_outputData(const UT_UCSChar * data, UT_uint32 length)
 			pBuf = buf;
 		}
 
-		UT_ASSERT(*pData < 256);
-		// We let any UCS_LF's (forced line breaks) go out as is.
+		if (*pData > 0x00ff)
+		{
+			// TODO how should we deal with non-Latin-1 chars ?
+			// TODO some other applications try to map it to
+			// TODO some latin char that approximates it.  for
+			// TODO example, strip off the accent marks; for
+			// TODO other chars, replace with a slug character.
+			// TODO anything i do here is bound to be wrong,
+			// TODO so i'm going to do something stupid and
+			// TODO easy.  i'll defer to the judgement of folks
+			// TODO in europe or asia -- jeff
+
+			*pBuf++ = '?';
+			pData++;
+		}
+		else
+		{
+			// We let any UCS_LF's (forced line breaks) go out as is.
 #ifdef WIN32
-		if (m_bToClipboard && *pData==UCS_LF)
-			*pBuf++ = '\r';
+			if (m_bToClipboard && *pData==UCS_LF)
+				*pBuf++ = '\r';
 #endif
-		*pBuf++ = (UT_Byte)*pData++;
+			*pBuf++ = (UT_Byte)*pData++;
+		}
 	}
 
 	if (pBuf > buf)
