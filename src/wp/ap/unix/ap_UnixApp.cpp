@@ -1422,6 +1422,10 @@ bool AP_UnixApp::doWindowlessArgs(const AP_Args *Args)
 		if ((Args->m_sFile = poptGetArg (Args->poptcon)) != NULL)
 	    {
 			AP_Convert conv ;
+
+			if (Args->m_sMerge)
+				conv.setMergeSource (Args->m_sMerge);
+
 			PS_GraphicsFactory printFactory (Args->m_sPrintTo);
 
 			conv.setVerbose(Args->m_iVerbose);

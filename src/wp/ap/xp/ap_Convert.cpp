@@ -49,7 +49,7 @@
 //////////////////////////////////////////////////////////////////
 
 AP_Convert::AP_Convert(int inVerbose)
-	: m_iVerbose(inVerbose), m_mergeSource(0)
+	: m_iVerbose(inVerbose)
 {
 }
 
@@ -345,34 +345,41 @@ static void handleMerge(const char * szMailMergeFile,
 
 void AP_Convert::print(const char * szFile, GR_GraphicsFactory & pFactory)
 {
-	GR_Graphics *pGraphics;
-
 	// get the current document
 	PD_Document *pDoc = new PD_Document(XAP_App::getApp());
 	pDoc->readFromFile(szFile, IEFT_Unknown);
-	
-	pGraphics = pFactory.getGraphics ();
 
-	// create a new layout and view object for the doc
-	FL_DocLayout *pDocLayout = new FL_DocLayout(pDoc,pGraphics);
-	FV_View printView(XAP_App::getApp(),0,pDocLayout);
-	pDocLayout->setView (&printView);
-	pDocLayout->fillLayouts();
-	pDocLayout->formatAll();
-
+	if (m_mergeSource.size()){
+		IE_MailMerge::IE_MailMerge_Listener * listener = new Print_MailMerge_Listener(pDoc, pFactory, szFile);
+		
+		handleMerge (m_mergeSource.utf8_str(), *listener);
+		DELETEP(listener);
+	} else {
+							 
+		GR_Graphics *pGraphics = pFactory.getGraphics ();
+		
+		// create a new layout and view object for the doc
+		FL_DocLayout *pDocLayout = new FL_DocLayout(pDoc,pGraphics);
+		FV_View printView(XAP_App::getApp(),0,pDocLayout);
+		pDocLayout->setView (&printView);
+		pDocLayout->fillLayouts();
+		pDocLayout->formatAll();
+		
 #ifdef XP_UNIX_TARGET_GTK
-	PS_Graphics *psGr = static_cast<PS_Graphics*>(pGraphics);
-	psGr->setColorSpace(GR_Graphics::GR_COLORSPACE_COLOR);
-	psGr->setPageSize(printView.getPageSize().getPredefinedName());
+		PS_Graphics *psGr = static_cast<PS_Graphics*>(pGraphics);
+		psGr->setColorSpace(GR_Graphics::GR_COLORSPACE_COLOR);
+		psGr->setPageSize(printView.getPageSize().getPredefinedName());
 #endif
-	
-	s_actuallyPrint (pDoc, pGraphics, 
-					 &printView, szFile, 
-					 1, true, 
-					 pDocLayout->getWidth(), pDocLayout->getHeight() / pDocLayout->countPages(), 
-					 1, pDocLayout->countPages());
-	
-	DELETEP(pDocLayout);
+		
+		s_actuallyPrint (pDoc, pGraphics, 
+						 &printView, szFile, 
+						 1, true, 
+						 pDocLayout->getWidth(), pDocLayout->getHeight() / pDocLayout->countPages(), 
+						 1, pDocLayout->countPages());
+		
+		DELETEP(pDocLayout);
+		DELETEP(pGraphics);
+	}
+
 	UNREFP(pDoc);
-	DELETEP(pGraphics);
 }

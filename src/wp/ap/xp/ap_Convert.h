@@ -22,6 +22,7 @@
 
 #include "ie_types.h"
 #include "pd_Document.h"
+#include "ut_string_class.h"
 
 //////////////////////////////////////////////////////////////////
 
@@ -50,7 +51,7 @@ class ABI_EXPORT AP_Convert
 
  private:
 	int m_iVerbose;
-	const char * m_mergeSource;
+	UT_UTF8String m_mergeSource;
 };
 
 #endif /* AP_CONVERT_H */

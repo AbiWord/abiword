@@ -182,6 +182,7 @@ private:
 	PS_GraphicsFactory& operator=(const PS_GraphicsFactory & other);
 
 	UT_String m_command;
+	UT_uint32 m_mergeCount;
 };
 
 #endif /* XAP_UNIXPSGRAPHICS_H */
