@@ -99,7 +99,7 @@ class fp_Run
 	void 					calcWidths(UT_GrowBuf * pgbCharWidths);
 	void            		expandWidthTo(UT_uint32);
 
-	void					mapXYToPosition(UT_sint32 xPos, UT_sint32 yPos, PT_DocPosition& pos, UT_Bool& bEOL);
+	void					mapXYToPosition(UT_sint32 xPos, UT_sint32 yPos, PT_DocPosition& pos, UT_Bool& bBOL, UT_Bool& bEOL);
 	void					getOffsets(UT_uint32& xoff, UT_uint32& yoff);
 	UT_uint32 				containsOffset(UT_uint32 iOffset);
 	void 					findPointCoords(UT_uint32 iOffset, UT_uint32& x, UT_uint32& y, UT_uint32& height);

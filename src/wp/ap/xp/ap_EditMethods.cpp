@@ -95,6 +95,11 @@ public:
 	static EV_EditMethod_Fn extSelPageUp;
 	static EV_EditMethod_Fn selectAll;
 	static EV_EditMethod_Fn selectWord;
+	static EV_EditMethod_Fn selectLine;
+	static EV_EditMethod_Fn selectBlock;
+	
+	static EV_EditMethod_Fn singleClick;
+	static EV_EditMethod_Fn doubleClick;
 	
 	static EV_EditMethod_Fn delLeft;
 	static EV_EditMethod_Fn delRight;
@@ -113,6 +118,9 @@ public:
 	static EV_EditMethod_Fn insertTab;
 	static EV_EditMethod_Fn insertSoftBreak;
 	static EV_EditMethod_Fn insertParagraphBreak;
+	static EV_EditMethod_Fn insertLineBreak;
+	static EV_EditMethod_Fn insertPageBreak;
+	static EV_EditMethod_Fn insertColumnBreak;
 	static EV_EditMethod_Fn insFmtBold;
 	static EV_EditMethod_Fn insFmtItalic;
 	static EV_EditMethod_Fn insFmtUline;
@@ -227,6 +235,11 @@ static EV_EditMethod s_arrayEditMethods[] =
 		EV_EditMethod(NF(extSelPageUp),			_M_,	""),
 		EV_EditMethod(NF(selectAll),			_M_,	""),
 		EV_EditMethod(NF(selectWord),			_M_,	""),
+		EV_EditMethod(NF(selectLine),			_M_,	""),
+		EV_EditMethod(NF(selectBlock),			_M_,	""),
+
+		EV_EditMethod(NF(singleClick),			_M_,	""),
+		EV_EditMethod(NF(doubleClick),			_M_,	""),
 
 		EV_EditMethod(NF(delLeft),				_M_,	""),
 		EV_EditMethod(NF(delRight),				_M_,	""),
@@ -245,6 +258,9 @@ static EV_EditMethod s_arrayEditMethods[] =
 		EV_EditMethod(NF(insertTab),			_M_,	""),
 		EV_EditMethod(NF(insertSoftBreak),		_M_,	""),
 		EV_EditMethod(NF(insertParagraphBreak),	_M_,	""),
+		EV_EditMethod(NF(insertLineBreak),		_M_,	""),
+		EV_EditMethod(NF(insertPageBreak),		_M_,	""),
+		EV_EditMethod(NF(insertColumnBreak),	_M_,	""),
 		EV_EditMethod(NF(insFmtBold),			_M_,	""),
 		EV_EditMethod(NF(insFmtItalic),			_M_,	""),
 		EV_EditMethod(NF(insFmtUline),			_M_,	""),
@@ -318,6 +334,7 @@ EV_EditMethodContainer * AP_GetEditMethods(void)
 
 #define F(fn)		ap_EditMethods::fn
 #define Defun(fn)	UT_Bool F(fn)(FV_View* pView, EV_EditMethodCallData * pCallData)
+#define EX(fn)		F(fn)(pView, pCallData)
 
 
 Defun(scrollPageDown)
@@ -390,6 +407,31 @@ Defun(scrollToBottom)
 	return UT_TRUE;
 }
 
+Defun(singleClick)
+{
+	UT_Bool bRes = UT_TRUE;
+
+	// NOTE: context-free binding mechanism ==> we need this extra layer
+	if (pView->isLeftMargin(pCallData->m_xPos, pCallData->m_yPos))
+		bRes = EX(selectLine);
+	else
+		bRes = EX(warpInsPtToXY);
+	
+	return bRes;
+}
+
+Defun(doubleClick)
+{
+	UT_Bool bRes = UT_TRUE;
+
+	// NOTE: context-free binding mechanism ==> we need this extra layer
+	if (pView->isLeftMargin(pCallData->m_xPos, pCallData->m_yPos))
+		bRes = EX(selectBlock);
+	else
+		bRes = EX(selectWord);
+	
+	return bRes;
+}
 
 Defun(warpInsPtToXY)
 {
@@ -583,13 +625,26 @@ Defun(extSelPageUp)
 
 Defun(selectAll)
 {
+	pView->moveInsPtTo(FV_DOCPOS_BOD);
+	pView->extSelTo(FV_DOCPOS_EOD);
 	return UT_TRUE;
 }
 
 Defun(selectWord)
 {
-	pView->cmdSelectWord(pCallData->m_xPos, pCallData->m_yPos);
-	
+	pView->cmdSelect(pCallData->m_xPos, pCallData->m_yPos, FV_DOCPOS_BOW, FV_DOCPOS_EOW);
+	return UT_TRUE;
+}
+
+Defun(selectLine)
+{
+	pView->cmdSelect(pCallData->m_xPos, pCallData->m_yPos, FV_DOCPOS_BOL, FV_DOCPOS_EOL);
+	return UT_TRUE;
+}
+
+Defun(selectBlock)
+{
+	pView->cmdSelect(pCallData->m_xPos, pCallData->m_yPos, FV_DOCPOS_BOB, FV_DOCPOS_EOB);
 	return UT_TRUE;
 }
 
@@ -673,6 +728,7 @@ Defun(insertTab)
 {
 	return UT_TRUE;
 }
+
 Defun(insertSoftBreak)
 {
 	return UT_TRUE;
@@ -682,6 +738,21 @@ Defun(insertParagraphBreak)
 {
 	pView->insertParagraphBreak();
 	
+	return UT_TRUE;
+}
+
+Defun(insertLineBreak)
+{
+	return UT_TRUE;
+}
+
+Defun(insertPageBreak)
+{
+	return UT_TRUE;
+}
+
+Defun(insertColumnBreak)
+{
 	return UT_TRUE;
 }
 

@@ -531,7 +531,7 @@ void fp_Run::expandWidthTo(UT_uint32 iNewWidth)
 #endif
 }
 
-void fp_Run::mapXYToPosition(UT_sint32 x, UT_sint32 y, PT_DocPosition& pos, UT_Bool& bEOL)
+void fp_Run::mapXYToPosition(UT_sint32 x, UT_sint32 y, PT_DocPosition& pos, UT_Bool& bBOL, UT_Bool& bEOL)
 {
 	const UT_GrowBuf * pgbCharWidths = m_pBL->getCharWidths();
 	const UT_uint16* pCharWidths = pgbCharWidths->getPointer(0);

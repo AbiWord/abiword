@@ -257,7 +257,37 @@ PT_DocPosition FV_View::_getDocPos(FV_DocPos dp, UT_Bool bKeepLooking)
 		break;
 
 	case FV_DOCPOS_BOB:
-		iPos = pBlock->getPosition(UT_TRUE);
+		{
+			// are we already there?
+			if (iPos == pBlock->getPosition())
+			{
+				// yep.  is there a prior block?
+				if (!pBlock->getPrev())
+					break;
+
+				// yep.  look there instead
+				pBlock = pBlock->getPrev();
+			}
+
+			iPos = pBlock->getPosition();
+		}
+		break;
+
+	case FV_DOCPOS_EOB:
+		{
+			if (pBlock->getNext())
+			{
+				// BOB for next block
+				pBlock = pBlock->getNext();
+				iPos = pBlock->getPosition();
+			}
+			else
+			{
+				// EOD
+				UT_Bool bRes = m_pDoc->getBounds(UT_TRUE, iPos);
+				UT_ASSERT(bRes);
+			}
+		}
 		break;
 
 	case FV_DOCPOS_BOW:
@@ -375,7 +405,6 @@ PT_DocPosition FV_View::_getDocPos(FV_DocPos dp, UT_Bool bKeepLooking)
 		}
 		break;
 
-	case FV_DOCPOS_EOB:		// TODO: just write it
 	case FV_DOCPOS_BOS: 
 	case FV_DOCPOS_EOS:
 		UT_ASSERT(UT_TODO);
@@ -740,8 +769,8 @@ void FV_View::extSelToXY(UT_sint32 xPos, UT_sint32 yPos)
 	UT_ASSERT(pPage);
 
 	PT_DocPosition iNewPoint;
-	UT_Bool bEOL;
-	pPage->mapXYToPosition(xPos + m_xScrollOffset, yClick, iNewPoint, bEOL);
+	UT_Bool bBOL, bEOL;
+	pPage->mapXYToPosition(xPos + m_xScrollOffset, yClick, iNewPoint, bBOL, bEOL);
 
 	_extSelToPos(iNewPoint);
 }
@@ -890,9 +919,9 @@ void FV_View::warpInsPtToXY(UT_sint32 xPos, UT_sint32 yPos)
 	}
 	
 	PT_DocPosition pos;
-	UT_Bool bEOL;
+	UT_Bool bBOL, bEOL;
 	
-	pPage->mapXYToPosition(xPos + m_xScrollOffset, yClick, pos, bEOL);
+	pPage->mapXYToPosition(xPos + m_xScrollOffset, yClick, pos, bBOL, bEOL);
 	
 	_setPoint(pos, bEOL);
 	_updateInsertionPoint();
@@ -1405,14 +1434,47 @@ void FV_View::sendScrollEvent(UT_sint32 xoff, UT_sint32 yoff)
 	}
 }
 
-void FV_View::cmdSelectWord(UT_sint32 xPos, UT_sint32 yPos)
+UT_Bool FV_View::isLeftMargin(UT_sint32 xPos, UT_sint32 yPos)
+{
+	/*
+	  Figure out which page we clicked on.
+	  Pass the click down to that page.
+	*/
+
+	UT_sint32 yClick = yPos + m_yScrollOffset;
+	fp_Page* pPage = m_pLayout->getFirstPage();
+	while (pPage)
+	{
+		UT_sint32 iPageHeight = pPage->getHeight();
+		if (yClick < iPageHeight)
+		{
+			// found it
+			break;
+		}
+		else
+		{
+			yClick -= iPageHeight;
+		}
+		pPage = pPage->getNext();
+	}
+
+	UT_ASSERT(pPage);
+
+	PT_DocPosition iNewPoint;
+	UT_Bool bBOL, bEOL;
+	pPage->mapXYToPosition(xPos + m_xScrollOffset, yClick, iNewPoint, bBOL, bEOL);
+
+	return bBOL;
+}
+
+void FV_View::cmdSelect(UT_sint32 xPos, UT_sint32 yPos, FV_DocPos dpBeg, FV_DocPos dpEnd)
 {
 	warpInsPtToXY(xPos, yPos);
 
 	_eraseInsertionPoint();
 
-	PT_DocPosition iPosLeft = _getDocPos(FV_DOCPOS_BOW, UT_FALSE);
-	PT_DocPosition iPosRight = _getDocPos(FV_DOCPOS_EOW, UT_FALSE);
+	PT_DocPosition iPosLeft = _getDocPos(dpBeg, UT_FALSE);
+	PT_DocPosition iPosRight = _getDocPos(dpEnd, UT_FALSE);
 
 	if (!_isSelectionEmpty())
 	{

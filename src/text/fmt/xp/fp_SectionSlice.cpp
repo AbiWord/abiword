@@ -75,7 +75,7 @@ void fp_SectionSlice::addColumn(fp_Column* pCol, UT_sint32 xoff, UT_sint32 yoff)
 	m_vecColumnInfos.addItem(pCI);
 }
 
-void fp_SectionSlice::mapXYToPosition(UT_sint32 x, UT_sint32 y, PT_DocPosition& pos, UT_Bool& bEOL)
+void fp_SectionSlice::mapXYToPosition(UT_sint32 x, UT_sint32 y, PT_DocPosition& pos, UT_Bool& bBOL, UT_Bool& bEOL)
 {
 	int count = m_vecColumnInfos.getItemCount();
 	UT_uint32 iMinDist = 0xffffffff;
@@ -86,7 +86,7 @@ void fp_SectionSlice::mapXYToPosition(UT_sint32 x, UT_sint32 y, PT_DocPosition& 
 
 		if (pCI->pColumn->containsPoint(x - pCI->xoff, y - pCI->yoff))
 		{
-			pCI->pColumn->mapXYToPosition(x - pCI->xoff, y - pCI->yoff, pos, bEOL);
+			pCI->pColumn->mapXYToPosition(x - pCI->xoff, y - pCI->yoff, pos, bBOL, bEOL);
 			return;
 		}
 		UT_uint32 iDist = pCI->pColumn->distanceFromPoint(x - pCI->xoff, y - pCI->yoff);
@@ -99,7 +99,7 @@ void fp_SectionSlice::mapXYToPosition(UT_sint32 x, UT_sint32 y, PT_DocPosition& 
 
 	UT_ASSERT(pMinDist);
 
-	pMinDist->pColumn->mapXYToPosition(x - pMinDist->xoff, y - pMinDist->yoff, pos, bEOL);
+	pMinDist->pColumn->mapXYToPosition(x - pMinDist->xoff, y - pMinDist->yoff, pos, bBOL, bEOL);
 }
 
 void fp_SectionSlice::getOffsets(fp_Column* pCol, void* p, UT_sint32& xoff, UT_sint32& yoff)

@@ -52,7 +52,7 @@ public:
 	fp_Column* 	getFirstColumn();
 	void 		addColumn(fp_Column*, UT_sint32, UT_sint32);
 
-	void		mapXYToPosition(UT_sint32 xPos, UT_sint32 yPos, PT_DocPosition& pos, UT_Bool& bEOL);
+	void		mapXYToPosition(UT_sint32 xPos, UT_sint32 yPos, PT_DocPosition& pos, UT_Bool& bBOL, UT_Bool& bEOL);
 	void 		getOffsets(fp_Column* pCol, void* p, UT_sint32& xoff, UT_sint32& yoff);
 	void 		getScreenOffsets(fp_Column* pCol, void* p, UT_sint32& xoff, UT_sint32& yoff, UT_sint32& width, UT_sint32& height);	
 
