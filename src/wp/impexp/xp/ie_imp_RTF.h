@@ -94,6 +94,7 @@ public:
 	const char * m_szLang;
 	bool    m_RTL;
 	UT_BidiCharType m_dirOverride;
+	bool    m_Hidden;
 };
 
 class ABI_EXPORT RTFProps_bCharProps
@@ -123,6 +124,7 @@ public:
 	bool bm_listTag; // tag for lists to hanfg off
 	bool bm_RTL;
 	bool bm_dirOverride;
+	bool bm_Hidden;
 };
 
 struct ABI_EXPORT _rtfListTable
@@ -631,6 +633,7 @@ private:
 	bool HandleDeleted(bool state);
 	bool HandleBold(bool state);
 	bool HandleItalic(bool state);
+	bool HandleHidden(bool state);
 	bool HandleUnderline(bool state);
 	bool HandleOverline(bool state);
 	bool HandleStrikeout(bool state);

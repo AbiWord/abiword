@@ -1131,6 +1131,7 @@ RTFProps_CharProps::RTFProps_CharProps(void)
 	m_szLang = 0;
 	m_RTL = false;
 	m_dirOverride = UT_BIDI_UNSET;
+	m_Hidden = false;
 }
 
 RTFProps_CharProps::~RTFProps_CharProps(void)
@@ -4710,6 +4711,10 @@ bool IE_Imp_RTF::TranslateKeyword(unsigned char* pKeyword, UT_sint16 param, bool
 		// subscript: see dn keyword
 		return HandleSuperscriptPosition (fParam ? param : 6);
 
+	case RTF_KW_v:
+		HandleHidden(fParam ? (param != 0) : true);
+		break;
+		
 	case RTF_KW_STAR:
 		return HandleStarKeyword();
 		break;
@@ -5018,6 +5023,12 @@ bool IE_Imp_RTF::buildCharacterProps(UT_String & propBuffer)
 	// italic
 	propBuffer += "; font-style:";
 	propBuffer += m_currentRTFState.m_charProps.m_italic ? "italic" : "normal";
+
+	// hidden
+	if(m_currentRTFState.m_charProps.m_Hidden)
+	{
+		propBuffer += "; display:none";
+	}
 
 	// underline & overline & strike-out
 	propBuffer += "; text-decoration:";
@@ -8572,6 +8583,11 @@ bool IE_Imp_RTF::HandleBold(bool state)
 bool IE_Imp_RTF::HandleItalic(bool state)
 {
 	return HandleBoolCharacterProp(state, &m_currentRTFState.m_charProps.m_italic);
+}
+
+bool IE_Imp_RTF::HandleHidden(bool state)
+{
+	return HandleBoolCharacterProp(state, &m_currentRTFState.m_charProps.m_Hidden);
 }
 
 bool IE_Imp_RTF::HandleUnderline(bool state)

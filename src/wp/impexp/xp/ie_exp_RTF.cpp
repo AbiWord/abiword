@@ -962,7 +962,13 @@ bool IE_Exp_RTF::_write_rtf_header(void)
 	}
 
 	// underline newly inserted text
-	_rtf_keyword("revprop", 3);
+	UT_uint32 iRevMode = 0;
+	if(getDoc()->isShowRevisions())
+	{
+		iRevMode = 3;
+	}
+	
+	_rtf_keyword("revprop", iRevMode);
 	
 	if(getDoc()->isMarkRevisions())
 	{
@@ -1299,6 +1305,13 @@ void IE_Exp_RTF::_write_charfmt(const s_RTF_AttrPropAdapter & apa)
 			_rtf_keyword ("rtlch");
 	}  */
 
+	const XML_Char * szHidden = _getStyleProp(pADStyle,&apa,"display");
+	if(szHidden && *szHidden && !UT_strcmp(szHidden, "none"))
+	{
+		_rtf_keyword ("v");
+	}
+	
+	
 	const XML_Char * szListTag = apa.getProperty("list-tag");
 	if (szListTag && *szListTag)
 	{
