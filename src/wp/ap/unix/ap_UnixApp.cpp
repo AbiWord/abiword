@@ -582,7 +582,8 @@ void AP_UnixApp::clearSelection(void)
 	if (m_pViewSelection && m_pFrameSelection && m_bHasSelection)
 	{
 		UT_DEBUGMSG(("crash2\n"));
-		m_pViewSelection->cmdUnselectSelection();
+		FV_View *pView = static_cast<FV_View *>(m_pViewSelection);
+		pView->cmdUnselectSelection();
 		m_bHasSelection = false;
 	}
 	
