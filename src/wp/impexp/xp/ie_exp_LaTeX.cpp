@@ -176,8 +176,8 @@ void s_LaTeX_Listener::_closeBlock(void)
         else if(m_iBlockType == BT_BLOCKTEXT)
 		  m_pie->write("\n\\end{quote}\n"); // It's not correct, but I'll leave it by now...
 
-	else if(m_iBlockType == BT_PLAINTEXT) // it's \texttt{ ??
-		m_pie->write("\n");
+	else if(m_iBlockType == BT_PLAINTEXT)
+		m_pie->write("}\n");
 
         // Add "catchall" for now
 
@@ -241,7 +241,7 @@ void s_LaTeX_Listener::_openParagraph(PT_AttrPropIndex api)
 				// <p style="Plain Text"> ...
 
 				m_iBlockType = BT_PLAINTEXT;
-				m_pie->write("%% Plain text");
+				m_pie->write("\\texttt{");
 			}
 			else 
 			{
@@ -294,11 +294,7 @@ void s_LaTeX_Listener::_openSection(PT_AttrPropIndex /* api*/)
 void s_LaTeX_Listener::_convertColor(char* szDest, const char* pszColor)
 {
 	/*
-	  TODO we might want to be a little more careful about this.
-	  The proper LaTeX color is #rrggbb, which is basically the same
-	  as what we use this.  HTML browsers are likely to be more
-	  forgiving than we are, so this is probably not a big
-	  problem.
+	  TODO I've no clue about the colors in LaTeX
 	*/
 	strcpy(szDest, pszColor);
 }
@@ -312,33 +308,45 @@ void s_LaTeX_Listener::_convertFontSize(char* szDest, const char* pszFontSize)
 	  is more accurate than the code below.  I just guessed.
 	*/
 	
-	if (fSizeInPoints <= 7)
+	if (fSizeInPoints <= 6)
 	{
-		strcpy(szDest, "1");
+		strcpy(szDest, "tiny");
+	}
+	else if (fSizeInPoints <= 8)
+	{
+		strcpy(szDest, "scriptsize");
 	}
 	else if (fSizeInPoints <= 10)
 	{
-		strcpy(szDest, "2");
+		strcpy(szDest, "footnotesize");
+	}
+	else if (fSizeInPoints <= 11)
+	{
+		strcpy(szDest, "small");
 	}
 	else if (fSizeInPoints <= 12)
 	{
-		strcpy(szDest, "3");
+		strcpy(szDest, "normalsize");
 	}
-	else if (fSizeInPoints <= 16)
+	else if (fSizeInPoints <= 14)
 	{
-		strcpy(szDest, "4");
+		strcpy(szDest, "large");
 	}
-	else if (fSizeInPoints <= 24)
+	else if (fSizeInPoints <= 17)
 	{
-		strcpy(szDest, "5");
+		strcpy(szDest, "Large");
 	}
-	else if (fSizeInPoints <= 36)
+	else if (fSizeInPoints <= 20)
 	{
-		strcpy(szDest, "6");
+		strcpy(szDest, "LARGE");
+	}
+	else if (fSizeInPoints <= 25)
+	{
+		strcpy(szDest, "huge");
 	}
 	else
 	{
-		strcpy(szDest, "7");
+		strcpy(szDest, "Huge");
 	}
 }
 
@@ -373,7 +381,7 @@ void s_LaTeX_Listener::_openSpan(PT_AttrPropIndex api)
 			&& !UT_stricmp(szValue, "bold")
 			)
 		{
-			m_pie->write("<b>");
+			m_pie->write("\\textbf{");
 		}
 		
 		if (
@@ -381,7 +389,7 @@ void s_LaTeX_Listener::_openSpan(PT_AttrPropIndex api)
 			&& !UT_stricmp(szValue, "italic")
 			)
 		{
-			m_pie->write("{em");
+			m_pie->write("\\textit{");
 		}
 		
 		if (
@@ -403,7 +411,33 @@ void s_LaTeX_Listener::_openSpan(PT_AttrPropIndex api)
 			{
 				if (0 == UT_stricmp(q, "underline"))
 				{
-					m_pie->write("<u>");
+					m_pie->write("\\underline{");
+				}
+
+				q = strtok(NULL, " ");
+			}
+
+			free(p);
+		}
+
+		if (pAP->getProperty("text-decoration", szValue))
+		{
+			const XML_Char* pszDecor = szValue;
+			
+			XML_Char* p;
+			if (!UT_cloneString((char *&)p, pszDecor))
+			{
+				// TODO outofmem
+			}
+			
+			UT_ASSERT(p || !pszDecor);
+			XML_Char*	q = strtok(p, " ");
+
+			while (q)
+				{
+				if (0 == UT_stricmp(q, "overline"))
+				{
+					m_pie->write("$\\overline{\\textrm{");
 				}
 
 				q = strtok(NULL, " ");
@@ -431,7 +465,7 @@ void s_LaTeX_Listener::_openSpan(PT_AttrPropIndex api)
 			{
 				if (0 == UT_stricmp(q, "line-through"))
 				{
-					m_pie->write("<s>");	// is it <s> or <strike> ? TODO
+					m_pie->write("");	// TODO
 				}
 
 				q = strtok(NULL, " ");
@@ -444,57 +478,35 @@ void s_LaTeX_Listener::_openSpan(PT_AttrPropIndex api)
 		{
 			if (!UT_stricmp("superscript", szValue))
 			{
-				m_pie->write("<sup>");
+				m_pie->write(""); // TODO
 			}
 			else if (!UT_stricmp("subscript", szValue))
 			{
-				m_pie->write("<sub>");
+				m_pie->write(""); // TODO
 			}
 		}
 		
-		if (
-			(pAP->getProperty("color", szValue))
-		    || (pAP->getProperty("font-size", szValue))
-		    || (pAP->getProperty("font-family", szValue))
-			)
+		if (pAP->getProperty("color", szValue))
+			; // TODO
+
+		if (pAP->getProperty("font-size", szValue))
 		{
-			const XML_Char* pszColor = NULL;
 			const XML_Char* pszFontSize = NULL;
-			const XML_Char* pszFontFamily = NULL;
-
-			pAP->getProperty("color", pszColor);
 		    pAP->getProperty("font-size", pszFontSize);
-		    pAP->getProperty("font-family", pszFontFamily);
 
-			m_pie->write("<font");
-			if (pszColor)
-			{
-				m_pie->write(" COLOR=\"");
-				char szColor[16];
-				_convertColor(szColor, pszColor);
-				m_pie->write(szColor);
-				m_pie->write("\"");
-			}
-			
-			if (pszFontFamily)
-			{
-				m_pie->write(" FACE=\"");
-				m_pie->write(pszFontFamily);
-				m_pie->write("\"");
-			}
-			
 			if (pszFontSize)
 			{
-				m_pie->write(" SIZE=\"");
+				m_pie->write("{\\");
 				char szSize[16];
 				_convertFontSize(szSize, pszFontSize);
 				m_pie->write(szSize);
-				m_pie->write("\"");
+				m_pie->write("{}");
 			}
-
-			m_pie->write(">");
 		}
 		
+		if (pAP->getProperty("font-family", szValue))
+			; // TODO
+
 		m_bInSpan = UT_TRUE;
 		m_pAP_Span = pAP;
 	}
@@ -517,18 +529,18 @@ void s_LaTeX_Listener::_closeSpan(void)
 		    || (pAP->getProperty("font-family", szValue))
 			)
 		{
-			m_pie->write("</font>");
+			m_pie->write("}");
 		}
 
 		if (pAP->getProperty("text-position", szValue))
 		{
 			if (!UT_stricmp("superscript", szValue))
 			{
-				m_pie->write("</sup>");
+				m_pie->write(""); // TODO
 			}
 			else if (!UT_stricmp("subscript", szValue))
 			{
-				m_pie->write("</sub>");
+				m_pie->write(""); // TODO
 			}
 		}
 
@@ -551,7 +563,7 @@ void s_LaTeX_Listener::_closeSpan(void)
 			{
 				if (0 == UT_stricmp(q, "line-through"))
 				{
-					m_pie->write("</s>");	// is it <s> or <strike> ? TODO
+					m_pie->write("");	// TODO
 				}
 
 				q = strtok(NULL, " ");
@@ -579,7 +591,12 @@ void s_LaTeX_Listener::_closeSpan(void)
 			{
 				if (0 == UT_stricmp(q, "underline"))
 				{
-					m_pie->write("</u>");
+					m_pie->write("}");
+				}
+
+				if (0 == UT_stricmp(q, "overline"))
+				{
+					m_pie->write("}}$");
 				}
 
 				q = strtok(NULL, " ");
@@ -593,7 +610,7 @@ void s_LaTeX_Listener::_closeSpan(void)
 			&& !UT_stricmp(szValue, "italic")
 			)
 		{
-			m_pie->write("</i>");
+			m_pie->write("}");
 		}
 		
 		if (
@@ -601,7 +618,7 @@ void s_LaTeX_Listener::_closeSpan(void)
 			&& !UT_stricmp(szValue, "bold")
 			)
 		{
-			m_pie->write("</b>");
+			m_pie->write("}");
 		}
 
 		m_pAP_Span = NULL;
@@ -692,6 +709,22 @@ void s_LaTeX_Listener::_outputData(const UT_UCSChar * data, UT_uint32 length)
 
 		case '}':
 			*pBuf++ = '\\';
+			*pBuf++ = '}';
+			pData++;
+			break;
+
+		case '~':
+			*pBuf++ = '\\';
+			*pBuf++ = '~';
+			*pBuf++ = '{';
+			*pBuf++ = '}';
+			pData++;
+			break;
+
+		case '^':
+			*pBuf++ = '\\';
+			*pBuf++ = '^';
+			*pBuf++ = '{';
 			*pBuf++ = '}';
 			pData++;
 			break;
