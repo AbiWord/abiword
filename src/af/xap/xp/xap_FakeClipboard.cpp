@@ -48,7 +48,7 @@ _ClipboardItem::_ClipboardItem(const char * szFormat, const void* pData, UT_uint
 
 _ClipboardItem::~_ClipboardItem()
 {
-	delete m_pData;
+	delete [] m_pData;
 }
 
 void _ClipboardItem::replace(const void * pData, UT_uint32 iLen)

@@ -188,8 +188,7 @@ bool IE_Imp_Text::_insertBlock()
 	
 	if (isClipboard ()) // intentional - don't append style
 						// information
-	{
-		
+	{		
 		ret = appendStrux(PTX_Block, NULL);
 	}
 	else

@@ -89,7 +89,12 @@ bool IE_Imp::appendStrux (PTStruxType pts, const XML_Char ** attributes)
 
 bool IE_Imp::appendStruxFmt(pf_Frag_Strux * pfs, const XML_Char ** attributes)
 {
-	return m_pDocument->appendStruxFmt(pfs, attributes);
+	if (!m_isPaste)
+		return m_pDocument->appendStruxFmt(pfs, attributes);
+
+	/* there is no insertStruxFmt call, unfortunately */
+	UT_ASSERT_NOT_REACHED();
+	return false;
 }
 
 bool IE_Imp::appendSpan (const UT_UCSChar * p, UT_uint32 length)
