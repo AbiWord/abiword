@@ -34,6 +34,7 @@
 #include "ie_imp_RTFParse.h"
 #include "ie_types.h"
 #include "ie_impGraphic.h"
+#include "fl_FrameLayout.h"
 
 #include "fg_Graphic.h"
 #include "fg_GraphicRaster.h"
@@ -556,6 +557,7 @@ public:
 	UT_sint32        m_iFrameType;
 	UT_sint32        m_iFramePositionTo;
 	bool             m_bCleared;
+	UT_sint32        m_iFrameWrapMode;
 };
 
 
@@ -570,7 +572,8 @@ RTFProps_FrameProps::RTFProps_FrameProps(void):
 	m_iBotPad(0),
 	m_iFrameType(-1),
 	m_iFramePositionTo(-1),
-	m_bCleared(true)
+	m_bCleared(true),
+	m_iFrameWrapMode(3)
 {
 }
 
@@ -587,6 +590,7 @@ void RTFProps_FrameProps::clear(void)
 	m_iFrameType = -1;
 	m_iFramePositionTo =1;
 	m_bCleared= true;
+	m_iFrameWrapMode=3;
 }
 
 
@@ -875,6 +879,25 @@ IE_Imp_ShpGroupParser::tokenKeyword(IE_Imp_RTF * ie, RTF_KEYWORD_ID kwID,
 	case RTF_KW_shptop:
 		m_currentFrame.m_iTopPos = param;
 		break;
+	case RTF_KW_shpbypara:
+		m_currentFrame.m_iFramePositionTo = FL_FRAME_POSITIONED_TO_BLOCK;
+		break;
+	case RTF_KW_shpbymargin:
+		m_currentFrame.m_iFramePositionTo = FL_FRAME_POSITIONED_TO_COLUMN;
+		break;
+	case RTF_KW_shpbypage:
+		m_currentFrame.m_iFramePositionTo = FL_FRAME_POSITIONED_TO_PAGE;
+		break;
+	case RTF_KW_shpwr:
+		if(param == 3)
+		{
+			m_currentFrame.m_iFrameWrapMode = FL_FRAME_ABOVE_TEXT;
+		}
+		else
+		{
+			m_currentFrame.m_iFrameWrapMode = FL_FRAME_WRAPPED_BOTH_SIDES;
+		}
+		break;
 	case RTF_KW_shpbottom:
 		m_currentFrame.m_iBotPos = param;
 		break;
@@ -942,7 +965,29 @@ void IE_Imp_RTF::HandleShapeText(RTFProps_FrameProps & frame)
 	UT_UTF8String_setProperty(sPropString,sP,sV); // fixme make other types
 
 	sP = "position-to";
-	sV = "block-above-text";
+	if(frame.m_iFramePositionTo == FL_FRAME_POSITIONED_TO_COLUMN)
+	{
+		sV = "column-above-text";
+	}
+	else if(frame.m_iFramePositionTo == FL_FRAME_POSITIONED_TO_PAGE)
+	{
+		sV = "page-above-text";
+	}
+	else
+	{
+		sV = "block-above-text";
+	}
+	UT_UTF8String_setProperty(sPropString,sP,sV); // fixme make other types
+
+	sP = "wrap-mode";
+	if(frame.m_iFrameWrapMode == FL_FRAME_ABOVE_TEXT)
+	{
+		sV = "above-text";
+	}
+	else
+	{
+		sV = "wrapped-both";
+	}
 	UT_UTF8String_setProperty(sPropString,sP,sV); // fixme make other types
 
 	{
@@ -952,10 +997,18 @@ void IE_Imp_RTF::HandleShapeText(RTFProps_FrameProps & frame)
 		sV= UT_UTF8String_sprintf("%fin",dV);
 		sP= "xpos";
 		UT_UTF8String_setProperty(sPropString,sP,sV);
+		sP= "frame-col-xpos";
+		UT_UTF8String_setProperty(sPropString,sP,sV);
+		sP= "frame-page-xpos";
+		UT_UTF8String_setProperty(sPropString,sP,sV);
 		
 		dV = static_cast<double>(frame.m_iTopPos)/1440.0;
 		sV= UT_UTF8String_sprintf("%fin",dV);
 		sP= "ypos";
+		UT_UTF8String_setProperty(sPropString,sP,sV);
+		sP= "frame-col-ypos";
+		UT_UTF8String_setProperty(sPropString,sP,sV);
+		sP= "frame-page-ypos";
 		UT_UTF8String_setProperty(sPropString,sP,sV);
 		
 		dV = static_cast<double>(frame.m_iRightPos - frame.m_iLeftPos)/1440.0;
