@@ -132,8 +132,12 @@ BOOL AP_Win32Dialog_InsertTable::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM 
 	// Limit to four chars
 	SendMessage(GetDlgItem(hWnd,AP_RID_DIALOG_INSERTTABLE_TEXT_COLUMN),EM_LIMITTEXT,(WPARAM)5,(WPARAM)0);
 	SendMessage(GetDlgItem(hWnd,AP_RID_DIALOG_INSERTTABLE_TEXT_ROW),EM_LIMITTEXT,(WPARAM)5,(WPARAM)0);
+
+	SetFocus(GetDlgItem(hWnd,AP_RID_DIALOG_INSERTTABLE_VAL_COLUMN));
+	SendDlgItemMessage(hWnd, AP_RID_DIALOG_INSERTTABLE_VAL_COLUMN, EM_SETSEL, 0, -1);
 	
-	return 1;		
+	
+	return 0; // 0 because we called SetFocus
 }
 
 //
@@ -156,24 +160,24 @@ BOOL AP_Win32Dialog_InsertTable::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lPa
 {
 	WORD wNotifyCode = HIWORD(wParam);
 	WORD wId = LOWORD(wParam);
-	HWND hWndCtrl = (HWND)lParam;	
+	HWND hWndCtrl = (HWND)lParam;
 
 	switch (wId)
 	{
-	case IDCANCEL:						
-		m_answer = a_CANCEL;		
-		// fall through
+		case IDCANCEL:						
+			m_answer = a_CANCEL;
+			EndDialog(hWnd,0);
+			return 1;
+			
+		case IDOK:		
+			m_answer = a_OK;
+			getCtrlValues();		
+			EndDialog(hWnd,0);
+			return 1;
 
-	case IDOK:		
-	
-	 	m_answer = a_OK;
-		getCtrlValues();		
-		EndDialog(hWnd,0);
-		return 1;
-
-	default:							// we did not handle this notification
-		UT_DEBUGMSG(("WM_Command for id %ld\n",wId));
-		return 0;						// return zero to let windows take care of it.
+		default:							// we did not handle this notification
+			UT_DEBUGMSG(("WM_Command for id %ld\n",wId));
+			return 0;						// return zero to let windows take care of it.
 	}
 }
 
