@@ -148,6 +148,31 @@ UT_Bool UT_XML_cloneNoAmpersands(XML_Char *& rszDest, const XML_Char * szSource)
 	return UT_TRUE;
 }
 
+// TODO : put a better strncpy here; resolve to platform version if available
+
+UT_uint32 UT_XML_strncpy(XML_Char * szDest, UT_uint32 nLen, const XML_Char * szSource)
+{
+	if (!szSource)
+		return 0;
+	
+	UT_ASSERT(szDest);
+
+	UT_uint32 i = 0;
+
+	while (i < nLen - 1)
+	{
+		szDest[i] = szSource[i];
+
+		// if we just wrote NULL, return
+		if (szDest[i] == 0)
+			return i;
+		
+		i++;
+	}
+
+	return i;
+}
+
 UT_uint32 UT_pointerArrayLength(void ** array)
 {
 	if (! (array && *array))

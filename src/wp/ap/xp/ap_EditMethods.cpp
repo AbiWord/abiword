@@ -3087,19 +3087,32 @@ static UT_Bool s_doParagraphDlg(FV_View * pView)
 	// get the dialog answer
 	AP_Dialog_Paragraph::tAnswer answer = pDialog->getAnswer();
 
+	const XML_Char ** propitem = NULL;
+
 	switch (answer)
 	{
 	case AP_Dialog_Paragraph::a_OK:
 
 		// getDialogData() returns us XML_Char ** data we have to free
-		pDialog->getDialogData(&props);
+		pDialog->getDialogData(props);
 		UT_ASSERT(props);
 
 		// set properties back to document
-		pView->setBlockFormat(props);
-				
+		if (props && props[0])
+			pView->setBlockFormat(props);
+
+		// we have to loop through the props pairs, freeing each string
+		// referenced, then freeing the pointers themselves
+		while (propitem[0] && propitem[1])
+		{
+			FREEP(propitem[0]);
+			FREEP(propitem[1]);
+			propitem += 2;
+		}
+
+		// now free props
 		FREEP(props);
-		
+
 		break;
 		
 	case AP_Dialog_Paragraph::a_TABS:

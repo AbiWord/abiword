@@ -68,6 +68,13 @@ public:
 	fl_BlockLayout(PL_StruxDocHandle sdh, fb_LineBreaker*, fl_BlockLayout*, fl_SectionLayout*, PT_AttrPropIndex indexAP);
 	~fl_BlockLayout();
 
+	typedef enum _eSpacingPolicy
+	{
+		spacing_MULTIPLE,
+		spacing_EXACT,
+		spacing_ATLEAST
+	} eSpacingPolicy;
+
 	int 		format();
 	UT_Bool		recalculateFields(void);
 	
@@ -119,8 +126,8 @@ public:
 
 	void setSectionLayout(fl_SectionLayout* pSectionLayout);
 
-	void getLineSpacing(double& dSpacing, UT_Bool& bExact) const;
-
+	void getLineSpacing(double& dSpacing, eSpacingPolicy& eSpacing) const;
+						
 	inline UT_uint32 getProp_Orphans(void) const { return m_iOrphansProperty; }
 	inline UT_uint32 getProp_Widows(void) const { return m_iWidowsProperty; }
 	inline UT_Bool getProp_KeepTogether(void) const { return m_bKeepTogether; }
@@ -256,7 +263,8 @@ protected:
 	UT_sint32				m_iTextIndent;
 	fb_Alignment *			m_pAlignment;
 	double					m_dLineSpacing;
-	UT_Bool					m_bExactSpacing;
+	//UT_Bool					m_bExactSpacing;
+	eSpacingPolicy			m_eSpacingPolicy;
 	UT_Bool					m_bKeepTogether;
 	UT_Bool					m_bKeepWithNext;
 	const XML_Char *		m_szStyle;

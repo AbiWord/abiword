@@ -43,6 +43,8 @@ const char * UT_dimensionName(UT_Dimension dim);
 const char * UT_convertToDimensionString(UT_Dimension, double value, const char * szPrecision = NULL);
 const char * UT_convertToDimensionlessString(double value, const char * szPrecision = NULL);
 
+UT_Bool UT_hasDimensionComponent(const char * sz);
+
 UT_END_EXTERN_C
 
 #endif /* UT_UNITS_H */

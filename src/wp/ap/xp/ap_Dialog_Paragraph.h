@@ -27,6 +27,8 @@
 class XAP_Frame;
 class AP_Preview_Paragraph;
 
+#define SPIN_BUF_TEXT_SIZE	20
+
 class AP_Dialog_Paragraph : public XAP_Dialog_NonPersistent
 {
  public:
@@ -39,22 +41,49 @@ class AP_Dialog_Paragraph : public XAP_Dialog_NonPersistent
 	// answer from dialog
 	typedef enum { a_OK, a_CANCEL, a_TABS } tAnswer;
 
-	UT_Bool setDialogData(const XML_Char * props[]);
- 	UT_Bool getDialogData(const XML_Char *** props);
+	UT_Bool setDialogData(const XML_Char ** pProps);
+ 	UT_Bool getDialogData(const XML_Char **& pProps);
 
 	AP_Dialog_Paragraph::tAnswer	getAnswer(void) const;
 	
  protected:
 
 	// enumerated types for drop-down lists (option menus)
-	typedef enum { align_LEFT, align_CENTERED, align_RIGHT, align_JUSTIFIED } tAlignment;
-	typedef enum { indent_NONE, indent_FIRSTLINE, indent_HANGING } tSpecialIndent;
-	typedef enum { spacing_SINGLE, spacing_ONEANDHALF, spacing_DOUBLE,
-				   spacing_ATLEAST, spacing_EXACTLY, spacing_MULTIPLE } tLineSpacing;
+	typedef enum { align_LEFT = 0, align_CENTERED, align_RIGHT, align_JUSTIFIED } tAlignState;
+	typedef enum { indent_NONE = 0, indent_FIRSTLINE, indent_HANGING } tIndentState;
+	typedef enum { spacing_SINGLE = 0, spacing_ONEANDHALF, spacing_DOUBLE,
+				   spacing_ATLEAST, spacing_EXACTLY, spacing_MULTIPLE } tSpacingState;
+	typedef enum { check_FALSE = 0, check_TRUE, check_INDETERMINATE } tCheckState;
+	
+	typedef enum { id_MENU_ALIGNMENT = 0, id_SPIN_LEFT_INDENT,
+				   id_SPIN_RIGHT_INDENT, id_MENU_SPECIAL_INDENT,
+				   id_SPIN_SPECIAL_INDENT, id_SPIN_BEFORE_SPACING,
+				   id_SPIN_AFTER_SPACING, id_MENU_SPECIAL_SPACING,
+				   id_SPIN_SPECIAL_SPACING, id_CHECK_WIDOW_ORPHAN,
+				   id_CHECK_KEEP_LINES, id_CHECK_PAGE_BREAK,
+				   id_CHECK_SUPPRESS, id_CHECK_NO_HYPHENATE,
+				   id_CHECK_KEEP_NEXT } tControl;
 
+	struct _sControlData
+	{
+		void * pData;
+		UT_Bool bChanged;
+	};
+	typedef struct _sControlData sControlData;
+	
 	// handle the XP-job of attaching something to our m_paragraphPreview
 	void _createPreviewFromGC(GR_Graphics * gc, UT_uint32 width, UT_uint32 height);
 
+	void 			   	_setMenuItemValue(tControl item, UT_sint32 value, UT_Bool bToggleDirty = UT_TRUE);
+	UT_uint32 			_getMenuItemValue(tControl item);
+	void 				_setCheckItemValue(tControl item, tCheckState value, UT_Bool bToggleDirty = UT_TRUE);
+	tCheckState 		_getCheckItemValue(tControl item);
+	void 				_setSpinItemValue(tControl item, const XML_Char * value, const UT_Bool bToggleDirty = UT_TRUE);
+	const XML_Char * 	_getSpinItemValue(tControl item);
+
+	UT_Bool				_wasChanged(tControl item);
+	
+#if 0
 	// string manipulators for spinbutton filtering
 	const XML_Char * _incrementUnitQuantity(const XML_Char * input);
 	const XML_Char * _decrementUnitQuantity(const XML_Char * input);	
@@ -64,10 +93,25 @@ class AP_Dialog_Paragraph : public XAP_Dialog_NonPersistent
 	// conversion utilities (platform code will probably not need to call these)
 	const XML_Char * _formatAsUnitQuantity(const XML_Char * input);
 	const XML_Char * _formatAsUnitlessQuantity(const XML_Char * input);
+#endif
 	
+	// final dialog answer
 	tAnswer					m_answer;
-	XML_Char ** 			m_blockProps;
+
+	// properties stored as a vector 
+	UT_Vector				m_vecProperties;
+
+	XML_Char				m_bufRightIndent[SPIN_BUF_TEXT_SIZE];
+	XML_Char				m_bufLeftIndent[SPIN_BUF_TEXT_SIZE];
+	XML_Char				m_bufSpecialIndent[SPIN_BUF_TEXT_SIZE];
+	XML_Char				m_bufBeforeSpacing[SPIN_BUF_TEXT_SIZE];
+	XML_Char				m_bufAfterSpacing[SPIN_BUF_TEXT_SIZE];
+	XML_Char				m_bufSpecialSpacing[SPIN_BUF_TEXT_SIZE];
+	
+	// store a pointer to our preview control
 	AP_Preview_Paragraph *	m_paragraphPreview;
+
+	// which dimension system we're using as "native" for this document
 	UT_Dimension			m_dim;
 };
 

@@ -255,7 +255,7 @@ void AP_UnixDialog_Paragraph::event_AlignmentChanged(void) { }
 /****************************************/
 
 // generic methods for spin buttons
-void AP_UnixDialog_Paragraph::event_UpdateEntry(GtkWidget * widget)
+void AP_UnixDialog_Paragraph::event_UpdateEntry(GtkWidget * /* widget */)
 {
 #if 0
 	gchar * oldtext = gtk_entry_get_text(GTK_ENTRY(widget));
@@ -1028,37 +1028,36 @@ GtkWidget * AP_UnixDialog_Paragraph::_constructWindow(void)
 
 void AP_UnixDialog_Paragraph::_populateWindowData(void)
 {
-#if 0
+
 	// alignment option menu 
 	UT_ASSERT(m_listAlignment);
 	gtk_option_menu_set_history(GTK_OPTION_MENU(m_listAlignment),
-								(gint) m_paragraphData.m_alignmentType);
+								(gint) _getMenuItemValue(id_MENU_ALIGNMENT));
 
 	// indent and paragraph margins
 	UT_ASSERT(m_spinbuttonLeft);
 	gtk_entry_set_text(GTK_ENTRY(m_spinbuttonLeft),
-					   (const gchar *) m_paragraphData.m_leftIndent);
+					   (const gchar *) _getSpinItemValue(id_SPIN_LEFT_INDENT));
 
 	UT_ASSERT(m_spinbuttonRight);
 	gtk_entry_set_text(GTK_ENTRY(m_spinbuttonRight),
-					   (const gchar *) m_paragraphData.m_rightIndent);
+					   (const gchar *) _getSpinItemValue(id_SPIN_RIGHT_INDENT));
 
 	UT_ASSERT(m_spinbuttonBy);
 	gtk_entry_set_text(GTK_ENTRY(m_spinbuttonBy),
-					   (const gchar *) m_paragraphData.m_specialIndent);
+					   (const gchar *) _getSpinItemValue(id_SPIN_SPECIAL_INDENT));
 
 	UT_ASSERT(m_listSpecial);
 	gtk_option_menu_set_history(GTK_OPTION_MENU(m_listSpecial),
-								(gint) m_paragraphData.m_specialIndentType);
+								(gint) _getMenuItemValue(id_MENU_SPECIAL_INDENT));
 	
 	// if m_specialIndentType is "(none)" (ParagraphDialogData::indent_NONE)
 	// then the "By" spin should be disabled
 
-	if (m_paragraphData.m_specialIndentType == ParagraphDialogData::indent_NONE)
+	if (_getMenuItemValue(id_MENU_SPECIAL_INDENT) == indent_NONE)
 		gtk_widget_set_sensitive(GTK_WIDGET(m_spinbuttonBy), FALSE);
 	else
 		gtk_widget_set_sensitive(GTK_WIDGET(m_spinbuttonBy), TRUE);
-#endif	
 }
 
 void AP_UnixDialog_Paragraph::_storeWindowData(void)

@@ -312,12 +312,15 @@ void fp_Line::recalcHeight()
 	{
 		// adjust line height to include leading
 		double dLineSpace;
-		UT_Bool bExact;
-		m_pBlock->getLineSpacing(dLineSpace, bExact);
+		fl_BlockLayout::eSpacingPolicy eSpacing;
+		m_pBlock->getLineSpacing(dLineSpace, eSpacing);
 
-		if (bExact)
-			iNewHeight += (UT_sint32) dLineSpace;
+		if (eSpacing == fl_BlockLayout::spacing_EXACT)
+			iNewHeight = (UT_sint32) dLineSpace;
+		else if (eSpacing == fl_BlockLayout::spacing_ATLEAST)
+			iNewHeight = UT_MAX(iNewHeight, (UT_sint32) dLineSpace);
 		else
+			// multiple
 			iNewHeight = (UT_sint32) (iNewHeight * dLineSpace);
 	}
 

@@ -264,6 +264,27 @@ const char * UT_convertToDimensionlessString(double value, const char * szPrecis
 	return buf;
 }
 
+UT_Bool UT_hasDimensionComponent(const char * sz)
+{
+	// TODO : check against known units instead of taking any
+	// TODO : ASCII chars after a number as a sign of units.
+	
+	if (!sz)
+		return UT_FALSE;
+	
+	const char *p = sz;
+	while ((*p) && (isdigit(*p) || (*p == '-') || (*p == '.')))
+	{
+		p++;
+	}
+
+	// if we landed on non-NULL, unit component
+	if(*p)
+		return UT_TRUE;
+	else
+		return UT_FALSE;
+}
+
 UT_sint32 UT_paperUnits(const char * sz)
 {
 	// convert string in form "8.5in" into "paper" units.

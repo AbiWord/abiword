@@ -345,10 +345,24 @@ void fl_BlockLayout::_lookupProperties(void)
 	
 	m_iDefaultTabInterval = pG->convertDimension(getProperty("default-tab-interval"));
 
-	// for now, just allow fixed multiples
-	// TODO: if units were used, convert to exact spacing required
-	m_dLineSpacing = UT_convertDimensionless(getProperty("line-height"));
-	m_bExactSpacing = UT_FALSE;
+	const char * pszSpacing = getProperty("line-height");
+	m_dLineSpacing = UT_convertDimensionless(pszSpacing);
+
+	// NOTE : Parsing spacing strings:
+	// NOTE : - if spacing string ends with "+", it's marked as an "At Least" measurement
+	// NOTE : - if spacing has a unit in it, it's an "Exact" measurement
+	// NOTE : - if spacing is a unitless number, it's just a "Multiple"
+	UT_uint32 nLen = strlen(pszSpacing);
+	if (nLen > 1)
+	{
+		char * pPlusFound = strrchr(pszSpacing, '+');
+		if (pPlusFound && *(pPlusFound + 1) == 0)
+			m_eSpacingPolicy = spacing_ATLEAST;
+		else if(UT_hasDimensionComponent(pszSpacing))
+			m_eSpacingPolicy = spacing_EXACT;
+		else
+			m_eSpacingPolicy = spacing_MULTIPLE;
+	}
 }
 
 fl_BlockLayout::~fl_BlockLayout()
@@ -792,10 +806,10 @@ UT_GrowBuf * fl_BlockLayout::getCharWidths(void)
 	return &m_gbCharWidths;
 }
 
-void fl_BlockLayout::getLineSpacing(double& dSpacing, UT_Bool& bExact) const
+void fl_BlockLayout::getLineSpacing(double& dSpacing, eSpacingPolicy& eSpacing) const
 {
 	dSpacing = m_dLineSpacing;
-	bExact = m_bExactSpacing;
+	eSpacing = m_eSpacingPolicy;
 }
 
 UT_Bool fl_BlockLayout::getSpanPtr(UT_uint32 offset, const UT_UCSChar ** ppSpan, UT_uint32 * pLength) const
