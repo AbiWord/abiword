@@ -23,10 +23,7 @@
 ABI_DEPTH=..
 include $(ABI_DEPTH)/config/abi_defs.mk
 
-ifeq ($(BUILDWXWIN),)
-DIRS=		ptbl impexp fmt guts
-else
-DIRS=		ptbl impexp fmt guts gui
-endif
+DIRS=		ap ptbl impexp fmt guts
+
 include $(ABI_DEPTH)/config/abi_rules.mk
 
