@@ -26,7 +26,7 @@
     <cell value="Gnome">Gnome version.</cell>
     <cell value="BeOS">Be<abbr title="Operating System">OS</abbr> version.</cell>
     <cell value="QNX">QNX version.</cell>
-    <cell value="Mac">MacIntosh version.</cell>
+    <cell value="Mac">Macintosh version.</cell>
   </row>
 </header>
 
@@ -53,7 +53,7 @@
           <cell value="na"/>
           <cell value="unknown"/>
           <cell value="yes"/>
-          <cell value="no"/>
+          <cell value="yes"/>
         </row>
 
         <row>
@@ -64,7 +64,7 @@
           <cell value="na"/>
           <cell value="unknown"/>
           <cell value="yes"/>
-          <cell value="no"/>
+          <cell value="yes"/>
         </row>
 
         <row>
@@ -75,7 +75,7 @@
           <cell value="na"/>
           <cell value="unknown"/>
           <cell value="yes"/>
-          <cell value="no"/>
+          <cell value="yes"/>
         </row>
 
         <row>
@@ -109,7 +109,7 @@
           <cell value="na"/>
           <cell value="unknown"/>
           <cell value="yes"/>
-          <cell value="no"/>
+          <cell value="partially"/>
         </row>
 
         <row>
@@ -120,7 +120,7 @@
           <cell value="na"/>
           <cell value="unknown"/>
           <cell value="yes"/>
-          <cell value="no"/>
+          <cell value="partially"/>
         </row>
 
         <row>
@@ -154,7 +154,7 @@
           <cell value="yes"/>
           <cell value="partially"><bug id="483"/></cell>
           <cell value="yes"/>
-          <cell value="no"/>
+          <cell value="yes"/>
         </row>
 
         <row>
@@ -187,7 +187,7 @@
           <cell value="yes"/>
           <cell value="unknown"/>
           <cell value="yes"/>
-          <cell value="no"/>
+          <cell value="partially"/>
         </row>
 
       </body>
@@ -210,7 +210,7 @@
           <cell value="yes"/>
           <cell value="unknown"/>
           <cell value="yes"/>
-          <cell value="no"/>
+          <cell value="yes"/>
         </row>
 
         <row>
@@ -221,7 +221,7 @@
           <cell value="yes"/>
           <cell value="unknown"/>
           <cell value="yes"/>
-          <cell value="no"/>
+          <cell value="partially"/>
         </row>
 
         <row>
@@ -320,7 +320,7 @@
           <cell value="na"/>
           <cell value="unknown"/>
           <cell value="yes"/>
-          <cell value="no"/>
+          <cell value="yes"/>
         </row>
 
         <row>
@@ -397,7 +397,7 @@
           <cell value="na"/>
           <cell value="unknown"/>
           <cell value="yes"/>
-          <cell value="no"/>
+          <cell value="partially"/>
         </row>
 
         <row>
@@ -469,7 +469,7 @@
           <cell value="na"/>
           <cell value="unknown"/>
           <cell value="yes"/>
-          <cell value="no"/>
+          <cell value="yes"/>
         </row>
 
         <row>
