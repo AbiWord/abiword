@@ -80,9 +80,9 @@ endif
 
 $(PROGRAM_S): $(OBJS) $(EXTRA_LIBDEP)
 ifeq ($(QNX_CAN_BUILD_STATIC),1)
-	$(MAKE_OBJDIR)
-	echo Linking static $(PROGRAM_S)
-	$(CCC) -o $@ $(CFLAGS) $(OBJS) $(STATIC_LDFLAGS) -L/lib -L/usr/local/lib $(LDFLAGS) $(EXTRA_LIBS) $(XLDFLAGS) $(STUPID_STATIC_LIBS)
+	@$(MAKE_OBJDIR)
+	@echo Linking static $(PROGRAM_S)
+	@$(CCC) -o $@ $(CFLAGS) $(OBJS) $(STATIC_LDFLAGS) -L/lib -L/usr/local/lib $(LDFLAGS) $(EXTRA_LIBS) $(XLDFLAGS) $(STUPID_STATIC_LIBS)
 	@bindres -q $@ Icon.wgti
 else
 	@echo "Not linking static $(PROGRAM)"
