@@ -11444,27 +11444,34 @@ Defun1(toggleAutoRevision)
 	UT_return_val_if_fail(pDoc,false);
 	
 	bool bAuto = !pDoc->isAutoRevisioning();
-	bool bIgnore = false;
-	
+	bool bDoIT = true;
+	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
+	UT_return_val_if_fail(pFrame,false);
 	if(!bAuto)
 	{
 		// the user asked to turn revisioning off; this would disrupt
 		// the record of changes, making it impossible to revert
 		// reliably to any earlier versions of document history
 		// we issue worning
-		XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
-		UT_return_val_if_fail(pFrame,false);
 		
-		bIgnore = (XAP_Dialog_MessageBox::a_YES ==
+		bDoIT = (XAP_Dialog_MessageBox::a_YES ==
 				        pFrame->showMessageBox(AP_STRING_ID_MSG_AutoRevisionOffWarning, 
 											   XAP_Dialog_MessageBox::b_YN, 
 											   XAP_Dialog_MessageBox::a_NO));
 	
 	}
-
-	if(!bIgnore)
+	if(bDoIT)
+	{
+//
+// Get rid of the warning box before the redraw
+//
+		UT_sint32 i =0;
+		for(i=0; i< 5;i++)
+		{
+			pFrame->nullUpdate();
+		}
 		pDoc->setAutoRevisioning(bAuto);
-
+	}
 	return true;
 }
 
