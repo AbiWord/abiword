@@ -342,11 +342,13 @@ bool UT_UUID::_makeUUID(uuid &uu)
 	
     if(!s_bInitDone)
 	{
+#if 0
 		bool bNoMAC;
 		XAP_App::getApp()->getPrefsValueBool((XML_Char*)XAP_PREF_KEY_NoMACinUUID,
 											 &bNoMAC);
 		
         if(bNoMAC || !UT_getEthernetAddress(s_node))
+#endif
 		{
             bRet &= _getRandomBytes(s_node, 6);
             /*

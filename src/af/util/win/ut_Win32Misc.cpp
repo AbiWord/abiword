@@ -45,7 +45,8 @@ void UT_gettimeofday(struct timeval *tv)
     tv->tv_usec = (long) ((_100ns.LowPart % (DWORD) (10000 * 1000)) / 10);
 }
 
-
+#define NO_MAC_ADDRESS
+#ifdef NO_MAC_ADDRESS
 typedef struct _ASTAT
 {
 	ADAPTER_STATUS adapt;
@@ -74,12 +75,13 @@ typedef int (WINAPI * pWSAStartup) (WORD wVersionRequested,LPWSADATA lpWSAData);
 
 typedef UCHAR (WINAPI * pNetbios) (PNCB pncb);
 
-
+#endif
 /*!
     retrieve the 6-byte address of the network card; returns true on success
 */
 bool UT_getEthernetAddress(UT_EthernetAddress &A)
 {
+#ifdef NO_MAC_ADDRESS
 	// the following code by James Marsh <James.Marsh@sandtechnology.com>
 	// was found at http://tangentsoft.net/wskfaq/examples/getmac-snmp.html
 	// I adjusted it, so all the libs are dynamically loaded and unloaded
@@ -392,5 +394,8 @@ bool UT_getEthernetAddress(UT_EthernetAddress &A)
 		FreeLibrary(m_hInst);
 		return true;
 	}
+#else
+	UT_return_val_if_fail(0, false);
+#endif
 }
 
