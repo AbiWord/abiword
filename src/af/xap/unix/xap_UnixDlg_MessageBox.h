@@ -48,10 +48,10 @@ protected:
 	struct keyBinding
 	{
 		guint key;
-		AP_Dialog_MessageBox::tAnswer answer;
+		XAP_Dialog_MessageBox::tAnswer answer;
 	};
 
-	void _bindKey(guint key, AP_Dialog_MessageBox::tAnswer answer);
+	void _bindKey(guint key, XAP_Dialog_MessageBox::tAnswer answer);
 	
 };
 

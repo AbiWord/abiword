@@ -83,7 +83,7 @@ XAP_UnixDialog_Print::~XAP_UnixDialog_Print(void)
 
 void XAP_UnixDialog_Print::useStart(void)
 {
-	AP_Dialog_Print::useStart();
+	XAP_Dialog_Print::useStart();
 
 	if (m_bPersistValid)
 	{
@@ -96,7 +96,7 @@ void XAP_UnixDialog_Print::useStart(void)
 
 void XAP_UnixDialog_Print::useEnd(void)
 {
-	AP_Dialog_Print::useEnd();
+	XAP_Dialog_Print::useEnd();
 
 	m_persistPrintDlg.bDoPageRange = m_bDoPrintRange;
 	m_persistPrintDlg.bDoPrintSelection = m_bDoPrintSelection;
@@ -164,21 +164,21 @@ static void s_ok_clicked(GtkWidget * widget,
 		return;
 	}
 
-	*data->answer = AP_Dialog_Print::a_OK;
+	*data->answer = XAP_Dialog_Print::a_OK;
 	gtk_main_quit();
 }
 
 static void s_cancel_clicked(GtkWidget * widget,
-							 AP_Dialog_Print::tAnswer * answer)
+							 XAP_Dialog_Print::tAnswer * answer)
 {
-	*answer = AP_Dialog_Print::a_CANCEL;
+	*answer = XAP_Dialog_Print::a_CANCEL;
 	gtk_main_quit();
 }
 
 static void s_delete_clicked(GtkWidget * widget, gpointer data,
-							 AP_Dialog_Print::tAnswer * answer)
+							 XAP_Dialog_Print::tAnswer * answer)
 {
-	*answer = AP_Dialog_Print::a_CANCEL;
+	*answer = XAP_Dialog_Print::a_CANCEL;
 	gtk_main_quit();
 }
 

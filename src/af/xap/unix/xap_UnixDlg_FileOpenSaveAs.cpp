@@ -218,21 +218,21 @@ UT_Bool XAP_UnixDialog_FileOpenSaveAs::_askOverwrite_YesNo(XAP_Frame * pFrame, c
 	AP_DialogFactory * pDialogFactory
 		= (AP_DialogFactory *)(pFrame->getDialogFactory());
 
-	AP_Dialog_MessageBox * pDialog
-		= (AP_Dialog_MessageBox *)(pDialogFactory->requestDialog(XAP_DIALOG_ID_MESSAGE_BOX));
+	XAP_Dialog_MessageBox * pDialog
+		= (XAP_Dialog_MessageBox *)(pDialogFactory->requestDialog(XAP_DIALOG_ID_MESSAGE_BOX));
 	UT_ASSERT(pDialog);
 
 	pDialog->setMessage("File already exists.  Overwrite file '%s'?", fileName);
-	pDialog->setButtons(AP_Dialog_MessageBox::b_YN);
-	pDialog->setDefaultAnswer(AP_Dialog_MessageBox::a_NO);	// should this be YES?
+	pDialog->setButtons(XAP_Dialog_MessageBox::b_YN);
+	pDialog->setDefaultAnswer(XAP_Dialog_MessageBox::a_NO);	// should this be YES?
 
 	pDialog->runModal(pFrame);
 
-	AP_Dialog_MessageBox::tAnswer ans = pDialog->getAnswer();
+	XAP_Dialog_MessageBox::tAnswer ans = pDialog->getAnswer();
 
 	pDialogFactory->releaseDialog(pDialog);
 
-	return (ans == AP_Dialog_MessageBox::a_YES);
+	return (ans == XAP_Dialog_MessageBox::a_YES);
 }
 
 	
@@ -241,17 +241,17 @@ void XAP_UnixDialog_FileOpenSaveAs::_notifyError_OKOnly(XAP_Frame * pFrame, cons
 	AP_DialogFactory * pDialogFactory
 		= (AP_DialogFactory *)(pFrame->getDialogFactory());
 
-	AP_Dialog_MessageBox * pDialog
-		= (AP_Dialog_MessageBox *)(pDialogFactory->requestDialog(XAP_DIALOG_ID_MESSAGE_BOX));
+	XAP_Dialog_MessageBox * pDialog
+		= (XAP_Dialog_MessageBox *)(pDialogFactory->requestDialog(XAP_DIALOG_ID_MESSAGE_BOX));
 	UT_ASSERT(pDialog);
 
 	pDialog->setMessage(message);
-	pDialog->setButtons(AP_Dialog_MessageBox::b_O);
-	pDialog->setDefaultAnswer(AP_Dialog_MessageBox::a_OK);
+	pDialog->setButtons(XAP_Dialog_MessageBox::b_O);
+	pDialog->setDefaultAnswer(XAP_Dialog_MessageBox::a_OK);
 
 	pDialog->runModal(pFrame);
 
-//	AP_Dialog_MessageBox::tAnswer ans = pDialog->getAnswer();
+//	XAP_Dialog_MessageBox::tAnswer ans = pDialog->getAnswer();
 
 	pDialogFactory->releaseDialog(pDialog);
 }
@@ -262,17 +262,17 @@ void XAP_UnixDialog_FileOpenSaveAs::_notifyError_OKOnly(XAP_Frame * pFrame,
 	AP_DialogFactory * pDialogFactory
 		= (AP_DialogFactory *)(pFrame->getDialogFactory());
 
-	AP_Dialog_MessageBox * pDialog
-		= (AP_Dialog_MessageBox *)(pDialogFactory->requestDialog(XAP_DIALOG_ID_MESSAGE_BOX));
+	XAP_Dialog_MessageBox * pDialog
+		= (XAP_Dialog_MessageBox *)(pDialogFactory->requestDialog(XAP_DIALOG_ID_MESSAGE_BOX));
 	UT_ASSERT(pDialog);
 
 	pDialog->setMessage(message,sz1);
-	pDialog->setButtons(AP_Dialog_MessageBox::b_O);
-	pDialog->setDefaultAnswer(AP_Dialog_MessageBox::a_OK);
+	pDialog->setButtons(XAP_Dialog_MessageBox::b_O);
+	pDialog->setDefaultAnswer(XAP_Dialog_MessageBox::a_OK);
 
 	pDialog->runModal(pFrame);
 
-//	AP_Dialog_MessageBox::tAnswer ans = pDialog->getAnswer();
+//	XAP_Dialog_MessageBox::tAnswer ans = pDialog->getAnswer();
 
 	pDialogFactory->releaseDialog(pDialog);
 }

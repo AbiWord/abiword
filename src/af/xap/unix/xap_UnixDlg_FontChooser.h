@@ -29,7 +29,7 @@ class GR_UnixGraphics;
 
 /*****************************************************************/
 
-class XAP_UnixDialog_FontChooser : public AP_Dialog_FontChooser
+class XAP_UnixDialog_FontChooser : public XAP_Dialog_FontChooser
 {
 public:
 	XAP_UnixDialog_FontChooser(AP_DialogFactory * pDlgFactory, AP_Dialog_Id id);
