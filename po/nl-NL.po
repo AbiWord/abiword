@@ -197,9 +197,8 @@ msgstr "&Automatische spellingscontrole"
 
 #. MENU_LABEL_TABLE_AUTOFIT
 #: po/tmp/ap_String_Id.h.h:63
-#, fuzzy
 msgid "&Autofit Table"
-msgstr "Automatisch opslaan"
+msgstr "Tabel &AutoAanpassen"
 
 #. DLG_Options_Label_PrefsAutoSave
 #: po/tmp/ap_String_Id.h.h:65
@@ -278,9 +277,8 @@ msgstr "&Huidige voorkeur schema"
 
 #. MENU_LABEL_TABLE_DELETE
 #: po/tmp/ap_String_Id.h.h:95
-#, fuzzy
 msgid "&Delete"
-msgstr "Wissen"
+msgstr "&Verwijderen"
 
 #. MENU_LABEL_INSERT_DELETE_HYPERLINK
 #: po/tmp/ap_String_Id.h.h:97
@@ -495,9 +493,8 @@ msgstr "Zoek exact dezelfde"
 
 #. MENU_LABEL_TABLE_MERGE_CELLS
 #: po/tmp/ap_String_Id.h.h:179
-#, fuzzy
 msgid "&Merge Cells"
-msgstr "Cellen samenvoegen"
+msgstr "Cellen sa&menvoegen"
 
 #. MENU_LABEL_WINDOW_MORE
 #: po/tmp/ap_String_Id.h.h:181
@@ -1016,7 +1013,6 @@ msgstr "Werking AutoAanpassen"
 
 #. MENU_STATUSLINE_TABLE_AUTOFIT
 #: po/tmp/ap_String_Id.h.h:375
-#, fuzzy
 msgid "Autofit Table"
 msgstr "Tabel AutoAanpassen"
 
@@ -1720,61 +1716,54 @@ msgstr "Een stijl maken voor, of toepassen op de selectie"
 #. MENU_STATUSLINE_TABLE_DELETE
 #: po/tmp/ap_String_Id.h.h:639 po/tmp/xap_String_Id.h.h:173
 msgid "Delete"
-msgstr "Wissen"
+msgstr "Verwijderen"
 
 #. MENU_LABEL_TABLE_DELETE_CELLS
 #: po/tmp/ap_String_Id.h.h:641
 #, fuzzy
 msgid "Delete &Cells"
-msgstr "Wissen"
+msgstr "&Cellen verwijderen"
 
 #. MENU_LABEL_TABLE_DELETE_ROWS
 #: po/tmp/ap_String_Id.h.h:643
 #, fuzzy
 msgid "Delete &Rows"
-msgstr "Wissen"
+msgstr "&Rijen verwijderen"
 
 #. MENU_LABEL_TABLE_DELETE_TABLE
 #: po/tmp/ap_String_Id.h.h:645
-#, fuzzy
 msgid "Delete &Table"
-msgstr "Onderdelen tabel"
+msgstr "&Tabel verwijderen"
 
 #. MENU_STATUSLINE_TABLE_DELETE_CELLS
 #: po/tmp/ap_String_Id.h.h:647
-#, fuzzy
 msgid "Delete Cells"
-msgstr "Wissen"
+msgstr "Cellen verwijderen"
 
 #. MENU_LABEL_TABLE_DELETE_COLUMNS
 #: po/tmp/ap_String_Id.h.h:649
-#, fuzzy
 msgid "Delete Co&lumns"
-msgstr "Kolommen"
+msgstr "Ko&lommen verwijderen"
 
 #. MENU_STATUSLINE_TABLE_DELETE_COLUMNS
 #: po/tmp/ap_String_Id.h.h:651
-#, fuzzy
 msgid "Delete Columns"
-msgstr "Kolommen"
+msgstr "Kolommen verwijderen"
 
 #. MENU_STATUSLINE_TABLE_DELETE_ROWS
 #: po/tmp/ap_String_Id.h.h:653
-#, fuzzy
 msgid "Delete Rows"
-msgstr "Wissen"
+msgstr "Rijen verwijderen"
 
 #. MENU_STATUSLINE_TABLE_DELETE_TABLE
 #: po/tmp/ap_String_Id.h.h:655
-#, fuzzy
 msgid "Delete Table"
-msgstr "Onderdelen tabel"
+msgstr "Tabel verwijderen"
 
 #. MENU_STATUSLINE_INSERT_DELETE_HYPERLINK
 #: po/tmp/ap_String_Id.h.h:657
-#, fuzzy
 msgid "Delete hyperlink"
-msgstr "Verwijder het geselecteerde gedeelte"
+msgstr "Hyperlink verwijderen"
 
 #. MENU_STATUSLINE_EDIT_CLEAR
 #: po/tmp/ap_String_Id.h.h:659
@@ -1794,9 +1783,8 @@ msgstr "Omschrijving"
 
 #. DLG_Options_Label_UseContextGlyphs
 #: po/tmp/ap_String_Id.h.h:665
-#, fuzzy
 msgid "Determine correct glyph shapes from context"
-msgstr "Bepaal de juiste symboolvorm uit de context"
+msgstr "Bepaal de juiste symboolvorm aan de hand van de context"
 
 #. DLG_Lists_Diamond_List
 #: po/tmp/ap_String_Id.h.h:667 po/tmp/xap_String_Id.h.h:177
@@ -1806,12 +1794,12 @@ msgstr "Diamand Lijst"
 #. DLG_HdrFtr_FooterFirst
 #: po/tmp/ap_String_Id.h.h:669
 msgid "Different Footer on First page"
-msgstr "Andere Voettekt op eerste Pagina"
+msgstr "Andere Voettekt op eerste pagina"
 
 #. DLG_HdrFtr_FooterLast
 #: po/tmp/ap_String_Id.h.h:671
 msgid "Different Footer on Last page"
-msgstr "Andere Voettekst op laatste Pagina"
+msgstr "Andere Voettekst op laatste pagina"
 
 #. DLG_HdrFtr_FooterEven
 #: po/tmp/ap_String_Id.h.h:673
@@ -3255,7 +3243,6 @@ msgstr "Verander in deze voorgestelde spelling"
 
 #. MENU_STATUSLINE_TABLE_HEADING_ROWS_REPEAT
 #: po/tmp/ap_String_Id.h.h:1209
-#, fuzzy
 msgid "Repeat Row as Heading"
 msgstr "Herhaal rij als kop"
 
@@ -3389,7 +3376,7 @@ msgstr "S&cripts"
 #: po/tmp/ap_String_Id.h.h:1259
 #, fuzzy
 msgid "S&plit Cells"
-msgstr "Cellen splitsen"
+msgstr "Cellen s&plitsen"
 
 #. AUTOTEXT_MAIL_5
 #: po/tmp/ap_String_Id.h.h:1261
@@ -3498,9 +3485,8 @@ msgstr "Selecteer"
 
 #. MENU_LABEL_TABLE_SELECT_CELL
 #: po/tmp/ap_String_Id.h.h:1299
-#, fuzzy
 msgid "Select &Cell"
-msgstr "&Alles selecteren"
+msgstr "&Cell selecteren"
 
 #. MENU_LABEL_TABLE_SELECT_ROW
 #: po/tmp/ap_String_Id.h.h:1301
@@ -3510,9 +3496,8 @@ msgstr "Selecteer rij"
 
 #. MENU_LABEL_TABLE_SELECT_TABLE
 #: po/tmp/ap_String_Id.h.h:1303
-#, fuzzy
 msgid "Select &Table"
-msgstr "&Alles selecteren"
+msgstr "&Tabel selecteren"
 
 #. MENU_LABEL_EDIT_SELECTALL
 #: po/tmp/ap_String_Id.h.h:1305
@@ -3521,19 +3506,16 @@ msgstr "&Alles selecteren"
 
 #. MENU_STATUSLINE_TABLE_SELECT_CELL
 #: po/tmp/ap_String_Id.h.h:1307
-#, fuzzy
 msgid "Select Cell"
-msgstr "&Alles selecteren"
+msgstr "Cell selecteren"
 
 #. MENU_LABEL_TABLE_SELECT_COLUMN
 #: po/tmp/ap_String_Id.h.h:1309
-#, fuzzy
 msgid "Select Co&lumn"
-msgstr "Selecteer kolom"
+msgstr "Selecteer ko&lom"
 
 #. MENU_STATUSLINE_TABLE_SELECT_COLUMN
 #: po/tmp/ap_String_Id.h.h:1311
-#, fuzzy
 msgid "Select Column"
 msgstr "Selecteer kolom"
 
@@ -3544,15 +3526,13 @@ msgstr "Selecteer wijziging"
 
 #. MENU_STATUSLINE_TABLE_SELECT_ROW
 #: po/tmp/ap_String_Id.h.h:1315
-#, fuzzy
 msgid "Select Row"
 msgstr "Selecteer rij"
 
 #. MENU_STATUSLINE_TABLE_SELECT_TABLE
 #: po/tmp/ap_String_Id.h.h:1317
-#, fuzzy
 msgid "Select Table"
-msgstr "&Alles selecteren"
+msgstr "Tabel selecteren"
 
 #. DLG_InsertHyperlink_Msg
 #: po/tmp/ap_String_Id.h.h:1319
@@ -3695,7 +3675,7 @@ msgstr "Enkel"
 #: po/tmp/ap_String_Id.h.h:1371
 #, fuzzy
 msgid "So&rt Table"
-msgstr "Tabel sorteren"
+msgstr "Tabel so&rteren"
 
 #. MENU_STATUSLINE_TABLE_SORT
 #: po/tmp/ap_String_Id.h.h:1373
@@ -3730,9 +3710,8 @@ msgstr "Spelling &opties"
 
 #. MENU_LABEL_TABLE_SPLIT_TABLE
 #: po/tmp/ap_String_Id.h.h:1385
-#, fuzzy
 msgid "Spli&t Table"
-msgstr "Tabel splitsen"
+msgstr "Tabel spli&tsen"
 
 #. MENU_STATUSLINE_TABLE_SPLIT_CELLS
 #: po/tmp/ap_String_Id.h.h:1387
@@ -4780,9 +4759,8 @@ msgstr "Opties instellen"
 
 #. STYLE_ENDTEXT
 #: po/tmp/xap_String_Id.h.h:195
-#, fuzzy
 msgid "Endnote Text"
-msgstr "&Eindnoot"
+msgstr "Eindnoot tekst"
 
 #. LANG_EN_AU
 #: po/tmp/xap_String_Id.h.h:197
@@ -5055,12 +5033,12 @@ msgstr ""
 
 #. DLG_HashDownloader_FeatureDisabledForThis
 #: po/tmp/xap_String_Id.h.h:305
-#, fuzzy
 msgid ""
 "I'm sorry. This feature is disabled for this release.\n"
 "Please consider upgrading AbiWord."
 msgstr ""
 "Sorry, het gewenste woordenboek is niet beschikbaar voor deze versie.\n"
+"Overweeg het installeren van de nieuwste AbiWord versie."
 
 #. DLG_HashDownloader_FeatureDisabled
 #: po/tmp/xap_String_Id.h.h:307
@@ -5751,9 +5729,8 @@ msgstr "West Europees, Windows Code Pagina 1252"
 
 #. DLG_Image_Width
 #: po/tmp/xap_String_Id.h.h:603
-#, fuzzy
 msgid "Width:"
-msgstr "&Breedte"
+msgstr "Breedte"
 
 #. DLG_IP_Width_Label
 #: po/tmp/xap_String_Id.h.h:605
@@ -5824,12 +5801,10 @@ msgstr "punten"
 
 #. DLG_HashDownloader_Dict
 #: po/tmp/xap_String_Id.h.h:629
-#, fuzzy
 msgid "the dictionary"
-msgstr "het wooordenboek"
+msgstr "het woordenboek"
 
 #. DLG_HashDownloader_DictList
 #: po/tmp/xap_String_Id.h.h:631
-#, fuzzy
 msgid "the dictionary-list"
 msgstr "de woordenboeken lijst"
