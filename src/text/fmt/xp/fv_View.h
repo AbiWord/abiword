@@ -241,7 +241,6 @@ protected:
 	void				_setPointAP(PT_AttrPropIndex indexAP);
 	UT_Bool				_clearPointAP(UT_Bool bNotify);
 	void				_doPaste(void);
-	void				_doInsertImage(GR_Image*);
 	
 	PT_DocPosition		m_iInsPoint;
 	UT_sint32			m_xPoint;

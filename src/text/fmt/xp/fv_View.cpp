@@ -1825,8 +1825,6 @@ void FV_View::extSelHorizontal(UT_Bool bForward, UT_uint32 count)
 			return;
 		}
 		
-		PT_DocPosition iNewPoint = getPoint();
-
 		_extSel(iOldPoint);
 		
 		if (isSelectionEmpty())
@@ -2344,7 +2342,7 @@ UT_Bool	FV_View::findReplace(const UT_UCSChar * find, const UT_UCSChar * replace
 	}
 	else
 	{
-		!_ensureThatInsertionPointIsOnScreen();
+		_ensureThatInsertionPointIsOnScreen();
 	}
 
 	return bRes;
@@ -3828,38 +3826,6 @@ void FV_View::cmdPaste(void)
 	m_pDoc->endUserAtomicGlob();
 }
 
-void FV_View::_doInsertImage(GR_Image* pImg)
-{
-	// just the insert, no selection or screen updating needed here
-	
-	/*
-	  First, find a unique name for the data item.
-	*/
-	char szName[GR_IMAGE_MAX_NAME_LEN + 10 + 1];
-	UT_uint32 ndx = 0;
-	for (;;)
-	{
-		pImg->getName(szName);
-		sprintf(szName + strlen(szName), "%ld", ndx);
-		if (!m_pDoc->getDataItemDataByName(szName, NULL, NULL, NULL))
-		{
-			break;
-		}
-		ndx++;
-	}
-
-	/*
-	  Get the byte buffer for this image.
-	*/
-	UT_ByteBuf* pBB = NULL;
-	pImg->getByteBuf(&pBB);
-
-	UT_sint32	iImageWidth = pImg->getWidth();
-	UT_sint32	iImageHeight = pImg->getHeight();
-
-	_insertPNGImage(pBB, szName, iImageWidth, iImageHeight);
-}
-
 void FV_View::_doPaste(void)
 {
 	// internal portion of paste operation.
@@ -3886,7 +3852,34 @@ void FV_View::_doPaste(void)
 			GR_Image* pImg = pClip->getImage();
 			UT_ASSERT(pImg);
 
-			_doInsertImage(pImg);
+			// just the insert, no selection or screen updating needed here
+	
+			/*
+			  First, find a unique name for the data item.
+			*/
+			char szName[GR_IMAGE_MAX_NAME_LEN + 10 + 1];
+			UT_uint32 ndx = 0;
+			for (;;)
+			{
+				pImg->getName(szName);
+				sprintf(szName + strlen(szName), "%ld", ndx);
+				if (!m_pDoc->getDataItemDataByName(szName, NULL, NULL, NULL))
+				{
+					break;
+				}
+				ndx++;
+			}
+
+			/*
+			  Get the byte buffer for this image.
+			*/
+			UT_ByteBuf* pBB = NULL;
+			pImg->getByteBuf(&pBB);
+
+			UT_sint32	iImageWidth = pImg->getWidth();
+			UT_sint32	iImageHeight = pImg->getHeight();
+
+			_insertPNGImage(pBB, szName, iImageWidth, iImageHeight);
 
 			delete pImg;
 		}
@@ -4127,8 +4120,7 @@ void FV_View::cmdInsertPNGImage(UT_ByteBuf* pBB, const char* pszName)
 	UT_sint32 iImageWidth;
 	UT_sint32 iImageHeight;
 
-	UT_Bool bRes = UT_PNG_getDimensions(pBB, iImageWidth, iImageHeight);
-	// TODO check bRes
+	UT_PNG_getDimensions(pBB, iImageWidth, iImageHeight);
 	
 	_insertPNGImage(pBB, szName, iImageWidth, iImageHeight);
 	
