@@ -100,7 +100,7 @@ void AP_QNXDialog_Break::runModal(XAP_Frame * pFrame)
 	XAP_QNXFrame * pQNXFrame = static_cast<XAP_QNXFrame *>(pFrame);
 	UT_ASSERT(pQNXFrame);
 	
-	// Get the GtkWindow of the parent frame
+	// Get the Window of the parent frame
 	PtWidget_t * parentWindow = pQNXFrame->getTopLevelWindow();
 	UT_ASSERT(parentWindow);
 	PtSetParentWidget(parentWindow);

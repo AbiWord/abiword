@@ -51,8 +51,8 @@ AP_QNXDialog_Styles::AP_QNXDialog_Styles(XAP_DialogFactory * pDlgFactory,
 {
 	m_windowMain = NULL;
 
-	m_wbuttonOk = NULL;
-	m_wbuttonCancel = NULL;
+	m_wbuttonApply = NULL;
+	m_wbuttonClose = NULL;
 	m_wGnomeButtons = NULL;
 	m_wParaPreviewArea = NULL;
 	m_pParaPreviewGR = NULL;
@@ -196,19 +196,19 @@ static int s_styletype(PtWidget_t *widget, void *data, PtCallbackInfo_t *info)
 	return Pt_CONTINUE;
 }
 
-static int s_ok_clicked(PtWidget_t *widget, void *data, PtCallbackInfo_t *info)
+static int s_apply_clicked(PtWidget_t *widget, void *data, PtCallbackInfo_t *info)
 {
 	AP_QNXDialog_Styles * dlg = (AP_QNXDialog_Styles *)data;
 	UT_ASSERT(widget && dlg);
-	dlg->event_OK();
+	dlg->event_Apply();
 	return Pt_CONTINUE;
 }
 
-static int s_cancel_clicked(PtWidget_t *widget, void *data, PtCallbackInfo_t *info)
+static int s_close_clicked(PtWidget_t *widget, void *data, PtCallbackInfo_t *info)
 {
 	AP_QNXDialog_Styles * dlg = (AP_QNXDialog_Styles *)data;
 	UT_ASSERT(widget && dlg);
-	dlg->event_Cancel();
+	dlg->event_Close();
 	return Pt_CONTINUE;
 }
 
@@ -312,6 +312,13 @@ static int s_modify_delete_clicked(PtWidget_t *widget, void *data, PtCallbackInf
 	return Pt_CONTINUE;
 }
 
+
+static int s_modify_format(PtWidget_t *widget, void *data, PtCallbackInfo_t *info) {
+	AP_QNXDialog_Styles * dlg = (AP_QNXDialog_Styles *)data;
+	UT_ASSERT(dlg);
+	dlg->event_ModifySelected(widget, data, info);
+	return Pt_CONTINUE;
+}
 
 static int s_modify_paragraph(PtWidget_t *widget, void *data, PtCallbackInfo_t *info)
 {
@@ -434,27 +441,25 @@ void AP_QNXDialog_Styles::runModal(XAP_Frame * pFrame)
 	DELETEP (m_pParaPreviewGR);
 	DELETEP (m_pCharPreviewGR);
 	
-	if(m_answer == AP_Dialog_Styles::a_OK)
-	{
-//		getDoc()->updateDocForStyleChange(getCurrentStyle(),true);
-//		getView()->getCurrentBlock()->setNeedsRedraw();
-//		getDoc()->signalListeners(PD_SIGNAL_UPDATE_LAYOUT);
-	}
-
 	UT_QNXBlockWidget(parentWindow, 0);
 	PtDestroyWidget(mainWindow);
 }
 
 /*****************************************************************/
 
-void AP_QNXDialog_Styles::event_OK(void)
+void AP_QNXDialog_Styles::event_Apply(void)
 {
 	// TODO save out state of radio items
 	m_answer = AP_Dialog_Styles::a_OK;
-	done++;
+	const XML_Char * szStyle = getCurrentStyle();
+	if(szStyle && *szStyle)
+	{
+		getView()->setStyle(szStyle);
+	}
+	//done++;
 }
 
-void AP_QNXDialog_Styles::event_Cancel(void)
+void AP_QNXDialog_Styles::event_Close(void)
 {
 	if(!done++) {
 		m_answer = AP_Dialog_Styles::a_CANCEL;
@@ -483,18 +488,23 @@ void AP_QNXDialog_Styles::event_charPreviewExposed(void)
 
 void AP_QNXDialog_Styles::event_DeleteClicked(void)
 {
-#if 0
 	if (m_whichRow != -1)
     {
-        gchar * style = NULL;
-		int rtn = gtk_clist_get_text (GTK_CLIST(m_wclistStyles), 
-									  m_whichRow, m_whichCol, 
-									  &style);
-		if (!rtn || !style)
+		unsigned short *index;
+		char **styles, *style;
+
+		index = NULL;
+		styles = NULL;
+		PtGetResource(m_wclistStyles, Pt_ARG_SELECTION_INDEXES, &index, 0);
+		PtGetResource(m_wclistStyles, Pt_ARG_ITEMS, &styles, 0);
+
+		if (!index || !styles || index[0] < 1)
 			return; // ok, nothing's selected. that's fine
 
-		UT_DEBUGMSG(("DOM: attempting to delete style %s\n", style));
+		UT_ASSERT(m_whichRow == index[0] -1);
 
+		style = styles[index[0] - 1];
+		UT_DEBUGMSG(("DOM: attempting to delete style %s\n", style));
 
 		if (!getDoc()->removeStyle(style)) // actually remove the style
 		{
@@ -511,7 +521,6 @@ void AP_QNXDialog_Styles::event_DeleteClicked(void)
 		_populateWindowData(); // force a refresh
 		getDoc()->signalListeners(PD_SIGNAL_UPDATE_LAYOUT);
     }
-#endif
 }
 
 void AP_QNXDialog_Styles::event_NewClicked(void)
@@ -554,8 +563,8 @@ void AP_QNXDialog_Styles::event_ListClicked(const char * which)
 PtWidget_t * AP_QNXDialog_Styles::_constructWindow(void)
 {
 	PtWidget_t * windowStyles;
-	PtWidget_t * buttonOK;
-	PtWidget_t * buttonCancel;
+	PtWidget_t * buttonApply;
+	PtWidget_t * buttonClose;
 
 	PtWidget_t * vgroup, * hgroup;
 	PtWidget_t * vboxTopLeft;
@@ -712,16 +721,16 @@ PtWidget_t * AP_QNXDialog_Styles::_constructWindow(void)
 	hgroup = PtCreateWidget(PtGroup, vgroup, n, args);
 
 	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, pSS->getValue(XAP_STRING_ID_DLG_Cancel), 0);
+	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, pSS->getValue(XAP_STRING_ID_DLG_Close), 0);
 	PtSetArg(&args[n++], Pt_ARG_WIDTH, ABI_DEFAULT_BUTTON_WIDTH, 0);
-	buttonCancel = PtCreateWidget(PtButton, hgroup, n, args);
-	PtAddCallback(buttonCancel, Pt_CB_ACTIVATE, s_cancel_clicked, this);
+	buttonClose = PtCreateWidget(PtButton, hgroup, n, args);
+	PtAddCallback(buttonClose, Pt_CB_ACTIVATE, s_close_clicked, this);
 
 	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, pSS->getValue(XAP_STRING_ID_DLG_OK), 0);
+	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, pSS->getValue(XAP_STRING_ID_DLG_Apply), 0);
 	PtSetArg(&args[n++], Pt_ARG_WIDTH, ABI_DEFAULT_BUTTON_WIDTH, 0);
-	buttonOK = PtCreateWidget(PtButton, hgroup, n, args);
-	PtAddCallback(buttonOK, Pt_CB_ACTIVATE, s_ok_clicked, this);
+	buttonApply = PtCreateWidget(PtButton, hgroup, n, args);
+	PtAddCallback(buttonApply, Pt_CB_ACTIVATE, s_apply_clicked, this);
 
 	m_windowMain = windowStyles;
 	m_wlistTypes = comboList;
@@ -732,8 +741,8 @@ PtWidget_t * AP_QNXDialog_Styles::_constructWindow(void)
 	m_wbuttonNew = buttonNew;
 	m_wbuttonModify = buttonModify;
 	m_wbuttonDelete = buttonDelete;
-	m_wbuttonOk = buttonOK;
-	m_wbuttonCancel = buttonCancel;
+	m_wbuttonApply = buttonApply;
+	m_wbuttonClose = buttonClose;
 
 	return windowStyles;
 }
@@ -905,10 +914,18 @@ PtWidget_t *  AP_QNXDialog_Styles::_constructModifyDialog(void)
 	followingLabel = PtCreateWidget(PtLabel, hgroup, n, args);
 
 	n = 0;
-	basedOnEntry = PtCreateWidget(PtText, hgroup, n, args);
+	if(isNew()) {
+		basedOnEntry = PtCreateWidget(PtComboBox, hgroup, n, args);
+	} else {
+		basedOnEntry = PtCreateWidget(PtText, hgroup, n, args);
+	}
 
 	n = 0;
-	followingEntry = PtCreateWidget(PtText, hgroup, n, args);
+	if(isNew()) {
+		followingEntry = PtCreateWidget(PtComboBox, hgroup, n, args);
+	} else {
+		followingEntry = PtCreateWidget(PtText, hgroup, n, args);
+	}
 
 	/* Preview portion */
 	n = 0;
@@ -999,7 +1016,7 @@ PtWidget_t *  AP_QNXDialog_Styles::_constructModifyDialog(void)
 	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, pSS->getValue(AP_STRING_ID_DLG_Styles_ModifyShortCut), 0);
 	PtSetArg(&args[n++], Pt_ARG_WIDTH, ABI_DEFAULT_BUTTON_WIDTH, 0);
 	shortCutButton = PtCreateWidget(PtButton, hgroup, n, args);
-	PtAddCallback(shortCutButton, Pt_CB_ACTIVATE, s_modify_ok_clicked, this);
+	//PtAddCallback(shortCutButton, Pt_CB_ACTIVATE, s_modify_ok_clicked, this);
 
 	m_wStyleNameEntry = styleNameEntry;
 	m_wBasedOnCombo = basedOnCombo;
@@ -1048,6 +1065,9 @@ void  AP_QNXDialog_Styles::_constructFormatList(PtWidget_t * FormatMenu)
 	item = pSS->getValue(AP_STRING_ID_DLG_Styles_ModifyLanguage);
 	PtListAddItems(FormatMenu, &item, 1, 0);
 
+	PtAddCallback(FormatMenu, Pt_CB_SELECTION, s_modify_format, this);
+	PtSetResource(FormatMenu, Pt_ARG_CBOX_SEL_ITEM, 1, 0);
+
 	m_wFormat = 
 	m_wModifyParagraph = 
 	m_wModifyFont = 
@@ -1056,73 +1076,49 @@ void  AP_QNXDialog_Styles::_constructFormatList(PtWidget_t * FormatMenu)
 	m_wModifyLanguage = NULL;
 }
 
-void AP_QNXDialog_Styles::_connectModifySignals(void)
+int AP_QNXDialog_Styles::event_ModifySelected(PtWidget_t *w, void *data, PtCallbackInfo_t *info)
 {
-#if 0
-	gtk_signal_connect(GTK_OBJECT(m_wModifyParagraph),
-					   "activate",
-					   GTK_SIGNAL_FUNC(s_modify_paragraph),
-					   (gpointer) this);
+	unsigned short index;
+	PtGetResource(w, Pt_ARG_CBOX_SEL_ITEM, &index, 0);
 
-
-	gtk_signal_connect(GTK_OBJECT(m_wModifyFont),
-					   "activate",
-					   GTK_SIGNAL_FUNC(s_modify_font),
-					   (gpointer) this);
-
-
-	gtk_signal_connect(GTK_OBJECT(m_wModifyNumbering),
-					   "activate",
-					   GTK_SIGNAL_FUNC(s_modify_numbering),
-					   (gpointer) this);
-
-	gtk_signal_connect(GTK_OBJECT(m_wModifyTabs),
-					   "activate",
-					   GTK_SIGNAL_FUNC(s_modify_tabs),
-					   (gpointer) this);
-
-	gtk_signal_connect(GTK_OBJECT(m_wModifyLanguage),
-					   "activate",
-					   GTK_SIGNAL_FUNC(s_modify_language),
-					   (gpointer) this);
-
-	gtk_signal_connect(GTK_OBJECT(m_wModifyDrawingArea),
-					   "expose_event",
-					   GTK_SIGNAL_FUNC(s_modifyPreview_exposed),
-					   (gpointer) this);
-
-	gtk_signal_connect(GTK_OBJECT(m_wStyleNameEntry),
-					   "changed",
-					   GTK_SIGNAL_FUNC(s_style_name),
-					   (gpointer) this);
-
-	gtk_signal_connect(GTK_OBJECT(m_wBasedOnEntry), 
-					   "changed",
-					   GTK_SIGNAL_FUNC(s_basedon),
-					   (gpointer) this);
-
-	gtk_signal_connect(GTK_OBJECT(m_wFollowingEntry), 
-					   "changed",
-					   GTK_SIGNAL_FUNC(s_followedby),
-					   (gpointer) this);
-
-	gtk_signal_connect(GTK_OBJECT(m_wStyleTypeEntry), 
-					   "changed",
-					   GTK_SIGNAL_FUNC(s_styletype),
-					   (gpointer) this);
-
-	
-	gtk_signal_connect_after(GTK_OBJECT(m_wModifyDialog),
-							 "expose_event",
-							 GTK_SIGNAL_FUNC(s_modify_window_exposed),
-							 (gpointer) this);
-
-#endif
+	switch(index) {
+	case 1:
+		return Pt_CONTINUE;
+	case 2:
+		return s_modify_paragraph(w, data, info);
+	case 3:
+	   return s_modify_font(w, data, info);
+	case 4:
+		return s_modify_tabs(w, data, info);
+	case 5:
+		return s_modify_numbering(w, data, info);
+	case 6:
+		return s_modify_language(w, data, info);
+	default:
+		return Pt_CONTINUE;
+	}
 }
 
 
 void AP_QNXDialog_Styles::event_Modify_OK(void)
 {
+	const char * text = NULL;
+
+	PtGetResource(m_wStyleNameEntry, Pt_ARG_TEXT_STRING, &text, 0);
+
+	if (!text || !strlen (text))
+    {
+      // error message!
+      const XAP_StringSet * pSS = m_pApp->getStringSet ();
+      const char * msg = pSS->getValue (AP_STRING_ID_DLG_Styles_ErrBlankName);
+
+      getFrame()->showMessageBox ((const char *)msg,
+				  XAP_Dialog_MessageBox::b_O,
+				  XAP_Dialog_MessageBox::a_OK);
+
+      return;
+    }
+
 	// TODO save out state of radio items
 	m_answer = AP_Dialog_Styles::a_OK;
 	modifydone++;
@@ -1133,28 +1129,29 @@ void AP_QNXDialog_Styles::event_Modify_OK(void)
  */
 void AP_QNXDialog_Styles::new_styleName(void)
 {
-#if 0
 	static char message[200];
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
-	gchar * psz = gtk_entry_get_text( GTK_ENTRY( m_wStyleNameEntry));
+
+	char * psz = NULL;
+	PtGetResource(m_wStyleNameEntry, Pt_ARG_TEXT_STRING, &psz, 0);
+
 	if(psz && strcmp(psz,pSS->getValue(AP_STRING_ID_DLG_Styles_DefNone))== 0)
 	{
 			// TODO: do a real error dialog
 		sprintf(message,"%s%s%s",pSS->getValue(AP_STRING_ID_DLG_Styles_ErrNotTitle1),psz,pSS->getValue(AP_STRING_ID_DLG_Styles_ErrNotTitle2));
-		messageBoxOK((const char *) message);
+		//messageBoxOK((const char *) message);
 		return;
 	}
 	if(psz && strcmp(psz,pSS->getValue(AP_STRING_ID_DLG_Styles_DefCurrent))== 0)
 	{
 			// TODO: do a real error dialog
 		sprintf(message,"%s%s%s",pSS->getValue(AP_STRING_ID_DLG_Styles_ErrNotTitle1),psz,pSS->getValue(AP_STRING_ID_DLG_Styles_ErrNotTitle2));
-		messageBoxOK((const char *) message);
+		//messageBoxOK((const char *) message);
 		return;
 	}
 
-	g_snprintf((gchar *) m_newStyleName,40,"%s",psz);
+	snprintf((char *) m_newStyleName,40,"%s",psz);
 	addOrReplaceVecAttribs(PT_NAME_ATTRIBUTE_NAME,getNewStyleName());
-#endif
 }
 
 /*!
@@ -1162,12 +1159,11 @@ void AP_QNXDialog_Styles::new_styleName(void)
  */
 void AP_QNXDialog_Styles::event_RemoveProperty(void)
 {
-#if 0
-	gchar * psz = gtk_entry_get_text( GTK_ENTRY(m_wDeletePropEntry));
+	char * psz = NULL;
+	PtGetResource(m_wDeletePropEntry, Pt_ARG_TEXT_STRING, &psz, 0);
 	removeVecProp(psz);
 	rebuildDeleteProps();
 	updateCurrentStyle();
-#endif
 }
 
 void AP_QNXDialog_Styles::rebuildDeleteProps(void)
@@ -1196,13 +1192,13 @@ void AP_QNXDialog_Styles::rebuildDeleteProps(void)
  */
 void AP_QNXDialog_Styles::event_basedOn(void)
 {
-#if 0
-	gchar * psz = gtk_entry_get_text( GTK_ENTRY( m_wBasedOnEntry));
-	g_snprintf((gchar *) m_basedonName,40,"%s",psz);
+	char * psz = NULL;
+	PtGetResource(m_wBasedOnEntry, Pt_ARG_TEXT_STRING, &psz, 0);
+
+	snprintf((char *) m_basedonName,40,"%s",psz);
 	addOrReplaceVecAttribs("basedon",getBasedonName());
 	fillVecWithProps(getBasedonName(),false);
 	updateCurrentStyle();
-#endif
 }
 
 
@@ -1211,11 +1207,11 @@ void AP_QNXDialog_Styles::event_basedOn(void)
  */
 void AP_QNXDialog_Styles::event_followedBy(void)
 {
-#if 0
-	gchar * psz = gtk_entry_get_text( GTK_ENTRY(m_wFollowingEntry));
-	g_snprintf((gchar *) m_followedbyName,40,"%s",psz);
+	char * psz = NULL;
+	PtGetResource(m_wFollowingEntry, Pt_ARG_TEXT_STRING, &psz, 0);
+
+	snprintf((char *) m_followedbyName,40,"%s",psz);
 	addOrReplaceVecAttribs("followedby",getFollowedbyName());
-#endif
 }
 
 
@@ -1224,15 +1220,15 @@ void AP_QNXDialog_Styles::event_followedBy(void)
  */
 void AP_QNXDialog_Styles::event_styleType(void)
 {
-#if 0
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
-	gchar * psz = gtk_entry_get_text( GTK_ENTRY(m_wStyleTypeEntry));
-	g_snprintf((gchar *) m_styleType,40,"%s",psz);
+	char * psz = NULL;
+	PtGetResource(m_wStyleTypeEntry, Pt_ARG_TEXT_STRING, &psz, 0);
+
+	snprintf((char *) m_styleType,40,"%s",psz);
 	const XML_Char * pszSt = "P";
 	if(strstr(m_styleType, pSS->getValue(AP_STRING_ID_DLG_Styles_ModifyCharacter)) != 0)
 		pszSt = "C";
 	addOrReplaceVecAttribs("type",pszSt);
-#endif
 }
 
 void AP_QNXDialog_Styles::event_Modify_Cancel(void)
@@ -1304,28 +1300,28 @@ void  AP_QNXDialog_Styles::modifyRunModal(void)
 	}
 	PtModalEnd(MODAL_END_ARG(count));
 
-#if 0
-	if(m_wModifyDialog && GTK_IS_WIDGET(m_wModifyDialog)) 
+/*
+	if(m_wModifyDialog) 
 	{
 		if(m_gbasedOnStyles != NULL)
 		{	
-			g_list_free (m_gbasedOnStyles);
+			//g_list_free (m_gbasedOnStyles);
 			m_gbasedOnStyles = NULL;
 		}
 
 		if(m_gfollowedByStyles != NULL)
 		{
-			g_list_free (m_gfollowedByStyles);
+			//g_list_free (m_gfollowedByStyles);
 			m_gfollowedByStyles = NULL;
 		}
 
 		if(m_gStyleType != NULL)
 		{
-			g_list_free (m_gStyleType);
+			//g_list_free (m_gStyleType);
 			m_gStyleType = NULL;
 		}
 	}
-#endif
+*/
 
 	destroyAbiPreview();
 	DELETEP(m_pAbiPreviewGR);
@@ -1411,16 +1407,17 @@ void  AP_QNXDialog_Styles::setModifyDescription( const char * desc)
 
 bool  AP_QNXDialog_Styles::_populateModify(void)
 {
-#if 0
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
-//
-// Don't do any callback while setting up stuff here.
-//
+
+	//
+	// Don't do any callback while setting up stuff here.
+	//
 	setModifySignalBlocked(true);
 	setModifyDescription( m_curStyleDesc.c_str());
-//
-// Get Style name and put in in the text entry
-//
+
+	//
+	// Get Style name and put in in the text entry
+	//
 	const char * szCurrentStyle = NULL;
 	if(!isNew())
 	{
@@ -1428,21 +1425,27 @@ bool  AP_QNXDialog_Styles::_populateModify(void)
 		if(!szCurrentStyle)
 		{
 			// TODO: change me to use a real messagebox
-			messageBoxOK( pSS->getValue(AP_STRING_ID_DLG_Styles_ErrNoStyle));
+			//messageBoxOK( pSS->getValue(AP_STRING_ID_DLG_Styles_ErrNoStyle));
 			m_answer = AP_Dialog_Styles::a_CANCEL;
 			return false;
 		}
+		PtSetResource(m_wStyleNameEntry, Pt_ARG_TEXT_STRING, getCurrentStyle(), 0);
+/*
 		gtk_entry_set_text (GTK_ENTRY(m_wStyleNameEntry), getCurrentStyle());
 		gtk_entry_set_editable( GTK_ENTRY(m_wStyleNameEntry),FALSE );
+*/
 	}
 	else
 	{
+/*
 		gtk_entry_set_editable( GTK_ENTRY(m_wStyleNameEntry),TRUE );
+*/
 	}
-//
-// Next interogate the current style and find the based on and followed by
-// Styles
-//
+
+	//
+	// Next interogate the current style and find the based on and followed by
+	// Styles
+	//
 	const char * szBasedOn = NULL;
 	const char * szFollowedBy = NULL;
 	PD_Style * pBasedOnStyle = NULL;
@@ -1455,19 +1458,20 @@ bool  AP_QNXDialog_Styles::_populateModify(void)
 		if(!pStyle)
 		{
 			// TODO: do a real error dialog
-			messageBoxOK( pSS->getValue(AP_STRING_ID_DLG_Styles_ErrStyleNot));
+			//messageBoxOK( pSS->getValue(AP_STRING_ID_DLG_Styles_ErrStyleNot));
 			m_answer = AP_Dialog_Styles::a_CANCEL;
 			return false;
 		}
-//
-// Valid style get the Based On and followed by values
-//
+		//
+		// Valid style get the Based On and followed by values
+		//
 	    pBasedOnStyle = pStyle->getBasedOn();
 		pFollowedByStyle = pStyle->getFollowedBy();
 	}
-//
-// Next make a glists of all styles and attach them to the BasedOn and FollowedBy
-//
+
+	//
+	// Next make a glists of all styles and attach them to the BasedOn and FollowedBy
+	//
 	size_t nStyles = getDoc()->getStyleCount();
 	const char * name = NULL;
 	const PD_Style * pcStyle = NULL;
@@ -1481,67 +1485,87 @@ bool  AP_QNXDialog_Styles::_populateModify(void)
 		}
 		if(pFollowedByStyle && pcStyle == pFollowedByStyle)
 			szFollowedBy = name;
-		if(szCurrentStyle && strcmp(name,szCurrentStyle) != 0)
-			m_gbasedOnStyles = g_list_append (m_gbasedOnStyles, (gpointer) name);
-		else if(szCurrentStyle == NULL)
-			m_gbasedOnStyles = g_list_append (m_gbasedOnStyles, (gpointer) name);
+		if(szCurrentStyle && strcmp(name,szCurrentStyle) != 0) {
+			//m_gbasedOnStyles = g_list_append (m_gbasedOnStyles, (gpointer) name);
+			PtListAddItems(m_wBasedOnEntry, &name, 1, 0);
+		}
+		else if(szCurrentStyle == NULL) {
+			//m_gbasedOnStyles = g_list_append (m_gbasedOnStyles, (gpointer) name);
+			PtListAddItems(m_wBasedOnEntry, &name, 1, 0);
+		}
 
-		m_gfollowedByStyles = g_list_append (m_gfollowedByStyles, (gpointer) name);
+		//m_gfollowedByStyles = g_list_append (m_gfollowedByStyles, (gpointer) name);
+		PtListAddItems(m_wFollowingEntry, &name, 1, 0);
 	}
+/*
 	m_gfollowedByStyles = g_list_append (m_gfollowedByStyles, (gpointer)  pSS->getValue(AP_STRING_ID_DLG_Styles_DefCurrent));
 	m_gbasedOnStyles = g_list_append (m_gbasedOnStyles, (gpointer)  pSS->getValue(AP_STRING_ID_DLG_Styles_DefNone));
 	m_gStyleType = g_list_append(m_gStyleType, (gpointer) pSS->getValue(AP_STRING_ID_DLG_Styles_ModifyParagraph) );
 	m_gStyleType = g_list_append(m_gStyleType, (gpointer) pSS->getValue(AP_STRING_ID_DLG_Styles_ModifyCharacter));
+*/
+	const char *item = pSS->getValue(AP_STRING_ID_DLG_Styles_DefCurrent);
+	PtListAddItems(m_wFollowingEntry, &item, 1, 0);
+
+	item = pSS->getValue(AP_STRING_ID_DLG_Styles_DefNone);
+	PtListAddItems(m_wBasedOnEntry, &item, 1, 0);
+
+	item = pSS->getValue(AP_STRING_ID_DLG_Styles_ModifyParagraph);
+	PtListAddItems(m_wStyleTypeEntry, &item, 1, 0);
+	item = pSS->getValue(AP_STRING_ID_DLG_Styles_ModifyCharacter);
+	PtListAddItems(m_wStyleTypeEntry, &item, 1, 0);
  
-//
-// Set the popdown list
-//
-	gtk_combo_set_popdown_strings( GTK_COMBO(m_wBasedOnCombo),m_gbasedOnStyles);
-	gtk_combo_set_popdown_strings( GTK_COMBO(m_wFollowingCombo),m_gfollowedByStyles);
+/*
+	PtSetArg(m_wBasedOnEntry, Pt_ARG_CBOX_SEL_ITEM, 1, 0);
+	PtSetArg(m_wFollowingEntry, Pt_ARG_CBOX_SEL_ITEM, 1, 0);
 	if(isNew())
 	{
-		gtk_combo_set_popdown_strings( GTK_COMBO(m_wStyleTypeCombo),m_gStyleType);
+		PtSetArg(m_wStyleTypeCombo, Pt_ARG_CBOX_SEL_ITEM, 1, 0);
 	}
-//
-// OK here we set intial values for the basedOn and followedBy
-//
+*/
+
+	//
+	// OK here we set intial values for the basedOn and followedBy
+	//
 	if(!isNew())
 	{
 		if(pBasedOnStyle != NULL)
-			gtk_entry_set_text (GTK_ENTRY(m_wBasedOnEntry),szBasedOn);
+			PtSetResource(m_wBasedOnEntry, Pt_ARG_TEXT_STRING, szBasedOn, 0);
 		else
-			gtk_entry_set_text (GTK_ENTRY(m_wBasedOnEntry), pSS->getValue(AP_STRING_ID_DLG_Styles_DefNone));
+			PtSetResource(m_wBasedOnEntry, Pt_ARG_TEXT_STRING, pSS->getValue(AP_STRING_ID_DLG_Styles_DefNone), 0);
 		if(pFollowedByStyle != NULL)
-			gtk_entry_set_text (GTK_ENTRY(m_wFollowingEntry),szFollowedBy);
+			PtSetResource(m_wFollowingEntry, Pt_ARG_TEXT_STRING, szFollowedBy, 0);
 		else
-			gtk_entry_set_text (GTK_ENTRY(m_wFollowingEntry), pSS->getValue(AP_STRING_ID_DLG_Styles_DefCurrent));
+			PtSetResource(m_wFollowingEntry, Pt_ARG_TEXT_STRING, pSS->getValue(AP_STRING_ID_DLG_Styles_DefCurrent), 0);
 		if(strstr(getAttsVal("type"),"P") != 0)
 		{
-			gtk_entry_set_text (GTK_ENTRY(m_wStyleTypeEntry),
-								pSS->getValue(AP_STRING_ID_DLG_Styles_ModifyParagraph));
+			PtSetResource(m_wStyleTypeEntry, Pt_ARG_TEXT_STRING, pSS->getValue(AP_STRING_ID_DLG_Styles_ModifyParagraph), 0);
 		}
 		else
 		{
-			gtk_entry_set_text (GTK_ENTRY(m_wStyleTypeEntry),
-								pSS->getValue(AP_STRING_ID_DLG_Styles_ModifyCharacter));
+			PtSetResource(m_wStyleTypeEntry, Pt_ARG_TEXT_STRING, pSS->getValue(AP_STRING_ID_DLG_Styles_ModifyCharacter), 0);
 		}
 	}
 	else
 	{
-//
-// Hardwire defaults for "new"
-//
+		//
+		// Hardwire defaults for "new"
+		//
+/*
 		gtk_entry_set_text (GTK_ENTRY(m_wBasedOnEntry), pSS->getValue(AP_STRING_ID_DLG_Styles_DefNone));
 		gtk_entry_set_text (GTK_ENTRY(m_wFollowingEntry), pSS->getValue(AP_STRING_ID_DLG_Styles_DefCurrent));
 		gtk_entry_set_text (GTK_ENTRY(m_wStyleTypeEntry),
 							pSS->getValue(AP_STRING_ID_DLG_Styles_ModifyParagraph));
+*/
 	}
+/*
 	gtk_entry_set_editable(GTK_ENTRY(m_wFollowingEntry),FALSE );
 	gtk_entry_set_editable(GTK_ENTRY(m_wBasedOnEntry),FALSE );
 	gtk_entry_set_editable(GTK_ENTRY(m_wStyleTypeEntry),FALSE );
-//
-// Set these in our attributes vector
-//
+*/
+
+	//
+	// Set these in our attributes vector
+	//
 	event_basedOn();
 	event_followedBy();
 	event_styleType();
@@ -1553,19 +1577,17 @@ bool  AP_QNXDialog_Styles::_populateModify(void)
 	{
 		fillVecWithProps(szCurrentStyle,true);
 	}
-//
-// Allow callback's now.
-//
+	//
+	// Allow callback's now.
+	//
 	setModifySignalBlocked(false);
-//
-// Now set the list of properties which can be deleted.
-//
+
+	//
+	// Now set the list of properties which can be deleted.
+	//
 	rebuildDeleteProps();
-	gtk_entry_set_text(GTK_ENTRY(m_wDeletePropEntry),"");
+	PtSetResource(m_wDeletePropEntry, Pt_ARG_TEXT_STRING, "", 0);
 	return true;
-#else
-	return true;
-#endif
 }
 
 void   AP_QNXDialog_Styles::event_ModifyParagraph()

@@ -50,15 +50,15 @@ public:
 	void                            event_paraPreviewExposed(void);
 	void                            event_charPreviewExposed(void);
 	
-	virtual void			event_OK(void);
-	virtual void			event_Cancel(void);
+	virtual void event_Apply(void);
+	virtual void event_Close(void);
 
 	virtual void event_DeleteClicked(void);
 	virtual void event_NewClicked(void);
 	virtual void event_ModifyClicked(void);
 	virtual void event_ClistClicked(int row, int col);
 	virtual void event_ListClicked(const char * which);
-	virtual void			event_WindowDelete(void);
+	virtual void event_WindowDelete(void);
 	void new_styleName(void);
 
 /////////////////////////////////////////////////////////////////////////
@@ -68,6 +68,7 @@ public:
 	void         event_Modify_OK(void);
 	void         event_Modify_Cancel(void);
 	void         event_ModifyDelete(void);
+	int 		 event_ModifySelected(PtWidget_t *w, void *data, PtCallbackInfo_t *info);
 	void         event_ModifyParagraph();
 	void         event_ModifyFont();
 	void         event_ModifyNumbering();
@@ -92,7 +93,7 @@ protected:
 
 	// private construction functions
 	virtual PtWidget_t * _constructWindow(void);
-	PtWidget_t * _constructWindowContents(PtWidget_t * parent);
+	PtWidget_t 		  * _constructWindowContents(PtWidget_t * parent);
 	void				_populateWindowData(void);
 	void                            _populateCList(void) const;
 	void 				_storeWindowData(void) const;
@@ -106,8 +107,8 @@ protected:
 	// pointers to widgets we need to query/set
 	PtWidget_t * m_windowMain;
 
-	PtWidget_t * m_wbuttonOk;
-	PtWidget_t * m_wbuttonCancel;
+	PtWidget_t * m_wbuttonApply;
+	PtWidget_t * m_wbuttonClose;
 	PtWidget_t * m_wbuttonNew;
 	PtWidget_t * m_wbuttonModify;
 	PtWidget_t * m_wbuttonDelete;
