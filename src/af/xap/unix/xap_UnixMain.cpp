@@ -80,7 +80,16 @@ int AP_UnixApp::main(const char * szAppName, int argc, char ** argv)
 				break;
 			}
 		}
-		pFirstUnixFrame->loadDocument(argv[i]);
+
+		// try to load the document named on the command line,
+		// if that fails, create an new, untitled document window.
+		
+		if (!pFirstUnixFrame->loadDocument(argv[i]))
+		{
+			// TODO: warn user that we couldn't open that file
+			
+			pFirstUnixFrame->loadDocument(NULL);
+		}
 	}
 
 	// turn over control to gtk
