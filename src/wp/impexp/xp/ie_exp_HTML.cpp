@@ -4597,6 +4597,12 @@ bool s_HTML_Listener::populateStrux (PL_StruxDocHandle sdh,
 		case PTX_SectionHdrFtr:
 			m_bIgnoreTillNextSection = true;
 			return true;
+		case PTX_SectionTOC:
+			m_bIgnoreTillEnd = true;
+			return true;
+		case PTX_EndTOC:
+			m_bIgnoreTillEnd = false;
+			return true;
 		default:
 			UT_DEBUGMSG(("WARNING: ie_exp_HTML.cpp: unhandled strux type!\n"));
 			return false;
