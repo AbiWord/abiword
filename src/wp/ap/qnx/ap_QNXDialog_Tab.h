@@ -64,8 +64,24 @@ protected:
 	// clear all the items from the tab list - only gui side
 	virtual void			_clearList();
 
-
 	/*** End inherited ***/
+	static int s_ok_clicked			(PtWidget_t *w, void *data, PtCallbackInfo_t *info); 
+	static int s_cancel_clicked		(PtWidget_t *w, void *data, PtCallbackInfo_t *info);
+	static int s_apply_clicked			(PtWidget_t *w, void *data, PtCallbackInfo_t *info);
+
+	static int s_set_clicked			(PtWidget_t *w, void *data, PtCallbackInfo_t *info);
+	static int s_clear_clicked			(PtWidget_t *w, void *data, PtCallbackInfo_t *info);
+	static int s_clear_all_clicked		(PtWidget_t *w, void *data, PtCallbackInfo_t *info);
+
+	static int s_delete_clicked		(PtWidget_t *w, void *data, PtCallbackInfo_t *info);
+
+	static int s_list_select			(PtWidget_t *w, void *data, PtCallbackInfo_t *info);
+	static int s_list_deselect			(PtWidget_t *w, void *data, PtCallbackInfo_t *info);
+
+	static int s_edit_change			(PtWidget_t *w, void *data, PtCallbackInfo_t *info);
+	static int s_alignment_change		(PtWidget_t *w, void *data, PtCallbackInfo_t *info);
+	static int s_leader_change 		(PtWidget_t *w, void *data, PtCallbackInfo_t *info);
+	
 	PtWidget_t *			_lookupWidget ( tControl id );
 	PtWidget_t *			_constructWindow(void);
     void 					event_OK(void);

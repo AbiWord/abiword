@@ -165,7 +165,6 @@ PtWidget_t* AP_QNXDialog_Tab::_constructWindow (void )
 	PtSetArg(&args[n++], Pt_ARG_WINDOW_TITLE, pSS->getValue( AP_STRING_ID_DLG_Tab_TabTitle), 0);
 	windowTabs = PtCreateWidget(PtWindow, NULL, n, args);
 
-
 	n = 0;
 	PtSetArg(&args[n++], Pt_ARG_GROUP_ORIENTATION, Pt_GROUP_VERTICAL, 0);
 	PtWidget_t *vgroup = PtCreateWidget(PtGroup, windowTabs, n, args);
@@ -181,19 +180,22 @@ PtWidget_t* AP_QNXDialog_Tab::_constructWindow (void )
 	vtmpgroup = PtCreateWidget(PtGroup, hcontrolgroup, n, args);
 
 	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, "Tab stop position: ", 0);
+	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, UT_XML_transNoAmpersands(pSS->getValue( AP_STRING_ID_DLG_Tab_Label_TabPosition)), 0);
 	PtCreateWidget(PtLabel, vtmpgroup, n, args);
 
 	n = 0;
 	PtSetArg(&args[n++], Pt_ARG_WIDTH, 2 * ABI_DEFAULT_BUTTON_WIDTH, 0);
 	PtWidget_t *entryTabEntry = PtCreateWidget(PtText, vtmpgroup, n, args);
+	PtAddCallback(entryTabEntry, Pt_CB_ACTIVATE, s_edit_change, this);
 
 	n = 0;
 	PtSetArg(&args[n++], Pt_ARG_WIDTH, 2 * ABI_DEFAULT_BUTTON_WIDTH, 0);
+	PtSetArg(&args[n++], Pt_ARG_VISIBLE_COUNT, 5, 0);
 	PtWidget_t *listTabs = PtCreateWidget(PtList, vtmpgroup, n, args);
+	PtAddCallback(listTabs, Pt_CB_SELECTION, s_list_select, this);
 
 	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, "Tab stops to be cleared: ", 0);
+	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, UT_XML_transNoAmpersands(pSS->getValue( AP_STRING_ID_DLG_Tab_Label_TabToClear)), 0);
 	PtCreateWidget(PtLabel, vtmpgroup, n, args);
 
 	/* Choices ... */
@@ -205,90 +207,135 @@ PtWidget_t* AP_QNXDialog_Tab::_constructWindow (void )
 	htmpgroup = PtCreateWidget(PtGroup, vtmpgroup, n, args);
 
 	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, "Default tab stops: ", 0);
+	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, UT_XML_transNoAmpersands(pSS->getValue( AP_STRING_ID_DLG_Tab_Label_DefaultTS)), 0);
 	PtCreateWidget(PtLabel, htmpgroup, n, args);
 
 	n = 0;
-	PtWidget_t *spinbuttonTabstop = PtCreateWidget(PtNumericInteger, htmpgroup, n, args);
+	PtWidget_t *spinbuttonTabstop = PtCreateWidget(PtNumericFloat, htmpgroup, n, args);
+
+	PtWidget_t *radgroup;
 
 	PtWidget_t *agroup;
 	n = 0;
 	PtSetArg(&args[n++], Pt_ARG_CONTAINER_FLAGS, Pt_SHOW_TITLE, Pt_SHOW_TITLE);
-	PtSetArg(&args[n++], Pt_ARG_TITLE, "Alignment", 0);
+	PtSetArg(&args[n++], Pt_ARG_TITLE, UT_XML_transNoAmpersands(pSS->getValue( AP_STRING_ID_DLG_Tab_Label_Alignment)), 0);
 	PtSetArg(&args[n++], Pt_ARG_GROUP_ORIENTATION, Pt_GROUP_VERTICAL, 0);
+	PtSetArg(&args[n++], Pt_ARG_GROUP_FLAGS, Pt_GROUP_EXCLUSIVE, Pt_GROUP_EXCLUSIVE);
 	agroup = PtCreateWidget(PtGroup, vtmpgroup, n, args);
 
 	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, "Left", 0);
-	PtWidget_t *radiobuttonLeft = PtCreateWidget(PtToggleButton, agroup, n, args);
+	radgroup = PtCreateWidget(PtGroup, agroup, n, args);
 	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, "Center", 0);
-	PtWidget_t *radiobuttonCenter = PtCreateWidget(PtToggleButton, agroup, n, args);
+	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, UT_XML_transNoAmpersands(pSS->getValue( AP_STRING_ID_DLG_Tab_Radio_Left)), 0);
+	PtSetArg(&args[n++], Pt_ARG_WIDTH, 2*ABI_DEFAULT_BUTTON_WIDTH, 0);
+	PtWidget_t *radiobuttonLeft = PtCreateWidget(PtToggleButton, radgroup, n, args);
 	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, "Right", 0);
-	PtWidget_t *radiobuttonRight = PtCreateWidget(PtToggleButton, agroup, n, args);
-	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, "Decimal", 0);
-	PtWidget_t *radiobuttonDecimal = PtCreateWidget(PtToggleButton, agroup, n, args);
-	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, "Bar", 0);
-	PtWidget_t *radiobuttonBar = PtCreateWidget(PtToggleButton, agroup, n, args);
+	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, UT_XML_transNoAmpersands(pSS->getValue( AP_STRING_ID_DLG_Tab_Radio_Decimal)), 0);
+	PtSetArg(&args[n++], Pt_ARG_WIDTH, 2*ABI_DEFAULT_BUTTON_WIDTH, 0);
+	PtWidget_t *radiobuttonDecimal = PtCreateWidget(PtToggleButton, radgroup, n, args);
 
+	n = 0;
+	radgroup = PtCreateWidget(PtGroup, agroup, n, args);
+	n = 0;
+	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, UT_XML_transNoAmpersands(pSS->getValue( AP_STRING_ID_DLG_Tab_Radio_Center)), 0);
+	PtSetArg(&args[n++], Pt_ARG_WIDTH, 2*ABI_DEFAULT_BUTTON_WIDTH, 0);
+	PtWidget_t *radiobuttonCenter = PtCreateWidget(PtToggleButton, radgroup, n, args);
+	n = 0;
+	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, UT_XML_transNoAmpersands(pSS->getValue( AP_STRING_ID_DLG_Tab_Radio_Bar)), 0);
+	PtSetArg(&args[n++], Pt_ARG_WIDTH, 2*ABI_DEFAULT_BUTTON_WIDTH, 0);
+	PtWidget_t *radiobuttonBar = PtCreateWidget(PtToggleButton, radgroup, n, args);
+
+	n = 0;
+	radgroup = PtCreateWidget(PtGroup, agroup, n, args);
+	n = 0;
+	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, UT_XML_transNoAmpersands(pSS->getValue( AP_STRING_ID_DLG_Tab_Radio_Right)), 0);
+	PtSetArg(&args[n++], Pt_ARG_WIDTH, 2*ABI_DEFAULT_BUTTON_WIDTH, 0);
+	PtWidget_t *radiobuttonRight = PtCreateWidget(PtToggleButton, radgroup, n, args);
 
 	PtWidget_t *lgroup;
 	n = 0;
 	PtSetArg(&args[n++], Pt_ARG_CONTAINER_FLAGS, Pt_SHOW_TITLE, Pt_SHOW_TITLE);
-	PtSetArg(&args[n++], Pt_ARG_TITLE, "Leader", 0);
+	PtSetArg(&args[n++], Pt_ARG_TITLE, UT_XML_transNoAmpersands(pSS->getValue( AP_STRING_ID_DLG_Tab_Label_Leader)), 0);
 	PtSetArg(&args[n++], Pt_ARG_GROUP_ORIENTATION, Pt_GROUP_VERTICAL, 0);
+	PtSetArg(&args[n++], Pt_ARG_GROUP_FLAGS, Pt_GROUP_EXCLUSIVE, Pt_GROUP_EXCLUSIVE);
 	lgroup = PtCreateWidget(PtGroup, vtmpgroup, n, args);
 
 	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, "None", 0);
-	PtWidget_t *radiobuttonLeaderNone = PtCreateWidget(PtToggleButton, lgroup, n, args);
+	radgroup = PtCreateWidget(PtGroup, lgroup, n, args);
 	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, "..........", 0);
-	PtWidget_t *radiobuttonLeaderDot = PtCreateWidget(PtToggleButton, lgroup, n, args);
+	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING,  UT_XML_transNoAmpersands(pSS->getValue( AP_STRING_ID_DLG_Tab_Radio_None)), 0);
+	PtSetArg(&args[n++], Pt_ARG_WIDTH, 2*ABI_DEFAULT_BUTTON_WIDTH, 0);
+	PtWidget_t *radiobuttonLeaderNone = PtCreateWidget(PtToggleButton, radgroup, n, args);
 	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, "----------", 0);
-	PtWidget_t *radiobuttonLeaderDash = PtCreateWidget(PtToggleButton, lgroup, n, args);
+	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, UT_XML_transNoAmpersands(pSS->getValue( AP_STRING_ID_DLG_Tab_Radio_Dash)), 0);
+	PtSetArg(&args[n++], Pt_ARG_WIDTH, 2*ABI_DEFAULT_BUTTON_WIDTH, 0);
+	PtWidget_t *radiobuttonLeaderDash = PtCreateWidget(PtToggleButton, radgroup, n, args);
+
 	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, "__________", 0);
-	PtWidget_t *radiobuttonLeaderUnderline = PtCreateWidget(PtToggleButton, lgroup, n, args);
+	radgroup = PtCreateWidget(PtGroup, lgroup, n, args);
+	n = 0;
+	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, UT_XML_transNoAmpersands(pSS->getValue( AP_STRING_ID_DLG_Tab_Radio_Dot)), 0);
+	PtSetArg(&args[n++], Pt_ARG_WIDTH, 2*ABI_DEFAULT_BUTTON_WIDTH, 0);
+	PtWidget_t *radiobuttonLeaderDot = PtCreateWidget(PtToggleButton, radgroup, n, args);
+	n = 0;
+	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, UT_XML_transNoAmpersands(pSS->getValue( AP_STRING_ID_DLG_Tab_Radio_Underline)), 0);
+	PtSetArg(&args[n++], Pt_ARG_WIDTH, 2*ABI_DEFAULT_BUTTON_WIDTH, 0);
+	PtWidget_t *radiobuttonLeaderUnderline = PtCreateWidget(PtToggleButton, radgroup, n, args);
 
 	/* Setting buttons */
 	n = 0;
 	htmpgroup = PtCreateWidget(PtGroup, vgroup, n, args);
 
 	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, "Set", 0);
-	PtWidget_t *buttonSet = PtCreateWidget(PtButton, htmpgroup, n, args);
+	PtSetArg(&args[n++], Pt_ARG_WIDTH, 2 * ABI_DEFAULT_BUTTON_WIDTH, 0);
+	PtCreateWidget(PtLabel, htmpgroup, n, args);
 
 	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, "Clear", 0);
+	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, UT_XML_transNoAmpersands(pSS->getValue( AP_STRING_ID_DLG_Tab_Button_Set)), 0);
+	PtSetArg(&args[n++], Pt_ARG_WIDTH, ABI_DEFAULT_BUTTON_WIDTH, 0);
+	PtWidget_t *buttonSet = PtCreateWidget(PtButton, htmpgroup, n, args);
+	PtAddCallback(buttonSet, Pt_CB_ACTIVATE, s_set_clicked, this);
+
+	n = 0;
+	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, UT_XML_transNoAmpersands(pSS->getValue( AP_STRING_ID_DLG_Tab_Button_Clear)), 0);
+	PtSetArg(&args[n++], Pt_ARG_WIDTH, ABI_DEFAULT_BUTTON_WIDTH, 0);
 	PtWidget_t *buttonClear = PtCreateWidget(PtButton, htmpgroup, n, args);
+	PtAddCallback(buttonClear, Pt_CB_ACTIVATE, s_clear_clicked, this);
 	
 	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, "Clear All", 0);
+	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, UT_XML_transNoAmpersands(pSS->getValue( AP_STRING_ID_DLG_Tab_Button_ClearAll)), 0);
+	PtSetArg(&args[n++], Pt_ARG_WIDTH, ABI_DEFAULT_BUTTON_WIDTH, 0);
 	PtWidget_t *buttonClearAll = PtCreateWidget(PtButton, htmpgroup, n, args);
+	PtAddCallback(buttonClearAll, Pt_CB_ACTIVATE, s_clear_all_clicked, this);
 
 	/* Other buttons */
 	n = 0;
 	PtSetArg(&args[n++], Pt_ARG_FLAGS, Pt_HIGHLIGHTED, Pt_HIGHLIGHTED);
-	PtSetArg(&args[n++], Pt_ARG_BASIC_FLAGS, Pt_TOP_BEVEL, Pt_ALL);
+	PtSetArg(&args[n++], Pt_ARG_BASIC_FLAGS, Pt_TOP_BEVEL | Pt_TOP_OUTLINE, Pt_ALL);
 	PtSetArg(&args[n++], Pt_ARG_BEVEL_WIDTH, 1, 0);
 	htmpgroup = PtCreateWidget(PtGroup, vgroup, n, args);
 
 	n = 0;
+	PtSetArg(&args[n++], Pt_ARG_WIDTH, 2*ABI_DEFAULT_BUTTON_WIDTH, 0);
+	PtCreateWidget(PtLabel, htmpgroup, n, args);
+
+	n = 0;
 	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, "Apply", 0);
+	PtSetArg(&args[n++], Pt_ARG_WIDTH, ABI_DEFAULT_BUTTON_WIDTH, 0);
 	PtWidget_t *buttonApply = PtCreateWidget(PtButton, htmpgroup, n, args);
+	PtAddCallback(buttonApply, Pt_CB_ACTIVATE, s_apply_clicked, this);
 
 	n = 0;
 	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, "OK", 0);
+	PtSetArg(&args[n++], Pt_ARG_WIDTH, ABI_DEFAULT_BUTTON_WIDTH, 0);
 	PtWidget_t *buttonOK = PtCreateWidget(PtButton, htmpgroup, n, args);
+	PtAddCallback(buttonOK, Pt_CB_ACTIVATE, s_ok_clicked, this);
 	
 	n = 0;
 	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, "Cancel", 0);
+	PtSetArg(&args[n++], Pt_ARG_WIDTH, ABI_DEFAULT_BUTTON_WIDTH, 0);
 	PtWidget_t *buttonCancel = PtCreateWidget(PtButton, htmpgroup, n, args);
+	PtAddCallback(buttonCancel, Pt_CB_ACTIVATE, s_cancel_clicked, this);
 
 	m_Widgets.setNthItem( id_EDIT_TAB,				entryTabEntry,		NULL);
 	m_Widgets.setNthItem( id_LIST_TAB,				listTabs,			NULL);
@@ -312,6 +359,40 @@ PtWidget_t* AP_QNXDialog_Tab::_constructWindow (void )
 	m_Widgets.setNthItem( id_BUTTON_OK,				buttonOK,					NULL);
 	m_Widgets.setNthItem( id_BUTTON_CANCEL,			buttonCancel,				NULL);
 	m_Widgets.setNthItem( id_BUTTON_APPLY,			buttonApply,				NULL);
+
+	UT_uint32 id, userdata;
+
+	// create user data tControl -> stored in widgets 
+	for ( id = 0; id < id_last; id++ ) 
+	{
+		PtWidget_t *w = _lookupWidget( (tControl) id );
+
+		UT_ASSERT( w );
+
+		/* check to see if there is any data already stored there (note, will
+		 * not work if 0's is stored in multiple places  */
+		PtSetResource(w, Pt_ARG_USER_DATA, &id, sizeof(id));
+	}
+
+	for ( id = id_ALIGN_LEFT; id <= id_ALIGN_BAR; id++)
+	{
+		PtWidget_t *w = _lookupWidget((tControl)id);
+
+		//We want the matching eTabType from fl_BlockLayout.h
+		userdata = id - id_ALIGN_LEFT + 1;
+		PtSetResource(w, Pt_ARG_USER_DATA, &userdata, sizeof(userdata));
+		PtAddCallback(w, Pt_CB_ACTIVATE, s_alignment_change, this);
+	}
+
+	for ( id = id_LEADER_NONE; id <= id_LEADER_UNDERLINE; id++)
+	{
+		PtWidget_t *w = _lookupWidget((tControl)id);
+
+		//We want the matching eTabLeader from fl_BlockLayout.h
+		userdata = id - id_LEADER_NONE;
+		PtSetResource(w, Pt_ARG_USER_DATA, &userdata, sizeof(userdata));
+		PtAddCallback(w, Pt_CB_ACTIVATE, s_leader_change, this);
+	}
 	
 	return windowTabs;
 }
@@ -331,6 +412,7 @@ PtWidget_t *AP_QNXDialog_Tab::_lookupWidget ( tControl id )
 void AP_QNXDialog_Tab::_controlEnable( tControl id, UT_Bool value )
 {
 	PtWidget_t *w = _lookupWidget(id);
+	UT_ASSERT(w);
 	if (w) {
 		int flags = 0;
 		flags = (value == UT_TRUE) ? Pt_SELECTABLE : (Pt_BLOCKED | Pt_GHOST);
@@ -338,35 +420,233 @@ void AP_QNXDialog_Tab::_controlEnable( tControl id, UT_Bool value )
 	}
 }
 
+/*****************************************************************/
+
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+// Callbacks events
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+
+/*static*/ int AP_QNXDialog_Tab::s_ok_clicked(PtWidget_t *widget, void *data, PtCallbackInfo_t *info)
+{ 
+	AP_QNXDialog_Tab * dlg = (AP_QNXDialog_Tab *)data;
+	UT_ASSERT(dlg); 
+	dlg->event_OK(); 
+	return Pt_CONTINUE;
+}
+
+/*static*/ int AP_QNXDialog_Tab::s_cancel_clicked(PtWidget_t *widget, void *data, PtCallbackInfo_t *info)
+{ 
+	AP_QNXDialog_Tab * dlg = (AP_QNXDialog_Tab *)data;
+	UT_ASSERT(widget && dlg); 
+	dlg->event_Cancel(); 
+	return Pt_CONTINUE;
+}
+
+/*static*/ int AP_QNXDialog_Tab::s_apply_clicked(PtWidget_t *widget, void *data, PtCallbackInfo_t *info)
+{ 
+	AP_QNXDialog_Tab * dlg = (AP_QNXDialog_Tab *)data;
+	UT_ASSERT(widget && dlg); 
+	dlg->event_Apply(); 
+	return Pt_CONTINUE;
+}
+
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+// WP level events
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+ 
+/*static*/ int AP_QNXDialog_Tab::s_set_clicked(PtWidget_t *widget, void *data, PtCallbackInfo_t *info)
+{ 
+	AP_QNXDialog_Tab * dlg = (AP_QNXDialog_Tab *)data;
+	UT_ASSERT(widget && dlg); 
+	dlg->_event_Set();	
+	return Pt_CONTINUE;
+}
+
+/*static*/ int AP_QNXDialog_Tab::s_clear_clicked(PtWidget_t *widget, void *data, PtCallbackInfo_t *info)
+{ 
+	AP_QNXDialog_Tab * dlg = (AP_QNXDialog_Tab *)data;
+	UT_ASSERT(widget && dlg); 
+	dlg->_event_Clear(); 
+	return Pt_CONTINUE;
+}
+
+/*static*/ int AP_QNXDialog_Tab::s_clear_all_clicked(PtWidget_t *widget, void *data, PtCallbackInfo_t *info)
+{ 
+	AP_QNXDialog_Tab * dlg = (AP_QNXDialog_Tab *)data;
+	UT_ASSERT(widget && dlg); 
+	dlg->_event_ClearAll(); 
+	return Pt_CONTINUE;
+}
+
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+// Listbox stuff
+
+// TODO - This should be moved to XAP code, but the methods in which GTK and
+// windows handles selection/deselection differ so much, it's easier just to
+// code up the hooks directly.
+
+/*static*/ int AP_QNXDialog_Tab::s_list_select(PtWidget_t *widget, void *data, PtCallbackInfo_t *info)
+{
+	AP_QNXDialog_Tab * dlg = (AP_QNXDialog_Tab *)data;
+	PtListCallback_t * lcb = (PtListCallback_t *)info->cbdata;
+	UT_ASSERT(dlg && lcb && widget); 
+
+	//Clear all of our tags first
+	int index;
+	for (index=id_ALIGN_LEFT; index <= id_ALIGN_BAR; index++) {
+		PtSetResource(dlg->_lookupWidget((tControl)index), Pt_ARG_FLAGS, 0, Pt_SET);
+	}
+	for (index=id_LEADER_NONE; index <= id_LEADER_UNDERLINE; index++) {
+		PtSetResource(dlg->_lookupWidget((tControl)index), Pt_ARG_FLAGS, 0, Pt_SET);
+	}
+
+	// get the -1, 0.. (n-1) index
+	dlg->_event_TabSelected(lcb->item_pos - 1);
+	return Pt_CONTINUE;
+}
+
+/*static*/ int AP_QNXDialog_Tab::s_list_deselect(PtWidget_t *widget, void *data, PtCallbackInfo_t *info)
+{
+	AP_QNXDialog_Tab * dlg = (AP_QNXDialog_Tab *)data;
+	UT_ASSERT(widget && dlg); 
+	UT_DEBUGMSG(("AP_QNXDialog_Tab::s_list_deselect"));
+	return Pt_CONTINUE;
+}
+
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+// edit box stuff
+
+/*static*/ int AP_QNXDialog_Tab::s_edit_change(PtWidget_t *widget, void *data, PtCallbackInfo_t *info)
+{
+	AP_QNXDialog_Tab * dlg = (AP_QNXDialog_Tab *)data;
+	UT_ASSERT(widget && dlg); 
+	UT_DEBUGMSG(("AP_QNXDialog_Tab::s_edit_change"));
+	dlg->_event_TabChange();
+	return Pt_CONTINUE;
+}
+
+/*static*/ int AP_QNXDialog_Tab::s_alignment_change(PtWidget_t *widget, void *data, PtCallbackInfo_t *info)
+{
+	eTabType *id;
+	int		  index, *flags;
+	AP_QNXDialog_Tab * dlg = (AP_QNXDialog_Tab *)data;
+	UT_ASSERT(widget && dlg); 
+
+	// we're only interested in "i'm not toggled"
+/*
+	if ( dlg->m_bInSetCall || gtk_toggle_button_get_active( GTK_TOGGLE_BUTTON(widget)) == FALSE ) 
+		return;
+*/
+	PtGetResource(widget, Pt_ARG_FLAGS, &flags, 0);
+	if (!(*flags & Pt_SET)) {
+		return Pt_CONTINUE;
+	}
+
+	id = NULL;
+	PtGetResource(widget, Pt_ARG_USER_DATA, &id, 0);
+	dlg->m_current_alignment = *id;
+
+	for (index=id_ALIGN_LEFT; index <= id_ALIGN_BAR; index++) {
+		if ((*id) + id_ALIGN_LEFT - 1 == index) {
+			continue;
+		}
+		PtSetResource(dlg->_lookupWidget((tControl)index), Pt_ARG_FLAGS, 0, Pt_SET);
+	}
+
+	UT_DEBUGMSG(("AP_QNXDialog_Tab::s_alignment_change [%c]", AlignmentToChar(dlg->m_current_alignment)));
+
+	dlg->_event_AlignmentChange();
+	return Pt_CONTINUE;
+}
+
+/*static*/ int AP_QNXDialog_Tab::s_leader_change(PtWidget_t *widget, void *data, PtCallbackInfo_t *info)
+{
+	eTabLeader *id;
+	int 		index;
+	AP_QNXDialog_Tab * dlg = (AP_QNXDialog_Tab *)data;
+	UT_ASSERT(widget && dlg); 
+
+/*
+	// we're only interested in "i'm not toggled"
+	if ( dlg->m_bInSetCall || gtk_toggle_button_get_active( GTK_TOGGLE_BUTTON(widget)) == FALSE ) 
+		return;
+*/	
+
+	id = NULL;
+	PtGetResource(widget, Pt_ARG_USER_DATA, &id, 0);
+	dlg->m_current_leader = *id;
+	
+	for (index=id_LEADER_NONE; index <= id_LEADER_UNDERLINE; index++) {
+		if (*id + id_LEADER_NONE == index) {
+			continue;
+		}
+		PtSetResource(dlg->_lookupWidget((tControl)index), Pt_ARG_FLAGS, 0, Pt_SET);
+	}
+
+	UT_DEBUGMSG(("AP_QNXDialog_Tab::s_leader_change"));
+
+	dlg->_event_somethingChanged();
+	return Pt_CONTINUE;
+}
+
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+// when a window is closed
+/*static*/ int AP_QNXDialog_Tab::s_delete_clicked(PtWidget_t *widget, void *data, PtCallbackInfo_t *info)
+{ 
+	AP_QNXDialog_Tab * dlg = (AP_QNXDialog_Tab *)data;
+	UT_ASSERT(dlg); 
+	UT_DEBUGMSG(("AP_QNXDialog_Tab::s_delete_clicked"));
+	dlg->event_WindowDelete(); 
+	return Pt_CONTINUE;
+}
+
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 
 eTabType AP_QNXDialog_Tab::_gatherAlignment()
 {
-#if 0
-	// for ( UT_uint32 i = (UT_uint32)id_ALIGN_LEFT; 
-	// 	  i <= (UT_uint32)id_ALIGN_BAR;
-	// 	  i++ )
-#endif
 	return m_current_alignment;
 }
 
 void AP_QNXDialog_Tab::_setAlignment( eTabType a )
 {
-	// NOTE - tControl id_ALIGN_LEFT .. id_ALIGN_BAR must be in the same order
-	// as the tAlignment enums.
+	tControl id = id_ALIGN_LEFT;
+	
+	
+	switch(a)
+		{
+		case FL_TAB_LEFT:
+			id = id_ALIGN_LEFT;
+			break;
 
-	// magic noted above
-	tControl id = (tControl)((UT_uint32)id_ALIGN_LEFT + (UT_uint32)a);	
-	UT_ASSERT( id >= id_ALIGN_LEFT && id <= id_ALIGN_BAR );
+		case FL_TAB_CENTER:
+			id = id_ALIGN_CENTER;
+			break;
+
+		case FL_TAB_RIGHT:
+			id = id_ALIGN_RIGHT;
+			break;
+
+		case FL_TAB_DECIMAL:
+			id = id_ALIGN_DECIMAL;
+			break;
+
+		case FL_TAB_BAR:
+			id = id_ALIGN_BAR;
+			break;
+
+		}
 
 	// time to set the alignment radiobutton widget
 	PtWidget_t *w = _lookupWidget( id );
-	UT_ASSERT(w); 
+	UT_ASSERT(w);
 
 	// tell the change routines to ignore this message
-	if (w) {
-		PtSetResource(w, Pt_ARG_FLAGS, Pt_SET, Pt_SET);
-	}
+	//m_bInSetCall = UT_TRUE;
+	PtSetResource(w, Pt_ARG_FLAGS, Pt_SET, Pt_SET);
+	//m_bInSetCall = UT_FALSE;
+
+	m_current_alignment = a;
 }
 
 
@@ -391,9 +671,9 @@ void AP_QNXDialog_Tab::_setLeader( eTabLeader a )
 	UT_ASSERT(w);
 
 	// tell the change routines to ignore this message
-	if (w) {
-		PtSetResource(w, Pt_ARG_FLAGS, Pt_SET, Pt_SET);
-	}
+	//m_bInSetCall = UT_TRUE;
+	PtSetResource(w, Pt_ARG_FLAGS, Pt_SET, Pt_SET);
+	//m_bInSetCall = UT_FALSE;
 }
 
 
@@ -401,13 +681,34 @@ void AP_QNXDialog_Tab::_setLeader( eTabLeader a )
 
 const XML_Char * AP_QNXDialog_Tab::_gatherDefaultTabStop()
 {
-	//return gtk_entry_get_text( GTK_ENTRY( _lookupWidget( id_SPIN_DEFAULT_TAB_STOP ) ) );
-	return NULL;
+	char *text = NULL;
+	PtGetResource(_lookupWidget(id_SPIN_DEFAULT_TAB_STOP), Pt_ARG_TEXT_STRING, &text, 0);
+	return text;
 }
 
 void AP_QNXDialog_Tab::_setDefaultTabStop( const XML_Char * a )
 {
-	UT_UNUSED(a);
+	const XML_Char *suffix;
+	double f;
+	int len;
+
+	PtWidget_t *w = _lookupWidget(id_SPIN_DEFAULT_TAB_STOP);
+	/* There are two parts here ... the number and the suffix,
+       we should extract both components */
+	sscanf(a, "%f", &f);
+	suffix = &a[strlen(a)-1];
+	while ((*suffix < '0' || *suffix > '9') && suffix > a) { suffix--; } 
+
+	if (suffix <= a) {
+		suffix = NULL;
+	} else {
+		suffix++;
+	}
+		
+	PtSetResource(w, Pt_ARG_NUMERIC_VALUE, &f, 0);
+	if (suffix) {
+		PtSetResource(w, Pt_ARG_NUMERIC_SUFFIX, suffix, 0);
+	}
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
@@ -415,7 +716,6 @@ void AP_QNXDialog_Tab::_setTabList( UT_uint32 count )
 {
 	PtWidget_t *wList = _lookupWidget( id_LIST_TAB );
 	UT_uint32 i;
-	fl_TabStop *pTabInfo;
 
 	UT_ASSERT(wList);
 
@@ -425,38 +725,18 @@ void AP_QNXDialog_Tab::_setTabList( UT_uint32 count )
 	}
 	PtListDeleteAllItems(wList);
 
-#if 0
 	for ( i = 0; i < count; i++ )
 	{
-		GtkWidget *li = gtk_list_item_new_with_label( _getTabDimensionString(i));
+		char *text = _getTabDimensionString(i);
 
-		// we want to DO stuff
-		gtk_signal_connect(GTK_OBJECT(li),
-						   "select",
-						   GTK_SIGNAL_FUNC(s_list_select),
-						   (gpointer) this);
+		if (!text) {
+			UT_DEBUGMSG(("Skipping empty "));
+			continue;
+		}
+		UT_DEBUGMSG(("Adding %s", text));
 
-		// show this baby
-		gtk_widget_show(li);
-
-		gList = g_list_append( gList, li );
+		PtListAddItems(wList, (const char **)&text, 1, 0);
 	}
-
-	for ( i = 0; i < count; i++ )
-	{
-		pTabInfo = (fl_TabStop *)v.getNthItem(i);
-
-		// this will do for the time being, but if we want 
-		UT_DEBUGMSG(("%s:%d need to fix\n", __FILE__,__LINE__));
-
-		const char *ptr;
-
-		//Unix does this ... I think it is wrong!
-		//ptr = UT_convertToDimensionlessString( pTabInfo->iPositionLayoutUnits,  pTabInfo->iPosition );
-		ptr = UT_convertToDimensionlessString( pTabInfo->iPosition,  NULL);
-		PtListAddItems(wList, &ptr, 1, 0);
-	}
-#endif
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
@@ -489,10 +769,10 @@ void AP_QNXDialog_Tab::_setSelectTab( UT_sint32 v )
 
 const char * AP_QNXDialog_Tab::_gatherTabEdit()
 {
-#if 0
-	return gtk_entry_get_text( GTK_ENTRY( _lookupWidget( id_EDIT_TAB ) ) );
-#endif
-	return NULL;
+	char *text = NULL;
+
+	PtGetResource(_lookupWidget(id_EDIT_TAB), Pt_ARG_TEXT_STRING, &text, 0);
+	return (const char *)text;
 }
 
 void AP_QNXDialog_Tab::_setTabEdit( const char *pszStr )
