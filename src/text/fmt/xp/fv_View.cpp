@@ -6656,7 +6656,7 @@ void FV_View::cmdScroll(AV_ScrollCmd cmd, UT_uint32 iPos)
 	}
 
 	bool bRedrawPoint = true;
-	
+
 	if (bVertical && (yoff != m_yScrollOffset))
 	{
 		sendVerticalScrollEvent(yoff);

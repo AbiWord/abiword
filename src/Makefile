@@ -78,16 +78,13 @@ else
 			cp $$k american.hash;		\
 			rm $$k ;			\
 		done)
-
-#	@if [ -d $(ABI_ROOT)/../abispell ]; then 							\
-#		$(ABICOPY) $(ABI_ROOT)/../abispell/enc/*.hash-encoding $(CANONDIR)/dictionary 		\
-#		$(ABICOPY) $(ABI_ROOT)/../abispell/$(DICT_ENDIAN)/*.hash $(CANONDIR)/dictionary         \
-#	fi
+	@if [ -d $(ABI_ROOT)/../abispell ]; then 							\
+		$(ABICOPY) $(ABI_ROOT)/../abispell/enc/*.hash-encoding $(CANONDIR)/dictionary 		;\
+		$(ABICOPY) $(ABI_ROOT)/../abispell/$(DICT_ENDIAN)/*.hash $(CANONDIR)/dictionary         ;\
+	fi
 endif
-
 	@$(subst xxxx,$(CANONDIR)/clipart,$(VERIFY_DIRECTORY))
 	@$(ABICOPY) $(ABI_ROOT)/../abidistfiles/clipart/*.png $(CANONDIR)/clipart
-
 #	(cd $(ABI_ROOT)/../abidistfiles; tar cf - dictionary/*.hash) | (cd $(CANONDIR); tar xf -)
 ifeq ($(ABI_NATIVE),unix)
 # each Unix installer requires both unixfonts and abidistfiles, 
