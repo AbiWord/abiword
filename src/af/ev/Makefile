@@ -35,7 +35,8 @@ TARGETS=		$(LIBRARY)
 PLATFORM_OBJS=	$(ABI_NATIVE)/$(OBJDIR)/ev_$(ABI_FE)Keyboard.$(OBJ_SUFFIX)	\
 		$(ABI_NATIVE)/$(OBJDIR)/ev_$(ABI_FE)Menu.$(OBJ_SUFFIX)		\
 		$(ABI_NATIVE)/$(OBJDIR)/ev_$(ABI_FE)Mouse.$(OBJ_SUFFIX)		\
-		$(ABI_NATIVE)/$(OBJDIR)/ev_$(ABI_FE)Toolbar.$(OBJ_SUFFIX)
+		$(ABI_NATIVE)/$(OBJDIR)/ev_$(ABI_FE)Toolbar.$(OBJ_SUFFIX)	\
+		$(ABI_NATIVE)/$(OBJDIR)/ev_$(ABI_FE)Toolbar_ViewListener.$(OBJ_SUFFIX)
 
 
 OBJS=		$(PLATFORM_OBJS)					\

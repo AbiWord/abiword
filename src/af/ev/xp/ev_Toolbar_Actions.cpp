@@ -35,11 +35,15 @@
 
 EV_Toolbar_Action::EV_Toolbar_Action(AP_Toolbar_Id id,
 									 EV_Toolbar_ItemType type,
-									 const char * szMethodName)
+									 const char * szMethodName,
+									 FV_ChangeMask maskOfInterest,
+									 EV_GetToolbarItemState_pFn pfnGetState)
 {
 	m_id = id;
 	m_type = type;
 	UT_cloneString(m_szMethodName,szMethodName);
+	m_maskOfInterest = maskOfInterest;
+	m_pfnGetState = pfnGetState;
 }
 
 EV_Toolbar_Action::~EV_Toolbar_Action(void)
@@ -60,6 +64,19 @@ EV_Toolbar_ItemType EV_Toolbar_Action::getItemType(void) const
 const char * EV_Toolbar_Action::getMethodName(void) const
 {
 	return m_szMethodName;
+}
+
+FV_ChangeMask EV_Toolbar_Action::getChangeMaskOfInterest(void) const
+{
+	return m_maskOfInterest;
+}
+
+EV_Toolbar_ItemState EV_Toolbar_Action::getToolbarItemState(FV_View * pView, const char ** pszState) const
+{
+	if (m_pfnGetState)
+		return m_pfnGetState(pView,m_id,pszState);
+	else
+		return EV_TIS_ZERO;
 }
 
 /*****************************************************************/
@@ -87,14 +104,16 @@ EV_Toolbar_ActionSet::~EV_Toolbar_ActionSet(void)
 
 UT_Bool EV_Toolbar_ActionSet::setAction(AP_Toolbar_Id id,
 										EV_Toolbar_ItemType type,
-										const char * szMethodName)
+										const char * szMethodName,
+										FV_ChangeMask maskOfInterest,
+										EV_GetToolbarItemState_pFn pfnGetState)
 {
 	if ((id < m_first) || (id > m_last))
 		return UT_FALSE;
 
 	UT_uint32 index = (id - m_first);
 	DELETEP(m_actionTable[index]);
-	m_actionTable[index] = new EV_Toolbar_Action(id,type,szMethodName);
+	m_actionTable[index] = new EV_Toolbar_Action(id,type,szMethodName,maskOfInterest,pfnGetState);
 	return (m_actionTable[index] != NULL);
 }
 

@@ -48,6 +48,7 @@ OBJS=		$(PLATFORM_OBJS)					\
 		xp/$(OBJDIR)/ap_Menu_LabelSet.$(OBJ_SUFFIX)		\
 		xp/$(OBJDIR)/ap_Menu_Layouts.$(OBJ_SUFFIX)		\
 		xp/$(OBJDIR)/ap_Toolbar_ActionSet.$(OBJ_SUFFIX)		\
+		xp/$(OBJDIR)/ap_Toolbar_Functions.$(OBJ_SUFFIX)		\
 		xp/$(OBJDIR)/ap_Toolbar_Icons.$(OBJ_SUFFIX)		\
 		xp/$(OBJDIR)/ap_Toolbar_LabelSet.$(OBJ_SUFFIX)		\
 		xp/$(OBJDIR)/ap_Toolbar_Layouts.$(OBJ_SUFFIX)		\

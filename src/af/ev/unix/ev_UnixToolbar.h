@@ -17,14 +17,19 @@
  * 02111-1307, USA.
  */
 
+#ifndef EV_UNIXTOOLBAR_H
+#define EV_UNIXTOOLBAR_H
+
+#include <gtk/gtk.h>
 #include "ut_types.h"
 #include "ut_vector.h"
 #include "ap_Toolbar_Id.h"
 #include "ev_Toolbar.h"
-
+#include "fv_Listener.h"
 class AP_UnixApp;
 class AP_UnixFrame;
 class AP_UnixToolbar_Icons;
+class EV_UnixToolbar_ViewListener;
 
 
 class EV_UnixToolbar : public EV_Toolbar
@@ -38,12 +43,20 @@ public:
 
 	UT_Bool toolbarEvent(AP_Toolbar_Id id);
 	UT_Bool synthesize(void);
+	UT_Bool bindListenerToView(FV_View * pView);
+	UT_Bool refreshToolbar(FV_View * pView, FV_ChangeMask mask);
 
 protected:
-	AP_UnixApp *				m_pUnixApp;
-	AP_UnixFrame *				m_pUnixFrame;
+	void							_releaseListener(void);
 
-	GtkWidget *					m_wToolbar;
-	AP_UnixToolbar_Icons *		m_pUnixToolbarIcons;
-	UT_Vector					m_vecToolbarWidgets;
+	AP_UnixApp *					m_pUnixApp;
+	AP_UnixFrame *					m_pUnixFrame;
+	EV_UnixToolbar_ViewListener *	m_pViewListener;
+	FV_ListenerId					m_lid;	/* view listener id */
+
+	GtkWidget *						m_wToolbar;
+	AP_UnixToolbar_Icons *			m_pUnixToolbarIcons;
+	UT_Vector						m_vecToolbarWidgets;
 };
+
+#endif /* EV_UNIXTOOLBAR_H */

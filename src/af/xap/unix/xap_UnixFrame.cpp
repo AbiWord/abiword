@@ -432,6 +432,7 @@ UT_Bool AP_UnixFrame::_showDocument(void)
 	ap_ViewListener * pViewListener = NULL;
 
 	int height, pageLen;
+	UT_uint32 nrToolbars;
 
 	// TODO fix prefix on class UNIXGraphics
 	
@@ -453,6 +454,22 @@ UT_Bool AP_UnixFrame::_showDocument(void)
 	if (!pView->addListener(static_cast<FV_Listener *>(pViewListener),&lid))
 		goto Cleanup;
 
+	nrToolbars = m_vecToolbarLayoutNames.getItemCount();
+	for (UT_uint32 k=0; k < nrToolbars; k++)
+	{
+		// TODO Toolbars are a frame-level item, but a view-listener is
+		// TODO a view-level item.  I've bound the toolbar-view-listeners
+		// TODO to the current view within this frame and have code in the
+		// TODO toolbar to allow the view-listener to be rebound to a different
+		// TODO view.  in the future, when we have support for multiple views
+		// TODO in the frame (think splitter windows), we will need to have
+		// TODO a loop like this to help change the focus when the current
+		// TODO view changes.
+		
+		EV_UnixToolbar * pUnixToolbar = (EV_UnixToolbar *)m_vecUnixToolbars.getNthItem(k);
+		pUnixToolbar->bindListenerToView(pView);
+	}
+	
 	// switch to new view, cleaning up previous settings
 	REPLACEP(m_pG, pG);
 	REPLACEP(m_pDocLayout, pDocLayout);

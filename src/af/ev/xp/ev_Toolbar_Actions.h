@@ -35,9 +35,29 @@
 
 #include "ut_types.h"
 #include "ap_Toolbar_Id.h"
+#include "fv_Listener.h"
 class AP_App;
 class FV_View;
 class EV_Toolbar_Label;
+
+/*****************************************************************/
+
+typedef enum _ev_Toolbar_ItemState			/* values may be ORed */
+{
+	EV_TIS_ZERO				= 0x00,
+	EV_TIS_Gray				= 0x01,			/* should be grayed */
+	EV_TIS_Toggled			= 0x02,			/* should be pressed down */
+	EV_TIS_UseString		= 0x04,			/* should reference pszState */
+	
+} EV_Toolbar_ItemState;
+
+typedef EV_Toolbar_ItemState ( EV_GetToolbarItemState_Fn )(FV_View * pView, AP_Toolbar_Id id, const char ** pszState);
+typedef EV_Toolbar_ItemState (*EV_GetToolbarItemState_pFn)(FV_View * pView, AP_Toolbar_Id id, const char ** pszState);
+#define Defun_EV_GetToolbarItemState_Fn(fn) EV_Toolbar_ItemState fn(FV_View * pView, AP_Toolbar_Id id, const char ** pszState)
+
+#define EV_TIS_ShouldBeGray(tis)		(((tis) & EV_TIS_Gray)!=0)
+#define EV_TIS_ShouldBeToggled(tis)		(((tis) & EV_TIS_Toggled)!=0)
+#define EV_TIS_ShouldUseString(tis)		(((tis) & EV_TIS_UseString)!=0)
 
 /*****************************************************************/
 
@@ -61,18 +81,24 @@ class EV_Toolbar_Action
 public:
 	EV_Toolbar_Action(AP_Toolbar_Id id,
 					  EV_Toolbar_ItemType type,
-					  const char * szMethodName);
+					  const char * szMethodName,
+					  FV_ChangeMask maskOfInterest,
+					  EV_GetToolbarItemState_pFn pfnGetState);
 	~EV_Toolbar_Action(void);
 
 	AP_Toolbar_Id					getToolbarId(void) const;
 	EV_Toolbar_ItemType				getItemType(void) const;
 	const char *					getMethodName(void) const;
-
+	FV_ChangeMask					getChangeMaskOfInterest(void) const;
+	EV_Toolbar_ItemState			getToolbarItemState(FV_View * pView, const char ** pszState) const;
 	
 protected:
 	AP_Toolbar_Id					m_id;
 	EV_Toolbar_ItemType				m_type;
 	char *							m_szMethodName;		/* name of method to invoke */
+
+	FV_ChangeMask					m_maskOfInterest;
+	EV_GetToolbarItemState_pFn		m_pfnGetState;
 };
 
 /*****************************************************************/
@@ -85,7 +111,9 @@ public:
 
 	UT_Bool				setAction(AP_Toolbar_Id id,
 								  EV_Toolbar_ItemType type,
-								  const char * szMethodName);
+								  const char * szMethodName,
+								  FV_ChangeMask maskOfInterest,
+								  EV_GetToolbarItemState_pFn pfnGetState);
 	EV_Toolbar_Action *	getAction(AP_Toolbar_Id id) const;
 
 protected:

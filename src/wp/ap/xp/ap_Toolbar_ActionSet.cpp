@@ -23,6 +23,8 @@
 #include "ev_Toolbar_Actions.h"
 #include "ap_Toolbar_ActionSet.h"
 #include "ap_Toolbar_Id.h"
+#include "ap_Toolbar_Functions.h"
+#include "fv_Listener.h"
 
 /*****************************************************************/
 
@@ -50,40 +52,49 @@ EV_Toolbar_ActionSet * AP_CreateToolbarActionSet(void)
 	//              call when the toolbar item is selected.  if it is null, the
 	//              toolbar item doesn't do anything (we set it null for spacers).
 	//
+	// mask         defines the mask-of-interest.  This describes what type of
+	//              document changes that the item reflects (ie. dirty-state vs
+	//              font style at the insertion point).  this allows us to short
+	//              cut toolbar refreshes.
+	//
+	// pfnGetState  defines a function to be called to compute the state of
+	//              the toolbar widget;  whether enabled/disabled,
+	//              grayed/ungrayed, and for text or combo objects, the value
+	//              of string.
 	
-#define _s(id,type,szMethodName)	\
-	pActionSet->setAction(id,type,szMethodName)
+#define _s(id,type,szMethodName,maskOfInterest,pfnGetState)		\
+	pActionSet->setAction(id,type,szMethodName,maskOfInterest,pfnGetState)
 
-	//( __id__,          			type,					szMethodName);
+	//( __id__,          			type,					szMethodName,	mask,				pfn);
 	
-	_s(AP_TOOLBAR_ID__BOGUS1__,		EV_TBIT_BOGUS,			NULL);
+	_s(AP_TOOLBAR_ID__BOGUS1__,		EV_TBIT_BOGUS,			NULL,			0,					NULL);
 
-	_s(AP_TOOLBAR_ID_FILE_NEW,		EV_TBIT_PushButton,		"fileNew");
-	_s(AP_TOOLBAR_ID_FILE_OPEN,		EV_TBIT_PushButton,		"fileOpen");
-	_s(AP_TOOLBAR_ID_FILE_SAVE,		EV_TBIT_PushButton,		"fileSave");
-	_s(AP_TOOLBAR_ID_FILE_SAVEAS,	EV_TBIT_PushButton,		"fileSaveAs");
-	_s(AP_TOOLBAR_ID_FILE_PRINT,	EV_TBIT_PushButton,		"print");
+	_s(AP_TOOLBAR_ID_FILE_NEW,		EV_TBIT_PushButton,		"fileNew",		FV_CHG_NONE,		NULL);
+	_s(AP_TOOLBAR_ID_FILE_OPEN,		EV_TBIT_PushButton,		"fileOpen",		FV_CHG_NONE,		NULL);
+	_s(AP_TOOLBAR_ID_FILE_SAVE,		EV_TBIT_PushButton,		"fileSave",		FV_CHG_NONE,		NULL);
+	_s(AP_TOOLBAR_ID_FILE_SAVEAS,	EV_TBIT_PushButton,		"fileSaveAs",	FV_CHG_NONE,		NULL);
+	_s(AP_TOOLBAR_ID_FILE_PRINT,	EV_TBIT_PushButton,		"print",		FV_CHG_NONE,		NULL);
 
-	_s(AP_TOOLBAR_ID_EDIT_UNDO,		EV_TBIT_PushButton,		"undo");
-	_s(AP_TOOLBAR_ID_EDIT_REDO,		EV_TBIT_PushButton,		"redo");
-	_s(AP_TOOLBAR_ID_EDIT_CUT,		EV_TBIT_PushButton,		"cut");
-	_s(AP_TOOLBAR_ID_EDIT_COPY,		EV_TBIT_PushButton,		"copy");
-	_s(AP_TOOLBAR_ID_EDIT_PASTE,	EV_TBIT_PushButton,		"paste");
+	_s(AP_TOOLBAR_ID_EDIT_UNDO,		EV_TBIT_PushButton,		"undo",			FV_CHG_DO,			ap_ToolbarGetState_Changes);
+	_s(AP_TOOLBAR_ID_EDIT_REDO,		EV_TBIT_PushButton,		"redo",			FV_CHG_DO,			ap_ToolbarGetState_Changes);
+	_s(AP_TOOLBAR_ID_EDIT_CUT,		EV_TBIT_PushButton,		"cut",			FV_CHG_EMPTYSEL,	ap_ToolbarGetState_Selection);
+	_s(AP_TOOLBAR_ID_EDIT_COPY,		EV_TBIT_PushButton,		"copy",			FV_CHG_EMPTYSEL,	ap_ToolbarGetState_Selection);
+	_s(AP_TOOLBAR_ID_EDIT_PASTE,	EV_TBIT_PushButton,		"paste",		FV_CHG_NONE,		NULL);
 
-	_s(AP_TOOLBAR_ID_FMT_FONT,		EV_TBIT_PushButton,		"dlgFont");
-	_s(AP_TOOLBAR_ID_FMT_BOLD,		EV_TBIT_ToggleButton,	"toggleBold");
-	_s(AP_TOOLBAR_ID_FMT_ITALIC,	EV_TBIT_ToggleButton,	"toggleItalic");
-	_s(AP_TOOLBAR_ID_FMT_UNDERLINE,	EV_TBIT_ToggleButton,	"toggleUline");
-	_s(AP_TOOLBAR_ID_FMT_STRIKE,	EV_TBIT_ToggleButton,	"toggleStrike");
+	_s(AP_TOOLBAR_ID_FMT_FONT,		EV_TBIT_PushButton,		"dlgFont",		FV_CHG_NONE,		NULL);
+	_s(AP_TOOLBAR_ID_FMT_BOLD,		EV_TBIT_ToggleButton,	"toggleBold",	FV_CHG_FMTCHAR,		ap_ToolbarGetState_CharFmt);
+	_s(AP_TOOLBAR_ID_FMT_ITALIC,	EV_TBIT_ToggleButton,	"toggleItalic",	FV_CHG_FMTCHAR,		ap_ToolbarGetState_CharFmt);
+	_s(AP_TOOLBAR_ID_FMT_UNDERLINE,	EV_TBIT_ToggleButton,	"toggleUline",	FV_CHG_FMTCHAR,		ap_ToolbarGetState_CharFmt);
+	_s(AP_TOOLBAR_ID_FMT_STRIKE,	EV_TBIT_ToggleButton,	"toggleStrike",	FV_CHG_FMTCHAR,		ap_ToolbarGetState_CharFmt);
 
-	_s(AP_TOOLBAR_ID_ALIGN_LEFT,	EV_TBIT_ToggleButton,	"alignLeft");
-	_s(AP_TOOLBAR_ID_ALIGN_CENTER,	EV_TBIT_ToggleButton,	"alignCenter");
-	_s(AP_TOOLBAR_ID_ALIGN_RIGHT,	EV_TBIT_ToggleButton,	"alignRight");
-	_s(AP_TOOLBAR_ID_ALIGN_JUSTIFY,	EV_TBIT_ToggleButton,	"alignJustify");
+	_s(AP_TOOLBAR_ID_ALIGN_LEFT,	EV_TBIT_ToggleButton,	"alignLeft",	FV_CHG_FMTBLOCK,	ap_ToolbarGetState_BlockFmt);
+	_s(AP_TOOLBAR_ID_ALIGN_CENTER,	EV_TBIT_ToggleButton,	"alignCenter",	FV_CHG_FMTBLOCK,	ap_ToolbarGetState_BlockFmt);
+	_s(AP_TOOLBAR_ID_ALIGN_RIGHT,	EV_TBIT_ToggleButton,	"alignRight",	FV_CHG_FMTBLOCK,	ap_ToolbarGetState_BlockFmt);
+	_s(AP_TOOLBAR_ID_ALIGN_JUSTIFY,	EV_TBIT_ToggleButton,	"alignJustify",	FV_CHG_FMTBLOCK,	ap_ToolbarGetState_BlockFmt);
 
 	// ... add others here ...
 	
-	_s(AP_TOOLBAR_ID__BOGUS2__,		EV_TBIT_BOGUS,			NULL);
+	_s(AP_TOOLBAR_ID__BOGUS2__,		EV_TBIT_BOGUS,			NULL,			0,					NULL);
 
 #undef _s
 	

@@ -33,6 +33,7 @@ CPPSRCS=		ap_App.cpp			\
 			ap_Menu_LabelSet.cpp		\
 			ap_Menu_Layouts.cpp		\
 			ap_Toolbar_ActionSet.cpp	\
+			ap_Toolbar_Functions.cpp	\
 			ap_Toolbar_Icons.cpp		\
 			ap_Toolbar_LabelSet.cpp		\
 			ap_Toolbar_Layouts.cpp		\
