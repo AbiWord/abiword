@@ -92,7 +92,7 @@ static const UT_uint32 PT_MAX_ATTRIBUTES = 8;
 
 
 static char g_dbgLastKeyword [256];
-static UT_sint16 g_dbgLastParam; 
+static UT_sint32 g_dbgLastParam; 
 
 //////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////
@@ -1403,7 +1403,8 @@ IE_Imp_RTF::IE_Imp_RTF(PD_Document * pDocument)
 	m_iStackDepthAtFrame(0),
 	m_bFrameOpen(false),
 	m_sPendingShapeProp(""),
-	m_bEndFrameOpen(false)
+	m_bEndFrameOpen(false),
+	m_iCurrentRevisionId(0)
 {
 	if (!IE_Imp_RTF::keywordSorted) {
 		_initialKeywordSort();
@@ -2202,7 +2203,7 @@ UT_Error IE_Imp_RTF::_parseText()
 				// need to see if the keyword is \ftnalt indicating
 				// endnote
 				unsigned char keyword[MAX_KEYWORD_LEN];
-				UT_sint16 parameter = 0;
+				UT_sint32 parameter = 0;
 				bool parameterUsed = false;
 				if (ReadKeyword(keyword, &parameter, &parameterUsed, MAX_KEYWORD_LEN))
 				{
@@ -2687,7 +2688,7 @@ bool IE_Imp_RTF::ParseChar(UT_UCSChar ch,bool no_convert)
 bool IE_Imp_RTF::ParseRTFKeyword()
 {
 	unsigned char keyword[MAX_KEYWORD_LEN];
-	UT_sint16 parameter = 0;
+	UT_sint32 parameter = 0;
 	bool parameterUsed = false;
 	if (ReadKeyword(keyword, &parameter, &parameterUsed, MAX_KEYWORD_LEN))
 	{
@@ -2720,7 +2721,7 @@ bool IE_Imp_RTF::ParseRTFKeyword()
   \desc This function parse and read the keyword. It is called if a
   \\ is encountered in the flow. *pKeyword never contains the \\
  */
-bool IE_Imp_RTF::ReadKeyword(unsigned char* pKeyword, UT_sint16* pParam, bool* pParamUsed, UT_uint32 keywordBuffLen)
+bool IE_Imp_RTF::ReadKeyword(unsigned char* pKeyword, UT_sint32* pParam, bool* pParamUsed, UT_uint32 keywordBuffLen)
 {
 	bool fNegative = false;
 	*pParam = 0;
@@ -2772,6 +2773,8 @@ bool IE_Imp_RTF::ReadKeyword(unsigned char* pKeyword, UT_sint16* pParam, bool* p
     }
 
     // Read the numeric parameter (if there is one)
+	// According to the specs, a dttm parameter (e.g. \revdttm), which is a long, has the
+	// individual bytes emited as ASCII characters
 	if (isdigit(ch))
 	{
 		*pParamUsed = true;
@@ -3002,7 +3005,7 @@ bool IE_Imp_RTF::HandleField()
 {
 	RTFTokenType tokenType;
 	unsigned char keyword[MAX_KEYWORD_LEN];
-	UT_sint16 parameter = 0;
+	UT_sint32 parameter = 0;
 	bool paramUsed = false;
 	bool bUseResult = false;  // true if field instruction can not be used
 	int nested = 0;           // nesting level
@@ -3668,7 +3671,7 @@ bool IE_Imp_RTF::HandleHeaderFooter(RTFHdrFtr::HdrFtrType hftype, UT_uint32 & he
 
 
 // Test the keyword against all the known handlers
-bool IE_Imp_RTF::TranslateKeyword(unsigned char* pKeyword, UT_sint16 param, bool fParam)
+bool IE_Imp_RTF::TranslateKeyword(unsigned char* pKeyword, UT_sint32 param, bool fParam)
 {
 	// switch on the first char to reduce the number of string comparisons
 	// NB. all RTF keywords are lowercase.
@@ -3701,7 +3704,7 @@ bool IE_Imp_RTF::TranslateKeyword(unsigned char* pKeyword, UT_sint16 param, bool
 // this keyword will be immediately followed by either the
 // ltrch or rtlch keyword, which we need to eat up ...
 		unsigned char kwrd[MAX_KEYWORD_LEN];
-		UT_sint16 par = 0;
+		UT_sint32 par = 0;
 		bool parUsed = false;
 		bool ok = true;
 		unsigned char c;
@@ -3993,9 +3996,6 @@ bool IE_Imp_RTF::TranslateKeyword(unsigned char* pKeyword, UT_sint16 param, bool
 		xxx_UT_DEBUGMSG(("Writing background color %s to properties \n",sColor.c_str()));
 		_setStringProperty(m_currentRTFState.m_cellProps.m_sCellProps,"background-color",sColor.c_str());
 	}
-	case RTF_KW_deleted:
-		// bold - either on or off depending on the parameter
-		return HandleDeleted(fParam ? false : true);
 	case RTF_KW_dn:
 		// subscript with position. Default is 6.
 		// superscript: see up keyword
@@ -4433,6 +4433,25 @@ bool IE_Imp_RTF::TranslateKeyword(unsigned char* pKeyword, UT_sint16 param, bool
 		return ParseChar(UCS_RQUOTE);
 	case RTF_KW_rdblquote:
 		return ParseChar(UCS_RDBLQUOTE);
+
+	// various revision keywords
+	case RTF_KW_deleted: // skip this -- it is redundant
+	case RTF_KW_revised:
+		return true;
+		
+	case RTF_KW_revauthdel:
+		return HandleRevisedText(PP_REVISION_DELETION, param);
+	case RTF_KW_revauth:
+		return HandleRevisedText(PP_REVISION_ADDITION, param);
+	case RTF_KW_crauth:
+		return HandleRevisedText(PP_REVISION_FMT_CHANGE, param);
+		
+	case RTF_KW_crdate:
+	case RTF_KW_revdttmdel:
+	case RTF_KW_revdttm:
+		return HandleRevisedTextTimestamp(param);
+		
+		
 	case RTF_KW_ri:
 		m_currentRTFState.m_paraProps.m_indentRight = param;
 		return true;
@@ -4766,7 +4785,7 @@ bool IE_Imp_RTF::TranslateKeyword(unsigned char* pKeyword, UT_sint16 param, bool
 bool IE_Imp_RTF::HandleStarKeyword() 
 {
 	unsigned char keyword_star[MAX_KEYWORD_LEN];
-	UT_sint16 parameter_star = 0;
+	UT_sint32 parameter_star = 0;
 	bool parameterUsed_star = false;
 		
 	if (ReadKeyword(keyword_star, &parameter_star, &parameterUsed_star,
@@ -4997,6 +5016,9 @@ bool IE_Imp_RTF::HandleStarKeyword()
 					PopRTFState();
 					return true;
 				}
+				case RTF_KW_revtbl:
+					return ReadRevisionTable();
+				
 				default:
 					UT_DEBUGMSG (("RTF: default case star keyword %s not handled\n", keyword_star));
 					break;
@@ -6683,7 +6705,7 @@ bool IE_Imp_RTF::ReadListTable()
 	UT_VECTOR_PURGEALL(RTF_msword97_list*, m_vecWord97Lists);
 	unsigned char keyword[MAX_KEYWORD_LEN];
 	unsigned char ch;
-	UT_sint16 parameter = 0;
+	UT_sint32 parameter = 0;
 	bool paramUsed = false;
 	UT_uint32 nesting = 1;
 	xxx_UT_DEBUGMSG(("Doing Read List Table \n"));
@@ -6735,7 +6757,7 @@ bool IE_Imp_RTF::HandleTableList(void)
 {
 	unsigned char keyword[MAX_KEYWORD_LEN];
 	unsigned char ch;
-    UT_sint16 parameter = 0;
+    UT_sint32 parameter = 0;
 	bool paramUsed = false;
 	UT_uint32 nesting = 1;
 	UT_uint32 levelCount = 0;
@@ -6811,7 +6833,7 @@ bool IE_Imp_RTF::HandleListLevel(RTF_msword97_list * pList, UT_uint32 levelCount
 {
 	unsigned char keyword[MAX_KEYWORD_LEN];
 	unsigned char ch;
-	UT_sint16 parameter = 0;
+	UT_sint32 parameter = 0;
 	bool paramUsed = false;
 	UT_uint32 nesting = 1;
 	UT_String szLevelNumbers;
@@ -6954,7 +6976,7 @@ bool IE_Imp_RTF::HandleListLevel(RTF_msword97_list * pList, UT_uint32 levelCount
  * These are used by the list table
  * reader.
  */
-bool IE_Imp_RTF::ParseCharParaProps( unsigned char * pKeyword, UT_sint16 param, bool fParam, RTFProps_CharProps * pChars, RTFProps_ParaProps * pParas, RTFProps_bCharProps * pbChars, RTFProps_bParaProps * pbParas)
+bool IE_Imp_RTF::ParseCharParaProps( unsigned char * pKeyword, UT_sint32 param, bool fParam, RTFProps_CharProps * pChars, RTFProps_ParaProps * pParas, RTFProps_bCharProps * pbChars, RTFProps_bParaProps * pbParas)
 {
 	if (strcmp(reinterpret_cast<char*>(pKeyword), "b") == 0) // bold
 	{
@@ -7213,7 +7235,7 @@ bool IE_Imp_RTF::ReadListOverrideTable(void)
 	UT_VECTOR_PURGEALL(RTF_msword97_listOverride*, m_vecWord97ListOverride);
 	unsigned char keyword[MAX_KEYWORD_LEN];
 	unsigned char ch;
-	UT_sint16 parameter = 0;
+	UT_sint32 parameter = 0;
 	bool paramUsed = false;
 	UT_uint32 nesting = 1;
 	while (nesting >0) // Outer loop
@@ -7281,7 +7303,7 @@ bool IE_Imp_RTF::HandleTableListOverride(void)
 {
 	unsigned char keyword[MAX_KEYWORD_LEN];
 	unsigned char ch;
-	UT_sint16 parameter = 0;
+	UT_sint32 parameter = 0;
 	bool paramUsed = false;
 //
 // OK define this in the data structure.
@@ -7346,6 +7368,50 @@ bool IE_Imp_RTF::HandleTableListOverride(void)
 	return true;
 }
 
+// the revision table looks
+// \*\revtb{{Author1;}{Author2;} ... }
+bool IE_Imp_RTF::ReadRevisionTable()
+{
+	unsigned char ch = 0;
+	UT_UCS4String s;
+	UT_sint32 i = 1;
+
+	while(ReadCharFromFile(&ch) && ch != '}')
+	{
+		while(ch != '{' && ReadCharFromFile(&ch)){;}
+	
+		if(ch != '{')
+			return false;
+		
+		s.clear();
+		
+		while(ReadCharFromFile(&ch) && ch != ';')
+		{
+			s += ch;
+		}
+		// the semicolon should be followed by a closing brace
+		ReadCharFromFile(&ch);
+		UT_return_val_if_fail(ch == '}', false);
+
+		// now add the revision to the document
+		// the rtf doc stores the time stamp for each individual rev. operation rather
+		// than for the revision set; we will set it when we encounter the first revision
+
+		// the first entry is typically author Unknown; we will ignore it
+		// hack around non stricmp
+		UT_UCS4Char u1[] = {'U','n','k','n','o','w','n',0};
+		UT_UCS4Char u2[] = {'u','n','k','n','o','w','n',0};
+		
+		if(i == 1 && (!UT_UCS4_strcmp(s.ucs4_str(), u1) || !UT_UCS4_strcmp(s.ucs4_str(), u2)))
+			continue;
+		
+		getDoc()->addRevision(i,s.ucs4_str(),s.length(),0,0);
+		++i;
+	}
+
+	UT_return_val_if_fail( ch == '}', false );
+	return true;
+}
 
 //////////////////////////////////////////////////////////////////////////////
 // Font table reader
@@ -7419,7 +7485,7 @@ bool IE_Imp_RTF::ReadOneFontFromTable()
 {
 	unsigned char keyword[MAX_KEYWORD_LEN];
 	unsigned char ch;
-    UT_sint16 parameter = 0;
+    UT_sint32 parameter = 0;
 	bool paramUsed = false;
 
 	int nesting = 0;
@@ -7657,7 +7723,7 @@ bool IE_Imp_RTF::ReadColourTable()
 
 	unsigned char keyword[MAX_KEYWORD_LEN];
 	unsigned char ch;
-	UT_sint16 parameter = 0;
+	UT_sint32 parameter = 0;
 	bool paramUsed = false;
 	if (!ReadCharFromFile(&ch))
 		return false;
@@ -7780,7 +7846,7 @@ bool IE_Imp_RTF::HandleLists(_rtfListTable & rtfTable )
 {
 	unsigned char keyword[MAX_KEYWORD_LEN];
 	unsigned char ch;
-	UT_sint16 parameter = 0;
+	UT_sint32 parameter = 0;
 	bool paramUsed = false;
 	if (!ReadCharFromFile(&ch))
 		return false;
@@ -8406,7 +8472,7 @@ bool IE_Imp_RTF::HandleAbiLists()
 {
 	unsigned char keyword[MAX_KEYWORD_LEN];
 	unsigned char ch;
-	UT_sint16 parameter = 0;
+	UT_sint32 parameter = 0;
 	bool paramUsed = false;
 	if (!ReadCharFromFile(&ch))
 		return false;
@@ -8562,6 +8628,50 @@ bool IE_Imp_RTF::HandleAbiLists()
 //////////////////////////////////////////////////////////////////////////////
 // Character Properties keyword handlers
 //////////////////////////////////////////////////////////////////////////////
+bool IE_Imp_RTF::HandleRevisedText(PP_RevisionType eType, UT_uint32 iId)
+{
+	UT_return_val_if_fail( FlushStoredChars(), false);
+
+	// remember the id for future reference
+	m_iCurrentRevisionId = iId;
+#if 0
+	switch(eType)
+	{
+		case PP_REVISION_ADDITION:
+		case PP_REVISION_ADDITION_AND_FMT:
+
+		case PP_REVISION_DELETION:
+
+		case PP_REVISION_FMT_CHANGE:
+			;
+	}
+#endif
+	return true;
+}
+
+bool IE_Imp_RTF::HandleRevisedTextTimestamp(UT_uint32 iDttm)
+{
+	// we basically rely on the dttm keyword to follow the auth keyword -- Word outputs
+	// them in this sequence, and so do we
+	UT_return_val_if_fail( m_iCurrentRevisionId > 0,false);
+	
+	const UT_GenericVector<AD_Revision*> & Rtbl = getDoc()->getRevisions();
+	UT_return_val_if_fail(Rtbl.getItemCount(),false);
+
+	// valid revision id's start at 1, but vector is 0-based
+	AD_Revision * pRev = Rtbl.getNthItem(m_iCurrentRevisionId - 1);
+
+	UT_return_val_if_fail( pRev, false );
+
+	if(!pRev->getStartTime())
+	{
+		// set the start time to what ever is represented by dttm
+		
+	}
+	
+	return true;
+}
+
 
 bool IE_Imp_RTF::HandleBoolCharacterProp(bool state, bool* pProp)
 {
@@ -8775,7 +8885,7 @@ bool IE_Imp_RTF::AddTabstop(UT_sint32 stopDist, eTabType tabType, eTabLeader tab
   RTF_TOKEN_KEYWORD
   \note this changes the state of the file
 */
-IE_Imp_RTF::RTFTokenType IE_Imp_RTF::NextToken (unsigned char *pKeyword, UT_sint16* pParam,
+IE_Imp_RTF::RTFTokenType IE_Imp_RTF::NextToken (unsigned char *pKeyword, UT_sint32* pParam,
 												bool* pParamUsed, UT_uint32 len, bool bIgnoreWhiteSpace /* = false */ )
 {
 	RTFTokenType tokenType = RTF_TOKEN_NONE;
@@ -9188,7 +9298,7 @@ bool IE_Imp_RTF::HandleStyleDefinition(void)
 	while (nesting>0 && status == true)
 	{
         unsigned char keyword[MAX_KEYWORD_LEN];
-        UT_sint16 parameter = 0;
+        UT_sint32 parameter = 0;
 	    bool parameterUsed = false;
 
 		if (!ReadCharFromFile(&ch))
@@ -9736,7 +9846,7 @@ bool IE_Imp_RTF::HandleInfoMetaData()
 	RTF_KEYWORD_ID keywordID;
 	RTFTokenType tokenType;
 	unsigned char keyword[MAX_KEYWORD_LEN];
-	UT_sint16 parameter = 0;
+	UT_sint32 parameter = 0;
 	bool paramUsed = false;	
 	int nested = 0;
 	bool result;
@@ -9855,7 +9965,7 @@ bool IE_Imp_RTF::HandlePCData(UT_UTF8String & str)
 {
 	RTFTokenType tokenType;
 	unsigned char keyword[MAX_KEYWORD_LEN];
-	UT_sint16 parameter = 0;
+	UT_sint32 parameter = 0;
 	bool paramUsed = false;	
 
 	UT_ByteBuf buf;

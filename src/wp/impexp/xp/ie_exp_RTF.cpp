@@ -937,6 +937,13 @@ bool IE_Exp_RTF::_write_rtf_header(void)
 		
 		UT_UTF8String s;
 		UT_UCS4String s4;
+
+		// MS Word assumes that the table always starts with author Unknown and it will
+		// not bother to lookup the 0-th author, so we have to insert that dummy entry
+		_rtf_open_brace();
+		_rtf_chardata("Unknown", 7);
+		_rtf_semi();
+		_rtf_close_brace();
 		
 		for(UT_sint32 i = 0; i < Revs.getItemCount(); ++i)
 		{
@@ -1378,9 +1385,16 @@ void IE_Exp_RTF::_output_revision(const s_RTF_AttrPropAdapter & apa, bool bPara)
 			time_t t = pRevTblItem->getStartTime();
 			struct tm * pT = gmtime(&t);
 
-			UT_uint32 iDttm = pT->tm_min | (pT->tm_hour << 6) | (pT->tm_mday << 11) | (pT->tm_mon << 16)
+			// NB: gmtime counts months 0-11, while dttm 1-12
+
+			UT_uint32 iDttm = pT->tm_min | (pT->tm_hour << 6) | (pT->tm_mday << 11) | ((pT->tm_mon + 1) << 16)
 				| (pT->tm_year << 20) | (pT->tm_wday << 29);
 
+#if 0
+			// according to the docs, we are supposed to emit each of the four bytes of
+			// the dttm int as an ascii char, and if > 127 convert to hex; however, Word
+			// emits this as a normal int and so will we -- the code below is disabled
+			// 
 			// Now that we have the int, we need to convert the 4 bytes to ascii string.
 			// We need to output this in little endian order, I think, since win32 is
 			// inherently LE
@@ -1402,7 +1416,7 @@ void IE_Exp_RTF::_output_revision(const s_RTF_AttrPropAdapter & apa, bool bPara)
 
 			for(UT_uint32 j = 0; j < 4; j++)
 			{
-				if(pDttm[i] <= 127)
+				if(Dttm[i] <= 127)
 				{
 					s += Dttm[i];
 				}
@@ -1413,7 +1427,7 @@ void IE_Exp_RTF::_output_revision(const s_RTF_AttrPropAdapter & apa, bool bPara)
 					s += s2.c_str();
 				}
 			}
-			
+#endif
 			if(iIndx < 0)
 			{
 				UT_ASSERT_HARMLESS( UT_SHOULD_NOT_HAPPEN );
@@ -1441,13 +1455,13 @@ void IE_Exp_RTF::_output_revision(const s_RTF_AttrPropAdapter & apa, bool bPara)
 					// fall through
 				case PP_REVISION_ADDITION:
 					_rtf_keyword(pAD);
-					_rtf_keyword(pADauth, iIndx);
+					_rtf_keyword(pADauth, iIndx+1);
 					_rtf_keyword(pADdttm, iDttm);
 					break;
 					
 				case PP_REVISION_DELETION:
 					_rtf_keyword(pDEL);
-					_rtf_keyword(pDELauth, iIndx);
+					_rtf_keyword(pDELauth, iIndx+1);
 					_rtf_keyword(pDELdttm, iDttm);
 					break;
 					
@@ -1459,7 +1473,7 @@ void IE_Exp_RTF::_output_revision(const s_RTF_AttrPropAdapter & apa, bool bPara)
 						break;
 					}
 					
-					_rtf_keyword(pCHauth, iIndx);
+					_rtf_keyword(pCHauth, iIndx+1);
 					_rtf_keyword(pCHdttm, iDttm);
 					break;
 

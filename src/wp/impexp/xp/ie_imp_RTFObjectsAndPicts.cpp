@@ -382,7 +382,7 @@ bool IE_Imp_RTF::HandlePicture()
 	PictFormat format = picNone;
 
 	unsigned char keyword[MAX_KEYWORD_LEN];
-	UT_sint16 parameter = 0;
+	UT_sint32 parameter = 0;
 	bool parameterUsed = false;
 	RTFProps_ImageProps imageProps;
 
@@ -693,7 +693,7 @@ void IE_Imp_RTF::HandleShape()
 {
 	RTFTokenType tokenType;
 	unsigned char keyword[MAX_KEYWORD_LEN];
-	UT_sint16 parameter = 0;
+	UT_sint32 parameter = 0;
 	bool paramUsed = false;	
 	int nested = 1;           // nesting level	
 	RTF_KEYWORD_ID keywordID;
@@ -747,7 +747,7 @@ bool IE_Imp_RTF::HandleObject()
 {	
 	RTFTokenType tokenType;
 	unsigned char keyword[MAX_KEYWORD_LEN];
-	UT_sint16 parameter = 0;
+	UT_sint32 parameter = 0;
 	bool paramUsed = false;	
 	int nested = 1;           // nesting level	
 	RTF_KEYWORD_ID keywordID;

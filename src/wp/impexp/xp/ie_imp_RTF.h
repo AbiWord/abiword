@@ -31,6 +31,7 @@
 #include "ut_stack.h"
 #include "pt_Types.h"
 #include "pd_Document.h"
+#include "pp_Revision.h"
 #include "ut_mbtowc.h"
 #include "fl_AutoLists.h"
 #include "fl_AutoNum.h"
@@ -581,9 +582,9 @@ private:
 	bool ReadCharFromFile(unsigned char* pCh);
 	UT_UCS4Char ReadHexChar(void);
 	bool SkipBackChar(unsigned char ch);
-	bool ReadKeyword(unsigned char* pKeyword, UT_sint16* pParam, bool* pParamUsed,
+	bool ReadKeyword(unsigned char* pKeyword, UT_sint32* pParam, bool* pParamUsed,
 					 UT_uint32 keywordBuffLen);
-	bool TranslateKeyword(unsigned char* pKeyword, UT_sint16 param, bool fParam);
+	bool TranslateKeyword(unsigned char* pKeyword, UT_sint32 param, bool fParam);
 
 	RTF_KEYWORD_ID KeywordToID(const char * keyword);
 	bool HandleStarKeyword();
@@ -593,6 +594,7 @@ private:
 	bool ReadColourTable();
 	bool ReadFontTable();
 	bool ReadOneFontFromTable();
+	bool ReadRevisionTable();
 	bool HandlePicture();
 	bool HandleObject();
 	bool HandleField();
@@ -615,7 +617,7 @@ private:
 	bool HandleListLevel(RTF_msword97_list * pList, UT_uint32 levelCount  );
 	bool HandleTableList(void);
 	char * getCharsInsideBrace(void);
-	bool ParseCharParaProps( unsigned char * pKeyword, UT_sint16 param, bool fParam, RTFProps_CharProps * pChars, RTFProps_ParaProps * pParas, RTFProps_bCharProps * pbChars, RTFProps_bParaProps * pbParas);
+	bool ParseCharParaProps( unsigned char * pKeyword, UT_sint32 param, bool fParam, RTFProps_CharProps * pChars, RTFProps_ParaProps * pParas, RTFProps_bCharProps * pbChars, RTFProps_bParaProps * pbParas);
 	bool ReadListOverrideTable(void);
 	bool HandleTableListOverride(void);
 
@@ -646,6 +648,9 @@ private:
 	bool HandleFontSize(long sizeInHalfPoints);
 	bool HandleBookmark (RTFBookmarkType type);
 	bool HandleListTag(long id);
+
+	bool HandleRevisedText(PP_RevisionType eType, UT_uint32 iId);
+	bool HandleRevisedTextTimestamp(UT_uint32 iDttm);
 
 	// Generic handlers
 	bool HandleFloatCharacterProp(double val, double* pProp);
@@ -716,7 +721,7 @@ private:
 	    RTF_TOKEN_DATA,
 	    RTF_TOKEN_ERROR = -1
 	} RTFTokenType;
-	RTFTokenType NextToken (unsigned char *pKeyword, UT_sint16* pParam,
+	RTFTokenType NextToken (unsigned char *pKeyword, UT_sint32* pParam,
 							bool* pParamUsed, UT_uint32 len, bool bIgnoreWhiteSpace=false);
 
 	UT_Error _isBidiDocument();
@@ -837,6 +842,7 @@ private:
 	UT_String             m_sPendingShapeProp;
 	RTFProps_FrameProps   m_currentFrame;
 	bool                  m_bEndFrameOpen;
+	UT_uint32             m_iCurrentRevisionId;
 };
 
 #endif /* IE_IMP_RTF_H */
