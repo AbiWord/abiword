@@ -1046,7 +1046,7 @@ bool fp_TextRun::split(UT_uint32 iSplitOffset)
 	// need to set this, so the split run could reset its justification correctly
 	pNew->m_iSpaceWidthBeforeJustification = this->m_iSpaceWidthBeforeJustification;
 
-	pNew->_setHyperlink(this->getHyperlink());
+	pNew->m_pHyperlink = this->getHyperlink();
 
 	pNew->m_pPrev = this;
 	pNew->m_pNext = this->m_pNext;
