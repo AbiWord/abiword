@@ -3702,6 +3702,7 @@ Defun1(viewRuler)
 	AP_FrameData *pFrameData = (AP_FrameData *)pFrame->getFrameData();
 	UT_ASSERT(pFrameData);
 
+#if 0
 	// toggle the ruler bit
 	pFrameData->m_bShowRuler = ! pFrameData->m_bShowRuler;
 
@@ -3712,6 +3713,8 @@ Defun1(viewRuler)
 
 	// TODO: synch this implementation with ap_GetState_View
 	// s_TellNotImplemented(pFrame, "View ruler", __LINE__);
+#endif
+
 	return UT_TRUE;
 }
 
