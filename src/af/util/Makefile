@@ -61,6 +61,7 @@ OBJS=		$(PLATFORM_OBJS)						\
 		$(OBJDIR)/ut_base64.$(OBJ_SUFFIX)		\
 		$(OBJDIR)/ut_base64_TestRoutines.$(OBJ_SUFFIX)		\
 		$(OBJDIR)/ut_bytebuf.$(OBJ_SUFFIX)		\
+		$(OBJDIR)/ut_getopt.$(OBJ_SUFFIX)		\
 		$(OBJDIR)/ut_growbuf.$(OBJ_SUFFIX)		\
 		$(OBJDIR)/ut_hash.$(OBJ_SUFFIX)			\
 		$(OBJDIR)/ut_misc.$(OBJ_SUFFIX)			\

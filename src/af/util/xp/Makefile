@@ -26,6 +26,7 @@ CPPSRCS=	ut_alphahash.cpp	\
 		ut_base64.cpp		\
 		ut_base64_TestRoutines.cpp	\
 		ut_bytebuf.cpp		\
+		ut_getopt.cpp		\
 		ut_growbuf.cpp		\
 		ut_hash.cpp		\
 		ut_math.cpp		\
