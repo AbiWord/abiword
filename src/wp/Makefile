@@ -47,5 +47,5 @@ canonical:
 	@$(ABICOPY) $(USERDIR)/wp/readme.txt $(CANON_AppDir)
 	@$(ABICOPY) $(USERDIR)/wp/system.profile* $(CANON_AppDir)
 	@$(ABICOPY) $(USERDIR)/wp/strings/*.strings $(CANON_AppDir)/strings
-	(cd $(USERDIR)/wp/help; tar cf - images $(CANON_Lang)/*.* $(CANON_Lang)/*/*.*) | (cd $(CANON_AppDir)/help; tar xf -)
-	@$(ABICOPY) $(ABI_ROOT)/CREDITS.TXT $(CANON_AppDir)/help/en-US/credits.txt
+#	(cd $(USERDIR)/wp/help; tar cf - images $(CANON_Lang)/*.* $(CANON_Lang)/*/*.*) | (cd $(CANON_AppDir)/help; tar xf -)
+#	@$(ABICOPY) $(ABI_ROOT)/CREDITS.TXT $(CANON_AppDir)/help/en-US/credits.txt
