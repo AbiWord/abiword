@@ -1537,10 +1537,16 @@ inline void fp_Line::_calculateWidthOfRun(	UT_sint32 &iX,
 				eTabType	iTabType;
 				eTabLeader	iTabLeader;
 				bool bRes;
+				if(pTabRun->isTOCTab())
+				{
+					iTabLeader = getBlock()->getTOCTabLeader(10);
+					iTabType =  FL_TAB_LEFT;
+					iPos =  getBlock()->getTOCTabPosition(10);
+				}
 
 				// now find the tabstop for this tab, depending on whether we
 				// are to use next or previous tabstop
-				if(eUseTabStop == USE_NEXT_TABSTOP)
+				else if(eUseTabStop == USE_NEXT_TABSTOP)
 				{
 					if(iDomDirection == FRIBIDI_TYPE_RTL)
 					{
@@ -1552,6 +1558,7 @@ inline void fp_Line::_calculateWidthOfRun(	UT_sint32 &iX,
 						bRes = findNextTabStop(iX, iPos, iTabType, iTabLeader);
 				}
 				else
+				{
 					if(iDomDirection == FRIBIDI_TYPE_RTL)
 					{
 						UT_sint32 iStartPos = getContainer()->getWidth() - iX;
@@ -1561,15 +1568,13 @@ inline void fp_Line::_calculateWidthOfRun(	UT_sint32 &iX,
 					}
 					else
 						bRes = findPrevTabStop(iX, iPos, iTabType, iTabLeader);
-				
+				}
 				UT_ASSERT(bRes);
 				
 				fp_Run *pScanRun = NULL;
 				UT_sint32 iScanWidth = 0;
-				
 				pTabRun->setLeader(iTabLeader);
 				pTabRun->setTabType(iTabType);
-				
 				// we need to remember what the iX was
 				UT_sint32 iXprev;
 				iXprev = iX;

@@ -71,7 +71,7 @@
 #include "ap_Prefs.h"
 #include "ap_Prefs_SchemeIds.h"
 #include "ut_rand.h"
-
+#include "fp_FieldTOCNum.h"
 #include "ut_debugmsg.h"
 #include "ut_assert.h"
 #include "ut_string.h"
@@ -174,7 +174,8 @@ fl_BlockLayout::fl_BlockLayout(PL_StruxDocHandle sdh,
 	  m_iDomDirection(FRIBIDI_TYPE_UNSET),
 	  m_iDirOverride(FRIBIDI_TYPE_UNSET),
 	  m_bIsTOC(false),
-	  m_bStyleInTOC(false)
+	  m_bStyleInTOC(false),
+	  m_iTOCLevel(0)
 {
 	UT_DEBUGMSG(("BlockLayout %x created \n",this));
 	setPrev(pPrev);
@@ -195,6 +196,13 @@ fl_BlockLayout::fl_BlockLayout(PL_StruxDocHandle sdh,
 		{
 			m_szStyle = NULL;
 		}
+	m_bIsTOC = (pSectionLayout->getContainerType() == FL_CONTAINER_TOC);
+	if(m_bIsTOC)
+	{
+		UT_DEBUGMSG(("TOC BLOck created %x \n",this));
+		fl_TOCLayout * pTOCL= static_cast<fl_TOCLayout *>(getSectionLayout());
+		m_iTOCLevel = pTOCL->getCurrentLevel();
+	}
 	if (m_szStyle != NULL)
 	{
 		PD_Style * pStyle = NULL;
@@ -210,9 +218,11 @@ fl_BlockLayout::fl_BlockLayout(PL_StruxDocHandle sdh,
 				iLoop++;
 			}
 		}
-		m_bStyleInTOC = m_pLayout->addOrRemoveBlockFromTOC(this);
+		if(!m_bIsTOC)
+		{
+			m_bStyleInTOC = m_pLayout->addOrRemoveBlockFromTOC(this);
+		}
 	}
-	m_bIsTOC = (pSectionLayout->getContainerType() == FL_CONTAINER_TOC);
 	_lookupProperties();
 
 	if(!isHdrFtr() || (static_cast<fl_HdrFtrSectionLayout *>(getSectionLayout())->getDocSectionLayout() != NULL))
@@ -1179,6 +1189,38 @@ fp_Line * fl_BlockLayout::findLineWithFootnotePID(UT_uint32 pid)
 		return pLine;
 	}
 	return NULL;
+}
+
+FootnoteType fl_BlockLayout::getTOCNumType(void)
+{
+	UT_ASSERT(m_bIsTOC);
+	fl_TOCLayout * pTOCL = static_cast<fl_TOCLayout *>(getSectionLayout());
+	UT_ASSERT(pTOCL->getContainerType() == FL_CONTAINER_TOC);
+	return pTOCL->getNumType(m_iTOCLevel);
+}
+
+eTabLeader fl_BlockLayout::getTOCTabLeader(UT_sint32 iOff)
+{
+	UT_ASSERT(m_bIsTOC);
+	fl_TOCLayout * pTOCL = static_cast<fl_TOCLayout *>(getSectionLayout());
+	UT_ASSERT(pTOCL->getContainerType() == FL_CONTAINER_TOC);
+	if(iOff > 1)
+	{
+		return pTOCL->getTabLeader(m_iTOCLevel);
+	}
+	return FL_LEADER_NONE;
+}
+
+UT_sint32 fl_BlockLayout::getTOCTabPosition(UT_sint32 iOff)
+{
+	UT_ASSERT(m_bIsTOC);
+	fl_TOCLayout * pTOCL = static_cast<fl_TOCLayout *>(getSectionLayout());
+	UT_ASSERT(pTOCL->getContainerType() == FL_CONTAINER_TOC);
+	if(iOff > 1)
+	{
+		return pTOCL->getTabPosition(m_iTOCLevel);
+	}
+	return 0;
 }
 
 UT_sint32 fl_BlockLayout::getMaxNonBreakableRun(void)
@@ -3773,6 +3815,15 @@ bool	fl_BlockLayout::_doInsertTabRun(PT_BlockOffset blockOffset)
 	return _doInsertRun(pNewRun);
 }
 
+
+bool	fl_BlockLayout::_doInsertTOCTabRun(PT_BlockOffset blockOffset)
+{
+	fp_Run* pNewRun = new fp_TabRun(this,blockOffset, 1);
+	UT_ASSERT(pNewRun); // TODO check for outofmem
+	static_cast<fp_TabRun *>(pNewRun)->setTOCTab();
+	return _doInsertRun(pNewRun);
+}
+
 bool	fl_BlockLayout::_doInsertImageRun(PT_BlockOffset blockOffset, FG_Graphic* pFG)
 {
 	fp_ImageRun* pNewRun = new fp_ImageRun(this, blockOffset, 1, pFG);
@@ -4017,6 +4068,17 @@ bool	fl_BlockLayout::_doInsertFieldRun(PT_BlockOffset blockOffset, const PX_Chan
 	// pNewRun->lookupProperties();
 	pNewRun->calculateValue();
 
+	_doInsertRun(pNewRun);
+	recalculateFields(0);
+	return true;
+}
+
+
+bool	fl_BlockLayout::_doInsertFieldTOCRun(PT_BlockOffset blockOffset)
+{
+	fp_FieldRun* pNewRun;
+	pNewRun = new fp_FieldTOCNumRun(this,   blockOffset, 1);
+	pNewRun->calculateValue();
 	_doInsertRun(pNewRun);
 	recalculateFields(0);
 	return true;

@@ -358,6 +358,9 @@ public:
 	void					recheckIgnoredWords();
 	bool                    isContainedByTOC(void) const
 	    { return m_bIsTOC;}
+	FootnoteType            getTOCNumType(void);
+	eTabLeader              getTOCTabLeader(UT_sint32 iOff);
+	UT_sint32               getTOCTabPosition(UT_sint32 iOff);
 	static bool 		s_EnumTabStops(void * myThis, UT_uint32 k, fl_TabStop *pTabInfo);
 
 	inline void 		addBackgroundCheckReason(UT_uint32 reason) {m_uBackgroundCheckReasons |= reason;}
@@ -404,8 +407,10 @@ protected:
 	bool					_doInsertForcedColumnBreakRun(PT_BlockOffset blockOffset);
 	bool					_doInsertForcedPageBreakRun(PT_BlockOffset blockOffset);
 	bool					_doInsertTabRun(PT_BlockOffset blockOffset);
+	bool					_doInsertTOCTabRun(PT_BlockOffset blockOffset);
 	bool					_doInsertImageRun(PT_BlockOffset blockOffset, FG_Graphic* pFG);
 	bool					_doInsertFieldRun(PT_BlockOffset blockOffset, const PX_ChangeRecord_Object * pcro);
+	bool					_doInsertFieldTOCRun(PT_BlockOffset blockOffset);
 	bool                    _doInsertDirectionMarkerRun(PT_BlockOffset blockOffset, UT_UCS4Char iM);
 	bool					_deleteFmtMark(PT_BlockOffset blockOffset);
 
@@ -430,7 +435,6 @@ protected:
 	void					_deleteListLabel(void);
 	inline void 			_addBlockToPrevList( fl_BlockLayout * prevBlockInList, UT_uint32 level);
 	inline void 			_prependBlockToPrevList( fl_BlockLayout * nextBlockInList);
-
 	UT_sint32 				m_iNeedsReformat; // will store offset
 											  // from which reformat
 											  // is need, -1 if not
@@ -475,6 +479,7 @@ protected:
 
 	bool                    m_bIsTOC;
 	bool                    m_bStyleInTOC;
+	UT_sint32               m_iTOCLevel;
 };
 
 /*

@@ -5742,6 +5742,7 @@ void FV_View::warpInsPtToXY(UT_sint32 xPos, UT_sint32 yPos, bool bClick = false)
 
 
 	_setPoint(pos, bEOL);
+	_ensureInsertionPointOnScreen();
 	setCursorToContext();
 	notifyListeners(AV_CHG_MOTION | AV_CHG_HDRFTR ); // Sevior Put this in
 //	notifyListeners(AV_CHG_HDRFTR );

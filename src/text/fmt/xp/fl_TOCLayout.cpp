@@ -63,7 +63,16 @@ fl_TOCLayout::fl_TOCLayout(FL_DocLayout* pLayout, fl_DocSectionLayout* pDocSL, P
 	  m_bNeedsFormat(true),
 	  m_bIsOnPage(false),
 	  m_pDocSL(pDocSL),
-	  m_bHasEndTOC(false)
+	  m_bHasEndTOC(false),
+	  m_iNumType1(FOOTNOTE_TYPE_NUMERIC),
+	  m_iNumType2(FOOTNOTE_TYPE_NUMERIC),
+	  m_iNumType3(FOOTNOTE_TYPE_NUMERIC),
+	  m_iNumType4(FOOTNOTE_TYPE_NUMERIC),
+	  m_iTabLeader1(FL_LEADER_DOT),
+	  m_iTabLeader2(FL_LEADER_DOT),
+	  m_iTabLeader3(FL_LEADER_DOT),
+	  m_iTabLeader4(FL_LEADER_DOT),
+	  m_iCurrentLevel(0)
 {
 	UT_ASSERT(m_pDocSL->getContainerType() == FL_CONTAINER_DOCSECTION);
 	_createTOCContainer();
@@ -179,27 +188,106 @@ fl_SectionLayout * fl_TOCLayout::getSectionLayout(void) const
 	return NULL;
 }
 
+FootnoteType fl_TOCLayout::getNumType(UT_sint32 iLevel)
+{
+	if(iLevel == 1)
+	{
+		return m_iNumType1;
+	}
+	else if(iLevel == 2)
+	{
+		return m_iNumType2;
+	}
+	else if(iLevel == 3)
+	{
+		return m_iNumType3;
+	}
+	else if(iLevel == 4)
+	{
+		return m_iNumType4;
+	}
+	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+	return static_cast<FootnoteType>(0);
+}
+
+
+eTabLeader fl_TOCLayout::getTabLeader(UT_sint32 iLevel)
+{
+	if(iLevel == 1)
+	{
+		return m_iTabLeader1;
+	}
+	else if(iLevel == 2)
+	{
+		return m_iTabLeader2;
+	}
+	else if(iLevel == 3)
+	{
+		return m_iTabLeader3;
+	}
+	else if(iLevel == 4)
+	{
+		return m_iTabLeader4;
+	}
+	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+	return static_cast<eTabLeader>(0);
+}
+
+UT_sint32 fl_TOCLayout::getTabPosition(UT_sint32 iLevel)
+{
+	fp_TOCContainer * pTOCC = static_cast<fp_TOCContainer *>(getFirstContainer());
+	if(pTOCC == NULL)
+	{
+		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		return 0;
+	}
+	UT_sint32 iWidth = pTOCC->getWidth();
+	UT_UTF8String sStr("");
+	if(iLevel == 1)
+	{
+		sStr = m_sNumOff1;
+	}
+	else if(iLevel == 2)
+	{
+		sStr = m_sNumOff2;
+	}
+	else if(iLevel == 3)
+	{
+		sStr = m_sNumOff3;
+	}
+	else if(iLevel == 4)
+	{
+		sStr = m_sNumOff4;
+	}
+	iWidth -= UT_convertToLogicalUnits(sStr.utf8_str());
+	return iWidth;
+}
+
 bool fl_TOCLayout::addBlock(fl_BlockLayout * pBlock)
 {
 	UT_UTF8String sStyle;
 	pBlock->getStyle(sStyle);
 	if(sStyle == m_sSourceStyle1)
 	{
+		m_iCurrentLevel = 1;
 		_addBlockInVec(pBlock,&m_vecBlock1, m_sDestStyle1);
 		return true;
 	}
 	if(sStyle == m_sSourceStyle2)
 	{
+		m_iCurrentLevel = 2;
 		_addBlockInVec(pBlock,&m_vecBlock2,m_sDestStyle2);
 		return true;
 	}
 	if(sStyle == m_sSourceStyle3)
 	{
+		m_iCurrentLevel = 3;
 		_addBlockInVec(pBlock,&m_vecBlock3,m_sDestStyle3);
 		return true;
 	}
 	if(sStyle == m_sSourceStyle4)
 	{
+		m_iCurrentLevel = 4;
 		_addBlockInVec(pBlock,&m_vecBlock4,m_sDestStyle4);
 		return true;
 	}
@@ -267,6 +355,15 @@ void fl_TOCLayout::_addBlockInVec(fl_BlockLayout * pBlock, UT_Vector * pVecBlock
 	{
 		pNewBlock = static_cast<fl_BlockLayout *>(getFirstLayout());
 	}
+	UT_DEBUGMSG(("New TOC block in TOCLayout %x \n",pNewBlock));
+//
+// Now append the tab and Field's to end of the Block.
+//
+	PT_DocPosition iLen = static_cast<PT_DocPosition>(pBlock->getLength());
+	iLen -=1; // subtract 1 for the inital strux
+	pNewBlock->_doInsertTOCTabRun(iLen);
+	iLen++;
+	pNewBlock->_doInsertFieldTOCRun(iLen);
 //
 // OK Now add the block to out vectors.
 //
@@ -789,6 +886,10 @@ void fl_TOCLayout::_lookupProperties(void)
 	{
 		m_iTOCPID = atoi(pszTOCPID);
 	}
+	m_sNumOff1 = "0.5in";
+	m_sNumOff2 = "0.5in";
+	m_sNumOff3 = "0.5in";
+	m_sNumOff4 = "0.5in";
 	const XML_Char *pszTOCSRC = NULL;
 	if(!pSectionAP || !pSectionAP->getAttribute("toc-source-style-1",pszTOCSRC))
 	{

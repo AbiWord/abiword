@@ -428,6 +428,9 @@ public:
 	eTabLeader			    getLeader(void);
 	void                    setTabType(eTabType iTabType);
 	eTabType                getTabType(void) const;
+	bool                    isTOCTab(void);
+	void                    setTOCTab(void)
+	{ m_bIsTOC = true;}
 protected:
 	virtual void			_drawArrow(UT_uint32 iLeft,UT_uint32 iTop,UT_uint32 iWidth, UT_uint32 iHeight);
 	virtual void			_draw(dg_DrawArgs*);
@@ -444,6 +447,7 @@ private:
 private:
 	eTabLeader			    m_leader;
     eTabType                m_TabType;
+	bool                    m_bIsTOC;
 };
 
 class ABI_EXPORT fp_ForcedLineBreakRun : public fp_Run

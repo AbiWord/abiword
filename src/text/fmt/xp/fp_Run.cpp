@@ -1623,7 +1623,8 @@ void fp_Run::_drawTextLine(UT_sint32 xoff,UT_sint32 yoff,UT_uint32 iWidth,UT_uin
 //////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////
 
-fp_TabRun::fp_TabRun(fl_BlockLayout* pBL, UT_uint32 iOffsetFirst, UT_uint32 iLen) : fp_Run(pBL, iOffsetFirst, iLen, FPRUN_TAB)
+fp_TabRun::fp_TabRun(fl_BlockLayout* pBL, UT_uint32 iOffsetFirst, UT_uint32 iLen) : fp_Run(pBL, iOffsetFirst, iLen, FPRUN_TAB),
+																					m_bIsTOC(false)
 {
 	lookupProperties();
 }
@@ -1809,6 +1810,11 @@ void fp_TabRun::findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y, U
 	bDirection = (iDirection != FRIBIDI_TYPE_LTR);
 	y = yoff;
 	height = getHeight();
+}
+
+bool fp_TabRun::isTOCTab(void)
+{
+	return m_bIsTOC;
 }
 
 void fp_TabRun::setTabWidth(UT_sint32 iWidth)
@@ -3468,7 +3474,6 @@ void fp_FieldRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 									const PP_AttrProp * pSectionAP,
 									GR_Graphics * pG)
 {
-	UT_ASSERT(pSpanAP);
 	if(pG == NULL)
 	{
 		pG = getGraphics();

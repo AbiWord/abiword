@@ -25,6 +25,8 @@
 #include "ut_vector.h"
 #include "pt_Types.h"
 #include "fl_Layout.h"
+#include "fl_DocLayout.h"
+#include "fl_BlockLayout.h"
 #include "fl_ContainerLayout.h"
 #include "fl_SectionLayout.h"
 #include "pl_Listener.h"
@@ -84,6 +86,11 @@ public:
 	bool                     addBlock(fl_BlockLayout * pBlock);
 	bool                     removeBlock(fl_BlockLayout * pBlock);
 	fl_BlockLayout *         getMatchingBlock(fl_BlockLayout * pBlock);
+	UT_sint32                getCurrentLevel(void) const
+		{ return m_iCurrentLevel;}
+	FootnoteType             getNumType(UT_sint32 iLevel);
+	eTabLeader               getTabLeader(UT_sint32 iLevel);
+	UT_sint32                getTabPosition(UT_sint32 iLevel);
 private:
 	virtual void             _purgeLayout(void);
 	virtual void		     _lookupProperties(void);
@@ -106,11 +113,24 @@ private:
 	UT_UTF8String            m_sDestStyle2;
 	UT_UTF8String            m_sDestStyle3;
 	UT_UTF8String            m_sDestStyle4;
+	UT_UTF8String            m_sNumOff1;
+	UT_UTF8String            m_sNumOff2;
+	UT_UTF8String            m_sNumOff3;
+	UT_UTF8String            m_sNumOff4;
 	UT_Vector                m_vecBlock1;
 	UT_Vector                m_vecBlock2;
 	UT_Vector                m_vecBlock3;
 	UT_Vector                m_vecBlock4;
+	FootnoteType             m_iNumType1;
+	FootnoteType             m_iNumType2;
+	FootnoteType             m_iNumType3;
+	FootnoteType             m_iNumType4;
+	eTabLeader               m_iTabLeader1;
+	eTabLeader               m_iTabLeader2;
+	eTabLeader               m_iTabLeader3;
+	eTabLeader               m_iTabLeader4;
 	UT_Vector                m_vecAllBlocks;
+	UT_sint32                m_iCurrentLevel;
 };
 
 
