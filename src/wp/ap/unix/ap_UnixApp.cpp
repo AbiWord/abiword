@@ -467,6 +467,7 @@ void AP_UnixApp::copyToClipboard(PD_DocumentRange * pDocRange, bool bUseClipboar
     IE_Exp_HTML * pExpHtml = new IE_Exp_HTML(pDocRange->m_pDoc);
     if ( pExpHtml )
     {
+	pExpHtml->set_HTML4(true);
         pExpHtml->copyToBuffer(pDocRange, &bufHTML);
         DELETEP(pExpHtml);
     }
