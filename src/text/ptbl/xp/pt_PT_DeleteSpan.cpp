@@ -1847,7 +1847,8 @@ bool pt_PieceTable::_realDeleteSpan(PT_DocPosition dpos1,
 		// All text in paragraph is deleted so insert a text format.
 		// Except if we're realy don't want it. We know we dont if
 		// bDontGlob is true.
-		if(!bDontGlob)
+		pf_Frag_Strux * pfs = static_cast<pf_Frag_Strux *>(p_frag_before);
+		if(!bDontGlob && ((pfs->getStruxType() == PTX_Block) || (p_frag_before->getType() == pf_Frag::PFT_EndOfDoc) ))
 			_insertFmtMarkFragWithNotify(PTC_AddFmt, dpos1, &AttrProp_Before);
 
 	}
