@@ -617,8 +617,7 @@ UT_Error IE_Imp_WordPerfect::_parseDocument()
    
    UT_DEBUGMSG(("WordPerfect: File Pointer at %i equals or exceeds document length of %i\n", (int)ftell(m_importFile), (int)m_documentEnd));
    
-   if(m_textBuf.getLength() > 0)
-     X_CheckWordPerfectError(_flushText());
+   X_CheckWordPerfectError(_flushText());
    
    return UT_OK;
 }

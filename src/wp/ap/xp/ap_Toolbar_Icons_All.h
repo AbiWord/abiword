@@ -97,6 +97,7 @@
 #       include "tb_smiley.xpm"
 
 #	include "tb_script_play.xpm"
+#       include "tb_stock_paint.xpm"
 
 	// these are specific to one or more translations
 #	include "tb_text_bold_G.xpm"
@@ -202,6 +203,7 @@
  	DefineToolbarIcon(tb_edit_removeheader_xpm)
  	DefineToolbarIcon(tb_edit_removefooter_xpm)
 	DefineToolbarIcon(tb_script_play_xpm)
+        DefineToolbarIcon(tb_stock_paint_xpm)
 
 	// these are specific to one or more translations
 	DefineToolbarIcon(tb_text_bold_G_xpm)

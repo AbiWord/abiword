@@ -43,6 +43,9 @@ BeginLayout(FileEditOps)
 	ToolbarItem(AP_TOOLBAR_ID_EDIT_CUT)
 	ToolbarItem(AP_TOOLBAR_ID_EDIT_COPY)
 	ToolbarItem(AP_TOOLBAR_ID_EDIT_PASTE)
+#if 0//defined(DEBUG)
+        ToolbarItem(AP_TOOLBAR_ID_FMTPAINTER)
+#endif
 
 	Spacer()
 	ToolbarItem(AP_TOOLBAR_ID_EDIT_UNDO)

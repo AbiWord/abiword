@@ -463,7 +463,7 @@ s_AbiWord_1_Listener::s_AbiWord_1_Listener(PD_Document * pDocument,
 	// TODO: write out a DOCTYPE description after we update the DTD
 	m_pie->write ("<!DOCTYPE abiword PUBLIC \"-//ABISOURCE//DTD AWML 1.0 Strict//EN\" \"http://www.abisource.com/awml.dtd\">\n");
 
-	m_pie->write("<abiword xmlns:awml=\"http://www.abisource.com/awml.dtd\"");
+	m_pie->write("<abiword xmlns:awml=\"http://www.abisource.com/awml.dtd\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" xmlns:svg=\"http://www.w3.org/2000/svg\" xmlns:fo=\"http://www.w3.org/1999/XSL/Format\" xmlns:math=\"http://www.w3.org/1998/Math/MathML\" xmlns:dc=\"http://purl.org/dc/elements/1.1/\"");
 	m_pie->write(" version=\"");
 	if (XAP_App::s_szBuild_Version && XAP_App::s_szBuild_Version[0])
 	{

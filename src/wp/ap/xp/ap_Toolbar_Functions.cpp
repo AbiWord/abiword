@@ -136,6 +136,18 @@ Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_Clipboard)
 		s = ( (pView->getApp()->canPasteFromClipboard()) ? EV_TIS_ZERO : EV_TIS_Gray );
 		break;
 
+	case AP_TOOLBAR_ID_FMTPAINTER:
+	  if ( pView->getApp()->canPasteFromClipboard() &&
+	       !pView->isSelectionEmpty() )
+	    s = EV_TIS_ZERO;
+	  else
+	    s = EV_TIS_Gray;
+	  break;
+
+	case AP_TOOLBAR_ID_FMT_HYPERLINK:
+	  s = ( (!pView->isSelectionEmpty()) ? EV_TIS_ZERO : EV_TIS_Gray );
+	  break;
+	  
 	default:
 		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 		break;

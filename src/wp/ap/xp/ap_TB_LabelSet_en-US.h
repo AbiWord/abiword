@@ -110,6 +110,8 @@ BeginSetEnc(en,US,true,"iso-8859-1")
 
 	ToolbarLabel(AP_TOOLBAR_ID_SCRIPT_PLAY,		"Ex. script",	tb_script_play_xpm,		NULL, "Execute script")
 
+     ToolbarLabel(AP_TOOLBAR_ID_FMTPAINTER, "Format Painter", tb_stock_paint_xpm, NULL, "Apply the previously copied paragraph formatting onto the selected text")
+
 #ifdef BIDI_ENABLED
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_DIR_OVERRIDE_LTR,	"Force text LTR",		tb_text_direction_ltr_xpm,	NULL, "Force LTR direction of text")
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_DIR_OVERRIDE_RTL,	"Force text RTL",		tb_text_direction_rtl_xpm,	NULL, "Force RTL direction of text")

@@ -423,6 +423,8 @@ void XAP_UnixGnomeFrame::_createTopLevelWindow(void)
 
 	m_wTopLevelWindow = gnome_app_new((gchar *)(m_pUnixApp->getApplicationName()),
 									  (gchar *)(m_pUnixApp->getApplicationTitleForTitleBar()));
+ 	gtk_object_set_data(GTK_OBJECT(m_wTopLevelWindow), "ic_attr", NULL);
+ 	gtk_object_set_data(GTK_OBJECT(m_wTopLevelWindow), "ic", NULL);
 	gtk_object_set_data(GTK_OBJECT(m_wTopLevelWindow), "toplevelWindow",
 						m_wTopLevelWindow);
 	gtk_object_set_user_data(GTK_OBJECT(m_wTopLevelWindow),this);
@@ -436,6 +438,17 @@ void XAP_UnixGnomeFrame::_createTopLevelWindow(void)
 					   drag_types, 
 					   n_drag_types, 
 					   GDK_ACTION_COPY);
+
+ 	gtk_signal_connect(GTK_OBJECT(m_wTopLevelWindow), "realize",
+ 					   GTK_SIGNAL_FUNC(_fe::realize), NULL);
+ 	gtk_signal_connect(GTK_OBJECT(m_wTopLevelWindow), "unrealize",
+ 					   GTK_SIGNAL_FUNC(_fe::unrealize), NULL);
+ 	gtk_signal_connect(GTK_OBJECT(m_wTopLevelWindow), "size_allocate",
+ 					   GTK_SIGNAL_FUNC(_fe::sizeAllocate), NULL);
+ 	gtk_signal_connect(GTK_OBJECT(m_wTopLevelWindow), "focus_in_event",
+ 					   GTK_SIGNAL_FUNC(_fe::focusIn), NULL);
+ 	gtk_signal_connect(GTK_OBJECT(m_wTopLevelWindow), "focus_out_event",
+ 					   GTK_SIGNAL_FUNC(_fe::focusOut), NULL);
 
 	gtk_signal_connect (GTK_OBJECT (m_wTopLevelWindow),
 						"drag_data_get",

@@ -270,6 +270,7 @@ public:
 	static EV_EditMethod_Fn fileSaveAs;
 	static EV_EditMethod_Fn fileExport;
 	static EV_EditMethod_Fn fileImport;
+	static EV_EditMethod_Fn formatPainter;
 	static EV_EditMethod_Fn pageSetup;
 	static EV_EditMethod_Fn print;
 	static EV_EditMethod_Fn printTB;
@@ -686,6 +687,8 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(findAgain),			0,	""),	
 	EV_EditMethod(NF(fontFamily),			_D_,	""),
 	EV_EditMethod(NF(fontSize), 			_D_,	""),
+	EV_EditMethod(NF(formatPainter),		0,	""),
+
 
 	// g
 	EV_EditMethod(NF(go),					0,	""),
@@ -5324,6 +5327,76 @@ Defun(fontSize)
 		pView->setCharFormat(properties);
 	}
 	return true;
+}
+
+Defun(formatPainter)
+{
+  // TODO: MAKE ME WORK!!!
+
+  CHECK_FRAME;
+  ABIWORD_VIEW;
+
+  // prereqs: !pView->isSelectionEmpty() && XAP_App::getApp()->canPasteFromClipboard()
+  // taken care of in ap_Toolbar_Functions.cpp::ap_ToolbarGetState_Clipboard
+
+  UT_DEBUGMSG(("DOM: FORMAT PAINTER!!\n"));
+
+  bool retval = false;
+
+  const XML_Char ** block_properties = 0;
+  const XML_Char ** span_properties  = 0;
+
+  // get the current document's selected range
+  PD_DocumentRange range;
+  pView->getDocumentRangeOfCurrentSelection ( &range ) ;
+
+  // now create a new (invisible) view to paste our clipboard contents into
+  PD_Document * pNewDoc = new PD_Document(XAP_App::getApp());
+  pNewDoc->newDocument();
+
+  FL_DocLayout *pDocLayout = new FL_DocLayout(pNewDoc, pView->getGraphics());
+  FV_View pPasteView (XAP_App::getApp(), 0, pDocLayout);
+
+  // paste contents
+  pPasteView.cmdPaste ();
+
+  // select all so that we can get the block & span properties
+  pPasteView.cmdSelect(0, 0, FV_DOCPOS_BOD, FV_DOCPOS_EOD);
+
+  // re-select it so that we still have those contents on the clipboard
+  pPasteView.cmdCopy ();
+
+  UT_DEBUGMSG(("DOM: Selected and copied\n"));
+
+  // get the paragraph and span/character formatting properties of 
+  // the clipboard selection
+  if (!pPasteView.getBlockFormat(&block_properties))
+    {
+      UT_DEBUGMSG(("DOM: No block attributes in the new paragraph!\n"));
+      goto cleanup;
+    }
+
+  if (!pPasteView.getCharFormat(&span_properties))
+    {
+      UT_DEBUGMSG(("DOM: No span attributes in the new paragraph!\n"));
+      goto cleanup;
+    }
+
+  // reset what was selected before setting the block and char formatting
+  pView->cmdSelect (range.m_pos1, range.m_pos2) ;
+
+  // set the current selection's properties to what's on the clipboard
+  pView->setBlockFormat (block_properties);
+  pView->setCharFormat (span_properties);
+
+  retval = true;
+
+ cleanup:
+  DELETEP(pDocLayout);
+  UNREFP(pNewDoc);
+
+  // done!
+  return retval;
 }
 
 /*****************************************************************/
