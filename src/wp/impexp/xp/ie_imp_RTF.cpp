@@ -1290,11 +1290,44 @@ bool IE_Imp_RTF::LoadPictData(PictFormat format, char * image_name)
 		{
 			// null file, we're pasting an image. this really makes
 			// quite a difference to the piece table
-			XAP_App * pApp = XAP_App::getApp();
-			FV_View * pView = static_cast<FV_View *>(pApp->getViewSelection());
-			pView->cmdInsertGraphic(pFG, image_name);
+
+			// Get a unique name for image.
+		   
+			char *szName = new char [strlen (image_name) + 64 + 1];
+			UT_uint32 ndx = 0;
+			for (;;)
+			{
+				sprintf(szName, "%s_%d", image_name, ndx);
+				if (!m_pDocument->getDataItemDataByName(szName, NULL, NULL, NULL))
+				{
+					break;
+				}
+				ndx++;
+			}
+//
+// Code from fg_GraphicsRaster.cpp
+//
+			/*
+			  Create the data item
+			*/
+			char * mimetype = UT_strdup("image/png");
+			m_pDocument->createDataItem(szName, false, buf, mimetype, NULL);
+
+			/*
+			  Insert the object into the document.
+			*/
+			const XML_Char * attributes[] = {
+				"dataid", NULL,
+				NULL, NULL
+			};
+			attributes [1] = szName;
+			
+			m_pDocument->insertObject(m_dposPaste, PTO_Image, attributes, NULL);
+            m_dposPaste++;
+			delete [] szName;
+			delete [] mimetype;
 		}
-	} 
+	}
 	else
 	{
 		// if we're not inserting a graphic, we should destroy the buffer

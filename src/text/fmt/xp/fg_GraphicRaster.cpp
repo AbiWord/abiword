@@ -213,6 +213,7 @@ UT_Error FG_GraphicRaster::insertIntoDocument(PD_Document* pDoc, double fDPI,
 #endif
 
 	pDoc->insertObject(iPos, PTO_Image, attributes, NULL);
+	delete [] mimetype;
 
 	// TODO: better error checking in this function
 	return UT_OK;
