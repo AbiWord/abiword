@@ -29,6 +29,7 @@ PROGRAM=		$(BINDIR)/cdump$(EXE_SUFFIX)
 ABI_LDFLAGS=		/nologo /subsystem:console /incremental:no /machine:$(LINK_ARCH) /profile
 ABI_APPLIBS=		
 
+EXTRA_LIBS=
 ABI_OTHLIBS=		
 ABI_LIBS=		kernel32 user32 gdi32 winspool comdlg32 advapi32 \
 			shell32 uuid comctl32 ole32
