@@ -263,6 +263,7 @@ fl_BlockLayout::fl_BlockLayout(PL_StruxDocHandle sdh,
 	m_pSpellSquiggles = new fl_SpellSquiggles(this);
 	m_pGrammarSquiggles = new fl_GrammarSquiggles(this);
 	UT_ASSERT(m_pSpellSquiggles);
+	UT_ASSERT(m_pGrammarSquiggles);
 	setUpdatableField(false);
 	updateEnclosingBlockIfNeeded();
 }
@@ -885,6 +886,7 @@ void fl_BlockLayout::_lookupProperties(const PP_AttrProp* pBlockAP)
 fl_BlockLayout::~fl_BlockLayout()
 {
 	DELETEP(m_pSpellSquiggles);
+	DELETEP(m_pGrammarSquiggles);
 	purgeLayout();
 	UT_VECTOR_PURGEALL(fl_TabStop *, m_vecTabs);
 	DELETEP(m_pAlignment);
@@ -1145,6 +1147,7 @@ void fl_BlockLayout::updateOffsets(PT_DocPosition posEmbedded, UT_uint32 iEmbedd
 // Now update the PartOfBlocks in the squiggles
 //
 		getSpellSquiggles()->updatePOBs(iFirstOffset,iSuggestDiff);
+		getGrammarSquiggles()->updatePOBs(iFirstOffset,iSuggestDiff);
 	}
 #if 0
 #if DEBUG
@@ -5417,6 +5420,7 @@ bool fl_BlockLayout::doclistener_insertSpan(const PX_ChangeRecord_Span * pcrs)
 	updateEnclosingBlockIfNeeded();
 
 	m_pSpellSquiggles->textInserted(blockOffset, len);
+	m_pGrammarSquiggles->textInserted(blockOffset, len);
 
 	FV_View* pView = getView();
 	if (pView && (pView->isActive() || pView->isPreview()))
@@ -5857,6 +5861,7 @@ bool fl_BlockLayout::doclistener_deleteSpan(const PX_ChangeRecord_Span * pcrs)
 	_delete(blockOffset, len);
 
 	m_pSpellSquiggles->textDeleted(blockOffset, len);
+	m_pGrammarSquiggles->textDeleted(blockOffset, len);
 
 	FV_View* pView = getView();
 	if (pView && (pView->isActive() || pView->isPreview()))
@@ -6306,6 +6311,7 @@ fl_BlockLayout::doclistener_deleteStrux(const PX_ChangeRecord_Strux* pcrx)
 		// This call will dequeue the block from background checking
 		// if necessary
 		m_pSpellSquiggles->join(offset, pPrevBL);
+		m_pGrammarSquiggles->join(offset, pPrevBL);
 		pPrevBL->setNeedsReformat();
 		//
 		// Update if it's TOC entry by removing then restoring
@@ -6691,6 +6697,7 @@ bool fl_BlockLayout::doclistener_insertBlock(const PX_ChangeRecord_Strux * pcrx,
 
 	// Split squiggles between this and the new block
 	m_pSpellSquiggles->split(blockOffset, pNewBL);
+	m_pGrammarSquiggles->split(blockOffset, pNewBL);
 
 	FV_View* pView = getView();
 	if (pView && (pView->isActive() || pView->isPreview()))
@@ -7608,6 +7615,7 @@ bool fl_BlockLayout::doclistener_insertObject(const PX_ChangeRecord_Object * pcr
 
 	// TODO: are objects always one wide?
 	m_pSpellSquiggles->textInserted(blockOffset, 1);
+	m_pGrammarSquiggles->textInserted(blockOffset, 1);
 
 	_assertRunListIntegrity();
 	//
@@ -7705,6 +7713,8 @@ bool fl_BlockLayout::doclistener_deleteObject(const PX_ChangeRecord_Object * pcr
 	// TODO: are objects always one wide?
 	if(m_pSpellSquiggles)
 		m_pSpellSquiggles->textDeleted(blockOffset, 1);
+	if(m_pGrammarSquiggles)
+		m_pGrammarSquiggles->textDeleted(blockOffset, 1);
 
 	_assertRunListIntegrity();
 	//

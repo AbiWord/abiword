@@ -1,4 +1,4 @@
-/* AbiWord
+ /* AbiWord
  * Copyright (C) 1998,1999 AbiSource, Inc.
  * Copyright (c) 2001,2002 Tomas Frydrych
  *
@@ -2289,7 +2289,7 @@ void fp_TextRun::drawSquiggle(UT_uint32 iOffset, UT_uint32 iLen,FL_SQUIGGLE_TYPE
 	UT_sint32 iGap = (iDescent > 3) ?/*1*/0 : (iDescent - 3);
 	if(iSquiggle == FL_SQUIGGLE_GRAMMAR)
 	{
-	  iGap += getGraphics()->tlu(2);
+	  //	  iGap += getGraphics()->tlu(2);
 	}
 	getGraphics()->setColor(_getView()->getColorSquiggle(iSquiggle));
 
