@@ -488,6 +488,7 @@ void AP_UnixFrame::_scrollFunc(void * pData, UT_sint32 xoff, UT_sint32 yoff)
 
 UT_Bool AP_UnixFrame::close()
 {
+	gtk_widget_destroy(getTopLevelWindow());
 	return UT_TRUE;
 }
 
