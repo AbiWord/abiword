@@ -174,7 +174,7 @@ typedef		UT_sint32				UT_Error;
 
 /* UGLY UGLY Iconv hack for win32.  I will suffer in the afterlife for this */
 
-#ifdef WIN32
+#if defined(WIN32) || defined(__QNXNTO__)
 #define ICONV_CONST const
 #else
 #define ICONV_CONST
