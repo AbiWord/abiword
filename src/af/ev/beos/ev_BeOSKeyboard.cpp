@@ -160,7 +160,7 @@ BMessage: what = _KYD (0x5f4b5944, or 1598773572)
 	if (modifier & B_SHIFT_KEY) {
 		state |= EV_EMS_SHIFT;
 	}
-	
+
 #if 0
 	if (modifier & B_CONTROL_KEY) {
 		state |= EV_EMS_CONTROL;
@@ -173,7 +173,52 @@ BMessage: what = _KYD (0x5f4b5944, or 1598773572)
 	if (s_mapVirtualKeyCodeToNVK(keychar, modifier, rawchar, bytes)) {
 		EV_EditBits nvk = s_mapVirtualKeyCodeToNVK(keychar, modifier, 
 													rawchar, bytes);
-	    UT_DEBUGMSG(("VKC 0x%x ignore 0x%x \n", nvk, EV_NVK__IGNORE__));
+		UT_DEBUGMSG(("VKC 0x%x ignore 0x%x \n", nvk, EV_NVK__IGNORE__));
+	    
+		//Trap Ten-Key Data
+		UT_uint16 charData;
+		bool ignore = false;
+		if (!(modifier & B_SHIFT_KEY))
+			if (modifier & B_NUM_LOCK)
+			{
+				switch (keychar)
+				{
+					case 0x37:
+						charData = 0x37;// Ten-Key 7
+						break;
+					case 0x38:
+						charData = 0x38;// Ten-Key 8
+						break;
+					case 0x39:
+						charData = 0x39;// Ten-Key 9
+						break;
+					case 0x48:
+						charData = 0x34;// Ten-Key 4
+						break;
+					case 0x49:
+						charData = 0x35;// Ten-Key 5
+						break;
+					case 0x4a:
+						charData = 0x36;// Ten-Key 6
+						break;
+					case 0x58:
+						charData = 0x31;// Ten-Key 1
+						break;
+					case 0x59:
+						charData = 0x32;// Ten-Key 2
+						break;
+					case 0x5a:
+						charData = 0x33;// Ten-Key 3
+						break;
+					case 0x64:
+						charData = 0x30;// Ten-Key 0
+						break;
+					default:
+						ignore = true;
+				}
+				if (!ignore)
+					nvk = charData;
+			}
 
 		switch (nvk) {
 		case EV_NVK__IGNORE__:
@@ -199,7 +244,10 @@ BMessage: what = _KYD (0x5f4b5944, or 1598773572)
 			case EV_EEMR_COMPLETE:
 				UT_ASSERT(pEM);
 				// no char data to offer
-				invokeKeyboardMethod(pView,pEM,0,0); 
+				if (charData < 0xff) 
+					invokeKeyboardMethod(pView,pEM, &charData,1); 
+				else
+					invokeKeyboardMethod(pView,pEM,0,0); 
 				return true;
 				
 			case EV_EEMR_INCOMPLETE:
@@ -215,15 +263,15 @@ BMessage: what = _KYD (0x5f4b5944, or 1598773572)
 		UT_uint16 charData;
 
 		charData = s_getUCSChar(keychar, modifier, rawchar, bytes);
+
 		UT_DEBUGMSG(("AKC %c (0x%x) \n", charData, charData));
-		
 		result = m_pEEM->Keystroke(EV_EKP_PRESS|state|charData,&pEM);
 		switch (result) {
 		case EV_EEMR_BOGUS_START:
 			// If it is a bogus key and we don't have a sequence in
 			// progress, we should let the system handle it
 			// (this lets things like ALT-F4 work).
-			return false;
+			return true;
 			
 		case EV_EEMR_BOGUS_CONT:
 			// If it is a bogus key but in the middle of a sequence,
@@ -326,7 +374,6 @@ EV_EditBits s_mapVirtualKeyCodeToNVK(int keyval, int modifiers,
 		//Goes all the way to EV_NVK_F34
 		}
 	}
-
 	//Everything else is a character
 	return(0);
 	//We ignore everything else

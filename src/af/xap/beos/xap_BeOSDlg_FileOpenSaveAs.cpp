@@ -145,8 +145,12 @@ void XAP_BeOSDialog_FileOpenSaveAs::SetFileTypeIndex(UT_sint32 newIndex)
 
 void XAP_BeOSDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 {
+	bool b_find = true;
+
 	m_pBeOSFrame = (XAP_BeOSFrame*)pFrame;
 	UT_ASSERT(m_pBeOSFrame);
+
+	const XAP_StringSet * pSS = m_pApp->getStringSet();
 	
 	sync_sem = create_sem(0, "sync_sem");
 	
@@ -154,40 +158,60 @@ void XAP_BeOSDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 	// directory for writability?  Save/Export operations will want
 	// this, open/import will not.
 
-	bool bCheckWritePermission;
-	char * szTitle;
+	const XML_Char * szTitle = NULL;
+	const XML_Char * szFileTypeLabel = NULL;
+
 	BMessenger *messenger = new BMessenger(m_pHandler);
+
 	m_pOpenPanel = m_pSavePanel = NULL;
+	bool bCheckWritePermission = false;
 		
+	//Set Dialog Title & FileType Label
+
+	szFileTypeLabel = pSS->getValue(XAP_STRING_ID_DLG_FOSA_FileOpenTypeLabel);
+
 	switch (m_id) {
-	case XAP_DIALOG_ID_INSERT_PICTURE:
-	case XAP_DIALOG_ID_FILE_OPEN: {
-		szTitle = "AbiWord - Open File";
-		bCheckWritePermission = false;
-		if (!m_pOpenPanel) {
-			//BMessenger tmpMessenger(this);
-		 	m_pOpenPanel = new BFilePanel(B_OPEN_PANEL, 	//Mode SAVE/OPEN
-          								  	messenger,			//Target BMessenger
-         								  	NULL, 			//entry_ref* directory
-         								  	0, 				//Node flavours
-         								  	false, 			//multiselect
-         								  	new BMessage('fopn'), 			//BMessage
-         								  	NULL, 			//BRefFilter
-         								  	true, 			//modal
-         								  	false);			//hide when done
-			m_pOpenPanel->Window()->SetTitle("Open your file");
-		}
-		m_pOpenPanel->Show();
-		break;
+		case XAP_DIALOG_ID_INSERT_PICTURE:
+			szTitle = pSS->getValue(XAP_STRING_ID_DLG_IP_Title);
+			break;
+		case XAP_DIALOG_ID_FILE_OPEN:
+			szTitle = pSS->getValue(XAP_STRING_ID_DLG_FOSA_OpenTitle);
+			break;
+		case XAP_DIALOG_ID_FILE_IMPORT:
+			szTitle = pSS->getValue(XAP_STRING_ID_DLG_FOSA_ImportTitle);
+			break;
+		case XAP_DIALOG_ID_INSERT_FILE:
+			szTitle = pSS->getValue(XAP_STRING_ID_DLG_FOSA_InsertTitle);
+			break;
+		case XAP_DIALOG_ID_FILE_SAVEAS:
+			szTitle = pSS->getValue(XAP_STRING_ID_DLG_FOSA_SaveAsTitle);
+			szFileTypeLabel = pSS->getValue(XAP_STRING_ID_DLG_FOSA_FileSaveTypeLabel);
+			bCheckWritePermission = true;
+			break;
+		case XAP_DIALOG_ID_FILE_EXPORT:
+			szTitle = pSS->getValue(XAP_STRING_ID_DLG_FOSA_ExportTitle);
+			szFileTypeLabel = pSS->getValue(XAP_STRING_ID_DLG_FOSA_FileSaveTypeLabel);
+			bCheckWritePermission = true;
+			break;
+		case XAP_DIALOG_ID_PRINTTOFILE:
+			szTitle = pSS->getValue(XAP_STRING_ID_DLG_FOSA_PrintToFileTitle);
+			szFileTypeLabel = pSS->getValue(XAP_STRING_ID_DLG_FOSA_FilePrintTypeLabel);
+			bCheckWritePermission = true;
+			break;
+		default:
+			b_find = false;
 	}
-	case XAP_DIALOG_ID_FILE_SAVEAS: 
+
+	//Show FilePanel Dialog
+
+	if (b_find)
 	{
-		
-		szTitle = "AbiWord - Save File As";
-		bCheckWritePermission = true;
-		if (!m_pSavePanel) {
-			//BMessenger tmpMessenger(this);
-		 	m_pSavePanel = new BFilePanel(B_SAVE_PANEL, 	//Mode SAVE/OPEN
+		if (bCheckWritePermission)
+		{
+			//Save Panel
+			if (!m_pSavePanel) {
+				//BMessenger tmpMessenger(this);
+			 	m_pSavePanel = new BFilePanel(B_SAVE_PANEL, 	//Mode SAVE/OPEN
        									  messenger,				//Target BMessenger
        									  NULL, 			//entry_ref* directory
        									  0, 				//Node flavours
@@ -196,105 +220,109 @@ void XAP_BeOSDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
        									  NULL, 			//BRefFilter
        									  true, 			//modal
        									  false);			//hide when done
-			m_pSavePanel->Window()->SetTitle("Save your file");
+				m_pSavePanel->Window()->SetTitle(szTitle);
 			
-			if( m_pSavePanel->Window()->Lock())
-			{
-				// Add our sweet file type selection list to the dialog.
-				// We put it 10 points to the right of the filename.
-
-				m_pSavePanel->Window()->ResizeBy(0.0, 30.0);
-				m_pSavePanel->Window()->ChildAt(0)->FindView("PoseView")->ResizeBy(0.0, -30.0);
-				m_pSavePanel->Window()->ChildAt(0)->FindView("VScrollBar")->ResizeBy(0.0, -30.0);
-				m_pSavePanel->Window()->ChildAt(0)->FindView("CountVw")->MoveBy(0.0, -30.0);
-				m_pSavePanel->Window()->ChildAt(0)->FindView("HScrollBar")->MoveBy(0.0, -30.0);
-
-				BRect saveTypeRect = m_pSavePanel->Window()->ChildAt(0)->FindView("text view")->Frame();
-				saveTypeRect.right = saveTypeRect.left + 330.0;
-				saveTypeRect.top -= 30.0;
-				saveTypeRect.bottom -= 30.0;
-
-				BPopUpMenu* pPopup = new BPopUpMenu("typeListMenu");
-				BMenuField* typeList = new BMenuField(saveTypeRect , "typeList" , "Save as Type:" , pPopup , B_FOLLOW_LEFT | B_FOLLOW_BOTTOM , B_WILL_DRAW);
-				typeList->SetDivider( typeList->StringWidth("Save as Type:") + 13);
-				typeList->SetViewColor(m_pSavePanel->Window()->ChildAt(0)->ViewColor());
-				m_pSavePanel->Window()->ChildAt(0)->AddChild(typeList);
-				m_pSavePanel->Window()->Unlock();
-				
-				for(int i = 0; m_szDescriptions[i] != '\0'; i ++)
+				if( m_pSavePanel->Window()->Lock())
 				{
-					BMenuItem* newItem = new BMenuItem(m_szDescriptions[i] , new BMessage('styp'));
-					newItem->SetTarget(*messenger);
-					pPopup->AddItem(newItem);
+					// Add our sweet file type selection list to the dialog.
+					// We put it 10 points to the right of the filename.
+
+					m_pSavePanel->Window()->ResizeBy(0.0, 30.0);
+					m_pSavePanel->Window()->ChildAt(0)->FindView("PoseView")->ResizeBy(0.0, -30.0);
+					m_pSavePanel->Window()->ChildAt(0)->FindView("VScrollBar")->ResizeBy(0.0, -30.0);
+					m_pSavePanel->Window()->ChildAt(0)->FindView("CountVw")->MoveBy(0.0, -30.0);
+					m_pSavePanel->Window()->ChildAt(0)->FindView("HScrollBar")->MoveBy(0.0, -30.0);
+
+					BRect saveTypeRect = m_pSavePanel->Window()->ChildAt(0)->FindView("text view")->Frame();
+					saveTypeRect.right = saveTypeRect.left + 330.0;
+					saveTypeRect.top -= 30.0;
+					saveTypeRect.bottom -= 30.0;
+
+					BPopUpMenu* pPopup = new BPopUpMenu("typeListMenu");
+					BMenuField* typeList = new BMenuField(saveTypeRect , "typeList" , szFileTypeLabel , pPopup , B_FOLLOW_LEFT | B_FOLLOW_BOTTOM , B_WILL_DRAW);
+					typeList->SetDivider( typeList->StringWidth(szFileTypeLabel) + 13);
+					typeList->SetViewColor(m_pSavePanel->Window()->ChildAt(0)->ViewColor());
+					m_pSavePanel->Window()->ChildAt(0)->AddChild(typeList);
+					m_pSavePanel->Window()->Unlock();
+				
+					for(int i = 0; m_szDescriptions[i] != '\0'; i ++)
+					{
+						BMenuItem* newItem = new BMenuItem(m_szDescriptions[i] , new BMessage('styp'));
+						newItem->SetTarget(*messenger);
+						pPopup->AddItem(newItem);
 					
-					if( m_nTypeList[i] == m_nDefaultFileType)
-						newItem->SetMarked(true);
+						if( m_nTypeList[i] == m_nDefaultFileType)
+							newItem->SetMarked(true);
+					}
 				}
 			}
-		}
-		
-		if(m_szInitialPathname)
-		{
-			BPath parent;
-			BPath* fullPath = new BPath(m_szInitialPathname);
-			
-			if( fullPath->GetParent(&parent) == B_OK)
-			{
-				m_pSavePanel->SetSaveText(fullPath->Leaf());
-				m_pSavePanel->SetPanelDirectory(parent.Path());
-			}
-			
-			delete fullPath;
-		}
-		
-		m_pSavePanel->Show();
-		break;
-	}
-	case XAP_DIALOG_ID_PRINTTOFILE: {
-		szTitle = "Print To File";
-		bCheckWritePermission = true;
-		break;
-	}
-	default:
-		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-		break;
-	}
 
-	
+			if(m_szInitialPathname)
+			{
+				BPath parent;
+				BPath* fullPath = new BPath(m_szInitialPathname);
+			
+				if( fullPath->GetParent(&parent) == B_OK)
+					{
+					m_pSavePanel->SetSaveText(fullPath->Leaf());
+					m_pSavePanel->SetPanelDirectory(parent.Path());
+				}
+				delete fullPath;
+			}
+			m_pSavePanel->Show();
+		}
+		else
+		{
+			//Open Panel
+			if (!m_pOpenPanel) {
+				//BMessenger tmpMessenger(this);
+			 	m_pOpenPanel = new BFilePanel(B_OPEN_PANEL, 	//Mode SAVE/OPEN
+          								  	messenger,			//Target BMessenger
+         								  	NULL, 			//entry_ref* directory
+         								  	0, 				//Node flavours
+         								  	false, 			//multiselect
+         								  	new BMessage('fopn'), 			//BMessage
+         								  	NULL, 			//BRefFilter
+         								  	true, 			//modal
+         								  	false);			//hide when done
+				m_pOpenPanel->Window()->SetTitle(szTitle);
+			}
+			m_pOpenPanel->Show();
+		}
 
 	//Wait for the pannels to be finished
 #if 0 // Instead of just waiting, make the windows look pretty.
- 	acquire_sem(sync_sem);
+ 		acquire_sem(sync_sem);
 #else
-	status_t	result;
-	thread_id	this_tid = find_thread(NULL);
-	BLooper		*pLoop;
-	BWindow		*pWin = 0;
+		status_t	result;
+		thread_id	this_tid = find_thread(NULL);
+		BLooper		*pLoop;
+		BWindow		*pWin = 0;
 
-	pLoop = BLooper::LooperForThread(this_tid);
-	if (pLoop)
-		pWin = dynamic_cast<BWindow*>(pLoop);
+		pLoop = BLooper::LooperForThread(this_tid);
+		if (pLoop)
+			pWin = dynamic_cast<BWindow*>(pLoop);
 
 	// block until semaphore is deleted (modal is finished)
-	if (pWin) 
-	{
-		do {
-			// update the window periodically			
-			pWin->UpdateIfNeeded();
-			result = acquire_sem_etc(sync_sem, 1, B_TIMEOUT, 10000);
-		} while (result != B_BAD_SEM_ID);
-	} else 
-	{
-		do 
+		if (pWin) 
 		{
-			// just wait for exit
-			result = acquire_sem(sync_sem);
-		} while (result != B_BAD_SEM_ID);
-	}
+			do {
+				// update the window periodically			
+				pWin->UpdateIfNeeded();
+				result = acquire_sem_etc(sync_sem, 1, B_TIMEOUT, 10000);
+			} while (result != B_BAD_SEM_ID);
+		} else 
+		{
+			do 
+			{
+				// just wait for exit
+				result = acquire_sem(sync_sem);
+			} while (result != B_BAD_SEM_ID);
+		}
 #endif
  	
-	delete m_pSavePanel;
-	delete m_pOpenPanel;
+		delete m_pSavePanel;
+		delete m_pOpenPanel;
 
 	//Need to sleep on some sort of semaphore here ...
 	//UT_cloneString(m_szFinalPathname, "/boot/home/tfletche/junk.abw");		
@@ -304,5 +332,6 @@ void XAP_BeOSDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 	m_answer = a_OK;		//vs a_CANCEL 
 */
 
+	}
 	return;
 }

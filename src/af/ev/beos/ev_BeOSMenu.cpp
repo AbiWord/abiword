@@ -219,7 +219,10 @@ const char ** _ev_GetLabelName(XAP_BeOSApp * pBeOSApp,
 	const char * szLabelName;
 	
 	if (pAction->hasDynamicLabel())
+{
 		szLabelName = pAction->getDynamicLabel(pBeOSFrame,pLabel);
+
+}
 	else
 		szLabelName = pLabel->getMenuLabel();
 
@@ -350,7 +353,7 @@ bool EV_BeOSMenu::synthesize()
 		UT_ASSERT(pAction);
 		EV_Menu_Label * pLabel = m_pMenuLabelSet->getLabel(id);
 		UT_ASSERT(pLabel);
-
+//		printf("label: %s \n",pLabel);//jun
 		// get the name for the menu item
 		const char * szLabelName = NULL;
                 const char * szMnemonicName = NULL;
@@ -471,8 +474,8 @@ bool EV_BeOSMenu::synthesize()
 				int32 iLength = strlen(szLabelName);
 				char* buffer = new char[2*(iLength+1)];
 	        		memset(buffer, 0, 2*(iLength+1));
+				printf("label: %s \n",szLabelName);//jun
 				accel = _ev_convert(buf, szLabelName);
-				
 				pMenu = top(stack);
 				if (!pMenu)			//Skip bogus first item
 				{
@@ -485,6 +488,7 @@ bool EV_BeOSMenu::synthesize()
 				newmesg->AddInt32(ABI_BEOS_MENU_EV_NAME, id);
                 
 				BMenuItem *pMenuItem = new BMenuItem(buf, newmesg, key,modifiers);
+				printf("menu: %s \n",buf);//jun
 				if( pAction->isCheckable() )
 					pMenuItem->SetMarked( (bCheck == true) );
 
@@ -564,7 +568,7 @@ bool EV_BeOSMenu::synthesize()
 		case EV_MLF_BeginPopupMenu:
 			xxx_UT_DEBUGMSG(("MENU: Begin popup menu \n"));
                         break;
-                case EV_MLF_EndPopupMenu:
+		case EV_MLF_EndPopupMenu:
 			xxx_UT_DEBUGMSG(("MENU: End popup menu \n"));
                         break;
 

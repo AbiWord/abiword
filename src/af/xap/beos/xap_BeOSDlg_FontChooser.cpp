@@ -72,7 +72,7 @@ status_t FontWin::WaitForDelete(sem_id blocker)
 			
 			// update the window periodically			
 			pWin->UpdateIfNeeded();
-			result = acquire_sem_etc(blocker, 1, B_TIMEOUT, 10000);
+			result = acquire_sem_etc(blocker, 1, B_TIMEOUT, 1000);
 		} while (result != B_BAD_SEM_ID);
 	} else {
 		do {
@@ -441,7 +441,6 @@ void FontWin::SetDlg(XAP_BeOSDialog_FontChooser *font)
 
 bool FontWin::QuitRequested() 
 {
-
 	UT_ASSERT(m_FontChooser);
 
 	// We need to activate the first tab so we can find the view children.
@@ -502,15 +501,19 @@ void XAP_BeOSDialog_FontChooser::runModal(XAP_Frame * pFrame)
 	if (RehydrateWindow("FontWindow", &msg)) {
 		FontWin *newwin = new FontWin(&msg);
 		newwin->SetDlg(this);			
-	
-		m_bChangedFontFamily	= true;
-		m_bChangedFontSize		= true;
-		m_bChangedFontWeight	= true;
-		m_bChangedFontStyle		= true;
-		m_bChangedColor		= true;
-		m_bChangedUnderline	= true;
-		m_bChangedOverline		= true;
-		m_bChangedStrikeOut		= true;
+
+		newwin->Lock();
+		if (m_answer == a_OK)
+		{
+			m_bChangedFontFamily	= true;
+			m_bChangedFontSize		= true;
+			m_bChangedFontWeight	= true;
+			m_bChangedFontStyle		= true;
+			m_bChangedColor		= true;
+			m_bChangedUnderline	= true;
+			m_bChangedOverline		= true;
+			m_bChangedStrikeOut		= true;
+		}
 
 		//Take the information here ...
 		newwin->Lock();

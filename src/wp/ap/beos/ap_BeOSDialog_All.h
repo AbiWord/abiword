@@ -55,6 +55,8 @@
 #include "ap_BeOSDialog_Tab.h"
 #include "ap_BeOSDialog_Columns.h"
 #include "ap_BeOSDialog_PageNumbers.h"
+#include "ap_BeOSDialog_New.h"
+#include "ap_BeOSDialog_HdrFtr.h"
 #include "ap_BeOSDialog_InsertBookmark.h"
 #include "ap_BeOSDialog_InsertHyperlink.h"
 #include "ap_BeOSDialog_MarkRevisions.h"
@@ -82,7 +84,7 @@
 	DeclareDialog(AP_DIALOG_ID_REPLACE,			AP_BeOSDialog_Replace)
 	DeclareDialog(AP_DIALOG_ID_FIND,			AP_BeOSDialog_Replace)
 	DeclareDialog(AP_DIALOG_ID_BREAK,			AP_BeOSDialog_Break)
-    DeclareDialog(AP_DIALOG_ID_GOTO,            AP_BeOSDialog_Goto)
+	DeclareDialog(AP_DIALOG_ID_GOTO,            AP_BeOSDialog_Goto)
 	DeclareDialog(AP_DIALOG_ID_SPELL,			AP_BeOSDialog_Spell)
 	DeclareDialog(AP_DIALOG_ID_STYLES,			AP_BeOSDialog_Styles)
 	DeclareDialog(AP_DIALOG_ID_PARAGRAPH,		AP_BeOSDialog_Paragraph)
@@ -95,8 +97,11 @@
 	DeclareDialog(AP_DIALOG_ID_PAGE_NUMBERS,		AP_BeOSDialog_PageNumbers)
         DeclareDialog(XAP_DIALOG_ID_FILE_IMPORT, XAP_BeOSDialog_FileOpenSaveAs)
         DeclareDialog(XAP_DIALOG_ID_FILE_EXPORT, XAP_BeOSDialog_FileOpenSaveAs)
+	DeclareDialog(XAP_DIALOG_ID_INSERT_FILE, XAP_BeOSDialog_FileOpenSaveAs)
  	DeclareDialog(AP_DIALOG_ID_INSERTBOOKMARK,	AP_BeOSDialog_InsertBookmark)
  	DeclareDialog(AP_DIALOG_ID_INSERTHYPERLINK,	AP_BeOSDialog_InsertHyperlink)
+ 	DeclareDialog(AP_DIALOG_ID_HDRFTR,          AP_BeOSDialog_HdrFtr)
+ 	DeclareDialog(AP_DIALOG_ID_FILE_NEW, AP_BeOSDialog_New)
  	DeclareDialog(AP_DIALOG_ID_MARK_REVISIONS,	AP_BeOSDialog_MarkRevisions)
  	DeclareDialog(AP_DIALOG_ID_LIST_REVISIONS,	AP_BeOSDialog_ListRevisions)
 #ifdef HAVE_CURL

@@ -102,6 +102,9 @@ void SpellWin::SetDlg(AP_BeOSDialog_Spell *dlg)
 	// As nice as using InterfaceElements is, the app doesn't properly set up
 	// the textRect for our BTextView..
 	BTextView* sentenceView = (BTextView *)FindView("sentencedisplay");
+
+	Lock();
+
 	BRect frameRect = sentenceView->Bounds();
 	frameRect.InsetBy(5,5);
 	
@@ -125,9 +128,8 @@ void SpellWin::SetDlg(AP_BeOSDialog_Spell *dlg)
 	
 	// This semaphore ties up the window until after it deletes..
 	modalSem = create_sem(0,"SpellModalSem");
-
+	Unlock();
 	Show();
-
 	WaitForDelete(modalSem);
 }
 

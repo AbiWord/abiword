@@ -63,6 +63,7 @@ void AP_BeOSPrefs::overlayEnvironmentPrefs(void)
 {
 	// TODO steal the appropriate code from the unix version
 	// TODO after it is finished.
+	printf("no set locale\n");
 	if (!m_bUseEnvLocale)
 		return;							// nothing to do...
 
@@ -77,7 +78,6 @@ void AP_BeOSPrefs::overlayEnvironmentPrefs(void)
 
 	// this will set our current locale information
 	// according to the user's env variables
-	setlocale(LC_ALL, "");
 
 	// locale categories:
 	// LC_COLLATE - collation of strings (functions strcoll and strxfrm)
@@ -92,8 +92,16 @@ void AP_BeOSPrefs::overlayEnvironmentPrefs(void)
 	// (most likely, all of LC_* are the same)
 	
 	const char * szNewLang = "en-US"; // default to US English
-	char * lc_ctype = UT_strdup(setlocale(LC_MESSAGES, NULL));
-
+//#if defined (LC_MESSAGES)
+//	char * lc_ctype = UT_strdup(setlocale(LC_MESSAGES, NULL));
+//#else
+	printf("getenv\n");
+	char * lc_ctype = getenv("LANG");
+	if (lc_ctype) lc_ctype = UT_strdup(lc_ctype);
+	else lc_ctype = UT_strdup("en_US");
+	printf(lc_ctype);
+	printf("\n");
+//#endif
 	// locale categories seem to always look like this:
 	// two letter for language (lowcase) _ two letter country code (upcase)
 	// ie. en_US, es_ES, pt_PT
@@ -103,7 +111,24 @@ void AP_BeOSPrefs::overlayEnvironmentPrefs(void)
 	// we'll try this quick conversion
 	if (lc_ctype != NULL && strlen(lc_ctype) >= 5) {
 	   lc_ctype[2] = '-';
-	   szNewLang = lc_ctype;
+		char* modifier = strrchr(lc_ctype,'@');
+ 		/*
+                   remove modifier field. It's a right thing since expat
+ 		  already converts data in stringset from ANY encoding to
+ 		  current one (if iconv knows this encoding).
+ 		*/
+ 		if (modifier)
+ 		  *modifier = '\0'; 
+ 
+ 		char* dot = strrchr(lc_ctype,'.');
+ 		/*
+                   remove charset field. It's a right thing since expat
+   		  already converts data in stringset from ANY encoding to
+ 		  current one (if iconv knows this encoding).
+ 		 */
+ 		if (dot)
+ 			*dot = '\0';
+		szNewLang = lc_ctype;
 	}
 
 	UT_DEBUGMSG(("Prefs: Using LOCALE info from environment [%s]\n",szNewLang));	

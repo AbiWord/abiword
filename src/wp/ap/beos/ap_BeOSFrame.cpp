@@ -485,6 +485,7 @@ UT_Error AP_BeOSFrame::_loadDocument(const char * szFilename, IEFileType ieft,
 	  {
 	    // we have a file name but couldn't load it
 	    pNewDoc->newDocument();
+	    printf("new document\n");
 
 	    // here, we want to open a new document if it doesn't exist.
 	    // errorCode could also take several other values, indicating
@@ -511,7 +512,10 @@ ReplaceDocument:
 	return UT_OK;
 }
 
-UT_Error AP_BeOSFrame::importDocument(const char * szFilename, int ieft, bool markClean) {
+UT_Error AP_BeOSFrame::_importDocument(const char * szFilename, int ieft, bool markClean)
+{
+	UT_DEBUGMSG(("DOM: trying to import %s (%d, %d)\n", szFilename, ieft, markClean));
+
 	// are we replacing another document?
 	if (m_pDoc)
 	{
@@ -524,11 +528,10 @@ UT_Error AP_BeOSFrame::importDocument(const char * szFilename, int ieft, bool ma
 
 	AD_Document * pNewDoc = new PD_Document(getApp());
 	UT_ASSERT(pNewDoc);
-	
+
 	if (!szFilename || !*szFilename)
 	{
 		pNewDoc->newDocument();
-		m_iUntitled = _getNextUntitledNumber();
 		goto ReplaceDocument;
 	}
 	UT_Error errorCode;
@@ -537,15 +540,60 @@ UT_Error AP_BeOSFrame::importDocument(const char * szFilename, int ieft, bool ma
 		goto ReplaceDocument;
 
 	UT_DEBUGMSG(("ap_Frame: could not open the file [%s]\n",szFilename));
+
 	UNREFP(pNewDoc);
 	return errorCode;
 
 ReplaceDocument:
 	getApp()->forgetClones(this);
 
+	m_iUntitled = _getNextUntitledNumber();
+
 	// NOTE: prior document is discarded in _showDocument()
 	m_pDoc = pNewDoc;
 	return UT_OK;
+
+}
+
+
+
+
+
+UT_Error AP_BeOSFrame::importDocument(const char * szFilename, int ieft, bool markClean)
+{
+	bool bUpdateClones;
+	UT_Vector vClones;
+	XAP_App * pApp = getApp();
+
+    printf("import document\n");
+
+	bUpdateClones = (getViewNumber() > 0);
+	if (bUpdateClones)
+	{
+		pApp->getClones(&vClones, this);
+	}
+	UT_Error errorCode;
+	errorCode =  _importDocument(szFilename, (IEFileType) ieft, markClean);
+	if (errorCode)
+	{
+		return errorCode;
+	}
+
+	pApp->rememberFrame(this);
+	if (bUpdateClones)
+	{
+		for (UT_uint32 i = 0; i < vClones.getItemCount(); i++)
+		{
+			AP_BeOSFrame * pFrame = (AP_BeOSFrame *) vClones.getNthItem(i);
+			if(pFrame != this)
+			{
+				pFrame->_replaceDocument(m_pDoc);
+				pApp->rememberFrame(pFrame, this);
+			}
+		}
+	}
+
+	return _showDocument();
 }
 	
 XAP_Frame * AP_BeOSFrame::buildFrame(XAP_Frame * pF)
@@ -580,7 +628,8 @@ XAP_Frame * AP_BeOSFrame::cloneFrame(void)
 {
 	AP_BeOSFrame * pClone = new AP_BeOSFrame(this);
 	ENSUREP(pClone);
-	return pClone;
+	printf("CloneFraame\n");
+	return  static_cast<XAP_Frame *>(pClone);
 
 Cleanup:
 	// clean up anything we created here
@@ -603,6 +652,8 @@ UT_Error AP_BeOSFrame::loadDocument(const char * szFilename, int ieft, bool crea
 	bool bUpdateClones;
 	UT_Vector vClones;
 	XAP_App * pApp = getApp();
+
+    printf("load document\n");
 
 	bUpdateClones = (getViewNumber() > 0);
 	if (bUpdateClones)
@@ -798,7 +849,7 @@ void AP_BeOSFrame::toggleBar(UT_uint32 iBarNb, bool bBarOn)
 	
 	UT_ASSERT(pToolbar);
 
-	int height = 36;//TODO:tempolary
+	int height = 35;//TODO:tempolary
 
 	if (bBarOn)
 	{
@@ -972,4 +1023,5 @@ void AP_BeOSFrame::translateDocumentToScreen(UT_sint32 &x, UT_sint32 &y)
 	x = (UT_sint32)pt.x;
 	y = (UT_sint32)pt.y;
 }
+
 
