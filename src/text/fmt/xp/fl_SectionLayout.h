@@ -172,6 +172,8 @@ public:
 	virtual void         checkGraphicTick(GR_Graphics * pG);
 	virtual void         setImageWidth(UT_sint32 iWidth);
 	virtual void         setImageHeight(UT_sint32 iHeight);
+	GR_Image *           getBackgroundImage(void)
+	  {	return m_pImageImage;}
 
 #ifdef FMT_TEST
 	virtual void		__dump(FILE * fp) const;

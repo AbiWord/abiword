@@ -62,8 +62,8 @@ public:
 	virtual UT_sint32   getY() const;
 	virtual UT_sint32   getWidth() const;
 	virtual UT_sint32   getHeight() const;
-	//	UT_sint32           getPenetrationFromLeft(UT_sint32 y, UT_sint32 height);
-	//	UT_sint32           getPenetrationFromRight(UT_sint32 y, UT_sint32 height);
+	UT_sint32           getLeftPad(UT_sint32 y, UT_sint32 height);
+	UT_sint32           getRightPad(UT_sint32 y, UT_sint32 height);
 	virtual bool        isVBreakable(void)
 		{ return false;}
 	UT_sint32           getFullX() const;
@@ -97,7 +97,7 @@ public:
 	        { m_bIsTightWrapped = bTight;}
 	bool                isTightWrapped(void) const
 	        { return m_bIsTightWrapped;}
-
+	bool                overlapsRect(UT_Rect & rec);
 private:
 	void                   _drawLine (const PP_PropertyMap::Line & style,
 									  UT_sint32 left, UT_sint32 top, 

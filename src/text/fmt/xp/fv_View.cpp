@@ -746,6 +746,23 @@ bool FV_View::convertPositionedToInLine(fl_FrameLayout * pFrame)
 	UT_GenericVector<fl_BlockLayout *> vecBlocks;
 	fp_FrameContainer * pFC = static_cast<fp_FrameContainer *>(pFrame->getFirstContainer());
 	pFC->getBlocksAroundFrame(vecBlocks);
+	if(vecBlocks.getItemCount() == 0)
+	{
+		fp_Page * pPage = pFC->getPage();
+		fp_Column * pCol = pPage->getNthColumnLeader(0);
+		fp_Container * pCon = pCol->getFirstContainer();
+		fl_BlockLayout * pB = NULL;
+		if(pCon->getContainerType() == FP_CONTAINER_LINE)
+		{
+			pB = static_cast<fp_Line *>(pCon)->getBlock();
+		}
+		else
+		{
+			fl_ContainerLayout * pCL = static_cast<fl_ContainerLayout *>(pCon->getSectionLayout());
+			pB = pCL->getNextBlockInDocument();
+		}
+		vecBlocks.addItem(pB);
+	}
 	UT_sint32 iBlk = 0;
 	fl_BlockLayout * pBL = vecBlocks.getNthItem(iBlk);
 	fp_Line * pLine = static_cast<fp_Line *>(pBL->getFirstContainer());
@@ -773,7 +790,10 @@ bool FV_View::convertPositionedToInLine(fl_FrameLayout * pFrame)
 	}
 	if(pLine == NULL)
 	{
-		return false;
+		pBL = vecBlocks.getNthItem(vecBlocks.getItemCount()-1);
+		pLine = static_cast<fp_Line *>(pBL->getLastContainer());
+		if(pLine == NULL)
+			return false;
 	}
 	fp_Run * pRun = pLine->getLastRun();
 	PT_DocPosition pos = pBL->getPosition() + pRun->getBlockOffset() + pRun->getLength();

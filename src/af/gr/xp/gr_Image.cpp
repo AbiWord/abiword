@@ -94,7 +94,7 @@ UT_sint32 GR_Image::GetOffsetFromLeft(GR_Graphics * pG, UT_sint32 pad, UT_sint32
   {
     GenerateOutline();
   }
-  double minDist = 10000000;
+  double maxDist = -10000000;
   double d = 0.0;
   UT_uint32 i = 0;
   double ddPad = static_cast<double>(pG->tdu(pad));
@@ -128,23 +128,23 @@ UT_sint32 GR_Image::GetOffsetFromLeft(GR_Graphics * pG, UT_sint32 pad, UT_sint32
 	//
 	// This point doesn't overlap at all
 	//
-	  d = 10000000;
+	  d = -10000000;
       }
       else
       {
-	d = ddPad - sqrt(root); 
+	d = -static_cast<double>(pPoint->m_iX) - sqrt(root); 
       }
     }
-    if(d < minDist)
+    if(d > maxDist)
     {
-      minDist = d;
+      maxDist = d;
     }
   }
-  if(minDist == 10000000)
+  if(maxDist == -10000000)
   {
-    minDist = static_cast<double>(-getDisplayWidth());
+    maxDist = static_cast<double>(-getDisplayWidth());
   }
-  return pG->tlu(static_cast<UT_sint32>(minDist));
+  return pG->tlu(static_cast<UT_sint32>(maxDist));
 }
 
 
@@ -177,7 +177,7 @@ UT_sint32 GR_Image::GetOffsetFromRight(GR_Graphics * pG, UT_sint32 pad, UT_sint3
   {
     GenerateOutline();
   }
-  double minDist = 10000000;
+  double maxDist = -10000000;
   double d = 0.0;
   UT_uint32 i = 0;
   double ddPad = static_cast<double>(pG->tdu(pad));
@@ -190,44 +190,46 @@ UT_sint32 GR_Image::GetOffsetFromRight(GR_Graphics * pG, UT_sint32 pad, UT_sint3
   for(i=nPts; i < m_vecOutLine.getItemCount();i++)
   {
     pPoint = m_vecOutLine.getNthItem(i);
-    if((pPoint->m_iY >= yTop) && (pPoint->m_iY <= (yTop + height)))
+    if((pPoint->m_iY >= diTop) && (pPoint->m_iY <= (diTop + diHeight)))
     {
-      d = ddPad - (getDisplayWidth() - pPoint->m_iX);
+         d = ddPad - static_cast<double>(getDisplayWidth() - pPoint->m_iX);
+	 xxx_UT_DEBUGMSG(("Got Center distance %f \n",d));
     }
     else
     {
-      double y = ddTop + ddHeight;
-      if(abs(pPoint->m_iY - diTop) < abs(pPoint->m_iY - (diTop + diHeight)))
-      {
-	//
-	// Calculate from top point.
-	//
-	y = ddTop;
-      }
-      double dYP = static_cast<double>(pPoint->m_iY);
-      double root = ddPad*ddPad - (y - dYP)*(y - dYP);
-      if(root < 0.0)
-      {
-	//
-	// This point doesn't overlap at all
-	//
-	  d = 10000000;
-      }
-      else
-      {
-	d = ddPad - (static_cast<double>(getDisplayWidth()) - sqrt(root)); 
-      }
+         double y = ddTop + ddHeight;
+	 if(abs(pPoint->m_iY - diTop) < abs(pPoint->m_iY - (diTop + diHeight)))
+         {
+	      //
+	      // Calculate from top point.
+	      //
+	   y = ddTop;
+	 }
+	 double dYP = static_cast<double>(pPoint->m_iY);
+	 double root = ddPad*ddPad - (y - dYP)*(y - dYP);
+	 if(root < 0.0)
+         {
+	      //
+	      // This point doesn't overlap at all
+	      //
+	      d = -10000000;
+	 }
+	 else
+         {
+	      d = static_cast<double>(pPoint->m_iX) - (static_cast<double>(getDisplayWidth())) + sqrt(root); 
+	      xxx_UT_DEBUGMSG(("Got Projected distance %f \n",d));
+	 }
     }
-    if(d < minDist)
+    if(d > maxDist)
     {
-      minDist = d;
+         maxDist = d;
     }
   }
-  if(minDist == 10000000)
+  if(maxDist == -10000000)
   {
-    minDist = static_cast<double>(-getDisplayWidth());
+    maxDist = static_cast<double>(-getDisplayWidth());
   }
-  return pG->tlu(static_cast<UT_sint32>(minDist));
+  return pG->tlu(static_cast<UT_sint32>(maxDist));
 }
 
 /*!
@@ -251,7 +253,7 @@ void GR_Image::GenerateOutline(void)
   {
     for(j =0; j< width;j++)
     {
-      if(!isTransparentAt(i,j))
+      if(!isTransparentAt(j,i))
       {
 	break;
       }
@@ -259,8 +261,8 @@ void GR_Image::GenerateOutline(void)
     if( j < width)
     {
       GR_Image_Point * pXY = new GR_Image_Point();
-      pXY->m_iX = i;
-      pXY->m_iY = j;
+      pXY->m_iX = j;
+      pXY->m_iY = i;
       m_vecOutLine.addItem(pXY);
     }
   }
@@ -271,7 +273,7 @@ void GR_Image::GenerateOutline(void)
   {
     for(j =width-1; j>= 0;j--)
     {
-      if(!isTransparentAt(i,j))
+      if(!isTransparentAt(j,i))
       {
 	break;
       }
@@ -279,8 +281,8 @@ void GR_Image::GenerateOutline(void)
     if( j >= 0)
     {
       GR_Image_Point * pXY = new GR_Image_Point();
-      pXY->m_iX = i;
-      pXY->m_iY = j;
+      pXY->m_iX = j;
+      pXY->m_iY = i;
       m_vecOutLine.addItem(pXY);
     }
   }

@@ -276,6 +276,9 @@ dcl(DLG_Image_WrappedBoth, "Text wrapped on both sides of the Image")
 dcl(DLG_Image_PlaceParagraph, "Position relative to nearest paragraph")
 dcl(DLG_Image_PlaceColumn, "Position relative to its Column")
 dcl(DLG_Image_PlacePage, "Position relative to its Page")
+dcl(DLG_Image_WrapType, "Type of text wrapping")
+dcl(DLG_Image_SquareWrap, "Square text wrapping")
+dcl(DLG_Image_TightWrap, "Tight text wrapping")
 
 /* ListDocuments Dialog */
 dcl(DLG_LISTDOCS_Title,					"Opened Documents")

@@ -350,8 +350,14 @@ bool IE_Imp_RTF::InsertImage (const UT_ByteBuf * buf, const char * image_name,
 		case RTFProps_ImageProps::ipstScale:
 			UT_DEBUGMSG (("Scale: x=%d, y=%d, w=%d, h=%d\n", imgProps.scaleX, imgProps.scaleY, imgProps.width, imgProps.height));
 			resize = true;
-			wInch = ((static_cast<double>(imgProps.scaleX) / 100.0f) * imgProps.width);
-			hInch = ((static_cast<double>(imgProps.scaleY) / 100.0f) * imgProps.height);
+			if ((imgProps.wGoal != 0) && (imgProps.hGoal != 0)) {
+				// want image scaled against the w&h specified, not the image's natural size
+				wInch = ((static_cast<double>(imgProps.scaleX) / 100.0f) * imgProps.wGoal/ 1440.0f);
+				hInch = ((static_cast<double>(imgProps.scaleY) / 100.0f) * imgProps.hGoal/ 1440.0f);
+			} else {
+				wInch = ((static_cast<double>(imgProps.scaleX) / 100.0f) * (imgProps.width));
+				hInch = ((static_cast<double>(imgProps.scaleY) / 100.0f) * (imgProps.height));
+			}
 			break;
 		default:
 			resize = false;
@@ -462,25 +468,17 @@ bool IE_Imp_RTF::HandlePicture()
 				}
 				break;
 			case RTF_KW_picscalex:
-				if ((imageProps.sizeType == RTFProps_ImageProps::ipstNone)
-					|| (imageProps.sizeType == RTFProps_ImageProps::ipstScale))
+				if ((parameterUsed) && (parameter != 100))       // scale the image if one of these two keywords appear
 				{
-					if ((parameterUsed) && (parameter != 100))
-					{
-						imageProps.sizeType = RTFProps_ImageProps::ipstScale;
-						imageProps.scaleX = static_cast<unsigned short>(parameter);
-					}
+					imageProps.sizeType = RTFProps_ImageProps::ipstScale;
+					imageProps.scaleX = static_cast<unsigned short>(parameter);
 				}
 				break;
 			case RTF_KW_picscaley:
-				if ((imageProps.sizeType == RTFProps_ImageProps::ipstNone)
-					|| (imageProps.sizeType == RTFProps_ImageProps::ipstScale))
+				if ((parameterUsed) && (parameter != 100))
 				{
-					if ((parameterUsed) && (parameter != 100))
-					{
-						imageProps.sizeType = RTFProps_ImageProps::ipstScale;
-						imageProps.scaleY = static_cast<unsigned short>(parameter);
-					}
+					imageProps.sizeType = RTFProps_ImageProps::ipstScale;
+					imageProps.scaleY = static_cast<unsigned short>(parameter);
 				}
 				break;
 			case RTF_KW_piccropt:

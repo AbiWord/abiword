@@ -1206,7 +1206,7 @@ void FV_FrameEdit::mouseRelease(UT_sint32 x, UT_sint32 y)
 		fl_BlockLayout * pCloseBL = NULL;
 		getFrameStrings(m_recCurFrame.left,m_recCurFrame.top,sXpos,sYpos,sWidth,sHeight,sColXpos,sColYpos,sPageXpos,sPageYpos,&pCloseBL);
 		pf_Frag_Strux * pfFrame = NULL;
-		const XML_Char * props[26] = {"frame-type","textbox",
+		const XML_Char * props[28] = {"frame-type","textbox",
 					      "wrap-mode","wrapped-both",
 					      "position-to","column-above-text",
 					      "xpos",sXpos.c_str(),
@@ -1218,6 +1218,7 @@ void FV_FrameEdit::mouseRelease(UT_sint32 x, UT_sint32 y)
 					      "frame-page-xpos",sPageXpos.c_str(),
 					      "frame-page-ypos",sPageYpos.c_str(),
 					      "background-color", "ffffff",
+					      "tight-wrap","0",
 					      NULL,NULL};
 //
 // This should place the the frame strux immediately after the block containing
@@ -1388,6 +1389,18 @@ void FV_FrameEdit::mouseRelease(UT_sint32 x, UT_sint32 y)
 		if(!pSectionAP || !pSectionAP->getProperty("wrap-mode",pszWrapMode))
 		{
 			sVal = "above-text";
+		}
+		else
+		{
+			sVal = pszWrapMode;
+		}
+		UT_String_setProperty(sFrameProps,sProp,sVal);		
+// tight-wrap
+
+		sProp = "tight-wrap";
+		if(!pSectionAP || !pSectionAP->getProperty("tight-wrap",pszWrapMode))
+		{
+			sVal = "0";
 		}
 		else
 		{
@@ -1884,7 +1897,17 @@ void FV_FrameEdit::drawFrame(bool bWithHandles)
 		if(m_iDraggingWhat == FV_FrameEdit_DragWholeFrame)
 		{
 			GR_Painter painter (getGraphics());
-			m_pFrameImage = painter.genImageFromRectangle(m_recCurFrame);
+			if(m_pFrameLayout->getFrameType() == FL_FRAME_TEXTBOX_TYPE)
+			{
+			      m_pFrameImage = painter.genImageFromRectangle(m_recCurFrame);
+			}
+			else
+		        {
+			      UT_Rect rec = m_recCurFrame;
+			      rec.left = 0;
+			      rec.top = 0;
+			      m_pFrameImage = m_pFrameLayout->getBackgroundImage()->createImageSegment(getGraphics(),rec);
+			}
 		}
 	}
 	else

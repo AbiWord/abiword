@@ -384,6 +384,7 @@ void fp_Line::setMaxWidth(UT_sint32 iMaxWidth)
 		iMaxWidth = 60;
 	}
 	m_iMaxWidth = iMaxWidth;
+	xxx_UT_DEBUGMSG(("Line %x MaxWidth %d \n",this,iMaxWidth));
 	m_iClearToPos = iMaxWidth;
 	m_iClearLeftOffset = getDescent();
 }
@@ -2536,6 +2537,7 @@ void fp_Line::setX(UT_sint32 iX, bool bDontClearIfNeeded)
 	{
 		clearScreen();
 	}
+	xxx_UT_DEBUGMSG(("Line %x X %d \n",this,iX));
 	m_iX = iX;
 }
 

@@ -322,11 +322,6 @@ public:
 
 	static EV_EditMethod_Fn replaceChar;
 
-	static EV_EditMethod_Fn resizeImage;
-	static EV_EditMethod_Fn endResizeImage;
-	static EV_EditMethod_Fn dragImage;
-	static EV_EditMethod_Fn dropImage;
-
 	static EV_EditMethod_Fn cutVisualText;
 	static EV_EditMethod_Fn copyVisualText;
 	static EV_EditMethod_Fn dragVisualText;
@@ -834,7 +829,6 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(doubleSpace),			0,	""),
 	EV_EditMethod(NF(dragFrame), 			0,	""),
 	EV_EditMethod(NF(dragHline), 			0,	""),
-	EV_EditMethod(NF(dragImage),			0,	""),
 	EV_EditMethod(NF(dragInlineImage),		0,	""),
 	EV_EditMethod(NF(dragSelectionBegin), 0, ""),
 	EV_EditMethod(NF(dragSelectionEnd), 0, ""),
@@ -842,7 +836,6 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(dragToXYword), 		0,	""),
 	EV_EditMethod(NF(dragVisualText),       0, ""),
 	EV_EditMethod(NF(dragVline), 			0,	""),
-	EV_EditMethod(NF(dropImage),			0,	""),
 
 
 	// e
@@ -851,7 +844,6 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(endDrag),				0,	""),
 	EV_EditMethod(NF(endDragHline),			0,	""),
 	EV_EditMethod(NF(endDragVline),			0,	""),
-	EV_EditMethod(NF(endResizeImage),		0,	""),
 	EV_EditMethod(NF(executeScript),		EV_EMT_REQUIRE_SCRIPT_NAME, ""),
 	EV_EditMethod(NF(extSelBOB),			0,	""),
 	EV_EditMethod(NF(extSelBOD),			0,	""),
@@ -1061,7 +1053,6 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(removeHeader), 		0,	""),
 	EV_EditMethod(NF(replace),				0,	""),
 	EV_EditMethod(NF(replaceChar),			_D_,""),
-	EV_EditMethod(NF(resizeImage),			0,  ""),
 	EV_EditMethod(NF(revisionAccept),		0,  ""),
 	EV_EditMethod(NF(revisionCompareDocuments),	0,  ""),
 	EV_EditMethod(NF(revisionFindNext),		0,  ""),
@@ -9695,8 +9686,15 @@ Defun (dlgFmtPosImage)
 	}
 	pDialog->setWrapping( iWrap);
 	pDialog->setPositionTo( iPos);
+	if(pPosObj->isTightWrap())
+	{
+	  pDialog->setTightWrap(true);
+	}
+	else
+	{
+	  pDialog->setTightWrap(false);
+	}
 	pDialog->runModal(pFrame);
-	
 	XAP_Dialog_Image::tAnswer ans = pDialog->getAnswer();
 	bool bOK = (ans == XAP_Dialog_Image::a_OK);
 	if(!bOK)
@@ -9717,7 +9715,8 @@ Defun (dlgFmtPosImage)
 	  const XML_Char * properties[] = {"frame-width", NULL, 
 					   "frame-height", NULL, 
 					   "wrap-mode",NULL,
-					   "position-to",NULL,0};
+					   "position-to",NULL,
+					   "tight-wrap",NULL,NULL};
 
 	  sWidth = pDialog->getWidthString();
 	  sHeight = pDialog->getHeightString();
@@ -9748,7 +9747,14 @@ Defun (dlgFmtPosImage)
 	  {
 	    properties[7] = "page-above-text";
 	  }
-
+	  if(pDialog->isTightWrap())
+	  {
+	    properties[9] = "1";
+	  }
+	  else
+	  {
+	    properties[9] = "0";
+	  }
 	  UT_UTF8String title (pDialog->getTitle());
 	  UT_UTF8String description (pDialog->getDescription());
 
@@ -9771,7 +9777,15 @@ Defun(dlgFmtImage)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
-
+	if(pView->getFrameEdit()->isActive())
+	{
+	  fl_FrameLayout * pFL = pView->getFrameLayout();
+	  if(pFL->getFrameType() == FL_FRAME_TEXTBOX_TYPE)
+	  {
+	    return true;
+	  }
+	  return EX(dlgFmtPosImage);
+	}
 	XAP_Frame * pFrame = static_cast<XAP_Frame *>(pView->getParentData());
 	UT_return_val_if_fail(pFrame, false);
 
@@ -9946,7 +9960,6 @@ UT_return_val_if_fail(pDialog, false);
 	  FREEP(props_in);
 
 	  WRAPPING_TYPE oldWrap = WRAP_INLINE;
-	  POSITION_TO oldPositionTo = POSITION_TO_PARAGRAPH;
 	  pDialog->runModal(pFrame);
 
 	  XAP_Dialog_Image::tAnswer ans = pDialog->getAnswer();
@@ -10176,6 +10189,18 @@ UT_return_val_if_fail(pDialog, false);
 					  sVal = UT_formatDimensionedValue(xpos,"in", NULL);
 					  UT_String_setProperty(sFrameProps,sProp,sVal);
 				  }
+			  }
+			  if(pDialog->isTightWrap())
+			  {
+			    sProp = "tight-wrap";
+			    sVal = "1";
+			    UT_String_setProperty(sFrameProps,sProp,sVal);
+			  }
+			  else
+			  {
+			    sProp = "tight-wrap";
+			    sVal = "0";
+			    UT_String_setProperty(sFrameProps,sProp,sVal);
 			  }
 //
 // Now define the Frame attributes strux
@@ -12895,268 +12920,6 @@ Defun1(revisionMergeDocuments)
 	return true;
 }
 
-Defun(resizeImage)
-{
-	CHECK_FRAME;
-	ABIWORD_VIEW;
-
-	// clear status bar of any lingering messages
-	XAP_Frame * pFrame = static_cast<XAP_Frame *> (pView->getParentData());
-	pFrame->setStatusMessage(NULL);
-
-	GR_Graphics * pG = pView->getGraphics();
-	if(pG)
-	{
-		bool bIsResizing = pView->isResizingImage();
-		if (!bIsResizing)
-			pView->startImageResizing(pCallData->m_xPos, pCallData->m_yPos);
-	
-		UT_sint32 xOrigin;
-		UT_sint32 yOrigin;
-		UT_sint32 xDiff; 
-		UT_sint32 yDiff;
-		
-		pView->getResizeOrigin(xOrigin, yOrigin);
-		UT_Rect orgImgRect = pView->getImageSelRect();
-		
-		xDiff = pCallData->m_xPos - xOrigin;
-		yDiff = pCallData->m_yPos - yOrigin;	
-		
-		UT_DEBUGMSG(("MARCM: ap_EditMethods::resizing image! Origin at pos: (x:%d,y:%d) - mouse at pos (x:%d,y:%d)\n", xOrigin, yOrigin, pCallData->m_xPos, pCallData->m_yPos));
-	
-		UT_sint32 x1,x2,y1,y2,iHeight;
-		bool bEOL = false;
-		bool bDir = false;
-	
-		PT_DocPosition pos = pView->getDocPositionFromXY(xOrigin, yOrigin);
-	
-		fl_BlockLayout * pBlock = pView->getBlockAtPosition(pos);
-		fp_Run *  pRun = NULL;
-		if(pBlock)
-		{
-			pRun = pBlock->findPointCoords(pos,bEOL,x1,y1,x2,y2,iHeight,bDir);
-			while(pRun && pRun->getType() != FPRUN_IMAGE)
-			{
-				pRun = pRun->getNextRun();
-			}
-			if(pRun && pRun->getType() == FPRUN_IMAGE)
-			{
-				UT_DEBUGMSG(("MARCM: Image run on pos \n"));
-			}
-			else
-			{
-				//UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
-				return false;
-			}
-		}
-
-		UT_Rect r = orgImgRect;
-		double aRatio = static_cast<double>(r.height)/(static_cast<double>(r.width));
-		
-		// we can savely use the cursor format to see what kind of dragging we are doing
-		GR_Graphics::Cursor cur = pView->getImageSelCursor();
-		switch (cur)
-		{
-			case GR_Graphics::GR_CURSOR_IMAGESIZE_NW:
-				r.left += xDiff;
-				r.top += static_cast<UT_sint32>(xDiff * aRatio);
-				r.width -= xDiff;
-				r.height -= static_cast<UT_sint32>(xDiff * aRatio);
-				break;
-			case GR_Graphics::GR_CURSOR_IMAGESIZE_N:
-				r.top += yDiff;
-				r.height -= yDiff;
-				break;
-			case GR_Graphics::GR_CURSOR_IMAGESIZE_NE:
-				r.top -= static_cast<UT_sint32>(xDiff * aRatio);
-				r.width += xDiff;
-				r.height += static_cast<UT_sint32>(xDiff * aRatio);
-				break;		
-			case GR_Graphics::GR_CURSOR_IMAGESIZE_E:
-				r.width += xDiff;
-				break;
-			case GR_Graphics::GR_CURSOR_IMAGESIZE_SE:
-				r.width += xDiff;
-				r.height += static_cast<UT_sint32>(xDiff * aRatio);
-				break;
-			case GR_Graphics::GR_CURSOR_IMAGESIZE_S:			
-				r.height += yDiff;
-				break;
-			case GR_Graphics::GR_CURSOR_IMAGESIZE_SW:			
-				r.left += xDiff;
-				r.width -= xDiff;
-				r.height -= static_cast<UT_sint32>(xDiff * aRatio);
-				break;
-			case GR_Graphics::GR_CURSOR_IMAGESIZE_W:
-				r.left += xDiff;
-				r.width -= xDiff;
-				break;
-			default:
-				UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
-		}
-		
-		pG->setLineProperties(pG->tlu(1), GR_Graphics::JOIN_MITER, GR_Graphics::CAP_PROJECTING, GR_Graphics::LINE_DOTTED); // MARCM: setting the line style to DOTTED doesn't seem to work with GTK2
-#if XAP_DONTUSE_XOR
-		pG->setColor(UT_RGBColor(0, 0, 0));
-#else
-		pG->setColor(UT_RGBColor(255,255,255));
-#endif
-		GR_Painter painter(pG);
-		if (bIsResizing)
-		{
-			UT_DEBUGMSG(("MARCM: Clearing old line\n"));
-#if XAP_DONTUSE_XOR
-			UT_Rect r2 = pView->getCurImageSel();
-			GR_Image *img = pView->getCurImageSelCache();
-			r2.left -= pG->tlu(1);
-			r2.top -= pG->tlu(1);
-			painter.drawImage(img, r2.left, r2.top);
-			pView->setCurImageSelCache(NULL);
-			DELETEP(img);
-#else
-			painter.xorRect(pView->getCurImageSel());
-#endif
-		}
-		pView->setCurImageSel(r);
-#if XAP_DONTUSE_XOR
-		UT_Rect r3 = r;
-		r3.left -= pG->tlu(1);
-		r3.top -= pG->tlu(1);
-		r3.width += pG->tlu(2);
-		r3.height += pG->tlu(2);
-		pView->setCurImageSelCache(painter.genImageFromRectangle(r3));
-
-		UT_sint32 bot, right;
-		bot = r.top + r.height;
-		right =  r.left + r.width;
-		painter.drawLine(r.left, r.top, right, r.top);
-		painter.drawLine(right, r.top, right, bot);
-		painter.drawLine(right, bot, r.left, bot);
-		painter.drawLine(r.left, bot, r.left, r.top);
-		pG->setLineProperties(pG->tlu(1), GR_Graphics::JOIN_MITER, GR_Graphics::CAP_PROJECTING, GR_Graphics::LINE_SOLID);
-#else
-		painter.xorRect(r);
-#endif				
-		UT_DEBUGMSG(("MARCM: image display size: (w:%d,h:%d) - total change (w:%d,h:%d)\n",r.width,r.height,xDiff, yDiff));
-	}
-		
-	return true;
-}
-
-Defun(endResizeImage)
-{
-	CHECK_FRAME;
-	ABIWORD_VIEW;
-
-	// clear status bar of any lingering messages
-	XAP_Frame * pFrame = static_cast<XAP_Frame *> (pView->getParentData());
-	pFrame->setStatusMessage(NULL);
-
-	GR_Graphics * pG = pView->getGraphics();
-	if(pG)
-	{
-		pView->stopImageResizing();
-	
-		UT_sint32 xOrigin;
-		UT_sint32 yOrigin;
-		pView->getResizeOrigin(xOrigin, yOrigin);
-		UT_Rect newImgBounds = pView->getCurImageSel();
-		
-		// an approximate... TODO: make me more accurate
-		const fp_PageSize & page = pView->getPageSize ();		
-		double max_width = 0., max_height = 0.;
-		max_width  = page.Width (DIM_PX);
-		max_height = page.Height (DIM_PX);
-		
-		// some range checking stuff
-		newImgBounds.width = abs(newImgBounds.width);
-		newImgBounds.height = abs(newImgBounds.height);
-		
-		if (newImgBounds.width > max_width)
-			newImgBounds.width = static_cast<UT_sint32>(max_width);
-		
-		if (newImgBounds.height > max_height)
-			newImgBounds.height = static_cast<UT_sint32>(max_height);
-		
-		if (newImgBounds.width == 0)
-			newImgBounds.width = pView->getGraphics()->tlu(1);
-
-		if (newImgBounds.height == 0)
-			newImgBounds.height = pView->getGraphics()->tlu(1);
-		
-		// clear the resizing line
-		pG->setLineProperties(pG->tlu(1), GR_Graphics::JOIN_MITER, GR_Graphics::CAP_PROJECTING, GR_Graphics::LINE_DOTTED); // MARCM: setting the line style to DOTTED doesn't seem to work with GTK2
-		pG->setColor(UT_RGBColor(255,255,255));
-
-		GR_Painter painter(pG);
-#if XAP_DONTUSE_XOR
-		{
-			UT_Rect r2 = pView->getCurImageSel();
-			GR_Image *img = pView->getCurImageSelCache();
-			r2.left -= pG->tlu(1);
-			r2.top -= pG->tlu(1);
-			painter.drawImage(img, r2.left, r2.top);
-			pView->setCurImageSelCache(NULL);
-			DELETEP(img);
-		}
-#else
-		painter.xorRect(pView->getCurImageSel());
-#endif
-		pG->setLineProperties(pG->tlu(1), GR_Graphics::JOIN_MITER, GR_Graphics::CAP_PROJECTING, GR_Graphics::LINE_SOLID);
-		
-		UT_DEBUGMSG(("MARCM: ap_EditMethods::done resizing image! new size in px (h:%d,w:%d)\n", newImgBounds.width, newImgBounds.height));
-	
-		UT_sint32 x1,x2,y1,y2,iHeight;
-		bool bEOL = false;
-		bool bDir = false;
-	
-		PT_DocPosition pos = pView->getDocPositionFromXY(xOrigin, yOrigin);
-	
-		fl_BlockLayout * pBlock = pView->getBlockAtPosition(pos);
-		fp_Run *  pRun = NULL;
-		if(pBlock)
-		{
-			pRun = pBlock->findPointCoords(pos,bEOL,x1,y1,x2,y2,iHeight,bDir);
-			while(pRun && pRun->getType() != FPRUN_IMAGE)
-			{
-				pRun = pRun->getNextRun();
-			}
-			if(pRun && pRun->getType() == FPRUN_IMAGE)
-			{
-				UT_DEBUGMSG(("MARCM: Image run on pos \n"));
-			}
-			else
-			{
-				//UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
-				return false;
-			}
-		}
-	
-		char widthBuf[32];
-		char heightBuf[32];
-		
-		// TODO: set format
-		const XML_Char * properties[] = {"width", NULL, "height", NULL, 0};
-
-		{
-			UT_LocaleTransactor(LC_NUMERIC, "C");
-			sprintf(widthBuf, "%fin", UT_convertDimToInches(newImgBounds.width, DIM_PX));
-			sprintf(heightBuf, "%fin", UT_convertDimToInches(newImgBounds.height, DIM_PX));
-		}
-		
-		UT_DEBUGMSG(("MARCM: nw:%s nh:%s\n", widthBuf, heightBuf));
-		
-		properties[1] = widthBuf;
-		properties[3] = heightBuf;
-		pView->setCharFormat(properties);
-		pView->cmdSelect(pos,pos+1);
-		pView->setPoint(pView->getPoint());
-		UT_ASSERT(!pView->isSelectionEmpty());
-		pView->updateScreen();
-	}
-		
-	return true;
-}
 static UT_sint32 sTopRulerHeight =0;
 static UT_sint32 sLeftRulerPos =0;
 static UT_sint32 siFixed =0;
@@ -13321,73 +13084,6 @@ Defun(endDragHline)
 	pLeftRuler->mouseRelease(ems,emb,sLeftRulerPos,y);
 	pView->setDragTableLine(false);
 	pView->setCursorToContext();
-	return true;
-}
-
-Defun(dragImage)
-{
-	CHECK_FRAME;
-	ABIWORD_VIEW;
-
-	// clear status bar of any lingering messages
-	XAP_Frame * pFrame = static_cast<XAP_Frame *> (pView->getParentData());
-	pFrame->setStatusMessage(NULL);
-
-	GR_Graphics * pG = pView->getGraphics();
-	if(pG)
-	{
-		fp_Run *  pRun = NULL;
-		
-		if (!pView->isDraggingImage())
-		{
-			UT_sint32 x1,x2,y1,y2,iHeight;
-			bool bEOL = false;
-			bool bDir = false;
-			
-			PT_DocPosition pos = pView->getDocPositionFromXY(pCallData->m_xPos, pCallData->m_yPos);
-		
-			fl_BlockLayout * pBlock = pView->getBlockAtPosition(pos);
-			if(pBlock)
-			{
-				pRun = pBlock->findPointCoords(pos,bEOL,x1,y1,x2,y2,iHeight,bDir);
-				while(pRun && pRun->getType() != FPRUN_IMAGE)
-				{
-					pRun = pRun->getNextRun();
-				}
-				if(pRun && pRun->getType() == FPRUN_IMAGE)
-				{
-					UT_DEBUGMSG(("MARCM: Image run on pos \n"));
-				}
-				else
-				{
-					//UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
-					return false;
-				}
-			}
-			pView->cmdSelect(pos,pos+1);
-			pView->startImageDrag(pRun, pCallData->m_xPos, pCallData->m_yPos);
-		}
-		pView->drawDraggedImage(pCallData->m_xPos, pCallData->m_yPos);
-	}
-	
-	return true;
-}
-
-Defun(dropImage)
-{	
-	CHECK_FRAME;
-	ABIWORD_VIEW;
-
-	// clear status bar of any lingering messages
-	XAP_Frame * pFrame = static_cast<XAP_Frame *> (pView->getParentData());
-	pFrame->setStatusMessage(NULL);
-
-	GR_Graphics * pG = pView->getGraphics();
-	if(pG)
-	{
-		pView->stopImageDrag(pCallData->m_xPos, pCallData->m_yPos);
-	}
-	
 	return true;
 }
 
@@ -13578,6 +13274,10 @@ Defun(releaseFrame)
 	UT_sint32 y = pCallData->m_yPos;
 	UT_sint32 x = pCallData->m_xPos;
 	sReleaseFrame = false;
+	if(pView->getFrameEdit()->getFrameEditMode() == FV_FrameEdit_EXISTING_SELECTED)
+	{
+	  return true;
+	}
 	pView->releaseFrame(x,y);
 	return true;
 }

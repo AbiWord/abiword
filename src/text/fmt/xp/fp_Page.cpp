@@ -508,19 +508,10 @@ bool fp_Page::overlapsWrappedFrame(UT_Rect & rec)
 		{
 			continue;
 		}
-		UT_Rect * pMyFrameRec = pFC->getScreenRect();
-		fl_FrameLayout * pFL = static_cast<fl_FrameLayout *>(pFC->getSectionLayout());
-		UT_sint32 iextra = pFL->getBoundingSpace() -2;
-		pMyFrameRec->left -= iextra;
-		pMyFrameRec->top -= iextra;
-		pMyFrameRec->width += 2*iextra;
-		pMyFrameRec->height += 2*iextra;
-		if(rec.intersectsRect(pMyFrameRec))
+		if(pFC->overlapsRect(rec))
 		{
-			delete pMyFrameRec;
-			return true;
+		        return true;
 		}
-		delete pMyFrameRec;
 	}
 	return false;
 }

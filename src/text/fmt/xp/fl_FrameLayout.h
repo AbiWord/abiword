@@ -137,6 +137,8 @@ public:
 	void                setFrameYpos(UT_sint32 iY) { m_iYpos = iY;}
 	bool                isEndFrameIn(void) const
 		{ return m_bHasEndFrame;}
+	bool                isTightWrap(void)
+	  { return m_bIsTightWrap;}
 private:
 	virtual void		     _lookupProperties(const PP_AttrProp* pAP);
 	void                     _purgeLayout(void);

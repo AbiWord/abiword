@@ -88,6 +88,132 @@ void fp_FrameContainer::setPage(fp_Page * pPage)
 	}
 }
 
+/*!
+ * Returns true if the supplied screen rectangle overlaps with frame
+ * container. This method takes account of transparening and tight wrapping.
+ */
+bool fp_FrameContainer::overlapsRect(UT_Rect & rec)
+{
+     UT_Rect * pMyFrameRec = getScreenRect();
+     fl_FrameLayout * pFL = static_cast<fl_FrameLayout *>(getSectionLayout());
+     UT_sint32 iextra = pFL->getBoundingSpace() -2;
+     pMyFrameRec->left -= iextra;
+     pMyFrameRec->top -= iextra;
+     pMyFrameRec->width += 2*iextra;
+     pMyFrameRec->height += 2*iextra;
+     xxx_UT_DEBUGMSG(("look at rec.left %d top %d width %d  \n",rec.left,rec.top,rec.width));
+     if(rec.intersectsRect(pMyFrameRec))
+     {
+         if(!isTightWrapped())
+	 {
+	      delete pMyFrameRec;
+	      return true;
+	 }
+	 UT_sint32 y = rec.top - pMyFrameRec->top - iextra;
+	 UT_sint32 h = rec.height;
+	 if(pFL->getBackgroundImage() == NULL)
+	 {
+	      delete pMyFrameRec;
+	      return true;
+	 }
+	 UT_sint32 pad = pFL->getBoundingSpace();
+	 UT_sint32 iLeft = pFL->getBackgroundImage()->GetOffsetFromLeft(getGraphics(),pad,y,h);
+	 if(iLeft < -getWidth())
+	 {
+	   //
+	   // Pure transparent.
+	   //
+	      delete pMyFrameRec;
+	      return false;
+	 }
+	 xxx_UT_DEBUGMSG(("iLeft in overlapRect %d Y %d \n",iLeft,y));
+	 if(rec.left < pMyFrameRec->left)
+	 {
+              pMyFrameRec->left -= iLeft;
+	 }
+	 else
+	 {
+	      UT_sint32 iRight = pFL->getBackgroundImage()->GetOffsetFromRight(getGraphics(),pad,y,h);
+              pMyFrameRec->width += iRight;
+	 }
+	 if(rec.intersectsRect(pMyFrameRec))
+	 {
+	   xxx_UT_DEBUGMSG(("Frame overlaps \n"));
+	   delete pMyFrameRec;
+	   return true;
+	 }
+	 UT_DEBUGMSG(("Tight Frame does not overlap \n"));
+     }
+     delete pMyFrameRec;
+     return false;
+}
+/*!
+ * This method returns the padding to be applied between a line approaching
+ * wrapped frame or image from the left. 
+ * y Is the top of the line in logical units as defined relative to the
+ * y position on the screen.
+ * height is the height of the line.
+ * If tight wrapping is set on a positioned object this number can be negative
+ * which means the line can encroach into the rectangular region of the
+ * image provided the region is transparent.
+ */
+UT_sint32 fp_FrameContainer::getLeftPad(UT_sint32 y, UT_sint32 height)
+{
+  fl_FrameLayout *pFL = static_cast<fl_FrameLayout *>(getSectionLayout());
+  UT_sint32 pad = pFL->getBoundingSpace();	
+  UT_Rect * pRect = getScreenRect();
+  UT_sint32 yC = pRect->top;
+  delete pRect;
+  if(!isTightWrapped() || !isWrappingSet())
+  {
+    return pad;
+  }
+  if(FL_FRAME_TEXTBOX_TYPE == pFL->getFrameType())
+  {
+    return pad;
+  }
+  if(pFL->getBackgroundImage() == NULL)
+  {
+    return pad;
+  }
+  UT_sint32 iLeft = pFL->getBackgroundImage()->GetOffsetFromLeft(getGraphics(),pad,y - yC,height);
+  UT_DEBUGMSG(("Local Y %d iLeft %d width %d \n",y-yC,iLeft,getFullWidth()));  return iLeft;
+}
+
+
+/*!
+ * This method returns the padding to be applied between a line approaching
+ * wrapped frame or image from the right. 
+ * y Is the top of the line in logical units as defined relative to the
+ * y position on the screen.
+ * height is the height of the line.
+ * If tight wrapping is set on a positioned object this number can be negative
+ * which means the line can encroach into the rectangular region of the
+ * image provided the region is transparent.
+ */
+UT_sint32 fp_FrameContainer::getRightPad(UT_sint32 y, UT_sint32 height)
+{
+  fl_FrameLayout *pFL = static_cast<fl_FrameLayout *>(getSectionLayout());
+  UT_sint32 pad = pFL->getBoundingSpace();
+  UT_Rect * pRect = getScreenRect();
+  UT_sint32 yC = pRect->top;
+  if(!isTightWrapped() || !isWrappingSet())
+  {
+    return pad;
+  }
+  if(FL_FRAME_TEXTBOX_TYPE == pFL->getFrameType())
+  {
+    return pad;
+  }
+  if(pFL->getBackgroundImage() == NULL)
+  {
+    return pad;
+  }
+  UT_sint32 iRight = pFL->getBackgroundImage()->GetOffsetFromRight(getGraphics(),pad,y - yC,height);
+  UT_DEBUGMSG(("Local Y %d iRight %d width %d \n",y-yC,iRight,getFullWidth()));
+  return iRight;
+}
+
 void fp_FrameContainer::clearScreen(void)
 {
 	fp_Page * pPage = getPage();
@@ -236,6 +362,23 @@ void fp_FrameContainer::getBlocksAroundFrame(UT_GenericVector<fl_BlockLayout *> 
       pCol = pCol->getFollower();
     }
   }
+  if(vecBlocks.getItemCount() == 0)
+  {
+      pCol = pPage->getNthColumnLeader(0);
+      fp_Container * pCon = pCol->getFirstContainer();
+      fl_BlockLayout * pB = NULL;
+      if(pCon->getContainerType() == FP_CONTAINER_LINE)
+      {
+	  pB = static_cast<fp_Line *>(pCon)->getBlock();
+      }
+      else
+      {
+	  fl_ContainerLayout * pCL = static_cast<fl_ContainerLayout *>(pCon->getSectionLayout());
+	  pB = pCL->getNextBlockInDocument();
+      }
+      vecBlocks.addItem(pB);
+  }
+
 }
 
 /* just a little helper function

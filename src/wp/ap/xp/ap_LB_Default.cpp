@@ -115,7 +115,7 @@ ap_bs_Mouse MouseTable[] =
 //	Button-1, Frame-context
 //  { context	{ click				doubleclick		drag,		dbldrag,		release,	doublerelease }},
   { _CTF _B1,	{ "btn1Frame",     "btn1Frame",		"dragFrame", "dragFrame",   "releaseFrame",	   	"releaseFrame" }},
-  { _CPO _B1,	{ "btn1Frame",     "btn1Frame",		"dragFrame", "dragFrame",   "releaseFrame",	   	"releaseFrame" }},
+  { _CPO _B1,	{ "btn1Frame",     "btn1Frame",		"dragFrame", "dragFrame",   "releaseFrame",   "releaseFrame" }},
 
 
 //	Button-1, Image-context

@@ -30,7 +30,7 @@ XAP_Dialog_Image::XAP_Dialog_Image(XAP_DialogFactory * pDlgFactory, XAP_Dialog_I
 	m_bAspect(true),
 	m_width(0), 
 	m_height(0),
-    m_maxWidth (0), 
+        m_maxWidth (0), 
 	m_maxHeight(0), 
 	m_answer(a_OK),	
 	m_HeightString("0.0in"),
@@ -40,7 +40,8 @@ XAP_Dialog_Image::XAP_Dialog_Image(XAP_DialogFactory * pDlgFactory, XAP_Dialog_I
 	m_PreferedUnits(DIM_IN),
 	m_iWrappingType(WRAP_INLINE),	
     m_iPositionTo(POSITION_TO_PARAGRAPH),
-    m_bInHdrFtr(false)
+    m_bInHdrFtr(false),
+    m_bTightWrap(false)
 {
 }
 
