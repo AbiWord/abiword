@@ -4996,27 +4996,30 @@ FV_DocCount FV_View::countWords(void)
 				
 				if (newWord)
 					wCount.word++;
+			
+			}
+
+		
+			// count lines
+
+			fp_Line * pLine = pBL->getFirstLine();
+			while (pLine)
+		       	{
+				wCount.line++;
+				pLine = pLine->getNext();
 			}
 			
 			if (isPara)
-			{
+		       	{
 				wCount.para++;
 				isPara = UT_FALSE;
-
-				// count lines
-				fp_Line * pLine = pBL->getFirstLine();
-				while (pLine)
-				{
-					wCount.line++;
-					pLine = pLine->getNext();
-				}
 			}
-
+	
 			pBL = pBL->getNext();
 		}
 		pSL = pSL->getNext();
+
 	}
-	
 	// count pages
 	wCount.page = m_pLayout->countPages();
 	
