@@ -1,3 +1,5 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+
 /* AbiSource Application Framework
  * Copyright (C) 1998 AbiSource, Inc.
  * 
@@ -56,11 +58,13 @@ protected:
 
 	GtkFileSelection * m_FS;
 	GtkWidget * m_preview;
+private:
+	bool				m_bExport;
+protected:
 	XAP_Frame *			m_pFrame;
 	char * 					m_szFinalPathnameCandidate;
 private:
 	GtkWidget *         m_wFileTypes_PullDown;
-
 
 };
 

@@ -1,3 +1,5 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+
 /* AbiSource Application Framework
  * Copyright (C) 1998 AbiSource, Inc.
  * 
@@ -67,7 +69,7 @@ XAP_Dialog * XAP_UnixDialog_FileOpenSaveAs::static_constructor(XAP_DialogFactory
 
 XAP_UnixDialog_FileOpenSaveAs::XAP_UnixDialog_FileOpenSaveAs(XAP_DialogFactory * pDlgFactory,
 														   XAP_Dialog_Id id)
-  : XAP_Dialog_FileOpenSaveAs(pDlgFactory,id), m_FS(0), m_preview(0)
+  : XAP_Dialog_FileOpenSaveAs(pDlgFactory,id), m_FS(0), m_preview(0), m_bExport(true)
 {
 	m_szFinalPathnameCandidate = NULL;
 }
@@ -442,6 +444,9 @@ void XAP_UnixDialog_FileOpenSaveAs::_notifyError_OKOnly(XAP_Frame * pFrame,
 
 void XAP_UnixDialog_FileOpenSaveAs::fileTypeChanged(GtkWidget * w)
 {
+	if (!m_bExport)
+		return;
+
 	UT_sint32 nFileType = GPOINTER_TO_INT(g_object_get_data(
 				G_OBJECT(w), "user_data"));
 	UT_DEBUGMSG(("File type widget is %x filetype number is %d \n",w,nFileType));
@@ -507,12 +512,13 @@ void XAP_UnixDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
         UT_String szFileTypeLabel = NULL;
 	switch (m_id)
 	{
-	case XAP_DIALOG_ID_INSERT_PICTURE:
-	  {
-		  szTitle = pSS->getValueUTF8(XAP_STRING_ID_DLG_IP_Title);
-		  szFileTypeLabel = pSS->getValueUTF8(XAP_STRING_ID_DLG_FOSA_FileOpenTypeLabel);
-		  bCheckWritePermission = false;    
-	  }
+		case XAP_DIALOG_ID_INSERT_PICTURE:
+			{
+				szTitle = pSS->getValueUTF8(XAP_STRING_ID_DLG_IP_Title);
+				szFileTypeLabel = pSS->getValueUTF8(XAP_STRING_ID_DLG_FOSA_FileOpenTypeLabel);
+				bCheckWritePermission = false;    
+				break;
+			}
 		case XAP_DIALOG_ID_FILE_OPEN:
 			{
 				szTitle = pSS->getValueUTF8(XAP_STRING_ID_DLG_FOSA_OpenTitle);
@@ -559,6 +565,7 @@ void XAP_UnixDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 			break;
 	}
+	m_bExport = bCheckWritePermission;
 
 	// NOTE: we use our string mechanism to localize the dialog's
 	// NOTE: title and the error/confirmation message boxes.  we
