@@ -32,7 +32,9 @@
 #include "ut_types.h"
 #endif
 
-class XAP_Resource;
+#include "xap_Resource.h"
+
+class UT_UTF8String;
 
 class ABI_EXPORT XAP_ResourceManager
 {
@@ -40,6 +42,8 @@ public:
 	XAP_ResourceManager ();
 
 	~XAP_ResourceManager ();
+
+	const UT_UTF8String new_id ();
 
 	/* returns resource corresponding to href
 	 * returns 0 if none is found
@@ -63,11 +67,29 @@ public:
 		return (i < m_resource_count) ? m_resource[i] : 0;
 	}
 
+	class ABI_EXPORT Writer : public XAP_InternalResource::Writer
+	{
+	public:
+		virtual ~Writer () { }
+
+		/* start element
+		 */
+		virtual UT_Error write_xml (void * context, const char * name, const char * const * atts) = 0;
+
+		/* end element
+		 */
+		virtual UT_Error write_xml (void * context, const char * name) = 0;
+	};
+
+	UT_Error write_xml (void * context, Writer & writer); // call's writer's write_xml() & write_base64() callbacks
+
 private:
 	XAP_Resource ** m_resource;
 
 	UT_uint32 m_resource_count;
 	UT_uint32 m_resource_max;
+
+	UT_uint32 m_id_number;
 
 	bool grow ();
 };

@@ -65,6 +65,8 @@ protected:
     const XML_Char *	_getDataItemMimeType(const XML_Char ** atts);
     bool		_getDataItemEncoded(const XML_Char ** atts);
 
+    bool		_handleImage (const XML_Char ** atts);
+
  private:
     bool m_bWroteSection;
     bool m_bWroteParagraph;

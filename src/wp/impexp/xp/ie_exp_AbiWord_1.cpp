@@ -1,3 +1,5 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
  *
@@ -44,6 +46,10 @@
 
 #include "ut_string_class.h"
 
+#ifdef ENABLE_RESOURCE_MANAGER
+#include "xap_ResourceManager.h"
+#endif
+
 // the fileformat that used to be defined here is now defined at the
 // top of pd_Document.cpp
 
@@ -89,7 +95,11 @@ IE_Exp_AbiWord_1::~IE_Exp_AbiWord_1()
 /*****************************************************************/
 /*****************************************************************/
 
+#ifdef ENABLE_RESOURCE_MANAGER
+class s_AbiWord_1_Listener : public PL_Listener, XAP_ResourceManager::Writer
+#else
 class s_AbiWord_1_Listener : public PL_Listener
+#endif
 {
 public:
 	s_AbiWord_1_Listener(PD_Document * pDocument,
@@ -115,6 +125,13 @@ public:
 															PL_StruxFmtHandle sfhNew));
 
 	virtual bool		signal(UT_uint32 iSignal);
+
+	/* implementation of XAP_[Internal]Resource[Manager]::Writer
+	 */
+	UT_Error write_base64 (void * context, const char * base64, UT_uint32 length, bool final);
+
+	UT_Error write_xml (void * context, const char * name, const char * const * atts);
+	UT_Error write_xml (void * context, const char * name);
 
 protected:
 	void                _closeTable(void);
@@ -850,6 +867,54 @@ bool s_AbiWord_1_Listener::signal(UT_uint32 /* iSignal */)
 	return false;
 }
 
+/* base64-encoded object data
+ */
+UT_Error s_AbiWord_1_Listener::write_base64 (void * /*context*/, const char * base64, UT_uint32 /*length*/, bool /*final*/)
+{
+	m_pie->write (base64);
+	m_pie->write ("\n");
+
+	return UT_OK;
+}
+
+/* start tag & attributes
+ */
+UT_Error s_AbiWord_1_Listener::write_xml (void * /*context*/, const char * name, const char * const * atts)
+{
+	UT_UTF8String tag(" <");
+
+	tag += name;
+
+	const char * const * attr = atts;
+	while (*attr)
+		{
+			tag += " ";
+			tag += *attr++;
+			tag += "=\"";
+			tag += *attr++;
+			tag += "\"";
+		}
+	tag += ">\n";
+
+	m_pie->write (tag.utf8_str ());
+
+	return UT_OK;
+}
+
+/* end tag
+ */
+UT_Error s_AbiWord_1_Listener::write_xml (void * /*context*/, const char * name)
+{
+	UT_UTF8String tag(" </");
+
+	tag += name;
+	tag += ">\n";
+
+	m_pie->write (tag.utf8_str ());
+
+	return UT_OK;
+}
+
 /*****************************************************************/
 /*****************************************************************/
 
@@ -1078,6 +1143,9 @@ void s_AbiWord_1_Listener::_handlePageSize(void)
 
 void s_AbiWord_1_Listener::_handleDataItems(void)
 {
+#ifdef ENABLE_RESOURCE_MANAGER
+	m_pDocument->resourceManager().write_xml (0, *this);
+#else
 	bool bWroteOpenDataSection = false;
 
 	const char * szName;
@@ -1180,8 +1248,7 @@ void s_AbiWord_1_Listener::_handleDataItems(void)
 
 	if (bWroteOpenDataSection)
 		m_pie->write("</data>\n");
-
-	return;
+#endif
 }
 
 void s_AbiWord_1_Listener::_handleRevisions(void)

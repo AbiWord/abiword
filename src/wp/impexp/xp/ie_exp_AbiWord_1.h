@@ -49,7 +49,7 @@ class ABI_EXPORT IE_Exp_AbiWord_1 : public IE_Exp
 public:
 	IE_Exp_AbiWord_1(PD_Document * pDocument, bool isTemplate = false);
 	virtual ~IE_Exp_AbiWord_1();
-	
+
 protected:
 	virtual UT_Error	_writeDocument(void);
 

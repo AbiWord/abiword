@@ -1,3 +1,5 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+
 /* AbiSource Application Framework
  * Copyright (C) 1998,1999 AbiSource, Inc.
  * 
@@ -27,14 +29,22 @@
 
 #include "xad_Document.h"
 
-AD_Document::AD_Document()
-{
-	m_iRefCount = 1;
-	m_szFilename = NULL;
+#ifdef ENABLE_RESOURCE_MANAGER
+#include "xap_ResourceManager.h"
+#endif
 
-	// TODO do we need to auto-increase the bucket count,
-   	// TODO if the ignore list gets long?
-	m_pIgnoreList = new UT_StringPtrMap(11);
+AD_Document::AD_Document() :
+#ifdef ENABLE_RESOURCE_MANAGER
+	m_pResourceManager(new XAP_ResourceManager),
+#else
+	m_pResourceManager(0),
+#endif
+	m_iRefCount(1),
+	m_szFilename(NULL),
+	m_szEncodingName(""), // Should this have a default? UTF-8, perhaps?
+	m_pIgnoreList(new UT_StringPtrMap(11)) // TODO do we need to auto-increase the bucket count, if the ignore list gets long?
+{
+	// 
 }
 
 AD_Document::~AD_Document()
@@ -53,6 +63,11 @@ AD_Document::~AD_Document()
 	DELETEP(m_pIgnoreList);
 
    	// NOTE: let subclass clean up m_szFilename, so it matches the alloc mechanism
+
+	// & finally...
+#ifdef ENABLE_RESOURCE_MANAGER
+	DELETEP(m_pResourceManager);
+#endif
 }
 
 void AD_Document::ref(void)

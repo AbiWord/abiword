@@ -1,3 +1,5 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
  *
@@ -33,6 +35,10 @@
 #include "ut_bytebuf.h"
 #include "xap_EncodingManager.h"
 #include "ut_misc.h"
+
+#ifdef ENABLE_RESOURCE_MANAGER
+#include "xap_ResourceManager.h"
+#endif
 
 /*****************************************************************/
 /*****************************************************************/
@@ -328,7 +334,11 @@ void IE_Imp_AbiWord_1::startElement(const XML_Char *name, const XML_Char **atts)
 
 	case TT_IMAGE:
 		X_VerifyParseState(_PS_Block);
+#ifdef ENABLE_RESOURCE_MANAGER
+		X_CheckError(_handleImage (atts));
+#else
 		X_CheckError(getDoc()->appendObject(PTO_Image,atts));
+#endif
 		return;
 	case TT_BOOKMARK:
 		X_VerifyParseState(_PS_Block);
@@ -789,3 +799,63 @@ bool IE_Imp_AbiWord_1::_getDataItemEncoded(const XML_Char ** atts)
 	return false;
 }
 
+bool IE_Imp_AbiWord_1::_handleImage (const XML_Char ** atts)
+{
+#ifdef ENABLE_RESOURCE_MANAGER
+	static const char * psz_id = "id";
+
+	XAP_ResourceManager & RM = getDoc()->resourceManager ();
+
+	/* old: <image dataid="ID" props="height:HH; width:WW" />
+	 * new: <image href="#ID" props="height:HH; width:WW" />
+	 * 
+	 * going to assume the document is one or the other, not a mixture...
+	 */
+	bool bResource = false; // assume old-style
+
+	UT_uint32 natts = 0;
+	const XML_Char ** attr = atts;
+	while (*attr)
+		{
+			if (strcmp (*attr++, "href") == 0)
+				{
+					bResource = true;
+					RM.ref (*attr);
+					break;
+				}
+			attr++;
+			natts += 2;
+		}
+	if (bResource) return getDoc()->appendObject (PTO_Image, atts);
+
+	/* old-style - convert to new-style
+	 */
+	const char ** new_atts = (const char **) malloc ((natts + 2) * sizeof (char *));
+	if (new_atts == 0) return false;
+
+	UT_UTF8String r_id = RM.new_id ();
+
+	const char ** new_attr = new_atts;
+	attr = atts;
+	while (*attr)
+		{
+			if (strcmp (*attr, "dataid") == 0)
+				{
+					*new_attr++ = psz_id; // id="#ID"
+					// TODO: map *attr -> r_id.utf8_str ()
+					*new_attr++ = r_id.utf8_str ();
+				}
+			else
+				{
+					*new_attr++ = (const char *) *attr++;
+					*new_attr++ = (const char *) *attr++;
+				}
+		}
+	*new_attr++ = 0;
+	*new_attr++ = 0;
+
+	return getDoc()->appendObject (PTO_Image, new_atts);
+#else
+	return false;
+#endif
+}

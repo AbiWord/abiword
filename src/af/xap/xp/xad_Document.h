@@ -1,3 +1,5 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+
 /* AbiSource Application Framework
  * Copyright (C) 1998,1999 AbiSource, Inc.
  * 
@@ -35,12 +37,19 @@
 // fwd. decl.
 class UT_StringPtrMap;
 
+class XAP_ResourceManager;
+
 class ABI_EXPORT AD_Document
 {
 public:
 	AD_Document();
 	void				ref(void);
 	void				unref(void);
+
+private:
+	XAP_ResourceManager *	m_pResourceManager;
+public:
+	XAP_ResourceManager &	resourceManager () const { return *m_pResourceManager; }
 
 	const char *			getFilename(void) const;
 	virtual UT_uint32               getLastSavedAsType() = 0; 
@@ -76,7 +85,7 @@ protected:
 	const char *	m_szFilename;
 	UT_String		m_szEncodingName;
 
-	UT_StringPtrMap *	m_pIgnoreList;
+	UT_StringPtrMap *		m_pIgnoreList;
 };
 
 
