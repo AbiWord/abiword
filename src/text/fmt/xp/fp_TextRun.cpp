@@ -907,6 +907,12 @@ void fp_TextRun::mergeWithNext(void)
 	m_iWidthLayoutUnits += pNext->m_iWidthLayoutUnits;
 
 #ifdef BIDI_ENABLED
+	UT_DEBUGMSG(("fp_TextRun::mergeWithNext\n"));
+	// first of all, make sure the X coordinance of the merged run is correct
+
+	if(m_iX > pNext->m_iX)
+		m_iX = pNext->m_iX;
+
 	// join the two span buffers; this will save us refreshing the draw buffer
 	// which is very expensive
 
@@ -1039,8 +1045,14 @@ bool fp_TextRun::split(UT_uint32 iSplitOffset)
 #ifdef BIDI_ENABLED
 	// first of all, split the span buffer, this will save us refreshing it
 	// which is very expensive (see notes on the mergeWithNext())
-	UT_UCSChar * pSB = new UT_UCSChar[m_iLen + 1];
 
+	// we have a dilema here, either we can leave the span buffer for this run
+	// of the size it is now, or we delete it and allocate a shorter one
+	// we will use the first option, the extra delete/new pair should not
+	// cost us too much time
+	m_iSpanBuffSize = m_iLen + 1;
+	UT_UCSChar * pSB = new UT_UCSChar[m_iSpanBuffSize];
+	
 	if((!s_bBidiOS && iVisDirection == FRIBIDI_TYPE_RTL)
 	  || (s_bBidiOS && m_iDirOverride == FRIBIDI_TYPE_LTR && m_iDirection == FRIBIDI_TYPE_RTL)
 	)

@@ -1363,6 +1363,12 @@ fl_BlockLayout::format(fp_Line * pLineToStartAt)
 		// we have to do this in the breakParagraph rutine
 		//_removeAllEmptyLines();
 #ifdef BIDI_ENABLED
+		// the down-side of this is that on the active line we keep
+		// spliting/merging if the editing position is not at either
+		// end; the up-side is that at any given time our document
+		// is represented by the minimal number of runs necessary
+		// as I have not noticed any performance impairment with this
+		// I will leave this in
 		coalesceRuns();
 #endif
 	}
