@@ -52,11 +52,11 @@ AR		= ar cr $@
 
 # Compiler flags
 ifeq ($(ABI_OPT_DEBUG),1)
-OPTIMIZER	= -g 
+OPTIMIZER	= -g -O2 -Wall -W -ansi -pedantic
 DEFINES		= -DDEBUG -UNDEBUG
 OBJ_DIR_SFX	= DBG
 else
-OPTIMIZER	= -O3 
+OPTIMIZER	= -O3 -Wall -W -ansi -pedantic
 DEFINES		=
 OBJ_DIR_SFX	= OBJ
 endif

@@ -80,8 +80,10 @@ public:
 	virtual void MouseUp(BPoint point);
 	
 	tb_item_t *  FindItemByID(XAP_Toolbar_Id id);
+	int FindItemIndexByID(XAP_Toolbar_Id id); 
 			
 	void 		HighLightItem(int index, int up);
+	void 		DrawSeparator(int index);
 
 	int				item_count, last_highlight;
 	

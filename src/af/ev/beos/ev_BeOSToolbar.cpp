@@ -224,7 +224,8 @@ bool EV_BeOSToolbar::synthesize(void) {
 
 //This is used to make the toolbar reflect the current state of
 //the document (enable, disable, set font values etc
-bool EV_BeOSToolbar::refreshToolbar(AV_View * pView, AV_ChangeMask mask) {
+bool EV_BeOSToolbar::refreshToolbar(AV_View * pView, AV_ChangeMask mask) 
+{
 	const EV_Toolbar_ActionSet * pToolbarActionSet;
 	pToolbarActionSet = m_pBeOSApp->getToolbarActionSet();
 
@@ -233,7 +234,8 @@ bool EV_BeOSToolbar::refreshToolbar(AV_View * pView, AV_ChangeMask mask) {
 	
 	UT_uint32 nrLabelItemsInLayout = m_pToolbarLayout->getLayoutItemCount();
 	
-	for (UT_uint32 k=0; (k < nrLabelItemsInLayout); k++) {
+	for (UT_uint32 k=0; (k < nrLabelItemsInLayout); k++) 
+	{
 		EV_Toolbar_LayoutItem * pLayoutItem = m_pToolbarLayout->getLayoutItem(k);
 		UT_ASSERT(pLayoutItem);
 
@@ -246,115 +248,134 @@ bool EV_BeOSToolbar::refreshToolbar(AV_View * pView, AV_ChangeMask mask) {
 		if ((maskOfInterest & mask) == 0)   //If this item doesn't care about
 			continue;						// changes of this type, skip it...
 
-		switch (pLayoutItem->getToolbarLayoutFlags()) {
-		case EV_TLF_Normal: {
+		switch (pLayoutItem->getToolbarLayoutFlags()) 
+		{
+			case EV_TLF_Normal: 
+			{
 				const char * szState = 0;
 				EV_Toolbar_ItemState tis = pAction->getToolbarItemState(pView,&szState);
 
-				switch (pAction->getItemType())	{
-				case EV_TBIT_PushButton: {
-					bool bGrayed = EV_TIS_ShouldBeGray(tis);
+				switch (pAction->getItemType())	
+				{
+					case EV_TBIT_PushButton: 
+					{
+						bool bGrayed = EV_TIS_ShouldBeGray(tis);
 
 				//	UT_DEBUGMSG(("refreshToolbar: PushButton [%s] is %s\n", 
 				//		m_pToolbarLabelSet->getLabel(id)->getToolbarLabel(), 
 				//		((bGrayed) ? "disabled" : "enabled"))); 
-					tb_item_t * item = m_pTBView->FindItemByID(id);
-					if (item) {
-						oldstate = item->state;
-						item->state = (bGrayed) ? 0 : ENABLED_MASK;
-						perform_update |= (oldstate == item->state) ? 0 : 1; 
-					if(perform_update)
-					{
-						//m_pTBView->Window()->Lock();
-						m_pTBView->Draw(item->rect);
-					//	m_pTBView->Window()->Unlock();
-					}
+						tb_item_t * item = m_pTBView->FindItemByID(id);
+						if (item) 
+						{
+							oldstate = item->state;
+							item->state = (bGrayed) ? 0 : ENABLED_MASK;
+							perform_update |= (oldstate == item->state) ? 0 : 1; 
+							if(perform_update)
+							{
+								//m_pTBView->Window()->Lock();
+								m_pTBView->Draw(item->rect);
+								//	m_pTBView->Window()->Unlock();
+							}
 						}
-				}
-				break;
+					}
+					break;
 			
-				case EV_TBIT_GroupButton:
-					DPRINTF(printf("Ref Group->Toggle Button \n"));
-				case EV_TBIT_ToggleButton: {
-					bool bGrayed = EV_TIS_ShouldBeGray(tis);
-					bool bToggled = EV_TIS_ShouldBeToggled(tis);
+					case EV_TBIT_GroupButton:
+						DPRINTF(printf("Ref Group->Toggle Button \n"));
+					case EV_TBIT_ToggleButton: 
+					{
+						bool bGrayed = EV_TIS_ShouldBeGray(tis);
+						bool bToggled = EV_TIS_ShouldBeToggled(tis);
 
 											
-					//UT_DEBUGMSG(("refreshToolbar: ToggleBut [%s] is %s and %s\n", 
-					//	m_pToolbarLabelSet->getLabel(id)->getToolbarLabel(), 
-					//	((bGrayed) ? "disabled" : "enabled"), 
-					//	((bToggled) ? "pressed" : "not pressed")));
-
-					tb_item_t * item = m_pTBView->FindItemByID(id);
-					if (item) {
-						oldstate = item->state;
-						item->state = ((bGrayed) ? 0 : ENABLED_MASK) |
-						              ((bToggled) ? PRESSED_MASK : 0);
-						perform_update |= (oldstate == item->state) ? 0 : 1; 
-						if(perform_update)
+						//UT_DEBUGMSG(("refreshToolbar: ToggleBut [%s] is %s and %s\n", 
+						//	m_pToolbarLabelSet->getLabel(id)->getToolbarLabel(), 
+						//	((bGrayed) ? "disabled" : "enabled"), 
+						//	((bToggled) ? "pressed" : "not pressed")));
+	
+						tb_item_t * item = m_pTBView->FindItemByID(id);
+						if (item) 
+						{
+							oldstate = item->state;
+							item->state = ((bGrayed) ? 0 : ENABLED_MASK) |
+							              ((bToggled) ? PRESSED_MASK : 0);
+							perform_update |= (oldstate == item->state) ? 0 : 1; 
+							if(perform_update)
 		        			{
-				//			 m_pTBView->Window()->Lock();
-		 					 m_pTBView->Draw(item->rect);
-		 		//			 m_pTBView->Window()->Unlock();
-						}	
+					//			 m_pTBView->Window()->Lock();
+								
+		 						m_pTBView->Draw(item->rect);
+		 						 
+		 						if(!bToggled)
+		 						{
+		 							int index = m_pTBView->FindItemIndexByID(id);
+		 						 	m_pTBView->HighLightItem(index, 0);
+		 						}
+		 			//			 m_pTBView->Window()->Unlock();
+							}
 																															                                    
-					}
-				
-				}
-				break;
-
-				case EV_TBIT_ComboBox: {
-					bool bGrayed = EV_TIS_ShouldBeGray(tis);
-					bool bString = EV_TIS_ShouldUseString(tis);
-						
-					//UT_DEBUGMSG(("refreshToolbar: ComboBox [%s] is %s and %s\n", 
-					// 	m_pToolbarLabelSet->getLabel(id)->getToolbarLabel(), 
-					//	((bGrayed) ? "disabled" : "enabled"), 
-					//	((bString) ? szState : "no state")));
-
-					tb_item_t * item = m_pTBView->FindItemByID(id);
-					if (item && bString) {
-						BPopUpMenu *popup;
-						UT_ASSERT(item->menu);
-						popup = (BPopUpMenu*)item->menu->Menu();
-						UT_ASSERT(popup);
-						BMenuItem *mnuitem = popup->FindItem(szState);
-						if (!mnuitem) {
-							printf("Can't find menu item %s \n", szState);
-							if (!(mnuitem = popup->FindItem("Dutch801 Rm BT")))
-								break;
-							//Send a message to fix that
-							/*
-							char *buffer = "Dutch801 Rm BT";
-							toolbarEvent(id, 
-								(UT_UCSChar *)buffer, strlen(buffer));
-							*/
 						}
-						mnuitem->SetMarked(true);
-					}			
-
-				}
-				break;
-
-				case EV_TBIT_EditText:
-				case EV_TBIT_DropDown:
-				case EV_TBIT_StaticLabel:
-				case EV_TBIT_Spacer:
-					DPRINTF(printf("refreshToolbar: Update Text, DropDown, Label, Spacer \n"));
+				
+					}
 					break;
-				case EV_TBIT_BOGUS:
-				default:
-					UT_ASSERT(0);
+
+					case EV_TBIT_ComboBox: 
+					{
+						bool bGrayed = EV_TIS_ShouldBeGray(tis);
+						bool bString = EV_TIS_ShouldUseString(tis);
+						
+						//UT_DEBUGMSG(("refreshToolbar: ComboBox [%s] is %s and %s\n", 
+						// 	m_pToolbarLabelSet->getLabel(id)->getToolbarLabel(), 
+						//	((bGrayed) ? "disabled" : "enabled"), 
+						//	((bString) ? szState : "no state")));
+
+						tb_item_t * item = m_pTBView->FindItemByID(id);
+						if (item && bString) 
+						{
+							BPopUpMenu *popup;
+							UT_ASSERT(item->menu);
+							popup = (BPopUpMenu*)item->menu->Menu();
+							UT_ASSERT(popup);
+							BMenuItem *mnuitem = popup->FindItem(szState);
+							if (!mnuitem) 
+							{
+								printf("Can't find menu item %s \n", szState);
+								if (!(mnuitem = popup->FindItem("Dutch801 Rm BT")))
+									break;
+								//Send a message to fix that
+								/*
+								char *buffer = "Dutch801 Rm BT";
+								toolbarEvent(id, 
+									(UT_UCSChar *)buffer, strlen(buffer));
+								*/
+							}
+							mnuitem->SetMarked(true);
+						}			
+
+					}	
 					break;
-				}
+
+					case EV_TBIT_EditText:
+					case EV_TBIT_DropDown:
+					case EV_TBIT_StaticLabel:
+					case EV_TBIT_Spacer:
+						DPRINTF(printf("refreshToolbar: Update Text, DropDown, Label, Spacer \n"));
+					break;
+			
+					case EV_TBIT_BOGUS:
+					default:
+						UT_ASSERT(0);
+					break;
+					
+				}	// END { switch (pAction->getItemType()) }	
 			}
 			break;
 			
-		case EV_TLF_Spacer:
+			case EV_TLF_Spacer:
 			break;
 			
-		default:
-			UT_ASSERT(0);
+			default:
+				UT_ASSERT(0);
 			break;
 		}
 	}
@@ -473,6 +494,10 @@ ToolbarView::~ToolbarView()
 		if(items[i].popupString)
 			free(items[i].popupString);
 	}
+	
+	// destroy tool_tip and tip_thread
+	fToolTip->Lock();
+	fToolTip->Quit();
 }
 
 tb_item_t * ToolbarView::FindItemByID(XAP_Toolbar_Id id) {
@@ -487,6 +512,21 @@ tb_item_t * ToolbarView::FindItemByID(XAP_Toolbar_Id id) {
 	}
 	return(NULL);
 }
+
+
+int ToolbarView::FindItemIndexByID(XAP_Toolbar_Id id) {
+	int index;
+	
+	for (index=0; index<item_count; index++) {
+		if (items[index].id == id)
+			break;
+	}
+	if (index<item_count) {
+		return index;
+	}
+	return 0;
+}
+
 
 bool ToolbarView::AddItem(BBitmap *upbitmap, BBitmap *downbitmap, XAP_Toolbar_Id id , const char* popupString) {
 	if (item_count >= ITEM_MAX -1)
@@ -609,7 +649,8 @@ void ToolbarView::Draw(BRect clip) {
 	Window()->Unlock();
 	for (i=0; i<item_count; i++) {
 		r = items[i].rect;
-		if (items[i].bitmap && r.Intersects(clip)) {
+		if (items[i].bitmap && r.Intersects(clip)) 
+		{
 			Window()->Lock();
 				
 			// We're dawing with alpha, so we need to overdraw the old bitmap
@@ -652,7 +693,7 @@ void ToolbarView::Draw(BRect clip) {
 			Window()->Unlock();
 		}
 		else if (items[i].type == SEPERATOR) {
-			HighLightItem(i, 1);
+			DrawSeparator(i);
 		}
 	}
 	
@@ -695,18 +736,52 @@ void ToolbarView::HighLightItem(int index, int state) {
 	else if (state == 2)		//DOWN look
 		colortouse=light;
 	BeginLineArray(8);
-	AddLine(BPoint(r.left, r.bottom), BPoint(r.right, r.bottom),colortouse);
-	AddLine(BPoint(r.left+1, r.bottom-1), BPoint(r.right-1, r.bottom-1),colortouse);
-	AddLine(BPoint(r.right, r.top), BPoint(r.right, r.bottom),colortouse);
-	AddLine(BPoint(r.right-1, r.top+1), BPoint(r.right-1, r.bottom-1),colortouse);
+
+	AddLine(BPoint(r.left-1, r.bottom+1), BPoint(r.right+2, r.bottom+1),colortouse);
+	AddLine(BPoint(r.left-2, r.bottom+2), BPoint(r.right+2, r.bottom+2),colortouse);
+	AddLine(BPoint(r.right+1, r.top), BPoint(r.right+1, r.bottom),colortouse);
+	AddLine(BPoint(r.right+2, r.top-1), BPoint(r.right+2, r.bottom),colortouse);
+
 	if (state == 1)
 		colortouse=light;
 	else if (state == 2)
 		colortouse=dark;
+
+	AddLine(BPoint(r.left-1, r.bottom), BPoint(r.left-1, r.top-1),colortouse);
+	AddLine(BPoint(r.left-2, r.bottom+1), BPoint(r.left-2, r.top-2),colortouse);
+	AddLine(BPoint(r.left-1, r.top-1), BPoint(r.right+1, r.top-1),colortouse);
+	AddLine(BPoint(r.left-2, r.top-2), BPoint(r.right+2, r.top-2),colortouse);
+
+	EndLineArray();
+	Window()->Sync();
+	Window()->Unlock();
+}
+
+void ToolbarView::DrawSeparator(int index) 
+{
+	BRect r = items[index].rect;
+	rgb_color colortouse;
+	rgb_color dark = { 154, 154, 154, 255 };
+	rgb_color light = { 241, 241, 241, 255 };
+	rgb_color back = { 216, 216, 216, 255 };
+	Window()->Lock();
+	
+	colortouse=dark;
+	
+	BeginLineArray(8);
+	
+	AddLine(BPoint(r.left, r.bottom), BPoint(r.right, r.bottom),colortouse);
+	AddLine(BPoint(r.left+1, r.bottom-1), BPoint(r.right-1, r.bottom-1),colortouse);
+	AddLine(BPoint(r.right, r.top), BPoint(r.right, r.bottom),colortouse);
+	AddLine(BPoint(r.right-1, r.top+1), BPoint(r.right-1, r.bottom-1),colortouse);
+
+	colortouse=light;
+	
 	AddLine(BPoint(r.left, r.bottom), BPoint(r.left, r.top),colortouse);
 	AddLine(BPoint(r.left+1, r.bottom-1), BPoint(r.left+1, r.top+1),colortouse);
 	AddLine(BPoint(r.left, r.top), BPoint(r.right, r.top),colortouse);
 	AddLine(BPoint(r.left+1, r.top+1), BPoint(r.right-1, r.top+1),colortouse);
+	
 	EndLineArray();
 	Window()->Sync();
 	Window()->Unlock();
