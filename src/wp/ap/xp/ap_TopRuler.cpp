@@ -197,7 +197,14 @@ UT_Bool AP_TopRuler::notify(AV_View * pView, const AV_ChangeMask mask)
 	// indents), then we redraw the ruler.
 	
 	if (mask & (AV_CHG_COLUMN | AV_CHG_FMTSECTION | AV_CHG_FMTBLOCK))
-		draw(NULL);
+	{
+		UT_Rect pClipRect;
+		pClipRect.top = 0;
+		pClipRect.left = UT_MAX(m_iLeftRulerWidth, s_iFixedWidth);
+		pClipRect.height = m_iHeight;
+		pClipRect.width = m_iWidth;
+		draw(&pClipRect);
+	}
 	
 	return UT_TRUE;
 }
