@@ -318,7 +318,7 @@ void AP_UnixFrame::_createTopLevelWindow(void)
 						   m_pUnixApp->getApplicationName());
 
 	// TODO get the following values from a preferences or something.
-	gtk_container_border_width(GTK_CONTAINER(m_wTopLevelWindow), 10);
+	gtk_container_border_width(GTK_CONTAINER(m_wTopLevelWindow), 0);
 	gtk_widget_set_usize(GTK_WIDGET(m_wTopLevelWindow), 700,650);
 
 	gtk_signal_connect(GTK_OBJECT(m_wTopLevelWindow), "delete_event",

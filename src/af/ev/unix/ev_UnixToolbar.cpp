@@ -133,7 +133,7 @@ UT_Bool EV_UnixToolbar::synthesize(void)
 	m_wToolbar = gtk_toolbar_new(GTK_ORIENTATION_HORIZONTAL, GTK_TOOLBAR_BOTH);
 	gtk_toolbar_set_button_relief(GTK_TOOLBAR(m_wToolbar), GTK_RELIEF_NORMAL);
 	gtk_toolbar_set_tooltips(GTK_TOOLBAR(m_wToolbar), TRUE);
-	gtk_toolbar_set_space_size(GTK_TOOLBAR(m_wToolbar), 5);
+	gtk_toolbar_set_space_size(GTK_TOOLBAR(m_wToolbar), 10);
 
 	for (UT_uint32 k=0; (k < nrLabelItemsInLayout); k++)
 	{
@@ -235,7 +235,12 @@ UT_Bool EV_UnixToolbar::synthesize(void)
 	}
 
 	gtk_widget_show(m_wToolbar);
-	gtk_box_pack_start(GTK_BOX(wVBox), m_wToolbar,FALSE,TRUE,0);
+	
+	// TODO: Can we do this only vertically, so we can align the leftmost
+	// buttons with the menu bar?
+	gtk_container_border_width(GTK_CONTAINER(m_wToolbar), 2);
+	
+	gtk_box_pack_start(GTK_BOX(wVBox), m_wToolbar, FALSE, TRUE, 0);
 
 	return UT_TRUE;
 }
@@ -304,7 +309,6 @@ UT_Bool EV_UnixToolbar::refreshToolbar(FV_View * pView, FV_ChangeMask mask)
 						
 						// Disable/enable toolbar item
 						gtk_widget_set_sensitive(GTK_WIDGET(item), !bGrayed);
-
 
 						UT_DEBUGMSG(("refreshToolbar: PushButton [%s] is %s\n",
 									m_pToolbarLabelSet->getLabel(id)->getToolbarLabel(),
