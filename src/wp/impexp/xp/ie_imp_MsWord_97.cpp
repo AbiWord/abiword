@@ -294,12 +294,18 @@ int SpecCharProc(wvParseStruct *ps, U16 eachchar, CHP* achp)
     	     {
  
 	     	fspa = wvGetFSPAFromCP(ps->currentcp, ps->fspa,
-		    			    ps->fspapos, ps->nooffspa);
-	     
+				       ps->fspapos, ps->nooffspa);
+
+		if(!fspa)
+		  {
+		    UT_DEBUGMSG(("No fspa! Panic and Insanity Abounds!\n"));
+		    return 0;
+		  }	     
+
 	     	if (wv0x08(&blip, fspa->spid, ps))
 	        {
 		    pDocReader->_handleImage(&blip, fspa->xaRight-fspa->xaLeft,
-					   fspa->yaBottom-fspa->yaTop);
+					     fspa->yaBottom-fspa->yaTop);
 	      	}
 		else
 		  {
