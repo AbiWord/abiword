@@ -7,7 +7,7 @@
 CRCCheck on
 
 ; The name of the installer
-Name "AbiWord Dictionary - Norsk"
+Name "AbiWord Dictionary - Norsk (bokmål)"
 Icon "..\..\pkg\win\setup\setup.ico"
 OutFile "AbiWord_Dictionary_Norsk.exe"
 
@@ -22,7 +22,7 @@ InstallDir $PROGRAMFILES\AbiSuite
 InstallDirRegKey HKLM SOFTWARE\Abisuite "Install_Dir"
 
 ; The text to prompt the user to enter a directory
-ComponentText "This will install Abiword's Norsk Dictionary on your computer."
+ComponentText "This will install Abiword's Norsk (bokmål) Dictionary on your computer."
 
 ; The text to prompt the user to enter a directory
 DirText "Choose the AbiSuite directory where you previously installed Abiword:"
@@ -31,7 +31,7 @@ EnabledBitmap  ..\..\pkg\win\setup\checkbox.bmp
 DisabledBitmap ..\..\pkg\win\setup\emptybox.bmp
 
 ; The stuff that must be installed
-; binary, license, and Norsk dictionary
+; binary, license, and Norsk (bokmål) dictionary
 Section "Abiword.exe (required)"
 
 	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
