@@ -16,7 +16,7 @@ fi
 
 # Produce aclocal.m4, so autoconf gets the automake macros it needs
 echo "Creating aclocal.m4..."
-aclocal -I ac-helpers -I macros
+aclocal -I ac-helpers
 
 autoheader
 
