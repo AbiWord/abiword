@@ -100,10 +100,14 @@ include $(ABI_ROOT)/src/config/abi_rules.mk
 ifeq ($(OS_NAME), MINGW32)
 $(PROGRAM): $(OBJS) $(EXTRA_LIBDEP)
 	@$(MAKE_OBJDIR)
+ifeq ($(ABI_OPT_WINE), 1)
+	$(CCC) -o $@ $(CFLAGS) $(OBJDIR)/Win32Main.o $(OBJDIR)/Win32Mainrc.o $(LDFLAGS) $(OBJDIR)/dummy.o $(EXTRA_LIBS) $(OS_LIBS) $(XLDFLAGS)
+else
 	@echo Linking dynamic $(PROGRAM)
 	$(CCC) -o $(BINDIR)/libAbiWord.dll $(SHARED_LDFLAGS) $(CFLAGS) $(OBJDIR)/dummy.o  $(LDFLAGS) $(EXTRA_LIBS) $(OS_LIBS) $(XLDFLAGS)
 	@mv libAbiWord.dll.a $(LIBDIR)
 	$(CCC) -o $@ $(CFLAGS) $(OBJDIR)/Win32Main.o $(OBJDIR)/Win32Mainrc.o $(LDFLAGS) -L$(LIBDIR) -lAbiWord.dll $(OS_LIBS) $(XLDFLAGS)
+endif
 else
 $(PROGRAM): $(OBJS) $(EXTRA_LIBDEP)
 	@$(MAKE_OBJDIR)
