@@ -52,7 +52,9 @@ bool pt_PieceTable::changeSpanFmt(PTChangeFmt ptc,
 									 const XML_Char ** attributes,
 								  const XML_Char ** properties)
 {
-	if(m_pDocument->isMarkRevisions())
+	// if dpos1 == dpos2 we are inserting a fmt mark; this must be chanelled throught
+	// the non-revision branch ...
+	if(m_pDocument->isMarkRevisions() && dpos1 != dpos2)
 	{
 		const XML_Char name[] = "revision";
 		const XML_Char * pRevision = NULL;

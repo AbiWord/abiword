@@ -60,6 +60,11 @@ bool pt_PieceTable::insertSpan(PT_DocPosition dpos,
 		bool bFound = getFragFromPosition(dpos,&pf,&fragOffset);
 		UT_return_val_if_fail( bFound, false );
 
+		if(pf->getType() == pf_Frag::PFT_EndOfDoc)
+			pf = pf->getPrev();
+
+		UT_return_val_if_fail( pf, false );
+		
 		PT_AttrPropIndex indexAP = pf->getIndexAP();
 
 		_translateRevisionAttribute(Revisions, indexAP, PP_REVISION_ADDITION, ppRevAttrib, ppRevProps, 0, 0);

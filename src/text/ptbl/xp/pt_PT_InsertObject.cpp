@@ -52,6 +52,11 @@ bool pt_PieceTable::insertObject(PT_DocPosition dpos,
 		bool bFound = getFragFromPosition(dpos,&pf,&fragOffset);
 		UT_return_val_if_fail( bFound, false );
 
+		if(pf->getType() == pf_Frag::PFT_EndOfDoc)
+			pf = pf->getPrev();
+
+		UT_return_val_if_fail( pf, false );
+		
 		PT_AttrPropIndex indexAP = pf->getIndexAP();
 		UT_uint32 length = pf->getLength();
 		
@@ -112,6 +117,11 @@ bool pt_PieceTable::insertObject(PT_DocPosition dpos,
 		bool bFound = getFragFromPosition(dpos,&pf,&fragOffset);
 		UT_return_val_if_fail( bFound, false );
 
+		if(pf->getType() == pf_Frag::PFT_EndOfDoc)
+			pf = pf->getPrev();
+
+		UT_return_val_if_fail( pf, false );
+		
 		PT_AttrPropIndex indexAP = pf->getIndexAP();
 		UT_uint32 length = pf->getLength();
 
