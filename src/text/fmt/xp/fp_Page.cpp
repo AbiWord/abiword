@@ -59,8 +59,6 @@ fp_Page::fp_Page(FL_DocLayout* pLayout,
 	UT_ASSERT(pG);
 
 	m_iResolution = pG->getResolution();
-	UT_ASSERT(m_pOwner);
-	m_pOwner->addOwnedPage(this);
 }
 
 fp_Page::~fp_Page()
@@ -1075,7 +1073,7 @@ const fp_PageSize&	fp_Page::getPageSize(void) const
 
 void fp_Page::removeHeader(void)
 {
-	UT_DEBUGMSG(("SEVIOR: Deleting header from page m_pHeader = %x \n",m_pHeader));
+	UT_DEBUGMSG(("SEVIOR: Deleting header from page %x m_pHeader = %x \n",this, m_pHeader));
 	if(m_pHeader == NULL)
 		return;
 	delete m_pHeader;
@@ -1085,7 +1083,7 @@ void fp_Page::removeHeader(void)
 
 void fp_Page::removeFooter(void)
 {
-	UT_DEBUGMSG(("SEVIOR: Deleting header from page m_pFooter = %x \n",m_pFooter));
+	UT_DEBUGMSG(("SEVIOR: Deleting footer from page %x m_pFooter = %x \n",this,m_pFooter));
 	if(m_pFooter == NULL)
 		return;
 	delete m_pFooter;
@@ -1117,11 +1115,63 @@ fp_ShadowContainer* fp_Page::getHeaderContainer(fl_HdrFtrSectionLayout* pHFSL)
 	return m_pHeader;
 }
 
+
+fp_ShadowContainer* fp_Page::buildHeaderContainer(fl_HdrFtrSectionLayout* pHFSL)
+{
+	if (m_pHeader)
+	{
+		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+	}
+
+	// TODO fix these coordinates - Done!
+	//
+	// headerMargin is the height from the top of the page.
+	//
+	m_pHeader = new fp_ShadowContainer(m_pOwner->getLeftMargin(),
+									   m_pOwner->getHeaderMargin(),
+									   getWidth() - (m_pOwner->getLeftMargin() + m_pOwner->getRightMargin()),
+									   m_pOwner->getTopMargin() - m_pOwner->getHeaderMargin(),
+									   getWidthInLayoutUnits() - (m_pOwner->getLeftMarginInLayoutUnits() + m_pOwner->getRightMarginInLayoutUnits()),
+									   m_pOwner->getTopMarginInLayoutUnits() - m_pOwner->getHeaderMarginInLayoutUnits(),
+									   pHFSL);
+	// TODO outofmem
+
+	m_pHeader->setPage(this);
+
+	return m_pHeader;
+}
+
 fp_ShadowContainer* fp_Page::getFooterContainer(fl_HdrFtrSectionLayout* pHFSL)
 {
 	if (m_pFooter)
 	{
 		return m_pFooter;
+	}
+
+	// TODO fix these coordinates -Done !
+	//
+	// footerMargin is the distance from the bottom of the text to the
+	// top of the footer
+	//
+	m_pFooter = new fp_ShadowContainer(m_pOwner->getLeftMargin(),
+									   getHeight() - m_pOwner->getBottomMargin() + m_pOwner->getFooterMargin(),
+									   getWidth() - (m_pOwner->getLeftMargin() + m_pOwner->getRightMargin()),
+									   m_pOwner->getBottomMargin(),
+									   getWidthInLayoutUnits() - (m_pOwner->getLeftMarginInLayoutUnits() + m_pOwner->getRightMarginInLayoutUnits()),
+									   m_pOwner->getBottomMarginInLayoutUnits() - m_pOwner->getFooterMarginInLayoutUnits(),
+									   pHFSL);
+	// TODO outofmem
+
+	m_pFooter->setPage(this);
+
+	return m_pFooter;
+}
+
+fp_ShadowContainer* fp_Page::buildFooterContainer(fl_HdrFtrSectionLayout* pHFSL)
+{
+	if (m_pFooter)
+	{
+		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 	}
 
 	// TODO fix these coordinates -Done !

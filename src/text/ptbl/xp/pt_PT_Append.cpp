@@ -70,9 +70,34 @@ bool pt_PieceTable::appendStrux(PTStruxType pts, const XML_Char ** attributes)
 			{
 				pts = PTX_SectionHdrFtr;
 			}
-//
-// FIXME! EndNote shuld go in here.
-//
+			else if(UT_strcmp(szStruxType,"header-even") == 0)
+			{
+				pts = PTX_SectionHdrFtr;
+			}
+			else if(UT_strcmp(szStruxType,"footer-even") == 0)
+			{
+				pts = PTX_SectionHdrFtr;
+			}
+			else if(UT_strcmp(szStruxType,"header-first") == 0)
+			{
+				pts = PTX_SectionHdrFtr;
+			}
+			else if(UT_strcmp(szStruxType,"footer-first") == 0)
+			{
+				pts = PTX_SectionHdrFtr;
+			}
+			else if(UT_strcmp(szStruxType,"header-last") == 0)
+			{
+				pts = PTX_SectionHdrFtr;
+			}
+			else if(UT_strcmp(szStruxType,"footer-last") == 0)
+			{
+				pts = PTX_SectionHdrFtr;
+			}
+			else if(UT_strcmp(szStruxType,"endnote") == 0)
+			{
+				pts = PTX_SectionEndnote;
+			}
 	    }
 	}
 	if (!_createStrux(pts,indexAP,&pfs))

@@ -66,6 +66,7 @@ FL_DocLayout::FL_DocLayout(PD_Document* doc, GR_Graphics* pG)
 	m_bImSpellCheckingNow = false;
 	m_uDocBackgroundCheckReasons = 0;
 	m_iSkipUpdates = 0;
+	m_bDeletingLayout = false;
 	m_pRedrawUpdateTimer = UT_Timer::static_constructor(_redrawUpdate, this, m_pG);
 	if (m_pRedrawUpdateTimer)
 	{
@@ -95,6 +96,7 @@ FL_DocLayout::FL_DocLayout(PD_Document* doc, GR_Graphics* pG)
 
 FL_DocLayout::~FL_DocLayout()
 {
+	m_bDeletingLayout = true;
 	if (m_pPrefs)
 	{
 		m_pPrefs->removeListener ( _prefsListener, this ); 
@@ -126,7 +128,18 @@ FL_DocLayout::~FL_DocLayout()
 	
 	DELETEP(m_pRedrawUpdateTimer);
 
-	UT_VECTOR_PURGEALL(fp_Page *, m_vecPages);
+	UT_sint32 count = (UT_sint32) m_vecPages.getItemCount() -1;
+	while(count >= 0)
+	{
+		fp_Page * pPage = (fp_Page *) m_vecPages.getNthItem(count);
+		if(pPage->getPrev())
+		{
+			pPage->getPrev()->setNext(NULL);
+		}
+		m_vecPages.deleteNthItem(count);
+		delete pPage;
+		count--;
+	}
 	
 	while (m_pFirstSection)
 	{
@@ -366,6 +379,16 @@ UT_uint32 FL_DocLayout::countPages()
 	return m_vecPages.getItemCount();
 }
 
+UT_sint32 FL_DocLayout::findPage(fp_Page * pPage)
+{
+	UT_sint32 count = m_vecPages.getItemCount();
+	if(count < 1)
+	{
+		return -1;
+	}
+	return m_vecPages.findItem((void *) pPage);
+}
+
 fp_Page* FL_DocLayout::getNthPage(int n)
 {
 	UT_ASSERT(m_vecPages.getItemCount() > 0);
@@ -433,6 +456,7 @@ fp_Page* FL_DocLayout::addNewPage(fl_DocSectionLayout* pOwner)
 	{
 		pLastPage = NULL;
 	}
+
 	fp_Page* pPage = new fp_Page(	this,
 									m_pView,
 									m_pDoc->m_docPageSize,
@@ -445,6 +469,7 @@ fp_Page* FL_DocLayout::addNewPage(fl_DocSectionLayout* pOwner)
 	}
 	pPage->setPrev(pLastPage);
 	m_vecPages.addItem(pPage);
+	pOwner->addOwnedPage(pPage);
 
 	// let the view know that we created a new page,
 	// so that it can update the scroll bar ranges
@@ -587,7 +612,10 @@ void FL_DocLayout::formatAll()
 	while (pSL)
 	{
 		pSL->format();
-		
+		if(pSL->getType() == FL_SECTION_DOC)
+		{
+			static_cast<fl_DocSectionLayout *>(pSL)->checkAndRemovePages();
+		}
 		pSL = pSL->getNext();
 	}
 }
@@ -843,6 +871,15 @@ void FL_DocLayout::_backgroundCheck(UT_Worker * pWorker)
 	{
 		return;
 	}
+//
+// Don't spell check while a redrawupdate is happening either...
+//
+	PD_Document * pDoc = pDocLayout->getDocument();
+	if(pDoc->isRedrawHappenning())
+	{
+		return;
+	}
+
 	pDocLayout->m_bImSpellCheckingNow = true;
 
 	// prevent getting a new timer hit before we've finished this one by
@@ -1231,19 +1268,46 @@ fl_DocSectionLayout* FL_DocLayout::findSectionForHdrFtr(const char* pszHdrFtrID)
 	while (pDocSL)
 	{
 		pszAtt = pDocSL->getAttribute("header");
-		if (
-			pszAtt
-			&& (0 == UT_stricmp(pszAtt, pszHdrFtrID))
-			)
+		if ( pszAtt	&& (0 == UT_stricmp(pszAtt, pszHdrFtrID)))
 		{
 			return pDocSL;
 		}
 		
 		pszAtt = pDocSL->getAttribute("footer");
-		if (
-			pszAtt
-			&& (0 == UT_stricmp(pszAtt, pszHdrFtrID))
-			)
+		if (pszAtt && (0 == UT_stricmp(pszAtt, pszHdrFtrID)))
+		{
+			return pDocSL;
+		}
+		pszAtt = pDocSL->getAttribute("header-even");
+		if ( pszAtt	&& (0 == UT_stricmp(pszAtt, pszHdrFtrID)))
+		{
+			return pDocSL;
+		}
+		
+		pszAtt = pDocSL->getAttribute("footer-even");
+		if (pszAtt && (0 == UT_stricmp(pszAtt, pszHdrFtrID)))
+		{
+			return pDocSL;
+		}
+		pszAtt = pDocSL->getAttribute("header-last");
+		if ( pszAtt	&& (0 == UT_stricmp(pszAtt, pszHdrFtrID)))
+		{
+			return pDocSL;
+		}
+		
+		pszAtt = pDocSL->getAttribute("footer-last");
+		if (pszAtt && (0 == UT_stricmp(pszAtt, pszHdrFtrID)))
+		{
+			return pDocSL;
+		}
+		pszAtt = pDocSL->getAttribute("header-first");
+		if ( pszAtt	&& (0 == UT_stricmp(pszAtt, pszHdrFtrID)))
+		{
+			return pDocSL;
+		}
+		
+		pszAtt = pDocSL->getAttribute("footer-first");
+		if (pszAtt && (0 == UT_stricmp(pszAtt, pszHdrFtrID)))
 		{
 			return pDocSL;
 		}

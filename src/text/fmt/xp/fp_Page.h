@@ -90,6 +90,8 @@ public:
 	fp_ShadowContainer*             getFooterP(void) const { return m_pFooter;}
 	fp_ShadowContainer*	getHeaderContainer(fl_HdrFtrSectionLayout*);
 	fp_ShadowContainer*	getFooterContainer(fl_HdrFtrSectionLayout*);
+	fp_ShadowContainer*	buildHeaderContainer(fl_HdrFtrSectionLayout*);
+	fp_ShadowContainer*	buildFooterContainer(fl_HdrFtrSectionLayout*);
 	
 #ifdef FMT_TEST
 	void				__dump(FILE * fp) const;

@@ -464,6 +464,7 @@ protected:
 	void				_checkPendingWordForSpell(void);
 
     bool                _isSpaceBefore(PT_DocPosition pos);
+	void                _removeThisHdrFtr(fl_HdrFtrSectionLayout * pHdrFtr);
 
 	PT_DocPosition		m_iInsPoint;
 	UT_sint32			m_xPoint;

@@ -266,16 +266,73 @@ bool pt_PieceTable::_deleteHdrFtrsFromSectionStruxIfPresent(pf_Frag_Strux_Sectio
 	// Get the index to the Attributes/properties of the section strux to see if 
 	// if there is a header defined for this strux.
 	//
+	// FIXME: Handle all the new header/footer types.
 	PT_AttrPropIndex indexAP = pfStruxSec->getIndexAP();
 	const PP_AttrProp * pAP = NULL;
 	getAttrProp(indexAP, &pAP);
+	UT_Vector vecHdrFtr;
+	UT_String HeaderV,HeaderEvenV,HeaderLastV,HeaderFirstV;
+	UT_String FooterV,FooterEvenV,FooterLastV,FooterFirstV;
+	vecHdrFtr.clear();
 	const XML_Char * szHeaderV = NULL;
 	bool bres = pAP->getAttribute("header",szHeaderV);
-	const XML_Char * szFooterV = NULL;
-    bres = bres & pAP->getAttribute("footer",szFooterV);
-	pf_Frag * curFrag = NULL;
-	UT_DEBUGMSG(("SEVIOR: Deleting HdrFtrs from Document, headerID = %s footerID = %s \n",szHeaderV,szFooterV));
-	if((szFooterV == NULL) && (szHeaderV == NULL))
+	if(szHeaderV && *szHeaderV && (UT_strcmp(szHeaderV,"0") != 0))
+	{
+		HeaderV = szHeaderV;
+		vecHdrFtr.addItem((void *) HeaderV.c_str());
+	} 
+	szHeaderV =  NULL;
+	bres = pAP->getAttribute("header-even",szHeaderV);
+	if(szHeaderV && *szHeaderV && (UT_strcmp(szHeaderV,"0") != 0))
+	{
+		HeaderEvenV = szHeaderV;
+		vecHdrFtr.addItem((void *) HeaderEvenV.c_str());
+	} 
+	szHeaderV =  NULL;
+	bres = pAP->getAttribute("header-last",szHeaderV);
+	if(szHeaderV && *szHeaderV && (UT_strcmp(szHeaderV,"0") != 0))
+	{
+		HeaderLastV = szHeaderV;
+		vecHdrFtr.addItem((void *) HeaderLastV.c_str());
+	} 
+	szHeaderV =  NULL;
+	bres = pAP->getAttribute("header-first",szHeaderV);
+	if(szHeaderV && *szHeaderV && (UT_strcmp(szHeaderV,"0") != 0))
+	{
+		HeaderFirstV = szHeaderV;
+		vecHdrFtr.addItem((void *) HeaderFirstV.c_str());
+	} 
+	szHeaderV =  NULL;
+	bres = pAP->getAttribute("footer",szHeaderV);
+	if(szHeaderV && *szHeaderV && (UT_strcmp(szHeaderV,"0") != 0))
+	{
+		FooterV = szHeaderV;
+		vecHdrFtr.addItem((void *) FooterV.c_str());
+	} 
+	szHeaderV =  NULL;
+	bres = pAP->getAttribute("footer-even",szHeaderV);
+	if(szHeaderV && *szHeaderV && (UT_strcmp(szHeaderV,"0") != 0))
+	{
+		FooterEvenV = szHeaderV;
+		vecHdrFtr.addItem((void *) FooterEvenV.c_str());
+	} 
+	szHeaderV =  NULL;
+	bres = pAP->getAttribute("footer-last",szHeaderV);
+	if(szHeaderV && *szHeaderV && (UT_strcmp(szHeaderV,"0") != 0))
+	{
+		FooterLastV = szHeaderV;
+		vecHdrFtr.addItem((void *) FooterLastV.c_str());
+	} 
+	szHeaderV =  NULL;
+	bres = pAP->getAttribute("footer-first",szHeaderV);
+	if(szHeaderV && *szHeaderV && (UT_strcmp(szHeaderV,"0") != 0))
+	{
+		FooterFirstV = szHeaderV;
+		vecHdrFtr.addItem((void *) FooterFirstV.c_str());
+	} 
+	UT_sint32 countHdrFtr = (UT_sint32) vecHdrFtr.getItemCount();
+	UT_DEBUGMSG(("SEVIOR: Deleting HdrFtrs from Document, num Header/Footers %d\n",countHdrFtr));
+	if(0 == countHdrFtr)
 	{
 		return true;
 	}
@@ -283,99 +340,60 @@ bool pt_PieceTable::_deleteHdrFtrsFromSectionStruxIfPresent(pf_Frag_Strux_Sectio
 // This section has a header or footer attribute. Scan the piecetable to see 
 // if there is a header strux somewhere with an ID that matches our section.
 //
-	curFrag = static_cast<pf_Frag *>(pfStruxSec);
-	bool bFoundIt = false;
-	pf_Frag_Strux * curStrux = NULL;
+	pf_Frag * curFrag = NULL;
 	getFragments().cleanFrags(); // clean up to be safe...
 //
-// Do this loop for both headers and footers seperately coz unlinking the header/footer content
-// screws up the loop.
+// Do this loop for all and headers and footers.
 //
-
-	while(curFrag != getFragments().getLast() && !bFoundIt)
+	UT_sint32 i = 0;
+	for(i=0; i< countHdrFtr; i++)
 	{
-		if(curFrag->getType() == pf_Frag::PFT_Strux)
+		curFrag = static_cast<pf_Frag *>(pfStruxSec);
+		bool bFoundIt = false;
+		pf_Frag_Strux * curStrux = NULL;
+		while(curFrag != getFragments().getLast() && !bFoundIt)
 		{
-			curStrux = static_cast<pf_Frag_Strux *>(curFrag);
-			if(curStrux->getStruxType() == PTX_SectionHdrFtr)
+			if(curFrag->getType() == pf_Frag::PFT_Strux)
 			{
+				curStrux = static_cast<pf_Frag_Strux *>(curFrag);
+				if(curStrux->getStruxType() == PTX_SectionHdrFtr)
+				{
 //
 // OK we've got a candidate
 //
-				PT_AttrPropIndex indexAPHdr = curStrux->getIndexAP();
-				const PP_AttrProp * pAPHdr = NULL;
-				getAttrProp(indexAPHdr, &pAPHdr);
-				const XML_Char * szID = NULL;
-				bres = pAPHdr->getAttribute("id",szID);
-				UT_DEBUGMSG(("SEVIOR: Found candidate id = %s \n",szID));
-				if(bres && (szID != NULL))
-				{
+					PT_AttrPropIndex indexAPHdr = curStrux->getIndexAP();
+					const PP_AttrProp * pAPHdr = NULL;
+					getAttrProp(indexAPHdr, &pAPHdr);
+					const XML_Char * szID = NULL;
+					bres = pAPHdr->getAttribute("id",szID);
+					UT_DEBUGMSG(("SEVIOR: Found candidate id = %s \n",szID));
+					if(bres && (szID != NULL))
+					{
 					//
 					// Look for a match.
 					//
-					if(szHeaderV != NULL && strcmp(szHeaderV,szID) == 0)
-					{
-						bFoundIt = true;
+						szHeaderV = (const char *) vecHdrFtr.getNthItem(i);
+						if(szHeaderV != NULL && strcmp(szHeaderV,szID) == 0)
+						{
+							bFoundIt = true;
+						}
 					}
 				}
 			}
+			curFrag = curFrag->getNext();
 		}
-		curFrag = curFrag->getNext();
-	}
-	if(bFoundIt)
-	{
+		if(bFoundIt)
+		{
 		//
 		// This Header belongs to our section. It must be deleted.
 		//
-		_deleteHdrFtrStruxWithNotify(curStrux);
-	}
-//
-// Now the footer.
-// 
-	curFrag = static_cast<pf_Frag *>(pfStruxSec);
-	bFoundIt = false;
+			_deleteHdrFtrStruxWithNotify(curStrux);
 //
 // Clean up after deleting the text in the Header.
 //
-	getFragments().cleanFrags();
-	while(curFrag != getFragments().getLast() && !bFoundIt)
-	{
-		if(curFrag->getType() == pf_Frag::PFT_Strux)
-		{
-			curStrux = static_cast<pf_Frag_Strux *>(curFrag);
-			if(curStrux->getStruxType() == PTX_SectionHdrFtr)
-			{
-//
-// OK we've got a candidate
-//
-				PT_AttrPropIndex indexAPHdr = curStrux->getIndexAP();
-				const PP_AttrProp * pAPHdr = NULL;
-				getAttrProp(indexAPHdr, &pAPHdr);
-				const XML_Char * szID = NULL;
-				bres = pAPHdr->getAttribute("id",szID);
-				UT_DEBUGMSG(("SEVIOR: Found a footer candidate id = %s \n",szID));
-				if(bres && (szID != NULL))
-				{
-					//
-					// Look for a match.
-					//
-					if(szFooterV != NULL && strcmp(szFooterV,szID) == 0)
-					{
-						bFoundIt = true;
-					}
-				}
-			}
+			getFragments().cleanFrags();
 		}
-		curFrag = curFrag->getNext();
 	}
-	if(bFoundIt)
-	{
-		//
-		// This Footer belongs to our section. It must be deleted.
-		//
-		_deleteHdrFtrStruxWithNotify(curStrux);
-	}
-	getFragments().cleanFrags(); // clean up to be safe...
 	return true;
 }
 

@@ -222,41 +222,49 @@ bool fl_DocListener::populateStrux(PL_StruxDocHandle sdh,
 			}
 			else
 			{
-				if (0 == UT_strcmp(pszSectionType, "header"))
+				HdrFtrType hfType = FL_HDRFTR_NONE;
+				if(pszSectionType && *pszSectionType && UT_strcmp(pszSectionType,"header") == 0)
 				{
-					const XML_Char* pszID = NULL;
-					pAP->getAttribute("id", pszID);
-					UT_DEBUGMSG(("Populating header/footer header strux \n"));
-					fl_DocSectionLayout* pDocSL = m_pLayout->findSectionForHdrFtr((char*)pszID);
-					UT_ASSERT(pDocSL);
-					
-					// Append a HdrFtrSectionLayout to this DocLayout
-					fl_HdrFtrSectionLayout* pSL = new fl_HdrFtrSectionLayout(FL_HDRFTR_HEADER, m_pLayout, pDocSL, sdh, pcr->getIndexAP());
-					if (!pSL)
-					{
-						UT_DEBUGMSG(("no memory for SectionLayout"));
-						return false;
-					}
-					//
-					// Add the hdrFtr section to the linked list of SectionLayouts
-					//
-					m_pLayout->addHdrFtrSection(pSL);
-					pDocSL->setHdrFtr(FL_HDRFTR_HEADER, pSL);
-					*psfh = (PL_StruxFmtHandle)pSL;
-					
-					m_pCurrentSL = pSL;
+					hfType = FL_HDRFTR_HEADER;
 				}
-				else if (0 == UT_strcmp(pszSectionType, "footer"))
+				else if (pszSectionType && *pszSectionType && UT_strcmp(pszSectionType,"header-even") == 0)
+				{
+					hfType = FL_HDRFTR_HEADER_EVEN;
+				}
+				else if (pszSectionType && *pszSectionType && UT_strcmp(pszSectionType,"header-first") == 0)
+				{
+					hfType = FL_HDRFTR_HEADER_FIRST;
+				}
+				else if (pszSectionType && *pszSectionType && UT_strcmp(pszSectionType,"header-last") == 0)
+				{
+					hfType = FL_HDRFTR_HEADER_LAST;
+				}
+				if(pszSectionType && *pszSectionType && UT_strcmp(pszSectionType,"footer") == 0)
+				{
+					hfType = FL_HDRFTR_FOOTER;
+				}
+				else if (pszSectionType && *pszSectionType && UT_strcmp(pszSectionType,"footer-even") == 0)
+				{
+					hfType = FL_HDRFTR_FOOTER_EVEN;
+				}
+				else if (pszSectionType && *pszSectionType && UT_strcmp(pszSectionType,"footer-first") == 0)
+				{
+					hfType = FL_HDRFTR_FOOTER_FIRST;
+				}
+				else if (pszSectionType && *pszSectionType && UT_strcmp(pszSectionType,"footer-last") == 0)
+				{
+					hfType = FL_HDRFTR_FOOTER_LAST;
+				}
+				if(hfType != FL_HDRFTR_NONE)
 				{
 					const XML_Char* pszID = NULL;
 					pAP->getAttribute("id", pszID);
-
+					UT_DEBUGMSG(("Populating header/footer header strux \n"));
 					fl_DocSectionLayout* pDocSL = m_pLayout->findSectionForHdrFtr((char*)pszID);
 					UT_ASSERT(pDocSL);
-					UT_DEBUGMSG(("Populating header/footer header strux \n"));
 			
 					// Append a HdrFtrSectionLayout to this DocLayout
-					fl_HdrFtrSectionLayout* pSL = new fl_HdrFtrSectionLayout(FL_HDRFTR_FOOTER, m_pLayout, pDocSL, sdh, pcr->getIndexAP());
+					fl_HdrFtrSectionLayout* pSL = new fl_HdrFtrSectionLayout(hfType, m_pLayout, pDocSL, sdh, pcr->getIndexAP());
 					if (!pSL)
 					{
 						UT_DEBUGMSG(("no memory for SectionLayout"));
@@ -266,8 +274,7 @@ bool fl_DocListener::populateStrux(PL_StruxDocHandle sdh,
 					// Add the hdrFtr section to the linked list of SectionLayouts
 					//
 					m_pLayout->addHdrFtrSection(pSL);
-					pDocSL->setHdrFtr(FL_HDRFTR_FOOTER, pSL);
-
+					pDocSL->setHdrFtr(hfType, pSL);
 					*psfh = (PL_StruxFmtHandle)pSL;
 					
 					m_pCurrentSL = pSL;
@@ -340,11 +347,41 @@ bool fl_DocListener::populateStrux(PL_StruxDocHandle sdh,
 			}
 			else
 			{
-				if ((0 == UT_strcmp(pszSectionType, "header")) ||
-					(0 == UT_strcmp(pszSectionType, "footer")))
+				HdrFtrType hfType = FL_HDRFTR_NONE;
+				if(pszSectionType && *pszSectionType && UT_strcmp(pszSectionType,"header") == 0)
 				{
-					HdrFtrType hfType = (UT_strcmp(pszSectionType, "header")==0) ? FL_HDRFTR_HEADER : FL_HDRFTR_FOOTER;
-
+					hfType = FL_HDRFTR_HEADER;
+				}
+				else if (pszSectionType && *pszSectionType && UT_strcmp(pszSectionType,"header-even") == 0)
+				{
+					hfType = FL_HDRFTR_HEADER_EVEN;
+				}
+				else if (pszSectionType && *pszSectionType && UT_strcmp(pszSectionType,"header-first") == 0)
+				{
+					hfType = FL_HDRFTR_HEADER_FIRST;
+				}
+				else if (pszSectionType && *pszSectionType && UT_strcmp(pszSectionType,"header-last") == 0)
+				{
+					hfType = FL_HDRFTR_HEADER_LAST;
+				}
+				if(pszSectionType && *pszSectionType && UT_strcmp(pszSectionType,"footer") == 0)
+				{
+					hfType = FL_HDRFTR_FOOTER;
+				}
+				else if (pszSectionType && *pszSectionType && UT_strcmp(pszSectionType,"footer-even") == 0)
+				{
+					hfType = FL_HDRFTR_FOOTER_EVEN;
+				}
+				else if (pszSectionType && *pszSectionType && UT_strcmp(pszSectionType,"footer-first") == 0)
+				{
+					hfType = FL_HDRFTR_FOOTER_FIRST;
+				}
+				else if (pszSectionType && *pszSectionType && UT_strcmp(pszSectionType,"footer-last") == 0)
+				{
+					hfType = FL_HDRFTR_FOOTER_LAST;
+				}
+				if(hfType != FL_HDRFTR_NONE)
+				{
 					const XML_Char* pszID = NULL;
 					pAP->getAttribute("id", pszID);
 

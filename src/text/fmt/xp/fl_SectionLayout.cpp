@@ -395,15 +395,14 @@ void fl_SectionLayout::updateBackgroundColor(void)
 	if(getType() != FL_SECTION_DOC)
 		return;
 	fl_DocSectionLayout * pDSL = static_cast<fl_DocSectionLayout *>(this);	
-	if(pDSL->getHeader())
+	UT_Vector vecHdrFtr;
+	pDSL->getVecOfHdrFtrs( &vecHdrFtr);
+	UT_uint32 i = 0;
+	for(i = 0; i < vecHdrFtr.getItemCount(); i++)
 	{
-		pDSL->getHeader()->updateBackgroundColor();
+		fl_HdrFtrSectionLayout * pHdrFtr = (fl_HdrFtrSectionLayout *) vecHdrFtr.getNthItem(i);
+		pHdrFtr->updateBackgroundColor();
 	}
-	if(pDSL->getFooter())
-	{
-		pDSL->getFooter()->updateBackgroundColor();
-	}
-
 }
 
 //////////////////////////////////////////////////////////////////
@@ -438,9 +437,16 @@ fl_DocSectionLayout::~fl_DocSectionLayout()
 	// NB: be careful about the order of these
 	_purgeLayout();
 
-	DELETEP(m_pHeaderSL);
-	DELETEP(m_pFooterSL);
-	
+	UT_Vector vecHdrFtr;
+	getVecOfHdrFtrs( &vecHdrFtr);
+	UT_uint32 i = 0;
+	fl_HdrFtrSectionLayout * pHdrFtr = NULL;
+	for(i = 0; i < vecHdrFtr.getItemCount(); i++)
+	{
+		pHdrFtr = (fl_HdrFtrSectionLayout *) vecHdrFtr.getNthItem(i);
+		delete pHdrFtr;
+	}
+
 	fp_Column* pCol = m_pFirstColumn;
 	while (pCol)
 	{
@@ -488,6 +494,7 @@ void fl_DocSectionLayout::setHdrFtr(HdrFtrType iType, fl_HdrFtrSectionLayout* pH
 		{
 			m_pFooterLastSL = pHFSL;
 		}	
+		checkAndRemovePages();
 	return;
 	}
 	const char* pszID = pHFSL->getAttribute("id");
@@ -498,6 +505,7 @@ void fl_DocSectionLayout::setHdrFtr(HdrFtrType iType, fl_HdrFtrSectionLayout* pH
 	if (pszAtt && (0 == UT_stricmp(pszAtt, pszID)) )
 	{
 		m_pHeaderSL = pHFSL;
+		checkAndRemovePages();
 		return;
 	}
 
@@ -505,6 +513,7 @@ void fl_DocSectionLayout::setHdrFtr(HdrFtrType iType, fl_HdrFtrSectionLayout* pH
 	if (pszAtt && (0 == UT_stricmp(pszAtt, pszID)) )
 	{
 		m_pHeaderEvenSL = pHFSL;
+		checkAndRemovePages();
 		return;
 	}
 
@@ -512,6 +521,7 @@ void fl_DocSectionLayout::setHdrFtr(HdrFtrType iType, fl_HdrFtrSectionLayout* pH
 	if (pszAtt && (0 == UT_stricmp(pszAtt, pszID)) )
 	{
 		m_pHeaderFirstSL = pHFSL;
+		checkAndRemovePages();
 		return;
 	}
 
@@ -519,6 +529,7 @@ void fl_DocSectionLayout::setHdrFtr(HdrFtrType iType, fl_HdrFtrSectionLayout* pH
 	if (pszAtt && (0 == UT_stricmp(pszAtt, pszID)) )
 	{
 		m_pHeaderLastSL = pHFSL;
+		checkAndRemovePages();
 		return;
 	}
 	
@@ -526,6 +537,7 @@ void fl_DocSectionLayout::setHdrFtr(HdrFtrType iType, fl_HdrFtrSectionLayout* pH
 	if (pszAtt && (0 == UT_stricmp(pszAtt, pszID))	)
 	{
 		m_pFooterSL = pHFSL;
+		checkAndRemovePages();
 		return;
 	}
 
@@ -533,6 +545,7 @@ void fl_DocSectionLayout::setHdrFtr(HdrFtrType iType, fl_HdrFtrSectionLayout* pH
 	if (pszAtt && (0 == UT_stricmp(pszAtt, pszID))	)
 	{
 		m_pFooterEvenSL = pHFSL;
+		checkAndRemovePages();
 		return;
 	}
 
@@ -540,6 +553,7 @@ void fl_DocSectionLayout::setHdrFtr(HdrFtrType iType, fl_HdrFtrSectionLayout* pH
 	if (pszAtt && (0 == UT_stricmp(pszAtt, pszID))	)
 	{
 		m_pFooterFirstSL = pHFSL;
+		checkAndRemovePages();
 		return;
 	}
 
@@ -547,6 +561,7 @@ void fl_DocSectionLayout::setHdrFtr(HdrFtrType iType, fl_HdrFtrSectionLayout* pH
 	if (pszAtt && (0 == UT_stricmp(pszAtt, pszID))	)
 	{
 		m_pFooterLastSL = pHFSL;
+		checkAndRemovePages();
 		return;
 	}
 
@@ -933,6 +948,11 @@ void fl_DocSectionLayout::updateLayout(void)
 	}
 	
 	breakSection();
+	if(!needsRebuild())
+	{
+		checkAndRemovePages();
+		addValidPages();
+	}
 }
 
 void fl_DocSectionLayout::redrawUpdate(void)
@@ -949,6 +969,11 @@ void fl_DocSectionLayout::redrawUpdate(void)
 	}
 	
 	breakSection();
+	if(!needsRebuild())
+	{
+		checkAndRemovePages();
+		addValidPages();
+	}
 }
 
 bool fl_DocSectionLayout::doclistener_changeStrux(const PX_ChangeRecord_StruxChange * pcrxc)
@@ -991,39 +1016,8 @@ void fl_DocSectionLayout::updateDocSection(void)
 
 	format();
 	updateBackgroundColor();
-	if(m_pHeaderSL)
-	{
-		m_pHeaderSL->format();
-	}
-	if(m_pHeaderEvenSL)
-	{
-		m_pHeaderEvenSL->format();
-	}
-	if(m_pHeaderFirstSL)
-	{
-		m_pHeaderFirstSL->format();
-	}
-	if(m_pHeaderLastSL)
-	{
-		m_pHeaderLastSL->format();
-	}
-	if(m_pFooterSL)
-	{
-		m_pFooterSL->format();
-	}
-	if(m_pFooterEvenSL)
-	{
-		m_pFooterEvenSL->format();
-	}
-	if(m_pFooterFirstSL)
-	{
-		m_pFooterFirstSL->format();
-	}
-	if(m_pFooterLastSL)
-	{
-		m_pFooterLastSL->format();
-	}
-
+	checkAndRemovePages();
+	formatAllHdrFtr();
 	if (m_pEndnoteSL)
 	{
 		m_pEndnoteSL->format();
@@ -1451,42 +1445,23 @@ void fl_DocSectionLayout::collapseDocSection(void)
 	//
 	// Clear the header/footers too
 	//
-	if(m_pHeaderSL)
-		m_pHeaderSL->clearScreen();
-	if(m_pHeaderEvenSL)
-		m_pHeaderEvenSL->clearScreen();
-	if(m_pHeaderFirstSL)
-		m_pHeaderFirstSL->clearScreen();
-	if(m_pHeaderLastSL)
-		m_pHeaderLastSL->clearScreen();
-	if(m_pFooterSL)
-		m_pFooterSL->clearScreen();
-	if(m_pFooterEvenSL)
-		m_pFooterEvenSL->clearScreen();
-	if(m_pFooterFirstSL)
-		m_pFooterFirstSL->clearScreen();
-	if(m_pFooterLastSL)
-		m_pFooterLastSL->clearScreen();
+	UT_Vector vecHdrFtr;
+	getVecOfHdrFtrs( &vecHdrFtr);
+	UT_uint32 i = 0;
+	fl_HdrFtrSectionLayout * pHdrFtr = NULL;
+	for(i = 0; i < vecHdrFtr.getItemCount(); i++)
+	{
+		pHdrFtr = (fl_HdrFtrSectionLayout *) vecHdrFtr.getNthItem(i);
+		pHdrFtr->clearScreen();
+	}
 	//
 	// Collapse the header/footers now
 	//
-  	if(m_pHeaderSL)
-		m_pHeaderSL->collapse();
-  	if(m_pHeaderEvenSL)
-		m_pHeaderEvenSL->collapse();
-  	if(m_pHeaderFirstSL)
-		m_pHeaderFirstSL->collapse();
-  	if(m_pHeaderLastSL)
-		m_pHeaderLastSL->collapse();
-  	if(m_pFooterSL)
-		m_pFooterSL->collapse();
-  	if(m_pFooterEvenSL)
-		m_pFooterEvenSL->collapse();
-  	if(m_pFooterFirstSL)
-		m_pFooterFirstSL->collapse();
-  	if(m_pFooterLastSL)
-		m_pFooterLastSL->collapse();
-
+	for(i = 0; i < vecHdrFtr.getItemCount(); i++)
+	{
+		pHdrFtr = (fl_HdrFtrSectionLayout *) vecHdrFtr.getNthItem(i);
+		pHdrFtr->collapse();
+	}
 	// remove all the columns from their pages
 	pCol = m_pFirstColumn;
 	while (pCol)
@@ -1646,19 +1621,37 @@ void fl_DocSectionLayout::addOwnedPage(fp_Page* pPage)
 		m_pFirstOwnedPage = pPage;
 	fp_Page * pPrev = m_pFirstOwnedPage;
 
-	if (m_pHeaderSL)
+//
+// The addPage methods will add the page to the correct HdrFtrSL.
+//
+	UT_Vector vecHdrFtr;
+	getVecOfHdrFtrs( &vecHdrFtr);
+	UT_uint32 i = 0;
+	for(i = 0; i < vecHdrFtr.getItemCount(); i++)
 	{
-		if(pPrev && pPrev->getOwningSection() == this && pPrev->getHeaderP() == NULL )
-			prependOwnedHeaderPage(pPrev);
+		fl_HdrFtrSectionLayout * pHdrFtr = (fl_HdrFtrSectionLayout *) vecHdrFtr.getNthItem(i);
+		if(pHdrFtr->getHFType() < FL_HDRFTR_FOOTER)
+		{
+			if(pPrev && pPrev->getOwningSection() == this && pPrev->getHeaderP() == NULL )
+				prependOwnedHeaderPage(pPrev);
 
-		m_pHeaderSL->addPage(pPage);
+			pHdrFtr->addPage(pPage);
+		}
+		else
+		{
+			if(pPrev && pPrev->getOwningSection() == this && pPrev->getFooterP() == NULL)
+			{
+				prependOwnedFooterPage(pPrev);
+			}
+			pHdrFtr->addPage(pPage);
+		}
 	}
-
-	if (m_pFooterSL)
+	fl_DocSectionLayout * pDSL = this;
+	while(pDSL != NULL)
 	{
-		if(pPrev && pPrev->getOwningSection() == this && pPrev->getFooterP() == NULL)
-			prependOwnedFooterPage(pPrev);
-		m_pFooterSL->addPage(pPage);
+		pDSL->checkAndRemovePages();
+		pDSL->addValidPages();
+		pDSL = pDSL->getNextDocSection();
 	}
 }
 
@@ -1669,8 +1662,23 @@ void fl_DocSectionLayout::prependOwnedHeaderPage(fp_Page* pPage)
 	//
 	fp_Page * pPrev = pPage->getPrev();
 	if(pPrev && pPrev->getOwningSection() == this && pPrev->getHeaderP() == NULL)
+	{
 		prependOwnedHeaderPage(pPrev);
-	m_pHeaderSL->addPage(pPage);
+	}
+//
+// The addPage methods will add the page to the correct HdrFtrSL.
+//
+	UT_Vector vecHdrFtr;
+	getVecOfHdrFtrs( &vecHdrFtr);
+	UT_uint32 i = 0;
+	for(i = 0; i < vecHdrFtr.getItemCount(); i++)
+	{
+		fl_HdrFtrSectionLayout * pHdrFtr = (fl_HdrFtrSectionLayout *) vecHdrFtr.getNthItem(i);
+		if(pHdrFtr->getHFType() < FL_HDRFTR_FOOTER)
+		{
+			pHdrFtr->addPage(pPage);
+		}
+	}
 }
 
 
@@ -1682,23 +1690,129 @@ void fl_DocSectionLayout::prependOwnedFooterPage(fp_Page* pPage)
 	fp_Page * pPrev = pPage->getPrev();
 	if(pPrev && pPrev->getOwningSection() == this && pPrev->getFooterP() == NULL)
 		prependOwnedFooterPage(pPrev);
-	m_pFooterSL->addPage(pPage);
+	if(m_pFooterFirstSL)
+	{
+		m_pFooterFirstSL->addPage(pPage);
+	}
+	if(m_pFooterLastSL)
+	{
+		m_pFooterLastSL->addPage(pPage);
+	}
+	if(m_pFooterEvenSL)
+	{
+		m_pFooterEvenSL->addPage(pPage);
+	}
+	if(m_pFooterSL)
+	{
+		m_pFooterSL->addPage(pPage);
+	}
 }
 
-	
+
+/*!
+ * This fills a vector with all the valid header/footers.
+ */
+void fl_DocSectionLayout::getVecOfHdrFtrs(UT_Vector * vecHdrFtr)
+{
+	vecHdrFtr->clear();
+	if (m_pHeaderFirstSL != NULL)
+	{
+		vecHdrFtr->addItem((void *) m_pHeaderFirstSL);
+	}
+	if (m_pHeaderLastSL  != NULL)
+	{
+		vecHdrFtr->addItem((void *) m_pHeaderLastSL);
+	}
+	if (m_pHeaderEvenSL  != NULL)
+	{
+		vecHdrFtr->addItem((void *) m_pHeaderEvenSL);
+	}
+	if (m_pHeaderSL  != NULL)
+	{
+		vecHdrFtr->addItem((void *) m_pHeaderSL);
+	}
+	if (m_pFooterFirstSL != NULL)
+	{
+		vecHdrFtr->addItem((void *) m_pFooterFirstSL);
+	}
+	if (m_pFooterLastSL != NULL)
+	{
+		vecHdrFtr->addItem((void *) m_pFooterLastSL);
+	}
+	if (m_pFooterEvenSL != NULL)
+	{
+		vecHdrFtr->addItem((void *) m_pFooterEvenSL);
+	}
+	if (m_pFooterSL != NULL)
+	{
+		vecHdrFtr->addItem((void *) m_pFooterSL);
+	}
+}
+
+/*!
+ * This method formats all the header/footers
+ */
+void fl_DocSectionLayout::formatAllHdrFtr(void)
+{
+	UT_Vector vecHdrFtr;
+	getVecOfHdrFtrs( &vecHdrFtr);
+	UT_uint32 i = 0;
+	for(i = 0; i < vecHdrFtr.getItemCount(); i++)
+	{
+		fl_HdrFtrSectionLayout * pHdrFtr = (fl_HdrFtrSectionLayout *) vecHdrFtr.getNthItem(i);
+		pHdrFtr->format();
+	}
+}
+
+/*!
+ * This method checks each header for valid pages and removes the page if it's not
+ * valid. ie it remove odd pages from even headers etc.
+ */
+void fl_DocSectionLayout::checkAndRemovePages(void)
+{
+	UT_Vector vecHdrFtr;
+	getVecOfHdrFtrs( &vecHdrFtr);
+	UT_uint32 i = 0;
+	for(i = 0; i < vecHdrFtr.getItemCount(); i++)
+	{
+		fl_HdrFtrSectionLayout * pHdrFtr = (fl_HdrFtrSectionLayout *) vecHdrFtr.getNthItem(i);
+		pHdrFtr->checkAndRemovePages();
+	}
+}
+
+
+/*!
+ * This method adds valid pages to every valid header/footer in the docsection if 
+ * they're not there already.
+ */
+void fl_DocSectionLayout::addValidPages(void)
+{
+	UT_Vector vecHdrFtr;
+	getVecOfHdrFtrs( &vecHdrFtr);
+	UT_uint32 i = 0;
+	for(i = 0; i < vecHdrFtr.getItemCount(); i++)
+	{
+		fl_HdrFtrSectionLayout * pHdrFtr = (fl_HdrFtrSectionLayout *) vecHdrFtr.getNthItem(i);
+		pHdrFtr->addValidPages();
+	}
+}
+
+/*!
+ * This method deletes the owned page from the DocSectionLayout and all 
+ * the header files.
+ */ 	
 void fl_DocSectionLayout::deleteOwnedPage(fp_Page* pPage)
 {
-	
-	if (m_pHeaderSL)
+	UT_Vector vecHdrFtr;
+	getVecOfHdrFtrs( &vecHdrFtr);
+	UT_uint32 i = 0;
+	for(i = 0; i < vecHdrFtr.getItemCount(); i++)
 	{
-		xxx_UT_DEBUGMSG(("SEVIOR: Deleting header from DocSecition Layout\n"));
-		m_pHeaderSL->deletePage(pPage);
-	}
-
-	if (m_pFooterSL)
-	{
-		xxx_UT_DEBUGMSG(("SEVIOR: Deleting footer from DocSection Layout \n"));
-		m_pFooterSL->deletePage(pPage);
+		fl_HdrFtrSectionLayout * pHdrFtr = (fl_HdrFtrSectionLayout *) vecHdrFtr.getNthItem(i);
+		if(pHdrFtr->isPageHere(pPage))
+		{
+			pHdrFtr->deletePage(pPage);
+		}
 	}
 //
 // Remove this page from the list of owned pages
@@ -1714,6 +1828,13 @@ void fl_DocSectionLayout::deleteOwnedPage(fp_Page* pPage)
 		{
 			m_pFirstOwnedPage = NULL;
 		}
+	}
+	fl_DocSectionLayout * pDSL = this;
+	while(pDSL != NULL && !getDocLayout()->isLayoutDeleting())
+	{
+		pDSL->checkAndRemovePages();
+		pDSL->addValidPages();
+		pDSL = pDSL->getNextDocSection();
 	}
 }
 
@@ -2055,6 +2176,148 @@ UT_sint32 fl_DocSectionLayout::breakSection(fl_BlockLayout * pLastValidBlock)
 	return 0; // TODO return code
 }
 
+/*!
+ * This method returns true if the pPage pointer matches the header/footer type
+ * given.
+\param hfType The type of the header/Footer
+\param fp_Page * pThisPage pointer to the page queried. 
+ */
+bool fl_DocSectionLayout::isThisPageValid(HdrFtrType hfType, fp_Page * pThisPage)
+{
+	typedef enum {odd,even,first,last} PageType;
+	PageType FirstLast = odd;
+	PageType OddEven = odd;
+	fp_Page * pPage = m_pFirstOwnedPage;
+	if(pThisPage == pPage)
+	{
+		FirstLast = first;
+	}
+	if(hfType == FL_HDRFTR_HEADER_FIRST)
+	{
+		if(FirstLast == first)
+		{
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+	}
+	if(hfType == FL_HDRFTR_FOOTER_FIRST)
+	{
+		if(FirstLast == first)
+		{
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+	}
+//
+// If there is a header page defined and this is a header page bail now!
+//
+	if(m_pHeaderFirstSL && (FirstLast == first) && (hfType < FL_HDRFTR_FOOTER))
+	{
+		return false;
+	}
+	if(m_pFooterFirstSL && (FirstLast == first) && (hfType >= FL_HDRFTR_FOOTER))
+	{
+		return false;
+	}
+
+	fp_Page * pNext = pPage->getNext();
+	while(pNext && (pNext->getOwningSection() == this))
+	{
+		pPage = pNext;
+		pNext = pNext->getNext();
+	}
+	if(pPage == pThisPage)
+	{
+		FirstLast = last;
+	}
+	if(hfType == FL_HDRFTR_HEADER_LAST)
+	{
+		if(FirstLast == last)
+		{
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+	}
+	if(hfType == FL_HDRFTR_FOOTER_LAST)
+	{
+		if(FirstLast == last)
+		{
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+	}
+//
+// If there is a Last SL  defined and this is the last page in the SLpage bail now!
+//
+	if(m_pHeaderLastSL && (FirstLast == last) &&  (hfType < FL_HDRFTR_FOOTER) )
+	{
+		return false;
+	}
+	if(m_pFooterLastSL && (FirstLast == last) &&  (hfType >= FL_HDRFTR_FOOTER))
+	{
+		return false;
+	}
+
+	UT_sint32 count = (UT_sint32) getDocLayout()->countPages();
+	UT_sint32 i =0;
+	bool bFound = false;
+	for(i=0; (i < count) && !bFound ; i++)
+	{
+		bFound = (getDocLayout()->getNthPage(i) == pThisPage);
+	}
+	if(bFound)
+	{
+		UT_sint32 j = i/2;
+		if(j*2 != i)
+		{
+			OddEven = odd;
+		}
+		else
+		{
+			OddEven = even;
+		}
+	}
+	else
+	{
+		UT_ASSERT(0);
+	}
+	if((hfType == FL_HDRFTR_HEADER_EVEN) || (hfType == FL_HDRFTR_FOOTER_EVEN))
+	{
+		if(OddEven == even)
+		{
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+	}
+//
+// If there is an Even SL  defined and this is an even page in the SL page bail now!
+//
+	if(m_pHeaderEvenSL && (OddEven == even) &&  (hfType < FL_HDRFTR_FOOTER))
+	{
+		return false;
+	}
+	if(m_pFooterEvenSL && (OddEven == even) &&  (hfType > FL_HDRFTR_FOOTER))
+	{
+		return false;
+	}
+	return true; //if we're here all pages are valid.
+}
+
 void fl_DocSectionLayout::checkAndAdjustColumnGap(UT_sint32 iLayoutWidth)
 {
 	// Check to make sure column gap is not to wide to fit on the page with the
@@ -2091,6 +2354,7 @@ fl_HdrFtrSectionLayout::fl_HdrFtrSectionLayout(HdrFtrType iHFType, FL_DocLayout*
 	m_iType = FL_SECTION_HDRFTR;
 	m_pHdrFtrContainer = NULL;
 	fl_Layout::setType(PTX_SectionHdrFtr); // Set the type of this strux
+	UT_DEBUGMSG(("SEVIOR: Creating HFType =%d \n",m_iHFType));
 //
 // Since we're almost certainly removing blocks at the end of the doc, tell the
 // view to remember the current position on the active view.
@@ -2104,7 +2368,7 @@ fl_HdrFtrSectionLayout::fl_HdrFtrSectionLayout(HdrFtrType iHFType, FL_DocLayout*
 
 fl_HdrFtrSectionLayout::~fl_HdrFtrSectionLayout()
 {
-	
+	UT_DEBUGMSG(("SEVIOR: Deleting HFType =%d \n",m_iHFType));
 	UT_uint32 iCount = m_vecPages.getItemCount();
 	for (UT_uint32 i=0; i<iCount; i++)
 	{
@@ -2162,7 +2426,7 @@ void fl_HdrFtrSectionLayout::collapse(void)
 		struct _PageHdrFtrShadowPair* pPair = (struct _PageHdrFtrShadowPair*) m_vecPages.getNthItem(i);
 		fp_Page * ppPage = pPair->pPage;
 		delete pPair->pShadow;
-		if (getHFType() == FL_HDRFTR_HEADER)
+		if (getHFType() < FL_HDRFTR_FOOTER)
 		{
 			ppPage->removeHeader();
 		}
@@ -2190,9 +2454,9 @@ void fl_HdrFtrSectionLayout::collapseBlock(fl_BlockLayout *pBlock)
 		UT_ASSERT(pShadowBL);
 		if(pShadowBL)
 		{
-			pPair->pShadow->removeBlock( pShadowBL);
 			// In case we've never checked this one
 			m_pLayout->dequeueBlockForBackgroundCheck(pShadowBL);
+			pPair->pShadow->removeBlock( pShadowBL);
 			delete pShadowBL;
 			pPair->pShadow->format();
 		}
@@ -2244,6 +2508,11 @@ fp_Container* fl_HdrFtrSectionLayout::getNewContainer(fp_Line * pFirstLine)
 	UT_sint32 iWidthLayout = m_pDocSL->getFirstContainer()->getPage()->getWidthInLayoutUnits() - m_pDocSL->getLeftMarginInLayoutUnits() - m_pDocSL->getRightMarginInLayoutUnits();
 	m_pHdrFtrContainer = (fp_Container *) new fp_HdrFtrContainer(iWidth,iWidthLayout, (fl_SectionLayout *) this);
 	return m_pHdrFtrContainer;
+}
+
+bool fl_HdrFtrSectionLayout::isPageHere(fp_Page * pPage)
+{
+	return (_findShadow(pPage) >=0 );
 }
 
 fl_HdrFtrShadow *  fl_HdrFtrSectionLayout::findShadow(fp_Page* pPage)
@@ -2405,9 +2674,15 @@ void fl_HdrFtrSectionLayout::addPage(fp_Page* pPage)
 //  strux. Reinstate if needed to find other bugs.
 //	UT_ASSERT(0 > _findShadow(pPage));
 
-	UT_sint32 icnt = m_vecPages.getItemCount();
 	if(_findShadow(pPage) > -1)
 		return;
+//
+// Check this page is valid for this type of hdrftr
+//
+	if(!getDocSectionLayout()->isThisPageValid(m_iHFType, pPage))
+	{
+		return;
+	}
 	struct _PageHdrFtrShadowPair* pPair = new _PageHdrFtrShadowPair;
 	// TODO outofmem
 	pPair->pPage = pPage;
@@ -2419,7 +2694,7 @@ void fl_HdrFtrSectionLayout::addPage(fp_Page* pPage)
 	//
 	// Populate the shadow
 	//
-	icnt = m_vecPages.getItemCount();
+
 	fl_ShadowListener* pShadowListener = new fl_ShadowListener(this, pPair->pShadow);
 //
 // Populate with just this section so find the start and end of it
@@ -2444,10 +2719,12 @@ void fl_HdrFtrSectionLayout::addPage(fp_Page* pPage)
 		bres = m_pDoc->getStruxOfTypeFromPosition(posEnd, PTX_Block, &sdh);
 	}
 	posEnd--;
+	UT_ASSERT(posEnd > posStart);
 	PD_DocumentRange * docRange = new PD_DocumentRange(m_pDoc,posStart,posEnd);
 	m_pDoc->tellListenerSubset(pShadowListener, docRange);
 	delete docRange;
 	delete pShadowListener;
+	markAllRunsDirty();
 }
 
 void fl_HdrFtrSectionLayout::deletePage(fp_Page* pPage)
@@ -2466,17 +2743,19 @@ void fl_HdrFtrSectionLayout::deletePage(fp_Page* pPage)
 
 	fp_Page * ppPage = pPair->pPage; 
 	delete pPair->pShadow;
-	if (getHFType() == FL_HDRFTR_HEADER)
+	if(getDocLayout()->findPage(ppPage) >= 0)
 	{
-		UT_DEBUGMSG(("SEVIOR: Remove header from shadow \n"));
-		ppPage->removeHeader();
+		if (getHFType() < FL_HDRFTR_FOOTER)
+		{
+			UT_DEBUGMSG(("SEVIOR: Remove header from shadow \n"));
+			ppPage->removeHeader();
+		}
+		else 
+		{
+			UT_DEBUGMSG(("SEVIOR: Remove footer form shadow \n"));
+			ppPage->removeFooter();
+		}
 	}
-	else 
-	{
-		UT_DEBUGMSG(("SEVIOR: Remove footer form shadow \n"));
-		ppPage->removeFooter();
-	}
-
 	delete pPair;
 	m_vecPages.deleteNthItem(iShadow);
 }
@@ -2533,16 +2812,52 @@ fl_BlockLayout* fl_HdrFtrSectionLayout::findMatchingBlock(fl_BlockLayout* pBL)
 }
 
 /*!
- * Format the overall HdrFtrSectionLayout in it's virtual container.
- * Also check that all the correct pages have been found for this HdrFtr. Then
- * format the Shadows.
- */ 
-void fl_HdrFtrSectionLayout::format(void)
+ * This method checks that the pages in this header are valid and removes them if 
+ * they're not.
+ */
+void fl_HdrFtrSectionLayout::checkAndRemovePages(void)
 {
-	localFormat();
-	UT_uint32 iCount = m_vecPages.getItemCount();
-	//
-	// Fail safe code to add pages if we don't have them.
+	UT_sint32 iCount = (UT_sint32) m_vecPages.getItemCount();
+//
+// Check that the pages we have are still valid. Delete them if they're not.
+//
+	UT_sint32 i = 0;
+	UT_Vector pageForDelete;
+	for(i =0; i< iCount; i++)
+	{
+		struct _PageHdrFtrShadowPair* pPair = (struct _PageHdrFtrShadowPair*) m_vecPages.getNthItem(i);
+		UT_ASSERT(pPair);
+		UT_ASSERT(pPair->pShadow);
+
+		fp_Page * ppPage = pPair->pPage;
+		if(getDocLayout()->findPage(ppPage) >= 0)
+		{
+			if(!getDocSectionLayout()->isThisPageValid(getHFType(),ppPage))
+			{
+				pageForDelete.addItem((void *) ppPage);
+			}
+		}
+		else
+		{
+			pageForDelete.addItem((void *) ppPage);
+		}
+	}
+	for(i=0; i< (UT_sint32) pageForDelete.getItemCount(); i++)
+	{
+		fp_Page * pPage = (fp_Page *) pageForDelete.getNthItem(i);
+		deletePage(pPage);
+	}
+	if( pageForDelete.getItemCount() > 0)
+	{
+		markAllRunsDirty();
+	}
+}
+
+/*! 
+ * This method adds valid pages to the collection of shadows.
+ */
+void fl_HdrFtrSectionLayout::addValidPages(void)
+{
 	//
 	// Check that all the pages this header/footer should have are 
     // in place.
@@ -2550,26 +2865,46 @@ void fl_HdrFtrSectionLayout::format(void)
 	// Loop through all the columns in m_pDocSl and find the pages owned
 	// by m_pDocSL
 	//
-
 	fp_Column * pCol = (fp_Column *) m_pDocSL->getFirstContainer();
 	fp_Page * pOldPage = NULL;
 	fp_Page * pNewPage = NULL;
 	while(pCol)
 	{
 		pNewPage = pCol->getPage();
-		if(pNewPage != NULL && pNewPage != pOldPage)
+		if((pNewPage != NULL) && (pNewPage != pOldPage) && (getDocLayout()->findPage(pNewPage) >=0))
 		{
 			fl_DocSectionLayout* pDocSec = pNewPage->getOwningSection();
 			if(pDocSec == m_pDocSL && _findShadow(pNewPage) < 0)
 			{
+//
+// The addPage Method checks that only valid pages are added to this HdrFtr based on
+// the HFType
+//
 				addPage(pNewPage);
 			}
 		}
 		pCol = pCol->getNext();
 	}
+}
+
+/*!
+ * Format the overall HdrFtrSectionLayout in it's virtual container.
+ * Also check that all the correct pages have been found for this HdrFtr. Then
+ * format the Shadows.
+ */ 
+void fl_HdrFtrSectionLayout::format(void)
+{
+	UT_sint32 iCount =0;
+	UT_sint32 i = 0;
+	localFormat();
+	//
+	// Fail safe code to add pages if we don't have them.
+	//
+	addValidPages();
+
 	iCount = m_vecPages.getItemCount();
 	
-	for (UT_uint32 i=0; i<iCount; i++)
+	for (i=0; i<iCount; i++)
 	{
 		struct _PageHdrFtrShadowPair* pPair = (struct _PageHdrFtrShadowPair*) m_vecPages.getNthItem(i);
 		pPair->pShadow->format();
@@ -3128,14 +3463,15 @@ fl_HdrFtrShadow::fl_HdrFtrShadow(FL_DocLayout* pLayout, fp_Page* pPage, fl_HdrFt
 {
 	m_pHdrFtrSL = pHdrFtrSL;
 	m_pPage = pPage;
-	if (m_pHdrFtrSL->getHFType() == FL_HDRFTR_HEADER)
+	if (m_pHdrFtrSL->getHFType() < FL_HDRFTR_FOOTER)
 	{
-		m_pContainer = m_pPage->getHeaderContainer(m_pHdrFtrSL);
+		m_pContainer = m_pPage->buildHeaderContainer(m_pHdrFtrSL);
 	}
-	else if (m_pHdrFtrSL->getHFType() == FL_HDRFTR_FOOTER)
+	else
 	{
-		m_pContainer =  m_pPage->getFooterContainer(m_pHdrFtrSL);
+		m_pContainer =  m_pPage->buildFooterContainer(m_pHdrFtrSL);
 	}
+	UT_DEBUGMSG(("SEVIOR: created shadow %x with container %x \n",this,m_pContainer));
 	m_iType = FL_SECTION_SHADOW;
 	fl_Layout::setType(PTX_Section); // Set the type of this strux
 }
@@ -3147,11 +3483,11 @@ fl_HdrFtrShadow::~fl_HdrFtrShadow()
 
 fp_Container* fl_HdrFtrShadow::getFirstContainer()
 {
-	if (m_pHdrFtrSL->getHFType() == FL_HDRFTR_HEADER)
+	if (m_pHdrFtrSL->getHFType() < FL_HDRFTR_FOOTER)
 	{
 		return m_pPage->getHeaderContainer(m_pHdrFtrSL);
 	}
-	else if (m_pHdrFtrSL->getHFType() == FL_HDRFTR_FOOTER)
+	else
 	{
 		return m_pPage->getFooterContainer(m_pHdrFtrSL);
 	}
@@ -3382,9 +3718,7 @@ bool fl_ShadowListener::populate(PL_StruxFmtHandle sfh,
 		PT_BlockOffset blockOffset = pcrs->getBlockOffset();
 		UT_uint32 len = pcrs->getLength();
 
-// sterwill -- is this call to getSectionLayout() needed?  pBLSL is not used.
 			
-//			fl_SectionLayout* pBLSL = m_pCurrentBL->getSectionLayout();
 		bResult = m_pCurrentBL->doclistener_populateSpan(pcrs, blockOffset, len);
 		goto finish_up;
 	}
@@ -3449,7 +3783,7 @@ bool fl_ShadowListener::populateStrux(PL_StruxDocHandle sdh,
 									  PL_StruxFmtHandle * psfh)
 {
 	UT_ASSERT(m_pShadow);
-//	UT_DEBUGMSG(("fl_ShadowListener::populateStrux\n"));
+	xxx_UT_DEBUGMSG(("fl_ShadowListener::populateStrux\n"));
 
 	UT_ASSERT(pcr->getType() == PX_ChangeRecord::PXT_InsertStrux);
 	const PX_ChangeRecord_Strux * pcrx = static_cast<const PX_ChangeRecord_Strux *> (pcr);
@@ -3480,9 +3814,14 @@ bool fl_ShadowListener::populateStrux(PL_StruxDocHandle sdh,
 			}
 			else
 			{
-				if (
-					(0 == UT_strcmp(pszSectionType, "header"))
+				if ( (0 == UT_strcmp(pszSectionType, "header"))
 					|| (0 == UT_strcmp(pszSectionType, "footer"))
+					 || (0 == UT_strcmp(pszSectionType, "header-first"))
+					|| (0 == UT_strcmp(pszSectionType, "footer-first"))
+					 || (0 == UT_strcmp(pszSectionType, "header-even"))
+					|| (0 == UT_strcmp(pszSectionType, "footer-even"))
+					 || (0 == UT_strcmp(pszSectionType, "header-last"))
+					|| (0 == UT_strcmp(pszSectionType, "footer-last"))
 					)
 				{
 					// TODO verify id match
@@ -3520,9 +3859,14 @@ bool fl_ShadowListener::populateStrux(PL_StruxDocHandle sdh,
 			}
 			else
 			{
-				if (
-					(0 == UT_strcmp(pszSectionType, "header"))
+				if ( (0 == UT_strcmp(pszSectionType, "header"))
 					|| (0 == UT_strcmp(pszSectionType, "footer"))
+					 || (0 == UT_strcmp(pszSectionType, "header-first"))
+					|| (0 == UT_strcmp(pszSectionType, "footer-first"))
+					 || (0 == UT_strcmp(pszSectionType, "header-even"))
+					|| (0 == UT_strcmp(pszSectionType, "footer-even"))
+					 || (0 == UT_strcmp(pszSectionType, "header-last"))
+					|| (0 == UT_strcmp(pszSectionType, "footer-last"))
 					)
 				{
 					// TODO verify id match

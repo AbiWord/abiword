@@ -227,6 +227,7 @@ public:
 	bool					isDoingPaste(void);
 
 	void                    setRedrawHappenning(bool bIsHappening) {m_bRedrawHappenning  = bIsHappening;}
+	bool                    isRedrawHappenning(void) const {return m_bRedrawHappenning;}
 
 	// PageSize functions
 	fp_PageSize				m_docPageSize;

@@ -244,7 +244,6 @@ public:
 
 	void				setEndnoteOwner(fl_DocSectionLayout*);
 	fl_DocSectionLayout* getEndnoteOwner(void);
-
 	void				addOwnedPage(fp_Page*);
 	void                            prependOwnedHeaderPage(fp_Page * p_Page);
 	void                            prependOwnedFooterPage(fp_Page * p_Page);
@@ -255,6 +254,12 @@ public:
 	void				checkAndAdjustColumnGap(UT_sint32 iLayoutWidth);
     void                markForReformat(void) { m_bNeedsFormat = true;}
     bool                needsReFormat(void) const { return m_bNeedsFormat;}
+	bool                isThisPageValid(HdrFtrType hfType, fp_Page * pThisPage);
+    void                getVecOfHdrFtrs(UT_Vector * vecHdrFtr);
+	void                formatAllHdrFtr(void);
+	void                checkAndRemovePages(void);
+	void                addValidPages(void);
+
 protected:
 	virtual void		_lookupProperties(void);
 
@@ -337,6 +342,9 @@ public:
 	void                        localFormat(void);
 	void                        localCollapse(void);
 	void                        markAllRunsDirty(void);
+	void                        checkAndRemovePages(void);
+	void                        addValidPages(void);
+	bool                        isPageHere( fp_Page *pPage);
 	void                        collapseBlock(fl_BlockLayout * pBlock);
 	virtual void				format(void);
 	virtual void				updateLayout(void);

@@ -4287,7 +4287,8 @@ bool fl_BlockLayout::doclistener_insertSection(const PX_ChangeRecord_Strux * pcr
 		break;
 	case FL_SECTION_HDRFTR:
 	{
-		m_pLayout->addHdrFtrSection(pSL);
+		fl_HdrFtrSectionLayout * pHFSL = static_cast<fl_HdrFtrSectionLayout *>(pSL);
+		m_pLayout->addHdrFtrSection(pHFSL);
 //
 // Need to find the DocSectionLayout associated with this.
 //
@@ -4307,29 +4308,50 @@ bool fl_BlockLayout::doclistener_insertSection(const PX_ChangeRecord_Strux * pcr
 //
 // Determine if this is a header or a footer.
 //
-			const XML_Char* pszHFSectionType = NULL;
-			pHFAP->getAttribute("type", pszHFSectionType);
-			//
-			// Got a header
-			//
-			fl_HdrFtrSectionLayout * pHFSL = static_cast<fl_HdrFtrSectionLayout *>(pSL);
-			if(pszHFSectionType && UT_strcmp(pszHFSectionType,"header") == 0)
+			const XML_Char* pszSectionType = NULL;
+			pHFAP->getAttribute("type", pszSectionType);
+
+			HdrFtrType hfType = FL_HDRFTR_NONE;
+			if(pszSectionType && *pszSectionType && UT_strcmp(pszSectionType,"header") == 0)
 			{
-				pHFSL->setDocSectionLayout(pDocSL);
-				pHFSL->setHdrFtr(FL_HDRFTR_HEADER);
-				//
-				// Set the pointers to this header/footer
-				//
-				pDocSL->setHdrFtr(FL_HDRFTR_HEADER, pHFSL);
+				hfType = FL_HDRFTR_HEADER;
 			}
-			else
+			else if (pszSectionType && *pszSectionType && UT_strcmp(pszSectionType,"header-even") == 0)
+			{
+				hfType = FL_HDRFTR_HEADER_EVEN;
+			}
+			else if (pszSectionType && *pszSectionType && UT_strcmp(pszSectionType,"header-first") == 0)
+			{
+				hfType = FL_HDRFTR_HEADER_FIRST;
+			}
+			else if (pszSectionType && *pszSectionType && UT_strcmp(pszSectionType,"header-last") == 0)
+			{
+				hfType = FL_HDRFTR_HEADER_LAST;
+			}
+			if(pszSectionType && *pszSectionType && UT_strcmp(pszSectionType,"footer") == 0)
+			{
+				hfType = FL_HDRFTR_FOOTER;
+			}
+			else if (pszSectionType && *pszSectionType && UT_strcmp(pszSectionType,"footer-even") == 0)
+			{
+				hfType = FL_HDRFTR_FOOTER_EVEN;
+			}
+			else if (pszSectionType && *pszSectionType && UT_strcmp(pszSectionType,"footer-first") == 0)
+			{
+				hfType = FL_HDRFTR_FOOTER_FIRST;
+			}
+			else if (pszSectionType && *pszSectionType && UT_strcmp(pszSectionType,"footer-last") == 0)
+			{
+				hfType = FL_HDRFTR_FOOTER_LAST;
+			}
+			if(hfType != FL_HDRFTR_NONE)
 			{
 				pHFSL->setDocSectionLayout(pDocSL);
-				pHFSL->setHdrFtr(FL_HDRFTR_FOOTER);
+				pHFSL->setHdrFtr(hfType);
 				//
 				// Set the pointers to this header/footer
 				//
-				pDocSL->setHdrFtr(FL_HDRFTR_FOOTER, pHFSL);
+				pDocSL->setHdrFtr(hfType, pHFSL);
 			}
 		}
 		else
@@ -6530,6 +6552,7 @@ void fl_BlockLayout::debugFlashing(void)
 	// the entire block that's being checked.  This sort of messes up the
 	// spelling squiggles, but it's just a debug thing anyhow.  Enable it
 	// by setting a preference DebugFlash="1"
+#if 0
 	UT_DEBUGMSG(("fl_BlockLayout::debugFlashing() was called\n"));
 	UT_GrowBuf pgb(1024);
 	bool bRes = getBlockBuf(&pgb);
@@ -6550,6 +6573,6 @@ void fl_BlockLayout::debugFlashing(void)
 	pView->_eraseInsertionPoint();
 	pView->updateScreen();
 	pView->_drawInsertionPoint();
-
+#endif
 	return;
 }

@@ -8525,7 +8525,7 @@ void FV_View::setShowPara(bool bShowPara)
 };
 
 /*!
- * Remove the Header or footer from the section owning the current Page.
+ * Remove all the Headers or footers from the section owning the current Page.
 \params bool isHeader remove the header if true, the footer if false.
 */
 void FV_View::cmdRemoveHdrFtr( bool isHeader)
@@ -8536,9 +8536,6 @@ void FV_View::cmdRemoveHdrFtr( bool isHeader)
 	fp_ShadowContainer * pHFCon = NULL;
 	fl_HdrFtrShadow * pShadow = NULL;
 	fl_HdrFtrSectionLayout * pHdrFtr = NULL;
-	fl_BlockLayout * pLast = NULL;
-	PT_DocPosition posBOS = 0;
-	PT_DocPosition posEOS = 0;
 
 	if(isHeader)
 	{
@@ -8602,13 +8599,57 @@ void FV_View::cmdRemoveHdrFtr( bool isHeader)
 // Need code here to remove all the header/footers.
 //
 	pHdrFtr = pShadow->getHdrFtrSectionLayout();
-//	fl_DocSectionLayout pDSL = pHdrFtr->getDocSectionLayout();
+    fl_DocSectionLayout * pDSL = pHdrFtr->getDocSectionLayout();
 //
 // Repeat this code 4 times to remove all the DocSection Layouts.
 //
-	posBOS = m_pDoc->getStruxPosition(pHdrFtr->getStruxDocHandle());
-	pLast = pHdrFtr->getLastBlock();
-	posEOS = pLast->getPosition(false);
+	_eraseInsertionPoint();
+	if(isHeader)
+	{
+		_removeThisHdrFtr(pDSL->getHeaderFirst());
+		_removeThisHdrFtr(pDSL->getHeaderLast());
+		_removeThisHdrFtr(pDSL->getHeaderEven());
+		_removeThisHdrFtr(pDSL->getHeader());
+	}
+	else
+	{
+		_removeThisHdrFtr(pDSL->getFooterFirst());
+		_removeThisHdrFtr(pDSL->getFooterLast());
+		_removeThisHdrFtr(pDSL->getFooterEven());
+		_removeThisHdrFtr(pDSL->getFooter());
+	}
+//
+// After erarsing the cursor, Restore to the point before all this mess started.
+//
+	_eraseInsertionPoint();
+	_setPoint(curPoint);
+
+	_generalUpdate();
+
+	// Signal PieceTable Changes have finished
+	_restorePieceTableState();
+	updateScreen (); // fix 1803, force screen update/redraw
+
+	if (!_ensureThatInsertionPointIsOnScreen())
+	{
+		_fixInsertionPointCoords();
+		_drawInsertionPoint();
+	}
+	m_pDoc->endUserAtomicGlob();
+}
+
+/*!
+ * This method removes the HdrFtr pHdrFtr
+ */
+void FV_View::_removeThisHdrFtr(fl_HdrFtrSectionLayout * pHdrFtr)
+{
+	if(pHdrFtr == NULL)
+	{
+		return;
+	}
+	PT_DocPosition 	posBOS = m_pDoc->getStruxPosition(pHdrFtr->getStruxDocHandle());
+fl_BlockLayout * pLast = pHdrFtr->getLastBlock();
+	PT_DocPosition posEOS = pLast->getPosition(false);
 //
 // This code assumes there is an End of Block run at the end of the Block. Thanks
 // to Jesper, there always is!
@@ -8648,25 +8689,9 @@ void FV_View::cmdRemoveHdrFtr( bool isHeader)
 // Now delete the header strux.
 //
 	m_pDoc->deleteSpan(posBOS,posBOS+2,NULL);
-
 //
-// After erarsing the cursor, Restore to the point before all this mess started.
+// This Header Footer is gone!
 //
-	_eraseInsertionPoint();
-	_setPoint(curPoint);
-
-	_generalUpdate();
-
-	// Signal PieceTable Changes have finished
-	_restorePieceTableState();
-	updateScreen (); // fix 1803, force screen update/redraw
-
-	if (!_ensureThatInsertionPointIsOnScreen())
-	{
-		_fixInsertionPointCoords();
-		_drawInsertionPoint();
-	}
-    m_pDoc->endUserAtomicGlob();
 }
 
 /*!

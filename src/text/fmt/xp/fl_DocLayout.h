@@ -115,6 +115,7 @@ public:
 	fp_Page*	getLastPage();
 	fp_Page*	getNthPage(int n);
 	UT_uint32	countPages();
+	UT_sint32   findPage(fp_Page * pPage);
 
 	fl_BlockLayout*	findBlockAtPosition(PT_DocPosition pos);
 	void		deletePage(fp_Page* pPage, bool bDontNotify);
@@ -179,7 +180,7 @@ public:
 	inline fl_AutoNum *	getNthList(UT_uint32 i) const; // { return m_vecLists[i]; }
 	inline UT_uint32	getListsCount(void) const; // { return m_vecLists.getItemCount(); }
 	inline void		addList(fl_AutoNum * pAutoNum);
-	
+	bool            isLayoutDeleting(void) const {return m_bDeletingLayout;}
 #ifdef FMT_TEST
 	//! Pointer to last instatiated FL_DocLayout. Used for debugging.
 	static		FL_DocLayout* m_pDocLayout;
@@ -232,7 +233,9 @@ protected:
 	
 	UT_Timer*			m_pRedrawUpdateTimer;
 	UT_uint32           m_iSkipUpdates;
+	bool                m_bDeletingLayout;
 };
 
 #endif /* DOCLAYOUT_H */
+
 
