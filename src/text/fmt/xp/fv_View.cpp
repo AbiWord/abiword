@@ -568,6 +568,7 @@ void FV_View::convertInLineToPositioned(PT_DocPosition pos,const XML_Char ** att
 	fl_BlockLayout * pBlock = getBlockAtPosition(pos);
 	fp_Run *  pRun = NULL;
 	bool bEOL,bDir;
+	bEOL = false;
 	UT_sint32 x1,y1,x2,y2,iHeight;
 	if(pBlock)
 	{
