@@ -605,42 +605,7 @@ void fp_TextRun::_clearScreen(UT_Bool /* bFullLineHeightRect */)
 	UT_sint32 xoff = 0, yoff = 0;
 	m_pLine->getScreenOffsets(this, xoff, yoff);
 	
-#ifdef PT_NOTIFY_BEFORE_DELETES
-	const UT_GrowBuf * pgbCharWidths = m_pBL->getCharWidths();
-
-	FV_View* pView = m_pBL->getDocLayout()->getView();
-	UT_uint32 iSelAnchor = pView->getSelectionAnchor();
-	UT_uint32 iPoint = pView->getPoint();
-
-	UT_uint32 iSel1 = UT_MIN(iSelAnchor, iPoint);
-	UT_uint32 iSel2 = UT_MAX(iSelAnchor, iPoint);
-	
-	UT_ASSERT(iSel1 <= iSel2);
-	
-	UT_uint32 iRunBase = m_pBL->getPosition() + m_iOffsetFirst;
-
-	if (
-		bFullLineHeightRect
-		|| m_bSquiggled
-		|| (m_fDecorations & (TEXT_DECOR_UNDERLINE | TEXT_DECOR_LINETHROUGH))
-		|| !(
-			(iSel2 < iRunBase)
-			|| (iSel1 >= (iRunBase + m_iLen))
-			)
-		)
-#endif		
-	{
-		m_pG->clearArea(xoff, yoff, m_iWidth, m_pLine->getHeight());
-	}
-
-#ifdef PT_NOTIFY_BEFORE_DELETES
-	/*
-	  To get bug 7 fixed again, reverse this if 0, and
-	  #define PT_NOTIFY_BEFORE_DELETES in the piece table
-	  code.
-	*/
-	_drawPart(xoff, yoff + m_pLine->getAscent() - m_iAscent, m_iOffsetFirst, m_iLen, pgbCharWidths);
-#endif	
+	m_pG->clearArea(xoff, yoff, m_iWidth, m_pLine->getHeight());
 }
 
 void fp_TextRun::_draw(dg_DrawArgs* pDA)

@@ -201,17 +201,11 @@ UT_Bool pt_PieceTable::_deleteFmtMarkWithNotify(PT_DocPosition dpos, pf_Frag_Fmt
 
 	// actually remove the fragment from the list and delete it.
 
-#ifndef PT_NOTIFY_BEFORE_DELETES
 	_deleteFmtMark(pffm,ppfEnd,pfragOffsetEnd);
-#endif
 	
 	m_history.addChangeRecord(pcr);
 	m_pDocument->notifyListeners(pfs,pcr);
 	
-#ifdef PT_NOTIFY_BEFORE_DELETES
-	_deleteFmtMark(pffm,ppfEnd,pfragOffsetEnd);
-#endif
-
 	return UT_TRUE;
 }
 
