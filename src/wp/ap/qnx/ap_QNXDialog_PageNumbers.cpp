@@ -22,13 +22,13 @@
 #include "ut_string.h"
 #include "ap_QNXDialog_PageNumbers.h"
 
-AP_QNXDialog_PageNumbers::AP_QNXDialogPageNumbers (XAP_DialogFactory * pDlgFactory,
+AP_QNXDialog_PageNumbers::AP_QNXDialog_PageNumbers (XAP_DialogFactory * pDlgFactory,
 						     XAP_Dialog_Id id) : AP_Dialog_PageNumbers (pDlgFactory, id)
 {
 
 }
 
-AP_QNXDialog_PageNumbers::~AP_QNXDialogPageNumbers(void)
+AP_QNXDialog_PageNumbers::~AP_QNXDialog_PageNumbers(void)
 {
 }
 

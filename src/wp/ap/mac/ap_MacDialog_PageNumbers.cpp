@@ -22,13 +22,13 @@
 #include "ut_string.h"
 #include "ap_MacDialog_PageNumbers.h"
 
-AP_MacDialog_PageNumbers::AP_MacDialogPageNumbers (XAP_DialogFactory * pDlgFactory,
+AP_MacDialog_PageNumbers::AP_MacDialog_PageNumbers (XAP_DialogFactory * pDlgFactory,
 						     XAP_Dialog_Id id) : AP_Dialog_PageNumbers (pDlgFactory, id)
 {
 
 }
 
-AP_MacDialog_PageNumbers::~AP_MacDialogPageNumbers(void)
+AP_MacDialog_PageNumbers::~AP_MacDialog_PageNumbers(void)
 {
 }
 

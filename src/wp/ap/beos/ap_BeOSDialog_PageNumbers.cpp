@@ -22,13 +22,13 @@
 #include "ut_string.h"
 #include "ap_BeOSDialog_PageNumbers.h"
 
-AP_BeOSDialog_PageNumbers::AP_BeOSDialogPageNumbers (XAP_DialogFactory * pDlgFactory,
+AP_BeOSDialog_PageNumbers::AP_BeOSDialog_PageNumbers (XAP_DialogFactory * pDlgFactory,
 						     XAP_Dialog_Id id) : AP_Dialog_PageNumbers (pDlgFactory, id)
 {
 
 }
 
-AP_BeOSDialog_PageNumbers::~AP_BeOSDialogPageNumbers(void)
+AP_BeOSDialog_PageNumbers::~AP_BeOSDialog_PageNumbers(void)
 {
 }
 

@@ -22,13 +22,13 @@
 #include "ut_string.h"
 #include "ap_Win32Dialog_PageNumbers.h"
 
-AP_Win32Dialog_PageNumbers::AP_Win32DialogPageNumbers (XAP_DialogFactory * pDlgFactory,
+AP_Win32Dialog_PageNumbers::AP_Win32_DialogPageNumbers (XAP_DialogFactory * pDlgFactory,
 						     XAP_Dialog_Id id) : AP_Dialog_PageNumbers (pDlgFactory, id)
 {
 
 }
 
-AP_Win32Dialog_PageNumbers::~AP_Win32DialogPageNumbers(void)
+AP_Win32Dialog_PageNumbers::~AP_Win32_DialogPageNumbers(void)
 {
 }
 
