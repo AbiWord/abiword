@@ -370,6 +370,7 @@ LRESULT CALLBACK EV_Win32Toolbar::_ComboEditWndProc( HWND hWnd, UINT uMessage, W
 
 					nData  = SendMessage(hWndCombo, CB_GETITEMDATA, iSelected, 0);                                                         					
 					strcpy (buf, (char *)v->getNthItem(nData));				
+					DELETEP(pControl);
 				}
 				
 				t->toolbarEvent(id, pData, dataLength);
@@ -1008,6 +1009,7 @@ bool EV_Win32Toolbar::_refreshItem(AV_View * pView, const EV_Toolbar_Action * pA
 					if (strcmp((char *)v->getNthItem(k), szState)==0)
 					{
 						bFound = true;
+						DELETEP(pControl);
 						break;
 					}	
 				}				
@@ -1024,7 +1026,7 @@ bool EV_Win32Toolbar::_refreshItem(AV_View * pView, const EV_Toolbar_Action * pA
 				if (idx==CB_ERR)
 					SetWindowText(hwndCombo, pLocalised);							
 	
-					
+				DELETEP(pControl);	
 				//UT_DEBUGMSG(("refreshToolbar: ComboBox [%s] is %s and %s\n",
 				//			 m_pToolbarLabelSet->getLabel(id)->getToolbarLabel(),
 				//			 ((bGrayed) ? "disabled" : "enabled"),

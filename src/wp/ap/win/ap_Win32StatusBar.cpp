@@ -58,7 +58,7 @@ void ap_usb_TextListener::notify()
 			&uRead, &uWrite);
 	
 	SendMessage(m_hWnd, SB_SETTEXT, m_nID, (LPARAM)  pText);
-	
+	FREEP(pText);	
 }
 
 
