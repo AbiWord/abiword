@@ -23,7 +23,6 @@
 
 #include "ut_types.h"
 #include "ut_vector.h"
-#include "ap_Clipboard.h"
 #include "ap_UnixClipboard.h"
 
 #include <gdk/gdk.h>
@@ -31,20 +30,23 @@
 //////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////
 
-AP_UnixClipboard::AP_UnixClipboard(void)
-	: XAP_UnixClipboard()
+AP_UnixClipboard::AP_UnixClipboard(AP_UnixApp * pApp)
+	: XAP_UnixClipboard((XAP_UnixApp *)(pApp))
 {
-#define AddFmt(szFormat,cf)	do { m_vecFormat.addItem((void *) szFormat); m_vecCF.addItem((void*)cf); } while (0)
+#define AddFmt(szFormat)															\
+	do {	m_vecFormat_AP_Name.addItem((void *) szFormat);							\
+			m_vecFormat_GdkAtom.addItem((void *) gdk_atom_intern(szFormat,FALSE));	\
+	} while (0)
 
-	AddFmt(AP_CLIPBOARD_ABIWORD_1,			gdk_atom_intern("application/abiword", FALSE));
-	AddFmt(AP_CLIPBOARD_TEXTPLAIN_8BIT,		GDK_SELECTION_TYPE_STRING);
-	AddFmt(AP_CLIPBOARD_TEXTPLAIN_UNICODE,	GDK_SELECTION_TYPE_STRING);				// probably NT only
-   	AddFmt(AP_CLIPBOARD_RTF,				gdk_atom_intern("text/rtf", FALSE));
-	AddFmt(AP_CLIPBOARD_IMAGE,				GDK_SELECTION_TYPE_PIXMAP);
-	AddFmt(AP_CLIPBOARD_UNKNOWN,			GDK_NONE);								// must be last
+   	AddFmt(AP_CLIPBOARD_RTF);
+	AddFmt(AP_CLIPBOARD_TEXTPLAIN_8BIT);
+	AddFmt(AP_CLIPBOARD_STRING);		// alias for TEXTPLAIN_8BIT
 
-	// We don't need to free these strings in our destructor
-	// because we did not allocate any of the string pointers.
+	// TODO deal with multi-byte text (either unicode or utf8 or whatever)
+	// TODO add something like the following.  you should be able to test
+	// TODO against xemacs.
+	// TODO
+	// TODO AddFmt(AP_CLIPBOARD_COMPOUND_TEXT);
 
 #undef AddFmt
 }

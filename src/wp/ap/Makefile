@@ -43,6 +43,11 @@ PLATFORM_OBJS=	$(OBJDIR)/ap_$(ABI_FE)App.$(OBJ_SUFFIX)				\
 		$(OBJDIR)/ap_$(ABI_FE)TopRuler.$(OBJ_SUFFIX)
 
 
+ifeq ($(ABI_FE), Unix)
+PLATFORM_OBJS += 	$(OBJDIR)/ap_$(ABI_FE)ViewListener.$(OBJ_SUFFIX)
+endif
+
+
 OBJS=		$(PLATFORM_OBJS)						\
 		$(OBJDIR)/ap_Dialog_Break.$(OBJ_SUFFIX)			\
 		$(OBJDIR)/ap_Dialog_Replace.$(OBJ_SUFFIX)			\

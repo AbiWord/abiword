@@ -24,29 +24,23 @@
 #include "ut_vector.h"
 #include "xap_Clipboard.h"
 
-class XAP_Win32Clipboard : public XAP_Clipboard
+class XAP_Win32Clipboard
 {
 public:
 	XAP_Win32Clipboard(void);
 	
-	virtual UT_Bool			open(void);
-	virtual UT_Bool			close(void);
+	virtual UT_Bool			openClipboard(void);
+	virtual UT_Bool			closeClipboard(void);
+	virtual UT_Bool			clearClipboard(void);
 	virtual UT_Bool			addData(const char* format, void* pData, UT_sint32 iNumBytes);
-	virtual UT_sint32		getDataLen(const char* format);
-	virtual UT_Bool			getData(const char* format, void* pData);
 	virtual HANDLE			getHandleInFormat(const char * format);
 	virtual UT_Bool			hasFormat(const char * format);
-	virtual UT_sint32		countFormats(void);
-	virtual const char *	getNthFormat(UT_sint32 n);
-	virtual UT_Bool			clear(void);
-
-	virtual GR_Image *		getImage(void);
-	virtual UT_Bool			addImage(GR_Image*);
 	
 protected:
 	virtual UT_uint32		_convertFormatString(const char * format) const;
 	virtual const char *	_convertToFormatString(UT_uint32 fmt) const;
 
+	UT_Bool					m_bOpen;
 	UT_Vector				m_vecFormat;
 	UT_Vector				m_vecCF;
 };

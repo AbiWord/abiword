@@ -27,11 +27,18 @@
 #define AP_UNIXCLIPBOARD_H
 
 #include "xap_UnixClipboard.h"
+class AP_UnixApp;
+
+#define	AP_CLIPBOARD_TEXTPLAIN_8BIT 		"TEXT"
+#define AP_CLIPBOARD_STRING					"STRING"
+#define AP_CLIPBOARD_COMPOUND_TEXT			"COMPOUND_TEXT"
+#define AP_CLIPBOARD_RTF 					"text/rtf"
+
 
 class AP_UnixClipboard : public XAP_UnixClipboard
 {
 public:
-	AP_UnixClipboard(void);
+	AP_UnixClipboard(AP_UnixApp * pUnixApp);
 };
 
 #endif /* AP_UNIXCLIPBOARD_H */

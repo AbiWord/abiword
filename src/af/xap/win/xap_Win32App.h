@@ -56,8 +56,9 @@ public:
 	virtual const XAP_StringSet *			getStringSet(void) const = 0;
 	virtual const char *					getAbiSuiteAppDir(void) const = 0;
 	virtual void							copyToClipboard(PD_DocumentRange * pDocRange) = 0;
-	virtual void							pasteFromClipboard(PD_DocumentRange * pDocRange) = 0;
+	virtual void							pasteFromClipboard(PD_DocumentRange * pDocRange, UT_Bool) = 0;
 	virtual UT_Bool							canPasteFromClipboard(void) = 0;
+	virtual void							cacheCurrentSelection(AV_View *) = 0;
 	virtual const char *					getUserPrivateDirectory(void);
 
 	virtual HICON							getIcon(void) = 0;

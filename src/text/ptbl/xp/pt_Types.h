@@ -34,7 +34,21 @@ class PD_Document;
 class PD_DocumentRange
 {
 public:
+	PD_DocumentRange(void)
+		{
+			m_pDoc = NULL;
+			m_pos1 = 0;
+			m_pos2 = 0;
+		}
+	
 	PD_DocumentRange(PD_Document * pDoc, PT_DocPosition k1, PT_DocPosition k2)
+		{
+			m_pDoc = pDoc;
+			m_pos1 = k1;
+			m_pos2 = k2;
+		}
+
+	void set(PD_Document * pDoc, PT_DocPosition k1, PT_DocPosition k2)
 		{
 			m_pDoc = pDoc;
 			m_pos1 = k1;

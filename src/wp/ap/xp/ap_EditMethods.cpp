@@ -198,6 +198,7 @@ public:
 	static EV_EditMethod_Fn cut;
 	static EV_EditMethod_Fn copy;
 	static EV_EditMethod_Fn paste;
+	static EV_EditMethod_Fn pasteSelection;
 	static EV_EditMethod_Fn find;
 	static EV_EditMethod_Fn findAgain;
 	static EV_EditMethod_Fn go;
@@ -450,7 +451,8 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(redo),					0,	""),
 	EV_EditMethod(NF(cut),					0,	""),
 	EV_EditMethod(NF(copy),					0,	""),
-	EV_EditMethod(NF(paste),				0,	""),
+	EV_EditMethod(NF(paste),				0,	""),	// intended for ^V and Menu[Edit/Paste]
+	EV_EditMethod(NF(pasteSelection),		0,	""),	// intended for X11 middle mouse
 	EV_EditMethod(NF(find),					0,	""),
 	EV_EditMethod(NF(findAgain),			0,	""),	
 	EV_EditMethod(NF(go),					0,	""),
@@ -2768,6 +2770,15 @@ Defun1(paste)
 {
 	ABIWORD_VIEW;
 	pView->cmdPaste();
+	
+	return UT_TRUE;
+}
+
+Defun(pasteSelection)
+{
+	// this is intended for the X11 middle mouse thing.
+	ABIWORD_VIEW;
+	pView->cmdPasteSelectionAt(pCallData->m_xPos, pCallData->m_yPos);
 	
 	return UT_TRUE;
 }

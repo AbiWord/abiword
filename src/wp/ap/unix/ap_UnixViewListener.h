@@ -17,19 +17,18 @@
  * 02111-1307, USA.
  */
 
-/*****************************************************************
-** Only one of these is created by the application.
-*****************************************************************/
 
-#include "ut_types.h"
-#include "ut_vector.h"
-#include "ap_Clipboard.h"
-#include "ap_BeOSClipboard.h"
 
-//////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////
+#ifndef AP_UNIXVIEWLISTENER_H
+#define AP_UNIXVIEWLISTENER_H
 
-AP_BeOSClipboard::AP_BeOSClipboard(void)
-	: XAP_BeOSClipboard()
+#include "xap_ViewListener.h"
+
+class ap_UnixViewListener : public ap_ViewListener
 {
-}
+public:
+	ap_UnixViewListener(XAP_Frame * pFrame);
+	virtual UT_Bool		notify(AV_View * pView, const AV_ChangeMask mask);
+};
+
+#endif /* AP_UNIXVIEWLISTENER_H */

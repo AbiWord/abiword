@@ -37,11 +37,8 @@ AP_Win32Clipboard::AP_Win32Clipboard(void)
 {
 #define AddFmt(szFormat,cf)	do { m_vecFormat.addItem(szFormat); m_vecCF.addItem((void*)cf); } while (0)
 
-	AddFmt(AP_CLIPBOARD_ABIWORD_1,			RegisterClipboardFormat(AP_CLIPBOARD_ABIWORD_1));
 	AddFmt(AP_CLIPBOARD_TEXTPLAIN_8BIT,		CF_TEXT);
-	AddFmt(AP_CLIPBOARD_TEXTPLAIN_UNICODE,	CF_UNICODETEXT);	// probably NT only
 	AddFmt(AP_CLIPBOARD_RTF,				RegisterClipboardFormat(CF_RTF));
-	AddFmt(AP_CLIPBOARD_IMAGE,				CF_DIB);
 	AddFmt(AP_CLIPBOARD_UNKNOWN,			0);					// must be last
 
 	// We don't need to free these strings in our destructor

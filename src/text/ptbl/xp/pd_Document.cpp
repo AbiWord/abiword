@@ -422,7 +422,7 @@ UT_Bool PD_Document::notifyListeners(pf_Frag_Strux * pfs, const PX_ChangeRecord 
 	// notify listeners of a change.
 	
 #ifdef PT_TEST
-	pcr->__dump();
+	//pcr->__dump();
 #endif
 
 	PL_ListenerId lid;
@@ -467,7 +467,7 @@ UT_Bool PD_Document::notifyListeners(pf_Frag_Strux * pfs,
 	// handles with the listener for the new strux.
 
 #ifdef PT_TEST
-	pcr->__dump();
+	//pcr->__dump();
 #endif
 	
 	PL_ListenerId lid;

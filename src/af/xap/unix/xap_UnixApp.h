@@ -31,6 +31,7 @@
 
 class XAP_Args;
 class AP_UnixToolbar_Icons;
+class AV_View;
 
 /*****************************************************************
 ******************************************************************
@@ -55,9 +56,16 @@ public:
 	virtual const XAP_StringSet *			getStringSet(void) const = 0;
 	virtual const char *					getAbiSuiteAppDir(void) const = 0;
 	virtual void							copyToClipboard(PD_DocumentRange * pDocRange) = 0;
-	virtual void							pasteFromClipboard(PD_DocumentRange * pDocRange) = 0;
+	virtual void							pasteFromClipboard(PD_DocumentRange * pDocRange, UT_Bool bUseClipboard) = 0;
 	virtual UT_Bool							canPasteFromClipboard(void) = 0;
 	virtual const char *					getUserPrivateDirectory(void);
+
+	virtual void							setSelectionStatus(AV_View * pView) = 0;
+	virtual void							clearSelection(void) = 0;
+	virtual UT_Bool							getCurrentSelection(const char** formatList,
+																void ** ppData, UT_uint32 * pLen,
+																const char **pszFormatFound) = 0;
+	virtual void							cacheCurrentSelection(AV_View *) = 0;
 
 	XAP_UnixFontManager *					getFontManager(void);
 
@@ -74,10 +82,13 @@ public:
 		XAP_UnixApp::windowGeometryFlags flags;
 	};
 	
-	virtual	void							setGeometry(gint x, gint y, guint width, guint height,
-														windowGeometryFlags flags);
-	virtual	void							getGeometry(gint * x, gint * y, guint * width, guint * height,
-														windowGeometryFlags * flags);
+	virtual	void					setGeometry(gint x, gint y, guint width, guint height,
+												windowGeometryFlags flags);
+	virtual	void					getGeometry(gint * x, gint * y, guint * width, guint * height,
+												windowGeometryFlags * flags);
+
+	void							setTimeOfLastEvent(guint32 eventTime);
+	guint32							getTimeOfLastEvent(void) const { return m_eventTime; };
 	
 protected:
 	UT_Bool							_loadFonts(void);
@@ -87,13 +98,11 @@ protected:
 	AP_UnixDialogFactory			m_dialogFactory;
 	AP_UnixToolbar_ControlFactory	m_controlFactory;
 	XAP_UnixFontManager *			m_fontManager;
-	
-	/* TODO put anything we need here.  for example, our
-	** TODO connection to the XServer.
-	*/
 
 	windowGeometry			m_geometry;
-	
+	guint32					m_eventTime; // e->time field of a recent X event
+										 // (we use this to sync clipboard
+										 // operations with the server).
 };
 
 #endif /* XAP_UNIXAPP_H */

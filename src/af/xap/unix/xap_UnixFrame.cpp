@@ -45,10 +45,11 @@
 gint XAP_UnixFrame::_fe::button_press_event(GtkWidget * w, GdkEventButton * e)
 {
 	XAP_UnixFrame * pUnixFrame = (XAP_UnixFrame *)gtk_object_get_user_data(GTK_OBJECT(w));
+	pUnixFrame->setTimeOfLastEvent(e->time);
 	AV_View * pView = pUnixFrame->getCurrentView();
 	EV_UnixMouse * pUnixMouse = pUnixFrame->getUnixMouse();
 
-	UT_DEBUGMSG(("Grabbing mouse.\n"));
+	//UT_DEBUGMSG(("Grabbing mouse.\n"));
 	gtk_grab_add(w);
 	
 	if (pView)
@@ -59,10 +60,11 @@ gint XAP_UnixFrame::_fe::button_press_event(GtkWidget * w, GdkEventButton * e)
 gint XAP_UnixFrame::_fe::button_release_event(GtkWidget * w, GdkEventButton * e)
 {
 	XAP_UnixFrame * pUnixFrame = (XAP_UnixFrame *)gtk_object_get_user_data(GTK_OBJECT(w));
+	pUnixFrame->setTimeOfLastEvent(e->time);
 	AV_View * pView = pUnixFrame->getCurrentView();
 	EV_UnixMouse * pUnixMouse = pUnixFrame->getUnixMouse();
 
-	UT_DEBUGMSG(("Ungrabbing mouse.\n"));
+	//UT_DEBUGMSG(("Ungrabbing mouse.\n"));
 	gtk_grab_remove(w);
 	
 	if (pView)
@@ -86,13 +88,12 @@ gint XAP_UnixFrame::_fe::configure_event(GtkWidget* w, GdkEventConfigure *e)
 gint XAP_UnixFrame::_fe::motion_notify_event(GtkWidget* w, GdkEventMotion* e)
 {
 	XAP_UnixFrame * pUnixFrame = (XAP_UnixFrame *)gtk_object_get_user_data(GTK_OBJECT(w));
+	pUnixFrame->setTimeOfLastEvent(e->time);
 	AV_View * pView = pUnixFrame->getCurrentView();
 	EV_UnixMouse * pUnixMouse = pUnixFrame->getUnixMouse();
 	
 	if (pView)
-	{
 		pUnixMouse->mouseMotion(pView, e);
-	}
 	
 	return 1;
 }
@@ -100,13 +101,12 @@ gint XAP_UnixFrame::_fe::motion_notify_event(GtkWidget* w, GdkEventMotion* e)
 gint XAP_UnixFrame::_fe::key_press_event(GtkWidget* w, GdkEventKey* e)
 {
 	XAP_UnixFrame * pUnixFrame = (XAP_UnixFrame *)gtk_object_get_user_data(GTK_OBJECT(w));
+	pUnixFrame->setTimeOfLastEvent(e->time);
 	AV_View * pView = pUnixFrame->getCurrentView();
 	ev_UnixKeyboard * pUnixKeyboard = pUnixFrame->getUnixKeyboard();
 		
 	if (pView)
-	{
 		pUnixKeyboard->keyPressEvent(pView, e);
-	}
 
 	// HACK : This one's ugly.  If we continue through the callback chain,
 	// HACK : GTK will pick up key presses and hand them off to widgets with
@@ -127,7 +127,6 @@ gint XAP_UnixFrame::_fe::key_press_event(GtkWidget* w, GdkEventKey* e)
 		(e->state & GDK_MOD3_MASK) ||
 		(e->state & GDK_MOD4_MASK) ||
 		(e->state & GDK_MOD5_MASK))
-		
 	{
 		return 0;
 	}
@@ -547,7 +546,7 @@ UT_Bool XAP_UnixFrame::runModalContextMenu(AV_View * /* pView */, const char * s
 		GtkWidget * w = gtk_grab_get_current();
 		if (w)
 		{
-			UT_DEBUGMSG(("Ungrabbing mouse [before popup].\n"));
+			//UT_DEBUGMSG(("Ungrabbing mouse [before popup].\n"));
 			gtk_grab_remove(w);
 		}
 
@@ -569,3 +568,9 @@ UT_Bool XAP_UnixFrame::runModalContextMenu(AV_View * /* pView */, const char * s
 	DELETEP(m_pUnixPopup);
 	return bResult;
 }
+
+void XAP_UnixFrame::setTimeOfLastEvent(guint32 eventTime)
+{
+	m_pUnixApp->setTimeOfLastEvent(eventTime);
+}
+

@@ -474,6 +474,11 @@ void FV_View::_resetSelection(void)
 	m_iSelectionAnchor = getPoint();
 }
 
+void FV_View::cmdUnselectSelection(void)
+{
+	_clearSelection();
+}
+
 void FV_View::_drawSelection()
 {
 	UT_ASSERT(!isSelectionEmpty());
@@ -520,7 +525,7 @@ void FV_View::_deleteSelection(void)
 	}
 }
 
-UT_Bool FV_View::isSelectionEmpty()
+UT_Bool FV_View::isSelectionEmpty(void) const
 {
 	if (!m_bSelection)
 	{
@@ -4021,14 +4026,8 @@ void FV_View::cmdCut(void)
 	_drawInsertionPoint();
 }
 
-void FV_View::cmdCopy(void)
+void FV_View::getDocumentRangeOfCurrentSelection(PD_DocumentRange * pdr)
 {
-	if (isSelectionEmpty())
-	{
-		// clipboard does nothing if there is no selection
-		return;
-	}
-	
 	PT_DocPosition iPos1, iPos2;
 	if (m_iSelectionAnchor < getPoint())
 	{
@@ -4041,7 +4040,20 @@ void FV_View::cmdCopy(void)
 		iPos2 = m_iSelectionAnchor;
 	}
 
-	PD_DocumentRange dr(m_pDoc,iPos1,iPos2);
+	pdr->set(m_pDoc,iPos1,iPos2);
+	return;
+}
+
+void FV_View::cmdCopy(void)
+{
+	if (isSelectionEmpty())
+	{
+		// clipboard does nothing if there is no selection
+		return;
+	}
+	
+	PD_DocumentRange dr;
+	getDocumentRangeOfCurrentSelection(&dr);
 	m_pApp->copyToClipboard(&dr);
 	notifyListeners(AV_CHG_CLIPBOARD);
 }
@@ -4052,11 +4064,32 @@ void FV_View::cmdPaste(void)
 	// so that undo/redo will treat it as one step.
 	
 	m_pDoc->beginUserAtomicGlob();
-	_doPaste();
+	_doPaste(UT_TRUE);
 	m_pDoc->endUserAtomicGlob();
 }
 
-void FV_View::_doPaste(void)
+void FV_View::cmdPasteSelectionAt(UT_sint32 xPos, UT_sint32 yPos)
+{
+	// this is intended for the X11 middle mouse paste trick.
+	//
+	// if this view has the selection, we need to remember it
+	// before we warp to the given (x,y) -- or else there won't
+	// be a selection to paste when get there.  this is sort of
+	// back door hack and should probably be re-thought.
+	
+	// set UAG markers around everything that the actual paste does
+	// so that undo/redo will treat it as one step.
+	
+	m_pDoc->beginUserAtomicGlob();
+	if (!isSelectionEmpty())
+		m_pApp->cacheCurrentSelection(this);
+	warpInsPtToXY(xPos,yPos);
+	_doPaste(UT_FALSE);
+	m_pApp->cacheCurrentSelection(NULL);
+	m_pDoc->endUserAtomicGlob();
+}
+
+void FV_View::_doPaste(UT_Bool bUseClipboard)
 {
 	// internal portion of paste operation.
 	
@@ -4067,141 +4100,7 @@ void FV_View::_doPaste(void)
 
 	_clearIfAtFmtMark(getPoint());
 	PD_DocumentRange dr(m_pDoc,getPoint(),getPoint());
-	m_pApp->pasteFromClipboard(&dr);
-
-#if 0
-	AP_Clipboard* pClip = XAP_App::getClipboard();
-	if (pClip->open())
-	{
-		_clearIfAtFmtMark(getPoint());
-		
-
-		if (pClip->hasFormat(AP_CLIPBOARD_IMAGE))
-		{
-			GR_Image* pImg = pClip->getImage();
-			UT_ASSERT(pImg);
-
-			// just the insert, no selection or screen updating needed here
-	
-			/*
-			  First, find a unique name for the data item.
-			*/
-			char szName[GR_IMAGE_MAX_NAME_LEN + 10 + 1];
-			UT_uint32 ndx = 0;
-			for (;;)
-			{
-				pImg->getName(szName);
-				sprintf(szName + strlen(szName), "%d", ndx);
-				if (!m_pDoc->getDataItemDataByName(szName, NULL, NULL, NULL))
-				{
-					break;
-				}
-				ndx++;
-			}
-
-			/*
-			  Get the byte buffer for this image.
-			*/
-			UT_ByteBuf* pBB = NULL;
-			pImg->convertToPNG(&pBB);
-
-			FG_GraphicRaster *pFGR;
-			pFGR = new FG_GraphicRaster();
-			if (pFGR)
-			{
-				if(pFGR->setRaster_PNG(pBB)) {
-					_insertGraphic(pFGR, szName);
-				}
-				delete pFGR;
-			}
-
-			delete pImg;
-		}
-		else if (pClip->hasFormat(AP_CLIPBOARD_TEXTPLAIN_8BIT))
-		{
-			UT_sint32 iLen = pClip->getDataLen(AP_CLIPBOARD_TEXTPLAIN_8BIT);
-
-			unsigned char* pData = new unsigned char[iLen];
-			UT_ASSERT(pData); // TODO outofmem
-
-			pClip->getData(AP_CLIPBOARD_TEXTPLAIN_8BIT, (char*) pData);
-
-			UT_UCSChar* pUCSData = new UT_UCSChar[iLen];
-			for (int i=0; i<iLen; i++)
-			{
-				pUCSData[i] = pData[i];
-			}
-			delete pData;
-
-			UT_UCSChar* pStart = pUCSData;
-			UT_UCSChar* pCur = pStart;
-			for (;;)
-			{
-				// TODO replace these 13's and 10's with UT_UCS_ constants
-				
-				while (
-					(*pCur != 13)
-					&& (*pCur != 10)
-					&& *pCur
-					&& ((pCur - pStart) < iLen)
-					)
-				{
-					pCur++;
-				}
-
-				if ((pCur - pStart) > 0)
-				{
-					m_pDoc->insertSpan(getPoint(), pStart, pCur - pStart);
-				}
-
-				if (
-					(*pCur == 13)
-					|| (*pCur == 10)
-					)
-				{
-					m_pDoc->insertStrux(getPoint(), PTX_Block);
-	
-					if (*pCur == 13)
-					{
-						pCur++;
-						if (*pCur == 10 && ((pCur - pStart) < iLen))
-						{
-							pCur++;
-						}
-					}
-					else 
-					{
-						UT_ASSERT(*pCur == 10);
-						
-						pCur++;
-					}
-					
-					if ((*pCur) && ((pCur - pStart) < iLen))
-					{
-						pStart = pCur;
-					}
-					else
-					{
-						break;
-					}
-				}
-				else
-				{
-					break;
-				}
-			}
-			
-
-			delete pUCSData;
-		}
-		else
-		{
-			UT_DEBUGMSG(("Unsupported clipboard format...\n"));
-		}
-		
-		pClip->close();
-	}
-#endif
+	m_pApp->pasteFromClipboard(&dr,bUseClipboard);
 
 	_generalUpdate();
 	

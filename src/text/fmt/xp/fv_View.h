@@ -109,12 +109,17 @@ public:
 	virtual void	cmdCopy(void);
 	virtual void	cmdCut(void);
 	virtual void	cmdPaste(void);
+	virtual void	cmdPasteSelectionAt(UT_sint32 xPos, UT_sint32 yPos);
 
 	virtual void	getTopRulerInfo(AP_TopRulerInfo * pInfo);
 	virtual void	getLeftRulerInfo(AP_LeftRulerInfo * pInfo);
 	
 	virtual EV_EditMouseContext getMouseContext(UT_sint32 xPos, UT_sint32 yPos);
 	virtual EV_EditMouseContext getInsertionPointContext(UT_sint32 * pxPos, UT_sint32 * pyPos);
+
+	virtual UT_Bool		isSelectionEmpty(void) const;
+	virtual void		cmdUnselectSelection(void);
+	void				getDocumentRangeOfCurrentSelection(PD_DocumentRange * pdr);
 	
 // ----------------------
 	FL_DocLayout* 	getLayout() const;
@@ -147,7 +152,6 @@ public:
 
 // ----------------------
 	UT_Bool			isLeftMargin(UT_sint32 xPos, UT_sint32 yPos);
-	UT_Bool			isSelectionEmpty();
 	void			cmdSelect(UT_sint32 xPos, UT_sint32 yPos, FV_DocPos dpBeg, FV_DocPos dpEnd);
 	void			cmdCharMotion(UT_Bool bForward, UT_uint32 count);
 	UT_Bool			cmdCharInsert(UT_UCSChar * text, UT_uint32 count);
@@ -258,7 +262,7 @@ protected:
 	void				_setPoint(UT_uint32 pt, UT_Bool bEOL = UT_FALSE);
 	UT_uint32			_getDataCount(UT_uint32 pt1, UT_uint32 pt2);
 	UT_Bool				_charMotion(UT_Bool bForward,UT_uint32 countChars);
-	void				_doPaste(void);
+	void				_doPaste(UT_Bool bUseClipboard);
 	void				_clearIfAtFmtMark(PT_DocPosition dpos);
 	
 	PT_DocPosition		m_iInsPoint;

@@ -76,6 +76,8 @@ public:
 	virtual void				translateDocumentToScreen(UT_sint32 &x, UT_sint32 &y) = 0;
 	virtual void				setStatusMessage(const char * szMsg) = 0;
 
+	void						setTimeOfLastEvent(guint32 eventTime);
+	
 protected:
 	virtual GtkWidget *			_createDocumentWindow(void)=0;
 	virtual GtkWidget *			_createStatusBarWindow(void)=0;

@@ -28,6 +28,11 @@
 
 #include "xap_Win32Clipboard.h"
 
+#define	AP_CLIPBOARD_TEXTPLAIN_8BIT 		"text-8bit"
+#define AP_CLIPBOARD_RTF 					"rtf"
+#define AP_CLIPBOARD_UNKNOWN 				"unknown"
+
+
 class AP_Win32Clipboard : public XAP_Win32Clipboard
 {
 public:

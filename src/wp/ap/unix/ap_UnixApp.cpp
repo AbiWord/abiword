@@ -44,6 +44,7 @@
 #include "ap_LoadBindings.h"
 #include "xap_Menu_ActionSet.h"
 #include "xap_Toolbar_ActionSet.h"
+#include "xav_View.h"
 
 #include "ie_imp.h"
 #include "ie_types.h"
@@ -60,8 +61,9 @@
 #include "ut_bytebuf.h"
 #include "ut_png.h"
 #include "ut_dialogHelper.h"
+#include "ut_debugmsg.h"
 
-#include "ap_Clipboard.h"
+#include "fv_View.h"
 
 /*****************************************************************/
 
@@ -71,6 +73,13 @@ AP_UnixApp::AP_UnixApp(XAP_Args * pArgs, const char * szAppName)
 	m_prefs = NULL;
 	m_pStringSet = NULL;
 	m_pClipboard = NULL;
+
+	m_bHasSelection = UT_FALSE;
+	m_bSelectionInFlux = UT_FALSE;
+	m_cacheDeferClear = UT_FALSE;
+	m_pViewSelection = NULL;
+	m_pFrameSelection = NULL;
+	m_cacheSelectionView = NULL;
 }
 
 AP_UnixApp::~AP_UnixApp(void)
@@ -116,8 +125,9 @@ UT_Bool AP_UnixApp::initialize(void)
 	
 	// now that preferences are established, let the xap init
 		   
-	m_pClipboard = new AP_UnixClipboard();
+	m_pClipboard = new AP_UnixClipboard(this);
 	UT_ASSERT(m_pClipboard);
+	m_pClipboard->initialize();
 	   
 	m_pEMC = AP_GetEditMethods();
 	UT_ASSERT(m_pEMC);
@@ -299,153 +309,341 @@ void AP_UnixApp::copyToClipboard(PD_DocumentRange * pDocRange)
 {
 	// copy the given subset of the given document to the
 	// system clipboard in a variety of formats.
+	//
+	// to minimize the effects of race-conditions, we create
+	// all of the buffers we need and then post them to the
+	// server (well sorta) all at one time.
 
-	if (!m_pClipboard->open())
-		return;
-	
-	m_pClipboard->clear();
-	
+	UT_ByteBuf bufRTF;
+	UT_ByteBuf bufTEXT;
+
+	// create RTF buffer to put on the clipboard
+		
+	IE_Exp_RTF * pExpRtf = new IE_Exp_RTF(pDocRange->m_pDoc);
+	if (pExpRtf)
 	{
-		// put raw 8bit text on the clipboard
-		
-		IE_Exp_Text * pExpText = new IE_Exp_Text(pDocRange->m_pDoc);
-		if (pExpText)
-		{
-			UT_ByteBuf buf;
-			IEStatus status = pExpText->copyToBuffer(pDocRange,&buf);
-
-			// NOTE: MS Docs state that for CF_TEXT and CF_OEMTEXT we must have a zero
-			// NOTE: on the end of the buffer -- that's how they determine how much text
-			// NOTE: that we have.
-			UT_Byte b = 0;
-			buf.append(&b,1);
-			
-			m_pClipboard->addData(AP_CLIPBOARD_TEXTPLAIN_8BIT,(UT_Byte *)buf.getPointer(0),buf.getLength());
-			DELETEP(pExpText);
-			UT_DEBUGMSG(("CopyToClipboard: copying %d bytes in TEXTPLAIN format.\n",buf.getLength()));
-		}
-
-		// also put RTF on the clipboard
-		
-		IE_Exp_RTF * pExpRtf = new IE_Exp_RTF(pDocRange->m_pDoc);
-		if (pExpRtf)
-		{
-			UT_ByteBuf buf;
-			IEStatus status = pExpRtf->copyToBuffer(pDocRange,&buf);
-			m_pClipboard->addData(AP_CLIPBOARD_RTF,(UT_Byte *)buf.getPointer(0),buf.getLength());
-			DELETEP(pExpRtf);
-			UT_DEBUGMSG(("CopyToClipboard: copying %d bytes in RTF format.\n",buf.getLength()));
-		}
-
-#if 0
-		// also put our format on the clipboard
-		
-		IE_Exp_AbiWord_1 * pExpAbw = new IE_Exp_AbiWord_1(pDocRange->m_pDoc);
-		if (pExpAbw)
-		{
-			UT_ByteBuf buf;
-			IEStatus status = pExpAbw->copyToBuffer(pDocRange,&buf);
-			m_pClipboard->addData(AP_CLIPBOARD_ABIWORD_1,(UT_Byte *)buf.getPointer(0),buf.getLength());
-			DELETEP(pExpAbw);
-			UT_DEBUGMSG(("CopyToClipboard: copying %d bytes in ABIWORD_1 format.\n",buf.getLength()));
-		}
-
-		// TODO on NT, do we need to put unicode text on the clipboard ??
-		// TODO do we need to put HTML on the clipboard ??
-#endif
+		pExpRtf->copyToBuffer(pDocRange,&bufRTF);
+		DELETEP(pExpRtf);
+		UT_DEBUGMSG(("CopyToClipboard: copying %d bytes in RTF format.\n",bufRTF.getLength()));
 	}
 
-	m_pClipboard->close();
+	// create raw 8bit text buffer to put on the clipboard
+		
+	IE_Exp_Text * pExpText = new IE_Exp_Text(pDocRange->m_pDoc);
+	if (pExpText)
+	{
+		pExpText->copyToBuffer(pDocRange,&bufTEXT);
+		DELETEP(pExpText);
+		UT_DEBUGMSG(("CopyToClipboard: copying %d bytes in TEXTPLAIN format.\n",bufTEXT.getLength()));
+	}
+
+	// NOTE: this clearData() will actually release our ownership of
+	// NOTE: the CLIPBOARD property in addition to clearing any
+	// NOTE: stored buffers.  I'm omitting it since we seem to get
+	// NOTE: clr callback after we have done some other processing
+	// NOTE: (like adding the new stuff).
+	// m_pClipboard->clearData(UT_TRUE,UT_FALSE);
+	
+	if (bufRTF.getLength() > 0)
+		m_pClipboard->addData(AP_CLIPBOARD_RTF,(UT_Byte *)bufRTF.getPointer(0),bufRTF.getLength());
+	if (bufTEXT.getLength() > 0)
+		m_pClipboard->addData(AP_CLIPBOARD_TEXTPLAIN_8BIT,(UT_Byte *)bufTEXT.getPointer(0),bufTEXT.getLength());
+
+	return;
 }
 
-void AP_UnixApp::pasteFromClipboard(PD_DocumentRange * pDocRange)
+void AP_UnixApp::pasteFromClipboard(PD_DocumentRange * pDocRange, UT_Bool bUseClipboard)
 {
 	// paste from the system clipboard using the best-for-us format
-	// that is present.
+	// that is present.  try to get the content in the order listed.
+
+	static const char * aszFormatsAccepted[] = { AP_CLIPBOARD_RTF,
+												 AP_CLIPBOARD_TEXTPLAIN_8BIT,
+												 0 /* must be last */ };
+
+	// TODO currently i have this set so that a ^v or Menu[Edit/Paste] will
+	// TODO use the CLIPBOARD property and a MiddleMouseClick will use the
+	// TODO PRIMARY property -- this seems to be the "X11 way" (sigh).
+	// TODO consider having a preferences switch to allow ^v and Menu[Edit/Paste]
+	// TODO to use the most recent property... this might be a nice way of
+	// TODO unifying things -- or it might not -- this is probably an area
+	// TODO for investigation or some usability testing.
 	
-	if (!m_pClipboard->open())
-		return;
-	
+	XAP_UnixClipboard::T_AllowGet tFrom = ((bUseClipboard)
+										   ? XAP_UnixClipboard::TAG_ClipboardOnly
+										   : XAP_UnixClipboard::TAG_PrimaryOnly);
+
+	const char * szFormatFound = NULL;
+	unsigned char * pData = NULL;
+	UT_uint32 iLen = 0;
+
+	UT_Bool bFoundOne = m_pClipboard->getData(tFrom,aszFormatsAccepted,(void**)&pData,&iLen,&szFormatFound);
+	if (!bFoundOne)
 	{
-		// TODO decide what the proper order is for these.
+		UT_DEBUGMSG(("PasteFromClipboard: did not find anything to paste.\n"));
+		return;
+	}
+	
+	if (UT_stricmp(szFormatFound,AP_CLIPBOARD_RTF) == 0)
+	{
+		iLen = MyMin(iLen,strlen((const char *)pData));
+		UT_DEBUGMSG(("PasteFromClipboard: pasting %d bytes in format [%s].\n",iLen,szFormatFound));
 
-#if 0
-		if (m_pClipboard->hasFormat(AP_CLIPBOARD_ABIWORD_1))
-		{
-			UT_uint32 iLen = m_pClipboard->getDataLen(AP_CLIPBOARD_ABIWORD_1);
-			UT_DEBUGMSG(("PasteFromClipboard: pasting %d bytes in ABIWORD_1 format.\n",iLen));
-			unsigned char * pData = new unsigned char[iLen+1];
-			memset(pData,0,iLen+1);
-			m_pClipboard->getData(AP_CLIPBOARD_ABIWORD_1,pData);
-			IE_Imp_AbiWord_1 * pImpAbw = new IE_Imp_AbiWord_1(pDocRange->m_pDoc);
-			pImpAbw->pasteFromBuffer(pDocRange,pData,iLen);
-			DELETEP(pImpAbw);
-			DELETEP(pData);
-			goto MyEnd;
-		}
-#endif
+		IE_Imp_RTF * pImpRTF = new IE_Imp_RTF(pDocRange->m_pDoc);
+		pImpRTF->pasteFromBuffer(pDocRange,pData,iLen);
+		DELETEP(pImpRTF);
 
-		if (m_pClipboard->hasFormat(AP_CLIPBOARD_RTF))
-		{
-			UT_uint32 iLen = m_pClipboard->getDataLen(AP_CLIPBOARD_RTF);
-			UT_DEBUGMSG(("PasteFromClipboard: pasting %d bytes in RTF format.\n",iLen));
-			unsigned char * pData = new unsigned char[iLen+1];
-			memset(pData,0,iLen+1);
-			m_pClipboard->getData(AP_CLIPBOARD_RTF,pData);
-			IE_Imp_RTF * pImpRTF = new IE_Imp_RTF(pDocRange->m_pDoc);
-			pImpRTF->pasteFromBuffer(pDocRange,pData,iLen);
-			DELETEP(pImpRTF);
-			DELETEP(pData);
-			goto MyEnd;
-		}
-
-		if (m_pClipboard->hasFormat(AP_CLIPBOARD_TEXTPLAIN_8BIT))
-		{
-			UT_uint32 iLen = m_pClipboard->getDataLen(AP_CLIPBOARD_TEXTPLAIN_8BIT);
-			UT_DEBUGMSG(("PasteFromClipboard: pasting %d bytes in TEXTPLAIN format.\n",iLen));
-			unsigned char * pData = new unsigned char[iLen+1];
-			memset(pData,0,iLen+1);
-			m_pClipboard->getData(AP_CLIPBOARD_TEXTPLAIN_8BIT,pData);
-			IE_Imp_Text * pImpText = new IE_Imp_Text(pDocRange->m_pDoc);
-			// NOTE: MS Docs state that the terminating zero on the string buffer is 
-			// NOTE: included in the length for CF_TEXT and CF_OEMTEXT, so we compensate
-			// NOTE: for it here.
-			if (pData[iLen-1]==0)
-				iLen--;
-			pImpText->pasteFromBuffer(pDocRange,pData,iLen);
-			DELETEP(pImpText);
-			DELETEP(pData);
-			goto MyEnd;
-		}
-
-		// TODO figure out what to do with an image....
-		UT_DEBUGMSG(("PasteFromClipboard: TODO support this format..."));
+		return;
 	}
 
-MyEnd:
-	m_pClipboard->close();
+	if (UT_stricmp(szFormatFound,AP_CLIPBOARD_TEXTPLAIN_8BIT) == 0)
+	{
+		iLen = MyMin(iLen,strlen((const char *)pData));
+		UT_DEBUGMSG(("PasteFromClipboard: pasting %d bytes in format [%s].\n",iLen,szFormatFound));
+
+		IE_Imp_Text * pImpText = new IE_Imp_Text(pDocRange->m_pDoc);
+		pImpText->pasteFromBuffer(pDocRange,pData,iLen);
+		DELETEP(pImpText);
+
+		return;
+	}
+
 	return;
 }
 
 UT_Bool AP_UnixApp::canPasteFromClipboard(void)
 {
-	if (!m_pClipboard->open())
-		return UT_FALSE;
+	// TODO fix this...
+	return UT_TRUE;
+}
 
-#if 0
-	if (m_pClipboard->hasFormat(AP_CLIPBOARD_ABIWORD_1))
-		goto ReturnTrue;
-#endif
-	if (m_pClipboard->hasFormat(AP_CLIPBOARD_RTF))
-		goto ReturnTrue;
-	if (m_pClipboard->hasFormat(AP_CLIPBOARD_TEXTPLAIN_8BIT))
-		goto ReturnTrue;
+/*****************************************************************/
+/*****************************************************************/
 
-	m_pClipboard->close();
+void AP_UnixApp::setSelectionStatus(AV_View * pView)
+{
+	// this is called by the view-listeners when the state
+	// of the X Selection is changed by the user on one of
+	// our windows.
+	//
+	// we need to notify the clipboard so that it can assert
+	// or release the X Selection.
+	//
+	// we remember the last view that called us so that
+	// clearSelection() can do it's job when another application
+	// asserts the X Selection.
+
+	if (m_bSelectionInFlux)
+		return;
+	m_bSelectionInFlux = UT_TRUE;
+
+	UT_Bool bSelectionStateInThisView = ( ! pView->isSelectionEmpty() );
+	
+	if (m_pViewSelection && m_pFrameSelection && m_bHasSelection && (pView != m_pViewSelection))
+	{
+		// one window has a selection currently and another window just
+		// asserted one.  we force clear the old one to enforce the X11
+		// style.
+
+		m_pViewSelection->cmdUnselectSelection();
+	}
+
+	// now fill in all of our variables for this window
+	// and notify the XServer that we have/don't have a
+	// selection.  if we were asked to clear the selection
+	// and we match the cached value (because of the warp
+	// effect on a X11 style middle mouse), we don't actually
+	// tell the XServer of the release (so that the paste
+	// that will immediately follow will short circut to us
+	// rather than going to the server).
+
+
+	if (bSelectionStateInThisView)
+	{
+		m_bHasSelection = bSelectionStateInThisView;
+		m_pClipboard->assertSelection();
+	}
+	else if (pView == m_cacheSelectionView)
+	{
+		// if we are going to use the cache, we do not
+		// clear m_bHasSelection now.  rather, we defer
+		// this and the server notification until afterwards.
+		
+		UT_ASSERT(m_bHasSelection);
+		m_cacheDeferClear = UT_TRUE;
+	}
+	else
+	{
+		m_bHasSelection = bSelectionStateInThisView;
+		m_pClipboard->clearData(UT_FALSE,UT_TRUE);
+	}
+	
+	m_pViewSelection = pView;
+	m_pFrameSelection = (XAP_Frame *)pView->getParentData();
+
+	m_bSelectionInFlux = UT_FALSE;
+	return;
+}
+
+UT_Bool AP_UnixApp::forgetFrame(XAP_Frame * pFrame)
+{
+	// we intercept this so that we can erase our
+	// selection-related variables if necessary.
+	// wouldn't want to hold onto a stale frame or
+	// view pointer of a closed window when the
+	// selection is changed....
+
+	if (m_pFrameSelection && (pFrame==m_pFrameSelection))
+	{
+		m_pClipboard->clearData(UT_FALSE,UT_TRUE);
+		m_pFrameSelection = NULL;
+		m_pViewSelection = NULL;
+	}
+	
+	return XAP_App::forgetFrame(pFrame);
+}
+
+void AP_UnixApp::clearSelection(void)
+{
+	// this method goes with setSelectionStatus().
+	//
+	// we are called by the clipboard (thru the callback chain)
+	// in response to another application stealing the X Selection.
+	//
+	// we need to notify the view so that it can clear the screen
+	// as is the custom on X -- only one selection at any time.
+	//
+	// we have to watch out here because when we call up to clear
+	// the selection, the view will notify the view-listeners of
+	// the change, which may cause setSelectionStatus() to get
+	// called and thus update the clipboard -- this could recurse
+	// a while....
+
+	if (m_bSelectionInFlux)
+		return;
+	m_bSelectionInFlux = UT_TRUE;
+	
+	if (m_pViewSelection && m_pFrameSelection && m_bHasSelection)
+	{
+		m_pViewSelection->cmdUnselectSelection();
+		m_bHasSelection = UT_FALSE;
+	}
+	
+	m_bSelectionInFlux = UT_FALSE;
+	return;
+}
+
+void AP_UnixApp::cacheCurrentSelection(AV_View * pView)
+{
+	if (pView)
+	{
+		// remember a temporary copy of the extent of the current
+		// selection in the given view.  this is intended for the
+		// X11 middle mouse trick -- where we need to warp to a
+		// new location and paste the current selection (not the
+		// clipboard) and the act of warping clears the selection.
+
+		// TODO if we ever support multiple view types, we'll have to
+		// TODO change this.
+		FV_View * pFVView = static_cast<FV_View *>(pView);
+		pFVView->getDocumentRangeOfCurrentSelection(&m_cacheDocumentRangeOfSelection);
+
+		m_cacheSelectionView = pView;
+		UT_DEBUGMSG(("Clipboard::cacheCurrentSelection: [view %p][range %d %d]\n",
+					 pFVView,
+					 m_cacheDocumentRangeOfSelection.m_pos1,
+					 m_cacheDocumentRangeOfSelection.m_pos2));
+		m_cacheDeferClear = UT_FALSE;
+	}
+	else
+	{
+		if (m_cacheDeferClear)
+		{
+			m_cacheDeferClear = UT_FALSE;
+			m_bHasSelection = UT_FALSE;
+			m_pClipboard->clearData(UT_FALSE,UT_TRUE);
+		}
+		m_cacheSelectionView = NULL;
+	}
+
+	return;
+}
+
+UT_Bool AP_UnixApp::getCurrentSelection(const char** formatList,
+										void ** ppData, UT_uint32 * pLen,
+										const char **pszFormatFound)
+{
+	// get the current contents of the selection in the
+	// window last known to have a selection using one
+	// of the formats in the given list.
+
+	int j;
+	
+	*ppData = NULL;				// assume failure
+	*pLen = 0;
+	*pszFormatFound = NULL;
+	
+	if (!m_pViewSelection || !m_pFrameSelection || !m_bHasSelection)
+		return UT_FALSE;		// can't do it, give up.
+
+	PD_DocumentRange dr;
+
+	if (m_cacheSelectionView == m_pViewSelection)
+	{
+		dr = m_cacheDocumentRangeOfSelection;
+		UT_DEBUGMSG(("Clipboard::getCurrentSelection: *using cached values* [range %d %d]\n",dr.m_pos1,dr.m_pos2));
+	}
+	else
+	{
+		// TODO if we ever support multiple view types, we'll have to
+		// TODO change this.
+		FV_View * pFVView = static_cast<FV_View *>(m_pViewSelection);
+	
+		pFVView->getDocumentRangeOfCurrentSelection(&dr);
+		UT_DEBUGMSG(("Clipboard::getCurrentSelection: [view %p][range %d %d]\n",pFVView,dr.m_pos1,dr.m_pos2));
+	}
+	
+	m_selectionByteBuf.truncate(0);
+
+	for (j=0; (formatList[j]); j++)
+	{
+		UT_DEBUGMSG(("Clipboard::getCurrentSelection: considering format [%s]\n",formatList[j]));
+
+		if (UT_stricmp(formatList[j],AP_CLIPBOARD_RTF) == 0)
+		{
+			IE_Exp_RTF * pExpRtf = new IE_Exp_RTF(dr.m_pDoc);
+			if (!pExpRtf)
+				return UT_FALSE;		// give up on memory errors
+
+			pExpRtf->copyToBuffer(&dr,&m_selectionByteBuf);
+			DELETEP(pExpRtf);
+			goto ReturnThisBuffer;
+		}
+			
+		if (   (UT_stricmp(formatList[j],AP_CLIPBOARD_TEXTPLAIN_8BIT) == 0)
+			|| (UT_stricmp(formatList[j],AP_CLIPBOARD_STRING) == 0))
+		{
+			IE_Exp_Text * pExpText = new IE_Exp_Text(dr.m_pDoc);
+			if (!pExpText)
+				return UT_FALSE;
+
+			pExpText->copyToBuffer(&dr,&m_selectionByteBuf);
+			DELETEP(pExpText);
+			goto ReturnThisBuffer;
+		}
+
+		// TODO add other formats as necessary
+	}
+
+	UT_DEBUGMSG(("Clipboard::getCurrentSelection: cannot create anything in one of requested formats.\n"));
 	return UT_FALSE;
 
-ReturnTrue:
-	m_pClipboard->close();
+ReturnThisBuffer:
+	UT_DEBUGMSG(("Clipboard::getCurrentSelection: copying %d bytes in format [%s].\n",
+				 m_selectionByteBuf.getLength(),formatList[j]));
+	*ppData = (void *)m_selectionByteBuf.getPointer(0);
+	*pLen = m_selectionByteBuf.getLength();
+	*pszFormatFound = formatList[j];
 	return UT_TRUE;
 }
 

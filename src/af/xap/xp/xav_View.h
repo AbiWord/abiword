@@ -28,6 +28,8 @@
 #include "ev_EditBits.h"
 class XAP_App;
 
+// TODO shouldn't these classes be xav_ prefixed ??
+
 typedef enum _AV_ScrollCmd
 {
 	AV_SCROLLCMD_PAGEUP,
@@ -93,6 +95,8 @@ public:
 	virtual UT_Bool	cmdSaveAs(const char * szFilename, int ieft) = 0;
 
 	virtual EV_EditMouseContext getMouseContext(UT_sint32 xPos, UT_sint32 yPos) = 0;
+	virtual UT_Bool 	isSelectionEmpty(void) const = 0;
+	virtual void		cmdUnselectSelection(void) = 0;
 	
 protected:
 	XAP_App *			m_pApp;

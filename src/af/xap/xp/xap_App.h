@@ -38,6 +38,7 @@ class XAP_BindingSet;
 class XAP_Prefs;
 class XAP_StringSet;
 class PD_DocumentRange;
+class AV_View;
 
 /*****************************************************************
 ******************************************************************
@@ -96,8 +97,9 @@ public:
 	virtual const char *					getAbiSuiteLibDir(void) const;
 	virtual const char *					getAbiSuiteAppDir(void) const = 0;
 	virtual void							copyToClipboard(PD_DocumentRange * pDocRange) = 0;
-	virtual void							pasteFromClipboard(PD_DocumentRange * pDocRange) = 0;
+	virtual void							pasteFromClipboard(PD_DocumentRange * pDocRange, UT_Bool bUseClipboard) = 0;
 	virtual UT_Bool							canPasteFromClipboard(void) = 0;
+	virtual void							cacheCurrentSelection(AV_View *) = 0;
 
 protected:
 	void							_setAbiSuiteLibDir(const char * sz);

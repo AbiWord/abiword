@@ -273,3 +273,11 @@ void XAP_UnixApp::_setAbiSuiteLibDir(void)
 	XAP_App::_setAbiSuiteLibDir(buf);
 	return;
 }
+
+//////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////
+
+void XAP_UnixApp::setTimeOfLastEvent(guint32 eventTime)
+{
+	m_eventTime = eventTime;
+}

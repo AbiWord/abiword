@@ -1,4 +1,4 @@
-/* AbiWord
+/* AbiSource Application Framework
  * Copyright (C) 1998 AbiSource, Inc.
  * 
  * This program is free software; you can redistribute it and/or
@@ -17,19 +17,34 @@
  * 02111-1307, USA.
  */
 
-/*****************************************************************
-** Only one of these is created by the application.
-*****************************************************************/
+
+
+#include <stdio.h>
+#include <stdlib.h>
 
 #include "ut_types.h"
-#include "ut_vector.h"
-#include "ap_Clipboard.h"
-#include "ap_BeOSClipboard.h"
+#include "ut_debugmsg.h"
+#include "ut_assert.h"
+#include "xav_Listener.h"
+#include "xav_View.h"
+#include "ap_UnixViewListener.h"
+#include "ap_UnixApp.h"
 
-//////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////
-
-AP_BeOSClipboard::AP_BeOSClipboard(void)
-	: XAP_BeOSClipboard()
+ap_UnixViewListener::ap_UnixViewListener(XAP_Frame * pFrame)
+	: ap_ViewListener(pFrame)
 {
 }
+
+UT_Bool ap_UnixViewListener::notify(AV_View * pView, const AV_ChangeMask mask)
+{
+	UT_ASSERT(pView);
+	
+	if (mask & AV_CHG_EMPTYSEL)
+	{
+		AP_UnixApp * pUnixApp = static_cast<AP_UnixApp *>(pView->getApp());
+		pUnixApp->setSelectionStatus(pView);
+	}
+
+	return ap_ViewListener::notify(pView,mask);
+}
+

@@ -73,7 +73,7 @@ UT_Bool ev_UnixKeyboard::keyPressEvent(AV_View* pView,
 	if (e->state & (s_alt_mask))
 		state |= EV_EMS_ALT;
 
-	UT_DEBUGMSG(("KeyPressEvent: keyval=%04lx state=%04lx\n",e->keyval,state));
+	//UT_DEBUGMSG(("KeyPressEvent: keyval=%04lx state=%04lx\n",e->keyval,state));
 	
 	if (s_isVirtualKeyCode(e->keyval))
 	{
@@ -496,7 +496,7 @@ static GdkModifierType s_getAltMask(void)
 	if (!alt_mask)						// if nothing set, fall back to MOD1
 		alt_mask = GDK_MOD1_MASK;
 	
-	UT_DEBUGMSG(("Keycodes for alt [l 0x%x][r 0x%x] using modifiers [%d %d] yields [0x%x]\n",kcAltL,kcAltR,mAltL-2,mAltR-2,alt_mask));
+	//UT_DEBUGMSG(("Keycodes for alt [l 0x%x][r 0x%x] using modifiers [%d %d] yields [0x%x]\n",kcAltL,kcAltR,mAltL-2,mAltR-2,alt_mask));
 
 	return (GdkModifierType)alt_mask;
 }

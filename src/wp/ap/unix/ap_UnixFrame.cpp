@@ -39,6 +39,7 @@
 #include "ap_UnixLeftRuler.h"
 #include "xap_UnixFontManager.h"
 #include "ap_UnixStatusBar.h"
+#include "ap_UnixViewListener.h"
 
 #ifdef ABISOURCE_LICENSED_TRADEMARKS
 #include "abiword_48_tm.xpm"
@@ -117,6 +118,8 @@ UT_Bool AP_UnixFrame::_showDocument(UT_uint32 iZoom)
 	// This ViewListener is responsible for keeping
 	// the title-bar up to date (primarily title
 	// changes, dirty indicator, and window number).
+	// ON UNIX ONLY: we subclass this with ap_UnixViewListener
+	// ON UNIX ONLY: so that we can deal with X-Selections.
 	//
 	// The "ap_Scrollbar_ViewListener pScrollbarViewListener"
 	// receives change notifications as the doucment changes.
@@ -134,7 +137,7 @@ UT_Bool AP_UnixFrame::_showDocument(UT_uint32 iZoom)
 	
 	pScrollObj = new AV_ScrollObj(this,_scrollFuncX,_scrollFuncY);
 	ENSUREP(pScrollObj);
-	pViewListener = new ap_ViewListener(this);
+	pViewListener = new ap_UnixViewListener(this);
 	ENSUREP(pViewListener);
 	pScrollbarViewListener = new ap_Scrollbar_ViewListener(this,pView);
 	ENSUREP(pScrollbarViewListener);

@@ -16,10 +16,3 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
  * 02111-1307, USA.
  */
-
-#include "xap_Clipboard.h"
-
-XAP_Clipboard::XAP_Clipboard()
-{
-	m_bOpen = UT_FALSE;
-}

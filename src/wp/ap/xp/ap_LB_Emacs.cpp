@@ -110,6 +110,12 @@ static struct ap_bs_Mouse s_MouseTable[] =
 //  { context	{ click				doubleclick		drag,	dbldrag,	release,	doublerelease	}},
 //	{_CI _B1,	{ "selectField",	"editField",	"",		"",			"",			""				}},
 
+//	Button-2, Text-context
+//  { context	{ click				doubleclick		drag,		dbldrag,		release,	doublerelease	}},
+
+// special key binding for X11-style middle mouse selection (not to be confused with the clipboard)
+	{_CT _B2,	{ "pasteSelection",	"",				"",			"",				"",			""				}},
+
 //	Button-3, context menus
 //  { context	{ click					dblclick	drag,	dbldrag,	release,	doublerelease	}},
 	//{_CU _B3,	{ "contextDefault",		"",			"",		"",			"",			""				}},

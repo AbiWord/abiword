@@ -65,7 +65,7 @@ UT_Bool fl_DocListener::populate(PL_StruxFmtHandle sfh,
 								 const PX_ChangeRecord * pcr)
 {
 	UT_ASSERT(m_pLayout);
-	UT_DEBUGMSG(("fl_DocListener::populate\n"));
+	//UT_DEBUGMSG(("fl_DocListener::populate\n"));
 
 	UT_Bool bResult = UT_FALSE;
 
@@ -132,7 +132,7 @@ UT_Bool fl_DocListener::populateStrux(PL_StruxDocHandle sdh,
 									  PL_StruxFmtHandle * psfh)
 {
 	UT_ASSERT(m_pLayout);
-	UT_DEBUGMSG(("fl_DocListener::populateStrux\n"));
+	//UT_DEBUGMSG(("fl_DocListener::populateStrux\n"));
 
 	UT_ASSERT(pcr->getType() == PX_ChangeRecord::PXT_InsertStrux);
 	const PX_ChangeRecord_Strux * pcrx = static_cast<const PX_ChangeRecord_Strux *> (pcr);
@@ -265,7 +265,7 @@ UT_Bool fl_DocListener::populateStrux(PL_StruxDocHandle sdh,
 UT_Bool fl_DocListener::change(PL_StruxFmtHandle sfh,
 							   const PX_ChangeRecord * pcr)
 {
-	UT_DEBUGMSG(("fl_DocListener::change\n"));
+	//UT_DEBUGMSG(("fl_DocListener::change\n"));
 	UT_Bool bResult = UT_FALSE;
 
 	switch (pcr->getType())
@@ -511,7 +511,7 @@ UT_Bool fl_DocListener::insertStrux(PL_StruxFmtHandle sfh,
 															PL_ListenerId lid,
 															PL_StruxFmtHandle sfhNew))
 {
-	UT_DEBUGMSG(("fl_DocListener::insertStrux\n"));
+	//UT_DEBUGMSG(("fl_DocListener::insertStrux\n"));
 
 	UT_ASSERT(pcr->getType() == PX_ChangeRecord::PXT_InsertStrux);
 	const PX_ChangeRecord_Strux * pcrx = static_cast<const PX_ChangeRecord_Strux *> (pcr);

@@ -20,68 +20,87 @@
 #ifndef XAP_UNIXCLIPBOARD_H
 #define XAP_UNIXCLIPBOARD_H
 
-#include "ut_types.h"
-#include "ut_vector.h"
-
-#include "xap_Clipboard.h"
-
 #include <glib.h>
 #include <gdk/gdk.h>
 #include <gtk/gtk.h>
 
-class XAP_UnixClipboard : public XAP_Clipboard
+#include "ut_types.h"
+#include "ut_vector.h"
+#include "ut_bytebuf.h"
+#include "xap_FakeClipboard.h"
+#include "xap_UnixApp.h"
+
+//////////////////////////////////////////////////////////////////
+
+class XAP_UnixClipboard
 {
 public:
-   XAP_UnixClipboard();
-   XAP_UnixClipboard(const char * selection);
+	typedef enum _T_AllowGet { TAG_ClipboardOnly, TAG_PrimaryOnly, TAG_MostRecent } T_AllowGet;
 
-   virtual ~XAP_UnixClipboard();
+	XAP_UnixClipboard(XAP_UnixApp * pUnixApp);
+	virtual ~XAP_UnixClipboard();
+
+	void				initialize(void);
+
+	UT_Bool				addData(const char* format, void* pData, UT_sint32 iNumBytes);
+	void				clearData(UT_Bool bClipboard, UT_Bool bPrimary);
+	UT_Bool				getData(T_AllowGet tFrom, const char** formatList,
+								void ** ppData, UT_uint32 * pLen,
+								const char **pszFormatFound);
+	UT_Bool				assertSelection(void);
 	
-   virtual UT_Bool		open(void);
-   virtual UT_Bool		close(void);
-   virtual UT_Bool		addData(const char* format, void* pData, UT_sint32 iNumBytes);
-   virtual UT_sint32	getDataLen(const char* format);
-   virtual UT_Bool		getData(const char* format, void* pData);
-   virtual UT_Bool		hasFormat(const char* format);
-   virtual UT_sint32	countFormats(void);
-   virtual const char *	getNthFormat(UT_sint32 n);
-   virtual UT_Bool		clear(void);
-   
-   virtual GR_Image*	getImage(void);
-   virtual UT_Bool		addImage(GR_Image*);
+	// the following are callbacks
+	
+	void					_selrcv(GtkSelectionData *selectionData, guint32 time, gpointer data);
+	gint					_selclr(GdkEventSelection * event);
+	void					_selsnd(GtkSelectionData * selectionData, guint info, guint32 time, gpointer data);
 
-   GdkAtom	m_received_format;
-   void*	m_received_data;
-   UT_uint32	m_received_length;
-
-   UT_Vector	m_vecData;
-
-   UT_Vector   	m_vecFormatAtoms;
-
-   UT_Bool	m_waiting;
-   UT_Bool	m_error;
-
-   UT_Bool	m_ownClipboard;
-
-   GdkAtom	m_selection;
-   
 protected:
+	virtual GdkAtom			_convertFormatString(const char * format);
+	virtual const char *	_convertToFormatString(GdkAtom fmt) const;
 
-   virtual UT_Bool _init(GdkAtom selection);
+	void					_releaseOwnership(GdkAtom atom, guint32 timeOfRelease);
+	UT_Bool					_testOwnership(GdkAtom atom) const;
+
+	UT_Bool					_getDataFromServerInFormat(GdkAtom atom, GdkAtom atomFormat,
+													   void ** ppData, UT_uint32 * pLen,
+													   const char **pszFormatFound);
+	void					_getFormats(GdkAtom atom);
+	UT_Bool					_getDataFromServer(GdkAtom atom, const char** formatList,
+											   void ** ppData, UT_uint32 * pLen,
+											   const char **pszFormatFound);
+	UT_Bool					_getDataFromFakeClipboard(const char** formatList,
+													  void ** ppData, UT_uint32 * pLen,
+													  const char **pszFormatFound);
+	guint32					_getTimeFromServer(GdkAtom atom);
+	UT_Bool					_getCurrentSelection(const char** formatList,
+												 void ** ppData, UT_uint32 * pLen,
+												 const char **pszFormatFound);
+
+	GtkWidget *			m_myWidget;				// private widget to sync selection/clipboard communication with XServer.
    
-   GtkWidget*	m_targets_widget;
-   GtkWidget*	m_data_widget;
+	UT_Bool				m_waiting;				// sync flag between top-half and bottom-half (callbacks)
+	UT_Bool				m_bOwnClipboard;		// do we own CLIPBOARD property (ie the clipboard)
+	UT_Bool				m_bOwnPrimary;			// do we own PRIMARY property (ie the X selection)
+	UT_Bool				m_bWaitingForDataFromServer;	// transient used to guard against stray SELRCVs
+
+	guint32				m_timeClipboard;		// eventTime when we took ownership of CLIPBOARD property
+	guint32				m_timePrimary;			// eventTime when we took ownership of PRIMARY property
+	guint32				m_timeOnServer;			// transient we use to request server time on a property
+	
+	GdkAtom				m_atomClipboard;		// intern("CLIPBOARD")
+	GdkAtom				m_atomPrimary;			// intern("PRIMARY")
+	GdkAtom				m_atomTargets;			// intern("TARGETS")
+	GdkAtom				m_atomTimestamp;		// intern("TIMESTAMP")
+	GdkAtom				m_databuftype;			// transient atom describing current contents of m_databuf
    
-   virtual UT_Bool	_getFormats(void);
-   virtual UT_Bool	_getData(GdkAtom target);
-   
-   virtual UT_Bool	_getClipboard(void);
-   virtual void		_releaseClipboard(void);
-      
-   virtual GdkAtom	_convertFormatString(const char * format);
-   virtual const char * _convertToFormatString(GdkAtom fmt);
-   UT_Vector	m_vecFormat;
-   UT_Vector	m_vecCF;
+	UT_Vector			m_vecFormat_AP_Name;	// our internal list of (pseudo-mime types)
+	UT_Vector			m_vecFormat_GdkAtom;	// atoms for ...AP_Name
+	UT_Vector			m_vecFormatsOnServer;	// transient list of atoms from server
+	UT_ByteBuf			m_databuf;				// transient buffer to receive selection data from server
+
+	XAP_UnixApp *		m_pUnixApp;
+	XAP_FakeClipboard	m_fakeClipboard;		// internal clipboard to short-circut the XServer.
 };
 
 #endif /* XAP_UNIXCLIPBOARD_H */

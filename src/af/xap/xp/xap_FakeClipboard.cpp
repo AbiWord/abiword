@@ -29,67 +29,78 @@
 
 struct _ClipboardItem
 {
-	_ClipboardItem(const char * _szFormat, void* _pData, UT_uint32 _iLen);
+	_ClipboardItem(const char * szFormat, void* pData, UT_uint32 iLen);
 	~_ClipboardItem();
+	void replace(void * pData, UT_uint32 iLen);
 
-	const char *	szFormat;
-	void*			pData;
-	UT_uint32		iLen;
+	const char *	m_szFormat;
+	void*			m_pData;
+	UT_uint32		m_iLen;
 };
 
-_ClipboardItem::_ClipboardItem(const char * _szFormat, void* _pData, UT_uint32 _iLen)
+_ClipboardItem::_ClipboardItem(const char * szFormat, void* pData, UT_uint32 iLen)
 {
-	szFormat = _szFormat;
-	pData = new char[_iLen];
-	memcpy(pData, _pData, _iLen);
-	iLen = _iLen;
+	m_szFormat = szFormat;
+	m_pData = new char[iLen];
+	memcpy(m_pData, pData, iLen);
+	m_iLen = iLen;
 }
 
 _ClipboardItem::~_ClipboardItem()
 {
-	delete pData;
+	delete m_pData;
+}
+
+void _ClipboardItem::replace(void * pData, UT_uint32 iLen)
+{
+	DELETEP(m_pData);
+	m_pData = new char[iLen];
+	memcpy(m_pData, pData, iLen);
+	m_iLen = iLen;
 }
 
 //////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////
 
 XAP_FakeClipboard::XAP_FakeClipboard()
-	: XAP_Clipboard()
 {
 }
 
 XAP_FakeClipboard::~XAP_FakeClipboard()
 {
-	clear();
+	clearClipboard();
 }
 
-UT_Bool XAP_FakeClipboard::open(void)
+UT_Bool XAP_FakeClipboard::clearClipboard(void)
 {
-	if (m_bOpen)
-		return UT_FALSE;
+	UT_sint32 iCount = m_vecData.getItemCount();
+	for (int i=0; i<iCount; i++)
+	{
+		_ClipboardItem* pItem = (_ClipboardItem*) m_vecData.getNthItem(i);
+		DELETEP(pItem);
+	}
 
+	m_vecData.clear();
+	
 	return UT_TRUE;
 }
 
-UT_Bool XAP_FakeClipboard::close(void)
-{
-	m_bOpen = UT_FALSE;
-	return UT_TRUE;
-}
+//////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////
 
 UT_Bool XAP_FakeClipboard::addData(const char* format, void* pData, UT_sint32 iNumBytes)
 {
-	_ClipboardItem* pItem = new _ClipboardItem(format, pData, iNumBytes);
-
-	UT_sint32 err = m_vecData.addItem(pItem);
-	if (err < 0)
+	_ClipboardItem * pExistingItem = _findFormatItem(format);
+	if (pExistingItem)
 	{
-		return UT_FALSE;
-	}
-	else
-	{
+		pExistingItem->replace(pData,iNumBytes);
 		return UT_TRUE;
 	}
+	
+	_ClipboardItem * pItem = new _ClipboardItem(format, pData, iNumBytes);
+
+	UT_sint32 err = m_vecData.addItem(pItem);
+	return (err >= 0);
 }
 
 _ClipboardItem* XAP_FakeClipboard::_findFormatItem(const char* format)
@@ -99,11 +110,8 @@ _ClipboardItem* XAP_FakeClipboard::_findFormatItem(const char* format)
 	for (UT_uint32 i=0; i<iCount; i++)
 	{
 		_ClipboardItem* pItem = (_ClipboardItem*) m_vecData.getNthItem(i);
-
-		if (0 == UT_stricmp(format, pItem->szFormat))
-		{
+		if (UT_stricmp(format, pItem->m_szFormat) == 0)
 			return pItem;
-		}
 	}
 
 	return NULL;
@@ -115,66 +123,21 @@ UT_Bool XAP_FakeClipboard::hasFormat(const char* format)
 	return (pItem != NULL);
 }
 
-UT_sint32 XAP_FakeClipboard::getDataLen(const char * format)
+UT_Bool XAP_FakeClipboard::getClipboardData(const char * format, void ** ppData, UT_uint32 * pLen)
 {
-	_ClipboardItem* pItem = _findFormatItem(format);
-	if (!pItem)
-	{
-		return -1;
-	}
-	
-	return pItem->iLen;
-}
+	UT_ASSERT(ppData && pLen);
 
-UT_Bool XAP_FakeClipboard::getData(const char * format, void* pData)
-{
 	_ClipboardItem* pItem = _findFormatItem(format);
-	if (!pItem)
+	if (pItem)
+	{
+		*ppData = pItem->m_pData;
+		*pLen = pItem->m_iLen;
+		return UT_TRUE;
+	}
+	else
+	{
+		*ppData = NULL;
+		*pLen = 0;
 		return UT_FALSE;
-	
-	memcpy(pData, pItem->pData, pItem->iLen);
-		
-	return UT_TRUE;
-}
-
-UT_sint32 XAP_FakeClipboard::countFormats(void)
-{
-	return m_vecData.getItemCount();
-}
-
-const char * XAP_FakeClipboard::getNthFormat(UT_sint32 n)
-{
-	_ClipboardItem* pItem = (_ClipboardItem*) m_vecData.getNthItem(n);
-	UT_ASSERT(pItem);
-
-	return pItem->szFormat;
-}
-
-UT_Bool XAP_FakeClipboard::clear(void)
-{
-	UT_sint32 iCount = m_vecData.getItemCount();
-	for (int i=0; i<iCount; i++)
-	{
-		_ClipboardItem* pItem = (_ClipboardItem*) m_vecData.getNthItem(i);
-		UT_ASSERT(pItem);
-		
-		delete pItem;
 	}
-
-	m_vecData.clear();
-	
-	return UT_TRUE;
 }
-
-GR_Image * XAP_FakeClipboard::getImage(void)
-{
-	UT_ASSERT(UT_TODO);
-	return NULL;
-}
-
-UT_Bool XAP_FakeClipboard::addImage(GR_Image*)
-{
-	UT_ASSERT(UT_TODO);
-	return UT_FALSE;
-}
-

@@ -28,6 +28,11 @@
 
 #include "xap_BeOSClipboard.h"
 
+#define	AP_CLIPBOARD_TEXTPLAIN_8BIT 		"text-8bit"
+#define AP_CLIPBOARD_RTF 					"rtf"
+#define AP_CLIPBOARD_UNKNOWN 				"unknown"
+
+
 class AP_BeOSClipboard : public XAP_BeOSClipboard
 {
 public:

@@ -19,31 +19,4 @@
 
 #ifndef XAP_CLIPBOARD_H
 #define XAP_CLIPBOARD_H
-
-#include "ut_types.h"
-class GR_Image;
-
-
-class XAP_Clipboard
-{
-public:
-	XAP_Clipboard();
-	
-	virtual UT_Bool			open(void) = 0;
-	virtual UT_Bool			close(void) = 0;
-	virtual UT_Bool			addData(const char * format, void* pData, UT_sint32 iNumBytes) = 0;
-	virtual UT_sint32		getDataLen(const char * format) = 0;
-	virtual UT_Bool			getData(const char * format, void* pData) = 0;
-	virtual UT_sint32		countFormats(void) = 0;
-	virtual UT_Bool			hasFormat(const char * format) = 0;
-	virtual const char *	getNthFormat(UT_sint32 n) = 0;
-	virtual UT_Bool			clear(void) = 0;
-
-	virtual GR_Image*		getImage(void) = 0;
-	virtual UT_Bool			addImage(GR_Image*) = 0;
-
-protected:
-	UT_Bool					m_bOpen;
-};
-
 #endif /* XAP_CLIPBOARD_H */

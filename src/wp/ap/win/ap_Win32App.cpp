@@ -321,27 +321,13 @@ void AP_Win32App::copyToClipboard(PD_DocumentRange * pDocRange)
 	// MSFT requests that we post them in the order of
 	// importance to us (most preserving to most lossy).
 	//
-	// TODO do we need to put HTML on the clipboard ??
 	// TODO on NT, do we need to put unicode text on the clipboard ??
+	// TODO do we need to put something in .ABW format on the clipboard ??
 
-	if (!m_pClipboard->open())
+	if (!m_pClipboard->openClipboard())			// try to lock the clipboard
 		return;
 	{
-		m_pClipboard->clear();
-	
-#if 0
-		// put our format on the clipboard
-		
-		IE_Exp_AbiWord_1 * pExpAbw = new IE_Exp_AbiWord_1(pDocRange->m_pDoc);
-		if (pExpAbw)
-		{
-			UT_ByteBuf buf;
-			IEStatus status = pExpAbw->copyToBuffer(pDocRange,&buf);
-			m_pClipboard->addData(AP_CLIPBOARD_ABIWORD_1,(UT_Byte *)buf.getPointer(0),buf.getLength());
-			DELETEP(pExpAbw);
-			UT_DEBUGMSG(("CopyToClipboard: copying %d bytes in ABIWORD_1 format.\n",buf.getLength()));
-		}
-#endif
+		m_pClipboard->clearClipboard();
 
 		// put RTF on the clipboard
 		
@@ -351,11 +337,11 @@ void AP_Win32App::copyToClipboard(PD_DocumentRange * pDocRange)
 			UT_ByteBuf buf;
 			IEStatus status = pExpRtf->copyToBuffer(pDocRange,&buf);
 			UT_Byte b = 0;
-			buf.append(&b,1);
+			buf.append(&b,1);			// NULL terminate the string
 			m_pClipboard->addData(AP_CLIPBOARD_RTF,(UT_Byte *)buf.getPointer(0),buf.getLength());
 			DELETEP(pExpRtf);
 			UT_DEBUGMSG(("CopyToClipboard: copying %d bytes in RTF format.\n",buf.getLength()));
-//			UT_DEBUGMSG(("CopyToClipboard: [%s]\n",buf.getPointer(0)));
+			//UT_DEBUGMSG(("CopyToClipboard: [%s]\n",buf.getPointer(0)));
 		}
 
 		// put raw 8bit text on the clipboard
@@ -365,25 +351,19 @@ void AP_Win32App::copyToClipboard(PD_DocumentRange * pDocRange)
 		{
 			UT_ByteBuf buf;
 			IEStatus status = pExpText->copyToBuffer(pDocRange,&buf);
-
-			// NOTE: MS Docs state that for CF_TEXT and CF_OEMTEXT we must have a zero
-			// NOTE: on the end of the buffer -- that's how they determine how much text
-			// NOTE: that we have.
 			UT_Byte b = 0;
-			buf.append(&b,1);
-			
+			buf.append(&b,1);			// NULL terminate the string
 			m_pClipboard->addData(AP_CLIPBOARD_TEXTPLAIN_8BIT,(UT_Byte *)buf.getPointer(0),buf.getLength());
 			DELETEP(pExpText);
 			UT_DEBUGMSG(("CopyToClipboard: copying %d bytes in TEXTPLAIN format.\n",buf.getLength()));
-//			UT_DEBUGMSG(("CopyToClipboard: [%s]\n",buf.getPointer(0)));
+			//UT_DEBUGMSG(("CopyToClipboard: [%s]\n",buf.getPointer(0)));
 		}
-
 	}
 
-	m_pClipboard->close();
+	m_pClipboard->closeClipboard();				// release clipboard lock
 }
 
-void AP_Win32App::pasteFromClipboard(PD_DocumentRange * pDocRange)
+void AP_Win32App::pasteFromClipboard(PD_DocumentRange * pDocRange, UT_Bool)
 {
 	// paste from the system clipboard using the best-for-us format
 	// that is present.
@@ -427,15 +407,12 @@ void AP_Win32App::pasteFromClipboard(PD_DocumentRange * pDocRange)
 	} while (0)
 
 
-	if (!m_pClipboard->open())
+	if (!m_pClipboard->openClipboard())			// try to lock the clipboard
 		return;
 	
 	{
 		// TODO decide what the proper order is for these.
-
-#if 0
-		TRY_TO_PASTE_IN_FORMAT(AP_CLIPBOARD_ABIWORD_1, IE_Imp_AbiWord_1);
-#endif
+		// TODO decide if we need to support .ABW on the clipboard.
 
 		TRY_TO_PASTE_IN_FORMAT(AP_CLIPBOARD_RTF, IE_Imp_RTF);
 		TRY_TO_PASTE_IN_FORMAT(AP_CLIPBOARD_TEXTPLAIN_8BIT, IE_Imp_Text);
@@ -445,29 +422,27 @@ void AP_Win32App::pasteFromClipboard(PD_DocumentRange * pDocRange)
 	}
 
 MyEnd:
-	m_pClipboard->close();
+	m_pClipboard->closeClipboard();				// release clipboard lock
 	return;
 }
 
 UT_Bool AP_Win32App::canPasteFromClipboard(void)
 {
-	if (!m_pClipboard->open())
+	if (!m_pClipboard->openClipboard())
 		return UT_FALSE;
 
-#if 0
-	if (m_pClipboard->hasFormat(AP_CLIPBOARD_ABIWORD_1))
-		goto ReturnTrue;
-#endif
+	// TODO decide if we need to support .ABW format on the clipboard.
+	
 	if (m_pClipboard->hasFormat(AP_CLIPBOARD_RTF))
 		goto ReturnTrue;
 	if (m_pClipboard->hasFormat(AP_CLIPBOARD_TEXTPLAIN_8BIT))
 		goto ReturnTrue;
 
-	m_pClipboard->close();
+	m_pClipboard->closeClipboard();
 	return UT_FALSE;
 
 ReturnTrue:
-	m_pClipboard->close();
+	m_pClipboard->closeClipboard();
 	return UT_TRUE;
 }
 

@@ -26,12 +26,14 @@
 #ifndef AP_UNIXAPP_H
 #define AP_UNIXAPP_H
 
+#include "ut_bytebuf.h"
 #include "xap_Args.h"
 #include "xap_UnixApp.h"
 #include "ap_UnixPrefs.h"
 #include "ap_UnixClipboard.h"
-class PD_DocumentRange;
+#include "pt_Types.h"
 class XAP_StringSet;
+class AV_View;
 
 class AP_UnixApp : public XAP_UnixApp
 {
@@ -41,6 +43,7 @@ public:
 
 	virtual UT_Bool					initialize(void);
 	virtual XAP_Frame *				newFrame(void);
+	virtual UT_Bool					forgetFrame(XAP_Frame * pFrame);
 	virtual UT_Bool					shutdown(void);
 	virtual XAP_Prefs *				getPrefs(void) const;
 	virtual UT_Bool					getPrefsValue(const XML_Char * szKey, const XML_Char ** pszValue) const;
@@ -49,10 +52,17 @@ public:
 	virtual const XAP_StringSet *	getStringSet(void) const;
 	virtual const char *			getAbiSuiteAppDir(void) const;
 	virtual void					copyToClipboard(PD_DocumentRange * pDocRange);
-	virtual void					pasteFromClipboard(PD_DocumentRange * pDocRange);
+	virtual void					pasteFromClipboard(PD_DocumentRange * pDocRange, UT_Bool bUseClipboard);
 	virtual UT_Bool					canPasteFromClipboard(void);
 	
 	UT_Bool							parseCommandLine(void);
+
+	virtual void					setSelectionStatus(AV_View * pView);
+	virtual void					clearSelection(void);
+	virtual UT_Bool					getCurrentSelection(const char** formatList,
+														void ** ppData, UT_uint32 * pLen,
+														const char **pszFormatFound);
+	virtual void					cacheCurrentSelection(AV_View *);
 
 	static int main (const char * szAppName, int argc, char ** argv);
 
@@ -63,6 +73,15 @@ protected:
 	AP_UnixPrefs *			m_prefs;
 	XAP_StringSet *			m_pStringSet;
 	AP_UnixClipboard *		m_pClipboard;
+
+	UT_Bool					m_bHasSelection;
+	UT_Bool					m_bSelectionInFlux;
+	UT_Bool					m_cacheDeferClear;
+	AV_View *				m_pViewSelection;
+	AV_View *				m_cacheSelectionView;
+	XAP_Frame *				m_pFrameSelection;
+	UT_ByteBuf				m_selectionByteBuf;
+	PD_DocumentRange		m_cacheDocumentRangeOfSelection;
 };
 
 #endif /* AP_UNIXAPP_H */
