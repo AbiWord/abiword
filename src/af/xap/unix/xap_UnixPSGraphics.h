@@ -55,7 +55,8 @@ public:
 	virtual UT_uint32 getFontDescent();
 	virtual UT_uint32 getFontHeight();
 	
-	virtual UT_uint32 measureString(const UT_UCSChar*s, int iOffset, int num, unsigned short* pWidths);
+	// virtual UT_uint32 measureString(const UT_UCSChar*s, int iOffset, int num, unsigned short* pWidths);
+	virtual UT_uint32 measureUnRemappedChar(const UT_UCSChar c);
 	
 	virtual void setColor(UT_RGBColor& clr);
 	virtual GR_Font* getGUIFont();

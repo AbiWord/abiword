@@ -155,6 +155,13 @@ UT_uint32 PS_Graphics::getFontHeight()
 #endif
 }
 	
+UT_uint32 PS_Graphics::measureUnRemappedChar(const UT_UCSChar c)
+{
+	UT_ASSERT(m_pCurrentFont);
+	const UT_uint16 * cwi = m_pCurrentFont->getUniWidths();
+	return (c >= 256  ?  0  :  _scale(cwi[c]));
+}
+#if 0
 UT_uint32 PS_Graphics::measureString(const UT_UCSChar* s, int iOffset, 
 									int num, unsigned short* pWidths)
 {
@@ -166,8 +173,15 @@ UT_uint32 PS_Graphics::measureString(const UT_UCSChar* s, int iOffset,
 	UT_uint32 iCharWidth = 0;
 	for (int k=0; k<num; k++)
 	{
-		UT_ASSERT(p[k] < 256);			// TODO deal with Unicode
-		register int x = _scale(cwi[p[k]]);
+		//UT_ASSERT(p[k] < 256);			// TODO deal with Unicode
+		register int x;
+		UT_UCSChar currentChar;
+		currentChar = p[k];
+		if (currentChar >= 256 || !(_scale(cwi[currentChar])))
+		{
+			currentChar = remapGlyph(currentChar, UT_TRUE);
+		}
+		x = _scale(cwi[currentChar]);
 		
 		iCharWidth += x;
 		pWidths[k] = x;
@@ -175,7 +189,7 @@ UT_uint32 PS_Graphics::measureString(const UT_UCSChar* s, int iOffset,
 		
 	return iCharWidth;
 }
-	
+#endif
 UT_uint32 PS_Graphics::_getResolution(void) const
 {
 	return PS_RESOLUTION;
@@ -313,6 +327,7 @@ void PS_Graphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
 
 	const UT_UCSChar * pS = pChars+iCharOffset;
 	const UT_UCSChar * pEnd = pS+iLength;
+	UT_UCSChar currentChar;
 
 	*pD++ = '(';
 	while (pS<pEnd)
@@ -328,7 +343,8 @@ void PS_Graphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
 
 		// TODO deal with Unicode issues.
 
-		switch (*pS)
+		currentChar = remapGlyph(*pS, currentChar >= 256 ? UT_TRUE : UT_FALSE);
+		switch (currentChar)
 		{
 		case 0x08:		*pD++ = '\\';	*pD++ = 'b';	break;
 		case UCS_TAB:	*pD++ = '\\';	*pD++ = 't';	break;
@@ -338,7 +354,7 @@ void PS_Graphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
 		case '\\':		*pD++ = '\\';	*pD++ = '\\';	break;
 		case '(':		*pD++ = '\\';	*pD++ = '(';	break;
 		case ')':		*pD++ = '\\';	*pD++ = ')';	break;
-		default:		*pD++ = (unsigned char) *pS; 	break;
+		default:		*pD++ = (unsigned char)currentChar; 	break;
 		}
 		pS++;
 	}

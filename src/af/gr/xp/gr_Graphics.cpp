@@ -25,6 +25,7 @@
 #include "ut_assert.h"
 #include "ut_string.h"
 #include "ut_units.h"
+#include "ut_debugmsg.h"
 
 GR_Font::GR_Font() 
 {
@@ -68,6 +69,61 @@ UT_uint32 GR_Graphics::getMaxCharacterWidth(const UT_UCSChar*s, UT_uint32 Length
 
 	return MaxWidth;
 
+}
+
+UT_uint32 GR_Graphics::measureString(const UT_UCSChar* s, int iOffset,
+										 int num,  unsigned short* pWidths)
+{
+	// Generic base class version defined in terms of measureUnRemappedChar().
+	// Platform versions can roll their own if it makes a performance difference.
+	UT_ASSERT(s);
+
+	int charWidth = 0, width;
+	
+	for (int i = 0; i < num; i++)
+    {
+		UT_UCSChar currentChar = s[i + iOffset];
+		
+		width = measureUnRemappedChar(currentChar);
+		if (width == 0)
+		{
+			xxx_UT_DEBUGMSG(("GR_Graphics::measureString remapping 0x%04X\n", currentChar));
+			currentChar = remapGlyph(currentChar, UT_TRUE);
+			width = measureUnRemappedChar(currentChar);
+		}
+		
+		charWidth += width;
+		if (pWidths)
+			pWidths[i] = width;
+    }
+  
+	return charWidth;
+}
+
+UT_UCSChar GR_Graphics::remapGlyph(const UT_UCSChar actual, UT_Bool noMatterWhat)
+{
+	// This routine is for remapping zero-width characters, which
+	// represent undefined glyphs in the font, into something useful
+	// and visible.  This is most useful for the smart quote
+	// characters, which are specially treated.  Other zero-width
+	// characters are mapped to a generic filler character.
+	UT_UCSChar remap = actual;
+	unsigned short w = 1;
+	
+	w = measureUnRemappedChar(actual);
+	if (noMatterWhat  ||  w == 0)
+	{
+		switch (actual)
+		{
+		case UCS_LQUOTE:     remap = '`';  break;
+		case UCS_RQUOTE:     remap = '\''; break;
+		case UCS_RDBLQUOTE:  remap = '"'; break;
+		case UCS_LDBLQUOTE:  remap = '"'; break;
+		default:             remap = (w ? actual : 0xB0); break;
+		}
+	}
+	if (remap != actual) UT_DEBUGMSG(("remapGlyph  0x%04X -> 0x%04X   %d %d\n", actual, remap, noMatterWhat, w));
+	return remap;
 }
 
 void GR_Graphics::setZoomPercentage(UT_uint32 iZoom)

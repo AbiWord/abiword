@@ -73,7 +73,10 @@ public:
 	virtual UT_uint32 getFontDescent() = 0;
 	virtual UT_uint32 getFontHeight() = 0;
 	
-	virtual UT_uint32 measureString(const UT_UCSChar*s, int iOffset, int num, unsigned short* pWidths) = 0;
+	virtual UT_uint32 measureString(const UT_UCSChar*s, int iOffset, int num, unsigned short* pWidths);
+	virtual UT_uint32 measureUnRemappedChar(const UT_UCSChar c) = 0;
+
+	UT_UCSChar remapGlyph(const UT_UCSChar actual, UT_Bool noMatterWhat);
 
 	UT_uint32 getMaxCharacterWidth(const UT_UCSChar*s, UT_uint32 Length);
 	

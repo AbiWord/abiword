@@ -5492,7 +5492,7 @@ void FV_View::insertFooter()
 	m_pDoc->insertStrux(getPoint(), PTX_Section);
 	m_pDoc->insertStrux(getPoint(), PTX_Block);
 
-	m_pDoc->endUserAtomicGlob(); // end the big undo section
+
 
 	_generalUpdate(); // Why is this needed here?
 
@@ -5526,5 +5526,5 @@ void FV_View::insertFooter()
 	moveInsPtTo(oldPos);
 	m_pDoc->changeStruxFmt(PTC_AddFmt, getPoint(), getPoint(), sec_attributes2, NULL, PTX_Section);
 	_generalUpdate();
-
+	m_pDoc->endUserAtomicGlob(); // end the big undo section
 }

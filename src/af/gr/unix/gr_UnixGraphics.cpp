@@ -95,7 +95,7 @@ UT_Bool GR_UnixGraphics::queryProperties(GR_Graphics::Properties gp) const
 // HACK: I need more speed
 void GR_UnixGraphics::drawChar(UT_UCSChar Char, UT_sint32 xoff, UT_sint32 yoff)
 {
-	GdkWChar Wide_char = Char;
+	GdkWChar Wide_char = remapGlyph(Char, UT_FALSE);
 	
 	GdkFont *font = m_pFont->getGdkFont();
 	gdk_draw_text_wc (m_pWin, font, m_pGC,
@@ -122,7 +122,7 @@ void GR_UnixGraphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
 
    		for (int i = 0; i < iLength; i++)
      		{
-			pNChars[i] = pChars[i + iCharOffset];
+			pNChars[i] = remapGlyph(pChars[i + iCharOffset], UT_FALSE);
     		}
   	
 
@@ -139,7 +139,7 @@ void GR_UnixGraphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
 	   	// the vast majority of calls to this function are
 	   	// to draw a single character, so we'll optimize this case
 	   
-	   	GdkWChar pChar = pChars[iCharOffset];
+	   	GdkWChar pChar = remapGlyph(pChars[iCharOffset], UT_FALSE);
 	   	gdk_draw_text_wc (m_pWin, font, m_pGC,
 				  xoff, yoff + font->ascent, &pChar, 1);
 	}
@@ -185,6 +185,26 @@ UT_uint32 GR_UnixGraphics::getFontHeight()
 	return font->ascent + font->descent;
 }
 
+UT_uint32 GR_UnixGraphics::measureUnRemappedChar(const UT_UCSChar c)
+{
+	// measureString() could be defined in terms of measureUnRemappedChar()
+	// but its not (for presumed performance reasons).  Also, a difference
+	// is that measureString() uses remapping to get past zero-width
+	// character cells.
+	if (!m_pFontManager)
+		return 0;
+
+	UT_ASSERT(m_pFont);
+	UT_ASSERT(m_pGC);
+
+	int width;
+	GdkWChar cChar = c;
+
+	GdkFont* pFont = m_pFont->getGdkFont();
+	width = gdk_text_width_wc (pFont, &cChar, 1);
+	return width;
+}
+#if 0
 UT_uint32 GR_UnixGraphics::measureString(const UT_UCSChar* s, int iOffset,
 										 int num,  unsigned short* pWidths)
 {
@@ -212,6 +232,11 @@ UT_uint32 GR_UnixGraphics::measureString(const UT_UCSChar* s, int iOffset,
 		cChar = s[i + iOffset];
 		
 		width = gdk_text_width_wc (pFont, &cChar, 1);
+		if (width == 0)
+		{
+			cChar = remapGlyph(s[i + iOffset], UT_TRUE);
+			width = gdk_text_width_wc (pFont, &cChar, 1);
+		}
 		
 		charWidth += width;
 		if (pWidths)
@@ -220,7 +245,7 @@ UT_uint32 GR_UnixGraphics::measureString(const UT_UCSChar* s, int iOffset,
   
 	return charWidth;
 }
-
+#endif
 UT_uint32 GR_UnixGraphics::_getResolution(void) const
 {
 	// this is hard-coded at 100 for X now, since 75 (which
