@@ -1188,6 +1188,7 @@ bool s_LaTeX_Listener::populate(PL_StruxFmtHandle /*sfh*/,
 			switch (pcro->getObjectType())
 			{
 			case PTO_Image:
+				{
 				// TODO we *could* insert the images and create separate GIF files.
 				// GIF (EPS,PNG...) files.
 				m_pie->write("\\includegraphics[height=");
@@ -1200,15 +1201,14 @@ bool s_LaTeX_Listener::populate(PL_StruxFmtHandle /*sfh*/,
 				pAP->getAttribute("dataid", szValue);
 				szImageName = UT_strdup(szValue);
 
-				int i;
-				for (i = strlen(szValue); szValue[i] != '_'; i--) {
+				for (int i = strlen(szValue); szValue[i] != '_'; i--) {
 					szImageName[i - 1] = '\0';
 				}
 				m_pie->write(szImageName);
 				m_pie->write("}");
 
 				return true;
-
+				}
 			case PTO_Field:
 
 			  field = pcro->getField();
