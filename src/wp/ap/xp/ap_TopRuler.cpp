@@ -241,13 +241,14 @@ void AP_TopRuler::draw(const UT_Rect * pClipRect, AP_TopRulerInfo * pUseInfo)
 
 	// draw the foreground
 	
-	_draw(pUseInfo);
+	_draw(pClipRect,pUseInfo);
 	
 	if (pClipRect)
 		m_pG->setClipRect(NULL);
 }
 
-void AP_TopRuler::_drawBar(AP_TopRulerInfo * pInfo, UT_RGBColor &clr, UT_sint32 x, UT_sint32 w)
+void AP_TopRuler::_drawBar(const UT_Rect * pClipRect, AP_TopRulerInfo * pInfo,
+						   UT_RGBColor &clr, UT_sint32 x, UT_sint32 w)
 {
 	// Draw ruler bar (white or dark-gray) over [x,x+w)
 	// where x is in page-relative coordinates.  we need
@@ -271,17 +272,36 @@ void AP_TopRuler::_drawBar(AP_TopRulerInfo * pInfo, UT_RGBColor &clr, UT_sint32 
 	// draw whatever is left
 
 	if (xAbsRight > xAbsLeft)
-		m_pG->fillRect(clr,xAbsLeft,yTop,(xAbsRight-xAbsLeft),yBar);
-
+	{
+		UT_Rect r(xAbsLeft,yTop,(xAbsRight-xAbsLeft),yBar);
+		if (!pClipRect || r.intersectsRect(pClipRect))
+			m_pG->fillRect(clr,r);
+	}
+	
 	return;
 }
 
-void AP_TopRuler::_drawTickMark(AP_TopRulerInfo * pInfo, ap_RulerTicks &tick,
+void AP_TopRuler::_drawTickMark(const UT_Rect * pClipRect,
+								AP_TopRulerInfo * pInfo, ap_RulerTicks &tick,
 								UT_RGBColor &clr, GR_Font * pFont,
 								UT_sint32 k, UT_sint32 xTick)
 {
 	UT_uint32 yTop = s_iFixedHeight/4;
 	UT_uint32 yBar = s_iFixedHeight/2;
+
+	if (pClipRect)
+	{
+		// do quick and crude check for visibility.
+		// we know that everything that we draw will
+		// be vertically within the bar.  horizontally
+		// it will either be a single line or a small
+		// font -- let's assume that a 3 digit centered
+		// string will be less than 100 pixels.
+		
+		UT_Rect r(xTick-50,yTop,50,yBar);
+		if (!r.intersectsRect(pClipRect))
+			return;
+	}
 
 	if (k % tick.tickLabel)
 	{
@@ -318,7 +338,8 @@ void AP_TopRuler::_drawTickMark(AP_TopRulerInfo * pInfo, ap_RulerTicks &tick,
 	}
 }
 		
-void AP_TopRuler::_drawTicks(AP_TopRulerInfo * pInfo, ap_RulerTicks &tick,
+void AP_TopRuler::_drawTicks(const UT_Rect * pClipRect,
+							 AP_TopRulerInfo * pInfo, ap_RulerTicks &tick,
 							 UT_RGBColor &clr, GR_Font * pFont,
 							 UT_sint32 xOrigin, UT_sint32 xFrom, UT_sint32 xTo)
 {
@@ -360,7 +381,7 @@ void AP_TopRuler::_drawTicks(AP_TopRulerInfo * pInfo, ap_RulerTicks &tick,
 			if (xTick > xAbsTo)
 				break;
 			if (xTick >= xAbsFrom)
-				_drawTickMark(pInfo,tick,clr,pFont,k,xTick);
+				_drawTickMark(pClipRect,pInfo,tick,clr,pFont,k,xTick);
 			k++;
 		}
 	}
@@ -375,7 +396,7 @@ void AP_TopRuler::_drawTicks(AP_TopRulerInfo * pInfo, ap_RulerTicks &tick,
 			if (xTick < xAbsTo)
 				break;
 			if (xTick <= xAbsFrom)
-				_drawTickMark(pInfo,tick,clr,pFont,k,xTick);
+				_drawTickMark(pClipRect,pInfo,tick,clr,pFont,k,xTick);
 			k++;
 		}
 	}
@@ -420,7 +441,8 @@ void AP_TopRuler::_getParagraphMarkerRects(AP_TopRulerInfo * pInfo,
 		prRightIndent->set(rightCenter - hs, yBottom-fs, fs, fs);
 }
 
-void AP_TopRuler::_drawParagraphProperties(AP_TopRulerInfo * pInfo,
+void AP_TopRuler::_drawParagraphProperties(const UT_Rect * pClipRect,
+										   AP_TopRulerInfo * pInfo,
 										   UT_RGBColor &clrDark, UT_RGBColor &clrLight,
 										   UT_Bool bDrawAll)
 {
@@ -439,7 +461,8 @@ void AP_TopRuler::_drawParagraphProperties(AP_TopRulerInfo * pInfo,
 	}
 	else if (bDrawAll)
 	{
-		_drawSculptedRect(rLeftIndent);
+		if (!pClipRect || rLeftIndent.intersectsRect(pClipRect))
+			_drawSculptedRect(rLeftIndent);
 	}
 
 	if (m_draggingWhat == DW_RIGHTINDENT)
@@ -449,7 +472,8 @@ void AP_TopRuler::_drawParagraphProperties(AP_TopRulerInfo * pInfo,
 	}
 	else if (bDrawAll)
 	{
-		_drawSculptedRect(rRightIndent);
+		if (!pClipRect || rRightIndent.intersectsRect(pClipRect))
+			_drawSculptedRect(rRightIndent);
 	}
 	
 	if (m_draggingWhat == DW_FIRSTLINEINDENT)
@@ -459,7 +483,8 @@ void AP_TopRuler::_drawParagraphProperties(AP_TopRulerInfo * pInfo,
 	}
 	else if (bDrawAll)
 	{
-		_drawSculptedRect(rFirstLineIndent);
+		if (!pClipRect || rFirstLineIndent.intersectsRect(pClipRect))
+			_drawSculptedRect(rFirstLineIndent);
 	}
 }
 
@@ -484,7 +509,8 @@ void AP_TopRuler::_getColumnMarkerRect(AP_TopRulerInfo * pInfo, UT_uint32 kCol,
 	prCol->set(xCenter -hs, yTop-fs, fs, fs);
 }
 
-void AP_TopRuler::_drawColumnProperties(AP_TopRulerInfo * pInfo,
+void AP_TopRuler::_drawColumnProperties(const UT_Rect * pClipRect,
+										AP_TopRulerInfo * pInfo,
 										UT_RGBColor &clrDark, UT_RGBColor &clrLight,
 										UT_uint32 kCol)
 {
@@ -498,7 +524,8 @@ void AP_TopRuler::_drawColumnProperties(AP_TopRulerInfo * pInfo,
 	}
 	else
 	{
-		_drawSculptedRect(rCol);
+		if (!pClipRect || rCol.intersectsRect(pClipRect))
+			_drawSculptedRect(rCol);
 	}
 }
 
@@ -524,7 +551,8 @@ void AP_TopRuler::_getMarginMarkerRects(AP_TopRulerInfo * pInfo, UT_Rect &rLeft,
 	rRight.set(xAbsRight -hs, yTop-fs, fs, fs);
 }
 
-void AP_TopRuler::_drawMarginProperties(AP_TopRulerInfo * pInfo, UT_RGBColor &clr)
+void AP_TopRuler::_drawMarginProperties(const UT_Rect * pClipRect,
+										AP_TopRulerInfo * pInfo, UT_RGBColor &clr)
 {
 #if 0
 	UT_Rect rLeft, rRight;
@@ -537,7 +565,7 @@ void AP_TopRuler::_drawMarginProperties(AP_TopRulerInfo * pInfo, UT_RGBColor &cl
 
 /*****************************************************************/
 
-void AP_TopRuler::_draw(AP_TopRulerInfo * pUseInfo)
+void AP_TopRuler::_draw(const UT_Rect * pClipRect, AP_TopRulerInfo * pUseInfo)
 {
 	UT_sint32 sum;
 	UT_uint32 k;
@@ -574,28 +602,28 @@ void AP_TopRuler::_draw(AP_TopRulerInfo * pUseInfo)
 	
 	// draw a dark-gray bar over the left margin
 
-	_drawBar(pInfo,clrDarkGray,0+1,pInfo->u.c.m_xaLeftMargin-1);
+	_drawBar(pClipRect,pInfo,clrDarkGray,0+1,pInfo->u.c.m_xaLeftMargin-1);
 	sum=pInfo->u.c.m_xaLeftMargin;
 
 	for (k=0; k<pInfo->m_iNumColumns; k++)
 	{
 		// draw white bar over this column
 		
-		_drawBar(pInfo,clrWhite, sum+1, pInfo->u.c.m_xColumnWidth-1);
+		_drawBar(pClipRect,pInfo,clrWhite, sum+1, pInfo->u.c.m_xColumnWidth-1);
 		sum += pInfo->u.c.m_xColumnWidth;
 
 		// if another column after this one, draw dark gray-gap
 		
 		if (k+1 < pInfo->m_iNumColumns)
 		{
-			_drawBar(pInfo,clrDarkGray, sum+1, pInfo->u.c.m_xColumnGap-1);
+			_drawBar(pClipRect,pInfo,clrDarkGray, sum+1, pInfo->u.c.m_xColumnGap-1);
 			sum += pInfo->u.c.m_xColumnGap;
 		}
 	}
 
 	// draw dark-gray right margin
 	
-	_drawBar(pInfo,clrDarkGray,sum+1,pInfo->u.c.m_xaRightMargin-1);
+	_drawBar(pClipRect,pInfo,clrDarkGray,sum+1,pInfo->u.c.m_xaRightMargin-1);
 
 	// now draw tick marks on the bar, using the selected system of units.
 
@@ -616,7 +644,7 @@ void AP_TopRuler::_draw(AP_TopRulerInfo * pUseInfo)
 
 	// draw negative ticks over left margin.  
 
-	_drawTicks(pInfo,tick,clrBlack,pFont,xTickOrigin, pInfo->u.c.m_xaLeftMargin,sum);
+	_drawTicks(pClipRect,pInfo,tick,clrBlack,pFont,xTickOrigin, pInfo->u.c.m_xaLeftMargin,sum);
 	sum += pInfo->u.c.m_xaLeftMargin;
 	
 	for (k=0; k<pInfo->m_iNumColumns; k++)
@@ -624,9 +652,9 @@ void AP_TopRuler::_draw(AP_TopRulerInfo * pUseInfo)
 		// draw positive or negative ticks on this column.
 		
 		if (k < pInfo->m_iCurrentColumn)
-			_drawTicks(pInfo,tick,clrBlack,pFont,xTickOrigin, sum+pInfo->u.c.m_xColumnWidth, sum);
+			_drawTicks(pClipRect,pInfo,tick,clrBlack,pFont,xTickOrigin, sum+pInfo->u.c.m_xColumnWidth, sum);
 		else
-			_drawTicks(pInfo,tick,clrBlack,pFont,xTickOrigin, sum, sum+pInfo->u.c.m_xColumnWidth);
+			_drawTicks(pClipRect,pInfo,tick,clrBlack,pFont,xTickOrigin, sum, sum+pInfo->u.c.m_xColumnWidth);
 
 		sum += pInfo->u.c.m_xColumnWidth;
 
@@ -639,7 +667,7 @@ void AP_TopRuler::_draw(AP_TopRulerInfo * pUseInfo)
 
 	// draw ticks over the right margin
 
-	_drawTicks(pInfo,tick,clrBlack,pFont,xTickOrigin, sum, sum+pInfo->u.c.m_xaRightMargin);
+	_drawTicks(pClipRect,pInfo,tick,clrBlack,pFont,xTickOrigin, sum, sum+pInfo->u.c.m_xaRightMargin);
 
 	// draw the various widgets for the:
 	// 
@@ -647,10 +675,10 @@ void AP_TopRuler::_draw(AP_TopRulerInfo * pUseInfo)
 	// the current column properties {column-gap};
 	// and the current paragraph properties {left-indent, right-indent, first-left-indent}.
 
-	_drawMarginProperties(pInfo,clrBlack);
+	_drawMarginProperties(pClipRect,pInfo,clrBlack);
 	if (pInfo->m_iNumColumns > 1)
-		_drawColumnProperties(pInfo,clrBlack,clrWhite,0);
-	_drawParagraphProperties(pInfo,clrBlack,clrWhite,UT_TRUE);
+		_drawColumnProperties(pClipRect,pInfo,clrBlack,clrWhite,0);
+	_drawParagraphProperties(pClipRect,pInfo,clrBlack,clrWhite,UT_TRUE);
 	
 	return;
 }
@@ -927,7 +955,7 @@ void AP_TopRuler::mouseMotion(EV_EditModifierState ems, UT_uint32 x, UT_uint32 y
 			_getColumnMarkerRect(&m_infoCache,0,m_draggingCenter,&m_draggingRect);
 			if (!m_bBeforeFirstMotion && (m_draggingCenter != oldDraggingCenter))
 				draw(&oldDraggingRect,&m_infoCache);
-			_drawColumnProperties(&m_infoCache,clrBlack,clrWhite,0);
+			_drawColumnProperties(NULL,&m_infoCache,clrBlack,clrWhite,0);
 		}
 		m_bBeforeFirstMotion = UT_FALSE;
 		return;
@@ -947,7 +975,7 @@ void AP_TopRuler::mouseMotion(EV_EditModifierState ems, UT_uint32 x, UT_uint32 y
 			_getParagraphMarkerRects(&m_infoCache,m_draggingCenter,0,0,&m_draggingRect,NULL,NULL);
 			if (!m_bBeforeFirstMotion && (m_draggingCenter != oldDraggingCenter))
 				draw(&oldDraggingRect,&m_infoCache);
-			_drawParagraphProperties(&m_infoCache,clrBlack,clrWhite,UT_FALSE);
+			_drawParagraphProperties(NULL,&m_infoCache,clrBlack,clrWhite,UT_FALSE);
 		}
 		m_bBeforeFirstMotion = UT_FALSE;
 		return;
@@ -968,7 +996,7 @@ void AP_TopRuler::mouseMotion(EV_EditModifierState ems, UT_uint32 x, UT_uint32 y
 			_getParagraphMarkerRects(&m_infoCache,0,m_draggingCenter,0,NULL,&m_draggingRect,NULL);
 			if (!m_bBeforeFirstMotion && (m_draggingCenter != oldDraggingCenter))
 				draw(&oldDraggingRect,&m_infoCache);
-			_drawParagraphProperties(&m_infoCache,clrBlack,clrWhite,UT_FALSE);
+			_drawParagraphProperties(NULL,&m_infoCache,clrBlack,clrWhite,UT_FALSE);
 		}
 		m_bBeforeFirstMotion = UT_FALSE;
 		return;
@@ -991,7 +1019,7 @@ void AP_TopRuler::mouseMotion(EV_EditModifierState ems, UT_uint32 x, UT_uint32 y
 			_getParagraphMarkerRects(&m_infoCache,0,0,m_draggingCenter,NULL,NULL,&m_draggingRect);
 			if (!m_bBeforeFirstMotion && (m_draggingCenter != oldDraggingCenter))
 				draw(&oldDraggingRect,&m_infoCache);
-			_drawParagraphProperties(&m_infoCache,clrBlack,clrWhite,UT_FALSE);
+			_drawParagraphProperties(NULL,&m_infoCache,clrBlack,clrWhite,UT_FALSE);
 			UT_DEBUGMSG(("FirstLineIndent: r [%ld %ld %ld %ld]]n",
 						 m_draggingRect.left,m_draggingRect.top,m_draggingRect.width,m_draggingRect.height));
 		}

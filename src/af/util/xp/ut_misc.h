@@ -52,6 +52,7 @@ public:
 
 	UT_Bool containsPoint(UT_sint32 x, UT_sint32 y) const;
 	void set(int iLeft, int iTop, int iWidth, int iHeight);
+	UT_Bool intersectsRect(const UT_Rect * pRect) const;
 	
 	UT_sint32	left;
 	UT_sint32	top;

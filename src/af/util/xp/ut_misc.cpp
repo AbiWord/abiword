@@ -73,6 +73,31 @@ void UT_Rect::set(int iLeft, int iTop, int iWidth, int iHeight)
 	height = iHeight;
 }
 
+UT_Bool UT_Rect::intersectsRect(const UT_Rect * pRect) const
+{
+	// return true if this rectangle and pRect intersect.
+
+#define R_RIGHT(pr)		(((pr)->left)+((pr)->width))
+#define R_BOTTOM(pr)	(((pr)->top)+((pr)->height))
+	
+	if (R_RIGHT(pRect) < left)
+		return UT_FALSE;
+
+	if (R_RIGHT(this) < pRect->left)
+		return UT_FALSE;
+
+	if (R_BOTTOM(pRect) < top)
+		return UT_FALSE;
+
+	if (R_BOTTOM(this) < pRect->top)
+		return UT_FALSE;
+
+	return UT_TRUE;
+
+#undef R_RIGHT
+#undef R_BOTTOM
+}
+
 /*****************************************************************/
 /*****************************************************************/
 
