@@ -4561,7 +4561,7 @@ bool s_HTML_Listener::populateStrux (PL_StruxDocHandle sdh,
 		case PTX_EndFootnote:
 		case PTX_EndEndnote:
 			{
-				PD_DocumentRange * pDocRange = new PD_DocumentRange(m_pDocument, m_iEmbedStartPos, pcrx->getPosition() -1);
+				PD_DocumentRange * pDocRange = new PD_DocumentRange(m_pDocument, m_iEmbedStartPos, pcrx->getPosition());
 				if(pcrx->getStruxType () == PTX_EndFootnote)
 				{
 					addFootnote(pDocRange);
