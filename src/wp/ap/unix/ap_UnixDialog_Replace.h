@@ -1,4 +1,4 @@
-/* AbiSource Application Framework
+/* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
  * 
  * This program is free software; you can redistribute it and/or
@@ -21,6 +21,7 @@
 #define AP_UNIXDIALOG_REPLACE_H
 
 #include "ap_Dialog_Replace.h"
+
 class XAP_UnixFrame;
 
 /*****************************************************************/
@@ -31,17 +32,37 @@ public:
 	AP_UnixDialog_Replace(AP_DialogFactory * pDlgFactory, AP_Dialog_Id id);
 	virtual ~AP_UnixDialog_Replace(void);
 
-	static AP_Dialog *		static_constructor(AP_DialogFactory *, AP_Dialog_Id id);
-
 	virtual void			runModal(XAP_Frame * pFrame);
 
-	// public so callbacks can access them
-   	GtkWidget *				findEntry;
-	GtkWidget *				matchCaseCheck;
-    GtkWidget *				replaceEntry;
+	static AP_Dialog *		static_constructor(AP_DialogFactory *, AP_Dialog_Id id);
 
- protected:
-	
+	// callbacks can fire these events
+	virtual void			event_Find(void);
+	virtual void			event_Replace(void);
+	virtual void			event_ReplaceAll(void);
+	virtual void			event_MatchCaseToggled(void);	
+	virtual void			event_Cancel(void);
+	virtual void			event_WindowDelete(void);
+
+protected:
+
+	// private construction functions
+	GtkWidget * _constructWindow(void);
+	void		_populateWindowData(void);
+	void 		_storeWindowData(void);
+
+	// pointers to widgets we need to query/set
+	GtkWidget * m_windowMain;
+
+	GtkWidget * m_entryFind;
+	GtkWidget * m_entryReplace;
+	GtkWidget * m_checkbuttonMatchCase;
+
+	GtkWidget * m_buttonFindNext;
+	GtkWidget * m_buttonReplace;
+	GtkWidget * m_buttonReplaceAll;
+
+	GtkWidget * m_buttonCancel;
 };
 
 #endif /* AP_UNIXDIALOG_REPLACE_H */
