@@ -421,6 +421,10 @@ dcl(DLG_ToggleCase_UpperCase, "UPPERCASE")
 dcl(DLG_ToggleCase_TitleCase, "Title Case")
 dcl(DLG_ToggleCase_ToggleCase, "tOGGLE cASE")
 
+dcl(DLG_Background_Title, "Change Background Color")
+
+dcl(MSG_EmptySelection, "Current Selection is Empty")
+
      /* below are autotext defaults */
 
      dcl(AUTOTEXT_ATTN_1, "Attention:")

@@ -137,6 +137,7 @@ EV_Menu_ActionSet * AP_CreateMenuActionSet(void)
 	_s(AP_MENU_ID_FMT_DOCUMENT, 0,1,0, "pageSetup", NULL, NULL);
 	_s(AP_MENU_ID_FMT_BORDERS,		0,1,0,	"dlgBorders",		NULL,					NULL);
 	_s(AP_MENU_ID_FMT_COLUMNS,		0,1,0,	"dlgColumns",		NULL,					NULL);
+	_s(AP_MENU_ID_FMT_BACKGROUND, 0,1,0, "dlgBackground", NULL, NULL);
 	_s(AP_MENU_ID_FMT_STYLE,		0,1,0,	"dlgStyle",			NULL,					NULL);
 	_s(AP_MENU_ID_FMT_TABS,			0,1,0,	"dlgTabs",			NULL,					NULL);
 	_s(AP_MENU_ID_FMT_BOLD,			0,0,1,	"toggleBold",		ap_GetState_CharFmt,	NULL);

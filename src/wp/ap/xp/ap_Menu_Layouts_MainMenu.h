@@ -201,6 +201,9 @@ BeginLayout(Main,0)
 			MenuItem(AP_MENU_ID_ALIGN_RIGHT)
 			MenuItem(AP_MENU_ID_ALIGN_JUSTIFY)
 		EndSubMenu()
+#ifdef DEBUG
+                MenuItem(AP_MENU_ID_FMT_BACKGROUND)
+#endif
 		MenuItem(AP_MENU_ID_FMT_STYLE)
 	EndSubMenu()
 

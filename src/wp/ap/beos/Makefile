@@ -53,6 +53,7 @@ CPPSRCS=	ap_$(ABI_FE)App.cpp			\
 			ap_$(ABI_FE)Toolbar_SizeCombo.cpp	\
 			ap_$(ABI_FE)Toolbar_ZoomCombo.cpp	\
 			ap_$(ABI_FE)_TB_CFactory.cpp		\
+			ap_$(ABI_FE)Dialog_Background.cpp	\
 			ap_$(ABI_FE)TopRuler.cpp
 
 #TF We could use

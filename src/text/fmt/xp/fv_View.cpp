@@ -113,7 +113,7 @@ FV_View::FV_View(XAP_App * pApp, void* pParentData, FL_DocLayout* pLayout)
 		_m_matchCase(false),
 		_m_findNextString(0),
 		m_bShowPara(false),
-		m_clrPaper(255,255,255)
+		m_clrPaper (255, 255, 255)
 {
 //	UT_ASSERT(m_pG->queryProperties(GR_Graphics::DGP_SCREEN));
 
@@ -325,19 +325,10 @@ void FV_View::toggleCase (ToggleCase c)
   m_pDoc->notifyPieceTableChangeStart();
   m_pDoc->beginUserAtomicGlob();
 
-  PP_AttrProp AttrProp_Before;
-  _eraseInsertionPoint();
-  _deleteSelection(&AttrProp_Before);
-
-  m_pDoc->insertSpan(getPoint(),
-		     replace,
-		     replace_len,
-		     &AttrProp_Before);
+  cmdCharInsert (replace, replace_len, true);
 
   m_pDoc->endUserAtomicGlob();
-
   _generalUpdate();
-
   m_pDoc->notifyPieceTableChangeEnd();
 
   FREEP(cur);
@@ -346,7 +337,25 @@ void FV_View::toggleCase (ToggleCase c)
 
 void FV_View::setPaperColor(UT_RGBColor & rgb)
 {
-  UT_setColor(m_clrPaper, rgb.m_red, rgb.m_grn, rgb.m_blu);
+
+#if 0
+	char clr[8];
+
+	sprintf(clr, "#%02x%02x%02x", rgb.m_red, rgb.m_grn, rgb.m_blu);
+
+	UT_DEBUGMSG(("DOM: color is: %s\n", clr));
+
+	const XML_Char * props [3];
+	props [0] = "props";
+	props [1] = clr;
+	props [2] = 0;
+
+	setSectionFormat(props);
+#else
+	UT_setColor(m_clrPaper, rgb.m_red, rgb.m_grn, rgb.m_blu);
+#endif
+	// update the screen
+	_draw(0,0,m_iWindowWidth,m_iWindowHeight,false,false);
 }
 
 void FV_View::focusChange(AV_Focus focus)
@@ -2895,6 +2904,7 @@ bool FV_View::getSectionFormat(const XML_Char ***pProps)
 	v.addItem(new _fmtPair("page-margin-bottom",NULL,pBlockAP,pSectionAP,m_pDoc,false));
 	v.addItem(new _fmtPair("page-margin-footer",NULL,pBlockAP,pSectionAP,m_pDoc,false));
 	v.addItem(new _fmtPair("page-margin-header",NULL,pBlockAP,pSectionAP,m_pDoc,false));
+	v.addItem(new _fmtPair("bgcolor",NULL,pBlockAP,pSectionAP,m_pDoc,false));
 
 	// 2. prune 'em as they vary across selection
 	if (!isSelectionEmpty())
@@ -5720,9 +5730,20 @@ void FV_View::_xorInsertionPoint()
 {
 	if (m_iPointHeight > 0 )
 	{
-	  //UT_RGBColor clr(255,255,255);
+#if 0
+	  const PP_AttrProp *pSectionAP = NULL;
+	  fl_BlockLayout* pBlock = _findBlockAtPosition(getPoint());
+	  fl_SectionLayout* pSection = pBlock->getSectionLayout();
+	  pSection->getAttrProp(&pSectionAP);
 
-		m_pG->setColor(m_clrPaper);
+	  UT_RGBColor clrPaper;
+	  const XML_Char * szclr = PP_evalProperty("bgcolor", NULL, NULL, pSectionAP, m_pDoc, false);
+	  UT_parseColor (szclr, clrPaper);
+	  m_pG->setColor(clrPaper);
+#else
+	  m_pG->setColor(m_clrPaper);
+#endif
+
 		m_pG->xorLine(m_xPoint-1, m_yPoint+1, m_xPoint-1, m_yPoint + m_iPointHeight+1);
 		m_pG->xorLine(m_xPoint, m_yPoint+1, m_xPoint, m_yPoint + m_iPointHeight+1);
 		m_bCursorIsOn = !m_bCursorIsOn;
@@ -6114,7 +6135,19 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 
 			if (!bDirtyRunsOnly || pPage->needsRedraw())
 			{	
-				m_pG->fillRect(m_clrPaper,adjustedLeft+1,adjustedTop+1,iPageWidth-1,iPageHeight-1);
+#if 0
+			  const PP_AttrProp *pSectionAP = NULL;
+			  fl_BlockLayout* pBlock = _findBlockAtPosition(getPoint());
+			  fl_SectionLayout* pSection = pBlock->getSectionLayout();
+			  pSection->getAttrProp(&pSectionAP);
+			  
+			  UT_RGBColor clrPaper;
+			  const XML_Char * szclr = PP_evalProperty("bgcolor", NULL, NULL, pSectionAP, m_pDoc, false);
+			  UT_parseColor (szclr, clrPaper);
+			  m_pG->fillRect(clrPaper,adjustedLeft+1,adjustedTop+1,iPageWidth-1,iPageHeight-1);
+#else
+			  m_pG->fillRect(m_clrPaper,adjustedLeft+1,adjustedTop+1,iPageWidth-1,iPageHeight-1);
+#endif
 			}
 
 			pPage->draw(&da);

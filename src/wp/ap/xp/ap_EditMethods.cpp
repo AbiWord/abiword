@@ -62,6 +62,7 @@
 #include "ap_Dialog_Columns.h"
 #include "ap_Dialog_Tab.h"
 #include "ap_Dialog_ToggleCase.h"
+#include "ap_Dialog_Background.h"
 
 #include "xap_App.h"
 #include "xap_DialogFactory.h"
@@ -281,6 +282,7 @@ public:
 	static EV_EditMethod_Fn dlgBorders;
 	static EV_EditMethod_Fn dlgColumns;
 	static EV_EditMethod_Fn style;
+        static EV_EditMethod_Fn dlgBackground;
 	static EV_EditMethod_Fn dlgStyle;
 	static EV_EditMethod_Fn dlgTabs;
         static EV_EditMethod_Fn dlgToggleCase;
@@ -531,6 +533,7 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(delLeft),				0,	""),
 	EV_EditMethod(NF(delRight),				0,	""),
 	EV_EditMethod(NF(dlgAbout),				0,	""),
+	EV_EditMethod(NF(dlgBackground),                0,              ""),
 	EV_EditMethod(NF(dlgBorders),			0,		""),
 	EV_EditMethod(NF(dlgBullets),			0,		""),
 	EV_EditMethod(NF(dlgColumns),			0,		""),
@@ -1583,7 +1586,6 @@ Defun1(fileSaveAsWeb)
 
 Defun1(filePreviewWeb)
 {
-	bool bAppendExt = true;
   XAP_Frame * pFrame = static_cast<XAP_Frame *>(pAV_View->getParentData());
   char szTempFileName[ 2048 ];
 
@@ -1837,6 +1839,14 @@ static bool s_doToggleCase(XAP_Frame * pFrame, FV_View * pView, XAP_Dialog_Id id
 	UT_ASSERT(pFrame);
 
 	pFrame->raise();
+
+	if (pView->isSelectionEmpty())
+	  {
+	    pFrame->showMessageBox(AP_STRING_ID_MSG_EmptySelection,
+				   XAP_Dialog_MessageBox::b_O,
+				   XAP_Dialog_MessageBox::a_OK); 
+	    return false;
+	  }
 
 	XAP_DialogFactory * pDialogFactory
 		= (XAP_DialogFactory *)(pFrame->getDialogFactory());
@@ -6379,4 +6389,37 @@ Defun(insAutotext_subject_1)
 {
   return _insAutotext(static_cast<FV_View *>(pAV_View), 
 		      AP_STRING_ID_AUTOTEXT_SUBJECT_1);
+}
+
+Defun(dlgBackground)
+{
+	FV_View * pView = static_cast<FV_View *>(pAV_View);
+
+	XAP_Frame * pFrame = (XAP_Frame *) pView->getParentData();
+	UT_ASSERT(pFrame);
+
+	pFrame->raise();
+
+	XAP_DialogFactory * pDialogFactory
+		= (XAP_DialogFactory *)(pFrame->getDialogFactory());
+
+	AP_Dialog_Background * pDialog
+		= (AP_Dialog_Background *)(pDialogFactory->requestDialog(AP_DIALOG_ID_BACKGROUND));
+	UT_ASSERT(pDialog);
+
+	pDialog->runModal (pFrame);
+
+	AP_Dialog_Background::tAnswer ans = pDialog->getAnswer();
+	bool bOK = (ans == AP_Dialog_Background::a_OK);
+
+	if (bOK)
+	  {
+	    // let the view set the proper value in the
+	    // document and refresh/redraw itself
+	    UT_RGBColor clr = pDialog->getColor();
+	    pView->setPaperColor (clr);
+	  }
+
+	pDialogFactory->releaseDialog(pDialog);
+	return bOK;
 }

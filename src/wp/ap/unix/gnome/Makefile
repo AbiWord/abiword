@@ -40,6 +40,7 @@ PLATFORM_OBJS+=	$(OBJDIR)/ap_$(ABI_FE)$(ABI_GNOME_PREFIX)App.$(OBJ_SUFFIX)			\
 		$(OBJDIR)/ap_$(ABI_FE)$(ABI_GNOME_PREFIX)Dialog_Styles.$(OBJ_SUFFIX)		\
 		$(OBJDIR)/ap_$(ABI_FE)$(ABI_GNOME_PREFIX)Dialog_ToggleCase.$(OBJ_SUFFIX)	\
 		$(OBJDIR)/ap_$(ABI_FE)$(ABI_GNOME_PREFIX)Dialog_Tab.$(OBJ_SUFFIX)		\
+		$(OBJDIR)/ap_$(ABI_FE)$(ABI_GNOME_PREFIX)Dialog_Background.$(OBJ_SUFFIX)	\
 		$(OBJDIR)/ap_$(ABI_FE)$(ABI_GNOME_PREFIX)Dialog_Options.$(OBJ_SUFFIX)
 
 CPPSRCS=		ap_$(ABI_FE)$(ABI_GNOME_PREFIX)App.cpp			\
@@ -58,6 +59,7 @@ CPPSRCS=		ap_$(ABI_FE)$(ABI_GNOME_PREFIX)App.cpp			\
 			ap_$(ABI_FE)$(ABI_GNOME_PREFIX)Dialog_ToggleCase.cpp	\
 			ap_$(ABI_FE)$(ABI_GNOME_PREFIX)Dialog_Styles.cpp		\
 			ap_$(ABI_FE)$(ABI_GNOME_PREFIX)Dialog_Tab.cpp		\
+			ap_$(ABI_FE)$(ABI_GNOME_PREFIX)Dialog_Background.cpp	\
 			ap_$(ABI_FE)$(ABI_GNOME_PREFIX)Dialog_Options.cpp
 
 TARGETS=		$(OBJS)

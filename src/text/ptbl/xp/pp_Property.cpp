@@ -61,15 +61,15 @@
 
 static PP_Property _props[] =
 {
-	{ "background-color", "transparent", 0},
-	{ "bgcolor", "ffffff", 1},
+	{ "background-color", "transparent", false},
+	{ "bgcolor", "ffffff", true},
 
-	{ "color",   "000000", 1},
-	{ "column-gap",	"0.25in", 0},
-	{ "column-line", "off",	0},
-	{ "columns", "1", 0},
+	{ "color",   "000000", true},
+	{ "column-gap",	"0.25in", false},
+	{ "column-line", "off",	false},
+	{ "columns", "1", false},
 
-	{ "default-tab-interval",  "0.5in", 0},
+	{ "default-tab-interval",  "0.5in", false},
 
 #ifdef BIDI_ENABLED
 	/*	these two stand for "direction" and "dominant direction"; they were
@@ -77,61 +77,61 @@ static PP_Property _props[] =
 		set basically for each word and each chunk of whitespace, inflating
 		the ABW file
 	*/
-	{ "dir", default_direction,              1},  //the direction of the present text, prossible values ltr, rtl,ntrl	
-	{ "dir-override", "off",              1},  //the direction of the present text, prossible values ltr, rtl,ntrl	
-	{ "dom-dir", default_dominant_direction,              0},  //added by #TF, dominant direction of writing in a paragraph, can be either ltr or rtl (i.e., left-to-right, right-to-left)
+	{ "dir", default_direction,              true},  //the direction of the present text, prossible values ltr, rtl,ntrl	
+	{ "dir-override", "off",              true},  //the direction of the present text, prossible values ltr, rtl,ntrl	
+	{ "dom-dir", default_dominant_direction,              false},  //added by #TF, dominant direction of writing in a paragraph, can be either ltr or rtl (i.e., left-to-right, right-to-left)
 #endif
 
-	{ "field-color", "dcdcdc", 1},
-	{ "field-font",	"NULL",	1},	
-	{ "font-family", "Times New Roman", 1},	// TODO this is Win32-specific.  must fix!
-	{ "font-size",	"12pt",	1},	// MS word defaults to 10pt, but it just seems too small
-	{ "font-stretch", "normal", 1},
-	{ "font-style",	"normal", 1},
-	{ "font-variant", "normal", 1},
-	{ "font-weight", "normal", 1},
-	{ "format","%*%d.", 1},
+	{ "field-color", "dcdcdc", true},
+	{ "field-font",	"NULL",	true},	
+	{ "font-family", "Times New Roman", true},	// TODO this is Win32-specific.  must fix!
+	{ "font-size",	"12pt",	true},	// MS word defaults to 10pt, but it just seems too small
+	{ "font-stretch", "normal", true},
+	{ "font-style",	"normal", true},
+	{ "font-variant", "normal", true},
+	{ "font-weight", "normal", true},
+	{ "format","%*%d.", true},
 
-	{ "height", "",	0},
+	{ "height", "",	false},
 
-	{ "keep-together", "", 0},
-	{ "keep-with-next", "",	0},
+	{ "keep-together", "", false},
+	{ "keep-with-next", "",	false},
 
-	{ "lang", "en-US", 1},
+	{ "lang", "en-US", true},
 	
-	{ "line-height", "1.0", 0},
-	{ "list-decimal", ".", 1},
-	{ "list-delim", "%L", 1},
+	{ "line-height", "1.0", false},
+	{ "list-decimal", ".", true},
+	{ "list-delim", "%L", true},
 
-	{ "margin-bottom", "0in", 0},
-	{ "margin-left", "0in",	0},
-	{ "margin-right", "0in", 0},
-	{ "margin-top",	"0in", 0}, // zero to be consistent with other WPs
+	{ "margin-bottom", "0in", false},
+	{ "margin-left", "0in",	false},
+	{ "margin-right", "0in", false},
+	{ "margin-top",	"0in", false}, // zero to be consistent with other WPs
 
-	{ "orphans", "2", 0},
+	{ "orphans", "2", false},
 
-	{ "page-margin-bottom",		"1in",				0},
-	{ "page-margin-footer",         "0in",                          0},
-	{ "page-margin-header",         "0in",                          0},
-	{ "page-margin-left",		"1in",				0},
-	{ "page-margin-right",		"1in",				0},
-	{ "page-margin-top",		"1in",				0},
+	{ "page-margin-bottom",		"1in",				false},
+	{ "page-margin-footer",         "0in",                          false},
+	{ "page-margin-header",         "0in",                          false},
+	{ "page-margin-left",		"1in",				false},
+	{ "page-margin-right",		"1in",				false},
+	{ "page-margin-top",		"1in",				false},
 
-	{ "section-space-after",	"0.25in",			0},
-   	{ "start-value",			"1",				1},
+	{ "section-space-after",	"0.25in",			false},
+   	{ "start-value",			"1",				true},
 
-	{ "tabstops", "", 0},
+	{ "tabstops", "", false},
 #ifdef BIDI_ENABLED
-	{ "text-align", text_align,	1},
+	{ "text-align", text_align,	true},
 #else
-	{ "text-align", "left",	1},
+	{ "text-align", "left",	true},
 #endif	
-	{ "text-decoration", "none", 1},
-	{ "text-indent", "0in", 0},
-	{ "text-position", "normal", 1},	
+	{ "text-decoration", "none", true},
+	{ "text-indent", "0in", false},
+	{ "text-position", "normal", true},	
 	
-	{ "widows", "2", 0},
-	{ "width", "", 0},
+	{ "widows", "2", false},
+	{ "width", "", false},
 
 };
 
@@ -168,20 +168,6 @@ inline bool PP_Property::canInherit() const
 
 const PP_Property * PP_lookupProperty(const XML_Char * name)
 {
-#if 0
-	int i;
-	int count = NrElements(_props);
-
-	for (i=0; i<count; i++)
-	{
-		if (0 == UT_strcmp(_props[i].m_pszName, name))
-		{
-			return _props + i;
-		}
-	}
-
-	return NULL;
-#else
 	PP_Property * prop = NULL;
 
 	static UT_HashTable propHash(NrElements(_props));
@@ -199,7 +185,6 @@ const PP_Property * PP_lookupProperty(const XML_Char * name)
 	propHash.addEntry(szName, NULL, prop);
 
 	return prop;
-#endif
 }
 
 #ifdef BIDI_ENABLED

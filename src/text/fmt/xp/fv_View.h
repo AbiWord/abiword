@@ -147,7 +147,6 @@ public:
 
 	virtual void    toggleCase(ToggleCase c);
 	virtual void    setPaperColor(UT_RGBColor &rgb);
-	virtual inline UT_RGBColor &getPaperColor(void) {return m_clrPaper;}
 
 	virtual void	cmdCopy(void);
 	virtual void	cmdCut(void);
