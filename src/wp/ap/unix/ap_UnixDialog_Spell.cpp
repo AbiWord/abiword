@@ -658,11 +658,12 @@ void AP_UnixDialog_Spell::event_ReplacementChanged()
 // make a multibyte encoded version of a string
 char * AP_UnixDialog_Spell::_convertToMB(UT_UCSChar *wword)
 {
+   char temp[8];
    int mbindex = 0, wcindex = 0;
    int mblength = 0;
    int wclength = UT_UCS_strlen(wword);
    while (wcindex < wclength) {
-      int len = wctomb(NULL, (wchar_t)(wword[wcindex]));
+      int len = wctomb(temp, (wchar_t)(wword[wcindex]));
       UT_ASSERT(len >= 0);
       mblength += len;
       wcindex++;
