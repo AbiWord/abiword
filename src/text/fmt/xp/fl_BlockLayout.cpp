@@ -4110,11 +4110,19 @@ bool	fl_BlockLayout::_doInsertTextSpan(PT_BlockOffset blockOffset, UT_uint32 len
 
 bool	fl_BlockLayout::_doInsertForcedLineBreakRun(PT_BlockOffset blockOffset)
 {
-	fp_Run* pNewRun = new fp_ForcedLineBreakRun(this, blockOffset, 1);
+	fp_Run* pNewRun = NULL;
+	if(isContainedByTOC())
+	{
+		pNewRun = new fp_DummyRun(this,blockOffset);
+	}
+	else
+	{
+		pNewRun = new fp_ForcedLineBreakRun(this, blockOffset, 1);
+	}
 	UT_ASSERT(pNewRun); // TODO check for outofmem
 
 	bool bResult = _doInsertRun(pNewRun);
-	if (bResult)
+	if (bResult && !isContainedByTOC())
 		_breakLineAfterRun(pNewRun);
 
 	return bResult;
@@ -4295,7 +4303,15 @@ bool	fl_BlockLayout::_doInsertFieldEndRun(PT_BlockOffset blockOffset)
 
 bool	fl_BlockLayout::_doInsertForcedPageBreakRun(PT_BlockOffset blockOffset)
 {
-	fp_Run* pNewRun = new fp_ForcedPageBreakRun(this,blockOffset, 1);
+	fp_Run* pNewRun = NULL;
+	if(isContainedByTOC())
+	{
+		pNewRun = new fp_DummyRun(this,blockOffset);
+	}
+	else
+	{
+		pNewRun = new fp_ForcedPageBreakRun(this,blockOffset, 1);
+	}
 	UT_ASSERT(pNewRun); // TODO check for outofmem
 	if(getPrev()!= NULL && getPrev()->getLastContainer()==NULL)
 	{
@@ -4313,7 +4329,15 @@ bool	fl_BlockLayout::_doInsertForcedPageBreakRun(PT_BlockOffset blockOffset)
 
 bool	fl_BlockLayout::_doInsertForcedColumnBreakRun(PT_BlockOffset blockOffset)
 {
-	fp_Run* pNewRun = new fp_ForcedColumnBreakRun(this,blockOffset, 1);
+	fp_Run* pNewRun = NULL;
+	if(isContainedByTOC())
+	{
+		pNewRun = new fp_DummyRun(this,blockOffset);
+	}
+	else
+	{
+		pNewRun = new fp_ForcedColumnBreakRun(this,blockOffset, 1);
+	}
 	UT_ASSERT(pNewRun); // TODO check for outofmem
 
 	bool bResult = _doInsertRun(pNewRun);
@@ -7360,15 +7384,17 @@ bool	fl_BlockLayout::findNextTabStop( UT_sint32 iStartX, UT_sint32 iMaxX, UT_sin
 {
 #ifdef DEBUG
 	UT_sint32 iMinLeft = m_iLeftMargin;
-	if(m_iTextIndent < 0)
+  	if(m_iTextIndent < 0)
 		iMinLeft += m_iTextIndent;
-	
 	UT_ASSERT(iStartX >= iMinLeft);
 #endif
 	
 	UT_uint32 iCountTabs = m_vecTabs.getItemCount();
 	UT_uint32 i;
-
+	if(isContainedByTOC())
+    {
+		iCountTabs = 0;
+	}
 	iLeader = FL_LEADER_NONE;
 
 	for (i=0; i<iCountTabs; i++)

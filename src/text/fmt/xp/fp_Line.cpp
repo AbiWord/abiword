@@ -1672,6 +1672,12 @@ inline void fp_Line::_calculateWidthOfRun(	UT_sint32 &iX,
 					iPos =  getBlock()->getTOCTabPosition(10);
 					bRes = true;
 				}
+				else if(pTabRun->isTOCTabListLabel())
+				{
+					iTabLeader = FL_LEADER_NONE;
+					iTabType =  FL_TAB_LEFT;
+					bRes =  findNextTabStop(iX, iPos, iTabType, iTabLeader);
+				}
 
 				// now find the tabstop for this tab, depending on whether we
 				// are to use next or previous tabstop

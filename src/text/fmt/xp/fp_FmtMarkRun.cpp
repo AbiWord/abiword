@@ -182,7 +182,7 @@ void fp_FmtMarkRun::_draw(dg_DrawArgs* /*pDA */)
 /*!
  * This is just placeholder to make a run dissapear while preserving the offsets
  * for subsequent runs.
- * Used by TOCs to make ListLabel and TAB dissapear from TOC's
+ * Used by TOCs to make ListLabel, pagebreak and TAB dissappear from TOC's
  */
 fp_DummyRun::fp_DummyRun(fl_BlockLayout* pBL,
 							 UT_uint32 iOffsetFirst)

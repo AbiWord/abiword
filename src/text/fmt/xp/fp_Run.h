@@ -476,6 +476,8 @@ public:
 	void                    setTOCTab(void)
 	{ m_bIsTOC = true;}
 	void                    setTOCTabListLabel(void);
+	bool                    isTOCTabListLabel(void) const
+	{ return m_bIsTOCListLabel;}
 
 protected:
 	virtual void			_drawArrow(UT_uint32 iLeft,UT_uint32 iTop,UT_uint32 iWidth, UT_uint32 iHeight);
