@@ -400,8 +400,9 @@ UT_uint32 PD_DocIterator::find(UT_UCS4Char * what, UT_uint32 iLen, bool bForward
 */
 PD_StruxIterator::PD_StruxIterator(PL_StruxDocHandle sdh,UT_uint32 offset,
 								   UT_uint32 maxOffset)
-	: m_pPT(NULL), m_offset(offset), m_sdh(sdh),
-	  m_frag_offset(0), m_frag(NULL),
+	: m_pPT(NULL), m_offset(offset),
+	  m_frag_offset(0),  m_sdh(sdh),
+	  m_frag(NULL),
 	  m_status(UTIter_OK),
 	  m_max_offset(maxOffset),
 	  m_strux_len(0)

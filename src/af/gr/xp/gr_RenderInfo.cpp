@@ -45,8 +45,8 @@ GR_XPRenderInfo::GR_XPRenderInfo(GR_ScriptType type)
 		 m_pChars(NULL),
 		 m_pAdvances(NULL),
 		 m_iBufferSize(0),
-		 m_iSegmentCount(0),
-		 m_pSegmentOffset(NULL)
+		 m_pSegmentOffset(NULL),
+		 m_iSegmentCount(0)
 {
 	_constructorCommonCode();
 }
@@ -61,8 +61,8 @@ GR_XPRenderInfo::GR_XPRenderInfo(UT_UCS4Char *pChar,
 		 m_pChars(pChar),
 		 m_pAdvances(pAdv),
 		 m_iBufferSize(iBufferSize),
-		 m_iSegmentCount(0),
-		 m_pSegmentOffset(NULL)
+		 m_pSegmentOffset(NULL),
+		 m_iSegmentCount(0)
 {
 	m_iOffset = offset;
 	m_iLength = len;

@@ -1146,9 +1146,7 @@ void s_AbiWord_1_Listener::_handlePageSize(void)
   //
   // Code to write out the PageSize Definitions to disk
   //
-	char *old_locale;
-
-        m_pie->write("<pagesize pagetype=\"");
+	m_pie->write("<pagesize pagetype=\"");
 	m_pie->write(m_pDocument->m_docPageSize.getPredefinedName());
 	m_pie->write("\"");
 

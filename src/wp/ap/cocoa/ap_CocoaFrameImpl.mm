@@ -612,10 +612,10 @@ bool AP_CocoaFrameImpl::_graphicsUpdateCB(NSRect * aRect, GR_CocoaGraphics *pG, 
 	UT_DEBUGMSG(("AP_CocoaFrameImpl::_graphicsUpdateCB()\n"));
 	if(pView != NULL) {
 		UT_Rect rClip;
-		rClip.left = static_cast<UT_sint32>(rintf(pG->tlu(aRect->origin.x) + 1));
-		rClip.top = static_cast<UT_sint32>(rintf(pG->tlu(aRect->origin.y) + 1));
-		rClip.width = static_cast<UT_sint32>(rintf(pG->tlu(aRect->size.width)));
-		rClip.height = static_cast<UT_sint32>(rintf(pG->tlu(aRect->size.height)));
+		rClip.left = (UT_sint32)rint(pG->tluD(aRect->origin.x)) + 1;
+		rClip.top = (UT_sint32)rint(pG->tluD(aRect->origin.y)) + 1;
+		rClip.width = (UT_sint32)rint(pG->tluD(aRect->size.width));
+		rClip.height = (UT_sint32)rint(pG->tluD(aRect->size.height));
 		xxx_UT_DEBUGMSG(("Cocoa in frame expose painting area:  left=%d, top=%d, width=%d, height=%d\n", rClip.left, rClip.top, rClip.width, rClip.height));
 		pView->draw(&rClip);
 	}
