@@ -45,7 +45,11 @@ const char * UT_convertToDimensionString(UT_Dimension dim, double value)
 	switch (dim)
 	{
 	case DIM_IN:
-		sprintf(buf,"%.3fin",value);
+		// (1/16th (0.0625) is smallest unit the ui will
+		// let them enter (via the TopRuler), so let's
+		// set the precision so that we get nice roundoff.
+		// TODO we may need to improve this later.
+		sprintf(buf,"%.4fin",value);
 		break;
 
 	case DIM_CM:

@@ -38,23 +38,23 @@ ap_RulerTicks::ap_RulerTicks(GR_Graphics * pG)
 		// on the half inches and short ticks on the eighth inches.  
 		// We round up/down mouse actions to the nearest 1/16th.
 
-		// On a 75 dpi screen, a 1/16 inch is 4.6875, so i set the scale to 10000.
+		// On a 75 dpi screen, a 1/32 inch is 2.34375, so i set the scale to 100000.
 		
-		tickUnit = m_pG->convertDimension("1250in"); // (1/8) * scale
-		tickUnitScale = 10000;
-		tickLong = 4;
-		tickLabel = 8;
-		tickScale = 1;
-		dragDelta = m_pG->convertDimension("625in"); // (1/16) * scale
+		tickUnit = m_pG->convertDimension("12500in"); // 1/8th inch is our basic unit
+		tickUnitScale = 100000;
+		tickLong = 4;					// draw long ticks every 4 units (1/2 inch)
+		tickLabel = 8;					// draw labeled ticks every 8 units (1 inch)
+		tickScale = 1;					// label increment
+		dragDelta = m_pG->convertDimension("6250in"); // 1/16th inch is mouse resolution
 		break;
 
 	case DIM_CM:
-		tickUnit = m_pG->convertDimension("25cm");
-		tickUnitScale = 100;
+		tickUnit = m_pG->convertDimension("2500cm");
+		tickUnitScale = 10000;
 		tickLong = 2;
 		tickLabel = 4;
 		tickScale = 1;
-		dragDelta = m_pG->convertDimension("12.5cm");
+		dragDelta = m_pG->convertDimension("1250cm");
 		break;
 
 	case DIM_PI:						// picas
