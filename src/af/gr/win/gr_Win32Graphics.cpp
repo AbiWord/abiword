@@ -411,8 +411,8 @@ void GR_Win32Graphics::drawLine(UT_sint32 x1, UT_sint32 y1, UT_sint32 x2, UT_sin
 		const UT_sint32 nLineWidth = m_iLineWidth ? m_iLineWidth : 1;
 		fillRect(	color,
 					x1, y1,
-					nLineWidth + (!bVert ? x2 - x1 : 0),
-					nLineWidth + ( bVert ? y2 - y1 : 0));
+					nLineWidth + (!bVert ? x2 - x1 - 1: 0),
+					nLineWidth + ( bVert ? y2 - y1 - 1: 0));
 		return;
 	}
 
