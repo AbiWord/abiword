@@ -275,7 +275,7 @@ void AP_Win32Dialog_MetaData_Summary::transferData()
 	getContainer()->setCategory(m_sCategory.c_str());
 	getContainer()->setKeywords(m_sKeywords.c_str());
 	getContainer()->setLanguages(m_sLanguages.c_str());
-	getContainer()->setDescription(m_sLanguages.c_str());	
+	getContainer()->setDescription(m_sDescription.c_str());	
 }
 
 /*
