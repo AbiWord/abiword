@@ -429,7 +429,7 @@ void UNIXGraphics::fillRect(UT_RGBColor& c, UT_sint32 x, UT_sint32 y,
 	gdk_gc_set_foreground(m_pGC, &oColor);
 }
 
-void UNIXGraphics::scroll(UT_sint32 /*dx*/, UT_sint32 dy)
+void UNIXGraphics::scroll(UT_sint32 dx, UT_sint32 dy)
 {
 	GdkWindowPrivate* pPWin = (GdkWindowPrivate*) m_pWin;
 
@@ -449,7 +449,7 @@ void UNIXGraphics::scroll(UT_sint32 /*dx*/, UT_sint32 dy)
 			gdk_window_clear_area(m_pWin, 0, 0, winWidth, winHeight);
 		}
     }
-	else
+	else if (dy < 0)
     {
 		if (dy >= -winHeight)
 		{
@@ -463,6 +463,35 @@ void UNIXGraphics::scroll(UT_sint32 /*dx*/, UT_sint32 dy)
 			gdk_window_clear_area(m_pWin, 0, 0, winWidth, winHeight);
 		}
     }
+
+	if (dx > 0)
+    {
+		if (dx < winWidth)
+		{
+			gdk_window_copy_area(m_pWin, m_pGC, 0, 0,
+								 m_pWin, dx, 0, winWidth - dx, winHeight);
+			gdk_window_clear_area(m_pWin, winWidth - dx, 0, dx, winHeight);
+		}
+		else
+		{
+			gdk_window_clear_area(m_pWin, 0, 0, winWidth, winHeight);
+		}
+    }
+	else if (dx < 0)
+    {
+		if (dx >= -winWidth)
+		{
+			gdk_window_copy_area(m_pWin, m_pGC, -dx, 0, m_pWin, 0, 0, winWidth + dx,
+								 winHeight);
+
+			gdk_window_clear_area(m_pWin, 0, 0, -dx, winHeight);
+		}
+		else
+		{
+			gdk_window_clear_area(m_pWin, 0, 0, winWidth, winHeight);
+		}
+    }
+	
 }
 
 void UNIXGraphics::clearArea(UT_sint32 x, UT_sint32 y,
