@@ -2811,6 +2811,29 @@ const char * fp_ImageRun::getDataId(void) const
 	return m_pFGraphic->getDataId();
 }
 
+void fp_ImageRun::_drawResizeBox(UT_Rect box)
+{
+	UT_sint32 left = box.left;
+	UT_sint32 top = box.top;
+	UT_sint32 right = box.left + box.width;
+	UT_sint32 bottom = box.top + box.height;
+	
+	// draw some really fancy box here
+	getGR()->setColor(UT_RGBColor(98,129,131));
+	getGR()->drawLine(left, box.top, right-1, box.top);
+	getGR()->drawLine(left, box.top, left, bottom-1);
+	getGR()->setColor(UT_RGBColor(230,234,238));
+	getGR()->drawLine(box.left+1, box.top+1, right - 2, top+1);
+	getGR()->drawLine(box.left+1, box.top+1, left+1, bottom - 2);
+	getGR()->setColor(UT_RGBColor(98,129,131));
+	getGR()->drawLine(right-2, top+1, right-2, bottom-2);
+	getGR()->drawLine(left+1, bottom-2, right, bottom-2);
+	getGR()->setColor(UT_RGBColor(49,85,82));
+	getGR()->drawLine(right-1, top, right-1, bottom-1);
+	getGR()->drawLine(left, bottom-1, right, bottom-1);
+	getGR()->fillRect(UT_RGBColor(156,178,180),box.left + 2, box.top + 2, box.width - 4, box.height - 4);
+}
+
 void fp_ImageRun::_draw(dg_DrawArgs* pDA)
 {
 	UT_ASSERT(pDA->pG == getGR());
@@ -2872,14 +2895,16 @@ void fp_ImageRun::_draw(dg_DrawArgs* pDA)
 
 				UT_sint32 boxSize = pView->getImageSelInfo();
 			
-				getGR()->fillRect(c, left, top, boxSize, boxSize); 												// North West
-				getGR()->fillRect(c, left + (right - left)/2 - boxSize/2, top, boxSize, boxSize); 				// North
-				getGR()->fillRect(c, right-boxSize, top, boxSize, boxSize); 									// North East
-				getGR()->fillRect(c, right-boxSize, top + ((bottom - top) / 2) - boxSize/2, boxSize, boxSize); 	// East
-				getGR()->fillRect(c, right-boxSize, bottom - boxSize, boxSize, boxSize); 						// South East
-				getGR()->fillRect(c, left + (right - left)/2 - boxSize/2, bottom - boxSize, boxSize, boxSize); 	// South
-				getGR()->fillRect(c, left, bottom - boxSize, boxSize, boxSize); 								// South West
-				getGR()->fillRect(c, left, top + ((bottom - top) / 2) - boxSize/2, boxSize, boxSize); 			// West
+				// now, draw the resize boxes around the image
+	
+				_drawResizeBox(UT_Rect(left, top, boxSize, boxSize));
+				_drawResizeBox(UT_Rect(left + (right - left)/2 - boxSize/2, top, boxSize, boxSize)); 				// North
+				_drawResizeBox(UT_Rect(right-boxSize+1, top, boxSize, boxSize)); 									// North East
+				_drawResizeBox(UT_Rect(right-boxSize+1, top + ((bottom - top) / 2) - boxSize/2, boxSize, boxSize)); // East
+				_drawResizeBox(UT_Rect(right-boxSize+1, bottom - boxSize + 1, boxSize, boxSize)); 					// South East
+				_drawResizeBox(UT_Rect(left + (right - left)/2 - boxSize/2, bottom - boxSize + 1, boxSize, boxSize));// South
+				_drawResizeBox(UT_Rect(left, bottom - boxSize + 1, boxSize, boxSize)); 								// South West
+				_drawResizeBox(UT_Rect(left, top + ((bottom - top) / 2) - boxSize/2, boxSize, boxSize)); 			// West
 			}
 		}
 
