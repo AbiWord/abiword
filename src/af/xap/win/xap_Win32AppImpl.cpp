@@ -20,6 +20,7 @@
 
 
 #include <windows.h>
+#include <winreg.h>
 
 #include "xap_Win32AppImpl.h"
 #include "ut_string_class.h"
@@ -34,40 +35,94 @@ bool XAP_Win32AppImpl::openURL(const char * szURL)
 
 	UT_String sURL = szURL;
 
-	// strip file:///\ from URL, the extra forward-slash back-slash is passed in from "View as Web Page"
-	if ( "file:///\\" == sURL.substr(0,9) )
-	{
-		sURL = sURL.substr(9, sURL.size() - 9);
-	}
-
-	// strip "file://" from URL, win32 doesn't handle them well
-	if ( "file://" == sURL.substr(0, 7) )
+	// If this is a file:// URL, strip off file:// and make it backslashed
+	if (sURL.substr(0, 7) == "file://")
 	{
 		sURL = sURL.substr(7, sURL.size() - 7);
+
+		// View as WebPage likes to throw in an extra /\ just for fun, strip it off
+		if (sURL.substr(0, 2) == "/\\")
+			sURL = sURL.substr(2, sURL.size() - 2);
+
+		// Enclose in double-quotes, incase there's a space in the path
+		if ((sURL.substr(0, 1) != "\"") && (sURL.substr(sURL.size() -1, 1) != "\""))
+			sURL = "\"" + sURL + "\"";
+
+		// Convert all forwardslashes to backslashes
+		for (unsigned int i=0; i<sURL.length();i++)	
+			if (sURL[i]=='/')	sURL[i]='\\';
 	}
-	
-	/* */
-	for (unsigned int i=0; i<sURL.length();i++)	
-		if (sURL[i]=='\\')	sURL[i]='/';		
-	
+
+	// Query the registry for the default browser so we can directly invoke it
+	UT_String sBrowser;
+	HKEY hKey;
+	unsigned long lType;
+	DWORD dwSize;
+	unsigned char* szValue = NULL;
+
+	if (RegOpenKeyEx(HKEY_CLASSES_ROOT, "http\\shell\\open\\command", 0, KEY_READ, &hKey) == ERROR_SUCCESS)
+	{
+		if(RegQueryValueEx(hKey, NULL, NULL, &lType, NULL, &dwSize) == ERROR_SUCCESS)
+		{
+			szValue = new unsigned char[dwSize + 1];
+			RegQueryValueEx(hKey, NULL, NULL, &lType, szValue, &dwSize);
+			sBrowser = (char*) szValue;
+			DELETEP(szValue);
+		}
+		RegCloseKey(hKey);
+	}
+
+	/* Now that we have sBrowser from the registry, we need to parse it out.
+	 * If the first character is a double-quote, everything up to and including
+	 * the next double-quote is the sBrowser command. Everything after the
+	 * double-quote is appended to the parameters.
+	 * If the first character is NOT a double-quote, we assume
+	 * everything up to the first whitespace is the command and anything after
+	 * is appended to the parameters.
+	 */
+
+	int iDelimiter;
+	if (sBrowser.substr(0, 1) == "\"")
+		iDelimiter = UT_String_findCh(sBrowser.substr(1, sBrowser.length()-1), '"')+2;
+	else
+		iDelimiter = UT_String_findCh(sBrowser.substr(0, sBrowser.length()), ' ');
+
+	// Store params into a separate UT_String before we butcher sBrowser
+	UT_String sParams = sBrowser.substr(iDelimiter+1, sBrowser.length()-iDelimiter+1);
+	// Cut params off of sBrowser so all we're left with is the broweser path & executable
+	sBrowser = sBrowser.substr(0, iDelimiter);
+
+	// Check for a %1 passed in from the registry.  If we find it,
+	// substitute our URL for %1.  Otherwise, just append sURL to params.
+	char *pdest = strstr(sParams.c_str(), "%1");
+	int i = pdest - sParams.c_str() + 1;
+	if (pdest != NULL)
+		sParams = sParams.substr(0, i-1) + sURL + sParams.substr(i+1, sParams.length()-i+1);
+	else
+		sParams = sParams + " " + sURL;
+
+	// Win95 doesn't like the Browser command to be quoted, so strip em off.
+	if (sBrowser.substr(0, 1) == "\"")
+		sBrowser = sBrowser.substr(1, sBrowser.length() - 1);
+	if (sBrowser.substr(sBrowser.length()-1, 1) == "\"")
+		sBrowser = sBrowser.substr(0, sBrowser.length() - 1);
+
 	XAP_Frame * pFrame = XAP_App::getApp()->getLastFocussedFrame();
 	UT_return_val_if_fail(pFrame, false);
 	XAP_Win32FrameImpl *pFImp =  (XAP_Win32FrameImpl *) pFrame->getFrameImpl();
 	UT_return_val_if_fail(pFImp, false);
-	
-	
+
 	int res = (int) ShellExecute(pFImp->getTopLevelWindow() /*(HWND)*/,
-								 "open", sURL.c_str(), NULL, NULL, SW_SHOWNORMAL);
+								 "open", sBrowser.c_str(), sParams.c_str(), NULL, SW_SHOW );
 
 	// TODO: localized error messages
 	// added more specific error messages as documented in http://msdn.microsoft.com/library/default.asp?url=/library/en-us/debug/base/system_error_codes.asp
-
-	if (res <= 32)	// show error message if failed to launch browser to display URL
+	if (res <= 32)
 	{
 		UT_String errMsg;
 		switch (res)
 		{
-			case 2:
+			case ERROR_FILE_NOT_FOUND:
 				{
 					errMsg = "Error ("; 
 					errMsg += UT_String_sprintf("%d", res);
@@ -77,7 +132,7 @@ bool XAP_Win32AppImpl::openURL(const char * szURL)
 				}
 				break;
 
-			case 3:
+			case ERROR_PATH_NOT_FOUND:
 				{
 					errMsg = "Error ("; 
 					errMsg += UT_String_sprintf("%d", res);
@@ -87,7 +142,7 @@ bool XAP_Win32AppImpl::openURL(const char * szURL)
 				}
 				break;
 
-			case 5:
+			case SE_ERR_ACCESSDENIED:
 				{
 					errMsg = "Error ("; 
 					errMsg += UT_String_sprintf("%d", res);
