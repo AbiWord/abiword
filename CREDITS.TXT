@@ -309,6 +309,8 @@ Gustavs Galdins <gusts@mits.lv>				Latvian
 Breton
 The KAD Association (Korvigelloù An Drouizig)
 		    <drouizig@drouizig.org>		Breton
+Team Turca <team_turca@yahoo.com>			Turkish
+Ismo Mäkinen <ismtaol@luukku.com>			Finnish
 
 unsung heroes
 -------------

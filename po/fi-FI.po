@@ -39,7 +39,7 @@ msgstr " Päivitys"
 #: po/tmp/ap_String_Id.h.h:13
 #, c-format
 msgid "% of normal size"
-msgstr ""
+msgstr "% normaalista koosta"
 
 #. MENU_LABEL_AUTOTEXT_EMAIL_6
 #: po/tmp/ap_String_Id.h.h:15
@@ -59,13 +59,12 @@ msgid ""
 "\tabiword-dev@abisource.com\n"
 "\n"
 "Otherwise, please be patient."
-msgstr ""
-"%s ei ole vielä valmis.\n"
+msgstr "%s ei ole vielä valmis.\n"
 "\n"
 "Jos olet ohjelmoija, voit vapaasti kirjoittaa koodia  %s, riville %d\n"
 "ja lähettää muutos osoitteeseen :\n"
 "\n"
-"\tabiword-dev@abisource.com\n"
+"&#x0009;abiword-dev@abisource.com\n"
 "\n"
 "Muutoin, ole kärsivällinen."
 
@@ -78,7 +77,7 @@ msgstr "&1 %s"
 #. DLG_Tab_Radio_None
 #: po/tmp/ap_String_Id.h.h:21
 msgid "&1 None"
-msgstr ""
+msgstr "&1 Ei mitään"
 
 #. MENU_LABEL_WINDOW_2
 #: po/tmp/ap_String_Id.h.h:23
@@ -89,12 +88,12 @@ msgstr "&2 %s"
 #. DLG_Tab_Radio_Dot
 #: po/tmp/ap_String_Id.h.h:25
 msgid "&2 .........."
-msgstr ""
+msgstr "&2 ................"
 
 #. DLG_Tab_Radio_Dash
 #: po/tmp/ap_String_Id.h.h:27
 msgid "&3\t----------"
-msgstr ""
+msgstr "&3 ----------------"
 
 #. MENU_LABEL_WINDOW_3
 #: po/tmp/ap_String_Id.h.h:29
@@ -111,7 +110,7 @@ msgstr "&4 %s"
 #. DLG_Tab_Radio_Underline
 #: po/tmp/ap_String_Id.h.h:33
 msgid "&4 __________"
-msgstr ""
+msgstr "&4 _______________________"
 
 #. MENU_LABEL_WINDOW_5
 #: po/tmp/ap_String_Id.h.h:35
@@ -157,7 +156,7 @@ msgstr "&Lisää"
 #. DLG_PageSetup_Adjust
 #: po/tmp/ap_String_Id.h.h:49
 msgid "&Adjust to:"
-msgstr ""
+msgstr "K&oko:"
 
 #. MENU_LABEL_ALIGN
 #: po/tmp/ap_String_Id.h.h:51
@@ -177,22 +176,22 @@ msgstr "M&itta:"
 #. MENU_LABEL_TOOLS_AUTOSPELL
 #: po/tmp/ap_String_Id.h.h:57
 msgid "&Auto Spellcheck"
-msgstr ""
+msgstr "Tarkista &kirjoitettaessa"
 
 #. DLG_Options_Label_PrefsAutoSave
 #: po/tmp/ap_String_Id.h.h:59
 msgid "&Automatically save this Scheme"
-msgstr "&Automaattisesti tallennetaan asetukset"
+msgstr "&Asetukset tallennetaan automaattisesti"
 
 #. MENU_LABEL_INSERT_AUTOTEXT
 #: po/tmp/ap_String_Id.h.h:61
 msgid "&Autotext"
-msgstr ""
+msgstr "&Automaattinen teksti"
 
 #. DLG_DateTime_AvailableFormats
 #: po/tmp/ap_String_Id.h.h:63
 msgid "&Available formats:"
-msgstr "&Alusta:"
+msgstr "Muoto:"
 
 #. DLG_Para_LabelBefore
 #: po/tmp/ap_String_Id.h.h:65
@@ -207,17 +206,17 @@ msgstr "&Lihavoitu"
 #. MENU_LABEL_INSERT_BOOKMARK
 #: po/tmp/ap_String_Id.h.h:69
 msgid "&Bookmark"
-msgstr ""
+msgstr "Kirja&nmerkki"
 
 #. DLG_PageSetup_Bottom
 #: po/tmp/ap_String_Id.h.h:71
 msgid "&Bottom:"
-msgstr ""
+msgstr "&Ala:"
 
 #. MENU_LABEL_INSERT_BREAK
 #: po/tmp/ap_String_Id.h.h:73
 msgid "&Break"
-msgstr "&Väli"
+msgstr "Vaiht&o"
 
 #. MENU_LABEL_ALIGN_CENTER
 #: po/tmp/ap_String_Id.h.h:75
@@ -232,7 +231,7 @@ msgstr "&Vaihda"
 #. MENU_LABEL_INSERT_CLIPART
 #: po/tmp/ap_String_Id.h.h:79
 msgid "&Clip Art"
-msgstr ""
+msgstr "&ClipArt"
 
 #. MENU_LABEL_FILE_CLOSE
 #: po/tmp/ap_String_Id.h.h:81
@@ -247,12 +246,12 @@ msgstr "&Palstan vaihto"
 #. MENU_LABEL_FMT_COLUMNS
 #: po/tmp/ap_String_Id.h.h:85
 msgid "&Columns"
-msgstr "&Palstat"
+msgstr "Pal&stat"
 
 #. MENU_LABEL_EDIT_COPY
 #: po/tmp/ap_String_Id.h.h:87
 msgid "&Copy"
-msgstr "&Kopioi"
+msgstr "K&opioi"
 
 #. DLG_Options_Label_PrefsCurrentScheme
 #: po/tmp/ap_String_Id.h.h:89
@@ -263,7 +262,7 @@ msgstr "Käytössä olevat asetukset "
 #: po/tmp/ap_String_Id.h.h:91
 #, fuzzy
 msgid "&Delete hyperlink"
-msgstr "Tyhjennä valinta"
+msgstr "Poista hyperlinkki"
 
 #. DLG_Options_Btn_CustomDict
 #: po/tmp/ap_String_Id.h.h:93
@@ -273,7 +272,7 @@ msgstr "&Sanasto..."
 #. MENU_LABEL_FMT_DOCUMENT
 #: po/tmp/ap_String_Id.h.h:95
 msgid "&Document"
-msgstr ""
+msgstr "Asiakirja"
 
 #. DLG_Para_PushNoHyphenate
 #: po/tmp/ap_String_Id.h.h:97
@@ -288,13 +287,13 @@ msgstr "&Muokkaa"
 #. DLG_Options_Label_SmartQuotesEnable
 #: po/tmp/ap_String_Id.h.h:101
 msgid "&Enable smart quotes"
-msgstr "Salli lainausmerkki muunnos"
+msgstr "Salli lainausmerkkimuunnos"
 
 #. MENU_LABEL_INSERT_ENDNOTE
 #: po/tmp/ap_String_Id.h.h:103
 #, fuzzy
 msgid "&Endnote"
-msgstr "&Muokkaa"
+msgstr "&Loppuviite"
 
 #. DLG_Break_EvenPage
 #: po/tmp/ap_String_Id.h.h:105
@@ -304,7 +303,7 @@ msgstr "P&arillinen sivu"
 #. MENU_LABEL_VIEW_TB_EXTRA
 #: po/tmp/ap_String_Id.h.h:107
 msgid "&Extra"
-msgstr "&Extra"
+msgstr "&Lisätyökalurivi"
 
 #. MENU_LABEL_INSERT_FIELD
 #: po/tmp/ap_String_Id.h.h:109
@@ -334,12 +333,12 @@ msgstr "&Etsi seuraava"
 #. MENU_LABEL_FMT_FONT
 #: po/tmp/ap_String_Id.h.h:119
 msgid "&Font"
-msgstr "&Fontti"
+msgstr "Ki&rjasin"
 
 #. DLG_PageSetup_Footer
 #: po/tmp/ap_String_Id.h.h:121
 msgid "&Footer:"
-msgstr ""
+msgstr "Ala&tunniste:"
 
 #. MENU_LABEL_VIEW_TB_FORMAT
 #: po/tmp/ap_String_Id.h.h:123
@@ -349,12 +348,12 @@ msgstr "&Muotoilu"
 #. MENU_LABEL_INSERT_GRAPHIC
 #: po/tmp/ap_String_Id.h.h:125
 msgid "&From File"
-msgstr "K&uva"
+msgstr "Ku&va"
 
 #. MENU_LABEL_EDIT_GOTO
 #: po/tmp/ap_String_Id.h.h:127
 msgid "&Go To"
-msgstr "&Mene"
+msgstr "&Siirry"
 
 #. MENU_LABEL_VIEW_HEADFOOT
 #: po/tmp/ap_String_Id.h.h:129
@@ -364,12 +363,12 @@ msgstr "&Ylätunniste ja alatunniste"
 #. DLG_PageSetup_Header
 #: po/tmp/ap_String_Id.h.h:131
 msgid "&Header:"
-msgstr ""
+msgstr "Yl&ätunniste:"
 
 #. DLG_PageSetup_Height
 #: po/tmp/ap_String_Id.h.h:133
 msgid "&Height:"
-msgstr ""
+msgstr "Korke&us:"
 
 #. MENU_LABEL_HELP
 #: po/tmp/ap_String_Id.h.h:135
@@ -385,7 +384,7 @@ msgstr "&Piilotettu teksti"
 #: po/tmp/ap_String_Id.h.h:139
 #, fuzzy
 msgid "&Hyperlink"
-msgstr "Ylle&viivattu"
+msgstr "&Hyperlinkki"
 
 #. DLG_Spell_Ignore
 #: po/tmp/ap_String_Id.h.h:141
@@ -400,18 +399,18 @@ msgstr "&Ohita kaikki"
 #. DLG_Para_TabLabelIndentsAndSpacing
 #: po/tmp/ap_String_Id.h.h:145
 msgid "&Indents and Spacing"
-msgstr "&Sisennys ja välistys"
+msgstr "&Sisennys ja kappaleväli"
 
 #. MENU_LABEL_INSERT
 #: po/tmp/ap_String_Id.h.h:147 po/tmp/xap_String_Id.h.h:17
 msgid "&Insert"
-msgstr "&Väliin"
+msgstr "&Lisää"
 
 #. MENU_LABEL_INSERT_FILE
 #: po/tmp/ap_String_Id.h.h:149
 #, fuzzy
 msgid "&Insert File"
-msgstr "&Väliin"
+msgstr "Tie&dosto"
 
 #. MENU_LABEL_FMT_ITALIC
 #: po/tmp/ap_String_Id.h.h:151
@@ -421,7 +420,7 @@ msgstr "&Kursivoitu"
 #. MENU_LABEL_ALIGN_JUSTIFY
 #: po/tmp/ap_String_Id.h.h:153
 msgid "&Justify"
-msgstr "&Tasaa molemmat reunat"
+msgstr "&Molemmat reunat"
 
 #. DLG_Para_PushKeepLinesTogether
 #: po/tmp/ap_String_Id.h.h:155
@@ -431,13 +430,13 @@ msgstr "Pidä &rivit yhdessä"
 #. DLG_PageSetup_Landscape
 #: po/tmp/ap_String_Id.h.h:157
 msgid "&Landscape"
-msgstr ""
+msgstr "V&aaka"
 
 #. MENU_LABEL_TOOLS_LANGUAGE
 #: po/tmp/ap_String_Id.h.h:159
 #, fuzzy
 msgid "&Language"
-msgstr "&Vaihda"
+msgstr "Määritä &kieli"
 
 #. MENU_LABEL_ALIGN_LEFT
 #: po/tmp/ap_String_Id.h.h:161
@@ -447,17 +446,17 @@ msgstr "&Vasen"
 #. DLG_PageSetup_Left
 #: po/tmp/ap_String_Id.h.h:163
 msgid "&Left:"
-msgstr ""
+msgstr "Vase&n:"
 
 #. DLG_PageSetup_Margin
 #: po/tmp/ap_String_Id.h.h:165
 msgid "&Margin"
-msgstr ""
+msgstr "Reunukset"
 
 #. DLG_FR_MatchCase
 #: po/tmp/ap_String_Id.h.h:167
 msgid "&Match case"
-msgstr "&Sama kirjaisin koko"
+msgstr "&Sama kirjainkoko"
 
 #. MENU_LABEL_WINDOW_MORE
 #: po/tmp/ap_String_Id.h.h:169
@@ -482,7 +481,7 @@ msgstr "S&euraava sivu"
 #. MENU_LABEL_VIEW_NORMAL
 #: po/tmp/ap_String_Id.h.h:177
 msgid "&Normal Layout"
-msgstr ""
+msgstr "&Normaalinäkymä"
 
 #. DLG_Goto_Label_Number
 #: po/tmp/ap_String_Id.h.h:179
@@ -512,7 +511,7 @@ msgstr "&Sivun vaihto"
 #. MENU_LABEL_FMT_PARAGRAPH
 #: po/tmp/ap_String_Id.h.h:189
 msgid "&Paragraph"
-msgstr "Ka&ppale"
+msgstr "Kappal&e"
 
 #. MENU_LABEL_EDIT_PASTE
 #: po/tmp/ap_String_Id.h.h:191
@@ -523,12 +522,12 @@ msgstr "L&iitä"
 #: po/tmp/ap_String_Id.h.h:193
 #, fuzzy
 msgid "&Picture"
-msgstr "Kuva"
+msgstr "K&uva"
 
 #. DLG_PageSetup_Portrait
 #: po/tmp/ap_String_Id.h.h:195
 msgid "&Portrait"
-msgstr ""
+msgstr "Pys&ty"
 
 #. MENU_LABEL_TOOLS_OPTIONS
 #: po/tmp/ap_String_Id.h.h:197
@@ -544,12 +543,12 @@ msgstr "T&ulosta"
 #: po/tmp/ap_String_Id.h.h:201
 #, fuzzy
 msgid "&Print Layout"
-msgstr "T&ulosta"
+msgstr "&Tulostusnäkymä"
 
 #. MENU_LABEL_EDIT_REDO
 #: po/tmp/ap_String_Id.h.h:203
 msgid "&Redo"
-msgstr "&Uudelleen"
+msgstr "Tee &uudelleen"
 
 #. DLG_FR_ReplaceButton
 #: po/tmp/ap_String_Id.h.h:205
@@ -565,7 +564,7 @@ msgstr "T&yhjennä"
 #: po/tmp/ap_String_Id.h.h:209
 #, fuzzy
 msgid "&Revert"
-msgstr "T&yhjennä"
+msgstr "Palaa tallennettuun"
 
 #. MENU_LABEL_ALIGN_RIGHT
 #: po/tmp/ap_String_Id.h.h:211
@@ -575,12 +574,12 @@ msgstr "&Oikea"
 #. DLG_PageSetup_Right
 #: po/tmp/ap_String_Id.h.h:213
 msgid "&Right:"
-msgstr ""
+msgstr "O&ikea:"
 
 #. DLG_Options_Label_ViewRuler
 #: po/tmp/ap_String_Id.h.h:215
 msgid "&Ruler"
-msgstr "&Jana"
+msgstr "&Viivain"
 
 #. MENU_LABEL_FILE_SAVE
 #: po/tmp/ap_String_Id.h.h:217
@@ -595,7 +594,7 @@ msgstr "&Etsi ohjeesta"
 #. MENU_LABEL_VIEW_STATUSBAR
 #: po/tmp/ap_String_Id.h.h:221
 msgid "&Show Status Bar"
-msgstr "T&ilapalkki"
+msgstr "T&ilarivi"
 
 #. DLG_Para_LabelSpecial
 #: po/tmp/ap_String_Id.h.h:223
@@ -606,57 +605,57 @@ msgstr "Mu&kautettu:"
 #: po/tmp/ap_String_Id.h.h:225
 #, fuzzy
 msgid "&Spelling"
-msgstr "Oikoluku"
+msgstr "Kie&liasun tarkistus"
 
 #. MENU_LABEL_VIEW_TB_STD
 #: po/tmp/ap_String_Id.h.h:227
 msgid "&Standard"
-msgstr "&Perusvalikko"
+msgstr "Vakio"
 
 #. DLG_Options_Label_ViewStatusBar
 #: po/tmp/ap_String_Id.h.h:229
 msgid "&Status bar"
-msgstr ""
+msgstr "Tilarivi"
 
 #. MENU_LABEL_FMT_SUBSCRIPT
 #: po/tmp/ap_String_Id.h.h:231
 msgid "&Subscript"
-msgstr "Alai&ndeksi"
+msgstr "Alain&deksi"
 
 #. DLG_Para_PushSuppressLineNumbers
 #: po/tmp/ap_String_Id.h.h:233
 msgid "&Suppress line numbers"
-msgstr "&Rivi numerointi"
+msgstr "&Rivinumerointi"
 
 #. MENU_LABEL_FMT_TABS
 #: po/tmp/ap_String_Id.h.h:235
 msgid "&Tabs"
-msgstr "&Sisennä"
+msgstr "Sar&kaimet"
 
 #. DLG_Para_ButtonTabs
 #: po/tmp/ap_String_Id.h.h:237
 msgid "&Tabs..."
-msgstr "&Tabulaattori..."
+msgstr "&Sarkaimet..."
 
 #. MENU_LABEL_VIEW_TOOLBARS
 #: po/tmp/ap_String_Id.h.h:239
 msgid "&Toolbars"
-msgstr "&Työkalurivit"
+msgstr "T&yökalurivit"
 
 #. MENU_LABEL_TOOLS
 #: po/tmp/ap_String_Id.h.h:241
 msgid "&Tools"
-msgstr "&Työkalut"
+msgstr "Ty&ökalut"
 
 #. DLG_PageSetup_Top
 #: po/tmp/ap_String_Id.h.h:243
 msgid "&Top:"
-msgstr ""
+msgstr "&Ylä:"
 
 #. DLG_Field_Types
 #: po/tmp/ap_String_Id.h.h:245
 msgid "&Types:"
-msgstr "&Tyylit"
+msgstr "&Luokat:"
 
 #. MENU_LABEL_FMT_UNDERLINE
 #: po/tmp/ap_String_Id.h.h:247
@@ -671,7 +670,7 @@ msgstr "&Peru"
 #. DLG_PageSetup_Units
 #: po/tmp/ap_String_Id.h.h:251
 msgid "&Units:"
-msgstr "&Asteikko:"
+msgstr "Yksikkö:"
 
 #. MENU_LABEL_VIEW
 #: po/tmp/ap_String_Id.h.h:253
@@ -681,17 +680,17 @@ msgstr "&Näytä"
 #. MENU_LABEL_VIEW_WEB
 #: po/tmp/ap_String_Id.h.h:255
 msgid "&Web Layout"
-msgstr ""
+msgstr "&Web-näkymä"
 
 #. DLG_Para_PushWidowOrphanControl
 #: po/tmp/ap_String_Id.h.h:257
 msgid "&Widow/Orphan control"
-msgstr "&Leski- /orporivien esto"
+msgstr "&Leski- ja orporivien esto"
 
 #. DLG_PageSetup_Width
 #: po/tmp/ap_String_Id.h.h:259
 msgid "&Width:"
-msgstr ""
+msgstr "L&eveys:"
 
 #. MENU_LABEL_WINDOW
 #: po/tmp/ap_String_Id.h.h:261
@@ -736,7 +735,7 @@ msgstr "&Ehdota aina korjausta"
 #. FIELD_DateTime_AMPM
 #: po/tmp/ap_String_Id.h.h:277
 msgid "AM/PM"
-msgstr ""
+msgstr "AM/PM"
 
 #. AUTOTEXT_ATTN_2
 #: po/tmp/ap_String_Id.h.h:279
@@ -747,13 +746,13 @@ msgstr ""
 #: po/tmp/ap_String_Id.h.h:281
 #, c-format
 msgid "AbiWord cannot open %s. It appears to be a bogus or invalid document"
-msgstr "Tiedostoa %s ei tunnistettu asiakirjaksi"
+msgstr "Tiedostoa %s ei tunnistettu asiakirjaksi. Tiedostossa saattaa olla tunnistamattomia muotoiluja."
 
 #. MENU_LABEL_HELP_ABOUT_GNU
 #: po/tmp/ap_String_Id.h.h:283
 #, fuzzy
 msgid "About &GNU Free Software"
-msgstr "Tietoja &Open Source"
+msgstr "Tietoja &GNU"
 
 #. MENU_LABEL_HELP_ABOUTOS
 #: po/tmp/ap_String_Id.h.h:285
@@ -763,17 +762,17 @@ msgstr "Tietoja &Open Source"
 #. MENU_LABEL_HELP_ABOUT_GNOMEOFFICE
 #: po/tmp/ap_String_Id.h.h:287
 msgid "About G&NOME Office"
-msgstr ""
+msgstr "Tietoja G&NOME Office"
 
 #. MENU_STATUSLINE_HELP_ABOUT_GNOMEOFFICE
 #: po/tmp/ap_String_Id.h.h:289
 msgid "About the GNOME Office project"
-msgstr ""
+msgstr "Tietoja GNOME Office projektista"
 
 #. MENU_STATUSLINE_HELP_ABOUT_GNU
 #: po/tmp/ap_String_Id.h.h:291
 msgid "About the GNU project"
-msgstr ""
+msgstr "Tietoja GNU projektista"
 
 #. MENU_STATUSLINE_FMT_BORDERS
 #: po/tmp/ap_String_Id.h.h:293
@@ -783,8 +782,7 @@ msgstr "Lisää reunat ja varjostus valittuun tekstiin"
 #. MENU_STATUSLINE_FMT_BULLETS
 #: po/tmp/ap_String_Id.h.h:295
 msgid "Add or modify bullets and numbering for selected paragraphs"
-msgstr ""
-"Lisää tai moukkaa luettelomerkkejä tai numerointia valitussa kappaleessa"
+msgstr "Lisää/muokkaa valitun alueen luettelomerkkejä tai numerointia"
 
 #. MENU_STATUSLINE_SPELL_ADD
 #: po/tmp/ap_String_Id.h.h:297
@@ -794,7 +792,7 @@ msgstr "Lisää tämä sana omaan sanastoon"
 #. DLG_Styles_ModifyTemplate
 #: po/tmp/ap_String_Id.h.h:299
 msgid "Add to template"
-msgstr ""
+msgstr "Li&sää malliin"
 
 #. DLG_Para_LabelAfter
 #: po/tmp/ap_String_Id.h.h:301
@@ -809,42 +807,42 @@ msgstr "Tasa&us:"
 #. DLG_Tab_Label_Alignment
 #: po/tmp/ap_String_Id.h.h:305
 msgid "Alignment"
-msgstr ""
+msgstr "Tasaaminen"
 
 #. DLG_PageNumbers_Alignment
 #: po/tmp/ap_String_Id.h.h:307
 msgid "Alignment:"
-msgstr ""
+msgstr "Tasaus:"
 
 #. DLG_Styles_LBL_All
 #: po/tmp/ap_String_Id.h.h:309 po/tmp/xap_String_Id.h.h:41
 msgid "All"
-msgstr ""
+msgstr "Kaikki tyylit"
 
 #. DLG_Options_Label_CheckAllowCustomToolbars
 #: po/tmp/ap_String_Id.h.h:311
 msgid "Allow Custom Toolbars"
-msgstr ""
+msgstr "Salli muokattavat työkalurivit"
 
 #. DLG_Options_Label_CheckWhiteForTransparent
 #: po/tmp/ap_String_Id.h.h:313
 msgid "Allow screen colors other than white"
-msgstr ""
+msgstr "Näytön taustaväri muu kuin valkoinen"
 
 #. FIELD_Application
 #: po/tmp/ap_String_Id.h.h:315
 msgid "Application"
-msgstr ""
+msgstr "Ohjelma"
 
 #. DLG_Options_Btn_Apply
 #: po/tmp/ap_String_Id.h.h:317 po/tmp/xap_String_Id.h.h:49
 msgid "Apply"
-msgstr "Hyväksy"
+msgstr "Käytä"
 
 #. DLG_Lists_Apply_Current
 #: po/tmp/ap_String_Id.h.h:319
 msgid "Apply to Current List"
-msgstr ""
+msgstr "Käytä nykyisessä luettelossa"
 
 #. DLG_Para_SpacingAtLeast
 #: po/tmp/ap_String_Id.h.h:321
@@ -854,48 +852,48 @@ msgstr "Vähintään"
 #. DLG_Lists_Resume
 #: po/tmp/ap_String_Id.h.h:323
 msgid "Attach to Previous List"
-msgstr ""
+msgstr "Liitä edelliseen luetteloon"
 
 #. MENU_LABEL_AUTOTEXT_ATTN
 #: po/tmp/ap_String_Id.h.h:325
 msgid "Attention:"
-msgstr ""
+msgstr "Huomiorivi"
 
 #. DLG_Options_Label_AutoSaveCurrent
 #: po/tmp/ap_String_Id.h.h:327
 msgid "Auto &save current file each"
-msgstr ""
+msgstr "Tallenna automaattisesti joka"
 
 #. DLG_Options_Label_AutoSave
 #: po/tmp/ap_String_Id.h.h:329
 msgid "Auto Save"
-msgstr ""
+msgstr "Asiakirjan automaattitallennus"
 
 #. DLG_Options_Label_SpellAutoReplace
 #: po/tmp/ap_String_Id.h.h:331
 msgid "Auto replace misspelled words"
-msgstr ""
+msgstr "Väärinkirjoitettujen sanojen automaattikorvaus"
 
 #. DLG_Options_Label_CheckAutoLoadPlugins
 #: po/tmp/ap_String_Id.h.h:333
 msgid "Automatically load all plugins found"
-msgstr ""
+msgstr "Löytyneiden lisämodulien automaattilataus"
 
 #. MENU_STATUSLINE_TOOLS_AUTOSPELL
 #: po/tmp/ap_String_Id.h.h:335
 #, fuzzy
 msgid "Automatically spell-check the document"
-msgstr "&Automaattisesti tallennetaan asetukset"
+msgstr "Asiakirjan kieliasu tarkistetaan kirjoitettaessa"
 
 #. DLG_Styles_ModifyAutomatic
 #: po/tmp/ap_String_Id.h.h:337
 msgid "Automatically update"
-msgstr ""
+msgstr "Päi&vitä automaattisesti"
 
 #. DLG_Styles_Available
 #: po/tmp/ap_String_Id.h.h:339
 msgid "Available Styles"
-msgstr ""
+msgstr "Valittavissa olevat tyylit"
 
 #. DLG_Para_LabelBy
 #: po/tmp/ap_String_Id.h.h:341
@@ -910,22 +908,22 @@ msgstr ""
 #. MENU_LABEL_FMT_BACKGROUND
 #: po/tmp/ap_String_Id.h.h:345
 msgid "Back&ground"
-msgstr ""
+msgstr "Ta&ustaväri"
 
 #. DLG_Tab_Radio_Bar
 #: po/tmp/ap_String_Id.h.h:347
 msgid "Bar"
-msgstr ""
+msgstr "Viiv&a"
 
 #. TabToggleBarTab
 #: po/tmp/ap_String_Id.h.h:349
 msgid "Bar Tab"
-msgstr ""
+msgstr "Pystyviivasarkain"
 
 #. DLG_Styles_ModifyBasedOn
 #: po/tmp/ap_String_Id.h.h:351
 msgid "Based On:"
-msgstr ""
+msgstr "Perustuu tyyliin:"
 
 #. AUTOTEXT_CLOSING_1
 #: po/tmp/ap_String_Id.h.h:353
@@ -940,18 +938,18 @@ msgstr ""
 #. DLG_Options_Label_BiDiOptions
 #: po/tmp/ap_String_Id.h.h:357
 msgid "Bi-Directional Options"
-msgstr ""
+msgstr "Kaksisuuntaisuuden asetukset"
 
 #. DLG_Goto_Target_Bookmark
 #: po/tmp/ap_String_Id.h.h:359
 msgid "Bookmark"
-msgstr ""
+msgstr "Kirjanmerkki"
 
 #. MSG_BookmarkNotFound
 #: po/tmp/ap_String_Id.h.h:361
 #, c-format
 msgid "Bookmark \"%s\" was not found in this document."
-msgstr ""
+msgstr "Kirjanmerkkiä &quot;%s&quot; ei löytynyt asiakirjasta."
 
 #. MENU_LABEL_FMT_BORDERS
 #: po/tmp/ap_String_Id.h.h:363
@@ -962,69 +960,69 @@ msgstr "&Reunat ja varjostus"
 #: po/tmp/ap_String_Id.h.h:365
 #, c-format
 msgid "Bottom Margin [%s]"
-msgstr ""
+msgstr "Alareunus [%s]"
 
 #. MENU_LABEL_FMT_BOTTOMLINE
 #: po/tmp/ap_String_Id.h.h:367 po/tmp/xap_String_Id.h.h:79
 msgid "Bottomline"
-msgstr ""
+msgstr "Alaviiva"
 
 #. DLG_Lists_Box_List
 #: po/tmp/ap_String_Id.h.h:369
 msgid "Box List"
-msgstr ""
+msgstr "laatikko"
 
 #. DLG_Break_BreakTitle
 #: po/tmp/ap_String_Id.h.h:371
 msgid "Break"
-msgstr "Väli"
+msgstr "Vaihto"
 
 #. FIELD_Application_BuildId
 #: po/tmp/ap_String_Id.h.h:373
 msgid "Build Id."
-msgstr ""
+msgstr "Käännöksen tunniste"
 
 #. FIELD_Application_Options
 #: po/tmp/ap_String_Id.h.h:375
 msgid "Build Options"
-msgstr ""
+msgstr "Käännösasetukset"
 
 #. FIELD_Application_Target
 #: po/tmp/ap_String_Id.h.h:377
 msgid "Build Target"
-msgstr ""
+msgstr "Käännöksen kohde"
 
 #. DLG_Lists_Type_bullet
 #: po/tmp/ap_String_Id.h.h:379
 msgid "Bullet"
-msgstr ""
+msgstr "Luettelomerkki"
 
 #. DLG_Lists_Bullet_List
 #: po/tmp/ap_String_Id.h.h:381
 msgid "Bullet List"
-msgstr "Luoti luettelo"
+msgstr "täytetty ympyrä"
 
 #. MENU_LABEL_FMT_BULLETS
 #: po/tmp/ap_String_Id.h.h:383
 msgid "Bullets and &Numbering"
-msgstr "L&uettelomerkit ja numerointi"
+msgstr "Luettelomerkit ja &numerointi"
 
 #. DLG_Options_Label_Look
 #: po/tmp/ap_String_Id.h.h:385
 msgid "Button Style"
-msgstr ""
+msgstr "Painikkeen tyyli"
 
 #. MENU_LABEL_FMT_TOGGLECASE
 #: po/tmp/ap_String_Id.h.h:387
 #, fuzzy
 msgid "C&hange Case"
-msgstr "&Vaihda"
+msgstr "&Muuta kirjainkoko"
 
 #. MENU_LABEL_HELP_CREDITS
 #: po/tmp/ap_String_Id.h.h:389
 #, fuzzy
 msgid "C&redits"
-msgstr "&Muokkaa"
+msgstr "Te&kijät"
 
 #. AUTOTEXT_EMAIL_4
 #: po/tmp/ap_String_Id.h.h:391
@@ -1044,28 +1042,28 @@ msgstr ""
 #. DLG_ToggleCase_FirstUpperCase
 #: po/tmp/ap_String_Id.h.h:397
 msgid "Camel Caps"
-msgstr ""
+msgstr "&Sanan 1. Kirjain Isolla"
 
 #. DLG_Styles_ErrStyleCantDelete
 #: po/tmp/ap_String_Id.h.h:399
 msgid "Cannot delete this style"
-msgstr ""
+msgstr "Tyyliä ei voi poistaa"
 
 #. DLG_Styles_ErrStyleBuiltin
 #: po/tmp/ap_String_Id.h.h:401
 msgid "Cannot modify a builtin style"
-msgstr ""
+msgstr "Sisäänrakennettua tyyliä ei voi muokata"
 
 #. DLG_PageNumbers_Center
 #: po/tmp/ap_String_Id.h.h:403
 msgid "Center"
-msgstr ""
+msgstr "Keskellä"
 
 #. TabToggleCenterTab
 #: po/tmp/ap_String_Id.h.h:405
 #, fuzzy
 msgid "Center Tab"
-msgstr "&Keskitä"
+msgstr "Keskittävä sarkain"
 
 #. MENU_STATUSLINE_ALIGN_CENTER
 #: po/tmp/ap_String_Id.h.h:407
@@ -1090,40 +1088,40 @@ msgstr "V&aihda kaikki"
 #. DLG_Background_Title
 #: po/tmp/ap_String_Id.h.h:415
 msgid "Change Background Color"
-msgstr ""
+msgstr "Muuta taustaväriä"
 
 #. DLG_ToggleCase_Title
 #: po/tmp/ap_String_Id.h.h:417
 msgid "Change Case"
-msgstr ""
+msgstr "Muuta kirjainkoko"
 
 #. DLG_Lists_Cur_Change_Start
 #: po/tmp/ap_String_Id.h.h:419
 msgid ""
 "Change Current \n"
 "List"
-msgstr "Vaihda luettelo"
+msgstr "Vaihda &#10;luettelo"
 
 #. DLG_Background_TitleHighlight
 #: po/tmp/ap_String_Id.h.h:421
 msgid "Change Highlight Color"
-msgstr ""
+msgstr "Muuta korostusväriä"
 
 #. DLG_Background_TitleFore
 #: po/tmp/ap_String_Id.h.h:423
 msgid "Change Text Color"
-msgstr ""
+msgstr "Muuta tekstiväriä"
 
 #. MENU_STATUSLINE_FMT_TOGGLECASE
 #: po/tmp/ap_String_Id.h.h:425
 #, fuzzy
 msgid "Change the case of the selected text"
-msgstr "Muuta Fonttia valitussa tekstissä"
+msgstr "Muuta valitun alueen kirjainkokoa (ISOT/pienet)"
 
 #. MENU_STATUSLINE_FMT_FONT
 #: po/tmp/ap_String_Id.h.h:427
 msgid "Change the font of the selected text"
-msgstr "Muuta Fonttia valitussa tekstissä"
+msgstr "Muuta kirjasinasetuksia valitussa tekstissä"
 
 #. MENU_STATUSLINE_FMT_PARAGRAPH
 #: po/tmp/ap_String_Id.h.h:429
@@ -1134,7 +1132,7 @@ msgstr "Muuta asetuksia valitussa kappaleessa"
 #: po/tmp/ap_String_Id.h.h:431
 #, fuzzy
 msgid "Change the language of the selected text"
-msgstr "Muuta Fonttia valitussa tekstissä"
+msgstr "Asetetaan valitun alueen kieli"
 
 #. MENU_STATUSLINE_FMT_COLUMNS
 #: po/tmp/ap_String_Id.h.h:433
@@ -1144,7 +1142,7 @@ msgstr "Muuta palstojen määrää"
 #. MENU_STATUSLINE_FILE_PAGESETUP
 #: po/tmp/ap_String_Id.h.h:435
 msgid "Change the printing options"
-msgstr "Muuta sivun tulostus asetuksia"
+msgstr "Muuta sivun tulostusasetuksia"
 
 #. MENU_STATUSLINE_SPELL_SUGGEST_9
 #: po/tmp/ap_String_Id.h.h:437
@@ -1154,27 +1152,27 @@ msgstr "Vaihda ehdotettu sana"
 #. MENU_STATUSLINE_FMT_BACKGROUND
 #: po/tmp/ap_String_Id.h.h:439
 msgid "Change your document's background color"
-msgstr ""
+msgstr "Muuta asiakirjan taustaväriä"
 
 #. DLG_Styles_ModifyCharacter
 #: po/tmp/ap_String_Id.h.h:441
 msgid "Character"
-msgstr ""
+msgstr "Merkki"
 
 #. FIELD_Numbers_CharCount
 #: po/tmp/ap_String_Id.h.h:443
 msgid "Character Count"
-msgstr ""
+msgstr "Merkkejä"
 
 #. FIELD_Numbers_NbspCount
 #: po/tmp/ap_String_Id.h.h:445
 msgid "Character Count (w/o spaces)"
-msgstr ""
+msgstr "Merkkejä (ilman välejä)"
 
 #. DLG_Styles_CharPrev
 #: po/tmp/ap_String_Id.h.h:447
 msgid "Character Preview"
-msgstr ""
+msgstr "Merkin esikatselu"
 
 #. DLG_WordCount_Characters_No
 #: po/tmp/ap_String_Id.h.h:449
@@ -1189,12 +1187,12 @@ msgstr "Merkkejä (välit laskettu)"
 #. MENU_LABEL_TOOLS_SPELL
 #: po/tmp/ap_String_Id.h.h:453
 msgid "Check &Spelling"
-msgstr "&Oikoluku"
+msgstr "&Oikolue"
 
 #. MENU_LABEL_HELP_CHECKVER
 #: po/tmp/ap_String_Id.h.h:455
 msgid "Check &Version"
-msgstr "Tarkista &Versio"
+msgstr "Tarkista ohjelma&versio"
 
 #. DLG_Options_Label_SpellCheckAsType
 #: po/tmp/ap_String_Id.h.h:457
@@ -1204,27 +1202,27 @@ msgstr "T&arkista oikeinkirjoitus kirjoitettaessa"
 #. MENU_STATUSLINE_TOOLS_SPELL
 #: po/tmp/ap_String_Id.h.h:459
 msgid "Check the document for incorrect spelling"
-msgstr "Tarkista asiakirja virheellisitä sanoista"
+msgstr "Tarkista asiakirja virheellisistä sanoista"
 
 #. DLG_NEW_Choose
 #: po/tmp/ap_String_Id.h.h:461
 msgid "Choose"
-msgstr ""
+msgstr "Valitse"
 
 #. DLG_Options_Label_ChooseForTransparent
 #: po/tmp/ap_String_Id.h.h:463
 msgid "Choose Screen Color"
-msgstr ""
+msgstr "Valitse taustaväri"
 
 #. DLG_NEW_Title
 #: po/tmp/ap_String_Id.h.h:465
 msgid "Choose a Template"
-msgstr ""
+msgstr "Valitse asiakirjamalli"
 
 #. DLG_Options_Label_ColorChooserLabel
 #: po/tmp/ap_String_Id.h.h:467
 msgid "Choose screen color for AbiWord"
-msgstr ""
+msgstr "Värivalitsin"
 
 #. DLG_Goto_Label_Help
 #: po/tmp/ap_String_Id.h.h:469
@@ -1234,46 +1232,42 @@ msgid ""
 "desired number.  You can use + and - to perform relative movement.  I.e., if "
 "you write \"+2\" and you select \"Line\", the \"Go To\" will go 2 lines "
 "below your current position."
-msgstr ""
-"Valitse kohteesi vasemmalta puolelta. Jos haluat käyttää Siirry nappia, "
-"täytä numerokenttä. Voit lisätä + ja - vähentää suhteellista kohtaa. Esim "
-"jos kirjoitat +2 ja valitset Rivi, ja sitten Mene niin siirryt kaksi riviä "
-"alaspäin nykyisesä kohdasta."
+msgstr "Valitse kohteesi vasemmalta puolelta. Jos haluat käyttää Siirry painiketta, niin täytä numerokenttä. Voit lisätä + tai - vähentää suhteellista kohtaa. Jos esim.  kirjoitat +2 ja valitset Rivi, ja sitten Siirry, niin siirryt kaksi riviä alaspäin nykyisestä kohdasta."
 
 #. MENU_LABEL_EDIT_CLEAR
 #: po/tmp/ap_String_Id.h.h:471
 msgid "Cle&ar"
-msgstr "&Tyhjennä"
+msgstr "T&yhjennä"
 
 #. DLG_Tab_Button_Clear
 #: po/tmp/ap_String_Id.h.h:473
 msgid "Clear"
-msgstr ""
+msgstr "Poista"
 
 #. DLG_Tab_Button_ClearAll
 #: po/tmp/ap_String_Id.h.h:475
 msgid "Clear &All"
-msgstr ""
+msgstr "Poista kaikki"
 
 #. DLG_Background_ClearClr
 #: po/tmp/ap_String_Id.h.h:477
 msgid "Clear Background Color"
-msgstr ""
+msgstr "Poista taustaväri"
 
 #. DLG_Background_ClearHighlight
 #: po/tmp/ap_String_Id.h.h:479
 msgid "Clear Highlight Color"
-msgstr ""
+msgstr "Poista korostusväri"
 
 #. MSG_QueryExit
 #: po/tmp/ap_String_Id.h.h:481
 msgid "Close all windows and exit?"
-msgstr "Suljetaanko kaikki ikkunat ja poistutaan"
+msgstr "Suljetaanko kaikki AbiWordin ikkunat ja poistutaan ohjelmasta"
 
 #. MENU_STATUSLINE_FILE_EXIT
 #: po/tmp/ap_String_Id.h.h:483
 msgid "Close all windows in the application and exit"
-msgstr "Sulje kaikki ikkunat ja sulje sovellus"
+msgstr "Sulje kaikki ikkunat ja poistu ohjelmasta"
 
 #. MENU_STATUSLINE_FILE_CLOSE
 #: po/tmp/ap_String_Id.h.h:485
@@ -1284,7 +1278,7 @@ msgstr "Sulje asiakirja"
 #: po/tmp/ap_String_Id.h.h:487
 #, fuzzy
 msgid "Closing:"
-msgstr "Sulje"
+msgstr "Lopetus"
 
 #. ColumnGapStatus
 #: po/tmp/ap_String_Id.h.h:489
@@ -1295,17 +1289,17 @@ msgstr "Palstojen väli [%s]"
 #. DLG_Column_ColumnTitle
 #: po/tmp/ap_String_Id.h.h:491
 msgid "Columns"
-msgstr ""
+msgstr "Palstat"
 
 #. FIELD_Application_CompileDate
 #: po/tmp/ap_String_Id.h.h:493
 msgid "Compile Date"
-msgstr ""
+msgstr "Käännöspäivä"
 
 #. FIELD_Application_CompileTime
 #: po/tmp/ap_String_Id.h.h:495
 msgid "Compile Time"
-msgstr ""
+msgstr "Käännösaika"
 
 #. DLG_Break_Continuous
 #: po/tmp/ap_String_Id.h.h:497
@@ -1315,7 +1309,7 @@ msgstr "&Jatkuva"
 #. MENU_STATUSLINE_EDIT_COPY
 #: po/tmp/ap_String_Id.h.h:499
 msgid "Copy the selection and put it on the Clipboard"
-msgstr "Kopioi valinta ja sioita se leikepöydälle"
+msgstr "Kopioi valinta ja sijoita se leikepöydälle"
 
 #. AUTOTEXT_CLOSING_3
 #: po/tmp/ap_String_Id.h.h:501
@@ -1332,7 +1326,7 @@ msgstr "Tiedostoa %s ei voitu avata."
 #: po/tmp/ap_String_Id.h.h:505
 #, fuzzy, c-format
 msgid "Could not open file %s."
-msgstr "Ei voinut kirjoittaa tiedostoon %s."
+msgstr "Tiedostoa %s ei voitu avata."
 
 #. MSG_IE_CouldNotWrite
 #: po/tmp/ap_String_Id.h.h:507
@@ -1344,7 +1338,7 @@ msgstr "Tiedostoa %s ei voitu tallentaa."
 #: po/tmp/ap_String_Id.h.h:509
 #, c-format
 msgid "Could not write to the file %s."
-msgstr "Ei voinut kirjoittaa tiedostoon %s."
+msgstr "Tiedostoon %s ei voitu kirjoittaa."
 
 #. MENU_STATUSLINE_TOOLS_WORDCOUNT
 #: po/tmp/ap_String_Id.h.h:511
@@ -1369,7 +1363,7 @@ msgstr "Luo uusi asiakirja"
 #. DLG_NEW_Create
 #: po/tmp/ap_String_Id.h.h:519
 msgid "Create new document from a Template"
-msgstr ""
+msgstr "Luo uusi asiakirja mallipohjasta"
 
 #. MENU_LABEL_EDIT_CUT
 #: po/tmp/ap_String_Id.h.h:521
@@ -1384,37 +1378,37 @@ msgstr ""
 #. DLG_Lists_Current_Font
 #: po/tmp/ap_String_Id.h.h:525
 msgid "Current Font"
-msgstr ""
+msgstr "Nykyinen kirjasin"
 
 #. DLG_Lists_Current_List_Label
 #: po/tmp/ap_String_Id.h.h:527
 msgid "Current List Label"
-msgstr "Nyt luettelon arvo"
+msgstr "Nyk. luettelon arvo"
 
 #. DLG_Lists_Current_List_Type
 #: po/tmp/ap_String_Id.h.h:529
 msgid "Current List Type"
-msgstr "Nyt luettelon tyyppi"
+msgstr "Nyk. luettelon tyyppi"
 
 #. MSG_EmptySelection
 #: po/tmp/ap_String_Id.h.h:531
 msgid "Current Selection is Empty"
-msgstr ""
+msgstr "Valittu alue on tyhjä"
 
 #. DLG_Styles_DefCurrent
 #: po/tmp/ap_String_Id.h.h:533
 msgid "Current Settings"
-msgstr ""
+msgstr "Nykyiset asetukset"
 
 #. FIELD_Datetime_CurrentTime
 #: po/tmp/ap_String_Id.h.h:535
 msgid "Current Time"
-msgstr "Nykyinen aika"
+msgstr "Tämänhetkinen aika"
 
 #. DLG_Options_Label_ViewCursorBlink
 #: po/tmp/ap_String_Id.h.h:537
 msgid "Cursor &blink"
-msgstr "Kursori &vilkkuu"
+msgstr "Kohdistin &vilkkuu"
 
 #. DLG_Options_Label_SpellCustomDict
 #: po/tmp/ap_String_Id.h.h:539
@@ -1424,17 +1418,17 @@ msgstr "Käyttäjän sanasto:"
 #. DLG_Lists_Customize
 #: po/tmp/ap_String_Id.h.h:541
 msgid "Customized List"
-msgstr ""
+msgstr "Mukautettu"
 
 #. MENU_STATUSLINE_EDIT_CUT
 #: po/tmp/ap_String_Id.h.h:543
 msgid "Cut the selection and put it on the Clipboard"
-msgstr "Leikkaa valinta ja sioita se leikepöydälle"
+msgstr "Leikkaa valinta ja sijoita se leikepöydälle"
 
 #. DLG_Lists_Dashed_List
 #: po/tmp/ap_String_Id.h.h:545
 msgid "Dashed List"
-msgstr ""
+msgstr "ranskal. viiva"
 
 #. MENU_LABEL_INSERT_DATETIME
 #: po/tmp/ap_String_Id.h.h:547
@@ -1449,7 +1443,7 @@ msgstr "Päiväys ja aika"
 #. FIELD_DateTime_DOY
 #: po/tmp/ap_String_Id.h.h:551
 msgid "Day # in the year"
-msgstr ""
+msgstr "Päivän järjestysnumero vuodessa"
 
 #. DLG_Options_Btn_Default
 #: po/tmp/ap_String_Id.h.h:553
@@ -1469,37 +1463,37 @@ msgstr ""
 #. DLG_Tab_Radio_Decimal
 #: po/tmp/ap_String_Id.h.h:559
 msgid "Decimal"
-msgstr ""
+msgstr "&Desimaali"
 
 #. TabToggleDecimalTab
 #: po/tmp/ap_String_Id.h.h:561
 msgid "Decimal Tab"
-msgstr ""
+msgstr "Desimaalisarkain"
 
 #. FIELD_DateTime_DefaultDateNoTime
 #: po/tmp/ap_String_Id.h.h:563
 msgid "Default date (w/o time)"
-msgstr ""
+msgstr "Päiväys ilman kellonaikaa"
 
 #. FIELD_DateTime_DefaultDate
 #: po/tmp/ap_String_Id.h.h:565
 msgid "Default date representation"
-msgstr ""
+msgstr "Päiväyksen oletusmuoto"
 
 #. DLG_Options_Label_DefaultPageSize
 #: po/tmp/ap_String_Id.h.h:567
 msgid "Default page size"
-msgstr ""
+msgstr "Paperin koko:"
 
 #. DLG_Tab_Label_DefaultTS
 #: po/tmp/ap_String_Id.h.h:569
 msgid "Default tab stops:"
-msgstr ""
+msgstr "Olet&ussarkaimet:"
 
 #. DLG_Options_Label_DirectionRtl
 #: po/tmp/ap_String_Id.h.h:571
 msgid "Default to right-to-left direction of text"
-msgstr ""
+msgstr "Tekstin suunta oikealta vasemmalle"
 
 #. MENU_STATUSLINE_FMT_STYLE
 #: po/tmp/ap_String_Id.h.h:573
@@ -1509,13 +1503,13 @@ msgstr "Määritä tai valitse tyyli valittuun tekstiin"
 #. DLG_Styles_Delete
 #: po/tmp/ap_String_Id.h.h:575
 msgid "Delete"
-msgstr ""
+msgstr "Poista"
 
 #. MENU_STATUSLINE_INSERT_DELETE_HYPERLINK
 #: po/tmp/ap_String_Id.h.h:577
 #, fuzzy
 msgid "Delete hyperlink"
-msgstr "Tyhjennä valinta"
+msgstr "Poista hyperlinkki"
 
 #. MENU_STATUSLINE_EDIT_CLEAR
 #: po/tmp/ap_String_Id.h.h:579
@@ -1525,63 +1519,63 @@ msgstr "Tyhjennä valinta"
 #. DLG_Styles_ModifyDescription
 #: po/tmp/ap_String_Id.h.h:581 po/tmp/xap_String_Id.h.h:149
 msgid "Description"
-msgstr ""
+msgstr "Kuvaus"
 
 #. DLG_Options_Label_UseContextGlyphs
 #: po/tmp/ap_String_Id.h.h:583
 msgid "Determine correct glyph shapes from context"
-msgstr ""
+msgstr "Arvaa oikeat kirjasinmuodot asiayhteydestä"
 
 #. DLG_Lists_Diamond_List
 #: po/tmp/ap_String_Id.h.h:585
 msgid "Diamond List"
-msgstr ""
+msgstr "timantti"
 
 #. DLG_HdrFtr_FooterFirst
 #: po/tmp/ap_String_Id.h.h:587
 msgid "Different Footer on First page"
-msgstr ""
+msgstr "Erilainen 1. sivulla "
 
 #. DLG_HdrFtr_FooterLast
 #: po/tmp/ap_String_Id.h.h:589
 msgid "Different Footer on Last page"
-msgstr ""
+msgstr "Erilainen viimeisellä sivulla"
 
 #. DLG_HdrFtr_FooterEven
 #: po/tmp/ap_String_Id.h.h:591
 msgid "Different Footer on facing pages"
-msgstr ""
+msgstr "Erilainen pariton ja parillinen sivu "
 
 #. DLG_HdrFtr_HeaderFirst
 #: po/tmp/ap_String_Id.h.h:593
 msgid "Different Header on First page"
-msgstr ""
+msgstr "Erilainen 1. sivulla "
 
 #. DLG_HdrFtr_HeaderLast
 #: po/tmp/ap_String_Id.h.h:595
 msgid "Different Header on Last page"
-msgstr ""
+msgstr "Erilainen viimeisellä sivulla"
 
 #. DLG_HdrFtr_HeaderEven
 #: po/tmp/ap_String_Id.h.h:597
 msgid "Different Header on facing pages"
-msgstr ""
+msgstr "Erilainen pariton ja parillinen sivu"
 
 #. MENU_STATUSLINE_HELP_CREDITS
 #: po/tmp/ap_String_Id.h.h:599
 #, fuzzy
 msgid "Display Credits"
-msgstr "Ohjeen hakemiston"
+msgstr "Tietoja ohjelman tekijöistä"
 
 #. MENU_STATUSLINE_HELP_CONTENTS
 #: po/tmp/ap_String_Id.h.h:601
 msgid "Display Help Contents"
-msgstr "Ohjeen hakemiston"
+msgstr "Ohjeen sisältö"
 
 #. MENU_STATUSLINE_HELP_INDEX
 #: po/tmp/ap_String_Id.h.h:603
 msgid "Display Help Index"
-msgstr "Ohjeen indeksi"
+msgstr "Ohjeen hakemisto"
 
 #. MENU_STATUSLINE_HELP_ABOUTOS
 #: po/tmp/ap_String_Id.h.h:605
@@ -1596,12 +1590,12 @@ msgstr "Näytä tulostumattomat merkit"
 #. MENU_STATUSLINE_HELP_ABOUT
 #: po/tmp/ap_String_Id.h.h:609
 msgid "Display program information, version number, and copyright"
-msgstr "Kertoo lisätietoja ohjelmasta, sen versiosta ja kopiointi oikeuksista"
+msgstr "Lisätietoja ohjelmasta, sen versiosta ja tekijänoikeuksista"
 
 #. MENU_STATUSLINE_HELP_CHECKVER
 #: po/tmp/ap_String_Id.h.h:611
 msgid "Display program version number"
-msgstr "Ohjelman versio numero"
+msgstr "Ohjelman versionumero"
 
 #. DLG_Options_Prompt_IgnoreResetAll
 #: po/tmp/ap_String_Id.h.h:613
@@ -1626,12 +1620,12 @@ msgstr "&Lopeta"
 #. MENU_LABEL_EDIT_EDITFOOTER
 #: po/tmp/ap_String_Id.h.h:621
 msgid "Edit Footer"
-msgstr ""
+msgstr "Muokkaa alatu&nnistetta"
 
 #. MENU_LABEL_EDIT_EDITHEADER
 #: po/tmp/ap_String_Id.h.h:623
 msgid "Edit Header"
-msgstr ""
+msgstr "Muokkaa yl&ätunnistetta"
 
 #. MENU_STATUSLINE_VIEW_HEADFOOT
 #: po/tmp/ap_String_Id.h.h:625
@@ -1641,57 +1635,57 @@ msgstr "Muokkaa ylä- tai alatunnistetta"
 #. MENU_STATUSLINE_EDIT_EDITFOOTER
 #: po/tmp/ap_String_Id.h.h:627
 msgid "Edit the Footer on the current page"
-msgstr ""
+msgstr "Muokkaa sivun alaosaa"
 
 #. MENU_STATUSLINE_EDIT_EDITHEADER
 #: po/tmp/ap_String_Id.h.h:629
 msgid "Edit the Header on the current page"
-msgstr ""
+msgstr "Muokkaa sivun yläosaa"
 
 #. MENU_LABEL_AUTOTEXT_EMAIL
 #: po/tmp/ap_String_Id.h.h:631
 msgid "Email:"
-msgstr ""
+msgstr "Sähköposti"
 
 #. FIELD_Numbers_EndnoteAnchor
 #: po/tmp/ap_String_Id.h.h:633
 msgid "Endnote anchor"
-msgstr ""
+msgstr "Loppuviitteen merkki"
 
 #. FIELD_Numbers_EndnoteReference
 #: po/tmp/ap_String_Id.h.h:635
 #, fuzzy
 msgid "Endnote reference"
-msgstr "Muuta asetuksia"
+msgstr "Loppuviitteen teksti"
 
 #. FIELD_Error
 #: po/tmp/ap_String_Id.h.h:637
 msgid "Error calculating value!"
-msgstr ""
+msgstr "Virhe laskettaessa arvoa!"
 
 #. SCRIPT_CANTRUN
 #: po/tmp/ap_String_Id.h.h:639
 #, fuzzy, c-format
 msgid "Error executing script %s"
-msgstr "Virhe haku tiedosto %s."
+msgstr "Virhe suoritettaessa skriptiä %s"
 
 #. MSG_ImportError
 #: po/tmp/ap_String_Id.h.h:641
 #, c-format
 msgid "Error importing file %s."
-msgstr "Virhe haku tiedosto %s."
+msgstr "Virhe avattaessa tiedostoa %s."
 
 #. MSG_SaveFailedExport
 #: po/tmp/ap_String_Id.h.h:643
 #, c-format
 msgid "Error while attempting to save %s: could not construct exporter"
-msgstr "Ei voinut kirjoittaa tiedostoon %s."
+msgstr "Tiedostoon %s ei voitu kirjoittaa. Virhe muutettaessa tallennusmuotoa"
 
 #. MSG_SaveFailedName
 #: po/tmp/ap_String_Id.h.h:645
 #, c-format
 msgid "Error while attempting to save %s: invalid name"
-msgstr "Ei voinut kirjoittaa tiedostoon %s."
+msgstr "Tiedostoon %s ei voitu kirjoittaa. Virhe tiedoston nimessä."
 
 #. DLG_Para_SpacingExactly
 #: po/tmp/ap_String_Id.h.h:647
@@ -1701,27 +1695,27 @@ msgstr "Täsmälleen"
 #. MENU_STATUSLINE_TOOLS_SCRIPTS
 #: po/tmp/ap_String_Id.h.h:649
 msgid "Execute helper scripts"
-msgstr ""
+msgstr "Suorita lisämodulien skriptejä"
 
 #. DLG_Options_Label_ViewExtraTB
 #: po/tmp/ap_String_Id.h.h:651
 msgid "Extra Toolbar"
-msgstr ""
+msgstr "Näytä lisätyökalurivi"
 
 #. DLG_Field_Parameters
 #: po/tmp/ap_String_Id.h.h:653
 msgid "Extra parameters:"
-msgstr ""
+msgstr "Lisäparametrit:"
 
 #. MENU_LABEL_FORMAT
 #: po/tmp/ap_String_Id.h.h:655
 msgid "F&ormat"
-msgstr "&Muotoile"
+msgstr "Muotoil&e"
 
 #. MENU_LABEL_VIEW_FULLSCREEN
 #: po/tmp/ap_String_Id.h.h:657
 msgid "F&ull Screen"
-msgstr ""
+msgstr "Koko n&äyttö"
 
 #. DLG_FR_FindLabel
 #: po/tmp/ap_String_Id.h.h:659
@@ -1737,7 +1731,7 @@ msgstr "Kenttä"
 #: po/tmp/ap_String_Id.h.h:663
 #, c-format
 msgid "File %s is not of a currently supported file type"
-msgstr "Tiedosto %s ei ole nyt tuettu tiedosto muoto"
+msgstr "Tiedosto %s ei ole tuettu tiedostomuoto."
 
 #. MSG_IE_FakeType
 #: po/tmp/ap_String_Id.h.h:665
@@ -1760,7 +1754,7 @@ msgstr "Tiedostoa %s ei löydy."
 #. FIELD_Application_Filename
 #: po/tmp/ap_String_Id.h.h:671
 msgid "File Name"
-msgstr ""
+msgstr "Asiakirjan nimi"
 
 #. DLG_FR_FindTitle
 #: po/tmp/ap_String_Id.h.h:673
@@ -1788,68 +1782,66 @@ msgstr "1. rivi"
 msgid ""
 "Following Paragraph Following Paragraph Following Paragraph Following "
 "Paragraph Following Paragraph Following Paragraph Following Paragraph"
-msgstr ""
-"Seuraava kappale Seuraava kappale Seuraava kappale Seuraava kappale Seuraava "
-"kappale Seuraava kappale Seuraava kappale"
+msgstr "Seuraava kappale Seuraava kappale Seuraava kappale Seuraava kappale Seuraava kappale Seuraava kappale Seuraava kappale"
 
 #. DLG_Styles_ModifyFont
 #: po/tmp/ap_String_Id.h.h:683 po/tmp/xap_String_Id.h.h:189
 msgid "Font"
-msgstr ""
+msgstr "Kirjasin"
 
 #. DLG_Lists_ButtonFont
 #: po/tmp/ap_String_Id.h.h:685
 #, fuzzy
 msgid "Font..."
-msgstr "Siirry"
+msgstr "Kirjasin..."
 
 #. DLG_Lists_Font
 #: po/tmp/ap_String_Id.h.h:687 po/tmp/xap_String_Id.h.h:191
 msgid "Font:"
-msgstr ""
+msgstr "Kirjasin:"
 
 #. DLG_PageNumbers_Footer
 #: po/tmp/ap_String_Id.h.h:689
 msgid "Footer"
-msgstr ""
+msgstr "Alatunniste"
 
 #. DLG_HdrFtr_FooterFrame
 #: po/tmp/ap_String_Id.h.h:691
 msgid "Footer Properties"
-msgstr ""
+msgstr "Alatunnisteen ominaisuudet"
 
 #. FooterStatus
 #: po/tmp/ap_String_Id.h.h:693
 #, c-format
 msgid "Footer [%s]"
-msgstr ""
+msgstr "Alatunniste [%s]"
 
 #. DLG_Styles_ModifyFormat
 #: po/tmp/ap_String_Id.h.h:695
 msgid "Format"
-msgstr ""
+msgstr "Muotoilu"
 
 #. MENU_LABEL_FMT_IMAGE
 #: po/tmp/ap_String_Id.h.h:697
 #, fuzzy
 msgid "Format &Image"
-msgstr "&Muotoile"
+msgstr "Muokkaa kuvaa"
 
 #. MENU_LABEL_FMT_HDRFTR
 #: po/tmp/ap_String_Id.h.h:699
 #, fuzzy
 msgid "Format Header/Footers"
-msgstr "&Ylätunniste ja alatunniste"
+msgstr "Ylä- ja alatunniste"
 
 #. DLG_Options_Label_ViewFormatTB
 #: po/tmp/ap_String_Id.h.h:701
 msgid "Format Toolbar"
-msgstr ""
+msgstr "Näytä muotoilutyökalurivi"
 
 #. DLG_Lists_Format
 #: po/tmp/ap_String_Id.h.h:703
 msgid "Format:"
-msgstr ""
+msgstr "Muotoilu:"
 
 #. AUTOTEXT_EMAIL_2
 #: po/tmp/ap_String_Id.h.h:705
@@ -1864,7 +1856,7 @@ msgstr ""
 #. DLG_Options_Label_General
 #: po/tmp/ap_String_Id.h.h:709
 msgid "General"
-msgstr ""
+msgstr "Yleiset"
 
 #. DLG_Goto_Btn_Goto
 #: po/tmp/ap_String_Id.h.h:711
@@ -1884,7 +1876,7 @@ msgstr "Siirry"
 #. DLG_Lists_Hand_List
 #: po/tmp/ap_String_Id.h.h:717
 msgid "Hand List"
-msgstr ""
+msgstr "käsi"
 
 #. DLG_Para_SpecialHanging
 #: po/tmp/ap_String_Id.h.h:719
@@ -1894,38 +1886,38 @@ msgstr "Riippuva"
 #. DLG_PageNumbers_Header
 #: po/tmp/ap_String_Id.h.h:721
 msgid "Header"
-msgstr ""
+msgstr "Ylätunniste"
 
 #. DLG_HdrFtr_HeaderFrame
 #: po/tmp/ap_String_Id.h.h:723
 msgid "Header Properties"
-msgstr ""
+msgstr "Ylätunnisteen ominaisuudet"
 
 #. HeaderStatus
 #: po/tmp/ap_String_Id.h.h:725
 #, c-format
 msgid "Header [%s]"
-msgstr ""
+msgstr "Ylätunniste [%s]"
 
 #. DLG_Lists_Heart_List
 #: po/tmp/ap_String_Id.h.h:727
 msgid "Heart List"
-msgstr ""
+msgstr "sydän"
 
 #. MENU_LABEL_HELP_CONTENTS
 #: po/tmp/ap_String_Id.h.h:729
 msgid "Help &Contents"
-msgstr "Ohje &hakemisto"
+msgstr "Ohjeen &sisältö"
 
 #. MENU_LABEL_HELP_INDEX
 #: po/tmp/ap_String_Id.h.h:731
 msgid "Help &Index"
-msgstr "Ohjeen &indeksi"
+msgstr "Ohjeen &hakemisto"
 
 #. DLG_Options_Label_Hide
 #: po/tmp/ap_String_Id.h.h:733
 msgid "Hide"
-msgstr ""
+msgstr "Piilota"
 
 #. DLG_Options_Label_SpellHideErrors
 #: po/tmp/ap_String_Id.h.h:735
@@ -1945,12 +1937,12 @@ msgstr "LISÄÄ"
 #. DLG_Options_Label_Icons
 #: po/tmp/ap_String_Id.h.h:741
 msgid "Icons"
-msgstr ""
+msgstr "Kuvakkeet"
 
 #. DLG_Options_Label_Ignore
 #: po/tmp/ap_String_Id.h.h:743
 msgid "Ignore"
-msgstr ""
+msgstr "Ohita"
 
 #. DLG_Options_Label_SpellInternet
 #: po/tmp/ap_String_Id.h.h:745
@@ -1960,7 +1952,7 @@ msgstr "O&hita Internet- ja tiedosto-osoitteet"
 #. MENU_STATUSLINE_SPELL_IGNOREALL
 #: po/tmp/ap_String_Id.h.h:747
 msgid "Ignore all occurrences of this word in the document"
-msgstr "Ohita kaikki tämän sana esiintymiset tässä asiakirjassa"
+msgstr "Ohita kaikki tämän sanan esiintymät tässä asiakirjassa"
 
 #. DLG_Options_Label_SpellUppercase
 #: po/tmp/ap_String_Id.h.h:749
@@ -1980,18 +1972,18 @@ msgstr "Ohita sanat:"
 #. DLG_Lists_Implies_List
 #: po/tmp/ap_String_Id.h.h:755
 msgid "Implies List"
-msgstr ""
+msgstr "nuoli"
 
 #. MENU_STATUSLINE_FILE_IMPORT
 #: po/tmp/ap_String_Id.h.h:757
 #, fuzzy
 msgid "Import the document"
-msgstr "Sulje asiakirja"
+msgstr "Avaa asiakirjasta kopio"
 
 #. DLG_Styles_LBL_InUse
 #: po/tmp/ap_String_Id.h.h:759
 msgid "In Use"
-msgstr ""
+msgstr "Asiakirjassa käytetyt tyylit"
 
 #. AUTOTEXT_REFERENCE_1
 #: po/tmp/ap_String_Id.h.h:761
@@ -2001,7 +1993,7 @@ msgstr ""
 #. WORD_PassInvalid
 #: po/tmp/ap_String_Id.h.h:763
 msgid "Incorrect Password"
-msgstr ""
+msgstr "Väärä salasana"
 
 #. DLG_Para_LabelIndentation
 #: po/tmp/ap_String_Id.h.h:765
@@ -2016,7 +2008,7 @@ msgstr "Lisää"
 #. DLG_InsertBookmark_Title
 #: po/tmp/ap_String_Id.h.h:769
 msgid "Insert Bookmark"
-msgstr ""
+msgstr "Lisää kirjanmerkki"
 
 #. MENU_STATUSLINE_EDIT_PASTE
 #: po/tmp/ap_String_Id.h.h:771
@@ -2027,17 +2019,17 @@ msgstr "Liitä leikepöydän sisältö"
 #: po/tmp/ap_String_Id.h.h:773
 #, fuzzy
 msgid "Insert Hyperlink"
-msgstr "Lisää merkki"
+msgstr "Lisää hyperlinkki"
 
 #. MENU_STATUSLINE_INSERT_FIELD
 #: po/tmp/ap_String_Id.h.h:775
 msgid "Insert a calculated field"
-msgstr "Lisää laskentakenttä"
+msgstr "Lisää kentän arvo"
 
 #. MENU_STATUSLINE_INSERT_BREAK
 #: po/tmp/ap_String_Id.h.h:777
 msgid "Insert a page, column, or section break"
-msgstr "Lisää sivu, palsta tai kappale väli"
+msgstr "Lisää sivu, palsta tai osa"
 
 #. MENU_STATUSLINE_INSERT_PICTURE
 #: po/tmp/ap_String_Id.h.h:779
@@ -2053,13 +2045,13 @@ msgstr "Lisää symboli tai muu erikoismerkki"
 #. MENU_STATUSLINE_INSERT_PAGENO
 #: po/tmp/ap_String_Id.h.h:783
 msgid "Insert an automatically-updated page number"
-msgstr "Lisää päivittyvä sivunumerointi"
+msgstr "Lisää päivittyvä sivunumero"
 
 #. MENU_STATUSLINE_INSERT_ENDNOTE
 #: po/tmp/ap_String_Id.h.h:785
 #, fuzzy
 msgid "Insert an endnote"
-msgstr "Lisää päiväys ja/tai aika"
+msgstr "Lisää loppuviite"
 
 #. MENU_STATUSLINE_INSERT_GRAPHIC
 #: po/tmp/ap_String_Id.h.h:787
@@ -2070,25 +2062,25 @@ msgstr "Lisää kuva tiedostosta"
 #: po/tmp/ap_String_Id.h.h:789
 #, fuzzy
 msgid "Insert bookmark"
-msgstr "Lisää merkki"
+msgstr "Lisää kirjanmerkki"
 
 #. MENU_STATUSLINE_INSERT_CLIPART
 #: po/tmp/ap_String_Id.h.h:791
 #, fuzzy
 msgid "Insert clipart"
-msgstr "Liitä leikepöydän sisältö"
+msgstr "Lisää ClipArt-leikekuva"
 
 #. MENU_STATUSLINE_INSERT_HYPERLINK
 #: po/tmp/ap_String_Id.h.h:793
 #, fuzzy
 msgid "Insert hyperlink"
-msgstr "Lisää merkki"
+msgstr "Lisää hyperlinkki"
 
 #. MENU_STATUSLINE_INSERT_FILE
 #: po/tmp/ap_String_Id.h.h:795
 #, fuzzy
 msgid "Insert the contents of another file"
-msgstr "Lisää kuva tiedostosta"
+msgstr "Lisää toisen tiedoston sisältö"
 
 #. MENU_STATUSLINE_INSERT_DATETIME
 #: po/tmp/ap_String_Id.h.h:797
@@ -2099,7 +2091,7 @@ msgstr "Lisää päiväys ja/tai aika"
 #: po/tmp/ap_String_Id.h.h:799
 #, fuzzy
 msgid "Insert unformatted clipboard contents"
-msgstr "Liitä leikepöydän sisältö"
+msgstr "Liitä leikepöydän sisältö sellaisenaan"
 
 #. DLG_Options_Label_ViewUnprintable
 #: po/tmp/ap_String_Id.h.h:801
@@ -2124,12 +2116,12 @@ msgstr "Si&do seuraavaan"
 #. FIELD_PieceTable_Test
 #: po/tmp/ap_String_Id.h.h:809
 msgid "Kevins Test"
-msgstr ""
+msgstr "Kevinin testi"
 
 #. DLG_Lists_Indent
 #: po/tmp/ap_String_Id.h.h:811
 msgid "Label Align:"
-msgstr ""
+msgstr "Merkin sijainti:"
 
 #. AUTOTEXT_SALUTATION_3
 #: po/tmp/ap_String_Id.h.h:813
@@ -2139,22 +2131,22 @@ msgstr ""
 #. DLG_Styles_ModifyLanguage
 #: po/tmp/ap_String_Id.h.h:815 po/tmp/xap_String_Id.h.h:277
 msgid "Language"
-msgstr ""
+msgstr "Kieli"
 
 #. DLG_Options_Label_Layout
 #: po/tmp/ap_String_Id.h.h:817
 msgid "Layout"
-msgstr ""
+msgstr "Näkymä"
 
 #. DLG_Tab_Label_Leader
 #: po/tmp/ap_String_Id.h.h:819
 msgid "Leader"
-msgstr ""
+msgstr "Täytemerkki"
 
 #. DLG_PageNumbers_Left
 #: po/tmp/ap_String_Id.h.h:821
 msgid "Left"
-msgstr ""
+msgstr "Vasemmalla"
 
 #. LeftIndentStatus
 #: po/tmp/ap_String_Id.h.h:823
@@ -2172,13 +2164,13 @@ msgstr "Vasen sisennys [%s] Ensimmäisen rivin sisennys [%s]"
 #: po/tmp/ap_String_Id.h.h:827
 #, c-format
 msgid "Left Margin [%s]"
-msgstr "Vasen marginaali [%s]"
+msgstr "Vasen reunus [%s]"
 
 #. TabToggleLeftTab
 #: po/tmp/ap_String_Id.h.h:829
 #, fuzzy
 msgid "Left Tab"
-msgstr "&Vasen"
+msgstr "Vasen sarkain"
 
 #. MENU_STATUSLINE_ALIGN_LEFT
 #: po/tmp/ap_String_Id.h.h:831
@@ -2188,12 +2180,12 @@ msgstr "Vasemmalle tasattu kappale"
 #. DLG_Lists_DelimiterString
 #: po/tmp/ap_String_Id.h.h:833
 msgid "Level Delimiter:"
-msgstr ""
+msgstr "Tason erotin:"
 
 #. DLG_Lists_Level
 #: po/tmp/ap_String_Id.h.h:835
 msgid "Level:"
-msgstr ""
+msgstr "Taso:"
 
 #. DLG_Para_LabelLineSpacing
 #: po/tmp/ap_String_Id.h.h:837
@@ -2208,29 +2200,29 @@ msgstr "Rivi"
 #. FIELD_Numbers_LineCount
 #: po/tmp/ap_String_Id.h.h:841
 msgid "Line Count"
-msgstr ""
+msgstr "Rivejä"
 
 #. MENU_STATUSLINE_FMT_TOPLINE
 #: po/tmp/ap_String_Id.h.h:843
 #, fuzzy
 msgid "Line above the selection (toggle)"
-msgstr "Muuta valinta ylleviivaus (päälle/pois)"
+msgstr "Valitun tekstin yläpuolelle viiva(päälle/pois)"
 
 #. DLG_Para_TabLabelLineAndPageBreaks
 #: po/tmp/ap_String_Id.h.h:845
 msgid "Line and &Page Breaks"
-msgstr "&Rivi ja sivu vaihto"
+msgstr "&Rivit ja sivunvaihto"
 
 #. MENU_STATUSLINE_FMT_BOTTOMLINE
 #: po/tmp/ap_String_Id.h.h:847
 #, fuzzy
 msgid "Line below the selection (toggle)"
-msgstr "Muuta valinta ylleviivaus (päälle/pois)"
+msgstr "Valitun tekstin alapuolelle viiva(päälle/pois)"
 
 #. DLG_Column_Line_Between
 #: po/tmp/ap_String_Id.h.h:849
 msgid "Line between"
-msgstr ""
+msgstr "Viiva välissä"
 
 #. DLG_WordCount_Lines
 #: po/tmp/ap_String_Id.h.h:851
@@ -2240,12 +2232,12 @@ msgstr "Rivejä"
 #. DLG_Styles_List
 #: po/tmp/ap_String_Id.h.h:853
 msgid "List"
-msgstr ""
+msgstr "Esitä luettelona:"
 
 #. FIELD_Numbers_ListLabel
 #: po/tmp/ap_String_Id.h.h:855
 msgid "List Label"
-msgstr "Luettelo tyyppi"
+msgstr "Luettelotyyppi"
 
 #. DLG_Lists_Title
 #: po/tmp/ap_String_Id.h.h:857
@@ -2260,17 +2252,17 @@ msgstr ""
 #. DLG_Lists_Lower_Case_List
 #: po/tmp/ap_String_Id.h.h:861
 msgid "Lower Case List"
-msgstr "lista pien. kirj."
+msgstr "a, b, c, d, ..."
 
 #. DLG_Lists_Lower_Roman_List
 #: po/tmp/ap_String_Id.h.h:863
 msgid "Lower Roman List"
-msgstr ""
+msgstr "i, ii, iii, iv"
 
 #. MENU_LABEL_AUTOTEXT_MAIL
 #: po/tmp/ap_String_Id.h.h:865
 msgid "Mail Instructions:"
-msgstr ""
+msgstr "Postitus"
 
 #. MENU_STATUSLINE_FMT_BOLD
 #: po/tmp/ap_String_Id.h.h:867
@@ -2295,53 +2287,53 @@ msgstr "Muuta valinta yläindeksiksi (päälle/pois)"
 #. MENU_STATUSLINE_TOOLS_PLUGINS
 #: po/tmp/ap_String_Id.h.h:875
 msgid "Manage plugins"
-msgstr ""
+msgstr "Lisämodulit (plugins)"
 
 #. FIELD_PieceTable_MartinTest
 #: po/tmp/ap_String_Id.h.h:877
 msgid "Martins Test"
-msgstr ""
+msgstr "Martinin testi"
 
 #. DLG_Column_Size
 #: po/tmp/ap_String_Id.h.h:879
 #, fuzzy
 msgid "Max Column size"
-msgstr "&Palstat"
+msgstr "Palstan suurin koko"
 
 #. FIELD_DateTime_MilTime
 #: po/tmp/ap_String_Id.h.h:881
 msgid "Military Time"
-msgstr ""
+msgstr "24 tunnin aikamuoto"
 
 #. DLG_Options_TabLabel_Misc
 #: po/tmp/ap_String_Id.h.h:883
 msgid "Misc."
-msgstr ""
+msgstr "Muut"
 
 #. DLG_Styles_ModifyTitle
 #: po/tmp/ap_String_Id.h.h:885
 msgid "Modify Styles"
-msgstr ""
+msgstr "Muokkaa tyyliä"
 
 #. DLG_Styles_Modify
 #: po/tmp/ap_String_Id.h.h:887
 msgid "Modify..."
-msgstr ""
+msgstr "Muokkaa..."
 
 #. FIELD_DateTime_MonthDayYear
 #: po/tmp/ap_String_Id.h.h:889
 msgid "Month Day, Year"
-msgstr ""
+msgstr "Kuukausi päivä, vuosi"
 
 #. MENU_STATUSLINE_EDIT_GOTO
 #: po/tmp/ap_String_Id.h.h:891
 msgid "Move the insertion point to a specific location"
-msgstr "Siirrä osoitin haluttuun kohtaan"
+msgstr "Siirry asiakirjassa haluttuun kohtaan"
 
 #. FIELD_DateTime_MthDayYear
 #: po/tmp/ap_String_Id.h.h:893
 msgid "Mth. Day, Year"
-msgstr ""
+msgstr "Kuu päivä, vuosi"
 
 #. DLG_Para_SpacingMultiple
 #: po/tmp/ap_String_Id.h.h:895
@@ -2358,66 +2350,66 @@ msgstr "Uusi luettelon arvo"
 msgid ""
 "New List \n"
 "Type"
-msgstr "Uusi luettelo Tyyppi"
+msgstr "Uusi luettelo &#10;Tyyppi"
 
 #. DLG_Lists_Starting_Value
 #: po/tmp/ap_String_Id.h.h:901
 msgid ""
 "New Starting \n"
 "Value"
-msgstr "Uusi aloitus Arvo"
+msgstr "Uusi &#10;aloitusarvo"
 
 #. DLG_Styles_NewTitle
 #: po/tmp/ap_String_Id.h.h:903
 msgid "New Style"
-msgstr ""
+msgstr "Uusi tyyli"
 
 #. DLG_Styles_New
 #: po/tmp/ap_String_Id.h.h:905
 msgid "New..."
-msgstr ""
+msgstr "Uusi..."
 
 #. DLG_Goto_Btn_Next
 #: po/tmp/ap_String_Id.h.h:907
 msgid "Next >>"
-msgstr "Seuraava >> "
+msgstr "Seuraava &gt;&gt; "
 
 #. DLG_NEW_NoFile
 #: po/tmp/ap_String_Id.h.h:909
 msgid "No File"
-msgstr ""
+msgstr "Ei tiedostoa"
 
 #. DLG_Styles_ErrNoStyle
 #: po/tmp/ap_String_Id.h.h:911
 msgid ""
 "No Style selected \n"
 " so it cannot be modified"
-msgstr ""
+msgstr "Et valinnut tyyliä.&#10;Et voi siis muokata tyyliä"
 
 #. SCRIPT_NOSCRIPTS
 #: po/tmp/ap_String_Id.h.h:913
 msgid "No scripts found"
-msgstr ""
+msgstr "Skriptejä ei löydy"
 
 #. DLG_Lists_Type_none
 #: po/tmp/ap_String_Id.h.h:915
 msgid "None"
-msgstr ""
+msgstr "(tyhjä)"
 
 #. MENU_STATUSLINE_VIEW_NORMAL
 #: po/tmp/ap_String_Id.h.h:917
 msgid "Normal View"
-msgstr ""
+msgstr "Siirry normaalinäkymään"
 
 #. DLG_Spell_UnknownWord
 #: po/tmp/ap_String_Id.h.h:919
 msgid "Not in dictionary&:"
-msgstr "Ei &löydy sanakirjasta:"
+msgstr "Ei &löydy sanastosta:"
 
 #. DLG_Column_Number_Cols
 #: po/tmp/ap_String_Id.h.h:921
 msgid "Number of Columns"
-msgstr ""
+msgstr "Palstojen määrä"
 
 #. FIELD_Numbers_PagesCount
 #: po/tmp/ap_String_Id.h.h:923
@@ -2427,27 +2419,27 @@ msgstr "Sivujen määrä"
 #. DLG_Column_Number
 #: po/tmp/ap_String_Id.h.h:925
 msgid "Number of columns"
-msgstr ""
+msgstr "Palstojen määrä"
 
 #. DLG_Lists_Type_numbered
 #: po/tmp/ap_String_Id.h.h:927
 msgid "Numbered"
-msgstr ""
+msgstr "Numeroitu"
 
 #. DLG_Lists_Numbered_List
 #: po/tmp/ap_String_Id.h.h:929
 msgid "Numbered List"
-msgstr "Numeroitu lista"
+msgstr "1, 2, 3, 4, ..."
 
 #. DLG_Styles_ModifyNumbering
 #: po/tmp/ap_String_Id.h.h:931
 msgid "Numbering"
-msgstr ""
+msgstr "Luettelo"
 
 #. FIELD_Type_Numbers
 #: po/tmp/ap_String_Id.h.h:933
 msgid "Numbers"
-msgstr "Numerot"
+msgstr "Numerointi"
 
 #. InsertModeFieldOVR
 #: po/tmp/ap_String_Id.h.h:935
@@ -2457,29 +2449,29 @@ msgstr "PÄÄLLE"
 #. DLG_Column_One
 #: po/tmp/ap_String_Id.h.h:937
 msgid "One"
-msgstr ""
+msgstr "Yksi"
 
 #. MENU_LABEL_FILE_IMPORT
 #: po/tmp/ap_String_Id.h.h:939
 #, fuzzy
 msgid "Op&en Copy"
-msgstr "&Kopioi"
+msgstr "Avaa kopio"
 
 #. MENU_LABEL_OPEN_TEMPLATE
 #: po/tmp/ap_String_Id.h.h:941
 #, fuzzy
 msgid "Open Template"
-msgstr "Avaa tiedosto"
+msgstr "Avaa malli"
 
 #. MENU_STATUSLINE_FILE_OPEN
 #: po/tmp/ap_String_Id.h.h:943
 msgid "Open an existing document"
-msgstr ""
+msgstr "Avaa asiakirja"
 
 #. MENU_STATUSLINE_WINDOW_NEW
 #: po/tmp/ap_String_Id.h.h:945
 msgid "Open another window for the document"
-msgstr "Avaa ikkuna uudelle asiakirjalle"
+msgstr "Avaa nykyinen asiakirja myöskin toiseen ikkunaan"
 
 #. MENU_STATUSLINE_FILE_RECENT_9
 #: po/tmp/ap_String_Id.h.h:947
@@ -2489,7 +2481,7 @@ msgstr "Avaa tämä asiakirja"
 #. DLG_PageSetup_Orient
 #: po/tmp/ap_String_Id.h.h:949
 msgid "Orientation..."
-msgstr ""
+msgstr "Paperin suunta ..."
 
 #. DLG_Options_TabLabel_Other
 #: po/tmp/ap_String_Id.h.h:951
@@ -2500,7 +2492,7 @@ msgstr "Muu"
 #: po/tmp/ap_String_Id.h.h:953
 #, c-format
 msgid "Out of memory attempting to open %s"
-msgstr "Muisti ei riitä avaamaan tiedostoa %s "
+msgstr "Muisti ei riitä tiedoston %s avaamiseen."
 
 #. MENU_STATUSLINE_FMT_OVERLINE
 #: po/tmp/ap_String_Id.h.h:955
@@ -2510,13 +2502,13 @@ msgstr "Muuta valinta ylleviivaus (päälle/pois)"
 #. MENU_LABEL_EDIT_PASTE_SPECIAL
 #: po/tmp/ap_String_Id.h.h:957
 msgid "P&aste Unformatted"
-msgstr ""
+msgstr "Liitä &muotoilematon"
 
 #. MENU_LABEL_TOOLS_PLUGINS
 #: po/tmp/ap_String_Id.h.h:959
 #, fuzzy
 msgid "P&lugins"
-msgstr "&Palstat"
+msgstr "Li&sämodulit"
 
 #. AUTOTEXT_MAIL_3
 #: po/tmp/ap_String_Id.h.h:961
@@ -2531,28 +2523,28 @@ msgstr "Sivu"
 #. DLG_Para_PushPageBreakBefore
 #: po/tmp/ap_String_Id.h.h:965
 msgid "Page &break before"
-msgstr "Sivu&vaihto ennen"
+msgstr "Sivun&vaihto ennen"
 
 #. MENU_LABEL_INSERT_PAGENO
 #: po/tmp/ap_String_Id.h.h:967
 msgid "Page N&umbers"
-msgstr "Sivu &Numerot"
+msgstr "&Sivunumerot"
 
 #. FIELD_Numbers_PageNumber
 #: po/tmp/ap_String_Id.h.h:969
 msgid "Page Number"
-msgstr "Sivu numero"
+msgstr "Sivunumero"
 
 #. DLG_PageNumbers_Title
 #: po/tmp/ap_String_Id.h.h:971
 msgid "Page Numbers"
-msgstr ""
+msgstr "Sivunumerot"
 
 #. FIELD_Numbers_PageReference
 #: po/tmp/ap_String_Id.h.h:973
 #, fuzzy
 msgid "Page Reference"
-msgstr "Asetukset"
+msgstr "Kirjanmerkin sivunumero"
 
 #. MENU_LABEL_FILE_PAGESETUP
 #: po/tmp/ap_String_Id.h.h:975
@@ -2562,7 +2554,7 @@ msgstr "S&ivun asetukset"
 #. DLG_PageSetup_Title
 #: po/tmp/ap_String_Id.h.h:977
 msgid "Page Setup"
-msgstr ""
+msgstr "Sivu"
 
 #. PageInfoField
 #: po/tmp/ap_String_Id.h.h:979
@@ -2583,12 +2575,12 @@ msgstr "Sivutus"
 #. DLG_PageSetup_Paper_Size
 #: po/tmp/ap_String_Id.h.h:985
 msgid "Paper Si&ze:"
-msgstr ""
+msgstr "Paperin &koko:"
 
 #. DLG_PageSetup_Paper
 #: po/tmp/ap_String_Id.h.h:987
 msgid "Paper..."
-msgstr ""
+msgstr "Paperi ..."
 
 #. DLG_Para_ParaTitle
 #: po/tmp/ap_String_Id.h.h:989
@@ -2598,12 +2590,12 @@ msgstr "Kappale"
 #. FIELD_Numbers_ParaCount
 #: po/tmp/ap_String_Id.h.h:991
 msgid "Paragraph Count"
-msgstr ""
+msgstr "Kappaleita"
 
 #. DLG_Styles_ParaPrev
 #: po/tmp/ap_String_Id.h.h:993
 msgid "Paragraph Preview"
-msgstr ""
+msgstr "Kappaleen esikatselu"
 
 #. DLG_WordCount_Paragraphs
 #: po/tmp/ap_String_Id.h.h:995
@@ -2613,7 +2605,7 @@ msgstr "Kappaleita"
 #. WORD_PassRequired
 #: po/tmp/ap_String_Id.h.h:997
 msgid "Password required, this is an encrypted document"
-msgstr ""
+msgstr "Salasana vaaditaan. Salasanasuojattu asiakirja"
 
 #. DLG_Goto_Target_Picture
 #: po/tmp/ap_String_Id.h.h:999
@@ -2623,22 +2615,22 @@ msgstr "Kuva"
 #. FIELD_Type_PieceTable
 #: po/tmp/ap_String_Id.h.h:1001
 msgid "Piece Table"
-msgstr ""
+msgstr "Osiotaulukko"
 
 #. DLG_PageNumbers_Position
 #: po/tmp/ap_String_Id.h.h:1003
 msgid "Position:"
-msgstr ""
+msgstr "Sijainti:"
 
 #. MENU_LABEL_WEB_WEBPREVIEW
 #: po/tmp/ap_String_Id.h.h:1005
 msgid "Pre&view web page"
-msgstr ""
+msgstr "Näytä We&b-sivuna"
 
 #. DLG_Options_Label_Schemes
 #: po/tmp/ap_String_Id.h.h:1007
 msgid "Preference Schemes"
-msgstr ""
+msgstr "Asetuksien tallennus tiedostoon"
 
 #. DLG_Options_OptionsTitle
 #: po/tmp/ap_String_Id.h.h:1009
@@ -2648,65 +2640,63 @@ msgstr "Asetukset"
 #. DLG_PageNumbers_Preview
 #: po/tmp/ap_String_Id.h.h:1011 po/tmp/xap_String_Id.h.h:323
 msgid "Preview"
-msgstr ""
+msgstr "Esikatselu"
 
 #. MENU_STATUSLINE_WEB_WEBPREVIEW
 #: po/tmp/ap_String_Id.h.h:1013
 #, fuzzy
 msgid "Preview the document as a web page"
-msgstr "Tallenna käsiteltävä asiakirja eri nimelle"
+msgstr "Näytä asiakirja selaimessa Web-sivuna"
 
 #. MENU_STATUSLINE_FILE_PRINT_PREVIEW
 #: po/tmp/ap_String_Id.h.h:1015
 #, fuzzy
 msgid "Preview the document before printing"
-msgstr "Tarkista asiakirja virheellisitä sanoista"
+msgstr "Katsele asiakirjaa tulostuksen esikatselunäkymässä"
 
 #. DLG_Para_PreviewPrevParagraph
 #: po/tmp/ap_String_Id.h.h:1017
 msgid ""
 "Previous Paragraph Previous Paragraph Previous Paragraph Previous Paragraph "
 "Previous Paragraph Previous Paragraph Previous Paragraph"
-msgstr ""
-"Edellinen kappale Edellinen kappale Edellinen kappale Edellinen kappale "
-"Edellinen kappale Edellinen kappale Edellinen kappale"
+msgstr "Edellinen kappale Edellinen kappale Edellinen kappale Edellinen kappale Edellinen kappale Edellinen kappale Edellinen kappale"
 
 #. MENU_LABEL_FILE_PRINT_DIRECTLY
 #: po/tmp/ap_String_Id.h.h:1019
 msgid "Print &directly"
-msgstr ""
+msgstr "Tulosta suoraan"
 
 #. MENU_STATUSLINE_VIEW_PRINT
 #: po/tmp/ap_String_Id.h.h:1021
 #, fuzzy
 msgid "Print Layout"
-msgstr "Tulosta: "
+msgstr "Näytä tulostusmuodossa"
 
 #. MENU_LABEL_FILE_PRINT_PREVIEW
 #: po/tmp/ap_String_Id.h.h:1023
 msgid "Print P&review"
-msgstr ""
+msgstr "Esikatselu"
 
 #. MENU_STATUSLINE_FILE_PRINT
 #: po/tmp/ap_String_Id.h.h:1025
 msgid "Print all or part of the document"
-msgstr "Tulosta koko asiakirja"
+msgstr "Tulosta asiakirja"
 
 #. MENU_STATUSLINE_FILE_PRINT_DIRECTLY
 #: po/tmp/ap_String_Id.h.h:1027
 msgid "Print using the internal PS driver"
-msgstr ""
+msgstr "Tulosta käyttäen ohjelman sisäistä PostScript-ajuria"
 
 #. MSG_PrintStatus
 #: po/tmp/ap_String_Id.h.h:1029
 #, c-format
 msgid "Printing page %d of %d"
-msgstr ""
+msgstr "Tulostetaan sivua %d/%d"
 
 #. MENU_LABEL_EDIT_REPLACE
 #: po/tmp/ap_String_Id.h.h:1031
 msgid "R&eplace"
-msgstr "K&orvaa"
+msgstr "Korv&aa"
 
 #. AUTOTEXT_REFERENCE_2
 #: po/tmp/ap_String_Id.h.h:1033
@@ -2741,7 +2731,7 @@ msgstr "Pienennä tai suurenna asiakirjaa näytöllä"
 #. MENU_LABEL_AUTOTEXT_REFERENCE
 #: po/tmp/ap_String_Id.h.h:1045
 msgid "Reference:"
-msgstr ""
+msgstr "Viiterivi"
 
 #. AUTOTEXT_CLOSING_5
 #: po/tmp/ap_String_Id.h.h:1047
@@ -2751,32 +2741,32 @@ msgstr ""
 #. DLG_Styles_RemoveButton
 #: po/tmp/ap_String_Id.h.h:1049
 msgid "Remove"
-msgstr ""
+msgstr "Poista"
 
 #. MENU_LABEL_EDIT_REMOVEFOOTER
 #: po/tmp/ap_String_Id.h.h:1051
 msgid "Remove Footer"
-msgstr ""
+msgstr "Poista alatunniste"
 
 #. MENU_LABEL_EDIT_REMOVEHEADER
 #: po/tmp/ap_String_Id.h.h:1053
 msgid "Remove Header"
-msgstr ""
+msgstr "Poista ylätunniste"
 
 #. DLG_Styles_RemoveLab
 #: po/tmp/ap_String_Id.h.h:1055
 msgid "Remove Property from Style"
-msgstr ""
+msgstr "Poista ominaisuus tyylistä"
 
 #. MENU_STATUSLINE_EDIT_REMOVEFOOTER
 #: po/tmp/ap_String_Id.h.h:1057
 msgid "Remove the Footer on this page from the Document"
-msgstr ""
+msgstr "Poista alatunniste sivuaukeaman tältä puolelta"
 
 #. MENU_STATUSLINE_EDIT_REMOVEHEADER
 #: po/tmp/ap_String_Id.h.h:1059
 msgid "Remove the Header on this page from the Document"
-msgstr ""
+msgstr "Poista ylätunniste sivuaukeaman tältä puolelta"
 
 #. DLG_FR_ReplaceTitle
 #: po/tmp/ap_String_Id.h.h:1061
@@ -2796,12 +2786,12 @@ msgstr "Korvaa haluttu teksti toisella tekstillä"
 #. MENU_LABEL_HELP_REPORT_BUG
 #: po/tmp/ap_String_Id.h.h:1067
 msgid "Report a &Bug"
-msgstr ""
+msgstr "&Raportoi ohjelmavirhe"
 
 #. MENU_STATUSLINE_HELP_REPORT_BUG
 #: po/tmp/ap_String_Id.h.h:1069
 msgid "Report a bug and help AbiWord become a better product"
-msgstr ""
+msgstr "Raportoi ohjelmavirhe ja auta parantamaan ohjelman laatua"
 
 #. MENU_STATUSLINE_FMT_IMAGE
 #: po/tmp/ap_String_Id.h.h:1071
@@ -2821,38 +2811,38 @@ msgstr ""
 #. DLG_HdrFtr_RestartCheck
 #: po/tmp/ap_String_Id.h.h:1077
 msgid "Restart Page Numbers on new Sections"
-msgstr ""
+msgstr "Aloita sivunumerointi alusta osan alussa"
 
 #. DLG_HdrFtr_RestartNumbers
 #: po/tmp/ap_String_Id.h.h:1079
 msgid "Restart numbering at:"
-msgstr ""
+msgstr "Uusi aloitussivunumero:"
 
 #. DLG_Lists_Resume_Previous_List
 #: po/tmp/ap_String_Id.h.h:1081
 msgid "Resume Previous List"
-msgstr ""
+msgstr "Palaa aik. luetteloon"
 
 #. MSG_RevertFile
 #: po/tmp/ap_String_Id.h.h:1083
 msgid "Revert file to last unsaved state?"
-msgstr ""
+msgstr "Palaa tiedoston viimeksi tallennettuun versioon?"
 
 #. MENU_STATUSLINE_FILE_REVERT
 #: po/tmp/ap_String_Id.h.h:1085
 msgid "Revert the document to the last saved state"
-msgstr ""
+msgstr "Palaa tiedoston viimeksi tallennettuun versioon "
 
 #. MSG_RevertBuffer
 #: po/tmp/ap_String_Id.h.h:1087
 #, c-format
 msgid "Revert to saved copy of %s?"
-msgstr "Palataanko tallennettuun kopioon %s tiedostosta?"
+msgstr "Palaa tiedoston  %s viimeksi tallennettuun kopioon?"
 
 #. DLG_PageNumbers_Right
 #: po/tmp/ap_String_Id.h.h:1089
 msgid "Right"
-msgstr ""
+msgstr "Oikealla"
 
 #. RightIndentStatus
 #: po/tmp/ap_String_Id.h.h:1091
@@ -2864,13 +2854,13 @@ msgstr "Oikea sisennys [%s]"
 #: po/tmp/ap_String_Id.h.h:1093
 #, c-format
 msgid "Right Margin [%s]"
-msgstr "Oikea marginaali [%s]"
+msgstr "Oikea reunus [%s]"
 
 #. TabToggleRightTab
 #: po/tmp/ap_String_Id.h.h:1095
 #, fuzzy
 msgid "Right Tab"
-msgstr "&Oikea"
+msgstr "Oikea sarkain"
 
 #. MENU_STATUSLINE_ALIGN_RIGHT
 #: po/tmp/ap_String_Id.h.h:1097
@@ -2880,13 +2870,13 @@ msgstr "Oikealle tasattu kappale"
 #. DLG_Para_DomDirection
 #: po/tmp/ap_String_Id.h.h:1099
 msgid "Right-to-left &dominant"
-msgstr ""
+msgstr "Teksti oikealta vasemmalle"
 
 #. MENU_LABEL_TOOLS_SCRIPTS
 #: po/tmp/ap_String_Id.h.h:1101
 #, fuzzy
 msgid "S&cripts"
-msgstr "Ylä&indeksi"
+msgstr "Sk&riptit"
 
 #. AUTOTEXT_MAIL_5
 #: po/tmp/ap_String_Id.h.h:1103
@@ -2902,30 +2892,30 @@ msgstr "&Tallenna"
 #: po/tmp/ap_String_Id.h.h:1107
 #, fuzzy
 msgid "Sa&ve Copy"
-msgstr "&Tallenna"
+msgstr "Tallenna kopio"
 
 #. MENU_LABEL_AUTOTEXT_SALUTATION
 #: po/tmp/ap_String_Id.h.h:1109
 #, fuzzy
 msgid "Salutation:"
-msgstr "Valinta"
+msgstr "Tervehdys"
 
 #. MENU_LABEL_FILE_SAVEAS
 #: po/tmp/ap_String_Id.h.h:1111
 msgid "Save &As"
-msgstr "Tallenna &Nimellä"
+msgstr "Tallenna &nimellä"
 
 #. MENU_LABEL_WEB_SAVEASWEB
 #: po/tmp/ap_String_Id.h.h:1113
 #, fuzzy
 msgid "Save as &web"
-msgstr "Tallenna tiedosto:"
+msgstr "Tallenna We&b-sivuna"
 
 #. MSG_ConfirmSave
 #: po/tmp/ap_String_Id.h.h:1115
 #, c-format
 msgid "Save changes to %s?"
-msgstr "Tallennetaanko muutokset %s tiedostoon?"
+msgstr "Tallennetaanko tiedostoon %s tehdyt muutokset?"
 
 #. MENU_STATUSLINE_FILE_SAVE
 #: po/tmp/ap_String_Id.h.h:1117
@@ -2936,7 +2926,7 @@ msgstr "Tallenna asiakirja"
 #: po/tmp/ap_String_Id.h.h:1119
 #, fuzzy
 msgid "Save the document as a web page"
-msgstr "Tallenna asiakirja"
+msgstr "Tallenna asiakirja Web-sivuna"
 
 #. MENU_STATUSLINE_FILE_SAVEAS
 #: po/tmp/ap_String_Id.h.h:1121
@@ -2947,22 +2937,22 @@ msgstr "Tallenna käsiteltävä asiakirja eri nimelle"
 #: po/tmp/ap_String_Id.h.h:1123
 #, fuzzy
 msgid "Save the document without changing the current name"
-msgstr "Tallenna käsiteltävä asiakirja eri nimelle"
+msgstr "Tallenna asiakirjasta kopio muuttamatta tiedoston nimeä"
 
 #. DLG_Options_Label_SaveContextGlyphs
 #: po/tmp/ap_String_Id.h.h:1125
 msgid "Save visual glyph shapes"
-msgstr ""
+msgstr "Tallenna kirjasinmuodot"
 
 #. DLG_PageSetup_Scale
 #: po/tmp/ap_String_Id.h.h:1127
 msgid "Scale..."
-msgstr ""
+msgstr "Skaalaus ..."
 
 #. MENU_STATUSLINE_HELP_SEARCH
 #: po/tmp/ap_String_Id.h.h:1129
 msgid "Search for help about..."
-msgstr "Etsii hakusanalla ohjeesta"
+msgstr "Etsi hakusanalla ohjeesta"
 
 #. DLG_WordCount_Update_Rate
 #: po/tmp/ap_String_Id.h.h:1131
@@ -2972,12 +2962,12 @@ msgstr "sekunnin välein"
 #. FIELD_DateTime_Epoch
 #: po/tmp/ap_String_Id.h.h:1133
 msgid "Seconds since the epoch"
-msgstr ""
+msgstr "Sekuntia aikalaskennan alusta"
 
 #. DLG_Break_SectionBreaks
 #: po/tmp/ap_String_Id.h.h:1135
 msgid "Section breaks"
-msgstr "Kappale vaihto"
+msgstr "Osan vaihto"
 
 #. MENU_LABEL_EDIT_SELECTALL
 #: po/tmp/ap_String_Id.h.h:1137
@@ -2987,7 +2977,7 @@ msgstr "&Valitse kaikki"
 #. DLG_InsertHyperlink_Msg
 #: po/tmp/ap_String_Id.h.h:1139
 msgid "Select a target bookmark from the list."
-msgstr ""
+msgstr "Valitse luettelosta kohteen kirjanmerkki."
 
 #. MENU_STATUSLINE_EDIT_SELECTALL
 #: po/tmp/ap_String_Id.h.h:1141
@@ -2997,22 +2987,22 @@ msgstr "Valitse koko asiakirja"
 #. DLG_ToggleCase_SentenceCase
 #: po/tmp/ap_String_Id.h.h:1143
 msgid "Sentence case"
-msgstr ""
+msgstr "&Virkkeen kirjainkoko"
 
 #. DLG_Tab_Button_Set
 #: po/tmp/ap_String_Id.h.h:1145
 msgid "Set"
-msgstr ""
+msgstr "Aseta"
 
 #. MENU_LABEL_FMT_LANGUAGE
 #: po/tmp/ap_String_Id.h.h:1147
 msgid "Set &Language"
-msgstr ""
+msgstr "&Valitse kieli"
 
 #. DLG_Lists_SetDefault
 #: po/tmp/ap_String_Id.h.h:1149
 msgid "Set Default Values"
-msgstr ""
+msgstr "Aseta oletusarvoksi"
 
 #. MENU_STATUSLINE_TOOLS_OPTIONS
 #: po/tmp/ap_String_Id.h.h:1151
@@ -3022,34 +3012,34 @@ msgstr "Muuta asetuksia"
 #. MENU_STATUSLINE_FMT_TABS
 #: po/tmp/ap_String_Id.h.h:1153
 msgid "Set tab stops"
-msgstr "Määritä sisennyskohdat"
+msgstr "Määritä sarkainkohdat"
 
 #. MENU_STATUSLINE_FMT_HDRFTR
 #: po/tmp/ap_String_Id.h.h:1155
 #, fuzzy
 msgid "Set the types of Headers and Footers"
-msgstr "&Ylätunniste ja alatunniste"
+msgstr "Muuta sivun ylä-/alareunassa toistuvia tekstialueita"
 
 #. MENU_STATUSLINE_TOOLS_SPELLPREFS
 #: po/tmp/ap_String_Id.h.h:1157
 #, fuzzy
 msgid "Set your spelling preferences"
-msgstr "Muuta asetuksia"
+msgstr "Kieliasun tarkistuksen asetukset"
 
 #. MENU_STATUSLINE_FMT_DOCUMENT
 #: po/tmp/ap_String_Id.h.h:1159
 msgid "Setup your document's page properties such as page size and margins"
-msgstr ""
+msgstr "Asiakirjan sivun ominaisuudet, esim. sivukoko ja reunukset"
 
 #. DLG_Styles_ModifyShortCut
 #: po/tmp/ap_String_Id.h.h:1161
 msgid "Shortcut Key"
-msgstr ""
+msgstr "P&ikanäppäin"
 
 #. DLG_Options_Label_Show
 #: po/tmp/ap_String_Id.h.h:1163
 msgid "Show"
-msgstr ""
+msgstr "Näytä"
 
 #. MENU_LABEL_VIEW_RULER
 #: po/tmp/ap_String_Id.h.h:1165
@@ -3059,42 +3049,42 @@ msgstr "&Viivain"
 #. MENU_LABEL_VIEW_SHOWPARA
 #: po/tmp/ap_String_Id.h.h:1167
 msgid "Show Para&graphs"
-msgstr "&Näytä koodit"
+msgstr "Näytä &koodit"
 
 #. MENU_STATUSLINE_WINDOW_MORE
 #: po/tmp/ap_String_Id.h.h:1169
 msgid "Show full list of windows"
-msgstr "Koko lista ikkunoista"
+msgstr "Kaikki ikkunat luettelona"
 
 #. MENU_STATUSLINE_VIEW_TB_EXTRA
 #: po/tmp/ap_String_Id.h.h:1171
 msgid "Show or hide the extra toolbar"
-msgstr "Näytä tai piilota extra työkalut"
+msgstr "Näytä tai piilota lisätyökalurivi"
 
 #. MENU_STATUSLINE_VIEW_TB_FORMAT
 #: po/tmp/ap_String_Id.h.h:1173
 msgid "Show or hide the formatting toolbar"
-msgstr "Näytä tai piilota muotoiluvalikot"
+msgstr "Näytä tai piilota muotoilutyökalurivi"
 
 #. MENU_STATUSLINE_VIEW_RULER
 #: po/tmp/ap_String_Id.h.h:1175
 msgid "Show or hide the rulers"
-msgstr "Näytä tai piilota viivain"
+msgstr "Näytä tai piilota viivaimet"
 
 #. MENU_STATUSLINE_VIEW_TB_STD
 #: po/tmp/ap_String_Id.h.h:1177
 msgid "Show or hide the standard toolbar"
-msgstr "Näytä tai piilota perusvalikko"
+msgstr "Näytä tai piilota vakiotyökalurivi"
 
 #. MENU_STATUSLINE_VIEW_STATUSBAR
 #: po/tmp/ap_String_Id.h.h:1179
 msgid "Show or hide the status bar"
-msgstr "Näytä tai piilota tilapalkki"
+msgstr "Näytä tai piilota tilarivi"
 
 #. DLG_Options_Label_ShowSplash
 #: po/tmp/ap_String_Id.h.h:1181
 msgid "Show the AbiWord splash screen on application startup"
-msgstr ""
+msgstr "Näytä käynnistyskuva ohjelman käynnistyksen yhteydessä"
 
 #. DLG_Options_Label_ViewShowHide
 #: po/tmp/ap_String_Id.h.h:1183
@@ -3116,12 +3106,12 @@ msgstr "1 riviä"
 #: po/tmp/ap_String_Id.h.h:1189
 #, fuzzy
 msgid "Space after Column"
-msgstr "Tallenna asiakirja"
+msgstr "Palstan jälkeen tilaa"
 
 #. DLG_Para_LabelSpacing
 #: po/tmp/ap_String_Id.h.h:1191
 msgid "Spacing"
-msgstr "Välistys"
+msgstr "Väli"
 
 #. DLG_Options_TabLabel_Spelling
 #: po/tmp/ap_String_Id.h.h:1193
@@ -3132,12 +3122,12 @@ msgstr "Oikoluku"
 #: po/tmp/ap_String_Id.h.h:1195
 #, fuzzy
 msgid "Spelling &Options"
-msgstr "Oikoluku"
+msgstr "Oikoluvun &asetukset"
 
 #. DLG_Lists_Square_List
 #: po/tmp/ap_String_Id.h.h:1197
 msgid "Square List"
-msgstr ""
+msgstr "neliö"
 
 #. MENU_LABEL_FMT_STYLE
 #: po/tmp/ap_String_Id.h.h:1199
@@ -3147,37 +3137,37 @@ msgstr "T&yyli"
 #. DLG_Options_Label_ViewStandardTB
 #: po/tmp/ap_String_Id.h.h:1201
 msgid "Standard Toolbar"
-msgstr ""
+msgstr "Näytä vakiotyökalurivi"
 
 #. DLG_Lists_Star_List
 #: po/tmp/ap_String_Id.h.h:1203
 msgid "Star List"
-msgstr ""
+msgstr "tähti"
 
 #. DLG_Lists_Start
 #: po/tmp/ap_String_Id.h.h:1205
 msgid "Start At:"
-msgstr ""
+msgstr "Alkava nro:"
 
 #. DLG_Lists_Start_New
 #: po/tmp/ap_String_Id.h.h:1207
 msgid "Start New List"
-msgstr ""
+msgstr "Aloita uusi luettelo"
 
 #. DLG_Lists_Start_Sub
 #: po/tmp/ap_String_Id.h.h:1209
 msgid "Start Sublist"
-msgstr ""
+msgstr "Aloita aliluettelo"
 
 #. DLG_NEW_StartEmpty
 #: po/tmp/ap_String_Id.h.h:1211
 msgid "Start with an empty document"
-msgstr ""
+msgstr "Aloita tyhjällä asiakirjalla"
 
 #. DLG_WordCount_Statistics
 #: po/tmp/ap_String_Id.h.h:1213
 msgid "Statistics:"
-msgstr "Tilasto:"
+msgstr "Tilastotiedot:"
 
 #. DLG_Lists_Stop_Current_List
 #: po/tmp/ap_String_Id.h.h:1215
@@ -3202,32 +3192,32 @@ msgstr ""
 #. DLG_Styles_ModifyName
 #: po/tmp/ap_String_Id.h.h:1223
 msgid "Style Name:"
-msgstr ""
+msgstr "Tyylin &nimi:"
 
 #. DLG_Styles_ModifyType
 #: po/tmp/ap_String_Id.h.h:1225
 msgid "Style Type"
-msgstr ""
+msgstr "Käyttökohde"
 
 #. DLG_Styles_ModifyFollowing
 #: po/tmp/ap_String_Id.h.h:1227
 msgid "Style for following paragraph"
-msgstr ""
+msgstr "S&euraavan kappaleen tyyli:"
 
 #. DLG_Styles_ErrBlankName
 #: po/tmp/ap_String_Id.h.h:1229
 msgid "Style name cannot be left blank"
-msgstr ""
+msgstr "Tyylin nimi on annettava"
 
 #. DLG_Lists_Style
 #: po/tmp/ap_String_Id.h.h:1231 po/tmp/xap_String_Id.h.h:377
 msgid "Style:"
-msgstr ""
+msgstr "Tyyli:"
 
 #. DLG_Styles_StylesTitle
 #: po/tmp/ap_String_Id.h.h:1233
 msgid "Styles"
-msgstr ""
+msgstr "Tyylit"
 
 #. AUTOTEXT_SUBJECT_1
 #: po/tmp/ap_String_Id.h.h:1235
@@ -3237,7 +3227,7 @@ msgstr ""
 #. MENU_LABEL_AUTOTEXT_SUBJECT
 #: po/tmp/ap_String_Id.h.h:1237
 msgid "Subject:"
-msgstr ""
+msgstr "Aihe"
 
 #. DLG_Spell_Suggestions
 #: po/tmp/ap_String_Id.h.h:1239
@@ -3257,28 +3247,28 @@ msgstr "Ylä&indeksi"
 #. MENU_LABEL_INSERT_SYMBOL
 #: po/tmp/ap_String_Id.h.h:1245
 msgid "Sy&mbol"
-msgstr "&Symboli"
+msgstr "Merkk&i"
 
 #. TabStopStatus
 #: po/tmp/ap_String_Id.h.h:1247
 #, c-format
 msgid "Tab Stop [%s]"
-msgstr "Tab merkki [%s]"
+msgstr "Sarkain [%s]"
 
 #. DLG_Tab_Label_TabPosition
 #: po/tmp/ap_String_Id.h.h:1249
 msgid "Tab stop position:"
-msgstr ""
+msgstr "&Sarkainkohta:"
 
 #. DLG_Tab_Label_TabToClear
 #: po/tmp/ap_String_Id.h.h:1251
 msgid "Tab stops to be cleared:"
-msgstr ""
+msgstr "Luettelon sarkaimet:"
 
 #. DLG_Tab_TabTitle
 #: po/tmp/ap_String_Id.h.h:1253
 msgid "Tabs"
-msgstr ""
+msgstr "Sarkaimet"
 
 #. AUTOTEXT_CLOSING_9
 #: po/tmp/ap_String_Id.h.h:1255
@@ -3288,17 +3278,17 @@ msgstr ""
 #. DLG_Options_Label_Text
 #: po/tmp/ap_String_Id.h.h:1257
 msgid "Text"
-msgstr ""
+msgstr "Teksti"
 
 #. DLG_Lists_Align
 #: po/tmp/ap_String_Id.h.h:1259
 msgid "Text Align:"
-msgstr ""
+msgstr "Tekstin sijainti:"
 
 #. DLG_Options_Label_Both
 #: po/tmp/ap_String_Id.h.h:1261
 msgid "Text and Icon"
-msgstr ""
+msgstr "Teksti ja kuvakkeet"
 
 #. AUTOTEXT_CLOSING_10
 #: po/tmp/ap_String_Id.h.h:1263
@@ -3313,7 +3303,7 @@ msgstr ""
 #. DLG_PageSetup_ErrBigMargins
 #: po/tmp/ap_String_Id.h.h:1267
 msgid "The margins selected are too large to fit on the page."
-msgstr ""
+msgstr "Paperille valitut reunukset ovat liian suuret"
 
 #. MSG_SpellDone
 #: po/tmp/ap_String_Id.h.h:1269
@@ -3325,19 +3315,19 @@ msgstr "Oikoluku on valmis."
 msgid ""
 "The text to which the hyperlink is to be attached must be within a single "
 "paragraph."
-msgstr ""
+msgstr "Hyperlinkin teksti ei saa ulottua useamman kappaleen alueelle."
 
 #. FIELD_DateTime_Wkday
 #: po/tmp/ap_String_Id.h.h:1273
 msgid "The weekday"
-msgstr ""
+msgstr "Viikonpäivä"
 
 #. MSG_AfterRestartNew
 #: po/tmp/ap_String_Id.h.h:1275
 msgid ""
 "This change will only take effect when you restart AbiWord or create a new "
 "document."
-msgstr ""
+msgstr "Tämä muutos tulee voimaan vasta kun käynnistät AbiWordin uudestaan tai luot uuden asiakirjan."
 
 #. DLG_Para_PreviewSampleFallback
 #: po/tmp/ap_String_Id.h.h:1277
@@ -3345,32 +3335,29 @@ msgid ""
 "This paragraph represents words as they might appear in your document.  To "
 "see text from your document used in this preview, position your cursor in a "
 "document paragraph with some text in it and open this dialog."
-msgstr ""
-"Tämä kappale edustaa sanoja, jotka voi esiintyä asiakirjassa. Nähdäksesi "
-"asiakirjan käytä tätä esikatselua, sioita kursori asiakirjan kappaleeseen "
-"tekstin kanssa avataksesi tämän valinnan."
+msgstr "Tämä kappale edustaa asiakirjassa esiintyviä sanoja. Nähdäksesi asiakirjasi tekstin tässä esikatselussa sijoita kohdistin asiakirjan kappaleen sisään ja anna tämä komento uudistaan."
 
 #. DLG_Styles_ErrStyleNot
 #: po/tmp/ap_String_Id.h.h:1279
 msgid ""
 "This style does not exist \n"
 " so it cannot be modified"
-msgstr ""
+msgstr "Tyyliä ei ole olemassa.&#10;Et voi siis muokata tyyliä"
 
 #. DLG_Column_Three
 #: po/tmp/ap_String_Id.h.h:1281
 msgid "Three"
-msgstr ""
+msgstr "Kolme"
 
 #. DLG_Lists_Tick_List
 #: po/tmp/ap_String_Id.h.h:1283
 msgid "Tick List"
-msgstr ""
+msgstr "valintamerkki"
 
 #. FIELD_DateTime_TimeZone
 #: po/tmp/ap_String_Id.h.h:1285
 msgid "Time Zone"
-msgstr ""
+msgstr "Aikavyöhyke"
 
 #. DLG_ToggleCase_TitleCase
 #: po/tmp/ap_String_Id.h.h:1287
@@ -3390,43 +3377,43 @@ msgstr ""
 #. DLG_Options_Label_Toolbars
 #: po/tmp/ap_String_Id.h.h:1293
 msgid "Toolbars"
-msgstr ""
+msgstr "Työkalurivit"
 
 #. TopMarginStatus
 #: po/tmp/ap_String_Id.h.h:1295
 #, c-format
 msgid "Top Margin [%s]"
-msgstr ""
+msgstr "Yläreunus [%s]"
 
 #. MENU_LABEL_FMT_TOPLINE
 #: po/tmp/ap_String_Id.h.h:1297 po/tmp/xap_String_Id.h.h:395
 msgid "Topline"
-msgstr ""
+msgstr "Yläviiva"
 
 #. DLG_Lists_Triangle_List
 #: po/tmp/ap_String_Id.h.h:1299
 msgid "Triangle List"
-msgstr ""
+msgstr "kolmio"
 
 #. DLG_Column_Two
 #: po/tmp/ap_String_Id.h.h:1301
 msgid "Two"
-msgstr ""
+msgstr "Kaksi"
 
 #. DLG_InsertBookmark_Msg
 #: po/tmp/ap_String_Id.h.h:1303
 msgid "Type a name for the bookmark, or select existing one from the list."
-msgstr ""
+msgstr "Kirjoita kirjanmerkin nimi tai valitse luettelosta."
 
 #. DLG_Lists_Type
 #: po/tmp/ap_String_Id.h.h:1305
 msgid "Type:"
-msgstr ""
+msgstr "Tyyppi:"
 
 #. DLG_ToggleCase_UpperCase
 #: po/tmp/ap_String_Id.h.h:1307
 msgid "UPPERCASE"
-msgstr ""
+msgstr "&ISOT KIRJAIMET"
 
 #. MENU_STATUSLINE_FMT_UNDERLINE
 #: po/tmp/ap_String_Id.h.h:1309
@@ -3441,22 +3428,22 @@ msgstr "Peru muutokset"
 #. DLG_Lists_Upper_Case_List
 #: po/tmp/ap_String_Id.h.h:1313
 msgid "Upper Case List"
-msgstr "lista isoil. kirj."
+msgstr "A, B, C, D, ..."
 
 #. DLG_Lists_Upper_Roman_List
 #: po/tmp/ap_String_Id.h.h:1315
 msgid "Upper Roman List"
-msgstr ""
+msgstr "I, II, III, IV"
 
 #. DLG_Column_RtlOrder
 #: po/tmp/ap_String_Id.h.h:1317
 msgid "Use RTL Order"
-msgstr ""
+msgstr "Täytetään oikealta"
 
 #. DLG_Styles_LBL_UserDefined
 #: po/tmp/ap_String_Id.h.h:1319
 msgid "User-defined styles"
-msgstr ""
+msgstr "Käyttäjän määrittelemät tyylit"
 
 #. AUTOTEXT_MAIL_6
 #: po/tmp/ap_String_Id.h.h:1321
@@ -3476,7 +3463,7 @@ msgstr ""
 #. FIELD_Application_Version
 #: po/tmp/ap_String_Id.h.h:1327 po/tmp/xap_String_Id.h.h:445
 msgid "Version"
-msgstr ""
+msgstr "Ohjelman versio"
 
 #. DLG_Options_TabLabel_View
 #: po/tmp/ap_String_Id.h.h:1329
@@ -3487,12 +3474,12 @@ msgstr "Katsele"
 #: po/tmp/ap_String_Id.h.h:1331
 #, fuzzy
 msgid "View the document in full screen mode"
-msgstr "Tallenna käsiteltävä asiakirja eri nimelle"
+msgstr "Näytä asiakirja koko näytöllä ilman työkalurivejä"
 
 #. DLG_Options_Label_ViewTooltips
 #: po/tmp/ap_String_Id.h.h:1333
 msgid "View tooltips"
-msgstr ""
+msgstr "Näytä työkalurivien ohjeteksti"
 
 #. DLG_Options_Label_ViewViewFrame
 #: po/tmp/ap_String_Id.h.h:1335
@@ -3502,38 +3489,38 @@ msgstr "Näkymä..."
 #. DLG_Options_Label_Visible
 #: po/tmp/ap_String_Id.h.h:1337
 msgid "Visible"
-msgstr ""
+msgstr "Näkyvissä"
 
 #. MSG_HyperlinkNoBookmark
 #: po/tmp/ap_String_Id.h.h:1339
 #, c-format
 msgid "Warning: the bookmark you provided [%s] does not exist."
-msgstr ""
+msgstr "Varoitus: ilmoittamaasi kirjanmerkkiä [%s] ei löydy."
 
 #. MENU_LABEL_WEB
 #: po/tmp/ap_String_Id.h.h:1341
 msgid "We&b"
-msgstr ""
+msgstr "&Web"
 
 #. MENU_STATUSLINE_VIEW_WEB
 #: po/tmp/ap_String_Id.h.h:1343
 msgid "Web Layout"
-msgstr ""
+msgstr "Näytä Web-näkymä"
 
 #. DLG_Styles_LBL_TxtMsg
 #: po/tmp/ap_String_Id.h.h:1345
 msgid "What Hath God Wrought"
-msgstr ""
+msgstr "Nykyinen kappale"
 
 #. DLG_Options_Label_WithExtension
 #: po/tmp/ap_String_Id.h.h:1347
 msgid "With extension:"
-msgstr ""
+msgstr "tiedostopäätteellä:"
 
 #. FIELD_Numbers_WordCount
 #: po/tmp/ap_String_Id.h.h:1349
 msgid "Word Count"
-msgstr "Sanojen laskenta"
+msgstr "Sanoja"
 
 #. DLG_NEW_Tab1
 #: po/tmp/ap_String_Id.h.h:1351
@@ -3549,22 +3536,22 @@ msgstr "Sanoja"
 #: po/tmp/ap_String_Id.h.h:1355
 #, c-format
 msgid "Writing error when attempting to save %s"
-msgstr "Ei voinut kirjoittaa tiedostoon %s."
+msgstr "Tiedostoon %s ei voitu kirjoittaa."
 
 #. MSG_DefaultDirectionChg
 #: po/tmp/ap_String_Id.h.h:1357
 msgid "You have changed the default direction."
-msgstr ""
+msgstr "Olet vaihtanut oletussuuntaa."
 
 #. MSG_DirectionModeChg
 #: po/tmp/ap_String_Id.h.h:1359
 msgid "You have changed the direction mode."
-msgstr ""
+msgstr "Olet vaihtanut suuntaa."
 
 #. MSG_HyperlinkNoSelection
 #: po/tmp/ap_String_Id.h.h:1361
 msgid "You must select a portion of the document before inserting a hyperlink."
-msgstr ""
+msgstr "Valitse tekstialue ennen hyperlinkin lisäystä."
 
 #. AUTOTEXT_CLOSING_12
 #: po/tmp/ap_String_Id.h.h:1363
@@ -3599,13 +3586,13 @@ msgstr "Zoomaa"
 #: po/tmp/ap_String_Id.h.h:1373
 #, fuzzy
 msgid "Zoom to &Page Width"
-msgstr "&Sivun leveys"
+msgstr "Zoomaa sivun &leveydelle"
 
 #. MENU_LABEL_VIEW_ZOOM_WHOLE
 #: po/tmp/ap_String_Id.h.h:1375
 #, fuzzy
 msgid "Zoom to &Whole Page"
-msgstr "&Koko sivu"
+msgstr "Zoomaa koko &sivulle"
 
 #. MENU_STATUSLINE_VIEW_ZOOM_100
 #: po/tmp/ap_String_Id.h.h:1377
@@ -3635,43 +3622,43 @@ msgstr "Zoomaa"
 #: po/tmp/ap_String_Id.h.h:1385
 #, fuzzy
 msgid "Zoom to page width"
-msgstr "&Sivun leveys"
+msgstr "Suurenna sivun leveydelle"
 
 #. MENU_STATUSLINE_VIEW_ZOOM_WHOLE
 #: po/tmp/ap_String_Id.h.h:1387
 #, fuzzy
 msgid "Zoom to whole page"
-msgstr "&Koko sivu"
+msgstr "Näytä koko sivu näytöllä"
 
 #. DLG_Options_Label_CustomDict
 #: po/tmp/ap_String_Id.h.h:1389
 msgid "custom.dic"
-msgstr ""
+msgstr "custom.dic"
 
 #. FIELD_DateTime_DDMMYY
 #: po/tmp/ap_String_Id.h.h:1391
 msgid "dd/mm/yy"
-msgstr ""
+msgstr "pp/kk/vv"
 
 #. DLG_ToggleCase_LowerCase
 #: po/tmp/ap_String_Id.h.h:1393
 msgid "lowercase"
-msgstr ""
+msgstr "pienet &kirjaimet"
 
 #. DLG_Options_Label_Minutes
 #: po/tmp/ap_String_Id.h.h:1395
 msgid "minutes"
-msgstr ""
+msgstr "minuutti"
 
 #. FIELD_DateTime_MMDDYY
 #: po/tmp/ap_String_Id.h.h:1397
 msgid "mm/dd/yy"
-msgstr ""
+msgstr "kk/pp/vv"
 
 #. DLG_ToggleCase_ToggleCase
 #: po/tmp/ap_String_Id.h.h:1399
 msgid "tOGGLE cASE"
-msgstr ""
+msgstr "vAIH&DA KIRJAINKOKO"
 
 #.
 #. * Translatable strings file generated by extract-ui.
@@ -3680,7 +3667,7 @@ msgstr ""
 #. DLG_UFS_FontTab
 #: po/tmp/xap_String_Id.h.h:7
 msgid "   Font   "
-msgstr "  Fontti "
+msgstr "  Kirjasin "
 
 #. DLG_UP_To
 #: po/tmp/xap_String_Id.h.h:9
@@ -3718,33 +3705,34 @@ msgstr "&Koko sivu"
 #. DLG_NoSaveFile_DirNotExist
 #: po/tmp/xap_String_Id.h.h:23
 msgid "A directory in the given pathname does not exist."
-msgstr "Annetulla polulla ei ole hakemistoa"
+msgstr "Hakupolun hakemistoa ei ole olemassa."
 
 #. DLG_PLUGIN_MANAGER_TITLE
 #: po/tmp/xap_String_Id.h.h:25
 msgid "AbiWord Plugin Manager"
-msgstr ""
+msgstr "Lisämodulit"
 
 #. MSG_ShowUnixFontWarning
 #: po/tmp/xap_String_Id.h.h:27
 msgid "AbiWord was not able to add its fonts to the X "
-msgstr ""
+msgstr "Abiword ei onnistunut lisäämään kirjasimiaan X-kirjasinten joukkoon.\n"
+"Katso &quot;Unixin kirjasinpolkuongelma&quot; AbiWordin ohjeen &quot;Kysymyksiä ja vastauksia&quot; osuudesta."
 
 #. DLG_UP_PrintPreviewTitle
 #: po/tmp/xap_String_Id.h.h:29
 msgid "AbiWord: Print Preview"
-msgstr ""
+msgstr "AbiWord: Tulostuksen esikatselu"
 
 #. DLG_ABOUT_Title
 #: po/tmp/xap_String_Id.h.h:31
 #, c-format
 msgid "About %s"
-msgstr ""
+msgstr "Tietoja %s"
 
 #. DLG_MW_MoreWindows
 #: po/tmp/xap_String_Id.h.h:33
 msgid "Activate Window"
-msgstr "Valittu ikkuna"
+msgstr "Valitse ikkuna"
 
 #. DLG_MW_Activate
 #: po/tmp/xap_String_Id.h.h:35
@@ -3754,82 +3742,82 @@ msgstr "Valitse:"
 #. DLG_PLUGIN_MANAGER_ACTIVE
 #: po/tmp/xap_String_Id.h.h:37
 msgid "Active Plugins"
-msgstr ""
+msgstr "Aktiivit lisämodulit"
 
 #. LANG_AF_ZA
 #: po/tmp/xap_String_Id.h.h:39
 msgid "Afrikaans"
-msgstr ""
+msgstr "afrikaans"
 
 #. DLG_FOSA_ALL
 #: po/tmp/xap_String_Id.h.h:43
 msgid "All (*.*)"
-msgstr ""
+msgstr "Kaikki tiedostot (*.*)"
 
 #. DLG_FOSA_ALLDOCS
 #: po/tmp/xap_String_Id.h.h:45
 msgid "All Documents"
-msgstr ""
+msgstr "Kaikki asiakirjat"
 
 #. DLG_FOSA_ALLIMAGES
 #: po/tmp/xap_String_Id.h.h:47
 msgid "All Image Files"
-msgstr ""
+msgstr "Kaikki kuvatiedostot"
 
 #. LANG_AR_EG
 #: po/tmp/xap_String_Id.h.h:51
 msgid "Arabic (Egypt)"
-msgstr ""
+msgstr "arabia (Egypti)"
 
 #. LANG_AR_SA
 #: po/tmp/xap_String_Id.h.h:53
 msgid "Arabic (Saudi Arabia)"
-msgstr ""
+msgstr "arabia (Saudi Arabia)"
 
 #. ENC_ARAB_ISO
 #: po/tmp/xap_String_Id.h.h:55
 msgid "Arabic, ISO-8859-6"
-msgstr ""
+msgstr "Arabialainen, ISO-8859-6"
 
 #. ENC_ARAB_MAC
 #: po/tmp/xap_String_Id.h.h:57
 msgid "Arabic, Macintosh"
-msgstr ""
+msgstr "Arabialainen, Macintosh"
 
 #. ENC_ARAB_WIN
 #: po/tmp/xap_String_Id.h.h:59
 msgid "Arabic, Windows Code Page 1256"
-msgstr ""
+msgstr "Arabialainen, Windowsin koodisivu 1256"
 
 #. LANG_HY_AM
 #: po/tmp/xap_String_Id.h.h:61
 msgid "Armenian"
-msgstr ""
+msgstr "armenia"
 
 #. ENC_ARME_ARMSCII
 #: po/tmp/xap_String_Id.h.h:63
 msgid "Armenian, ARMSCII-8"
-msgstr ""
+msgstr "Armenialainen, ARMSCII-8"
 
 #. DLG_PLUGIN_MANAGER_AUTHOR
 #: po/tmp/xap_String_Id.h.h:65
 msgid "Author"
-msgstr ""
+msgstr "Tekijä"
 
 #. DLG_FOSA_FileTypeAutoDetect
 #: po/tmp/xap_String_Id.h.h:67
 msgid "Automatically Detected"
-msgstr "Automaatti tunnistus"
+msgstr "Automaattitunnistus"
 
 #. ENC_BALT_ISO
 #: po/tmp/xap_String_Id.h.h:69
 msgid "Baltic, ISO-8859-4"
-msgstr ""
+msgstr "Balttilainen, ISO-8859-4"
 
 #. ENC_BALT_WIN
 #: po/tmp/xap_String_Id.h.h:71
 msgid "Baltic, Windows Code Page 1257"
-msgstr ""
+msgstr "Balttilainen, Windowsin koodisivu 1257"
 
 #. DLG_UP_BlackWhite
 #: po/tmp/xap_String_Id.h.h:73
@@ -3854,62 +3842,62 @@ msgstr "Peruuta"
 #. LANG_CA_ES
 #: po/tmp/xap_String_Id.h.h:83
 msgid "Catalan"
-msgstr ""
+msgstr "katalaani"
 
 #. ENC_CENT_ISO
 #: po/tmp/xap_String_Id.h.h:85
 msgid "Central European, ISO-8859-2"
-msgstr ""
+msgstr "Keskieurooppalainen, ISO-8859-2"
 
 #. ENC_CENT_MAC
 #: po/tmp/xap_String_Id.h.h:87
 msgid "Central European, Macintosh"
-msgstr ""
+msgstr "Keskieurooppalainen, Macintosh"
 
 #. ENC_CENT_WIN
 #: po/tmp/xap_String_Id.h.h:89
 msgid "Central European, Windows Code Page 1250"
-msgstr ""
+msgstr "Keskieurooppalainen, Windowsin koodisivu 1250"
 
 #. LANG_ZH_HK
 #: po/tmp/xap_String_Id.h.h:91
 msgid "Chinese (Hong Kong)"
-msgstr ""
+msgstr "kiina (Hong Kong)"
 
 #. LANG_ZH_CN
 #: po/tmp/xap_String_Id.h.h:93
 msgid "Chinese (PRC)"
-msgstr ""
+msgstr "kiina (Kansantasavalta)"
 
 #. LANG_ZH_SG
 #: po/tmp/xap_String_Id.h.h:95
 msgid "Chinese (Singapore)"
-msgstr ""
+msgstr "kiina (Singapore)"
 
 #. LANG_ZH_TW
 #: po/tmp/xap_String_Id.h.h:97
 msgid "Chinese (Taiwan)"
-msgstr ""
+msgstr "kiina (Taiwan)"
 
 #. ENC_CHSI_EUC
 #: po/tmp/xap_String_Id.h.h:99
 msgid "Chinese Simplified, EUC-CN"
-msgstr ""
+msgstr "Kiinalainen yksinkertaistettu, EUC-CN"
 
 #. ENC_CHSI_GB
 #: po/tmp/xap_String_Id.h.h:101
 msgid "Chinese Simplified, GB_2312-80"
-msgstr ""
+msgstr "Kiinalainen yksinkertaistettu, GB_2312-80"
 
 #. ENC_CHSI_HZ
 #: po/tmp/xap_String_Id.h.h:103
 msgid "Chinese Simplified, HZ"
-msgstr ""
+msgstr "Kiinalainen yksinkertaistettu, HZ"
 
 #. ENC_CHSI_WIN
 #: po/tmp/xap_String_Id.h.h:105
 msgid "Chinese Simplified, Windows Code Page 936"
-msgstr ""
+msgstr "Kiinalainen yksinkertaistettu, Windowsin koodisivu 936"
 
 #. ENC_CHTR_BIG5
 #: po/tmp/xap_String_Id.h.h:107
@@ -3919,17 +3907,17 @@ msgstr ""
 #. ENC_CHTR_EUC
 #: po/tmp/xap_String_Id.h.h:109
 msgid "Chinese Traditional, EUC-TW"
-msgstr ""
+msgstr "Kiinalainen perinteinen, EUC-TW"
 
 #. ENC_CHTR_WIN
 #: po/tmp/xap_String_Id.h.h:111
 msgid "Chinese Traditional, Windows Code Page 950"
-msgstr ""
+msgstr "Kiinalainen perinteinen, Windowsin koodisivu 950"
 
 #. DLG_CLIPART_Title
 #: po/tmp/xap_String_Id.h.h:113
 msgid "Clip Art"
-msgstr ""
+msgstr "ClipArt leikekuva"
 
 #. DLG_Close
 #: po/tmp/xap_String_Id.h.h:115
@@ -3939,7 +3927,7 @@ msgstr "Sulje"
 #. DLG_UP_Collate
 #: po/tmp/xap_String_Id.h.h:117
 msgid "Collate"
-msgstr "Järjestä"
+msgstr "Lajittele"
 
 #. DLG_UP_Color
 #: po/tmp/xap_String_Id.h.h:119
@@ -3949,7 +3937,7 @@ msgstr "Värillisenä"
 #. DLG_UFS_ColorLabel
 #: po/tmp/xap_String_Id.h.h:121
 msgid "Color:"
-msgstr ""
+msgstr "Väri:"
 
 #. DLG_UP_Copies
 #: po/tmp/xap_String_Id.h.h:123
@@ -3959,89 +3947,89 @@ msgstr "Kopioita: "
 #. DLG_PLUGIN_MANAGER_COULDNT_LOAD
 #: po/tmp/xap_String_Id.h.h:125
 msgid "Could not activate/load plugin"
-msgstr ""
+msgstr "Lisämoduliaa ei voinut aktivoida/käynnistää"
 
 #. DLG_PLUGIN_MANAGER_COULDNT_UNLOAD
 #: po/tmp/xap_String_Id.h.h:127
 msgid "Could not deactivate plugin"
-msgstr ""
+msgstr "Lisämodulia ei voitu poistaa käytöstä"
 
 #. SPELL_CANTLOAD_DICT
 #: po/tmp/xap_String_Id.h.h:129
 #, c-format
 msgid "Could not load the dictionary for the %s language"
-msgstr ""
+msgstr "Kielen %s sanastoa ei voinut avata"
 
 #. ENC_CROA_MAC
 #: po/tmp/xap_String_Id.h.h:131
 msgid "Croatian, Macintosh"
-msgstr ""
+msgstr "Kroatialainen, Macintosh"
 
 #. ENC_CYRL_ISO
 #: po/tmp/xap_String_Id.h.h:133
 msgid "Cyrillic, ISO-8859-5"
-msgstr ""
+msgstr "Kyrillinen, ISO-8859-5"
 
 #. ENC_CYRL_KOI
 #: po/tmp/xap_String_Id.h.h:135
 msgid "Cyrillic, KOI8-R"
-msgstr ""
+msgstr "Kyrillinen, KOI8-R"
 
 #. ENC_CYRL_MAC
 #: po/tmp/xap_String_Id.h.h:137
 msgid "Cyrillic, Macintosh"
-msgstr ""
+msgstr "Kyrillinen, Macintosh"
 
 #. ENC_CYRL_WIN
 #: po/tmp/xap_String_Id.h.h:139
 msgid "Cyrillic, Windows Code Page 1251"
-msgstr ""
+msgstr "Kyrillinen, Windowsin koodisivu 1251"
 
 #. LANG_CS_CZ
 #: po/tmp/xap_String_Id.h.h:141
 msgid "Czech"
-msgstr ""
+msgstr "tsekki"
 
 #. LANG_DA_DK
 #: po/tmp/xap_String_Id.h.h:143
 msgid "Danish"
-msgstr ""
+msgstr "tanska"
 
 #. DLG_PLUGIN_MANAGER_DEACTIVATE_ALL
 #: po/tmp/xap_String_Id.h.h:145
 msgid "Deactivate all plugins"
-msgstr ""
+msgstr "Poista lisämodulit"
 
 #. DLG_PLUGIN_MANAGER_DEACTIVATE
 #: po/tmp/xap_String_Id.h.h:147
 msgid "Deactivate plugin"
-msgstr ""
+msgstr "Poista lisämoduli"
 
 #. DLG_Remove_Icon
 #: po/tmp/xap_String_Id.h.h:151
 #, fuzzy
 msgid "Do you want to remove this icon from the toolbar?"
-msgstr "Haluatko asettaa uudelleen ohitetut sanat kaikissa asiakirjoissa?"
+msgstr "Haluatko poistaa kuvakkeen työkaluriviltä?"
 
 #. LANG_NL_NL
 #: po/tmp/xap_String_Id.h.h:153
 msgid "Dutch (Netherlands)"
-msgstr ""
+msgstr "flaami (Alankomaat)"
 
 #. DLG_UFS_EffectsFrameLabel
 #: po/tmp/xap_String_Id.h.h:155
 msgid "Effects"
-msgstr "Tehoste"
+msgstr "Tehosteet"
 
 #. DLG_UP_EmbedFonts
 #: po/tmp/xap_String_Id.h.h:157
 msgid "Embed Fonts"
-msgstr ""
+msgstr "Upota kirjasimet"
 
 #. DLG_UENC_EncTitle
 #: po/tmp/xap_String_Id.h.h:159
 msgid "Encoding"
-msgstr ""
+msgstr "Koodaus"
 
 #. DLG_UFS_EncodingLabel
 #: po/tmp/xap_String_Id.h.h:161
@@ -4051,52 +4039,52 @@ msgstr "Koodaus:"
 #. LANG_EN_AU
 #: po/tmp/xap_String_Id.h.h:163
 msgid "English (Australia)"
-msgstr ""
+msgstr "englanti (Australia)"
 
 #. LANG_EN_CA
 #: po/tmp/xap_String_Id.h.h:165
 msgid "English (Canada)"
-msgstr ""
+msgstr "englanti (Kanada)"
 
 #. LANG_EN_IE
 #: po/tmp/xap_String_Id.h.h:167
 msgid "English (Ireland)"
-msgstr ""
+msgstr "englanti (Irlanti)"
 
 #. LANG_EN_NZ
 #: po/tmp/xap_String_Id.h.h:169
 msgid "English (New Zealand)"
-msgstr ""
+msgstr "englanti (Uusi Seelanti)"
 
 #. LANG_EN_ZA
 #: po/tmp/xap_String_Id.h.h:171
 msgid "English (South Africa)"
-msgstr ""
+msgstr "englanti (Etelä-Afrikka)"
 
 #. LANG_EN_GB
 #: po/tmp/xap_String_Id.h.h:173
 msgid "English (UK)"
-msgstr ""
+msgstr "englanti (Iso-Britannia)"
 
 #. LANG_EN_US
 #: po/tmp/xap_String_Id.h.h:175
 msgid "English (US)"
-msgstr ""
+msgstr "englanti (Yhdysvallat)"
 
 #. DLG_Password_Title
 #: po/tmp/xap_String_Id.h.h:177
 msgid "Enter Password"
-msgstr ""
+msgstr "Anna salasana"
 
 #. DLG_FOSA_ExportTitle
 #: po/tmp/xap_String_Id.h.h:179
 msgid "Export File"
-msgstr ""
+msgstr "Tallenna kopio tiedostoksi"
 
 #. LANG_FA_IR
 #: po/tmp/xap_String_Id.h.h:181
 msgid "Farsi"
-msgstr ""
+msgstr "farsi"
 
 #. DLG_UP_File
 #: po/tmp/xap_String_Id.h.h:183
@@ -4107,17 +4095,17 @@ msgstr "Tiedostoon"
 #: po/tmp/xap_String_Id.h.h:185
 #, c-format
 msgid "File already exists.  Overwrite file '%s'?"
-msgstr "Tiedosto on jo. Kirjoitetaanko tiedoston '%s' päälle?"
+msgstr "Tiedosto on jo olemassa. Kirjoitetaanko tiedoston '%s' päälle?"
 
 #. LANG_FI_FI
 #: po/tmp/xap_String_Id.h.h:187
 msgid "Finnish"
-msgstr ""
+msgstr "suomi"
 
 #. LANG_FR_FR
 #: po/tmp/xap_String_Id.h.h:193
 msgid "French (France)"
-msgstr ""
+msgstr "ranska (Ranska)"
 
 #. DLG_UP_From
 #: po/tmp/xap_String_Id.h.h:195
@@ -4127,32 +4115,32 @@ msgstr "Sivulta: "
 #. LANG_GL_ES
 #: po/tmp/xap_String_Id.h.h:197
 msgid "Galician"
-msgstr ""
+msgstr "galicia"
 
 #. LANG_KA_GE
 #: po/tmp/xap_String_Id.h.h:199
 msgid "Georgian"
-msgstr ""
+msgstr "georgia"
 
 #. ENC_GEOR_ACADEMY
 #: po/tmp/xap_String_Id.h.h:201
 msgid "Georgian, Academy"
-msgstr ""
+msgstr "Georgialainen, Academy"
 
 #. ENC_GEOR_PS
 #: po/tmp/xap_String_Id.h.h:203
 msgid "Georgian, PS"
-msgstr ""
+msgstr "Georgialainen, PS"
 
 #. LANG_DE_AT
 #: po/tmp/xap_String_Id.h.h:205
 msgid "German (Austria)"
-msgstr ""
+msgstr "saksa (Itävalta)"
 
 #. LANG_DE_DE
 #: po/tmp/xap_String_Id.h.h:207
 msgid "German (Germany)"
-msgstr ""
+msgstr "saksa (Saksa)"
 
 #. DLG_UP_Grayscale
 #: po/tmp/xap_String_Id.h.h:209
@@ -4162,22 +4150,22 @@ msgstr "Harmaasävyinä"
 #. LANG_EL_GR
 #: po/tmp/xap_String_Id.h.h:211
 msgid "Greek"
-msgstr ""
+msgstr "kreikka"
 
 #. ENC_GREE_ISO
 #: po/tmp/xap_String_Id.h.h:213
 msgid "Greek, ISO-8859-7"
-msgstr ""
+msgstr "Kreikkalainen, ISO-8859-7"
 
 #. ENC_GREE_MAC
 #: po/tmp/xap_String_Id.h.h:215
 msgid "Greek, Macintosh"
-msgstr ""
+msgstr "Kreikkalainen, Macintosh"
 
 #. ENC_GREE_WIN
 #: po/tmp/xap_String_Id.h.h:217
 msgid "Greek, Windows Code Page 1253"
-msgstr ""
+msgstr "Kreikkalainen, Windowsin koodisivu 1253"
 
 #. LANG_IW_IL
 #: po/tmp/xap_String_Id.h.h:219
@@ -4187,22 +4175,22 @@ msgstr ""
 #. ENC_HEBR_ISO
 #: po/tmp/xap_String_Id.h.h:221
 msgid "Hebrew, ISO-8859-8"
-msgstr ""
+msgstr "Heprealainen, ISO-8859-8"
 
 #. ENC_HEBR_MAC
 #: po/tmp/xap_String_Id.h.h:223
 msgid "Hebrew, Macintosh"
-msgstr ""
+msgstr "Heprealainen, Macintosh"
 
 #. ENC_HEBR_WIN
 #: po/tmp/xap_String_Id.h.h:225
 msgid "Hebrew, Windows Code Page 1255"
-msgstr ""
+msgstr "Heprealainen, Windowsin koodisivu 1255"
 
 #. DLG_Image_Height
 #: po/tmp/xap_String_Id.h.h:227
 msgid "Height in pixels:"
-msgstr ""
+msgstr "Korkeus:"
 
 #. DLG_IP_Height_Label
 #: po/tmp/xap_String_Id.h.h:229
@@ -4212,33 +4200,33 @@ msgstr "Korkeus:"
 #. DLG_UFS_BGColorTab
 #: po/tmp/xap_String_Id.h.h:231
 msgid "HighLight Color"
-msgstr ""
+msgstr "Korostusväri"
 
 #. LANG_HI_IN
 #: po/tmp/xap_String_Id.h.h:233
 msgid "Hindi"
-msgstr ""
+msgstr "hindi"
 
 #. ENC_ICEL_MAC
 #: po/tmp/xap_String_Id.h.h:235
 msgid "Icelandic, Macintosh"
-msgstr ""
+msgstr "Islantilainen, Macintosh"
 
 #. DLG_Image_Title
 #: po/tmp/xap_String_Id.h.h:237
 msgid "Image Properties"
-msgstr ""
+msgstr "Kuvan ominaisuudet"
 
 #. DLG_FOSA_ImportTitle
 #: po/tmp/xap_String_Id.h.h:239
 msgid "Import File"
-msgstr ""
+msgstr "Avaa kopio tiedostosta"
 
 #. DLG_FOSA_InsertTitle
 #: po/tmp/xap_String_Id.h.h:243
 #, fuzzy
 msgid "Insert File"
-msgstr "Lisää kuva"
+msgstr "Lisää tiedosto"
 
 #. DLG_IP_Title
 #: po/tmp/xap_String_Id.h.h:245
@@ -4253,17 +4241,17 @@ msgstr "Lisää merkki"
 #. DLG_PLUGIN_MANAGER_INSTALL
 #: po/tmp/xap_String_Id.h.h:249
 msgid "Install new plugin"
-msgstr ""
+msgstr "Asenna uusi lisämoduli"
 
 #. DLG_InvalidPathname
 #: po/tmp/xap_String_Id.h.h:251
 msgid "Invalid pathname."
-msgstr "Virheellinen hakemisto"
+msgstr "Virheellinen hakemisto."
 
 #. LANG_IT_IT
 #: po/tmp/xap_String_Id.h.h:253
 msgid "Italian (Italy)"
-msgstr ""
+msgstr "italia (Italia)"
 
 #. DLG_UFS_StyleItalic
 #: po/tmp/xap_String_Id.h.h:255
@@ -4273,77 +4261,77 @@ msgstr "Kursiivi"
 #. LANG_JA_JP
 #: po/tmp/xap_String_Id.h.h:257
 msgid "Japanese"
-msgstr ""
+msgstr "japani"
 
 #. ENC_JAPN_EUC
 #: po/tmp/xap_String_Id.h.h:259
 msgid "Japanese, EUC-JP"
-msgstr ""
+msgstr "Japanilainen, EUC-JP"
 
 #. ENC_JAPN_ISO
 #: po/tmp/xap_String_Id.h.h:261
 msgid "Japanese, ISO-2022-JP"
-msgstr ""
+msgstr "Japanilainen, ISO-2022-JP"
 
 #. ENC_JAPN_SJIS
 #: po/tmp/xap_String_Id.h.h:263
 msgid "Japanese, Shift-JIS"
-msgstr ""
+msgstr "Japanilainen, Shift-JIS"
 
 #. ENC_JAPN_WIN
 #: po/tmp/xap_String_Id.h.h:265
 msgid "Japanese, Windows Code Page 932"
-msgstr ""
+msgstr "Japanilainen, Windowsin koodisivu 932"
 
 #. LANG_KO_KR
 #: po/tmp/xap_String_Id.h.h:267
 msgid "Korean"
-msgstr ""
+msgstr "korea"
 
 #. ENC_KORE_EUC
 #: po/tmp/xap_String_Id.h.h:269
 msgid "Korean, EUC-KR"
-msgstr ""
+msgstr "Korealainen, EUC-KR"
 
 #. ENC_KORE_JOHAB
 #: po/tmp/xap_String_Id.h.h:271
 msgid "Korean, Johab"
-msgstr ""
+msgstr "Korealainen, Johab"
 
 #. ENC_KORE_KSC
 #: po/tmp/xap_String_Id.h.h:273
 msgid "Korean, KSC_5601"
-msgstr ""
+msgstr "Korealainen, KSC_5601"
 
 #. ENC_KORE_WIN
 #: po/tmp/xap_String_Id.h.h:275
 msgid "Korean, Windows Code Page 949"
-msgstr ""
+msgstr "Korealainen, Windowsin koodisivu 949"
 
 #. LANG_LA_IT
 #: po/tmp/xap_String_Id.h.h:279
 msgid "Latin (Renaissance)"
-msgstr ""
+msgstr "latina (renessanssi)"
 
 #. LANG_LV_LV
 #: po/tmp/xap_String_Id.h.h:281
 msgid "Latvian"
-msgstr ""
+msgstr "latvia"
 
 #. LANG_LT_LT
 #: po/tmp/xap_String_Id.h.h:283
 msgid "Lithuanian"
-msgstr ""
+msgstr "liettua"
 
 #. DLG_Options_Label_ModifyUnixFontPath
 #: po/tmp/xap_String_Id.h.h:285
 msgid "Modify Unix Font Path"
-msgstr ""
+msgstr "Muokkaa Unixin kirjasinpolkua"
 
 #. DLG_PLUGIN_MANAGER_NAME
 #: po/tmp/xap_String_Id.h.h:287
 msgid "Name"
-msgstr ""
+msgstr "Nimi"
 
 #. DLG_QNXMB_No
 #: po/tmp/xap_String_Id.h.h:289
@@ -4358,17 +4346,17 @@ msgstr "Ei ole kuva"
 #. DLG_PLUGIN_MANAGER_NONE_SELECTED
 #: po/tmp/xap_String_Id.h.h:293
 msgid "No plugin selected"
-msgstr ""
+msgstr "Lisämodulia ei valittu"
 
 #. LANG_NB_NO
 #: po/tmp/xap_String_Id.h.h:295
 msgid "Norwegian Bokmal"
-msgstr ""
+msgstr "norja (bokmål)"
 
 #. LANG_NN_NO
 #: po/tmp/xap_String_Id.h.h:297
 msgid "Norwegian Nynorsk"
-msgstr ""
+msgstr "norja (nynorsk)"
 
 #. DLG_OK
 #: po/tmp/xap_String_Id.h.h:299
@@ -4388,7 +4376,7 @@ msgstr "Avaa tiedosto:"
 #. DLG_UFS_OverlineCheck
 #: po/tmp/xap_String_Id.h.h:305
 msgid "Overline"
-msgstr ""
+msgstr "Ylleviivaus"
 
 #. DLG_Zoom_Percent
 #: po/tmp/xap_String_Id.h.h:307
@@ -4403,27 +4391,27 @@ msgstr "Sivut:"
 #. DLG_Password_Password
 #: po/tmp/xap_String_Id.h.h:313
 msgid "Password:"
-msgstr ""
+msgstr "Salasana:"
 
 #. DLG_PLUGIN_MANAGER_DETAILS
 #: po/tmp/xap_String_Id.h.h:315
 msgid "Plugin Details"
-msgstr ""
+msgstr "Yksityiskohdat"
 
 #. DLG_PLUGIN_MANAGER_LIST
 #: po/tmp/xap_String_Id.h.h:317
 msgid "Plugin List"
-msgstr ""
+msgstr "Lisämoduliluettelo"
 
 #. LANG_PT_BR
 #: po/tmp/xap_String_Id.h.h:319
 msgid "Portuguese (Brazil)"
-msgstr ""
+msgstr "portugali (Brasilia)"
 
 #. LANG_PT_PT
 #: po/tmp/xap_String_Id.h.h:321
 msgid "Portuguese (Portugal)"
-msgstr ""
+msgstr "portugali (Portugali)"
 
 #. DLG_IP_Activate_Label
 #: po/tmp/xap_String_Id.h.h:325
@@ -4453,7 +4441,7 @@ msgstr "Tulostetaan: "
 #. DLG_UP_PrintTo
 #: po/tmp/xap_String_Id.h.h:335
 msgid "Print to: "
-msgstr "Tulosta: "
+msgstr "Tulostuskohde: "
 
 #. DLG_UP_Printer
 #: po/tmp/xap_String_Id.h.h:337
@@ -4463,7 +4451,7 @@ msgstr "Kirjoitimelle"
 #. DLG_UP_PrinterCommand
 #: po/tmp/xap_String_Id.h.h:339
 msgid "Printer command: "
-msgstr "Tulostus komento: "
+msgstr "Tulostuskomento: "
 
 #. DLG_UFS_StyleRegular
 #: po/tmp/xap_String_Id.h.h:341
@@ -4473,22 +4461,22 @@ msgstr "Normaali"
 #. DLG_UFS_Direction
 #: po/tmp/xap_String_Id.h.h:343
 msgid "Right-to-left"
-msgstr ""
+msgstr "Oikealta vasemmalle"
 
 #. ENC_ROMA_MAC
 #: po/tmp/xap_String_Id.h.h:345
 msgid "Romanian, Macintosh"
-msgstr ""
+msgstr "Romanialainen, Macintosh"
 
 #. LANG_RU_RU
 #: po/tmp/xap_String_Id.h.h:347
 msgid "Russian (Russia)"
-msgstr ""
+msgstr "venäjä (Venäjä)"
 
 #. DLG_UFS_SampleFrameLabel
 #: po/tmp/xap_String_Id.h.h:349
 msgid "Sample"
-msgstr ""
+msgstr "Malli"
 
 #. DLG_FOSA_SaveAsTitle
 #: po/tmp/xap_String_Id.h.h:351
@@ -4503,17 +4491,17 @@ msgstr "Tallenna tiedosto:"
 #. DLG_UFS_ScriptLabel
 #: po/tmp/xap_String_Id.h.h:355
 msgid "Script:"
-msgstr ""
+msgstr "Koodaus:"
 
 #. DLG_UENC_EncLabel
 #: po/tmp/xap_String_Id.h.h:357
 msgid "Select Encoding:"
-msgstr ""
+msgstr "Valitse koodaus:"
 
 #. DLG_ULANG_LangLabel
 #: po/tmp/xap_String_Id.h.h:359
 msgid "Select Language:"
-msgstr ""
+msgstr "Valitse kieli:"
 
 #. DLG_UP_Selection
 #: po/tmp/xap_String_Id.h.h:361
@@ -4523,12 +4511,12 @@ msgstr "Valinta"
 #. DLG_UFS_TransparencyCheck
 #: po/tmp/xap_String_Id.h.h:363
 msgid "Set no Highlight Color"
-msgstr ""
+msgstr "Älä aseta korostusväriä"
 
 #. DLG_Options_Label_UnixFontWarning
 #: po/tmp/xap_String_Id.h.h:365
 msgid "Show font warning at start up"
-msgstr ""
+msgstr "Näytä kirjasinvaroitus käynnistettäessä"
 
 #. DLG_UFS_SizeLabel
 #: po/tmp/xap_String_Id.h.h:367
@@ -4538,27 +4526,27 @@ msgstr "Koko:"
 #. DLG_UFS_SmallCapsCheck
 #: po/tmp/xap_String_Id.h.h:369
 msgid "Small Caps"
-msgstr ""
+msgstr "Kapiteelit"
 
 #. LANG_ES_MX
 #: po/tmp/xap_String_Id.h.h:371
 msgid "Spanish (Mexico)"
-msgstr ""
+msgstr "espanja (Meksiko)"
 
 #. LANG_ES_ES
 #: po/tmp/xap_String_Id.h.h:373
 msgid "Spanish (Spain)"
-msgstr ""
+msgstr "espanja (Espanja)"
 
 #. DLG_UFS_StrikeoutCheck
 #: po/tmp/xap_String_Id.h.h:375
 msgid "Strikeout"
-msgstr "Yliviivattu"
+msgstr "Yliviivaus"
 
 #. LANG_SV_SE
 #: po/tmp/xap_String_Id.h.h:379
 msgid "Swedish"
-msgstr ""
+msgstr "ruotsi"
 
 #. DLG_UFS_ColorTab
 #: po/tmp/xap_String_Id.h.h:381
@@ -4568,22 +4556,22 @@ msgstr "  Väri    "
 #. LANG_TH_TH
 #: po/tmp/xap_String_Id.h.h:383
 msgid "Thai"
-msgstr ""
+msgstr "thai"
 
 #. ENC_THAI_MAC
 #: po/tmp/xap_String_Id.h.h:385
 msgid "Thai, Macintosh"
-msgstr ""
+msgstr "Thainkielinen, Macintosh"
 
 #. ENC_THAI_TIS
 #: po/tmp/xap_String_Id.h.h:387
 msgid "Thai, TIS-620"
-msgstr ""
+msgstr "Thainkielinen, TIS-620"
 
 #. ENC_THAI_WIN
 #: po/tmp/xap_String_Id.h.h:389
 msgid "Thai, Windows Code Page 874"
-msgstr ""
+msgstr "Thainkielinen, Windowsin koodisivu 874"
 
 #. DLG_NoSaveFile_DirNotWriteable
 #: po/tmp/xap_String_Id.h.h:391
@@ -4594,47 +4582,47 @@ msgstr "Hakemisto '%s' on kirjoitussuojattu"
 #. DLG_UP_InvalidPrintString
 #: po/tmp/xap_String_Id.h.h:393
 msgid "The print command string is not valid."
-msgstr "Tulostus komentorivi on virheellinen."
+msgstr "Tulostuskomentorivi on virheellinen."
 
 #. LANG_TR_TR
 #: po/tmp/xap_String_Id.h.h:397
 msgid "Turkish"
-msgstr ""
+msgstr "turkki"
 
 #. ENC_TURK_ISO
 #: po/tmp/xap_String_Id.h.h:399
 msgid "Turkish, ISO-8859-9"
-msgstr ""
+msgstr "Turkkilainen, ISO-8859-9"
 
 #. ENC_TURK_MAC
 #: po/tmp/xap_String_Id.h.h:401
 msgid "Turkish, Macintosh"
-msgstr ""
+msgstr "Turkkilainen, Macintosh"
 
 #. ENC_TURK_WIN
 #: po/tmp/xap_String_Id.h.h:403
 msgid "Turkish, Windows Code Page 1254"
-msgstr ""
+msgstr "Turkkilainen, Windowsin koodisivu 1254"
 
 #. ENC_WEST_ASCII
 #: po/tmp/xap_String_Id.h.h:405
 msgid "US-ASCII"
-msgstr ""
+msgstr "US-ASCII"
 
 #. ENC_UKRA_KOI
 #: po/tmp/xap_String_Id.h.h:407
 msgid "Ukrainian, KOI8-U"
-msgstr ""
+msgstr "Ukrainalainen, KOI8-U"
 
 #. ENC_UKRA_MAC
 #: po/tmp/xap_String_Id.h.h:409
 msgid "Ukrainian, Macintosh"
-msgstr ""
+msgstr "Ukrainalainen, Macintosh"
 
 #. DLG_UFS_UnderlineCheck
 #: po/tmp/xap_String_Id.h.h:411
 msgid "Underline"
-msgstr "Alleviivattu"
+msgstr "Alleviivaus"
 
 #. ENC_UNIC_UCS2
 #: po/tmp/xap_String_Id.h.h:413
@@ -4720,57 +4708,57 @@ msgstr "Päivitä"
 #. LANG_VI_VN
 #: po/tmp/xap_String_Id.h.h:447
 msgid "Vietnamese"
-msgstr ""
+msgstr "vietnam"
 
 #. ENC_VIET_TCVN
 #: po/tmp/xap_String_Id.h.h:449
 msgid "Vietnamese, TCVN"
-msgstr ""
+msgstr "Vietnamilainen, TCVN"
 
 #. ENC_VIET_VISCII
 #: po/tmp/xap_String_Id.h.h:451
 msgid "Vietnamese, VISCII"
-msgstr ""
+msgstr "Vietnamilainen, VISCII"
 
 #. ENC_VIET_WIN
 #: po/tmp/xap_String_Id.h.h:453
 msgid "Vietnamese, Windows Code Page 1258"
-msgstr ""
+msgstr "Vietnamilainen, Windowsin koodisivu 1258"
 
 #. ENC_WEST_HP
 #: po/tmp/xap_String_Id.h.h:455
 msgid "Western European, HP"
-msgstr ""
+msgstr "Länsieurooppalainen, HP"
 
 #. ENC_WEST_ISO
 #: po/tmp/xap_String_Id.h.h:457
 msgid "Western European, ISO-8859-1"
-msgstr ""
+msgstr "Länsieurooppalainen, ISO-8859-1"
 
 #. ENC_WEST_MAC
 #: po/tmp/xap_String_Id.h.h:459
 msgid "Western European, Macintosh"
-msgstr ""
+msgstr "Länsieurooppalainen, Macintosh"
 
 #. ENC_WEST_NXT
 #: po/tmp/xap_String_Id.h.h:461
 msgid "Western European, NeXT"
-msgstr ""
+msgstr "Länsieurooppalainen, NeXT"
 
 #. ENC_WEST_WIN
 #: po/tmp/xap_String_Id.h.h:463
 msgid "Western European, Windows Code Page 1252"
-msgstr ""
+msgstr "Länsieurooppalainen, Windowsin koodisivu 1252"
 
 #. TB_Zoom_PageWidth
 #: po/tmp/xap_String_Id.h.h:465
 msgid "Width"
-msgstr ""
+msgstr "Leveys"
 
 #. DLG_Image_Width
 #: po/tmp/xap_String_Id.h.h:467
 msgid "Width in pixels:"
-msgstr ""
+msgstr "Leveys:"
 
 #. DLG_IP_Width_Label
 #: po/tmp/xap_String_Id.h.h:469
@@ -4815,7 +4803,7 @@ msgstr "tuuma"
 #. DLG_Unit_mm
 #: po/tmp/xap_String_Id.h.h:485
 msgid "mm"
-msgstr ""
+msgstr "mm"
 
 #. LANG_0
 #: po/tmp/xap_String_Id.h.h:487

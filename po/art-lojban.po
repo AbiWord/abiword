@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: art-lojban\n"
 "POT-Creation-Date: 2003-09-02 23:02-0400\n"
-"PO-Revision-Date: 2003-09-04 22:31-0400\n"
+"PO-Revision-Date: 2003-09-07 19:13-0400\n"
 "Last-Translator: Pierre Abbat <phma@webjockey.net>\n"
 "Language-Team: Lojban\n"
 "MIME-Version: 1.0\n"
@@ -1171,7 +1171,7 @@ msgstr "jmina lo rajypau ri'u"
 #. MENU_STATUSLINE_FMT_BULLETS
 #: po/tmp/ap_String_Id.h.h:522
 msgid "Add or modify bullets and numbering for selected paragraphs"
-msgstr "Ajoute ou modifie les puces et numéros du paragraphe sélectionné"
+msgstr "jmina ja galfi lo bolba'a ja porna'a pe le selcu'a jufygri"
 
 #. TOOLBAR_LABEL_ADD_ROW
 #: po/tmp/ap_String_Id.h.h:524
@@ -1181,38 +1181,38 @@ msgstr "jmina lo pinpau ni'a"
 #. MENU_STATUSLINE_SPELL_ADD
 #: po/tmp/ap_String_Id.h.h:526
 msgid "Add this word to the custom dictionary"
-msgstr "Ajouter ce mot au dictionnaire personnel"
+msgstr "jmina le vi valsi le donte'i vlaste"
 
 #. DLG_Styles_ModifyTemplate
 #: po/tmp/ap_String_Id.h.h:528
 msgid "Add to template"
-msgstr "Ajouter au modèle"
+msgstr "jmina fi le kutytai"
 
 #. DLG_Para_LabelAfter
 #: po/tmp/ap_String_Id.h.h:530
 msgid "Aft&er:"
-msgstr "Ap&rès :"
+msgstr "ni'a"
 
 #. DLG_Para_LabelAlignment
 #: po/tmp/ap_String_Id.h.h:532
 msgid "Ali&gnment:"
-msgstr "&Alignement :"
+msgstr "kam&sirji:"
 
 #. DLG_Tab_Label_Alignment
 #. DLG_PageNumbers_Alignment_No_Colon
 #: po/tmp/ap_String_Id.h.h:535
 msgid "Alignment"
-msgstr "Alignement"
+msgstr "kamsirji"
 
 #. DLG_PageNumbers_Alignment
 #: po/tmp/ap_String_Id.h.h:537
 msgid "Alignment:"
-msgstr "&Alignement :"
+msgstr "&kamsirji :"
 
 #. DLG_Styles_LBL_All
 #: po/tmp/ap_String_Id.h.h:539 po/tmp/xap_String_Id.h.h:45
 msgid "All"
-msgstr "Tout"
+msgstr "ro"
 
 #. DLG_Options_Label_CheckAllowCustomToolbars
 #: po/tmp/ap_String_Id.h.h:541
@@ -1227,17 +1227,17 @@ msgstr ""
 #. DLG_Options_Label_CheckWhiteForTransparent
 #: po/tmp/ap_String_Id.h.h:545
 msgid "Allow screen colors other than white"
-msgstr "Permettre les couleurs autres que blanc"
+msgstr "curmi lo drata be lo blabi be'o skari"
 
 #. FIELD_Application
 #: po/tmp/ap_String_Id.h.h:547
 msgid "Application"
-msgstr "Application"
+msgstr "mutmi'i"
 
 #. DLG_Options_Btn_Apply
 #: po/tmp/ap_String_Id.h.h:549 po/tmp/xap_String_Id.h.h:57
 msgid "Apply"
-msgstr "Appliquer"
+msgstr "tamsmigau"
 
 #. TOOLBAR_STATUSLINE_FMTPAINTER
 #. TOOLBAR_TOOLTIP_FMTPAINTER
@@ -1248,7 +1248,7 @@ msgstr "le selcu'a selci'a cu tamsmi le purci selfu'i ju'agri"
 #. DLG_Lists_Apply_Current
 #: po/tmp/ap_String_Id.h.h:554
 msgid "Apply to Current List"
-msgstr "Appliquer à la liste &actuelle"
+msgstr "tamsmigau le cabna liste"
 
 #. DLG_FormatTable_Apply_To
 #: po/tmp/ap_String_Id.h.h:556
@@ -1268,7 +1268,7 @@ msgstr "su'o"
 #. DLG_Lists_Resume
 #: po/tmp/ap_String_Id.h.h:562
 msgid "Attach to Previous List"
-msgstr "&Revenir à la liste précédente"
+msgstr "jongau fi le prula'i liste"
 
 #. AUTOTEXT_ATTN_1
 #. MENU_LABEL_AUTOTEXT_ATTN
@@ -1289,12 +1289,12 @@ msgstr "zmiku ralte le datnyvei &di'i"
 #. DLG_Options_Label_AutoSave
 #: po/tmp/ap_String_Id.h.h:571
 msgid "Auto Save"
-msgstr "Enregistrement automatique"
+msgstr "zmiku ralte"
 
 #. DLG_Options_Label_SpellAutoReplace
 #: po/tmp/ap_String_Id.h.h:573
 msgid "Auto replace misspelled words"
-msgstr "Remplace automatiquement les mots en erreur"
+msgstr "zmiku basygau fi lo lersre valsi"
 
 #. DLG_InsertTable_AutoFit_Capital
 #: po/tmp/ap_String_Id.h.h:575
@@ -1325,12 +1325,12 @@ msgstr "zmiku setca ro seltolcri nermutmi'i"
 #. MENU_STATUSLINE_TOOLS_AUTOSPELL
 #: po/tmp/ap_String_Id.h.h:585
 msgid "Automatically spell-check the document"
-msgstr "Vérification automatique du document"
+msgstr "lerfu zmidragau le selpapri"
 
 #. DLG_Styles_ModifyAutomatic
 #: po/tmp/ap_String_Id.h.h:587
 msgid "Automatically update"
-msgstr "Mis à jour automatique"
+msgstr "zmiku cabgau"
 
 #. DLG_MailMerge_AvailableFields
 #: po/tmp/ap_String_Id.h.h:589
@@ -1345,12 +1345,12 @@ msgstr "selplika'e tarmi:"
 #. DLG_Styles_Available
 #: po/tmp/ap_String_Id.h.h:593
 msgid "Available Styles"
-msgstr "Styles disponibles"
+msgstr ""
 
 #. DLG_Para_LabelBy
 #: po/tmp/ap_String_Id.h.h:595
 msgid "B&y:"
-msgstr "Par :"
+msgstr ""
 
 #. AUTOTEXT_EMAIL_5
 #: po/tmp/ap_String_Id.h.h:597
@@ -5454,12 +5454,12 @@ msgstr ""
 #. DLG_NoSaveFile_DirNotExist
 #: po/tmp/xap_String_Id.h.h:29
 msgid "A directory in the given pathname does not exist."
-msgstr "Un répertoire du chemin d'accès n'existe pas."
+msgstr ""
 
 #. DLG_PLUGIN_MANAGER_TITLE
 #: po/tmp/xap_String_Id.h.h:31
 msgid "AbiWord Plugin Manager"
-msgstr "Gestionnaire de modules d'AbiWord"
+msgstr ""
 
 #. SPELL_CANTLOAD_DLL
 #: po/tmp/xap_String_Id.h.h:33
@@ -5472,18 +5472,18 @@ msgstr ""
 #. DLG_UP_PrintPreviewTitle
 #: po/tmp/xap_String_Id.h.h:35
 msgid "AbiWord: Print Preview"
-msgstr "AbiWord : Aperçu avant impression"
+msgstr "Abiuord: prina jvinu"
 
 #. DLG_ABOUT_Title
 #: po/tmp/xap_String_Id.h.h:37
 #, c-format
 msgid "About %s"
-msgstr "A propos de %s"
+msgstr "sera'a %s"
 
 #. DLG_PLUGIN_MANAGER_ACTIVE
 #: po/tmp/xap_String_Id.h.h:39
 msgid "Active Plugins"
-msgstr "Modules actifs :"
+msgstr "tolcando nermutmi'i"
 
 #. LANG_AF_ZA
 #: po/tmp/xap_String_Id.h.h:41
@@ -5498,17 +5498,17 @@ msgstr "le ckiptare"
 #. DLG_FOSA_ALL
 #: po/tmp/xap_String_Id.h.h:47
 msgid "All (*.*)"
-msgstr "Tous (*.*)"
+msgstr "ro (*.*)"
 
 #. DLG_FOSA_ALLDOCS
 #: po/tmp/xap_String_Id.h.h:49
 msgid "All Documents"
-msgstr "Tous les documents"
+msgstr "ro selpapri"
 
 #. DLG_FOSA_ALLIMAGES
 #: po/tmp/xap_String_Id.h.h:51
 msgid "All Image Files"
-msgstr "Tous les fichiers d'image"
+msgstr "ro pixra datnyvei"
 
 #. DLG_HTMLOPT_ExpAllowAWML
 #: po/tmp/xap_String_Id.h.h:53
@@ -5563,7 +5563,7 @@ msgstr "le xindrxasami"
 #. DLG_Options_Label_DirMarkerAfterClosingParenthesis
 #: po/tmp/xap_String_Id.h.h:77
 msgid "Auto-insert direction markers"
-msgstr ""
+msgstr "zmiku setca lo farna tcita"
 
 #. DLG_FOSA_FileTypeAutoDetect
 #: po/tmp/xap_String_Id.h.h:79
@@ -5572,15 +5572,13 @@ msgstr "zmiku facki"
 
 #. DLG_MW_AvailableDocuments
 #: po/tmp/xap_String_Id.h.h:81
-#, fuzzy
 msgid "Available Documents"
-msgstr "Tous les documents"
+msgstr ""
 
 #. DLG_ULANG_AvailableLanguages
 #: po/tmp/xap_String_Id.h.h:83
-#, fuzzy
 msgid "Available Languages"
-msgstr "Styles disponibles"
+msgstr ""
 
 #. ENC_BALT_ISO
 #: po/tmp/xap_String_Id.h.h:85
@@ -5600,7 +5598,7 @@ msgstr "le skalduna"
 #. LANG_BE_BY
 #: po/tmp/xap_String_Id.h.h:91
 msgid "Belarusian"
-msgstr "le labru'e"
+msgstr "le labru'o"
 
 #. DLG_UP_BlackWhite
 #: po/tmp/xap_String_Id.h.h:93
@@ -5660,7 +5658,7 @@ msgstr "le mijropno le 1250moi papri pe la .uindoz."
 #. DLG_Options_Label_LangWithKeyboard
 #: po/tmp/xap_String_Id.h.h:123
 msgid "Change Language when changing keyboard"
-msgstr ""
+msgstr "galfi le bangu gi'ocabo le batkyta'o"
 
 #. STYLE_CHAPHEADING
 #: po/tmp/xap_String_Id.h.h:125
@@ -5673,6 +5671,7 @@ msgid "Chinese (Hong Kong)"
 msgstr "le jungo pe la xyngon"
 
 #. LANG_ZH_CN
+# jungo ke selnatmi ka'irje'a
 #: po/tmp/xap_String_Id.h.h:129
 msgid "Chinese (PRC)"
 msgstr "le jungo pe la me JSK"
@@ -5710,7 +5709,7 @@ msgstr "le sampu jungo le 936moi papri pe la .uindoz."
 #. ENC_CHTR_BIG5
 #: po/tmp/xap_String_Id.h.h:143
 msgid "Chinese Traditional, BIG5"
-msgstr ""
+msgstr "le jungo la bramum"
 
 #. ENC_CHTR_BIG5HKSCS
 #: po/tmp/xap_String_Id.h.h:145
@@ -5720,12 +5719,12 @@ msgstr "le jungo la bramum"
 #. ENC_CHTR_EUC
 #: po/tmp/xap_String_Id.h.h:147
 msgid "Chinese Traditional, EUC-TW"
-msgstr "Chinois traditionnel, EUC-TW"
+msgstr "le jungo la me EUC-TW"
 
 #. ENC_CHTR_WIN
 #: po/tmp/xap_String_Id.h.h:149
 msgid "Chinese Traditional, Windows Code Page 950"
-msgstr "Chinois traditionnel, Page de codes Windows 950"
+msgstr ""
 
 #. DLG_CLIPART_Title
 #: po/tmp/xap_String_Id.h.h:151
@@ -5735,12 +5734,12 @@ msgstr "larcu spisa"
 #. DLG_Close
 #: po/tmp/xap_String_Id.h.h:153
 msgid "Close"
-msgstr ""
+msgstr "tolcpa"
 
 #. DLG_Exit_CloseWithoutSaving
 #: po/tmp/xap_String_Id.h.h:155
 msgid "Close &Without Saving"
-msgstr ""
+msgstr "tolcpa se&cau lenu ralte"
 
 #. DLG_UP_Collate
 #: po/tmp/xap_String_Id.h.h:157
@@ -6437,12 +6436,12 @@ msgstr "vi'o"
 #. LANG_OC_FR
 #: po/tmp/xap_String_Id.h.h:455
 msgid "Occitan"
-msgstr "le bangrxokcitanu"
+msgstr "le .okcitanu"
 
 #. DLG_FOSA_OpenTitle
 #: po/tmp/xap_String_Id.h.h:457
 msgid "Open File"
-msgstr "Ouverture"
+msgstr "cpacu le datnyvei"
 
 #. DLG_FOSA_FileOpenTypeLabel
 #: po/tmp/xap_String_Id.h.h:459
@@ -6525,7 +6524,7 @@ msgstr "prigau le datnyvei"
 #. DLG_FOSA_FilePrintTypeLabel
 #: po/tmp/xap_String_Id.h.h:496
 msgid "Print file as type:"
-msgstr "Imprimer un fichier sous le type :"
+msgstr "prinyci'a le datnyvei le'a"
 
 #. DLG_UP_PrintIn
 #: po/tmp/xap_String_Id.h.h:498
