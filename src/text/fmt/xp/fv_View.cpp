@@ -1099,7 +1099,7 @@ UT_Bool FV_View::cmdCharInsert(UT_UCSChar * text, UT_uint32 count, UT_Bool bForc
 			cmdCharDelete(UT_TRUE,count);
 		}
 		UT_uint32 d = (UT_uint32) text[0];
-		UT_ASSERT( d != 63);
+		//UT_ASSERT( d != 63);
 		bResult = m_pDoc->insertSpan(getPoint(), text, count);
 
 		if (bOverwrite)
