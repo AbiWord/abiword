@@ -123,7 +123,7 @@ void AP_Convert::convertTo(const char * szFilename, const char * szTargetSuffixO
 
   char *tmp = NULL;
 
-  if(NULL != (tmp = strrchr(szTargetSuffixOrFilename, '.')))
+  if(NULL != (tmp = strrchr(const_cast<char *>(szTargetSuffixOrFilename), '.')))
     {
       // found an extension. use that instead, else just use AbiWord native format
       if(strlen(tmp) > 1)
