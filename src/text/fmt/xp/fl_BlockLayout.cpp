@@ -4897,7 +4897,6 @@ bool fl_BlockLayout::_delete(PT_BlockOffset blockOffset, UT_uint32 len)
 				}
 				
 				fp_Line* pLine = pRun->getLine();
-				UT_ASSERT(pLine);
 				if(pLine)
 				{
 					pLine->removeRun(pRun, true);
