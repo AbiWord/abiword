@@ -1058,6 +1058,14 @@ void AP_UnixDialog_Lists::_fillNumberedStyleMenu( GtkWidget *listmenu)
 
 #ifdef BIDI_ENABLED
 	glade_menuitem = gtk_menu_item_new_with_label (
+		pSS->getValue(AP_STRING_ID_DLG_Lists_Arabic_List));
+	gtk_widget_show (glade_menuitem);
+	gtk_object_set_user_data(GTK_OBJECT(glade_menuitem),GINT_TO_POINTER(
+		(gint) ARABICNUMBERED_LIST));
+	gtk_menu_append (GTK_MENU (listmenu), glade_menuitem);
+	gtk_signal_connect (GTK_OBJECT (glade_menuitem), "activate",
+						GTK_SIGNAL_FUNC (s_typeChanged), this);
+	glade_menuitem = gtk_menu_item_new_with_label (
 		pSS->getValue(AP_STRING_ID_DLG_Lists_Hebrew_List));
 	gtk_widget_show (glade_menuitem);
 	gtk_object_set_user_data(GTK_OBJECT(glade_menuitem),GINT_TO_POINTER(
