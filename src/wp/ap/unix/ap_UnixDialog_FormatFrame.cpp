@@ -136,15 +136,6 @@ static gboolean s_preview_exposed(GtkWidget * widget, gpointer /* data */, AP_Un
 	return FALSE;
 }
 
-static gboolean s_apply_to_changed(GtkWidget *widget, gpointer data)
-{
-	AP_UnixDialog_FormatFrame * dlg = reinterpret_cast<AP_UnixDialog_FormatFrame *>(data);
-	UT_return_val_if_fail(widget && dlg, FALSE);
-	dlg->event_ApplyToChanged();
-	return FALSE;
-}
-
-
 static gboolean s_select_image(GtkWidget *widget, gpointer data)
 {
 	AP_UnixDialog_FormatFrame * dlg = reinterpret_cast<AP_UnixDialog_FormatFrame *>(data);
@@ -187,7 +178,6 @@ AP_UnixDialog_FormatFrame::AP_UnixDialog_FormatFrame(XAP_DialogFactory * pDlgFac
 	m_wLineRight = NULL;
 	m_wLineTop = NULL;
 	m_wLineBottom = NULL;
-	m_wApplyToMenu = NULL;	
 	m_wSetImageButton = NULL;
 	m_wSelectImageButton = NULL;
 	m_wNoImageButton = NULL;
@@ -561,11 +551,6 @@ void AP_UnixDialog_FormatFrame::_connectSignals(void)
 	g_signal_connect(G_OBJECT(m_wPreviewArea),
 							"expose_event",
 							G_CALLBACK(s_preview_exposed),
-							reinterpret_cast<gpointer>(this));
-
-	g_signal_connect(G_OBJECT(m_wApplyToMenu),
-							"changed",
-							G_CALLBACK(s_apply_to_changed),
 							reinterpret_cast<gpointer>(this));
 }
 

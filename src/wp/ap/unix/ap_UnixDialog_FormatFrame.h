@@ -74,7 +74,6 @@ protected:
 	GtkWidget * m_wLineBottom;
 	
 	GtkWidget * m_wPreviewArea;
-	GtkWidget * m_wApplyToMenu;
 
 	GtkWidget * m_wSetImageButton;
 	GtkWidget * m_wSelectImageButton;
