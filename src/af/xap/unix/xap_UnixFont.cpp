@@ -88,7 +88,7 @@ XAP_UnixFont::XAP_UnixFont(void)
 	m_metricsData = NULL;
 	m_uniWidths = NULL;
 	
-	m_PFAFile = NULL;
+	m_PFFile = NULL;
 	
 	m_fontKey = NULL;
 }
@@ -104,7 +104,7 @@ XAP_UnixFont::XAP_UnixFont(XAP_UnixFont & copy)
 	
 	m_metricsData = NULL;
 
-	m_PFAFile = NULL;
+	m_PFFile = NULL;
 
 	m_fontKey = NULL;
 
@@ -121,7 +121,7 @@ XAP_UnixFont::~XAP_UnixFont(void)
 	FREEP(m_fontfile);
 	FREEP(m_metricfile);
 
-	DELETEP(m_PFAFile);
+	DELETEP(m_PFFile);
 	
 	FREEP(m_fontKey);
 
@@ -589,10 +589,11 @@ ABIFontInfo * XAP_UnixFont::getMetricsData(void)
 UT_Bool XAP_UnixFont::openPFA(void)
 {
 	ASSERT_MEMBERS;
+	int peeked;
 	
-	m_PFAFile = fopen(m_fontfile, "r");
+	m_PFFile = fopen(m_fontfile, "r");
 
-	if (!m_PFAFile)
+	if (!m_PFFile)
 	{
 		char message[1024];
 		g_snprintf(message, 1024,
@@ -601,14 +602,19 @@ UT_Bool XAP_UnixFont::openPFA(void)
 		return UT_FALSE;
 	}
 
+	/* Check to see if it's a binary or ascii PF file */
+	peeked = fgetc(m_PFFile);
+	ungetc(peeked, m_PFFile);
+	m_PFB = peeked == PFB_MARKER;
+	m_bufpos = 0;
 	return UT_TRUE;
 }
 
 UT_Bool XAP_UnixFont::closePFA(void)
 {
-	if (m_PFAFile)
+	if (m_PFFile)
 	{
-		fclose(m_PFAFile);
+		fclose(m_PFFile);
 		return UT_TRUE;
 	}
 	return UT_FALSE;
@@ -616,8 +622,95 @@ UT_Bool XAP_UnixFont::closePFA(void)
 
 char XAP_UnixFont::getPFAChar(void)
 {
-	UT_ASSERT(m_PFAFile);
-	return fgetc(m_PFAFile);
+	UT_ASSERT(m_PFFile);
+	return m_PFB ? _getPFBChar() : fgetc(m_PFFile);
+}
+
+char XAP_UnixFont::_getPFBChar(void)
+{
+	char message[1024];
+	UT_Byte inbuf[BUFSIZ], hexbuf[2 * BUFSIZ], *inp, *hexp;
+	int  type, in, got, length;
+	static char *hex = "0123456789abcdef";
+
+	if (m_buffer.getLength() > m_bufpos )
+	{
+		return m_buffer.getPointer(m_bufpos++)[0];
+	}
+
+	// Read a new block into the buffer.
+	m_buffer.truncate(0);
+	in = fgetc(m_PFFile);
+	type = fgetc(m_PFFile);
+
+	if (in != PFB_MARKER
+	    || (type != PFB_ASCII && type != PFB_BINARY && type != PFB_DONE))
+	{
+		g_snprintf(message, 1024,
+				   "AbiWord encountered errors parsing the font data file\n"
+				   "[%s].\n"
+				   "These errors were not fatal, but printing may be incorrect.",
+				   m_fontfile);
+		messageBoxOK(message);
+		return EOF;
+	}
+
+	if (type == PFB_DONE)
+	{
+		/*
+		 * If there's data after this, the file is corrupt and we want
+		 * to ignore it.
+		 */
+		ungetc(PFB_DONE, m_PFFile);
+		return EOF;
+	}
+
+	length = fgetc(m_PFFile) & 0xFF;
+	length |= (fgetc(m_PFFile) & 0XFF) << 8;
+	length |= (fgetc(m_PFFile) & 0XFF) << 16;
+	length |= (fgetc(m_PFFile) & 0XFF) << 24;
+	if (feof(m_PFFile))
+	{
+		g_snprintf(message, 1024,
+				   "AbiWord encountered errors parsing the font data file\n"
+				   "[%s].\n"
+				   "These errors were not fatal, but printing may be incorrect.",
+				   m_fontfile);
+		messageBoxOK(message);
+		return EOF;
+	}
+
+	while (length > 0)
+	{
+		in = (length > BUFSIZ ? BUFSIZ : length);
+		got = fread(inbuf, 1, in, m_PFFile);
+		if (in != got)
+		{
+		g_snprintf(message, 1024,
+				   "AbiWord encountered errors parsing the font data file\n"
+				   "[%s].\n"
+				   "These errors were not fatal, but printing may be incorrect.",
+				   m_fontfile);
+			messageBoxOK(message);
+			length = got;
+		}
+		if (type == PFB_ASCII)
+			m_buffer.append(inbuf, got);
+		else // type == PFB_BINARY
+		{
+			hexp = hexbuf;
+			for (inp = inbuf; inp - inbuf < got; inp += 1)
+			{
+				  *hexp++ = hex[(*inp >> 4) & 0xf];
+				  *hexp++ = hex[*inp & 0xf];
+			}
+			m_buffer.append(hexbuf, 2 * got);
+		}
+		length -= got ;
+	}
+
+	m_bufpos = 1;
+	return m_buffer.getPointer(0)[0];
 }
 
 const char * XAP_UnixFont::getFontKey(void)

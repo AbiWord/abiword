@@ -26,6 +26,7 @@
 
 #include "ut_types.h"
 #include "ut_vector.h"
+#include "ut_bytebuf.h"
 
 #include "gr_Graphics.h"
 
@@ -101,8 +102,19 @@ protected:
 	char * 					m_fontfile;
 	char *					m_metricfile;
 
-	FILE *	 				m_PFAFile;
+	// The font file proper
+	FILE *	 				m_PFFile;
+	UT_Bool					m_PFB;
+	UT_ByteBuf				m_buffer;
+	UT_uint32				m_bufpos;
+	char					_getPFBChar(void);
 };
+
+/* Values found in PFB files */
+#define	PFB_MARKER	0x80
+#define PFB_ASCII	1
+#define PFB_BINARY	2
+#define PFB_DONE	3
 
 /*****************************************************************/
 
