@@ -153,7 +153,10 @@ static const char * _ev_GetLabelName(XAP_Win32App * pWin32App,
 		szLabelName = pLabel->getMenuLabel();
 
 	if (!szLabelName || !*szLabelName)
+	{
+		UT_DEBUGMSG(("failed to get menu label"));
 		return NULL;
+	}
 
 	const char * szShortcut = NULL;
 	int len = 0;
@@ -215,12 +218,12 @@ EV_Win32Menu::EV_Win32Menu(XAP_Win32App * pWin32App,
 	m_myMenu(NULL)
 {
 		    
-	NONCLIENTMETRICSA ncm;
-	ncm.cbSize = sizeof (NONCLIENTMETRICSA);
+	NONCLIENTMETRICS ncm;
+	ncm.cbSize = sizeof (NONCLIENTMETRICS);
 	m_bTrack = false;
 
-    SystemParametersInfoA(SPI_GETNONCLIENTMETRICS, sizeof(NONCLIENTMETRICSA), &ncm, 0);
-	m_hFont = CreateFontIndirectA(&ncm.lfMenuFont);	
+    SystemParametersInfo(SPI_GETNONCLIENTMETRICS, sizeof(NONCLIENTMETRICS), &ncm, 0);
+	m_hFont = CreateFontIndirect(&ncm.lfMenuFont);	
 
 	m_nBitmapCX = m_nBitmapCY = 24;	// Default value overwritten later
 
@@ -231,7 +234,7 @@ EV_Win32Menu::EV_Win32Menu(XAP_Win32App * pWin32App,
 	{
 		BITMAP bitmap;
 		
-		if (GetObjectA(hBitmap, sizeof(BITMAP), &bitmap))
+		if (GetObject(hBitmap, sizeof(BITMAP), &bitmap))
 		{
 			m_nBitmapCX = bitmap.bmWidth+2;
 			m_nBitmapCY = bitmap.bmHeight+2;
@@ -348,7 +351,7 @@ bool EV_Win32Menu::synthesizeMenu(XAP_Frame * pFrame, HMENU menuRoot)
 
 		case EV_MLF_Normal:
 			{
-				UT_DEBUGMSG(("menu::synthesize [name %s]\n",szLabelName));
+				//UT_DEBUGMSG(("menu::synthesize [name %s]\n",szLabelName));
 
 				HMENU m;
 				bResult = stack.viewTop((void **)&m);
@@ -369,7 +372,7 @@ bool EV_Win32Menu::synthesizeMenu(XAP_Frame * pFrame, HMENU menuRoot)
 					HMENU sub = CreateMenu();	// TODO NOTE: Leaking handle!
 					UT_ASSERT(sub);
 
-					UT_DEBUGMSG(("menu::synthesize [name %s][subMenu 0x%08lx] %u\n",szLabelName,u, stack.getDepth()));
+					//UT_DEBUGMSG(("menu::synthesize [name %s][subMenu 0x%08lx] %u\n",szLabelName,u, stack.getDepth()));
 
 					flags |= MF_POPUP;
 					stack.push(sub);
@@ -381,13 +384,13 @@ bool EV_Win32Menu::synthesizeMenu(XAP_Frame * pFrame, HMENU menuRoot)
 						item->id = id;					
 						item->pMenu= this;							
 						
-						strcpy (item->szText, szLabelName);					
+						_tcscpy (item->szText, XAP_Win32App::getWideString(szLabelName));					
 						m_vecItems.addItem(item);
 							
 						if (!m_bTrack && stack.getDepth()==2)
-							AppendMenu(m, flags,u, szLabelName);																	
+							AppendMenu(m, flags,u, item->szText);																	
 						else
-							AppendMenu(m, flags|MF_OWNERDRAW,u, (const char*) item);
+							AppendMenu(m, flags|MF_OWNERDRAW,u, (const TCHAR*) item);
 					}		
 						
 				}
@@ -398,10 +401,10 @@ bool EV_Win32Menu::synthesizeMenu(XAP_Frame * pFrame, HMENU menuRoot)
 						EV_Menu_Item*	item = new EV_Menu_Item;
 						item->id = id;
 						item->pMenu= this;						
-						strcpy (item->szText, szLabelName);																						
+						_tcscpy (item->szText, XAP_Win32App::getWideString(szLabelName));																						
 						m_vecItems.addItem(item);
 						
-						AppendMenu(m, MF_OWNERDRAW , u, (const char*) item);// TODO: Parameter four, right cast												
+						AppendMenu(m, MF_OWNERDRAW , u, (const TCHAR*) item);// TODO: Parameter four, right cast												
 					}
 				}
 
@@ -414,7 +417,7 @@ bool EV_Win32Menu::synthesizeMenu(XAP_Frame * pFrame, HMENU menuRoot)
 				HMENU m = NULL;
 				bResult = stack.pop((void **)&m);
 				UT_ASSERT(bResult);
-				UT_DEBUGMSG(("menu::synthesize [endSubMenu 0x%08lx]\n",m));
+				//UT_DEBUGMSG(("menu::synthesize [endSubMenu 0x%08lx]\n",m));
 			}
 			break;
 			
@@ -426,7 +429,7 @@ bool EV_Win32Menu::synthesizeMenu(XAP_Frame * pFrame, HMENU menuRoot)
 				UT_ASSERT(m);
 
 				AppendMenu(m, MF_SEPARATOR, 0, NULL);
-				UT_DEBUGMSG(("menu::synthesize [separator appended to submenu 0x%08lx]\n",m));
+				//UT_DEBUGMSG(("menu::synthesize [separator appended to submenu 0x%08lx]\n",m));
 			}
 			break;
 
@@ -515,7 +518,7 @@ bool EV_Win32Menu::onInitMenu(XAP_Frame * pFrame, AV_View * pView, HWND hWnd, HM
 				// get the current menu info for this item.
 				
 				MENUITEMINFO mif;
-				char bufMIF[128];
+				TCHAR bufMIF[128];
 				mif.cbSize = sizeof(mif);
 				mif.dwTypeData = bufMIF;
 				mif.cch = NrElements(bufMIF)-1;
@@ -636,7 +639,7 @@ bool EV_Win32Menu::_isAMenuBar(XAP_Menu_Id id, HMENU hMenu)
 
 			if (item && id==item->id)		
 			{
-				UT_DEBUGMSG(("EV_Win32Menu::_isAMenuBar->%s, 1\n", item->szText));
+				UT_DEBUGMSG(("EV_Win32Menu::_isAMenuBar->%S, 1\n", item->szText));
 				return true;
 			}
 		}
@@ -667,7 +670,7 @@ bool _isAMenuBar2(XAP_Menu_Id id, EV_Menu_Item* item)
 
 			if (item && id==item->id)		
 			{
-				UT_DEBUGMSG(("EV_Win32Menu::_isAMenuBar2->%s, 1\n", item->szText));
+				UT_DEBUGMSG(("EV_Win32Menu::_isAMenuBar2->%S, 1\n", item->szText));
 				return true;
 			}
 		}
@@ -690,10 +693,12 @@ void EV_Win32Menu::onMeasureItem(HWND hwnd, WPARAM wParam, LPARAM lParam)
 	EV_Menu_Item*	item = (EV_Menu_Item *) lpmis->itemData;            	
 	HFONT hfontOld = (HFONT) SelectObject(hdc, m_hFont); 
 
-	// Retrieve the width and height of the item's string 
-	GetTextExtentPoint32(hdc, item->szText, lstrlen(item->szText), &size); 
+	// Retrieve the width and height of the item's string
+	GetTextExtentPoint32(hdc, item->szText, lstrlen(item->szText), &size);
+	
+	
 
-	UT_DEBUGMSG(("EV_Win32Menu::onMeasureItem->%s\n", item->szText));
+	UT_DEBUGMSG(("EV_Win32Menu::onMeasureItem->%S\n", item->szText));
 	
 	if (lpmis->itemHeight<item->pMenu->m_nBitmapCY)
 		lpmis->itemHeight = item->pMenu->m_nBitmapCY;
@@ -738,7 +743,7 @@ LPARAM EV_Win32Menu::onMenuChar(HWND hwnd, WPARAM wParam, LPARAM lParam)
 
 		if (item)
 		{
-			strcpy (szBuff, item->szText);
+			strcpy (szBuff, XAP_Win32App::getUTF8String(item->szText));
 			strlwr(szBuff);			
 
 			char* pHotKeyPos = strchr (szBuff, '&');
@@ -772,8 +777,7 @@ void EV_Win32Menu::onDrawItem(HWND hwnd, WPARAM wParam, LPARAM lParam)
 	DWORD dwColor = GetSysColor(COLOR_MENU);
 	int x = 255, y=255;									
 	RECT rect;
-	UT_String sTextRight, sTextLeft;
-	UINT nFormat;
+	UT_UTF8String sTextRight, sTextLeft, sText;
 	HBITMAP hBitmap;	
 	UT_ASSERT(lpdis->CtlType==ODT_MENU); 						
 
@@ -797,12 +801,12 @@ void EV_Win32Menu::onDrawItem(HWND hwnd, WPARAM wParam, LPARAM lParam)
 	UT_RGBColor Color(GetRValue(dwColor),GetGValue(dwColor),GetBValue(dwColor));
 	hBitmap =  EV_Win32Menu::_loadBitmap(item->id,  x, y, Color);			
 
-	UT_DEBUGMSG(("EV_Win32Menu::onDrawItem->%s\n", item->szText));
+	UT_DEBUGMSG(("EV_Win32Menu::onDrawItem->%S\n", item->szText));
 
 	if (hBitmap)	
 	{
 		BITMAP bitmap;		
-		GetObjectA(hBitmap, sizeof(BITMAP), &bitmap);	
+		GetObject(hBitmap, sizeof(BITMAP), &bitmap);	
 	}	
 
 	/*Draw the background of the item*/
@@ -829,16 +833,17 @@ void EV_Win32Menu::onDrawItem(HWND hwnd, WPARAM wParam, LPARAM lParam)
 	/* 
 		Process tabs
 	*/	
-	char* pTabPos = strchr (item->szText, '\t');
+	sText = UT_UTF8String(XAP_Win32App::getUTF8String(item->szText));
+	char* pTabPos = strchr (sText.utf8_str(), '\t');
 
 	if (pTabPos)
 	{
 		char szTmp[255];
 		char* pTmp;
-		int nLen = strlen(item->szText);
+		int nLen = sText.length();
 		
-		strncpy (szTmp, item->szText, pTabPos-item->szText);
-		pTmp = szTmp; pTmp+=pTabPos-item->szText; *pTmp=NULL;
+		strncpy (szTmp, sText.utf8_str(), pTabPos-sText.utf8_str());
+		pTmp = szTmp; pTmp+=pTabPos-sText.utf8_str(); *pTmp=NULL;
 		sTextLeft = szTmp;
 		
 		strcpy (szTmp, pTabPos+1);
@@ -846,16 +851,16 @@ void EV_Win32Menu::onDrawItem(HWND hwnd, WPARAM wParam, LPARAM lParam)
 		sTextRight +="  ";
 	}
 	else
-		sTextLeft = item->szText;		
+		sTextLeft = sText;		
 	
 	if (lpdis->itemState & ODS_SELECTED) 
 		crBkgnd = SetBkColor(lpdis->hDC, GetSysColor(COLOR_HIGHLIGHT));
 
 	/* Draw text*/
-	DrawText(lpdis->hDC, sTextLeft.c_str(),  sTextLeft.length() , &rect, DT_LEFT | DT_VCENTER | DT_SINGLELINE);
+	DrawText(lpdis->hDC, XAP_Win32App::getWideString(sTextLeft.utf8_str()),  sTextLeft.length() , &rect, DT_LEFT | DT_VCENTER | DT_SINGLELINE);
 
 	if (sTextRight.length())
-		DrawText(lpdis->hDC, sTextRight.c_str(), sTextRight.length(), &rect, DT_RIGHT | DT_VCENTER | DT_SINGLELINE);
+		DrawText(lpdis->hDC, XAP_Win32App::getWideString(sTextRight.utf8_str()), sTextRight.length(), &rect, DT_RIGHT | DT_VCENTER | DT_SINGLELINE);
 
 	if (lpdis->itemState & ODS_SELECTED) 
 		SetBkColor(lpdis->hDC, crBkgnd); 

@@ -44,6 +44,9 @@ public:
 	bool onChar(AV_View * pView,
 				   HWND hWnd, UINT iMsg, WPARAM nVirtKey, LPARAM keyData);
 
+	bool onUniChar(AV_View * pView,
+				   HWND hWnd, UINT iMsg, WPARAM nVirtKey, LPARAM keyData);
+
 protected:
 	EV_EditBits			_getModifierState(void);	
 	void				_emitChar(AV_View * pView,
@@ -57,6 +60,7 @@ protected:
 										  UINT wFlags, HKL dwhkl);
 	HKL					m_hKeyboardLayout;
 	UT_iconv_t			m_iconv; /* Selected translation to Unicode */
+	UT_iconv_t			m_ucs2iconv; /* Selected translation from Unicode */
 	bool				m_bIsUnicodeInput;
 	bool				m_bWasAnAbiCommand;
 };

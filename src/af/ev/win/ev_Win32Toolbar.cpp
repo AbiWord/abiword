@@ -299,7 +299,8 @@ LRESULT CALLBACK EV_Win32Toolbar::_ComboWndProc( HWND hWnd, UINT uMessage, WPARA
 			{
 				HFONT hUIFont = (HFONT) GetStockObject(DEFAULT_GUI_FONT);
 				hfontSave = (HFONT) SelectObject (dis->hDC, hUIFont);
-				ExtTextOut(dis->hDC, dis->rcItem.left, dis->rcItem.top, ETO_OPAQUE | ETO_CLIPPED, 0, sz, lstrlen(sz), 0);
+				const TCHAR *wsz = XAP_Win32App::getWideString(sz);
+				ExtTextOut(dis->hDC, dis->rcItem.left, dis->rcItem.top, ETO_OPAQUE | ETO_CLIPPED, 0, wsz, lstrlen(wsz), 0);
 				SelectObject (dis->hDC, hfontSave);				
 			}
 			else
@@ -320,7 +321,7 @@ LRESULT CALLBACK EV_Win32Toolbar::_ComboWndProc( HWND hWnd, UINT uMessage, WPARA
 				logfont.lfClipPrecision = CLIP_DEFAULT_PRECIS;
 				logfont.lfQuality = DEFAULT_QUALITY;
 				logfont.lfPitchAndFamily = DEFAULT_PITCH | FF_DONTCARE;			  
-				strcpy (logfont.lfFaceName, sz);   
+				_tcscpy (logfont.lfFaceName, XAP_Win32App::getWideString(sz));   
 				hFont = CreateFontIndirect (&logfont);			
 
 				if(dis->itemState & ODS_SELECTED) /* HighLight the selected text*/
@@ -340,13 +341,14 @@ LRESULT CALLBACK EV_Win32Toolbar::_ComboWndProc( HWND hWnd, UINT uMessage, WPARA
 
 				/*Fontname in regular font*/
 				hfontSave = (HFONT) SelectObject (dis->hDC, hUIFont);
-				ExtTextOut(dis->hDC, dis->rcItem.left, dis->rcItem.top, ETO_OPAQUE | ETO_CLIPPED, 0, sz, lstrlen(sz), 0);
+				const TCHAR *wsz = XAP_Win32App::getWideString(sz);
+				ExtTextOut(dis->hDC, dis->rcItem.left, dis->rcItem.top, ETO_OPAQUE | ETO_CLIPPED, 0, wsz, lstrlen(wsz), 0);
 				
 				/*Font example after the name*/
-				const char* szSample="AbCdEfGhIj";
-				GetTextExtentPoint32(dis->hDC, sz, lstrlen(sz), &size);
+				const TCHAR* szSample=_T("AbCdEfGhIj");
+				GetTextExtentPoint32(dis->hDC, wsz, lstrlen(wsz), &size);
 				SelectObject (dis->hDC, hFont);
-				ExtTextOut(dis->hDC, dis->rcItem.left+size.cx+5, dis->rcItem.top, ETO_OPAQUE | ETO_CLIPPED, 0, szSample, lstrlen(szSample), 0);					
+				ExtTextOut(dis->hDC, dis->rcItem.left+size.cx+5, dis->rcItem.top, ETO_OPAQUE | ETO_CLIPPED, 0, szSample, lstrlen(szSample), 0); 
 				SelectObject (dis->hDC, hfontSave);									
 				DeleteObject(hFont); 
 			}
@@ -402,7 +404,7 @@ LRESULT CALLBACK EV_Win32Toolbar::_ComboWndProc( HWND hWnd, UINT uMessage, WPARA
 						static UT_UCSChar ucs_buf[COMBO_BUF_LEN];
 						char buf[COMBO_BUF_LEN];
 
-						UT_uint32 dataLength = GetWindowText(hWnd, buf, COMBO_BUF_LEN);
+						UT_uint32 dataLength = GetWindowTextA(hWnd, buf, COMBO_BUF_LEN); //!TODO Using ANSI function
 
 						UT_UCS4_strcpy_char(ucs_buf, buf);
 						UT_UCSChar * pData = (UT_UCSChar *) ucs_buf;	// HACK: should be void *
@@ -525,9 +527,9 @@ bool EV_Win32Toolbar::synthesize(void)
 
 	// NOTE: this toolbar will get placed later, by frame or rebar
 
-	m_hwnd = CreateWindowEx(0, 
+	m_hwnd = CreateWindowEx(0,  
 				TOOLBARCLASSNAME,		// window class name
-				(LPSTR) NULL,			// window caption
+				(LPTSTR) NULL,			// window caption
 				WS_CHILD | WS_VISIBLE 
 				| WS_CLIPCHILDREN | WS_CLIPSIBLINGS 
 				| TBSTYLE_TOOLTIPS | TBSTYLE_FLAT
@@ -666,8 +668,8 @@ bool EV_Win32Toolbar::synthesize(void)
 							
 							
 						HWND hwndCombo = CreateWindowEx ( 0L,   // No extended styles.
-							"COMBOBOX",						// Class name.
-							"",								// Default text.
+							_T("COMBOBOX"),						// Class name.
+							_T(""),								// Default text.
 							dwStyle,						// Styles and defaults.
 							0, 2, iWidth, 250,				// Size and position.
 							m_hwnd,							// Parent window.
@@ -696,8 +698,8 @@ bool EV_Win32Toolbar::synthesize(void)
 								int nIndex;
 								for (UT_uint32 k=0; k < items; k++)
 								{
-									char * sz = (char *)v->getNthItem(k);
-									nIndex = SendMessage(hwndCombo, CB_ADDSTRING,(WPARAM)0, (LPARAM)sz);
+									TCHAR * wsz = (TCHAR *)XAP_Win32App::getWideString((char *)v->getNthItem(k));
+									nIndex = SendMessage(hwndCombo, CB_ADDSTRING,(WPARAM)0, (LPARAM)wsz);
 									SendMessage(hwndCombo,CB_SETITEMDATA, nIndex, k);
 								}
 							}
@@ -726,7 +728,7 @@ bool EV_Win32Toolbar::synthesize(void)
 
 							ti.cbSize = sizeof(ti);
 							ti.uFlags = TTF_IDISHWND | TTF_CENTERTIP;
-							ti.lpszText = (char *) szToolTip;
+							ti.lpszText = (TCHAR *)XAP_Win32App::getWideString(szToolTip);
 							ti.hwnd = m_hwnd;		// TODO: should this be the frame?
 							ti.uId = (UINT)hwndCombo;
 							// Set up tooltips for the combo box.
@@ -798,10 +800,10 @@ bool EV_Win32Toolbar::synthesize(void)
 					
 					if (bText)
 					{
-						const char * szLabel = pLabel->getToolbarLabel();
+						const TCHAR * wszLabel = XAP_Win32App::getWideString(pLabel->getToolbarLabel());
 						// As long as translators don't cut the text short, we need to autosize just to squize anything insize 1280 :)
 						tbb.fsStyle |= TBSTYLE_AUTOSIZE;
-						tbb.iString = SendMessage(m_hwnd, TB_ADDSTRING, (WPARAM) 0, (LPARAM) (LPSTR) szLabel);
+						tbb.iString = SendMessage(m_hwnd, TB_ADDSTRING, (WPARAM) 0, (LPARAM) (LPWSTR) wszLabel);
 					}
 					
 					if (pAction->getItemType() == EV_TBIT_ColorFore || pAction->getItemType() == EV_TBIT_ColorBack)
@@ -1107,9 +1109,9 @@ bool EV_Win32Toolbar::_refreshItem(AV_View * pView, const EV_Toolbar_Action * pA
 					pLocalised = (char *) pt_PieceTable::s_getLocalisedStyleName(pLocalised);
 				}								
 												
-				int idx = SendMessage(hwndCombo, CB_SELECTSTRING, (WPARAM)-1, (LPARAM)pLocalised);
+				int idx = SendMessage(hwndCombo, CB_SELECTSTRING, (WPARAM)-1, (LPARAM)XAP_Win32App::getWideString(pLocalised));
 				if (idx==CB_ERR)
-					SetWindowText(hwndCombo, pLocalised);							
+					SetWindowText(hwndCombo, XAP_Win32App::getWideString(pLocalised));							
 	
 				DELETEP(pControl);	
 				//UT_DEBUGMSG(("refreshToolbar: ComboBox [%s] is %s and %s\n",
@@ -1164,7 +1166,7 @@ bool EV_Win32Toolbar::getToolTip(LPARAM lParam)
 	if (szToolTip && *szToolTip)
 	{
 		// here 'tis
-		strncpy(lpttt->lpszText, szToolTip, 80);
+		_tcsncpy(lpttt->lpszText, XAP_Win32App::getWideString(szToolTip), 80);
 	}
 	else
 	{
@@ -1345,7 +1347,7 @@ bool EV_Win32Toolbar::repopulateStyles(void)
 		if (pLocalised!=sz)
 			int n=1;			
 
-		nItem = SendMessage(hwndCombo, CB_ADDSTRING,(WPARAM)0, (LPARAM)pLocalised);
+		nItem = SendMessage(hwndCombo, CB_ADDSTRING,(WPARAM)0, (LPARAM)XAP_Win32App::getWideString(pLocalised));
 		SendMessage(hwndCombo, CB_SETITEMDATA,(WPARAM)nItem, (LPARAM)k);
 	}
 //

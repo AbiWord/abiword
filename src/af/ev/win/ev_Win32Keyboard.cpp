@@ -1,5 +1,5 @@
 /* AbiSource Program Utilities
- * Copyright (c) 2002 Jordi Mas i Hernàndez - jmas@softcatala.org
+ * Copyright (c) 2002 Jordi Mas i Hernï¿½ndez - jmas@softcatala.org
  * 			 (c) 1998-2000 AbiSource, Inc.	
  *
  * This program is free software; you can redistribute it and/or
@@ -70,11 +70,11 @@ ev_Win32Keyboard::ev_Win32Keyboard(EV_EditEventMapper * pEEM)
 	: EV_Keyboard(pEEM),
 	  m_hKeyboardLayout(0),
 	  m_bWasAnAbiCommand(false),
-	  m_iconv(UT_ICONV_INVALID),
+	  m_iconv(UT_ICONV_INVALID), m_ucs2iconv(UT_ICONV_INVALID),
 	  m_bIsUnicodeInput(false)
 {
 	HINSTANCE hInstUser;
-	if (hInstUser = LoadLibrary("USER32.DLL"))
+	if (hInstUser = LoadLibraryA("USER32.DLL")) // !TODO Using ANSI function
 	{
 		m_pToUnicodeEx = reinterpret_cast<int (*)(UINT,UINT,CONST PBYTE,LPWSTR,int,UINT,HKL)>
 			(GetProcAddress(hInstUser, "ToUnicodeEx"));
@@ -94,7 +94,6 @@ ev_Win32Keyboard::~ev_Win32Keyboard()
 void ev_Win32Keyboard::remapKeyboard(HKL hKeyboardLayout)
 {
 	char  szCodePage[16];
-
 	if( m_iconv != UT_ICONV_INVALID )
 	{
 		UT_iconv_close( m_iconv );
@@ -103,7 +102,7 @@ void ev_Win32Keyboard::remapKeyboard(HKL hKeyboardLayout)
 	if( hKeyboardLayout != 0 )
 	{
 		strcpy( szCodePage, "CP" );
-		if( GetLocaleInfo( LOWORD( hKeyboardLayout ), LOCALE_IDEFAULTANSICODEPAGE, &szCodePage[2], sizeof( szCodePage ) / sizeof( szCodePage[0] ) - 2 ) )
+		if( GetLocaleInfoA( LOWORD( hKeyboardLayout ), LOCALE_IDEFAULTANSICODEPAGE, &szCodePage[2], sizeof( szCodePage ) / sizeof( szCodePage[0] ) - 2 ) ) // !TODO Using ANSI function
 		{
 			// Unicode locale?
 			if( !strcmp( szCodePage, "CP0" ) )
@@ -119,6 +118,7 @@ void ev_Win32Keyboard::remapKeyboard(HKL hKeyboardLayout)
 			UT_DEBUGMSG(("New keyboard codepage: %s\n",szCodePage));
 
 			m_iconv = UT_iconv_open( "UCS-4-INTERNAL", szCodePage );
+			m_ucs2iconv = UT_iconv_open( szCodePage, "UCS-2-INTERNAL");
 		}
 
 		m_hKeyboardLayout = hKeyboardLayout;
@@ -330,6 +330,99 @@ bool ev_Win32Keyboard::onChar(AV_View * pView,
 	return true;
 
 }
+
+/*	
+
+	Processes WM_UNICHAR messages
+	
+*/
+bool ev_Win32Keyboard::onUniChar(AV_View * pView,
+								 HWND hWnd, UINT iMsg, WPARAM nVirtKey, LPARAM keyData)
+{
+	EV_EditModifierState ems = _getModifierState(); 		
+
+	/* 
+		If the key is NOT processed as an Abiword command
+		we follow their path and need to emit the char
+	*/
+	/*
+	if (m_bWasAnAbiCommand)
+	{
+		#ifdef  _WIN32KEY_DEBUG
+		UT_DEBUGMSG(("WIN32KEY_DEBUG->onChar return\n"));
+		#endif
+		return true;
+	} 
+	*/
+	// Process the key
+	//_emitChar(pView,hWnd,iMsg,nVirtKey,keyData,nVirtKey,0);
+	//UniChar version of emitChar below
+	// do the dirty work of pumping this character thru the state machine.
+	WCHAR b = nVirtKey;
+	
+
+	UT_UCSChar charData[2];
+	size_t ret;
+	if( m_ucs2iconv != UT_ICONV_INVALID )
+	{
+		// convert to 8bit string and null terminate
+		size_t len_in, len_out;
+		const char *In = (const char *)&b;
+		char *Out = (char *)&charData;
+
+		// 2 bytes for Unicode and MBCS
+		len_in = (m_bIsUnicodeInput || (nVirtKey & 0xff00)) ? 2 : 1;
+		len_out = sizeof(charData);
+
+		if ((ret = UT_iconv( m_ucs2iconv, &In, &len_in, &Out, &len_out )) == -1)
+			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		if (Out == (char *)charData)
+		{
+			// m_iconv is waiting for a combination keystroke. Flush the buffer
+		    if ((ret = UT_iconv( m_ucs2iconv, NULL, &len_in, &Out, &len_out )) == -1)
+			    UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		}
+	}
+	else
+	{
+		charData[0] = b;
+		charData[1] = 0;
+	}
+
+	EV_EditMethod * pEM;
+	EV_EditEventMapperResult result = m_pEEM->Keystroke(EV_EKP_PRESS|ems|charData[0],&pEM);
+
+	switch (result)
+	{
+	case EV_EEMR_BOGUS_START:
+		//UT_DEBUGMSG(("    Unbound StartChar: %c\n",b));
+		break;
+
+	case EV_EEMR_BOGUS_CONT:
+		//UT_DEBUGMSG(("    Unbound ContChar: %c\n",b));
+		break;
+
+	case EV_EEMR_COMPLETE:
+		UT_ASSERT(pEM);
+		invokeKeyboardMethod(pView,pEM,charData,1);
+		break;
+
+	case EV_EEMR_INCOMPLETE:
+		//MSG(keyData,(("    Non-Terminal-Char: %c\n",b)));
+		break;
+
+	default:
+		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		break;
+	}
+
+
+
+
+	return true;
+
+}
+
 
 /*****************************************************************/
 /*****************************************************************/
