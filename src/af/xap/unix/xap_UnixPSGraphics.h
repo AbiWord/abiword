@@ -188,7 +188,6 @@ protected:
 	GR_Graphics::ColorSpace	m_cs;
 	
 	XAP_UnixFontManager *	m_fm;
-
 };
 
 #endif /* XAP_UNIXPSGRAPHICS_H */

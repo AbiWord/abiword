@@ -158,7 +158,7 @@ void PS_Graphics::setFont(GR_Font* pFont)
 	// TODO Not always what we want, i.e., start of a new page.
 	// TODO I added a call directly to _startPage to call _emit_SetFont();
 	// TODO I would rather do it all here.
-	if (pNewFont == m_pCurrentFont ) 
+	if (pNewFont == m_pCurrentFont) 
 		return;
 
 	UT_ASSERT(pFont);
@@ -285,11 +285,10 @@ UT_uint32 PS_Graphics::getFontHeight()
 	
 UT_uint32 PS_Graphics::measureUnRemappedChar(const UT_UCSChar c)
 {
+  UT_return_val_if_fail(m_pCurrentFont, 0);
 #ifdef USE_XFT
- 	UT_ASSERT(m_pCurrentFont);
 	return (UT_uint32) (m_pCurrentFont->getUnixFont()->measureUnRemappedChar(c, m_pCurrentFont->getSize()) + 0.5);
 #else
- 	UT_ASSERT(m_pCurrentFont);
 //
 // If the font is in cache we're doing layout calculations so use exactly
 // the same calculations as the screen uses.
@@ -390,6 +389,7 @@ void PS_Graphics::setColor(const UT_RGBColor& clr)
 	m_currentColor.m_grn = clr.m_grn;
 	m_currentColor.m_blu = clr.m_blu;
 
+	if (m_bStartPage)
 	_emit_SetColor();
 }
 
@@ -402,7 +402,6 @@ GR_Font* PS_Graphics::getGUIFont()
 {
 	// getGUIFont is only used for drawing UI widgets, which does not apply on paper.
 	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-
 	return NULL;
 }
 
@@ -441,9 +440,6 @@ GR_Font * PS_Graphics::findFont(const char* pszFontFamily,
 	{
 		PSFont * psf = (PSFont *) m_vecFontList.getNthItem(k);
 		UT_ASSERT(psf);
-
-		UT_DEBUGMSG(("DOM: (%s, %s) | (%d %d %d %s %d %p)\n", psf->getUnixFont()->getPostscriptName().c_str(),
-			     pFont->getUnixFont()->getPostscriptName().c_str(), psf->getSize(), pFont->getSize(), iSize, pszFontSize, getResolution(), this));
 
 		// is this good enough for a match?
 		if (!strcmp(psf->getUnixFont()->getPostscriptName().c_str(),pFont->getUnixFont()->getPostscriptName().c_str()) &&		
@@ -579,6 +575,9 @@ void PS_Graphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
 							int iLength, UT_sint32 xoff, UT_sint32 yoff,
 							int * pCharWidths)
 {
+  if (!m_bStartPage)
+    return;
+
 	PSFont *pEnglishFont;
 	PSFont *pChineseFont;
 	_explodePSFonts(m_pCurrentFont, pEnglishFont,pChineseFont);
@@ -1076,6 +1075,9 @@ void PS_Graphics::_drawCharsUTF8(const UT_UCSChar* pChars, UT_uint32 iCharOffset
 
 void PS_Graphics::drawLine(UT_sint32 x1, UT_sint32 y1, UT_sint32 x2, UT_sint32 y2)
 {
+  if (!m_bStartPage)
+    return;
+
 	// TODO This is used for lines in the document, as well as underlines
 	// TODO and strikes.
 	m_bNeedStroked = true;
@@ -1106,6 +1108,9 @@ void PS_Graphics::polyLine(UT_Point * /* pts */, UT_uint32 /* nPoints */)
 
 void PS_Graphics::fillRect(const UT_RGBColor& c, UT_sint32 x, UT_sint32 y, UT_sint32 w, UT_sint32 h)
 {
+  if (!m_bStartPage)
+    return;
+
   UT_RGBColor cl = m_currentColor;
   setColor(c);
 
@@ -1298,7 +1303,8 @@ bool PS_Graphics::_startPage(const char * szPageLabel, UT_uint32 pageNumber,
 	m_ps->writeBytes(buf);
 
 	// Note, need to reset font at the beginning of each page
-	_emit_SetFont();
+	_emit_SetFont();	
+	_emit_SetColor();
 
 	return true;
 }
@@ -1624,28 +1630,27 @@ void PS_Graphics::_emit_FontMacros(void)
 
 void PS_Graphics::_emit_SetFont(void)
 {
-        _emit_SetFont(m_pCurrentFont);
+  _emit_SetFont(m_pCurrentFont);
 }
 
 void PS_Graphics::_emit_SetLineWidth(void)
 {
-	char buf[1024];
-	g_snprintf(buf, sizeof(buf), " %d setlinewidth\n", m_iLineWidth);
-	m_ps->writeBytes(buf);
+  char buf[1024];
+  g_snprintf(buf, sizeof(buf), " %d setlinewidth\n", m_iLineWidth);
+  m_ps->writeBytes(buf);
 }
 
 void PS_Graphics::_emit_SetColor(void)
 {
-	// NOTE : Depending on the colorspace the user has selected, we emit
-	// NOTE : the correct space declarations.
-
-	// We're printing 8 digits of color... do we want to
-	// be any more precise, or perhaps less?  8 was a
-	// completely arbitrary decision on my part.  :)
-
-	char buf[128];
-	// used for any averaging
-	unsigned char newclr;
+  // NOTE : Depending on the colorspace the user has selected, we emit
+  // NOTE : the correct space declarations.
+  
+  // We're printing 8 digits of color... do we want to
+  // be any more precise, or perhaps less?  8 was a
+  // completely arbitrary decision on my part.  :)
+  char buf[128];
+  // used for any averaging
+  unsigned char newclr;
 
 	char * old_locale = setlocale(LC_NUMERIC,"C");
 	switch(m_cs)
@@ -1698,6 +1703,9 @@ void PS_Graphics::_emit_SetColor(void)
 
 void PS_Graphics::drawImage(GR_Image* pImg, UT_sint32 xDest, UT_sint32 yDest)
 {
+  if (!m_bStartPage)
+    return;
+
    	if (pImg->getType() != GR_Image::GRT_Raster) {
 	   pImg->render(this, xDest, yDest);
 	   return;
@@ -1982,7 +1990,7 @@ PSFont *PS_Graphics::_findMatchPSFontCJK(PSFont * pFont)
 
 void PS_Graphics::_emit_SetFont(PSFont *pFont)
 {
-  if ( pFont && pFont->getIndex () < m_vecFontList.size())
+  if (m_bStartPage && pFont && pFont->getIndex () < m_vecFontList.size())
     {
       char buf[1024];
       g_snprintf(buf, 1024, "F%d\n", pFont->getIndex());
