@@ -43,10 +43,11 @@ public:
 	void						setDialogProc(DLGPROC pfnDlgProc){m_pfnDlgProc=pfnDlgProc;};	
 	virtual	void				_onInitDialog(){};
 	virtual	void				_onKillActive(){};
-
+	static int CALLBACK			s_pageWndProc(HWND hWnd, UINT msg, WPARAM wParam,LPARAM lParam);
+	
 private:
 
-	static int CALLBACK			s_pageWndProc(HWND hWnd, UINT msg, WPARAM wParam,LPARAM lParam);
+	
 	
 	PROPSHEETPAGE				m_page;
 	HPROPSHEETPAGE	 			m_hdle;	
