@@ -40,6 +40,9 @@ void GR_Win32CharWidths::setCharWidthsOfRange(HDC hdc, UT_UCSChar c0, UT_UCSChar
 	
 	UINT k;
 	int w;
+#ifdef DEBUG
+	DWORD iErrorCode = 0;
+#endif
 
 	// Windows NT and Windows 95 support the Unicode Font file. 
 	// All of the Unicode glyphs can be rendered if the glyph is found in
@@ -75,7 +78,7 @@ void GR_Win32CharWidths::setCharWidthsOfRange(HDC hdc, UT_UCSChar c0, UT_UCSChar
 					else
 					{
 						ABC abc;
-						int iRes = GetCharABCWidths(hdc,k,k,&abc);
+						int iRes = GetCharABCWidthsW(hdc,k,k,&abc);
 						UT_ASSERT( iRes );
 						
 
@@ -157,8 +160,21 @@ void GR_Win32CharWidths::setCharWidthsOfRange(HDC hdc, UT_UCSChar c0, UT_UCSChar
 						else
 						{
 							ABC abc;
-							int iRes = GetCharABCWidths(hdc,k,k,&abc);
-							UT_ASSERT( iRes );
+							int iRes = GetCharABCWidthsW(hdc,k,k,&abc);
+
+							// I have commented out the assert below,
+							// because when the function above is called for
+							// the first time, it seems to always
+							// return 0, even though it fills the abc
+							// structure with reasonable values,
+							// Tomas, June 22, 2003
+							// UT_ASSERT( iRes );
+#ifdef DEBUG
+							if(!iRes)
+							{
+								iErrorCode = GetLastError();
+							}
+#endif
 
 							if(iOver == UT_OVERSTRIKING_LEFT)
 							{
@@ -173,8 +189,8 @@ void GR_Win32CharWidths::setCharWidthsOfRange(HDC hdc, UT_UCSChar c0, UT_UCSChar
 						}
 					}
 				
-#if 0
-					if(!res)
+#ifdef DEBUG
+					if(iErrorCode)
 					{
 						LPVOID lpMsgBuf;
 						FormatMessage( 
@@ -182,7 +198,7 @@ void GR_Win32CharWidths::setCharWidthsOfRange(HDC hdc, UT_UCSChar c0, UT_UCSChar
 									  FORMAT_MESSAGE_FROM_SYSTEM | 
 									  FORMAT_MESSAGE_IGNORE_INSERTS,
 									  NULL,
-									  GetLastError(),
+									  iErrorCode,
 									  MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), // Default language
 									  (LPTSTR) &lpMsgBuf,
 									  0,
@@ -192,7 +208,7 @@ void GR_Win32CharWidths::setCharWidthsOfRange(HDC hdc, UT_UCSChar c0, UT_UCSChar
 						// ...
 						// Display the string.
 						//MessageBox( NULL, (LPCTSTR)lpMsgBuf, "Error", MB_OK | MB_ICONINFORMATION );
-						UT_DEBUGMSG(("GetCharWidthFloatW error: %s\n", lpMsgBuf));
+						UT_DEBUGMSG(("char width error: %s\n", lpMsgBuf));
 						// Free the buffer.
 						LocalFree( lpMsgBuf );
 					}

@@ -1302,27 +1302,46 @@ GR_Win32Font::~GR_Win32Font()
 
 UT_sint32 GR_Win32Font::measureUnremappedCharForCache(UT_UCSChar cChar) const
 {
-	GR_Win32Font tempFont(m_hFont, m_pG);
-	return GR_Win32Font::Acq::measureUnRemappedChar(tempFont, cChar);
+	// first of all, handle 0-width spaces ...
+	if(cChar == 0xFEFF || cChar == 0x200b || cChar == UCS_LIGATURE_PLACEHOLDER)
+		return 0;
+
+	// this function is only called when there is no value in the
+	// cache; we will set not only the value for the character
+	// required, but also for everything on the same char-width page
+    UT_return_val_if_fail(_getCharWidths(),0);
+
+	// calculate the limits of the 256-char page
+	UT_UCS4Char base = (cChar & 0xffffff00);
+	UT_UCS4Char limit = (cChar | 0x000000ff);
+	
+	_getCharWidths()->setCharWidthsOfRange(m_oldHDC, base, limit, m_pG);
+	return _getCharWidths()->getWidth(cChar);
+}
+
+/*!
+	Implements a GR_CharWidths.
+	Override if you which to instanciate a subclass.
+ */
+GR_CharWidths* GR_Win32Font::newFontWidths(void) const
+{
+	return new GR_Win32CharWidths();
 }
 
 void GR_Win32Font::setupFontInfo()
 {
-	m_cw.zeroWidths();
-
-	// preload US-ASCII subset of Latin-1 as these
-	// are rather frequently used.  we can demand
-	// load the other half of latin-1 as well as
-	// the rest of unicode.
-	//m_cw.setCharWidthsOfRange(hdc,0,255);
-
-	m_cw.setCharWidthsOfRange(m_oldHDC, 0x20, 0x7f, m_pG);
-
+	// when we are called, the char widths might not exist yet; we
+	// will force initialisation by a bogus call to
+	// getCharWidthFromCache(); by measuring the space, we will
+	// preload the entire Latin1 page
+	getCharWidthFromCache(' ');
+	
 	GetTextMetrics(m_oldHDC, &m_tm);
-
 	UINT d = m_tm.tmDefaultChar;
-	m_cw.setCharWidthsOfRange(m_oldHDC, d, d, m_pG);
-	m_defaultCharWidth = m_cw.getWidth(d);
+
+	UT_return_if_fail(_getCharWidths());
+	_getCharWidths()->setCharWidthsOfRange(m_oldHDC, d, d, m_pG);
+	m_defaultCharWidth = getCharWidthFromCache(d);
 }
 
 
@@ -1332,82 +1351,8 @@ UT_uint32 GR_Win32Font::Acq::measureUnRemappedChar(GR_Win32Font& font, UT_UCSCha
 	if(c == 0xFEFF || c == 0x200b || c == UCS_LIGATURE_PLACEHOLDER)
 		return 0;
 	
-	int iWidth;
-	// try to get cached value for the width of this char.
-	// if that fails, force fill the cache for this char
-	// and then re-hit the cache.
-	// if that fails, the char is probably not defined in
-	// the font, so we substitute the default char width.
-	iWidth = font.m_cw.getWidth(c);
-	if (iWidth == GR_CW_UNKNOWN)
-	{
-		if(font.m_oldHDC)
-			font.m_cw.setCharWidthsOfRange(font.m_oldHDC, c, c, font.m_pG);
-		else
-		{
-			// got a problem: the font does not have hdc; this happens
-			// when we need to measure character outside of the
-			// constructor; see notes on design problems in the
-			// constructor code
-			HDC hDC = GetDC(0);
-			font.m_cw.setCharWidthsOfRange(hDC, c, c, font.m_pG);
-			ReleaseDC(0, hDC);
-		}
-		
-		iWidth = font.m_cw.getWidth(c);
-
-		// Let's leave the UNKNOWN value in, so we can test for glyph
-		// availability. Tomas, June 21, 2003
-		// 
-		// [[Why the default width?  I think zero is better in that case?]]
-		// because the win32 font rendering engine will remap the
-		// glyph to the default glyph, so we need to be advancing by
-		// the default glyph's width
-		if (iWidth == GR_CW_UNKNOWN) 
-			//iWidth = font.m_defaultCharWidth;
-			iWidth = GR_CW_ABSENT;
-	}
-
-	#ifdef GR_GRAPHICS_DEBUG
-	UT_DEBUGMSG(("GR_Win32Font::Acq::measureUnRemappedChar %c, witdh: %u\n",  c, iWidth));	
-	#endif													 
-
-	return iWidth;
+	return font.getCharWidthFromCache(c);
 }
-
-#if 0
-UT_uint32 GR_Win32Font::Acq::measureString(GR_Win32Font& font, const UT_UCSChar* s, int iOffset, int num, unsigned short* pWidths)
-{
-	UT_ASSERT(s);
-	if (!s)
-		return 0;
-
-	int iCharWidth = 0;
-	int iWidth;
-	for (int i=0; i<num; i++)
-	{
-		// try to get cached value for the width of this char.
-		// if that fails, force fill the cache for this char
-		// and then re-hit the cache.
-		// if that fails, the char is probably not defined in
-		// the font, so we substitute the default char width.
-		UT_UCSChar currentChar;
-		currentChar = remapGlyph(s[i + iOffset]);
-		iWidth = font.m_cw.getWidth(currentChar);
-		if (!iWidth)
-		{
-			font.m_cw.setCharWidthsOfRange(font.m_oldHDC,currentChar,currentChar, m_pG);
-			iWidth = font.m_cw.getWidth(currentChar);
-		}
-
-		iCharWidth += iWidth;
-		if (pWidths)
-			pWidths[i] = iWidth;
-	}
-
-	return iCharWidth;
-}
-#endif
 
 void GR_Win32Font::Acq::selectFontIntoDC(GR_Win32Font& font, HDC hdc)
 {

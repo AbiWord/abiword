@@ -46,18 +46,9 @@ public:
 
 		static inline HFONT		getHFONT(GR_Win32Font& font)
 			{ return font.m_hFont; };
-#if 0
-		static UT_uint32	measureString(	GR_Win32Font& font,
-											const UT_UCSChar* s,
-											int iOffset,
-											int num,
-											unsigned short* pWidths);
-#endif
+
 		static UT_uint32	measureUnRemappedChar(	GR_Win32Font& font,
 													UT_UCSChar c);
-		static const GR_Win32CharWidths&
-		getCharWidths(const GR_Win32Font& font)
-			{ return font.m_cw; };
 		static UT_uint32	getAscent(const GR_Win32Font& font)
 			{ return font.m_tm.tmAscent; };
 		static UT_uint32	getDescent(const GR_Win32Font& font)
@@ -70,6 +61,15 @@ public:
 	friend class Acq;
 
 	virtual UT_sint32 measureUnremappedCharForCache(UT_UCSChar cChar) const;
+	virtual GR_CharWidths* newFontWidths(void) const;
+
+protected:
+	GR_Win32CharWidths * _getCharWidths() const
+	{
+		return reinterpret_cast<GR_Win32CharWidths *>(GR_Font::_getCharWidths());
+	};
+	
+	
 	
 private:
 	void					setupFontInfo();
@@ -77,7 +77,6 @@ private:
 	HFONT					m_hFont;
 	UT_uint32				m_defaultCharWidth;
 	TEXTMETRIC				m_tm;
-	GR_Win32CharWidths		m_cw;
 	GR_Graphics            *m_pG;
 };
 
