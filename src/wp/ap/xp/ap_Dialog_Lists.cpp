@@ -290,7 +290,7 @@ void AP_Dialog_Lists::Apply(void)
 			clearDirty();
 			return;
 		}
-		else if ( m_isListAtPoint != true )
+		else if ( m_isListAtPoint != true && m_newListType != NOT_A_LIST )
 		{
 		        getBlock()->getDocument()->disableListUpdates();
 			getBlock()->StartList(m_newListType,m_iStartValue,m_pszDelim,m_pszDecimal,m_pszFont,m_fAlign,m_fIndent, 0,1); 
@@ -299,7 +299,7 @@ void AP_Dialog_Lists::Apply(void)
 			clearDirty();
 			return;
 		}
-		else
+		else if( m_newListType != NOT_A_LIST )
 		{
 			UT_uint32 curlevel = getBlock()->getLevel();
 			UT_uint32 currID = getBlock()->getAutoNum()->getID();
