@@ -113,7 +113,7 @@ void s_RTF_ListenerWriteDoc::_closeBlock(PT_AttrPropIndex  nextApi)
 
 	m_bBlankLine = false;
 	
-
+	xxx_UT_DEBUGMSG(("Doing write par now \n"));
 	m_pie->_rtf_keyword("par");
 	_closeSpan();
 
@@ -4026,15 +4026,19 @@ bool s_RTF_ListenerWriteDoc::populateStrux(PL_StruxDocHandle sdh,
 		}
 	case PTX_Block:
 		{
+			xxx_UT_DEBUGMSG(("_rtf_listenerWriteDoc: Populate block \n"));
 			_closeSpan();
+			if(!m_bBlankLine)
+			{
+				m_bInBlock = true;
+			}
 			_closeBlock(pcr->getIndexAP());
 			_setListBlock(false);
 			_setTabEaten(false);
 			m_sdh = sdh;
 			_rtf_open_block(pcr->getIndexAP());
-			m_bInBlock = true;
 			m_bBlankLine = true;	
-			xxx_UT_DEBUGMSG(("_rtf_listenerWriteDoc: openned block \n"));
+			m_bInBlock = true;
 		return true;
 		}
 
