@@ -322,7 +322,9 @@ UT_Error AP_Win32Frame::_showDocument(UT_uint32 iZoom)
 			props[2] = 0;
 			((FV_View *)m_pView)->setCharFormat(props);
 		}
+		
 		((FV_View *)m_pView)->notifyListeners(AV_CHG_ALL);
+		((FV_View *)m_pView)->focusChange(AV_FOCUS_HERE);
 	}	
 
 	{
