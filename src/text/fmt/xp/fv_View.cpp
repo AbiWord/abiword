@@ -5061,10 +5061,6 @@ void FV_View::_findPositionCoords(PT_DocPosition pos,
 	UT_sint32 yPoint2;
 	UT_sint32 iPointHeight;
 
-	PT_DocPosition posEOD;
-	bool bRes;
-
-
 	// Get the previous block in the document. _findBlockAtPosition
 	// will iterate forwards until it actually find a block if there
 	// isn't one previous to pos.

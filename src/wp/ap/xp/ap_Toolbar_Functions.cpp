@@ -199,9 +199,11 @@ Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_CharFmt)
 	bool bMultiple = false;
 	bool bSize = false;
 	bool bString = false;
-	
+
+#ifdef BIDI_ENABLED	
 	XAP_Prefs	*pPrefs;
 	bool 	bPref;
+#endif
 
 	EV_Toolbar_ItemState s = EV_TIS_ZERO;
 
