@@ -513,6 +513,9 @@ int AP_BeOSApp::local_main(const char * szAppName, int argc, char ** argv) {
 	pMyBeOSApp->ParseCommandLine();
 
 #if CONVERT
+	int nFirstArg = 1;
+	int k;
+
 	for (k=nFirstArg; (k<Args.m_argc); k++) {
 		if (*Args.m_argv[k] == '-') {
 			if (UT_stricmp(Args.m_argv[k],"-to") == 0) {
