@@ -85,9 +85,9 @@ static lang_entry s_Table[] =
 	{"hr",			NULL, XAP_STRING_ID_LANG_HR,    UTLANG_LTR},		// Hipi: Why not hr-HR?
 	{"hu-HU",		NULL, XAP_STRING_ID_LANG_HU_HU, UTLANG_LTR},
 	{"hy-AM",		NULL, XAP_STRING_ID_LANG_HY_AM, UTLANG_LTR},	// Win2K shows "hy-am"
-	{"is-IS",		NULL, XAP_STRING_ID_LANG_IS_IS, UTLANG_LTR},
 	{"ia",			NULL, XAP_STRING_ID_LANG_IA,    UTLANG_LTR},
 	{"id-ID",		NULL, XAP_STRING_ID_LANG_ID_ID, UTLANG_LTR},
+	{"is-IS",		NULL, XAP_STRING_ID_LANG_IS_IS, UTLANG_LTR},
 	{"it-IT",		NULL, XAP_STRING_ID_LANG_IT_IT, UTLANG_LTR},
 	{"ja-JP",		NULL, XAP_STRING_ID_LANG_JA_JP, UTLANG_VERTICAL},	// TODO also UTLANG_LTR
 	{"ka-GE",		NULL, XAP_STRING_ID_LANG_KA_GE, UTLANG_LTR},
@@ -141,13 +141,18 @@ static int s_compareQ(const void * a, const void *b)
 {
 	const lang_entry * A = static_cast<const lang_entry *>(a);
 	const lang_entry * B = static_cast<const lang_entry *>(b);
-	
+#if 0
+	// PLEASE SEE WHAT THE CODE DOES BEFORE DOING MINDLESS CHANGES !!!
 	if (B->m_nID == XAP_STRING_ID_LANG_0)
 		return 1;
 	else if (A->m_nID == XAP_STRING_ID_LANG_0)
 		return -1;
 
 	return UT_strcoll(A->m_szLangName, B->m_szLangName);
+#else
+
+	return UT_strcmp(A->m_szLangCode, B->m_szLangCode);
+#endif
 }
 
 /*!
@@ -165,6 +170,8 @@ static int s_compareB(const void * l, const void *e)
 	const XML_Char * L   = static_cast<const XML_Char *>(l);
 	const lang_entry * E = static_cast<const lang_entry *>(e);
 
+#if 0
+	// PLEASE SEE WHAT THE CODE DOES BEFORE DOING MINDLESS CHANGES !!!
 	if (E->m_nID == XAP_STRING_ID_LANG_0)
 		return 1;
 	else if (L == s_Table[0].m_szLangName)
@@ -173,6 +180,9 @@ static int s_compareB(const void * l, const void *e)
 		return -1;
 
 	return UT_strcoll(L, E->m_szLangName);
+#else
+	return UT_strcmp(L, E->m_szLangCode);
+#endif
 }
 
 
