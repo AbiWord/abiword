@@ -17,6 +17,7 @@
  * 02111-1307, USA.
  */
 #include <stdio.h>
+#include <string.h>
 #include "ut_types.h"
 #include "ut_assert.h"
 #include "xap_UnixToolbar_Icons.h"
