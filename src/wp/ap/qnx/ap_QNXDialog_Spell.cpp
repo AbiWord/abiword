@@ -216,7 +216,7 @@ PtWidget_t * AP_QNXDialog_Spell::_constructWindow(void)
    XML_Char * unixstr = NULL;      // used for conversions
 
 	n = 0;
-PtSetArg(&args[n++], Pt_ARG_WINDOW_TITLE, pSS->getValueUTF8(AP_STRING_ID_DLG_Spell_SpellTitle).c_str(), 0);
+PtSetArg(&args[n++], Pt_ARG_WINDOW_TITLE, _(AP,DLG_Spell_SpellTitle), 0);
     PtSetArg(&args[n++], Pt_ARG_WINDOW_RENDER_FLAGS, 0, ABI_MODAL_WINDOW_RENDER_FLAGS);
     PtSetArg(&args[n++], Pt_ARG_WINDOW_MANAGED_FLAGS, 0, ABI_MODAL_WINDOW_MANAGE_FLAGS);
 	windowSpell = PtCreateWidget(PtWindow, NULL, n, args);
@@ -335,7 +335,7 @@ PtSetArg(&args[n++], Pt_ARG_WINDOW_TITLE, pSS->getValueUTF8(AP_STRING_ID_DLG_Spe
 	PtAddCallback(buttonChangeAll, Pt_CB_ACTIVATE, s_change_all_clicked, this);
    
 	n = 0;
-PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, pSS->getValueUTF8(XAP_STRING_ID_DLG_Cancel).c_str(), 0);
+PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, _(XAP,DLG_Cancel), 0);
 	PtSetArg(&args[n++], Pt_ARG_WIDTH, ABI_DEFAULT_BUTTON_WIDTH, 0);
    buttonCancel = PtCreateWidget(PtButton, vboxChangeButtons, n, args);
 	PtAddCallback(buttonCancel, Pt_CB_ACTIVATE, s_cancel_clicked, this);

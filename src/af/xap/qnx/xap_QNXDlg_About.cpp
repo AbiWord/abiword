@@ -285,7 +285,7 @@ PtWidget_t * XAP_QNXDialog_About::_constructWindow(void)
 	PtAddCallback(buttonURL, Pt_CB_ACTIVATE, s_url_clicked, this);
 
 	n = 0;
-PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, pSS->getValueUTF8(XAP_STRING_ID_DLG_OK).c_str(), 0);
+PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, _(XAP,DLG_OK), 0);
 	PtSetArg(&args[n++], Pt_ARG_WIDTH, ABI_DEFAULT_BUTTON_WIDTH, 0);
 	buttonOK = PtCreateWidget(PtButton, hbox2, n, args);
 	PtAddCallback(buttonOK, Pt_CB_ACTIVATE, s_ok_clicked, this);

@@ -136,8 +136,7 @@ PtWidget_t * AP_QNXDialog_Background::_constructWindow (void)
 	int n;
   
 	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_WINDOW_TITLE, 
-	UT_XML_transNoAmpersands(pSS->getValueUTF8(AP_STRING_ID_DLG_Background_Title ).c_str()), 0);
+	PtSetArg(&args[n++], Pt_ARG_WINDOW_TITLE,_(AP,DLG_Background_Title ), 0);
     PtSetArg(&args[n++], Pt_ARG_WINDOW_RENDER_FLAGS, 0, ABI_MODAL_WINDOW_RENDER_FLAGS);
     PtSetArg(&args[n++], Pt_ARG_WINDOW_MANAGED_FLAGS, 0, ABI_MODAL_WINDOW_MANAGE_FLAGS);
 	window = PtCreateWidget(PtWindow, NULL, n, args);
@@ -174,13 +173,13 @@ PtWidget_t * AP_QNXDialog_Background::_constructWindow (void)
 	hgroup = PtCreateWidget(PtGroup, vboxMain, n, args);
 
 	n = 0;
-PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, pSS->getValueUTF8(XAP_STRING_ID_DLG_Cancel).c_str(), 0);
+PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, _(XAP,DLG_Cancel), 0);
 	PtSetArg(&args[n++], Pt_ARG_WIDTH, ABI_DEFAULT_BUTTON_WIDTH, 0);
 	PtWidget_t *buttonCancel = PtCreateWidget(PtButton, hgroup, n, args);
 	PtAddCallback(buttonCancel, Pt_CB_ACTIVATE, s_cancel_clicked, this);
 
 	n = 0;
-PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, pSS->getValueUTF8(XAP_STRING_ID_DLG_OK).c_str(), 0);
+PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, _(XAP,DLG_OK), 0);
 	PtSetArg(&args[n++], Pt_ARG_WIDTH, ABI_DEFAULT_BUTTON_WIDTH, 0);
 	PtWidget_t *buttonOK = PtCreateWidget(PtButton, hgroup, n, args);
 	PtAddCallback(buttonOK, Pt_CB_ACTIVATE, s_ok_clicked, this);

@@ -617,10 +617,8 @@ void XAP_QNXFrame::_createTopLevelWindow(void)
 	PtSetArg(&args[n++], Pt_ARG_USER_DATA, &data, sizeof(this));
 	PtSetArg(&args[n++], Pt_ARG_WINDOW_MANAGED_FLAGS, 0, Ph_WM_CLOSE);
 	PtSetArg(&args[n++], Pt_ARG_WINDOW_NOTIFY_FLAGS, Ph_WM_CLOSE, Ph_WM_CLOSE);
-	/*
-	PtSetArg(&args[n++], Pt_ARG_WINDOW_STATE, 0, Ph_WM_STATE_ISFRONT);
-	*/
-	//m_wTopLevelWindow = PtAppInit(NULL, NULL, NULL, 2, args);
+	PtSetArg(&args[n++], Pt_ARG_FLAGS,Pt_TRUE,Pt_CALLBACKS_ACTIVE);
+
 	PtSetParentWidget(NULL);
 	m_wTopLevelWindow = PtCreateWidget(PtWindow, NULL /* Use last widget? */, n, args);
 	if (!m_wTopLevelWindow) {
@@ -639,6 +637,7 @@ void XAP_QNXFrame::_createTopLevelWindow(void)
     PtSetArg(&args[n++], Pt_ARG_ANCHOR_FLAGS, _A_TBGRP, _A_TBGRP);
     PtSetArg(&args[n++], Pt_ARG_RESIZE_FLAGS, 0, Pt_RESIZE_X_BITS);
     PtSetArg(&args[n++], Pt_ARG_WIDTH, area.size.w, 0); 
+		PtSetArg(&args[n++], Pt_ARG_TG_FLAGS,Pt_TRUE,Pt_TG_COLLAPSIBLE);
 	m_wTBGroup = PtCreateWidget(PtToolbarGroup, m_wTopLevelWindow, n, args);
 
 	/*** Create the menu bars ***/

@@ -191,7 +191,7 @@ PtWidget_t * AP_QNXDialog_Goto::_constructWindow (void)
 	PtWidget_t *vlistgroup = PtCreateWidget(PtGroup, htextgroup, n, args);
 
 	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, _TR(pSS->getValueUTF8(AP_STRING_ID_DLG_Goto_Label_What ).c_str()), 0);
+	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, (_(AP,DLG_Goto_Label_What )), 0);
 	PtCreateWidget(PtLabel, vlistgroup, n, args);
 
 	n = 0;
@@ -212,7 +212,7 @@ PtWidget_t * AP_QNXDialog_Goto::_constructWindow (void)
 	PtWidget_t *vlabelgroup = PtCreateWidget(PtGroup, htextgroup, n, args);
 
 	n = 0;
-PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, _TR(pSS->getValueUTF8(AP_STRING_ID_DLG_Goto_Label_Number ).c_str()), 0);
+PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, (_(AP,DLG_Goto_Label_Number )), 0);
 	PtCreateWidget(PtLabel, vlabelgroup, n, args);
 
 	n = 0;
@@ -222,7 +222,7 @@ PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, _TR(pSS->getValueUTF8(AP_STRING_ID_DLG_
 	n = 0;
 	PtSetArg(&args[n++], Pt_ARG_MULTITEXT_ROWS, 10, 0);
 	PtSetArg(&args[n++], Pt_ARG_FLAGS, 0, Pt_SET | Pt_HIGHLIGHTED);
-	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, pSS->getValue (AP_STRING_ID_DLG_Goto_Label_Help), 0);
+	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, _ (AP,DLG_Goto_Label_Help), 0);
 	PtCreateWidget(PtMultiText, vlabelgroup, n, args);
 
 	// Horizontal grouping of buttons
@@ -231,25 +231,25 @@ PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, _TR(pSS->getValueUTF8(AP_STRING_ID_DLG_
 
 	n = 0;
 	PtSetArg(&args[n++], Pt_ARG_WIDTH,  ABI_DEFAULT_BUTTON_WIDTH, 0);
-	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, pSS->getValue (AP_STRING_ID_DLG_Goto_Btn_Prev), NULL);
+	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, _ (AP,DLG_Goto_Btn_Prev), NULL);
 	m_wPrev = PtCreateWidget(PtButton, hbuttongroup, n, args);
 	PtAddCallback(m_wPrev, Pt_CB_ACTIVATE, s_prevClicked, this);
 
 	n = 0;
 	PtSetArg(&args[n++], Pt_ARG_WIDTH,  ABI_DEFAULT_BUTTON_WIDTH, 0);
-	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, pSS->getValue (AP_STRING_ID_DLG_Goto_Btn_Next), NULL);
+	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, _ (AP,DLG_Goto_Btn_Next), NULL);
 	m_wNext = PtCreateWidget(PtButton, hbuttongroup, n, args);
 	PtAddCallback(m_wNext, Pt_CB_ACTIVATE, s_nextClicked, this);
 
 	n = 0;
 	PtSetArg(&args[n++], Pt_ARG_WIDTH,  ABI_DEFAULT_BUTTON_WIDTH, 0);
-	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, pSS->getValue (AP_STRING_ID_DLG_Goto_Btn_Goto), NULL);
+	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, _ (AP,DLG_Goto_Btn_Goto), NULL);
 	m_wGoto = PtCreateWidget(PtButton, hbuttongroup, n, args);
 	PtAddCallback(m_wGoto, Pt_CB_ACTIVATE, s_gotoClicked, this);
 
 	n = 0;
 	PtSetArg(&args[n++], Pt_ARG_WIDTH,  ABI_DEFAULT_BUTTON_WIDTH, 0);
-	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, pSS->getValue (XAP_STRING_ID_DLG_Close), NULL);
+	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, _ (XAP,DLG_Close), NULL);
 	m_wClose = PtCreateWidget(PtButton, hbuttongroup, n, args);
 	PtAddCallback(m_wClose, Pt_CB_ACTIVATE, s_closeClicked, this);
 

@@ -184,22 +184,22 @@ const XAP_StringSet * pSS = m_pApp->getStringSet();
 	PtSetArg(&args[n++],Pt_ARG_GROUP_ROWS_COLS,5,0);
 	PtSetArg(&args[n++],Pt_ARG_GROUP_ORIENTATION,Pt_GROUP_VERTICAL,0);
 	maingroup=PtCreateWidget(PtGroup,mainwindow,n,args);
-	pretty_group(maingroup,pSS->getValueUTF8(AP_STRING_ID_DLG_MergeCells_Frame ).c_str());
+	pretty_group(maingroup,_(AP,DLG_MergeCells_Frame ));
 
 	n=0;
-PtSetArg(&args[n++],Pt_ARG_TEXT_STRING,pSS->getValueUTF8(AP_STRING_ID_DLG_MergeCells_Left).c_str(),0);
+PtSetArg(&args[n++],Pt_ARG_TEXT_STRING,_(AP,DLG_MergeCells_Left),0);
 	PtCreateWidget(PtLabel,maingroup,n,args);
 
 	n=0;
-PtSetArg(&args[n++],Pt_ARG_TEXT_STRING,pSS->getValueUTF8(AP_STRING_ID_DLG_MergeCells_Right).c_str(),0);
+PtSetArg(&args[n++],Pt_ARG_TEXT_STRING,_(AP,DLG_MergeCells_Right),0);
 	PtCreateWidget(PtLabel,maingroup,n,args);
 
 	n=0;
-PtSetArg(&args[n++],Pt_ARG_TEXT_STRING,pSS->getValueUTF8(AP_STRING_ID_DLG_MergeCells_Above).c_str(),0);
+PtSetArg(&args[n++],Pt_ARG_TEXT_STRING,_(AP,DLG_MergeCells_Above),0);
 	PtCreateWidget(PtLabel,maingroup,n,args);
 
 	n=0;
-PtSetArg(&args[n++],Pt_ARG_TEXT_STRING,pSS->getValueUTF8(AP_STRING_ID_DLG_MergeCells_Below).c_str(),0);
+PtSetArg(&args[n++],Pt_ARG_TEXT_STRING,_(AP,DLG_MergeCells_Below),0);
 	PtCreateWidget(PtLabel,maingroup,n,args);
 
 	n=0;

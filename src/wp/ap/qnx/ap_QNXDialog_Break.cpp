@@ -189,7 +189,7 @@ PtWidget_t * AP_QNXDialog_Break::_constructWindow(void)
 	memset(&zero, 0, sizeof(zero));
 
 	n = bmi = 0;
-	PtSetArg(&args[n++], Pt_ARG_WINDOW_TITLE,UT_XML_transNoAmpersands((pSS->getValueUTF8(AP_STRING_ID_DLG_Break_BreakTitle).c_str())), 0);
+	PtSetArg(&args[n++], Pt_ARG_WINDOW_TITLE,(_(AP,DLG_Break_BreakTitle)), 0);
     PtSetArg(&args[n++], Pt_ARG_WINDOW_RENDER_FLAGS, 0, ABI_MODAL_WINDOW_RENDER_FLAGS);
     PtSetArg(&args[n++], Pt_ARG_WINDOW_MANAGED_FLAGS, 0, ABI_MODAL_WINDOW_MANAGE_FLAGS);
     PtSetArg(&args[n++], Pt_ARG_WIDTH, 200, 0);
@@ -213,10 +213,10 @@ PtWidget_t * AP_QNXDialog_Break::_constructWindow(void)
 	PtSetArg(&args[n++], Pt_ARG_GROUP_ROWS_COLS, 2, 0);
 	PtSetArg(&args[n++], Pt_ARG_GROUP_FLAGS, Pt_GROUP_EQUAL_SIZE_HORIZONTAL, Pt_GROUP_EQUAL_SIZE_HORIZONTAL);
 	hgroup = PtCreateWidget(PtGroup, vgroup, n, args);	
-	pretty_group(hgroup, UT_XML_transNoAmpersands(pSS->getValueUTF8(AP_STRING_ID_DLG_Break_Insert).c_str()));
+	pretty_group(hgroup, _(AP,DLG_Break_Insert));
 
 	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, UT_XML_transNoAmpersands(pSS->getValueUTF8(AP_STRING_ID_DLG_Break_PageBreak ).c_str()), 0);
+	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, _(AP,DLG_Break_PageBreak), 0);
 	PtSetArg(&args[n++], Pt_ARG_INDICATOR_TYPE, Pt_ONE_OF_MANY, 0);
 	PtSetArg(&args[n++], Pt_ARG_FLAGS, Pt_SET, Pt_SET);
 	bm[bmi].widget =
@@ -226,7 +226,7 @@ PtWidget_t * AP_QNXDialog_Break::_constructWindow(void)
 
 	n = 0;
 	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, 
-	UT_XML_transNoAmpersands(pSS->getValueUTF8(AP_STRING_ID_DLG_Break_ColumnBreak ).c_str()), 0);
+	_(AP,DLG_Break_ColumnBreak ), 0);
 	PtSetArg(&args[n++], Pt_ARG_INDICATOR_TYPE, Pt_ONE_OF_MANY, 0);
 	bm[bmi].widget = 
 	radiobuttonColumnBreak = PtCreateWidget(PtToggleButton, hgroup, n, args);
@@ -243,7 +243,7 @@ PtWidget_t * AP_QNXDialog_Break::_constructWindow(void)
 	pretty_group(hgroup, UT_XML_transNoAmpersands(pSS->getValueUTF8(AP_STRING_ID_DLG_Break_SectionBreaks).c_str());
 #else
 	n = 0;
-PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, UT_XML_transNoAmpersands(pSS->getValueUTF8(AP_STRING_ID_DLG_Break_SectionBreaks ).c_str()), 0);
+PtSetArg(&args[n++], Pt_ARG_TEXT_STRING,_(AP,DLG_Break_SectionBreaks ), 0);
 	PtCreateWidget(PtLabel, hgroup, n, args);
 	n = 0;
 	PtCreateWidget(PtLabel, hgroup, n, args);
@@ -251,7 +251,7 @@ PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, UT_XML_transNoAmpersands(pSS->getValueU
 
 	n = 0;
 	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, 
-	UT_XML_transNoAmpersands(pSS->getValueUTF8(AP_STRING_ID_DLG_Break_NextPage ).c_str()), 0);
+	_(AP,DLG_Break_NextPage ), 0);
 	PtSetArg(&args[n++], Pt_ARG_INDICATOR_TYPE, Pt_ONE_OF_MANY, 0);
 	bm[bmi].widget = 
 	radiobuttonNextPage = PtCreateWidget(PtToggleButton, hgroup, n, args);
@@ -260,7 +260,7 @@ PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, UT_XML_transNoAmpersands(pSS->getValueU
 
 	n = 0;
 	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, 
-	UT_XML_transNoAmpersands(pSS->getValueUTF8(AP_STRING_ID_DLG_Break_EvenPage ).c_str()), 0);
+	_(AP,DLG_Break_EvenPage ), 0);
 	PtSetArg(&args[n++], Pt_ARG_INDICATOR_TYPE, Pt_ONE_OF_MANY, 0);
 	bm[bmi].widget = 
 	radiobuttonEvenPage = PtCreateWidget(PtToggleButton, hgroup, n, args);
@@ -269,7 +269,7 @@ PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, UT_XML_transNoAmpersands(pSS->getValueU
 
 	n = 0;
 	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, 
-	UT_XML_transNoAmpersands(pSS->getValueUTF8(AP_STRING_ID_DLG_Break_Continuous ).c_str()), 0);
+	_(AP,DLG_Break_Continuous ), 0);
 	PtSetArg(&args[n++], Pt_ARG_INDICATOR_TYPE, Pt_ONE_OF_MANY, 0);
 	bm[bmi].widget = 
 	radiobuttonContinuous = PtCreateWidget(PtToggleButton, hgroup, n, args);
@@ -278,7 +278,7 @@ PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, UT_XML_transNoAmpersands(pSS->getValueU
 
 	n = 0;
 	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, 
-	UT_XML_transNoAmpersands(pSS->getValueUTF8(AP_STRING_ID_DLG_Break_OddPage ).c_str()), 0);
+	_(AP,DLG_Break_OddPage ), 0);
 	PtSetArg(&args[n++], Pt_ARG_INDICATOR_TYPE, Pt_ONE_OF_MANY, 0);
 	bm[bmi].widget = 
 	radiobuttonOddPage = PtCreateWidget(PtToggleButton, hgroup, n, args);
@@ -294,13 +294,13 @@ PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, UT_XML_transNoAmpersands(pSS->getValueU
 	PtCreateWidget(PtLabel, hgroup, n, args);
 
 	n = 0;
-PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, pSS->getValueUTF8(XAP_STRING_ID_DLG_Cancel).c_str(), 0);
+PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, _(XAP,DLG_Cancel), 0);
 	PtSetArg(&args[n++], Pt_ARG_WIDTH, ABI_DEFAULT_BUTTON_WIDTH, 0);
 	buttonCancel = PtCreateWidget(PtButton, hgroup, n, args);
 	PtAddCallback(buttonCancel, Pt_CB_ACTIVATE, s_cancel_clicked, this);
 
 	n = 0;
-PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, pSS->getValueUTF8(XAP_STRING_ID_DLG_OK).c_str(), 0);
+PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, _(XAP,DLG_OK), 0);
 	PtSetArg(&args[n++], Pt_ARG_WIDTH, ABI_DEFAULT_BUTTON_WIDTH, 0);
 	buttonOK = PtCreateWidget(PtButton, hgroup, n, args);
 	PtAddCallback(buttonOK, Pt_CB_ACTIVATE, s_ok_clicked, this);

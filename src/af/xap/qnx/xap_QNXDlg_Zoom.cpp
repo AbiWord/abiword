@@ -347,7 +347,7 @@ PtWidget_t * XAP_QNXDialog_Zoom::_constructWindow(void)
 	char  *unixstr;
 
 	n = 0;
-PtSetArg(&args[n++], Pt_ARG_WINDOW_TITLE, pSS->getValueUTF8(XAP_STRING_ID_DLG_Zoom_ZoomTitle).c_str(), 0);
+PtSetArg(&args[n++], Pt_ARG_WINDOW_TITLE, _(XAP,DLG_Zoom_ZoomTitle), 0);
     PtSetArg(&args[n++], Pt_ARG_WINDOW_RENDER_FLAGS, 0, ABI_MODAL_WINDOW_RENDER_FLAGS);
     PtSetArg(&args[n++], Pt_ARG_WINDOW_MANAGED_FLAGS, 0, ABI_MODAL_WINDOW_MANAGE_FLAGS);
 
@@ -375,13 +375,13 @@ PtSetArg(&args[n++], Pt_ARG_WINDOW_TITLE, pSS->getValueUTF8(XAP_STRING_ID_DLG_Zo
 				Pt_GROUP_EXCLUSIVE | Pt_GROUP_EQUAL_SIZE_HORIZONTAL, 
 				Pt_GROUP_EXCLUSIVE | Pt_GROUP_EQUAL_SIZE_HORIZONTAL);
 	vboxZoomTo = PtCreateWidget(PtGroup, hboxFrames, n, args);
-pretty_group(vboxZoomTo, pSS->getValueUTF8(XAP_STRING_ID_DLG_Zoom_RadioFrameCaption ).c_str());
+pretty_group(vboxZoomTo, _(XAP,DLG_Zoom_RadioFrameCaption ));
 
 	n = 0;
 	PtSetArg(&args[n++], Pt_ARG_GROUP_ORIENTATION, Pt_GROUP_VERTICAL, Pt_GROUP_VERTICAL); 
 	PtSetArg(&args[n++], Pt_ARG_GROUP_SPACING_Y, 10, 0); 
 	vboxZoomPreview = PtCreateWidget(PtGroup, hboxFrames, n, args);
-	pretty_group(vboxZoomPreview, pSS->getValueUTF8(XAP_STRING_ID_DLG_Zoom_PreviewFrame ).c_str());
+	pretty_group(vboxZoomPreview, _(XAP,DLG_Zoom_PreviewFrame ));
 
 #if 0
 	n = 0;
@@ -497,13 +497,13 @@ UT_XML_cloneNoAmpersands(unixstr, pSS->getValueUTF8(XAP_STRING_ID_DLG_Zoom_Previ
 
 	n = 0;
 	PtSetArg(&args[n++], Pt_ARG_WIDTH, ABI_DEFAULT_BUTTON_WIDTH, 0);
-PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, pSS->getValueUTF8(XAP_STRING_ID_DLG_OK).c_str(), 0);
+PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, _(XAP,DLG_OK), 0);
 	buttonOK = PtCreateWidget(PtButton, vboxButtons, n, args);
 	PtAddCallback(buttonOK, Pt_CB_ACTIVATE, s_ok_clicked, this);
 
 	n = 0;
 	PtSetArg(&args[n++], Pt_ARG_WIDTH, ABI_DEFAULT_BUTTON_WIDTH, 0);
-PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, pSS->getValueUTF8(XAP_STRING_ID_DLG_Cancel).c_str(), 0);
+PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, _(XAP,DLG_Cancel), 0);
 	buttonCancel = PtCreateWidget(PtButton, vboxButtons, n, args);
 	PtAddCallback(buttonCancel, Pt_CB_ACTIVATE, s_cancel_clicked, this);
 

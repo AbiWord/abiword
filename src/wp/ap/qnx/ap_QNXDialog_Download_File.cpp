@@ -163,7 +163,7 @@ sprintf(buf,pSS->getValueUTF8(AP_STRING_ID_DLG_DlFile_Status).c_str(),getDescrip
 	m_progressBar = PtCreateWidget(PtProgress,group,n,args);
 	n=0;
 
-	PtSetArg(&args[n++],Pt_ARG_TEXT_STRING,pSS->getValueUTF8(XAP_STRING_ID_DLG_Cancel ).c_str(),0);
+	PtSetArg(&args[n++],Pt_ARG_TEXT_STRING,_(XAP,DLG_Cancel ),0);
 	buttonCancel = PtCreateWidget(PtButton,group,n,args);
 	
 	PtAddCallback(buttonCancel,Pt_CB_ACTIVATE,ph_event_cancel,this);

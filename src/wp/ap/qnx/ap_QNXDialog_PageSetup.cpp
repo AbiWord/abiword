@@ -55,42 +55,6 @@ static bool label_with_pixmap(PtWidget_t *widget, const char **pIconData, UT_uin
 	return true;
 }
 
-static char *
-_ev_convert (char * bufResult,
-	     const char * szString)
-{
-	UT_ASSERT (szString && bufResult);
-	
-	char *pl = bufResult;
-	char *s = (char *)szString;
-
-	int len = strlen (szString);
-	int i;
-
-	for (i = 0; i < len; i++)
-	  {
-	    if (*s == '&')
-	      s++;
-	    else
-	      *pl++ = *s++;
-	  }
-
-	*pl = 0;
-	return bufResult;
-}
-
-/*********************************************************************************/
-
-// some static variables
-/*
-static fp_PageSize::Predefined last_page_size = fp_PageSize::Custom;
-*/
-
-/*********************************************************************************/
-
-// a *huge* convenience macro
-static char _ev_buf[256];
-#define _(a, x) _ev_convert (_ev_buf, pSS->getValue (a##_STRING_ID_##x))
 
 /*********************************************************************************/
 

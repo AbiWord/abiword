@@ -311,16 +311,11 @@ void AP_QNXFrame::setXScrollRange(void)
 	if (newvalue > newmax)
 		newvalue = newmax;
 
-	float slidersize;
-	slidersize = (float)windowWidth / (float)newmax; 
-	slidersize *= (float)windowWidth;
-
 	n=0;
 	PtSetArg(&args[n++], Pt_ARG_MAXIMUM, newmax, 0); 
 	PtSetArg(&args[n++], Pt_ARG_INCREMENT, 20, 0); 
 	PtSetArg(&args[n++], Pt_ARG_PAGE_INCREMENT, windowWidth, 0); 
 	PtSetArg(&args[n++], Pt_ARG_SCROLLBAR_POSITION, newvalue, 0); 
-	/* PtSetArg(&args[n++], Pt_ARG_SLIDER_SIZE, (int)slidersize, 0); */
 	PtSetResources(m_hScroll, n, args);
 
 	/*
@@ -354,16 +349,11 @@ void AP_QNXFrame::setYScrollRange(void)
 		newmax=0;
 		newvalue=0;
 	}
-	float slidersize;
-	slidersize = (float)windowHeight / (float)newmax; 
-	slidersize *= (float)windowHeight;
-
 	n =0;
 	PtSetArg(&args[n++], Pt_ARG_MAXIMUM, newmax, 0); 
 	PtSetArg(&args[n++], Pt_ARG_INCREMENT, 20, 0); 
 	PtSetArg(&args[n++], Pt_ARG_PAGE_INCREMENT, windowHeight, 0);
 	PtSetArg(&args[n++], Pt_ARG_SCROLLBAR_POSITION, newvalue, 0);
-	/* PtSetArg(&args[n++], Pt_ARG_SLIDER_SIZE, slidersize, 0);  */
 	PtSetResources(m_vScroll, n, args);
 
 	/*
@@ -714,7 +704,7 @@ void AP_QNXFrame::_scrollFuncX(void * pData, UT_sint32 xoff, UT_sint32 /*xrange*
 	PtSetArg(&args[0], Pt_ARG_SCROLLBAR_POSITION, _UD(xoff), 0);
 	PtSetResources(pQNXFrame->m_hScroll, 1, args);
 
-	pView->setXScrollOffset(_UL(xoff));
+	pView->setXScrollOffset(xoff);
 }
 
 void AP_QNXFrame::_scrollFuncY(void * pData, UT_sint32 yoff, UT_sint32 /*yrange*/)
@@ -731,7 +721,7 @@ void AP_QNXFrame::_scrollFuncY(void * pData, UT_sint32 yoff, UT_sint32 /*yrange*
 	PtSetArg(&args[0], Pt_ARG_SCROLLBAR_POSITION, _UD(yoff), 0);
 	PtSetResources(pQNXFrame->m_vScroll, 1, args);
 
-	pView->setYScrollOffset(_UL(yoff));
+	pView->setYScrollOffset(yoff);
 }
 	
 PtWidget_t * AP_QNXFrame::_createDocumentWindow(void)

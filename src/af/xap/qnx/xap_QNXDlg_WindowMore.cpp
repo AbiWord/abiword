@@ -185,7 +185,7 @@ PtWidget_t * XAP_QNXDialog_WindowMore::_constructWindow(void)
 
 	// Create the new top level window.
 	n = 0;
-PtSetArg(&args[n++], Pt_ARG_WINDOW_TITLE, pSS->getValueUTF8(XAP_STRING_ID_DLG_MW_MoreWindows).c_str(), 0);
+PtSetArg(&args[n++], Pt_ARG_WINDOW_TITLE, _(XAP,DLG_MW_MoreWindows), 0);
     PtSetArg(&args[n++], Pt_ARG_WINDOW_RENDER_FLAGS, 0, ABI_MODAL_WINDOW_RENDER_FLAGS);
     PtSetArg(&args[n++], Pt_ARG_WINDOW_MANAGED_FLAGS, 0, ABI_MODAL_WINDOW_MANAGE_FLAGS);
 	windowMain = PtCreateWidget(PtWindow, NULL, n, args);
@@ -208,7 +208,7 @@ PtSetArg(&args[n++], Pt_ARG_WINDOW_TITLE, pSS->getValueUTF8(XAP_STRING_ID_DLG_MW
 				Pt_GROUP_STRETCH_VERTICAL | Pt_GROUP_STRETCH_HORIZONTAL);
 	PtSetArg(&args[n++], Pt_ARG_HEIGHT,2 * ABI_DEFAULT_BUTTON_WIDTH,0);
 	vboxGroup = PtCreateWidget(PtGroup, vboxMain, n, args);
-	pretty_group(vboxGroup, pSS->getValueUTF8(XAP_STRING_ID_DLG_MW_Activate ).c_str());
+	pretty_group(vboxGroup, _(XAP,DLG_MW_Activate ));
 
 	n = 0;
 	PtSetArg(&args[n++], Pt_ARG_WIDTH, ABI_DEFAULT_BUTTON_WIDTH, 0);
@@ -222,13 +222,13 @@ PtSetArg(&args[n++], Pt_ARG_WINDOW_TITLE, pSS->getValueUTF8(XAP_STRING_ID_DLG_MW
 	hboxGroup = PtCreateWidget(PtGroup, vboxMain, n, args);
 
 	n = 0;
-PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, pSS->getValueUTF8(XAP_STRING_ID_DLG_OK).c_str(), 0);
+PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, _(XAP,DLG_OK), 0);
 	PtSetArg(&args[n++], Pt_ARG_WIDTH, ABI_DEFAULT_BUTTON_WIDTH, 0);
 	buttonOK = PtCreateWidget(PtButton, hboxGroup, n, args);
 	PtAddCallback(buttonOK, Pt_CB_ACTIVATE, s_ok_clicked, this);
 
 	n = 0;
-PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, pSS->getValueUTF8(XAP_STRING_ID_DLG_Cancel).c_str(), 0);
+PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, _(XAP,DLG_Cancel), 0);
 	PtSetArg(&args[n++], Pt_ARG_WIDTH, ABI_DEFAULT_BUTTON_WIDTH, 0);
 	buttonCancel = PtCreateWidget(PtButton, hboxGroup, n, args);
 	PtAddCallback(buttonCancel, Pt_CB_ACTIVATE, s_cancel_clicked, this);

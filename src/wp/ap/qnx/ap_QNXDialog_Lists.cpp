@@ -435,7 +435,7 @@ PtWidget_t * AP_QNXDialog_Lists::_constructWindow (void)
 	n = 0;
 	group = PtCreateWidget(PtGroup, ctlgroup, n, args);
 	n = 0;
-PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, pSS->getValueUTF8(AP_STRING_ID_DLG_Lists_Type).c_str(), 0);
+PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, _(AP,DLG_Lists_Type), 0);
 	lblType = PtCreateWidget(PtLabel, group, n, args);
 	n = 0;
 	PtSetArg(&args[n++], Pt_ARG_WIDTH, 2*ABI_DEFAULT_BUTTON_WIDTH, 0);
@@ -454,7 +454,7 @@ text = pSS->getValueUTF8(AP_STRING_ID_DLG_Lists_Type_numbered).c_str();
 	n = 0;
 	group = PtCreateWidget(PtGroup, ctlgroup, n, args);
 	n = 0;
-PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, pSS->getValueUTF8(AP_STRING_ID_DLG_Lists_Style).c_str(), 0);
+PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, _(AP,DLG_Lists_Style), 0);
 	lblStyle = PtCreateWidget(PtLabel, group, n, args);
 	n = 0;
 	PtSetArg(&args[n++], Pt_ARG_WIDTH, 2*ABI_DEFAULT_BUTTON_WIDTH, 0);
@@ -483,29 +483,29 @@ PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, pSS->getValueUTF8(AP_STRING_ID_DLG_List
 	PtSetArg(&args[n++], Pt_ARG_FLAGS, Pt_DELAY_REALIZE | Pt_HIGHLIGHTED, Pt_DELAY_REALIZE | Pt_HIGHLIGHTED);
 */
 	grpCustomize = PtCreateWidget(PtGroup, ctlgroup, n, args);
-	pretty_group(grpCustomize, pSS->getValueUTF8(AP_STRING_ID_DLG_Lists_Customize ).c_str());
+	pretty_group(grpCustomize, _(AP,DLG_Lists_Customize ));
 
 	n = 0;
 	PtSetArg(&args[n++], Pt_ARG_GROUP_ORIENTATION, Pt_GROUP_VERTICAL, 0);
 	PtSetArg(&args[n++], Pt_ARG_GROUP_SPACING, 5, 0);
 	group = PtCreateWidget(PtGroup, grpCustomize, n, args);
 	n = 0;
-PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, pSS->getValueUTF8(AP_STRING_ID_DLG_Lists_Format).c_str(), 0);
+PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, _(AP,DLG_Lists_Format), 0);
 	PtCreateWidget(PtLabel, group, n, args);
 	n = 0;
-PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, pSS->getValueUTF8(AP_STRING_ID_DLG_Lists_Font).c_str(), 0);
+PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, _(AP,DLG_Lists_Font), 0);
 	PtCreateWidget(PtLabel, group, n, args);
 	n = 0;
-PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, pSS->getValueUTF8(AP_STRING_ID_DLG_Lists_DelimiterString).c_str(), 0);
+PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, _(AP,DLG_Lists_DelimiterString), 0);
 	PtCreateWidget(PtLabel, group, n, args);
 	n = 0;
-PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, pSS->getValueUTF8(AP_STRING_ID_DLG_Lists_Start).c_str(), 0);
+PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, _(AP,DLG_Lists_Start), 0);
 	PtCreateWidget(PtLabel, group, n, args);
 	n = 0;
-PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, pSS->getValueUTF8(AP_STRING_ID_DLG_Lists_Align).c_str(), 0);
+PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, _(AP,DLG_Lists_Align), 0);
 	PtCreateWidget(PtLabel, group, n, args);
 	n = 0;
-PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, pSS->getValueUTF8(AP_STRING_ID_DLG_Lists_Indent).c_str(), 0);
+PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, _(AP,DLG_Lists_Indent), 0);
 	PtCreateWidget(PtLabel, group, n, args);
 
 	n = 0;
@@ -577,16 +577,16 @@ PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, pSS->getValueUTF8(AP_STRING_ID_DLG_List
 	PtSetArg(&args[n++], Pt_ARG_GROUP_SPACING, 5, 0);
 	group = PtCreateWidget(PtGroup, vgroup, n, args);
 	n = 0;
-PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, pSS->getValueUTF8(AP_STRING_ID_DLG_Lists_Start_New).c_str(), 0);
+PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, _(AP,DLG_Lists_Start_New), 0);
 	PtSetArg(&args[n++], Pt_ARG_INDICATOR_TYPE, Pt_TOGGLE_RADIO, 0);
 	PtSetArg(&args[n++], Pt_ARG_FLAGS, Pt_SET, Pt_SET);
 	radnewlist = PtCreateWidget(PtToggleButton, group, n, args);
 	n = 0;
 	PtSetArg(&args[n++], Pt_ARG_INDICATOR_TYPE, Pt_TOGGLE_RADIO, 0);
-PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, pSS->getValueUTF8(AP_STRING_ID_DLG_Lists_Apply_Current).c_str(), 0);
+PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, _(AP,DLG_Lists_Apply_Current), 0);
 	radexisting = PtCreateWidget(PtToggleButton, group, n, args);
 	n = 0;
-PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, pSS->getValueUTF8(AP_STRING_ID_DLG_Lists_Start_Sub).c_str(), 0);
+PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, _(AP,DLG_Lists_Start_Sub), 0);
 	PtSetArg(&args[n++], Pt_ARG_INDICATOR_TYPE, Pt_TOGGLE_RADIO, 0);
 	radsublist = PtCreateWidget(PtToggleButton, group, n, args);
 

@@ -348,9 +348,9 @@ PtWidget_t * AP_QNXDialog_Replace::_constructWindow(void)
 	PtSetArg(&args[n++],Pt_ARG_FLAGS,Pt_FALSE,Pt_GETS_FOCUS );
 
 	if (m_id == AP_DIALOG_ID_FIND)
-		PtSetArg(&args[n++], Pt_ARG_WINDOW_TITLE, pSS->getValueUTF8(AP_STRING_ID_DLG_FR_FindTitle).c_str(), 0);
+		PtSetArg(&args[n++], Pt_ARG_WINDOW_TITLE, _(AP,DLG_FR_FindTitle), 0);
 	else
-		PtSetArg(&args[n++], Pt_ARG_WINDOW_TITLE, pSS->getValueUTF8(AP_STRING_ID_DLG_FR_ReplaceTitle).c_str(), 0);
+		PtSetArg(&args[n++], Pt_ARG_WINDOW_TITLE, _(AP,DLG_FR_ReplaceTitle), 0);
 	windowReplace = PtCreateWidget(PtWindow, NULL, n, args);
 	PtAddCallback(windowReplace, Pt_CB_WINDOW_CLOSING, s_delete_clicked, this);
 
@@ -443,7 +443,7 @@ PtWidget_t * AP_QNXDialog_Replace::_constructWindow(void)
 
 	n = 0;
 	UT_XML_cloneNoAmpersands(unixstr, pSS->getValueUTF8(AP_STRING_ID_DLG_FR_ReplaceAllButton).c_str());	
-	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, pSS->getValueUTF8(XAP_STRING_ID_DLG_Cancel).c_str(), 0);
+	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, _(XAP,DLG_Cancel), 0);
 	PtSetArg(&args[n++], Pt_ARG_WIDTH, ABI_DEFAULT_BUTTON_WIDTH, 0);
 	buttonCancel = PtCreateWidget(PtButton, hbuttonbox1, n, args);
 	PtAddCallback(buttonCancel, Pt_CB_ACTIVATE, s_cancel_clicked, this);

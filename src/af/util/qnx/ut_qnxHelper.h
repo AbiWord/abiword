@@ -71,4 +71,9 @@ void connectFocus(PtWidget_t *widget, XAP_Frame *frame);
 */
 int pretty_group(PtWidget_t *w, const char *title);
 
+char * _ev_convert(char *,const char *);
+// a *huge* convenience macro
+static char _ev_buf[256];
+#define _(a, x) _ev_convert (_ev_buf, pSS->getValueUTF8 (a##_STRING_ID_##x).c_str())
+
 #endif /* UT_QNXHELPER_H */

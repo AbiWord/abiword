@@ -155,7 +155,7 @@ PtWidget_t * AP_QNXDialog_ToggleCase::_constructWindow(void)
 	int n;
 
 	n = 0;
-PtSetArg(&args[n++], Pt_ARG_WINDOW_TITLE, pSS->getValueUTF8(AP_STRING_ID_DLG_ToggleCase_Title).c_str(), 0);
+PtSetArg(&args[n++], Pt_ARG_WINDOW_TITLE, _(AP,DLG_ToggleCase_Title), 0);
     PtSetArg(&args[n++], Pt_ARG_WINDOW_RENDER_FLAGS, 0, ABI_MODAL_WINDOW_RENDER_FLAGS);
     PtSetArg(&args[n++], Pt_ARG_WINDOW_MANAGED_FLAGS, 0, ABI_MODAL_WINDOW_MANAGE_FLAGS);
 	window = PtCreateWidget(PtWindow, NULL, n, args);
@@ -177,10 +177,10 @@ PtSetArg(&args[n++], Pt_ARG_WINDOW_TITLE, pSS->getValueUTF8(AP_STRING_ID_DLG_Tog
 				Pt_GROUP_STRETCH_VERTICAL | Pt_GROUP_STRETCH_HORIZONTAL | Pt_GROUP_EXCLUSIVE,
 				Pt_GROUP_STRETCH_VERTICAL | Pt_GROUP_STRETCH_HORIZONTAL | Pt_GROUP_EXCLUSIVE);
 	vboxMain =  PtCreateWidget(PtGroup, vboxOuter, n, args);
-	pretty_group(vboxMain, pSS->getValueUTF8(AP_STRING_ID_DLG_ToggleCase_Title ).c_str());
+	pretty_group(vboxMain, _(AP,DLG_ToggleCase_Title));
 
 	n = 0;
-PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, pSS->getValueUTF8(AP_STRING_ID_DLG_ToggleCase_SentenceCase).c_str(), 0);
+PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, _(AP,DLG_ToggleCase_SentenceCase), 0);
 	PtSetArg(&args[n++], Pt_ARG_INDICATOR_TYPE, Pt_TOGGLE_RADIO, 0);
 	PtSetArg(&args[n++], Pt_ARG_POINTER, find_entry(CASE_SENTENCE), 0);
 	PtSetArg(&args[n++], Pt_ARG_FLAGS, Pt_SET, Pt_SET);
@@ -188,28 +188,28 @@ PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, pSS->getValueUTF8(AP_STRING_ID_DLG_Togg
 	PtAddCallback(widget, Pt_CB_ACTIVATE, s_toggled, this);
 
 	n = 0;
-PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, pSS->getValueUTF8(AP_STRING_ID_DLG_ToggleCase_LowerCase).c_str(), 0);
+PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, _(AP,DLG_ToggleCase_LowerCase), 0);
 	PtSetArg(&args[n++], Pt_ARG_INDICATOR_TYPE, Pt_TOGGLE_RADIO, 0);
 	PtSetArg(&args[n++], Pt_ARG_POINTER, find_entry(CASE_LOWER), 0);
 	widget = PtCreateWidget(PtToggleButton, vboxMain, n, args);
 	PtAddCallback(widget, Pt_CB_ACTIVATE, s_toggled, this);
 
 	n = 0;
-PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, pSS->getValueUTF8(AP_STRING_ID_DLG_ToggleCase_UpperCase).c_str(), 0);
+PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, _(AP,DLG_ToggleCase_UpperCase), 0);
 	PtSetArg(&args[n++], Pt_ARG_INDICATOR_TYPE, Pt_TOGGLE_RADIO, 0);
 	PtSetArg(&args[n++], Pt_ARG_POINTER, find_entry(CASE_UPPER), 0);
 	widget = PtCreateWidget(PtToggleButton, vboxMain, n, args);
 	PtAddCallback(widget, Pt_CB_ACTIVATE, s_toggled, this);
 
 	n = 0;
-PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, pSS->getValueUTF8(AP_STRING_ID_DLG_ToggleCase_FirstUpperCase).c_str(), 0);
+PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, _(AP,DLG_ToggleCase_FirstUpperCase), 0);
 	PtSetArg(&args[n++], Pt_ARG_INDICATOR_TYPE, Pt_TOGGLE_RADIO, 0);
 	PtSetArg(&args[n++], Pt_ARG_POINTER, find_entry(CASE_FIRST_CAPITAL), 0);
 	widget = PtCreateWidget(PtToggleButton, vboxMain, n, args);
 	PtAddCallback(widget, Pt_CB_ACTIVATE, s_toggled, this);
 
 	n = 0;
-PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, pSS->getValueUTF8(AP_STRING_ID_DLG_ToggleCase_ToggleCase).c_str(), 0);
+PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, _(AP,DLG_ToggleCase_ToggleCase), 0);
 	PtSetArg(&args[n++], Pt_ARG_INDICATOR_TYPE, Pt_TOGGLE_RADIO, 0);
 	PtSetArg(&args[n++], Pt_ARG_POINTER, find_entry(CASE_TOGGLE), 0);
 	widget = PtCreateWidget(PtToggleButton, vboxMain, n, args);
@@ -221,13 +221,13 @@ PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, pSS->getValueUTF8(AP_STRING_ID_DLG_Togg
 
 	n = 0;
 	PtSetArg(&args[n++], Pt_ARG_WIDTH, ABI_DEFAULT_BUTTON_WIDTH, 0);
-PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, pSS->getValueUTF8(XAP_STRING_ID_DLG_OK).c_str(), 0);
+	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, _(XAP,DLG_OK), 0);
 	buttonOK = PtCreateWidget(PtButton, hboxBut, n, args);
 	PtAddCallback(buttonOK, Pt_CB_ACTIVATE, s_ok_clicked, this);
 
 	n = 0;
 	PtSetArg(&args[n++], Pt_ARG_WIDTH, ABI_DEFAULT_BUTTON_WIDTH, 0);
-PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, pSS->getValueUTF8(XAP_STRING_ID_DLG_Cancel).c_str(), 0);
+PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, _(XAP,DLG_Cancel), 0);
 	buttonCancel = PtCreateWidget(PtButton, hboxBut, n, args);
 	PtAddCallback(buttonCancel, Pt_CB_ACTIVATE, s_cancel_clicked, this);
 

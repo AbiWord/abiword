@@ -251,7 +251,7 @@ PtWidget_t * AP_QNXDialog_PageNumbers::_constructWindow (void)
   const XAP_StringSet * pSS = m_pApp->getStringSet();
 
 	n = 0;
-PtSetArg(&args[n++], Pt_ARG_WINDOW_TITLE, pSS->getValueUTF8(AP_STRING_ID_DLG_PageNumbers_Title).c_str(), 0);
+PtSetArg(&args[n++], Pt_ARG_WINDOW_TITLE, _(AP,DLG_PageNumbers_Title), 0);
 	PtSetArg(&args[n++], Pt_ARG_WINDOW_RENDER_FLAGS, 0, ABI_MODAL_WINDOW_RENDER_FLAGS);
 	PtSetArg(&args[n++], Pt_ARG_WINDOW_MANAGED_FLAGS, 0, ABI_MODAL_WINDOW_MANAGE_FLAGS);
 	m_window = PtCreateWidget(PtWindow, NULL, n, args);
@@ -275,7 +275,7 @@ PtSetArg(&args[n++], Pt_ARG_WINDOW_TITLE, pSS->getValueUTF8(AP_STRING_ID_DLG_Pag
 
 	//Create the first label/combo combination
 	n = 0;
-PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, pSS->getValueUTF8(AP_STRING_ID_DLG_PageNumbers_Position).c_str(), 0);
+PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, _(AP,DLG_PageNumbers_Position), 0);
 	label1 = PtCreateWidget(PtLabel, vgroup_inner, n, args);
 
 	n = 0;
@@ -294,7 +294,7 @@ add = pSS->getValueUTF8(AP_STRING_ID_DLG_PageNumbers_Header).c_str();
 
 	//Create the second label/combo combination
 	n = 0;
-PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, pSS->getValueUTF8(AP_STRING_ID_DLG_PageNumbers_Alignment).c_str(), 0);
+PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, _(AP,DLG_PageNumbers_Alignment), 0);
 	label2 = PtCreateWidget(PtLabel, vgroup_inner, n, args);
 
 	n = 0;
@@ -335,7 +335,7 @@ add = pSS->getValueUTF8(AP_STRING_ID_DLG_PageNumbers_Center).c_str();
 	PtCreateWidget(PtLabel, hgroup, n, args);
 
 	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, pSS->getValue (XAP_STRING_ID_DLG_OK), 0);
+	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, _(XAP,DLG_OK), 0);
     PtSetArg(&args[n++], Pt_ARG_WIDTH,  ABI_DEFAULT_BUTTON_WIDTH, 0);
 	m_buttonOK = PtCreateWidget(PtButton, hgroup, n, args);
 	PtAddCallback(m_buttonOK, Pt_CB_ACTIVATE, s_cancel_clicked, this);

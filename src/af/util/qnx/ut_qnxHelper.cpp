@@ -207,4 +207,27 @@ int pretty_group(PtWidget_t *w, const char *title) {
 	return 0;
 }
 
+char *
+_ev_convert (char * bufResult,
+	     const char * szString)
+{
+	UT_ASSERT (szString && bufResult);
+	
+	char *pl = bufResult;
+	char *s = (char *)szString;
+
+	int len = strlen (szString);
+	int i;
+
+	for (i = 0; i < len; i++)
+	  {
+	    if (*s == '&')
+	      s++;
+	    else
+	      *pl++ = *s++;
+	  }
+
+	*pl = 0;
+	return bufResult;
+}
 
