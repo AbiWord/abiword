@@ -990,6 +990,11 @@ bool FV_View::cmdMergeCells(PT_DocPosition posSource, PT_DocPosition posDestinat
 				}
 				bChanged = true;
 				_MergeCells(posSource,posWork,false);
+				UT_ASSERT(Bot > Top);
+				if(Bot <= Top)
+				{
+					break;
+				}
 				Top = Bot;
 			}
 //
