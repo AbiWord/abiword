@@ -57,15 +57,16 @@ if test "$abi_found_parser" = "no" -a "$abi_force_expat" = "no" ; then
 	AC_CHECK_PROG(XML_CONFIG, xml2-config, xml2-config)
 	if test "$XML_CONFIG" != ""; then
 		#Check for recent library
-		XML_LIBS="`$XML_CONFIG --libs` -DHAVE_LIBXML2"
-		XML_CFLAGS="`$XML_CONFIG --cflags`"
+		XML_LIBS="`$XML_CONFIG --libs`"
+		XML_CFLAGS="`$XML_CONFIG --cflags` -DHAVE_LIBXML2"
 		AC_CHECK_LIB(xml2, xmlCreatePushParserCtxt,
 			abi_found_parser="libxml2" abi_xml_parser_message="libxml2"
 			AC_DEFINE(HAVE_LIBXML2, 1, [Define if you have libxml2])
 			,
 			XML_CFLAGS=""
 			XML_LIBS=""
-			AC_WARN([cannot use libxml1, libxml2 is required ]))
+			AC_WARN([cannot use libxml1; libxml2 is required ]),
+                        $XML_LIBS)
 		
 	fi
 fi
