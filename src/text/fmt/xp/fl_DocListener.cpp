@@ -99,8 +99,20 @@ UT_Bool fl_DocListener::populate(PL_StruxFmtHandle sfh,
 			goto finish_up;
 		}
 
+	case PX_ChangeRecord::PXT_InsertFmtMark:
+		{
+			const PX_ChangeRecord_FmtMark * pcrfm = static_cast<const PX_ChangeRecord_FmtMark *>(pcr);
+
+			fl_Layout * pL = (fl_Layout *)sfh;
+			UT_ASSERT(pL->getType() == PTX_Block);
+			fl_BlockLayout * pBL = static_cast<fl_BlockLayout *>(pL);
+			fl_SectionLayout* pBLSL = pBL->getSectionLayout();
+			bResult = pBLSL->bl_doclistener_insertFmtMark(pBL, pcrfm);
+			goto finish_up;
+		}
+	
 	default:
-		UT_ASSERT(0);
+		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 		return UT_FALSE;
 	}
 
