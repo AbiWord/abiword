@@ -107,12 +107,12 @@ void XAP_Win32Dialog_About::runModal(XAP_Frame * pFrame)
 	wndclassAbout.cbClsExtra	= 0;
 	wndclassAbout.cbWndExtra	= 0;
 	wndclassAbout.hInstance		= pWin32App->getInstance();
-	wndclassAbout.hIcon			= pWin32App->getIcon();
+	wndclassAbout.hIcon			= NULL;
 	wndclassAbout.hCursor		= LoadCursor(NULL, IDC_ARROW);
 	wndclassAbout.hbrBackground	= GetSysColorBrush(COLOR_BTNFACE);
 	wndclassAbout.lpszMenuName	= NULL;
 	wndclassAbout.lpszClassName	= "AbiSource_About";
-	wndclassAbout.hIconSm		= pWin32App->getSmallIcon();
+	wndclassAbout.hIconSm		= NULL;
 	
 	if (!RegisterClassEx(&wndclassAbout))
 	{
@@ -135,7 +135,7 @@ void XAP_Win32Dialog_About::runModal(XAP_Frame * pFrame)
 
 	HWND hwndAbout = CreateWindow(	wndclassAbout.lpszClassName,
 									buf,
-									WS_OVERLAPPED | WS_VISIBLE | WS_SYSMENU,
+									WS_OVERLAPPED | WS_VISIBLE,
 									(iScreenWidth - ABOUT_WIDTH) / 2,
 									(iScreenHeight - ABOUT_HEIGHT) /2,
 									ABOUT_WIDTH,
