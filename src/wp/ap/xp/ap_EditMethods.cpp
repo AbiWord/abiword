@@ -1015,7 +1015,7 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(printTB),				0,	""),
 
 	// q
-	EV_EditMethod(NF(querySaveAndExit), 	0,	""),
+	EV_EditMethod(NF(querySaveAndExit), 	_A_,	""),
 
 	// r
 	EV_EditMethod(NF(redo), 				0,	""),
@@ -3263,43 +3263,51 @@ Defun(closeWindowX)
 Defun(querySaveAndExit)
 {
 	CHECK_FRAME;
-	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
-	UT_ASSERT(pFrame);
-	XAP_App * pApp = pFrame->getApp();
+	XAP_Frame * pFrame = NULL;
+	bool bRet = true;
+
+	if (pAV_View) {
+		pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
+		UT_ASSERT(pFrame);
+	}
+	XAP_App * pApp = XAP_App::getApp();
 	UT_ASSERT(pApp);
 
+	if (pFrame) {
 
-	if (1 < pApp->getFrameCount())
-	{
-		if (!s_AskCloseAllAndExit(pFrame))
+		if (1 < pApp->getFrameCount())
 		{
-			// never mind
-			return false;
+			if (!s_AskCloseAllAndExit(pFrame))
+			{
+				// never mind
+				return false;
+			}
+		}
+
+
+		UT_uint32 ndx = pApp->getFrameCount();
+
+		// loop over windows, but stop if one can't close
+		while (bRet && ndx > 0)
+		{
+			XAP_Frame * f = pApp->getFrame(ndx - 1);
+			UT_ASSERT(f);
+			pAV_View = f->getCurrentView();
+			UT_ASSERT(pAV_View);
+
+			bRet = s_closeWindow (pAV_View, pCallData, true);
+
+			ndx--;
 		}
 	}
-
-
-	bool bRet = true;
-	UT_uint32 ndx = pApp->getFrameCount();
-
-	// loop over windows, but stop if one can't close
-	while (bRet && ndx > 0)
-	{
-		XAP_Frame * f = pApp->getFrame(ndx - 1);
-		UT_ASSERT(f);
-		pAV_View = f->getCurrentView();
-		UT_ASSERT(pAV_View);
-
-		bRet = s_closeWindow (pAV_View, pCallData, true);
-
-		ndx--;
+	else {
+		bRet = true;
 	}
-
+	
 	if (bRet)
 	{
-
-			//	delete all open modeless dialogs
-			pApp->closeModelessDlgs();
+		//	delete all open modeless dialogs
+		pApp->closeModelessDlgs();
 
 		// TODO: this shouldn't be necessary, but just in case
 		pApp->reallyExit();
