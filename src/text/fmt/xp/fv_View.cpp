@@ -8092,13 +8092,15 @@ fp_CellContainer * FV_View::getCellAtPos(PT_DocPosition pos)
 
 fp_Run * FV_View::getHyperLinkRun(PT_DocPosition pos)
 {
-	bool bEOL = false;
-	UT_sint32 xPoint, yPoint, xPoint2, yPoint2;
-	UT_uint32 iPointHeight;
-	bool bDirection;
-	fl_BlockLayout* pBlock;
+	fl_BlockLayout* pBlock =_findBlockAtPosition(pos);
 	fp_Run* pRun = NULL;
-	_findPositionCoords(pos, bEOL, xPoint, yPoint, xPoint2, yPoint2, iPointHeight, bDirection, &pBlock, &pRun);
+
+	if(pBlock)
+	{
+		UT_uint32 blockOffset = pos - pBlock->getPosition();
+		pRun = pBlock->findRunAtOffset(blockOffset);
+	}
+	
 	if(pRun && pRun->getHyperlink() != NULL)
 	{
 		return pRun->getHyperlink();
