@@ -18,7 +18,7 @@
 
 include $(top_srcdir)/includes.mk
 
-INCLUDES = $(AF_INCLUDES)
+INCLUDES = $(AF_INCLUDES) $(ICONV_INCLUDES)
 
 noinst_LIBRARIES = libGr_xp.a
 

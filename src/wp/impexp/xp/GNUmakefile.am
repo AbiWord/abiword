@@ -19,7 +19,8 @@
 include $(top_srcdir)/includes.mk
 
 INCLUDES= $(PSICONV_INCLUDES) $(WP_INCLUDES) \
-	$(TEXT_INCLUDES) $(AF_INCLUDES) $(WV_INCLUDES)
+	$(TEXT_INCLUDES) $(AF_INCLUDES) $(WV_INCLUDES) $(ICONV_INCLUDES) \
+	$(LIBPNG_INCLUDES)
 
 noinst_LIBRARIES = libImpexp.a
 
@@ -46,7 +47,6 @@ libImpexp_a_SOURCES=\
 	ie_imp_Applix.cpp			\
 	ie_imp_MsWord_97.cpp			\
 	ie_imp_GZipAbiWord.cpp                  \
-	ie_imp_MsWord_97.cpp			\
 	ie_imp_RTF.cpp				\
 	ie_imp_Text.cpp				\
 	ie_imp_UTF8.cpp				\

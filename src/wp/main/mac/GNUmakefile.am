@@ -24,13 +24,13 @@ bin_PROGRAMS = AbiWord
 INCLUDES=\
 	 -DABIWORD_APP_NAME="\"$(ABIWORD_APP_NAME)\"" \
 	$(AF_INCLUDES) $(WP_INCLUDES) $(OTHER_INCLUDES) \
-	$(TEXT_INCLUDES) @MACOSX_CFLAGS@ 
+	$(TEXT_INCLUDES) 
 
 AbiWord_SOURCES = abi_ver.cpp MacMain.cpp
 
 REPEAT_LIBS = $(ABI_LIBS) 
 
-AbiWord_LDADD = $(REPEAT_LIBS) @MACOSX_LIBS@ $(OTHER_LIBS) 
+AbiWord_LDADD = $(REPEAT_LIBS) $(OTHER_LIBS) 
 
 abi_ver.cpp:
 	cp $(srcdir)/../xp/abi_ver.cpp .

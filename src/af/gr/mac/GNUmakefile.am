@@ -19,8 +19,7 @@
 
 include $(top_srcdir)/includes.mk
 
-INCLUDES= @MACOSX_CFLAGS@ \
-	$(AF_INCLUDES) $(WP_INCLUDES) $(TEXT_INCLUDES)	
+INCLUDES = $(AF_INCLUDES) $(WP_INCLUDES) $(TEXT_INCLUDES) $(ICONV_INCLUDES)
 
 noinst_LIBRARIES = libGr_mac.a
 

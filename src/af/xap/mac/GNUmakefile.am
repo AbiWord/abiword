@@ -18,8 +18,7 @@
 
 include $(top_srcdir)/includes.mk
 
-INCLUDES= @MACOSX_CFLAGS@ \
-	$(AF_INCLUDES) $(WP_INCLUDES) $(TEXT_INCLUDES)	
+INCLUDES= $(AF_INCLUDES) $(WP_INCLUDES) $(TEXT_INCLUDES) $(ICONV_INCLUDES)
 
 noinst_LIBRARIES = libXap_mac.a
 
@@ -27,7 +26,6 @@ libXap_mac_a_SOURCES=		\
 	xap_MacApp.cpp                          \
 	xap_MacDlg_PrintPreview.cpp	\
 	xap_MacClipboard.cpp	\
-	xap_MacDlg_Stub.cpp	\
 	xap_MacDlg_About.cpp	\
 	xap_MacDlg_WindowMore.cpp	\
 	xap_MacDlg_FileOpenSaveAs.cpp	\
