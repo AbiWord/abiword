@@ -927,7 +927,7 @@ UT_UCS4String UT_UCS4String::substr(size_t iStart, size_t nChars) const
 	const size_t nSize = pimpl->size();
 
 	if (iStart >= nSize || !nChars) {
-		return UT_UCS2String();
+		return UT_UCS4String();
 	}
 
 	const UT_UCS4Char* p = pimpl->data() + iStart;
