@@ -178,8 +178,9 @@ Gilles Saint-Denis <stdenisg@cedep.net> 		fixes for bugs 787, 282,
 Pierre Sarrazin <ps@cam.org>
 David Schmitter <dls@globalinitiative.org>		Online Help
 Dan Schreiber <dan@abisource.com>
-Martin Sevior <msevior@physics.unimelb.edu.au>		Symbol dialog, Overline,
-							cursor motion fixes
+Martin Sevior <msevior@physics.unimelb.edu.au>		Symbol dialog, Overline,							cursor motion fixes,
+							Tables,Footnotes, lots
+							of other stuff
 Jeremy Sheeley <jeremy@sourcegear.com>
 Alexey Sinutin <megabyte@salesexplosion.com>		Insert Date/Time dialog,
 							show Paragraphs

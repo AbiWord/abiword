@@ -8062,7 +8062,7 @@ bool FV_View::insertFootnote(bool bFootnote)
 	getStyle(&cur_style);
 
 	m_pDoc->beginUserAtomicGlob();
-
+	_saveAndNotifyPieceTableChange();
 	bool bCreatedFootnoteSL = false;
 
 	PT_DocPosition dpFT = 0;
@@ -8075,6 +8075,7 @@ bool FV_View::insertFootnote(bool bFootnote)
 	if (!insertFootnoteSection(bFootnote,footpid.c_str()))
 	{
 		m_pDoc->endUserAtomicGlob();
+		_restorePieceTableState();
 		return false;
 	}
 	dpFT = getPoint(); // Points right at the EndFootnote strux
@@ -8173,10 +8174,12 @@ bool FV_View::insertFootnote(bool bFootnote)
 //
 	m_pDoc->changeStruxFmt(PTC_RemoveFmt,dpBody,dpBody,NULL,dumProps,PTX_Block);
 	m_pDoc->endUserAtomicGlob();
+	setScreenUpdateOnGeneralUpdate( true);
+	_restorePieceTableState(); // clean up remaining measures
 	_updateInsertionPoint();
+	_ensureInsertionPointOnScreen();
 	_generalUpdate();
 	_fixInsertionPointCoords();
-	_ensureInsertionPointOnScreen();
 //
 // Lets have a peek at the doc structure, shall we?
 //
