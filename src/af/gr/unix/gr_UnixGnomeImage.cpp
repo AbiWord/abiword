@@ -56,13 +56,19 @@ UT_sint32	GR_UnixGnomeImage::getDisplayHeight(void) const
 
 bool		GR_UnixGnomeImage::convertToBuffer(UT_ByteBuf** ppBB) const
 {
-	UT_ByteBuf* pBB = new UT_ByteBuf();
 	const guchar * pixels = gdk_pixbuf_get_pixels(m_image);
-	UT_uint32 len = (pixels ? strlen((const char *)pixels) : 0);
-	
-	pBB->append((const UT_Byte *)pixels, len);
+	UT_ByteBuf * pBB = 0;
+
+	if (pixels)
+	{
+		// length is height * rowstride
+		UT_uint32 len = gdk_pixbuf_get_height (m_image) * 
+			gdk_pixbuf_get_rowstride (m_image);
+		pBB = new UT_ByteBuf();		
+		pBB->append((const UT_Byte *)pixels, len);		
+	}
+
 	*ppBB = pBB;
-	
 	return true;
 }
 
@@ -71,10 +77,10 @@ bool	GR_UnixGnomeImage::convertFromBuffer(const UT_ByteBuf* pBB,
 											 UT_sint32 iDisplayHeight)
 {
 	GdkPixbufLoader * ldr = gdk_pixbuf_loader_new ();
-	UT_ASSERT(ldr);
+	UT_ASSERT (ldr);
 	if (!ldr)
 	{
-		UT_DEBUGMSG(("DOM: couldn't create loader! WTF?\n"));
+		UT_DEBUGMSG (("GdkPixbuf: couldn't create loader! WTF?\n"));
 		return false;
 	}
 
@@ -90,28 +96,30 @@ bool	GR_UnixGnomeImage::convertFromBuffer(const UT_ByteBuf* pBB,
 #endif
 	
 	GdkPixbuf * image = gdk_pixbuf_loader_get_pixbuf (ldr);
-	UT_ASSERT(image);
+	UT_ASSERT (image);
 	if (!image)
 	{
-		UT_DEBUGMSG(("DOM: couldn't get image from loader!\n"));
+		UT_DEBUGMSG (("GdkPixbuf: couldn't get image from loader!\n"));
 		return false;
 	}
-	m_image = gdk_pixbuf_scale_simple (image, iDisplayWidth, iDisplayHeight, GDK_INTERP_NEAREST);
-	UT_ASSERT(m_image);
+
+	m_image = gdk_pixbuf_scale_simple (image, iDisplayWidth, 
+									   iDisplayHeight, GDK_INTERP_NEAREST);
+	UT_ASSERT (m_image);
 	if (!m_image)
 	{
-		UT_DEBUGMSG(("HUB: couldn't scale image!\n"));
+		UT_DEBUGMSG(("GdkPixbuf: couldn't scale image!\n"));
 		return false;
 	}
-	gdk_pixbuf_ref(m_image);
-	gdk_pixbuf_unref(image);
+
+	gdk_pixbuf_ref (m_image);
+	gdk_pixbuf_unref (image);
+
 #ifdef HAVE_GTK_2_0
 	g_error_free (err);
 #endif
 
 	gdk_pixbuf_loader_close (ldr);
-
-	xxx_UT_DEBUGMSG(("DOM: GDK-PIXBUF WORKING!!\n"));
 
 	return true;
 }

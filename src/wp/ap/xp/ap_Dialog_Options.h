@@ -48,7 +48,7 @@ class AP_Dialog_Options : public XAP_Dialog_NonPersistent
 				   id_CHECK_SPELL_UPPERCASE, id_CHECK_SPELL_NUMBERS, 
 				   id_CHECK_SPELL_INTERNET, id_LIST_DICTIONARY,
 				   id_BUTTON_DICTIONARY_EDIT, id_BUTTON_IGNORE_RESET,
-				   id_BUTTON_IGNORE_EDIT,
+				   id_BUTTON_IGNORE_EDIT, id_BUTTON_SPELL_AUTOREPLACE,
 
 				   id_CHECK_SMART_QUOTES_ENABLE, id_LIST_DEFAULT_PAGE_SIZE,
 #ifdef BIDI_ENABLED
@@ -107,6 +107,7 @@ class AP_Dialog_Options : public XAP_Dialog_NonPersistent
 	SET_GATHER			(SpellUppercase,	bool);
 	SET_GATHER			(SpellNumbers,		bool);
 	SET_GATHER			(SpellInternet,		bool);
+	SET_GATHER          (SpellAutoReplace,  bool);
 
 	SET_GATHER			(SmartQuotesEnable,	bool);
 	SET_GATHER			(DefaultPageSize,	fp_PageSize::Predefined);

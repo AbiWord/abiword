@@ -76,7 +76,7 @@ bool	IE_Exp_HTML::GetDlgLabels(const char ** pszDesc,
 								  const char ** pszSuffixList,
 								  IEFileType * ft)
 {
-	*pszDesc = "HTML (.html)";
+	*pszDesc = "XHTML (.html)";
 	*pszSuffixList = "*.html";
 	*ft = IEFT_HTML;
 	return true;

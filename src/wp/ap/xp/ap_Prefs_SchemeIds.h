@@ -61,6 +61,9 @@
 #define AP_PREF_KEY_SpellCheckIgnoredWordsLoad		"SpellCheckIgnoredWordsLoad"	/* load ignored words list with doc */
 #define AP_PREF_DEFAULT_SpellCheckIgnoredWordsLoad	"1"
 
+#define AP_PREF_KEY_SpellAutoReplace                "SpellAutoReplace" /* automatically substitute "incorrect" words with replacements */
+#define AP_PREF_DEFAULT_SpellAutoReplace            "0"
+
 #define AP_PREF_KEY_OptionsTabNumber				"OptionsTabNumber"			/* the page number of the currently shown page in the */
 #define AP_PREF_DEFAULT_OptionsTabNumber			"0"							/* options dialog */
 

@@ -1850,6 +1850,12 @@ UT_sint32 fl_BlockLayout::_findSquiggle(UT_uint32 iOffset) const
 	return res;
 }
 
+// DOM: you want to do some SpellAutoReplace magic
+// see if we auto-replace words based on language-tags and suggestions
+// if no suggestion exists && autoReplace, then squiggle
+// else if suggestion exists && autoReplace, then replace, and remove pPOB
+// else just squiggle
+
 void fl_BlockLayout::_addSquiggle(UT_uint32 iOffset, UT_uint32 iLen, bool bIsIgnored /* = false */)
 {
 	fl_PartOfBlock*	pPOB = new fl_PartOfBlock();
