@@ -34,6 +34,12 @@ else
 XML_OBJ=ut_xml_libxml2.cpp
 endif
 
+if HAVE_THREADS
+THREAD_OBJ=ut_thread.cpp
+else
+THREAD_OBJ=
+endif
+
 libUtil_xp_a_SOURCES=\
 	ut_AdobeEncoding.cpp 	\
 	ut_allocator.cpp	\
@@ -75,5 +81,6 @@ libUtil_xp_a_SOURCES=\
 	ut_rand.cpp		\
 	$(XML_OBJ)		\
 	$(SCRIPT_OBJ)		\
+	$(THREAD_OBJ)		\
 	ut_xml.cpp		\
 	ut_spi.cpp
