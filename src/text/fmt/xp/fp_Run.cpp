@@ -877,7 +877,7 @@ void fp_Run::draw(dg_DrawArgs* pDA)
 		// have to set the colour again, since fp_TextRun::_draw can set it to red
 		// for drawing sguiggles
 		getGR()->setColor(_getView()->getColorHyperLink());
-		getGR()->setLineProperties(1.0,
+ 		getGR()->setLineProperties(getGR()->tluD(1.0),
 								GR_Graphics::JOIN_MITER,
 								GR_Graphics::CAP_BUTT,
 								GR_Graphics::LINE_SOLID);
@@ -888,7 +888,7 @@ void fp_Run::draw(dg_DrawArgs* pDA)
 	if(m_eHidden == FP_HIDDEN_TEXT || m_eHidden == FP_HIDDEN_REVISION_AND_TEXT)
 	{
 		getGR()->setColor(getFGColor());
-		getGR()->setLineProperties(1.0,
+ 		getGR()->setLineProperties(getGR()->tluD(1.0),
 								GR_Graphics::JOIN_MITER,
 								GR_Graphics::CAP_BUTT,
 								GR_Graphics::LINE_DOTTED);
@@ -2801,30 +2801,31 @@ const char * fp_ImageRun::getDataId(void) const
 
 void fp_ImageRun::_drawResizeBox(UT_Rect box)
 {
+	GR_Graphics * pG = getGR();
 	UT_sint32 left = box.left;
 	UT_sint32 top = box.top;
-	UT_sint32 right = box.left + box.width - getGR()->tlu(1);
-	UT_sint32 bottom = box.top + box.height - getGR()->tlu(1);
+	UT_sint32 right = box.left + box.width - pG->tlu(1);
+	UT_sint32 bottom = box.top + box.height - pG->tlu(1);
 	
-	getGR()->setLineProperties(1.0,
+ 	pG->setLineProperties(pG->tluD(1.0),
 								 GR_Graphics::JOIN_MITER,
 								 GR_Graphics::CAP_BUTT,
 								 GR_Graphics::LINE_SOLID);	
 	
 	// draw some really fancy box here
-	getGR()->setColor(UT_RGBColor(98,129,131));
-	getGR()->drawLine(left, top, right, top);
-	getGR()->drawLine(left, top, left, bottom);
-	getGR()->setColor(UT_RGBColor(230,234,238));
-	getGR()->drawLine(box.left+getGR()->tlu(1), box.top + getGR()->tlu(1), right - getGR()->tlu(1), top+getGR()->tlu(1));
-	getGR()->drawLine(box.left+getGR()->tlu(1), box.top + getGR()->tlu(1), left + getGR()->tlu(1), bottom - getGR()->tlu(1));
-	getGR()->setColor(UT_RGBColor(98,129,131));
-	getGR()->drawLine(right - getGR()->tlu(1), top + getGR()->tlu(1), right - getGR()->tlu(1), bottom - getGR()->tlu(1));
-	getGR()->drawLine(left + getGR()->tlu(1), bottom - getGR()->tlu(1), right - getGR()->tlu(1), bottom - getGR()->tlu(1));
-	getGR()->setColor(UT_RGBColor(49,85,82));
-	getGR()->drawLine(right, top, right, bottom);
-	getGR()->drawLine(left, bottom, right, bottom);
-	getGR()->fillRect(UT_RGBColor(156,178,180),box.left + getGR()->tlu(2), box.top + getGR()->tlu(2), box.width - getGR()->tlu(4), box.height - getGR()->tlu(4));
+	pG->setColor(UT_RGBColor(98,129,131));
+	pG->drawLine(left, top, right, top);
+	pG->drawLine(left, top, left, bottom);
+	pG->setColor(UT_RGBColor(230,234,238));
+	pG->drawLine(box.left+pG->tlu(1), box.top + pG->tlu(1), right - pG->tlu(1), top+pG->tlu(1));
+	pG->drawLine(box.left+pG->tlu(1), box.top + pG->tlu(1), left + pG->tlu(1), bottom - pG->tlu(1));
+	pG->setColor(UT_RGBColor(98,129,131));
+	pG->drawLine(right - pG->tlu(1), top + pG->tlu(1), right - pG->tlu(1), bottom - pG->tlu(1));
+	pG->drawLine(left + pG->tlu(1), bottom - pG->tlu(1), right - pG->tlu(1), bottom - pG->tlu(1));
+	pG->setColor(UT_RGBColor(49,85,82));
+	pG->drawLine(right, top, right, bottom);
+	pG->drawLine(left, bottom, right, bottom);
+	pG->fillRect(UT_RGBColor(156,178,180),box.left + pG->tlu(2), box.top + pG->tlu(2), box.width - pG->tlu(4), box.height - pG->tlu(4));
 }
 
 void fp_ImageRun::_draw(dg_DrawArgs* pDA)
