@@ -22,6 +22,10 @@
 ## SunOS (Solaris for now, too) platform defines
 ##############################################################################
 ABI_REQUIRE_PEER_ICONV = 1
+include $(ABI_ROOT)/src/config/platforms/nix-common.mk
+
+OS_ARCH := $(shell uname -p)
+OS_REALARCH := $(shell uname -p)
 
 PLATFORM_FLAGS          = -DSunOS
 PORT_FLAGS		= -D_POSIX_SOURCE -D_BSD_SOURCE -DHAVE_STRERROR -D_XOPEN_SOURCE -D__EXTENSIONS__ -DSETENV_MISSING -DSCANDIR_MISSING
