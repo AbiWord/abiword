@@ -8670,7 +8670,7 @@ Defun1(insBreak)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
-	if(pView->isInTable())
+	if(pView->isInTable(pView->getPoint()-1) && pView->isInTable())
 	{
 		XAP_Frame * pFrame = static_cast<XAP_Frame *> (pAV_View->getParentData());
 		pFrame->showMessageBox(AP_STRING_ID_MSG_NoBreakInsideTable,
