@@ -77,7 +77,8 @@ const char * GR_Graphics::invertDimension(UT_Dimension dim, double dValue) const
 	double dResolution = getResolution();		// NOTE: assumes square pixels/dpi/etc.
 	double dInches = dValue / dResolution;
 
-	return UT_convertToDimensionString(dim, dInches);
+	return UT_convertToDimensionString( dim,
+				UT_convertInchesToDimension( dInches, dim ) );
 }
 
 UT_Bool GR_Graphics::scaleDimensions(const char * szLeftIn, const char * szWidthIn,
