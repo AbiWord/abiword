@@ -5342,6 +5342,7 @@ fl_BlockLayout::doclistener_deleteStrux(const PX_ChangeRecord_Strux* pcrx)
 		// This call will dequeue the block from background checking
 		// if necessary
 		m_pSquiggles->join(offset, pPrevBL);
+		pPrevBL->setNeedsReformat();
 	}
 	else
 	{

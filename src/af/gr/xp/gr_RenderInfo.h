@@ -232,8 +232,8 @@ class GR_RenderInfo
 	virtual bool isJustified() const = 0;
 	
 	
-	UT_uint32           m_iOffset;
-	UT_uint32           m_iLength;
+	UT_sint32           m_iOffset;
+	UT_sint32           m_iLength;
 	GRShapingResult     m_eShapingResult;
 	GRShapingResult     m_eState;
 	GR_ScriptType       m_eScriptType;
@@ -245,7 +245,7 @@ class GR_RenderInfo
 	const GR_Graphics * m_pGraphics;
 	const GR_Font     * m_pFont;
 
-	UT_uint32           m_iJustificationPoints;
+	UT_sint32           m_iJustificationPoints;
 	UT_sint32           m_iJustificationAmount;
 	bool                m_bLastOnLine;
 	const GR_Item *     m_pItem;
@@ -281,17 +281,17 @@ class GR_XPRenderInfo : public GR_RenderInfo
 
 	UT_UCS4Char *       m_pChars;
 	UT_sint32 *         m_pWidths;
-	UT_uint32           m_iBufferSize;
-	UT_uint32 *         m_pSegmentOffset;
-	UT_uint32           m_iSegmentCount;
+	UT_sint32           m_iBufferSize;
+	UT_sint32 *         m_pSegmentOffset;
+	UT_sint32           m_iSegmentCount;
 	UT_sint32           m_iSpaceWidthBeforeJustification; // <0 for not justified
 	UT_uint32           m_iTotalLength;
 
 	// these can be static as for now we do not want to chache anything
-	static UT_uint32	    s_iClassInstanceCount;
+	static UT_sint32	    s_iClassInstanceCount;
 	static UT_UCS4Char *    s_pCharBuff;
 	static UT_sint32 *      s_pWidthBuff;
-	static UT_uint32        s_iBuffSize;
+	static UT_sint32        s_iBuffSize;
 	static UT_sint32 *      s_pAdvances;
 	static GR_RenderInfo *  s_pOwner;
   private:
@@ -324,7 +324,7 @@ class GR_ShapingInfo
 	virtual ~GR_ShapingInfo() {};
 
 	UT_TextIterator &   m_Text;
-	UT_uint32           m_iLength;
+	UT_sint32           m_iLength;
 	const char *        m_pLang;
 	UT_BidiCharType     m_iVisDir;
 	GRShapingResult     m_eShapingRequired;

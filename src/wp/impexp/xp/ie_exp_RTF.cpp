@@ -1086,19 +1086,67 @@ void IE_Exp_RTF::_write_tabdef(const char * szTabStops)
 }
 
 /*!
+ * Get style
+ */
+const XML_Char * IE_Exp_RTF::_getStyleProp(
+	s_RTF_AttrPropAdapter_Style * pADStyle,
+	const s_RTF_AttrPropAdapter * apa,
+	const char * szProp)
+{
+	const XML_Char *szVal = NULL;
+	if(pADStyle != NULL)
+	{
+		szVal = pADStyle->getProperty(szProp);
+		if(szVal == NULL)
+		{
+			szVal = apa->getProperty(szProp);
+		}
+		else
+		{
+			szVal = NULL;
+		}
+	}
+	else
+	{
+		szVal = apa->getProperty(szProp);
+	}
+	return szVal;
+}
+							   
+/*!
  * Write out the <charfmt> paragraph or character formatting. This
  * does not print opening and closing braces.
  */
 void IE_Exp_RTF::_write_charfmt(const s_RTF_AttrPropAdapter & apa)
 {
-	const XML_Char * szColor = apa.getProperty("color");
-	UT_sint32 ndxColor = _findColor((char*)szColor);
-	UT_return_if_fail (ndxColor != -1);
+	const XML_Char * szStyle = apa.getAttribute(PT_STYLE_ATTRIBUTE_NAME);
+	UT_sint32 iStyle = -1;
+	PD_Style * pStyle = NULL;
+	s_RTF_AttrPropAdapter_Style * pADStyle = NULL;
+	if(szStyle != NULL)
+	{
+		iStyle = static_cast<UT_sint32>(_getStyleNumber(szStyle));
+		getDoc()->getStyle(szStyle,&pStyle);
+		pADStyle = new s_RTF_AttrPropAdapter_Style(pStyle);
+		_rtf_keyword("cf",iStyle);
+//
+// OK now we have to make sure all these character props aren't in the style
+//
+	}
+	
+	const XML_Char * szColor = _getStyleProp(pADStyle,&apa,"color");
 
-	if (ndxColor != 0) // black text, the default
-		_rtf_keyword("cf",ndxColor);
+	UT_sint32 ndxColor = -1;
+	if(szColor)
+	{
+		UT_sint32 ndxColor = _findColor((char*)szColor);
+		UT_return_if_fail (ndxColor != -1);
 
-	szColor = apa.getProperty("bgcolor");
+		if (ndxColor != 0) // black text, the default
+			_rtf_keyword("cf",ndxColor);
+	}
+
+	szColor = _getStyleProp(pADStyle,&apa,"bgcolor");
 
 	if (szColor && UT_stricmp (szColor, "transparent") != 0)
 	{
@@ -1110,12 +1158,19 @@ void IE_Exp_RTF::_write_charfmt(const s_RTF_AttrPropAdapter & apa)
 			_rtf_keyword("highlight",ndxColor);
 		}
 	}
+	const XML_Char * szFont = NULL;
+	if(pADStyle != NULL)
+	{
+		szFont = pADStyle->getProperty("font-family");
+	}
+	if(szFont == NULL)
+	{
+		UT_sint32 ndxFont = _findFont(&apa);
+		if(ndxFont != -1)
+			_rtf_keyword("f",ndxFont);	// font index in fonttbl
+	}
 
-	UT_sint32 ndxFont = _findFont(&apa);
-	if(ndxFont != -1)
-		_rtf_keyword("f",ndxFont);	// font index in fonttbl
-
-	const XML_Char * szFontSize = apa.getProperty("font-size");
+	const XML_Char * szFontSize = _getStyleProp(pADStyle,&apa,"font-size");
 	double dbl = UT_convertToPoints(szFontSize);
 	UT_sint32 d = (UT_sint32)(dbl*2.0);
 
@@ -1126,15 +1181,15 @@ void IE_Exp_RTF::_write_charfmt(const s_RTF_AttrPropAdapter & apa)
 			d = 24;
 		_rtf_keyword("fs",d);	// font size in half points
 	}
-	const XML_Char * szFontStyle = apa.getProperty("font-style");
+	const XML_Char * szFontStyle = _getStyleProp(pADStyle,&apa,"font-style");
 	if (szFontStyle && *szFontStyle && (UT_strcmp(szFontStyle,"italic")==0))
 		_rtf_keyword("i");
 
-	const XML_Char * szFontWeight = apa.getProperty("font-weight");
+	const XML_Char * szFontWeight = _getStyleProp(pADStyle,&apa,"font-weight");
 	if (szFontWeight && *szFontWeight && (UT_strcmp(szFontWeight,"bold")==0))
 		_rtf_keyword("b");
 
-	const XML_Char * szFontDecoration = apa.getProperty("text-decoration");
+	const XML_Char * szFontDecoration = _getStyleProp(pADStyle,&apa,"text-decoration");
 	if (szFontDecoration && *szFontDecoration)
 	{
 		if (strstr(szFontDecoration,"underline") != 0)
@@ -1153,7 +1208,7 @@ void IE_Exp_RTF::_write_charfmt(const s_RTF_AttrPropAdapter & apa)
 		}
 	}
 
-	const XML_Char * szFontPosition = apa.getProperty("text-position");
+	const XML_Char * szFontPosition = _getStyleProp(pADStyle,&apa,"text-position");
 	if (szFontPosition && *szFontPosition)
 	{
 		if (!UT_strcmp(szFontPosition,"superscript"))
@@ -1163,7 +1218,7 @@ void IE_Exp_RTF::_write_charfmt(const s_RTF_AttrPropAdapter & apa)
 	}
 
 	// export the language of the run of text
-	const XML_Char * szLang = apa.getProperty("lang");
+	const XML_Char * szLang = _getStyleProp(pADStyle,&apa,"lang");
 	if ( szLang )
 	  {
 	    UT_DEBUGMSG(("DOM: lang,lid = %s,%d\n", szLang, wvLangToLIDConverter(szLang)));
@@ -1171,7 +1226,7 @@ void IE_Exp_RTF::_write_charfmt(const s_RTF_AttrPropAdapter & apa)
 	  }
 
 	//###TF const XML_Char * szDir = apa.getProperty("dir");
-	const XML_Char * szDirOvrr = apa.getProperty("dir-override");
+	const XML_Char * szDirOvrr = _getStyleProp(pADStyle,&apa,"dir-override");
 
 	bool bProceed = true;
 	if (szDirOvrr)
@@ -1207,7 +1262,7 @@ void IE_Exp_RTF::_write_charfmt(const s_RTF_AttrPropAdapter & apa)
 		_rtf_keyword("listtag",id);
 		_rtf_close_brace();
 	}
-
+	DELETEP(pADStyle);
 
 	// TODO do something with our font-stretch and font-variant properties
 	// note: we assume that kerning has been turned off at global scope.

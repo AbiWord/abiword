@@ -97,8 +97,8 @@ fp_TextRun::fp_TextRun(fl_BlockLayout* pBL,
 
 fp_TextRun::~fp_TextRun()
 {
-	delete m_pRenderInfo;
-	delete m_pItem;
+	DELETEP(m_pRenderInfo);
+	DELETEP(m_pItem);
 }
 
 bool fp_TextRun::hasLayoutProperties(void) const
@@ -1631,7 +1631,7 @@ void fp_TextRun::_draw(dg_DrawArgs* pDA)
 		// drawing. As a result, the offsets of the segments we
 		// calculated above need to be adjusted
 		GR_XPRenderInfo * pRI = (GR_XPRenderInfo *) m_pRenderInfo;
-		pRI->m_pSegmentOffset = &iSegmentOffset[0];
+		pRI->m_pSegmentOffset = reinterpret_cast<UT_sint32 *>(&iSegmentOffset[0]);
 		pRI->m_iSegmentCount = iSegmentCount;
 	}
 

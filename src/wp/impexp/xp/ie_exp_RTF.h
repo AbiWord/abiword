@@ -36,6 +36,7 @@ class PP_AttrProp;
 class s_RTF_ListenerWriteDoc;
 class s_RTF_ListenerGetProps;
 class s_RTF_AttrPropAdapter;
+class s_RTF_AttrPropAdapter_Style;
 class ie_exp_RTF_MsWord97List;
 class ie_exp_RTF_MsWord97ListSimple;
 class ie_exp_RTF_MsWord97ListMulti;
@@ -143,6 +144,10 @@ protected:
 	void				_rtf_fontname(const char * szFontName);
 	void				_rtf_chardata(const char * pbuf, UT_uint32 buflen);
 	void				_rtf_nl(void);
+	const XML_Char *    _getStyleProp(s_RTF_AttrPropAdapter_Style * pADStyle,
+									  const s_RTF_AttrPropAdapter * apa,
+									  const char * szProp);
+
 	bool				_write_rtf_header(void);
 	bool				_write_rtf_trailer(void);
 

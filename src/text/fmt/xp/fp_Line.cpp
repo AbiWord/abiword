@@ -2561,6 +2561,7 @@ void fp_Line::recalcMaxWidth(bool bDontClearIfNeeded)
 		if(getContainer()->getContainerType() == FP_CONTAINER_COLUMN ||
 			getContainer()->getContainerType() == FP_CONTAINER_COLUMN_SHADOW ||
 			getContainer()->getContainerType() == FP_CONTAINER_HDRFTR ||
+			getContainer()->getContainerType() == FP_CONTAINER_TOC ||
 			getContainer()->getContainerType() == FP_CONTAINER_FOOTNOTE||
 			getContainer()->getContainerType() == FP_CONTAINER_ENDNOTE)
 		{
@@ -2573,6 +2574,11 @@ void fp_Line::recalcMaxWidth(bool bDontClearIfNeeded)
 			m_iClearToPos = static_cast<UT_sint32>(iMaxWidth + pCell->getRightPad());
 //			m_iClearLeftOffset = pCell->getCellX(this) - pCell->getLeftPos() - getGraphics()->tlu(1);
 			m_iClearLeftOffset =  0;
+		}
+		else if(getContainer()->getContainerType() == FP_CONTAINER_FRAME)
+		{
+			m_iClearToPos = iMaxWidth;
+			m_iClearLeftOffset = 0;
 		}
 		else
 		{

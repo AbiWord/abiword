@@ -42,10 +42,10 @@ void GR_Itemization::clear()
 
 #define GRIXP_STATIC_BUFFER_SIZE 256
 
-UT_uint32       GR_XPRenderInfo::s_iClassInstanceCount = 0;
+UT_sint32       GR_XPRenderInfo::s_iClassInstanceCount = 0;
 UT_UCS4Char *   GR_XPRenderInfo::s_pCharBuff           = NULL;
 UT_sint32 *     GR_XPRenderInfo::s_pWidthBuff          = NULL;
-UT_uint32       GR_XPRenderInfo::s_iBuffSize           = 0;
+UT_sint32       GR_XPRenderInfo::s_iBuffSize           = 0;
 UT_sint32 *     GR_XPRenderInfo::s_pAdvances           = NULL;
 GR_RenderInfo * GR_XPRenderInfo::s_pOwner              = NULL;
 
@@ -56,7 +56,7 @@ GR_XPRenderInfo::GR_XPRenderInfo(GR_ScriptType type)
 		 m_iBufferSize(0),
 		 m_pSegmentOffset(NULL),
 		 m_iSegmentCount(0),
-		 m_iSpaceWidthBeforeJustification(0xffffffff),
+		 m_iSpaceWidthBeforeJustification(0xfffffff), // note one less 'f'
 		 m_iTotalLength(0)
 {
 	_constructorCommonCode();
@@ -74,7 +74,7 @@ GR_XPRenderInfo::GR_XPRenderInfo(UT_UCS4Char *pChar,
 		 m_iBufferSize(iBufferSize),
 		 m_pSegmentOffset(NULL),
 		 m_iSegmentCount(0),
-		 m_iSpaceWidthBeforeJustification(0xffffffff)
+		 m_iSpaceWidthBeforeJustification(0xfffffff) // not one less 'f'
 {
 	m_iOffset = offset;
 	m_iLength = len;
@@ -194,7 +194,7 @@ bool GR_XPRenderInfo::append(GR_RenderInfo &ri, bool bReverse)
 		|| m_iJustificationPoints)
 	{
 		// the text is justified, merge the justification information
-		if(m_iSpaceWidthBeforeJustification == 0xffffffff)
+		if(m_iSpaceWidthBeforeJustification == 0xfffffff) // note one less 'f'
 			m_iSpaceWidthBeforeJustification = RI.m_iSpaceWidthBeforeJustification;
 	
 		m_iJustificationPoints += ri.m_iJustificationPoints;
@@ -347,21 +347,21 @@ bool  GR_XPRenderInfo::split (GR_RenderInfo *&pri, bool bReverse)
 bool GR_XPRenderInfo::cut(UT_uint32 offset, UT_uint32 iLen, bool bReverse)
 {
 	UT_return_val_if_fail(m_pText, false);
-	
 	// ascertain the state of the buffer and our shaping requirenments ...
 	bool bRefresh = (((UT_uint32)m_eState & (UT_uint32)m_eShapingResult ) != 0);
-
+	UT_sint32 ioffset = static_cast<UT_sint32>(offset);
+	UT_sint32 jLen = static_cast<UT_sint32>(iLen);
 	if(bRefresh)
 		return false;
 	
 	bool bLigatures = (((UT_uint32)m_eShapingResult & (UT_uint32) GRSR_Ligatures) != 0);
 	bool bContext = (((UT_uint32)m_eShapingResult & (UT_uint32) GRSR_ContextSensitive) != 0);
 
-	m_iTotalLength -= iLen;
-	
+	m_iTotalLength -= jLen;
+
 	GR_ContextGlyph cg;
 
-	UT_uint32 pos = m_pText->getPosition();
+	UT_sint32 pos = static_cast<UT_sint32>(m_pText->getPosition());
 
 #ifndef NO_BIDI_SUPPORT
 	UT_UCS4Char c;
@@ -375,11 +375,11 @@ bool GR_XPRenderInfo::cut(UT_uint32 offset, UT_uint32 iLen, bool bReverse)
 
 		// start with the right boundary, as that is computationally
 		// easier
-		if(offset + iLen < m_iLength)
+		if(ioffset + jLen < m_iLength)
 		{
 			// the easiest way of checking for presence of ligature
 			// glyph is to check for the presence of the placeholder
-			UT_uint32 off2  = offset + iLen;
+			UT_sint32 off2  = ioffset + jLen;
 
 			if(m_iVisDir == UT_BIDI_RTL)
 			{
@@ -392,7 +392,7 @@ bool GR_XPRenderInfo::cut(UT_uint32 offset, UT_uint32 iLen, bool bReverse)
 		// now the left boundary
 		if(!bRefresh && offset > 0)
 		{
-			m_pText->setPosition(pos + offset - 1);
+			m_pText->setPosition(pos + ioffset - 1);
 			if(m_pText->getStatus() == UTIter_OK)
 			{
 				c = m_pText->getChar();
@@ -407,7 +407,7 @@ bool GR_XPRenderInfo::cut(UT_uint32 offset, UT_uint32 iLen, bool bReverse)
 		// deletion
 		if(offset > 0)
 		{
-			m_pText->setPosition(pos + offset - 1);
+			m_pText->setPosition(pos + ioffset - 1);
 			if(m_pText->getStatus() == UTIter_OK)
 			{
 				c = m_pText->getChar();
@@ -415,12 +415,12 @@ bool GR_XPRenderInfo::cut(UT_uint32 offset, UT_uint32 iLen, bool bReverse)
 			}
 		}
 
-		if(!bRefresh && offset + iLen < m_iLength)
+		if(!bRefresh && ioffset + jLen < m_iLength)
 		{
 			// this function is called in response to the PT being
 			// already changed, i.e., the character that used to be at
-			// offset + iLen is now at offset
-			m_pText->setPosition(pos + offset);
+			// ioffset + jLen is now at offset
+			m_pText->setPosition(pos + ioffset);
 			if(m_pText->getStatus() == UTIter_OK)
 			{
 				c = m_pText->getChar();
@@ -434,38 +434,38 @@ bool GR_XPRenderInfo::cut(UT_uint32 offset, UT_uint32 iLen, bool bReverse)
 	if(bRefresh)
 	{
 		return false;
-	}
+    }
 	else
 	{
 		// if we got here, we just need to cut out a bit of the draw
 		// buffer
-		UT_sint32 iLenToCopy = static_cast<UT_sint32>(m_iLength) - static_cast<UT_sint32>(offset) - static_cast<UT_sint32>(iLen);
-
+		UT_sint32 iLenToCopy = m_iLength - ioffset - jLen;
+		UT_return_val_if_fail(iLenToCopy >= 0, false);
 		if(iLenToCopy)
 		{
-			UT_UCS4Char * d = m_pChars+offset;
-			UT_UCS4Char * s = m_pChars+offset+iLen;
+			UT_UCS4Char * d = m_pChars+ioffset;
+			UT_UCS4Char * s = m_pChars+ioffset+jLen;
 
 			if(m_iVisDir == UT_BIDI_RTL)
 			{
-				d = m_pChars + (m_iLength - (offset + iLen - 1));
-				s = m_pChars + (m_iLength - offset);
+				d = m_pChars + (m_iLength - (ioffset + jLen - 1));
+				s = m_pChars + (m_iLength - ioffset);
 			}
 
 			UT_UCS4_strncpy(d, s, iLenToCopy);
 			m_pChars[m_iLength - iLen] = 0;
 
-			d = (UT_UCS4Char *) m_pWidths+offset;
-			s = (UT_UCS4Char *) m_pWidths+offset+iLen;
+			d = (UT_UCS4Char *) m_pWidths+ioffset;
+			s = (UT_UCS4Char *) m_pWidths+ioffset+jLen;
 
 			if(m_iVisDir == UT_BIDI_RTL)
 			{
-				d = (UT_UCS4Char *) m_pWidths + (m_iLength - offset + iLen - 1);
-				s = (UT_UCS4Char *) m_pWidths + (m_iLength - offset);
+				d = (UT_UCS4Char *) m_pWidths + (m_iLength - ioffset + jLen - 1);
+				s = (UT_UCS4Char *) m_pWidths + (m_iLength - ioffset);
 			}
 
 			UT_UCS4_strncpy(d, s, iLenToCopy);
-			m_pWidths[m_iLength - iLen] = 0;
+			m_pWidths[m_iLength - jLen] = 0;
 		}
 	}
 
@@ -692,13 +692,13 @@ void GR_XPRenderInfo::_calculateCharAdvances()
 		// _stripLigaturePlaceHolders(), which is in the same order as
 		// the string to which it relates
 
-		for(UT_uint32 n = 0; n < m_iLength; n++)
+		for(UT_sint32 n = 0; n < m_iLength; n++)
 		{
 			if(s_pWidthBuff[n] < 0 || s_pWidthBuff[n] >= GR_OC_LEFT_FLUSHED)
 			{
 				UT_sint32 iCumAdvance = 0;
 
-				UT_uint32 m = n+1;
+				UT_sint32 m = n+1;
 				while(m < (UT_sint32)m_iLength && s_pWidthBuff[m] < 0)
 					m++;
 
@@ -708,14 +708,14 @@ void GR_XPRenderInfo::_calculateCharAdvances()
 					// character over which we are meant to be
 					// overimposing our overstriking chars
 					// we will have to set the offsets to 0
-					for(UT_uint32 k = n; k < m_iLength; k++)
+					for(UT_sint32 k = n; k < m_iLength; k++)
 						s_pAdvances[k] = 0;
 
 					n = m_iLength;
 				}
 				else
 				{
-					UT_uint32 k;
+					UT_sint32 k;
 					for(k = n; k < m; k++)
 					{
 						UT_sint32 iAdv;
@@ -766,7 +766,7 @@ void GR_XPRenderInfo::_calculateCharAdvances()
 	}
 	else
 	{
-		for(UT_uint32 n = 0; n < m_iLength; n++)
+		for(UT_sint32 n = 0; n < m_iLength; n++)
 		{
 			if(s_pWidthBuff[n+1] < 0 || s_pWidthBuff[n+1] >= GR_OC_LEFT_FLUSHED)
 			{
@@ -775,7 +775,7 @@ void GR_XPRenderInfo::_calculateCharAdvances()
 				UT_sint32 iCumAdvance = 0;
 
 				// find the next non-zerow char
-				UT_uint32 m  = n + 1;
+				UT_sint32 m  = n + 1;
 				while(m < m_iLength && s_pWidthBuff[m] < 0)
 				{
 					// plus because pCharWidths[m] < 0

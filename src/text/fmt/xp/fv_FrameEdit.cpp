@@ -492,6 +492,7 @@ void FV_FrameEdit::setDragType(UT_sint32 x, UT_sint32 y, bool bDrawFrame)
 	xxx_UT_DEBUGMSG(("setDragType called frameEdit mode %d \n",m_iFrameEditMode));
 	PT_DocPosition posAtXY = m_pView->getDocPositionFromXY(x,y,false);
 	fl_BlockLayout * pBL = m_pView->_findBlockAtPosition(posAtXY);
+	UT_return_if_fail(pBL);
 	if(!isActive())
 	{
 		m_iFrameEditMode = 	FV_FrameEdit_EXISTING_SELECTED;
@@ -541,6 +542,7 @@ void FV_FrameEdit::setDragType(UT_sint32 x, UT_sint32 y, bool bDrawFrame)
 		pFL = static_cast<fl_FrameLayout *>(pBL->myContainingLayout());
 		pFCon = static_cast<fp_FrameContainer *>(pFL->getFirstContainer());
 	}
+	UT_return_if_fail(pFCon);
 	UT_sint32 ires = getGraphics()->tlu(FRAME_HANDLE_SIZE); // 6 pixels wide hit area
 	UT_sint32 iLeft = xPage + pFCon->getFullX();
 	UT_sint32 iRight = xPage + pFCon->getFullX() + pFCon->getFullWidth();

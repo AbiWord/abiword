@@ -1130,7 +1130,7 @@ UT_sint32 GR_Graphics::resetJustification(GR_RenderInfo & ri, bool /* bPermanent
 			}
 		}
 		
-		RI.m_iSpaceWidthBeforeJustification = 0xffffffff;
+		RI.m_iSpaceWidthBeforeJustification = 0xfffffff; // note one less 'f'
 		RI.m_iJustificationPoints = 0;
 		RI.m_iJustificationAmount = 0;
 

@@ -506,7 +506,9 @@ void AP_LeftRuler::mouseRelease(EV_EditModifierState ems, EV_EditMouseButton emb
 				if(pPage)
 				{
 					fp_ShadowContainer* pShadowC = pPage->getHdrFtrP(hfType);
+					UT_return_if_fail(pShadowC);
 					pShadow = pShadowC->getShadow();
+					UT_return_if_fail(pShadow);
 					pView->setHdrFtrEdit(pShadow);
 				}
 				pView->setPoint(insPos);
