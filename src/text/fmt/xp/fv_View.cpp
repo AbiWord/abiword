@@ -320,6 +320,9 @@ void FV_View::toggleCase (ToggleCase c)
       UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
     }
 
+  m_pDoc->notifyPieceTableChangeStart();
+  m_pDoc->beginUserAtomicGlob();
+
   PP_AttrProp AttrProp_Before;
   _eraseInsertionPoint();
   _deleteSelection(&AttrProp_Before);
@@ -329,7 +332,11 @@ void FV_View::toggleCase (ToggleCase c)
 		     replace_len,
 		     &AttrProp_Before);
 
+  m_pDoc->endUserAtomicGlob();
+
   _generalUpdate();
+
+  m_pDoc->notifyPieceTableChangeEnd();
 
   FREEP(cur);
   delete [] replace;
@@ -1615,7 +1622,6 @@ bool FV_View::isPointBeforeListLabel(void)
 	return bBefore;
 }
 
-
 void FV_View::processSelectedBlocks(List_Type listType)
 {
 	//
@@ -1655,6 +1661,9 @@ void FV_View::processSelectedBlocks(List_Type listType)
 		}
 	}
 	m_pDoc->endUserAtomicGlob();
+
+	// closes bug # 1255 - unselect a list after creation
+	cmdUnselectSelection();
 
 	_generalUpdate();
 
