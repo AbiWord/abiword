@@ -64,12 +64,19 @@ AP_Dialog_Goto::tAnswer AP_Dialog_Goto::getAnswer(void) const
 // --------------------------- Setup Functions -----------------------------
 UT_Bool AP_Dialog_Goto::setView(FV_View * view)
 {
-	m_pView = view;
-
+        m_pView =  (FV_View *) getActiveFrame()->getCurrentView();
 	return UT_TRUE;
 }
 
-FV_View * AP_Dialog_Goto::getView(void) const
+FV_View * AP_Dialog_Goto::getView(void)
 {
-	return m_pView;
+        XAP_Frame * pFrame =  getActiveFrame();
+        return  (FV_View *) pFrame->getCurrentView();
 }
+
+
+
+
+
+
+

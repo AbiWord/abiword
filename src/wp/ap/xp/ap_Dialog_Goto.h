@@ -54,7 +54,7 @@ public:
 	// instance of the dialog.  These do not read the persistent
 	// values.
   	UT_Bool						setView(FV_View * view);
-  	FV_View * 					getView(void) const;
+  	FV_View * 					getView(void);
 
 	static char **              getJumpTargets(void); // TODO: Change to UT_UCSChar
 

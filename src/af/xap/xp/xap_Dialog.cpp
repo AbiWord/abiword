@@ -145,14 +145,12 @@ XAP_Dialog_Modeless::~XAP_Dialog_Modeless(void)
 
 void XAP_Dialog_Modeless::useStart(void)
 {
-	UT_ASSERT(!m_bInUse);
-	m_bInUse = UT_TRUE;
+  // UT_DEBUGMSG(("Called generic useStart in XAP_DIALOG_Modeless \n"));
 }
 
 void XAP_Dialog_Modeless::useEnd(void)
 {
-	UT_ASSERT(m_bInUse);
-	m_bInUse = UT_FALSE;
+  // UT_DEBUGMSG(("Called generic useEnd in XAP_DIALOG_Modeless \n"));
 }
 
 void XAP_Dialog_Modeless::modeless_cleanup(void)
@@ -166,15 +164,6 @@ UT_Bool XAP_Dialog_Modeless::isRunning(void)
 {
  
 	UT_sint32 sid = (UT_sint32) getDialogId();
-
-	/*
-	void * pWidget = m_pApp->getModelessWidget(sid);
-	UT_Bool isrunning = UT_TRUE;
-	if(pWidget == (void *) NULL)
-	{
-		isrunning = UT_FALSE;
-	}
-	*/
 	return m_pApp->isModelessRunning(sid);
 }
 

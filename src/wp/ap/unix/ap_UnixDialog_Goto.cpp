@@ -59,12 +59,8 @@ static void s_goto (const char *number, AP_UnixDialog_Goto * me)
 {
 	UT_UCSChar *ucsnumber = (UT_UCSChar *) malloc (sizeof (UT_UCSChar) * (strlen(number) + 1));
 	UT_UCS_strcpy_char (ucsnumber, number);
-	FV_View *view;
 	int target = me->getSelectedRow ();
-	
-	UT_ASSERT(view = me->getView ());
-
-	view->gotoTarget ((AP_JumpTarget) target, ucsnumber);
+	me->getView()->gotoTarget ((AP_JumpTarget) target, ucsnumber);
 	free (ucsnumber);
 }
 
@@ -216,7 +212,6 @@ GtkWidget * AP_UnixDialog_Goto::_constructWindow (void)
 	gtk_container_add (GTK_CONTAINER (hbuttonbox1), close_bt);
 	GTK_WIDGET_SET_FLAGS (close_bt, (GTK_CAN_DEFAULT | GTK_HAS_DEFAULT));
 
-	gtk_grab_add(m_wMainWindow);
 	gtk_widget_show_all (m_wMainWindow);
 
 	return (m_wMainWindow);

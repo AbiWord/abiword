@@ -2969,9 +2969,15 @@ static UT_Bool s_doGotoDlg(FV_View * pView, XAP_Dialog_Id id)
 		= (AP_Dialog_Goto *)(pDialogFactory->requestDialog(id));
 	UT_ASSERT(pDialog);
 
-	pDialog->setView(pView);
-	pDialog->runModeless(pFrame);
-	
+        if(pDialog->isRunning() == UT_TRUE)
+	{
+	        pDialog->activate();
+        }
+	else
+        {
+	        pDialog->setView(pView);
+	        pDialog->runModeless(pFrame);
+	}
 	return UT_TRUE;
 }
 #endif
