@@ -42,7 +42,8 @@ HEADERS=		$(EXPORT_HEADERS)		\
 			ap_Menu_Layouts.h		\
 			ap_Menu_Layouts_All.h		\
 			ap_Menu_Layouts_DebugMenu.h	\
-			ap_Menu_Layouts_MainMenu.h
+			ap_Menu_Layouts_MainMenu.h \
+			ap_ViewListener.h
 
 RELEASE_HEADERS=	$(EXPORT_HEADERS)
 RELEASE_HEADERS_DEST=	$(RELEASE_INCLUDE_DIR)
@@ -55,7 +56,8 @@ CPPSRCS=		ap_App.cpp			\
 			ap_Menu_ActionSet.cpp		\
 			ap_Menu_Functions.cpp		\
 			ap_Menu_LabelSet.cpp		\
-			ap_Menu_Layouts.cpp
+			ap_Menu_Layouts.cpp			\
+			ap_ViewListener.cpp
 
 INCLUDES=		-I$(DIST)/include -I. -DUT_DEBUG
 

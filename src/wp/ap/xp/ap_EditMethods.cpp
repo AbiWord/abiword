@@ -36,7 +36,6 @@
 #include "fl_DocLayout.h"
 #include "pd_Document.h"
 #include "gr_Graphics.h"
-#include "fl_Types.h"
 #include "ap_App.h"
 #include "ap_Frame.h"
 #include "ap_EditMethods.h"

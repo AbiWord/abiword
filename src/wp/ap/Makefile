@@ -44,7 +44,8 @@ OBJS=		$(PLATFORM_OBJS)					\
 		xp/$(OBJDIR)/ap_Menu_ActionSet.$(OBJ_SUFFIX)		\
 		xp/$(OBJDIR)/ap_Menu_Functions.$(OBJ_SUFFIX)		\
 		xp/$(OBJDIR)/ap_Menu_LabelSet.$(OBJ_SUFFIX)		\
-		xp/$(OBJDIR)/ap_Menu_Layouts.$(OBJ_SUFFIX)
+		xp/$(OBJDIR)/ap_Menu_Layouts.$(OBJ_SUFFIX)		\
+		xp/$(OBJDIR)/ap_ViewListener.$(OBJ_SUFFIX)
 
 include $(ABI_DEPTH)/config/abi_rules.mk
 

@@ -20,6 +20,7 @@
 #include <gtk/gtk.h>
 #include "ut_types.h"
 #include "ut_assert.h"
+#include "ap_ViewListener.h"
 #include "ap_UnixApp.h"
 #include "ap_UnixFrame.h"
 #include "ev_UnixKeyboard.h"
@@ -329,6 +330,7 @@ UT_Bool AP_UnixFrame::loadDocument(const char * szFilename)
 	FL_DocLayout * pDocLayout = NULL;
 	FV_View * pView = NULL;
 	FV_ScrollObj * pScrollObj = NULL;
+	ap_ViewListener * pViewListener = NULL;
 
 	int height, pageLen;
 
@@ -345,12 +347,20 @@ UT_Bool AP_UnixFrame::loadDocument(const char * szFilename)
 	ENSUREP(pView);
 	pScrollObj = new FV_ScrollObj(this,_scrollFunc);
 	ENSUREP(pScrollObj);
+	pViewListener = new ap_ViewListener(this);
+	ENSUREP(pViewListener);
+
+	FV_ListenerId lid;
+	if (!pView->addListener(static_cast<FV_Listener *>(pViewListener),&lid))
+		goto Cleanup;
 
 	// switch to new view, cleaning up previous settings
 	REPLACEP(m_pG, pG);
 	REPLACEP(m_pDocLayout, pDocLayout);
 	REPLACEP(m_pView, pView);
 	REPLACEP(m_pScrollObj, pScrollObj);
+	REPLACEP(m_pViewListener, pViewListener);
+	m_lid = lid;
 
 	m_pView->addScrollListener(m_pScrollObj);
 	m_pView->setWindowSize(GTK_WIDGET(m_dArea)->allocation.width,
@@ -378,6 +388,7 @@ Cleanup:
 	DELETEP(pG);
 	DELETEP(pDocLayout);
 	DELETEP(pView);
+	DELETEP(pViewListener);
 	DELETEP(pScrollObj);
 
 	// change back to prior document

@@ -27,12 +27,17 @@
 #include "ut_vector.h"
 #include "ut_growbuf.h"
 #include "pt_Types.h"
-#include "fl_Types.h"
 #include "fl_Layout.h"
 
 // number of DocPositions occupied by the block strux
 #define fl_BLOCK_STRUX_OFFSET	1
 
+// TODO the following should be an enum
+#define FL_ALIGN_BLOCK_LEFT		1
+#define FL_ALIGN_BLOCK_RIGHT    2
+#define FL_ALIGN_BLOCK_CENTER   3
+#define FL_ALIGN_BLOCK_JUSTIFY  4
+	
 class FL_DocLayout;
 class fl_SectionLayout;
 class fb_LineBreaker;

@@ -37,7 +37,7 @@ CPPSRCS=		ap_UnixApp.cpp			\
 			ap_UnixFrame.cpp
 
 
-INCLUDES=		-I$(DIST)/include -I. -DUT_DEBUG
+INCLUDES=		-I$(DIST)/include -I. -I../xp -DUT_DEBUG
 
 TARGETS=		$(OBJS)
 

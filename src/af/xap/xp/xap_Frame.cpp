@@ -26,6 +26,7 @@
 
 #include "ap_App.h"
 #include "ap_Frame.h"
+#include "ap_ViewListener.h"
 #include "ev_EditBinding.h"
 #include "ev_EditEventMapper.h"
 #include "ev_EditMethod.h"
@@ -51,6 +52,7 @@ AP_Frame::AP_Frame(AP_App * app)
 	m_pDoc = NULL;
 	m_pDocLayout = NULL;
 	m_pView = NULL;
+	m_pViewListener = NULL;
 	m_pScrollObj = NULL;
 	m_pG = NULL;
 	m_pEBM = NULL;
@@ -69,6 +71,12 @@ AP_Frame::~AP_Frame(void)
 //	m_app->forgetFrame(this);
 	
 	// only delete the things that we created...
+
+	if (m_pView)
+		m_pView->removeListener(m_lid);
+
+	if (m_pViewListener)
+		delete m_pViewListener;
 
 	DELETEP(m_pView);
 	DELETEP(m_pDocLayout);		// NOTE: this also nukes m_pDoc

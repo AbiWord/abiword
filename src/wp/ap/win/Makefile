@@ -37,7 +37,7 @@ CPPSRCS=		ap_Win32App.cpp			\
 			ap_Win32Frame.cpp
 
 
-INCLUDES=		-I$(DIST)/include -I. -DUT_DEBUG
+INCLUDES=		-I$(DIST)/include -I. -I../xp -DUT_DEBUG
 
 TARGETS=		$(OBJS)
 

@@ -19,13 +19,38 @@
 
 
 
-#ifndef FL_TYPES_H
-#define FL_TYPES_H
+#include <stdio.h>
+#include <stdlib.h>
 
-// TODO the following should be an enum
-#define FL_ALIGN_BLOCK_LEFT		1
-#define FL_ALIGN_BLOCK_RIGHT    2
-#define FL_ALIGN_BLOCK_CENTER   3
-#define FL_ALIGN_BLOCK_JUSTIFY  4
-	
-#endif /* FL_TYPES_H */
+#include "ut_types.h"
+#include "ut_debugmsg.h"
+#include "ut_assert.h"
+#include "ap_Frame.h"
+#include "ap_ViewListener.h"
+#include "fv_Listener.h"
+#include "fv_View.h"
+
+
+ap_ViewListener::ap_ViewListener(AP_Frame* pFrame)
+{
+	m_pFrame = pFrame;
+}
+
+ap_ViewListener::~ap_ViewListener()
+{
+}
+
+UT_Bool ap_ViewListener::notify(FV_View * pView, const FV_ChangeMask mask)
+{
+	UT_ASSERT(pView);
+	UT_ASSERT(pView==m_pFrame->getCurrentView());
+
+	if ((mask & FV_CHG_DIRTY) || (mask & FV_CHG_FILENAME))
+	{
+		// NOTE: could pass mask here to make updateTitle more efficient
+		m_pFrame->updateTitle();
+	}
+
+	return UT_TRUE;
+}
+

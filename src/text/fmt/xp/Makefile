@@ -24,7 +24,7 @@ include $(ABI_DEPTH)/config/abi_defs.mk
 
 EXPORT_HEADERS=		fv_View.h	\
 			fl_DocLayout.h	\
-			fl_Types.h		
+			fv_Listener.h
 
 HEADERS=		$(EXPORT_HEADERS)	\
 			fb_LineBreaker.h	\

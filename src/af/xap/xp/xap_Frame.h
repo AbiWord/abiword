@@ -22,8 +22,10 @@
 #define AP_FRAME_H
 
 #include "ut_types.h"
+#include "fv_Listener.h"	// for FV_ListenerID
 
 class AP_App;
+class ap_ViewListener;
 class DG_Graphics;
 class FV_View;
 class FL_DocLayout;
@@ -75,6 +77,8 @@ protected:
 	PD_Document *				m_pDoc;			/* to our in-memory representation of a document */
 	FL_DocLayout *				m_pDocLayout;	
 	FV_View *					m_pView;		/* to our view on the document */
+	ap_ViewListener *			m_pViewListener;
+	FV_ListenerId				m_lid;
 	FV_ScrollObj *				m_pScrollObj;	/* to our scroll handler */
 	DG_Graphics *				m_pG;
 	EV_EditBindingMap *			m_pEBM;			/* the key/mouse bindings for this frame */

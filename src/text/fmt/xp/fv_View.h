@@ -25,6 +25,7 @@
 #include "ut_misc.h"
 #include "ut_types.h"
 #include "ut_vector.h"
+#include "fv_Listener.h"
 #include "pt_Types.h"
 #include "gr_DrawArgs.h"
 
@@ -69,6 +70,14 @@ class FV_ScrollObj
 	void (*m_pfn)(void *, UT_sint32, UT_sint32);
 };
 
+struct fv_ChangeState
+{
+	UT_Bool				bUndo;
+	UT_Bool				bRedo;
+	UT_Bool				bDirty;
+	UT_Bool				bSelection;
+};
+
 class FV_View
 {
 	friend class fl_DocListener;
@@ -100,12 +109,13 @@ public:
 	void insertParagraphBreak();
 
 	void cmdScroll(UT_sint32 iScrollCmd, UT_uint32 iPos = 0);
-//	void addScrollListener(void (*pfn)(FV_View*,UT_sint32, UT_sint32));
-//	void removeScrollListener(void (*pfn)(FV_View*,UT_sint32, UT_sint32));
 	void addScrollListener(FV_ScrollObj*);
 	void removeScrollListener(FV_ScrollObj*);
 	void sendScrollEvent(UT_sint32 xoff, UT_sint32 yoff);
 
+	UT_Bool			addListener(FV_Listener * pListener, FV_ListenerId * pListenerId);
+	UT_Bool			removeListener(FV_ListenerId listenerId);
+	UT_Bool			notifyListeners(const FV_ChangeMask hint);
 
 // ----------------------
 	UT_Bool			isLeftMargin(UT_sint32 xPos, UT_sint32 yPos);
@@ -199,6 +209,9 @@ protected:
 	PT_DocPosition		m_iSelectionAnchor;
 	UT_Bool				m_bSelection;
 	UT_Vector           m_scrollListeners;
+
+	UT_Vector			m_vecListeners;
+	fv_ChangeState		m_chg;
 };
 
-#endif /* FV_View_H */
+#endif /* FV_VIEW_H */

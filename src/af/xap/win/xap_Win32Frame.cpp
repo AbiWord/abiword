@@ -21,6 +21,7 @@
 #include "ut_types.h"
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
+#include "ap_ViewListener.h"
 #include "ap_Win32App.h"
 #include "ap_Win32Frame.h"
 #include "ev_Win32Keyboard.h"
@@ -184,6 +185,7 @@ UT_Bool AP_Win32Frame::loadDocument(const char * szFilename)
 	FL_DocLayout * pDocLayout = NULL;
 	FV_View * pView = NULL;
 	FV_ScrollObj * pScrollObj = NULL;
+	ap_ViewListener * pViewListener = NULL;
 
 	UT_uint32 iWindowHeight, iHeight;
 	HWND hwnd = m_hwnd;
@@ -201,12 +203,20 @@ UT_Bool AP_Win32Frame::loadDocument(const char * szFilename)
 	ENSUREP(pView);
 	pScrollObj = new FV_ScrollObj(this,_scrollFunc);
 	ENSUREP(pScrollObj);
+	pViewListener = new ap_ViewListener(this);
+	ENSUREP(pViewListener);
+
+	FV_ListenerId lid;
+	if (!pView->addListener(static_cast<FV_Listener *>(pViewListener),&lid))
+		goto Cleanup;
 
 	// switch to new view, cleaning up previous settings
 	REPLACEP(m_pG, pG);
 	REPLACEP(m_pDocLayout, pDocLayout);
 	REPLACEP(m_pView, pView);
 	REPLACEP(m_pScrollObj, pScrollObj);
+	REPLACEP(m_pViewListener, pViewListener);
+	m_lid = lid;
 			
 	RECT r;
 	GetClientRect(hwnd, &r);
@@ -226,7 +236,7 @@ UT_Bool AP_Win32Frame::loadDocument(const char * szFilename)
 
 	m_pView->addScrollListener(m_pScrollObj);
 //	m_pMouse->reset();
-
+	
 	// enough HACKs to get a clean redisplay?
 	m_pView->setWindowSize(r.right - r.left, iWindowHeight);
 	InvalidateRect(hwnd, NULL, true);
@@ -240,6 +250,7 @@ Cleanup:
 	DELETEP(pG);
 	DELETEP(pDocLayout);
 	DELETEP(pView);
+	DELETEP(pViewListener);
 	DELETEP(pScrollObj);
 
 	// change back to prior document

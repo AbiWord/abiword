@@ -86,6 +86,12 @@ FV_View::FV_View(void* pParentData, FL_DocLayout* pLayout)
 	pLayout->setView(this);
 		
 	moveInsPtTo(FV_DOCPOS_BOD);
+
+	// initialize change cache
+	m_chg.bUndo = UT_FALSE;
+	m_chg.bRedo = UT_FALSE;
+	m_chg.bDirty = UT_FALSE;
+	m_chg.bSelection = UT_FALSE;
 }
 
 void* FV_View::getParentData() const
@@ -96,6 +102,125 @@ void* FV_View::getParentData() const
 FL_DocLayout* FV_View::getLayout() const
 {
 	return m_pLayout;
+}
+
+UT_Bool FV_View::addListener(FV_Listener * pListener, 
+							 FV_ListenerId * pListenerId)
+{
+	UT_uint32 kLimit = m_vecListeners.getItemCount();
+	UT_uint32 k;
+
+	// see if we can recycle a cell in the vector.
+	
+	for (k=0; k<kLimit; k++)
+		if (m_vecListeners.getNthItem(k) == 0)
+		{
+			(void)m_vecListeners.setNthItem(k,pListener,NULL);
+			goto ClaimThisK;
+		}
+
+	// otherwise, extend the vector for it.
+	
+	if (m_vecListeners.addItem(pListener,&k) != 0)
+		return UT_FALSE;				// could not add item to vector
+
+  ClaimThisK:
+
+	// give our vector index back to the caller as a "Listener Id".
+	
+	*pListenerId = k;
+	return UT_TRUE;
+}
+
+UT_Bool FV_View::removeListener(FV_ListenerId listenerId)
+{
+	return (m_vecListeners.setNthItem(listenerId,NULL,NULL) == 0);
+}
+
+UT_Bool FV_View::notifyListeners(const FV_ChangeMask hint)
+{
+	/*
+		IDEA: The view caches its change state as of the last notification, 
+		to minimize noise from duplicate notifications.  
+	*/
+	UT_ASSERT(hint != FV_CHG_NONE);
+	FV_ChangeMask mask = hint;
+	
+	if (mask & FV_CHG_DO)
+	{
+		UT_Bool bUndo = canDo(UT_TRUE);
+		UT_Bool bRedo = canDo(UT_FALSE);
+
+		if ((m_chg.bUndo == bUndo) && (m_chg.bRedo == bRedo))
+		{
+			mask ^= FV_CHG_DO;
+		}
+		else
+		{
+			if (m_chg.bUndo != bUndo)
+				m_chg.bUndo = bUndo;
+			if (m_chg.bRedo != bRedo)
+				m_chg.bRedo = bRedo;
+		}
+	}
+	
+	if (mask & FV_CHG_DIRTY)
+	{
+		UT_Bool bDirty = m_pDoc->isDirty();
+
+		if (m_chg.bDirty != bDirty)
+			m_chg.bDirty = bDirty;
+		else
+			mask ^= FV_CHG_DIRTY;
+	}
+
+	if (mask & FV_CHG_EMPTYSEL)
+	{
+		UT_Bool bSel = !isSelectionEmpty();
+
+		if (m_chg.bSelection != bSel)
+			m_chg.bSelection = bSel;
+		else
+			mask ^= FV_CHG_EMPTYSEL;
+	}
+
+	if (mask & FV_CHG_FILENAME)
+	{
+		// NOTE: we don't attempt to filter this
+	}
+
+	if (mask & FV_CHG_FMTBLOCK)
+	{
+		// TODO: do something smart here, (ie, easier than getBlockFormat)
+	}
+
+	if (mask & FV_CHG_FMTCHAR)
+	{
+		// TODO: do something smart here, (ie, easier than getCharFormat)
+	}
+		
+	// make sure there's something left
+
+	if (mask == FV_CHG_NONE)
+		return UT_FALSE;
+	
+	// notify listeners of a change.
+		
+	FV_ListenerId lid;
+	FV_ListenerId lidCount = m_vecListeners.getItemCount();
+
+	// for each listener in our vector, we send a notification.
+	// we step over null listners (for listeners which have been
+	// removed (views that went away)).
+	
+	for (lid=0; lid<lidCount; lid++)
+	{
+		FV_Listener * pListener = (FV_Listener *)m_vecListeners.getNthItem(lid);
+		if (pListener)
+			pListener->notify(this,mask);
+	}
+
+	return UT_TRUE;
 }
 
 void FV_View::_swapSelectionOrientation(void)
@@ -481,6 +606,8 @@ void FV_View::cmdCharMotion(UT_Bool bForward, UT_uint32 count)
 	{
 		_updateInsertionPoint();
 	}
+
+	notifyListeners(FV_CHG_MOTION);
 }
 
 fl_BlockLayout* FV_View::_findBlockAtPosition(PT_DocPosition pos)
@@ -985,6 +1112,8 @@ void FV_View::_moveInsPtNextPrevLine(UT_Bool bNext)
 	{
 		// cannot move.  should we beep?
 	}
+
+	notifyListeners(FV_CHG_MOTION);
 }
 
 void FV_View::warpInsPtNextPrevLine(UT_Bool bNext)
@@ -997,6 +1126,8 @@ void FV_View::warpInsPtNextPrevLine(UT_Bool bNext)
 	_moveInsPtNextPrevLine(bNext);
 
 	_updateInsertionPoint();
+
+	notifyListeners(FV_CHG_MOTION);
 }
 
 void FV_View::extSelNextPrevLine(UT_Bool bNext)
@@ -1031,6 +1162,8 @@ void FV_View::extSelNextPrevLine(UT_Bool bNext)
 			_resetSelection();
 		}
 	}
+
+	notifyListeners(FV_CHG_MOTION);
 }
 
 void FV_View::extSelHorizontal(UT_Bool bForward, UT_uint32 count)
@@ -1067,6 +1200,8 @@ void FV_View::extSelHorizontal(UT_Bool bForward, UT_uint32 count)
 			_resetSelection();
 		}
 	}
+
+	notifyListeners(FV_CHG_MOTION);
 }
 
 void FV_View::extSelTo(FV_DocPos dp)
@@ -1074,6 +1209,8 @@ void FV_View::extSelTo(FV_DocPos dp)
 	PT_DocPosition iPos = _getDocPos(dp);
 
 	_extSelToPos(iPos);
+
+	notifyListeners(FV_CHG_MOTION);
 }
 
 void FV_View::extSelToXY(UT_sint32 xPos, UT_sint32 yPos)
@@ -1107,6 +1244,8 @@ void FV_View::extSelToXY(UT_sint32 xPos, UT_sint32 yPos)
 	pPage->mapXYToPosition(xPos + m_xScrollOffset, yClick, iNewPoint, bBOL, bEOL);
 
 	_extSelToPos(iNewPoint);
+	
+	notifyListeners(FV_CHG_MOTION);
 }
 
 void FV_View::_extSelToPos(PT_DocPosition iNewPoint)
@@ -1730,13 +1869,11 @@ void FV_View::cmdScroll(UT_sint32 iScrollCmd, UT_uint32 iPos)
 	sendScrollEvent(xoff, yoff);
 }
 
-//void FV_View::addScrollListener(void (*pfn)(FV_View*,UT_sint32, UT_sint32))
 void FV_View::addScrollListener(FV_ScrollObj* pObj)
 {
 	m_scrollListeners.addItem((void *)pObj);
 }
 
-//void FV_View::removeScrollListener(void (*pfn)(UT_sint32, UT_sint32))
 void FV_View::removeScrollListener(FV_ScrollObj* pObj)
 {
 	UT_sint32 count = m_scrollListeners.getItemCount();
@@ -1744,7 +1881,6 @@ void FV_View::removeScrollListener(FV_ScrollObj* pObj)
 	for (UT_sint32 i = 0; i < count; i++)
 	{
 		FV_ScrollObj* obj = (FV_ScrollObj*) m_scrollListeners.getNthItem(i);
-//		void (*pfn2)(FV_View*,UT_sint32, UT_sint32)  = (void (*)(FV_ScrollObj*,UT_sint32,UT_sint32)) m_scrollListeners.getNthItem(i);
 
 		if (obj == pObj)
 		{
@@ -1761,10 +1897,8 @@ void FV_View::sendScrollEvent(UT_sint32 xoff, UT_sint32 yoff)
 	for (UT_sint32 i = 0; i < count; i++)
 	{
 		FV_ScrollObj* pObj = (FV_ScrollObj*) m_scrollListeners.getNthItem(i);
-//		void (*pfn)(FV_View*,UT_sint32, UT_sint32)  = (void ((*)(FV_ScrollObj*,UT_sint32,UT_sint32))) m_scrollListeners.getNthItem(i);
 
 		pObj->m_pfn(pObj->m_pData, xoff, yoff);
-//		pfn(this, xoff, yoff);
 	}
 }
 
@@ -1957,11 +2091,13 @@ void FV_View::cmdRedo(UT_uint32 count)
 void FV_View::cmdSave(void)
 {
 	m_pDoc->save(IEFT_AbiWord_1);
+	notifyListeners(FV_CHG_SAVE);
 }
 
 void FV_View::cmdSaveAs(const char * szFilename)
 {
 	m_pDoc->saveAs(szFilename, IEFT_AbiWord_1);
+	notifyListeners(FV_CHG_SAVE);
 }
 
 UT_Bool FV_View::pasteBlock(UT_UCSChar * text, UT_uint32 count)
