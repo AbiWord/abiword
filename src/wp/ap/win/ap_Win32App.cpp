@@ -242,8 +242,6 @@ bool AP_Win32App::initialize(void)
 		}
 	}
 	// Now we have the strings loaded we can populate the field names correctly
-	// CHECK THIS: the following was added by a Linux developer who can't test
-	// on Win32, or even compile, so someone with a Windows box needs to check it
 	int i;
 	
 	for (i = 0; fp_FieldTypes[i].m_Type != FPFIELDTYPE_END; i++)
@@ -280,7 +278,7 @@ bool AP_Win32App::initialize(void)
 		} while( _findnext( findtag, &cfile ) == 0 );
 	}
 	_findclose( findtag );
-	
+
 	return true;
 }
 
