@@ -423,7 +423,8 @@ void fp_Run::lookupProperties(GR_Graphics * pG)
 	// colour from higher layout elements
 	const char * pszBGcolor = PP_evalProperty("bgcolor",pSpanAP,pBlockAP,pSectionAP, pDoc, true);
 	_setColorHL(pszBGcolor);
-	m_FillType.setColor(pszBGcolor);
+	//	m_FillType.setColor(pszBGcolor); // we should clear with screen color
+	// and draw with background color
 	if(pG == NULL)
 	{
 		pG = getGraphics();
@@ -1150,7 +1151,11 @@ void fp_Run::draw(dg_DrawArgs* pDA)
 			pDA->pG->setClipRect(&clip);
 		}
 	}
+	UT_RGBColor OldCol = *m_FillType.getColor();
+	UT_RGBColor bgCol = _getColorHL();
+	m_FillType.setColor(bgCol); 
 	_draw(pDA);
+	m_FillType.setColor(OldCol); // restore the old clear color
 	if(isSelectionDraw())
 	{
 		pDA->pG->setClipRect(NULL);

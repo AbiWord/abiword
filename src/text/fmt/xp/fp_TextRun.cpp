@@ -1098,6 +1098,7 @@ bool fp_TextRun::split(UT_uint32 iSplitOffset)
 
 	pNew->_setDecorations(this->_getDecorations());
 	pNew->_setColorFG(_getColorFG());
+	pNew->_setColorHL(_getColorHL());
 	pNew->_setField(this->getField());
 	pNew->m_fPosition = this->m_fPosition;
 
