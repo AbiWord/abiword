@@ -248,24 +248,27 @@ Zbynek Miksa <xmiksa@informatics.muni.cz>		Czech
 Gediminas Paulauskas <menesis@03bar.ktu.lt> 		Lithuanian
 John Profic <profic@linux.ru.net>			Russian
 Piotr Banski <bansp@bigfoot.com>			Polish
-Andrzej Pruszynski <abi@rth.coi.waw.pl>		Polish
+Andrzej Pruszynski <abi@rth.coi.waw.pl>			Polish
 Eutanazy Sercxemulo <szperacz@free.net.pl>		Polish
 Giovanni dos Reis Nunes <giovanni@skydome.net>		Portugese (Brazil)
 Rui M. Silva Seabra <rms@1407.org>	 		Portugese (Portugal)
 Tânia M. G. Ferreira <tmgferreira@hotmail.com>		Portugese (Portugal)
 Martin Lacko <lacko@host.sk>				Slovak
+Christian Neumair <christian-neumair@web.de>		German
 Christian Terboven <cterboven@gmx.net>			German
+Damon Allen Davison <allolex@users.sourceforge.net>	German
 Owen Thomas <owen@llanilar.freeserve.co.uk> 		Welsh
 Rhoslyn Prys <rhoslyn.prys@ntlworld.com>		Welsh
-Andraz Tori 									Slovenian (sl-SI)
+Andraz Tori 						Slovenian (sl-SI)
 Alper <shullgum@yahoo.com>				Turkish
 Nikos Niktaris <niktarin@yahoo.com>			Greek
-Damon Allen Davison <allolex@users.sourceforge.net>	German
 Masayuki Hatta <mhatta@gnu.org>				Japanese
 Daniel Yacob <locales@geez.org>				Amharic
 Pierre Abbat <phma@webjockey.net>			Lojban
 Alfredo Barrainkua Zallo <alfredobz@euskalnet.net>	Basque
 Mugurel Tudor <mugurelu@go.ro>				Romanian
+
+
 unsung heroes
 -------------
 Mary Eppich
