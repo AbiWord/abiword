@@ -43,6 +43,7 @@ AP_Dialog_Replace::AP_Dialog_Replace(AP_DialogFactory * pDlgFactory, AP_Dialog_I
 	_m_matchCase = UT_TRUE;
 
 	m_pView = NULL;
+	m_pFrame = NULL;
 	
 	m_findString = NULL;
 	m_replaceString = NULL;
@@ -60,6 +61,9 @@ AP_Dialog_Replace::~AP_Dialog_Replace(void)
 
 	FREEP(m_findString);
 	FREEP(m_replaceString);
+
+	FREEP(_m_findString);
+	FREEP(_m_replaceString);
 }
 
 void AP_Dialog_Replace::useStart(void)
