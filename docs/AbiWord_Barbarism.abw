@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE abiword PUBLIC "-//ABISOURCE//DTD AWML 1.0 Strict//EN" "http://www.abisource.com/awml.dtd">
+<abiword template="false" styles="unlocked" xmlns:fo="http://www.w3.org/1999/XSL/Format" xmlns:svg="http://www.w3.org/2000/svg" xmlns:dc="http://purl.org/dc/elements/1.1/" fileformat="1.1" xmlns:math="http://www.w3.org/1998/Math/MathML" xmlns:awml="http://www.abisource.com/awml.dtd" xmlns="http://www.abisource.com/awml.dtd" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1.1" xml:space="preserve" props="lang:de-DE; dom-dir:ltr">
+<!-- =====================================================================  -->
+<!-- This file is an AbiWord document.                                      -->
+<!-- AbiWord is a free, Open Source word processor.                         -->
+<!-- More information about AbiWord is available at http://www.abisource.com     -->
+<!-- You should not edit this file by hand.                                 -->
+<!-- =====================================================================  -->
+
+<metadata>
+<m key="dc.format">application/x-abiword</m>
+<m key="abiword.generator">AbiWord</m>
+<m key="abiword.date_last_changed">Sun Jan 19 23:26:03 2003</m>
+</metadata>
+<styles>
+<s type="P" name="Normal" basedon="" followedby="Current Settings" props="font-family:Times New Roman; margin-top:0pt; font-variant:normal; margin-left:0pt; text-indent:0in; widows:2; font-style:normal; font-weight:normal; text-decoration:none; dom-dir:ltr; color:000000; line-height:1.000000; text-align:left; margin-bottom:0pt; text-position:normal; margin-right:0pt; bgcolor:transparent; font-size:12pt; font-stretch:normal"/>
+</styles>
+<pagesize pagetype="A4" orientation="portrait" width="8.267717" height="11.692913" units="in" page-scale="1.000000"/>
+<section props="page-margin-footer:0.5in; page-margin-header:0.5in">
+<p style="Normal"><c props="lang:de-DE"></c></p>
+<p style="Normal"><c props="lang:en-US; font-size:16pt; font-weight:bold">Abiword barbarism support</c><c props="lang:en-US; font-size:16pt; font-weight:bold"></c></p>
+<p style="Normal"><c props="font-weight:normal; lang:en-US">Jordi Mas &lt;jmas@softcatala.org&gt; 19/01/2003</c><c props="font-weight:normal; lang:en-US"></c></p>
+<p style="Normal"><c props="lang:en-US"></c></p>
+<p style="Normal"><c props="font-weight:bold; lang:en-US">What is a barbarism</c><c props="font-weight:bold; lang:en-US"></c></p>
+<p style="Normal"><c props="lang:en-US"></c></p>
+<p style="Normal"><c props="lang:en-US">Barbarism is a problem that manly concerns to minority languages, i.e. languages that are competing, in the same territory, with a more powerful one, called "rooflanguage", for example Welsh, Catalan, Occitan, and others.</c><c props="lang:en-US"></c></p>
+<p style="Normal"><c props="lang:en-US"></c></p>
+<p style="Normal"><c props="lang:en-US">When two languages compete in the same territory comes up interferences, but they are not symmetric. The roof language is weakly affected but the minority one can be strongly affected, and can disappear (glottophagy). One of these interferences is barbarism. <br/><br/>For example, in Catalan the correct word (that belongs to the language) for 'size' is 'mida' but due to the Spanish influence some people uses 'tamany' (that comes from Spanish tamaño) that is wrong.</c><c props="lang:en-US"></c></p>
+<p style="Normal"><c props="lang:en-US"></c></p>
+<p style="Normal"><c props="font-family:Times New Roman; text-decoration:none; color:000000; lang:en-US; text-position:normal; font-weight:bold; font-style:normal; font-size:12pt">Abiword's barbarism support</c><c props="font-family:Times New Roman; text-decoration:none; color:000000; lang:en-US; text-position:normal; font-weight:bold; font-style:normal; font-size:12pt"></c></p>
+<p style="Normal"><c props="font-family:Times New Roman; text-decoration:none; color:000000; lang:en-US; text-position:normal; font-weight:bold; font-style:normal; font-size:12pt"><br/></c><c props="font-family:Times New Roman; text-decoration:none; color:000000; lang:en-US; text-position:normal; font-weight:bold; font-style:normal; font-size:12pt"></c><c props="font-family:Times New Roman; text-decoration:none; color:000000; lang:en-US; text-position:normal; font-weight:normal; font-style:normal; font-size:12pt">I strongly belive that the barbarism support should be part of a good spell checker. Since ispell and aspell do not have support for barbarism we have implemented a quick workaround. Ideally, the barbarism support integrated with the spell checker would accept rules, much need it for verbs if you do not want to list of all its declinations.</c></p>
+<p style="Normal"><c props="font-family:Times New Roman; text-decoration:none; color:000000; lang:en-US; text-position:normal; font-weight:normal; font-style:normal; font-size:12pt"></c></p>
+<p style="Normal"><c props="font-family:Times New Roman; text-decoration:none; color:000000; lang:en-US; text-position:normal; font-weight:normal; font-style:normal; font-size:12pt">Our quick workaround is a light-weight XML file that allows to define barbarism and possible replacements. The file should be placed in the same directory that the spell checker and it will have the same the same name that the spell checker but with ended with '-barbarism.xml' instead of ".hash". In the case of the Catalan language, the file is called</c><c props="font-family:Times New Roman; text-decoration:none; color:000000; lang:en-US; text-position:normal; font-weight:normal; font-style:normal; font-size:12pt"></c></p>
+<p style="Normal"><c props="font-family:Times New Roman; text-decoration:none; color:000000; lang:en-US; text-position:normal; font-weight:normal; font-style:normal; font-size:12pt"></c><c props="font-family:Times New Roman; text-decoration:none; color:000000; lang:en-US; text-position:normal; font-weight:normal; font-style:normal; font-size:12pt">catala-barbarism.xml</c></p>
+<p style="Normal"><c props="font-family:Times New Roman; text-decoration:none; color:000000; lang:en-US; text-position:normal; font-weight:normal; font-style:normal; font-size:12pt"><br/>When we run the spell checker over a text every barbarism is marked as an error and the barbarism suggestions defined in the XML file are offered to fix it. They always appear at the top of the suggested words by the spell checker.</c></p>
+<p style="Normal"><c props="font-family:Times New Roman; text-decoration:none; color:000000; lang:en-US; text-position:normal; font-weight:normal; font-style:normal; font-size:12pt"></c></p>
+<p style="Normal"><c props="font-family:Times New Roman; text-decoration:none; color:000000; lang:en-US; text-position:normal; font-weight:bold; font-style:normal; font-size:12pt">File format</c><c props="font-family:Times New Roman; text-decoration:none; color:000000; lang:en-US; text-position:normal; font-weight:bold; font-style:normal; font-size:12pt"></c></p>
+<p style="Normal"><c props="font-family:Times New Roman; text-decoration:none; color:000000; lang:en-US; text-position:normal; font-weight:normal; font-style:normal; font-size:12pt"><br/>- The file starts with the '</c><c props="font-family:Times New Roman; text-decoration:none; color:000000; lang:en-US; text-position:normal; font-weight:normal; font-style:normal; font-size:12pt"></c><c props="font-family:Times New Roman; text-decoration:none; color:000000; font-size:12pt; text-position:normal; font-weight:normal; font-style:normal; lang:en-US">AbiBarbarism' tag, like this line</c></p>
+<p style="Normal"><c props="font-family:Times New Roman; text-decoration:none; color:000000; font-size:12pt; text-position:normal; font-weight:normal; font-style:normal; lang:en-US"></c></p>
+<p style="Normal"><c props="font-family:Times New Roman; text-decoration:none; color:000000; font-size:12pt; text-position:normal; font-weight:normal; font-style:normal; lang:en-US">&lt;AbiBarbarism app="AbiWord" ver="1.0" language="ca-ES"&gt;</c><c props="font-family:Times New Roman; text-decoration:none; color:000000; font-size:12pt; text-position:normal; font-weight:normal; font-style:normal; lang:en-US"></c></p>
+<p style="Normal"><c props="font-family:Times New Roman; text-decoration:none; color:000000; font-size:12pt; text-position:normal; font-weight:normal; font-style:normal; lang:en-US"></c></p>
+<p style="Normal"><c props="font-family:Times New Roman; font-size:12pt; color:000000; lang:en-US; text-position:normal; font-weight:normal; font-style:normal; text-decoration:none">the language attribute contains the locale for the language that we are defining in the file.</c><c props="font-family:Times New Roman; font-size:12pt; color:000000; lang:en-US; text-position:normal; font-weight:normal; font-style:normal; text-decoration:none"></c></p>
+<p style="Normal"><c props="font-family:Times New Roman; text-decoration:none; color:000000; font-size:12pt; text-position:normal; font-weight:normal; font-style:normal; lang:en-US"></c></p>
+<p style="Normal"><c props="font-family:Times New Roman; font-size:12pt; color:000000; lang:en-US; text-position:normal; font-weight:normal; font-style:normal; text-decoration:none">-  The 'barbarism' tag defines a barbarism entry where the word attribute contains the word defined as barbarism. For example:</c></p>
+<p style="Normal"></p>
+<p style="Normal"><c props="font-family:Times New Roman; font-size:12pt; color:000000; text-decoration:none; text-position:normal; font-weight:normal; font-style:normal; lang:en-US">&lt;barbarism word="tiro"&gt;</c></p>
+<p style="Normal"><c props="font-family:Times New Roman; font-size:12pt; color:000000; text-decoration:none; text-position:normal; font-weight:normal; font-style:normal; lang:en-US"></c><c props="font-family:Times New Roman; font-size:12pt; color:000000; lang:en-US; text-position:normal; font-weight:normal; font-style:normal; text-decoration:none"><br/>where 'tiro' is the barbarism.</c></p>
+<p style="Normal"><c props="font-family:Times New Roman; font-size:12pt; color:000000; lang:en-US; text-position:normal; font-weight:normal; font-style:normal; text-decoration:none"></c></p>
+<p style="Normal"><c props="font-family:Times New Roman; font-size:12pt; color:000000; lang:en-US; text-position:normal; font-weight:normal; font-style:normal; text-decoration:none">- The 'suggestion' tag defines a suggested replacement for the barbarism that we have just defined. The word attribute contains the suggested word. For example:</c></p>
+<p style="Normal"><c props="font-family:Times New Roman; font-size:12pt; color:000000; lang:en-US; text-position:normal; font-weight:normal; font-style:normal; text-decoration:none"></c></p>
+<p style="Normal" props="margin-top:0.0000in; margin-left:0.0000in; text-indent:0.0000in; dom-dir:ltr; margin-bottom:0.0000in; line-height:1.000000; text-align:left; margin-right:0.0000in"><c props="font-family:Times New Roman; font-size:12pt; color:000000; lang:en-US; text-position:normal; font-weight:normal; font-style:normal; text-decoration:none">&lt;suggestion word="tret" /&gt;    </c><c props="font-family:Times New Roman; font-size:12pt; color:000000; lang:en-US; text-position:normal; font-weight:normal; font-style:normal; text-decoration:none"></c></p>
+<p style="Normal" props="margin-top:0.0000in; margin-left:0.0000in; text-indent:0.0000in; dom-dir:ltr; margin-bottom:0.0000in; line-height:1.000000; text-align:left; margin-right:0.0000in"><c props="font-family:Times New Roman; text-decoration:none; color:000000; lang:en-US; text-position:normal; font-weight:normal; font-style:normal; font-size:12pt"></c></p>
+<p style="Normal" props="margin-top:0.0000in; margin-left:0.0000in; text-indent:0.0000in; dom-dir:ltr; margin-bottom:0.0000in; line-height:1.000000; text-align:left; margin-right:0.0000in"><c props="font-family:Times New Roman; font-size:12pt; color:000000; lang:en-US; text-position:normal; font-weight:normal; font-style:normal; text-decoration:none"></c></p>
+<p style="Normal"><c props="font-weight:bold; lang:en-US">Sample barbarism file</c><c props="font-weight:bold; lang:en-US"></c></p>
+<p style="Normal"><c props="lang:en-US"></c></p>
+<p style="Normal"><c props="lang:en-US">&lt;?xml version="1.0" encoding="iso-8859-1"?&gt;</c><c props="lang:en-US"></c></p>
+<p style="Normal"><c props="lang:en-US"></c></p>
+<p style="Normal"><c props="lang:en-US">&lt;!-- </c><c props="lang:en-US"></c></p>
+<p style="Normal"><c props="lang:en-US"></c></p>
+<p style="Normal"><c props="lang:en-US">Fitxer de barbarismes per l'Abiword</c><c props="lang:en-US"></c></p>
+<p style="Normal"><c props="lang:en-US">(c) 2002 Softcatalà Jordi Mas i Hernàndez &lt;jmas@softcatala.org&gt;</c><c props="lang:en-US"></c></p>
+<p style="Normal"><c props="lang:en-US"></c></p>
+<p style="Normal"><c props="lang:en-US">1. Introducció</c><c props="lang:en-US"></c></p>
+<p style="Normal"><c props="lang:en-US"></c></p>
+<p style="Normal"><c props="lang:en-US">Aquest arxiu és una recopilació en format XML de barbarismes en llengua </c><c props="lang:en-US"></c></p>
+<p style="Normal"><c props="lang:en-US">catalana i les seves corresponents correcions. En principi, ha estat </c><c props="lang:en-US"></c></p>
+<p style="Normal"><c props="lang:en-US">dissenyat per millorar les capacitats del corrector l'Abiword </c><c props="lang:en-US"></c></p>
+<p style="Normal"><c props="lang:en-US">(www.abiword.com) però aquesta llista pot ser utilizada per millorar </c><c props="lang:en-US"></c></p>
+<p style="Normal"><c props="lang:en-US">qualsevol altre corrector ortogràfic.</c><c props="lang:en-US"></c></p>
+<p style="Normal"><c props="lang:en-US"></c></p>
+<p style="Normal"><c props="lang:en-US">2. Llicència</c><c props="lang:en-US"></c></p>
+<p style="Normal"><c props="lang:en-US"></c></p>
+<p style="Normal"><c props="lang:en-US">Aquest document és (c)1998-2002 Softcatalà. Es permet l'ús, </c><c props="lang:en-US"></c></p>
+<p style="Normal"><c props="lang:en-US">distribució, i/o modificació d'aquest document d'acord amb Llicència </c><c props="lang:en-US"></c></p>
+<p style="Normal"><c props="lang:en-US">GNU per a documentació lliure versió 1.1 o superior publicada per la </c><c props="lang:en-US"></c></p>
+<p style="Normal"><c props="lang:en-US">Free Software Foundation; amb les secció invariable  "copyright" i </c><c props="lang:en-US"></c></p>
+<p style="Normal"><c props="lang:en-US">sense cap secció de text de portada.</c><c props="lang:en-US"></c></p>
+<p style="Normal"><c props="lang:en-US"></c></p>
+<p style="Normal"><c props="lang:en-US"></c></p>
+<p style="Normal"><c props="lang:en-US">--&gt;</c><c props="lang:en-US"></c></p>
+<p style="Normal"><c props="lang:en-US"></c></p>
+<p style="Normal"><c props="lang:en-US">&lt;AbiBarbarism app="AbiWord" ver="1.0" language="ca-ES"&gt;</c><c props="lang:en-US"></c></p>
+<p style="Normal"><c props="lang:en-US"></c></p>
+<p style="Normal"><c props="lang:en-US">&lt;barbarism word="tamany"&gt;</c><c props="lang:en-US"></c></p>
+<p style="Normal"><c props="lang:en-US">    &lt;suggestion word="mida" /&gt;</c><c props="lang:en-US"></c></p>
+<p style="Normal"><c props="lang:en-US">    &lt;suggestion word="grandària" /&gt;    </c><c props="lang:en-US"></c></p>
+<p style="Normal"><c props="lang:en-US">&lt;/barbarism&gt; </c><c props="lang:en-US"></c></p>
+<p style="Normal"><c props="lang:en-US"></c></p>
+<p style="Normal"><c props="lang:en-US">&lt;barbarism word="tamanys"&gt;</c><c props="lang:en-US"></c></p>
+<p style="Normal"><c props="lang:en-US">    &lt;suggestion word="mides" /&gt;</c><c props="lang:en-US"></c></p>
+<p style="Normal"><c props="lang:en-US">    &lt;suggestion word="grandàries" /&gt;    </c><c props="lang:en-US"></c></p>
+<p style="Normal"><c props="lang:en-US">&lt;/barbarism&gt; </c><c props="lang:en-US"></c></p>
+<p style="Normal"><c props="lang:en-US"></c></p>
+<p style="Normal"><c props="lang:en-US">&lt;barbarism word="boleto"&gt;</c><c props="lang:en-US"></c></p>
+<p style="Normal"><c props="lang:en-US">    &lt;suggestion word="billet" /&gt;    </c><c props="lang:en-US"></c></p>
+<p style="Normal"><c props="lang:en-US">&lt;/barbarism&gt; </c><c props="lang:en-US"></c></p>
+<p style="Normal"><c props="lang:en-US"></c></p>
+<p style="Normal"><c props="lang:en-US">&lt;barbarism word="tiro"&gt;</c><c props="lang:en-US"></c></p>
+<p style="Normal"><c props="lang:en-US">    &lt;suggestion word="tret" /&gt;    </c><c props="lang:en-US"></c></p>
+<p style="Normal"><c props="lang:en-US">&lt;/barbarism&gt; </c><c props="lang:en-US"></c></p>
+<p style="Normal"><c props="lang:en-US"></c></p>
+<p style="Normal"><c props="lang:en-US">&lt;barbarism word="tanteig"&gt;</c><c props="lang:en-US"></c></p>
+<p style="Normal"><c props="lang:en-US">    &lt;suggestion word="tempteig" /&gt;    </c><c props="lang:en-US"></c></p>
+<p style="Normal"><c props="lang:en-US">&lt;/barbarism&gt; </c><c props="lang:en-US"></c></p>
+<p style="Normal"><c props="lang:en-US"></c></p>
+<p style="Normal"><c props="lang:en-US">&lt;barbarism word="aconteixement"&gt;</c><c props="lang:en-US"></c></p>
+<p style="Normal"><c props="lang:en-US">    &lt;suggestion word="esdeveniment" /&gt;    </c><c props="lang:en-US"></c></p>
+<p style="Normal"><c props="lang:en-US">&lt;/barbarism&gt; </c><c props="lang:en-US"></c></p>
+<p style="Normal"><c props="lang:en-US"></c></p>
+<p style="Normal"><c props="lang:en-US">&lt;barbarism word="àngul"&gt;</c><c props="lang:en-US"></c></p>
+<p style="Normal"><c props="lang:en-US">    &lt;suggestion word="angle" /&gt;    </c><c props="lang:en-US"></c></p>
+<p style="Normal"><c props="lang:en-US">&lt;/barbarism&gt;     </c><c props="lang:en-US"></c></p>
+<p style="Normal"><c props="lang:en-US"></c></p>
+<p style="Normal"><c props="lang:en-US"></c></p>
+<p style="Normal"><c props="lang:en-US">&lt;barbarism word="atràs"&gt;</c><c props="lang:en-US"></c></p>
+<p style="Normal"><c props="lang:en-US">    &lt;suggestion word="endarreriment" /&gt;    </c><c props="lang:en-US"></c></p>
+<p style="Normal"><c props="lang:en-US">&lt;/barbarism&gt; </c><c props="lang:en-US"></c></p>
+<p style="Normal"><c props="lang:en-US"></c></p>
+<p style="Normal"><c props="lang:en-US">&lt;barbarism word="búsqueda"&gt;</c><c props="lang:en-US"></c></p>
+<p style="Normal"><c props="lang:en-US">    &lt;suggestion word="cerca" /&gt;    </c><c props="lang:en-US"></c></p>
+<p style="Normal"><c props="lang:en-US">&lt;/barbarism&gt;     </c><c props="lang:en-US"></c></p>
+<p style="Normal"><c props="lang:en-US"></c></p>
+<p style="Normal"><c props="lang:en-US">&lt;barbarism word="cantitat"&gt;</c><c props="lang:en-US"></c></p>
+<p style="Normal"><c props="lang:en-US">    &lt;suggestion word="quantitat" /&gt;    </c><c props="lang:en-US"></c></p>
+<p style="Normal"><c props="lang:en-US">&lt;/barbarism&gt;     </c><c props="lang:en-US"></c></p>
+<p style="Normal"><c props="lang:en-US">    </c><c props="lang:en-US"></c></p>
+<p style="Normal"><c props="lang:en-US">&lt;barbarism word="cotidià"&gt;</c><c props="lang:en-US"></c></p>
+<p style="Normal"><c props="lang:en-US">    &lt;suggestion word="quotidià" /&gt;    </c><c props="lang:en-US"></c></p>
+<p style="Normal"><c props="lang:en-US">&lt;/barbarism&gt;     </c><c props="lang:en-US"></c></p>
+<p style="Normal"><c props="lang:en-US">    </c><c props="lang:en-US"></c></p>
+<p style="Normal"><c props="lang:en-US">&lt;barbarism word="despreci"&gt;</c><c props="lang:en-US"></c></p>
+<p style="Normal"><c props="lang:en-US">    &lt;suggestion word="menyspreu" /&gt;    </c><c props="lang:en-US"></c></p>
+<p style="Normal"><c props="lang:en-US">&lt;/barbarism&gt;     </c><c props="lang:en-US"></c></p>
+<p style="Normal"><c props="lang:en-US">    </c><c props="lang:en-US"></c></p>
+<p style="Normal"><c props="lang:en-US">&lt;barbarism word="enfermetat"&gt;</c><c props="lang:en-US"></c></p>
+<p style="Normal"><c props="lang:en-US">    &lt;suggestion word="malaltia" /&gt;    </c><c props="lang:en-US"></c></p>
+<p style="Normal"><c props="lang:en-US">    </c><c props="lang:en-US"></c></p>
+<p style="Normal"><c props="lang:en-US">&lt;/barbarism&gt; &lt;barbarism word="fetxa"&gt;</c><c props="lang:en-US"></c></p>
+<p style="Normal"><c props="lang:en-US">    &lt;suggestion word="data" /&gt;    </c><c props="lang:en-US"></c></p>
+<p style="Normal"><c props="lang:en-US">    </c><c props="lang:en-US"></c></p>
+<p style="Normal"><c props="lang:en-US">&lt;/barbarism&gt; &lt;barbarism word="impar"&gt;</c><c props="lang:en-US"></c></p>
+<p style="Normal"><c props="lang:en-US">    &lt;suggestion word="imparell" /&gt;    </c><c props="lang:en-US"></c></p>
+<p style="Normal"><c props="lang:en-US">     </c><c props="lang:en-US"></c></p>
+<p style="Normal"><c props="lang:en-US">&lt;/barbarism&gt; &lt;barbarism word="monasteri"&gt;</c><c props="lang:en-US"></c></p>
+<p style="Normal"><c props="lang:en-US">    &lt;suggestion word="monestir" /&gt;    </c><c props="lang:en-US"></c></p>
+<p style="Normal"><c props="lang:en-US">    </c><c props="lang:en-US"></c></p>
+<p style="Normal"><c props="lang:en-US">&lt;/barbarism&gt; &lt;barbarism word="promedi"&gt;</c><c props="lang:en-US"></c></p>
+<p style="Normal"><c props="lang:en-US">    &lt;suggestion word="promig" /&gt;    </c><c props="lang:en-US"></c></p>
+<p style="Normal"><c props="lang:en-US">    </c><c props="lang:en-US"></c></p>
+<p style="Normal"><c props="lang:en-US">&lt;/barbarism&gt; &lt;barbarism word="testic"&gt;</c><c props="lang:en-US"></c></p>
+<p style="Normal"><c props="lang:en-US">    &lt;suggestion word="testimoni" /&gt;    </c><c props="lang:en-US"></c></p>
+<p style="Normal"><c props="lang:en-US">             </c><c props="lang:en-US"></c></p>
+<p style="Normal"><c props="lang:en-US">&lt;/barbarism&gt; &lt;barbarism word="tregua"&gt;</c><c props="lang:en-US"></c></p>
+<p style="Normal"><c props="lang:en-US">    &lt;suggestion word="treva" /&gt;    </c><c props="lang:en-US"></c></p>
+<p style="Normal"><c props="lang:en-US">    </c><c props="lang:en-US"></c></p>
+<p style="Normal"><c props="lang:en-US">&lt;/barbarism&gt; &lt;barbarism word="títul"&gt;</c><c props="lang:en-US"></c></p>
+<p style="Normal"><c props="lang:en-US">    &lt;suggestion word="títol" /&gt;    </c><c props="lang:en-US"></c></p>
+<p style="Normal"><c props="lang:en-US">&lt;/barbarism&gt;</c><c props="lang:en-US"></c></p>
+<p style="Normal"><c props="lang:en-US"></c></p>
+<p style="Normal"><c props="lang:en-US">&lt;barbarism word="cumpleanys"&gt;</c><c props="lang:en-US"></c></p>
+<p style="Normal"><c props="lang:en-US">    &lt;suggestion word="aniversari" /&gt;    </c><c props="lang:en-US"></c></p>
+<p style="Normal"><c props="lang:en-US">&lt;/barbarism&gt;</c><c props="lang:en-US"></c></p>
+<p style="Normal"><c props="lang:en-US"></c></p>
+<p style="Normal"><c props="lang:en-US">&lt;/AbiBarbarism&gt;</c><c props="lang:en-US"></c></p>
+</section>
+</abiword>
