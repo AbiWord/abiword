@@ -48,6 +48,7 @@ static UT_LangRecord s_Table[] =
 	{"as-IN",		NULL, XAP_STRING_ID_LANG_AS_IN, UTLANG_LTR},
 	{"be-BY",		NULL, XAP_STRING_ID_LANG_BE_BY, UTLANG_LTR},
 	{"bg-BG",		NULL, XAP_STRING_ID_LANG_BG_BG, UTLANG_LTR},
+	{"bn-IN",       NULL, XAP_STRING_ID_LANG_BN_IN, UTLANG_LTR}, // Bengali -- is it LTR?
 	{"br-FR",		NULL, XAP_STRING_ID_LANG_BR_FR, UTLANG_LTR},		
 	{"ca-ES",		NULL, XAP_STRING_ID_LANG_CA_ES, UTLANG_LTR},	
 	{"co-FR",		NULL, XAP_STRING_ID_LANG_CO_FR, UTLANG_LTR},	
@@ -78,9 +79,10 @@ static UT_LangRecord s_Table[] =
 	{"fr-FR",		NULL, XAP_STRING_ID_LANG_FR_FR, UTLANG_LTR},
 	{"fy-NL",		NULL, XAP_STRING_ID_LANG_FY_NL, UTLANG_LTR},	
 	{"ga-IE",		NULL, XAP_STRING_ID_LANG_GA_IE, UTLANG_LTR},
-	{"gl-ES",		NULL, XAP_STRING_ID_LANG_GL_ES, UTLANG_LTR},
-	{"ha-NE",		NULL, XAP_STRING_ID_LANG_HA_NE, UTLANG_LTR},
+	{"gl-ES",		NULL, XAP_STRING_ID_LANG_GL_ES, UTLANG_LTR},    // should this be hau- ?
+	{"ha-NE",		NULL, XAP_STRING_ID_LANG_HA_NE, UTLANG_LTR},    // is this correct or just duplicate of the line below?
 	{"ha-NG",		NULL, XAP_STRING_ID_LANG_HA_NG, UTLANG_LTR},
+	{"haw-US",      NULL, XAP_STRING_ID_LANG_HAW_US,UTLANG_LTR},
 	{"he-IL",		NULL, XAP_STRING_ID_LANG_HE_IL, UTLANG_RTL},	// was iw-IL - why?
 	{"hi-IN",		NULL, XAP_STRING_ID_LANG_HI_IN, UTLANG_LTR},
 	{"hr",			NULL, XAP_STRING_ID_LANG_HR,    UTLANG_LTR},		// Hipi: Why not hr-HR?
@@ -90,21 +92,29 @@ static UT_LangRecord s_Table[] =
 	{"id-ID",		NULL, XAP_STRING_ID_LANG_ID_ID, UTLANG_LTR},
 	{"is-IS",		NULL, XAP_STRING_ID_LANG_IS_IS, UTLANG_LTR},
 	{"it-IT",		NULL, XAP_STRING_ID_LANG_IT_IT, UTLANG_LTR},
+	{"iu-CA",		NULL, XAP_STRING_ID_LANG_IU_CA, UTLANG_LTR},
 	{"ja-JP",		NULL, XAP_STRING_ID_LANG_JA_JP, UTLANG_VERTICAL},	// TODO also UTLANG_LTR
 	{"ka-GE",		NULL, XAP_STRING_ID_LANG_KA_GE, UTLANG_LTR},
+	{"kn-IN",       NULL, XAP_STRING_ID_LANG_KN_IN, UTLANG_LTR},     // is Kannada LTR?
 	{"ko-KR",		NULL, XAP_STRING_ID_LANG_KO_KR, UTLANG_VERTICAL},	// TODO also UTLANG_LTR, Hipi: What about ko-KP?
 	{"kw-GB",		NULL, XAP_STRING_ID_LANG_KW_GB, UTLANG_LTR},	
 	{"la-IT",		NULL, XAP_STRING_ID_LANG_LA_IT, UTLANG_LTR},	// Hipi: Should be just "la"
+	{"lo-LA",       NULL, XAP_STRING_ID_LANG_LO_LA, UTLANG_LTR},
 	{"lt-LT",		NULL, XAP_STRING_ID_LANG_LT_LT, UTLANG_LTR},
 	{"lv-LV",		NULL, XAP_STRING_ID_LANG_LV_LV, UTLANG_LTR},
 	{"mh-MH",		NULL, XAP_STRING_ID_LANG_MH_MH, UTLANG_LTR},
 	{"mh-NR",		NULL, XAP_STRING_ID_LANG_MH_NR, UTLANG_LTR},
+	{"mi-NZ",       NULL, XAP_STRING_ID_LANG_MI_NZ, UTLANG_LTR},
 	{"mk",			NULL, XAP_STRING_ID_LANG_MK,    UTLANG_LTR},		// Hipi: Why not mk-MK?
+    {"mn-MN",       NULL, XAP_STRING_ID_LANG_MN_MN, UTLANG_LTR},
+    {"mr-IN",       NULL, XAP_STRING_ID_LANG_MR_IN, UTLANG_LTR},
 	{"nb-NO",		NULL, XAP_STRING_ID_LANG_NB_NO, UTLANG_LTR},
 	{"nl-BE",		NULL, XAP_STRING_ID_LANG_NL_BE, UTLANG_LTR},
 	{"nl-NL",		NULL, XAP_STRING_ID_LANG_NL_NL, UTLANG_LTR},
 	{"nn-NO",		NULL, XAP_STRING_ID_LANG_NN_NO, UTLANG_LTR},	
-	{"oc-FR",		NULL, XAP_STRING_ID_LANG_OC_FR, UTLANG_LTR},	
+    {"oc-FR",		NULL, XAP_STRING_ID_LANG_OC_FR, UTLANG_LTR},
+    {"pa-IN",       NULL, XAP_STRING_ID_LANG_PA_IN, UTLANG_LTR}, // is this LTR?
+    {"pa-PK",       NULL, XAP_STRING_ID_LANG_PA_PK, UTLANG_RTL},
 	{"pl-PL",		NULL, XAP_STRING_ID_LANG_PL_PL, UTLANG_LTR},
 	{"pt-BR",		NULL, XAP_STRING_ID_LANG_PT_BR, UTLANG_LTR},
 	{"pt-PT",		NULL, XAP_STRING_ID_LANG_PT_PT, UTLANG_LTR},
@@ -115,8 +125,13 @@ static UT_LangRecord s_Table[] =
 	{"sl-SI",		NULL, XAP_STRING_ID_LANG_SL_SI, UTLANG_LTR},
 	{"sq-AL",		NULL, XAP_STRING_ID_LANG_SQ_AL, UTLANG_LTR},
 	{"sr",			NULL, XAP_STRING_ID_LANG_SR,    UTLANG_LTR},		// Why not sr-YU?
-	{"sv-SE",		NULL, XAP_STRING_ID_LANG_SV_SE, UTLANG_LTR},
-	{"th-TH",		NULL, XAP_STRING_ID_LANG_TH_TH, UTLANG_LTR},
+    {"sv-SE",		NULL, XAP_STRING_ID_LANG_SV_SE, UTLANG_LTR},
+    {"sw",          NULL, XAP_STRING_ID_LANG_SW,    UTLANG_LTR},
+    {"syr",         NULL, XAP_STRING_ID_LANG_SYR,   UTLANG_RTL}, 
+    {"ta-IN",       NULL, XAP_STRING_ID_LANG_TA_IN, UTLANG_LTR}, // is this LTR?
+    {"te-IN",       NULL, XAP_STRING_ID_LANG_TE_IN, UTLANG_LTR}, // is this LTR?
+    {"th-TH",		NULL, XAP_STRING_ID_LANG_TH_TH, UTLANG_LTR},
+    {"tl-PH",       NULL, XAP_STRING_ID_LANG_TL_PH, UTLANG_LTR},
 	{"tr-TR",		NULL, XAP_STRING_ID_LANG_TR_TR, UTLANG_LTR},		// UTLANG_RTL for Ottoman Turkish
 	{"uk-UA",		NULL, XAP_STRING_ID_LANG_UK_UA, UTLANG_LTR},
 	{"ur-PK",		NULL, XAP_STRING_ID_LANG_UR_PK, UTLANG_RTL},
@@ -179,7 +194,8 @@ static int s_compareB(const void * l, const void *e)
 
 	return UT_strcoll(L, E->m_szLangName);
 #else
-	return UT_strcmp(L, E->m_szLangCode);
+	// make the comparison case insensitive to cope with buggy systems 
+	return UT_stricmp(L, E->m_szLangCode);
 #endif
 }
 
@@ -233,7 +249,8 @@ const XML_Char * UT_Language::getCodeFromName(const XML_Char * szName)
 {
 	for(UT_uint32 i = 0; i < NrElements(s_Table); i++)
 	{
-		if(!UT_strcmp(szName, s_Table[i].m_szLangName))
+		// make the comparison case insensitive to cope with buggy systems 
+		if(!UT_stricmp(szName, s_Table[i].m_szLangName))
 			return s_Table[i].m_szLangCode;
 	}
 
@@ -247,7 +264,8 @@ UT_uint32 UT_Language::getIndxFromCode(const XML_Char * szCode)
 {
 	for(UT_uint32 i = 0; i < NrElements(s_Table); i++)
 	{
-		if(!UT_strcmp(szCode, s_Table[i].m_szLangCode))
+		// make the comparison case insensitive to cope with buggy systems 
+		if(!UT_stricmp(szCode, s_Table[i].m_szLangCode))
 			return i;
 	}
 
@@ -259,7 +277,8 @@ UT_uint32 UT_Language::getIndxFromCode(const XML_Char * szCode)
 
 UT_uint32 UT_Language::getIdFromCode(const XML_Char * szCode)
 {
-	UT_LangRecord * e = static_cast<UT_LangRecord *>(bsearch(szCode, s_Table, NrElements(s_Table), sizeof(UT_LangRecord), s_compareB));
+	const UT_LangRecord * e = getLangRecordFromCode(szCode);
+
 	if(e)
 		return e->m_nID;
 	else
@@ -281,9 +300,7 @@ UT_uint32 UT_Language::getIdFromCode(const XML_Char * szCode)
 
 const XML_Char * UT_Language::getCodeFromCode(const XML_Char * szName)
 {
-	UT_LangRecord * e = static_cast<UT_LangRecord *>(bsearch(szName, s_Table,
-															 NrElements(s_Table),
-															 sizeof(UT_LangRecord), s_compareB));
+	const UT_LangRecord * e = getLangRecordFromCode(szName);
 	
 	if(e)
 		return e->m_szLangCode;
@@ -298,9 +315,7 @@ const XML_Char * UT_Language::getCodeFromCode(const XML_Char * szName)
 
 UT_LANGUAGE_DIR UT_Language::getDirFromCode(const XML_Char * szCode)
 {
-	UT_LangRecord * e = static_cast<UT_LangRecord *>(bsearch(szCode, s_Table,
-															 NrElements(s_Table),
-															 sizeof(UT_LangRecord), s_compareB));
+	const UT_LangRecord * e = getLangRecordFromCode(szCode);
 	
 	if(e)
 		return e->m_eDir;
@@ -316,10 +331,27 @@ UT_LANGUAGE_DIR UT_Language::getDirFromCode(const XML_Char * szCode)
 const UT_LangRecord * UT_Language::getLangRecordFromCode(const XML_Char * szCode)
 {
 	const UT_LangRecord * e = static_cast<UT_LangRecord *>(bsearch(szCode, s_Table,
-															 NrElements(s_Table),
-															 sizeof(UT_LangRecord), s_compareB));
+																   NrElements(s_Table),
+																   sizeof(UT_LangRecord), s_compareB));
 	if(!e)
 	{
+		// see if our tables contain short version of this code, e.g., hr instead of hr-HR
+		static XML_Char szShortCode[7];
+		strncpy(szShortCode, szCode,6);
+		szShortCode[6] = 0;
+
+		char * dash = strchr(szShortCode, '-');
+		if(dash)
+		{
+			*dash = 0;
+			e = static_cast<UT_LangRecord *>(bsearch(szShortCode, s_Table,
+													 NrElements(s_Table),
+													 sizeof(UT_LangRecord), s_compareB));
+
+			if(e)
+				return e;
+		}
+		
 		UT_ASSERT( UT_SHOULD_NOT_HAPPEN );
 		UT_DEBUGMSG(("UT_Language: unknown language [%s]; if this message appears, add the "
 					 "language to the tables\n", szCode));
