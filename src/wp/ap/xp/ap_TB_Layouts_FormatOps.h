@@ -38,6 +38,10 @@ BeginLayout(FormatOps)
 	ToolbarItem(AP_TOOLBAR_ID_FMT_STRIKE)
 
 	Spacer()
+	ToolbarItem(AP_TOOLBAR_ID_FMT_SUPERSCRIPT)
+	ToolbarItem(AP_TOOLBAR_ID_FMT_SUBSCRIPT)	
+	
+	Spacer()
 	ToolbarItem(AP_TOOLBAR_ID_ALIGN_LEFT)
 	ToolbarItem(AP_TOOLBAR_ID_ALIGN_CENTER)
 	ToolbarItem(AP_TOOLBAR_ID_ALIGN_RIGHT)

@@ -202,6 +202,18 @@ Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_CharFmt)
 		bMultiple = UT_TRUE;
 		break;
 
+	case AP_TOOLBAR_ID_FMT_SUPERSCRIPT:
+		prop = "text-position";
+		val  = "superscript";
+		bMultiple = UT_TRUE;
+		break;
+
+	case AP_TOOLBAR_ID_FMT_SUBSCRIPT:
+		prop = "text-position";
+		val  = "subscript";
+		bMultiple = UT_TRUE;
+		break;
+		
 	default:
 		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 		break;
