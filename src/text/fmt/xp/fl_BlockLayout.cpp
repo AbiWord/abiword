@@ -453,8 +453,10 @@ void fl_BlockLayout::_lookupProperties(void)
 
 	const PP_AttrProp * pBlockAP = NULL;
 	getAttrProp(&pBlockAP);
-	const XML_Char * szLid;
-	UT_uint32 id;
+	const XML_Char * szLid=NULL;
+	const XML_Char * szPid=NULL;
+	const XML_Char * szLevel=NULL;
+	UT_uint32 id,parent_id,level;
 
 	if (!pBlockAP || !pBlockAP->getAttribute(PT_LISTID_ATTRIBUTE_NAME, szLid))
 		szLid = NULL;
@@ -464,7 +466,7 @@ void fl_BlockLayout::_lookupProperties(void)
 		id = 0;
 
 
-/*	if (!pBlockAP || !pBlockAP->getAttribute(PT_PARENTID_ATTRIBUTE_NAME, szPid))
+        if (!pBlockAP || !pBlockAP->getAttribute(PT_PARENTID_ATTRIBUTE_NAME, szPid))
 		szPid = NULL;
 	if (szPid)
 		parent_id = atoi(szPid);
@@ -477,7 +479,7 @@ void fl_BlockLayout::_lookupProperties(void)
 		level = atoi(szLevel);
 	else 
 		level = 0;
-	UT_DEBUGMSG(("JORDAN: szPid %s, Parent ID %i\n", szPid, parent_id));*/
+	UT_DEBUGMSG(("Sevior: szPid %s, Parent ID %i\n", szPid, parent_id));
 
 	fl_BlockLayout * prevBlockInList = NULL;
 	fl_BlockLayout * nextBlockInList = NULL;
@@ -516,7 +518,21 @@ void fl_BlockLayout::_lookupProperties(void)
 		UT_DEBUGMSG(("Adding to List\n"));
 		
 		pAutoNum = m_pDoc->getListByID(id);
-		// TODO Make this more tolerant - create a list.
+		//
+		// Create new list if none exists
+		//
+		if(pAutoNum == NULL)
+		{
+		        const XML_Char * pszStart = getProperty((XML_Char*)"start-value",UT_TRUE);
+			const XML_Char * lDelim =  getProperty((XML_Char*)"list-delim",UT_TRUE);
+			const XML_Char * lDecimal =  getProperty((XML_Char*)"list-decimal",UT_TRUE);
+			UT_uint32 start = atoi(pszStart);
+			const XML_Char * style = NULL;
+ 	                pBlockAP->getAttribute(PT_STYLE_ATTRIBUTE_NAME,style);
+			List_Type lType = getListTypeFromStyle( style);
+			pAutoNum = new fl_AutoNum(id, parent_id, lType, start, lDelim, lDecimal, m_pDoc);
+			m_pDoc->addList(pAutoNum);
+		}
 		UT_ASSERT(pAutoNum);
 		m_pAutoNum = pAutoNum;
 		m_bListItem = UT_TRUE;
@@ -3034,18 +3050,9 @@ UT_Bool fl_BlockLayout::doclistener_deleteStrux(const PX_ChangeRecord_Strux* pcr
 	        if( m_pAutoNum->isItem(getStruxDocHandle()) == UT_TRUE)
 		{
 		  //
-		  // First prevent updates
-		  // 
-		  //      m_pAutoNum->setUpdatePolicy(UT_FALSE);
-		  //
 		  // This nifty method handles all the details
 		  //
 		        m_pAutoNum->removeItem(getStruxDocHandle());
-		  //
-		  // Now restore updates
-		  // 
-		  //      m_pAutoNum->setUpdatePolicy(UT_TRUE);
-		  //
 
 		}
 	}
@@ -4419,7 +4426,7 @@ void fl_BlockLayout::remItemFromList(void)
 
                 pView->AV_View::notifyListeners(AV_CHG_FMTBLOCK);
 		pView->_fixInsertionPointCoords();
-		pView->_generalUpdate();
+		//	pView->_generalUpdate();
 		pView->_drawInsertionPoint();
 		DELETEP(props);
 
@@ -4546,16 +4553,16 @@ void    fl_BlockLayout::getListPropertyVector( UT_Vector * vp)
   // quantities are const XML_Char *
   //
         UT_uint32 count=0;
-//	const XML_Char * pszStart = getProperty((XML_Char*)"start-value",UT_TRUE);
- //       const XML_Char * lDelim =  getProperty((XML_Char*)"list-delim",UT_TRUE);
- //       const XML_Char * lDecimal =  getProperty((XML_Char*)"list-decimal",UT_TRUE);
+	const XML_Char * pszStart = getProperty((XML_Char*)"start-value",UT_TRUE);
+        const XML_Char * lDelim =  getProperty((XML_Char*)"list-delim",UT_TRUE);
+        const XML_Char * lDecimal =  getProperty((XML_Char*)"list-decimal",UT_TRUE);
         const XML_Char * pszAlign =  getProperty((XML_Char*)"margin-left",UT_TRUE);
         const XML_Char * pszIndent =  getProperty((XML_Char*)"text-indent",UT_TRUE);
         const XML_Char * fFont =  getProperty((XML_Char*)"field-font",UT_TRUE);
-/*	if(pszStart != NULL)
+	if(pszStart != NULL)
 	{
 	       vp->addItem( (void *) "start-value");	vp->addItem( (void *) pszStart);
-	}*/
+	}
 	if(pszAlign != NULL)
 	{
 	      vp->addItem( (void *) "margin-left");	vp->addItem( (void *) pszAlign);
@@ -4566,7 +4573,7 @@ void    fl_BlockLayout::getListPropertyVector( UT_Vector * vp)
 	      vp->addItem( (void *) "text-indent");	vp->addItem( (void *) pszIndent);
 	      count++;
 	}
-/*	if(lDelim != NULL)
+	if(lDelim != NULL)
 	{
 	      vp->addItem( (void *) "list-delim"); vp->addItem( (void *) lDelim);
 	      count++;
@@ -4575,7 +4582,7 @@ void    fl_BlockLayout::getListPropertyVector( UT_Vector * vp)
 	{
 	      vp->addItem( (void *) "list-decimal"); vp->addItem( (void *) lDecimal);
 	      count++;
-	}*/
+	}
 	if(fFont != NULL)
 	{
 	      vp->addItem( (void *) "field-font"); vp->addItem( (void *) fFont);
@@ -4651,8 +4658,8 @@ void    fl_BlockLayout::StartList( List_Type lType, UT_uint32 start,const XML_Ch
 
 	setStarting( UT_FALSE);
 	bRet = m_pDoc->changeStruxFmt(PTC_AddFmt, getPosition(), getPosition(), attribs, props, PTX_Block);
-	pView->_ensureThatInsertionPointIsOnScreen();
-	pView->_eraseInsertionPoint();
+	//pView->_ensureThatInsertionPointIsOnScreen();
+	//pView->_eraseInsertionPoint();
 
 	m_pDoc->listUpdate(getStruxDocHandle());
 	pView->_generalUpdate();
@@ -4709,7 +4716,7 @@ void    fl_BlockLayout::StopList(void)
 
 	setStopping(UT_FALSE);
 	pView->_eraseInsertionPoint();
-	format();
+	//format();
 	//
 	// Set formatiing to match the next paragraph if it exists
 	//
@@ -5123,8 +5130,8 @@ void fl_BlockLayout::_createListLabel(void)
 		NULL, NULL
 	};
 	UT_Bool bResult = m_pDoc->insertObject(getPosition(), PTO_Field, attributes, NULL);
-       	pView->_generalUpdate();
-        UT_UCSChar c = UCS_TAB;
+	// 	pView->_generalUpdate();
+	UT_UCSChar c = UCS_TAB;
 	bResult = m_pDoc->insertSpan(getPosition()+1,&c,1);
 	pView->_setPoint(pView->getPoint()+offset);  
        	pView->_generalUpdate();

@@ -982,11 +982,15 @@ void PD_Document::allowChangeInsPoint(void)
 fl_AutoNum * PD_Document::getListByID(UT_uint32 id) const
 {
 	UT_uint16 i = 0;
+	UT_sint32 cnt = 0;
         fl_AutoNum * pAutoNum;
 	        
+	cnt = m_vecLists.getItemCount();
+        if ( cnt <= 0)
+	        return (fl_AutoNum *) NULL;
 	UT_ASSERT(m_vecLists.getFirstItem());
 		        
-	while (i<m_vecLists.getItemCount())
+	while (i<cnt)
 	{
 	 	pAutoNum = (fl_AutoNum *)m_vecLists[i];
                 if (pAutoNum->getID() == id)
@@ -994,7 +998,7 @@ fl_AutoNum * PD_Document::getListByID(UT_uint32 id) const
 	     	i++;
         }
 	
-	return 0;
+	return (fl_AutoNum *) NULL;
 }
 
 UT_Bool PD_Document::enumLists(UT_uint32 k, fl_AutoNum ** pAutoNum) 

@@ -1277,7 +1277,7 @@ void    FV_View::processSelectedBlocks(List_Type listType)
 	// restore updates and clean up dirty lists
 	m_pDoc->enableListUpdates();
 	m_pDoc->updateDirtyLists();
-
+	_generalUpdate();
 }
 
 
@@ -2473,7 +2473,7 @@ void FV_View::cmdCharDelete(UT_Bool bForward, UT_uint32 count)
 			     fl_BlockLayout * curBlock = _findBlockAtPosition(getPoint()); 
 			     fl_BlockLayout * nBlock = _findBlockAtPosition(getPoint()-2);
 			     if(nBlock == curBlock)
-			             count = 2;
+			       count = 2; //sevior was 2
 		      }
 		}
 	        if((bForward == UT_TRUE) && (count == 1))
@@ -5391,7 +5391,8 @@ UT_Bool FV_View::_charMotion(UT_Bool bForward,UT_uint32 countChars)
 	{
 		m_iInsPoint += countChars;
 		_findPositionCoords(m_iInsPoint-1, UT_FALSE, x, y, uheight, &pBlock, &pRun);
-		while(pRun != NULL && (pRun->isField() == UT_TRUE || pRun->getType() == FPRUN_FIELD && m_iInsPoint < posEOD))
+		//		while(pRun != NULL && (pRun->isField() == UT_TRUE || pRun->getType() == FPRUN_FIELD && m_iInsPoint < posEOD))
+		while(pRun != NULL && pRun->isField() == UT_TRUE && m_iInsPoint < posEOD)
 		{
 		        m_iInsPoint++;
 		        _findPositionCoords(m_iInsPoint, UT_FALSE, x, y, uheight, &pBlock, &pRun);
@@ -5401,7 +5402,8 @@ UT_Bool FV_View::_charMotion(UT_Bool bForward,UT_uint32 countChars)
 	{
 		m_iInsPoint -= countChars;
 		_findPositionCoords(m_iInsPoint, UT_FALSE, x, y, uheight, &pBlock, &pRun);
-		while(pRun != NULL && (pRun->isField() == UT_TRUE || pRun->getType() == FPRUN_FIELD) && m_iInsPoint > posBOD)
+		//		while(pRun != NULL && (pRun->isField() == UT_TRUE || pRun->getType() == FPRUN_FIELD) && m_iInsPoint > posBOD)
+		while(pRun != NULL && pRun->isField() == UT_TRUE && m_iInsPoint > posBOD)
 		{
 		        m_iInsPoint--;
 		        _findPositionCoords(m_iInsPoint-1, UT_FALSE, x, y, uheight, &pBlock, &pRun);
@@ -5506,7 +5508,15 @@ void FV_View::cmdRedo(UT_uint32 count)
 	// Signal Spell checks are unsafe 
         m_bdontSpellCheckRightNow = UT_TRUE;
 
+
+	// Turn off list updates
+	m_pDoc->disableListUpdates();
+
 	m_pDoc->redoCmd(count);
+
+	// restore updates and clean up dirty lists
+	m_pDoc->enableListUpdates();
+	m_pDoc->updateDirtyLists();
 
 	_generalUpdate();
 
