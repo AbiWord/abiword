@@ -51,6 +51,10 @@ protected:
 	void				_append_Separator(char * bufMenuPathname,
 										  AP_Menu_Id id);
 
+	UT_Bool				refreshMenu(FV_View * pView);
+	const char *		_getItemPath(AP_Menu_Id id) const;
+	UT_Bool				_isItemPresent(AP_Menu_Id id) const;
+
 	AP_UnixApp *		m_pUnixApp;
 	AP_UnixFrame *		m_pUnixFrame;
 

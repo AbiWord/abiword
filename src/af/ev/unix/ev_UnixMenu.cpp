@@ -62,7 +62,6 @@ public:									// we create...
 		wd->m_pUnixMenu->menuEvent(wd->m_id);
 	};
 	
-protected:
 	EV_UnixMenu *		m_pUnixMenu;
 	AP_Menu_Id			m_id;
 };
@@ -361,4 +360,141 @@ void EV_UnixMenu::_append_Separator(char * bufMenuPathname, AP_Menu_Id id)
 
 	p->callback_action = (guint)wd;
 	p->item_type = "<Separator>";
+}
+
+UT_Bool EV_UnixMenu::refreshMenu(FV_View * pView)
+{
+	// update the status of stateful items on menu bar.
+
+	const EV_Menu_ActionSet * pMenuActionSet = m_pUnixApp->getMenuActionSet();
+	const EV_Menu_LabelSet * pMenuLabelSet = m_pUnixFrame->getMenuLabelSet();
+	const EV_Menu_Layout * pMenuLayout = m_pUnixFrame->getMenuLayout();
+	UT_uint32 nrLabelItemsInLayout = pMenuLayout->getLayoutItemCount();
+	
+	for (UT_uint32 k=0; (k < nrLabelItemsInLayout); k++)
+	{
+		EV_Menu_LayoutItem * pLayoutItem = pMenuLayout->getLayoutItem(k);
+		AP_Menu_Id id = pLayoutItem->getMenuId();
+		EV_Menu_Action * pAction = pMenuActionSet->getAction(id);
+		EV_Menu_Label * pLabel = pMenuLabelSet->getLabel(id);
+		const char * szMenuFactoryItemPath = _getItemPath(id);
+		UT_Bool bPresent = _isItemPresent(id);
+
+		switch (pLayoutItem->getMenuLayoutFlags())
+		{
+		case EV_MLF_Normal:
+			{
+				// see if we need to enable/disable and/or check/uncheck it.
+				
+				UT_Bool bEnable = UT_TRUE;
+				UT_Bool bCheck = UT_FALSE;
+				
+				if (pAction->hasGetStateFunction())
+				{
+					EV_Menu_ItemState mis = pAction->getMenuItemState(pView);
+					if (mis & EV_MIS_Gray)
+						bEnable = UT_FALSE;
+					if (mis & EV_MIS_Toggled)
+						bCheck = UT_TRUE;
+				}
+
+				if (!pAction->hasDynamicLabel())
+				{
+					// if no dynamic label, all we need to do
+					// is enable/disable and/or check/uncheck it.
+
+					// TODO use bEnable and szMenuFactoryItemPath to enable/gray item.
+					// TODO use bCheck and szMenuFactoryItemPath to check/uncheck item.
+					break;
+				}
+
+				// get the current menu info for this item.
+				
+				// TODO get state (enabled/grayed, checked/unchecked, pathname)
+				
+				// this item has a dynamic label...
+				// compute the value for the label.
+				// if it is blank, we remove the item from the menu.
+
+				const char * szLabelName = _ev_GetLabelName(m_pUnixApp,pAction,pLabel);
+
+				UT_Bool bRemoveIt = (!szLabelName || !*szLabelName);
+
+				if (bRemoveIt)			// we don't want it to be there
+				{
+					if (bPresent)
+					{
+						// TODO remove this item from the menu
+					}
+					break;
+				}
+
+				// we want the item in the menu.
+				
+				if (bPresent)			// just update the label on the item.
+				{
+					if (strcmp(szLabelName,szMenuFactoryItemPath)==0)
+					{
+						// dynamic label has not changed, all we need to do
+						// is enable/disable and/or check/uncheck it.
+
+						// TODO use bEnable and szMenuFactoryItemPath to enable/gray item.
+						// TODO use bCheck and szMenuFactoryItemPath to check/uncheck item.
+					}
+					else
+					{
+						// dynamic label has changed, do the complex modify.
+						
+						// TODO rename the item
+						// TODO use bEnable and szMenuFactoryItemPath to enable/gray item.
+						// TODO use bCheck and szMenuFactoryItemPath to check/uncheck item.
+					}
+					break;
+				}
+				else
+				{
+					// insert new item at the correct location
+
+					// TODO do this
+				}
+			}
+			break;
+	
+		case EV_MLF_BeginSubMenu:
+		case EV_MLF_EndSubMenu:
+		case EV_MLF_Separator:
+			break;
+
+		default:
+			UT_ASSERT(0);
+			break;
+		}
+
+	}
+
+	return UT_TRUE;
+}
+
+const char * EV_UnixMenu::_getItemPath(AP_Menu_Id id) const
+{
+	for (UT_uint32 k=0; (k < m_nrActualFactoryItems); k++)
+	{
+		_wd * wd = (_wd *)m_menuFactoryItems[k].callback_action;
+		if (wd && (wd->m_id==id))
+			return m_menuFactoryItems[k].path;
+	}
+
+	return NULL;
+}
+
+UT_Bool EV_UnixMenu::_isItemPresent(AP_Menu_Id id) const
+{
+	for (UT_uint32 k=0; (k < m_nrActualFactoryItems); k++)
+	{
+		_wd * wd = (_wd *)m_menuFactoryItems[k].callback_action;
+		if (wd && (wd->m_id==id))
+			return UT_TRUE;
+	}
+
+	return UT_FALSE;
 }
