@@ -101,11 +101,14 @@ void fp_FootnoteContainer::clearScreen(void)
 		UT_RGBColor * pBGColor = getFillType()->getColor();
 		UT_sint32 iLeftMargin = pDSL->getLeftMargin();
 		UT_sint32 iRightMargin = pDSL->getRightMargin();
-		UT_sint32 diff = getPage()->getWidth()/10;
+//		UT_sint32 diff = getPage()->getWidth()/10;
+		UT_sint32 diff = 0; // FIXME make a property
 		UT_sint32 xoff,yoff;
 		getPage()->getScreenOffsets(this,xoff,yoff);
 		UT_sint32 xoffStart = xoff  + diff;
-		UT_sint32 xoffEnd = xoff + getPage()->getWidth() - iLeftMargin -iRightMargin - diff;
+		UT_sint32 width = (getPage()->getWidth() - iLeftMargin -iRightMargin)/3;
+		UT_sint32 xoffEnd = xoff + width;
+
 		getGraphics()->setColor(*pBGColor);
 		UT_sint32 iLineThick = pDSL->getFootnoteLineThickness();
 		getGraphics()->setLineWidth(iLineThick);
@@ -166,9 +169,12 @@ void fp_FootnoteContainer::draw(dg_DrawArgs* pDA)
 		fl_DocSectionLayout * pDSL = getPage()->getOwningSection();
 		UT_sint32 iLeftMargin = pDSL->getLeftMargin();
 		UT_sint32 iRightMargin = pDSL->getRightMargin();
-		UT_sint32 diff = getPage()->getWidth()/10;
+//		UT_sint32 diff = getPage()->getWidth()/10;
+		UT_sint32 diff = 0; // FIXME make a property
 		UT_sint32 xoffStart = pDA->xoff + diff;
-		UT_sint32 xoffEnd = pDA->xoff + getPage()->getWidth() -iLeftMargin - iRightMargin - diff;
+		UT_sint32 width = (getPage()->getWidth() - iLeftMargin -iRightMargin)/3;
+		UT_sint32 xoffEnd = pDA->xoff + width;
+
 		UT_sint32 yline = pDA->yoff;
 		pDA->pG->setColor(black);
 		pDA->pG->setLineProperties(1.0,

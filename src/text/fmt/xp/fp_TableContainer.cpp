@@ -163,17 +163,12 @@ void fp_CellContainer::setHeight(UT_sint32 iHeight)
 }
 
 /*!
- * Return the broken table that contains this cell and the given line
+ * Return the broken table that contains this cell and the given Container
  */
-fp_TableContainer * fp_CellContainer::getBrokenTable(fp_Line * pLine)
+fp_TableContainer * fp_CellContainer::getBrokenTable(fp_Container * pCon)
 {
 	fp_TableContainer * pMaster = static_cast<fp_TableContainer *>(getContainer());
 	fp_CellContainer * pTopCell = this;
-	while(pMaster && pMaster->getContainer() && pMaster->getContainer()->getContainerType() != FP_CONTAINER_COLUMN)
-	{
-		pTopCell = static_cast<fp_CellContainer *>(pMaster->getContainer());
-		pMaster = static_cast<fp_TableContainer *>(pTopCell->getContainer());
-	}
 	if(pMaster == NULL)
 	{
 		return pMaster;
@@ -183,7 +178,7 @@ fp_TableContainer * fp_CellContainer::getBrokenTable(fp_Line * pLine)
     {
 		if(pTopCell->doesOverlapBrokenTable(pBroke))
 		{
-			if(pBroke->isInBrokenTable(this,pLine))
+			if(pBroke->isInBrokenTable(this,pCon))
 			{
 				return pBroke;
 			}
@@ -194,11 +189,11 @@ fp_TableContainer * fp_CellContainer::getBrokenTable(fp_Line * pLine)
 }
 
 /*!
- * This Method returns the column that embeds the line given.
+ * This Method returns the column that embeds the container given.
  */
-fp_Column * fp_CellContainer::getColumn(fp_Line * pLine)
+fp_Column * fp_CellContainer::getColumn(fp_Container * pCon)
 {
-	fp_TableContainer * pBroke = getBrokenTable(pLine);
+	fp_TableContainer * pBroke = getBrokenTable(pCon);
 	if(pBroke == NULL)
 	{
 		pBroke = static_cast<fp_TableContainer *>(getContainer());
@@ -207,12 +202,16 @@ fp_Column * fp_CellContainer::getColumn(fp_Line * pLine)
 	{
 		return NULL;
 	}
+	if(isInNestedTable())
+	{
+		UT_DEBUGMSG(("getColumn in nested table \n"));
+	}
 	bool bStop = false;
 	fp_Column * pCol = NULL;
 	//
-	// FIXME for nexted tables off first page
+	// Now FIXED for nested tables off first page
 	//
-	while(!pBroke->isThisBroken() && !bStop)
+	while(pBroke->isThisBroken() && !bStop)
 	{
 		fp_Container * pCon = pBroke->getContainer();
 		if(pCon->isColumnType())
@@ -229,13 +228,15 @@ fp_Column * fp_CellContainer::getColumn(fp_Line * pLine)
 		}
 		else
 		{
-			pBroke = static_cast<fp_TableContainer *>(pCon->getContainer());
-		}
+			fp_CellContainer * pCell = static_cast<fp_CellContainer *>(pBroke->getContainer());
+			UT_ASSERT(pCell->getContainerType() == FP_CONTAINER_CELL);
+			pBroke = pCell->getBrokenTable(static_cast<fp_Container *>(pBroke));		}
 	}
 	if(!bStop)
 	{
 		pCol = static_cast<fp_Column *>(pBroke->getContainer());
 	}
+	UT_ASSERT(pCol->getContainerType() != FP_CONTAINER_CELL);
 	return pCol;
 }
 
@@ -313,6 +314,13 @@ void fp_CellContainer::_getBrokenRect(fp_TableContainer * pBroke, fp_Page * &pPa
 			else
 			{
 				off = pBroke->getX();
+			}
+			fp_Container * pCon = pBroke;
+			while(pCon->getContainer() && !pCon->getContainer()->isColumnType())
+			{
+				pCon = pCon->getContainer();
+				col_x += pCon->getX();
+				col_y += pCon->getY();
 			}
 			col_x += off;
 			iLeft += col_x;
@@ -981,7 +989,7 @@ void fp_CellContainer::drawLines(fp_TableContainer * pBroke,GR_Graphics * pG)
 	{ 
 		bNested = true;
 	}
-	if(!bNested && pBroke && pBroke->getPage())
+	if(pBroke && pBroke->getPage())
 	{
 		if(pG->queryProperties(GR_Graphics::DGP_SCREEN) && !pBroke->getPage()->isOnScreen())
 		{
@@ -1063,6 +1071,7 @@ void fp_CellContainer::drawLines(fp_TableContainer * pBroke,GR_Graphics * pG)
 		fp_Container * pCon = static_cast<fp_Container *>(pBroke);
 		while(!pCon->isColumnType())
 		{
+			
 			offy += pCon->getY();
 			offx += pCon->getX();
 			pCon = pCon->getContainer();
@@ -1077,7 +1086,7 @@ void fp_CellContainer::drawLines(fp_TableContainer * pBroke,GR_Graphics * pG)
 
 	if(pBroke != NULL)
 	{
-		if(m_iBotY < pBroke->getYBreak() && !bNested)
+		if(m_iBotY < pBroke->getYBreak())
 		{
 //
 // Cell is above this page
@@ -1085,7 +1094,7 @@ void fp_CellContainer::drawLines(fp_TableContainer * pBroke,GR_Graphics * pG)
 			xxx_UT_DEBUGMSG(("Don't drawlines because M-IBotY < pBroke->getYbreak \n",m_iBotY,pBroke->getYBreak()));
 			return;
 		}
-		if(m_iTopY > pBroke->getYBottom() && !bNested)
+		if(m_iTopY > pBroke->getYBottom())
 		{
 //
 // Cell is below this page
@@ -1902,7 +1911,7 @@ UT_sint32 fp_CellContainer::wantVBreakAt(UT_sint32 vpos)
 			UT_sint32 iCur =0;
 			if(pCon->isVBreakable())
 			{
-				iCur = pCon->wantVBreakAt(iY - vpos);
+				iCur = pCon->wantVBreakAt(vpos - iY);
 				iCur = iCur + iY;
 			}
 			else
@@ -2067,15 +2076,42 @@ void fp_CellContainer::layout(void)
 		if(pContainer->getHeight() > _getMaxContainerHeight())
 			_setMaxContainerHeight(pContainer->getHeight());
 
+		fp_TableContainer * pTab = NULL;
 		if(pContainer->getY() != iY)
 		{
 			pContainer->clearScreen();
+			if(pContainer->getContainerType() == FP_CONTAINER_TABLE)
+			{
+				pTab = static_cast<fp_TableContainer *>(pContainer);
+				if(!pTab->isThisBroken())
+				{
+					//
+					// The position of the master table has changed.
+					// All broken tables need to be rebroken
+					pTab->deleteBrokenTables(false);
+				}
+			}
 		}
 			
 		pContainer->setY(iY);
 
 		UT_sint32 iContainerHeight = pContainer->getHeight();
 		UT_sint32 iContainerMarginAfter = pContainer->getMarginAfter();
+
+		if(pContainer->getContainerType() == FP_CONTAINER_TABLE)
+		{
+			pTab = static_cast<fp_TableContainer *>(pContainer);
+			if(!pTab->isThisBroken())
+			{
+				if(pTab->getFirstBrokenTable() == NULL)
+				{
+					static_cast<fp_TableContainer *>(pTab->VBreakAt(0));
+				}
+				pTab = pTab->getFirstBrokenTable();
+				pTab->setY(iY);
+			}
+			iContainerHeight = pTab->getHeight();
+		}
 
 		iY += iContainerHeight;
 		iY += iContainerMarginAfter;
@@ -2858,6 +2894,13 @@ void fp_TableContainer::resize(UT_sint32 n_rows, UT_sint32 n_cols)
  */
 bool fp_TableContainer::isVBreakable(void)
 {
+	//
+	// Fixme remove this when nested tables break across pages.
+	//
+	if(getContainer() && (getContainer()->getContainerType() == FP_CONTAINER_CELL))
+	{
+		return false;
+	}
 	return true;
 }
 
@@ -2869,7 +2912,7 @@ void fp_TableContainer::adjustBrokenTables(void)
 {
 	if(isThisBroken())
 	{
-		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		//		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 		return;
 	}
 	if(getFirstBrokenTable() == NULL)
@@ -3069,9 +3112,10 @@ fp_ContainerObject * fp_TableContainer::VBreakAt(UT_sint32 vpos)
 //
 	fp_Container * pCon = getContainer();
 	UT_return_val_if_fail(pCon, NULL);
+	bool bIsNested = false;
 	if(pCon->getContainerType() == FP_CONTAINER_CELL)
 	{
-		return NULL;
+		bIsNested = true;
 	}
 //
 // Do the case of creating the first broken table from the master table.
@@ -3303,6 +3347,28 @@ UT_sint32 fp_TableContainer::wantVBreakAt(UT_sint32 vpos)
 	return iYBreak;
 }
 
+fp_Page * fp_TableContainer::getPage(void)
+{
+	if(getContainer() && getContainer()->getContainerType() == FP_CONTAINER_CELL)
+	{
+		if(!isThisBroken())
+		{
+			return fp_Container::getPage();
+		}
+		if(getMasterTable() && getMasterTable()->getFirstBrokenTable() == this)
+		{
+			return fp_Container::getPage();
+		}
+		//
+		// OK all the easy cases dealt with.Now we have to find the page
+		// associated with this broken table.
+		//
+		fp_CellContainer * pCell = static_cast<fp_CellContainer *>(getContainer());
+		fp_Column * pCol = pCell->getColumn(this);
+		return pCol->getPage();
+	}
+	return fp_Container::getPage();
+}
 
 fp_Container * fp_TableContainer::getNextContainerInSection() const
 {
@@ -3644,21 +3710,6 @@ void  fp_TableContainer::clearScreen(void)
 	// This should be fixed later.
 	fp_Container *pUp = getContainer();
 	bool bIsNested = (pUp && (pUp->getContainerType() == FP_CONTAINER_CELL));
-	if(bIsNested && !m_bRecursiveClear)
-	{
-		fp_Container * pPrev = pUp;
-		while(pUp && pUp->getContainer() && (pUp->getContainer()->getContainerType() !=  FP_CONTAINER_COLUMN))
-		{
-			pPrev = pUp;
-			pUp = pUp->getContainer();
-		}
-		if(pPrev && pPrev->getContainerType() == FP_CONTAINER_CELL)
-		{
-			m_bRecursiveClear = true;
-			static_cast<fp_CellContainer *>(pPrev)->clearScreen(true);
-		}
-	}
-	m_bRecursiveClear = false;
 	if(isThisBroken()  && !bIsNested)
 	{
 		return;
@@ -3941,11 +3992,8 @@ bool fp_TableContainer::isInBrokenTable(fp_CellContainer * pCell, fp_Container *
 // container in the cell in the table. If this the case the rest of the
 // drawing code in AbiWord will have to clip it on the bottom.
 //
-// We assume that this is the top level table
+// We don't assume that this is the top level table
 //
-	fp_TableContainer * pTab = getMasterTable();
-	UT_return_val_if_fail(pTab && pTab->getContainer() && 
-						  pTab->getContainer()->isColumnType(),false);
 	//
 	// Short circuit things if the BrokenContainer pointer is set.
     //
@@ -3959,14 +4007,6 @@ bool fp_TableContainer::isInBrokenTable(fp_CellContainer * pCell, fp_Container *
  	}
 	UT_sint32 iTop = 0;
 	iTop = pCell->getY() + pCon->getY();
-	fp_CellContainer * pTopCell = pCell;
-	while(pTopCell && pTopCell->getContainer() != pTab)
-	{
-		fp_TableContainer * pNextTab = static_cast<fp_TableContainer *>(pTopCell->getContainer());
-		iTop += pNextTab->getY();
-		pTopCell = static_cast<fp_CellContainer *>(pNextTab->getContainer());
-		iTop += pTopCell->getY();
-	}
 	UT_sint32 iBot = iTop + pCon->getHeight();
 	UT_sint32 iBreak = getYBreak();
 	UT_sint32 iBottom = getYBottom();
