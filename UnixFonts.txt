@@ -74,6 +74,10 @@ need to be enclosed in double quotes:
 ** iso-8859-1 - 10, 13-16; utf-8 and koi8-r,u. Other encodings can be added
 ** on request.
 
+** The following paragraphs contain an overview of the issues; a step by step
+** guite on setup of ttf fonts for AW can be found in the document
+** TrueTypeFontsWithUnix.abw in the doc directory.
+
 Your font server must support ttf fonts. Then, just
 as in the case of pfa fonts, you need to add an entry into 
 fonts.scale, and you should use the same programme (ttmkfdir) to
