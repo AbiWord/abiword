@@ -1,5 +1,5 @@
 <awml>
-<section COLUMN_GAP="0.25in" NUM_COLUMNS="1">
+<section COLUMN_GAP="0.25in" NUM_COLUMNS="1" PROPS="columns:1">
 <p><c PROPS="font-family:courier; font-size:11pt">$Id$</c></p>
 <p PROPS="text-align:center"><c PROPS="font-size:24pt; font-weight:bold">AbiWord Layout Engine Design Overview</c></p>
 <p PROPS="text-align:center"><c PROPS="font-size:11pt">Copyright (C) 1999 AbiSource, Inc. All Rights Reserved.</c></p>

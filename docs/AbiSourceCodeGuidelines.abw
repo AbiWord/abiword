@@ -26,6 +26,7 @@
 <p>7.  Cross-platform (XP) code is very important to us.  Remember that XP code must compile on a wide variety of platforms.  Don't put platform-specific stuff in XP files.  Don't put platform #ifdefs in XP files.  Don't put any code which could be XP in a platform-specific file.  At the time of this writing, AbiWord is approximately 90% XP code, based on line count.  We'd like to keep it that way.</p>
 <p></p>
 <p>8.  Use  the portability types in abi/src/util.  For example, don't use <c PROPS="font-family:Courier New">unsigned long</c>, use <c PROPS="font-family:Courier New">UT_uint32</c> instead.  There's also <c PROPS="font-family:Courier New">UT_Bool</c>, with its attendant <c PROPS="font-family:Courier New">UT_TRUE</c> and <c PROPS="font-family:Courier New">UT_FALSE</c>.</p>
+<p></p>
 <p>9.  Keep an eye on Bugzilla.  We believe in the "fix bugs as you go" approach.  Don't let the bug count ever get too high.  When you fix a bug, update Bugzilla to reflect the change in state.</p>
 <p></p>
 <p>10.  When you check something in, send email about it.  Put the word 'commit' in the subject line of the message.</p>

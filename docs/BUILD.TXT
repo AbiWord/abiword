@@ -15,7 +15,9 @@ which contains the instructions for how to build the contents of that directory.
 To get things started, just cd into the abi/src directory, and type 'make'.
 
 There's a separate note on FONTS that you'll probably need to look at before
-you can run AbiWord.  Remember this is a work-in-progress.
+you can run AbiWord.  Remember this is a work-in-progress.  In the rare event that
+your system does not have PNG and zlib development libraries installed, you will 
+need to do this also. 
 
 
 Build Instructions -- Windows NT
@@ -45,9 +47,16 @@ but we do use the compiler, headers, libraries, and so on.  You'll
 need them all to be in your PATH, since the Makefiles will expect them
 to be readily available.
 
-Once you have all this stuff installed, then you should be able to
-build the tree in the same way that the Linux version builds.  Just cd
-into the abi/src directory and type "make" (from a bash shell).
+Additionally, AbiWord uses the PNG and zlib libraries.  Both of these are 
+available from our website, and are peers of the abi tree.  Once you 
+have all this stuff downloaded, then you should be able to build the 
+tree as follows:
+	cd zlib
+	make
+	cd ../libpng
+	make
+	cd ../abi
+	make 
 
 Where is the executable?
 ------------------------

@@ -2,7 +2,7 @@
 <section>
 <p><c PROPS="font-family:courier; font-size:11pt">$Id$</c></p>
 <p PROPS="text-align:center"><c PROPS="font-size:24pt; font-weight:bold">AbiWord Source Overview</c></p>
-<p PROPS="text-align:center"><c PROPS="font-size:11pt">Copyright (C) 1998 AbiSource, Inc. All Rights Reserved.</c></p>
+<p PROPS="text-align:center"><c PROPS="font-size:11pt">Copyright (C) 1998</c><c PROPS="font-size:11pt">-1999</c><c PROPS="font-size:11pt"> AbiSource, Inc. All Rights Reserved.</c></p>
 <p PROPS="text-align:center"><c PROPS="font-style:italic">Jeff Hostetler</c>, <c PROPS="font-family:courier">jeff@abisource.com</c></p>
 <p PROPS="text-align:center">AbiSource, Inc.</p>
 <p PROPS="text-align:center"><c PROPS="font-family:courier">$Date$</c></p>
