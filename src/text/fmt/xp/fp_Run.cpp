@@ -132,6 +132,54 @@ fp_Run::~fp_Run()
   // no impl.
 }
 
+void fp_Run::lookupProperties()
+{
+	clearScreen();
+
+	const PP_AttrProp * pSpanAP = NULL;
+	const PP_AttrProp * pBlockAP = NULL;
+	const PP_AttrProp * pSectionAP = NULL; // TODO do we care about section-level inheritance?
+	bool bDelete;
+
+	m_pBL->getAttrProp(&pBlockAP);
+
+	// examining the m_pRevisions contents is too involved, it is
+	// faster to delete it and create a new instance if needed
+	if(m_pRevisions)
+	{
+		delete m_pRevisions;
+		m_pRevisions = NULL;
+	}
+
+	// NB this call will recreate m_pRevisions for us
+	getSpanAP(pSpanAP,bDelete);
+
+	_lookupProperties(pSpanAP, pBlockAP, pSectionAP);
+
+	if(m_pRevisions)
+	{
+		FV_View* pView = getBlock()->getDocLayout()->getView();
+		UT_return_if_fail(pView);
+		UT_uint32 iId  = pView->getRevisionLevel();
+
+		if(iId && !m_pRevisions->isVisible(iId))
+		{
+			if(isHidden() == FP_HIDDEN_TEXT)
+			{
+				setVisibility(FP_HIDDEN_REVISION_AND_TEXT);
+			}
+			else
+			{
+				setVisibility(FP_HIDDEN_REVISION);
+			}
+		}
+	}
+
+	//if we are responsible for deleting pSpanAP, then just do so
+	if(bDelete)
+		delete pSpanAP;
+
+}
 
 //////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////
@@ -1146,23 +1194,10 @@ fp_TabRun::fp_TabRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirs
 	lookupProperties();
 }
 
-void fp_TabRun::lookupProperties(void)
+void fp_TabRun::_lookupProperties(const PP_AttrProp * pSpanAP,
+								  const PP_AttrProp * pBlockAP,
+								  const PP_AttrProp * pSectionAP)
 {
-	const PP_AttrProp * pSpanAP = NULL;
-	const PP_AttrProp * pBlockAP = NULL;
-	const PP_AttrProp * pSectionAP = NULL; // TODO do we care about section-level inheritance?
-
-	//getBlock()->getSpanAttrProp(getBlockOffset(),false,&pSpanAP);
-	if(getRevisions())
-	{
-		delete getRevisions();
-		_setRevisions(NULL);
-	}
-
-	bool bDeleteSpanAP;
-	getSpanAP(pSpanAP,bDeleteSpanAP);
-
-	getBlock()->getAttrProp(&pBlockAP);
 	fd_Field * fd = NULL;
 	getBlock()->getField(getBlockOffset(),fd);
 	_setField(fd);
@@ -1253,9 +1288,6 @@ void fp_TabRun::lookupProperties(void)
 		q = strtok(NULL, " ");
 	}
 	free(p);
-
-	if(bDeleteSpanAP)
-		delete pSpanAP;
 }
 
 bool fp_TabRun::canBreakAfter(void) const
@@ -1595,7 +1627,9 @@ fp_ForcedLineBreakRun::fp_ForcedLineBreakRun(fl_BlockLayout* pBL, GR_Graphics* p
 	lookupProperties();
 }
 
-void fp_ForcedLineBreakRun::lookupProperties(void)
+void fp_ForcedLineBreakRun::_lookupProperties(const PP_AttrProp * pSpanAP,
+											  const PP_AttrProp * pBlockAP,
+											  const PP_AttrProp * pSectionAP)
 {
 	//UT_DEBUGMSG(("fp_ForcedLineBreakRun::lookupProperties\n"));
 	fd_Field * fd = NULL;
@@ -1618,11 +1652,6 @@ void fp_ForcedLineBreakRun::lookupProperties(void)
 		}
 		else
 		{
-			const PP_AttrProp * pSpanAP = NULL;
-			const PP_AttrProp * pBlockAP = NULL;
-			const PP_AttrProp * pSectionAP = NULL;
-			getBlock()->getSpanAttrProp(getBlockOffset(),true,&pSpanAP);
-			getBlock()->getAttrProp(&pBlockAP);
 			// look for fonts in this DocLayout's font cache
 			FL_DocLayout * pLayout = getBlock()->getDocLayout();
 
@@ -1839,7 +1868,9 @@ fp_FieldStartRun::fp_FieldStartRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint
 	lookupProperties();
 }
 
-void fp_FieldStartRun::lookupProperties(void)
+void fp_FieldStartRun::_lookupProperties(const PP_AttrProp * /*pSpanAP*/,
+										 const PP_AttrProp * /*pBlockAP*/,
+										 const PP_AttrProp * /*pSectionAP*/)
 {
 	fd_Field * fd = NULL;
 	getBlock()->getField(getBlockOffset(),fd);
@@ -1896,7 +1927,9 @@ fp_FieldEndRun::fp_FieldEndRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 i
 	lookupProperties();
 }
 
-void fp_FieldEndRun::lookupProperties(void)
+void fp_FieldEndRun::_lookupProperties(const PP_AttrProp * /*pSpanAP*/,
+									   const PP_AttrProp * /*pBlockAP*/,
+									   const PP_AttrProp * /*pSectionAP*/)
 {
 	fd_Field * fd = NULL;
 	getBlock()->getField(getBlockOffset(),fd);
@@ -1978,7 +2011,9 @@ bool fp_BookmarkRun::isComrade(fp_BookmarkRun *pBR) const
 	return (0 == UT_XML_strcmp(m_pName, pBR->m_pName));
 }
 
-void fp_BookmarkRun::lookupProperties(void)
+void fp_BookmarkRun::_lookupProperties(const PP_AttrProp * /*pSpanAP*/,
+									   const PP_AttrProp * /*pBlockAP*/,
+									   const PP_AttrProp * /*pSectionAP*/)
 {
 }
 
@@ -2164,7 +2199,9 @@ fp_HyperlinkRun::~fp_HyperlinkRun()
 		delete [] m_pTarget;
 }
 
-void fp_HyperlinkRun::lookupProperties(void)
+void fp_HyperlinkRun::_lookupProperties(const PP_AttrProp * /*pSpanAP*/,
+									   const PP_AttrProp * /*pBlockAP*/,
+									   const PP_AttrProp * /*pSectionAP*/)
 {
 }
 
@@ -2223,22 +2260,12 @@ fp_EndOfParagraphRun::fp_EndOfParagraphRun(fl_BlockLayout* pBL,
 	lookupProperties();
 }
 
-void fp_EndOfParagraphRun::lookupProperties(void)
+void fp_EndOfParagraphRun::_lookupProperties(const PP_AttrProp * pSpanAP,
+											 const PP_AttrProp * pBlockAP,
+											 const PP_AttrProp * pSectionAP)
 {
 	//UT_DEBUGMSG(("fp_EndOfParagraphRun::lookupProperties\n"));
 	_inheritProperties();
-
-	// we will make this run to indicate revisions on the block;
-	// examining the m_pRevisions contents is too involved, it is
-	// faster to delete it and create a new instance if needed
-	if(getRevisions())
-	{
-		delete getRevisions();
-		_setRevisions(NULL);
-	}
-
-	const PP_AttrProp * pBlockAP = NULL;
-	getBlock()->getAttrProp(&pBlockAP);
 
 	const XML_Char* pRevision = NULL;
 
@@ -2248,8 +2275,12 @@ void fp_EndOfParagraphRun::lookupProperties(void)
 		// properties and attributes contained in the revision
 		// we just need its representation so the base class can
 		// handle us properly
-		if(!getRevisions())
-			_setRevisions(new PP_RevisionAttr(pRevision));
+		PP_RevisionAttr * pRev = getRevisions();
+
+		if(pRev)
+			delete pRev;
+
+		_setRevisions(new PP_RevisionAttr(pRevision));
 	}
 
 	FV_View* pView = getBlock()->getDocLayout()->getView();
@@ -2267,11 +2298,6 @@ void fp_EndOfParagraphRun::lookupProperties(void)
 		}
 		else
 		{
-			const PP_AttrProp * pSpanAP = NULL;
-			const PP_AttrProp * pBlockAP = NULL;
-			const PP_AttrProp * pSectionAP = NULL;
-			getBlock()->getSpanAttrProp(getBlockOffset(),true,&pSpanAP);
-			getBlock()->getAttrProp(&pBlockAP);
 			// look for fonts in this DocLayout's font cache
 			FL_DocLayout * pLayout = getBlock()->getDocLayout();
 
@@ -2526,13 +2552,13 @@ fp_ImageRun::~fp_ImageRun()
 	}
 }
 
-void fp_ImageRun::lookupProperties(void)
+void fp_ImageRun::_lookupProperties(const PP_AttrProp * pSpanAP,
+									const PP_AttrProp * /*pBlockAP*/,
+									const PP_AttrProp * /*pSectionAP*/)
 {
 	fd_Field * fd = NULL;
 	getBlock()->getField(getBlockOffset(), fd);
 	_setField(fd);
-	const PP_AttrProp * pSpanAP = NULL;
-	getBlock()->getSpanAttrProp(getBlockOffset(),false,&pSpanAP);
 	const XML_Char * szWidth = NULL;
 	pSpanAP->getProperty("width", szWidth);
 	if(szWidth == NULL)
@@ -2964,17 +2990,12 @@ bool fp_FieldRun::_setValue(UT_UCSChar *p_new_value)
 	return false;
 }
 
-void fp_FieldRun::lookupProperties(void)
+void fp_FieldRun::_lookupProperties(const PP_AttrProp * pSpanAP,
+									const PP_AttrProp * pBlockAP,
+									const PP_AttrProp * pSectionAP)
 {
-	const PP_AttrProp * pSpanAP = NULL;
-	const PP_AttrProp * pBlockAP = NULL;
-	const PP_AttrProp * pSectionAP = NULL; // TODO do we care about section-level inheritance?
-
-	getBlock()->getSpanAttrProp(getBlockOffset(),false,&pSpanAP);
-	//	UT_DEBUGMSG(("SEVIOR: Doing Lookupprops for block %x run %x  offset =%d \n ",getBlock(),this,getBlockOffset()));
 	UT_ASSERT(pSpanAP);
 	PD_Document * pDoc = getBlock()->getDocument();
-	getBlock()->getAttrProp(&pBlockAP);
 	fd_Field * fd = NULL;
 	getBlock()->getField(getBlockOffset()+1,fd); // Next Pos?
 	_setField(fd);
@@ -4333,7 +4354,9 @@ fp_ForcedColumnBreakRun::fp_ForcedColumnBreakRun(fl_BlockLayout* pBL, GR_Graphic
 	lookupProperties();
 }
 
-void fp_ForcedColumnBreakRun::lookupProperties(void)
+void fp_ForcedColumnBreakRun::_lookupProperties(const PP_AttrProp * /*pSpanAP*/,
+												const PP_AttrProp * /*pBlockAP*/,
+												const PP_AttrProp * /*pSectionAP*/)
 {
 	fd_Field * fd = NULL;
 
@@ -4446,7 +4469,9 @@ fp_ForcedPageBreakRun::fp_ForcedPageBreakRun(fl_BlockLayout* pBL, GR_Graphics* p
 	lookupProperties();
 }
 
-void fp_ForcedPageBreakRun::lookupProperties(void)
+void fp_ForcedPageBreakRun::_lookupProperties(const PP_AttrProp * /*pSpanAP*/,
+											  const PP_AttrProp * /*pBlockAP*/,
+											  const PP_AttrProp * /*pSectionAP*/)
 {
 	fd_Field * fd = NULL;
 

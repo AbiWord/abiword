@@ -51,15 +51,10 @@ fp_FmtMarkRun::fp_FmtMarkRun(fl_BlockLayout* pBL, GR_Graphics* pG,
 	lookupProperties();
 }
 
-void fp_FmtMarkRun::lookupProperties(void)
+void fp_FmtMarkRun::_lookupProperties(const PP_AttrProp * pSpanAP,
+									  const PP_AttrProp * pBlockAP,
+									  const PP_AttrProp * pSectionAP)
 {
-	const PP_AttrProp * pSpanAP = NULL;
-	const PP_AttrProp * pBlockAP = NULL;
-	const PP_AttrProp * pSectionAP = NULL; // TODO do we care about section-level inheritance?
-
-	getBlock()->getSpanAttrProp(getBlockOffset(),true,&pSpanAP);
-	getBlock()->getAttrProp(&pBlockAP);
-
 	// look for fonts in this DocLayout's font cache
 	FL_DocLayout * pLayout = getBlock()->getDocLayout();
 

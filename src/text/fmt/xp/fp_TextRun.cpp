@@ -140,8 +140,7 @@ bool fp_TextRun::hasLayoutProperties(void) const
 	return true;
 }
 
-/*! a private method used internally by lookupProperties() */
-void fp_TextRun::_processProperties(const PP_AttrProp * pSpanAP,
+void fp_TextRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 									const PP_AttrProp * pBlockAP,
 									const PP_AttrProp * pSectionAP)
 {
@@ -326,58 +325,8 @@ void fp_TextRun::_processProperties(const PP_AttrProp * pSpanAP,
 	else
 #endif
 		setDirection(FRIBIDI_TYPE_UNSET, iNewOverride);
-
-	PP_RevisionAttr * pRev = getRevisions();
-
-	if(pRev)
-	{
-		FV_View* pView = getBlock()->getDocLayout()->getView();
-		UT_return_if_fail(pView);
-		UT_uint32 iId  = pView->getRevisionLevel();
-
-		if(iId && !pRev->isVisible(iId))
-		{
-			if(isHidden() == FP_HIDDEN_TEXT)
-			{
-				setVisibility(FP_HIDDEN_REVISION_AND_TEXT);
-			}
-			else
-			{
-				setVisibility(FP_HIDDEN_REVISION);
-			}
-		}
-	}
 }
 
-
-void fp_TextRun::lookupProperties(void)
-{
-	clearScreen();
-
-	const PP_AttrProp * pSpanAP = NULL;
-	const PP_AttrProp * pBlockAP = NULL;
-	const PP_AttrProp * pSectionAP = NULL; // TODO do we care about section-level inheritance?
-	bool bDelete;
-
-	getBlock()->getAttrProp(&pBlockAP);
-
-	// examining the m_pRevisions contents is too involved, it is
-	// faster to delete it and create a new instance if needed
-	if(getRevisions())
-	{
-		delete getRevisions();
-		_setRevisions(NULL);
-	}
-
-	// NB this call will recreate m_pRevisions for us
-	getSpanAP(pSpanAP,bDelete);
-
-	_processProperties(pSpanAP, pBlockAP, pSectionAP);
-
-	//if we are responsible for deleting pSpanAP, then just do so
-	if(bDelete)
-		delete pSpanAP;
-}
 
 bool fp_TextRun::canBreakAfter(void) const
 {

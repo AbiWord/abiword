@@ -51,7 +51,6 @@ public:
 	fp_TextRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen, bool bLookupProperties=true);
 	virtual ~fp_TextRun();
 
-	virtual void			lookupProperties(void);
 	virtual void			mapXYToPosition(UT_sint32 xPos, UT_sint32 yPos, PT_DocPosition& pos, bool& bBOL, bool& bEOL);
 	virtual void			findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y, UT_sint32& x2, UT_sint32& y2, UT_sint32& height, bool& bDirection);
 	virtual bool			canBreakAfter(void) const;
@@ -160,7 +159,7 @@ private:
 
 private:
 	bool				_addupCharWidths(void);
-	inline void         _processProperties(const PP_AttrProp * pSpanAP,
+	virtual void        _lookupProperties(const PP_AttrProp * pSpanAP,
 										   const PP_AttrProp * pBlockAP,
 										   const PP_AttrProp * pSectionAP);
 
