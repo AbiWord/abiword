@@ -269,6 +269,7 @@ IE_Imp_WordPerfect::IE_Imp_WordPerfect(PD_Document * pDocument)
 {
    m_undoOn = false;
    m_paragraphChanged = true;
+   m_hasColumns = false;
 
    m_wordPerfectDispatchBytes.addItem(new WordPerfectByteTag(WP_TOP_SOFT_EOL, &IE_Imp_WordPerfect::_insertSpace));
    m_wordPerfectDispatchBytes.addItem(new WordPerfectByteTag(WP_TOP_SOFT_SPACE, &IE_Imp_WordPerfect::_insertSpace));
@@ -734,16 +735,89 @@ UT_Error IE_Imp_WordPerfect::_handlePageGroup()
 }
 
 // handles a column group
-// (TODO: not implemented, just skips over it)
+// (TODO: partially implemented, only basic column import is done, see bug 2756, 1270 and bug 515)
 UT_Error IE_Imp_WordPerfect::_handleColumnGroup()
 {
    UT_DEBUGMSG(("WordPerfect: Handling a column group\n"));
    long startPosition;
-   unsigned char subGroup;   
+   unsigned char subGroup;
    UT_uint16 size;
    unsigned char flags;
+   unsigned char nonDeletableInfoSize;
 
-   X_CheckWordPerfectError(_handleVariableGroupHeader(startPosition, subGroup, size, flags));   
+   X_CheckWordPerfectError(_handleVariableGroupHeader(startPosition, subGroup, size, flags));
+   X_CheckFileReadElementError(fread(&nonDeletableInfoSize, sizeof(unsigned char), 1, m_importFile));
+   UT_DEBUGMSG(("WordPerfect: Size of non deletable data: %d\n", nonDeletableInfoSize));
+    
+   if(!m_undoOn)
+   {
+       UT_DEBUGMSG(("WordPerfect: Column subgroup: %d\n", subGroup));
+       switch (subGroup)
+       {
+          case 0: // Left Margin Set
+                  break;
+          case 1: // TODO: Right Margin Set
+                  break;
+          case 2: // TODO: Define Text Columns, Partially implemented
+                  unsigned char colType;
+                  unsigned char rowSpacing[5]; // a WPSP type var., which seems to be 5 bytes, but I don't what it is.
+                  unsigned char numCols;
+          
+                  // skip this section if there are already columns defined, 
+                  // since abiword only supports 1 single column definition per document right now
+                  if (m_hasColumns)
+                     break;
+          
+                  X_CheckFileReadElementError(fread(&colType, sizeof(unsigned char), 1, m_importFile));
+                  
+                  // WTF doesn't this line work? 5 bytes isn't asked to much, isn't it?
+                  // X_CheckFileReadElementError(fread(&rowSpacing[0], sizeof(unsigned char), 5, m_importFile));
+                  
+                  // instead, read 5 charachters 1 by 1
+                  X_CheckFileReadElementError(fread(&rowSpacing[0], sizeof(unsigned char), 1, m_importFile));
+                  X_CheckFileReadElementError(fread(&rowSpacing[1], sizeof(unsigned char), 1, m_importFile));
+                  X_CheckFileReadElementError(fread(&rowSpacing[2], sizeof(unsigned char), 1, m_importFile));
+                  X_CheckFileReadElementError(fread(&rowSpacing[3], sizeof(unsigned char), 1, m_importFile));
+                  X_CheckFileReadElementError(fread(&rowSpacing[4], sizeof(unsigned char), 1, m_importFile));
+                  
+                  X_CheckFileReadElementError(fread(&numCols, sizeof(unsigned char), 1, m_importFile));
+          
+                  UT_DEBUGMSG(("WordPerfect: Column type: %d\n", colType & 0x03));
+                  UT_DEBUGMSG(("WordPerfect: # columns: %d\n", numCols));
+                  switch (colType & 0x03)
+                  {
+                     // TODO: implement the seperate cases
+                     case 0: // newspaper
+                     case 1: // newspaper with vertical balance
+                     case 2: // parallel
+                     case 3: // parallel with protect [what does this mean? for now, handle the same as parallel]
+                             {
+                                UT_String propBuffer;
+                                UT_String_sprintf(propBuffer, "columns:%d", numCols);
+                                
+                                UT_DEBUGMSG(("Appending column definition: %s\n", propBuffer.c_str()));
+                                const XML_Char* pProps = "props";
+                                const XML_Char* propsArray[3];
+                                propsArray[0] = pProps;
+                                propsArray[1] = propBuffer.c_str();
+                                propsArray[2] = NULL;
+                                // change the first Section which is inserted in the beginning of _parseDocument
+                                X_CheckDocumentError(getDoc()->changeStruxFmt(PTC_AddFmt,0,0,
+                                                                        propsArray,NULL,PTX_Section));
+                                m_hasColumns = true;
+                             }
+                             break;
+                     default: // something else we don't support, since it isn't in the docs
+                              break;
+                  }
+                  break;
+          case 3: // TODO: Column Border
+                  break;
+          default: // something else we don't support, since it isn't in the docs
+                   break;
+       }
+   }
+     
    X_CheckWordPerfectError(_skipGroup(startPosition, size));
    
    return UT_OK;
@@ -806,7 +880,7 @@ UT_Error IE_Imp_WordPerfect::_handleTabGroup()
    UT_uint16 size;
    
    X_CheckFileReadElementError(fread(&tabDefinition, sizeof(unsigned char), 1, m_importFile));
-   X_CheckFileReadElementError(fread(&size, sizeof(UT_uint16), 1, m_importFile)); // I have no idea WHAT this var. does. but it's there.
+   X_CheckFileReadElementError(fread(&size, sizeof(UT_uint16), 1, m_importFile));
 
    if(!m_undoOn)
      {

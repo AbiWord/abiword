@@ -277,6 +277,7 @@ public:
    UT_uint16 m_indexPointer;
    bool m_undoOn;
    bool m_paragraphChanged;
+   bool m_hasColumns;
    UT_Mbtowc m_Mbtowc;
    UT_GrowBuf m_textBuf;
    UT_Vector m_fontDescriptorList;
