@@ -121,7 +121,7 @@ UT_Error AP_CocoaFrame::_showDocument(UT_uint32 iZoom)
 	pView = new FV_View(getApp(), this, pDocLayout);
 	ENSUREP(pView);
 
-//	bFocus=GPOINTER_TO_INT(gtk_object_get_data(GTK_OBJECT(m_wTopLevelWindow),"toplevelWindowFocus"));
+//	bFocus=GPOINTER_TO_INT(g_object_get_data(G_OBJECT(m_wTopLevelWindow),"toplevelWindowFocus"));
 #if 0
 	pView->setFocus(bFocus && (gtk_grab_get_current()==NULL || gtk_grab_get_current()==m_wTopLevelWindow) ? AV_FOCUS_HERE : !bFocus && gtk_grab_get_current()!=NULL && isTransientWindow(GTK_WINDOW(gtk_grab_get_current()),GTK_WINDOW(m_wTopLevelWindow)) ?  AV_FOCUS_NEARBY : AV_FOCUS_NONE);
 #endif
@@ -797,23 +797,23 @@ void AP_CocoaFrame::_createDocumentWindow()
 	// TODO check what really remains to be done.
 //	UT_ASSERT (UT_TODO);
 #if 0
-//	gtk_signal_connect(GTK_OBJECT(m_pHadj), "value_changed", GTK_SIGNAL_FUNC(_fe::hScrollChanged), NULL);
-//	gtk_signal_connect(GTK_OBJECT(m_pVadj), "value_changed", GTK_SIGNAL_FUNC(_fe::vScrollChanged), NULL);
+//	g_signal_connect(G_OBJECT(m_pHadj), "value_changed", G_CALLBACK(_fe::hScrollChanged), NULL);
+//	g_signal_connect(G_OBJECT(m_pVadj), "value_changed", G_CALLBACK(_fe::vScrollChanged), NULL);
 
-	gtk_signal_connect(GTK_OBJECT(m_dArea), "expose_event",
-					   GTK_SIGNAL_FUNC(_fe::expose), NULL);
+	g_signal_connect(G_OBJECT(m_dArea), "expose_event",
+					   G_CALLBACK(_fe::expose), NULL);
   
-	gtk_signal_connect(GTK_OBJECT(m_dArea), "button_press_event",
-					   GTK_SIGNAL_FUNC(_fe::button_press_event), NULL);
+	g_signal_connect(G_OBJECT(m_dArea), "button_press_event",
+					   G_CALLBACK(_fe::button_press_event), NULL);
 
-	gtk_signal_connect(GTK_OBJECT(m_dArea), "button_release_event",
-					   GTK_SIGNAL_FUNC(_fe::button_release_event), NULL);
+	g_signal_connect(G_OBJECT(m_dArea), "button_release_event",
+					   G_CALLBACK(_fe::button_release_event), NULL);
 
-	gtk_signal_connect(GTK_OBJECT(m_dArea), "motion_notify_event",
-					   GTK_SIGNAL_FUNC(_fe::motion_notify_event), NULL);
+	g_signal_connect(G_OBJECT(m_dArea), "motion_notify_event",
+					   G_CALLBACK(_fe::motion_notify_event), NULL);
   
-	gtk_signal_connect(GTK_OBJECT(m_dArea), "configure_event",
-					   GTK_SIGNAL_FUNC(_fe::configure_event), NULL);
+	g_signal_connect(G_OBJECT(m_dArea), "configure_event",
+					   G_CALLBACK(_fe::configure_event), NULL);
 #endif
 }
 
@@ -906,7 +906,7 @@ void AP_CocoaFrame::toggleTopRuler(bool bRulerOn)
 	else
 	{
 		// delete the actual widgets
-		gtk_object_destroy( GTK_OBJECT(m_topRuler) );
+		g_object_destroy( G_OBJECT(m_topRuler) );
 		DELETEP(((AP_FrameData*)m_pData)->m_pTopRuler);
 		m_topRuler = NULL;
 	}
@@ -947,7 +947,7 @@ void AP_CocoaFrame::toggleLeftRuler(bool bRulerOn)
 	else
 	  {
 	    if (m_leftRuler && GTK_IS_OBJECT(m_leftRuler))
-		gtk_object_destroy( GTK_OBJECT(m_leftRuler) );
+		g_object_destroy( G_OBJECT(m_leftRuler) );
 	    
 	    DELETEP(((AP_FrameData*)m_pData)->m_pLeftRuler);
 	    m_leftRuler = NULL;

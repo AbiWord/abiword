@@ -143,8 +143,8 @@ void XAP_UnixDialog_Password::_constructWindowContents (GtkWidget * container)
 
   gtk_widget_grab_focus(password);
 
-  gtk_signal_connect (G_OBJECT(password), "activate",
-                     GTK_SIGNAL_FUNC(s_ok_clicked),
+  g_signal_connect (G_OBJECT(password), "activate",
+                     G_CALLBACK(s_ok_clicked),
                      (gpointer)this);
 
   mTextEntry = password;
@@ -196,22 +196,22 @@ GtkWidget * XAP_UnixDialog_Password::_constructWindow ()
   gtk_container_add (GTK_CONTAINER (hbuttonbox1), cancel_btn);
   GTK_WIDGET_SET_FLAGS (cancel_btn, GTK_CAN_DEFAULT);
 
-  gtk_signal_connect_after(G_OBJECT(dialog1),
+  g_signal_connect_after(G_OBJECT(dialog1),
 			   "destroy",
 			   NULL,
 			   NULL);
   
-  gtk_signal_connect(G_OBJECT(dialog1),
+  g_signal_connect(G_OBJECT(dialog1),
 		     "delete_event",
-		     GTK_SIGNAL_FUNC(s_delete_clicked),
+		     G_CALLBACK(s_delete_clicked),
 		     (gpointer) this);
 
-  gtk_signal_connect (G_OBJECT(ok_btn), "clicked",
-		      GTK_SIGNAL_FUNC(s_ok_clicked), 
+  g_signal_connect (G_OBJECT(ok_btn), "clicked",
+		      G_CALLBACK(s_ok_clicked), 
 		      (gpointer)this);
   
-  gtk_signal_connect (G_OBJECT(cancel_btn), "clicked",
-		      GTK_SIGNAL_FUNC(s_cancel_clicked), 
+  g_signal_connect (G_OBJECT(cancel_btn), "clicked",
+		      G_CALLBACK(s_cancel_clicked), 
 		      (gpointer)this);
 
   GTK_WIDGET_SET_FLAGS (cancel_btn, GTK_CAN_DEFAULT);

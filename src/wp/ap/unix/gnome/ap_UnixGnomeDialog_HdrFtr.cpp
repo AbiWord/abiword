@@ -83,24 +83,24 @@ GtkWidget * AP_UnixGnomeDialog_HdrFtr::_constructWindow (void)
 			  NULL);
 
   k = GTK_WIDGET (g_list_first (GNOME_DIALOG (dlg)->buttons)->data);
-  gtk_signal_connect (G_OBJECT(k), "clicked", 
-		      GTK_SIGNAL_FUNC(s_ok_clicked), (gpointer)this);
+  g_signal_connect (G_OBJECT(k), "clicked", 
+		      G_CALLBACK(s_ok_clicked), (gpointer)this);
   
   cancel = GTK_WIDGET (g_list_last (GNOME_DIALOG (dlg)->buttons)->data);
-  gtk_signal_connect (G_OBJECT(cancel), "clicked", 
-		      GTK_SIGNAL_FUNC(s_cancel_clicked), (gpointer)this);
+  g_signal_connect (G_OBJECT(cancel), "clicked", 
+		      G_CALLBACK(s_cancel_clicked), (gpointer)this);
 
-  gtk_signal_connect (G_OBJECT(dlg), "close", 
-		      GTK_SIGNAL_FUNC(s_cancel_clicked), (gpointer)this);
+  g_signal_connect (G_OBJECT(dlg), "close", 
+		      G_CALLBACK(s_cancel_clicked), (gpointer)this);
 
-  gtk_signal_connect_after(G_OBJECT(dlg),
+  g_signal_connect_after(G_OBJECT(dlg),
 			   "destroy",
 			   NULL,
 			   NULL);
 
-  gtk_signal_connect(G_OBJECT(dlg),
+  g_signal_connect(G_OBJECT(dlg),
 		     "delete_event",
-		     GTK_SIGNAL_FUNC(s_delete_clicked),
+		     G_CALLBACK(s_delete_clicked),
 		     (gpointer) this);
 
   m_wButtonOK = k;

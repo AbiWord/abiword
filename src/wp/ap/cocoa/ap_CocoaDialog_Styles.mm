@@ -375,24 +375,24 @@ void AP_CocoaDialog_Styles::runModal(XAP_Frame * pFrame)
 							 (UT_uint32) m_wCharPreviewArea->allocation.height);
 
 	// the expose event of the preview
-	gtk_signal_connect(GTK_OBJECT(m_wParaPreviewArea),
+	g_signal_connect(G_OBJECT(m_wParaPreviewArea),
 					   "expose_event",
-					   GTK_SIGNAL_FUNC(s_paraPreview_exposed),
+					   G_CALLBACK(s_paraPreview_exposed),
 					   (gpointer) this);
 
-	gtk_signal_connect(GTK_OBJECT(m_wCharPreviewArea),
+	g_signal_connect(G_OBJECT(m_wCharPreviewArea),
 					   "expose_event",
-					   GTK_SIGNAL_FUNC(s_charPreview_exposed),
+					   G_CALLBACK(s_charPreview_exposed),
 					   (gpointer) this);
 	
-	gtk_signal_connect_after(GTK_OBJECT(m_windowMain),
+	g_signal_connect_after(G_OBJECT(m_windowMain),
 							 "expose_event",
-							 GTK_SIGNAL_FUNC(s_window_exposed),
+							 G_CALLBACK(s_window_exposed),
 							 (gpointer) this);
 
 	// connect the select_row signal to the clist
-	gtk_signal_connect (GTK_OBJECT (m_wclistStyles), "select_row",
-						GTK_SIGNAL_FUNC (s_clist_clicked), (gpointer)this);
+	g_signal_connect (G_OBJECT (m_wclistStyles), "select_row",
+						G_CALLBACK (s_clist_clicked), (gpointer)this);
 
 	// Run into the GTK event loop for this window.
 	
@@ -751,25 +751,25 @@ GtkWidget* AP_CocoaDialog_Styles::_constructWindowContents(
 	gtk_box_pack_start(GTK_BOX(vboxContents), buttonBoxStyleManip, FALSE, FALSE, 0);
 
 	// connect signal for this list
-	gtk_signal_connect (GTK_OBJECT(GTK_COMBO(comboList)->entry), 
+	g_signal_connect (G_OBJECT(GTK_COMBO(comboList)->entry), 
 						"changed",
-						GTK_SIGNAL_FUNC(s_typeslist_changed),
+						G_CALLBACK(s_typeslist_changed),
 						(gpointer)this);
 
 	// connect signals for these 3 buttons
-	gtk_signal_connect (GTK_OBJECT(buttonNew),
+	g_signal_connect (G_OBJECT(buttonNew),
 						"clicked",
-						GTK_SIGNAL_FUNC(s_newbtn_clicked),
+						G_CALLBACK(s_newbtn_clicked),
 						(gpointer)this);
 
-	gtk_signal_connect (GTK_OBJECT(buttonModify),
+	g_signal_connect (G_OBJECT(buttonModify),
 						"clicked",
-						GTK_SIGNAL_FUNC(s_modifybtn_clicked),
+						G_CALLBACK(s_modifybtn_clicked),
 						(gpointer)this);
 
-	gtk_signal_connect (GTK_OBJECT(buttonDelete),
+	g_signal_connect (G_OBJECT(buttonDelete),
 						"clicked",
-						GTK_SIGNAL_FUNC(s_deletebtn_clicked),
+						G_CALLBACK(s_deletebtn_clicked),
 						(gpointer)this);
 
 	m_wclistStyles = listStyles;
@@ -789,24 +789,24 @@ void AP_CocoaDialog_Styles::_connectsignals(void) const
 
 	// the control buttons
 
-	gtk_signal_connect(GTK_OBJECT(m_wbuttonApply),
+	g_signal_connect(G_OBJECT(m_wbuttonApply),
 					   "clicked",
-					   GTK_SIGNAL_FUNC(s_apply_clicked),
+					   G_CALLBACK(s_apply_clicked),
 					   (gpointer) this);
 	
-	gtk_signal_connect(GTK_OBJECT(m_wbuttonClose),
+	g_signal_connect(G_OBJECT(m_wbuttonClose),
 					   "clicked",
-					   GTK_SIGNAL_FUNC(s_close_clicked),
+					   G_CALLBACK(s_close_clicked),
 					   (gpointer) this);
 	
 	// the catch-alls
 	
-	gtk_signal_connect(GTK_OBJECT(m_windowMain),
+	g_signal_connect(G_OBJECT(m_windowMain),
 					   "delete_event",
-					   GTK_SIGNAL_FUNC(s_delete_clicked),
+					   G_CALLBACK(s_delete_clicked),
 					   (gpointer) this);
 
-	gtk_signal_connect_after(GTK_OBJECT(m_windowMain),
+	g_signal_connect_after(G_OBJECT(m_windowMain),
 							 "destroy",
 							 NULL,
 							 NULL);
@@ -1202,87 +1202,87 @@ void  AP_CocoaDialog_Styles::_constructFormatList(GtkWidget * FormatMenu)
 void AP_CocoaDialog_Styles::_connectModifySignals(void)
 {
 
-	gtk_signal_connect(GTK_OBJECT(m_wModifyOk),
+	g_signal_connect(G_OBJECT(m_wModifyOk),
 					   "clicked",
-					   GTK_SIGNAL_FUNC(s_modify_ok_clicked),
+					   G_CALLBACK(s_modify_ok_clicked),
 					   (gpointer) this);
 	
-	gtk_signal_connect(GTK_OBJECT(m_wModifyCancel),
+	g_signal_connect(G_OBJECT(m_wModifyCancel),
 					   "clicked",
-					   GTK_SIGNAL_FUNC(s_modify_cancel_clicked),
+					   G_CALLBACK(s_modify_cancel_clicked),
 					   (gpointer) this);
 
-	gtk_signal_connect(GTK_OBJECT(m_wModifyParagraph),
+	g_signal_connect(G_OBJECT(m_wModifyParagraph),
 					   "activate",
-					   GTK_SIGNAL_FUNC(s_modify_paragraph),
+					   G_CALLBACK(s_modify_paragraph),
 					   (gpointer) this);
 
 
-	gtk_signal_connect(GTK_OBJECT(m_wModifyFont),
+	g_signal_connect(G_OBJECT(m_wModifyFont),
 					   "activate",
-					   GTK_SIGNAL_FUNC(s_modify_font),
+					   G_CALLBACK(s_modify_font),
 					   (gpointer) this);
 
 
-	gtk_signal_connect(GTK_OBJECT(m_wModifyNumbering),
+	g_signal_connect(G_OBJECT(m_wModifyNumbering),
 					   "activate",
-					   GTK_SIGNAL_FUNC(s_modify_numbering),
+					   G_CALLBACK(s_modify_numbering),
 					   (gpointer) this);
 
-	gtk_signal_connect(GTK_OBJECT(m_wModifyTabs),
+	g_signal_connect(G_OBJECT(m_wModifyTabs),
 					   "activate",
-					   GTK_SIGNAL_FUNC(s_modify_tabs),
+					   G_CALLBACK(s_modify_tabs),
 					   (gpointer) this);
 
-	gtk_signal_connect(GTK_OBJECT(m_wModifyLanguage),
+	g_signal_connect(G_OBJECT(m_wModifyLanguage),
 					   "activate",
-					   GTK_SIGNAL_FUNC(s_modify_language),
+					   G_CALLBACK(s_modify_language),
 					   (gpointer) this);
 
-	gtk_signal_connect(GTK_OBJECT(m_wModifyDrawingArea),
+	g_signal_connect(G_OBJECT(m_wModifyDrawingArea),
 					   "expose_event",
-					   GTK_SIGNAL_FUNC(s_modifyPreview_exposed),
+					   G_CALLBACK(s_modifyPreview_exposed),
 					   (gpointer) this);
 
-	gtk_signal_connect(GTK_OBJECT(m_wDeletePropButton),
+	g_signal_connect(G_OBJECT(m_wDeletePropButton),
 					   "clicked",
-					   GTK_SIGNAL_FUNC(s_remove_property),
+					   G_CALLBACK(s_remove_property),
 					   (gpointer) this);
 
-	gtk_signal_connect(GTK_OBJECT(m_wStyleNameEntry),
+	g_signal_connect(G_OBJECT(m_wStyleNameEntry),
 					   "changed",
-					   GTK_SIGNAL_FUNC(s_style_name),
+					   G_CALLBACK(s_style_name),
 					   (gpointer) this);
 
-	gtk_signal_connect(GTK_OBJECT(m_wBasedOnEntry), 
+	g_signal_connect(G_OBJECT(m_wBasedOnEntry), 
 					   "changed",
-					   GTK_SIGNAL_FUNC(s_basedon),
+					   G_CALLBACK(s_basedon),
 					   (gpointer) this);
 
-	gtk_signal_connect(GTK_OBJECT(m_wFollowingEntry), 
+	g_signal_connect(G_OBJECT(m_wFollowingEntry), 
 					   "changed",
-					   GTK_SIGNAL_FUNC(s_followedby),
+					   G_CALLBACK(s_followedby),
 					   (gpointer) this);
 
-	gtk_signal_connect(GTK_OBJECT(m_wStyleTypeEntry), 
+	g_signal_connect(G_OBJECT(m_wStyleTypeEntry), 
 					   "changed",
-					   GTK_SIGNAL_FUNC(s_styletype),
+					   G_CALLBACK(s_styletype),
 					   (gpointer) this);
 
 	
-	gtk_signal_connect_after(GTK_OBJECT(m_wModifyDialog),
+	g_signal_connect_after(G_OBJECT(m_wModifyDialog),
 							 "expose_event",
-							 GTK_SIGNAL_FUNC(s_modify_window_exposed),
+							 G_CALLBACK(s_modify_window_exposed),
 							 (gpointer) this);
 
 	// the catch-alls
 	
-	gtk_signal_connect(GTK_OBJECT(m_wModifyDialog),
+	g_signal_connect(G_OBJECT(m_wModifyDialog),
 					   "delete_event",
-					   GTK_SIGNAL_FUNC(s_modify_delete_clicked),
+					   G_CALLBACK(s_modify_delete_clicked),
 					   (gpointer) this);
 
-	gtk_signal_connect_after(GTK_OBJECT(m_wModifyDialog),
+	g_signal_connect_after(G_OBJECT(m_wModifyDialog),
 							 "destroy",
 							 NULL,
 							 NULL);

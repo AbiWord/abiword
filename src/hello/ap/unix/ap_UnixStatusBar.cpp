@@ -81,11 +81,11 @@ GtkWidget * AP_UnixStatusBar::createWidget(void)
 
 	gtk_widget_set_events(GTK_WIDGET(m_wStatusBar), (GDK_EXPOSURE_MASK));
 
-	gtk_signal_connect(G_OBJECT(m_wStatusBar), "expose_event",
-					   GTK_SIGNAL_FUNC(_fe::expose), NULL);
+	g_signal_connect(G_OBJECT(m_wStatusBar), "expose_event",
+					   G_CALLBACK(_fe::expose), NULL);
   
-	gtk_signal_connect(G_OBJECT(m_wStatusBar), "configure_event",
-					   GTK_SIGNAL_FUNC(_fe::configure_event), NULL);
+	g_signal_connect(G_OBJECT(m_wStatusBar), "configure_event",
+					   G_CALLBACK(_fe::configure_event), NULL);
 
 	return m_wStatusBar;
 }

@@ -303,19 +303,19 @@ GtkWidget * XAP_CocoaDialog_Encoding::_constructWindow(void)
 	  class methods.
 	*/
 	
-	gtk_signal_connect(GTK_OBJECT(buttonOK),
+	g_signal_connect(G_OBJECT(buttonOK),
 					   "clicked",
-					   GTK_SIGNAL_FUNC(s_ok_clicked),
+					   G_CALLBACK(s_ok_clicked),
 					   (gpointer) this);
 	
-	gtk_signal_connect(GTK_OBJECT(buttonCancel),
+	g_signal_connect(G_OBJECT(buttonCancel),
 					   "clicked",
-					   GTK_SIGNAL_FUNC(s_cancel_clicked),
+					   G_CALLBACK(s_cancel_clicked),
 					   (gpointer) this);
 
-	gtk_signal_connect(GTK_OBJECT(clistWindows),
+	g_signal_connect(G_OBJECT(clistWindows),
 					   "button_press_event",
-					   GTK_SIGNAL_FUNC(s_clist_event),
+					   G_CALLBACK(s_clist_event),
 					   (gpointer) this);
 
 	// Since each modal dialog is raised through gtk_main(),
@@ -324,12 +324,12 @@ GtkWidget * XAP_CocoaDialog_Encoding::_constructWindow(void)
 	// with gtk_main_quit(), for the case that the user used
 	// a window manager to close us.
 
-	gtk_signal_connect(GTK_OBJECT(windowMain),
+	g_signal_connect(G_OBJECT(windowMain),
 			   "delete_event",
-			   GTK_SIGNAL_FUNC(s_delete_clicked),
+			   G_CALLBACK(s_delete_clicked),
 			   (gpointer) this);
 
-	gtk_signal_connect_after(GTK_OBJECT(windowMain),
+	g_signal_connect_after(G_OBJECT(windowMain),
 							 "destroy",
 							 NULL,
 							 NULL);

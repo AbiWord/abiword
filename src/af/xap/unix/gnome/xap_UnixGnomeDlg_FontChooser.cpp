@@ -89,7 +89,7 @@ GtkWidget * XAP_UnixGnomeDialog_FontChooser::constructWindow(void)
 	UT_XML_cloneNoAmpersands(unixstr, pSS->getValue(XAP_STRING_ID_DLG_UFS_FontTitle) );
 	windowFontSelection = gnome_dialog_new (unixstr, NULL);
 	FREEP(unixstr);
-	gtk_object_set_data (G_OBJECT (windowFontSelection), "windowFontSelection", windowFontSelection);
+	g_object_set_data (G_OBJECT (windowFontSelection), "windowFontSelection", windowFontSelection);
 	gtk_window_set_policy (GTK_WINDOW (windowFontSelection), FALSE, FALSE, FALSE);
 
 	gnome_dialog_append_button(GNOME_DIALOG(windowFontSelection), GNOME_STOCK_BUTTON_OK);
@@ -99,33 +99,33 @@ GtkWidget * XAP_UnixGnomeDialog_FontChooser::constructWindow(void)
 	gtk_box_pack_start (GTK_BOX (GNOME_DIALOG (windowFontSelection)->vbox), windowContents, FALSE, FALSE, 0);
 
 	buttonOK = GTK_WIDGET (g_list_nth_data (GNOME_DIALOG (windowFontSelection)->buttons, 0) );
-	gtk_object_set_data (G_OBJECT (windowFontSelection), "buttonOK", buttonOK);
+	g_object_set_data (G_OBJECT (windowFontSelection), "buttonOK", buttonOK);
 	gtk_widget_grab_default (buttonOK);
 
 	buttonCancel = GTK_WIDGET (g_list_nth_data (GNOME_DIALOG (windowFontSelection)->buttons, 1) );
-	gtk_object_set_data (G_OBJECT (windowFontSelection), "buttonCancel", buttonCancel);
+	g_object_set_data (G_OBJECT (windowFontSelection), "buttonCancel", buttonCancel);
 
-	gtk_signal_connect_after(G_OBJECT(windowFontSelection),
+	g_signal_connect_after(G_OBJECT(windowFontSelection),
 							  "destroy",
 							  NULL,
 							  NULL);
-	gtk_signal_connect(G_OBJECT(windowFontSelection),
+	g_signal_connect(G_OBJECT(windowFontSelection),
 			   "delete_event",
-			   GTK_SIGNAL_FUNC(s_delete_clicked),
+			   G_CALLBACK(s_delete_clicked),
 			   (gpointer) &m_answer);
 
-	gtk_signal_connect(G_OBJECT(buttonOK),
+	g_signal_connect(G_OBJECT(buttonOK),
 					   "clicked",
-					   GTK_SIGNAL_FUNC(s_ok_clicked),
+					   G_CALLBACK(s_ok_clicked),
 					   (gpointer) &m_answer);
-	gtk_signal_connect(G_OBJECT(buttonCancel),
+	g_signal_connect(G_OBJECT(buttonCancel),
 					   "clicked",
-					   GTK_SIGNAL_FUNC(s_cancel_clicked),
+					   G_CALLBACK(s_cancel_clicked),
 					   (gpointer) &m_answer);
 
-	gtk_signal_connect(G_OBJECT(windowFontSelection),
+	g_signal_connect(G_OBJECT(windowFontSelection),
 					   "close",
-					   GTK_SIGNAL_FUNC(s_cancel_clicked),
+					   G_CALLBACK(s_cancel_clicked),
 					   (gpointer) &m_answer);
 
 	// set cancel button as default

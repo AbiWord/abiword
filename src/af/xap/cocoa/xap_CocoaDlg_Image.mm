@@ -115,17 +115,17 @@ void XAP_CocoaDialog_Image::runModal(XAP_Frame * pFrame)
 void XAP_CocoaDialog_Image::_connectSignals (void)
 {
   // the control buttons
-  gtk_signal_connect(GTK_OBJECT(m_buttonOK),
+  g_signal_connect(G_OBJECT(m_buttonOK),
 		     "clicked",
-		     GTK_SIGNAL_FUNC(s_ok_clicked),
+		     G_CALLBACK(s_ok_clicked),
 		     (gpointer) this);
   
-  gtk_signal_connect(GTK_OBJECT(m_buttonCancel),
+  g_signal_connect(G_OBJECT(m_buttonCancel),
 		     "clicked",
-		     GTK_SIGNAL_FUNC(s_cancel_clicked),
+		     G_CALLBACK(s_cancel_clicked),
 		     (gpointer) this);
   
-  gtk_signal_connect_after(GTK_OBJECT(mMainWindow),
+  g_signal_connect_after(G_OBJECT(mMainWindow),
 			   "destroy",
 			   NULL,
 			   NULL);
@@ -136,8 +136,8 @@ void XAP_CocoaDialog_Image::_constructWindowContents (GtkWidget * dialog_vbox1)
   GtkWidget *table1;
   GtkWidget *label1;
   GtkWidget *label2;
-  GtkObject *height_spin_adj;
-  GtkObject *width_spin_adj;
+  GObject *height_spin_adj;
+  GObject *width_spin_adj;
 
   const XAP_StringSet * pSS = m_pApp->getStringSet();
 

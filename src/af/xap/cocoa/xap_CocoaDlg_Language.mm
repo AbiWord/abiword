@@ -90,7 +90,7 @@ GtkWidget * XAP_CocoaDialog_Language::constructWindow(void)
 	gtk_widget_show (vboxOuter);
 	gtk_container_add (GTK_CONTAINER (windowLangSelection), vboxOuter);
 
-	vboxMain = constructWindowContents(GTK_OBJECT (windowLangSelection));
+	vboxMain = constructWindowContents(G_OBJECT (windowLangSelection));
 	gtk_box_pack_start (GTK_BOX (vboxOuter), vboxMain, TRUE, TRUE, 0);
 
 	fixedButtons = gtk_hbutton_box_new ();
@@ -110,22 +110,22 @@ GtkWidget * XAP_CocoaDialog_Language::constructWindow(void)
 	gtk_widget_show (buttonCancel);
 	gtk_container_add (GTK_CONTAINER (fixedButtons), buttonCancel);
 
-	gtk_signal_connect_after(GTK_OBJECT(windowLangSelection),
+	g_signal_connect_after(G_OBJECT(windowLangSelection),
 							  "destroy",
 							  NULL,
 							  NULL);
-	gtk_signal_connect(GTK_OBJECT(windowLangSelection),
+	g_signal_connect(G_OBJECT(windowLangSelection),
 			   "delete_event",
-			   GTK_SIGNAL_FUNC(s_delete_clicked),
+			   G_CALLBACK(s_delete_clicked),
 			   (gpointer) &m_answer);
 
-	gtk_signal_connect(GTK_OBJECT(buttonOK),
+	g_signal_connect(G_OBJECT(buttonOK),
 					   "clicked",
-					   GTK_SIGNAL_FUNC(s_ok_clicked),
+					   G_CALLBACK(s_ok_clicked),
 					   (gpointer) &m_answer);
-	gtk_signal_connect(GTK_OBJECT(buttonCancel),
+	g_signal_connect(G_OBJECT(buttonCancel),
 					   "clicked",
-					   GTK_SIGNAL_FUNC(s_cancel_clicked),
+					   G_CALLBACK(s_cancel_clicked),
 					   (gpointer) &m_answer);
 
 	return windowLangSelection;
@@ -133,7 +133,7 @@ GtkWidget * XAP_CocoaDialog_Language::constructWindow(void)
 
 // Glade generated dialog, using fixed widgets to closely match
 // the Windows layout, with some changes for color selector
-GtkWidget * XAP_CocoaDialog_Language::constructWindowContents(GtkObject *parent)
+GtkWidget * XAP_CocoaDialog_Language::constructWindowContents(GObject *parent)
 {
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
   GtkWidget *vboxMain;

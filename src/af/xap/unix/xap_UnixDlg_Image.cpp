@@ -148,11 +148,11 @@ void XAP_UnixDialog_Image::doHeightEntry(void)
 	{
 		setHeight(szHeight);
 
-		gtk_signal_handler_block(G_OBJECT(m_wHeightEntry), m_iHeightID);
+		g_signal_handler_block(G_OBJECT(m_wHeightEntry), m_iHeightID);
 		int pos = gtk_editable_get_position(GTK_EDITABLE(m_wHeightEntry));
 		gtk_entry_set_text( GTK_ENTRY(m_wHeightEntry),getHeightString() );
 		gtk_entry_set_position(GTK_ENTRY(m_wHeightEntry), pos);
-		gtk_signal_handler_unblock(G_OBJECT(m_wHeightEntry), m_iHeightID);
+		g_signal_handler_unblock(G_OBJECT(m_wHeightEntry), m_iHeightID);
 	}
 	adjustWidthForAspect();
 }
@@ -160,20 +160,20 @@ void XAP_UnixDialog_Image::doHeightEntry(void)
 
 void XAP_UnixDialog_Image::setHeightEntry(void)
 {
-	gtk_signal_handler_block(G_OBJECT(m_wHeightEntry), m_iHeightID);
+	g_signal_handler_block(G_OBJECT(m_wHeightEntry), m_iHeightID);
 	int pos = gtk_editable_get_position(GTK_EDITABLE(m_wHeightEntry));
 	gtk_entry_set_text( GTK_ENTRY(m_wHeightEntry),getHeightString() );
 	gtk_entry_set_position(GTK_ENTRY(m_wHeightEntry), pos);
-	gtk_signal_handler_unblock(G_OBJECT(m_wHeightEntry), m_iHeightID);
+	g_signal_handler_unblock(G_OBJECT(m_wHeightEntry), m_iHeightID);
 }
 
 void XAP_UnixDialog_Image::setWidthEntry(void)
 {
-	gtk_signal_handler_block(G_OBJECT(m_wWidthEntry), m_iWidthID);
+	g_signal_handler_block(G_OBJECT(m_wWidthEntry), m_iWidthID);
 	int pos = gtk_editable_get_position(GTK_EDITABLE(m_wWidthEntry));
 	gtk_entry_set_text( GTK_ENTRY(m_wWidthEntry),getWidthString() );
 	gtk_entry_set_position(GTK_ENTRY(m_wWidthEntry), pos);
-	gtk_signal_handler_unblock(G_OBJECT(m_wWidthEntry), m_iWidthID);
+	g_signal_handler_unblock(G_OBJECT(m_wWidthEntry), m_iWidthID);
 }
 
 
@@ -184,11 +184,11 @@ void XAP_UnixDialog_Image::doWidthEntry(void)
 	{
 		setWidth(szWidth);
 
-		gtk_signal_handler_block(G_OBJECT(m_wWidthEntry), m_iWidthID);
+		g_signal_handler_block(G_OBJECT(m_wWidthEntry), m_iWidthID);
 		int pos = gtk_editable_get_position(GTK_EDITABLE(m_wWidthEntry));
 		gtk_entry_set_text( GTK_ENTRY(m_wWidthEntry),getWidthString() );
 		gtk_entry_set_position(GTK_ENTRY(m_wWidthEntry), pos);
-		gtk_signal_handler_unblock(G_OBJECT(m_wWidthEntry), m_iWidthID);
+		g_signal_handler_unblock(G_OBJECT(m_wWidthEntry), m_iWidthID);
 	}
 	adjustHeightForAspect();
 }
@@ -283,42 +283,42 @@ void XAP_UnixDialog_Image::_connectSignals (void)
   // the control buttons
 
 
-	gtk_signal_connect(G_OBJECT(m_wHeightSpin),
+	g_signal_connect(G_OBJECT(m_wHeightSpin),
 					   "changed",
-					  GTK_SIGNAL_FUNC(s_HeightSpin_changed),
+					  G_CALLBACK(s_HeightSpin_changed),
 					   (gpointer) this);
 
-	m_iHeightID = gtk_signal_connect(G_OBJECT(m_wHeightEntry),
+	m_iHeightID = g_signal_connect(G_OBJECT(m_wHeightEntry),
 					   "changed",
-					  GTK_SIGNAL_FUNC(s_HeightEntry_changed),
+					  G_CALLBACK(s_HeightEntry_changed),
 					   (gpointer) this);
 
-	gtk_signal_connect(G_OBJECT(m_wWidthSpin),
+	g_signal_connect(G_OBJECT(m_wWidthSpin),
 					   "changed",
-					  GTK_SIGNAL_FUNC(s_WidthSpin_changed),
+					  G_CALLBACK(s_WidthSpin_changed),
 					   (gpointer) this);
 
-	m_iWidthID = gtk_signal_connect(G_OBJECT(m_wWidthEntry),
+	m_iWidthID = g_signal_connect(G_OBJECT(m_wWidthEntry),
 					   "changed",
-					  GTK_SIGNAL_FUNC(s_WidthEntry_changed),
+					  G_CALLBACK(s_WidthEntry_changed),
 					   (gpointer) this);
 
-	gtk_signal_connect(G_OBJECT(m_wAspectCheck),
+	g_signal_connect(G_OBJECT(m_wAspectCheck),
 					   "clicked",
-					   GTK_SIGNAL_FUNC(s_aspect_clicked),
+					   G_CALLBACK(s_aspect_clicked),
 					   (gpointer) this);
 
-	gtk_signal_connect(G_OBJECT(m_buttonOK),
+	g_signal_connect(G_OBJECT(m_buttonOK),
 					   "clicked",
-					   GTK_SIGNAL_FUNC(s_ok_clicked),
+					   G_CALLBACK(s_ok_clicked),
 					   (gpointer) this);
 	
-	gtk_signal_connect(G_OBJECT(m_buttonCancel),
+	g_signal_connect(G_OBJECT(m_buttonCancel),
 					   "clicked",
-					   GTK_SIGNAL_FUNC(s_cancel_clicked),
+					   G_CALLBACK(s_cancel_clicked),
 					   (gpointer) this);
 	
-	gtk_signal_connect_after(G_OBJECT(mMainWindow),
+	g_signal_connect_after(G_OBJECT(mMainWindow),
 							 "destroy",
 							 NULL,
 							 NULL);
@@ -358,7 +358,7 @@ void XAP_UnixDialog_Image::_constructWindowContents (GtkWidget * dialog_vbox1)
   GtkWidget * hboxSpinHeight = gtk_hbox_new (FALSE, 0);
   gtk_widget_show(hboxSpinHeight);
 
-  GtkObject * HeightSpinAdj = gtk_adjustment_new( 1,-2000, 2000, 1, 1, 10);
+  GObject * HeightSpinAdj = gtk_adjustment_new( 1,-2000, 2000, 1, 1, 10);
   GtkWidget * HeightEntry = gtk_entry_new();
   gtk_widget_show (HeightEntry);
   gtk_box_pack_start (GTK_BOX (hboxSpinHeight), HeightEntry, TRUE, TRUE, 0);
@@ -379,7 +379,7 @@ void XAP_UnixDialog_Image::_constructWindowContents (GtkWidget * dialog_vbox1)
   GtkWidget * hboxSpinWidth = gtk_hbox_new (FALSE, 0);
   gtk_widget_show(hboxSpinWidth);
 
-  GtkObject * WidthSpinAdj = gtk_adjustment_new( 1,-2000, 2000, 1, 1, 10);
+  GObject * WidthSpinAdj = gtk_adjustment_new( 1,-2000, 2000, 1, 1, 10);
   GtkWidget * WidthEntry = gtk_entry_new();
   gtk_widget_show (WidthEntry);
   gtk_box_pack_start (GTK_BOX (hboxSpinWidth), WidthEntry, TRUE, TRUE, 0);

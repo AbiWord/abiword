@@ -123,7 +123,7 @@ _wd::~_wd(void)
 	static void s_drag_begin(GtkWidget  *widget,
 							GdkDragContext     *context)
 	{
-		_wd * wd = (_wd *) gtk_object_get_data(GTK_OBJECT(widget),"wd_pointer");
+		_wd * wd = (_wd *) g_object_get_data(G_OBJECT(widget),"wd_pointer");
 		UT_DEBUGMSG(("SEVIOR: Begin drag at icon id %d \n",wd->m_id));
 		XAP_Frame * pFrame = static_cast<XAP_Frame *>(wd->m_pCocoaToolbar->getFrame());
 	    EV_Toolbar * pTBsrc = (EV_Toolbar *) wd->m_pCocoaToolbar;
@@ -135,9 +135,9 @@ _wd::~_wd(void)
 							GdkDragContext     *context,
 							gint x, gint y, guint time )
 	{
-		_wd * wd = (_wd *) gtk_object_get_data(GTK_OBJECT(widget),"wd_pointer");
+		_wd * wd = (_wd *) g_object_get_data(G_OBJECT(widget),"wd_pointer");
 		GtkWidget * src = gtk_drag_get_source_widget(context);
-		_wd * wdSrc = (_wd *)  gtk_object_get_data(GTK_OBJECT(src),"wd_pointer");
+		_wd * wdSrc = (_wd *)  g_object_get_data(G_OBJECT(src),"wd_pointer");
 		UT_DEBUGMSG(("SEVIOR: Drop at icon id %d source icon %d \n",wd->m_id,wdSrc->m_id));
 		
 		XAP_Frame * pFrame = static_cast<XAP_Frame *>(wd->m_pCocoaToolbar->getFrame());
@@ -151,7 +151,7 @@ _wd::~_wd(void)
 							gint x, gint y, guint time, gpointer pTB)
 	{
 		GtkWidget * src = gtk_drag_get_source_widget(context);
-		_wd * wdSrc = (_wd *)  gtk_object_get_data(GTK_OBJECT(src),"wd_pointer");
+		_wd * wdSrc = (_wd *)  g_object_get_data(G_OBJECT(src),"wd_pointer");
 		UT_DEBUGMSG(("SEVIOR: Drop  icon on toolbar source icon %d \n",wdSrc->m_id));
 		XAP_Frame * pFrame = static_cast<XAP_Frame *>(wdSrc->m_pCocoaToolbar->getFrame());
 	    EV_Toolbar * pTBsrc = (EV_Toolbar *) wdSrc->m_pCocoaToolbar;
@@ -162,7 +162,7 @@ _wd::~_wd(void)
 	static void s_drag_end(GtkWidget  *widget,
 							GdkDragContext     *context)
 	{
-		_wd * wd = (_wd *) gtk_object_get_data(GTK_OBJECT(widget),"wd_pointer");
+		_wd * wd = (_wd *) g_object_get_data(G_OBJECT(widget),"wd_pointer");
 		UT_DEBUGMSG(("SEVIOR: End drag of icon id %d \n",wd->m_id));
 		XAP_Frame * pFrame = static_cast<XAP_Frame *>(wd->m_pCocoaToolbar->getFrame());
 		pFrame->dragEnd(wd->m_id);
@@ -528,7 +528,7 @@ bool EV_CocoaToolbar::synthesize(void)
 	gtk_drag_dest_set(m_wToolbar,(GtkDestDefaults) GTK_DEST_DEFAULT_ALL,
 					  s_AbiTBTargets,1,
 					  GDK_ACTION_COPY);
-	gtk_signal_connect(GTK_OBJECT(m_wToolbar),"drag_drop",GTK_SIGNAL_FUNC(_wd::s_drag_drop_toolbar),this);
+	g_signal_connect(G_OBJECT(m_wToolbar),"drag_drop",G_CALLBACK(_wd::s_drag_drop_toolbar),this);
 #endif
 	NSNibControlConnector * conn = [[NSNibControlConnector alloc] init];
 	for (UT_uint32 k=0; (k < nrLabelItemsInLayout); k++)
@@ -565,10 +565,10 @@ bool EV_CocoaToolbar::synthesize(void)
 													   pLabel->getToolbarLabel(),
 													   szToolTip,(const char *)NULL,
 													   wPixmap,
-													   GTK_SIGNAL_FUNC(_wd::s_callback),
+													   G_CALLBACK(_wd::s_callback),
 													   wd);
 				GtkWidget * wwd = wd->m_widget;
-				gtk_object_set_data(GTK_OBJECT(wwd),
+				g_object_set_data(G_OBJECT(wwd),
 									"wd_pointer",
 									wd);
 				gtk_drag_source_set(wwd,GDK_BUTTON3_MASK,
@@ -581,9 +581,9 @@ bool EV_CocoaToolbar::synthesize(void)
 				gtk_drag_dest_set(wwd, GTK_DEST_DEFAULT_ALL,
 									s_AbiTBTargets,1,
 									GDK_ACTION_COPY);
-				gtk_signal_connect(GTK_OBJECT(wd->m_widget),"drag_begin",GTK_SIGNAL_FUNC(_wd::s_drag_begin), wd);
-				gtk_signal_connect(GTK_OBJECT(wd->m_widget),"drag_drop",GTK_SIGNAL_FUNC(_wd::s_drag_drop), wd);
-				gtk_signal_connect(GTK_OBJECT(wd->m_widget),"drag_end",GTK_SIGNAL_FUNC(_wd::s_drag_end), wd);
+				g_signal_connect(G_OBJECT(wd->m_widget),"drag_begin",G_CALLBACK(_wd::s_drag_begin), wd);
+				g_signal_connect(G_OBJECT(wd->m_widget),"drag_drop",G_CALLBACK(_wd::s_drag_drop), wd);
+				g_signal_connect(G_OBJECT(wd->m_widget),"drag_end",G_CALLBACK(_wd::s_drag_end), wd);
 #endif
 			}
 			break;
@@ -604,9 +604,9 @@ bool EV_CocoaToolbar::synthesize(void)
 				gtk_drag_dest_set(wwd,(GtkDestDefaults) GTK_DEST_DEFAULT_ALL,
 									s_AbiTBTargets,1,
 									GDK_ACTION_COPY);
-				gtk_signal_connect(GTK_OBJECT(wd->m_widget),"drag_begin",GTK_SIGNAL_FUNC(_wd::s_drag_begin), wd);
-				gtk_signal_connect(GTK_OBJECT(wd->m_widget),"drag_drop",GTK_SIGNAL_FUNC(_wd::s_drag_drop), wd);
-				gtk_signal_connect(GTK_OBJECT(wd->m_widget),"drag_end",GTK_SIGNAL_FUNC(_wd::s_drag_end), wd);
+				g_signal_connect(G_OBJECT(wd->m_widget),"drag_begin",G_CALLBACK(_wd::s_drag_begin), wd);
+				g_signal_connect(G_OBJECT(wd->m_widget),"drag_drop",G_CALLBACK(_wd::s_drag_drop), wd);
+				g_signal_connect(G_OBJECT(wd->m_widget),"drag_end",G_CALLBACK(_wd::s_drag_end), wd);
 #endif
 				}
 				break;
@@ -653,30 +653,30 @@ bool EV_CocoaToolbar::synthesize(void)
 				GtkWidget * popwin = GTK_WIDGET(GTK_COMBO(comboBox)->popwin);
 				UT_ASSERT(popwin);
 
-				gtk_signal_connect(GTK_OBJECT(popwin),
+				g_signal_connect(G_OBJECT(popwin),
 								   "hide",
-								   GTK_SIGNAL_FUNC(_wd::s_combo_hide),
+								   G_CALLBACK(_wd::s_combo_hide),
 								   wd);
 				// take away the ability to gain focus
-//				gtk_signal_connect(GTK_OBJECT(GTK_COMBO(comboBox)->entry),
+//				g_signal_connect(G_OBJECT(GTK_COMBO(comboBox)->entry),
 //								   "focus_in_event",
-//								   GTK_SIGNAL_FUNC(_wd::s_combo_focus_in),
+//								   G_CALLBACK(_wd::s_combo_focus_in),
 //								   wd);
-//				gtk_signal_connect(GTK_OBJECT(comboBox),
+//				g_signal_connect(G_OBJECT(comboBox),
 //								   "key_press_event",
-//								   GTK_SIGNAL_FUNC(_wd::s_combo_key_press),
+//								   G_CALLBACK(_wd::s_combo_key_press),
 //								   wd);
-//				gtk_signal_connect(GTK_OBJECT(GTK_COMBO(comboBox)->entry),
+//				g_signal_connect(G_OBJECT(GTK_COMBO(comboBox)->entry),
 //								   "key_press_event",
-//								   GTK_SIGNAL_FUNC(_wd::s_combo_key_press),
+//								   G_CALLBACK(_wd::s_combo_key_press),
 //								   wd);
 				
 				// handle changes in content
 				GtkEntry * blah = GTK_ENTRY(GTK_COMBO(comboBox)->entry);
 				GtkEditable * yuck = GTK_EDITABLE(blah);
-				gtk_signal_connect(GTK_OBJECT(&yuck->widget),
+				g_signal_connect(G_OBJECT(&yuck->widget),
 								   "changed",
-								   GTK_SIGNAL_FUNC(_wd::s_combo_changed),
+								   G_CALLBACK(_wd::s_combo_changed),
 								   wd);
 #endif
 				// populate it
@@ -715,7 +715,7 @@ bool EV_CocoaToolbar::synthesize(void)
 // Add in a right drag method
 //
 				GtkWidget * wwd = wd->m_widget;
-				gtk_object_set_data(GTK_OBJECT(wwd),
+				g_object_set_data(G_OBJECT(wwd),
 									"wd_pointer",
 									wd);
 				gtk_drag_source_set(evBox,GDK_BUTTON3_MASK,
@@ -728,9 +728,9 @@ bool EV_CocoaToolbar::synthesize(void)
 				gtk_drag_dest_set(evBox,(GtkDestDefaults) GTK_DEST_DEFAULT_ALL,
 									s_AbiTBTargets,1,
 									GDK_ACTION_COPY);
-				gtk_signal_connect(GTK_OBJECT(evBox),"drag_begin",GTK_SIGNAL_FUNC(_wd::s_drag_begin), wd);
-				gtk_signal_connect(GTK_OBJECT(evBox),"drag_drop",GTK_SIGNAL_FUNC(_wd::s_drag_drop), wd);
-				gtk_signal_connect(GTK_OBJECT(evBox),"drag_end",GTK_SIGNAL_FUNC(_wd::s_drag_end), wd);
+				g_signal_connect(G_OBJECT(evBox),"drag_begin",G_CALLBACK(_wd::s_drag_begin), wd);
+				g_signal_connect(G_OBJECT(evBox),"drag_drop",G_CALLBACK(_wd::s_drag_drop), wd);
+				g_signal_connect(G_OBJECT(evBox),"drag_end",G_CALLBACK(_wd::s_drag_end), wd);
 
 #endif
 				// for now, we never repopulate, so can just toss it

@@ -200,13 +200,13 @@ void AP_CocoaDialog_Columns::runModal(XAP_Frame * pFrame)
 	_populateWindowData();
 	// To center the dialog, we need the frame of its parent.
 
-    gtk_signal_handler_block(GTK_OBJECT(m_wSpaceAfterEntry), m_iSpaceAfterID);
+    g_signal_handler_block(G_OBJECT(m_wSpaceAfterEntry), m_iSpaceAfterID);
 	gtk_entry_set_text( GTK_ENTRY(m_wSpaceAfterEntry),getSpaceAfterString() );
-	gtk_signal_handler_unblock(GTK_OBJECT(m_wSpaceAfterEntry),m_iSpaceAfterID);
+	g_signal_handler_unblock(G_OBJECT(m_wSpaceAfterEntry),m_iSpaceAfterID);
 
-    gtk_signal_handler_block(GTK_OBJECT(m_wMaxColumnHeightEntry), m_iMaxColumnHeightID);
+    g_signal_handler_block(G_OBJECT(m_wMaxColumnHeightEntry), m_iMaxColumnHeightID);
 	gtk_entry_set_text( GTK_ENTRY(m_wMaxColumnHeightEntry),getHeightString() );
-	gtk_signal_handler_unblock(GTK_OBJECT(m_wMaxColumnHeightEntry), m_iMaxColumnHeightID);
+	g_signal_handler_unblock(G_OBJECT(m_wMaxColumnHeightEntry), m_iMaxColumnHeightID);
 
 	XAP_CocoaFrame * pCocoaFrame = static_cast<XAP_CocoaFrame *>(pFrame);
 	UT_ASSERT(pCocoaFrame);
@@ -293,9 +293,9 @@ void AP_CocoaDialog_Columns::doHeightSpin(void)
 	}
 	m_iMaxColumnHeight = val;
 	incrementMaxHeight(bIncrement);
-//  gtk_signal_handler_block(GTK_OBJECT(m_wMaxColumnHeightEntry), m_iMaxColumnHeightID);
+//  g_signal_handler_block(G_OBJECT(m_wMaxColumnHeightEntry), m_iMaxColumnHeightID);
 	gtk_entry_set_text( GTK_ENTRY(m_wMaxColumnHeightEntry),getHeightString() );
-//  gtk_signal_handler_unblock(GTK_OBJECT(m_wMaxColumnHeightEntry), m_iMaxColumnHeightID);
+//  g_signal_handler_unblock(G_OBJECT(m_wMaxColumnHeightEntry), m_iMaxColumnHeightID);
 }
 
 void  AP_CocoaDialog_Columns::doSpaceAfterSpin(void)
@@ -309,9 +309,9 @@ void  AP_CocoaDialog_Columns::doSpaceAfterSpin(void)
     }
 	m_iSpaceAfter = val;
 	incrementSpaceAfter(bIncrement);
-//  gtk_signal_handler_block(GTK_OBJECT(m_wSpaceAfterEntry), m_iSpaceAfterID);
+//  g_signal_handler_block(G_OBJECT(m_wSpaceAfterEntry), m_iSpaceAfterID);
 	gtk_entry_set_text( GTK_ENTRY(m_wSpaceAfterEntry),getSpaceAfterString() );
-//  gtk_signal_handler_unblock(GTK_OBJECT(m_wSpaceAfterEntry),m_iSpaceAfterID);
+//  g_signal_handler_unblock(G_OBJECT(m_wSpaceAfterEntry),m_iSpaceAfterID);
 }
 
 void AP_CocoaDialog_Columns::readSpin(void)
@@ -324,21 +324,21 @@ void AP_CocoaDialog_Columns::readSpin(void)
 		event_Toggle(val);
 		return;
 	}
-	gtk_signal_handler_block(GTK_OBJECT(m_wtoggleOne), 
+	g_signal_handler_block(G_OBJECT(m_wtoggleOne), 
 							 m_oneHandlerID);
-	gtk_signal_handler_block(GTK_OBJECT(m_wtoggleTwo), 
+	g_signal_handler_block(G_OBJECT(m_wtoggleTwo), 
 							 m_twoHandlerID);
-	gtk_signal_handler_block(GTK_OBJECT(m_wtoggleThree), 
+	g_signal_handler_block(G_OBJECT(m_wtoggleThree), 
 							 m_threeHandlerID);
 
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(m_wtoggleOne),FALSE);
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(m_wtoggleTwo),FALSE);
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(m_wtoggleThree),FALSE);
-	gtk_signal_handler_unblock(GTK_OBJECT(m_wtoggleOne), 
+	g_signal_handler_unblock(G_OBJECT(m_wtoggleOne), 
 							   m_oneHandlerID);
-	gtk_signal_handler_unblock(GTK_OBJECT(m_wtoggleTwo), 
+	g_signal_handler_unblock(G_OBJECT(m_wtoggleTwo), 
 							   m_twoHandlerID);
-	gtk_signal_handler_unblock(GTK_OBJECT(m_wtoggleThree), 
+	g_signal_handler_unblock(G_OBJECT(m_wtoggleThree), 
 							   m_threeHandlerID);
 	setColumns( val );
 	m_pColumnsPreview->draw();
@@ -347,18 +347,18 @@ void AP_CocoaDialog_Columns::readSpin(void)
 void AP_CocoaDialog_Columns::event_Toggle( UT_uint32 icolumns)
 {
 	checkLineBetween();
-	gtk_signal_handler_block(GTK_OBJECT(m_wtoggleOne), 
+	g_signal_handler_block(G_OBJECT(m_wtoggleOne), 
 							 m_oneHandlerID);
-	gtk_signal_handler_block(GTK_OBJECT(m_wtoggleTwo), 
+	g_signal_handler_block(G_OBJECT(m_wtoggleTwo), 
 							 m_twoHandlerID);
-	gtk_signal_handler_block(GTK_OBJECT(m_wtoggleThree), 
+	g_signal_handler_block(G_OBJECT(m_wtoggleThree), 
 							 m_threeHandlerID);
 
 		// DOM: TODO: rewrite me
-	gtk_signal_handler_block(GTK_OBJECT(m_wSpin), 
+	g_signal_handler_block(G_OBJECT(m_wSpin), 
 							 m_spinHandlerID);
 	gtk_spin_button_set_value( GTK_SPIN_BUTTON(m_wSpin), (gfloat) icolumns);
-	gtk_signal_handler_unblock(GTK_OBJECT(m_wSpin), 
+	g_signal_handler_unblock(G_OBJECT(m_wSpin), 
 							   m_spinHandlerID);
 
 	switch (icolumns)
@@ -383,11 +383,11 @@ void AP_CocoaDialog_Columns::event_Toggle( UT_uint32 icolumns)
 		// TODO: make these insenstive and update a spin control
 
 	}
-	gtk_signal_handler_unblock(GTK_OBJECT(m_wtoggleOne), 
+	g_signal_handler_unblock(G_OBJECT(m_wtoggleOne), 
 							   m_oneHandlerID);
-	gtk_signal_handler_unblock(GTK_OBJECT(m_wtoggleTwo), 
+	g_signal_handler_unblock(G_OBJECT(m_wtoggleTwo), 
 							   m_twoHandlerID);
-	gtk_signal_handler_unblock(GTK_OBJECT(m_wtoggleThree), 
+	g_signal_handler_unblock(G_OBJECT(m_wtoggleThree), 
 							   m_threeHandlerID);
 	setColumns( icolumns );
 	m_pColumnsPreview->draw();
@@ -409,9 +409,9 @@ void AP_CocoaDialog_Columns::doMaxHeightEntry(void)
 	{
 		setMaxHeight(szHeight);
 
-		gtk_signal_handler_block(GTK_OBJECT(m_wMaxColumnHeightEntry), m_iMaxColumnHeightID);
+		g_signal_handler_block(G_OBJECT(m_wMaxColumnHeightEntry), m_iMaxColumnHeightID);
 		gtk_entry_set_text( GTK_ENTRY(m_wMaxColumnHeightEntry),getHeightString() );
-		gtk_signal_handler_unblock(GTK_OBJECT(m_wMaxColumnHeightEntry), m_iMaxColumnHeightID);
+		g_signal_handler_unblock(G_OBJECT(m_wMaxColumnHeightEntry), m_iMaxColumnHeightID);
 	}
 }
 
@@ -422,9 +422,9 @@ void AP_CocoaDialog_Columns::doSpaceAfterEntry(void)
 	{
 		setSpaceAfter(szAfter);
 
-		gtk_signal_handler_block(GTK_OBJECT(m_wSpaceAfterEntry), m_iSpaceAfterID);
+		g_signal_handler_block(G_OBJECT(m_wSpaceAfterEntry), m_iSpaceAfterID);
 		gtk_entry_set_text( GTK_ENTRY(m_wSpaceAfterEntry),getSpaceAfterString() );
-		gtk_signal_handler_unblock(GTK_OBJECT(m_wSpaceAfterEntry),m_iSpaceAfterID);
+		g_signal_handler_unblock(G_OBJECT(m_wSpaceAfterEntry),m_iSpaceAfterID);
 	}
 }
 
@@ -617,7 +617,7 @@ void AP_CocoaDialog_Columns::_constructWindowContents(GtkWidget * windowColumns)
 
 	wPreviewArea = createDrawingArea ();
 	gtk_widget_ref (wPreviewArea);
-	gtk_object_set_data_full (GTK_OBJECT (windowColumns), "wPreviewArea", wPreviewArea,
+	g_object_set_data_full (G_OBJECT (windowColumns), "wPreviewArea", wPreviewArea,
 								  (GtkDestroyNotify) gtk_widget_unref);
 
        	gtk_widget_show(wPreviewArea);
@@ -682,7 +682,7 @@ void AP_CocoaDialog_Columns::_constructWindowContents(GtkWidget * windowColumns)
 	gtk_widget_show(SpinLabelAfter);
 	gtk_box_pack_start(GTK_BOX(hboxSpinAfter),SpinLabelAfter,FALSE,FALSE,0);
 
-	GtkObject * SpinAfterAdj = gtk_adjustment_new( 1, -1000, 1000, 1, 1, 10);
+	GObject * SpinAfterAdj = gtk_adjustment_new( 1, -1000, 1000, 1, 1, 10);
 	GtkWidget * SpinAfter = gtk_entry_new();
 	gtk_widget_show (SpinAfter);
 	gtk_box_pack_start (GTK_BOX (hboxSpinAfter), SpinAfter, TRUE, TRUE, 0);
@@ -705,7 +705,7 @@ void AP_CocoaDialog_Columns::_constructWindowContents(GtkWidget * windowColumns)
 	gtk_widget_show(SpinLabelColumnSize);
 	gtk_box_pack_start(GTK_BOX(hboxSpinSize),SpinLabelColumnSize,FALSE,FALSE,0);
 
-	GtkObject * SpinSizeAdj = gtk_adjustment_new( 1,-2000, 2000, 1, 1, 10);
+	GObject * SpinSizeAdj = gtk_adjustment_new( 1,-2000, 2000, 1, 1, 10);
 	GtkWidget * SpinSize = gtk_entry_new();
 	gtk_widget_show (SpinSize);
 	gtk_box_pack_start (GTK_BOX (hboxSpinSize), SpinSize, TRUE, TRUE, 0);
@@ -752,85 +752,85 @@ void AP_CocoaDialog_Columns::_connectsignals(void)
 {
 
 	// the control buttons
-	m_oneHandlerID = gtk_signal_connect(GTK_OBJECT(m_wtoggleOne),
+	m_oneHandlerID = g_signal_connect(G_OBJECT(m_wtoggleOne),
 					   "clicked",
-					   GTK_SIGNAL_FUNC(s_one_clicked),
+					   G_CALLBACK(s_one_clicked),
 					   (gpointer) this);
 
-	m_twoHandlerID = gtk_signal_connect(GTK_OBJECT(m_wtoggleTwo),
+	m_twoHandlerID = g_signal_connect(G_OBJECT(m_wtoggleTwo),
 					   "clicked",
-					   GTK_SIGNAL_FUNC(s_two_clicked),
+					   G_CALLBACK(s_two_clicked),
 					   (gpointer) this);
 
-	m_threeHandlerID = gtk_signal_connect(GTK_OBJECT(m_wtoggleThree),
+	m_threeHandlerID = g_signal_connect(G_OBJECT(m_wtoggleThree),
 					   "clicked",
-					   GTK_SIGNAL_FUNC(s_three_clicked),
+					   G_CALLBACK(s_three_clicked),
 					   (gpointer) this);
 
 
-	m_spinHandlerID = gtk_signal_connect(GTK_OBJECT(m_wSpin),
+	m_spinHandlerID = g_signal_connect(G_OBJECT(m_wSpin),
 					   "changed",
-					   GTK_SIGNAL_FUNC(s_spin_changed),
+					   G_CALLBACK(s_spin_changed),
 					   (gpointer) this);
 
 
-	gtk_signal_connect(GTK_OBJECT(m_wSpaceAfterSpin),
+	g_signal_connect(G_OBJECT(m_wSpaceAfterSpin),
 					   "changed",
-					  GTK_SIGNAL_FUNC(s_SpaceAfterSpin_changed),
+					  G_CALLBACK(s_SpaceAfterSpin_changed),
 					   (gpointer) this);
 
 
-	gtk_signal_connect(GTK_OBJECT(m_wMaxColumnHeightSpin),
+	g_signal_connect(G_OBJECT(m_wMaxColumnHeightSpin),
 					   "changed",
-					  GTK_SIGNAL_FUNC(s_HeightSpin_changed),
+					  G_CALLBACK(s_HeightSpin_changed),
 					   (gpointer) this);
 
-	m_iSpaceAfterID = gtk_signal_connect(GTK_OBJECT(m_wSpaceAfterEntry),
+	m_iSpaceAfterID = g_signal_connect(G_OBJECT(m_wSpaceAfterEntry),
 					   "changed",
-					  GTK_SIGNAL_FUNC(s_SpaceAfterEntry_changed),
+					  G_CALLBACK(s_SpaceAfterEntry_changed),
 					   (gpointer) this);
 
 
-	m_iMaxColumnHeightID = gtk_signal_connect(GTK_OBJECT(m_wMaxColumnHeightEntry),
+	m_iMaxColumnHeightID = g_signal_connect(G_OBJECT(m_wMaxColumnHeightEntry),
 					   "changed",
-					  GTK_SIGNAL_FUNC(s_MaxHeightEntry_changed),
+					  G_CALLBACK(s_MaxHeightEntry_changed),
 					   (gpointer) this);
 
-	gtk_signal_connect(GTK_OBJECT(m_wlineBetween),
+	g_signal_connect(G_OBJECT(m_wlineBetween),
 					   "clicked",
-					   GTK_SIGNAL_FUNC(s_line_clicked),
+					   G_CALLBACK(s_line_clicked),
 					   (gpointer) this);
 
-	gtk_signal_connect(GTK_OBJECT(m_wbuttonOk),
+	g_signal_connect(G_OBJECT(m_wbuttonOk),
 					   "clicked",
-					   GTK_SIGNAL_FUNC(s_ok_clicked),
+					   G_CALLBACK(s_ok_clicked),
 					   (gpointer) this);
 	
-	gtk_signal_connect(GTK_OBJECT(m_wbuttonCancel),
+	g_signal_connect(G_OBJECT(m_wbuttonCancel),
 					   "clicked",
-					   GTK_SIGNAL_FUNC(s_cancel_clicked),
+					   G_CALLBACK(s_cancel_clicked),
 					   (gpointer) this);
 
 	// the expose event of the preview
-	             gtk_signal_connect(GTK_OBJECT(m_wpreviewArea),
+	             g_signal_connect(G_OBJECT(m_wpreviewArea),
 					   "expose_event",
-					   GTK_SIGNAL_FUNC(s_preview_exposed),
+					   G_CALLBACK(s_preview_exposed),
 					   (gpointer) this);
 
 	
-		     gtk_signal_connect_after(GTK_OBJECT(m_windowMain),
+		     g_signal_connect_after(G_OBJECT(m_windowMain),
 		     					 "expose_event",
-		     				 GTK_SIGNAL_FUNC(s_window_exposed),
+		     				 G_CALLBACK(s_window_exposed),
 		    					 (gpointer) this);
 
 	// the catch-alls
 	
-	gtk_signal_connect(GTK_OBJECT(m_windowMain),
+	g_signal_connect(G_OBJECT(m_windowMain),
 			   "delete_event",
-			   GTK_SIGNAL_FUNC(s_delete_clicked),
+			   G_CALLBACK(s_delete_clicked),
 			   (gpointer) this);
 
-	gtk_signal_connect_after(GTK_OBJECT(m_windowMain),
+	g_signal_connect_after(G_OBJECT(m_windowMain),
 							 "destroy",
 							 NULL,
 							 NULL);

@@ -70,9 +70,9 @@ GtkWidget * XAP_UnixGnomeDialog_Image::_constructWindow(void)
 	m_buttonCancel = GTK_WIDGET (g_list_last (GNOME_DIALOG (windowImage)->buttons)->data);
 	GTK_WIDGET_SET_FLAGS (m_buttonCancel, GTK_CAN_DEFAULT);
 
-	gtk_signal_connect (G_OBJECT(windowImage),
+	g_signal_connect (G_OBJECT(windowImage),
 			    "close",
-			    GTK_SIGNAL_FUNC(cb_close),
+			    G_CALLBACK(cb_close),
 			    (gpointer) this);
 
 	mMainWindow = windowImage;

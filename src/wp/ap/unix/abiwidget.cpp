@@ -192,7 +192,7 @@ enum {
 // our parent class
 static GtkBinClass * parent_class = 0;
 
-static void s_abi_widget_map_cb(GtkObject * w,  GdkEvent *event,gpointer p);
+static void s_abi_widget_map_cb(GObject * w,  GdkEvent *event,gpointer p);
 
 
 /**************************************************************************/
@@ -404,7 +404,7 @@ static gint s_abi_widget_load_file(gpointer p)
 }
 	  
 
-static void s_abi_widget_map_cb(GtkObject * w,  GdkEvent *event,gpointer p)
+static void s_abi_widget_map_cb(GObject * w,  GdkEvent *event,gpointer p)
 {
   AbiWidget * abi = ABI_WIDGET(p);
 //  int i = 1;
@@ -424,7 +424,7 @@ static void s_abi_widget_map_cb(GtkObject * w,  GdkEvent *event,gpointer p)
 //
 // arguments to abiwidget
 //
-static void abi_widget_get_arg (GtkObject  *object,
+static void abi_widget_get_arg (GObject  *object,
 				GtkArg     *arg,
 				guint	arg_id)
 {
@@ -454,7 +454,7 @@ static void abi_widget_get_arg (GtkObject  *object,
 //
 // arguments to abiwidget
 //
-static void abi_widget_set_arg (GtkObject  *object,
+static void abi_widget_set_arg (GObject  *object,
 				GtkArg     *arg,
 				guint	arg_id)
 {
@@ -1209,14 +1209,14 @@ abi_widget_realize (GtkWidget * widget)
 								 GDK_IC_PREEDIT_AREA);
 		}
 	}
-	gtk_object_set_data(G_OBJECT(widget), "ic_attr", priv->ic_attr);
-	gtk_object_set_data(G_OBJECT(widget), "ic", priv->ic);
+	g_object_set_data(G_OBJECT(widget), "ic_attr", priv->ic_attr);
+	g_object_set_data(G_OBJECT(widget), "ic", priv->ic);
 	
 	//
     // connect a signal handler to load files after abiword is mapped
     //
-	gtk_signal_connect_after(G_OBJECT(widget),"map_event", 
-							 GTK_SIGNAL_FUNC (s_abi_widget_map_cb),
+	g_signal_connect_after(G_OBJECT(widget),"map_event", 
+							 G_CALLBACK (s_abi_widget_map_cb),
 							 (gpointer) abi);
 //	int i =1;
 //	while(i == 1) usleep(10000);
@@ -1224,7 +1224,7 @@ abi_widget_realize (GtkWidget * widget)
 }
 
 static void
-abi_widget_destroy (GtkObject *object)
+abi_widget_destroy (GObject *object)
 {
 	AbiWidget * abi;
 	
@@ -1707,7 +1707,7 @@ abi_widget_new_with_app_file (AP_UnixApp * pApp, const gchar * file)
 	g_return_val_if_fail (pApp != 0, 0);
 
 	abi = (AbiWidget *)gtk_type_new (abi_widget_get_type ());
-	abi_widget_construct (abi, file,pApp);
+	abi_widget_construct (abi, file, pApp);
 
 	return GTK_WIDGET (abi);
 }

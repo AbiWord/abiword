@@ -433,7 +433,7 @@ void EV_UnixGnomeMenu::s_onMenuItemSelect(GtkWidget * widget, gpointer data)
 	XAP_UnixFrame * pFrame = aux->me->getFrame();
 	UT_ASSERT(pFrame);
 	
-	const gchar* szMsg = (gchar *) gtk_object_get_data(G_OBJECT(widget),
+	const gchar* szMsg = (gchar *) g_object_get_data(G_OBJECT(widget),
 													   "abi_statusbar_text");
 	
 	if (!szMsg || !*szMsg)
@@ -828,7 +828,7 @@ void EV_UnixGnomeMenu::_addNewItemEntry(GtkWidget * wMenuRoot,
 	_attachWidgetsAndSignals(wMenuRoot, pUIInfo);
 
 	// This hack is to clear pUIInfo when the widget gets destroyed
-	gtk_object_set_data_full (G_OBJECT (pUIInfo->widget), "pUIInfo",
+	g_object_set_data_full (G_OBJECT (pUIInfo->widget), "pUIInfo",
 							  pUIInfo, (GtkDestroyNotify) _ImpDestroyUIInfo);
 }
 
@@ -905,7 +905,7 @@ bool EV_UnixGnomeMenu::_refreshMenu(AV_View * pView, GtkWidget * wMenuRoot)
 				// The menu item should not exist. If it does, we have to
 				// remove it
 				char * strId = g_strdup_printf("%d", id);
-				item = (GtkWidget *) gtk_object_get_data (G_OBJECT (wMenuRoot), strId);
+				item = (GtkWidget *) g_object_get_data (G_OBJECT (wMenuRoot), strId);
 				
 				if (item)
 				{
@@ -919,7 +919,7 @@ bool EV_UnixGnomeMenu::_refreshMenu(AV_View * pView, GtkWidget * wMenuRoot)
 				
 					// we have to disconnect it from wMenuRoot so we didn't find
 					// it next time
-					gtk_object_remove_data (G_OBJECT (wMenuRoot), strId);
+					gtk_object_remove_data (GTK_OBJECT (wMenuRoot), strId);
 				}
 
 				g_free (strId);
@@ -934,7 +934,7 @@ bool EV_UnixGnomeMenu::_refreshMenu(AV_View * pView, GtkWidget * wMenuRoot)
 			char * strId = g_strdup_printf("%d", id);
 			
 			_ev_convert(buf, szLabelName);
-			item = (GtkWidget *) gtk_object_get_data (G_OBJECT (wMenuRoot), strId);
+			item = (GtkWidget *) g_object_get_data (G_OBJECT (wMenuRoot), strId);
 			g_free (strId);
 
 			if (!item)
@@ -989,7 +989,7 @@ bool EV_UnixGnomeMenu::_refreshMenu(AV_View * pView, GtkWidget * wMenuRoot)
 			// we need to nest sub menus to have some sort of context so
 			// we can parent menu items
 			char * strId = g_strdup_printf("%d",id);
-			item = (GtkWidget *) gtk_object_get_data (G_OBJECT (wMenuRoot), strId);
+			item = (GtkWidget *) g_object_get_data (G_OBJECT (wMenuRoot), strId);
 			g_free (strId);
 			UT_ASSERT(item);
 
@@ -1055,26 +1055,26 @@ void EV_UnixGnomeMenu::_attachWidgetsAndSignals(GtkWidget * wMenuRoot, GnomeUIIn
 				
 				char * strId = g_strdup_printf("%d", ((__Aux *) 
 									uiinfo->user_data)->id);
-				gtk_object_set_data_full (G_OBJECT (wMenuRoot), strId,
+				g_object_set_data_full (G_OBJECT (wMenuRoot), strId,
 										  uiinfo->widget,
 										  (GtkDestroyNotify) gtk_widget_unref);
 			
 				// This hack is to clear strId when the widget gets destroyed
-				gtk_object_set_data_full (G_OBJECT (uiinfo->widget), "strId",
+				g_object_set_data_full (G_OBJECT (uiinfo->widget), "strId",
 										  strId, (GtkDestroyNotify) g_free);
 			}
 			
 			if ((uiinfo->type == GNOME_APP_UI_ITEM) ||
 			    (uiinfo->type == GNOME_APP_UI_TOGGLEITEM)) {
 				// connect callbacks
-				gtk_signal_connect(G_OBJECT(uiinfo->widget), "select",
-								   GTK_SIGNAL_FUNC(s_onMenuItemSelect), uiinfo->user_data);
-				gtk_signal_connect(G_OBJECT(uiinfo->widget), "deselect",
-								   GTK_SIGNAL_FUNC(s_onMenuItemDeselect), uiinfo->user_data);
+				g_signal_connect(G_OBJECT(uiinfo->widget), "select",
+								   G_CALLBACK(s_onMenuItemSelect), uiinfo->user_data);
+				g_signal_connect(G_OBJECT(uiinfo->widget), "deselect",
+								   G_CALLBACK(s_onMenuItemDeselect), uiinfo->user_data);
 			}
 
 			if (uiinfo->hint != NULL) {
-				gtk_object_set_data (G_OBJECT (uiinfo->widget), "abi_statusbar_text",
+				g_object_set_data (G_OBJECT (uiinfo->widget), "abi_statusbar_text",
 									 uiinfo->hint);
 			}
 		}
@@ -1082,12 +1082,12 @@ void EV_UnixGnomeMenu::_attachWidgetsAndSignals(GtkWidget * wMenuRoot, GnomeUIIn
 		if (uiinfo->type == GNOME_APP_UI_SUBTREE) {
 			// hack - refresh all of the menus whenever one gets selected
 			// because we can't refresh just one
-			gtk_signal_connect(G_OBJECT(((GnomeUIInfo *) uiinfo->widget)), "select",
-							   GTK_SIGNAL_FUNC(s_onInitMenu), uiinfo->user_data);		
-			gtk_signal_connect(G_OBJECT(((GnomeUIInfo *) uiinfo->moreinfo)->widget), "map",
-							   GTK_SIGNAL_FUNC(s_onInitMenu), uiinfo->user_data);
-			gtk_signal_connect(G_OBJECT(((GnomeUIInfo *) uiinfo->moreinfo)->widget), "unmap",
-							   GTK_SIGNAL_FUNC(s_onDestroyMenu), uiinfo->user_data);
+			g_signal_connect(G_OBJECT(((GnomeUIInfo *) uiinfo->widget)), "select",
+							   G_CALLBACK(s_onInitMenu), uiinfo->user_data);		
+			g_signal_connect(G_OBJECT(((GnomeUIInfo *) uiinfo->moreinfo)->widget), "map",
+							   G_CALLBACK(s_onInitMenu), uiinfo->user_data);
+			g_signal_connect(G_OBJECT(((GnomeUIInfo *) uiinfo->moreinfo)->widget), "unmap",
+							   G_CALLBACK(s_onDestroyMenu), uiinfo->user_data);
 
 			_attachWidgetsAndSignals (wMenuRoot, (GnomeUIInfo *) uiinfo->moreinfo);
 		}

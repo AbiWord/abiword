@@ -70,24 +70,24 @@ GtkWidget * XAP_UnixGnomeDialog_PluginManager::_constructWindow(void)
 	GTK_WIDGET_SET_FLAGS (buttonClose, GTK_CAN_DEFAULT);
 	gtk_widget_grab_default (buttonClose);
 
-	gtk_signal_connect_after(G_OBJECT(windowPluginManager),
+	g_signal_connect_after(G_OBJECT(windowPluginManager),
 							 "destroy",
 							 NULL,
 							 NULL);
 
-	gtk_signal_connect(G_OBJECT(windowPluginManager),
+	g_signal_connect(G_OBJECT(windowPluginManager),
 					   "delete_event",
-					   GTK_SIGNAL_FUNC(s_delete_clicked),
+					   G_CALLBACK(s_delete_clicked),
 					   (gpointer) this);
 
-	gtk_signal_connect(G_OBJECT(buttonClose),
+	g_signal_connect(G_OBJECT(buttonClose),
 					   "clicked",
-					   GTK_SIGNAL_FUNC(s_close_clicked),
+					   G_CALLBACK(s_close_clicked),
 					   (gpointer) this);
 	
-	gtk_signal_connect(G_OBJECT(windowPluginManager),
+	g_signal_connect(G_OBJECT(windowPluginManager),
 					   "close",
-					   GTK_SIGNAL_FUNC(s_close_clicked),
+					   G_CALLBACK(s_close_clicked),
 					   (gpointer) this);
 
 	// make cancel button the default

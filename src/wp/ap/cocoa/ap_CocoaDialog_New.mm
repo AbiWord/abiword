@@ -360,9 +360,9 @@ void AP_CocoaDialog_New::_constructWindowContents (GtkWidget * container)
 	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (radio_empty), TRUE);
 
 	// connect signals
-	gtk_signal_connect (GTK_OBJECT(choose_btn), 
+	g_signal_connect (G_OBJECT(choose_btn), 
 						"clicked",
-						GTK_SIGNAL_FUNC(s_choose_clicked), 
+						G_CALLBACK(s_choose_clicked), 
 						(gpointer)this);
 
 	// set the private pointers
@@ -375,24 +375,24 @@ void AP_CocoaDialog_New::_constructWindowContents (GtkWidget * container)
 void AP_CocoaDialog_New::_connectSignals ()
 {
   	// the control buttons
-	gtk_signal_connect(GTK_OBJECT(m_buttonOk),
+	g_signal_connect(G_OBJECT(m_buttonOk),
 					   "clicked",
-					   GTK_SIGNAL_FUNC(s_ok_clicked),
+					   G_CALLBACK(s_ok_clicked),
 					   (gpointer) this);
 	
-	gtk_signal_connect(GTK_OBJECT(m_buttonCancel),
+	g_signal_connect(G_OBJECT(m_buttonCancel),
 					   "clicked",
-					   GTK_SIGNAL_FUNC(s_cancel_clicked),
+					   G_CALLBACK(s_cancel_clicked),
 					   (gpointer) this);
 	
 	// the catch-alls
 	
-	gtk_signal_connect(GTK_OBJECT(m_mainWindow),
+	g_signal_connect(G_OBJECT(m_mainWindow),
 					   "delete_event",
-					   GTK_SIGNAL_FUNC(s_window_delete),
+					   G_CALLBACK(s_window_delete),
 					   (gpointer) this);
 
-	gtk_signal_connect_after(GTK_OBJECT(m_mainWindow),
+	g_signal_connect_after(G_OBJECT(m_mainWindow),
 							 "destroy",
 							 NULL,
 							 NULL);

@@ -95,9 +95,9 @@ AP_CocoaTopRuler::AP_CocoaTopRuler(XAP_Frame * pFrame)
 #if 0
 	// change ruler color on theme change
 	NSWindow * toplevel = (static_cast<XAP_CocoaFrame *> (m_pFrame))->getTopLevelWindow();
-	gtk_signal_connect_after (GTK_OBJECT(toplevel),
+	g_signal_connect_after (G_OBJECT(toplevel),
 							  "client_event",
-							  GTK_SIGNAL_FUNC(ruler_style_changed),
+							  G_CALLBACK(ruler_style_changed),
 							  (gpointer)this);
 #endif
 }
@@ -119,7 +119,7 @@ Abi_NSView * AP_CocoaTopRuler::createWidget(void)
 	//UT_DEBUGMSG(("AP_CocoaTopRuler::createWidget - [w=%p] [this=%p]\n", m_wTopRuler,this));
 
 #if 0
-	gtk_object_set_user_data(GTK_OBJECT(m_wTopRuler),this);
+	g_object_set_user_data(G_OBJECT(m_wTopRuler),this);
 	gtk_widget_show(m_wTopRuler);
 	gtk_widget_set_usize(m_wTopRuler, -1, s_iFixedHeight);
 
@@ -130,20 +130,20 @@ Abi_NSView * AP_CocoaTopRuler::createWidget(void)
 													GDK_KEY_PRESS_MASK |
 													GDK_KEY_RELEASE_MASK));
 
-	gtk_signal_connect(GTK_OBJECT(m_wTopRuler), "expose_event",
-					   GTK_SIGNAL_FUNC(_fe::expose), NULL);
+	g_signal_connect(G_OBJECT(m_wTopRuler), "expose_event",
+					   G_CALLBACK(_fe::expose), NULL);
   
-	gtk_signal_connect(GTK_OBJECT(m_wTopRuler), "button_press_event",
-					   GTK_SIGNAL_FUNC(_fe::button_press_event), NULL);
+	g_signal_connect(G_OBJECT(m_wTopRuler), "button_press_event",
+					   G_CALLBACK(_fe::button_press_event), NULL);
 
-	gtk_signal_connect(GTK_OBJECT(m_wTopRuler), "button_release_event",
-					   GTK_SIGNAL_FUNC(_fe::button_release_event), NULL);
+	g_signal_connect(G_OBJECT(m_wTopRuler), "button_release_event",
+					   G_CALLBACK(_fe::button_release_event), NULL);
 
-	gtk_signal_connect(GTK_OBJECT(m_wTopRuler), "motion_notify_event",
-					   GTK_SIGNAL_FUNC(_fe::motion_notify_event), NULL);
+	g_signal_connect(G_OBJECT(m_wTopRuler), "motion_notify_event",
+					   G_CALLBACK(_fe::motion_notify_event), NULL);
   
-	gtk_signal_connect(GTK_OBJECT(m_wTopRuler), "configure_event",
-					   GTK_SIGNAL_FUNC(_fe::configure_event), NULL);
+	g_signal_connect(G_OBJECT(m_wTopRuler), "configure_event",
+					   G_CALLBACK(_fe::configure_event), NULL);
 #endif
 
 	return m_wTopRuler;
@@ -223,7 +223,7 @@ bool AP_CocoaTopRuler::_graphicsUpdateCB(NSRect * aRect, GR_CocoaGraphics *pG, v
 gint AP_CocoaTopRuler::_fe::button_press_event(GtkWidget * w, GdkEventButton * e)
 {
 	// a static function
-	AP_CocoaTopRuler * pCocoaTopRuler = (AP_CocoaTopRuler *)gtk_object_get_user_data(GTK_OBJECT(w));
+	AP_CocoaTopRuler * pCocoaTopRuler = (AP_CocoaTopRuler *)g_object_get_user_data(G_OBJECT(w));
 
 	// grab the mouse for the duration of the drag.
 	gtk_grab_add(w);
@@ -256,7 +256,7 @@ gint AP_CocoaTopRuler::_fe::button_press_event(GtkWidget * w, GdkEventButton * e
 gint AP_CocoaTopRuler::_fe::button_release_event(GtkWidget * w, GdkEventButton * e)
 {
 	// a static function
-	AP_CocoaTopRuler * pCocoaTopRuler = (AP_CocoaTopRuler *)gtk_object_get_user_data(GTK_OBJECT(w));
+	AP_CocoaTopRuler * pCocoaTopRuler = (AP_CocoaTopRuler *)g_object_get_user_data(G_OBJECT(w));
 
 	EV_EditModifierState ems;
 	EV_EditMouseButton emb = 0;
@@ -292,7 +292,7 @@ gint AP_CocoaTopRuler::_fe::button_release_event(GtkWidget * w, GdkEventButton *
 gint AP_CocoaTopRuler::_fe::configure_event(GtkWidget* w, GdkEventConfigure *e)
 {
 	// a static function
-	AP_CocoaTopRuler * pCocoaTopRuler = (AP_CocoaTopRuler *)gtk_object_get_user_data(GTK_OBJECT(w));
+	AP_CocoaTopRuler * pCocoaTopRuler = (AP_CocoaTopRuler *)g_object_get_user_data(G_OBJECT(w));
 
 	//UT_DEBUGMSG(("CocoaTopRuler: [p %p] [size w %d h %d] received configure_event\n",
 	//			 pCocoaTopRuler, e->width, e->height));
@@ -312,7 +312,7 @@ gint AP_CocoaTopRuler::_fe::configure_event(GtkWidget* w, GdkEventConfigure *e)
 gint AP_CocoaTopRuler::_fe::motion_notify_event(GtkWidget* w, GdkEventMotion* e)
 {
 	// a static function
-	AP_CocoaTopRuler * pCocoaTopRuler = (AP_CocoaTopRuler *)gtk_object_get_user_data(GTK_OBJECT(w));
+	AP_CocoaTopRuler * pCocoaTopRuler = (AP_CocoaTopRuler *)g_object_get_user_data(G_OBJECT(w));
 
 	EV_EditModifierState ems;
 	
@@ -339,7 +339,7 @@ gint AP_CocoaTopRuler::_fe::motion_notify_event(GtkWidget* w, GdkEventMotion* e)
 gint AP_CocoaTopRuler::_fe::key_press_event(GtkWidget* w, GdkEventKey* /* e */)
 {
 	// a static function
-	AP_CocoaTopRuler * pCocoaTopRuler = (AP_CocoaTopRuler *)gtk_object_get_user_data(GTK_OBJECT(w));
+	AP_CocoaTopRuler * pCocoaTopRuler = (AP_CocoaTopRuler *)g_object_get_user_data(G_OBJECT(w));
 	UT_DEBUGMSG(("CocoaTopRuler: [p %p] received key_press_event\n",pCocoaTopRuler));
 	return 1;
 }
@@ -347,7 +347,7 @@ gint AP_CocoaTopRuler::_fe::key_press_event(GtkWidget* w, GdkEventKey* /* e */)
 gint AP_CocoaTopRuler::_fe::delete_event(GtkWidget * /* w */, GdkEvent * /*event*/, gpointer /*data*/)
 {
 	// a static function
-	// AP_CocoaTopRuler * pCocoaTopRuler = (AP_CocoaTopRuler *)gtk_object_get_user_data(GTK_OBJECT(w));
+	// AP_CocoaTopRuler * pCocoaTopRuler = (AP_CocoaTopRuler *)g_object_get_user_data(G_OBJECT(w));
 	// UT_DEBUGMSG(("CocoaTopRuler: [p %p] received delete_event\n",pCocoaTopRuler));
 	return 1;
 }

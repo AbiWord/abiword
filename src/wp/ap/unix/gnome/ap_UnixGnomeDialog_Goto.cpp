@@ -79,9 +79,9 @@ GtkWidget * AP_UnixGnomeDialog_Goto::_constructWindow (void)
 
 	gtk_widget_show_all (m_wMainWindow);
 
-	gtk_signal_connect (G_OBJECT(m_wMainWindow),
+	g_signal_connect (G_OBJECT(m_wMainWindow),
 			    "close",
-			    GTK_SIGNAL_FUNC(s_closeClicked),
+			    G_CALLBACK(s_closeClicked),
 			    (gpointer)this);
 
 	_connectSignals ();

@@ -135,10 +135,10 @@ static char _ev_buf[256];
 // convenience macro
 #define CONNECT_MENU_ITEM_SIGNAL_ACTIVATE(w, m, d, f)				\
         do {												\
-                gtk_object_set_data (GTK_OBJECT (w), WIDGET_MENU_OPTION_PTR, (gpointer)m);                \
-                gtk_object_set_data (GTK_OBJECT (w), WIDGET_MENU_VALUE_TAG,  GINT_TO_POINTER(d));                \
-	        gtk_signal_connect (GTK_OBJECT (w), "activate",	\
-                GTK_SIGNAL_FUNC (f),		\
+                g_object_set_data (G_OBJECT (w), WIDGET_MENU_OPTION_PTR, (gpointer)m);                \
+                g_object_set_data (G_OBJECT (w), WIDGET_MENU_VALUE_TAG,  GINT_TO_POINTER(d));                \
+	        g_signal_connect (G_OBJECT (w), "activate",	\
+                G_CALLBACK (f),		\
                 (gpointer)this);							\
         } while (0)
 
@@ -168,14 +168,14 @@ static void s_delete_clicked (GtkWidget * w,
 
 static void s_menu_item_activate (GtkWidget * widget)
 {
-	GtkWidget *option_menu = (GtkWidget *)gtk_object_get_data (GTK_OBJECT (widget),
+	GtkWidget *option_menu = (GtkWidget *)g_object_get_data (G_OBJECT (widget),
 								   WIDGET_MENU_OPTION_PTR);
 	UT_ASSERT(option_menu && GTK_IS_OPTION_MENU (option_menu));
 
-	gpointer p = gtk_object_get_data (GTK_OBJECT (widget),
+	gpointer p = g_object_get_data (G_OBJECT (widget),
 					  WIDGET_MENU_VALUE_TAG);
 
-	gtk_object_set_data (GTK_OBJECT (option_menu), WIDGET_MENU_VALUE_TAG, p);
+	g_object_set_data (G_OBJECT (option_menu), WIDGET_MENU_VALUE_TAG, p);
 }
 
 static void s_page_size_changed (GtkWidget * w, GtkWidget * child, 
@@ -256,7 +256,7 @@ void AP_CocoaDialog_PageSetup::event_WindowDelete (void)
 
 void AP_CocoaDialog_PageSetup::event_PageUnitsChanged (void)
 {
-  UT_Dimension pu = (UT_Dimension) GPOINTER_TO_INT (gtk_object_get_data (GTK_OBJECT (m_optionPageUnits), 
+  UT_Dimension pu = (UT_Dimension) GPOINTER_TO_INT (g_object_get_data (G_OBJECT (m_optionPageUnits), 
 										   WIDGET_MENU_VALUE_TAG));
 
   float width, height;
@@ -316,7 +316,7 @@ void AP_CocoaDialog_PageSetup::event_PageSizeChanged (fp_PageSize::Predefined pd
 
 void AP_CocoaDialog_PageSetup::event_MarginUnitsChanged (void)
 {
-  UT_Dimension mu = (UT_Dimension) GPOINTER_TO_INT (gtk_object_get_data (GTK_OBJECT (m_optionMarginUnits),
+  UT_Dimension mu = (UT_Dimension) GPOINTER_TO_INT (g_object_get_data (G_OBJECT (m_optionMarginUnits),
 										   WIDGET_MENU_VALUE_TAG));
 
   float top, bottom, left, right, header, footer;
@@ -403,24 +403,24 @@ void AP_CocoaDialog_PageSetup::runModal (XAP_Frame *pFrame)
 void AP_CocoaDialog_PageSetup::_connectSignals (void)
 {
   	// the control buttons
-	gtk_signal_connect(GTK_OBJECT(m_buttonOK),
+	g_signal_connect(G_OBJECT(m_buttonOK),
 			   "clicked",
-			   GTK_SIGNAL_FUNC(s_ok_clicked),
+			   G_CALLBACK(s_ok_clicked),
 			   (gpointer) this);
 	
-	gtk_signal_connect(GTK_OBJECT(m_buttonCancel),
+	g_signal_connect(G_OBJECT(m_buttonCancel),
 			   "clicked",
-			   GTK_SIGNAL_FUNC(s_cancel_clicked),
+			   G_CALLBACK(s_cancel_clicked),
 			   (gpointer) this);
 
 	// the catch-alls
 	
-	gtk_signal_connect(GTK_OBJECT(m_window),
+	g_signal_connect(G_OBJECT(m_window),
 			   "delete_event",
-			   GTK_SIGNAL_FUNC(s_delete_clicked),
+			   G_CALLBACK(s_delete_clicked),
 			   (gpointer) this);
 
-	gtk_signal_connect_after(GTK_OBJECT(m_window),
+	g_signal_connect_after(G_OBJECT(m_window),
 				 "destroy",
 				 NULL,
 				 NULL);
@@ -478,13 +478,13 @@ void AP_CocoaDialog_PageSetup::_constructWindowContents (GtkWidget *container)
   GtkWidget *table1;
   GtkWidget *label5;
   GtkWidget *label6;
-  GtkObject *spinPageScale_adj;
+  GObject *spinPageScale_adj;
   GtkWidget *spinPageScale;
   GtkWidget *labelPage;
   GtkWidget *tableMargin;
-  GtkObject *spinMarginBottom_adj;
+  GObject *spinMarginBottom_adj;
   GtkWidget *spinMarginBottom;
-  GtkObject *spinMarginFooter_adj;
+  GObject *spinMarginFooter_adj;
   GtkWidget *spinMarginFooter;
   GtkWidget *labelMarginUnits;
   GtkWidget *labelTop;
@@ -492,17 +492,17 @@ void AP_CocoaDialog_PageSetup::_constructWindowContents (GtkWidget *container)
   GtkWidget *labelFooter;
   GtkWidget *labelBottom;
   GtkWidget *customPreview;
-  GtkObject *spinMarginTop_adj;
+  GObject *spinMarginTop_adj;
   GtkWidget *spinMarginTop;
-  GtkObject *spinMarginHeader_adj;
+  GObject *spinMarginHeader_adj;
   GtkWidget *spinMarginHeader;
   GtkWidget *vbox3;
   GtkWidget *labelRight;
-  GtkObject *spinMarginRight_adj;
+  GObject *spinMarginRight_adj;
   GtkWidget *spinMarginRight;
   GtkWidget *vbox2;
   GtkWidget *labelLeft;
-  GtkObject *spinMarginLeft_adj;
+  GObject *spinMarginLeft_adj;
   GtkWidget *spinMarginLeft;
   GtkWidget *optionMarginUnits;
   GtkWidget *optionMarginUnits_menu;
@@ -585,8 +585,8 @@ void AP_CocoaDialog_PageSetup::_constructWindowContents (GtkWidget *container)
   GtkList * optionPageSizeList = GTK_LIST(GTK_COMBO(optionPageSize)->list);
   gtk_list_select_item (optionPageSizeList, (gint)last_page_size);
 
-  gtk_signal_connect(GTK_OBJECT(optionPageSizeList), "select-child",
-		     GTK_SIGNAL_FUNC(s_page_size_changed), (gpointer)this);
+  g_signal_connect(G_OBJECT(optionPageSizeList), "select-child",
+		     G_CALLBACK(s_page_size_changed), (gpointer)this);
 
   labelPageUnits = gtk_label_new (_(AP, DLG_PageSetup_Units));
   gtk_widget_show (labelPageUnits);

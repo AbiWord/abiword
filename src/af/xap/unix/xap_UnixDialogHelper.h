@@ -76,18 +76,28 @@ GtkWidget *createDrawingArea ();
 
 // These are here so that I can start on the GTK+2 port without installing
 // GTK+2 quite yet...
-#define G_OBJECT_FLAGS GTK_OBJECT_FLAGS
 #define G_OBJECT(x) GTK_OBJECT(x)
 #define G_CALLBACK(x) GTK_SIGNAL_FUNC(x)
-#define G_OBJECT_DESTROYED(x) GTK_OBJECT_DESTROYED(x)
 #define G_OBJECT_CLASS(x) GTK_OBJECT_CLASS(x)
-#define g_signal_connect(o,s,c,d) gtk_signal_connect(o,s,c,d)
+#define G_IS_OBJECT(x) GTK_IS_OBJECT(x)
+
 #define g_object_ref(x) gtk_object_ref(x)
 #define g_object_unref(x) gtk_object_unref(x)
+#define g_object_set(a,b,c,d) gtk_object_set(a,b,c,d)
 #define g_object_set_data(x,y,z) gtk_object_set_data(x,y,z)
 #define g_object_get_data(x,y) gtk_object_get_data(x,y)
-#define g_object_set_user_data(x,y) gtk_object_set_user_data(x,y)
-#define g_object_get_user_data(x) gtk_object_get_user_data(x)
+#define g_object_set_data_full(a,b,c,d) gtk_object_set_data_full(a,b,c,d)
+
+#define g_signal_connect(o,s,c,d) gtk_signal_connect(o,s,c,d)
+#define g_signal_connect_after(a,b,c,d) gtk_signal_connect_after(a,b,c,d)
+#define g_signal_handler_block(w,i) gtk_signal_handler_block(w,i)
+#define g_signal_handler_unblock(w,i) gtk_signal_handler_block(w,i)
+#define g_signal_emit_stop_by_name(w,s) gtk_signal_emit_stop_by_name(w,s)
+#define g_signal_emit_by_name(w,s) gtk_signal_emit_by_name(w,s)
+#define g_signal_handler_block_by_data(a,b) gtk_signal_handler_block_by_data(a,b)
+#define g_signal_handler_unblock_by_data(a,b) gtk_signal_handler_unblock_by_data(a,b)
+
+typedef GtkObject GObject;
 
 #endif /* UT_DIALOGHELPER_H */
 

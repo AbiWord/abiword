@@ -277,7 +277,7 @@ void AP_CocoaDialog_HdrFtr::_constructWindowContents (GtkWidget * parent)
 	GtkWidget *hbox1;
 	GtkWidget *ReStartButton;
 	GtkWidget *restartLabel;
-	GtkObject *spinbutton1_adj;
+	GObject *spinbutton1_adj;
 	GtkWidget *spinbutton1;
 
 
@@ -391,64 +391,64 @@ void AP_CocoaDialog_HdrFtr::_constructWindowContents (GtkWidget * parent)
 
 void AP_CocoaDialog_HdrFtr::_connectSignals(void)
 {
-	gtk_signal_connect (GTK_OBJECT(m_wHdrFtrCheck[HdrEven]), 
+	g_signal_connect (G_OBJECT(m_wHdrFtrCheck[HdrEven]), 
 						"toggled", 
-						GTK_SIGNAL_FUNC(s_HdrEven), 
+						G_CALLBACK(s_HdrEven), 
 						(gpointer)this);
 
-	gtk_signal_connect (GTK_OBJECT(m_wHdrFtrCheck[HdrFirst]), 
+	g_signal_connect (G_OBJECT(m_wHdrFtrCheck[HdrFirst]), 
 						"toggled", 
-						GTK_SIGNAL_FUNC(s_HdrFirst), 
+						G_CALLBACK(s_HdrFirst), 
 						(gpointer)this);
 
-	gtk_signal_connect (GTK_OBJECT(m_wHdrFtrCheck[HdrLast]), 
+	g_signal_connect (G_OBJECT(m_wHdrFtrCheck[HdrLast]), 
 						"toggled", 
-						GTK_SIGNAL_FUNC(s_HdrLast), 
+						G_CALLBACK(s_HdrLast), 
 						(gpointer)this);
 
-	gtk_signal_connect (GTK_OBJECT(m_wHdrFtrCheck[FtrEven]), 
+	g_signal_connect (G_OBJECT(m_wHdrFtrCheck[FtrEven]), 
 						"toggled", 
-						GTK_SIGNAL_FUNC(s_FtrEven), 
+						G_CALLBACK(s_FtrEven), 
 						(gpointer)this);
 
-	gtk_signal_connect (GTK_OBJECT(m_wHdrFtrCheck[FtrFirst]), 
+	g_signal_connect (G_OBJECT(m_wHdrFtrCheck[FtrFirst]), 
 						"toggled", 
-						GTK_SIGNAL_FUNC(s_FtrFirst), 
+						G_CALLBACK(s_FtrFirst), 
 						(gpointer)this);
 
-	gtk_signal_connect (GTK_OBJECT(m_wHdrFtrCheck[FtrLast]), 
+	g_signal_connect (G_OBJECT(m_wHdrFtrCheck[FtrLast]), 
 						"toggled", 
-						GTK_SIGNAL_FUNC(s_FtrLast), 
+						G_CALLBACK(s_FtrLast), 
 						(gpointer)this);
 
-	gtk_signal_connect (GTK_OBJECT(m_wRestartButton), 
+	g_signal_connect (G_OBJECT(m_wRestartButton), 
 						"toggled", 
-						GTK_SIGNAL_FUNC(s_restart_toggled), 
+						G_CALLBACK(s_restart_toggled), 
 						(gpointer)this);
 
-	gtk_signal_connect (GTK_OBJECT (m_oSpinAdj), "value_changed",
-						GTK_SIGNAL_FUNC (s_spin_changed),
+	g_signal_connect (G_OBJECT (m_oSpinAdj), "value_changed",
+						G_CALLBACK (s_spin_changed),
 						(gpointer) this);
 
-	gtk_signal_connect (GTK_OBJECT(m_wRestartButton), 
+	g_signal_connect (G_OBJECT(m_wRestartButton), 
 						"toggled", 
-						GTK_SIGNAL_FUNC(s_restart_toggled), 
+						G_CALLBACK(s_restart_toggled), 
 						(gpointer)this);
 
-	gtk_signal_connect (GTK_OBJECT(m_wButtonOK), "clicked", 
-						GTK_SIGNAL_FUNC(s_ok_clicked), (gpointer)this);
+	g_signal_connect (G_OBJECT(m_wButtonOK), "clicked", 
+						G_CALLBACK(s_ok_clicked), (gpointer)this);
 
-	gtk_signal_connect (GTK_OBJECT(m_wButtonCancel), "clicked", 
-						GTK_SIGNAL_FUNC(s_cancel_clicked), (gpointer)this);
+	g_signal_connect (G_OBJECT(m_wButtonCancel), "clicked", 
+						G_CALLBACK(s_cancel_clicked), (gpointer)this);
 	 
-	gtk_signal_connect_after(GTK_OBJECT(m_wHdrFtrDialog),
+	g_signal_connect_after(G_OBJECT(m_wHdrFtrDialog),
 							 "destroy",
 							 NULL,
 							 NULL);
 
-	gtk_signal_connect(GTK_OBJECT(m_wHdrFtrDialog),
+	g_signal_connect(G_OBJECT(m_wHdrFtrDialog),
 					   "delete_event",
-					   GTK_SIGNAL_FUNC(s_delete_clicked),
+					   G_CALLBACK(s_delete_clicked),
 					   (gpointer) this);
 
 }

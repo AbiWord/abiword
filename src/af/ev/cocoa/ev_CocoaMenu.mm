@@ -138,7 +138,7 @@ public:									// we create...
 		wd->m_pCocoaMenu->refreshMenu(wd->m_pCocoaMenu->getFrame()->getCurrentView());
 
 		// attach this new menu's accel group to be triggered off itself
-		gtk_accel_group_attach(wd->m_accelGroup, GTK_OBJECT(menuItem));
+		gtk_accel_group_attach(wd->m_accelGroup, G_OBJECT(menuItem));
 		gtk_accel_group_lock(wd->m_accelGroup);
 	};
 
@@ -155,7 +155,7 @@ public:									// we create...
 		pFrame->setStatusMessage(NULL);
 		
 		// bind this menuitem to its parent menu
-		gtk_accel_group_detach(wd->m_accelGroup, GTK_OBJECT(menuItem));
+		gtk_accel_group_detach(wd->m_accelGroup, G_OBJECT(menuItem));
 		gtk_accel_group_unlock(wd->m_accelGroup);
 	};
 
@@ -494,19 +494,19 @@ UT_ASSERT(UT_NOT_IMPLEMENTED);
 					gtk_widget_show(w);
 
 					// set menu data to relate to class
-					gtk_object_set_user_data(GTK_OBJECT(w),this);
+					g_object_set_user_data(G_OBJECT(w),this);
 					// create callback info data for action handling
 					_wd * wd = new _wd(this, id);
 					UT_ASSERT(wd);
 
 					// set parent data stuff
-					gtk_object_set_data(GTK_OBJECT(wMenuRoot), szLabelName, w);
+					g_object_set_data(G_OBJECT(wMenuRoot), szLabelName, w);
 					// bury in parent 
 					gtk_menu_insert(GTK_MENU(GTK_MENU_ITEM(wParent)->submenu), w, nPositionInThisMenu);
 					// connect callbacks
-					gtk_signal_connect(GTK_OBJECT(w), "activate", GTK_SIGNAL_FUNC(_wd::s_onActivate), wd);
-					gtk_signal_connect(GTK_OBJECT(w), "select", GTK_SIGNAL_FUNC(_wd::s_onMenuItemSelect), wd);
-					gtk_signal_connect(GTK_OBJECT(w), "deselect", GTK_SIGNAL_FUNC(_wd::s_onMenuItemDeselect), wd);				
+					g_signal_connect(G_OBJECT(w), "activate", G_CALLBACK(_wd::s_onActivate), wd);
+					g_signal_connect(G_OBJECT(w), "select", G_CALLBACK(_wd::s_onMenuItemSelect), wd);
+					g_signal_connect(G_OBJECT(w), "deselect", G_CALLBACK(_wd::s_onMenuItemDeselect), wd);				
 						
 					// we do NOT add a new item, we point the existing index at our new widget
 					// (update the pointers)

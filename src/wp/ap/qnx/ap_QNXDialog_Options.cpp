@@ -113,7 +113,7 @@ int AP_QNXDialog_Options::s_checkbutton_toggle(PtWidget_t *widget, void *data, P
 	AP_QNXDialog_Options * dlg = (AP_QNXDialog_Options *)data;
 	UT_ASSERT(dlg); 
 	UT_ASSERT( w && GTK_IS_WIDGET(w));
-	int i = (int) gtk_object_get_data( G_OBJECT(w), "tControl" );
+	int i = (int) g_object_get_data( G_OBJECT(w), "tControl" );
 	dlg->_enableDisableLogic( (AP_Dialog_Options::tControl) i );
 #endif
 	return Pt_CONTINUE;
@@ -126,14 +126,14 @@ int AP_QNXDialog_Options::s_menu_item_activate(PtWidget_t *widget, void *data, P
 
 	UT_ASSERT(widget && dlg);
 
-	PtWidget_t *option_menu = (PtWidget_t *)gtk_object_get_data(G_OBJECT(widget),
+	PtWidget_t *option_menu = (PtWidget_t *)g_object_get_data(G_OBJECT(widget),
 												 WIDGET_MENU_OPTION_PTR);
 	UT_ASSERT( option_menu && GTK_IS_OPTION_MENU(option_menu));
 
-	void * p = gtk_object_get_data( G_OBJECT(widget),
+	void * p = g_object_get_data( G_OBJECT(widget),
 												WIDGET_MENU_VALUE_TAG);
 
-	gtk_object_set_data( G_OBJECT(option_menu), WIDGET_MENU_VALUE_TAG, p );
+	g_object_set_data( G_OBJECT(option_menu), WIDGET_MENU_VALUE_TAG, p );
 
 	UT_DEBUGMSG(("s_menu_item_activate [%d %s]\n", p, UT_dimensionName( (UT_Dimension)((UT_uint32)p)) ) );
 #endif

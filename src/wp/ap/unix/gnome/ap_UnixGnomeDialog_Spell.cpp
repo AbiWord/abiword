@@ -68,9 +68,9 @@ GtkWidget * AP_UnixGnomeDialog_Spell::_constructWindow (void)
 
 	_constructWindowContents (GNOME_DIALOG (m_windowMain)->vbox);
 
-	gtk_signal_connect (G_OBJECT(m_windowMain),
+	g_signal_connect (G_OBJECT(m_windowMain),
 			    "close",
-			    GTK_SIGNAL_FUNC(cb_close),
+			    G_CALLBACK(cb_close),
 			    (gpointer)this);
 
 	_connectSignals ();

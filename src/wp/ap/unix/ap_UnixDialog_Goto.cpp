@@ -367,16 +367,16 @@ GtkWidget *AP_UnixDialog_Goto::_constructWindowContents (void)
 	
 
     //add signal handlers
-	gtk_signal_connect (G_OBJECT (clist), "select_row",
-						GTK_SIGNAL_FUNC (s_targetChanged),
+	g_signal_connect (G_OBJECT (clist), "select_row",
+						G_CALLBACK (s_targetChanged),
 						this);
-	gtk_signal_connect (G_OBJECT (m_wEntry), "changed",
-						GTK_SIGNAL_FUNC (s_dataChanged), this);
-	gtk_signal_connect (G_OBJECT (m_wEntry), "activate",
-						GTK_SIGNAL_FUNC (s_gotoClicked), this);
+	g_signal_connect (G_OBJECT (m_wEntry), "changed",
+						G_CALLBACK (s_dataChanged), this);
+	g_signal_connect (G_OBJECT (m_wEntry), "activate",
+						G_CALLBACK (s_gotoClicked), this);
 						
-	gtk_signal_connect (G_OBJECT (blist), "select_row",
-						GTK_SIGNAL_FUNC (s_blist_clicked), this);
+	g_signal_connect (G_OBJECT (blist), "select_row",
+						G_CALLBACK (s_blist_clicked), this);
 
 	gtk_widget_add_accelerator (clist, "grab_focus", m_accelGroup,
 								what_lb_key, GDK_MOD1_MASK, (GtkAccelFlags) 0);
@@ -390,21 +390,21 @@ void AP_UnixDialog_Goto::_populateWindowData (void) {}
 
 void AP_UnixDialog_Goto::_connectSignals(void)
 {
-	gtk_signal_connect_after(G_OBJECT(m_wMainWindow),
+	g_signal_connect_after(G_OBJECT(m_wMainWindow),
 							 "destroy",
 							 NULL,
 							 NULL);
 	//
         // Don't use connect_after in modeless dialog
-	gtk_signal_connect(G_OBJECT(m_wMainWindow),
+	g_signal_connect(G_OBJECT(m_wMainWindow),
 						     "delete_event",
-						     GTK_SIGNAL_FUNC(s_deleteClicked), (gpointer) this);
-	gtk_signal_connect (G_OBJECT (m_wPrev), "clicked",
-						GTK_SIGNAL_FUNC (s_prevClicked), this);
-	gtk_signal_connect (G_OBJECT (m_wNext), "clicked",
-						GTK_SIGNAL_FUNC (s_nextClicked), this);
-	gtk_signal_connect (G_OBJECT (m_wGoto), "clicked",
-						GTK_SIGNAL_FUNC (s_gotoClicked), this);
-	gtk_signal_connect (G_OBJECT (m_wClose), "clicked",
-						GTK_SIGNAL_FUNC (s_closeClicked), this);
+						     G_CALLBACK(s_deleteClicked), (gpointer) this);
+	g_signal_connect (G_OBJECT (m_wPrev), "clicked",
+						G_CALLBACK (s_prevClicked), this);
+	g_signal_connect (G_OBJECT (m_wNext), "clicked",
+						G_CALLBACK (s_nextClicked), this);
+	g_signal_connect (G_OBJECT (m_wGoto), "clicked",
+						G_CALLBACK (s_gotoClicked), this);
+	g_signal_connect (G_OBJECT (m_wClose), "clicked",
+						G_CALLBACK (s_closeClicked), this);
 }

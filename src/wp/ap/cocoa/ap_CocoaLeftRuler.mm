@@ -92,9 +92,9 @@ AP_CocoaLeftRuler::AP_CocoaLeftRuler(XAP_Frame * pFrame)
 
 #if 0
 	NSView * toplevel = (static_cast<XAP_CocoaFrame *> (m_pFrame))->getTopLevelWindow();
-	gtk_signal_connect_after (GTK_OBJECT(toplevel),
+	g_signal_connect_after (G_OBJECT(toplevel),
 							  "client_event",
-							  GTK_SIGNAL_FUNC(ruler_style_changed),
+							  G_CALLBACK(ruler_style_changed),
 							  (gpointer)this);
 // TODO handle theme. Does Cocoa even know what this is all about ?
 #endif
@@ -119,17 +119,17 @@ void AP_CocoaLeftRuler::_ruler_style_changed (void)
 Abi_NSView * AP_CocoaLeftRuler::createWidget(void)
 {
 #if 0
-	gtk_signal_connect(GTK_OBJECT(m_wLeftRuler), "button_press_event",
-					   GTK_SIGNAL_FUNC(_fe::button_press_event), NULL);
+	g_signal_connect(G_OBJECT(m_wLeftRuler), "button_press_event",
+					   G_CALLBACK(_fe::button_press_event), NULL);
 
-	gtk_signal_connect(GTK_OBJECT(m_wLeftRuler), "button_release_event",
-					   GTK_SIGNAL_FUNC(_fe::button_release_event), NULL);
+	g_signal_connect(G_OBJECT(m_wLeftRuler), "button_release_event",
+					   G_CALLBACK(_fe::button_release_event), NULL);
 
-	gtk_signal_connect(GTK_OBJECT(m_wLeftRuler), "motion_notify_event",
-					   GTK_SIGNAL_FUNC(_fe::motion_notify_event), NULL);
+	g_signal_connect(G_OBJECT(m_wLeftRuler), "motion_notify_event",
+					   G_CALLBACK(_fe::motion_notify_event), NULL);
   
-	gtk_signal_connect(GTK_OBJECT(m_wLeftRuler), "configure_event",
-					   GTK_SIGNAL_FUNC(_fe::configure_event), NULL);
+	g_signal_connect(G_OBJECT(m_wLeftRuler), "configure_event",
+					   G_CALLBACK(_fe::configure_event), NULL);
 	if( m_iBackgroundRedrawID == 0)
 	{
 //
@@ -229,7 +229,7 @@ bool AP_CocoaLeftRuler::_graphicsUpdateCB(NSRect * aRect, GR_CocoaGraphics *pG, 
 gint AP_CocoaLeftRuler::_fe::button_press_event(GtkWidget * w, GdkEventButton * e)
 {
 	// a static function
-	AP_CocoaLeftRuler * pCocoaLeftRuler = (AP_CocoaLeftRuler *)gtk_object_get_user_data(GTK_OBJECT(w));
+	AP_CocoaLeftRuler * pCocoaLeftRuler = (AP_CocoaLeftRuler *)g_object_get_user_data(G_OBJECT(w));
 	xxx_UT_DEBUGMSG(("CocoaLeftRuler: [p %p] received button_press_event\n",pCocoaLeftRuler));
 
 	// grab the mouse for the duration of the drag.
@@ -262,7 +262,7 @@ gint AP_CocoaLeftRuler::_fe::button_press_event(GtkWidget * w, GdkEventButton * 
 gint AP_CocoaLeftRuler::_fe::button_release_event(GtkWidget * w, GdkEventButton * e)
 {
 	// a static function
-	AP_CocoaLeftRuler * pCocoaLeftRuler = (AP_CocoaLeftRuler *)gtk_object_get_user_data(GTK_OBJECT(w));
+	AP_CocoaLeftRuler * pCocoaLeftRuler = (AP_CocoaLeftRuler *)g_object_get_user_data(G_OBJECT(w));
 	xxx_UT_DEBUGMSG(("CocoaLeftRuler: [p %p] received button_release_event\n",pCocoaLeftRuler));
 	EV_EditModifierState ems;
 	EV_EditMouseButton emb = 0;
@@ -298,7 +298,7 @@ gint AP_CocoaLeftRuler::_fe::button_release_event(GtkWidget * w, GdkEventButton 
 gint AP_CocoaLeftRuler::_fe::configure_event(GtkWidget* w, GdkEventConfigure * e)
 {
 	// a static function
-	AP_CocoaLeftRuler * pCocoaLeftRuler = (AP_CocoaLeftRuler *)gtk_object_get_user_data(GTK_OBJECT(w));
+	AP_CocoaLeftRuler * pCocoaLeftRuler = (AP_CocoaLeftRuler *)g_object_get_user_data(G_OBJECT(w));
 
 	// UT_DEBUGMSG(("CocoaLeftRuler: [p %p] [size w %d h %d] received configure_event\n",
 	//			 pCocoaLeftRuler, e->width, e->height));
@@ -317,7 +317,7 @@ gint AP_CocoaLeftRuler::_fe::configure_event(GtkWidget* w, GdkEventConfigure * e
 gint AP_CocoaLeftRuler::_fe::motion_notify_event(GtkWidget* w , GdkEventMotion* e)
 {
 	// a static function
-	AP_CocoaLeftRuler * pCocoaLeftRuler = (AP_CocoaLeftRuler *)gtk_object_get_user_data(GTK_OBJECT(w));
+	AP_CocoaLeftRuler * pCocoaLeftRuler = (AP_CocoaLeftRuler *)g_object_get_user_data(G_OBJECT(w));
 	// UT_DEBUGMSG(("CocoaLeftRuler: [p %p] received motion_notify_event\n",pCocoaLeftRuler));
 
 	EV_EditModifierState ems;
@@ -342,7 +342,7 @@ gint AP_CocoaLeftRuler::_fe::motion_notify_event(GtkWidget* w , GdkEventMotion* 
 gint AP_CocoaLeftRuler::_fe::key_press_event(GtkWidget* w, GdkEventKey* /* e */)
 {
 	// a static function
-	AP_CocoaLeftRuler * pCocoaLeftRuler = (AP_CocoaLeftRuler *)gtk_object_get_user_data(GTK_OBJECT(w));
+	AP_CocoaLeftRuler * pCocoaLeftRuler = (AP_CocoaLeftRuler *)g_object_get_user_data(G_OBJECT(w));
 	xxx_UT_DEBUGMSG(("CocoaLeftRuler: [p %p] received key_press_event\n",pCocoaLeftRuler));
 	return 1;
 }
@@ -350,7 +350,7 @@ gint AP_CocoaLeftRuler::_fe::key_press_event(GtkWidget* w, GdkEventKey* /* e */)
 gint AP_CocoaLeftRuler::_fe::delete_event(GtkWidget * /* w */, GdkEvent * /*event*/, gpointer /*data*/)
 {
 	// a static function
-	// AP_CocoaLeftRuler * pCocoaLeftRuler = (AP_CocoaLeftRuler *)gtk_object_get_user_data(GTK_OBJECT(w));
+	// AP_CocoaLeftRuler * pCocoaLeftRuler = (AP_CocoaLeftRuler *)g_object_get_user_data(G_OBJECT(w));
 	// UT_DEBUGMSG(("CocoaLeftRuler: [p %p] received delete_event\n",pCocoaLeftRuler));
 	return 1;
 }

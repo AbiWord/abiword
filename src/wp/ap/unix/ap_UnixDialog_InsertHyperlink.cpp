@@ -247,21 +247,21 @@ GtkWidget*  AP_UnixDialog_InsertHyperlink::_constructWindow(void)
 void AP_UnixDialog_InsertHyperlink::_connectSignals (void)
 {
 	// the control buttons
-	gtk_signal_connect(G_OBJECT(m_buttonOK),
+	g_signal_connect(G_OBJECT(m_buttonOK),
 					   "clicked",
-					   GTK_SIGNAL_FUNC(s_ok_clicked),
+					   G_CALLBACK(s_ok_clicked),
 					   (gpointer) this);
 	
-	gtk_signal_connect(G_OBJECT(m_buttonCancel),
+	g_signal_connect(G_OBJECT(m_buttonCancel),
 					   "clicked",
-					   GTK_SIGNAL_FUNC(s_cancel_clicked),
+					   G_CALLBACK(s_cancel_clicked),
 					   (gpointer) this);
 					
-	gtk_signal_connect (G_OBJECT (m_clist), "select_row",
-						GTK_SIGNAL_FUNC (s_blist_clicked), this);
+	g_signal_connect (G_OBJECT (m_clist), "select_row",
+						G_CALLBACK (s_blist_clicked), this);
 					
 	
-	gtk_signal_connect_after(G_OBJECT(m_windowMain),
+	g_signal_connect_after(G_OBJECT(m_windowMain),
 							 "destroy",
 							 NULL,
 							 NULL);

@@ -859,7 +859,7 @@ bool XAP_UnixGnomePrintGraphics::_endDocument(void)
 	    gtk_widget_show(GTK_WIDGET(preview));
 	  }
 	
-	gtk_object_unref(G_OBJECT(m_gpm));
+	g_object_unref(G_OBJECT(m_gpm));
 	return true;
 }
 

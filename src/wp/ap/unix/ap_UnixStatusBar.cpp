@@ -52,9 +52,9 @@ AP_UnixStatusBar::AP_UnixStatusBar(XAP_Frame * pFrame)
 	m_pG = NULL;
 
 	GtkWidget * toplevel = (static_cast<XAP_UnixFrame *> (m_pFrame))->getTopLevelWindow();
-	gtk_signal_connect_after (G_OBJECT(toplevel),
+	g_signal_connect_after (G_OBJECT(toplevel),
 							  "client_event",
-							  GTK_SIGNAL_FUNC(style_changed),
+							  G_CALLBACK(style_changed),
 							  (gpointer)this);
 }
 
@@ -103,17 +103,17 @@ GtkWidget * AP_UnixStatusBar::createWidget(void)
 	
 	m_wStatusBar = createDrawingArea ();
 
-	gtk_object_set_user_data(G_OBJECT(m_wStatusBar),this);
+	gtk_object_set_user_data(GTK_OBJECT(m_wStatusBar),this);
 	gtk_widget_show(m_wStatusBar);
 	gtk_widget_set_usize(m_wStatusBar, -1, s_iFixedHeight);
 
 	gtk_widget_set_events(GTK_WIDGET(m_wStatusBar), (GDK_EXPOSURE_MASK));
 
-	gtk_signal_connect(G_OBJECT(m_wStatusBar), "expose_event",
-					   GTK_SIGNAL_FUNC(_fe::expose), NULL);
+	g_signal_connect(G_OBJECT(m_wStatusBar), "expose_event",
+					   G_CALLBACK(_fe::expose), NULL);
   
-	gtk_signal_connect(G_OBJECT(m_wStatusBar), "configure_event",
-					   GTK_SIGNAL_FUNC(_fe::configure_event), NULL);
+	g_signal_connect(G_OBJECT(m_wStatusBar), "configure_event",
+					   G_CALLBACK(_fe::configure_event), NULL);
 
 	return m_wStatusBar;
 }
@@ -124,7 +124,7 @@ GtkWidget * AP_UnixStatusBar::createWidget(void)
 gint AP_UnixStatusBar::_fe::configure_event(GtkWidget* w, GdkEventConfigure *e)
 {
 	// a static function
-	AP_UnixStatusBar * pUnixStatusBar = (AP_UnixStatusBar *)gtk_object_get_user_data(G_OBJECT(w));
+	AP_UnixStatusBar * pUnixStatusBar = (AP_UnixStatusBar *)gtk_object_get_user_data(GTK_OBJECT(w));
 
 	UT_uint32 iHeight = (UT_uint32)e->height;
 	pUnixStatusBar->setHeight(iHeight);
@@ -139,7 +139,7 @@ gint AP_UnixStatusBar::_fe::configure_event(GtkWidget* w, GdkEventConfigure *e)
 gint AP_UnixStatusBar::_fe::delete_event(GtkWidget * /* w */, GdkEvent * /*event*/, gpointer /*data*/)
 {
 	// a static function
-	// AP_UnixStatusBar * pUnixStatusBar = (AP_UnixStatusBar *)gtk_object_get_user_data(G_OBJECT(w));
+	// AP_UnixStatusBar * pUnixStatusBar = (AP_UnixStatusBar *)gtk_object_get_user_data(GTK_OBJECT(w));
 	// UT_DEBUGMSG(("UnixStatusBar: [p %p] received delete_event\n",pUnixStatusBar));
 	return 1;
 }
@@ -147,7 +147,7 @@ gint AP_UnixStatusBar::_fe::delete_event(GtkWidget * /* w */, GdkEvent * /*event
 gint AP_UnixStatusBar::_fe::expose(GtkWidget * w, GdkEventExpose * /*pExposeEvent*/)
 {
 	// a static function
-	AP_UnixStatusBar * pUnixStatusBar = (AP_UnixStatusBar *)gtk_object_get_user_data(G_OBJECT(w));
+	AP_UnixStatusBar * pUnixStatusBar = (AP_UnixStatusBar *)gtk_object_get_user_data(GTK_OBJECT(w));
 	if (!pUnixStatusBar)
 		return 0;
 

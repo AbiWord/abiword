@@ -53,8 +53,8 @@
 /****************************************************************/
 void XAP_CocoaFrame::_fe::realize(GtkWidget * widget, GdkEvent * /*e*/,gpointer /*data*/)
 {
-  GdkICAttr *ic_attr=(GdkICAttr *)gtk_object_get_data(GTK_OBJECT(widget), "ic_attr");
-  GdkIC * ic=(GdkIC *)gtk_object_get_data(GTK_OBJECT(widget), "ic");
+  GdkICAttr *ic_attr=(GdkICAttr *)g_object_get_data(G_OBJECT(widget), "ic_attr");
+  GdkIC * ic=(GdkIC *)g_object_get_data(G_OBJECT(widget), "ic");
   if (gdk_im_ready () && (ic_attr = gdk_ic_attr_new ()) != NULL)
     {
       gint width, height;
@@ -123,14 +123,14 @@ void XAP_CocoaFrame::_fe::realize(GtkWidget * widget, GdkEvent * /*e*/,gpointer 
 			gdk_im_begin (ic, widget->window);
 		}
 	}
-  gtk_object_set_data(GTK_OBJECT(widget), "ic_attr", ic_attr);
-  gtk_object_set_data(GTK_OBJECT(widget), "ic", ic);
+  g_object_set_data(G_OBJECT(widget), "ic_attr", ic_attr);
+  g_object_set_data(G_OBJECT(widget), "ic", ic);
 }
 
 void XAP_CocoaFrame::_fe::unrealize(GtkWidget * widget, GdkEvent * /*e*/,gpointer /*data*/)
 {
-  GdkICAttr *ic_attr=(GdkICAttr *)gtk_object_get_data(GTK_OBJECT(widget), "ic_attr");
-  GdkIC * ic=(GdkIC *)gtk_object_get_data(GTK_OBJECT(widget), "ic");
+  GdkICAttr *ic_attr=(GdkICAttr *)g_object_get_data(G_OBJECT(widget), "ic_attr");
+  GdkIC * ic=(GdkIC *)g_object_get_data(G_OBJECT(widget), "ic");
   if (ic)
     {
       gdk_ic_destroy (ic);
@@ -141,14 +141,14 @@ void XAP_CocoaFrame::_fe::unrealize(GtkWidget * widget, GdkEvent * /*e*/,gpointe
       gdk_ic_attr_destroy (ic_attr);
       ic_attr = (GdkICAttr *)NULL;
     }
-  gtk_object_set_data(GTK_OBJECT(widget), "ic_attr", ic_attr);
-  gtk_object_set_data(GTK_OBJECT(widget), "ic", ic);
+  g_object_set_data(G_OBJECT(widget), "ic_attr", ic_attr);
+  g_object_set_data(G_OBJECT(widget), "ic", ic);
 }
 
 void XAP_CocoaFrame::_fe::sizeAllocate(GtkWidget * widget, GdkEvent * /*e*/,gpointer /*data*/)
 {
-  GdkICAttr *ic_attr=(GdkICAttr *)gtk_object_get_data(GTK_OBJECT(widget), "ic_attr");
-  GdkIC * ic=(GdkIC *)gtk_object_get_data(GTK_OBJECT(widget), "ic");
+  GdkICAttr *ic_attr=(GdkICAttr *)g_object_get_data(G_OBJECT(widget), "ic_attr");
+  GdkIC * ic=(GdkIC *)g_object_get_data(G_OBJECT(widget), "ic");
   if (ic &&
 	  (gdk_ic_get_style (ic) & GDK_IM_PREEDIT_POSITION))
 	{
@@ -164,7 +164,7 @@ void XAP_CocoaFrame::_fe::sizeAllocate(GtkWidget * widget, GdkEvent * /*e*/,gpoi
 
 gint XAP_CocoaFrame::_fe::focusIn(GtkWidget * widget, GdkEvent * /*e*/,gpointer /*data*/)
 {
-  GdkIC * ic=(GdkIC *)gtk_object_get_data(GTK_OBJECT(widget), "ic");
+  GdkIC * ic=(GdkIC *)g_object_get_data(G_OBJECT(widget), "ic");
   if (ic)
     gdk_im_begin (ic, widget->window);
   return FALSE;
@@ -177,9 +177,9 @@ gint XAP_CocoaFrame::_fe::focusOut(GtkWidget * /* w*/, GdkEvent * /*e*/,gpointer
 }
 gboolean XAP_CocoaFrame::_fe::focus_in_event(GtkWidget *w,GdkEvent */*event*/,gpointer /*user_data*/)
 {
-	XAP_CocoaFrame * pFrame = (XAP_CocoaFrame *) gtk_object_get_user_data(GTK_OBJECT(w));
+	XAP_CocoaFrame * pFrame = (XAP_CocoaFrame *) g_object_get_user_data(G_OBJECT(w));
 	UT_ASSERT(pFrame);
-	gtk_object_set_data(GTK_OBJECT(w), "toplevelWindowFocus",
+	g_object_set_data(G_OBJECT(w), "toplevelWindowFocus",
 						GINT_TO_POINTER(TRUE));
 	if (pFrame->getCurrentView())
 		pFrame->getCurrentView()->focusChange(gtk_grab_get_current() == NULL || gtk_grab_get_current() == w ? AV_FOCUS_HERE : AV_FOCUS_NEARBY);
@@ -188,9 +188,9 @@ gboolean XAP_CocoaFrame::_fe::focus_in_event(GtkWidget *w,GdkEvent */*event*/,gp
 
 gboolean XAP_CocoaFrame::_fe::focus_out_event(GtkWidget *w,GdkEvent */*event*/,gpointer /*user_data*/)
 {
-	XAP_CocoaFrame * pFrame = (XAP_CocoaFrame *)gtk_object_get_user_data(GTK_OBJECT(w));
+	XAP_CocoaFrame * pFrame = (XAP_CocoaFrame *)g_object_get_user_data(G_OBJECT(w));
 	UT_ASSERT(pFrame);
-	gtk_object_set_data(GTK_OBJECT(w), "toplevelWindowFocus",
+	g_object_set_data(G_OBJECT(w), "toplevelWindowFocus",
 						GINT_TO_POINTER(FALSE));
 	if (pFrame->getCurrentView())
 		pFrame->getCurrentView()->focusChange(AV_FOCUS_NONE);
@@ -199,7 +199,7 @@ gboolean XAP_CocoaFrame::_fe::focus_out_event(GtkWidget *w,GdkEvent */*event*/,g
 
 gint XAP_CocoaFrame::_fe::button_press_event(GtkWidget * w, GdkEventButton * e)
 {
-	XAP_CocoaFrame * pCocoaFrame = (XAP_CocoaFrame *)gtk_object_get_user_data(GTK_OBJECT(w));
+	XAP_CocoaFrame * pCocoaFrame = (XAP_CocoaFrame *)g_object_get_user_data(G_OBJECT(w));
 	pCocoaFrame->setTimeOfLastEvent(e->time);
 	AV_View * pView = pCocoaFrame->getCurrentView();
 	EV_CocoaMouse * pCocoaMouse = static_cast<EV_CocoaMouse *>(pCocoaFrame->getMouse());
@@ -214,7 +214,7 @@ gint XAP_CocoaFrame::_fe::button_press_event(GtkWidget * w, GdkEventButton * e)
 
 gint XAP_CocoaFrame::_fe::button_release_event(GtkWidget * w, GdkEventButton * e)
 {
-	XAP_CocoaFrame * pCocoaFrame = (XAP_CocoaFrame *)gtk_object_get_user_data(GTK_OBJECT(w));
+	XAP_CocoaFrame * pCocoaFrame = (XAP_CocoaFrame *)g_object_get_user_data(G_OBJECT(w));
 	pCocoaFrame->setTimeOfLastEvent(e->time);
 	AV_View * pView = pCocoaFrame->getCurrentView();
 
@@ -233,7 +233,7 @@ gint XAP_CocoaFrame::_fe::configure_event(GtkWidget* w, GdkEventConfigure *e)
 {
 	// This is basically a resize event.
 		
-	XAP_CocoaFrame * pCocoaFrame = (XAP_CocoaFrame *)gtk_object_get_user_data(GTK_OBJECT(w));
+	XAP_CocoaFrame * pCocoaFrame = (XAP_CocoaFrame *)g_object_get_user_data(G_OBJECT(w));
 	AV_View * pView = pCocoaFrame->getCurrentView();
 
 	if (pView)
@@ -247,7 +247,7 @@ gint XAP_CocoaFrame::_fe::configure_event(GtkWidget* w, GdkEventConfigure *e)
 	
 gint XAP_CocoaFrame::_fe::motion_notify_event(GtkWidget* w, GdkEventMotion* e)
 {
-	XAP_CocoaFrame * pCocoaFrame = (XAP_CocoaFrame *)gtk_object_get_user_data(GTK_OBJECT(w));
+	XAP_CocoaFrame * pCocoaFrame = (XAP_CocoaFrame *)g_object_get_user_data(G_OBJECT(w));
 	pCocoaFrame->setTimeOfLastEvent(e->time);
 	AV_View * pView = pCocoaFrame->getCurrentView();
 	EV_CocoaMouse * pCocoaMouse = static_cast<EV_CocoaMouse *>(pCocoaFrame->getMouse());
@@ -260,7 +260,7 @@ gint XAP_CocoaFrame::_fe::motion_notify_event(GtkWidget* w, GdkEventMotion* e)
 	
 gint XAP_CocoaFrame::_fe::key_press_event(GtkWidget* w, GdkEventKey* e)
 {
-	XAP_CocoaFrame * pCocoaFrame = (XAP_CocoaFrame *)gtk_object_get_user_data(GTK_OBJECT(w));
+	XAP_CocoaFrame * pCocoaFrame = (XAP_CocoaFrame *)g_object_get_user_data(G_OBJECT(w));
 	pCocoaFrame->setTimeOfLastEvent(e->time);
 	AV_View * pView = pCocoaFrame->getCurrentView();
 	ev_CocoaKeyboard * pCocoaKeyboard = static_cast<ev_CocoaKeyboard *>(pCocoaFrame->getKeyboard());
@@ -297,13 +297,13 @@ gint XAP_CocoaFrame::_fe::key_press_event(GtkWidget* w, GdkEventKey* e)
 	}
 
 	// ... else, stop this signal
-	gtk_signal_emit_stop_by_name(GTK_OBJECT(w), "key_press_event");
+	g_signal_emit_stop_by_name(G_OBJECT(w), "key_press_event");
 	return 1;
 }
 	
 gint XAP_CocoaFrame::_fe::delete_event(GtkWidget * w, GdkEvent * /*event*/, gpointer /*data*/)
 {
-	XAP_CocoaFrame * pCocoaFrame = (XAP_CocoaFrame *) gtk_object_get_user_data(GTK_OBJECT(w));
+	XAP_CocoaFrame * pCocoaFrame = (XAP_CocoaFrame *) g_object_get_user_data(G_OBJECT(w));
 	XAP_App * pApp = pCocoaFrame->getApp();
 	UT_ASSERT(pApp);
 
@@ -340,7 +340,7 @@ gint XAP_CocoaFrame::_fe::expose(GtkWidget * w, GdkEventExpose* pExposeEvent)
 	rClip.width = pExposeEvent->area.width;
 	rClip.height = pExposeEvent->area.height;
 	xxx_UT_DEBUGMSG(("gtk in Frame expose:  left=%d, top=%d, width=%d, height=%d\n", rClip.left, rClip.top, rClip.width, rClip.height));
-	XAP_CocoaFrame * pCocoaFrame = (XAP_CocoaFrame *)gtk_object_get_user_data(GTK_OBJECT(w));
+	XAP_CocoaFrame * pCocoaFrame = (XAP_CocoaFrame *)g_object_get_user_data(G_OBJECT(w));
 	FV_View * pView = (FV_View *) pCocoaFrame->getCurrentView();
 	if(pView)
 	{
@@ -403,7 +403,7 @@ gint XAP_CocoaFrame::_fe::abi_expose_repaint( gpointer p)
 
 void XAP_CocoaFrame::_fe::vScrollChanged(GtkAdjustment * w, gpointer /*data*/)
 {
-	XAP_CocoaFrame * pCocoaFrame = (XAP_CocoaFrame *)gtk_object_get_user_data(GTK_OBJECT(w));
+	XAP_CocoaFrame * pCocoaFrame = (XAP_CocoaFrame *)g_object_get_user_data(G_OBJECT(w));
 	AV_View * pView = pCocoaFrame->getCurrentView();
 	
 	//UT_DEBUGMSG(("gtk vScroll: value %ld\n",(UT_sint32)w->value));
@@ -414,7 +414,7 @@ void XAP_CocoaFrame::_fe::vScrollChanged(GtkAdjustment * w, gpointer /*data*/)
 	
 void XAP_CocoaFrame::_fe::hScrollChanged(GtkAdjustment * w, gpointer /*data*/)
 {
-	XAP_CocoaFrame * pCocoaFrame = (XAP_CocoaFrame *)gtk_object_get_user_data(GTK_OBJECT(w));
+	XAP_CocoaFrame * pCocoaFrame = (XAP_CocoaFrame *)g_object_get_user_data(G_OBJECT(w));
 	AV_View * pView = pCocoaFrame->getCurrentView();
 	
 	if (pView)

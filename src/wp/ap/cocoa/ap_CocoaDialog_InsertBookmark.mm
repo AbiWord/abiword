@@ -230,17 +230,17 @@ GtkWidget*  AP_CocoaDialog_InsertBookmark::_constructWindow(void)
 void AP_CocoaDialog_InsertBookmark::_connectSignals (void)
 {
 	// the control buttons
-	gtk_signal_connect(GTK_OBJECT(m_buttonOK),
+	g_signal_connect(G_OBJECT(m_buttonOK),
 					   "clicked",
-					   GTK_SIGNAL_FUNC(s_ok_clicked),
+					   G_CALLBACK(s_ok_clicked),
 					   (gpointer) this);
 	
-	gtk_signal_connect(GTK_OBJECT(m_buttonCancel),
+	g_signal_connect(G_OBJECT(m_buttonCancel),
 					   "clicked",
-					   GTK_SIGNAL_FUNC(s_cancel_clicked),
+					   G_CALLBACK(s_cancel_clicked),
 					   (gpointer) this);
 	
-	gtk_signal_connect_after(GTK_OBJECT(m_windowMain),
+	g_signal_connect_after(G_OBJECT(m_windowMain),
 							 "destroy",
 							 NULL,
 							 NULL);

@@ -378,7 +378,7 @@ void s_checkbutton_toggle( GtkWidget *w, AP_MacDialog_Options *dlg )
 { 
 	UT_ASSERT(dlg); 
 	UT_ASSERT( w && GTK_IS_WIDGET(w));
-	int i = (int) gtk_object_get_data( G_OBJECT(w), "tControl" );
+	int i = (int) g_object_get_data( G_OBJECT(w), "tControl" );
 	dlg->_enableDisableLogic( (AP_Dialog_Options::tControl) i );
 }
 #endif

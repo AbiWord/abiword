@@ -145,7 +145,7 @@ void AP_CocoaDialog_Insert_DateTime::event_OK(void)
 	// since we only do single mode selection, there is only one
 	// item in the GList we just got back
 
-	gint indexdata = GPOINTER_TO_INT(gtk_object_get_data(GTK_OBJECT(listitem->data), LIST_ITEM_INDEX_KEY));
+	gint indexdata = GPOINTER_TO_INT(g_object_get_data(G_OBJECT(listitem->data), LIST_ITEM_INDEX_KEY));
 
 	m_iFormatIndex = indexdata;
 	
@@ -202,24 +202,24 @@ GtkWidget * AP_CocoaDialog_Insert_DateTime::_constructWindow(void)
 void AP_CocoaDialog_Insert_DateTime::_connectSignals(void)
 {
 	// the control buttons
-	gtk_signal_connect(GTK_OBJECT(m_buttonOK),
+	g_signal_connect(G_OBJECT(m_buttonOK),
 			   "clicked",
-			   GTK_SIGNAL_FUNC(s_ok_clicked),
+			   G_CALLBACK(s_ok_clicked),
 			   (gpointer) this);
 	
-	gtk_signal_connect(GTK_OBJECT(m_buttonCancel),
+	g_signal_connect(G_OBJECT(m_buttonCancel),
 			   "clicked",
-			   GTK_SIGNAL_FUNC(s_cancel_clicked),
+			   G_CALLBACK(s_cancel_clicked),
 			   (gpointer) this);
 
 	// the catch-alls
 	
-	gtk_signal_connect(GTK_OBJECT(m_windowMain),
+	g_signal_connect(G_OBJECT(m_windowMain),
 			   "delete_event",
-			   GTK_SIGNAL_FUNC(s_delete_clicked),
+			   G_CALLBACK(s_delete_clicked),
 			   (gpointer) this);
 
-	gtk_signal_connect_after(GTK_OBJECT(m_windowMain),
+	g_signal_connect_after(G_OBJECT(m_windowMain),
 				 "destroy",
 				 NULL,
 				 NULL);
@@ -306,7 +306,7 @@ void AP_CocoaDialog_Insert_DateTime::_populateWindowData(void)
 		gtk_widget_show(listitem);
 		
 		// store index in data pointer
-		gtk_object_set_data(GTK_OBJECT(listitem), LIST_ITEM_INDEX_KEY, GINT_TO_POINTER(i));
+		g_object_set_data(G_OBJECT(listitem), LIST_ITEM_INDEX_KEY, GINT_TO_POINTER(i));
 
 		// add to list
 	    list = g_list_append(list, (void *) listitem);

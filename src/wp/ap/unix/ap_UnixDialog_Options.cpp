@@ -216,17 +216,17 @@ void AP_UnixDialog_Options::event_ChooseTransparentColor(void)
   gtk_widget_show(k);
   gtk_box_pack_start (GTK_BOX (GTK_DIALOG (dlg)->action_area),
                                k, TRUE, TRUE, 0);
-  gtk_signal_connect (G_OBJECT(k), "clicked", 
-		      GTK_SIGNAL_FUNC(gtk_main_quit), (gpointer)this);
+  g_signal_connect (G_OBJECT(k), "clicked", 
+		      G_CALLBACK(gtk_main_quit), (gpointer)this);
 
-  gtk_signal_connect_after(G_OBJECT(dlg),
+  g_signal_connect_after(G_OBJECT(dlg),
 			   "destroy",
 			   NULL,
 			   NULL);
 
-  gtk_signal_connect(G_OBJECT(dlg),
+  g_signal_connect(G_OBJECT(dlg),
 		     "delete_event",
-		     GTK_SIGNAL_FUNC(gtk_main_quit),
+		     G_CALLBACK(gtk_main_quit),
 		     (gpointer) this);
 
   GtkWidget *colorsel;
@@ -247,8 +247,8 @@ void AP_UnixDialog_Options::event_ChooseTransparentColor(void)
   gtk_color_selection_set_color (GTK_COLOR_SELECTION(colorsel),
 				 currentColor);
 
-  gtk_signal_connect (G_OBJECT(colorsel), "color-changed",
-		      GTK_SIGNAL_FUNC(s_color_changed),
+  g_signal_connect (G_OBJECT(colorsel), "color-changed",
+		      G_CALLBACK(s_color_changed),
 		      (gpointer) this);
 
 //
@@ -317,8 +317,8 @@ void AP_UnixDialog_Options::event_WindowDelete(void)
 /*****************************************************************/
 #define CONNECT_MENU_ITEM_SIGNAL_ACTIVATE(w)			\
         do {							\
-	        gtk_signal_connect(G_OBJECT(w), "activate",	\
-                GTK_SIGNAL_FUNC(s_menu_item_activate),		\
+	        g_signal_connect(G_OBJECT(w), "activate",	\
+                G_CALLBACK(s_menu_item_activate),		\
                 (gpointer) this);				\
         } while (0)
 
@@ -413,7 +413,7 @@ GtkWidget* AP_UnixDialog_Options::_constructWindowContents (GtkWidget * vbox)
 	GtkWidget *hbox26;
 	GtkWidget *hbox27;
 	GtkWidget *autosave_cb;
-	GtkObject *autosave_time_adj;
+	GObject *autosave_time_adj;
 	GtkWidget *autosave_time;
 	GtkWidget *frame44;
 	GtkWidget *check_splash;
@@ -483,12 +483,12 @@ GtkWidget* AP_UnixDialog_Options::_constructWindowContents (GtkWidget * vbox)
 
 	gtk_clist_thaw (GTK_CLIST (toolbar_clist));
 
-	gtk_signal_connect (G_OBJECT (toolbar_clist), "select_row",
-			    GTK_SIGNAL_FUNC (s_clist_clicked), (gpointer)this);
+	g_signal_connect (G_OBJECT (toolbar_clist), "select_row",
+			    G_CALLBACK (s_clist_clicked), (gpointer)this);
 
 #if 0
-	gtk_signal_connect (G_OBJECT (toolbar_clist), "unselect_row",
-			    GTK_SIGNAL_FUNC (NULL), (gpointer)this);
+	g_signal_connect (G_OBJECT (toolbar_clist), "unselect_row",
+			    G_CALLBACK (NULL), (gpointer)this);
 #endif
 
 	vbox18 = gtk_vbox_new (FALSE, 0);
@@ -509,8 +509,8 @@ GtkWidget* AP_UnixDialog_Options::_constructWindowContents (GtkWidget * vbox)
 	gtk_widget_show (show_toolbar);
 	gtk_box_pack_start (GTK_BOX (vbox19), show_toolbar, FALSE, FALSE, 0);
 
-	gtk_signal_connect (G_OBJECT (show_toolbar), "toggled",
-			    GTK_SIGNAL_FUNC (s_radio_toggled), toolbar_clist);
+	g_signal_connect (G_OBJECT (show_toolbar), "toggled",
+			    G_CALLBACK (s_radio_toggled), toolbar_clist);
 	
 	hide_toolbar = gtk_radio_button_new_with_label (vbox19_group, pSS->getValue(AP_STRING_ID_DLG_Options_Label_Hide));
 	vbox19_group = gtk_radio_button_group (GTK_RADIO_BUTTON (hide_toolbar));
@@ -754,32 +754,32 @@ GtkWidget* AP_UnixDialog_Options::_constructWindowContents (GtkWidget * vbox)
 
 	// inches
 	glade_menuitem = gtk_menu_item_new_with_label (pSS->getValue(XAP_STRING_ID_DLG_Unit_inch));
- 	gtk_object_set_data(G_OBJECT(glade_menuitem), WIDGET_MENU_OPTION_PTR, (gpointer) ruler_units);
- 	gtk_object_set_data(G_OBJECT(glade_menuitem), WIDGET_MENU_VALUE_TAG,  GINT_TO_POINTER(DIM_IN));	
+ 	g_object_set_data(G_OBJECT(glade_menuitem), WIDGET_MENU_OPTION_PTR, (gpointer) ruler_units);
+ 	g_object_set_data(G_OBJECT(glade_menuitem), WIDGET_MENU_VALUE_TAG,  GINT_TO_POINTER(DIM_IN));	
  	CONNECT_MENU_ITEM_SIGNAL_ACTIVATE(glade_menuitem);
 	gtk_widget_show (glade_menuitem);
 	gtk_menu_append (GTK_MENU (ruler_units_menu), glade_menuitem);
 
 	// cm
 	glade_menuitem = gtk_menu_item_new_with_label (pSS->getValue(XAP_STRING_ID_DLG_Unit_cm));
- 	gtk_object_set_data(G_OBJECT(glade_menuitem), WIDGET_MENU_OPTION_PTR, (gpointer) ruler_units);
- 	gtk_object_set_data(G_OBJECT(glade_menuitem), WIDGET_MENU_VALUE_TAG,  GINT_TO_POINTER(DIM_CM));	
+ 	g_object_set_data(G_OBJECT(glade_menuitem), WIDGET_MENU_OPTION_PTR, (gpointer) ruler_units);
+ 	g_object_set_data(G_OBJECT(glade_menuitem), WIDGET_MENU_VALUE_TAG,  GINT_TO_POINTER(DIM_CM));	
  	CONNECT_MENU_ITEM_SIGNAL_ACTIVATE(glade_menuitem);
 	gtk_widget_show (glade_menuitem);
 	gtk_menu_append (GTK_MENU (ruler_units_menu), glade_menuitem);
 
 	// points
 	glade_menuitem = gtk_menu_item_new_with_label (pSS->getValue(XAP_STRING_ID_DLG_Unit_points));
- 	gtk_object_set_data(G_OBJECT(glade_menuitem), WIDGET_MENU_OPTION_PTR, (gpointer) ruler_units);
-  	gtk_object_set_data(G_OBJECT(glade_menuitem), WIDGET_MENU_VALUE_TAG,  GINT_TO_POINTER(DIM_PT));	
+ 	g_object_set_data(G_OBJECT(glade_menuitem), WIDGET_MENU_OPTION_PTR, (gpointer) ruler_units);
+  	g_object_set_data(G_OBJECT(glade_menuitem), WIDGET_MENU_VALUE_TAG,  GINT_TO_POINTER(DIM_PT));	
   	CONNECT_MENU_ITEM_SIGNAL_ACTIVATE(glade_menuitem);
 	gtk_widget_show (glade_menuitem);
 	gtk_menu_append (GTK_MENU (ruler_units_menu), glade_menuitem);
   
 	// pico
   	glade_menuitem = gtk_menu_item_new_with_label (pSS->getValue(XAP_STRING_ID_DLG_Unit_pico));
-  	gtk_object_set_data(G_OBJECT(glade_menuitem), WIDGET_MENU_OPTION_PTR, (gpointer) ruler_units);
-  	gtk_object_set_data(G_OBJECT(glade_menuitem), WIDGET_MENU_VALUE_TAG,  GINT_TO_POINTER(DIM_PI));	
+  	g_object_set_data(G_OBJECT(glade_menuitem), WIDGET_MENU_OPTION_PTR, (gpointer) ruler_units);
+  	g_object_set_data(G_OBJECT(glade_menuitem), WIDGET_MENU_VALUE_TAG,  GINT_TO_POINTER(DIM_PI));	
   	CONNECT_MENU_ITEM_SIGNAL_ACTIVATE(glade_menuitem);
   	gtk_widget_show (glade_menuitem);
   	gtk_menu_append (GTK_MENU (ruler_units_menu), glade_menuitem);
@@ -802,8 +802,8 @@ GtkWidget* AP_UnixDialog_Options::_constructWindowContents (GtkWidget * vbox)
 
 	GtkList * optionPageSizeList = GTK_LIST(GTK_COMBO(page_size)->list);
 	gtk_list_select_item (optionPageSizeList, (gint)m_pageSize);
-	gtk_signal_connect(G_OBJECT(optionPageSizeList), "select-child",
-			   GTK_SIGNAL_FUNC(s_page_size_changed), (gpointer)this);
+	g_signal_connect(G_OBJECT(optionPageSizeList), "select-child",
+			   G_CALLBACK(s_page_size_changed), (gpointer)this);
 
 	label22 = gtk_label_new (pSS->getValue(AP_STRING_ID_DLG_Options_Label_DefaultPageSize));
 	gtk_widget_show (label22);
@@ -1050,44 +1050,44 @@ GtkWidget* AP_UnixDialog_Options::_constructWindowContents (GtkWidget * vbox)
 	m_toolbarClist = toolbar_clist;
 
 	
-	gtk_signal_connect(G_OBJECT(m_buttonSpellIgnoreEdit),
+	g_signal_connect(G_OBJECT(m_buttonSpellIgnoreEdit),
 			   "clicked",
-			   GTK_SIGNAL_FUNC(s_ignore_edit_clicked),
+			   G_CALLBACK(s_ignore_edit_clicked),
 			   (gpointer) this);
 	
-	gtk_signal_connect(G_OBJECT(m_buttonSpellIgnoreReset),
+	g_signal_connect(G_OBJECT(m_buttonSpellIgnoreReset),
 			   "clicked",
-			   GTK_SIGNAL_FUNC(s_ignore_reset_clicked),
+			   G_CALLBACK(s_ignore_reset_clicked),
 			   (gpointer) this);
 	
-	gtk_signal_connect(G_OBJECT(m_buttonSpellDictionary),
+	g_signal_connect(G_OBJECT(m_buttonSpellDictionary),
 			   "clicked",
-			   GTK_SIGNAL_FUNC(s_dict_edit_clicked),
+			   G_CALLBACK(s_dict_edit_clicked),
 			   (gpointer) this);
 	
 	// to enable/disable other controls (hide errors)
-	gtk_signal_connect(G_OBJECT(m_checkbuttonSpellCheckAsType),
+	g_signal_connect(G_OBJECT(m_checkbuttonSpellCheckAsType),
 			   "toggled",
-			   GTK_SIGNAL_FUNC(s_checkbutton_toggle),
+			   G_CALLBACK(s_checkbutton_toggle),
 			   (gpointer) this);
 
 	// to enable/disable other screen colors from white
-	gtk_signal_connect(G_OBJECT( m_checkbuttonTransparentIsWhite),
+	g_signal_connect(G_OBJECT( m_checkbuttonTransparentIsWhite),
 			   "toggled",
-			   GTK_SIGNAL_FUNC(s_allowTransparentColor),
+			   G_CALLBACK(s_allowTransparentColor),
 			   (gpointer) this);
 
 
 	// to choose another color for the screen
-	gtk_signal_connect(G_OBJECT( m_pushbuttonNewTransparentColor ),
+	g_signal_connect(G_OBJECT( m_pushbuttonNewTransparentColor ),
 			   "clicked",
-			   GTK_SIGNAL_FUNC(s_chooseTransparentColor),
+			   G_CALLBACK(s_chooseTransparentColor),
 			   (gpointer) this);
 
 #ifdef BIDI_ENABLED
-	gtk_signal_connect(G_OBJECT(m_checkbuttonOtherUseContextGlyphs),
+	g_signal_connect(G_OBJECT(m_checkbuttonOtherUseContextGlyphs),
 			   "toggled",
-			   GTK_SIGNAL_FUNC(s_checkbutton_toggle),
+			   G_CALLBACK(s_checkbutton_toggle),
 			   (gpointer) this);
 #endif
 
@@ -1144,37 +1144,37 @@ GtkWidget* AP_UnixDialog_Options::_constructWindow ()
 
 
 	// the catch-alls
-	gtk_signal_connect(G_OBJECT(mainWindow),
+	g_signal_connect(G_OBJECT(mainWindow),
 			   "delete_event",
-			   GTK_SIGNAL_FUNC(s_delete_clicked),
+			   G_CALLBACK(s_delete_clicked),
 			   (gpointer) this);
 
 
-	gtk_signal_connect_after(G_OBJECT(mainWindow),
+	g_signal_connect_after(G_OBJECT(mainWindow),
 				 "destroy",
 				 NULL,
 				 NULL);
 
 	//////////////////////////////////////////////////////////////////////
 	// the control buttons
-	gtk_signal_connect(G_OBJECT(buttonOk),
+	g_signal_connect(G_OBJECT(buttonOk),
 			   "clicked",
-			   GTK_SIGNAL_FUNC(s_ok_clicked),
+			   G_CALLBACK(s_ok_clicked),
 			   (gpointer) this);
     
-	gtk_signal_connect(G_OBJECT(buttonCancel),
+	g_signal_connect(G_OBJECT(buttonCancel),
 			   "clicked",
-			   GTK_SIGNAL_FUNC(s_cancel_clicked),
+			   G_CALLBACK(s_cancel_clicked),
 			   (gpointer) this);
 	
-	gtk_signal_connect(G_OBJECT(buttonDefaults),
+	g_signal_connect(G_OBJECT(buttonDefaults),
 			   "clicked",
-			   GTK_SIGNAL_FUNC(s_defaults_clicked),
+			   G_CALLBACK(s_defaults_clicked),
 			   (gpointer) this);
 	
-	gtk_signal_connect(G_OBJECT(buttonApply),
+	g_signal_connect(G_OBJECT(buttonApply),
 			   "clicked",
-			   GTK_SIGNAL_FUNC(s_apply_clicked),
+			   G_CALLBACK(s_apply_clicked),
 			   (gpointer) this);
 	
 
@@ -1202,9 +1202,9 @@ GtkWidget* AP_UnixDialog_Options::_constructWindow ()
 
 		/* check to see if there is any data already stored there (note, will
 		 * not work if 0's is stored in multiple places  */
-		UT_ASSERT( gtk_object_get_data(G_OBJECT(w), "tControl" ) == NULL);
+		UT_ASSERT( g_object_get_data(G_OBJECT(w), "tControl" ) == NULL);
 
-		gtk_object_set_data( G_OBJECT(w), "tControl", (gpointer) i );
+		g_object_set_data( G_OBJECT(w), "tControl", (gpointer) i );
 	}
 
 	return mainWindow;
@@ -1460,7 +1460,7 @@ void AP_UnixDialog_Options::_setAutoSaveFilePeriod(const UT_String &stPeriod)
 UT_Dimension AP_UnixDialog_Options::_gatherViewRulerUnits(void) 
 {				
 	UT_ASSERT(m_listViewRulerUnits && GTK_IS_OPTION_MENU(m_listViewRulerUnits)); 
-	return (UT_Dimension)((gint)gtk_object_get_data( G_OBJECT(m_listViewRulerUnits), WIDGET_MENU_VALUE_TAG )); 
+	return (UT_Dimension)((gint)g_object_get_data( G_OBJECT(m_listViewRulerUnits), WIDGET_MENU_VALUE_TAG )); 
 }			
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
@@ -1483,7 +1483,7 @@ static void search_for_value ( GtkWidget *widget, gpointer _value )
 
 	value->index++;
 
-	gint v = (gint) gtk_object_get_data( G_OBJECT(widget), value->key );
+	gint v = (gint) g_object_get_data( G_OBJECT(widget), value->key );
 	if ( v == (gint)value->data )
 	{
 		// UT_DEBUGMSG(("search_for_value [%d]", (gint) value->data ));
@@ -1497,7 +1497,7 @@ static int option_menu_set_by_key ( GtkWidget *option_menu, gpointer value, gcha
 	UT_ASSERT( option_menu && key && GTK_IS_OPTION_MENU(option_menu));
 
 	// at least make sure the value will be restored by the _gather
-	gtk_object_set_data( G_OBJECT(option_menu), key, value);
+	g_object_set_data( G_OBJECT(option_menu), key, value);
 
 	// lookup for the key with the value of dim
 	search_data data = { -1, -1, key, value };
@@ -1652,7 +1652,7 @@ void    AP_UnixDialog_Options::_setNotebookPageNum(int pn)
 	UT_ASSERT(dlg); 
 	UT_ASSERT(w && GTK_IS_WIDGET(w));
 
-	int i = (int) gtk_object_get_data( G_OBJECT(w), "tControl" );
+	int i = (int) g_object_get_data( G_OBJECT(w), "tControl" );
 	UT_DEBUGMSG(("s_checkbutton_toggle: control id = %d\n", i));
 	dlg->_enableDisableLogic( (AP_Dialog_Options::tControl) i );
 }
@@ -1663,14 +1663,14 @@ void    AP_UnixDialog_Options::_setNotebookPageNum(int pn)
 
 	UT_ASSERT(widget && dlg);
 
-	GtkWidget *option_menu = (GtkWidget *)gtk_object_get_data(G_OBJECT(widget),
+	GtkWidget *option_menu = (GtkWidget *)g_object_get_data(G_OBJECT(widget),
 												 WIDGET_MENU_OPTION_PTR);
 	UT_ASSERT( option_menu && GTK_IS_OPTION_MENU(option_menu));
 
-	gpointer p = gtk_object_get_data( G_OBJECT(widget),
+	gpointer p = g_object_get_data( G_OBJECT(widget),
 												WIDGET_MENU_VALUE_TAG);
 
-	gtk_object_set_data( G_OBJECT(option_menu), WIDGET_MENU_VALUE_TAG, p );
+	g_object_set_data( G_OBJECT(option_menu), WIDGET_MENU_VALUE_TAG, p );
 
 	//TODO: This code is now shared between RulerUnits and DefaultPaperSize
 	//so anyone who wants to resurect this msg. needs to add a conditional

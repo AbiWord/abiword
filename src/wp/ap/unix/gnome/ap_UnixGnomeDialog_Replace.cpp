@@ -267,40 +267,40 @@ GtkWidget * AP_UnixGnomeDialog_Replace::_constructWindow(void)
 	GTK_WIDGET_SET_FLAGS (buttonCancel, GTK_CAN_DEFAULT);
 
 	// attach generic signals
-	gtk_signal_connect(G_OBJECT(checkbuttonMatchCase),
+	g_signal_connect(G_OBJECT(checkbuttonMatchCase),
 					   "toggled",
-					   GTK_SIGNAL_FUNC(s_match_case_toggled),
+					   G_CALLBACK(s_match_case_toggled),
 					   this);
 
 	// If the user hits "enter" in the entry field, we launch a find
-	gtk_signal_connect(G_OBJECT(entryFind),
+	g_signal_connect(G_OBJECT(entryFind),
 					   "activate",
-					   GTK_SIGNAL_FUNC(s_find_entry_activate),
+					   G_CALLBACK(s_find_entry_activate),
 					   this);
 
 	// Buttons
-	gtk_signal_connect(G_OBJECT(buttonFindNext),
+	g_signal_connect(G_OBJECT(buttonFindNext),
 					   "clicked",
-					   GTK_SIGNAL_FUNC(s_find_clicked),
+					   G_CALLBACK(s_find_clicked),
 					   this);
 	
-	gtk_signal_connect(G_OBJECT(buttonCancel),
+	g_signal_connect(G_OBJECT(buttonCancel),
 					   "clicked",
-					   GTK_SIGNAL_FUNC(s_cancel_clicked),
+					   G_CALLBACK(s_cancel_clicked),
 					   this);
-	gtk_signal_connect(G_OBJECT(windowReplace),
+	g_signal_connect(G_OBJECT(windowReplace),
 			   "close",
-			   GTK_SIGNAL_FUNC(s_cancel_clicked),
+			   G_CALLBACK(s_cancel_clicked),
 			   this);
 
 	// Window events
-	//	gtk_signal_connect_after(G_OBJECT(windowReplace),
-	gtk_signal_connect(G_OBJECT(windowReplace),
+	//	g_signal_connect_after(G_OBJECT(windowReplace),
+	g_signal_connect(G_OBJECT(windowReplace),
 							 "delete_event",
-							 GTK_SIGNAL_FUNC(s_delete_clicked),
+							 G_CALLBACK(s_delete_clicked),
 							 (gpointer) this);
 
-		gtk_signal_connect_after(G_OBJECT(windowReplace),
+		g_signal_connect_after(G_OBJECT(windowReplace),
 					 "destroy",
 					 NULL,
 					 NULL);
@@ -309,20 +309,20 @@ GtkWidget * AP_UnixGnomeDialog_Replace::_constructWindow(void)
 	if (m_id == AP_DIALOG_ID_REPLACE)
 	{
 		// If the user hits "enter" in the entry field, we launch a replace
-		gtk_signal_connect(G_OBJECT(entryReplace),
+		g_signal_connect(G_OBJECT(entryReplace),
 						   "activate",
-						   GTK_SIGNAL_FUNC(s_replace_entry_activate),
+						   G_CALLBACK(s_replace_entry_activate),
 						   this);
 
 		// Buttons
-		gtk_signal_connect(G_OBJECT(buttonReplace),
+		g_signal_connect(G_OBJECT(buttonReplace),
 						   "clicked",
-						   GTK_SIGNAL_FUNC(s_replace_clicked),
+						   G_CALLBACK(s_replace_clicked),
 						   this);
 
-		gtk_signal_connect(G_OBJECT(buttonReplaceAll),
+		g_signal_connect(G_OBJECT(buttonReplaceAll),
 						   "clicked",
-						   GTK_SIGNAL_FUNC(s_replace_all_clicked),
+						   G_CALLBACK(s_replace_all_clicked),
 						   this);
 		setDefaultButton (GNOME_DIALOG(windowReplace), 3);
 	}

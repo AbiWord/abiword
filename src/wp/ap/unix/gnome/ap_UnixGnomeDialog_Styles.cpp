@@ -74,9 +74,9 @@ GtkWidget * AP_UnixGnomeDialog_Styles::_constructWindow(void)
 	m_wbuttonClose = GTK_WIDGET (g_list_last (GNOME_DIALOG (windowStyles)->buttons)->data);
 	GTK_WIDGET_SET_FLAGS (m_wbuttonClose, GTK_CAN_DEFAULT);
 
-	gtk_signal_connect (G_OBJECT (windowStyles),
+	g_signal_connect (G_OBJECT (windowStyles),
 						"close",
-						GTK_SIGNAL_FUNC(cb_close),
+						G_CALLBACK(cb_close),
 						(gpointer) this);
 
 	_connectsignals();

@@ -525,20 +525,20 @@ XAP_CocoaDialog_PluginManager::_constructWindowContents (GtkWidget * container)
 
 	// connect some relvant signals
 
-	gtk_signal_connect (GTK_OBJECT(btnDeactivate), "clicked",
-						GTK_SIGNAL_FUNC(s_deactivate_clicked), 
+	g_signal_connect (G_OBJECT(btnDeactivate), "clicked",
+						G_CALLBACK(s_deactivate_clicked), 
 						(gpointer)this);
 
-	gtk_signal_connect (GTK_OBJECT(btnDeactivateAll), "clicked",
-						GTK_SIGNAL_FUNC(s_deactivate_all_clicked), 
+	g_signal_connect (G_OBJECT(btnDeactivateAll), "clicked",
+						G_CALLBACK(s_deactivate_all_clicked), 
 						(gpointer)this);
 
-	gtk_signal_connect (GTK_OBJECT(btnInstall), "clicked",
-						GTK_SIGNAL_FUNC(s_load_clicked), 
+	g_signal_connect (G_OBJECT(btnInstall), "clicked",
+						G_CALLBACK(s_load_clicked), 
 						(gpointer)this);
 
-	gtk_signal_connect (GTK_OBJECT(clistPlugins), "select_row",
-						GTK_SIGNAL_FUNC(s_clist_selected),
+	g_signal_connect (G_OBJECT(clistPlugins), "select_row",
+						G_CALLBACK(s_clist_selected),
 						(gpointer)this);
 
 	// assign pointers to important widgets
@@ -585,19 +585,19 @@ GtkWidget * XAP_CocoaDialog_PluginManager::_constructWindow ()
 	
 	// connect signals
 	
-	gtk_signal_connect_after(GTK_OBJECT(windowPlugins),
+	g_signal_connect_after(G_OBJECT(windowPlugins),
 							 "destroy",
 							 NULL,
 							 NULL);
 	
-	gtk_signal_connect(GTK_OBJECT(windowPlugins),
+	g_signal_connect(G_OBJECT(windowPlugins),
 					   "delete_event",
-					   GTK_SIGNAL_FUNC(s_delete_clicked),
+					   G_CALLBACK(s_delete_clicked),
 					   (gpointer) this);
 	
-	gtk_signal_connect(GTK_OBJECT(btnClose),
+	g_signal_connect(G_OBJECT(btnClose),
 					   "clicked",
-					   GTK_SIGNAL_FUNC(s_close_clicked),
+					   G_CALLBACK(s_close_clicked),
 					   (gpointer) this);
 	
 	m_windowMain = windowPlugins;

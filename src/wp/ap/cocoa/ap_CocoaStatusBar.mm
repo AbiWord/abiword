@@ -109,7 +109,7 @@ bool AP_CocoaStatusBar::_graphicsUpdateCB(NSRect * aRect, GR_CocoaGraphics *pGR,
 gint AP_CocoaStatusBar::_fe::configure_event(GtkWidget* w, GdkEventConfigure *e)
 {
 	// a static function
-	AP_CocoaStatusBar * pCocoaStatusBar = (AP_CocoaStatusBar *)gtk_object_get_user_data(GTK_OBJECT(w));
+	AP_CocoaStatusBar * pCocoaStatusBar = (AP_CocoaStatusBar *)g_object_get_user_data(G_OBJECT(w));
 
 	UT_uint32 iHeight = (UT_uint32)e->height;
 	pCocoaStatusBar->setHeight(iHeight);

@@ -163,8 +163,8 @@ void AP_UnixDialog_Tab::event_WindowDelete(void)
 /*****************************************************************/
 #define CONNECT_MENU_ITEM_SIGNAL_ACTIVATE(w)				\
         do {												\
-	        gtk_signal_connect(G_OBJECT(w), "activate",	\
-                GTK_SIGNAL_FUNC(s_menu_item_activate),		\
+	        g_signal_connect(G_OBJECT(w), "activate",	\
+                G_CALLBACK(s_menu_item_activate),		\
                 (gpointer) this);							\
         } while (0)
 GtkWidget* AP_UnixDialog_Tab::_constructWindow (void )
@@ -178,7 +178,7 @@ GtkWidget* AP_UnixDialog_Tab::_constructWindow (void )
 
 	windowTabs = gtk_window_new (GTK_WINDOW_TOPLEVEL);
 	//windowTabs = gtk_window_new (GTK_WINDOW_DIALOG);
-	gtk_object_set_data (G_OBJECT (windowTabs), "windowTabs", windowTabs);
+	g_object_set_data (G_OBJECT (windowTabs), "windowTabs", windowTabs);
 	gtk_window_set_title (GTK_WINDOW (windowTabs), pSS->getValue( AP_STRING_ID_DLG_Tab_TabTitle));
 
 	_constructWindowContents(windowTabs);
@@ -206,7 +206,7 @@ void    AP_UnixDialog_Tab::_constructGnomeButtons( GtkWidget * windowTabs)
 	
 	buttonApply = gtk_button_new_with_label (pSS->getValue( AP_STRING_ID_DLG_Options_Btn_Apply));
 	gtk_widget_ref (buttonApply);
-	gtk_object_set_data_full (G_OBJECT (windowTabs), "buttonApply", buttonApply,
+	g_object_set_data_full (G_OBJECT (windowTabs), "buttonApply", buttonApply,
 							(GtkDestroyNotify) gtk_widget_unref);
 	gtk_widget_show (buttonApply);
 	gtk_container_add (GTK_CONTAINER (m_GnomeButtons), buttonApply);
@@ -214,7 +214,7 @@ void    AP_UnixDialog_Tab::_constructGnomeButtons( GtkWidget * windowTabs)
 
 	buttonOK = gtk_button_new_with_label (pSS->getValue( XAP_STRING_ID_DLG_OK));
 	gtk_widget_ref (buttonOK);
-	gtk_object_set_data_full (G_OBJECT (windowTabs), "buttonOK", buttonOK,
+	g_object_set_data_full (G_OBJECT (windowTabs), "buttonOK", buttonOK,
 							  (GtkDestroyNotify) gtk_widget_unref);
 	gtk_widget_show (buttonOK);
 	gtk_container_add (GTK_CONTAINER (m_GnomeButtons), buttonOK);
@@ -222,7 +222,7 @@ void    AP_UnixDialog_Tab::_constructGnomeButtons( GtkWidget * windowTabs)
 
 	buttonCancel = gtk_button_new_with_label (pSS->getValue( XAP_STRING_ID_DLG_Cancel));
 	gtk_widget_ref (buttonCancel);
-	gtk_object_set_data_full (G_OBJECT (windowTabs), "buttonCancel", buttonCancel,
+	g_object_set_data_full (G_OBJECT (windowTabs), "buttonCancel", buttonCancel,
 							  (GtkDestroyNotify) gtk_widget_unref);
 	gtk_widget_show (buttonCancel);
 	gtk_container_add (GTK_CONTAINER (m_GnomeButtons), buttonCancel);
@@ -233,7 +233,7 @@ void    AP_UnixDialog_Tab::_constructGnomeButtons( GtkWidget * windowTabs)
 
 	hseparator5 = gtk_hseparator_new ();
 	gtk_widget_ref (hseparator5);
-	gtk_object_set_data_full (G_OBJECT (windowTabs), "hseparator5", hseparator5,
+	g_object_set_data_full (G_OBJECT (windowTabs), "hseparator5", hseparator5,
 							  (GtkDestroyNotify) gtk_widget_unref);
 	gtk_widget_show (hseparator5);
 	gtk_table_attach (GTK_TABLE (m_wTable), hseparator5, 0, 1, 3, 4,
@@ -284,21 +284,21 @@ void    AP_UnixDialog_Tab::_constructWindowContents( GtkWidget * windowTabs )
 	GtkWidget *radiobuttonLeaderUnderline;
 	GtkWidget *hbox12;
 	GtkWidget *label9;
-	GtkObject *spinbuttonTabstop_adj;
+	GObject *spinbuttonTabstop_adj;
 	GtkWidget *spinbuttonTabstop;
 
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
 
 	table13 = gtk_table_new (5, 1, FALSE);
 	gtk_widget_ref (table13);
-	gtk_object_set_data_full (G_OBJECT (windowTabs), "table13", table13,
+	g_object_set_data_full (G_OBJECT (windowTabs), "table13", table13,
 							  (GtkDestroyNotify) gtk_widget_unref);
 	gtk_widget_show (table13);
 	gtk_container_add (GTK_CONTAINER (windowTabs), table13);
 
 	hbuttonbox4 = gtk_hbutton_box_new ();
 	gtk_widget_ref (hbuttonbox4);
-	gtk_object_set_data_full (G_OBJECT (windowTabs), "hbuttonbox4", hbuttonbox4,
+	g_object_set_data_full (G_OBJECT (windowTabs), "hbuttonbox4", hbuttonbox4,
 							  (GtkDestroyNotify) gtk_widget_unref);
 	gtk_widget_show (hbuttonbox4);
 	gtk_table_attach (GTK_TABLE (table13), hbuttonbox4, 0, 1, 2, 3,
@@ -310,7 +310,7 @@ void    AP_UnixDialog_Tab::_constructWindowContents( GtkWidget * windowTabs )
 
 	buttonSet = gtk_button_new_with_label (pSS->getValue( AP_STRING_ID_DLG_Tab_Button_Set));
 	gtk_widget_ref (buttonSet);
-	gtk_object_set_data_full (G_OBJECT (windowTabs), "buttonSet", buttonSet,
+	g_object_set_data_full (G_OBJECT (windowTabs), "buttonSet", buttonSet,
 							  (GtkDestroyNotify) gtk_widget_unref);
 	gtk_widget_show (buttonSet);
 	gtk_container_add (GTK_CONTAINER (hbuttonbox4), buttonSet);
@@ -318,7 +318,7 @@ void    AP_UnixDialog_Tab::_constructWindowContents( GtkWidget * windowTabs )
 
 	buttonClear = gtk_button_new_with_label (pSS->getValue( AP_STRING_ID_DLG_Tab_Button_Clear));
 	gtk_widget_ref (buttonClear);
-	gtk_object_set_data_full (G_OBJECT (windowTabs), "buttonClear", buttonClear,
+	g_object_set_data_full (G_OBJECT (windowTabs), "buttonClear", buttonClear,
 							  (GtkDestroyNotify) gtk_widget_unref);
 	gtk_widget_show (buttonClear);
 	gtk_container_add (GTK_CONTAINER (hbuttonbox4), buttonClear);
@@ -326,7 +326,7 @@ void    AP_UnixDialog_Tab::_constructWindowContents( GtkWidget * windowTabs )
 
 	buttonClearAll = gtk_button_new_with_label (pSS->getValue( AP_STRING_ID_DLG_Tab_Button_ClearAll));
 	gtk_widget_ref (buttonClearAll);
-	gtk_object_set_data_full (G_OBJECT (windowTabs), "buttonClearAll", buttonClearAll,
+	g_object_set_data_full (G_OBJECT (windowTabs), "buttonClearAll", buttonClearAll,
 							  (GtkDestroyNotify) gtk_widget_unref);
 	gtk_widget_show (buttonClearAll);
 	gtk_container_add (GTK_CONTAINER (hbuttonbox4), buttonClearAll);
@@ -335,7 +335,7 @@ void    AP_UnixDialog_Tab::_constructWindowContents( GtkWidget * windowTabs )
 	hbuttonbox3 = gtk_hbutton_box_new ();
 	m_GnomeButtons = hbuttonbox3;
 	gtk_widget_ref (hbuttonbox3);
-	gtk_object_set_data_full (G_OBJECT (windowTabs), "hbuttonbox3", hbuttonbox3,
+	g_object_set_data_full (G_OBJECT (windowTabs), "hbuttonbox3", hbuttonbox3,
 				  (GtkDestroyNotify) gtk_widget_unref);
 	gtk_widget_show (hbuttonbox3);
 	gtk_table_attach (GTK_TABLE (table13), hbuttonbox3, 0, 1, 4, 5,
@@ -354,7 +354,7 @@ void    AP_UnixDialog_Tab::_constructWindowContents( GtkWidget * windowTabs )
 
 	hbox10 = gtk_hbox_new (FALSE, 0);
 	gtk_widget_ref (hbox10);
-	gtk_object_set_data_full (G_OBJECT (windowTabs), "hbox10", hbox10,
+	g_object_set_data_full (G_OBJECT (windowTabs), "hbox10", hbox10,
 							  (GtkDestroyNotify) gtk_widget_unref);
 	gtk_widget_show (hbox10);
 	gtk_table_attach (GTK_TABLE (table13), hbox10, 0, 1, 1, 2,
@@ -363,7 +363,7 @@ void    AP_UnixDialog_Tab::_constructWindowContents( GtkWidget * windowTabs )
 
 	label8 = gtk_label_new (pSS->getValue( AP_STRING_ID_DLG_Tab_Label_TabToClear));
 	gtk_widget_ref (label8);
-	gtk_object_set_data_full (G_OBJECT (windowTabs), "label8", label8,
+	g_object_set_data_full (G_OBJECT (windowTabs), "label8", label8,
 							  (GtkDestroyNotify) gtk_widget_unref);
 	gtk_widget_show (label8);
 	gtk_box_pack_start (GTK_BOX (hbox10), label8, FALSE, FALSE, 0);
@@ -372,7 +372,7 @@ void    AP_UnixDialog_Tab::_constructWindowContents( GtkWidget * windowTabs )
 
 	hbox11 = gtk_hbox_new (FALSE, 0);
 	gtk_widget_ref (hbox11);
-	gtk_object_set_data_full (G_OBJECT (windowTabs), "hbox11", hbox11,
+	g_object_set_data_full (G_OBJECT (windowTabs), "hbox11", hbox11,
 							  (GtkDestroyNotify) gtk_widget_unref);
 	gtk_widget_show (hbox11);
 	gtk_table_attach (GTK_TABLE (table13), hbox11, 0, 1, 0, 1,
@@ -381,21 +381,21 @@ void    AP_UnixDialog_Tab::_constructWindowContents( GtkWidget * windowTabs )
 
 	vbox4 = gtk_vbox_new (FALSE, 0);
 	gtk_widget_ref (vbox4);
-	gtk_object_set_data_full (G_OBJECT (windowTabs), "vbox4", vbox4,
+	g_object_set_data_full (G_OBJECT (windowTabs), "vbox4", vbox4,
 							  (GtkDestroyNotify) gtk_widget_unref);
 	gtk_widget_show (vbox4);
 	gtk_box_pack_start (GTK_BOX (hbox11), vbox4, TRUE, TRUE, 5);
 
 	hbox15 = gtk_hbox_new (FALSE, 0);
 	gtk_widget_ref (hbox15);
-	gtk_object_set_data_full (G_OBJECT (windowTabs), "hbox15", hbox15,
+	g_object_set_data_full (G_OBJECT (windowTabs), "hbox15", hbox15,
 							  (GtkDestroyNotify) gtk_widget_unref);
 	gtk_widget_show (hbox15);
 	gtk_box_pack_start (GTK_BOX (vbox4), hbox15, FALSE, FALSE, 5);
 
 	label13 = gtk_label_new (pSS->getValue( AP_STRING_ID_DLG_Tab_Label_TabPosition));
 	gtk_widget_ref (label13);
-	gtk_object_set_data_full (G_OBJECT (windowTabs), "label13", label13,
+	g_object_set_data_full (G_OBJECT (windowTabs), "label13", label13,
 							  (GtkDestroyNotify) gtk_widget_unref);
 	gtk_widget_show (label13);
 	gtk_box_pack_start (GTK_BOX (hbox15), label13, FALSE, TRUE, 0);
@@ -403,49 +403,49 @@ void    AP_UnixDialog_Tab::_constructWindowContents( GtkWidget * windowTabs )
 
 	entryTabEntry = gtk_entry_new ();
 	gtk_widget_ref (entryTabEntry);
-	gtk_object_set_data_full (G_OBJECT (windowTabs), "entryTabEntry", entryTabEntry,
+	g_object_set_data_full (G_OBJECT (windowTabs), "entryTabEntry", entryTabEntry,
 							  (GtkDestroyNotify) gtk_widget_unref);
 	gtk_widget_show (entryTabEntry);
 	gtk_box_pack_start (GTK_BOX (vbox4), entryTabEntry, FALSE, FALSE, 1);
 
 	hbox16 = gtk_hbox_new (FALSE, 0);
 	gtk_widget_ref (hbox16);
-	gtk_object_set_data_full (G_OBJECT (windowTabs), "hbox16", hbox16,
+	g_object_set_data_full (G_OBJECT (windowTabs), "hbox16", hbox16,
 							  (GtkDestroyNotify) gtk_widget_unref);
 	gtk_widget_show (hbox16);
 	gtk_box_pack_start (GTK_BOX (vbox4), hbox16, TRUE, TRUE, 1);
 
 	label14 = gtk_label_new ("     ");
 	gtk_widget_ref (label14);
-	gtk_object_set_data_full (G_OBJECT (windowTabs), "label14", label14,
+	g_object_set_data_full (G_OBJECT (windowTabs), "label14", label14,
 							  (GtkDestroyNotify) gtk_widget_unref);
 	gtk_widget_show (label14);
 	gtk_box_pack_start (GTK_BOX (hbox16), label14, FALSE, TRUE, 0);
 
 	frame3 = gtk_frame_new (NULL);
 	gtk_widget_ref (frame3);
-	gtk_object_set_data_full (G_OBJECT (windowTabs), "frame3", frame3,
+	g_object_set_data_full (G_OBJECT (windowTabs), "frame3", frame3,
 							  (GtkDestroyNotify) gtk_widget_unref);
 	gtk_widget_show (frame3);
 	gtk_box_pack_start (GTK_BOX (hbox16), frame3, TRUE, TRUE, 0);
 
 	listTabs = gtk_list_new ();
 	gtk_widget_ref (listTabs);
-	gtk_object_set_data_full (G_OBJECT (windowTabs), "listTabs", listTabs,
+	g_object_set_data_full (G_OBJECT (windowTabs), "listTabs", listTabs,
 							  (GtkDestroyNotify) gtk_widget_unref);
 	gtk_widget_show (listTabs);
 	gtk_container_add (GTK_CONTAINER (frame3), listTabs);
 
 	table14 = gtk_table_new (8, 2, FALSE);
 	gtk_widget_ref (table14);
-	gtk_object_set_data_full (G_OBJECT (windowTabs), "table14", table14,
+	g_object_set_data_full (G_OBJECT (windowTabs), "table14", table14,
 							  (GtkDestroyNotify) gtk_widget_unref);
 	gtk_widget_show (table14);
 	gtk_box_pack_start (GTK_BOX (hbox11), table14, TRUE, TRUE, 0);
 
 	hbox13 = gtk_hbox_new (FALSE, 0);
 	gtk_widget_ref (hbox13);
-	gtk_object_set_data_full (G_OBJECT (windowTabs), "hbox13", hbox13,
+	g_object_set_data_full (G_OBJECT (windowTabs), "hbox13", hbox13,
 							  (GtkDestroyNotify) gtk_widget_unref);
 	gtk_widget_show (hbox13);
 	gtk_table_attach (GTK_TABLE (table14), hbox13, 0, 2, 1, 2,
@@ -454,7 +454,7 @@ void    AP_UnixDialog_Tab::_constructWindowContents( GtkWidget * windowTabs )
 
 	label10 = gtk_label_new (pSS->getValue( AP_STRING_ID_DLG_Tab_Label_Alignment));
 	gtk_widget_ref (label10);
-	gtk_object_set_data_full (G_OBJECT (windowTabs), "label10", label10,
+	g_object_set_data_full (G_OBJECT (windowTabs), "label10", label10,
 							  (GtkDestroyNotify) gtk_widget_unref);
 	gtk_widget_show (label10);
 	gtk_box_pack_start (GTK_BOX (hbox13), label10, FALSE, FALSE, 0);
@@ -462,14 +462,14 @@ void    AP_UnixDialog_Tab::_constructWindowContents( GtkWidget * windowTabs )
 
 	hseparator6 = gtk_hseparator_new ();
 	gtk_widget_ref (hseparator6);
-	gtk_object_set_data_full (G_OBJECT (windowTabs), "hseparator6", hseparator6,
+	g_object_set_data_full (G_OBJECT (windowTabs), "hseparator6", hseparator6,
 							  (GtkDestroyNotify) gtk_widget_unref);
 	gtk_widget_show (hseparator6);
 	gtk_box_pack_start (GTK_BOX (hbox13), hseparator6, TRUE, TRUE, 0);
 
 	hbox14 = gtk_hbox_new (FALSE, 0);
 	gtk_widget_ref (hbox14);
-	gtk_object_set_data_full (G_OBJECT (windowTabs), "hbox14", hbox14,
+	g_object_set_data_full (G_OBJECT (windowTabs), "hbox14", hbox14,
 							  (GtkDestroyNotify) gtk_widget_unref);
 	gtk_widget_show (hbox14);
 	gtk_table_attach (GTK_TABLE (table14), hbox14, 0, 2, 5, 6,
@@ -478,7 +478,7 @@ void    AP_UnixDialog_Tab::_constructWindowContents( GtkWidget * windowTabs )
 
 	label11 = gtk_label_new (pSS->getValue( AP_STRING_ID_DLG_Tab_Label_Leader));
 	gtk_widget_ref (label11);
-	gtk_object_set_data_full (G_OBJECT (windowTabs), "label11", label11,
+	g_object_set_data_full (G_OBJECT (windowTabs), "label11", label11,
 							  (GtkDestroyNotify) gtk_widget_unref);
 	gtk_widget_show (label11);
 	gtk_box_pack_start (GTK_BOX (hbox14), label11, FALSE, FALSE, 0);
@@ -486,7 +486,7 @@ void    AP_UnixDialog_Tab::_constructWindowContents( GtkWidget * windowTabs )
 
 	hseparator7 = gtk_hseparator_new ();
 	gtk_widget_ref (hseparator7);
-	gtk_object_set_data_full (G_OBJECT (windowTabs), "hseparator7", hseparator7,
+	g_object_set_data_full (G_OBJECT (windowTabs), "hseparator7", hseparator7,
 							  (GtkDestroyNotify) gtk_widget_unref);
 	gtk_widget_show (hseparator7);
 	gtk_box_pack_start (GTK_BOX (hbox14), hseparator7, TRUE, TRUE, 0);
@@ -495,7 +495,7 @@ void    AP_UnixDialog_Tab::_constructWindowContents( GtkWidget * windowTabs )
 			pSS->getValue( AP_STRING_ID_DLG_Tab_Radio_Decimal));
 	group_align_group = gtk_radio_button_group (GTK_RADIO_BUTTON (radiobuttonDecimal));
 	gtk_widget_ref (radiobuttonDecimal);
-	gtk_object_set_data_full (G_OBJECT (windowTabs), "radiobuttonDecimal", radiobuttonDecimal,
+	g_object_set_data_full (G_OBJECT (windowTabs), "radiobuttonDecimal", radiobuttonDecimal,
 							  (GtkDestroyNotify) gtk_widget_unref);
 	gtk_widget_show (radiobuttonDecimal);
 	gtk_table_attach (GTK_TABLE (table14), radiobuttonDecimal, 1, 2, 2, 3,
@@ -506,7 +506,7 @@ void    AP_UnixDialog_Tab::_constructWindowContents( GtkWidget * windowTabs )
 					pSS->getValue( AP_STRING_ID_DLG_Tab_Radio_Left));
 	group_align_group = gtk_radio_button_group (GTK_RADIO_BUTTON (radiobuttonLeft));
 	gtk_widget_ref (radiobuttonLeft);
-	gtk_object_set_data_full (G_OBJECT (windowTabs), "radiobuttonLeft", radiobuttonLeft,
+	g_object_set_data_full (G_OBJECT (windowTabs), "radiobuttonLeft", radiobuttonLeft,
 							  (GtkDestroyNotify) gtk_widget_unref);
 	gtk_widget_show (radiobuttonLeft);
 	gtk_table_attach (GTK_TABLE (table14), radiobuttonLeft, 0, 1, 2, 3,
@@ -518,7 +518,7 @@ void    AP_UnixDialog_Tab::_constructWindowContents( GtkWidget * windowTabs )
 						pSS->getValue( AP_STRING_ID_DLG_Tab_Radio_Center));
 	group_align_group = gtk_radio_button_group (GTK_RADIO_BUTTON (radiobuttonCenter));
 	gtk_widget_ref (radiobuttonCenter);
-	gtk_object_set_data_full (G_OBJECT (windowTabs), "radiobuttonCenter", radiobuttonCenter,
+	g_object_set_data_full (G_OBJECT (windowTabs), "radiobuttonCenter", radiobuttonCenter,
 							  (GtkDestroyNotify) gtk_widget_unref);
 	gtk_widget_show (radiobuttonCenter);
 	gtk_table_attach (GTK_TABLE (table14), radiobuttonCenter, 0, 1, 3, 4,
@@ -529,7 +529,7 @@ void    AP_UnixDialog_Tab::_constructWindowContents( GtkWidget * windowTabs )
 				pSS->getValue( AP_STRING_ID_DLG_Tab_Radio_Right));
 	group_align_group = gtk_radio_button_group (GTK_RADIO_BUTTON (radiobuttonRight));
 	gtk_widget_ref (radiobuttonRight);
-	gtk_object_set_data_full (G_OBJECT (windowTabs), "radiobuttonRight", radiobuttonRight,
+	g_object_set_data_full (G_OBJECT (windowTabs), "radiobuttonRight", radiobuttonRight,
 							  (GtkDestroyNotify) gtk_widget_unref);
 	gtk_widget_show (radiobuttonRight);
 	gtk_table_attach (GTK_TABLE (table14), radiobuttonRight, 0, 1, 4, 5,
@@ -540,7 +540,7 @@ void    AP_UnixDialog_Tab::_constructWindowContents( GtkWidget * windowTabs )
 					pSS->getValue( AP_STRING_ID_DLG_Tab_Radio_Bar));
 	group_align_group = gtk_radio_button_group (GTK_RADIO_BUTTON (radiobuttonBar));
 	gtk_widget_ref (radiobuttonBar);
-	gtk_object_set_data_full (G_OBJECT (windowTabs), "radiobuttonBar", radiobuttonBar,
+	g_object_set_data_full (G_OBJECT (windowTabs), "radiobuttonBar", radiobuttonBar,
 							  (GtkDestroyNotify) gtk_widget_unref);
 	gtk_widget_show (radiobuttonBar);
 	gtk_table_attach (GTK_TABLE (table14), radiobuttonBar, 1, 2, 3, 4,
@@ -551,7 +551,7 @@ void    AP_UnixDialog_Tab::_constructWindowContents( GtkWidget * windowTabs )
 				pSS->getValue( AP_STRING_ID_DLG_Tab_Radio_Dash));
 	group_leader_group = gtk_radio_button_group (GTK_RADIO_BUTTON (radiobuttonLeaderDash));
 	gtk_widget_ref (radiobuttonLeaderDash);
-	gtk_object_set_data_full (G_OBJECT (windowTabs), "radiobuttonLeaderDash", radiobuttonLeaderDash,
+	g_object_set_data_full (G_OBJECT (windowTabs), "radiobuttonLeaderDash", radiobuttonLeaderDash,
 							  (GtkDestroyNotify) gtk_widget_unref);
 	gtk_widget_show (radiobuttonLeaderDash);
 	gtk_table_attach (GTK_TABLE (table14), radiobuttonLeaderDash, 1, 2, 6, 7,
@@ -562,7 +562,7 @@ void    AP_UnixDialog_Tab::_constructWindowContents( GtkWidget * windowTabs )
 				pSS->getValue( AP_STRING_ID_DLG_Tab_Radio_Dot));
 	group_leader_group = gtk_radio_button_group (GTK_RADIO_BUTTON (radiobuttonLeaderDot));
 	gtk_widget_ref (radiobuttonLeaderDot);
-	gtk_object_set_data_full (G_OBJECT (windowTabs), "radiobuttonLeaderDot", radiobuttonLeaderDot,
+	g_object_set_data_full (G_OBJECT (windowTabs), "radiobuttonLeaderDot", radiobuttonLeaderDot,
 							  (GtkDestroyNotify) gtk_widget_unref);
 	gtk_widget_show (radiobuttonLeaderDot);
 	gtk_table_attach (GTK_TABLE (table14), radiobuttonLeaderDot, 0, 1, 7, 8,
@@ -573,7 +573,7 @@ void    AP_UnixDialog_Tab::_constructWindowContents( GtkWidget * windowTabs )
 			pSS->getValue( AP_STRING_ID_DLG_Tab_Radio_None));
 	group_leader_group = gtk_radio_button_group (GTK_RADIO_BUTTON (radiobuttonLeaderNone));
 	gtk_widget_ref (radiobuttonLeaderNone);
-	gtk_object_set_data_full (G_OBJECT (windowTabs), "radiobuttonLeaderNone", radiobuttonLeaderNone,
+	g_object_set_data_full (G_OBJECT (windowTabs), "radiobuttonLeaderNone", radiobuttonLeaderNone,
 							  (GtkDestroyNotify) gtk_widget_unref);
 	gtk_widget_show (radiobuttonLeaderNone);
 	gtk_table_attach (GTK_TABLE (table14), radiobuttonLeaderNone, 0, 1, 6, 7,
@@ -585,7 +585,7 @@ void    AP_UnixDialog_Tab::_constructWindowContents( GtkWidget * windowTabs )
 					pSS->getValue( AP_STRING_ID_DLG_Tab_Radio_Underline));
 	group_leader_group = gtk_radio_button_group (GTK_RADIO_BUTTON (radiobuttonLeaderUnderline));
 	gtk_widget_ref (radiobuttonLeaderUnderline);
-	gtk_object_set_data_full (G_OBJECT (windowTabs), "radiobuttonLeaderUnderline", radiobuttonLeaderUnderline,
+	g_object_set_data_full (G_OBJECT (windowTabs), "radiobuttonLeaderUnderline", radiobuttonLeaderUnderline,
 							  (GtkDestroyNotify) gtk_widget_unref);
 	gtk_widget_show (radiobuttonLeaderUnderline);
 	gtk_table_attach (GTK_TABLE (table14), radiobuttonLeaderUnderline, 1, 2, 7, 8,
@@ -594,7 +594,7 @@ void    AP_UnixDialog_Tab::_constructWindowContents( GtkWidget * windowTabs )
 
 	hbox12 = gtk_hbox_new (FALSE, 0);
 	gtk_widget_ref (hbox12);
-	gtk_object_set_data_full (G_OBJECT (windowTabs), "hbox12", hbox12,
+	g_object_set_data_full (G_OBJECT (windowTabs), "hbox12", hbox12,
 							  (GtkDestroyNotify) gtk_widget_unref);
 	gtk_widget_show (hbox12);
 	gtk_table_attach (GTK_TABLE (table14), hbox12, 0, 2, 0, 1,
@@ -603,7 +603,7 @@ void    AP_UnixDialog_Tab::_constructWindowContents( GtkWidget * windowTabs )
 
 	label9 = gtk_label_new (pSS->getValue( AP_STRING_ID_DLG_Tab_Label_DefaultTS));
 	gtk_widget_ref (label9);
-	gtk_object_set_data_full (G_OBJECT (windowTabs), "label9", label9,
+	g_object_set_data_full (G_OBJECT (windowTabs), "label9", label9,
 							  (GtkDestroyNotify) gtk_widget_unref);
 	gtk_widget_show (label9);
 	gtk_box_pack_start (GTK_BOX (hbox12), label9, FALSE, FALSE, 1);
@@ -623,57 +623,57 @@ void    AP_UnixDialog_Tab::_constructWindowContents( GtkWidget * windowTabs )
 	// END: glade stuff
 
     // the catch-alls
-    gtk_signal_connect(G_OBJECT(windowTabs),
+    g_signal_connect(G_OBJECT(windowTabs),
 		       "delete_event",
-		       GTK_SIGNAL_FUNC(s_delete_clicked),
+		       G_CALLBACK(s_delete_clicked),
 		       (gpointer) this);
 
 
-    gtk_signal_connect_after(G_OBJECT(windowTabs),
+    g_signal_connect_after(G_OBJECT(windowTabs),
                              "destroy",
                              NULL,
                              NULL);
 
     //////////////////////////////////////////////////////////////////////
     // the control buttons
-    gtk_signal_connect(G_OBJECT(m_buttonOK),
+    g_signal_connect(G_OBJECT(m_buttonOK),
                        "clicked",
-                       GTK_SIGNAL_FUNC(s_ok_clicked),
+                       G_CALLBACK(s_ok_clicked),
                        (gpointer) this);
     
-    gtk_signal_connect(G_OBJECT(m_buttonCancel),
+    g_signal_connect(G_OBJECT(m_buttonCancel),
                        "clicked",
-                       GTK_SIGNAL_FUNC(s_cancel_clicked),
+                       G_CALLBACK(s_cancel_clicked),
                        (gpointer) this);
 
-    gtk_signal_connect(G_OBJECT(m_buttonApply),
+    g_signal_connect(G_OBJECT(m_buttonApply),
                        "clicked",
-                       GTK_SIGNAL_FUNC(s_apply_clicked),
+                       G_CALLBACK(s_apply_clicked),
                        (gpointer) this);
 
-    gtk_signal_connect(G_OBJECT(buttonSet),
+    g_signal_connect(G_OBJECT(buttonSet),
                        "clicked",
-                       GTK_SIGNAL_FUNC(s_set_clicked),
+                       G_CALLBACK(s_set_clicked),
                        (gpointer) this);
 
-    gtk_signal_connect(G_OBJECT(buttonClear),
+    g_signal_connect(G_OBJECT(buttonClear),
                        "clicked",
-                       GTK_SIGNAL_FUNC(s_clear_clicked),
+                       G_CALLBACK(s_clear_clicked),
                        (gpointer) this);
 
-    gtk_signal_connect(G_OBJECT(buttonClearAll),
+    g_signal_connect(G_OBJECT(buttonClearAll),
                        "clicked",
-                       GTK_SIGNAL_FUNC(s_clear_all_clicked),
+                       G_CALLBACK(s_clear_all_clicked),
                        (gpointer) this);
 
-    gtk_signal_connect(G_OBJECT(entryTabEntry),
+    g_signal_connect(G_OBJECT(entryTabEntry),
                        "changed",
-                       GTK_SIGNAL_FUNC(s_edit_change),
+                       G_CALLBACK(s_edit_change),
                        (gpointer) this);
 
-    gtk_signal_connect(spinbuttonTabstop_adj,
+    g_signal_connect(spinbuttonTabstop_adj,
                        "value_changed",
-                       GTK_SIGNAL_FUNC(s_spin_default_changed),
+                       G_CALLBACK(s_spin_default_changed),
                        (gpointer) this);
 
     // Update member variables with the important widgets that
@@ -711,25 +711,25 @@ void    AP_UnixDialog_Tab::_constructWindowContents( GtkWidget * windowTabs )
 	for ( id = id_ALIGN_LEFT; id <= id_ALIGN_BAR; id = (tControl)((UT_uint32)id + 1))
 	{
 		GtkWidget *w = _lookupWidget(id);
-		gtk_signal_connect(G_OBJECT(w),
+		g_signal_connect(G_OBJECT(w),
 						   "toggled",
-						   GTK_SIGNAL_FUNC(s_alignment_change),
+						   G_CALLBACK(s_alignment_change),
 						   (gpointer) this);
 
 		// set the "userdata" to be the tALignment
-		gtk_object_set_user_data( G_OBJECT(w), (gpointer)((UT_uint32)id - (UT_uint32)id_ALIGN_LEFT + (UT_uint32)FL_TAB_LEFT));
+		gtk_object_set_user_data( GTK_OBJECT(w), (gpointer)((UT_uint32)id - (UT_uint32)id_ALIGN_LEFT + (UT_uint32)FL_TAB_LEFT));
 	}
 
 	for ( id = id_LEADER_NONE; id <= id_LEADER_UNDERLINE; id = (tControl)((UT_uint32)id + 1))
 	{
 		GtkWidget *w = _lookupWidget(id);
-		gtk_signal_connect(G_OBJECT(w),
+		g_signal_connect(G_OBJECT(w),
 						   "toggled",
-						   GTK_SIGNAL_FUNC(s_leader_change),
+						   G_CALLBACK(s_leader_change),
 						   (gpointer) this);
 
 		// set the "userdata" to be the tALignment
-		gtk_object_set_user_data( G_OBJECT(w), (gpointer)((UT_uint32)id - (UT_uint32)id_LEADER_NONE + (UT_uint32)FL_LEADER_NONE));
+		gtk_object_set_user_data( GTK_OBJECT(w), (gpointer)((UT_uint32)id - (UT_uint32)id_LEADER_NONE + (UT_uint32)FL_LEADER_NONE));
 	}
 
 	// create user data tControl -> stored in widgets 
@@ -741,9 +741,9 @@ void    AP_UnixDialog_Tab::_constructWindowContents( GtkWidget * windowTabs )
 
 		/* check to see if there is any data already stored there (note, will
 		 * not work if 0's is stored in multiple places  */
-		UT_ASSERT( gtk_object_get_data(G_OBJECT(w), "tControl" ) == NULL);
+		UT_ASSERT( g_object_get_data(G_OBJECT(w), "tControl" ) == NULL);
 
-		gtk_object_set_data( G_OBJECT(w), "tControl", (gpointer) i );
+		g_object_set_data( G_OBJECT(w), "tControl", (gpointer) i );
 	}
 }
 
@@ -885,7 +885,7 @@ void AP_UnixDialog_Tab::_spinChanged(void)
 	if ( dlg->m_bInSetCall || gtk_toggle_button_get_active( GTK_TOGGLE_BUTTON(widget)) == FALSE ) 
 		return;
 
-	dlg->m_current_alignment = (eTabType)((UT_uint32)gtk_object_get_user_data(G_OBJECT(widget)));
+	dlg->m_current_alignment = (eTabType)((UT_uint32)gtk_object_get_user_data(GTK_OBJECT(widget)));
 
 	UT_DEBUGMSG(("AP_UnixDialog_Tab::s_alignment_change [%c]\n", AlignmentToChar(dlg->m_current_alignment)));
 	dlg->_event_AlignmentChange();
@@ -900,7 +900,7 @@ void AP_UnixDialog_Tab::_spinChanged(void)
 	if ( dlg->m_bInSetCall || gtk_toggle_button_get_active( GTK_TOGGLE_BUTTON(widget)) == FALSE ) 
 		return;
 	
-	dlg->m_current_leader = (eTabLeader)((UT_uint32)gtk_object_get_user_data(G_OBJECT(widget)));
+	dlg->m_current_leader = (eTabLeader)((UT_uint32)gtk_object_get_user_data(GTK_OBJECT(widget)));
 	
 	UT_DEBUGMSG(("AP_UnixDialog_Tab::s_leader_change\n"));
 	dlg->_event_somethingChanged();
@@ -1026,9 +1026,9 @@ void AP_UnixDialog_Tab::_setTabList(UT_uint32 count)
 		GtkWidget *li = gtk_list_item_new_with_label( _getTabDimensionString(i));
 
 		// we want to DO stuff
-		gtk_signal_connect(G_OBJECT(li),
+		g_signal_connect(G_OBJECT(li),
 						   "select",
-						   GTK_SIGNAL_FUNC(s_list_select),
+						   G_CALLBACK(s_list_select),
 						   (gpointer) this);
 
 		// show this baby
@@ -1074,13 +1074,13 @@ void AP_UnixDialog_Tab::_setTabEdit( const char *pszStr )
 	GtkWidget *w = _lookupWidget( id_EDIT_TAB );
 
 	// first, we stop the entry from sending the changed signal to our handler
-	gtk_signal_handler_block_by_data(  G_OBJECT(w), (gpointer) this );
+	g_signal_handler_block_by_data(  G_OBJECT(w), (gpointer) this );
 
 	// then set the text
 	gtk_entry_set_text( GTK_ENTRY(w), pszStr );
 
 	// turn signals back on
-	gtk_signal_handler_unblock_by_data(  G_OBJECT(w), (gpointer) this );
+	g_signal_handler_unblock_by_data(  G_OBJECT(w), (gpointer) this );
 }
 
 

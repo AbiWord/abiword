@@ -176,13 +176,13 @@ void XAP_UnixDialog_MessageBox::runModal(XAP_Frame * pFrame)
 	GtkWidget * dialog_window = gtk_dialog_new();								 
 
 	connectFocus(GTK_WIDGET(dialog_window),pFrame);
-	gtk_signal_connect_after (G_OBJECT (dialog_window),
+	g_signal_connect_after (G_OBJECT (dialog_window),
 							  "destroy",
 							  NULL,
 							  NULL);
-	gtk_signal_connect (G_OBJECT (dialog_window),
+	g_signal_connect (G_OBJECT (dialog_window),
 			    "delete_event",
-			    GTK_SIGNAL_FUNC(s_delete_clicked),
+			    G_CALLBACK(s_delete_clicked),
 			    &m_answer);
 
 	gtk_window_set_title (GTK_WINDOW (dialog_window), szCaption);
@@ -195,9 +195,9 @@ void XAP_UnixDialog_MessageBox::runModal(XAP_Frame * pFrame)
 						  TRUE);
 
 	// Intercept key strokes
-	gtk_signal_connect(G_OBJECT(dialog_window),
+	g_signal_connect(G_OBJECT(dialog_window),
 					   "key_press_event",
-					   GTK_SIGNAL_FUNC(s_key_pressed),
+					   G_CALLBACK(s_key_pressed),
 					   this);
 
 	// Add our label string to the dialog in the message area
@@ -236,9 +236,9 @@ void XAP_UnixDialog_MessageBox::runModal(XAP_Frame * pFrame)
 	gtk_widget_show(ok_label);
 	ok_button = gtk_button_new();
 	gtk_container_add(GTK_CONTAINER(ok_button), ok_label);
-	gtk_signal_connect (G_OBJECT (ok_button),
+	g_signal_connect (G_OBJECT (ok_button),
 						"clicked",
-						GTK_SIGNAL_FUNC (s_ok_clicked),
+						G_CALLBACK (s_ok_clicked),
 						&m_answer);
 	GTK_WIDGET_SET_FLAGS (ok_button, GTK_CAN_DEFAULT);
 	gtk_widget_set_usize(ok_button, DEFAULT_BUTTON_WIDTH, 0);
@@ -248,9 +248,9 @@ void XAP_UnixDialog_MessageBox::runModal(XAP_Frame * pFrame)
 	gtk_widget_show(cancel_label);
 	cancel_button = gtk_button_new();
 	gtk_container_add(GTK_CONTAINER(cancel_button), cancel_label);
-	gtk_signal_connect (G_OBJECT (cancel_button),
+	g_signal_connect (G_OBJECT (cancel_button),
 						"clicked",
-						GTK_SIGNAL_FUNC (s_cancel_clicked),
+						G_CALLBACK (s_cancel_clicked),
 						&m_answer);
 	GTK_WIDGET_SET_FLAGS (cancel_button, GTK_CAN_DEFAULT);
 	gtk_widget_set_usize(cancel_button, DEFAULT_BUTTON_WIDTH, 0);
@@ -260,9 +260,9 @@ void XAP_UnixDialog_MessageBox::runModal(XAP_Frame * pFrame)
 	gtk_widget_show(yes_label);
 	yes_button = gtk_button_new();
 	gtk_container_add(GTK_CONTAINER(yes_button), yes_label);
-	gtk_signal_connect (G_OBJECT (yes_button),
+	g_signal_connect (G_OBJECT (yes_button),
 						"clicked",
-						GTK_SIGNAL_FUNC (s_yes_clicked),
+						G_CALLBACK (s_yes_clicked),
 						&m_answer);
 	GTK_WIDGET_SET_FLAGS (yes_button, GTK_CAN_DEFAULT);
 	gtk_widget_set_usize(yes_button, DEFAULT_BUTTON_WIDTH, 0);
@@ -272,9 +272,9 @@ void XAP_UnixDialog_MessageBox::runModal(XAP_Frame * pFrame)
 	gtk_widget_show(no_label);
 	no_button = gtk_button_new();
 	gtk_container_add(GTK_CONTAINER(no_button), no_label);
-	gtk_signal_connect (G_OBJECT (no_button),
+	g_signal_connect (G_OBJECT (no_button),
 						"clicked",
-						GTK_SIGNAL_FUNC (s_no_clicked),
+						G_CALLBACK (s_no_clicked),
 						&m_answer);
 	GTK_WIDGET_SET_FLAGS (no_button, GTK_CAN_DEFAULT);
 	gtk_widget_set_usize(no_button, DEFAULT_BUTTON_WIDTH, 0);

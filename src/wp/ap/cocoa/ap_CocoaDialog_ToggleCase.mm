@@ -41,7 +41,7 @@
 
 static void s_toggled (GtkWidget * radio, AP_Dialog_ToggleCase * dlg)
 {
-  ToggleCase tc = (ToggleCase) GPOINTER_TO_INT (gtk_object_get_user_data (GTK_OBJECT(radio)));
+  ToggleCase tc = (ToggleCase) GPOINTER_TO_INT (g_object_get_user_data (G_OBJECT(radio)));
   dlg->setCase (tc);
 }
 
@@ -131,22 +131,22 @@ GtkWidget * AP_CocoaDialog_ToggleCase::_constructWindow (void)
   gtk_widget_show (buttonCancel);
   gtk_container_add (GTK_CONTAINER (GTK_DIALOG(windowMain)->action_area), buttonCancel);
 
-	gtk_signal_connect_after(GTK_OBJECT(windowMain),
+	g_signal_connect_after(G_OBJECT(windowMain),
 				 "destroy",
 				 NULL,
 				 NULL);
-	gtk_signal_connect(GTK_OBJECT(windowMain),
+	g_signal_connect(G_OBJECT(windowMain),
 			   "delete_event",
-			   GTK_SIGNAL_FUNC(s_delete_clicked),
+			   G_CALLBACK(s_delete_clicked),
 			   (gpointer) this);
 
-	gtk_signal_connect(GTK_OBJECT(buttonOK),
+	g_signal_connect(G_OBJECT(buttonOK),
 			   "clicked",
-			   GTK_SIGNAL_FUNC(s_ok_clicked),
+			   G_CALLBACK(s_ok_clicked),
 			   (gpointer) this);
-	gtk_signal_connect(GTK_OBJECT(buttonCancel),
+	g_signal_connect(G_OBJECT(buttonCancel),
 			   "clicked",
-			   GTK_SIGNAL_FUNC(s_cancel_clicked),
+			   G_CALLBACK(s_cancel_clicked),
 			   (gpointer) this);
 
   return windowMain;
@@ -193,20 +193,20 @@ void AP_CocoaDialog_ToggleCase::_constructWindowContents (GtkWidget *vbox1)
   gtk_widget_show (toggleCase);
   gtk_box_pack_start (GTK_BOX (vbox1), toggleCase, FALSE, FALSE, 0);
 
-  gtk_object_set_user_data (GTK_OBJECT(sentenceCase), GINT_TO_POINTER(CASE_SENTENCE));
-  gtk_object_set_user_data (GTK_OBJECT(lowerCase), GINT_TO_POINTER(CASE_LOWER));
-  gtk_object_set_user_data (GTK_OBJECT(upperCase), GINT_TO_POINTER(CASE_UPPER));
-  gtk_object_set_user_data (GTK_OBJECT(firstUpperCase), GINT_TO_POINTER(CASE_FIRST_CAPITAL));
-  gtk_object_set_user_data (GTK_OBJECT(toggleCase), GINT_TO_POINTER(CASE_TOGGLE));
+  g_object_set_user_data (G_OBJECT(sentenceCase), GINT_TO_POINTER(CASE_SENTENCE));
+  g_object_set_user_data (G_OBJECT(lowerCase), GINT_TO_POINTER(CASE_LOWER));
+  g_object_set_user_data (G_OBJECT(upperCase), GINT_TO_POINTER(CASE_UPPER));
+  g_object_set_user_data (G_OBJECT(firstUpperCase), GINT_TO_POINTER(CASE_FIRST_CAPITAL));
+  g_object_set_user_data (G_OBJECT(toggleCase), GINT_TO_POINTER(CASE_TOGGLE));
 
-  gtk_signal_connect (GTK_OBJECT(sentenceCase), "toggled",
-		      GTK_SIGNAL_FUNC(s_toggled), (gpointer)this);
-  gtk_signal_connect (GTK_OBJECT(lowerCase), "toggled",
-		      GTK_SIGNAL_FUNC(s_toggled), (gpointer)this);
-  gtk_signal_connect (GTK_OBJECT(upperCase), "toggled",
-		      GTK_SIGNAL_FUNC(s_toggled), (gpointer)this);
-  gtk_signal_connect (GTK_OBJECT(firstUpperCase), "toggled",
-		      GTK_SIGNAL_FUNC(s_toggled), (gpointer)this);
-  gtk_signal_connect (GTK_OBJECT(toggleCase), "toggled",
-		      GTK_SIGNAL_FUNC(s_toggled), (gpointer)this);
+  g_signal_connect (G_OBJECT(sentenceCase), "toggled",
+		      G_CALLBACK(s_toggled), (gpointer)this);
+  g_signal_connect (G_OBJECT(lowerCase), "toggled",
+		      G_CALLBACK(s_toggled), (gpointer)this);
+  g_signal_connect (G_OBJECT(upperCase), "toggled",
+		      G_CALLBACK(s_toggled), (gpointer)this);
+  g_signal_connect (G_OBJECT(firstUpperCase), "toggled",
+		      G_CALLBACK(s_toggled), (gpointer)this);
+  g_signal_connect (G_OBJECT(toggleCase), "toggled",
+		      G_CALLBACK(s_toggled), (gpointer)this);
 }

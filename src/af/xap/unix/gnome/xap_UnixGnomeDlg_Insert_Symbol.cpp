@@ -94,19 +94,19 @@ GtkWidget * XAP_UnixGnomeDialog_Insert_Symbol::_constructWindow(void)
 	
 // Finally construct the combo box
 	m_fontcombo = _createComboboxWithFonts ();
-	gtk_object_set_data (G_OBJECT (m_windowMain), "fontcombo", m_fontcombo);
+	g_object_set_data (G_OBJECT (m_windowMain), "fontcombo", m_fontcombo);
 	gtk_box_pack_start (GTK_BOX (hbox), m_fontcombo, TRUE, FALSE, 0);
 
 	// And the area for the current symbol
 	m_areaCurrentSym = _previewNew (60, 45);
-	gtk_object_set_data (G_OBJECT (m_windowMain), 
+	g_object_set_data (G_OBJECT (m_windowMain), 
 						 "areaCurrentSym", m_areaCurrentSym);
 	gtk_box_pack_start(GTK_BOX(hbox), m_areaCurrentSym, TRUE, FALSE, 0);
 
 	// Now the Symbol Map. 
 	// TODO: 32 * x (19) = 608, 7 * y (21) = 147  FIXME!
 	m_SymbolMap = _previewNew (608, 147);
-	gtk_object_set_data (G_OBJECT (m_windowMain), "SymbolMap", m_SymbolMap);
+	g_object_set_data (G_OBJECT (m_windowMain), "SymbolMap", m_SymbolMap);
 	gtk_box_pack_start(GTK_BOX(vbox), m_SymbolMap, FALSE, FALSE, 0);
 	
 	UT_XML_cloneNoAmpersands(tmp, pSS->getValue(XAP_STRING_ID_DLG_Insert));
@@ -118,11 +118,11 @@ GtkWidget * XAP_UnixGnomeDialog_Insert_Symbol::_constructWindow(void)
 	gnome_dialog_append_button (GNOME_DIALOG (m_windowMain), GNOME_STOCK_BUTTON_CLOSE);
    	m_buttonCancel = GTK_WIDGET (g_list_last (GNOME_DIALOG (m_windowMain)->buttons)->data);
 
-	gtk_object_set_data (G_OBJECT (m_windowMain), "buttonOK", m_buttonOK);
-	gtk_object_set_data (G_OBJECT (m_windowMain), "buttonCancel", m_buttonCancel);
+	g_object_set_data (G_OBJECT (m_windowMain), "buttonOK", m_buttonOK);
+	g_object_set_data (G_OBJECT (m_windowMain), "buttonCancel", m_buttonCancel);
 
-	gtk_signal_connect (G_OBJECT(m_windowMain), "close",
-			    GTK_SIGNAL_FUNC(cb_close), (gpointer)this);
+	g_signal_connect (G_OBJECT(m_windowMain), "close",
+			    G_CALLBACK(cb_close), (gpointer)this);
 
 	_connectSignals ();
 

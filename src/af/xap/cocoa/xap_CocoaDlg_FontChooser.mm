@@ -119,7 +119,7 @@ static gint s_color_wheel_clicked(GtkWidget * area,
 {
 	GtkColorSelection * colorSelector;
 
-	colorSelector = (GtkColorSelection *) gtk_object_get_data(GTK_OBJECT(area), "_GtkColorSelection");
+	colorSelector = (GtkColorSelection *) g_object_get_data(G_OBJECT(area), "_GtkColorSelection");
   
 	// these were stolen from gtkcolorsel.c, are private data,
 	// and as such are subject to immediate change and breakage
@@ -248,7 +248,7 @@ static gint s_drawing_area_expose(GtkWidget * w,
 								  GdkEventExpose * /* pExposeEvent */)
 {
 	XAP_CocoaDialog_FontChooser * dlg = (XAP_CocoaDialog_FontChooser *)
-		                              gtk_object_get_user_data(GTK_OBJECT(w));
+		                              g_object_get_user_data(G_OBJECT(w));
 
 //
 // Look if updates are blocked and quit if they are.
@@ -489,51 +489,51 @@ GtkWidget * XAP_CocoaDialog_FontChooser::constructWindow(void)
 	GtkWidget *buttonCancel;
 
 	windowFontSelection = gtk_window_new (GTK_WINDOW_DIALOG);
-	gtk_object_set_data (GTK_OBJECT (windowFontSelection), "windowFontSelection", windowFontSelection);
+	g_object_set_data (G_OBJECT (windowFontSelection), "windowFontSelection", windowFontSelection);
 	gtk_window_set_title (GTK_WINDOW (windowFontSelection), pSS->getValue(XAP_STRING_ID_DLG_UFS_FontTitle));
 	gtk_window_set_policy (GTK_WINDOW (windowFontSelection), FALSE, TRUE, FALSE);
 
 	vboxOuter = gtk_vbox_new (FALSE, 0);
-	gtk_object_set_data (GTK_OBJECT (windowFontSelection), "vboxOuter", vboxOuter);
+	g_object_set_data (G_OBJECT (windowFontSelection), "vboxOuter", vboxOuter);
 	gtk_widget_show (vboxOuter);
 	gtk_container_add (GTK_CONTAINER (windowFontSelection), vboxOuter);
 
-	vboxMain = constructWindowContents(GTK_OBJECT (windowFontSelection));
+	vboxMain = constructWindowContents(G_OBJECT (windowFontSelection));
 	gtk_box_pack_start (GTK_BOX (vboxOuter), vboxMain, TRUE, TRUE, 0);
 
 	fixedButtons = gtk_fixed_new ();
-	gtk_object_set_data (GTK_OBJECT (windowFontSelection), "fixedButtons", fixedButtons);
+	g_object_set_data (G_OBJECT (windowFontSelection), "fixedButtons", fixedButtons);
 	gtk_widget_show (fixedButtons);
 	gtk_box_pack_start (GTK_BOX (vboxOuter), fixedButtons, FALSE, TRUE, 0);
 
 	buttonOK = gtk_button_new_with_label (pSS->getValue(XAP_STRING_ID_DLG_OK));
-	gtk_object_set_data (GTK_OBJECT (windowFontSelection), "buttonOK", buttonOK);
+	g_object_set_data (G_OBJECT (windowFontSelection), "buttonOK", buttonOK);
 	gtk_widget_show (buttonOK);
 	gtk_fixed_put (GTK_FIXED (fixedButtons), buttonOK, 279, 0);
 	GTK_WIDGET_SET_FLAGS (buttonOK, GTK_CAN_DEFAULT);
 	gtk_widget_grab_default (buttonOK);
 
 	buttonCancel = gtk_button_new_with_label (pSS->getValue(XAP_STRING_ID_DLG_Cancel));
-	gtk_object_set_data (GTK_OBJECT (windowFontSelection), "buttonCancel", buttonCancel);
+	g_object_set_data (G_OBJECT (windowFontSelection), "buttonCancel", buttonCancel);
 	gtk_widget_show (buttonCancel);
 	gtk_fixed_put (GTK_FIXED (fixedButtons), buttonCancel, 374, 6);
 
-	gtk_signal_connect_after(GTK_OBJECT(windowFontSelection),
+	g_signal_connect_after(G_OBJECT(windowFontSelection),
 							  "destroy",
 							  NULL,
 							  NULL);
-	gtk_signal_connect(GTK_OBJECT(windowFontSelection),
+	g_signal_connect(G_OBJECT(windowFontSelection),
 			   "delete_event",
-			   GTK_SIGNAL_FUNC(s_delete_clicked),
+			   G_CALLBACK(s_delete_clicked),
 			   (gpointer) &m_answer);
 
-	gtk_signal_connect(GTK_OBJECT(buttonOK),
+	g_signal_connect(G_OBJECT(buttonOK),
 					   "clicked",
-					   GTK_SIGNAL_FUNC(s_ok_clicked),
+					   G_CALLBACK(s_ok_clicked),
 					   (gpointer) &m_answer);
-	gtk_signal_connect(GTK_OBJECT(buttonCancel),
+	g_signal_connect(G_OBJECT(buttonCancel),
 					   "clicked",
-					   GTK_SIGNAL_FUNC(s_cancel_clicked),
+					   G_CALLBACK(s_cancel_clicked),
 					   (gpointer) &m_answer);
 
 	return windowFontSelection;
@@ -541,7 +541,7 @@ GtkWidget * XAP_CocoaDialog_FontChooser::constructWindow(void)
 
 // Glade generated dialog, using fixed widgets to closely match
 // the Windows layout, with some changes for color selector
-GtkWidget * XAP_CocoaDialog_FontChooser::constructWindowContents(GtkObject *parent)
+GtkWidget * XAP_CocoaDialog_FontChooser::constructWindowContents(GObject *parent)
 {
 	GtkWidget *vboxMain;
 	GtkWidget *notebookMain;
@@ -585,16 +585,16 @@ GtkWidget * XAP_CocoaDialog_FontChooser::constructWindowContents(GtkObject *pare
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
 	
 	vboxMain = gtk_vbox_new (FALSE, 0);
-	gtk_object_set_data (parent, "vboxMain", vboxMain);
+	g_object_set_data (parent, "vboxMain", vboxMain);
 	gtk_widget_show (vboxMain);
 
 	notebookMain = gtk_notebook_new ();
-	gtk_object_set_data (parent, "notebookMain", notebookMain);
+	g_object_set_data (parent, "notebookMain", notebookMain);
 	gtk_widget_show (notebookMain);
 	gtk_box_pack_start (GTK_BOX (vboxMain), notebookMain, 1, 1, 0);
 	gtk_container_set_border_width (GTK_CONTAINER (notebookMain), 8);
 
-	GtkObject *window1 = parent;	
+	GObject *window1 = parent;	
   	GtkWidget *table1;
   	GtkWidget *vbox1;
   
@@ -609,7 +609,7 @@ GtkWidget * XAP_CocoaDialog_FontChooser::constructWindowContents(GtkObject *pare
 	table1 = gtk_table_new (2, 3, FALSE);
 	gtk_widget_set_name (table1, "table1");
 	gtk_widget_ref (table1);
-	gtk_object_set_data_full (GTK_OBJECT (window1), "table1", table1,
+	g_object_set_data_full (G_OBJECT (window1), "table1", table1,
 	                          (GtkDestroyNotify) gtk_widget_unref);
 	gtk_widget_show (table1);
 
@@ -624,7 +624,7 @@ GtkWidget * XAP_CocoaDialog_FontChooser::constructWindowContents(GtkObject *pare
 	vbox1 = gtk_vbox_new (FALSE, 0);
 	gtk_widget_set_name (vbox1, "vbox1");
 	gtk_widget_ref (vbox1);
-	gtk_object_set_data_full (GTK_OBJECT (window1), "vbox1", vbox1,
+	g_object_set_data_full (G_OBJECT (window1), "vbox1", vbox1,
 	                          (GtkDestroyNotify) gtk_widget_unref);
 	gtk_widget_show (vbox1);
 	gtk_table_attach (GTK_TABLE (table1), vbox1, 0, 1, 0, 2,
@@ -634,7 +634,7 @@ GtkWidget * XAP_CocoaDialog_FontChooser::constructWindowContents(GtkObject *pare
 	labelFont = gtk_label_new (pSS->getValue(XAP_STRING_ID_DLG_UFS_FontLabel));
 	gtk_widget_set_name (labelFont, "labelFont");
 	gtk_widget_ref (labelFont);
-	gtk_object_set_data_full (GTK_OBJECT (window1), "labelFont", labelFont,
+	g_object_set_data_full (G_OBJECT (window1), "labelFont", labelFont,
 	                          (GtkDestroyNotify) gtk_widget_unref);
 	gtk_widget_show (labelFont);
 	gtk_box_pack_start (GTK_BOX (vbox1), labelFont, FALSE, FALSE, 0);
@@ -642,7 +642,7 @@ GtkWidget * XAP_CocoaDialog_FontChooser::constructWindowContents(GtkObject *pare
 	scrolledwindow1 = gtk_scrolled_window_new (NULL, NULL);
 	gtk_widget_set_name (scrolledwindow1, "scrolledwindow1");
 	gtk_widget_ref (scrolledwindow1);
-	gtk_object_set_data_full (GTK_OBJECT (window1), "scrolledwindow1", scrolledwindow1,
+	g_object_set_data_full (G_OBJECT (window1), "scrolledwindow1", scrolledwindow1,
 	                          (GtkDestroyNotify) gtk_widget_unref);
 	gtk_widget_show (scrolledwindow1);
 	gtk_box_pack_start (GTK_BOX (vbox1), scrolledwindow1, TRUE, TRUE, 0);
@@ -652,7 +652,7 @@ GtkWidget * XAP_CocoaDialog_FontChooser::constructWindowContents(GtkObject *pare
 	listFonts = gtk_clist_new (1);
 	gtk_widget_set_name (listFonts, "listFonts");
 	gtk_widget_ref (listFonts);
-	gtk_object_set_data_full (GTK_OBJECT (window1), "listFonts", listFonts,
+	g_object_set_data_full (G_OBJECT (window1), "listFonts", listFonts,
 	                          (GtkDestroyNotify) gtk_widget_unref);
 	gtk_widget_show (listFonts);
 	gtk_container_add (GTK_CONTAINER (scrolledwindow1), listFonts);
@@ -661,7 +661,7 @@ GtkWidget * XAP_CocoaDialog_FontChooser::constructWindowContents(GtkObject *pare
 	vbox2 = gtk_vbox_new (FALSE, 0);
 	gtk_widget_set_name (vbox2, "vbox2");
 	gtk_widget_ref (vbox2);
-	gtk_object_set_data_full (GTK_OBJECT (window1), "vbox2", vbox2,
+	g_object_set_data_full (G_OBJECT (window1), "vbox2", vbox2,
 	                          (GtkDestroyNotify) gtk_widget_unref);
 	gtk_widget_show (vbox2);
 	gtk_table_attach (GTK_TABLE (table1), vbox2, 1, 2, 0, 1,
@@ -671,7 +671,7 @@ GtkWidget * XAP_CocoaDialog_FontChooser::constructWindowContents(GtkObject *pare
 	labelStyle = gtk_label_new (pSS->getValue(XAP_STRING_ID_DLG_UFS_StyleLabel));
 	gtk_widget_set_name (labelStyle, "labelStyle");
 	gtk_widget_ref (labelStyle);
-	gtk_object_set_data_full (GTK_OBJECT (window1), "labelStyle", labelStyle,
+	g_object_set_data_full (G_OBJECT (window1), "labelStyle", labelStyle,
 	                          (GtkDestroyNotify) gtk_widget_unref);
 	gtk_widget_show (labelStyle);
 	gtk_box_pack_start (GTK_BOX (vbox2), labelStyle, FALSE, FALSE, 0);
@@ -679,7 +679,7 @@ GtkWidget * XAP_CocoaDialog_FontChooser::constructWindowContents(GtkObject *pare
 	scrolledwindow2 = gtk_scrolled_window_new (NULL, NULL);
 	gtk_widget_set_name (scrolledwindow2, "scrolledwindow2");
 	gtk_widget_ref (scrolledwindow2);
-	gtk_object_set_data_full (GTK_OBJECT (window1), "scrolledwindow2", scrolledwindow2,
+	g_object_set_data_full (G_OBJECT (window1), "scrolledwindow2", scrolledwindow2,
 	                          (GtkDestroyNotify) gtk_widget_unref);
 	gtk_widget_show (scrolledwindow2);
 	gtk_box_pack_start (GTK_BOX (vbox2), scrolledwindow2, TRUE, TRUE, 0);
@@ -689,7 +689,7 @@ GtkWidget * XAP_CocoaDialog_FontChooser::constructWindowContents(GtkObject *pare
 	listStyles = gtk_clist_new (1);
 	gtk_widget_set_name (listStyles, "listStyles");
 	gtk_widget_ref (listStyles);
-	gtk_object_set_data_full (GTK_OBJECT (window1), "listStyles", listStyles,
+	g_object_set_data_full (G_OBJECT (window1), "listStyles", listStyles,
 	                          (GtkDestroyNotify) gtk_widget_unref);
 	gtk_widget_show (listStyles);
 	gtk_container_add (GTK_CONTAINER (scrolledwindow2), listStyles);
@@ -698,7 +698,7 @@ GtkWidget * XAP_CocoaDialog_FontChooser::constructWindowContents(GtkObject *pare
 	vbox3 = gtk_vbox_new (FALSE, 0);
 	gtk_widget_set_name (vbox3, "vbox3");
 	gtk_widget_ref (vbox3);
-	gtk_object_set_data_full (GTK_OBJECT (window1), "vbox3", vbox3,
+	g_object_set_data_full (G_OBJECT (window1), "vbox3", vbox3,
 	                          (GtkDestroyNotify) gtk_widget_unref);
 	gtk_widget_show (vbox3);
 	gtk_table_attach (GTK_TABLE (table1), vbox3, 2, 3, 0, 1,
@@ -708,7 +708,7 @@ GtkWidget * XAP_CocoaDialog_FontChooser::constructWindowContents(GtkObject *pare
 	labelSize = gtk_label_new (pSS->getValue(XAP_STRING_ID_DLG_UFS_SizeLabel));
 	gtk_widget_set_name (labelSize, "labelSize");
 	gtk_widget_ref (labelSize);
-	gtk_object_set_data_full (GTK_OBJECT (window1), "labelSize", labelSize,
+	g_object_set_data_full (G_OBJECT (window1), "labelSize", labelSize,
 	                          (GtkDestroyNotify) gtk_widget_unref);
 	gtk_widget_show (labelSize);
 	gtk_box_pack_start (GTK_BOX (vbox3), labelSize, FALSE, FALSE, 0);
@@ -716,7 +716,7 @@ GtkWidget * XAP_CocoaDialog_FontChooser::constructWindowContents(GtkObject *pare
 	scrolledwindow3 = gtk_scrolled_window_new (NULL, NULL);
 	gtk_widget_set_name (scrolledwindow3, "scrolledwindow3");
 	gtk_widget_ref (scrolledwindow3);
-	gtk_object_set_data_full (GTK_OBJECT (window1), "scrolledwindow3", scrolledwindow3,
+	g_object_set_data_full (G_OBJECT (window1), "scrolledwindow3", scrolledwindow3,
 	                          (GtkDestroyNotify) gtk_widget_unref);
 	gtk_widget_show (scrolledwindow3);
 	gtk_box_pack_start (GTK_BOX (vbox3), scrolledwindow3, TRUE, TRUE, 0);
@@ -726,7 +726,7 @@ GtkWidget * XAP_CocoaDialog_FontChooser::constructWindowContents(GtkObject *pare
 	listSizes = gtk_clist_new (1);
 	gtk_widget_set_name (listSizes, "listSizes");
 	gtk_widget_ref (listSizes);
-	gtk_object_set_data_full (GTK_OBJECT (window1), "listSizes", listSizes,
+	g_object_set_data_full (G_OBJECT (window1), "listSizes", listSizes,
 	                          (GtkDestroyNotify) gtk_widget_unref);
 	gtk_widget_show (listSizes);
 	gtk_container_add (GTK_CONTAINER (scrolledwindow3), listSizes);
@@ -735,7 +735,7 @@ GtkWidget * XAP_CocoaDialog_FontChooser::constructWindowContents(GtkObject *pare
 	vboxmisc = gtk_vbox_new (FALSE, 0);
 	gtk_widget_set_name (vboxmisc, "vboxmisc");
 	gtk_widget_ref (vboxmisc);
-	gtk_object_set_data_full (GTK_OBJECT (window1), "vboxmisc", vboxmisc,
+	g_object_set_data_full (G_OBJECT (window1), "vboxmisc", vboxmisc,
 	                          (GtkDestroyNotify) gtk_widget_unref);
 	gtk_widget_show (vboxmisc);
 	gtk_table_attach (GTK_TABLE (table1), vboxmisc, 1, 3, 1, 2,
@@ -743,12 +743,12 @@ GtkWidget * XAP_CocoaDialog_FontChooser::constructWindowContents(GtkObject *pare
 	                  (GtkAttachOptions) (GTK_FILL), 0, 0);
 
 	frameEffects = gtk_frame_new (pSS->getValue(XAP_STRING_ID_DLG_UFS_EffectsFrameLabel));
-	gtk_object_set_data (parent, "frameEffects", frameEffects);
+	g_object_set_data (parent, "frameEffects", frameEffects);
 	gtk_widget_show (frameEffects);
 	gtk_box_pack_start(GTK_BOX (vboxmisc), frameEffects, 0,0, 2);
 
 	hboxDecorations = gtk_hbox_new (FALSE, 0);
-	gtk_object_set_data (parent, "hboxDecorations", hboxDecorations);
+	g_object_set_data (parent, "hboxDecorations", hboxDecorations);
 	gtk_widget_show (hboxDecorations);
 	gtk_container_add (GTK_CONTAINER (frameEffects), hboxDecorations);
 
@@ -770,7 +770,7 @@ GtkWidget * XAP_CocoaDialog_FontChooser::constructWindowContents(GtkObject *pare
 /*
 #ifdef BIDI_ENABLED
 	checkbuttonDirection = gtk_check_button_new_with_label (pSS->getValue(XAP_STRING_ID_DLG_UFS_Direction));
-	gtk_object_set_data (parent, "checkbuttonDirection", checkbuttonDirection);
+	g_object_set_data (parent, "checkbuttonDirection", checkbuttonDirection);
 	gtk_container_border_width (GTK_CONTAINER (checkbuttonDirection), 5);
 	gtk_widget_show (checkbuttonDirection);
 	gtk_box_pack_start (GTK_BOX (hboxDecorations), checkbuttonDirection, TRUE, TRUE, 0);
@@ -780,20 +780,20 @@ GtkWidget * XAP_CocoaDialog_FontChooser::constructWindowContents(GtkObject *pare
 	hboxForEncoding = gtk_hbox_new (FALSE, 0);
 	gtk_widget_set_name (hboxForEncoding, "hboxForEncoding");
 	gtk_widget_ref (hboxForEncoding);
-	gtk_object_set_data_full (GTK_OBJECT (window1), "hboxForEncoding", hboxForEncoding,
+	g_object_set_data_full (G_OBJECT (window1), "hboxForEncoding", hboxForEncoding,
 	                          (GtkDestroyNotify) gtk_widget_unref);
 	gtk_widget_show (hboxForEncoding);
 	gtk_box_pack_start (GTK_BOX (vboxmisc), hboxForEncoding, TRUE, TRUE, 0);
 	
 	labelEncoding = gtk_label_new (pSS->getValue(XAP_STRING_ID_DLG_UFS_EncodingLabel));
-	gtk_object_set_data (parent, "labelEncoding", labelEncoding);
+	g_object_set_data (parent, "labelEncoding", labelEncoding);
 	gtk_widget_show (labelEncoding);
 	gtk_box_pack_start (GTK_BOX (hboxForEncoding), labelEncoding, 1,1, 2);
 	gtk_label_set_justify (GTK_LABEL (labelEncoding), GTK_JUSTIFY_LEFT);
 	gtk_misc_set_alignment (GTK_MISC (labelEncoding), 0, 0.5);
 	
 	comboEncoding = gtk_combo_new ();
-	gtk_object_set_data (parent, "comboEncoding", comboEncoding);
+	g_object_set_data (parent, "comboEncoding", comboEncoding);
 	gtk_widget_show (comboEncoding);
 	gtk_box_pack_start(GTK_BOX (hboxForEncoding), comboEncoding, 1, 1, 0); 
 	gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (GTK_COMBO (comboEncoding)->popup),
@@ -867,8 +867,8 @@ GtkWidget * XAP_CocoaDialog_FontChooser::constructWindowContents(GtkObject *pare
 
 	entryArea = createDrawingArea ();
 	gtk_widget_set_events(entryArea, GDK_EXPOSURE_MASK);
-	gtk_signal_connect(GTK_OBJECT(entryArea), "expose_event",
-					   GTK_SIGNAL_FUNC(s_drawing_area_expose), NULL);
+	g_signal_connect(G_OBJECT(entryArea), "expose_event",
+					   G_CALLBACK(s_drawing_area_expose), NULL);
 	gtk_widget_set_usize (entryArea, -1, PREVIEW_BOX_HEIGHT_PIXELS);
 	gtk_widget_show (entryArea);
 	gtk_container_add (GTK_CONTAINER (frame4), entryArea);
@@ -891,39 +891,39 @@ GtkWidget * XAP_CocoaDialog_FontChooser::constructWindowContents(GtkObject *pare
 #endif
 */
 	// bind signals to things
-	gtk_signal_connect(GTK_OBJECT(m_checkUnderline),
+	g_signal_connect(G_OBJECT(m_checkUnderline),
 					   "toggled",
-					   GTK_SIGNAL_FUNC(s_underline_toggled),
+					   G_CALLBACK(s_underline_toggled),
 					   (gpointer) this);
 
-	gtk_signal_connect(GTK_OBJECT(m_checkOverline),
+	g_signal_connect(G_OBJECT(m_checkOverline),
 					   "toggled",
-					   GTK_SIGNAL_FUNC(s_overline_toggled),
+					   G_CALLBACK(s_overline_toggled),
 					   (gpointer) this);
 
-	gtk_signal_connect(GTK_OBJECT(m_checkStrikeOut),
+	g_signal_connect(G_OBJECT(m_checkStrikeOut),
 					   "toggled",
-					   GTK_SIGNAL_FUNC(s_strikeout_toggled),
-					   (gpointer) this);
-
-
-	gtk_signal_connect(GTK_OBJECT(m_checkTransparency),
-					   "toggled",
-					   GTK_SIGNAL_FUNC(s_transparency_toggled),
+					   G_CALLBACK(s_strikeout_toggled),
 					   (gpointer) this);
 
 
-	gtk_signal_connect(GTK_OBJECT(listFonts),
+	g_signal_connect(G_OBJECT(m_checkTransparency),
+					   "toggled",
+					   G_CALLBACK(s_transparency_toggled),
+					   (gpointer) this);
+
+
+	g_signal_connect(G_OBJECT(listFonts),
 					   "select_row",
-					   GTK_SIGNAL_FUNC(s_select_row_font),
+					   G_CALLBACK(s_select_row_font),
 					   (gpointer) this);
-	gtk_signal_connect(GTK_OBJECT(listStyles),
+	g_signal_connect(G_OBJECT(listStyles),
 					   "select_row",
-					   GTK_SIGNAL_FUNC(s_select_row_style),
+					   G_CALLBACK(s_select_row_style),
 					   (gpointer) this);
-	gtk_signal_connect(GTK_OBJECT(listSizes),
+	g_signal_connect(G_OBJECT(listSizes),
 					   "select_row",
-					   GTK_SIGNAL_FUNC(s_select_row_size),
+					   G_CALLBACK(s_select_row_size),
 					   (gpointer) this);
 	
 	// we catch the color tab's wheel click event so we can do some nasty
@@ -934,27 +934,27 @@ GtkWidget * XAP_CocoaDialog_FontChooser::constructWindowContents(GtkObject *pare
 	// also, we must do connect_after() so we get the information before
 	// any other native color selector events get the chance to change
 	// things on us
-	gtk_signal_connect_after(GTK_OBJECT(GTK_COLOR_SELECTION(colorSelector)->wheel_area),
+	g_signal_connect_after(G_OBJECT(GTK_COLOR_SELECTION(colorSelector)->wheel_area),
 							 "event",
-							 GTK_SIGNAL_FUNC(s_color_wheel_clicked),
+							 G_CALLBACK(s_color_wheel_clicked),
 							 (gpointer) GTK_COLOR_SELECTION(colorSelector)->wheel_area);
 
-	gtk_signal_connect_after(GTK_OBJECT(GTK_COLOR_SELECTION(colorBGSelector)->wheel_area),
+	g_signal_connect_after(G_OBJECT(GTK_COLOR_SELECTION(colorBGSelector)->wheel_area),
 							 "event",
-							 GTK_SIGNAL_FUNC(s_color_wheel_clicked),
+							 G_CALLBACK(s_color_wheel_clicked),
 							 (gpointer) GTK_COLOR_SELECTION(colorSelector)->wheel_area);
 
 	// This is a catch-all color selector callback which catches any
 	// real-time updating of the color so we can refresh our preview
 	// text
-	gtk_signal_connect(GTK_OBJECT(colorSelector),
+	g_signal_connect(G_OBJECT(colorSelector),
 					   "event",
-					   GTK_SIGNAL_FUNC(s_color_update),
+					   G_CALLBACK(s_color_update),
 					   (gpointer) this);
 
-	gtk_signal_connect(GTK_OBJECT(colorBGSelector),
+	g_signal_connect(G_OBJECT(colorBGSelector),
 					   "event",
-					   GTK_SIGNAL_FUNC(s_bgcolor_update),
+					   G_CALLBACK(s_bgcolor_update),
 					   (gpointer) this);
 	
 	GTK_WIDGET_SET_FLAGS(listFonts, GTK_CAN_FOCUS);
@@ -1178,7 +1178,7 @@ void XAP_CocoaDialog_FontChooser::runModal(XAP_Frame * pFrame)
 // This enables callbacks on the preview area with a widget pointer to 
 // access this dialog.
 //
-	gtk_object_set_user_data(GTK_OBJECT(m_preview), this);
+	g_object_set_user_data(G_OBJECT(m_preview), this);
 	
 	// unfreeze updates of the preview
 	m_blockUpdate = false;

@@ -1189,10 +1189,10 @@ rms:  I'm adding something here to get a localized splash screen
 		GtkWidget * da = createDrawingArea ();
 		gtk_widget_set_events(da, GDK_ALL_EVENTS_MASK);
 		gtk_drawing_area_size(GTK_DRAWING_AREA (da), iSplashWidth, iSplashHeight);
-		gtk_signal_connect(G_OBJECT(da), "expose_event",
-						   GTK_SIGNAL_FUNC(s_drawingarea_expose), NULL);
-		gtk_signal_connect(G_OBJECT(da), "button_press_event",
-						   GTK_SIGNAL_FUNC(s_button_event), NULL);
+		g_signal_connect(G_OBJECT(da), "expose_event",
+						   G_CALLBACK(s_drawingarea_expose), NULL);
+		g_signal_connect(G_OBJECT(da), "button_press_event",
+						   G_CALLBACK(s_button_event), NULL);
 		gtk_container_add(GTK_CONTAINER(frame), da);
 		gtk_widget_show(da);
 

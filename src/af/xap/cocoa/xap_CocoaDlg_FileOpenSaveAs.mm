@@ -228,8 +228,8 @@ bool XAP_CocoaDialog_FileOpenSaveAs::_run_gtk_main(XAP_Frame * pFrame,
 				gtk_option_menu_get_menu(GTK_OPTION_MENU(filetypes_pulldown))));
 			UT_ASSERT(activeItem);
 
-			UT_sint32 nFileType = GPOINTER_TO_INT(gtk_object_get_user_data(
-				GTK_OBJECT(activeItem)));
+			UT_sint32 nFileType = GPOINTER_TO_INT(g_object_get_user_data(
+				G_OBJECT(activeItem)));
 
 			// set to first item, which should probably be auto detect
 			// TODO : "probably" isn't very good.
@@ -542,14 +542,14 @@ void XAP_CocoaDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 		    gtk_widget_set_usize (frame, PREVIEW_WIDTH, PREVIEW_HEIGHT);
 
 		    // the expose event off the preview
-		    gtk_signal_connect(GTK_OBJECT(preview),
+		    g_signal_connect(G_OBJECT(preview),
 				       "expose_event",
-				       GTK_SIGNAL_FUNC(s_preview_exposed),
+				       G_CALLBACK(s_preview_exposed),
 				       static_cast<gpointer>(this));
 
-		    gtk_signal_connect(GTK_OBJECT(pFS->file_list),
+		    g_signal_connect(G_OBJECT(pFS->file_list),
 				       "select-row",
-				       GTK_SIGNAL_FUNC(s_filename_select),
+				       G_CALLBACK(s_filename_select),
 				       static_cast<gpointer>(this));
 		  }
 
@@ -595,7 +595,7 @@ void XAP_CocoaDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 			// types yet.
 			g_snprintf(buffer, 1024, "%s", pSS->getValue(XAP_STRING_ID_DLG_FOSA_FileTypeAutoDetect));
 			thismenuitem = gtk_menu_item_new_with_label(buffer);
-			gtk_object_set_user_data(GTK_OBJECT(thismenuitem), GINT_TO_POINTER(XAP_DIALOG_FILEOPENSAVEAS_FILE_TYPE_AUTO));
+			g_object_set_user_data(G_OBJECT(thismenuitem), GINT_TO_POINTER(XAP_DIALOG_FILEOPENSAVEAS_FILE_TYPE_AUTO));
 			gtk_widget_show(thismenuitem);
 			gtk_menu_append(GTK_MENU(menu), thismenuitem);
 
@@ -617,7 +617,7 @@ void XAP_CocoaDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 					
 					g_snprintf(buffer, 1024, "%s", m_szDescriptions[i]);
 					thismenuitem = gtk_menu_item_new_with_label(buffer);
-					gtk_object_set_user_data(GTK_OBJECT(thismenuitem), GINT_TO_POINTER(m_nTypeList[i]));
+					g_object_set_user_data(G_OBJECT(thismenuitem), GINT_TO_POINTER(m_nTypeList[i]));
 					gtk_widget_show(thismenuitem);
 					gtk_menu_append(GTK_MENU(menu), thismenuitem);
 				}
@@ -642,10 +642,10 @@ void XAP_CocoaDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 #endif
 
 #if 0
-	gtk_signal_connect(GTK_OBJECT(pFS->ok_button), "clicked",
-					   GTK_SIGNAL_FUNC(s_ok_clicked), &m_answer);
-	gtk_signal_connect(GTK_OBJECT(pFS->cancel_button), "clicked",
-					   GTK_SIGNAL_FUNC(s_cancel_clicked), &m_answer);
+	g_signal_connect(G_OBJECT(pFS->ok_button), "clicked",
+					   G_CALLBACK(s_ok_clicked), &m_answer);
+	g_signal_connect(G_OBJECT(pFS->cancel_button), "clicked",
+					   G_CALLBACK(s_cancel_clicked), &m_answer);
 #endif
 #if 0
 	if (m_id == XAP_DIALOG_ID_FILE_OPEN || m_id == XAP_DIALOG_ID_INSERT_PICTURE || m_id == XAP_DIALOG_ID_FILE_INSERT || m_id == XAP_DIALOG_ID_INSERT_FILE) // only hide the buttons if we're opening a file/picture

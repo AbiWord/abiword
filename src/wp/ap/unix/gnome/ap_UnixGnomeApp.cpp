@@ -297,7 +297,7 @@ static void get_prop (BonoboPropertyBag 	*bag,
 // OK get the data from the widget. Only one argument at a time.
 //
 	abi = ABI_WIDGET(user_data); 
-	gtk_object_getv(G_OBJECT(abi),1,gtk_arg);
+	gtk_object_getv(GTK_OBJECT(abi),1,gtk_arg);
 //
 // Now copy it back to the bonobo argument.
 //
@@ -334,7 +334,7 @@ static void set_prop (BonoboPropertyBag 	*bag,
 //
 // Can only pass one argument at a time.
 //
-	gtk_object_setv(G_OBJECT(abi),1,gtk_arg);
+	gtk_object_setv(GTK_OBJECT(abi),1,gtk_arg);
 //
 // Free up allocated memory
 //
@@ -406,8 +406,8 @@ load_document_from_stream (BonoboPersistStream *ps,
 // Load the file.
 //
 //
-	gtk_object_set(G_OBJECT(abiwidget),"AbiWidget::unlink_after_load",(gboolean) TRUE,NULL);
-	gtk_object_set(G_OBJECT(abiwidget),"AbiWidget::load_file",(gchar *) szTempfile,NULL);
+	g_object_set(G_OBJECT(abiwidget),"AbiWidget::unlink_after_load",(gboolean) TRUE,NULL);
+	g_object_set(G_OBJECT(abiwidget),"AbiWidget::load_file",(gchar *) szTempfile,NULL);
 	return;
 
  exit_clean:
@@ -565,7 +565,7 @@ load_document_from_file(BonoboPersistFile *pf, const CORBA_char *filename,
 //
 // Load the file.
 //
-	gtk_object_set(G_OBJECT(abiwidget),"AbiWidget::load_file",(gchar *) filename,NULL);
+	g_object_set(G_OBJECT(abiwidget),"AbiWidget::load_file",(gchar *) filename,NULL);
 	return 0;
 }
 
@@ -680,7 +680,7 @@ pstream_get_content_types (BonoboPersistStream *ps, void *closure,
 // increment/decrement zoom percentages by this amount
 #define ZOOM_PCTG 10
 
-static void zoom_level_func(GtkObject * z, float lvl, gpointer data)
+static void zoom_level_func(GObject * z, float lvl, gpointer data)
 {
   g_return_if_fail (data != NULL);
   g_return_if_fail (IS_ABI_WIDGET(data));
@@ -697,7 +697,7 @@ static void zoom_level_func(GtkObject * z, float lvl, gpointer data)
   pFrame->setZoomPercentage ((UT_uint32)lvl);
 }
 
-static void zoom_in_func(GtkObject * z, gpointer data)
+static void zoom_in_func(GObject * z, gpointer data)
 {
   g_return_if_fail (data != NULL);
   g_return_if_fail (IS_ABI_WIDGET(data));
@@ -714,7 +714,7 @@ static void zoom_in_func(GtkObject * z, gpointer data)
   pFrame->setZoomPercentage (zoom_lvl);  
 }
 
-static void zoom_out_func(GtkObject * z, gpointer data)
+static void zoom_out_func(GObject * z, gpointer data)
 {
   g_return_if_fail (data != NULL);
   g_return_if_fail (IS_ABI_WIDGET(data));
@@ -734,7 +734,7 @@ static void zoom_out_func(GtkObject * z, gpointer data)
   pFrame->setZoomPercentage (zoom_lvl);  
 }
 
-static void zoom_to_fit_func(GtkObject * z, gpointer data)
+static void zoom_to_fit_func(GObject * z, gpointer data)
 {
   g_return_if_fail (data != NULL);
   g_return_if_fail (IS_ABI_WIDGET(data));
@@ -752,7 +752,7 @@ static void zoom_to_fit_func(GtkObject * z, gpointer data)
   pFrame->setZoomPercentage(newZoom);
 }
 
-static void zoom_to_default_func(GtkObject * z, gpointer data)
+static void zoom_to_default_func(GObject * z, gpointer data)
 {
   g_return_if_fail (data != NULL);
   g_return_if_fail (IS_ABI_WIDGET(data));
@@ -827,9 +827,9 @@ AbiControl_add_interfaces (AbiWidget *abiwidget,
 
 	item_container = bonobo_item_container_new ();
 
-	gtk_signal_connect (G_OBJECT (item_container),
+	g_signal_connect (G_OBJECT (item_container),
 			    "get_object",
-			    GTK_SIGNAL_FUNC (abiwidget_get_object),
+			    G_CALLBACK (abiwidget_get_object),
 			    abiwidget);
 	
 	bonobo_object_add_interface (BONOBO_OBJECT (to_aggregate),
@@ -845,16 +845,16 @@ AbiControl_add_interfaces (AbiWidget *abiwidget,
 	bonobo_object_add_interface (BONOBO_OBJECT (to_aggregate),
 				     BONOBO_OBJECT (zoomable));
 
-	gtk_signal_connect(G_OBJECT(zoomable), "zoom_in",
-			   GTK_SIGNAL_FUNC(zoom_in_func), abiwidget);
-	gtk_signal_connect(G_OBJECT(zoomable), "zoom_out",
-			   GTK_SIGNAL_FUNC(zoom_out_func), abiwidget);
-	gtk_signal_connect(G_OBJECT(zoomable), "zoom_to_fit",
-			   GTK_SIGNAL_FUNC(zoom_to_fit_func), abiwidget);
-	gtk_signal_connect(G_OBJECT(zoomable), "zoom_to_default",
-			   GTK_SIGNAL_FUNC(zoom_to_default_func), abiwidget);
-	gtk_signal_connect(G_OBJECT(zoomable), "set_zoom_level",
-			   GTK_SIGNAL_FUNC(zoom_level_func), abiwidget);
+	g_signal_connect(G_OBJECT(zoomable), "zoom_in",
+			   G_CALLBACK(zoom_in_func), abiwidget);
+	g_signal_connect(G_OBJECT(zoomable), "zoom_out",
+			   G_CALLBACK(zoom_out_func), abiwidget);
+	g_signal_connect(G_OBJECT(zoomable), "zoom_to_fit",
+			   G_CALLBACK(zoom_to_fit_func), abiwidget);
+	g_signal_connect(G_OBJECT(zoomable), "zoom_to_default",
+			   G_CALLBACK(zoom_to_default_func), abiwidget);
+	g_signal_connect(G_OBJECT(zoomable), "set_zoom_level",
+			   G_CALLBACK(zoom_level_func), abiwidget);
 
 	return to_aggregate;
 }

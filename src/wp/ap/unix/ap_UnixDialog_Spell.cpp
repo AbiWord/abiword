@@ -344,42 +344,42 @@ void AP_UnixDialog_Spell::_connectSignals(void)
    // connect signals to handlers
 
    // buttons
-   gtk_signal_connect(G_OBJECT(m_buttonChange), "clicked",
-		      GTK_SIGNAL_FUNC(s_change_clicked),
+   g_signal_connect(G_OBJECT(m_buttonChange), "clicked",
+		      G_CALLBACK(s_change_clicked),
 		      (gpointer) this);
-   gtk_signal_connect(G_OBJECT(m_buttonChangeAll), "clicked",
-		      GTK_SIGNAL_FUNC(s_change_all_clicked),
+   g_signal_connect(G_OBJECT(m_buttonChangeAll), "clicked",
+		      G_CALLBACK(s_change_all_clicked),
 		      (gpointer) this);
-   gtk_signal_connect(G_OBJECT(m_buttonIgnore), "clicked",
-		      GTK_SIGNAL_FUNC(s_ignore_clicked),
+   g_signal_connect(G_OBJECT(m_buttonIgnore), "clicked",
+		      G_CALLBACK(s_ignore_clicked),
 		      (gpointer) this);
-   gtk_signal_connect(G_OBJECT(m_buttonIgnoreAll), "clicked",
-		      GTK_SIGNAL_FUNC(s_ignore_all_clicked),
+   g_signal_connect(G_OBJECT(m_buttonIgnoreAll), "clicked",
+		      G_CALLBACK(s_ignore_all_clicked),
 		      (gpointer) this);
-   gtk_signal_connect(G_OBJECT(m_buttonAddToDict), "clicked",
-		      GTK_SIGNAL_FUNC(s_add_to_dict_clicked),
+   g_signal_connect(G_OBJECT(m_buttonAddToDict), "clicked",
+		      G_CALLBACK(s_add_to_dict_clicked),
 		      (gpointer) this);
-   gtk_signal_connect(G_OBJECT(m_buttonCancel), "clicked",
-		      GTK_SIGNAL_FUNC(s_cancel_clicked),
+   g_signal_connect(G_OBJECT(m_buttonCancel), "clicked",
+		      G_CALLBACK(s_cancel_clicked),
 		      (gpointer) this);
 
    // suggestion list
-   m_listHandlerID = gtk_signal_connect(G_OBJECT(m_clistSuggestions), "select-row",
-					GTK_SIGNAL_FUNC(s_suggestion_selected),
+   m_listHandlerID = g_signal_connect(G_OBJECT(m_clistSuggestions), "select-row",
+					G_CALLBACK(s_suggestion_selected),
 					(gpointer) this);
    
    // replacement edited
-   m_replaceHandlerID = gtk_signal_connect(G_OBJECT(m_entryChange), "changed",
-					   GTK_SIGNAL_FUNC(s_replacement_changed),
+   m_replaceHandlerID = g_signal_connect(G_OBJECT(m_entryChange), "changed",
+					   G_CALLBACK(s_replacement_changed),
 					   (gpointer) this);
    
    // the catch-alls
-   gtk_signal_connect(G_OBJECT(m_windowMain),
+   g_signal_connect(G_OBJECT(m_windowMain),
 		      "delete_event",
-		      GTK_SIGNAL_FUNC(s_delete_clicked),
+		      G_CALLBACK(s_delete_clicked),
 		      (gpointer) this);
          
-   gtk_signal_connect_after(G_OBJECT(m_windowMain),
+   g_signal_connect_after(G_OBJECT(m_windowMain),
 			    "destroy",
 			    NULL,
 			    NULL);
@@ -438,9 +438,9 @@ void AP_UnixDialog_Spell::_showMisspelledWord(void)
       FREEP(suggest[0]);
       gtk_clist_set_selectable(GTK_CLIST(m_clistSuggestions), 0, FALSE);
 
-      gtk_signal_handler_block(G_OBJECT(m_entryChange), m_replaceHandlerID);
+      g_signal_handler_block(G_OBJECT(m_entryChange), m_replaceHandlerID);
       gtk_entry_set_text(GTK_ENTRY(m_entryChange), "");
-      gtk_signal_handler_unblock(G_OBJECT(m_entryChange), m_replaceHandlerID);
+      g_signal_handler_unblock(G_OBJECT(m_entryChange), m_replaceHandlerID);
 
       m_iSelectedRow = -1;
       
@@ -554,9 +554,9 @@ void AP_UnixDialog_Spell::event_SuggestionSelected(gint row, gint column)
    gtk_clist_get_text(GTK_CLIST(m_clistSuggestions), row, column, &newreplacement);
    UT_ASSERT(newreplacement);
 
-   gtk_signal_handler_block(G_OBJECT(m_entryChange), m_replaceHandlerID);
+   g_signal_handler_block(G_OBJECT(m_entryChange), m_replaceHandlerID);
    gtk_entry_set_text(GTK_ENTRY(m_entryChange), newreplacement);
-   gtk_signal_handler_unblock(G_OBJECT(m_entryChange), m_replaceHandlerID);
+   g_signal_handler_unblock(G_OBJECT(m_entryChange), m_replaceHandlerID);
 }
 
 void AP_UnixDialog_Spell::event_ReplacementChanged()
@@ -570,9 +570,9 @@ void AP_UnixDialog_Spell::event_ReplacementChanged()
 	gtk_clist_get_text(GTK_CLIST(m_clistSuggestions), i, 0, &suggest);
 	UT_ASSERT(suggest);
 	if (strcmp(modtext, suggest) == 0) {
-	   gtk_signal_handler_block(G_OBJECT(m_clistSuggestions), m_listHandlerID);
+	   g_signal_handler_block(G_OBJECT(m_clistSuggestions), m_listHandlerID);
 	   gtk_clist_select_row(GTK_CLIST(m_clistSuggestions), i, 0);
-	   gtk_signal_handler_unblock(G_OBJECT(m_clistSuggestions), m_listHandlerID);
+	   g_signal_handler_unblock(G_OBJECT(m_clistSuggestions), m_listHandlerID);
 	   return;
 	}
      }

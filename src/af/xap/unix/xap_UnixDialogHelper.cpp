@@ -48,7 +48,7 @@
 
 static gboolean focus_in_event(GtkWidget *widget,GdkEvent */*event*/,gpointer /*user_data*/)
 {
-      XAP_Frame *pFrame=(XAP_Frame *)gtk_object_get_data(G_OBJECT(widget), "frame");
+      XAP_Frame *pFrame=(XAP_Frame *)g_object_get_data(G_OBJECT(widget), "frame");
       UT_ASSERT(pFrame);
 	  if (pFrame->getCurrentView())
 		  pFrame->getCurrentView()->focusChange(AV_FOCUS_NEARBY);
@@ -57,7 +57,7 @@ static gboolean focus_in_event(GtkWidget *widget,GdkEvent */*event*/,gpointer /*
 
 static gboolean destroy_event(GtkWidget *widget,GdkEvent */*event*/,gpointer /*user_data*/)
 {
-      XAP_Frame *pFrame=(XAP_Frame *)gtk_object_get_data(G_OBJECT(widget), "frame");
+      XAP_Frame *pFrame=(XAP_Frame *)g_object_get_data(G_OBJECT(widget), "frame");
       if(pFrame == NULL) return FALSE;
       
       return FALSE;
@@ -65,7 +65,7 @@ static gboolean destroy_event(GtkWidget *widget,GdkEvent */*event*/,gpointer /*u
 
 static gboolean focus_out_event(GtkWidget *widget,GdkEvent */*event*/,gpointer /*user_data*/)
 {
-      XAP_Frame *pFrame=(XAP_Frame *)gtk_object_get_data(G_OBJECT(widget), "frame");
+      XAP_Frame *pFrame=(XAP_Frame *)g_object_get_data(G_OBJECT(widget), "frame");
       if(pFrame == NULL) return FALSE;
       AV_View * pView = pFrame->getCurrentView();
       if(pView!= NULL)
@@ -77,7 +77,7 @@ static gboolean focus_out_event(GtkWidget *widget,GdkEvent */*event*/,gpointer /
 
 static gboolean focus_out_event_Modeless(GtkWidget *widget,GdkEvent */*event*/,gpointer /*user_data*/)
 {
-      XAP_App *pApp = (XAP_App *)gtk_object_get_data(G_OBJECT(widget), "pApp");
+      XAP_App *pApp = (XAP_App *)g_object_get_data(G_OBJECT(widget), "pApp");
       XAP_Frame *pFrame = pApp->getLastFocussedFrame();
       if(pFrame ==(XAP_Frame *)  NULL) 
       {
@@ -104,7 +104,7 @@ static gboolean focus_out_event_Modeless(GtkWidget *widget,GdkEvent */*event*/,g
 
 static gboolean focus_in_event_Modeless(GtkWidget *widget,GdkEvent */*event*/,gpointer /*user_data*/)
 {
-      XAP_App *pApp=(XAP_App *)gtk_object_get_data(G_OBJECT(widget), "pApp");
+      XAP_App *pApp=(XAP_App *)g_object_get_data(G_OBJECT(widget), "pApp");
       XAP_Frame *pFrame= pApp->getLastFocussedFrame();
       if(pFrame ==(XAP_Frame *)  NULL) 
       {
@@ -130,7 +130,7 @@ static gboolean focus_in_event_Modeless(GtkWidget *widget,GdkEvent */*event*/,gp
 
 static gboolean focus_in_event_ModelessOther(GtkWidget *widget,GdkEvent */*event*/,gboolean (*other_function)(void) )
 {
-      XAP_App *pApp=(XAP_App *)gtk_object_get_data(G_OBJECT(widget), "pApp");
+      XAP_App *pApp=(XAP_App *)g_object_get_data(G_OBJECT(widget), "pApp");
       XAP_Frame *pFrame= pApp->getLastFocussedFrame();
       if(pFrame ==(XAP_Frame *)  NULL) 
       {
@@ -156,40 +156,40 @@ static gboolean focus_in_event_ModelessOther(GtkWidget *widget,GdkEvent */*event
 
 void connectFocus(GtkWidget *widget,const XAP_Frame *frame)
 {
-      gtk_object_set_data(G_OBJECT(widget), "frame",
+      g_object_set_data(G_OBJECT(widget), "frame",
 					  (void *)frame);
-      gtk_signal_connect(G_OBJECT(widget), "focus_in_event",
-					 GTK_SIGNAL_FUNC(focus_in_event), NULL);
-      gtk_signal_connect(G_OBJECT(widget), "focus_out_event",
-					 GTK_SIGNAL_FUNC(focus_out_event), NULL);
-      gtk_signal_connect(G_OBJECT(widget), "destroy",
-					 GTK_SIGNAL_FUNC(destroy_event), NULL);
+      g_signal_connect(G_OBJECT(widget), "focus_in_event",
+					 G_CALLBACK(focus_in_event), NULL);
+      g_signal_connect(G_OBJECT(widget), "focus_out_event",
+					 G_CALLBACK(focus_out_event), NULL);
+      g_signal_connect(G_OBJECT(widget), "destroy",
+					 G_CALLBACK(destroy_event), NULL);
 }
 
 void connectFocusModelessOther(GtkWidget *widget,const XAP_App * pApp, 
 			       gboolean(*other_function)(void))
 {
-      gtk_object_set_data(G_OBJECT(widget), "pApp",
+      g_object_set_data(G_OBJECT(widget), "pApp",
 					  (void *)pApp);
-      gtk_signal_connect(G_OBJECT(widget), "focus_in_event",
-					 GTK_SIGNAL_FUNC(focus_in_event_ModelessOther), (gpointer) other_function);
-      gtk_signal_connect(G_OBJECT(widget), "focus_out_event",
-					 GTK_SIGNAL_FUNC(focus_out_event_Modeless), NULL);
-      gtk_signal_connect(G_OBJECT(widget), "destroy",
-					 GTK_SIGNAL_FUNC(focus_out_event_Modeless), NULL);
+      g_signal_connect(G_OBJECT(widget), "focus_in_event",
+					 G_CALLBACK(focus_in_event_ModelessOther), (gpointer) other_function);
+      g_signal_connect(G_OBJECT(widget), "focus_out_event",
+					 G_CALLBACK(focus_out_event_Modeless), NULL);
+      g_signal_connect(G_OBJECT(widget), "destroy",
+					 G_CALLBACK(focus_out_event_Modeless), NULL);
 }
 
 
 void connectFocusModeless(GtkWidget *widget,const XAP_App * pApp)
 {
-      gtk_object_set_data(G_OBJECT(widget), "pApp",
+      g_object_set_data(G_OBJECT(widget), "pApp",
 					  (void *)pApp);
-      gtk_signal_connect(G_OBJECT(widget), "focus_in_event",
-					 GTK_SIGNAL_FUNC(focus_in_event_Modeless), NULL);
-      gtk_signal_connect(G_OBJECT(widget), "focus_out_event",
-					 GTK_SIGNAL_FUNC(focus_out_event_Modeless), NULL);
-      gtk_signal_connect(G_OBJECT(widget), "destroy",
-					 GTK_SIGNAL_FUNC(destroy_event), NULL);
+      g_signal_connect(G_OBJECT(widget), "focus_in_event",
+					 G_CALLBACK(focus_in_event_Modeless), NULL);
+      g_signal_connect(G_OBJECT(widget), "focus_out_event",
+					 G_CALLBACK(focus_out_event_Modeless), NULL);
+      g_signal_connect(G_OBJECT(widget), "destroy",
+					 G_CALLBACK(destroy_event), NULL);
 }
 
 
@@ -235,13 +235,13 @@ void messageBoxOK(const char * message)
 	// New GTK+ dialog window
 	GtkWidget * dialog_window = gtk_dialog_new();								 
 
-	gtk_signal_connect_after (G_OBJECT (dialog_window),
+	g_signal_connect_after (G_OBJECT (dialog_window),
 							  "destroy",
 							  NULL,
 							  NULL);
-	gtk_signal_connect_after (G_OBJECT (dialog_window),
+	g_signal_connect_after (G_OBJECT (dialog_window),
 							  "delete_event",
-							  GTK_SIGNAL_FUNC(gtk_main_quit),
+							  G_CALLBACK(gtk_main_quit),
 							  NULL);
 
 	gtk_window_set_title(GTK_WINDOW(dialog_window), "AbiWord");
@@ -254,9 +254,9 @@ void messageBoxOK(const char * message)
 						  TRUE);
 
 	// Intercept key strokes
-	gtk_signal_connect(G_OBJECT(dialog_window),
+	g_signal_connect(G_OBJECT(dialog_window),
 					   "key_press_event",
-					   GTK_SIGNAL_FUNC(s_key_pressed),
+					   G_CALLBACK(s_key_pressed),
 					   NULL);
 
 	// Add our label string to the dialog in the message area
@@ -276,9 +276,9 @@ void messageBoxOK(const char * message)
 	gtk_widget_show(ok_label);
 	ok_button = gtk_button_new();
 	gtk_container_add(GTK_CONTAINER(ok_button), ok_label);
-	gtk_signal_connect (G_OBJECT (ok_button),
+	g_signal_connect (G_OBJECT (ok_button),
 						"clicked",
-						GTK_SIGNAL_FUNC(gtk_main_quit),
+						G_CALLBACK(gtk_main_quit),
 						NULL);
 	GTK_WIDGET_SET_FLAGS (ok_button, GTK_CAN_DEFAULT);
 	gtk_widget_set_usize(ok_button, DEFAULT_BUTTON_WIDTH, 0);
@@ -448,19 +448,19 @@ on_notebook_switch_page				   (GtkNotebook		*notebook,
 	UT_ASSERT(notebook && GTK_IS_NOTEBOOK(notebook));
 	UT_ASSERT(page && page->child && GTK_IS_OBJECT(page->child));
 
-	if ( G_OBJECT_DESTROYED(notebook) )
+	if ( GTK_OBJECT_DESTROYED(notebook) )
 		return ;
 
-	oldaccel = (GtkAccelGroup *)gtk_object_get_data( G_OBJECT(notebook),
+	oldaccel = (GtkAccelGroup *)g_object_get_data( G_OBJECT(notebook),
 													 KEY_ACCEL_GROUP );
-	newaccel = (GtkAccelGroup *)gtk_object_get_data( G_OBJECT(page->child),  
+	newaccel = (GtkAccelGroup *)g_object_get_data( G_OBJECT(page->child),  
 													 KEY_ACCEL_GROUP );
 	
 	if ( oldaccel )
 		gtk_window_remove_accel_group( topwindow, oldaccel );
 
 	gtk_window_add_accel_group( topwindow, newaccel );
-	gtk_object_set_data(G_OBJECT(notebook), KEY_ACCEL_GROUP, newaccel );
+	g_object_set_data(G_OBJECT(notebook), KEY_ACCEL_GROUP, newaccel );
 }
 
 /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -483,7 +483,7 @@ static void process_notebook_page( GtkWidget *notebook,
 	newgroup = gtk_accel_group_new();
 	UT_ASSERT(newgroup);
 
-	gtk_object_set_data( G_OBJECT(page), KEY_ACCEL_GROUP, (gpointer)newgroup );
+	g_object_set_data( G_OBJECT(page), KEY_ACCEL_GROUP, (gpointer)newgroup );
 
 	newdata.accel_group = newgroup;
 	fix_label_callback( page, &newdata );
@@ -549,16 +549,16 @@ static void fix_label_callback( GtkWidget *widget, gpointer _data )
 
 			if ( pageindex == 0 )		
 			{
-						accel_group = gtk_object_get_data( G_OBJECT(w), KEY_ACCEL_GROUP);
-						gtk_object_set_data( G_OBJECT(widget), KEY_ACCEL_GROUP, accel_group );
+						accel_group = g_object_get_data( G_OBJECT(w), KEY_ACCEL_GROUP);
+						g_object_set_data( G_OBJECT(widget), KEY_ACCEL_GROUP, accel_group );
 						gtk_window_add_accel_group( GTK_WINDOW(data->topwindow), 
 																				(GtkAccelGroup *)accel_group);
 			}
 		}
 			
 		/* set the signal handler to change to accel groups */
-		gtk_signal_connect (G_OBJECT(widget), "switch_page",
-						  GTK_SIGNAL_FUNC (on_notebook_switch_page),
+		g_signal_connect (G_OBJECT(widget), "switch_page",
+						  G_CALLBACK (on_notebook_switch_page),
 						  data->topwindow );
 
 
@@ -570,7 +570,7 @@ static void fix_label_callback( GtkWidget *widget, gpointer _data )
 	else if ( GTK_IS_OPTION_MENU( widget ) ) {
 		TRACE(("found option menu " ));
 
-		accel_tie = (GtkWidget *)gtk_object_get_data( G_OBJECT(widget),
+		accel_tie = (GtkWidget *)g_object_get_data( G_OBJECT(widget),
 													  "accel-tie");
 
 		if ( accel_tie ) {

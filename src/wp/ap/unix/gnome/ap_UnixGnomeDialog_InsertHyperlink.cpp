@@ -70,9 +70,9 @@ GtkWidget * AP_UnixGnomeDialog_InsertHyperlink::_constructWindow(void)
 	m_buttonCancel = GTK_WIDGET (g_list_last (GNOME_DIALOG (windowInsertHyperlink)->buttons)->data);
 	GTK_WIDGET_SET_FLAGS (m_buttonCancel, GTK_CAN_DEFAULT);
 
-	gtk_signal_connect (G_OBJECT(windowInsertHyperlink),
+	g_signal_connect (G_OBJECT(windowInsertHyperlink),
 			    "close",
-			    GTK_SIGNAL_FUNC(cb_close),
+			    G_CALLBACK(cb_close),
 			    (gpointer) this);
 
 	m_windowMain = windowInsertHyperlink;

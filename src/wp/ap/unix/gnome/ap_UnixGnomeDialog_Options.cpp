@@ -85,7 +85,7 @@ GtkWidget* AP_UnixGnomeDialog_Options::_constructWindow ()
 	gnome_dialog_append_button(GNOME_DIALOG(windowOptions), GNOME_STOCK_BUTTON_OK);
 	gnome_dialog_append_button(GNOME_DIALOG(windowOptions), GNOME_STOCK_BUTTON_CANCEL);
 
-	gtk_object_set_data (G_OBJECT (windowOptions), "windowOptions", windowOptions);
+	g_object_set_data (G_OBJECT (windowOptions), "windowOptions", windowOptions);
 
 	buttonApply = GTK_WIDGET (g_list_nth_data (GNOME_DIALOG (windowOptions)->buttons, 0) );
 	buttonDefaults = GTK_WIDGET (g_list_nth_data (GNOME_DIALOG (windowOptions)->buttons, 1) );
@@ -93,43 +93,43 @@ GtkWidget* AP_UnixGnomeDialog_Options::_constructWindow ()
 	buttonCancel = GTK_WIDGET (g_list_nth_data (GNOME_DIALOG (windowOptions)->buttons, 3) );
 
 	// the catch-alls
-	gtk_signal_connect(G_OBJECT(windowOptions),
+	g_signal_connect(G_OBJECT(windowOptions),
 			   "delete_event",
-			   GTK_SIGNAL_FUNC(s_delete_clicked),
+			   G_CALLBACK(s_delete_clicked),
 			   (gpointer) this);
 
 	
-	gtk_signal_connect_after(G_OBJECT(windowOptions),
+	g_signal_connect_after(G_OBJECT(windowOptions),
 				 "destroy",
 				 NULL,
 				 NULL);
 	
 	//////////////////////////////////////////////////////////////////////
 	// the control buttons
-	gtk_signal_connect(G_OBJECT(buttonOk),
+	g_signal_connect(G_OBJECT(buttonOk),
 			   "clicked",
-			   GTK_SIGNAL_FUNC(s_ok_clicked),
+			   G_CALLBACK(s_ok_clicked),
 			   (gpointer) this);
     
-	gtk_signal_connect(G_OBJECT(buttonCancel),
+	g_signal_connect(G_OBJECT(buttonCancel),
 			   "clicked",
-			   GTK_SIGNAL_FUNC(s_cancel_clicked),
+			   G_CALLBACK(s_cancel_clicked),
 			   (gpointer) this);
 	
-	gtk_signal_connect(G_OBJECT(buttonDefaults),
+	g_signal_connect(G_OBJECT(buttonDefaults),
 			   "clicked",
-			   GTK_SIGNAL_FUNC(s_defaults_clicked),
+			   G_CALLBACK(s_defaults_clicked),
 			   (gpointer) this);
 	
-	gtk_signal_connect(G_OBJECT(buttonApply),
+	g_signal_connect(G_OBJECT(buttonApply),
 			   "clicked",
-			   GTK_SIGNAL_FUNC(s_apply_clicked),
+			   G_CALLBACK(s_apply_clicked),
 			   (gpointer) this);
 	
 	
-	gtk_signal_connect(G_OBJECT(windowOptions),
+	g_signal_connect(G_OBJECT(windowOptions),
 			   "close",
-			   GTK_SIGNAL_FUNC(s_cancel_clicked),
+			   G_CALLBACK(s_cancel_clicked),
 			   (gpointer)this);
 
 	// Update member variables with the important widgets that
@@ -156,9 +156,9 @@ GtkWidget* AP_UnixGnomeDialog_Options::_constructWindow ()
 
 	    /* check to see if there is any data already stored there (note, will
 	     * not work if 0's is stored in multiple places  */
-	    UT_ASSERT( gtk_object_get_data(G_OBJECT(w), "tControl" ) == NULL);
+	    UT_ASSERT( g_object_get_data(G_OBJECT(w), "tControl" ) == NULL);
 	    
-	    gtk_object_set_data( G_OBJECT(w), "tControl", (gpointer) i );
+	    g_object_set_data( G_OBJECT(w), "tControl", (gpointer) i );
 	  }
 
 	setDefaultButton (GNOME_DIALOG (windowOptions), 3);

@@ -485,7 +485,7 @@ bool EV_UnixMenu::synthesizeMenu(GtkWidget * wMenuRoot)
 				gtk_widget_show(w);
 
 				// set menu data to relate to class
-				gtk_object_set_user_data(G_OBJECT(w),this);
+				gtk_object_set_user_data(GTK_OBJECT(w),this);
 
 				// create callback info data for action handling
 				_wd * wd = new _wd(this, id);
@@ -494,13 +494,13 @@ bool EV_UnixMenu::synthesizeMenu(GtkWidget * wMenuRoot)
 				GtkWidget * wParent;
 				bResult = stack.viewTop((void **)&wParent);
 				UT_ASSERT(bResult);
-				gtk_object_set_data(G_OBJECT(wMenuRoot), szLabelName, w);
+				g_object_set_data(G_OBJECT(wMenuRoot), szLabelName, w);
 				// bury in parent
 				gtk_menu_append(GTK_MENU(wParent), w);
 				// connect callbacks
-				gtk_signal_connect(G_OBJECT(w), "activate", GTK_SIGNAL_FUNC(_wd::s_onActivate), wd);
-				gtk_signal_connect(G_OBJECT(w), "select", GTK_SIGNAL_FUNC(_wd::s_onMenuItemSelect), wd);
-				gtk_signal_connect(G_OBJECT(w), "deselect", GTK_SIGNAL_FUNC(_wd::s_onMenuItemDeselect), wd);				
+				g_signal_connect(G_OBJECT(w), "activate", G_CALLBACK(_wd::s_onActivate), wd);
+				g_signal_connect(G_OBJECT(w), "select", G_CALLBACK(_wd::s_onMenuItemSelect), wd);
+				g_signal_connect(G_OBJECT(w), "deselect", G_CALLBACK(_wd::s_onMenuItemDeselect), wd);				
 
 				// we always set the acccelerators in "normal" menu items, but
 				// not top-level (begin_submenus), as shown below
@@ -542,7 +542,7 @@ bool EV_UnixMenu::synthesizeMenu(GtkWidget * wMenuRoot)
 
 				// create the item widget
 				GtkWidget * w = gtk_menu_item_new();
-				gtk_object_set_user_data(G_OBJECT(w), this);
+				gtk_object_set_user_data(GTK_OBJECT(w), this);
 				gtk_widget_show(w);
 								
 				// create callback info data for action handling
@@ -552,7 +552,7 @@ bool EV_UnixMenu::synthesizeMenu(GtkWidget * wMenuRoot)
 				GtkWidget * wParent;
 				bResult = stack.viewTop((void **)&wParent);
 				UT_ASSERT(bResult);
-				gtk_object_set_data(G_OBJECT(wMenuRoot), szLabelName, w);
+				g_object_set_data(G_OBJECT(wMenuRoot), szLabelName, w);
 				// bury the widget in parent menu
 				gtk_container_add(GTK_CONTAINER(wParent), w);
 				
@@ -670,19 +670,19 @@ bool EV_UnixMenu::synthesizeMenu(GtkWidget * wMenuRoot)
 
 				// menu items with sub menus attached (w) get this signal
 				// bound to their children so they can trigger a refresh 
-				gtk_signal_connect(G_OBJECT(wsub),
+				g_signal_connect(G_OBJECT(wsub),
 								   "map",
-								   GTK_SIGNAL_FUNC(_wd::s_onInitMenu),
+								   G_CALLBACK(_wd::s_onInitMenu),
 								   wd);
-				gtk_signal_connect(G_OBJECT(wsub),
+				g_signal_connect(G_OBJECT(wsub),
 								   "unmap",
-								   GTK_SIGNAL_FUNC(_wd::s_onDestroyMenu),
+								   G_CALLBACK(_wd::s_onDestroyMenu),
 								   wd);
 				
-				gtk_object_set_user_data(G_OBJECT(wsub),this);
+				gtk_object_set_user_data(GTK_OBJECT(wsub),this);
 
 				// add to menu bar
-				gtk_object_set_data(G_OBJECT(wMenuRoot), _ev_FakeName(szLabelName, tmp++), wsub);
+				g_object_set_data(G_OBJECT(wMenuRoot), _ev_FakeName(szLabelName, tmp++), wsub);
 				gtk_menu_item_set_submenu(GTK_MENU_ITEM(w), wsub);
 				stack.push(wsub);
 
@@ -714,13 +714,13 @@ bool EV_UnixMenu::synthesizeMenu(GtkWidget * wMenuRoot)
 			GtkWidget * w = gtk_menu_item_new();
 			UT_ASSERT(w);
 			gtk_widget_set_sensitive(w, FALSE);
-			gtk_object_set_user_data(G_OBJECT(w),this);
+			gtk_object_set_user_data(GTK_OBJECT(w),this);
 
 			GtkWidget * wParent;
 			bResult = stack.viewTop((void **)&wParent);
 			UT_ASSERT(bResult);
 
-			gtk_object_set_data(G_OBJECT(wMenuRoot), _ev_FakeName("separator",tmp++), w);
+			g_object_set_data(G_OBJECT(wMenuRoot), _ev_FakeName("separator",tmp++), w);
 			gtk_widget_show(w);
 			gtk_menu_append(GTK_MENU(wParent),w);
 
@@ -849,19 +849,19 @@ bool EV_UnixMenu::_refreshMenu(AV_View * pView, GtkWidget * wMenuRoot)
 					gtk_widget_show(w);
 
 					// set menu data to relate to class
-					gtk_object_set_user_data(G_OBJECT(w),this);
+					gtk_object_set_user_data(GTK_OBJECT(w),this);
 					// create callback info data for action handling
 					_wd * wd = new _wd(this, id);
 					UT_ASSERT(wd);
 
 					// set parent data stuff
-					gtk_object_set_data(G_OBJECT(wMenuRoot), szLabelName, w);
+					g_object_set_data(G_OBJECT(wMenuRoot), szLabelName, w);
 					// bury in parent 
 					gtk_menu_insert(GTK_MENU(GTK_MENU_ITEM(wParent)->submenu), w, nPositionInThisMenu);
 					// connect callbacks
-					gtk_signal_connect(G_OBJECT(w), "activate", GTK_SIGNAL_FUNC(_wd::s_onActivate), wd);
-					gtk_signal_connect(G_OBJECT(w), "select", GTK_SIGNAL_FUNC(_wd::s_onMenuItemSelect), wd);
-					gtk_signal_connect(G_OBJECT(w), "deselect", GTK_SIGNAL_FUNC(_wd::s_onMenuItemDeselect), wd);				
+					g_signal_connect(G_OBJECT(w), "activate", G_CALLBACK(_wd::s_onActivate), wd);
+					g_signal_connect(G_OBJECT(w), "select", G_CALLBACK(_wd::s_onMenuItemSelect), wd);
+					g_signal_connect(G_OBJECT(w), "deselect", G_CALLBACK(_wd::s_onMenuItemDeselect), wd);				
 						
 					// we do NOT add a new item, we point the existing index at our new widget
 					// (update the pointers)
@@ -1196,11 +1196,11 @@ bool EV_UnixMenuPopup::synthesizeMenuPopup()
 	UT_ASSERT(wd);
 	wd->m_accelGroup = gtk_accel_group_new();
 	gtk_menu_set_accel_group(GTK_MENU(m_wMenuPopup), wd->m_accelGroup);
-	gtk_signal_connect(G_OBJECT(m_wMenuPopup), "map",
-					   GTK_SIGNAL_FUNC(_wd::s_onInitMenu), wd);
-	gtk_signal_connect(G_OBJECT(m_wMenuPopup), "unmap",
-					   GTK_SIGNAL_FUNC(_wd::s_onDestroyPopupMenu), wd);
-	gtk_object_set_user_data(G_OBJECT(m_wMenuPopup),this);
+	g_signal_connect(G_OBJECT(m_wMenuPopup), "map",
+					   G_CALLBACK(_wd::s_onInitMenu), wd);
+	g_signal_connect(G_OBJECT(m_wMenuPopup), "unmap",
+					   G_CALLBACK(_wd::s_onDestroyPopupMenu), wd);
+	gtk_object_set_user_data(GTK_OBJECT(m_wMenuPopup),this);
 
 	synthesizeMenu(m_wMenuPopup);
 	return true;
