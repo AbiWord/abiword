@@ -2452,11 +2452,11 @@ fl_BlockLayout::_doCheckWord(fl_PartOfBlock* pPOB,
 		}
 
 		// Configurably ignore upper-case words
-		if (bAllUpperCase && !m_pLayout->getSpellCheckCaps())
+		if (bAllUpperCase && m_pLayout->getSpellCheckCaps())
 			break;
 
 		// Configurably ignore words containing digits
-		if (bHasNumeric && !m_pLayout->getSpellCheckNumbers())
+		if (bHasNumeric && m_pLayout->getSpellCheckNumbers())
 			break;
 
 		// Spell check the word, return if correct
