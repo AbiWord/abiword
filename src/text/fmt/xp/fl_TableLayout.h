@@ -327,7 +327,7 @@ private:
 };
 
 ///
-/// Define he current supported background fill types
+/// Define the current supported background fill types
 /// DO NOT CHANGE THE EXISTING NUMBERS, EVER!
 /// You can add new styles as you please
 ///
@@ -347,4 +347,3 @@ private:
 // add more line styles here
 
 #endif /* TABLELAYOUT_H */
-
