@@ -73,7 +73,7 @@ UT_Error IE_ImpGraphic_PNG::importGraphic(UT_ByteBuf* pBB,
 	if(!pFGR->setRaster_PNG(pBB)) {
 		DELETEP(pFGR);
 		
-		return UT_IE_BOGUSDOCUMENT;
+		return UT_IE_FAKETYPE;
 	}
 
 	*ppfg = (FG_Graphic *) pFGR;

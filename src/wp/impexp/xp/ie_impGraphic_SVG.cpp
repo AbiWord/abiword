@@ -38,8 +38,8 @@ UT_Bool IE_ImpGraphic_SVG::RecognizeContents(const char * szBuf, UT_uint32 iNumb
 		   	if ((szBuf[off+1] == 's' || szBuf[off+1] == 'S') &&
 			    (szBuf[off+2] == 'v' || szBuf[off+2] == 'V') &&
 			    (szBuf[off+3] == 'g' || szBuf[off+3] == 'G') &&
-			    (szBuf[off] == ' ' || szBuf[off] == '\t' ||
-			     szBuf[off] == '\n' || szBuf[off] == '\r'))
+			    (szBuf[off+4] == ' ' || szBuf[off+4] == '\t' ||
+			     szBuf[off+4] == '\n' || szBuf[off+4] == '\r'))
 		     		return UT_TRUE;
 		   	else {
 			   	off++;
@@ -88,7 +88,7 @@ UT_Error IE_ImpGraphic_SVG::importGraphic(UT_ByteBuf* pBB,
 	if(!pFGR->setVector_SVG(pBB)) {
 		DELETEP(pFGR);
 		
-		return UT_IE_BOGUSDOCUMENT;
+		return UT_IE_FAKETYPE;
 	}
 
 	*ppfg = (FG_Graphic *) pFGR;
