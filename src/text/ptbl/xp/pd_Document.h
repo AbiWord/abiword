@@ -201,6 +201,8 @@ public:
 	void					endUserAtomicGlob(void);
 	void                    setMarginChangeOnly(bool b);
 	bool                    isMarginChangeOnly(void) const;
+	bool                    changeObjectFormatNoUpdate(PTChangeFmt ptc ,PL_ObjectHandle odh,const XML_Char ** attributes,const XML_Char ** properties );	
+PT_AttrPropIndex            getAPIFromSOH(PL_ObjectHandle odh);	
 	bool					insertObject(PT_DocPosition dpos,
 										 PTObjectType pto,
 										 const XML_Char ** attributes,
@@ -287,7 +289,6 @@ public:
 	bool					appendFmtMark(void);
 	bool					appendStyle(const XML_Char ** attributes);
 	bool                    changeStruxFormatNoUpdate(PTChangeFmt ptc ,PL_StruxDocHandle sdh,const XML_Char ** attributes);	
-	bool                    changeObjectFormatNoUpdate(PTChangeFmt ptc ,PL_ObjectHandle odh,const XML_Char ** attributes,const XML_Char ** properties );	
 	bool					insertStruxBeforeFrag(pf_Frag * pF, PTStruxType pts,
 												  const XML_Char ** attributes, pf_Frag_Strux ** ppfs_ret = 0);
 	bool					insertSpanBeforeFrag(pf_Frag * pF, const UT_UCSChar * p, UT_uint32 length);

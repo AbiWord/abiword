@@ -55,10 +55,8 @@ protected:
 	virtual void			_clearScreen(bool bFullLineHeightRect);
 	virtual bool			_letPointPass(void) const;
 	void                    _drawResizeBox(UT_Rect box);
-	UT_sint32               m_iImageWidth;
-	UT_sint32               m_iImageHeight;
-	UT_String               m_sCachedWidthProp;
-	UT_String               m_sCachedHeightProp;
+	UT_sint32               _getLayoutPropFromObject(const char * szProp);
+    bool                    _updatePropValuesIfNeeded(void);
 	UT_sint32               m_iPointHeight;
 	const PP_AttrProp *     m_pSpanAP;
 	UT_uint32               m_iGraphicTick;

@@ -36,10 +36,6 @@
 fp_MathRun::fp_MathRun(fl_BlockLayout* pBL, 
 					   UT_uint32 iOffsetFirst,PT_AttrPropIndex indexAP,PL_ObjectHandle oh)	: 
 	fp_Run(pBL,  iOffsetFirst,1, FPRUN_MATH ),
-	m_iImageWidth(0),
-	m_iImageHeight(0),
-	m_sCachedWidthProp(""),
-	m_sCachedHeightProp(""),
 	m_iPointHeight(0),
 	m_pSpanAP(NULL),
 	m_iGraphicTick(0),
@@ -74,7 +70,7 @@ void fp_MathRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 	UT_DEBUGMSG(("fp_MathRun _lookupProperties span %x \n",pSpanAP));
 	m_pSpanAP = pSpanAP;
 	m_bNeedsSnapshot = true;
-	bool bFoundDataID = pSpanAP->getAttribute("dataid", m_pszDataID);
+	pSpanAP->getAttribute("dataid", m_pszDataID);
 	m_pMathManager = m_pDocLayout->getEmbedManager("mathml");
 
 // Load this into MathView
@@ -110,28 +106,19 @@ void fp_MathRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 	  getMathManager()->loadEmbedData(m_iMathUID);
 	}
 	getMathManager()->setDefaultFontSize(m_iMathUID,atoi(pszSize));
-	iWidth = getMathManager()->getWidth(m_iMathUID);
-	iAscent = getMathManager()->getAscent(m_iMathUID);
-	iDescent = getMathManager()->getDescent(m_iMathUID);
+	if(getMathManager()->isDefault())
+	{
+	  iWidth = _getLayoutPropFromObject("width");
+	  iAscent = _getLayoutPropFromObject("ascent");
+	  iDescent = _getLayoutPropFromObject("descent");
+	}
+	else
+	{
+	  iWidth = getMathManager()->getWidth(m_iMathUID);
+	  iAscent = getMathManager()->getAscent(m_iMathUID);
+	  iDescent = getMathManager()->getDescent(m_iMathUID);
+	}
 	UT_DEBUGMSG(("Width = %d Ascent = %d Descent = %d \n",iWidth,iAscent,iDescent)); 
-	const XML_Char * szWidth = NULL;
-	m_pSpanAP->getProperty("width", szWidth);
-	if(szWidth == NULL)
-	{
-		szWidth = "0in";
-	}
-	const XML_Char * szHeight = NULL;
-	pSpanAP->getProperty("height", szHeight);
-	if(pG == NULL)
-	{
-		pG = getGraphics();
-	}
-	if(szHeight == NULL)
-	{
-		szHeight = "0in";
-	}
-
-	// Also get max width, height ready for generateImage.
 
 	fl_DocSectionLayout * pDSL = getBlock()->getDocSectionLayout();
 	fp_Page * p = NULL;
@@ -147,27 +134,24 @@ void fp_MathRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 	UT_sint32 maxH = p->getHeight() - UT_convertToLogicalUnits("0.1in");
 	maxW -= pDSL->getLeftMargin() + pDSL->getRightMargin();
 	maxH -= pDSL->getTopMargin() + pDSL->getBottomMargin();
-
-	if((strcmp(m_sCachedWidthProp.c_str(),szWidth) != 0) ||
-	   (strcmp(m_sCachedHeightProp.c_str(),szHeight) != 0) ||
-		UT_convertToLogicalUnits(szHeight) > maxH ||
-		UT_convertToLogicalUnits(szWidth) > maxW)
-	{
-		m_sCachedWidthProp = szWidth;
-		m_sCachedHeightProp = szHeight;
-	}
 	markAsDirty();
 	if(getLine())
 	{
 		getLine()->setNeedsRedraw();
 	}
-
+	if(iAscent < 0)
+	{
+	  iAscent = 0;
+	}
+	if(iDescent < 0)
+	{
+	  iDescent = 0;
+	}
 	_setAscent(iAscent);
 	_setDescent(iDescent);
 	_setWidth(iWidth);
 	_setHeight(iAscent+iDescent);
-	m_iImageWidth = getWidth();
-	m_iImageHeight = getHeight();
+	_updatePropValuesIfNeeded();
 }
 
 
@@ -356,4 +340,105 @@ void fp_MathRun::_draw(dg_DrawArgs* pDA)
 	}
 }
 
+/*!
+ * This method is used to determine the value of the layout properties
+ * of the math runs. The values returned are in logical units.
+ * The properties are "height","width","ascent","decent".
+ * If the propeties are not defined return -1
+ */
+UT_sint32  fp_MathRun::_getLayoutPropFromObject(const char * szProp)
+{
+  PT_AttrPropIndex api = getBlock()->getDocument()->getAPIFromSOH(m_OH);
+  const PP_AttrProp * pAP = NULL;
+  const char * szPropVal = NULL;
+  getBlock()->getDocument()->getAttrProp(api, &pAP);
+  if(pAP)
+    {
+      bool bFound = pAP->getProperty(szProp, szPropVal);
+      if(bFound)
+	{
+	  return atoi(szPropVal);
+	}
+    }
+  return -1;
+}
 
+/*!
+ * Returns true if the properties are changed in the document.
+ */
+bool fp_MathRun::_updatePropValuesIfNeeded(void)
+{
+  UT_sint32 iVal = 0;
+  if(getMathManager()->isDefault())
+    {
+      return false;
+    }
+  PT_AttrPropIndex api = getBlock()->getDocument()->getAPIFromSOH(m_OH);
+  const PP_AttrProp * pAP = NULL;
+  const char * szPropVal = NULL;
+  getBlock()->getDocument()->getAttrProp(api, &pAP);
+  UT_return_val_if_fail(pAP,false);
+  bool bFound = pAP->getProperty("height", szPropVal);
+  bool bDoUpdate = false;
+  if(bFound)
+    {
+      iVal = atoi(szPropVal);
+      bDoUpdate = (iVal != getHeight());
+    }
+  else
+    {
+      bDoUpdate = true;
+    }
+  bFound = pAP->getProperty("width", szPropVal);
+  if(bFound && !bDoUpdate)
+    {
+      iVal = atoi(szPropVal);
+      bDoUpdate = (iVal != getWidth());
+    }
+  else
+    {
+      bDoUpdate = true;
+    }
+  bFound = pAP->getProperty("ascent", szPropVal);
+  if(bFound && !bDoUpdate)
+    {
+      iVal = atoi(szPropVal);
+      bDoUpdate = (iVal != static_cast<UT_sint32>(getAscent()));
+    }
+  else
+    {
+      bDoUpdate = true;
+    }
+  bFound = pAP->getProperty("descent", szPropVal);
+  if(bFound && !bDoUpdate)
+    {
+      iVal = atoi(szPropVal);
+      bDoUpdate = (iVal != static_cast<UT_sint32>(getDescent()));
+    }
+  else
+    {
+      bDoUpdate = true;
+    }
+  if(bDoUpdate)
+    {
+      const char * pProps[10] = {NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL};
+      UT_UTF8String sHeight,sWidth,sAscent,sDescent;
+      UT_UTF8String_sprintf(sHeight,"%d",getHeight());
+      pProps[0] = "height";
+      pProps[1] = sHeight.utf8_str();
+      UT_UTF8String_sprintf(sWidth,"%d",getWidth());
+      pProps[2] = "width";
+      pProps[3] = sWidth.utf8_str();
+      UT_UTF8String_sprintf(sAscent,"%d",getAscent());
+      pProps[4] = "ascent";
+      pProps[5] = sAscent.utf8_str();
+      UT_UTF8String_sprintf(sDescent,"%d",getDescent());
+      pProps[6] = "descent";
+      pProps[7] = sDescent.utf8_str();
+      getBlock()->getDocument()->changeObjectFormatNoUpdate(PTC_AddFmt,m_OH,
+							    NULL,
+							    pProps);
+      return true;
+    }
+  return false;
+}

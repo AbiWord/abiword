@@ -395,8 +395,18 @@ void GR_EmbedManager::render(UT_sint32 uid ,UT_Rect & rec )
   else if( pEView->m_bHasPNGSnapshot)
   {
     UT_sint32 iWidth,iHeight = 0;
-    UT_PNG_getDimensions(const_cast<const UT_ByteBuf*>(pEView->m_PNGBuf), iWidth,iHeight);
-    pEView->m_pPreview = getGraphics()->createNewImage(pEView->m_sDataID.utf8_str(),const_cast<const UT_ByteBuf*>(pEView->m_PNGBuf),getGraphics()->tlu(iWidth),getGraphics()->tlu(iHeight));
+    if((rec.height <= 0) || (rec.width <= 0))
+    { 
+      UT_PNG_getDimensions(const_cast<const UT_ByteBuf*>(pEView->m_PNGBuf), iWidth,iHeight);
+      iHeight = getGraphics()->tlu(iHeight);
+      iWidth = getGraphics()->tlu(iWidth);
+    }
+    else
+    {
+      iHeight = rec.height;
+      iWidth = rec.width;
+    }
+    pEView->m_pPreview = getGraphics()->createNewImage(pEView->m_sDataID.utf8_str(),const_cast<const UT_ByteBuf*>(pEView->m_PNGBuf),iWidth,iHeight);
     GR_Painter painter(getGraphics());
     painter.drawImage(pEView->m_pPreview,rec.left,rec.top);
     return;

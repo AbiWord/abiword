@@ -5088,6 +5088,16 @@ bool PD_Document::changeObjectFormatNoUpdate(PTChangeFmt ptc ,PL_ObjectHandle od
 	return m_pPieceTable->changeObjectFormatNoUpdate(ptc ,pfo,attributes,properties);
 }
 
+/*!
+ * Return Attribute Property Index associated with the pf_Frag_Object pointed
+ * to by odh
+ */
+PT_AttrPropIndex  PD_Document::getAPIFromSOH(PL_ObjectHandle odh)
+{
+	pf_Frag_Object * pfo = const_cast<pf_Frag_Object *>(static_cast<const pf_Frag_Object *>(odh));
+	return pfo->getIndexAP();
+}	
+
 bool PD_Document::insertFmtMarkBeforeFrag(pf_Frag * pF, const XML_Char ** attributes)
 {
 	UT_return_val_if_fail (m_pPieceTable, false);
