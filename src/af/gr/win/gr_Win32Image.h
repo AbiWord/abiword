@@ -20,9 +20,11 @@
 #ifndef GR_WIN32IMAGE_H
 #define GR_WIN32IMAGE_H
 
-#include <windows.h>
-
 #include "gr_Image.h"
+
+// fwd. decl.
+typedef struct tagBITMAPINFO BITMAPINFO;
+
 
 class GR_Win32Image : public GR_RasterImage
 {
@@ -33,11 +35,11 @@ public:
 	virtual UT_Bool		convertToBuffer(UT_ByteBuf** ppBB) const;
 	virtual UT_Bool		convertFromBuffer(const UT_ByteBuf* pBB, UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight);
 	
-	void 			setDIB(BITMAPINFO *pDIB) { m_pDIB = pDIB; }
-   	inline BITMAPINFO*	getDIB(void) const { return m_pDIB; }
+	void				setDIB(BITMAPINFO *pDIB) { m_pDIB = pDIB; }
+	inline BITMAPINFO*	getDIB(void) const { return m_pDIB; }
 
 protected:
-    BITMAPINFO*		m_pDIB;
+	BITMAPINFO*		m_pDIB;
 };
 
 #endif /* GR_WIN32IMAGE_H */

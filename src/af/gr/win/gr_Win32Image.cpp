@@ -17,21 +17,31 @@
  * 02111-1307, USA.
  */
 
+// *sigh* lots and lots of defines needed to not make the compiler try to
+// parse over 512KB (and then some) of include files...
+#define WIN32_LEAN_AND_MEAN
+#define NOUSER
+#define NOHELP
+#define NOSYSPARAMSINFO
+#define NOWINABLE
+#define NOMETAFILE
+#define NOTEXTMETRIC
+#define NOGDICAPMASKS
+#define NOSERVICE
+#define NOIME
+#define NOMCX
+#include <windows.h>
+
 #include "gr_Win32Image.h"
 #include "png.h"
 
 #include "ut_assert.h"
 #include "ut_bytebuf.h"
 
+
 GR_Win32Image::GR_Win32Image(const char* szName)
+:	m_pDIB(0)
 {
-	m_pDIB = NULL;
-
-	if (m_pDIB)
-	{
-		setDisplaySize(m_pDIB->bmiHeader.biWidth, m_pDIB->bmiHeader.biHeight);
-	}
-
 	if (szName)
 	{
 		strcpy(m_szName, szName);
@@ -88,7 +98,7 @@ UT_Bool GR_Win32Image::convertFromBuffer(const UT_ByteBuf* pBB, UT_sint32 iDispl
 	{
 		/* Free all of the memory associated with the png_ptr and info_ptr */
 		png_destroy_read_struct(&png_ptr, &info_ptr, (png_infopp)NULL);
-	  
+
 		/* If we get here, we had a problem reading the file */
 		return UT_FALSE;
 	}
@@ -136,7 +146,7 @@ UT_Bool GR_Win32Image::convertFromBuffer(const UT_ByteBuf* pBB, UT_sint32 iDispl
 	{
 		iBytesInRow += (4 - (iBytesInRow % 4));
 	}
-	
+
 	m_pDIB = (BITMAPINFO*) malloc(sizeof(BITMAPINFOHEADER) + height * iBytesInRow);
 	if (!m_pDIB)
 	{
@@ -151,7 +161,7 @@ UT_Bool GR_Win32Image::convertFromBuffer(const UT_ByteBuf* pBB, UT_sint32 iDispl
 	*/
 
 	setDisplaySize(iDisplayWidth, iDisplayHeight);
-	
+
 	m_pDIB->bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
 	m_pDIB->bmiHeader.biWidth = width;
 	m_pDIB->bmiHeader.biHeight = height;
@@ -163,15 +173,15 @@ UT_Bool GR_Win32Image::convertFromBuffer(const UT_ByteBuf* pBB, UT_sint32 iDispl
 	m_pDIB->bmiHeader.biYPelsPerMeter = 0;
 	m_pDIB->bmiHeader.biClrUsed = 0;
 	m_pDIB->bmiHeader.biClrImportant = 0;
-	
+
 	UT_Byte* pBits = ((unsigned char*) m_pDIB) + m_pDIB->bmiHeader.biSize;
-	
+
 	for (; iInterlacePasses; iInterlacePasses--)
 	{
 		for (UT_uint32 iRow = 0; iRow < height; iRow++)
 		{
 			UT_Byte* pRow = pBits + (height - iRow - 1) * iBytesInRow;
-		
+
 			png_read_rows(png_ptr, &pRow, NULL, 1);
 		}
 	}
@@ -196,7 +206,7 @@ static void _png_write(png_structp png_ptr, png_bytep data, png_size_t length)
 
 	pBB->ins(pBB->getLength(), data, length);
 }
-	
+
 static void _png_flush(png_structp png_ptr)
 {
 }
@@ -324,7 +334,7 @@ UT_Bool GR_Win32Image::convertToBuffer(UT_ByteBuf** ppBB) const
 			{
 				pRow = pBits + (iHeight - iRow - 1) * iBytesInRow;
 			}
-			
+
 			for (iCol=0; iCol<iWidth; iCol++)
 			{
 				UT_Byte byt = pRow[iCol / 2];
@@ -337,15 +347,15 @@ UT_Bool GR_Win32Image::convertToBuffer(UT_ByteBuf** ppBB) const
 				{
 					pixel = byt >> 4;
 				}
-				
+
 				UT_ASSERT(pixel < m_pDIB->bmiHeader.biClrUsed);
-				
+
 				pData[(iRow*iWidth + iCol)*3 + 0] = pColors[pixel].rgbRed;
 				pData[(iRow*iWidth + iCol)*3 + 1] = pColors[pixel].rgbGreen;
 				pData[(iRow*iWidth + iCol)*3 + 2] = pColors[pixel].rgbBlue;
 			}
 		}
-		
+
 		break;
 	}
 	
@@ -356,7 +366,7 @@ UT_Bool GR_Win32Image::convertToBuffer(UT_ByteBuf** ppBB) const
 		{
 			iBytesInRow += (4 - (iBytesInRow % 4));
 		}
-		
+
 		for (iRow = 0; iRow<iHeight; iRow++)
 		{
 			if (bTopDown)
@@ -367,22 +377,22 @@ UT_Bool GR_Win32Image::convertToBuffer(UT_ByteBuf** ppBB) const
 			{
 				pRow = pBits + (iHeight - iRow - 1) * iBytesInRow;
 			}
-			
+
 			for (iCol=0; iCol<iWidth; iCol++)
 			{
 				UT_Byte pixel = pRow[iCol];
-				
+
 				UT_ASSERT(pixel < m_pDIB->bmiHeader.biClrUsed);
-				
+
 				pData[(iRow*iWidth + iCol)*3 + 0] = pColors[pixel].rgbRed;
 				pData[(iRow*iWidth + iCol)*3 + 1] = pColors[pixel].rgbGreen;
 				pData[(iRow*iWidth + iCol)*3 + 2] = pColors[pixel].rgbBlue;
 			}
 		}
-		
+
 		break;
 	}
-		
+
 	case 24:
 	{
 		iBytesInRow = iWidth * 3;
@@ -390,7 +400,7 @@ UT_Bool GR_Win32Image::convertToBuffer(UT_ByteBuf** ppBB) const
 		{
 			iBytesInRow += (4 - (iBytesInRow % 4));
 		}
-		
+
 		for (iRow = 0; iRow<iHeight; iRow++)
 		{
 			if (bTopDown)
@@ -401,7 +411,7 @@ UT_Bool GR_Win32Image::convertToBuffer(UT_ByteBuf** ppBB) const
 			{
 				pRow = pBits + (iHeight - iRow - 1) * iBytesInRow;
 			}
-			
+
 			for (iCol=0; iCol<iWidth; iCol++)
 			{
 				pData[(iRow*iWidth + iCol)*3 + 0] = pRow[iCol*3 + 2];
@@ -409,10 +419,10 @@ UT_Bool GR_Win32Image::convertToBuffer(UT_ByteBuf** ppBB) const
 				pData[(iRow*iWidth + iCol)*3 + 2] = pRow[iCol*3 + 0];
 			}
 		}
-		
+
 		break;
 	}
-	
+
 	default:
 		// there are DIB formats we do not support.
 		UT_ASSERT(UT_TODO);
