@@ -4094,7 +4094,7 @@ XML_Char* fl_BlockLayout::getListStyleString( List_Type iListType)
        if(nlisttype < 0 || nlisttype >= (UT_uint32) NOT_A_LIST)
 	      style = (XML_Char *) NULL;
        else
-	      style = xml_Lists[nlisttype];
+	      style = const_cast<XML_Char *>(xml_Lists[nlisttype]);
        return style;
 }
 
