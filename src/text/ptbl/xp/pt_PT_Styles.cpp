@@ -43,7 +43,7 @@
 
 UT_Bool pt_PieceTable::_loadBuiltinStyles(void)
 {
-	_s("Normal",	"P", "", "Normal", "font-family:Times New Roman; font-size:10pt; text-align:left; line-height:1.0");
+	_s("Normal",	"P", "",       "Normal", "font-family:Times New Roman; font-size:10pt; text-align:left; line-height:1.0");
 	_s("Heading 1",	"P", "Normal", "Normal", "font-family:Arial; font-size:14pt; font-weight:bold; margin-top:12pt; margin-bottom:3pt; keep-with-next:1");
 	_s("Heading 2",	"P", "Normal", "Normal", "font-family:Arial; font-size:12pt; font-weight:bold; font-style:italic; margin-top:12pt; margin-bottom:3pt; keep-with-next:1");
 	_s("Heading 3",	"P", "Normal", "Normal", "font-family:Arial; font-size:12pt; margin-top:12pt; margin-bottom:3pt; keep-with-next:1");

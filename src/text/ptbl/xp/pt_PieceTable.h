@@ -285,6 +285,7 @@ protected:
 											  pf_Frag ** ppfNewEnd,
 											  UT_uint32 * pfragOffsetNewEnd);
 	UT_Bool					_computeFmtMarkForNewBlock(pf_Frag_Strux * pfsBlock,
+													   pf_Frag * pfCurrent, PT_BlockOffset fragOffset,
 													   PT_AttrPropIndex * pFmtMarkAP);
 	UT_Bool					_getSpanAttrPropHelper(pf_Frag * pf, const PP_AttrProp ** ppAP) const;
 	UT_Bool					_lastUndoIsThisFmtMark(PT_DocPosition dpos);

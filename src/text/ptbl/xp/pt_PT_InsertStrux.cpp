@@ -207,10 +207,6 @@ UT_Bool pt_PieceTable::insertStrux(PT_DocPosition dpos,
 	if (!_createStrux(pts,indexAP,&pfsNew))
 		return UT_FALSE;
 	
-	// insert this frag into the fragment list.
-
-	_insertStrux(pf,fragOffset,pfsNew);
-
 	// when inserting paragraphs, we try to remember the current
 	// span formatting active at the insertion point and add a
 	// FmtMark immediately after the block.  this way, if the
@@ -224,10 +220,30 @@ UT_Bool pt_PieceTable::insertStrux(PT_DocPosition dpos,
 	PT_AttrPropIndex apFmtMark = 0;
 	if (pfsNew->getStruxType() == PTX_Block)
 	{
-		bNeedGlob = _computeFmtMarkForNewBlock(pfsNew,&apFmtMark);
+		bNeedGlob = _computeFmtMarkForNewBlock(pfsNew,pf,fragOffset,&apFmtMark);
 		if (bNeedGlob)
 			beginMultiStepGlob();
+
+		// if we are leaving an empty block (are stealing all it's content) we should
+		// put a FmtMark in it to remember the active span fmt at the time.
+		// this lets things like hitting two consecutive CR's and then comming
+		// back to the first empty paragraph behave as expected.
+
+		if ( (pf->getType()==pf_Frag::PFT_Strux) && (fragOffset == pf->getLength()) )
+		{
+			pf_Frag_Strux * pfsPrev = static_cast<pf_Frag_Strux *>(pf);
+			if (pfsPrev->getStruxType()==PTX_Block)
+			{
+				_insertFmtMarkAfterBlockWithNotify(pfsPrev,dpos,apFmtMark);
+				pf = pf->getNext();
+				fragOffset = 0;
+			}
+		}
 	}
+
+	// insert this frag into the fragment list.
+
+	_insertStrux(pf,fragOffset,pfsNew);
 
 	// create a change record to describe the change, add
 	// it to the history, and let our listeners know about it.
@@ -243,40 +259,40 @@ UT_Bool pt_PieceTable::insertStrux(PT_DocPosition dpos,
 
 	if (bNeedGlob)
 	{
+		UT_ASSERT(!pfsNew->getNext() || pfsNew->getNext()->getType()!=pf_Frag::PFT_FmtMark);
 		_insertFmtMarkAfterBlockWithNotify(pfsNew,dpos+pfsNew->getLength(),apFmtMark);
-
-		// if we left an empty block (and stole all it's content) we should
-		// put a FmtMark in it to remember the active span fmt at the time.
-		// this lets things like hitting two consecutive CR's behave as expected.
-
-		if (pfsNew->getPrev()->getType()==pf_Frag::PFT_Strux)
-		{
-			pf_Frag_Strux * pfsPrev = static_cast<pf_Frag_Strux *>(pfsNew->getPrev());
-			if (pfsPrev->getStruxType()==PTX_Block)
-				_insertFmtMarkAfterBlockWithNotify(pfsPrev,dpos,apFmtMark);
-		}
-		
 		endMultiStepGlob();
 	}
 	
 	return UT_TRUE;
 }
 
-UT_Bool pt_PieceTable::_computeFmtMarkForNewBlock(pf_Frag_Strux * pfsBlock,
+UT_Bool pt_PieceTable::_computeFmtMarkForNewBlock(pf_Frag_Strux * /* pfsNewBlock */,
+												  pf_Frag * pfCurrent, PT_BlockOffset fragOffset,
 												  PT_AttrPropIndex * pFmtMarkAP)
 {
 	*pFmtMarkAP = 0;
-	
+
+	// pfsNewBlock will soon be inserted at [pfCurrent,fragOffset].
 	// look at the attr/prop and/or style on this block and see if we should
 	// create a FmtMark based upon it.  then look to previous blocks for
 	// information to create one.
 
 	// TODO paul, if we set a style on this block and it implies a span-level
-	// TODO paul, format, create the proper FmtMark and return TRUE.
+	// TODO paul, format, create the proper FmtMark and return TRUE here rather
+	// TODO paul, than looking backwards.
 
-	// next we look backwards for an active FmrMark or Text span.
+	// next we look backwards for an active FmtMark or Text span.
 
-	for (pf_Frag * pfPrev=pfsBlock->getPrev(); (pfPrev); pfPrev=pfPrev->getPrev())
+	pf_Frag * pfPrev;
+	if (fragOffset!=0)
+		pfPrev = pfCurrent;
+	else if (pfCurrent->getLength()==0)
+		pfPrev = pfCurrent;
+	else
+		pfPrev = pfCurrent->getPrev();
+
+	for (/*pfPrev*/; (pfPrev); pfPrev=pfPrev->getPrev())
 	{
 		switch (pfPrev->getType())
 		{
@@ -313,9 +329,7 @@ UT_Bool pt_PieceTable::_computeFmtMarkForNewBlock(pf_Frag_Strux * pfsBlock,
 
 		case pf_Frag::PFT_Strux:
 			{	
-				// let's keep on looking back.  this is probably correct for
-				// a block, but may be questionable for sections.
-				break;
+				return UT_FALSE;
 			}
 
 		case pf_Frag::PFT_FmtMark:
@@ -324,6 +338,11 @@ UT_Bool pt_PieceTable::_computeFmtMarkForNewBlock(pf_Frag_Strux * pfsBlock,
 				pf_Frag_FmtMark * pfPrevFM = static_cast<pf_Frag_FmtMark *>(pfPrev);
 				*pFmtMarkAP = pfPrevFM->getIndexAP();
 				return UT_TRUE;
+			}
+
+		case pf_Frag::PFT_EndOfDoc:
+			{
+				break;						// keep looking back
 			}
 		}
 	}

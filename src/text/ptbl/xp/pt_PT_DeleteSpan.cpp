@@ -293,15 +293,18 @@ TheBeginning:
 
 		UT_Bool bDeletedInlineFmtMarks = UT_FALSE;
 		
-		if ((fragOffset_First==0) && pf_First->getPrev() && (pf_First->getPrev()->getType()==pf_Frag::PFT_FmtMark))
-			pf_First = pf_First->getPrev();
+//		if ((fragOffset_First==0) && pf_First->getPrev() && (pf_First->getPrev()->getType()==pf_Frag::PFT_FmtMark))
+//			pf_First = pf_First->getPrev();
 
 		pf_Frag * pfTemp = pf_First;
 		PT_BlockOffset fragOffsetTemp = fragOffset_First;
 
 		PT_DocPosition dposTemp = dpos1;
-		while (dposTemp < dpos2)
+		while (dposTemp <= dpos2)
 		{
+			if (pfTemp->getType() == pf_Frag::PFT_EndOfDoc)
+				break;
+			
 			if (pfTemp->getType() == pf_Frag::PFT_FmtMark)
 			{
 				pf_Frag * pfNewTemp;

@@ -36,6 +36,7 @@ void FV_View::Test_Dump(void)
 	static UT_uint32 x = 0;
 
 	x++;
+	UT_DEBUGMSG(("Dumping to files dump.*.%d\n",x));
 	
 #if defined(PT_TEST)
 	sprintf(buf,"dump.ptbl.%d",x);
