@@ -231,19 +231,25 @@ public:
 	static EV_EditMethod_Fn delBOD;
 	static EV_EditMethod_Fn delEOD;
 	static EV_EditMethod_Fn deleteBookmark;
+	static EV_EditMethod_Fn deleteColumns;
+	static EV_EditMethod_Fn deleteCell;
 	static EV_EditMethod_Fn deleteHyperlink;
+	static EV_EditMethod_Fn deleteRows;
 
-
-	static EV_EditMethod_Fn insertData;
-	static EV_EditMethod_Fn insertTab;
-	static EV_EditMethod_Fn insertSoftBreak;
-	static EV_EditMethod_Fn insertParagraphBreak;
-	static EV_EditMethod_Fn insertSectionBreak;
-	static EV_EditMethod_Fn insertLineBreak;
-	static EV_EditMethod_Fn insertPageBreak;
-	static EV_EditMethod_Fn insertColumnBreak;
 	static EV_EditMethod_Fn insertBookmark;
 	static EV_EditMethod_Fn insertHyperlink;
+	static EV_EditMethod_Fn insertColsAfter;
+	static EV_EditMethod_Fn insertColsBefore;
+	static EV_EditMethod_Fn insertColumnBreak;
+	static EV_EditMethod_Fn insertData;
+	static EV_EditMethod_Fn insertLineBreak;
+	static EV_EditMethod_Fn insertParagraphBreak;
+	static EV_EditMethod_Fn insertPageBreak;
+	static EV_EditMethod_Fn insertRowsAfter;
+	static EV_EditMethod_Fn insertRowsBefore;
+	static EV_EditMethod_Fn insertSectionBreak;
+	static EV_EditMethod_Fn insertSoftBreak;
+	static EV_EditMethod_Fn insertTab;
 
 	static EV_EditMethod_Fn insertSpace;
 	static EV_EditMethod_Fn insertNBSpace;
@@ -635,7 +641,10 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(delLeft),				0,	""),
 	EV_EditMethod(NF(delRight), 			0,	""),
 	EV_EditMethod(NF(deleteBookmark),		0,	""),
+	EV_EditMethod(NF(deleteCell),   		0,	""),
+	EV_EditMethod(NF(deleteColumns),   		0,	""),
 	EV_EditMethod(NF(deleteHyperlink),		0,	""),
+	EV_EditMethod(NF(deleteRows),   		0,	""),
 	EV_EditMethod(NF(dlgAbout), 			0,	""),
 	EV_EditMethod(NF(dlgBackground),		0,	""),
 	EV_EditMethod(NF(dlgBorders),			0,	""),
@@ -777,6 +786,8 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(insertCedillaData),	_D_,	""),
 	EV_EditMethod(NF(insertCircumflexData), _D_,	""),
 	EV_EditMethod(NF(insertClipart), 0, ""),
+	EV_EditMethod(NF(insertColsAfter),	0,	""),
+	EV_EditMethod(NF(insertColsBefore),	0,	""),
 	EV_EditMethod(NF(insertColumnBreak),	0,	""),
 	EV_EditMethod(NF(insertData),			_D_,	""),
 	EV_EditMethod(NF(insertDiaeresisData),	_D_,	""),
@@ -789,6 +800,8 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(insertOgonekData), 	_D_,	""),
 	EV_EditMethod(NF(insertPageBreak),		0,	""),
 	EV_EditMethod(NF(insertParagraphBreak), 0,	""),
+	EV_EditMethod(NF(insertRowsAfter),	0,	""),
+	EV_EditMethod(NF(insertRowsBefore),	0,	""),
 	EV_EditMethod(NF(insertSectionBreak),	0,	""),
 	EV_EditMethod(NF(insertSoftBreak),		0,	""),
 	EV_EditMethod(NF(insertSpace),			0,	""),
@@ -4206,6 +4219,103 @@ Defun1(insertColumnBreak)
 		return true;
 	UT_UCSChar c = UCS_VTAB;
 	pView->cmdCharInsert(&c,1);
+	return true;
+}
+
+Defun1(insertColsBefore)
+{
+	CHECK_FRAME;
+	ABIWORD_VIEW;
+//
+// Check we're in a table
+//
+	if(!pView->isInTable())
+		return true;
+//	pView->cmdInsertColumn(pView->getPoint(),true) // is before
+	return true;
+}
+
+
+Defun1(insertColsAfter)
+{
+	CHECK_FRAME;
+	ABIWORD_VIEW;
+//
+// Check we're in a table
+//
+	if(!pView->isInTable())
+		return true;
+//	pView->cmdInsertColumn(pView->getPoint(),false) // is before
+	return true;
+}
+
+
+Defun1(insertRowsBefore)
+{
+	CHECK_FRAME;
+	ABIWORD_VIEW;
+//
+// Check we're in a table
+//
+	if(!pView->isInTable())
+		return true;
+//	pView->cmdInsertRow(pView->getPoint(),true) // is before
+	return true;
+}
+
+
+Defun1(insertRowsAfter)
+{
+	CHECK_FRAME;
+	ABIWORD_VIEW;
+//
+// Check we're in a table
+//
+	if(!pView->isInTable())
+		return true;
+//	pView->cmdInsertRow(pView->getPoint(),false) // is before
+	return true;
+}
+
+
+Defun1(deleteCell)
+{
+	CHECK_FRAME;
+	ABIWORD_VIEW;
+//
+// Check we're in a table
+//
+	if(!pView->isInTable())
+		return true;
+//	pView->cmdDeleteCell(pView->getPoint());
+	return true;
+}
+
+
+Defun1(deleteColumns)
+{
+	CHECK_FRAME;
+	ABIWORD_VIEW;
+//
+// Check we're in a table
+//
+	if(!pView->isInTable())
+		return true;
+	pView->cmdDeleteCol(pView->getPoint());
+	return true;
+}
+
+
+Defun1(deleteRows)
+{
+	CHECK_FRAME;
+	ABIWORD_VIEW;
+//
+// Check we're in a table
+//
+	if(!pView->isInTable())
+		return true;
+	pView->cmdDeleteRow(pView->getPoint());
 	return true;
 }
 

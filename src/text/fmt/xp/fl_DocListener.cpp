@@ -909,7 +909,6 @@ bool fl_DocListener::change(PL_StruxFmtHandle sfh,
 		switch (pL->getType())
 		{
 		case PTX_Section:
-		case PTX_SectionTable:
 		case PTX_SectionEndnote:
 		{
 			fl_DocSectionLayout* pSL = static_cast<fl_DocSectionLayout*>(pL);
@@ -1140,6 +1139,20 @@ bool fl_DocListener::change(PL_StruxFmtHandle sfh,
 			UT_DEBUGMSG(("SEVIOR: Unknown change record on a SectionHdrFtr strux \n"));
 			UT_DEBUGMSG(("SEVIOR: Most like we're undoing an Insert HdrFtr. Carry on! \n"));
 			bResult = true;
+			goto finish_up;
+		}
+        case PTX_SectionTable:
+		{
+			fl_TableLayout * pTL = (fl_TableLayout *) pL;
+			UT_ASSERT(pTL->getContainerType() == FL_CONTAINER_TABLE);
+ 			bResult = pTL->doclistener_changeStrux(pcrxc);
+			goto finish_up;
+		}
+		case PTX_SectionCell:
+		{
+			fl_CellLayout * pCL = (fl_CellLayout *) pL;
+			UT_ASSERT(pCL->getContainerType() == FL_CONTAINER_CELL);
+			bResult = pCL->doclistener_changeStrux(pcrxc);
 			goto finish_up;
 		}
 		default:

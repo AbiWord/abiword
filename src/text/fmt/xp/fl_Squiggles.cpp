@@ -419,6 +419,7 @@ fl_Squiggles::textInserted(UT_sint32 iOffset, UT_sint32 iLength)
 	if (m_pOwner->getDocLayout()->isPendingWordForSpell())
 	{
 		// If not affected by insert, check it
+#if 0
 		if (!m_pOwner->getDocLayout()->touchesPendingWordForSpell(m_pOwner, iOffset, 0))
 		{
 			fl_PartOfBlock* pPending = m_pOwner->getDocLayout()->getPendingWordForSpell();
@@ -429,6 +430,11 @@ fl_Squiggles::textInserted(UT_sint32 iOffset, UT_sint32 iLength)
 
 			m_pOwner->getDocLayout()->checkPendingWordForSpell();
 		}
+#endif 
+//
+// Remove the pending word. Trying to spellcheck it is giving us troubles
+//
+		m_pOwner->getDocLayout()->setPendingWordForSpell(NULL,NULL);
 	}
 
 	// Recheck word at boundary
@@ -472,6 +478,7 @@ fl_Squiggles::textDeleted(UT_sint32 iOffset, UT_sint32 iLength)
 	if (m_pOwner->getDocLayout()->isPendingWordForSpell())
 	{
 		// If not affected by delete, check it
+#if 0
 		if (!m_pOwner->getDocLayout()->touchesPendingWordForSpell(m_pOwner, iOffset, chg))
 		{
 			fl_PartOfBlock* pPending = m_pOwner->getDocLayout()->getPendingWordForSpell();
@@ -482,6 +489,11 @@ fl_Squiggles::textDeleted(UT_sint32 iOffset, UT_sint32 iLength)
 
 			m_pOwner->getDocLayout()->checkPendingWordForSpell();
 		}
+#endif
+//
+// Remove the pending word. Trying to spellcheck it is giving us troubles
+//
+		m_pOwner->getDocLayout()->setPendingWordForSpell(NULL,NULL);
 	}
 
 	// Recheck at boundary

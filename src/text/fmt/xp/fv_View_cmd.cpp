@@ -63,7 +63,7 @@
 #include "fd_Field.h"
 #include "spell_manager.h"
 #include "ut_rand.h"
-
+#include "fp_TableContainer.h"
 #include "xap_EncodingManager.h"
 
 #include "pp_Revision.h"
@@ -140,6 +140,493 @@ void FV_View::cmdCharMotion(bool bForward, UT_uint32 count)
 	m_pLayout->setSkipUpdates(2);
 	notifyListeners(AV_CHG_MOTION);
 
+}
+
+/*!
+ * Delete the column containing the position posCol
+ */
+bool FV_View::cmdDeleteCol(PT_DocPosition posCol)
+{
+	PL_StruxDocHandle cellSDH,tableSDH,endTableSDH,endCellSDH;
+	PT_DocPosition posTable,posCell;
+	UT_sint32 iLeft,iRight,iTop,iBot;
+	_getCellParams(posCol, &iLeft, &iRight,&iTop,&iBot);
+	bool bRes = m_pDoc->getStruxOfTypeFromPosition(posCol,PTX_SectionCell,&cellSDH);
+	bRes = m_pDoc->getStruxOfTypeFromPosition(posCol,PTX_SectionTable,&tableSDH);
+	if(!bRes)
+	{
+		return false;
+	}
+	posTable = m_pDoc->getStruxPosition(tableSDH) + 1;
+//
+// Now find the number of rows and columns inthis table. This is easiest to
+// get from the table container
+//
+	fl_BlockLayout * pBL =	m_pLayout->findBlockAtPosition(posCol);
+	fp_Run * pRun;
+	UT_sint32 xPoint,yPoint,xPoint2,yPoint2,iPointHeight;
+	bool bDirection;
+	pRun = pBL->findPointCoords(posCol, false, xPoint,
+							    yPoint, xPoint2, yPoint2,
+							    iPointHeight, bDirection);
+
+	if(!pRun)
+	{
+		return false;
+	}
+	fp_Line * pLine = pRun->getLine();
+	if(!pLine)
+	{
+		return false;
+	}
+	fp_Container * pCon = pLine->getContainer();
+	if(!pCon)
+	{
+		return false;
+	}
+	fp_TableContainer * pTab = (fp_TableContainer *) pCon->getContainer();
+	if(!pTab)
+	{
+		return false;
+	}
+	UT_sint32 numRows = pTab->getNumRows();
+//
+// Got all we need, now set things up to do the delete nicely
+//
+	// Signal PieceTable Change
+	_saveAndNotifyPieceTableChange();
+
+	// Turn off list updates
+
+	m_pDoc->disableListUpdates();
+	m_pDoc->beginUserAtomicGlob();
+	if (!isSelectionEmpty())
+	{
+		m_pDoc->beginUserAtomicGlob();
+		PP_AttrProp AttrProp_Before;
+		_deleteSelection(&AttrProp_Before);
+		m_pDoc->endUserAtomicGlob();
+	}
+	else
+	{
+		_eraseInsertionPoint();
+	}
+	m_pDoc->setDontImmediatelyLayout(true);
+//
+// Now trigger a rebuild of the whole table by sending a changeStrux to the table strux
+// with a bogus line-type property. We'll restore it later.
+//
+	const char * pszTable[3] = {NULL,NULL,NULL};
+	pszTable[0] = "table-line-type";
+	const char * szLineType = NULL;
+	UT_String sLineType;
+	UT_sint32 iLineType;
+	m_pDoc->getPropertyFromSDH(tableSDH,pszTable[0],&szLineType);
+	if(szLineType == NULL || *szLineType == NULL)
+	{
+		iLineType = 0;
+	}
+	else
+	{
+		iLineType = atoi(szLineType);
+		iLineType -= 1;
+	}
+	UT_String_sprintf(sLineType,"%d",iLineType);
+	pszTable[1] = sLineType.c_str();
+	UT_DEBUGMSG(("SEVIOR: Doing Table strux change of %s %s \n",pszTable[0],pszTable[1]));
+	m_pDoc->changeStruxFmt(PTC_AddFmt,posTable,posTable,NULL,pszTable,PTX_SectionTable);
+//
+// OK loop through all the rows in this column and delete the entries in the specified
+// column if the cell spans just the width of the column..
+//
+	UT_sint32 i =0;
+	for(i=0; i <numRows; i++)
+	{
+		PT_DocPosition posCell = findCellPosAt(posTable,i,iLeft);
+		UT_sint32 Left,Right,Top,Bot;
+		_getCellParams(posCell+1,&Left,&Right,&Top,&Bot);
+		UT_DEBUGMSG(("SEVIOR: Before delete left %d right %d top %d bot %d \n",Left,Right,Top,Bot));
+		if((Right - Left) == 1)
+		{
+			_deleteCellAt(posTable,i, iLeft);
+		}
+	}
+//
+// OK now subtract one from all the column coordinates in the table with iLeft > iLeft
+// do this by running through the linked list of SectionCell fragments in the piecetable
+//
+// We stop when the position of the endCell strux is just before the position of
+// the endTable strux. So lets's get that now.
+//
+	bRes = m_pDoc->getNextStruxOfType(tableSDH,PTX_EndTable,&endTableSDH);
+	if(!bRes)
+	{
+		//
+		// Disaster! the table structure in the piecetable is screwed.
+		// we're totally stuffed now.
+		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+	}
+	PT_DocPosition posEndTable = m_pDoc->getStruxPosition(endTableSDH);
+	PT_DocPosition posEndCell;
+	bool bEnd = false;
+	UT_sint32 iCurLeft,iCurRight,iCurTop,iCurBot,iNewLeft,iNewRight;
+	cellSDH = tableSDH;
+    while(!bEnd)
+	{
+		bRes = m_pDoc->getNextStruxOfType(cellSDH,PTX_SectionCell,&cellSDH);
+		if(!bRes)
+		{
+			bEnd = true;
+			break;
+		}
+		posCell =  m_pDoc->getStruxPosition(cellSDH);
+		_getCellParams(posCell+1, &iCurLeft, &iCurRight,&iCurTop,&iCurBot);
+		UT_DEBUGMSG(("SEVIOR: Looking at cell left %d right %d top %d bot %d \n",iCurLeft,iCurRight,iCurTop,iCurBot));
+		bool bChange = false;
+		iNewLeft = iCurLeft;
+		iNewRight = iCurRight;
+		if(iCurLeft > iLeft)
+		{
+			bChange = true;
+			iNewLeft--;
+		}
+		if(iCurRight > iLeft)
+		{
+			bChange = true;
+			iNewRight--;
+		}
+		if(bChange)
+		{
+			UT_DEBUGMSG(("SEVIOR: changing cell to left %d right %d top %d bot %d \n",iNewLeft,iNewRight,iCurTop,iCurBot));
+			const char * props[9] = {NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL};
+			UT_String sLeft,sRight,sTop,sBot;
+			props[0] = "left-attach";
+			UT_String_sprintf(sLeft,"%d",iNewLeft);
+			props[1] = sLeft.c_str();
+			props[2] = "right-attach";
+			UT_String_sprintf(sRight,"%d",iNewRight);
+			props[3] = sRight.c_str();
+			props[4] = "top-attach";
+			UT_String_sprintf(sTop,"%d",iCurTop);
+			props[5] = sTop.c_str();
+			props[6] = "bot-attach";
+			UT_String_sprintf(sBot,"%d",iCurBot);
+			props[7] = sBot.c_str();
+			bRes = m_pDoc->changeStruxFmt(PTC_AddFmt,posCell+1,posCell+1,NULL,props,PTX_SectionCell);
+		}
+		bRes = m_pDoc->getNextStruxOfType(cellSDH,PTX_EndCell,&endCellSDH);
+		posEndCell =  m_pDoc->getStruxPosition(endCellSDH);
+		if(posEndCell+1 >= posEndTable)
+		{
+			bEnd = true;
+		}
+	}
+//
+// Now trigger a rebuild of the whole table by sending a changeStrux to the table strux
+// with the restored line-type property it has before.
+//
+	iLineType += 1;
+	UT_String_sprintf(sLineType,"%d",iLineType);
+	pszTable[1] = sLineType.c_str();
+	UT_DEBUGMSG(("SEVIOR: Doing Table strux change of %s %s \n",pszTable[0],pszTable[1]));
+	m_pDoc->changeStruxFmt(PTC_AddFmt,posTable,posTable,NULL,pszTable,PTX_SectionTable);
+//
+// OK finish everything off with the various parameters which allow the formatter to
+// be updated.
+//
+	m_pDoc->endUserAtomicGlob();
+	m_pDoc->setDontImmediatelyLayout(false);
+	_generalUpdate();
+
+
+	// restore updates and clean up dirty lists
+	m_pDoc->enableListUpdates();
+	m_pDoc->updateDirtyLists();
+
+	// Signal PieceTable Changes have finished
+	_restorePieceTableState();
+
+	_ensureThatInsertionPointIsOnScreen();
+	return true;
+}
+
+/*!
+ * Delete the row containing the position posRow
+ */
+bool FV_View::cmdDeleteRow(PT_DocPosition posRow)
+{
+	PL_StruxDocHandle cellSDH,tableSDH,endTableSDH,endCellSDH;
+	PT_DocPosition posTable,posCell;
+	UT_sint32 iLeft,iRight,iTop,iBot;
+	_getCellParams(posRow, &iLeft, &iRight,&iTop,&iBot);
+	bool bRes = m_pDoc->getStruxOfTypeFromPosition(posRow,PTX_SectionCell,&cellSDH);
+	bRes = m_pDoc->getStruxOfTypeFromPosition(posRow,PTX_SectionTable,&tableSDH);
+	if(!bRes)
+	{
+		return false;
+	}
+	posTable = m_pDoc->getStruxPosition(tableSDH) + 1;
+//
+// Now find the number of rows and columns inthis table. This is easiest to
+// get from the table container
+//
+	fl_BlockLayout * pBL =	m_pLayout->findBlockAtPosition(posRow);
+	fp_Run * pRun;
+	UT_sint32 xPoint,yPoint,xPoint2,yPoint2,iPointHeight;
+	bool bDirection;
+	pRun = pBL->findPointCoords(posRow, false, xPoint,
+							    yPoint, xPoint2, yPoint2,
+							    iPointHeight, bDirection);
+
+	if(!pRun)
+	{
+		return false;
+	}
+	fp_Line * pLine = pRun->getLine();
+	if(!pLine)
+	{
+		return false;
+	}
+	fp_Container * pCon = pLine->getContainer();
+	if(!pCon)
+	{
+		return false;
+	}
+	fp_TableContainer * pTab = (fp_TableContainer *) pCon->getContainer();
+	if(!pTab)
+	{
+		return false;
+	}
+	UT_sint32 numCols = pTab->getNumCols();
+//
+// Got all we need, now set things up to do the delete nicely
+//
+	// Signal PieceTable Change
+	_saveAndNotifyPieceTableChange();
+
+	// Turn off list updates
+
+	m_pDoc->disableListUpdates();
+	m_pDoc->beginUserAtomicGlob();
+	if (!isSelectionEmpty())
+	{
+		m_pDoc->beginUserAtomicGlob();
+		PP_AttrProp AttrProp_Before;
+		_deleteSelection(&AttrProp_Before);
+		m_pDoc->endUserAtomicGlob();
+	}
+	else
+	{
+		_eraseInsertionPoint();
+	}
+	m_pDoc->setDontImmediatelyLayout(true);
+//
+// Now trigger a rebuild of the whole table by sending a changeStrux to the table strux
+// with a bogus line-type property. We'll restore it later.
+//
+	const char * pszTable[3] = {NULL,NULL,NULL};
+	pszTable[0] = "table-line-type";
+	const char * szLineType = NULL;
+	UT_String sLineType;
+	UT_sint32 iLineType;
+	m_pDoc->getPropertyFromSDH(tableSDH,pszTable[0],&szLineType);
+	if(szLineType == NULL || *szLineType == NULL)
+	{
+		iLineType = 0;
+	}
+	else
+	{
+		iLineType = atoi(szLineType);
+		iLineType -= 1;
+	}
+	UT_String_sprintf(sLineType,"%d",iLineType);
+	pszTable[1] = sLineType.c_str();
+	UT_DEBUGMSG(("SEVIOR: Doing Table strux change of %s %s \n",pszTable[0],pszTable[1]));
+	m_pDoc->changeStruxFmt(PTC_AddFmt,posTable,posTable,NULL,pszTable,PTX_SectionTable);
+//
+// OK loop through all the rows in this column and delete the entries in the specified
+// column if the cell spans just the width of the column..
+//
+	UT_sint32 i =0;
+	for(i=0; i <numCols; i++)
+	{
+		PT_DocPosition posCell = findCellPosAt(posTable,i,iLeft);
+		UT_sint32 Left,Right,Top,Bot;
+		_getCellParams(posCell+1,&Left,&Right,&Top,&Bot);
+		UT_DEBUGMSG(("SEVIOR: Before delete left %d right %d top %d bot %d \n",Left,Right,Top,Bot));
+		if((Bot - Top) == 1)
+		{
+			_deleteCellAt(posTable,iTop, i);
+		}
+	}
+//
+// OK now subtract one from all the row coordinates in the table with iTop,iBot > iTop
+// do this by running through the linked list of SectionCell fragments in the piecetable
+//
+// We stop when the position of the endCell strux is just before the position of
+// the endTable strux. So lets's get that now.
+//
+	bRes = m_pDoc->getNextStruxOfType(tableSDH,PTX_EndTable,&endTableSDH);
+	if(!bRes)
+	{
+		//
+		// Disaster! the table structure in the piecetable is screwed.
+		// we're totally stuffed now.
+		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+	}
+	PT_DocPosition posEndTable = m_pDoc->getStruxPosition(endTableSDH);
+	PT_DocPosition posEndCell;
+	bool bEnd = false;
+	UT_sint32 iCurLeft,iCurRight,iCurTop,iCurBot,iNewTop,iNewBot;
+	cellSDH = tableSDH;
+    while(!bEnd)
+	{
+		bRes = m_pDoc->getNextStruxOfType(cellSDH,PTX_SectionCell,&cellSDH);
+		if(!bRes)
+		{
+			bEnd = true;
+			break;
+		}
+		posCell =  m_pDoc->getStruxPosition(cellSDH);
+		_getCellParams(posCell+1, &iCurLeft, &iCurRight,&iCurTop,&iCurBot);
+		UT_DEBUGMSG(("SEVIOR: Looking at cell left %d right %d top %d bot %d \n",iCurLeft,iCurRight,iCurTop,iCurBot));
+		bool bChange = false;
+		iNewTop = iCurTop;
+		iNewBot = iCurBot;
+		if(iCurTop > iTop)
+		{
+			bChange = true;
+			iNewTop--;
+		}
+		if(iCurBot > iTop)
+		{
+			bChange = true;
+			iNewBot--;
+		}
+		if(bChange)
+		{
+			UT_DEBUGMSG(("SEVIOR: changing cell to left %d right %d top %d bot %d \n",iCurLeft,iCurRight,iNewTop,iNewBot));
+			const char * props[9] = {NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL};
+			UT_String sLeft,sRight,sTop,sBot;
+			props[0] = "left-attach";
+			UT_String_sprintf(sLeft,"%d",iCurLeft);
+			props[1] = sLeft.c_str();
+			props[2] = "right-attach";
+			UT_String_sprintf(sRight,"%d",iCurRight);
+			props[3] = sRight.c_str();
+			props[4] = "top-attach";
+			UT_String_sprintf(sTop,"%d",iNewTop);
+			props[5] = sTop.c_str();
+			props[6] = "bot-attach";
+			UT_String_sprintf(sBot,"%d",iNewBot);
+			props[7] = sBot.c_str();
+			bRes = m_pDoc->changeStruxFmt(PTC_AddFmt,posCell+1,posCell+1,NULL,props,PTX_SectionCell);
+		}
+		bRes = m_pDoc->getNextStruxOfType(cellSDH,PTX_EndCell,&endCellSDH);
+		posEndCell =  m_pDoc->getStruxPosition(endCellSDH);
+		if(posEndCell+1 >= posEndTable)
+		{
+			bEnd = true;
+		}
+	}
+//
+// Now trigger a rebuild of the whole table by sending a changeStrux to the table strux
+// with the restored line-type property it has before.
+//
+	iLineType += 1;
+	UT_String_sprintf(sLineType,"%d",iLineType);
+	pszTable[1] = sLineType.c_str();
+	UT_DEBUGMSG(("SEVIOR: Doing Table strux change of %s %s \n",pszTable[0],pszTable[1]));
+	m_pDoc->changeStruxFmt(PTC_AddFmt,posTable,posTable,NULL,pszTable,PTX_SectionTable);
+//
+// OK finish everything off with the various parameters which allow the formatter to
+// be updated.
+//
+	m_pDoc->endUserAtomicGlob();
+	m_pDoc->setDontImmediatelyLayout(false);
+	_generalUpdate();
+
+
+	// restore updates and clean up dirty lists
+	m_pDoc->enableListUpdates();
+	m_pDoc->updateDirtyLists();
+
+	// Signal PieceTable Changes have finished
+	_restorePieceTableState();
+
+	_ensureThatInsertionPointIsOnScreen();
+	return true;
+}
+
+		
+/*!
+ * Delete the cell at the specified position
+ */
+bool FV_View::cmdDeleteCell(PT_DocPosition cellPos)
+{
+	PL_StruxDocHandle cellSDH;
+	const char * pszLeftAttach =NULL;
+	const char * pszTopAttach = NULL;
+	UT_sint32 iLeft =-999;
+	UT_sint32 iTop = -999;
+	bool bRes = m_pDoc->getStruxOfTypeFromPosition(cellPos,PTX_SectionCell,&cellSDH);
+	if(!bRes)
+	{
+		return false;
+	}
+	m_pDoc->getPropertyFromSDH(cellSDH,"left-attach",&pszLeftAttach);
+	m_pDoc->getPropertyFromSDH(cellSDH,"top-attach",&pszTopAttach);
+	if(pszLeftAttach && *pszLeftAttach)
+	{
+		iLeft = atoi(pszLeftAttach);
+	}
+	if(pszTopAttach && *pszTopAttach)
+	{
+		iTop = atoi(pszTopAttach);
+	}
+//
+// Got all we need, now set things up to do the delete nicely
+//
+	// Signal PieceTable Change
+	_saveAndNotifyPieceTableChange();
+
+	// Turn off list updates
+
+	m_pDoc->disableListUpdates();
+	m_pDoc->beginUserAtomicGlob();
+	if (!isSelectionEmpty())
+	{
+		m_pDoc->beginUserAtomicGlob();
+		PP_AttrProp AttrProp_Before;
+		_deleteSelection(&AttrProp_Before);
+		m_pDoc->endUserAtomicGlob();
+	}
+	else
+	{
+		_eraseInsertionPoint();
+	}
+	m_pDoc->setDontImmediatelyLayout(true);
+//
+// delete the cell.
+//
+	_deleteCellAt(cellPos,iTop, iLeft);
+//
+// OK do all the piecetable finished changing business
+//
+	m_pDoc->endUserAtomicGlob();
+	m_pDoc->setDontImmediatelyLayout(false);
+	_generalUpdate();
+
+
+	// restore updates and clean up dirty lists
+	m_pDoc->enableListUpdates();
+	m_pDoc->updateDirtyLists();
+
+	// Signal PieceTable Changes have finished
+	_restorePieceTableState();
+
+	_ensureThatInsertionPointIsOnScreen();
+	return true;
 }
 
 

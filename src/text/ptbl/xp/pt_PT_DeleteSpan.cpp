@@ -472,6 +472,15 @@ bool pt_PieceTable::_tweakDeleteSpanOnce(PT_DocPosition & dpos1,
 		dpos1 -= pfsContainer->getLength();
 		return true;
 
+	case PTX_SectionTable:
+	case PTX_SectionCell:
+	case PTX_EndTable:
+	case PTX_EndCell:
+//
+// We've set things up so that deleting table struxes is done very deliberately. Don't
+// mess with the end points here
+//
+		return true;
 	case PTX_Block:
 		// if the previous container is a block, we're ok.
 		// the loop below will take care of everything.

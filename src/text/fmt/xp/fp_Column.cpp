@@ -692,6 +692,7 @@ void fp_VerticalContainer::mapXYToPosition(UT_sint32 x, UT_sint32 y, PT_DocPosit
 		pContainer->mapXYToPosition(x - pContainer->getX(),
 								y - pContainer->getY() , 
 									pos, bBOL, bEOL);
+		xxx_UT_DEBUGMSG(("SEVIOR: Found pos %d in column \n",pos));
 	}
 }
 

@@ -93,6 +93,7 @@ fl_TableLayout::fl_TableLayout(FL_DocLayout* pLayout, PL_StruxDocHandle sdh, PT_
 fl_TableLayout::~fl_TableLayout()
 {
 	// NB: be careful about the order of these
+	UT_DEBUGMSG(("SEVIOR: !!!!!!!! Deleting tableLayout  %x !! \n",this));
 	_purgeLayout();
 	fp_TableContainer * pTC = (fp_TableContainer *) getFirstContainer();
 	if (pTC)
@@ -242,7 +243,7 @@ void fl_TableLayout::format(void)
 		}
 		pCell = pCell->getNext();
 	}
-	UT_DEBUGMSG(("SEVIOR: Finished Formatting %x \n",this));
+	UT_DEBUGMSG(("SEVIOR: Finished Formatting %x isDirty %d \n",this,isDirty()));
 
 	if(isDirty() && !getDocument()->isDontImmediateLayout())
 	{
@@ -262,9 +263,9 @@ void fl_TableLayout::format(void)
 		UT_DEBUGMSG(("SEVIOR: Layout pass 2 \n"));
 		setNeedsRedraw();
 		markAllRunsDirty();
+		m_bIsDirty = false;
 	}
-	m_bNeedsFormat = false;
-	m_bIsDirty = false;
+	m_bNeedsFormat = m_bIsDirty;
 }
 
 void fl_TableLayout::markAllRunsDirty(void)
@@ -289,6 +290,7 @@ void fl_TableLayout::updateLayout(void)
 
 		pBL = pBL->getNext();
 	}
+	format();
 }
 
 void fl_TableLayout::redrawUpdate(void)
@@ -312,11 +314,28 @@ void fl_TableLayout::redrawUpdate(void)
 bool fl_TableLayout::doclistener_changeStrux(const PX_ChangeRecord_StruxChange * pcrxc)
 {
 	UT_ASSERT(pcrxc->getType()==PX_ChangeRecord::PXT_ChangeStrux);
-
+	UT_DEBUGMSG(("SEVIOR: getNext() %x getPrev() %x \n",getNext(),getPrev()));
+	if(getPrev())
+	{
+		UT_ASSERT(getPrev()->getNext() == this);
+	}
+	if(getNext())
+	{
+		UT_ASSERT(getNext()->getPrev() == this);
+	}
 
 	setAttrPropIndex(pcrxc->getIndexAP());
 	collapse();
 	updateTable();
+	UT_DEBUGMSG(("SEVIOR: getNext() %x getPrev() %x \n",getNext(),getPrev()));
+	if(getPrev())
+	{
+		UT_ASSERT(getPrev()->getNext() == this);
+	}
+	if(getNext())
+	{
+		UT_ASSERT(getNext()->getPrev() == this);
+	}
 	return true;
 }
 
@@ -873,7 +892,7 @@ bool fl_TableLayout::doclistener_deleteStrux(const PX_ChangeRecord_Strux * pcrx)
 	UT_ASSERT(pcrx->getType()==PX_ChangeRecord::PXT_DeleteStrux);
 	UT_ASSERT(pcrx->getStruxType()== PTX_SectionTable);
 
-
+	UT_DEBUGMSG(("SEVIOR: !!!!!!!! Doing table delete strux!! \n"));
 	fl_ContainerLayout * pPrev = getPrev();
 	fl_ContainerLayout * pNext = getNext();
 
@@ -1243,8 +1262,11 @@ bool fl_CellLayout::doclistener_changeStrux(const PX_ChangeRecord_StruxChange * 
 
 
 	setAttrPropIndex(pcrxc->getIndexAP());
+	fl_TableLayout * pTL = (fl_TableLayout *) myContainingLayout();
 	collapse();
+//	pTL->collapse();
 	updateCell();
+//	pTL->updateTable(); // may not need this
 	return true;
 }
 
@@ -1596,7 +1618,22 @@ void fl_CellLayout::collapse(void)
 	if (pCell)
 	{
 		fp_TableContainer * pTabCon = (fp_TableContainer *) pCell->getContainer();
-		pTabCon->removeContainer(pCell);
+		if(pTabCon)
+		{
+			pTabCon->removeContainer(pCell);
+		}
+//
+// remove it from the linked list.
+//
+		fp_CellContainer * pPrev = (fp_CellContainer *) pCell->getPrev();
+		if(pPrev)
+		{
+			pPrev->setNext(pCell->getNext());
+		}
+		if(pCell->getNext())
+		{
+			pCell->getNext()->setPrev(pPrev);
+		}
 		delete pCell;
 	}
 	setFirstContainer(NULL);
@@ -1613,7 +1650,8 @@ bool fl_CellLayout::doclistener_deleteStrux(const PX_ChangeRecord_Strux * pcrx)
 	fl_ContainerLayout * pNext = getNext();
 
 	collapse();
-
+//	fl_TableLayout * pTL = (fl_TableLayout *) myContainingLayout();
+//	pTL->collapse();
 	if(pPrev != NULL)
 	{
 		pPrev->setNext(pNext);
@@ -1630,7 +1668,7 @@ bool fl_CellLayout::doclistener_deleteStrux(const PX_ChangeRecord_Strux * pcrx)
 	{
 		myContainingLayout()->setLastLayout(pPrev);
 	}
-
+//	pTL->updateTable(); // may not need this. FIXME check if we do!
 	delete this;			// TODO whoa!  this construct is VERY dangerous.
 
 	return true;

@@ -268,6 +268,276 @@ void FV_View::_deleteSelection(PP_AttrProp *p_AttrProp_Before)
 	}
 }
 
+
+/*!
+ * Return the left,right,top and bottom attach points of the cell containing
+ * the position cellPos
+ */
+bool FV_View::_getCellParams(PT_DocPosition posCell, UT_sint32 * pLeft, UT_sint32 * pRight,
+							 UT_sint32 * pTop, UT_sint32 * pBot)
+{
+	PL_StruxDocHandle cellSDH;
+	bool bres = m_pDoc->getStruxOfTypeFromPosition(posCell,PTX_SectionCell,&cellSDH);
+	if(!bres)
+	{
+		return false;
+	}
+	const char * pszLeft;
+	const char * pszRight;
+	const char * pszTop;
+	const char * pszBot;
+	m_pDoc->getPropertyFromSDH(cellSDH,"left-attach",&pszLeft);
+	if(pszLeft && *pszLeft)
+	{
+		*pLeft = atoi(pszLeft);
+	}
+	else
+	{
+		return false;
+	}
+	m_pDoc->getPropertyFromSDH(cellSDH,"right-attach",&pszRight);
+	if(pszRight && *pszRight)
+	{
+		*pRight = atoi(pszRight);
+	}
+	else
+	{
+		return false;
+	}
+	m_pDoc->getPropertyFromSDH(cellSDH,"top-attach",&pszTop);
+	if(pszTop && *pszTop)
+	{
+		*pTop = atoi(pszTop);
+	}
+	else
+	{
+		return false;
+	}	
+	m_pDoc->getPropertyFromSDH(cellSDH,"bot-attach",&pszBot);
+	if(pszBot && *pszBot)
+	{
+		*pBot = atoi(pszBot);
+	}
+	else
+	{
+		return false;
+	}
+	return true;
+}
+
+
+/*!
+ * This method deletes the cell at (row,col) in the table specified by posTable
+ */
+bool FV_View::_deleteCellAt(PT_DocPosition posTable, UT_sint32 row, UT_sint32 col)
+{
+	PL_StruxDocHandle cellSDH,endCellSDH;
+	PT_DocPosition posCell = findCellPosAt(posTable,row,col);
+	if(posCell == 0)
+	{
+		return false;
+	}
+	bool bres = m_pDoc->getStruxOfTypeFromPosition(posCell+1,PTX_SectionCell,&cellSDH);
+	if(!bres)
+	{
+		return false;
+	}
+	bres = m_pDoc->getNextStruxOfType(cellSDH,PTX_EndCell,&endCellSDH);
+	PT_DocPosition posEndCell = m_pDoc->getStruxPosition(endCellSDH);
+	if(posEndCell == 0)
+	{
+		return false;
+	}
+//
+// check that this 
+//
+
+//
+// We trust that calling routine does all the things needed to make sure this goes
+// smoothly and undo's in a single step.
+// Here we just delete.
+//
+
+//
+// OK do the delete
+//
+
+	m_pDoc->deleteSpan( posCell, posEndCell, NULL,true);
+	return true;
+}
+
+
+/*!
+ * This method changes the coordinates of the cell at (row,col) in the table specified by 
+ * posTable to the cordinates specified.
+ */
+bool FV_View::_changeCellTo(PT_DocPosition posTable, UT_sint32 rowold, UT_sint32 colold,
+						  UT_sint32 left, UT_sint32 right, UT_sint32 top, UT_sint32 bot)
+{
+	PT_DocPosition posCell = findCellPosAt(posTable,rowold,colold);
+	if(posCell == 0)
+	{
+		return false;
+	}
+	const char * props[9] = {NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL};
+	UT_String sLeft,sRight,sTop,sBot;
+	props[0] = "left-attach";
+	UT_String_sprintf(sLeft,"%d",left);
+	props[1] = sLeft.c_str();
+	props[2] = "right-attach";
+	UT_String_sprintf(sRight,"%d",right);
+	props[3] = sRight.c_str();
+	props[4] = "top-attach";
+	UT_String_sprintf(sTop,"%d",top);
+	props[5] = sTop.c_str();
+	props[6] = "bot-attach";
+	UT_String_sprintf(sBot,"%d",bot);
+	props[7] = sBot.c_str();
+
+//
+// Here we trust that the calling routine will do all the begin/end globbing and other
+// stuff so that this will go smoothly and undo's in a single step.
+// Here we just change
+//
+
+	bool bres = m_pDoc->changeStruxFmt(PTC_AddFmt,posCell,posCell,NULL,props,PTX_SectionCell);
+
+	return bres;
+}
+
+
+/*!
+ * This method inserts the cell before the coordinates of the cell at (row,col) in the table 
+ * specified by 
+ * posTable at the cordinates specified.
+ */
+bool FV_View::_insertCellBefore(PT_DocPosition posTable, UT_sint32 rowold, UT_sint32 colold,
+						  UT_sint32 left, UT_sint32 right, UT_sint32 top, UT_sint32 bot)
+{
+	PT_DocPosition posCell = findCellPosAt(posTable,rowold,colold);
+	if(posCell == 0)
+	{
+		return false;
+	}
+	posCell--;
+	const char * props[9] = {NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL};
+	UT_String sLeft,sRight,sTop,sBot;
+	props[0] = "left-attach";
+	UT_String_sprintf(sLeft,"%d",left);
+	props[1] = sLeft.c_str();
+	props[2] = "right-attach";
+	UT_String_sprintf(sRight,"%d",right);
+	props[3] = sRight.c_str();
+	props[4] = "top-attach";
+	UT_String_sprintf(sTop,"%d",top);
+	props[5] = sTop.c_str();
+	props[6] = "bot-attach";
+	UT_String_sprintf(sBot,"%d",bot);
+	props[7] = sBot.c_str();
+
+//
+// Here we trust that the calling routine will do all the begin/end globbing and other
+// stuff so that this will go smoothly and undo's in a single step.
+// Here we just insert
+//
+
+	bool bres = m_pDoc->insertStrux(posCell,PTX_SectionCell,NULL,props);
+	if(!bres)
+	{
+		return false;
+	}
+//
+// Insert a block for content
+//
+	bres = m_pDoc->insertStrux(posCell+1,PTX_Block);
+	if(!bres)
+	{
+		return false;
+	}
+//
+// Insert an endCell
+//
+	bres = m_pDoc->insertStrux(posCell+1,PTX_EndCell);
+	if(!bres)
+	{
+		return false;
+	}
+	return bres;
+}
+
+
+/*!
+ * This method inserts the cell after the coordinates of the cell at (row,col) in the table 
+ * specified by 
+ * posTable at the cordinates specified.
+ */
+bool FV_View::_insertCellAfter(PT_DocPosition posTable, UT_sint32 rowold, UT_sint32 colold,
+						  UT_sint32 left, UT_sint32 right, UT_sint32 top, UT_sint32 bot)
+{
+	PL_StruxDocHandle cellSDH,endCellSDH;
+	PT_DocPosition posCell = findCellPosAt(posTable,rowold,colold);
+	if(posCell == 0)
+	{
+		return false;
+	}
+	bool bres = m_pDoc->getStruxOfTypeFromPosition(posCell+1,PTX_SectionCell,&cellSDH);
+	if(!bres)
+	{
+		return false;
+	}
+	bres = m_pDoc->getNextStruxOfType(cellSDH,PTX_EndCell,&endCellSDH);
+	PT_DocPosition posEndCell = m_pDoc->getStruxPosition(endCellSDH);
+	if(posEndCell == 0)
+	{
+		return false;
+	}
+	posEndCell++;
+	const char * props[9] = {NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL};
+	UT_String sLeft,sRight,sTop,sBot;
+	props[0] = "left-attach";
+	UT_String_sprintf(sLeft,"%d",left);
+	props[1] = sLeft.c_str();
+	props[2] = "right-attach";
+	UT_String_sprintf(sRight,"%d",right);
+	props[3] = sRight.c_str();
+	props[4] = "top-attach";
+	UT_String_sprintf(sTop,"%d",top);
+	props[5] = sTop.c_str();
+	props[6] = "bot-attach";
+	UT_String_sprintf(sBot,"%d",bot);
+	props[7] = sBot.c_str();
+
+//
+// Here we trust that the calling routine will do all the begin/end globbing and other
+// stuff so that this will go smoothly and undo's in a single step.
+// Here we just insert
+//
+
+	bres = m_pDoc->insertStrux(posCell,PTX_SectionCell,NULL,props);
+	if(!bres)
+	{
+		return false;
+	}
+//
+// Insert a block for content
+//
+	bres = m_pDoc->insertStrux(posCell+1,PTX_Block);
+	if(!bres)
+	{
+		return false;
+	}
+//
+// Insert an endCell
+//
+	bres = m_pDoc->insertStrux(posCell+1,PTX_EndCell);
+	if(!bres)
+	{
+		return false;
+	}
+	return bres;
+}
+
+
 PT_DocPosition FV_View::_getDocPos(FV_DocPos dp, bool bKeepLooking)
 {
 	return _getDocPosFromPoint(getPoint(),dp,bKeepLooking);
@@ -2773,8 +3043,8 @@ void FV_View::_setPoint(PT_DocPosition pt, bool bEOL)
 	if(!m_pDoc->isPieceTableChanging())
 	{
 		m_pLayout->considerPendingSmartQuoteCandidate();
+		_checkPendingWordForSpell();
 	}
-	_checkPendingWordForSpell();
 }
 
 
