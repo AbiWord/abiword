@@ -951,6 +951,11 @@ bool fp_TabRun::letPointPass(void) const
 	return true;
 }
 
+bool fp_TabRun::hasLayoutProperties(void) const
+{
+	return true;
+}
+
 void fp_TabRun::mapXYToPosition(UT_sint32 x, UT_sint32 /*y*/, PT_DocPosition& pos, bool& bBOL, bool& bEOL)
 {
 	// If X is left of the middle, return offset to the left,
@@ -1083,30 +1088,29 @@ void fp_TabRun::_drawArrow(UT_uint32 iLeft,UT_uint32 iTop,UT_uint32 iWidth, UT_u
     UT_uint32 ixGap = (iWidth - iMaxWidth) / 2;
 
 #ifdef BIDI_ENABLED
-    UT_uint32 iLeftAdj = iLeft;
-
+	//UT_DEBUGMSG(("iLeft %d, iWidth %d, visDir \"%s\"\n", iLeft,iWidth, m_iVisDirection == FRIBIDI_TYPE_LTR ? "ltr":"rtl"));
 	if(m_iVisDirection == FRIBIDI_TYPE_LTR)
 	{
-	    points[0].x = /*iLeft*/iLeftAdj + ixGap + iMaxWidth - cur_linewidth * 4;
+	    points[0].x = iLeft + ixGap + iMaxWidth - cur_linewidth * 4;
     	points[0].y = iyAxis - cur_linewidth * 2;
 
 	    points[1].x = points[0].x + cur_linewidth;
 	    points[1].y = points[0].y;
 
-	    points[2].x = /*iLeft*/iLeftAdj + iWidth - ixGap;
+	    points[2].x = iLeft + iWidth - ixGap;
 	    points[2].y = iyAxis;
 	}
 	else
 	{
 		//iLeftAdj -= m_iWidth;
 	
-	    points[0].x = /*iLeft*/iLeftAdj - ixGap - iMaxWidth + cur_linewidth * 4;
+	    points[0].x = iLeft + ixGap + cur_linewidth * 4;
     	points[0].y = iyAxis - cur_linewidth * 2;
 
 	    points[1].x = points[0].x - cur_linewidth;
 	    points[1].y = points[0].y;
 
-	    points[2].x = /*iLeft*/iLeftAdj - iWidth + ixGap;
+	    points[2].x = iLeft + ixGap;
 	    points[2].y = iyAxis;
 
 	}
@@ -1124,9 +1128,9 @@ void fp_TabRun::_drawArrow(UT_uint32 iLeft,UT_uint32 iTop,UT_uint32 iWidth, UT_u
     m_pG->polygon(clrShowPara,points,NPOINTS);
 
     if(m_iVisDirection == FRIBIDI_TYPE_LTR)
-	    m_pG->fillRect(clrShowPara,/*iLeft*/iLeftAdj + ixGap,iyAxis - cur_linewidth / 2,iMaxWidth - cur_linewidth * 4,cur_linewidth);
+	    m_pG->fillRect(clrShowPara,iLeft + ixGap,iyAxis - cur_linewidth / 2,iMaxWidth - cur_linewidth * 4,cur_linewidth);
 	else
-	    m_pG->fillRect(clrShowPara,/*iLeft*/iLeftAdj - ixGap - iMaxWidth + cur_linewidth * 4,iyAxis - cur_linewidth / 2,iMaxWidth - cur_linewidth * 4,cur_linewidth);
+	    m_pG->fillRect(clrShowPara,iLeft + ixGap + cur_linewidth * 4,iyAxis - cur_linewidth / 2,iMaxWidth - cur_linewidth * 4,cur_linewidth);
 
 #else
     points[0].x = iLeft + ixGap + iMaxWidth - cur_linewidth * 4;
@@ -1150,6 +1154,10 @@ void fp_TabRun::_drawArrow(UT_uint32 iLeft,UT_uint32 iTop,UT_uint32 iWidth, UT_u
     UT_RGBColor clrShowPara(127,127,127);
     m_pG->polygon(clrShowPara,points,NPOINTS);
     m_pG->fillRect(clrShowPara,iLeft + ixGap,iyAxis - cur_linewidth / 2,iMaxWidth - cur_linewidth * 4,cur_linewidth);
+#endif
+#if 0
+	for(UT_uint32 i = 0; i< 5; i++)
+		UT_DEBUGMSG(("P[%d] (%d,%d)\n", i, points[i].x, points[i].y));
 #endif
 }
 
@@ -1178,11 +1186,15 @@ void fp_TabRun::_draw(dg_DrawArgs* pDA)
 	
 #ifdef BIDI_ENABLED
 	UT_uint32 iRunBase = m_pBL->getPosition() + getOffsetFirstVis(); //m_iOffsetFirst;
-	if(getVisDirection() == FRIBIDI_TYPE_RTL)
+
+    //UT_sint32 cur_linewidth = 1 + (UT_MAX(10,m_iAscent) - 10) / 8;
+    //UT_uint32 iMaxWidth = UT_MIN(m_iWidth / 10 * 6, (UT_uint32) cur_linewidth * 9);
+    //UT_uint32 ixGap = (m_iWidth - iMaxWidth) / 2;
+
+/*	if(getVisDirection() == FRIBIDI_TYPE_RTL)
 	{
-		DA_xoff -= m_iWidth;
-		xoff -= m_iWidth;
-	}	
+		DA_xoff += 4*cur_linewidth;
+	}*/	
 #else
 	UT_uint32 iRunBase = m_pBL->getPosition() + m_iOffsetFirst;
 #endif
@@ -1607,7 +1619,7 @@ void fp_EndOfParagraphRun::findPointCoords(UT_uint32 iOffset,
 		if (pPropRun->getLine() == m_pLine)
 		{
 #ifdef BIDI_ENABLED
-			pPropRun->findPointCoords(iOffset, x, y, x2, y2, height, bDirection);
+			pPropRun->findPointCoords(iOffset, xoff, y, xoff, y2, height, bDirection);
 #else		
 			m_pLine->getOffsets(pPropRun, xoff, y);
 #endif

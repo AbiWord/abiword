@@ -286,6 +286,7 @@ public:
 	virtual bool			canBreakAfter(void) const;
 	virtual bool			canBreakBefore(void) const;
 	virtual bool			letPointPass(void) const;
+	virtual bool 			hasLayoutProperties(void) const;
 	void			       	setWidth(UT_sint32);
 	void			       	setLeader(eTabLeader iTabType);
 	eTabLeader			    getLeader(void);
