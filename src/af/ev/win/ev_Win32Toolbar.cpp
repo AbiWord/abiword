@@ -589,7 +589,7 @@ bool EV_Win32Toolbar::synthesize(void)
 
 						// create a matching child control
 						DWORD dwStyle = WS_CHILD | WS_BORDER | WS_VISIBLE | WS_VSCROLL |
-								CBS_HASSTRINGS | CBS_DROPDOWN;
+								CBS_HASSTRINGS | CBS_DROPDOWNLIST;
 
 						if ((pControl) && (pControl->shouldSort()))
 						{
