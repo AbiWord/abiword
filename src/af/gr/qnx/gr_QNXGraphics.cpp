@@ -234,8 +234,9 @@ UT_uint32 GR_QNXGraphics::getFontHeight()
 UT_uint32 GR_QNXGraphics::measureString(const UT_UCSChar* s, int iOffset,
 					  int num,  unsigned short* pWidths)
 {
-	int  i, charWidth = 0;
 	const char *font;
+	int  i, charWidth = 0;
+	char c[2], *buffer;
 
 	if (!m_pFont || !(font = m_pFont->getFont())) {
 		return(0);
@@ -243,10 +244,14 @@ UT_uint32 GR_QNXGraphics::measureString(const UT_UCSChar* s, int iOffset,
 	//printf("GR: Measure string font %s \n", (font) ? font : "NULL");
 
 	//CHANGE THIS TO MAKE IT UNICODE
-	char *buffer;
-	if (!(buffer = (char *)malloc(num + 1))) {
-		fprintf(stderr, "Can't allocate memory \n");
-		return(0);
+	if (num == 1) {
+		buffer = c;
+	}
+	else {
+		if (!(buffer = (char *)malloc(num + 1))) {
+			fprintf(stderr, "Can't allocate memory \n");
+			return(0);
+		}
 	}
 	memset(buffer, 0, num + 1);
 
@@ -289,7 +294,9 @@ UT_uint32 GR_QNXGraphics::measureString(const UT_UCSChar* s, int iOffset,
 
 #endif
 
-	free(buffer);
+	if (num != 1) {
+		free(buffer);
+	}
 
 	//printf("GR: Width:%d \n", charWidth);
 	return charWidth;
@@ -378,11 +385,13 @@ GR_Font * GR_QNXGraphics::findFont(const char* pszFontFamily,
 
 	//The size is in xxpt so just cat it and back up two
 	//strncat(fname, pszFontSize, strlen(pszFontSize) - 2);
-	//OR: keep scaling ... the return from this is inches?
-	//int size = convertDimension(pszFontSize);
-	//OR: just do it yourself!
+	//OR: keep scaling ... the return from this is inches, convert to points??
+	int size = convertDimension(pszFontSize);
+	//OR: just do it yourself! We get bit by the resize factor!
+	/*
 	double size = UT_convertToPoints(pszFontSize);
 	size = (size * (double)getZoomPercentage() / 100.0) + 0.5;
+	*/
 	sprintf(temp, "%s%d", fname, (int)size);
 	strcpy(fname, temp);
 	//printf("GR: Font w/ size is [%s] (%s -> %d)  \n", fname, pszFontSize, size);
@@ -421,15 +430,27 @@ GR_Font * GR_QNXGraphics::findFont(const char* pszFontFamily,
 UT_uint32 GR_QNXGraphics::getFontAscent()
 {
 	FontQueryInfo info;
+	memset(&info, 0, sizeof(info));
 
 	if (!m_pFont || !m_pFont->getFont()) {
+		UT_ASSERT(0);
 		return(0);
 	}
 
 	if (PfQueryFont(m_pFont->getFont(), &info) == -1) {
+		UT_ASSERT(0);
 		return(0);
 	}
-		
+/*
+	printf("Name: [%s] \n", info.font);
+	printf("Desc: [%s] \n", info.desc);
+	printf("Size: [%d] \n", info.size);
+	printf("Style: [0x%x] \n", info.style);
+	printf("Asc:  [%d] \n", info.ascender);
+	printf("Dsc:  [%d] \n", info.descender);
+	printf("Width: [%d] \n", info.width);
+	printf("Range: [0x%x - 0x%x] \n", info.lochar, info.hichar);
+*/		
 	return(MY_ABS(info.ascender));
 }
 
@@ -438,10 +459,12 @@ UT_uint32 GR_QNXGraphics::getFontDescent()
 	FontQueryInfo info;
 
 	if (!m_pFont || !m_pFont->getFont()) {
+		UT_ASSERT(0);
 		return(0);
 	}
 
 	if (PfQueryFont(m_pFont->getFont(), &info) == -1) {
+		UT_ASSERT(0);
 		return(0);
 	}
 		
@@ -658,8 +681,6 @@ UT_Bool GR_QNXGraphics::endPrint(void)
 
 GR_Image* GR_QNXGraphics::createNewImage(const char* pszName, const UT_ByteBuf* pBBPNG, UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight)
 {
-	printf("GR: convertNewImage \n");
-
 	GR_QNXImage* pImg = new GR_QNXImage(NULL, pszName);
 
 	pImg->convertFromPNG(pBBPNG, iDisplayWidth, iDisplayHeight);
