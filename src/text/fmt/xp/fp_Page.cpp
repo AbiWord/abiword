@@ -377,9 +377,19 @@ void fp_Page::removeColumnLeader(fp_Column* pLeader)
 	// Delete leader from list
 	m_vecColumnLeaders.deleteNthItem(ndx);
 
+	// Urgh! Changes to the document (logical content) cause graphics
+	// updates at various times when the physical representation is
+	// still in flux, resulting in both crap performance and code to
+	// break due to broken assumptions.  This is a point in case where
+	// the current page may get asked to render even though it
+	// actually doesn't contain any columns (see bug 1385). So we have
+	// to leave the pointer here, even if the page doesn't actually
+	// have an owner at this time...
+#if 0
 	// Deassociate this page from the old owner
 	m_pOwner->deleteOwnedPage(this);
 	m_pOwner = NULL;
+#endif
 
 	// The row of columns are not on this page anymore
 	fp_Column* pTmpCol = pLeader;

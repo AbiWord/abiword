@@ -65,7 +65,7 @@ public:
 	FL_DocLayout*		getDocLayout();
 	void				setView(FV_View*);
 
-	inline fl_DocSectionLayout* getOwningSection(void) const { return m_pOwner; }
+	inline fl_DocSectionLayout* getOwningSection(void) const { UT_ASSERT(NULL != m_pOwner) ; return m_pOwner; }
 
 	PT_DocPosition		getFirstLastPos(bool bFirst) const;
 	void				mapXYToPosition(UT_sint32 xPos, UT_sint32 yPos, PT_DocPosition& pos, bool& bBOL, bool& bEOL);
