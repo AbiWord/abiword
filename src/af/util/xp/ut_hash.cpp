@@ -153,6 +153,9 @@ public:
 // TODO: sane memory ownership characteristics for hashtables,
 // TODO: presumably done via AbiObjects
 
+/*!
+ * This class represents a mapping between key/value pairs
+ */
 UT_HashTable::UT_HashTable(size_t expected_cardinality)
 	:	n_keys(0),
 		n_deleted(0),
@@ -170,6 +173,10 @@ UT_HashTable::~UT_HashTable()
 }
 
 
+/*!
+ * Find the value associated with the key \k
+ * \return 0 if key not found, object if found
+ */
 const UT_HashTable::HashValType UT_HashTable::pick(const HashKeyType k) const
 {
 	hash_slot*		sl = 0;
@@ -182,6 +189,11 @@ const UT_HashTable::HashValType UT_HashTable::pick(const HashKeyType k) const
 }
 
 
+/*!
+ * See if the map contains the (key, value) pair represented by (\k, \v)
+ * If \v is null, just see if the key \k exists
+ * \return truth
+ */
 bool UT_HashTable::contains(const HashKeyType k, const HashValType v) const
 {
 	hash_slot * sl = 0;
@@ -203,6 +215,9 @@ bool UT_HashTable::contains(const HashKeyType k, const HashValType v) const
 }
 
 
+/*!
+ * Insert this key/value pair into the map
+ */
 void UT_HashTable::insert(const HashKeyType key, const HashValType value)
 {
 	size_t		slot = 0;
@@ -223,6 +238,10 @@ void UT_HashTable::insert(const HashKeyType key, const HashValType value)
 	}
 }
 
+/*!
+ * Set the item determined by \key to the value \value
+ * If item(\key) does not exist, insert it into the map
+ */
 void UT_HashTable::set(const HashKeyType key, const HashValType value)
 {
 	size_t		slot = 0;
@@ -243,6 +262,10 @@ void UT_HashTable::set(const HashKeyType key, const HashValType value)
 	sl->insert(value, key, hashval);
 }
 
+/*!
+ * Return a UT_Vector of elements in the HashTable that you must
+ * Later free with a call to delete
+ */
 UT_Vector * UT_HashTable::enumerate (void) const
 {
 	UT_Vector * pVec = new UT_Vector (size());
@@ -266,6 +289,9 @@ UT_Vector * UT_HashTable::enumerate (void) const
 	return pVec;
 }
 
+/*!
+ * Remove the item referenced by \key in the map
+ */
 void UT_HashTable::remove(const HashKeyType key, const HashValType)
 {
 	size_t slot = 0, hashval;
@@ -282,7 +308,9 @@ void UT_HashTable::remove(const HashKeyType key, const HashValType)
 	}
 }
 
-
+/*!
+ * Remove all key/value pairs from the map
+ */
 void UT_HashTable::clear()
 {
 	hash_slot* slots = m_pMapping;
