@@ -16,8 +16,6 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
  * 02111-1307, USA.
  */
- 
-
 
 #ifndef EV_MENU_ACTIONS_H
 #define EV_MENU_ACTIONS_H
@@ -87,6 +85,7 @@ public:
 	AP_Menu_Id						getMenuId(void) const;
 	const char *					getDynamicLabel(AP_Ap * pAp) const;
 	const char *					getMethodName(void) const;
+	UT_Bool							raisesDialog(void) const;
 	
 protected:
 	AP_Menu_Id						m_id;

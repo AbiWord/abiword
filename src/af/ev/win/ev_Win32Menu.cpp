@@ -19,6 +19,7 @@
 
 #include <windows.h>
 #include <stdio.h>
+#include <string.h>
 #include "ut_types.h"
 #include "ut_stack.h"
 #include "ap_Menu_Id.h"
@@ -30,6 +31,9 @@
 #include "ev_Menu_Labels.h"
 #include "ev_EditEventMapper.h"
 
+
+#define DELETEP(p)		do { if (p) delete p; } while (0)
+
 /*****************************************************************/
 
 static const char * _ev_FakeName(const char * sz, UT_uint32 k)
@@ -37,6 +41,7 @@ static const char * _ev_FakeName(const char * sz, UT_uint32 k)
 	// construct a temporary string
 
 	static char buf[128];
+	UT_ASSERT(strlen(sz)<120);
 	sprintf(buf,"%s%ld",sz,k);
 	return buf;
 }
@@ -134,9 +139,23 @@ UT_Bool EV_Win32Menu::synthesize(void)
 		EV_Menu_Label * pLabel = pMenuLabelSet->getLabel(id);
 		UT_ASSERT(pLabel);
 
+		// get the name for the menu item
+
 		const char * szLabelName = pAction->getDynamicLabel(m_pWin32Ap);
 		if (!szLabelName || !*szLabelName)
 			szLabelName = pLabel->getMenuLabel();
+
+		// append "..." to menu item if it raises a dialog
+		
+		char * buf = NULL;
+		if (pAction->raisesDialog())
+		{
+			buf = new char[strlen(szLabelName) + 4];
+			UT_ASSERT(buf);
+			strcpy(buf,szLabelName);
+			strcat(buf,"...");
+			szLabelName = buf;
+		}
 
 		switch (pLayoutItem->getMenuLayoutFlags())
 		{
@@ -189,6 +208,8 @@ UT_Bool EV_Win32Menu::synthesize(void)
 			UT_ASSERT(0);
 			break;
 		}
+
+		DELETEP(buf);
 	}
 
 #ifdef UT_DEBUG

@@ -76,6 +76,11 @@ const char * EV_Menu_Action::getMethodName(void) const
 	return m_szMethodName;
 }
 
+UT_Bool EV_Menu_Action::raisesDialog(void) const
+{
+	return m_bRaisesDialog;
+}
+
 /*****************************************************************/
 /*****************************************************************/
 
