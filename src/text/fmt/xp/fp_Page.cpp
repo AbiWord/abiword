@@ -308,7 +308,7 @@ void fp_Page::draw(dg_DrawArgs* pDA, bool bAlwaysUseWhiteBackground)
 			pTmpCol = pNextCol;
 		}
 	}
-    if(m_pView->getViewMode()!= VIEW_NORMAL) 
+    if(m_pView->getViewMode() == VIEW_PRINT) 
 	{
 		if (m_pHeader)
 		{
@@ -896,7 +896,7 @@ void fp_Page::mapXYToPositionClick(UT_sint32 x, UT_sint32 y, PT_DocPosition& pos
 // Look in header for insertion point
 //
 	pShadow = NULL;
-	if(m_pView && m_pView->getViewMode() != VIEW_NORMAL)
+	if(m_pView && m_pView->getViewMode() == VIEW_PRINT)
 	{
 		if(m_pHeader != NULL)
 		{

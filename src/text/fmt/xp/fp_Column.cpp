@@ -163,7 +163,7 @@ UT_sint32 fp_Container::getX(void) const
 */
 UT_sint32 fp_Container::getY(void) const
 {
-	if(getSectionLayout()->getDocLayout()->getView()  && (getSectionLayout()->getDocLayout()->getView()->getViewMode() == VIEW_NORMAL))
+	if(getSectionLayout()->getDocLayout()->getView()  && (getSectionLayout()->getDocLayout()->getView()->getViewMode() != VIEW_PRINT))
 	{
 		return m_iY - static_cast<fl_DocSectionLayout *>(getSectionLayout())->getTopMargin();
 	}
@@ -876,7 +876,7 @@ fl_HdrFtrSectionLayout* fp_ShadowContainer::getHdrFtrSectionLayout(void) const
 void fp_ShadowContainer::clearScreen(void)
 {
 	FV_View * pView = getPage()->getDocLayout()->getView();
-	if(pView->getViewMode() ==  VIEW_NORMAL)
+	if(pView->getViewMode() !=  VIEW_PRINT)
 	{
 		UT_DEBUGMSG(("SEVIOR: Attempting to clear Header/Footer in Normal Mode \n"));
 		return;
@@ -901,7 +901,7 @@ void fp_ShadowContainer::clearScreen(void)
 void fp_ShadowContainer::draw(dg_DrawArgs* pDA)
 {
 	FV_View * pView = getPage()->getDocLayout()->getView();
-	if(pView->getViewMode() ==  VIEW_NORMAL)
+	if(pView->getViewMode() !=  VIEW_PRINT)
 	{
 		UT_DEBUGMSG(("SEVIOR: Attempting to draw Header/Footer in Normal Mode \n"));
 		return;
