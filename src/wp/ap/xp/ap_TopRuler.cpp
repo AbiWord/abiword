@@ -2321,8 +2321,11 @@ void AP_TopRuler::mouseRelease(EV_EditModifierState /* ems */, EV_EditMouseButto
 
 
 	_xorGuide (true);
-
-	if (xgrid == m_oldX) // Not moved - clicked and released
+	if(pView == NULL)
+	{
+		return;
+	}
+	if (xgrid == m_oldX && (!pView->getDragTableLine())  ) // Not moved - clicked and released
 	{
 		UT_DEBUGMSG(("release only\n"));
 		m_draggingWhat = DW_NOTHING;
@@ -2708,7 +2711,7 @@ void AP_TopRuler::mouseRelease(EV_EditModifierState /* ems */, EV_EditMouseButto
 				else if(i == static_cast<UT_sint32>(m_infoCache.m_vecFullTable->getItemCount()) && !bDragRightMost)
 				{
 					pTInfo = static_cast<AP_TopRulerTableInfo *>(m_infoCache.m_vecFullTable->getNthItem(i-1));
-					right = pTInfo->m_iRightCellPos + xAbsLeft;
+					right = pTInfo->m_iRightCellPos + xAbsLeft - pTInfo->m_iLeftSpacing;
 				}
 				else if(i == static_cast<UT_sint32>(m_infoCache.m_vecFullTable->getItemCount()) && bDragRightMost )
 				{
@@ -2732,7 +2735,7 @@ void AP_TopRuler::mouseRelease(EV_EditModifierState /* ems */, EV_EditMouseButto
 				sColWidths += sTmp;
 				sColWidths += '/';
 			}
-			xxx_UT_DEBUGMSG(("SEVIOR: COlumn Width string = %s \n",sColWidths.c_str()));
+			UT_DEBUGMSG(("SEVIOR: COlumn Width string = %s \n",sColWidths.c_str()));
 			m_draggingWhat = DW_NOTHING;
 			FV_View * pView = static_cast<FV_View *>(m_pView);
 			const XML_Char * props[5] = {NULL,NULL,NULL,NULL,NULL};
@@ -2762,6 +2765,10 @@ void AP_TopRuler::mouseRelease(EV_EditModifierState /* ems */, EV_EditMouseButto
 			fl_BlockLayout * pBL = static_cast<fl_BlockLayout *>(pSL->getFirstLayout());
 			PT_DocPosition pos = pBL->getPosition();
 			pView->setTableFormat(pos,props);
+			if(pView->getDragTableLine() && !pView->isInTable())
+			{
+				pView->setPoint(pos);
+			}
 			notify(pView, AV_CHG_HDRFTR);
 			if(m_pG)
 				m_pG->setCursor(GR_Graphics::GR_CURSOR_LEFTRIGHT);
