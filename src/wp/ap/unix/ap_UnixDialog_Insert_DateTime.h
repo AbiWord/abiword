@@ -47,7 +47,9 @@ protected:
 	// private construction functions
 	virtual GtkWidget * _constructWindow(void);
 	void		_populateWindowData(void);
-	
+	void            _connectSignals(void);
+	GtkWidget *     _constructWindowContents(void);
+
 	// pointers to widgets we need to query/set
 	GtkWidget * m_windowMain;
 

@@ -110,11 +110,10 @@ void AP_UnixDialog_Insert_DateTime::runModal(XAP_Frame * pFrame)
 	
 	// Center our new dialog in its parent and make it a transient
 	// so it won't get lost underneath
-    centerDialog(parentWindow, mainWindow);
-	gtk_window_set_transient_for(GTK_WINDOW(mainWindow), GTK_WINDOW(parentWindow));
+	centerDialog(parentWindow, mainWindow);
 
 	// Show the top level dialog,
-	gtk_widget_show(mainWindow);
+	gtk_widget_show_all(mainWindow);
 
 	// Make it modal, and stick it up top
 	gtk_grab_add(mainWindow);
@@ -166,145 +165,117 @@ void AP_UnixDialog_Insert_DateTime::event_WindowDelete(void)
 }
 
 /*****************************************************************/
-
 GtkWidget * AP_UnixDialog_Insert_DateTime::_constructWindow(void)
 {
-	GtkWidget *windowMain;
-	GtkWidget *hboxMain;
-	GtkWidget *vboxFormats;
+  GtkWidget *vbox;
+  GtkWidget *contents;
+  GtkWidget *actionarea;
+
+  const XAP_StringSet * pSS = m_pApp->getStringSet();
+
+  m_windowMain = gtk_dialog_new();
+  gtk_window_set_title (GTK_WINDOW (m_windowMain), 
+			pSS->getValue(AP_STRING_ID_DLG_DateTime_DateTimeTitle));
+  gtk_window_set_policy (GTK_WINDOW (m_windowMain), FALSE, FALSE, FALSE);
+  gtk_container_set_border_width(GTK_CONTAINER(m_windowMain), 4);
+
+  actionarea = GTK_DIALOG(m_windowMain)->action_area;
+  vbox = GTK_DIALOG(m_windowMain)->vbox;
+
+  contents = _constructWindowContents();
+  gtk_box_pack_start (GTK_BOX (vbox), contents, TRUE, TRUE, 0);
+
+  m_buttonOK = gtk_button_new_with_label (pSS->getValue(XAP_STRING_ID_DLG_OK));
+  gtk_container_add(GTK_CONTAINER(actionarea), m_buttonOK);
+  GTK_WIDGET_SET_FLAGS(m_buttonOK, GTK_CAN_DEFAULT);
+
+  m_buttonCancel = gtk_button_new_with_label (pSS->getValue(XAP_STRING_ID_DLG_Cancel));
+  gtk_container_add(GTK_CONTAINER(actionarea), m_buttonCancel);
+  GTK_WIDGET_SET_FLAGS(m_buttonCancel, GTK_CAN_DEFAULT);
+
+  _connectSignals();
+
+  return m_windowMain;
+}
+
+void AP_UnixDialog_Insert_DateTime::_connectSignals(void)
+{
+	// the control buttons
+	gtk_signal_connect(GTK_OBJECT(m_buttonOK),
+			   "clicked",
+			   GTK_SIGNAL_FUNC(s_ok_clicked),
+			   (gpointer) this);
+	
+	gtk_signal_connect(GTK_OBJECT(m_buttonCancel),
+			   "clicked",
+			   GTK_SIGNAL_FUNC(s_cancel_clicked),
+			   (gpointer) this);
+
+	// the catch-alls
+	
+	gtk_signal_connect_after(GTK_OBJECT(m_windowMain),
+				 "delete_event",
+				 GTK_SIGNAL_FUNC(s_delete_clicked),
+				 (gpointer) this);
+
+	gtk_signal_connect_after(GTK_OBJECT(m_windowMain),
+				 "destroy",
+				 NULL,
+				 NULL);
+}
+
+GtkWidget * AP_UnixDialog_Insert_DateTime::_constructWindowContents(void)
+{
+        GtkWidget *vboxFormats;
 	GtkWidget *labelFormats;
 	GtkWidget *scrolledwindowFormats;
 	GtkWidget *viewportFormats;
 	GtkWidget *listFormats;
-	GtkWidget *vbuttonboxButtons;
-	GtkWidget *buttonOK;
-	GtkWidget *buttonCancel;
 
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
 	XML_Char * unixstr = NULL;	// used for conversions
 
-	windowMain = gtk_window_new (GTK_WINDOW_DIALOG);
-	gtk_object_set_data (GTK_OBJECT (windowMain), "windowMain", windowMain);
-//	gtk_widget_set_usize (windowMain, 270 , 240);
-	gtk_container_set_border_width (GTK_CONTAINER (windowMain), 10);
-	gtk_window_set_title (GTK_WINDOW (windowMain), pSS->getValue(AP_STRING_ID_DLG_DateTime_DateTimeTitle));
-	gtk_window_set_policy (GTK_WINDOW (windowMain), FALSE, FALSE, FALSE);
-
-	hboxMain = gtk_hbox_new (FALSE, 5);
-	gtk_widget_ref (hboxMain);
-	gtk_object_set_data_full (GTK_OBJECT (windowMain), "hboxMain", hboxMain,
-							  (GtkDestroyNotify) gtk_widget_unref);
-	gtk_widget_show (hboxMain);
-	gtk_container_add (GTK_CONTAINER (windowMain), hboxMain);
-
 	vboxFormats = gtk_vbox_new (FALSE, 0);
-	gtk_widget_ref (vboxFormats);
-	gtk_object_set_data_full (GTK_OBJECT (windowMain), "vboxFormats", vboxFormats,
-							  (GtkDestroyNotify) gtk_widget_unref);
-	gtk_widget_show (vboxFormats);
-	gtk_box_pack_start (GTK_BOX (hboxMain), vboxFormats, TRUE, TRUE, 0);
+	//gtk_widget_ref (vboxFormats);
+	//gtk_widget_show (vboxFormats);
 
 	UT_XML_cloneNoAmpersands(unixstr, pSS->getValue(AP_STRING_ID_DLG_DateTime_AvailableFormats));
 	labelFormats = gtk_label_new (unixstr);
 	FREEP(unixstr);
-	gtk_widget_ref (labelFormats);
-	gtk_object_set_data_full (GTK_OBJECT (windowMain), "labelFormats", labelFormats,
-							  (GtkDestroyNotify) gtk_widget_unref);
-	gtk_widget_show (labelFormats);
+	//gtk_widget_ref (labelFormats);
+	//gtk_widget_show (labelFormats);
 	gtk_box_pack_start (GTK_BOX (vboxFormats), labelFormats, FALSE, FALSE, 0);
 	gtk_label_set_justify (GTK_LABEL (labelFormats), GTK_JUSTIFY_LEFT);
 	gtk_misc_set_alignment (GTK_MISC (labelFormats), 0, 0.5);
 
 	scrolledwindowFormats = gtk_scrolled_window_new (NULL, NULL);
-	gtk_widget_ref (scrolledwindowFormats);
-	gtk_object_set_data_full (GTK_OBJECT (windowMain), "scrolledwindowFormats", scrolledwindowFormats,
-							  (GtkDestroyNotify) gtk_widget_unref);
-	gtk_widget_show (scrolledwindowFormats);
+	//gtk_widget_ref (scrolledwindowFormats);
+	//gtk_widget_show (scrolledwindowFormats);
 	gtk_box_pack_start (GTK_BOX (vboxFormats), scrolledwindowFormats, TRUE, TRUE, 0);
 	gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (scrolledwindowFormats), GTK_POLICY_NEVER, GTK_POLICY_AUTOMATIC);
 	gtk_widget_set_usize(scrolledwindowFormats,-1,240);
 
 	viewportFormats = gtk_viewport_new (NULL, NULL);
-	gtk_widget_ref (viewportFormats);
-	gtk_object_set_data_full (GTK_OBJECT (windowMain), "viewportFormats", viewportFormats,
-							  (GtkDestroyNotify) gtk_widget_unref);
-	gtk_widget_show (viewportFormats);
+	//gtk_widget_ref (viewportFormats);
+	//gtk_widget_show (viewportFormats);
 	gtk_container_add (GTK_CONTAINER (scrolledwindowFormats), viewportFormats);
 
 	listFormats = gtk_list_new ();
-	gtk_widget_ref (listFormats);
-	gtk_object_set_data_full (GTK_OBJECT (windowMain), "listFormats", listFormats,
-							  (GtkDestroyNotify) gtk_widget_unref);
+	//gtk_widget_ref (listFormats);
 	gtk_list_set_selection_mode (GTK_LIST(listFormats), GTK_SELECTION_SINGLE);
-	gtk_widget_show (listFormats);
+	//gtk_widget_show (listFormats);
 	gtk_container_add (GTK_CONTAINER (viewportFormats), listFormats);
 
-	vbuttonboxButtons = gtk_vbutton_box_new ();
-	gtk_widget_ref (vbuttonboxButtons);
-	gtk_object_set_data_full (GTK_OBJECT (windowMain), "vbuttonboxButtons", vbuttonboxButtons,
-							  (GtkDestroyNotify) gtk_widget_unref);
-	gtk_widget_show (vbuttonboxButtons);
-	gtk_box_pack_start (GTK_BOX (hboxMain), vbuttonboxButtons, FALSE, TRUE, 0);
-	gtk_button_box_set_layout (GTK_BUTTON_BOX (vbuttonboxButtons), GTK_BUTTONBOX_START);
-
-	buttonOK = gtk_button_new_with_label (pSS->getValue(XAP_STRING_ID_DLG_OK));
-	gtk_widget_ref (buttonOK);
-	gtk_object_set_data_full (GTK_OBJECT (windowMain), "buttonOK", buttonOK,
-							  (GtkDestroyNotify) gtk_widget_unref);
-	gtk_widget_show (buttonOK);
-	gtk_container_add (GTK_CONTAINER (vbuttonboxButtons), buttonOK);
-	gtk_widget_set_usize (buttonOK, -2, 33);
-	GTK_WIDGET_SET_FLAGS (buttonOK, GTK_CAN_DEFAULT);
-
-	buttonCancel = gtk_button_new_with_label (pSS->getValue(XAP_STRING_ID_DLG_Cancel));
-	gtk_widget_ref (buttonCancel);
-	gtk_object_set_data_full (GTK_OBJECT (windowMain), "buttonCancel", buttonCancel,
-							  (GtkDestroyNotify) gtk_widget_unref);
-	gtk_widget_show (buttonCancel);
-	gtk_container_add (GTK_CONTAINER (vbuttonboxButtons), buttonCancel);
-	gtk_widget_set_usize (buttonCancel, -2, 33);
-	GTK_WIDGET_SET_FLAGS (buttonCancel, GTK_CAN_DEFAULT);
-
-	// the control buttons
-	gtk_signal_connect(GTK_OBJECT(buttonOK),
-					   "clicked",
-					   GTK_SIGNAL_FUNC(s_ok_clicked),
-					   (gpointer) this);
-	
-	gtk_signal_connect(GTK_OBJECT(buttonCancel),
-					   "clicked",
-					   GTK_SIGNAL_FUNC(s_cancel_clicked),
-					   (gpointer) this);
-
-	// the catch-alls
-	
-	gtk_signal_connect_after(GTK_OBJECT(windowMain),
-							 "delete_event",
-							 GTK_SIGNAL_FUNC(s_delete_clicked),
-							 (gpointer) this);
-
-	gtk_signal_connect_after(GTK_OBJECT(windowMain),
-							 "destroy",
-							 NULL,
-							 NULL);
-
-	// Update member variables with the important widgets that
-	// might need to be queried or altered later.
-
-	m_windowMain = windowMain;
-
-	m_buttonOK = buttonOK;
-	m_buttonCancel = buttonCancel;
-
+	// *must set this here*
 	m_listFormats = listFormats;
 
-	return windowMain;
+	return vboxFormats;
 }
 
 void AP_UnixDialog_Insert_DateTime::_populateWindowData(void)
 {
 	UT_ASSERT(m_windowMain && m_listFormats);
-	
+
 	// NOTE : this code is similar to the Windows dialog code to do
 	// NOTE : the same thing.  if you are implementing this dialog
 	// NOTE : for a new front end, this is the formatting logic 

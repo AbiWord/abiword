@@ -191,6 +191,7 @@ IE_Imp_XML::IE_Imp_XML(PD_Document * pDocument)
 	m_lenCharDataSeen = 0;
 	m_lenCharDataExpected = 0;
 	m_bSeenCR = UT_FALSE;
+	m_bWhiteSignificant = UT_TRUE;
 
 	m_currentDataItemName = NULL;
 	m_currentDataItemMimeType = NULL;

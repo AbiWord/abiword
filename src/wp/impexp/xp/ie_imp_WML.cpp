@@ -51,6 +51,8 @@ IE_Imp_WML::~IE_Imp_WML()
 IE_Imp_WML::IE_Imp_WML(PD_Document * pDocument)
 	: IE_Imp_XML(pDocument)
 {
+  // white space is not significant
+  m_bWhiteSignificant = UT_FALSE;
 }
 
 /*****************************************************************/
