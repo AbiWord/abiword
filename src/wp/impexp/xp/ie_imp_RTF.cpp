@@ -239,7 +239,7 @@ void RTF_msword97_level::buildAbiListProperties( const char ** szListID,
     }
     else if(RTFListType == 4)
     {
-        abiListType = UPPERCASE_LIST;
+        abiListType = LOWERCASE_LIST;
     }
     else if(RTFListType == 5)
     {
@@ -4125,7 +4125,7 @@ bool IE_Imp_RTF::HandleListLevel(RTF_msword97_list * pList, UT_uint32 levelCount
 	pLevel->pbCharProps = pbChars;
 	pList->RTF_level[levelCount] = pLevel;
 	UT_uint32 rnd =0;
-	while(rnd < 100000)
+	while(rnd < 10000)
 		rnd = rand();
 	pLevel->AbiLevelID = rnd;
 	while(nesting > 0)
