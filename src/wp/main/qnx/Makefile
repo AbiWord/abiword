@@ -41,12 +41,12 @@ ABI_APPLIBDEP=		$(LoadOrder)
 
 # libdl flags go into the process later
 # We needed libstdc++ at one point, not any more apparently
-ABI_LIBS=		ph phrender m  z png popt
+ABI_LIBS=		ph phrender m  z png
 ifndef ABI_REQUIRE_PEER_ICONV
 ABI_LIBS+= iconv 
 endif
 
-STUPID_STATIC_LIBS= -Wl,-Bstatic -lphS 
+STUPID_STATIC_LIBS= -Wl,-Bstatic -lphS -lpopt 
 
 # include both dynamic and static binaries
 TARGETS=		$(PROGRAM) $(PROGRAM_S)

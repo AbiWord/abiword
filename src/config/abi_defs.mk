@@ -823,7 +823,11 @@ ifeq ($(OS_NAME), WIN32)
 	CFLAGS += -DFRIBIDI_EXPORTS	# symbols match
 	CFLAGS += -I$(ABI_XX_ROOT)/..	# so <fribidi/fribidi.h> works
 else
+ifeq ($(OS_NAME),QNX)
+	EXTRA_LIBS += -Bstatic -lfribidi -Bdynamic
+else
 	EXTRA_LIBS += -lfribidi
+endif
 endif
 ifeq ($(OS_NAME), MINGW32)
 	CFLAGS += -I$(ABI_ROOT)/..	# so <fribidi/fribidi.h> works
