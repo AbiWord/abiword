@@ -921,8 +921,7 @@ void fp_Column::_drawBoundaries(dg_DrawArgs* pDA)
     UT_ASSERT(pDA->pG == getGraphics());
     if(getPage()->getDocLayout()->getView()->getShowPara() && getGraphics()->queryProperties(GR_Graphics::DGP_SCREEN))
     {
-        UT_RGBColor clrShowPara(127,127,127);
-        getGraphics()->setColor(clrShowPara);
+        getGraphics()->setColor(getPage()->getDocLayout()->getView()->getColorShowPara());
         UT_sint32 xoffBegin = pDA->xoff - 1;
         UT_sint32 yoffBegin = pDA->yoff - 1;
         UT_sint32 xoffEnd = pDA->xoff + getWidth() + 2;
@@ -945,6 +944,11 @@ void fp_Column::_drawBoundaries(dg_DrawArgs* pDA)
 			}
 		}
 		UT_sint32 yoffEnd = pDA->yoff + iHeight + 2;
+
+		getGraphics()->setLineProperties(1.0,
+											GR_Graphics::JOIN_MITER,
+											GR_Graphics::CAP_BUTT,
+											GR_Graphics::LINE_SOLID);
 
         getGraphics()->drawLine(xoffBegin, yoffBegin, xoffEnd, yoffBegin);
         getGraphics()->drawLine(xoffBegin, yoffEnd, xoffEnd, yoffEnd);
