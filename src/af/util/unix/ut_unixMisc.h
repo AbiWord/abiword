@@ -22,10 +22,15 @@
 #ifndef UTUNIXMISC_H
 #define UTUNIXMISC_H
 
+#ifndef XP_TARGET_COCOA
 #include <gdk/gdk.h>
+#endif
+
 #include "ut_misc.h"
 
+#ifndef XP_TARGET_COCOA
 UT_RGBColor* UT_UnixGdkColorToRGBColor(const GdkColor &color);
 GdkColor* UT_UnixRGBColorToGdkColor(const UT_RGBColor &rgb);
+#endif
 
 #endif /* UTUNIXMISC_H */

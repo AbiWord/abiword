@@ -112,6 +112,7 @@ bool UT_getEthernetAddress(UT_EthernetAddress &a)
     return false;
 }
 
+#ifndef XP_TARGET_COCOA
 /*!
 * Convert a GdkColor stuct to abi's UT_RGBColor. 
 * The caller is responsible for freeing the returned object.
@@ -134,3 +135,4 @@ GdkColor* UT_UnixRGBColorToGdkColor(const UT_RGBColor &rgb)
 
 	return gdk_color_copy(&color);
 }
+#endif
