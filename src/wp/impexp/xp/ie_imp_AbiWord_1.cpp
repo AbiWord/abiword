@@ -48,7 +48,7 @@ IE_Imp_AbiWord_1::IE_Imp_AbiWord_1(PD_Document * pDocument)
 /* Quick hack for GZipAbiWord */
 UT_Error IE_Imp_AbiWord_1::importFile(const char * szFilename)
 {
-  return IE_Imp_XML::importFile(szFilename);
+	return IE_Imp_XML::importFile(szFilename);
 }
 
 /*****************************************************************/
@@ -221,16 +221,18 @@ void IE_Imp_AbiWord_1::_startElement(const XML_Char *name, const XML_Char **atts
 		return;
 
 	case TT_BLOCK:
+	{
 		X_VerifyParseState(_PS_Sec);
 		m_parseState = _PS_Block;
 		X_CheckError(m_pDocument->appendStrux(PTX_Block,atts));
 		UT_DEBUGMSG(("SEVIOR: Appending strux \n"));
 		for(UT_sint32 i=0; atts[i] != NULL; i++)
-		  { 
-		    UT_DEBUGMSG(("Element %d is %s \n",i,atts[i]));
-		  }
+		{ 
+			UT_DEBUGMSG(("Element %d is %s \n",i,atts[i]));
+		}
 		return;
-		
+	}
+
 	case TT_INLINE:
         // ignored for fields
                 if (m_parseState == _PS_Field) return;
@@ -250,6 +252,7 @@ void IE_Imp_AbiWord_1::_startElement(const XML_Char *name, const XML_Char **atts
 		return;
 
 	case TT_FIELD:
+	{
 		X_VerifyParseState(_PS_Block);
                 m_parseState = _PS_Field;
 		X_CheckError(m_pDocument->appendObject(PTO_Field,atts));
@@ -259,7 +262,8 @@ void IE_Imp_AbiWord_1::_startElement(const XML_Char *name, const XML_Char **atts
 		    UT_DEBUGMSG(("Element %d is %s \n",i,atts[i]));
 		  }
 		return;
-
+	}
+	
 		// Forced Line Breaks are not containers.  Therefore we don't
 		// push the ParseState (_PS_...).  Breaks are marked with a
 		// tag, but are translated into character data (LF).  This may
