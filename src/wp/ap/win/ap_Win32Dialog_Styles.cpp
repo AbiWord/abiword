@@ -466,6 +466,7 @@ BOOL AP_Win32Dialog_Styles::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
 				getFrame()->repopulateCombos();
 				_populateWindowData(); // force a refresh
 				getDoc()->signalListeners(PD_SIGNAL_UPDATE_LAYOUT);
+				m_selectedStyle = "";
 			}
     	}
 		return 1;
