@@ -24,6 +24,7 @@
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
 #include "ut_misc.h"
+#include "ut_string.h"
 
 #include "fv_View.h"
 #include "fl_DocLayout.h"
@@ -40,6 +41,8 @@
 #include "gr_DrawArgs.h"
 #include "ie_types.h"
 
+
+#define DELETEP(p)	do { if (p) delete p; } while (0)
 
 /****************************************************************/
 
@@ -551,6 +554,8 @@ UT_Bool FV_View::getCharFormat(const XML_Char *** pProps)
 	const PP_AttrProp * pBlockAP = NULL;
 	const PP_AttrProp * pSectionAP = NULL; // TODO do we care about section-level inheritance
 	UT_Vector v;
+	UT_uint32 i;
+	_fmtPair * f;
 
 	/*
 		IDEA: We want to know character-level formatting properties, iff
@@ -588,7 +593,82 @@ UT_Bool FV_View::getCharFormat(const XML_Char *** pProps)
 	v.addItem(new _fmtPair("text-decoration",pSpanAP,pBlockAP,pSectionAP));
 	v.addItem(new _fmtPair("color",pSpanAP,pBlockAP,pSectionAP));
 
-	// TODO: 2. prune 'em as they vary across selection
+	// 2. prune 'em as they vary across selection
+	if (!isSelectionEmpty())
+	{
+		fl_BlockLayout* pBlockEnd = _findBlockAtPosition(posEnd);
+		fp_Run* pRunEnd = pBlockEnd->findPointCoords(posEnd, UT_FALSE,
+											   xPoint, yPoint, iPointHeight);
+	
+		while (pRun && (pRun != pRunEnd))
+		{
+			const PP_AttrProp * pAP;
+			UT_Bool bCheck = UT_FALSE;
+
+			pRun = pRun->getNext();
+
+			if (!pRun)
+			{
+				// go to first run of next block
+				pBlock = pBlock->getNext();
+
+				if (!pBlock)
+				{
+					// TODO: go to first block of next section
+					// for now, just bail
+					break;
+				}
+
+				// did block format change?
+				pBlock->getAttrProp(&pAP);
+				if (pBlockAP != pAP)
+				{
+					pBlockAP = pAP;
+					bCheck = UT_TRUE;
+				}
+
+				pRun = pBlock->getFirstRun();
+			}
+
+			// did span format change?
+			UT_ASSERT((pRun->getLength()>0) || (pRun->getBlockOffset()>0));
+			pBlock->getSpanAttrProp(pRun->getBlockOffset()+pRun->getLength(),&pAP);
+			if (pSpanAP != pAP)
+			{
+				pSpanAP = pAP;
+				bCheck = UT_TRUE;
+			}
+
+			if (bCheck)
+			{
+				i = v.getItemCount();
+
+				while (i > 0)
+				{
+					f = (_fmtPair *)v.getNthItem(i-1);
+
+					const XML_Char * value = PP_evalProperty(f->m_prop,pSpanAP,pBlockAP,pSectionAP);
+					UT_ASSERT(value);
+
+					// prune anything that doesn't match
+					if (UT_stricmp(f->m_val, value))
+					{
+						DELETEP(f);
+						v.deleteNthItem(i-1);
+					}
+
+					i--;
+				}
+
+				// when vector is empty, stop looking
+				if (0 == v.getItemCount())
+				{
+					pRun = NULL;
+					break;
+				}
+			}
+		}
+	}
 
 	// 3. export whatever's left
 	UT_uint32 count = v.getItemCount()*2 + 1;
@@ -598,9 +678,9 @@ UT_Bool FV_View::getCharFormat(const XML_Char *** pProps)
 	if (!props)
 		return UT_FALSE;
 
-	UT_uint32 i = v.getItemCount();
-	_fmtPair * f;
 	const XML_Char ** p = props;
+
+	i = v.getItemCount();
 
 	while (i > 0)
 	{
@@ -648,6 +728,8 @@ UT_Bool FV_View::getBlockFormat(const XML_Char *** pProps)
 	const PP_AttrProp * pBlockAP = NULL;
 	const PP_AttrProp * pSectionAP = NULL; // TODO do we care about section-level inheritance
 	UT_Vector v;
+	UT_uint32 i;
+	_fmtPair * f;
 
 	/*
 		IDEA: We want to know block-level formatting properties, iff
@@ -674,7 +756,63 @@ UT_Bool FV_View::getBlockFormat(const XML_Char *** pProps)
 	v.addItem(new _fmtPair("margin-top",NULL,pBlockAP,pSectionAP));
 	v.addItem(new _fmtPair("margin-bottom",NULL,pBlockAP,pSectionAP));
 
-	// TODO: 2. prune 'em as they vary across selection
+	// 2. prune 'em as they vary across selection
+	if (!isSelectionEmpty())
+	{
+		fl_BlockLayout* pBlockEnd = _findBlockAtPosition(posEnd);
+
+		while (pBlock && (pBlock != pBlockEnd))
+		{
+			const PP_AttrProp * pAP;
+			UT_Bool bCheck = UT_FALSE;
+
+			pBlock = pBlock->getNext();
+
+			if (!pBlock)
+			{
+				// TODO: go to first block of next section
+				// for now, just bail
+				break;
+			}
+
+			// did block format change?
+			pBlock->getAttrProp(&pAP);
+			if (pBlockAP != pAP)
+			{
+				pBlockAP = pAP;
+				bCheck = UT_TRUE;
+			}
+
+			if (bCheck)
+			{
+				i = v.getItemCount();
+
+				while (i > 0)
+				{
+					f = (_fmtPair *)v.getNthItem(i-1);
+
+					const XML_Char * value = PP_evalProperty(f->m_prop,NULL,pBlockAP,pSectionAP);
+					UT_ASSERT(value);
+
+					// prune anything that doesn't match
+					if (UT_stricmp(f->m_val, value))
+					{
+						DELETEP(f);
+						v.deleteNthItem(i-1);
+					}
+
+					i--;
+				}
+
+				// when vector is empty, stop looking
+				if (0 == v.getItemCount())
+				{
+					pBlock = NULL;
+					break;
+				}
+			}
+		}
+	}
 
 	// 3. export whatever's left
 	UT_uint32 count = v.getItemCount()*2 + 1;
@@ -684,9 +822,9 @@ UT_Bool FV_View::getBlockFormat(const XML_Char *** pProps)
 	if (!props)
 		return UT_FALSE;
 
-	UT_uint32 i = v.getItemCount();
-	_fmtPair * f;
 	const XML_Char ** p = props;
+
+	i = v.getItemCount();
 
 	while (i > 0)
 	{

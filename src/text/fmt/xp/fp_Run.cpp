@@ -135,24 +135,31 @@ void fp_Run::lookupProperties(void)
 
 	const XML_Char *pszDecor = PP_evalProperty("text-decoration",pSpanAP,pBlockAP,pSectionAP);
 
-	/*
-	  TODO -- m_fDecorations supports multiple simultanous decors.  Unfortunately,
-	  our use of UT_stricmp only allows one.
-	*/
-	
 	m_fDecorations = 0;
-	if (0 == UT_stricmp(pszDecor, "underline"))
+
+	XML_Char*	p = strdup(pszDecor);
+	UT_ASSERT(p || !pszDecor);
+	XML_Char*	q = strtok(p, " ");
+
+	while (q)
 	{
-		m_fDecorations |= TEXT_DECOR_UNDERLINE;
+		if (0 == UT_stricmp(q, "underline"))
+		{
+			m_fDecorations |= TEXT_DECOR_UNDERLINE;
+		}
+		else if (0 == UT_stricmp(q, "overline"))
+		{
+			m_fDecorations |= TEXT_DECOR_OVERLINE;
+		}
+		else if (0 == UT_stricmp(q, "line-through"))
+		{
+			m_fDecorations |= TEXT_DECOR_LINETHROUGH;
+		}
+
+		q = strtok(NULL, " ");
 	}
-	if (0 == UT_stricmp(pszDecor, "overline"))
-	{
-		m_fDecorations |= TEXT_DECOR_OVERLINE;
-	}
-	if (0 == UT_stricmp(pszDecor, "line-through"))
-	{
-		m_fDecorations |= TEXT_DECOR_LINETHROUGH;
-	}
+
+	free(p);
 
 	m_pG->setFont(m_pFont);
 	m_iAscent = m_pG->getFontAscent();	

@@ -1024,7 +1024,7 @@ Defun(dlgFont)
 #endif /* DLGHACK */
 }
 
-static UT_Bool _toggleSpan(FV_View * pView, const XML_Char * prop, const XML_Char * vOn, const XML_Char * vOff)
+static UT_Bool _toggleSpan(FV_View * pView, const XML_Char * prop, const XML_Char * vOn, const XML_Char * vOff, UT_Bool bMultiple=UT_FALSE)
 {
 	const XML_Char * props_out[] =	{ NULL, NULL, 0};
 
@@ -1036,17 +1036,73 @@ static UT_Bool _toggleSpan(FV_View * pView, const XML_Char * prop, const XML_Cha
 		return UT_FALSE;
 
 	props_out[0] = prop;
-	props_out[1] = vOn;
+	props_out[1] = vOn;		// be optimistic
 
-	// TODO: some properties, espec. text-decoration, should *not* be mutually-exclusive
+	XML_Char * buf = NULL;
+
 	s = UT_getAttribute(prop, props_in);
-	if (s && (0 == UT_stricmp(s, vOn)))
-		props_out[1] = vOff;
-	
+	if (s)
+	{
+		if (bMultiple)
+		{
+			// some properties have multiple values
+			XML_Char*	p = strstr(s, vOn);
+
+			if (p)
+			{
+				// yep...
+				if (strstr(s, vOff))
+					UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+
+				// ... take it out
+				int len = strlen(s);
+				buf = (XML_Char *) calloc(len, sizeof(XML_Char *));
+
+				strncpy(buf, s, p - s);
+				strcat(buf, s + (p - s) + strlen(vOn));
+
+				// now see if anything's left
+				XML_Char * q;
+				UT_cloneString(q, buf);
+
+				if (q && strtok(q, " "))
+					props_out[1] = buf;		// yep, use it
+				else
+					props_out[1] = vOff;	// nope, clear it
+
+				free(q);
+			}
+			else
+			{
+				// nope...
+				if (UT_stricmp(s, vOff))
+				{
+					// ...put it in by appending to current contents
+					int len = strlen(s) + strlen(vOn) + 2;
+					buf = (XML_Char *) calloc(len, sizeof(XML_Char *));
+
+					strcpy(buf, s);
+					strcat(buf, " ");
+					strcat(buf, vOn);
+
+					props_out[1] = buf;
+				}
+			}
+		}
+		else
+		{
+			if (0 == UT_stricmp(s, vOn))
+				props_out[1] = vOff;
+		}
+	}
 	free(props_in);
 
 	// set it either way
 	pView->setCharFormat(props_out);
+	
+	if (buf)
+		free(buf);
+
 	return UT_TRUE;
 }
 
@@ -1062,12 +1118,12 @@ Defun1(toggleItalic)
 
 Defun1(toggleUline)
 {
-	return _toggleSpan(pView, "text-decoration", "underline", "none");
+	return _toggleSpan(pView, "text-decoration", "underline", "none", UT_TRUE);
 }
 
 Defun1(toggleStrike)
 {
-	return _toggleSpan(pView, "text-decoration", "line-through", "none");
+	return _toggleSpan(pView, "text-decoration", "line-through", "none", UT_TRUE);
 }
 
 Defun1(alignLeft)
@@ -1212,22 +1268,42 @@ UT_Bool _chooseFont(AP_Frame * pFrame, FV_View * pView)
 		cf.Flags |= CF_NOSIZESEL;
 
 	s = UT_getAttribute("font-weight", props_in);
-	if (s && (0 == UT_stricmp(s, "bold")))
-		lf.lfWeight = 700;
+	if (s)
+	{
+		if (0 == UT_stricmp(s, "bold"))
+			lf.lfWeight = 700;
+	}
+	else
+		cf.Flags |= CF_NOSTYLESEL;
 
 	s = UT_getAttribute("font-style", props_in);
-	if (s && (0 == UT_stricmp(s, "italic")))
-		lf.lfItalic = TRUE;
+	if (s)
+	{
+		if (0 == UT_stricmp(s, "italic"))
+			lf.lfItalic = TRUE;
+	}
+	else
+		cf.Flags |= CF_NOSTYLESEL;
 
 	s = UT_getAttribute("text-decoration", props_in);
 	if (s)
 	{
-		// TODO: these should *not* be mutually exclusive
-		if (0 == UT_stricmp(s, "underline"))
-			lf.lfUnderline = TRUE;
+		XML_Char*	p = strdup(s);
+		UT_ASSERT(p);
+		XML_Char*	q = strtok(p, " ");
 
-		else if (0 == UT_stricmp(s, "line-through"))
-			lf.lfStrikeOut = TRUE;
+		while (q)
+		{
+			if (0 == UT_stricmp(q, "underline"))
+				lf.lfUnderline = TRUE;
+
+			else if (0 == UT_stricmp(q, "line-through"))
+				lf.lfStrikeOut = TRUE;
+
+			q = strtok(NULL, " ");
+		}
+
+		free(p);
 	}
 
 	s = UT_getAttribute("color", props_in);
@@ -1302,8 +1378,14 @@ UT_Bool _chooseFont(AP_Frame * pFrame, FV_View * pView)
 			i += 2;
 		}
 
-		// TODO: these should *not* be mutually exclusive
-		if (lf.lfUnderline == TRUE)
+		if ((lf.lfUnderline == TRUE) && 
+			(lf.lfStrikeOut == TRUE))
+		{
+			props_out[i] = "text-decoration";
+			props_out[i+1] ="underline line-through";
+			i += 2;
+		}
+		else if (lf.lfUnderline == TRUE)
 		{
 			props_out[i] = "text-decoration";
 			props_out[i+1] ="underline";

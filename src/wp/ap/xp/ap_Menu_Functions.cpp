@@ -17,6 +17,7 @@
  * 02111-1307, USA.
  */
 
+#include <string.h>
 
 #include "ut_types.h"
 #include "ut_assert.h"
@@ -74,6 +75,7 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_Selection)
 Defun_EV_GetMenuItemState_Fn(ap_GetState_CharFmt)
 {
 	UT_ASSERT(pView);
+	UT_Bool bMultiple = UT_FALSE;
 
 	EV_Menu_ItemState s = EV_MIS_ZERO;
 
@@ -95,11 +97,13 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_CharFmt)
 	case AP_MENU_ID_FMT_UNDERLINE:
 		prop = "text-decoration";
 		val  = "underline";
+		bMultiple = UT_TRUE;
 		break;
 
 	case AP_MENU_ID_FMT_STRIKE:
 		prop = "text-decoration";
 		val  = "line-through";
+		bMultiple = UT_TRUE;
 		break;
 
 	default:
@@ -116,10 +120,21 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_CharFmt)
 		if (!pView->getCharFormat(&props_in))
 			return s;
 
-		// TODO: some properties, espec. text-decoration, should *not* be mutually-exclusive
 		sz = UT_getAttribute(prop, props_in);
-		if (sz && (0 == UT_stricmp(sz, val)))
-			s = EV_MIS_Toggled;
+		if (sz)
+		{
+			if (bMultiple)
+			{	
+				// some properties have multiple values
+				if (strstr(sz, val))
+					s = EV_MIS_Toggled;
+			}
+			else
+			{
+				if (0 == UT_stricmp(sz, val))
+					s = EV_MIS_Toggled;
+			}
+		}
 		
 		free(props_in);
 	}
