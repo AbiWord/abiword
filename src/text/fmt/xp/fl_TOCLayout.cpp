@@ -1352,7 +1352,7 @@ void fl_TOCLayout::_lookupProperties(void)
 		}
 		else
 		{
-			m_bTOCHeading = true;
+			m_bTOCHeading = false;
 		}
 	}
 //
