@@ -214,8 +214,8 @@ static void s_poptInit(AP_Args *Args)
 #ifndef ABI_OPT_WIDGET
 	// This is deprecated.  We're supposed to use gnome_program_init!
 	gnome_init_with_popt_table("AbiWord", "1.0.0", 
-							   Args->XArgs->m_argc, Args->XArgs->m_argv, 
-							   Args->options, 0, &Args->poptcon);
+				   Args->XArgs->m_argc, Args->XArgs->m_argv, 
+				   Args->options, 0, &Args->poptcon);
 #endif
 }
 

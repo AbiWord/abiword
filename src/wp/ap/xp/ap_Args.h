@@ -35,7 +35,7 @@ class AP_Args
 {
 public:
 	AP_Args(XAP_Args * pArgs, const char * szAppName,
-					 initPopt_cb ipFunc, dwa_cb dwaFunc);
+		initPopt_cb ipFunc, dwa_cb dwaFunc);
 	~AP_Args(void);
 
 	XAP_Args *XArgs;

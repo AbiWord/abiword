@@ -18,3 +18,7 @@
  */
 
 #include "ap_Frame.h"
+
+AP_Frame::~AP_Frame()
+{
+}

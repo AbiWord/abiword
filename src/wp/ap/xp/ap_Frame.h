@@ -20,4 +20,13 @@
 #ifndef AP_FRAME_H
 #define AP_FRAME_H
 
+class AP_Frame
+{
+ public:
+
+  virtual ~AP_Frame () ;
+
+ private:
+} ;
+
 #endif // AP_FRAME_H
