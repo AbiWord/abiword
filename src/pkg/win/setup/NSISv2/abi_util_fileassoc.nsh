@@ -63,7 +63,7 @@ FunctionEnd
   WriteRegStr HKCR "${appType}\DefaultIcon" "" "${defIcon}"
 
   ; Basic command to open the file (pass filename as argv[1] to program executable)
-  WriteRegStr HKCR "OptionsFile\shell\open\command" "" '"${exeCmd}" "%1"'
+  WriteRegStr HKCR "${appType}\shell\open\command" "" '"${exeCmd}" "%1"'
 
   ; To open file via DDE (OLE, ie via already active instance) instead of in a new process
   ; Here for those who want to locally enable, not normally used as having each document
