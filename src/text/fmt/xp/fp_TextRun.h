@@ -78,12 +78,12 @@ class fp_TextRun : public fp_Run
 	UT_Bool					isFirstCharacter(UT_UCSChar Character) const;
 	UT_Bool					isLastCharacter(UT_UCSChar Character) const;
 	virtual UT_Bool			doesContainNonBlankData(void) const;
-	virtual UT_Bool				isSuperscript(void) const;
-	virtual UT_Bool				isSubscript(void) const;
-	virtual UT_Bool                         isUnderline(void) const;
-	virtual UT_Bool                         isOverline(void) const;
-	virtual UT_Bool                         isStrikethrough(void) const;
-	virtual void                            setLinethickness(UT_sint32 max_linethickness);
+	inline virtual UT_Bool	isSuperscript(void) const;
+	inline virtual UT_Bool	isSubscript(void) const;
+	inline virtual UT_Bool	isUnderline(void) const;
+	inline virtual UT_Bool	isOverline(void) const;
+	inline virtual UT_Bool	isStrikethrough(void) const;
+	virtual void			setLinethickness(UT_sint32 max_linethickness);
 	virtual UT_sint32                       getLinethickness(void);
 	virtual void                            setUnderlineXoff(UT_sint32 xoff);
 	virtual UT_sint32                       getUnderlineXoff(void);

@@ -38,9 +38,9 @@ public:
 	XML_Char *	m_pszInitial;
 	UT_Bool		m_bInherit;
 
-	const XML_Char *	getName() const;
-	const XML_Char *	getInitial() const;
-	UT_Bool				canInherit() const;
+	inline const XML_Char *	getName() const;
+	inline const XML_Char *	getInitial() const;
+	inline UT_Bool				canInherit() const;
 };
 
 const PP_Property * PP_lookupProperty(const XML_Char * pszName);

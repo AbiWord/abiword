@@ -19,6 +19,7 @@
 
 
 #include <string.h>
+#include <stdlib.h>
 
 #include "ut_types.h"
 #include "ut_assert.h"
@@ -36,93 +37,115 @@
   It seems out of place... --EWS
 */
 
+// KEEP THIS ALPHABETICALLY ORDERED UNDER PENALTY OF DEATH!
+
 static PP_Property _props[] =
 {
-	{ "color",					"000000",			1},
+        { "background-color", "transparent", 0},
 	{ "bgcolor", "ffffff", 1},
-	{ "field-color",				"dcdcdc",	1},
-	{ "font-family",			"Times New Roman",	1},	// TODO this is Win32-specific.  must fix!
-	{ "field-font",			"NULL",	1},	
-	{ "font-size",				"14pt",				1},	// MS word defaults to 10pt, but it just seems too small
-	{ "font-stretch",			"normal",			1},
-	{ "font-style",				"normal",			1},
-	{ "font-variant",			"normal",			1},
-	{ "font-weight",			"normal",			1},
-	{ "text-decoration",		"none",				1},
-	{ "text-position",			"normal",		1},	
 
-	{ "margin-bottom",			"0in",				0},	// EWS -- I changed these to
-	{ "margin-top",				"0in",				0}, // zero to be consistent with other WPs
-	{ "margin-left",			"0in",				0},
-	{ "margin-right",			"0in",				0},
-	{ "text-indent",			"0in",				0},
-	{ "text-align",				"left",				1},
+	{ "color",   "000000", 1},
+	{ "column-gap",	"0.25in", 0},
+	{ "column-line", "off",	0},
+	{ "columns", "1", 0},
 
-	{ "start-value",			"1",				1},
-	{ "format",				"%*%d.",			1},
-	{ "list-delim",				"%L", 			1},
-	{ "list-decimal",			".",     			1},
+	{ "default-tab-interval",  "0.5in", 0},
 
-	{ "width",					"",					0},
-	{ "height",					"",					0},
-	
-	{ "background-color",		"transparent",		0},
-	{ "line-height",			"1.0",				0},
-	{ "keep-together",			"",					0},
-	{ "keep-with-next",			"",					0},
+	{ "field-color", "dcdcdc", 1},
+	{ "field-font",	"NULL",	1},	
+	{ "font-family", "Times New Roman", 1},	// TODO this is Win32-specific.  must fix!
+	{ "font-size",	"14pt",	1},	// MS word defaults to 10pt, but it just seems too small
+	{ "font-stretch", "normal", 1},
+	{ "font-style",	"normal", 1},
+	{ "font-variant", "normal", 1},
+	{ "font-weight", "normal", 1},
+	{ "format","%*%d.", 1},
 
-	{ "orphans",				"2",				0},
-	{ "widows",					"2",				0},
+	{ "height", "",	0},
 
-	{ "page-margin-left",		"1in",				0},
-	{ "page-margin-top",		"1in",				0},
-	{ "page-margin-right",		"1in",				0},
+	{ "keep-together", "", 0},
+	{ "keep-with-next", "",	0},
+
+	{ "line-height", "1.0", 0},
+	{ "list-decimal", ".", 1},
+	{ "list-delim", "%L", 1},
+
+	{ "margin-bottom", "0in", 0},
+	{ "margin-left", "0in",	0},
+	{ "margin-right", "0in", 0},
+	{ "margin-top",	"0in", 0}, // zero to be consistent with other WPs
+
+	{ "orphans", "2", 0},
+
 	{ "page-margin-bottom",		"1in",				0},
-	{ "columns",				"1",				0},
-	{ "column-gap",				"0.25in",			0},
-	{ "column-line",			"off",				0},
+	{ "page-margin-left",		"1in",				0},
+	{ "page-margin-right",		"1in",				0},
+	{ "page-margin-top",		"1in",				0},
+
+
 	{ "section-space-after",	"0.25in",			0},
+       	{ "start-value",			"1",				1},
+
+	{ "tabstops", "", 0},
+	{ "text-align", "left",	1},
+	{ "text-decoration", "none", 1},
+	{ "text-indent", "0in", 0},
+	{ "text-position", "normal", 1},	
 	
-	{ "default-tab-interval",	"0.5in",			0},
-	{ "tabstops",				"",					0},
+	{ "widows", "2", 0},
+	{ "width", "", 0},
+
 };
+
+static int s_compare (const void * a, const void * b)
+{
+  const PP_Property * prop;
+  const char * name;
+
+  name = (const char *)a;
+  prop = (const PP_Property *)b;
+
+  return UT_strcmp (name, prop->getName());
+}
 
 /*****************************************************************/
 
-const XML_Char * PP_Property::getName() const
+inline const XML_Char * PP_Property::getName() const
 {
 	return m_pszName;
 }
 
-const XML_Char * PP_Property::getInitial() const
+inline const XML_Char * PP_Property::getInitial() const
 {
 	return m_pszInitial;
 }
 
-UT_Bool PP_Property::canInherit() const
+inline UT_Bool PP_Property::canInherit() const
 {
 	return m_bInherit;
 }
 
 const PP_Property * PP_lookupProperty(const XML_Char * name)
 {
-	/*
-		TODO we can make this faster later by storing all the property names
-		in alphabetical order and doing a binary search.
-	*/
-
+#if 0
 	int i;
 	int count = NrElements(_props);
 
 	for (i=0; i<count; i++)
 	{
-		if (0 == UT_stricmp(_props[i].m_pszName, name))
+		if (0 == UT_strcmp(_props[i].m_pszName, name))
 		{
 			return _props + i;
 		}
 	}
 
 	return NULL;
+#else
+	PP_Property * prop = NULL;
+
+	prop = (PP_Property *)bsearch (name, _props, NrElements(_props), sizeof (_props[0]), s_compare);
+	return prop;
+#endif
 }
 
 static PD_Style * _getStyle(const PP_AttrProp * pAttrProp, PD_Document * pDoc)
