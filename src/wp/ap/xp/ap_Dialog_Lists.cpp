@@ -297,14 +297,18 @@ void AP_Dialog_Lists::Apply(void)
 		return;
 	}
 /*!
- * Start new list. 3 Possibilities.
+ * Start new list. 4 Possibilities.
  * 1. If there is a list at the current point and the user choose no list, stop
  *    the list the current point. 
  *
  * 2. start a new list with the properties given if there is not a 
  * list at the current point.
  *
- * 3. Start a sublist at the current point if a list already exists there.
+ * 3. Start a sublist at the current point if a list already exists there and is
+ *    non-empty
+ *
+ * 4. Change the list to the requested value if a list already eists but only
+ *    has one item in it.
  */
 	if(m_bStartNewList == true)
 	{ 
@@ -332,7 +336,7 @@ void AP_Dialog_Lists::Apply(void)
 			clearDirty();
 			return;
 		}
-		else if( m_isListAtPoint == true && m_NewListType != NOT_A_LIST )
+		else if( getAutoNum() && (getAutoNum()->getNumLabels() > 1) && m_NewListType != NOT_A_LIST )
 		{
 //
 // This starts a sublist.
@@ -348,6 +352,21 @@ void AP_Dialog_Lists::Apply(void)
 			getBlock()->StartList(m_NewListType,m_iStartValue,m_pszDelim,m_pszDecimal,m_pszFont,m_fAlign,m_fIndent, currID,curlevel);
 			getBlock()->getDocument()->enableListUpdates();
 			getBlock()->getDocument()->updateDirtyLists();
+			clearDirty();
+			return;
+		}
+		else if( getAutoNum() && (getAutoNum()->getNumLabels() <= 1) && m_NewListType != NOT_A_LIST )
+		{
+//
+// The list at the current point only has one item which is the current paragraph.
+// We can't share an sdh amongst two autonum's so we can't start a sublist.
+// We'll change the list style instead.
+//
+			getView()->changeListStyle(getAutoNum(),m_NewListType,m_iStartValue,(XML_Char *) m_pszDelim,(XML_Char *) m_pszDecimal, m_pszFont,m_fAlign,m_fIndent);
+			if(getAutoNum() != NULL)
+			{
+				getAutoNum()->update(0);
+			}
 			clearDirty();
 			return;
 		}
