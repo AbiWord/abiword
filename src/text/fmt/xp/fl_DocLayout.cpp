@@ -529,6 +529,8 @@ void FL_DocLayout::_toggleAutoSpell(UT_Bool bSpell)
 			// If we're here, it was set to TRUE before but now it is being set
 			// to FALSE. This means that it is the user setting it. That's good.
 			m_pView->draw(NULL);
+			// A pending word would be bad. Not sure why it's not ignored once autospell is off, but for now it should definattely be annulled.
+			setPendingWord(NULL, NULL);
 		}
 	}
 }
