@@ -60,6 +60,10 @@ double UT_convertToInches(const char* s)
 		{
 			result = f;
 		}
+		else if (0 == UT_stricmp(p, "pi"))
+		{
+			result = f / 6;
+		}
 		else if (0 == UT_stricmp(p, "pt"))
 		{
 			result = f / 72;
@@ -103,6 +107,10 @@ double UT_convertToPoints(const char* s)
 		if (0 == UT_stricmp(p, "pt"))
 		{
 			result = f;
+		}
+		else if (0 == UT_stricmp(p, "pi"))
+		{
+			result = f * 12;	// ie, 72 / 6
 		}
 		else if (0 == UT_stricmp(p, "in"))
 		{
