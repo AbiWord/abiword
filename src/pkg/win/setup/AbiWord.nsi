@@ -63,12 +63,12 @@ Section "Abiword.exe (required)"
 	File "..\AbiSuite\readme.txt"
 
 	; Special Install of Dingbats font
-	SetOutPath $TEMPDIR
+	SetOutPath $TEMP
 	File "..\..\pkg\win\setup\Dingbats.ttf"
 	IfFileExists "$WINDIR\Fonts\Dingbats.ttf" EraseTemp 0
-		CopyFiles /SILENT "$TEMPDIR\Dingbats.ttf" "$WINDIR\Fonts" 
+		CopyFiles /SILENT "$TEMP\Dingbats.ttf" "$WINDIR\Fonts" 
 	EraseTemp:
-	Delete $TEMPDIR\Dingbats.ttf
+	Delete $TEMP\Dingbats.ttf
   
 	; Write the installation path into the registry
 	WriteRegStr HKLM SOFTWARE\Abisuite "Install_Dir" "$INSTDIR"
