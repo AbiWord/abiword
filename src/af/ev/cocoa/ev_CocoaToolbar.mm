@@ -85,12 +85,13 @@ public:									// we create...
 		UT_DEBUGMSG (("Unexpected object class\n"));
 		UT_ASSERT (UT_SHOULD_NOT_HAPPEN);
 	}
+	return sender;		// FIXME what should we return here ?
 }
 @end
 
 
 
-_wd::_wd(EV_CocoaToolbar * pCocoaToolbar, XAP_Toolbar_Id tlbrid, NSButton * widget = nil)
+_wd::_wd(EV_CocoaToolbar * pCocoaToolbar, XAP_Toolbar_Id tlbrid, NSControl * widget)
 {
 	m_pCocoaToolbar = pCocoaToolbar;
 	m_id = tlbrid;
@@ -256,10 +257,10 @@ _wd::~_wd(void)
 EV_CocoaToolbar::EV_CocoaToolbar(XAP_CocoaApp * pCocoaApp, XAP_CocoaFrame * pCocoaFrame,
 							   const char * szToolbarLayoutName,
 							   const char * szToolbarLabelSetName)
-	: m_pCocoaApp (pCocoaApp), m_pCocoaFrame(pCocoaFrame),
-	  EV_Toolbar(pCocoaApp->getEditMethodContainer(),
+	: EV_Toolbar(pCocoaApp->getEditMethodContainer(),
 				 szToolbarLayoutName,
-				 szToolbarLabelSetName)
+				 szToolbarLabelSetName),
+	 m_pCocoaApp (pCocoaApp), m_pCocoaFrame(pCocoaFrame)
 {
 	m_pViewListener = 0;
 	m_wToolbar = nil;
@@ -464,7 +465,7 @@ void EV_CocoaToolbar::rebuildToolbar(UT_sint32 oldpos)
 bool EV_CocoaToolbar::synthesize(void)
 {
 	// TODO: rationalize those as static members of the class.
-	const float BTN_WIDTH = getButtonWidth ();
+//	const float BTN_WIDTH = getButtonWidth ();
 	const float BTN_HEIGHT = getButtonHeight ();
 	const float BTN_SPACE = getButtonSpace ();
 

@@ -68,6 +68,7 @@ public:									// we create...
 	_wd *wd = (_wd *)[sender tag];
 	UT_ASSERT  (wd);
 	wd->m_pCocoaMenu->menuEvent(wd->m_id);
+	return sender;		// FIXME we should we return here ?
 }
 
 @end
@@ -241,7 +242,6 @@ bool EV_CocoaMenu::synthesizeMenu(NSMenu * wMenuRoot)
 
 	// we keep a stack of the widgets so that we can properly
 	// parent the menu items and deal with nested pull-rights.
-	UT_uint32 tmp = 0;
 	bool bResult;
 	UT_Stack stack;
 	stack.push(wMenuRoot);
