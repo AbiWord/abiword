@@ -145,5 +145,6 @@ void XAP_Dialog_Zoom::_createPreviewFromGC(GR_Graphics * gc,
 	m_zoomPreview->setWindowSize(width, height);
 	m_zoomPreview->setString("10-pt Times New Roman");
 	m_zoomPreview->setFont(XAP_Preview_Zoom::font_NORMAL);
+	m_zoomPreview->setZoomPercent(m_zoomPercent);
 
 }

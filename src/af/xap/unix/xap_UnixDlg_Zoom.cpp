@@ -207,20 +207,14 @@ void XAP_UnixDialog_Zoom::event_RadioPageWidthClicked(void)
 {
 	_enablePercentSpin(false);
 	if ( m_pFrame )
-	{
-		UT_uint32 value = m_pFrame->getCurrentView ()->calculateZoomPercentForPageWidth () ;
-		_updatePreviewZoomPercent(value);
-	}
+		_updatePreviewZoomPercent(m_pFrame->getCurrentView ()->calculateZoomPercentForPageWidth ());
 }
 
 void XAP_UnixDialog_Zoom::event_RadioWholePageClicked(void)
 {
 	_enablePercentSpin(false);
 	if ( m_pFrame )
-	{
-		UT_uint32 value = m_pFrame->getCurrentView ()->calculateZoomPercentForWholePage () ;
-		_updatePreviewZoomPercent(value);
-	}
+		_updatePreviewZoomPercent(m_pFrame->getCurrentView ()->calculateZoomPercentForWholePage ());
 }
 
 void XAP_UnixDialog_Zoom::event_RadioPercentClicked(void)

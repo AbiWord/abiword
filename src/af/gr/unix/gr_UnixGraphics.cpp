@@ -585,8 +585,6 @@ void GR_UnixGraphics::setFont(GR_Font * pFont)
 	// I'm just taking here the shortest path to get Xft working...
 
 	// this is probably caching done on the wrong level
-	// but it's currently faster to shortcut
-	// than to call explodeGdkFonts
 	// TODO: turn this off when our text runs get a bit smarter
 
 	// this probably is not safe. It was observed in the win32 build that
@@ -620,30 +618,17 @@ void GR_UnixGraphics::setFont(GR_Font * pFont)
 	{
 		if(strstr(szFontName,"symbol") != NULL)
 		{
-			m_bIsSymbol = true;
 			if(strstr(szFontName,"star") != NULL)
-			{
 				m_bIsSymbol = false;
-			}
-			xxx_UT_DEBUGMSG(("UnixGraphics: Found Symbol font \n"));
+			else
+				m_bIsSymbol = true;
 		}
 		if(strstr(szFontName,"dingbat") != NULL)
-		{
 			m_bIsDingbat = true;
-		}
 	}
-	if (szFontName)
-	{
-		if(strstr(szFontName,"Symbol") != NULL)
-		{
-			m_bIsSymbol = true;
-			xxx_UT_DEBUGMSG(("unixGraphics: Found Symbol Font! \n"));
-		}
-	}
-	xxx_UT_DEBUGMSG(("unixGraphics: Font set to %s m_bIsSymbol %d\n",szFontName,m_bIsSymbol));
+	FREEP(szFontName);
 	m_pXftFontL = m_pFont->getLayoutXftFont();
 	m_pXftFontD = m_pFont->getDeviceXftFont(getZoomPercentage());
-	FREEP(szFontName);
 }
 
 UT_uint32 GR_UnixGraphics::getFontHeight(GR_Font * fnt)

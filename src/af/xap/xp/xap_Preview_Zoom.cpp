@@ -19,14 +19,10 @@
 
 
 #include <stdlib.h>
-#include <stdio.h>
-
-#include "ut_debugmsg.h"
 #include "ut_assert.h"
 #include "ut_types.h"
 #include "ut_string.h"
 #include "gr_Graphics.h"
-
 #include "xap_Preview_Zoom.h"
 
 XAP_Preview_Zoom::XAP_Preview_Zoom(GR_Graphics * gc)
@@ -68,31 +64,23 @@ XAP_Preview_Zoom::~XAP_Preview_Zoom()
 
 void XAP_Preview_Zoom::setDrawAtPosition(XAP_Preview_Zoom::tPos pos)
 {
-	UT_ASSERT(m_gc);
-	
+	UT_ASSERT(m_gc);	
 	m_pos = pos;
 }
 
 void XAP_Preview_Zoom::setFont(XAP_Preview_Zoom::tFont f)
 {
 	UT_ASSERT(m_gc);
-
 	UT_ASSERT(m_zoomPercent > 0);
-		
+	char fontString [10];
+
 	// when searching for fonts, we use these
 	GR_Font * found = NULL;
-	char fontString[10];
-
-	UT_uint32 pointSize = 0;
 
 	switch (f)
 	{
 	case XAP_Preview_Zoom::font_NORMAL:
-
-		// 10 points for "NORMAL"
-		pointSize = static_cast<UT_uint32>(10.0 * static_cast<float>(m_zoomPercent) / 100.0);
- 		sprintf(fontString, "%dpt", pointSize);
-
+		sprintf (fontString, "%dpt", (10 * m_zoomPercent / 100));
 		found = m_gc->findFont("Times New Roman", "normal", "", "normal", "", fontString);
 
 		if (found)
@@ -122,7 +110,6 @@ void XAP_Preview_Zoom::setZoomPercent(UT_uint32 percent)
 	// re-calculate the GC's font using the new zoom size
 	setFont(m_previewFont);
 }
-
 
 bool XAP_Preview_Zoom::setString(const char * string)
 {
@@ -176,14 +163,9 @@ void XAP_Preview_Zoom::draw(void)
 	pageRect.height -= m_gc->tlu(10);
 
 	// set the cliprect to our page size, so we don't draw over our borders
-	UT_Rect r;
-	r.left   = pageRect.left;
-	r.top    = pageRect.top;
-	r.width  = pageRect.width;
-	r.height = pageRect.height;
-	m_gc->setClipRect(&r);
+	m_gc->setClipRect(&pageRect);
 
-#ifndef WITH_PANGO	
+#ifndef WITH_PANGO
 	m_gc->drawChars(m_string, 0, UT_UCS4_strlen(m_string), pageRect.left, pageRect.top);
 #else
 	if(!m_pGlyphString)
@@ -192,10 +174,6 @@ void XAP_Preview_Zoom::draw(void)
 	m_gc->drawPangoGlyphString(m_pGlyphString, pageRect.left, pageRect.top);
 #endif
 
-	UT_Rect rr;
-	rr.left   = 0;
-	rr.top    = 0;
-	rr.width  = iWidth;
-	rr.height = iHeight;
+	UT_Rect rr (0, 0, iWidth, iHeight);
 	m_gc->setClipRect(&rr);
 }
