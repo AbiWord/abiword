@@ -736,15 +736,20 @@ void IE_Exp_RTF::_write_charfmt(const s_RTF_AttrPropAdapter & apa)
    	_rtf_font_info fi(apa);
 	UT_sint32 ndxFont = _findFont(&fi);
 	UT_ASSERT(ndxFont != -1);
-	_rtf_keyword("f",ndxFont);	// font index in fonttbl
+	if(ndxFont != -1)
+		_rtf_keyword("f",ndxFont);	// font index in fonttbl
 
 	const XML_Char * szFontSize = apa.getProperty("font-size");
 	double dbl = UT_convertToPoints(szFontSize);
 	UT_sint32 d = (UT_sint32)(dbl*2.0);
 
 	// if (d != 24) - always write this out
-	_rtf_keyword("fs",d);	// font size in half points
-
+	if(szFontSize != NULL)
+	{
+		if(d == 0)
+			d = 24;
+		_rtf_keyword("fs",d);	// font size in half points
+	}
 	const XML_Char * szFontStyle = apa.getProperty("font-style");
 	if (szFontStyle && *szFontStyle && (UT_strcmp(szFontStyle,"italic")==0))
 		_rtf_keyword("i");
