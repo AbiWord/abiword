@@ -42,7 +42,7 @@ _EXPAT_:
 	@if [ -d $(ABI_ROOT)/../expat ]; then						\
 		echo Found expat in peer directory;					\
 		if [ ! -r $(ABI_ROOT)/../exapt/config.h ]; then \
-			cd $(ABI_ROOT)/../expatt; \
+			cd $(ABI_ROOT)/../expat; \
 			./configure --disable-shared --enable-static; \
 		fi; \
 		$(MAKE) ABI_ROOT=$(ABI_ROOT) -C $(ABI_ROOT)/../expat;			\
