@@ -169,7 +169,10 @@ void FV_View::_eraseSelection(void)
 
 void FV_View::_clearSelection(void)
 {
-	UT_return_if_fail(!isSelectionEmpty());
+	if( isSelectionEmpty() )
+	{
+		return;
+	}
 	m_pG->getCaret()->enable();
 
 	_fixInsertionPointCoords();
