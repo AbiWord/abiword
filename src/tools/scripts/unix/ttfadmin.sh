@@ -18,6 +18,7 @@ TTF2T42=${0%ttfadmin.sh}ttf2t42
 FILES=`ls -1 $1/*.ttf`
 for dir in $FILES
 do
+	echo "Processing font $dir"
 	AFM=${dir%.ttf}.afm
 	UTOG=${dir%.ttf}.u2g
 	T42=${dir%.ttf}.t42
