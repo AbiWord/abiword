@@ -2688,7 +2688,7 @@ void fp_Line::resetJustification()
 
 void fp_Line::distributeJustificationAmongstSpaces(UT_sint32 iAmount)
 {
-	if(iAmount)
+	if(iAmount > 0)
 	{
 		// because the justification means that the spaces are wider than the OS
 		// will draw them, we cannot have runs merged across the spaces
@@ -2719,7 +2719,7 @@ void fp_Line::distributeJustificationAmongstSpaces(UT_sint32 iAmount)
 			UT_sint32 count = m_vecRuns.getItemCount();
 			UT_ASSERT(count);
 
-		xxx_UT_DEBUGMSG(("DOM: must split iAmount %d between iSpaceCount %d spaces for count %d runs\n", iAmount, iSpaceCount, count));
+			xxx_UT_DEBUGMSG(("DOM: must split iAmount %d between iSpaceCount %d spaces for count %d runs\n", iAmount, iSpaceCount, count));
 
 			for (UT_sint32 i=count-1; i >= 0 && iSpaceCount > 0; i--)
 			{
