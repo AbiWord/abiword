@@ -123,12 +123,16 @@ public:
 #else
 
 /* This struct is defined in xap_Dlg_HTMLOptions.h, but that file does not
- * exist in AbiWord-1.0.x so a reduced definition is provided here.
+ * exist in AbiWord-1.0.x so a definition is provided here for the moment.
  */
 struct XAP_Exp_HTMLOptions
 {
 	bool	bIs4;
 	bool	bIsAbiWebDoc;
+	bool	bDeclareXML;
+	bool	bAllowAWML;
+	bool	bEmbedCSS;
+	bool	bEmbedImages;
 
 	// TODO: 1. enable/disable AWML namespace mark-up
 	//       2. save images as base-64 encoded data-URL
