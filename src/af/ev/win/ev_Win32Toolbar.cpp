@@ -75,6 +75,7 @@ UT_Bool EV_Win32Toolbar::toolbarEvent(AP_Toolbar_Id id,
 
 	AV_View * pView = m_pWin32Frame->getCurrentView();
 
+#if 0
 	// make sure we ignore presses on "down" group buttons
 	if (pAction->getItemType() == EV_TBIT_GroupButton)
 	{
@@ -91,6 +92,7 @@ UT_Bool EV_Win32Toolbar::toolbarEvent(AP_Toolbar_Id id,
 			return UT_TRUE;
 		}
 	}
+#endif 
 
 	const char * szMethodName = pAction->getMethodName();
 	if (!szMethodName)
