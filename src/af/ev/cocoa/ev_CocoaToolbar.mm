@@ -44,11 +44,11 @@
 #import "xap_CocoaToolbarWindow.h"
 
 static	float	getButtonWidth ()
-					{ return 30.0f; };
+					{ return 34.0f; };
 static	float	getButtonHeight ()
-					{ return 30.0f; };
+					{ return 34.0f; };
 static	float	getButtonSpace () 
-					{ return 4.0f; };
+					{ return 1.0f; };
 					
 class _wd								// a private little class to help
 {										// us remember all the widgets that
@@ -283,7 +283,7 @@ NSButton * EV_CocoaToolbar::_makeToolbarButton (int type, EV_Toolbar_Label * pLa
 	const float BTN_HEIGHT = getButtonHeight ();
 	const float BTN_SPACE = getButtonSpace ();
 
-	NSButton * btn = nil;;
+	NSButton * btn = nil;
 	
 	NSRect btnFrame;
 	btnFrame.origin.x = btnX;
@@ -295,7 +295,8 @@ NSButton * EV_CocoaToolbar::_makeToolbarButton (int type, EV_Toolbar_Label * pLa
 	btn = [[NSButton alloc] initWithFrame:btnFrame];
 	switch (type) {
 	case EV_TBIT_PushButton:
-		[btn setButtonType:NSToggleButton];
+		/*[btn setButtonType:NSToggleButton];*/
+		[btn setButtonType:NSMomentaryPushInButton]; 
 		break;
 	case EV_TBIT_ToggleButton:
 	case EV_TBIT_GroupButton:
@@ -304,6 +305,7 @@ NSButton * EV_CocoaToolbar::_makeToolbarButton (int type, EV_Toolbar_Label * pLa
 	default:
 		UT_ASSERT (UT_SHOULD_NOT_HAPPEN);
 	}
+	[btn setBezelStyle:NSRegularSquareBezelStyle];
 	UT_ASSERT(UT_stricmp(pLabel->getIconName(),"NoIcon")!=0);
 	NSImage * wPixmap;
 	bool bFoundIcon = m_pCocoaToolbarIcons->getPixmapForIcon(pLabel->getIconName(),
@@ -564,22 +566,6 @@ bool EV_CocoaToolbar::synthesize(void)
 				btn = _makeToolbarButton (EV_TBIT_PushButton, pLabel, wd, m_wToolbar, btnX);
 
 #if 0 // TODO
-				gtk_toolbar_append_item(GTK_TOOLBAR(m_wToolbar),
-													   pLabel->getToolbarLabel(),
-													   szToolTip,(const char *)NULL,
-													   wPixmap,
-													   G_CALLBACK(_wd::s_callback),
-													   wd);
-				GtkWidget * wwd = wd->m_widget;
-				g_object_set_data(G_OBJECT(wwd),
-									"wd_pointer",
-									wd);
-				gtk_drag_source_set(wwd,GDK_BUTTON3_MASK,
-									s_AbiTBTargets,1,
-									GDK_ACTION_COPY);
-				GdkColormap * ClrMap = gtk_widget_get_colormap (wwd);
-				GdkPixmap * pixmap = GTK_PIXMAP(wPixmap)->pixmap;
-				GdkBitmap * bitmap = GTK_PIXMAP(wPixmap)->mask;
 				gtk_drag_source_set_icon(wwd,ClrMap ,pixmap,NULL);
 				gtk_drag_dest_set(wwd, GTK_DEST_DEFAULT_ALL,
 									s_AbiTBTargets,1,
@@ -597,16 +583,6 @@ bool EV_CocoaToolbar::synthesize(void)
 					NSButton *btn;
 					btn = _makeToolbarButton (pAction->getItemType(), pLabel, wd, m_wToolbar, btnX);
 #if 0
-				gtk_drag_source_set(wwd,GDK_BUTTON3_MASK,
-									s_AbiTBTargets,1,
-									GDK_ACTION_COPY);
-				GdkColormap * ClrMap = gtk_widget_get_colormap (wwd);
-				GdkPixmap * pixmap = GTK_PIXMAP(wPixmap)->pixmap;
-				GdkBitmap * bitmap = GTK_PIXMAP(wPixmap)->mask;
-				gtk_drag_source_set_icon(wwd,ClrMap ,pixmap,NULL);
-				gtk_drag_dest_set(wwd,(GtkDestDefaults) GTK_DEST_DEFAULT_ALL,
-									s_AbiTBTargets,1,
-									GDK_ACTION_COPY);
 				g_signal_connect(G_OBJECT(wd->m_widget),"drag_begin",G_CALLBACK(_wd::s_drag_begin), wd);
 				g_signal_connect(G_OBJECT(wd->m_widget),"drag_drop",G_CALLBACK(_wd::s_drag_drop), wd);
 				g_signal_connect(G_OBJECT(wd->m_widget),"drag_end",G_CALLBACK(_wd::s_drag_end), wd);
@@ -635,9 +611,9 @@ bool EV_CocoaToolbar::synthesize(void)
 				
 				NSRect btnFrame;
 				btnFrame.origin.x = btnX;
-				btnFrame.origin.y = BTN_SPACE;
 				btnFrame.size.width = fWidth;
-				btnFrame.size.height = BTN_HEIGHT;
+				btnFrame.size.height = 24.0f; 
+				btnFrame.origin.y = BTN_SPACE + ((BTN_HEIGHT - btnFrame.size.height) / 2);
 
 				NSComboBox * comboBox = [[NSComboBox alloc] initWithFrame:btnFrame];
 				UT_ASSERT(comboBox);
