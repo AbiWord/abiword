@@ -374,11 +374,66 @@ bool XAP_Win32Frame::openURL(const char * szURL)
 	// NOTE: could get finer control over browser window via DDE 
 	// NOTE: may need to fallback to WinExec for old NSCP versions
 
+	UT_String sURL = szURL;
 	HWND hwnd = getTopLevelWindow();
-	int res = (int) ShellExecute(hwnd, "open", szURL, NULL, NULL, SW_SHOWNORMAL);
 
-	// TODO: more specific error messages ??
-	UT_ASSERT(res>32);
+	// strip "file://" from URL, win32 doesn't handle them well
+	if ( "file://" == sURL.substr(0, 7) )
+	{
+		sURL = sURL.substr(7, sURL.size() - 7);
+	}
+
+	int res = (int) ShellExecute(hwnd, "open", sURL.c_str(), NULL, NULL, SW_SHOWNORMAL);
+
+	// TODO: more specific (and localized) error messages ??
+	// added more specific error messages as documented in http://msdn.microsoft.com/library/default.asp?url=/library/en-us/debug/base/system_error_codes.asp
+
+	if (res <= 32)	// show error message if failed to launch browser to display URL
+	{
+		UT_String errMsg;
+		switch (res)
+		{
+			case 2:
+				{
+					errMsg = "Error ("; 
+					errMsg += UT_String_sprintf("%d", res);
+					errMsg += ") displaying URL: The system cannot find the file specified.\n";
+					errMsg += " [ ";  errMsg += sURL;  errMsg += " ] ";
+					MessageBox(hwnd, errMsg.c_str(), "Error displaying URL", MB_OK|MB_ICONEXCLAMATION);
+				}
+				break;
+
+			case 3:
+				{
+					errMsg = "Error ("; 
+					errMsg += UT_String_sprintf("%d", res);
+					errMsg += ") displaying URL: The system cannot find the path specified.\n";
+					errMsg += " [ ";  errMsg += sURL;  errMsg += " ] ";
+					MessageBox(hwnd, errMsg.c_str(), "Error displaying URL", MB_OK|MB_ICONEXCLAMATION);
+				}
+				break;
+
+			case 5:
+				{
+					errMsg = "Error ("; 
+					errMsg += UT_String_sprintf("%d", res);
+					errMsg += ") displaying URL: Access is denied.\n";
+					errMsg += " [ ";  errMsg += sURL;  errMsg += " ] ";
+					MessageBox(hwnd, errMsg.c_str(), "Error displaying URL", MB_OK|MB_ICONEXCLAMATION);
+				}
+				break;
+
+			default:
+				{
+					errMsg = "Error ("; 
+					errMsg += UT_String_sprintf("%d", res);
+					errMsg += ") displaying URL: \n";
+					errMsg += " [ ";  errMsg += sURL;  errMsg += " ] ";
+					MessageBox(hwnd, errMsg.c_str(), "Error displaying URL", MB_OK|MB_ICONEXCLAMATION);
+				}
+				break;
+		} /* switch (res) */
+	} /* if (res <= 32) */
 
 	return (res>32);
 }
@@ -578,105 +633,105 @@ LRESULT CALLBACK XAP_Win32Frame::_FrameWndProc(HWND hwnd, UINT iMsg, WPARAM wPar
 		// Process other notifications here
 		default:
 			break;
-		} 
+		} /* switch (((LPNMHDR) lParam)->code) */
 		break;
 
 	case WM_SIZE:
-	{
-		int nWidth = LOWORD(lParam);
-		int nHeight = HIWORD(lParam);
-
-		if( pView && !pView->isLayoutFilling() )
 		{
-			f->_startViewAutoUpdater();
+			int nWidth = LOWORD(lParam);
+			int nHeight = HIWORD(lParam);
 
-			if (nWidth != (int) f->m_iSizeWidth && f->m_hwndRebar != NULL)
+			if( pView && !pView->isLayoutFilling() )
 			{
-				MoveWindow(f->m_hwndRebar, 0, 0, nWidth, f->m_iBarHeight, TRUE); 
+				f->_startViewAutoUpdater();
+
+				if (nWidth != (int) f->m_iSizeWidth && f->m_hwndRebar != NULL)
+				{
+					MoveWindow(f->m_hwndRebar, 0, 0, nWidth, f->m_iBarHeight, TRUE); 
+				}
+
+				// leave room for the toolbars and the status bar
+				nHeight -= f->m_iBarHeight;
+				nHeight -= f->m_iStatusBarHeight;
+
+				if (f->m_hwndContainer)
+					MoveWindow(f->m_hwndContainer, 0, f->m_iBarHeight, nWidth, nHeight, TRUE);
+
+				if (f->m_hwndStatusBar)
+					MoveWindow(f->m_hwndStatusBar, 0, f->m_iBarHeight+nHeight, nWidth, f->m_iStatusBarHeight, TRUE);
+				
+				f->m_iSizeWidth = nWidth;
+				f->m_iSizeHeight = nHeight;
+
+				f->updateZoom();
 			}
 
-			// leave room for the toolbars and the status bar
-			nHeight -= f->m_iBarHeight;
-			nHeight -= f->m_iStatusBarHeight;
-
-			if (f->m_hwndContainer)
-				MoveWindow(f->m_hwndContainer, 0, f->m_iBarHeight, nWidth, nHeight, TRUE);
-
-			if (f->m_hwndStatusBar)
-				MoveWindow(f->m_hwndStatusBar, 0, f->m_iBarHeight+nHeight, nWidth, f->m_iStatusBarHeight, TRUE);
-			
-			f->m_iSizeWidth = nWidth;
-			f->m_iSizeHeight = nHeight;
-
-			f->updateZoom();
-		}
-
-		return 0;
-	}
-
-	case WM_CLOSE:
-	{
-		XAP_App * pApp = f->getApp();
-		UT_ASSERT(pApp);
-
-		const EV_EditMethodContainer * pEMC = pApp->getEditMethodContainer();
-		UT_ASSERT(pEMC);
-
-		EV_EditMethod * pEM = pEMC->findEditMethodByName("closeWindowX");
-		UT_ASSERT(pEM);						// make sure it's bound to something
-
-		if (pEM)
-		{
-			(*pEM->getFn())(pView,NULL);
 			return 0;
 		}
 
-		// let the window be destroyed
-		break;
-	}
-
-	case WM_INPUTLANGCHANGE:
-	{
-		UT_DEBUGMSG(("Frame received input language change\n"));
-
-		// This will remap the static tables used by all frames.
-		// (see the comment in ev_Win32Keyboard.cpp.)
-		ev_Win32Keyboard *pWin32Keyboard = static_cast<ev_Win32Keyboard *>(f->m_pKeyboard);
-		pWin32Keyboard->remapKeyboard((HKL)lParam);
-
-		// Do not propagate this message.
-		
-		return 1; //DefWindowProc(hwnd, iMsg, wParam, lParam);
-	}
-
-	case WM_MOUSEWHEEL:
-	{
-		return SendMessage(f->m_hwndContainer, iMsg, wParam, lParam);
-	}
-
-	case WM_SYSCOLORCHANGE:
-	{
-		if (f->m_hwndRebar)
+	case WM_CLOSE:
 		{
-			SendMessage(f->m_hwndRebar,WM_SYSCOLORCHANGE,0,0);
+			XAP_App * pApp = f->getApp();
+			UT_ASSERT(pApp);
 
-			REBARBANDINFO rbbi = { 0 };
-			rbbi.cbSize = sizeof(REBARBANDINFO);
-			rbbi.fMask = RBBIM_COLORS;
-			rbbi.clrFore = GetSysColor(COLOR_BTNTEXT);
-			rbbi.clrBack = GetSysColor(COLOR_BTNFACE);
+			const EV_EditMethodContainer * pEMC = pApp->getEditMethodContainer();
+			UT_ASSERT(pEMC);
 
-			UT_uint32 nrToolbars = f->m_vecToolbars.getItemCount();
-			for (UT_uint32 k=0; k < nrToolbars; k++)
-				SendMessage(f->m_hwndRebar, RB_SETBANDINFO,k,(LPARAM)&rbbi);
+			EV_EditMethod * pEM = pEMC->findEditMethodByName("closeWindowX");
+			UT_ASSERT(pEM);						// make sure it's bound to something
+
+			if (pEM)
+			{
+				(*pEM->getFn())(pView,NULL);
+				return 0;
+			}
+
+			// let the window be destroyed
+			break;
 		}
 
-		if (f->m_hwndContainer)
-			SendMessage(f->m_hwndContainer,WM_SYSCOLORCHANGE,0,0);
-		if (f->m_hwndStatusBar)
-			SendMessage(f->m_hwndStatusBar,WM_SYSCOLORCHANGE,0,0);
-		return 0;
-	}
+	case WM_INPUTLANGCHANGE:
+		{
+			UT_DEBUGMSG(("Frame received input language change\n"));
+
+			// This will remap the static tables used by all frames.
+			// (see the comment in ev_Win32Keyboard.cpp.)
+			ev_Win32Keyboard *pWin32Keyboard = static_cast<ev_Win32Keyboard *>(f->m_pKeyboard);
+			pWin32Keyboard->remapKeyboard((HKL)lParam);
+
+			// Do not propagate this message.
+			
+			return 1; //DefWindowProc(hwnd, iMsg, wParam, lParam);
+		}
+
+	case WM_MOUSEWHEEL:
+		{
+			return SendMessage(f->m_hwndContainer, iMsg, wParam, lParam);
+		}
+
+	case WM_SYSCOLORCHANGE:
+		{
+			if (f->m_hwndRebar)
+			{
+				SendMessage(f->m_hwndRebar,WM_SYSCOLORCHANGE,0,0);
+
+				REBARBANDINFO rbbi = { 0 };
+				rbbi.cbSize = sizeof(REBARBANDINFO);
+				rbbi.fMask = RBBIM_COLORS;
+				rbbi.clrFore = GetSysColor(COLOR_BTNTEXT);
+				rbbi.clrBack = GetSysColor(COLOR_BTNFACE);
+
+				UT_uint32 nrToolbars = f->m_vecToolbars.getItemCount();
+				for (UT_uint32 k=0; k < nrToolbars; k++)
+					SendMessage(f->m_hwndRebar, RB_SETBANDINFO,k,(LPARAM)&rbbi);
+			}
+
+			if (f->m_hwndContainer)
+				SendMessage(f->m_hwndContainer,WM_SYSCOLORCHANGE,0,0);
+			if (f->m_hwndStatusBar)
+				SendMessage(f->m_hwndStatusBar,WM_SYSCOLORCHANGE,0,0);
+			return 0;
+		}
 
 	case WM_DROPFILES:
 		{
