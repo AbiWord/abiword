@@ -12,7 +12,7 @@
 // If anyone think it's more apropriate to express it in meters,
 // you're free to change the implementation.
 
-const int cMaxSymbolicLength = 7;
+const int cMaxSymbolicLength = 12;
 
 struct private_pagesize_sizes
 {
@@ -42,6 +42,7 @@ pagesizes[fp_PageSize::_last_predefined_pagesize_dont_use_] =
 	{   8.5,   14.0, fp_PageSize::inch,	"Legal" 	},
 	{   8.5,   13.0, fp_PageSize::inch,	"Folio" 	},
 	{   8.5,   11.0, fp_PageSize::inch,	"Letter"	},
+	{   8.5,    5.5, fp_PageSize::inch,     "Half-Letter"   },
 	{   0.0,    0.0, fp_PageSize::mm,	"Custom"	}
 };
 

@@ -61,7 +61,10 @@ canonical:
 	@for k in $(CANON_SubDirs); do				\
 		$(MAKE) ABI_ROOT=$(ABI_ROOT) -C $$k canonical;	\
 	done
-# copy the various dictionary hash files
+# copy the various dictionary hash files, only used in non-pspell builds
+ifdef ABI_OPT_PSPELL	
+	echo "Using Pspell build, not installing ispell hash files"
+else
 	@$(subst xxxx,$(CANONDIR)/dictionary,$(VERIFY_DIRECTORY))
 	@$(ABICOPY) $(ABI_ROOT)/../abidistfiles/dictionary/$(OS_ENDIAN).*.hash $(CANONDIR)/dictionary
 	@(cd $(CANONDIR)/dictionary; 				\
@@ -69,6 +72,8 @@ canonical:
 			cp $$k american.hash;		\
 			rm $$k ;			\
 		done)
+endif
+
 #	(cd $(ABI_ROOT)/../abidistfiles; tar cf - dictionary/*.hash) | (cd $(CANONDIR); tar xf -)
 ifeq ($(ABI_NATIVE),unix)
 # each Unix installer requires both unixfonts and abidistfiles, 
