@@ -35,7 +35,7 @@ XAP_Preview_Zoom::XAP_Preview_Zoom(GR_Graphics * gc)
 	m_pFont = NULL;
 
 	// m_gc is set in base class, so set up defaults
-	setZoomPercent(100);
+	m_zoomPercent = 100;
 	setFont(XAP_Preview_Zoom::font_NORMAL);
 	setDrawAtPosition(XAP_Preview_Zoom::pos_CENTER);
 
