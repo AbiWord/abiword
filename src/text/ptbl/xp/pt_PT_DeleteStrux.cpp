@@ -95,6 +95,14 @@ bool pt_PieceTable::_unlinkStrux(pf_Frag_Strux * pfs,
 	{
 		UT_DEBUGMSG(("_unlink Strux EndEndnote %x \n",pfs));
 	}
+	else if(pfs->getStruxType() == PTX_SectionTOC)
+	{
+		UT_DEBUGMSG(("_unlink Strux SectionTOC %x \n",pfs));
+	}
+	else if(pfs->getStruxType() == PTX_EndTOC)
+	{
+		UT_DEBUGMSG(("_unlink Strux EndTOC %x \n",pfs));
+	}
 	m_pDocument->miniDump((PL_StruxDocHandle) pfs, 2);
 #endif
 	switch (pfs->getStruxType())
@@ -106,11 +114,13 @@ bool pt_PieceTable::_unlinkStrux(pf_Frag_Strux * pfs,
 	case PTX_SectionFrame:
 	case PTX_SectionCell:
 	case PTX_SectionFootnote:
+	case PTX_SectionTOC:
 	case PTX_EndCell:
 	case PTX_EndTable:
 	case PTX_EndFootnote:
 	case PTX_EndEndnote:
 	case PTX_EndFrame:
+	case PTX_EndTOC:
 		return _unlinkStrux_Section(pfs,ppfEnd,pfragOffsetEnd);
 
 	case PTX_Block:
@@ -228,7 +238,9 @@ bool pt_PieceTable::_unlinkStrux_Section(pf_Frag_Strux * pfs,
 			  || pfs->getStruxType()==PTX_SectionFootnote 
 			  || pfs->getStruxType()==PTX_EndFootnote 
 			  || pfs->getStruxType()==PTX_SectionEndnote 
-			  || pfs->getStruxType()==PTX_EndEndnote );
+			  || pfs->getStruxType()==PTX_EndEndnote
+			  || pfs->getStruxType()==PTX_SectionTOC 
+			  || pfs->getStruxType()==PTX_EndTOC );
 
 	// unlink this Section strux from the document.
 	// the caller is responsible for deleting pfs.
@@ -319,6 +331,23 @@ bool pt_PieceTable::_unlinkStrux_Section(pf_Frag_Strux * pfs,
 	case PTX_EndEndnote:
         //
         // deleting Endnotes is a multi-step process that can't make 
+        // assumptions
+        // on a single step
+		_unlinkFrag(pfs,ppfEnd,pfragOffsetEnd);
+		return true;
+
+
+	case PTX_SectionTOC:
+        //
+        // deleting TOC is a multi-step process that can't make 
+        // assumptions
+        // on a single step
+		_unlinkFrag(pfs,ppfEnd,pfragOffsetEnd);
+		return true;
+
+	case PTX_EndTOC:
+        //
+        // deleting TOC is a multi-step process that can't make 
         // assumptions
         // on a single step
 		_unlinkFrag(pfs,ppfEnd,pfragOffsetEnd);

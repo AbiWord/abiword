@@ -76,12 +76,14 @@ bool pt_PieceTable::insertStrux(PT_DocPosition dpos,
 			case PTX_SectionFootnote:
 			case PTX_SectionMarginnote:
 			case PTX_SectionFrame:
+			case PTX_SectionTOC:
 			case PTX_EndCell:
 			case PTX_EndTable:
 			case PTX_EndFootnote:
 			case PTX_EndEndnote:
 			case PTX_EndMarginnote:
 			case PTX_EndFrame:
+			case PTX_EndTOC:
 				iLen = pf_FRAG_STRUX_SECTION_LENGTH;
 				break;
 
@@ -137,12 +139,14 @@ bool pt_PieceTable::insertStrux(PT_DocPosition dpos,
 			case PTX_SectionFootnote:
 			case PTX_SectionMarginnote:
 			case PTX_SectionFrame:
+			case PTX_SectionTOC:
 			case PTX_EndCell:
 			case PTX_EndTable:
 			case PTX_EndFootnote:
 			case PTX_EndEndnote:
 			case PTX_EndMarginnote:
 			case PTX_EndFrame:
+		    case PTX_EndTOC:	
 				iLen = pf_FRAG_STRUX_SECTION_LENGTH;
 				break;
 
@@ -210,6 +214,9 @@ bool pt_PieceTable::_createStrux(PTStruxType pts,
 	case PTX_SectionCell:
 		pfs = new pf_Frag_Strux_SectionCell(this, indexAP);
 		break;
+	case PTX_SectionTOC:
+		pfs = new pf_Frag_Strux_SectionTOC(this, indexAP);
+		break;
 	case PTX_EndTable:
 		pfs = new pf_Frag_Strux_SectionEndTable(this, indexAP);
 		break;
@@ -221,6 +228,9 @@ bool pt_PieceTable::_createStrux(PTStruxType pts,
 		break;
 	case PTX_EndEndnote:
 		pfs = new pf_Frag_Strux_SectionEndEndnote(this, indexAP);
+		break;
+	case PTX_EndTOC:
+		pfs = new pf_Frag_Strux_SectionEndTOC(this, indexAP);
 		break;
 
 	default:

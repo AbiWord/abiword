@@ -279,4 +279,40 @@ public:
 #endif
 };
 
+
+/*!
+ pf_Frag_Strux_SectionTOC represents structure information for
+ a Table of Conents section in the document.
+*/
+
+class pf_Frag_Strux_SectionTOC : public pf_Frag_Strux
+{
+public:
+	pf_Frag_Strux_SectionTOC(pt_PieceTable * pPT,
+						  PT_AttrPropIndex indexAP);
+	virtual ~pf_Frag_Strux_SectionTOC();
+
+#ifdef PT_TEST
+	virtual void			__dump(FILE * fp) const;
+#endif
+};
+
+
+/*!
+ pf_Frag_Strux_SectionEndTOC represents structure information for
+ the end of a Table of Contents section in the document.
+*/
+
+class pf_Frag_Strux_SectionEndTOC : public pf_Frag_Strux
+{
+public:
+	pf_Frag_Strux_SectionEndTOC(pt_PieceTable * pPT,
+						  PT_AttrPropIndex indexAP);
+	virtual ~pf_Frag_Strux_SectionEndTOC();
+
+#ifdef PT_TEST
+	virtual void			__dump(FILE * fp) const;
+#endif
+};
+
 #endif /* PF_FRAG_STRUX_SECTION_H */

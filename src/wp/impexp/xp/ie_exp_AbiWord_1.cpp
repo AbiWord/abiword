@@ -787,6 +787,16 @@ bool s_AbiWord_1_Listener::populateStrux(PL_StruxDocHandle /*sdh*/,
 			_openTag("endnote","",true,pcr->getIndexAP());
 			return true;
 		}
+	case PTX_SectionTOC:
+		{
+			_closeSpan();
+            _closeField();
+            _closeHyperlink();
+			_closeBlock();
+			m_bInBlock = false;
+			_openTag("toc","",true,pcr->getIndexAP());
+			return true;
+		}
 	case PTX_SectionMarginnote:
 		{
 			_closeSpan();
@@ -841,6 +851,15 @@ bool s_AbiWord_1_Listener::populateStrux(PL_StruxDocHandle /*sdh*/,
 			_closeBlock();
 			m_pie->write("</endnote>");
 			m_bInBlock = true;
+			return true;
+		}
+	case PTX_EndTOC:
+		{
+			_closeSpan();
+            _closeField();
+            _closeHyperlink();
+			_closeBlock();
+			m_pie->write("</toc>");
 			return true;
 		}
 	case PTX_EndMarginnote:

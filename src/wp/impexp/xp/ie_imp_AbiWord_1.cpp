@@ -233,6 +233,8 @@ UT_Error IE_Imp_AbiWord_1::importFile(const char * szFilename)
 #define TT_ENDNOTE         31 //<endnote>
 #define TT_HISTORYSECTION  32 //<history>
 #define TT_VERSION         33 //<version>
+#define TT_TOC             34 //<toc> (Table of Contents
+
 
 /*
   TODO remove tag synonyms.  We're currently accepted
@@ -287,6 +289,7 @@ static struct xmlToIdMapping s_Tokens[] =
 	{	"section",		TT_SECTION		},
 	{	"styles",		TT_STYLESECTION	},
 	{	"table",		TT_TABLE		},
+	{	"toc",		    TT_TOC  		},
 	{   "version",      TT_VERSION      }
 	
 };
@@ -383,6 +386,20 @@ void IE_Imp_AbiWord_1::startElement(const XML_Char *name, const XML_Char **atts)
 
 		X_CheckError(appendStrux(PTX_SectionEndnote,atts));
 		xxx_UT_DEBUGMSG(("Finished Append Endnote strux \n"));
+		return;
+	}
+	case TT_TOC:
+	{
+		// Table of Contents are inside a DocSection
+		X_VerifyParseState(_PS_Sec);
+		m_parseState = _PS_Sec;
+		m_bWroteSection = true;
+
+		// Don't check for id of the endnote strux. It should match the
+		// id of the endnote reference.
+
+		X_CheckError(appendStrux(PTX_SectionTOC,atts));
+		xxx_UT_DEBUGMSG(("Finished Append TOC strux \n"));
 		return;
 	}
 	case TT_BLOCK:
@@ -820,6 +837,14 @@ void IE_Imp_AbiWord_1::endElement(const XML_Char *name)
 		X_VerifyParseState(_PS_Sec);
 		X_CheckError(appendStrux(PTX_EndEndnote,NULL));
 		xxx_UT_DEBUGMSG(("Finished Append End Endnote strux \n"));
+		m_parseState = _PS_Block;
+		return;
+
+
+	case TT_TOC:
+		X_VerifyParseState(_PS_Sec);
+		X_CheckError(appendStrux(PTX_EndTOC,NULL));
+		xxx_UT_DEBUGMSG(("Finished Append End TOC strux \n"));
 		m_parseState = _PS_Block;
 		return;
 

@@ -128,6 +128,17 @@ void pf_Frag_Strux_SectionEndEndnote::__dump(FILE * fp) const
 			const_cast<void*>(static_cast<const void*>(this)),static_cast<long>(m_indexAP));
 }
 
+void pf_Frag_Strux_SectionTOC::__dump(FILE * fp) const
+{
+	fprintf(fp,"    SectionTOC %p api[%08lx]\n",
+			(void*)this,(long)m_indexAP);
+}
+void pf_Frag_Strux_SectionEndTOC::__dump(FILE * fp) const
+{
+	fprintf(fp,"    SectionEndTOC %p api[%08lx]\n",
+			const_cast<void*>(static_cast<const void*>(this)),static_cast<long>(m_indexAP));
+}
+
 void pf_Frag_Text::__dump(FILE * fp) const
 {
 	fprintf(fp,"        TextFragment %p b[%08lx,%ld] api[%08lx]\n",

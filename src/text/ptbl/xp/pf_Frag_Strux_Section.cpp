@@ -185,4 +185,30 @@ pf_Frag_Strux_SectionEndFrame::~pf_Frag_Strux_SectionEndFrame()
 
 
 
+pf_Frag_Strux_SectionTOC::pf_Frag_Strux_SectionTOC(pt_PieceTable * pPT,
+											 PT_AttrPropIndex indexAP)
+	: pf_Frag_Strux(pPT,PTX_SectionHdrFtr,pf_FRAG_STRUX_SECTION_LENGTH,indexAP)
+{
+	m_struxType =  PTX_SectionTOC;
+}
+
+pf_Frag_Strux_SectionTOC::~pf_Frag_Strux_SectionTOC()
+{
+}
+
+
+pf_Frag_Strux_SectionEndTOC::pf_Frag_Strux_SectionEndTOC(pt_PieceTable * pPT,
+											 PT_AttrPropIndex indexAP)
+	: pf_Frag_Strux(pPT,PTX_SectionHdrFtr,pf_FRAG_STRUX_SECTION_LENGTH,indexAP)
+{
+	m_struxType =  PTX_EndTOC;
+}
+
+pf_Frag_Strux_SectionEndTOC::~pf_Frag_Strux_SectionEndTOC()
+{
+}
+
+
+
+
 
