@@ -4887,8 +4887,16 @@ Defun1(dlgBullets)
   //
   // Dialog for Bullets and Lists
   //
+#if defined(WIN32) || defined(__QNXTO__) || defined(__BEOS__) || defined(TARGET_OS_MAC)
+	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
+	UT_ASSERT(pFrame);
+
+	s_TellNotImplemented(pFrame, "Lists dialog", __LINE__);
+	return true;
+#else // enable for GTK+ & Gnome builds only
 	ABIWORD_VIEW;
 	return s_doBullets(pView);
+#endif
 }
 
 Defun1(dlgBorders)
