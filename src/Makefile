@@ -53,6 +53,11 @@ CANON_TOPLEVELFILES=	$(ABI_ROOT)/COPYING $(ABI_ROOT)/user/wp/readme.txt
 ## that have work to do.
 CANON_SubDirs=		wp
 
+DICT_ENDIAN=le
+ifeq ($(OS_ENDIAN), BigEndian32)
+DICT_ENDIAN=be
+endif
+
 canonical:
 	@$(subst xxxx,$(CANONDIR),$(VERIFY_DIRECTORY))
 	@for k in $(CANON_TOPLEVELFILES); do			\
@@ -61,6 +66,7 @@ canonical:
 	@for k in $(CANON_SubDirs); do				\
 		$(MAKE) ABI_ROOT=$(ABI_ROOT) -C $$k canonical;	\
 	done
+
 # copy the various dictionary hash files, only used in non-pspell builds
 ifdef ABI_OPT_PSPELL	
 	echo "Using Pspell build, not installing ispell hash files"
@@ -72,6 +78,11 @@ else
 			cp $$k american.hash;		\
 			rm $$k ;			\
 		done)
+
+#	@if [ -d $(ABI_ROOT)/../abispell ]; then 							\
+#		$(ABICOPY) $(ABI_ROOT)/../abispell/enc/*.hash-encoding $(CANONDIR)/dictionary 		\
+#		$(ABICOPY) $(ABI_ROOT)/../abispell/$(DICT_ENDIAN)/*.hash $(CANONDIR)/dictionary         \
+#	fi
 endif
 
 	@$(subst xxxx,$(CANONDIR)/clipart,$(VERIFY_DIRECTORY))
