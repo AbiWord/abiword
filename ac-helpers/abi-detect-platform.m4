@@ -117,6 +117,7 @@ dnl
 case "$OS_NAME" in 
 	MACOSX) WARNING_CFLAGS="" ;;
 	*BSD)   WARNING_CFLAGS="-Wall -pedantic -ansi -D_BSD_SOURCE -pipe" ;;
+	SunOS)  WARNING_CFLAGS="-Wall -pedantic -ansi -D_BSD_SOURCE -pipe -D__EXTENSIONS__ -DSCANDIR_MISSING -DSunOS";;
 	*)      WARNING_CFLAGS="-Wall -pedantic -ansi -D_POSIX_SOURCE -D_BSD_SOURCE -pipe" ;;
 esac
 
