@@ -24,7 +24,7 @@
 #include "ut_string.h"
 #include "ut_debugmsg.h"
 
-#include "ap_UnixDialog_All.h"
+//#include "ap_UnixDialog_All.h"	// why is this referenced in an XP file?
 #include "ap_Dialog_Replace.h"
 
 #include "xap_Dialog_Id.h"
