@@ -1339,12 +1339,13 @@ void fl_CellLayout::setCellContainerProperties(fp_CellContainer * pCell)
 bool fl_CellLayout::isCellSelected(void)
 {
 	FV_View* pView = m_pLayout->getView();
-	PT_DocPosition posStartCell = getPosition();
+	PT_DocPosition posStartCell = 0;
 	PT_DocPosition posEndCell =0;
 	PL_StruxDocHandle sdhEnd,sdhStart;
 	sdhStart = getStruxDocHandle();
+	posStartCell = m_pDoc->getStruxPosition(sdhStart) +1;
 	m_pDoc->getNextStruxOfType(sdhStart, PTX_EndCell, &sdhEnd);
-	posEndCell = m_pDoc->getStruxPosition(sdhEnd);
+	posEndCell = m_pDoc->getStruxPosition(sdhEnd) -1;
 	PT_DocPosition iAnchor = pView->getSelectionAnchor();
 	PT_DocPosition iPoint = pView->getPoint();
 	if(iAnchor > iPoint)
@@ -1353,7 +1354,7 @@ bool fl_CellLayout::isCellSelected(void)
 		iPoint = iAnchor;
 		iAnchor = swap;
 	}
-	if(iAnchor < posStartCell && iPoint > posEndCell)
+	if(iAnchor <= posStartCell && iPoint >= posEndCell)
 	{
 		return true;
 	}

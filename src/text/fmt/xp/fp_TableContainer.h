@@ -419,6 +419,14 @@ public:
 		{
 	      m_iRowHeight = iHeight;
 		}		
+	void setLastWantedVBreak(UT_sint32 iBreakAt)
+	{
+		m_iLastWantedVBreak = iBreakAt;
+	}
+	UT_sint32 getLastWantedVBreak(void) const
+	{
+		return m_iLastWantedVBreak;
+	}
 #ifdef FMT_TEST
 	void				__dump(FILE * fp) const;
 #endif
@@ -478,6 +486,10 @@ private:
 
 // Global row height
 	UT_sint32           m_iRowHeight;
+
+// Last requested vbreak height
+
+	UT_sint32           m_iLastWantedVBreak;
 };
 
 #endif /* TABLECONTAINER_H */

@@ -255,7 +255,19 @@ void fp_CellContainer::_getBrokenRect(fp_TableContainer * pBroke, fp_Page * &pPa
 			iBot += col_y;
 		}
 	}
-
+	//
+	// Now correct for printing.
+	//
+	if(pPage->getDocLayout()->getView() && pPage->getDocLayout()->getView()->getGraphics()->queryProperties(GR_Graphics::DGP_PAPER))
+	{
+//
+// Now correct for printing
+//
+		UT_sint32 xdiff,ydiff;
+		pPage->getDocLayout()->getView()->getPageScreenOffsets(pPage, xdiff, ydiff);
+		iTop -= ydiff;
+		iBot -= ydiff;
+	}
 	bRec = UT_Rect(iLeft,iTop,iRight-iLeft,iBot-iTop);
 }
 
@@ -863,6 +875,7 @@ void fp_CellContainer::drawLines(fp_TableContainer * pBroke)
 		xxx_UT_DEBUGMSG(("drawLines: ibot = %d col_y %d m_iBotY %d pCol->getHeight() %d left %d top %d \n",iBot,col_y,m_iBotY,pCol->getHeight(),m_iLeftAttach,m_iTopAttach));
 		if(iTop < col_y)
 		{
+			xxx_UT_DEBUGMSG(("iTop < col_y !! iTop %d col_y %d row is %d \n",iTop,col_y,getTopAttach()));
 			iTop = col_y;
 			bDrawTop = true;
 			if(pBroke != NULL)
@@ -880,6 +893,24 @@ void fp_CellContainer::drawLines(fp_TableContainer * pBroke)
 				pBroke->setBrokenBot(1);
 			}
 		}
+		//
+		// Now get a rectangle to calculate draw arguments
+		//
+		// This code might eventually replace a lot of the code above but
+		// it needs more testing and tweaking - particularly for nested tables.
+		//
+// 		UT_Rect bRec;
+// 		fp_Page * pLinePage;
+// 		_getBrokenRect(pBroke, pLinePage, bRec);
+// 		if(pLinePage != pPage)
+// 		{
+// 			UT_DEBUGMSG(("Pages don't match! \n"));
+// 			return;
+// 		}
+// 		iLeft = bRec.left;
+// 		iTop = bRec.top;
+// 		iBot = iTop + bRec.height;
+// 		iRight = iLeft + bRec.width;
 		m_bDrawRight = true;
 		if (m_bDrawLeft)
 		{
@@ -1917,7 +1948,8 @@ fp_TableContainer::fp_TableContainer(fl_SectionLayout* pSectionLayout, fp_TableC
 	  m_iYBreakHere(0),
 	  m_iYBottom(0),
 	  m_iBrokenTop(0),
-	  m_iBrokenBottom(0)
+	  m_iBrokenBottom(0),
+	  m_iLastWantedVBreak(-1)
 {
 }
 

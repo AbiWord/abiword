@@ -157,15 +157,33 @@ UT_sint32 fb_ColumnBreaker::breakSection(fl_DocSectionLayout * pSL)
 				continue;
 			}
 			UT_sint32 iContainerHeight = 0;
+			UT_sint32 iContainerMarginAfter = pCurContainer->getMarginAfter();
+			fp_TableContainer * pVTab = NULL;
 			if(pCurContainer->getContainerType() == FP_CONTAINER_TABLE)
 			{
-				iContainerHeight = static_cast<fp_TableContainer *>(pCurContainer)->getHeight();
+				pVTab = static_cast<fp_TableContainer *>(pCurContainer);
+				UT_sint32 iOldBreak = pVTab->getLastWantedVBreak(); 
+				UT_DEBUGMSG(("pVTab height is %d \n",pVTab->getHeight()));
+				if( (iOldBreak > 0) && !pVTab->isThisBroken())
+				{
+					UT_sint32 iAvail = iMaxColHeight - iWorkingColHeight - iContainerMarginAfter;
+					UT_sint32 iBreakAt = pVTab->wantVBreakAt(iAvail-1);
+					if(iBreakAt != iOldBreak)
+					{
+//
+// Rebreak it
+//
+						pVTab->deleteBrokenTables();
+						pVTab->VBreakAt(0);
+						pVTab->setLastWantedVBreak(iBreakAt);
+					}
+				}
+				iContainerHeight = pVTab->getHeight();
 			}
 			else
 			{
 				iContainerHeight = pCurContainer->getHeight();
 			}
-			UT_sint32 iContainerMarginAfter = pCurContainer->getMarginAfter();
 			iTotalContainerSpace = iContainerHeight + iContainerMarginAfter;
 			if (pCurContainer && 
 				pCurContainer->getContainerType() == FP_CONTAINER_LINE)
@@ -811,6 +829,7 @@ bool fb_ColumnBreaker::_breakTable(fp_Container*& pOffendingContainer,
 	fp_TableContainer * pBroke = NULL;
 	UT_sint32 iAvail = iMaxColHeight - iWorkingColHeight - iContainerMarginAfter;
 	UT_sint32 iBreakAt = pTab->wantVBreakAt(iAvail-1);
+	pTab->setLastWantedVBreak(iBreakAt);
 	UT_DEBUGMSG(("breakTable column: iAvail %d actual break at %d \n",iAvail,iBreakAt));
 //
 // Look to see if the table can be broken. If iBreakAt < 0 we have to bump 
