@@ -1472,7 +1472,7 @@ void AP_UnixApp::catchSignals(int sig_num)
     {
 		AP_UnixFrame * curFrame = (AP_UnixFrame*) m_vecFrames[i];
 		UT_ASSERT(curFrame);
-		curFrame->backup(".SEGFAULTED");
+		curFrame->backup(".CRASHED");
     }
     
     fflush(stdout);
