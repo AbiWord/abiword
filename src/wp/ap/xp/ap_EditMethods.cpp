@@ -2127,7 +2127,7 @@ Defun1(fileNew)
 		if (str.size())
 		{
 			// we want to create from a template
-			bOK = s_importFile (pFrame, str.c_str(), IEFT_Unknown);
+			bOK = s_importFile (pFrame, str.c_str(), IEFT_Unknown) == UT_OK;
 		}
 		else
 		{
@@ -2137,7 +2137,7 @@ Defun1(fileNew)
 			if (pNewFrame)
 				pFrame = pNewFrame;
 
-			bOK = pFrame->loadDocument(NULL, IEFT_Unknown);
+			bOK = pFrame->loadDocument(NULL, IEFT_Unknown) == UT_OK;
 
 			if (pNewFrame)
 			{
@@ -5255,9 +5255,13 @@ Defun1(dlgPlugins)
 	if (!pDialog)
 		return false;
 
-	pDialog->runModal (pFrame);
+	if (pDialog)
+	{
+		pDialog->runModal (pFrame);
+		return true;
+	}
 
-	return true;
+	return false;
 }
 
 Defun1(dlgOptions)
