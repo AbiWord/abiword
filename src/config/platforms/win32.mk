@@ -114,7 +114,7 @@ OS_CFLAGS 	= -MDd -Z7
 else
 OPTIMIZER	?= -O2
 DEFINES	= -UDEBUG -U_DEBUG -DNDEBUG
-OS_CFLAGS 	= -MD -Zi
+OS_CFLAGS 	= -MT -Zi
 endif
 
 OS_CFLAGS 	+= -W3 -nologo -GF -Gy -GX -Zm200
