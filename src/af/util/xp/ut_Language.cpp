@@ -63,7 +63,7 @@ UT_Language::UT_Language()
 
 		for(UT_uint32 i = 0; i < NrElements(s_Table); i++)
 		{
-			s_Table[i].lang = pSS->getValue(s_Table[i].id);
+			s_Table[i].lang = (XML_Char *) pSS->getValue(s_Table[i].id);
 		}
 
 		qsort(s_Table, NrElements(s_Table), sizeof(lang_entry), s_compareQ);
@@ -89,7 +89,7 @@ const XML_Char * UT_Language::getNthLanguage(UT_uint32 n)
 
 const XML_Char * UT_Language::getPropertyFromLanguage(const XML_Char * lang)
 {
-	lang_entry * e = bsearch(lang, s_Table, NrElements(s_Table), sizeof(lang_entry), s_compareB);
+	lang_entry * e = (lang_entry *) bsearch(lang, s_Table, NrElements(s_Table), sizeof(lang_entry), s_compareB);
 	if(e)
 		return e->prop;
 	else
