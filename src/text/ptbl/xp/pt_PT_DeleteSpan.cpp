@@ -725,8 +725,8 @@ bool pt_PieceTable::deleteSpan(PT_DocPosition dpos1,
 	}
 
 
-	if (_isSimpleDeleteSpan(dpos1, dpos2) 
-		&& stDelayStruxDelete.getDepth() == 0)
+	bool bIsSimple = _isSimpleDeleteSpan(dpos1, dpos2) && stDelayStruxDelete.getDepth() == 0;
+	if (bIsSimple)
 	{
 		//  If the delete is sure to be within a fragment, we don't 
 		//  need to worry about much of the bookkeeping of a complex
@@ -760,7 +760,6 @@ bool pt_PieceTable::deleteSpan(PT_DocPosition dpos1,
 		}
 
 		_changePointWithNotify(dpos1);
-		endMultiStepGlob();
 	}
 
 	// Have we deleted all the text in a paragraph.
@@ -784,6 +783,14 @@ bool pt_PieceTable::deleteSpan(PT_DocPosition dpos1,
 
 		_insertFmtMarkFragWithNotify(PTC_AddFmt, dpos1, &AttrProp_Before);
 
+	}
+
+	// By ending the glob after having inserted the FmtMark, an undo
+	// behaves properly, instead of being a two-step operation. See
+	// bug 1140.
+	if (!bIsSimple)
+	{
+		endMultiStepGlob();
 	}
 
 	return bSuccess;
