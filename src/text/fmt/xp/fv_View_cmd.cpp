@@ -4877,7 +4877,6 @@ bool FV_View::cmdInsertLatexMath(UT_UTF8String & sLatex,
 	UT_UTF8String sNewProps;
 	UT_UTF8String sProp;
 	UT_UTF8String sVal;
-	const XML_Char * szProp = NULL;
 	UT_sint32 i = 0;
 	if(props)
 	{
@@ -4933,6 +4932,63 @@ bool FV_View::cmdInsertMathML(const char * szFileName,PT_DocPosition pos)
 	getCharFormat(&props,false,pos);
 
 	m_pDoc->insertObject(pos,PTO_Math,atts,props);
+
+	if (bDidGlob)
+		m_pDoc->endUserAtomicGlob();
+
+	_generalUpdate();
+
+	_restorePieceTableState();
+	_updateInsertionPoint();
+	return true;
+}
+
+
+/*!
+ * This method inserts a Embed object at the point presented.
+ * It assumes that a data item with a name of the supplied filename has
+ * already been inserted.
+ */
+bool FV_View::cmdInsertEmbed(const char * szFileName,PT_DocPosition pos,UT_UTF8String & sProps)
+{
+
+	const XML_Char * atts[7]={"dataid",NULL,"props",NULL,NULL,NULL,NULL};
+	atts[1] = static_cast<const XML_Char *>(szFileName);
+	const XML_Char *cur_style = NULL;
+	getStyle(&cur_style);
+	if((cur_style != NULL) && (*cur_style) && (strcmp(cur_style,"None") != 0))
+	{
+		atts[4] = PT_STYLE_ATTRIBUTE_NAME;
+		atts[5] = cur_style;
+	}
+	bool bDidGlob = false;
+	const XML_Char ** props = NULL;
+
+	// Signal PieceTable Change
+	_saveAndNotifyPieceTableChange();
+
+	if (!isSelectionEmpty())
+	{
+		bDidGlob = true;
+		m_pDoc->beginUserAtomicGlob();
+		_deleteSelection();
+	}
+	getCharFormat(&props,false,pos);
+	UT_UTF8String sFullProps;
+	UT_UTF8String sProp,sVal;
+	UT_UTF8String_addPropertyString(sFullProps,sProps);
+	UT_sint32 i = 0;
+	if(props)
+	{
+	  for(i=0;props[i] != NULL;i+=2)
+	  {
+	    sProp = props[i];
+	    sVal = props[i+1];
+	    UT_UTF8String_setProperty(sFullProps,sProp,sVal);
+	  }
+	}
+	atts[3]=sFullProps.utf8_str();
+	m_pDoc->insertObject(pos,PTO_Embed,atts,NULL);
 
 	if (bDidGlob)
 		m_pDoc->endUserAtomicGlob();

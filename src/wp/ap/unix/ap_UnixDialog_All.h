@@ -123,6 +123,7 @@
 	DeclareDialog(XAP_DIALOG_ID_INSERT_SYMBOL,  XAP_UnixDialog_Insert_Symbol)
 	DeclareDialog(XAP_DIALOG_ID_INSERT_PICTURE,	XAP_UnixDialog_FileOpenSaveAs)
 	DeclareDialog(XAP_DIALOG_ID_INSERTMATHML,	XAP_UnixDialog_FileOpenSaveAs)
+	DeclareDialog(XAP_DIALOG_ID_INSERTOBJECT,	XAP_UnixDialog_FileOpenSaveAs)
 	DeclareDialog(XAP_DIALOG_ID_PLUGIN_MANAGER, XAP_UnixDialog_PluginManager)
 	DeclareDialog(XAP_DIALOG_ID_ENCODING,       XAP_UnixDialog_Encoding)
 	DeclareDialog(XAP_DIALOG_ID_HTMLOPTIONS,    XAP_UnixDialog_HTMLOptions)

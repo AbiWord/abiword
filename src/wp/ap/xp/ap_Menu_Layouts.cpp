@@ -355,10 +355,65 @@ XAP_Menu_Id XAP_Menu_Factory::addNewMenuAfter(const char * szMenu,
 
 XAP_Menu_Id XAP_Menu_Factory::addNewMenuBefore(const char * szMenu, 
 											   const char * szLanguage,
-											   const char * szAfter, 
-											   EV_Menu_LayoutFlags flags)
+											   const char * szBefore, 
+											   EV_Menu_LayoutFlags flags, XAP_Menu_Id newID)
 {
-	return 0;
+	UT_return_val_if_fail (szMenu && *szMenu, 0);		// no defaults
+	UT_uint32 k = 0;
+	bool bFoundMenu = false;
+	_vectt * pVectt = NULL;
+	for (k=0; (k< m_vecTT.getItemCount()) && !bFoundMenu; k++)
+	{
+		pVectt = (_vectt *)m_vecTT.getNthItem(k);
+		bFoundMenu = (UT_stricmp(szMenu,pVectt->m_name)==0);
+	}
+	if(!bFoundMenu)
+	{
+		UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
+		return 0;
+	}
+	
+// next we need to find the id of the label name
+//
+// OK now search for this label
+//
+	UT_String Before = szBefore;
+	XAP_Menu_Id beforeID = EV_searchMenuLabel( m_pLabelSet, Before);
+	if(beforeID == 0)
+	{
+		if(m_pEnglishLabelSet == NULL)
+		{
+			buildBuiltInMenuLabelSet( m_pEnglishLabelSet);
+		}
+		beforeID = EV_searchMenuLabel( m_pEnglishLabelSet, Before);
+		if(beforeID == 0)
+		{	
+			UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
+			return 0;
+		}
+	}
+//
+// OK got the menu ID at last, insert the new id here.
+//
+	if(newID == 0)
+	{
+		newID = getNewID();
+	}
+//
+// Now insert our new ID
+//
+	_lt * plt = new _lt;
+	plt->m_id = newID;
+	plt->m_flags = flags;
+	if(beforeID > 0)
+	{
+	  pVectt->insertItemAt((void *) plt, beforeID-1);
+	}
+	else
+	{
+	  pVectt->insertItemAt((void *) plt, beforeID);
+	}
+	return (XAP_Menu_Id) newID;
 }
 
 /*!

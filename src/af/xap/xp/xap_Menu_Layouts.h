@@ -47,7 +47,7 @@ public:
 	XAP_Menu_Id         addNewMenuBefore(const char * szMenu, 
 										 const char * szLanguage, 
 										 const char * szBefore, 
-									   EV_Menu_LayoutFlags flags);
+									   EV_Menu_LayoutFlags flags, XAP_Menu_Id menuID = 0);
 	XAP_Menu_Id        getNewID(void);
     XAP_Menu_Id        removeMenuItem(const char * szMenu, 
 									  const char * szLanguage,  

@@ -105,6 +105,7 @@
 	DeclareDialog(XAP_DIALOG_ID_INSERT_SYMBOL,  XAP_CocoaDialog_Insert_Symbol)
 	DeclareDialog(XAP_DIALOG_ID_INSERT_PICTURE,	XAP_CocoaDialog_FileOpenSaveAs)
 	DeclareDialog(XAP_DIALOG_ID_INSERTMATHML,	XAP_CocoaDialog_FileOpenSaveAs)
+	DeclareDialog(XAP_DIALOG_ID_INSERTOBJECT,	XAP_CocoaDialog_FileOpenSaveAs)
 	DeclareDialog(XAP_DIALOG_ID_HTMLOPTIONS,	XAP_CocoaDialog_HTMLOptions)
 	DeclareDialog(XAP_DIALOG_ID_ABOUT,			XAP_CocoaDialog_About)
 	DeclareDialog(XAP_DIALOG_ID_PLUGIN_MANAGER, XAP_CocoaDialog_PluginManager)

@@ -9326,6 +9326,9 @@ EV_EditMouseContext FV_View::getMouseContext(UT_sint32 xPos, UT_sint32 yPos)
 	case FPRUN_MATH:
 		m_prevMouseContext = EV_EMC_MATH;
 		return EV_EMC_MATH;
+	case FPRUN_EMBED:
+		m_prevMouseContext = EV_EMC_EMBED;
+		return EV_EMC_EMBED;
 	default:
 		UT_ASSERT(UT_NOT_IMPLEMENTED);
 		xxx_UT_DEBUGMSG(("fv_View::getMouseContext: (12)\n"));
