@@ -19,6 +19,11 @@
 
 /* Required to get proper namespace inclusion from PNG code */
 #include <string.h>
+
+// AIX does this inside <sys/context.h> but we can't force png to know.
+#ifdef _AIX
+#define jmpbuf __jmpbuf
+#endif
 #include "png.h"
 
 #include "ut_assert.h"

@@ -573,7 +573,8 @@ bool AP_UnixApp::canPasteFromClipboard(void)
 }
 
 // return > 0 for directory entries ending in ".so"
-#if defined (__APPLE__) || defined (__FreeBSD__) || defined (__OpenBSD__)
+#if defined (__APPLE__) || defined (__FreeBSD__) || defined (__OpenBSD__) \
+	|| defined(_AIX)
 static int so_only (struct dirent *d)
 #else
 static int so_only (const struct dirent *d)

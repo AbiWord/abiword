@@ -234,7 +234,8 @@ s_clist_clicked (GtkWidget *w, gint row, gint col,
 /*************************************************************************/
 
 // return > 0 for directory entries ending in ".awt" and ".dot"
-#if defined (__APPLE__) || defined (__FreeBSD__) || defined (__OpenBSD__)
+#if defined (__APPLE__) || defined (__FreeBSD__) || defined (__OpenBSD__) \
+	|| defined(_AIX)
 static int awt_only (struct dirent *d)
 #else
 static int awt_only (const struct dirent *d)

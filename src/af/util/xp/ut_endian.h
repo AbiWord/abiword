@@ -74,6 +74,13 @@
 	#elif BYTE_ORDER == BIG_ENDIAN
 		#define UT_BIG_ENDIAN
 	#endif
+#elif defined(_AIX)
+        #include <sys/machine.h>
+        #if BYTE_ORDER == LITTLE_ENDIAN
+                #define UT_LITTLE_ENDIAN
+        #elif BYTE_ORDER == BIG_ENDIAN
+                #define UT_BIG_ENDIAN
+        #endif
 #else /* this is for Linux */
 	#include <endian.h>
 	#if __BYTE_ORDER == __LITTLE_ENDIAN		
