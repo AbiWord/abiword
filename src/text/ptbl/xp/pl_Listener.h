@@ -19,8 +19,6 @@ class PX_ChangeRecord;
 class PL_Listener
 {
 public:
-	virtual ~PL_Listener();
-
 	// when a listener is installed, the document calls the listener
 	// for each fragment in the document.  this allows the layout to
 	// fully populate its representation of the formatting/layout of
