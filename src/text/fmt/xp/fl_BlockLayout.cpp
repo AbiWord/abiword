@@ -3823,6 +3823,10 @@ fl_BlockLayout::_recalcPendingWord(UT_uint32 iOffset, UT_sint32 chg)
 	}
 
 	UT_uint32 iFirst = iOffset;
+
+	if (iFirst > pgb.getLength() - 1)
+		iFirst = pgb.getLength() - 1;
+
 	UT_uint32 iAbs = static_cast<UT_uint32>((chg >= 0) ? chg : -chg);
 	UT_sint32 iLen = ((chg > 0) ? iAbs : 0);
 
