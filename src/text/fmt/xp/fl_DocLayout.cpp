@@ -913,10 +913,20 @@ void FL_DocLayout::queueBlockForBackgroundCheck(UT_uint32 reason, fl_BlockLayout
 	  reprioritized by setting bHead == true.  
 	*/
 	if (!m_pBackgroundCheckTimer)
-	{
-		m_pBackgroundCheckTimer = UT_Timer::static_constructor(_backgroundCheck, this, m_pG);
-		if (m_pBackgroundCheckTimer)
-			m_pBackgroundCheckTimer->set(BACKGROUND_CHECK_MSECS);
+	  {
+	    int inMode = UT_WorkerFactory::IDLE | UT_WorkerFactory::TIMER;
+	    UT_WorkerFactory::ConstructMode outMode = UT_WorkerFactory::NONE;
+
+	    m_pBackgroundCheckTimer = UT_WorkerFactory::static_constructor (_backgroundCheck, this, inMode, outMode, m_pG);
+
+	    UT_ASSERT(m_pBackgroundCheckTimer);
+	    UT_ASSERT(outMode != UT_WorkerFactory::NONE);
+
+	    if ( UT_WorkerFactory::TIMER == outMode )
+	      {
+		// this is really a timer, so it's safe to static_cast it
+		static_cast<UT_Timer*>(m_pBackgroundCheckTimer)->set(BACKGROUND_CHECK_MSECS);
+	      }
 	}
 	else
 	{

@@ -18,6 +18,7 @@
  */
 
 #include "ut_worker.h"
+#include "ut_assert.h"
 
 /*!
  * Public virtual destructor
@@ -73,4 +74,79 @@ void UT_Worker::_setInstanceData(void * data)
 void* UT_Worker::getInstanceData() const
 {
   return m_pInstanceData;
+}
+
+/*!
+ * Fires off the event with the proper callback data
+ */
+void UT_Worker::fire()
+{
+  UT_ASSERT(m_pCallback);
+	
+  m_pCallback(this);
+}
+
+/****************************************************************************/
+/****************************************************************************/
+
+#include "ut_timer.h"
+#include "ut_idle.h"
+#include "ut_debugmsg.h"
+
+/*!
+ * Private c'tor
+ */
+UT_WorkerFactory::UT_WorkerFactory()
+{
+}
+
+/*!
+ * Private d'tor
+ */
+UT_WorkerFactory::~UT_WorkerFactory()
+{
+}
+
+/*!
+ * Constructs a new UT_Worker object with the callback \param cb
+ * and \param data. It will try to create the type of UT_Worker
+ * specified by \param mode. The mode values can be ORed together.
+ * IDLE is given preference over TIMER. \return a valid UT_Worker
+ * on success, NULL on failure. \param outMode will be set to the
+ * type of object constructed, so that you can static_cast<> it to
+ * the proper type for further manipulation, should it be needed
+ */
+UT_Worker * UT_WorkerFactory::static_constructor ( UT_WorkerCallback cb, 
+						   void * data, int mode,
+						   UT_WorkerFactory::ConstructMode & outMode,
+						   GR_Graphics * pG )
+{
+
+  UT_Worker * tmp = 0;
+  
+  // give preference to CAN_USE_IDLE
+
+#ifdef SUPPORTS_UT_IDLE
+  if ( mode & IDLE )
+    {
+      tmp = UT_Idle::static_constructor ( cb, mode );
+      outMode = IDLE;
+    } 
+  else
+#endif
+    
+    if ( mode & TIMER )
+      {
+	tmp = UT_Timer::static_constructor ( cb, data, pG );
+	outMode = TIMER;
+      }
+  else
+    {
+      UT_DEBUGMSG(("UNKNOWN MODE: %d\n", mode));
+      mode = NONE;
+    }
+
+
+  UT_ASSERT(tmp != 0);
+  return tmp;
 }

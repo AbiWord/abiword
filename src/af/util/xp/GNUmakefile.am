@@ -47,6 +47,7 @@ libUtil_xp_a_SOURCES=\
 	ut_timer.cpp		\
 	ut_types.cpp		\
 	ut_worker.cpp		\
+	ut_idle.cpp		\
 	ut_units.cpp		\
 	ut_vector.cpp		\
 	ut_wctomb.cpp		\

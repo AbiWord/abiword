@@ -26,6 +26,7 @@ CPPSRCS=	ut_base64.cpp		\
 		ut_base64_TestRoutines.cpp	\
 		ut_rand.cpp		\
 		ut_worker.cpp		\
+		ut_idle.cpp		\
 		ut_bytebuf.cpp		\
 		ut_AbiObject.cpp	\
 		ut_growbuf.cpp		\

@@ -77,11 +77,3 @@ UT_Timer* UT_Timer::findTimer(UT_uint32 iIdentifier)
 
 	return NULL;
 }
-
-void UT_Timer::fire()
-{
-  UT_WorkerCallback cb = getCallback ();
-  UT_ASSERT(cb);
-	
-  cb(this);
-}

@@ -26,7 +26,6 @@
 #include "ut_vector.h"
 #include "ut_worker.h"
 
-class UT_Timer;
 class GR_Graphics;
 
 // simple backwards-compatible definition
@@ -47,7 +46,6 @@ public:
 	virtual UT_sint32 set(UT_uint32 iMilliseconds) = 0;	/* set freq and start */
 	virtual void stop(void) = 0;		/* suspend events */
 	virtual void start(void) = 0;		/* resume events */
-	void fire();
 	
 	void setIdentifier(UT_uint32);
 	UT_uint32 getIdentifier();

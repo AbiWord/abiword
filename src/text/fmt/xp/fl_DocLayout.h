@@ -224,7 +224,7 @@ protected:
 	fl_BlockLayout*		m_pPendingBlockForSmartQuote;  // if NULL, ignore m_uOffsetForSmartQuote
 	UT_uint32           m_uOffsetForSmartQuote;
 	char                m_szCurrentTransparentColor[10];
-	UT_Timer*			m_pBackgroundCheckTimer; 
+	UT_Worker*			m_pBackgroundCheckTimer; 
 
 	XAP_Prefs *			m_pPrefs;
 
