@@ -37,7 +37,9 @@ AP_Dialog_Columns::AP_Dialog_Columns(XAP_DialogFactory * pDlgFactory, XAP_Dialog
 	m_answer = a_OK;
 	m_pColumnsPreview = NULL;
 	m_bLineBetween = false;
+#ifdef BIDI_ENABLED
 	m_iColumnOrder = 0;
+#endif
 }
 
 AP_Dialog_Columns::~AP_Dialog_Columns(void)
@@ -195,3 +197,5 @@ void AP_Columns_preview_drawer::draw(GR_Graphics *gc, UT_Rect &rect, UT_sint32 i
 		}
 	}
 }
+
+
