@@ -35,7 +35,6 @@ AbiWord_LDADD = $(REPEAT_LIBS) $(PEER_LIBS) @MACOSX_LIBS@ $(OTHER_LIBS)
 abi_ver.cpp:
 	cp $(srcdir)/../xp/abi_ver.cpp .
 
-endif
 
 
 
