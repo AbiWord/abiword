@@ -58,7 +58,7 @@
 #endif
 
 /*****************************************************************/
-
+#define ENSUREP_RF(p)            do { UT_ASSERT(p); if (!p) return false; } while (0)
 #define ENSUREP(p)		do { UT_ASSERT(p); if (!p) goto Cleanup; } while (0)
 
 
@@ -72,214 +72,11 @@ UT_uint32 AP_CocoaFrame::getZoomPercentage(void)
 	return ((AP_FrameData*)m_pData)->m_pG->getZoomPercentage();
 }
 
-UT_Error AP_CocoaFrame::_showDocument(UT_uint32 iZoom)
-{
-	if (!m_pDoc)
-	{
-		UT_DEBUGMSG(("Can't show a non-existent document\n"));
-		return UT_IE_FILENOTFOUND;
-	}
-
-	if (!((AP_FrameData*)m_pData))
-	{
-		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-		return UT_IE_IMPORTERROR;
-	}
-
-	GR_CocoaGraphics * pG = NULL;
-	FL_DocLayout * pDocLayout = NULL;
-	AV_View * pView = NULL;
-	AV_ScrollObj * pScrollObj = NULL;
-	ap_ViewListener * pViewListener = NULL;
-	AD_Document * pOldDoc = NULL;
-	ap_Scrollbar_ViewListener * pScrollbarViewListener = NULL;
-	AV_ListenerId lid;
-	AV_ListenerId lidScrollbarViewListener;
-	UT_uint32 point = 0;
-	
-	NSRect rect;
-
-//	XAP_CocoaFontManager * fontManager = ((XAP_CocoaApp *) getApp())->getFontManager();
-	static_cast<AP_CocoaFrameImpl*>(m_pFrameImpl)->_createDocView(pG);
-	ENSUREP(pG);
-	pG->setZoomPercentage(iZoom);
-	pDocLayout = new FL_DocLayout(static_cast<PD_Document *>(m_pDoc), pG);
-	ENSUREP(pDocLayout);
-	  
-	if (m_pView != NULL)
-	{
-		point = ((FV_View *) m_pView)->getPoint();
-	}
-
-	pView = new FV_View(getApp(), this, pDocLayout);
-	ENSUREP(pView);
-
-//	bFocus=GPOINTER_TO_INT(g_object_get_data(G_OBJECT(m_wTopLevelWindow),"toplevelWindowFocus"));
-#if 0
-	pView->setFocus(bFocus && (gtk_grab_get_current()==NULL || gtk_grab_get_current()==m_wTopLevelWindow) ? AV_FOCUS_HERE : !bFocus && gtk_grab_get_current()!=NULL && isTransientWindow(GTK_WINDOW(gtk_grab_get_current()),GTK_WINDOW(m_wTopLevelWindow)) ?  AV_FOCUS_NEARBY : AV_FOCUS_NONE);
-#endif
-	// The "AV_ScrollObj pScrollObj" receives
-	// send{Vertical,Horizontal}ScrollEvents
-	// from both the scroll-related edit methods
-	// and from the UI callbacks.
-	// 
-	// The "ap_ViewListener pViewListener" receives
-	// change notifications as the document changes.
-	// This ViewListener is responsible for keeping
-	// the title-bar up to date (primarily title
-	// changes, dirty indicator, and window number).
-	// ON UNIX ONLY: we subclass this with ap_CocoaViewListener
-	// ON UNIX ONLY: so that we can deal with X-Selections.
-	//
-	// The "ap_Scrollbar_ViewListener pScrollbarViewListener"
-	// receives change notifications as the doucment changes.
-	// This ViewListener is responsible for recalibrating the
-	// scrollbars as pages are added/removed from the document.
-	//
-	// Each Toolbar will also get a ViewListener so that
-	// it can update toggle buttons, and other state-indicating
-	// controls on it.
-	//
-	// TODO we ***really*** need to re-do the whole scrollbar thing.
-	// TODO we have an addScrollListener() using an m_pScrollObj
-	// TODO and a View-Listener, and a bunch of other widget stuff.
-	// TODO and its very confusing.
-	
-	pScrollObj = new AV_ScrollObj(this,_scrollFuncX,_scrollFuncY);
-	ENSUREP(pScrollObj);
-	pViewListener = new ap_CocoaViewListener(this);
-	ENSUREP(pViewListener);
-	pScrollbarViewListener = new ap_Scrollbar_ViewListener(this,pView);
-	ENSUREP(pScrollbarViewListener);
-
-	if (!pView->addListener(static_cast<AV_Listener *>(pViewListener),&lid))
-		goto Cleanup;
-
-	if (!pView->addListener(static_cast<AV_Listener *>(pScrollbarViewListener),
-							&lidScrollbarViewListener))
-		goto Cleanup;
-
-
-	/****************************************************************
-	*****************************************************************
-	** If we reach this point, everything for the new document has
-	** been created.  We can now safely replace the various fields
-	** within the structure.  Nothing below this point should fail.
-	*****************************************************************
-	****************************************************************/
-	
-	// switch to new view, cleaning up previous settings
-	if (((AP_FrameData*)m_pData)->m_pDocLayout)
-	{
-		pOldDoc = ((AP_FrameData*)m_pData)->m_pDocLayout->getDocument();
-	}
-
-	REPLACEP(((AP_FrameData*)m_pData)->m_pG, pG);
-	REPLACEP(((AP_FrameData*)m_pData)->m_pDocLayout, pDocLayout);
-	if (pOldDoc != m_pDoc)
-	{
-		UNREFP(pOldDoc);
-	}
-	REPLACEP(m_pView, pView);
-        if(getApp()->getViewSelection())
-	       getApp()->setViewSelection(pView);
-	REPLACEP(m_pScrollObj, pScrollObj);
-	REPLACEP(m_pViewListener, pViewListener);
-	m_lid = lid;
-	REPLACEP(m_pScrollbarViewListener,pScrollbarViewListener);
-	m_lidScrollbarViewListener = lidScrollbarViewListener;
-
-	m_pView->addScrollListener(m_pScrollObj);
-
-	// Associate the new view with the existing TopRuler, LeftRuler.
-	// Because of the binding to the actual on-screen widgets we do
-	// not destroy and recreate the TopRuler, LeftRuler when we change
-	// views, like we do for all the other objects.  We also do not
-	// allocate the TopRuler, LeftRuler  here; that is done as the
-	// frame is created.
-	if (((AP_FrameData*)m_pData)->m_bShowRuler)	{
-		if ( ((AP_FrameData*)m_pData)->m_pTopRuler ) {
-			((AP_FrameData*)m_pData)->m_pTopRuler->setView(pView, iZoom);
-		}
-		if ( ((AP_FrameData*)m_pData)->m_pLeftRuler ) {
-			((AP_FrameData*)m_pData)->m_pLeftRuler->setView(pView, iZoom);
-		}
-	}
-
-	if ( ((AP_FrameData*)m_pData)->m_pStatusBar ) {
-		((AP_FrameData*)m_pData)->m_pStatusBar->setView(pView);
-	}
-    ((FV_View *) m_pView)->setShowPara(((AP_FrameData*)m_pData)->m_bShowPara);
-
-	pView->setInsertMode(((AP_FrameData*)m_pData)->m_bInsertMode);
-
-	rect = [[static_cast<XAP_CocoaFrameImpl*>(m_pFrameImpl)->_getController() window] frame];
-	m_pView->setWindowSize(rect.size.width , rect.size.height);
-	setXScrollRange();
-	setYScrollRange();
-	updateTitle();
-
-#if 1
-	/*
-	  UPDATE:  this code is back, but I'm leaving these comments as
-	  an audit trail.  See bug 99.  This only happens when loading
-	  a document into an empty window -- the case where a frame gets
-	  reused.  TODO consider putting an expose into ap_EditMethods.cpp
-	  instead of a draw() here.
-	*/
-	
-	/*
-	  I've removed this once again.  (Eric)  I replaced it with a call
-	  to draw() which is now in the configure event handler in the GTK
-	  section of the code.  See me if this causes problems.
-	*/
-	pDocLayout->fillLayouts();
-	if (point != 0) 
-		((FV_View *) m_pView)->moveInsPtTo(point);
-	m_pView->draw();
-#endif	
-	
-	if ( ((AP_FrameData*)m_pData)->m_bShowRuler  ) 
-	{
-		if ( ((AP_FrameData*)m_pData)->m_pTopRuler )
-			((AP_FrameData*)m_pData)->m_pTopRuler->draw(NULL);
-
-		if ( ((AP_FrameData*)m_pData)->m_pLeftRuler )
-			((AP_FrameData*)m_pData)->m_pLeftRuler->draw(NULL);
-	}
-
-	if(isStatusBarShown())
-	{
-		((AP_FrameData*)m_pData)->m_pStatusBar->notify(m_pView, AV_CHG_ALL);
-	}
-	if(m_pView)
-	{
-		m_pView->notifyListeners(AV_CHG_ALL);
-		m_pView->focusChange(AV_FOCUS_HERE);
-	}
-	
-	return UT_OK;
-
-Cleanup:
-	// clean up anything we created here
-	DELETEP(pG);
-	DELETEP(pDocLayout);
-	DELETEP(pView);
-	DELETEP(pViewListener);
-	DELETEP(pScrollObj);
-	DELETEP(pScrollbarViewListener);
-
-	// change back to prior document
-	UNREFP(m_pDoc);
-	m_pDoc = ((AP_FrameData*)m_pData)->m_pDocLayout->getDocument();
-
-	return UT_IE_ADDLISTENERERROR;
-}
 
 void AP_CocoaFrame::setXScrollRange(void)
 {
 	int width = ((AP_FrameData*)m_pData)->m_pDocLayout->getWidth();
-	NSRect rect = [static_cast<AP_CocoaFrameImpl *>(m_pFrameImpl)->m_docAreaGRView frame];
+	NSRect rect = [static_cast<AP_CocoaFrameImpl *>(getFrameImpl())->m_docAreaGRView frame];
 	int windowWidth = rect.size.width;
 
 	int newvalue = ((m_pView) ? m_pView->getXScrollOffset() : 0);
@@ -314,7 +111,7 @@ void AP_CocoaFrame::setXScrollRange(void)
 void AP_CocoaFrame::setYScrollRange(void)
 {
 	int height = ((AP_FrameData*)m_pData)->m_pDocLayout->getHeight();
-	NSRect rect = [static_cast<AP_CocoaFrameImpl *>(m_pFrameImpl)->m_docAreaGRView frame];
+	NSRect rect = [static_cast<AP_CocoaFrameImpl *>(getFrameImpl())->m_docAreaGRView frame];
 	int windowHeight = rect.size.width;
 
 	int newvalue = ((m_pView) ? m_pView->getYScrollOffset() : 0);
@@ -357,7 +154,6 @@ AP_CocoaFrame::AP_CocoaFrame(XAP_CocoaApp * app)
 AP_CocoaFrame::AP_CocoaFrame(AP_CocoaFrame * f)
 	: AP_Frame(static_cast<AP_Frame *>(f))
 {
-	m_pFrameImpl = new AP_CocoaFrameImpl(this, static_cast<XAP_CocoaApp *>(f->m_pApp));
 	m_pData = NULL;
 }
 
@@ -366,8 +162,9 @@ AP_CocoaFrame::~AP_CocoaFrame()
 	killFrameData();
 }
 
-bool AP_CocoaFrame::initialize()
+bool AP_CocoaFrame::initialize(XAP_FrameMode frameMode)
 {
+	AP_CocoaFrameImpl* pFrameImpl = static_cast<AP_CocoaFrameImpl *>(getFrameImpl());
 	UT_DEBUGMSG(("AP_CocoaFrame::initialize\n"));
 	if (!initFrameData())
 		return false;
@@ -379,7 +176,7 @@ bool AP_CocoaFrame::initialize()
 								   AP_PREF_KEY_StringSet, AP_PREF_DEFAULT_StringSet))
 		return false;
 
-	static_cast<AP_CocoaFrameImpl *>(m_pFrameImpl)->_createTopLevelWindow();
+	pFrameImpl->_createTopLevelWindow();
 //	gtk_widget_show(m_wTopLevelWindow);
 	if(getFrameMode() == XAP_NormalFrame)
 	{
@@ -387,9 +184,10 @@ bool AP_CocoaFrame::initialize()
 		// TODO: get rid of cursed flicker caused by initially
 		// TODO: showing these and then hiding them (esp.
 		// TODO: noticable in the gnome build with a toolbar disabled)
-		static_cast<AP_CocoaFrameImpl *>(m_pFrameImpl)->_showOrHideToolbars();
-		static_cast<AP_CocoaFrameImpl *>(m_pFrameImpl)->_showOrHideStatusbar();
+		pFrameImpl->_showOrHideToolbars();
+		pFrameImpl->_showOrHideStatusbar();
 	}
+	pFrameImpl->_show();
 	return true;
 }
 
@@ -397,131 +195,6 @@ bool AP_CocoaFrame::initialize()
 
 
 /*****************************************************************/
-
-bool AP_CocoaFrame::initFrameData()
-{
-	UT_ASSERT(!((AP_FrameData*)m_pData));
-
-	AP_FrameData* pData = new AP_FrameData(static_cast<XAP_App *>(m_pApp));
-
-	m_pData = (void*)pData;
-	return (pData ? true : false);
-}
-
-void AP_CocoaFrame::killFrameData()
-{
-	AP_FrameData* pData = (AP_FrameData*) m_pData;
-	DELETEP(pData);
-	m_pData = NULL;
-}
-
-UT_Error AP_CocoaFrame::_loadDocument(const char * szFilename, IEFileType ieft,
-				     bool createNew)
-{
-#ifdef DEBUG
-	if (szFilename) {
-		UT_DEBUGMSG(("DOM: trying to load %s (%d, %d)\n", szFilename, ieft, createNew));
-	}
-	else {
-		UT_DEBUGMSG(("DOM: trying to load %s (%d, %d)\n", "(NULL)", ieft, createNew));
-	}
-#endif
-
-	// are we replacing another document?
-	if (m_pDoc)
-	{
-		// yep.  first make sure it's OK to discard it, 
-		// TODO: query user if dirty...
-	}
-
-	// load a document into the current frame.
-	// if no filename, create a new document.
-
-	AD_Document * pNewDoc = new PD_Document(getApp());
-	UT_ASSERT(pNewDoc);
-	
-	if (!szFilename || !*szFilename)
-	{
-		pNewDoc->newDocument();
-		m_iUntitled = _getNextUntitledNumber();
-		goto ReplaceDocument;
-	}
-	UT_Error errorCode;
-	errorCode = pNewDoc->readFromFile(szFilename, ieft);
-	if (!errorCode)
-		goto ReplaceDocument;
-
-	if (createNew)
-	  {
-	    // we have a file name but couldn't load it
-	    pNewDoc->newDocument();
-
-	    // here, we want to open a new document if it doesn't exist.
-	    // errorCode could also take several other values, indicating
-	    // that the document exists but for some reason we could not
-	    // open it. in those cases, we do not wish to overwrite the
-	    // existing documents, but instead open a new blank document. 
-	    // this fixes bug 1668 - DAL
-	    if ( UT_IE_FILENOTFOUND == errorCode )
-	      errorCode = pNewDoc->saveAs(szFilename, ieft);
-	  }
-	if (!errorCode)
-	  goto ReplaceDocument;
-	
-	UT_DEBUGMSG(("ap_Frame: could not open the file [%s]\n",szFilename));
-	UNREFP(pNewDoc);
-	return errorCode;
-
-ReplaceDocument:
-	getApp()->forgetClones(this);
-
-	// NOTE: prior document is discarded in _showDocument()
-	m_pDoc = pNewDoc;
-	return UT_OK;
-}
-	
-UT_Error AP_CocoaFrame::_importDocument(const char * szFilename, int ieft,
-									  bool markClean)
-{
-	UT_DEBUGMSG(("DOM: trying to import %s (%d, %d)\n", szFilename, ieft, markClean));
-
-	// are we replacing another document?
-	if (m_pDoc)
-	{
-		// yep.  first make sure it's OK to discard it, 
-		// TODO: query user if dirty...
-	}
-
-	// load a document into the current frame.
-	// if no filename, create a new document.
-
-	AD_Document * pNewDoc = new PD_Document(getApp());
-	UT_ASSERT(pNewDoc);
-
-	if (!szFilename || !*szFilename)
-	{
-		pNewDoc->newDocument();
-		goto ReplaceDocument;
-	}
-	UT_Error errorCode;
-	errorCode = pNewDoc->importFile(szFilename, ieft, markClean);
-	if (!errorCode)
-		goto ReplaceDocument;
-
-	UT_DEBUGMSG(("ap_Frame: could not open the file [%s]\n",szFilename));
-
-	UNREFP(pNewDoc);
-	return errorCode;
-
-ReplaceDocument:
-	getApp()->forgetClones(this);
-
-	m_iUntitled = _getNextUntitledNumber();
-
-	// NOTE: prior document is discarded in _showDocument()
-	m_pDoc = pNewDoc;
-	return UT_OK;
-}
 
 XAP_Frame * AP_CocoaFrame::cloneFrame()
 {
@@ -540,114 +213,6 @@ Cleanup:
 	return NULL;
 }
 
-XAP_Frame * AP_CocoaFrame::buildFrame(XAP_Frame * pF)
-{
-	AP_CocoaFrame * pClone = static_cast<AP_CocoaFrame *>(pF);
-	UT_Error error = UT_OK;
-	ENSUREP(pClone);
-
-	if (!pClone->initialize())
-		goto Cleanup;
-
-	error = pClone->_showDocument();
-	if (error)
-		goto Cleanup;
-
-	pClone->show();
-
-	return pClone;
-
-Cleanup:
-	// clean up anything we created here
-	if (pClone)
-	{
-		static_cast<XAP_App *>(m_pApp)->forgetFrame(pClone);
-		delete pClone;
-	}
-
-	return NULL;
-}
-
-UT_Error AP_CocoaFrame::loadDocument(const char * szFilename, int ieft,
-									bool createNew)
-{
-	bool bUpdateClones;
-	UT_Vector vClones;
-	XAP_App * pApp = getApp();
-
-	bUpdateClones = (getViewNumber() > 0);
-	if (bUpdateClones)
-	{
-		pApp->getClones(&vClones, this);
-	}
-	UT_Error errorCode;
-	errorCode =  _loadDocument(szFilename, (IEFileType) ieft, createNew);
-	if (errorCode)
-	{
-		// we could not load the document.
-		// we cannot complain to the user here, we don't know
-		// if the app is fully up yet.  we force our caller
-		// to deal with the problem.
-		return errorCode;
-	}
-
-	pApp->rememberFrame(this);
-	if (bUpdateClones)
-	{
-		for (UT_uint32 i = 0; i < vClones.getItemCount(); i++)
-		{
-			AP_CocoaFrame * pFrame = (AP_CocoaFrame *) vClones.getNthItem(i);
-			if(pFrame != this)
-			{
-				pFrame->_replaceDocument(m_pDoc);
-				pApp->rememberFrame(pFrame, this);
-			}
-		}
-	}
-
-	return _showDocument();
-}
-
-UT_Error AP_CocoaFrame::loadDocument(const char * szFilename, int ieft)
-{
-  return loadDocument(szFilename, ieft, false);
-}
-
-UT_Error AP_CocoaFrame::importDocument(const char * szFilename, int ieft,
-									  bool markClean)
-{
-	bool bUpdateClones;
-	UT_Vector vClones;
-	XAP_App * pApp = getApp();
-
-	bUpdateClones = (getViewNumber() > 0);
-	if (bUpdateClones)
-	{
-		pApp->getClones(&vClones, this);
-	}
-	UT_Error errorCode;
-	errorCode =  _importDocument(szFilename, (IEFileType) ieft, markClean);
-	if (errorCode)
-	{
-		return errorCode;
-	}
-
-	pApp->rememberFrame(this);
-	if (bUpdateClones)
-	{
-		for (UT_uint32 i = 0; i < vClones.getItemCount(); i++)
-		{
-			AP_CocoaFrame * pFrame = (AP_CocoaFrame *) vClones.getNthItem(i);
-			if(pFrame != this)
-			{
-				pFrame->_replaceDocument(m_pDoc);
-				pApp->rememberFrame(pFrame, this);
-			}
-		}
-	}
-
-	return _showDocument();
-}
 
 void AP_CocoaFrame::_scrollFuncY(void * pData, UT_sint32 yoff, UT_sint32 /*yrange*/)
 {
@@ -720,14 +285,6 @@ void AP_CocoaFrame::setStatusMessage(const char * szMsg)
 	((AP_FrameData *)m_pData)->m_pStatusBar->setStatusMessage(szMsg);
 }
 
-
-UT_Error AP_CocoaFrame::_replaceDocument(AD_Document * pDoc)
-{
-	// NOTE: prior document is discarded in _showDocument()
-	m_pDoc = REFP(pDoc);
-
-	return _showDocument();
-}
 
 void AP_CocoaFrame::toggleTopRuler(bool bRulerOn)
 {
@@ -858,13 +415,86 @@ void AP_CocoaFrame::toggleStatusBar(bool bStatusBarOn)
 	}
 }
 
+bool AP_CocoaFrame::_createScrollBarListeners(AV_View * pView, AV_ScrollObj *& pScrollObj, 
+					     ap_ViewListener *& pViewListener, ap_Scrollbar_ViewListener *& pScrollbarViewListener,
+					     AV_ListenerId &lid, AV_ListenerId &lidScrollbarViewListener)
+{
+	// The "AV_ScrollObj pScrollObj" receives
+	// send{Vertical,Horizontal}ScrollEvents
+	// from both the scroll-related edit methods
+	// and from the UI callbacks.
+	// 
+	// The "ap_ViewListener pViewListener" receives
+	// change notifications as the document changes.
+	// This ViewListener is responsible for keeping
+	// the title-bar up to date (primarily title
+	// changes, dirty indicator, and window number).
+	// ON UNIX ONLY: we subclass this with ap_UnixViewListener
+	// ON UNIX ONLY: so that we can deal with X-Selections.
+	//
+	// The "ap_Scrollbar_ViewListener pScrollbarViewListener"
+	// receives change notifications as the doucment changes.
+	// This ViewListener is responsible for recalibrating the
+	// scrollbars as pages are added/removed from the document.
+	//
+	// Each Toolbar will also get a ViewListener so that
+	// it can update toggle buttons, and other state-indicating
+	// controls on it.
+	//
+	// TODO we ***really*** need to re-do the whole scrollbar thing.
+	// TODO we have an addScrollListener() using an m_pScrollObj
+	// TODO and a View-Listener, and a bunch of other widget stuff.
+	// TODO and its very confusing.
+
+	pScrollObj = new AV_ScrollObj(this,_scrollFuncX,_scrollFuncY);
+	ENSUREP_RF(pScrollObj);
+
+	pViewListener = new ap_CocoaViewListener(this);
+	ENSUREP_RF(pViewListener);
+	pScrollbarViewListener = new ap_Scrollbar_ViewListener(this,pView);
+	ENSUREP_RF(pScrollbarViewListener);
+	
+	if (!pView->addListener(static_cast<AV_Listener *>(pViewListener),&lid))
+		return false;
+	if (!pView->addListener(static_cast<AV_Listener *>(pScrollbarViewListener),
+							&lidScrollbarViewListener))
+		return false;
+
+	return true;
+}
+
+
 UT_sint32 AP_CocoaFrame::_getDocumentAreaWidth()
 {
-	return (UT_sint32)[static_cast<AP_CocoaFrameImpl *>(m_pFrameImpl)->m_docAreaGRView frame].size.width;
+	return (UT_sint32)[static_cast<AP_CocoaFrameImpl *>(getFrameImpl())->m_docAreaGRView frame].size.width;
 }
 
 UT_sint32 AP_CocoaFrame::_getDocumentAreaHeight()
 {
-	return (UT_sint32)[static_cast<AP_CocoaFrameImpl *>(m_pFrameImpl)->m_docAreaGRView frame].size.height;
+	return (UT_sint32)[static_cast<AP_CocoaFrameImpl *>(getFrameImpl())->m_docAreaGRView frame].size.height;
+}
+
+bool AP_CocoaFrame::_createViewGraphics(GR_Graphics *& pG, UT_uint32 iZoom)
+{
+
+	static_cast<AP_CocoaFrameImpl*>(getFrameImpl())->_createDocView(pG);
+	ENSUREP_RF(pG);
+	pG->setZoomPercentage(iZoom);
+
+	return true;
+}
+
+void AP_CocoaFrame::_setViewFocus(AV_View *pView)
+{
+	AP_CocoaFrameImpl * pFrameImpl = static_cast<AP_CocoaFrameImpl *>(getFrameImpl());
+#warning not implemented
+//	bool bFocus=GPOINTER_TO_INT(g_object_get_data(G_OBJECT(pFrameImpl->getTopLevelWindow()),
+//						 "toplevelWindowFocus"));
+//	pView->setFocus(bFocus && (gtk_grab_get_current()==NULL || gtk_grab_get_current()==pFrameImpl->getTopLevelWindow()) ? AV_FOCUS_HERE : !bFocus && gtk_grab_get_current()!=NULL && isTransientWindow(GTK_WINDOW(gtk_grab_get_current()),GTK_WINDOW(pFrameImpl->getTopLevelWindow())) ?  AV_FOCUS_NEARBY : AV_FOCUS_NONE);
+}
+
+void AP_CocoaFrame::_bindToolbars(AV_View *pView)
+{
+	static_cast<AP_CocoaFrameImpl *>(getFrameImpl())->_bindToolbars(pView);
 }
 

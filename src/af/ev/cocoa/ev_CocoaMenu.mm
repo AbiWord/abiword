@@ -289,7 +289,7 @@ bool EV_CocoaMenu::synthesizeMenu(NSMenu * wMenuRoot)
 				NSString * shortCut = nil;
 				
 				if (data[1] && *(data[1])) {
-					_getItemCmd (data[1], modifier, shortCut);
+					shortCut = _getItemCmd (data[1], modifier);
 				}
 				else {
 					shortCut = [NSString string];
@@ -340,7 +340,6 @@ bool EV_CocoaMenu::synthesizeMenu(NSMenu * wMenuRoot)
 				// TODO check that this does not leak when we destroy the menu
 				_wd * wd = new _wd (this, pLayoutItem->getMenuId(), menuItem);
 				[menuItem setTag:(int)wd];
-				[shortCut release];
 		
 				// item is created, add to class vector
 				m_vecMenuWidgets.addItem(wd);
@@ -762,9 +761,8 @@ bool EV_CocoaMenu::_doAddMenuItem(UT_uint32 layout_pos)
 	\returnvalue key a newly allocated NSString that contains the key equivalent. 
 	should be nil on entry.
  */
-void EV_CocoaMenu::_getItemCmd (const char * mnemonic, unsigned int & modifiers, NSString * & key)
+NSString* EV_CocoaMenu::_getItemCmd (const char * mnemonic, unsigned int & modifiers)
 {
-	NSString * nsMnemonic;
 	modifiers = 0;
 	char * p;
 	if (strstr (mnemonic, "Alt+")) {
@@ -780,8 +778,8 @@ void EV_CocoaMenu::_getItemCmd (const char * mnemonic, unsigned int & modifiers,
 		p = strchr (mnemonic, '+');
 		p++;
 	}
-	nsMnemonic = [NSString stringWithCString:p];	// autoreleased
-	key = [nsMnemonic lowercaseString];
+
+	return [[NSString stringWithCString:p] lowercaseString];
 }
 
 

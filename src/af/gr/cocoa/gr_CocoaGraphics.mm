@@ -121,6 +121,7 @@ GR_CocoaGraphics::GR_CocoaGraphics(NSView * win, XAP_App * app)
 {
 	m_pApp = app;
 	UT_ASSERT (win);
+	m_fontProps = [[NSMutableDictionary alloc] init];
 	NSRect viewBounds = [win bounds];
 //  	xxx_UT_DEBUGMSG (("frame is %f %f %f %f\n", theRect.origin.x, theRect.origin.y, theRect.size.width, theRect.size.height));
 	if (![win isKindOfClass:[XAP_CocoaNSView class]]) {
@@ -138,24 +139,18 @@ GR_CocoaGraphics::GR_CocoaGraphics(NSView * win, XAP_App * app)
 	s_iInstanceCount++;
 	init3dColors ();
 
+	m_cache = [[NSImage alloc] init];
+	[m_cache setFlipped:YES];
 	m_offscreen = [[NSImage alloc] initWithSize:viewBounds.size];
 	[m_offscreen setFlipped:YES];
 
 	LOCK_CONTEXT__;
-	m_CGContext = CG_CONTEXT__;
-	::CGContextSetLineWidth (m_CGContext, m_iLineWidth);
-	::CGContextSetLineCap (m_CGContext, kCGLineCapButt);
-	::CGContextSetLineJoin (m_CGContext, kCGLineJoinMiter);
-	::CGContextTranslateCTM (m_CGContext, 0.5, 0.5);
-	::CGContextSetShouldAntialias (m_CGContext, false);
 	m_currentColor = [[NSColor blackColor] copy];
- 	[m_currentColor set];
+	_resetContext();
 
 	m_cs = GR_Graphics::GR_COLORSPACE_COLOR;
 	m_cursor = GR_CURSOR_INVALID;
 	setCursor(GR_CURSOR_DEFAULT);
-	/* save initial graphics state that has no clipping */
-	::CGContextSaveGState(m_CGContext);
 # ifndef USE_OFFSCREEN
 	StNSImageLocker locker (m_offscreen);
 # endif
@@ -170,7 +165,11 @@ GR_CocoaGraphics::GR_CocoaGraphics(NSView * win, XAP_App * app)
 
 GR_CocoaGraphics::~GR_CocoaGraphics()
 {
-	[m_pWin removeFromSuperview];
+	[m_cache release];
+	[m_fontProps release];
+#warning I can be wrong here.
+	[m_pWin removeFromSuperview];	// TODO FIXME: not always valid
+	[m_offscreen release];
 
 	s_iInstanceCount--;
 	if(!s_iInstanceCount) {
@@ -296,7 +295,6 @@ void GR_CocoaGraphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
 	const UT_UCSChar *pC;
 
 	// Lock the NSView
-	LOCK_CONTEXT__;
 	NSString * string = nil;
 
   	for(pC=pChars+iCharOffset, x=xoff; pC<pChars+iCharOffset+iLength; ++pC)
@@ -316,13 +314,12 @@ void GR_CocoaGraphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
 		//unicode font
 		//UT_DEBUGMSG(("CocoaGraphics::drawChars: utf-8\n"));
 
-		NSMutableDictionary* fontProps = [NSMutableDictionary dictionaryWithObject:font forKey:NSFontAttributeName];
-		[fontProps setObject:m_currentColor forKey:NSForegroundColorAttributeName];
+		LOCK_CONTEXT__;
 		switch(UT_OVERSTRIKING_DIR & UT_isOverstrikingChar(*pC))
 		{
 		case UT_NOT_OVERSTRIKING:
 			{
-				NSSize aSize = [string sizeWithAttributes:fontProps];
+				NSSize aSize = [string sizeWithAttributes:m_fontProps];
 				curWidth = aSize.width;
 				curX = x;
 			}
@@ -341,7 +338,7 @@ void GR_CocoaGraphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
 		point.x = curX;
 		point.y = yoff + [font descender];
 
-		[string drawAtPoint:point withAttributes:fontProps];
+		[string drawAtPoint:point withAttributes:m_fontProps];
 		
 		//gdk_draw_text(m_pWin,font,m_pGC,curX,yoff+font->ascent,(gchar*)&beucs,2);
 		x+=curWidth;
@@ -371,6 +368,7 @@ void GR_CocoaGraphics::setFont(GR_Font * pFont)
 	XAP_CocoaFont * pUFont = static_cast<XAP_CocoaFont *> (pFont);
 	UT_ASSERT (pUFont);
 	m_pFont = pUFont;
+	[m_fontProps setObject:pUFont->getNSFont() forKey:NSFontAttributeName];
 }
 
 UT_uint32 GR_CocoaGraphics::getFontHeight(GR_Font * fnt)
@@ -380,8 +378,10 @@ UT_uint32 GR_CocoaGraphics::getFontHeight(GR_Font * fnt)
 	XAP_CocoaFont * hndl = static_cast<XAP_CocoaFont *>(fnt);
 
 	NSFont* pFont = hndl->getNSFont();
+//	printf ("size request for font %@\n", pFont);
 //	printf ("line height %f\n", [pFont defaultLineHeightForFont]);
-	return (UT_uint32)([pFont ascender] + [pFont descender]); //[pFont defaultLineHeightForFont];
+//	printf ("font height %f\n", [pFont ascender] + [pFont descender]);
+	return (UT_uint32)[pFont defaultLineHeightForFont]; //([pFont ascender] + [pFont descender]); //;
 }
 
 UT_uint32 GR_CocoaGraphics::getFontHeight()
@@ -401,12 +401,9 @@ UT_uint32 GR_CocoaGraphics::measureUnRemappedChar(const UT_UCSChar c)
 
 	UT_ASSERT(m_pFont);
 
-	NSFont * font = m_pFont->getNSFont();
 	NSString * string = [[NSString alloc] initWithData:[NSData dataWithBytes:&c length:sizeof(UT_UCSChar)]
 							encoding:NSUnicodeStringEncoding];
-	NSMutableDictionary* fontProps = [NSMutableDictionary dictionaryWithObject:font forKey:NSFontAttributeName];
-	NSSize aSize = [string sizeWithAttributes:fontProps];
-
+	NSSize aSize = [string sizeWithAttributes:m_fontProps];
 	[string release];
 
 	return (UT_uint32)aSize.width;
@@ -430,11 +427,9 @@ UT_uint32 GR_CocoaGraphics::_getResolution(void) const
 /*!
 	Convert a UT_RGBColor to a NSColor
 	\param clr the UT_RGBColor to convert
-	\return a retained NSColor
+	\return an autoreleased NSColor
 
 	Handle the transparency as well.
-	
-	\note Allocate the color. Must be released by caller.
  */
 NSColor	*GR_CocoaGraphics::_utRGBColorToNSColor (const UT_RGBColor& clr)
 {
@@ -443,7 +438,7 @@ NSColor	*GR_CocoaGraphics::_utRGBColorToNSColor (const UT_RGBColor& clr)
 	g = (float)clr.m_grn / 255.0f;
 	b = (float)clr.m_blu / 255.0f;
 	UT_DEBUGMSG (("converting color r=%f, g=%f, b=%f from %d, %d, %d\n", r, g, b, clr.m_red, clr.m_grn, clr.m_blu));
-	NSColor *c = [[NSColor colorWithDeviceRed:r green:g blue:b alpha:1.0 /*(clr.m_bIsTransparent ? 0.0 : 1.0)*/] retain];	// is autoreleased, so retain
+	NSColor *c = [NSColor colorWithDeviceRed:r green:g blue:b alpha:1.0 /*(clr.m_bIsTransparent ? 0.0 : 1.0)*/];
 	return c;
 }
 
@@ -470,7 +465,6 @@ void GR_CocoaGraphics::setColor(const UT_RGBColor& clr)
 	UT_DEBUGMSG (("GR_CocoaGraphics::setColor(const UT_RGBColor&): setting color %d, %d, %d\n", clr.m_red, clr.m_grn, clr.m_blu));
 	NSColor *c = _utRGBColorToNSColor (clr);
 	_setColor(c);
-	[c release];
 }
 
 void	GR_CocoaGraphics::getColor(UT_RGBColor& clr)
@@ -485,6 +479,7 @@ void GR_CocoaGraphics::_setColor(NSColor * c)
 	UT_DEBUGMSG (("GR_CocoaGraphics::_setColor(NSColor *): setting NSColor\n"));
 	[m_currentColor release];
 	m_currentColor = [c copy];
+	[m_fontProps setObject:m_currentColor forKey:NSForegroundColorAttributeName];
 	LOCK_CONTEXT__;
 	[m_currentColor set];
 }
@@ -705,8 +700,6 @@ void GR_CocoaGraphics::fillRect(const UT_RGBColor& clr, UT_sint32 x, UT_sint32 y
 	[c set];
 	NSRectFill (NSMakeRect (x, y, w, h));
 	[NSGraphicsContext restoreGraphicsState];
-
-	[c release];
 }
 
 void GR_CocoaGraphics::fillRect(GR_Color3D c, UT_sint32 x, UT_sint32 y, UT_sint32 w, UT_sint32 h)
@@ -971,7 +964,6 @@ void GR_CocoaGraphics::polygon(UT_RGBColor& clr,UT_Point *pts,UT_uint32 nPoints)
 	[c set];
 	::CGContextFillPath(m_CGContext);
 	::CGContextRestoreGState(m_CGContext);
-	[c release];
 }
 
 
@@ -1023,7 +1015,9 @@ void GR_CocoaGraphics::_updateRect(NSView * v, NSRect aRect)
 			{
 				StNSImageLocker locker (m_pWin, img);
 				// the NSImage has been resized. So the CGContextRef has changed.
-				m_CGContext = CG_CONTEXT__;
+				// context is locked. it is safe to reset the CG context.
+				_resetContext();
+//				m_CGContext = CG_CONTEXT__;
 				::CGContextSaveGState(m_CGContext);
 				[[NSColor whiteColor] set];
 				::CGContextFillRect (m_CGContext, ::CGRectMake(myBounds.origin.x, myBounds.origin.y, 
@@ -1081,20 +1075,31 @@ void GR_Font::s_getGenericFontProperties(const char * /*szFontName*/,
 
 void GR_CocoaGraphics::saveRectangle(UT_Rect & rect)
 {
-	NSRect r = NSMakeRect(rect.left, rect.top, 
+	m_cacheRect = NSMakeRect(rect.left, rect.top, 
 						  rect.width, rect.height);
-	LOCK_CONTEXT__;
-	[[m_pWin window] cacheImageInRect:r];
-	[[m_pWin window] flushWindowIfNeeded];
+	[m_cache setSize:m_cacheRect.size];
+	StNSImageLocker locker(m_pWin, m_cache);
+	[m_offscreen compositeToPoint:NSMakePoint(0.0, 0.0) fromRect:m_cacheRect operation:NSCompositeCopy fraction:1.0];
 }
 
 
 void GR_CocoaGraphics::restoreRectangle()
 {
 	LOCK_CONTEXT__;
-	[[m_pWin window] restoreCachedImage];
+	[m_cache compositeToPoint:m_cacheRect.origin operation:NSCompositeCopy fraction:1.0];
 	[[m_pWin window] flushWindowIfNeeded];
 }
 
-
-
+void GR_CocoaGraphics::_resetContext()
+{
+	// TODO check that we properly reset parameters according to what has been saved.
+	m_CGContext = CG_CONTEXT__;
+	::CGContextSetLineWidth (m_CGContext, m_iLineWidth);
+	::CGContextSetLineCap (m_CGContext, kCGLineCapButt);
+	::CGContextSetLineJoin (m_CGContext, kCGLineJoinMiter);
+	::CGContextTranslateCTM (m_CGContext, 0.5, 0.5);
+	::CGContextSetShouldAntialias (m_CGContext, false);
+ 	[m_currentColor set];
+	/* save initial graphics state that has no clipping */
+	::CGContextSaveGState(m_CGContext);
+}

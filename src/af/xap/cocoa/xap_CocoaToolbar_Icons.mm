@@ -54,13 +54,12 @@ typedef struct _my_argb {
 	returns the pixmap for the named icon
 	
 	\param szIconName the name of the icon
-	\returnvalue pwPixmap the newly allocated NSImage
+	\return the newly allocated NSImage [autoreleased]
  */
-bool AP_CocoaToolbar_Icons::getPixmapForIcon(const char * szIconName, NSImage ** pwPixmap)
+NSImage* AP_CocoaToolbar_Icons::getPixmapForIcon(const char * szIconName)
 {
 	UT_ASSERT(szIconName && *szIconName);
-	UT_ASSERT(pwPixmap);
-	NSImage *pixmap;
+	NSImage *pixmap = nil;
 
 	UT_uint32 width, height, nrColors, charsPerPixel;
 	
@@ -69,7 +68,7 @@ bool AP_CocoaToolbar_Icons::getPixmapForIcon(const char * szIconName, NSImage **
 	
 	bool bFound = _findIconDataByName(szIconName, &pIconData, &sizeofIconData);
 	if (!bFound)
-		return false;
+		return nil;
 
 
 	UT_uint32 n = sscanf(pIconData[0],"%ld %ld %ld %ld",
@@ -164,18 +163,12 @@ bool AP_CocoaToolbar_Icons::getPixmapForIcon(const char * szIconName, NSImage **
 
 	FREEP(pRGB);
 
-//	NSData * iconData = [NSData dataWithBytes:(const void *)pIconData length:sizeofIconData];
-//	pixmap = [[NSImage alloc] initWithData:iconData];
 	pixmap = [[NSImage alloc] initWithSize:NSMakeSize(0.0, 0.0)];
 	[pixmap addRepresentation:bitmap];
 	[bitmap release];
-//	[iconData release];
 
 	UT_ASSERT (pixmap);	
-	if (!pixmap)
-		return false;
 
-	*pwPixmap = pixmap;
-	return true;
+	return [pixmap autorelease];
 }
 

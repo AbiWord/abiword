@@ -45,7 +45,7 @@ AP_CocoaFrameImpl::AP_CocoaFrameImpl(AP_CocoaFrame *pCocoaFrame, XAP_CocoaApp *p
 }
 
 
-void AP_CocoaFrameImpl::_createDocView(GR_CocoaGraphics* &pG)
+void AP_CocoaFrameImpl::_createDocView(GR_Graphics* &pG)
 {
 	XAP_Frame*	pFrame = getFrame();
 	NSView*		docArea = [_getController() getMainView];
@@ -100,8 +100,6 @@ void AP_CocoaFrameImpl::_createDocView(GR_CocoaGraphics* &pG)
 	
 	pG = new GR_CocoaGraphics(m_docAreaGRView, /*fontManager,*/ pFrame->getApp());
 	static_cast<GR_CocoaGraphics *>(pG)->_setUpdateCallback (&_graphicsUpdateCB, (void *)this);
-	
-
 }
 
 

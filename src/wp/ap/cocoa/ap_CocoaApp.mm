@@ -1085,7 +1085,6 @@ int AP_CocoaApp::main(const char * szAppName, int argc, const char ** argv)
     pMyCocoaApp->shutdown();
     delete pMyCocoaApp;
     
-	poptFreeContext (Args.poptcon);
     return 0;
 }
 

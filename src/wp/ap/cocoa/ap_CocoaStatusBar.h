@@ -61,6 +61,7 @@ private:
 
 	XAP_CocoaNSStatusBar *	m_wStatusBar;
 	NSView *			m_superView;
+	bool				m_hidden;
 };
 
 #endif /* AP_COCOASTATUSBAR_H */

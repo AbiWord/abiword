@@ -84,6 +84,7 @@ private:
 	NSButton * _makeToolbarButton (int type, EV_Toolbar_Label * pLabel, _wd * wd, NSView *parent,
 												float & btnX);
 	EV_CocoaToolbarTarget * 		m_target;
+	bool							m_hidden;
 };
 
 #endif /* EV_COCOATOOLBAR_H */

@@ -66,7 +66,7 @@ protected:
 	virtual bool		_doAddMenuItem(UT_uint32 layout_pos);
 
 private:
-	static void _getItemCmd (const char * mnemonic, unsigned int & modifiers, NSString * & key);
+	static NSString* _getItemCmd (const char * mnemonic, unsigned int & modifiers);
 	XAP_CocoaApp *		m_pCocoaApp;
 	AP_CocoaFrame *		m_pCocoaFrame;
 	

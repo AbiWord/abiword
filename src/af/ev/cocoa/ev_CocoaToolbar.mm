@@ -278,6 +278,7 @@ EV_CocoaToolbar::EV_CocoaToolbar(XAP_CocoaApp * pCocoaApp, AP_CocoaFrame * pCoco
 	m_wToolbar = nil;
 	m_lid = 0;							// view listener id
 	m_target = [[EV_CocoaToolbarTarget alloc] init];
+	m_hidden = false;
 }
 
 EV_CocoaToolbar::~EV_CocoaToolbar(void)
@@ -286,6 +287,9 @@ EV_CocoaToolbar::~EV_CocoaToolbar(void)
 	_releaseListener();
 	UT_ASSERT ([m_target retainCount] == 1);
 	[m_target release];
+	if ((m_hidden) && ([m_wToolbar superview] == nil)) {
+		[m_wToolbar release];
+	}
 }
 
 
@@ -320,12 +324,9 @@ NSButton * EV_CocoaToolbar::_makeToolbarButton (int type, EV_Toolbar_Label * pLa
 	}
 	[btn setBezelStyle:NSRegularSquareBezelStyle];
 	UT_ASSERT(UT_stricmp(pLabel->getIconName(),"NoIcon")!=0);
-	NSImage * wPixmap;
-	bool bFoundIcon = m_pCocoaToolbarIcons->getPixmapForIcon(pLabel->getIconName(),
-																&wPixmap);
-	UT_ASSERT(bFoundIcon);
+	NSImage * wPixmap = m_pCocoaToolbarIcons->getPixmapForIcon(pLabel->getIconName());		// autoreleased
+	UT_ASSERT(wPixmap);
 	[btn setImage:wPixmap];
-	[wPixmap release];
 	[parent addSubview:btn];
 	wd->m_widget = btn;
 	[btn setTag:(int)wd];
@@ -949,6 +950,7 @@ void EV_CocoaToolbar::show(void)
 		UT_ASSERT ([m_wToolbar retainCount] > 1);
 		[m_wToolbar release];
 	}
+	m_hidden = false;
 }
 
 void EV_CocoaToolbar::hide(void)
@@ -959,6 +961,7 @@ void EV_CocoaToolbar::hide(void)
 		[m_wToolbar retain];
 		[m_wToolbar removeFromSuperview];
 	}
+	m_hidden = true;
 }
 
 /*!

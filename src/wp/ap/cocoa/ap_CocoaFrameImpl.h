@@ -45,6 +45,8 @@ class AP_CocoaFrameImpl : public XAP_CocoaFrameImpl
 {
  public:
 	AP_CocoaFrameImpl(AP_CocoaFrame *pCocoaFrame, XAP_CocoaApp *pCocoaApp); 
+	virtual XAP_FrameImpl * createInstance(XAP_Frame *pFrame, XAP_App *pApp) { return NULL; };
+
 	virtual NSString *			_getNibName (); /* must be public to be called from Obj-C */
 
  protected:
@@ -61,7 +63,7 @@ class AP_CocoaFrameImpl : public XAP_CocoaFrameImpl
 	virtual void _setWindowIcon();
 	/* Cocoa specific stuff */
 	virtual XAP_CocoaFrameController *_createController();
-	virtual	void	_createDocView(GR_CocoaGraphics* &pG);
+	virtual	void	_createDocView(GR_Graphics* &pG);
 
 	NSScroller *				m_hScrollbar;
 	NSScroller *				m_vScrollbar;

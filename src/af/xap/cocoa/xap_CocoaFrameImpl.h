@@ -118,7 +118,7 @@ protected:
 	virtual void				_createStatusBarWindow(XAP_CocoaNSStatusBar *) = 0;
 	virtual void				_createTopLevelWindow();
 	virtual void				_setWindowIcon() = 0;
-	virtual	void				_createDocView(GR_CocoaGraphics* &pG) = 0; /* Cocoa specific */
+	virtual	void				_createDocView(GR_Graphics* &pG) = 0; /* Cocoa specific */
 
 	virtual EV_Toolbar *		_newToolbar(XAP_App *app, XAP_Frame *frame, const char *, const char *);
 private:

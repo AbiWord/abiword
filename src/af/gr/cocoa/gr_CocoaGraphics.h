@@ -138,12 +138,17 @@ class GR_CocoaGraphics : public GR_Graphics
 private:
 	static NSColor				*_utRGBColorToNSColor (const UT_RGBColor& clr);
 	static void 				_utNSColorToRGBColor (NSColor *c, UT_RGBColor &clr);
+	
+	void				_resetContext();	// reset m_CGContext to default values
 
 	gr_cocoa_graphics_update	m_updateCallback;
 	void 						*m_updateCBparam;
 	XAP_CocoaNSView *  			m_pWin;
+	NSMutableDictionary*		m_fontProps;
 	CGContextRef				m_CGContext;
 	NSImage*					m_offscreen;
+	NSImage*					m_cache;
+	NSRect						m_cacheRect;
 	NSColor *					m_currentColor;
 
 	// our currently requested font by handle

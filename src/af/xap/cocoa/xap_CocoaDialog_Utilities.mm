@@ -42,7 +42,7 @@ void LocalizeControl (id control, const XAP_StringSet * pSS, XAP_String_Id strin
 
 
 /*
-	Strip the '&' from the label
+	Strip the '&' et '_' from the label
 	
 	\param buf the result buffer
 	\param bufSize the allocated size for buf
@@ -53,7 +53,6 @@ void _convertLabelToMac (char * buf, size_t bufSize, const char * label)
 	UT_ASSERT(label && buf);
 	UT_ASSERT(strlen (label) < bufSize);
 
-	/* TODO: Handle charset conversion */
 	strcpy (buf, label);
 
 	char * src, *dst;
@@ -62,7 +61,8 @@ void _convertLabelToMac (char * buf, size_t bufSize, const char * label)
 	{
 		*dst = *src;
 		src++;
-		if (*dst != '&')
+#warning I am still wondering why some string have "&" and the other have "underscore"
+		if ((*dst != '&') && (*dst != '_'))
 			dst++;
 	}
 	*dst = 0;

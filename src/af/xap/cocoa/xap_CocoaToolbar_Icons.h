@@ -34,7 +34,7 @@ public:
 	AP_CocoaToolbar_Icons(void);
 	~AP_CocoaToolbar_Icons(void);
 
-	bool			getPixmapForIcon(const char * szIconName, NSImage ** pwPixmap);
+	NSImage*			getPixmapForIcon(const char * szIconName);
 	
 protected:
 };

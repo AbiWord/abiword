@@ -380,6 +380,11 @@ XAP_CocoaFrameImpl::XAP_CocoaFrameImpl(XAP_CocoaFrameImpl * f)
 XAP_CocoaFrameImpl::~XAP_CocoaFrameImpl(void)
 {
 	// only delete the things we created...
+	if(m_iAbiRepaintID)
+	{
+		XAP_stopCocoaTimer(m_iAbiRepaintID);
+	}
+
 	if 	(m_frameController != nil) {
 		[m_frameController release];
 	}

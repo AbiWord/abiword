@@ -115,6 +115,7 @@ bool GR_CocoaImage::_convertPNGFromBuffer(const NSData* data, UT_sint32 iDisplay
 	}
 	m_image = [[NSImage alloc] initWithData:data];
 	UT_ASSERT (m_image);
+	[m_image setFlipped:YES];
 	m_iDisplayWidth = iDisplayWidth;
 	m_iDisplayHeight = iDisplayHeight;
 	return (m_image != nil);

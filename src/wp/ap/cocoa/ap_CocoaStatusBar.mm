@@ -86,6 +86,7 @@ AP_CocoaStatusBar::AP_CocoaStatusBar(XAP_Frame * pFrame)
 	: AP_StatusBar(pFrame)
 {
 	m_wStatusBar = nil;
+	m_hidden = false;
 
 	/* fetch the widget from the controller */
 	m_wStatusBar = [(XAP_CocoaFrameController *)(static_cast<XAP_CocoaFrameImpl*>(m_pFrame->getFrameImpl()))->_getController() getStatusBar];
@@ -93,6 +94,10 @@ AP_CocoaStatusBar::AP_CocoaStatusBar(XAP_Frame * pFrame)
 
 AP_CocoaStatusBar::~AP_CocoaStatusBar(void)
 {
+	if ((m_hidden) && ([m_wStatusBar superview] == nil))
+	{
+		[m_wStatusBar release];
+	}
 }
 
 
@@ -150,6 +155,7 @@ void AP_CocoaStatusBar::show(void)
 		UT_ASSERT ([m_wStatusBar retainCount] > 1);
 		[m_wStatusBar autorelease];		// at this time it should have already been retained.
 	}
+	m_hidden = false;
 }
 
 void AP_CocoaStatusBar::hide(void)
@@ -161,6 +167,7 @@ void AP_CocoaStatusBar::hide(void)
 		[m_wStatusBar removeFromSuperview];
 	}
 	// TODO Check about resizing / layout changes
+	m_hidden = true;
 }
 
 @implementation XAP_CocoaNSStatusBar
