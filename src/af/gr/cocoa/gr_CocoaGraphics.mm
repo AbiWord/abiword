@@ -1,6 +1,6 @@
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
- * Copyright (C) 2001-2003 Hubert Figuiere
+ * Copyright (C) 2001-2004 Hubert Figuiere
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -154,13 +154,10 @@ GR_CocoaGraphics::GR_CocoaGraphics(NSView * win, XAP_App * app)
 	/* resolution does not change thru the life of the object */
 	m_screenResolution = lrintf(_getScreenResolution());
 
-	m_xorCache = [[NSImage alloc] initWithSize:NSMakeSize(0,0)] ;
-	[m_xorCache setFlipped:YES];
-
-
 	StNSViewLocker locker(m_pWin);
 	m_currentColor = [[NSColor blackColor] copy];
-	_resetContext();
+	m_CGContext = CG_CONTEXT__;
+	_resetContext(m_CGContext);
 
 	m_cs = GR_Graphics::GR_COLORSPACE_COLOR;
 	m_cursor = GR_CURSOR_INVALID;
@@ -181,7 +178,6 @@ GR_CocoaGraphics::~GR_CocoaGraphics()
 	UT_VECTOR_RELEASE(m_cacheArray);
 	UT_VECTOR_PURGEALL(NSRect*, m_cacheRectArray);
 	[m_pWin setGraphics:NULL];
-	[m_xorCache release];
 	[m_fontProps release];
 	[m_fontForGraphics release];
 	[m_currentColor release];
@@ -203,7 +199,8 @@ void GR_CocoaGraphics::_beginPaint (void)
 {
 	UT_ASSERT(m_viewLocker == NULL);
 	m_viewLocker = new StNSViewLocker(m_pWin);
-	_resetContext();
+	m_CGContext = CG_CONTEXT__;
+	_resetContext(m_CGContext);
 	_setClipRectImpl(NULL);
 }
 
@@ -671,34 +668,6 @@ void GR_CocoaGraphics::setLineWidth(UT_sint32 iLineWidth)
 	}
 }
 
-void GR_CocoaGraphics::xorLine(UT_sint32 x1, UT_sint32 y1, UT_sint32 x2,
-			    UT_sint32 y2)
-{
-	// TODO use XOR mode NSCompositeXOR
-	float x = UT_MIN(x1,x2);		// still layout unit
-	float y = UT_MIN(y1,y2);		// still layout unit
-	NSRect newBounds = NSMakeRect (TDUX(x), _tduY(y), UT_MAX(TDUX(UT_MAX(x1,x2) - x),1.0), 
-													UT_MAX(_tduY(UT_MAX(y1,y2) - y),1.0));
-	[m_xorCache setSize:newBounds.size];
-	{
-		StNSImageLocker locker(m_pWin, m_xorCache);
-		CGContextRef context = (CGContextRef)[[NSGraphicsContext currentContext] graphicsPort];
-
-
-		::CGContextSetLineWidth (context, m_fLineWidth);
-		/* since we are in the image coordinate space, we should offset it with the origin */
-		::CGContextMoveToPoint (context, TDUX(x1 - x), _tduY(y1 - y));
-		::CGContextAddLineToPoint (context, TDUX(x2 - x), _tduY(y2 - y));
-		::CGContextSaveGState(context);
-		[m_currentColor set];	
-		::CGContextStrokePath (context);
-		::CGContextRestoreGState(context);
-	}
-	// Should make an NSImage and XOR it onto the real image.
-	LOCK_CONTEXT__;
-	[m_xorCache compositeToPoint:newBounds.origin operation:NSCompositeXOR];
-}
-
 void GR_CocoaGraphics::polyLine(UT_Point * pts, UT_uint32 nPoints)
 {
 	UT_DEBUGMSG (("GR_CocoaGraphics::polyLine() width=%f\n", m_fLineWidth));
@@ -807,7 +776,8 @@ void GR_CocoaGraphics::scroll(UT_sint32 x_dest, UT_sint32 y_dest,
 	UT_sint32 dx, dy;
 	dx = tdu(x_src - x_dest);
 	dy = tdu(y_src - y_dest);
-	
+	printf ("scrollrect: %f %f %f %f -> %d %d\n", (float)tdu(x_src), (float)tdu(y_src), 
+			(float)tdu(width), (float)tdu(height), -dx, dy);
 	[m_pWin scrollRect:NSMakeRect(tduD(x_src), tduD(y_src), tduD(width), tduD(height)) 
 				by:NSMakeSize(-dx,dy)];
 }
@@ -883,9 +853,12 @@ void GR_CocoaGraphics::drawImage(GR_Image* pImg, UT_sint32 xDest, UT_sint32 yDes
 	NSSize size = [image size];
 
 	LOCK_CONTEXT__;
+	::CGContextSaveGState(m_CGContext);
+	::CGContextTranslateCTM (m_CGContext, -0.5, -0.5);
 	[image drawInRect:NSMakeRect(TDUX(xDest), _tduY(yDest), pCocoaImage->getDisplayWidth(), iImageHeight)
 	           fromRect:NSMakeRect(0, 0, size.width, size.height) operation:NSCompositeCopy fraction:1.0f];
 //	[image compositeToPoint:NSMakePoint(xDest, yDest + iImageHeight) operation:NSCompositeCopy fraction:1.0f];
+	::CGContextRestoreGState(m_CGContext);
 }
 
 
@@ -1186,16 +1159,15 @@ UT_uint32 GR_CocoaGraphics::getDeviceResolution(void) const
 }
 
 
-void GR_CocoaGraphics::_resetContext()
+void GR_CocoaGraphics::_resetContext(CGContextRef context)
 {
 	// TODO check that we properly reset parameters according to what has been saved.
-	m_CGContext = CG_CONTEXT__;
-	::CGContextSetLineWidth (m_CGContext, m_fLineWidth);
+	::CGContextSetLineWidth (context, m_fLineWidth);
 	_setCapStyle(m_capStyle);
 	_setJoinStyle(m_joinStyle);
 	_setLineStyle(m_lineStyle);
-	::CGContextTranslateCTM (m_CGContext, 0.5, 0.5);
-	::CGContextSetShouldAntialias (m_CGContext, false);
+	::CGContextTranslateCTM (context, 0.5, 0.5);
+	::CGContextSetShouldAntialias (context, false);
  	[m_currentColor set];
 }
 

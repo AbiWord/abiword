@@ -1,6 +1,6 @@
 /* Abiword
  * Copyright (C) 1998 AbiSource, Inc.
- * Copyright (C) 2001-2003 Hubert Figuiere
+ * Copyright (C) 2001-2004 Hubert Figuiere
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -61,7 +61,6 @@ class GR_CocoaGraphics : public GR_Graphics
 	virtual UT_uint32	getFontDescent();
 	virtual void		drawLine(UT_sint32, UT_sint32, UT_sint32, UT_sint32);
 	virtual void		setLineWidth(UT_sint32);
-	virtual void		xorLine(UT_sint32, UT_sint32, UT_sint32, UT_sint32);
 	virtual void		polyLine(UT_Point * pts, UT_uint32 nPoints);
 	virtual void		fillRect(const UT_RGBColor& c,
 								 UT_sint32 x, UT_sint32 y,
@@ -154,7 +153,7 @@ private:
 			return cache;
 	}
 	
-	void				_resetContext();	// reset m_CGContext to default values
+	void				_resetContext(CGContextRef context);	// reset m_CGContext to default values
 
 	gr_cocoa_graphics_update	m_updateCallback;
 	void 						*m_updateCBparam;
@@ -163,7 +162,6 @@ private:
 	CGContextRef				m_CGContext;
 	UT_Vector					m_cacheArray;
 	UT_Vector					m_cacheRectArray;
-	NSImage*					m_xorCache;
 	NSColor *					m_currentColor;
 
 	// our currently requested font by handle
