@@ -46,6 +46,7 @@
 #include "xad_Document.h"
 #include "gr_Graphics.h"
 #include "xap_UnixDialogHelper.h"
+#include "xap_Strings.h"
 
 /*****************************************************************/
 
@@ -104,6 +105,7 @@ static void wmspec_change_layer(bool fullscreen, GdkWindow *window)
 /****************************************************************/
 XAP_UnixFrameImpl::XAP_UnixFrameImpl(XAP_Frame *pFrame, XAP_UnixApp * pApp) : 
 	XAP_FrameImpl(pFrame),
+	m_imContext(NULL),
 	m_bDoZoomUpdate(false),
 	m_iZoomUpdateID(0),
 	m_iAbiRepaintID(0),
@@ -162,6 +164,7 @@ gboolean XAP_UnixFrameImpl::_fe::focus_in_event(GtkWidget *w,GdkEvent */*event*/
 						GINT_TO_POINTER(TRUE));
 	if (pFrame->getCurrentView())
 		pFrame->getCurrentView()->focusChange(gtk_grab_get_current() == NULL || gtk_grab_get_current() == w ? AV_FOCUS_HERE : AV_FOCUS_NEARBY);
+	gtk_im_context_focus_in(pFrameImpl->getIMContext());
 	return FALSE;
 }
 
@@ -174,6 +177,7 @@ gboolean XAP_UnixFrameImpl::_fe::focus_out_event(GtkWidget *w,GdkEvent */*event*
 						GINT_TO_POINTER(FALSE));
 	if (pFrame->getCurrentView())
 		pFrame->getCurrentView()->focusChange(AV_FOCUS_NONE);
+	gtk_im_context_focus_out(pFrameImpl->getIMContext());
 	return FALSE;
 }
 
@@ -341,6 +345,15 @@ gint XAP_UnixFrameImpl::_fe::scroll_notify_event(GtkWidget* w, GdkEventScroll* e
 gint XAP_UnixFrameImpl::_fe::key_press_event(GtkWidget* w, GdkEventKey* e)
 {
 	XAP_UnixFrameImpl * pUnixFrameImpl = (XAP_UnixFrameImpl *)gtk_object_get_user_data(GTK_OBJECT(w));
+
+	// Let IM handle the event first.
+	if (gtk_im_context_filter_keypress(pUnixFrameImpl->getIMContext(), e)) {
+	    xxx_UT_DEBUGMSG(("IMCONTEXT keyevent swallow: %lu\n", e->keyval));
+	    return 0;
+	}
+
+	xxx_UT_DEBUGMSG(("IMCONTEXT keyevent pass: %lu\n", e->keyval));
+	
 	XAP_Frame* pFrame = pUnixFrameImpl->getFrame();
 	pUnixFrameImpl->setTimeOfLastEvent(e->time);
 	AV_View * pView = pFrame->getCurrentView();
@@ -779,6 +792,8 @@ void XAP_UnixFrameImpl::createTopLevelWindow(void)
 	}
 
 
+	_createIMContext(m_wTopLevelWindow->window);
+
 	g_signal_connect(G_OBJECT(m_wTopLevelWindow), "key_press_event",
 					   G_CALLBACK(_fe::key_press_event), NULL);
 
@@ -811,6 +826,38 @@ void XAP_UnixFrameImpl::createTopLevelWindow(void)
 
 	// we let our caller decide when to show m_wTopLevelWindow.
 	return;
+}
+
+void XAP_UnixFrameImpl::_createIMContext(GdkWindow *w)
+{
+	m_imContext = gtk_im_multicontext_new();
+	gtk_im_context_set_use_preedit (m_imContext, TRUE);
+	gtk_im_context_set_client_window(m_imContext, w);
+	g_signal_connect(G_OBJECT(m_imContext), "commit", 
+					 GTK_SIGNAL_FUNC(_imCommit_cb), this);
+}
+
+// Actual keyboard commit should be done here.
+void XAP_UnixFrameImpl::_imCommit_cb(GtkIMContext *imc, const gchar *text, gpointer data)
+{
+	XAP_UnixFrameImpl * impl = (XAP_UnixFrameImpl*)data;
+	impl->_imCommit (imc, text);
+}
+
+// Actual keyboard commit should be done here.
+void XAP_UnixFrameImpl::_imCommit(GtkIMContext *imc, const gchar * text)
+{
+	XAP_Frame* pFrame = getFrame();
+	AV_View * pView   = pFrame->getCurrentView();
+	ev_UnixKeyboard * pUnixKeyboard = static_cast<ev_UnixKeyboard *>(pFrame->getKeyboard());
+
+	if (pView)
+		pUnixKeyboard->charDataEvent(pView, (EV_EditBits)0, text, strlen(text));
+}
+
+GtkIMContext * XAP_UnixFrameImpl::getIMContext()
+{
+	return m_imContext;
 }
 
 void XAP_UnixFrameImpl::_setGeometry ()
@@ -1032,11 +1079,33 @@ bool XAP_UnixFrameImpl::_runModalContextMenu(AV_View * /* pView */, const char *
 	m_pUnixPopup = new EV_UnixMenuPopup(m_pUnixApp, pFrame, szMenuName, m_szMenuLabelSetName);
 	if (m_pUnixPopup && m_pUnixPopup->synthesizeMenuPopup())
 	{
+		// Add our InputMethod selection item to the popup menu. Borrowed
+		// from gtkentry.c
+		GtkWidget * menuitem;
+		GtkWidget * submenu;
+		GtkWidget * menu = m_pUnixPopup->getMenuHandle();
+
+		menuitem = gtk_separator_menu_item_new ();
+		gtk_widget_show (menuitem);
+		gtk_menu_shell_append (GTK_MENU_SHELL (menu), menuitem);
+
+		const XAP_StringSet * pSS = m_pUnixApp->getStringSet();
+
+		menuitem = gtk_menu_item_new_with_label (pSS->getValue(XAP_STRING_ID_XIM_Methods));
+
+		gtk_widget_show (menuitem);
+		submenu = gtk_menu_new ();
+		gtk_menu_item_set_submenu (GTK_MENU_ITEM (menuitem), submenu);
+		
+		gtk_menu_shell_append (GTK_MENU_SHELL (menu), menuitem);
+
+		gtk_im_multicontext_append_menuitems(GTK_IM_MULTICONTEXT(m_imContext), 
+											 GTK_MENU_SHELL(submenu));
+
 		// the popup will steal the mouse and so we won't get the
 		// button_release_event and we won't know to release our
 		// grab.  so let's do it here.  (when raised from a keyboard
 		// context menu, we may not have a grab, but that should be ok.
-
 		GtkWidget * w = gtk_grab_get_current();
 		if (w)
 		{
@@ -1062,6 +1131,7 @@ bool XAP_UnixFrameImpl::_runModalContextMenu(AV_View * /* pView */, const char *
 
 		gtk_menu_popup(GTK_MENU(m_pUnixPopup->getMenuHandle()), NULL, NULL,
 			       s_gtkMenuPositionFunc, &pt, bevent->button, bevent->time);
+
 
 		// We run this menu synchronously, since GTK doesn't.
 		// Popup menus have a special "unmap" function to call

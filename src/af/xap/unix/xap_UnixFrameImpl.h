@@ -25,6 +25,7 @@
 #include <gtk/gtkwidget.h>
 #include <gtk/gtkadjustment.h>
 #include <gdk/gdktypes.h>
+#include <gtk/gtk.h>
 #include "xap_FrameImpl.h"
 #include "ut_vector.h"
 #include "xap_UnixDialogFactory.h"
@@ -53,11 +54,14 @@ class XAP_UnixFrameImpl : public XAP_FrameImpl
 	void setTopLevelWindow(GtkWidget * window) { m_wTopLevelWindow = window; }
 	void createTopLevelWindow(void);
 	GtkWidget * getVBoxWidget() const;
+	GtkIMContext* getIMContext();
 
 private:
 	void _setGeometry ();
 
 protected:
+	GtkIMContext *		    m_imContext;
+
 	virtual bool _close();
 	virtual bool _raise();
 	virtual bool _show();
@@ -71,6 +75,9 @@ protected:
 	virtual GtkWidget * _createStatusBarWindow() = 0;
 
 	bool _updateTitle();
+	void _createIMContext(GdkWindow* w);
+	static void _imCommit_cb(GtkIMContext *imc, const gchar* text, gpointer data);
+	void _imCommit (GtkIMContext * imc, const gchar * text);
 	UT_sint32 _setInputMode(const char * szName);
 	virtual void _setCursor(GR_Graphics::Cursor cursor);
 	
@@ -132,14 +139,13 @@ protected:
 	GtkWidget * 		    m_wSunkenBox;
 	GtkWidget *		    m_wStatusBar;
 
+
 	XAP_UnixApp *				m_pUnixApp;
 	EV_UnixMenuBar *			m_pUnixMenu;
 	EV_UnixMenuPopup *			m_pUnixPopup; /* only valid while a context popup is up */
 	AP_UnixDialogFactory		        m_dialogFactory;
 };
 #endif /* XAP_UNIXFRAME_H */
-
-
 
 
 

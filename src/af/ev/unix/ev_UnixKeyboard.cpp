@@ -31,6 +31,7 @@
 #include "ev_UnixKeyboard.h"
 #include "ev_UnixKeysym2ucs.cpp"
 #include "ut_mbtowc.h"
+#include "ut_string_class.h"
 
 //////////////////////////////////////////////////////////////////
 
@@ -71,6 +72,8 @@ bool ev_UnixKeyboard::keyPressEvent(AV_View* pView, GdkEventKey* e)
 	EV_EditEventMapperResult result;
 	EV_EditMethod * pEM;
 
+	UT_uint32 charData = e->keyval;
+
 	if (e->state & GDK_SHIFT_MASK)
 		state |= EV_EMS_SHIFT;
 	if (e->state & GDK_CONTROL_MASK)
@@ -78,9 +81,9 @@ bool ev_UnixKeyboard::keyPressEvent(AV_View* pView, GdkEventKey* e)
 	if (e->state & (s_alt_mask))
 		state |= EV_EMS_ALT;
 
-	if (s_isVirtualKeyCode(e->keyval))
+	if (s_isVirtualKeyCode(charData))
 	{
-		EV_EditBits nvk = s_mapVirtualKeyCodeToNVK(e->keyval);
+		EV_EditBits nvk = s_mapVirtualKeyCodeToNVK(charData);
 
 		switch (nvk)
 		{
@@ -120,79 +123,64 @@ bool ev_UnixKeyboard::keyPressEvent(AV_View* pView, GdkEventKey* e)
 			}
 		}
 	}
+	else 
+	  {
+	    UT_UTF8String utf8 ((const UT_UCSChar *)&charData, 1);
+	    return charDataEvent (pView, state, utf8.utf8_str(), utf8.byteLength());
+	  }
+
+	return false;
+}
+
+bool ev_UnixKeyboard::charDataEvent(AV_View* pView, EV_EditBits state, const char * text, size_t len)
+{
+	EV_EditEventMapperResult result;
+	EV_EditMethod * pEM;
+
+	UT_UCS4String ucs (text, len);
+
+	UT_uint32 charData = (UT_uint32)ucs[0];
+	
+	xxx_UT_DEBUGMSG(("DOM: charData: %d | length: %d | string: '%s'\n", charData, len, text));
+	if (charData == 32)
+	  charData = 'a'; // HACK!!! for space bar not working. investigate more....
+
+	if(charData>0xff || charData == 0)
+	  result = m_pEEM->Keystroke(EV_EKP_PRESS|state|'a',&pEM);
 	else
-	{
-		UT_uint32 charData = e->keyval;
+	  result = m_pEEM->Keystroke(EV_EKP_PRESS|state|charData,&pEM);
+	
+	switch (result)
+	  {
+	  case EV_EEMR_BOGUS_START:
+	    // If it is a bogus key and we don't have a sequence in
+	    // progress, we should let the system handle it
+	    // (this lets things like ALT-F4 work).
+	    return false;
+	    
+	  case EV_EEMR_BOGUS_CONT:
+	    // If it is a bogus key but in the middle of a sequence,
+	    // we should silently eat it (this is to prevent things
+	    // like Control-X ALT-F4 from killing us -- if they want
+	    // to kill us, fine, but they shouldn't be in the middle
+	    // of a sequence).
+	    return true;
+	    
+	  case EV_EEMR_COMPLETE:
+	    {
+	      UT_ASSERT(pEM);
 
-		if(charData>0xff || charData == 0)
-		  result = m_pEEM->Keystroke(EV_EKP_PRESS|state|'a',&pEM);
-		else
-		  result = m_pEEM->Keystroke(EV_EKP_PRESS|state|charData,&pEM);
-
-		switch (result)
-		{
-		case EV_EEMR_BOGUS_START:
-			// If it is a bogus key and we don't have a sequence in
-			// progress, we should let the system handle it
-			// (this lets things like ALT-F4 work).
-			return false;
-
-		case EV_EEMR_BOGUS_CONT:
-			// If it is a bogus key but in the middle of a sequence,
-			// we should silently eat it (this is to prevent things
-			// like Control-X ALT-F4 from killing us -- if they want
-			// to kill us, fine, but they shouldn't be in the middle
-			// of a sequence).
-			return true;
-
-		case EV_EEMR_COMPLETE:
-		  {
-			UT_ASSERT(pEM);
-
-			UT_UCSChar *ucs = NULL;
-			const char *mbs = e->string;
-			int mLength = strlen(mbs);
-			int uLength = 0;
-
-			/*
-				if gdk fails to translate, then we will try to do this
-				ourselves by calling kesym2ucs
-
-				if the current locale is utf-8, we will also use keysym2ucs
-			*/
-			if(mLength == 0)
-			{
-			  UT_uint32 u = gdk_keyval_to_unicode (e->keyval);
-
-			  mLength = 1;
-			  ucs = new UT_UCS4Char[1];
-			  ucs[0] = u;
-			  uLength = mLength;
-			}
-			else
-			{			  
-				static UT_UCS4_mbtowc m;
-				ucs=new UT_UCSChar[mLength];
-				for(int i=0;i<mLength;++i)
-			  	{
-					UT_UCS4Char wc;
-					if(m.mbtowc(wc,mbs[i]))
-					  ucs[uLength++]=wc;
-			  	}
-			 }
-			invokeKeyboardMethod(pView,pEM,ucs,uLength); // no char data to offer
-			delete[] ucs;
- 			return true;
-
-		  }
-		case EV_EEMR_INCOMPLETE:
-			return true;
-
-		default:
-			UT_ASSERT(0);
-			return true;
-		}
-	}
+	      invokeKeyboardMethod(pView,pEM,
+				   const_cast<UT_UCS4Char *>(ucs.ucs4_str()), (UT_uint32)ucs.size());
+	      return true;	      
+	    }
+	  case EV_EEMR_INCOMPLETE:
+	    return true;
+	    
+	  default:
+	    UT_ASSERT(0);
+	    return true;
+	  }
 
 	return false;
 }
@@ -418,8 +406,8 @@ static bool s_isVirtualKeyCode(guint keyval)
 
 	if (keyval > 0x0000FFFF)
 		return false; //was true before CJK patch
-//
-// Causes immediate on keypress segfault??
+	//
+	// Causes immediate on keypress segfault??
 	if (keyval >= GDK_KP_Space && keyval <= GDK_KP_9 && keyval != GDK_KP_Enter) // number pad keys
 		return false;
 
