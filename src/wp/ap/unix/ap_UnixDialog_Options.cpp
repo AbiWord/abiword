@@ -1350,9 +1350,9 @@ void AP_UnixDialog_Options::_setAutoSaveFileExt(const UT_String &stExt)
 void AP_UnixDialog_Options::_gatherAutoSaveFilePeriod(UT_String &stRetVal)
 {
 	UT_ASSERT(m_textAutoSaveFilePeriod && GTK_IS_SPIN_BUTTON(m_textAutoSaveFilePeriod));
-	char nb[10];
+	char nb[12];
 	int val = gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(m_textAutoSaveFilePeriod));
-	snprintf(nb, 10, "%d", val);
+	g_snprintf(nb, 12, "%d", val);
 	stRetVal = nb;
 }
 
