@@ -1,6 +1,9 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+
 /* AbiSource Application Framework
  * Copyright (C) 2001 AbiSource, Inc.
  * Copyright (C) 2001, 2003 Hubert Figuiere
+ * Copyright (C) 2004 Francis James Franklin
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -31,74 +34,88 @@
 
 class XAP_Frame;
 class XAP_CocoaDialog_PluginManager;
+class XAP_CocoaModule;
+
+@interface XAP_CocoaPluginReference : NSObject
+{
+	NSString *			m_name;
+	NSString *			m_author;
+	NSString *			m_version;
+	NSString *			m_description;
+	NSString *			m_usage;
+
+	XAP_CocoaModule *	m_module;
+}
+- (id)initWithModule:(XAP_CocoaModule *)pluginModule;
+- (void)dealloc;
+
+- (NSString *)name;
+- (NSString *)author;
+- (NSString *)version;
+- (NSString *)description;
+- (NSString *)usage;
+
+- (XAP_CocoaModule *)module;
+@end
 
 @interface XAP_CocoaDlg_PluginManagerController : NSWindowController <XAP_CocoaDialogProtocol>
 {
-    IBOutlet NSTextField *_authorData;
-    IBOutlet NSTextField *_authorLabel;
-    IBOutlet NSButton *_closeBtn;
-    IBOutlet NSButton *_deactivateAllBtn;
-    IBOutlet NSButton *_deactivateBtn;
-    IBOutlet NSTextField *_descriptionData;
-    IBOutlet NSTextField *_descriptionLabel;
-    IBOutlet NSBox *_detailsBox;
-    IBOutlet NSButton *_installBtn;
-    IBOutlet NSTextField *_nameData;
-    IBOutlet NSTextField *_nameLabel;
-    IBOutlet NSTableView *_pluginList;
-    IBOutlet NSTextField *_versionData;
-    IBOutlet NSTextField *_versionLabel;
+	IBOutlet NSButton *		oDeactivateBtn;
+	IBOutlet NSButton *		oDeactivateAllBtn;
+	IBOutlet NSButton *		oInstallBtn;
+	IBOutlet NSButton *		oCloseBtn;
+
+	IBOutlet NSTableView *	oPluginList;
+
+	IBOutlet NSTextField *	oNameData;
+	IBOutlet NSTextField *	oNameLabel;
+	IBOutlet NSTextField *	oAuthorData;
+	IBOutlet NSTextField *	oAuthorLabel;
+	IBOutlet NSTextField *	oVersionData;
+	IBOutlet NSTextField *	oVersionLabel;
+	IBOutlet NSTextField *	oDescriptionData;
+	IBOutlet NSTextField *	oDescriptionLabel;
+	IBOutlet NSTextField *	oUsageData;
+	IBOutlet NSTextField *	oUsageLabel;
+
 	XAP_CocoaDialog_PluginManager*	_xap;
+
+	NSMutableArray *	m_PluginRefs;
 }
+- (id)initFromNib;
+- (void)dealloc;
+
 - (IBAction)closeAction:(id)sender;
 - (IBAction)deactivateAction:(id)sender;
 - (IBAction)deactivateAllAction:(id)sender;
 - (IBAction)installAction:(id)sender;
-- (IBAction)selectAction:(id)sender;
 
-- (int)selectedPlugin;
-- (void)setSelectedPlugin:(int)idx;
-- (void)setModuleInfo:(const XAP_ModuleInfo*)info;
-- (void)setDataSource:(XAP_StringListDataSource*)source;
+/* NSTableView delegate method
+ */
+- (void)tableViewSelectionDidChange:(NSNotification *)aNotification;
+
+/* NSTableDataSource methods
+ */
+- (int)numberOfRowsInTableView:(NSTableView *)aTableView;
+- (id)tableView:(NSTableView *)aTableView objectValueForTableColumn:(NSTableColumn *)aTableColumn row:(int)rowIndex;
+
 @end
 
 class XAP_CocoaDialog_PluginManager : public XAP_Dialog_PluginManager
 {
 public:
-	XAP_CocoaDialog_PluginManager(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id dlgid);
-	virtual ~XAP_CocoaDialog_PluginManager(void);
-
-	virtual void			runModal(XAP_Frame * pFrame);
-
 	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id dlgid);
 
-	void event_DeactivateAll ();
-	void event_Deactivate ();
-	void event_Load ();
-	void event_Select1 ();
-	void event_Close();
+	XAP_CocoaDialog_PluginManager(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id dlgid);
 
-protected:
-#if 0
-	GtkWidget * m_windowMain;
+	virtual ~XAP_CocoaDialog_PluginManager(void);
 
-	void _constructWindowContents (GtkWidget * container);
-	virtual GtkWidget * _constructWindow ();
-#endif
+	virtual void	runModal (XAP_Frame * pFrame);
+
+	void			event_Load ();
+
 private:
-	void _refreshAll ();
-	void _refreshTab1 ();
-	void _refreshTab2 ();
-#if 0
-	GtkWidget * m_clist;
-	GtkWidget * m_name;
-	GtkWidget * m_author;
-	GtkWidget * m_version;
-	GtkWidget * m_desc;
-#endif
-	XAP_Frame * m_pFrame;
-	XAP_CocoaDlg_PluginManagerController* m_dlg;
-	XAP_StringListDataSource*	m_dataSource;
+	XAP_Frame *		m_pFrame;
 };
 
 #endif /* PLUGIN_MANAGER_H */

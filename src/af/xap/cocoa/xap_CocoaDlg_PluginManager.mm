@@ -1,6 +1,9 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+
 /* AbiSource Application Framework
  * Copyright (C) 2001 AbiSource, Inc.
  * Copyright (C) 2003 Hubert Figuiere
+ * Copyright (C) 2004 Francis James Franklin
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -21,265 +24,262 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
 #include "ut_string.h"
+
 #include "xap_CocoaDialog_Utilities.h"
 #include "xap_CocoaApp.h"
 #include "xap_CocoaFrame.h"
-
 #include "xap_Dialog_Id.h"
 #include "xap_CocoaDlg_PluginManager.h"
 #include "xap_CocoaDlg_FileOpenSaveAs.h"
-
+#include "xap_CocoaModule.h"
 #include "xap_Module.h"
 #include "xap_ModuleManager.h"
 
 #include "ie_types.h"
 
-#import "xap_Cocoa_NSTableUtils.h"
-
-/*****************************************************************/
-/*****************************************************************/
-
-static void _errorMessage (XAP_Frame * pFrame, const char * msg)
-{
-	// just a little simple error message box
-
-	pFrame->showMessageBox (msg,
-							XAP_Dialog_MessageBox::b_O,
-							XAP_Dialog_MessageBox::a_OK);
-}
-
-/*****************************************************************/
-/*****************************************************************/
-
 XAP_Dialog * XAP_CocoaDialog_PluginManager::static_constructor(XAP_DialogFactory * pFactory,
-														 XAP_Dialog_Id dlgid)
+															   XAP_Dialog_Id dlgid)
 {
 	XAP_CocoaDialog_PluginManager * p = new XAP_CocoaDialog_PluginManager(pFactory, dlgid);
 	return p;
 }
 
 XAP_CocoaDialog_PluginManager::XAP_CocoaDialog_PluginManager(XAP_DialogFactory * pDlgFactory,
-												   XAP_Dialog_Id dlgid)
+															 XAP_Dialog_Id dlgid)
 	: XAP_Dialog_PluginManager(pDlgFactory, dlgid),
-		m_pFrame(NULL),
-		m_dlg(nil),
-		m_dataSource(nil)
+	  m_pFrame(NULL)
 {
+	// 
 }
 
 XAP_CocoaDialog_PluginManager::~XAP_CocoaDialog_PluginManager(void)
 {
-	[m_dataSource release];
-}
-
-/*****************************************************************/
-/*****************************************************************/
-void XAP_CocoaDialog_PluginManager::event_Close()
-{
-	[NSApp stopModal];
-}
-
-
-void XAP_CocoaDialog_PluginManager::event_DeactivateAll()
-{
-	deactivateAllPlugins ();
-	_refreshAll ();
-}
-
-void XAP_CocoaDialog_PluginManager::event_Deactivate()
-{
-	const XAP_StringSet * pSS = m_pApp->getStringSet();
-
-	XAP_Module * pModule = NULL;
-
-	int selectedRow = [m_dlg selectedPlugin];
-	if (selectedRow != -1) {
-		pModule = (XAP_Module *) XAP_ModuleManager::instance().enumModules()->getNthItem(selectedRow);
-	} 
-	else {
-		// error message box - didn't select a plugin
-		_errorMessage (m_pFrame, 
-					   pSS->getValue(XAP_STRING_ID_DLG_PLUGIN_MANAGER_NONE_SELECTED));
-		return;
-	}
-
-	if (pModule) {
-		if (deactivatePlugin (pModule)) {
-			// worked
-			_refreshAll ();
-		}
-		else {
-			// error message box
-			_errorMessage (m_pFrame, 
-						   pSS->getValue(XAP_STRING_ID_DLG_PLUGIN_MANAGER_COULDNT_UNLOAD));
-		}
-	}
-	else {
-		// error message box
-		_errorMessage (m_pFrame, 
-					   pSS->getValue(XAP_STRING_ID_DLG_PLUGIN_MANAGER_COULDNT_UNLOAD));
-	}
+	// 
 }
 
 void XAP_CocoaDialog_PluginManager::event_Load ()
 {
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
 
-	XAP_DialogFactory * pDialogFactory
-		= (XAP_DialogFactory *) m_pFrame->getDialogFactory();
+	XAP_DialogFactory * pDialogFactory = (XAP_DialogFactory *) m_pFrame->getDialogFactory();
 	
-	XAP_Dialog_FileOpenSaveAs * pDialog
-		= (XAP_Dialog_FileOpenSaveAs *)(pDialogFactory->requestDialog(XAP_DIALOG_ID_FILE_OPEN));
+	XAP_Dialog_FileOpenSaveAs * pDialog = (XAP_Dialog_FileOpenSaveAs *) (pDialogFactory->requestDialog(XAP_DIALOG_ID_FILE_OPEN));
 	UT_ASSERT(pDialog);
+	if (!pDialog)
+		return;
 	
 	pDialog->setCurrentPathname(0);
 	pDialog->setSuggestFilename(false);
 	
-	UT_uint32 filterCount = 1;
-	const char ** szDescList = (const char **) UT_calloc(filterCount + 1,
-													  sizeof(char *));
-	const char ** szSuffixList = (const char **) UT_calloc(filterCount + 1,
-														sizeof(char *));
-	IEFileType * nTypeList = (IEFileType *) UT_calloc(filterCount + 1,
-												   sizeof(IEFileType));
+	const char * szDescList[3];
+	const char * szSuffixList[3];
+	IEFileType   nTypeList[3];
+
+	szDescList[0]   = "AbiWord Plugin (.so-abi)";
+	szSuffixList[0] = "*.so-abi";
+	nTypeList[0]    = (IEFileType) 1;
+
+	szDescList[1]   = "AbiWord Bundle-Plugin (.Abi)";
+	szSuffixList[1] = "*.Abi";
+	nTypeList[1]    = (IEFileType) 1;
 	
-	// we probably shouldn't hardcode this
-	// HP-UX uses .sl, for instance
-	szDescList[0] = "AbiWord Plugin (.so)";
-	szSuffixList[0] = "*.so";
-	nTypeList[0] = (IEFileType)1;
+	szDescList[2]   = 0;
+	szSuffixList[2] = 0;
+	nTypeList[2]    = 0;
 	
-	pDialog->setFileTypeList(szDescList, szSuffixList, 
-							 (const UT_sint32 *) nTypeList);
+	pDialog->setFileTypeList(szDescList, szSuffixList, (const UT_sint32 *) nTypeList);
 	
-	pDialog->setDefaultFileType((IEFileType)1);
+	pDialog->setDefaultFileType((IEFileType) 1);
 
 	// todo: cd to the proper plugin directory
 	
 	pDialog->runModal(m_pFrame);
 	
-	XAP_Dialog_FileOpenSaveAs::tAnswer ans = pDialog->getAnswer();
-	bool bOK = (ans == XAP_Dialog_FileOpenSaveAs::a_OK);
-	
-	if (bOK)
-	{
-		const char * szResultPathname = pDialog->getPathname();
-		if (szResultPathname && *szResultPathname)
+	if (pDialog->getAnswer() == XAP_Dialog_FileOpenSaveAs::a_OK)
 		{
-			if (activatePlugin (szResultPathname))
-			{
-				// worked!
-				_refreshAll ();
-			}
-			else
-			{
-				// error message
-				_errorMessage (m_pFrame, 
-							   pSS->getValue(XAP_STRING_ID_DLG_PLUGIN_MANAGER_COULDNT_LOAD));
-			}
+			const char * szResultPathname = pDialog->getPathname();
+
+			if (szResultPathname && *szResultPathname)
+				if (!activatePlugin(szResultPathname))
+					{
+						/* error message
+						 */
+						m_pFrame->showMessageBox (pSS->getValue(XAP_STRING_ID_DLG_PLUGIN_MANAGER_COULDNT_LOAD),
+												  XAP_Dialog_MessageBox::b_O,
+												  XAP_Dialog_MessageBox::a_OK);
+					}
 		}
-	}
-	
-	FREEP(szDescList);
-	FREEP(szSuffixList);
-	FREEP(nTypeList);
-	
 	pDialogFactory->releaseDialog(pDialog);
 }
-
-void XAP_CocoaDialog_PluginManager::event_Select1 ()
-{
-	_refreshTab2 ();
-}
-
-/*****************************************************************/
-/*****************************************************************/
-
-void XAP_CocoaDialog_PluginManager::_refreshAll ()
-{
-	_refreshTab1();
-
-	[m_dlg setSelectedPlugin:0];
-
-	_refreshTab2();
-}
-
-void XAP_CocoaDialog_PluginManager::_refreshTab1 ()
-{
-	XAP_Module * pModule = NULL;
-
-	const UT_GenericVector<XAP_Module*> * pVec = XAP_ModuleManager::instance().enumModules ();
-
-	[(NSMutableArray*)[m_dataSource array] removeAllObjects];
-	for (UT_uint32 i = 0; i < pVec->size(); i++) {
-		pModule = pVec->getNthItem (i);
-		NSString* str = [[NSString alloc ] initWithUTF8String:pModule->getModuleInfo()->name];
-		[m_dataSource addString:str];
-		[str release];
-	}
-}
-
-void XAP_CocoaDialog_PluginManager::_refreshTab2 ()
-{
-	XAP_Module * pModule = 0;
-	int selectedRow = [m_dlg selectedPlugin];
-	if (selectedRow != -1) {
-		pModule = XAP_ModuleManager::instance().enumModules()->getNthItem(selectedRow);
-	}
-
-	if (pModule)
-	{
-		const XAP_ModuleInfo * mi = pModule->getModuleInfo ();
-		[m_dlg setModuleInfo:mi];
-	}
-	else {
-		[m_dlg setModuleInfo:NULL];
-	}
-}
-
-/*****************************************************************/
-/*****************************************************************/
-
 
 void XAP_CocoaDialog_PluginManager::runModal(XAP_Frame * pFrame)
 {
 	UT_ASSERT(pFrame);
-	NSWindow* window;
 	m_pFrame = pFrame;	
 
-	m_dlg = [[XAP_CocoaDlg_PluginManagerController alloc] initFromNib];
-	[m_dlg setXAPOwner:this];
-	m_dataSource = [[XAP_StringListDataSource alloc] init];
+	XAP_CocoaDlg_PluginManagerController * pDialog = [[XAP_CocoaDlg_PluginManagerController alloc] initFromNib];
+	if (pDialog)
+		{
+			[pDialog setXAPOwner:this];
 
-	window = [m_dlg window];
-	[m_dlg setDataSource:m_dataSource];	// not retained
-	[m_dlg setSelectedPlugin:0];
-	
-	_refreshAll();
+			NSWindow * window = [pDialog window];
 
-	[NSApp runModalForWindow:window];
+			[NSApp runModalForWindow:window];
 
-	[m_dlg close];
-	[m_dlg release];
-	m_dlg = nil;
-	[m_dataSource release];
-	m_dataSource = nil;
+			[pDialog close];
+			[pDialog release];
+		}
 }
 
 /*****************************************************************/
 /*****************************************************************/
+
+@implementation XAP_CocoaPluginReference
+
+- (id)initWithModule:(XAP_CocoaModule *)pluginModule
+{
+	if (self = [super init])
+		{
+			m_name = 0;
+			m_author = 0;
+			m_version = 0;
+			m_description = 0;
+			m_usage = 0;
+
+			m_module = pluginModule;
+
+			if (!m_module)
+				{
+					[self release];
+					self = 0;
+				}
+		}
+	if (self)
+		{
+			const XAP_ModuleInfo * mi = m_module->getModuleInfo();
+
+			if (mi->name)
+				m_name = [NSString stringWithUTF8String:(mi->name)];
+			if (mi->author)
+				m_author = [NSString stringWithUTF8String:(mi->author)];
+			if (mi->version)
+				m_version = [NSString stringWithUTF8String:(mi->version)];
+			if (mi->desc)
+				m_description = [NSString stringWithUTF8String:(mi->desc)];
+			if (mi->usage)
+				m_usage = [NSString stringWithUTF8String:(mi->usage)];
+
+			if (m_name == 0)
+				m_name = @"";
+			if (m_author == 0)
+				m_author = @"";
+			if (m_version == 0)
+				m_version = @"";
+			if (m_description == 0)
+				m_description = @"";
+			if (m_usage == 0)
+				m_usage = @"";
+
+			[m_name retain];
+			[m_author retain];
+			[m_version retain];
+			[m_description retain];
+			[m_usage retain];
+		}
+	return self;
+}
+
+- (void)dealloc
+{
+	if (m_name)
+		{
+			[m_name release];
+			m_name = 0;
+		}
+	if (m_author)
+		{
+			[m_author release];
+			m_author = 0;
+		}
+	if (m_version)
+		{
+			[m_version release];
+			m_version = 0;
+		}
+	if (m_description)
+		{
+			[m_description release];
+			m_description = 0;
+		}
+	if (m_usage)
+		{
+			[m_usage release];
+			m_usage = 0;
+		}
+	[super dealloc];
+}
+
+- (NSString *)name
+{
+	return m_name;
+}
+
+- (NSString *)author
+{
+	return m_author;
+}
+
+- (NSString *)version
+{
+	return m_version;
+}
+
+- (NSString *)description
+{
+	return m_description;
+}
+
+- (NSString *)usage
+{
+	return m_usage;
+}
+
+- (XAP_CocoaModule *)module
+{
+	return m_module;
+}
+
+@end
 
 @implementation XAP_CocoaDlg_PluginManagerController
 
 - (id)initFromNib
 {
-	self = [super initWithWindowNibName:@"xap_CocoaDlg_PluginManager"];
+	if (self = [super initWithWindowNibName:@"xap_CocoaDlg_PluginManager"])
+		{
+			m_PluginRefs = [[NSMutableArray alloc] initWithCapacity:16];
+			if (!m_PluginRefs)
+				{
+					[self dealloc];
+					self = 0;
+				}
+		}
 	return self;
 }
 
+- (void)dealloc
+{
+	if (m_PluginRefs)
+		{
+			[m_PluginRefs release];
+			m_PluginRefs = 0;
+		}
+	[super dealloc];
+}
 
 - (void)setXAPOwner:(XAP_Dialog*)owner
 {
@@ -292,81 +292,137 @@ void XAP_CocoaDialog_PluginManager::runModal(XAP_Frame * pFrame)
 	_xap = nil;
 }
 
+- (void)reloadPluginList
+{
+	[m_PluginRefs removeAllObjects];
+
+	const UT_GenericVector<XAP_Module*> * pModuleVec = XAP_ModuleManager::instance().enumModules();
+
+	UT_uint32 count = pModuleVec->getItemCount();
+
+	for (UT_uint32 i = 0; i < count; i++)
+		if (XAP_CocoaModule * pModule = static_cast<XAP_CocoaModule *>(pModuleVec->getNthItem(i)))
+			if (XAP_CocoaPluginReference * pRef = [[XAP_CocoaPluginReference alloc] initWithModule:pModule])
+				{
+					[m_PluginRefs addObject:pRef];
+				}
+
+	if ([m_PluginRefs count])
+		[oDeactivateAllBtn setEnabled:YES];
+	else
+		[oDeactivateAllBtn setEnabled:NO];
+}
 
 - (void)windowDidLoad
 {
 	const XAP_StringSet * pSS = XAP_App::getApp()->getStringSet();
 	
-	LocalizeControl(_deactivateBtn, pSS, XAP_STRING_ID_DLG_PLUGIN_MANAGER_DEACTIVATE);
-	LocalizeControl(_deactivateAllBtn, pSS, XAP_STRING_ID_DLG_PLUGIN_MANAGER_DEACTIVATE_ALL);
-	LocalizeControl(_installBtn, pSS, XAP_STRING_ID_DLG_PLUGIN_MANAGER_INSTALL);
-	LocalizeControl(_nameData, pSS, XAP_STRING_ID_DLG_PLUGIN_MANAGER_NAME);
-	LocalizeControl(_descriptionData, pSS, XAP_STRING_ID_DLG_PLUGIN_MANAGER_DESC);
-	LocalizeControl(_authorData, pSS, XAP_STRING_ID_DLG_PLUGIN_MANAGER_AUTHOR);
-	LocalizeControl(_versionData, pSS, XAP_STRING_ID_DLG_PLUGIN_MANAGER_VERSION);
-	LocalizeControl(_detailsBox, pSS, XAP_STRING_ID_DLG_PLUGIN_MANAGER_DETAILS);
-	LocalizeControl([self window], pSS, XAP_STRING_ID_DLG_PLUGIN_MANAGER_TITLE);
-	LocalizeControl(_closeBtn, pSS, XAP_STRING_ID_DLG_Close);
-}
+	LocalizeControl([self window],		pSS, XAP_STRING_ID_DLG_PLUGIN_MANAGER_TITLE);
 
+	LocalizeControl(oDeactivateBtn,		pSS, XAP_STRING_ID_DLG_PLUGIN_MANAGER_DEACTIVATE);
+	LocalizeControl(oDeactivateAllBtn,	pSS, XAP_STRING_ID_DLG_PLUGIN_MANAGER_DEACTIVATE_ALL);
+	LocalizeControl(oInstallBtn,		pSS, XAP_STRING_ID_DLG_PLUGIN_MANAGER_INSTALL);
+
+	LocalizeControl(oCloseBtn,			pSS, XAP_STRING_ID_DLG_Close);
+
+	LocalizeControl(oNameLabel,			pSS, XAP_STRING_ID_DLG_PLUGIN_MANAGER_NAME);
+	LocalizeControl(oAuthorLabel,		pSS, XAP_STRING_ID_DLG_PLUGIN_MANAGER_AUTHOR);
+	LocalizeControl(oVersionLabel,		pSS, XAP_STRING_ID_DLG_PLUGIN_MANAGER_VERSION);
+	LocalizeControl(oDescriptionLabel,	pSS, XAP_STRING_ID_DLG_PLUGIN_MANAGER_DESC);
+//	LocalizeControl(oUsageLabel,		pSS, XAP_STRING_ID_DLG_PLUGIN_MANAGER_ ?? );
+
+	[self reloadPluginList];
+
+	[oPluginList setDelegate:self];
+	[oPluginList setDataSource:self];
+
+	[oDeactivateBtn setEnabled:NO];
+}
 
 - (IBAction)closeAction:(id)sender
 {
-	_xap->event_Close();
+	[NSApp stopModal];
 }
 
 - (IBAction)deactivateAction:(id)sender
 {
-	_xap->event_Deactivate();
+	int selection = [oPluginList selectedRow];
+	if (selection >= 0)
+		{
+			XAP_CocoaPluginReference * pRef = (XAP_CocoaPluginReference *) [m_PluginRefs objectAtIndex:selection];
+
+			XAP_CocoaModule * pModule = [pRef module];
+
+			XAP_ModuleManager::instance().unloadModule(pModule);
+
+			[self reloadPluginList];
+
+			[oPluginList deselectAll:self];
+			[oPluginList reloadData];
+		}
 }
 
 - (IBAction)deactivateAllAction:(id)sender
 {
-	_xap->event_DeactivateAll();
+	XAP_ModuleManager::instance().unloadAllPlugins();
+
+	[self reloadPluginList];
+
+	[oPluginList deselectAll:self];
+	[oPluginList reloadData];
 }
 
 - (IBAction)installAction:(id)sender
 {
 	_xap->event_Load();
+
+	[self reloadPluginList];
+
+	[oPluginList deselectAll:self];
+	[oPluginList reloadData];
 }
 
-- (IBAction)selectAction:(id)sender
+/* NSTableView delegate method
+ */
+- (void)tableViewSelectionDidChange:(NSNotification *)aNotification
 {
-	_xap->event_Select1();
+	int selection = [oPluginList selectedRow];
+	if (selection >= 0)
+		{
+			[oDeactivateBtn setEnabled:YES];
+
+			XAP_CocoaPluginReference * pRef = (XAP_CocoaPluginReference *) [m_PluginRefs objectAtIndex:selection];
+
+			[oNameData        setStringValue:[pRef name       ]];
+			[oAuthorData      setStringValue:[pRef author     ]];
+			[oVersionData     setStringValue:[pRef version    ]];
+			[oDescriptionData setStringValue:[pRef description]];
+			[oUsageData       setStringValue:[pRef usage      ]];
+		}
+	else
+		{
+			[oDeactivateBtn setEnabled:NO];
+
+			[oNameData        setStringValue:@""];
+			[oAuthorData      setStringValue:@""];
+			[oVersionData     setStringValue:@""];
+			[oDescriptionData setStringValue:@""];
+			[oUsageData       setStringValue:@""];
+		}
 }
 
-- (int)selectedPlugin
+/* NSTableDataSource methods
+ */
+- (int)numberOfRowsInTableView:(NSTableView *)aTableView
 {
-	return [_pluginList selectedRow];
+	return (int) [m_PluginRefs count];
 }
 
-
-- (void)setSelectedPlugin:(int)idx
+- (id)tableView:(NSTableView *)aTableView objectValueForTableColumn:(NSTableColumn *)aTableColumn row:(int)rowIndex
 {
-	[_pluginList selectRow:idx byExtendingSelection:NO];
-}
+	XAP_CocoaPluginReference * pRef = (XAP_CocoaPluginReference *) [m_PluginRefs objectAtIndex:rowIndex];
 
-
-- (void)setModuleInfo:(const XAP_ModuleInfo*)info
-{
-	if (info) {
-		[_nameData setStringValue:[NSString stringWithUTF8String:info->name]];
-		[_authorData setStringValue:[NSString stringWithUTF8String:info->author]];
-		[_descriptionData setStringValue:[NSString stringWithUTF8String:info->desc]];
-		[_versionData setStringValue:[NSString stringWithUTF8String:info->version]];	
-	}
-	else {
-		[_nameData setStringValue:@""];
-		[_authorData setStringValue:@""];
-		[_descriptionData setStringValue:@""];
-		[_versionData setStringValue:@""];
-	}
-}
-
-- (void)setDataSource:(XAP_StringListDataSource*)source
-{
-	UT_ASSERT(_pluginList);
-	[_pluginList setDataSource:source];
+	return [pRef name];
 }
 
 @end

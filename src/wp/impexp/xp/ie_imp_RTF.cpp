@@ -1326,6 +1326,20 @@ RTFStateStore::RTFStateStore()
 }
 
 
+RTFStateStore * RTFStateStore::clone(void)
+{
+	RTFStateStore * pNew = new RTFStateStore();
+	pNew->m_destinationState = m_destinationState;
+	pNew->m_charProps = m_charProps;
+	pNew->m_paraProps = m_paraProps;
+	pNew->m_sectionProps = m_sectionProps;
+	pNew->m_cellProps = m_cellProps;
+	pNew->m_tableProps = m_tableProps;
+	pNew->m_unicodeAlternateSkipCount = m_unicodeAlternateSkipCount;
+	pNew->m_unicodeInAlternate = m_unicodeInAlternate;
+	return pNew;
+}
+
 /*****************************************************************/
 /*****************************************************************/
 
@@ -2062,8 +2076,8 @@ void IE_Imp_RTF::HandleNoteReference(void)
 		// we have a pending reference mark; since the \footnote
 		// has removed the RTF state, we need to temporarily
 		// place the saved RTF state on the stack. We pop it afterwards
-
-		m_stateStack.push(&m_currentRTFState);
+		RTFStateStore * pSaved = m_currentRTFState.clone();
+		m_stateStack.push(pSaved);
 		m_stateStack.push(&m_FootnoteRefState);
 		m_currentRTFState = m_FootnoteRefState;
 		m_iLastFootnoteId = getDoc()->getUID(UT_UniqueId::Footnote);
@@ -2086,6 +2100,7 @@ void IE_Imp_RTF::HandleNoteReference(void)
 		m_stateStack.pop(reinterpret_cast<void**>(&pState));
 		m_stateStack.pop(reinterpret_cast<void**>(&pState));
 		m_currentRTFState = *pState;
+		DELETEP(pState);
 	}
 	else
 	{
@@ -8720,6 +8735,8 @@ bool IE_Imp_RTF::insertStrux(PTStruxType pts , const XML_Char ** attrs, const XM
 		return true;
 	}
 	FV_View * pView = static_cast<FV_View*>(pFrame->getCurrentView());
+	PT_DocPosition posEOD = 0;
+	pView->getEditableBounds(true,posEOD);
 	if(pView == NULL)
 	{
 		m_currentRTFState.m_destinationState = RTFStateStore::rdsSkip;
@@ -8775,6 +8792,23 @@ bool IE_Imp_RTF::insertStrux(PTStruxType pts , const XML_Char ** attrs, const XM
 	if(pts == PTX_SectionFrame)
 	{
 		pf_Frag_Strux * pfs = NULL;
+		if(pView->isInFrame(m_dposPaste))
+		{
+			PT_DocPosition pos = m_dposPaste;
+			while(pView->isInFrame(pos) && pos <= posEOD)
+			{
+				pos++;
+			} 
+			if(pos > posEOD)
+			{
+				pos = m_dposPaste;
+				while(pView->isInFrame(pos) && pos > 2)
+				{
+					pos--;
+				} 
+			}
+			m_dposPaste = pos;
+		}
 		res = getDoc()->insertStrux(m_dposPaste,pts,attrs,props,&pfs);
 		m_dposPaste = pfs->getPos()+1;
 		return res;

@@ -442,7 +442,7 @@ struct ABI_EXPORT RTFHdrFtr
 struct ABI_EXPORT RTFStateStore
 {
 	RTFStateStore();
-
+    RTFStateStore * clone();
 //	RTFStateStore& operator=(const RTFStateStore&);
 
 	enum DestinationStateTypes { rdsNorm, rdsSkip, rdsFootnote, rdsHeader, rdsFooter, rdsField };

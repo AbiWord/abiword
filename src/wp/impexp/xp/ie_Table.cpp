@@ -1258,20 +1258,31 @@ void ie_imp_table::writeAllCellPropsInDoc(void)
 		{
 			UT_DEBUGMSG(("BUG!BUG! found a sdh is merged above cell! removing it \n"));
 			PL_StruxDocHandle cellSDH = pCell->getCellSDH();
+			UT_return_if_fail(cellSDH != NULL);
 			PL_StruxDocHandle nextSDH = NULL;
 			m_pDoc->getNextStrux(cellSDH,&nextSDH);
+			bool bStop = (cellSDH == nextSDH);
 			m_pDoc->deleteStruxNoUpdate(cellSDH);
-			while((nextSDH != NULL) && (m_pDoc->getStruxType(nextSDH) != PTX_SectionCell))
+			while(!bStop && (nextSDH != NULL) && (m_pDoc->getStruxType(nextSDH) != PTX_SectionCell))
 			{
+				if(	cellSDH == nextSDH)
+				{
+					break;
+				}
 				cellSDH = nextSDH;
 				m_pDoc->getNextStrux(cellSDH,&nextSDH);
 				m_pDoc->deleteStruxNoUpdate(cellSDH);
+				if(	cellSDH == nextSDH)
+				{
+					break;
+				}
 			}
 		}
 		if(pCell->isMergedLeft() && (pCell->getCellSDH() != NULL))
 		{
 			UT_DEBUGMSG(("BUG!BUG! found a sdh is merged left cell! removing it \n"));
 			PL_StruxDocHandle cellSDH = pCell->getCellSDH();
+			UT_return_if_fail(cellSDH != NULL);
 			PL_StruxDocHandle nextSDH = NULL;
 			m_pDoc->getNextStrux(cellSDH,&nextSDH);
 			m_pDoc->deleteStruxNoUpdate(cellSDH);
