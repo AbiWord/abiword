@@ -237,56 +237,6 @@ bool IE_Exp_MHTML_Sniffer::getDlgLabels(const char ** pszDesc,
 /*****************************************************************/
 /*****************************************************************/
 
-IE_Exp_HTML::IE_Exp_HTML (PD_Document * pDocument)
-	: IE_Exp(pDocument),
-	  m_bSuppressDialog(false)
-{
-	m_exp_opt.bIs4         = false;
-	m_exp_opt.bIsAbiWebDoc = false;
-	m_exp_opt.bDeclareXML  = true;
-	m_exp_opt.bAllowAWML   = true;
-	m_exp_opt.bEmbedCSS    = true;
-	m_exp_opt.bEmbedImages = false;
-	m_exp_opt.bMultipart   = false;
-
-	m_error = UT_OK;
-
-#ifdef HTML_DIALOG_OPTIONS
-	XAP_Dialog_HTMLOptions::getHTMLDefaults (&m_exp_opt, pDocument->getApp ());
-#endif
-}
-
-IE_Exp_HTML::~IE_Exp_HTML ()
-{
-	UT_VECTOR_PURGEALL(PD_DocumentRange *,m_vecFootnotes);
-	UT_VECTOR_PURGEALL(PD_DocumentRange *,m_vecEndnotes);
-	
-	// 
-}
-
-void IE_Exp_HTML::addFootnote(PD_DocumentRange * pDocRange)
-{
-	m_vecFootnotes.addItem(reinterpret_cast<void *>(pDocRange));
-}
-
-void IE_Exp_HTML::addEndnote(PD_DocumentRange * pDocRange)
-{
-	m_vecEndnotes.addItem(reinterpret_cast<void *>(pDocRange));
-}
-
-UT_sint32 IE_Exp_HTML::getNumFootnotes(void)
-{
-	return static_cast<UT_sint32>(m_vecFootnotes.getItemCount());
-}
-
-
-UT_sint32 IE_Exp_HTML::getNumEndnotes(void)
-{
-	return static_cast<UT_sint32>(m_vecEndnotes.getItemCount());
-}
-/*****************************************************************/
-/*****************************************************************/
-
 /* TODO: is there a better way to do this?
  */
 static UT_UTF8String s_string_to_url (UT_String & str)
@@ -423,14 +373,18 @@ static char * s_removeWhiteSpace (const char * text, UT_UTF8String & utf8str)
 
 class s_HTML_Listener;
 
-class s_StyleTree
+class s_StyleTree : public PL_Listener
 {
 private:
+	PD_Document *	m_pDocument; // root element of tree only (atm, anyway)
+
 	s_StyleTree *	m_parent;
 	s_StyleTree **	m_list;
 
 	UT_uint32		m_count;
 	UT_uint32		m_max;
+
+	bool			m_bInUse;
 
 	UT_UTF8String	m_style_name;
 	UT_UTF8String	m_class_name;
@@ -442,13 +396,18 @@ private:
 
 	s_StyleTree (s_StyleTree * parent, const char * name, PD_Style * style);
 public:
-	s_StyleTree ();
+	s_StyleTree (PD_Document * pDocument);
 	~s_StyleTree ();
 
 private:
 	bool add (const char * style_name, PD_Style * style);
 public:
 	bool add (const char * style_name, PD_Document * pDoc);
+
+private:
+	void inUse ();
+public:
+	const s_StyleTree * findAndUse (const char * style_name);
 
 	const s_StyleTree * find (const char * style_name) const;
 	const s_StyleTree * find (PD_Style * style) const;
@@ -468,13 +427,38 @@ public:
 	const UT_UTF8String & class_list () const { return m_class_list; }
 
 	const UT_UTF8String * lookup (const UT_UTF8String & prop_name);
+
+private:
+	void	styleCheck (PT_AttrPropIndex api);
+public:
+	/* implementation of PL_Listener
+	 */
+	bool	populate (PL_StruxFmtHandle sfh,
+					  const PX_ChangeRecord * pcr);
+
+	bool	populateStrux (PL_StruxDocHandle sdh,
+						   const PX_ChangeRecord * pcr,
+						   PL_StruxFmtHandle * psfh);
+
+	bool	change (PL_StruxFmtHandle sfh,
+					const PX_ChangeRecord * pcr);
+
+	bool	insertStrux (PL_StruxFmtHandle sfh,
+						 const PX_ChangeRecord * pcr,
+						 PL_StruxDocHandle sdh,
+						 PL_ListenerId lid,
+						 void (*pfnBindHandles) (PL_StruxDocHandle sdhNew,
+												 PL_ListenerId lid,
+												 PL_StruxFmtHandle sfhNew));
+
+	bool	signal (UT_uint32 iSignal);
 };
 
 class s_HTML_Listener : public PL_Listener
 {
 public:
 	s_HTML_Listener (PD_Document * pDocument, IE_Exp_HTML * pie, bool bClipBoard, bool bTemplateBody,
-					 const XAP_Exp_HTMLOptions * exp_opt);
+					 const XAP_Exp_HTMLOptions * exp_opt, s_StyleTree * style_tree);
 
 	~s_HTML_Listener ();
 
@@ -505,7 +489,6 @@ private:
 	bool 	_openStyleSheet (UT_UTF8String & css_path);
 	void 	_closeStyleSheet ();
 	void	_outputStyles (const PP_AttrProp * pAP);
-	void	_buildStyleTree ();
 	void	_openSection (PT_AttrPropIndex api);
 	void	_closeSection (void);
 
@@ -545,6 +528,7 @@ private:
 	bool						m_bClipBoard;
 	bool						m_bTemplateBody;
 	const XAP_Exp_HTMLOptions *	m_exp_opt;
+	s_StyleTree *				m_style_tree;
 
 	inline bool		get_HTML4 ()        const { return m_exp_opt->bIs4; }
 	inline bool		get_PHTML ()        const { return m_exp_opt->bIsAbiWebDoc; }
@@ -667,7 +651,6 @@ private:
 
 	UT_StringPtrMap	m_SavedURLs;
 
-	s_StyleTree		m_style_tree;
 	bool            m_bIgnoreTillEnd;
 	PT_DocPosition  m_iEmbedStartPos;
 
@@ -1263,8 +1246,6 @@ void s_HTML_Listener::_outputBegin (PT_AttrPropIndex api)
 	_handleMeta ();
 #endif
 
-	_buildStyleTree ();
-
 	if (!get_PHTML ())
 		{
 			const PP_AttrProp * pAP = 0;
@@ -1543,7 +1524,7 @@ void s_HTML_Listener::_outputStyles (const PP_AttrProp * pAP)
 #endif /* HTML_TABLES_SUPPORTED */
 		}
 
-	m_style_tree.print (this);
+	m_style_tree->print (this);
 
 	if (get_Embed_CSS ())
 		{
@@ -1552,28 +1533,6 @@ void s_HTML_Listener::_outputStyles (const PP_AttrProp * pAP)
 			tagClose (TT_STYLE, m_utf8_1);
 		}
 	else _closeStyleSheet ();
-}
-
-void s_HTML_Listener::_buildStyleTree ()
-{
-	const PD_Style * p_pds = 0;
-	const XML_Char * szStyleName = 0;
-
-	for (size_t n = 0; m_pDocument->enumStyles (n, &szStyleName, &p_pds); n++)
-		{
-			if (p_pds == 0) continue;
-
-			PT_AttrPropIndex api = p_pds->getIndexAP ();
-
-			const PP_AttrProp * pAP_style = 0;
-			bool bHaveProp = m_pDocument->getAttrProp (api, &pAP_style);
-
-			if (bHaveProp && pAP_style && p_pds->isUsed ())
-				{
-					m_style_tree.add (szStyleName, m_pDocument);
-				}
-		}
-	m_StyleTreeBody = m_style_tree.find ("Normal");
 }
 
 /*!
@@ -2072,7 +2031,7 @@ void s_HTML_Listener::_openTag (PT_AttrPropIndex api, PL_StruxDocHandle sdh)
 
 	m_utf8_style = szValue;
 
-	m_StyleTreeBlock = m_style_tree.find (szValue);
+	m_StyleTreeBlock = m_style_tree->find (szValue);
 
 	if (!zero_listID)
 		{
@@ -2526,7 +2485,7 @@ void s_HTML_Listener::_openSpan (PT_AttrPropIndex api)
 
 	const s_StyleTree * tree = 0;
 	if (have_style)
-		tree = m_style_tree.find (szA_Style);
+		tree = m_style_tree->find (szA_Style);
 
 	m_StyleTreeInline = tree;
 
@@ -3417,12 +3376,13 @@ void s_HTML_Listener::_outputData (const UT_UCSChar * data, UT_uint32 length)
 }
 
 s_HTML_Listener::s_HTML_Listener (PD_Document * pDocument, IE_Exp_HTML * pie, bool bClipBoard, bool bTemplateBody,
-								  const XAP_Exp_HTMLOptions * exp_opt) :
+								  const XAP_Exp_HTMLOptions * exp_opt, s_StyleTree * style_tree) :
 	m_pDocument (pDocument),
 	m_pie(pie),
 	m_bClipBoard(bClipBoard),
 	m_bTemplateBody(bTemplateBody),
 	m_exp_opt(exp_opt),
+	m_style_tree(style_tree),
 	m_bInSection(false),
 	m_bInBlock(false),
 	m_bInTList(false),
@@ -3453,7 +3413,7 @@ s_HTML_Listener::s_HTML_Listener (PD_Document * pDocument, IE_Exp_HTML * pie, bo
 	m_dSecRightMarginInches(0.0),
 	m_dCellWidthInches(0.0)
 {
-	// 
+	m_StyleTreeBody = m_style_tree->find ("Normal");
 }
 
 s_HTML_Listener::~s_HTML_Listener()
@@ -4116,10 +4076,12 @@ bool s_HTML_Listener::signal (UT_uint32 /* iSignal */)
 /*****************************************************************/
 
 s_StyleTree::s_StyleTree (s_StyleTree * parent, const char * style_name, PD_Style * style) :
+	m_pDocument(0),
 	m_parent(parent),
 	m_list(0),
 	m_count(0),
 	m_max(0),
+	m_bInUse(false),
 	m_style_name(style_name),
 	m_class_name(style_name),
 	m_class_list(style_name),
@@ -4200,11 +4162,13 @@ s_StyleTree::s_StyleTree (s_StyleTree * parent, const char * style_name, PD_Styl
 		}
 }
 
-s_StyleTree::s_StyleTree () :
+s_StyleTree::s_StyleTree (PD_Document * pDocument) :
+	m_pDocument(pDocument),
 	m_parent(0),
 	m_list(0),
 	m_count(0),
 	m_max(0),
+	m_bInUse(false),
 	m_style_name("None"),
 	m_class_name(""),
 	m_class_list(""),
@@ -4294,6 +4258,25 @@ bool s_StyleTree::add (const char * style_name, PD_Document * pDoc)
 	return parent->add (style_name, style);
 }
 
+void s_StyleTree::inUse ()
+{
+	m_bInUse = true;
+	if (m_parent)
+		m_parent->inUse ();
+}
+
+const s_StyleTree * s_StyleTree::findAndUse (const char * style_name)
+{
+	const s_StyleTree * style_tree = find (style_name);
+
+	if (style_tree)
+		{
+			s_StyleTree * tree = const_cast<s_StyleTree *>(style_tree);
+			tree->inUse ();
+		}
+	return style_tree;
+}
+
 const s_StyleTree * s_StyleTree::find (const char * style_name) const
 {
 	if (m_style_name == style_name) return this;
@@ -4328,6 +4311,8 @@ bool s_StyleTree::descends (const char * style_name) const
 
 void s_StyleTree::print (s_HTML_Listener * listener) const
 {
+	if (!m_bInUse) return;
+
 	if (strstr (m_style_name.utf8_str (), "List")) return;
 
 	if (m_parent)
@@ -4379,6 +4364,82 @@ const UT_UTF8String * s_StyleTree::lookup (const UT_UTF8String & prop_name)
 		prop_value = m_parent->lookup (prop_name);
 
 	return prop_value;
+}
+
+void s_StyleTree::styleCheck (PT_AttrPropIndex api)
+{
+	const PP_AttrProp * pAP = 0;
+	bool bHaveProp = (api ? (m_pDocument->getAttrProp (api, &pAP)) : false);
+
+	if (bHaveProp && pAP)
+		{
+			const XML_Char * szStyle = NULL;
+			bool have_style  = pAP->getAttribute (PT_STYLE_ATTRIBUTE_NAME, szStyle);
+
+			if (have_style && szStyle)
+				{
+					findAndUse (szStyle);
+				}
+		}
+}
+
+bool s_StyleTree::populate (PL_StruxFmtHandle /*sfh*/, const PX_ChangeRecord * pcr)
+{
+	switch (pcr->getType ())
+		{
+		case PX_ChangeRecord::PXT_InsertSpan:
+			styleCheck (pcr->getIndexAP ());
+			break;
+		default:
+			break;
+		}
+	return true;
+}
+
+bool s_StyleTree::populateStrux (PL_StruxDocHandle /*sdh*/,
+									 const PX_ChangeRecord * pcr,
+									 PL_StruxFmtHandle * psfh)
+{
+	UT_ASSERT(pcr->getType() == PX_ChangeRecord::PXT_InsertStrux);
+
+	*psfh = 0; // we don't need it.
+
+	const PX_ChangeRecord_Strux * pcrx = static_cast<const PX_ChangeRecord_Strux *>(pcr);
+
+	switch (pcrx->getStruxType ())
+		{
+		case PTX_Block:
+			styleCheck (pcr->getIndexAP ());
+			break;
+		default:
+			break;
+		}
+	return true;
+}
+
+bool s_StyleTree::change (PL_StruxFmtHandle /*sfh*/,
+							  const PX_ChangeRecord * /*pcr*/)
+{
+	UT_ASSERT(0);						// this function is not used.
+	return false;
+}
+
+bool s_StyleTree::insertStrux (PL_StruxFmtHandle /*sfh*/,
+								   const PX_ChangeRecord * /*pcr*/,
+								   PL_StruxDocHandle /*sdh*/,
+								   PL_ListenerId /* lid */,
+								   void (* /*pfnBindHandles*/)(PL_StruxDocHandle /* sdhNew */,
+															   PL_ListenerId /* lid */,
+															   PL_StruxFmtHandle /* sfhNew */))
+{
+	UT_ASSERT(0);						// this function is not used.
+	return false;
+}
+
+bool s_StyleTree::signal (UT_uint32 /* iSignal */)
+{
+	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+	return false;
 }
 
 /*****************************************************************/
@@ -4845,8 +4906,66 @@ void s_TemplateHandler::Default (const XML_Char * buffer, int length)
 /*****************************************************************/
 /*****************************************************************/
 
+IE_Exp_HTML::IE_Exp_HTML (PD_Document * pDocument)
+	: IE_Exp(pDocument),
+	  m_style_tree(new s_StyleTree(pDocument)),
+	  m_bSuppressDialog(false)
+{
+	m_exp_opt.bIs4         = false;
+	m_exp_opt.bIsAbiWebDoc = false;
+	m_exp_opt.bDeclareXML  = true;
+	m_exp_opt.bAllowAWML   = true;
+	m_exp_opt.bEmbedCSS    = true;
+	m_exp_opt.bEmbedImages = false;
+	m_exp_opt.bMultipart   = false;
+
+	m_error = UT_OK;
+
+#ifdef HTML_DIALOG_OPTIONS
+	XAP_Dialog_HTMLOptions::getHTMLDefaults (&m_exp_opt, pDocument->getApp ());
+#endif
+}
+
+IE_Exp_HTML::~IE_Exp_HTML ()
+{
+	DELETEP(m_style_tree);
+
+	UT_VECTOR_PURGEALL(PD_DocumentRange *,m_vecFootnotes);
+	UT_VECTOR_PURGEALL(PD_DocumentRange *,m_vecEndnotes);
+	
+	// 
+}
+
+void IE_Exp_HTML::_buildStyleTree ()
+{
+	const PD_Style * p_pds = 0;
+	const XML_Char * szStyleName = 0;
+
+	for (size_t n = 0; getDoc()->enumStyles (n, &szStyleName, &p_pds); n++)
+		{
+			if (p_pds == 0) continue;
+
+			PT_AttrPropIndex api = p_pds->getIndexAP ();
+
+			const PP_AttrProp * pAP_style = 0;
+			bool bHaveProp = getDoc()->getAttrProp (api, &pAP_style);
+
+			if (bHaveProp && pAP_style /* && p_pds->isUsed () */) // can't trust ->isUsed() :-(
+				{
+					m_style_tree->add (szStyleName, getDoc ());
+				}
+		}
+
+	if (getDocRange ()) // clipboard
+		getDoc()->tellListenerSubset (m_style_tree, getDocRange ());
+	else
+		getDoc()->tellListener (m_style_tree);
+}
+
 UT_Error IE_Exp_HTML::_writeDocument ()
 {
+	_buildStyleTree ();
+
 	if (getDocRange () != NULL) // ClipBoard
 		{
 			m_exp_opt.bEmbedImages = true;
@@ -4922,7 +5041,7 @@ UT_Error IE_Exp_HTML::_writeDocument ()
 
 UT_Error IE_Exp_HTML::_writeDocument (bool bClipBoard, bool bTemplateBody)
 {
-	s_HTML_Listener * pListener = new s_HTML_Listener(getDoc(),this,bClipBoard,bTemplateBody,&m_exp_opt);
+	s_HTML_Listener * pListener = new s_HTML_Listener(getDoc(),this,bClipBoard,bTemplateBody,&m_exp_opt,m_style_tree);
 	if (pListener == 0) return UT_IE_NOMEMORY;
 
 	PL_Listener * pL = static_cast<PL_Listener *>(pListener);
@@ -4995,4 +5114,25 @@ bool IE_Exp_HTML::_openFile (const char * szFilename)
 		}
 #endif
 	return IE_Exp::_openFile (szFilename);
+}
+
+void IE_Exp_HTML::addFootnote(PD_DocumentRange * pDocRange)
+{
+	m_vecFootnotes.addItem(reinterpret_cast<void *>(pDocRange));
+}
+
+void IE_Exp_HTML::addEndnote(PD_DocumentRange * pDocRange)
+{
+	m_vecEndnotes.addItem(reinterpret_cast<void *>(pDocRange));
+}
+
+UT_sint32 IE_Exp_HTML::getNumFootnotes(void)
+{
+	return static_cast<UT_sint32>(m_vecFootnotes.getItemCount());
+}
+
+
+UT_sint32 IE_Exp_HTML::getNumEndnotes(void)
+{
+	return static_cast<UT_sint32>(m_vecEndnotes.getItemCount());
 }

@@ -163,6 +163,8 @@ struct XAP_Exp_HTMLOptions
 
 #endif /* HTML_DIALOG_OPTIONS */
 
+class s_StyleTree;
+
 class ABI_EXPORT IE_Exp_HTML : public IE_Exp
 {
 public:
@@ -186,12 +188,15 @@ public:
 	void                addEndnote(PD_DocumentRange * pDocRange);
 	UT_sint32           getNumFootnotes(void);
 	UT_sint32           getNumEndnotes(void);
+private:
+	void				_buildStyleTree ();
 protected:
 	virtual bool		_openFile (const char * szFilename);
 	virtual UT_Error	_writeDocument ();
 public:
 	virtual UT_Error	_writeDocument (bool bClipBoard, bool bTemplateBody);
 private:
+	s_StyleTree *		m_style_tree;
 	bool				m_bSuppressDialog;
 	XAP_Exp_HTMLOptions	m_exp_opt;
 	UT_Vector           m_vecFootnotes;
