@@ -35,7 +35,7 @@ PROGRAM_S=		$(BINDIR)/AbiWord_s
 
 LoadOrder=		AbiGr AbiFmt AbiPTbl AbiImpExp AbiXAp AbiWPAp \
 			AbiEv AbiUtil AbiWordVer AbiSpell Abi_libwv \
-			Abi_fribidi Abi_ttftool
+			Abi_ttftool
 
 ifeq ($(ABI_REQUIRE_PEER_ICONV),1)
 LoadOrder+= Abi_libiconv

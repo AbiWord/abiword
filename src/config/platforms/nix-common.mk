@@ -233,8 +233,11 @@ PLATFORM_FLAGS      += $(HPPA_ARCH_FLAGS)
 OS_ENDIAN       = BigEndian32
 endif
 
-GLIB_CONFIG	= pkg-config glib-2.0
-GTK_CONFIG	= pkg-config gtk+-2.0
+# may as well add gthread-2.0 here - fjf
+# 
+GLIB_CONFIG	= pkg-config glib-2.0 gthread-2.0
+GTK_CONFIG	= pkg-config gtk+-2.0 gthread-2.0
+
 # This is wrong.  So far the best option I've seen is gnome-desktop-2.0, but
 # that doesn't necessarily catch gnomeprint.  It also puts in libxml2 AFAICT.
 # We gotta find the best way to pull it all off real soon.  Until then, I'm commenting it. -MG
