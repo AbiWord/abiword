@@ -56,6 +56,13 @@ void GR_Win32CharWidths::setCharWidthsOfRange(HDC hdc, UT_UCSChar c0, UT_UCSChar
 	UINT k;
 	int w;
 
+	// Windows NT and Windows 95 support the Unicode Font file. 
+	// All of the Unicode glyphs can be rendered if the glyph is found in
+	// the font file. However, Windows 95 does  not support the Unicode 
+	// characters other than the characters for which the particular codepage
+	// of the font file is defined.
+	// Reference Microsoft knowledge base:
+	// Q145754 - PRB ExtTextOutW or TextOutW Unicode Text Output Is Blank
 	if (UT_IsWinNT())
 	{
 		for (k=c0; k<=c1; k++)
@@ -66,14 +73,35 @@ void GR_Win32CharWidths::setCharWidthsOfRange(HDC hdc, UT_UCSChar c0, UT_UCSChar
 	}
 	else
 	{
-		for (k=c0; k<=c1; k++)
+		HFONT hFont = (HFONT) GetCurrentObject(hdc, OBJ_FONT);
+		LOGFONT aLogFont;
+		int iRes = GetObject(hFont, sizeof(LOGFONT), &aLogFont);
+		UT_ASSERT(iRes);
+
+		if(aLogFont.lfCharSet == SYMBOL_CHARSET)
 		{
-			SIZE Size;
-			char str[sizeof(UT_UCSChar)];
-			int iConverted = WideCharToMultiByte(CP_ACP, NULL, 
-				(unsigned short*) &k, 1, str, sizeof(str), NULL, NULL);
-			GetTextExtentPoint32A(hdc, str, iConverted, &Size);
-			setWidth(k,Size.cx);
+			// Symbol character handling
+			for (k=c0; k<=c1; k++)
+			{
+				SIZE Size;
+				char str[sizeof(UT_UCSChar)];
+				int iConverted = WideCharToMultiByte(CP_ACP, NULL, 
+					(unsigned short*) &k, 1, str, sizeof(str), NULL, NULL);
+				GetTextExtentPoint32A(hdc, str, iConverted, &Size);
+				setWidth(k,Size.cx);
+			}
+		}
+		else
+		{
+			// Unicode font and default character sets
+			for (k=c0; k<=c1; k++)
+			{
+				SIZE Size;
+				wchar_t sz1[2];
+				sz1[0] = k;
+				GetTextExtentPoint32W(hdc, sz1, 1, &Size);
+				setWidth(k,Size.cx);
+			}
 		}
 	}
 }

@@ -101,6 +101,20 @@ GR_Font* GR_Win32Graphics::getGUIFont(void)
 	return m_pFontGUI;
 }
 
+
+extern "C"
+int CALLBACK
+win32Internal_fontEnumProcedure(ENUMLOGFONT* pLogFont,
+								NEWTEXTMETRICEX* pTextMetric,
+								int Font_type,
+								LPARAM lParam)
+{
+	LOGFONT *lf = (LOGFONT*)lParam;
+	lf->lfCharSet = pLogFont->elfLogFont.lfCharSet;
+	return 0;
+}
+
+
 GR_Font* GR_Win32Graphics::findFont(const char* pszFontFamily, 
 									const char* pszFontStyle, 
 									const char* pszFontVariant, 
@@ -115,10 +129,6 @@ GR_Font* GR_Win32Graphics::findFont(const char* pszFontFamily,
 		we'll get the closest possible matching font.  For
 		now, we're hard-coding a hack.
 	*/
-
-	// TMN: 27 Dec 2000 - OEM_CHARSET is needed to display
-	// extended unicode chars.
-	lf.lfCharSet = OEM_CHARSET;
 
 	UT_sint32 iHeight = convertDimension(pszFontSize);
 	lf.lfHeight = -(iHeight);
@@ -163,6 +173,22 @@ GR_Font* GR_Win32Graphics::findFont(const char* pszFontFamily,
 		strcpy(lf.lfFaceName, pszFontFamily);
 	}
 
+	if (!UT_stricmp(pszFontFamily, "symbol") ||
+		!UT_stricmp(pszFontFamily, "wingdings") ||
+		!UT_stricmp(pszFontFamily, "webdings") ||
+		!UT_stricmp(pszFontFamily, "marlett"))
+	{
+		lf.lfCharSet = SYMBOL_CHARSET;
+		strcpy(lf.lfFaceName, pszFontFamily);
+	}
+
+	// Get character set value from the font itself
+	LOGFONT enumlf = { 0 };
+	enumlf.lfCharSet = DEFAULT_CHARSET;
+	strcpy(enumlf.lfFaceName, lf.lfFaceName);
+	EnumFontFamiliesEx(GetDC(NULL), &enumlf, 
+		(FONTENUMPROC)win32Internal_fontEnumProcedure, (LPARAM)&lf, 0);
+
 	lf.lfOutPrecision = OUT_TT_ONLY_PRECIS;		// Choose only True Type fonts.
 	lf.lfQuality = PROOF_QUALITY;
 
@@ -176,37 +202,37 @@ GR_Font* GR_Win32Graphics::findFont(const char* pszFontFamily,
 
 void GR_Win32Graphics::drawChar(UT_UCSChar Char, UT_sint32 xoff, UT_sint32 yoff)
 {
-	SelectObject(m_hdc, m_pFont->getHFONT());
+	HFONT hFont = m_pFont->getHFONT();
+	SelectObject(m_hdc, hFont);
 	SetTextAlign(m_hdc, TA_LEFT | TA_TOP);
 	SetBkMode(m_hdc, TRANSPARENT);		// TODO: remember and reset?
 
 	UT_UCSChar currentChar = remapGlyph(Char, UT_FALSE);
 
-	// TMN: 27 Dec 2000 - TODO: Understand why the code previously
-	// checked for NT. Why did it use ExtTextOutA if not NT? ExtTextOutW
-	// is implemented in Win9x+ also.
-	// If _you_ - the reader - knows this and also think it's safe to
-	// remove the code within the "#if 0" block, please do.
-#if 0
-
-	if (UT_IsWinNT())
+	// Windows NT and Windows 95 support the Unicode Font file. 
+	// All of the Unicode glyphs can be rendered if the glyph is found in
+	// the font file. However, Windows 95 does  not support the Unicode 
+	// characters other than the characters for which the particular codepage
+	// of the font file is defined.
+	// Reference Microsoft knowledge base:
+	// Q145754 - PRB ExtTextOutW or TextOutW Unicode Text Output Is Blank
+	LOGFONT lf;
+	int iRes = GetObject(hFont, sizeof(LOGFONT), &lf);
+	UT_ASSERT(iRes);
+	if (UT_IsWinNT() == UT_FALSE && lf.lfCharSet == SYMBOL_CHARSET)
 	{
-		ExtTextOutW(m_hdc, xoff, yoff, 0, NULL, &currentChar, 1, NULL);
-	}
-	else
-	{
+		// Symbol character handling for Win9x
 		char str[sizeof(UT_UCSChar)];
 		int iConverted = WideCharToMultiByte(CP_ACP, NULL, 
 			&currentChar, 1,
 			str, sizeof(str), NULL, NULL);
 		ExtTextOutA(m_hdc, xoff, yoff, 0, NULL, str, iConverted, NULL);
 	}
-
-#else
-
-	ExtTextOutW(m_hdc, xoff, yoff, 0, NULL, &currentChar, 1, NULL);
-
-#endif
+	else
+	{
+		// Unicode font and default character set handling for WinNT and Win9x
+		ExtTextOutW(m_hdc, xoff, yoff, 0, NULL, &currentChar, 1, NULL);
+	}
 }
 
 void GR_Win32Graphics::drawChars(const UT_UCSChar* pChars,
@@ -215,7 +241,8 @@ void GR_Win32Graphics::drawChars(const UT_UCSChar* pChars,
 {
 	UT_ASSERT(pChars);
 
-	SelectObject(m_hdc, m_pFont->getHFONT());
+	HFONT hFont = m_pFont->getHFONT();
+	SelectObject(m_hdc, hFont);
 	SetTextAlign(m_hdc, TA_LEFT | TA_TOP);
 	SetBkMode(m_hdc, TRANSPARENT);		// TODO: remember and reset?
 
@@ -225,19 +252,19 @@ void GR_Win32Graphics::drawChars(const UT_UCSChar* pChars,
 		currentChars[i] = remapGlyph(pChars[iCharOffset + i], UT_FALSE);
 	}
 
-	// TMN: 27 Dec 2000 - TODO: Understand why the code previously
-	// checked for NT. Why did it use ExtTextOutA if not NT? ExtTextOutW
-	// is implemented in Win9x+ also.
-	// If _you_ - the reader - knows this and also think it's safe to
-	// remove the code within the "#if 0" block, please do.
-#if 0
-
-	if (UT_IsWinNT())
+	// Windows NT and Windows 95 support the Unicode Font file. 
+	// All of the Unicode glyphs can be rendered if the glyph is found in
+	// the font file. However, Windows 95 does  not support the Unicode 
+	// characters other than the characters for which the particular codepage
+	// of the font file is defined.
+	// Reference Microsoft knowledge base:
+	// Q145754 - PRB ExtTextOutW or TextOutW Unicode Text Output Is Blank
+	LOGFONT lf;
+	int iRes = GetObject(hFont, sizeof(LOGFONT), &lf);
+	UT_ASSERT(iRes);
+	if (UT_IsWinNT() == UT_FALSE && lf.lfCharSet == SYMBOL_CHARSET)
 	{
-		ExtTextOutW(m_hdc, xoff, yoff, 0, NULL, currentChars, iLength, NULL);
-	}
-	else
-	{
+		// Symbol character handling for Win9x
 		char* str = new char[iLength * sizeof(UT_UCSChar)];
 		int iConverted = WideCharToMultiByte(CP_ACP, NULL, 
 			currentChars, iLength, 
@@ -245,12 +272,11 @@ void GR_Win32Graphics::drawChars(const UT_UCSChar* pChars,
 		ExtTextOutA(m_hdc, xoff, yoff, 0, NULL, str, iConverted, NULL);
 		delete [] str;
 	}
-
-#else
-
-	ExtTextOutW(m_hdc, xoff, yoff, 0, NULL, currentChars, iLength, NULL);
-
-#endif
+	else
+	{
+		// Unicode font and default character set handling for WinNT and Win9x
+		ExtTextOutW(m_hdc, xoff, yoff, 0, NULL, currentChars, iLength, NULL);
+	}
 
 	delete [] currentChars;
 }
