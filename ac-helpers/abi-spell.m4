@@ -23,6 +23,36 @@ dnl Check for pspell
 SPELL_CFLAGS=""
 SPELL_LIBS=""
 
+abi_spell=check
+
+AC_ARG_ENABLE(enchant,[  --disable-enchant    don't use libenchant spell-wrapper],[
+	if test "x$enableval" = "xno"; then
+		abi_spell=disenchanted
+	fi
+])
+
+if test $abi_spell = check; then
+	PKG_CHECK_MODULES(_abi_enchant,[libenchant >= 0.1.0],[
+		abi_spell=enchant
+	],[	abi_spell=check
+	])
+fi
+
+if test $abi_spell = enchant; then
+	SPELL_CFLAGS="$_abi_enchant_CFLAGS"
+	SPELL_LIBS="$_abi_enchant_LIBS"
+else
+	ABI_SPELL_CHECK
+fi
+
+AM_CONDITIONAL(WITH_ENCHANT,[test $abi_spell = enchant])
+AM_CONDITIONAL(WITH_PSPELL, [test $abi_spell = pspell])
+AM_CONDITIONAL(WITH_ISPELL, [test $abi_spell = ispell])
+
+])
+
+AC_DEFUN([ABI_SPELL_CHECK],[
+
 ABI_PSPELL_OPT(0.12.0,yes)
 
 if test "$abi_pspell_opt" = yes; then
@@ -112,8 +142,6 @@ fi
 
 AC_SUBST(SPELL_CFLAGS)
 AC_SUBST(SPELL_LIBS)
-
-AM_CONDITIONAL(WITH_PSPELL,test $abi_spell = pspell)
 
 ])
 

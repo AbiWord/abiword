@@ -24,9 +24,22 @@ noinst_LIBRARIES = libSpell.a
 
 COMMONSOURCES = spell_manager.cpp barbarisms.cpp
 
-if WITH_PSPELL
-libSpell_a_SOURCES = $(COMMONSOURCES) pspell_checker.cpp
+if WITH_ENCHANT
+ENCHANTSOURCES = enchant_checker.cpp
 else
-libSpell_a_SOURCES = $(COMMONSOURCES) ispell_checker.cpp \
-	good.cpp tgood.cpp lookup.cpp makedent.cpp hash.cpp correct.cpp
+ENCHANTSOURCES = 
 endif
+
+if WITH_PSPELL
+PSPELLSOURCES = pspell_checker.cpp
+else
+PSPELLSOURCES = 
+endif
+
+if WITH_ISPELL
+ISPELLSOURCES = ispell_checker.cpp good.cpp tgood.cpp lookup.cpp makedent.cpp hash.cpp correct.cpp
+else
+ISPELLSOURCES = 
+endif
+
+libSpell_a_SOURCES = $(COMMONSOURCES) $(ENCHANTSOURCES) $(PSPELLSOURCES) $(ISPELLSOURCES)
