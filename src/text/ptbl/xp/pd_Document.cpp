@@ -212,6 +212,19 @@ UT_Error PD_Document::readFromFile(const char * szFilename, int ieft)
 
 UT_Error PD_Document::newDocument(void)
 {
+  UT_String normal_awt (XAP_App::getApp()->getAbiSuiteLibDir());
+  normal_awt += "/templates/normal.awt";
+
+  UT_DEBUGMSG(("DOM: trying to load normal.awt: %s\n", normal_awt.c_str()));
+
+  if (UT_OK == importFile ( normal_awt.c_str(), IEFT_Unknown, true ) )
+    {
+      UT_DEBUGMSG(("DOM: loaded normal.awt!\n"));
+      return UT_OK;
+    }
+  else
+    {
+      UT_DEBUGMSG(("Could not load normal.awt, defaulting to a blank document\n"));
 	setDefaultPageSize();
 	m_pPieceTable = new pt_PieceTable(this);
 	if (!m_pPieceTable)
@@ -230,6 +243,7 @@ UT_Error PD_Document::newDocument(void)
 	m_pPieceTable->setPieceTableState(PTS_Editing);
 	_setClean();							// mark the document as not-dirty
 	return UT_OK;
+    }
 }
 
 UT_Error PD_Document::saveAs(const char * szFilename, int ieft)
