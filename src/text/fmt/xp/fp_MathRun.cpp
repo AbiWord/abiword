@@ -31,18 +31,21 @@
 #include "gr_Graphics.h"
 #include "gr_Painter.h"
 #include "gr_DrawArgs.h"
+
+#if 0
 #include "gr_Abi_MathGraphicDevice.h"
 #include "gr_Abi_RenderingContext.h"
-
 #include <MathView/AbstractLogger.hh>
 #include <MathView/BoundingBox.hh>
 #include <MathView/MathMLNamespaceContext.hh>
 #include <MathView/MathMLOperatorDictionary.hh>
 #include <MathView/NamespaceContext.hh>
 #include <MathView/MathMLElement.hh>
+#endif
+#include "gr_Abi_EmbedManager.h"
 
 fp_MathRun::fp_MathRun(fl_BlockLayout* pBL, 
-					   UT_uint32 iOffsetFirst)	: 
+					   UT_uint32 iOffsetFirst,PT_AttrPropIndex indexAP)	: 
 	fp_Run(pBL,  iOffsetFirst,1, FPRUN_MATH ),
     m_iImageWidth(0),
 	m_iImageHeight(0),
@@ -53,7 +56,11 @@ fp_MathRun::fp_MathRun(fl_BlockLayout* pBL,
 	m_iGraphicTick(0),
 	m_pszDataID(NULL),
 	m_sMathML(""),
+#if 0
 	m_pMathView(NULL)
+#endif
+        m_iMathUID(-1),
+        m_iIndexAP(indexAP)
 {
 	lookupProperties(getGraphics());
 }
@@ -61,11 +68,14 @@ fp_MathRun::fp_MathRun(fl_BlockLayout* pBL,
 fp_MathRun::~fp_MathRun(void)
 {
 
+  getMathManager()->releaseEmbedView(m_iMathUID);
+#if 0
   // LUCA: It is fundamental to do this before the MathView object
   // gets destroyed to avoid resuscitating it
   m_pMathView->resetRootElement();
+#endif
 }
-
+#if 0
 AbstractLogger * fp_MathRun::getLogger() const
 {
   return getBlock()->getDocLayout()->getLogger();
@@ -80,6 +90,11 @@ GR_Abi_RenderingContext *  fp_MathRun::getAbiContext() const
 {
 	return getBlock()->getDocLayout()->getAbiContext();
 }
+#endif
+GR_Abi_EmbedManager * fp_MathRun::getMathManager(void)
+{
+  return getBlock()->getDocLayout()->getMathManager();
+}
 
 void fp_MathRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 									const PP_AttrProp * /*pBlockAP*/,
@@ -89,6 +104,7 @@ void fp_MathRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 	UT_DEBUGMSG(("fp_MathRun _lookupProperties span %x \n",pSpanAP));
 	m_pSpanAP = pSpanAP;
 	bool bFoundDataID = pSpanAP->getAttribute("dataid", m_pszDataID);
+#if 0
 	m_sMathML.clear();
 	if (bFoundDataID && m_pszDataID)
 	{
@@ -104,6 +120,7 @@ void fp_MathRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 	UT_return_if_fail(bFoundDataID);
 	UT_return_if_fail(m_pszDataID);
 	UT_DEBUGMSG(("MATH ML string is... \n %s \n",m_sMathML.utf8_str()));
+#endif
 
 // Load this into MathView
 
@@ -127,6 +144,7 @@ void fp_MathRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 
 	// LUCA: It is fundamental to do this before the MathView object
 	// gets destroyed to avoid resuscitating it
+#if 0
 	if(	m_pMathView == NULL)
 	{
 		m_pMathView = libxml2_MathView::create();
@@ -143,7 +161,19 @@ void fp_MathRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 	UT_sint32 iWidth = getAbiContext()->toAbiLayoutUnits(box.width);
 	UT_sint32 iAscent = getAbiContext()->toAbiLayoutUnits(box.height);
 	UT_sint32 iDescent = getAbiContext()->toAbiLayoutUnits(box.depth);
-
+#endif
+	UT_sint32 iWidth,iAscent,iDescent=0;
+	if(m_iMathUID < 0)
+	{
+	  PD_Document * pDoc = getBlock()->getDocument();
+	  m_iMathUID = getMathManager()->makeEmbedView(pDoc,m_iIndexAP);
+	  getMathManager()->initializeEmbedView(m_iMathUID);
+	  getMathManager()->loadEmbedData(m_iMathUID);
+	  getMathManager()->setDefaultFontSize(m_iMathUID,atoi(pszSize));
+	}
+	iWidth = getMathManager()->getWidth(m_iMathUID);
+	iAscent = getMathManager()->getAscent(m_iMathUID);
+	iDescent = getMathManager()->getDescent(m_iMathUID);
 	UT_DEBUGMSG(("Width = %d Ascent = %d Descent = %d \n",iWidth,iAscent,iDescent)); 
 	const XML_Char * szWidth = NULL;
 	m_pSpanAP->getProperty("width", szWidth);
@@ -324,8 +354,10 @@ const char * fp_MathRun::getDataID(void) const
 void fp_MathRun::_draw(dg_DrawArgs* pDA)
 {
 	GR_Graphics *pG = pDA->pG;
+#if 0
 	UT_DEBUGMSG(("Draw with class %x \n",pG));
 	UT_DEBUGMSG(("Contents of fp MathRun \n %s \n",m_sMathML.utf8_str()));
+#endif
 	FV_View* pView = _getView();
 	UT_return_if_fail(pView);
 
@@ -366,6 +398,7 @@ void fp_MathRun::_draw(dg_DrawArgs* pDA)
 	{
 		Fill(getGraphics(),pDA->xoff, pDA->yoff - getAscent(), getWidth(), iLineHeight);
 	}
+#if 0
 	scaled x = getAbiContext()->fromAbiX(-pDA->xoff);
 	scaled y = getAbiContext()->fromAbiLayoutUnits(pDA->yoff); // should be fromAbiY()
 
@@ -379,6 +412,9 @@ void fp_MathRun::_draw(dg_DrawArgs* pDA)
 	UT_DEBUGMSG(("from math run setting color %d %d %d\n", c.m_red, c.m_grn, c.m_blu));
 
 	m_pMathView->render(*getAbiContext(), x, y);
+#endif
+	getMathManager()->setColor(m_iMathUID,getFGColor());
+	getMathManager()->render(m_iMathUID,pDA->xoff,pDA->yoff);
 }
 
 

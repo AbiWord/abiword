@@ -65,6 +65,7 @@ class GR_GraphicsFactory;
 class GR_Graphics;
 class GR_AllocInfo;
 class XAP_InputModes;
+class GR_Abi_EmbedManager;
 
 /*****************************************************************
 ******************************************************************
@@ -228,6 +229,8 @@ public:
 	virtual UT_sint32			setInputMode(const char * szName);
 	const char *				getInputMode() const;
 	EV_EditEventMapper *		getEditEventMapper() const;
+    void                        registerEmbeddable(GR_Abi_EmbedManager * pEmbed);
+	GR_Abi_EmbedManager *       getEmbeddableManager(GR_Graphics * pG, const char * szObjectType);
 
 protected:
 	void									_setAbiSuiteLibDir(const char * sz);
@@ -273,7 +276,7 @@ private:
 	UT_uint32                               m_iDefaultGraphicsId;
 	
 	XAP_InputModes *						m_pInputModes;
-	
+	UT_GenericVector <GR_Abi_EmbedManager *>       m_vecEmbedManagers;
 	XAP_App(const XAP_App&);				// should not even be called. Just to avoid a warning.
 	void operator=(const XAP_App&);
 #ifdef DEBUG

@@ -72,6 +72,7 @@
 #include "ut_iconv.h"
 #include "fv_View.h"
 #include "fp_Run.h"
+#include "gr_Abi_MathManager.h"
 
 #include "ut_string_class.h"
 #include "xap_EncodingManager.h"
@@ -340,6 +341,12 @@ bool AP_UnixApp::initialize(bool has_display)
 	getMenuFactory()->buildMenuLabelSet(szMenuLabelSetName);
 	bool bLoadPlugins = true;
 	bool bFound = getPrefsValueBool(XAP_PREF_KEY_AutoLoadPlugins,&bLoadPlugins);
+	///////////////////////////////////////////////////////////////////
+	// Initial HACK for MathView
+	///////////////////////////////////////////////////////////////////
+	GR_Abi_MathManager * pMathManager = new GR_Abi_MathManager(NULL);
+	registerEmbeddable(pMathManager);
+
 	if(bLoadPlugins || !bFound)
 		loadAllPlugins();
 

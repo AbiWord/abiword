@@ -69,12 +69,15 @@ class PX_ChangeRecord_StruxChange;
 class fl_FootnoteLayout;
 class fl_EndnoteLayout;
 class fp_EndnoteContainer;
+#if 0
 // BEGIN: MathView
 class GR_Abi_MathGraphicDevice;
 class GR_Abi_RenderingContext;
 class AbstractLogger;
 class MathMLOperatorDictionary;
 // END: MathView
+#endif
+class 	GR_Abi_EmbedManager;
 
 // the following get used by view and layout code, 
 // since they're private to the formatter, we stick 'em here
@@ -175,7 +178,8 @@ public:
 	fl_DocSectionLayout* 	findSectionForHdrFtr(const char* pszHdrFtrID) const;
 	void 				deleteEmptyColumnsAndPages(void);
 	void 				deleteEmptyPages( bool bDontNotify = false);
-
+	GR_Abi_EmbedManager * getMathManager(void)
+	  { return m_pMathManager;}
 // --------------------------------------------------------------------
 // Footnote Methods
 // fl_DocLAyout stores this Vector of footnotes to speed things up and
@@ -272,10 +276,12 @@ public:
 	void            notifyListeners(AV_ChangeMask mask);
 
 	// BEGIN: MathView
+#if 0
 	AbstractLogger * getLogger(void) const { return m_pLogger; }
 	GR_Abi_MathGraphicDevice * getMathGraphicDevice(void) const { return m_pMathGraphicDevice; }
 	GR_Abi_RenderingContext * getAbiContext(void) const { return m_pAbiContext; }
 	MathMLOperatorDictionary * getOperatorDictionary(void) const { return m_pOperatorDictionary; }
+#endif
 	// END: MathView
 #ifdef FMT_TEST
 	//! Pointer to last instatiated FL_DocLayout. Used for debugging.
@@ -345,12 +351,15 @@ private:
 	UT_uint32           m_iGraphicTick;
 	UT_GenericVector<fl_TOCLayout *> m_vecTOC;
 	PT_DocPosition      m_iDocSize;
+#if 0
 	// BEGIN: MathView
 	AbstractLogger * m_pLogger;
 	GR_Abi_MathGraphicDevice *   m_pMathGraphicDevice;
 	GR_Abi_RenderingContext *  m_pAbiContext;
 	MathMLOperatorDictionary * m_pOperatorDictionary;
 	// END: MathView
+#endif
+	GR_Abi_EmbedManager * m_pMathManager;
 };
 
 #endif /* DOCLAYOUT_H */

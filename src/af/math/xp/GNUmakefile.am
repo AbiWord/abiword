@@ -20,7 +20,7 @@ NULL =
 
 include $(top_srcdir)/includes.mk
 
-INCLUDES = $(AF_INCLUDES) $(ICONV_INCLUDES) $(MATHVIEW_CFLAGS)
+INCLUDES = $(AF_INCLUDES) $(ICONV_INCLUDES) $(WP_INCLUDES)  $(OTHER_INCLUDES) \ $(MATHVIEW_CFLAGS) $(TEXT_INCLUDES) 
 
 noinst_LIBRARIES = libMath_xp.a
 
@@ -32,6 +32,7 @@ libMath_xp_a_SOURCES = \
 	gr_Abi_InkArea.cpp \
 	gr_Abi_MathGraphicDevice.cpp \
 	gr_Abi_RenderingContext.cpp \
+	gr_Abi_MathManager.cpp \
 	$(NULL)
 
 noinst_HEADERS = \
@@ -43,5 +44,6 @@ noinst_HEADERS = \
 	gr_Abi_InkArea.h \
 	gr_Abi_MathGraphicDevice.h \
 	gr_Abi_RenderingContext.h \
+	gr_Abi_MathManager.h \
 	$(NULL)
 

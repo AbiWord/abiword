@@ -368,7 +368,7 @@ protected:
 	bool					_doInsertFieldEndRun(PT_BlockOffset blockOffset);
 	bool					_doInsertBookmarkRun(PT_BlockOffset blockOffset);
 	bool					_doInsertHyperlinkRun(PT_BlockOffset blockOffset);
-	bool					_doInsertMathRun(PT_BlockOffset blockOffset);
+	bool					_doInsertMathRun(PT_BlockOffset blockOffset,PT_AttrPropIndex indexAP);
 //	bool					_deleteBookmarkRun(PT_BlockOffset blockOffset);
 	bool					_doInsertForcedColumnBreakRun(PT_BlockOffset blockOffset);
 	bool					_doInsertForcedPageBreakRun(PT_BlockOffset blockOffset);

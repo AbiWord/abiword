@@ -4447,10 +4447,10 @@ bool	fl_BlockLayout::_doInsertTabRun(PT_BlockOffset blockOffset)
 }
 
 
-bool	fl_BlockLayout::_doInsertMathRun(PT_BlockOffset blockOffset)
+bool	fl_BlockLayout::_doInsertMathRun(PT_BlockOffset blockOffset,PT_AttrPropIndex indexAP)
 {
 	fp_Run * pNewRun = NULL;
-	pNewRun = new fp_MathRun(this,blockOffset);
+	pNewRun = new fp_MathRun(this,blockOffset,indexAP);
 	UT_ASSERT(pNewRun); // TODO check for outofmem
 
 	return _doInsertRun(pNewRun);
@@ -7239,7 +7239,7 @@ bool fl_BlockLayout::doclistener_populateObject(PT_BlockOffset blockOffset,
 
 	case PTO_Math:
 		UT_DEBUGMSG(("Populate:InsertMathML:\n"));
-		_doInsertMathRun(blockOffset);
+		_doInsertMathRun(blockOffset,pcro->getIndexAP());
 		return true;
 
 	default:
@@ -7307,7 +7307,7 @@ bool fl_BlockLayout::doclistener_insertObject(const PX_ChangeRecord_Object * pcr
 	{
 		UT_DEBUGMSG(("Edit:InsertObject:Math:\n"));
 		blockOffset = pcro->getBlockOffset();
-		_doInsertMathRun(blockOffset);
+		_doInsertMathRun(blockOffset,pcro->getIndexAP());
 		break;
 
 	}

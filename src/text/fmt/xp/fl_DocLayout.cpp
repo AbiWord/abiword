@@ -49,6 +49,7 @@
 #include "ut_timer.h"
 #include "ut_string.h"
 #include "xap_Frame.h"
+#if 0
 // BEGIN: MathView
 #include <MathView/libxml2_MathView.hh>
 #include <MathView/MathMLElement.hh>
@@ -57,6 +58,8 @@
 #include "gr_Abi_MathGraphicDevice.h"
 #include "gr_Abi_RenderingContext.h"
 // END: MathView
+#endif
+#include "gr_Abi_EmbedManager.h"
 
 #define REDRAW_UPDATE_MSECS	500
 
@@ -134,10 +137,13 @@ FL_DocLayout::FL_DocLayout(PD_Document* doc, GR_Graphics* pG)
 	m_bRestartFootPage = false;
 	m_iEndnoteVal = 1;
 	m_EndnoteType = FOOTNOTE_TYPE_NUMERIC_SQUARE_BRACKETS;
-    m_bRestartEndSection = false;
+        m_bRestartEndSection = false;
 	m_bPlaceAtDocEnd = true;
 	m_bPlaceAtSecEnd = false;
-
+	m_pMathManager = XAP_App::getApp()->getEmbeddableManager(pG,"mathml");
+	m_pMathManager->initialize();
+	UT_DEBUGMSG(("Got mamanger of type %s \n",m_pMathManager->getObjectType()));
+#if 0
 	// BEGIN: MathView
 	SmartPtr<AbstractLogger> logger = Logger::create();
 	m_pLogger = logger;
@@ -154,7 +160,7 @@ FL_DocLayout::FL_DocLayout(PD_Document* doc, GR_Graphics* pG)
 						 libxml2_MathView::getDefaultOperatorDictionaryPath());
 	
 	// END: MathView
-
+#endif
 }
 
 FL_DocLayout::~FL_DocLayout()
@@ -171,6 +177,8 @@ FL_DocLayout::~FL_DocLayout()
 	}
 
 	DELETEP(m_pDocListener);
+	DELETEP(m_pMathManager);
+
 	if (m_pBackgroundCheckTimer)
 	{
 		m_bStopSpellChecking = true;
@@ -218,7 +226,7 @@ FL_DocLayout::~FL_DocLayout()
 		delete m_pFirstSection;
 		m_pFirstSection = pNext;
 	}
-
+#if 0
 	// BEGIN: MathView
 	m_pLogger->unref();
 	m_pLogger = 0;
@@ -229,6 +237,8 @@ FL_DocLayout::~FL_DocLayout()
 	m_pOperatorDictionary->unref();
 	m_pOperatorDictionary = 0;
 	// END: MathView
+#endif
+	DELETEP(m_pMathManager);
 }
 
 /*! 

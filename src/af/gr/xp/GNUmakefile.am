@@ -33,7 +33,8 @@ libGr_xp_a_SOURCES=\
 	gr_Caret.cpp			\
 	gr_Painter.cpp \
 	gr_ContextGlyph.cpp \
-	gr_RenderInfo.cpp
+	gr_RenderInfo.cpp \
+	gr_Abi_EmbedManager.cpp
 
 noinst_HEADERS =
 

@@ -24,18 +24,14 @@
 #define FP_MATHRUN_H
 
 #include "fp_Run.h"
-#include <MathView/libxml2_MathView.hh>
-
-class AbstractLogger;
-class GR_Abi_MathGraphicDevice;
-class GR_Abi_RenderingContext;
 
 class fl_BlockLayout;
+class GR_Abi_EmbedManager;
 
 class ABI_EXPORT fp_MathRun : public fp_Run
 {
 public:
-	fp_MathRun(fl_BlockLayout* pBL, PT_BlockOffset iOffsetFirst);
+	fp_MathRun(fl_BlockLayout* pBL, PT_BlockOffset iOffsetFirst,PT_AttrPropIndex indexAP);
     virtual	~ fp_MathRun(void);
 
 	virtual void			mapXYToPosition(UT_sint32 xPos, UT_sint32 yPos, PT_DocPosition& pos, bool& bBOL, bool& bEOL, bool &isTOC);
@@ -45,10 +41,13 @@ public:
 	virtual bool			isSuperscript(void) const ;
 	virtual bool			isSubscript(void)  const;
 	virtual bool 			hasLayoutProperties(void) const;
-
+#if 0
 	AbstractLogger * getLogger(void) const;
 	GR_Abi_MathGraphicDevice * getMathDevice(void) const;
 	GR_Abi_RenderingContext *  getAbiContext(void) const;
+#endif
+	GR_Abi_EmbedManager *   getMathManager(void);
+
 	const char *            getDataID(void) const;
 protected:
 	virtual void			_lookupProperties(const PP_AttrProp * pSpanAP,
@@ -69,7 +68,11 @@ protected:
 	UT_uint32               m_iGraphicTick;
 	const XML_Char *        m_pszDataID;
 	UT_UTF8String           m_sMathML;
+#if 0
 	SmartPtr<libxml2_MathView>      m_pMathView;
+#endif
+	UT_sint32               m_iMathUID;
+	PT_AttrPropIndex        m_iIndexAP;
 };
 
 #endif /* FP_MATHRUN_H */
