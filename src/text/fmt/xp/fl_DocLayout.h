@@ -38,6 +38,12 @@ class PP_AttrProp;
 class DG_Graphics;
 class DG_Font;
 
+// the following get used by view and layout code, 
+// since they're private to the formatter, we stick 'em here
+#define fl_PAGEVIEW_PAGE_SEP	20		// must be <= MARGIN_Y
+#define fl_PAGEVIEW_MARGIN_X	25		
+#define fl_PAGEVIEW_MARGIN_Y	25		
+
 // ----------------------------------------------------------------
 /*
 	FL_DocLayout is a formatted representation of a specific PD_Document, 

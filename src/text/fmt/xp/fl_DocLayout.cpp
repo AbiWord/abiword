@@ -103,6 +103,13 @@ UT_uint32 FL_DocLayout::getHeight()
 		iHeight += p->getHeight();
 	}
 
+	if (m_pG->queryProperties(DG_Graphics::DGP_SCREEN))
+	{
+		// add page view dimensions 
+		iHeight += fl_PAGEVIEW_PAGE_SEP * (count - 1);
+		iHeight += fl_PAGEVIEW_MARGIN_X * 2;
+	}
+
 	return iHeight;
 }
 
@@ -118,6 +125,12 @@ UT_uint32 FL_DocLayout::getWidth()
 		// we layout pages vertically, so this is max, not sum
 		if ((UT_sint32) iWidth < p->getWidth())
 			iWidth = p->getWidth();
+	}
+
+	if (m_pG->queryProperties(DG_Graphics::DGP_SCREEN))
+	{
+		// add page view dimensions 
+		iWidth += fl_PAGEVIEW_MARGIN_Y * 2;
 	}
 
 	return iWidth;

@@ -1448,14 +1448,9 @@ void FV_View::_autoScroll(UT_Timer * pTimer)
 	}
 }
 
-void FV_View::extSelToXY(UT_sint32 xPos, UT_sint32 yPos, UT_Bool bDrag)
+fp_Page* FV_View::_getPageForXY(UT_sint32 xPos, UT_sint32 yPos, UT_sint32& yClick)
 {
-	/*
-	  Figure out which page we clicked on.
-	  Pass the click down to that page.
-	*/
-
-	UT_sint32 yClick = yPos + m_yScrollOffset;
+	yClick = yPos + m_yScrollOffset - fl_PAGEVIEW_MARGIN_Y;
 	fp_Page* pPage = m_pLayout->getFirstPage();
 	while (pPage)
 	{
@@ -1467,7 +1462,7 @@ void FV_View::extSelToXY(UT_sint32 xPos, UT_sint32 yPos, UT_Bool bDrag)
 		}
 		else
 		{
-			yClick -= iPageHeight;
+			yClick -= iPageHeight + fl_PAGEVIEW_PAGE_SEP;
 		}
 		pPage = pPage->getNext();
 	}
@@ -1478,12 +1473,24 @@ void FV_View::extSelToXY(UT_sint32 xPos, UT_sint32 yPos, UT_Bool bDrag)
 		pPage = m_pLayout->getLastPage();
 
 		UT_sint32 iPageHeight = pPage->getHeight();
-		yClick += iPageHeight;
+		yClick += iPageHeight + fl_PAGEVIEW_PAGE_SEP;
 	}
+
+	return pPage;
+}
+
+void FV_View::extSelToXY(UT_sint32 xPos, UT_sint32 yPos, UT_Bool bDrag)
+{
+	/*
+	  Figure out which page we clicked on.
+	  Pass the click down to that page.
+	*/
+	UT_sint32 yClick;
+	fp_Page* pPage = _getPageForXY(xPos, yPos, yClick);
 
 	PT_DocPosition iNewPoint;
 	UT_Bool bBOL, bEOL;
-	pPage->mapXYToPosition(xPos + m_xScrollOffset, yClick, iNewPoint, bBOL, bEOL);
+	pPage->mapXYToPosition(xPos + m_xScrollOffset - fl_PAGEVIEW_MARGIN_X, yClick, iNewPoint, bBOL, bEOL);
 
 	UT_Bool bPostpone = UT_FALSE;
 
@@ -1688,25 +1695,8 @@ void FV_View::warpInsPtToXY(UT_sint32 xPos, UT_sint32 yPos)
 	  Figure out which page we clicked on.
 	  Pass the click down to that page.
 	*/
-
-	UT_sint32 yClick = yPos + m_yScrollOffset;
-	fp_Page* pPage = m_pLayout->getFirstPage();
-	while (pPage)
-	{
-		UT_sint32 iPageHeight = pPage->getHeight();
-		if (yClick < iPageHeight)
-		{
-			// found it
-			break;
-		}
-		else
-		{
-			yClick -= iPageHeight;
-		}
-		pPage = pPage->getNext();
-	}
-
-	UT_ASSERT(pPage);
+	UT_sint32 yClick;
+	fp_Page* pPage = _getPageForXY(xPos, yPos, yClick);
 
 	_clearPointAP(UT_TRUE);
 
@@ -1722,7 +1712,7 @@ void FV_View::warpInsPtToXY(UT_sint32 xPos, UT_sint32 yPos)
 	PT_DocPosition pos;
 	UT_Bool bBOL, bEOL;
 	
-	pPage->mapXYToPosition(xPos + m_xScrollOffset, yClick, pos, bBOL, bEOL);
+	pPage->mapXYToPosition(xPos + m_xScrollOffset - fl_PAGEVIEW_MARGIN_X, yClick, pos, bBOL, bEOL);
 	
 	_setPoint(pos, bEOL);
 	_fixInsertionPointCoords();
@@ -1735,7 +1725,7 @@ void FV_View::getPageScreenOffsets(fp_Page* pThePage, UT_sint32& xoff,
 										 UT_sint32& yoff, UT_sint32& width,
 										 UT_sint32& height)
 {
-	UT_uint32 y = 0;
+	UT_uint32 y = fl_PAGEVIEW_MARGIN_Y;
 	
 	fp_Page* pPage = m_pLayout->getFirstPage();
 	while (pPage)
@@ -1744,20 +1734,20 @@ void FV_View::getPageScreenOffsets(fp_Page* pThePage, UT_sint32& xoff,
 		{
 			break;
 		}
-		y += pPage->getHeight();
+		y += pPage->getHeight() + fl_PAGEVIEW_PAGE_SEP;
 
 		pPage = pPage->getNext();
 	}
 
 	yoff = y - m_yScrollOffset;
-	xoff = -m_xScrollOffset;
+	xoff = fl_PAGEVIEW_MARGIN_Y - m_xScrollOffset;
 	height = m_iWindowHeight;
 	width = m_iWindowWidth;
 }
 
 void FV_View::getPageYOffset(fp_Page* pThePage, UT_sint32& yoff)
 {
-	UT_uint32 y = 0;
+	UT_uint32 y = fl_PAGEVIEW_MARGIN_Y;
 	
 	fp_Page* pPage = m_pLayout->getFirstPage();
 	while (pPage)
@@ -1766,7 +1756,7 @@ void FV_View::getPageYOffset(fp_Page* pThePage, UT_sint32& yoff)
 		{
 			break;
 		}
-		y += pPage->getHeight();
+		y += pPage->getHeight() + fl_PAGEVIEW_PAGE_SEP;
 
 		pPage = pPage->getNext();
 	}
@@ -1887,6 +1877,7 @@ void FV_View::_findPositionCoords(PT_DocPosition pos,
 	UT_sint32 iPageOffset;
 	getPageYOffset(pPointPage, iPageOffset);
 	yPoint += iPageOffset;
+	xPoint += fl_PAGEVIEW_MARGIN_X;
 
 	// now, we have coords absolute, as if all pages were stacked vertically
 	xPoint -= m_xScrollOffset;
@@ -2096,13 +2087,42 @@ void FV_View::draw(UT_sint32 x, UT_sint32 y,
 		m_pG->setClipRect(&r);
 	}
 
-	UT_sint32 curY = 0;
+	// figure out where pages go, based on current window dimensions
+	// TODO: don't calc for every draw
+	// HYP:  cache calc results at scroll/size time
+	UT_sint32 iDocHeight = m_pLayout->getHeight();
+	UT_sint32 iDocWidth = m_pLayout->getHeight();
+
+	// TODO: handle positioning within oversized viewport
+	// TODO: handle variable-size pages (envelope, landscape, etc.)
+
+	/*
+		In page view mode, so draw outside decorations first, then each 
+		page with its decorations.  
+	*/
+
+	UT_RGBColor clrMargin(127,127,127);		// dark gray
+
+	if (m_xScrollOffset < fl_PAGEVIEW_MARGIN_X)
+	{
+		// fill left margin
+		m_pG->fillRect(clrMargin, 0, 0, fl_PAGEVIEW_MARGIN_X - m_xScrollOffset, m_iWindowHeight);
+	}
+
+	if (m_yScrollOffset < fl_PAGEVIEW_MARGIN_Y)
+	{
+		// fill top margin
+		m_pG->fillRect(clrMargin, 0, 0, m_iWindowWidth, fl_PAGEVIEW_MARGIN_Y - m_yScrollOffset);
+	}
+
+	UT_sint32 curY = fl_PAGEVIEW_MARGIN_Y;
 	fp_Page* pPage = m_pLayout->getFirstPage();
 	while (pPage)
 	{
+		UT_sint32 iPageWidth = pPage->getWidth();
 		UT_sint32 iPageHeight = pPage->getHeight();
 		UT_sint32 adjustedTop    = curY - m_yScrollOffset;
-		UT_sint32 adjustedBottom = adjustedTop + iPageHeight;
+		UT_sint32 adjustedBottom = adjustedTop + iPageHeight + fl_PAGEVIEW_PAGE_SEP;
 		if (adjustedTop > m_iWindowHeight)
 		{
 			// the start of this page is past the bottom
@@ -2163,20 +2183,15 @@ void FV_View::draw(UT_sint32 x, UT_sint32 y,
 			UT_DEBUGMSG(("drawing page E: iPageHeight=%d curY=%d nPos=%d m_iWindowHeight=%d y=%d h=%d\n",
 						 iPageHeight,curY,m_yScrollOffset,m_iWindowHeight,y,height));
 #endif
-			UT_RGBColor clr(0,0,0);		// black
-			m_pG->setColor(clr);
-			m_pG->drawLine(0, adjustedTop, m_iWindowWidth, adjustedTop);
-			
 			dg_DrawArgs da;
 			
 			da.pG = m_pG;
-			da.xoff = -m_xScrollOffset;
+			da.xoff = fl_PAGEVIEW_MARGIN_X - m_xScrollOffset;
 			da.yoff = adjustedTop;
 			da.x = x;
 			da.y = y;
 			da.width = width;
 			da.height = height;
-
 			if (m_bSelection)
 			{
 				if (m_iSelectionAnchor < _getPoint())
@@ -2196,11 +2211,54 @@ void FV_View::draw(UT_sint32 x, UT_sint32 y,
 			}
 
 			pPage->draw(&da);
+
+			// draw page decorations
+			UT_RGBColor clr(0,0,0);		// black
+			m_pG->setColor(clr);
+
+			UT_sint32 adjustedLeft  = fl_PAGEVIEW_MARGIN_X - m_xScrollOffset;
+			UT_sint32 adjustedRight = adjustedLeft + iPageWidth;
+
+			adjustedBottom -= fl_PAGEVIEW_PAGE_SEP;
+
+			// one pixel border
+			m_pG->drawLine(adjustedLeft, adjustedTop, adjustedRight, adjustedTop);
+			m_pG->drawLine(adjustedRight, adjustedTop, adjustedRight, adjustedBottom);
+			m_pG->drawLine(adjustedRight, adjustedBottom, adjustedLeft, adjustedBottom);
+			m_pG->drawLine(adjustedLeft, adjustedBottom, adjustedLeft, adjustedTop);
+
+			// fill to right of page
+			m_pG->fillRect(clrMargin, adjustedRight + 1, adjustedTop, m_iWindowWidth - (adjustedRight + 1), iPageHeight);
+
+			// fill separator below page
+			m_pG->fillRect(clrMargin, adjustedLeft, adjustedBottom + 1, m_iWindowWidth - adjustedLeft, fl_PAGEVIEW_PAGE_SEP - 1);
+
+			// two pixel drop shadow
+			adjustedLeft += 3;
+			adjustedBottom += 1;
+			m_pG->drawLine(adjustedLeft, adjustedBottom, adjustedRight+1, adjustedBottom);
+			adjustedBottom += 1;
+			m_pG->drawLine(adjustedLeft, adjustedBottom, adjustedRight+1, adjustedBottom);
+
+			adjustedTop += 3;
+			adjustedRight += 1;
+			m_pG->drawLine(adjustedRight, adjustedTop, adjustedRight, adjustedBottom+1);
+			adjustedRight += 1;
+			m_pG->drawLine(adjustedRight, adjustedTop, adjustedRight, adjustedBottom+1);
 		}
 
-		curY += iPageHeight;
+		curY += iPageHeight + fl_PAGEVIEW_PAGE_SEP;
 
 		pPage = pPage->getNext();
+	}
+
+	if (curY < iDocHeight)
+	{
+		// fill below bottom of document
+		UT_sint32 y = curY - m_yScrollOffset + 1;
+		UT_sint32 h = m_iWindowHeight - y;
+
+		m_pG->fillRect(clrMargin, 0, y, m_iWindowWidth, h);
 	}
 
 	_fixInsertionPointCoords();
@@ -2286,17 +2344,17 @@ void FV_View::cmdScroll(AV_ScrollCmd cmd, UT_uint32 iPos)
 		break;
 	case AV_SCROLLCMD_TOBOTTOM:
 		fp_Page* pPage = m_pLayout->getFirstPage();
-		UT_sint32 iDocHeight = 0;
+		UT_sint32 iDocHeight = fl_PAGEVIEW_MARGIN_Y;
 		while (pPage)
 		{
-			iDocHeight += pPage->getHeight();
+			iDocHeight += pPage->getHeight() + fl_PAGEVIEW_PAGE_SEP;
 			pPage = pPage->getNext();
 		}
 		yoff = iDocHeight;
 		break;
 	}
 
-	// try and figure out of we really need to scroll
+	// try and figure out if we really need to scroll
 	if (yoff < 0)
 	{
 		if (m_yScrollOffset == 0) // already at top - forget it
@@ -2309,7 +2367,7 @@ void FV_View::cmdScroll(AV_ScrollCmd cmd, UT_uint32 iPos)
 
 	if (yoff > docHeight)
 	{
-		if (m_yScrollOffset == docHeight) // all ready at bottom
+		if (m_yScrollOffset == docHeight) // already at bottom
 		{
 			return;
 		}
@@ -2328,29 +2386,12 @@ UT_Bool FV_View::isLeftMargin(UT_sint32 xPos, UT_sint32 yPos)
 	  Figure out which page we clicked on.
 	  Pass the click down to that page.
 	*/
-
-	UT_sint32 yClick = yPos + m_yScrollOffset;
-	fp_Page* pPage = m_pLayout->getFirstPage();
-	while (pPage)
-	{
-		UT_sint32 iPageHeight = pPage->getHeight();
-		if (yClick < iPageHeight)
-		{
-			// found it
-			break;
-		}
-		else
-		{
-			yClick -= iPageHeight;
-		}
-		pPage = pPage->getNext();
-	}
-
-	UT_ASSERT(pPage);
+	UT_sint32 yClick;
+	fp_Page* pPage = _getPageForXY(xPos, yPos, yClick);
 
 	PT_DocPosition iNewPoint;
 	UT_Bool bBOL, bEOL;
-	pPage->mapXYToPosition(xPos + m_xScrollOffset, yClick, iNewPoint, bBOL, bEOL);
+	pPage->mapXYToPosition(xPos + m_xScrollOffset - fl_PAGEVIEW_MARGIN_X, yClick, iNewPoint, bBOL, bEOL);
 
 	return bBOL;
 }

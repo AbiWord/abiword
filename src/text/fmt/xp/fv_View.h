@@ -140,6 +140,10 @@ protected:
 											fp_Run** ppRun);
 	fl_BlockLayout* 	_findBlockAtPosition(PT_DocPosition pos);
 
+	fp_Page*			_getPageForXY(UT_sint32 xPos, 
+									  UT_sint32 yPos, 
+									  UT_sint32& yClick);
+
 	void				_moveToSelectionEnd(UT_Bool bForward);
 	void				_clearSelection(void);
 	void				_resetSelection(void);
