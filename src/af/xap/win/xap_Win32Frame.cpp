@@ -358,14 +358,6 @@ LRESULT CALLBACK XAP_Win32Frame::_FrameWndProc(HWND hwnd, UINT iMsg, WPARAM wPar
 
 	switch (iMsg)
 	{
-#define chSTR(x)           #x
-#define chSTR2(x)        chSTR(x)
-#define chMSG(desc) message(__FILE__ "(" chSTR2(__LINE__) "):" desc)
-#pragma chMSG("TMN Put this in when view is committed!")
-#undef chMSG
-#undef chSTR2
-#undef chSTR
-
 	case WM_EXITMENULOOP:
 	case WM_SETFOCUS:
 		if (pView)
