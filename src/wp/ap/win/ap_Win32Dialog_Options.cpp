@@ -19,6 +19,7 @@
 
 #include <windows.h>
 #include <commctrl.h>
+#include <stdio.h>
 
 #include "ut_types.h"
 #include "ut_string.h"
@@ -437,7 +438,22 @@ BOOL AP_Win32Dialog_Options::_onInitTab(HWND hWnd, WPARAM wParam, LPARAM lParam)
 			_DS(OPTIONS_FRM_PreferenceScheme,		DLG_Options_Label_Schemes);
 			_DS(OPTIONS_CHK_PrefsAutoSave,			DLG_Options_Label_PrefsAutoSave);
 			_DS(OPTIONS_LBL_CURRENTSCHEME,			DLG_Options_Label_PrefsCurrentScheme);
-			
+
+			_DS(OPTIONS_FRM_AutoSaveOptions,		DLG_Options_Label_AutoSave);
+			_DS(OPTIONS_CHK_AutoSaveFile,			DLG_Options_Label_AutoSaveCurrent);
+			_DS(OPTIONS_LBL_AutoSaveMinutes,		DLG_Options_Label_Minutes);
+			_DS(OPTIONS_LBL_AutoSaveExtension,		DLG_Options_Label_WithExtension);
+
+			// Set the starting period to 1 minute
+			SetDlgItemInt(hWnd, AP_RID_DIALOG_OPTIONS_TXT_AutoSavePeriod, 1, FALSE );
+
+			// Set the range for the period to 1-360
+			SendMessage(GetDlgItem(hWnd,AP_RID_DIALOG_OPTIONS_SPN_AutoSavePeriodSpin),UDM_SETRANGE,(WPARAM)1,(WPARAM)360);
+			SendMessage(GetDlgItem(hWnd,AP_RID_DIALOG_OPTIONS_TXT_AutoSavePeriod),EM_LIMITTEXT,(WPARAM)3,(WPARAM)0);
+
+			// Limit the extension to 5 characters (plus the period)
+			SendMessage(GetDlgItem(hWnd,AP_RID_DIALOG_OPTIONS_TXT_AutoSaveExtension),EM_LIMITTEXT,(WPARAM)6,(WPARAM)0);
+
 			// Hidi Bidi Controls
 			HWND hwndBidiBox = GetDlgItem(hWnd, AP_RID_DIALOG_OPTIONS_FRM_BidiOptions);
 			HWND hwndBidiChk = GetDlgItem(hWnd, AP_RID_DIALOG_OPTIONS_CHK_OtherDirectionRtl);
@@ -471,6 +487,7 @@ BOOL AP_Win32Dialog_Options::_onInitTab(HWND hWnd, WPARAM wParam, LPARAM lParam)
 BOOL AP_Win32Dialog_Options::_onCommandTab(HWND hWnd, WPARAM wParam, LPARAM lParam)
 {
 	// This handles WM_COMMAND message for all of the sub-dialogs.
+	BOOL bChecked;
 	
 	WORD wNotifyCode = HIWORD(wParam);
 	WORD wId = LOWORD(wParam);
@@ -527,6 +544,13 @@ BOOL AP_Win32Dialog_Options::_onCommandTab(HWND hWnd, WPARAM wParam, LPARAM lPar
 #ifdef BIDI_ENABLED
 	case AP_RID_DIALOG_OPTIONS_CHK_OtherDirectionRtl:	_enableDisableLogic(id_CHECK_OTHER_DEFAULT_DIRECTION_RTL);	return 0;
 #endif
+	case AP_RID_DIALOG_OPTIONS_CHK_AutoSaveFile:
+		_enableDisableLogic(id_CHECK_AUTO_SAVE_FILE);
+
+		bChecked = (IsDlgButtonChecked( hWnd, AP_RID_DIALOG_OPTIONS_CHK_AutoSaveFile ) == BST_CHECKED);
+		EnableWindow( GetDlgItem( hWnd, AP_RID_DIALOG_OPTIONS_SPN_AutoSavePeriodSpin), bChecked );
+		EnableWindow( GetDlgItem( hWnd, AP_RID_DIALOG_OPTIONS_TXT_AutoSaveExtension), bChecked );
+		return 0;
 
 	default:
 		UT_DEBUGMSG(("WM_Command for id %ld for sub-dialog\n",wId));
@@ -657,6 +681,10 @@ void AP_Win32Dialog_Options::_controlEnable( tControl id, bool value )
 		return;
 #endif
 
+	case id_CHECK_AUTO_SAVE_FILE:
+		EnableWindow(GetDlgItem((HWND)m_vecSubDlgHWnd.getNthItem(PREF_INDEX),AP_RID_DIALOG_OPTIONS_CHK_AutoSaveFile),value);
+		return;
+
 	default:
 //		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 		return;
@@ -701,28 +729,54 @@ DEFINE_GET_SET_BOOL(PREF_INDEX,PrefsAutoSave);
 #ifdef BIDI_ENABLED
 DEFINE_GET_SET_BOOL(PREF_INDEX,OtherDirectionRtl);
 #endif
-DEFINE_GET_SET_BOOL(PREF_INDEX,AutoSaveFile);
 
 #undef DEFINE_GET_SET_BOOL
 
+bool AP_Win32Dialog_Options::_gatherAutoSaveFile(void)
+{
+	return (IsDlgButtonChecked((HWND)m_vecSubDlgHWnd.getNthItem(PREF_INDEX),AP_RID_DIALOG_OPTIONS_CHK_AutoSaveFile) == BST_CHECKED);
+}
+
+void AP_Win32Dialog_Options::_setAutoSaveFile(const bool b)
+{
+	BOOL bChecked;
+	HWND hWnd = (HWND)m_vecSubDlgHWnd.getNthItem(PREF_INDEX);
+
+	CheckDlgButton( hWnd, AP_RID_DIALOG_OPTIONS_CHK_AutoSaveFile, b );
+
+	// Disable the input boxes if auto save is turned off
+	bChecked = (IsDlgButtonChecked( hWnd, AP_RID_DIALOG_OPTIONS_CHK_AutoSaveFile ) == BST_CHECKED);
+	EnableWindow( GetDlgItem( hWnd, AP_RID_DIALOG_OPTIONS_SPN_AutoSavePeriodSpin), bChecked );
+	EnableWindow( GetDlgItem( hWnd, AP_RID_DIALOG_OPTIONS_TXT_AutoSaveExtension), bChecked );
+}
+
 void AP_Win32Dialog_Options::_gatherAutoSaveFileExt(UT_String &stRetVal)
 {
-	// TODO: Auto save option
+	char szExtension[ 10 ];
+	
+	GetDlgItemText( (HWND)m_vecSubDlgHWnd.getNthItem(PREF_INDEX), AP_RID_DIALOG_OPTIONS_TXT_AutoSaveExtension, szExtension, 7 );
+
+	stRetVal = szExtension;
 }
 
 void AP_Win32Dialog_Options::_setAutoSaveFileExt(const UT_String &stExt)
 {
-	// TODO: Auto save option
+	SetDlgItemText( (HWND)m_vecSubDlgHWnd.getNthItem(PREF_INDEX), AP_RID_DIALOG_OPTIONS_TXT_AutoSaveExtension, stExt.c_str() );
 }
 
 void AP_Win32Dialog_Options::_gatherAutoSaveFilePeriod(UT_String &stRetVal)
 {
-	// TODO: Auto save option
+	int iValue = GetDlgItemInt((HWND)m_vecSubDlgHWnd.getNthItem(PREF_INDEX), AP_RID_DIALOG_OPTIONS_TXT_AutoSavePeriod, NULL, FALSE );
+	char szTemp[10];
+
+	snprintf( szTemp, 10, "%d", iValue );                                            
+
+	stRetVal = szTemp;
 }
 
 void AP_Win32Dialog_Options::_setAutoSaveFilePeriod(const UT_String &stPeriod)
 {
-	// TODO: Auto save option
+	SetDlgItemInt((HWND)m_vecSubDlgHWnd.getNthItem(PREF_INDEX), AP_RID_DIALOG_OPTIONS_TXT_AutoSavePeriod, atoi(stPeriod.c_str()), FALSE );
 }
 
 UT_Dimension AP_Win32Dialog_Options::_gatherViewRulerUnits(void) 

@@ -83,7 +83,13 @@
 #define AP_RID_DIALOG_OPTIONS_COMBO_CURRENTSCHEME		1403
 #define AP_RID_DIALOG_OPTIONS_FRM_BidiOptions			1404
 #define AP_RID_DIALOG_OPTIONS_CHK_OtherDirectionRtl		1405
-#define AP_RID_DIALOG_OPTIONS_CHK_AutoSaveFile			1406
+#define AP_RID_DIALOG_OPTIONS_FRM_AutoSaveOptions		1406
+#define AP_RID_DIALOG_OPTIONS_CHK_AutoSaveFile			1407
+#define AP_RID_DIALOG_OPTIONS_TXT_AutoSavePeriod		1408
+#define AP_RID_DIALOG_OPTIONS_SPN_AutoSavePeriodSpin	1409
+#define AP_RID_DIALOG_OPTIONS_LBL_AutoSaveMinutes		1410
+#define AP_RID_DIALOG_OPTIONS_LBL_AutoSaveExtension		1411
+#define AP_RID_DIALOG_OPTIONS_TXT_AutoSaveExtension		1412
 
 #ifdef RC_INVOKED
 // NOTE -- these placeholder strings get overridden at runtime 
@@ -227,11 +233,28 @@ BEGIN
                     AP_RID_DIALOG_OPTIONS_LBL_CURRENTSCHEME,5,30,100,10
     COMBOBOX        AP_RID_DIALOG_OPTIONS_COMBO_CURRENTSCHEME,105,30,140,75,
                     CBS_DROPDOWN | CBS_SORT | WS_VSCROLL | WS_TABSTOP | WS_DISABLED
-	GROUPBOX		"Bi-Directional Options...", AP_RID_DIALOG_OPTIONS_FRM_BidiOptions,
+	GROUPBOX		"Auto Save", AP_RID_DIALOG_OPTIONS_FRM_AutoSaveOptions,
 					2, 47, 245, 30
+	CONTROL			"Auto save current file each", AP_RID_DIALOG_OPTIONS_CHK_AutoSaveFile ,
+					"Button", BS_AUTOCHECKBOX | WS_TABSTOP,
+					5, 60, 100, 10
+    EDITTEXT        AP_RID_DIALOG_OPTIONS_TXT_AutoSavePeriod,105,58,30,12, ES_LEFT | WS_BORDER | WS_TABSTOP | ES_READONLY
+    CONTROL         "Spin",	AP_RID_DIALOG_OPTIONS_SPN_AutoSavePeriodSpin,	
+							"msctls_updown32",UDS_SETBUDDYINT | UDS_ALIGNRIGHT | 
+							UDS_AUTOBUDDY | UDS_ARROWKEYS | UDS_NOTHOUSANDS,
+					132,60,8,8
+    LTEXT           "minutes",	AP_RID_DIALOG_OPTIONS_LBL_AutoSaveMinutes,
+					135,60,50,8
+    LTEXT           "With extension:",	AP_RID_DIALOG_OPTIONS_LBL_AutoSaveExtension,
+					165,60,50,8
+    EDITTEXT        AP_RID_DIALOG_OPTIONS_TXT_AutoSaveExtension,
+					215,58,25,12, ES_LEFT | WS_BORDER | WS_TABSTOP
+
+	GROUPBOX		"Bi-Directional Options...", AP_RID_DIALOG_OPTIONS_FRM_BidiOptions,
+					2, 79, 245, 30
 	CONTROL			"Default to right-to-left direction of text:", AP_RID_DIALOG_OPTIONS_CHK_OtherDirectionRtl ,
 					"Button", BS_AUTOCHECKBOX | WS_TABSTOP,
-					5, 60, 235, 10
+					5, 92, 235, 10
 
 END
 
