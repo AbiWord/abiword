@@ -33,7 +33,9 @@
 #include "ap_Dialog_Id.h"
 #include "ap_Dialog_Field.h"
 #include "ap_QNXDialog_Field.h"
+#include "ap_QNXDialog_Columns.h"
 #include "ap_QNXDialog_FormatTable.h"
+
 #include "ut_qnxHelper.h"
 
 
@@ -58,26 +60,216 @@ AP_QNXDialog_FormatTable::~AP_QNXDialog_FormatTable(void)
 
 void AP_QNXDialog_FormatTable::runModal(XAP_Frame * pFrame)
 {
-	UT_ASSERT(UT_NOT_IMPLEMENTED);
+	UT_ASSERT(0); //DEPRICATED.
 }
 
 void AP_QNXDialog_FormatTable::runModeless(XAP_Frame *pFrame)
 {
+	// Build the window's widgets and arrange them
+	PtWidget_t * mainWindow = _constructWindow();
+	UT_ASSERT(mainWindow);
 
-	UT_ASSERT(UT_NOT_IMPLEMENTED);
+	// Save dialog the ID number and pointer to the widget
+	UT_sint32 sid =(UT_sint32)  getDialogId();
+	m_pApp->rememberModelessId( sid, (XAP_Dialog_Modeless *) m_pDialog);
+
+	// This magic command displays the frame that characters will be
+	// inserted into.
+	connectFocusModeless(mainWindow, m_pApp);
+
+	m_pPreviewWidget = new GR_QNXGraphics(m_mainWindow,m_wPreviewArea,pFrame->getApp());	
+
+	unsigned short w,h;
+	UT_QNXGetWidgetArea(m_wPreviewArea, NULL, NULL, &w, &h);
+	_createPreviewFromGC(m_pPreviewWidget,w,h);
+
+	PtRealizeWidget(mainWindow);
+
+	m_pFormatTablePreview->draw();
+	startUpdater();
+}
+
+int s_apply_clicked(PtWidget_t *w,AP_QNXDialog_FormatTable *dlg,PtCallbackInfo_t *cbinfo)
+{
+dlg->lineClicked();
+dlg->applyChanges();
+return Pt_CONTINUE;
+}
+
+int s_delete_clicked(PtWidget_t *w,AP_QNXDialog_FormatTable *dlg,PtCallbackInfo_t *cbinfo)
+{
+dlg->event_WindowDelete();
+return Pt_CONTINUE;
+}
+
+void AP_QNXDialog_FormatTable::event_WindowDelete()
+{
+finalize();
+PtDestroyWidget(m_mainWindow);
+}
+
+int s_line_clicked(PtWidget_t *w,AP_QNXDialog_FormatTable *dlg,PtCallbackInfo_t *cbinfo)
+{
+dlg->lineClicked();
+return Pt_CONTINUE;
+}
+
+void AP_QNXDialog_FormatTable::lineClicked()
+{
+bool top,left,right,bottom;
+top = left = right = bottom = false;
+
+if(PtWidgetFlags(m_wLineTop) & Pt_SET) top = true;
+if(PtWidgetFlags(m_wLineLeft) & Pt_SET) left = true;
+if(PtWidgetFlags(m_wLineRight) & Pt_SET) right = true;
+if(PtWidgetFlags(m_wLineBottom) & Pt_SET) bottom = true;
+
+toggleLineType(AP_Dialog_FormatTable::toggle_bottom,bottom);
+toggleLineType(AP_Dialog_FormatTable::toggle_right,right);
+toggleLineType(AP_Dialog_FormatTable::toggle_left,left);
+toggleLineType(AP_Dialog_FormatTable::toggle_top,top);
+
+event_previewExposed();
+
+}
+
+int s_color_background(PtWidget_t *w,AP_QNXDialog_FormatTable *dlg,PtCallbackInfo_t *cbinfo)
+{
+PtColorSelectInfo_t colorinfo;
+memset(&colorinfo,0,sizeof(colorinfo));
+
+colorinfo.flags |= Pt_COLORSELECT_MODAL;
+
+PtColorSelect(PtGetParent(w,PtWindow),"Select Background color",&colorinfo);
+
+if(colorinfo.flags & Pt_COLORSELECT_ACCEPT)
+{
+dlg->setBGColor(UT_RGBColor(PgRedValue(colorinfo.rgb),PgGreenValue(colorinfo.rgb),PgBlueValue(colorinfo.rgb)));
+PtSetResource(w,Pt_ARG_FILL_COLOR,colorinfo.rgb,0);
+dlg->event_previewExposed();
+}
+return Pt_CONTINUE;
+}
+int s_color_border(PtWidget_t *w,AP_QNXDialog_FormatTable *dlg,PtCallbackInfo_t *cbinfo)
+{
+PtColorSelectInfo_t colorinfo;
+
+memset(&colorinfo,0,sizeof(colorinfo));
+colorinfo.flags |= Pt_COLORSELECT_MODAL;
+PtColorSelect(PtGetParent(w,PtWindow),"Select Background color",&colorinfo);
+
+if(colorinfo.flags & Pt_COLORSELECT_ACCEPT)
+{
+dlg->setBorderColor(UT_RGBColor(PgRedValue(colorinfo.rgb),PgGreenValue(colorinfo.rgb),PgBlueValue(colorinfo.rgb)));
+PtSetResource(w,Pt_ARG_FILL_COLOR,colorinfo.rgb,0);
+dlg->event_previewExposed();
+}
+return Pt_CONTINUE;
+}
+PtWidget_t* AP_QNXDialog_FormatTable::_constructWindow()
+{
+	PtArg_t	args[10];
+	int 	n;
+
+
+	const XAP_StringSet * pSS = m_pApp->getStringSet();
+
+	ConstructWindowName();
+
+	n = 0;
+	PtSetArg(&args[n++], Pt_ARG_WINDOW_TITLE, _(AP,DLG_WordCount_WordCountTitle), 0);
+	m_mainWindow = abiCreatePhabDialog("ap_QNXDialog_FormatTable",m_WindowName); 
+	PtAddHotkeyHandler(m_mainWindow,Pk_F1,0,Pt_HOTKEY_SYM,this,OpenHelp);
+	SetupContextHelp(m_mainWindow,this);
+	PtAddCallback(m_mainWindow, Pt_CB_WINDOW_CLOSING, s_delete_clicked, this);
+
+	PtSetResource(abiPhabLocateWidget(m_mainWindow,"grpBorder"),Pt_ARG_TITLE,_(AP,DLG_FormatTable_Borders),0);
+
+	PtSetResource(abiPhabLocateWidget(m_mainWindow,"lblBorderColor"),Pt_ARG_TEXT_STRING,_(AP,DLG_FormatTable_Border_Color),0);
+	m_wBorderColorButton = abiPhabLocateWidget(m_mainWindow,"btnBorderColor");
+	PtAddCallback(m_wBorderColorButton,Pt_CB_ACTIVATE,s_color_border,this);
+	
+
+	PtSetResource(abiPhabLocateWidget(m_mainWindow,"grpBackground"),Pt_ARG_TITLE,_(AP,DLG_FormatTable_Background),0);
+	PtSetResource(abiPhabLocateWidget(m_mainWindow,"lblBackgroundColor"),Pt_ARG_TEXT_STRING,_(AP,DLG_FormatTable_Background_Color),0);
+	m_wBackgroundColorButton = abiPhabLocateWidget(m_mainWindow,"btnBackgroundColor");
+	PtAddCallback(m_wBackgroundColorButton,Pt_CB_ACTIVATE,s_color_background,this);
+
+	PtSetResource(abiPhabLocateWidget(m_mainWindow,"grpPreview"),Pt_ARG_TITLE,_(AP,DLG_FormatTable_Preview),0);
+
+	m_wLineTop = abiPhabLocateWidget(m_mainWindow,"btnTop");
+	m_wLineLeft =abiPhabLocateWidget(m_mainWindow,"btnLeft"); 
+	m_wLineRight =abiPhabLocateWidget(m_mainWindow,"btnRight"); 
+	m_wLineBottom =abiPhabLocateWidget(m_mainWindow,"btnBottom"); 
+
+	// place some nice pixmaps on our border toggle buttons
+	label_button_with_abi_pixmap(m_wLineTop, "tb_LineTop_xpm");
+	label_button_with_abi_pixmap(m_wLineLeft, "tb_LineLeft_xpm");
+	label_button_with_abi_pixmap(m_wLineRight, "tb_LineRight_xpm");
+	label_button_with_abi_pixmap(m_wLineBottom, "tb_LineBottom_xpm");
+	PtSetResource(m_wLineTop,Pt_ARG_LABEL_TYPE,Pt_IMAGE,0);
+	PtSetResource(m_wLineLeft,Pt_ARG_LABEL_TYPE,Pt_IMAGE,0);
+	PtSetResource(m_wLineRight,Pt_ARG_LABEL_TYPE,Pt_IMAGE,0);
+	PtSetResource(m_wLineBottom,Pt_ARG_LABEL_TYPE,Pt_IMAGE,0);
+
+	PtSetResource(m_wLineTop,Pt_ARG_FLAGS,getTopToggled() ? Pt_TRUE : Pt_FALSE,Pt_SET);
+	PtSetResource(m_wLineLeft,Pt_ARG_FLAGS,getLeftToggled() ? Pt_TRUE : Pt_FALSE,Pt_SET);
+	PtSetResource(m_wLineRight,Pt_ARG_FLAGS,getRightToggled() ? Pt_TRUE : Pt_FALSE ,Pt_SET);
+	PtSetResource(m_wLineBottom,Pt_ARG_FLAGS,getBottomToggled() ? Pt_TRUE : Pt_FALSE,Pt_SET);
+
+	PtAddCallback(m_wLineTop, Pt_CB_ACTIVATE, s_line_clicked, this);
+	PtAddCallback(m_wLineLeft, Pt_CB_ACTIVATE, s_line_clicked, this);
+	PtAddCallback(m_wLineRight, Pt_CB_ACTIVATE, s_line_clicked, this);
+	PtAddCallback(m_wLineBottom, Pt_CB_ACTIVATE, s_line_clicked, this);
+
+	m_wPreviewArea = abiPhabLocateWidget(m_mainWindow,"rawPreview");
+
+	PtWidget_t *buttonClose = abiPhabLocateWidget(m_mainWindow,"btnClose");
+	PtSetResource(buttonClose, Pt_ARG_TEXT_STRING, _(XAP,DLG_Close), 0);
+	PtAddCallback(buttonClose, Pt_CB_ACTIVATE, s_delete_clicked, this);
+
+	m_wApplyButton = abiPhabLocateWidget(m_mainWindow,"btnApply");
+	PtSetResource(m_wApplyButton, Pt_ARG_TEXT_STRING, _(XAP,DLG_Apply), 0);
+	PtAddCallback(m_wApplyButton, Pt_CB_ACTIVATE, s_apply_clicked, this);
+
+	return m_mainWindow;
 }
 
 void AP_QNXDialog_FormatTable::setSensitivity(bool onoff)
 {
-
+	PtSetResource(m_wBorderColorButton,Pt_ARG_FLAGS, onoff ? Pt_FALSE : Pt_TRUE,Pt_BLOCKED|Pt_GHOST);
+	PtSetResource(m_wBackgroundColorButton,Pt_ARG_FLAGS, onoff ? Pt_FALSE : Pt_TRUE,Pt_BLOCKED|Pt_GHOST);	
+	PtSetResource(m_wLineLeft,Pt_ARG_FLAGS, onoff ? Pt_FALSE : Pt_TRUE,Pt_BLOCKED);
+	PtSetResource(m_wLineRight,Pt_ARG_FLAGS, onoff ? Pt_FALSE : Pt_TRUE,Pt_BLOCKED);
+	PtSetResource(m_wLineTop,Pt_ARG_FLAGS, onoff ? Pt_FALSE : Pt_TRUE,Pt_BLOCKED);
+	PtSetResource(m_wLineBottom,Pt_ARG_FLAGS, onoff ? Pt_FALSE : Pt_TRUE,Pt_BLOCKED);
+	PtSetResource(m_wApplyButton,Pt_ARG_FLAGS, onoff ? Pt_FALSE : Pt_TRUE,Pt_BLOCKED|Pt_GHOST);
 }
 
 void AP_QNXDialog_FormatTable::activate()
 {
 
+ConstructWindowName();
+PtSetResource(m_mainWindow,Pt_ARG_WINDOW_TITLE,m_WindowName,0);
+setAllSensitivities();
 }
 
+void AP_QNXDialog_FormatTable::notifyActiveFrame(XAP_Frame *pFrame)
+{
+ConstructWindowName();
+PtSetResource(m_mainWindow,Pt_ARG_WINDOW_TITLE,m_WindowName,0);
+setAllSensitivities();
+}
 void AP_QNXDialog_FormatTable::destroy()
 {
+finalize();
+PtDestroyWidget(m_mainWindow);
+}
+
+
+void AP_QNXDialog_FormatTable::event_previewExposed()
+{
+if(m_pFormatTablePreview)
+	m_pFormatTablePreview->draw();
 
 }

@@ -21,6 +21,8 @@
 #define AP_QNXDIALOG_FORMATTABLE_H
 
 #include "ap_Dialog_FormatTable.h"
+#include "gr_QNXGraphics.h"
+
 #include <Pt.h>
 
 class XAP_QNXFrame;
@@ -38,10 +40,23 @@ public:
 	virtual void			activate();
 	virtual void			destroy();
 	virtual void			setSensitivity(bool onoff);
-
+	virtual void            notifyActiveFrame(XAP_Frame * pFrame);
+	void				lineClicked();
+	void				event_WindowDelete();
+	void				event_previewExposed();
+		
 	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
 	
-protected:
+	
+private:
+	PtWidget_t *	_constructWindow();
+	PtWidget_t *	m_wBorderColorButton;
+	PtWidget_t *	m_wBackgroundColorButton;
+	PtWidget_t *	m_wApplyButton;
+	PtWidget_t *	m_wLineLeft,*m_wLineRight,*m_wLineTop,*m_wLineBottom;
+	PtWidget_t *	m_wPreviewArea;
+	PtWidget_t *	m_mainWindow;
+	GR_QNXGraphics *	m_pPreviewWidget;
 
 };
 
