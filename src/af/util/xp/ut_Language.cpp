@@ -269,6 +269,25 @@ UT_uint32 UT_Language::getIndxFromCode(const XML_Char * szCode)
 			return i;
 	}
 
+	// see if our tables contain short version of this code, e.g., hr instead of hr-HR
+	static XML_Char szShortCode[7];
+	strncpy(szShortCode, szCode,6);
+	szShortCode[6] = 0;
+
+	char * dash = strchr(szShortCode, '-');
+	if(dash)
+	{
+		*dash = 0;
+
+		for(UT_uint32 i = 0; i < NrElements(s_Table); i++)
+		{
+			// make the comparison case insensitive to cope with buggy systems 
+			if(!UT_stricmp(szShortCode, s_Table[i].m_szLangCode))
+				return i;
+		}
+	}
+		
+	
 	UT_ASSERT( UT_SHOULD_NOT_HAPPEN );
 	UT_DEBUGMSG(("UT_Language: unknown language [%s]; if this message appears, add the "
 				 "language to the tables\n", szCode));
