@@ -37,8 +37,10 @@ TARGETS=		$(LIBRARY)
 # package.
 ifeq ($(OS_NAME), WIN32)
 INCLUDES=		-I$(ABI_XX_ROOT)/../libiconv/include
-else
-INCLUDES=
+endif
+
+ifeq ($(OS_NAME), BeOS)
+INCLUDES= 		-I$(ABI_ROOT)/../libiconv/include
 endif
 
 include $(ABI_ROOT)/src/config/abi_rules.mk
