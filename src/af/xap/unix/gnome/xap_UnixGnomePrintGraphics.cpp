@@ -24,7 +24,6 @@
 
 #include "ut_types.h"
 #include "ut_assert.h"
-#include "ut_debugmsg.h"
 #include "ut_string.h"
 #include "ut_misc.h"
 #include "xap_Strings.h"
@@ -38,10 +37,6 @@
 #include "xap_Frame.h"
 #include "fv_View.h"
 #include "fp_PageSize.h"
-
-/***********************************************************************/
-/*      This file provides an interface into Gnome Print               */
-/***********************************************************************/
 
 static inline bool isItalic(XAP_UnixFont::style s)
 {
@@ -59,20 +54,19 @@ static inline GnomeFontWeight getGnomeFontWeight(XAP_UnixFont::style s)
 static const struct {
 	char * abi;
 	char * gp_id;
-	char * gp_name;
 } paperMap[] = {
-	{"Letter",          "USLetter",      "US Letter"},
-	{"Legal",           "USLegal",       "US Legal"},
-	{"Folio",           "Executive",     "Executive"},
-	{ "1/3 A4",         "A4_3",          "1/3 A4"},
-	{ "1/4 A4",         "A4_4",          "1/4 A4"},
-	{ "1/8 A4",         "A4_8",          "1/8 A4"},
-	{ "1/4 A3",         "A3_4",          "1/4 A3"},
-	{ "1/3 A5",         "A5_3",          "1/3 A5"},
-	{ "DL Envelope",    "DL",            "DL Envelope"},
-	{ "C6/C5 Envelope", "C6_C5",         "C6/C5 Envelope"},
-	{ "Envelope No10",  "Envelope_No10", "Envelope No10"},
-	{ "Envelope 6x9",   "Envelope_6x9",  "Envelope 6x9"}
+	{"Letter",         "USLetter"},
+	{"Legal",          "USLegal"},
+	{"Folio",          "Executive"},
+	{"1/3 A4",         "A4_3"},
+	{"1/4 A4",         "A4_4"},
+	{"1/8 A4",         "A4_8"},
+	{"1/4 A3",         "A3_4"},
+	{"1/3 A5",         "A5_3"},
+	{"DL Envelope",    "DL"},
+	{"C6/C5 Envelope", "C6_C5"},
+	{"Envelope No10",  "Envelope_No10"},
+	{"Envelope 6x9",   "Envelope_6x9"},
 };
 
 const guchar * XAP_UnixGnomePrintGraphics::s_map_page_size (const char * abi)
@@ -108,8 +102,6 @@ GnomePrintConfig * XAP_UnixGnomePrintGraphics::s_setup_config (XAP_Frame * pFram
 		width = pView->getPageSize().Width (DIM_MM);
 		width = pView->getPageSize().Height (DIM_MM);
 
-		UT_DEBUGMSG(("DOM: custom config: %f x %f\n", width, height));
-
 		gnome_print_convert_distance (&width, from, to);
 		gnome_print_config_set_length (cfg, (const guchar*)GNOME_PRINT_KEY_PAPER_WIDTH, width, from);
 		
@@ -120,13 +112,10 @@ GnomePrintConfig * XAP_UnixGnomePrintGraphics::s_setup_config (XAP_Frame * pFram
 	return cfg;
 }
 
-XAP_UnixGnomePrintGraphics::XAP_UnixGnomePrintGraphics(GnomePrintJob *gpm,
-													   XAP_UnixFontManager * fontManager,
-													   XAP_App *pApp,
-													   bool isPreview)
+XAP_UnixGnomePrintGraphics::XAP_UnixGnomePrintGraphics(GnomePrintJob *gpm, bool isPreview)
 	: GR_Graphics ()
 {
-	m_pApp         = pApp;
+	m_pApp         = XAP_App::getApp ();
 	m_gpm          = gpm;
 	m_gpc          = gnome_print_job_get_context(gpm);
 	
@@ -141,10 +130,8 @@ XAP_UnixGnomePrintGraphics::XAP_UnixGnomePrintGraphics(GnomePrintJob *gpm,
 	gnome_print_config_get_length (cfg, (const guchar*)GNOME_PRINT_KEY_PAPER_HEIGHT, &m_height, &from);
 	gnome_print_convert_distance (&m_height, from, to);
 
-	UT_DEBUGMSG(("DOM: c'tor: %f x %f\n", m_width, m_height));
-
 	m_bIsPreview     = isPreview;
-	m_fm             = fontManager;
+	m_fm             = static_cast<XAP_UnixApp *>(m_pApp)->getFontManager();
 	m_bStartPrint    = false;
 	m_bStartPage     = false;
 	m_pCurrentFont   = NULL;
@@ -190,19 +177,13 @@ void XAP_UnixGnomePrintGraphics::drawChars(const UT_UCSChar* pChars,
 	if (!m_bStartPage)
 		return;
 
-	// The GR classes are expected to take yoff as the upper-left of
-	// each glyph.  PostScript interprets the yoff as the baseline,
-	// which doesn't match this expectation.  Adding the ascent of the
-	// font will bring it back to the correct position.
-	yoff += getFontAscent();
-
 	UT_UTF8String utf8 (pChars + iCharOffset, iLength);
 
 	// push a graphics state & save it. then set the font
 	gnome_print_gsave (m_gpc);
 	gnome_print_setfont (m_gpc, m_pCurrentFont);
 
-	gnome_print_moveto(m_gpc, tdu(xoff), scale_ydir (tdu(yoff)));
+	gnome_print_moveto(m_gpc, tdu(xoff), scale_ydir (tdu(yoff + getFontAscent())));
 	gnome_print_show_sized (m_gpc, (const guchar *)utf8.utf8_str(), utf8.byteLength());
 
 	// pop the graphics state
@@ -310,7 +291,7 @@ GR_Graphics::ColorSpace XAP_UnixGnomePrintGraphics::getColorSpace(void) const
 
 UT_uint32 XAP_UnixGnomePrintGraphics::getDeviceResolution(void) const
 {
-	return 72; // 300
+	return 72;
 }
 
 void XAP_UnixGnomePrintGraphics::_drawAnyImage (GR_Image* pImg, 
@@ -424,7 +405,6 @@ bool XAP_UnixGnomePrintGraphics::_endPage(void)
 
 bool XAP_UnixGnomePrintGraphics::_endDocument(void)
 {
-	// bonobo version, we'd don't own the context or the master, just return
 	if(!m_gpm)
 		return true;
 
@@ -434,7 +414,7 @@ bool XAP_UnixGnomePrintGraphics::_endDocument(void)
 		gnome_print_job_print(m_gpm);
 	else
 		{
-			const XAP_StringSet * pSS = m_pApp->getStringSet();
+			const XAP_StringSet * pSS = XAP_App::getApp()->getStringSet();
 			GtkWidget * preview = gnome_print_job_preview_new (m_gpm, 
 															   (const guchar *)pSS->getValue(XAP_STRING_ID_DLG_UP_PrintPreviewTitle));
 			gtk_widget_show(GTK_WIDGET(preview));
@@ -477,7 +457,6 @@ void XAP_UnixGnomePrintGraphics::fillRect(const UT_RGBColor& c,
 
 void XAP_UnixGnomePrintGraphics::setClipRect(const UT_Rect* pRect)
 {
-	UT_ASSERT_NOT_REACHED ();
 }
 
 /***********************************************************************/
@@ -560,8 +539,13 @@ void XAP_UnixGnomePrintGraphics::fillRect(GR_Color3D c, UT_Rect &r)
 	UT_ASSERT_NOT_REACHED ();
 }
 
+void XAP_UnixGnomePrintGraphics::setPageSize(char* pageSizeName, UT_uint32 iwidth, UT_uint32 iheight)
+{
+	UT_ASSERT_NOT_REACHED ();
+}
+
 /***********************************************************************/
-/*                                 Done                                */
+/*                                Fonts                                */
 /***********************************************************************/
 
 UT_uint32 XAP_UnixGnomePrintGraphics::getFontAscent(GR_Font *fnt)
@@ -608,10 +592,9 @@ GR_Font* XAP_UnixGnomePrintGraphics::findFont(const char* pszFontFamily,
 											  const char* /* pszFontStretch */,
 											  const char* pszFontSize)
 {
-	// convert styles to XAP_UnixFont:: formats
 	XAP_UnixFont::style s = XAP_UnixFont::STYLE_NORMAL;
 
-	// this is kind of sloppy
+	// TODO: this is kind of sloppy
 	if (!UT_strcmp(pszFontStyle, "normal") &&
 		!UT_strcmp(pszFontWeight, "normal"))
 		s = XAP_UnixFont::STYLE_NORMAL;
@@ -642,11 +625,6 @@ GR_Font* XAP_UnixGnomePrintGraphics::findFont(const char* pszFontFamily,
     delete item;
 
 	return pFont;
-}
-
-void XAP_UnixGnomePrintGraphics::setPageSize(char* pageSizeName, UT_uint32 iwidth, UT_uint32 iheight)
-{
-	UT_ASSERT (UT_TODO);
 }
 
 static int
@@ -723,7 +701,7 @@ void XAP_UnixGnomePrintGraphics::setLineProperties (double inWidthPixels,
 
 #if 0
 	// rounded up and most certainly ignored for now!!!
-	m_iLineWidth = (UT_uint32)tdu(ceil(inWidthPixels));
+	setLineWidth (ceil(inWidthPixels));
 #endif
 }
 

@@ -131,16 +131,7 @@ void XAP_UnixGnomeDialog_Print::_getGraphics(void)
 {
 	UT_ASSERT(m_answer == a_OK);
 
-	XAP_UnixApp * unixapp = static_cast<XAP_UnixApp *> (XAP_App::getApp());
-	UT_ASSERT(unixapp);
-
-	XAP_UnixFontManager * fontmgr = unixapp->getFontManager();
-	UT_ASSERT(fontmgr);
-	
-	m_pGnomePrintGraphics = new XAP_UnixGnomePrintGraphics(m_gpm,
-														   fontmgr,
-														   unixapp,
-														   m_bIsPreview);
+	m_pGnomePrintGraphics = new XAP_UnixGnomePrintGraphics(m_gpm, m_bIsPreview);
 	UT_ASSERT(m_pGnomePrintGraphics);
 	m_pGnomePrintGraphics->setColorSpace(m_cColorSpace);
 	m_answer = a_OK;

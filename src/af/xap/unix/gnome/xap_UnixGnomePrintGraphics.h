@@ -42,8 +42,7 @@ class XAP_UnixGnomePrintGraphics : public GR_Graphics
  public:
 
 	explicit XAP_UnixGnomePrintGraphics(GnomePrintJob *gpm,
-										XAP_UnixFontManager * fontManager,
-										XAP_App *pApp, bool isPreview = false);
+										bool isPreview = false);
 
 	virtual ~XAP_UnixGnomePrintGraphics();
 
