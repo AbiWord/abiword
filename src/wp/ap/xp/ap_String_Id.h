@@ -114,6 +114,13 @@ dcl(DLG_Para_PushKeepWithNext,			"Keep with ne&xt")
 
 dcl(DLG_Para_ButtonTabs,		"&Tabs...")
 
+/* when translating these, the important thing to remember is to get a
+   similar amount of text in the translation.  Microsoft Word uses
+   strings just like this to simulate text, and if your translation
+   ends up very, very wordy, it will take up too much room in the preview.
+*/
 dcl(DLG_Para_PreviewSampleFallback, "This paragraph represents words as they might appear in your document.  "
                                     "To see text from your document used in this preview, position your cursor "
                                     "in a document paragraph with some text in it and open this dialog.")
+dcl(DLG_Para_PreviewPrevParagraph,  "Previous Paragraph Previous Paragraph Previous Paragraph Previous Paragraph Previous Paragraph Previous Paragraph Previous Paragraph")
+dcl(DLG_Para_PreviewFollowParagraph,"Following Paragraph Following Paragraph Following Paragraph Following Paragraph Following Paragraph Following Paragraph Following Paragraph")

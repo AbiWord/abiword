@@ -26,7 +26,9 @@
 #include "ut_string.h"
 
 #include "xap_Preview.h"
+
 #include "ap_Preview_Paragraph.h"
+#include "ap_Strings.h"
 
 /************************************************************************/
 
@@ -223,11 +225,6 @@ void AP_Preview_Paragraph_Block::setFormat(AP_Dialog_Paragraph::tAlignState alig
 
 /************************************************************************/
 
-// TODO : LOCALIZE THESE!
-
-#define STRING_PREVIOUS_BLOCK "Previous Paragraph Previous Paragraph Previous Paragraph Previous Paragraph Previous Paragraph Previous Paragraph Previous Paragraph"
-#define STRING_FOLLOWING_BLOCK "Following Paragraph Following Paragraph Following Paragraph Following Paragraph Following Paragraph Following Paragraph Following Paragraph"
-
 AP_Preview_Paragraph::AP_Preview_Paragraph(GR_Graphics * gc,
 										   const UT_UCSChar * text,
 										   AP_Dialog_Paragraph * dlg)
@@ -291,18 +288,20 @@ AP_Preview_Paragraph::AP_Preview_Paragraph(GR_Graphics * gc,
 									NULL,NULL,NULL,NULL,NULL,
 									AP_Dialog_Paragraph::spacing_SINGLE);
 	}
-	
-	// TODO : LOCALIZE THESE!
 
+	const XAP_StringSet * pSS = dlg->m_pApp->getStringSet();
+
+	
 	UT_UCSChar * tmp = NULL;
 
-	UT_UCS_cloneString_char(&tmp, STRING_PREVIOUS_BLOCK);
+	UT_UCS_cloneString_char(&tmp, pSS->getValue(AP_STRING_ID_DLG_Para_PreviewPrevParagraph));
 	m_previousBlock->setText(tmp);
 	FREEP(tmp);
-	
+
+	// this text came from the current document, passed in as arg
 	m_activeBlock->setText(text);
 
-	UT_UCS_cloneString_char(&tmp, STRING_FOLLOWING_BLOCK);	
+	UT_UCS_cloneString_char(&tmp, pSS->getValue(AP_STRING_ID_DLG_Para_PreviewFollowParagraph));
 	m_followingBlock->setText(tmp);
 	FREEP(tmp);
 }
