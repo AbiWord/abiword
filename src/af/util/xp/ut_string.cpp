@@ -767,7 +767,8 @@ static void endElement(void *userData, const XML_Char *name)
 static void startElement(void *userData, const XML_Char *name, const XML_Char **atts)
 {
 	XML_Char **pout = (XML_Char **)userData;
-	*pout = atts[1];
+	//What do we do with this, is this cast safe!?
+	*pout = (XML_Char *)atts[1];
 }
 
 XML_Char *UT_decodeXMLstring(XML_Char *in)
