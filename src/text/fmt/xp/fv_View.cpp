@@ -1575,3 +1575,26 @@ void FV_View::cmdSave(void)
 {
 	m_pDoc->save(IEFT_AbiWord_1);
 }
+
+UT_Bool FV_View::pasteBlock(UT_UCSChar * text, UT_uint32 count)
+{
+	if (!_isSelectionEmpty())
+	{
+		_deleteSelection();
+	}
+	else
+	{
+		_eraseInsertionPoint();
+	}	
+
+/* this comment could get really ugly if pasting pages of text */
+#ifdef UT_DEBUG
+	UT_DEBUGMSG(("pasteBlock: pasting \"%s\" length %d.\n", text, count));
+#endif
+
+	UT_Bool bResult = m_pDoc->insertSpan(_getPoint(), text, count);
+
+	_drawSelectionOrInsertionPoint();
+
+	return bResult;
+}

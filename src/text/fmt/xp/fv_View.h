@@ -106,6 +106,9 @@ public:
 	UT_Bool			cmdCharInsert(UT_UCSChar * text, UT_uint32 count);
 	void			cmdCharDelete(UT_Bool bForward, UT_uint32 count);
 	void			delTo(FV_DocPos dp);
+
+	// clipboard stuff, prototypes may change as we accomodate new clipboard data streams
+	UT_Bool			pasteBlock(UT_UCSChar * text, UT_uint32 count);
 	
 	void			warpInsPtToXY(UT_sint32 xPos, UT_sint32 yPos);
 	void			moveInsPtTo(FV_DocPos dp);
