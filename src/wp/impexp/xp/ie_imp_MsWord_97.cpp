@@ -52,6 +52,9 @@
 // Of the ico, hps, ftc, lid, etc... are used in place of their "normal"
 // Counterparts
 //
+#ifdef BIDI_ENABLED
+extern UT_sint32 isUCharRTL(UT_UCSChar c);
+#endif
 
 //
 // Forward decls. to wv's callbacks
@@ -360,6 +363,9 @@ IE_Imp_MsWord_97::~IE_Imp_MsWord_97()
 
 IE_Imp_MsWord_97::IE_Imp_MsWord_97(PD_Document * pDocument)
 	: IE_Imp (pDocument), m_iImageCount (0), m_nSections(0), m_bSetPageSize(false)
+#ifdef BIDI_ENABLED
+	,m_iPrevDir(-1),m_iCurrDir(-1)
+#endif	
 {
 }
 
@@ -473,6 +479,47 @@ void IE_Imp_MsWord_97::_flush ()
 
 void IE_Imp_MsWord_97::_appendChar (UT_UCSChar ch)
 {
+#ifdef BIDI_ENABLED
+	XML_Char * propsArray[3];
+	UT_String props;
+	m_iCurrDir = isUCharRTL(ch);
+	
+	propsArray[0] = (XML_Char *)"props";
+	propsArray[2] = 0;
+	
+	if(m_iCurrDir != m_iPrevDir)
+	{
+		xxx_UT_DEBUGMSG(("MS Word Importer: change of direction: prev %d, curr %d, UCS 0x%x\n", m_iPrevDir, m_iCurrDir, ch));
+		
+		props = m_pLastCharFmt;
+				
+		switch (m_iCurrDir)
+		{
+			case 0:
+					props += "dir:ltr";
+					break;
+			case 1:
+					props += "dir:rtl";
+					break;
+			case -1:
+					props += "dir:ntrl";
+					break;
+			default:
+					UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		}
+		m_iPrevDir = m_iCurrDir;
+		
+		propsArray[1] = (XML_Char *)props.c_str();
+		
+		this->_flush();
+		
+		if (!getDoc()->appendFmt((const XML_Char **)propsArray))
+		{
+			UT_DEBUGMSG(("_appendChar: error appending character formatting\n"));
+		}
+
+	}
+#endif
     m_pTextRun += ch;
 }
 
@@ -1173,9 +1220,9 @@ int IE_Imp_MsWord_97::_beginChar (wvParseStruct *ps, UT_uint32 tag,
 
 	// Our textrun automatically sets "dir" for us. We just need too keep
 	// LTR runs separate from RTL runs
-
+	
 	if (achp->fBidi) {
-		// TODO: do we need to do anything?
+		//TODO: do we need to do anything?
 	}
 
 #endif
@@ -1283,6 +1330,11 @@ int IE_Imp_MsWord_97::_beginChar (wvParseStruct *ps, UT_uint32 tag,
 	propsArray[0] = (XML_Char *)"props";
 	propsArray[1] = (XML_Char *)props.c_str();
 	propsArray[2] = 0;
+
+#ifdef BIDI_ENABLED
+	m_pLastCharFmt = props;
+	m_pLastCharFmt += ";";
+#endif
 	if (!getDoc()->appendFmt((const XML_Char **)propsArray))
 	{
 		UT_DEBUGMSG(("DOM: error appending character formatting\n"));
