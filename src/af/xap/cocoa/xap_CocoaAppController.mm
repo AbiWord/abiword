@@ -316,6 +316,8 @@ static XAP_CocoaAppController * XAP_AppController_Instance = nil;
 			m_PanelMenu   = [[NSMenu alloc] initWithTitle:@"Panels"];
 			m_ContextMenu = [[NSMenu alloc] initWithTitle:@"Context Menu"];
 
+			m_FontDictionary = 0;
+
 			m_Plugins      = [[NSMutableArray alloc] initWithCapacity:16];
 			m_PluginsTools = [[NSMutableArray alloc] initWithCapacity:16];
 
@@ -336,6 +338,11 @@ static XAP_CocoaAppController * XAP_AppController_Instance = nil;
 		{
 			[m_ContextMenu release];
 			m_ContextMenu = 0;
+		}
+	if (m_FontDictionary)
+		{
+			[m_FontDictionary release];
+			m_FontDictionary = 0;
 		}
 	if (m_Plugins)
 		{
@@ -704,6 +711,43 @@ static XAP_CocoaAppController * XAP_AppController_Instance = nil;
 	[self clearMenu:XAP_CocoaAppMenu_Table ];
 	// !Windows
 	[self clearMenu:XAP_CocoaAppMenu_Help  ];
+}
+
+- (NSString *)familyNameForFont:(NSString *)fontName
+{
+	NSString * familyName = nil;
+
+	if (!m_FontDictionary)
+		{
+			NSArray * pAvailableFontFamilies = [[NSFontManager sharedFontManager] availableFontFamilies];
+
+			unsigned family_count = [pAvailableFontFamilies count];
+
+			m_FontDictionary = [[NSMutableDictionary alloc] initWithCapacity:family_count];
+
+			for (unsigned ff = 0; ff < family_count; ff++)
+				{
+					NSString * family_name = (NSString *) [pAvailableFontFamilies objectAtIndex:ff];
+
+					NSArray * font_members = [[NSFontManager sharedFontManager] availableMembersOfFontFamily:family_name];
+
+					unsigned member_count = [font_members count];
+
+					for (unsigned fm = 0; fm < member_count; fm++)
+						{
+							NSArray * font = (NSArray *) [font_members objectAtIndex:fm];
+
+							NSString * name = (NSString *) [font objectAtIndex:0];
+
+							[m_FontDictionary setObject:family_name forKey:name];
+						}
+				}
+		}
+	if (m_FontDictionary && fontName)
+		{
+			familyName = (NSString *) [m_FontDictionary objectForKey:fontName];
+		}
+	return familyName;
 }
 
 - (void)appendPluginMenuItem:(NSMenuItem *)menuItem
