@@ -41,7 +41,7 @@ static PP_Property _props[] =
 {
 	{ "color",					"000000",			1},
 	{ "font-family",			"Times New Roman",	1},	// TODO this is Win32-specific.  must fix!
-	{ "font-size",				"12pt",				1},	// MS word defaults to 10pt, but it just seems too small
+	{ "font-size",				"14pt",				1},	// MS word defaults to 10pt, but it just seems too small
 	{ "font-stretch",			"normal",			1},
 	{ "font-style",				"normal",			1},
 	{ "font-variant",			"normal",			1},
