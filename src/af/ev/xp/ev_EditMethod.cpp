@@ -17,8 +17,7 @@
  * 02111-1307, USA.
  */
  
-
-
+#include <string.h>
 
 #include "ev_EditMethod.h"
 #include "ut_assert.h"
