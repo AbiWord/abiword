@@ -341,7 +341,7 @@ void GR_CocoaGraphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
 		//unicode font
 		//UT_DEBUGMSG(("CocoaGraphics::drawChars: utf-8\n"));
 
-		switch(isOverstrikingChar(*pC))
+		switch(UT_isOverstrikingChar(*pC))
 		{
 		case UT_NOT_OVERSTRIKING:
 			curWidth = (UT_sint32)[font widthOfString:string];

@@ -69,6 +69,23 @@ class ABI_EXPORT UT_UCS2Stringbuf
 public:
 	typedef UT_UCS2Char char_type;
 
+	/* scans a buffer for the next valid UTF-8 sequence and returns the corresponding
+	 * UCS-2 value for that sequence; the pointer and length-remaining are incremented
+	 * and decremented respectively; returns 0 if no valid UTF-8 sequence found by the
+	 * end of the string
+	 */
+	static UT_UCS2Char UTF8_to_UCS2 (const char *& buffer, size_t & length);
+
+	/* Returns -1 if ucs2 is not valid UCS-2, 0 if ucs2 is 0, 1-3 otherwise
+	 */
+	static int UTF8_ByteLength (UT_UCS2Char ucs2);
+
+	/* appends to the buffer the UTF-8 sequence corresponding to the UCS-2 value;
+	 * the pointer and length-remaining are incremented and decremented respectively;
+	 * returns false if not valid UCS-2 or if (length < UTF8_ByteLength (ucs2))
+	 */
+	static bool UCS2_to_UTF8 (char *& buffer, size_t & length, UT_UCS2Char ucs2);
+
 	UT_UCS2Stringbuf();
 	UT_UCS2Stringbuf(const UT_UCS2Stringbuf& rhs);
 	UT_UCS2Stringbuf(const char_type* sz, size_t n);
@@ -88,6 +105,8 @@ public:
 	size_t				capacity()	const { return m_size; }
 	const char_type*	data()		const { return m_psz; }
 	char_type*			data() 			  { return m_psz; }
+	const UT_UCS4Char*		ucs4_data();
+	const char*			utf8_data();
 
 private:
 	void	grow_nocopy(size_t n);
@@ -99,6 +118,8 @@ private:
 	char_type*	m_psz;
 	char_type*	m_pEnd;
 	size_t		m_size;
+	UT_UCS4Char*	m_ucs4string;
+	char*		m_utf8string;
 };
 
 class ABI_EXPORT UT_UTF8Stringbuf
@@ -120,6 +141,9 @@ public:
 	void		assign (const char * sz);
 	void		append (const char * sz);
 	void		append (const UT_UTF8Stringbuf & rhs);
+
+	void		appendUCS2 (const UT_UCS2Char * sz, size_t n /* == 0 => null-termination */);
+	void		appendUCS4 (const UT_UCS4Char * sz, size_t n /* == 0 => null-termination */);
 
 	void		clear ();
 
@@ -170,7 +194,7 @@ public:
 
 	/* scans a buffer for the next valid UTF-8 sequence and returns the corresponding
 	 * UCS-4 value for that sequence; the pointer and length-remaining are incremented
-	 * and decremented respectively; returns 0 if not valid UTF-8 sequence found by the
+	 * and decremented respectively; returns 0 if no valid UTF-8 sequence found by the
 	 * end of the string
 	 */
 	static UT_UCS4Char UTF8_to_UCS4 (const char *& buffer, size_t & length);

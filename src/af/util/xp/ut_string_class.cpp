@@ -60,8 +60,10 @@
 
 //////////////////////////////////////////////////////////////////
 
-static const char pszEmpty[] = "";
+static const char pszEmpty[] = { 0 };
 
+static const UT_UCS2Char ucs2Empty[] = { 0 };
+static const UT_UCS4Char ucs4Empty[] = { 0 };
 
 UT_String::UT_String()
 :	pimpl(new UT_Stringbuf)
@@ -453,31 +455,24 @@ UT_uint32 hashcode(const UT_String& string)
 /**************************************************************************/
 /*************************************************************************/
 
-//static const UT_UCSChar ucsEmpty[] = "";
-static const UT_UCS2Char *ucs2Empty = 0;
-static const UT_UCS4Char *ucs4Empty = 0;
-
 UT_UCS2String::UT_UCS2String()
-:	pimpl(new UT_UCS2Stringbuf), m_pUCS4(NULL), m_iUCS4Size(0)
+:	pimpl(new UT_UCS2Stringbuf)
 {
 }
 
 UT_UCS2String::UT_UCS2String(const UT_UCS2Char* sz, size_t n)
-:	pimpl(new UT_UCS2Stringbuf(sz, n ? n : (sz) ? UT_UCS2_strlen(sz) : 0)),
-	m_pUCS4(NULL), m_iUCS4Size(0)
+:	pimpl(new UT_UCS2Stringbuf(sz, n ? n : (sz) ? UT_UCS2_strlen(sz) : 0))
 {
 }
 
 UT_UCS2String::UT_UCS2String(const UT_UCS2String& rhs)
-	:	pimpl(new UT_UCS2Stringbuf(*rhs.pimpl)), m_pUCS4(NULL), m_iUCS4Size(0)
+	:	pimpl(new UT_UCS2Stringbuf(*rhs.pimpl))
 {
 }
 
 UT_UCS2String::~UT_UCS2String()
 {
 	delete pimpl;
-	if(m_pUCS4)
-		delete m_pUCS4;
 }
 
 
@@ -522,28 +517,17 @@ const UT_UCS2Char* UT_UCS2String::ucs2_str() const
 
 const UT_UCS4Char* UT_UCS2String::ucs4_str()
 {
-	if(!pimpl->size())
-		return ucs4Empty;
+	if(!pimpl->size()) return ucs4Empty;
 
-	if(pimpl->size() >= m_iUCS4Size)
-	{
-		if(m_pUCS4)
-			delete m_pUCS4;
-		
-		m_iUCS4Size = pimpl->size()+1;
-		m_pUCS4 = new UT_UCS4Char[m_iUCS4Size];
-		UT_ASSERT(m_pUCS4);
-	}
-	
-	UT_uint32 i;
-	for(i = 0; i < pimpl->size(); i++)
-		m_pUCS4[i] = (UT_UCS4Char)(*(pimpl->data()+i));
-	m_pUCS4[i] = 0;
-
-	return m_pUCS4;
+	return pimpl->ucs4_data ();
 }
 
+const char* UT_UCS2String::utf8_str()
+{
+	if(!pimpl->size()) return pszEmpty;
 
+	return pimpl->utf8_data ();
+}
 
 //////////////////////////////////////////////////////////////////
 // mutators
@@ -607,7 +591,7 @@ UT_UCS2String& UT_UCS2String::operator+=(unsigned char rhs)
 	char rs[2];
 
 	// TODO: is this nonsense needed?
-	rs[0] = (char)rhs; rs[1] = 0; // TODO: is this loss of 'unsigned' safe?
+	rs[0] = (char)rhs; rs[1] = 0; // TODO: is this loss of 'unsigned' safe? (imo, it is - fjf)
 	UT_UCS2_strcpy_char (cs, rs);
 
 	pimpl->append(cs, 1);
@@ -791,204 +775,33 @@ UT_UTF8String &	UT_UTF8String::operator+=(const UT_UCS2String & rhs)
 
 const char * UT_UTF8String::utf8_str () const
 {
-	static const char * utf8Empty = "";
-	return pimpl->utf8Length () ? pimpl->data() : utf8Empty;
+	return pimpl->utf8Length () ? pimpl->data() : pszEmpty;
 }
 
 void UT_UTF8String::appendUCS4 (const UT_UCS4Char * sz, size_t n /* 0 = null-terminated */)
 {
-	if (sz == 0) return;
-
-	size_t ucs2_length = 0;
-	size_t utf8_length = 0;
-
-	// check UCS-2 string length and calculate UTF-8 string length
-	if (n == 0)
-	{
-		const UT_UCSChar * p = sz;
-		while (*p)
-		{
-			if ((*p & 0xff80) == 0x0000)
-			{
-				utf8_length++;
-			}
-			else if ((*p & 0xf800) == 0x0000)
-			{
-				utf8_length += 2;
-			}
-			else
-			{
-				utf8_length += 3;
-			}
-			p++;
-			ucs2_length++;
-		}
-	}
-	else
-	{
-		const UT_UCSChar * p = sz;
-		for (size_t i = 0; i < n; i++)
-		{
-			if (*p == 0) break;
-			if ((*p & 0xff80) == 0x0000)
-			{
-				utf8_length++;
-			}
-			else if ((*p & 0xf800) == 0x0000)
-			{
-				utf8_length += 2;
-			}
-			else
-			{
-				utf8_length += 3;
-			}
-			p++;
-			ucs2_length++;
-		}
-	}
-
-	if (utf8_length == 0) return;
-
-	char * utf8_buffer = (char *) malloc (utf8_length + 1);
-	if (utf8_buffer == 0) return;
-
-	const UT_UCSChar * p = sz;
-	char * b = utf8_buffer;
-	for (size_t i = 0; i < utf8_length; i++)
-	{
-		if ((*p & 0xff80) == 0x0000)
-		{
-			*b++ = (char) (*p & 0x7f);
-		}
-		else if ((*p & 0xf800) == 0x0000)
-		{
-			*b++ = 0xc0 | (char) ((*p >> 6) & 0x1f);
-			*b++ = 0x80 | (char) ( *p       & 0x3f);
-		}
-		else
-		{
-			*b++ = 0xe0 | (char) ((*p >> 12) & 0x0f);
-			*b++ = 0x80 | (char) ((*p >>  6) & 0x3f);
-			*b++ = 0x80 | (char) ( *p        & 0x3f);
-		}
-		p++;
-	}
-	*b = 0;
-
-	pimpl->append (utf8_buffer);
-
-	free (utf8_buffer);
+	pimpl->appendUCS4 (sz, n);
 }
 
 void UT_UTF8String::appendUCS2 (const UT_UCS2Char * sz, size_t n /* 0 = null-terminated */)
 {
-	if (sz == 0) return;
-
-	size_t ucs2_length = 0;
-	size_t utf8_length = 0;
-
-	// check UCS-2 string length and calculate UTF-8 string length
-	if (n == 0)
-	{
-		const UT_UCS2Char * p = sz;
-		while (*p)
-		{
-			if ((*p & 0xff80) == 0x0000)
-			{
-				utf8_length++;
-			}
-			else if ((*p & 0xf800) == 0x0000)
-			{
-				utf8_length += 2;
-			}
-			else
-			{
-				utf8_length += 3;
-			}
-			p++;
-			ucs2_length++;
-		}
-	}
-	else
-	{
-		const UT_UCS2Char * p = sz;
-		for (size_t i = 0; i < n; i++)
-		{
-			if (*p == 0) break;
-			if ((*p & 0xff80) == 0x0000)
-			{
-				utf8_length++;
-			}
-			else if ((*p & 0xf800) == 0x0000)
-			{
-				utf8_length += 2;
-			}
-			else
-			{
-				utf8_length += 3;
-			}
-			p++;
-			ucs2_length++;
-		}
-	}
-
-	if (utf8_length == 0) return;
-
-	char * utf8_buffer = (char *) malloc (utf8_length + 1);
-	if (utf8_buffer == 0) return;
-
-	const UT_UCS2Char * p = sz;
-	char * b = utf8_buffer;
-	for (size_t i = 0; i < utf8_length; i++)
-	{
-		if ((*p & 0xff80) == 0x0000)
-		{
-			*b++ = (char) (*p & 0x7f);
-		}
-		else if ((*p & 0xf800) == 0x0000)
-		{
-			*b++ = 0xc0 | (char) ((*p >> 6) & 0x1f);
-			*b++ = 0x80 | (char) ( *p       & 0x3f);
-		}
-		else
-		{
-			*b++ = 0xe0 | (char) ((*p >> 12) & 0x0f);
-			*b++ = 0x80 | (char) ((*p >>  6) & 0x3f);
-			*b++ = 0x80 | (char) ( *p        & 0x3f);
-		}
-		p++;
-	}
-	*b = 0;
-
-	pimpl->append (utf8_buffer);
-
-	free (utf8_buffer);
+	pimpl->appendUCS2 (sz, n);
 }
-
 
 UT_UCS2String UT_UTF8String::ucs2_str ()
 {
-	UT_UCS2String ucs2_string;
+	UT_UCS2String ucs2string;
 
-	UT_UTF8Stringbuf::UTF8Iterator utf(pimpl);
-
-	utf = utf.start ();
-	if (utf.current () == 0) return ucs2_string;
+	const char * utf8string = pimpl->data ();
+	size_t bytelength = pimpl->byteLength ();
 
 	while (true)
 	{
-		const char * pUTF8 = utf.current ();
-		utf.advance ();
-
-		UT_UCS4Char ucs4 = UT_UTF8Stringbuf::charCode (pUTF8);
-
-		if (ucs4 == 0) break; // end of string
-		if (ucs4 & 0xffff0000) continue; // oops - UCS-2 can't handle this...
-
-		ucs2_string += (UT_UCS2Char) (ucs4 & 0x0000ffff);
+		UT_UCS2Char ucs2 = UT_UCS2Stringbuf::UTF8_to_UCS2 (utf8string, bytelength);
+		if (ucs2 == 0) break;
+		ucs2string += ucs2;
 	}
-
-	return ucs2_string;
+	return ucs2string;
 }
 
 UT_UTF8String operator+(const UT_UTF8String & s1, const UT_UTF8String & s2)
@@ -1131,8 +944,7 @@ const UT_UCS4Char* UT_UCS4String::ucs4_str() const
 
 const char* UT_UCS4String::utf8_str()
 {
-	static const char * utf8Empty = "";
-	return pimpl->size() ? pimpl->utf8_data() : utf8Empty;
+	return pimpl->size() ? pimpl->utf8_data() : pszEmpty;
 }
 
 //////////////////////////////////////////////////////////////////

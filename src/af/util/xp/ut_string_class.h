@@ -115,7 +115,7 @@ ABI_EXPORT UT_String UT_String_vprintf(const UT_String & inFormat, va_list args1
 //	UT_UCS2String, a simple wrapper for zero terminated 'UCS2' strings.
 //
 
-// TODO: add c_str(), utf8_str(), encoded_str(const char * to)
+// TODO: add c_str(), encoded_str(const char * to)
 
 class ABI_EXPORT UT_UCS2String
 {
@@ -151,11 +151,10 @@ public:
 	// even if to an empty (0) string.
 	const UT_UCS2Char* ucs2_str() const;
 	const UT_UCS4Char* ucs4_str();
+	const char*        utf8_str();
 
 private:
 	class UT_UCS2Stringbuf* pimpl;
-	UT_UCS4Char* m_pUCS4;
-	UT_uint32    m_iUCS4Size;
 };
 
 // helpers
@@ -177,7 +176,7 @@ UT_UCS2String operator+(const UT_UCS2String& s1, const UT_UCS2String& s2);
 //	UT_UCS4String, a simple wrapper for zero terminated 'UCS4' strings.
 //
 
-// TODO: add c_str(), utf8_str(), encoded_str(const char * to)
+// TODO: add c_str(), encoded_str(const char * to)
 
 class ABI_EXPORT UT_UCS4String
 {

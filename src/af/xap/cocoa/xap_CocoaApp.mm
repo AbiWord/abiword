@@ -150,29 +150,27 @@ void XAP_CocoaApp::getGeometry(int * x, int * y, UT_uint32 * width,
 
 const char * XAP_CocoaApp::getUserPrivateDirectory()
 {
-	/* return a pointer to a static buffer */
+	static const char * szAbiDir = "Library/Application Support/AbiSuite";
 	
 #ifndef PATH_MAX
-#define PATH_MAX 4096
+#define PATH_MAX 1024
 #endif
-	/* TODO Return ~/Library/AbiSuite and not ~/.AbiSuite */
-	char * szAbiDir = ".AbiSuite";
-	
-	static char buf[PATH_MAX];
-	memset(buf,0,sizeof(buf));
+	static char upd_buffer[PATH_MAX];
+
+	static char * upd_cache = 0;
+	if (upd_cache) return upd_cache; // points to the static buffer
 	
 	char * szHome = getenv("HOME");
-	if (!szHome || !*szHome)
-		szHome = "./";
+	if (!szHome || !*szHome) szHome = ".";
 	
-	if (strlen(szHome)+strlen(szAbiDir)+2 >= PATH_MAX)
-		return NULL;
+	if (strlen(szHome)+strlen(szAbiDir)+2 >= PATH_MAX) return NULL;
 	
-	strcpy(buf,szHome);
-	if (buf[strlen(buf)-1] != '/')
-		strcat(buf,"/");
-	strcat(buf,szAbiDir);
-	return buf;
+	strcpy(upd_buffer,szHome);
+	strcat(upd_buffer,"/");
+	strcat(upd_buffer,szAbiDir);
+
+	upd_cache = upd_buffer;
+	return upd_cache;
 }
 
 bool XAP_CocoaApp::_loadFonts()

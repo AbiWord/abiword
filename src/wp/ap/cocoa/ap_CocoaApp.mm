@@ -586,48 +586,6 @@ static int s_Abi_only (struct dirent * d)
   return 0;
 }
 
-#ifdef ABIWORD_PROFILE_PATH
-#undef ABIWORD_PROFILE_PATH
-#endif
-#define ABIWORD_PROFILE_PATH "/Contents/Resources/AbiWord.Profile"
-/* return > 0 for *.Abi directories containing file "Contents/Resources/AbiWord.Profile"
- */
-static int s_Abi_test (const char * bundledir)
-{
-  static const int profile_length = strlen (ABIWORD_PROFILE_PATH);
-
-  if (bundledir == 0) return 0;
-
-  int length = strlen (bundledir);
-  if (length < 4) return 0;
-  if (strcmp (bundledir + length - 4, ".Abi") != 0) return 0;
-
-  struct stat sbuf;
-  if (stat (bundledir, &sbuf) != 0) return 0; // no such file? huh?
-
-  if (((sbuf.st_mode & S_IFMT) != S_IFDIR) && ((sbuf.st_mode & S_IFMT) != S_IFLNK))
-    {
-      // this is neither a directory nor a symbolic link, so don't look further
-      return 0;
-    }
-
-  int profile_exists = 0;
-  char * profile_path = 0;
-  if ((profile_path = (char *) malloc (length + profile_length + 1)) != 0)
-    {
-      strcpy (profile_path, bundledir);
-      strcat (profile_path, ABIWORD_PROFILE_PATH);
-
-      if (stat (profile_path, &sbuf) == 0)
-	if ((sbuf.st_mode & S_IFMT) == S_IFREG) // should we allow symbolic links?
-	  profile_exists = 1;
-
-      free (profile_path);
-    }
-  return profile_exists;
-}
-#undef ABIWORD_PROFILE_PATH
-
 /* return true if dirname exists and is a directory; symlinks probably not counted
  */
 static bool s_dir_exists (const char * dirname)
@@ -649,25 +607,28 @@ static bool s_dir_exists (const char * dirname)
  * 
  * The System Overview recommends that plugins be given a suffix that the
  * application claims (presumably as a document type) so I'm opting for the suffix
- * ".Abi" but I am also reinforcing that with the requirement for an
- * "AbiWord.Profile" in the plug-in/bundle's "Contents/Resources" subdirectory.
- * 
- * What I'm thinking about with "AbiWord.Profile" is a system-level (read-only)
- * preferences file. User preferences will probably be stored in AbiWord's own
- * user AbiWord.Profile, wherever that is.
+ * ".Abi".
  */
 void AP_CocoaApp::loadAllPlugins ()
 {
   /* 1. TODO: Load from AbiWord.app/Contents/Plug-ins
    */
+  NSString * app_path = [[NSBundle mainBundle] bundlePath];
+  if (app_path)
+    {
+      NSString * plugin_path = [app_path stringByAppendingString:@"/Contents/Plug-ins"];
+      UT_DEBUGMSG(("FJF: path to bundle's plug-ins: %s\n",[plugin_path lossyCString]));
+    }
 
-  /* 2. Load from "/Library/Application Support" and "$HOME/Library/Application Support"
+  /* 2. Load from:
+   *  a. "/Library/Application Support/AbiSuite/Plug-ins"
+   *  b. "$HOME/Library/Application Support/AbiSuite/Plug-ins"
    */
   int support_dir_count = 0;
 
   UT_String support_dir[2];
 
-  support_dir[0] = "/Library/Application Support/AbiWord/Plug-ins";
+  support_dir[0] = "/Library/Application Support/AbiSuite/Plug-ins";
   if (!s_dir_exists (support_dir[0].c_str()))
     {
       UT_DEBUGMSG(("FJF: %s: no such directory\n",support_dir[0].c_str()));
@@ -678,7 +639,7 @@ void AP_CocoaApp::loadAllPlugins ()
       support_dir_count++;
     }
 
-  char * homedir = getenv ("HOME");
+  const char * homedir = getUserPrivateDirectory ();
   if (homedir == 0)
     {
       UT_DEBUGMSG(("FJF: no home directory?\n"));
@@ -690,7 +651,7 @@ void AP_CocoaApp::loadAllPlugins ()
   else
     {
       UT_String plugin_dir(homedir);
-      plugin_dir += "/Library/Application Support/AbiWord/Plug-ins";
+      plugin_dir += "/Plug-ins";
       if (!s_dir_exists (plugin_dir.c_str()))
 	{
 	  UT_DEBUGMSG(("FJF: %s: no such directory\n",plugin_dir.c_str()));
@@ -716,18 +677,16 @@ void AP_CocoaApp::loadAllPlugins ()
 	  plugin_path += '/';
 	  plugin_path += namelist[n]->d_name;
 
-	  if (s_Abi_test (plugin_path.c_str()))
+	  UT_DEBUGMSG(("DOM: loading plugin %s\n", plugin_path.c_str()));
+	  if (XAP_ModuleManager::instance().loadModule (plugin_path.c_str()))
 	    {
-	      UT_DEBUGMSG(("DOM: loading plugin %s\n", plugin_path.c_str()));
-	      if (XAP_ModuleManager::instance().loadModule (plugin_path.c_str()))
-		{
-		  UT_DEBUGMSG(("DOM: loaded plug-in: %s\n", namelist[n]->d_name));
-		}
-	      else
-		{
-		  UT_DEBUGMSG(("DOM: didn't load plug-in: %s\n", namelist[n]->d_name));
-		}
+	      UT_DEBUGMSG(("DOM: loaded plug-in: %s\n", namelist[n]->d_name));
 	    }
+	  else
+	    {
+	      UT_DEBUGMSG(("DOM: didn't load plug-in: %s\n", namelist[n]->d_name));
+	    }
+
 	  free (namelist[n]);
 	}
       free (namelist);
