@@ -134,7 +134,10 @@ public:
 	virtual UT_Bool		insertStrux(PL_StruxFmtHandle sfh,
 									const PX_ChangeRecord * pcr,
 									PL_StruxDocHandle sdh,
-									PL_StruxFmtHandle * psfh);
+									PL_ListenerId lid,
+									void (* pfnBindHandles)(PL_StruxDocHandle sdhNew,
+															PL_ListenerId lid,
+															PL_StruxFmtHandle sfhNew));
 
 protected:
 	void				_closeSection(void);
@@ -417,7 +420,10 @@ UT_Bool ie_Exp_Listener::change(PL_StruxFmtHandle /*sfh*/,
 UT_Bool ie_Exp_Listener::insertStrux(PL_StruxFmtHandle /*sfh*/,
 									 const PX_ChangeRecord * /*pcr*/,
 									 PL_StruxDocHandle /*sdh*/,
-									 PL_StruxFmtHandle * /*psfh*/)
+									 PL_ListenerId /* lid */,
+									 void (* pfnBindHandles)(PL_StruxDocHandle sdhNew,
+															 PL_ListenerId lid,
+															 PL_StruxFmtHandle sfhNew))
 {
 	UT_ASSERT(0);						// this function is not used.
 	return UT_FALSE;
