@@ -45,7 +45,6 @@ public:
 protected:
 
 	void					_raisePrintDialog(XAP_Frame * pFrame);
-	void					_getGraphics(void);
 	
 	XAP_BeOSFrame *			m_pBeOSFrame;
 	struct

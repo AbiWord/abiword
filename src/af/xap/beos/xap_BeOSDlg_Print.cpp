@@ -30,51 +30,21 @@
 #include "xap_BeOSFrame.h"
 #include "gr_BeOSGraphics.h"
 
-/*
- Remove this once things are working right
-*/
-#include "xap_DialogFactory.h"
-#include "xap_Dlg_MessageBox.h"
+#include <PrintJob.h>
 
-static void s_TellNotImplemented(XAP_Frame * pFrame, const char * szWhat, int iLine)
-{
-	pFrame->raise();
-
-	XAP_DialogFactory * pDialogFactory
-		= (XAP_DialogFactory *)(pFrame->getDialogFactory());
-
-	XAP_Dialog_MessageBox * pDialog
-		= (XAP_Dialog_MessageBox *)(pDialogFactory->requestDialog(XAP_DIALOG_ID_MESSAGE_BOX));
-	UT_ASSERT(pDialog);
-
-	char buf[1024];
-	// THIS ONE IS NOT LOCALIZED
-	sprintf(buf, "%s not implemented yet.\n\nAdd code in %s, line %d and mail patches to:\n\n\tabiword-dev@abisource.com", szWhat, __FILE__, iLine);
-
-	pDialog->setMessage(buf);
-	pDialog->setButtons(XAP_Dialog_MessageBox::b_O);
-	pDialog->setDefaultAnswer(XAP_Dialog_MessageBox::a_OK);
-
-	pDialog->runModal(pFrame);
-
-//	XAP_Dialog_MessageBox::tAnswer ans = pDialog->getAnswer();
-
-	pDialogFactory->releaseDialog(pDialog);
-}
-
-/*****************************************************************/
-XAP_Dialog * XAP_BeOSDialog_Print::static_constructor(XAP_DialogFactory * pFactory,
-													 XAP_Dialog_Id id)
+XAP_Dialog * XAP_BeOSDialog_Print::static_constructor(XAP_DialogFactory * pFactory, 
+						      XAP_Dialog_Id id)
 {
 	XAP_BeOSDialog_Print * p = new XAP_BeOSDialog_Print(pFactory,id);
 	return p;
 }
 
 XAP_BeOSDialog_Print::XAP_BeOSDialog_Print(XAP_DialogFactory * pDlgFactory,
-										   XAP_Dialog_Id id)
+					   XAP_Dialog_Id id)
 	: XAP_Dialog_Print(pDlgFactory,id)
 {
 	memset(&m_persistPrintDlg, 0, sizeof(m_persistPrintDlg));
+	m_pBeOSFrame = NULL;
 }
 
 XAP_BeOSDialog_Print::~XAP_BeOSDialog_Print(void)
@@ -87,6 +57,7 @@ void XAP_BeOSDialog_Print::useStart(void)
 
 	if (m_bPersistValid)
 	{
+		printf("PRINT: UseStart ... persist valid \n");
 		m_persistPrintDlg.bDoPageRange = m_bDoPrintRange;
 		m_persistPrintDlg.bDoPrintSelection = m_bDoPrintSelection;
 		m_persistPrintDlg.bDoPrintToFile = m_bDoPrintToFile;
@@ -96,6 +67,7 @@ void XAP_BeOSDialog_Print::useStart(void)
 
 void XAP_BeOSDialog_Print::useEnd(void)
 {
+	printf("PRINT: UseEnd ... \n");
 	XAP_Dialog_Print::useEnd();
 
 	m_persistPrintDlg.bDoPageRange = m_bDoPrintRange;
@@ -109,88 +81,88 @@ void XAP_BeOSDialog_Print::useEnd(void)
 	UT_cloneString(m_persistPrintDlg.szPrintCommand, m_szPrintCommand);
 }
 
-GR_Graphics * XAP_BeOSDialog_Print::getPrinterGraphicsContext(void)
-{
+GR_Graphics * XAP_BeOSDialog_Print::getPrinterGraphicsContext(void) {
+	//Should I create a new context for this ???
+	printf("PRINT: Get PrinterGraphicsContext Frame 0x%x\n", m_pBeOSFrame);
 	UT_ASSERT(m_answer == a_OK);
+	UT_ASSERT(m_pBeOSFrame);
 
-	return NULL;
+	printf("PRINT: Returning Graphics 0x%x \n", m_pBeOSFrame->Graphics());
+	return(m_pBeOSFrame->Graphics());
 }
 
-void XAP_BeOSDialog_Print::releasePrinterGraphicsContext(GR_Graphics * pGraphics)
-{
+void XAP_BeOSDialog_Print::releasePrinterGraphicsContext(GR_Graphics * pGraphics) {
+	printf("PRINT: Release PrinterGraphicsContext \n");
 }
 
 /*****************************************************************/
 
 void XAP_BeOSDialog_Print::runModal(XAP_Frame * pFrame)
 {
-	s_TellNotImplemented(pFrame, "Printing on BeOS", __LINE__);
-
 	m_pBeOSFrame = static_cast<XAP_BeOSFrame *>(pFrame);
 	UT_ASSERT(m_pBeOSFrame);
 	
 	// see if they just want the properties of the printer without
 	// bothering the user.
-	
 	if (m_bPersistValid && m_bBypassActualDialog)
 	{
+		printf("PRINT: Run modal with bypass/persist active \n");
 		m_answer = a_OK;
-		_getGraphics();
 	}
 	else
 	{
+		printf("PRINT: Run modal with bypass/persist inactive \n");
 		_raisePrintDialog(pFrame);
-		if (m_answer == a_OK)
-			_getGraphics();
 	}
 
-	m_pBeOSFrame = NULL;
 	return;
 }
 
 void XAP_BeOSDialog_Print::_raisePrintDialog(XAP_Frame * pFrame)
 {
-	return;
-}
+	BPrintJob 	*job = new BPrintJob("Thomas Add Document Name");
+	GR_BEOSGraphics *gr = (GR_BEOSGraphics *)m_pBeOSFrame->Graphics();
+	BMessage 	*msg;
 
-void XAP_BeOSDialog_Print::_getGraphics(void)
-{
-	UT_ASSERT(m_answer == a_OK);
+	UT_ASSERT(job);
+	UT_ASSERT(gr);
 	
-	if (m_bDoPrintToFile)
-	{
-		// we construct a suggested pathname for the print-to-file pathname.
-		// we append a .print to the string.  it would be better to append
-		// a .ps or whatever, but we don't know what the technology/language
-		// of the device is....
-		
-		char bufSuggestedName[1030];
-		memset(bufSuggestedName,0,sizeof(bufSuggestedName));
-
-		sprintf(bufSuggestedName,"%s.ps",m_szDocumentPathname);
-		if (!_getPrintToFilePathname(m_pBeOSFrame,bufSuggestedName))
-			goto Fail;
-
-		/*
-		m_pPSGraphics = new PS_Graphics(m_szPrintToFilePathname, m_szDocumentTitle,
-										m_pBeOSFrame->getApp()->getApplicationName(),
-										UT_TRUE);
-		*/
+	if (!(msg = gr->GetPrintSettings())) {
+		msg = new BMessage();
 	}
-	else
-	{
-		// TODO use a POPEN style constructor to get the graphics....
-		/*	
-		m_pPSGraphics = new PS_Graphics(m_szPrintCommand, m_szDocumentTitle,
-										m_pBeOSFrame->getApp()->getApplicationName(),
-										UT_FALSE);
-		*/
+	else {
+		job->SetSettings(msg);
 	}
+
+	//Get the user to configure the page
+	if (job->ConfigPage() != B_OK) {
+		delete job;
+		m_answer = a_CANCEL;
+		return;
+	}
+	msg = job->Settings();
+
+	//Configure the print job
+	if (job->ConfigJob() != B_OK) {
+		delete job;
+		m_answer = a_CANCEL;
+		return;
+	}
+
+	printf("PRINT: Status of the variables: \n");
+	printf("m_EnablePrintToFile %d \n", m_bEnablePrintToFile);	
+	printf("m_EnablePageRange %d \n", m_bEnablePageRange);	
+	printf("m_EnablePrintSelection %d \n", m_bEnablePrintSelection);	
+	printf("First %d - Last %d page \n", m_nFirstPage, m_nLastPage);	
+	m_nFirstPage = max_c(job->FirstPage(), m_nFirstPage);
+	m_nLastPage = min_c(job->LastPage(), m_nLastPage);
+
+	printf("REAL First %d - Last %d page \n", m_nFirstPage, m_nLastPage);	
+	UT_cloneString(m_szPrintCommand, "I'm not here");
+
+	gr->SetPrintSettings(msg);
+	gr->SetPrintJob(job);
 
 	m_answer = a_OK;
-	return;
-
-Fail:
-	m_answer = a_CANCEL;
-	return;
 }
+
