@@ -671,6 +671,7 @@ private:
 	UT_GenericStringMap<UT_UTF8String*>	m_SavedURLs;
 
 	bool            m_bIgnoreTillEnd;
+	bool			m_bIgnoreTillNextSection;
 	PT_DocPosition  m_iEmbedStartPos;
 
 	double          m_dPageWidthInches;
@@ -4378,7 +4379,7 @@ bool s_HTML_Listener::populate (PL_StruxFmtHandle /*sfh*/, const PX_ChangeRecord
 			_openSection (0);
 			_openTag (0, 0);
 		}
-		if(m_bIgnoreTillEnd)
+		if(m_bIgnoreTillEnd || m_bIgnoreTillNextSection)
 		{
 			return true;
 		}
@@ -4464,6 +4465,7 @@ bool s_HTML_Listener::populateStrux (PL_StruxDocHandle sdh,
 	{
 		case PTX_Section:
 			{
+				m_bIgnoreTillNextSection = false;
 				if(m_bIgnoreTillEnd)
 				{
 					return true;  // Nested sections could be the sign of a severe problem, even if caused by import
@@ -4481,7 +4483,7 @@ bool s_HTML_Listener::populateStrux (PL_StruxDocHandle sdh,
 
 		case PTX_Block:
 			{
-				if(m_bIgnoreTillEnd)
+				if(m_bIgnoreTillEnd || m_bIgnoreTillNextSection)
 				{
 					return true;
 				}
@@ -4493,7 +4495,7 @@ bool s_HTML_Listener::populateStrux (PL_StruxDocHandle sdh,
 #ifdef HTML_TABLES_SUPPORTED
 		case PTX_SectionTable:
 			{
-				if(m_bIgnoreTillEnd)
+				if(m_bIgnoreTillEnd || m_bIgnoreTillNextSection)
 				{
 					return true;
 				}
@@ -4508,7 +4510,7 @@ bool s_HTML_Listener::populateStrux (PL_StruxDocHandle sdh,
 
 		case PTX_SectionCell:
 			{
-				if(m_bIgnoreTillEnd)
+				if(m_bIgnoreTillEnd || m_bIgnoreTillNextSection)
 				{
 					return true;
 				}
@@ -4528,7 +4530,7 @@ bool s_HTML_Listener::populateStrux (PL_StruxDocHandle sdh,
 
 		case PTX_EndTable:
 			{
-				if(m_bIgnoreTillEnd)
+				if(m_bIgnoreTillEnd || m_bIgnoreTillNextSection)
 				{
 					return true;
 				}
@@ -4542,7 +4544,7 @@ bool s_HTML_Listener::populateStrux (PL_StruxDocHandle sdh,
 
 		case PTX_EndCell:
 			{
-				if(m_bIgnoreTillEnd)
+				if(m_bIgnoreTillEnd || m_bIgnoreTillNextSection)
 				{
 					return true;
 				}
@@ -4590,33 +4592,20 @@ bool s_HTML_Listener::populateStrux (PL_StruxDocHandle sdh,
 			// Record the position for a docrange later.
 		case PTX_SectionMarginnote:
 #endif
-			// because headers and footers live at the end of AW
-			// documents, we cannot just oputput them; until we find a
-			// smart way of representing hdr/ftr in html, we will
-			// ignore them --Author unknown
-			// Update: If number of Hdrs/Ftrs > 0, create a css box
-			// at the top/bottom of the page...it's size being some
-			// multiple of some unit percentage of the window in units
-			// of percent, such that both the body and the hdrftr are
-			// reasonably visible even at 640x480, as well as reasonably
-			// well-fitted at 1600x1200.  The contents of the box could be,
-			// like with images, either base64-encoded in the url, or a
-			// separate file, based on preference.  As for developing this,
-			// since AFAIK file-based image export is currently broken, it
-			// might make the most sense to focus on base64enc first.
+			// Ignore HdrFtr for now
 		case PTX_SectionHdrFtr:
-//			m_bIgnoreTillEnd = true;
+			m_bIgnoreTillNextSection = true;
 			return true;
-			// Possibly use m_bIgnoreTillNextSection?
 		default:
 			UT_DEBUGMSG(("WARNING: ie_exp_HTML.cpp: unhandled strux type!\n"));
-			return false;
+			return true;
 	}
 
 
 }
 
 bool s_HTML_Listener::endOfDocument () {
+	m_bIgnoreTillNextSection = false;
 	/* Remaining endnotes, whether from the last of multiple sections or from all sections */
 	_doEndnotes();
 	
