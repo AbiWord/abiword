@@ -78,7 +78,7 @@ ap_RulerTicks::ap_RulerTicks(GR_Graphics * pG, UT_Dimension dim)
 		tickUnit = UT_convertToLogicalUnits(Buffer);
 		tickLong = 2;
 		tickLabel = 4;
-		tickScale = 1;
+		tickScale = 10;
 		sprintf(Buffer, "%fmm", (dBasicUnit / 2 * (double)tickUnitScale));
 		dragDelta = UT_convertToLogicalUnits(Buffer);
 		break;
