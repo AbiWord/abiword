@@ -148,7 +148,9 @@ EV_Menu_ActionSet * AP_CreateMenuActionSet(void)
 	_s(AP_MENU_ID_INSERT_FIELD,		0,1,0,	"insField",			NULL,					NULL);
 	_s(AP_MENU_ID_INSERT_FILE, 0,1,0, "insFile", NULL, NULL);
 	_s(AP_MENU_ID_INSERT_SYMBOL,	0,1,0,	"insSymbol",		NULL,					NULL);
+#ifdef DEBUG
 	_s(AP_MENU_ID_INSERT_ENDNOTE,	0,0,0,	"insEndnote",		NULL,					NULL);
+#endif	
 #ifdef HAVE_GNOME
 	_s(AP_MENU_ID_INSERT_PICTURE,   1,0,0,  NULL, NULL, NULL);
 #else
@@ -204,30 +206,30 @@ EV_Menu_ActionSet * AP_CreateMenuActionSet(void)
 	_s(AP_MENU_ID_TOOLS_REVISIONS_REJECT_REVISION, 0,0,0, "revisionReject", ap_GetState_RevisionPresent,NULL);
 	
 	_s(AP_MENU_ID_TABLE,1,0,0,NULL,NULL,NULL);
-    _s(AP_MENU_ID_TABLE_INSERT,1,0,0, NULL, NULL, NULL);
-    _s(AP_MENU_ID_TABLE_INSERT_TABLE,0,1,0, "insertTable", NULL, NULL);
-    _s(AP_MENU_ID_TABLE_INSERT_COLUMNS_BEFORE,0,0,0, "insertColsBefore", ap_GetState_InTable, NULL);
-    _s(AP_MENU_ID_TABLE_INSERT_COLUMNS_AFTER,0,0,0, "insertColsAfter", ap_GetState_InTable, NULL);
-    _s(AP_MENU_ID_TABLE_INSERT_ROWS_BEFORE,0,0,0,"insertRowsBefore", ap_GetState_InTable, NULL);
-    _s(AP_MENU_ID_TABLE_INSERT_ROWS_AFTER,0,0,0,"insertRowsAfter", ap_GetState_InTable, NULL);
-     _s(AP_MENU_ID_TABLE_INSERT_CELLS,0,0,0, NULL, ap_GetState_InTable, NULL);
-    _s(AP_MENU_ID_TABLE_DELETE,1,0,0, NULL, ap_GetState_InTable, NULL);
-    _s(AP_MENU_ID_TABLE_DELETE_TABLE,0,0,0, "deleteTable", ap_GetState_InTable, NULL);
-    _s(AP_MENU_ID_TABLE_DELETE_COLUMNS,0,0,0, "deleteColumns", ap_GetState_InTable, NULL);
-    _s(AP_MENU_ID_TABLE_DELETE_ROWS,0,0,0, "deleteRows", ap_GetState_InTable, NULL);
-    _s(AP_MENU_ID_TABLE_DELETE_CELLS,0,0,0, "deleteCell", ap_GetState_InTable, NULL);
-    _s(AP_MENU_ID_TABLE_SELECT,1,0,0, NULL, ap_GetState_InTable, NULL);
-    _s(AP_MENU_ID_TABLE_SELECT_TABLE,0,0,0, NULL, ap_GetState_InTable, NULL);
-    _s(AP_MENU_ID_TABLE_SELECT_COLUMN,0,0,0, NULL, ap_GetState_InTable, NULL);
-    _s(AP_MENU_ID_TABLE_SELECT_ROW,0,0,0, NULL, ap_GetState_InTable, NULL);
-    _s(AP_MENU_ID_TABLE_SELECT_CELL,0,0,0, NULL, ap_GetState_InTable, NULL);
-    _s(AP_MENU_ID_TABLE_MERGE_CELLS,0,1,0, "mergeCells", ap_GetState_InTable, NULL);
-    _s(AP_MENU_ID_TABLE_SPLIT_CELLS,0,0,0, NULL, ap_GetState_InTable, NULL);
-    _s(AP_MENU_ID_TABLE_SPLIT_TABLE,0,0,0, NULL, ap_GetState_InTable, NULL);
-    _s(AP_MENU_ID_TABLE_FORMAT,0,0,0, "formatTable", ap_GetState_InTable, NULL);
-    _s(AP_MENU_ID_TABLE_AUTOFIT,0,0,0, NULL, ap_GetState_InTable, NULL);
-    _s(AP_MENU_ID_TABLE_HEADING_ROWS_REPEAT,0,0,0, NULL, ap_GetState_InTable, NULL);
-    _s(AP_MENU_ID_TABLE_SORT,0,0,0, NULL, ap_GetState_InTable, NULL);
+	_s(AP_MENU_ID_TABLE_INSERT,1,0,0, NULL, NULL, NULL);
+	_s(AP_MENU_ID_TABLE_INSERT_TABLE,0,1,0, "insertTable", NULL, NULL);
+	_s(AP_MENU_ID_TABLE_INSERT_COLUMNS_BEFORE,0,0,0, "insertColsBefore", ap_GetState_InTable, NULL);
+	_s(AP_MENU_ID_TABLE_INSERT_COLUMNS_AFTER,0,0,0, "insertColsAfter", ap_GetState_InTable, NULL);
+	_s(AP_MENU_ID_TABLE_INSERT_ROWS_BEFORE,0,0,0,"insertRowsBefore", ap_GetState_InTable, NULL);
+	_s(AP_MENU_ID_TABLE_INSERT_ROWS_AFTER,0,0,0,"insertRowsAfter", ap_GetState_InTable, NULL);
+	_s(AP_MENU_ID_TABLE_INSERT_CELLS,0,0,0, NULL, ap_GetState_InTable, NULL);
+	_s(AP_MENU_ID_TABLE_DELETE,1,0,0, NULL, ap_GetState_InTable, NULL);
+	_s(AP_MENU_ID_TABLE_DELETE_TABLE,0,0,0, "deleteTable", ap_GetState_InTable, NULL);
+	_s(AP_MENU_ID_TABLE_DELETE_COLUMNS,0,0,0, "deleteColumns", ap_GetState_InTable, NULL);
+	_s(AP_MENU_ID_TABLE_DELETE_ROWS,0,0,0, "deleteRows", ap_GetState_InTable, NULL);
+	_s(AP_MENU_ID_TABLE_DELETE_CELLS,0,0,0, "deleteCell", ap_GetState_InTable, NULL);
+	_s(AP_MENU_ID_TABLE_SELECT,1,0,0, NULL, ap_GetState_InTable, NULL);
+	_s(AP_MENU_ID_TABLE_SELECT_TABLE,0,0,0, NULL, ap_GetState_InTable, NULL);
+	_s(AP_MENU_ID_TABLE_SELECT_COLUMN,0,0,0, NULL, ap_GetState_InTable, NULL);
+	_s(AP_MENU_ID_TABLE_SELECT_ROW,0,0,0, NULL, ap_GetState_InTable, NULL);
+	_s(AP_MENU_ID_TABLE_SELECT_CELL,0,0,0, NULL, ap_GetState_InTable, NULL);
+	_s(AP_MENU_ID_TABLE_MERGE_CELLS,0,1,0, "mergeCells", ap_GetState_InTable, NULL);
+	_s(AP_MENU_ID_TABLE_SPLIT_CELLS,0,0,0, NULL, ap_GetState_AlwaysDisabled, NULL); // ap_GetState_AlwaysDisabled is a hack to disable the menu item before the 1.1.1 release
+	_s(AP_MENU_ID_TABLE_SPLIT_TABLE,0,0,0, NULL, ap_GetState_AlwaysDisabled, NULL);
+	_s(AP_MENU_ID_TABLE_FORMAT,0,0,0, "formatTable", ap_GetState_InTable, NULL);
+	_s(AP_MENU_ID_TABLE_AUTOFIT,0,0,0, NULL, ap_GetState_AlwaysDisabled, NULL);
+	_s(AP_MENU_ID_TABLE_HEADING_ROWS_REPEAT,0,0,0, NULL, ap_GetState_AlwaysDisabled, NULL);
+	_s(AP_MENU_ID_TABLE_SORT,0,0,0, NULL, ap_GetState_AlwaysDisabled, NULL);
 
 	_s(AP_MENU_ID_CONTEXT_REVISIONS_ACCEPT_REVISION, 0,0,0, "revisionAccept", ap_GetState_RevisionPresent,NULL);
 	_s(AP_MENU_ID_CONTEXT_REVISIONS_REJECT_REVISION, 0,0,0, "revisionReject", ap_GetState_RevisionPresent, NULL);

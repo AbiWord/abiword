@@ -157,7 +157,7 @@ EV_Toolbar_ActionSet * AP_CreateToolbarActionSet(void)
 	_s(AP_TOOLBAR_ID_DELETE_ROW, EV_TBIT_PushButton, "deleteRows", AV_CHG_ALL, ap_ToolbarGetState_Table);
 	_s(AP_TOOLBAR_ID_DELETE_COLUMN, EV_TBIT_PushButton, "deleteColumns", AV_CHG_ALL, ap_ToolbarGetState_Table);
 	_s(AP_TOOLBAR_ID_MERGE_CELLS, EV_TBIT_PushButton, "mergeCells", AV_CHG_ALL, ap_ToolbarGetState_Table);
-	_s(AP_TOOLBAR_ID_SPLIT_CELLS, EV_TBIT_PushButton, NULL, AV_CHG_ALL, ap_ToolbarGetState_Table);
+	_s(AP_TOOLBAR_ID_SPLIT_CELLS, EV_TBIT_PushButton, NULL, AV_CHG_ALL, ap_ToolbarGetState_AlwaysDisabled); // ap_ToolbarGetState_AlwaysDisabled is a hack to disable the menu item before the 1.1.1 release
 
 	_s(AP_TOOLBAR_ID__BOGUS2__,		EV_TBIT_BOGUS,			NULL,			0,					NULL);
 

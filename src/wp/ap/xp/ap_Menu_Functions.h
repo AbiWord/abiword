@@ -49,6 +49,7 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_MarkRevisions);
 Defun_EV_GetMenuItemState_Fn(ap_GetState_RevisionPresent);
 Defun_EV_GetMenuItemState_Fn(ap_GetState_RevisionPresentContext);
 Defun_EV_GetMenuItemState_Fn(ap_GetState_InTable);
+Defun_EV_GetMenuItemState_Fn(ap_GetState_AlwaysDisabled); // REMOVE ME
 Defun_EV_GetMenuItemState_Fn(ap_GetState_Recent);
 
 Defun_EV_GetMenuItemComputedLabel_Fn(ap_GetLabel_Recent);

@@ -993,6 +993,12 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_InTable)
     return EV_MIS_Gray;
 }
 
+// HACK TO ALWAYS DISABLE A MENU ITEM... DELETE ME
+Defun_EV_GetMenuItemState_Fn(ap_GetState_AlwaysDisabled)
+{
+    return EV_MIS_Gray;
+}
+
 Defun_EV_GetMenuItemState_Fn(ap_GetState_Recent)
 {
 	ABIWORD_VIEW;

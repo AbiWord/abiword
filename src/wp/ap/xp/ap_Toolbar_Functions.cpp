@@ -775,3 +775,8 @@ Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_Table)
   return EV_TIS_Gray;
 }
 
+// HACK TO ALWAYS DISABLE A TOOLBAR ITEM... DELETE ME
+Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_AlwaysDisabled)
+{
+  return EV_TIS_Gray;
+}

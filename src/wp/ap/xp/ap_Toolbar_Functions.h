@@ -47,6 +47,7 @@ Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_StylesLocked);
 Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_Indents);
 Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_Spelling);
 Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_Table);
+Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_AlwaysDisabled);
 
 #endif /* AP_TOOLBAR_FUNCTIONS_H */
 
