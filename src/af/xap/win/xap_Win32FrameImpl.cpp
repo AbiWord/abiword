@@ -384,13 +384,53 @@ bool XAP_Win32FrameImpl::_openURL(const char * szURL)
 	int res = (int) ShellExecute(m_hwndFrame /*(HWND) top level window */, "open", szURL, NULL, NULL, SW_SHOWNORMAL);
 
 	// TODO: more specific (and localized) error messages ??
+	// added more specific error messages as documented in http://msdn.microsoft.com/library/default.asp?url=/library/en-us/debug/base/system_error_codes.asp
+
 	if (res <= 32)	// show error message if failed to launch browser to display URL
 	{
-		UT_String errMsg = "Error ("; 
-		errMsg += res;  errMsg += ") displaying URL: \n";
-		errMsg += " [ ";  errMsg += szURL;  errMsg += " ] ";
-		MessageBox(m_hwndFrame, errMsg.c_str(), "Error displaying URL", MB_OK|MB_ICONEXCLAMATION);
-	}
+		switch (res)
+		{
+			case 2:
+				{
+					UT_String errMsg = "Error ("; 
+					errMsg += UT_String_sprintf("%d", res);
+					errMsg += ") displaying URL: The system cannot find the file specified.\n";
+					errMsg += " [ ";  errMsg += szURL;  errMsg += " ] ";
+					MessageBox(m_hwndFrame, errMsg.c_str(), "Error displaying URL", MB_OK|MB_ICONEXCLAMATION);
+				}
+				break;
+
+			case 3:
+				{
+					UT_String errMsg = "Error ("; 
+					errMsg += UT_String_sprintf("%d", res);
+					errMsg += ") displaying URL: The system cannot find the path specified.\n";
+					errMsg += " [ ";  errMsg += szURL;  errMsg += " ] ";
+					MessageBox(m_hwndFrame, errMsg.c_str(), "Error displaying URL", MB_OK|MB_ICONEXCLAMATION);
+				}
+				break;
+
+			case 5:
+				{
+					UT_String errMsg = "Error ("; 
+					errMsg += UT_String_sprintf("%d", res);
+					errMsg += ") displaying URL: Access is denied.\n";
+					errMsg += " [ ";  errMsg += szURL;  errMsg += " ] ";
+					MessageBox(m_hwndFrame, errMsg.c_str(), "Error displaying URL", MB_OK|MB_ICONEXCLAMATION);
+				}
+				break;
+
+			default:
+				{
+					UT_String errMsg = "Error ("; 
+					errMsg += UT_String_sprintf("%d", res);
+					errMsg += ") displaying URL: \n";
+					errMsg += " [ ";  errMsg += szURL;  errMsg += " ] ";
+					MessageBox(m_hwndFrame, errMsg.c_str(), "Error displaying URL", MB_OK|MB_ICONEXCLAMATION);
+				}
+				break;
+		} /* switch (res) */
+	} /* if (res <= 32) */
 
 	return (res>32);
 }
@@ -572,44 +612,44 @@ LRESULT CALLBACK XAP_Win32FrameImpl::_FrameWndProc(HWND hwnd, UINT iMsg, WPARAM 
 		return DefWindowProc(hwnd,iMsg,wParam,lParam);
 		
 	case WM_MEASUREITEM: 
- 	{
-        // Retrieve a device context for the main window.  
-        HDC hdc = GetDC(hwnd); 
+ 		{
+			// Retrieve a device context for the main window.  
+			HDC hdc = GetDC(hwnd); 
 
-        // Retrieve pointers to the menu item's 
-        // MEASUREITEMSTRUCT structure and MYITEM structure. 
+			// Retrieve pointers to the menu item's 
+			// MEASUREITEMSTRUCT structure and MYITEM structure. 
 
-        lpmis = (LPMEASUREITEMSTRUCT) lParam; 
-        //pmyitem = (MYITEM *) lpmis->itemData; 
-        char *pText = (char*) lpmis->itemData;
+			lpmis = (LPMEASUREITEMSTRUCT) lParam; 
+			//pmyitem = (MYITEM *) lpmis->itemData; 
+			char *pText = (char*) lpmis->itemData;
 
-        // Select the font associated with the item into 
-        // the main window's device context. 
+			// Select the font associated with the item into 
+			// the main window's device context. 
         
-        if (!gFont)
-        	gFont = GetAFont(0); 
+			if (!gFont)
+        		gFont = GetAFont(0); 
 
-        hfontOld = (HFONT) SelectObject(hdc, gFont); 
+			hfontOld = (HFONT) SelectObject(hdc, gFont); 
 
-        // Retrieve the width and height of the item's string, 
-        // and then copy the width and height into the 
-        // MEASUREITEMSTRUCT structure's itemWidth and 
-        // itemHeight members. 
+			// Retrieve the width and height of the item's string, 
+			// and then copy the width and height into the 
+			// MEASUREITEMSTRUCT structure's itemWidth and 
+			// itemHeight members. 
 
-        GetTextExtentPoint32(hdc, pText, 
-            lstrlen(pText), &size); 
+			GetTextExtentPoint32(hdc, pText, 
+				lstrlen(pText), &size); 
             
-        lpmis->itemWidth = size.cx; 
-        lpmis->itemHeight = size.cy; 
+			lpmis->itemWidth = size.cx; 
+			lpmis->itemHeight = size.cy; 
 
-        // Select the old font back into the device context, 
-        // and then release the device context. 
+			// Select the old font back into the device context, 
+			// and then release the device context. 
 
-        SelectObject(hdc, hfontOld); 
-        ReleaseDC(hwnd, hdc); 
+			SelectObject(hdc, hfontOld); 
+			ReleaseDC(hwnd, hdc); 
 
-        return TRUE; 
- 	}
+			return TRUE; 
+ 		}
  	
  	case WM_DRAWITEM: 
  	{
@@ -765,7 +805,7 @@ LRESULT CALLBACK XAP_Win32FrameImpl::_FrameWndProc(HWND hwnd, UINT iMsg, WPARAM 
 		// Process other notifications here
 		default:
 			break;
-		} 
+		} /* switch (((LPNMHDR) lParam)->code) */
 		break;
 
 	case WM_SIZE:
