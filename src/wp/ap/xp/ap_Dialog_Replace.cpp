@@ -34,10 +34,17 @@
 AP_Dialog_Replace::AP_Dialog_Replace(AP_DialogFactory * pDlgFactory, AP_Dialog_Id id)
 	: AP_Dialog_FramePersistent(pDlgFactory,id)
 {
-	// GUI
-    m_findString = NULL;
+	_m_findString = NULL;
+	_m_replaceString = NULL;
+	_m_matchCase = UT_TRUE;
+
+	m_pView = NULL;
+	
+	m_findString = NULL;
 	m_replaceString = NULL;
-	m_matchCase = UT_FALSE;
+	m_matchCase = UT_TRUE;
+
+	m_didSomething = UT_FALSE;
 
 	// is this used?
 	m_answer = a_VOID;
@@ -47,25 +54,23 @@ AP_Dialog_Replace::~AP_Dialog_Replace(void)
 {
 	UT_ASSERT(!m_bInUse);
 
-	if (m_findString)
-		FREEP(m_findString);
-	if (m_replaceString)
-		FREEP(m_replaceString);
+	FREEP(m_findString);
+	FREEP(m_replaceString);
 }
 
 void AP_Dialog_Replace::useStart(void)
 {
-
 	UT_DEBUGMSG(("AP_Dialog_Replace::useStart(void) I've been called\n"));
 
 	AP_Dialog_FramePersistent::useStart();
-	
-/*
-	FREEP(m_szInitialPathname);
-	FREEP(m_szFinalPathname);
-	m_answer = a_VOID;
-	m_bSuggestName = UT_FALSE;
-*/
+
+	// restore from persistent storage
+	if (_m_findString)
+		UT_UCS_cloneString(&m_findString, _m_findString);
+	if (_m_replaceString)
+		UT_UCS_cloneString(&m_replaceString, _m_replaceString);
+
+	m_matchCase = _m_matchCase;
 }
 
 void AP_Dialog_Replace::useEnd(void)
@@ -75,15 +80,18 @@ void AP_Dialog_Replace::useEnd(void)
 	AP_Dialog_FramePersistent::useEnd();
 
 	// persistent dialogs don't destroy this data
-/*
-	FREEP(m_szInitialPathname);
-	if (m_answer == a_OK)
+	if (m_didSomething)
 	{
-		FREEP(m_szPersistPathname);
-		m_szPersistPathname = m_szFinalPathname;
-		m_szFinalPathname = NULL;
+		FREEP(_m_findString);
+		if (m_findString)
+			UT_UCS_cloneString(&_m_findString, m_findString);
+		
+		FREEP(m_replaceString);
+		if (m_replaceString)
+			UT_UCS_cloneString(&_m_replaceString, m_replaceString);
+
+		_m_matchCase = m_matchCase;
 	}
-*/
 }
 
 AP_Dialog_Replace::tAnswer AP_Dialog_Replace::getAnswer(void) const
@@ -92,7 +100,9 @@ AP_Dialog_Replace::tAnswer AP_Dialog_Replace::getAnswer(void) const
 	return m_answer;
 }
 
-void AP_Dialog_Replace::setView(AV_View * view)
+// --------------------------- Setup Functions -----------------------------
+
+UT_Bool AP_Dialog_Replace::setView(AV_View * view)
 {
 	// we can do a static cast from AV_View into FV_View,
 	// so we can get WP specific information from it.
@@ -101,29 +111,94 @@ void AP_Dialog_Replace::setView(AV_View * view)
 	UT_ASSERT(view);
 
 	m_pView = static_cast<FV_View *>(view);
+	return UT_TRUE;
 }
 
-UT_Bool AP_Dialog_Replace::findNext(char * string)
+AV_View * AP_Dialog_Replace::getView(void) const
 {
-	UT_ASSERT(string);
+	return m_pView;
+}
+
+UT_Bool AP_Dialog_Replace::setFindString(const UT_UCSChar * string)
+{
+	FREEP(m_findString);
+	return UT_UCS_cloneString(&m_findString, string);
+}
+
+UT_UCSChar * AP_Dialog_Replace::getFindString(void)
+{
+	UT_UCSChar * string = NULL;
+	if (UT_UCS_cloneString(&string, m_findString))
+		return string;
+	else
+		return NULL;
+}
+
+UT_Bool AP_Dialog_Replace::setReplaceString(const UT_UCSChar * string)
+{
+	FREEP(m_replaceString);
+	return UT_UCS_cloneString(&m_replaceString, string);
+}
+
+UT_UCSChar * AP_Dialog_Replace::getReplaceString(void)
+{
+	UT_UCSChar * string = NULL;
+	if (UT_UCS_cloneString(&string, m_replaceString))
+		return string;
+	else
+		return NULL;
+}
+	
+UT_Bool AP_Dialog_Replace::setMatchCase(UT_Bool match)
+{
+	m_matchCase = match;
+	return UT_TRUE;
+}
+
+UT_Bool	AP_Dialog_Replace::getMatchCase(void)
+{
+	return m_matchCase;
+}
+
+// --------------------------- Action Functions -----------------------------
+
+UT_Bool AP_Dialog_Replace::findNext()
+{
 	UT_ASSERT(m_pView);
 
-	// convert from char * to unicode
-	UT_UCSChar * unicodeString = (UT_UCSChar *) calloc(strlen(string) + 1, sizeof(UT_UCSChar));
+	UT_ASSERT(m_findString);
 
-	UT_UCS_strcpy_char(unicodeString, string);
+	// so we save our attributes to persistent storage
+	m_didSomething = UT_TRUE;
 	
 	// call view to do the work
-	UT_Bool result = m_pView->findNext(unicodeString, UT_TRUE);
- 
-	if (unicodeString)
-		free(unicodeString);
-
-	return result;
+	return m_pView->findNext(m_findString, UT_TRUE);
 }
 
-UT_Bool AP_Dialog_Replace::findNextAndReplace(char * find, char * replace)
+UT_Bool AP_Dialog_Replace::findReplace()
 {
+	UT_ASSERT(m_pView);
+
+	UT_ASSERT(m_findString);
+	UT_ASSERT(m_replaceString);
+	
+	// so we save our attributes to persistent storage
+	m_didSomething = UT_TRUE;
+	
+	// TODO
+	return UT_TRUE;
+}
+
+UT_Bool AP_Dialog_Replace::findReplaceAll()
+{
+	UT_ASSERT(m_pView);
+
+	UT_ASSERT(m_findString);
+	UT_ASSERT(m_replaceString);
+	
+	// so we save our attributes to persistent storage
+	m_didSomething = UT_TRUE;
+	
 	// TODO
 	return UT_TRUE;
 }

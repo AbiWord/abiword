@@ -21,6 +21,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <ctype.h>
+#include <string.h>
 
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
@@ -1627,7 +1628,7 @@ void FV_View::findReset(void)
 
 /*
   This needs to be far more readable, starting with tossing the
-  goto call.
+  goto call and reworking the loop to flow better.
 */
 UT_Bool FV_View::findNext(const UT_UCSChar * string, UT_Bool bSelect)
 {
@@ -1637,9 +1638,6 @@ UT_Bool FV_View::findNext(const UT_UCSChar * string, UT_Bool bSelect)
 	UT_GrowBuf buffer;
 	fl_BlockLayout * block;
 
-	// get the block
-	block = _findGetCurrentBlock();
-
 	// Hold a local "started at which block" so we can bail on
 	// one full rotation.  This may have to change; right now
 	// it depends on a document block never starting at 0.  
@@ -1648,6 +1646,9 @@ UT_Bool FV_View::findNext(const UT_UCSChar * string, UT_Bool bSelect)
 	// magic number, -1 means we didn't find in the block,
 	// since 0 is a valid position
 	UT_sint32 foundAt = -1;
+
+	// get the block we're sittin in now
+	block = _findGetCurrentBlock();
 
     // search it
 	while (block && (cycleBeganAt != block->getPosition(UT_FALSE)) )
@@ -1667,13 +1668,31 @@ UT_Bool FV_View::findNext(const UT_UCSChar * string, UT_Bool bSelect)
 			// search starting at last place you stopped, but not if you've exhausted
 			// this buffer, then move to next
 			if (m_iFindBufferOffset < buffer.getLength())
-				foundAt = _findBlockSearchDumb(buffer.getPointer(m_iFindBufferOffset), string);
+			{
+				// this could slow us down on big blocks, but since the buffer's
+				// insides are not null terminated, we have to make a copy of the
+				// buffer segment we're searching.
+				UT_UCSChar * bufferSegment = NULL;
+				
+				bufferSegment = (UT_UCSChar *) calloc(buffer.getLength() - m_iFindBufferOffset,
+													  sizeof(UT_UCSChar));
 
+				memmove(bufferSegment, buffer.getPointer(m_iFindBufferOffset),
+						(buffer.getLength() - m_iFindBufferOffset) * sizeof(UT_UCSChar));
+
+				// do a dumb search (TODO: add case for regexp?)
+				foundAt = _findBlockSearchDumb(bufferSegment, string);
+
+				FREEP(bufferSegment);
+
+			}
 			else
 				// this has gotta go
 				goto FetchNextBlock;
-			
 
+			// make sure the search was sane
+			UT_ASSERT((UT_sint32) buffer.getLength() >= foundAt);
+			
 			if (foundAt >= 0)
 			{
 				// increment by the offset within the buffer block at which the substring was found
@@ -1768,8 +1787,8 @@ fl_BlockLayout * FV_View::_findGetCurrentBlock(void)
 /*
   Call this repeatedly to return the next block in the layout.  It will
   spill across sections by default, and will return wrap to the first
-  block when it hits the end of the document.  It will return a pointer
-  to a block unless the cursor is invalid, then it returns NULL.
+  block when it hits the end of the search region.  It will return a pointer
+  to a block unless the cursor is somewhere strange, then it returns NULL.
   If a pointer for a wrapped flag is passed in, it will be set UT_TRUE
   if the search was wrapped (so the caller could fire a "you got wrapped"
   dialog if desired.

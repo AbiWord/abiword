@@ -63,17 +63,25 @@ static void FindCallback(GtkWidget * widget, AP_UnixDialog_Replace * repDialog)
 	UT_ASSERT(widget);
 	UT_ASSERT(repDialog);
 
-	char * entryText;
+	char * findEntryText;
+	char * replaceEntryText;
 
-	/* TODO:  know who allocates and frees this memory returned from
-              gtk_entry_get_text() (I think it's just a char * to
-			  its buffer, which it manages on the condition you don't
-			  mess with it directly)
-    */
-	entryText = (char *) gtk_entry_get_text(GTK_ENTRY(repDialog->findEntry));
-	UT_DEBUGMSG(("Entry contents: \"%s\"\n", ((entryText) ? entryText : "NULL")));
+	findEntryText = (char *) gtk_entry_get_text(GTK_ENTRY(repDialog->findEntry));
+	replaceEntryText = (char *) gtk_entry_get_text(GTK_ENTRY(repDialog->replaceEntry));
+	
+	UT_DEBUGMSG(("Find entry contents: \"%s\"\n", ((findEntryText) ? findEntryText : "NULL")));
+	UT_DEBUGMSG(("Replace entry contents: \"%s\"\n", ((replaceEntryText) ? replaceEntryText : "NULL")));
 
-	repDialog->findNext(entryText);
+	UT_UCSChar * findString;
+	UT_UCSChar * replaceString;
+
+	UT_UCS_cloneString_char(&findString, findEntryText);
+	UT_UCS_cloneString_char(&replaceString, replaceEntryText);
+	
+	repDialog->setFindString(findString);
+	repDialog->setReplaceString(replaceString);
+	
+	repDialog->findNext();
 }
 
 

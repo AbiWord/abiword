@@ -227,8 +227,8 @@ UT_UCSChar * UT_UCS_strcpy(UT_UCSChar * dest, const UT_UCSChar * src)
 	UT_ASSERT(dest);
 	UT_ASSERT(src);
 	
-	UT_UCSChar * 	d = dest;
-	UT_UCSChar *	s = (UT_UCSChar *) src;
+	UT_UCSChar * d = dest;
+	UT_UCSChar * s = (UT_UCSChar *) src;
 
 	while (*s != NULL)
 		*d++ = *s++;
@@ -239,18 +239,45 @@ UT_UCSChar * UT_UCS_strcpy(UT_UCSChar * dest, const UT_UCSChar * src)
  
 // note that dest should be twice the size of src, and zeroed,
 // to accept the proper narrow src values
+
 UT_UCSChar * UT_UCS_strcpy_char(UT_UCSChar * dest, const char * src)
 {
 	UT_ASSERT(dest);
 	UT_ASSERT(src);
 	
-	UT_UCSChar * 	d = dest;
-	char *			s = (char *) src;
+	UT_UCSChar * d = dest;
+	char * 		 s = (char *) src;
 
 	while (*s != NULL)
 		*d++ = *s++;
 	*d = NULL;
 
 	return dest;
+}
+
+UT_Bool UT_UCS_cloneString(UT_UCSChar ** dest, const UT_UCSChar * src)
+{
+	UT_uint32 length = UT_UCS_strlen(src) + 1;
+	*dest = (UT_UCSChar *)calloc(length,sizeof(UT_UCSChar));
+	if (!*dest)
+		return UT_FALSE;
+	memmove(*dest,src,length*sizeof(UT_UCSChar));
+
+	return UT_TRUE;
+}
+
+UT_Bool UT_UCS_cloneString_char(UT_UCSChar ** dest, const char * src)
+{
+	UT_uint32 length = strlen(src) + 1;
+	*dest = (UT_UCSChar *)calloc(length,sizeof(UT_UCSChar));
+	if (!*dest)
+		return UT_FALSE;
+
+	//memmove(dest,src,length*sizeof(UT_UCSChar));
+	// do slightly slower copy for bit width variation
+
+	UT_UCS_strcpy_char(*dest, src);
+
+	return UT_TRUE;
 }
 

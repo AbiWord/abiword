@@ -1428,9 +1428,9 @@ static UT_Bool s_doReplaceDlg(FV_View * pView)
 		= (AP_Dialog_Replace *)(pDialogFactory->requestDialog(id));
 	UT_ASSERT(pDialog);
 
-	// stuff in any initial values....
-	// TODO: if they have a selection, set the persistent class
-	// "find" data to be the selection, with size checking of course
+	// if they have a selection, set the persistent class
+	// "find" data to be the selection
+	
 	
 	// run the dialog
 	pDialog->runModal(pFrame);
@@ -1440,15 +1440,6 @@ static UT_Bool s_doReplaceDlg(FV_View * pView)
 	
 	UT_Bool bOK = UT_TRUE;
 
-#if 0
- = (pDialog->getAnswer() == AP_Dialog_Replace::a_CANCEL);
-
-	if (bOK)
-	{
-		// TODO do we need to do anything here or is it already done during the dialog run ??
-	}
-#endif
-		
 	pDialogFactory->releaseDialog(pDialog);
 
 	return bOK;

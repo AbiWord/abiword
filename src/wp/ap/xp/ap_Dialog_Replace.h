@@ -44,21 +44,52 @@ public:
 
     AP_Dialog_Replace::tAnswer	getAnswer(void) const;
 
-	void						resetFind(void);
-	void						setView(AV_View * view);
-	UT_Bool						findNext(char * string);
-	UT_Bool						findNextAndReplace(char * find, char * replace);
+	// These are called from edit methods or from dialogs
+	// to set or read the variables in the current
+	// instance of the dialog.  These do not read the persistent
+	// values.
+	UT_Bool						setView(AV_View * view);
+	AV_View * 					getView(void) const;
+	
+	UT_Bool						setFindString(const UT_UCSChar * string);
+	UT_UCSChar *				getFindString(void);
+
+	UT_Bool						setReplaceString(const UT_UCSChar * string);
+	UT_UCSChar * 				getReplaceString(void);
+
+	UT_Bool						setMatchCase(UT_Bool match);
+	UT_Bool						getMatchCase(void);
+
+	// Action functions... set data using the accessors
+	// above and call one of these.
+	UT_Bool						findNext(void);
+	UT_Bool						findReplace(void);
+	UT_Bool 					findReplaceAll(void);
 	
  protected:
 
-	// GUI data (should this move do derived platform class, or
-	// will it always be common at a high level)?  Also, is
-	// UT_UCSChar annoying to work with at this level?
+	// These are the persistent dialog data items,
+	// which are carefully read and set by useStart()
+	// and useEnd(), and not by the accessors.
+	UT_UCSChar *			_m_findString; 
+	UT_UCSChar *			_m_replaceString;
+	UT_Bool					_m_matchCase;
+
+	// These are the "current use" dialog data items,
+	// which are liberally read and set by the
+	// accessor methods above.  Note that the buffers
+	// these may point to are destroyed when useEnd()
+	// is done storing them away
+	FV_View * 				m_pView;
 	UT_UCSChar *			m_findString; 
 	UT_UCSChar *			m_replaceString;
 	UT_Bool					m_matchCase;
 
-	FV_View * 				m_pView;
+	// These are also "current use" dialog data item,
+	// but they're not user-settable; they are set
+	// on conditions that action functions or other
+	// non-accessor methods are invoked.
+	UT_Bool					m_didSomething;
 	
 	// is this used in a non-persistent dialog like this?
 	tAnswer					m_answer;
