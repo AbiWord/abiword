@@ -136,6 +136,13 @@ BOOL AP_Win32Dialog_Columns::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lPar
 	enableLineBetweenControl(getColumns() != 1);
 	CheckDlgButton(hWnd, AP_RID_DIALOG_COLUMN_CHECK_LINE_BETWEEN, getLineBetween() ? BST_CHECKED : BST_UNCHECKED);
 
+	HWND hRTL = GetDlgItem( hWnd, AP_RID_DIALOG_COLUMN_CHECK_RTL_ORDER );
+	ShowWindow( hRTL, SW_HIDE );
+#ifdef BIDI_ENABLED
+	ShowWindow( hRTL, SW_NORMAL );
+	CheckDlgButton(hWnd, AP_RID_DIALOG_COLUMN_CHECK_RTL_ORDER, getColumnOrder() ? BST_CHECKED : BST_UNCHECKED );
+#endif
+
 	// Create a preview window.
 
 	HWND hwndChild = GetDlgItem(hWnd, AP_RID_DIALOG_COLUMN_PREVIEW);
@@ -189,6 +196,12 @@ BOOL AP_Win32Dialog_Columns::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
 	case AP_RID_DIALOG_COLUMN_CHECK_LINE_BETWEEN:
 		setLineBetween( (IsDlgButtonChecked(hWnd, AP_RID_DIALOG_COLUMN_CHECK_LINE_BETWEEN) == BST_CHECKED) );
 		return 1;
+
+#ifdef BIDI_ENABLED
+	case AP_RID_DIALOG_COLUMN_CHECK_RTL_ORDER:
+		setColumnOrder( (UT_uint32) (IsDlgButtonChecked(hWnd, AP_RID_DIALOG_COLUMN_CHECK_RTL_ORDER) == BST_CHECKED) );
+		return 1;
+#endif
 
 	default:							// we did not handle this notification
 		UT_DEBUGMSG(("WM_Command for id %ld\n",wId));
