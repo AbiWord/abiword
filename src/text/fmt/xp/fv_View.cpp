@@ -888,7 +888,7 @@ UT_Bool FV_View::cmdCharInsert(UT_UCSChar * text, UT_uint32 count)
 	}
 
 	_generalUpdate();
-	
+
 	if (!_ensureThatInsertionPointIsOnScreen())
 	{
 		_fixInsertionPointCoords();
@@ -922,7 +922,7 @@ void FV_View::insertSectionBreak(void)
 	m_pDoc->endUserAtomicGlob();
 
 	_generalUpdate();
-	
+
 	if (!_ensureThatInsertionPointIsOnScreen())
 	{
 		_fixInsertionPointCoords();
@@ -952,9 +952,9 @@ void FV_View::insertParagraphBreak(void)
 
 	if (bDidGlob)
 		m_pDoc->endUserAtomicGlob();
-	
+
 	_generalUpdate();
-	
+
 	if (!_ensureThatInsertionPointIsOnScreen())
 	{
 		_fixInsertionPointCoords();
@@ -1020,7 +1020,7 @@ UT_Bool FV_View::setStyle(const XML_Char * style)
 	}
 
 	_generalUpdate();
-        
+
 	if (isSelectionEmpty())
 	{
 		_fixInsertionPointCoords();
@@ -1242,7 +1242,7 @@ UT_Bool FV_View::setCharFormat(const XML_Char * properties[])
 	bRet = m_pDoc->changeSpanFmt(PTC_AddFmt,posStart,posEnd,NULL,properties);
 
 	_generalUpdate();
-	
+
 	if (isSelectionEmpty())
 	{
 		_fixInsertionPointCoords();
@@ -1446,7 +1446,7 @@ UT_Bool FV_View::setBlockFormat(const XML_Char * properties[])
 	bRet = m_pDoc->changeStruxFmt(PTC_AddFmt,posStart,posEnd,NULL,properties,PTX_Block);
 
 	_generalUpdate();
-	
+
 	if (isSelectionEmpty())
 	{
 		_fixInsertionPointCoords();
@@ -1708,7 +1708,7 @@ void FV_View::delTo(FV_DocPos dp)
 
 	_extSelToPos(iPos);
 	_deleteSelection();
-	
+
 	_generalUpdate();
 
 	_fixInsertionPointCoords();
@@ -1778,7 +1778,7 @@ void FV_View::cmdCharDelete(UT_Bool bForward, UT_uint32 count)
 		_deleteSelection();
 
 		_generalUpdate();
-	
+
 		if (!_ensureThatInsertionPointIsOnScreen())
 		{
 			_fixInsertionPointCoords();
@@ -1824,7 +1824,7 @@ void FV_View::cmdCharDelete(UT_Bool bForward, UT_uint32 count)
 		}
 
 		_generalUpdate();
-	
+
 		if (!_ensureThatInsertionPointIsOnScreen())
 		{
 			_fixInsertionPointCoords();
@@ -4368,9 +4368,9 @@ UT_Error FV_View::cmdInsertGraphic(FG_Graphic* pFG, const char* pszName)
 
 	if (bDidGlob)
 		m_pDoc->endUserAtomicGlob();
-	
+
 	_generalUpdate();
-	
+
 	if (!_ensureThatInsertionPointIsOnScreen())
 	{
 		_fixInsertionPointCoords();

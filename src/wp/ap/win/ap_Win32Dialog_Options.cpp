@@ -389,8 +389,8 @@ BOOL AP_Win32Dialog_Options::_onCommandTab(HWND hWnd, WPARAM wParam, LPARAM lPar
 		return 0;
 
 	case AP_RID_DIALOG_OPTIONS_BTN_IGNOREDRESET:
-		_event_IgnoreReset(); 
-//		UT_DEBUGMSG(("WM_Command for BtnIgnoreReset\n"));
+		//_event_IgnoreReset(); 
+		UT_DEBUGMSG(("WM_Command for BtnIgnoreReset\n"));
 		return 0;
 
 	case AP_RID_DIALOG_OPTIONS_BTN_IGNOREDEDIT:

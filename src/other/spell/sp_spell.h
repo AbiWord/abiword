@@ -24,13 +24,6 @@ int SpellCheckInit(char *hashname);
 void SpellCheckCleanup(void);
 int SpellCheckNWord16(const unsigned short *word16, int length);
 int SpellCheckSuggestNWord16(const unsigned short *word16, int length, sp_suggestions *sg);
-/* This functions are not uptodate, see SpellCheckNWord16 and SpellCheckSuggestNWord16 */
-#if 0
-int SpellCheckWord16(unsigned short  *word16);
-int SpellCheckSuggestWord16(unsigned short  *word16, sp_suggestions *sg);
-int SpellCheckWord(char *word);
-int SpellCheckSuggestWord(char *word, sp_suggestions *sg);  
-#endif
 
 #ifdef __cplusplus
 }

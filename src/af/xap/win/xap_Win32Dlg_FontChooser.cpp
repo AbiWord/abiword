@@ -1,5 +1,6 @@
 /* AbiSource Application Framework
  * Copyright (C) 1998,1999 AbiSource, Inc.
+
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -123,7 +124,6 @@ void XAP_Win32Dialog_FontChooser::runModal(XAP_Frame * pFrame)
 		lf.lfStrikeOut = TRUE;
 
 	// run the actual dialog...
-	
 	m_answer = (ChooseFont(&cf) ? a_OK : a_CANCEL);
 
 	if (m_answer == a_OK)

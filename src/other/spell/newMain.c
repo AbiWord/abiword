@@ -5,6 +5,7 @@
 #include "sp_spell.h"
 #include "iconv.h"
 
+
 /***************************************************************************/
 /* Reduced Gobals needed by ispell code.                                   */
 /***************************************************************************/
@@ -209,7 +210,7 @@ int SpellCheckSuggestNWord16(const unsigned short *word16, int length, sp_sugges
         iconv(translate_in, &In, &len_in, &Out, &len_out);
         *Out = '\0';
     }
-    
+   
     if( !strtoichar(iWord, word8, sizeof(iWord), 0) )
         makepossibilities(iWord);
 
@@ -242,7 +243,7 @@ int SpellCheckSuggestNWord16(const unsigned short *word16, int length, sp_sugges
             /* copy to 16bit string and null terminate */
             register int x;
 
-            for (x = 0; x < l; x++) 
+            for (x = 0; x < l; x++)
                 sg->word[c][x] = (unsigned char)possibilities[c][x];
             sg->word[c][l] = 0;
         }
