@@ -497,6 +497,8 @@ bool AP_Win32Frame::initialize(void)
 		return false;
 
 	_createTopLevelWindow();
+	_showOrHideToolbars();
+	_showOrHideStatusbar();
 	return true;
 }
 
@@ -1369,3 +1371,19 @@ void AP_Win32Frame::toggleStatusBar(bool bStatusBarOn)
 	}
 }
 
+void AP_Win32Frame::_showOrHideToolbars(void)
+{
+	bool *bShowBar = static_cast<AP_FrameData*> (m_pData)->m_bShowBar;
+
+	for (UT_uint32 i = 0; i < m_vecToolbarLayoutNames.getItemCount(); i++)
+	{
+		if (!bShowBar[i])
+			toggleBar( i, false );
+	}
+}
+
+void AP_Win32Frame::_showOrHideStatusbar(void)
+{
+	bool bShowStatusBar = static_cast<AP_FrameData*> (m_pData)->m_bShowStatusBar;
+	toggleStatusBar(bShowStatusBar);
+}

@@ -97,6 +97,9 @@ private:
 									return m_bMouseWheelTrack;
 								}
 
+	void						_showOrHideToolbars(void);
+	void						_showOrHideStatusbar(void);
+
 	bool						m_bMouseWheelTrack;
 	bool						m_bMouseActivateReceived;
 	HWND						m_hWndHScroll;
