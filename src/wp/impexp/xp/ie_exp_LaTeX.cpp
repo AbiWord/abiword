@@ -146,6 +146,7 @@ protected:
 	const PP_AttrProp*	m_pAP_Span;
 	UT_Bool             m_bMultiCols;
 	JustificationTypes  m_eJustification;
+	UT_Bool				m_bLineHeight;
 
 	// Need to look up proper type, and place to stick #defines...
 
@@ -192,6 +193,10 @@ void s_LaTeX_Listener::_closeBlock(void)
 			m_pie->write("\n\\end{flushleft}");
 			break;
 		}
+
+		if (m_bLineHeight)
+		  m_pie->write("\n\\end{spacing}");
+
 		m_pie->write("\n\n");
 		break;
 	case BT_HEADING1:
@@ -216,6 +221,7 @@ void s_LaTeX_Listener::_closeBlock(void)
 void s_LaTeX_Listener::_openParagraph(PT_AttrPropIndex api)
 {
 	m_eJustification = JUSTIFIED;
+	m_bLineHeight = UT_FALSE;
 
 	if (!m_bInSection)
 	{
@@ -268,23 +274,41 @@ void s_LaTeX_Listener::_openParagraph(PT_AttrPropIndex api)
 		}
 		
 		/* Assumption: never get property set with h1-h3, block text, plain text. Probably true. */
-		
-		if (m_iBlockType == BT_NORMAL && (pAP->getProperty("text-align", szValue)))
+		// TODO: Split this function in several ones
+		if (m_iBlockType == BT_NORMAL)
 		{
-			if (0 == UT_stricmp(szValue, "center"))
+			if (pAP->getProperty("text-align", szValue))
 			{
-				m_pie->write("\\begin{center}\n");
-				m_eJustification = CENTER;
+				if (0 == UT_stricmp(szValue, "center"))
+				{
+					m_pie->write("\\begin{center}\n");
+					m_eJustification = CENTER;
+				}
+				if (0 == UT_stricmp(szValue, "right"))
+				{
+					m_pie->write("\\begin{flushright}\n");
+					m_eJustification = RIGHT;
+				}
+				if (0 == UT_stricmp(szValue, "left"))
+				{
+					m_pie->write("\\begin{flushleft}\n");
+					m_eJustification = LEFT;
+				}
 			}
-			if (0 == UT_stricmp(szValue, "right"))
+
+			if (pAP->getProperty("line-height", szValue))
 			{
-				m_pie->write("\\begin{flushright}\n");
-				m_eJustification = RIGHT;
-			}
-			if (0 == UT_stricmp(szValue, "left"))
-			{
-				m_pie->write("\\begin{flushleft}\n");
-				m_eJustification = LEFT;
+				if (0 != UT_stricmp(szValue, "1.0"))
+				{
+					m_pie->write("\\begin{spacing}{");
+					m_bLineHeight = UT_TRUE;
+				}
+				if (0 == UT_stricmp(szValue, "1.5"))
+					m_pie->write("1.24}\n");
+				else if (0 == UT_stricmp(szValue, "2.0"))
+					m_pie->write("1.66}\n");
+				else // glup.  TODO: calculate the spacing :)
+				    m_pie->write("1.0} % Sorry.  I know that you don't expected the 1.0... feel free to fix it! :)\n");
 			}
 		}
 	}
@@ -337,7 +361,7 @@ void s_LaTeX_Listener::_openSection(PT_AttrPropIndex api)
 		}
 	}
 
-	m_pie->write ("\\begin{document}\n");
+	m_pie->write ("\n\n\\begin{document}\n");
 }
 
 void s_LaTeX_Listener::_convertColor(char* szDest, const char* pszColor)
@@ -799,7 +823,7 @@ s_LaTeX_Listener::s_LaTeX_Listener(PD_Document * pDocument,
 	m_pie->write("\\documentclass[12pt]{article}\n");
 	m_pie->write("\\usepackage[T1]{fontenc}\n");
 	m_pie->write("\\usepackage{calc}\n");
-	m_pie->write("%\\usepackage{doublespace}\n");
+	m_pie->write("\\usepackage{setspace}\n");
 	m_pie->write("\\usepackage{multicol}\t% TODO: I don't need this package if the document is a single column one.\n");
 	m_pie->write("\n");
 	//	m_pie->write("\\begin{document}\n");  // I've to leave this step to the openSection, and that implies
