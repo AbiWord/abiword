@@ -339,26 +339,6 @@ ReturnTrue:
 
 UT_Bool XAP_UnixDialog_FileOpenSaveAs::_askOverwrite_YesNo(XAP_Frame * pFrame, const char * fileName)
 {
-	// return UT_TRUE if we should overwrite the file
-	XAP_DialogFactory * pDialogFactory
-		= (XAP_DialogFactory *)(pFrame->getDialogFactory());
-
-	XAP_Dialog_MessageBox * pDialog
-		= (XAP_Dialog_MessageBox *)(pDialogFactory->requestDialog(XAP_DIALOG_ID_MESSAGE_BOX));
-	UT_ASSERT(pDialog);
-
-	const XAP_StringSet * pSS = m_pApp->getStringSet();
-
-	pDialog->setMessage(pSS->getValue(XAP_STRING_ID_DLG_OverwriteFile), fileName);
-	pDialog->setButtons(XAP_Dialog_MessageBox::b_YN);
-	pDialog->setDefaultAnswer(XAP_Dialog_MessageBox::a_NO);	// should this be YES?
-
-	pDialog->runModal(pFrame);
-
-	XAP_Dialog_MessageBox::tAnswer ans = pDialog->getAnswer();
-
-	pDialogFactory->releaseDialog(pDialog);
-
 	return (pFrame->showMessageBox(XAP_STRING_ID_DLG_OverwriteFile,
 										XAP_Dialog_MessageBox::b_YN,
 										XAP_Dialog_MessageBox::a_NO, // should this be YES?
