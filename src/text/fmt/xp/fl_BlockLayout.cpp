@@ -3824,16 +3824,29 @@ bool	fl_BlockLayout::_doInsertRun(fp_Run* pNewRun)
 
 	_assertRunListIntegrity();
 
+#if 0
 	// now that the run is in place and the context has been set, we
 	// calculate character widths
+
+	// actually, we are not in position to calculate widths at this
+	// point, because the insertion of this run invalidated the draw
+	// buffers of un unspecified number of runs on either side, and in
+	// order for the width calculation to be correct, the widths of
+	// the runs that precede it would need to be recalculated first,
+	// otherwise we get wrong results with ligatures (when our run
+	// starts with a ligature placeholder, its with gets set to 1/2 of
+	// the width of the previous glyph; this assumes that the previous
+	// glyph is already the ligature glyph which it is not)
+	// There seems to be no reason why we would need to calculate the widths
+	// here, so we will leave it for now, and when the widths are needed,
+	// i.e., when we attempt to draw, we will have all the right
+	// values in place
 	if (pNewRun->getType() == FPRUN_TEXT)
 	{
 		fp_TextRun* pNewTextRun = static_cast<fp_TextRun*>(pNewRun);
-
-		//pNewTextRun->fetchCharWidths(&m_gbCharWidths);
 		pNewTextRun->recalcWidth();
 	}
-
+#endif
 	return true;
 }
 
