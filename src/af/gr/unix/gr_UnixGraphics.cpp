@@ -317,8 +317,38 @@ void GR_UnixGraphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
 								int * pCharWidths)
 {
 #ifdef USE_XFT
-	XftDrawString32(m_pXftDraw, &m_XftColor, m_pXftFont, xoff, yoff + m_pXftFont->ascent,
-					const_cast<XftChar32*> (pChars + iCharOffset), iLength);
+	if (iLength == 0)
+		return;
+	
+	yoff += m_pXftFont->ascent;
+	
+	if (!pCharWidths)
+		XftDrawString32(m_pXftDraw, &m_XftColor, m_pXftFont, xoff, yoff,
+						const_cast<XftChar32*> (pChars + iCharOffset), iLength);
+	else
+	{
+		XftCharSpec aCharSpec[256];
+		XftCharSpec* pCharSpec = aCharSpec;
+		
+		if (iLength > 256)
+			pCharSpec = new XftCharSpec[iLength];
+
+		pCharSpec[0].ucs4 = (FT_UInt) pChars[iCharOffset];
+		pCharSpec[0].x = xoff;
+		pCharSpec[0].y = yoff;
+
+		for (int i = 1; i < iLength; ++i)
+		{
+			pCharSpec[i].ucs4 = (FT_UInt) pChars[i + iCharOffset];
+			pCharSpec[i].x = (short) (pCharSpec[i - 1].x + pCharWidths[i - 1]);
+			pCharSpec[i].y = yoff;
+		}
+		
+		XftDrawCharSpec (m_pXftDraw, &m_XftColor, m_pXftFont, pCharSpec, iLength);
+
+		if (pCharSpec != aCharSpec)
+			delete[] pCharSpec;
+	}
 #else
 	if (!m_pFontManager)
 		return;
