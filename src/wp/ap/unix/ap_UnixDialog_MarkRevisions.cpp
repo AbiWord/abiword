@@ -42,15 +42,14 @@
 XAP_Dialog * AP_UnixDialog_MarkRevisions::static_constructor(XAP_DialogFactory * pFactory,
 													 XAP_Dialog_Id id)
 {
-	AP_UnixDialog_MarkRevisions * p = new AP_UnixDialog_MarkRevisions(pFactory,id);
-	return p;
+	return new AP_UnixDialog_MarkRevisions(pFactory,id);
 }
 
 AP_UnixDialog_MarkRevisions::AP_UnixDialog_MarkRevisions(XAP_DialogFactory * pDlgFactory,
 										 XAP_Dialog_Id id)
 	: AP_Dialog_MarkRevisions(pDlgFactory,id)
 {
-  mRadio1  = mRadio2 = mComment = mEntryLbl = NULL ;
+	mRadio1  = mRadio2 = mComment = mEntryLbl = NULL ;
 }
 
 AP_UnixDialog_MarkRevisions::~AP_UnixDialog_MarkRevisions(void)
@@ -99,8 +98,8 @@ GtkWidget * AP_UnixDialog_MarkRevisions::constructWindow ()
 
   constructWindowContents ( dialog_vbox1 ) ;
 
-  abiAddStockButton ( GTK_DIALOG(dialog1), GTK_STOCK_OK, BUTTON_OK ) ;
-  abiAddStockButton ( GTK_DIALOG(dialog1), GTK_STOCK_CANCEL, BUTTON_CANCEL ) ;	
+  abiAddStockButton ( GTK_DIALOG(dialog1), GTK_STOCK_CANCEL, BUTTON_CANCEL );
+  abiAddStockButton ( GTK_DIALOG(dialog1), GTK_STOCK_OK, BUTTON_OK );
 	
   return dialog1;
 }
@@ -122,28 +121,31 @@ void AP_UnixDialog_MarkRevisions::constructWindowContents ( GtkWidget * containe
 
    if(getRadio1Label() != NULL)
      {
-	if(isRev())
-	{
-	radiobutton1 = gtk_radio_button_new_with_label (vbox1_group, getRadio1Label());
-       vbox1_group = gtk_radio_button_get_group (GTK_RADIO_BUTTON (radiobutton1));
-       gtk_widget_show (radiobutton1);
-       gtk_box_pack_start (GTK_BOX (vbox1), radiobutton1, FALSE, FALSE, 0);
-       lbl1 = gtk_label_new(getComment1());
-       gtk_widget_show (lbl1);
-       gtk_box_pack_start (GTK_BOX (vbox1), lbl1, FALSE, FALSE, 0);
-       }
-	radiobutton2 = gtk_radio_button_new_with_label (vbox1_group, getRadio2Label());
-       vbox1_group = gtk_radio_button_get_group (GTK_RADIO_BUTTON (radiobutton2));
-       gtk_widget_show (radiobutton2);
-       gtk_box_pack_start (GTK_BOX (vbox1), radiobutton2, FALSE, FALSE, 0);
-
-       g_signal_connect ( G_OBJECT(radiobutton2), "toggled",
-			  G_CALLBACK(focus_toggled_callback), this ) ;
-
-       mRadio1  = radiobutton1 ;
-       mRadio2  = radiobutton2 ;
+		 if(isRev())
+		 {
+			 radiobutton1 = gtk_radio_button_new_with_label (vbox1_group, getRadio1Label());
+			 vbox1_group = gtk_radio_button_get_group (GTK_RADIO_BUTTON (radiobutton1));
+			 gtk_widget_show (radiobutton1);
+			 gtk_box_pack_start (GTK_BOX (vbox1), radiobutton1, FALSE, FALSE, 0);
+			 lbl1 = gtk_label_new(getComment1());
+			 gtk_widget_show (lbl1);
+			 gtk_box_pack_start (GTK_BOX (vbox1), lbl1, FALSE, FALSE, 0);
+		 }
+		 radiobutton2 = gtk_radio_button_new_with_label (vbox1_group, getRadio2Label());
+		 vbox1_group = gtk_radio_button_get_group (GTK_RADIO_BUTTON (radiobutton2));
+		 
+		 if (isRev ())
+			 gtk_widget_show (radiobutton2);
+		 
+		 gtk_box_pack_start (GTK_BOX (vbox1), radiobutton2, FALSE, FALSE, 0);
+		 
+		 g_signal_connect ( G_OBJECT(radiobutton2), "toggled",
+							G_CALLBACK(focus_toggled_callback), this ) ;
+		 
+		 mRadio1  = radiobutton1 ;
+		 mRadio2  = radiobutton2 ;
      }
-
+   
    lbl2 = gtk_label_new (getComment2Label());
    gtk_widget_show (lbl2);
    gtk_box_pack_start (GTK_BOX (vbox1), lbl2, FALSE, FALSE, 0);
@@ -151,7 +153,7 @@ void AP_UnixDialog_MarkRevisions::constructWindowContents ( GtkWidget * containe
    entry1 = gtk_entry_new();
    gtk_widget_show (entry1);
    gtk_box_pack_start (GTK_BOX (vbox1), entry1, FALSE, FALSE, 0);
-
+   
    mEntryLbl = lbl2 ;
    mComment = entry1 ;
 }
@@ -169,15 +171,15 @@ void AP_UnixDialog_MarkRevisions::event_Cancel ()
 
 void AP_UnixDialog_MarkRevisions::event_FocusToggled ()
 {
-  gboolean second_active = FALSE ;
-
-  if ( gtk_toggle_button_get_active ( GTK_TOGGLE_BUTTON(mRadio2) ) 
-       || getRadio1Label() == NULL )
-    second_active = TRUE ;
-
-  if ( mEntryLbl )
-    gtk_widget_set_sensitive ( mEntryLbl, second_active ) ;
-
-  if ( mComment )
-    gtk_widget_set_sensitive ( mComment, second_active ) ;
+	gboolean second_active = FALSE ;
+	
+	if ( gtk_toggle_button_get_active ( GTK_TOGGLE_BUTTON(mRadio2) ) 
+		 || getRadio1Label() == NULL )
+		second_active = TRUE ;
+	
+	if ( mEntryLbl )
+		gtk_widget_set_sensitive ( mEntryLbl, second_active ) ;
+	
+	if ( mComment )
+		gtk_widget_set_sensitive ( mComment, second_active ) ;
 }

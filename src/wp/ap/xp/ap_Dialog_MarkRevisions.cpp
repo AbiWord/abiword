@@ -30,7 +30,7 @@
 
 AP_Dialog_MarkRevisions::AP_Dialog_MarkRevisions(XAP_DialogFactory * pDlgFactory,
 					   XAP_Dialog_Id id)
-  : XAP_Dialog_NonPersistent(pDlgFactory,id), m_answer(a_CANCEL),
+  : XAP_Dialog_NonPersistent(pDlgFactory,id, "interface/dialogmarkrevisions"), m_answer(a_CANCEL),
 		m_pDoc(NULL), m_pComment2(NULL),m_pRev(NULL)
 {
 	m_pSS = XAP_App::getApp()->getStringSet();

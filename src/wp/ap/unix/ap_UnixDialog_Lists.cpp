@@ -208,15 +208,7 @@ void AP_UnixDialog_Lists::runModeless (XAP_Frame * pFrame)
 	UT_ASSERT (m_wMainWindow);
 	clearDirty();
 
-	// Save dialog the ID number and pointer to the widget
-	UT_sint32 sid = static_cast<UT_sint32>(getDialogId ());
-	m_pApp->rememberModelessId(sid, static_cast<XAP_Dialog_Modeless *>(m_pDialog));
-
-	// This magic command displays the frame that characters will be
-	// inserted into.
-	// This variation runs the additional static function shown afterwards.
-	// Only use this if you need to to update the dialog upon focussing.
-
+	abiSetupModelessDialog(GTK_DIALOG(m_wMainWindow), pFrame, this, BUTTON_APPLY);
 	connectFocusModelessOther (GTK_WIDGET (m_wMainWindow), m_pApp, (gboolean (*)(void)) s_update);
 
 	// Populate the dialog
