@@ -191,7 +191,7 @@ void    fl_AutoNum::findAndSetParentItem(void)
 		               posParent = m_pDoc->getStruxPosition(pParentItem);
 		       }
 		}
-		if(pParentItem != NULL && i > 0)
+		if( i > 0)
 		{
 		       i--;
 		       m_pParentItem = m_pParent->getNthBlock(i);

@@ -479,7 +479,6 @@ void fl_BlockLayout::_lookupProperties(void)
 		level = atoi(szLevel);
 	else 
 		level = 0;
-	UT_DEBUGMSG(("Sevior: szPid %s, Parent ID %i\n", szPid, parent_id));
 
 	fl_BlockLayout * prevBlockInList = NULL;
 	fl_BlockLayout * nextBlockInList = NULL;
@@ -2704,9 +2703,7 @@ UT_Bool fl_BlockLayout::doclistener_insertSpan(const PX_ChangeRecord_Span * pcrs
 	UT_uint32 	iNormalBase = 0;
 	UT_Bool		bNormal = UT_FALSE;
 	UT_uint32 i;
-	UT_uint32 _sqlist[100], *sqlist = _sqlist; //FIXME Sevior says:
-	                                             //This should not
-	                                             //be hardwired 
+	UT_uint32 _sqlist[100], *sqlist = _sqlist; 
 	UT_uint32 sqcount = 0;
 	if (sizeof(_sqlist) / sizeof(_sqlist[0])  < len)
 	{
@@ -4663,6 +4660,8 @@ void    fl_BlockLayout::StartList( List_Type lType, UT_uint32 start,const XML_Ch
 	//pView->_ensureThatInsertionPointIsOnScreen();
 	//pView->_eraseInsertionPoint();
 
+       
+	pView->_generalUpdate();
 	m_pDoc->listUpdate(getStruxDocHandle());
 	pView->_generalUpdate();
 	pView->_ensureThatInsertionPointIsOnScreen();

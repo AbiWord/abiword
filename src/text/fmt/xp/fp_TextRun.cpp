@@ -722,7 +722,6 @@ void fp_TextRun::_clearScreen(UT_Bool /* bFullLineHeightRect */)
 		
 		UT_sint32 xoff = 0, yoff = 0;
 		m_pLine->getScreenOffsets(this, xoff, yoff);
-		
 		m_pG->clearArea(xoff, yoff, m_iWidth, m_pLine->getHeight());
 	}
 
@@ -785,7 +784,7 @@ void fp_TextRun::_draw(dg_DrawArgs* pDA)
 	if (pView->getFocus()==AV_FOCUS_NONE || iSel1 == iSel2)
 	{
 		// nothing in this run is selected
-        _fillRect(clrNormalBackground, pDA->xoff, yTopOfSel, m_iOffsetFirst, m_iLen, pgbCharWidths);
+                _fillRect(clrNormalBackground, pDA->xoff, yTopOfSel, m_iOffsetFirst, m_iLen, pgbCharWidths);
 		_drawPart(pDA->xoff, yTopOfRun, m_iOffsetFirst, m_iLen, pgbCharWidths);
 	}
 	else if (iSel1 <= iRunBase)
@@ -793,7 +792,7 @@ void fp_TextRun::_draw(dg_DrawArgs* pDA)
 		if (iSel2 <= iRunBase)
 		{
 			// nothing in this run is selected
-            _fillRect(clrNormalBackground, pDA->xoff, yTopOfSel, m_iOffsetFirst, m_iLen, pgbCharWidths);
+                        _fillRect(clrNormalBackground, pDA->xoff, yTopOfSel, m_iOffsetFirst, m_iLen, pgbCharWidths);
 			_drawPart(pDA->xoff, yTopOfRun, m_iOffsetFirst, m_iLen, pgbCharWidths);
 		}
 		else if (iSel2 >= (iRunBase + m_iLen))
@@ -839,9 +838,10 @@ void fp_TextRun::_draw(dg_DrawArgs* pDA)
 	}
 
 	_drawDecors(pDA->xoff, yTopOfRun);
-    if(pView->getShowPara()){
-        _drawInvisibles(pDA->xoff, yTopOfRun);
-    }
+	if(pView->getShowPara())
+	{
+                _drawInvisibles(pDA->xoff, yTopOfRun);
+	}
 
 	// TODO: draw this underneath (ie, before) the text and decorations
 	m_bSquiggled = UT_FALSE;

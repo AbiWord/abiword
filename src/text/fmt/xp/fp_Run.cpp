@@ -456,7 +456,6 @@ void fp_TabRun::_clearScreen(UT_Bool /* bFullLineHeightRect */)
 	
 	// need to clear full height of line, in case we had a selection
 	m_pLine->getScreenOffsets(this, xoff, yoff);
-	
 	m_pG->clearArea(xoff, yoff, m_iWidth, m_pLine->getHeight());
 }
 

@@ -433,6 +433,7 @@ void fp_Line::clearScreen(void)
 			m_pContainer->getScreenOffsets(this, xoffLine, yoffLine);
 
 			pRun->getGraphics()->clearArea(xoffLine, yoffLine, m_iMaxWidth, m_iHeight);
+
 		}
 	}
 	
@@ -470,7 +471,6 @@ void fp_Line::clearScreenFromRunToEnd(UT_uint32 runIndex)
 		UT_sint32 xoffLine, yoffLine;
 
 		m_pContainer->getScreenOffsets(this, xoffLine, yoffLine);
-		
 		pRun->getGraphics()->clearArea(xoff, yoff, m_iMaxWidth - (xoff - xoffLine), m_iHeight);
 		
 		for (i = runIndex; i < count; i++)
