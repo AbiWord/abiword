@@ -41,6 +41,9 @@
 #include "xap_Prefs.h"
 #include "ut_debugmsg.h"
 #include "ut_string_class.h"
+#if GTK_CHECK_VERSION(2,4,0)
+#include "ut_path.h"
+#endif
 
 #include "ut_png.h"
 #include "ut_svg.h"
@@ -547,7 +550,10 @@ void XAP_UnixDialog_FileOpenSaveAs::fileTypeChanged(GtkWidget * w)
 	sFileName += sSuffix;
 	
 #if GTK_CHECK_VERSION(2,4,0)
-	gtk_file_chooser_set_filename(m_FC,sFileName.c_str());
+	if (!gtk_file_chooser_select_filename(m_FC,sFileName.c_str()))
+	{
+		gtk_file_chooser_set_current_name(m_FC, UT_basename(sFileName.c_str()));
+	}
 #else	
 	gtk_file_selection_set_filename(m_FS,sFileName.c_str());
 #endif
