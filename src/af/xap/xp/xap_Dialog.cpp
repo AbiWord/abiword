@@ -45,6 +45,7 @@ XAP_Dialog::XAP_Dialog(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id,
 
 XAP_Dialog::~XAP_Dialog(void)
 {
+	delete m_helpUrl;
 }
 
 /*****************************************************************/
