@@ -89,7 +89,7 @@ void XAP_Win32Dialog_Insert_Symbol::runModeless(XAP_Frame * pFrame)
 	ShowWindow(hWndDialog, SW_SHOW);
 	UT_ASSERT((hWndDialog != NULL));
 
-	m_pApp->rememberModelessId(m_id, hWndDialog, this);
+	m_pApp->rememberModelessId(m_id, this);
 
 
 }

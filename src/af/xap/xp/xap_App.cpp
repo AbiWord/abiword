@@ -463,20 +463,12 @@ void XAP_App::rememberFocussedFrame( void * pJustFocussedFrame)
 {
 	m_lastFocussedFrame = (XAP_Frame *) pJustFocussedFrame;
 
-	UT_sint32 i = findFrame( m_lastFocussedFrame);
+	UT_sint32 i = safefindFrame( m_lastFocussedFrame);
 	if(i < 0 ) 
 	{   
 		m_lastFocussedFrame = (XAP_Frame *) NULL;
 	}
-
 	notifyModelessDlgsOfActiveFrame(m_lastFocussedFrame);
-}
-
-UT_Bool XAP_App::safeCompare( XAP_Frame * lff, XAP_Frame * f)
-{
-        int ulff = reinterpret_cast<long>( lff);
-        long uf = reinterpret_cast<long>( f);
-        return (UT_Bool) (ulff == uf);
 }
 
 UT_sint32 XAP_App::safefindFrame( XAP_Frame * f)
@@ -517,13 +509,11 @@ void XAP_App::clearIdTable( void)
         for(UT_sint32 i =0; i <= NUM_MODELESSID; i++)
         {
                 m_IdTable[i].id =  -1;
-                m_IdTable[i].pwidget = (void *) NULL;
                 m_IdTable[i].pDialog = (XAP_Dialog_Modeless *) NULL;
- 
 	}
 }
 
-void XAP_App::rememberModelessId(  UT_sint32 id  , void * pwidget, XAP_Dialog_Modeless * pDialog)
+void XAP_App::rememberModelessId(  UT_sint32 id  ,XAP_Dialog_Modeless * pDialog)
 {
 
   // find a free slot in the m_IdTable
@@ -531,42 +521,23 @@ void XAP_App::rememberModelessId(  UT_sint32 id  , void * pwidget, XAP_Dialog_Mo
         UT_sint32 i;
         for(i=0; (i<= NUM_MODELESSID) && (m_IdTable[i].id !=  -1); i++);
         UT_ASSERT( i <= NUM_MODELESSID );
-        UT_ASSERT( m_IdTable[i].pwidget == (void *) NULL);
         UT_ASSERT( m_IdTable[i].id == -1 );
         UT_ASSERT( pDialog);
         m_IdTable[i].id =  id;
-        m_IdTable[i].pwidget =  pwidget;
         m_IdTable[i].pDialog =  pDialog;
 }
 
 void XAP_App::forgetModelessId( UT_sint32 id )
 {
 
-  // remove the id, pwidget pair from the m_IdTable
-
+  // remove the id, pDialog pair from the m_IdTable
 
         UT_sint32 i;
         for(i=0; i <= NUM_MODELESSID && m_IdTable[i].id != id; i++) ;
         UT_ASSERT( i <= NUM_MODELESSID );
         UT_ASSERT( m_IdTable[i].id == id );
         m_IdTable[i].id =  -1;
-        m_IdTable[i].pwidget = (void *) NULL;
         m_IdTable[i].pDialog = (XAP_Dialog_Modeless *) NULL;
-}
-
-void * XAP_App::getModelessWidget( UT_sint32 id)
-{
-
-  // Retrieve pwidget from the table based on id
-
-        UT_sint32 i;
-        for(i=0; i <= NUM_MODELESSID && m_IdTable[i].id != id; i++) ;
-        if( i> NUM_MODELESSID)
-	{
-	     return (void *) NULL;
-	}
-        UT_ASSERT( m_IdTable[i].id == id );
-	return m_IdTable[i].pwidget;
 }
 
 UT_Bool XAP_App::isModelessRunning(UT_sint32 id)

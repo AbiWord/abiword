@@ -164,7 +164,7 @@ void XAP_UnixDialog_Insert_Symbol::runModeless(XAP_Frame * pFrame)
 	UT_ASSERT(mainWindow);
 
 	// Save dialog the ID number and pointer to the widget
-	m_pApp->rememberModelessId( sid, (void *) mainWindow, (XAP_Dialog_Modeless *) m_pDialog);
+	m_pApp->rememberModelessId( sid,  (XAP_Dialog_Modeless *) m_pDialog);
 
 	// This magic command displays the frame that characters will be
 	// inserted into.
@@ -249,7 +249,6 @@ void XAP_UnixDialog_Insert_Symbol::runModeless(XAP_Frame * pFrame)
 void XAP_UnixDialog_Insert_Symbol::event_OK(void)
 {
         m_Inserted_Symbol = m_CurrentSymbol;
-        setActiveFrame(getActiveFrame());
        	_onInsertButton();
 }
 

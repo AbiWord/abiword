@@ -80,14 +80,6 @@ XAP_Dialog_Insert_Symbol::tAnswer XAP_Dialog_Insert_Symbol::getAnswer(void) cons
 
 
 /************************************************************************/
-/*
-void XAP_Dialog_Insert_Symbol::modeless_cleanup(void)
-{
-	UT_sint32 sid = (UT_sint32) getDialogId();
-	m_pApp->forgetModelessId( (UT_sint32) sid);
-	m_pDlgFactory->releaseDialog(m_pDialog);
-}
-*/
 
 void XAP_Dialog_Insert_Symbol::_updateDrawSymbol()
 {
@@ -130,6 +122,11 @@ void XAP_Dialog_Insert_Symbol::_onInsertButton()
 {
 	UT_ASSERT(m_pListener);
 
+	// Now connect to the current active frame using the robust
+        // getActiveFrame 
+
+        m_pListener->setView(getActiveFrame()->getCurrentView());
+
 	/* Now get the character to be inserted */
 
 	UT_UCSChar c = getInsertedSymbol();
@@ -145,6 +142,8 @@ void XAP_Dialog_Insert_Symbol::setActiveFrame(XAP_Frame *pFrame)
 {
 
 	m_pListener->setView( pFrame->getCurrentView() );
+
+	// Update the platform code of this change in frame
 
 	notifyActiveFrame(pFrame);
 }

@@ -118,9 +118,8 @@ public:
         UT_sint32 safefindFrame( XAP_Frame * f);
         void clearLastFocussedFrame(void);
         void clearIdTable( void);
-	void rememberModelessId(  UT_sint32 id, void * pwidget, XAP_Dialog_Modeless * pDialog);
+	void rememberModelessId(  UT_sint32 id, XAP_Dialog_Modeless * pDialog);
 	void forgetModelessId( UT_sint32 id );
-	void * getModelessWidget( UT_sint32 id);
         UT_Bool isModelessRunning( UT_sint32 id);
 	XAP_Dialog_Modeless * getModelessDialog( UT_sint32 id);
 	void closeModelessDlgs( void);
@@ -149,7 +148,6 @@ protected:
         struct modeless_pair 
         { 
 	       UT_sint32 id;
-	       void * pwidget;
 	       XAP_Dialog_Modeless * pDialog;
         } m_IdTable[NUM_MODELESSID+1]; 
         
