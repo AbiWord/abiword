@@ -107,19 +107,24 @@ int abi_plugin_supports_version (UT_uint32 major, UT_uint32 minor,
 
 /****************************************************************************/
 
-bool IE_Imp_T602_Sniffer::recognizeContents (const char * szBuf, 
+UT_uint8 IE_Imp_T602_Sniffer::recognizeContents (const char * szBuf, 
 						     UT_uint32 iNumbytes)
 {
-   
- return ((iNumbytes>3) && (!strncmp (szBuf,"@CT ",4)));
-   
+  if ((iNumbytes>3) && (!strncmp (szBuf,"@CT ",4)))
+    return IMP_CONFIDENCE_PERFECT;
+  return IMP_CONFIDENCE_ZILCH;   
 }
 
-bool IE_Imp_T602_Sniffer::recognizeSuffix (const char * szSuffix)
+UT_uint8 IE_Imp_T602_Sniffer::recognizeSuffix (const char * szSuffix)
 {
-	return ((!UT_stricmp(szSuffix,".602")) ||
-		(!UT_stricmp(szSuffix,".t602")) ||
-		(!UT_stricmp(szSuffix,".txt")));
+  if ((!UT_stricmp(szSuffix,".602")) ||
+      (!UT_stricmp(szSuffix,".t602")))
+    return IMP_CONFIDENCE_PERFECT;
+  
+  if (!UT_stricmp(szSuffix,".txt"))
+    return IMP_CONFIDENCE_POOR;
+
+  return IMP_CONFIDENCE_ZILCH;
 }
 
 UT_Error IE_Imp_T602_Sniffer::constructImporter (PD_Document * pDocument,

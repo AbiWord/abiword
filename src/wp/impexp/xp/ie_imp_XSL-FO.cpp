@@ -113,7 +113,7 @@ int abi_plugin_supports_version (UT_uint32 major, UT_uint32 minor,
 /*****************************************************************/
 /*****************************************************************/
 
-bool IE_Imp_XSL_FO_Sniffer::recognizeContents(const char * szBuf, 
+UT_uint8 IE_Imp_XSL_FO_Sniffer::recognizeContents(const char * szBuf, 
 											  UT_uint32 iNumbytes)
 {
 	UT_uint32 iLinesToRead = 6;
@@ -127,13 +127,13 @@ bool IE_Imp_XSL_FO_Sniffer::recognizeContents(const char * szBuf,
 	while ( iLinesToRead-- )
 	{
 		magic = "<fo:root ";
-		if ( (iNumbytes - iBytesScanned) < strlen(magic) ) return(false);
-		if ( strncmp(p, magic, strlen(magic)) == 0 ) return(true);
+		if ( (iNumbytes - iBytesScanned) < strlen(magic) ) return(IMP_CONFIDENCE_ZILCH);
+		if ( strncmp(p, magic, strlen(magic)) == 0 ) return(IMP_CONFIDENCE_PERFECT);
 		/*  Seek to the next newline:  */
 		while ( *p != '\n' && *p != '\r' )
 		{
 			iBytesScanned++; p++;
-			if( iBytesScanned+2 >= iNumbytes ) return(false);
+			if( iBytesScanned+2 >= iNumbytes ) return(IMP_CONFIDENCE_ZILCH);
 		}
 		/*  Seek past the next newline:  */
 		if ( *p == '\n' || *p == '\r' )
@@ -146,12 +146,14 @@ bool IE_Imp_XSL_FO_Sniffer::recognizeContents(const char * szBuf,
 		}
 	}
 
-  return false;
+  return IMP_CONFIDENCE_ZILCH;
 }
 
-bool IE_Imp_XSL_FO_Sniffer::recognizeSuffix(const char * szSuffix)
+UT_uint8 IE_Imp_XSL_FO_Sniffer::recognizeSuffix(const char * szSuffix)
 {
-	return (UT_stricmp(szSuffix,".fo") == 0);
+	if (UT_stricmp(szSuffix,".fo") == 0)
+	  return IMP_CONFIDENCE_PERFECT;
+	return IMP_CONFIDENCE_ZILCH;
 }
 
 UT_Error IE_Imp_XSL_FO_Sniffer::constructImporter(PD_Document * pDocument,

@@ -112,20 +112,22 @@ int abi_plugin_supports_version (UT_uint32 major, UT_uint32 minor,
 /*****************************************************************/
 /*****************************************************************/
 
-bool IE_Imp_Applix_Sniffer::recognizeContents(const char * szBuf, 
+UT_uint8 IE_Imp_Applix_Sniffer::recognizeContents(const char * szBuf, 
 											  UT_uint32 iNumbytes)
 {
 	// this should be suffecient, at least for my liking
 	const char * magic = "<Applix Words>";
 
 	if (!AX_STRN_CMP(szBuf, magic, strlen(magic)))
-		return true;
-	return false;
+		return IMP_CONFIDENCE_PERFECT;
+	return IMP_CONFIDENCE_ZILCH;
 }
 
-bool IE_Imp_Applix_Sniffer::recognizeSuffix(const char * szSuffix)
+UT_uint8 IE_Imp_Applix_Sniffer::recognizeSuffix(const char * szSuffix)
 {
-	return (UT_stricmp(szSuffix,".aw") == 0);
+	if (UT_stricmp(szSuffix,".aw") == 0)
+		return IMP_CONFIDENCE_PERFECT;
+	return IMP_CONFIDENCE_ZILCH;
 }
 
 UT_Error IE_Imp_Applix_Sniffer::constructImporter(PD_Document * pDocument,

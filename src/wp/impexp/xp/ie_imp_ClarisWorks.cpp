@@ -158,7 +158,7 @@ UT_Error IE_Imp_ClarisWorks::importFile(const char * szFilename)
 /*****************************************************************/
 /*****************************************************************/
 
-bool IE_Imp_ClarisWorks_Sniffer::recognizeContents(const char * szBuf, 
+UT_uint8 IE_Imp_ClarisWorks_Sniffer::recognizeContents(const char * szBuf, 
 												   UT_uint32 iNumbytes)
 {
     if (iNumbytes >= 8) 
@@ -168,22 +168,25 @@ bool IE_Imp_ClarisWorks_Sniffer::recognizeContents(const char * szBuf,
         {
             if (szBuf [0] == CW_HANDLED_VERSION) 
             {
-                return (true);
+                return (IMP_CONFIDENCE_PERFECT);
             }
             else 
             {
                 UT_DEBUGMSG (("%s,%d: Mismatch version.\n",__FILE__,__LINE__));
+		return (IMP_CONFIDENCE_SOSO);
             }
         }
     
     }
 
-    return(false);
+    return(IMP_CONFIDENCE_ZILCH);
 }
 
-bool IE_Imp_ClarisWorks_Sniffer::recognizeSuffix(const char * szSuffix)
+UT_uint8 IE_Imp_ClarisWorks_Sniffer::recognizeSuffix(const char * szSuffix)
 {
-   return (UT_stricmp(szSuffix,".cwk") == 0);
+   if (UT_stricmp(szSuffix,".cwk") == 0)
+     return IMP_CONFIDENCE_PERFECT;
+   return IMP_CONFIDENCE_ZILCH;
 }
 
 UT_Error IE_Imp_ClarisWorks_Sniffer::constructImporter(PD_Document * pDocument,

@@ -93,7 +93,7 @@ int abi_plugin_supports_version (UT_uint32 major, UT_uint32 minor,
 /*****************************************************************/
 /*****************************************************************/
 
-bool IE_Imp_GZipAbiWord_Sniffer::recognizeContents(const char * szBuf, UT_uint32 iNumbytes)
+UT_uint8 IE_Imp_GZipAbiWord_Sniffer::recognizeContents(const char * szBuf, UT_uint32 iNumbytes)
 {
 	// TODO: This is a hack.  Since we're just passed in some
 	// TODO: some data, and not the actual filename, there isn't
@@ -105,14 +105,16 @@ bool IE_Imp_GZipAbiWord_Sniffer::recognizeContents(const char * szBuf, UT_uint32
 	if ( iNumbytes < 2 ) return(false);
 	if ( ( szBuf[0] == (char)0x1f ) && ( szBuf[1] == (char)0x8b ) )
 	{
-		return(true);
+		return(IMP_CONFIDENCE_SOSO);
 	}
-	return(false);
+	return(IMP_CONFIDENCE_ZILCH);
 }
 
-bool IE_Imp_GZipAbiWord_Sniffer::recognizeSuffix(const char * szSuffix)
+UT_uint8 IE_Imp_GZipAbiWord_Sniffer::recognizeSuffix(const char * szSuffix)
 {
-    return (!UT_stricmp(szSuffix,".zabw") || !UT_stricmp(szSuffix,".abw.gz"));
+    if (!UT_stricmp(szSuffix,".zabw") || !UT_stricmp(szSuffix,".abw.gz"))
+      return IMP_CONFIDENCE_PERFECT;
+    return IMP_CONFIDENCE_ZILCH;
 }
 
 UT_Error IE_Imp_GZipAbiWord_Sniffer::constructImporter(PD_Document * pDocument,

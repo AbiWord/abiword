@@ -110,7 +110,7 @@ int abi_plugin_supports_version (UT_uint32 major, UT_uint32 minor,
 /*****************************************************************/
 /*****************************************************************/
 
-bool IE_Imp_WML_Sniffer::recognizeContents(const char * szBuf, 
+UT_uint8 IE_Imp_WML_Sniffer::recognizeContents(const char * szBuf, 
 										   UT_uint32 iNumbytes)
 {
   // simply search for "<wml"
@@ -118,14 +118,16 @@ bool IE_Imp_WML_Sniffer::recognizeContents(const char * szBuf,
   // but this should sufficefor all I care
 
   if(strstr(szBuf, "<wml") == NULL)
-    return false;
+    return IMP_CONFIDENCE_ZILCH;
 
-  return true;
+  return IMP_CONFIDENCE_PERFECT;
 }
 
-bool IE_Imp_WML_Sniffer::recognizeSuffix(const char * szSuffix)
+UT_uint8 IE_Imp_WML_Sniffer::recognizeSuffix(const char * szSuffix)
 {
-	return (UT_stricmp(szSuffix,".wml") == 0);
+  if (UT_stricmp(szSuffix,".wml") == 0)
+    return IMP_CONFIDENCE_PERFECT;
+  return IMP_CONFIDENCE_ZILCH;
 }
 
 UT_Error IE_Imp_WML_Sniffer::constructImporter(PD_Document * pDocument,

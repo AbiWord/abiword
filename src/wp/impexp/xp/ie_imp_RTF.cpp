@@ -86,23 +86,25 @@ static const UT_uint32 PT_MAX_ATTRIBUTES = 8;
 //////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////
 
-bool IE_Imp_RTF_Sniffer::recognizeContents(const char * szBuf, 
+UT_uint8 IE_Imp_RTF_Sniffer::recognizeContents(const char * szBuf, 
 										   UT_uint32 iNumbytes)
 {
 	if ( iNumbytes < 5 )
 	{
-		return(false);
+		return(IMP_CONFIDENCE_ZILCH);
 	}
 	if ( strncmp( szBuf, "{\\rtf", 5 ) == 0 )
 	{
-		return(true) ;
+		return(IMP_CONFIDENCE_PERFECT) ;
 	}
-	return(false);
+	return(IMP_CONFIDENCE_ZILCH);
 }
 
-bool IE_Imp_RTF_Sniffer::recognizeSuffix(const char * szSuffix)
+UT_uint8 IE_Imp_RTF_Sniffer::recognizeSuffix(const char * szSuffix)
 {
-	return (UT_stricmp(szSuffix,".rtf") == 0);
+	if (UT_stricmp(szSuffix,".rtf") == 0)
+		return IMP_CONFIDENCE_PERFECT;
+	return IMP_CONFIDENCE_ZILCH;
 }
 
 UT_Error IE_Imp_RTF_Sniffer::constructImporter(PD_Document * pDocument,

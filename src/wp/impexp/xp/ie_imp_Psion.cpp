@@ -126,7 +126,7 @@ int abi_plugin_supports_version (UT_uint32 major, UT_uint32 minor,
 /*****************************************************************/
 /*****************************************************************/
 
-bool IE_Imp_Psion_Word_Sniffer::recognizeContents(const char * szBuf, 
+UT_uint8 IE_Imp_Psion_Word_Sniffer::recognizeContents(const char * szBuf, 
 												  UT_uint32 iNumbytes)
 {
 	
@@ -134,11 +134,11 @@ bool IE_Imp_Psion_Word_Sniffer::recognizeContents(const char * szBuf,
 
 	psiconv_buffer pl = psiconv_buffer_new();
 	if (!pl) 
-		return false;
+		return IMP_CONFIDENCE_ZILCH;
 	for (i=0; i < iNumbytes; i++)
 		if ((psiconv_buffer_add(pl,szBuf[i]))) {
 			psiconv_buffer_free(pl);
-			return false;
+			return IMP_CONFIDENCE_ZILCH;
 		}
 
 	// It is likely detection will fail, so keep it silent
@@ -148,14 +148,16 @@ bool IE_Imp_Psion_Word_Sniffer::recognizeContents(const char * szBuf,
 	psiconv_verbosity = verbosity;
 	psiconv_buffer_free(pl);
 	if (filetype == psiconv_word_file)
-		return true;
+		return IMP_CONFIDENCE_PERFECT;
 	else
-		return false;
+		return IMP_CONFIDENCE_ZILCH;
 }
 
-bool IE_Imp_Psion_Word_Sniffer::recognizeSuffix(const char * szSuffix)
+UT_uint8 IE_Imp_Psion_Word_Sniffer::recognizeSuffix(const char * szSuffix)
 {
-	return (UT_stricmp(szSuffix,".psiword") == 0);
+	if (UT_stricmp(szSuffix,".psiword") == 0)
+	  return IMP_CONFIDENCE_PERFECT;
+	return IMP_CONFIDENCE_ZILCH;
 }
 
 UT_Error IE_Imp_Psion_Word_Sniffer::constructImporter(PD_Document * pDocument, 
@@ -180,7 +182,7 @@ bool	IE_Imp_Psion_Word_Sniffer::getDlgLabels(const char ** pszDesc,
 /*****************************************************************/
 /*****************************************************************/
 
-bool IE_Imp_Psion_TextEd_Sniffer::recognizeContents(const char * szBuf, 
+UT_uint8 IE_Imp_Psion_TextEd_Sniffer::recognizeContents(const char * szBuf, 
 													UT_uint32 iNumbytes)
 {
 	
@@ -188,11 +190,11 @@ bool IE_Imp_Psion_TextEd_Sniffer::recognizeContents(const char * szBuf,
 
 	psiconv_buffer pl = psiconv_buffer_new();
 	if (!pl) 
-		return false;
+		return IMP_CONFIDENCE_ZILCH;
 	for (i=0; i < iNumbytes; i++)
 		if ((psiconv_buffer_add(pl,szBuf[i]))) {
 			psiconv_buffer_free(pl);
-			return false;
+			return IMP_CONFIDENCE_ZILCH;
 		}
 	// Keep it silent...
 	int verbosity=psiconv_verbosity;
@@ -201,14 +203,16 @@ bool IE_Imp_Psion_TextEd_Sniffer::recognizeContents(const char * szBuf,
 	psiconv_verbosity = verbosity;
 	psiconv_buffer_free(pl);
 	if (filetype == psiconv_texted_file)
-		return true;
+		return IMP_CONFIDENCE_PERFECT;
 	else
-		return false;
+		return IMP_CONFIDENCE_ZILCH;
 }
 
-bool IE_Imp_Psion_TextEd_Sniffer::recognizeSuffix(const char * szSuffix)
+UT_uint8 IE_Imp_Psion_TextEd_Sniffer::recognizeSuffix(const char * szSuffix)
 {
-	return (UT_stricmp(szSuffix,".psitext") == 0);
+	if (UT_stricmp(szSuffix,".psitext") == 0)
+	  return IMP_CONFIDENCE_PERFECT;
+	return IMP_CONFIDENCE_ZILCH;
 }
 
 UT_Error IE_Imp_Psion_TextEd_Sniffer::constructImporter(PD_Document * pDocument, IE_Imp ** ppie)

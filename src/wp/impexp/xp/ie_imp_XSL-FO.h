@@ -34,9 +34,9 @@ public:
 	IE_Imp_XSL_FO_Sniffer() {}
 	virtual ~IE_Imp_XSL_FO_Sniffer() {}
 
-	virtual bool recognizeContents (const char * szBuf, 
+	virtual UT_uint8 recognizeContents (const char * szBuf, 
 									UT_uint32 iNumbytes);
-	virtual bool recognizeSuffix (const char * szSuffix);
+	virtual UT_uint8 recognizeSuffix (const char * szSuffix);
 	virtual bool getDlgLabels (const char ** szDesc,
 							   const char ** szSuffixList,
 							   IEFileType * ft);

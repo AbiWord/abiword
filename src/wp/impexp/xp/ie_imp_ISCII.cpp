@@ -384,16 +384,18 @@ bool ImportISCIIStreamFile::getRawChar(UT_UCSChar &ucs)
 /*****************************************************************/
 /*****************************************************************/
 
-bool IE_Imp_ISCII_Sniffer::recognizeContents(const char * szBuf, 
+UT_uint8 IE_Imp_ISCII_Sniffer::recognizeContents(const char * szBuf, 
 										   UT_uint32 iNumbytes)
 {
   // We don't attempt to identify the contents.
-  return false;
+  return IMP_CONFIDENCE_SOSO;
 }
 
-bool IE_Imp_ISCII_Sniffer::recognizeSuffix(const char * szSuffix)
+UT_uint8 IE_Imp_ISCII_Sniffer::recognizeSuffix(const char * szSuffix)
 {
-	return (!UT_stricmp(szSuffix,".isc") || !UT_stricmp(szSuffix, ".iscii"));
+	if (!UT_stricmp(szSuffix,".isc") || !UT_stricmp(szSuffix, ".iscii"))
+	  return IMP_CONFIDENCE_PERFECT;
+	return IMP_CONFIDENCE_SOSO; // who knows? ;-)
 }
 
 UT_Error IE_Imp_ISCII_Sniffer::constructImporter(PD_Document * pDocument,

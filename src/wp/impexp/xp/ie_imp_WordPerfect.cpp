@@ -199,7 +199,7 @@ int abi_plugin_supports_version (UT_uint32 major, UT_uint32 minor,
 /****************************************************************************/
 /****************************************************************************/
 
-bool IE_Imp_WordPerfect_Sniffer::recognizeContents (const char * szBuf, 
+UT_uint8 IE_Imp_WordPerfect_Sniffer::recognizeContents (const char * szBuf, 
 						     UT_uint32 iNumbytes)
 {
    
@@ -220,21 +220,23 @@ bool IE_Imp_WordPerfect_Sniffer::recognizeContents (const char * szBuf,
 	     UT_DEBUGMSG(("product type: %i, file type: %i, major version: %i, minor version: %i\n", productType, fileType, majorVersion, minorVersion ));
 	     // we only want to try parsing wordperfect 6/7/8 documents for now
 	     if ((majorVersion != WP_WORDPERFECT678_EXPECTED_MAJOR_VERSION) || (fileType != WP_WORDPERFECT_DOCUMENT_FILE_TYPE))
-	       return false;
+	       return IMP_CONFIDENCE_POOR;
 	     
-	     return true;
+	     return IMP_CONFIDENCE_PERFECT;
 	  }
      }
 
    // ok, that didn't work, we'll try to dig through the OLE stream
    // (TODO)
-   return false;
+   return IMP_CONFIDENCE_ZILCH;
 }
 
-bool IE_Imp_WordPerfect_Sniffer::recognizeSuffix (const char * szSuffix)
+UT_uint8 IE_Imp_WordPerfect_Sniffer::recognizeSuffix (const char * szSuffix)
 {
-	// We recognize both word documents and their template versions
-	return (!UT_stricmp(szSuffix,".wpd"));
+  // We recognize both word documents and their template versions
+  if (!UT_stricmp(szSuffix,".wpd"))
+    return IMP_CONFIDENCE_PERFECT;
+  return IMP_CONFIDENCE_ZILCH;
 }
 
 UT_Error IE_Imp_WordPerfect_Sniffer::constructImporter (PD_Document * pDocument,

@@ -252,10 +252,10 @@ bool Inserter::insertSpan(UT_GrowBuf &b)
  We also don't want to steal recognition when user wants to use
  the Encoded Text importer.
  */
-bool IE_Imp_Text_Sniffer::recognizeContents(const char * /* szBuf */,
+UT_uint8 IE_Imp_Text_Sniffer::recognizeContents(const char * /* szBuf */,
 											UT_uint32 /* iNumbytes */)
 {
-	return false;
+	return IMP_CONFIDENCE_SOSO;
 }
 
 /*!
@@ -410,9 +410,11 @@ IE_Imp_Text_Sniffer::UCS2_Endian IE_Imp_Text_Sniffer::_recognizeUCS2(const char 
   Check filename extension for filetypes we support
  \param szSuffix Filename extension
  */
-bool IE_Imp_Text_Sniffer::recognizeSuffix(const char * szSuffix)
+UT_uint8 IE_Imp_Text_Sniffer::recognizeSuffix(const char * szSuffix)
 {
-	return (!UT_stricmp (szSuffix, ".txt") || !UT_stricmp(szSuffix, ".text"));
+  if (!UT_stricmp (szSuffix, ".txt") || !UT_stricmp(szSuffix, ".text"))
+    return IMP_CONFIDENCE_PERFECT;
+  return IMP_CONFIDENCE_SOSO;
 }
 
 UT_Error IE_Imp_Text_Sniffer::constructImporter(PD_Document * pDocument,
@@ -438,19 +440,21 @@ bool IE_Imp_Text_Sniffer::getDlgLabels(const char ** pszDesc,
 
  We don't attempt to recognize.  User must specifically choose Encoded Text.
  */
-bool IE_Imp_EncodedText_Sniffer::recognizeContents(const char * /* szBuf */,
+UT_uint8 IE_Imp_EncodedText_Sniffer::recognizeContents(const char * /* szBuf */,
 												   UT_uint32 /* iNumbytes */)
 {
-	return false;
+	return IMP_CONFIDENCE_POOR;
 }
 
 /*!
   Check filename extension for filetypes we support
  \param szSuffix Filename extension
  */
-bool IE_Imp_EncodedText_Sniffer::recognizeSuffix(const char * szSuffix)
+UT_uint8 IE_Imp_EncodedText_Sniffer::recognizeSuffix(const char * szSuffix)
 {
-	return (!UT_stricmp (szSuffix, ".txt") || !UT_stricmp(szSuffix, ".text"));
+  if (!UT_stricmp (szSuffix, ".txt") || !UT_stricmp(szSuffix, ".text"))
+    return IMP_CONFIDENCE_POOR;
+  return IMP_CONFIDENCE_ZILCH;
 }
 
 UT_Error IE_Imp_EncodedText_Sniffer::constructImporter(PD_Document * pDocument,

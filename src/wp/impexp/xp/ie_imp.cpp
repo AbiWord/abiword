@@ -132,27 +132,29 @@ IEFileType IE_Imp::fileTypeForContents(const char * szBuf, UT_uint32 iNumbytes)
 	// so we must query a match for all file types
 	UT_uint32 nrElements = getImporterCount();
 
+	IEFileType best = IEFT_Unknown;
+	UT_uint8   best_confidence = IMP_CONFIDENCE_ZILCH;
+
 	for (UT_uint32 k=0; k < nrElements; k++)
 	{
 		IE_ImpSniffer * s = (IE_ImpSniffer *)m_sniffers.getNthItem (k);
-		if (s->recognizeContents(szBuf, iNumbytes))
+		UT_uint8 confidence = s->recognizeContents(szBuf, iNumbytes);
+		if ((IEFT_Unknown == best) || (confidence >= best_confidence))
 		{
-			for (UT_sint32 a = 0; a < (int) nrElements; a++)
-			{
-				if (s->supportsFileType((IEFileType) (a+1)))
-					return (IEFileType) (a+1);
-			}
+		  best_confidence = confidence;
+		  for (UT_sint32 a = 0; a < (int) nrElements; a++)
+		    {
+		      if (s->supportsFileType((IEFileType) (a+1)))
+			best = (IEFileType) (a+1);
 
-			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-			// Hm... an importer recognizes the given data
-			// but refuses to support any file type we request.
-			return IEFT_Unknown;
+		      // short-circuit if we're 100% sure
+		      if ( IMP_CONFIDENCE_PERFECT == best_confidence )
+			return best;
+		    }
 		}
 	}
 
-	// No filter recognizes this data
-	return IEFT_Unknown;
-	
+	return best;	
 }
 
 /*! 
@@ -169,6 +171,9 @@ IEFileType IE_Imp::fileTypeForSuffix(const char * szSuffix)
 	if (!szSuffix)
 		return IEFT_Unknown;
 	
+	IEFileType best = IEFT_Unknown;
+	UT_uint8   best_confidence = IMP_CONFIDENCE_ZILCH;
+
 	// we have to construct the loop this way because a
 	// given filter could support more than one file type,
 	// so we must query a suffix match for all file types
@@ -177,24 +182,24 @@ IEFileType IE_Imp::fileTypeForSuffix(const char * szSuffix)
 	for (UT_uint32 k=0; k < nrElements; k++)
 	{
 		IE_ImpSniffer * s = static_cast<IE_ImpSniffer *>(m_sniffers.getNthItem(k));
-		if (s->recognizeSuffix(szSuffix))
-		{
+
+		UT_uint8 confidence = s->recognizeSuffix(szSuffix);
+		if ((IEFT_Unknown == best) || (confidence >= best_confidence))
+		  {
+		        best_confidence = confidence;
 			for (UT_sint32 a = 0; a < (int) nrElements; a++)
 			{
 				if (s->supportsFileType(static_cast<IEFileType>(a+1)))
-					return static_cast<IEFileType>(a+1);
-			}
+					best = static_cast<IEFileType>(a+1);
 
-			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-			// Hm... an importer has registered for the given suffix,
-			// but refuses to support any file type we request.
-			return IEFT_Unknown;
+				// short-circuit if we're 100% sure
+				if ( IMP_CONFIDENCE_PERFECT == best_confidence )
+				  return best;
+			}
 		}
 	}
 
-	// No filter is registered for that extension
-	return IEFT_Unknown;
-	
+	return best;	
 }
 
 /*! 
@@ -244,10 +249,10 @@ const char * IE_Imp::suffixesForFileType(IEFileType ieft)
  This function should closely match IE_Exp::contructExporter()
 */
 UT_Error IE_Imp::constructImporter(PD_Document * pDocument,
-								   const char * szFilename,
-								   IEFileType ieft,
-								   IE_Imp ** ppie,
-								   IEFileType * pieft)
+				   const char * szFilename,
+				   IEFileType ieft,
+				   IE_Imp ** ppie,
+				   IEFileType * pieft)
 {
 	bool bUseGuesswork = (ieft != IEFT_Unknown);
 	

@@ -34,6 +34,12 @@ class PD_DocumentRange;
 
 class IE_Imp;
 
+#define IMP_CONFIDENCE_PERFECT 255
+#define IMP_CONFIDENCE_GOOD    170
+#define IMP_CONFIDENCE_SOSO    127
+#define IMP_CONFIDENCE_POOR     85
+#define IMP_CONFIDENCE_ZILCH     0
+
 class ABI_EXPORT IE_ImpSniffer : public UT_AbiObject
 {
 	friend class IE_Imp;
@@ -46,10 +52,22 @@ public:
 	inline bool supportsFileType (IEFileType type) {return m_type == type;}
 	inline IEFileType getFileType() const {return m_type;}
 	
-	// these you must override these
-	virtual bool recognizeContents (const char * szBuf, 
-					UT_uint32 iNumbytes) = 0;
-	virtual bool recognizeSuffix (const char * szSuffix) = 0;
+	// these you must override these next 4 methods!!!
+
+	/*!
+	 * Return a number in the range [0,255] as to your confidence
+	 * that you recognize the contents. 0 being the least, 127 being
+	 * so-so, 255 being absolutely sure
+	 */
+	virtual UT_uint8 recognizeContents (const char * szBuf, 
+					    UT_uint32 iNumbytes) = 0;
+	/*!
+	 * Return a number in the range [0,255] as to your confidence
+	 * that you recognize the suffix. 0 being the least, 127 being
+	 * so-so, 255 being absolutely sure
+	 */
+	virtual UT_uint8 recognizeSuffix (const char * szSuffix) = 0;
+
 	virtual bool getDlgLabels (const char ** szDesc,
 				   const char ** szSuffixList,
 				   IEFileType * ft) = 0;
