@@ -178,7 +178,7 @@ void fp_FootnoteContainer::draw(dg_DrawArgs* pDA)
 
 		UT_sint32 yline = pDA->yoff;
 		pDA->pG->setColor(black);
-		pDA->pG->setLineProperties(1.0,
+		pDA->pG->setLineProperties(pDA->pG->tlu(1.0),
 									 GR_Graphics::JOIN_MITER,
 									 GR_Graphics::CAP_BUTT,
 									 GR_Graphics::LINE_SOLID);

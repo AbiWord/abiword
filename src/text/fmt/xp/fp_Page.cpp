@@ -405,7 +405,7 @@ void fp_Page::_drawCropMarks(dg_DrawArgs* pDA)
 
         pDA->pG->setColor(getDocLayout()->getView()->getColorShowPara());
 
-		pDA->pG->setLineProperties(1.0,
+		pDA->pG->setLineProperties(pDA->pG->tluD(1.0),
 									 GR_Graphics::JOIN_MITER,
 									 GR_Graphics::CAP_BUTT,
 									 GR_Graphics::LINE_SOLID);

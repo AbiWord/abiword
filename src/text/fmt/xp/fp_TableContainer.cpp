@@ -796,16 +796,16 @@ void fp_CellContainer::_drawLine (const PP_PropertyMap::Line & style,
 	switch (style.m_t_linestyle)
 	{
 		case PP_PropertyMap::linestyle_none:
-			pGr->setLineProperties (1, js, cs, GR_Graphics::LINE_DOTTED);
+			pGr->setLineProperties (pGr->tlu(1), js, cs, GR_Graphics::LINE_DOTTED);
 			break;
 		case PP_PropertyMap::linestyle_dotted:
-			pGr->setLineProperties (1, js, cs, GR_Graphics::LINE_DOTTED);
+			pGr->setLineProperties (pGr->tlu(1), js, cs, GR_Graphics::LINE_DOTTED);
 			break;
 		case PP_PropertyMap::linestyle_dashed:
-			pGr->setLineProperties (1, js, cs, GR_Graphics::LINE_ON_OFF_DASH);
+			pGr->setLineProperties (pGr->tlu(1), js, cs, GR_Graphics::LINE_ON_OFF_DASH);
 			break;
 		case PP_PropertyMap::linestyle_solid:
-			pGr->setLineProperties (1, js, cs, GR_Graphics::LINE_SOLID);
+			pGr->setLineProperties (pGr->tlu(1), js, cs, GR_Graphics::LINE_SOLID);
 			break;
 		default: // do nothing; shouldn't happen
 			break;
@@ -827,7 +827,7 @@ void fp_CellContainer::_drawLine (const PP_PropertyMap::Line & style,
 
 	painter.drawLine (left, top, right, bot);
 	
-	pGr->setLineProperties (1, js, cs, GR_Graphics::LINE_SOLID);
+	pGr->setLineProperties (pGr->tlu(1), js, cs, GR_Graphics::LINE_SOLID);
 }
 
 PP_PropertyMap::Background fp_CellContainer::getBackground () const

@@ -3635,7 +3635,7 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 			// one pixel border a
 			if(!isPreview() && (getViewMode() == VIEW_PRINT))
 			{
-				m_pG->setLineProperties(1.0,
+				m_pG->setLineProperties(m_pG->tluD(1.0),
 										GR_Graphics::JOIN_MITER,
 										GR_Graphics::CAP_BUTT,
 										GR_Graphics::LINE_SOLID);
@@ -3659,7 +3659,7 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 				UT_RGBColor clrPageSep(192,192,192);		// light gray
 				m_pG->setColor(clrPageSep);
 
-				m_pG->setLineProperties(1.0,
+				m_pG->setLineProperties(m_pG->tluD(1.0),
 										GR_Graphics::JOIN_MITER,
 										GR_Graphics::CAP_BUTT,
 										GR_Graphics::LINE_SOLID);
@@ -3703,7 +3703,7 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 
 			if(!isPreview() && (getViewMode() == VIEW_PRINT))
 			{
-				m_pG->setLineProperties(1.0,
+				m_pG->setLineProperties(m_pG->tluD(1.0),
 										GR_Graphics::JOIN_MITER,
 										GR_Graphics::CAP_BUTT,
 										GR_Graphics::LINE_SOLID);

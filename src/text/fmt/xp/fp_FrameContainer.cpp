@@ -200,13 +200,13 @@ void fp_FrameContainer::_drawLine (const PP_PropertyMap::Line & style,
 	switch (style.m_t_linestyle)
 	{
 		case PP_PropertyMap::linestyle_dotted:
-			pGr->setLineProperties (1, js, cs, GR_Graphics::LINE_DOTTED);
+			pGr->setLineProperties (pGr->tlu(1), js, cs, GR_Graphics::LINE_DOTTED);
 			break;
 		case PP_PropertyMap::linestyle_dashed:
-			pGr->setLineProperties (1, js, cs, GR_Graphics::LINE_ON_OFF_DASH);
+			pGr->setLineProperties (pGr->tlu(1), js, cs, GR_Graphics::LINE_ON_OFF_DASH);
 			break;
 		case PP_PropertyMap::linestyle_solid:
-			pGr->setLineProperties (1, js, cs, GR_Graphics::LINE_SOLID);
+			pGr->setLineProperties (pGr->tlu(1), js, cs, GR_Graphics::LINE_SOLID);
 			break;
 		default: // do nothing; shouldn't happen
 			break;
@@ -220,7 +220,7 @@ void fp_FrameContainer::_drawLine (const PP_PropertyMap::Line & style,
 
 	painter.drawLine (left, top, right, bot);
 	
-	pGr->setLineProperties (1, js, cs, GR_Graphics::LINE_SOLID);
+	pGr->setLineProperties (pGr->tlu(1), js, cs, GR_Graphics::LINE_SOLID);
 }
 
 /*!
@@ -267,32 +267,33 @@ void fp_FrameContainer::_drawHandleBox(UT_Rect box)
 //
 // Code cut and pasted from uwog's handle boxes on images.
 //
+	GR_Graphics * pGr = getGraphics();
 	UT_sint32 left = box.left;
 	UT_sint32 top = box.top;
-	UT_sint32 right = box.left + box.width - getGraphics()->tlu(1);
-	UT_sint32 bottom = box.top + box.height - getGraphics()->tlu(1);
+	UT_sint32 right = box.left + box.width - pGr->tlu(1);
+	UT_sint32 bottom = box.top + box.height - pGr->tlu(1);
 	
-	GR_Painter painter(getGraphics());
+	GR_Painter painter(pGr);
 
-	getGraphics()->setLineProperties(1.0,
+	pGr->setLineProperties(pGr->tluD(1.0),
 								 GR_Graphics::JOIN_MITER,
 								 GR_Graphics::CAP_BUTT,
 								 GR_Graphics::LINE_SOLID);	
 	
 	// draw some really fancy box here
-	getGraphics()->setColor(UT_RGBColor(98,129,131));
+	pGr->setColor(UT_RGBColor(98,129,131));
 	painter.drawLine(left, top, right, top);
 	painter.drawLine(left, top, left, bottom);
-	getGraphics()->setColor(UT_RGBColor(230,234,238));
-	painter.drawLine(box.left+getGraphics()->tlu(1), box.top + getGraphics()->tlu(1), right - getGraphics()->tlu(1), top+getGraphics()->tlu(1));
-	painter.drawLine(box.left+getGraphics()->tlu(1), box.top + getGraphics()->tlu(1), left + getGraphics()->tlu(1), bottom - getGraphics()->tlu(1));
-	getGraphics()->setColor(UT_RGBColor(98,129,131));
-	painter.drawLine(right - getGraphics()->tlu(1), top + getGraphics()->tlu(1), right - getGraphics()->tlu(1), bottom - getGraphics()->tlu(1));
-	painter.drawLine(left + getGraphics()->tlu(1), bottom - getGraphics()->tlu(1), right - getGraphics()->tlu(1), bottom - getGraphics()->tlu(1));
-	getGraphics()->setColor(UT_RGBColor(49,85,82));
+	pGr->setColor(UT_RGBColor(230,234,238));
+	painter.drawLine(box.left+pGr->tlu(1), box.top + pGr->tlu(1), right - pGr->tlu(1), top+pGr->tlu(1));
+	painter.drawLine(box.left+pGr->tlu(1), box.top + pGr->tlu(1), left + pGr->tlu(1), bottom - pGr->tlu(1));
+	pGr->setColor(UT_RGBColor(98,129,131));
+	painter.drawLine(right - pGr->tlu(1), top + pGr->tlu(1), right - pGr->tlu(1), bottom - pGr->tlu(1));
+	painter.drawLine(left + pGr->tlu(1), bottom - pGr->tlu(1), right - pGr->tlu(1), bottom - pGr->tlu(1));
+	pGr->setColor(UT_RGBColor(49,85,82));
 	painter.drawLine(right, top, right, bottom);
 	painter.drawLine(left, bottom, right, bottom);
-	painter.fillRect(UT_RGBColor(156,178,180),box.left + getGraphics()->tlu(2), box.top + getGraphics()->tlu(2), box.width - getGraphics()->tlu(4), box.height - getGraphics()->tlu(4));
+	painter.fillRect(UT_RGBColor(156,178,180),box.left + pGr->tlu(2), box.top + pGr->tlu(2), box.width - pGr->tlu(4), box.height - pGr->tlu(4));
 
 }
 
