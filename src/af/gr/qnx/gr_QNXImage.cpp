@@ -31,11 +31,11 @@ GR_QNXImage::GR_QNXImage(const char* szName)
 	
 	if (szName)
 	{
-		m_szName = szName;
+		setName(szName);
 	}
 	else
 	{
-		m_szName = "QNXImage";
+	  setName ("QNXImage");
 	}
 }
 
