@@ -546,6 +546,37 @@ GtkWidget * AP_UnixFrame::_createDocumentWindow(void)
 
 void AP_UnixFrame::translateDocumentToScreen(UT_sint32 &x, UT_sint32 &y)
 {
+	GdkWindowPrivate *priv;
+	gint return_val;
+	Window child;
+	gint tx = 0;
+	gint ty = 0;
+  
+//	g_return_val_if_fail (window != NULL, 0);
+  
+	priv = (GdkWindowPrivate*) m_dArea->window;
+  
+	if (!priv->destroyed)
+    {
+		return_val = XTranslateCoordinates (priv->xdisplay,
+											priv->xwindow,
+											gdk_root_window,
+											x, y, &tx, &ty,
+											&child);
+      
+    }
+	else
+		return_val = 0;
+  
+	x = tx;
+	y = ty;
+  
+	return return_val;
+}
+
+#if 0
+void AP_UnixFrame::translateDocumentToScreen(UT_sint32 &x, UT_sint32 &y)
+{
 	// translate the given document mouse coordinates into absolute screen coordinates.
 
 	gint wx, wy;
@@ -553,8 +584,9 @@ void AP_UnixFrame::translateDocumentToScreen(UT_sint32 &x, UT_sint32 &y)
 
 	for (priv=(GdkWindowPrivate *)m_dArea->window; (priv); priv=(GdkWindowPrivate *)priv->parent)
 	{
-		gdk_window_get_position((GdkWindow *)priv, &wx, &wy);
+ 		gdk_window_get_position((GdkWindow *)priv, &wx, &wy);
 		x += wx;
 		y += wy;
 	}
 }
+#endif
