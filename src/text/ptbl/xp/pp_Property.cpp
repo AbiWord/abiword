@@ -44,12 +44,12 @@
 	read-only segment.
 */
 #ifndef BIDI_RTL_DOMINANT
-	XML_Char default_dominant_direction[]="ltr";
+	XML_Char def_dom_dir[]="ltr";
 	XML_Char default_direction[]="ltr";
 	XML_Char text_align[]="left\0";		//the '\0' is needed so that we can copy
 										//the word 'right' here
 #else
-	XML_Char default_dominant_direction[]="rtl";
+	XML_Char def_dom_dir[]="rtl";
 	XML_Char default_direction[]="rtl";
 	XML_Char text_align[]="right";
 #endif
@@ -58,105 +58,96 @@
 
 
 /*!
- * Definitions are: Property Nme: Initial Value: Can Inherit: Pointer to class
+ * Definitions are: Property Nme: Initial Value: Can Inherit: Pointer
+ * to class : tPropLevel
+ * tPropLevel should be set by or-ing the values defined in PP_Property.h
  */
 static PP_Property _props[] =
 {
-	{ "background-color", "ffffff", false, NULL},
-	{ "bgcolor", "transparent", true, NULL},
+	{ "background-color",      "ffffff",          false, NULL, PP_LEVEL_CHAR},
+	{ "bgcolor",               "transparent",     true,  NULL, PP_LEVEL_CHAR},
 
-	{ "color",   "000000", true, NULL},
-	{ "column-gap",	"0.25in", false, NULL},
-	{ "column-line", "off",	false, NULL},
-	//{ "column-order", default_dominant_direction, false, NULL},
-	{ "columns", "1", false, NULL},
+	{ "color",                 "000000",          true,  NULL, PP_LEVEL_CHAR},
+	{ "column-gap",	           "0.25in",          false, NULL, PP_LEVEL_SECT},
+	{ "column-line",           "off",	          false, NULL, PP_LEVEL_SECT},
+	{ "columns",               "1",               false, NULL, PP_LEVEL_SECT},
 
-	{ "default-tab-interval",  "0.5in", false, NULL},
-	{ "dir-override", NULL, true, NULL},  //the direction of the present text, prossible values ltr, rtl,ntrl
-	{ "display", NULL, true, NULL},
-	{ "dom-dir", default_dominant_direction, true, NULL},  //added by #TF, dominant direction of writing in a paragraph, can be either ltr or rtl (i.e., left-to-right, right-to-left)
-	{ "field-color", "dcdcdc", true, NULL},
-	{ "field-font",	"NULL",	true, NULL},
-	{ "font-family", "Times New Roman", true, NULL},
-	{ "font-size",	"12pt",	true, NULL},	// MS word defaults to 10pt, but it just seems too small
-	{ "font-stretch", "normal", true, NULL},
-	{ "font-style",	"normal", true, NULL},
-	{ "font-variant", "normal", true, NULL},
-	{ "font-weight", "normal", true, NULL},
+	{ "default-tab-interval",  "0.5in",           false, NULL, PP_LEVEL_BLOCK},
+	{ "dir-override",          NULL,              true,  NULL, PP_LEVEL_CHAR},  
+	{ "display",               NULL,              true,  NULL, PP_LEVEL_CHAR},
+	{ "dom-dir",               def_dom_dir,       true,  NULL, PP_LEVEL_BLOCK | PP_LEVEL_SECT},  
 
-	{ "footer","",false,NULL},
-	{ "footer-even","",false,NULL},
-	{ "footer-first","",false,NULL},
-	{ "footer-last","",false,NULL},
+	{ "field-color",           "dcdcdc",          true,  NULL, PP_LEVEL_FIELD},
+	{ "field-font",	           "NULL",	          true,  NULL, PP_LEVEL_FIELD},
+	{ "font-family",           "Times New Roman", true,  NULL, PP_LEVEL_CHAR},
+	{ "font-size",	           "12pt",	          true,  NULL, PP_LEVEL_CHAR},	// MS word defaults to 10pt, but it just seems too small
+	{ "font-stretch",          "normal",          true,  NULL, PP_LEVEL_CHAR},
+	{ "font-style",	           "normal",          true,  NULL, PP_LEVEL_CHAR},
+	{ "font-variant",          "normal",          true,  NULL, PP_LEVEL_CHAR},
+	{ "font-weight",           "normal",          true,  NULL, PP_LEVEL_CHAR},
+	{ "footer",                "",                false, NULL, PP_LEVEL_SECT},
+	{ "footer-even",           "",                false, NULL, PP_LEVEL_SECT},
+	{ "footer-first",          "",                false, NULL, PP_LEVEL_SECT},
+	{ "footer-last",           "",                false, NULL, PP_LEVEL_SECT},
+	{ "format",                "%*%d.",           true,  NULL, PP_LEVEL_BLOCK},
 
+	{ "header",                "",                false, NULL, PP_LEVEL_SECT},
+	{ "header-even",           "",                false, NULL, PP_LEVEL_SECT},
+	{ "header-first",          "",                false, NULL, PP_LEVEL_SECT},
+	{ "header-last",           "",                false, NULL, PP_LEVEL_SECT},
+	{ "height",                "0in",             false, NULL, PP_LEVEL_CHAR},
+	{ "homogeneuos",           "1",               false, NULL, PP_LEVEL_CHAR},
 
-	{ "format","%*%d.", true, NULL},
+	{ "keep-together",         "",                false, NULL, PP_LEVEL_BLOCK},
+	{ "keep-with-next",        "",                false, NULL, PP_LEVEL_BLOCK},
 
-	{ "header","",false,NULL},
-	{ "header-even","",false,NULL},
-	{ "header-first","",false,NULL},
-	{ "header-last","",false,NULL},
+	{ "lang",                  "en-US",           true,  NULL, PP_LEVEL_CHAR},
+	{ "line-height",           "1.0",             false, NULL, PP_LEVEL_BLOCK},
+	{ "list-decimal",          ".",               true,  NULL, PP_LEVEL_BLOCK},
+	{ "list-delim",            "%L",              true,  NULL, PP_LEVEL_BLOCK},
+	{ "list-style",            "None",            true,  NULL, PP_LEVEL_CHAR},
+	{ "list-tag",              "0",               false, NULL, PP_LEVEL_BLOCK},
 
-	{ "height", "0in",	false, NULL},
+	{ "margin-bottom",         "0in",             false, NULL, PP_LEVEL_BLOCK},
+	{ "margin-left",           "0in",	          false, NULL, PP_LEVEL_BLOCK},
+	{ "margin-right",          "0in",             false, NULL, PP_LEVEL_BLOCK},
+	{ "margin-top",	           "0in",             false, NULL, PP_LEVEL_BLOCK}, // zero to be consistent with other WPs
 
-	{ "homogeneuos","1", false,NULL},
-	{ "keep-together", "", false, NULL},
-	{ "keep-with-next", "",	false, NULL},
+	{ "orphans",               "1",               false, NULL, PP_LEVEL_BLOCK},
 
-	{ "lang", "en-US", true, NULL},
+	{ "page-margin-bottom",	   "1in",             false, NULL, PP_LEVEL_SECT},
+	{ "page-margin-footer",    "0.0in",           false, NULL, PP_LEVEL_SECT},
+	{ "page-margin-header",    "0.0in",           false, NULL, PP_LEVEL_SECT},
+	{ "page-margin-left",	   "1in",             false, NULL, PP_LEVEL_SECT},
+	{ "page-margin-right",     "1in",             false, NULL, PP_LEVEL_SECT},
+	{ "page-margin-top",       "1in",             false, NULL, PP_LEVEL_SECT},
 
-	{ "line-height", "1.0", false, NULL},
-	{ "list-decimal", ".", true, NULL},
-	{ "list-delim", "%L", true, NULL},
-	{ "list-style", "None",true,NULL},
-	{ "list-tag", "0",false,NULL},
+    { "section-max-column-height", "0in",         false, NULL, PP_LEVEL_SECT},
+	{ "section-restart",       "",                false, NULL, PP_LEVEL_SECT},
+	{ "section-restart-value", "",                false, NULL, PP_LEVEL_SECT},
+	{ "section-space-after",   "0.25in",          false, NULL, PP_LEVEL_SECT},
+   	{ "start-value",           "1",               true,  NULL, PP_LEVEL_BLOCK},
 
-	{ "margin-bottom", "0in", false, NULL},
-	{ "margin-left", "0in",	false, NULL},
-	{ "margin-right", "0in", false, NULL},
-	{ "margin-top",	"0in", false, NULL}, // zero to be consistent with other WPs
+	{ "table-border",          "0.1in",           false, NULL, PP_LEVEL_TABLE},
+	{ "table-col-spacing",     "0.1in",           false, NULL, PP_LEVEL_TABLE},
+	{ "table-column-leftpos",  "0.0in",           false, NULL, PP_LEVEL_TABLE},
+	{ "table-column-props",    "",                false, NULL, PP_LEVEL_TABLE},
+	{ "table-line-thickness",  "1",               false, NULL, PP_LEVEL_TABLE},
+	{ "table-line-type",       "1",               false, NULL, PP_LEVEL_TABLE},
+	{ "table-margin-bottom",   "0.1in",           false, NULL, PP_LEVEL_TABLE},
+ 	{ "table-margin-left",     "0.1in",           false, NULL, PP_LEVEL_TABLE},
+	{ "table-margin-right",    "0.1in",           false, NULL, PP_LEVEL_TABLE},
+	{ "table-margin-top",      "0.1in",           false, NULL, PP_LEVEL_TABLE},
+	{ "table-row-spacing",     "0.1in",           false, NULL, PP_LEVEL_TABLE},
+	{ "table-row-props",       "",                false, NULL, PP_LEVEL_TABLE},
+	{ "tabstops",              "",                false, NULL, PP_LEVEL_BLOCK},
+	{ "text-align",            text_align,	      true,  NULL, PP_LEVEL_BLOCK},
+	{ "text-decoration",       "none",            true,  NULL, PP_LEVEL_CHAR},
+	{ "text-indent",           "0in",             false, NULL, PP_LEVEL_BLOCK},
+	{ "text-position",         "normal",          true,  NULL, PP_LEVEL_CHAR},
 
-	{ "orphans", "1", false, NULL},
-
-	{ "page-margin-bottom",		"1in",				false, NULL},
-	{ "page-margin-footer",         "0.0in",                          false, NULL},
-	{ "page-margin-header",         "0.0in",                          false, NULL},
-	{ "page-margin-left",		"1in",				false, NULL},
-	{ "page-margin-right",		"1in",				false, NULL},
-	{ "page-margin-top",		"1in",				false, NULL},
-
-    { "section-max-column-height", "0in",         false,NULL},
-	{ "section-restart",        "",                 false,NULL},
-	{ "section-restart-value",  "",                 false,NULL},
-	{ "section-space-after",	"0.25in",			false, NULL},
-   	{ "start-value",			"1",				true, NULL},
-
-	{"table-border", "0.1in",false,NULL},
-
-	{"table-col-spacing", "0.1in",false,NULL},
-	{"table-column-leftpos", "0.0in",false,NULL},
-	{"table-column-props", "",false,NULL},
-
-	{"table-line-thickness", "1",false,NULL},
-	{"table-line-type", "1",false,NULL},
-
-	{"table-margin-bottom", "0.1in", false, NULL},
- 	{"table-margin-left", "0.1in", false, NULL},
-	{"table-margin-right", "0.1in", false, NULL},
-	{"table-margin-top", "0.1in", false, NULL},
-
-	{"table-row-spacing", "0.1in",false,NULL},
-	{"table-row-props", "",false,NULL},
-
-	{ "tabstops", "", false, NULL},
-	{ "text-align", text_align,	true, NULL},
-	{ "text-decoration", "none", true, NULL},
-	{ "text-indent", "0in", false, NULL},
-	{ "text-position", "normal", true, NULL},
-
-	{ "widows", "2", false, NULL},
-	{ "width", "0in", false, NULL} // was ,
-
+	{ "widows",                "2",               false, NULL, PP_LEVEL_BLOCK},
+	{ "width",                 "0in",             false, NULL, PP_LEVEL_CHAR} 
 };
 
 #ifdef __MRC__
@@ -477,6 +468,23 @@ const PP_PropertyType * PP_evalPropertyType(const XML_Char *  pszName,
 
 	return pProp->getInitialType(Type);
 }
+
+UT_uint32        PP_getPropertyCount()
+{
+	return (sizeof(_props)/sizeof(PP_Property));
+}
+
+const XML_Char * PP_getNthPropertyName(UT_uint32 n)
+{
+	return _props[n].getName();
+}
+
+tPropLevel   PP_getNthPropertyLevel(UT_uint32 n)
+{
+	return _props[n].getLevel();
+}
+
+
 
 PP_Property::~PP_Property()
 {

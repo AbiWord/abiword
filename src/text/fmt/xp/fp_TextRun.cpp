@@ -1787,7 +1787,7 @@ void fp_TextRun::_draw(dg_DrawArgs* pDA)
 	{
 		for(UT_uint32 n = 0; n < iLen - 1; n++)
 		{
-			if(pCWThis[iLen - n - 1] < 0)
+			if(pCWThis[iLen - n - 1] < 0 || pCWThis[iLen - n - 1] >= GR_OC_LEFT_FLUSHED)
 			{
 				UT_sint32 iWidth = 0;
 				UT_sint32 iCumAdvance = 0;
@@ -1812,7 +1812,18 @@ void fp_TextRun::_draw(dg_DrawArgs* pDA)
 					UT_uint32 k;
 					for(k = n; k < iLen - m -1; k++)
 					{
-						UT_sint32 iAdv = (pCWThis[m] + pCWThis[iLen - k - 1])/2 - iCumAdvance;
+						UT_sint32 iAdv;
+						if(pCWThis[iLen - k - 1] >= GR_OC_LEFT_FLUSHED)
+						{
+							UT_sint32 iThisWidth = pCWThis[iLen - k - 1] & GR_OC_MAX_WIDTH;
+							iAdv = pCWThis[m] - iThisWidth - iCumAdvance;
+						}
+						else
+						{
+							// centered character
+							iAdv = (pCWThis[m] + pCWThis[iLen - k - 1])/2 - iCumAdvance;
+						}
+						
 						if(k == 0)
 						{
 							// k == 0, this is the leftmost character,
@@ -1851,7 +1862,7 @@ void fp_TextRun::_draw(dg_DrawArgs* pDA)
 	{
 		for(UT_uint32 n = 0; n < iLen - 1; n++)
 		{
-			if(pCWThis[n+1] < 0)
+			if(pCWThis[n+1] < 0 || pCWThis[n+1] >= GR_OC_LEFT_FLUSHED)
 			{
 				// remember the width of the non-zero character
 				UT_sint32 iWidth = pCWThis[n];
@@ -1863,8 +1874,22 @@ void fp_TextRun::_draw(dg_DrawArgs* pDA)
 				{
 					// plus because pCharWidths[m] < 0
 					// -1 because it is between m-1 and m
-					s_pCharAdvance[m-1] = iWidth - (iWidth + pCWThis[m])/2 + iCumAdvance;
-					iCumAdvance += s_pCharAdvance[m-1];
+					UT_sint32 iAdv;
+					if(pCWThis[m] >= GR_OC_LEFT_FLUSHED)
+					{
+						UT_sint32 iThisWidth = pCWThis[m] & GR_OC_MAX_WIDTH;
+						iThisWidth -= iWidth;
+						
+						iAdv = -(iThisWidth - iCumAdvance);
+					}
+					else
+					{
+						//centered character
+						iAdv = iWidth - (iWidth + pCWThis[m])/2 + iCumAdvance;
+					}
+					
+					s_pCharAdvance[m-1] = iAdv;
+					iCumAdvance += iAdv;
 					m++;
 				}
 

@@ -202,9 +202,10 @@ bool	PP_AttrProp::setAttribute(const XML_Char * szName, const XML_Char * szValue
 	// TODO when this assert fails, switch this file to use UT_XML_ version of str*() functions.
 	UT_ASSERT(sizeof(char)==sizeof(XML_Char));
 
-	if (0 == UT_strcmp(szName, PT_PROPS_ATTRIBUTE_NAME))	// PROPS -- cut value up into properties
+	if (0 == UT_strcmp(szName, PT_PROPS_ATTRIBUTE_NAME) && *szValue)	// PROPS -- cut value up into properties
 	{
 		char * pOrig = NULL;
+		
 		if (!UT_cloneString(pOrig,szValue))
 		{
 			UT_DEBUGMSG(("setAttribute: UT_cloneString failed on [%s]\n",szValue));
@@ -278,6 +279,7 @@ bool	PP_AttrProp::setAttribute(const XML_Char * szName, const XML_Char * szValue
 
 		// make sure we store attribute names in lowercase
 		UT_ASSERT(sizeof(char) == sizeof(XML_Char));
+
 		char * copy;
 		if (!UT_cloneString(copy, szName))
 		{
@@ -286,7 +288,6 @@ bool	PP_AttrProp::setAttribute(const XML_Char * szName, const XML_Char * szValue
 		}
 
 		UT_lowerString(copy);
-
 		char * szDupValue = UT_strdup(szValue);
 
 		if(!m_pAttributes->insert(copy, (void *)szDupValue))
@@ -636,6 +637,8 @@ PP_AttrProp * PP_AttrProp::cloneWithReplacements(const XML_Char ** attributes,
 												 const XML_Char ** properties,
 												 bool bClearProps) const
 {
+	bool bIgnoreProps = false; // see below
+	
 	// create a new AttrProp based upon the given one
 	// and adding or replacing the items given.
 	// return NULL on failure.
@@ -673,7 +676,15 @@ PP_AttrProp * PP_AttrProp::cloneWithReplacements(const XML_Char ** attributes,
 				goto Failed;
 	}
 
-	if (!bClearProps)
+	// we want to be able to remove all properties by setting the
+	// props attribute to ""; in order for that to work, we need to
+	// skip the following loop if props is set to ""
+	const XML_Char * szValue;
+
+	if(papNew->getAttribute("props", szValue) && !*szValue)
+		bIgnoreProps = true;
+
+	if (!bClearProps && !bIgnoreProps)
 	{
 		k = 0;
 		while (getNthProperty(k++,n,v))
@@ -685,8 +696,9 @@ PP_AttrProp * PP_AttrProp::cloneWithReplacements(const XML_Char ** attributes,
 	}
 
 	// the following will remove all properties set to ""; this allows us
-	// to remove properties with the by setting them to ""
+	// to remove properties by setting them to ""
 	papNew->_clearEmptyProperties();
+	papNew->_clearEmptyAttributes();
 
 	return papNew;
 
@@ -724,6 +736,24 @@ void PP_AttrProp::_clearEmptyProperties()
 
 				m_pProperties->remove(_hc1.key(),pEntry);
 			}
+		}
+	}
+}
+
+void PP_AttrProp::_clearEmptyAttributes()
+{
+	if(!m_pAttributes)
+		return;
+
+	UT_StringPtrMap::UT_Cursor _hc1(m_pAttributes);
+	XML_Char * pEntry;
+
+	for ( pEntry  = (XML_Char*) _hc1.first(); _hc1.is_valid(); pEntry = (XML_Char*) _hc1.next() )
+	{
+		if (pEntry && !*pEntry)
+		{
+			FREEP(pEntry);
+			m_pAttributes->remove(_hc1.key(),pEntry);
 		}
 	}
 }

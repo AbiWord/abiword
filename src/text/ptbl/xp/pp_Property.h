@@ -123,8 +123,18 @@ private:
 
 
 
+typedef unsigned int tPropLevel;
 
-
+// the m_iLevel member of PP_Property should be set by or-ing the
+// following constants
+#define PP_LEVEL_CHAR  0x00000001
+#define PP_LEVEL_BLOCK 0x00000002
+#define PP_LEVEL_SECT  0x00000004
+#define PP_LEVEL_DOC   0x00000008
+#define PP_LEVEL_TABLE 0x00000010
+#define PP_LEVEL_OBJ   0x00000011
+#define PP_LEVEL_IMG   0x00000012
+#define PP_LEVEL_FIELD 0x00000014
 
 class ABI_EXPORT PP_Property
 {
@@ -133,12 +143,14 @@ public:
 	XML_Char *			m_pszInitial;
 	bool				m_bInherit;
 	PP_PropertyType *	m_pProperty;
+	tPropLevel          m_iLevel;
 	~PP_Property();
 
 	inline const XML_Char *	getName() const {return m_pszName;}
 	inline const XML_Char *	getInitial() const {return m_pszInitial;}
 	const PP_PropertyType *	getInitialType(tProperty_type Type) const;
 	inline bool				canInherit() const {return m_bInherit;}
+	inline tPropLevel       getLevel() const {return m_iLevel;}
 };
 
 const PP_Property * PP_lookupProperty(const XML_Char * pszName);
@@ -163,4 +175,7 @@ ABI_EXPORT const PP_PropertyType * PP_evalPropertyType(const XML_Char * pszName,
 								 PD_Document * pDoc=NULL,
 								 bool bExpandStyles=false);
 
+ABI_EXPORT UT_uint32        PP_getPropertyCount();
+ABI_EXPORT const XML_Char * PP_getNthPropertyName(UT_uint32 n);
+ABI_EXPORT tPropLevel       PP_getNthPropertyLevel(UT_uint32 n);
 #endif /* PP_PROPERTY_H */

@@ -2527,7 +2527,7 @@ bool FV_View::getStyle(const XML_Char ** style)
 	return true;
 }
 
-bool FV_View::setCharFormat(const XML_Char * properties[])
+bool FV_View::setCharFormat(const XML_Char * properties[], const XML_Char * attribs[])
 {
 	bool bRet;
 
@@ -2557,7 +2557,7 @@ bool FV_View::setCharFormat(const XML_Char * properties[])
 	// Here the selection used to be cleared, but that prevented users
 	// from making multiple changes to the same region.
 
-	bRet = m_pDoc->changeSpanFmt(PTC_AddFmt,posStart,posEnd,NULL,properties);
+	bRet = m_pDoc->changeSpanFmt(PTC_AddFmt,posStart,posEnd,attribs,properties);
 
 	// if there is a selection then we need to change the formatting also for any
 	// completely selected block within the selection
@@ -2611,7 +2611,7 @@ bool FV_View::setCharFormat(const XML_Char * properties[])
 		}
 
 		if(bFormatStart && bFormatEnd)
-			bRet = m_pDoc->changeStruxFmt(PTC_AddFmt,posStart,posEnd,NULL,properties,PTX_Block);
+			bRet = m_pDoc->changeStruxFmt(PTC_AddFmt,posStart,posEnd,attribs,properties,PTX_Block);
 	}
 
 	_generalUpdate();
@@ -2626,6 +2626,7 @@ bool FV_View::setCharFormat(const XML_Char * properties[])
 	}
 	return bRet;
 }
+
 
 bool FV_View::getCharFormat(const XML_Char *** pProps, bool bExpandStyles)
 {
@@ -2737,87 +2738,20 @@ bool FV_View::getCharFormat(const XML_Char *** pProps, bool bExpandStyles, PT_Do
 
 	pBlock->getAttrProp(&pBlockAP);
 
-	f = new _fmtPair("font-family",pSpanAP,pBlockAP,pSectionAP,m_pDoc,bExpandStyles);
-	if(f->m_val != NULL)
-		v.addItem((void *) f);
-	else
-		delete f;
+	UT_uint32 iPropsCount = PP_getPropertyCount();
 
-	f = new _fmtPair("font-size",pSpanAP,pBlockAP,pSectionAP,m_pDoc,bExpandStyles);
-	if(f->m_val != NULL)
-		v.addItem( (void *) f);
-	else
-		delete f;
-
-	f = new _fmtPair("font-weight",pSpanAP,pBlockAP,pSectionAP,m_pDoc,bExpandStyles);
-	if(f->m_val != NULL)
-		v.addItem( (void *) f);
-	else
-		delete f;
-
-	f = new _fmtPair("font-style",pSpanAP,pBlockAP,pSectionAP,m_pDoc,bExpandStyles);
-	if(f->m_val != NULL)
-		v.addItem( (void *) f);
-	else
-		delete f;
-
-	f = new _fmtPair("text-decoration",pSpanAP,pBlockAP,pSectionAP,m_pDoc,bExpandStyles);
-	if(f->m_val != NULL)
-		v.addItem( (void *) f);
-	else
-		delete f;
-
-	f = new _fmtPair("text-position",pSpanAP,pBlockAP,pSectionAP,m_pDoc,bExpandStyles);
-	if(f->m_val != NULL)
-		v.addItem( (void *) f);
-	else
-		delete f;
-
-	f = new _fmtPair("color",pSpanAP,pBlockAP,pSectionAP,m_pDoc,bExpandStyles);
-	if(f->m_val != NULL)
-		v.addItem( (void *) f);
-	else
-		delete f;
-
-	f = new _fmtPair("bgcolor",pSpanAP,pBlockAP,pSectionAP,m_pDoc,bExpandStyles);
-	if(f->m_val != NULL)
-		v.addItem( (void *) f);
-	else
-		delete f;
-
-	f = new _fmtPair("dir-override",pSpanAP,pBlockAP,pSectionAP,m_pDoc,bExpandStyles);
-	if(f->m_val != NULL)
-		v.addItem( (void *) f);
-	else
-		delete f;
-
-	f = new _fmtPair("lang",pSpanAP,pBlockAP,pSectionAP,m_pDoc,bExpandStyles);
-	if(f->m_val != NULL)
-		v.addItem( (void *) f);
-	else
-		delete f;
-
-#if 1
-	f = new _fmtPair("width",pSpanAP,pBlockAP,pSectionAP,m_pDoc,bExpandStyles);
-	if(f->m_val != NULL)
-		v.addItem( (void *) f);
-	else
-		delete f;
-
-
-	f = new _fmtPair("height",pSpanAP,pBlockAP,pSectionAP,m_pDoc,bExpandStyles);
-	if(f->m_val != NULL)
-		v.addItem( (void *) f);
-	else
-		delete f;
-
-	f = new _fmtPair("display",pSpanAP,pBlockAP,pSectionAP,m_pDoc,bExpandStyles);
-	if(f->m_val != NULL)
-		v.addItem( (void *) f);
-	else
-		delete f;
-
-#endif
+	for(UT_uint32 n = 0; n < iPropsCount; n++)
+	{
+		if((PP_getNthPropertyLevel(n) & PP_LEVEL_CHAR))
+		{
+			f = new _fmtPair(PP_getNthPropertyName(n),pSpanAP,pBlockAP,pSectionAP,m_pDoc,bExpandStyles);
+			if(f->m_val != NULL)
+				v.addItem((void *) f);
+			else
+				delete f;
+		}
+	}
+	
 	// 2. prune 'em as they vary across selection
 	if (!bSelEmpty)
 	{
@@ -3484,30 +3418,18 @@ bool FV_View::getSectionFormat(const XML_Char ***pProps)
 	fl_SectionLayout* pSection = pBlock->getSectionLayout();
 	pSection->getAttrProp(&pSectionAP);
 
-	v.addItem(new _fmtPair("columns", NULL,pBlockAP,pSectionAP,m_pDoc,false));
-	v.addItem(new _fmtPair("column-line", NULL,pBlockAP,pSectionAP,m_pDoc,false));
-	v.addItem(new _fmtPair("column-gap",NULL,pBlockAP,pSectionAP,m_pDoc,false));
-	v.addItem(new _fmtPair("section-space-after",NULL,pBlockAP,pSectionAP,m_pDoc,false));
-	v.addItem(new _fmtPair("section-max-column-height",NULL,pBlockAP,pSectionAP,m_pDoc,false));
-	v.addItem(new _fmtPair("section-restart",NULL,pBlockAP,pSectionAP,m_pDoc,false));
-	v.addItem(new _fmtPair("section-restart-value",NULL,pBlockAP,pSectionAP,m_pDoc,false));
-	v.addItem(new _fmtPair("footer",NULL,pBlockAP,pSectionAP,m_pDoc,false));
-	v.addItem(new _fmtPair("footer-even",NULL,pBlockAP,pSectionAP,m_pDoc,false));
-	v.addItem(new _fmtPair("footer-first",NULL,pBlockAP,pSectionAP,m_pDoc,false));
-	v.addItem(new _fmtPair("footer-last",NULL,pBlockAP,pSectionAP,m_pDoc,false));
-	v.addItem(new _fmtPair("header",NULL,pBlockAP,pSectionAP,m_pDoc,false));
-	v.addItem(new _fmtPair("header-even",NULL,pBlockAP,pSectionAP,m_pDoc,false));
-	v.addItem(new _fmtPair("header-first",NULL,pBlockAP,pSectionAP,m_pDoc,false));
-	v.addItem(new _fmtPair("header-last",NULL,pBlockAP,pSectionAP,m_pDoc,false));
-	v.addItem(new _fmtPair("dom-dir",NULL,NULL,pSectionAP,m_pDoc,false));
-	v.addItem(new _fmtPair("text-align",NULL,NULL,pSectionAP,m_pDoc,false));
-	v.addItem(new _fmtPair("page-margin-left",NULL,pBlockAP,pSectionAP,m_pDoc,false));
-	v.addItem(new _fmtPair("page-margin-top",NULL,pBlockAP,pSectionAP,m_pDoc,false));
-	v.addItem(new _fmtPair("page-margin-right",NULL,pBlockAP,pSectionAP,m_pDoc,false));
-	v.addItem(new _fmtPair("page-margin-bottom",NULL,pBlockAP,pSectionAP,m_pDoc,false));
-	v.addItem(new _fmtPair("page-margin-footer",NULL,pBlockAP,pSectionAP,m_pDoc,false));
-	v.addItem(new _fmtPair("page-margin-header",NULL,pBlockAP,pSectionAP,m_pDoc,false));
-	v.addItem(new _fmtPair("bgcolor",NULL,pBlockAP,pSectionAP,m_pDoc,false));
+	UT_uint32 iPropsCount = PP_getPropertyCount();
+	for(UT_uint32 n = 0; n < iPropsCount; n++)
+	{
+		if((PP_getNthPropertyLevel(n) & PP_LEVEL_SECT))
+		{
+			f = new _fmtPair(PP_getNthPropertyName(n),NULL,pBlockAP,pSectionAP,m_pDoc,false);
+			if(f->m_val != NULL)
+				v.addItem((void *) f);
+			else
+				delete f;
+		}
+	}
 
 	// 2. prune 'em as they vary across selection
 	if (!isSelectionEmpty())
@@ -3637,89 +3559,20 @@ bool FV_View::getBlockFormat(const XML_Char *** pProps,bool bExpandStyles)
 	fl_SectionLayout* pSection = pBlock->getSectionLayout();
 	pSection->getAttrProp(&pSectionAP);
 
-	f = new _fmtPair("text-align",NULL,pBlockAP,pSectionAP,m_pDoc,bExpandStyles);
-	if(f->m_val != NULL)
-		v.addItem( (void *) f);
-	else
-		delete f;
 
-	f = new _fmtPair("text-indent",NULL,pBlockAP,pSectionAP,m_pDoc,bExpandStyles);
-	if(f->m_val != NULL)
-		v.addItem( (void *) f);
-	else
-		delete f;
+	UT_uint32 iPropsCount = PP_getPropertyCount();
 
-	f = new _fmtPair("margin-left",NULL,pBlockAP,pSectionAP,m_pDoc,bExpandStyles);
-	if(f->m_val != NULL)
-		v.addItem( (void *) f);
-	else
-		delete f;
-
-	f = new _fmtPair("margin-right",			NULL,pBlockAP,pSectionAP,m_pDoc,bExpandStyles);
-	if(f->m_val != NULL)
-		v.addItem( (void *) f);
-	else
-		delete f;
-
-	f = new _fmtPair("margin-top",				NULL,pBlockAP,pSectionAP,m_pDoc,bExpandStyles);
-	if(f->m_val != NULL)
-		v.addItem( (void *) f);
-	else
-		delete f;
-
-	f = new _fmtPair("margin-bottom",			NULL,pBlockAP,pSectionAP,m_pDoc,bExpandStyles);
-	if(f->m_val != NULL)
-		v.addItem( (void *) f);
-	else
-		delete f;
-
-	f = new _fmtPair("line-height", 		NULL,pBlockAP,pSectionAP,m_pDoc,bExpandStyles);
-	if(f->m_val != NULL)
-		v.addItem( (void *) f);
-	else
-		delete f;
-
-	f = new _fmtPair("tabstops",				NULL,pBlockAP,pSectionAP,m_pDoc,bExpandStyles);
-	if(f->m_val != NULL)
-		v.addItem( (void *) f);
-	else
-		delete f;
-
-	f = new _fmtPair("default-tab-interval",	NULL,pBlockAP,pSectionAP,m_pDoc,bExpandStyles);
-	if(f->m_val != NULL)
-		v.addItem( (void *) f);
-	else
-		delete f;
-
-	f = new _fmtPair("keep-together",			NULL,pBlockAP,pSectionAP,m_pDoc,bExpandStyles);
-	if(f->m_val != NULL)
-		v.addItem( (void *) f);
-	else
-		delete f;
-
-	f = new _fmtPair("keep-with-next",			NULL,pBlockAP,pSectionAP,m_pDoc,bExpandStyles);
-	if(f->m_val != NULL)
-		v.addItem( (void *) f);
-	else
-		delete f;
-
-	f = new _fmtPair("orphans", 			NULL,pBlockAP,pSectionAP,m_pDoc,bExpandStyles);
-	if(f->m_val != NULL)
-		v.addItem( (void *) f);
-	else
-		delete f;
-
-	f = new _fmtPair("widows",					NULL,pBlockAP,pSectionAP,m_pDoc,bExpandStyles);
-	if(f->m_val != NULL)
-		v.addItem( (void *) f);
-	else
-		delete f;
-
-	f = new _fmtPair("dom-dir", 	NULL,pBlockAP,pSectionAP,m_pDoc,bExpandStyles);
-	if(f->m_val != NULL)
-		v.addItem( (void *) f);
-	else
-		delete f;
+	for(UT_uint32 n = 0; n < iPropsCount; n++)
+	{
+		if((PP_getNthPropertyLevel(n) & PP_LEVEL_BLOCK))
+		{
+			f = new _fmtPair(PP_getNthPropertyName(n),NULL,pBlockAP,pSectionAP,m_pDoc,bExpandStyles);
+			if(f->m_val != NULL)
+				v.addItem((void *) f);
+			else
+				delete f;
+		}
+	}
 
 	// 2. prune 'em as they vary across selection
 	if (!isSelectionEmpty())

@@ -89,6 +89,7 @@ protected:
 	void _computeCheckSum(void);
  private:
 	void _clearEmptyProperties();
+	void _clearEmptyAttributes();
 
 
 	UT_StringPtrMap * m_pAttributes;
