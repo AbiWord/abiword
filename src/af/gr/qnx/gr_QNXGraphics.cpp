@@ -341,10 +341,10 @@ pnt.y = pos->y + render->offset.y;
          PgDrawPhImagemx(&pnt, &tsImage, 0x00);
 				 PgFlush();
       }
-      else
-/*			{
+      else if((render->bpl * render->size.y) > 16000)
+			{
  			 PhImage_t tsImage;
-		   PgColor_t palette[2] = {Pg_TRANSPARENT,qGR->getCurrentGC()->text.com.primary };
+		   PgColor_t palette[2] = {qGR->getCurrentGC()->fill.com.primary,qGR->getCurrentGC()->text.com.primary };
 
 		   memset(&tsImage, 0x00, sizeof(PhImage_t));
 		   tsImage.size.w = render->size.x;
@@ -354,11 +354,15 @@ pnt.y = pos->y + render->offset.y;
 		   tsImage.palette = palette;
 		   tsImage.colors = 2;
 			 tsImage.type = Pg_IMAGE_GRADIENT_BYTE;
- 
+			
+			 PhMakeTransparent(&tsImage,qGR->getCurrentGC()->fill.com.primary); 
        PgDrawPhImagemx(&pnt, &tsImage, 0x00);
 			 PgFlush();
-			}*/
-      {  PgMap_t alpha;
+			 xxx_UT_DEBUGMSG(("renderText: Using Gradient method, %d *%d = %d\n",render->bpl,render->size.y,render->size.y*render->bpl));
+			}
+      else { //We're not able to feed the Alphamap way too much data, as then we risk blowing the draw buffer, this way looks louds better though, So we only use above way when we are dealing with a arbitary 'too much data', There is no 'good' way determining what 'too much' is, current value come from trial and error.
+ 
+				 PgMap_t alpha; 
          PgColor_t old;
          PhRect_t rect;
 
@@ -367,17 +371,18 @@ pnt.y = pos->y + render->offset.y;
          rect.lr.x = (rect.ul.x + render->size.x) - 1;
          rect.lr.y = (rect.ul.y + render->size.y) - 1;
 
-         PgAlphaOn();
          alpha.map = (char *)render->bmptr;
          alpha.dim.w = render->size.x;
          alpha.dim.h = render->size.y;
          PgSetAlphaBlend(&alpha, 0x00);
          old = PgSetFillColor(qGR->getCurrentGC()->text.com.primary);
+				 PgFlush();
+				 PgAlphaOn();
          PgDrawRect(&rect, Pg_DRAW_FILL);
-         PgSetFillColor(old);
-         PgSetAlphaBlend(NULL, 0x00);
          PgAlphaOff();
 				 PgFlush();
+         PgSetFillColor(old);
+         PgSetAlphaBlend(NULL, 0x00);
       }
    }
    return;
@@ -407,7 +412,6 @@ void GR_QNXGraphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
 	DRAW_START
 
 	PgSetTextColor(m_currentColor);	
-	PgSetFillColor(Pg_TRANSPARENT);
 	long scale=0; //16.16
 	scale = DOUBLE_TO_FIXED((double)m_pFont->getSize() * (double)(getZoomPercentage()/100.0));
 	PgFlush();
