@@ -52,6 +52,7 @@ CPPSRCS=		ie_impexp_Register.cpp			\
 			ie_imp_DocBook.cpp                      \
 			ie_imp_MsWord_97.cpp			\
 			ie_imp_PalmDoc.cpp			\
+			ie_imp_KWord_1.cpp			\
 			ie_imp_RTF.cpp				\
 			ie_imp_Text.cpp				\
 			ie_imp_WML.cpp				\

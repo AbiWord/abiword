@@ -362,9 +362,9 @@ IE_Imp_MsWord_97::~IE_Imp_MsWord_97()
 }
 
 IE_Imp_MsWord_97::IE_Imp_MsWord_97(PD_Document * pDocument)
-	: IE_Imp (pDocument), m_iImageCount (0), m_nSections(0), m_bSetPageSize(false)
+  : IE_Imp (pDocument), m_iImageCount (0), m_nSections(0), m_bSetPageSize(false), m_bIsLower(false)
 #ifdef BIDI_ENABLED
-	,m_iPrevDir(-1),m_iCurrDir(-1)
+	,m_pLastCharFmt(""), m_iPrevDir(-1), m_iCurrDir(-1)
 #endif	
 {
 }
@@ -520,7 +520,10 @@ void IE_Imp_MsWord_97::_appendChar (UT_UCSChar ch)
 
 	}
 #endif
-    m_pTextRun += ch;
+
+	if ( m_bIsLower )
+	  ch = UT_UCS_tolower ( ch );
+	m_pTextRun += ch;
 }
 
 /****************************************************************************/
@@ -1182,6 +1185,10 @@ int IE_Imp_MsWord_97::_beginChar (wvParseStruct *ps, UT_uint32 tag,
 	//
 	// TODO: set char tolower if fSmallCaps && fLowerCase, possibly some list stuff
 	//
+	if ( achp->fSmallCaps && achp->fLowerCase )
+	  m_bIsLower = true;
+	else
+	  m_bIsLower = false;
 
 	// flush any data in our character runs
 	this->_flush ();

@@ -57,6 +57,7 @@
 #include "ie_imp_Applix.h"
 #include "ie_imp_ISCII.h"
 #include "ie_imp_WordPerfect_6.h"
+#include "ie_imp_KWord_1.h"
 
 
 /*!
@@ -72,6 +73,11 @@ void IE_ImpExp_RegisterXP ()
 	IE_Imp::registerImporter(new IE_Imp_XSL_FO_Sniffer ());
 	IE_Imp::registerImporter(new IE_Imp_XHTML_Sniffer ());
 	IE_Imp::registerImporter(new IE_Imp_ISCII_Sniffer ());
+
+#ifdef DEBUG
+	IE_Imp::registerImporter(new IE_Imp_KWord_1_Sniffer ());
+#endif
+
 	IE_Imp::registerImporter(new IE_Imp_PalmDoc_Sniffer ());
 	IE_Imp::registerImporter(new IE_Imp_Psion_TextEd_Sniffer ());
 	IE_Imp::registerImporter(new IE_Imp_Psion_Word_Sniffer ());
