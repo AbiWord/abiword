@@ -24,7 +24,11 @@
 #include "ut_assert.h"
 #include "xap_ViewListener.h"
 #include "ap_FrameData.h"
+#ifdef HAVE_GNOME
+#include "xap_UnixGnomeFrame.h"
+#else
 #include "xap_UnixFrame.h"
+#endif
 #include "ev_UnixToolbar.h"
 #include "xav_View.h"
 #include "xad_Document.h"
@@ -317,13 +321,13 @@ void AP_UnixFrame::setYScrollRange(void)
 
 
 AP_UnixFrame::AP_UnixFrame(XAP_UnixApp * app)
-	: XAP_UnixFrame(app)
+	: XAP_UNIXBASEFRAME(app)
 {
 	// TODO
 }
 
 AP_UnixFrame::AP_UnixFrame(AP_UnixFrame * f)
-	: XAP_UnixFrame(static_cast<XAP_UnixFrame *>(f))
+	: XAP_UNIXBASEFRAME(static_cast<XAP_UNIXBASEFRAME *>(f))
 {
 	// TODO
 }
@@ -338,7 +342,7 @@ UT_Bool AP_UnixFrame::initialize(void)
 	if (!initFrameData())
 		return UT_FALSE;
 
-	if (!XAP_UnixFrame::initialize(AP_PREF_KEY_KeyBindings,AP_PREF_DEFAULT_KeyBindings,
+	if (!XAP_UNIXBASEFRAME::initialize(AP_PREF_KEY_KeyBindings,AP_PREF_DEFAULT_KeyBindings,
 								   AP_PREF_KEY_MenuLayout, AP_PREF_DEFAULT_MenuLayout,
 								   AP_PREF_KEY_MenuLabelSet, AP_PREF_DEFAULT_MenuLabelSet,
 								   AP_PREF_KEY_ToolbarLayouts, AP_PREF_DEFAULT_ToolbarLayouts,

@@ -55,7 +55,7 @@ XAP_UnixFont * PSFont::getUnixFont(void)
 	return m_hFont;
 }
 
-FontInfo * PSFont::getMetricsData(void)
+ABIFontInfo * PSFont::getMetricsData(void)
 {
 	UT_ASSERT(m_hFont);
 	return m_hFont->getMetricsData();

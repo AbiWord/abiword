@@ -73,7 +73,7 @@ public:
 				   const char * szMenuLabelSetName);
 	virtual ~EV_UnixMenuBar(void);
 
-	UT_Bool				synthesizeMenuBar(void);
+	virtual UT_Bool     synthesizeMenuBar(void);
 	virtual UT_Bool		refreshMenu(AV_View * pView);
 
 protected:

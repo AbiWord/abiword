@@ -34,6 +34,11 @@ PLATFORM_OBJS=	$(OBJDIR)/ev_$(ABI_FE)Keyboard.$(OBJ_SUFFIX)	\
 		$(OBJDIR)/ev_$(ABI_FE)Toolbar.$(OBJ_SUFFIX)	\
 		$(OBJDIR)/ev_$(ABI_FE)Toolbar_ViewListener.$(OBJ_SUFFIX)
 
+ifdef ABI_OPT_GNOME
+PLATFORM_OBJS +=	$(OBJDIR)/ev_$(ABI_FE)$(ABI_GNOME_PREFIX)Menu.$(OBJ_SUFFIX)	\
+			$(OBJDIR)/ev_$(ABI_FE)$(ABI_GNOME_PREFIX)Toolbar.$(OBJ_SUFFIX)
+endif
+
 
 OBJS=		$(PLATFORM_OBJS)							\
 		$(OBJDIR)/ev_EditBinding.$(OBJ_SUFFIX)		\

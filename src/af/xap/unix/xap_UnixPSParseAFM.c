@@ -612,7 +612,7 @@ static int parseCharWidths(fp, cwi)
  
 static int parseCharMetrics(fp, fi)
   FILE *fp;
-  register FontInfo *fi;
+  register ABIFontInfo *fi;
 {  
     BOOL cont = TRUE, firstTime = TRUE;
     int error = ok, count = 0;
@@ -723,7 +723,7 @@ static int parseCharMetrics(fp, fi)
  
 static int parseTrackKernData(fp, fi)
   FILE *fp;
-  register FontInfo *fi;
+  register ABIFontInfo *fi;
 {  
     BOOL cont = TRUE, save = (fi->tkd != NULL);
     int pos = 0, error = ok, tcount = 0;
@@ -827,7 +827,7 @@ static int parseTrackKernData(fp, fi)
  
 static int parsePairKernData(fp, fi)
   FILE *fp;
-  register FontInfo *fi;
+  register ABIFontInfo *fi;
 {  
     BOOL cont = TRUE, save = (fi->pkd != NULL);
     int pos = 0, error = ok, pcount = 0;
@@ -953,7 +953,7 @@ static int parsePairKernData(fp, fi)
  
 static int parseCompCharData(fp, fi)
   FILE *fp;
-  register FontInfo *fi;
+  register ABIFontInfo *fi;
 {  
     BOOL cont = TRUE, firstTime = TRUE, save = (fi->ccd != NULL);
     int pos = 0, j = 0, error = ok, ccount = 0, pcount = 0;
@@ -1086,7 +1086,7 @@ static int parseCompCharData(fp, fi)
  *  pointer upon return of this function is undefined.
  */
 
-extern int parseFile (FILE *fp, FontInfo **fi, FLAGS flags)
+extern int parseFile (FILE *fp, ABIFontInfo **fi, FLAGS flags)
 {
     
     int code = ok; 	/* return code from each of the parsing routines */
@@ -1099,7 +1099,7 @@ extern int parseFile (FILE *fp, FontInfo **fi, FLAGS flags)
     ident = (char *) calloc(MAX_NAME, sizeof(char)); 
     if (ident == NULL) {error = storageProblem; return(error);}      
   
-    (*fi) = (FontInfo *) calloc(1, sizeof(FontInfo));
+    (*fi) = (ABIFontInfo *) calloc(1, sizeof(ABIFontInfo));
     if ((*fi) == NULL) {error = storageProblem; return(error);}      
   
     if (flags & P_G) 

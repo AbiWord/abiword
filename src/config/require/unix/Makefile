@@ -22,7 +22,7 @@ ABI_ROOT:=$(shell pwd)/../../../..
 
 include $(ABI_ROOT)/src/config/abi_defs.mk
 
-REQUIRE=		_GCC_ _GLIB_ _GTK_ _ZLIB_ _LIBPNG_ _LIBWV_ _UNIXFONTS_ _ABIDISTFILES_
+REQUIRE=		_GCC_ _GLIB_ _GTK_ _ZLIB_ _LIBPNG_ _LIBWV_ _UNIXFONTS_ _ABIDISTFILES_ _GNOME_
 REQUIRECLEAN=		clean_ZLIB_ clean_LIBPNG_ clean_LIBWV_
 REQUIREREALCLEAN=	$(REQUIRECLEAN) 
 
@@ -57,6 +57,17 @@ _GLIB_:
 _GTK_:
 	@$(GTK_CONFIG) --version 2>&1 1>/dev/null		\
 	|| (echo gtk not found; exit 1)
+
+# For right now GNOME is, by default, disabled, but can be forced on 
+# through ABI_GNOME_OPT=1
+
+ifdef ABI_OPT_GNOME
+_GNOME_:
+	@$(GNOME_CONFIG) --version 2>&1 1>/dev/null		\
+	|| (echo gnome not found; exit 1)
+else
+endif
+
 
 # zlib can only be used if located in a system directory.
 

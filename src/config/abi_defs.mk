@@ -106,8 +106,8 @@ endif
 ##             in abi_defs_*.mk -- one for each application in AbiSuite.
 
 ABI_XAP_INCS=	/config					\
-		/af/xap/xp		/af/xap/$(ABI_NATIVE)	\
-		/af/ev/xp		/af/ev/$(ABI_NATIVE)	\
+		/af/xap/xp		/af/xap/$(ABI_NATIVE)	/af/xap/$(ABI_NATIVE)/$(ABI_GNOME_DIR)	\
+		/af/ev/xp		/af/ev/$(ABI_NATIVE)	/af/ev/$(ABI_NATIVE)/$(ABI_GNOME_DIR)	\
 		/af/util/xp		/af/util/$(ABI_NATIVE)	\
 		/af/gr/xp		/af/gr/$(ABI_NATIVE)
 
@@ -143,6 +143,7 @@ ABI_DBGDEFS=		-DNDEBUG
 ABI_OPTIONS+=Debug:Off
 endif
 
+ABI_GNOME_DIR=.
 ##################################################################
 ##################################################################
 
@@ -324,8 +325,12 @@ endif
 ##################################################################
 ## Generic Unix includes for Gtk, as it moves about installation paths.
 ## We should change this when get non-gtk versions on unix....
-
-ifeq ($(ABI_NATIVE),unix)
+## Changed: I've added the ABI_OPT_GNOME variable, anybody has any
+## inconvenient with the addition?
+ifdef ABI_OPT_GNOME
+CFLAGS 		+=	`$(GNOME_CONFIG) --cflags gnorba gnomeui` -DHAVE_GNOME
+EXTRA_LIBS	+=	`$(GNOME_CONFIG) --libs gnorba gnomeui`
+else
 CFLAGS 		+=	`$(GTK_CONFIG) --cflags`
 EXTRA_LIBS	+=	`$(GTK_CONFIG) --libs`
 endif

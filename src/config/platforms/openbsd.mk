@@ -78,6 +78,7 @@ PORT_FLAGS		+=
 
 GLIB_CONFIG		= glib-config
 GTK_CONFIG		= gtk-config
+GNOME_CONFIG    	= gnome-config
 
 # Shared library flags
 MKSHLIB			= $(LD) $(DSO_LDOPTS) -soname $(@:$(OBJDIR)/%.so=%.so)
@@ -86,6 +87,15 @@ MKSHLIB			= $(LD) $(DSO_LDOPTS) -soname $(@:$(OBJDIR)/%.so=%.so)
 # both of these options.
 UNIX_CAN_BUILD_DYNAMIC=1
 UNIX_CAN_BUILD_STATIC=1
+
+##################################################################
+## Here you can choice if you want to use the gnome stuff.
+## Set ABI_OPT_GNOME to 1 (when invoking 'make') to override
+## the setting of 0 here.  Example:  "make ABI_OPT_GNOME=1 install"
+
+ABI_OPT_GNOME		= 0
+ABI_GNOME_DIR		= gnome
+ABI_GNOME_PREFIX	= Gnome
 
 # Compiler options for static and dynamic linkage
 DL_LIBS			= 

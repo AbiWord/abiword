@@ -313,7 +313,7 @@ typedef struct
     PairKernData *pkd;		/* ptr to pair kerning array */
     int numOfComps;		/* number to entries in comp char array */
     CompCharData *ccd;		/* ptr to comp char array */
-} FontInfo;
+} ABIFontInfo;
 
 
 
@@ -337,7 +337,7 @@ typedef struct
 #ifdef __cplusplus
 extern "C" {
 #endif
-  extern int parseFile (FILE *fp, FontInfo **fi, FLAGS flags); 
+  extern int parseFile (FILE *fp, ABIFontInfo **fi, FLAGS flags); 
 #ifdef __cplusplus
 };
 #endif

@@ -66,7 +66,7 @@ class XAP_UnixFont
 	void					setXLFD(const char * xlfd);
 	const char * 			getXLFD(void);
 
-	FontInfo * 				getMetricsData(void);
+	ABIFontInfo *			getMetricsData(void);
 	
 	UT_Bool					openPFA(void);
 	char					getPFAChar(void);
@@ -92,7 +92,7 @@ protected:
 	char * 					m_name;
 	XAP_UnixFont::style		m_style;
 	char * 					m_xlfd;
-	FontInfo *				m_metricsData;
+	ABIFontInfo *			m_metricsData;
 
 	char * 					m_fontfile;
 	char *					m_metricfile;

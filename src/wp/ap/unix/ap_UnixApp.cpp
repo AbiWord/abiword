@@ -68,7 +68,7 @@
 /*****************************************************************/
 
 AP_UnixApp::AP_UnixApp(XAP_Args * pArgs, const char * szAppName)
-	: XAP_UnixApp(pArgs,szAppName)
+	: XAP_UNIXBASEAPP(pArgs,szAppName)
 {
 	m_pStringSet = NULL;
 	m_pClipboard = NULL;
@@ -139,7 +139,7 @@ UT_Bool AP_UnixApp::initialize(void)
 	m_pToolbarActionSet = AP_CreateToolbarActionSet();
 	UT_ASSERT(m_pToolbarActionSet);
 
-	if (! XAP_UnixApp::initialize())
+	if (! XAP_UNIXBASEAPP::initialize())
 		return UT_FALSE;
 	
 	//////////////////////////////////////////////////////////////////
@@ -686,7 +686,7 @@ static gint s_drawingarea_expose(GtkWidget * /* widget */,
 
 // szFile is optional; a NULL pointer will use the default splash screen.
 // The delay is how long the splash should stay on screen in milliseconds.
-static GR_Image * _showSplash(UT_uint32 delay)
+GR_Image * AP_UnixApp::_showSplash(UT_uint32 delay)
 {
 	wSplash = NULL;
 	pSplashImage = NULL;
@@ -786,7 +786,7 @@ int AP_UnixApp::main(const char * szAppName, int argc, char ** argv)
 				break;
 			}
 
-	// HACK : these calls to gtk reside properly in XAP_UnixApp::initialize(),
+	// HACK : these calls to gtk reside properly in XAP_UNIXBASEAPP::initialize(),
 	// HACK : but need to be here to throw the splash screen as
 	// HACK : soon as possible.
 	gtk_set_locale();
@@ -883,17 +883,17 @@ UT_Bool AP_UnixApp::parseCommandLine(void)
 				XParseGeometry(m_pArgs->m_argv[k], &x, &y, &width, &height);
 
 				// use both by default
-				XAP_UnixApp::windowGeometryFlags f = (XAP_UnixApp::windowGeometryFlags)
-					(XAP_UnixApp::GEOMETRY_FLAG_SIZE
-					 | XAP_UnixApp::GEOMETRY_FLAG_POS);
+				XAP_UNIXBASEAPP::windowGeometryFlags f = (XAP_UNIXBASEAPP::windowGeometryFlags)
+					(XAP_UNIXBASEAPP::GEOMETRY_FLAG_SIZE
+					 | XAP_UNIXBASEAPP::GEOMETRY_FLAG_POS);
 
 				// if pos (x and y) weren't provided just use size
 				if (x == dummy || y == dummy)
-					f = XAP_UnixApp::GEOMETRY_FLAG_SIZE;
+					f = XAP_UNIXBASEAPP::GEOMETRY_FLAG_SIZE;
 
 				// if size (width and height) weren't provided just use pos
 				if (width == 0 || height == 0)
-					f = XAP_UnixApp::GEOMETRY_FLAG_POS;
+					f = XAP_UNIXBASEAPP::GEOMETRY_FLAG_POS;
 			
 				// set the xap-level geometry for future frame use
 				setGeometry(x, y, width, height, f);

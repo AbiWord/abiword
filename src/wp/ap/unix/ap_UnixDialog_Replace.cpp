@@ -49,6 +49,8 @@
 XAP_Dialog * AP_UnixDialog_Replace::static_constructor(XAP_DialogFactory * pFactory,
 													   XAP_Dialog_Id id)
 {
+	UT_DEBUGMSG(("AP_UnixDialog_Replace::static_constructor(...) I've been called\n"));
+
 	AP_UnixDialog_Replace * p = new AP_UnixDialog_Replace(pFactory,id);
 	return p;
 }

@@ -22,6 +22,10 @@ ABI_ROOT:=$(shell pwd)/../../../..
 
 include $(ABI_ROOT)/src/config/abi_defs_wp.mk
 
+ifdef ABI_OPT_GNOME
+DIRS=		$(ABI_GNOME_DIR)
+endif
+
 ABI_WP_INCS+=	/wp/ap/xp	/wp/ap/$(ABI_NATIVE)
 
 CPPSRCS=		ap_$(ABI_FE)App.cpp			\

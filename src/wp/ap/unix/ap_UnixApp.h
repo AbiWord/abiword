@@ -28,14 +28,22 @@
 
 #include "ut_bytebuf.h"
 #include "xap_Args.h"
-#include "xap_UnixApp.h"
 #include "ap_UnixPrefs.h"
 #include "ap_UnixClipboard.h"
 #include "pt_Types.h"
+
+#ifdef HAVE_GNOME
+#include "xap_UnixGnomeApp.h"
+#define XAP_UNIXBASEAPP XAP_UnixGnomeApp
+#else
+#include "xap_UnixApp.h"
+#define XAP_UNIXBASEAPP XAP_UnixApp
+#endif
+
 class XAP_StringSet;
 class AV_View;
 
-class AP_UnixApp : public XAP_UnixApp
+class AP_UnixApp : public XAP_UNIXBASEAPP
 {
 public:
 	AP_UnixApp(XAP_Args * pArgs, const char * szAppName);
@@ -67,6 +75,7 @@ public:
 protected:
 
 	void							_printUsage(void);
+	static GR_Image *               _showSplash(UT_uint32);
 
 	XAP_StringSet *			m_pStringSet;
 	AP_UnixClipboard *		m_pClipboard;

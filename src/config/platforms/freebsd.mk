@@ -79,6 +79,9 @@ PORT_FLAGS		+=
 
 GLIB_CONFIG		= glib12-config
 GTK_CONFIG		= gtk12-config
+# QUESTION : Does FreeBSD test for "gnome1-config" (or something similar)
+# QUESTION : instead of "gnome-config" like it does with gtk?
+GNOME_CONFIG    	= gnome-config
 
 # Shared library flags
 MKSHLIB			= $(LD) $(DSO_LDOPTS) -soname $(@:$(OBJDIR)/%.so=%.so)
@@ -110,6 +113,15 @@ STATIC_FLAGS		= -static
 
 ABI_NATIVE	= unix
 ABI_FE		= Unix
+
+##################################################################
+## Here you can choice if you want to use the gnome stuff.
+## Set ABI_OPT_GNOME to 1 (when invoking 'make') to override
+## the setting of 0 here.  Example:  "make ABI_OPT_GNOME=1 install"
+
+ABI_OPT_GNOME		= 0
+ABI_GNOME_DIR		= gnome
+ABI_GNOME_PREFIX	= Gnome
 
 ##################################################################
 ## ABIPKGDIR defines the directory containing the Makefile to use to

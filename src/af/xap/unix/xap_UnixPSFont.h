@@ -40,7 +40,7 @@ public:
 	void				setIndex(UT_uint32 ndx) { m_index = ndx; }
 	UT_uint32			getIndex(void) { return m_index; };	
 	
-	FontInfo * 			getMetricsData(void);
+	ABIFontInfo *		getMetricsData(void);
 	// perhaps request raw data from PSFont?
  
 protected:

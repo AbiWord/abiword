@@ -22,12 +22,19 @@
 
 class GR_Graphics;
 
+#ifdef HAVE_GNOME
+#include "xap_UnixGnomeFrame.h"
+#define XAP_UNIXBASEFRAME XAP_UnixGnomeFrame
+#else
 #include "xap_UnixFrame.h"
+#define XAP_UNIXBASEFRAME XAP_UnixFrame
+#endif
+
 #include "ie_types.h"
 
 /*****************************************************************/
 
-class AP_UnixFrame : public XAP_UnixFrame
+class AP_UnixFrame : public XAP_UNIXBASEFRAME
 {
 public:
 	AP_UnixFrame(XAP_UnixApp * app);

@@ -45,7 +45,7 @@ public:
 protected:
 
 	// private construction functions
-	GtkWidget * _constructWindow(void);
+	virtual GtkWidget * _constructWindow(void);
 	void		_populateWindowData(void);
 	void 		_storeWindowData(void);
 

@@ -236,7 +236,7 @@ const char * XAP_UnixFont::getXLFD(void)
 	return m_xlfd;
 }
 
-FontInfo * XAP_UnixFont::getMetricsData(void)
+ABIFontInfo * XAP_UnixFont::getMetricsData(void)
 {
 	if (m_metricsData)
 		return m_metricsData;
