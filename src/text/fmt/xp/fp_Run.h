@@ -86,7 +86,8 @@ enum FP_RUN_TYPE
 	FPRUN_BOOKMARK					= 12,
 	FPRUN_HYPERLINK					= 13,
 	FPRUN_DIRECTIONMARKER           = 14,
-	FPRUN__LAST__					= 15
+	FPRUN_DUMMY                     = 15,
+	FPRUN__LAST__					= 16
 };
 
 // specifies how setX should handle screen clearing
@@ -113,6 +114,7 @@ enum FPRUN_CLEAR_SCREEN
 		fp_FieldEndRun
 		fp_BookmarkRun
 		fp_HyperlinkRun
+		fp_DummyRun
 
 	As far as the formatter's concerned, each subclass behaves somewhat
 	differently, but they can all be treated like rectangular blocks to
@@ -951,6 +953,7 @@ public:
 	virtual UT_uint32		needsFrequentUpdates(){return FIELD_UPDATE_DATE;};
 };
 
+
 class ABI_EXPORT fp_FieldFileNameRun : public fp_FieldRun
 {
 public:
@@ -1420,6 +1423,32 @@ private:
 		TEXT_POSITION_SUBSCRIPT
 	};
 	UT_Byte					m_fPosition;
+};
+
+
+class ABI_EXPORT fp_DummyRun : public fp_Run
+{
+public:
+	fp_DummyRun(fl_BlockLayout* pBL, UT_uint32 iOffsetFirst);
+
+	virtual void			mapXYToPosition(UT_sint32 xPos, UT_sint32 yPos, PT_DocPosition& pos, bool& bBOL, bool& bEOL);
+	virtual void 			findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y, UT_sint32& x2, UT_sint32& y2, UT_sint32& height, bool& bDirection);
+	virtual bool			canBreakAfter(void) const;
+	virtual bool			canBreakBefore(void) const;
+	virtual const PP_AttrProp* getAP(void) const;
+	virtual bool			isSuperscript(void) const ;
+	virtual bool			isSubscript(void)  const;
+	virtual bool 			hasLayoutProperties(void) const {return false;}
+
+protected:
+	virtual void			_lookupProperties(const PP_AttrProp * pSpanAP,
+											  const PP_AttrProp * pBlockAP,
+											  const PP_AttrProp * pSectionAP,
+											  GR_Graphics * pG = NULL);
+
+	virtual void			_draw(dg_DrawArgs*);
+	virtual void			_clearScreen(bool bFullLineHeightRect);
+	virtual bool			_letPointPass(void) const;
 };
 
 #endif /* FP_RUN_H */

@@ -185,3 +185,113 @@ const PP_AttrProp* fp_FmtMarkRun::getAP(void) const
 
 	return pSpanAP;
 }
+
+////////////////////////////////////////////////////////////////////////
+
+/*!
+ * This is just placeholder to make a run dissapear while preserving the offsets
+ * for subsequent runs.
+ * Used by TOCs to make ListLabel and TAB dissapear from TOC's
+ */
+fp_DummyRun::fp_DummyRun(fl_BlockLayout* pBL,
+							 UT_uint32 iOffsetFirst)
+	: fp_Run(pBL,iOffsetFirst, 0, FPRUN_DUMMY)
+{
+	lookupProperties();
+}
+
+void fp_DummyRun::_lookupProperties(const PP_AttrProp * pSpanAP,
+									  const PP_AttrProp * pBlockAP,
+									  const PP_AttrProp * pSectionAP,
+									  GR_Graphics * pG)
+{
+	if(pG == NULL)
+	{
+		pG = getGraphics();
+	}
+	// look for fonts in this DocLayout's font cache
+	FL_DocLayout * pLayout = getBlock()->getDocLayout();
+	GR_Font * pFont = const_cast<GR_Font *>(pLayout->findFont(pSpanAP,
+									   pBlockAP,
+									   pSectionAP));
+
+	_setAscent(pG->getFontAscent(pFont));
+	_setDescent(pG->getFontDescent(pFont));
+	_setHeight(pG->getFontHeight(pFont));
+	xxx_UT_DEBUGMSG(("fmtmark lookup properties: Font Ascent %d  Font Descent %d Font %x Span %x \n",getAscent(),getDescent(),pFont,pSpanAP));
+	PD_Document * pDoc = getBlock()->getDocument();
+	_setWidth(0);
+	_setLength(1);
+	_setDirection(FRIBIDI_TYPE_WS);
+
+}
+
+bool fp_DummyRun::isSuperscript(void) const
+{
+	return false;
+}
+
+
+bool fp_DummyRun::isSubscript(void) const
+{
+	return false;
+}
+
+bool fp_DummyRun::canBreakAfter(void) const
+{
+	return true;
+}
+
+bool fp_DummyRun::canBreakBefore(void) const
+{
+	return true;
+}
+
+bool fp_DummyRun::_letPointPass(void) const
+{
+	return true;
+}
+
+void fp_DummyRun::mapXYToPosition(UT_sint32 /* x */, UT_sint32 /*y*/, PT_DocPosition& pos, bool& bBOL, bool& bEOL)
+{
+	pos = getBlock()->getPosition() + getBlockOffset();
+	bBOL = false;
+	bEOL = false;
+}
+
+void fp_DummyRun::findPointCoords(UT_uint32 /*iOffset*/, UT_sint32& x, UT_sint32& y,  UT_sint32& x2, UT_sint32& y2, UT_sint32& height, bool& bDirection)
+{
+	UT_sint32 xoff;
+	UT_sint32 yoff;
+
+	UT_ASSERT(getLine());
+
+	getLine()->getOffsets(this, xoff, yoff);
+	x = xoff;
+	y = yoff;
+	height = getHeight();
+	x2 = x;
+	y2 = y;
+	bDirection = (getVisDirection() != 0);
+	xxx_UT_DEBUGMSG(("findpoint coords fmtmarkRun height %d \n",height));
+}
+
+void fp_DummyRun::_clearScreen(bool /* bFullLineHeightRect */)
+{
+}
+
+void fp_DummyRun::_draw(dg_DrawArgs* /*pDA */)
+{
+}
+
+
+const PP_AttrProp* fp_DummyRun::getAP(void) const
+{
+	const PP_AttrProp * pSpanAP = NULL;
+
+	getBlock()->getSpanAttrProp(getBlockOffset(),true,&pSpanAP);
+
+	return pSpanAP;
+}
+
+/////////////////////////////////////////////////////////////////////////

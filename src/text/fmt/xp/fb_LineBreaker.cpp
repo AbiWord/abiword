@@ -246,6 +246,7 @@ fb_LineBreaker::breakParagraph(fl_BlockLayout* pBlock, fp_Line * pLineToStartAt)
 					break;
 				}
 				case FPRUN_FMTMARK:
+				case FPRUN_DUMMY:
 					break;
 
 				case FPRUN_FIELD:
