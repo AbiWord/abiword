@@ -71,7 +71,7 @@ GR_Font::~GR_Font()
 	Return the char width from the cache.
 	Compute the width if needed, and cache it.
  */
-UT_uint32 GR_Font::getCharWidthFromCache (UT_UCSChar c)
+UT_uint32 GR_Font::getCharWidthFromCache (UT_UCSChar c) const
 {
 	UT_sint32	iWidth = GR_CW_UNKNOWN;
 

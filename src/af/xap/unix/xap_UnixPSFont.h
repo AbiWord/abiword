@@ -42,7 +42,8 @@ public:
 	UT_uint32			getIndex(void) { return m_index; };	
 	
 	UT_uint16			getCharWidth(UT_UCSChar c);
- 
+	UT_sint32           measureUnremappedCharForCache(UT_UCSChar cChar) const;
+
 protected:
 	XAP_UnixFont * 		m_hFont;
 	UT_uint32			m_pointSize;

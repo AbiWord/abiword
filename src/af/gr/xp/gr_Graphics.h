@@ -78,12 +78,12 @@ class ABI_EXPORT GR_Font
 		Measure the unremapped char to be put into the cache.
 		That means measuring it for a font size of 120
 	 */
-	virtual UT_sint32 measureUnremappedCharForCache(UT_UCSChar cChar) = 0;
+	virtual UT_sint32 measureUnremappedCharForCache(UT_UCSChar cChar) const = 0;
 	const UT_String & hashKey(void) const
 	{
 		return m_hashKey;
 	};
-	UT_uint32 getCharWidthFromCache (UT_UCSChar c);
+	UT_uint32 getCharWidthFromCache (UT_UCSChar c) const;
 	virtual GR_CharWidths* newFontWidths(void) const; /*reimplement if you want to instanciate something else */
 
   protected:
@@ -93,7 +93,7 @@ class ABI_EXPORT GR_Font
 
 	static UT_uint32 s_iAllocCount;
 	UT_uint32        m_iAllocNo;
-	GR_CharWidths*	m_pCharWidths;
+	mutable GR_CharWidths*	m_pCharWidths;
 };
 #else
 #define GR_Font PangoFont

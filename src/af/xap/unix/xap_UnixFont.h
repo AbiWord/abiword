@@ -196,7 +196,8 @@ class XAP_UnixFontHandle : public GR_Font
 	
 	XAP_UnixFont*				getUnixFont() const { return m_font; }
 	virtual const char*			getFamily() const { return getUnixFont()->getName(); }
-
+ 
+	virtual UT_sint32 measureUnremappedCharForCache(UT_UCSChar cChar) const;
 // private:
 	XAP_UnixFont*				m_font;
 	UT_uint32					m_size;

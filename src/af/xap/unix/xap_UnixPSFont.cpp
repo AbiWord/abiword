@@ -64,3 +64,9 @@ UT_uint16 PSFont::getCharWidth(UT_UCSChar c)
 	UT_ASSERT(m_hFont);
 	return m_hFont->getCharWidth(c);
 }
+
+UT_sint32 PSFont::measureUnremappedCharForCache(UT_UCSChar cChar) const
+{
+	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+	return 0;
+}

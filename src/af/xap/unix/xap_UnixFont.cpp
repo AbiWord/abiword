@@ -78,6 +78,7 @@ XAP_UnixFontHandle::XAP_UnixFontHandle():m_font(NULL), m_size(0)
 XAP_UnixFontHandle::XAP_UnixFontHandle(XAP_UnixFont * font, UT_uint32 size):m_font(font),
 																			m_size (size)
 {
+	m_hashKey = m_font->getName();
 }
 
 XftFont *XAP_UnixFontHandle::getLayoutXftFont(void)
@@ -88,6 +89,26 @@ XftFont *XAP_UnixFontHandle::getLayoutXftFont(void)
 XftFont *XAP_UnixFontHandle::getDeviceXftFont(UT_uint32 zoomPercentage)
 {
 	return m_font ? m_font->getDeviceXftFont(m_size, zoomPercentage) : NULL;
+}
+
+UT_sint32 XAP_UnixFontHandle::measureUnremappedCharForCache(UT_UCSChar cChar) const
+{
+	UT_sint32 width;
+	XftFaceLocker locker(m_font->getLayoutXftFont(GR_CharWidthsCache::CACHE_FONT_SIZE));
+	FT_Face pFace = locker.getFace();
+
+	FT_UInt glyph_index = FT_Get_Char_Index(pFace, cChar);
+	FT_Error error =
+		FT_Load_Glyph(pFace, glyph_index,
+					FT_LOAD_LINEAR_DESIGN |
+					FT_LOAD_IGNORE_TRANSFORM |
+					FT_LOAD_NO_BITMAP | FT_LOAD_NO_SCALE);
+	if (error) {
+		return 0;
+	}
+
+	width = pFace->glyph->linearHoriAdvance;
+	return width;
 }
 
 /*******************************************************************/
@@ -295,6 +316,7 @@ void XAP_UnixFont::_deleteEncodingTable()
 		  m_iEncodingTableSize = 0;
 	  }
 }
+
 
 static int s_compare(const void *a, const void *b)
 {
