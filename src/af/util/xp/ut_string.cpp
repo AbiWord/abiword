@@ -904,6 +904,10 @@ XML_Char* UT_encodeUTF8char(UT_UCSChar cIn)
 #endif // --jeff
 
 #ifndef HAVE_LIBXML2
+/* these functions needs to be declared as plain C for MrCPP (Apple MPW C) */
+#ifdef __MRC__
+extern "C" {
+#endif
 static void endElement(void *userData, const XML_Char *name)
 {
 }
@@ -914,6 +918,9 @@ static void startElement(void *userData, const XML_Char *name, const XML_Char **
 	//What do we do with this, is this cast safe!?
 	*pout = (XML_Char *)atts[1];
 }
+#ifdef __MRC__
+};
+#endif
 #endif /* HAVE_LIBXML2 */
 
 XML_Char *UT_decodeXMLstring(XML_Char *in)
