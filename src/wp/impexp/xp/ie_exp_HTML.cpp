@@ -1719,7 +1719,7 @@ void s_HTML_Listener::_openTag (PT_AttrPropIndex api, PL_StruxDocHandle sdh)
 				{
 					m_iBlockType = BT_NUMBEREDLIST;
 				}
-#ifdef HTML_NESTED_LISTS
+#ifndef HTML_PSEUDO_LISTS
 			/* Find out how deeply nested this list item is.
 			 */
 			pAP->getAttribute ("level", szLevel);
