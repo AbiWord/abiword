@@ -76,6 +76,8 @@ public:
 	// instance data to be exchanged for a new strux.  in this case,
 	// sfh refers to the strux preceeding the new one.
 
+	virtual ~PL_Listener(){};
+	
 	virtual bool		populate(PL_StruxFmtHandle sfh,
 								 const PX_ChangeRecord * pcr) = 0;
 
