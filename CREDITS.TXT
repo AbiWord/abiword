@@ -29,6 +29,7 @@ Andy Burnett <andy@abisource.com>
 Christopher Caron <ChrisDigo@aol.com>           Help (French)
 Bill Carpenter <bill-abisource@carpenter.org>  	Smart Quotes
 Heath D. Carr <heath@abisource.com>
+Chema Celorio <chema@celorio.com>               Help w/ Gnome-Print
 Allan Clark <shark@blueyonder.co.uk>		StringPool fixes, Find algorithm
 Joaquín Cuenca Abela <cuenca@ie2.u-psud.fr>     GNOME front end, LaTeX exporter
 Philippe Defert <Philippe.Defert@cern.ch>       AIX, HPUX, IRIX64, OSF1
