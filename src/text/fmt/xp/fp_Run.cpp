@@ -1451,7 +1451,7 @@ void fp_EndOfParagraphRun::lookupProperties(void)
 	_inheritProperties();
 
 	FV_View* pView = m_pBL->getDocLayout()->getView();
-	if (pView && pView->getShowPara())
+	if (pView /*&& pView->getShowPara()*/)
 	{
 		// Find width of Pilcrow
 		UT_UCSChar pEOP[] = { UCS_PILCROW, 0 };

@@ -153,6 +153,9 @@ public:
 	static EV_EditMethod_Fn cursorDefault;
 	static EV_EditMethod_Fn cursorIBeam;
 	static EV_EditMethod_Fn cursorRightArrow;
+#ifdef BIDI_ENABLED
+	static EV_EditMethod_Fn cursorLeftArrow;
+#endif	
 	static EV_EditMethod_Fn cursorImage;
 	static EV_EditMethod_Fn cursorImageSize;
 
@@ -560,6 +563,9 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(cursorIBeam),			0,	""),
 	EV_EditMethod(NF(cursorImage),			0,	""),
 	EV_EditMethod(NF(cursorImageSize),		0,	""),
+#ifdef BIDI_ENABLED
+	EV_EditMethod(NF(cursorLeftArrow),		0,	""),
+#endif	
 	EV_EditMethod(NF(cursorRightArrow),		0,	""),
 	EV_EditMethod(NF(cut),					0,	""),
 	EV_EditMethod(NF(cycleInputMode),		0,	""),
@@ -2829,6 +2835,17 @@ Defun1(cursorRightArrow)
 		pG->setCursor(GR_Graphics::GR_CURSOR_RIGHTARROW);
 	return true;
 }
+
+#ifdef BIDI_ENABLED
+Defun1(cursorLeftArrow)
+{
+	ABIWORD_VIEW;
+	GR_Graphics * pG = pView->getGraphics();
+	if (pG)
+		pG->setCursor(GR_Graphics::GR_CURSOR_LEFTARROW);
+	return true;
+}
+#endif
 
 Defun1(cursorImage)
 {

@@ -1078,10 +1078,21 @@ void GR_UnixGraphics::setCursor(GR_Graphics::Cursor c)
 		cursor_number = GDK_XTERM;
 		break;
 
+	//I have changed the shape of the arrow so get a consistent
+	//behaviour in the bidi build; I think the new arrow is better
+	//for the purpose anyway
+	
 	case GR_CURSOR_RIGHTARROW:
-		cursor_number = GDK_ARROW;
+		cursor_number = GDK_SB_RIGHT_ARROW; //GDK_ARROW;
 		break;
-		
+
+#ifdef BIDI_ENABLED
+//#error choose a suitable cursor; this is just a placeholder !!!		
+	case GR_CURSOR_LEFTARROW:
+		cursor_number = GDK_SB_LEFT_ARROW; //GDK_LEFT_PTR;
+		break;
+#endif		
+
 	case GR_CURSOR_IMAGE:
 		cursor_number = GDK_FLEUR;
 		break;

@@ -795,6 +795,13 @@ void GR_Win32Graphics::handleSetCursorMessage(void)
 		cursor_name = IDC_ARROW;		// TODO change this
 		break;
 		
+#ifdef BIDI_ENABLED
+//#error choose a suitable cursor; this is just a placeholder !!!		
+	case GR_CURSOR_LEFTARROW:
+		cursor_name = IDC_ARROW;		// TODO change this
+		break;
+#endif
+
 	case GR_CURSOR_IMAGE:
 		cursor_name = IDC_SIZEALL;
 		break;

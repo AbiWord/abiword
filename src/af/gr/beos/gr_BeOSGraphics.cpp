@@ -898,9 +898,16 @@ void GR_BeOSGraphics::setCursor(GR_Graphics::Cursor c)
 		break;
 
 	case GR_CURSOR_RIGHTARROW:
-		cursor_number = GDK_ARROW;
+		cursor_number = GDK_SB_RIGHT_ARROW; //GDK_ARROW;
 		break;
-		
+
+#ifdef BIDI_ENABLED
+//#error choose a suitable cursor; this is just a placeholder !!!		
+	case GR_CURSOR_LEFTARROW:
+		cursor_number = GDK_SB_LEFT_ARROW; //GDK_ARROW;
+		break;
+#endif
+	
 	case GR_CURSOR_IMAGE:
 		cursor_number = GDK_FLEUR;
 		break;

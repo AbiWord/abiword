@@ -42,6 +42,11 @@ typedef UT_uint32 EV_EditMouseContext;								/* may not be ORed */
 #define EV_EMC_IMAGE			((EV_EditMouseContext) 0x50000000)
 #define EV_EMC_IMAGESIZE		((EV_EditMouseContext) 0x60000000)
 #define EV_EMC_FIELD			((EV_EditMouseContext) 0x70000000)
+
+#ifdef BIDI_ENABLED
+#define EV_EMC_RIGHTOFTEXT		((EV_EditMouseContext) 0x80000000)
+#endif
+
 #define EV_EMC_ToNumber(emc)			(((emc)&EV_EMC__MASK__)>>28)
 
 

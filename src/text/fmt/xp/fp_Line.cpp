@@ -168,11 +168,13 @@ bool fp_Line::removeRun(fp_Run* pRun, bool bTellTheRunAboutIt)
     {
 		case 0:
 			m_iRunsLTRcount--;
+			//UT_DEBUGMSG(("decreased LTR run count (fp_Line::removeRun) [%d, this=0x%x]\n", m_iRunsLTRcount, this));
 			UT_ASSERT((m_iRunsLTRcount >= 0));
 			break;
 			
 		case 1:
 			m_iRunsRTLcount--;
+			//UT_DEBUGMSG(("decreased RTL run count (fp_Line::removeRun) [%d, this=0x%x]\n", m_iRunsRTLcount, this));			
 			UT_ASSERT((m_iRunsRTLcount >= 0));
 			break;
 		default:;
@@ -212,10 +214,12 @@ void fp_Line::insertRunBefore(fp_Run* pNewRun, fp_Run* pBefore)
 	{
 		case 0:
 			m_iRunsLTRcount++;
+			//UT_DEBUGMSG(("increased LTR run count [%d, this=0x%x]\n", m_iRunsLTRcount, this));
 			break;
 					
 		case 1:
 			m_iRunsRTLcount++;
+			//UT_DEBUGMSG(("increased RTL run count [%d, this=0x%x]\n", m_iRunsRTLcount, this));
 			break;
 					
 		default:; 	//either -1 for whitespace, or 2 for 'not set'
@@ -243,9 +247,11 @@ void fp_Line::insertRun(fp_Run* pNewRun)
 	{
 		case 0:
 			m_iRunsLTRcount++;
+			//UT_DEBUGMSG(("increased LTR run count [%d, this=0x%x]\n", m_iRunsLTRcount, this));
 			break;
 					
 		case 1:
+			//UT_DEBUGMSG(("increased RTL run count [%d, this=0x%x]\n", m_iRunsRTLcount, this));
 			m_iRunsRTLcount++;
 			break;
 					
@@ -274,10 +280,12 @@ void fp_Line::addRun(fp_Run* pNewRun)
 	{
 	case 0:
 		m_iRunsLTRcount++;
+		//UT_DEBUGMSG(("increased LTR run count [%d, this=0x%x]\n", m_iRunsLTRcount, this));
 		break;
 					
 	case 1:
 		m_iRunsRTLcount++;
+		//UT_DEBUGMSG(("increased RTL run count [%d, this=0x%x]\n", m_iRunsRTLcount, this));
 		break;
 					
 	default:
@@ -314,10 +322,12 @@ void fp_Line::insertRunAfter(fp_Run* pNewRun, fp_Run* pAfter)
 	{
 		case 0:
 			m_iRunsLTRcount++;
+			//UT_DEBUGMSG(("increased LTR run count [%d, this=0x%x]\n", m_iRunsLTRcount, this));
 			break;
 					
 		case 1:
 			m_iRunsRTLcount++;
+			//UT_DEBUGMSG(("increased RTL run count [%d, this=0x%x]\n", m_iRunsRTLcount, this));
 			break;
 					
 		default:; 	//either -1 for whitespace, or 2 for 'not set'
@@ -1003,8 +1013,8 @@ void fp_Line::layout(void)
 
 			// Need to erase some or all of the line depending of Alignment mode.
 #ifdef BIDI_ENABLED
-            		pRun->setX(iX); //#TF have to set this before the call to erase, since otherwise
-                            		//we will be erasing from invalid coordinances.
+   			pRun->setX(iX); //#TF have to set this before the call to erase, since otherwise
+	               			//we will be erasing from invalid coordinances.
 #endif
 			pAlignment->eraseLineFromRun(this, i);
 			bLineErased = true;
@@ -1037,7 +1047,15 @@ void fp_Line::layout(void)
 			    {
 					iXLayoutUnits = (iPosLayoutUnits + iStartXLayoutUnits);
 					iX = iXLayoutUnits * Screen_resolution / UT_LAYOUT_UNITS;
+#ifdef BIDI_ENABLED
+//the else branch is probably wrong, have a look at the right tab
+					if(pTabRun->getVisDirection())
+						pTabRun->setWidth(m_iWidth - (iX - pTabRun->getX()));
+					else
+						pTabRun->setWidth(iX - pTabRun->getX());
+#else
 					pTabRun->setWidth(iX - pTabRun->getX());
+#endif
 				}
 			break;
 
@@ -1156,6 +1174,7 @@ void fp_Line::layout(void)
 		{
 			iXLayoutUnits += pRun->getWidthInLayoutUnits();
 			iX += pRun->getWidth();
+			//UT_DEBUGMSG(("run[%d] (type %d) width=%d\n", i,pRun->getType(),pRun->getWidth()));
 		}
 	}
 }
@@ -1496,32 +1515,18 @@ void fp_Line::coalesceRuns(void)
 {
 	//UT_DEBUGMSG(("coalesceRuns (line 0x%x)\n", this));
 	UT_uint32 count = m_vecRuns.getItemCount();
-	for (UT_uint32 i=0; i<(count-1); i++)
+	for (UT_sint32 i=0; i < (UT_sint32)(count-1); i++)
 	{
-		fp_Run* pRun = (fp_Run*) m_vecRuns.getNthItem(i);
+		fp_Run* pRun = (fp_Run*) m_vecRuns.getNthItem((UT_uint32)i);
 
 		if (pRun->getType() == FPRUN_TEXT)
 		{
 			fp_TextRun* pTR = static_cast<fp_TextRun *>(pRun);
 			if (pTR->canMergeWithNext())
 			{
-#ifdef BIDI_ENABLED
-				switch(pRun->getDirection())
-				{
-					case 0:
-							m_iRunsLTRcount--;
-							UT_ASSERT((m_iRunsLTRcount >= 0));
-							break;
-			
-					case 1:
-							m_iRunsRTLcount--;
-							UT_ASSERT((m_iRunsRTLcount >= 0));
-							break;
-					default:;
-			    }
-#endif				
     			pTR->mergeWithNext();
 				count--;
+				i--; //test the newly merged run with the next
 			}
 		}
 	}
@@ -1558,6 +1563,7 @@ UT_sint32 fp_Line::calculateWidthOfLine(void)
 		{
 			iX += pRun->getWidth();
 		}
+		//UT_DEBUGMSG(("calculateWidthOfLine: run[%d] (type %d) width=%d total=%d\n", i, pRun->getType(), pRun->getWidth(),iX));
 	}
 
 	UT_ASSERT(iX <= m_iMaxWidth);
@@ -1819,9 +1825,11 @@ void fp_Line::splitRunsAtSpaces(void)
 				{
 					case 0:
 							m_iRunsLTRcount++;
+							//UT_DEBUGMSG(("increased LTR run count [%d, this=0x%x]\n", m_iRunsLTRcount, this));
 							break;
 			
 					case 1:
+							//UT_DEBUGMSG(("increased RTL run count [%d, this=0x%x]\n", m_iRunsRTLcount, this));
 							m_iRunsRTLcount++;
 							break;
 					default:;
@@ -1850,8 +1858,10 @@ void fp_Line::splitRunsAtSpaces(void)
 			{
 				case 0:
 						m_iRunsLTRcount++;
+						//UT_DEBUGMSG(("increased LTR run count [%d, this=0x%x]\n", m_iRunsLTRcount, this));
 						break;
 				case 1:
+						//UT_DEBUGMSG(("increased RTL run count [%d, this=0x%x]\n", m_iRunsRTLcount, this));
 						m_iRunsRTLcount++;
 						break;
 				default:;
@@ -2124,10 +2134,12 @@ void fp_Line::addDirectionUsed(UT_uint32 dir)
 	{
 		case 0:
 			m_iRunsLTRcount++;
+			//UT_DEBUGMSG(("increased LTR run count [%d, this=0x%x]\n", m_iRunsLTRcount, this));
 			break;
 			
 		case 1:
 			m_iRunsRTLcount++;
+			//UT_DEBUGMSG(("increased RTL run count [%d, this=0x%x]\n", m_iRunsRTLcount, this));
 			break;
 		default:;
 	}
@@ -2139,12 +2151,16 @@ void fp_Line::removeDirectionUsed(UT_uint32 dir)
 	{
 		case 0:
 			m_iRunsLTRcount--;
+			//UT_DEBUGMSG(("decreased LTR run count (fp_Line::removeDirectionUsed) [%d, this=0x%x]\n", m_iRunsLTRcount, this));
+			
 			if(m_iRunsLTRcount < 0)
 				m_iRunsLTRcount = 0;
 			break;
 			
 		case 1:
 			m_iRunsRTLcount--;
+			//UT_DEBUGMSG(("decreased RTL run count (fp_Line::removeDirectionUsed) [%d, this=0x%x]\n", m_iRunsRTLcount, this));
+			
 			if(m_iRunsRTLcount < 0)
 				m_iRunsRTLcount = 0;
 			break;

@@ -42,6 +42,7 @@ Philippe Defert <Philippe.Defert@cern.ch>       AIX, HPUX, IRIX64, OSF1
 Andrew Dunbar <falconsquire@start.com.au>       UTF-8 text recognition, encoding stuff
 Ryan Dooley <ryan@coe.missouri.edu>             started IRIX port
 Paul Egli <pegli@sourcegear.com>
+Uri Elias <elias@techunix.technion.ac.il>	testing of bidi
 Danny Faught <faught@rstcorp.com>
 Harald Fernengel <harry@bnro.de>                RTF compatibility fixes
 Hubert Figuiere <hfiguiere@teaser.fr>           RTF import/export work, MacOS (X) maintainer, MacOS X makefiles and autoconf, JPEG import, Applix import

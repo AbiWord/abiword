@@ -7878,13 +7878,29 @@ EV_EditMouseContext FV_View::getMouseContext(UT_sint32 xPos, UT_sint32 yPos)
 		return EV_EMC_UNKNOWN;
 	}
 
-	if (isLeftMargin(xPos,yPos))
-	{
-		return EV_EMC_LEFTOFTEXT;
-	}
-
+#ifdef BIDI_ENABLED	
 	pPage->mapXYToPosition(xClick, yClick, pos, bBOL, bEOL);
 	fl_BlockLayout* pBlock = _findBlockAtPosition(pos);
+#endif
+	
+	if (isLeftMargin(xPos,yPos))
+	{
+#ifdef BIDI_ENABLED
+		UT_ASSERT(pBlock);
+		xxx_UT_DEBUGMSG(("Entered BOL margin: dir %d\n", pBlock->getDominantDirection()));
+		if(pBlock->getDominantDirection())
+			return EV_EMC_RIGHTOFTEXT;
+		else
+			return EV_EMC_LEFTOFTEXT;
+#else
+		return EV_EMC_LEFTOFTEXT;
+#endif
+	}
+
+#ifndef BIDI_ENABLED	
+	pPage->mapXYToPosition(xClick, yClick, pos, bBOL, bEOL);
+	fl_BlockLayout* pBlock = _findBlockAtPosition(pos);
+#endif
 	if (!pBlock)
 		return EV_EMC_UNKNOWN;
 	fp_Run* pRun = pBlock->findPointCoords(pos, bEOL, xPoint, yPoint, xPoint2, yPoint2, iPointHeight, bDirection);

@@ -53,6 +53,11 @@
 #define _CT		EV_EMC_TEXT
 #define _CM		EV_EMC_MISSPELLEDTEXT
 #define _CL		EV_EMC_LEFTOFTEXT
+
+#ifdef BIDI_ENABLED
+#define _CR		EV_EMC_RIGHTOFTEXT
+#endif
+
 #define _CI		EV_EMC_IMAGE
 #define _CZ		EV_EMC_IMAGESIZE
 #define _CF		EV_EMC_FIELD
@@ -81,7 +86,9 @@ ap_bs_Mouse MouseTable[] =
 	{_CI _B0,	{ "",	"",			"cursorImage",		"",			"",			""				}},
 	{_CZ _B0,	{ "",	"",			"cursorImageSize",	"",			"",			""				}},
 	{_CF _B0,	{ "",	"",			"cursorDefault",	"",			"",			""				}},
-
+#ifdef BIDI_ENABLED
+	{_CR _B0,	{ "",	"",			"cursorLeftArrow",	"",			"",			""				}},
+#endif
 //	Button-1, Unknown-context
 //  { context	{ click				doubleclick		drag,		dbldrag,		release,	doublerelease }},
 	{_CU _B1,	{ "warpInsPtToXY",	"",				"",			"",				"",			""	}},
@@ -101,6 +108,9 @@ ap_bs_Mouse MouseTable[] =
 //	Button-1, Left-of-Text-context (left-margin)
 //  { context	{ click				doubleclick		drag,		dbldrag,		release,	doublerelease	}},
 	{_CL _B1,	{ "selectLine",		"selectBlock",	"dragToXY",	"dragToXYword",	"endDrag",	"endDrag"		}},
+#ifdef BIDI_ENABLED
+	{_CR _B1,	{ "selectLine",		"selectBlock",	"dragToXY",	"dragToXYword",	"endDrag",	"endDrag"		}},
+#endif
 
 //	Button-1, Image-context
 //  { context	{ click				doubleclick		drag,		dbldrag,	release,		doublerelease	}},
@@ -135,6 +145,9 @@ ap_bs_Mouse MouseTable[] =
 	{_CU _B4,	{ "scrollWheelMouseUp",		"scrollWheelMouseUp",			"",		"",			"",			""				}},
 	{_CT _B4,	{ "scrollWheelMouseUp",		"scrollWheelMouseUp",			"",		"",			"",			""				}},
 	{_CL _B4,	{ "scrollWheelMouseUp",		"scrollWheelMouseUp",			"",		"",			"",			""				}},
+#ifdef BIDI_ENABLED
+	{_CR _B4,	{ "scrollWheelMouseUp",		"scrollWheelMouseUp",			"",		"",			"",			""				}},
+#endif	
 	{_CM _B4,	{ "scrollWheelMouseUp",		"scrollWheelMouseUp",			"",		"",			"",			""				}},
 	{_CI _B4,	{ "scrollWheelMouseUp",		"scrollWheelMouseUp",			"",		"",			"",			""				}},
 	{_CZ _B4,	{ "scrollWheelMouseUp",		"scrollWheelMouseUp",			"",		"",			"",			""				}},

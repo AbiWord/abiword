@@ -172,6 +172,9 @@ public:
 				   GR_CURSOR_UPDOWN,
 				   GR_CURSOR_EXCHANGE,
 				   GR_CURSOR_GRAB
+#ifdef BIDI_ENABLED
+					,GR_CURSOR_LEFTARROW
+#endif
 	} Cursor;
 
 	virtual void setCursor(GR_Graphics::Cursor c) = 0;

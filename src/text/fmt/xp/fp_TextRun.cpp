@@ -486,19 +486,49 @@ void fp_TextRun::mapXYToPosition(UT_sint32 x, UT_sint32 /*y*/,
 {
 	if (x <= 0)
 	{
+#ifdef BIDI_ENABLED
+		if(m_pBL->getDominantDirection())
+		{
+			pos = m_pBL->getPosition() + m_iOffsetFirst + m_iLen;
+			bEOL = true;
+			bBOL = false;
+		}
+		else
+		{
+			pos = m_pBL->getPosition() + m_iOffsetFirst;
+			bEOL = false;
+			bBOL = true;
+		}
+#else		
 		pos = m_pBL->getPosition() + m_iOffsetFirst;
 		// don't set bBOL to false here
 		bEOL = false;
+#endif
 		return;
 	}
 
 	if (x >= m_iWidth)
 	{
+#ifdef BIDI_ENABLED
+		if(m_pBL->getDominantDirection())
+		{
+			pos = m_pBL->getPosition() + m_iOffsetFirst;
+			bEOL = false;
+			bBOL = true;
+		}
+		else
+		{
+			pos = m_pBL->getPosition() + m_iOffsetFirst + m_iLen;
+			bEOL = true;
+			bBOL = false;
+		}
+#else
 		pos = m_pBL->getPosition() + m_iOffsetFirst + m_iLen;
 		// Setting bEOL fixes bug 1149. But bEOL has been set in the
 		// past - probably somewhere else, so this is not necessarily
 		// the correct place to do it.  2001.02.25 jskov
 		bEOL = true;
+#endif
 		return;
 	}
 
@@ -1251,7 +1281,7 @@ void fp_TextRun::_drawPart(UT_sint32 xoff,
 	for(;;)
 	{
 		bContinue = m_pBL->getSpanPtr(offset, &pSpan, &lenSpan);
-		UT_ASSERT(lenSpan>0);
+		//UT_ASSERT(lenSpan>0);
 
 		//we need special buffer for the rtl text so we could draw reversed
 		if(lenSpan > s_iSpanBuffSize) //the buffer too small, reallocate
@@ -1493,7 +1523,7 @@ UT_sint32 fp_TextRun::findCharacter(UT_uint32 startPosition, UT_UCSChar Characte
 			bContinue = m_pBL->getSpanPtr(offset, &pSpan, &lenSpan);
 			//if(!bContinue)
 			//	break;
-			UT_ASSERT(lenSpan>0);
+			//UT_ASSERT(lenSpan>0);
 
 			if (len <= lenSpan)
 			{
@@ -1600,7 +1630,7 @@ bool	fp_TextRun::doesContainNonBlankData(void) const
 					pLine = pLine->getNext();
 				}
 			}
-			UT_ASSERT(lenSpan>0);
+			//UT_ASSERT(lenSpan>0);
 
 			if (len <= lenSpan)
 			{
