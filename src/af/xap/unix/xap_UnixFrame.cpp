@@ -310,10 +310,10 @@ gint XAP_UnixFrame::_fe::delete_event(GtkWidget * w, GdkEvent * /*event*/, gpoin
 gint XAP_UnixFrame::_fe::expose(GtkWidget * w, GdkEventExpose* pExposeEvent)
 {
 	UT_Rect rClip;
-	rClip.left = pExposeEvent->area.x;
-	rClip.top = pExposeEvent->area.y;
-	rClip.width = pExposeEvent->area.width;
-	rClip.height = pExposeEvent->area.height;
+	rClip.left = _UL(pExposeEvent->area.x);
+	rClip.top = _UL(pExposeEvent->area.y);
+	rClip.width = _UL(pExposeEvent->area.width);
+	rClip.height = _UL(pExposeEvent->area.height);
 	xxx_UT_DEBUGMSG(("gtk in Frame expose:  left=%d, top=%d, width=%d, height=%d\n", rClip.left, rClip.top, rClip.width, rClip.height));
 	XAP_UnixFrame * pUnixFrame = (XAP_UnixFrame *)gtk_object_get_user_data(GTK_OBJECT(w));
 	FV_View * pView = (FV_View *) pUnixFrame->getCurrentView();
@@ -384,7 +384,7 @@ void XAP_UnixFrame::_fe::vScrollChanged(GtkAdjustment * w, gpointer /*data*/)
 	//UT_DEBUGMSG(("gtk vScroll: value %ld\n",(UT_sint32)w->value));
 
 	if (pView)
-		pView->sendVerticalScrollEvent((UT_sint32) w->value);
+		pView->sendVerticalScrollEvent((UT_sint32) _UL(w->value));
 }
 
 void XAP_UnixFrame::_fe::hScrollChanged(GtkAdjustment * w, gpointer /*data*/)
@@ -393,21 +393,11 @@ void XAP_UnixFrame::_fe::hScrollChanged(GtkAdjustment * w, gpointer /*data*/)
 	AV_View * pView = pUnixFrame->getCurrentView();
 
 	if (pView)
-		pView->sendHorizontalScrollEvent((UT_sint32) w->value);
+		pView->sendHorizontalScrollEvent((UT_sint32) _UL(w->value));
 }
 
 void XAP_UnixFrame::_fe::destroy(GtkWidget * /*widget*/, gpointer /*data*/)
 {
-	// I think this is right:
-	// 	We shouldn't have to call gtk_main_quit() here because
-	//  this signal catcher is only inserted before the GTK
-	//  default handler (which will continue to destroy the window
-	//  if we don't return TRUE).
-	//
-	//  This function should be for things to happen immediately
-	//  before a frame gets hosed once and for all.
-
-	//gtk_main_quit ();
 }
 
 /*****************************************************************/
@@ -1132,6 +1122,9 @@ bool XAP_UnixFrame::runModalContextMenu(AV_View * /* pView */, const char * szMe
 	bool bResult = true;
 
 	UT_ASSERT(!m_pUnixPopup);
+
+	_UUD(x);
+	_UUD(y);
 
 	m_pUnixPopup = new EV_UnixMenuPopup(m_pUnixApp,this,szMenuName,m_szMenuLabelSetName);
 	if (m_pUnixPopup && m_pUnixPopup->synthesizeMenuPopup())

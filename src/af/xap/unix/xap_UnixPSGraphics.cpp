@@ -1050,7 +1050,7 @@ void PS_Graphics::drawLine(UT_sint32 x1, UT_sint32 y1, UT_sint32 x2, UT_sint32 y
 	
 	char buf[LINE_BUFFER_SIZE];
 //	UT_sint32 nA = getFontAscent();
-	g_snprintf(buf,sizeof (buf),"%d %d %d %d ML\n", x2, y2, x1, y1);
+	g_snprintf(buf,sizeof (buf),"%d %d %d %d ML\n", _UD(x2), _UD(y2), _UD(x1), _UD(y1));
 	m_ps->writeBytes(buf);
 }
 
@@ -1073,6 +1073,11 @@ void PS_Graphics::fillRect(const UT_RGBColor& c, UT_sint32 x, UT_sint32 y, UT_si
 {
   UT_RGBColor cl = m_currentColor;
   setColor(c);
+
+  _UUD(x);
+  _UUD(y);
+  _UUD(w);
+  _UUD(h);
 
   char buf[256];
   buf[0] = 0;
@@ -1636,6 +1641,9 @@ void PS_Graphics::_emit_SetColor(void)
 {
 	GR_Image* pImg = NULL;
    
+	_UUD(iDisplayWidth);
+	_UUD(iDisplayHeight);
+
    	if (iType == GR_Image::GRT_Raster)
      		pImg = new PS_Image(pszName);
    	else if (iType == GR_Image::GRT_Vector)
@@ -1673,8 +1681,11 @@ void PS_Graphics::drawRGBImage(GR_Image* pImg, UT_sint32 xDest, UT_sint32 yDest)
 {
 	UT_ASSERT(pImg);
 
-	UT_sint32 iDestWidth = pImg->getDisplayWidth();
-	UT_sint32 iDestHeight = pImg->getDisplayHeight();
+	_UUD(xDest);
+	_UUD(yDest);
+
+	UT_sint32 iDestWidth = _UD(pImg->getDisplayWidth());
+	UT_sint32 iDestHeight = _UD(pImg->getDisplayHeight());
 	
 	PS_Image * pPSImage = static_cast<PS_Image *>(pImg);
 
@@ -1743,8 +1754,11 @@ void PS_Graphics::drawGrayImage(GR_Image* pImg, UT_sint32 xDest, UT_sint32 yDest
 {
 	UT_ASSERT(pImg);
 
-	UT_sint32 iDestWidth = pImg->getDisplayWidth();
-	UT_sint32 iDestHeight = pImg->getDisplayHeight();
+	_UUD(xDest);
+	_UUD(yDest);
+
+	UT_sint32 iDestWidth = _UD(pImg->getDisplayWidth());
+	UT_sint32 iDestHeight = _UD(pImg->getDisplayHeight());
 	
 	PS_Image * pPSImage = static_cast<PS_Image *>(pImg);
 

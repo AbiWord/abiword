@@ -73,7 +73,6 @@ static bool isFontUnicode(GdkFont *font)
 }
 #endif
 
-
 //
 // Below this size we use GDK fonts. Above it we use metric info.
 //
@@ -275,6 +274,9 @@ static bool fallback_used;
 #ifndef WITH_PANGO
 void GR_UnixGraphics::drawGlyph(UT_uint32 Char, UT_sint32 xoff, UT_sint32 yoff)
 {
+  _UUD(xoff);
+  _UUD(yoff);
+
 #ifdef USE_XFT
 	XftDrawGlyphs(m_pXftDraw, &m_XftColor, m_pXftFont, xoff, yoff + m_pXftFont->ascent, &Char, 1);
 #else
@@ -300,7 +302,7 @@ void GR_UnixGraphics::drawGlyph(UT_uint32 Char, UT_sint32 xoff, UT_sint32 yoff)
 		{
 			//non-unicode font, Wide char is guaranteed to be <= 0xff
 			gchar gc = (gchar) Wide_char;
-			gdk_draw_text(m_pWin,font,m_pGC,xoff,yoff+font->ascent,(gchar*)&gc,1);			//UT_DEBUGMSG(("drawChar: utf-8\n"));
+			gdk_draw_text(m_pWin,font,m_pGC,xoff,yoff+font->ascent,(gchar*)&gc,1);
 		}
 	}
 	else
@@ -313,9 +315,12 @@ void GR_UnixGraphics::drawGlyph(UT_uint32 Char, UT_sint32 xoff, UT_sint32 yoff)
 }
 
 void GR_UnixGraphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
-								int iLength, UT_sint32 xoff, UT_sint32 yoff,
-								int * pCharWidths)
+				int iLength, UT_sint32 xoff, UT_sint32 yoff,
+				int * pCharWidths)
 {
+  _UUD(xoff);
+  _UUD(yoff);
+
 #ifdef USE_XFT
 	if (iLength == 0)
 		return;
@@ -592,14 +597,14 @@ UT_uint32 GR_UnixGraphics::measureUnRemappedChar(const UT_UCSChar c)
 	{
 		xxx_UT_DEBUGMSG(("Using measureUnRemappedChar in layout units\n"));
 		float width = m_pFont->getUnixFont()->measureUnRemappedChar(c, m_pFont->getSize());
-		return (UT_uint32) (width + 0.5);
+		return (UT_uint32) _UL((width + 0.5));
 	}
 	else
 	{
 		xxx_UT_DEBUGMSG(("Using measureUnRemappedChar in screen units\n"));
 		XGlyphInfo extents;
 		XftTextExtents32(GDK_DISPLAY(), m_pXftFont, const_cast<XftChar32*> (&c), 1, &extents);
-		return extents.xOff;
+		return _UL(extents.xOff);
 	}
 
 #else
@@ -629,7 +634,7 @@ UT_uint32 GR_UnixGraphics::measureUnRemappedChar(const UT_UCSChar c)
 			{
 				//this is a unicode font
 				LE2BE16(&c,&Wide_char)
-					return gdk_text_width(font, (gchar*) &Wide_char, 2);
+					return _UL(gdk_text_width(font, (gchar*) &Wide_char, 2));
 			}
 			else
 			{
@@ -639,7 +644,7 @@ UT_uint32 GR_UnixGraphics::measureUnRemappedChar(const UT_UCSChar c)
 				else
 				{
 					gchar gc = (gchar) c;
-					return gdk_text_width(font, (gchar*)&gc, 1);
+					return _UL(gdk_text_width(font, (gchar*)&gc, 1));
 				}
 			}
 		}
@@ -651,7 +656,7 @@ UT_uint32 GR_UnixGraphics::measureUnRemappedChar(const UT_UCSChar c)
 				return 0;
 			font = XAP_EncodingManager::get_instance()->is_cjk_letter(Wide_char) ? m_pMultiByteFont : m_pSingleByteFont;
 
-			return gdk_text_width(font, text, text_length);
+			return _UL(gdk_text_width(font, text, text_length));
 		}
 	}
 //
@@ -660,23 +665,22 @@ UT_uint32 GR_UnixGraphics::measureUnRemappedChar(const UT_UCSChar c)
 	else
 	{
 		double dsize = (double) m_pFont->getSize();
-	    XAP_UnixFont *pEnglishFont;
+		XAP_UnixFont *pEnglishFont;
 		XAP_UnixFont *pChineseFont;
-	    m_pFont->explodeUnixFonts(&pEnglishFont,&pChineseFont);
+		m_pFont->explodeUnixFonts(&pEnglishFont,&pChineseFont);
 //
 // The metrics are in 1/1000th's of an inch, we need to convert these to
 // pixels.  Try this....
 //
-		double fFactor;
-		fFactor = (double) 1.0/1000.0;
+		double fFactor = (double) 1.0/1000.0;
 		if (XAP_EncodingManager::get_instance()->is_cjk_letter(c))
 		{
-			return (UT_uint32) ( fFactor * dsize * (double) pChineseFont->get_CJK_Width());
+			return (UT_uint32) _UL((fFactor * dsize * (double) pChineseFont->get_CJK_Width()));
 		}
 		else
 		{
 			UT_uint32 width;
-			width = (UT_uint32) (fFactor * dsize * (double) pEnglishFont->getCharWidth(c));
+			width = (UT_uint32) _UL((fFactor * dsize * (double) pEnglishFont->getCharWidth(c)));
 			return width;
 		}
 	}
@@ -740,7 +744,7 @@ UT_uint32 GR_UnixGraphics::_getResolution(void) const
 	// most X servers return when queried for a resolution)
 	// makes for tiny fonts on modern resolutions.
 
-	return 96;
+	return _UL(96);
 }
 
 void GR_UnixGraphics::getColor(UT_RGBColor& clr)
@@ -1049,7 +1053,7 @@ void GR_UnixGraphics::drawLine(UT_sint32 x1, UT_sint32 y1,
 {
 	GR_CaretDisabler caretDisabler(getCaret());
 	// TODO set the line width according to m_iLineWidth
-	gdk_draw_line(m_pWin, m_pGC, x1, y1, x2, y2);
+	gdk_draw_line(m_pWin, m_pGC, _UD(x1), _UD(y1), _UD(x2), _UD(y2));
 }
 
 void GR_UnixGraphics::setLineWidth(UT_sint32 iLineWidth)
@@ -1074,59 +1078,54 @@ void GR_UnixGraphics::xorLine(UT_sint32 x1, UT_sint32 y1, UT_sint32 x2,
 			    UT_sint32 y2)
 {
 	GR_CaretDisabler caretDisabler(getCaret());
-	gdk_draw_line(m_pWin, m_pXORGC, x1, y1, x2, y2);
+	gdk_draw_line(m_pWin, m_pXORGC, _UD(x1), _UD(y1), _UD(x2), _UD(y2));
 }
 
 void GR_UnixGraphics::polyLine(UT_Point * pts, UT_uint32 nPoints)
 {
 	GR_CaretDisabler caretDisabler(getCaret());
-  // see bug #303 for what this is about
-#if 1
+
+	// see bug #303 for what this is about
+
 	GdkPoint * points = (GdkPoint *)calloc(nPoints, sizeof(GdkPoint));
 	UT_ASSERT(points);
 
 	for (UT_uint32 i = 0; i < nPoints; i++)
 	{
-		points[i].x = pts[i].x;
+		points[i].x = _UD(pts[i].x);
 		// It seems that Windows draws each pixel along the the Y axis
 		// one pixel beyond where GDK draws it (even though both coordinate
 		// systems start at 0,0 (?)).  Subtracting one clears this up so
 		// that the poly line is in the correct place relative to where
 		// the rest of GR_UnixGraphics:: does things (drawing text, clearing
 		// areas, etc.).
-		points[i].y = pts[i].y - 1;
+		points[i].y = _UD(pts[i].y - 1);
 	}
 
 	gdk_draw_lines(m_pWin, m_pGC, points, nPoints);
 
 	FREEP(points);
-#else
-	for (UT_uint32 k=1; k<nPoints; k++)
-		drawLine(pts[k-1].x,pts[k-1].y, pts[k].x,pts[k].y);
-#endif
 }
 
 void GR_UnixGraphics::invertRect(const UT_Rect* pRect)
 {
 	GR_CaretDisabler caretDisabler(getCaret());
 	UT_ASSERT(pRect);
-	gdk_draw_rectangle(m_pWin, m_pXORGC, 1, pRect->left, pRect->top,
-					   pRect->width, pRect->height);
+	gdk_draw_rectangle(m_pWin, m_pXORGC, 1, _UD(pRect->left), _UD(pRect->top),
+			   _UD(pRect->width), _UD(pRect->height));
 }
 
 void GR_UnixGraphics::setClipRect(const UT_Rect* pRect)
 {
-//	if(pRect != NULL)
-//		UT_ASSERT(m_pRect==NULL);
 	m_pRect = pRect;
 	if (pRect)
 	{
 		GdkRectangle r;
 
-		r.x = pRect->left;
-		r.y = pRect->top;
-		r.width = pRect->width;
-		r.height = pRect->height;
+		r.x = _UD(pRect->left);
+		r.y = _UD(pRect->top);
+		r.width = _UD(pRect->width);
+		r.height = _UD(pRect->height);
 
 		gdk_gc_set_clip_rectangle(m_pGC, &r);
 		gdk_gc_set_clip_rectangle(m_pXORGC, &r);
@@ -1192,7 +1191,7 @@ void GR_UnixGraphics::fillRect(const UT_RGBColor& c, UT_sint32 x, UT_sint32 y,
 
 	gdk_gc_set_foreground(m_pGC, &nColor);
 
- 	gdk_draw_rectangle(m_pWin, m_pGC, 1, x, y, w, h);
+ 	gdk_draw_rectangle(m_pWin, m_pGC, 1, _UD(x), _UD(y), _UD(w), _UD(h));
 
 	gdk_gc_set_foreground(m_pGC, &oColor);
 }
@@ -1259,8 +1258,6 @@ void GR_UnixGraphics::scroll(UT_sint32 dx, UT_sint32 dy)
 	{
 		unionPendingRect(&exposeArea);
 	}
-	xxx_UT_DEBUGMSG(("SEVIOR: After expand top %d left %d width %d height %d \n",exposeArea.top,exposeArea.left,exposeArea.width,exposeArea.height));
-	xxx_UT_DEBUGMSG(("SEVIOR: After Union top %d left %d width %d height %d \n",getPendingRect()->top,getPendingRect()->left,getPendingRect()->width,getPendingRect()->height));
 //
 // Merge into previous areas
 //
@@ -1301,36 +1298,24 @@ void GR_UnixGraphics::scroll(UT_sint32 x_dest, UT_sint32 y_dest,
 						  UT_sint32 width, UT_sint32 height)
 {
 	GR_CaretDisabler caretDisabler(getCaret());
-	gdk_window_copy_area(m_pWin, m_pGC, x_dest, y_dest,
-						 m_pWin, x_src, y_src, width, height);
+	gdk_window_copy_area(m_pWin, m_pGC, _UD(x_dest), _UD(y_dest),
+			     _UD(m_pWin), _UD(x_src), _UD(y_src), _UD(width), _UD(height));
 }
 
 void GR_UnixGraphics::clearArea(UT_sint32 x, UT_sint32 y,
-							 UT_sint32 width, UT_sint32 height)
+				UT_sint32 width, UT_sint32 height)
 {
 	GR_CaretDisabler caretDisabler(getCaret());
-  //	UT_DEBUGMSG(("ClearArea: %d %d %d %d\n", x, y, width, height));
+
+	_UUD(x);
+	_UUD(y);
+	_UUD(width);
+	_UUD(height);
+
 	if (width > 0)
 	{
-#define TURBOSLOW	0
-
-#if TURBOSLOW
-		gdk_flush();
-		usleep(TURBOSLOW);
-
-		UT_RGBColor clr(255,0,0);
-		fillRect(clr, x, y, width, height);
-		gdk_flush();
-		usleep(TURBOSLOW);
-#endif
-
-		UT_RGBColor clrWhite(255,255,255);
+		static const UT_RGBColor clrWhite(255,255,255);
 		fillRect(clrWhite, x, y, width, height);
-
-#if TURBOSLOW
-		gdk_flush();
-		usleep(TURBOSLOW);
-#endif
 	}
 }
 
@@ -1360,7 +1345,7 @@ GR_Image* GR_UnixGraphics::createNewImage(const char* pszName, const UT_ByteBuf*
    	GR_Image* pImg = NULL;
 
 	pImg = new GR_UnixImage(pszName,false);
-	pImg->convertFromBuffer(pBB, iDisplayWidth, iDisplayHeight);
+	pImg->convertFromBuffer(pBB, _UD(iDisplayWidth), _UD(iDisplayHeight));
    	return pImg;
 }
 
@@ -1380,25 +1365,27 @@ void GR_UnixGraphics::drawImage(GR_Image* pImg, UT_sint32 xDest, UT_sint32 yDest
 	GdkPixbuf * image = pUnixImage->getData();
 	UT_return_if_fail(image);
 
-   	UT_sint32 iImageWidth = pUnixImage->getDisplayWidth();
-   	UT_sint32 iImageHeight = pUnixImage->getDisplayHeight();
+	_UUD(xDest);
+	_UUD(yDest);
+   	UT_sint32 iImageWidth = _UD(pUnixImage->getDisplayWidth());
+   	UT_sint32 iImageHeight = _UD(pUnixImage->getDisplayHeight());
 
 	if (gdk_pixbuf_get_has_alpha (image))
 		gdk_pixbuf_render_to_drawable_alpha (image, m_pWin,
-											 0, 0,
-											 xDest, yDest,
-											 iImageWidth, iImageHeight,
-											 GDK_PIXBUF_ALPHA_BILEVEL,
-											 ABI_ALPHA_THRESHOLD,
-											 GDK_RGB_DITHER_NORMAL,
-											 0, 0);
+						     0, 0,
+						     xDest, yDest,
+						     iImageWidth, iImageHeight,
+						     GDK_PIXBUF_ALPHA_BILEVEL,
+						     ABI_ALPHA_THRESHOLD,
+						     GDK_RGB_DITHER_NORMAL,
+						     0, 0);
 	else
-		gdk_pixbuf_render_to_drawable (image, m_pWin, m_pGC,
-									   0, 0,
-									   xDest, yDest,
-									   iImageWidth, iImageHeight,
-									   GDK_RGB_DITHER_NORMAL,
-									   0, 0);
+	  gdk_pixbuf_render_to_drawable (image, m_pWin, m_pGC,
+					 0, 0,
+					 xDest, yDest,
+					 iImageWidth, iImageHeight,
+					 GDK_RGB_DITHER_NORMAL,
+					 0, 0);
 }
 
 void GR_UnixGraphics::flush(void)
@@ -1533,9 +1520,9 @@ void GR_UnixGraphics::init3dColors(GtkStyle * pStyle)
 {
 	m_3dColors[CLR3D_Foreground] = pStyle->fg[GTK_STATE_NORMAL];
 	m_3dColors[CLR3D_Background] = pStyle->bg[GTK_STATE_NORMAL];
-	m_3dColors[CLR3D_BevelUp] = pStyle->light[GTK_STATE_NORMAL];
-	m_3dColors[CLR3D_BevelDown] = pStyle->dark[GTK_STATE_NORMAL];
-	m_3dColors[CLR3D_Highlight] = pStyle->bg[GTK_STATE_PRELIGHT];
+	m_3dColors[CLR3D_BevelUp]    = pStyle->light[GTK_STATE_NORMAL];
+	m_3dColors[CLR3D_BevelDown]  = pStyle->dark[GTK_STATE_NORMAL];
+	m_3dColors[CLR3D_Highlight]  = pStyle->bg[GTK_STATE_PRELIGHT];
 }
 
 void GR_UnixGraphics::fillRect(GR_Color3D c, UT_sint32 x, UT_sint32 y, UT_sint32 w, UT_sint32 h)
@@ -1543,7 +1530,7 @@ void GR_UnixGraphics::fillRect(GR_Color3D c, UT_sint32 x, UT_sint32 y, UT_sint32
 	GR_CaretDisabler caretDisabler(getCaret());
 	UT_ASSERT(c < COUNT_3D_COLORS);
 	gdk_gc_set_foreground(m_pGC, &m_3dColors[c]);
-	gdk_draw_rectangle(m_pWin, m_pGC, 1, x, y, w, h);
+	gdk_draw_rectangle(m_pWin, m_pGC, 1, _UD(x), _UD(y), _UD(w), _UD(h));
 }
 
 void GR_UnixGraphics::fillRect(GR_Color3D c, UT_Rect &r)
@@ -1580,8 +1567,8 @@ void GR_UnixGraphics::polygon(UT_RGBColor& c,UT_Point *pts,UT_uint32 nPoints)
     UT_ASSERT(points);
 
     for (UT_uint32 i = 0;i < nPoints;i++){
-        points[i].x = pts[i].x;
-        points[i].y = pts[i].y;
+        points[i].x = _UD(pts[i].x);
+        points[i].y = _UD(pts[i].y);
     }
 	gdk_draw_polygon(m_pWin, m_pGC, 1, points, nPoints);
 	delete[] points;
