@@ -45,7 +45,9 @@ include $(ABI_ROOT)/src/config/abi_rules.mk
 $(PROGRAM): $(OBJS)
 	@$(MAKE_OBJDIR)
 	@echo Linking $(PROGRAM)....
-	@$(CC) $(subst /,\\,$(OBJS)) -Fe$(subst /,\\,$@) -link $(LDFLAGS) $(OS_LIBS) $(ABI_LDFLAGS) $(subst /,\\,$(EXTRA_LIBS))
+	@$(CC) $(shell echo $(OBJS) | sed 's|//[a-zA-Z]/|/|g' | sed 's|/|\\\\|g')		\
+		-Fe$(shell echo $@ | sed 's|//[a-zA-Z]/|/|g' | sed 's|/|\\\\|g')		\
+		-link $(LDFLAGS) $(OS_LIBS) $(ABI_LDFLAGS) $(subst /,\\,$(EXTRA_LIBS))
 
 build:: $(TARGETS)
 	@echo cdump built

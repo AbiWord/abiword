@@ -116,26 +116,41 @@ tidy::
 	rm -rf $(OBJS)
 	+$(LOOP_OVER_DIRS)
 
+################################################################################
+
 ifdef HELPER_PROGRAM
 $(HELPER_PROGRAM): $(OBJS)
 	@$(MAKE_OBJDIR)
 ifeq ($(OS_NAME),WIN32)
-	@$(CC) -nologo $(subst /,\\,$(OBJS)) -Fe$(subst /,\\,$@) -link $(LDFLAGS) $(OS_LIBS) $(EXTRA_LIBS)
+	@$(CC) -nologo $(shell echo $(OBJS) | sed 's|//[a-zA-Z]/|/|g' | sed 's|/|\\\\|g')	\
+		-Fe$(shell echo $@ | sed 's|//[a-zA-Z]/|/|g' | sed 's|/|\\\\|g')		\
+		-link $(LDFLAGS) $(OS_LIBS) $(EXTRA_LIBS)
 else
 	@$(CCC) -o $@ $(CFLAGS) $(OBJS) $(LDFLAGS) 
 endif
 endif
+
+################################################################################
 
 $(LIBRARY): $(OBJS)
 	@echo Building library $(LIBRARY)
 	@$(MAKE_OBJDIR)
 	@rm -f $@
 ifeq ($(OS_NAME),WIN32)
-	@$(AR) $(shell echo $(OBJS) | sed 's|//[a-zA-Z]/|/|g' | sed 's|/|\\\\|g') $(AR_EXTRA_ARGS)
+####	@$(AR) $(shell echo $(OBJS) | sed 's|//[a-zA-Z]/|/|g' | sed 's|/|\\\\|g') $(AR_EXTRA_ARGS)
+####	we build a @file because the command line can overrun the win32 bash
+####	command line limit (or something which crashes bash)....
+	@echo -NOLOGO -OUT:"$(shell echo $@ | sed 's|//[a-zA-Z]/|/|g' | sed 's|/|\\\\|g')" 	>linkfile.1
+	@echo $(OBJS) | sed 's|//[a-zA-Z]/|/|g' | sed 's|/|\\|g' 				>linkfile.2
+	@echo $(AR_EXTRA_ARGS)									>linkfile.3
+	@lib @linkfile.1 @linkfile.2 @linkfile.3
+	@rm linkfile.[123]
 else
 	@$(AR) $(OBJS) $(AR_EXTRA_ARGS)
 endif
 	@$(RANLIB) $@
+
+################################################################################
 
 $(SHARED_LIBRARY): $(OBJS)
 	@$(MAKE_OBJDIR)
@@ -146,10 +161,13 @@ else
 	$(MKSHLIB) -o $@ $(OBJS) $(EXTRA_LIBS) $(OS_LIBS)
 endif
 
+################################################################################
+
 ifeq ($(OS_NAME), WIN32)
 $(RCOBJS): $(RCSRCS)
 	@$(MAKE_OBJDIR)
-	@$(RC) /fo$(subst /,\\,$(RCOBJS)) $(ABI_INCS) $(ABI_TMDEFS) $(RCSRCS)
+	@$(RC) /fo$(shell echo $(RCOBJS) | sed 's|//[a-zA-Z]/|/|g' | sed 's|/|\\\\|g')	\
+		$(ABI_INCS) $(ABI_TMDEFS) $(RCSRCS)
 	@echo $(RCOBJS) finished
 endif
 
@@ -160,7 +178,7 @@ endif
 $(OBJDIR)/%.$(OBJ_SUFFIX): %.cpp
 	@$(MAKE_OBJDIR)
 ifeq ($(OS_NAME), WIN32)
-	@$(CCC) -Fo$(subst /,\\,$@) -c $(CFLAGS) $<
+	@$(CCC) -Fo$(shell echo $@ | sed 's|//[a-zA-Z]/|/|g' | sed 's|/|\\\\|g') -c $(CFLAGS) $<
 else
 	@echo $<:
 	@$(CCC) -o $@ -c $(CFLAGS) $<
@@ -173,7 +191,8 @@ endif
 $(OBJDIR)/%.$(OBJ_SUFFIX): $(OBJDIR)/%.cpp
 	@$(MAKE_OBJDIR)
 ifeq ($(OS_NAME), WIN32)
-	@$(CCC) -Fo$(subst /,\\,$@) -c $(CFLAGS) $<
+	@$(CCC) -Fo$(shell echo $@ | sed 's|//[a-zA-Z]/|/|g' | sed 's|/|\\\\|g') -c	\
+		$(CFLAGS) $(shell echo $< | sed 's|//[a-zA-Z]/|/|g' | sed 's|/|\\\\|g')
 else
 	@echo $<:
 	@$(CCC) -o $@ -c $(CFLAGS) $<

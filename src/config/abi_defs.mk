@@ -62,6 +62,22 @@ OS_NAME		:= $(shell uname -s | sed "s/\//-/" | sed "s/_/-/" | sed "s/-.*//g")
 OS_RELEASE	:= $(shell uname -r | sed "s/\//-/" | sed "s/ .*//g")
 ####OS_ARCH is now set in platform/*.mk
 
+##################################################################
+##################################################################
+#### Cygnus keeps changing the value that uname returns between
+#### different versions of the package and between different
+#### versions of Windows.  Here we fold them all in into one symbol.
+
+ifeq ($(OS_NAME), CYGWIN32)
+OS_NAME = WIN32
+endif
+ifeq ($(OS_NAME), CYGWIN)
+OS_NAME = WIN32
+endif
+
+##################################################################
+##################################################################
+
 ABICOPY=cp
 
 ifdef ABISOURCE_LICENSED_TRADEMARKS
@@ -100,7 +116,12 @@ ABI_PEER_INCS=	/../../expat/xmlparse	\
 		/../../expat/xmltok
 
 ABI_ALL_INCS=	$(ABI_XAP_INCS) $(ABI_PEER_INCS) $(ABI_AP_INCS) $(ABI_OTH_INCS) $(ABI_TM_INCS)
-ABI_INCS=	$(addprefix -I, $(addprefix $(ABI_ROOT)/src,$(ABI_ALL_INCS)))
+ifeq ($(OS_NAME), WIN32)
+ABI_XX_ROOT:=$(shell echo $(ABI_ROOT) | sed 's|//[a-zA-Z]/|/|g')
+ABI_INCS=	$(addprefix -I$(ABI_XX_ROOT)/src,$(ABI_ALL_INCS))
+else
+ABI_INCS=	$(addprefix -I$(ABI_ROOT)/src,$(ABI_ALL_INCS))
+endif
 
 ##################################################################
 ##################################################################
@@ -128,19 +149,6 @@ LINK_DLL	= $(LINK) $(OS_DLLFLAGS) $(DLLFLAGS)
 
 CFLAGS		= $(OPTIMIZER) $(OS_CFLAGS) $(DEFINES) $(INCLUDES) $(XCFLAGS)	\
 			$(ABI_TMDEFS) $(ABI_NAMEDEFS) $(ABI_DBGDEFS) $(ABI_INCS)
-
-##################################################################
-##################################################################
-#### Cygnus keeps changing the value that uname returns between
-#### different versions of the package and between different
-#### versions of Windows.  Here we fold them all in into one symbol.
-
-ifeq ($(OS_NAME), CYGWIN32)
-OS_NAME = WIN32
-endif
-ifeq ($(OS_NAME), CYGWIN)
-OS_NAME = WIN32
-endif
 
 ##################################################################
 ##################################################################

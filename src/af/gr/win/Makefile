@@ -26,8 +26,8 @@ CPPSRCS=		gr_Win32Graphics.cpp	\
 			gr_Win32Image.cpp
 
 TARGETS=		$(OBJS)
-INCLUDES=		-I$(ABI_ROOT)/../libpng	\
-			-I$(ABI_ROOT)/../zlib
+INCLUDES=		-I$(ABI_XX_ROOT)/../libpng	\
+			-I$(ABI_XX_ROOT)/../zlib
 
 include $(ABI_ROOT)/src/config/abi_rules.mk
 

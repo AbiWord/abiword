@@ -52,7 +52,10 @@ include $(ABI_ROOT)/src/config/abi_rules.mk
 $(PROGRAM): $(OBJS) $(EXTRA_LIBDEP)
 	@$(MAKE_OBJDIR)
 	@echo Linking $(PROGRAM)....
-	@$(CC) $(subst /,\\,$(OBJS)) -Fe$(subst /,\\,$@) -link $(LDFLAGS) $(OS_LIBS) $(ABI_LDFLAGS) $(subst /,\\,$(EXTRA_LIBS))
+	@$(CC) $(shell echo $(OBJS) | sed 's|//[a-zA-Z]/|/|g' | sed 's|/|\\\\|g')	\
+		-Fe$(shell echo $@ | sed 's|//[a-zA-Z]/|/|g' | sed 's|/|\\\\|g')	\
+		-link $(LDFLAGS) $(OS_LIBS) $(ABI_LDFLAGS)				\
+		$(shell echo $(EXTRA_LIBS) | sed 's|//[a-zA-Z]/|/|g' | sed 's|/|\\\\|g')
 
 build:: $(TARGETS)
 	@echo Target $(TARGETS) completed.
