@@ -10333,8 +10333,15 @@ Defun(endResizeImage)
 		// TODO: set format
 		const XML_Char * properties[] = {"width", NULL, "height", NULL, 0};
 		char * old_locale = setlocale(LC_NUMERIC, "C");
-		sprintf(widthBuf, "%fin", UT_convertDimToInches(newImgBounds.width, DIM_PX));
-		sprintf(heightBuf, "%fin", UT_convertDimToInches(newImgBounds.height, DIM_PX));
+		double fzoom = (double) pView->getGraphics()->getZoomPercentage();
+		double fwidth = (double) newImgBounds.width;
+		double fheight = (double) newImgBounds.height;
+		fwidth = fwidth*100./fzoom;
+		fheight = fheight*100./fzoom;
+		UT_sint32 iwidth = (UT_sint32) fwidth;
+		UT_sint32 iheight = (UT_sint32) fheight;
+		sprintf(widthBuf, "%fin", UT_convertDimToInches(iwidth, DIM_PX));
+		sprintf(heightBuf, "%fin", UT_convertDimToInches(iheight, DIM_PX));
 		setlocale(LC_NUMERIC, old_locale);
 		
 		UT_DEBUGMSG(("MARCM: nw:%s nh:%s\n", widthBuf, heightBuf));
