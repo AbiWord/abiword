@@ -224,9 +224,7 @@ public:
 
 	SET_GATHER			(ShowSplash,		bool );
 
-	SET_GATHER			(SmartQuotesEnable, bool );
-	SET_GATHER			(DefaultPageSize,	fp_PageSize::Predefined );
-
+	SET_GATHER			(SmartQuotesEnable, bool );	
 	SET_GATHER			(PrefsAutoSave, 	bool );
 
 	SET_GATHER			(ViewShowRuler, 	bool );
