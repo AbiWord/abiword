@@ -3640,14 +3640,14 @@ bool	fl_BlockLayout::_doInsertRun(fp_Run* pNewRun)
 	_assertRunListIntegrity();
 
 	m_gbCharWidths.ins(blockOffset, len);
-	if (pNewRun->getType() == FPRUN_TEXT)
-	{
-		fp_TextRun* pNewTextRun = static_cast<fp_TextRun*>(pNewRun);
 
-		pNewTextRun->fetchCharWidths(&m_gbCharWidths);
-		pNewTextRun->recalcWidth();
-	}
-
+	// here we used to fetch character widths; this requires to refresh
+	// the draw buffer, which will come to be immediately invalidated by the
+	// insertion of the run into the runlist in the code
+	// below. Therefore, I have moved this to the very end of
+	// processing, to save us refreshing the draw buffer too many
+	// times. Tomas, June 22, 2003
+	
 	bool bInserted = false;
 	fp_Run* pRun = m_pFirstRun;
 	while (pRun)
@@ -3823,6 +3823,16 @@ bool	fl_BlockLayout::_doInsertRun(fp_Run* pNewRun)
 	}
 
 	_assertRunListIntegrity();
+
+	// now that the run is in place and the context has been set, we
+	// calculate character widths
+	if (pNewRun->getType() == FPRUN_TEXT)
+	{
+		fp_TextRun* pNewTextRun = static_cast<fp_TextRun*>(pNewRun);
+
+		//pNewTextRun->fetchCharWidths(&m_gbCharWidths);
+		pNewTextRun->recalcWidth();
+	}
 
 	return true;
 }

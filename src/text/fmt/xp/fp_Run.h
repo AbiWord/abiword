@@ -178,7 +178,7 @@ public:
 	void					setX(UT_sint32, FPRUN_CLEAR_SCREEN eClearScreen = FP_CLEARSCREEN_AUTO);
 	void					setY(UT_sint32);
 	void					setBlockOffset(UT_uint32);
-	void					setLength(UT_uint32);
+	void					setLength(UT_uint32 iLen, bool bRefresh = true);
 	void					setNext(fp_Run*, bool bRefresh = true);
 	void					setPrev(fp_Run*, bool bRefresh = true);
 	void					setHyperlink(fp_HyperlinkRun * pH);

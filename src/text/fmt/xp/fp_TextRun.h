@@ -61,7 +61,7 @@ public:
 #endif
 	void                    appendTextToBuf(UT_GrowBuf & buf);
 	virtual bool			hasLayoutProperties(void) const;
-	virtual void			fetchCharWidths(fl_CharWidths * pgbCharWidths);
+	//virtual void			fetchCharWidths(fl_CharWidths * pgbCharWidths);
 #ifndef WITH_PANGO
 	virtual bool			recalcWidth(void);
 #else
@@ -142,7 +142,7 @@ public:
 #endif
 
 protected:
-	void					_fetchCharWidths(GR_Font* pFont, UT_GrowBufElement* pCharWidths);
+	// void					_fetchCharWidths(GR_Font* pFont, UT_GrowBufElement* pCharWidths);
 	virtual void			_draw(dg_DrawArgs*);
 	virtual void			_clearScreen(bool bFullLineHeightRect = true);
 

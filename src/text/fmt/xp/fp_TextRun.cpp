@@ -879,10 +879,17 @@ void fp_TextRun::mergeWithNext(void)
 
 	// join the two span buffers; this will save us refreshing the draw buffer
 	// which is very expensive
+#if 0
 	// however, first make sure that the buffers are uptodate (_refreshDrawBuffer
 	// decides whether this is needed or not)
+	//
+	// Actually, we do not want to do this; we will simply join the
+	// two buffers as they are, and OR the draw buffer states
 	_refreshDrawBuffer();
 	pNext->_refreshDrawBuffer();
+#else
+	_setRefreshDrawBuffer(_getRefreshDrawBuffer() | pNext->_getRefreshDrawBuffer());
+#endif
 
 	// we need to take into consideration whether this run has been reversed
 	// in which case the order of the concating needs to be reversed too
@@ -933,7 +940,7 @@ void fp_TextRun::mergeWithNext(void)
 		*(m_pSpanBuff + iMyLen + iNextLen) = 0;
 	}
 
-	setLength(iMyLen + iNextLen);
+	setLength(iMyLen + iNextLen, false);
 	_setDirty(isDirty() || pNext->isDirty());
 
 	setNext(pNext->getNext(), false);
@@ -1089,6 +1096,7 @@ bool fp_TextRun::split(UT_uint32 iSplitOffset)
 	return true;
 }
 
+#if 0
 void fp_TextRun::_fetchCharWidths(GR_Font* pFont, UT_GrowBufElement* pCharWidths)
 {
 	UT_ASSERT(pCharWidths);
@@ -1138,6 +1146,7 @@ void fp_TextRun::fetchCharWidths(fl_CharWidths * pgbCharWidths)
 	}
 	return;
 }
+#endif
 
 UT_sint32 fp_TextRun::simpleRecalcWidth(UT_sint32 iLength)
 {
@@ -1838,7 +1847,6 @@ void fp_TextRun::_refreshDrawBuffer()
 {
 	if(_getRefreshDrawBuffer())
 	{
-		_setRefreshDrawBuffer(false);
 		FriBidiCharType iVisDir = getVisDirection();
 
 		const UT_UCSChar* pSpan = NULL;
@@ -1910,6 +1918,9 @@ void fp_TextRun::_refreshDrawBuffer()
 		if((!s_bBidiOS && iVisDir == FRIBIDI_TYPE_RTL)
 		  || (s_bBidiOS && m_iDirOverride == FRIBIDI_TYPE_LTR && _getDirection() == FRIBIDI_TYPE_RTL))
 			UT_UCS4_strnrev(m_pSpanBuff, getLength());
+
+		// mark the draw buffer clean ...
+		_setRefreshDrawBuffer(false);
 	} //if(m_bRefreshDrawBuffer)
 }
 

@@ -706,17 +706,17 @@ bool fp_Run::isOnlyRunOnLine(void) const
 	return false;
 }
 
-void fp_Run::setLength(UT_uint32 iLen)
+void fp_Run::setLength(UT_uint32 iLen, bool bRefresh)
 {
 	if (iLen == getLength())
 	{
 		return;
 	}
-    m_bRecalcWidth = true;
+    m_bRecalcWidth = bRefresh;
 	clearScreen();
 
 	m_iLen = iLen;
-	m_bRefreshDrawBuffer = true;
+	m_bRefreshDrawBuffer = bRefresh;
 }
 
 void fp_Run::setBlockOffset(UT_uint32 offset)
