@@ -54,7 +54,9 @@ PLATFORM_OBJS=	$(OBJDIR)/ut_debugmsg.$(OBJ_SUFFIX)	\
 		$(OBJDIR)/ut_$(ABI_FE)Idle.$(OBJ_SUFFIX)	\
 		$(OBJDIR)/ut_$(ABI_FE)Locale.$(OBJ_SUFFIX)	\
 		$(OBJDIR)/ut_sleep.$(OBJ_SUFFIX)            \
-		$(OBJDIR)/ut_Xpm2Bmp.$(OBJ_SUFFIX)
+		$(OBJDIR)/ut_Xpm2Bmp.$(OBJ_SUFFIX)			\
+		$(OBJDIR)/ut_Win32Uuid.$(OBJ_SUFFIX)		\
+		$(OBJDIR)/ut_Win32Misc.$(OBJ_SUFFIX)		
 endif
 
 ifeq ($(ABI_NATIVE), beos)

@@ -22,6 +22,8 @@
 #include <winsock.h>
 #include <snmp.h>
 #include <nb30.h>
+#include "ut_debugmsg.h"
+
 /*!
     UT_gettimeofday() fills in the timeval structure with current
     time; the platform implementation needs to be as accurate as

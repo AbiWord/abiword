@@ -22,6 +22,7 @@
 
 #include "ut_Win32Uuid.h"
 #include "ut_assert.h"
+#include "ut_debugmsg.h"
 
 HCRYPTPROV UT_Win32UUID::s_hProv = 0;
 UT_sint32  UT_Win32UUID::s_iInstCount = 0;
