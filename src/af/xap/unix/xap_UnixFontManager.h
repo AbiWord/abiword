@@ -31,6 +31,7 @@
 #include "xap_UnixApp.h"
 #include "xap_UnixFont.h"
 
+class GR_Graphics;
 /*****************************************************************/
 
 class UT_String;
@@ -50,13 +51,14 @@ public:
 									XAP_UnixFont::style s);
 
 	XAP_UnixFont*			searchFont(const char* pszXftName);
-
+	bool                    isDeallocated(XAP_UnixFont * pF);
 	XAP_UnixFont*			findNearestFont(const char* pszFontFamily,
 											const char* pszFontStyle,
 											const char* pszFontVariant,
 											const char* pszFontWeight,
 											const char* pszFontStretch,
-											const char* pszFontSize);
+											const char* pszFontSize,
+											GR_Graphics * pG=NULL);
 	
 	// MARCM: this should point to the only instance of XAP_UnixFontManager, 
 	// so we can reach our Font Manager from a static context. Without having this static
@@ -71,13 +73,15 @@ private:
 								 const char* /* pszFontVariant */,
 								 const char* pszFontWeight,
 								 const char* /* pszFontStretch */,
-								 const char* pszFontSize);
+								 const char* pszFontSize,
+								 GR_Graphics * pG);
 
-	void					_addFont(XAP_UnixFont* font);
+	void					_addFont(XAP_UnixFont* font,GR_Graphics * pG);
 
 	UT_StringPtrMap 		m_fontHash;
 	FcFontSet*		m_pFontSet;
 	FcConfig*		m_pConfig;
+	UT_Vector       m_vecDeallocatedFonts;
 };
 
 #endif /* XAP_UNIXFONTMANAGER_H */

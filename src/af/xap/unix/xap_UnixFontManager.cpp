@@ -27,7 +27,7 @@
 #include "ut_debugmsg.h"
 #include "ut_string.h"
 #include "xap_UnixDialogHelper.h"
-
+#include "ut_string_class.h"
 #include "xap_UnixFontManager.h"
 #include "xap_UnixFontXLFD.h"
 #include "xap_EncodingManager.h"
@@ -36,6 +36,7 @@
 #include <sys/stat.h>
 #include "xap_Strings.h"
 #include "xap_Prefs.h"
+#include "gr_Graphics.h"
 
 // initialize our static member pFontManager
 XAP_UnixFontManager * XAP_UnixFontManager::pFontManager = 0;
@@ -51,12 +52,13 @@ XAP_UnixFontManager::XAP_UnixFontManager(void) : m_fontHash(256),
 XAP_UnixFontManager::~XAP_UnixFontManager(void)
 {
 	UT_HASH_PURGEDATA(XAP_UnixFont *, &m_fontHash, delete);
-
+	UT_VECTOR_PURGEALL(XAP_UnixFont *,m_vecDeallocatedFonts);
 	if (m_pFontSet)
 		FcFontSetDestroy (m_pFontSet);
 
 	if (m_pConfig)
 		FcConfigDestroy (m_pConfig);
+
 }
 
 /*!
@@ -127,7 +129,8 @@ static XAP_UnixFont* buildFont(XAP_UnixFontManager* pFM, FcPattern* fp)
 
 	// create the string representing our Pattern
 	char* xlfd = reinterpret_cast<char*>(FcNameUnparse(fp));
-
+//	UT_String sXLFD = xlfd;
+//	UT_ASSERT(sXLFD.size() < 100);
 	// get the family of the font
 	unsigned char *family;
 	FcPatternGetString(fp, FC_FAMILY, 0, &family);
@@ -189,7 +192,7 @@ bool XAP_UnixFontManager::scavengeFonts()
 			if (pFont)
 			{
 				FcFontSetAdd(m_pFontSet, fs->fonts[j]);
-				_addFont(pFont);
+				_addFont(pFont,NULL);
 			}
 		}
 
@@ -213,6 +216,14 @@ XAP_UnixFont* XAP_UnixFontManager::searchFont(const char* pszXftName)
 		sLeft += szLocm;
 		sXftName = sLeft;
 		UT_DEBUGMSG(("searchFont:: Symbol replaced with %s \n",sXftName.utf8_str()));
+	}
+	else if(strstr(pszXftName,"symbol") != NULL)
+	{
+		const char * szLocm = strstr(pszXftName,"-");
+		UT_UTF8String sLeft("Standard Symbols L");
+		sLeft += szLocm;
+		sXftName = sLeft;
+		UT_DEBUGMSG(("searchFont:: symbol replaced with %s \n",sXftName.utf8_str()));
 	}
 
 	fp = FcNameParse(reinterpret_cast<const FcChar8*>(sXftName.utf8_str()));
@@ -349,7 +360,8 @@ XAP_UnixFontManager::forceFontSynth(XAP_UnixFontManager* pFontManager,
 									const char* /* pszFontVariant */,
 									const char* pszFontWeight,
 									const char* /* pszFontStretch */,
-									const char* pszFontSize)
+									const char* pszFontSize,
+									GR_Graphics * pG)
 {
   UT_UTF8String pszFontSlant(!UT_stricmp("italic", pszFontStyle)? "100":
 							 !UT_stricmp("oblique", pszFontStyle)? "110":
@@ -397,7 +409,7 @@ XAP_UnixFontManager::forceFontSynth(XAP_UnixFontManager* pFontManager,
 	  
   }	
 
-  _addFont(pNewFont);
+  _addFont(pNewFont,pG);
   
   return pNewFont;
 }
@@ -413,7 +425,8 @@ XAP_UnixFont* XAP_UnixFontManager::findNearestFont(const char* pszFontFamily,
 												   const char* /* pszFontVariant */,
 												   const char* pszFontWeight,
 												   const char* /* pszFontStretch */,
-												   const char* pszFontSize)
+												   const char* pszFontSize,
+												   GR_Graphics * pG)
 {
 	UT_UTF8String st(pszFontFamily);
 
@@ -467,7 +480,7 @@ XAP_UnixFont* XAP_UnixFontManager::findNearestFont(const char* pszFontFamily,
 	if(!pFont){
 	  UT_DEBUGMSG(("The font does not exist!\n"));
 	  pFont = forceFontSynth(pFontManager, pszFontFamily, pszFontStyle, NULL, pszFontWeight,
-							 NULL, pszFontSize);
+							 NULL, pszFontSize,pG);
 	}
 	
 	// If the font still doesn't exist, search for possible alternatives
@@ -478,25 +491,25 @@ XAP_UnixFont* XAP_UnixFontManager::findNearestFont(const char* pszFontFamily,
 		&& !UT_stricmp(pszFontWeight, "bold")){
 	      pFont = findNearestFont(pszFontFamily, "normal",
 				      NULL, pszFontWeight,
-				      NULL, pszFontSize);
+				      NULL, pszFontSize,pG);
 	      if (pFont && (pFont->getStyle() == XAP_UnixFont::STYLE_NORMAL)){
 		pFont = findNearestFont(pszFontFamily, pszFontStyle,
 					NULL, "normal",
-					NULL, pszFontSize);
+					NULL, pszFontSize,pG);
 	      }
 	    } else if (!UT_stricmp(pszFontStyle, "italic") || !UT_stricmp(pszFontStyle, "oblique")){
 	      pFont = findNearestFont(pszFontFamily, "normal",
 				      NULL, pszFontWeight,
-				      NULL, pszFontSize);
+				      NULL, pszFontSize,pG);
 	    } else if (!UT_stricmp(pszFontWeight, "bold")){
 	      pFont = findNearestFont(pszFontFamily, pszFontStyle,
 				      NULL, "normal",
-				      NULL, pszFontSize);
+				      NULL, pszFontSize,pG);
 	    } else {
 	      UT_DEBUGMSG(("No Such Font!\n"));
 	      pFont = findNearestFont("Times", "normal",
 				      NULL, "normal",
-				      NULL, pszFontSize);    
+				      NULL, pszFontSize,pG);    
 	    }
 	  }
   
@@ -519,7 +532,12 @@ XAP_UnixFont * XAP_UnixFontManager::getFont(const char * fontname,
 	return const_cast<XAP_UnixFont *>(entry);
 }
 
-void XAP_UnixFontManager::_addFont(XAP_UnixFont * newfont)
+bool XAP_UnixFontManager::isDeallocated(XAP_UnixFont * pF)
+{
+	return (m_vecDeallocatedFonts.findItem(pF) >= 0);
+}
+
+void XAP_UnixFontManager::_addFont(XAP_UnixFont * newfont,GR_Graphics * pG)
 {
 	// we index fonts by a combined "name" and "style"
 	const char* fontkey = newfont->getFontKey();
@@ -527,7 +545,17 @@ void XAP_UnixFontManager::_addFont(XAP_UnixFont * newfont)
 	if (curfont_entry)
 	{
 		const XAP_UnixFont* curfont = static_cast<const XAP_UnixFont*>(curfont_entry);
-		delete curfont;     
+//
+// Delay the deletion of this font until this class is deleted. There could
+// be a pointer to this font in fp_Run as well as being in the GR_Graphics
+// font cache.
+//
+		m_vecDeallocatedFonts.addItem(curfont);
+		if(pG)
+		{
+			UT_DEBUGMSG(("Invalidate graphics cache %x \n",pG));
+			pG->invalidateCache();
+		}
 		m_fontHash.remove (fontkey, NULL);
 	} 
 

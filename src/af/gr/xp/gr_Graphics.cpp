@@ -174,6 +174,23 @@ void GR_Graphics::_destroyFonts ()
 	m_hashFontCache.clear ();
 }
 
+/*!
+ * WARNING! WARNING! WARNING!
+ * Only gr_UnixGraphics should call this!
+ * Because xap_UnixFontManager "owns" it's fonts, keeps it's own cache of them
+ * and will happily destroy them. If it does this, the cache of pointers here
+ * is no longer valid.
+ * It would be better to simply remove the font from this cache too but the
+ * key used in the xap_UnixFontManager class is different fromt the key used
+ * here.
+ * Until a better solution appears I'll leave this here. Other classes should
+ * use _destroyFonts to remove the cache. 
+ */
+void GR_Graphics::invalidateCache(void)
+{
+	m_hashFontCache.clear ();
+}
+
 void GR_Graphics::beginPaint ()
 {
 	if (m_paintCount == 0)

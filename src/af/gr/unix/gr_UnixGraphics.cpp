@@ -508,9 +508,11 @@ const char* GR_Graphics::findNearestFont(const char* pszFontFamily,
 										 const char* pszFontStretch,
 										 const char* pszFontSize)
 {
-
+	UT_DEBUGMSG(("Find Font findNearestFont for %s \n",pszFontFamily));
 	XAP_UnixFont* pUnixFont = XAP_UnixFontManager::pFontManager->findNearestFont(pszFontFamily, pszFontStyle, pszFontVariant, pszFontWeight,
 																				 pszFontStretch, pszFontSize);
+	UT_DEBUGMSG(("Return Font name %s \n",pUnixFont->getName()));
+	//	UT_ASSERT(0);
 	return pUnixFont->getName();
 }
 
@@ -790,12 +792,12 @@ void GR_UnixGraphics::setLineProperties ( double inWidth,
 void GR_UnixGraphics::drawGlyph(UT_uint32 Char, UT_sint32 xoff, UT_sint32 yoff)
 {
 	UT_uint32 iChar = Char;
-	if(m_bIsSymbol && iChar < 255  && iChar >= 32)
+	if(m_bIsSymbol && (iChar < 255)  && (iChar >= 32))
 	{
 		iChar = adobeToUnicode(Char);
 		xxx_UT_DEBUGMSG(("DrawGlyph 1 remapped %d to %d \n",Char,iChar));
 	}
-	if(m_bIsDingbat && iChar < 255  && iChar >= 32)
+	if(m_bIsDingbat && (iChar < 255)  && (iChar >= 32))
 	{
 		iChar = adobeDingbatsToUnicode(Char);
 		xxx_UT_DEBUGMSG(("DrawGlyph 1 remapped %d to %d \n",Char,iChar));
@@ -835,7 +837,7 @@ void GR_UnixGraphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
 			for(UT_uint32 i = static_cast<UT_uint32>(iCharOffset); i< static_cast<UT_uint32>(iLength); i++)
 			{
 				uChars[i] = static_cast<UT_uint32>(pChars[iCharOffset + i]);
-				if(uChars[i] < 255 && uChars[i] >= 32)
+				if((uChars[i] < 255) && (uChars[i] >= 32))
 				{
 					uChars[i] = adobeToUnicode(uChars[i]);
 					xxx_UT_DEBUGMSG(("drawchars: mapped %d to %d \n",pChars[i],uChars[i]));
@@ -847,15 +849,15 @@ void GR_UnixGraphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
 		}
 		else if(m_bIsDingbat)
 		{
-			xxx_UT_DEBUGMSG(("Doing draw symbols length %d offset %d \n",iLength,iCharOffset));
+			UT_DEBUGMSG(("Doing draw Dingbat symbols length %d offset %d \n",iLength,iCharOffset));
 			UT_uint32 * uChars = new UT_uint32[iLength];
 			for(UT_uint32 i = static_cast<UT_uint32>(iCharOffset); i< static_cast<UT_uint32>(iLength); i++)
 			{
 				uChars[i] = static_cast<UT_uint32>(pChars[iCharOffset + i]);
-				if(uChars[i] < 255 && uChars[i] >= 32)
+				if((uChars[i] < 255) && (uChars[i] >= 32))
 				{
 					uChars[i] = adobeDingbatsToUnicode(uChars[i]);
-					xxx_UT_DEBUGMSG(("drawchars: mapped %d to %d \n",pChars[i],uChars[i]));
+					UT_DEBUGMSG(("drawchars: mapped Dingbat %d to %d \n",pChars[iCharOffset + i],uChars[i]));
 				}
 			}
 			XftDrawString32(m_pXftDraw, &m_XftColor, m_pXftFontD, tdu(m_iXoff) +idx, tdu(iAscent + m_iYoff)+idy,
@@ -943,6 +945,16 @@ void GR_UnixGraphics::setFont(GR_Font * pFont)
 	//   so I will not meddle with this, but it needs to be
 	//   investigated by someone who knows better -- Tomas
 	
+	// It's worse. Fonts can get deallocated in the cache but have
+    // pointers to them in fp_Run.h. I can detect them here and prevent
+	// crashes but I don't know
+	// how to communicate this back to fp_Run and fully solve this right now 
+	// - Martin
+
+	XAP_UnixFont * pUnixFont = pUFont->getUnixFont();
+	//	bool bDealloc = m_pFontManager->isDeallocated(pUnixFont);
+	//UT_ASSERT(!bDealloc);
+
 	if(m_pFont && (pUFont->getUnixFont() == m_pFont->getUnixFont()) &&
 	   (pUFont->getSize() == m_pFont->getSize()))
 	{
@@ -957,21 +969,24 @@ void GR_UnixGraphics::setFont(GR_Font * pFont)
 
 	m_pFont = pUFont;
 	char * szUnixFontName = UT_strdup(m_pFont->getUnixFont()->getName());
-	const char * szFontName = UT_lowerString(szUnixFontName);
+	const char * szLCFontName = UT_lowerString(szUnixFontName);
 
-	if (szFontName)
+	if (szLCFontName)
 	{
-		if(strstr(szFontName,"symbol") != NULL)
+		if(strstr(szLCFontName,"symbol") != NULL)
 		{
-			if(strstr(szFontName,"star") != NULL)
+			if(strstr(szLCFontName,"star") != NULL)
 				m_bIsSymbol = false;
 			else
 				m_bIsSymbol = true;
 		}
-		if(strstr(szFontName,"dingbat") != NULL)
+		if(strstr(szLCFontName,"dingbat") != NULL)
 			m_bIsDingbat = true;
 	}
-	FREEP(szFontName);
+	FREEP(szLCFontName);
+	//	m_bIsSymbol = false;
+	//  m_bIsDingbat = false;
+	
 	m_pXftFontL = m_pFont->getLayoutXftFont();
 	m_pXftFontD = m_pFont->getDeviceXftFont(getZoomPercentage());
 }
@@ -1116,14 +1131,15 @@ GR_Font * GR_UnixGraphics::_findFont(const char* pszFontFamily,
 									 const char* pszFontStretch,
 									 const char* pszFontSize)
 {
+	UT_DEBUGMSG(("Find Font _findFont for %s \n",pszFontFamily));
 	XAP_UnixFont* pUnixFont = m_pFontManager->findNearestFont(pszFontFamily, pszFontStyle, pszFontVariant, pszFontWeight,
-															  pszFontStretch, pszFontSize);
+															  pszFontStretch, pszFontSize,this);
 
 	// bury the pointer to our Unix font in a XAP_UnixFontHandle with the correct size.
 	UT_uint32 iSize = static_cast<UT_uint32>(UT_convertToPoints(pszFontSize));
 	XAP_UnixFontHandle* pFont = new XAP_UnixFontHandle(pUnixFont, iSize);
 	UT_ASSERT(pFont);
-
+	UT_DEBUGMSG(("Return Font name %s \n",pUnixFont->getName())); 
 	return pFont;
 }
 

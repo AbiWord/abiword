@@ -335,6 +335,7 @@ class ABI_EXPORT GR_Graphics
 	virtual UT_uint32 getFontAscent() = 0;
 	virtual UT_uint32 getFontDescent() = 0;
 	virtual UT_uint32 getFontHeight() = 0;
+	void              invalidateCache(void);
 
 	virtual UT_uint32 measureString(const UT_UCSChar*s,
 									int iOffset,

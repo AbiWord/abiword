@@ -143,7 +143,7 @@ XAP_UnixFont::XAP_UnixFont(XAP_UnixFontManager * pFM)
 	: m_fontKey(NULL), 
 	  m_name(NULL), 
 	  m_style(STYLE_LAST),
-	  m_xlfd(NULL), 
+	  m_xlfd(""), 
 	  m_uniWidths(NULL),
 	  m_fontfile(NULL), 
 	  m_metricfile(NULL), 
@@ -167,7 +167,7 @@ XAP_UnixFont::XAP_UnixFont(const XAP_UnixFont & copy)
 
 	m_name = NULL;
 	m_style = STYLE_LAST;
-	m_xlfd = NULL;
+	m_xlfd = "";
 
 	m_fontfile = NULL;
 	m_metricfile = NULL;
@@ -193,18 +193,18 @@ XAP_UnixFont::XAP_UnixFont(const XAP_UnixFont & copy)
 	  {
 		  allocFont *p = static_cast<allocFont *>(copyAllocFonts.getNthItem(i));
 		  insertFontInCache(p->pixelSize, XftFontCopy(GDK_DISPLAY(), p->xftFont));
+		  UT_ASSERT(m_allocFonts.getItemCount() < 100000);
+
 	  }
 }
 
 XAP_UnixFont::~XAP_UnixFont(void)
 {
-	xxx_UT_DEBUGMSG(("~XAP_UnixFont:: HELP! I'm getting deleted! Make sure this is at program startup or shutdown!!\n"));
+	xxx_UT_DEBUGMSG(("~XAP_UnixFont:: HELP! %x is  getting deleted! Make sure this is at program startup or shutdown!! \n",this));
 	FREEP(m_name);
 	FREEP(m_fontfile);
 	FREEP(m_metricfile);
-	FREEP(m_xlfd);
 	FREEP(m_fontKey);
-
 	//      UT_VECTOR_PURGEALL(allocFont *, m_allocFonts);
 	for (UT_uint32 i = 0; i < m_allocFonts.getItemCount(); ++i)
 	  {
@@ -230,11 +230,24 @@ bool XAP_UnixFont::doesGlyphExist(UT_UCS4Char g)
 //
 	if(m_bIsSymbol)
 	{
-		g = static_cast<UT_UCS4Char>(adobeToUnicode(g));
+		UT_UCS4Char ig = g;
+		ig = static_cast<UT_UCS4Char>(adobeToUnicode(g));
+		if((ig != g) && (ig != 0))
+		{
+			return true;
+		}
+		g = ig;
+		UT_DEBUGMSG(("Symbol Glyph remapped to %x \n",g));
 	}
 	if(m_bIsDingbat)
 	{
-		g = static_cast<UT_UCS4Char>(adobeDingbatsToUnicode(g));
+		UT_UCS4Char ig = static_cast<UT_UCS4Char>(adobeDingbatsToUnicode(g));
+		if((ig != g) && (ig != 0))
+		{
+			return true;
+		}
+		g = ig;
+		UT_DEBUGMSG(("Dingbat Glyph remapped to %x \n",g));
 	}
 	UT_return_val_if_fail (m_pXftFont, false);
 	return XftCharExists(GDK_DISPLAY(), m_pXftFont, (FcChar32)g);
@@ -250,18 +263,19 @@ bool XAP_UnixFont::openFileAs(const char *fontfile, const char *metricfile, cons
 	m_bIsSymbol = false;
 	m_bIsDingbat = false;
 	char * szUnixFontName = UT_strdup(m_name);
-	const char * szFontName = UT_lowerString(szUnixFontName);
+	const char * szLCFontName = UT_lowerString(szUnixFontName);
 
-	if(strstr(szUnixFontName,"symbol") != NULL)
+	if(strstr(szLCFontName,"symbol") != NULL)
 	{
-		if(strstr(szUnixFontName,"star") != NULL)
+		if(strstr(szLCFontName,"star") != NULL)
 			m_bIsSymbol = false;
 		else
 			m_bIsSymbol = true;
 	}
-	if(strstr(szUnixFontName,"dingbat") != NULL)
+	if(strstr(szLCFontName,"dingbat") != NULL)
 		m_bIsDingbat = true;
-	FREEP(szFontName);
+
+	FREEP(szLCFontName);
 
 	// save to memebers
 	FREEP(m_fontfile);
@@ -301,18 +315,18 @@ void XAP_UnixFont::setName(const char *name)
 	m_bIsSymbol = false;
 	m_bIsDingbat = false;
 	char * szUnixFontName = UT_strdup(m_name);
-	const char * szFontName = UT_lowerString(szUnixFontName);
+	const char * szLCFontName = UT_lowerString(szUnixFontName);
 
-	if(strstr(szUnixFontName,"symbol") != NULL)
+	if(strstr(szLCFontName,"symbol") != NULL)
 	{
-		if(strstr(szUnixFontName,"star") != NULL)
+		if(strstr(szLCFontName,"star") != NULL)
 			m_bIsSymbol = false;
 		else
 			m_bIsSymbol = true;
 	}
-	if(strstr(szUnixFontName,"dingbat") != NULL)
+	if(strstr(szLCFontName,"dingbat") != NULL)
 		m_bIsDingbat = true;
-	FREEP(szFontName);
+	FREEP(szLCFontName);
 }
 
 const char *XAP_UnixFont::getName(void) const
@@ -342,13 +356,15 @@ const char *XAP_UnixFont::getMetricfile(void) const
 
 void XAP_UnixFont::setXLFD(const char *xlfd)
 {
-	FREEP(m_xlfd);
-	UT_cloneString(m_xlfd, xlfd);
+	m_xlfd = xlfd;
+//	UT_ASSERT(m_xlfd.size() < 100);
+//	UT_DEBUGMSG(("m_xlfd set to %s \n",m_xlfd.c_str()));
+
 }
 
 const char *XAP_UnixFont::getXLFD(void) const
 {
-	return m_xlfd;
+	return m_xlfd.c_str();
 }
 
 
@@ -735,6 +751,7 @@ void XAP_UnixFont::insertFontInCache(UT_uint32 pixelsize, XftFont * pXftFont) co
 
 	m_pXftFont = pXftFont;
 	m_allocFonts.push_back(static_cast<void *>(entry));
+	UT_ASSERT(m_allocFonts.getItemCount() < 100000);
 }
 
 /*! Loads pixelsize into cache - both layout & device versions. */
@@ -742,7 +759,7 @@ void XAP_UnixFont::fetchXftFont(UT_uint32 pixelsize) const
 {
 	XftFont * pXftFont;
 
-	FcPattern *fp = XftNameParse(m_xlfd);
+	FcPattern *fp = XftNameParse(m_xlfd.c_str());
 	FcResult result;
 	FcPattern *layout_fp = XftFontMatch(GDK_DISPLAY(),
 										DefaultScreen(GDK_DISPLAY()), fp,

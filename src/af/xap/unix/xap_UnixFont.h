@@ -35,7 +35,7 @@
 #include "xap_UnixFontXLFD.h"
 
 #include "ut_AdobeEncoding.h"
-
+#include "ut_string_class.h"
 #include <ft2build.h>
 #include FT_FREETYPE_H
 #include <X11/Xft/Xft.h>
@@ -149,7 +149,7 @@ private:
 	
 	char * 					m_name;
 	XAP_UnixFont::style		m_style;
-	char * 					m_xlfd;
+	UT_String    			m_xlfd;
 	
 	// The next line is the info that is given back to us by parseAFM. The line after that is our own mangled one to follow Unicode.
 	uniWidth *				m_uniWidths;
