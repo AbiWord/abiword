@@ -107,7 +107,9 @@ There are several ways to build and run AbiWord:
     ABI_OPT_PSPELL=[1,0]		enable Pspell
     ABI_OPT_PROF=[1,0]			for profiling flags I think
     ABI_OPT_WAY_TOO_MANY_WARNINGS=[1,0]	linux one to disable some warnings???
-
+    ABI_OPT_PACIFY_COMPILER		quiet down the compiler warnings and allow more bogus code, depending on platform.
+    ABI_OPT_EXCLUSIVE_OPT		tighter code, but will only work on that particular architecture and above.
+    ABI_OPT_TINY			Optimize for size.
 
     Linux specific options
     ----------------------
