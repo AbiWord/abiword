@@ -198,15 +198,15 @@ void AP_Dialog_Tab::_event_TabSelected( UT_sint32 index )
 
 void AP_Dialog_Tab::_event_Set(void)
 {
-	char buffer[20];
+	UT_String buffer;
 
-	buildTab(buffer, 20);
-
+	buildTab(buffer);
+	const char *cbuffer = buffer.c_str();
 	int Dimension_size = 0;
-	while(buffer[Dimension_size] != 0)
+	while(cbuffer[Dimension_size] != 0)
 	{
 
-		if(buffer[Dimension_size] == '/')
+		if(cbuffer[Dimension_size] == '/')
 		{
 			Dimension_size--;
 			break;
@@ -223,7 +223,7 @@ void AP_Dialog_Tab::_event_Set(void)
 		UT_ASSERT(pTabInfo);
 
 		// if we have a tab at that unit
-		if ( memcmp(buffer, _getTabString(pTabInfo), Dimension_size) == 0 )
+		if ( memcmp(cbuffer, _getTabString(pTabInfo), Dimension_size) == 0 )
 		{
 			// Delete the tab.
 	
@@ -236,13 +236,13 @@ void AP_Dialog_Tab::_event_Set(void)
 	// Add tab to list.
 
 	int NewOffset = strlen(m_pszTabStops);
-	char *p_temp = new char[NewOffset + 1 + strlen(buffer) + 1];
+	char *p_temp = new char[NewOffset + 1 + strlen(cbuffer) + 1];
 	strcpy(p_temp, m_pszTabStops);
 	if(m_pszTabStops[0] != 0)
 	{
 		strcat(p_temp, ",");
 	}
-	strcat(p_temp, buffer);
+	strcat(p_temp, cbuffer);
 	delete [] m_pszTabStops;
 	m_pszTabStops = p_temp;
 
@@ -262,7 +262,7 @@ void AP_Dialog_Tab::_event_Set(void)
 		UT_ASSERT(pTabInfo);
 
 		// if we have a tab at that unit
-		if ( memcmp(buffer, _getTabString(pTabInfo), Dimension_size) == 0 )
+		if ( memcmp(cbuffer, _getTabString(pTabInfo), Dimension_size) == 0 )
 		{
 			_setSelectTab(i);
 			_setTabEdit( _getTabDimensionString(i) );
@@ -404,23 +404,23 @@ void AP_Dialog_Tab::clearList()
 }
 
 
-void AP_Dialog_Tab::buildTab( char *buffer, UT_uint32 bufflen )
+void AP_Dialog_Tab::buildTab( UT_String buffer )
 {
 	// get current value from member
 	const XML_Char* szOld = _gatherTabEdit();
 	const XML_Char* szNew = UT_reformatDimensionString(m_dim, szOld); 
 
-	snprintf( buffer, bufflen, "%s/%c%c", szNew, AlignmentToChar(_gatherAlignment()),
+	UT_String_sprintf( buffer, "%s/%c%c", szNew, AlignmentToChar(_gatherAlignment()),
 		 				((char)_gatherLeader())+'0');
 }
 
 void AP_Dialog_Tab::_event_somethingChanged()
 {
-	char buffer[0x100];
+	UT_String buffer;
 
-	buildTab( buffer, 0x100 );
-
-	UT_DEBUGMSG(("AP_Dialog_Tab::_event_somethingChanged  [%s]\n", buffer ));
+	buildTab( buffer );
+	const char *cbuffer = buffer.c_str();
+	UT_DEBUGMSG(("AP_Dialog_Tab::_event_somethingChanged  [%s]\n", cbuffer ));
 
 	// check to see if the current tab is in the list
 	bool bEnableClear = false;
@@ -441,7 +441,7 @@ void AP_Dialog_Tab::_event_somethingChanged()
 		UT_ASSERT(pTabInfo);
 
 		// if we have a tab at that unit
-		if ( !strcmp(buffer, _getTabString(pTabInfo)) )
+		if ( !strcmp(cbuffer, _getTabString(pTabInfo)) )
 		{
 			bEnableClear = true;
 

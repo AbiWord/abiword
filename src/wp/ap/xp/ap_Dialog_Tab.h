@@ -84,7 +84,7 @@ class AP_Dialog_Tab : public XAP_Dialog_NonPersistent
 	void _storeWindowData(void);	
 
 	// grab tab from the current text/align/leader controls
-	void buildTab( char *buffer, UT_uint32 bufferlen );
+	void buildTab( UT_String buffer );
 
 	char *_getTabDimensionString(UT_uint32 tabIndex);
 	char *_getTabString(fl_TabStop *pTabInfo);
