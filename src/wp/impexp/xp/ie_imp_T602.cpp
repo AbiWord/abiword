@@ -725,7 +725,7 @@ UT_Error IE_Imp_T602::importFile(const char * szFilename)
    UT_Error error;  
    unsigned char c;
    
-   m_importFile = fopen(szFilename, "r");
+   m_importFile = fopen(szFilename, "rb");
    if (!m_importFile)
      {
 	UT_DEBUGMSG(("Could not open file %s\n",szFilename));
