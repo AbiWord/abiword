@@ -29,6 +29,7 @@
 #include "ut_assert.h"
 #include "ut_misc.h"
 #include "ut_string.h"
+#include "ut_iconv.h"
 
 #define min(x, y) (((x) > (y)) ? (y) : (x))
 
@@ -199,7 +200,8 @@ void GR_QNXGraphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
 {
 	PhPoint_t pos;
 	int i;
-
+	char *utf8;
+	UT_uint32 len;
 	pos.x = xoff;
 	pos.y = yoff + getFontAscent();
 
@@ -208,29 +210,7 @@ void GR_QNXGraphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
 	PgSetFont(m_pFont->getFont());
 	PgSetTextColor(m_currentColor);
 
-	/* We have no idea in advance how big this result is going
-	   to convert into, so we will guestimate with the MB_CUR_MAX,
-       which in theory is the max number of characters a wc will expand to.
-	*/
-	char *pNChars, utb[MB_CUR_MAX * 150];  // arbitrary biggish size for utb
-	int  blen, ipos;
-
-	if ((iLength * MB_CUR_MAX) < (int)(sizeof(utb) / sizeof(utb[0]))) {
-		blen = sizeof(utb) / sizeof(utb[0]);
-		pNChars = utb;
-	} else {
-		blen = iLength * MB_CUR_MAX;
-		pNChars = new char[blen];
-	}
-
-	for (i = ipos = 0; i < iLength; i++) {
-		int tlen;
-
-		UT_ASSERT((ipos + MB_CUR_MAX) < blen);
-		tlen = wctomb(&pNChars[ipos], remapGlyph(pChars[i + iCharOffset], false));
-		UT_ASSERT(tlen > 0);
-		ipos += tlen;
-	}
+	utf8=(char*)UT_convert((char*)pChars,(iLength)*sizeof(UT_UCS4Char),"UCS-4","UTF-8",NULL,&len);
 
 	//Faster to copy and not flush or to not copy and flush?
 /*
@@ -239,12 +219,10 @@ void GR_QNXGraphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
 	PgDrawTextmx(pNChars, ipos, &pos, 0);
 	PgFlush();
 */
-	PgDrawText(pNChars, ipos, &pos, 0);
+	PgDrawText(utf8,len , &pos, 0);
 
-	if (pNChars != utb) {
-		delete [] pNChars;
-	}
 
+	free(utf8);
 	DRAW_END
 }
 
@@ -260,36 +238,28 @@ void GR_QNXGraphics::drawChar(UT_UCSChar Char, UT_sint32 xoff, UT_sint32 yoff)
 UT_uint32 GR_QNXGraphics::measureUnRemappedChar(const UT_UCSChar c)
 {
 	PhRect_t rect;
-	const char *font;
-	int 	 indices, penpos;
-	UT_UCSChar buffer[1];
 
+	const char *font;
+	UT_UCS4Char buffer[2];
+	char *utf8;
+	
 	buffer[0]=c;
+	buffer[1]=NULL;
+	utf8=(char*)UT_convert((char*)buffer,sizeof(buffer),"UCS-4","UTF-8",NULL,NULL);	
+	
 if (!m_pFont || !(font = m_pFont->getFont())) {
 		return 0;
 	}
 
-	indices = 1;
-	penpos = 0;
 /*
 	printf("wide character %d (0x%x) [%c] in %s ==\n", c, c, (char)c, font);
 	printf("multi byte char 0x%x 0x%x 0x%x 0x%x (%d) \n", buffer[0], buffer[1], buffer[2], buffer[3], len);
 */
-	PfExtentTextCharPositions(&rect, 		/* Rect extent */
-				  NULL,			/* Position offset */
-				  (char*)buffer,	   	/* Buffer to hit */
-				  font, 		/* Font buffer uses */
-				  &indices,		/* Where to get pen pos from */
-				  &penpos, 		/* Where to store pen pos */
-				  1,			/* Number of indices */
-				  PF_WIDE_CHARS,		/* Flags */
-				  0,			/* Length of buffer (0 = use strlen) */
-				  0, 			/* Number of characters to skip */
-				  NULL);		/* Clipping rectangle? */
-/*
-	printf("gives width %d and char = 0x%x\n", penpos,c);
-*/
+	int indices=1;
+	int penpos=0;
+	PfExtentTextCharPositions(&rect,NULL,utf8,font,&indices,&penpos,1,0,0,0,NULL);
 
+	free(utf8);
 	return penpos;
 }
 
