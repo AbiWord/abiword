@@ -338,6 +338,8 @@ void AP_QNXDialog_Tab::_controlEnable( tControl id, UT_Bool value )
 	}
 }
 
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+
 eTabType AP_QNXDialog_Tab::_gatherAlignment()
 {
 #if 0
@@ -367,6 +369,9 @@ void AP_QNXDialog_Tab::_setAlignment( eTabType a )
 	}
 }
 
+
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+
 eTabLeader AP_QNXDialog_Tab::_gatherLeader()
 {
 	return FL_LEADER_NONE;
@@ -391,50 +396,22 @@ void AP_QNXDialog_Tab::_setLeader( eTabLeader a )
 	}
 }
 
-UT_sint32 AP_QNXDialog_Tab::_gatherDefaultTabStop()
+
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+
+const XML_Char * AP_QNXDialog_Tab::_gatherDefaultTabStop()
 {
-	return 5;
+	//return gtk_entry_get_text( GTK_ENTRY( _lookupWidget( id_SPIN_DEFAULT_TAB_STOP ) ) );
+	return NULL;
 }
 
-void AP_QNXDialog_Tab::_setDefaultTabStop( UT_sint32 a )
+void AP_QNXDialog_Tab::_setDefaultTabStop( const XML_Char * a )
 {
 	UT_UNUSED(a);
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-
-UT_sint32 AP_QNXDialog_Tab::_gatherSelectTab()
-{
-	UT_ASSERT(UT_NOT_IMPLEMENTED);
-	return -1;
-}
-
-void AP_QNXDialog_Tab::_setSelectTab( UT_sint32 v )
-{
-	UT_ASSERT(UT_NOT_IMPLEMENTED);
-}
-
-// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-
-const char * AP_QNXDialog_Tab::_gatherTabEdit()
-{
-	UT_ASSERT(UT_NOT_IMPLEMENTED);
-	return NULL;
-}
-
-void AP_QNXDialog_Tab::_setTabEdit( const char *pszStr )
-{
-	UT_ASSERT(UT_NOT_IMPLEMENTED);
-}
-
-
-// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-const UT_Vector& AP_QNXDialog_Tab::_gatherTabList()
-{
-	return m_tabInfo;
-}
-
-void AP_QNXDialog_Tab::_setTabList( const UT_Vector &v )
+void AP_QNXDialog_Tab::_setTabList( UT_uint32 count )
 {
 	PtWidget_t *wList = _lookupWidget( id_LIST_TAB );
 	UT_uint32 i;
@@ -448,7 +425,24 @@ void AP_QNXDialog_Tab::_setTabList( const UT_Vector &v )
 	}
 	PtListDeleteAllItems(wList);
 
-	for ( i = 0; i < v.getItemCount(); i++ )
+#if 0
+	for ( i = 0; i < count; i++ )
+	{
+		GtkWidget *li = gtk_list_item_new_with_label( _getTabDimensionString(i));
+
+		// we want to DO stuff
+		gtk_signal_connect(GTK_OBJECT(li),
+						   "select",
+						   GTK_SIGNAL_FUNC(s_list_select),
+						   (gpointer) this);
+
+		// show this baby
+		gtk_widget_show(li);
+
+		gList = g_list_append( gList, li );
+	}
+
+	for ( i = 0; i < count; i++ )
 	{
 		pTabInfo = (fl_TabStop *)v.getNthItem(i);
 
@@ -462,6 +456,7 @@ void AP_QNXDialog_Tab::_setTabList( const UT_Vector &v )
 		ptr = UT_convertToDimensionlessString( pTabInfo->iPosition,  NULL);
 		PtListAddItems(wList, &ptr, 1, 0);
 	}
+#endif
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 

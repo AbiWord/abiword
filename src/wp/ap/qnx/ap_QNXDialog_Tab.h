@@ -47,10 +47,10 @@ protected:
  					    virtual void    _set##a( t )
 	SET_GATHER			(Alignment,			eTabType);
 	SET_GATHER			(Leader,			eTabLeader);
-	SET_GATHER			(DefaultTabStop,	UT_sint32);
+	SET_GATHER			(DefaultTabStop,	const XML_Char *);
 
 	// to populate the whole list
-	SET_GATHER			(TabList,			const UT_Vector &);
+	virtual void _setTabList(UT_uint32 count);
 
 	// get/set the selected tab
 	// the list of n tabs are index 0..(n-1)
@@ -61,7 +61,9 @@ protected:
 	SET_GATHER			(TabEdit,			const char *);
 #undef SET_GATHER
 
+	// clear all the items from the tab list - only gui side
 	virtual void			_clearList();
+
 
 	/*** End inherited ***/
 	PtWidget_t *			_lookupWidget ( tControl id );
