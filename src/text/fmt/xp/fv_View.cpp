@@ -2121,7 +2121,26 @@ bool FV_View::setStyle(const XML_Char * style, bool bDontGeneralUpdate)
 //
 // Do the list elements processing
 //
-	if(bisListStyle && (strstr(style,"Numbered Heading") == NULL))
+//
+// Look for Numbered Heading in the style or it's ancestry.
+//
+	bool bHasNumberedHeading = false;
+	const XML_Char * pszCurStyle = style;
+	PD_Style * pCurStyle = pStyle;
+	UT_uint32 depth = 0;
+	while(bisListStyle && pCurStyle && !bHasNumberedHeading && depth < 10)
+	{
+		bHasNumberedHeading = (strstr(pszCurStyle,"Numbered Heading") != NULL);
+		if(!bHasNumberedHeading)
+		{
+			pCurStyle = pCurStyle->getBasedOn();
+			if(pCurStyle)
+				pszCurStyle = pCurStyle->getName();
+			depth++;
+		}
+	}
+
+	if(bisListStyle && !bHasNumberedHeading)
 	{
 		UT_uint32 i;
 		for(i=0; i< vBlock.getItemCount(); i++)
@@ -2141,7 +2160,7 @@ bool FV_View::setStyle(const XML_Char * style, bool bDontGeneralUpdate)
 //
 // Code to handle Numbered Heading styles...
 //
-	else if(strstr(style,"Numbered Heading") != NULL)
+	else if(bHasNumberedHeading)
 	{
 		fl_BlockLayout*  currBlock = _findBlockAtPosition(getPoint());
 		PT_DocPosition pos = currBlock->getPosition(true) -1;
