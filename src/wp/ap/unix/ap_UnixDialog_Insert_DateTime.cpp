@@ -150,34 +150,29 @@ GtkWidget * AP_UnixDialog_Insert_DateTime::_constructWindowContents(void)
 	XML_Char * unixstr = NULL;	// used for conversions
 
 	vboxFormats = gtk_vbox_new (FALSE, 0);
-	//gtk_widget_ref (vboxFormats);
-	//gtk_widget_show (vboxFormats);
+	gtk_widget_show (vboxFormats);
 
 	UT_XML_cloneNoAmpersands(unixstr, pSS->getValue(AP_STRING_ID_DLG_DateTime_AvailableFormats));
 	labelFormats = gtk_label_new (unixstr);
 	FREEP(unixstr);
-	//gtk_widget_ref (labelFormats);
-	//gtk_widget_show (labelFormats);
+	gtk_widget_show (labelFormats);
 	gtk_box_pack_start (GTK_BOX (vboxFormats), labelFormats, FALSE, FALSE, 0);
 	gtk_label_set_justify (GTK_LABEL (labelFormats), GTK_JUSTIFY_LEFT);
 	gtk_misc_set_alignment (GTK_MISC (labelFormats), 0, 0.5);
 
 	scrolledwindowFormats = gtk_scrolled_window_new (NULL, NULL);
-	//gtk_widget_ref (scrolledwindowFormats);
-	//gtk_widget_show (scrolledwindowFormats);
+	gtk_widget_show (scrolledwindowFormats);
 	gtk_box_pack_start (GTK_BOX (vboxFormats), scrolledwindowFormats, TRUE, TRUE, 0);
 	gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (scrolledwindowFormats), GTK_POLICY_NEVER, GTK_POLICY_AUTOMATIC);
 	gtk_widget_set_usize(scrolledwindowFormats,-1,240);
 
 	viewportFormats = gtk_viewport_new (NULL, NULL);
-	//gtk_widget_ref (viewportFormats);
-	//gtk_widget_show (viewportFormats);
+	gtk_widget_show (viewportFormats);
 	gtk_container_add (GTK_CONTAINER (scrolledwindowFormats), viewportFormats);
 
 	listFormats = gtk_list_new ();
-	//gtk_widget_ref (listFormats);
 	gtk_list_set_selection_mode (GTK_LIST(listFormats), GTK_SELECTION_SINGLE);
-	//gtk_widget_show (listFormats);
+	gtk_widget_show (listFormats);
 	gtk_container_add (GTK_CONTAINER (viewportFormats), listFormats);
 
 	// *must set this here*
