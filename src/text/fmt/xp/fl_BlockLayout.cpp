@@ -7693,6 +7693,17 @@ fl_BlockSpellIterator::nextWordForSpellChecking(const UT_UCSChar*& pWord, UT_sin
 		bool bAllUpperCase = true;
 		bool bHasNumeric = false;
 		UT_sint32 iWordEnd = m_iWordOffset;
+		if (0 == iWordEnd) {
+			// Special check for first letter in the block - which can
+			// never be a word delimiter (we skipped those in the
+			// first loop of this method, remember?) - so juct collect
+			// the property data
+            bAllUpperCase &= UT_UCS4_isupper(m_pText[iWordEnd]);
+            bHasNumeric |= UT_UCS4_isdigit(m_pText[iWordEnd]);
+
+            iWordEnd++;
+        }
+
 		while (!bFound && (iWordEnd < (m_iLength-1)))
 		{
 			if (UT_isWordDelimiter( m_pText[iWordEnd], 
