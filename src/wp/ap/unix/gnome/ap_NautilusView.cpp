@@ -30,7 +30,9 @@
 
 #define ABIWORD_INTERNAL
 
+#ifdef HAVE_CONFIG_H
 #include <config.h>
+#endif
 #if 0
 #include "ap_NautilusView.h"
 #endif
