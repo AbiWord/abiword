@@ -615,6 +615,11 @@ void IE_Imp_XHTML::pasteFromBuffer(PD_DocumentRange * pDocRange,
 	if(e != UT_OK)
 	{
 		UT_DEBUGMSG(("Error pasting HTML.... \n"));
+		UT_DEBUGMSG(("Data is %s Length of buffer is %d \n",buf.getPointer(0),lenData));
+		delete p;
+		delete newXML;
+		UNREFP( newDoc);
+		return;
 	}
 	newDoc->finishRawCreation();
 	//

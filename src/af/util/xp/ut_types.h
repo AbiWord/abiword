@@ -150,6 +150,7 @@ typedef	UT_sint32		UT_Error;
 #define UT_IE_SKIPINVALID       ((UT_Error) -313)       // (pass) protected doc
 #define UT_IE_IMPORTERROR       ((UT_Error) -300) 	/* The general case */
 #define UT_IE_IMPSTYLEUNSUPPORTED  ((UT_Error) -314)
+#define UT_IE_XMLNOANGLEBRACKET    ((UT_Error) -360)
 
 ABI_EXPORT UT_Error UT_errnoToUTError (void);
 

@@ -88,14 +88,8 @@ bool  IE_Imp_PasteListener::populate(PL_StruxFmtHandle /* sfh */,
 	case PX_ChangeRecord::PXT_InsertObject:
 	{
 		const PX_ChangeRecord_Object * pcro = static_cast<const PX_ChangeRecord_Object *>(pcr);
-		if(pcro->getObjectType() == PTO_Image)
-		{
-		}
-		else
-		{
-			m_pPasteDocument->insertObject(m_insPoint,pcro->getObjectType(),atts,props);
-			m_insPoint++;
-		}
+		m_pPasteDocument->insertObject(m_insPoint,pcro->getObjectType(),atts,props);
+		m_insPoint++;
 		return true;
 	}
 
@@ -141,6 +135,22 @@ bool  IE_Imp_PasteListener::populateStrux(PL_StruxDocHandle sdh,
 	{
 		if(m_bFirstSection)
 		{
+//
+// Every doc has a first section. Now is good time to extract all the 
+// data items from the source document and stuff them into pasted doc
+//
+// Now these can be found via the properties of the spans and strux's
+//
+			void * pHandle = NULL;
+			const char * szName= NULL;
+			const UT_ByteBuf * pBuf = NULL;
+			const void * pToken;
+			UT_sint32 k = 0;
+			while(m_pSourceDoc->enumDataItems(k,&pHandle,&szName,&pBuf,&pToken))
+			{
+				m_pPasteDocument->createDataItem(szName,false,pBuf,pToken,&pHandle);
+				k++;
+			}
 			m_bFirstSection = false;
 			return true;
 		}
