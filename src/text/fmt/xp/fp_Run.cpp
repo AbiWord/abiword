@@ -1466,9 +1466,9 @@ void fp_ForcedLineBreakRun::lookupProperties(void)
 	FV_View* pView = m_pBL->getDocLayout()->getView();
 	if (pView && pView->getShowPara())
 	{
-		// Find width of Pilcrow
-		UT_UCSChar pEOP[] = { UCS_LINESEP, 0 };
-		UT_uint32 iTextLen = UT_UCS_strlen(pEOP);
+	  //UT_UCSChar pEOP[] = { UCS_LINESEP, 0 }; - see bug 1279
+	  UT_UCSChar pEOP[] = { '^', 'l', 0 };
+	  UT_uint32 iTextLen = UT_UCS_strlen(pEOP);
 
 		fp_Run* pPropRun = _findPrevPropertyRun();
 		if (pPropRun && (FPRUN_TEXT == pPropRun->getType()))
