@@ -44,10 +44,50 @@
 #include "ispell.h"
 #endif
 
-static bool
-SpellCheckWord (const UT_UCSChar * word, UT_uint32 len)
+SpellChecker *
+AP_Dialog_Spell::_getDict (void)
 {
-	SpellChecker * checker = SpellManager::instance().lastDictionary();
+	SpellChecker * checker = NULL;
+	const char * szLang = NULL;
+
+	const XML_Char ** props_in = NULL;
+
+	// todo: this isn't behaving properly
+	// todo: every language returned is the same
+	// todo: even for multi-language documents
+
+#if 1
+	if (m_pView && m_pView->getCharFormat(&props_in))
+	{
+		szLang = UT_getAttribute("lang", props_in);
+		FREEP(props_in);
+	}
+#else
+	if (m_pBlock)
+	{
+		szLang = m_pBlock->getProperty("lang");
+	}
+#endif
+
+	if (szLang)
+	{
+		// we get smart and request the proper dictionary
+		UT_DEBUGMSG(("DOM: icky language is %s\n", szLang));
+		checker = SpellManager::instance().requestDictionary(szLang);
+	}
+	else
+	{
+		// we just (dumbly) default to the last dictionary
+		checker = SpellManager::instance().lastDictionary();
+	}
+
+	return checker;
+}
+
+bool
+AP_Dialog_Spell::_spellCheckWord (const UT_UCSChar * word, UT_uint32 len)
+{
+	SpellChecker * checker = _getDict();
 
 	if (!checker)
 	{
@@ -266,14 +306,13 @@ bool AP_Dialog_Spell::nextMisspelledWord(void)
 				 if (currentChar == UCS_RQUOTE) currentChar = '\'';
 				 theWord[ldex] = currentChar;
 			 }
-			 UT_DEBUGMSG(("word: %s\n", theWord));
 			 if (!m_pDoc->isIgnore(theWord, m_iWordLength) &&
 			     !pApp->isWordInDict(theWord, m_iWordLength) &&
-			     !SpellCheckWord(theWord, m_iWordLength)) {
+			     !_spellCheckWord(theWord, m_iWordLength)) {
 		  
 			// unknown word...
 			// prepare list of possibilities
-			SpellChecker * checker = SpellManager::instance().lastDictionary();
+			SpellChecker * checker = _getDict();
 			if (!checker)
 			{
 				UT_DEBUGMSG(("No checker returned\n"));

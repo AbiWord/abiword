@@ -7539,8 +7539,33 @@ UT_UCSChar * FV_View::_lookupSuggestion(fl_BlockLayout* pBL, fl_PartOfBlock* pPO
 		theWord[ldex] = currentChar;
 	}
 
-	SpellChecker * checker = SpellManager::instance().lastDictionary();
-	sg = checker->suggestWord (theWord, pPOB->iLength);
+	{
+
+		SpellChecker * checker = NULL;
+		const char * szLang = NULL;
+
+		const XML_Char ** props_in = NULL;
+	
+		if (getCharFormat(&props_in))
+		{
+			szLang = UT_getAttribute("lang", props_in);
+			FREEP(props_in);
+		}
+		
+		if (szLang)
+		{
+			// we get smart and request the proper dictionary
+			checker = SpellManager::instance().requestDictionary(szLang);
+		}
+		else
+		{
+			// we just (dumbly) default to the last dictionary
+			checker = SpellManager::instance().lastDictionary();
+		}
+
+		sg = checker->suggestWord (theWord, pPOB->iLength);
+		
+	}
 
 	if (!sg)
 	{

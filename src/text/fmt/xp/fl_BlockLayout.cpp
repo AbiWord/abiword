@@ -118,10 +118,31 @@ static const char     * fmt_Lists[] = { fmt_NUMBERED_LIST,
 //////////////////////////////////////////////////////////////////////////
 
 
-static bool 
-SpellCheckWord (const UT_UCSChar * word, UT_uint32 len)
+bool 
+fl_BlockLayout::_spellCheckWord (const UT_UCSChar * word, UT_uint32 len)
 {
-	SpellChecker * checker = SpellManager::instance().lastDictionary();
+	SpellChecker * checker = NULL;
+	const char * szLang = NULL;
+
+	const XML_Char ** props_in = NULL;
+
+	FV_View* pView = m_pLayout->getView();
+	if (pView && pView->getCharFormat(&props_in))
+	{
+		szLang = UT_getAttribute("lang", props_in);
+		FREEP(props_in);
+	}
+
+	if (szLang)
+	{
+		// we get smart and request the proper dictionary
+		checker = SpellManager::instance().requestDictionary(szLang);
+	}
+	else
+	{
+		// we just (dumbly) default to the last dictionary
+		checker = SpellManager::instance().lastDictionary();
+	}
 
 	if (!checker)
 	{
@@ -414,24 +435,12 @@ void fl_BlockLayout::_lookupProperties(void)
 		//UT_DEBUGMSG(("Block: _lookupProperties, m_bDomDirection=%d (%s)\n", m_bDomDirection, getProperty("dom-dir", true)));
 #endif
 		const char* pszOrphans = getProperty("orphans");
-		if (pszOrphans && pszOrphans[0])
-		{
-			m_iOrphansProperty = atoi(pszOrphans);
-		}
-		else
-		{
-			m_iOrphansProperty = 1;
-		}
-		
+		UT_ASSERT(pszOrphans);
+		m_iOrphansProperty = atoi(pszOrphans);
+
 		const char* pszWidows = getProperty("widows");
-		if (pszWidows && pszWidows[0])
-		{
-			m_iWidowsProperty = atoi(pszWidows);
-		}
-		else
-		{	
-			m_iWidowsProperty = 1;
-		}
+		UT_ASSERT(pszWidows);
+		m_iWidowsProperty = atoi(pszWidows);
 
 		if (m_iOrphansProperty < 1)
 		{
@@ -2339,7 +2348,7 @@ bool fl_BlockLayout::_checkMultiWord(const UT_UCSChar* pBlockText,
 					theWord[ldex - (wordLength - newLength)] = currentChar;
 				}
 
-			   	if (!SpellCheckWord(theWord, newLength) &&
+			   	if (!_spellCheckWord(theWord, newLength) &&
 					!pApp->isWordInDict(theWord, newLength))
 				{
 					bool bIsIgnored = pDoc->isIgnore(theWord, newLength);
@@ -2438,7 +2447,7 @@ bool fl_BlockLayout::checkWord(fl_PartOfBlock* pPOB)
 		    theWord[ldex - (wordLength - newLength)] = currentChar;
 		  }
 
-		if (!SpellCheckWord(theWord, newLength) &&
+		if (!_spellCheckWord(theWord, newLength) &&
 			!pApp->isWordInDict(theWord, newLength))
 		{
 			// squiggle it
@@ -4806,7 +4815,7 @@ void fl_BlockLayout::recheckIgnoredWords()
 			(!bHasNumeric || !m_pLayout->getSpellCheckNumbers()) &&		// can these two lines be simplified?
 			(newLength < INPUTWORDLEN) &&
 
-			(!SpellCheckWord(theWord, newLength)) &&
+			(!_spellCheckWord(theWord, newLength)) &&
 			(!pApp->isWordInDict(theWord, newLength)))
 		{
 			// squiggle it

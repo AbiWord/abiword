@@ -62,7 +62,7 @@ XAP_Dialog_Language::~XAP_Dialog_Language(void)
 	if(m_pLangTable)
 		delete m_pLangTable;
 	if(m_ppLanguages)
-		delete m_ppLanguages;
+		delete [] m_ppLanguages;
 }
 
 // we will not use the value passed to us, but rather will reference

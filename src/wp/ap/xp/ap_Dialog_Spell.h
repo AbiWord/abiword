@@ -46,6 +46,9 @@ class AP_Dialog_Spell : public XAP_Dialog_NonPersistent
 
  protected:
 
+	bool _spellCheckWord (const UT_UCSChar * word, UT_uint32 len);
+	SpellChecker * _getDict();
+
    void _purgeSuggestions(void);
 
    UT_UCSChar * _getCurrentWord(void);

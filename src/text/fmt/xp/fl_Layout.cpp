@@ -73,7 +73,6 @@ void fl_Layout::setAttrPropIndex(PT_AttrPropIndex apIndex)
 bool fl_Layout::getAttrProp(const PP_AttrProp ** ppAP) const
 {
 	return m_pDoc->getAttrProp(m_apIndex,ppAP);
-	UT_DEBUGMSG(("SEVIOR: In fl_Layout m_apIndex = %x \n",m_apIndex));
 }
 
 bool fl_Layout::getSpanAttrProp(UT_uint32 offset, bool bLeftSide, const PP_AttrProp ** ppAP) const
