@@ -1775,7 +1775,18 @@ void FV_View::processSelectedBlocks(List_Type listType)
 		else
 		{
 			fl_BlockLayout * pPrev = pBlock->getPrev();
-			if(pBlock->isListItem()== NULL && pPrev != NULL && pPrev->isListItem()== true && pPrev->getAutoNum()->getType() == listType)
+//
+// Only attach block to previous list if the margin of the current block < the 
+// previous block.
+//
+			double prevLeft = 0.0;
+			double blockLeft = 0.0;
+			if(pPrev != NULL)
+			{
+				prevLeft = UT_convertToInches(pPrev->getProperty("margin-left",true));
+				blockLeft = UT_convertToInches(pBlock->getProperty("margin-left",true));
+			}
+			if(pBlock->isListItem()== NULL && pPrev != NULL && pPrev->isListItem()== true && pPrev->getAutoNum()->getType() == listType && (blockLeft <= (prevLeft - 0.00001)))
 			{
 				pBlock->resumeList(pPrev);
 			}			

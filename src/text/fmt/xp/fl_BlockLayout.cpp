@@ -5538,6 +5538,10 @@ void fl_BlockLayout::remItemFromList(void)
 	}
 }
 
+/*!
+ * Start a list with the paragraph definition container in the style defined by "style"
+\params const XML_CHar * style the name of the paragraph style for this block.
+*/
 void    fl_BlockLayout::StartList( const XML_Char * style)
 {
 	//
@@ -5577,6 +5581,8 @@ void    fl_BlockLayout::StartList( const XML_Char * style)
 			fIndent =  (float)-LIST_DEFAULT_INDENT_LABEL;
 		if(!szFont)
 			UT_ASSERT(0);
+		double dLeft = UT_convertToInches(getProperty("margin-left",true));
+		fAlign += dLeft;
 	}
 	else
 	{
@@ -5818,15 +5824,19 @@ void    fl_BlockLayout::StopList(void)
 		pView->_generalUpdate();
 	}
 
-/*
+#if 0
 	UT_uint32 currLevel = getLevel();
 
 	UT_ASSERT(currLevel > 0);
 	currLevel=0; // was currlevel--
-	sprintf(buf, "%i", currLevel);*/
+	sprintf(buf, "%i", currLevel);
+#endif
+
 	PT_DocPosition offset = pView->getPoint() - getPosition();
 	fl_BlockLayout * pPrev, * pNext;
-/*	if (currLevel == 0)
+
+#if 0
+	if (currLevel == 0)
 	{
 	id = 0;
 	//      if(pNext != NULL && pNext->isListItem()!= true)
@@ -5838,12 +5848,13 @@ void    fl_BlockLayout::StopList(void)
 	{
 	id = getAutoNum()->getParent()->getID();
 	pNext = getPreviousList( id);
-	}*/
+	}
+#endif
+
 	if (getAutoNum()->getParent())
 	{
 		id = getAutoNum()->getParent()->getID();
 		level = getAutoNum()->getParent()->getLevel();
-		// pNext = getPreviousList(id);
 	}
 	else
 	{
@@ -5855,7 +5866,6 @@ void    fl_BlockLayout::StopList(void)
 
 	setStopping(false);
 	pView->_eraseInsertionPoint();
-	//format();
 	//
 	// Set formatting to match the next paragraph if it exists
 	//
