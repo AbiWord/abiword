@@ -31,6 +31,7 @@
 #include "ev_NamedVirtualKey.h"
 #include "ev_UnixKeyboard.h"
 #include "ev_UnixKeysym2ucs.cpp"
+#include "xap_EncodingManager.h"
 
 #include"ut_mbtowc.h"
 
@@ -113,6 +114,7 @@ bool ev_UnixKeyboard::keyPressEvent(AV_View* pView,
 				
 			case EV_EEMR_COMPLETE:
 				UT_ASSERT(pEM);
+				//UT_DEBUGMSG(("invokeKeyboardMethod (1)\n"));
 				invokeKeyboardMethod(pView,pEM,0,0); // no char data to offer
 				return true;
 				
@@ -163,9 +165,11 @@ bool ev_UnixKeyboard::keyPressEvent(AV_View* pView,
 			/*
 				if gdk fails to translate, then we will try to do this
 				ourselves by calling kesym2ucs
+				
+				if the current locale is utf-8, we will also use keysym2ucs
 			*/
 			
-			if(mLength == 0)
+			if(XAP_EncodingManager::get_instance()->isUnicodeLocale() || mLength == 0)
 			{
 				UT_sint32 u = keysym2ucs(e->keyval);
 				
@@ -185,6 +189,7 @@ bool ev_UnixKeyboard::keyPressEvent(AV_View* pView,
 			}
 			else
 			{
+				//UT_DEBUGMSG(("#TF: mLength = %d, ",mLength));
 				ucs=new UT_UCSChar[mLength];
 				for(int i=0;i<mLength;++i)
 			  	{
@@ -192,8 +197,11 @@ bool ev_UnixKeyboard::keyPressEvent(AV_View* pView,
 					wchar_t wc;
 					if(m.mbtowc(wc,mbs[i]))
 					  ucs[uLength++]=wc;
+					//UT_DEBUGMSG(("ucs[i] 0x%04x, ",ucs[i]));
 			  	}					
+			  	//UT_DEBUGMSG((" uLength %d\n",uLength));
 			 }
+			//UT_DEBUGMSG(("invokeKeyboardMethod (2)\n"));
 			invokeKeyboardMethod(pView,pEM,ucs,uLength); // no char data to offer
 			delete[] ucs;
  			return true;
