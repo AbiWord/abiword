@@ -28,6 +28,7 @@
 #include "ut_vector.h"
 
 #include "dg_DocMarker.h"
+#include "pl_Listener.h"
 
 class FP_Page;
 class DG_Graphics;
@@ -61,7 +62,7 @@ class DG_LayoutView;
 	document, usually text.
 */
 
-class FL_DocLayout
+class FL_DocLayout : public PL_Listener
 {
 public:
 	FL_DocLayout(DG_Document* doc, DG_Graphics* pG);
@@ -83,6 +84,25 @@ public:
 	int			formatAll();
 	int			reformat();
 
+	// Listener-related routines
+	
+	virtual UT_Bool		populate(PL_StruxFmtHandle sfh,
+								 PX_ChangeRecord * pcr);
+
+	virtual UT_Bool		populateStrux(PL_StruxDocHandle sdh,
+									  PX_ChangeRecord * pcr,
+									  PL_StruxFmtHandle * psfh);
+
+	virtual UT_Bool		change(PL_StruxFmtHandle sfh,
+							   PX_ChangeRecord * pcr);
+
+	virtual UT_Bool		insertStrux(PL_StruxFmtHandle sfh,
+									PX_ChangeRecord * pcr,
+									PL_StruxDocHandle sdh,
+									PL_StruxFmtHandle * psfh);
+
+	// Debug-related routined
+	
 	void dump();
 	
 protected:

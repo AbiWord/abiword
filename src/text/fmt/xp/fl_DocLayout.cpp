@@ -221,3 +221,38 @@ void FL_DocLayout::dump()
 	// TODO dump the section layouts
 }
 
+/*****************************************************************/
+/*****************************************************************/
+
+
+UT_Bool FL_DocLayout::populate(PL_StruxFmtHandle sfh,
+							   PX_ChangeRecord * pcr)
+{
+	UT_DEBUGMSG(("FL_DocLayout::populate\n"));
+	return UT_TRUE;
+}
+
+UT_Bool FL_DocLayout::populateStrux(PL_StruxDocHandle sdh,
+									PX_ChangeRecord * pcr,
+									PL_StruxFmtHandle * psfh)
+{
+	UT_DEBUGMSG(("FL_DocLayout::populateStrux\n"));
+	return UT_TRUE;
+}
+
+UT_Bool FL_DocLayout::change(PL_StruxFmtHandle sfh,
+							 PX_ChangeRecord * pcr)
+{
+	UT_DEBUGMSG(("FL_DocLayout::change\n"));
+	return UT_TRUE;
+}
+
+UT_Bool FL_DocLayout::insertStrux(PL_StruxFmtHandle sfh,
+								  PX_ChangeRecord * pcr,
+								  PL_StruxDocHandle sdh,
+								  PL_StruxFmtHandle * psfh)
+{
+	UT_DEBUGMSG(("FL_DocLayout::insertStrux\n"));
+	return UT_TRUE;
+}
+
