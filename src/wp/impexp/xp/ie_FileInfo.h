@@ -57,6 +57,7 @@ public:
 #define IE_MIME_Palm		"application/vnd.palm"
 #define IE_MIME_SDW			"application/vnd.stardivision.writer"
 #define IE_MIME_WP_51		"application/wordperfect5.1"
+#define IE_MIME_WP_6		"application/wordperfect6"
 #define IE_MIME_AbiWord		"application/x-abiword"
 #define IE_MIME_Applix		"application/x-applix-word"
 #define IE_MIME_XHTML		"application/xhtml+xml"
