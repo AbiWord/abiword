@@ -395,5 +395,3 @@ UT_Vector * simpleSplit (const UT_String & str, char separator,
 
 	return utvResult;
 }
-
-    

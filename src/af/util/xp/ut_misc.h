@@ -84,17 +84,5 @@ UT_sint32 signedLoWord(UT_uint32 dw);
 
 UT_Vector * simpleSplit (const UT_String & str, char separator = ' ',
 						 size_t max = 0 /* 0 == full split */);
+
 #endif /* UTMISC_H */
-
-
-
-
-
-
-
-
-
-
-
-
-
