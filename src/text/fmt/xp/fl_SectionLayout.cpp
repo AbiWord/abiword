@@ -3448,6 +3448,12 @@ void fl_HdrFtrSectionLayout::updateLayout(void)
 {
 	bool bredraw = false;
 	fl_ContainerLayout*	pBL = getFirstLayout();
+	if(needsReformat())
+	{
+		format();
+		bredraw = true;
+		setNeedsReformat(false);
+	}
 	while (pBL)
 	{
 		if (pBL->needsReformat())
@@ -4061,7 +4067,7 @@ bool fl_HdrFtrSectionLayout::bl_doclistener_insertBlock(fl_ContainerLayout* pBL,
 //
 	UT_uint32 iCount = m_vecPages.getItemCount();
 	fl_ContainerLayout * pShadowBL = NULL;
-	xxx_UT_DEBUGMSG(("fl_HdrFtrSectionLayout: insertBlock \n"));
+	UT_DEBUGMSG(("fl_HdrFtrSectionLayout: insertBlock \n"));
 	m_pDoc->setDontChangeInsPoint();
 	for (UT_uint32 i=0; i<iCount; i++)
 	{
@@ -4108,6 +4114,7 @@ bool fl_HdrFtrSectionLayout::bl_doclistener_insertBlock(fl_ContainerLayout* pBL,
 // Mark the Block as HdrFtr
 //
 		static_cast<fl_BlockLayout *>(ppBL->getNext())->setHdrFtr();
+		setNeedsReformat();
 	}
 	else
 //
@@ -4123,6 +4130,7 @@ bool fl_HdrFtrSectionLayout::bl_doclistener_insertBlock(fl_ContainerLayout* pBL,
 		bResult = bResult && static_cast<fl_BlockLayout *>(pNewBL)->doclistener_insertFirstBlock(pcrx, sdh,
 													lid, pfnBindHandles);
 		static_cast<fl_BlockLayout *>(pNewBL)->setHdrFtr();
+		setNeedsReformat();
 	}
 	return bResult;
 }

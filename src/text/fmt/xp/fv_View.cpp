@@ -10200,13 +10200,13 @@ bool FV_View::isInTable( PT_DocPosition pos)
 		return true;
 	}
 	fl_BlockLayout * pBL =	m_pLayout->findBlockAtPosition(pos);
-	UT_ASSERT(pBL->getContainerType() == FL_CONTAINER_BLOCK);
 	xxx_UT_DEBUGMSG((" Got Bokc at pos %d looking at pos %d \n",pBL->getPosition(true),pos));
 	if(!pBL)
 	{
 		xxx_UT_DEBUGMSG(("Not in table \n"));
 		return false;
 	}
+	UT_ASSERT(pBL->getContainerType() == FL_CONTAINER_BLOCK);
 	fl_ContainerLayout * pCL = pBL->myContainingLayout();
 	if(!pCL)
 	{
