@@ -118,12 +118,12 @@ fp_CellContainer::fp_CellContainer(fl_SectionLayout* pSectionLayout)
 	  m_iRightStyle(LS_NORMAL),
 	  m_iTopStyle(LS_NORMAL),
 	  m_iBottomStyle(LS_NORMAL),
-	  m_bBgDirty(true),
-m_iLeftThickness(0),
-m_iTopThickness(0),
-m_iRightThickness(0),
-m_iBottomThickness(0)
-	  
+	  m_iLeftThickness(-1),
+	  m_iTopThickness(-1),
+	  m_iRightThickness(-1),
+	  m_iBottomThickness(-1),
+	  m_iBgStyle( FS_FILL ),
+	  m_bBgDirty(true)
 {
 }
 
@@ -323,7 +323,7 @@ void fp_CellContainer::_clear(fp_TableContainer * pBroke)
 	UT_Rect bRec;
 	fp_Page * pPage = NULL;
 	_getBrokenRect(pBroke, pPage, bRec);	
-	
+	fp_TableContainer * pTab = (fp_TableContainer *) getContainer();
 	if (pPage != NULL)
 	{
 		if (getGraphics()->queryProperties(GR_Graphics::DGP_SCREEN))
@@ -346,10 +346,12 @@ void fp_CellContainer::_clear(fp_TableContainer * pBroke)
 		{
 			if(m_iLeftStyle != LS_OFF)
 			{	
+				getGraphics()->setLineWidth(m_iLeftThickness >=0 ? m_iLeftThickness : pTab->getLineThickness());
 				getGraphics()->drawLine(bRec.left, bRec.top, bRec.left,  bRec.top + bRec.height); 
 			}
 			if(m_iTopStyle != LS_OFF)
 			{	
+				getGraphics()->setLineWidth(m_iTopThickness >=0 ? m_iTopThickness : pTab->getLineThickness());
 				getGraphics()->drawLine(bRec.left, bRec.top, bRec.left + bRec.width,  bRec.top); 
 				if(pBroke && pBroke->getPage() && pBroke->getBrokenTop() > 0)
 				{
@@ -361,10 +363,12 @@ void fp_CellContainer::_clear(fp_TableContainer * pBroke)
 			}
 			if(m_iRightStyle != LS_OFF)
 			{	
+				getGraphics()->setLineWidth(m_iRightThickness >=0 ? m_iRightThickness : pTab->getLineThickness());
 				getGraphics()->drawLine(bRec.left + bRec.width, bRec.top, bRec.left + bRec.width, bRec.top + bRec.height); 
 			}
 			if(m_iBottomStyle != LS_OFF)
 			{	
+				getGraphics()->setLineWidth(m_iBottomThickness >=0 ? m_iBottomThickness : pTab->getLineThickness());
 				getGraphics()->drawLine(bRec.left, bRec.top + bRec.height, bRec.left + bRec.width , bRec.top + bRec.height);
 				xxx_UT_DEBUGMSG(("_Clear: pBroke %x \n",pBroke));
 				if(pBroke && pBroke->getPage() && pBroke->getBrokenBot() >= 0)
@@ -379,7 +383,8 @@ void fp_CellContainer::_clear(fp_TableContainer * pBroke)
 
 			}
 		}
-					
+		getGraphics()->setLineWidth(1);
+
 // then clear the background as well
 		switch (m_iBgStyle)
 		{
@@ -608,22 +613,22 @@ void fp_CellContainer::drawLines(fp_TableContainer * pBroke)
 		if(m_bDrawLeft)
 		{
 			// must draw a line : if no thickness available, fetch it from the enclosing table object
-			getGraphics()->setLineWidth(m_iLeftThickness ? m_iLeftThickness : pTab->getLineThickness());
+			getGraphics()->setLineWidth(m_iLeftThickness >=0 ? m_iLeftThickness : pTab->getLineThickness());
 			_drawLine(m_cLeftColor, m_iLeftStyle, iLeft,iTop, iLeft, iBot);
 		}
 		if(m_bDrawTop || bDrawTop)
 		{
-			getGraphics()->setLineWidth(m_iTopThickness ? m_iTopThickness : pTab->getLineThickness());
+			getGraphics()->setLineWidth(m_iTopThickness >=0 ? m_iTopThickness : pTab->getLineThickness());
 			_drawLine(m_cTopColor, m_iTopStyle, iLeft, iTop, iRight, iTop);
 		}
 		if(m_bDrawRight)
 		{
-			getGraphics()->setLineWidth(m_iRightThickness ? m_iRightThickness : pTab->getLineThickness());
+			getGraphics()->setLineWidth(m_iRightThickness >=0 ? m_iRightThickness : pTab->getLineThickness());
 			_drawLine(m_cRightColor, m_iRightStyle, iRight, iTop, iRight, iBot);
 		}
 		if(m_bDrawBot || bDrawBot)
 		{
-			getGraphics()->setLineWidth(m_iBottomThickness ? m_iBottomThickness : pTab->getLineThickness());
+			getGraphics()->setLineWidth(m_iBottomThickness >=0 ? m_iBottomThickness : pTab->getLineThickness());
 			_drawLine(m_cBottomColor, m_iBottomStyle, iLeft, iBot, iRight, iBot);
 		}
 	}
@@ -1352,7 +1357,12 @@ fp_TableContainer::fp_TableContainer(fl_SectionLayout* pSectionLayout)
 	  m_pMasterTable(NULL),
 	  m_iYBreakHere(0),
 	  m_iYBottom(0),
-	  m_bRedrawLines(false)
+	  m_bRedrawLines(false),
+	  m_iLeftOffset(0),
+	  m_iRightOffset(0),
+	  m_iTopOffset(0),
+	  m_iBottomOffset(0),
+	  m_iLineThickness(1)
 {
 }
 

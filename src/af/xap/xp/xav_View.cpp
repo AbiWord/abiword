@@ -112,7 +112,10 @@ bool AV_View::notifyListeners(const AV_ChangeMask hint)
 	{
 		return false;
 	}
-
+	if(isLayoutFilling())
+	{
+		return false;
+	}
 	m_iTick++;
 
 	// make sure there's something left

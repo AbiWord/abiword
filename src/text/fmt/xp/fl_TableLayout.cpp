@@ -158,6 +158,16 @@ void fl_TableLayout::setTableContainerProperties(fp_TableContainer * pTab)
 	pTab->setBorderWidth(borderWidth);
 	pTab->setColSpacings(m_iColSpacing);
 	pTab->setRowSpacings(m_iRowSpacing);
+#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
+	pTab->setLeftOffset(m_iLeftOffsetLayoutUnits);
+	pTab->setRightOffset(m_iRightOffsetLayoutUnits);
+#else
+	pTab->setLeftOffset(m_iLeftOffset);
+	pTab->setRightOffset(m_iRightOffset);
+#endif
+	pTab->setTopOffset(m_iTopOffset);
+	pTab->setBottomOffset(m_iBottomOffset);
+	pTab->setLineThickness(m_iLineThickness);
 }
 
 
@@ -705,11 +715,15 @@ void fl_TableLayout::_lookupProperties(void)
 	pSectionAP->getProperty("table-line-thickness", (const XML_Char *&)pszLineThick);
 	if(pszLineThick && *pszLineThick)
 	{
-		m_iLineThickness = atoi(pszLineThick);
+		m_iLineThickness = m_pLayout->getGraphics()->convertDimension(pszLineThick);
 	}
 	else
 	{
-		m_iLineThickness = 1;
+		m_iLineThickness = m_pLayout->getGraphics()->convertDimension("0.8pt");
+		if(m_iLineThickness < 1)
+		{
+			m_iLineThickness = 1;
+		}
 	}
 	UT_DEBUGMSG(("SEVIOR: TableLayout::_lookup lineThickness %d \n",m_iLineThickness));
 	const char * pszTableColSpacing = NULL;
@@ -1642,25 +1656,46 @@ void fl_CellLayout::_lookupProperties(void)
 		m_iBgStyle = atoi(pszBgStyle);
 	}
 
-const char *pszLeftLineThickness = NULL;
-const char *pszTopLineThickness = NULL;
-const char *pszRightLineThickness = NULL;
-const char *pszBottomLineThickness = NULL;
-pSectionAP->getProperty("left-thickness", (const XML_Char *&)pszLeftLineThickness);
-pSectionAP->getProperty("top-thickness", (const XML_Char *&)pszTopLineThickness);
-pSectionAP->getProperty("right-thickness", (const XML_Char *&)pszRightLineThickness);
-pSectionAP->getProperty("bot-thickness", (const XML_Char *&)pszBottomLineThickness);
-if (pszLeftLineThickness && pszLeftLineThickness[0]) {
-	m_iLeftLineThickness = atoi(pszLeftLineThickness);
+	const char *pszLeftLineThickness = NULL;
+	const char *pszTopLineThickness = NULL;
+	const char *pszRightLineThickness = NULL;
+	const char *pszBottomLineThickness = NULL;
+	pSectionAP->getProperty("left-thickness", (const XML_Char *&)pszLeftLineThickness);
+	pSectionAP->getProperty("top-thickness", (const XML_Char *&)pszTopLineThickness);
+	pSectionAP->getProperty("right-thickness", (const XML_Char *&)pszRightLineThickness);
+	pSectionAP->getProperty("bot-thickness", (const XML_Char *&)pszBottomLineThickness);
+	GR_Graphics * pG = m_pLayout->getGraphics();
+	if (pszLeftLineThickness && pszLeftLineThickness[0]) 
+	{
+		m_iLeftLineThickness = pG->convertDimension(pszLeftLineThickness);
 	}
-if (pszTopLineThickness && pszTopLineThickness[0]) {
-	m_iTopLineThickness = atoi(pszTopLineThickness);
+	else
+	{
+		m_iLeftLineThickness = -1;
 	}
-if (pszRightLineThickness && pszRightLineThickness[0]) {
-	m_iRightLineThickness = atoi(pszRightLineThickness);
+	if (pszTopLineThickness && pszTopLineThickness[0]) 
+	{
+		m_iTopLineThickness = pG->convertDimension(pszTopLineThickness);
 	}
-if (pszBottomLineThickness && pszBottomLineThickness[0]) {
-	m_iBottomLineThickness = atoi(pszBottomLineThickness);
+	else
+	{
+		m_iTopLineThickness = -1;
+	}
+	if (pszRightLineThickness && pszRightLineThickness[0]) 
+	{
+		m_iRightLineThickness = pG->convertDimension(pszRightLineThickness);
+	}
+	else
+	{
+		m_iRightLineThickness = -1;
+	}
+	if (pszBottomLineThickness && pszBottomLineThickness[0]) 
+	{
+		m_iBottomLineThickness = pG->convertDimension(pszBottomLineThickness);
+	}
+	else
+	{
+		m_iBottomLineThickness = -1;
 	}
 }
 

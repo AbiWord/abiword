@@ -313,10 +313,10 @@ private:
 	UT_sint32              m_iTopStyle;
 	UT_sint32              m_iBottomStyle;
 	
-UT_uint32 m_iLeftLineThickness;
-UT_uint32 m_iTopLineThickness;
-UT_uint32 m_iRightLineThickness;
-UT_uint32 m_iBottomLineThickness;
+	UT_sint32              m_iLeftLineThickness;
+	UT_sint32              m_iTopLineThickness;
+	UT_sint32              m_iRightLineThickness;
+	UT_sint32              m_iBottomLineThickness;
 
 // Background properties
 	UT_RGBColor            m_cBgColor;
