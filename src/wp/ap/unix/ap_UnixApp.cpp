@@ -1307,7 +1307,7 @@ int AP_UnixApp::main(const char * szAppName, int argc, const char ** argv)
 			bShowSplash = bShowSplash && bSplashPref;
 		
 		if (bShowSplash)
-			_showSplash(1500);	   
+			_showSplash(1500);
     
 		// Step 3: Create windows as appropriate.
 		// if some args are botched, it returns false and we should

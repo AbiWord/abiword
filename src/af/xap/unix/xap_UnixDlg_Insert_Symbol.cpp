@@ -225,8 +225,9 @@ void XAP_UnixDialog_Insert_Symbol::event_WindowDelete(void)
 //
 // Save last font
 //
-	xap_Unix_Prev_Font = iDrawSymbol->getSelectedFont();
-	g_list_free( m_InsertS_Font_list);
+	if (iDrawSymbol)
+		xap_Unix_Prev_Font = iDrawSymbol->getSelectedFont();
+	g_list_free(m_InsertS_Font_list);
 	
 	for(UT_uint32 i = 0; i < m_Insert_Symbol_no_fonts; i++) 
 	{

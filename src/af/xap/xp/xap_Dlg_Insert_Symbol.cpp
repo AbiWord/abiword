@@ -100,7 +100,6 @@ void XAP_Dialog_Insert_Symbol::_createSymbolFromGC(GR_Graphics * gc,
 
 XAP_Draw_Symbol * XAP_Dialog_Insert_Symbol::_getCurrentSymbolMap( void)
 {
-	UT_ASSERT(m_DrawSymbol);
 	return m_DrawSymbol;
 }
 
