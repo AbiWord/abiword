@@ -1530,6 +1530,8 @@ void s_RTF_ListenerWriteDoc::_rtf_open_block(PT_AttrPropIndex api)
 	{
 		UT_uint32 iOver = m_pie->getMatchingOverideNum(id);
 		UT_uint32 iLevel = 0;
+		fl_AutoNum * pAuto = m_pDocument->getListByID(id);
+
 //		if(id != m_currID)
 		{
 			UT_ASSERT(iOver);
@@ -1546,8 +1548,16 @@ void s_RTF_ListenerWriteDoc::_rtf_open_block(PT_AttrPropIndex api)
 			}
 			m_currID = id;
 		}
-		m_pie->_rtf_keyword("ls",iOver);
-		m_pie->_rtf_keyword("ilvl",iLevel);
+		/* This is changed so that Word97 can see the numbers in 
+		   numbered lists */
+		if(pAuto->getType() < BULLETED_LIST) {
+	        	m_pie->_rtf_keyword_ifnotdefault_twips("fn",(char*)szFirstLineIndent,0);
+	        	m_pie->_rtf_keyword_ifnotdefault_twips("li",(char*)szLeftIndent,0);
+			}
+		else {
+			m_pie->_rtf_keyword("ls",iOver);
+			m_pie->_rtf_keyword("ilvl",iLevel);
+			}
 	}
 
 	if (strcmp(szLineHeight,"1.0") != 0)
