@@ -109,7 +109,7 @@ bool	GR_CocoaImage::convertFromBuffer(const UT_ByteBuf* pBB, UT_sint32 iDisplayW
 }
 
 
-bool GR_CocoaImage::_convertPNGFromBuffer(const NSData* data, UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight)
+bool GR_CocoaImage::_convertPNGFromBuffer(NSData* data, UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight)
 {
 	if (m_image) {
 		[m_image release];

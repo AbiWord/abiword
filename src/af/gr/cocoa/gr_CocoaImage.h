@@ -68,7 +68,7 @@ private:
 	UT_sint32 m_iDisplayWidth;
 	UT_sint32 m_iDisplayHeight;
 
-	bool _convertPNGFromBuffer(const NSData* data, UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight);
+	bool _convertPNGFromBuffer(NSData* data, UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight);
 
 //	bool _convertPNGFromBuffer(const UT_ByteBuf* pBB, UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight);
 };
