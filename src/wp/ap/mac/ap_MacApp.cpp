@@ -67,7 +67,6 @@ UT_Bool AP_MacApp::initialize(void)
 	if (! XAP_MacApp::initialize())
 		return UT_FALSE;
 
-	m_pClipboard = new AP_MacClipboard();
 	UT_ASSERT(m_pClipboard);
 
 #if 0
