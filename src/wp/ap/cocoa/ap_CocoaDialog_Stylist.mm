@@ -106,53 +106,17 @@
 
 @end
 
-
-#if 0
-static gboolean
-tree_select_filter (GtkTreeSelection *selection, GtkTreeModel *model,
-								  GtkTreePath *path, gboolean path_selected,
-								  gpointer data)
-{
-	if (gtk_tree_path_get_depth (path) > 1)
-		return TRUE;
-	return FALSE;
-}
-
-
-static void s_delete_clicked(GtkWidget * wid, AP_CocoaDialog_Stylist * me )
-{
-    abiDestroyWidget( wid ) ;// will emit signals for us
-}
-
-
-static void s_destroy_clicked(GtkWidget * wid, AP_CocoaDialog_Stylist * me )
-{
-   me->event_Close();
-}
-
-
-static void s_response_triggered(GtkWidget * widget, gint resp, AP_CocoaDialog_Stylist * dlg)
-{
-	UT_return_if_fail(widget && dlg);
-	
-	if ( resp == GTK_RESPONSE_APPLY )
-	  dlg->event_Apply();
-	else if ( resp == GTK_RESPONSE_CLOSE )
-	  abiDestroyWidget(widget);
-}
-#endif
-
-XAP_Dialog * AP_CocoaDialog_Stylist::static_constructor(XAP_DialogFactory * pFactory,
-														  XAP_Dialog_Id dlgid)
+XAP_Dialog * AP_CocoaDialog_Stylist::static_constructor(XAP_DialogFactory * pFactory, XAP_Dialog_Id dlgid)
 {
 	return new AP_CocoaDialog_Stylist(pFactory,dlgid);
 }
 
-AP_CocoaDialog_Stylist::AP_CocoaDialog_Stylist(XAP_DialogFactory * pDlgFactory,
-												   XAP_Dialog_Id dlgid)
-	: AP_Dialog_Stylist(pDlgFactory,dlgid),
-		m_dlg(nil),
-		m_items(nil)
+AP_CocoaDialog_Stylist::AP_CocoaDialog_Stylist(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id dlgid) :
+	AP_Dialog_Stylist(pDlgFactory, dlgid),
+	m_dlg(nil),
+	m_items(nil),
+	m_bModal(false),
+	m_bDialogClosed(false)
 {
 	m_items = [[NSMutableArray alloc] init];
 }
@@ -164,7 +128,16 @@ AP_CocoaDialog_Stylist::~AP_CocoaDialog_Stylist(void)
 
 void AP_CocoaDialog_Stylist::event_Close(void)
 {
-	destroy();
+	if (m_bModal)
+		{
+			m_bDialogClosed = true; // we may need to destroy()
+			setStyleValid(false);
+			[NSApp stopModal];
+		}
+	else
+		{
+			destroy();
+		}
 }
 
 void AP_CocoaDialog_Stylist::setStyleInGUI(void)
@@ -239,7 +212,41 @@ void AP_CocoaDialog_Stylist::styleClicked(UT_sint32 row, UT_sint32 col)
 
 void AP_CocoaDialog_Stylist::runModal(XAP_Frame * pFrame)
 {
-	UT_ASSERT(0);
+	bool bUsingModeless = (m_dlg ? true : false);
+
+	if (!bUsingModeless)
+		{
+			m_dlg = [[AP_CocoaDialog_Stylist_Controller alloc] initFromNib];
+
+			[m_dlg setXAPOwner:this];
+
+			_populateWindowData();
+		}
+
+	m_bDialogClosed = false;
+	m_bModal = true;
+
+	NSWindow * window = [m_dlg window];
+
+	[window orderFront:m_dlg];
+
+	[NSApp runModalForWindow:window];
+
+	m_bModal = false;
+
+	if (!bUsingModeless)
+		{
+			[m_dlg discardXAP];
+			[m_dlg close];
+			[m_dlg release];
+
+			m_dlg = nil;
+		}
+	else if (m_bDialogClosed)
+		{
+			// the user closed the dialog...
+			destroy();
+		}
 }
 
 void AP_CocoaDialog_Stylist::runModeless(XAP_Frame * pFrame)
@@ -258,7 +265,15 @@ void AP_CocoaDialog_Stylist::runModeless(XAP_Frame * pFrame)
 
 void  AP_CocoaDialog_Stylist::event_Apply(void)
 {
-	Apply();
+	if (m_bModal)
+		{
+			setStyleValid(true);
+			[NSApp stopModal];
+		}
+	else
+		{
+			Apply();
+		}
 }
 
 /*!
@@ -372,6 +387,12 @@ void  AP_CocoaDialog_Stylist::_populateWindowData(void)
 
 		// data source and delegate for style list should be set by the Nib.
 	}
+}
+
+- (void)windowWillClose:(NSNotification *)aNotification
+{
+	if (_xap)
+		_xap->event_Close();
 }
 
 - (void)refresh
