@@ -123,7 +123,7 @@ const char * XAP_MacApp::getUserPrivateDirectory(void) {
 		
 		/* change this later as MacOS don't really have user dir. use prefs dir
 		   instead */
-		::FindFolder (kOnSystemDisk, kPreferencesFolderType, TRUE, &vRefNum, &dirID);
+		::FindFolder (kOnSystemDisk, kPreferencesFolderType, true, &vRefNum, &dirID);
 		err = ::FSMakeFSSpec (vRefNum, dirID, "\p", &dirSpec);
 		UT_ASSERT (err == noErr);
 		
