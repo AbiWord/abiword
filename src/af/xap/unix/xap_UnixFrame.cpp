@@ -119,13 +119,20 @@ gint XAP_UnixFrame::_fe::key_press_event(GtkWidget* w, GdkEventKey* e)
 	// HACK :
 	// HACK : What we do is let ONLY Alt-modified keys through to GTK.
 
-	if (! (e->state & GDK_MODIFIER_MASK))
+	// If a modifier is down, return to let GTK catch
+	if ((e->state & GDK_MOD1_MASK) ||
+		(e->state & GDK_MOD2_MASK) ||
+		(e->state & GDK_MOD3_MASK) ||
+		(e->state & GDK_MOD4_MASK) ||
+		(e->state & GDK_MOD5_MASK))
+		
 	{
-		gtk_signal_emit_stop_by_name(GTK_OBJECT(w), "key_press_event");
-		return 1;
+		return 0;
 	}
 
-	return 0;
+	// ... else, stop this signal
+	gtk_signal_emit_stop_by_name(GTK_OBJECT(w), "key_press_event");
+	return 1;
 }
 	
 gint XAP_UnixFrame::_fe::delete_event(GtkWidget * w, GdkEvent * /*event*/, gpointer /*data*/)
