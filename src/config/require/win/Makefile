@@ -70,6 +70,7 @@ _LIBICONV_:
 		cd $(ABI_ROOT)/../libiconv; 			\
 		$(ABICOPY) lib/config.h.msvc lib/config.h;	\
 		$(ABICOPY) libcharset/config.h.msvc libcharset/config.h;	\
+		$(ABICOPY) libcharset/include/libcharset.h.in libcharset/include/libcharset.h;	\
 		$(ABICOPY) include/iconv.h.msvc-static include/iconv.h; \
 		$(MAKE) -f Makefile.abi -C $(ABI_ROOT)/../libiconv;	\
 	else								\
