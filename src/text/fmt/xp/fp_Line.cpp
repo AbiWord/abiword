@@ -31,6 +31,7 @@
 #include "fp_Run.h"
 #include "fp_TextRun.h"
 #include "fp_Page.h"
+#include "fv_View.h"
 #include "fl_SectionLayout.h"
 #include "gr_DrawArgs.h"
 #include "gr_Graphics.h"
