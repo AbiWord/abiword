@@ -197,11 +197,16 @@ extern "C" {
 				    const char * data, gint32 x, gint32 y);
   
   void        abi_widget_draw(AbiWidget * w);
+
+  gboolean abi_widget_save ( AbiWidget * w, const char * fname );
+  gboolean abi_widget_save_ext ( AbiWidget * w, const char * fname,
+				 const char * extension ) ;
   
 #ifdef ABIWORD_INTERNAL
   /* these functions are used by abiword internally and really aren't exported to the rest of the world */
   GtkWidget * abi_widget_new_with_app (AP_UnixApp * pApp);
   GtkWidget * abi_widget_new_with_app_file (AP_UnixApp * pApp,const gchar * file);
+  XAP_Frame * abi_widget_get_frame ( AbiWidget * w ) ;
 #endif
   
 #ifdef __cplusplus

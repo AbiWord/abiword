@@ -5599,11 +5599,11 @@ static bool _toggleSpan(FV_View * pView,
 /*****************************************************************/
 /*****************************************************************/
 
-static bool s_actuallyPrint(PD_Document *doc,  GR_Graphics *pGraphics,
-				   FV_View * pPrintView, const char *pDocName,
-				   UT_uint32 nCopies, bool bCollate,
-				   UT_sint32 iWidth,  UT_sint32 iHeight,
-				   UT_uint32 nToPage, UT_uint32 nFromPage)
+bool s_actuallyPrint(PD_Document *doc,  GR_Graphics *pGraphics,
+		     FV_View * pPrintView, const char *pDocName,
+		     UT_uint32 nCopies, bool bCollate,
+		     UT_sint32 iWidth,  UT_sint32 iHeight,
+		     UT_uint32 nToPage, UT_uint32 nFromPage)
 {
 	UT_uint32 j,k;
 	//

@@ -79,11 +79,12 @@
 #include "ap_Args.h"
 
 #include "xap_UnixPSGraphics.h"
-#if 1
+#include "xap_UnixGnomePrintGraphics.h"
+#include "ap_EditMethods.h"
+
 #include <bonobo.h>
 #include <liboaf/liboaf.h>
 #include "abiwidget.h"
-#endif
 
 // quick hack - this is defined in ap_EditMethods.cpp
 extern XAP_Dialog_MessageBox::tAnswer s_CouldNotLoadFileMessage(XAP_Frame * pFrame, const char * pNewFile, UT_Error errorCode);
@@ -163,9 +164,9 @@ int AP_UnixGnomeApp::main(const char * szAppName, int argc, const char ** argv)
 	AP_Args Args = AP_Args(&XArgs, szAppName, pMyUnixApp);
 
 	// Step 1: Initialize GTK and create the APP.
-    // HACK: these calls to gtk reside properly in 
-    // HACK: XAP_UNIXBASEAPP::initialize(), but need to be here 
-    // HACK: to throw the splash screen as soon as possible.
+	// HACK: these calls to gtk reside properly in 
+	// HACK: XAP_UNIXBASEAPP::initialize(), but need to be here 
+	// HACK: to throw the splash screen as soon as possible.
 	// hack needed to intialize gtk before ::initialize
 	gtk_set_locale();
 
@@ -581,6 +582,79 @@ save_document_to_file(BonoboPersistFile *pf, const CORBA_char *filename,
   return 0 ;
 }
 
+static void
+print_document (GnomePrintContext         *ctx,
+		double                     inWidth,
+		double                     inHeight,
+		const Bonobo_PrintScissor *opt_scissor,
+		gpointer                   user_data)
+{
+  printf ( "DOM: inside of print_document!!\n" ) ;
+
+  // assert pre-conditions
+  g_return_if_fail (user_data != NULL);
+  g_return_if_fail (IS_ABI_WIDGET (user_data));
+
+  // get me!
+  AbiWidget * abi = ABI_WIDGET(user_data);
+
+  // get our frame
+  XAP_Frame * pFrame = abi_widget_get_frame ( abi ) ;
+  UT_ASSERT(pFrame);
+
+  // get our current view so we can get the document being worked on
+  FV_View * pView = (FV_View*) pFrame->getCurrentView();
+  UT_return_if_fail(pView!=NULL);
+
+  // get the current document
+  PD_Document * pDoc = pView->getDocument () ;
+  UT_return_if_fail(pDoc!=NULL);
+
+  // get the current app
+  XAP_UnixGnomeApp * pApp = (XAP_UnixGnomeApp*) XAP_App::getApp () ;
+
+  // create a graphics drawing class
+  GR_Graphics *pGraphics = new XAP_UnixGnomePrintGraphics ( ctx, pApp->getFontManager(), pApp ) ;
+  UT_return_if_fail(pGraphics!=NULL);
+
+  // layout the document
+  FL_DocLayout * pDocLayout = new FL_DocLayout(pDoc,pGraphics);
+  UT_ASSERT(pDocLayout);
+  
+  // create a new printing view of the document
+  FV_View * pPrintView = new FV_View(pFrame->getApp(),pFrame,pDocLayout);
+  UT_ASSERT(pPrintView);
+
+  // fill the layouts
+  pDocLayout->fillLayouts();
+
+  // get the best fit width & height of the printed pages
+  UT_sint32 iWidth  =  pDocLayout->getWidth();
+  UT_sint32 iHeight =  pDocLayout->getHeight();
+  UT_sint32 iPages  = pDocLayout->countPages();
+  UT_uint32 width =  MIN(iWidth, inWidth);
+  UT_uint32 height = MIN(iHeight, inHeight);
+
+  // figure out roughly how many pages to print
+  UT_sint32 iPagesToPrint = (UT_sint32) ((int)height/pDocLayout->countPages());
+  if (iPagesToPrint < 1)
+    iPagesToPrint = 1;
+
+  // actually print
+  s_actuallyPrint ( pDoc, pGraphics,
+		    pPrintView, "bonobo_printed_document",
+		    1, false,
+		    width, height,
+		    1, iPagesToPrint ) ;
+  
+  // clean up
+  DELETEP(pGraphics);
+  DELETEP(pPrintView);
+  DELETEP(pDocLayout);
+
+  return;
+}
+
 //
 // Data content for persist stream
 //
@@ -588,7 +662,7 @@ static Bonobo_Persist_ContentTypeList *
 pstream_get_content_types (BonoboPersistStream *ps, void *closure,
 			   CORBA_Environment *ev)
 {
-	return bonobo_persist_generate_content_types (9, "application/msword","application/rtf","application/x-abiword", "application/x-applix-word", "application/wordperfect5.1", "appplication/vnd.palm", "text/abiword", "text/plain", "text/vnd.wap.wml");
+	return bonobo_persist_generate_content_types (9, "application/msword", "application/rtf", "application/x-abiword", "application/x-applix-word", "application/wordperfect5.1", "appplication/vnd.palm", "text/abiword", "text/plain", "text/vnd.wap.wml");
 }
 
 
@@ -601,12 +675,14 @@ AbiControl_add_interfaces (AbiWidget *abiwidget,
 {
 	BonoboPersistFile   *file;
 	BonoboPersistStream *stream;
+	BonoboPrint         *printer;
 	BonoboItemContainer *item_container;
 
 	g_return_val_if_fail (IS_ABI_WIDGET(abiwidget), NULL);
 	g_return_val_if_fail (BONOBO_IS_OBJECT (to_aggregate), NULL);
 
 	/* Interface Bonobo::PersistStream */
+
 	stream = bonobo_persist_stream_new (load_document_from_stream, 
 					    save_document_to_stream, NULL, pstream_get_content_types, abiwidget);
 	if (!stream) {
@@ -615,13 +691,13 @@ AbiControl_add_interfaces (AbiWidget *abiwidget,
 	}
 
 	bonobo_object_add_interface (BONOBO_OBJECT (to_aggregate),
-								 BONOBO_OBJECT (stream));
+				     BONOBO_OBJECT (stream));
 
 	/* Interface Bonobo::PersistFile */
 
 	file = bonobo_persist_file_new (load_document_from_file,
 					save_document_to_file, 
-					(void *) abiwidget);
+					abiwidget);
 	if (!file) 
 	{
 		bonobo_object_unref (BONOBO_OBJECT (to_aggregate));
@@ -629,20 +705,31 @@ AbiControl_add_interfaces (AbiWidget *abiwidget,
 	}
 
 	bonobo_object_add_interface (BONOBO_OBJECT (to_aggregate),
-								 BONOBO_OBJECT (file));
+				     BONOBO_OBJECT (file));
+	
+	/* Interface Bonobo::Print */
+
+	printer = bonobo_print_new (print_document, abiwidget);
+	if (!printer) {
+	  bonobo_object_unref (BONOBO_OBJECT (to_aggregate));
+	  return NULL;
+	}
+
+	bonobo_object_add_interface (BONOBO_OBJECT (to_aggregate),
+				     BONOBO_OBJECT (printer));
 
 	/* BonoboItemContainer */
 
 	item_container = bonobo_item_container_new ();
 
 	gtk_signal_connect (GTK_OBJECT (item_container),
-						"get_object",
-						GTK_SIGNAL_FUNC (abiwidget_get_object),
-						abiwidget);
-
+			    "get_object",
+			    GTK_SIGNAL_FUNC (abiwidget_get_object),
+			    abiwidget);
+	
 	bonobo_object_add_interface (BONOBO_OBJECT (to_aggregate),
-								 BONOBO_OBJECT (item_container));
-
+				     BONOBO_OBJECT (item_container));
+	
 	return to_aggregate;
 }
 
@@ -719,37 +806,6 @@ bonobo_AbiWidget_factory  (BonoboGenericFactory *factory, void *closure)
 
 static int mainBonobo(int argc, char * argv[])
 {
-
-
-    
-#if 0
-//
-// For debuging
-//
-    // Setup signal handlers, primarily for segfault
-    // If we segfaulted before here, we *really* blew it
-    
-    struct sigaction sa;
-    
-    sa.sa_handler = signalWrapper;
-    
-    sigfillset(&sa.sa_mask);  // We don't want to hear about other signals
-    sigdelset(&sa.sa_mask, SIGABRT); // But we will call abort(), so we can't ignore that
-/* #ifndef AIX - I presume these are always #define not extern... -fjf */
-#if defined (SA_NODEFER) && defined (SA_RESETHAND)
-    sa.sa_flags = SA_NODEFER | SA_RESETHAND; // Don't handle nested signals
-#else
-    sa.sa_flags = 0;
-#endif
-    sigaction(SIGSEGV, &sa, NULL);
-    sigaction(SIGBUS, &sa, NULL);
-    sigaction(SIGILL, &sa, NULL);
-    sigaction(SIGQUIT, &sa, NULL);
-    sigaction(SIGFPE, &sa, NULL);
-    sigaction(9, &sa, NULL);
-#endif
-
-
 	BonoboGenericFactory 	*factory;
 	CORBA_ORB 		 orb;
 	/*

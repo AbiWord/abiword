@@ -262,6 +262,36 @@ char * mapPageSize (const char * sz)
 
 #undef PaperTableSize
 
+XAP_UnixGnomePrintGraphics::XAP_UnixGnomePrintGraphics(GnomePrintContext *gpc,
+													   XAP_UnixFontManager * fontManager,
+													   XAP_App *pApp)
+{
+		m_gpm = NULL;
+		m_gpc = gpc;
+		m_paper = NULL;
+
+		m_bIsPreview   = false;
+		m_fm           = fontManager;
+		m_bStartPrint  = false;
+		m_bStartPage   = false;
+		m_pCurrentFont = NULL;
+		m_pCurrentPSFont = NULL;
+		if(m_vecEncSymbol.getItemCount()>0)
+				m_vecEncSymbol.clear();
+		if(m_vecEncDingbats.getItemCount()>0)
+				m_vecEncDingbats.clear();
+		
+		m_cs = GR_Graphics::GR_COLORSPACE_COLOR;
+		
+		m_currentColor.m_red = 0;
+		m_currentColor.m_grn = 0;
+		m_currentColor.m_blu = 0;
+		//
+		// Now I need to load in the translations to unicode for Dingbats and Symbols.
+		//
+		loadUnicodeData();
+}
+
 XAP_UnixGnomePrintGraphics::XAP_UnixGnomePrintGraphics(GnomePrintMaster *gpm,
 													   const char * pageSize,
 						       XAP_UnixFontManager * fontManager,

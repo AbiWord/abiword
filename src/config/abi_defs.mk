@@ -629,7 +629,7 @@ GNOME_CFLAGS += $(shell $(GLIB_CONFIG) --cflags)
 ifeq ($(ABI_OPT_BONOBO),1)
 GNOME_CFLAGS    += $(shell $(GNOME_CONFIG) --cflags oaf bonobo)
 GNOME_CFLAGS    += -DHAVE_BONOBO
-GNOME_LIBS      += -lbonobo -loaf -lORBitCosNaming -lORBit -lIIOP -lORBitutil $(shell $(GNOME_CONFIG) --libs bonobox)
+GNOME_LIBS      += -lbonobo -loaf -lORBitCosNaming -lORBit -lIIOP -lORBitutil $(shell $(GNOME_CONFIG) --libs bonobox) -lbonobo-print
 ABI_OPTIONS+=Bonobo:On
 else
 ABI_OPTIONS+=Bonobo:Off

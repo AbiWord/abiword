@@ -30,6 +30,10 @@
 #include "ap_UnixFrame.h"
 #include "ap_FrameData.h"
 #include  "xap_Args.h"
+#include "pd_Document.h"
+#include "ie_imp.h"
+#include "ie_exp.h"
+
 #ifdef HAVE_GNOME
 #include "ap_UnixGnomeApp.h"
 #else
@@ -1697,6 +1701,13 @@ abi_widget_new_with_app_file (AP_UnixApp * pApp, const gchar * file)
 	return GTK_WIDGET (abi);
 }
 
+extern "C" XAP_Frame * 
+abi_widget_get_frame ( AbiWidget * w )
+{
+  g_return_val_if_fail ( w != NULL, NULL ) ;
+  return w->priv->m_pFrame ;
+}
+
 /**
  * abi_widget_invoke()
  *
@@ -1800,16 +1811,31 @@ abi_widget_draw (AbiWidget * w)
 	}
 }
 
+extern "C" gboolean
+abi_widget_save ( AbiWidget * w, const char * fname )
+{
+  return abi_widget_save_ext ( w, fname, ".abw" ) ;
+}
 
+extern "C" gboolean 
+abi_widget_save_ext ( AbiWidget * w, const char * fname,
+		      const char * extension )
+{
+  g_return_val_if_fail ( w != NULL, FALSE );
+  g_return_val_if_fail ( IS_ABI_WIDGET(w), FALSE );
+  g_return_val_if_fail ( fname != NULL, FALSE );
 
+  FV_View * view = (FV_View *) w->priv->m_pFrame->getCurrentView();
+  PD_Document * doc = view->getDocument () ;
 
+  // start out saving as abiword format by default
+  IEFileType ieft = IE_Exp::fileTypeForSuffix ( ".abw" ) ;
 
+  if ( extension != NULL && strlen ( extension ) > 0 && extension[0] == '.' )
+    ieft = IE_Exp::fileTypeForSuffix ( extension ) ;
 
-
-
-
-
-
+  return ( doc->saveAs ( fname, ieft ) == UT_OK ? TRUE : FALSE ) ;
+}
 
 
 

@@ -85,7 +85,7 @@ if test "$gnome" = true ; then
 fi
 
 if test "$gnome" = true ; then
-	GNOME_CFLAGS="`gnome-config --cflags $gnomelibs` -DHAVE_GNOME=1"
+	GNOME_CFLAGS="`gnome-config --cflags $gnomelibs` -DHAVE_GNOME=1 -lbonobo-print"
 	GNOME_LIBS="`gnome-config --libs $gnomelibs`"
 fi
 
