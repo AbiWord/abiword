@@ -196,7 +196,7 @@ public:
 	virtual fp_Container * getNewContainer(fp_Container * pCon = NULL)
 		{ return getNewContainerLocal();}
 	fp_Container*	getNewContainerLocal(void);
-	FV_View *		getView(void);
+	FV_View *		getView(void) const { return m_pLayout->getView(); }
 
 	const char* getProperty(const XML_Char * pszName, bool bExpandStyles = true) const;
 	const PP_PropertyType * getPropertyType(const XML_Char * szName, tProperty_type Type, bool bExpandStyles = true) const;

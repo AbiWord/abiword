@@ -266,6 +266,7 @@ protected:
 	void					_inheritProperties(void);
 	fp_Run*					_findPrevPropertyRun(void) const;
 
+	FV_View*				_getView(void) const { return getBlock()->getView(); }
 	// By convention, _getFoo and _setFoo have no side effects.
 	// They can easily be inlined by a smart compiler.
 	UT_RGBColor				_getColorPG(void) const { return m_pColorPG; }

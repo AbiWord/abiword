@@ -175,7 +175,7 @@ void fp_Run::lookupProperties()
 
 	if(m_pRevisions)
 	{
-		FV_View* pView = getBlock()->getDocLayout()->getView();
+		FV_View* pView = _getView();
 		UT_return_if_fail(pView);
 		UT_uint32 iId  = pView->getRevisionLevel();
 
@@ -865,7 +865,7 @@ void fp_Run::draw(dg_DrawArgs* pDA)
 
 bool fp_Run::canContainPoint(void) const
 {
-	FV_View* pView = getBlock()->getDocLayout()->getView();
+	FV_View* pView = _getView();
 	bool bShowHidden = pView->getShowPara();
 
 
@@ -1579,7 +1579,7 @@ void fp_TabRun::_draw(dg_DrawArgs* pDA)
 	UT_sint32 iFillHeight = getLine()->getHeight();
 	UT_sint32 iFillTop = pDA->yoff - getLine()->getAscent();
 
-	FV_View* pView = getBlock()->getDocLayout()->getView();
+	FV_View* pView = _getView();
 	UT_uint32 iSelAnchor = pView->getSelectionAnchor();
 	UT_uint32 iPoint = pView->getPoint();
 
@@ -1703,7 +1703,7 @@ void fp_ForcedLineBreakRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 	_setField(fd);
 
 	_inheritProperties();
-	FV_View* pView = getBlock()->getDocLayout()->getView();
+	FV_View* pView = _getView();
 	if (pView && pView->getShowPara())
 	{
 	  //UT_UCSChar pEOP[] = { UCS_LINESEP, 0 }; - see bug 1279
@@ -1793,7 +1793,7 @@ void fp_ForcedLineBreakRun::findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_
 
 	if (iOffset == getBlockOffset()+1)
 	{
-	    FV_View* pView = getBlock()->getDocLayout()->getView();
+	    FV_View* pView = _getView();
 	    if (pView && pView->getShowPara())
 		{
 			x += getWidth();
@@ -1818,7 +1818,7 @@ void fp_ForcedLineBreakRun::_draw(dg_DrawArgs* pDA)
 	UT_sint32 iXoffText = 0;
 	UT_sint32 iYoffText = 0;
 
-	FV_View* pView = getBlock()->getDocLayout()->getView();
+	FV_View* pView = _getView();
 	if(!pView || !pView->getShowPara())
     {
     	if(getWidth())
@@ -2117,7 +2117,7 @@ void fp_BookmarkRun::_clearScreen(bool /* bFullLineHeightRect */)
 {
 	UT_ASSERT(getGR()->queryProperties(GR_Graphics::DGP_SCREEN));
 
-   	FV_View* pView = getBlock()->getDocLayout()->getView();
+   	FV_View* pView = _getView();
     if(!pView || !pView->getShowPara())
     {
     	return;
@@ -2140,7 +2140,7 @@ void fp_BookmarkRun::_draw(dg_DrawArgs* pDA)
         return;
     }
 
-   	FV_View* pView = getBlock()->getDocLayout()->getView();
+   	FV_View* pView = _getView();
     if(!pView || !pView->getShowPara())
     {
     	return;
@@ -2349,7 +2349,7 @@ void fp_EndOfParagraphRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 		_setRevisions(new PP_RevisionAttr(pRevision));
 	}
 
-	FV_View* pView = getBlock()->getDocLayout()->getView();
+	FV_View* pView = _getView();
 	if (pView && pView->getShowPara())
 	{
 		// Find width of Pilcrow
@@ -2481,7 +2481,7 @@ void fp_EndOfParagraphRun::_draw(dg_DrawArgs* pDA)
 	// if showPara is turned off we will not draw anything at all; however,
 	// we will ensure that the width is set to 0, and if it is currently not
 	// we will get our line to redo its layout and redraw.
-	FV_View* pView = getBlock()->getDocLayout()->getView();
+	FV_View* pView = _getView();
     if(!pView || !pView->getShowPara())
     {
     	if(m_iDrawWidth)
@@ -2830,7 +2830,7 @@ void fp_ImageRun::_draw(dg_DrawArgs* pDA)
 		{
 			UT_uint32 iRunBase = getBlock()->getPosition() + getBlockOffset();
 
-			FV_View* pView = getBlock()->getDocLayout()->getView();
+			FV_View* pView = _getView();
 			UT_uint32 iSelAnchor = pView->getSelectionAnchor();
 			UT_uint32 iPoint = pView->getPoint();
 
@@ -3377,7 +3377,7 @@ void fp_FieldRun::_defaultDraw(dg_DrawArgs* pDA)
 		UT_sint32 iFillTop = iYdraw+1;
 		UT_sint32 iFillHeight = getAscent() + getDescent();
 
-		FV_View* pView = getBlock()->getDocLayout()->getView();
+		FV_View* pView = _getView();
 		UT_uint32 iSelAnchor = pView->getSelectionAnchor();
 		UT_uint32 iPoint = pView->getPoint();
 
@@ -3423,13 +3423,6 @@ void fp_FieldRun::_defaultDraw(dg_DrawArgs* pDA)
 
 // BEGIN DOM work on some new fields
 
-static FV_View *
-_getViewFromBlk(fl_BlockLayout* pBlock)
-{
-	FV_View *pView    = pBlock->getDocLayout()->getView();
-	return pView;
-}
-
 fp_FieldCharCountRun::fp_FieldCharCountRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen) : fp_FieldRun(pBL, pG, iOffsetFirst, iLen)
 {
 }
@@ -3441,7 +3434,7 @@ bool fp_FieldCharCountRun::calculateValue(void)
 
 	UT_String szFieldValue;
 
-	FV_View *pView = _getViewFromBlk(getBlock());
+	FV_View *pView = _getView();
 	if(!pView)
 	{
 	    szFieldValue ="?";
@@ -3471,7 +3464,7 @@ bool fp_FieldNonBlankCharCountRun::calculateValue(void)
 	char szFieldValue[FPFIELD_MAX_LENGTH + 1];
 	szFieldValue[0] = 0;
 
-	FV_View *pView = _getViewFromBlk(getBlock());
+	FV_View *pView = _getView();
 	if(!pView)
 	{
 		strcpy(szFieldValue, "?");
@@ -3502,7 +3495,7 @@ bool fp_FieldLineCountRun::calculateValue(void)
 	char szFieldValue[FPFIELD_MAX_LENGTH + 1];
 	szFieldValue[0] = 0;
 
-	FV_View *pView = _getViewFromBlk(getBlock());
+	FV_View *pView = _getView();
 	if(!pView)
 	{
 	    strcpy(szFieldValue, "?");
@@ -3534,7 +3527,7 @@ bool fp_FieldParaCountRun::calculateValue(void)
 	char szFieldValue[FPFIELD_MAX_LENGTH + 1];
 	szFieldValue[0] = 0;
 
-	FV_View *pView = _getViewFromBlk(getBlock());
+	FV_View *pView = _getView();
 	if(!pView)
 	{
 	    strcpy(szFieldValue, "?");
@@ -3565,7 +3558,7 @@ bool fp_FieldWordCountRun::calculateValue(void)
 	char szFieldValue[FPFIELD_MAX_LENGTH + 1];
 	szFieldValue[0] = 0;
 
-	FV_View *pView = _getViewFromBlk(getBlock());
+	FV_View *pView = _getView();
 	if(!pView)
 	{
 	    strcpy(szFieldValue, "?");
@@ -4283,7 +4276,7 @@ bool fp_FieldPageReferenceRun::calculateValue(void)
 	if(!_getParameter())
 		return false;
 
-	FV_View * pView = getBlock()->getView();
+	FV_View * pView = _getView();
 	// on import the field value can be requested before the View exists
 	// so we cannot assert here
 	//UT_ASSERT(pView);
@@ -4513,7 +4506,7 @@ void fp_ForcedColumnBreakRun::_draw(dg_DrawArgs* pDA)
         return;
     }
 
-    FV_View* pView = getBlock()->getDocLayout()->getView();
+    FV_View* pView = _getView();
     UT_ASSERT(pView);
     if(!pView->getShowPara()){
         return;
@@ -4604,7 +4597,7 @@ void fp_ForcedPageBreakRun::findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_
 
 	if (iOffset == getBlockOffset()+1)
 	{
-	    FV_View* pView = getBlock()->getDocLayout()->getView();
+	    FV_View* pView = _getView();
 	    if (pView->getShowPara())
 		{
 			x += getWidth();
@@ -4634,7 +4627,7 @@ void fp_ForcedPageBreakRun::_draw(dg_DrawArgs* pDA)
         return;
     }
 
-    FV_View* pView = getBlock()->getDocLayout()->getView();
+    FV_View* pView = _getView();
     UT_ASSERT(pView);
     if(!pView->getShowPara()){
         return;
