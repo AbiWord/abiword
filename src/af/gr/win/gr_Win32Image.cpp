@@ -32,6 +32,7 @@
 #define NOMCX
 #include <windows.h>
 
+#include "gr_Graphics.h"
 #include "gr_Win32Image.h"
 #include "png.h"
 
@@ -460,3 +461,118 @@ bool GR_Win32Image::convertToBuffer(UT_ByteBuf** ppBB) const
 	return true;
 }
 
+/*!
+ * The idea is to create a
+ * new image from the rectangular segment in device units defined by 
+ * UT_Rect rec. The Image should be deleted by the calling routine.
+ */
+GR_Image * GR_Win32Image::createImageSegment(GR_Graphics * pG,const UT_Rect & rec)
+{
+	// this code assumes 24 bit RGB bitmaps ...
+	UT_return_val_if_fail(m_pDIB && m_pDIB->bmiHeader.biBitCount == 24, NULL);
+	
+	UT_sint32 x = pG->tdu(rec.left);
+	UT_sint32 y = pG->tdu(rec.top);
+	if(x < 0)
+	{
+		x = 0;
+	}
+	if(y < 0)
+	{
+		y = 0;
+	}
+	UT_sint32 width = pG->tdu(rec.width);
+	UT_sint32 height = pG->tdu(rec.height);
+	UT_sint32 dH = getDisplayHeight();
+	UT_sint32 dW = getDisplayWidth();
+	if(height > dH)
+	{
+		height = dH;
+	}
+	if(width > dW)
+	{
+		width = dW;
+	}
+	if(x + width > dW)
+	{
+		width = dW - x;
+	}
+	if(y + height > dH)
+	{
+		height = dH - y;
+	}
+	if(width < 0)
+	{
+		x = dW -1;
+		width = 1;
+	}
+	if(height < 0)
+	{
+		y = dH -1;
+		height = 1;
+	}
+	UT_String sName("");
+	getName(sName);
+    UT_String sSub("");
+	UT_String_sprintf(sSub,"_segemnt_%d_%d_%d_%d",x,y,width,height);
+	sName += sSub;
+	GR_Win32Image * pImage = new GR_Win32Image(sName.c_str());
+
+	UT_return_val_if_fail( pImage, NULL );
+	
+	// now allocate memory -- mostly copied from convertFromBuffer()
+	UT_uint32 iBytesInRow = width * 3;
+	if (iBytesInRow % 4)
+	{
+		iBytesInRow += (4 - (iBytesInRow % 4));
+	}
+
+	pImage->m_pDIB = (BITMAPINFO*) malloc(sizeof(BITMAPINFOHEADER) + height * iBytesInRow);
+	UT_return_val_if_fail( pImage->m_pDIB, NULL );
+
+	// simply copy the whole header
+	memcpy(pImage->m_pDIB, m_pDIB, sizeof(BITMAPINFOHEADER));
+
+	// now set the image size ...
+	pImage->setDisplaySize(width, height);
+	pImage->m_pDIB->bmiHeader.biWidth = width;
+	pImage->m_pDIB->bmiHeader.biHeight = height;
+	pImage->m_pDIB->bmiHeader.biSizeImage = 0;
+
+	// now copy the bitmap bits
+	// the rows in both maps are/need to be padded to 4-bytes
+	// NB: in the DIB lines are numbered from bottom up, while in our coord system y goes
+	// from top to bottom
+
+	// how wide is a row in the orignal ?
+	UT_uint32 iOrigRowBytes = m_pDIB->bmiHeader.biWidth*3;
+	if(iOrigRowBytes%4)
+		iOrigRowBytes += (4 - iOrigRowBytes%4);
+
+	// what are the coords in the orginal we want?
+	UT_uint32 iByteWidth = width*3;
+	UT_uint32 iLeft = x*3;
+	UT_uint32 iRight = iLeft + iByteWidth;
+	UT_uint32 iTop = m_pDIB->bmiHeader.biHeight - y;
+	UT_uint32 iBottom = iTop - height;
+	UT_uint32 iRightPadded = iRight + (iBytesInRow - iByteWidth);
+
+	UT_Byte * pBits1 = ((UT_Byte*)m_pDIB) + sizeof(BITMAPINFOHEADER);
+	UT_Byte * pBits2 = ((UT_Byte*)pImage->m_pDIB) + sizeof(BITMAPINFOHEADER);
+
+	UT_uint32 iRow;
+	
+	for(iRow = iBottom; iRow < iTop; iRow++)
+	{
+		memcpy(pBits2, pBits1 + iRow * iOrigRowBytes + iLeft, iByteWidth);
+		pBits2 += iByteWidth;
+		
+		// now the padding ...
+		for(UT_uint32 iPad = iRight; iPad < iRightPadded; iPad++, pBits2++)
+		{
+			*pBits2 = 0;
+		}
+	}
+	
+	return static_cast<GR_Image *>(pImage);
+}
