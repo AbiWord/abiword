@@ -1,8 +1,12 @@
 #ifndef UT_MBTOWC_H
 #define UT_MBTOWC_H
 
-#include<wchar.h>
-#include<limits.h>
+#include <wchar.h>
+#include <limits.h>
+
+#if defined(__BEOS__)
+typedef int mbstate_t;
+#endif
 
 class UT_Mbtowc
 {

@@ -1,6 +1,6 @@
-#include<wchar.h>
-#include<string.h>
-#include"ut_wctomb.h"
+#include <wchar.h>
+#include <string.h>
+#include "ut_wctomb.h"
 
 void UT_Wctomb::initialize()
 {
@@ -12,7 +12,7 @@ UT_Wctomb::UT_Wctomb()
   initialize();
 }
 
-#if defined(__QNXNTO__)
+#if defined(__QNXNTO__) || defined(__BEOS__)
 #include <stdlib.h>
 
 //We have to do this since wctomb clashes with the class name
@@ -24,7 +24,7 @@ int my_wctomb( char* s, wchar_t wchar, int *state ) {
 
 int UT_Wctomb::wctomb(char * pC,int &length,wchar_t wc)
 {
-#if defined(__QNXNTO__)
+#if defined(__QNXNTO__) || defined(__BEOS__)
   size_t len=my_wctomb(pC,wc, &m_state);
 #else
   size_t len=wcrtomb(pC,wc, &m_state);

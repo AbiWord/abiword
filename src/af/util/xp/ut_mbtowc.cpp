@@ -33,7 +33,8 @@ void UT_Mbtowc::initialize()
   m_bufLen=0;
 }
 
-#if defined(__QNXNTO__)
+#if defined(__QNXNTO__) || defined(__BEOS__)
+
 #include <stdlib.h>
 
 int my_mbtowc( wchar_t *pwc, const char *s, size_t n, int *state) {
@@ -50,7 +51,7 @@ int UT_Mbtowc::mbtowc(wchar_t &wc,char mb)
 	  return 0;
 	}
   m_buf[m_bufLen-1]=mb;
-#if defined(__QNXNTO__)
+#if defined(__QNXNTO__) || defined(__BEOS__)
   size_t thisLen=my_mbtowc(&wc,m_buf,m_bufLen,&m_state);
 #else
   size_t thisLen=mbrtowc(&wc,m_buf,m_bufLen,&m_state);

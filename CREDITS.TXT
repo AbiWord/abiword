@@ -66,6 +66,7 @@ James Montgomerie <jamie@montgomerie.net>       ANSI C patrol, libole2 integrati
 Tom Newton <Tom.Newton@gtl.com>
 Mike Nordell <tamlin@algonet.se>                Windows printing fix
 Bruce Pearson <BruceP@wn.com.au>                full justification
+Christopher Plymire <chrisjp@eudoramail.com> 	BeOS fixes, Word Count, Insert Date/Time
 Michael Pritchett <MPritchett@attglobal.net>    BMP Import, Cygwin 1.1.0 build fixes
 Bryan Prusha <bryanp@wolfram.com>		Mac Port Work
 Andy Richardson <andy@promethium.chem.ucl.ac.uk>	PostScript image handling
