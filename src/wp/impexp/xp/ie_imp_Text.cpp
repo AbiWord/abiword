@@ -36,6 +36,10 @@
 #include "xap_DialogFactory.h"
 #include "xap_Dlg_Encoding.h"
 #include "ap_Prefs.h"
+#include <fribidi/fribidi.h>
+
+#include "pt_PieceTable.h"
+#include "pf_Frag_Strux.h"
 
 /*!
   Construct ImportStream
@@ -177,18 +181,32 @@ bool ImportStreamClipboard::_getByte(unsigned char &b)
  */
 bool IE_Imp_Text::_insertBlock()
 {
-	if (isClipboard ()) // intentional - don't append style information
-		return appendStrux(PTX_Block, NULL);
+	bool ret = false;
+	m_bBlockDirectionPending = true;
+	m_bFirstBlockData = true;
+	
+	if (isClipboard ()) // intentional - don't append style
+						// information
+	{
+		
+		ret = appendStrux(PTX_Block, NULL);
+	}
 	else
-	  {
+	{
 	    // text gets applied in the Normal style
 	    const XML_Char * propsArray[3];
 	    propsArray[0] = "style";
 	    propsArray[1] = "Normal";
 	    propsArray[2] = 0;
 
-	    return appendStrux(PTX_Block, static_cast<const XML_Char **>(&propsArray[0]));
-	  }
+	    ret = appendStrux(PTX_Block, static_cast<const XML_Char **>(&propsArray[0]));
+	}
+
+	pf_Frag * pf = getDoc()->getPieceTable()->getFragments().getLast();
+	UT_ASSERT( pf->getType() == pf_Frag::PFT_Strux );
+	m_pBlock = (pf_Frag_Strux *) pf;
+	UT_ASSERT( m_pBlock->getStruxType() == PTX_Block );
+	return ret;
 }
 
 /*!
@@ -199,8 +217,62 @@ bool IE_Imp_Text::_insertBlock()
  */
 bool IE_Imp_Text::_insertSpan(UT_GrowBuf &b)
 {
-	bool bRes = appendSpan (reinterpret_cast<UT_UCS4Char*>(b.getPointer(0)), b.getLength());
+	UT_uint32 iLength = b.getLength();
+	const UT_UCS4Char * pData = (const UT_UCS4Char *)b.getPointer(0);
+
+	// handle block direction if needed ...
+	if(pData && m_bBlockDirectionPending)
+	{
+		const UT_UCS4Char * p = pData;
+
+		// we look for the first strong character
+		for(UT_uint32 i = 0; i < iLength; i++, p++)
+		{
+			FriBidiCharType type = fribidi_get_type(static_cast<FriBidiChar>(*p));
+
+			if(FRIBIDI_IS_STRONG(type))
+			{
+				m_bBlockDirectionPending = false;
+
+				// set 'dom-dir' property of the block ...
+				const XML_Char * propsArray[3];
+				propsArray[0] = "props";
+				propsArray[1] = NULL;
+				propsArray[2] = NULL;
+
+				UT_String props("dom-dir:");
+				
+				if(FRIBIDI_IS_RTL(type))
+					props += "rtl";
+				else
+					props += "ltr";
+
+				propsArray[1] = props.c_str();
+				
+				// we need to modify the existing formatting ...
+				appendStruxFmt(m_pBlock, static_cast<const XML_Char **>(&propsArray[0]));
+			
+				// if this is the first data in the block and the first
+				// character is LRM or RLM followed by a strong character,
+				// then we will remove it
+				if(m_bFirstBlockData && i==0 && iLength > 1 && (*p == UCS_LRM || *p == UCS_RLM))
+				{
+					FriBidiCharType next_type = fribidi_get_type(static_cast<FriBidiChar>(*(p+1)));
+					if(FRIBIDI_IS_STRONG(next_type))
+					{
+						pData++;
+						iLength--;
+					}
+				}
+				
+				break;
+			}
+		}
+	}
+	
+	bool bRes = appendSpan (pData, iLength);
 	b.truncate(0);
+	m_bFirstBlockData = false;
 	return bRes;
 }
 
@@ -537,7 +609,9 @@ IE_Imp_Text::IE_Imp_Text(PD_Document * pDocument, bool bEncoded)
     m_bIsEncoded(false),
     m_bIs16Bit(false),
     m_bUseBOM(false),
-    m_bBigEndian(false)
+	m_bBigEndian(false),
+	m_bBlockDirectionPending(true),
+	m_bFirstBlockData(true)
 {
 	// Get encoding dialog prefs setting
 	bool bAlwaysPrompt;
@@ -559,7 +633,9 @@ IE_Imp_Text::IE_Imp_Text(PD_Document * pDocument, const char * encoding)
     m_bIsEncoded(false),
     m_bIs16Bit(false),
     m_bUseBOM(false),
-    m_bBigEndian(false)
+	m_bBigEndian(false),
+	m_bBlockDirectionPending(true),
+	m_bFirstBlockData(true)
 {
   m_bIsEncoded = ((encoding != NULL) && (strlen(encoding) > 0));
   
@@ -642,16 +718,21 @@ UT_Error IE_Imp_Text::_constructStream(ImportStream *& pStream, FILE * fp)
  */
 UT_Error IE_Imp_Text::_writeHeader(FILE * /* fp */)
 {
-  // text gets applied in the Normal style
-  const XML_Char * propsArray[3];
-  propsArray[0] = "style";
-  propsArray[1] = "Normal";
-  propsArray[2] = 0;
+	// text gets applied in the Normal style
+	const XML_Char * propsArray[3];
+	propsArray[0] = "style";
+	propsArray[1] = "Normal";
+	propsArray[2] = 0;
 
-  X_ReturnNoMemIfError(appendStrux(PTX_Section, NULL));
-  X_ReturnNoMemIfError(appendStrux(PTX_Block, static_cast<const XML_Char**>(&propsArray[0])));
+	X_ReturnNoMemIfError(appendStrux(PTX_Section, NULL));
+	X_ReturnNoMemIfError(appendStrux(PTX_Block, static_cast<const XML_Char**>(&propsArray[0])));
 
-  return UT_OK;
+	pf_Frag * pf = getDoc()->getPieceTable()->getFragments().getLast();
+	UT_ASSERT( pf->getType() == pf_Frag::PFT_Strux );
+	m_pBlock = (pf_Frag_Strux *) pf;
+	UT_ASSERT( m_pBlock->getStruxType() == PTX_Block );
+  
+	return UT_OK;
 }
 
 /*!

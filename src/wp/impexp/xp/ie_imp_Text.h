@@ -28,6 +28,8 @@
 #include "ut_mbtowc.h"
 #include "pd_Document.h"
 
+class pf_Frag_Strux;
+
 // Stream class can be File or Clipboard
 
 class ABI_EXPORT ImportStream
@@ -168,6 +170,9 @@ protected:
 	bool			m_bIs16Bit;
 	bool			m_bUseBOM;
 	bool			m_bBigEndian;
+	bool            m_bBlockDirectionPending;
+	bool            m_bFirstBlockData;
+	pf_Frag_Strux * m_pBlock;
 };
 
 #endif /* IE_IMP_TEXT_H */

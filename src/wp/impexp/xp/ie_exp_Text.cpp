@@ -42,6 +42,7 @@
 #ifdef WIN32
   #include "ut_Win32OS.h"
 #endif
+#include <fribidi/fribidi.h>
 
 
 /*****************************************************************/
@@ -54,6 +55,7 @@ IE_Exp_Text::IE_Exp_Text(PD_Document * pDocument, bool bEncoded)
 	  m_szEncoding(0),
 	  m_bExplicitlySetEncoding(false),
 	  m_bIs16Bit(false),
+	  m_bUnicode(false),
 	  m_bBigEndian(false),
 	  m_bUseBOM(false)
 {
@@ -79,8 +81,9 @@ IE_Exp_Text::IE_Exp_Text(PD_Document * pDocument, const char * encoding)
     m_szEncoding(0),
     m_bExplicitlySetEncoding(false),
     m_bIs16Bit(false),
+    m_bUnicode(false),
     m_bBigEndian(false),
-    m_bUseBOM(false)
+	m_bUseBOM(false)
 {
   m_error = UT_OK;
   
@@ -183,7 +186,8 @@ bool IE_Exp_EncodedText_Sniffer::getDlgLabels(const char ** pszDesc,
 
 PL_Listener * IE_Exp_Text::_constructListener(void)
 {
-	return new Text_Listener(getDoc(),this,(getDocRange()!=NULL),m_szEncoding,m_bIs16Bit,m_bUseBOM,m_bBigEndian);
+	return new Text_Listener(getDoc(),this,(getDocRange()!=NULL),m_szEncoding,
+							 m_bIs16Bit,m_bUnicode,m_bUseBOM,m_bBigEndian);
 }
 
 // TODO This function is also used for Copy and Paste.
@@ -304,6 +308,7 @@ void IE_Exp_Text::_setEncoding(const char *szEncoding)
 #else
 		m_bUseBOM = false;
 #endif
+		m_bUnicode = true;
 	}
 	else if (szEncoding && !strcmp(szEncoding,XAP_EncodingManager::get_instance()->getUCS2BEName()))
 	{
@@ -314,6 +319,15 @@ void IE_Exp_Text::_setEncoding(const char *szEncoding)
 #else
 		m_bUseBOM = false;
 #endif
+		m_bUnicode = true;
+	}
+	else if(szEncoding && !UT_strnicmp(szEncoding,"UTF-",4))
+	{
+		// TODO -- can encoding be utf-16 or utf-32?
+		m_bIs16Bit = false;
+		m_bBigEndian = false;
+		m_bUseBOM = false;
+		m_bUnicode = true;
 	}
 	else
 	{
@@ -321,6 +335,7 @@ void IE_Exp_Text::_setEncoding(const char *szEncoding)
 		// These are currently meaningless when not in a Unicode encoding
 		m_bBigEndian = false;
 		m_bUseBOM = false;
+		m_bUnicode = false;
 	}
 }
 
@@ -470,6 +485,8 @@ void Text_Listener::_closeBlock(void)
 	m_pie->write(static_cast<const char *>(m_mbLineBreak),m_iLineBreakLen);
 
 	m_bInBlock = false;
+	m_eDirOverride = DO_UNSET;
+	m_eDirMarkerPending = DO_UNSET;
 	return;
 }
 
@@ -477,13 +494,15 @@ void Text_Listener::_handleDirMarker(PT_AttrPropIndex api)
 {
 	const PP_AttrProp * pAP = NULL;
 	bool bHaveProp = m_pDocument->getAttrProp (api, &pAP);
-
+	
+	UT_UCS4Char * pMarker = NULL;
+		
 	if (bHaveProp && pAP)
 	{
 		UT_UCS4Char cRLO = UCS_RLO;
 		UT_UCS4Char cLRO = UCS_LRO;
 		UT_UCS4Char cPDF = UCS_PDF;
-		
+
 		const XML_Char *szValue = NULL;
 		if(pAP->getProperty("dir-override", szValue))
 		{
@@ -492,14 +511,12 @@ void Text_Listener::_handleDirMarker(PT_AttrPropIndex api)
 				if(!UT_stricmp(szValue, "rtl"))
 				{
 					m_eDirOverride = DO_RTL;
-					// write RLO
-					_outputData(&cRLO, 1);
+					pMarker = &cRLO;
 				}
 				else if(!UT_stricmp(szValue, "ltr"))
 				{
 					m_eDirOverride = DO_LTR;
-					// write LRO
-					_outputData(&cLRO, 1);
+					pMarker = &cLRO;
 				}
 			}
 			else if(m_eDirOverride == DO_RTL)
@@ -511,8 +528,7 @@ void Text_Listener::_handleDirMarker(PT_AttrPropIndex api)
 				else if(!UT_stricmp(szValue, "ltr"))
 				{
 					m_eDirOverride = DO_LTR;
-					// write LRO
-					_outputData(&cLRO, 1);
+					pMarker = &cLRO;
 				}
 			}
 			else if(m_eDirOverride == DO_LTR)
@@ -524,8 +540,7 @@ void Text_Listener::_handleDirMarker(PT_AttrPropIndex api)
 				else if(!UT_stricmp(szValue, "rtl"))
 				{
 					m_eDirOverride = DO_RTL;
-					// write RLO
-					_outputData(&cRLO, 1);
+					pMarker = &cRLO;
 				}
 			}
 			else
@@ -540,8 +555,7 @@ void Text_Listener::_handleDirMarker(PT_AttrPropIndex api)
 			if(m_eDirOverride != DO_UNSET)
 			{
 				m_eDirOverride = DO_UNSET;
-				// write PDF
-				_outputData(&cPDF, 1);
+				pMarker = &cPDF;
 			}
 		}
 	}
@@ -551,7 +565,42 @@ void Text_Listener::_handleDirMarker(PT_AttrPropIndex api)
 					 bHaveProp, pAP));
 		UT_ASSERT( UT_SHOULD_NOT_HAPPEN );
 	}
-	
+
+	// first see if there is a pending marker (for block direction)
+	// and handle it
+	if(pMarker && m_eDirMarkerPending != DO_UNSET)
+	{
+		UT_UCS4Char cRLM = UCS_RLM;
+		UT_UCS4Char cLRM = UCS_LRM;
+
+		if(m_eDirMarkerPending == DO_RTL && *pMarker == UCS_RLO)
+		{
+			//the override corresponds to the marker, no marker needed
+			m_eDirMarkerPending = DO_UNSET;
+		}
+		else if(m_eDirMarkerPending == DO_RTL && *pMarker == UCS_LRO)
+		{
+			//need to issue marker
+			_outputData(&cRLM, 1);
+			m_eDirMarkerPending = DO_UNSET;
+		}
+		else if(m_eDirMarkerPending == DO_LTR && *pMarker == UCS_LRO)
+		{
+			//the override corresponds to the marker, no marker needed
+			m_eDirMarkerPending = DO_UNSET;
+		}
+		else if(m_eDirMarkerPending == DO_LTR && *pMarker == UCS_RLO)
+		{
+			//need to issue marker
+			_outputData(&cLRM, 1);
+			m_eDirMarkerPending = DO_UNSET;
+		}
+	}
+
+	if(pMarker)
+	{
+		_outputData(pMarker, 1);
+	}
 }
 
 
@@ -561,6 +610,7 @@ Text_Listener::Text_Listener(PD_Document * pDocument,
 							 bool bToClipboard,
 							 const char *szEncoding,
 							 bool bIs16Bit,
+							 bool bUnicode,
 							 bool bUseBOM,
 							 bool bBigEndian)
 	: m_pDocument(pDocument),
@@ -576,10 +626,39 @@ Text_Listener::Text_Listener(PD_Document * pDocument,
 	  m_bFirstWrite(true),
 	  m_szEncoding(szEncoding),
 	  m_bIs16Bit(bIs16Bit),
+	  m_bUnicode(bUnicode),
 	  m_bBigEndian(bBigEndian),
 	  m_bUseBOM(bToClipboard ? false : bUseBOM),
-	  m_eDirOverride(DO_UNSET)
+	  m_eDirOverride(DO_UNSET),
+	  m_eDirMarkerPending(DO_UNSET),
+	  m_eSectionDir(DO_UNSET),
+	  m_eDocDir(DO_UNSET)
 {
+	PT_AttrPropIndex api = m_pDocument->getAttrPropIndex();
+	const PP_AttrProp * pAP = NULL;
+	bool bHaveProp = m_pDocument->getAttrProp (api, &pAP);
+
+	if (bHaveProp && pAP)
+	{
+		const XML_Char *szValue = NULL;
+		if(pAP->getProperty("dom-dir", szValue))
+		{
+			if(!UT_stricmp("rtl",szValue))
+			{
+				m_eDocDir = DO_RTL;
+			}
+			else
+			{
+				m_eDocDir = DO_LTR;
+			}
+		}
+		else
+		{
+			// something wrong, default to LTR
+			m_eSectionDir = DO_LTR;
+		}
+				
+	}
 }
 
 bool Text_Listener::populate(PL_StruxFmtHandle /*sfh*/,
@@ -595,7 +674,42 @@ bool Text_Listener::populate(PL_StruxFmtHandle /*sfh*/,
 			_handleDirMarker(api);
 
 			PT_BufIndex bi = pcrs->getBufIndex();
-			_outputData(m_pDocument->getPointer(bi),pcrs->getLength());
+			const UT_UCS4Char * pData = m_pDocument->getPointer(bi);
+
+			// first see if there is a pending marker (for block direction)
+			// and handle it
+			if(pData && m_eDirMarkerPending != DO_UNSET)
+			{
+				UT_UCS4Char cRLM = UCS_RLM;
+				UT_UCS4Char cLRM = UCS_LRM;
+
+				FriBidiCharType type = fribidi_get_type(static_cast<FriBidiChar>(*pData));
+				
+				if(m_eDirMarkerPending == DO_RTL && type == FRIBIDI_TYPE_RTL)
+				{
+					//the override corresponds to the marker, no marker needed
+					m_eDirMarkerPending = DO_UNSET;
+				}
+				else if(m_eDirMarkerPending == DO_RTL && type == FRIBIDI_TYPE_LTR)
+				{
+					//need to issue marker
+					_outputData(&cRLM, 1);
+					m_eDirMarkerPending = DO_UNSET;
+				}
+				else if(m_eDirMarkerPending == DO_LTR && type == FRIBIDI_TYPE_LTR)
+				{
+					//the override corresponds to the marker, no marker needed
+					m_eDirMarkerPending = DO_UNSET;
+				}
+				else if(m_eDirMarkerPending == DO_LTR && type == FRIBIDI_TYPE_RTL)
+				{
+					//need to issue marker
+					_outputData(&cLRM, 1);
+					m_eDirMarkerPending = DO_UNSET;
+				}
+			}
+			
+			_outputData(pData,pcrs->getLength());
 
 			return true;
 		}
@@ -665,6 +779,30 @@ bool Text_Listener::populateStrux(PL_StruxDocHandle /*sdh*/,
 	case PTX_Section:
 		{
 			_closeBlock();
+			PT_AttrPropIndex api = pcr->getIndexAP();
+			const PP_AttrProp * pAP = NULL;
+			bool bHaveProp = m_pDocument->getAttrProp (api, &pAP);
+
+			if (bHaveProp && pAP)
+			{
+				const XML_Char *szValue = NULL;
+				if(pAP->getProperty("dom-dir", szValue))
+				{
+					if(!UT_stricmp("rtl",szValue))
+					{
+						m_eSectionDir = DO_RTL;
+					}
+					else
+					{
+						m_eSectionDir = DO_LTR;
+					}
+				}
+				else
+				{
+					m_eSectionDir = DO_UNSET;
+				}
+				
+			}
 			return true;
 		}
 
@@ -672,6 +810,43 @@ bool Text_Listener::populateStrux(PL_StruxDocHandle /*sdh*/,
 		{
 			_closeBlock();
 			m_bInBlock = true;
+
+			// in 16-bit encodings we sometimes have to issue LRM or
+			// RLM to indicate the dominant direction of the block
+			// (the actual insertion will be done in the subsequent
+			// call to _outputData(), since most often the marker is
+			// unnecessary
+			if(m_bUnicode)
+			{
+				PT_AttrPropIndex api = pcr->getIndexAP();
+				const PP_AttrProp * pAP = NULL;
+				bool bHaveProp = m_pDocument->getAttrProp (api, &pAP);
+
+				if (bHaveProp && pAP)
+				{
+					const XML_Char *szValue = NULL;
+					if(pAP->getProperty("dom-dir", szValue))
+					{
+						if(!UT_stricmp("rtl",szValue))
+						{
+							m_eDirMarkerPending = DO_RTL;
+						}
+						else
+						{
+							m_eDirMarkerPending = DO_LTR;
+						}
+					}
+					else if(m_eSectionDir != DO_UNSET)
+					{
+						m_eDirMarkerPending = m_eSectionDir;
+					}
+					else
+					{
+						m_eDirMarkerPending = m_eDocDir;
+					}
+				}
+			}
+			
 			return true;
 		}
 

@@ -142,6 +142,7 @@ public:
 	bool isClipboard () const;
 
 	bool appendStrux (PTStruxType pts, const XML_Char ** attributes);
+	bool appendStruxFmt(pf_Frag_Strux * pfs, const XML_Char ** attributes);
 	bool appendSpan (const UT_UCSChar * p, UT_uint32 length);
 	bool appendObject (PTObjectType pto, const XML_Char ** attribs,
 					   const XML_Char ** props = NULL);

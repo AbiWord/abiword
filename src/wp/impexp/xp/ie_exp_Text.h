@@ -88,6 +88,7 @@ protected:
 	const char *		m_szEncoding;
 	bool m_bExplicitlySetEncoding;
 	bool				m_bIs16Bit;
+	bool                m_bUnicode;
 	bool				m_bBigEndian;
 	bool				m_bUseBOM;
 };
@@ -105,6 +106,7 @@ public:
 					bool bToClipboard = false,
 					const char *szEncoding = 0,
 					bool bIs16Bit = false,
+ 				    bool m_bUnicode = false,
 					bool bUseBOM = false,
 					bool bBigEndian = false);
 	virtual ~Text_Listener(){};
@@ -160,8 +162,12 @@ protected:
 	const char *		m_szEncoding;
 	bool				m_bIs16Bit;
 	bool				m_bBigEndian;
+	bool                m_bUnicode;
 	bool				m_bUseBOM;
 	_dirOverride        m_eDirOverride;
+	_dirOverride        m_eDirMarkerPending;
+	_dirOverride        m_eSectionDir;
+	_dirOverride        m_eDocDir;
 };
 
 #endif /* IE_EXP_TEXT_H */
