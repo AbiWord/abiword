@@ -791,6 +791,10 @@ void fp_Run::draw(dg_DrawArgs* pDA)
 	}
 
 	_drawDecors(pDA->xoff, pDA->yoff);
+
+	UT_DEBUGMSG(("Calling find Squiggles...\n"));
+	m_pBL->findSquigglesForRun(this);
+	
 }
 
 UT_uint32 fp_Run::_sumPartWidth(UT_uint32 iStart, UT_uint32 iLen, const UT_GrowBuf* pgbCharWidths)
@@ -1013,3 +1017,29 @@ UT_Bool fp_Run::del(UT_uint32 iOffset, UT_uint32 iCount)
 	return UT_TRUE;
 }
 
+
+
+void fp_Run::drawSquiggle(UT_uint32 iOffset, UT_uint32 iLen)
+{
+		UT_Rect rect;
+		UT_sint32 xoff = 0, yoff = 0;
+		const UT_GrowBuf * pgbCharWidths = m_pBL->getCharWidths();  
+		UT_RGBColor redSquiggle(255, 0, 0);
+
+		/* TODO: are these params coorect? */
+		m_pLine->getScreenOffsets(this, m_pLineData, xoff, yoff, 0, 0, UT_TRUE);
+
+		_getPartRect( &rect, xoff, yoff, iOffset, iLen, pgbCharWidths);
+
+		// Is this correct? 
+		m_pG->setColor(redSquiggle);
+
+		// TODO ----> is this the correct coordinate space?
+		m_pG->drawLine(xoff + rect.left, yoff + rect.height + 1, xoff + rect.width, yoff + rect.height + 1);
+
+		UT_DEBUGMSG(("Drawing squiggle from xoff = %d, yoff = %d, left=%d, height=%d, width=%d\n", 
+							xoff,yoff, rect.left, rect.height, rect.width));
+		UT_DEBUGMSG(("Drawing squiggle from (%d,%d) to (%d,%d) \n", xoff + rect.left, yoff + rect.height+1, 
+							xoff + rect.width, yoff + rect.height +1));
+
+}

@@ -1351,6 +1351,10 @@ UT_Bool fl_BlockLayout::doclistener_populate(PT_BlockOffset blockOffset, UT_uint
 		m_pFirstRun = pNewRun;
 	}
 
+	UT_DEBUGMSG(("to block %p, invalidating adding offset %d, length %d\n", this, blockOffset,len));
+
+	_addPartNotSpellChecked(blockOffset, len);
+
 	return UT_TRUE;
 }
 
@@ -1455,6 +1459,46 @@ UT_Bool fl_BlockLayout::doclistener_insertSpan(const PX_ChangeRecord_Span * pcrs
 
 	pView->notifyListeners(mask);
 
+/***************************************************************************************/
+
+	/* Update spell check lists */
+
+    fl_PartOfBlock *pPOB;
+
+    pPOB = (fl_PartOfBlock *) m_lstNotSpellChecked.head();
+	while ((pPOB) != (fl_PartOfBlock *) 0)
+	{
+		if (pPOB->iOffset > blockOffset)
+		{
+			/* 
+				text insertion comes before this non-spell checked region, 
+				so update the non-spell check region.
+			*/
+			pPOB->iOffset += len;
+		}
+	    pPOB = (fl_PartOfBlock *) m_lstNotSpellChecked.next();
+	}
+
+
+    pPOB = (fl_PartOfBlock *) m_lstSpelledWrong.head();
+	while ((pPOB) != (fl_PartOfBlock *) 0)
+	{
+		if (pPOB->iOffset > blockOffset)
+		{
+			/* 
+				text insertion comes before this spell checked/unknown word region, 
+				so update this region.
+			*/
+			pPOB->iOffset += len;
+		}
+    	pPOB = (fl_PartOfBlock *) m_lstSpelledWrong.next();
+	}
+
+	/* Invalidate the region */
+	_addPartNotSpellChecked(blockOffset, len);
+
+/***************************************************************************************/
+
 	return UT_TRUE;
 }
 
@@ -1465,6 +1509,9 @@ UT_Bool fl_BlockLayout::doclistener_deleteSpan(const PX_ChangeRecord_Span * pcrs
 	PT_BlockOffset blockOffset = (pcrs->getPosition() - getPosition());
 	UT_uint32 len = pcrs->getLength();
 	UT_ASSERT(len>0);
+	PT_BlockOffset beginning;
+	UT_uint32 end;
+
 
 	m_gbCharWidths.del(blockOffset, len);
 	
@@ -1527,11 +1574,128 @@ UT_Bool fl_BlockLayout::doclistener_deleteSpan(const PX_ChangeRecord_Span * pcrs
 		pView->notifyListeners(AV_CHG_TYPING | AV_CHG_FMTCHAR);
 	}
 
+/*****  SPELL CHECK UPDATE follows *************************************************************/
+
+	bool takeCurrent = false;
+
+	/* update index's for non-spell checked regions */
+    fl_PartOfBlock *pPOB = (fl_PartOfBlock *) m_lstNotSpellChecked.head();
+	while ((pPOB) != (fl_PartOfBlock *) 0)
+	{
+		if ((pPOB->iOffset + pPOB->iLength) > blockOffset)
+		{
+			if (pPOB->iOffset < blockOffset)
+			{
+				if ((pPOB->iOffset + pPOB->iLength) > (blockOffset + len))
+				{
+					/* deletion is a subset of this region */
+					pPOB->iLength -= len;
+				}
+				else
+				{
+					/* deletion overlaps the end of this region */
+					pPOB->iLength = blockOffset - pPOB->iOffset;
+				}
+			}
+			else if ((blockOffset + len) < (pPOB->iOffset + pPOB->iLength) )
+			{
+				if ((blockOffset +len ) < pPOB->iOffset)
+				{
+					/* deletion is wholly infront of this region */
+					pPOB->iOffset -= len;
+				}
+				else
+				{
+					/* deletion overlaps over the front of this region */
+					pPOB->iLength = (pPOB->iOffset + pPOB->iLength) - (blockOffset + len);
+					pPOB->iOffset = blockOffset;
+				}
+			}
+			else 
+			{
+				/* this region is a subset of the deletion... remove from list */
+				m_lstSpelledWrong.remove();
+				delete pPOB;
+				takeCurrent = true;
+			}
+		} else if ((pPOB->iOffset == blockOffset) && (pPOB->iLength == len))
+		{
+			/* deletion _is_ this same region */
+				m_lstSpelledWrong.remove();
+				delete pPOB;
+				takeCurrent = true;
+		}
+
+
+		if (!takeCurrent)
+	    		pPOB = (fl_PartOfBlock *) m_lstNotSpellChecked.next();
+		else
+			{
+	    		pPOB = (fl_PartOfBlock *) m_lstNotSpellChecked.current();
+				takeCurrent = false;
+			}
+	}
+
+
+
+	// update the misspelled word list (m_lstSpelledWrong)...
+
+	takeCurrent = false;
+	pPOB = (fl_PartOfBlock *) m_lstSpelledWrong.head();
+	while ((pPOB) != (fl_PartOfBlock *) 0)
+	{
+		if ((pPOB->iOffset + pPOB->iLength) > blockOffset)
+		{
+			if ((blockOffset + len) < pPOB->iOffset)
+			{
+				/* Doesn't intersect, but it's after deletion */
+							pPOB->iOffset -= len;
+			}
+			else
+			{
+				/* does intersect... invalidate the whole region  */
+				beginning = (blockOffset < pPOB->iOffset)? blockOffset: pPOB->iOffset;
+				end = ((pPOB->iOffset + pPOB->iLength) > (blockOffset + len)) ? 
+													(pPOB->iOffset + pPOB->iLength) : (blockOffset + len);
+
+				_addPartNotSpellChecked(beginning, (end - ((UT_uint32) beginning)) );
+
+				/* Remove the word from list */
+				m_lstSpelledWrong.remove();
+				delete pPOB;
+				takeCurrent = true;
+			}
+
+		} else if ((pPOB->iOffset == blockOffset) && (pPOB->iLength == len))
+		{
+			/* deletion region _is_ this misspelled word */
+			m_lstSpelledWrong.remove();
+			delete pPOB;
+			takeCurrent = true;
+		}
+		
+
+		if (!takeCurrent)
+	    		pPOB = (fl_PartOfBlock *) m_lstSpelledWrong.next();
+		else
+			{
+	    		pPOB = (fl_PartOfBlock *) m_lstSpelledWrong.current();
+				takeCurrent = false;
+			}
+	
+	}
+
+
+/****  End of Spell check code ***********************************************************/
+
 	return UT_TRUE;
 }
 
 UT_Bool fl_BlockLayout::doclistener_changeSpan(const PX_ChangeRecord_SpanChange * pcrsc)
 {
+
+	// TODO:  This span needs to be invalidated for the spell checker....
+
 	UT_ASSERT(pcrsc->getType()==PX_ChangeRecord::PXT_ChangeSpan);
 		
 	PT_BlockOffset blockOffset = (pcrsc->getPosition() - getPosition());
@@ -1886,3 +2050,59 @@ UT_Bool fl_BlockLayout::doclistener_insertStrux(const PX_ChangeRecord_Strux * pc
 	
 	return UT_TRUE;
 }
+
+
+void fl_BlockLayout::findSquigglesForRun(fp_Run* pRun)
+{
+	UT_uint32  runOffset = pRun->getBlockOffset();
+	UT_uint32  runLength = pRun->getLength();
+	fl_PartOfBlock*	pPOB;
+
+	/* For all misspelled words in this run, call the run->drawSquiggle() method */
+
+	UT_DEBUGMSG(("findSquigglesForRun, There are %d invalid regions and %d bad words\n",
+			m_lstNotSpellChecked.size(), m_lstSpelledWrong.size()));	
+
+	pPOB = (fl_PartOfBlock *) m_lstSpelledWrong.head();
+	while (NULL != pPOB)
+	{
+
+		if ((pPOB->iOffset == runOffset) && (pPOB->iLength == runLength))
+		{
+			pRun->drawSquiggle(runOffset, runLength);
+
+		} 
+		else if ((pPOB->iOffset < runOffset) && ((runOffset + runLength) > pPOB->iOffset))
+		{
+			if ((runOffset + runLength) < (pPOB->iOffset + pPOB->iLength))
+			{
+				/* This run overlaps the front of this misspelled word */
+				pRun->drawSquiggle(pPOB->iOffset, runLength - (pPOB->iOffset - runOffset));
+			}
+			else
+			{
+				/* this run is a superset of this mispelled word */
+				pRun->drawSquiggle(pPOB->iOffset, pPOB->iLength);
+			}
+		}
+		else if ((pPOB->iOffset < runOffset) && ((runOffset + runLength) > pPOB->iOffset))
+		{
+			if ((runOffset + runLength) < (pPOB->iOffset + pPOB->iLength))
+			{
+				/* this run is a subset of this misspelled word */
+				pRun->drawSquiggle(runOffset, runLength);
+			}
+			else
+			{
+				/* this run overlaps the end of this misspelled word */
+				pRun->drawSquiggle(runOffset, pPOB->iLength - (runOffset - pPOB->iOffset));
+			}
+		}
+
+		pPOB = (fl_PartOfBlock *) m_lstSpelledWrong.next();
+	}
+}
+
+
+
+

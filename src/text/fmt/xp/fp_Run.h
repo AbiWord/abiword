@@ -113,6 +113,7 @@ class fp_Run
 	void                    clearScreen(void);
 	void					draw(dg_DrawArgs*);
 	void					dumpRun(void) const;
+	void					drawSquiggle(UT_uint32, UT_uint32);
 	
  protected:
 	void					_drawDecors(UT_sint32, UT_sint32);

@@ -136,6 +136,8 @@ public:
 	fp_Line* findPrevLineInDocument(fp_Line*);
 	fp_Line* findNextLineInDocument(fp_Line*);
 	fp_Run* getFirstRun();
+	void findSquigglesForRun(fp_Run* pRun);
+
 
 	FL_DocLayout * getLayout();
 	fl_SectionLayout * getSectionLayout();
