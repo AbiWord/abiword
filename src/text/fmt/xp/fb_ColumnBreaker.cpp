@@ -52,15 +52,6 @@ UT_sint32 fb_ColumnBreaker::breakSection(fl_DocSectionLayout * pSL)
 		return 0;
 	pCurrentContainer = pFirstLayout->getFirstContainer();
 	pCurColumn = (fp_Column*) pSL->getFirstContainer();
-//
-// This branch is from _reformat in fp_Page. A column that used to
-// exist has been bumped off
-// the page by an expanding column. We need to layout from the last
-// valid block onwards. If
-// start the beginning we get stuck in an infinite loop. The last
-// valid block, is the last block
-// that has all it's lines correctly laid out on a page.
-//
 
 	while (pCurColumn)
 	{
@@ -87,10 +78,10 @@ UT_sint32 fb_ColumnBreaker::breakSection(fl_DocSectionLayout * pSL)
 		if (pCurContainer && pCurContainer->getContainerType() == FP_CONTAINER_LINE)
 		{
 			fp_Line* pCurLine = (fp_Line *)pCurContainer;
-			bHasFootnote |= pCurLine->getHasFootnoteRef();
+			bHasFootnote |= pCurLine->containsFootnoteRef();
 			// Excellent.  If we have a footnote, we can start deducting
 			// from the working height before we lay out the text.
-			if (pCurLine->getHasFootnoteRef())
+			if (pCurLine->containsFootnoteRef())
 			{
 				// Unless bFirstColumn is false.  In which case we assert
 				// NOT_YET_IMPLEMENTED for now!  Hurrah!
@@ -523,10 +514,10 @@ UT_sint32 fb_ColumnBreaker::breakSection(fl_DocSectionLayout * pSL)
 			if (pCurContainer && pCurContainer->getContainerType() == FP_CONTAINER_LINE)
 			{
 				fp_Line* pCurLine = (fp_Line *)pCurContainer;
-				bHasFootnote |= pCurLine->getHasFootnoteRef();
+				bHasFootnote |= pCurLine->containsFootnoteRef();
 				// Excellent.  If we have a footnote, we can start deducting
 				// from the working height before we lay out the text.
-				if (pCurLine->getHasFootnoteRef())
+				if (pCurLine->containsFootnoteRef())
 				{
 					// Unless bFirstColumn is false.  In which case we assert
 					// NOT_YET_IMPLEMENTED for now!  Hurrah!

@@ -63,44 +63,40 @@ UT_sint32 * fp_Line::s_pOldXs = NULL;
 UT_uint32   fp_Line::s_iOldXsSize = 0;
 UT_uint32	fp_Line::s_iClassInstanceCounter = 0;
 
-fp_Line::fp_Line(fl_SectionLayout * pSectionLayout) : fp_Container(FP_CONTAINER_LINE, pSectionLayout)
-{
-	m_pBlock = NULL;
-	m_iWidth = 0;
-	m_iMaxWidth = 0;
-	m_iClearToPos = 0;
-	m_iClearLeftOffset = 0;
-	m_iHeight = 0;
-
-	m_iScreenHeight = -1;
-	m_iAscent = 0;
-	m_iDescent = 0;
-	m_iX = 0;
-	m_iY = -2000000; // So setY(0) triggers a clearscreen and redraw!
-	m_iYLayoutUnits = -20000000;
-
+fp_Line::fp_Line(fl_SectionLayout * pSectionLayout) : 
+	fp_Container(FP_CONTAINER_LINE, pSectionLayout),
+	m_pBlock(NULL),
+	m_iWidth(0),
+	m_iMaxWidth(0),
+	m_iClearToPos(0),
+	m_iClearLeftOffset(0),
+	m_iHeight(0),
+	m_iScreenHeight(-1),
+	m_iAscent(0),
+	m_iDescent(0),
+	m_iX(0),
+	m_iY(-2000000), // So setY(0) triggers a clearscreen and redraw!
 #ifndef WITH_PANGO
-	m_iHeightLayoutUnits = 0;
-	m_iWidthLayoutUnits = 0;
-	m_iMaxWidthLayoutUnits = 0;
-	m_iXLayoutUnits = 0;
-	m_iYLayoutUnits = 0;
+	m_iWidthLayoutUnits(0),
+	m_iMaxWidthLayoutUnits(0),
+	m_iHeightLayoutUnits(0),
+	m_iXLayoutUnits(0),
+	m_iYLayoutUnits(-20000000),
 #endif
-
-	m_bNeedsRedraw = false;
-	//m_bRedoLayout = true;
-
+	//m_bRedoLayout(true),
+	m_bNeedsRedraw(false),
+	m_bMapDirty(true), //map that has not been initialized is dirty by deafault
+	m_iRunsRTLcount(0),
+	m_iRunsLTRcount(0),
+	m_bIsCleared(true),
+	m_bContainsFootnoteRef(false)
+{
 	if(!s_iClassInstanceCounter)
 	{
 		s_pOldXs = new UT_sint32[STATIC_BUFFER_INITIAL];
 		UT_ASSERT(s_pOldXs);
 		s_iOldXsSize = STATIC_BUFFER_INITIAL;
 	}
-
-
-	m_iRunsRTLcount = 0;
-	m_iRunsLTRcount = 0;
-	m_bMapDirty = true; //map that has not been initialized is dirty by deafault
 
 	#ifdef USE_STATIC_MAP
 	if(!s_pMapOfRunsL2V)
@@ -111,19 +107,16 @@ fp_Line::fp_Line(fl_SectionLayout * pSectionLayout) : fp_Container(FP_CONTAINER_
 		s_pEmbeddingLevels =  new FriBidiLevel[RUNS_MAP_SIZE];
 		s_iMapOfRunsSize = RUNS_MAP_SIZE;
 	}
-
     #else
 	m_pMapOfRunsL2V = new FriBidiStrIndex[RUNS_MAP_SIZE];
 	m_pMapOfRunsV2L = new FriBidiStrIndex[RUNS_MAP_SIZE];
 	m_pPseudoString    = new FriBidiChar[RUNS_MAP_SIZE];
 	m_pEmbeddingLevels =  new FriBidiLevel[RUNS_MAP_SIZE];
 	m_iMapOfRunsSize = RUNS_MAP_SIZE;
-	#endif
+    #endif
 
 	UT_ASSERT(s_pMapOfRunsL2V && s_pMapOfRunsV2L && s_pPseudoString && s_pEmbeddingLevels);
 
-	m_bNeedsRedraw = false;
-	m_bIsCleared = true;
 	++s_iClassInstanceCounter; // this tells us how many instances of Line are out there
 							   //we use this to decide whether the above should be
 							   //deleted by the destructor
@@ -289,7 +282,13 @@ bool fp_Line::removeRun(fp_Run* pRun, bool bTellTheRunAboutIt)
 		pRun->setLine(NULL);
 	}
 
-
+	// Might have to check for other footnotes on this line.
+	if (pRun->getType() == FPRUN_FIELD)
+	{
+		fp_FieldRun * fr = (fp_FieldRun*) pRun;
+		if (fr->getFieldType() == FPFIELD_endnote_ref)
+			_updateContainsFootnoteRef();
+	}
 
 	UT_sint32 ndx = m_vecRuns.findItem(pRun);
 	UT_ASSERT(ndx >= 0);
@@ -307,6 +306,13 @@ void fp_Line::insertRunBefore(fp_Run* pNewRun, fp_Run* pBefore)
 	UT_ASSERT(pNewRun);
 	UT_ASSERT(pBefore);
 
+	if (pNewRun->getType() == FPRUN_FIELD)
+	{
+		fp_FieldRun * fr = (fp_FieldRun*) pNewRun;
+		if (fr->getFieldType() == FPFIELD_endnote_ref)
+			m_bContainsFootnoteRef = true;
+	}
+
 	pNewRun->setLine(this);
 
 	UT_sint32 ndx = m_vecRuns.findItem(pBefore);
@@ -320,6 +326,12 @@ void fp_Line::insertRunBefore(fp_Run* pNewRun, fp_Run* pBefore)
 void fp_Line::insertRun(fp_Run* pNewRun)
 {
 	//UT_DEBUGMSG(("insertRun (line 0x%x, run 0x%x, type %d)\n", this, pNewRun, pNewRun->getType()));
+	if (pNewRun->getType() == FPRUN_FIELD)
+	{
+		fp_FieldRun * fr = (fp_FieldRun*) pNewRun;
+		if (fr->getFieldType() == FPFIELD_endnote_ref)
+			m_bContainsFootnoteRef = true;
+	}
 
 	UT_ASSERT(m_vecRuns.findItem(pNewRun) < 0);
 	pNewRun->setLine(this);
@@ -332,6 +344,12 @@ void fp_Line::insertRun(fp_Run* pNewRun)
 void fp_Line::addRun(fp_Run* pNewRun)
 {
 	//UT_DEBUGMSG(("addRun (line 0x%x, run 0x%x, type %d)\n", this, pNewRun, pNewRun->getType()));
+	if (pNewRun->getType() == FPRUN_FIELD)
+	{
+		fp_FieldRun * fr = (fp_FieldRun*) pNewRun;
+		if (fr->getFieldType() == FPFIELD_endnote_ref)
+			m_bContainsFootnoteRef = true;
+	}
 
 	UT_ASSERT(m_vecRuns.findItem(pNewRun) < 0);
 	pNewRun->setLine(this);
@@ -345,6 +363,12 @@ void fp_Line::addRun(fp_Run* pNewRun)
 void fp_Line::insertRunAfter(fp_Run* pNewRun, fp_Run* pAfter)
 {
 	//UT_DEBUGMSG(("insertRunAfter (line 0x%x, run 0x%x, type %d)\n", this, pNewRun, pNewRun->getType()));
+	if (pNewRun->getType() == FPRUN_FIELD)
+	{
+		fp_FieldRun * fr = (fp_FieldRun*) pNewRun;
+		if (fr->getFieldType() == FPFIELD_endnote_ref)
+			m_bContainsFootnoteRef = true;
+	}
 
 	UT_ASSERT(m_vecRuns.findItem(pNewRun) < 0);
 	UT_ASSERT(pNewRun);
@@ -378,12 +402,11 @@ void fp_Line::remove(void)
 void fp_Line::mapXYToPosition(UT_sint32 x, UT_sint32 y, PT_DocPosition& pos,
 							  bool& bBOL, bool& bEOL)
 {
-	UT_sint32 count = m_vecRuns.getItemCount();
-	UT_ASSERT(count > 0);
+	UT_uint32 count = m_vecRuns.getItemCount();
 
 	FV_View* pView = getBlock()->getDocLayout()->getView();
 	bool bShowHidden = pView->getShowPara();
-	UT_sint32 i = 0;
+	UT_uint32 i = 0;
 	fp_Run* pFirstRun;
 	bool bHidden;
 	FPVisibility eHidden;
@@ -2588,7 +2611,8 @@ void fp_Line::recalcMaxWidth(bool bDontClearIfNeeded)
 	{
 		if(getContainer()->getContainerType() == FP_CONTAINER_COLUMN ||
 			getContainer()->getContainerType() == FP_CONTAINER_COLUMN_SHADOW ||
-			getContainer()->getContainerType() == FP_CONTAINER_HDRFTR)
+			getContainer()->getContainerType() == FP_CONTAINER_HDRFTR ||
+			getContainer()->getContainerType() == FP_CONTAINER_FOOTNOTE)
 		{
 			m_iClearToPos = iMaxWidth + pSL->getColumnGap();
 			m_iClearLeftOffset = pSL->getColumnGap() -1;
@@ -2596,7 +2620,7 @@ void fp_Line::recalcMaxWidth(bool bDontClearIfNeeded)
 		else if(getContainer()->getContainerType() == FP_CONTAINER_CELL)
 		{
 			fp_CellContainer * pCell = (fp_CellContainer *) getContainer();
-			m_iClearToPos = iMaxWidth + pCell->getRightPad() * SCALE_TO_SCREEN;
+			m_iClearToPos = (UT_sint32)iMaxWidth + pCell->getRightPad() * SCALE_TO_SCREEN;
 //			m_iClearLeftOffset =  pCell->getCellX(this) - pCell->getLeftPos() - 1;
 			m_iClearLeftOffset =  0;
 		}
@@ -2611,7 +2635,8 @@ void fp_Line::recalcMaxWidth(bool bDontClearIfNeeded)
 	{
 		if(getContainer()->getContainerType() == FP_CONTAINER_COLUMN ||
 			getContainer()->getContainerType() == FP_CONTAINER_COLUMN_SHADOW ||
-			getContainer()->getContainerType() == FP_CONTAINER_HDRFTR)
+			getContainer()->getContainerType() == FP_CONTAINER_HDRFTR ||
+			getContainer()->getContainerType() == FP_CONTAINER_FOOTNOTE)
 		{
 			m_iClearToPos = iMaxWidth + pSL->getRightMargin() - 2;
 			m_iClearLeftOffset = pSL->getLeftMargin() -1;
@@ -2619,7 +2644,7 @@ void fp_Line::recalcMaxWidth(bool bDontClearIfNeeded)
 		else if(getContainer()->getContainerType() == FP_CONTAINER_CELL)
 		{
 			fp_CellContainer * pCell = (fp_CellContainer *) getContainer();
-			m_iClearToPos = iMaxWidth + pCell->getRightPad() * SCALE_TO_SCREEN;
+			m_iClearToPos = (UT_sint32)iMaxWidth + pCell->getRightPad() * SCALE_TO_SCREEN;
 //			m_iClearLeftOffset =  pCell->getCellX(this) - pCell->getLeftPos() - 1;
 			m_iClearLeftOffset =  0;
 		}
@@ -3481,5 +3506,26 @@ void fp_Line::changeDirectionUsed(FriBidiCharType oldDir, FriBidiCharType newDir
 	{
 		m_bMapDirty = true;
 		_createMapOfRuns();
+	}
+}
+
+/*!
+    Scan through the runs on this line, checking for footnote anchor
+    fields.  Return true if so.
+*/
+void fp_Line::_updateContainsFootnoteRef(void)
+{
+	m_bContainsFootnoteRef = false;
+
+	UT_uint32 count = m_vecRuns.getItemCount();
+	for (UT_uint32 i = 0; i < count; i++)
+	{
+		fp_Run * r = (fp_Run *)m_vecRuns.getNthItem(i);
+		if (r->getType() == FPRUN_FIELD)
+		{
+			fp_FieldRun * fr = (fp_FieldRun*) r;
+			if (fr->getFieldType() == FPFIELD_endnote_ref)
+				m_bContainsFootnoteRef = true;
+		}
 	}
 }
