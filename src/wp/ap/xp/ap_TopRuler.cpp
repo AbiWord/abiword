@@ -274,7 +274,9 @@ void AP_TopRuler::draw(const UT_Rect * pClipRect)
 	{
 		// area within the page margins is on-screen (not over
 		// the LeftRuler).  draw a main white bar over the area.
-
+		// we subtract 1 from w for the right margin widget (a
+		// 3 pixel wide area)
+		
 		x = xFixed;
 		w = docWithinMarginWidth - 1;
 		if (xScrolledOrigin < 0)
@@ -290,7 +292,8 @@ void AP_TopRuler::draw(const UT_Rect * pClipRect)
 	{
 		// right margin of paper is on-screen (not over the
 		// LeftRuler).  draw another dark-gray bar, like we
-		// did on the left side.
+		// did on the left side.  we add 2 to x for the other
+		// side of the right margin widget (a 3 pixel wide area).
 
 		x = xFixed + 2;
 		w = docRightMarginWidth - 2;
@@ -310,7 +313,9 @@ void AP_TopRuler::draw(const UT_Rect * pClipRect)
 	if (1)
 	{
 		// For english, we draw numbers on the inches, long ticks 
-		// on the half inches and short ticks on the eighth inches.  
+		// on the half inches and short ticks on the eighth inches.
+		// We scale up a factor of 100 to avoid round off problems.
+		
 		tickUnit = m_pG->convertDimension("12.5in");
 		tickLong = 4;
 		tickLabel = 8;
