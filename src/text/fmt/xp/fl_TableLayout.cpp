@@ -2003,6 +2003,7 @@ static void s_background_properties (const char * pszBgStyle, const char * pszBg
 							if (background.m_t_background == PP_PropertyMap::background_solid)
 								UT_parseColor (pszBgColor, background.m_color);
 						}
+
 				}
 		}
 
