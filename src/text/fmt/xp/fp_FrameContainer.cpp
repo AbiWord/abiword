@@ -53,7 +53,8 @@ fp_FrameContainer::fp_FrameContainer(fl_SectionLayout* pSectionLayout)
 	  m_bNeverDrawn(true),
 	  m_bOverWrote(false),
 	  m_bIsWrapped(false),
-	  m_bIsTightWrapped(false)
+	  m_bIsTightWrapped(false),
+	  m_bIsAbove(true)
 {
 }
 

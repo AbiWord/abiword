@@ -155,6 +155,10 @@ void 	fl_FrameLayout::setContainerProperties(void)
 	pFrame->setXpad(m_iXpad);
 	pFrame->setYpad(m_iYpad);
 	pFrame->setTightWrapping(m_bIsTightWrap);
+	if(FL_FRAME_BELOW_TEXT ==  m_iFrameWrapMode)
+        {
+	        pFrame->setAbove(false);
+	}
 //
 // Now do the image for this frame.
 //

@@ -124,8 +124,10 @@ public:
 
 	// Frame functions.
 	void 				frameHeightChanged(void);
-	UT_uint32			countFrameContainers(void) const;
-	fp_FrameContainer*  getNthFrameContainer(UT_sint32 n) const; 
+	UT_uint32			countAboveFrameContainers(void) const;
+	UT_uint32			countBelowFrameContainers(void) const;
+	fp_FrameContainer*  getNthAboveFrameContainer(UT_sint32 n) const; 
+	fp_FrameContainer*  getNthBelowFrameContainer(UT_sint32 n) const; 
 	bool				insertFrameContainer(fp_FrameContainer * pFC);
 	void				removeFrameContainer(fp_FrameContainer * pFC);
 	UT_sint32           findFrameContainer(fp_FrameContainer * pFC);
@@ -176,7 +178,8 @@ private:
 
 	UT_GenericVector<fp_FootnoteContainer *> m_vecFootnotes;
 	fg_FillType         m_FillType;
-	UT_GenericVector<fp_FrameContainer *> m_vecFrames;
+	UT_GenericVector<fp_FrameContainer *> m_vecAboveFrames;
+	UT_GenericVector<fp_FrameContainer *> m_vecBelowFrames;
 	fl_TOCLayout *      m_pLastMappedTOC;
 
 	UT_Rect             m_rDamageRect;

@@ -1958,11 +1958,16 @@ int IE_Imp_MsWord_97::_specCharProc (wvParseStruct *ps, U16 eachchar, CHP *achp)
 					sProps += "wrap-mode:";
 					if(fspa->wr == 3)
 					{
-						sVal = "above-text; ";
+					  sVal = "above-text; ";
 					}
 					else
 					{
 						sVal = "wrapped-both; ";
+					}
+					if(fspa->fBelowText == 1)
+				        {
+					     UT_DEBUGMSG(("Set Below Text \n"));
+					     sVal = "below-text; ";
 					}
 					sProps += sVal;
 					sProps += "xpos:";

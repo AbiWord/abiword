@@ -96,7 +96,7 @@ fg_FillType * fp_Page::getFillType(void)
 
 bool fp_Page::isEmpty(void) const
 {
-	if((m_vecColumnLeaders.getItemCount() == 0) && (m_vecFootnotes.getItemCount() == 0) && (m_vecFrames.getItemCount() == 0))
+	if((m_vecColumnLeaders.getItemCount() == 0) && (m_vecFootnotes.getItemCount() == 0) && (m_vecAboveFrames.getItemCount() == 0) && (m_vecBelowFrames.getItemCount() == 0))
 	{
 		return true;
 	}
@@ -189,9 +189,9 @@ fp_Container * fp_Page::updatePageForWrapping(fp_Column *& pNextCol)
 		}
 	}
 	UT_sint32 nWrappedObjs = 0;
-	for(i=0; i< static_cast<UT_sint32>(countFrameContainers()); i++)
+	for(i=0; i< static_cast<UT_sint32>(countAboveFrameContainers()); i++)
 	{
-		fp_FrameContainer * pFrame = getNthFrameContainer(i);
+		fp_FrameContainer * pFrame = getNthAboveFrameContainer(i);
 		if(pFrame->isWrappingSet())
 		{
 			nWrappedObjs++;
@@ -579,9 +579,9 @@ bool fp_Page::overlapsWrappedFrame(fp_Line * pLine)
 bool fp_Page::overlapsWrappedFrame(UT_Rect & rec)
 {
 	UT_sint32 i=0;
-	for(i=0; i<static_cast<UT_sint32>(countFrameContainers());i++)
+	for(i=0; i<static_cast<UT_sint32>(countAboveFrameContainers());i++)
 	{
-		fp_FrameContainer * pFC = getNthFrameContainer(i);
+		fp_FrameContainer * pFC = getNthAboveFrameContainer(i);
 		if(!pFC->isWrappingSet())
 		{
 			continue;
@@ -925,6 +925,29 @@ void fp_Page::draw(dg_DrawArgs* pDA, bool bAlwaysUseWhiteBackground)
 
 	UT_sint32 count = 0;
 
+	// draw Below Frames
+	count = m_vecBelowFrames.getItemCount();
+	for (i=0; i<count; i++)
+	{
+		fp_FrameContainer* pFC = m_vecBelowFrames.getNthItem(i);
+		UT_Rect r(pFC->getX(),pFC->getY(),pFC->getWidth(),pFC->getHeight());
+		if(m_rDamageRect.intersectsRect(&r))
+		{
+			pFC->setOverWrote();
+		}
+		dg_DrawArgs da = *pDA;
+		if(m_pView && (m_pView->getViewMode() != VIEW_PRINT) && !pDA->pG->queryProperties(GR_Graphics::DGP_PAPER))
+		{
+			fp_Column* pFirstColumnLeader = getNthColumnLeader(0);
+			fl_DocSectionLayout* pFirstSectionLayout = (pFirstColumnLeader->getDocSectionLayout());
+			da.yoff -= pFirstSectionLayout->getTopMargin();
+		}
+		da.xoff += pFC->getX();
+		da.yoff += pFC->getY();
+		pFC->draw(&da);
+	}
+
+
 	// draw each column on the page
 	count = m_vecColumnLeaders.getItemCount();
 
@@ -993,11 +1016,11 @@ void fp_Page::draw(dg_DrawArgs* pDA, bool bAlwaysUseWhiteBackground)
 		pFC->draw(&da);
 	}
 
-	// draw Frames
-	count = m_vecFrames.getItemCount();
+	// draw Above Frames
+	count = m_vecAboveFrames.getItemCount();
 	for (i=0; i<count; i++)
 	{
-		fp_FrameContainer* pFC = m_vecFrames.getNthItem(i);
+		fp_FrameContainer* pFC = m_vecAboveFrames.getNthItem(i);
 		UT_Rect r(pFC->getX(),pFC->getY(),pFC->getWidth(),pFC->getHeight());
 		if(m_rDamageRect.intersectsRect(&r))
 		{
@@ -1050,11 +1073,11 @@ void   fp_Page::expandDamageRect(UT_sint32 x, UT_sint32 y,
 void   fp_Page::redrawDamagedFrames(dg_DrawArgs* pDA)
 {
 	// draw Frames
-	UT_sint32 count = m_vecFrames.getItemCount();
+	UT_sint32 count = m_vecAboveFrames.getItemCount();
 	UT_sint32 i = 0;
 	for (i=0; i<count; i++)
 	{
-		fp_FrameContainer* pFC = m_vecFrames.getNthItem(i);
+		fp_FrameContainer* pFC = m_vecAboveFrames.getNthItem(i);
 		UT_Rect r(pFC->getX(),pFC->getY(),pFC->getWidth(),pFC->getHeight());
 		if(m_rDamageRect.intersectsRect(&r))
 		{
@@ -1868,9 +1891,9 @@ void fp_Page::mapXYToPosition(bool bNotFrames,UT_sint32 x, UT_sint32 y, PT_DocPo
 		// loop from high z to low z
 		// Because we draw from old to new, the new appears on top
 		// and because the new appears on top, it should be treated as such
-		for (i=(static_cast<UT_sint32>(countFrameContainers()-1)); i>=0; i--)
+		for (i=(static_cast<UT_sint32>(countAboveFrameContainers()-1)); i>=0; i--)
 		{
-			pFrameC = getNthFrameContainer(i);
+			pFrameC = getNthAboveFrameContainer(i);
 			bool isImage = false;
 			fl_FrameLayout * pFL = static_cast<fl_FrameLayout *>(pFrameC->getSectionLayout());
 			if(pFL->getFrameType() >= FL_FRAME_WRAPPER_IMAGE)
@@ -1925,6 +1948,64 @@ void fp_Page::mapXYToPosition(bool bNotFrames,UT_sint32 x, UT_sint32 y, PT_DocPo
 				}
 			}
 		}
+		for (i=(static_cast<UT_sint32>(countBelowFrameContainers()-1)); i>=0; i--)
+		{
+			pFrameC = getNthBelowFrameContainer(i);
+			bool isImage = false;
+			fl_FrameLayout * pFL = static_cast<fl_FrameLayout *>(pFrameC->getSectionLayout());
+			if(pFL->getFrameType() >= FL_FRAME_WRAPPER_IMAGE)
+			{
+				isImage = true;
+			}
+			if ((pFrameC->getFirstContainer()) || isImage )
+			{
+				if ((x >= (pFrameC->getFullX()- iextra))
+					&& (x < (pFrameC->getFullX() + pFrameC->getFullWidth()+iextra))
+					&& (y >= (pFrameC->getFullY() - iextra))
+					&& (y < (pFrameC->getFullY() + pFrameC->getFullHeight() + iextra))
+					)
+				{
+					if(isImage)
+					{
+						pos = pFL->getPosition(true);
+						return;
+					}
+					pFrameC->mapXYToPosition(x - pFrameC->getX(), y - pFrameC->getY(), pos, bBOL, bEOL,isTOC);
+					return;
+				}
+				
+				iDist = pFrameC->distanceFromPoint(x, y);
+//
+// The tlu(3) makes the distance of the mouse to the sensitive edge of the
+// text box 3 pixels. ie Move the mouse within 3 pixels of the textbox and it
+// change to show you can select the text box.
+//
+// If we're outside this distance make sure all other options are excluded
+// before placing hte point inside th text box
+//
+
+				if(static_cast<UT_sint32>(iDist) > m_pLayout->getGraphics()->tlu(3))
+				{
+					iDist += 200000;
+				}
+				if (iDist < iMinDist)
+				{
+					iMinDist = iDist;
+					pMinDist = static_cast<fp_VerticalContainer *>(pFrameC);
+				}
+				
+				if ( (y >= pFrameC->getY())
+					 && (y < (pFrameC->getY() + pFrameC->getHeight()))) 
+				{
+					if (iDist < iMinXDist)
+					{
+						iMinXDist = iDist;
+						pMinXDist = static_cast<fp_VerticalContainer *>(pFrameC);
+					}
+				}
+			}
+		}
+
 	}
 //
 // Look in header for insertion point
@@ -2171,9 +2252,13 @@ void fp_Page::frameHeightChanged(void)
 void fp_Page::clearScreenFrames(void)
 {
 	UT_sint32 i =0;
-	for (i = 0; i < static_cast<UT_sint32>(countFrameContainers()); i++)
+	for (i = 0; i < static_cast<UT_sint32>(countAboveFrameContainers()); i++)
 	{
-		getNthFrameContainer(i)->clearScreen();
+		getNthAboveFrameContainer(i)->clearScreen();
+	}
+	for (i = 0; i < static_cast<UT_sint32>(countBelowFrameContainers()); i++)
+	{
+		getNthBelowFrameContainer(i)->clearScreen();
 	}
 }
 
@@ -2222,37 +2307,75 @@ void fp_Page::markDirtyOverlappingRuns(fp_FrameContainer * pFrameC)
 
 	// Now Frames
 
-	count = m_vecFrames.getItemCount();
+	count = m_vecAboveFrames.getItemCount();
 	for (i=0; i<count; i++)
 	{
-		fp_FrameContainer* pFC = m_vecFrames.getNthItem(i);
+		fp_FrameContainer* pFC = m_vecAboveFrames.getNthItem(i);
 		if(pFC != pFrameC)
 		{
 			pFC->markDirtyOverlappingRuns(*pMyFrameRect);
 		}
 	}
-	delete pMyFrameRect;
+
+
+	count = m_vecBelowFrames.getItemCount();
+	for (i=0; i<count; i++)
+	{
+		fp_FrameContainer* pFC = m_vecBelowFrames.getNthItem(i);
+		if(pFC != pFrameC)
+		{
+			pFC->markDirtyOverlappingRuns(*pMyFrameRect);
+		}
+	}
+	DELETEP(pMyFrameRect);
 }
 
-UT_uint32 fp_Page::countFrameContainers(void) const
+
+UT_uint32 fp_Page::countAboveFrameContainers(void) const
 {
-	return m_vecFrames.getItemCount();
+        return m_vecAboveFrames.getItemCount();
+}
+
+
+UT_uint32 fp_Page::countBelowFrameContainers(void) const
+{
+        return m_vecBelowFrames.getItemCount();
 }
 
 UT_sint32 fp_Page::findFrameContainer(fp_FrameContainer * pFC)
 {
-	UT_sint32 i = m_vecFrames.findItem(pFC);
+        UT_sint32 i; 
+        if(pFC->isAbove())
+	{
+	  i = m_vecAboveFrames.findItem(pFC);
+	  return i;
+
+	}
+        i = m_vecBelowFrames.findItem(pFC);
 	return i;
 }
 
-fp_FrameContainer* fp_Page::getNthFrameContainer(UT_sint32 n) const 
+fp_FrameContainer* fp_Page::getNthAboveFrameContainer(UT_sint32 n) const 
 {
-	return m_vecFrames.getNthItem(n);
+	return m_vecAboveFrames.getNthItem(n);
+} 
+
+
+fp_FrameContainer* fp_Page::getNthBelowFrameContainer(UT_sint32 n) const 
+{
+	return m_vecBelowFrames.getNthItem(n);
 } 
 
 bool fp_Page::insertFrameContainer(fp_FrameContainer * pFC)
 {
-	m_vecFrames.addItem(pFC);
+        if(pFC->isAbove())
+	{
+	       m_vecAboveFrames.addItem(pFC);
+	}
+	else
+	{
+	       m_vecBelowFrames.addItem(pFC);
+	}
 	if(pFC)
 	{
 		pFC->setPage(this);
@@ -2265,16 +2388,40 @@ void fp_Page::removeFrameContainer(fp_FrameContainer * pFC)
 {
 
 	markDirtyOverlappingRuns(pFC);
-	UT_sint32 ndx = m_vecFrames.findItem(pFC);
+	UT_sint32 ndx = 0;
+	bool isAbove = false;
+	if(pFC->isAbove())
+	{
+	    ndx = m_vecAboveFrames.findItem(pFC);
+	    isAbove = true;
+	}
+	else
+	{
+	    ndx = m_vecBelowFrames.findItem(pFC);
+	}
 	if(ndx>=0)
 	{
-		m_vecFrames.deleteNthItem(ndx);
-		for(ndx=0; ndx < static_cast<UT_sint32>(countFrameContainers());ndx++)
-		{			
-			fp_FrameContainer * pFC = getNthFrameContainer(ndx);
-			fl_FrameLayout * pFL = static_cast<fl_FrameLayout *>(pFC->getSectionLayout());
-			pFC->clearScreen();
-			pFL->markAllRunsDirty();
+	        if(isAbove)
+		{
+		        m_vecAboveFrames.deleteNthItem(ndx);
+			for(ndx=0; ndx < static_cast<UT_sint32>(countAboveFrameContainers());ndx++)
+			{			
+			    fp_FrameContainer * pFC = getNthAboveFrameContainer(ndx);
+			    fl_FrameLayout * pFL = static_cast<fl_FrameLayout *>(pFC->getSectionLayout());
+			    pFC->clearScreen();
+			    pFL->markAllRunsDirty();
+			}
+		}
+		else
+		{
+		        m_vecBelowFrames.deleteNthItem(ndx);
+			for(ndx=0; ndx < static_cast<UT_sint32>(countAboveFrameContainers());ndx++)
+			{			
+			    fp_FrameContainer * pFC = getNthAboveFrameContainer(ndx);
+			    fl_FrameLayout * pFL = static_cast<fl_FrameLayout *>(pFC->getSectionLayout());
+			    pFC->clearScreen();
+			    pFL->markAllRunsDirty();
+			}
 		}
 		_reformat();
 		return;

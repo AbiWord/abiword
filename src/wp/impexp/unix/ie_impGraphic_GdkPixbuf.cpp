@@ -171,9 +171,62 @@ UT_Error IE_ImpGraphic_GdkPixbuf::convertGraphic(UT_ByteBuf* pBB,
 	return UT_OK;
 }
 
+#if 0
+//
+// FIXME Remove this code after we work out how to speed to image writing
+// with libpng
+//
+// Otherwise might need this code is we can work out how to make gdk-pixbuf
+// to speed up writes.
+//
+static gboolean convCallback(const gchar *buf,
+			     gsize count,
+			     GError **error,
+			     gpointer byteBuf)
+{
+  UT_ByteBuf * pBB = reinterpret_cast<UT_ByteBuf *>(byteBuf);
+  pBB->append(reinterpret_cast<const UT_Byte *>(buf),count);
+  return TRUE;
+}
+
+#endif
+/*!
+ * This method fills the m_pPNG byte buffer with a PNG representation of 
+ * of the supplied gdk-pixbuf.
+ * This can be saved in the PT as a data-item and recreated.
+ * ppBB is a pointer to a pointer of a byte buffer. It's the callers
+ * job to delete it.
+ */
 void IE_ImpGraphic_GdkPixbuf::_createPNGFromPixbuf(GdkPixbuf * pixbuf)
 {
+#if 0
+  const guchar * pixels = gdk_pixbuf_get_pixels(pixbuf);
+  DELETEP(m_pPngBB);
+	  
+  if (pixels)
+  {
+	  m_pPngBB =  new UT_ByteBuf();
+	  GError    * error =NULL;
+	  gdk_pixbuf_save_to_callback(pixbuf,
+								  convCallback,
+								  reinterpret_cast<gpointer>(m_pPngBB),
+								  "png",
+								  &error,NULL,NULL);
+	  if(error != NULL)
+      {
+		  g_error_free (error);
+      }
+  }
+#endif
+  
+#if 1
+
 	int colorType = PNG_COLOR_TYPE_RGB;
+
+	if(gdk_pixbuf_get_has_alpha(pixbuf))
+	{
+		colorType =  PNG_COLOR_TYPE_RGB_ALPHA;
+	}
 
 	//
 	// OK define the PNG header from the info in GdkPixbuf
@@ -183,11 +236,6 @@ void IE_ImpGraphic_GdkPixbuf::_createPNGFromPixbuf(GdkPixbuf * pixbuf)
 	UT_uint32 height = gdk_pixbuf_get_height(pixbuf);
 	int rowstride = gdk_pixbuf_get_rowstride(pixbuf);
 	guchar * pBuf = gdk_pixbuf_get_pixels(pixbuf);
-
-	if(gdk_pixbuf_get_has_alpha(pixbuf))
-	{
-		colorType =  PNG_COLOR_TYPE_RGB_ALPHA;
-	}
 	//
 	// Abi only has 8 bits per sample
 	//
@@ -202,17 +250,20 @@ void IE_ImpGraphic_GdkPixbuf::_createPNGFromPixbuf(GdkPixbuf * pixbuf)
 				   PNG_FILTER_TYPE_DEFAULT );
 	
 	png_write_info(m_pPNG, m_pPNGInfo);
+	png_set_compression_level(m_pPNG,3); // 3 is much faster and keeps a reasonable size
 	UT_Byte* pngScanline = new UT_Byte[rowstride];
-
+	UT_DEBUGMSG(("COnverting pixbuf to png \n"));
 	for(UT_uint32 i =0; i < height; i++)
 	{
 		memmove(pngScanline,pBuf,rowstride);
 		png_write_row(m_pPNG, pngScanline);
 		pBuf += rowstride;
 	}
+	UT_DEBUGMSG(("Conversion over \n"));
 
 	DELETEPV (pngScanline);		
 	png_write_end(m_pPNG, m_pPNGInfo);
+#endif
 }
 
 /*!

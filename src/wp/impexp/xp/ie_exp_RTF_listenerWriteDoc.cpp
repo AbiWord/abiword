@@ -1113,7 +1113,7 @@ void s_RTF_ListenerWriteDoc::_openFrame(PT_AttrPropIndex apiFrame)
 			m_pie->_rtf_keyword("shpwr",3); // no text wrapping
 			m_pie->_rtf_keyword("shpfblwtxt",0); // text below frame
 		}
-		else if(iFrameWrapMode >= FL_FRAME_BELOW_TEXT)
+		else if(iFrameWrapMode > FL_FRAME_BELOW_TEXT)
 		{
 			m_pie->_rtf_keyword("shpwr",2); // text wrapping
 			m_pie->_rtf_keyword("shpwrk",0); // text wrap both sides
@@ -1133,7 +1133,7 @@ void s_RTF_ListenerWriteDoc::_openFrame(PT_AttrPropIndex apiFrame)
 			m_pie->_rtf_keyword("shpwr",3); // no text wrapping
 			m_pie->_rtf_keyword("shpfblwtxt",0); // text below frame
 		}
-		else if(iFrameWrapMode >= FL_FRAME_BELOW_TEXT)
+		else if(iFrameWrapMode > FL_FRAME_BELOW_TEXT)
 		{
 			m_pie->_rtf_keyword("shpwr",2); // text wrapping
 			m_pie->_rtf_keyword("shpwrk",0); // text wrap both sides

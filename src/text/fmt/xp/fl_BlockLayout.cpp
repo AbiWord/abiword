@@ -2336,11 +2336,11 @@ void fl_BlockLayout::formatWrappedFromHere(fp_Line * pLine, fp_Page * pPage)
 		UT_sint32 iMinLeft = BIG_NUM_BLOCKBL;
 		UT_sint32 iMinWidth = BIG_NUM_BLOCKBL;
 		UT_sint32 iMinRight = BIG_NUM_BLOCKBL;
-		for(i=0; i< static_cast<UT_sint32>(pPage->countFrameContainers());i++)
+		for(i=0; i< static_cast<UT_sint32>(pPage->countAboveFrameContainers());i++)
 		{
 			rec.left = iX + xoff;
 			rec.width = iWidth;
-			pFC = pPage->getNthFrameContainer(i);
+			pFC = pPage->getNthAboveFrameContainer(i);
 			if(!pFC->isWrappingSet())
 			{
 				continue;
@@ -2534,6 +2534,7 @@ fp_Line *  fl_BlockLayout::getNextWrappedLine(UT_sint32 iX,
 	iMinR += xoff;
  	fp_FrameContainer * pFC = NULL;
 	fp_Line * pLine = NULL;
+	UT_sint32 iExpand;
 	if((iMinR - iX -xoff) < 20*4)
 	{
 		xxx_UT_DEBUGMSG(("!!!!!!! ttttOOOO NAAARRRROOOWWWW iMaxW %d iX %d \n",iMaxW,iX));
@@ -2550,13 +2551,13 @@ fp_Line *  fl_BlockLayout::getNextWrappedLine(UT_sint32 iX,
 		UT_sint32 iMinLeft = BIG_NUM_BLOCKBL;
 		UT_sint32 iMinWidth = BIG_NUM_BLOCKBL;
 		UT_sint32 iMinRight = BIG_NUM_BLOCKBL;
-		for(i=0; i< static_cast<UT_sint32>(pPage->countFrameContainers());i++)
+		for(i=0; i< static_cast<UT_sint32>(pPage->countAboveFrameContainers());i++)
 		{
 			projRec.left = iScreenX;
 			projRec.height = iHeight;
 			projRec.width = iMaxW;
 			projRec.top = m_iAccumulatedHeight;
-			pFC = pPage->getNthFrameContainer(i);
+			pFC = pPage->getNthAboveFrameContainer(i);
 			if(!pFC->isWrappingSet())
 			{
 				continue;
@@ -2564,7 +2565,7 @@ fp_Line *  fl_BlockLayout::getNextWrappedLine(UT_sint32 iX,
 			bIsTight = pFC->isTightWrapped();
 			UT_Rect * pRec = pFC->getScreenRect();
 			fl_FrameLayout * pFL = static_cast<fl_FrameLayout *>(pFC->getSectionLayout());
-			UT_sint32 iExpand = pFL->getBoundingSpace() + 2;
+			iExpand = pFL->getBoundingSpace() + 2;
 			pRec->height += 2*iExpand;
 			pRec->width += 2*iExpand;
 			pRec->left -= iExpand;
@@ -2623,6 +2624,76 @@ fp_Line *  fl_BlockLayout::getNextWrappedLine(UT_sint32 iX,
 			iMinRight = iMinR;
 		}
 		iMinWidth = iMinRight - iMinLeft;
+		fp_FrameContainer * pRightC = NULL;
+		if(iMinWidth < 20*4)
+		{
+#if 0
+			//
+			// Look to see if there is some space between iMinLeft and the right
+			// margin
+			//
+			if(iMinR + xoff - iMinLeft > 20*4)
+			{
+				// 
+				// OK we have some overlapping images. We'll take the right-most
+				// edge of the available frames.
+				//
+				UT_sint32 iRightEdge = 0;
+				for(i=0; i< static_cast<UT_sint32>(pPage->countAboveFrameContainers());i++)
+				{
+					projRec.left = iScreenX;
+					projRec.height = iHeight;
+					projRec.width = iMaxW;
+					projRec.top = m_iAccumulatedHeight;
+					pFC = pPage->getNthAboveFrameContainer(i);
+					if(!pFC->isWrappingSet())
+					{
+						continue;
+					}
+					bIsTight = pFC->isTightWrapped();
+					UT_Rect * pRec = pFC->getScreenRect();
+					fl_FrameLayout * pFL = static_cast<fl_FrameLayout *>(pFC->getSectionLayout());
+					iExpand = pFL->getBoundingSpace() + 2;
+					pRec->height += 2*iExpand;
+					pRec->width += 2*iExpand;
+					pRec->left -= iExpand;
+					pRec->top -= iExpand;
+					if(projRec.intersectsRect(pRec))
+					{
+						if(!pFC->overlapsRect(projRec)  && bIsTight)
+						{
+							delete pRec;
+							continue;
+						}
+						if((pRec->left + pRec->width) > iRightEdge)
+						{
+							iRightEdge = pRec->left + pRec->width;
+							pRightC = pFC;
+						} 
+					}
+					delete pRec;
+				}
+				if(pRightC != NULL)
+				{
+					UT_sint32 iRightP = 0;
+					if(pRightC->isTightWrapped())
+					{
+						//
+						// Project back into image over the transparent region
+						//
+						iRightP = pRightC->getRightPad(m_iAccumulatedHeight,iHeight) - iExpand;
+						xxx_UT_DEBUGMSG(("Projecnt Right %d \n",iRightP));
+					}
+					UT_Rect * pRec = pFC->getScreenRect();
+					iMinLeft = pRec->left + pRec->width + iRightP + pG->tlu(1);
+					iMinRight = iMinR + xoff;
+					iMinWidth = iMinRight - iMinLeft;
+				}
+
+			} 
+#endif
+
+		}
 		if(iMinWidth <  20*4)
 		{
 			iX = getLeftMargin();
@@ -2698,13 +2769,13 @@ fp_Line *  fl_BlockLayout::getNextWrappedLine(UT_sint32 iX,
 		UT_sint32 iMinLeft = BIG_NUM_BLOCKBL;
 		UT_sint32 iMinWidth = BIG_NUM_BLOCKBL;
 		UT_sint32 iMinRight = BIG_NUM_BLOCKBL;
-		for(i=0; i< static_cast<UT_sint32>(pPage->countFrameContainers());i++)
+		for(i=0; i< static_cast<UT_sint32>(pPage->countAboveFrameContainers());i++)
 		{
 			projRec.left = iScreenX;
 			projRec.height = iHeight;
 			projRec.width = iMaxW;
 			projRec.top = m_iAccumulatedHeight;
-			pFC = pPage->getNthFrameContainer(i);
+			pFC = pPage->getNthAboveFrameContainer(i);
 			if(!pFC->isWrappingSet())
 			{
 				continue;

@@ -98,6 +98,10 @@ public:
 	bool                isTightWrapped(void) const
 	        { return m_bIsTightWrapped;}
 	bool                overlapsRect(UT_Rect & rec);
+	bool                isAbove(void)
+	        { return m_bIsAbove;}
+	void                setAbove(bool bAbove)
+	        { m_bIsAbove = bAbove;} 
 private:
 	void                   _drawLine (const PP_PropertyMap::Line & style,
 									  UT_sint32 left, UT_sint32 top, 
@@ -119,6 +123,7 @@ private:
 	bool                   m_bOverWrote;
 	bool                   m_bIsWrapped;
 	bool                   m_bIsTightWrapped;
+	bool                   m_bIsAbove;
 };
 
 
