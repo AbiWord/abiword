@@ -1041,7 +1041,7 @@ static gint s_hideSplash(gpointer /*data*/)
 {
     if (wSplash)
     {
-		gtk_timeout_remove(death_timeout_handler);
+		g_source_remove(death_timeout_handler);
 		gtk_widget_destroy(wSplash);
 		wSplash = NULL;
 		DELETEP(pUnixGraphics);
@@ -1078,7 +1078,7 @@ static gint s_drawingarea_expose(GtkWidget * /* widget */,
 		{
 			firstExpose = true;
 			// kill the window after splashTimeoutValue ms
-			death_timeout_handler = gtk_timeout_add(splashTimeoutValue, s_hideSplash, NULL);
+			death_timeout_handler = g_timeout_add_full(0,splashTimeoutValue, s_hideSplash, NULL,NULL);
 		}
     }
 
