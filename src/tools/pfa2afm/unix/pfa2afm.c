@@ -22,10 +22,9 @@ static void ProcessFile(char *psfile, char * afmfile) {
     FontDict *fd = ReadPSFont(psfile);
     SplineFont *sf;
     FILE *afm;
-    char buffer[1025];
 
     if ( fd==NULL )
-return;
+		return;
 
     sf = SplineFontFromPSFont(fd);
     sf->filename = strdup(psfile);
@@ -33,11 +32,11 @@ return;
 
     afm = fopen(afmfile,"w");
     if ( afm==NULL ) {
-	fprintf( stderr, "Error: Can't open afm file: %s\n", buffer );
+	fprintf( stderr, "Error: Can't open afm file: %s\n", afmfile );
 	exit(1);
     }
     if ( !AfmSplineFont(afm,sf)) {
-	fprintf( stderr, "Error: Failed to write afm file: %s\n", buffer );
+	fprintf( stderr, "Error: Failed to write afm file: %s\n", afmfile );
 	exit(1);
     }
     fclose(afm);
