@@ -912,7 +912,7 @@ void    AP_QNXDialog_Options::_setNotebookPageNum(int pn)
 fp_PageSize::Predefined AP_QNXDialog_Options::_gatherDefaultPageSize(void)
 {
 	// FIXME: replace this with *real* gui code
-	return defaultPaperSize;
+	return defaultPageSize;
 }
 
 void	AP_QNXDialog_Options::_setDefaultPageSize(fp_PageSize::Predefined pre)
