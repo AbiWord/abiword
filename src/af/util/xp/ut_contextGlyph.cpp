@@ -1443,6 +1443,13 @@ void UT_contextGlyph::renderString(const UT_UCSChar * src,
 					default:
 						UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 				}
+
+				if(glyph == 1)
+				{
+					// no special form exists in this context, process
+					// as ordinary characters
+					goto ligature_form_missing;
+				}
 			}
 			else
 			{
@@ -1459,6 +1466,8 @@ void UT_contextGlyph::renderString(const UT_UCSChar * src,
 			
 			if(!bGlyphAvailable)
 			{
+				UT_DEBUGMSG(("UT_contextGlyph::render [1a] glyph 0x%x not present in font\n",
+							 glyph));
 				// we need to use the original glyphs; glyph2 is
 				// already set
 				glyph = *src_ptr;
@@ -1494,6 +1503,8 @@ void UT_contextGlyph::renderString(const UT_UCSChar * src,
 				else
 				{
 					// bad luck, not even the original glyph exists
+					UT_DEBUGMSG(("UT_contextGlyph::render [1b] glyph 0x%x not present in font\n",
+								 glyph));
 					*dst_ptr++ = s_cDefaultGlyph;
 				}
 
@@ -1514,16 +1525,18 @@ void UT_contextGlyph::renderString(const UT_UCSChar * src,
 				}
 				else
 				{
+					UT_DEBUGMSG(("UT_contextGlyph::render [1c] glyph 0x%x not present in font\n",
+								 glyph));
 					*dst_ptr++ = s_cDefaultGlyph;
 				}
 				
 				continue;
 			}
-
 			// if we got here, the glyph was 1, which means this form is to be just
 			// treated as an ordinary letter, also if this was a first part of the ligature
 			// we already know its context, but not if it was a second part of lig.
 		}
+		ligature_form_missing:
 		
 		// if we have no pLig we are dealing with an ordinary
 		// letter
@@ -1550,11 +1563,21 @@ void UT_contextGlyph::renderString(const UT_UCSChar * src,
 				*dst_ptr++ = glyph;
 			else
 			{
+				UT_DEBUGMSG(("UT_contextGlyph::render [2a] glyph 0x%x not present in font\n",
+							 glyph));
+				
 				UT_UCS4Char t = _remapGlyph(glyph);
 				if(isGlyphAvailable != NULL && isGlyphAvailable(t, fparam))
+				{
 					*dst_ptr++ = t;
+				}
 				else
+				{
+					UT_DEBUGMSG(("UT_contextGlyph::render [2b] glyph 0x%x not present in font\n",
+								 t));
+					
 					*dst_ptr++ = s_cDefaultGlyph;
+				}
 			}
 			continue;
 		}
@@ -1587,15 +1610,28 @@ void UT_contextGlyph::renderString(const UT_UCSChar * src,
 		}
 		else if(isGlyphAvailable(*src_ptr, fparam))
 		{
+			UT_DEBUGMSG(("UT_contextGlyph::render [3a] glyph 0x%x not present in font\n",
+						 glyph));
+			
 			*dst_ptr++ = *src_ptr;
 		}
 		else
 		{
+			UT_DEBUGMSG(("UT_contextGlyph::render [3b] glyph 0x%x not present in font\n",
+						 glyph));
+			UT_DEBUGMSG(("UT_contextGlyph::render [3c] glyph 0x%x not present in font\n",
+						 *src_ptr));
+
 			UT_UCS4Char t = _remapGlyph(glyph);
 			if(isGlyphAvailable != NULL && isGlyphAvailable(t, fparam))
 				*dst_ptr++ = t;
 			else
+			{
+				UT_DEBUGMSG(("UT_contextGlyph::render [3d] glyph 0x%x not present in font\n",
+							 glyph));
+				
 				*dst_ptr++ = s_cDefaultGlyph;
+			}
 		}
 	}
 }
