@@ -2778,7 +2778,13 @@ bool FV_View::setStyleAtPos(const XML_Char * style, PT_DocPosition posStart1, PT
 					if(i == 0)
 						pBL->StartList(style);
 					else
-						pBL->resumeList(static_cast<fl_BlockLayout *>(pBL->getPrev()));
+					{
+						fl_ContainerLayout * pPrevL = pBL->getPrev();
+						if(pPrevL && pPrevL->getContainerType() == FL_CONTAINER_BLOCK)
+						{
+							pBL->resumeList(static_cast<fl_BlockLayout *>(pPrevL));
+						}
+					}
 				}
 			}
 //
