@@ -20,10 +20,14 @@
 #include "gr_Abi_ColorArea.h"
 #include "gr_Abi_RenderingContext.h"
 
+#include "gr_Graphics.h"
+
 void
 GR_Abi_ColorArea::render(RenderingContext& c, const scaled& x, const scaled& y) const
 {
   GR_Abi_RenderingContext& context = dynamic_cast<GR_Abi_RenderingContext&>(c);
+
+  UT_DEBUGMSG(("setting color %d %d %d\n", getColor().red, getColor().green, getColor().blue));
 
   UT_RGBColor oldColor;
   context.getColor(oldColor);

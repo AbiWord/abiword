@@ -69,10 +69,12 @@ class PX_ChangeRecord_StruxChange;
 class fl_FootnoteLayout;
 class fl_EndnoteLayout;
 class fp_EndnoteContainer;
-// MathView-related stuff
+// BEGIN: MathView
 class GR_Abi_MathGraphicDevice;
 class GR_Abi_RenderingContext;
 class AbstractLogger;
+class MathMLOperatorDictionary;
+// END: MathView
 
 // the following get used by view and layout code, 
 // since they're private to the formatter, we stick 'em here
@@ -272,6 +274,7 @@ public:
 	AbstractLogger * getLogger(void) const { return m_pLogger; }
 	GR_Abi_MathGraphicDevice * getMathGraphicDevice(void) const { return m_pMathGraphicDevice; }
 	GR_Abi_RenderingContext * getAbiContext(void) const { return m_pAbiContext; }
+	MathMLOperatorDictionary * getOperatorDictionary(void) const { return m_pOperatorDictionary; }
 	// END: MathView
 #ifdef FMT_TEST
 	//! Pointer to last instatiated FL_DocLayout. Used for debugging.
@@ -345,6 +348,7 @@ private:
 	AbstractLogger * m_pLogger;
 	GR_Abi_MathGraphicDevice *   m_pMathGraphicDevice;
 	GR_Abi_RenderingContext *  m_pAbiContext;
+	MathMLOperatorDictionary * m_pOperatorDictionary;
 	// END: MathView
 };
 

@@ -37,6 +37,7 @@
 #include <MathView/AbstractLogger.hh>
 #include <MathView/BoundingBox.hh>
 #include <MathView/MathMLNamespaceContext.hh>
+#include <MathView/MathMLOperatorDictionary.hh>
 #include <MathView/NamespaceContext.hh>
 #include <MathView/MathMLElement.hh>
 
@@ -130,6 +131,7 @@ void fp_MathRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 	{
 		m_pMathView = libxml2_MathView::create();
 		m_pMathView->setLogger(getLogger());
+		m_pMathView->setOperatorDictionary(pLayout->getOperatorDictionary());
 		m_pMathView->setMathMLNamespaceContext(
 			MathMLNamespaceContext::create(m_pMathView, getMathDevice()));
 		UT_DEBUGMSG(("fp_MathRun Created! \n"));
@@ -366,6 +368,16 @@ void fp_MathRun::_draw(dg_DrawArgs* pDA)
 	}
 	scaled x = getAbiContext()->fromAbiX(-pDA->xoff);
 	scaled y = getAbiContext()->fromAbiLayoutUnits(pDA->yoff); // should be fromAbiY()
+
+	GR_Abi_RenderingContext* ctxt = getAbiContext();
+	if (false)
+	  ctxt->setColor(_getView()->getColorSelForeground());
+	else
+	  ctxt->setColor(getFGColor());
+
+	UT_RGBColor c = getFGColor();
+	UT_DEBUGMSG(("from math run setting color %d %d %d\n", c.m_red, c.m_grn, c.m_blu));
+
 	m_pMathView->render(*getAbiContext(), x, y);
 }
 

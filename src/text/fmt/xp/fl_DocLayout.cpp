@@ -53,6 +53,7 @@
 #include <MathView/libxml2_MathView.hh>
 #include <MathView/MathMLElement.hh>
 #include <MathView/Logger.hh>
+#include <MathView/MathMLOperatorDictionary.hh>
 #include "gr_Abi_MathGraphicDevice.h"
 #include "gr_Abi_RenderingContext.h"
 // END: MathView
@@ -141,10 +142,17 @@ FL_DocLayout::FL_DocLayout(PD_Document* doc, GR_Graphics* pG)
 	SmartPtr<AbstractLogger> logger = Logger::create();
 	m_pLogger = logger;
 	m_pLogger->ref();
+	logger->setLogLevel(LOG_INFO);
 	SmartPtr<GR_Abi_MathGraphicDevice> mathGraphicDevice = GR_Abi_MathGraphicDevice::create(m_pG);
 	m_pMathGraphicDevice = mathGraphicDevice;
 	m_pMathGraphicDevice->ref();
 	m_pAbiContext = new GR_Abi_RenderingContext(pG);
+	SmartPtr<MathMLOperatorDictionary> dictionary = MathMLOperatorDictionary::create();
+	m_pOperatorDictionary = dictionary;
+	dictionary->ref();
+	libxml2_MathView::loadOperatorDictionary(logger, dictionary,
+						 libxml2_MathView::getDefaultOperatorDictionaryPath());
+	
 	// END: MathView
 
 }
@@ -218,6 +226,8 @@ FL_DocLayout::~FL_DocLayout()
 	m_pMathGraphicDevice = 0;
 	DELETEP(m_pAbiContext);
 	m_pAbiContext = 0;
+	m_pOperatorDictionary->unref();
+	m_pOperatorDictionary = 0;
 	// END: MathView
 }
 

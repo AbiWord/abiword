@@ -16,6 +16,9 @@ subdirectories:
 <dt>Directory <tt>gr</tt>
   <dd>Source code for graphics (drawing code, font code, etc.)</dd>
 
+<dt>Directory <tt>math</tt>
+  <dd>Source code for the classes that adapt GtkMathView to AbiWord</dd>
+
 <dt>Directory <tt>util</tt>
   <dd>Source code for general-purpose utility functions.</dd>
 

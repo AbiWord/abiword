@@ -401,6 +401,8 @@ AC_CONFIG_FILES([GNUmakefile
  src/af/gr/cocoa/GNUmakefile
  src/af/gr/unix/GNUmakefile
  src/af/gr/qnx/GNUmakefile
+ src/af/math/GNUmakefile
+ src/af/math/xp/GNUmakefile
  src/af/util/GNUmakefile
  src/af/util/xp/GNUmakefile
  src/af/util/unix/GNUmakefile

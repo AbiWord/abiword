@@ -28,6 +28,9 @@ AF_INCLUDES=-I'$(top_srcdir)/src/af/util/xp'
 AF_INCLUDES+=-I'$(top_srcdir)/src/af/ev/xp'
 AF_INCLUDES+=-I'$(top_srcdir)/src/af/ev/xp'
 AF_INCLUDES+=-I'$(top_srcdir)/src/af/gr/xp'
+if HAVE_MATHVIEW
+AF_INCLUDES+=-I'$(top_srcdir)/src/af/math/xp'
+endif
 AF_INCLUDES+=-I'$(top_srcdir)/src/af/xap/xp'
 AF_INCLUDES+=-I'$(top_srcdir)/src/af/util/@BE_PLATFORM@'
 AF_INCLUDES+=-I'$(top_srcdir)/src/af/ev/@PLATFORM@'
@@ -40,6 +43,9 @@ AF_INCLUDES=-I'$(top_srcdir)/src/af/util/xp'
 AF_INCLUDES+=-I'$(top_srcdir)/src/af/ev/xp'
 AF_INCLUDES+=-I'$(top_srcdir)/src/af/ev/xp'
 AF_INCLUDES+=-I'$(top_srcdir)/src/af/gr/xp'
+if HAVE_MATHVIEW
+AF_INCLUDES+=-I'$(top_srcdir)/src/af/math/xp'
+endif
 AF_INCLUDES+=-I'$(top_srcdir)/src/af/xap/xp'
 AF_INCLUDES+=-I'$(top_srcdir)/src/af/util/@BE_PLATFORM@'
 AF_INCLUDES+=-I'$(top_srcdir)/src/af/ev/@PLATFORM@'
@@ -117,6 +123,9 @@ ABI_LIBS+=$(top_builddir)/src/wp/impexp/libImpExp.a
 ABI_LIBS+=$(top_builddir)/src/af/xap/libXap.a
 ABI_LIBS+=$(top_builddir)/src/af/util/libUtil.a
 ABI_LIBS+=$(top_builddir)/src/af/gr/libGr.a
+if HAVE_MATHVIEW
+ABI_LIBS+=$(top_builddir)/src/af/math/xp/libMath_xp.a
+endif
 ABI_LIBS+=$(top_builddir)/src/af/ev/libEv.a
 ABI_LIBS+=$(top_builddir)/src/other/spell/xp/libSpell.a
 ABI_LIBS+=$(top_builddir)/src/other/ttftool/unix/libTtfTool.a
@@ -129,6 +138,9 @@ ABI_LIBS+=$(top_builddir)/src/wp/impexp/libImpExp.a
 ABI_LIBS+=$(top_builddir)/src/af/xap/libXap.a
 ABI_LIBS+=$(top_builddir)/src/af/util/libUtil.a
 ABI_LIBS+=$(top_builddir)/src/af/gr/libGr.a
+if HAVE_MATHVIEW
+ABI_LIBS+=$(top_builddir)/src/af/math/xp/libMath_xp.a
+endif
 ABI_LIBS+=$(top_builddir)/src/af/ev/libEv.a
 ABI_LIBS+=$(top_builddir)/src/other/spell/xp/libSpell.a
 ABI_LIBS+=$(top_builddir)/src/text/fmt/xp/libFmt.a

@@ -16,11 +16,9 @@
 ## Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
 ## 02111-1307, USA.
 
-NULL =
-
 include $(top_srcdir)/includes.mk
 
-INCLUDES = $(AF_INCLUDES) $(ICONV_INCLUDES) $(MATHVIEW_CFLAGS)
+INCLUDES = $(AF_INCLUDES) $(ICONV_INCLUDES)
 
 noinst_LIBRARIES = libGr_xp.a
 
@@ -38,27 +36,4 @@ libGr_xp_a_SOURCES=\
 	gr_RenderInfo.cpp
 
 noinst_HEADERS =
-
-if HAVE_MATHVIEW
-libGr_xp_a_SOURCES += \
-	gr_Abi_CharArea.cpp \
-	gr_Abi_ColorArea.cpp \
-	gr_Abi_DefaultShaper.cpp \
-	gr_Abi_StandardSymbolsShaper.cpp \
-	gr_Abi_InkArea.cpp \
-	gr_Abi_MathGraphicDevice.cpp \
-	gr_Abi_RenderingContext.cpp \
-	$(NULL)
-
-noinst_HEADERS += \
-	gr_Abi_AreaFactory.h \
-	gr_Abi_CharArea.h \
-	gr_Abi_ColorArea.h \
-	gr_Abi_DefaultShaper.h \
-	gr_Abi_StandardSymbolsShaper.h \
-	gr_Abi_InkArea.h \
-	gr_Abi_MathGraphicDevice.h \
-	gr_Abi_RenderingContext.h \
-	$(NULL)
-endif
 
