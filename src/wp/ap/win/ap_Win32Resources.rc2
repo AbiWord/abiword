@@ -87,5 +87,5 @@
 #include "ap_Win32Res_DlgNew.rc2"
 #include "ap_Win32Res_DlgMarkRevisions.rc2"
 #include "ap_Win32Res_DlgListRevisions.rc2"
-#include "ap_Win32Res_InsertTable.rc2"
+#include "ap_Win32Res_DlgInsertTable.rc2"
 #include "ap_Win32Res_DlgDownload_File.rc2"

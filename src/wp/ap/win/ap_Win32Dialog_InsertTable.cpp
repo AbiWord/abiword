@@ -113,7 +113,6 @@ BOOL CALLBACK AP_Win32Dialog_InsertTable::s_dlgProc(HWND hWnd,UINT msg,WPARAM wP
 #define _DS(c,s)	SetDlgItemText(hWnd,AP_RID_DIALOG_INSERTTABLE_##c,pSS->getValue(AP_STRING_ID_##s))
 #define _DSX(c,s)	SetDlgItemText(hWnd,AP_RID_DIALOG_INSERTTABLE_##c,pSS->getValue(XAP_STRING_ID_##s))
 
-
 // This handles the WM_INITDIALOG message for the top-level dialog.
 BOOL AP_Win32Dialog_InsertTable::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam)
 {	
@@ -128,15 +127,21 @@ BOOL AP_Win32Dialog_InsertTable::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM 
 	// Set Spin range (TODO: check if the max value is correct, copied from the unix version)
 	SendMessage(GetDlgItem(hWnd,AP_RID_DIALOG_INSERTTABLE_SPIN_COLUMN),UDM_SETRANGE,(WPARAM)1,(WPARAM)9999);
 	SendMessage(GetDlgItem(hWnd,AP_RID_DIALOG_INSERTTABLE_SPIN_ROW),UDM_SETRANGE,(WPARAM)1,(WPARAM)9999);
+	SendMessage(GetDlgItem(hWnd,AP_RID_DIALOG_INSERTTABLE_SPIN_SIZE),UDM_SETRANGE,(WPARAM)1,(WPARAM)9999);
 	
 	// Limit to four chars
 	SendMessage(GetDlgItem(hWnd,AP_RID_DIALOG_INSERTTABLE_TEXT_COLUMN),EM_LIMITTEXT,(WPARAM)5,(WPARAM)0);
 	SendMessage(GetDlgItem(hWnd,AP_RID_DIALOG_INSERTTABLE_TEXT_ROW),EM_LIMITTEXT,(WPARAM)5,(WPARAM)0);
+	SendMessage(GetDlgItem(hWnd,AP_RID_DIALOG_INSERTTABLE_TEXT_SIZE),EM_LIMITTEXT,(WPARAM)5,(WPARAM)0);
 
+	CheckRadioButton(hWnd, AP_RID_DIALOG_INSERTTABLE_RADIO_AUTO,
+		AP_RID_DIALOG_INSERTTABLE_RADIO_FIXED, AP_RID_DIALOG_INSERTTABLE_RADIO_AUTO);
+	
+	
 	SetFocus(GetDlgItem(hWnd,AP_RID_DIALOG_INSERTTABLE_VAL_COLUMN));
 	SendDlgItemMessage(hWnd, AP_RID_DIALOG_INSERTTABLE_VAL_COLUMN, EM_SETSEL, 0, -1);
 	
-	
+
 	return 0; // 0 because we called SetFocus
 }
 
@@ -145,15 +150,22 @@ BOOL AP_Win32Dialog_InsertTable::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM 
 //
 void AP_Win32Dialog_InsertTable::getCtrlValues(void)
 {	
-	char 	szValue[BUFSIZE];
+	char 	szValue[BUFSIZE];	
 		
 	if (GetDlgItemText(m_hwndDlg, AP_RID_DIALOG_INSERTTABLE_VAL_COLUMN, szValue, BUFSIZE ))	
 		m_numCols = atoi(szValue);
 	
 	if (GetDlgItemText(m_hwndDlg, AP_RID_DIALOG_INSERTTABLE_VAL_ROW, szValue, BUFSIZE ))	
 		m_numRows = atoi(szValue);
-	
-	
+		
+	if (GetDlgItemText(m_hwndDlg, AP_RID_DIALOG_INSERTTABLE_VAL_SIZE, szValue, BUFSIZE ))	
+		m_columnWidth = (float) atoi(szValue);
+		
+	if (IsDlgButtonChecked(m_hwndDlg, AP_RID_DIALOG_INSERTTABLE_RADIO_AUTO))
+		m_columnType = AP_Dialog_InsertTable::b_AUTOSIZE;
+		
+	if (IsDlgButtonChecked(m_hwndDlg, AP_RID_DIALOG_INSERTTABLE_RADIO_FIXED))
+		m_columnType = AP_Dialog_InsertTable::b_FIXEDSIZE;
 }
 
 BOOL AP_Win32Dialog_InsertTable::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
