@@ -50,7 +50,7 @@ protected:
 private:
 	PtWidget_t * _constructWindow(void);
 	PtWidget_t *m_windowMain;
-	PtWidget_t *m_MergeRight,*m_MergeLeft,*m_MergeAbove,*m_MergeBelow;
+	PtWidget_t *m_SplitRight,*m_SplitLeft,*m_SplitAbove,*m_SplitBelow;
 };
 
 #endif /* AP_QNXDIALOG_SPLITCELLS_H */

@@ -44,28 +44,30 @@ mc->event_Close();
 return Pt_CONTINUE;
 }
 
-int s_merge_left(PtWidget_t *w,AP_QNXDialog_SplitCells *mc,PtCallbackInfo_t *cbinfo)
+int s_split_left(PtWidget_t *w,AP_QNXDialog_SplitCells *mc,PtCallbackInfo_t *cbinfo)
 {
-mc->setMergeType(radio_left);
-mc->onMerge();
+mc->setSplitType(hori_left);
+mc->onSplit();
 return Pt_CONTINUE;
 }
-int s_merge_right(PtWidget_t *w,AP_QNXDialog_SplitCells *mc,PtCallbackInfo_t *cbinfo)
+
+int s_split_right(PtWidget_t *w,AP_QNXDialog_SplitCells *mc,PtCallbackInfo_t *cbinfo)
 {
-mc->setMergeType(radio_right);
-mc->onMerge();
+mc->setSplitType(hori_right);
+mc->onSplit();
 return Pt_CONTINUE;
 }
-int s_merge_below(PtWidget_t *w,AP_QNXDialog_SplitCells *mc,PtCallbackInfo_t *cbinfo)
+
+int s_split_below(PtWidget_t *w,AP_QNXDialog_SplitCells *mc,PtCallbackInfo_t *cbinfo)
 {
-mc->setMergeType(radio_below);
-mc->onMerge();
+mc->setSplitType(vert_below);
+mc->onSplit();
 return Pt_CONTINUE;
 }
-int s_merge_above(PtWidget_t *w,AP_QNXDialog_SplitCells *mc,PtCallbackInfo_t *cbinfo)
+int s_split_above(PtWidget_t *w,AP_QNXDialog_SplitCells *mc,PtCallbackInfo_t *cbinfo)
 {
-mc->setMergeType(radio_above);
-mc->onMerge();
+mc->setSplitType(vert_above);
+mc->onSplit();
 return Pt_CONTINUE;
 }
 
@@ -152,44 +154,44 @@ const XAP_StringSet * pSS = m_pApp->getStringSet();
 
 
 
-	mainwindow= abiCreatePhabDialog("ap_QNXDialog_SplitCells",m_WindowName);
+	mainwindow= abiCreatePhabDialog("ap_QNXDialog_MergeCells",m_WindowName);
 	SetupContextHelp(mainwindow,this);
 	PtAddHotkeyHandler(mainwindow,Pk_F1,0,Pt_HOTKEY_SYM,this,OpenHelp);
 	PtAddCallback(mainwindow, Pt_CB_WINDOW_CLOSING, s_delete_clicked, this);
 
 	PtSetResource(abiPhabLocateWidget(mainwindow,"grpSplitCells"),Pt_ARG_TITLE,_(AP,DLG_SplitCells_Frame ),0);
 
-PtSetResource(abiPhabLocateWidget(mainwindow,"lblMergeLeft"),Pt_ARG_TEXT_STRING,_(AP,DLG_SplitCells_Left),0);
+PtSetResource(abiPhabLocateWidget(mainwindow,"lblSplitLeft"),Pt_ARG_TEXT_STRING,_(AP,DLG_SplitCells_Left),0);
 
-PtSetResource(abiPhabLocateWidget(mainwindow,"lblMergeRight"),Pt_ARG_TEXT_STRING,_(AP,DLG_SplitCells_Right),0);
+PtSetResource(abiPhabLocateWidget(mainwindow,"lblSplitRight"),Pt_ARG_TEXT_STRING,_(AP,DLG_SplitCells_Right),0);
 
-PtSetResource(abiPhabLocateWidget(mainwindow,"lblMergeAbove"),Pt_ARG_TEXT_STRING,_(AP,DLG_SplitCells_Above),0);
+PtSetResource(abiPhabLocateWidget(mainwindow,"lblSplitAbove"),Pt_ARG_TEXT_STRING,_(AP,DLG_SplitCells_Above),0);
 
-PtSetResource(abiPhabLocateWidget(mainwindow,"lblMergeBelow"),Pt_ARG_TEXT_STRING,_(AP,DLG_SplitCells_Below),0);
+PtSetResource(abiPhabLocateWidget(mainwindow,"lblSplitBelow"),Pt_ARG_TEXT_STRING,_(AP,DLG_SplitCells_Below),0);
 
 	btn=abiPhabLocateWidget(mainwindow,"btnClose");
 	PtSetResource(btn,Pt_ARG_TEXT_STRING,_(XAP,DLG_Close),0);
 	PtAddCallback(btn,Pt_CB_ACTIVATE,s_delete_clicked,this);
 
-	btn=abiPhabLocateWidget(mainwindow,"btnMergeLeft");
-	m_MergeLeft=btn;
-	label_button_with_abi_pixmap(btn,"tb_MergeLeft_xpm");
-	PtAddCallback(btn,Pt_CB_ACTIVATE,s_merge_left,this);
+	btn=abiPhabLocateWidget(mainwindow,"btnSplitLeft");
+	m_SplitLeft=btn;
+	label_button_with_abi_pixmap(btn,"tb_SplitLeft_xpm");
+	PtAddCallback(btn,Pt_CB_ACTIVATE,s_split_left,this);
 
-	btn=abiPhabLocateWidget(mainwindow,"btnMergeRight");
-	m_MergeRight=btn;
-	label_button_with_abi_pixmap(btn,"tb_MergeRight_xpm");
-	PtAddCallback(btn,Pt_CB_ACTIVATE,s_merge_right,this);
+	btn=abiPhabLocateWidget(mainwindow,"btnSplitRight");
+	m_SplitRight=btn;
+	label_button_with_abi_pixmap(btn,"tb_SplitRight_xpm");
+	PtAddCallback(btn,Pt_CB_ACTIVATE,s_split_right,this);
 	
-	btn=abiPhabLocateWidget(mainwindow,"btnMergeAbove");
-	m_MergeAbove = btn;
-	label_button_with_abi_pixmap(btn,"tb_MergeAbove_xpm");
-	PtAddCallback(btn,Pt_CB_ACTIVATE,s_merge_above,this);
+	btn=abiPhabLocateWidget(mainwindow,"btnSplitAbove");
+	m_SplitAbove = btn;
+	label_button_with_abi_pixmap(btn,"tb_SplitAbove_xpm");
+	PtAddCallback(btn,Pt_CB_ACTIVATE,s_split_above,this);
 	
-	btn=abiPhabLocateWidget(mainwindow,"btnMergeBelow");
-	m_MergeBelow=btn;
-	label_button_with_abi_pixmap(btn,"tb_MergeBelow_xpm");
-	PtAddCallback(btn,Pt_CB_ACTIVATE,s_merge_below,this);
+	btn=abiPhabLocateWidget(mainwindow,"btnSplitBelow");
+	m_SplitBelow=btn;
+	label_button_with_abi_pixmap(btn,"tb_SplitBelow_xpm");
+	PtAddCallback(btn,Pt_CB_ACTIVATE,s_split_below,this);
 
 m_windowMain = mainwindow;
 
