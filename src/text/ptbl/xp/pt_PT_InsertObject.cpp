@@ -82,7 +82,6 @@ bool pt_PieceTable::_realInsertObject(PT_DocPosition dpos,
 
 	apiOld = _chooseIndexAP(pf,fragOffset);
 
-	PT_AttrPropIndex ;
 	if (!m_varset.mergeAP(PTC_AddFmt, apiOld, attributes, properties, &indexAP, m_pDocument))
 		return false;
 
