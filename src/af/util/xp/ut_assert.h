@@ -155,7 +155,12 @@
 /*!
  * This line of code should not be reached
  */
-#define UT_ASSERT_NOT_REACHED() UT_ASSERT(UT_SHOULD_NOT_HAPPEN)
+#define UT_NOT_REACHED 0
+
+/*!
+ * This line of code should not be reached
+ */
+#define UT_ASSERT_NOT_REACHED() UT_ASSERT(UT_NOT_REACHED)
 
 /*!
  * Trigger a debug assertion, but let the normal flow of code progress
@@ -181,7 +186,7 @@
 
 #else
 
-//disable these checks (NOTE: NOT NDEBUG!!!)
+// disable these checks - probably not a good idea (NOTE: NOT NDEBUG!!!)
 
 #define UT_return_if_fail(cond)
 #define UT_return_val_if_fail(cond, val)
