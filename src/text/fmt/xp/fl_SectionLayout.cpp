@@ -857,20 +857,51 @@ void fl_DocSectionLayout::_HdrFtrChangeCallback(UT_Worker * pWorker)
 	{
 		return;
 	}
+// Don't do anything until insertion point is allowed to change
+	if (!pDoc->getAllowChangeInsPoint())
+	{
+		return;
+	}
 	const char * pProps = pDSL->m_sHdrFtrChangeProps.c_str();
 	PT_DocPosition pos = pDoc->getStruxPosition(pDSL->getStruxDocHandle()) +1;
 	const XML_Char * pszAtts[4] = {"props",pProps,NULL,NULL};
 	pDoc->notifyPieceTableChangeStart();
 	FV_View * pView =  pDSL->m_pLayout->getView();
-//	PT_DocPosition insPos = pView->getPoint();
+    PT_DocPosition insPos = pView->getPoint();
+	fl_HdrFtrShadow * pShadow = pView->getEditShadow();
+	HdrFtrType hfType = FL_HDRFTR_HEADER;
+	if(pShadow)
+	{
+		hfType = pShadow->getHdrFtrSectionLayout()->getHFType();
+	}
+	UT_sint32 iPage = -1;
+	if(pShadow)
+	{
+		iPage = pDSL->m_pLayout->findPage(pShadow->getPage());
+	}
 	pDoc->changeStruxFmt(PTC_AddFmt,pos,pos,pszAtts,NULL,PTX_Section);
 //
 // update the screen
 //
 	pDoc->signalListeners(PD_SIGNAL_UPDATE_LAYOUT);
 	pDoc->notifyPieceTableChangeEnd();
-//	pView->setPoint(insPos);
+//
+// Put the point at the right point in the header/footer on the right page.
+//
+	if(iPage >= 0)
+	{
+		fp_Page * pPage = pDSL->m_pLayout->getNthPage(iPage);
+		if(pPage)
+		{
+			fp_ShadowContainer* pShadowC = pPage->getHdrFtrP(hfType);
+			pShadow = pShadowC->getShadow();
+			pView->setHdrFtrEdit(pShadow);
+		}
+	}
+    pView->setPoint(insPos);
 	pView->notifyListeners(AV_CHG_MOTION | AV_CHG_HDRFTR );
+    pView->setPoint(insPos);
+	pView->ensureInsertionPointOnScreen();
 //
 // Stop the resizer and delete and clear it's pointer. It's job is done now.
 //
@@ -3754,7 +3785,6 @@ bool fl_HdrFtrSectionLayout::bl_doclistener_insertBlock(fl_ContainerLayout* pBL,
 //
 // Now insert it into all the shadows.
 //
-	FV_View * pView = m_pLayout->getView();
 	UT_uint32 iCount = m_vecPages.getItemCount();
 	fl_ContainerLayout * pShadowBL = NULL;
 	xxx_UT_DEBUGMSG(("fl_HdrFtrSectionLayout: insertBlock \n"));
