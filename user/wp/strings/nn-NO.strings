@@ -10,7 +10,7 @@
 
 <!-- Norwegian Nynorsk translations provided by Karl Ove Hufthammer <huftis@bigfoot.com> -->
 
-<AbiStrings app="AbiWord Personal" ver="1.0" language="no-NYN">
+<AbiStrings app="AbiWord Personal" ver="1.0" language="nn-NO">
 
 <Strings	class="XAP"
 UntitledDocument="Utan namn%d"

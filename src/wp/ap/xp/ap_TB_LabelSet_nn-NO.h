@@ -43,7 +43,7 @@
 // If the third argument is UT_TRUE, then this is the fall-back for
 // this language (named in the first argument).
 
-BeginSet(no,NYN,UT_TRUE)
+BeginSet(nn,NO,UT_TRUE)
 
 	ToolbarLabel(AP_TOOLBAR_ID__BOGUS1__,		NULL,		NoIcon,			NULL,NULL)
 
