@@ -62,7 +62,7 @@ endif
 
 OTHER_INCLUDES=-I'$(top_srcdir)/src/other/spell/xp'
 OTHER_INCLUDES+=-I'$(top_srcdir)/src/other/fribidi/xp'
-OTHER_INCLUDES+=-I'$(top_srcdir)/src/other/ttftool/@PLATFORM@'
+OTHER_INCLUDES+=-I'$(top_srcdir)/src/other/ttftool/@BE_PLATFORM@'
 
 TEXT_INCLUDES=-I'$(top_srcdir)/src/text/ptbl/xp'
 TEXT_INCLUDES+=-I'$(top_srcdir)/src/text/fmt/xp'
@@ -94,7 +94,7 @@ CARBON_CFLAGS =
 endif
 
 if WITH_COCOA
-COCOA_CFLAGS = -DXP_TARGET_COCOA $(MACOSX_CFLAGS)
+COCOA_CFLAGS = -DXP_TARGET_COCOA $(MACOSX_CFLAGS) 
 else
 COCOA_CFLAGS = 
 endif
@@ -125,7 +125,7 @@ ABI_LIBS+=$(top_builddir)/src/af/util/libUtil.a
 ABI_LIBS+=$(top_builddir)/src/af/gr/libGr.a
 ABI_LIBS+=$(top_builddir)/src/af/ev/libEv.a
 ABI_LIBS+=$(top_builddir)/src/other/spell/xp/libSpell.a
-ABI_LIBS+=$(top_builddir)/src/other/ttftool/@PLATFORM@/libTtfTool.a
+ABI_LIBS+=$(top_builddir)/src/other/ttftool/@BE_PLATFORM@/libTtfTool.a
 ABI_LIBS+=$(top_builddir)/src/other/fribidi/xp/libFribidi.a
 ABI_LIBS+=$(top_builddir)/src/text/fmt/xp/libFmt.a
 ABI_LIBS+=$(top_builddir)/src/text/ptbl/xp/libPtbl.a
@@ -139,6 +139,9 @@ endif
 ABI_OBJECTS=xp/*.o @PLATFORM@/*.o 
 
 SUFFIXES=.mm
+# Added for automake (at least version 1.5) - Frodo Looijaard (frodol@dds.nl)
+.mm.lo:
+	$(CXX) -c $(CPPFLAGS) $(CXXFLAGS) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(AM_OBJCFLAGS) $(OBJCFLAGS) $<
 .mm.o:
 	$(CXX) -c $(CPPFLAGS) $(CXXFLAGS) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(AM_OBJCFLAGS) $(OBJCFLAGS) $<
 
