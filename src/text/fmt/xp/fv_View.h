@@ -31,6 +31,7 @@
 #include "gr_DrawArgs.h"
 #include "ev_EditBits.h"
 #include "ie_types.h"
+#include "xap_Prefs.h"
 
 #define AUTO_DRAW_POINT 600
 
@@ -48,6 +49,9 @@ class UT_Timer;
 class UT_ByteBuf;
 class AP_TopRulerInfo;
 class AP_LeftRulerInfo;
+class XAP_App;
+class XAP_Prefs;
+class UT_AlphaHashTable;
 
 
 typedef enum _FVDocPos
@@ -330,6 +334,9 @@ protected:
 	UT_sint32 			_findBlockSearchDumbCase(const UT_UCSChar * haystack, const UT_UCSChar * needle);
 	UT_sint32 			_findBlockSearchDumbNoCase(const UT_UCSChar * haystack, const UT_UCSChar * needle);	
 	UT_sint32			_findBlockSearchRegexp(const UT_UCSChar * haystack, const UT_UCSChar * needle);
+
+	// prefs listener - to change cursor blink on/off (and possibly others)
+	static void _prefsListener( XAP_App *, XAP_Prefs *, UT_AlphaHashTable *, void *);
 };
 
 #endif /* FV_VIEW_H */

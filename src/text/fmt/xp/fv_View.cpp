@@ -93,6 +93,9 @@ FV_View::FV_View(XAP_App * pApp, void* pParentData, FL_DocLayout* pLayout)
 	
 	// initialize prefs cache
 	pApp->getPrefsValueBool(AP_PREF_KEY_CursorBlink, &m_bCursorBlink);
+
+	// initialize prefs listener
+	pApp->getPrefs()->addListener( _prefsListener, this );
 	
 	// initialize change cache
 	m_chg.bUndo = UT_FALSE;
@@ -4680,3 +4683,28 @@ void FV_View::cmdContextAdd(void)
 	}
 }
 
+
+/*static*/ void FV_View::_prefsListener( XAP_App * /*pApp*/, XAP_Prefs *pPrefs, UT_AlphaHashTable * /*phChanges*/, void *data )
+{
+	FV_View *pView = (FV_View *)data;
+	UT_Bool b;
+	UT_ASSERT(data && pPrefs);
+	if ( pPrefs->getPrefsValueBool(AP_PREF_KEY_CursorBlink, &b) && b != pView->m_bCursorBlink )
+	{
+		UT_DEBUGMSG(("FV_View::_prefsListener m_bCursorBlink=%s m_bCursorIsOn=%s",
+					 pView->m_bCursorBlink ? "TRUE" : "FALSE",
+					 pView->m_bCursorIsOn ? "TRUE" : "FALSE"));
+
+		pView->m_bCursorBlink = b;
+
+		// if currently blinking, turn it off
+		if ( pView->m_bCursorBlink == UT_FALSE && pView->m_pAutoCursorTimer )
+			pView->m_pAutoCursorTimer->stop();                                           
+
+		// this is an attempt for force the cursors to draw, don't know if it actually helps
+		if ( !pView->m_bCursorBlink && pView->m_bCursorIsOn )
+			pView->_drawInsertionPoint();
+
+		pView->_updateInsertionPoint();
+	}
+}
