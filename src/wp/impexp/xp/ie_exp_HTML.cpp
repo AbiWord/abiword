@@ -4939,6 +4939,8 @@ bool s_StyleTree::add (const char * style_name, PD_Style * style)
 		{
 			tree = 0;
 		}
+	UT_END_CATCH
+
 	if (tree == 0) return false;
 
 	m_list[m_count++] = tree;

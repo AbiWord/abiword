@@ -490,32 +490,28 @@ void s_RTF_ListenerGetProps::_compute_span_properties(const PP_AttrProp * pSpanA
 
 	UT_sint32 ndxFont;
 
-	UT_TRY
-		{
-			_rtf_font_info fi(s_RTF_AttrPropAdapter_AP(pSpanAP,pBlockAP,pSectionAP,m_pDocument));
+	{
+		_rtf_font_info fi;
+
+		if (fi.init(s_RTF_AttrPropAdapter_AP(pSpanAP,pBlockAP,pSectionAP,m_pDocument))) {
 			ndxFont = m_pie->_findFont(&fi);
 			if (ndxFont == -1)
 				m_pie->_addFont(&fi);
 		}
-	UT_CATCH(UT_CATCH_ANY)
-		{
-		}
-	UT_END_CATCH
+	}
 
 //
 // Look in field-font too
 //
-	UT_TRY
-		{
-			_rtf_font_info fii(s_RTF_AttrPropAdapter_AP(pSpanAP,pBlockAP,pSectionAP,m_pDocument),true);
+	{
+		_rtf_font_info fii;
+
+		if (fii.init(s_RTF_AttrPropAdapter_AP(pSpanAP,pBlockAP,pSectionAP,m_pDocument),true)) {
 			ndxFont = m_pie->_findFont(&fii);
 			if (ndxFont == -1)
 				m_pie->_addFont(&fii);
 		}
-	UT_CATCH(UT_CATCH_ANY)
-		{
-		}
-	UT_END_CATCH
+	}
 }
 
 

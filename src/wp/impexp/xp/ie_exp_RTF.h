@@ -199,15 +199,14 @@ protected:
 /*****************************************************************/
 /*****************************************************************/
 
-class ABI_EXPORT _rtf_no_font {};
-
 /* This struct contains the RTF font info as needed for the 
    font table. */
 class ABI_EXPORT _rtf_font_info
 {
 public:
-    _rtf_font_info(const s_RTF_AttrPropAdapter & apa, bool bDoFieldFont = false) UT_THROWS((_rtf_no_font));
-    _rtf_font_info(const char * szfontName ) UT_THROWS((_rtf_no_font));
+    _rtf_font_info();
+	bool init(const s_RTF_AttrPropAdapter & apa, bool bDoFieldFont = false);
+    bool init(const char * szfontName);
 	virtual ~_rtf_font_info(void);
     bool _is_same(const _rtf_font_info & fi) const;
 	const char * getFontFamily(void) const { return szFamily;}

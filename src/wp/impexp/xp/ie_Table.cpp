@@ -2631,6 +2631,7 @@ bool IE_Imp_TableHelperStack::push (const char * style)
 
 	IE_Imp_TableHelper * th = 0;
 
+	// TODO: not sure this needs to happen...
 	UT_TRY
 		{
 			IE_Imp_TableHelper * prev = top();
@@ -2641,10 +2642,12 @@ bool IE_Imp_TableHelperStack::push (const char * style)
 			}
 			th = new IE_Imp_TableHelper(m_pDocument,pfs,style);
 		}
-	UT_CATCH(...)
+	UT_CATCH(UT_CATCH_ANY)
 		{
 			th = 0;
 		}
+	UT_END_CATCH
+
 	if (th == 0)
 		return false;
 	m_count++;

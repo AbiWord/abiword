@@ -1626,29 +1626,25 @@ void IE_Exp_RTF::_selectStyles()
 			if(pns == NULL)
 			{
 				m_hashStyles.insert(szName, new NumberedStyle(pStyle, ++nStyleNumber));
-				UT_TRY
 				{
-					_rtf_font_info fi(static_cast<s_RTF_AttrPropAdapter_Style>(pStyle));
-					if (_findFont(&fi) == -1)
-						_addFont(&fi);
+					_rtf_font_info fi;
+
+					if (fi.init(static_cast<s_RTF_AttrPropAdapter_Style>(pStyle))) {
+						if (_findFont(&fi) == -1)
+							_addFont(&fi);
+					}
 				}
-				UT_CATCH(UT_CATCH_ANY)
-				{
-				}
-				UT_END_CATCH
 //
 // Now do it for the field font as well
 //
-				UT_TRY
 				{
-					_rtf_font_info fi(static_cast<s_RTF_AttrPropAdapter_Style>(pStyle),true);
-					if (_findFont(&fi) == -1)
-						_addFont(&fi);
+					_rtf_font_info fi;
+
+					if (fi.init(static_cast<s_RTF_AttrPropAdapter_Style>(pStyle),true)) {
+						if (_findFont(&fi) == -1)
+							_addFont(&fi);
+					}
 				}
-				UT_CATCH(UT_CATCH_ANY)
-				{
-				}
-				UT_END_CATCH
 			}
 		}
     }
@@ -2358,21 +2354,19 @@ void IE_Exp_RTF::_output_ListRTF(fl_AutoNum * pAuto, UT_uint32 iLevel)
 //
 	if(Param == 23)
 	{
-		UT_TRY
 			{
-				_rtf_font_info fi(fontName.c_str());
-				UT_sint32 ifont = _findFont(&fi);
-				if(ifont < 0)
-				{
-					UT_ASSERT_NOT_REACHED();
-					ifont = 0;
+				_rtf_font_info fi;
+
+				if (fi.init(fontName.c_str())) {
+					UT_sint32 ifont = _findFont(&fi);
+					if(ifont < 0)
+					{
+						UT_ASSERT_NOT_REACHED();
+						ifont = 0;
+					}
+					_rtf_keyword("f",ifont);
 				}
-				_rtf_keyword("f",ifont);
 			}
-		UT_CATCH(UT_CATCH_ANY)
-			{
-			}
-		UT_END_CATCH
 	}
 }
 
@@ -2463,17 +2457,15 @@ UT_sint32 IE_Exp_RTF::_findFont(const _rtf_font_info * pfi) const
 UT_sint32 IE_Exp_RTF::_findFont(const s_RTF_AttrPropAdapter * apa) const
 {
 	static UT_sint32 ifont = 0;
-	UT_TRY
-	  {
-	    _rtf_font_info fi(*apa);
-	    ifont = _findFont(&fi);
-	    return ifont;
-	  }
-	UT_CATCH(UT_CATCH_ANY)
-	  {
-	    return -1;
-	  }
-	UT_END_CATCH
+
+	_rtf_font_info fi;
+	
+	if (fi.init(*apa)) {
+		ifont = _findFont(&fi);
+		return ifont;
+	}
+	
+	return -1;
 }
 
 /*!
@@ -2484,20 +2476,18 @@ void IE_Exp_RTF::_addFont(const _rtf_font_info * pfi)
 {
 	UT_return_if_fail(pfi && (_findFont(pfi)==-1));
 
-	UT_TRY
-		{
-			_rtf_font_info * pNew = new _rtf_font_info(*pfi);
-			if (pNew)
-				m_vecFonts.addItem(pNew);
-		}
-	UT_CATCH(UT_CATCH_ANY)
-		{
-		}
-	UT_END_CATCH
+	_rtf_font_info * pNew = new _rtf_font_info (*pfi);
+	
+	if (pNew)
+		m_vecFonts.addItem(pNew);
 }
 
-_rtf_font_info::_rtf_font_info(const s_RTF_AttrPropAdapter & apa, bool bDoFieldFont)
-	UT_THROWS((_rtf_no_font))
+_rtf_font_info::_rtf_font_info()
+{
+	// TODO: set these to some default bogus values
+}
+
+bool _rtf_font_info::init(const s_RTF_AttrPropAdapter & apa, bool bDoFieldFont)
 {
     // Not a typo. The AbiWord "font-family" property is what RTF
     // calls font name. It has values like "Courier New".
@@ -2520,8 +2510,7 @@ _rtf_font_info::_rtf_font_info(const s_RTF_AttrPropAdapter & apa, bool bDoFieldF
 	}
     if (szName == NULL)
 	{
-		_rtf_no_font e;
-		UT_THROW(e);
+		return false;
 	}
 
     static const char * t_ff[] = { "fnil", "froman", "fswiss", "fmodern", "fscript", "fdecor", "ftech", "fbidi" };
@@ -2537,22 +2526,21 @@ _rtf_font_info::_rtf_font_info(const s_RTF_AttrPropAdapter & apa, bool bDoFieldF
     nCharset = XAP_EncodingManager::get_instance()->getWinCharsetCode();
     nPitch = fp;
     fTrueType = tt;
-}
 
+	return true;
+}
 
 _rtf_font_info::~_rtf_font_info(void)
 {
 }
 
-_rtf_font_info::_rtf_font_info(const char * szFontName)
-	UT_THROWS((_rtf_no_font))
+bool _rtf_font_info::init(const char * szFontName)
 {
     // Not a typo. The AbiWord "font-family" property is what RTF
     // calls font name. It has values like "Courier New".
     if (szFontName == NULL)
 	{
-		_rtf_no_font e;
-		UT_THROW(e);
+		return false;
 	}
 
 	m_szName = szFontName;
@@ -2570,6 +2558,8 @@ _rtf_font_info::_rtf_font_info(const char * szFontName)
     nCharset = XAP_EncodingManager::get_instance()->getWinCharsetCode();
     nPitch = fp;
     fTrueType = tt;
+
+	return true;
 }
 
 /*!
