@@ -145,6 +145,7 @@ public:
 
 	static EV_EditMethod_Fn insertSpace;
 	static EV_EditMethod_Fn insertNBSpace;
+	static EV_EditMethod_Fn insertGraveData; // for certain european keys
 
 	// TODO add functions for all of the standard menu commands.
 	// TODO here are a few that i started.
@@ -297,6 +298,7 @@ static EV_EditMethod s_arrayEditMethods[] =
 
 	EV_EditMethod(NF(insertSpace),			_M_,	""),
 	EV_EditMethod(NF(insertNBSpace),		_M_,	""),
+	EV_EditMethod(NF(insertGraveData),		_M_,	""),
 
 	EV_EditMethod(NF(fileNew),				_M_,	""),
 	EV_EditMethod(NF(fileOpen),				_M_,	""),
@@ -1374,6 +1376,47 @@ Defun1(insertNBSpace)
 	ABIWORD_VIEW;
 	UT_UCSChar sp = 0x00a0;				// decimal 160 is NBS
 	pView->cmdCharInsert(&sp,1);
+	return UT_TRUE;
+}
+
+Defun(insertGraveData)
+{
+	ABIWORD_VIEW;
+
+	// This function provides an interlude.  All of the keys
+	// on the Dead_Grave map are mapped here.  The desired
+	// character is in the argument (just like in insertData()).
+	// We do the character mapping here.
+	//
+	// This keeps us from having to define 10 EditMethod
+	// functions (one for each grave character).
+	//
+	// It would be nice if the key-binding mechanism (in
+	// ap_LoadBindings_*.cpp) were extended to allow a constant
+	// to be specified along with the function binding, so that
+	// we could have bound 'A' on the DeadGrave map to
+	// "insertData(0x00c0)", for example.
+	
+	UT_ASSERT(pCallData->m_dataLength==1);
+	UT_UCSChar graveChar = 0x0000;
+	switch (pCallData->m_pData[0])
+	{
+	case 0x41:		graveChar=0x00c0;	break;	// Agrave
+	case 0x45:		graveChar=0x00c8;	break;	// Egrave
+	case 0x49:		graveChar=0x00cc;	break;	// Igrave
+	case 0x4f:		graveChar=0x00d2;	break;	// Ograve
+	case 0x55:		graveChar=0x00d9;	break;	// Ugrave
+
+	case 0x61:		graveChar=0x00e0;	break;	// agrave
+	case 0x65:		graveChar=0x00e8;	break;	// egrave
+	case 0x69:		graveChar=0x00ec;	break;	// igrave
+	case 0x6f:		graveChar=0x00f2;	break;	// ograve
+	case 0x75:		graveChar=0x00f9;	break;	// ugrave
+	default:
+		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+	}
+	
+	pView->cmdCharInsert(&graveChar, 1);
 	return UT_TRUE;
 }
 

@@ -30,6 +30,7 @@
 #include "ut_string.h"
 #include "xap_LoadBindings.h"
 #include "ap_LoadBindings_Default.h"
+#include "ap_LoadBindings_DeadGrave.h"
 
 /****************************************************************/
 /****************************************************************/
@@ -44,7 +45,8 @@ struct _lb
 
 static struct _lb s_lbTable[] =
 {
-	{	"default",		ap_LoadBindings_Default		}
+	{	"default",		ap_LoadBindings_Default		},
+	{	"deadgrave",	ap_LoadBindings_DeadGrave	},
 };
 
 #define NrElements(a)	((sizeof(a)/sizeof(a[0])))

@@ -32,6 +32,7 @@
 #include "ev_EditBinding.h"
 #include "ev_EditMethod.h"
 #include "ev_NamedVirtualKey.h"
+#include "xap_LoadBindings.h"
 
 // TODO We need something here to map Esc (when used as a prefix)
 // TODO to ALT so that we don't have to load both bindings (ie.
@@ -78,7 +79,7 @@ static struct _iMouse s_MouseTable[] =
 #endif
 };
 
-static void s_loadMouse(EV_EditBindingMap * pebm)
+static void s_loadMouse(EV_EditMethodContainer * /*pemc*/, EV_EditBindingMap * pebm)
 {
 	int k, m;
 	int kLimit = NrElements(s_MouseTable);
@@ -190,9 +191,31 @@ static struct _iNVK s_NVKTable[] =
 // 	{EV_NVK_F33,		{
 // 	{EV_NVK_F34,		{
 // 	{EV_NVK_F35,		{
+
 };
 
-static void s_loadNVK(EV_EditBindingMap * pebm)
+/*****************************************************************
+******************************************************************
+** load top-level prefixed builtin bindings for the NamedVirtualKeys
+******************************************************************
+*****************************************************************/
+
+struct _iNVK_P
+{
+	EV_EditBits			m_eb;			// sans ems
+	const char *		m_szMapName[EV_COUNT_EMS];
+};
+
+static struct _iNVK_P s_NVKTable_P[] =
+{
+//	{nvk,				{ none,					_S,					_C,				_S_C,		
+//  					  _A,					_A_S,				_A_C,			_A_C_S				}},
+
+	{EV_NVK_DEAD_GRAVE,	{ "deadgrave",			"deadgrave",		"",				"",
+						  "",					"",					"",				""					}},
+};
+
+static void s_loadNVK(EV_EditMethodContainer * pemc, EV_EditBindingMap * pebm)
 {
 	int k, m;
 	int kLimit = NrElements(s_NVKTable);
@@ -203,6 +226,23 @@ static void s_loadNVK(EV_EditBindingMap * pebm)
 			{
 				EV_EditModifierState ems = EV_EMS_FromNumber(m);
 				pebm->setBinding(EV_EKP_PRESS|s_NVKTable[k].m_eb|ems,s_NVKTable[k].m_szMethod[m]);
+			}
+
+	kLimit = NrElements(s_NVKTable_P);
+
+	for (k=0; k<kLimit; k++)
+		for (m=0; m<EV_COUNT_EMS; m++)
+			if (s_NVKTable_P[k].m_szMapName[m] && *s_NVKTable_P[k].m_szMapName[m])
+			{
+				EV_EditModifierState ems = EV_EMS_FromNumber(m);
+				EV_EditBindingMap * pebmSub = NULL;
+				UT_Bool bResult = AP_LoadBindings(s_NVKTable_P[k].m_szMapName[m],pemc,&pebmSub);
+				if (bResult)
+				{
+					EV_EditBinding * pebSub = new EV_EditBinding(pebmSub);
+					if (pebSub)
+						pebm->setBinding(EV_EKP_PRESS|s_NVKTable_P[k].m_eb|ems,pebSub);
+				}
 			}
 }
 
@@ -436,7 +476,7 @@ static struct _iChar s_CharTable[] =
 	
 };
 
-static void s_loadChar(EV_EditBindingMap * pebm)
+static void s_loadChar(EV_EditMethodContainer * /*pemc*/, EV_EditBindingMap * pebm)
 {
 	int k, m;
 	int kLimit = NrElements(s_CharTable);
@@ -467,9 +507,9 @@ UT_Bool ap_LoadBindings_Default(EV_EditMethodContainer * pemc,
 	if (!pNewEBM)
 		return UT_FALSE;
 
-	s_loadMouse(pNewEBM);
-	s_loadNVK(pNewEBM);
-	s_loadChar(pNewEBM);
+	s_loadMouse(pemc,pNewEBM);
+	s_loadNVK(pemc,pNewEBM);
+	s_loadChar(pemc,pNewEBM);
 
 	*ppebm = pNewEBM;
 	return UT_TRUE;

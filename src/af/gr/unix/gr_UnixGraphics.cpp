@@ -176,7 +176,7 @@ UT_uint32 UNIXGraphics::measureString(const UT_UCSChar* s, int iOffset,
 	for (int i = 0; i < num; i++)
     {
 		UT_ASSERT(s[i + iOffset] < 256);
-		char ch = s[i + iOffset];
+		unsigned char ch = s[i + iOffset];
 
 		int len = m_aCharWidths[ch];
       
