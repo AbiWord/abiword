@@ -393,7 +393,6 @@ AC_CONFIG_FILES([GNUmakefile
  src/af/ev/xp/GNUmakefile
  src/af/ev/cocoa/GNUmakefile
  src/af/ev/unix/GNUmakefile
- src/af/ev/unix/gnome/GNUmakefile
  src/af/gr/GNUmakefile
  src/af/gr/xp/GNUmakefile
  src/af/gr/cocoa/GNUmakefile

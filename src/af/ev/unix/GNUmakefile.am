@@ -21,10 +21,6 @@ include $(top_srcdir)/includes.mk
 INCLUDES= @GTK_CFLAGS@ @GMODULE_CFLAGS@ \
 	$(AF_INCLUDES) $(WP_INCLUDES) $(TEXT_INCLUDES) $(ICONV_INCLUDES)
 
-if WITH_GNOME
-#SUBDIRS = gnome
-endif
-
 noinst_LIBRARIES = libEv_unix.a
 
 libEv_unix_a_SOURCES=		\

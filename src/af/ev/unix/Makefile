@@ -22,10 +22,6 @@ ABI_ROOT:=$(shell pwd)/../../../..
 
 include $(ABI_ROOT)/src/config/abi_defs_wp.mk
 
-ifeq ($(ABI_OPT_GNOME),1)
-DIRS=		$(ABI_GNOME_DIR)
-endif
-
 CPPSRCS=		ev_UnixKeyboard.cpp		\
 			ev_UnixMenu.cpp			\
 			ev_UnixMouse.cpp		\
