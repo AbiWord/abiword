@@ -236,7 +236,7 @@ cd ../abi
 %{ABIPREFIX}/AbiSuite/AbiWord/help/en-US
 %{ABIPREFIX}/AbiSuite/AbiWord/strings
 %{ABIPREFIX}/AbiSuite/AbiWord/system.profile-*
-%{ABIPREFIX}/AbiSuite/bin
+%attr(755,-,-,-)%{ABIPREFIX}/AbiSuite/bin
 %{ABIPREFIX}/AbiSuite/dictionary/*american*.hash*
 %{ABIPREFIX}/AbiSuite/icons
 %{ABIPREFIX}/AbiSuite/templates
@@ -292,7 +292,7 @@ cd ../abi
 %{ABIPREFIX}/AbiSuite/AbiWord/plugins/libAbiWordPerfect.*
 %{ABIPREFIX}/AbiSuite/AbiWord/plugins/libAbiXHTML.*
 %{ABIPREFIX}/AbiSuite/AbiWord/plugins/libAbiXSLFO.*
-#%{ABIPREFIX}/AbiSuite/AbiWord/plugins/libOpenWriter.*
+%{ABIPREFIX}/AbiSuite/AbiWord/plugins/libOpenWriter.*
 %endif
 
 %files clipart
