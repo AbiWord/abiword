@@ -1000,7 +1000,7 @@ bool EV_UnixToolbar::refreshToolbar(AV_View * pView, AV_ChangeMask mask)
 {
 	// make the toolbar reflect the current state of the document
 	// at the current insertion point or selection.
-	
+
 	const EV_Toolbar_ActionSet * pToolbarActionSet = m_pUnixApp->getToolbarActionSet();
 	UT_ASSERT(pToolbarActionSet);
 	

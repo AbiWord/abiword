@@ -143,6 +143,24 @@ struct FV_DocCount
 	UT_uint32 page;
 };
 
+class ABI_EXPORT fv_PropCache
+{
+public:
+	fv_PropCache(void);
+	virtual ~fv_PropCache(void);
+	UT_uint32         getTick(void) const;
+	void              setTick(UT_uint32 iTick);
+	bool              isValid(void) const;
+	const XML_Char ** getCopyOfProps(void) const;
+	void              fillProps(UT_uint32 numProps, const XML_Char ** props);
+	void              clearProps(void);
+private:
+	UT_uint32         m_iTick;
+	UT_uint32         m_iNumProps;
+	XML_Char **       m_pszProps;
+};
+
+								
 class ABI_EXPORT FV_View : public AV_View
 {
 	friend class fl_DocListener;
@@ -749,6 +767,11 @@ private:
 
 	FV_Caret_Listener * m_caretListener;
 	bool m_bgColorInitted;
+	PT_DocPosition      m_iLowDrawPoint;
+	PT_DocPosition      m_iHighDrawPoint;
+	fv_PropCache        m_CharProps;
+	fv_PropCache        m_BlockProps;
+	fv_PropCache        m_SecProps;
 };
 
 #endif /* FV_VIEW_H */

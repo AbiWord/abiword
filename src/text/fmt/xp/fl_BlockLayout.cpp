@@ -1777,7 +1777,7 @@ fp_Container* fl_BlockLayout::getNewContainer(fp_Container * /* pCon*/)
 	fp_Line* pLine = new fp_Line(getSectionLayout());
 	// TODO: Handle out-of-memory
 	UT_ASSERT(pLine);
-
+	fp_TableContainer * pPrevTable = NULL;
 	pLine->setBlock(this);
 	pLine->setNext(NULL);
 	fp_VerticalContainer* pContainer = NULL;
@@ -1826,16 +1826,22 @@ fp_Container* fl_BlockLayout::getNewContainer(fp_Container * /* pCon*/)
 			else
 			{
 				fp_Container * ppPrev = (fp_Container *) pPrevCon;
-				while(ppPrev && ppPrev->getContainerType() != FP_CONTAINER_LINE)
+				while(ppPrev && ((ppPrev->getContainerType() == FP_CONTAINER_FOOTNOTE) || (ppPrev->getContainerType() == FP_CONTAINER_ENDNOTE) ))
 				{
 					ppPrev = (fp_Container *)ppPrev->getPrev();
 				}
-				if(ppPrev)
+				if(ppPrev && (ppPrev->getContainerType() == FP_CONTAINER_LINE))
 				{
 					pPrevLine = (fp_Line *) ppPrev;
 					pContainer = (fp_VerticalContainer *) pPrevLine->getContainer();
 					UT_ASSERT(pContainer);
 					UT_ASSERT(pContainer->getWidth() >0);
+				}
+				else if(ppPrev && (ppPrev->getContainerType() == FP_CONTAINER_TABLE))
+				{
+					pContainer = (fp_VerticalContainer *) ppPrev->getContainer();
+					pPrevLine = NULL;
+					pPrevTable = (fp_TableContainer*)ppPrev;
 				}
 				else
 				{
@@ -1870,10 +1876,18 @@ fp_Container* fl_BlockLayout::getNewContainer(fp_Container * /* pCon*/)
 			UT_ASSERT(pContainer->getWidth() >0);
 		}
 
-		if (!pPrevLine)
+		if ((pPrevLine==NULL) && (pPrevTable== NULL))
+		{
 			pContainer->insertContainer((fp_Container *) pLine);
+		}
+		else if((pPrevLine==NULL) &&(NULL!=pPrevTable))
+		{
+			pContainer->insertContainerAfter((fp_Container *)pLine, (fp_Container *) pPrevTable);
+		}
 		else
+		{
 			pContainer->insertContainerAfter((fp_Container *)pLine, (fp_Container *) pPrevLine);
+		}
 	}
 	UT_ASSERT(pLine->getContainer());
 	return (fp_Container *) pLine;

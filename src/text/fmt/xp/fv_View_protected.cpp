@@ -164,6 +164,8 @@ void FV_View::_eraseSelection(void)
 		iPos1 = getPoint();
 		iPos2 = m_iSelectionAnchor;
 	}
+	m_iLowDrawPoint = 0;
+	m_iHighDrawPoint = 0;;
 
 	_clearBetweenPositions(iPos1, iPos2, true);
 }
@@ -200,6 +202,8 @@ void FV_View::_clearSelection(void)
 	if(!bres)
 		return;
 	_resetSelection();
+	m_iLowDrawPoint = 0;
+	m_iHighDrawPoint = 0;
 
 	_drawBetweenPositions(iPos1, iPos2);
 }
@@ -208,14 +212,33 @@ void FV_View::_drawSelection()
 {
 	UT_return_if_fail(!isSelectionEmpty());
 //	CHECK_WINDOW_SIZE
-	if (m_iSelectionAnchor < getPoint())
+	UT_DEBUGMSG(("_drawSelection \n"));
+	if(m_iLowDrawPoint == 0 && m_iHighDrawPoint == 0)
 	{
-		_drawBetweenPositions(m_iSelectionAnchor, getPoint());
+		if (m_iSelectionAnchor < getPoint())
+		{
+			_drawBetweenPositions(m_iSelectionAnchor, getPoint());
+		}
+		else
+		{
+			_drawBetweenPositions(getPoint(), m_iSelectionAnchor);
+		}
 	}
 	else
 	{
-		_drawBetweenPositions(getPoint(), m_iSelectionAnchor);
+		PT_DocPosition iLow = UT_MIN(m_iSelectionAnchor,getPoint());
+		PT_DocPosition iHigh =  UT_MAX(m_iSelectionAnchor,getPoint());
+		if(iLow < m_iLowDrawPoint)
+		{
+			_drawBetweenPositions(iLow, m_iLowDrawPoint);
+		}
+		if(iHigh > m_iHighDrawPoint)
+		{
+			_drawBetweenPositions(m_iHighDrawPoint, iHigh);
+		}
 	}
+	m_iLowDrawPoint = UT_MIN(m_iSelectionAnchor,getPoint());
+	m_iHighDrawPoint = UT_MAX(m_iSelectionAnchor,getPoint());
 }
 
 // Note that isClearSelection() might change its tune in one of two ways.
@@ -2345,7 +2368,7 @@ void FV_View::_extSel(UT_uint32 iOldPoint)
 	*/
 	bool bres;
 	UT_uint32 iNewPoint = getPoint();
-
+	xxx_UT_DEBUGMSG(("_extSel: iNewPoint %d ioldPoint %d selectionAnchor %d \n",iNewPoint,iOldPoint,m_iSelectionAnchor));
 	PT_DocPosition posBOD,posEOD,dNewPoint,dOldPoint;
 	dNewPoint = static_cast<PT_DocPosition>(iNewPoint);
 	dOldPoint = static_cast<PT_DocPosition>(iOldPoint);
@@ -2476,7 +2499,7 @@ void FV_View::_extSelToPos(PT_DocPosition iNewPoint)
 		_resetSelection();
 	}
 
-	notifyListeners(AV_CHG_MOTION);
+//	notifyListeners(AV_CHG_MOTION);
 }
 
 
@@ -2503,7 +2526,7 @@ void FV_View::_drawBetweenPositions(PT_DocPosition iPos1, PT_DocPosition iPos2)
 	{
 		return;
 	}
-	_fixInsertionPointCoords();
+//	_fixInsertionPointCoords();
 	{
 		UT_sint32 x;
 		UT_sint32 y;

@@ -197,7 +197,9 @@ FV_View::FV_View(XAP_App * pApp, void* pParentData, FL_DocLayout* pLayout)
 		m_pTopRuler(NULL),
 		m_pLeftRuler(NULL),
 		m_bInFootnote(false),
-		m_bgColorInitted(false)
+		m_bgColorInitted(false),
+		m_iLowDrawPoint(0),
+		m_iHighDrawPoint(0)
 {
 	m_colorRevisions[0] = UT_RGBColor(171,4,254);
 	m_colorRevisions[1] = UT_RGBColor(171,20,119);
@@ -2720,6 +2722,24 @@ bool FV_View::getCharFormat(const XML_Char *** pProps, bool bExpandStyles, PT_Do
 	{
 		return false;
 	}
+//
+// fixme
+#if 0
+	// NOTE: caller must free this, but not the referenced contents
+	const XML_Char ** tprops = static_cast<const XML_Char **>(UT_calloc(3, sizeof(XML_Char *)));
+	UT_DEBUGMSG(("charFormat \n"));
+	tprops[0] = "fred";
+	tprops[1] = "1";
+	tprops[2] = NULL;
+	*pProps = tprops;
+#endif
+	if((AV_View::getTick() == m_CharProps.getTick()) && m_CharProps.isValid())
+	{
+		*pProps = m_CharProps.getCopyOfProps();
+		return true;
+	}
+	m_CharProps.clearProps();
+	m_CharProps.setTick(AV_View::getTick());
 	/*
 	  IDEA: We want to know character-level formatting properties, if
 	  they're constant across the entire selection.  To do so, we start
@@ -2914,9 +2934,8 @@ bool FV_View::getCharFormat(const XML_Char *** pProps, bool bExpandStyles, PT_Do
 		return false;
 
 	const XML_Char ** p = props;
-
 	i = v.getItemCount();
-
+	UT_uint32 numProps = count;
 	while (i > 0)
 	{
 		f = static_cast<_fmtPair *>(v.getNthItem(i-1));
@@ -2925,12 +2944,14 @@ bool FV_View::getCharFormat(const XML_Char *** pProps, bool bExpandStyles, PT_Do
 		p[0] = f->m_prop;
 		p[1] = f->m_val;
 		p += 2;
+
 	}
 	p[0] = NULL;
+
 	UT_VECTOR_PURGEALL(_fmtPair *,v);
 
 	*pProps = props;
-
+	m_CharProps.fillProps(numProps,props);
 	return true;
 }
 
@@ -3439,6 +3460,17 @@ bool FV_View::getSectionFormat(const XML_Char ***pProps)
 //
 // Check we have a layout defined first. On start up we don't
 //
+	bool b = m_SecProps.isValid();
+	if((AV_View::getTick() == m_SecProps.getTick()) && m_SecProps.isValid())
+	{
+		xxx_UT_DEBUGMSG(("GOt a valid cache for section props \n"));
+		*pProps = m_SecProps.getCopyOfProps();
+		return true;
+	}
+	m_SecProps.clearProps();
+	m_SecProps.setTick(AV_View::getTick());
+	b = m_SecProps.isValid();
+	
 	if(getLayout()->getFirstSection() == NULL)
 	{
 		return false;
@@ -3539,7 +3571,7 @@ bool FV_View::getSectionFormat(const XML_Char ***pProps)
 	const XML_Char ** p = props;
 
 	i = v.getItemCount();
-
+	UT_uint32 numProps = count;
 	while (i > 0)
 	{
 		f = static_cast<_fmtPair *>(v.getNthItem(i-1));
@@ -3553,6 +3585,8 @@ bool FV_View::getSectionFormat(const XML_Char ***pProps)
 	UT_VECTOR_PURGEALL(_fmtPair *,v);
 
 	*pProps = props;
+	m_SecProps.fillProps(numProps,props);
+	b = m_SecProps.isValid();
 
 	return true;
 }
@@ -3566,6 +3600,17 @@ bool FV_View::getBlockFormat(const XML_Char *** pProps,bool bExpandStyles)
 //
 // Check we have a layout defined first. On startup we don't
 //
+// fixme
+#if 1
+	// NOTE: caller must free this, but not the referenced contents
+	const XML_Char ** tprops = static_cast<const XML_Char **>(UT_calloc(3, sizeof(XML_Char *)));
+	tprops[0] = "fred";
+	tprops[1] = "1";
+	tprops[2] = NULL;
+	*pProps = tprops;
+#endif
+
+
 	if(getLayout()->getFirstSection() == NULL)
 	{
 		return false;
@@ -3580,6 +3625,13 @@ bool FV_View::getBlockFormat(const XML_Char *** pProps,bool bExpandStyles)
 	  at the beginning of the selection, load 'em all into a vector, and
 	  then prune any property that collides.
 	*/
+	if((AV_View::getTick() == m_BlockProps.getTick()) && m_BlockProps.isValid())
+	{
+		*pProps = m_BlockProps.getCopyOfProps();
+		return true;
+	}
+	m_BlockProps.clearProps();
+	m_BlockProps.setTick(AV_View::getTick());
 	PT_DocPosition posStart = getPoint();
 	PT_DocPosition posEnd = posStart;
 
@@ -3677,7 +3729,7 @@ bool FV_View::getBlockFormat(const XML_Char *** pProps,bool bExpandStyles)
 	const XML_Char ** p = props;
 
 	i = v.getItemCount();
-
+	UT_uint32 numProps = count;
 	while (i > 0)
 	{
 		f = static_cast<_fmtPair *>(v.getNthItem(i-1));
@@ -3691,6 +3743,7 @@ bool FV_View::getBlockFormat(const XML_Char *** pProps,bool bExpandStyles)
 	UT_VECTOR_PURGEALL(_fmtPair *,v);
 
 	*pProps = props;
+	m_BlockProps.fillProps(numProps,props);
 
 	return true;
 }
@@ -4289,7 +4342,6 @@ void FV_View::extSelToXY(UT_sint32 xPos, UT_sint32 yPos, bool bDrag)
 			bPostpone = true;
 		}
 	}
-
 	if (!bPostpone)
 	{
 		_extSelToPos(iNewPoint);
@@ -8593,6 +8645,8 @@ void FV_View::stopImageDrag(UT_sint32 xPos, UT_sint32 yPos)
 	_restorePieceTableState();
 }
 
+
+
 SpellChecker * FV_View::getDictForSelection ()
 {
 	SpellChecker * checker = NULL;
@@ -8617,4 +8671,77 @@ SpellChecker * FV_View::getDictForSelection ()
 	}
 
 	return checker;
+}
+
+fv_PropCache::fv_PropCache(void):
+	m_iTick(0),
+	m_iNumProps(0),
+	m_pszProps(NULL)
+{
+}
+
+fv_PropCache::~fv_PropCache(void)
+{
+	clearProps();
+}
+
+void fv_PropCache::setTick(UT_uint32 iTick)
+{
+	m_iTick = iTick;
+}
+
+UT_uint32 fv_PropCache::getTick(void) const
+{
+	return m_iTick;
+}
+
+const XML_Char ** fv_PropCache::getCopyOfProps(void) const
+{
+	const XML_Char ** props = static_cast<const XML_Char **>(UT_calloc(m_iNumProps, sizeof(XML_Char *))); 
+	UT_uint32 i =0;
+	const XML_Char ** p = props;
+	for(i =0; i< m_iNumProps;i++)
+	{
+		p[i] = m_pszProps[i];
+		xxx_UT_DEBUGMSG((" copy i %d m_pszProps[i] %x m_pszProps %s props %x props %s\n",i,m_pszProps[i],m_pszProps[i],props[i],props[i]));
+	}
+	xxx_UT_DEBUGMSG(("getCopy: props %x m_pszProps %x \n",props,m_pszProps));
+	UT_ASSERT(props != m_pszProps);
+	UT_ASSERT(NULL != m_pszProps);
+	return props;
+}
+
+void fv_PropCache::fillProps(UT_uint32 numProps, const XML_Char ** props)
+{
+	m_iNumProps = numProps;
+	m_pszProps = static_cast<XML_Char **>(UT_calloc(m_iNumProps, sizeof(XML_Char *))); 
+	UT_uint32 i = 0;
+	xxx_UT_DEBUGMSG(("m_pszProps %x props %x ",m_pszProps,props));
+	for(i =0; i< m_iNumProps;i++)
+	{
+		m_pszProps[i] = const_cast<XML_Char *>(props[i]);
+		xxx_UT_DEBUGMSG((" i %d m_pszProps[i] %x m_pszProps %s \n",i,m_pszProps[i],m_pszProps[i]));
+	}
+	UT_ASSERT(props != m_pszProps);
+	UT_ASSERT(NULL != m_pszProps);
+}
+
+bool fv_PropCache::isValid(void) const
+{
+	bool b = ((m_iNumProps > 0) && (NULL != m_pszProps));
+	if(m_iNumProps > 0)
+	{
+		UT_ASSERT(NULL != m_pszProps);
+	}
+	xxx_UT_DEBUGMSG(("Numprops %d m_pszProps %x \n",m_iNumProps,m_pszProps));
+	return b;
+}	
+
+void fv_PropCache::clearProps(void)
+{
+	xxx_UT_DEBUGMSG(("clearing props NumProps %d m_pszProps %x \n",m_iNumProps,m_pszProps));
+	FREEP(m_pszProps);
+	m_pszProps = NULL;
+	m_iNumProps = 0;
+	xxx_UT_DEBUGMSG(("clearing props numProps %d \n",m_iNumProps));
 }

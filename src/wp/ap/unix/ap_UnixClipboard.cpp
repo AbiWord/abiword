@@ -177,6 +177,7 @@ bool  AP_UnixClipboard::getSupportedData(T_AllowGet tFrom,
 					 const void ** ppData, UT_uint32 * pLen,
 					 const char **pszFormatFound)
 {
+
   // give priority to rich text, html, then images, then text
   if (getData(tFrom, rtfszFormatsAccepted, ppData, pLen, pszFormatFound))
     return true;

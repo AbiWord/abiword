@@ -156,7 +156,7 @@ fp_Line::~fp_Line()
 }
 
 
-#ifndef NDEBUG
+#ifdef DEBUG
 bool fp_Line::assertLineListIntegrity(void)
 {
 	UT_sint32 k =0;
