@@ -439,6 +439,21 @@ void FV_View::_deleteSelection(PP_AttrProp *p_AttrProp_Before, bool bNoUpdate)
 	}
 	m_pDoc->beginUserAtomicGlob();
 	m_pDoc->deleteSpan(iLow, iHigh, p_AttrProp_Before, iRealDeleteCount, bDeleteTables);
+	//
+	// Handle case of no valid block because of hidden text
+	//
+	pBL = getCurrentBlock();
+	if(pBL && (pBL->getNextBlockInDocument() == NULL) && (pBL->getPrevBlockInDocument() == NULL))
+	{
+	     if(pBL->isHidden() == FP_HIDDEN_TEXT)
+	     {
+	          const char * props[3] = {"display",NULL,NULL};
+	          PT_DocPosition pos = pBL->getPosition();
+		  PT_DocPosition posEnd = pos + pBL->getLength() -1;
+	          m_pDoc->changeStruxFmt(PTC_RemoveFmt,pos,posEnd,NULL,props,PTX_Block);
+		  m_pDoc->changeSpanFmt(PTC_RemoveFmt,pos,posEnd,NULL,props);
+	     }
+	}
 //
 // Stop any lists remaining if we've deleted their list fields
 //
