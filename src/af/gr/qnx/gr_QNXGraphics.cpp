@@ -33,43 +33,57 @@
 #define min(x, y) (((x) > (y)) ? (y) : (x))
 
 #define  MY_ABS(x) 	(((x) < 0) ? -(x) : (x))
-/* NOTE: This having to set the focus here sucks ... we shouldn't
-         have to do it, but unfortunately there is no way to have
-		 some things (like the combo boxes) reject our text input
+/* NOTE: Having to do all of this set up here is a real
+         pain, but since we can be drawing outside of an
+         expose context, it is just what we have to do.
 */
-#if 0
-#define DRAW_START	PhPoint_t _ptwin, _ptdraw;					\
-			PtGetAbsPosition(m_pWin, &_ptwin.x, &_ptwin.y);		\
-			PtGetAbsPosition(m_pDraw, &_ptdraw.x, &_ptdraw.y);	\
-			_ptdraw.x -= _ptwin.x;								\
-			_ptdraw.y -= _ptwin.y;								\
-			PgSetTranslation (&_ptdraw, 0 /* Pg_RELATIVE */);	\
-			PhRect_t _rdraw;									\
-			PtBasicWidgetCanvas(m_pDraw, &_rdraw);				\
-			PgSetUserClip(&_rdraw);								\
-			PtTranslateRect(&_rdraw, &_ptdraw);					
+#define DRAW_START DrawSetup();
+#define DRAW_END   DrawTeardown();
 
-#define DRAW_END	_ptdraw.x *= -1; 							\
-			_ptdraw.y *= -1; 									\
-			PgSetUserClip(NULL);								\
-			PgSetTranslation(&_ptdraw, 0); 						\
-			PgFlush();										
-#else
-#define DRAW_START	PhPoint_t  _ptdraw;							\
-			PgSetRegion(PtWidgetRid(PtFindDisjoint(m_pDraw)));	\
-			PtWidgetOffset(m_pDraw, &_ptdraw);					\
-			PgSetTranslation (&_ptdraw, 0 /* Pg_RELATIVE */);	\
-			PhRect_t _rdraw;									\
-			PtBasicWidgetCanvas(m_pDraw, &_rdraw);				\
-			PgSetUserClip(&_rdraw);								
+int GR_QNXGraphics::DrawSetup() {
 
-#define DRAW_END	_ptdraw.x *= -1; 							\
-			_ptdraw.y *= -1; 									\
-			PgSetUserClip(NULL);								\
-			PgSetTranslation(&_ptdraw, 0); 						\
-			/* Debugging PgFlush(); */
+	//Set the region and the draw offset
+	PgSetRegion(PtWidgetRid(PtFindDisjoint(m_pDraw)));	
+	PtWidgetOffset(m_pDraw, &m_OffsetPoint);					
+	PgSetTranslation (&m_OffsetPoint, 0 /* Pg_RELATIVE */);	
 
-#endif
+	//Always clip to the canvas
+	PhRect_t _rdraw;									
+	PtBasicWidgetCanvas(m_pDraw, &_rdraw);				
+/*
+	printf("Widget Rect %d,%d %d,%d \n", 
+		_rdraw.ul.x, _rdraw.ul.y, _rdraw.lr.x, _rdraw.lr.y);
+*/
+	PgSetUserClip(&_rdraw); 
+
+	//Add additional user clipping areas (only one for now)
+	if (m_pClipList) {
+/*
+		printf("Add Clip Rect %d,%d %d,%d \n", 
+			m_pClipList->rect.ul.x, m_pClipList->rect.ul.y, 
+			m_pClipList->rect.lr.x, m_pClipList->rect.lr.y);
+*/
+		PtClipAdd(m_pDraw, &m_pClipList->rect);
+	}
+	return 0;
+}
+
+int GR_QNXGraphics::DrawTeardown() {
+	
+	//Remove the clipping (only one for now)
+	if (m_pClipList) {
+		PtClipRemove();
+	}
+	PgSetUserClip(NULL); 
+	
+	//Reset the translation
+	m_OffsetPoint.x *= -1; 							
+	m_OffsetPoint.y *= -1; 									
+	PgSetTranslation(&m_OffsetPoint, 0); 						
+
+	/* Debugging PgFlush(); */
+	return 0;
+}
 
 GR_QNXGraphics::GR_QNXGraphics(PtWidget_t * win, PtWidget_t * draw)
 {
@@ -77,6 +91,7 @@ GR_QNXGraphics::GR_QNXGraphics(PtWidget_t * win, PtWidget_t * draw)
 	m_pDraw = draw;
 	m_pFont = NULL;
 	m_pFontGUI = NULL;
+	m_pClipList = NULL;
 	m_iLineWidth = 1;
 	m_currentColor = Pg_BLACK;
 
@@ -551,14 +566,20 @@ void GR_QNXGraphics::setClipRect(const UT_Rect* pRect)
 
 		//printf("GR: Set clipping %d,%d %d/%d \n", 
 		//	pRect->left, pRect->top, pRect->width, pRect->height);
-		PgSetUserClip(&r);							
-		//PtClipAdd(m_pDraw, &r);
+		UT_ASSERT(!m_pClipList);		//Only one item for now	
+	
+		if (m_pClipList || (m_pClipList = PhGetTile())) {
+			m_pClipList->rect = r;
+			m_pClipList->next = NULL; //One item list for now
+		}
 	}
 	else
 	{
 		//printf("GR: Clear Clipping \n");
-		PgSetUserClip(NULL);							
-		//PtClipRemove();
+		if (m_pClipList) {
+			PhFreeTiles(m_pClipList);
+			m_pClipList = NULL;
+		}
 	}
 }
 
@@ -615,9 +636,7 @@ void GR_QNXGraphics::scroll(UT_sint32 dx, UT_sint32 dy)
 	PhRect_t  rect;
 	PhPoint_t offset;
 
-	//PtWidgetCanvas(m_pDraw, &rect);
 	PtBasicWidgetCanvas(m_pDraw, &rect);
-	//PtLabelWidgetCanvas(m_pDraw, &rect);
 
 	offset.x = -1*dx;
 	offset.y = -1*dy;
@@ -626,11 +645,13 @@ void GR_QNXGraphics::scroll(UT_sint32 dx, UT_sint32 dy)
 	printf("GR Scroll %d,%d %d,%d  by %d,%d\n",
 			rect.ul.x, rect.ul.y, rect.lr.x, rect.lr.y, offset.x, offset.y);
 	*/
-
+#if 1
 	//This generates an expose event on the area uncovered by the blit
 	//which the framework draws over anyway and so it flickers a bit.
-	//PtBlit(m_pDraw, &rect, &offset);
-	
+	PtBlit(m_pDraw, &rect, &offset);
+#else
+	//PROBLEM: This doesn't seem to  clip properly
+
 	//OR: This does the blit on the region, so the rect must be in
 	//the windows co-ordinates.  But it doesn't automatically
 	//generate a damage event like PtBlit does so we only re-draw once.
@@ -644,6 +665,7 @@ void GR_QNXGraphics::scroll(UT_sint32 dx, UT_sint32 dy)
 	adjust_rect(&rect, &offset);
 	PhBlit(PtWidgetRid(PtFindDisjoint(m_pDraw)), &rect, &offset);
 	//to get an expose call PtDamageExtent(region_widget, damage_rect)
+#endif
 }
 
 void GR_QNXGraphics::scroll(UT_sint32 x_dest, UT_sint32 y_dest,

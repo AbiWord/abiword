@@ -102,9 +102,13 @@ class GR_QNXGraphics : public GR_Graphics
   
  protected:
 	virtual UT_uint32 	_getResolution(void) const;
+	int 				DrawSetup();
+	int 				DrawTeardown();
 
 	PtWidget_t *  	m_pWin;
 	PtWidget_t *  	m_pDraw;
+	PhPoint_t		m_OffsetPoint;		
+	PhTile_t *		m_pClipList;		
 
 	// our currently requested font by handle
 	QNXFont *			m_pFont;
@@ -114,8 +118,8 @@ class GR_QNXGraphics : public GR_Graphics
 	FontDetails			*m_FontList;
   
 	void*  				m_pColormap;
-	int				m_aCharWidths[256];
-	int          			m_iWindowHeight, m_iWindowWidth;
+	int					m_aCharWidths[256];
+	int          		m_iWindowHeight, m_iWindowWidth;
 	UT_sint32			m_iLineWidth;
 	GR_Graphics::Cursor		m_cursor;
 
