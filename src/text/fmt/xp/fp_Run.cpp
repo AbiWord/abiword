@@ -106,6 +106,7 @@ UT_uint32	fp_Run::getHeight() const
 
 UT_uint32	fp_Run::getWidth() const
 {
+	UT_ASSERT(m_iWidth >= 0);
 	return m_iWidth;
 }
 
@@ -319,6 +320,8 @@ int fp_Run::split(fp_RunSplitInfo& si)
 {
 	UT_ASSERT(si.iOffset >= (UT_sint32)m_iOffsetFirst);
 	UT_ASSERT(si.iOffset < (UT_sint32)(m_iOffsetFirst + m_iLen));
+	UT_ASSERT(si.iLeftWidth >= 0);
+	UT_ASSERT(si.iRightWidth >= 0);
 
 	fp_Run* pNew = new fp_Run(m_pBL, m_pG, si.iOffset+1, m_iLen - (si.iOffset - m_iOffsetFirst) - 1, UT_FALSE);
 	UT_ASSERT(pNew);
@@ -381,6 +384,8 @@ UT_Bool fp_Run::split(UT_uint32 splitOffset, UT_Bool bInsertBlock)
 	m_pNext = pNew;
 
 	m_iLen = splitOffset - m_iOffsetFirst;
+
+	UT_sint32 iOldWidth = m_iWidth;
 	
 	calcWidths(pgbCharWidths, UT_TRUE);
 	pNew->calcWidths(pgbCharWidths, UT_TRUE);
@@ -389,6 +394,13 @@ UT_Bool fp_Run::split(UT_uint32 splitOffset, UT_Bool bInsertBlock)
 	if (bInsertBlock)
 	{
 		pNew->m_iOffsetFirst -= fl_BLOCK_STRUX_OFFSET;
+	}
+
+	UT_sint32 iNewWidth = m_iWidth + pNew->m_iWidth;
+
+	if (iOldWidth != iNewWidth)
+	{
+		m_pLine->runSizeChanged(NULL, iOldWidth, iNewWidth);
 	}
 
 	// this has to happen *after* calcWidths to position things properly
@@ -565,6 +577,8 @@ void fp_Run::_calcWidths(UT_GrowBuf * pgbCharWidths)
 			len -= lenSpan;
 		}
 	}
+
+	UT_ASSERT(m_iWidth >= 0);
 }
 
 void fp_Run::calcWidths(UT_GrowBuf * pgbCharWidths, UT_Bool bSplitting)
