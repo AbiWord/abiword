@@ -23,17 +23,21 @@
 #include "ie_impGraphic_PNG.h"
 #include "fg_GraphicRaster.h"
 
-bool IE_ImpGraphicPNG_Sniffer::recognizeSuffix(const char * szSuffix)
+UT_Confidence_t IE_ImpGraphicPNG_Sniffer::recognizeSuffix(const char * szSuffix)
 {
-	return (UT_stricmp(szSuffix,".png") == 0);
+	if (UT_stricmp(szSuffix,".png") == 0)
+	  return UT_CONFIDENCE_PERFECT;
+	return UT_CONFIDENCE_ZILCH;
 }
 
-bool IE_ImpGraphicPNG_Sniffer::recognizeContents(const char * szBuf, UT_uint32 iNumbytes)
+UT_Confidence_t IE_ImpGraphicPNG_Sniffer::recognizeContents(const char * szBuf, UT_uint32 iNumbytes)
 {
    	char str1[10] = "\211PNG";
    	char str2[10] = "<89>PNG";
    
-   	return ( !(strncmp(szBuf, str1, 4)) || !(strncmp(szBuf, str2, 6)) );
+   	if ( !(strncmp(szBuf, str1, 4)) || !(strncmp(szBuf, str2, 6)) )
+	  return UT_CONFIDENCE_PERFECT;
+	return UT_CONFIDENCE_ZILCH;
 }
 
 bool IE_ImpGraphicPNG_Sniffer::getDlgLabels(const char ** pszDesc,

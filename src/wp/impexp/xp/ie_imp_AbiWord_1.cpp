@@ -60,7 +60,7 @@
 /*****************************************************************/
 /*****************************************************************/
 
-UT_uint8 IE_Imp_AbiWord_1_Sniffer::recognizeContents (const char * szBuf, 
+UT_Confidence_t IE_Imp_AbiWord_1_Sniffer::recognizeContents (const char * szBuf, 
 												  UT_uint32 iNumbytes)
 {
 	UT_uint32 iLinesToRead = 6 ;  // Only examine the first few lines of the file
@@ -71,16 +71,16 @@ UT_uint8 IE_Imp_AbiWord_1_Sniffer::recognizeContents (const char * szBuf,
 	while( iLinesToRead-- )
 	{
 		magic = "<abiword " ;
-		if ( (iNumbytes - iBytesScanned) < strlen(magic) ) return(IMP_CONFIDENCE_ZILCH);
-		if ( strncmp(p, magic, strlen(magic)) == 0 ) return(IMP_CONFIDENCE_PERFECT);
+		if ( (iNumbytes - iBytesScanned) < strlen(magic) ) return(UT_CONFIDENCE_ZILCH);
+		if ( strncmp(p, magic, strlen(magic)) == 0 ) return(UT_CONFIDENCE_PERFECT);
 		magic = "<!-- This file is an AbiWord document." ;
-		if ( (iNumbytes - iBytesScanned) < strlen(magic) ) return(IMP_CONFIDENCE_ZILCH);
-		if ( strncmp(p, magic, strlen(magic)) == 0 ) return(IMP_CONFIDENCE_PERFECT);
+		if ( (iNumbytes - iBytesScanned) < strlen(magic) ) return(UT_CONFIDENCE_ZILCH);
+		if ( strncmp(p, magic, strlen(magic)) == 0 ) return(UT_CONFIDENCE_PERFECT);
 		/*  Seek to the next newline:  */
 		while ( *p != '\n' && *p != '\r' )
 		{
 			iBytesScanned++ ; p++ ;
-			if( iBytesScanned+2 >= iNumbytes ) return(IMP_CONFIDENCE_PERFECT);
+			if( iBytesScanned+2 >= iNumbytes ) return(UT_CONFIDENCE_PERFECT);
 		}
 		/*  Seek past the next newline:  */
 		if ( *p == '\n' || *p == '\r' )
@@ -92,14 +92,14 @@ UT_uint8 IE_Imp_AbiWord_1_Sniffer::recognizeContents (const char * szBuf,
 			}
 		}
 	}
-	return IMP_CONFIDENCE_ZILCH;
+	return UT_CONFIDENCE_ZILCH;
 }
 
-UT_uint8 IE_Imp_AbiWord_1_Sniffer::recognizeSuffix (const char * szSuffix)
+UT_Confidence_t IE_Imp_AbiWord_1_Sniffer::recognizeSuffix (const char * szSuffix)
 {
   if (!UT_stricmp(szSuffix, ".abw") || !UT_stricmp(szSuffix, ".awt"))
-    return IMP_CONFIDENCE_PERFECT;
-  return IMP_CONFIDENCE_ZILCH;
+    return UT_CONFIDENCE_PERFECT;
+  return UT_CONFIDENCE_ZILCH;
 }
 
 bool IE_Imp_AbiWord_1_Sniffer::getDlgLabels (const char ** szDesc,

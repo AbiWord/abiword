@@ -87,27 +87,29 @@ IEGraphicFileType IE_ImpGraphic::fileTypeForSuffix(const char * szSuffix)
 	// so we must query a suffix match for all file types
 	UT_uint32 nrElements = getImporterCount();
 
+	IEGraphicFileType best = IEGFT_Unknown;
+	UT_Confidence_t   best_confidence = UT_CONFIDENCE_ZILCH;
+
 	for (UT_uint32 k=0; k < nrElements; k++)
 	{
 		IE_ImpGraphicSniffer * s = static_cast<IE_ImpGraphicSniffer *>(s_impGraphicTable.getNthItem(k));
-		if (s->recognizeSuffix(szSuffix))
+		UT_Confidence_t confidence = s->recognizeSuffix(szSuffix);
+		if ((IEGFT_Unknown == best) || (confidence >= best_confidence))
 		{
+		        best_confidence = confidence;
 			for (UT_sint32 a = 0; a < (int) nrElements; a++)
 			{
 				if (s->supportsType(static_cast<IEGraphicFileType>(a+1)))
-					return static_cast<IEGraphicFileType>(a+1);
-			}
+				  best = static_cast<IEGraphicFileType>(a+1);
 
-			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-			// Hm... an importer has registered for the given suffix,
-			// but refuses to support any file type we request.
-			return IEGFT_Unknown;
+				// short-circuit if we're 100% sure
+				if ( UT_CONFIDENCE_PERFECT == best_confidence )
+				  return best;
+			}
 		}
 	}
 
-	// No filter is registered for that extension
-	return IEGFT_Unknown;
-	
+	return best;	
 }
 	
 IEGraphicFileType IE_ImpGraphic::fileTypeForContents(const char * szBuf, UT_uint32 iNumbytes)
@@ -117,26 +119,29 @@ IEGraphicFileType IE_ImpGraphic::fileTypeForContents(const char * szBuf, UT_uint
 	// so we must query a match for all file types
 	UT_uint32 nrElements = getImporterCount();
 
+	IEGraphicFileType best = IEGFT_Unknown;
+	UT_Confidence_t   best_confidence = UT_CONFIDENCE_ZILCH;
+
 	for (UT_uint32 k=0; k < nrElements; k++)
 	{
 		IE_ImpGraphicSniffer * s = (IE_ImpGraphicSniffer *)s_impGraphicTable.getNthItem (k);
-		if (s->recognizeContents(szBuf, iNumbytes))
+		UT_Confidence_t confidence = s->recognizeContents(szBuf, iNumbytes);
+		if ((IEGFT_Unknown == best) || (confidence >= best_confidence))
 		{
+		        best_confidence = confidence;
 			for (UT_sint32 a = 0; a < (int) nrElements; a++)
 			{
 				if (s->supportsType((IEGraphicFileType) (a+1)))
-					return (IEGraphicFileType) (a+1);
-			}
+				  best = static_cast<IEGraphicFileType>(a+1);
 
-			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-			// Hm... an importer recognizes the given data
-			// but refuses to support any file type we request.
-			return IEGFT_Unknown;
+				// short-circuit if we're 100% sure
+				if ( UT_CONFIDENCE_PERFECT == best_confidence )
+				  return best;
+			}
 		}
 	}
 
-	// No filter recognizes this data
-	return IEGFT_Unknown;	
+	return best;
 }
 	
 bool IE_ImpGraphic::enumerateDlgLabels(UT_uint32 ndx,

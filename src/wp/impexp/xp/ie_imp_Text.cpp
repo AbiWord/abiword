@@ -252,10 +252,10 @@ bool Inserter::insertSpan(UT_GrowBuf &b)
  We also don't want to steal recognition when user wants to use
  the Encoded Text importer.
  */
-UT_uint8 IE_Imp_Text_Sniffer::recognizeContents(const char * /* szBuf */,
+UT_Confidence_t IE_Imp_Text_Sniffer::recognizeContents(const char * /* szBuf */,
 											UT_uint32 /* iNumbytes */)
 {
-	return IMP_CONFIDENCE_SOSO;
+	return UT_CONFIDENCE_SOSO;
 }
 
 /*!
@@ -410,11 +410,15 @@ IE_Imp_Text_Sniffer::UCS2_Endian IE_Imp_Text_Sniffer::_recognizeUCS2(const char 
   Check filename extension for filetypes we support
  \param szSuffix Filename extension
  */
-UT_uint8 IE_Imp_Text_Sniffer::recognizeSuffix(const char * szSuffix)
+UT_Confidence_t IE_Imp_Text_Sniffer::recognizeSuffix(const char * szSuffix)
 {
   if (!UT_stricmp (szSuffix, ".txt") || !UT_stricmp(szSuffix, ".text"))
-    return IMP_CONFIDENCE_PERFECT;
-  return IMP_CONFIDENCE_SOSO;
+    return UT_CONFIDENCE_PERFECT;
+
+  if (!UT_stricmp (szSuffix, ".doc"))
+    return UT_CONFIDENCE_SOSO;
+
+  return UT_CONFIDENCE_SOSO;
 }
 
 UT_Error IE_Imp_Text_Sniffer::constructImporter(PD_Document * pDocument,
@@ -440,21 +444,21 @@ bool IE_Imp_Text_Sniffer::getDlgLabels(const char ** pszDesc,
 
  We don't attempt to recognize.  User must specifically choose Encoded Text.
  */
-UT_uint8 IE_Imp_EncodedText_Sniffer::recognizeContents(const char * /* szBuf */,
+UT_Confidence_t IE_Imp_EncodedText_Sniffer::recognizeContents(const char * /* szBuf */,
 												   UT_uint32 /* iNumbytes */)
 {
-	return IMP_CONFIDENCE_POOR;
+	return UT_CONFIDENCE_POOR;
 }
 
 /*!
   Check filename extension for filetypes we support
  \param szSuffix Filename extension
  */
-UT_uint8 IE_Imp_EncodedText_Sniffer::recognizeSuffix(const char * szSuffix)
+UT_Confidence_t IE_Imp_EncodedText_Sniffer::recognizeSuffix(const char * szSuffix)
 {
   if (!UT_stricmp (szSuffix, ".txt") || !UT_stricmp(szSuffix, ".text"))
-    return IMP_CONFIDENCE_POOR;
-  return IMP_CONFIDENCE_ZILCH;
+    return UT_CONFIDENCE_POOR;
+  return UT_CONFIDENCE_ZILCH;
 }
 
 UT_Error IE_Imp_EncodedText_Sniffer::constructImporter(PD_Document * pDocument,

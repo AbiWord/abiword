@@ -64,8 +64,8 @@ public:
 
 	IE_ImpGraphicPixbufGraphic_Sniffer();
 	~IE_ImpGraphicPixbufGraphic_Sniffer();
-	virtual bool recognizeSuffix(const char * szSuffix);
-	virtual bool recognizeContents(const char * szBuf, UT_uint32 iNum);
+	virtual UT_Confidence_t recognizeSuffix(const char * szSuffix);
+	virtual UT_Confidence_t recognizeContents(const char * szBuf, UT_uint32 iNum);
 	virtual bool getDlgLabels(const char ** pszDesc,
 							  const char ** pszSuffixList,
 							  IEGraphicFileType * ft);

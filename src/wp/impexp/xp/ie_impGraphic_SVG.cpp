@@ -23,14 +23,18 @@
 #include "ie_impGraphic_SVG.h"
 #include "fg_GraphicVector.h"
 
-bool IE_ImpGraphicSVG_Sniffer::recognizeSuffix(const char * szSuffix)
+UT_Confidence_t IE_ImpGraphicSVG_Sniffer::recognizeSuffix(const char * szSuffix)
 {
-	return (UT_stricmp(szSuffix,".svg") == 0);
+	if (UT_stricmp(szSuffix,".svg") == 0)
+	  return UT_CONFIDENCE_PERFECT;
+	return UT_CONFIDENCE_ZILCH;
 }
 
-bool IE_ImpGraphicSVG_Sniffer::recognizeContents(const char * szBuf, UT_uint32 iNumbytes)
+UT_Confidence_t IE_ImpGraphicSVG_Sniffer::recognizeContents(const char * szBuf, UT_uint32 iNumbytes)
 {
-	return UT_SVG_recognizeContent(szBuf,iNumbytes);
+  if ( UT_SVG_recognizeContent(szBuf,iNumbytes) )
+    return UT_CONFIDENCE_PERFECT;
+  return UT_CONFIDENCE_ZILCH;
 }
 
 bool IE_ImpGraphicSVG_Sniffer::getDlgLabels(const char ** pszDesc,

@@ -34,14 +34,18 @@ static void _write_png( png_structp png_ptr,
 static void _write_flush(png_structp png_ptr) { } // Empty Fuction.
 
 
-bool IE_ImpGraphicBMP_Sniffer::recognizeSuffix(const char * szSuffix)
+UT_Confidence_t IE_ImpGraphicBMP_Sniffer::recognizeSuffix(const char * szSuffix)
 {
-	return (UT_stricmp(szSuffix,".bmp") == 0);
+	if (UT_stricmp(szSuffix,".bmp") == 0)
+	  return UT_CONFIDENCE_PERFECT;
+	return UT_CONFIDENCE_ZILCH;
 }
 
-bool IE_ImpGraphicBMP_Sniffer::recognizeContents(const char * szBuf, UT_uint32 iNumbytes)
+UT_Confidence_t IE_ImpGraphicBMP_Sniffer::recognizeContents(const char * szBuf, UT_uint32 iNumbytes)
 {
-	return ( !(strncmp(szBuf, "BM", 2)) );
+	if ( !(strncmp(szBuf, "BM", 2)) )
+	  return UT_CONFIDENCE_PERFECT;
+	return UT_CONFIDENCE_ZILCH;
 }
 
 bool IE_ImpGraphicBMP_Sniffer::getDlgLabels(const char ** pszDesc,

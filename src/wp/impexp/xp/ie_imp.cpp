@@ -133,12 +133,12 @@ IEFileType IE_Imp::fileTypeForContents(const char * szBuf, UT_uint32 iNumbytes)
 	UT_uint32 nrElements = getImporterCount();
 
 	IEFileType best = IEFT_Unknown;
-	UT_uint8   best_confidence = IMP_CONFIDENCE_ZILCH;
+	UT_Confidence_t   best_confidence = UT_CONFIDENCE_ZILCH;
 
 	for (UT_uint32 k=0; k < nrElements; k++)
 	{
 		IE_ImpSniffer * s = (IE_ImpSniffer *)m_sniffers.getNthItem (k);
-		UT_uint8 confidence = s->recognizeContents(szBuf, iNumbytes);
+		UT_Confidence_t confidence = s->recognizeContents(szBuf, iNumbytes);
 		if ((IEFT_Unknown == best) || (confidence >= best_confidence))
 		{
 		  best_confidence = confidence;
@@ -148,7 +148,7 @@ IEFileType IE_Imp::fileTypeForContents(const char * szBuf, UT_uint32 iNumbytes)
 			best = (IEFileType) (a+1);
 
 		      // short-circuit if we're 100% sure
-		      if ( IMP_CONFIDENCE_PERFECT == best_confidence )
+		      if ( UT_CONFIDENCE_PERFECT == best_confidence )
 			return best;
 		    }
 		}
@@ -172,7 +172,7 @@ IEFileType IE_Imp::fileTypeForSuffix(const char * szSuffix)
 		return IEFT_Unknown;
 	
 	IEFileType best = IEFT_Unknown;
-	UT_uint8   best_confidence = IMP_CONFIDENCE_ZILCH;
+	UT_Confidence_t   best_confidence = UT_CONFIDENCE_ZILCH;
 
 	// we have to construct the loop this way because a
 	// given filter could support more than one file type,
@@ -183,7 +183,7 @@ IEFileType IE_Imp::fileTypeForSuffix(const char * szSuffix)
 	{
 		IE_ImpSniffer * s = static_cast<IE_ImpSniffer *>(m_sniffers.getNthItem(k));
 
-		UT_uint8 confidence = s->recognizeSuffix(szSuffix);
+		UT_Confidence_t confidence = s->recognizeSuffix(szSuffix);
 		if ((IEFT_Unknown == best) || (confidence >= best_confidence))
 		  {
 		        best_confidence = confidence;
@@ -193,7 +193,7 @@ IEFileType IE_Imp::fileTypeForSuffix(const char * szSuffix)
 					best = static_cast<IEFileType>(a+1);
 
 				// short-circuit if we're 100% sure
-				if ( IMP_CONFIDENCE_PERFECT == best_confidence )
+				if ( UT_CONFIDENCE_PERFECT == best_confidence )
 				  return best;
 			}
 		}

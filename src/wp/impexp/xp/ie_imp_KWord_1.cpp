@@ -111,25 +111,25 @@ int abi_plugin_supports_version(UT_uint32 major, UT_uint32 minor, UT_uint32 rele
 /***********************************************************/
 /***********************************************************/
 
-UT_uint8 IE_Imp_KWord_1_Sniffer::recognizeContents(const char *szBuf, UT_uint32 iNumbytes)
+UT_Confidence_t IE_Imp_KWord_1_Sniffer::recognizeContents(const char *szBuf, UT_uint32 iNumbytes)
 {
 
   // first, look for the <?xml at the beginning of the document
   if(strncmp(szBuf, "<?xml", 4) != 0)
-    return IMP_CONFIDENCE_ZILCH;
+    return UT_CONFIDENCE_ZILCH;
 
   // now look for the KWord beginning tag <DOC
   if(strstr(szBuf, "<DOC") == NULL)
-    return IMP_CONFIDENCE_ZILCH;
+    return UT_CONFIDENCE_ZILCH;
 
-  return IMP_CONFIDENCE_PERFECT;
+  return UT_CONFIDENCE_PERFECT;
 }
 
-UT_uint8 IE_Imp_KWord_1_Sniffer::recognizeSuffix(const char *szSuffix)
+UT_Confidence_t IE_Imp_KWord_1_Sniffer::recognizeSuffix(const char *szSuffix)
 {
   if (UT_stricmp(szSuffix,".kwd") == 0)
-    return IMP_CONFIDENCE_PERFECT;
-  return IMP_CONFIDENCE_ZILCH;
+    return UT_CONFIDENCE_PERFECT;
+  return UT_CONFIDENCE_ZILCH;
 }
 
 UT_Error IE_Imp_KWord_1_Sniffer::constructImporter(PD_Document *pDocument, IE_Imp **ppie)

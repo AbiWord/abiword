@@ -115,14 +115,14 @@ int abi_plugin_supports_version (UT_uint32 major, UT_uint32 minor,
 /*****************************************************************/
 /*****************************************************************/
 
-UT_uint8 IE_Imp_PalmDoc_Sniffer::recognizeContents(const char * szBuf, 
+UT_Confidence_t IE_Imp_PalmDoc_Sniffer::recognizeContents(const char * szBuf, 
 											   UT_uint32 iNumbytes)
 {
 	pdb_header	* header;
 
 	// not enough bytes to make a good enough guess
 	if (!iNumbytes || (iNumbytes < sizeof (pdb_header)))
-	  return(IMP_CONFIDENCE_ZILCH);
+	  return(UT_CONFIDENCE_ZILCH);
 
 	// evil, type unsafe cast
 	header = (pdb_header *) szBuf;
@@ -130,17 +130,17 @@ UT_uint8 IE_Imp_PalmDoc_Sniffer::recognizeContents(const char * szBuf,
 	if (strncmp( header->type,    DOC_TYPE,    sizeof(header->type) ) ||
 	    strncmp( header->creator, DOC_CREATOR, sizeof(header->creator) ))
         {
-		return IMP_CONFIDENCE_ZILCH;
+		return UT_CONFIDENCE_ZILCH;
 	}
 
-	return(IMP_CONFIDENCE_PERFECT);
+	return(UT_CONFIDENCE_PERFECT);
 }
 
-UT_uint8 IE_Imp_PalmDoc_Sniffer::recognizeSuffix(const char * szSuffix)
+UT_Confidence_t IE_Imp_PalmDoc_Sniffer::recognizeSuffix(const char * szSuffix)
 {
 	if (UT_stricmp(szSuffix,".pdb") == 0)
-	  return IMP_CONFIDENCE_PERFECT;
-	return IMP_CONFIDENCE_ZILCH;	  
+	  return UT_CONFIDENCE_PERFECT;
+	return UT_CONFIDENCE_ZILCH;	  
 }
 
 UT_Error IE_Imp_PalmDoc_Sniffer::constructImporter(PD_Document * pDocument,

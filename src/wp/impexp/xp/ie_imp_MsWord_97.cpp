@@ -348,7 +348,7 @@ s_fieldFontForListStyle (MSWordListIdType id)
 /****************************************************************************/
 /****************************************************************************/
 
-UT_uint8 IE_Imp_MsWord_97_Sniffer::recognizeContents (const char * szBuf, 
+UT_Confidence_t IE_Imp_MsWord_97_Sniffer::recognizeContents (const char * szBuf, 
 												  UT_uint32 iNumbytes)
 {
 	char * magic	= 0;
@@ -360,7 +360,7 @@ UT_uint8 IE_Imp_MsWord_97_Sniffer::recognizeContents (const char * szBuf,
 	{
 		if (!strncmp (szBuf + magicoffset, magic, strlen (magic)))
 		{
-			return IMP_CONFIDENCE_PERFECT;
+			return UT_CONFIDENCE_PERFECT;
 		}
 	}
 
@@ -370,7 +370,7 @@ UT_uint8 IE_Imp_MsWord_97_Sniffer::recognizeContents (const char * szBuf,
 	{
 		if (!strncmp(szBuf + magicoffset, magic, strlen (magic)))
 		{
-			return IMP_CONFIDENCE_PERFECT;
+			return UT_CONFIDENCE_PERFECT;
 		}
 	}
 
@@ -380,7 +380,7 @@ UT_uint8 IE_Imp_MsWord_97_Sniffer::recognizeContents (const char * szBuf,
 	{
 		if (!strncmp (szBuf + magicoffset, magic, strlen (magic)))
 		{
-			return IMP_CONFIDENCE_PERFECT;
+			return UT_CONFIDENCE_PERFECT;
 		}
 	}
 
@@ -392,7 +392,7 @@ UT_uint8 IE_Imp_MsWord_97_Sniffer::recognizeContents (const char * szBuf,
 		if (szBuf[0] == (char)0x31 && szBuf[1] == (char)0xbe &&
 			szBuf[2] == (char)0 && szBuf[3] == (char)0)
 		{
-			return IMP_CONFIDENCE_POOR;
+			return UT_CONFIDENCE_POOR;
 		}
 
 		// this identifies staroffice dox
@@ -401,37 +401,37 @@ UT_uint8 IE_Imp_MsWord_97_Sniffer::recognizeContents (const char * szBuf,
 			szBuf[4] == (char)0xa1 && szBuf[5] == (char)0xb1 &&
 			szBuf[6] == (char)0x1a && szBuf[7] == (char)0xe1)
 		{
-			return IMP_CONFIDENCE_POOR;
+			return UT_CONFIDENCE_POOR;
 		}
 #endif
 		if (szBuf[0] == 'P' && szBuf[1] == 'O' &&
 			szBuf[2] == '^' && szBuf[3] == 'Q' && szBuf[4] == '`')
 		{
-			return IMP_CONFIDENCE_POOR;
+			return UT_CONFIDENCE_POOR;
 		}
 		if (szBuf[0] == (char)0xfe && szBuf[1] == (char)0x37 &&
 			szBuf[2] == (char)0 && szBuf[3] == (char)0x23)
 		{
-			return IMP_CONFIDENCE_POOR;
+			return UT_CONFIDENCE_POOR;
 		}
 
 		if (szBuf[0] == (char)0xdb && szBuf[1] == (char)0xa5 &&
 			szBuf[2] == (char)0x2d && szBuf[3] == (char)0 &&
 			szBuf[4] == (char)0 && szBuf[5] == (char)0)
 		{
-			return IMP_CONFIDENCE_POOR;
+			return UT_CONFIDENCE_POOR;
 		}
 	}
-	return IMP_CONFIDENCE_ZILCH;
+	return UT_CONFIDENCE_ZILCH;
 }
 
-UT_uint8 IE_Imp_MsWord_97_Sniffer::recognizeSuffix (const char * szSuffix)
+UT_Confidence_t IE_Imp_MsWord_97_Sniffer::recognizeSuffix (const char * szSuffix)
 {
 	// We recognize both word documents and their template versions
 	if (!UT_stricmp(szSuffix,".doc") || 
 			!UT_stricmp(szSuffix,".dot"))
-	  return IMP_CONFIDENCE_PERFECT;
-	return IMP_CONFIDENCE_ZILCH;
+	  return UT_CONFIDENCE_PERFECT;
+	return UT_CONFIDENCE_ZILCH;
 }
 
 UT_Error IE_Imp_MsWord_97_Sniffer::constructImporter (PD_Document * pDocument,

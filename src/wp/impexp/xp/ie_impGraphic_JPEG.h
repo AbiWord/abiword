@@ -38,9 +38,9 @@ extern "C"
 class IE_ImpGraphicJPEG_Sniffer : public IE_ImpGraphicSniffer
 {
  public:
-	virtual bool recognizeContents (const char * szBuf, 
+	virtual UT_Confidence_t recognizeContents (const char * szBuf, 
 					UT_uint32 iNumbytes);
-	virtual bool recognizeSuffix (const char * szSuffix);
+	virtual UT_Confidence_t recognizeSuffix (const char * szSuffix);
 	virtual bool getDlgLabels (const char ** szDesc,
 				   const char ** szSuffixList,
 				   IEGraphicFileType * ft);

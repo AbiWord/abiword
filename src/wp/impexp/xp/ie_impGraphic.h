@@ -45,9 +45,9 @@ public:
 	inline IEGraphicFileType getType() const {return m_type;}
 	
 	// these you must override these
-	virtual bool recognizeContents (const char * szBuf, 
+	virtual UT_Confidence_t recognizeContents (const char * szBuf, 
 					UT_uint32 iNumbytes) = 0;
-	virtual bool recognizeSuffix (const char * szSuffix) = 0;
+	virtual UT_Confidence_t recognizeSuffix (const char * szSuffix) = 0;
 	virtual bool getDlgLabels (const char ** szDesc,
 				   const char ** szSuffixList,
 				   IEGraphicFileType * ft) = 0;

@@ -48,13 +48,15 @@ static void _write_flush(png_structp png_ptr) { } // Empty Fuction.
 
 
 
-bool IE_ImpGraphicJPEG_Sniffer::recognizeSuffix(const char * szSuffix)
+UT_Confidence_t IE_ImpGraphicJPEG_Sniffer::recognizeSuffix(const char * szSuffix)
 {
     // TODO add a more complete list of suffixes
-	return ((UT_stricmp(szSuffix,".jpg") == 0) || (UT_stricmp(szSuffix,".jpeg") == 0));
+	if ((UT_stricmp(szSuffix,".jpg") == 0) || (UT_stricmp(szSuffix,".jpeg") == 0))
+		return UT_CONFIDENCE_PERFECT;
+	return UT_CONFIDENCE_ZILCH;
 }
 
-bool IE_ImpGraphicJPEG_Sniffer::recognizeContents(const char * szBuf, UT_uint32 iNumbytes)
+UT_Confidence_t IE_ImpGraphicJPEG_Sniffer::recognizeContents(const char * szBuf, UT_uint32 iNumbytes)
 {
 	bool isJPEG = false;
 	if (iNumbytes >= 10) 
@@ -63,7 +65,7 @@ bool IE_ImpGraphicJPEG_Sniffer::recognizeContents(const char * szBuf, UT_uint32 
 		isJPEG = (szBuf [0] == (char)0xff) && (szBuf [1] == (char)0xd8);
 		isJPEG = isJPEG && (strncmp(&(szBuf[6]), "JFIF", 4) == 0);
 	}
-   	return isJPEG;
+   	return isJPEG ? UT_CONFIDENCE_PERFECT : UT_CONFIDENCE_ZILCH;
 }
 
 bool IE_ImpGraphicJPEG_Sniffer::getDlgLabels(const char ** pszDesc,

@@ -102,18 +102,18 @@ int abi_plugin_supports_version (UT_uint32 major, UT_uint32 minor,
 /*****************************************************************/
 /*****************************************************************/
 
-UT_uint8 IE_Imp_MIF_Sniffer::recognizeContents(const char * szBuf, 
+UT_Confidence_t IE_Imp_MIF_Sniffer::recognizeContents(const char * szBuf, 
 										   UT_uint32 iNumbytes)
 {
   // TODO: try to sensibly recognize the contents of the buffer
-  return(IMP_CONFIDENCE_ZILCH);
+  return(UT_CONFIDENCE_ZILCH);
 }
 
-UT_uint8 IE_Imp_MIF_Sniffer::recognizeSuffix(const char * szSuffix)
+UT_Confidence_t IE_Imp_MIF_Sniffer::recognizeSuffix(const char * szSuffix)
 {
 	if (UT_stricmp(szSuffix,".mif") == 0)
-	  return IMP_CONFIDENCE_PERFECT;
-	return IMP_CONFIDENCE_ZILCH;
+	  return UT_CONFIDENCE_PERFECT;
+	return UT_CONFIDENCE_ZILCH;
 }
 
 UT_Error IE_Imp_MIF_Sniffer::constructImporter(PD_Document * pDocument,

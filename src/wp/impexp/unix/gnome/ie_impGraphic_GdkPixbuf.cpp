@@ -454,7 +454,7 @@ IE_ImpGraphicPixbufGraphic_Sniffer:: ~IE_ImpGraphicPixbufGraphic_Sniffer()
  * Sniff the byte buffer to see if it contains vaild image data recognized
  * by gdk-pixbuf
  */
-bool IE_ImpGraphicPixbufGraphic_Sniffer::recognizeContents(const char * szBuf, UT_uint32 iNum)
+UT_Confidence_t IE_ImpGraphicPixbufGraphic_Sniffer::recognizeContents(const char * szBuf, UT_uint32 iNum)
 {
 
 //
@@ -464,7 +464,7 @@ bool IE_ImpGraphicPixbufGraphic_Sniffer::recognizeContents(const char * szBuf, U
 	if((iNum > 9) && (strncmp (szBuf, "/* XPM */", 9) == 0))
 	{
 		m_bIsXPM = true;
-		return true;
+		return UT_CONFIDENCE_PERFECT;
 	}
 	GdkPixbufLoader * ldr = gdk_pixbuf_loader_new ();
 	UT_ASSERT (ldr);
@@ -474,63 +474,63 @@ bool IE_ImpGraphicPixbufGraphic_Sniffer::recognizeContents(const char * szBuf, U
 	{
 		m_bIsXPM = false;
 		gdk_pixbuf_loader_close (ldr);
-		return true;
+		return UT_CONFIDENCE_PERFECT;
 	}
 	else
 	{
-		return false;
+		return UT_CONFIDENCE_ZILCH;
 	}
 }
 
-bool IE_ImpGraphicPixbufGraphic_Sniffer::recognizeSuffix(const char * szSuffix)
+UT_Confidence_t IE_ImpGraphicPixbufGraphic_Sniffer::recognizeSuffix(const char * szSuffix)
 {
 	m_bIsXPM = false;
 	if(UT_stricmp(szSuffix,".jpg") == 0)
 	{
-		return true;
+		return UT_CONFIDENCE_PERFECT;
 	}
 	else if(UT_stricmp(szSuffix,".jepg") == 0)
 	{
-		return true;
+		return UT_CONFIDENCE_PERFECT;
 	}
 	else if(UT_stricmp(szSuffix,".png") == 0)
 	{
-		return true;
+		return UT_CONFIDENCE_PERFECT;
 	}
 	else if(UT_stricmp(szSuffix,".tiff") == 0)
 	{
-		return true;
+		return UT_CONFIDENCE_PERFECT;
 	}
 	else if(UT_stricmp(szSuffix,".gif") == 0)
 	{
-		return true;
+		return UT_CONFIDENCE_PERFECT;
 	}
 	else if(UT_stricmp(szSuffix,".xpm") == 0)
 	{
 		m_bIsXPM = true;
-		return true;
+		return UT_CONFIDENCE_PERFECT;
 	}
 	else if(UT_stricmp(szSuffix,".pnm") == 0)
 	{
-		return true;
+		return UT_CONFIDENCE_PERFECT;
 	}
 	else if(UT_stricmp(szSuffix,".ras") == 0)
 	{
-		return true;
+		return UT_CONFIDENCE_PERFECT;
 	}
 	else if(UT_stricmp(szSuffix,".ico") == 0)
 	{
-		return true;
+		return UT_CONFIDENCE_PERFECT;
 	}
 	else if(UT_stricmp(szSuffix,".bmp") == 0)
 	{
-		return true;
+		return UT_CONFIDENCE_PERFECT;
 	}
 	else if(UT_stricmp(szSuffix,".xbm") == 0)
 	{
-		return true;
+		return UT_CONFIDENCE_PERFECT;
 	}
-	return false;
+	return UT_CONFIDENCE_ZILCH;
 }
 
 bool IE_ImpGraphicPixbufGraphic_Sniffer::getDlgLabels(const char ** pszDesc,

@@ -66,9 +66,9 @@ public:
 	IE_Imp_Psion_Word_Sniffer() {}
 	virtual ~IE_Imp_Psion_Word_Sniffer() {}
 
-	virtual UT_uint8 recognizeContents (const char * szBuf, 
+	virtual UT_Confidence_t recognizeContents (const char * szBuf, 
 									UT_uint32 iNumbytes);
-	virtual UT_uint8 recognizeSuffix (const char * szSuffix);
+	virtual UT_Confidence_t recognizeSuffix (const char * szSuffix);
 	virtual bool getDlgLabels (const char ** szDesc,
 							   const char ** szSuffixList,
 							   IEFileType * ft);
@@ -85,9 +85,9 @@ public:
 	IE_Imp_Psion_TextEd_Sniffer() {}
 	virtual ~IE_Imp_Psion_TextEd_Sniffer() {}
 
-	virtual UT_uint8 recognizeContents (const char * szBuf, 
+	virtual UT_Confidence_t recognizeContents (const char * szBuf, 
 									UT_uint32 iNumbytes);
-	virtual UT_uint8 recognizeSuffix (const char * szSuffix);
+	virtual UT_Confidence_t recognizeSuffix (const char * szSuffix);
 	virtual bool getDlgLabels (const char ** szDesc,
 							   const char ** szSuffixList,
 							   IEFileType * ft);

@@ -54,6 +54,18 @@ typedef signed short            UT_sint16;
 typedef unsigned int		UT_uint32;
 typedef signed int		UT_sint32;
 
+/*!
+ * Confidence heuristic datatype normalized to the range
+ * [0,255] with 0 being least confident and 255 being the most confident
+ */
+typedef UT_uint8 UT_Confidence_t;
+
+#define UT_CONFIDENCE_PERFECT 255
+#define UT_CONFIDENCE_GOOD    170
+#define UT_CONFIDENCE_SOSO    127
+#define UT_CONFIDENCE_POOR     85
+#define UT_CONFIDENCE_ZILCH     0
+
 #ifdef WIN32
   #define ABI_PLUGIN_EXPORT __declspec(dllexport)
   #ifndef ABI_DLL
