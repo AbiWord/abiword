@@ -67,7 +67,11 @@ BeginSet(FiFI,UT_TRUE)
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_BOLD,		"Lihavoitu",		tb_text_bold_L_xpm,		NULL, "Lihavoitu")
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_ITALIC,		"Kursivoitu",	tb_text_italic_K_xpm,	NULL, "Kursivoitu")
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_UNDERLINE,	"Alleviivattu",tb_text_underline_A_xpm,	NULL, "Alleviivattu")
+        ToolbarLabel(AP_TOOLBAR_ID_FMT_OVERLINE,        "Ylleviivattu",tb_text_overline_xpm,        NULL, "Ylleviivattu")
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_STRIKE,		"Yliviivattu",   tb_text_strikeout_Y_xpm,	NULL, "Yliviivattu")
+
+        ToolbarLabel(AP_TOOLBAR_ID_FMT_SUPERSCRIPT,     "Yläindeksi",  tb_text_superscript_xpm,        NULL, "Yläindeksi")
+        ToolbarLabel(AP_TOOLBAR_ID_FMT_SUBSCRIPT,       "Alaindeksi",    tb_text_subscript_xpm,          NULL, "Alaindeksi")
 
 	ToolbarLabel(AP_TOOLBAR_ID_ALIGN_LEFT,		"Vasen",		tb_text_align_left_xpm,		NULL, "Vasen tasaus")
 	ToolbarLabel(AP_TOOLBAR_ID_ALIGN_CENTER,	"Keskitetty",	tb_text_center_xpm,	NULL, "Keskitetty tasaus")
@@ -78,7 +82,7 @@ BeginSet(FiFI,UT_TRUE)
 	ToolbarLabel(AP_TOOLBAR_ID_PARA_12BEFORE,	"12 pt ennen",		tb_para_12before_xpm,	NULL, "Riviväli ennen: 12 pt")
 
 	ToolbarLabel(AP_TOOLBAR_ID_SINGLE_SPACE,	"Ykkös riviväli",	tb_line_single_space_xpm,	NULL, "Ykkös riviväli")
-	ToolbarLabel(AP_TOOLBAR_ID_MIDDLE_SPACE,	"1.5 Spacing",		tb_line_middle_space_xpm,	NULL, "1.5 riviväli")
+	ToolbarLabel(AP_TOOLBAR_ID_MIDDLE_SPACE,	"1.5 riviväli",		tb_line_middle_space_xpm,	NULL, "1.5 riviväli")
 	ToolbarLabel(AP_TOOLBAR_ID_DOUBLE_SPACE,	"Kaksois riviväli",	tb_line_double_space_xpm,	NULL, "Kaksois riviväli")
 
 	ToolbarLabel(AP_TOOLBAR_ID_1COLUMN,			"1 palsta",			tb_1column_xpm,			NULL, "1 palsta")

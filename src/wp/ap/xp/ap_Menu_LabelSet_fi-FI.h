@@ -69,7 +69,7 @@ BeginSet(FiFI,UT_TRUE)
 	MenuLabel(AP_MENU_ID_EDIT_FIND,			"&Etsi",			"Etsi haluttu teksti")
 	MenuLabel(AP_MENU_ID_EDIT_REPLACE,		"K&orvaa",			"Korvaa haluttu teksti toisella tekstill‰")
 	MenuLabel(AP_MENU_ID_EDIT_GOTO,			"&Mene",			"Siirr‰ osoitin haluttuun kohtaan")
-	MenuLabel(AP_MENU_ID_EDIT_SPELL,		"&Spelling",		"Check the document for incorrect spelling")
+	MenuLabel(AP_MENU_ID_EDIT_SPELL,		"&Oikoluku",		"Tarkista asiakirja virheellisit‰ sanoista")
 	MenuLabel(AP_MENU_ID_EDIT_OPTIONS,		"&Asetukset",			"Muuta asetuksia")
 	
 	MenuLabel(AP_MENU_ID_VIEW,				"&N‰yt‰",			NULL)
@@ -101,7 +101,10 @@ BeginSet(FiFI,UT_TRUE)
 	MenuLabel(AP_MENU_ID_FMT_BOLD,			"&Lihavoitu",			"Muuta valinta lihavoiduksi (p‰‰lle/pois)")
 	MenuLabel(AP_MENU_ID_FMT_ITALIC,		"&Kursivoitu",			"Muuta valinta kursivoiduksi (p‰‰lle/pois)")
 	MenuLabel(AP_MENU_ID_FMT_UNDERLINE,		"&Alleviivattu",		"Muuta valinta alleviivatuksi (p‰‰lle/pois)")
+	MenuLabel(AP_MENU_ID_FMT_OVERLINE,              "Ylle&viivattu",            "Muuta valinta ylleviivaus (p‰‰lle/pois)")
 	MenuLabel(AP_MENU_ID_FMT_STRIKE,		"&Yliviivattu",			"Muuta valinta yliviivatuksi (p‰‰lle/pois)")
+	MenuLabel(AP_MENU_ID_FMT_SUPERSCRIPT,   	"Yl‰&indeksi",         		"Muuta valinta yl‰indeksiksi (p‰‰lle/pois)")
+	MenuLabel(AP_MENU_ID_FMT_SUBSCRIPT,             "Alai&ndeksi",         		"Muuta valinta alaindeksiksi (p‰‰lle/pois)")
 
 	MenuLabel(AP_MENU_ID_ALIGN,				"&Tasaus",			NULL)
 	MenuLabel(AP_MENU_ID_ALIGN_LEFT,		"&Vasen",			"Vasemmalle tasattu kappale")
@@ -124,6 +127,18 @@ BeginSet(FiFI,UT_TRUE)
 
 	MenuLabel(AP_MENU_ID_HELP,				"&Ohje",			NULL)
 	MenuLabel(AP_MENU_ID_HELP_ABOUT,		"&Tietoja %s",		"Kertoo lis‰tietoja ohjelmasta, sen versiosta ja kopiointi oikeuksista")
+
+	MenuLabel(AP_MENU_ID_SPELL_SUGGEST_1,   "%s",                           "Vaihda ehdotettu sana")
+        MenuLabel(AP_MENU_ID_SPELL_SUGGEST_2,   "%s",                           "Vaihda ehdotettu sana")
+        MenuLabel(AP_MENU_ID_SPELL_SUGGEST_3,   "%s",                           "Vaihda ehdotettu sana")
+        MenuLabel(AP_MENU_ID_SPELL_SUGGEST_4,   "%s",                           "Vaihda ehdotettu sana")
+        MenuLabel(AP_MENU_ID_SPELL_SUGGEST_5,   "%s",                           "Vaihda ehdotettu sana")
+        MenuLabel(AP_MENU_ID_SPELL_SUGGEST_6,   "%s",                           "Vaihda ehdotettu sana")
+        MenuLabel(AP_MENU_ID_SPELL_SUGGEST_7,   "%s",                           "Vaihda ehdotettu sana")
+        MenuLabel(AP_MENU_ID_SPELL_SUGGEST_8,   "%s",                           "Vaihda ehdotettu sana")
+        MenuLabel(AP_MENU_ID_SPELL_SUGGEST_9,   "%s",                           "Vaihda ehdotettu sana")
+        MenuLabel(AP_MENU_ID_SPELL_IGNOREALL,   "&Ohita kaikki",          "Ohita kaikki t‰m‰n sana esiintymiset t‰ss‰ asiakirjassa")
+        MenuLabel(AP_MENU_ID_SPELL_ADD,                 "&Lis‰‰",                         "Lis‰‰ t‰m‰ sana omaan sanastoon")
 
 	// ... add others here ...
 
