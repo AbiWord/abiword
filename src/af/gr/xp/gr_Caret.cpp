@@ -48,10 +48,10 @@ GR_Caret::GR_Caret(GR_Graphics * pG)
 	    m_bCursorBlink(true),
 	    m_bCursorIsOn(false),
 	    m_bPositionSet(false),
-		m_bRecursiveDraw(false),
-		m_bSplitCaret(false),
-		m_bCaret1OnScreen(false),
-		m_bCaret2OnScreen(false)
+	    m_bRecursiveDraw(false),
+	    m_bSplitCaret(false),
+	    m_bCaret1OnScreen(false),
+	    m_bCaret2OnScreen(false)
 {
 	UT_WorkerFactory::ConstructMode outMode = UT_WorkerFactory::NONE;
 	m_worker = static_cast<UT_Timer *>(UT_WorkerFactory::static_constructor
@@ -63,8 +63,6 @@ GR_Caret::GR_Caret(GR_Graphics * pG)
 		(s_enable, this, UT_WorkerFactory::TIMER, outMode, pG));
 	UT_ASSERT(outMode == UT_WorkerFactory::TIMER);
 	m_enabler->set(CURSOR_DELAY_TIME);
-
-	xxx_UT_DEBUGMSG(("DOM: caret %p created\n",this));
 }
 
 GR_Caret::~GR_Caret()
@@ -74,8 +72,6 @@ GR_Caret::~GR_Caret()
 
 	DELETEP(m_worker);
 	DELETEP(m_enabler);
-
-	xxx_UT_DEBUGMSG(("DOM: deleting caret %p\n", this));
 }
 
 void GR_Caret::s_work(UT_Worker * _w)
@@ -91,7 +87,6 @@ void GR_Caret::s_enable(UT_Worker * _w)
 {
 	GR_Caret * c = static_cast<GR_Caret *>(_w->getInstanceData());
 
- 	xxx_UT_DEBUGMSG(("enabling caret %d (%p)\n", c->m_nDisableCount, c));
 	c->m_worker->stop();
 	if (!c->m_bCursorIsOn)
 	{
@@ -110,13 +105,6 @@ void GR_Caret::setCoords(UT_sint32 x, UT_sint32 y, UT_uint32 h,
 			 UT_sint32 x2, UT_sint32 y2, UT_uint32 h2,
 			 bool bPointDirection, UT_RGBColor * pClr)
 {
-#if 0
-	if(x < 0 || y < 0 || x2 < 0 || y2 < 0)
-	{
-		UT_DEBUGMSG(("GR_Caret::setCoords: negative value, x=%d, y=%d, x2=%d, y2=%d\n",x,y,x2,y2));
-	}
-#endif
-	
 	// if visible, then hide while we change positions.
 	_erase();
 
@@ -151,11 +139,9 @@ void GR_Caret::setCoords(UT_sint32 x, UT_sint32 y, UT_uint32 h,
 
 void GR_Caret::enable()
 {
-	xxx_UT_DEBUGMSG(("GR_Caret: enable() recursive draw %d disablecount %d (%p)\n",m_bRecursiveDraw,m_nDisableCount, this));
 	if (m_bRecursiveDraw)
 		return;
 
-  	xxx_UT_DEBUGMSG(("GR_Caret::enable() - 2 , this=%p, count = %d\n", this, m_nDisableCount));
 	if (m_nDisableCount == 0)
 	{
 		// If the caret is already enabled, just return
@@ -174,12 +160,9 @@ void GR_Caret::enable()
 
 void GR_Caret::disable(bool bNoMulti)
 {
-	xxx_UT_DEBUGMSG(("GR_Caret: disable () recursive draw %d disablecount %d \n",m_bRecursiveDraw,m_nDisableCount));
-//	UT_ASSERT(m_nDisableCount < 10);
 	if (m_bRecursiveDraw)
 		return;
 
-   	xxx_UT_DEBUGMSG(("GR_Caret::disable(), this=%p, count = %d\n", this, m_nDisableCount));
 	if (bNoMulti && (m_nDisableCount > 0))
 		return;
 
@@ -210,7 +193,6 @@ void GR_Caret::_erase()
 
 void GR_Caret::_blink(bool bExplicit)
 {
-	xxx_UT_DEBUGMSG(("GR_Caret: _blink recursive draw %d position set %d (%p)\n",m_bRecursiveDraw,m_bPositionSet, this));
 	if (m_bRecursiveDraw || !m_bPositionSet)
 		return;
 
@@ -228,7 +210,6 @@ void GR_Caret::_blink(bool bExplicit)
 	{
 		m_bRecursiveDraw = true;
 		
-		xxx_UT_DEBUGMSG(("actually blinking at %d %d h=%d; cursorison will be %s\n", m_xPoint, m_yPoint, m_iPointHeight, !m_bCursorIsOn ? "true" : "false"));
 		UT_RGBColor oldColor; m_pG->getColor(oldColor);
 
 		if (m_bCursorIsOn)
@@ -245,7 +226,6 @@ void GR_Caret::_blink(bool bExplicit)
 		else
 		{
 			// if neither caret is on screen, quit
-			xxx_UT_DEBUGMSG(("gr_Caret:_blink: m_bCaret1OnScreen=%d, m_bCaret2OnScreen=%d\n", m_bCaret1OnScreen, m_bCaret2OnScreen));
 			if(!m_bCaret1OnScreen && !m_bCaret2OnScreen)
 			{
 				m_bCursorIsOn = false;
@@ -253,7 +233,6 @@ void GR_Caret::_blink(bool bExplicit)
 				return;
 			}
 			
-			xxx_UT_DEBUGMSG(("gr_Caret: Drawing cursor NOW!!! \n"));
 			UT_Rect r0(m_xPoint-3, m_yPoint+1, 7, m_iPointHeight);
 			m_pG->saveRectangle(r0,0);
 
