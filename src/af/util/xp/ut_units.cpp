@@ -271,9 +271,9 @@ const char * UT_formatDimensionString(UT_Dimension dim, double value, const char
 
 const char * UT_reformatDimensionString(UT_Dimension dim, const char *sz, const char * szPrecision)
 {
-	if (!sz)
+	UT_ASSERT(sz);  // this function segfaults if it gets a null
+	if (!sz)	// if we really need to give it a null, we make it = 0in
 	{
-		//catch NULLs and make them 0 
 		sz = "0.0in";
 		UT_DEBUGMSG(("UT_reformatDimensionString just made the assumption null = 0.0in\n"));
 	}

@@ -166,10 +166,10 @@ void AP_Dialog_Columns::setViewAndDoc(XAP_Frame * pFrame)
 	const XML_Char ** pszSecProps = NULL;
 	m_pView->getSectionFormat(&pszSecProps);
 		
-	_convertToPreferedUnits( pFrame, (const XML_Char *)
+	_convertToPreferredUnits( pFrame, (const XML_Char *)
 	UT_getAttribute("section-space-after",pszSecProps), (const XML_Char *)pszAfter);
-	_convertToPreferedUnits( pFrame, (const XML_Char *)
-	UT_getAttribute("section-max-column-height",pszSecProps), (const XML_Char *)pszMaxHeight);	
+	_convertToPreferredUnits( pFrame, (const XML_Char *)
+	UT_getAttribute("section-max-column-height",pszSecProps), (const XML_Char *)pszMaxHeight);
 	
 	if(pszAfter && *pszAfter)
 	{
@@ -365,7 +365,7 @@ void AP_Dialog_Columns::_drawColumnButton(GR_Graphics *gc, UT_Rect rect, UT_uint
 \params const char * sz is the string containing the old value
 \params const XML_Char * pRet is the string to which the new value is copied.
 */
-void AP_Dialog_Columns::_convertToPreferedUnits(XAP_Frame * pFrame,const char *sz, const XML_Char *pRet)
+void AP_Dialog_Columns::_convertToPreferredUnits(XAP_Frame * pFrame,const char *sz, const XML_Char *pRet)
 {
 	UT_Dimension PreferedUnits = DIM_none;
 	const XML_Char * pszRulerUnits = NULL;

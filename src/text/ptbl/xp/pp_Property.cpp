@@ -138,7 +138,7 @@ static PP_Property _props[] =
 	{ "page-margin-right",		"1in",				false, NULL},
 	{ "page-margin-top",		"1in",				false, NULL},
 
-    { "section-max-column-height", "0in",         false,NULL},
+    	{ "section-max-column-height", "0in",         false,NULL},
 	{ "section-restart",        "",                 false,NULL},
 	{ "section-restart-value",  "",                 false,NULL},
 	{ "section-space-after",	"0.25in",			false, NULL},
