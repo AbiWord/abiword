@@ -84,5 +84,6 @@ case "$OS_NAME" in
 esac
 
 AC_SUBST(PLATFORM)
+AC_SUBST(OS_NAME)
 
 ])
