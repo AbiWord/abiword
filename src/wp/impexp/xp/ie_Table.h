@@ -51,6 +51,8 @@ class ABI_EXPORT ie_PartTable
 	const char *     getCellProp(const char * pPropName);
 	UT_sint32        getNumRows(void);
 	UT_sint32        getNumCols(void);
+	PL_StruxDocHandle getTableSDH(void)
+		{ return m_TableSDH;}
  private:
 	void                  _setRowsCols(void);
 	void                  _clearAll(void);
@@ -90,6 +92,7 @@ class ABI_EXPORT ie_Table
 	const char *     getTableProp(const char * pPropName);
 	const char *     getCellProp(const char * pPropName);
 	UT_sint32        getNestDepth(void);
+	void             setCellRowCol(UT_sint32 row, UT_sint32 col);
  private:
 	PD_Document *     m_pDoc;
 	UT_Stack          m_sLastTable;
