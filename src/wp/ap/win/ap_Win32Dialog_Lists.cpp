@@ -1014,7 +1014,7 @@ void AP_Win32Dialog_Lists::_selectFont()
 }
 
 
-void AP_Win32Dialog_Lists::autoupdateLists(UT_Timer * pTimer)
+void AP_Win32Dialog_Lists::autoupdateLists(UT_Worker * pTimer)
 {
 	UT_ASSERT(pTimer);
 	// this is a static callback method and does not have a 'this' pointer.

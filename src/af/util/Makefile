@@ -99,6 +99,8 @@ OBJS=		$(PLATFORM_OBJS)						\
 		$(OBJDIR)/ut_string_class.$(OBJ_SUFFIX)		\
 		$(OBJDIR)/ut_stringbuf.$(OBJ_SUFFIX)		\
 		$(OBJDIR)/ut_test.$(OBJ_SUFFIX)			\
+		$(OBJDIR)/ut_worker.$(OBJ_SUFFIX)		\
+		$(OBJDIR)/ut_idle.$(OBJ_SUFFIX)			\
 		$(OBJDIR)/ut_timer.$(OBJ_SUFFIX)		\
 		$(OBJDIR)/ut_types.$(OBJ_SUFFIX)		\
 		$(OBJDIR)/ut_units.$(OBJ_SUFFIX)		\

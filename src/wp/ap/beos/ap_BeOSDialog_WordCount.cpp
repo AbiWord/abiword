@@ -279,7 +279,7 @@ void AP_BeOSDialog_WordCount::event_Update(void)
 	_updateWindowData();
 }
 
-void AP_BeOSDialog_WordCount::autoupdateWC(UT_Timer * pTimer)
+void AP_BeOSDialog_WordCount::autoupdateWC(UT_Worker * pTimer)
 {
 	UT_ASSERT(pTimer);
 

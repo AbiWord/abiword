@@ -127,7 +127,7 @@ void    AP_Win32Dialog_WordCount::setUpdateCounter( UT_uint32 iRate )
 		m_pAutoUpdateWC->set(m_iUpdateRate * iFactor);
 }         
 
-void    AP_Win32Dialog_WordCount::autoupdateWC(UT_Timer * pTimer)
+void    AP_Win32Dialog_WordCount::autoupdateWC(UT_Worker * pTimer)
 {
 	UT_ASSERT(pTimer);
 

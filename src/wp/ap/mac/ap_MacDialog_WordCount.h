@@ -51,7 +51,7 @@ protected:
         WindowPtr newwin;
 	bool windowIsValid;
 	
-	static void				autoupdateWC(UT_Timer * pTimer);
+	static void				autoupdateWC(UT_Worker * pTimer);
 	UT_Timer *				m_pAutoUpdateWC;
 	UT_uint32				m_iUpdateRate;
 	void  					setUpdateCounter( UT_uint32 iRate );

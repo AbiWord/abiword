@@ -41,7 +41,7 @@ public:
 	virtual void			activate();
 
 	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
-	static void				autoupdateLists(UT_Timer * pTimer);
+	static void				autoupdateLists(UT_Worker * pTimer);
 
 
 protected:

@@ -52,7 +52,7 @@ public:
 	void                            updateDialog(void);
 	void 							updateFromDocument(void);
 	bool 							dontUpdate(void);
-	static void                     autoupdateLists(UT_Timer * pTimer);
+	static void                     autoupdateLists(UT_Worker * pTimer);
 
 protected:
 	PtWidget_t *	_constructWindow(void);

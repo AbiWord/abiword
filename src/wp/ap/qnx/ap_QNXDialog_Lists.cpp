@@ -255,7 +255,7 @@ void AP_QNXDialog_Lists::runModeless(XAP_Frame * pFrame)
 	//m_pAutoUpdateLists->set(500);
 }
 
-void    AP_QNXDialog_Lists::autoupdateLists(UT_Timer * pTimer)
+void    AP_QNXDialog_Lists::autoupdateLists(UT_Worker * pTimer)
 {
 	UT_ASSERT(pTimer);
 	// this is a static callback method and does not have a 'this' pointer.

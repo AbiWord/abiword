@@ -205,7 +205,7 @@ void    AP_QNXDialog_WordCount::setUpdateCounter( void )
 //	set_sensitivity();
 }         
 
-void    AP_QNXDialog_WordCount::autoupdateWC(UT_Timer * pTimer)
+void    AP_QNXDialog_WordCount::autoupdateWC(UT_Worker * pTimer)
 {
 	UT_ASSERT(pTimer);
 

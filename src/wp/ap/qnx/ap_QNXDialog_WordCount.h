@@ -42,7 +42,7 @@ public:
 	virtual void			notifyActiveFrame(XAP_Frame *pFrame);
 
 	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
-	static void				autoupdateWC(UT_Timer * pTimer);
+	static void				autoupdateWC(UT_Worker * pTimer);
 
 	virtual void			setUpdateCounter(void);
 
