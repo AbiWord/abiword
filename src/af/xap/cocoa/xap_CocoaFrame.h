@@ -73,6 +73,7 @@ class FV_View;
 	IBOutlet NSMenu *menuBar;
 	IBOutlet NSMenuItem *m_preferenceMenu;
 	IBOutlet NSMenuItem *m_aboutMenu;
+        IBOutlet NSMenuItem *m_quitMenu;
 }
 + (XAP_CocoaFrameController*)createFrom:(XAP_CocoaFrame *)frame;
 - (id)initWith:(XAP_CocoaFrame *)frame;
@@ -81,6 +82,7 @@ class FV_View;
 - (XAP_CocoaNSView *)getStatusBar;
 - (NSMenuItem *)_aboutMenu;
 - (NSMenuItem *)_preferenceMenu;
+- (NSMenuItem *)_quitMenu;
 @end
 
 class XAP_CocoaFrame : public XAP_Frame
@@ -133,6 +135,7 @@ public:
 	
 	NSMenuItem	*				_getPreferenceMenuItem () { return [m_frameController _preferenceMenu]; };
 	NSMenuItem  *				_getAboutMenuItem () { return [m_frameController _aboutMenu]; };
+	NSMenuItem  *				_getQuitMenuItem () { return [m_frameController _quitMenu]; };
 protected:
 	virtual void				_createDocumentWindow() = 0;
 	virtual void				_createStatusBarWindow(NSView *) = 0;

@@ -906,6 +906,11 @@ void XAP_CocoaFrame::_setController (XAP_CocoaFrameController * ctrl)
 	return m_aboutMenu;
 }
 
+- (NSMenuItem *)_quitMenu
+{
+	return m_quitMenu;
+}
+
 - (NSMenuItem *)_preferenceMenu
 {
 	return m_preferenceMenu;
