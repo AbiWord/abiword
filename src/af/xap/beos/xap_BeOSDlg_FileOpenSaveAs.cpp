@@ -55,7 +55,6 @@ DLGHandler::DLGHandler(XAP_BeOSDialog_FileOpenSaveAs *dlg, const char *name)
 }
 
 void DLGHandler::MessageReceived(BMessage *msg) {
-	msg->PrintToStream();
 	switch (msg->what) {
 	case 'fopn': {
 		entry_ref ref;
@@ -65,7 +64,6 @@ void DLGHandler::MessageReceived(BMessage *msg) {
 		entry.GetPath(&path);
 		m_pDlg->SetAnswer(XAP_Dialog_FileOpenSaveAs::a_OK);
 		m_pDlg->SetPathname(path.Path());
-		printf("Opening from %s \n", path.Path());
 		break;
 	}
 	case 'fsve': {		//Check "name" and "directory"
@@ -78,7 +76,6 @@ void DLGHandler::MessageReceived(BMessage *msg) {
 		path.Append(name);
 		m_pDlg->SetAnswer(XAP_Dialog_FileOpenSaveAs::a_OK);
 		m_pDlg->SetPathname(path.Path());
-		printf("Saving to %s \n", path.Path());
 		delete [] name;
 		break;
 	}

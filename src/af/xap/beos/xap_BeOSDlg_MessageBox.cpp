@@ -45,7 +45,6 @@ XAP_BeOSDialog_MessageBox::~XAP_BeOSDialog_MessageBox(void)
 void XAP_BeOSDialog_MessageBox::runModal(XAP_Frame * pFrame)
 {
 	char msgs[3][20];
-	printf("Called the message box \n");
 	//Build a message box based on m_szMessage, m_buttons
 	//returning m_answer
 	strcpy(msgs[0], "");
@@ -73,7 +72,6 @@ void XAP_BeOSDialog_MessageBox::runModal(XAP_Frame * pFrame)
                      (strlen(msgs[2])) ? msgs[2] : NULL);
 
    int32 button_index = alert->Go();
-   printf("Returned an index %d %s\n", button_index, msgs[button_index]);
 	if (strcmp(msgs[button_index], "Yes") == 0) 
 		m_answer = a_YES;
 	else if (strcmp(msgs[button_index], "No") == 0)
