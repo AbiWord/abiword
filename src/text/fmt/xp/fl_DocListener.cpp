@@ -437,6 +437,7 @@ UT_Bool fl_DocListener::change(PL_StruxFmtHandle sfh,
 					FV_View* pView = m_pLayout->m_pView;
 					if (pView)
 					{
+						pView->_resetSelection();
 						pView->_setPoint(pcr->getPosition());
 						pView->notifyListeners(FV_CHG_TYPING | FV_CHG_FMTCHAR);
 					}
