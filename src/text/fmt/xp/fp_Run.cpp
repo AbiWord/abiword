@@ -2562,7 +2562,7 @@ void fp_EndOfParagraphRun::_draw(dg_DrawArgs* pDA)
 	{
 		Fill(getGraphics(),m_iXoffText, m_iYoffText, m_iDrawWidth, getLine()->getHeight());
 	}
-	if (pView->getShowPara())
+	if (getGraphics()->queryProperties(GR_Graphics::DGP_SCREEN) && pView->getShowPara())
 	{
 		// Draw pilcrow
 		// use the hard-coded colour only if not revised
