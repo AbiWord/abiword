@@ -966,6 +966,8 @@ LRESULT CALLBACK AP_Win32FrameImpl::_ContainerWndProc(HWND hwnd, UINT iMsg, WPAR
  					pMouse->onButtonWheel(pView,hwnd,EV_EMB_BUTTON4,wParam,LOWORD(lParam),HIWORD(lParam));
  				else
  					pMouse->onButtonWheel(pView,hwnd,EV_EMB_BUTTON5,wParam,LOWORD(lParam),HIWORD(lParam));
+
+				break;
 			} 			
  			
 			const int cWheelLines = _getMouseWheelLines();
