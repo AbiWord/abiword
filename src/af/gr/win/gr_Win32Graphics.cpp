@@ -645,11 +645,12 @@ bool GR_Win32Graphics::startPage(const char * szPageLabel, UT_uint32 pageNumber,
 	}
 
 	// Correct for Portrait vs Lanscape mode
-	DEVMODE* pDevMode = new DEVMODE;
-	pDevMode->dmFields = DM_ORIENTATION;
-	pDevMode->dmOrientation = (bPortrait) ? DMORIENT_PORTRAIT : DMORIENT_LANDSCAPE;
-	ResetDC( m_hdc, pDevMode );
-	delete pDevMode;
+	DEVMODE pDevMode;
+	pDevMode.dmSize = sizeof(DEVMODE);
+	pDevMode.dmDriverExtra = 0;
+	pDevMode.dmFields = DM_ORIENTATION;
+	pDevMode.dmOrientation = (bPortrait) ? DMORIENT_PORTRAIT : DMORIENT_LANDSCAPE;
+	ResetDC( m_hdc, &pDevMode );
 
 	const int iRet = StartPage(m_hdc);
 
