@@ -106,6 +106,7 @@ public:
 
 	GtkWidget * m_buttonSave;
 	GtkWidget * m_buttonDefaults;
+	GtkWidget * m_buttonApply;
 	GtkWidget * m_buttonOK;
 	GtkWidget * m_buttonCancel;
 
@@ -113,6 +114,7 @@ protected:
 	// Unix call back handlers
 	static void s_ok_clicked			( GtkWidget *, gpointer );
 	static void s_cancel_clicked		( GtkWidget *, gpointer );
+	static void s_apply_clicked			( GtkWidget *, gpointer );
 	static void s_delete_clicked		( GtkWidget *, gpointer );
 	static void s_ignore_reset_clicked	( GtkWidget *, gpointer );
 	static void s_ignore_edit_clicked	( GtkWidget *, gpointer );
@@ -125,6 +127,7 @@ protected:
 	// callbacks can fire these events
     virtual void event_OK(void);
     virtual void event_Cancel(void);
+    virtual void event_Apply(void);
     virtual void event_WindowDelete(void);
 
 };

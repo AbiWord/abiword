@@ -37,8 +37,7 @@ class AP_Dialog_Options : public XAP_Dialog_NonPersistent
 	virtual void	runModal(XAP_Frame * pFrame) = 0;
 
 	// answer from dialog
-	typedef enum { a_OK, a_CANCEL, a_SAVE } tAnswer;
-	typedef enum { unit_IN, unit_CM, unit_POINTS  } tUnits;
+	typedef enum { a_OK, a_CANCEL, a_SAVE, a_APPLY } tAnswer;
 
 	// control ids
 	typedef enum { id_CHECK_SPELL_CHECK_AS_TYPE = 0, id_CHECK_SPELL_HIDE_ERRORS,
@@ -56,14 +55,13 @@ class AP_Dialog_Options : public XAP_Dialog_NonPersistent
 				   id_CHECK_VIEW_UNPRINTABLE,
 
 				   id_BUTTON_SAVE, id_BUTTON_DEFAULTS, 
-				   id_BUTTON_OK, id_BUTTON_CANCEL,
+				   id_BUTTON_OK, id_BUTTON_CANCEL, id_BUTTON_APPLY,
 			
 				   id_last } tControl;
 
-	typedef enum { check_FALSE = 0, check_TRUE, check_INDETERMINATE } tCheckState;
+	// typedef enum { check_FALSE = 0, check_TRUE, check_INDETERMINATE } tCheckState;
 
 	AP_Dialog_Options::tAnswer	getAnswer(void) const;
-
 
  protected:
 

@@ -122,24 +122,31 @@ void AP_UnixDialog_Options::runModal(XAP_Frame * pFrame)
     gtk_grab_add(mainWindow);
 
     // Run into the GTK event loop for this window.
-    gtk_main();
+	do {
+		gtk_main();
 
-	switch ( m_answer )
-	{
-	case AP_Dialog_Options::a_OK:
-		_storeWindowData();
-		break;
+		switch ( m_answer )
+		{
+		case AP_Dialog_Options::a_OK:
+			_storeWindowData();
+			break;
 
-	case AP_Dialog_Options::a_CANCEL:
-		break;
+		case AP_Dialog_Options::a_APPLY:
+			UT_DEBUGMSG(("Applying changes"));
+			_storeWindowData();
+			break;
 
-	default:
-		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-		break;
-	};
+		case AP_Dialog_Options::a_CANCEL:
+			break;
 
-    
-    gtk_widget_destroy(mainWindow);
+		default:
+			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+			break;
+		};
+
+	} while ( m_answer == AP_Dialog_Options::a_APPLY );	
+	
+	gtk_widget_destroy(mainWindow);
 }
 
 void AP_UnixDialog_Options::event_OK(void)
@@ -151,6 +158,12 @@ void AP_UnixDialog_Options::event_OK(void)
 void AP_UnixDialog_Options::event_Cancel(void)
 {
     m_answer = AP_Dialog_Options::a_CANCEL;
+    gtk_main_quit();
+}
+
+void AP_UnixDialog_Options::event_Apply(void)
+{
+    m_answer = AP_Dialog_Options::a_APPLY;
     gtk_main_quit();
 }
 
@@ -180,6 +193,7 @@ GtkWidget* AP_UnixDialog_Options::_constructWindow ()
 	GtkWidget *hbuttonbox2;
 	GtkWidget *buttonSave;
 	GtkWidget *buttonDefaults;
+	GtkWidget *buttonApply;
 	GtkWidget *buttonOk;
 	GtkWidget *buttonCancel;
 	GtkWidget *notebook1;
@@ -254,6 +268,15 @@ GtkWidget* AP_UnixDialog_Options::_constructWindow ()
 	gtk_widget_show (buttonSave);
 	gtk_container_add (GTK_CONTAINER (hbuttonbox2), buttonSave);
 	GTK_WIDGET_SET_FLAGS (buttonSave, GTK_CAN_DEFAULT);
+
+	buttonApply = gtk_button_new_with_label ( 
+							pSS->getValue(AP_STRING_ID_DLG_Options_Btn_Apply ));
+	gtk_widget_ref (buttonApply);
+	gtk_object_set_data_full (GTK_OBJECT (windowOptions), "buttonApply", buttonApply,
+	                          (GtkDestroyNotify) gtk_widget_unref);
+	gtk_widget_show (buttonApply);
+	gtk_container_add (GTK_CONTAINER (hbuttonbox2), buttonApply);
+	GTK_WIDGET_SET_FLAGS (buttonApply, GTK_CAN_DEFAULT);
 
 	buttonDefaults = gtk_button_new_with_label ( 
 							pSS->getValue(AP_STRING_ID_DLG_Options_Btn_Default ));
@@ -662,6 +685,11 @@ GtkWidget* AP_UnixDialog_Options::_constructWindow ()
                        GTK_SIGNAL_FUNC(s_defaults_clicked),
                        (gpointer) this);
 
+    gtk_signal_connect(GTK_OBJECT(buttonApply),
+                       "clicked",
+                       GTK_SIGNAL_FUNC(s_apply_clicked),
+                       (gpointer) this);
+
     gtk_signal_connect(GTK_OBJECT(buttonSpellIgnoreEdit),
                        "clicked",
                        GTK_SIGNAL_FUNC(s_ignore_edit_clicked),
@@ -726,6 +754,7 @@ GtkWidget* AP_UnixDialog_Options::_constructWindow ()
 
     m_buttonSave					= buttonSave;
     m_buttonDefaults				= buttonDefaults;
+    m_buttonApply					= buttonApply;
     m_buttonOK						= buttonOk;
     m_buttonCancel					= buttonCancel;
 
@@ -854,6 +883,10 @@ GtkWidget *AP_UnixDialog_Options::_lookupWidget ( tControl id )
 
 	case id_BUTTON_CANCEL:
 		return m_buttonCancel;
+		break;
+
+	case id_BUTTON_APPLY:
+		return m_buttonApply;
 		break;
 
 	default:
@@ -999,6 +1032,13 @@ void    AP_UnixDialog_Options::_setNotebookPageNum(int pn)
 	AP_UnixDialog_Options * dlg = (AP_UnixDialog_Options *)data;
 	UT_ASSERT(widget && dlg); 
 	dlg->event_Cancel(); 
+}
+
+/*static*/ void AP_UnixDialog_Options::s_apply_clicked(GtkWidget * widget, gpointer data )
+{ 
+	AP_UnixDialog_Options * dlg = (AP_UnixDialog_Options *)data;
+	UT_ASSERT(widget && dlg); 
+	dlg->event_Apply(); 
 }
 
 /*static*/ void AP_UnixDialog_Options::s_delete_clicked(GtkWidget * /* widget */, gpointer data )

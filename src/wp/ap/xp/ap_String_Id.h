@@ -133,6 +133,7 @@ dcl(DLG_Options_TabLabel_Preferences,	"Preferences")
 dcl(DLG_Options_TabLabel_View,			"View")
 
 dcl(DLG_Options_Btn_Save,				"Sa&ve")
+dcl(DLG_Options_Btn_Apply,				"Apply")
 dcl(DLG_Options_Btn_Default,			"De&faults")
 
 dcl(DLG_Options_Label_SpellCheckAsType,	"Check s&pelling as you type")
