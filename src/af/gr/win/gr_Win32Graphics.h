@@ -257,6 +257,7 @@ public:
 	virtual void          setPrintDC(HDC dc);
 	HDC                   getPrintDC() const {return m_printHDC;}
 	
+	double                getXYRatio() const {return m_fXYRatio;}
 	
 protected:
 	// all instances have to be created via GR_GraphicsFactory; see gr_Graphics.h
@@ -300,6 +301,7 @@ protected:
 	DWORD					m_clrCurrent;
 	DWORD					m_3dColors[COUNT_3D_COLORS];
 	int                     m_nPrintLogPixelsY;
+	double                  m_fXYRatio;
 
 
 private:
@@ -312,7 +314,7 @@ private:
 
 	UT_UCS2Char*			m_remapBuffer;
 	UT_uint32				m_remapBufferSize;
-	UT_UCS2Char*				m_remapIndices;
+	UT_UCS2Char*			m_remapIndices;
 
 	UT_RGBColor				m_curColor;
 	UT_Vector				m_vSaveRect;

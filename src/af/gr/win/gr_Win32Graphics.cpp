@@ -131,6 +131,17 @@ void GR_Win32Graphics::_constructorCommonCode(HDC hdc)
 	setBrush((HBRUSH) GetStockObject(WHITE_BRUSH));	// Default brush
 
 	m_nLogPixelsY = GetDeviceCaps(m_hdc, LOGPIXELSY);
+	int nLogPixelsX = GetDeviceCaps(m_hdc, LOGPIXELSX);
+	if(m_nLogPixelsY)
+	{
+		m_fXYRatio = (double)nLogPixelsX / (double) m_nLogPixelsY;
+	}
+	else
+	{
+		UT_ASSERT_HARMLESS( UT_SHOULD_NOT_HAPPEN );
+		m_fXYRatio = 1;
+	}
+	
 	m_hDevMode = NULL;
 	
 	
@@ -344,7 +355,7 @@ void GR_Win32Graphics::drawChar(UT_UCSChar Char, UT_sint32 xoff, UT_sint32 yoff)
 	UT_DEBUGMSG(("GR_Win32Graphics::drawChar %c %u %u\n", Char, xoff, yoff));	
 	#endif	
 	
-	xoff = _tduX(xoff);
+	xoff = (UT_sint32)((double)_tduX(xoff) * m_fXYRatio);
 	yoff = _tduY(yoff);
 
 #if 0 // this bypassesthe font handling mechanism
@@ -443,7 +454,7 @@ void GR_Win32Graphics::drawChars(const UT_UCSChar* pChars,
 	UT_DEBUGMSG(("GR_Win32Graphics::drawChars %c %u %u\n", pChars, xoff, yoff));	
 	#endif
 	
-	xoff = _tduX(xoff);
+	xoff = (UT_sint32)((double)_tduX(xoff) * m_fXYRatio);
 	yoff = _tduY(yoff);
 	int *pCharAdvances = NULL;
 	
@@ -507,7 +518,7 @@ void GR_Win32Graphics::drawChars(const UT_UCSChar* pChars,
 					// below the #else, but this one produces much
 					// smaller rounding errors. Tomas, Dec 6, 2003
 					iwidth += pCharWidths[iCharOffset + i];
-					inextAdvance = _tduX(iwidth);
+					inextAdvance = (UT_sint32)((double)_tduX(iwidth) * m_fXYRatio);
 					pCharAdvances[j] = inextAdvance - iadvance;
 					iadvance = inextAdvance;
 #else
@@ -719,15 +730,15 @@ void GR_Win32Graphics::drawLine(UT_sint32 x1, UT_sint32 y1, UT_sint32 x2, UT_sin
 	UT_DEBUGMSG(("GR_Win32Graphics::drawLine %u %u %u %u\n", x1,  y1, x2,  y2));	
 	#endif			   	
 	
-	x1 = _tduX(x1);
-	x2 = _tduX(x2);
+	x1 = (UT_sint32)((double)_tduX(x1) * m_fXYRatio);
+	x2 = (UT_sint32)((double)_tduX(x2) * m_fXYRatio);
 	y1 = _tduY(y1);
 	y2 = _tduY(y2);	
 
 	int penStyle;
 	HPEN hPen = NULL;
 	bool bCached = false;
-	UT_sint32 iLineWidth = _tduR(m_iLineWidth);
+	UT_sint32 iLineWidth = (UT_sint32)((double)_tduR(m_iLineWidth) * m_fXYRatio);
 	
 	switch(m_eLineStyle)
 	{
@@ -821,8 +832,8 @@ void GR_Win32Graphics::xorLine(UT_sint32 x1, UT_sint32 y1, UT_sint32 x2, UT_sint
 	  this should always be done to the screen.
 	*/
 
-	x1 = _tduX(x1);
-	x2 = _tduX(x2);
+	x1 = (UT_sint32)((double)_tduX(x1) * m_fXYRatio);
+	x2 = (UT_sint32)((double)_tduX(x2) * m_fXYRatio);
 	y1 = _tduY(y1);
 	y2 = _tduY(y2);
 
@@ -830,7 +841,7 @@ void GR_Win32Graphics::xorLine(UT_sint32 x1, UT_sint32 y1, UT_sint32 x2, UT_sint
 	{
 		if (m_hXorPen)
 			DeleteObject(m_hXorPen);
-		m_hXorPen = CreatePen(PS_SOLID, _tduR(m_iLineWidth), m_clrCurrent);
+		m_hXorPen = CreatePen(PS_SOLID, (UT_sint32)((double)_tduR(m_iLineWidth) * m_fXYRatio), m_clrCurrent);
 		m_clrXorPen = m_clrCurrent;
 	}
 
@@ -850,7 +861,7 @@ void GR_Win32Graphics::polyLine(UT_Point * pts, UT_uint32 nPoints)
 	UT_DEBUGMSG(("GR_Win32Graphics::polyLine %u\n", nPoints));	
 	#endif
 	
-	HPEN hPen = CreatePen(PS_SOLID, _tduR(m_iLineWidth), m_clrCurrent);
+	HPEN hPen = CreatePen(PS_SOLID, (UT_sint32)((double)_tduR(m_iLineWidth) * m_fXYRatio), m_clrCurrent);
 	HPEN hOldPen = (HPEN) SelectObject(m_hdc, hPen);
 
 	POINT * points = (POINT *)UT_calloc(nPoints, sizeof(POINT));
@@ -858,7 +869,7 @@ void GR_Win32Graphics::polyLine(UT_Point * pts, UT_uint32 nPoints)
 
 	for (UT_uint32 i = 0; i < nPoints; i++)
 	{
-		points[i].x = _tduX(pts[i].x);
+		points[i].x = (UT_sint32)((double)_tduX(pts[i].x) * m_fXYRatio);
 		points[i].y = _tduY(pts[i].y);
 	}
 
@@ -873,11 +884,11 @@ void GR_Win32Graphics::fillRect(const UT_RGBColor& c, UT_sint32 x, UT_sint32 y, 
 {
 	
 	RECT r;
-	r.left = _tduX(x);
+	r.left = (UT_sint32)((double)_tduX(x) * m_fXYRatio);
 	r.top = _tduY(y);
 	r.right = _tduX(x + w);
-	r.bottom = _tduY(y + h);
-	w=_tduR(w);
+	r.bottom =(UT_sint32)((double) _tduY(y + h) * m_fXYRatio);
+	w=(UT_sint32)((double)_tduR(w) * m_fXYRatio);
 	h=_tduR(h);
 
 	COLORREF clr = RGB(c.m_red, c.m_grn, c.m_blu);
@@ -907,7 +918,7 @@ bool GR_Win32Graphics::startPrint(void)
 bool GR_Win32Graphics::startPage(const char * szPageLabel, UT_uint32 pageNumber,
 									bool bPortrait, UT_uint32 iWidth, UT_uint32 iHeight)
 {
-	iWidth = _tduR(iWidth);
+	iWidth = (UT_sint32)((double)_tduR(iWidth) * m_fXYRatio);
 	iHeight = _tduR(iHeight);
 	if (m_bStartPage)
 	{
@@ -963,10 +974,10 @@ bool GR_Win32Graphics::endPrint(void)
 void GR_Win32Graphics::scroll(UT_sint32 dx, UT_sint32 dy)
 {
 	UT_sint32 oldDY = tdu(getPrevYOffset());
-	UT_sint32 oldDX = tdu(getPrevXOffset());
+	UT_sint32 oldDX = (UT_sint32)((double)tdu(getPrevXOffset()) * m_fXYRatio);
 	UT_sint32 newY = getPrevYOffset() + dy;
 	UT_sint32 newX = getPrevXOffset() + dx;
-	UT_sint32 ddx = -(tdu(newX) - oldDX);
+	UT_sint32 ddx = -(UT_sint32)((double)(tdu(newX) - oldDX) * m_fXYRatio);
 	UT_sint32 ddy = -(tdu(newY) - oldDY);
 	setPrevYOffset(newY);
 	setPrevXOffset(newX);
@@ -984,11 +995,11 @@ void GR_Win32Graphics::scroll(UT_sint32 x_dest, UT_sint32 y_dest,
 							  UT_sint32 x_src, UT_sint32 y_src,
 							  UT_sint32 width, UT_sint32 height)
 {
-	x_dest = tdu(x_dest);
+	x_dest = (UT_sint32)((double)tdu(x_dest) * m_fXYRatio);
 	y_dest = tdu(y_dest);
-	x_src = tdu(x_src);
+	x_src = (UT_sint32)((double)tdu(x_src) * m_fXYRatio);
 	y_src = tdu(y_src);
-	width = tdu(width);
+	width = (UT_sint32)((double)tdu(width) * m_fXYRatio);
 	height = tdu(height);
 	RECT r;
 	r.left = x_src;
@@ -1009,9 +1020,9 @@ void GR_Win32Graphics::clearArea(UT_sint32 x, UT_sint32 y, UT_sint32 width, UT_s
 	UT_DEBUGMSG(("GR_Win32Graphics::clearArea %u %u %u %u\n",  x, y, width, height));	
 	#endif
 	
-	x = _tduX(x);
+	x = (UT_sint32)((double)_tduX(x) * m_fXYRatio);
 	y = _tduY(y);
-	width = _tduR(width);
+	width = (UT_sint32)((double)_tduR(width) * m_fXYRatio);
 	height = _tduR(height);	
 	
 	RECT r;
@@ -1031,9 +1042,9 @@ void GR_Win32Graphics::invertRect(const UT_Rect* pRect)
 	
 	RECT r;
 
-	r.left = _tduX(pRect->left);
+	r.left = (UT_sint32)((double)_tduX(pRect->left) * m_fXYRatio);
 	r.top = _tduY(pRect->top);
-	r.right = _tduX(pRect->left + pRect->width);
+	r.right = (UT_sint32)((double)_tduX(pRect->left + pRect->width) * m_fXYRatio);
 	r.bottom = _tduY(pRect->top + pRect->height);
 
 	InvertRect(m_hdc, &r);
@@ -1051,9 +1062,9 @@ void GR_Win32Graphics::setClipRect(const UT_Rect* pRect)
 	if (pRect)
 	{
 		// set the clip rectangle
-		HRGN hrgn = CreateRectRgn(_tduX(pRect->left),
+		HRGN hrgn = CreateRectRgn((UT_sint32)((double)_tduX(pRect->left) * m_fXYRatio),
 								  _tduY(pRect->top),
-								  _tduX(pRect->left + pRect->width),
+								  (UT_sint32)((double)_tduX(pRect->left + pRect->width) * m_fXYRatio),
 								  _tduY(pRect->top + pRect->height));
 		UT_ASSERT(hrgn);
 
@@ -1071,7 +1082,7 @@ GR_Image* GR_Win32Graphics::createNewImage(const char* pszName, const UT_ByteBuf
 					   UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight,
 					   GR_Image::GRType iType)
 {
-	iDisplayWidth = _tduR(iDisplayWidth);
+	iDisplayWidth = (UT_sint32)((double)_tduR(iDisplayWidth) * m_fXYRatio);
 	iDisplayHeight = _tduR(iDisplayHeight);
 	
 	GR_Image* pImg = NULL;
@@ -1089,7 +1100,7 @@ void GR_Win32Graphics::drawImage(GR_Image* pImg, UT_sint32 xDest, UT_sint32 yDes
 {
 	UT_ASSERT(pImg);
 	
-	xDest = _tduX(xDest);
+	xDest = (UT_sint32)((double)_tduX(xDest) * m_fXYRatio);
 	yDest = _tduY(yDest);
 	
 	if (pImg->getType() != GR_Image::GRT_Raster)
@@ -1296,9 +1307,9 @@ void GR_Win32Graphics::fillRect(GR_Color3D c, UT_sint32 x, UT_sint32 y, UT_sint3
 	#endif
 	
 	RECT r;
-	r.left = _tduX(x);
+	r.left = (UT_sint32)((double)_tduX(x) * m_fXYRatio);
 	r.top = _tduY(y);
-	r.right = _tduX(x + w);
+	r.right = (UT_sint32)((double)_tduX(x + w) * m_fXYRatio);
 	r.bottom = _tduY(y + h);
 
 	FillRect(m_hdc, &r, hBrush);
@@ -1738,7 +1749,7 @@ void GR_Win32Font::selectFontIntoDC(GR_Graphics * pGr, HDC hdc)
 
 void GR_Win32Graphics::polygon(UT_RGBColor& c,UT_Point *pts,UT_uint32 nPoints)
 {
-	HPEN hPen = CreatePen(PS_SOLID, _tduR(m_iLineWidth), RGB(c.m_red, c.m_grn, c.m_blu));
+	HPEN hPen = CreatePen(PS_SOLID, (UT_sint32)((double)_tduR(m_iLineWidth) * m_fXYRatio), RGB(c.m_red, c.m_grn, c.m_blu));
 	HPEN hOldPen = (HPEN)SelectObject(m_hdc,hPen);
 
 	HBRUSH hBrush = CreateSolidBrush(RGB(c.m_red, c.m_grn, c.m_blu));
@@ -1749,7 +1760,7 @@ void GR_Win32Graphics::polygon(UT_RGBColor& c,UT_Point *pts,UT_uint32 nPoints)
 
 	for (UT_uint32 i = 0; i < nPoints; ++i)
 	{
-		points[i].x = _tduX(pts[i].x);
+		points[i].x = (UT_sint32)((double)_tduX(pts[i].x) * m_fXYRatio);
 		points[i].y = _tduY(pts[i].y);
 	}
 
@@ -1818,9 +1829,9 @@ void GR_Win32Graphics::saveRectangle(UT_Rect & r, UT_uint32 iIndx)
 	m_vSaveRect.setNthItem(iIndx, (void*)new UT_Rect(r),(const void **)&oldR);
 	DELETEP(oldR);
 
-	UT_uint32 iWidth = _tduR(r.width);
+	UT_uint32 iWidth = (UT_sint32)((double)_tduR(r.width) * m_fXYRatio);
 	UT_uint32 iHeight = _tduR(r.height);
-	UT_sint32 x = _tduX(r.left);
+	UT_sint32 x = (UT_sint32)((double)_tduX(r.left) * m_fXYRatio);
 	UT_sint32 y = _tduY(r.top);	 
 
 	#ifdef GR_GRAPHICS_DEBUG	
@@ -1865,9 +1876,9 @@ void GR_Win32Graphics::restoreRectangle(UT_uint32 iIndx)
 	UT_ASSERT(r);
 	UT_ASSERT(hBit);
 	
-	UT_uint32 iWidth = _tduR(r->width);
+	UT_uint32 iWidth = (UT_sint32)((double)_tduR(r->width) * m_fXYRatio);
 	UT_uint32 iHeight = _tduR(r->height);
-	UT_sint32 x = _tduX(r->left);
+	UT_sint32 x = (UT_sint32)((double)_tduX(r->left) * m_fXYRatio);
 	UT_sint32 y = _tduY(r->top);			
 
 	#ifdef GR_GRAPHICS_DEBUG
@@ -2013,9 +2024,9 @@ BITMAPINFO * GR_Win32Graphics::ConvertDDBToDIB(HBITMAP bitmap, HPALETTE hPal, DW
 
 GR_Image * GR_Win32Graphics::genImageFromRectangle(const UT_Rect & r) {
 
-	UT_uint32 iWidth = tdu(r.width);
+	UT_uint32 iWidth = (UT_sint32)((double)tdu(r.width) * m_fXYRatio);
 	UT_uint32 iHeight = tdu(r.height);
-	UT_sint32 x = tdu(r.left);
+	UT_sint32 x = (UT_sint32)((double)tdu(r.left) * m_fXYRatio);
 	UT_sint32 y = tdu(r.top);
 
 	if (!iWidth) { // can happen when drag'n'dropping text

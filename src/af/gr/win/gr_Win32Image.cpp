@@ -25,14 +25,14 @@
 #define NOSYSPARAMSINFO
 #define NOWINABLE
 #define NOMETAFILE
-#define NOTEXTMETRIC
+//#define NOTEXTMETRIC
 #define NOGDICAPMASKS
 #define NOSERVICE
 #define NOIME
 #define NOMCX
 #include <windows.h>
 
-#include "gr_Graphics.h"
+#include "gr_Win32Graphics.h"
 #include "gr_Win32Image.h"
 #include "png.h"
 
@@ -469,9 +469,11 @@ bool GR_Win32Image::convertToBuffer(UT_ByteBuf** ppBB) const
 GR_Image * GR_Win32Image::createImageSegment(GR_Graphics * pG,const UT_Rect & rec)
 {
 	// this code assumes 24 bit RGB bitmaps ...
-	UT_return_val_if_fail(m_pDIB && m_pDIB->bmiHeader.biBitCount == 24, NULL);
+	UT_return_val_if_fail(pG && m_pDIB && m_pDIB->bmiHeader.biBitCount == 24, NULL);
+
+	double fXYRatio = ((GR_Win32Graphics *)pG)->getXYRatio();
 	
-	UT_sint32 x = pG->tdu(rec.left);
+	UT_sint32 x = (UT_sint32)((double)pG->tdu(rec.left) * fXYRatio);
 	UT_sint32 y = pG->tdu(rec.top);
 	if(x < 0)
 	{
@@ -481,7 +483,7 @@ GR_Image * GR_Win32Image::createImageSegment(GR_Graphics * pG,const UT_Rect & re
 	{
 		y = 0;
 	}
-	UT_sint32 width = pG->tdu(rec.width);
+	UT_sint32 width = (UT_sint32)((double)pG->tdu(rec.width) * fXYRatio);
 	UT_sint32 height = pG->tdu(rec.height);
 	UT_sint32 dH = getDisplayHeight();
 	UT_sint32 dW = getDisplayWidth();
@@ -514,7 +516,7 @@ GR_Image * GR_Win32Image::createImageSegment(GR_Graphics * pG,const UT_Rect & re
 	UT_String sName("");
 	getName(sName);
     UT_String sSub("");
-	UT_String_sprintf(sSub,"_segemnt_%d_%d_%d_%d",x,y,width,height);
+	UT_String_sprintf(sSub,"_segment_%d_%d_%d_%d",x,y,width,height);
 	sName += sSub;
 	GR_Win32Image * pImage = new GR_Win32Image(sName.c_str());
 

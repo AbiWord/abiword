@@ -1155,14 +1155,14 @@ void GR_Win32USPGraphics::prepareToRenderChars(GR_RenderInfo & ri)
 	for(UT_uint32 i = 0; i < RI.m_iIndicesCount; ++i)
 	{
 		iWidth += RI.m_pAdvances[i];
-		iNextAdvance = _tduX(iWidth);
+		iNextAdvance = (UT_sint32)((double)_tduX(iWidth) * m_fXYRatio);
 		RI.s_pAdvances[i] = iNextAdvance - iAdvance;
 		iAdvance = iNextAdvance;
 		
 		if(RI.m_pJustify)
 		{
 			iWidthJ += RI.m_pAdvances[i] + RI.m_pJustify[i];
-			iNextAdvanceJ = _tduX(iWidthJ);
+			iNextAdvanceJ = (UT_sint32)((double)_tduX(iWidthJ) * m_fXYRatio);
 			RI.s_pJustify[i] = iNextAdvanceJ - iAdvanceJ;
 			iAdvanceJ = iNextAdvanceJ;
 		}
@@ -1183,7 +1183,7 @@ void GR_Win32USPGraphics::renderChars(GR_RenderInfo & ri)
 	GR_Win32USPItem * pItem = (GR_Win32USPItem *)RI.m_pItem;
 	UT_return_if_fail(pItem && pFont);
 
-	UT_sint32 xoff = _tduX(RI.m_xoff);
+	UT_sint32 xoff = (UT_sint32)((double)_tduX(RI.m_xoff) * m_fXYRatio);
 	UT_sint32 yoff = _tduY(RI.m_yoff);
 
 	if(RI.m_iLength == 0)
@@ -1421,18 +1421,18 @@ void GR_Win32USPGraphics::measureRenderedCharWidths(GR_RenderInfo & ri)
 		{
 			// RI.m_pAdvances[i] = tlu(RI.m_pAdvances[i]);
 			RI.m_pAdvances[i] = (UT_sint32)((double)RI.m_pAdvances[i]*(double)getResolution()
-											/((double)m_nPrintLogPixelsY) + 0.5);
+											/((double)m_nPrintLogPixelsY*m_fXYRatio) + 0.5);
 		}
 
 		//RI.m_ABC.abcA = tlu(RI.m_ABC.abcA);
 		//RI.m_ABC.abcB = tlu(RI.m_ABC.abcB);
 		//RI.m_ABC.abcC = tlu(RI.m_ABC.abcC);
 		RI.m_ABC.abcA = (UT_sint32)((double) RI.m_ABC.abcA * (double)getResolution()
-									/((double)m_nPrintLogPixelsY) + 0.5);
+									/((double)m_nPrintLogPixelsY*m_fXYRatio) + 0.5);
 		RI.m_ABC.abcB = (UT_sint32)((double) RI.m_ABC.abcB * (double)getResolution()
-									/((double)m_nPrintLogPixelsY) + 0.5);
+									/((double)m_nPrintLogPixelsY*m_fXYRatio) + 0.5);
 		RI.m_ABC.abcC = (UT_sint32)((double) RI.m_ABC.abcC * (double)getResolution()
-									/((double)m_nPrintLogPixelsY) + 0.5);
+									/((double)m_nPrintLogPixelsY*m_fXYRatio) + 0.5);
 	}
 	else if (m_bPrint)
 	{
@@ -1447,11 +1447,11 @@ void GR_Win32USPGraphics::measureRenderedCharWidths(GR_RenderInfo & ri)
 		//RI.m_ABC.abcB = tlu(RI.m_ABC.abcB);
 		//RI.m_ABC.abcC = tlu(RI.m_ABC.abcC);
 		RI.m_ABC.abcA = (UT_sint32)((double) RI.m_ABC.abcA * (double)getResolution() /
-									((double)getDeviceResolution()) + 0.5);
+									((double)getDeviceResolution()*m_fXYRatio) + 0.5);
 		RI.m_ABC.abcB = (UT_sint32)((double) RI.m_ABC.abcB * (double)getResolution() /
-									((double)getDeviceResolution()) + 0.5);
+									((double)getDeviceResolution()*m_fXYRatio) + 0.5);
 		RI.m_ABC.abcC = (UT_sint32)((double) RI.m_ABC.abcC * (double)getResolution() /
-									((double)getDeviceResolution()) + 0.5);
+									((double)getDeviceResolution()*m_fXYRatio) + 0.5);
 	}
 	else
 	{
@@ -1459,18 +1459,18 @@ void GR_Win32USPGraphics::measureRenderedCharWidths(GR_RenderInfo & ri)
 		{
 			// RI.m_pAdvances[i] = tlu(RI.m_pAdvances[i]);
 			RI.m_pAdvances[i] = (UT_sint32)((double)RI.m_pAdvances[i]*(double)getResolution()/
-											((double)getDeviceResolution()*(double)GR_WIN32_USP_FONT_SCALING) + 0.5);
+											((double)getDeviceResolution()*(double)GR_WIN32_USP_FONT_SCALING*m_fXYRatio) + 0.5);
 		}
 
 		//RI.m_ABC.abcA = tlu(RI.m_ABC.abcA);
 		//RI.m_ABC.abcB = tlu(RI.m_ABC.abcB);
 		//RI.m_ABC.abcC = tlu(RI.m_ABC.abcC);
 		RI.m_ABC.abcA = (UT_sint32)((double) RI.m_ABC.abcA * (double)getResolution() /
-									((double)getDeviceResolution() * (double)GR_WIN32_USP_FONT_SCALING) + 0.5);
+									((double)getDeviceResolution() * (double)GR_WIN32_USP_FONT_SCALING*m_fXYRatio) + 0.5);
 		RI.m_ABC.abcB = (UT_sint32)((double) RI.m_ABC.abcB * (double)getResolution() /
-									((double)getDeviceResolution() * (double)GR_WIN32_USP_FONT_SCALING) + 0.5);
+									((double)getDeviceResolution() * (double)GR_WIN32_USP_FONT_SCALING*m_fXYRatio) + 0.5);
 		RI.m_ABC.abcC = (UT_sint32)((double) RI.m_ABC.abcC * (double)getResolution() /
-									((double)getDeviceResolution() * (double)GR_WIN32_USP_FONT_SCALING) + 0.5);
+									((double)getDeviceResolution() * (double)GR_WIN32_USP_FONT_SCALING*m_fXYRatio) + 0.5);
 	}
 	
 	RI.m_bRejustify = true;
@@ -2082,7 +2082,7 @@ void GR_Win32USPGraphics::drawChars(const UT_UCSChar* pChars,
 		LOG_USP_EXCPT_X("fScriptStringAnalyse failed", hRes)
 	}
 	
-	hRes = fScriptStringOut(SSA, _tduX(xoff), _tduY(yoff), 0, NULL, 0, 0, FALSE);
+	hRes = fScriptStringOut(SSA, (UT_sint32)((double)_tduX(xoff) * m_fXYRatio), _tduY(yoff), 0, NULL, 0, 0, FALSE);
 
 	if(hRes)
 	{
@@ -2135,12 +2135,20 @@ bool GR_Win32USPRenderInfo::split (GR_RenderInfo *&pri, bool bReverse)
 	RI.m_bShapingFailed = m_bShapingFailed;
 	
 	UT_return_val_if_fail( (UT_sint32)m_iClustSize > m_iOffset, false );
+
+	GR_Win32USPItem &I = (GR_Win32USPItem &)*m_pItem;
 	
 	UT_uint32 iGlyphOffset = m_pClust[m_iOffset];
+
+	if(I.isRTL())
+	{
+		// need to include the glyph at the offset as well
+		iGlyphOffset++;
+	}
+	
 	UT_uint32 iGlyphLen1 = iGlyphOffset;
 	UT_uint32 iGlyphLen2 = m_iIndicesCount - iGlyphLen1;
 
-	GR_Win32USPItem &I = (GR_Win32USPItem &)*m_pItem;
 	if(I.isRTL())
 	{
 		UT_uint32 t = iGlyphLen1;
@@ -2201,7 +2209,7 @@ bool GR_Win32USPRenderInfo::split (GR_RenderInfo *&pri, bool bReverse)
 		// of the string)
 		for(i = 0; i < iCharLen1; ++i)
 		{
-			m_pClust[i] = m_pClust[i] - m_iOffset;
+			m_pClust[i] = m_pClust[i] - iCharLen2;
 		}
 	}
 	else
@@ -2224,6 +2232,7 @@ bool GR_Win32USPRenderInfo::split (GR_RenderInfo *&pri, bool bReverse)
 
 	RI.m_eShapingResult = m_eShapingResult;
 	RI.m_eState = m_eState;
+	RI.m_hdc = m_hdc;
 
 	GR_Graphics * pG = const_cast<GR_Graphics*>(m_pGraphics);
 
