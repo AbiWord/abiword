@@ -184,6 +184,7 @@ protected:
 	
 	UT_Bool					_fmtChangeStruxWithNotify(PTChangeFmt ptc,
 													  pf_Frag_Strux * pfs,
+													  PT_DocPosition dpos,
 													  const XML_Char ** attributes,
 													  const XML_Char ** properties);
 

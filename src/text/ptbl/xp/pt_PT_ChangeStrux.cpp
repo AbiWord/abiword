@@ -50,9 +50,16 @@ UT_Bool pt_PieceTable::_fmtChangeStrux(pf_Frag_Strux * pfs,
 
 UT_Bool pt_PieceTable::_fmtChangeStruxWithNotify(PTChangeFmt ptc,
 												 pf_Frag_Strux * pfs,
+												 PT_DocPosition dpos,
 												 const XML_Char ** attributes,
 												 const XML_Char ** properties)
 {
+	// we now pass in the dpos (rather than calling getFragPosition(pfs))
+	// so that it can go into the change record.  this will help undo,
+	// since the undo code will use the dpos and search for the right
+	// strux -- if we put the computed position, the getStruxFromPosition()
+	// call may find the previous paragraph (since we're on the boundary)....
+	
 	PT_AttrPropIndex indexNewAP;
 	PT_AttrPropIndex indexOldAP = pfs->getIndexAP();
 	UT_Bool bMerged = m_varset.mergeAP(ptc,indexOldAP,attributes,properties,&indexNewAP);
@@ -63,7 +70,7 @@ UT_Bool pt_PieceTable::_fmtChangeStruxWithNotify(PTChangeFmt ptc,
 
 	PX_ChangeRecord_StruxChange * pcr
 		= new PX_ChangeRecord_StruxChange(PX_ChangeRecord::PXT_ChangeStrux,
-										  getFragPosition(pfs),
+										  dpos,
 										  indexOldAP,indexNewAP,
 										  ptc);
 	UT_ASSERT(pcr);
@@ -134,7 +141,7 @@ UT_Bool pt_PieceTable::changeStruxFmt(PTChangeFmt ptc,
 				pf_Frag_Strux * pfs = static_cast<pf_Frag_Strux *>(pf);
 				if (pfs->getStruxType() == pts)
 				{
-					UT_Bool bResult = _fmtChangeStruxWithNotify(ptc,pfs,attributes,properties);
+					UT_Bool bResult = _fmtChangeStruxWithNotify(ptc,pfs,dpos1,attributes,properties);
 					UT_ASSERT(bResult);
 				}
 				if (pfs == pfs_End)
