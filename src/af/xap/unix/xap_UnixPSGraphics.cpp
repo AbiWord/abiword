@@ -677,8 +677,8 @@ void PS_Graphics::drawImage(GR_Image* pImg, UT_sint32 xDest, UT_sint32 yDest, UT
 	m_ps->writeBytes(buf);
 	
 	// translate for quadrant 2, so Y values are negative; land us at
-	// lower left of image (baseline)
-	sprintf(buf, "%ld %ld translate\n", xDest, yDest * -1);
+	// lower left of image (baseline), which is twice the height
+	sprintf(buf, "%ld %ld translate\n", xDest, (yDest * -1) - iDestHeight);
 	m_ps->writeBytes(buf);
 
 	sprintf(buf, "%ld %ld scale\n", iDestWidth, iDestHeight);
