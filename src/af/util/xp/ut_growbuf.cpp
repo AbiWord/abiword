@@ -83,6 +83,16 @@ bool UT_GrowBuf::ins(UT_uint32 position, const UT_GrowBufElement * pValue, UT_ui
 	
 	UT_ASSERT(pValue);
 	
+	if (position > m_iSize)
+	{
+		// Situation here: We're inserting after the end of the
+		// buffer that we've previously used (i.e. m_iSize).
+		// Treat the request as if we were starting at m_iSize,
+		// subtracting from position and adding to length.
+		UT_uint32 slack = position - m_iSize;
+		position = m_iSize; length += slack;
+	}
+
 	if (m_iSpace-m_iSize < length)
 		if (!_growBuf(length))
 			return false;
@@ -102,6 +112,16 @@ bool UT_GrowBuf::ins(UT_uint32 position, UT_uint32 length)
 	if (!length)
 		return true;
 	
+	if (position > m_iSize)
+	{
+		// Situation here: We're inserting after the end of the
+		// buffer that we've previously used (i.e. m_iSize).
+		// Treat the request as if we were starting at m_iSize,
+		// subtracting from position and adding to length.
+		UT_uint32 slack = position - m_iSize;
+		position = m_iSize; length += slack;
+	}
+
 	if (m_iSpace-m_iSize < length)
 		if (!_growBuf(length))
 			return false;
