@@ -60,6 +60,10 @@ typedef struct
 //
 //	A list of the styles and they correspondant localised name
 //
+//  IMPORTANT: when adding styles here, please check also
+//  s_translateStyleId() in ie_imp_MSWord_97.cpp and if there is a
+//  corresponding Word style make sure that it gets translated into
+//  this unlocalised name. Tomas, May 10, 2003
 ST_LOCALISED_STYLES stLocalised[] =
 {
 	
