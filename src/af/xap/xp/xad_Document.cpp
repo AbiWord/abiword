@@ -67,7 +67,6 @@ AD_Document::AD_Document() :
 	UT_return_if_fail(XAP_App::getApp() && XAP_App::getApp()->getUUIDGenerator());
 
 	m_pUUID = XAP_App::getApp()->getUUIDGenerator()->createUUID();
-
 	UT_return_if_fail(m_pUUID);
 	UT_return_if_fail(m_pUUID->isValid());
 }
@@ -86,6 +85,28 @@ AD_Document::~AD_Document()
 	UT_VECTOR_PURGEALL(AD_VersionData*, m_vHistory);
 	UT_VECTOR_PURGEALL(AD_Revision*, m_vRevisions);
 }
+
+UT_UUID * AD_Document::getNewUUID()const
+{
+	UT_return_val_if_fail(XAP_App::getApp() && XAP_App::getApp()->getUUIDGenerator(), NULL);
+
+	UT_UUID * pUUID = XAP_App::getApp()->getUUIDGenerator()->createUUID();
+	UT_ASSERT( pUUID && pUUID->isValid());
+	return pUUID;
+}
+
+UT_uint32 AD_Document::getNewUUID32() const
+{
+	UT_return_val_if_fail(XAP_App::getApp() && XAP_App::getApp()->getUUIDGenerator(),0);
+	return XAP_App::getApp()->getUUIDGenerator()->getNewUUID32();
+}
+
+UT_uint64 AD_Document::getNewUUID64() const
+{
+	UT_return_val_if_fail(XAP_App::getApp() && XAP_App::getApp()->getUUIDGenerator(),0);
+	return XAP_App::getApp()->getUUIDGenerator()->getNewUUID64();
+}
+
 
 void AD_Document::ref(void)
 {
@@ -236,10 +257,10 @@ const UT_UUID & AD_Document::getHistoryNthUID(UT_uint32 i) const
 */
 bool AD_Document::areDocumentsRelated(const AD_Document & d) const
 {
-	if((!m_pUUID && d.getUUID()) || (m_pUUID && !d.getUUID()))
+	if((!m_pUUID && d.getDocUUID()) || (m_pUUID && !d.getDocUUID()))
 		return false;
 
-	return (*m_pUUID == *(d.getUUID()));
+	return (*m_pUUID == *(d.getDocUUID()));
 }
 
 /*!
@@ -248,10 +269,10 @@ bool AD_Document::areDocumentsRelated(const AD_Document & d) const
 */
 bool AD_Document::areDocumentHistoriesEqual(const AD_Document & d) const
 {
-	if((!m_pUUID && d.getUUID()) || (m_pUUID && !d.getUUID()))
+	if((!m_pUUID && d.getDocUUID()) || (m_pUUID && !d.getDocUUID()))
 		return false;
 
-	if(!(*m_pUUID == *(d.getUUID())))
+	if(!(*m_pUUID == *(d.getDocUUID())))
 		return false;
 
 	UT_uint32 iHCount = getHistoryCount();
@@ -273,7 +294,7 @@ bool AD_Document::areDocumentHistoriesEqual(const AD_Document & d) const
 /*!
     Set UID for the present document
 */
-void AD_Document::setUUID(const char * s)
+void AD_Document::setDocUUID(const char * s)
 {
 	if(!m_pUUID)
 	{
@@ -287,7 +308,7 @@ void AD_Document::setUUID(const char * s)
     Get the UID of this document represented as a string (this
     function is primarily for exporters)
 */
-const char * AD_Document::getUUIDString() const
+const char * AD_Document::getDocUUIDString() const
 {
 	UT_return_val_if_fail(m_pUUID, NULL);
 	static UT_String s;

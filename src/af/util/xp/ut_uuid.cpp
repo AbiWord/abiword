@@ -578,9 +578,68 @@ UT_uint64 UT_UUID::hash64() const
     return hval;
 }
 
+UT_uint32 UT_UUIDGenerator::getNewUUID32()
+{
+	// We cannot initialise m_pUUID in the constructor, because we
+	// want it to be an instance of a platform specific class where
+	// such exists and we cannot call virtual createUUID() before the
+	// constructor of the derived class was called.
+	if(!m_pUUID)
+		m_pUUID = createUUID();
+
+	UT_return_val_if_fail(m_pUUID, 0);
+
+	m_pUUID->makeUUID();
+	UT_ASSERT(m_pUUID->isValid());
+	
+	return m_pUUID->hash32();
+}
+
+UT_uint64 UT_UUIDGenerator::getNewUUID64()
+{
+	// We cannot initialise m_pUUID in the constructor, because we
+	// want it to be an instance of a platform specific class where
+	// such exists and we cannot call virtual createUUID() before the
+	// constructor of the derived class was called.
+	if(!m_pUUID)
+		m_pUUID = createUUID();
+
+	UT_return_val_if_fail(m_pUUID, 0);
+
+	m_pUUID->makeUUID();
+	UT_ASSERT(m_pUUID->isValid());
+	
+	return m_pUUID->hash64();
+}
+
+
 
 #ifdef DEBUG
 #include "ut_endian.h"
+#include "ut_vector.h"
+#include "ut_rand.h"
+
+struct test_record
+{
+	UT_uint32 val;
+	UT_uint32 indx;
+};
+
+static int s_cmp_int(const void *i1, const void * i2)
+{
+	struct test_record ** I1  = (struct test_record**) i1;
+	struct test_record ** I2  = (struct test_record**) i2;
+
+	if((*I1)->val > (*I2)->val)
+		return 1;
+	
+	if((*I1)->val < (*I2)->val)
+		return -1;
+
+		return 0;
+}
+
+
 void UT_UUID::__test()
 {
 #if 0
@@ -619,6 +678,104 @@ void UT_UUID::__test()
 	}
 
 	UT_DEBUGMSG(("-------------------------------------------------\n"));
+#endif
+#if 0
+	// test hashes ...
+	UT_DEBUGMSG(("------------------------- Testing UT_rand() -----------------------------\n"));
+	UT_Vector v, u;
+	const UT_uint32 iMax = 128000;
+	const UT_uint32 iMsg = 1000;
+	const UT_uint32 iTest = 10;
+	UT_uint32 iColRTotal = 0;
+	UT_uint32 iColHTotal = 0;
+	UT_uint32 iDeltaMinR = 0xffffffff;
+	UT_uint32 iDeltaMinH = 0xffffffff;
+	
+
+	for (UT_uint32 k = 0; k < iTest; ++k)
+	{
+		UT_uint32 j;
+		UT_uint32 iColR = 0;
+		UT_uint32 iColH = 0;
+		UT_uint32 iDMinR = 0xffffffff;
+		UT_uint32 iDMinH = 0xffffffff;
+
+		for(j = 0; j < iMax; ++j)
+		{
+			struct test_record * t = new struct test_record;
+			t->val = UT_rand();
+			t->indx = j;
+			v.addItem((void*)t);
+
+			t = new struct test_record;
+			makeUUID();
+			t->val = hash32();
+			t->indx = j;
+			u.addItem((void*)t);
+		
+			if(0 == j%iMsg)
+				UT_DEBUGMSG(("Round %d: Generating rand %d of %d\n", k, j, iMax));
+		}
+
+		v.qsort(s_cmp_int);
+		u.qsort(s_cmp_int);
+
+		for(j = 0; j < iMax - 1; ++j)
+		{
+			struct test_record * t1 = (struct test_record *) v.getNthItem(j);
+			struct test_record * t2 = (struct test_record *) v.getNthItem(j+1);
+
+			if(t1->val == t2->val)
+			{
+				UT_DEBUGMSG(("Round %04d: UT_rand() collision (value: %d\n", k, t1->val));
+				UT_uint32 i1 = t1->indx > t2->indx ? t1->indx : t2->indx;
+				UT_uint32 i2 = t1->indx < t2->indx ? t1->indx : t2->indx;
+				iDMinR = iDMinR < (UT_uint32)(i1-i2) ? iDMinR : (UT_uint32)i1-i2;
+				iColR++;
+			}
+		
+
+			t1 = (struct test_record *) u.getNthItem(j);
+			t2 = (struct test_record *) u.getNthItem(j+1);
+
+			if(t1->val == t2->val)
+			{
+				UT_DEBUGMSG(("Round %04d: uuid hash collision (value: %d\n", k, t1->val));
+				UT_uint32 i1 = t1->indx > t2->indx ? t1->indx : t2->indx;
+				UT_uint32 i2 = t1->indx < t2->indx ? t1->indx : t2->indx;
+				iDMinH = iDMinH < (UT_uint32)(i1-i2) ? iDMinH : (UT_uint32)i1-i2;
+				iColH++;
+			}
+		
+
+			if(0 == j%iMsg)
+				UT_DEBUGMSG(("Round %04d: testing %d of %d\n", k, j, iMax));
+		}
+	
+		UT_DEBUGMSG(("RESULTS: round %04d: %d rand collisions (min distance %d)\n"
+					 "                      %d hash collisions (min distance %d)\n",
+					 k, iColR, iDMinR, iColH, iDMinH));
+
+		iColRTotal += iColR;
+		iColHTotal += iColH;
+		iDeltaMinR = iDeltaMinR < iDMinR ? iDeltaMinR : iDMinR;
+		iDeltaMinH = iDeltaMinH < iDMinH ? iDeltaMinH : iDMinH;
+
+		UT_VECTOR_PURGEALL(struct test_record *, v);
+		UT_VECTOR_PURGEALL(struct test_record *, u);
+		v.clear();
+		u.clear();
+		
+	}
+
+	UT_DEBUGMSG(("CUMULATIVE RESULTS (of %d): %d rand collisions (min distance %d)\n"
+				 "                            %d hash collisions (min distance %d)\n"
+				 "                            R/H collision rate %f\n",
+				 iMax*iTest, iColRTotal, iDeltaMinR,
+				 iColHTotal, iDeltaMinH,
+				 ((float)iColRTotal)/((float)iColHTotal)));
+
+	UT_DEBUGMSG(("---------------------- Testing UT_rand() END --------------------------\n"));	
 #endif
 }
 #endif

@@ -189,6 +189,7 @@ class ABI_EXPORT UT_UUIDGenerator
 {
   public:
 	UT_UUIDGenerator()
+		:m_pUUID(NULL)
 	{
 #ifdef DEBUG
 		UT_UUID u;
@@ -196,7 +197,7 @@ class ABI_EXPORT UT_UUIDGenerator
 #endif
 	};
 	
-	virtual ~UT_UUIDGenerator(){};
+	virtual ~UT_UUIDGenerator(){if(m_pUUID) delete m_pUUID;};
 
 	// because the default constructor creates NULL uuid, we also need
 	// to call makeUUID() with this one
@@ -205,6 +206,12 @@ class ABI_EXPORT UT_UUIDGenerator
 	virtual UT_UUID * createUUID(const UT_String &s){return new UT_UUID(s);}
 	virtual UT_UUID * createUUID(const char *s){return new UT_UUID(s);}
 	virtual UT_UUID * createUUID(const UT_UUID &u){return new UT_UUID(u);}
+
+	UT_uint32 getNewUUID32();
+	UT_uint64 getNewUUID64();
+	
+  private:
+	UT_UUID * m_pUUID;
 };
 
 #endif /* UT_UUID_H */

@@ -165,10 +165,14 @@ public:
 	bool            areDocumentsRelated (const AD_Document &d) const;
 	bool            areDocumentHistoriesEqual(const AD_Document &d) const;
 
-	void            setUUID(const char * u);
-	const char *    getUUIDString()const;
-	const UT_UUID * getUUID()const {return m_pUUID;};
+	void            setDocUUID(const char * u);
+	const char *    getDocUUIDString()const;
+	const UT_UUID * getDocUUID()const {return m_pUUID;};
 
+	UT_UUID *       getNewUUID()   const;
+	UT_uint32       getNewUUID32() const;
+	UT_uint64       getNewUUID64() const;
+	
 	bool            addRevision(UT_uint32 iId, UT_UCS4Char * pDesc,
 										time_t tStart);
 	
@@ -227,6 +231,7 @@ protected:
 	bool            m_bForcedDirty;
 	
 	UT_UUID *       m_pUUID;
+	UT_UUID *       m_pNewUUID;
 };
 
 

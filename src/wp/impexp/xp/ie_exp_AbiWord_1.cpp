@@ -1352,7 +1352,7 @@ void s_AbiWord_1_Listener::_handleHistory(void)
 							  m_pDocument->getDocVersion(),
 							  m_pDocument->getEditTime(),
 							  m_pDocument->getLastSavedTime(),
-							  m_pDocument->getUUIDString());
+							  m_pDocument->getDocUUIDString());
 			
 			m_pie->write(s.c_str());
 			bWroteOpenSection = true;
