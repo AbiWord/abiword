@@ -57,9 +57,27 @@ public:
 
 	XAP_UnixFontManager *					getFontManager(void);
 
+	typedef enum
+	{
+		GEOMETRY_FLAG_POS = 	1 << 0,
+		GEOMETRY_FLAG_SIZE = 	1 << 1
+	} windowGeometryFlags;
+	
+	struct windowGeometry
+	{
+		gint x, y;
+		guint width, height;
+		XAP_UnixApp::windowGeometryFlags flags;
+	};
+	
+	virtual	void							setGeometry(gint x, gint y, guint width, guint height,
+														windowGeometryFlags flags);
+	virtual	void							getGeometry(gint * x, gint * y, guint * width, guint * height,
+														windowGeometryFlags * flags);
+	
 protected:
-	UT_Bool									_loadFonts(void);
-	void									_setAbiSuiteLibDir(void);
+	UT_Bool							_loadFonts(void);
+	void							_setAbiSuiteLibDir(void);
 
 	AP_UnixToolbar_Icons *			m_pUnixToolbarIcons;
 	AP_UnixDialogFactory			m_dialogFactory;
@@ -69,6 +87,9 @@ protected:
 	/* TODO put anything we need here.  for example, our
 	** TODO connection to the XServer.
 	*/
+
+	windowGeometry			m_geometry;
+	
 };
 
 #endif /* XAP_UNIXAPP_H */

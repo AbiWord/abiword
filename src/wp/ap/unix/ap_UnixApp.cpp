@@ -408,6 +408,7 @@ void AP_UnixApp::_printUsage(void)
 #ifdef DEBUG
 	printf("  -d,         --dumpstrings    dump strings strings to file\n");
 #endif
+	printf("  -g geom,    --geometry=geom  set initial frame geometry\n");
 	printf("  -h,         --help           view this help summary\n");
 	printf("  -l dir,     --lib=dir        use dir for application components\n");
 	printf("  -n,         --nosplash       do not show splash screen\n");
@@ -470,7 +471,8 @@ struct option longopts[] =
 #ifdef DEBUG
     {"dumpstrings", no_argument, 		NULL, 'd'},
 #endif
-    {"help",        no_argument, 		NULL, 'h'},			
+    {"geometry",    required_argument, 	NULL, 'g'},
+    {"help",        no_argument, 		NULL, 'h'},		
     {"lib",         required_argument, 	NULL, 'l'},
 	{"nosplash",	no_argument, 		NULL, 'n'},
 	{"script",      required_argument, 	NULL, 's'},
@@ -489,6 +491,7 @@ char shortopts[] =
     "d"
 #endif
     "h"
+    "g:"
     "l:"
     "n"
     "s:"
@@ -514,8 +517,10 @@ UT_Bool AP_UnixApp::parseCommandLine(void)
 	UT_Bool bShowSplash = UT_TRUE;
 	const char * szSplashFile = NULL;
 
-	// use getopt_long as suggested and contributed by Ming-I Hsieh <mihs@wm28.csie.ncu.edu.tw>
-	while ((k = getopt_long(m_pArgs->m_argc, m_pArgs->m_argv, shortopts, longopts, NULL)) != EOF)
+	// use getopt_long as suggested and contributed by Ming-I Hsieh
+	// <mihs@wm28.csie.ncu.edu.tw>
+	while ((k = getopt_long(m_pArgs->m_argc, m_pArgs->m_argv,
+							shortopts, longopts, NULL)) != EOF)
 	{
 		switch (k)
 		{
@@ -527,7 +532,38 @@ UT_Bool AP_UnixApp::parseCommandLine(void)
 				new AP_BuiltinStringSet(this, AP_PREF_DEFAULT_StringSet);
 			pBuiltinStringSet->dumpBuiltinSet("EnUS.strings");
 			delete pBuiltinStringSet;
-#endif
+#endif			
+			break;
+		}
+		case 'g':
+		{
+			// store the user's requested geometry at the app level for frames
+			// to request, if they want it.
+			UT_ASSERT(optarg);
+
+			gint dummy = 1 << ((sizeof(gint) * 8) - 1);
+			gint x = dummy;
+			gint y = dummy;
+			guint width = 0;
+			guint height = 0;
+			
+			XParseGeometry(optarg, &x, &y, &width, &height);
+
+			// use both by default
+			XAP_UnixApp::windowGeometryFlags f = (XAP_UnixApp::windowGeometryFlags)
+				(XAP_UnixApp::GEOMETRY_FLAG_SIZE
+				 | XAP_UnixApp::GEOMETRY_FLAG_POS);
+
+			// if pos (x and y) weren't provided just use size
+			if (x == dummy || y == dummy)
+				f = XAP_UnixApp::GEOMETRY_FLAG_SIZE;
+
+			// if size (width and height) weren't provided just use pos
+			if (width == 0 || height == 0)
+				f = XAP_UnixApp::GEOMETRY_FLAG_POS;
+			
+			// set the xap-level geometry for future frame use
+			setGeometry(x, y, width, height, f);
 			break;
 		}
 		case 'h':
@@ -599,6 +635,23 @@ UT_Bool AP_UnixApp::parseCommandLine(void)
 			g_snprintf(message, 2048,
 					   "Cannot open file %s.", m_pArgs->m_argv[optind]);
 			messageBoxOK(message);
+
+			// remove the stale frame
+
+			// NOTE : Must have app forget frame manually.  Is this a bad
+			// NOTE : design decision on the part of the frame?  The
+			// NOTE : frame is reponsible for making the app remember it
+			// NOTE : in its constructor, shouldn't it have the app
+			// NOTE : forget it in its destructor?
+
+			forgetFrame(pFirstUnixFrame);
+
+			pFirstUnixFrame->close();
+			DELETEP(pFirstUnixFrame);
+
+			// decrement the number of windows opened
+			kWindowsOpened--;
+			
 		}
 		optind++;
 	}

@@ -19,6 +19,8 @@
 
 #include <gtk/gtk.h>
 #include <stdio.h>
+#include <stdlib.h>
+
 #include "ut_types.h"
 #include "ut_debugmsg.h"
 #include "ut_assert.h"
@@ -350,14 +352,8 @@ void XAP_UnixFrame::_createTopLevelWindow(void)
 						   m_pUnixApp->getApplicationName(),
 						   m_pUnixApp->getApplicationName());
 
-	// TODO get the following values from a preferences or something.
-//	gtk_container_set_border_width(GTK_CONTAINER(m_wTopLevelWindow), 4);
-
-	// TODO These values should probably be set and read from program
-	// TODO preferences.
-	// NOTE GTK does not automatically parse -geometry for us, but
-	// NOTE we should honor it eventually.
-	gtk_widget_set_usize(GTK_WIDGET(m_wTopLevelWindow), 700, 650);
+	// This is now done with --geometry parsing.
+	//gtk_widget_set_usize(GTK_WIDGET(m_wTopLevelWindow), 700, 650);
 
 	gtk_signal_connect(GTK_OBJECT(m_wTopLevelWindow), "delete_event",
 					   GTK_SIGNAL_FUNC(_fe::delete_event), NULL);
@@ -425,13 +421,36 @@ void XAP_UnixFrame::_createTopLevelWindow(void)
 		gtk_box_pack_end(GTK_BOX(m_wVBox), m_wStatusBar, FALSE, FALSE, 0);
 	}
 	
-	// TODO decide what to do with accelerators
-	// gtk_window_add_accelerator_table(GTK_WINDOW(window), accel);
-
 	gtk_widget_show(m_wVBox);
 	
 	// set the icon
 	_setWindowIcon();
+
+	// set geometry hints as the user requested
+	gint x, y;
+	guint width, height;
+	XAP_UnixApp::windowGeometryFlags f;
+
+	m_pUnixApp->getGeometry(&x, &y, &width, &height, &f);
+
+	// Set the size if requested
+	
+	if (f & XAP_UnixApp::GEOMETRY_FLAG_SIZE)
+		gtk_widget_set_usize(m_wTopLevelWindow,
+							 width,
+							 height);
+
+	// Because we're clever, we only honor this flag when we
+	// are the first (well, only) top level frame available.
+	// This is so the user's window manager can find better
+	// places for new windows, instead of having our windows
+	// pile upon each other.
+
+	if (m_pUnixApp->getFrameCount() <= 1)
+		if (f & XAP_UnixApp::GEOMETRY_FLAG_POS)
+			gtk_widget_set_uposition(m_wTopLevelWindow,
+									 x,
+									 y);
 
 	// we let our caller decide when to show m_wTopLevelWindow.
 	return;
@@ -462,13 +481,16 @@ UT_Bool XAP_UnixFrame::show()
 
 UT_Bool XAP_UnixFrame::openURL(const char * szURL)
 {
-	// TODO: call NSCP to open the specified URL
+	// TODO : FIX THIS.  Find a better way to search for
+	// TODO : other browsers on your machine.
 
-	// TODO : FIX THIS.  Oh, this is hackish, really hackish, but
-	// TODO : better than an assert to the user.
+	// Try to connect to a running Netscape, if not, start new one
 
-	// try to connect to a running Netscape, if not, start new one
-	system("netscape -remote openURL\\(http://www.abisource.com/\\) || netscape http://www.abisource.com &");
+	char execstring[4096];
+
+	g_snprintf(execstring, 4096, "netscape -remote openURL\\(%s\\) "
+			   "|| netscape %s &", szURL, szURL);
+	system(execstring);
 	
 	return UT_FALSE;
 }

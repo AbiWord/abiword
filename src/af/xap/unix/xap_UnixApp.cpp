@@ -24,6 +24,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <strings.h>
+#include <unistd.h>
 
 #include "ut_debugmsg.h"
 #include "ut_dialogHelper.h"
@@ -45,6 +46,17 @@ XAP_UnixApp::XAP_UnixApp(XAP_Args * pArgs, const char * szAppName)
 	m_pUnixToolbarIcons = 0;
 
 	_setAbiSuiteLibDir();
+
+	// set some generic window sizes and positions
+	m_geometry.x = 1;
+	m_geometry.y = 1;
+	m_geometry.width = 600;
+	m_geometry.height = 600;
+
+	// by default, which will be applied if the user does NOT
+	// specify a --geometry argument, we only want to obey the
+	// size (which is set above), not a position.
+	m_geometry.flags = GEOMETRY_FLAG_SIZE;
 }
 
 XAP_UnixApp::~XAP_UnixApp(void)
@@ -112,6 +124,28 @@ XAP_Toolbar_ControlFactory * XAP_UnixApp::getControlFactory(void)
 XAP_UnixFontManager * XAP_UnixApp::getFontManager(void)
 {
 	return m_fontManager;
+}
+
+void XAP_UnixApp::setGeometry(gint x, gint y, guint width, guint height,
+							  windowGeometryFlags flags)
+{
+	// TODO : do some range checking?
+	m_geometry.x = x;
+	m_geometry.y = y;
+	m_geometry.width = width;
+	m_geometry.height = height;
+	m_geometry.flags = flags;
+}
+
+void XAP_UnixApp::getGeometry(gint * x, gint * y, guint * width,
+							  guint * height, windowGeometryFlags * flags)
+{
+	UT_ASSERT(x && y && width && height);
+	*x = m_geometry.x;
+	*y = m_geometry.y;
+	*width = m_geometry.width;
+	*height = m_geometry.height;
+	*flags = m_geometry.flags;
 }
 
 const char * XAP_UnixApp::getUserPrivateDirectory(void)
@@ -193,7 +227,7 @@ UT_Bool XAP_UnixApp::_loadFonts(void)
 void XAP_UnixApp::_setAbiSuiteLibDir(void)
 {
 	char buf[PATH_MAX];
-	char buf2[PATH_MAX];
+//	char buf2[PATH_MAX]; // not used?
 
 	// see if a command line option [-lib <AbiSuiteLibraryDirectory>] was given
 

@@ -29,8 +29,8 @@
 #include "xap_Args.h"
 #include "xap_UnixApp.h"
 #include "ap_UnixPrefs.h"
-class XAP_StringSet;
 
+class XAP_StringSet;
 
 class AP_UnixApp : public XAP_UnixApp
 {
@@ -53,7 +53,7 @@ public:
 protected:
 
 	void							_printUsage(void);
-	
+
 	AP_UnixPrefs *			m_prefs;
 	XAP_StringSet *			m_pStringSet;
 	
