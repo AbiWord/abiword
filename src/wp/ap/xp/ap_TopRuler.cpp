@@ -273,22 +273,22 @@ void AP_TopRuler::scrollRuler(UT_sint32 xoff, UT_sint32 xlimit)
 	UT_sint32 x_src = xFixed;
 
 	UT_Rect rClip;
-	rClip.top = y_src;
-	rClip.height = height;
+	rClip.top = _UD(y_src);
+	rClip.height = _UD(height);
 
 	if (dx > 0)
 	{
 		x_src += dx;
 		width += -dx;
-		rClip.left = x_dest + width;
-		rClip.width = dx;
+		rClip.left = _UD(x_dest + width);
+		rClip.width = _UD(dx);
 	}
 	else if (dx < 0)
 	{
 		x_dest += -dx;
 		width += dx;
-		rClip.left = x_src;
-		rClip.width = -dx;
+		rClip.left = _UD(x_src);
+		rClip.width = - _UD(dx);
 	}
 
 	m_pG->scroll(x_dest,y_dest,x_src,y_src,width,height);
@@ -1361,6 +1361,8 @@ bool AP_TopRuler::isMouseOverTab(UT_uint32 x, UT_uint32 y)
 	//UT_sint32 xFixed = (UT_sint32)MyMax(m_iLeftRulerWidth,s_iFixedWidth);
 	//UT_sint32 xStartPixel = xFixed + (UT_sint32) m_infoCache.m_xPageViewMargin;
 
+	_UUL(x);
+	_UUL(y);
 
 	UT_Rect rToggle;
 
@@ -1744,6 +1746,8 @@ void AP_TopRuler::_drawCellGap(AP_TopRulerInfo * pInfo, UT_sint32 iCell)
 void AP_TopRuler::mousePress(EV_EditModifierState /* ems */,
 							 EV_EditMouseButton emb , UT_uint32 x, UT_uint32 y)
 {
+	_UUL(x);
+	_UUL(y);
 	//UT_DEBUGMSG(("mousePress: [ems 0x%08lx][emb 0x%08lx][x %ld][y %ld]\n",ems,emb,x,y));
 
 	// get the complete state of what should be on the ruler at the time of the grab.
@@ -2079,6 +2083,9 @@ void AP_TopRuler::mouseRelease(EV_EditModifierState /* ems */, EV_EditMouseButto
 		return;
 	}
 
+	_UUL(x);
+	_UUL(y);
+	
 	m_bValidMouseClick = false;
 
 	// if they drag vertically off the ruler, we ignore the whole thing.
@@ -2610,6 +2617,10 @@ void AP_TopRuler::mouseMotion(EV_EditModifierState ems, UT_sint32 x, UT_sint32 y
 		m_pG->setCursor(GR_Graphics::GR_CURSOR_DEFAULT);
 		return;
 	}
+
+	_UUL(x);
+	_UUL(y);
+	
 	m_bEventIgnored = false;
 
 //  	UT_DEBUGMSG(("mouseMotion: [ems 0x%08lx][x %ld][y %ld]\n",ems,x,y));

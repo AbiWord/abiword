@@ -372,7 +372,7 @@ void AP_Win32Frame::setXScrollRange(void)
 	RECT r;
 	GetClientRect(m_hwndDocument, &r);
 	const UT_uint32 iWindowWidth = r.right - r.left;
-	const UT_uint32 iWidth = static_cast<AP_FrameData*>(m_pData)->m_pDocLayout->getWidth();
+	const UT_uint32 iWidth = _UD(static_cast<AP_FrameData*>(m_pData)->m_pDocLayout->getWidth());
 
 	SCROLLINFO si = { 0 };
 
@@ -380,11 +380,11 @@ void AP_Win32Frame::setXScrollRange(void)
 	si.fMask = SIF_ALL | SIF_DISABLENOSCROLL;
 	si.nMin = 0;
 	si.nMax = iWidth;
-	si.nPos = ((m_pView) ? m_pView->getXScrollOffset() : 0);
+	si.nPos = ((m_pView) ? _UD(m_pView->getXScrollOffset()) : 0);
 	si.nPage = iWindowWidth;
 	SetScrollInfo(m_hWndHScroll, SB_CTL, &si, TRUE);
 
-	m_pView->sendHorizontalScrollEvent(si.nPos,si.nMax-si.nPage);
+	m_pView->sendHorizontalScrollEvent(_UL(si.nPos),_UL(si.nMax-si.nPage));
 }
 
 void AP_Win32Frame::setYScrollRange(void)
@@ -392,7 +392,7 @@ void AP_Win32Frame::setYScrollRange(void)
 	RECT r;
 	GetClientRect(m_hwndDocument, &r);
 	const UT_uint32 iWindowHeight = r.bottom - r.top;
-	const UT_uint32 iHeight = static_cast<AP_FrameData*>(m_pData)->m_pDocLayout->getHeight();
+	const UT_uint32 iHeight = _UD(static_cast<AP_FrameData*>(m_pData)->m_pDocLayout->getHeight());
 
 	SCROLLINFO si = { 0 };
 
@@ -400,11 +400,11 @@ void AP_Win32Frame::setYScrollRange(void)
 	si.fMask = SIF_ALL | SIF_DISABLENOSCROLL;
 	si.nMin = 0;
 	si.nMax = iHeight;
-	si.nPos = ((m_pView) ? m_pView->getYScrollOffset() : 0);
+	si.nPos = ((m_pView) ? _UD(m_pView->getYScrollOffset()) : 0);
 	si.nPage = iWindowHeight;
 	_setVerticalScrollInfo(&si);
 
-	m_pView->sendVerticalScrollEvent(si.nPos,si.nMax-si.nPage);
+	m_pView->sendVerticalScrollEvent(_UL(si.nPos),_UL(si.nMax-si.nPage));
 }
 
 bool AP_Win32Frame::RegisterClass(XAP_Win32App * app)
@@ -853,10 +853,10 @@ void AP_Win32Frame::_scrollFuncY(void* pData, UT_sint32 yoff, UT_sint32 /*ylimit
 	si.fMask = SIF_ALL;
 
 	pWin32Frame->_getVerticalScrollInfo(&si);
-	si.nPos = yoff;
+	si.nPos = _UD(yoff);
 	pWin32Frame->_setVerticalScrollInfo(&si);
 	pWin32Frame->_getVerticalScrollInfo(&si); // values may have been clamped
-	pWin32Frame->m_pView->setYScrollOffset(si.nPos);
+	pWin32Frame->m_pView->setYScrollOffset(_UL(si.nPos));
 }
 
 void AP_Win32Frame::_scrollFuncX(void* pData, UT_sint32 xoff, UT_sint32 /*xlimit*/)
@@ -873,11 +873,11 @@ void AP_Win32Frame::_scrollFuncX(void* pData, UT_sint32 xoff, UT_sint32 /*xlimit
 	HWND hwndH = pWin32Frame->m_hWndHScroll;
 	GetScrollInfo(hwndH, SB_CTL, &si);
 
-	si.nPos = xoff;
+	si.nPos = _UD(xoff);
 	SetScrollInfo(hwndH, SB_CTL, &si, TRUE);
 
 	GetScrollInfo(hwndH, SB_CTL, &si);	// may have been clamped
-	pWin32Frame->m_pView->setXScrollOffset(si.nPos);
+	pWin32Frame->m_pView->setXScrollOffset(_UL(si.nPos));
 }
 
 /*****************************************************************/
@@ -952,7 +952,7 @@ LRESULT CALLBACK AP_Win32Frame::_ContainerWndProc(HWND hwnd, UINT iMsg, WPARAM w
 
 		f->_setVerticalScrollInfo(&si);				// notify window of new value.
 		f->_getVerticalScrollInfo(&si);				// update from window, in case we got clamped
-		pView->sendVerticalScrollEvent(si.nPos);	// now tell the view
+		pView->sendVerticalScrollEvent(_UL(si.nPos));	// now tell the view
 
 		return 0;
 	}
@@ -1007,7 +1007,7 @@ LRESULT CALLBACK AP_Win32Frame::_ContainerWndProc(HWND hwnd, UINT iMsg, WPARAM w
 			GetScrollInfo(f->m_hWndHScroll, SB_CTL, &si);
 
 			// now tell the view
-			pView->sendHorizontalScrollEvent(si.nPos);
+			pView->sendHorizontalScrollEvent(_UL(si.nPos));
 		}
 
 		return 0;
@@ -1240,10 +1240,10 @@ LRESULT CALLBACK AP_Win32Frame::_DocumentWndProc(HWND hwnd, UINT iMsg, WPARAM wP
 			si.fMask = SIF_ALL;
 
 			f->_getVerticalScrollInfo(&si);
-			pView->sendVerticalScrollEvent(si.nPos,si.nMax-si.nPage);
+			pView->sendVerticalScrollEvent(_UL(si.nPos),_UL(si.nMax-si.nPage));
 
 			GetScrollInfo(f->m_hWndHScroll, SB_CTL, &si);
-			pView->sendHorizontalScrollEvent(si.nPos,si.nMax-si.nPage);
+			pView->sendHorizontalScrollEvent(_UL(si.nPos),_UL(si.nMax-si.nPage));
 		}
 		return 0;
 	}

@@ -180,6 +180,9 @@ void AP_LeftRuler::mousePress(EV_EditModifierState /* ems */, EV_EditMouseButton
 	// time of the grab.  we assume that nothing in the document can
 	// change during our grab unless we change it.
 
+	_UUL(x);
+	_UUL(y);
+	
 	m_bValidMouseClick = false;
 	m_draggingWhat = DW_NOTHING;
 	m_bEventIgnored = false;
@@ -238,6 +241,9 @@ void AP_LeftRuler::mouseRelease(EV_EditModifierState ems, EV_EditMouseButton emb
 		m_pG->setCursor( GR_Graphics::GR_CURSOR_DEFAULT);
 		return;
 	}
+
+	_UUL(x);
+	_UUL(y);
 	
 	m_bValidMouseClick = false;
 
@@ -414,6 +420,9 @@ void AP_LeftRuler::mouseMotion(EV_EditModifierState ems, UT_sint32 x, UT_sint32 
 	}
 	pView->getLeftRulerInfo(&m_infoCache);
 
+	_UUL(x);
+	_UUL(y);
+	
 	if (!m_bValidMouseClick)
 	{
 	
@@ -703,17 +712,17 @@ void AP_LeftRuler::scrollRuler(UT_sint32 yoff, UT_sint32 ylimit)
 		// all we need to draw is the area exposed by the scroll.
 		
 		rClip.left = 0;
-		rClip.width = s_iFixedWidth;
+		rClip.width = _UD(s_iFixedWidth);
 
 		if (dy > 0)
 		{
-			rClip.top = m_iHeight - dy;
-			rClip.height = dy;
+			rClip.top = _UD(m_iHeight - dy);
+			rClip.height = _UD(dy);
 		}
 		else
 		{
 			rClip.top = 0;
-			rClip.height = -dy;
+			rClip.height = - _UD(dy);
 		}
 
 		prClip = &rClip;
