@@ -1369,7 +1369,7 @@ void fl_DocSectionLayout::setPaperColor(void)
 	FV_View * pView = m_pLayout->getView();
 	if(pszClrPaper && UT_strcmp(pszClrPaper,"transparent") != 0)
 		UT_parseColor(pszClrPaper,m_clrPaper);
-	else if( pView ) /* && pView->getGraphics()->queryProperties(GR_Graphics::DGP_SCREEN) ) */
+	else if( pView && pView->getGraphics()->queryProperties(GR_Graphics::DGP_SCREEN) )
 	{
 		XAP_App * pApp = pView->getApp();
 		XAP_Prefs * pPrefs = pApp->getPrefs();
