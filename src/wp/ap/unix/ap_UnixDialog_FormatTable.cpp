@@ -19,6 +19,7 @@
 
 #include <stdlib.h>
 #include <glade/glade.h>
+#include <locale.h>
 
 #include "ut_string.h"
 #include "ut_assert.h"
@@ -258,9 +259,9 @@ void AP_UnixDialog_FormatTable::event_previewExposed(void)
 		m_pFormatTablePreview->draw();
 }
 
-void AP_UnixDialog_FormatTable::setBorderThicknessInGUI(UT_String & sThick)
+void AP_UnixDialog_FormatTable::setBorderThicknessInGUI(UT_UTF8String & sThick)
 {
-	double thickness = UT_convertToInches(sThick.c_str());
+	double thickness = UT_convertToInches(sThick.utf8_str());
 	guint i =0;
 	guint closest = 0;
 	double dClose = 100000000.;
@@ -287,7 +288,11 @@ void AP_UnixDialog_FormatTable::event_BorderThicknessChanged(void)
 	{
 		gint history = gtk_option_menu_get_history(GTK_OPTION_MENU(m_wBorderThickness));
 		double thickness = m_dThickness[history];
-		UT_String sThickness = UT_String_sprintf("%fin",thickness);
+
+		char * locale = setlocale(LC_NUMERIC, "C");
+		UT_UTF8String sThickness(UT_UTF8String_sprintf("%fin",thickness));
+		setlocale(LC_NUMERIC, locale);
+
 		setBorderThickness(sThickness);
 		event_previewExposed();
 	}
