@@ -2403,7 +2403,7 @@ const PP_AttrProp * PD_Document::explodeRevisions(PP_RevisionAttr *& pRevisions,
 		{
 			// revisions not to be shown, but document to be presented
 			// as it looks after the revision iId
-			UT_ASSERT( bMark || iId == 0xffffffff );
+			// UT_ASSERT( bMark || iId == 0xffffffff );
 			
 			UT_uint32 iMyMaxId = bMark ? UT_MIN(iId,iMaxId) : iMaxId;
 
@@ -5624,6 +5624,15 @@ bool PD_Document::areDocumentFormatsEqual(const AD_Document &D, UT_uint32 &pos) 
 	}
 
 	return true;
+}
+
+void PD_Document::setMarkRevisions(bool bMark)
+{
+	if(isMarkRevisions() != bMark)
+	{
+		AD_Document::setMarkRevisions(bMark);
+	 	signalListeners(PD_SIGNAL_REVISION_MODE_CHANGED);
+	}
 }
 
 

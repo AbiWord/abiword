@@ -509,18 +509,21 @@ public:
 	void                toggleMarkRevisions();
 	void                cmdAcceptRejectRevision(bool bReject, UT_sint32 x, UT_sint32 y);
 	// NB: 'mark revisions' state is document-wide
-	bool                isMarkRevisions();
+	bool                isMarkRevisions() const;
 	// NB: 'show revisions' state is view-specific
 	bool                isShowRevisions() const {return m_bShowRevisions;}
 	void                toggleShowRevisions();
 	void                setShowRevisions(bool bShow);
 	
 	void                cmdSetRevisionLevel(UT_uint32 i);
-	UT_uint32           getRevisionLevel()const{return m_iViewRevision;}
+	UT_uint32           getRevisionLevel()const;
 	void                setRevisionLevel(UT_uint32 i);
 
 	bool                cmdFindRevision(bool bNext, UT_sint32 xPos, UT_sint32 yPos);
 	bool                doesSelectionContainRevision() const;
+  protected:
+	void                _fixInsertionPointAfterRevision();
+  public:
 	
 	/* Table related functions */
 	bool                isPointLegal(PT_DocPosition pos);

@@ -32,23 +32,68 @@
 #include "px_ChangeRecord.h"
 #include "px_CR_Object.h"
 #include "px_CR_ObjectChange.h"
+#include "pp_Revision.h"
 
 /*****************************************************************/
 /*****************************************************************/
 bool pt_PieceTable::insertObject(PT_DocPosition dpos,
-									PTObjectType pto,
-									const XML_Char ** attributes,
-									  const XML_Char ** properties,  pf_Frag_Object ** ppfo)
+								 PTObjectType pto,
+								 const XML_Char ** attributes,
+								 const XML_Char ** properties,  pf_Frag_Object ** ppfo)
 {
-	return _realInsertObject(dpos, pto, attributes, properties, ppfo);
+	if(!_realInsertObject(dpos, pto, attributes, properties, ppfo))
+		return false;
+
+	if(m_pDocument->isMarkRevisions())
+	{
+		PP_RevisionAttr Revisions(NULL);
+		const XML_Char ** ppRevAttrib = NULL;
+		const XML_Char ** ppRevProps  = NULL;
+
+		pf_Frag * pf = NULL;
+		PT_BlockOffset fragOffset = 0;
+		bool bFound = getFragFromPosition(dpos,&pf,&fragOffset);
+		UT_return_val_if_fail( bFound, false );
+
+		PT_AttrPropIndex indexAP = pf->getIndexAP();
+		UT_uint32 length = pf->getLength();
+		
+		_translateRevisionAttribute(Revisions, indexAP, PP_REVISION_ADDITION, ppRevAttrib, ppRevProps);
+		
+		return _realChangeSpanFmt(PTC_AddFmt, dpos, dpos + length, ppRevAttrib, ppRevProps);
+	}
+
+	return true;
 }
 
 bool pt_PieceTable::insertObject(PT_DocPosition dpos,
-									PTObjectType pto,
-									const XML_Char ** attributes,
-									  const XML_Char ** properties )
+								 PTObjectType pto,
+								 const XML_Char ** attributes,
+								 const XML_Char ** properties )
 {
-	return _realInsertObject(dpos, pto, attributes, properties);
+	if(!_realInsertObject(dpos, pto, attributes, properties))
+		return false;
+
+	if(m_pDocument->isMarkRevisions())
+	{
+		PP_RevisionAttr Revisions(NULL);
+		const XML_Char ** ppRevAttrib = NULL;
+		const XML_Char ** ppRevProps  = NULL;
+
+		pf_Frag * pf = NULL;
+		PT_BlockOffset fragOffset = 0;
+		bool bFound = getFragFromPosition(dpos,&pf,&fragOffset);
+		UT_return_val_if_fail( bFound, false );
+
+		PT_AttrPropIndex indexAP = pf->getIndexAP();
+		UT_uint32 length = pf->getLength();
+
+		_translateRevisionAttribute(Revisions, indexAP, PP_REVISION_ADDITION, ppRevAttrib, ppRevProps);
+		
+		return _realChangeSpanFmt(PTC_AddFmt, dpos, dpos + length, ppRevAttrib, ppRevProps);
+	}
+
+	return true;
 }
 
 bool pt_PieceTable::_realInsertObject(PT_DocPosition dpos,

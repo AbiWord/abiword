@@ -279,7 +279,7 @@ EV_Menu_ActionSet * AP_CreateMenuActionSet(void)
 	_s(AP_MENU_ID_CONTEXT_REVISIONS_REJECT_REVISION, 0,0,0,0, "revisionReject", ap_GetState_RevisionPresent, NULL);
 	_s(AP_MENU_ID_CONTEXT_REVISIONS_FIND_NEXT, 0,0,0,0, "revisionFindNext", ap_GetState_HasRevisions,NULL);
 	_s(AP_MENU_ID_CONTEXT_REVISIONS_FIND_PREV, 0,0,0,0, "revisionFindPrev", ap_GetState_HasRevisions,NULL);
-	_s(AP_MENU_ID_TOOLS_REVISIONS_SET_VIEW_LEVEL, 0,1,0,0, "revisionSetViewLevel", ap_GetState_HasRevisions, NULL);
+	_s(AP_MENU_ID_TOOLS_REVISIONS_SET_VIEW_LEVEL, 0,1,0,0, "revisionSetViewLevel", ap_GetState_RevisionsSelectLevel, NULL);
 	_s(AP_MENU_ID_TOOLS_HISTORY,  1,0,0,0,  NULL,               NULL,                   NULL);
 	_s(AP_MENU_ID_TOOLS_HISTORY_SHOW, 0,1,0,0, "history", NULL, NULL);
 

@@ -2052,6 +2052,10 @@ bool fl_DocListener::signal(UT_uint32 iSignal)
 	case PD_SIGNAL_REFORMAT_LAYOUT:
 		m_pLayout->formatAll();
 		break;
+	case PD_SIGNAL_REVISION_MODE_CHANGED:
+		pView->_fixInsertionPointAfterRevision();
+		// fall through ...
+		
 	case PD_SIGNAL_DOCPROPS_CHANGED_REBUILD:
 		m_pLayout->updatePropsRebuild();
 		break;

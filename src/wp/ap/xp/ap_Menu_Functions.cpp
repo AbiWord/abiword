@@ -1051,6 +1051,19 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_MarkRevisions)
     return EV_MIS_ZERO;
 }
 
+Defun_EV_GetMenuItemState_Fn(ap_GetState_RevisionsSelectLevel)
+{
+	ABIWORD_VIEW;
+	UT_ASSERT(pView);
+
+	if(pView->getDocument()->isAutoRevisioning() || pView->isMarkRevisions())
+	{
+		return EV_MIS_Gray;
+	}
+
+    return EV_MIS_ZERO;
+}
+
 Defun_EV_GetMenuItemState_Fn(ap_GetState_HasRevisions)
 {
 	ABIWORD_VIEW;

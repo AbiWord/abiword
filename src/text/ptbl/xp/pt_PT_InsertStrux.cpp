@@ -42,6 +42,76 @@
 
 /****************************************************************/
 /****************************************************************/
+
+/*!
+    A helper function which translates a revision attribute associated with fragment of type pts at
+    pos dpos into arrays of attributes and properties suitable for passing into formating and other funcitons.
+
+    Revisions -- an instance of an empty PP_RevisionsAttr (i.e., PP_RevisionsAttr(NULL);)
+    
+    ppRevAttrib -- pointers to arrays of attributes and properties; the actual props and attribs are
+    ppRevProps     found inside the Revisions variable, so the returned pointers are only valid
+                   within the Revisions scope !!!.
+*/
+bool pt_PieceTable::_translateRevisionAttribute(PP_RevisionAttr & Revisions, PT_AttrPropIndex indexAP,
+												PP_RevisionType eType,
+												const XML_Char ** & ppRevAttrib,
+												const XML_Char ** & ppRevProps)
+{
+	// foolproofing
+	ppRevAttrib = NULL;
+	ppRevProps = NULL;
+	
+	UT_return_val_if_fail(m_pDocument->isMarkRevisions(),false );
+	
+	const PP_AttrProp * pRevisedAP = NULL;
+	const PP_AttrProp * pAP = NULL;
+	getAttrProp(indexAP, &pAP);
+	const XML_Char name[] = "revision";
+
+	if(pAP)
+	{
+		const XML_Char * pRev = NULL;
+		if(pAP->getAttribute(name, pRev))
+		{
+			// OK, the previous strux had a revision attribute, which was copied into the new
+			// strux. This revision attribute can contain significant properties and attributes
+			// which need to be preserved (such as list ids). However, we want the revision
+			// attributes from the addition and fmt records to be transfered into the regular
+			// attrs and props
+				
+			Revisions.setRevision(pRev);
+			Revisions.pruneForCumulativeResult();
+			pRevisedAP = Revisions.getLastRevision();
+			UT_return_val_if_fail( pRevisedAP, false );
+
+			PP_RevisionAttr Revisions2(NULL);
+
+			// now add the revision attribute
+			Revisions2.addRevision(m_pDocument->getRevisionId(),eType,NULL,NULL);
+			const_cast<PP_AttrProp*>(pRevisedAP)->setAttribute(name, Revisions2.getXMLstring());
+		}
+	}
+	
+	if(!pRevisedAP)
+	{
+		// there was either no pAP or no pRev, just add the current revision ...
+		// we need to create a rev. instance in Revisions
+		Revisions.addRevision(m_pDocument->getRevisionId(),eType,NULL,NULL);
+		pRevisedAP = Revisions.getLastRevision();
+		UT_return_val_if_fail( pRevisedAP, false );
+
+		// now set the revision attribute of the revision
+		const_cast<PP_AttrProp*>(pRevisedAP)->setAttribute(name, Revisions.getXMLstring());
+	}
+
+	ppRevAttrib = pRevisedAP->getAttributes();
+	ppRevProps  = pRevisedAP->getProperties();
+	
+	return true;
+}
+
+
 bool pt_PieceTable::insertStrux(PT_DocPosition dpos,
 								PTStruxType pts,
 								pf_Frag_Strux ** ppfs_ret)
@@ -52,16 +122,14 @@ bool pt_PieceTable::insertStrux(PT_DocPosition dpos,
 	if(m_pDocument->isMarkRevisions())
 	{
 		pf_Frag_Strux * pfsContainer = NULL;
-		bool bFoundContainer = _getStruxFromPosition(dpos-1,&pfsContainer); // the orig. strux
-		UT_ASSERT(bFoundContainer);
+		bool bFoundContainer = _getStruxFromPosition(dpos,&pfsContainer); // the orig. strux
+		UT_return_val_if_fail(bFoundContainer, false);
 	
 		if(isEndFootnote(pfsContainer))
 		{
 			bFoundContainer = _getStruxFromFragSkip(pfsContainer,&pfsContainer);
+			UT_return_val_if_fail(bFoundContainer, false);
 		}
-
-		PP_RevisionAttr Revisions(NULL);
-		PP_RevisionAttr Revisions2(NULL);
 
 		PT_AttrPropIndex indexAP = 0;
 		if (pfsContainer->getStruxType() == pts)
@@ -69,110 +137,12 @@ bool pt_PieceTable::insertStrux(PT_DocPosition dpos,
 			indexAP = pfsContainer->getIndexAP();
 		}
 
-		const PP_AttrProp * pRevisedAP = NULL;
-		const PP_AttrProp * pAP = NULL;
-		getAttrProp(indexAP, &pAP);
-		const XML_Char name[] = "revision";
-
-		bool bAddRevision = true;
-		if(pAP)
-		{
-			const XML_Char * pRev = NULL;
-			if(pAP->getAttribute(name, pRev))
-			{
-				// OK, the previous strux had a revision attribute, which was copied into the new
-				// strux. This revision attribute can contain significant properties and attributes
-				// which need to be preserved (such as list ids). If we are in a simple revisions
-				// mode, we will preserve these as a part of the revisions attribute, and if the
-				// revisions contain record with the same id as the current one, we will ensure that
-				// the record for this strux has the correct type, i.e., addition.
-				//
-				// If, however, we are in full-history mode, we want the revision attributes from
-				// the addition and fmt records to be transfered into the regular attrs and props
-				
-				if(m_pDocument->isAutoRevisioning())
-				{
-					Revisions2.setRevision(pRev);
-#ifdef DEBUG
-					UT_uint32 i;
-					pRevisedAP = Revisions2.getLastRevision();
-					for(i = 0; i < pRevisedAP->getPropertyCount(); ++i)
-					{
-						const XML_Char * pName, *pValue;
-						pRevisedAP->getNthProperty(i,pName,pValue);
-						UT_DEBUGMSG(("Revised props1: %s : %s\n", pName, pValue));
-					}
-#endif
-
-					Revisions2.pruneForCumulativeResult();
-					pRevisedAP = Revisions2.getLastRevision();
-					UT_return_val_if_fail( pRevisedAP, false );
-#ifdef DEBUG
-					for(i = 0; i < pRevisedAP->getPropertyCount(); ++i)
-					{
-						const XML_Char * pName, *pValue;
-						pRevisedAP->getNthProperty(i,pName,pValue);
-						UT_DEBUGMSG(("Revised props2: %s : %s\n",pName, pValue));
-					}
-#endif
-					// now add the revision attribute
-					Revisions.addRevision(m_pDocument->getRevisionId(),PP_REVISION_ADDITION,NULL,NULL);
-					const_cast<PP_AttrProp*>(pRevisedAP)->setAttribute(name, Revisions.getXMLstring());
-
-#ifdef DEBUG
-					for(i = 0; i < pRevisedAP->getPropertyCount(); ++i)
-					{
-						const XML_Char * pName, *pValue;
-						pRevisedAP->getNthProperty(i,pName,pValue);
-						UT_DEBUGMSG(("Revised props3: %s : %s\n",pName, pValue));
-					}
-#endif
-					bAddRevision = false;
-				}
-				else
-				{
-					Revisions.setRevision(pRev); // init with current attribute
-	
-					if(Revisions.changeRevisionType(m_pDocument->getRevisionId(), PP_REVISION_ADDITION))
-					{
-						bAddRevision = false;
-					}
-				}
-			}
-		}
-
-		if(bAddRevision)
-		{
-			Revisions.addRevision(m_pDocument->getRevisionId(),PP_REVISION_ADDITION,NULL,NULL);
-		}
-
+		PP_RevisionAttr Revisions(NULL);
 		const XML_Char ** ppRevAttrib = NULL;
 		const XML_Char ** ppRevProps  = NULL;
-		const XML_Char * ppRevAttrib1[3];
 
-		if(m_pDocument->isAutoRevisioning())
-		{
-			ppRevAttrib = pRevisedAP->getAttributes();
-			ppRevProps  = pRevisedAP->getProperties();
-#ifdef DEBUG
-			UT_uint32 i;
-			for(i = 0; i < pRevisedAP->getPropertyCount(); ++i)
-			{
-				const XML_Char * pName, *pValue;
-				pRevisedAP->getNthProperty(i,pName,pValue);
-				UT_DEBUGMSG(("Revised props4: %s : %s\n", pName, pValue));
-			}
-#endif
-		}
-		else
-		{
-			ppRevAttrib1[0] = name;
-			ppRevAttrib1[1] = Revisions.getXMLstring();
-			ppRevAttrib1[2] = NULL;
+		_translateRevisionAttribute(Revisions, indexAP, PP_REVISION_ADDITION, ppRevAttrib, ppRevProps);
 
-			ppRevAttrib = ppRevAttrib1;
-		}
-		
 		UT_uint32 iLen;
 
 		switch (pts)

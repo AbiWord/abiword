@@ -32,6 +32,8 @@
 #include "px_ChangeHistory.h"
 #include "pf_Fragments.h"
 #include "pt_VarSet.h"
+#include "pp_Revision.h"
+
 class pf_Frag_Object;
 class pf_Frag_FmtMark;
 class pf_Frag_Text;
@@ -508,6 +510,13 @@ protected:
 										pf_Frag_Object * &pfo);
 	bool					_makeFmtMark(pf_Frag_FmtMark * &pff);
 	bool                    _makeFmtMark(pf_Frag_FmtMark * &pff, const XML_Char ** attributes);
+
+	// implemented in pt_PT_InsertStrux.cpp
+	bool                    _translateRevisionAttribute(PP_RevisionAttr & Revisions, PT_AttrPropIndex indexAP,
+														PP_RevisionType eType,
+														const XML_Char ** & ppRevAttrib,
+														const XML_Char ** & ppRevProps);
+	
 
 	PTState					m_pts;		/* are we loading or editing */
 	pt_VarSet				m_varset;

@@ -4887,3 +4887,29 @@ void FV_View::_restorePieceTableState(void)
 }
 
 
+void FV_View::_fixInsertionPointAfterRevision()
+{
+	if(!m_pDoc->isMarkRevisions() && isSelectionEmpty())
+	{
+		bool bRet;
+
+		// Signal PieceTable Change
+		_saveAndNotifyPieceTableChange();
+
+		PT_DocPosition posStart = getPoint();
+		PT_DocPosition posEnd = posStart;
+
+		const XML_Char rev[] = "revision";
+		const XML_Char val[] = "";
+		const XML_Char * attr[3] = {rev,val,NULL};
+
+		bRet = m_pDoc->changeSpanFmt(PTC_RemoveFmt,posStart,posEnd,attr,NULL);
+
+		// Signal piceTable is stable again
+		_restorePieceTableState();
+
+		// might need to do general update here; leave it off for now
+		// _generalUpdate();
+		_fixInsertionPointCoords();
+	}
+}

@@ -55,15 +55,19 @@ bool pt_PieceTable::insertSpan(PT_DocPosition dpos,
 	if(bAddChangeRec && m_pDocument->isMarkRevisions())
 	{
 		PP_RevisionAttr Revisions(NULL);
-		Revisions.addRevision(m_pDocument->getRevisionId(),PP_REVISION_ADDITION,NULL,NULL);
+		const XML_Char ** ppRevAttrib = NULL;
+		const XML_Char ** ppRevProps  = NULL;
 
-		const XML_Char name[] = "revision";
-		const XML_Char * ppRevAttrib[3];
-		ppRevAttrib[0] = name;
-		ppRevAttrib[1] = Revisions.getXMLstring();
-		ppRevAttrib[2] = NULL;
+		pf_Frag * pf = NULL;
+		PT_BlockOffset fragOffset = 0;
+		bool bFound = getFragFromPosition(dpos,&pf,&fragOffset);
+		UT_return_val_if_fail( bFound, false );
 
-		return _realChangeSpanFmt(PTC_AddFmt, dpos, dpos + length, ppRevAttrib,NULL);
+		PT_AttrPropIndex indexAP = pf->getIndexAP();
+
+		_translateRevisionAttribute(Revisions, indexAP, PP_REVISION_ADDITION, ppRevAttrib, ppRevProps);
+		
+		return _realChangeSpanFmt(PTC_AddFmt, dpos, dpos + length, ppRevAttrib, ppRevProps);
 	}
 	else if(bAddChangeRec)
 	{

@@ -9696,40 +9696,6 @@ UT_uint32 FV_View::calculateZoomPercentForWholePage()
 void FV_View::toggleMarkRevisions()
 {
 	m_pDoc->toggleMarkRevisions();
-
-	// if we turned the revisions off, we want to remove any revisions
-	// attribute from the formatting at the insertion point so as not
-	// to have any newly entered text marked as revision
-	// we will only do this if there is no selection ...
-	if(!isMarkRevisions() && isSelectionEmpty())
-	{
-		bool bRet;
-
-		// Signal PieceTable Change
-		_saveAndNotifyPieceTableChange();
-
-		PT_DocPosition posStart = getPoint();
-		PT_DocPosition posEnd = posStart;
-
-		const XML_Char rev[] = "revision";
-		const XML_Char val[] = "";
-		const XML_Char * attr[3] = {rev,val,NULL};
-
-		bRet = m_pDoc->changeSpanFmt(PTC_RemoveFmt,posStart,posEnd,attr,NULL);
-
-		// Signal piceTable is stable again
-		_restorePieceTableState();
-
-		// might need to do general update here; leave it off for now
-		// _generalUpdate();
-		_fixInsertionPointCoords();
-	}
-
-	if(isMarkRevisions() && !m_bShowRevisions)
-	{
-		// make sure we see what we are doing ...
-		setShowRevisions(true);
-	}
 }
 
 void FV_View::setShowRevisions(bool bShow)
@@ -9763,7 +9729,30 @@ void FV_View::setRevisionLevel(UT_uint32 i)
 	m_iViewRevision = i;
 }
 
-bool FV_View::isMarkRevisions()
+/*!
+    Revision level i means that the document is to be shown as it looks _after_ revision with id ==
+    i. In non-revisioning mode, any revision level is OK, but when marking revisions legal values
+    are >= current revisioning level - 1.
+*/
+UT_uint32 FV_View::getRevisionLevel()const
+{
+	if(m_iViewRevision && isMarkRevisions())
+	{
+		UT_uint32 iRevLevel = m_pDoc->getHighestRevisionId();
+
+		if(!iRevLevel)
+			return 0;
+		
+		--iRevLevel;
+	
+		if(m_iViewRevision < iRevLevel)
+			return 0xffffffff;
+	}
+	
+	return m_iViewRevision;
+}
+
+bool FV_View::isMarkRevisions() const
 {
 	return m_pDoc->isMarkRevisions();
 }

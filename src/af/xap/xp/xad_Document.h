@@ -230,7 +230,7 @@ public:
 	void                toggleMarkRevisions();
 	void                toggleShowRevisions();
 
-	void                setMarkRevisions(bool bMark);
+	virtual void        setMarkRevisions(bool bMark);
 	void                setShowRevisions(bool bShow);
 	void                setShowRevisionId(UT_uint32 iId);
 	void                setRevisionId(UT_uint32 iId);

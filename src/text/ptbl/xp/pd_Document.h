@@ -67,7 +67,8 @@ enum
 	PD_SIGNAL_UPDATE_LAYOUT,
 	PD_SIGNAL_REFORMAT_LAYOUT,
 	PD_SIGNAL_DOCPROPS_CHANGED_REBUILD,
-	PD_SIGNAL_DOCPROPS_CHANGED_NO_REBUILD
+	PD_SIGNAL_DOCPROPS_CHANGED_NO_REBUILD,
+	PD_SIGNAL_REVISION_MODE_CHANGED
 };
 
 /////////////////////////////////////////////////////////
@@ -427,6 +428,8 @@ public:
 	/////////////////////////////////////////////////////////////////////////////
 	// Functions for dealing with revisions
 	//
+	virtual void            setMarkRevisions(bool bMark);
+	
 	virtual bool            acceptRejectRevision(bool bReject,
 												 UT_uint32 iStart,
 												 UT_uint32 iEnd,

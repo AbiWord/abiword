@@ -54,6 +54,7 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_ShowRevisionsAfterPrev);
 Defun_EV_GetMenuItemState_Fn(ap_GetState_ShowRevisionsBefore);
 Defun_EV_GetMenuItemState_Fn(ap_GetState_RevisionPresent);
 Defun_EV_GetMenuItemState_Fn(ap_GetState_RevisionPresentContext);
+Defun_EV_GetMenuItemState_Fn(ap_GetState_RevisionsSelectLevel);
 Defun_EV_GetMenuItemState_Fn(ap_GetState_InTOC);
 Defun_EV_GetMenuItemState_Fn(ap_GetState_InTable);
 Defun_EV_GetMenuItemState_Fn(ap_GetState_InTableMerged);
