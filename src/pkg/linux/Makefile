@@ -140,6 +140,7 @@ pack_rpm:
 rpm: pack_rpm
 # A tarball is already sitting in /usr/src/redhat/SOURCES (or thereabouts)
 # so rip the spec template through some sed magic and run with it.
+	@$(subst xxxx,$(DIST),$(VERIFY_DIRECTORY))	
 	@echo "Exporting spec file to [$(RPM_SOURCE_DIR)/SPECS]..."
 	@(sed "s/__ABI_BUILD_VERSION__/$(ABI_BUILD_VERSION)/" rpm/abisuite.spec-template \
 		| sed "s/__ABI_RELEASE_NUMBER__/$(ABI_RELEASE_NUMBER)/" \
@@ -152,11 +153,13 @@ rpm: pack_rpm
 # We're using alien to convert from RPM to DEB package
 deb: rpm
 	@echo "Producing DEB..."
+	@$(subst xxxx,$(DIST),$(VERIFY_DIRECTORY))	
 	(cd $(DIST); fakeroot alien --to-deb -c -k abisuite-$(ABI_BUILD_VERSION)-$(ABI_RELEASE_NUMBER).$(OS_ARCH).rpm)
 
 # We're using alien to convert from RPM to SLP package
 slp: rpm
 	@echo "Producing SLP..."
+	@$(subst xxxx,$(DIST),$(VERIFY_DIRECTORY))	
 	(cd $(DIST); fakeroot alien --to-slp -c -k abisuite-$(ABI_BUILD_VERSION)-$(ABI_RELEASE_NUMBER).$(OS_ARCH).rpm)
 
 # tgz target is provided by a common Unix makefile
