@@ -125,9 +125,9 @@ EV_Toolbar_ActionSet * AP_CreateToolbarActionSet(void)
 	_s(AP_TOOLBAR_ID_MIDDLE_SPACE,	EV_TBIT_GroupButton,	"middleSpace",	AV_CHG_FMTBLOCK,	ap_ToolbarGetState_BlockFmt);
 	_s(AP_TOOLBAR_ID_DOUBLE_SPACE,	EV_TBIT_GroupButton,	"doubleSpace",	AV_CHG_FMTBLOCK,	ap_ToolbarGetState_BlockFmt);
 
-	_s(AP_TOOLBAR_ID_1COLUMN,		EV_TBIT_GroupButton,	"sectColumns1",	AV_CHG_FMTSECTION,	ap_ToolbarGetState_SectionFmt);
-	_s(AP_TOOLBAR_ID_2COLUMN,		EV_TBIT_GroupButton,	"sectColumns2",	AV_CHG_FMTSECTION,	ap_ToolbarGetState_SectionFmt);
-	_s(AP_TOOLBAR_ID_3COLUMN,		EV_TBIT_GroupButton,	"sectColumns3",	AV_CHG_FMTSECTION,	ap_ToolbarGetState_SectionFmt);
+	_s(AP_TOOLBAR_ID_1COLUMN,		EV_TBIT_GroupButton,	"sectColumns1",	AV_CHG_ALL,	ap_ToolbarGetState_SectionFmt);
+	_s(AP_TOOLBAR_ID_2COLUMN,		EV_TBIT_GroupButton,	"sectColumns2",	AV_CHG_ALL,	ap_ToolbarGetState_SectionFmt);
+	_s(AP_TOOLBAR_ID_3COLUMN,		EV_TBIT_GroupButton,	"sectColumns3",	AV_CHG_ALL,	ap_ToolbarGetState_SectionFmt);
 
 	_s(AP_TOOLBAR_ID_VIEW_SHOWPARA,	EV_TBIT_ToggleButton,	"viewPara",		AV_CHG_FRAMEDATA,	ap_ToolbarGetState_View);
 
