@@ -2980,57 +2980,62 @@ void AP_TopRuler::mouseRelease(EV_EditModifierState ems, EV_EditMouseButton /* e
 					pTInfo = static_cast<AP_TopRulerTableInfo *>(m_infoCache.m_vecTableColInfo->getNthItem(m_draggingCell-1));
 					rightDrag = pTInfo->m_iRightCellPos ;
 				}
-				for(i=1; i <= iNumCells ;i++)
+				if(!bDragLeftMost)
 				{
-					UT_sint32 left =0;
-					UT_sint32 right = 0;
-					UT_sint32 width = 0;
-				//
-					pTInfo = static_cast<AP_TopRulerTableInfo *>(m_infoCache.m_vecFullTable->getNthItem(i-1));
-					UT_DEBUGMSG(("ap_TopRuler: leftDrag %d i %d pTInfo->m_iLeftCellPos %d \n",leftDrag,i,pTInfo->m_iLeftCellPos));
-					if(rightDrag != pTInfo->m_iRightCellPos)
+					for(i=1; i <= iNumCells ;i++)
 					{
-						left = pTInfo->m_iLeftCellPos + xAbsLeft + pTInfo->m_iLeftSpacing;
-						if(i < iNumCells)
+						UT_sint32 left =0;
+						UT_sint32 right = 0;
+						UT_sint32 width = 0;
+				//
+						pTInfo = static_cast<AP_TopRulerTableInfo *>(m_infoCache.m_vecFullTable->getNthItem(i-1));
+						UT_DEBUGMSG(("ap_TopRuler: leftDrag %d i %d pTInfo->m_iLeftCellPos %d \n",leftDrag,i,pTInfo->m_iLeftCellPos));
+						if(rightDrag != pTInfo->m_iRightCellPos)
 						{
-							pTInfo = static_cast<AP_TopRulerTableInfo *>(m_infoCache.m_vecTableColInfo->getNthItem(i));
-							right = pTInfo->m_iLeftCellPos + xAbsLeft + pTInfo->m_iLeftSpacing;
+							left = pTInfo->m_iLeftCellPos + xAbsLeft + pTInfo->m_iLeftSpacing;
+							if(i < iNumCells)
+							{
+								pTInfo = static_cast<AP_TopRulerTableInfo *>(m_infoCache.m_vecFullTable->getNthItem(i));
+								right = pTInfo->m_iLeftCellPos + xAbsLeft + pTInfo->m_iLeftSpacing;
+							}
+							else
+							{
+								right = pTInfo->m_iRightCellPos + xAbsLeft + pTInfo->m_iRightSpacing;
+							}
+							width = right - left;
+							if(width < 3*pTInfo->m_iLeftSpacing)
+							{
+								width = 3*pTInfo->m_iLeftSpacing;
+							}
 						}
 						else
 						{
-							right = pTInfo->m_iRightCellPos + xAbsLeft + pTInfo->m_iRightSpacing;
+							right =  m_draggingCenter;
+							left = pTInfo->m_iLeftCellPos + xAbsLeft + pTInfo->m_iLeftSpacing;
+							width = right - left;
+							if(width < 3*pTInfo->m_iLeftSpacing)
+							{
+								width = 3*pTInfo->m_iLeftSpacing;
+							}
 						}
-						width = right - left;
-						if(width < 3*pTInfo->m_iLeftSpacing)
-						{
-							width = 3*pTInfo->m_iLeftSpacing;
-						}
+						dxrel = tick.scalePixelDistanceToUnits(width);
+						UT_String sTmp = pView->getGraphics()->invertDimension(tick.dimType,dxrel);
+						sColWidths += sTmp;
+						sColWidths += '/';
 					}
-					else
-					{
-						right =  m_draggingCenter;
-						left = pTInfo->m_iLeftCellPos + xAbsLeft + pTInfo->m_iLeftSpacing;
-						width = right - left;
-						if(width < 3*pTInfo->m_iLeftSpacing)
-						{
-							width = 3*pTInfo->m_iLeftSpacing;
-						}
-					}
-					dxrel = tick.scalePixelDistanceToUnits(width);
-					UT_String sTmp = pView->getGraphics()->invertDimension(tick.dimType,dxrel);
-					sColWidths += sTmp;
-					sColWidths += '/';
-				}
 
+				}
+				UT_DEBUGMSG(("SEVIOR: COlumn Width string = %s \n",sColWidths.c_str()));
 			}
-			UT_DEBUGMSG(("SEVIOR: COlumn Width string = %s \n",sColWidths.c_str()));
 			m_draggingWhat = DW_NOTHING;
 			FV_View * pView = static_cast<FV_View *>(m_pView);
-			const XML_Char * props[5] = {NULL,NULL,NULL,NULL,NULL};
-			props[0] = "table-column-props";
-			props[1] = sColWidths.c_str();
- 
-			if(m_draggingCell == 0)
+			const XML_Char * props[3] = {NULL,NULL,NULL};
+			if(!bDragLeftMost)
+			{
+				props[0] = "table-column-props";
+				props[1] = sColWidths.c_str();
+			}
+			else
 			{
 				if(m_pG == NULL)
 				{
@@ -3040,8 +3045,8 @@ void AP_TopRuler::mouseRelease(EV_EditModifierState ems, EV_EditMouseButton /* e
 				xxx_UT_DEBUGMSG(("ap_TopRuler - set Left most leftCol %d dragging center %d M-iCellContainerLeftPos %d \n",leftCol,m_draggingCenter,  m_iCellContainerLeftPos));
 				double dLeft = tick.scalePixelDistanceToUnits(leftCol);
 				sCellPos = pView->getGraphics()->invertDimension(tick.dimType,dLeft);
-				props[2] = "table-column-leftpos";
-				props[3] = sCellPos.c_str();
+				props[0] = "table-column-leftpos";
+				props[1] = sCellPos.c_str();
 			}
 
 //
