@@ -215,7 +215,7 @@ public:
 	void		addDirectionUsed(FriBidiCharType dir, bool bRefreshMap = true);
 	void		removeDirectionUsed(FriBidiCharType dir, bool bRefreshMap = true);
 	void		changeDirectionUsed(FriBidiCharType oldDir, FriBidiCharType newDir, bool bRefreshMap = true);
-	bool		getHasFootnoteRef() { return m_bHasFootnoteRef; }
+	bool		containsFootnoteRef() { return m_bContainsFootnoteRef; }
 
 #ifdef FMT_TEST
 	void		__dump(FILE * fp) const;
@@ -292,8 +292,8 @@ void		_splitRunsAtSpaces(void);
 	UT_uint32		m_iRunsLTRcount;
 	UT_sint32		m_iMaxDirLevel;
 	bool            m_bIsCleared;
-	bool			m_bHasFootnoteRef; // updated when runs added/removed.
-	void			_updateHasFootnoteRef(void);
+	bool			m_bContainsFootnoteRef; // updated when runs added/removed.
+	void			_updateContainsFootnoteRef(void);
 };
 
 #endif /* FP_LINE_H */
