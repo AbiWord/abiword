@@ -138,6 +138,7 @@ BOOL AP_Win32Dialog_FormatFootnotes::_onInitDialog(HWND hWnd, WPARAM wParam, LPA
 	_DSX(BTN_CANCEL,		DLG_Cancel);				
 	_DS(RADIO_RSEL, 		DLG_FormatFootnotes_FootRestartSec);	
 	_DS(RADIO_PAGE,			DLG_FormatFootnotes_FootRestartPage);
+	_DS(RADIO_DONOT,		DLG_FormatFootnotes_FootRestartNone);
 	_DS(STATIC_INITFOOTVAL,	DLG_FormatFootnotes_FootInitialVal);
 	_DS(STATIC_FSTYLES1,	DLG_FormatFootnotes_FootStyle);
 	_DS(STATIC_FSTYLES2,	DLG_FormatFootnotes_FootStyle);
@@ -147,6 +148,9 @@ BOOL AP_Win32Dialog_FormatFootnotes::_onInitDialog(HWND hWnd, WPARAM wParam, LPA
 	_DS(STATIC_ESTYLES1,	DLG_FormatFootnotes_EndStyle);
 	_DS(STATIC_ESTYLES2, 	DLG_FormatFootnotes_EndStyle);
 	_DS(RADIO_ERSTSEC, 		DLG_FormatFootnotes_EndRestartSec);
+	_DS(STATIC_PLACEMENT, 	DLG_FormatFootnotes_EndPlacement);
+	_DS(STATIC_NUMBERING, 	DLG_FormatFootnotes_FootnoteRestart);
+
 	
 	/*Caption*/
 	SetWindowText(hWnd, pSS->getValue(AP_STRING_ID_DLG_FormatFootnotes_Title));
@@ -184,12 +188,17 @@ BOOL AP_Win32Dialog_FormatFootnotes::_onInitDialog(HWND hWnd, WPARAM wParam, LPA
 	 	 	 	
  	
 	/*Set Default Radio buttons Footnotes */                                                                                                      
-	CheckRadioButton(hWnd, AP_RID_DIALOG_FORMATFOOTNOTES_RADIO_RSEL, AP_RID_DIALOG_FORMATFOOTNOTES_RADIO_PAGE,
-		getRestartFootnoteOnSection() ? AP_RID_DIALOG_FORMATFOOTNOTES_RADIO_RSEL : AP_RID_DIALOG_FORMATFOOTNOTES_RADIO_PAGE);                                                                              
+	if (getRestartFootnoteOnSection() || getRestartFootnoteOnPage())
+		CheckRadioButton(hWnd, AP_RID_DIALOG_FORMATFOOTNOTES_RADIO_RSEL, AP_RID_DIALOG_FORMATFOOTNOTES_RADIO_DONOT,
+			getRestartFootnoteOnSection() ? AP_RID_DIALOG_FORMATFOOTNOTES_RADIO_RSEL : AP_RID_DIALOG_FORMATFOOTNOTES_RADIO_PAGE);                                                                              
+	else
+		CheckRadioButton(hWnd, AP_RID_DIALOG_FORMATFOOTNOTES_RADIO_RSEL, AP_RID_DIALOG_FORMATFOOTNOTES_RADIO_DONOT,
+			AP_RID_DIALOG_FORMATFOOTNOTES_RADIO_DONOT);                                                                              
+
 
 	/*Set Default Radio buttons Endnotes */                                                                                                      		
 	CheckRadioButton(hWnd, AP_RID_DIALOG_FORMATFOOTNOTES_RADIO_ENDDOC, AP_RID_DIALOG_FORMATFOOTNOTES_RADIO_ENDSEC,
-		 getRestartEndnoteOnSection() ? AP_RID_DIALOG_FORMATFOOTNOTES_RADIO_ENDDOC: AP_RID_DIALOG_FORMATFOOTNOTES_RADIO_ENDSEC);                                                                              		
+		 getPlaceAtDocEnd() ? AP_RID_DIALOG_FORMATFOOTNOTES_RADIO_ENDDOC: AP_RID_DIALOG_FORMATFOOTNOTES_RADIO_ENDSEC);                                                                              		
 				
 	/* Set Footnotes Spin*/ 
 	SendMessage(GetDlgItem(hWnd,AP_RID_DIALOG_FORMATFOOTNOTES_SPIN_FSTYLE),UDM_SETRANGE,(WPARAM)1,(WPARAM)9999);	
@@ -256,6 +265,16 @@ BOOL AP_Win32Dialog_FormatFootnotes::_onCommand(HWND hWnd, WPARAM wParam, LPARAM
 			if (IsDlgButtonChecked(hWnd, AP_RID_DIALOG_FORMATFOOTNOTES_RADIO_PAGE))
 			{
 				setRestartFootnoteOnPage(true);
+				setRestartFootnoteOnSection(false);
+			}
+			break;	
+		}
+
+		case AP_RID_DIALOG_FORMATFOOTNOTES_RADIO_DONOT:
+		{
+			if (IsDlgButtonChecked(hWnd, AP_RID_DIALOG_FORMATFOOTNOTES_RADIO_DONOT))
+			{
+				setRestartFootnoteOnPage(false);
 				setRestartFootnoteOnSection(false);
 			}
 			break;	
