@@ -42,6 +42,9 @@
 
 /*
  * $Log$
+ * Revision 1.9  1999/10/20 03:19:35  paul
+ * Hacked ispell code to ignore any characters that don't fit in the lookup tables loaded from the dictionary.  It ain't pretty, but at least we don't crash there any more.
+ *
  * Revision 1.8  1999/09/29 23:33:32  justin
  * Updates to the underlying ispell-based code to support suggested corrections.
  *
@@ -601,6 +604,7 @@ extern int	isstringstart P ((unsigned int ch));
 extern ichar_t	mytolower P ((unsigned int ch));
 extern ichar_t	mytoupper P ((unsigned int ch));
 #else /* lint */
+#if 0
 #define myupper(X)	(hashheader.upperchars[(X)])
 #define mylower(X)	(hashheader.lowerchars[(X)])
 #define myspace(X)	(((X) > 0)  &&  ((X) < 0x80) \
@@ -610,6 +614,21 @@ extern ichar_t	mytoupper P ((unsigned int ch));
 #define isstringstart(X) (hashheader.stringstarts[(unsigned char) (X)])
 #define mytolower(X)	(hashheader.lowerconv[(X)])
 #define mytoupper(X)	(hashheader.upperconv[(X)])
+#else
+/*
+	HACK: macros replaced with function implementations 
+	so we could do a side-effect-free check for unicode
+	characters which aren't in hashheader
+*/
+char myupper(ichar_t c);
+char mylower(ichar_t c);
+int myspace(ichar_t c);
+char iswordch(ichar_t c);
+char isboundarych(ichar_t c);
+char isstringstart(ichar_t c);
+ichar_t mytolower(ichar_t c);
+ichar_t mytoupper(ichar_t c);
+#endif
 #endif /* lint */
 
 /*

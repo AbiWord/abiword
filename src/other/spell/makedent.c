@@ -43,6 +43,9 @@ static char Rcs_Id[] =
 
 /*
  * $Log$
+ * Revision 1.5  1999/10/20 03:19:35  paul
+ * Hacked ispell code to ignore any characters that don't fit in the lookup tables loaded from the dictionary.  It ain't pretty, but at least we don't crash there any more.
+ *
  * Revision 1.4  1999/04/13 17:12:51  jeff
  * Applied "Darren O. Benham" <gecko@benham.net> spell check changes.
  * Fixed crash on Win32 with the new code.
@@ -94,6 +97,7 @@ static char Rcs_Id[] =
 
 #include <stdlib.h>
 #include <string.h>
+#include <ctype.h>
 
 #include "ispell.h"
 #include "msgs.h"
@@ -720,4 +724,74 @@ int isboundarych (ch) unsigned int ch; { return (int) ch; }
 int isstringstart (ch) unsigned int ch; { return ch; }
 ichar_t mytolower (ch) unsigned int ch; { return (ichar_t) ch; }
 ichar_t mytoupper (ch) unsigned int ch; { return (ichar_t) ch; }
+#else
+/*
+	HACK: macros replaced with function implementations 
+	so we could do a side-effect-free check for unicode
+	characters which aren't in hashheader
+
+	TODO: this is just a workaround to keep us from crashing. 
+	more sophisticated logic needed here. 
+*/
+char myupper(ichar_t c)
+{
+	if (c < (SET_SIZE + MAXSTRINGCHARS))
+		return hashheader.upperchars[c];
+	else
+		return 0;
+}
+
+char mylower(ichar_t c)
+{
+	if (c < (SET_SIZE + MAXSTRINGCHARS))
+		return hashheader.lowerchars[c];
+	else
+		return 0;
+}
+
+int myspace(ichar_t c)
+{
+	return ((c > 0)  &&  (c < 0x80) &&  isspace((unsigned char) c));
+}
+
+char iswordch(ichar_t c)
+{
+	if (c < (SET_SIZE + MAXSTRINGCHARS))
+		return hashheader.wordchars[c];
+	else
+		return 0;
+}
+
+char isboundarych(ichar_t c)
+{
+	if (c < (SET_SIZE + MAXSTRINGCHARS))
+		return hashheader.boundarychars[c];
+	else
+		return 0;
+}
+
+char isstringstart(ichar_t c)
+{
+	if (c < (SET_SIZE))
+		return hashheader.stringstarts[(unsigned char) c];
+	else
+		return 0;
+}
+
+ichar_t mytolower(ichar_t c)
+{
+	if (c < (SET_SIZE + MAXSTRINGCHARS))
+		return hashheader.lowerconv[c];
+	else
+		return c;
+}
+
+ichar_t mytoupper (ichar_t c)
+{
+	if (c < (SET_SIZE + MAXSTRINGCHARS))
+		return hashheader.upperconv[c];
+	else
+		return c;
+}
+
 #endif /* lint */
