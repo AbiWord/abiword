@@ -46,6 +46,7 @@ public:
 	virtual void			event_Close(void);
 	void					event_ApplyToChanged(void);
 	void 					event_previewExposed(void);
+	virtual void            setBorderThicknessInGUI(UT_String & sThick) {};
 	virtual void			setSensitivity(bool bSens);
 	virtual void            destroy(void);
 	virtual void            activate(void);

@@ -97,6 +97,13 @@ static void s_border_color(GtkWidget *widget, gpointer data )
 	dlg->event_previewExposed();
 }
 
+static void s_border_thickness(GtkWidget *widget, gpointer data )
+{
+	AP_UnixDialog_FormatFrame * dlg = static_cast<AP_UnixDialog_FormatFrame *>(data);
+	UT_return_if_fail(widget && dlg);
+	dlg->event_BorderThicknessChanged();
+}
+
 static void s_background_color(GtkWidget *widget, gpointer data)
 {
 	AP_UnixDialog_FormatFrame * dlg = static_cast<AP_UnixDialog_FormatFrame *>(data);
@@ -170,6 +177,20 @@ AP_UnixDialog_FormatFrame::AP_UnixDialog_FormatFrame(XAP_DialogFactory * pDlgFac
 	m_wSetImageButton = NULL;
 	m_wSelectImageButton = NULL;
 	m_wNoImageButton = NULL;
+	m_wBorderThickness = NULL;
+	m_iBorderThicknessConnect = 0;
+//
+// These are hardwired into the GUI.
+//
+	const char * sThickness[FORMAT_FRAME_NUMTHICKNESS] ={"0.25pt","0.5pt",
+													   "0.75pt","1.0pt",
+													   "1.5pt","2.25pt","3pt",
+													   "4.5pt","6.0pt"};
+	UT_sint32 i = 0;
+	for(i=0; i< FORMAT_FRAME_NUMTHICKNESS ;i++)
+	{
+		m_dThickness[i] = UT_convertToInches(sThickness[i]);
+	}
 
 }
 
@@ -235,6 +256,41 @@ void AP_UnixDialog_FormatFrame::event_previewExposed(void)
 {
 	if(m_pFormatFramePreview)
 		m_pFormatFramePreview->draw();
+}
+
+void AP_UnixDialog_FormatFrame::setBorderThicknessInGUI(UT_String & sThick)
+{
+	double thickness = UT_convertToInches(sThick.c_str());
+	guint i =0;
+	guint closest = 0;
+	double dClose = 100000000.;
+	for(i=0; i<FORMAT_FRAME_NUMTHICKNESS; i++)
+	{
+		double diff = thickness - m_dThickness[i];
+		if(diff < 0)
+			diff = -diff;
+		if(diff < dClose)
+		{
+			closest = i;
+			dClose = diff;
+		}
+	}
+	g_signal_handler_block(G_OBJECT(m_wBorderThickness),m_iBorderThicknessConnect);
+	gtk_option_menu_set_history (GTK_OPTION_MENU(m_wBorderThickness),
+							  closest);
+	g_signal_handler_unblock(G_OBJECT(m_wBorderThickness),m_iBorderThicknessConnect);
+}
+
+void AP_UnixDialog_FormatFrame::event_BorderThicknessChanged(void)
+{
+	if(m_wBorderThickness)
+	{
+		gint history = gtk_option_menu_get_history(GTK_OPTION_MENU(m_wBorderThickness));
+		double thickness = m_dThickness[history];
+		UT_String sThickness = UT_String_sprintf("%fin",thickness);
+		setBorderThickness(sThickness);
+		event_previewExposed();
+	}
 }
 
 void AP_UnixDialog_FormatFrame::event_ApplyToChanged(void)
@@ -316,6 +372,7 @@ GtkWidget * AP_UnixDialog_FormatFrame::_constructWindow(void)
 	
 	localizeLabelMarkup(glade_xml_get_widget(xml, "lbBorder"), pSS, AP_STRING_ID_DLG_FormatFrame_Borders);
 	localizeLabel(glade_xml_get_widget(xml, "lbBorderColor"), pSS, AP_STRING_ID_DLG_FormatFrame_Color);
+	localizeLabel(glade_xml_get_widget(xml, "lbBorderThickness"), pSS, AP_STRING_ID_DLG_FormatTable_Thickness);
 	
 	localizeLabelMarkup(glade_xml_get_widget(xml, "lbBackground"), pSS, AP_STRING_ID_DLG_FormatFrame_Background);
 	localizeLabel(glade_xml_get_widget(xml, "lbBackgroundColor"), pSS, AP_STRING_ID_DLG_FormatFrame_Color);
@@ -355,11 +412,11 @@ GtkWidget * AP_UnixDialog_FormatFrame::_constructWindow(void)
 	m_wBackgroundColorButton = gtk_color_picker_new();
 	gtk_widget_show(m_wBackgroundColorButton);
 	gtk_box_pack_start(GTK_BOX (glade_xml_get_widget(xml, "hbBackgroundColor")), m_wBackgroundColorButton, FALSE, TRUE, 0);
+//
+// Now the Border Thickness Option menu
+// 
+	m_wBorderThickness = glade_xml_get_widget(xml, "omBorderThickness");
 	
-	// add the options to the "Apply to" menu
-	// NOTE: if you change this order, make sure to adjust event_ApplyToChanged as well!
-	// FIXME: PLEASE ADD A "localizeMenuItem" HELPER FUNCTION OR SOMETHING LIKE THAT
-
 	// add the apply and ok buttons to the dialog
 	m_wCloseButton = glade_xml_get_widget(xml, "btClose");
 	m_wApplyButton = glade_xml_get_widget(xml, "btApply");
@@ -441,6 +498,11 @@ void AP_UnixDialog_FormatFrame::_connectSignals(void)
 							"color_set",
 							G_CALLBACK(s_background_color),
 							reinterpret_cast<gpointer>(this));	   
+
+	m_iBorderThicknessConnect = g_signal_connect(G_OBJECT(m_wBorderThickness),
+							"changed",
+							G_CALLBACK(s_border_thickness),
+							reinterpret_cast<gpointer>(this));
 						   
 	g_signal_connect(G_OBJECT(m_wPreviewArea),
 							"expose_event",

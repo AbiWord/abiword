@@ -44,6 +44,7 @@ public:
 	virtual void            	destroy(void);
 	virtual void            	activate(void);
 	virtual void            	notifyActiveFrame(XAP_Frame * pFrame);
+	virtual void                setBorderThicknessInGUI(UT_String & sThick) {};
 	
 	HBITMAP 				_loadBitmap(HWND hWnd,UINT nId, char* pName, int x, int y, UT_RGBColor Color);
 	virtual BOOL			_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam);

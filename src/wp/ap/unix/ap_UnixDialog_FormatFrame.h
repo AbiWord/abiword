@@ -41,6 +41,8 @@ public:
 	virtual void			event_Close(void);
 	void					event_previewExposed(void);
 	void					event_ApplyToChanged(void);
+	void                    event_BorderThicknessChanged(void);
+	virtual void            setBorderThicknessInGUI(UT_String & sThick);
 	virtual void            setSensitivity(bool bsens);
 	virtual void            destroy(void);
 	virtual void            activate(void);
@@ -77,7 +79,9 @@ protected:
 	GtkWidget * m_wSetImageButton;
 	GtkWidget * m_wSelectImageButton;
 	GtkWidget * m_wNoImageButton;
-
+	GtkWidget * m_wBorderThickness;
+	guint       m_iBorderThicknessConnect;
+	double      m_dThickness[FORMAT_FRAME_NUMTHICKNESS];
 };
 
 #endif /* AP_UNIXDIALOG_FORMATFRAME_H */

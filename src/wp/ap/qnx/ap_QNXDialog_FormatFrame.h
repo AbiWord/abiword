@@ -40,6 +40,8 @@ public:
 	virtual void			activate();
 	virtual void			destroy();
 	virtual void			setSensitivity(bool onoff);
+	virtual void            setBorderThicknessInGUI(UT_String & sThick) {};
+
 	virtual void            notifyActiveFrame(XAP_Frame * pFrame);
 	void				lineClicked();
 	void				event_WindowDelete();

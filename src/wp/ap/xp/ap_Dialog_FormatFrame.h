@@ -34,6 +34,7 @@
 #include "ie_types.h"
 #include "fg_Graphic.h"
 #include "xap_Dlg_FileOpenSaveAs.h"
+#define FORMAT_FRAME_NUMTHICKNESS 9
 
 class UT_Timer;
 class XAP_Frame;
@@ -99,6 +100,8 @@ public:
 												   const XML_Char * pszProp,
 												   const XML_Char * &pszVal);
 	void								removeVecProp(UT_Vector &vec, const XML_Char * pszProp);
+	void                                setBorderThickness(UT_String & sThick);
+	virtual void                        setBorderThicknessInGUI(UT_String & sThick) = 0;
 	
 	void                                setAllSensitivities(void);
 	void 								setCurFrameProps(void);	
@@ -124,13 +127,13 @@ public:
 	UT_RGBColor							m_borderColor;
 	UT_sint32							m_lineStyle;
 	XML_Char *							m_bgFillStyle;
-	UT_Vector                           m_vecProps;													 
+	UT_Vector                           m_vecProps;									UT_String                           m_sBorderThickness;
+					 
 protected:
 	AP_Dialog_FormatFrame::tAnswer		m_answer;
 	char                                m_WindowName[100];
 	AP_FormatFrame_preview				*m_pFormatFramePreview;
 	AP_FormatFrame_preview_drawer		m_previewDrawer;
-		
 private:
 	bool								_getToggleButtonStatus(const char * lineStyle);
 

@@ -565,31 +565,47 @@ void AP_Dialog_FormatFrame::toggleLineType(toggle_button btn, bool enabled)
 		{
 			addOrReplaceVecProp(m_vecProps, "left-style", sTmp.c_str());
 			addOrReplaceVecProp(m_vecProps, "left-color", cTmp.c_str());
-		}
+			addOrReplaceVecProp(m_vecProps, "left-thickness",m_sBorderThickness.c_str());		}
 		break;
 		case toggle_right:
 		{	
 			addOrReplaceVecProp(m_vecProps, "right-style", sTmp.c_str());
 			addOrReplaceVecProp(m_vecProps, "right-color", cTmp.c_str());
-		}
+			addOrReplaceVecProp(m_vecProps, "right-thickness",m_sBorderThickness.c_str());		}
 		break;
 		case toggle_top:
 		{			
 			addOrReplaceVecProp(m_vecProps, "top-style", sTmp.c_str());
 			addOrReplaceVecProp(m_vecProps, "top-color", cTmp.c_str());
-		}
+			addOrReplaceVecProp(m_vecProps, "top-thickness",m_sBorderThickness.c_str());		}
 		break;
 		case toggle_bottom:
 		{			
 			addOrReplaceVecProp(m_vecProps, "bot-style", sTmp.c_str());
 			addOrReplaceVecProp(m_vecProps, "bot-color", cTmp.c_str());
-		}
+			addOrReplaceVecProp(m_vecProps, "bot-thickness",m_sBorderThickness.c_str());		}
 		break;
 	}
 	
 	m_borderToggled = true;
 	m_bSettingsChanged = true;
 }
+
+
+void AP_Dialog_FormatFrame::setBorderThickness(UT_String & sThick)
+{
+	m_sBorderThickness = sThick;
+	if(m_borderToggled)
+		return;
+	addOrReplaceVecProp(m_vecProps, "left-thickness", m_sBorderThickness.c_str());
+	addOrReplaceVecProp(m_vecProps, "right-thickness",m_sBorderThickness.c_str());
+	addOrReplaceVecProp(m_vecProps, "top-thickness",m_sBorderThickness.c_str());
+	addOrReplaceVecProp(m_vecProps, "bot-thickness",m_sBorderThickness.c_str());
+	
+	m_bSettingsChanged = true;
+
+}
+
 
 void AP_Dialog_FormatFrame::setBorderColor(UT_RGBColor clr)
 {
@@ -808,6 +824,17 @@ void AP_FormatFrame_preview::draw(void)
 		}
 		else
 			m_gc->setColor(black);
+		const XML_Char * pszTopThickness = NULL;
+		m_pFormatFrame->getVecProp(m_pFormatFrame->m_vecProps, "top-thickness", pszTopThickness);
+		if(pszTopThickness)
+		{
+			UT_sint32 iTopThickness = UT_convertToLogicalUnits(pszTopThickness);
+			m_gc->setLineWidth(iTopThickness);
+		}
+		else
+		{
+			m_gc->setLineWidth(m_gc->tlu(1));
+		}
 		painter.drawLine(pageRect.left + border, pageRect.top + border,
 					   pageRect.left + pageRect.width - border, pageRect.top + border);
 	}
@@ -824,6 +851,17 @@ void AP_FormatFrame_preview::draw(void)
 		}
 		else
 			m_gc->setColor(black);
+		const XML_Char * pszLeftThickness = NULL;
+		m_pFormatFrame->getVecProp(m_pFormatFrame->m_vecProps, "left-thickness", pszLeftThickness);
+		if(pszLeftThickness)
+		{
+			UT_sint32 iLeftThickness = UT_convertToLogicalUnits(pszLeftThickness);
+			m_gc->setLineWidth(iLeftThickness);
+		}
+		else
+		{
+			m_gc->setLineWidth(m_gc->tlu(1));
+		}
 		painter.drawLine(pageRect.left + border, pageRect.top + border,
 					   pageRect.left + border, pageRect.top + pageRect.height - border);
 	}
@@ -840,6 +878,17 @@ void AP_FormatFrame_preview::draw(void)
 		}
 		else
 			m_gc->setColor(black);
+		const XML_Char * pszRightThickness = NULL;
+		m_pFormatFrame->getVecProp(m_pFormatFrame->m_vecProps, "right-thickness", pszRightThickness);
+		if(pszRightThickness)
+		{
+			UT_sint32 iRightThickness = UT_convertToLogicalUnits(pszRightThickness);
+			m_gc->setLineWidth(iRightThickness);
+		}
+		else
+		{
+			m_gc->setLineWidth(m_gc->tlu(1));
+		}
 		painter.drawLine(pageRect.left + pageRect.width - border, pageRect.top + border,
 					   pageRect.left + pageRect.width - border, pageRect.top + pageRect.height - border);
 	}
@@ -856,6 +905,17 @@ void AP_FormatFrame_preview::draw(void)
 		}
 		else
 			m_gc->setColor(black);
+		const XML_Char * pszBotThickness = NULL;
+		m_pFormatFrame->getVecProp(m_pFormatFrame->m_vecProps, "bot-thickness", pszBotThickness);
+		if(pszBotThickness)
+		{
+			UT_sint32 iBotThickness = UT_convertToLogicalUnits(pszBotThickness);
+			m_gc->setLineWidth(iBotThickness);
+		}
+		else
+		{
+			m_gc->setLineWidth(m_gc->tlu(1));
+		}
 		painter.drawLine(pageRect.left + border, pageRect.top + pageRect.height - border,
 					   pageRect.left + pageRect.width - border, pageRect.top + pageRect.height - border);
 	}
