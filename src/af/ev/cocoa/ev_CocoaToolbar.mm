@@ -388,6 +388,7 @@ bool EV_CocoaToolbar::synthesize(void)
 							[comboBox selectItemAtIndex:0];
 							[comboBox setObjectValue:[comboBox objectValueOfSelectedItem]];
 						}
+						//[comboBox setNumberOfVisibleItems:items];
 					}
 				}
 				// for now, we never repopulate, so can just toss it
@@ -571,11 +572,17 @@ bool EV_CocoaToolbar::refreshToolbar(AV_View * pView, AV_ChangeMask mask)
 						}
 					}
 					else {
-						value = [[NSString alloc] initWithUTF8String:szState];
+						if (szState) {
+							value = [[NSString alloc] initWithUTF8String:szState];
+						}
+						else {
+							UT_DEBUGMSG(("value is NULL\n"));
+						}
 					}
-
-					[item selectItemWithObjectValue:value];
-					[value release];
+					if (value) {
+						[item selectItemWithObjectValue:value];
+						[value release];
+					}
 				}
 				break;
 
@@ -647,6 +654,7 @@ bool EV_CocoaToolbar::repopulateStyles(void)
 	pStyleC->repopulate();
 	NSComboBox * item = [m_wToolbar viewWithTag:AP_TOOLBAR_ID_FMT_STYLE];
 	if (item == nil) {
+		delete pStyleC;
 		return false;
 	}
 //
