@@ -557,6 +557,8 @@ void AP_UnixDialog_PageSetup::_constructWindowContents (GtkWidget *container)
 
   framePaper = gtk_frame_new (_(AP, DLG_PageSetup_Paper));
   gtk_widget_show (framePaper);
+  gtk_container_add (GTK_CONTAINER (packerPage), framePaper);
+  
   tablePaper = gtk_table_new (3, 4, TRUE);
   gtk_widget_show (tablePaper);
   gtk_container_add (GTK_CONTAINER (framePaper), tablePaper);
