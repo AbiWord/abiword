@@ -204,6 +204,24 @@ bool pt_VarSet::mergeAP(PTChangeFmt ptc, PT_AttrPropIndex apiOld,
 			pNew->markReadOnly();
 			return addIfUniqueAP(pNew,papiNew);
 		}
+	case PTC_SetFmt:
+		{
+			if (papOld->areAlreadyPresent(attributes,properties))
+			{
+				*papiNew = apiOld;
+				return true;
+			}
+
+			// create a new AP that is exactly given by the atts/props
+			// presented.
+			
+			PP_AttrProp * pNew = papOld->cloneWithReplacements(attributes,properties, true);
+			if (!pNew)
+				return false;
+
+			pNew->markReadOnly();
+			return addIfUniqueAP(pNew,papiNew);
+		}
 
 	case PTC_AddStyle:
 		{

@@ -5107,6 +5107,7 @@ bool IE_Imp_RTF::buildCharacterProps(UT_String & propBuffer)
 			propBuffer += tempBuffer;
 		}
 	}
+
 	if(m_currentRTFState.m_charProps.m_listTag != 0)
 	{
 // List Tag to hang lists off
@@ -5430,7 +5431,7 @@ bool IE_Imp_RTF::_insertSpan()
 		if(!getDoc()->insertSpan(m_dposPaste, p ,iLen))
 			return false;
 						
-		if(!getDoc()->changeSpanFmt(PTC_AddFmt, m_dposPaste, m_dposPaste + iLen,
+		if(!getDoc()->changeSpanFmt(PTC_SetFmt, m_dposPaste, m_dposPaste + iLen,
 									propsArray,NULL))
 			return false;
 						
@@ -5489,7 +5490,7 @@ bool IE_Imp_RTF::ApplyCharacterAttributes()
 		}
 		else								// else we are pasting from a buffer
 		{
-			ok = getDoc()->changeSpanFmt(PTC_AddFmt,
+			ok = getDoc()->changeSpanFmt(PTC_SetFmt,
 												m_dposPaste,m_dposPaste,
 												propsArray,NULL);
 		}
@@ -6201,7 +6202,7 @@ bool IE_Imp_RTF::ApplyParagraphAttributes()
 				pAuto->findAndSetParentItem();
 				pAuto->markAsDirty();
 			}
-			bSuccess = getDoc()->changeStruxFmt(PTC_AddFmt,m_dposPaste,m_dposPaste,attribs, NULL,PTX_Block);
+			bSuccess = getDoc()->changeStruxFmt(PTC_SetFmt,m_dposPaste,m_dposPaste,attribs, NULL,PTX_Block);
 		}
 		else if(bUseInsertNotAppend())
 		{
@@ -6222,7 +6223,7 @@ bool IE_Imp_RTF::ApplyParagraphAttributes()
 			markPasteBlock();
 			bSuccess = getDoc()->insertStrux(m_dposPaste,PTX_Block);
 			m_dposPaste++;
-			bSuccess = getDoc()->changeStruxFmt(PTC_AddFmt,m_dposPaste,m_dposPaste, attribs,NULL,PTX_Block);
+			bSuccess = getDoc()->changeStruxFmt(PTC_SetFmt,m_dposPaste,m_dposPaste, attribs,NULL,PTX_Block);
 			//
 			// Now check if this strux has associated list element. If so stop the list!
 			//
@@ -6560,7 +6561,7 @@ bool IE_Imp_RTF::ApplySectionAttributes()
 			if (bSuccess)
 			{
 				m_dposPaste++;
-				bSuccess = getDoc()->changeStruxFmt(PTC_AddFmt,m_dposPaste,m_dposPaste,
+				bSuccess = getDoc()->changeStruxFmt(PTC_SetFmt,m_dposPaste,m_dposPaste,
 													   propsArray,NULL,PTX_Section);
 			}
 		}
