@@ -23,9 +23,10 @@
 #include <gtk/gtk.h>
 #include "ut_types.h"
 #include "ut_vector.h"
-#include "ap_Toolbar_Id.h"
+#include "ap_Types.h"
 #include "ev_Toolbar.h"
 #include "av_Listener.h"
+
 class AP_UnixApp;
 class AP_UnixFrame;
 class AP_UnixToolbar_Icons;

@@ -21,6 +21,8 @@
 #ifndef AP_TOOLBAR_IDSET_H
 #define AP_TOOLBAR_IDSET_H
 
+#include "ap_Types.h"
+
 /********************************************************************/
 /********************************************************************/
 /** This file defines the set of Id's used for all toolbar-related **/
@@ -31,7 +33,7 @@
 
 /* the following Id's must start at zero and be contiguous */
 
-typedef enum _Ap_Toolbar_Id
+enum _Ap_Toolbar_Id
 {
 	AP_TOOLBAR_ID__BOGUS1__ = 0,			/* must be first */
 
@@ -62,6 +64,6 @@ typedef enum _Ap_Toolbar_Id
 
 	AP_TOOLBAR_ID__BOGUS2__				/* must be last */
 
-} AP_Toolbar_Id;
+};
 
 #endif /* AP_TOOLBAR_IDSET_H */

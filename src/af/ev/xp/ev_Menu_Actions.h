@@ -39,10 +39,12 @@
 ****************************************************************/
 
 #include "ut_types.h"
-#include "ap_Menu_Id.h"
+#include "ap_Types.h"
+
 class AP_App;
 class AV_View;
 class EV_Menu_Label;
+
 
 // TODO consider removing bHoldsSubMenu bit from this file.
 

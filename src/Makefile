@@ -28,15 +28,15 @@ PS_DIRS=	ps
 endif
 
 ifeq ($(T), all)
-DIRS=		ver other util $(PS_DIRS) ev wp calc
+DIRS=		ver other util $(PS_DIRS) ev ap wp calc
 endif
 
 ifeq ($(T), abiword)
-DIRS=		ver other util $(PS_DIRS) ev wp
+DIRS=		ver other util $(PS_DIRS) ev ap wp
 endif
 
 ifeq ($(T), abicalc)
-DIRS=		ver other util $(PS_DIRS) ev calc
+DIRS=		ver other util $(PS_DIRS) ev ap calc
 endif
 
 include $(ABI_DEPTH)/config/abi_rules.mk

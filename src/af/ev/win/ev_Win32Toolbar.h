@@ -24,8 +24,7 @@
 
 #include "ut_types.h"
 #include "ut_vector.h"
-#include "ap_Menu_Id.h"
-#include "ap_Toolbar_Id.h"
+#include "ap_Types.h"
 #include "ev_Toolbar.h"
 #include "av_Listener.h"
 
@@ -34,6 +33,12 @@ class AP_Win32Frame;
 class AP_Win32Toolbar_Icons;
 class EV_Win32Toolbar_ViewListener;
 
+// HACK: it'd be nice to guarantee that menu and toolbar IDs don't overlap
+#ifdef AP_MENU_ID__BOGUS2__
+#define _ev_MENU_OFFSET		AP_MENU_ID__BOGUS2__
+#else
+#define _ev_MENU_OFFSET		1000
+#endif
 
 class EV_Win32Toolbar : public EV_Toolbar
 {
@@ -56,8 +61,8 @@ public:
 		Note that the namespaces for toolbar and menu command ids 
 		do *not* overlap.  
 	*/
-	inline AP_Toolbar_Id	ItemIdFromWmCommand(UINT cmd)			{ return (AP_Toolbar_Id)(cmd - WM_USER - AP_MENU_ID__BOGUS2__); };
-	inline UINT				WmCommandFromItemId(AP_Toolbar_Id id)	{ return (id + WM_USER + AP_MENU_ID__BOGUS2__); };
+	inline AP_Toolbar_Id	ItemIdFromWmCommand(UINT cmd)			{ return (AP_Toolbar_Id)(cmd - WM_USER - _ev_MENU_OFFSET); };
+	inline UINT				WmCommandFromItemId(AP_Toolbar_Id id)	{ return (id + WM_USER + _ev_MENU_OFFSET); };
 
 protected:
 	void							_releaseListener(void);

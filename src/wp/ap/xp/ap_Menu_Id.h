@@ -21,6 +21,8 @@
 #ifndef AP_MENU_IDSET_H
 #define AP_MENU_IDSET_H
 
+#include "ap_Types.h"
+
 /*****************************************************************/
 /*****************************************************************/
 /** This file defines the set of Id's used for all menu-related **/
@@ -31,7 +33,7 @@
 
 /* the following Id's must start at zero and be contiguous */
 
-typedef enum _Ap_Menu_Id
+enum _Ap_Menu_Id
 {
 	AP_MENU_ID__BOGUS1__ = 0,			/* must be first */
 
@@ -92,6 +94,6 @@ typedef enum _Ap_Menu_Id
 
 	AP_MENU_ID__BOGUS2__				/* must be last */
 
-} AP_Menu_Id;
+};
 
 #endif /* AP_MENU_IDSET_H */

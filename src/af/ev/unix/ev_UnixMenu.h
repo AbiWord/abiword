@@ -22,11 +22,13 @@
 
 #include "ut_types.h"
 #include "ut_vector.h"
+#include "ap_Types.h"
 #include "ev_Menu.h"
-#include "ap_Menu_Id.h"
+
 class AV_View;
 class AP_UnixApp;
 class AP_UnixFrame;
+
 
 /*****************************************************************/
 

@@ -65,6 +65,7 @@ DISTBASE 	= $(ABI_DEPTH)/../dist
 ##    reference for header files.
 
 ABI_XAP_INCS=	/config					\
+		/ap/xp		/ap/$(ABI_NATIVE)	\
 		/ev/xp		/ev/$(ABI_NATIVE)	\
 		/ps/xp							\
 		/util/xp	/util/$(ABI_NATIVE)	\
@@ -73,8 +74,7 @@ ABI_XAP_INCS=	/config					\
 ABI_CALC_INCS=	/calc/engine/xp				\
 		/calc/gui/$(ABI_NATIVE)
 
-ABI_WP_INCS=	/wp/ap/xp	/wp/ap/$(ABI_NATIVE)	\
-		/wp/fmt/xp				\
+ABI_WP_INCS=	/wp/fmt/xp				\
 		/wp/gr/xp	/wp/gr/$(ABI_NATIVE)	\
 		/wp/impexp/xp				\
 		/wp/ptbl/xp

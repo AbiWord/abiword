@@ -34,7 +34,7 @@ CPPSRCS=		Win32Main.cpp
 PROGRAM=		AbiWord.exe
 
 ABI_LDFLAGS=		/nologo /subsystem:windows /incremental:no /machine:I386 /profile
-ABI_APPLIBS=		AbiVer AbiUtil AbiPS AbiImpExp AbiPTbl AbiFmt AbiEv AbiGr AbiAp
+ABI_APPLIBS=		AbiVer AbiUtil AbiImpExp AbiPTbl AbiFmt AbiEv AbiXAp AbiGr AbiAp
 
 ABI_OTHLIBS=		expat $(ABI_JSLIBS)
 ####ABI_LIBS=		kernel32 user32 gdi32 winspool comdlg32 advapi32 \

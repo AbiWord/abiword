@@ -34,11 +34,13 @@
 ****************************************************************/
 
 #include "ut_types.h"
-#include "ap_Toolbar_Id.h"
+#include "ap_Types.h"
 #include "av_Listener.h"
+
 class AP_App;
 class AV_View;
 class EV_Toolbar_Label;
+
 
 /*****************************************************************/
 

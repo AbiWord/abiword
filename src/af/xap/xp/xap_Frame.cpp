@@ -40,7 +40,6 @@
 #include "av_View.h"
 #include "fl_DocLayout.h"
 #include "ad_Document.h"
-#include "pd_Document.h"
 
 
 #define DELETEP(p)	do { if (p) delete p; } while (0)
@@ -221,46 +220,6 @@ const char * AP_Frame::getTitle(int len) const
 {
 	// TODO: chop down to fit desired size?
 	return m_szTitle;
-}
-
-UT_Bool AP_Frame::loadDocument(const char * szFilename)
-{
-	// are we replacing another document?
-	if (m_pDoc)
-	{
-		// yep.  first make sure it's OK to discard it, 
-		// TODO: query user if dirty...
-	}
-
-	// load a document into the current frame.
-	// if no filename, create a new document.
-
-#if PAUL
-	AD_Document * pNewDoc = new AD_Document();
-#else
-	AD_Document * pNewDoc = new PD_Document();
-#endif
-	UT_ASSERT(pNewDoc);
-	
-	if (!szFilename || !*szFilename)
-	{
-		pNewDoc->newDocument();
-		s_iUntitled++;
-		m_iUntitled = s_iUntitled;
-		goto ReplaceDocument;
-	}
-
-	if (pNewDoc->readFromFile(szFilename))
-		goto ReplaceDocument;
-	
-	UT_DEBUGMSG(("ap_Frame: could not open the file [%s]\n",szFilename));
-	delete pNewDoc;
-	return UT_FALSE;
-
-ReplaceDocument:
-	// NOTE: prior document is bound to m_pDocLayout, which gets discarded by subclass
-	m_pDoc = pNewDoc;
-	return UT_TRUE;
 }
 
 UT_Bool AP_Frame::updateTitle()

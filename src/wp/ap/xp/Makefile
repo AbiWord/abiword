@@ -22,10 +22,7 @@ ABI_DEPTH = ../../..
 
 include $(ABI_DEPTH)/config/abi_defs.mk
 
-CPPSRCS=	ad_Document.cpp				\
-			ap_App.cpp					\
-			ap_Args.cpp					\
-			ap_EditMethods.cpp			\
+CPPSRCS=	ap_EditMethods.cpp			\
 			ap_Frame.cpp				\
 			ap_LoadBindings.cpp			\
 			ap_LoadBindings_Default.cpp	\
@@ -37,9 +34,7 @@ CPPSRCS=	ad_Document.cpp				\
 			ap_Toolbar_Functions.cpp	\
 			ap_Toolbar_Icons.cpp		\
 			ap_Toolbar_LabelSet.cpp		\
-			ap_Toolbar_Layouts.cpp		\
-			ap_ViewListener.cpp			\
-			av_View.cpp
+			ap_Toolbar_Layouts.cpp
 
 TARGETS=		$(OBJS)
 

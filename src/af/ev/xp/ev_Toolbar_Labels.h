@@ -20,7 +20,8 @@
 #ifndef EV_TOOLBAR_LABELS_H
 #define EV_TOOLBAR_LABELS_H
 
-#include "ap_Toolbar_Id.h"
+#include "ap_Types.h"
+
 
 /*****************************************************************
 ******************************************************************

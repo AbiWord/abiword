@@ -22,11 +22,13 @@
 
 #include <windows.h>
 #include "ut_types.h"
+#include "ap_Types.h"
 #include "ev_Menu.h"
-#include "ap_Menu_Id.h"
+
 class AV_View;
 class AP_Win32App;
 class AP_Win32Frame;
+
 
 /*****************************************************************/
 

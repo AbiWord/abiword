@@ -22,9 +22,7 @@ ABI_DEPTH = ../../..
 
 include $(ABI_DEPTH)/config/abi_defs.mk
 
-CPPSRCS=		ap_UnixApp.cpp			\
-			ap_UnixFrame.cpp		\
-			ap_UnixToolbar_Icons.cpp
+CPPSRCS=		ap_UnixFrame.cpp
 
 TARGETS=		$(OBJS)
 
