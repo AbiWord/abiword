@@ -21,8 +21,8 @@
 #define AP_WIN32DIALOG_Background_H
 
 #include "ap_Dialog_Background.h"
-#include "xap_Frame.h"
 
+class XAP_Frame;
 
 /*****************************************************************/
 
@@ -36,8 +36,13 @@ public:
 
 	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
 	
-protected:
+private:
+	static UINT CALLBACK s_hookProc(HWND hWnd,UINT msg,WPARAM wParam,LPARAM lParam);
+	
+	void _centerDialog();
+	void _callHelp();
 
+	HWND m_hDlg;
 };
 
 #endif /* AP_WIN32DIALOG_Background_H */

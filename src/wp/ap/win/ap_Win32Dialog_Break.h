@@ -20,12 +20,14 @@
 #ifndef AP_WIN32DIALOG_BREAK_H
 #define AP_WIN32DIALOG_BREAK_H
 
+#include "xap_Win32DialogBase.h"
 #include "ap_Dialog_Break.h"
-#include "xap_Frame.h"
+
+class XAP_Frame;
 
 /*****************************************************************/
 
-class AP_Win32Dialog_Break: public AP_Dialog_Break
+class AP_Win32Dialog_Break: public XAP_Win32DialogBase, public AP_Dialog_Break
 {
 public:
 	AP_Win32Dialog_Break(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
@@ -34,11 +36,11 @@ public:
 	virtual void			runModal(XAP_Frame * pFrame);
 
 	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
-	static BOOL CALLBACK	s_dlgProc(HWND,UINT,WPARAM,LPARAM);
 	
-protected:
-	BOOL					_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam);
-	BOOL					_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam);
+private:
+	BOOL _onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam);
+	BOOL _onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam);
+	BOOL _onDeltaPos(NM_UPDOWN * pnmud);
 };
 
 #endif /* AP_WIN32DIALOG_BREAK_H */

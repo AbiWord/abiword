@@ -136,10 +136,6 @@ void XAP_Win32Dialog_Insert_Symbol::notifyCloseFrame(XAP_Frame *pFrame)
 	}
 }
 
-#define _DSI(c,i)	SetDlgItemInt(hWnd,XAP_RID_DIALOG_##c,m_count.##i,FALSE)
-#define _DS(c,s)	SetDlgItemText(hWnd,XAP_RID_DIALOG_##c,pSS->getValue(AP_STRING_ID_##s))
-#define _DSX(c,s)	SetDlgItemText(hWnd,XAP_RID_DIALOG_##c,pSS->getValue(XAP_STRING_ID_##s))
-
 BOOL XAP_Win32Dialog_Insert_Symbol::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam)
 {
 	m_hDlg = hWnd;
@@ -184,7 +180,6 @@ BOOL XAP_Win32Dialog_Insert_Symbol::_onInitDialog(HWND hWnd, WPARAM wParam, LPAR
 	
 	m_pSamplePreviewWidget->setPreview(m_DrawSymbolSample);
 
-
 	XAP_Draw_Symbol * iDrawSymbol = _getCurrentSymbolMap();
 	UT_ASSERT(iDrawSymbol);
 
@@ -192,14 +187,15 @@ BOOL XAP_Win32Dialog_Insert_Symbol::_onInitDialog(HWND hWnd, WPARAM wParam, LPAR
 
 	HDC hDCScreen = CreateDC("DISPLAY", NULL, NULL, NULL);
 
-#if 0
-	EnumFontFamilies(hDCScreen, (LPLOGFONT)NULL, (FONTENUMPROC)fontEnumProcedure, (LPARAM)this, 0);
+#if 1
+	EnumFontFamilies(hDCScreen, (const char *)NULL, (FONTENUMPROC)fontEnumProcedure, (LPARAM)this);
 #else
 	LOGFONT LogFont;
-	LogFont.lfCharSet = SYMBOL_CHARSET;
+//	LogFont.lfCharSet = SYMBOL_CHARSET; - all fonts enum is more inline with XP nature
+	LogFont.lfCharSet = DEFAULT_CHARSET;
 	LogFont.lfFaceName[0] = '\0';
 	EnumFontFamiliesEx(hDCScreen, &LogFont, (FONTENUMPROC)fontEnumProcedure, (LPARAM)this, 0);
-#endif
+#endif	
 	
 	DeleteDC(hDCScreen);
 
@@ -271,11 +267,14 @@ int CALLBACK XAP_Win32Dialog_Insert_Symbol::fontEnumProcedure(const LOGFONT *pLo
 
 int XAP_Win32Dialog_Insert_Symbol::_enumFont(const LOGFONT *pLogFont, const TEXTMETRIC *pTextMetric, DWORD Font_type)
 {
-	if(Font_type & TRUETYPE_FONTTYPE) // Only except true type fonts.
+	if( ((int)Font_type) & TRUETYPE_FONTTYPE ) // Only except true type fonts.
 	{
 		SendDlgItemMessage(m_hDlg, XAP_RID_DIALOG_INSERTSYMBOL_FONT_LIST, CB_ADDSTRING, 0, (LPARAM)pLogFont->lfFaceName);
 	}
-
+//	if(Font_type & TRUETYPE_FONTTYPE) // Only accept true type fonts.
+//	{
+//		addItemToList(XAP_RID_DIALOG_INSERTSYMBOL_FONT_LIST, pLogFont->lfFaceName);
+//	}
 	return TRUE;
 }
 

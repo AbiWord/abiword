@@ -53,17 +53,32 @@ AP_Win32Dialog_Background::~AP_Win32Dialog_Background(void)
 {
 }
 
-static UINT CALLBACK s_hookProc(HWND hdlg,    UINT uiMsg,   WPARAM wParam,   LPARAM lParam)
+UINT CALLBACK AP_Win32Dialog_Background::s_hookProc(HWND hdlg,UINT uiMsg,WPARAM wParam,LPARAM lParam)
 {
+	AP_Win32Dialog_Background * pThis = NULL;
 	if (uiMsg==WM_INITDIALOG)
 	{
-		XAP_Win32DialogHelper::s_centerDialog(hdlg);	
+		CHOOSECOLOR * pCC = NULL;
+		pCC = (CHOOSECOLOR *) lParam;
+		pThis = (AP_Win32Dialog_Background *)pCC->lCustData;
+		SetWindowLong(hdlg, DWL_USER, (LONG) pThis);
+		pThis->m_hDlg = hdlg;
+		pThis->_centerDialog();
 		return 1;
 	}
+	else
+	{
+		pThis = (AP_Win32Dialog_Background *)GetWindowLong(hdlg, DWL_USER);
+	}
 
+	if (uiMsg==WM_HELP)
+	{
+		pThis->_callHelp();
+		return 1;
+	}
+	
 	return 0;
 }
-
 
 void AP_Win32Dialog_Background::runModal(XAP_Frame * pFrame)
 {
@@ -90,7 +105,8 @@ void AP_Win32Dialog_Background::runModal(XAP_Frame * pFrame)
 	cc.lpCustColors = (LPDWORD) acrCustClr;
 	cc.rgbResult = rgbCurrent;
 	cc.Flags = CC_RGBINIT |CC_ENABLEHOOK;
-	cc.lpfnHook  = s_hookProc;
+	cc.lpfnHook  = &AP_Win32Dialog_Background::s_hookProc;
+	cc.lCustData = (LPARAM)this;
  
 	if( ChooseColor(&cc) )
 	{
@@ -103,5 +119,56 @@ void AP_Win32Dialog_Background::runModal(XAP_Frame * pFrame)
 	}
 	else
 		setAnswer( a_CANCEL );
+}
+
+void AP_Win32Dialog_Background::_centerDialog()
+{
+	UT_ASSERT(IsWindow(m_hDlg));
+	
+	RECT 	rc, rcParent;
+	int 	nWidth, nHeight;
+	POINT 	pt;
+	
+    GetWindowRect(m_hDlg, &rc);
+    
+   	if (!GetParent(m_hDlg))
+	  GetWindowRect (GetDesktopWindow(), &rcParent);
+	else
+	  GetClientRect (GetParent(m_hDlg), &rcParent);	  
+	  
+	nWidth = rc.right - rc.left;
+	nHeight = rc.bottom - rc.top;
+	
+	pt.x = (rcParent.right - rcParent.left) / 2;
+	pt.y = (rcParent.bottom - rcParent.top) / 2;
+	
+	if (!GetParent(m_hDlg))
+	  ClientToScreen (GetDesktopWindow(), &pt);
+	else
+	  ClientToScreen (GetParent(m_hDlg), &pt);
+
+	pt.x -= nWidth / 2;
+	pt.y -= nHeight / 2;
+
+	// Move your arse...
+	MoveWindow (m_hDlg, pt.x, pt.y, nWidth, nHeight, TRUE);		
+}
+
+extern bool helpLocalizeAndOpenURL(XAP_Frame * pFrame, bool bLocal, const char* pathBeforeLang, const char* pathAfterLang);
+
+void AP_Win32Dialog_Background::_callHelp()
+{
+	XAP_Frame * pFrame = getApp()->findValidFrame();
+
+	if ( getHelpUrl().size () > 0 )
+    {
+		helpLocalizeAndOpenURL ( pFrame, true, "AbiWord/help", getHelpUrl().c_str() ) ;
+    }
+	else
+    {
+		// TODO: warn no help on this topic
+		// UT_DEBUGMSG(("NO HELP FOR THIS TOPIC!!\n"));
+    }
+	return;
 }
 

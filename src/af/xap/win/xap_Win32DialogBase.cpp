@@ -24,7 +24,6 @@
 #include "xap_Win32DialogBase.h"
 #include "xap_Win32FrameImpl.h"
 
-
 void XAP_Win32DialogBase::createModal(XAP_Frame* pFrame, LPCTSTR dlgTemplate)
 {
 	UT_ASSERT(m_tag == magic_tag);
@@ -95,7 +94,7 @@ BOOL CALLBACK XAP_Win32DialogBase::s_dlgProc(HWND hWnd, UINT msg, WPARAM wParam,
 	{
 		pThis = (XAP_Win32DialogBase*)lParam;
 		pThis->m_hDlg = hWnd;
-		SetProp(hWnd, szProp, (HANDLE)lParam /* XAP_Win32Dialog_mixin* */);
+		SetProp(hWnd, szProp, (HANDLE)lParam /* XAP_Win32DialogBase* */);
 		return pThis->_onInitDialog(hWnd, wParam, lParam);
 	}
 	else

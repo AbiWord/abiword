@@ -32,7 +32,6 @@
 #include "ap_Dialog_Id.h"
 #include "ap_Dialog_Break.h"
 #include "ap_Win32Dialog_Break.h"
-#include "xap_Win32DialogHelper.h"
 #include "ap_Win32Resources.rc2"
 
 /*****************************************************************/
@@ -59,84 +58,35 @@ AP_Win32Dialog_Break::~AP_Win32Dialog_Break(void)
 void AP_Win32Dialog_Break::runModal(XAP_Frame * pFrame)
 {
 	// raise the dialog
-	XAP_Win32App * pWin32App = static_cast<XAP_Win32App *>(m_pApp);
-
-	XAP_Win32LabelledSeparator_RegisterClass(pWin32App);
-
-	LPCTSTR lpTemplate = NULL;
-
+	UT_ASSERT(pFrame);
 	UT_ASSERT(m_id == AP_DIALOG_ID_BREAK);
-
-	lpTemplate = MAKEINTRESOURCE(AP_RID_DIALOG_BREAK);
-
-	int result = DialogBoxParam(pWin32App->getInstance(),lpTemplate,
-						static_cast<XAP_Win32FrameImpl*>(pFrame->getFrameImpl())->getTopLevelWindow(),
-						(DLGPROC)s_dlgProc,(LPARAM)this);
-	UT_ASSERT((result != -1));
+	XAP_Win32App * pWin32App = static_cast<XAP_Win32App *>(m_pApp);
+	XAP_Win32LabelledSeparator_RegisterClass(pWin32App);
+	setDialog(this);
+	createModal(pFrame, MAKEINTRESOURCE(AP_RID_DIALOG_BREAK));
 }
-
-BOOL CALLBACK AP_Win32Dialog_Break::s_dlgProc(HWND hWnd,UINT msg,WPARAM wParam,LPARAM lParam)
-{
-	// This is a static function.
-
-	AP_Win32Dialog_Break * pThis;
-	
-	switch (msg)
-	{
-	case WM_INITDIALOG:
-		pThis = (AP_Win32Dialog_Break *)lParam;
-		SetWindowLong(hWnd,DWL_USER,lParam);
-		return pThis->_onInitDialog(hWnd,wParam,lParam);
-		
-	case WM_COMMAND:
-		pThis = (AP_Win32Dialog_Break *)GetWindowLong(hWnd,DWL_USER);
-		return pThis->_onCommand(hWnd,wParam,lParam);
-		
-	default:
-		return 0;
-	}
-}
-
-#define _DS(c,s)	SetDlgItemText(hWnd,AP_RID_DIALOG_##c,pSS->getValue(AP_STRING_ID_##s))
-#define _DSX(c,s)	SetDlgItemText(hWnd,AP_RID_DIALOG_##c,pSS->getValue(XAP_STRING_ID_##s))
 
 BOOL AP_Win32Dialog_Break::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam)
 {
-	const XAP_StringSet * pSS = m_pApp->getStringSet();
-	
-	SetWindowText(hWnd, pSS->getValue(AP_STRING_ID_DLG_Break_BreakTitle));
+	localizeDialogTitle(AP_STRING_ID_DLG_Break_BreakTitle);
 
 	// localize controls
-	_DSX(BREAK_BTN_OK,			DLG_OK);
-	_DSX(BREAK_BTN_CANCEL,		DLG_Cancel);
+	localizeControlText(AP_RID_DIALOG_BREAK_BTN_OK,	 XAP_STRING_ID_DLG_OK);
+	localizeControlText(AP_RID_DIALOG_BREAK_BTN_CANCEL, XAP_STRING_ID_DLG_Cancel);
 
-	_DS(BREAK_TEXT_INSERT,		DLG_Break_Insert);
-	_DS(BREAK_TEXT_SECTION,		DLG_Break_SectionBreaks);
-	_DS(BREAK_RADIO_PAGE,		DLG_Break_PageBreak);
-	_DS(BREAK_RADIO_COL	,		DLG_Break_ColumnBreak);
-	_DS(BREAK_RADIO_NEXT,		DLG_Break_NextPage);
-	_DS(BREAK_RADIO_CONT,		DLG_Break_Continuous);
-	_DS(BREAK_RADIO_EVEN,		DLG_Break_EvenPage);
-	_DS(BREAK_RADIO_ODD,		DLG_Break_OddPage);
+	localizeControlText(AP_RID_DIALOG_BREAK_TEXT_INSERT, AP_STRING_ID_DLG_Break_Insert);
+	localizeControlText(AP_RID_DIALOG_BREAK_TEXT_SECTION,AP_STRING_ID_DLG_Break_SectionBreaks);
+	localizeControlText(AP_RID_DIALOG_BREAK_RADIO_PAGE,	AP_STRING_ID_DLG_Break_PageBreak);
+	localizeControlText(AP_RID_DIALOG_BREAK_RADIO_COL,	AP_STRING_ID_DLG_Break_ColumnBreak);
+	localizeControlText(AP_RID_DIALOG_BREAK_RADIO_NEXT,	AP_STRING_ID_DLG_Break_NextPage);
+	localizeControlText(AP_RID_DIALOG_BREAK_RADIO_CONT,	AP_STRING_ID_DLG_Break_Continuous);
+	localizeControlText(AP_RID_DIALOG_BREAK_RADIO_EVEN,	AP_STRING_ID_DLG_Break_EvenPage);
+	localizeControlText(AP_RID_DIALOG_BREAK_RADIO_ODD,	AP_STRING_ID_DLG_Break_OddPage);
 
 	// set initial state
-	CheckDlgButton(hWnd, AP_RID_DIALOG_BREAK_RADIO_PAGE + m_break, BST_CHECKED);
-	XAP_Win32DialogHelper::s_centerDialog(hWnd);	
-
+	checkButton(AP_RID_DIALOG_BREAK_RADIO_PAGE + m_break);
+	centerDialog();
 	return 1;							// 1 == we did not call SetFocus()
-}
-
-static int _getRBOffset(HWND hWnd, int nIDFirstButton, int nIDLastButton)
-{
-	UT_ASSERT(hWnd && IsWindow(hWnd));
-	UT_ASSERT(nIDFirstButton < nIDLastButton);
-
-	for (int i = nIDFirstButton; i <= nIDLastButton; i++)
-		if (BST_CHECKED == IsDlgButtonChecked(hWnd, i))
-			return (i - nIDFirstButton);
-
-	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-	return -1;
 }
 
 BOOL AP_Win32Dialog_Break::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
@@ -144,7 +94,7 @@ BOOL AP_Win32Dialog_Break::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
 	WORD wNotifyCode = HIWORD(wParam);
 	WORD wId = LOWORD(wParam);
 	HWND hWndCtrl = (HWND)lParam;
-	int n;
+
 
 	switch (wId)
 	{
@@ -153,10 +103,16 @@ BOOL AP_Win32Dialog_Break::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
 		// fall through
 
 	case IDOK:							// also AP_RID_DIALOG_BREAK_BTN_OK
-		n = _getRBOffset(hWnd, AP_RID_DIALOG_BREAK_RADIO_PAGE, AP_RID_DIALOG_BREAK_RADIO_ODD);
-		UT_ASSERT(n >= 0);
-
-		m_break = (AP_Dialog_Break::breakType) n;
+		{
+			for (int i = AP_RID_DIALOG_BREAK_RADIO_PAGE; i <= AP_RID_DIALOG_BREAK_RADIO_ODD; i++)
+			{
+				if (isChecked(i))
+				{
+					m_break = (AP_Dialog_Break::breakType)(i - AP_RID_DIALOG_BREAK_RADIO_PAGE);
+					break;
+				}
+			}
+		}
 		EndDialog(hWnd,0);
 		return 1;
 
@@ -166,3 +122,7 @@ BOOL AP_Win32Dialog_Break::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
 	}
 }
 
+BOOL AP_Win32Dialog_Break::_onDeltaPos(NM_UPDOWN * pnmud)
+{
+	return FALSE;
+}
