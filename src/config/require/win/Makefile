@@ -56,11 +56,12 @@ _LIBPNG_:
 	fi
 
 _LIBWV_:
+# if the following fails with /bin/sh not found, copy bash.exe to /bin
 	@if [ -d $(ABI_ROOT)/../wv ]; then			\
 		echo Found libwv in peer directory;		\
 		if [ ! -r $(ABI_ROOT)/../wv/config.h ]; then	\
 			cd $(ABI_ROOT)/../wv; 			\
-			./configure;				\
+			CC=cl.exe bash ./configure;		\
 		fi;						\
 		$(MAKE) -f Makefile.abi -C $(ABI_ROOT)/../wv;  	\
 	else							\

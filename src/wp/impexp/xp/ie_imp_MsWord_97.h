@@ -21,7 +21,7 @@
 #ifndef IE_IMP_WV_H
 #define IE_IMP_WV_H
 
-#include <stdlib.h>
+//#include <stdlib.h>
 #include <stdio.h>
 #include "wv.h"
 #include "xmlparse.h"

@@ -39,6 +39,9 @@
 #define X_CheckError(v)         do {  if (!(v))                             \
                                       {  m_iestatus = IES_Error;            \
                                          return; } } while (0)
+#define X_CheckError0(v)        do {  if (!(v))                             \
+                                      {  m_iestatus = IES_Error;            \
+                                         return 0; } } while (0)
 
 
 int CharProc(wvParseStruct *ps,U16 eachchar,U8 chartype);
@@ -52,7 +55,6 @@ int DocProc(wvParseStruct *ps,wvTag tag);
 IEStatus IE_Imp_MsWord_97::importFile(const char * szFilename)
 {
 	FILE *fp = NULL;
-	char buf[4096];
 	UT_DEBUGMSG(("got to import file\n"));
 
 	fp = fopen(szFilename, "rb");
@@ -110,7 +112,7 @@ int IE_Imp_MsWord_97::_charData(U16 *charstr, int len)
 	{
 	UT_UCSChar buf[1];
 	buf[0] = charstr[0];
-	X_CheckError(m_pDocument->appendSpan(buf,1));
+	X_CheckError0(m_pDocument->appendSpan(buf,1));
 	return(0);
 	}
 
