@@ -50,7 +50,9 @@ XAP_Dialog * AP_CocoaDialog_FormatTable::static_constructor(XAP_DialogFactory * 
 
 AP_CocoaDialog_FormatTable::AP_CocoaDialog_FormatTable(XAP_DialogFactory * pDlgFactory,
 										             XAP_Dialog_Id dlgid)
-	: AP_Dialog_FormatTable(pDlgFactory,dlgid)
+	: AP_Dialog_FormatTable(pDlgFactory,dlgid),
+	m_pPreviewWidget(NULL),
+	m_dlg(nil)
 {
 
 }
