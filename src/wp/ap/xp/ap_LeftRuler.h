@@ -74,6 +74,18 @@ protected:
 	UT_sint32			m_yScrollLimit;
 
 	/* static const*/ UT_uint32	s_iFixedWidth  /* =32 */;	/* width we draw stuff regardless of window width */
+
+	// a collection of standard colors for drawing
+
+	UT_RGBColor			m_clrWhite;				/* constant used for highlights */
+	UT_RGBColor			m_clrBlack;				/* constant used for ticks/text, shadows */
+	UT_RGBColor			m_clrDarkGray;			/* constant used for default tab stops, shadows */
+	UT_RGBColor			m_clrLiteGray;
+	
+	UT_RGBColor			m_clrBackground;		/* used for background flood fill */
+
+	UT_RGBColor			m_clrMarginArea;		/* used for flood fill of ruler area where margins are */
+	UT_RGBColor			m_clrDocumentArea;		/* used for flood fill of ruler where document is */
 };
 
 #endif /* AP_LEFTRULER_H */

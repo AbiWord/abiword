@@ -77,20 +77,7 @@ AP_UnixTopRuler::AP_UnixTopRuler(XAP_Frame * pFrame)
 	GtkStyle * style = gtk_widget_get_default_style();
 	UT_ASSERT(style);
 
-	/*
-	GdkColor fg[5];
-	GdkColor bg[5];
-	GdkColor light[5];
-	GdkColor dark[5];
-	GdkColor mid[5];
-	GdkColor text[5];
-	GdkColor base[5];
-	*/
-	
 	UT_setColor(m_clrBackground, style->bg[GTK_STATE_NORMAL].red, style->bg[GTK_STATE_NORMAL].green, style->bg[GTK_STATE_NORMAL].blue);
-
-	UT_setColor(m_clrMarginArea, 200, 0, 0);
-	UT_setColor(m_clrDocumentArea, 0, 200, 0);
 }
 
 AP_UnixTopRuler::~AP_UnixTopRuler(void)

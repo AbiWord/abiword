@@ -317,7 +317,7 @@ void XAP_UnixFrame::_createTopLevelWindow(void)
 						   m_pUnixApp->getApplicationName());
 
 	// TODO get the following values from a preferences or something.
-	gtk_container_set_border_width(GTK_CONTAINER(m_wTopLevelWindow), 4);
+//	gtk_container_set_border_width(GTK_CONTAINER(m_wTopLevelWindow), 4);
 
 	// TODO These values should probably be set and read from program
 	// TODO preferences.

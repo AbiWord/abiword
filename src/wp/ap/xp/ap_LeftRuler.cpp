@@ -61,6 +61,20 @@ AP_LeftRuler::AP_LeftRuler(XAP_Frame * pFrame)
 	// (GCC can :-)
 	
 	s_iFixedWidth = 32;
+
+	// Initialize colors.  Derived classes can change these, but they should
+	// probably be set as soon as possible (in the constructor if possible),
+	// so the drawing is consistent.
+
+ 	UT_setColor(m_clrWhite, 255, 255, 255);
+	UT_setColor(m_clrBlack, 0, 0, 0);
+	UT_setColor(m_clrDarkGray, 127, 127, 127);
+	UT_setColor(m_clrLiteGray, 192, 192, 192);
+	
+	UT_setColor(m_clrBackground, 192, 192, 192);
+
+	UT_setColor(m_clrMarginArea, 127, 127, 127);
+	UT_setColor(m_clrDocumentArea, 255, 255, 255);
 }
 
 AP_LeftRuler::~AP_LeftRuler(void)
@@ -215,66 +229,6 @@ void AP_LeftRuler::scrollRuler(UT_sint32 yoff, UT_sint32 ylimit)
 
 /*****************************************************************/
 
-/*
-  This function is taken from AP_TopRuler, and if _draw() gets similar treatment
-  (broken into functions) plug this in with the appropriate h (height) and watch
-  it go.
-
-  One could also stick this in AP_Ruler:: and cast down from AP_TopRulerInfo or
-  AP_LeftRulerInfo for specifics.
-*/
-
-#if 0
-void AP_LeftRuler::_draw3DFrame(const UT_Rect * pClipRect, AP_TopRulerInfo * pInfo,
-							   UT_sint32 x, UT_sint32 h)
-{
-	// Draw ruler bar (white or dark-gray) over [x,x+w)
-	// where x is in page-relative coordinates.  we need
-	// to compensate for fixed portion, the page-view margin,
-	// and the scroll.
-	
-	UT_uint32 yTop = s_iFixedHeight/4;
-	UT_uint32 yBar = s_iFixedHeight/2;
-	UT_sint32 xFixed = (UT_sint32)MyMax(m_iLeftRulerWidth,s_iFixedWidth);
-
-	// convert page-relative coordinates into absolute coordinates.
-	
-	UT_sint32 xAbsLeft = xFixed + pInfo->m_xPageViewMargin + x - m_xScrollOffset;
-	UT_sint32 xAbsRight = xAbsLeft + w;
-
-	// we need to do our own clipping for the fixed area
-	
-	if (xAbsLeft < xFixed)			// need to shorten what we draw
-		xAbsLeft = xFixed;
-
-	// draw whatever is left
-
-	UT_RGBColor clrWhite(255,255,255);
-	UT_RGBColor clrDarkGray(127,127,127);
-	UT_RGBColor clrBlack(0,0,0);
-
-	if (xAbsRight > xAbsLeft)
-	{
-		// draw black lines above and left of area
-		m_pG->setColor(clrBlack);
-		m_pG->drawLine(xAbsLeft - 1, yTop - 1, xAbsLeft + w + 2, yTop - 1);		// above
-		m_pG->drawLine(xAbsLeft - 1, yTop - 1, xAbsLeft - 1, yTop + yBar + 1);	// left
-
-		// draw dark gray lines above and left of black lines
-		m_pG->setColor(clrDarkGray);
-		m_pG->drawLine(xAbsLeft - 2, yTop - 2, xAbsLeft + w + 3, yTop - 2);		// above
-		m_pG->drawLine(xAbsLeft - 2, yTop - 2, xAbsLeft - 2, yTop + yBar + 2);	// left
-
-		// draw light gray lines down and right of area, seperated by 1 pixel all the way
-		m_pG->setColor(clrWhite);
-		m_pG->drawLine(xAbsLeft - 1, yTop + yBar + 1, xAbsLeft + w + 2, yTop + yBar + 1);	// below
-		m_pG->drawLine(xAbsLeft + w + 2, yTop + yBar + 1, xAbsLeft + w + 2, yTop - 2);		// right
-	}
-	
-	return;
-}
-#endif
-
 void AP_LeftRuler::draw(const UT_Rect * pClipRect)
 {
 	if (!m_pG)
@@ -283,14 +237,9 @@ void AP_LeftRuler::draw(const UT_Rect * pClipRect)
 	if (pClipRect)
 		m_pG->setClipRect(pClipRect);
 
-	UT_RGBColor clrDarkGray(127,127,127);
-	UT_RGBColor clrLiteGray(192,192,192);
-	UT_RGBColor clrBlack(0,0,0);
-	UT_RGBColor clrWhite(255,255,255);
-
 	// draw the background
 	
-	m_pG->fillRect(clrLiteGray,0,0,m_iWidth,m_iHeight);
+	m_pG->fillRect(m_clrBackground,0,0,m_iWidth,m_iHeight);
 
 	// draw a dark-gray and white bar lined up with the paper
 
@@ -319,7 +268,7 @@ void AP_LeftRuler::draw(const UT_Rect * pClipRect)
 
 		y = yScrolledOrigin;
 		h = docTopMarginHeight - 1;
-		m_pG->fillRect(clrDarkGray,xLeft,y,xBar,h);
+		m_pG->fillRect(m_clrMarginArea,xLeft,y,xBar,h);
 	}
 
 	yScrolledOrigin += docTopMarginHeight + 1;
@@ -330,7 +279,7 @@ void AP_LeftRuler::draw(const UT_Rect * pClipRect)
 
 		y = yScrolledOrigin;
 		h = docWithinMarginHeight - 1;
-		m_pG->fillRect(clrWhite,xLeft,y,xBar,h);
+		m_pG->fillRect(m_clrDocumentArea,xLeft,y,xBar,h);
 	}
 
 	yScrolledOrigin += docWithinMarginHeight + 1;
@@ -342,21 +291,18 @@ void AP_LeftRuler::draw(const UT_Rect * pClipRect)
 
 		y = yScrolledOrigin;
 		h = docBottomMarginHeight - 1;
-		m_pG->fillRect(clrDarkGray,xLeft,y,xBar,h);
+		m_pG->fillRect(m_clrMarginArea,xLeft,y,xBar,h);
 	}
 
 	// draw 3D frame around top margin + document + bottom margin rects
 
-// not quite implemented for left ruler	
-//	_draw3DFrame(pClipRect,pInfo,1,sum + pInfo->u.c.m_xaRightMargin - 2);
-	
 	// now draw tick marks on the bar, using the selected system of units.
 
 	ap_RulerTicks tick(m_pG,m_dim);
 
 	UT_uint32 k, iFontHeight;
 
-	m_pG->setColor(clrBlack);
+	m_pG->setColor(m_clrBlack);
 
 	GR_Font * pFont = m_pG->getGUIFont();
 	if (pFont)

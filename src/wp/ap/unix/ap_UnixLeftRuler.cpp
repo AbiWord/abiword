@@ -37,6 +37,13 @@ AP_UnixLeftRuler::AP_UnixLeftRuler(XAP_Frame * pFrame)
 {
 	m_wLeftRuler = NULL;
 	m_pG = NULL;
+
+	// Initialize ruler colors to match the style of the GTK Window
+	// representing pFrame
+	GtkStyle * style = gtk_widget_get_default_style();
+	UT_ASSERT(style);
+
+	UT_setColor(m_clrBackground, style->bg[GTK_STATE_NORMAL].red, style->bg[GTK_STATE_NORMAL].green, style->bg[GTK_STATE_NORMAL].blue);
 }
 
 AP_UnixLeftRuler::~AP_UnixLeftRuler(void)

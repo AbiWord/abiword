@@ -97,8 +97,8 @@ AP_TopRuler::AP_TopRuler(XAP_Frame * pFrame)
 	
 	UT_setColor(m_clrBackground, 192, 192, 192);
 
-	UT_setColor(m_clrMarginArea, 200, 0, 0);
-	UT_setColor(m_clrDocumentArea, 0, 200, 0);
+	UT_setColor(m_clrMarginArea, 127, 127, 127);
+	UT_setColor(m_clrDocumentArea, 255, 255, 255);
 }
 
 AP_TopRuler::~AP_TopRuler(void)
@@ -871,34 +871,29 @@ void AP_TopRuler::_draw(const UT_Rect * pClipRect, AP_TopRulerInfo * pUseInfo)
 	
 	// draw a dark-gray bar over the left margin
 
-	_drawBar(pClipRect,pInfo,m_clrDarkGray,0+1,pInfo->u.c.m_xaLeftMargin-1);
+	_drawBar(pClipRect,pInfo,m_clrMarginArea,0+1,pInfo->u.c.m_xaLeftMargin-1);
 	sum=pInfo->u.c.m_xaLeftMargin;
 
 	for (k=0; k<pInfo->m_iNumColumns; k++)
 	{
 		// draw white bar over this column
 		
-		_drawBar(pClipRect,pInfo,m_clrWhite, sum+1, pInfo->u.c.m_xColumnWidth-1);
+		_drawBar(pClipRect,pInfo,m_clrDocumentArea, sum+1, pInfo->u.c.m_xColumnWidth-1);
 		sum += pInfo->u.c.m_xColumnWidth;
 
 		// if another column after this one, draw dark gray-gap
 		
 		if (k+1 < pInfo->m_iNumColumns)
 		{
-			_drawBar(pClipRect,pInfo,m_clrDarkGray, sum+1, pInfo->u.c.m_xColumnGap-1);
+			_drawBar(pClipRect,pInfo,m_clrMarginArea, sum+1, pInfo->u.c.m_xColumnGap-1);
 			sum += pInfo->u.c.m_xColumnGap;
 		}
 	}
 
 	// draw dark-gray right margin
 	
-	_drawBar(pClipRect,pInfo,m_clrDarkGray,sum+1,pInfo->u.c.m_xaRightMargin-1);
+	_drawBar(pClipRect,pInfo,m_clrMarginArea,sum+1,pInfo->u.c.m_xaRightMargin-1);
 
-	// draw 3D frame around left margin + document + right margin rects
-#if 0
-	_draw3DFrame(pClipRect,pInfo,1,sum + pInfo->u.c.m_xaRightMargin - 2);
-#endif
-	
 	// now draw tick marks on the bar, using the selected system of units.
 
 	ap_RulerTicks tick(m_pG,m_dim);

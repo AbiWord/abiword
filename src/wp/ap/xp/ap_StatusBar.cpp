@@ -51,12 +51,32 @@ protected:
 	
 	AP_StatusBar *		m_pSB;
 	UT_Rect				m_rect3d;
+
+	// a collection of standard colors for drawing
+
+	UT_RGBColor			m_clrWhite;				/* constant used for highlights */
+	UT_RGBColor			m_clrBlack;				/* constant used for ticks/text, shadows */
+	UT_RGBColor			m_clrDarkGray;			/* constant used for default tab stops, shadows */
+	UT_RGBColor			m_clrLiteGray;
+	
+	UT_RGBColor			m_clrBackground;		/* used for background flood fill */
 };
 
 ap_sb_Field::ap_sb_Field(AP_StatusBar * pSB)
 {
 	m_pSB = pSB;
 	memset(&m_rect3d,0,sizeof(m_rect3d));
+
+	// Initialize colors.  Derived classes can change these, but they should
+	// probably be set as soon as possible (in the constructor if possible),
+	// so the drawing is consistent.
+
+ 	UT_setColor(m_clrWhite, 255, 255, 255);
+	UT_setColor(m_clrBlack, 0, 0, 0);
+	UT_setColor(m_clrDarkGray, 127, 127, 127);
+	UT_setColor(m_clrLiteGray, 192, 192, 192);
+	
+	UT_setColor(m_clrBackground, 192, 192, 192);
 }
 
 ap_sb_Field::~ap_sb_Field(void)
@@ -75,13 +95,9 @@ void ap_sb_Field::setLeftOrigin(UT_uint32 left)
 
 void ap_sb_Field::_draw3D(void)
 {
-	UT_RGBColor clrLiteGray(192,192,192);
-	UT_RGBColor clrWhite(255,255,255);
-	UT_RGBColor clrDarkGray(127,127,127);
-
 	GR_Graphics * pG = m_pSB->getGraphics();
 	
-	pG->fillRect(clrLiteGray,m_rect3d.left+1,m_rect3d.top+1,
+	pG->fillRect(m_clrBackground,m_rect3d.left+1,m_rect3d.top+1,
 				 m_rect3d.width-2,m_rect3d.height-2);
 
 	UT_uint32 l = m_rect3d.left;
@@ -89,11 +105,11 @@ void ap_sb_Field::_draw3D(void)
 	UT_uint32 t = m_rect3d.top;
 	UT_uint32 b = t + m_rect3d.height;
 	
-	pG->setColor(clrDarkGray);
+	pG->setColor(m_clrDarkGray);
 	pG->drawLine(l,t, l,b);
 	pG->drawLine(l,t, r,t);
 	
-	pG->setColor(clrWhite);
+	pG->setColor(m_clrWhite);
 	pG->drawLine(l+1,b, r,b);
 	pG->drawLine(r,b, r,t);
 }
@@ -169,8 +185,7 @@ void ap_sb_Field_PageInfo::draw(const UT_Rect * /*pClipRect*/)
 		UT_uint32 x = m_rect3d.left + 3;
 		UT_uint32 y = m_rect3d.top + (m_rect3d.height-iFontHeight)/2;
 
-		UT_RGBColor clrBlack(0,0,0);
-		pG->setColor(clrBlack);
+		pG->setColor(m_clrBlack);
 	
 		pG->drawChars(m_bufUCS,0,m_lenBufUCS,x,y);
 	}
@@ -259,8 +274,7 @@ void ap_sb_Field_StatusMessage::draw(const UT_Rect * /*pClipRect*/)
 		UT_uint32 x = m_rect3d.left + 3;
 		UT_uint32 y = m_rect3d.top + (m_rect3d.height-iFontHeight)/2;
 
-		UT_RGBColor clrBlack(0,0,0);
-		pG->setColor(clrBlack);
+		pG->setColor(m_clrBlack);
 	
 		pG->drawChars(szMsg,0,len,x,y);
 	}
@@ -336,8 +350,7 @@ void ap_sb_Field_InputMode::draw(const UT_Rect * /*pClipRect*/)
 		UT_uint32 x = m_rect3d.left + 3;
 		UT_uint32 y = m_rect3d.top + (m_rect3d.height-iFontHeight)/2;
 
-		UT_RGBColor clrBlack(0,0,0);
-		pG->setColor(clrBlack);
+		pG->setColor(m_clrBlack);
 	
 		pG->drawChars(m_bufUCS,0,m_lenBufUCS,x,y);
 	}
@@ -380,6 +393,17 @@ AP_StatusBar::AP_StatusBar(XAP_Frame * pFrame)
 	// (GCC can :-)
 	
 	s_iFixedHeight = 20;
+
+	// Initialize colors.  Derived classes can change these, but they should
+	// probably be set as soon as possible (in the constructor if possible),
+	// so the drawing is consistent.
+
+ 	UT_setColor(m_clrWhite, 255, 255, 255);
+	UT_setColor(m_clrBlack, 0, 0, 0);
+	UT_setColor(m_clrDarkGray, 127, 127, 127);
+	UT_setColor(m_clrLiteGray, 192, 192, 192);
+	
+	UT_setColor(m_clrBackground, 192, 192, 192);
 }
 
 AP_StatusBar::~AP_StatusBar(void)
@@ -497,8 +521,7 @@ void AP_StatusBar::draw(const UT_Rect * pClipRect)
 
 	// draw the background
 
-	UT_RGBColor clrLiteGray(192,192,192);
-	m_pG->fillRect(clrLiteGray,0,0,m_iWidth,m_iHeight);
+	m_pG->fillRect(m_clrBackground,0,0,m_iWidth,m_iHeight);
 
 	// draw the foreground
 	
