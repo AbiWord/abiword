@@ -363,7 +363,16 @@ fl_Squiggles::clear(fl_PartOfBlock* pPOB)
 
 	PT_DocPosition pos1 = m_pOwner->getPosition() + pPOB->getOffset();
 	PT_DocPosition pos2 = pos1 + pPOB->getLength();
-
+	PT_DocPosition posEOD = 0;
+	m_pOwner->getDocument()->getBounds(true,posEOD);
+	if(pos2 > posEOD)
+	{
+		pos2 = posEOD;
+	}
+	if(pos1 > pos2)
+	{
+		pos1 = pos2 -1;
+	}
 	pView->_clearBetweenPositions(pos1, pos2, true);
 }
 
@@ -438,7 +447,7 @@ fl_Squiggles::textDeleted(UT_sint32 iOffset, UT_sint32 iLength)
 	UT_sint32 iFirst, iLast;
 	if (findRange(iOffset, iOffset+iLength, iFirst, iLast))
 	{
-		while (iLast >= iFirst)
+		while ((iLast >= 0) && (iLast >= iFirst))
 		{
 			_deleteNth(iLast--);
 		}

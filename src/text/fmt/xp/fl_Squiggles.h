@@ -52,7 +52,6 @@ public:
 									  UT_sint32& iFirst, 
 									  UT_sint32& iLast) const;
 
-
 	bool					recheckIgnoredWords(const UT_UCSChar* pBlockText);
 
 #ifdef FMT_TEST
@@ -80,3 +79,7 @@ private:
 };
 
 #endif /* FL_SQUIGGLES_H */
+
+
+
+

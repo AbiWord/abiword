@@ -3595,7 +3595,6 @@ bool fl_BlockLayout::doclistener_deleteSpan(const PX_ChangeRecord_Span * pcrs)
 	UT_ASSERT(len>0);
 
 	_delete(blockOffset, len);
-	
 
 	m_pSquiggles->textDeleted(blockOffset, len);
 
