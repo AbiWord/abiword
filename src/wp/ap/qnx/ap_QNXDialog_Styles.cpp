@@ -840,7 +840,7 @@ char *_combo_or_text_entry(PtWidget_t *widget, const char *newentry) {
 		PtGetResource(widget, Pt_ARG_CBOX_SEL_ITEM, &selected, 0);
 		PtGetResource(widget, Pt_ARG_ITEMS, &items, 0);
 		if(selected) {
-			entry = items[*selected];
+			entry = items[((*selected)-1)];
 		} else {
 			entry = items[0];	//First item selected by default
 		}

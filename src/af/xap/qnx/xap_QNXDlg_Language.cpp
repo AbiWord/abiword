@@ -151,7 +151,7 @@ PtWidget_t * XAP_QNXDialog_Language::constructWindow(void)
 	windowLangSelection = PtCreateWidget(PtWindow, NULL, n, args);
 	PtAddCallback(windowLangSelection, Pt_CB_WINDOW_CLOSING, s_delete_clicked, this);
 
-#define MARGIN_SIZE 10 
+#define MARGIN_SIZE 2 
 
 	n = 0;
 	PtSetArg(&args[n++], Pt_ARG_GROUP_ORIENTATION, Pt_GROUP_VERTICAL, 0);

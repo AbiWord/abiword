@@ -180,7 +180,12 @@ static int s_cancel_clicked(PtWidget_t * widget, void *data, PtCallbackInfo_t * 
 { UT_ASSERT(widget && data); AP_QNXDialog_Paragraph * dlg = (AP_QNXDialog_Paragraph *)data; dlg->event_Cancel(); return Pt_CONTINUE; }
 
 static int s_tabs_clicked(PtWidget_t * widget, void *data, PtCallbackInfo_t * info) 
-{ UT_ASSERT(widget && data); AP_QNXDialog_Paragraph * dlg = (AP_QNXDialog_Paragraph *)data;	dlg->event_Tabs(widget, info); return Pt_CONTINUE; }
+{ 
+UT_ASSERT(widget && data);
+AP_QNXDialog_Paragraph * dlg = (AP_QNXDialog_Paragraph *)data;	
+dlg->event_Tabs(widget, info); 
+return Pt_CONTINUE; 
+}
 
 static int s_delete_clicked(PtWidget_t * widget, void *data, PtCallbackInfo_t * info)
 { UT_ASSERT(data);  AP_QNXDialog_Paragraph * dlg = (AP_QNXDialog_Paragraph *)data; dlg->event_WindowDelete(); return Pt_CONTINUE; }
@@ -884,6 +889,7 @@ PtWidget_t * AP_QNXDialog_Paragraph::_constructWindow(void)
 	PtSetArg(&args[n++], Pt_ARG_WIDTH, ABI_DEFAULT_BUTTON_WIDTH, 0);
 	UT_XML_cloneNoAmpersands(unixstr, pSS->getValue(AP_STRING_ID_DLG_Para_ButtonTabs));
 	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, unixstr, 0);
+	PtSetArg(&args[n++], Pt_ARG_FLAGS,Pt_TRUE,Pt_GHOST|Pt_BLOCKED);
 	buttonTabs = PtCreateWidget(PtButton, hbuttongroup, n, args);
 	FREEP(unixstr);
 

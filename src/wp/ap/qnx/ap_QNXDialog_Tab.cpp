@@ -168,6 +168,7 @@ PtWidget_t* AP_QNXDialog_Tab::_constructWindow (void )
 	PtSetArg(&args[n++], Pt_ARG_WINDOW_RENDER_FLAGS, 0, ABI_MODAL_WINDOW_RENDER_FLAGS);
 	PtSetArg(&args[n++], Pt_ARG_WINDOW_MANAGED_FLAGS, 0, ABI_MODAL_WINDOW_MANAGE_FLAGS);
 	windowTabs = PtCreateWidget(PtWindow, NULL, n, args);
+	PtAddCallback(windowTabs,Pt_CB_WINDOW_CLOSING,s_delete_clicked,this);
 
 	n = 0;
 	PtSetArg(&args[n++], Pt_ARG_GROUP_ORIENTATION, Pt_GROUP_VERTICAL, 0);
@@ -483,6 +484,7 @@ void AP_QNXDialog_Tab::_spinChanged(void)
 	dlg->event_OK(); 
 	return Pt_CONTINUE;
 }
+
 
 /*static*/ int AP_QNXDialog_Tab::s_cancel_clicked(PtWidget_t *widget, void *data, PtCallbackInfo_t *info)
 { 
