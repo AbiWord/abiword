@@ -174,15 +174,24 @@ static int s_margin_units_changed (PtWidget_t * w, void *data, PtCallbackInfo_t 
 
 void AP_QNXDialog_PageSetup::event_OK (void)
 {
-	setAnswer (a_OK);
 
 	int index, *flags;
 	double *d;
 
 	index = UT_QNXComboGetPos(m_optionPageSize);
 	fp_PageSize::Predefined pd = (fp_PageSize::Predefined)((int)m_vecsize.getNthItem(index - 1));
+	
+	if(pd.Width(fp_PageSize::inch) < 1.0 || pd.Height(fp_PageSize::inch) < 1.0)
+	{
+		if (!done++) {
+			setAnswer (a_CANCEL);
+		}
+		return;
+	}
 	setPageSize (pd);
 
+	setAnswer (a_OK);
+	
 	index = UT_QNXComboGetPos(m_optionMarginUnits);
 	fp_PageSize::Unit mu = (fp_PageSize::Unit)((int)m_vecunits.getNthItem(index - 1));
 	setMarginUnits (mu);

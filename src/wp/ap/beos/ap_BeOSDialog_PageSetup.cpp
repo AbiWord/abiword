@@ -39,3 +39,6 @@ void AP_BeOSDialog_PageSetup::runModal (XAP_Frame *pFrame)
 {
   return;
 }
+
+// when implementing this dialogue, make sure that if the user sets
+// custom page size smaller than 1in x 1in, we return cancel

@@ -220,9 +220,17 @@ static void s_margin_units_changed (GtkWidget * w, AP_UnixDialog_PageSetup *dlg)
 
 void AP_UnixDialog_PageSetup::event_OK (void)
 {
+	fp_PageSize fp (last_page_size);
+
+	if(fp.Width(fp_PageSize::inch) < 1.0 || fp.Height(fp_PageSize::inch) < 1.0)	
+	{
+		setAnswer(a_CANCEL);
+		gtk_main_quit();
+		return;
+	}
+	
 	setAnswer (a_OK);
 
-	fp_PageSize fp (last_page_size);
 
 	setPageSize (fp);
 	setMarginUnits (last_margin_unit);

@@ -243,8 +243,16 @@ BOOL AP_Win32Dialog_PageSetup::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lPara
 	switch (wId)
 	{
 	case AP_RID_DIALOG_PAGE_SETUP_BTN_OK:
-		setAnswer( a_OK );
-		setPageSize( m_PageSize );
+		if(m_PageSize.Width(fp_PageSize::inch) < 1.0 || m_PageSize.Height(fp_PageSize::inch) < 1.0)
+		{
+			setAnswer(a_CANCEL);
+		}
+		else
+		{
+			setAnswer( a_OK );
+			setPageSize( m_PageSize );
+		}
+		
 		EndDialog(hWnd,0);
 		return 0;
 
