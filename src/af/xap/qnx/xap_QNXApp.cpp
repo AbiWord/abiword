@@ -44,18 +44,7 @@ XAP_QNXApp::XAP_QNXApp(XAP_Args * pArgs, const char * szAppName)
 
 	_setAbiSuiteLibDir();
 
-/*
-	// set some generic window sizes and positions
-	m_geometry.x = 1;
-	m_geometry.y = 1;
-	m_geometry.width = 600;
-	m_geometry.height = 600;
-
-	// by default, which will be applied if the user does NOT
-	// specify a --geometry argument, we only want to obey the
-	// size (which is set above), not a position.
-	m_geometry.flags = GEOMETRY_FLAG_SIZE;
-*/
+	memset(&m_geometry,0,sizeof(m_geometry));
 }
 
 XAP_QNXApp::~XAP_QNXApp(void)
@@ -135,6 +124,26 @@ bool XAP_QNXApp::_loadFonts(void)
 {
 	//Not needed in QNX
 	return true;
+}
+
+void XAP_QNXApp::setWinGeometry(int x,int y,UT_uint32 width,UT_uint32 height, UT_uint32 flags)
+{
+	// TODO : do some range checking?
+ 	m_geometry.x = x;
+ 	m_geometry.y = y;
+ 	m_geometry.width = width;
+ 	m_geometry.height = height;
+ 	m_geometry.flags = flags;
+}
+
+void XAP_QNXApp::getWinGeometry(int *x,int *y,UT_uint32 *width,UT_uint32 *height,UT_uint32 *flags)
+{
+	UT_ASSERT(x && y && width && height);
+	*x = m_geometry.x;
+	*y = m_geometry.y;
+	*width = m_geometry.width;
+	*height = m_geometry.height;
+	*flags = m_geometry.flags;
 }
 
 void XAP_QNXApp::_setAbiSuiteLibDir(void)

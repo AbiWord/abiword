@@ -66,26 +66,25 @@ public:
 
 	UT_sint32 makeDirectory(const char *, int) const;
 
-#if 0
-	typedef enum
+	enum
 	{
 		GEOMETRY_FLAG_POS = 	1 << 0,
 		GEOMETRY_FLAG_SIZE = 	1 << 1
-	} windowGeometryFlags;
-	
+	};
+		
 	struct windowGeometry
 	{
 		int x, y;
-		unsigned int width, height;
-		XAP_QNXApp::windowGeometryFlags flags;
+		UT_uint32 width, height;
+		UT_uint32 flags;
 	};
-	
-	virtual	void					setGeometry(int x, int y, unsigned int width, unsigned int height,
-												windowGeometryFlags flags);
-	virtual	void					getGeometry(int * x, int * y, unsigned int * width, unsigned int * height,
-											windowGeometryFlags * flags);
-#endif
 
+	
+	virtual	void					setWinGeometry(int x, int y, unsigned int width, unsigned int height,
+																		UT_uint32 flags);
+	virtual	void					getWinGeometry(int * x, int * y, unsigned int * width, unsigned int * height,
+																		UT_uint32 * flags);
+	
 	void							setTimeOfLastEvent(unsigned int eventTime);
 	unsigned int					getTimeOfLastEvent(void) const { return m_eventTime; };
 	
@@ -98,9 +97,7 @@ protected:
 	AP_QNXToolbar_ControlFactory	m_controlFactory;
 	void *			m_fontManager;
 
-#if 0
 	struct windowGeometry			m_geometry;
-#endif
 	unsigned int			m_eventTime; // e->time field of a recent X event
 										 // (we use this to sync clipboard
 										 // operations with the server).
