@@ -19,163 +19,182 @@
  * 02111-1307, USA.
  */
  
-#import "xap_CocoaToolbarWindow.h"
-
-#include "ut_vector.h"
 #include "ut_debugmsg.h"
+
 #include "ev_CocoaToolbar.h"
 
-#import "xap_CocoaFrameImpl.h"
+#include "xap_CocoaFrameImpl.h"
+#include "xap_CocoaToolbarWindow.h"
 
-
-static XAP_CocoaToolbarWindow_Controller * pSharedToolbar = nil;
-
+static XAP_CocoaToolbarWindow_Controller * s_pSharedToolbar = nil;
 
 @interface XAP_CocoaToolbarWindow : NSPanel
+{
+	// 
+}
+- (id)initWithContentRect:(NSRect)frame;
 - (BOOL)canBecomeKeyWindow;
 @end
 
 @implementation XAP_CocoaToolbarWindow
+
+- (id)initWithContentRect:(NSRect)windowFrame
+{
+	if (self = [super initWithContentRect:windowFrame styleMask:NSBorderlessWindowMask backing:NSBackingStoreBuffered defer:YES])
+	{
+		[self setBecomesKeyOnlyIfNeeded:YES];
+		[self setHidesOnDeactivate:YES];
+		[self setReleasedWhenClosed:YES]; // ??
+		[self setExcludedFromWindowsMenu:YES];
+		[self setCanHide:YES];
+	}
+	return self;
+}
 
 - (BOOL)canBecomeKeyWindow
 {
 	return YES;
 }
 
-
 @end
-
 
 @implementation XAP_CocoaToolbarWindow_Controller
 
-+ (NSRect)defaultFrame:(float)height
-{
-	NSRect windowFrame = [[NSScreen mainScreen] visibleFrame];
-
-	windowFrame.origin.y   += windowFrame.size.height - height;
-	windowFrame.size.height = height;
-
-	return windowFrame;
-}
-
-+ (XAP_CocoaToolbarWindow_Controller *)create
-{
-	UT_DEBUGMSG (("Cocoa: @XAP_CocoaToolbarWindow create\n"));
-
-	NSRect windowFrame = [XAP_CocoaToolbarWindow_Controller defaultFrame:100.0f]; // TODO calc the bottom
-
-	NSPanel * myWindow = [[XAP_CocoaToolbarWindow alloc] initWithContentRect:windowFrame styleMask:NSBorderlessWindowMask backing:NSBackingStoreBuffered defer:YES];
-	UT_ASSERT (myWindow);
-
-	[myWindow setBecomesKeyOnlyIfNeeded:YES];
-	[myWindow setHidesOnDeactivate:YES];
-	[myWindow setReleasedWhenClosed:NO];
-	[myWindow setExcludedFromWindowsMenu:YES];
-	[myWindow setCanHide:YES];
-	
-	XAP_CocoaToolbarWindow_Controller * tlbr = [[XAP_CocoaToolbarWindow_Controller alloc] initWithWindow:myWindow];
-
-	return tlbr;
-}
-
 + (XAP_CocoaToolbarWindow_Controller *)sharedToolbar
 {
-	if (pSharedToolbar == nil) {
-		/* no toolbar created. create one and show it */
-		pSharedToolbar = [XAP_CocoaToolbarWindow_Controller create];
-		[pSharedToolbar showWindow:pSharedToolbar];
+	if (!s_pSharedToolbar)
+	{
+		/* no toolbar created. create one and show it:
+		 */
+		s_pSharedToolbar = [[XAP_CocoaToolbarWindow_Controller alloc] initWithWindow:nil];
+
+		// TODO!! [s_pSharedToolbar showWindow:s_pSharedToolbar];
 		xxx_UT_DEBUGMSG (("Toolbar is visible ? : %d\n", [myWindow isVisible]));
 	}
-	return pSharedToolbar;
+	return s_pSharedToolbar;
 }
 
 
 - (id)initWithWindow:(NSWindow *)window
 {
-	self = [super initWithWindow:window];
-	if (self) {
-		m_toolbarVector = new UT_Vector (5);
-		[[NSNotificationCenter defaultCenter] addObserver:self 
-			selector:@selector(showToolbarNotification:)
-			name:XAP_CocoaFrameImpl::XAP_FrameNeedToolbar 
-			object:nil]; 
-		[[NSNotificationCenter defaultCenter] addObserver:self 
-			selector:@selector(hideToolbarNotification:)
-			name:XAP_CocoaFrameImpl::XAP_FrameReleaseToolbar 
-			object:nil]; 
+	if (self = [super initWithWindow:window])
+	{
+		m_windows = [[NSMutableArray alloc] initWithCapacity:4];
+		if (!m_windows)
+		{
+			[self release];
+			self = 0;
+		}
+	}
+	if (self)
+	{
+		NSNotificationCenter * NC = [NSNotificationCenter defaultCenter];
+		[NC addObserver:self selector:@selector(showToolbarNotification:) name:(XAP_CocoaFrameImpl::XAP_FrameNeedToolbar)    object:nil];
+		[NC addObserver:self selector:@selector(hideToolbarNotification:) name:(XAP_CocoaFrameImpl::XAP_FrameReleaseToolbar) object:nil];
 	}
 	return self;
 }
 
 - (void)dealloc
 {
-	[[NSNotificationCenter defaultCenter] removeObserver:self];
-	if (m_toolbarVector) {
-		delete m_toolbarVector;
+	if (m_windows)
+	{
+		[self removeAllToolbars];
+
+		[m_windows release];
+		m_windows = 0;
 	}
+	[[NSNotificationCenter defaultCenter] removeObserver:self];
 	[super dealloc];
 }
 
 - (void)removeAllToolbars
 {
-	NSArray* views = [[[self window] contentView] subviews];
-	NSEnumerator* iter = [views objectEnumerator];
-	NSView* obj;
-	while (obj = [iter nextObject]) {
-		[obj removeFromSuperview];
-	}
-}
+	unsigned count = [m_windows count];
 
+	for (unsigned i = 0; i < count; i++)
+	{
+		NSWindowController * window = (NSWindowController *) [m_windows objectAtIndex:i];
+
+		[window close];
+		[window release];
+	}
+	[m_windows removeAllObjects];
+}
 
 - (void)autoResize
 {
-
+	// ??
 }
 
-
-- (void)redisplayToolbars:(XAP_CocoaFrameController*)frame
+- (void)redisplayToolbars:(XAP_CocoaFrameController *)frame
 {
-	if (!m_lock) {
-		[self removeAllToolbars];
+	if (!m_lock)
+	{
 		[self _showAllToolbars:frame];
 	}
 }
 
-- (void)_showAllToolbars:(XAP_CocoaFrameController*)frame
+- (void)_showAllToolbars:(XAP_CocoaFrameController *)frame
 {
+	[self removeAllToolbars];
+
 	UT_ASSERT(frame);
-	NSArray* toolbars = [frame getToolbars];
-
-	int count = [toolbars count];
-	if (!count) {
-		[[self window] orderOut:self];
+	if (!frame)
 		return;
-	}
 
-	float height = count * EV_CocoaToolbar::getToolbarHeight();
-	
-	NSRect bounds = [[self window] frame];
-	float delta = bounds.size.height - height;
-	bounds.size.height = height;
-	bounds.origin.y += delta;
-	[[self window] setFrame:bounds display:NO];
-	XAP_CocoaFrameImpl::setToolbarRect(bounds);
-	
-	NSEnumerator*	iter = [toolbars objectEnumerator];
-	NSView*		superView = [[self window] contentView];
-	NSView* 	obj;
-	float currentY = height - EV_CocoaToolbar::getToolbarHeight();
-	while (obj = [iter nextObject]) {
-		[superView addSubview:obj];
-		bounds = [obj frame];
-		bounds.origin.y = currentY;
-		[obj setFrame:bounds];
-		currentY -= EV_CocoaToolbar::getToolbarHeight();
-	}
+	NSArray * toolbars = [frame getToolbars];
 
-	[[self window] orderFront:self];
+	unsigned count = [toolbars count];
+	if (!count)
+		return;
+
+	NSRect visibleFrame = [[NSScreen mainScreen] visibleFrame];
+
+	float offset_x = 0;
+	float offset_y = 0;
+
+	for (unsigned i = 0; i < count; i++)
+	{
+		NSView * view = [toolbars objectAtIndex:i];
+
+		NSRect frame = [view frame];
+
+		bool bNewToolbarRow = true;
+
+		if (i > 0)
+			if (offset_x + frame.size.width < visibleFrame.origin.x + visibleFrame.size.width)
+				bNewToolbarRow = false;
+
+		if (bNewToolbarRow)
+		{
+			offset_x  = visibleFrame.origin.x;
+			offset_y += frame.size.height;
+		}
+		frame.origin.x = offset_x;
+		frame.origin.y = visibleFrame.origin.y + visibleFrame.size.height - offset_y;
+
+		XAP_CocoaToolbarWindow * window = [[XAP_CocoaToolbarWindow alloc] initWithContentRect:frame];
+		if (window)
+		{
+			NSWindowController * controller = [[NSWindowController alloc] initWithWindow:window];
+			[m_windows addObject:controller];
+			[controller showWindow:self];
+
+			[window orderFront:self];
+			[window release]; // ??
+		}
+		offset_x += frame.size.width;
+
+		frame.origin.x = 0;
+		frame.origin.y = 0;
+
+		[[window contentView] addSubview:view];
+	}
+	visibleFrame.origin.y = visibleFrame.origin.y + visibleFrame.size.height - offset_y;
+
+	XAP_CocoaFrameImpl::setToolbarRect(visibleFrame);
 }
-
 
 - (void)lock
 {
@@ -183,13 +202,11 @@ static XAP_CocoaToolbarWindow_Controller * pSharedToolbar = nil;
 	m_lock = YES;
 }
 
-
 - (void)unlock
 {
 	UT_ASSERT(m_lock);
 	m_lock = NO;
 }
-
 
 - (void)showToolbarNotification:(NSNotification*)notif
 {
@@ -205,7 +222,6 @@ static XAP_CocoaToolbarWindow_Controller * pSharedToolbar = nil;
 	[self removeAllToolbars];
 	[self _showAllToolbars:frame];
 }
-
 
 - (void)hideToolbarNotification:(NSNotification*)notif
 {

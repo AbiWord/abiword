@@ -372,6 +372,7 @@ bool EV_CocoaToolbar::synthesize(void)
 
 	NSAutoreleasePool* pool = [[NSAutoreleasePool alloc] init];
 
+#if 0
 	XAP_CocoaToolbarWindow_Controller * pToolbarWinCtrl = [XAP_CocoaToolbarWindow_Controller sharedToolbar];
 	UT_ASSERT (pToolbarWinCtrl);
 	NSView * toolbarParent = [[pToolbarWinCtrl window] contentView];
@@ -382,12 +383,21 @@ bool EV_CocoaToolbar::synthesize(void)
 	xxx_UT_DEBUGMSG (("toolbar has %u subviews\n", [[toolbarParent subviews] count]));
 	// revert the coordinate as they are upside down in NSView
 	viewBounds.origin.y = viewHeight - ([[toolbarParent subviews] count] + 1) * viewBounds.size.height;
+#endif
+	NSRect viewBounds;
+	viewBounds.origin.x = 0.0f;
+	viewBounds.origin.y = 0.0f;
+	viewBounds.size.width  = 0.0f;
+	viewBounds.size.height = getToolbarHeight();
+
 	m_wToolbar = [[NSView alloc] initWithFrame:viewBounds];
+
 	[m_wToolbar setAutoresizingMask:(NSViewWidthSizable | NSViewHeightSizable)];
+
+#if 0
 	////////////////////////////////////////////////////////////////
 	// get toolbar button appearance from the preferences
 	////////////////////////////////////////////////////////////////
-#if 0
 	// TODO
 	const XML_Char * szValue = NULL;
 	m_pCocoaApp->getPrefsValue(XAP_PREF_KEY_ToolbarAppearance, &szValue);
@@ -613,6 +623,9 @@ bool EV_CocoaToolbar::synthesize(void)
 			UT_ASSERT(0);
 		}
 	}
+	viewBounds.size.width = btnX;
+
+	[m_wToolbar setFrame:viewBounds];
 
 	[pool release];
 	//TODO here we should add the toolbar
