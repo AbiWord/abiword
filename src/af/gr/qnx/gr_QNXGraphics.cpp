@@ -445,7 +445,7 @@ GR_Font * GR_QNXGraphics::findFont(const char* pszFontFamily,
 	UT_ASSERT(pszFontWeight);
 	UT_ASSERT(pszFontSize);
 	
-	UT_DEBUGMSG(("GR: findFont [%s] [%s] [%s] [%s] \n", 
+	UT_DEBUGMSG(("GR: findFont [%s] [%s] [%s] [%s] ", 
 			pszFontFamily, pszFontStyle, pszFontWeight, pszFontSize));
 
 	char fname[MAX_FONT_TAG];
@@ -476,7 +476,7 @@ GR_Font * GR_QNXGraphics::findFont(const char* pszFontFamily,
 			break;
 		}
 	}
-	UT_DEBUGMSG(("Setting to font name [%s] \n", fname));
+	UT_DEBUGMSG(("Setting to font name [%s] ", fname));
 
 	return(new QNXFont(fname));
 }
@@ -680,8 +680,10 @@ void GR_QNXGraphics::scroll(UT_sint32 dx, UT_sint32 dy)
 	offset.x = -1*dx;
 	offset.y = -1*dy;
 
+/*
 	UT_DEBUGMSG(("GR Scroll1 Before %d,%d %d,%d  by %d,%d",
 			rect.ul.x, rect.ul.y, rect.lr.x, rect.lr.y, offset.x, offset.y));
+*/
 	
 	//This does the blit on the region, so the rect must be in
 	//the windows co-ordinates.  But it doesn't automatically
@@ -696,8 +698,10 @@ void GR_QNXGraphics::scroll(UT_sint32 dx, UT_sint32 dy)
 	//way easier though.
 	adjust_rect(&rect, &offset);
 
+/*
 	UT_DEBUGMSG(("GR Scroll1 %d,%d %d,%d  by %d,%d",
 			rect.ul.x, rect.ul.y, rect.lr.x, rect.lr.y, offset.x, offset.y));
+*/
 	PhBlit(PtWidgetRid(PtFindDisjoint(m_pDraw)), &rect, &offset);
 	//to get an expose call PtDamageExtent(region_widget, damage_rect)
 }
@@ -707,21 +711,33 @@ void GR_QNXGraphics::scroll(UT_sint32 x_dest, UT_sint32 y_dest,
 						  UT_sint32 width, UT_sint32 height)
 {
 //TF NOTE: This is still screwed up ... lots of screen dirt!
-#if 0
+#if 1
 	PhRect_t 	rect, widgetrect;
 	PhPoint_t 	offset;
 
 	PtBasicWidgetCanvas(m_pDraw, &widgetrect);
 
-	rect.ul.x = 
-	rect.lr.x = (width >= 0) ? x_src : x_src + width;
-	rect.ul.y = 
-	rect.lr.y = (height >= 0) ? y_src : y_src + height;
-	rect.lr.x += (width >= 0) ? width : -1*width;
-	rect.lr.y += (height >= 0) ? height : -1*height;
+	UT_DEBUGMSG(("GR Scroll2 dest:%d,%d src:%d,%d %dx%d ", 
+					x_dest, y_dest, x_src, y_src, width, height));
 
-	offset.x = -1*(x_src - x_dest);
-	offset.y = -1*(y_src - y_dest);
+	if (width < 0) {
+		UT_ASSERT(0);
+		x_src -= width;
+		width = -1*width;
+	}
+	if (height < 0) {
+		UT_ASSERT(0);
+		y_src -= height;
+		height = -1*height;
+	}
+
+	rect.ul.x = rect.lr.x = x_src;
+	rect.ul.y = rect.lr.y = y_src;
+	rect.lr.x += width;
+	rect.lr.y += height;
+
+	offset.x = x_dest - x_src;
+	offset.y = y_dest - y_src;
 
 	UT_DEBUGMSG(("GR Scroll2 Before %d,%d %d,%d  by %d,%d",
 			rect.ul.x, rect.ul.y, rect.lr.x, rect.lr.y, offset.x, offset.y));

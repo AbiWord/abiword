@@ -199,7 +199,44 @@ struct _cb_menu {
 	XAP_Menu_Id id;
 };
 
-int menu_activate(PtWidget_t *w, void *data, PtCallbackInfo_t *info) {
+static int s_menu_select(PtWidget_t *widget, void *data, PtCallbackInfo_t *info)
+{
+		struct _cb_menu *mcb = (struct _cb_menu *)data;
+		UT_ASSERT(mcb && mcb->qnxmenu);
+
+		XAP_QNXFrame * pFrame = mcb->qnxmenu->getFrame();
+		UT_ASSERT(pFrame);
+
+		EV_Menu_Label * pLabel = mcb->qnxmenu->getMenuLabelSet()->getLabel(mcb->id);
+		if (!pLabel) {
+			pFrame->setStatusMessage(NULL);
+			return Pt_CONTINUE;
+		}
+
+		const char * szMsg = pLabel->getMenuStatusMessage();
+		if (!szMsg || !*szMsg) {
+			szMsg = "TODO This menu item doesn't have a StatusMessage defined.";
+		}
+	
+		pFrame->setStatusMessage(szMsg);
+		return Pt_CONTINUE;
+}
+	
+static int s_menu_deselect(PtWidget_t *widget, void *data, PtCallbackInfo_t *info)
+{
+		struct _cb_menu *mcb = (struct _cb_menu *)data;
+
+		UT_ASSERT(mcb && mcb->qnxmenu);
+
+		XAP_QNXFrame * pFrame = mcb->qnxmenu->getFrame();
+		UT_ASSERT(pFrame);
+
+		pFrame->setStatusMessage(NULL);
+		return Pt_CONTINUE;
+}
+
+
+int s_menu_activate(PtWidget_t *w, void *data, PtCallbackInfo_t *info) {
 	struct _cb_menu *mcb = (struct _cb_menu *)data;
 
 	mcb->qnxmenu->menuEvent(mcb->id);
@@ -307,24 +344,36 @@ UT_Bool EV_QNXMenu::synthesizeMenu(PtWidget_t * wMenuRoot)
 
 
 				int n = 0;
-				PtSetArg(&args[n], Pt_ARG_TEXT_STRING, buf, 0); n++;
-				PtSetArg(&args[n], Pt_ARG_ACCEL_KEY, accel, 0); n++;
+				PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, buf, 0); 
+				PtSetArg(&args[n++], Pt_ARG_ACCEL_KEY, accel, 0); 
 				if (szMnemonicName && *szMnemonicName) {
-					PtSetArg(&args[n], Pt_ARG_ACCEL_TEXT, szMnemonicName, 0); n++;
+					PtSetArg(&args[n++], Pt_ARG_ACCEL_TEXT, szMnemonicName, 0); 
 				}
- 				wbutton = PtCreateWidget(PtMenuButton, wParent, n, args); 
+
+				if (pAction->isCheckable()) {
+					PtSetArg(&args[n++], Pt_ARG_FLAGS,
+							Pt_MENU_BUTTON | Pt_AUTOHIGHLIGHT | Pt_SET, 
+							Pt_MENU_BUTTON | Pt_AUTOHIGHLIGHT | Pt_SET);
+					wbutton = PtCreateWidget(PtToggleButton, wParent, n, args);
+				}
+				else {
+ 					wbutton = PtCreateWidget(PtMenuButton, wParent, n, args); 
+				}
+
 				struct _cb_menu *mcb;
 				mcb = (struct _cb_menu *)malloc(sizeof(*mcb));
 				mcb->widget = wbutton;
 				mcb->id = id;
 				mcb->qnxmenu = this;
-				PtAddCallback(wbutton, Pt_CB_ACTIVATE, menu_activate, mcb);
+				PtAddCallback(wbutton, Pt_CB_ACTIVATE, s_menu_activate, mcb);
+				PtAddCallback(wbutton, Pt_CB_ARM, s_menu_select, mcb);
+				PtAddCallback(wbutton, Pt_CB_DISARM, s_menu_deselect, mcb);
 
 				if (szMnemonicName && *szMnemonicName && get_hotkey_key(szMnemonicName) != '\0') {
 					PtAddHotkeyHandler(PtGetParent(wMenuRoot, PtWindow),
 									   get_hotkey_key(szMnemonicName), 
 									   get_hotkey_code(szMnemonicName),
-										0, mcb, menu_activate); 
+										0, mcb, s_menu_activate); 
 				}
 
 				// item is created, add to class vector
