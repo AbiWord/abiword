@@ -6,8 +6,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: ms-MY\n"
-"POT-Creation-Date: 2004-03-02 23:51+0800\n"
-"PO-Revision-Date: 2004-04-02 21:04+0800\n"
+"POT-Creation-Date: 2004-04-05 23:56+0800\n"
+"PO-Revision-Date: 2004-04-30 22:56+0800\n"
 "Last-Translator: Sharuzzaman Ahmat Raslan <sharuzzaman@myrealbox.com>\n"
 "Language-Team: Malay <translation-team-ms@lists.sourceforge.net>\n"
 "MIME-Version: 1.0\n"
@@ -532,557 +532,592 @@ msgstr "Dari &Fail"
 msgid "&Go To"
 msgstr "Per&gi"
 
-#. MENU_LABEL_VIEW_HEADFOOT
+#. DLG_FormatTOC_HasHeading
 #: po/tmp/ap_String_Id.h.h:272
+msgid "&Has Heading"
+msgstr "Mempunyai &Heading"
+
+#. MENU_LABEL_VIEW_HEADFOOT
+#: po/tmp/ap_String_Id.h.h:274
 msgid "&Header and Footer"
 msgstr "&Pengepala dan Footer"
 
 #. DLG_PageSetup_Header
-#: po/tmp/ap_String_Id.h.h:274
+#: po/tmp/ap_String_Id.h.h:276
 msgid "&Header:"
 msgstr "&Pengepala:"
 
 #. DLG_PageSetup_Height
-#: po/tmp/ap_String_Id.h.h:276
+#: po/tmp/ap_String_Id.h.h:278
 msgid "&Height:"
 msgstr "&Tinggi:"
 
 #. DLG_HelpButton
 #. MENU_LABEL_HELP
-#: po/tmp/ap_String_Id.h.h:279
+#: po/tmp/ap_String_Id.h.h:281
 msgid "&Help"
 msgstr "B&antuan"
 
 #. DLG_Options_Label_ViewHiddenText
-#: po/tmp/ap_String_Id.h.h:281
+#: po/tmp/ap_String_Id.h.h:283
 msgid "&Hidden Text"
 msgstr "&Teks Tersembunyi"
 
 #. MENU_LABEL_INSERT_HYPERLINK
-#: po/tmp/ap_String_Id.h.h:283
+#: po/tmp/ap_String_Id.h.h:285
 msgid "&Hyperlink"
 msgstr "&Hiperlink"
 
 #. DLG_Spell_Ignore
-#: po/tmp/ap_String_Id.h.h:285
+#: po/tmp/ap_String_Id.h.h:287
 msgid "&Ignore"
 msgstr "Aba&i"
 
 #. MENU_LABEL_SPELL_IGNOREALL
-#: po/tmp/ap_String_Id.h.h:287
+#: po/tmp/ap_String_Id.h.h:289
 msgid "&Ignore All"
 msgstr "Aba&i Semua"
 
 #. MENU_LABEL_FMT_IMPORTSTYLES
-#: po/tmp/ap_String_Id.h.h:289
+#: po/tmp/ap_String_Id.h.h:291
 msgid "&Import Styles"
 msgstr "&Import Gaya"
 
 #. MENU_LABEL_WEB_WEBPREVIEW
-#: po/tmp/ap_String_Id.h.h:291
+#: po/tmp/ap_String_Id.h.h:293
 msgid "&In web browser"
 msgstr "&Dalam pelayar web"
 
 #. DLG_Para_TabLabelIndentsAndSpacing
-#: po/tmp/ap_String_Id.h.h:293
+#: po/tmp/ap_String_Id.h.h:295
 msgid "&Indents and Spacing"
 msgstr "&Indent dan Ruang"
+
+#. DLG_FormatTOC_InheritLabel
+#: po/tmp/ap_String_Id.h.h:297
+msgid "&Inherit label"
+msgstr "War&isi label"
 
 #. DLG_InsertButton
 #. MENU_LABEL_INSERT
 #. MENU_LABEL_TABLE_INSERT
-#: po/tmp/ap_String_Id.h.h:297
+#: po/tmp/ap_String_Id.h.h:301
 #: po/tmp/xap_String_Id.h.h:17
 msgid "&Insert"
 msgstr "Sel&it"
 
 #. MENU_LABEL_INSERT_FILE
-#: po/tmp/ap_String_Id.h.h:299
+#: po/tmp/ap_String_Id.h.h:303
 msgid "&Insert File"
 msgstr "Sel&it Fail"
 
 #. MENU_LABEL_FMT_ITALIC
-#: po/tmp/ap_String_Id.h.h:301
+#: po/tmp/ap_String_Id.h.h:305
 msgid "&Italic"
 msgstr "&Italik"
 
 #. MENU_LABEL_ALIGN_JUSTIFY
-#: po/tmp/ap_String_Id.h.h:303
+#: po/tmp/ap_String_Id.h.h:307
 msgid "&Justify"
 msgstr "&Justifi"
 
 #. DLG_Para_PushKeepLinesTogether
-#: po/tmp/ap_String_Id.h.h:305
+#: po/tmp/ap_String_Id.h.h:309
 msgid "&Keep lines together"
 msgstr "Tetap&kan baris bersama"
 
 #. MENU_LABEL_INSERT_DIRECTIONMARKER_LRM
-#: po/tmp/ap_String_Id.h.h:307
+#: po/tmp/ap_String_Id.h.h:311
 msgid "&LRM"
 msgstr "&LRM"
 
 #. DLG_PageSetup_Landscape
-#: po/tmp/ap_String_Id.h.h:309
+#: po/tmp/ap_String_Id.h.h:313
 msgid "&Landscape"
 msgstr "&Lanskap"
 
 #. MENU_LABEL_TOOLS_LANGUAGE
-#: po/tmp/ap_String_Id.h.h:311
+#: po/tmp/ap_String_Id.h.h:315
 msgid "&Language"
 msgstr "&Bahasa"
 
 #. MENU_LABEL_ALIGN_LEFT
-#: po/tmp/ap_String_Id.h.h:313
+#: po/tmp/ap_String_Id.h.h:317
 msgid "&Left"
 msgstr "&Kiri"
 
 #. MENU_LABEL_FMT_DIRECTION_DO_LTR
-#: po/tmp/ap_String_Id.h.h:315
+#: po/tmp/ap_String_Id.h.h:319
 msgid "&Left-to-right text"
 msgstr "Teks kiri-ke-kanan"
 
 #. DLG_Para_LabelLeft
 #. DLG_PageSetup_Left
-#: po/tmp/ap_String_Id.h.h:318
+#: po/tmp/ap_String_Id.h.h:322
 msgid "&Left:"
 msgstr "&Kiri:"
 
 #. MENU_LABEL_VIEW_LOCK_TB_LAYOUT
-#: po/tmp/ap_String_Id.h.h:320
+#: po/tmp/ap_String_Id.h.h:324
 msgid "&Lock layout"
 msgstr "Kunci susunatur"
 
 #. MENU_LABEL_TOOLS_MAILMERGE
-#: po/tmp/ap_String_Id.h.h:322
+#: po/tmp/ap_String_Id.h.h:326
 msgid "&Mail Merge"
 msgstr "Gabung &Mel"
 
 #. MENU_LABEL_INSERT_MAILMERGE
-#: po/tmp/ap_String_Id.h.h:324
+#: po/tmp/ap_String_Id.h.h:328
 msgid "&Mail Merge Field"
 msgstr "Medan Gabung &Mel"
 
 #. MENU_LABEL_TOOLS_REVISIONS_AUTO
-#: po/tmp/ap_String_Id.h.h:326
+#: po/tmp/ap_String_Id.h.h:330
 msgid "&Maintain Full History"
 msgstr "Kekalkan Sejarah Penuh"
 
 #. DLG_PageSetup_Margin
-#: po/tmp/ap_String_Id.h.h:328
+#: po/tmp/ap_String_Id.h.h:332
 msgid "&Margin"
 msgstr "&Margin"
 
 #. MENU_LABEL_TOOLS_REVISIONS_MARK
-#: po/tmp/ap_String_Id.h.h:330
+#: po/tmp/ap_String_Id.h.h:334
 msgid "&Mark revisions while typing"
 msgstr "Tanda se&makan ketika menaip"
 
 #. DLG_FR_MatchCase
-#: po/tmp/ap_String_Id.h.h:332
+#: po/tmp/ap_String_Id.h.h:336
 msgid "&Match case"
 msgstr "&Padan huruf"
 
 #. MENU_LABEL_TABLE_MERGE_CELLS
-#: po/tmp/ap_String_Id.h.h:334
+#: po/tmp/ap_String_Id.h.h:338
 msgid "&Merge Cells"
 msgstr "&Gabung sel"
 
 #. MENU_LABEL_WINDOW_MORE
-#: po/tmp/ap_String_Id.h.h:336
+#: po/tmp/ap_String_Id.h.h:340
 msgid "&More Documents"
 msgstr "Lebih Doku&men"
 
 #. DLG_Goto_Label_Name
-#: po/tmp/ap_String_Id.h.h:338
+#: po/tmp/ap_String_Id.h.h:342
 msgid "&Name:"
 msgstr "&Nama:"
 
 #. MENU_LABEL_FILE_NEW
-#: po/tmp/ap_String_Id.h.h:340
+#: po/tmp/ap_String_Id.h.h:344
 msgid "&New"
 msgstr "&Baru"
 
 #. MENU_LABEL_WINDOW_NEW
-#: po/tmp/ap_String_Id.h.h:342
+#: po/tmp/ap_String_Id.h.h:346
 msgid "&New Window"
 msgstr "&Tetingkap Baru"
 
+#. MENU_LABEL_FILE_NEW_USING_TEMPLATE
+#: po/tmp/ap_String_Id.h.h:348
+msgid "&New using Template"
+msgstr "Baru me&nggunakan Template"
+
 #. DLG_Break_NextPage
-#: po/tmp/ap_String_Id.h.h:344
+#: po/tmp/ap_String_Id.h.h:350
 msgid "&Next page"
 msgstr "&Berikut"
 
 #. MENU_LABEL_VIEW_NORMAL
-#: po/tmp/ap_String_Id.h.h:346
+#: po/tmp/ap_String_Id.h.h:352
 msgid "&Normal Layout"
 msgstr "Susu&natur Biasa"
 
 #. DLG_Goto_Label_Number
-#: po/tmp/ap_String_Id.h.h:348
+#: po/tmp/ap_String_Id.h.h:354
 msgid "&Number:"
 msgstr "&Nombor:"
 
+#. DLG_FormatTOC_NumberingType
+#: po/tmp/ap_String_Id.h.h:356
+msgid "&Numbering type:"
+msgstr "Jenis per&nomboran:"
+
 #. DLG_Break_OddPage
-#: po/tmp/ap_String_Id.h.h:350
+#: po/tmp/ap_String_Id.h.h:358
 msgid "&Odd page"
 msgstr "&Halaman ganjil"
 
 #. MENU_LABEL_FILE_OPEN
-#: po/tmp/ap_String_Id.h.h:352
+#: po/tmp/ap_String_Id.h.h:360
 msgid "&Open"
 msgstr "B&uka"
 
 #. DLG_MailMerge_OpenFile
-#: po/tmp/ap_String_Id.h.h:354
+#: po/tmp/ap_String_Id.h.h:362
 msgid "&Open File"
 msgstr "Buka Fail"
 
 #. MENU_LABEL_FMT_OVERLINE
-#: po/tmp/ap_String_Id.h.h:356
+#: po/tmp/ap_String_Id.h.h:364
 msgid "&Overline"
 msgstr "&Garisatas"
 
 #. MENU_LABEL_VIEW_ZOOM_WIDTH
-#: po/tmp/ap_String_Id.h.h:358
+#: po/tmp/ap_String_Id.h.h:366
 msgid "&Page Width"
 msgstr "&Lebar Halaman"
 
 #. DLG_Break_PageBreak
-#: po/tmp/ap_String_Id.h.h:360
+#: po/tmp/ap_String_Id.h.h:368
 msgid "&Page break"
 msgstr "&Putus laman"
 
+#. DLG_FormatTOC_PageNumbering
+#: po/tmp/ap_String_Id.h.h:370
+msgid "&Page numbering:"
+msgstr "Nombor halaman:"
+
 #. MENU_LABEL_FMT_PARAGRAPH
-#: po/tmp/ap_String_Id.h.h:362
+#: po/tmp/ap_String_Id.h.h:372
 msgid "&Paragraph"
 msgstr "&Perenggan"
 
 #. MENU_LABEL_EDIT_PASTE
-#: po/tmp/ap_String_Id.h.h:364
+#: po/tmp/ap_String_Id.h.h:374
 msgid "&Paste"
 msgstr "Tam&pal"
 
 #. MENU_LABEL_INSERT_PICTURE
-#: po/tmp/ap_String_Id.h.h:366
+#: po/tmp/ap_String_Id.h.h:376
 msgid "&Picture"
 msgstr "&Gambar"
 
 #. MENU_LABEL_TOOLS_PLUGINS
-#: po/tmp/ap_String_Id.h.h:368
+#: po/tmp/ap_String_Id.h.h:378
 msgid "&Plugins"
 msgstr "&Plugin"
 
 #. DLG_PageSetup_Portrait
-#: po/tmp/ap_String_Id.h.h:370
+#: po/tmp/ap_String_Id.h.h:380
 msgid "&Portrait"
 msgstr "&Potret"
 
 #. MENU_LABEL_FILE_PRINT
-#: po/tmp/ap_String_Id.h.h:372
+#: po/tmp/ap_String_Id.h.h:382
 msgid "&Print"
 msgstr "&Cetak"
 
 #. MENU_LABEL_VIEW_PRINT
-#: po/tmp/ap_String_Id.h.h:374
+#: po/tmp/ap_String_Id.h.h:384
 msgid "&Print Layout"
 msgstr "&Susunatur Cetakan"
 
 #. MENU_LABEL_FILE_EXIT
-#: po/tmp/ap_String_Id.h.h:376
+#: po/tmp/ap_String_Id.h.h:386
 msgid "&Quit"
 msgstr "&Keluar"
 
 #. MENU_LABEL_INSERT_DIRECTIONMARKER_RLM
-#: po/tmp/ap_String_Id.h.h:378
+#: po/tmp/ap_String_Id.h.h:388
 msgid "&RLM"
 msgstr "&RLM"
 
 #. MENU_LABEL_EDIT_REDO
-#: po/tmp/ap_String_Id.h.h:380
+#: po/tmp/ap_String_Id.h.h:390
 msgid "&Redo"
 msgstr "&Buat semula"
 
 #. MENU_LABEL_TOOLS_REVISIONS_REJECT_REVISION
-#: po/tmp/ap_String_Id.h.h:382
+#: po/tmp/ap_String_Id.h.h:392
 msgid "&Reject revision"
 msgstr "&Tolak semakan"
 
 #. DLG_FR_ReplaceButton
-#: po/tmp/ap_String_Id.h.h:384
+#: po/tmp/ap_String_Id.h.h:394
 msgid "&Replace"
 msgstr "&Ganti"
 
 #. DLG_Options_Btn_IgnoreReset
-#: po/tmp/ap_String_Id.h.h:386
+#: po/tmp/ap_String_Id.h.h:396
 msgid "&Reset"
 msgstr "&Reset"
 
 #. MENU_LABEL_VIEW_DEFAULT_TB_LAYOUT
-#: po/tmp/ap_String_Id.h.h:388
+#: po/tmp/ap_String_Id.h.h:398
 msgid "&Reset to default layout"
 msgstr "&Tetapsemula kepada susunatur default"
 
 #. MENU_LABEL_TOOLS_REVISIONS
-#: po/tmp/ap_String_Id.h.h:390
+#: po/tmp/ap_String_Id.h.h:400
 msgid "&Revisions"
 msgstr "&Semakan"
 
 #. MENU_LABEL_ALIGN_RIGHT
-#: po/tmp/ap_String_Id.h.h:392
+#: po/tmp/ap_String_Id.h.h:402
 msgid "&Right"
 msgstr "K&anan"
 
 #. MENU_LABEL_FMT_DIRECTION_DO_RTL
-#: po/tmp/ap_String_Id.h.h:394
+#: po/tmp/ap_String_Id.h.h:404
 msgid "&Right-to-left text"
 msgstr "Teks kanan-ke-kiri"
 
 #. DLG_Para_LabelRight
 #. DLG_PageSetup_Right
-#: po/tmp/ap_String_Id.h.h:397
+#: po/tmp/ap_String_Id.h.h:407
 msgid "&Right:"
 msgstr "K&anan:"
 
 #. MENU_LABEL_TABLE_DELETE_ROWS
 #. MENU_LABEL_TABLE_SELECT_ROW
-#: po/tmp/ap_String_Id.h.h:400
+#: po/tmp/ap_String_Id.h.h:410
 msgid "&Row"
 msgstr "&Baris"
 
 #. DLG_Options_Label_ViewRuler
-#: po/tmp/ap_String_Id.h.h:402
+#: po/tmp/ap_String_Id.h.h:412
 msgid "&Ruler"
 msgstr "Pemba&ris"
 
 #. MENU_LABEL_FILE_SAVE
-#: po/tmp/ap_String_Id.h.h:404
+#: po/tmp/ap_String_Id.h.h:414
 msgid "&Save"
 msgstr "&Simpan"
 
 #. MENU_LABEL_FILE_SAVEIMAGE
-#: po/tmp/ap_String_Id.h.h:406
+#: po/tmp/ap_String_Id.h.h:416
 msgid "&Save Image As"
 msgstr "&Simpan Imej Sebagai"
 
 #. MENU_LABEL_WEB_SAVEASWEB
-#: po/tmp/ap_String_Id.h.h:408
+#: po/tmp/ap_String_Id.h.h:418
 msgid "&Save web page"
 msgstr "&Simpan laman web"
 
 #. MENU_LABEL_HELP_SEARCH
-#: po/tmp/ap_String_Id.h.h:410
+#: po/tmp/ap_String_Id.h.h:420
 msgid "&Search for Help"
 msgstr "&Cari Bantuan"
 
 #. MENU_LABEL_TABLE_SELECT
-#: po/tmp/ap_String_Id.h.h:412
+#: po/tmp/ap_String_Id.h.h:422
 msgid "&Select"
 msgstr "&Pilih"
 
 #. MENU_LABEL_TOOLS_REVISIONS_SET_VIEW_LEVEL
-#: po/tmp/ap_String_Id.h.h:414
+#: po/tmp/ap_String_Id.h.h:424
 msgid "&Select revision"
 msgstr "Pilih &semakan"
 
 #. MENU_LABEL_TOOLS_HISTORY_SHOW
-#: po/tmp/ap_String_Id.h.h:416
+#: po/tmp/ap_String_Id.h.h:426
 msgid "&Show History"
 msgstr "Papar &Sejarah"
 
 #. MENU_LABEL_VIEW_STATUSBAR
-#: po/tmp/ap_String_Id.h.h:418
+#: po/tmp/ap_String_Id.h.h:428
 msgid "&Show Status Bar"
 msgstr "Papar Bar &Status"
 
 #. DLG_Para_LabelSpecial
-#: po/tmp/ap_String_Id.h.h:420
+#: po/tmp/ap_String_Id.h.h:430
 msgid "&Special:"
 msgstr "I&stimewa:"
 
 #. MENU_LABEL_TOOLS_SPELLING
-#: po/tmp/ap_String_Id.h.h:422
+#: po/tmp/ap_String_Id.h.h:432
 msgid "&Spelling"
 msgstr "&Ejaan"
 
+#. DLG_FormatTOC_StartAt
+#: po/tmp/ap_String_Id.h.h:434
+msgid "&Start at:"
+msgstr "Mula pada:"
+
 #. DLG_Options_Label_ViewStatusBar
-#: po/tmp/ap_String_Id.h.h:424
+#: po/tmp/ap_String_Id.h.h:436
 msgid "&Status bar"
 msgstr "Bar &status"
 
 #. MENU_LABEL_FMT_SUBSCRIPT
-#: po/tmp/ap_String_Id.h.h:426
+#: po/tmp/ap_String_Id.h.h:438
 msgid "&Subscript"
 msgstr "&Subskrip"
 
 #. DLG_Para_PushSuppressLineNumbers
-#: po/tmp/ap_String_Id.h.h:428
+#: po/tmp/ap_String_Id.h.h:440
 msgid "&Suppress line numbers"
 msgstr "&Sembunyi nombor baris"
+
+#. DLG_FormatTOC_TabLeader
+#: po/tmp/ap_String_Id.h.h:442
+msgid "&Tab leader:"
+msgstr "Awalan &tab:"
 
 #. MENU_LABEL_TABLE_INSERT_TABLE
 #. MENU_LABEL_TABLE_DELETE_TABLE
 #. MENU_LABEL_TABLE_SELECT_TABLE
-#: po/tmp/ap_String_Id.h.h:432
+#: po/tmp/ap_String_Id.h.h:446
 msgid "&Table"
 msgstr "&Jadual"
 
 #. MENU_LABEL_FMT_TABS
-#: po/tmp/ap_String_Id.h.h:434
+#: po/tmp/ap_String_Id.h.h:448
 msgid "&Tabs"
 msgstr "&Tab"
 
 #. DLG_Para_ButtonTabs
-#: po/tmp/ap_String_Id.h.h:436
+#: po/tmp/ap_String_Id.h.h:450
 msgid "&Tabs..."
 msgstr "&Tab..."
 
 #. MENU_LABEL_VIEW_TOOLBARS
-#: po/tmp/ap_String_Id.h.h:438
+#: po/tmp/ap_String_Id.h.h:452
 msgid "&Toolbars"
 msgstr "Bar ala&t"
 
 #. MENU_LABEL_TOOLS
-#: po/tmp/ap_String_Id.h.h:440
+#: po/tmp/ap_String_Id.h.h:454
 msgid "&Tools"
 msgstr "Ala&t"
 
 #. DLG_PageSetup_Top
-#: po/tmp/ap_String_Id.h.h:442
+#: po/tmp/ap_String_Id.h.h:456
 msgid "&Top:"
 msgstr "A&tas:"
 
 #. DLG_Field_Types_No_Colon
-#: po/tmp/ap_String_Id.h.h:444
+#: po/tmp/ap_String_Id.h.h:458
 msgid "&Types"
 msgstr "&Jenis"
 
 #. DLG_Field_Types
-#: po/tmp/ap_String_Id.h.h:446
+#: po/tmp/ap_String_Id.h.h:460
 msgid "&Types:"
 msgstr "&Jenis:"
 
 #. MENU_LABEL_FMT_UNDERLINE
-#: po/tmp/ap_String_Id.h.h:448
+#: po/tmp/ap_String_Id.h.h:462
 msgid "&Underline"
 msgstr "G&arisbawah"
 
 #. MENU_LABEL_EDIT_UNDO
-#: po/tmp/ap_String_Id.h.h:450
+#: po/tmp/ap_String_Id.h.h:464
 msgid "&Undo"
 msgstr "Nyahb&uat"
 
 #. DLG_Options_Label_ViewUnits
 #. DLG_PageSetup_Units
-#: po/tmp/ap_String_Id.h.h:453
+#: po/tmp/ap_String_Id.h.h:467
 msgid "&Units:"
 msgstr "&Unit:"
 
 #. MENU_LABEL_VIEW
-#: po/tmp/ap_String_Id.h.h:455
+#: po/tmp/ap_String_Id.h.h:469
 #: po/tmp/xap_String_Id.h.h:23
 msgid "&View"
 msgstr "&Lihat"
 
 #. MENU_LABEL_VIEW_WEB
-#: po/tmp/ap_String_Id.h.h:457
+#: po/tmp/ap_String_Id.h.h:471
 msgid "&Web Layout"
 msgstr "Susunatur &Web"
 
 #. MENU_LABEL_VIEW_ZOOM_WHOLE
-#: po/tmp/ap_String_Id.h.h:459
+#: po/tmp/ap_String_Id.h.h:473
 msgid "&Whole Page"
 msgstr "&Seluruh Halaman"
 
 #. DLG_FR_WholeWord
-#: po/tmp/ap_String_Id.h.h:461
+#: po/tmp/ap_String_Id.h.h:475
 msgid "&Whole word"
 msgstr "&Seluruh perkataan"
 
 #. DLG_Para_PushWidowOrphanControl
-#: po/tmp/ap_String_Id.h.h:463
+#: po/tmp/ap_String_Id.h.h:477
 msgid "&Widow/Orphan control"
 msgstr "&Kawalan balu/yatim"
 
 #. DLG_PageSetup_Width
-#: po/tmp/ap_String_Id.h.h:465
+#: po/tmp/ap_String_Id.h.h:479
 msgid "&Width:"
 msgstr "&Lebar:"
 
 #. MENU_LABEL_TOOLS_WORDCOUNT
-#: po/tmp/ap_String_Id.h.h:467
+#: po/tmp/ap_String_Id.h.h:481
 msgid "&Word Count"
 msgstr "&Kira Perkataan"
 
 #. MENU_LABEL_VIEW_ZOOM_MENU
 #. MENU_LABEL_VIEW_ZOOM
-#: po/tmp/ap_String_Id.h.h:470
+#: po/tmp/ap_String_Id.h.h:484
 msgid "&Zoom"
 msgstr "&Zoom"
 
 #. DLG_ListRevisions_LevelZero
-#: po/tmp/ap_String_Id.h.h:472
+#: po/tmp/ap_String_Id.h.h:486
 msgid "(All revisions visible)"
 msgstr "(Semua rujukan kelihatan)"
 
 #. DLG_Spell_NoSuggestions
-#: po/tmp/ap_String_Id.h.h:474
+#: po/tmp/ap_String_Id.h.h:488
 msgid "(no spelling suggestions)"
 msgstr "(tiada cadangan ejaan)"
 
 #. DLG_Para_SpecialNone
-#: po/tmp/ap_String_Id.h.h:476
+#: po/tmp/ap_String_Id.h.h:490
 msgid "(none)"
 msgstr "(tiada)"
 
 #. TOOLBAR_LABEL_1COLUMN
 #. TOOLBAR_STATUSLINE_1COLUMN
 #. TOOLBAR_TOOLTIP_1COLUMN
-#: po/tmp/ap_String_Id.h.h:480
+#: po/tmp/ap_String_Id.h.h:494
 msgid "1 Column"
 msgstr "1 Lajur"
 
 #. TOOLBAR_LABEL_MIDDLE_SPACE
-#: po/tmp/ap_String_Id.h.h:482
+#: po/tmp/ap_String_Id.h.h:496
 msgid "1.5 Spacing"
 msgstr "1.5 Ruang"
 
 #. DLG_Para_SpacingHalf
-#: po/tmp/ap_String_Id.h.h:484
+#: po/tmp/ap_String_Id.h.h:498
 msgid "1.5 lines"
 msgstr "1.5 baris"
 
 #. TOOLBAR_STATUSLINE_MIDDLE_SPACE
 #. TOOLBAR_TOOLTIP_MIDDLE_SPACE
-#: po/tmp/ap_String_Id.h.h:487
+#: po/tmp/ap_String_Id.h.h:501
 msgid "1.5 spacing"
 msgstr "1.5 ruang"
 
 #. TOOLBAR_LABEL_PARA_12BEFORE
-#: po/tmp/ap_String_Id.h.h:489
+#: po/tmp/ap_String_Id.h.h:503
 msgid "12 pt before"
 msgstr "12 pt sebelum"
 
 #. TOOLBAR_LABEL_2COLUMN
 #. TOOLBAR_STATUSLINE_2COLUMN
 #. TOOLBAR_TOOLTIP_2COLUMN
-#: po/tmp/ap_String_Id.h.h:493
+#: po/tmp/ap_String_Id.h.h:507
 msgid "2 Columns"
 msgstr "2 Lajur"
 
 #. TOOLBAR_LABEL_3COLUMN
 #. TOOLBAR_STATUSLINE_3COLUMN
 #. TOOLBAR_TOOLTIP_3COLUMN
-#: po/tmp/ap_String_Id.h.h:497
+#: po/tmp/ap_String_Id.h.h:511
 msgid "3 Columns"
 msgstr "3 Lajur"
 
 #. DLG_Goto_Btn_Prev
-#: po/tmp/ap_String_Id.h.h:499
+#: po/tmp/ap_String_Id.h.h:513
 msgid "<< Prev"
 msgstr "<< Sebelum"
 
 #. MSG_Exception
-#: po/tmp/ap_String_Id.h.h:501
+#: po/tmp/ap_String_Id.h.h:515
 msgid ""
 "A fatal error has just occurred. Abiword is going to shutdown.\n"
 "The current document has been saved to disc with a \".saved\" extension."
@@ -1091,44 +1126,44 @@ msgstr ""
 "Dokumen semasa telah disimpan ke cakera dengan pengakhiran \".saved\"."
 
 #. DLG_Options_Label_SpellSuggest
-#: po/tmp/ap_String_Id.h.h:503
+#: po/tmp/ap_String_Id.h.h:517
 msgid "A&lways suggest corrections"
 msgstr "Senti&asa cadang pembetulan"
 
 #. FIELD_DateTime_AMPM
-#: po/tmp/ap_String_Id.h.h:505
+#: po/tmp/ap_String_Id.h.h:519
 msgid "AM/PM"
 msgstr "AM/PM"
 
 #. AUTOTEXT_ATTN_2
-#: po/tmp/ap_String_Id.h.h:507
+#: po/tmp/ap_String_Id.h.h:521
 msgid "ATTN:"
 msgstr "PRHTN:"
 
 #. MSG_IE_BogusDocument
-#: po/tmp/ap_String_Id.h.h:509
+#: po/tmp/ap_String_Id.h.h:523
 #, c-format
 msgid "AbiWord cannot open %s. It appears to be an invalid document"
 msgstr "AbiWord tidak dapat membuka %s. Ia kelihatan seperti dokumen tidak sah"
 
 #. MSG_SpellSelectionDone
-#: po/tmp/ap_String_Id.h.h:511
+#: po/tmp/ap_String_Id.h.h:525
 msgid "AbiWord finished checking the selection."
 msgstr "AbiWord telah selesai memeriksa pilihan."
 
 #. DLG_FR_FinishedReplace
-#: po/tmp/ap_String_Id.h.h:513
+#: po/tmp/ap_String_Id.h.h:527
 #, c-format
 msgid "AbiWord has finished its search of the document and has made %d replacements."
 msgstr "Abiword telah selesai mencari dalam dokumen dan telah melakukan %d perubahan."
 
 #. DLG_FR_FinishedFind
-#: po/tmp/ap_String_Id.h.h:515
+#: po/tmp/ap_String_Id.h.h:529
 msgid "AbiWord has finished searching the document."
 msgstr "Abiword telah selesai mencari dalam dokumen."
 
 #. WINDOWS_COMCTL_WARNING
-#: po/tmp/ap_String_Id.h.h:517
+#: po/tmp/ap_String_Id.h.h:531
 msgid ""
 "AbiWord is designed for a newer version of the system file COMCTL32.DLL\n"
 "than the one currently on your system. (COMCTL32.DLL version 4.72 or newer)\n"
@@ -1147,7 +1182,7 @@ msgstr ""
 "Anda boleh menggunakan program ini, tetapi bar alat mungkin hilang."
 
 #. WINDOWS_NEED_UNICOWS
-#: po/tmp/ap_String_Id.h.h:519
+#: po/tmp/ap_String_Id.h.h:533
 #, c-format
 msgid ""
 "AbiWord needs the file %s.dll\n"
@@ -1157,343 +1192,343 @@ msgstr ""
 "Sila muatturun dan pasang dari http://www.microsoft.com/msdownload/platformsdk/sdkupdate/psdkredist.htm"
 
 #. MENU_LABEL_HELP_ABOUT_GNU
-#: po/tmp/ap_String_Id.h.h:521
+#: po/tmp/ap_String_Id.h.h:535
 msgid "About &GNU Free Software"
 msgstr "Perihal &GNU Free Software"
 
 #. MENU_LABEL_HELP_ABOUTOS
-#: po/tmp/ap_String_Id.h.h:523
+#: po/tmp/ap_String_Id.h.h:537
 msgid "About &Open Source"
 msgstr "&Perihal Sumber Terbuka"
 
 #. MENU_LABEL_HELP_ABOUT_GNOMEOFFICE
-#: po/tmp/ap_String_Id.h.h:525
+#: po/tmp/ap_String_Id.h.h:539
 msgid "About G&NOME Office"
 msgstr "Perihal G&NOME Office"
 
 #. MENU_STATUSLINE_HELP_ABOUT_GNOMEOFFICE
-#: po/tmp/ap_String_Id.h.h:527
+#: po/tmp/ap_String_Id.h.h:541
 msgid "About the GNOME Office project"
 msgstr "Perihal projek GNOME Office"
 
 #. MENU_STATUSLINE_HELP_ABOUT_GNU
-#: po/tmp/ap_String_Id.h.h:529
+#: po/tmp/ap_String_Id.h.h:543
 msgid "About the GNU project"
 msgstr "Perihal projek GNU"
 
 #. MENU_STATUSLINE_TOOLS_REVISIONS_ACCEPT_REVISION
-#: po/tmp/ap_String_Id.h.h:531
+#: po/tmp/ap_String_Id.h.h:545
 msgid "Accept the suggested change"
 msgstr "Terima gantian yang dicadang"
 
 #. TOOLBAR_STATUSLINE_ADD_COLUMN
 #. TOOLBAR_TOOLTIP_ADD_COLUMN
-#: po/tmp/ap_String_Id.h.h:534
+#: po/tmp/ap_String_Id.h.h:548
 msgid "Add a column to this table after the current column"
 msgstr "Tambah lajur kepada jadual ini selepas lajur semasa"
 
 #. TOOLBAR_STATUSLINE_ADD_ROW
 #. TOOLBAR_TOOLTIP_ADD_ROW
-#: po/tmp/ap_String_Id.h.h:537
+#: po/tmp/ap_String_Id.h.h:551
 msgid "Add a row to this table after the current row"
 msgstr "Tambah baris kepada jadual ini selepas baris semasa"
 
 #. MENU_STATUSLINE_FMT_BORDERS
-#: po/tmp/ap_String_Id.h.h:539
+#: po/tmp/ap_String_Id.h.h:553
 msgid "Add borders and shading to the selection"
 msgstr "Tambah sempadan dan legapan kepada pilihan"
 
 #. TOOLBAR_LABEL_ADD_COLUMN
-#: po/tmp/ap_String_Id.h.h:541
+#: po/tmp/ap_String_Id.h.h:555
 msgid "Add column after"
 msgstr "Tambah lajur selepas"
 
 #. MENU_STATUSLINE_FMT_BULLETS
-#: po/tmp/ap_String_Id.h.h:543
+#: po/tmp/ap_String_Id.h.h:557
 msgid "Add or modify bullets and numbering for selected paragraphs"
 msgstr "Tambah atau ubah bullet dan nombor pada perenggan pilihan"
 
 #. TOOLBAR_LABEL_ADD_ROW
-#: po/tmp/ap_String_Id.h.h:545
+#: po/tmp/ap_String_Id.h.h:559
 msgid "Add row after"
 msgstr "Tambah baris selepas"
 
 #. MENU_STATUSLINE_SPELL_ADD
-#: po/tmp/ap_String_Id.h.h:547
+#: po/tmp/ap_String_Id.h.h:561
 msgid "Add this word to the custom dictionary"
 msgstr "Tambah perkataan ini kepada kamus sendiri"
 
 #. DLG_Styles_ModifyTemplate
-#: po/tmp/ap_String_Id.h.h:549
+#: po/tmp/ap_String_Id.h.h:563
 msgid "Add to template"
 msgstr "Tambah kepada template"
 
 #. DLG_Para_LabelAfter
-#: po/tmp/ap_String_Id.h.h:551
+#: po/tmp/ap_String_Id.h.h:565
 msgid "Aft&er:"
 msgstr "S&elepas:"
 
 #. DLG_Para_LabelAlignment
-#: po/tmp/ap_String_Id.h.h:553
+#: po/tmp/ap_String_Id.h.h:567
 msgid "Ali&gnment:"
 msgstr "&Jajaran:"
 
 #. DLG_Tab_Label_Alignment
 #. DLG_PageNumbers_Alignment_No_Colon
-#: po/tmp/ap_String_Id.h.h:556
+#: po/tmp/ap_String_Id.h.h:570
 msgid "Alignment"
 msgstr "Jajaran"
 
 #. DLG_PageNumbers_Alignment
-#: po/tmp/ap_String_Id.h.h:558
+#: po/tmp/ap_String_Id.h.h:572
 msgid "Alignment:"
 msgstr "Jajaran:"
 
 #. DLG_Styles_LBL_All
-#: po/tmp/ap_String_Id.h.h:560
+#: po/tmp/ap_String_Id.h.h:574
 #: po/tmp/xap_String_Id.h.h:51
 msgid "All"
 msgstr "Semua"
 
 #. DLG_Options_Label_CheckAllowCustomToolbars
-#: po/tmp/ap_String_Id.h.h:562
+#: po/tmp/ap_String_Id.h.h:576
 msgid "Allow Custom Toolbars"
 msgstr "Benarkan Toolbar Tersendiri"
 
 #. MENU_STATUSLINE_VIEW_LOCKSTYLES
-#: po/tmp/ap_String_Id.h.h:564
+#: po/tmp/ap_String_Id.h.h:578
 msgid "Allow formatting using styles only"
 msgstr "Benarkan memformat menggunakan gaya sahaja"
 
 #. DLG_Options_Label_CheckWhiteForTransparent
-#: po/tmp/ap_String_Id.h.h:566
+#: po/tmp/ap_String_Id.h.h:580
 msgid "Allow screen colors other than white"
 msgstr "Benarkan warna skrin selain dari putih"
 
 #. FIELD_Application
-#: po/tmp/ap_String_Id.h.h:568
+#: po/tmp/ap_String_Id.h.h:582
 msgid "Application"
 msgstr "Aplikasi"
 
 #. DLG_Options_Btn_Apply
-#: po/tmp/ap_String_Id.h.h:570
+#: po/tmp/ap_String_Id.h.h:584
 #: po/tmp/xap_String_Id.h.h:65
 msgid "Apply"
 msgstr "Terap"
 
 #. TOOLBAR_STATUSLINE_FMTPAINTER
 #. TOOLBAR_TOOLTIP_FMTPAINTER
-#: po/tmp/ap_String_Id.h.h:573
+#: po/tmp/ap_String_Id.h.h:587
 msgid "Apply the previously copied paragraph formatting onto the selected text"
 msgstr "Terapkan format perenggan yang disalin sebelumnya kedalam teks pilihan"
 
 #. DLG_Lists_Apply_Current
-#: po/tmp/ap_String_Id.h.h:575
+#: po/tmp/ap_String_Id.h.h:589
 msgid "Apply to Current List"
 msgstr "Terap kepada Senarai Semasa"
 
 #. DLG_FormatTable_Apply_To
-#: po/tmp/ap_String_Id.h.h:577
+#: po/tmp/ap_String_Id.h.h:591
 msgid "Apply to:"
 msgstr "Terap kepada:"
 
 #. DLG_Lists_Arabic_List
-#: po/tmp/ap_String_Id.h.h:579
+#: po/tmp/ap_String_Id.h.h:593
 msgid "Arabic List"
 msgstr "Senarai Arab"
 
 #. MSG_AutoRevisionOffWarning
-#: po/tmp/ap_String_Id.h.h:581
+#: po/tmp/ap_String_Id.h.h:595
 msgid "Are you sure you do not want to maintain full history record? If you proceed, you will not be able to restore earlier versions of this document."
 msgstr "Adakah anda pasti anda tidak mahu mengekalkan rekod penuh sejarah? Jika anda meneruskan, anda mungkin tidak boleh mengembalikan versi awal dokumen ini."
 
 #. DLG_Para_SpacingAtLeast
-#: po/tmp/ap_String_Id.h.h:583
+#: po/tmp/ap_String_Id.h.h:597
 msgid "At least"
 msgstr "Paling Kurang"
 
 #. DLG_Lists_Resume
-#: po/tmp/ap_String_Id.h.h:585
+#: po/tmp/ap_String_Id.h.h:599
 msgid "Attach to Previous List"
 msgstr "Kepil kepada Senarai Terdahulu"
 
 #. AUTOTEXT_ATTN_1
 #. MENU_LABEL_AUTOTEXT_ATTN
-#: po/tmp/ap_String_Id.h.h:588
+#: po/tmp/ap_String_Id.h.h:602
 msgid "Attention:"
 msgstr "Perhatian:"
 
 #. DLG_MetaData_Author_LBL
-#: po/tmp/ap_String_Id.h.h:590
+#: po/tmp/ap_String_Id.h.h:604
 #: po/tmp/xap_String_Id.h.h:83
 msgid "Author:"
 msgstr "Penulis:"
 
 #. DLG_Options_Label_AutoSaveCurrent
-#: po/tmp/ap_String_Id.h.h:592
+#: po/tmp/ap_String_Id.h.h:606
 msgid "Auto &save current file every"
 msgstr "Auto &simpan fail semasa setiap"
 
 #. DLG_Options_Label_AutoSave
-#: po/tmp/ap_String_Id.h.h:594
+#: po/tmp/ap_String_Id.h.h:608
 msgid "Auto Save"
 msgstr "Auto Simpan"
 
 #. DLG_Options_Label_SpellAutoReplace
-#: po/tmp/ap_String_Id.h.h:596
+#: po/tmp/ap_String_Id.h.h:610
 msgid "Auto replace misspelled words"
 msgstr "Auto ganti perkataan salah eja"
 
 #. DLG_InsertTable_AutoFit_Capital
-#: po/tmp/ap_String_Id.h.h:598
+#: po/tmp/ap_String_Id.h.h:612
 msgid "AutoFit Behavior"
 msgstr "Kelakuan Autofit"
 
 #. DLG_InsertTable_AutoFit
-#: po/tmp/ap_String_Id.h.h:600
+#: po/tmp/ap_String_Id.h.h:614
 msgid "AutoFit behavior"
 msgstr "Kelakuan Autofit"
 
 #. MENU_STATUSLINE_TABLE_AUTOFIT
-#: po/tmp/ap_String_Id.h.h:602
+#: po/tmp/ap_String_Id.h.h:616
 msgid "Autofit Table"
 msgstr "Automuat Jadual"
 
 #. DLG_InsertTable_AutoColSize
-#: po/tmp/ap_String_Id.h.h:604
+#: po/tmp/ap_String_Id.h.h:618
 msgid "Automatic column size"
 msgstr "Saiz lajur automatik"
 
 #. DLG_Options_Label_CheckAutoLoadPlugins
-#: po/tmp/ap_String_Id.h.h:606
+#: po/tmp/ap_String_Id.h.h:620
 msgid "Automatically load all plugins found"
 msgstr "Muat semua plugin yang dijumpai secara automatik"
 
 #. MENU_STATUSLINE_TOOLS_AUTOSPELL
-#: po/tmp/ap_String_Id.h.h:608
+#: po/tmp/ap_String_Id.h.h:622
 msgid "Automatically spell-check the document"
 msgstr "Semak ejaan dokument secara automatik"
 
 #. DLG_Styles_ModifyAutomatic
-#: po/tmp/ap_String_Id.h.h:610
+#: po/tmp/ap_String_Id.h.h:624
 msgid "Automatically update"
 msgstr "Kemaskini automatik"
 
 #. MSG_AutoMerge
-#: po/tmp/ap_String_Id.h.h:612
+#: po/tmp/ap_String_Id.h.h:626
 msgid "Automerge"
 msgstr "Autogabung"
 
 #. DLG_MailMerge_AvailableFields
-#: po/tmp/ap_String_Id.h.h:614
+#: po/tmp/ap_String_Id.h.h:628
 msgid "Available Fields"
 msgstr "Medan yang Ada  "
 
 #. DLG_DateTime_AvailableFormats_Capital
-#: po/tmp/ap_String_Id.h.h:616
+#: po/tmp/ap_String_Id.h.h:630
 msgid "Available Formats"
 msgstr "Format yang ada"
 
 #. DLG_Styles_Available
-#: po/tmp/ap_String_Id.h.h:618
+#: po/tmp/ap_String_Id.h.h:632
 msgid "Available Styles"
 msgstr "Gaya yang Ada"
 
 #. DLG_Para_LabelBy
-#: po/tmp/ap_String_Id.h.h:620
+#: po/tmp/ap_String_Id.h.h:634
 msgid "B&y:"
 msgstr "&Oleh:"
 
 #. AUTOTEXT_EMAIL_5
-#: po/tmp/ap_String_Id.h.h:622
+#: po/tmp/ap_String_Id.h.h:636
 msgid "BCC:"
 msgstr "BCC:"
 
 #. DLG_FormatFrame_Background
 #. DLG_FormatTable_Background
-#: po/tmp/ap_String_Id.h.h:625
+#: po/tmp/ap_String_Id.h.h:639
 msgid "Background"
 msgstr "Latarbelakang"
 
 #. DLG_FormatFrame_Background_Color
 #. DLG_FormatTable_Background_Color
-#: po/tmp/ap_String_Id.h.h:628
+#: po/tmp/ap_String_Id.h.h:642
 msgid "Background color:"
 msgstr "Warna latarbelakang:"
 
 #. DLG_Tab_Radio_Bar
-#: po/tmp/ap_String_Id.h.h:630
+#: po/tmp/ap_String_Id.h.h:644
 msgid "Bar"
 msgstr "Bar"
 
 #. TabToggleBarTab
-#: po/tmp/ap_String_Id.h.h:632
+#: po/tmp/ap_String_Id.h.h:646
 msgid "Bar Tab"
 msgstr "Tab Bar"
 
 #. DLG_Styles_ModifyBasedOn
-#: po/tmp/ap_String_Id.h.h:634
+#: po/tmp/ap_String_Id.h.h:648
 msgid "Based On:"
 msgstr "Berasaskan:"
 
 #. AUTOTEXT_CLOSING_1
-#: po/tmp/ap_String_Id.h.h:636
+#: po/tmp/ap_String_Id.h.h:650
 msgid "Best regards,"
 msgstr "Salam,"
 
 #. AUTOTEXT_CLOSING_2
-#: po/tmp/ap_String_Id.h.h:638
+#: po/tmp/ap_String_Id.h.h:652
 msgid "Best wishes,"
 msgstr "Dengan harapan,"
 
 #. DLG_Options_Label_BiDiOptions
-#: po/tmp/ap_String_Id.h.h:640
+#: po/tmp/ap_String_Id.h.h:654
 msgid "Bi-Directional Options"
 msgstr "Pilihan Dua-Arah"
 
 #. TOOLBAR_LABEL_FMT_BOLD
 #. TOOLBAR_STATUSLINE_FMT_BOLD
 #. TOOLBAR_TOOLTIP_FMT_BOLD
-#: po/tmp/ap_String_Id.h.h:644
+#: po/tmp/ap_String_Id.h.h:658
 #: po/tmp/xap_String_Id.h.h:109
 msgid "Bold"
 msgstr "Tebal"
 
 #. MENU_LABEL_INSERT_BOOKMARK
-#: po/tmp/ap_String_Id.h.h:646
+#: po/tmp/ap_String_Id.h.h:660
 msgid "Boo&kmark"
 msgstr "Tandabu&ku"
 
 #. DLG_Goto_Target_Bookmark
-#: po/tmp/ap_String_Id.h.h:648
+#: po/tmp/ap_String_Id.h.h:662
 msgid "Bookmark"
 msgstr "Tandabuku"
 
 #. MSG_BookmarkNotFound
-#: po/tmp/ap_String_Id.h.h:650
+#: po/tmp/ap_String_Id.h.h:664
 #, c-format
 msgid "Bookmark \"%s\" was not found in this document."
 msgstr "Tandabuku \"%s\" tidak dijumpai dalam.dokumen ini."
 
 #. DLG_FormatFrame_Border_Color
 #. DLG_FormatTable_Border_Color
-#: po/tmp/ap_String_Id.h.h:653
+#: po/tmp/ap_String_Id.h.h:667
 msgid "Border color:"
 msgstr "Warna sempadan:"
 
 #. DLG_FormatFrame_Borders
 #. DLG_FormatTable_Borders
-#: po/tmp/ap_String_Id.h.h:656
+#: po/tmp/ap_String_Id.h.h:670
 msgid "Borders"
 msgstr "Sempadan"
 
 #. MENU_LABEL_FMT_BORDERS
-#: po/tmp/ap_String_Id.h.h:658
+#: po/tmp/ap_String_Id.h.h:672
 msgid "Borders and Shading"
 msgstr "Sempadan dan Legapan"
 
 #. BottomMarginStatus
-#: po/tmp/ap_String_Id.h.h:660
+#: po/tmp/ap_String_Id.h.h:674
 #, c-format
 msgid "Bottom Margin [%s]"
 msgstr "Margin Bawah [%s]"
@@ -1502,39 +1537,39 @@ msgstr "Margin Bawah [%s]"
 #. TOOLBAR_LABEL_FMT_BOTTOMLINE
 #. TOOLBAR_STATUSLINE_FMT_BOTTOMLINE
 #. TOOLBAR_TOOLTIP_FMT_BOTTOMLINE
-#: po/tmp/ap_String_Id.h.h:665
+#: po/tmp/ap_String_Id.h.h:679
 #: po/tmp/xap_String_Id.h.h:113
 msgid "Bottomline"
 msgstr "Barisbawah"
 
 #. DLG_Lists_Box_List
-#: po/tmp/ap_String_Id.h.h:667
+#: po/tmp/ap_String_Id.h.h:681
 #: po/tmp/xap_String_Id.h.h:115
 msgid "Box List"
 msgstr "Kotak Senarai"
 
 #. FIELD_Application_BuildId
-#: po/tmp/ap_String_Id.h.h:669
+#: po/tmp/ap_String_Id.h.h:683
 msgid "Build Id."
 msgstr "Id Bina."
 
 #. FIELD_Application_Options
-#: po/tmp/ap_String_Id.h.h:671
+#: po/tmp/ap_String_Id.h.h:685
 msgid "Build Options"
 msgstr "Pilihan Bina"
 
 #. FIELD_Application_Target
-#: po/tmp/ap_String_Id.h.h:673
+#: po/tmp/ap_String_Id.h.h:687
 msgid "Build Target"
 msgstr "Sasaran Bina"
 
 #. DLG_Lists_Type_bullet
-#: po/tmp/ap_String_Id.h.h:675
+#: po/tmp/ap_String_Id.h.h:689
 msgid "Bullet"
 msgstr "Bullet"
 
 #. DLG_Lists_Bullet_List
-#: po/tmp/ap_String_Id.h.h:677
+#: po/tmp/ap_String_Id.h.h:691
 #: po/tmp/xap_String_Id.h.h:123
 msgid "Bullet List"
 msgstr "Senarai Bullet"
@@ -1542,120 +1577,120 @@ msgstr "Senarai Bullet"
 #. TOOLBAR_LABEL_LISTS_BULLETS
 #. TOOLBAR_STATUSLINE_LISTS_BULLETS
 #. TOOLBAR_TOOLTIP_LISTS_BULLETS
-#: po/tmp/ap_String_Id.h.h:681
+#: po/tmp/ap_String_Id.h.h:695
 msgid "Bullets"
 msgstr "Bullet"
 
 #. MENU_LABEL_FMT_BULLETS
-#: po/tmp/ap_String_Id.h.h:683
+#: po/tmp/ap_String_Id.h.h:697
 msgid "Bullets and &Numbering"
 msgstr "Bullets dan &Nombor"
 
 #. DLG_Options_Label_Look
-#: po/tmp/ap_String_Id.h.h:685
+#: po/tmp/ap_String_Id.h.h:699
 msgid "Button Style"
 msgstr "Gaya Butang"
 
 #. MENU_LABEL_FMT_TOGGLECASE
-#: po/tmp/ap_String_Id.h.h:687
+#: po/tmp/ap_String_Id.h.h:701
 msgid "C&hange Case"
 msgstr "Uba&h Case"
 
 #. MENU_LABEL_HELP_CREDITS
-#: po/tmp/ap_String_Id.h.h:689
+#: po/tmp/ap_String_Id.h.h:703
 msgid "C&redits"
 msgstr "K&redit"
 
 #. AUTOTEXT_EMAIL_4
-#: po/tmp/ap_String_Id.h.h:691
+#: po/tmp/ap_String_Id.h.h:705
 msgid "CC:"
 msgstr "CC:"
 
 #. AUTOTEXT_MAIL_1
-#: po/tmp/ap_String_Id.h.h:693
+#: po/tmp/ap_String_Id.h.h:707
 msgid "CERTIFIED MAIL"
 msgstr "MEL DIPERAKUI"
 
 #. AUTOTEXT_MAIL_2
-#: po/tmp/ap_String_Id.h.h:695
+#: po/tmp/ap_String_Id.h.h:709
 msgid "CONFIDENTIAL"
 msgstr "SULIT"
 
 #. MSG_NoBreakInsideTable
-#: po/tmp/ap_String_Id.h.h:697
+#: po/tmp/ap_String_Id.h.h:711
 msgid "Can not insert a Break inside a table"
 msgstr "Tidak dapat memasukkan Pecahan dalam jadual"
 
 #. DLG_Styles_ErrStyleCantDelete
-#: po/tmp/ap_String_Id.h.h:699
+#: po/tmp/ap_String_Id.h.h:713
 msgid "Cannot delete this style"
 msgstr "Tidak boleh buang gaya ini"
 
 #. DLG_Styles_ErrStyleBuiltin
-#: po/tmp/ap_String_Id.h.h:701
+#: po/tmp/ap_String_Id.h.h:715
 msgid "Cannot modify a builtin style"
 msgstr "Tidak dapat mengubah gaya terbinadalam"
 
 #. PRINT_CANNOTSTARTPRINTJOB
-#: po/tmp/ap_String_Id.h.h:703
+#: po/tmp/ap_String_Id.h.h:717
 msgid "Cannot start print job"
 msgstr "Tidak dapat memulakan kerja mencetak"
 
 #. DLG_MetaData_Category_LBL
-#: po/tmp/ap_String_Id.h.h:705
+#: po/tmp/ap_String_Id.h.h:719
 msgid "Category:"
 msgstr "Kategori:"
 
 #. DLG_Tab_Radio_Center
 #. DLG_PageNumbers_Center
 #. TOOLBAR_LABEL_ALIGN_CENTER
-#: po/tmp/ap_String_Id.h.h:709
+#: po/tmp/ap_String_Id.h.h:723
 msgid "Center"
 msgstr "Tengah"
 
 #. TabToggleCenterTab
-#: po/tmp/ap_String_Id.h.h:711
+#: po/tmp/ap_String_Id.h.h:725
 msgid "Center Tab"
 msgstr "Tab Tengah"
 
 #. TOOLBAR_STATUSLINE_ALIGN_CENTER
 #. TOOLBAR_TOOLTIP_ALIGN_CENTER
-#: po/tmp/ap_String_Id.h.h:714
+#: po/tmp/ap_String_Id.h.h:728
 msgid "Center alignment"
 msgstr "Jajaran tengah"
 
 #. MENU_STATUSLINE_ALIGN_CENTER
-#: po/tmp/ap_String_Id.h.h:716
+#: po/tmp/ap_String_Id.h.h:730
 msgid "Center-align the paragraph"
 msgstr "Jajar-tengah perenggan"
 
 #. DLG_Para_AlignCentered
-#: po/tmp/ap_String_Id.h.h:718
+#: po/tmp/ap_String_Id.h.h:732
 msgid "Centered"
 msgstr "Tengah"
 
 #. DLG_Spell_ChangeTo
-#: po/tmp/ap_String_Id.h.h:720
+#: po/tmp/ap_String_Id.h.h:734
 msgid "Change &to:"
 msgstr "U&bah kepada:"
 
 #. DLG_Spell_ChangeAll
-#: po/tmp/ap_String_Id.h.h:722
+#: po/tmp/ap_String_Id.h.h:736
 msgid "Change A&ll"
 msgstr "Ub&ah semua"
 
 #. DLG_Background_Title
-#: po/tmp/ap_String_Id.h.h:724
+#: po/tmp/ap_String_Id.h.h:738
 msgid "Change Background Color"
 msgstr "Ubah Warna Latarbelakang"
 
 #. DLG_ToggleCase_Title
-#: po/tmp/ap_String_Id.h.h:726
+#: po/tmp/ap_String_Id.h.h:740
 msgid "Change Case"
 msgstr "Ubah Case"
 
 #. DLG_Lists_Cur_Change_Start
-#: po/tmp/ap_String_Id.h.h:728
+#: po/tmp/ap_String_Id.h.h:742
 msgid ""
 "Change Current \n"
 "List"
@@ -1664,64 +1699,64 @@ msgstr ""
 "Semasa"
 
 #. DLG_Background_TitleHighlight
-#: po/tmp/ap_String_Id.h.h:730
+#: po/tmp/ap_String_Id.h.h:744
 msgid "Change Highlight Color"
 msgstr "Ubah Warna Sorotan"
 
 #. DLG_FormatTOC_ChangeStyle
-#: po/tmp/ap_String_Id.h.h:732
+#: po/tmp/ap_String_Id.h.h:746
 msgid "Change Style"
 msgstr "Ubah Gaya"
 
 #. DLG_Background_TitleFore
-#: po/tmp/ap_String_Id.h.h:734
+#: po/tmp/ap_String_Id.h.h:748
 msgid "Change Text Color"
 msgstr "Ubah Warna Teks"
 
 #. MENU_STATUSLINE_FMT_DIRECTION
-#: po/tmp/ap_String_Id.h.h:736
+#: po/tmp/ap_String_Id.h.h:750
 msgid "Change directional properties of text"
 msgstr "Ubah ciri-ciri arah teks"
 
 #. TOOLBAR_STATUSLINE_FMT_DOM_DIRECTION
 #. TOOLBAR_TOOLTIP_FMT_DOM_DIRECTION
-#: po/tmp/ap_String_Id.h.h:739
+#: po/tmp/ap_String_Id.h.h:753
 msgid "Change dominant direction of paragraph"
 msgstr "Ubah arah utama perenggan"
 
 #. MENU_STATUSLINE_FMT_TOGGLECASE
-#: po/tmp/ap_String_Id.h.h:741
+#: po/tmp/ap_String_Id.h.h:755
 msgid "Change the case of the selected text"
 msgstr "Ubah case pada teks pilihan"
 
 #. MENU_STATUSLINE_FMT_FONT
-#: po/tmp/ap_String_Id.h.h:743
+#: po/tmp/ap_String_Id.h.h:757
 msgid "Change the font of the selected text"
 msgstr "Ubah font pada teks pilihan"
 
 #. MENU_STATUSLINE_FMT_PARAGRAPH
-#: po/tmp/ap_String_Id.h.h:745
+#: po/tmp/ap_String_Id.h.h:759
 msgid "Change the format of the selected paragraph"
 msgstr "Ubah format pada teks pilihan"
 
 #. MENU_STATUSLINE_FMT_LANGUAGE
 #. MENU_STATUSLINE_TOOLS_LANGUAGE
-#: po/tmp/ap_String_Id.h.h:748
+#: po/tmp/ap_String_Id.h.h:762
 msgid "Change the language of the selected text"
 msgstr "Ubah bahasa pada teks pilihan"
 
 #. MENU_STATUSLINE_FMT_COLUMNS
-#: po/tmp/ap_String_Id.h.h:750
+#: po/tmp/ap_String_Id.h.h:764
 msgid "Change the number of columns"
 msgstr "Ubah jumlah lajur"
 
 #. MENU_STATUSLINE_FILE_PAGESETUP
-#: po/tmp/ap_String_Id.h.h:752
+#: po/tmp/ap_String_Id.h.h:766
 msgid "Change the printing options"
 msgstr "Ubah pilihan cetakan"
 
 #. MENU_STATUSLINE_FMT_FRAME
-#: po/tmp/ap_String_Id.h.h:754
+#: po/tmp/ap_String_Id.h.h:768
 msgid "Change the properties of the Text Box"
 msgstr "Ubah ciri-ciri Kekotak Teks"
 
@@ -1734,92 +1769,92 @@ msgstr "Ubah ciri-ciri Kekotak Teks"
 #. MENU_STATUSLINE_SPELL_SUGGEST_7
 #. MENU_STATUSLINE_SPELL_SUGGEST_8
 #. MENU_STATUSLINE_SPELL_SUGGEST_9
-#: po/tmp/ap_String_Id.h.h:764
+#: po/tmp/ap_String_Id.h.h:778
 msgid "Change to this suggested spelling"
 msgstr "Ubah kepada cadangan ejaan ini"
 
 #. MENU_STATUSLINE_FMT_BACKGROUND
-#: po/tmp/ap_String_Id.h.h:766
+#: po/tmp/ap_String_Id.h.h:780
 msgid "Change your document's page background"
 msgstr "Ubah latarbelakang halaman dokumen anda"
 
 #. MENU_STATUSLINE_FMT_BACKGROUND_PAGE_COLOR
-#: po/tmp/ap_String_Id.h.h:768
+#: po/tmp/ap_String_Id.h.h:782
 msgid "Change your document's page color"
 msgstr "Ubah warna halaman dokumen anda"
 
 #. DLG_Styles_ModifyCharacter
-#: po/tmp/ap_String_Id.h.h:770
+#: po/tmp/ap_String_Id.h.h:784
 msgid "Character"
 msgstr "Aksara"
 
 #. FIELD_Numbers_CharCount
-#: po/tmp/ap_String_Id.h.h:772
+#: po/tmp/ap_String_Id.h.h:786
 msgid "Character Count"
 msgstr "Kiraan Aksara"
 
 #. FIELD_Numbers_NbspCount
-#: po/tmp/ap_String_Id.h.h:774
+#: po/tmp/ap_String_Id.h.h:788
 msgid "Character Count (w/o spaces)"
 msgstr "Kiraan Aksara (tanpa ruang)"
 
 #. DLG_Styles_CharPrev
-#: po/tmp/ap_String_Id.h.h:776
+#: po/tmp/ap_String_Id.h.h:790
 msgid "Character Preview"
 msgstr "Pralihat Aksara"
 
 #. DLG_WordCount_Characters_No
-#: po/tmp/ap_String_Id.h.h:778
+#: po/tmp/ap_String_Id.h.h:792
 msgid "Characters (no spaces):"
 msgstr "Aksara (tiada ruang):"
 
 #. DLG_WordCount_Characters_Sp
-#: po/tmp/ap_String_Id.h.h:780
+#: po/tmp/ap_String_Id.h.h:794
 msgid "Characters (with spaces):"
 msgstr "Aksara (dengan ruang):"
 
 #. MENU_LABEL_TOOLS_SPELL
-#: po/tmp/ap_String_Id.h.h:782
+#: po/tmp/ap_String_Id.h.h:796
 msgid "Check &Spelling"
 msgstr "&Semak Ejaan"
 
 #. MENU_LABEL_HELP_CHECKVER
-#: po/tmp/ap_String_Id.h.h:784
+#: po/tmp/ap_String_Id.h.h:798
 msgid "Check &Version"
 msgstr "Periksa &Versi"
 
 #. DLG_Options_Label_SpellCheckAsType
-#: po/tmp/ap_String_Id.h.h:786
+#: po/tmp/ap_String_Id.h.h:800
 msgid "Check s&pelling as you type"
 msgstr "Semak ejaan ketika menai&p"
 
 #. MENU_STATUSLINE_TOOLS_SPELL
-#: po/tmp/ap_String_Id.h.h:788
+#: po/tmp/ap_String_Id.h.h:802
 msgid "Check the document for incorrect spelling"
 msgstr "Semak dokumen untuk kesalahan ejaan"
 
 #. DLG_NEW_Choose
-#: po/tmp/ap_String_Id.h.h:790
+#: po/tmp/ap_String_Id.h.h:804
 msgid "Choose"
 msgstr "Pilih"
 
 #. DLG_Options_Label_ChooseForTransparent
-#: po/tmp/ap_String_Id.h.h:792
+#: po/tmp/ap_String_Id.h.h:806
 msgid "Choose Screen Color"
 msgstr "Pilih Warna Skrin"
 
 #. DLG_Options_Label_ColorChooserLabel
-#: po/tmp/ap_String_Id.h.h:794
+#: po/tmp/ap_String_Id.h.h:808
 msgid "Choose screen color for AbiWord"
 msgstr "Pilih warna skrin untuk Abiword"
 
 #. MENU_STATUSLINE_TOOLS_REVISIONS_SET_VIEW_LEVEL
-#: po/tmp/ap_String_Id.h.h:796
+#: po/tmp/ap_String_Id.h.h:810
 msgid "Choose which revision you wish to view"
 msgstr "Pilih semakan mana yang anda hendak lihat"
 
 #. DLG_Goto_Label_Help
-#: po/tmp/ap_String_Id.h.h:798
+#: po/tmp/ap_String_Id.h.h:812
 msgid ""
 "Choose your target in the left side.\n"
 "If you want to use the \"Go To\" button, just fill the Number Entry with the desired number.  You can use + and - to perform relative movement.\tI.e., if you write \"+2\" and you select \"Line\", the \"Go To\" will go 2 lines below your current position."
@@ -1828,654 +1863,639 @@ msgstr ""
 "Jika anda hendak menggunakan butang \"Go To\", hanya isi Number Entry dengan nombor pilihan.  Anda boleh menggunakan + dan - untuk melakukan gerakan relatif.\tI.e., jika anda tulis \"+2\" dan anda pilih \"Baris\", \"Go To\" akan pergi ke 2 baris dibawah kedudukan semasa."
 
 #. MENU_LABEL_EDIT_CLEAR
-#: po/tmp/ap_String_Id.h.h:800
+#: po/tmp/ap_String_Id.h.h:814
 msgid "Cle&ar"
 msgstr "P&adam"
 
 #. DLG_Tab_Button_Clear
-#: po/tmp/ap_String_Id.h.h:802
+#: po/tmp/ap_String_Id.h.h:816
 msgid "Clear"
 msgstr "Padam"
 
 #. DLG_Tab_Button_ClearAll
-#: po/tmp/ap_String_Id.h.h:804
+#: po/tmp/ap_String_Id.h.h:818
 msgid "Clear &All"
 msgstr "P&adam Semua"
 
 #. DLG_Background_ClearClr
-#: po/tmp/ap_String_Id.h.h:806
+#: po/tmp/ap_String_Id.h.h:820
 msgid "Clear Background Color"
 msgstr "Hilangkan Warna Latarbelakang"
 
 #. DLG_Background_ClearHighlight
-#: po/tmp/ap_String_Id.h.h:808
+#: po/tmp/ap_String_Id.h.h:822
 msgid "Clear Highlight Color"
 msgstr "Hilangkan Warna Sorotan"
 
 #. MSG_QueryExit
-#: po/tmp/ap_String_Id.h.h:810
+#: po/tmp/ap_String_Id.h.h:824
 msgid "Close all windows and exit?"
 msgstr "Tutup semua tetingkap dan keluar?"
 
 #. MENU_STATUSLINE_FILE_EXIT
-#: po/tmp/ap_String_Id.h.h:812
+#: po/tmp/ap_String_Id.h.h:826
 msgid "Close all windows in the application and exit"
 msgstr "Tutup semua tetingkap dalam aplikasi dan keluar"
 
 #. MENU_STATUSLINE_FILE_CLOSE
-#: po/tmp/ap_String_Id.h.h:814
+#: po/tmp/ap_String_Id.h.h:828
 msgid "Close the document"
 msgstr "Tutup dokumen"
 
 #. MENU_LABEL_AUTOTEXT_CLOSING
-#: po/tmp/ap_String_Id.h.h:816
+#: po/tmp/ap_String_Id.h.h:830
 msgid "Closing:"
 msgstr "Menutup:"
 
 #. MENU_LABEL_TABLE_SELECT_COLUMN
-#: po/tmp/ap_String_Id.h.h:818
+#: po/tmp/ap_String_Id.h.h:832
 msgid "Co&lumn"
 msgstr "&Lajur"
 
 #. DLG_FormatFrame_Color
 #. DLG_FormatTable_Color
-#: po/tmp/ap_String_Id.h.h:821
+#: po/tmp/ap_String_Id.h.h:835
 #: po/tmp/xap_String_Id.h.h:175
 msgid "Color:"
 msgstr "Warna:"
 
 #. DLG_FormatTable_Apply_To_Column
-#: po/tmp/ap_String_Id.h.h:823
+#: po/tmp/ap_String_Id.h.h:837
 msgid "Column"
 msgstr "Lajur"
 
 #. ColumnGapStatus
-#: po/tmp/ap_String_Id.h.h:825
+#: po/tmp/ap_String_Id.h.h:839
 #, c-format
 msgid "Column Gap [%s]"
 msgstr "Ruang Lajur [%s]"
 
 #. ColumnStatus
-#: po/tmp/ap_String_Id.h.h:827
+#: po/tmp/ap_String_Id.h.h:841
 #, c-format
 msgid "Column [%d]"
 msgstr "Lajur [%d]"
 
 #. DLG_Column_ColumnTitle
-#: po/tmp/ap_String_Id.h.h:829
+#: po/tmp/ap_String_Id.h.h:843
 msgid "Columns"
 msgstr "Lajur"
 
 #. MENU_LABEL_TABLE_INSERT_COLUMNS_BEFORE
-#: po/tmp/ap_String_Id.h.h:831
+#: po/tmp/ap_String_Id.h.h:845
 msgid "Columns &Left"
 msgstr "&Lajur Kiri"
 
 #. MENU_LABEL_TABLE_INSERT_COLUMNS_AFTER
-#: po/tmp/ap_String_Id.h.h:833
+#: po/tmp/ap_String_Id.h.h:847
 msgid "Columns &Right"
 msgstr "Laju&r Kanan"
 
 #. DLG_ListRevisions_Column3Label
-#: po/tmp/ap_String_Id.h.h:835
+#: po/tmp/ap_String_Id.h.h:849
 msgid "Comment"
 msgstr "Komen"
 
 #. DLG_MarkRevisions_Comment2Label
-#: po/tmp/ap_String_Id.h.h:837
+#: po/tmp/ap_String_Id.h.h:851
 msgid "Comment to be associated with the revision:"
 msgstr "Komen untuk disertakan dengan semakan:"
 
 #. MENU_STATUSLINE_TOOLS_REVISIONS_COMPARE_DOCUMENTS
-#: po/tmp/ap_String_Id.h.h:839
+#: po/tmp/ap_String_Id.h.h:853
 msgid "Compare active document to another document"
 msgstr "Banding dokumen aktif dengan dokumen lain"
 
 #. FIELD_Application_CompileDate
-#: po/tmp/ap_String_Id.h.h:841
+#: po/tmp/ap_String_Id.h.h:855
 msgid "Compile Date"
 msgstr "Tarikh Himpun"
 
 #. FIELD_Application_CompileTime
-#: po/tmp/ap_String_Id.h.h:843
+#: po/tmp/ap_String_Id.h.h:857
 msgid "Compile Time"
 msgstr "Masa Himpun"
 
 #. DLG_Break_Continuous
-#: po/tmp/ap_String_Id.h.h:845
+#: po/tmp/ap_String_Id.h.h:859
 msgid "Con&tinuous"
 msgstr "Ber&terusan"
 
 #. DLG_MarkRevisions_Check1Label
-#: po/tmp/ap_String_Id.h.h:847
+#: po/tmp/ap_String_Id.h.h:861
 #, c-format
 msgid "Continue previous revision (number %d)"
 msgstr "Sambung semakan terdahulu (nombor %d)"
 
 #. FIELD_Document_Contributor
-#: po/tmp/ap_String_Id.h.h:849
+#: po/tmp/ap_String_Id.h.h:863
 msgid "Contributor"
 msgstr "Penyumbang"
 
 #. DLG_MetaData_CoAuthor_LBL
-#: po/tmp/ap_String_Id.h.h:851
+#: po/tmp/ap_String_Id.h.h:865
 msgid "Contributor(s):"
 msgstr "Penyumbang:"
 
 #. TOOLBAR_LABEL_EDIT_COPY
 #. TOOLBAR_STATUSLINE_EDIT_COPY
 #. TOOLBAR_TOOLTIP_EDIT_COPY
-#: po/tmp/ap_String_Id.h.h:855
+#: po/tmp/ap_String_Id.h.h:869
 msgid "Copy"
 msgstr "Salin"
 
 #. MENU_LABEL_EDIT_COPY_FRAME
-#: po/tmp/ap_String_Id.h.h:857
+#: po/tmp/ap_String_Id.h.h:871
 msgid "Copy Text Box"
 msgstr "Salin Kekotak Teks"
 
 #. MENU_STATUSLINE_EDIT_COPY_FRAME
-#: po/tmp/ap_String_Id.h.h:859
+#: po/tmp/ap_String_Id.h.h:873
 msgid "Copy the Text Box to the clipboard"
 msgstr "Salin Kekotak Teks ke papanklip"
 
 #. MENU_STATUSLINE_EDIT_CUT_FRAME
-#: po/tmp/ap_String_Id.h.h:861
+#: po/tmp/ap_String_Id.h.h:875
 msgid "Copy the Text Box to the clipboard then remove it"
 msgstr "Salin Kekotak Teks ke papanklip dan kemudian buangkannya"
 
 #. MENU_STATUSLINE_EDIT_COPY
-#: po/tmp/ap_String_Id.h.h:863
+#: po/tmp/ap_String_Id.h.h:877
 msgid "Copy the selection and put it on the Clipboard"
 msgstr "Salin pilihan dan letakkannya pada Papanklip"
 
 #. AUTOTEXT_CLOSING_3
-#: po/tmp/ap_String_Id.h.h:865
+#: po/tmp/ap_String_Id.h.h:879
 msgid "Cordially,"
 msgstr "Dengan mesra,"
 
 #. MSG_IE_CouldNotOpen
-#: po/tmp/ap_String_Id.h.h:867
+#: po/tmp/ap_String_Id.h.h:881
 #, c-format
 msgid "Could not open file %s for writing"
 msgstr "Tak dapat membuka fail %s untuk menulis"
 
 #. MSG_OpenFailed
-#: po/tmp/ap_String_Id.h.h:869
+#: po/tmp/ap_String_Id.h.h:883
 #, c-format
 msgid "Could not open file %s."
 msgstr "Tak dapat membuka fail %s."
 
 #. MSG_IE_CouldNotWrite
-#: po/tmp/ap_String_Id.h.h:871
+#: po/tmp/ap_String_Id.h.h:885
 #, c-format
 msgid "Could not write to file %s"
 msgstr "Tidak dapat menulis kepada fail %s"
 
 #. MSG_SaveFailed
-#: po/tmp/ap_String_Id.h.h:873
+#: po/tmp/ap_String_Id.h.h:887
 #, c-format
 msgid "Could not write to the file %s."
 msgstr "Tidak dapat menulis kepada fail %s."
 
 #. MENU_STATUSLINE_TOOLS_WORDCOUNT
-#: po/tmp/ap_String_Id.h.h:875
+#: po/tmp/ap_String_Id.h.h:889
 msgid "Count the number of words in the document"
 msgstr "Kira jumlah perkataan didalam dokumen"
 
 #. FIELD_Document_Coverage
-#: po/tmp/ap_String_Id.h.h:877
+#: po/tmp/ap_String_Id.h.h:891
 msgid "Coverage"
 msgstr "Liputan"
 
 #. DLG_MetaData_Coverage_LBL
-#: po/tmp/ap_String_Id.h.h:879
+#: po/tmp/ap_String_Id.h.h:893
 msgid "Coverage:"
 msgstr "Liputan:"
 
 #. DLG_NEW_Tab1_FAX1
-#: po/tmp/ap_String_Id.h.h:881
+#: po/tmp/ap_String_Id.h.h:895
 msgid "Create a fax"
 msgstr "Hasilkan fax"
 
 #. DLG_NEW_Tab1_WP1
-#: po/tmp/ap_String_Id.h.h:883
+#: po/tmp/ap_String_Id.h.h:897
 msgid "Create a new blank document"
 msgstr "Cipta dokumen kosong baru"
 
 #. MENU_STATUSLINE_FILE_NEW
 #. TOOLBAR_STATUSLINE_FILE_NEW
 #. TOOLBAR_TOOLTIP_FILE_NEW
-#: po/tmp/ap_String_Id.h.h:887
+#: po/tmp/ap_String_Id.h.h:901
 msgid "Create a new document"
 msgstr "Cipta dokumen baru"
 
 #. DLG_NEW_Create
-#: po/tmp/ap_String_Id.h.h:889
+#: po/tmp/ap_String_Id.h.h:903
 msgid "Create a new document from a template"
 msgstr "Cipta dokumen baru daripada template"
 
+#. MENU_STATUSLINE_FILE_NEW_USING_TEMPLATE
+#: po/tmp/ap_String_Id.h.h:905
+msgid "Create a new document using a template"
+msgstr "Cipta dokumen baru menggunakan template"
+
 #. DLG_NEW_StartEmpty
-#: po/tmp/ap_String_Id.h.h:891
+#: po/tmp/ap_String_Id.h.h:907
 msgid "Create an empty document"
 msgstr "Cipta dokumen kosong"
 
 #. FIELD_Document_Creator
-#: po/tmp/ap_String_Id.h.h:893
+#: po/tmp/ap_String_Id.h.h:909
 msgid "Creator"
 msgstr "Pencipta"
 
 #. MENU_LABEL_EDIT_CUT
-#: po/tmp/ap_String_Id.h.h:895
+#: po/tmp/ap_String_Id.h.h:911
 msgid "Cu&t"
 msgstr "Po&tong"
 
 #. FIELD_Datetime_CurrentDate
-#: po/tmp/ap_String_Id.h.h:897
+#: po/tmp/ap_String_Id.h.h:913
 msgid "Current Date"
 msgstr "Tarikh Semasa"
 
 #. DLG_Lists_Current_Font
-#: po/tmp/ap_String_Id.h.h:899
+#: po/tmp/ap_String_Id.h.h:915
 msgid "Current Font"
 msgstr "Font Semasa"
 
 #. DLG_Lists_Current_List_Label
-#: po/tmp/ap_String_Id.h.h:901
+#: po/tmp/ap_String_Id.h.h:917
 msgid "Current List Label"
 msgstr "Label Senarai Semasa"
 
 #. DLG_Lists_Current_List_Type
-#: po/tmp/ap_String_Id.h.h:903
+#: po/tmp/ap_String_Id.h.h:919
 msgid "Current List Type"
 msgstr "Jenis Senarai Semasa"
 
 #. MSG_EmptySelection
-#: po/tmp/ap_String_Id.h.h:905
+#: po/tmp/ap_String_Id.h.h:921
 msgid "Current Selection is Empty"
 msgstr "Pilihan Semasa adalah Kosong"
 
 #. DLG_Styles_DefCurrent
-#: po/tmp/ap_String_Id.h.h:907
+#: po/tmp/ap_String_Id.h.h:923
 msgid "Current Settings"
 msgstr "Tetapan Semasa"
 
 #. FIELD_Datetime_CurrentTime
-#: po/tmp/ap_String_Id.h.h:909
+#: po/tmp/ap_String_Id.h.h:925
 msgid "Current Time"
 msgstr "Masa Semasa"
 
 #. DLG_Options_Label_ViewCursorBlink
-#: po/tmp/ap_String_Id.h.h:911
+#: po/tmp/ap_String_Id.h.h:927
 msgid "Cursor &blink"
 msgstr "&Kelip kursor"
 
 #. DLG_Options_Label_SpellCustomDict
-#: po/tmp/ap_String_Id.h.h:913
+#: po/tmp/ap_String_Id.h.h:929
 msgid "Custom Dictionary:"
 msgstr "Kamus Lazim:"
 
 #. FIELD_DateTime_Custom
-#: po/tmp/ap_String_Id.h.h:915
+#: po/tmp/ap_String_Id.h.h:931
 msgid "Customizable date/time"
 msgstr "Tarikh/masa bolehubah"
 
 #. DLG_Lists_Customize
-#: po/tmp/ap_String_Id.h.h:917
+#: po/tmp/ap_String_Id.h.h:933
 msgid "Customized List"
 msgstr "Senarai Tersendiri"
 
 #. TOOLBAR_LABEL_EDIT_CUT
 #. TOOLBAR_STATUSLINE_EDIT_CUT
 #. TOOLBAR_TOOLTIP_EDIT_CUT
-#: po/tmp/ap_String_Id.h.h:921
+#: po/tmp/ap_String_Id.h.h:937
 msgid "Cut"
 msgstr "Potong"
 
 #. MENU_LABEL_EDIT_CUT_FRAME
-#: po/tmp/ap_String_Id.h.h:923
+#: po/tmp/ap_String_Id.h.h:939
 msgid "Cut Text Box"
 msgstr "Potong Kekotak Teks"
 
 #. MENU_STATUSLINE_EDIT_CUT
-#: po/tmp/ap_String_Id.h.h:925
+#: po/tmp/ap_String_Id.h.h:941
 msgid "Cut the selection and put it on the Clipboard"
 msgstr "Potong pilihan dan letakkannya pada Papanklip"
 
 #. MENU_LABEL_FMT_DIRECTION
-#: po/tmp/ap_String_Id.h.h:927
+#: po/tmp/ap_String_Id.h.h:943
 msgid "D&irectional"
 msgstr "Arah"
 
 #. DLG_Lists_Dashed_List
-#: po/tmp/ap_String_Id.h.h:929
+#: po/tmp/ap_String_Id.h.h:945
 #: po/tmp/xap_String_Id.h.h:223
 msgid "Dashed List"
 msgstr "Senarai Dash"
 
 #. FIELD_Document_Date
 #. DLG_ListRevisions_Column2Label
-#: po/tmp/ap_String_Id.h.h:932
+#: po/tmp/ap_String_Id.h.h:948
 msgid "Date"
 msgstr "Tarikh"
 
 #. MENU_LABEL_INSERT_DATETIME
-#: po/tmp/ap_String_Id.h.h:934
+#: po/tmp/ap_String_Id.h.h:950
 msgid "Date and &Time"
 msgstr "&Tarikh dan Masa"
 
 #. FIELD_Type_Datetime
-#: po/tmp/ap_String_Id.h.h:936
+#: po/tmp/ap_String_Id.h.h:952
 msgid "Date and Time"
 msgstr "Tarikh dan Masa"
 
 #. FIELD_DateTime_DOY
-#: po/tmp/ap_String_Id.h.h:938
+#: po/tmp/ap_String_Id.h.h:954
 msgid "Day # in the year"
 msgstr "Hari # dalam tahun"
 
 #. DLG_Options_Btn_Default
-#: po/tmp/ap_String_Id.h.h:940
+#: po/tmp/ap_String_Id.h.h:956
 msgid "De&faults"
 msgstr "De&fault"
 
 #. AUTOTEXT_SALUTATION_1
-#: po/tmp/ap_String_Id.h.h:942
+#: po/tmp/ap_String_Id.h.h:958
 msgid "Dear Mom and Dad,"
 msgstr "Kehadapan Ayah dan Ibu,"
 
 #. AUTOTEXT_SALUTATION_2
-#: po/tmp/ap_String_Id.h.h:944
+#: po/tmp/ap_String_Id.h.h:960
 msgid "Dear Sir or Madam:"
 msgstr "Tuan atau Puan:"
 
 #. DLG_Tab_Radio_Decimal
-#: po/tmp/ap_String_Id.h.h:946
+#: po/tmp/ap_String_Id.h.h:962
 msgid "Decimal"
 msgstr "Perpuluhan"
 
 #. TabToggleDecimalTab
-#: po/tmp/ap_String_Id.h.h:948
+#: po/tmp/ap_String_Id.h.h:964
 msgid "Decimal Tab"
 msgstr "Tab Perpuluhan"
 
 #. TOOLBAR_LABEL_UNINDENT
 #. TOOLBAR_STATUSLINE_UNINDENT
 #. TOOLBAR_TOOLTIP_UNINDENT
-#: po/tmp/ap_String_Id.h.h:952
+#: po/tmp/ap_String_Id.h.h:968
 msgid "Decrease indent"
 msgstr "Kurangkan indent"
 
 #. FIELD_DateTime_DefaultDateNoTime
-#: po/tmp/ap_String_Id.h.h:954
+#: po/tmp/ap_String_Id.h.h:970
 msgid "Default date (w/o time)"
 msgstr "Default tarikh (tanpa masa)"
 
 #. FIELD_DateTime_DefaultDate
-#: po/tmp/ap_String_Id.h.h:956
+#: po/tmp/ap_String_Id.h.h:972
 msgid "Default date representation"
 msgstr "Default perwakilan tarikh"
 
 #. DLG_Options_Label_DefaultPageSize
-#: po/tmp/ap_String_Id.h.h:958
+#: po/tmp/ap_String_Id.h.h:974
 msgid "Default page size"
 msgstr "Default saiz laman"
 
 #. DLG_Tab_Label_DefaultTS
-#: po/tmp/ap_String_Id.h.h:960
+#: po/tmp/ap_String_Id.h.h:976
 msgid "Default tab stops:"
 msgstr "Default hentian tab:"
 
 #. DLG_Options_Label_DirectionRtl
-#: po/tmp/ap_String_Id.h.h:962
+#: po/tmp/ap_String_Id.h.h:978
 msgid "Default to right-to-left direction of text"
 msgstr "Default arah teks dari kanan-ke-kiri"
 
-#. DLG_FormatTOC_Heading
-#: po/tmp/ap_String_Id.h.h:964
-msgid "Define Heading"
-msgstr "Takrif Heading"
-
-#. DLG_FormatTOC_Level1Defs
-#: po/tmp/ap_String_Id.h.h:966
-msgid "Define Level 1 Properties"
-msgstr "Takrif Ciri-ciri Tahap 1"
-
-#. DLG_FormatTOC_Level2Defs
-#: po/tmp/ap_String_Id.h.h:968
-msgid "Define Level 2 Properties"
-msgstr "Takrif Ciri-ciri Tahap 2"
-
-#. DLG_FormatTOC_Level3Defs
-#: po/tmp/ap_String_Id.h.h:970
-msgid "Define Level 3 Properties"
-msgstr "Takrif Ciri-ciri Tahap 3"
-
-#. DLG_FormatTOC_Level4Defs
-#: po/tmp/ap_String_Id.h.h:972
-msgid "Define Level 4 Properties"
-msgstr "Takrif Ciri-ciri Tahap 4"
+#. DLG_FormatTOC_LevelDefs
+#: po/tmp/ap_String_Id.h.h:980
+msgid "Define Main Properties"
+msgstr "Takrif Ciri-ciri Utama"
 
 #. MENU_STATUSLINE_FMT_STYLE
 #. MENU_STATUSLINE_FMT_STYLE_DEFINE
-#: po/tmp/ap_String_Id.h.h:975
+#: po/tmp/ap_String_Id.h.h:983
 msgid "Define or apply style for the selection"
 msgstr "Takrif atau guna gaya untuk pilihan"
 
 #. DLG_Styles_Delete
 #. MENU_STATUSLINE_TABLE_DELETE
-#: po/tmp/ap_String_Id.h.h:978
+#: po/tmp/ap_String_Id.h.h:986
 #: po/tmp/xap_String_Id.h.h:231
 msgid "Delete"
 msgstr "Padam"
 
 #. MENU_STATUSLINE_TABLE_DELETE_CELLS
-#: po/tmp/ap_String_Id.h.h:980
+#: po/tmp/ap_String_Id.h.h:988
 msgid "Delete Cells"
 msgstr "Padam Sel"
 
 #. MENU_LABEL_TABLE_DELETECOLUMN
-#: po/tmp/ap_String_Id.h.h:982
+#: po/tmp/ap_String_Id.h.h:990
 msgid "Delete Co&lumn"
 msgstr "Padam &Lajur"
 
 #. MENU_STATUSLINE_TABLE_DELETE_COLUMNS
 #. MENU_STATUSLINE_TABLE_DELETECOLUMN
-#: po/tmp/ap_String_Id.h.h:985
+#: po/tmp/ap_String_Id.h.h:993
 msgid "Delete Column"
 msgstr "Padam Lajur"
 
 #. MENU_LABEL_TABLE_DELETEROW
-#: po/tmp/ap_String_Id.h.h:987
+#: po/tmp/ap_String_Id.h.h:995
 msgid "Delete Ro&w"
 msgstr "Padam Baris"
 
 #. MENU_STATUSLINE_TABLE_DELETE_ROWS
 #. MENU_STATUSLINE_TABLE_DELETEROW
-#: po/tmp/ap_String_Id.h.h:990
+#: po/tmp/ap_String_Id.h.h:998
 msgid "Delete Row"
 msgstr "Padam Baris"
 
 #. MENU_LABEL_TABLE_DELETETABLE
-#: po/tmp/ap_String_Id.h.h:992
+#: po/tmp/ap_String_Id.h.h:1000
 msgid "Delete Tabl&e"
 msgstr "Padam Jadual"
 
 #. MENU_STATUSLINE_TABLE_DELETE_TABLE
 #. MENU_STATUSLINE_TABLE_DELETETABLE
-#: po/tmp/ap_String_Id.h.h:995
+#: po/tmp/ap_String_Id.h.h:1003
 msgid "Delete Table"
 msgstr "Padam Jadual"
 
 #. MENU_LABEL_EDIT_DELETEFRAME
-#: po/tmp/ap_String_Id.h.h:997
+#: po/tmp/ap_String_Id.h.h:1005
 msgid "Delete Text Box"
 msgstr "Padam Kekotak Teks"
 
 #. TOOLBAR_LABEL_DELETE_COLUMN
-#: po/tmp/ap_String_Id.h.h:999
+#: po/tmp/ap_String_Id.h.h:1007
 msgid "Delete column"
 msgstr "Padam lajur"
 
 #. MENU_STATUSLINE_INSERT_DELETE_HYPERLINK
-#: po/tmp/ap_String_Id.h.h:1001
+#: po/tmp/ap_String_Id.h.h:1009
 msgid "Delete hyperlink"
 msgstr "Padam hiperlink"
 
 #. TOOLBAR_LABEL_DELETE_ROW
-#: po/tmp/ap_String_Id.h.h:1003
+#: po/tmp/ap_String_Id.h.h:1011
 msgid "Delete row"
 msgstr "Padam baris"
 
 #. MENU_STATUSLINE_EDIT_CLEAR
-#: po/tmp/ap_String_Id.h.h:1005
+#: po/tmp/ap_String_Id.h.h:1013
 msgid "Delete the selection"
 msgstr "Padam pilihan"
 
 #. TOOLBAR_STATUSLINE_DELETE_COLUMN
 #. TOOLBAR_TOOLTIP_DELETE_COLUMN
-#: po/tmp/ap_String_Id.h.h:1008
+#: po/tmp/ap_String_Id.h.h:1016
 msgid "Delete this column from its table"
 msgstr "Padam lajur ini daripada jadual"
 
 #. TOOLBAR_STATUSLINE_DELETE_ROW
 #. TOOLBAR_TOOLTIP_DELETE_ROW
-#: po/tmp/ap_String_Id.h.h:1011
+#: po/tmp/ap_String_Id.h.h:1019
 msgid "Delete this row from its table"
 msgstr "Padam baris ini daripada jadual"
 
 #. DLG_Styles_Description
 #. DLG_Styles_ModifyDescription
 #. FIELD_Document_Description
-#: po/tmp/ap_String_Id.h.h:1015
+#: po/tmp/ap_String_Id.h.h:1023
 msgid "Description"
 msgstr "Huraian"
 
 #. DLG_MetaData_Description_LBL
-#: po/tmp/ap_String_Id.h.h:1017
+#: po/tmp/ap_String_Id.h.h:1025
 #: po/tmp/xap_String_Id.h.h:233
 msgid "Description:"
 msgstr "Huraian:"
 
 #. DLG_Lists_Diamond_List
-#: po/tmp/ap_String_Id.h.h:1019
+#: po/tmp/ap_String_Id.h.h:1027
 #: po/tmp/xap_String_Id.h.h:235
 msgid "Diamond List"
 msgstr "Senarai Berlian"
 
 #. DLG_HdrFtr_FooterEven
-#: po/tmp/ap_String_Id.h.h:1021
+#: po/tmp/ap_String_Id.h.h:1029
 msgid "Different footer on facing pages"
 msgstr "Footer berlainan pada halaman bertentang"
 
 #. DLG_HdrFtr_FooterFirst
-#: po/tmp/ap_String_Id.h.h:1023
+#: po/tmp/ap_String_Id.h.h:1031
 msgid "Different footer on first page"
 msgstr "Footer berlainan pada halaman pertama"
 
 #. DLG_HdrFtr_FooterLast
-#: po/tmp/ap_String_Id.h.h:1025
+#: po/tmp/ap_String_Id.h.h:1033
 msgid "Different footer on last page"
 msgstr "Footer berlainan pada halaman terakhir"
 
 #. DLG_HdrFtr_HeaderEven
-#: po/tmp/ap_String_Id.h.h:1027
+#: po/tmp/ap_String_Id.h.h:1035
 msgid "Different header on facing pages"
 msgstr "Header berlainan pada halaman bertentang"
 
 #. DLG_HdrFtr_HeaderFirst
-#: po/tmp/ap_String_Id.h.h:1029
+#: po/tmp/ap_String_Id.h.h:1037
 msgid "Different header on first page"
 msgstr "Header berlainan pada halaman pertama"
 
 #. DLG_HdrFtr_HeaderLast
-#: po/tmp/ap_String_Id.h.h:1031
+#: po/tmp/ap_String_Id.h.h:1039
 msgid "Different header on last page"
 msgstr "Header berlainan pada halaman terakhir"
 
 #. DLG_Styles_StylesLocked
-#: po/tmp/ap_String_Id.h.h:1033
+#: po/tmp/ap_String_Id.h.h:1041
 msgid "Disable all formatting commands, except styles"
 msgstr "Matikan semua arahan memformat, kecuali gaya"
 
 #. MENU_STATUSLINE_HELP_CREDITS
-#: po/tmp/ap_String_Id.h.h:1035
+#: po/tmp/ap_String_Id.h.h:1043
 msgid "Display Credits"
 msgstr "Papar Kredit"
 
 #. MENU_STATUSLINE_HELP_CONTENTS
-#: po/tmp/ap_String_Id.h.h:1037
+#: po/tmp/ap_String_Id.h.h:1045
 msgid "Display Help Contents"
 msgstr "Papar Kandungan Bantuan"
 
 #. MENU_STATUSLINE_HELP_INDEX
-#: po/tmp/ap_String_Id.h.h:1039
+#: po/tmp/ap_String_Id.h.h:1047
 msgid "Display Help Index"
 msgstr "Papar Indeks Bantuan"
 
 #. MENU_STATUSLINE_HELP_ABOUTOS
-#: po/tmp/ap_String_Id.h.h:1041
+#: po/tmp/ap_String_Id.h.h:1049
 msgid "Display information about Open Source"
 msgstr "Papar maklumat mengenai Sumber Terbuka"
 
 #. MENU_STATUSLINE_VIEW_SHOWPARA
-#: po/tmp/ap_String_Id.h.h:1043
+#: po/tmp/ap_String_Id.h.h:1051
 msgid "Display non-printing characters"
 msgstr "Papar aksara tidak boleh cetak"
 
 #. MENU_STATUSLINE_HELP_ABOUT
-#: po/tmp/ap_String_Id.h.h:1045
+#: po/tmp/ap_String_Id.h.h:1053
 msgid "Display program information, version number, and copyright"
 msgstr "Papar maklumat program, nombor versi, dan hakcipta"
 
 #. MENU_STATUSLINE_HELP_CHECKVER
-#: po/tmp/ap_String_Id.h.h:1047
+#: po/tmp/ap_String_Id.h.h:1055
 msgid "Display program version number"
 msgstr "Papar nombor versi program"
 
 #. DLG_FormatTOC_DispStyle
-#: po/tmp/ap_String_Id.h.h:1049
-msgid "Display with Style"
-msgstr "Papar dengan Gaya"
+#: po/tmp/ap_String_Id.h.h:1057
+msgid "Display style:"
+msgstr "Papar gaya:"
 
 #. DLG_Options_Prompt_IgnoreResetAll
-#: po/tmp/ap_String_Id.h.h:1051
+#: po/tmp/ap_String_Id.h.h:1059
 msgid "Do you want to reset ignored words in all the documents?"
 msgstr "Adakah anda hendak reset perkataan diabaikan dalam semua dokumen?"
 
 #. DLG_Options_Prompt_IgnoreResetCurrent
-#: po/tmp/ap_String_Id.h.h:1053
+#: po/tmp/ap_String_Id.h.h:1061
 msgid "Do you want to reset ignored words in the current document?"
 msgstr "Adakah anda hendak reset perkataan diabaikan dalam dokumen semasa?"
 
 #. FIELD_Type_Document
-#: po/tmp/ap_String_Id.h.h:1055
+#: po/tmp/ap_String_Id.h.h:1063
 msgid "Document"
 msgstr "Dokumen"
 
 #. DLG_MetaData_Title
-#: po/tmp/ap_String_Id.h.h:1057
+#: po/tmp/ap_String_Id.h.h:1065
 msgid "Document Properties"
 msgstr "Ciri-ciri Dokumen"
 
 #. DLG_FormatFootnotes_FootRestartNone
-#: po/tmp/ap_String_Id.h.h:1059
+#: po/tmp/ap_String_Id.h.h:1067
 msgid "Don't restart"
 msgstr "Jangan mula semula"
 
 #. DLG_Para_SpacingDouble
-#: po/tmp/ap_String_Id.h.h:1061
+#: po/tmp/ap_String_Id.h.h:1069
 msgid "Double"
 msgstr "Ganda"
 
 #. TOOLBAR_LABEL_DOUBLE_SPACE
-#: po/tmp/ap_String_Id.h.h:1063
+#: po/tmp/ap_String_Id.h.h:1071
 msgid "Double Spacing"
 msgstr "Selangan Ganda"
 
 #. TOOLBAR_STATUSLINE_DOUBLE_SPACE
 #. TOOLBAR_TOOLTIP_DOUBLE_SPACE
-#: po/tmp/ap_String_Id.h.h:1066
+#: po/tmp/ap_String_Id.h.h:1074
 msgid "Double spacing"
 msgstr "Selangan ganda"
 
@@ -2483,7 +2503,7 @@ msgstr "Selangan ganda"
 #. TOOLBAR_LABEL_EDIT_FOOTER
 #. TOOLBAR_STATUSLINE_EDIT_FOOTER
 #. TOOLBAR_TOOLTIP_EDIT_FOOTER
-#: po/tmp/ap_String_Id.h.h:1071
+#: po/tmp/ap_String_Id.h.h:1079
 msgid "Edit Footer"
 msgstr "Sunting Footer"
 
@@ -2491,237 +2511,257 @@ msgstr "Sunting Footer"
 #. TOOLBAR_LABEL_EDIT_HEADER
 #. TOOLBAR_STATUSLINE_EDIT_HEADER
 #. TOOLBAR_TOOLTIP_EDIT_HEADER
-#: po/tmp/ap_String_Id.h.h:1076
+#: po/tmp/ap_String_Id.h.h:1084
 msgid "Edit Header"
 msgstr "Sunting Pengepala"
 
 #. MENU_STATUSLINE_VIEW_HEADFOOT
-#: po/tmp/ap_String_Id.h.h:1078
+#: po/tmp/ap_String_Id.h.h:1086
 msgid "Edit text at the top or bottom of every page"
 msgstr "Sunting teks pada atas dan bawah setiap halaman"
 
 #. MENU_STATUSLINE_EDIT_EDITFOOTER
-#: po/tmp/ap_String_Id.h.h:1080
+#: po/tmp/ap_String_Id.h.h:1088
 msgid "Edit the Footer on the current page"
 msgstr "Sunting Footer pada halaman semasa"
 
 #. MENU_STATUSLINE_EDIT_EDITHEADER
-#: po/tmp/ap_String_Id.h.h:1082
+#: po/tmp/ap_String_Id.h.h:1090
 msgid "Edit the Header on the current page"
 msgstr "Edit Pengepala pada halaman semasa"
 
 #. MENU_LABEL_AUTOTEXT_EMAIL
-#: po/tmp/ap_String_Id.h.h:1084
+#: po/tmp/ap_String_Id.h.h:1092
 msgid "Email:"
 msgstr "Emel:"
 
 #. MENU_LABEL_VIEW_LOCKSTYLES
-#: po/tmp/ap_String_Id.h.h:1086
+#: po/tmp/ap_String_Id.h.h:1094
 msgid "Enable F&ormatting Tools"
 msgstr "Hidupkan Alatan Memf&ormat"
 
 #. DLG_Options_Label_CheckEnableSmoothScrolling
-#: po/tmp/ap_String_Id.h.h:1088
+#: po/tmp/ap_String_Id.h.h:1096
 msgid "Enable Smooth Scrolling"
 msgstr "Hidupkan Gulungan Lancar"
 
 #. FIELD_Numbers_EndnoteAnchor
-#: po/tmp/ap_String_Id.h.h:1090
+#: po/tmp/ap_String_Id.h.h:1098
 msgid "Endnote anchor"
 msgstr "Sauh notaakhir"
 
 #. FIELD_Numbers_EndnoteReference
-#: po/tmp/ap_String_Id.h.h:1092
+#: po/tmp/ap_String_Id.h.h:1100
 msgid "Endnote reference"
 msgstr "Rujukan notaakhir"
 
 #. DLG_FormatFootnotes_EndStyle
-#: po/tmp/ap_String_Id.h.h:1094
+#: po/tmp/ap_String_Id.h.h:1102
 msgid "Endnote style"
 msgstr "Gaya notaakhir"
 
 #. FIELD_Error
-#: po/tmp/ap_String_Id.h.h:1096
+#: po/tmp/ap_String_Id.h.h:1104
 msgid "Error calculating value!"
 msgstr "Ralat mengira nilai!"
 
 #. SCRIPT_CANTRUN
-#: po/tmp/ap_String_Id.h.h:1098
+#: po/tmp/ap_String_Id.h.h:1106
 #, c-format
 msgid "Error executing script %s"
 msgstr "Ralat melaksanakan skrip %s"
 
 #. MSG_ImportError
-#: po/tmp/ap_String_Id.h.h:1100
+#: po/tmp/ap_String_Id.h.h:1108
 #, c-format
 msgid "Error importing file %s."
 msgstr "Ralat mengimport fail %s"
 
 #. MSG_SaveFailedExport
-#: po/tmp/ap_String_Id.h.h:1102
+#: po/tmp/ap_String_Id.h.h:1110
 #, c-format
 msgid "Error while attempting to save %s: could not construct exporter"
 msgstr "Ralat ketika cuba menyimpan %s: tidak dapat membina pengeksport"
 
 #. MSG_SaveFailedName
-#: po/tmp/ap_String_Id.h.h:1104
+#: po/tmp/ap_String_Id.h.h:1112
 #, c-format
 msgid "Error while attempting to save %s: invalid name"
 msgstr "Ralat ketika cuba meyimpan %s: nama tidak sah"
 
 #. TOOLBAR_LABEL_SCRIPT_PLAY
-#: po/tmp/ap_String_Id.h.h:1106
+#: po/tmp/ap_String_Id.h.h:1114
 msgid "Ex. script"
 msgstr "Ex. skrip"
 
 #. DLG_Para_SpacingExactly
-#: po/tmp/ap_String_Id.h.h:1108
+#: po/tmp/ap_String_Id.h.h:1116
 msgid "Exactly"
 msgstr "Tepat"
 
 #. MENU_STATUSLINE_TOOLS_SCRIPTS
-#: po/tmp/ap_String_Id.h.h:1110
+#: po/tmp/ap_String_Id.h.h:1118
 msgid "Execute helper scripts"
 msgstr "Laksana skrip bantuan"
 
 #. TOOLBAR_STATUSLINE_SCRIPT_PLAY
 #. TOOLBAR_TOOLTIP_SCRIPT_PLAY
-#: po/tmp/ap_String_Id.h.h:1113
+#: po/tmp/ap_String_Id.h.h:1121
 msgid "Execute script"
 msgstr "Laksana skrip"
 
 #. DLG_ListRevisions_Label1
-#: po/tmp/ap_String_Id.h.h:1115
+#: po/tmp/ap_String_Id.h.h:1123
 msgid "Existing revisions:"
 msgstr "Semakan semasa:"
 
 #. TB_Extra
-#: po/tmp/ap_String_Id.h.h:1117
+#: po/tmp/ap_String_Id.h.h:1125
 msgid "Extra"
 msgstr "Tambahan"
 
 #. DLG_Field_Parameters_Capital
-#: po/tmp/ap_String_Id.h.h:1119
+#: po/tmp/ap_String_Id.h.h:1127
 msgid "Extra Parameters"
 msgstr "Parameter Tambahan"
 
 #. DLG_Options_Label_ViewExtraTB
-#: po/tmp/ap_String_Id.h.h:1121
+#: po/tmp/ap_String_Id.h.h:1129
 msgid "Extra Toolbar"
 msgstr "Bar Alat Tambahan"
 
 #. DLG_Field_Parameters
-#: po/tmp/ap_String_Id.h.h:1123
+#: po/tmp/ap_String_Id.h.h:1131
 msgid "Extra parameters:"
 msgstr "Parameter tambahan:"
 
 #. MENU_LABEL_FORMAT
-#: po/tmp/ap_String_Id.h.h:1125
+#: po/tmp/ap_String_Id.h.h:1133
 msgid "F&ormat"
 msgstr "F&ormat"
 
 #. MENU_LABEL_VIEW_FULLSCREEN
-#: po/tmp/ap_String_Id.h.h:1127
+#: po/tmp/ap_String_Id.h.h:1135
 msgid "F&ull Screen"
 msgstr "Skrin Pen&uh"
 
 #. DLG_FR_FindLabel
-#: po/tmp/ap_String_Id.h.h:1129
+#: po/tmp/ap_String_Id.h.h:1137
 msgid "Fi&nd what:"
 msgstr "&Cari apa:"
 
 #. DLG_MailMerge_Insert_No_Colon
-#: po/tmp/ap_String_Id.h.h:1131
+#: po/tmp/ap_String_Id.h.h:1139
 msgid "Field Name"
 msgstr "Nama Medan"
 
 #. DLG_MailMerge_Insert
-#: po/tmp/ap_String_Id.h.h:1133
+#: po/tmp/ap_String_Id.h.h:1141
 msgid "Field Name:"
 msgstr "Nama Medan:"
 
 #. MSG_IE_UnsupportedType
-#: po/tmp/ap_String_Id.h.h:1135
+#: po/tmp/ap_String_Id.h.h:1143
 #, c-format
 msgid "File %s is not of a currently supported file type"
 msgstr "Fail %s adalah jenis tidak disokong pada masa ini"
 
 #. MSG_IE_FakeType
-#: po/tmp/ap_String_Id.h.h:1137
+#: po/tmp/ap_String_Id.h.h:1145
 #, c-format
 msgid "File %s is not of the type it claims to be"
 msgstr "Fail %s adalah bukan dari jenis seperti didakwa"
 
 #. MSG_IE_UnknownType
-#: po/tmp/ap_String_Id.h.h:1139
+#: po/tmp/ap_String_Id.h.h:1147
 #, c-format
 msgid "File %s is of unknown type"
 msgstr "Fail %s adalah dari jenis tidak diketahui"
 
 #. MSG_IE_FileNotFound
-#: po/tmp/ap_String_Id.h.h:1141
+#: po/tmp/ap_String_Id.h.h:1149
 #, c-format
 msgid "File %s not found"
 msgstr "Fail %s tidak dijumpai"
 
 #. FIELD_Application_Filename
-#: po/tmp/ap_String_Id.h.h:1143
+#: po/tmp/ap_String_Id.h.h:1151
 msgid "File Name"
 msgstr "Nama Fail"
 
 #. DLG_FormatTOC_FillStyle
-#: po/tmp/ap_String_Id.h.h:1145
-msgid "Fill with Style"
-msgstr "Isi dengan Gaya"
+#: po/tmp/ap_String_Id.h.h:1153
+msgid "Fill style:"
+msgstr "Gaya pengisian:"
 
 #. DLG_FR_FindTitle
-#: po/tmp/ap_String_Id.h.h:1147
+#: po/tmp/ap_String_Id.h.h:1155
 msgid "Find"
 msgstr "Cari"
 
 #. MENU_LABEL_TOOLS_REVISIONS_FIND_NEXT
-#: po/tmp/ap_String_Id.h.h:1149
+#: po/tmp/ap_String_Id.h.h:1157
 msgid "Find &next revision"
 msgstr "Cari semaka&n berikut"
 
 #. MENU_LABEL_TOOLS_REVISIONS_FIND_PREV
-#: po/tmp/ap_String_Id.h.h:1151
+#: po/tmp/ap_String_Id.h.h:1159
 msgid "Find &previous revision"
 msgstr "Cari semakan terdahulu"
 
 #. MENU_STATUSLINE_TOOLS_REVISIONS_FIND_NEXT
-#: po/tmp/ap_String_Id.h.h:1153
+#: po/tmp/ap_String_Id.h.h:1161
 msgid "Find next visible revision in the document"
 msgstr "Cari semakan nyata berikut dalam dokumen"
 
 #. MENU_STATUSLINE_TOOLS_REVISIONS_FIND_PREV
-#: po/tmp/ap_String_Id.h.h:1155
+#: po/tmp/ap_String_Id.h.h:1163
 msgid "Find previous visible revision in the document"
 msgstr "Cari semakan nyata terdahulu dalam dokumen"
 
 #. MENU_STATUSLINE_EDIT_FIND
-#: po/tmp/ap_String_Id.h.h:1157
+#: po/tmp/ap_String_Id.h.h:1165
 msgid "Find the specified text"
 msgstr "Cari teks yang dinyatakan"
 
 #. FirstLineIndentStatus
-#: po/tmp/ap_String_Id.h.h:1159
+#: po/tmp/ap_String_Id.h.h:1167
 #, c-format
 msgid "First Line Indent [%s]"
 msgstr "Indent Baris Pertama [%s]"
 
 #. DLG_Para_SpecialFirstLine
-#: po/tmp/ap_String_Id.h.h:1161
+#: po/tmp/ap_String_Id.h.h:1169
 msgid "First line"
 msgstr "Baris pertama"
 
 #. DLG_InsertTable_FixedColSize
-#: po/tmp/ap_String_Id.h.h:1163
+#: po/tmp/ap_String_Id.h.h:1171
 msgid "Fixed column size:"
 msgstr "Saiz tetap lajur:"
 
+#. DLG_Lists_FoldingLevel1
+#: po/tmp/ap_String_Id.h.h:1173
+msgid "Fold below level 1"
+msgstr "Gulung dibawah tahap 1"
+
+#. DLG_Lists_FoldingLevel2
+#: po/tmp/ap_String_Id.h.h:1175
+msgid "Fold below level 2"
+msgstr "Gulung dibawah tahap 2"
+
+#. DLG_Lists_FoldingLevel3
+#: po/tmp/ap_String_Id.h.h:1177
+msgid "Fold below level 3"
+msgstr "Gulung dibawah tahap 3"
+
+#. DLG_Lists_FoldingLevel4
+#: po/tmp/ap_String_Id.h.h:1179
+msgid "Fold below level 4"
+msgstr "Gulung dibawah tahap 4"
+
 #. DLG_Para_PreviewFollowParagraph
-#: po/tmp/ap_String_Id.h.h:1165
+#: po/tmp/ap_String_Id.h.h:1181
 msgid "Following Paragraph Following Paragraph Following Paragraph Following Paragraph Following Paragraph Following Paragraph Following Paragraph"
 msgstr "Perenggan Berikut Perenggan Berikut Perenggan Berikut Perenggan Berikut Perenggan Berikut Perenggan Berikut Perenggan Berikut Perenggan Berikut "
 
@@ -2729,7 +2769,7 @@ msgstr "Perenggan Berikut Perenggan Berikut Perenggan Berikut Perenggan Berikut 
 #. TOOLBAR_LABEL_FMT_FONT
 #. TOOLBAR_STATUSLINE_FMT_FONT
 #. TOOLBAR_TOOLTIP_FMT_FONT
-#: po/tmp/ap_String_Id.h.h:1170
+#: po/tmp/ap_String_Id.h.h:1186
 #: po/tmp/xap_String_Id.h.h:305
 msgid "Font"
 msgstr "Font"
@@ -2737,245 +2777,245 @@ msgstr "Font"
 #. TOOLBAR_LABEL_FMT_SIZE
 #. TOOLBAR_STATUSLINE_FMT_SIZE
 #. TOOLBAR_TOOLTIP_FMT_SIZE
-#: po/tmp/ap_String_Id.h.h:1174
+#: po/tmp/ap_String_Id.h.h:1190
 msgid "Font Size"
 msgstr "Saiz Font"
 
 #. TOOLBAR_LABEL_COLOR_FORE
 #. TOOLBAR_STATUSLINE_COLOR_FORE
 #. TOOLBAR_TOOLTIP_COLOR_FORE
-#: po/tmp/ap_String_Id.h.h:1178
+#: po/tmp/ap_String_Id.h.h:1194
 msgid "Font color"
 msgstr "Warna font"
 
 #. DLG_Lists_ButtonFont
-#: po/tmp/ap_String_Id.h.h:1180
+#: po/tmp/ap_String_Id.h.h:1196
 msgid "Font..."
 msgstr "Font..."
 
 #. DLG_Lists_Font
-#: po/tmp/ap_String_Id.h.h:1182
+#: po/tmp/ap_String_Id.h.h:1198
 #: po/tmp/xap_String_Id.h.h:307
 msgid "Font:"
 msgstr "Font:"
 
 #. MENU_LABEL_INSERT_FOOTNOTE
-#: po/tmp/ap_String_Id.h.h:1184
+#: po/tmp/ap_String_Id.h.h:1200
 msgid "Foot&note"
 msgstr "&Notakaki"
 
 #. DLG_PageNumbers_Footer
-#: po/tmp/ap_String_Id.h.h:1186
+#: po/tmp/ap_String_Id.h.h:1202
 msgid "Footer"
 msgstr "Footer"
 
 #. DLG_HdrFtr_FooterFrame
-#: po/tmp/ap_String_Id.h.h:1188
+#: po/tmp/ap_String_Id.h.h:1204
 msgid "Footer Properties"
 msgstr "Ciri-ciri Footer"
 
 #. FooterStatus
-#: po/tmp/ap_String_Id.h.h:1190
+#: po/tmp/ap_String_Id.h.h:1206
 #, c-format
 msgid "Footer [%s]"
 msgstr "Footer [%s]"
 
 #. FIELD_Numbers_FootnoteAnchor
-#: po/tmp/ap_String_Id.h.h:1192
+#: po/tmp/ap_String_Id.h.h:1208
 msgid "Footnote anchor"
 msgstr "Sauh notakaki"
 
 #. FIELD_Numbers_FootnoteReference
-#: po/tmp/ap_String_Id.h.h:1194
+#: po/tmp/ap_String_Id.h.h:1210
 msgid "Footnote reference"
 msgstr "Rujukan notakaki"
 
 #. DLG_FormatFootnotes_FootStyle
-#: po/tmp/ap_String_Id.h.h:1196
+#: po/tmp/ap_String_Id.h.h:1212
 msgid "Footnote style"
 msgstr "Gaya notakaki"
 
 #. MENU_LABEL_FMT_FOOTNOTES
-#: po/tmp/ap_String_Id.h.h:1198
+#: po/tmp/ap_String_Id.h.h:1214
 msgid "Footnotes and Endnotes"
 msgstr "Notakaki dan Notaakhir"
 
 #. TOOLBAR_STATUSLINE_FMT_DIR_OVERRIDE_LTR
 #. TOOLBAR_TOOLTIP_FMT_DIR_OVERRIDE_LTR
-#: po/tmp/ap_String_Id.h.h:1201
+#: po/tmp/ap_String_Id.h.h:1217
 msgid "Force LTR direction of text"
 msgstr "Paksa teks arah LTR"
 
 #. TOOLBAR_STATUSLINE_FMT_DIR_OVERRIDE_RTL
 #. TOOLBAR_TOOLTIP_FMT_DIR_OVERRIDE_RTL
-#: po/tmp/ap_String_Id.h.h:1204
+#: po/tmp/ap_String_Id.h.h:1220
 msgid "Force RTL direction of text"
 msgstr "Paksa teks arah RTL"
 
 #. MENU_STATUSLINE_FMT_DIRECTION_DO_LTR
-#: po/tmp/ap_String_Id.h.h:1206
+#: po/tmp/ap_String_Id.h.h:1222
 msgid "Force left-to-right direction of text"
 msgstr "Paksa arah teks kiri-ke-kanan"
 
 #. MENU_STATUSLINE_FMT_DIRECTION_DO_RTL
-#: po/tmp/ap_String_Id.h.h:1208
+#: po/tmp/ap_String_Id.h.h:1224
 msgid "Force right-to-left direction of text"
 msgstr "Paksa arah teks kanan-ke-kiri"
 
 #. TOOLBAR_LABEL_FMT_DIR_OVERRIDE_LTR
-#: po/tmp/ap_String_Id.h.h:1210
+#: po/tmp/ap_String_Id.h.h:1226
 msgid "Force text LTR"
 msgstr "Paksa teks LTR"
 
 #. TOOLBAR_LABEL_FMT_DIR_OVERRIDE_RTL
-#: po/tmp/ap_String_Id.h.h:1212
+#: po/tmp/ap_String_Id.h.h:1228
 msgid "Force text RTL"
 msgstr "Paksa teks RTL"
 
 #. DLG_Styles_ModifyFormat
 #. TB_Format
-#: po/tmp/ap_String_Id.h.h:1215
+#: po/tmp/ap_String_Id.h.h:1231
 msgid "Format"
 msgstr "Format"
 
 #. MENU_LABEL_FMT_IMAGE
-#: po/tmp/ap_String_Id.h.h:1217
+#: po/tmp/ap_String_Id.h.h:1233
 msgid "Format &Image"
 msgstr "Format &Imej"
 
 #. DLG_FormatFootnotes_Endnotes
-#: po/tmp/ap_String_Id.h.h:1219
+#: po/tmp/ap_String_Id.h.h:1235
 msgid "Format Endnotes"
 msgstr "Format Notaakhir"
 
 #. DLG_FormatFootnotes_Footnotes
-#: po/tmp/ap_String_Id.h.h:1221
+#: po/tmp/ap_String_Id.h.h:1237
 msgid "Format Footnotes"
 msgstr "Format Notakaki"
 
 #. DLG_FormatFootnotes_Title
-#: po/tmp/ap_String_Id.h.h:1223
+#: po/tmp/ap_String_Id.h.h:1239
 msgid "Format Footnotes and Endnotes"
 msgstr "Format Notakaki dan Notaakhir"
 
 #. DLG_HdrFtr_Title
-#: po/tmp/ap_String_Id.h.h:1225
+#: po/tmp/ap_String_Id.h.h:1241
 msgid "Format Header/Footers"
 msgstr "Format Pengepala/Footer"
 
 #. TOOLBAR_LABEL_FMTPAINTER
-#: po/tmp/ap_String_Id.h.h:1227
+#: po/tmp/ap_String_Id.h.h:1243
 msgid "Format Painter"
 msgstr "Format Pengecat"
 
 #. DLG_FormatTableTitle
 #. MENU_STATUSLINE_TABLE_FORMAT
-#: po/tmp/ap_String_Id.h.h:1230
+#: po/tmp/ap_String_Id.h.h:1246
 msgid "Format Table"
 msgstr "Format Jadual"
 
 #. DLG_FormatTOC_Title
-#: po/tmp/ap_String_Id.h.h:1232
+#: po/tmp/ap_String_Id.h.h:1248
 msgid "Format Table of Contents"
 msgstr "Format Senarai Kandungan"
 
 #. DLG_FormatFrameTitle
-#. MENU_LABEL_FMT_FRAME
-#: po/tmp/ap_String_Id.h.h:1235
+#: po/tmp/ap_String_Id.h.h:1250
 msgid "Format Text Box"
 msgstr "Format Kekotak Teks"
 
 #. DLG_Options_Label_ViewFormatTB
-#: po/tmp/ap_String_Id.h.h:1237
+#: po/tmp/ap_String_Id.h.h:1252
 msgid "Format Toolbar"
 msgstr "Format Bar Alat"
 
 #. MENU_STATUSLINE_FMT_STYLIST
-#: po/tmp/ap_String_Id.h.h:1239
+#: po/tmp/ap_String_Id.h.h:1254
 msgid "Format your document using styles"
 msgstr "Format dokumen anda menggunakan gaya"
 
 #. DLG_Lists_Format
-#: po/tmp/ap_String_Id.h.h:1241
+#: po/tmp/ap_String_Id.h.h:1256
 #: po/tmp/xap_String_Id.h.h:313
 msgid "Format:"
 msgstr "Format:"
 
 #. AUTOTEXT_EMAIL_2
-#: po/tmp/ap_String_Id.h.h:1243
+#: po/tmp/ap_String_Id.h.h:1258
 msgid "From:"
 msgstr "Dari:"
 
 #. AUTOTEXT_EMAIL_6
-#: po/tmp/ap_String_Id.h.h:1245
+#: po/tmp/ap_String_Id.h.h:1260
 msgid "Fwd:"
 msgstr "Fwd:"
 
+#. DLG_FormatTOC_General
 #. DLG_Options_Label_General
 #. DLG_MetaData_TAB_General
-#: po/tmp/ap_String_Id.h.h:1248
+#: po/tmp/ap_String_Id.h.h:1264
 msgid "General"
 msgstr "Umum"
 
 #. DLG_Goto_Btn_Goto
-#: po/tmp/ap_String_Id.h.h:1250
+#: po/tmp/ap_String_Id.h.h:1266
 msgid "Go To"
 msgstr "Pergi"
 
 #. DLG_Goto_Label_What
-#: po/tmp/ap_String_Id.h.h:1252
+#: po/tmp/ap_String_Id.h.h:1268
 msgid "Go To &What:"
 msgstr "&Pergi Kepada:"
 
 #. DLG_Goto_Title
-#: po/tmp/ap_String_Id.h.h:1254
+#: po/tmp/ap_String_Id.h.h:1270
 msgid "Go to..."
 msgstr "Pergi..."
 
+#. DLG_FormatTOC_HasLabel
+#: po/tmp/ap_String_Id.h.h:1272
+msgid "H&as label"
+msgstr "Mempuny&ai label"
+
+#. DLG_FormatTOC_HeadingText
+#: po/tmp/ap_String_Id.h.h:1274
+msgid "H&eading text:"
+msgstr "T&eks heading:"
+
 #. DLG_Lists_Hand_List
-#: po/tmp/ap_String_Id.h.h:1256
+#: po/tmp/ap_String_Id.h.h:1276
 #: po/tmp/xap_String_Id.h.h:353
 msgid "Hand List"
 msgstr "Senarai Tangan"
 
 #. DLG_Para_SpecialHanging
-#: po/tmp/ap_String_Id.h.h:1258
+#: po/tmp/ap_String_Id.h.h:1278
 msgid "Hanging"
 msgstr "Tergantung"
 
-#. DLG_FormatTOC_HaveHeading
-#: po/tmp/ap_String_Id.h.h:1260
-msgid "Have Heading"
-msgstr "Mempunyai Heading"
-
-#. DLG_FormatTOC_HaveLabel
-#: po/tmp/ap_String_Id.h.h:1262
-msgid "Have Label"
-msgstr "Mempunyai Label"
-
 #. DLG_PageNumbers_Header
-#: po/tmp/ap_String_Id.h.h:1264
+#: po/tmp/ap_String_Id.h.h:1280
 msgid "Header"
 msgstr "Pengepala"
 
 #. DLG_HdrFtr_HeaderFrame
-#: po/tmp/ap_String_Id.h.h:1266
+#: po/tmp/ap_String_Id.h.h:1282
 msgid "Header Properties"
 msgstr "Ciri-ciri Pengepala"
 
 #. HeaderStatus
-#: po/tmp/ap_String_Id.h.h:1268
+#: po/tmp/ap_String_Id.h.h:1284
 #, c-format
 msgid "Header [%s]"
 msgstr "Pengepala [%s]"
 
 #. MENU_LABEL_FMT_HDRFTR
-#: po/tmp/ap_String_Id.h.h:1270
+#: po/tmp/ap_String_Id.h.h:1286
 msgid "Header/Footers"
 msgstr "Header/Footer"
 
 #. MSG_CHECK_PRINT_MODE
-#: po/tmp/ap_String_Id.h.h:1272
+#: po/tmp/ap_String_Id.h.h:1288
 msgid ""
 "Headers and Footers can only be created and edited while in Print View Mode. \n"
 " To enter this mode choose View then Print Layout from the Menus. \n"
@@ -2985,516 +3025,526 @@ msgstr ""
 " Untuk memasuki mod ini pilih Lihat kemudian Susunatur Cetakan daripada Menu. \n"
 " Adakah anda hendak memasuki mod Susunatur Cetakan sekarang?"
 
-#. DLG_FormatTOC_HeadingStyle
-#: po/tmp/ap_String_Id.h.h:1274
-msgid "Heading Style"
-msgstr "Gaya Heading"
-
 #. DLG_Stylist_HeadingStyles
-#: po/tmp/ap_String_Id.h.h:1276
+#: po/tmp/ap_String_Id.h.h:1290
 msgid "Heading Styles"
 msgstr "Gaya Heading"
 
-#. DLG_FormatTOC_HeadingText
-#: po/tmp/ap_String_Id.h.h:1278
-msgid "Heading Text"
-msgstr "Teks Heading"
+#. DLG_FormatTOC_HeadingStyle
+#: po/tmp/ap_String_Id.h.h:1292
+msgid "Heading style:"
+msgstr "Gaya heading:"
 
 #. DLG_Lists_Heart_List
-#: po/tmp/ap_String_Id.h.h:1280
+#: po/tmp/ap_String_Id.h.h:1294
 #: po/tmp/xap_String_Id.h.h:367
 msgid "Heart List"
 msgstr "Senarai Hati"
 
 #. DLG_Lists_Hebrew_List
-#: po/tmp/ap_String_Id.h.h:1282
+#: po/tmp/ap_String_Id.h.h:1296
 msgid "Hebrew List"
 msgstr "Senarai Hebrew"
 
 #. TOOLBAR_LABEL_HELP
 #. TOOLBAR_STATUSLINE_HELP
 #. TOOLBAR_TOOLTIP_HELP
-#: po/tmp/ap_String_Id.h.h:1286
+#: po/tmp/ap_String_Id.h.h:1300
 msgid "Help"
 msgstr "Bantuan"
 
 #. MENU_LABEL_HELP_CONTENTS
-#: po/tmp/ap_String_Id.h.h:1288
+#: po/tmp/ap_String_Id.h.h:1302
 msgid "Help &Contents"
 msgstr "&Kandungan Bantuan"
 
 #. MENU_LABEL_HELP_INDEX
-#: po/tmp/ap_String_Id.h.h:1290
+#: po/tmp/ap_String_Id.h.h:1304
 msgid "Help &Introduction"
 msgstr "&Pengenalan Bantuan"
 
 #. DLG_Options_Label_Hide
-#: po/tmp/ap_String_Id.h.h:1292
+#: po/tmp/ap_String_Id.h.h:1306
 msgid "Hide"
 msgstr "Sembunyi"
 
 #. DLG_Options_Label_SpellHideErrors
-#: po/tmp/ap_String_Id.h.h:1294
+#: po/tmp/ap_String_Id.h.h:1308
 msgid "Hide &spelling errors in the document"
 msgstr "&Sembunyi kesalahan ejaan dalam dokumen"
+
+#. DLG_Lists_FoldingLevelexp
+#: po/tmp/ap_String_Id.h.h:1310
+msgid "Hide text below List Levels"
+msgstr "Sorok teks dibawah Tahap Senarai"
 
 #. TOOLBAR_LABEL_COLOR_BACK
 #. TOOLBAR_STATUSLINE_COLOR_BACK
 #. TOOLBAR_TOOLTIP_COLOR_BACK
-#: po/tmp/ap_String_Id.h.h:1298
+#: po/tmp/ap_String_Id.h.h:1314
 msgid "Highlight"
 msgstr "Sorot"
 
 #. DLG_Spell_IgnoreAll
-#: po/tmp/ap_String_Id.h.h:1300
+#: po/tmp/ap_String_Id.h.h:1316
 msgid "I&gnore All"
 msgstr "&Abai Semua"
 
+#. DLG_FormatTOC_Indent
+#: po/tmp/ap_String_Id.h.h:1318
+msgid "I&ndent:"
+msgstr "I&ndent:"
+
 #. InsertModeFieldINS
-#: po/tmp/ap_String_Id.h.h:1302
+#: po/tmp/ap_String_Id.h.h:1320
 msgid "INS"
 msgstr "INS"
 
 #. DLG_Options_Label_Icons
-#: po/tmp/ap_String_Id.h.h:1304
+#: po/tmp/ap_String_Id.h.h:1322
 msgid "Icons"
 msgstr "Ikon"
 
 #. DLG_Options_Label_Ignore
-#: po/tmp/ap_String_Id.h.h:1306
+#: po/tmp/ap_String_Id.h.h:1324
 msgid "Ignore"
 msgstr "Abai"
 
 #. MENU_STATUSLINE_SPELL_IGNOREALL
-#: po/tmp/ap_String_Id.h.h:1308
+#: po/tmp/ap_String_Id.h.h:1326
 msgid "Ignore all occurrences of this word in the document"
 msgstr "Abai semua kewujudan perkataan ini dalam dokumen"
 
 #. DLG_Options_Label_SpellIgnoredWord
-#: po/tmp/ap_String_Id.h.h:1310
+#: po/tmp/ap_String_Id.h.h:1328
 msgid "Ignored words:"
 msgstr "Perkataan diabaikan:"
 
 #. DLG_FormatFrame_SetImageBackground
 #. DLG_FormatTable_SetImageBackground
-#: po/tmp/ap_String_Id.h.h:1313
+#: po/tmp/ap_String_Id.h.h:1331
 msgid "Image For Background"
 msgstr "Imej Untuk Latarbelakang"
 
 #. DLG_Lists_Implies_List
-#: po/tmp/ap_String_Id.h.h:1315
+#: po/tmp/ap_String_Id.h.h:1333
 #: po/tmp/xap_String_Id.h.h:397
 msgid "Implies List"
 msgstr "Senarai Sifat"
 
 #. MENU_STATUSLINE_FMT_IMPORTSTYLES
-#: po/tmp/ap_String_Id.h.h:1317
+#: po/tmp/ap_String_Id.h.h:1335
 msgid "Import style definitions from a document"
 msgstr "Import definisi gaya dari sebuah dokumen"
 
 #. DLG_Styles_LBL_InUse
-#: po/tmp/ap_String_Id.h.h:1319
+#: po/tmp/ap_String_Id.h.h:1337
 msgid "In Use"
 msgstr "Sedang Diguna"
 
 #. AUTOTEXT_REFERENCE_1
-#: po/tmp/ap_String_Id.h.h:1321
+#: po/tmp/ap_String_Id.h.h:1339
 msgid "In reply to:"
 msgstr "Sebagai jawapan kepada:"
 
 #. WORD_PassInvalid
-#: po/tmp/ap_String_Id.h.h:1323
+#: po/tmp/ap_String_Id.h.h:1341
 msgid "Incorrect Password"
 msgstr "Katalaluan Tidak Betul"
 
 #. TOOLBAR_LABEL_INDENT
 #. TOOLBAR_STATUSLINE_INDENT
 #. TOOLBAR_TOOLTIP_INDENT
-#: po/tmp/ap_String_Id.h.h:1327
+#: po/tmp/ap_String_Id.h.h:1345
 msgid "Increase indent"
 msgstr "Tambah indent"
 
-#. DLG_FormatTOC_Indent
-#: po/tmp/ap_String_Id.h.h:1329
-msgid "Indent"
-msgstr "Indent"
-
 #. DLG_Para_LabelIndentation
-#: po/tmp/ap_String_Id.h.h:1331
+#: po/tmp/ap_String_Id.h.h:1347
 msgid "Indentation"
 msgstr "Indentasi"
 
 #. DLG_ToggleCase_FirstUpperCase
-#: po/tmp/ap_String_Id.h.h:1333
+#: po/tmp/ap_String_Id.h.h:1349
 msgid "Initial Caps"
 msgstr "Caps Permulaan"
 
 #. DLG_FormatFootnotes_EndInitialVal
-#: po/tmp/ap_String_Id.h.h:1335
+#: po/tmp/ap_String_Id.h.h:1351
 msgid "Initial Endnote value"
 msgstr "Nilai Notaakhir permulaan"
 
 #. DLG_FormatFootnotes_FootInitialVal
-#: po/tmp/ap_String_Id.h.h:1337
+#: po/tmp/ap_String_Id.h.h:1353
 msgid "Initial Footnote value"
 msgstr "Nilai Notakaki permulaan"
 
 #. DLG_Break_Insert
 #. MENU_STATUSLINE_TABLE_INSERT
-#: po/tmp/ap_String_Id.h.h:1340
+#: po/tmp/ap_String_Id.h.h:1356
 #: po/tmp/xap_String_Id.h.h:407
 msgid "Insert"
 msgstr "Selit"
 
 #. MENU_LABEL_TABLE_INSERTCOLUMN
-#: po/tmp/ap_String_Id.h.h:1342
+#: po/tmp/ap_String_Id.h.h:1358
 msgid "Insert &Columns"
 msgstr "Selit Lajur"
 
 #. MENU_LABEL_TABLE_INSERTROW
-#: po/tmp/ap_String_Id.h.h:1344
+#: po/tmp/ap_String_Id.h.h:1360
 msgid "Insert &Rows"
 msgstr "Selit Ba&ris"
 
 #. MENU_LABEL_TABLE_INSERTTABLE
-#: po/tmp/ap_String_Id.h.h:1346
+#: po/tmp/ap_String_Id.h.h:1362
 msgid "Insert &Table"
 msgstr "Seli&t Jadual"
 
 #. DLG_InsertBookmark_Title
 #. TOOLBAR_LABEL_FMT_BOOKMARK
-#: po/tmp/ap_String_Id.h.h:1349
+#: po/tmp/ap_String_Id.h.h:1365
 msgid "Insert Bookmark"
 msgstr "Selit Tandabuku"
 
 #. DLG_Break_BreakTitle_Capital
-#: po/tmp/ap_String_Id.h.h:1351
+#: po/tmp/ap_String_Id.h.h:1367
 msgid "Insert Break"
 msgstr "Selit Pemutus"
 
 #. MENU_STATUSLINE_TABLE_INSERT_CELLS
-#: po/tmp/ap_String_Id.h.h:1353
+#: po/tmp/ap_String_Id.h.h:1369
 msgid "Insert Cells"
 msgstr "Selit Sel"
 
 #. MENU_STATUSLINE_EDIT_PASTE
-#: po/tmp/ap_String_Id.h.h:1355
+#: po/tmp/ap_String_Id.h.h:1371
 msgid "Insert Clipboard contents"
 msgstr "Selit kandungan Papanklip"
 
 #. DLG_DateTime_DateTimeTitle
-#: po/tmp/ap_String_Id.h.h:1357
+#: po/tmp/ap_String_Id.h.h:1373
 msgid "Insert Date and Time"
 msgstr "Selit Tarikh dan Masa"
 
 #. DLG_Field_FieldTitle_Capital
-#: po/tmp/ap_String_Id.h.h:1359
+#: po/tmp/ap_String_Id.h.h:1375
 msgid "Insert Field"
 msgstr "Selit Medan"
 
 #. MENU_LABEL_INSERT_INSERTFOOTER
-#: po/tmp/ap_String_Id.h.h:1361
+#: po/tmp/ap_String_Id.h.h:1377
 msgid "Insert Footer"
 msgstr "Selit Footer"
 
 #. MENU_LABEL_INSERT_INSERTHEADER
-#: po/tmp/ap_String_Id.h.h:1363
+#: po/tmp/ap_String_Id.h.h:1379
 msgid "Insert Header"
 msgstr "Selit Header"
 
 #. DLG_InsertHyperlink_Title
 #. TOOLBAR_LABEL_FMT_HYPERLINK
-#: po/tmp/ap_String_Id.h.h:1366
+#: po/tmp/ap_String_Id.h.h:1382
 msgid "Insert Hyperlink"
 msgstr "Selit Hiperlink"
 
 #. TOOLBAR_LABEL_IMG
-#: po/tmp/ap_String_Id.h.h:1368
+#: po/tmp/ap_String_Id.h.h:1384
 msgid "Insert Image"
 msgstr "Selit Imej"
 
 #. DLG_MailMerge_MailMergeTitle
-#: po/tmp/ap_String_Id.h.h:1370
+#: po/tmp/ap_String_Id.h.h:1386
 msgid "Insert Mail Merge Field"
 msgstr "Selit Medan Gabung Mel"
 
 #. DLG_InsertTable_TableTitle
 #. MENU_STATUSLINE_TABLE_INSERT_TABLE
 #. MENU_STATUSLINE_TABLE_INSERTTABLE
-#: po/tmp/ap_String_Id.h.h:1374
+#: po/tmp/ap_String_Id.h.h:1390
 msgid "Insert Table"
 msgstr "Selit Jadual"
 
 #. MENU_STATUSLINE_INSERT_DIRECTIONMARKER
-#: po/tmp/ap_String_Id.h.h:1376
+#: po/tmp/ap_String_Id.h.h:1392
 msgid "Insert Unicode direction marker into the document"
 msgstr "Selit penanda arah Unicode kedalam dokumen"
 
 #. MENU_STATUSLINE_INSERT_INSERTFOOTER
-#: po/tmp/ap_String_Id.h.h:1378
+#: po/tmp/ap_String_Id.h.h:1394
 msgid "Insert a Footer"
 msgstr "Selit Footer"
 
 #. MENU_STATUSLINE_INSERT_INSERTHEADER
-#: po/tmp/ap_String_Id.h.h:1380
+#: po/tmp/ap_String_Id.h.h:1396
 msgid "Insert a Header"
 msgstr "Selit Header"
 
 #. MENU_STATUSLINE_INSERT_TABLEOFCONTENTS
-#: po/tmp/ap_String_Id.h.h:1382
+#: po/tmp/ap_String_Id.h.h:1398
 msgid "Insert a Table of Contents based on Headings"
 msgstr "Selit Senarai Kandungan berdasarkan Heading"
 
 #. MENU_STATUSLINE_INSERT_TEXTBOX
-#: po/tmp/ap_String_Id.h.h:1384
+#: po/tmp/ap_String_Id.h.h:1400
 msgid "Insert a Text Box"
 msgstr "Selit Kekotak Teks"
 
 #. TOOLBAR_STATUSLINE_FMT_BOOKMARK
 #. TOOLBAR_TOOLTIP_FMT_BOOKMARK
-#: po/tmp/ap_String_Id.h.h:1387
+#: po/tmp/ap_String_Id.h.h:1403
 msgid "Insert a bookmark into the document"
 msgstr "Selit tandabuku kedalam dokumen"
 
 #. MENU_STATUSLINE_INSERT_FIELD
-#: po/tmp/ap_String_Id.h.h:1389
+#: po/tmp/ap_String_Id.h.h:1405
 msgid "Insert a calculated field"
 msgstr "Selit medan terkira"
 
 #. MENU_STATUSLINE_TABLE_INSERT_COLUMNS_BEFORE
-#: po/tmp/ap_String_Id.h.h:1391
+#: po/tmp/ap_String_Id.h.h:1407
 msgid "Insert a column to the left"
 msgstr "Selit lajur ke kiri"
 
 #. MENU_STATUSLINE_TABLE_INSERT_COLUMNS_AFTER
 #. MENU_STATUSLINE_TABLE_INSERTCOLUMN
-#: po/tmp/ap_String_Id.h.h:1394
+#: po/tmp/ap_String_Id.h.h:1410
 msgid "Insert a column to the right"
 msgstr "Selit lajur ke kanan"
 
 #. MENU_STATUSLINE_INSERT_FOOTNOTE
-#: po/tmp/ap_String_Id.h.h:1396
+#: po/tmp/ap_String_Id.h.h:1412
 msgid "Insert a footnote"
 msgstr "Selit notakaki"
 
 #. TOOLBAR_STATUSLINE_FMT_HYPERLINK
 #. TOOLBAR_TOOLTIP_FMT_HYPERLINK
-#: po/tmp/ap_String_Id.h.h:1399
+#: po/tmp/ap_String_Id.h.h:1415
 msgid "Insert a hyperlink into the document"
 msgstr "Selit hiperlink kedalam dokumen"
 
 #. MENU_STATUSLINE_INSERT_MAILMERGE
-#: po/tmp/ap_String_Id.h.h:1401
+#: po/tmp/ap_String_Id.h.h:1417
 msgid "Insert a mail merge field"
 msgstr "Selit medan gabung mel"
 
 #. TOOLBAR_STATUSLINE_INSERT_TABLE
 #. TOOLBAR_TOOLTIP_INSERT_TABLE
-#: po/tmp/ap_String_Id.h.h:1404
+#: po/tmp/ap_String_Id.h.h:1420
 msgid "Insert a new table into your document"
 msgstr "Selit jadual baru kedalam dokumen anda"
 
 #. MENU_STATUSLINE_INSERT_BREAK
-#: po/tmp/ap_String_Id.h.h:1406
+#: po/tmp/ap_String_Id.h.h:1422
 msgid "Insert a page, column, or section break"
 msgstr "Selit halaman, lajur, atau pecahan seksyen"
 
 #. MENU_STATUSLINE_INSERT_PICTURE
-#: po/tmp/ap_String_Id.h.h:1408
+#: po/tmp/ap_String_Id.h.h:1424
 msgid "Insert a picture"
 msgstr "Selit gambar"
 
 #. MENU_STATUSLINE_TABLE_INSERT_ROWS_BEFORE
-#: po/tmp/ap_String_Id.h.h:1410
+#: po/tmp/ap_String_Id.h.h:1426
 msgid "Insert a row above"
 msgstr "Selit baris diatas"
 
 #. MENU_STATUSLINE_TABLE_INSERT_ROWS_AFTER
 #. MENU_STATUSLINE_TABLE_INSERTROW
-#: po/tmp/ap_String_Id.h.h:1413
+#: po/tmp/ap_String_Id.h.h:1429
 msgid "Insert a row below"
 msgstr "Selit baris dibawah"
 
 #. MENU_STATUSLINE_INSERT_SYMBOL
-#: po/tmp/ap_String_Id.h.h:1415
+#: po/tmp/ap_String_Id.h.h:1431
 msgid "Insert a symbol or other special character"
 msgstr "Selit simbol atau lain-lain aksara khas"
 
 #. MENU_STATUSLINE_INSERT_PAGENO
-#: po/tmp/ap_String_Id.h.h:1417
+#: po/tmp/ap_String_Id.h.h:1433
 msgid "Insert an automatically-updated page number"
 msgstr "Selit nombor halaman kemaskini-automatik"
 
 #. MENU_STATUSLINE_INSERT_ENDNOTE
-#: po/tmp/ap_String_Id.h.h:1419
+#: po/tmp/ap_String_Id.h.h:1435
 msgid "Insert an endnote"
 msgstr "Selit notaakhir"
 
 #. MENU_STATUSLINE_INSERT_GRAPHIC
-#: po/tmp/ap_String_Id.h.h:1421
+#: po/tmp/ap_String_Id.h.h:1437
 msgid "Insert an existing picture from another file"
 msgstr "Selit gambar sediawujud daripada fail lain"
 
 #. TOOLBAR_STATUSLINE_IMG
 #. TOOLBAR_TOOLTIP_IMG
-#: po/tmp/ap_String_Id.h.h:1424
+#: po/tmp/ap_String_Id.h.h:1440
 msgid "Insert an image into the document"
 msgstr "Selit imej kedalam dokumen"
 
 #. MENU_STATUSLINE_INSERT_BOOKMARK
-#: po/tmp/ap_String_Id.h.h:1426
+#: po/tmp/ap_String_Id.h.h:1442
 msgid "Insert bookmark"
 msgstr "Selit tandabuku"
 
 #. DLG_Break_BreakTitle
-#: po/tmp/ap_String_Id.h.h:1428
+#: po/tmp/ap_String_Id.h.h:1444
 msgid "Insert break"
 msgstr "Selit pemutus"
 
 #. MENU_STATUSLINE_INSERT_CLIPART
-#: po/tmp/ap_String_Id.h.h:1430
+#: po/tmp/ap_String_Id.h.h:1446
 msgid "Insert clipart"
 msgstr "Selit clipart"
 
 #. DLG_Field_FieldTitle
-#: po/tmp/ap_String_Id.h.h:1432
+#: po/tmp/ap_String_Id.h.h:1448
 msgid "Insert field"
 msgstr "Selit medan"
 
 #. MENU_STATUSLINE_INSERT_HYPERLINK
-#: po/tmp/ap_String_Id.h.h:1434
+#: po/tmp/ap_String_Id.h.h:1450
 msgid "Insert hyperlink"
 msgstr "Selit hiperlink"
 
 #. MENU_STATUSLINE_INSERT_DIRECTIONMARKER_LRM
-#: po/tmp/ap_String_Id.h.h:1436
+#: po/tmp/ap_String_Id.h.h:1452
 msgid "Insert left-to-right direction marker (LRM)"
 msgstr "Selit penanda arah kiri-ke-kanan (LRM)"
 
 #. MENU_STATUSLINE_INSERT_DIRECTIONMARKER_RLM
-#: po/tmp/ap_String_Id.h.h:1438
+#: po/tmp/ap_String_Id.h.h:1454
 msgid "Insert right-to-left direction marker (RLM)"
 msgstr "Selit penanda arah kanan-ke-kiri (RLM)"
 
 #. TOOLBAR_STATUSLINE_INSERT_SYMBOL
 #. TOOLBAR_TOOLTIP_INSERT_SYMBOL
-#: po/tmp/ap_String_Id.h.h:1441
+#: po/tmp/ap_String_Id.h.h:1457
 msgid "Insert symbol"
 msgstr "Selit simbol"
 
 #. TOOLBAR_LABEL_INSERT_TABLE
-#: po/tmp/ap_String_Id.h.h:1443
+#: po/tmp/ap_String_Id.h.h:1459
 msgid "Insert table"
 msgstr "Selit jadual"
 
 #. MENU_STATUSLINE_INSERT_FILE
-#: po/tmp/ap_String_Id.h.h:1445
+#: po/tmp/ap_String_Id.h.h:1461
 msgid "Insert the contents of another file"
 msgstr "Selit kandungan fail lain"
 
 #. MENU_STATUSLINE_INSERT_DATETIME
-#: po/tmp/ap_String_Id.h.h:1447
+#: po/tmp/ap_String_Id.h.h:1463
 msgid "Insert the date and/or time"
 msgstr "Selit tarikh dan/atau masa"
 
 #. MENU_STATUSLINE_EDIT_PASTE_SPECIAL
-#: po/tmp/ap_String_Id.h.h:1449
+#: po/tmp/ap_String_Id.h.h:1465
 msgid "Insert unformatted clipboard contents"
 msgstr "Selit kandungan papanklip tanpa format"
 
 #. DLG_Options_Label_SpellInternet
-#: po/tmp/ap_String_Id.h.h:1451
+#: po/tmp/ap_String_Id.h.h:1467
 msgid "Internet and &file addresses"
 msgstr "Alamat Internet dan &fail"
 
 #. DLG_Options_Label_ViewUnprintable
-#: po/tmp/ap_String_Id.h.h:1453
+#: po/tmp/ap_String_Id.h.h:1469
 msgid "Invisible &Layout Marks"
 msgstr "Tanda Susunatur Tidak Ke&lihatan"
 
 #. TOOLBAR_LABEL_FMT_ITALIC
 #. TOOLBAR_STATUSLINE_FMT_ITALIC
 #. TOOLBAR_TOOLTIP_FMT_ITALIC
-#: po/tmp/ap_String_Id.h.h:1457
+#: po/tmp/ap_String_Id.h.h:1473
 #: po/tmp/xap_String_Id.h.h:427
 msgid "Italic"
 msgstr "Italik"
 
 #. DLG_Para_AlignJustified
-#: po/tmp/ap_String_Id.h.h:1459
+#: po/tmp/ap_String_Id.h.h:1475
 msgid "Justified"
 msgstr "Justifi"
 
 #. TOOLBAR_LABEL_ALIGN_JUSTIFY
-#: po/tmp/ap_String_Id.h.h:1461
+#: po/tmp/ap_String_Id.h.h:1477
 msgid "Justify"
 msgstr "Justifi"
 
 #. TOOLBAR_STATUSLINE_ALIGN_JUSTIFY
 #. TOOLBAR_TOOLTIP_ALIGN_JUSTIFY
-#: po/tmp/ap_String_Id.h.h:1464
+#: po/tmp/ap_String_Id.h.h:1480
 msgid "Justify paragraph"
 msgstr "Perenggan Justifi"
 
 #. MENU_STATUSLINE_ALIGN_JUSTIFY
-#: po/tmp/ap_String_Id.h.h:1466
+#: po/tmp/ap_String_Id.h.h:1482
 msgid "Justify the paragraph"
 msgstr "Justifikasikan perenggan"
 
 #. DLG_Para_PushKeepWithNext
-#: po/tmp/ap_String_Id.h.h:1468
+#: po/tmp/ap_String_Id.h.h:1484
 msgid "Keep with ne&xt"
 msgstr "&Sertakan dengan berikut"
 
 #. FIELD_PieceTable_Test
-#: po/tmp/ap_String_Id.h.h:1470
+#: po/tmp/ap_String_Id.h.h:1486
 msgid "Kevins Test"
 msgstr "Ujian Kevins"
 
 #. FIELD_Document_Keywords
-#: po/tmp/ap_String_Id.h.h:1472
+#: po/tmp/ap_String_Id.h.h:1488
 msgid "Keywords"
 msgstr "Katakunci"
 
 #. DLG_MetaData_Keywords_LBL
-#: po/tmp/ap_String_Id.h.h:1474
+#: po/tmp/ap_String_Id.h.h:1490
 msgid "Keywords:"
 msgstr "Katakunci:"
 
 #. DLG_Lists_Indent
-#: po/tmp/ap_String_Id.h.h:1476
+#: po/tmp/ap_String_Id.h.h:1492
 msgid "Label Align:"
 msgstr "Jajar Label:"
 
+#. DLG_FormatTOC_DetailsTop
+#: po/tmp/ap_String_Id.h.h:1494
+msgid "Label Definitions"
+msgstr "Takrifan Label"
+
 #. AUTOTEXT_SALUTATION_3
-#: po/tmp/ap_String_Id.h.h:1478
+#: po/tmp/ap_String_Id.h.h:1496
 msgid "Ladies and Gentlemen:"
 msgstr "Tuan-tuan dan Puan-puan:"
 
 #. DLG_Styles_ModifyLanguage
 #. DLG_Options_Label_Language
 #. FIELD_Document_Language
-#: po/tmp/ap_String_Id.h.h:1482
+#: po/tmp/ap_String_Id.h.h:1500
 msgid "Language"
 msgstr "Bahasa"
 
 #. DLG_Options_Label_LangSettings
-#: po/tmp/ap_String_Id.h.h:1484
+#: po/tmp/ap_String_Id.h.h:1502
 msgid "Language settings"
 msgstr "Tetapan bahasa"
 
 #. DLG_MetaData_Languages_LBL
-#: po/tmp/ap_String_Id.h.h:1486
+#: po/tmp/ap_String_Id.h.h:1504
 msgid "Language(s):"
 msgstr "Bahasa:"
 
 #. DLG_Options_Label_Layout
-#: po/tmp/ap_String_Id.h.h:1488
+#: po/tmp/ap_String_Id.h.h:1506
 msgid "Layout"
 msgstr "Susunatur"
 
+#. DLG_FormatTOC_LayoutDetails
+#: po/tmp/ap_String_Id.h.h:1508
+msgid "Layout Details"
+msgstr "Maklumat lanjut Susunatur"
+
 #. DLG_Tab_Label_Leader
-#: po/tmp/ap_String_Id.h.h:1490
+#: po/tmp/ap_String_Id.h.h:1510
 msgid "Leader"
 msgstr "Pendahulu"
 
@@ -3502,347 +3552,372 @@ msgstr "Pendahulu"
 #. DLG_Tab_Radio_Left
 #. DLG_PageNumbers_Left
 #. TOOLBAR_LABEL_ALIGN_LEFT
-#: po/tmp/ap_String_Id.h.h:1495
+#: po/tmp/ap_String_Id.h.h:1515
 msgid "Left"
 msgstr "Kiri"
 
 #. LeftIndentStatus
-#: po/tmp/ap_String_Id.h.h:1497
+#: po/tmp/ap_String_Id.h.h:1517
 #, c-format
 msgid "Left Indent [%s]"
 msgstr "Indent Kiri [%s]"
 
 #. LeftIndentTextIndentStatus
-#: po/tmp/ap_String_Id.h.h:1499
+#: po/tmp/ap_String_Id.h.h:1519
 #, c-format
 msgid "Left Indent [%s] First Line Indent [%s]"
 msgstr "Indent Kiri [%s] Indent Baris Pertama [%s]"
 
 #. LeftMarginStatus
-#: po/tmp/ap_String_Id.h.h:1501
+#: po/tmp/ap_String_Id.h.h:1521
 #, c-format
 msgid "Left Margin [%s]"
 msgstr "Margin Kiri [%s]"
 
 #. TabToggleLeftTab
-#: po/tmp/ap_String_Id.h.h:1503
+#: po/tmp/ap_String_Id.h.h:1523
 msgid "Left Tab"
 msgstr "Tab Kiri"
 
 #. TOOLBAR_STATUSLINE_ALIGN_LEFT
 #. TOOLBAR_TOOLTIP_ALIGN_LEFT
-#: po/tmp/ap_String_Id.h.h:1506
+#: po/tmp/ap_String_Id.h.h:1526
 msgid "Left alignment"
 msgstr "Jajaran kiri"
 
 #. MENU_STATUSLINE_ALIGN_LEFT
-#: po/tmp/ap_String_Id.h.h:1508
+#: po/tmp/ap_String_Id.h.h:1528
 msgid "Left-align the paragraph"
 msgstr "Jajar kiri perenggan"
 
+#. DLG_FormatTOC_Level1
+#: po/tmp/ap_String_Id.h.h:1530
+msgid "Level 1"
+msgstr "Tahap 1"
+
+#. DLG_FormatTOC_Level2
+#: po/tmp/ap_String_Id.h.h:1532
+msgid "Level 2"
+msgstr "Tahap 2"
+
+#. DLG_FormatTOC_Level3
+#: po/tmp/ap_String_Id.h.h:1534
+msgid "Level 3"
+msgstr "Tahap 3"
+
+#. DLG_FormatTOC_Level4
+#: po/tmp/ap_String_Id.h.h:1536
+msgid "Level 4"
+msgstr "Tahap 4"
+
 #. DLG_Lists_DelimiterString
-#: po/tmp/ap_String_Id.h.h:1510
+#: po/tmp/ap_String_Id.h.h:1538
 msgid "Level Delimiter:"
 msgstr "Sempadan Tahap:"
 
 #. DLG_Lists_Level
-#: po/tmp/ap_String_Id.h.h:1512
+#: po/tmp/ap_String_Id.h.h:1540
 msgid "Level:"
 msgstr "Tahap:"
 
 #. DLG_Para_LabelLineSpacing
-#: po/tmp/ap_String_Id.h.h:1514
+#: po/tmp/ap_String_Id.h.h:1542
 msgid "Li&ne spacing:"
 msgstr "&Ruang baris:"
 
 #. DLG_Goto_Target_Line
-#: po/tmp/ap_String_Id.h.h:1516
+#: po/tmp/ap_String_Id.h.h:1544
 msgid "Line"
 msgstr "Baris"
 
 #. FIELD_Numbers_LineCount
-#: po/tmp/ap_String_Id.h.h:1518
+#: po/tmp/ap_String_Id.h.h:1546
 msgid "Line Count"
 msgstr "Kiraan Baris"
 
 #. MENU_STATUSLINE_FMT_TOPLINE
-#: po/tmp/ap_String_Id.h.h:1520
+#: po/tmp/ap_String_Id.h.h:1548
 msgid "Line above the selection (toggle)"
 msgstr "Baris diatas pilihan (toggle)"
 
 #. DLG_Para_TabLabelLineAndPageBreaks
-#: po/tmp/ap_String_Id.h.h:1522
+#: po/tmp/ap_String_Id.h.h:1550
 msgid "Line and &Page Breaks"
 msgstr "&Pecahan Baris dan Halaman"
 
 #. MENU_STATUSLINE_FMT_BOTTOMLINE
-#: po/tmp/ap_String_Id.h.h:1524
+#: po/tmp/ap_String_Id.h.h:1552
 msgid "Line below the selection (toggle)"
 msgstr "Baris dibawah pilihan (toggle)"
 
 #. DLG_Column_Line_Between
-#: po/tmp/ap_String_Id.h.h:1526
+#: po/tmp/ap_String_Id.h.h:1554
 msgid "Line between"
 msgstr "Baris ditengah"
 
 #. DLG_WordCount_Lines
-#: po/tmp/ap_String_Id.h.h:1528
+#: po/tmp/ap_String_Id.h.h:1556
 msgid "Lines:"
 msgstr "Baris:"
 
 #. DLG_Styles_List
-#: po/tmp/ap_String_Id.h.h:1530
+#: po/tmp/ap_String_Id.h.h:1558
 msgid "List"
 msgstr "Senarai"
 
 #. FIELD_Numbers_ListLabel
-#: po/tmp/ap_String_Id.h.h:1532
+#: po/tmp/ap_String_Id.h.h:1560
 msgid "List Label"
 msgstr "Label Senarai"
 
+#. DLG_Lists_PageProperties
+#: po/tmp/ap_String_Id.h.h:1562
+msgid "List Properties"
+msgstr "Ciri-ciri Senarai"
+
 #. DLG_Stylist_ListStyles
-#: po/tmp/ap_String_Id.h.h:1534
+#: po/tmp/ap_String_Id.h.h:1564
 msgid "List Styles"
 msgstr "Gaya Senarai"
 
 #. DLG_Lists_Title
-#: po/tmp/ap_String_Id.h.h:1536
+#: po/tmp/ap_String_Id.h.h:1566
 msgid "Lists for "
 msgstr "Senarai untuk"
 
 #. MENU_STATUSLINE_VIEW_LOCK_TB_LAYOUT
-#: po/tmp/ap_String_Id.h.h:1538
+#: po/tmp/ap_String_Id.h.h:1568
 msgid "Lock the layout of the current toolbars"
 msgstr "Kunci susunatur bar alat semasa"
 
 #. AUTOTEXT_CLOSING_4
-#: po/tmp/ap_String_Id.h.h:1540
+#: po/tmp/ap_String_Id.h.h:1570
 msgid "Love,"
 msgstr "Yang mengingati,"
 
 #. DLG_Lists_Lower_Case_List
-#: po/tmp/ap_String_Id.h.h:1542
+#: po/tmp/ap_String_Id.h.h:1572
 #: po/tmp/xap_String_Id.h.h:457
 msgid "Lower Case List"
 msgstr "Senarai Huruf Kecil"
 
 #. DLG_Lists_Lower_Roman_List
-#: po/tmp/ap_String_Id.h.h:1544
+#: po/tmp/ap_String_Id.h.h:1574
 #: po/tmp/xap_String_Id.h.h:459
 msgid "Lower Roman List"
 msgstr "Senarai Roman Kecil"
 
 #. MENU_LABEL_TOOLS_REVISIONS_MERGE_DOCUMENTS
-#: po/tmp/ap_String_Id.h.h:1546
+#: po/tmp/ap_String_Id.h.h:1576
 msgid "M&erge documents"
 msgstr "Gabung dokumen"
 
 #. MENU_LABEL_AUTOTEXT_MAIL
-#: po/tmp/ap_String_Id.h.h:1548
+#: po/tmp/ap_String_Id.h.h:1578
 msgid "Mail Instructions:"
 msgstr "Arahan Mel:"
 
 #. FIELD_Application_MailMerge
 #. MENU_STATUSLINE_TOOLS_MAILMERGE
-#: po/tmp/ap_String_Id.h.h:1551
+#: po/tmp/ap_String_Id.h.h:1581
 msgid "Mail Merge"
 msgstr "Gabung Mel"
 
 #. MENU_STATUSLINE_FMT_BOLD
-#: po/tmp/ap_String_Id.h.h:1553
+#: po/tmp/ap_String_Id.h.h:1583
 msgid "Make the selection bold (toggle)"
 msgstr "Jadikan pilihan tebal (toggle)"
 
 #. MENU_STATUSLINE_FMT_ITALIC
-#: po/tmp/ap_String_Id.h.h:1555
+#: po/tmp/ap_String_Id.h.h:1585
 msgid "Make the selection italic (toggle)"
 msgstr "Jadikan pilihan italik (toggle)"
 
 #. MENU_STATUSLINE_FMT_SUBSCRIPT
-#: po/tmp/ap_String_Id.h.h:1557
+#: po/tmp/ap_String_Id.h.h:1587
 msgid "Make the selection subscript (toggle)"
 msgstr "Jadikan pilihan subskrip (toggle)"
 
 #. MENU_STATUSLINE_FMT_SUPERSCRIPT
-#: po/tmp/ap_String_Id.h.h:1559
+#: po/tmp/ap_String_Id.h.h:1589
 msgid "Make the selection superscript (toggle)"
 msgstr "Jadikan pilihan superskrip (toggle)"
 
 #. MENU_STATUSLINE_TOOLS_REVISIONS
-#: po/tmp/ap_String_Id.h.h:1561
+#: po/tmp/ap_String_Id.h.h:1591
 msgid "Manage changes in document"
 msgstr "Urus perubahan dalam dokumen"
 
 #. MENU_STATUSLINE_TOOLS_PLUGINS
-#: po/tmp/ap_String_Id.h.h:1563
+#: po/tmp/ap_String_Id.h.h:1593
 msgid "Manage plugins"
 msgstr "Urus plugin"
 
 #. DLG_MarkRevisions_Title
-#: po/tmp/ap_String_Id.h.h:1565
+#: po/tmp/ap_String_Id.h.h:1595
 msgid "Mark Revisions"
 msgstr "Tanda Semakan"
 
 #. MENU_STATUSLINE_TOOLS_REVISIONS_MARK
-#: po/tmp/ap_String_Id.h.h:1567
+#: po/tmp/ap_String_Id.h.h:1597
 msgid "Mark changes as you type"
 msgstr "Tanda perubahan ketika menaip"
 
 #. FIELD_PieceTable_MartinTest
-#: po/tmp/ap_String_Id.h.h:1569
+#: po/tmp/ap_String_Id.h.h:1599
 msgid "Martins Test"
 msgstr "Ujian Martins"
 
 #. DLG_Column_Size
-#: po/tmp/ap_String_Id.h.h:1571
+#: po/tmp/ap_String_Id.h.h:1601
 msgid "Max Column size"
 msgstr "Saiz Lajur maksimum"
 
 #. DLG_MergeCells_Above
-#: po/tmp/ap_String_Id.h.h:1573
+#: po/tmp/ap_String_Id.h.h:1603
 msgid "Merge Above"
 msgstr "Gabung Atas"
 
 #. DLG_MergeCells_Below
-#: po/tmp/ap_String_Id.h.h:1575
+#: po/tmp/ap_String_Id.h.h:1605
 msgid "Merge Below"
 msgstr "Gabung Bawah"
 
 #. DLG_MergeCellsTitle
 #. DLG_MergeCells_Frame
 #. MENU_STATUSLINE_TABLE_MERGE_CELLS
-#: po/tmp/ap_String_Id.h.h:1579
+#: po/tmp/ap_String_Id.h.h:1609
 msgid "Merge Cells"
 msgstr "Gabung Sel"
 
 #. DLG_MergeCells_Left
-#: po/tmp/ap_String_Id.h.h:1581
+#: po/tmp/ap_String_Id.h.h:1611
 msgid "Merge Left"
 msgstr "Gabung Kiri"
 
 #. DLG_MergeCells_Right
-#: po/tmp/ap_String_Id.h.h:1583
+#: po/tmp/ap_String_Id.h.h:1613
 msgid "Merge Right"
 msgstr "Gabung Kanan"
 
 #. TOOLBAR_LABEL_MERGEABOVE
-#: po/tmp/ap_String_Id.h.h:1585
+#: po/tmp/ap_String_Id.h.h:1615
 msgid "Merge above"
 msgstr "Gabung atas"
 
 #. MENU_STATUSLINE_TOOLS_REVISIONS_MERGE_DOCUMENTS
-#: po/tmp/ap_String_Id.h.h:1587
+#: po/tmp/ap_String_Id.h.h:1617
 msgid "Merge another document into the active document using revision marks"
 msgstr "Gabung dokumen lain kedalam dokumen aktif menggunakan penanda semakan"
 
 #. TOOLBAR_LABEL_MERGEBELOW
-#: po/tmp/ap_String_Id.h.h:1589
+#: po/tmp/ap_String_Id.h.h:1619
 msgid "Merge below"
 msgstr "Gabung bawah"
 
 #. TOOLBAR_LABEL_MERGE_CELLS
 #. TOOLBAR_STATUSLINE_MERGE_CELLS
 #. TOOLBAR_TOOLTIP_MERGE_CELLS
-#: po/tmp/ap_String_Id.h.h:1593
+#: po/tmp/ap_String_Id.h.h:1623
 msgid "Merge cells"
 msgstr "Gabung sel"
 
 #. TOOLBAR_LABEL_MERGELEFT
-#: po/tmp/ap_String_Id.h.h:1595
+#: po/tmp/ap_String_Id.h.h:1625
 msgid "Merge left"
 msgstr "Gabung kiri"
 
 #. TOOLBAR_LABEL_MERGERIGHT
-#: po/tmp/ap_String_Id.h.h:1597
+#: po/tmp/ap_String_Id.h.h:1627
 msgid "Merge right"
 msgstr "Gabung kanan"
 
 #. TOOLBAR_STATUSLINE_MERGEABOVE
 #. TOOLBAR_TOOLTIP_MERGEABOVE
-#: po/tmp/ap_String_Id.h.h:1600
+#: po/tmp/ap_String_Id.h.h:1630
 msgid "Merge with cell above"
 msgstr "Gabung dengan sel atas"
 
 #. TOOLBAR_STATUSLINE_MERGEBELOW
 #. TOOLBAR_TOOLTIP_MERGEBELOW
-#: po/tmp/ap_String_Id.h.h:1603
+#: po/tmp/ap_String_Id.h.h:1633
 msgid "Merge with cell below"
 msgstr "Gabung dengan sel bawah"
 
 #. TOOLBAR_STATUSLINE_MERGELEFT
 #. TOOLBAR_TOOLTIP_MERGELEFT
-#: po/tmp/ap_String_Id.h.h:1606
+#: po/tmp/ap_String_Id.h.h:1636
 msgid "Merge with left cell"
 msgstr "Gabung dengan sel kiri"
 
 #. TOOLBAR_STATUSLINE_MERGERIGHT
 #. TOOLBAR_TOOLTIP_MERGERIGHT
-#: po/tmp/ap_String_Id.h.h:1609
+#: po/tmp/ap_String_Id.h.h:1639
 msgid "Merge with right cell"
 msgstr "Gabung dengan sel kiri"
 
 #. FIELD_DateTime_MilTime
-#: po/tmp/ap_String_Id.h.h:1611
+#: po/tmp/ap_String_Id.h.h:1641
 msgid "Military Time"
 msgstr "Masa Tentera"
 
 #. DLG_Options_TabLabel_Misc
-#: po/tmp/ap_String_Id.h.h:1613
+#: po/tmp/ap_String_Id.h.h:1643
 msgid "Misc."
 msgstr "Lain-lain."
 
 #. DLG_Stylist_MiscStyles
-#: po/tmp/ap_String_Id.h.h:1615
+#: po/tmp/ap_String_Id.h.h:1645
 msgid "Miscellaneous Styles"
 msgstr "Lain-lain Gaya"
 
 #. DLG_Styles_ModifyTitle
-#: po/tmp/ap_String_Id.h.h:1617
+#: po/tmp/ap_String_Id.h.h:1647
 msgid "Modify Styles"
 msgstr "Ubahsuai Gaya"
 
 #. DLG_Styles_Modify
-#: po/tmp/ap_String_Id.h.h:1619
+#: po/tmp/ap_String_Id.h.h:1649
 msgid "Modify..."
 msgstr "Ubahsuai..."
 
 #. FIELD_DateTime_MonthDayYear
-#: po/tmp/ap_String_Id.h.h:1621
+#: po/tmp/ap_String_Id.h.h:1651
 msgid "Month Day, Year"
 msgstr "Bulan Hari, Tahun"
 
 #. MENU_STATUSLINE_EDIT_GOTO
-#: po/tmp/ap_String_Id.h.h:1623
+#: po/tmp/ap_String_Id.h.h:1653
 msgid "Move the insertion point to a specific location"
 msgstr "Pindah tempat kemasukan kepada lokasi spesifik"
 
 #. FIELD_DateTime_MthDayYear
-#: po/tmp/ap_String_Id.h.h:1625
+#: po/tmp/ap_String_Id.h.h:1655
 msgid "Mth. Day, Year"
 msgstr "Bln. Hari, Tahun"
 
 #. DLG_Para_SpacingMultiple
-#: po/tmp/ap_String_Id.h.h:1627
+#: po/tmp/ap_String_Id.h.h:1657
 msgid "Multiple"
 msgstr "Pelbagai"
 
 #. TOOLBAR_LABEL_FILE_NEW
-#: po/tmp/ap_String_Id.h.h:1629
+#: po/tmp/ap_String_Id.h.h:1659
 msgid "New"
 msgstr "Baru"
 
 #. DLG_NEW_Title
-#: po/tmp/ap_String_Id.h.h:1631
+#: po/tmp/ap_String_Id.h.h:1661
 msgid "New Document"
 msgstr "Dokumen Baru"
 
 #. DLG_Lists_New_List_Label
-#: po/tmp/ap_String_Id.h.h:1633
+#: po/tmp/ap_String_Id.h.h:1663
 msgid "New List Label"
 msgstr "Senarai Label Baru"
 
 #. DLG_Lists_New_List_Type
-#: po/tmp/ap_String_Id.h.h:1635
+#: po/tmp/ap_String_Id.h.h:1665
 msgid ""
 "New List \n"
 "Type"
@@ -3851,7 +3926,7 @@ msgstr ""
 "Baru"
 
 #. DLG_Lists_Starting_Value
-#: po/tmp/ap_String_Id.h.h:1637
+#: po/tmp/ap_String_Id.h.h:1667
 msgid ""
 "New Starting \n"
 "Value"
@@ -3860,27 +3935,32 @@ msgstr ""
 "Baru"
 
 #. DLG_Styles_NewTitle
-#: po/tmp/ap_String_Id.h.h:1639
+#: po/tmp/ap_String_Id.h.h:1669
 msgid "New Style"
 msgstr "Gaya Baru"
 
 #. DLG_Styles_New
-#: po/tmp/ap_String_Id.h.h:1641
+#: po/tmp/ap_String_Id.h.h:1671
 msgid "New..."
 msgstr "Baru..."
 
 #. DLG_Goto_Btn_Next
-#: po/tmp/ap_String_Id.h.h:1643
+#: po/tmp/ap_String_Id.h.h:1673
 msgid "Next >>"
 msgstr "Seterusnya >>"
 
 #. DLG_NEW_NoFile
-#: po/tmp/ap_String_Id.h.h:1645
+#: po/tmp/ap_String_Id.h.h:1675
 msgid "No File"
 msgstr "Tiada Fail"
 
+#. DLG_Lists_FoldingLevel0
+#: po/tmp/ap_String_Id.h.h:1677
+msgid "No Folding"
+msgstr "Tiada Gulungan"
+
 #. DLG_Styles_ErrNoStyle
-#: po/tmp/ap_String_Id.h.h:1647
+#: po/tmp/ap_String_Id.h.h:1679
 msgid ""
 "No Style selected \n"
 " so it cannot be modified"
@@ -3889,68 +3969,69 @@ msgstr ""
 " jadi ia tidak boleh diubahsuai"
 
 #. SCRIPT_NOSCRIPTS
-#: po/tmp/ap_String_Id.h.h:1649
+#: po/tmp/ap_String_Id.h.h:1681
 msgid "No scripts found"
 msgstr "Tiada skrip dijumpai"
 
+#. DLG_FormatTOC_None
 #. DLG_Styles_DefNone
 #. DLG_Lists_Type_none
-#: po/tmp/ap_String_Id.h.h:1652
+#: po/tmp/ap_String_Id.h.h:1685
 msgid "None"
 msgstr "Tiada"
 
 #. TOOLBAR_LABEL_PARA_0BEFORE
-#: po/tmp/ap_String_Id.h.h:1654
+#: po/tmp/ap_String_Id.h.h:1687
 msgid "None before"
 msgstr "Tiada sebelum"
 
 #. MENU_STATUSLINE_VIEW_NORMAL
-#: po/tmp/ap_String_Id.h.h:1656
+#: po/tmp/ap_String_Id.h.h:1689
 msgid "Normal View"
 msgstr "Lihat Normal"
 
 #. DLG_Spell_UnknownWord
-#: po/tmp/ap_String_Id.h.h:1658
+#: po/tmp/ap_String_Id.h.h:1691
 msgid "Not in dictionary&:"
 msgstr "Tiada dalam kamus&:"
 
 #. DLG_Stylist_FootnoteStyles
-#: po/tmp/ap_String_Id.h.h:1660
+#: po/tmp/ap_String_Id.h.h:1693
 msgid "Note Styles"
 msgstr "Gaya Nota"
 
 #. DLG_Column_Number_Cols
-#: po/tmp/ap_String_Id.h.h:1662
+#: po/tmp/ap_String_Id.h.h:1695
 msgid "Number of Columns"
 msgstr "Jumlah Lajur"
 
 #. FIELD_Numbers_PagesCount
-#: po/tmp/ap_String_Id.h.h:1664
+#: po/tmp/ap_String_Id.h.h:1697
 msgid "Number of Pages"
 msgstr "Jumlah Halaman"
 
 #. DLG_Column_Number
-#: po/tmp/ap_String_Id.h.h:1666
+#: po/tmp/ap_String_Id.h.h:1699
 msgid "Number of columns"
 msgstr "Jumlah lajur"
 
 #. DLG_InsertTable_NumCols
-#: po/tmp/ap_String_Id.h.h:1668
+#: po/tmp/ap_String_Id.h.h:1701
 msgid "Number of columns:"
 msgstr "Jumlah lajur:"
 
 #. DLG_InsertTable_NumRows
-#: po/tmp/ap_String_Id.h.h:1670
+#: po/tmp/ap_String_Id.h.h:1703
 msgid "Number of rows:"
 msgstr "Jumlah baris:"
 
 #. DLG_Lists_Type_numbered
-#: po/tmp/ap_String_Id.h.h:1672
+#: po/tmp/ap_String_Id.h.h:1705
 msgid "Numbered"
 msgstr "Bernombor"
 
 #. DLG_Lists_Numbered_List
-#: po/tmp/ap_String_Id.h.h:1674
+#: po/tmp/ap_String_Id.h.h:1707
 #: po/tmp/xap_String_Id.h.h:491
 msgid "Numbered List"
 msgstr "Senarai Bernombor"
@@ -3960,47 +4041,47 @@ msgstr "Senarai Bernombor"
 #. TOOLBAR_LABEL_LISTS_NUMBERS
 #. TOOLBAR_STATUSLINE_LISTS_NUMBERS
 #. TOOLBAR_TOOLTIP_LISTS_NUMBERS
-#: po/tmp/ap_String_Id.h.h:1680
+#: po/tmp/ap_String_Id.h.h:1713
 msgid "Numbering"
 msgstr "Pernomboran"
 
 #. FIELD_Type_Numbers
-#: po/tmp/ap_String_Id.h.h:1682
+#: po/tmp/ap_String_Id.h.h:1715
 msgid "Numbers"
 msgstr "Nombor"
 
 #. InsertModeFieldOVR
-#: po/tmp/ap_String_Id.h.h:1684
+#: po/tmp/ap_String_Id.h.h:1717
 msgid "OVR"
 msgstr "OVR"
 
 #. DLG_Column_One
-#: po/tmp/ap_String_Id.h.h:1686
+#: po/tmp/ap_String_Id.h.h:1719
 msgid "One"
 msgstr "Satu"
 
 #. MENU_LABEL_FILE_IMPORT
-#: po/tmp/ap_String_Id.h.h:1688
+#: po/tmp/ap_String_Id.h.h:1721
 msgid "Op&en Copy"
 msgstr "&Buka Salinan"
 
 #. TOOLBAR_LABEL_FILE_OPEN
-#: po/tmp/ap_String_Id.h.h:1690
+#: po/tmp/ap_String_Id.h.h:1723
 msgid "Open"
 msgstr "Buka"
 
 #. MENU_LABEL_OPEN_TEMPLATE
-#: po/tmp/ap_String_Id.h.h:1692
+#: po/tmp/ap_String_Id.h.h:1725
 msgid "Open Template"
 msgstr "Buka Template"
 
 #. MENU_STATUSLINE_FILE_IMPORT
-#: po/tmp/ap_String_Id.h.h:1694
+#: po/tmp/ap_String_Id.h.h:1727
 msgid "Open a document by making a copy"
 msgstr "Buka dokumen dengan membuat salinan"
 
 #. MENU_STATUSLINE_FILE_RECENT
-#: po/tmp/ap_String_Id.h.h:1696
+#: po/tmp/ap_String_Id.h.h:1729
 msgid "Open a recently used document"
 msgstr "Buka dokumen yang baru diguna"
 
@@ -4008,12 +4089,12 @@ msgstr "Buka dokumen yang baru diguna"
 #. MENU_STATUSLINE_FILE_OPEN
 #. TOOLBAR_STATUSLINE_FILE_OPEN
 #. TOOLBAR_TOOLTIP_FILE_OPEN
-#: po/tmp/ap_String_Id.h.h:1701
+#: po/tmp/ap_String_Id.h.h:1734
 msgid "Open an existing document"
 msgstr "Buka dokumen sedia ada"
 
 #. MENU_STATUSLINE_WINDOW_NEW
-#: po/tmp/ap_String_Id.h.h:1703
+#: po/tmp/ap_String_Id.h.h:1736
 msgid "Open another window for the document"
 msgstr "Buka tetingkap lain untuk dokumen"
 
@@ -4026,22 +4107,22 @@ msgstr "Buka tetingkap lain untuk dokumen"
 #. MENU_STATUSLINE_FILE_RECENT_7
 #. MENU_STATUSLINE_FILE_RECENT_8
 #. MENU_STATUSLINE_FILE_RECENT_9
-#: po/tmp/ap_String_Id.h.h:1713
+#: po/tmp/ap_String_Id.h.h:1746
 msgid "Open this document"
 msgstr "Buka dokumen ini"
 
 #. DLG_PageSetup_Orient
-#: po/tmp/ap_String_Id.h.h:1715
+#: po/tmp/ap_String_Id.h.h:1748
 msgid "Orientation..."
 msgstr "Orientasi..."
 
 #. DLG_Options_TabLabel_Other
-#: po/tmp/ap_String_Id.h.h:1717
+#: po/tmp/ap_String_Id.h.h:1750
 msgid "Other"
 msgstr "Lain-lain"
 
 #. MSG_IE_NoMemory
-#: po/tmp/ap_String_Id.h.h:1719
+#: po/tmp/ap_String_Id.h.h:1752
 #, c-format
 msgid "Out of memory attempting to open %s"
 msgstr "Kehabisan memori ketika mencuba membuka %s"
@@ -4049,210 +4130,209 @@ msgstr "Kehabisan memori ketika mencuba membuka %s"
 #. TOOLBAR_LABEL_FMT_OVERLINE
 #. TOOLBAR_STATUSLINE_FMT_OVERLINE
 #. TOOLBAR_TOOLTIP_FMT_OVERLINE
-#: po/tmp/ap_String_Id.h.h:1723
+#: po/tmp/ap_String_Id.h.h:1756
 #: po/tmp/xap_String_Id.h.h:505
 msgid "Overline"
 msgstr "Barisatas"
 
 #. MENU_STATUSLINE_FMT_OVERLINE
-#: po/tmp/ap_String_Id.h.h:1725
+#: po/tmp/ap_String_Id.h.h:1758
 msgid "Overline the selection (toggle)"
 msgstr "Barisatas pilihan (toggle)"
 
 #. MENU_LABEL_FILE_PROPERTIES
-#: po/tmp/ap_String_Id.h.h:1727
+#: po/tmp/ap_String_Id.h.h:1760
 msgid "P&roperties"
 msgstr "Ci&ri-ciri"
 
 #. AUTOTEXT_MAIL_3
-#: po/tmp/ap_String_Id.h.h:1729
+#: po/tmp/ap_String_Id.h.h:1762
 msgid "PERSONAL"
 msgstr "PERSENDIRIAN"
 
 #. MENU_LABEL_EDIT_PASTE_SPECIAL
-#: po/tmp/ap_String_Id.h.h:1731
+#: po/tmp/ap_String_Id.h.h:1764
 msgid "Pa&ste Unformatted"
 msgstr "&Tampal Tanpa Format"
 
 #. DLG_Goto_Target_Page
 #. DLG_PageSetup_Page
-#: po/tmp/ap_String_Id.h.h:1734
+#: po/tmp/ap_String_Id.h.h:1767
 msgid "Page"
 msgstr "Halaman"
 
 #. DLG_Para_PushPageBreakBefore
-#: po/tmp/ap_String_Id.h.h:1736
+#: po/tmp/ap_String_Id.h.h:1769
 msgid "Page &break before"
 msgstr "Pecahan halaman se&belum"
 
 #. MENU_LABEL_FMT_BACKGROUND
-#: po/tmp/ap_String_Id.h.h:1738
+#: po/tmp/ap_String_Id.h.h:1771
 msgid "Page Background"
 msgstr "Latarbelakang Halaman"
 
 #. MENU_LABEL_FMT_BACKGROUND_PAGE_COLOR
-#: po/tmp/ap_String_Id.h.h:1740
+#: po/tmp/ap_String_Id.h.h:1773
 msgid "Page C&olor"
 msgstr "Warna Halaman"
 
 #. MENU_LABEL_FMT_BACKGROUND_PAGE_IMAGE
-#: po/tmp/ap_String_Id.h.h:1742
+#: po/tmp/ap_String_Id.h.h:1775
 msgid "Page Image"
 msgstr "Imej Halaman"
 
 #. MENU_LABEL_INSERT_PAGENO
-#: po/tmp/ap_String_Id.h.h:1744
+#: po/tmp/ap_String_Id.h.h:1777
 msgid "Page N&umbers"
 msgstr "&Nombor Halaman"
 
-#. DLG_FormatTOC_PageNumber
 #. FIELD_Numbers_PageNumber
-#: po/tmp/ap_String_Id.h.h:1747
+#: po/tmp/ap_String_Id.h.h:1779
 msgid "Page Number"
 msgstr "Nombor Halaman"
 
 #. DLG_HdrFtr_PageNumberProperties
-#: po/tmp/ap_String_Id.h.h:1749
+#: po/tmp/ap_String_Id.h.h:1781
 msgid "Page Number Properties"
 msgstr "Ciri-ciri Nombor Halaman"
 
 #. DLG_PageNumbers_Title
-#: po/tmp/ap_String_Id.h.h:1751
+#: po/tmp/ap_String_Id.h.h:1783
 msgid "Page Numbers"
 msgstr "Nombor Halaman"
 
 #. FIELD_Numbers_PageReference
-#: po/tmp/ap_String_Id.h.h:1753
+#: po/tmp/ap_String_Id.h.h:1785
 msgid "Page Reference"
 msgstr "Rujukan Halaman"
 
 #. MENU_LABEL_FILE_PAGESETUP
-#: po/tmp/ap_String_Id.h.h:1755
+#: po/tmp/ap_String_Id.h.h:1787
 msgid "Page Set&up"
 msgstr "&Tetapan Halaman"
 
 #. DLG_PageSetup_Title
-#: po/tmp/ap_String_Id.h.h:1757
+#: po/tmp/ap_String_Id.h.h:1789
 msgid "Page Setup"
 msgstr "Tetapan Halaman"
 
 #. PageInfoField
-#: po/tmp/ap_String_Id.h.h:1759
+#: po/tmp/ap_String_Id.h.h:1791
 #, c-format
 msgid "Page: %d/%d"
 msgstr "Halaman: %d/%d"
 
 #. DLG_WordCount_Pages
-#: po/tmp/ap_String_Id.h.h:1761
+#: po/tmp/ap_String_Id.h.h:1793
 msgid "Pages:"
 msgstr "Halaman:"
 
 #. DLG_Para_LabelPagination
-#: po/tmp/ap_String_Id.h.h:1763
+#: po/tmp/ap_String_Id.h.h:1795
 msgid "Pagination"
 msgstr "Pagination"
 
 #. DLG_PageSetup_Paper_Size
-#: po/tmp/ap_String_Id.h.h:1765
+#: po/tmp/ap_String_Id.h.h:1797
 msgid "Paper Si&ze:"
 msgstr "Sai&z Kertas:"
 
 #. DLG_PageSetup_Paper
-#: po/tmp/ap_String_Id.h.h:1767
+#: po/tmp/ap_String_Id.h.h:1799
 msgid "Paper..."
 msgstr "Kertas..."
 
 #. DLG_Styles_ModifyParagraph
 #. DLG_Para_ParaTitle
-#: po/tmp/ap_String_Id.h.h:1770
+#: po/tmp/ap_String_Id.h.h:1802
 msgid "Paragraph"
 msgstr "Perenggan"
 
 #. FIELD_Numbers_ParaCount
-#: po/tmp/ap_String_Id.h.h:1772
+#: po/tmp/ap_String_Id.h.h:1804
 msgid "Paragraph Count"
 msgstr "Kiraan Perenggan"
 
 #. TOOLBAR_LABEL_FMT_DOM_DIRECTION
-#: po/tmp/ap_String_Id.h.h:1774
+#: po/tmp/ap_String_Id.h.h:1806
 msgid "Paragraph Direction"
 msgstr "Arah Perenggan"
 
 #. DLG_Styles_ParaPrev
-#: po/tmp/ap_String_Id.h.h:1776
+#: po/tmp/ap_String_Id.h.h:1808
 msgid "Paragraph Preview"
 msgstr "Pralihat Perenggan"
 
 #. DLG_WordCount_Paragraphs
-#: po/tmp/ap_String_Id.h.h:1778
+#: po/tmp/ap_String_Id.h.h:1810
 msgid "Paragraphs:"
 msgstr "Perenggan:"
 
 #. WORD_PassRequired
-#: po/tmp/ap_String_Id.h.h:1780
+#: po/tmp/ap_String_Id.h.h:1812
 msgid "Password required, this is an encrypted document"
 msgstr "Katalaluan diperlukan, ini adalah dokumen yang dienkrip"
 
 #. TOOLBAR_LABEL_EDIT_PASTE
 #. TOOLBAR_STATUSLINE_EDIT_PASTE
 #. TOOLBAR_TOOLTIP_EDIT_PASTE
-#: po/tmp/ap_String_Id.h.h:1784
+#: po/tmp/ap_String_Id.h.h:1816
 msgid "Paste"
 msgstr "Tampal"
 
 #. DLG_MetaData_TAB_Permission
-#: po/tmp/ap_String_Id.h.h:1786
+#: po/tmp/ap_String_Id.h.h:1818
 msgid "Permissions"
 msgstr "Kebenaran"
 
 #. DLG_Goto_Target_Picture
-#: po/tmp/ap_String_Id.h.h:1788
+#: po/tmp/ap_String_Id.h.h:1820
 msgid "Picture"
 msgstr "Gambar"
 
 #. FIELD_Type_PieceTable
-#: po/tmp/ap_String_Id.h.h:1790
+#: po/tmp/ap_String_Id.h.h:1822
 msgid "Piece Table"
 msgstr "Cantum Jadual"
 
 #. DLG_FormatFootnotes_EndPlaceEndDoc
-#: po/tmp/ap_String_Id.h.h:1792
+#: po/tmp/ap_String_Id.h.h:1824
 msgid "Place at end of document"
 msgstr "Letak di penghujung dokumen"
 
 #. DLG_FormatFootnotes_EndPlaceEndSec
-#: po/tmp/ap_String_Id.h.h:1794
+#: po/tmp/ap_String_Id.h.h:1826
 msgid "Place at end of section"
 msgstr "Letak di penghujung seksyen"
 
 #. DLG_FormatFootnotes_EndPlacement
-#: po/tmp/ap_String_Id.h.h:1796
+#: po/tmp/ap_String_Id.h.h:1828
 msgid "Placement"
 msgstr "Kedudukan"
 
 #. DLG_PageNumbers_Position_No_Colon
-#: po/tmp/ap_String_Id.h.h:1798
+#: po/tmp/ap_String_Id.h.h:1830
 msgid "Position"
 msgstr "Kedudukan"
 
 #. DLG_PageNumbers_Position
-#: po/tmp/ap_String_Id.h.h:1800
+#: po/tmp/ap_String_Id.h.h:1832
 msgid "Position:"
 msgstr "Kedudukan:"
 
 #. MENU_LABEL_TOOLS_OPTIONS
-#: po/tmp/ap_String_Id.h.h:1802
+#: po/tmp/ap_String_Id.h.h:1834
 msgid "Pr&eferences"
 msgstr "K&eutamaan"
 
 #. DLG_Options_TabLabel_Preferences
 #. DLG_Options_Label_Schemes
-#: po/tmp/ap_String_Id.h.h:1805
+#: po/tmp/ap_String_Id.h.h:1837
 msgid "Preference Schemes"
 msgstr "Skim Keutamaan"
 
 #. DLG_Options_OptionsTitle
-#: po/tmp/ap_String_Id.h.h:1807
+#: po/tmp/ap_String_Id.h.h:1839
 msgid "Preferences"
 msgstr "Keutamaan"
 
@@ -4263,172 +4343,172 @@ msgstr "Keutamaan"
 #. DLG_FormatTable_Preview
 #. DLG_Lists_Preview
 #. DLG_PageNumbers_Preview
-#: po/tmp/ap_String_Id.h.h:1815
+#: po/tmp/ap_String_Id.h.h:1847
 #: po/tmp/xap_String_Id.h.h:529
 msgid "Preview"
 msgstr "Pralihat"
 
 #. MENU_STATUSLINE_WEB_WEBPREVIEW
 #. MENU_STATUSLINE_WEB_SAVEASWEB
-#: po/tmp/ap_String_Id.h.h:1818
+#: po/tmp/ap_String_Id.h.h:1850
 msgid "Preview the document as a web page"
 msgstr "Pralihat dokumen sebagai laman web"
 
 #. MENU_STATUSLINE_FILE_PRINT_PREVIEW
 #. TOOLBAR_STATUSLINE_FILE_PRINT_PREVIEW
 #. TOOLBAR_TOOLTIP_FILE_PRINT_PREVIEW
-#: po/tmp/ap_String_Id.h.h:1822
+#: po/tmp/ap_String_Id.h.h:1854
 msgid "Preview the document before printing"
 msgstr "Pralihat dokumen sebelum mencetak"
 
 #. DLG_Para_PreviewPrevParagraph
-#: po/tmp/ap_String_Id.h.h:1824
+#: po/tmp/ap_String_Id.h.h:1856
 msgid "Previous Paragraph Previous Paragraph Previous Paragraph Previous Paragraph Previous Paragraph Previous Paragraph Previous Paragraph"
 msgstr "Perenggan Terdahulu Perenggan Terdahulu Perenggan Terdahulu Perenggan Terdahulu Perenggan Terdahulu Perenggan Terdahulu Perenggan Terdahulu"
 
 #. TOOLBAR_LABEL_FILE_PRINT
-#: po/tmp/ap_String_Id.h.h:1826
+#: po/tmp/ap_String_Id.h.h:1858
 #: po/tmp/xap_String_Id.h.h:534
 msgid "Print"
 msgstr "Cetak"
 
 #. MENU_LABEL_FILE_PRINT_DIRECTLY
-#: po/tmp/ap_String_Id.h.h:1828
+#: po/tmp/ap_String_Id.h.h:1860
 msgid "Print &directly"
 msgstr "&Cetak terus"
 
 #. MENU_STATUSLINE_VIEW_PRINT
-#: po/tmp/ap_String_Id.h.h:1830
+#: po/tmp/ap_String_Id.h.h:1862
 msgid "Print Layout"
 msgstr "Susunatur Cetakan"
 
 #. MENU_LABEL_FILE_PRINT_PREVIEW
-#: po/tmp/ap_String_Id.h.h:1832
+#: po/tmp/ap_String_Id.h.h:1864
 msgid "Print P&review"
 msgstr "P&ralihat Cetakan"
 
 #. TOOLBAR_LABEL_FILE_PRINT_PREVIEW
-#: po/tmp/ap_String_Id.h.h:1834
+#: po/tmp/ap_String_Id.h.h:1866
 msgid "Print Preview"
 msgstr "Pralihat Cetakan"
 
 #. MENU_STATUSLINE_FILE_PRINT
-#: po/tmp/ap_String_Id.h.h:1836
+#: po/tmp/ap_String_Id.h.h:1868
 msgid "Print all or part of the document"
 msgstr "Cetak semua atau sebahagian daripada dokumen"
 
 #. TOOLBAR_STATUSLINE_FILE_PRINT
 #. TOOLBAR_TOOLTIP_FILE_PRINT
-#: po/tmp/ap_String_Id.h.h:1839
+#: po/tmp/ap_String_Id.h.h:1871
 msgid "Print the document"
 msgstr "Cetak dokumen"
 
 #. MENU_STATUSLINE_FILE_PRINT_DIRECTLY
-#: po/tmp/ap_String_Id.h.h:1841
+#: po/tmp/ap_String_Id.h.h:1873
 msgid "Print using the internal PS driver"
 msgstr "Cetak menggunakan pemandu PS terbinadalam"
 
 #. MSG_PrintingDoc
-#: po/tmp/ap_String_Id.h.h:1843
+#: po/tmp/ap_String_Id.h.h:1875
 msgid "Printing Document.."
 msgstr "Cetak Dokumen..."
 
 #. MSG_PrintStatus
-#: po/tmp/ap_String_Id.h.h:1845
+#: po/tmp/ap_String_Id.h.h:1877
 #, c-format
 msgid "Printing page %d of %d"
 msgstr "Mencetak halaman %d daripada %d"
 
 #. FIELD_Document_Publisher
-#: po/tmp/ap_String_Id.h.h:1847
+#: po/tmp/ap_String_Id.h.h:1879
 msgid "Publisher"
 msgstr "Penerbit"
 
 #. DLG_MetaData_Publisher_LBL
-#: po/tmp/ap_String_Id.h.h:1849
+#: po/tmp/ap_String_Id.h.h:1881
 msgid "Publisher:"
 msgstr "Penerbit:"
 
 #. MENU_LABEL_EDIT_REPLACE
-#: po/tmp/ap_String_Id.h.h:1851
+#: po/tmp/ap_String_Id.h.h:1883
 msgid "R&eplace"
 msgstr "&Ganti"
 
 #. AUTOTEXT_REFERENCE_2
-#: po/tmp/ap_String_Id.h.h:1853
+#: po/tmp/ap_String_Id.h.h:1885
 msgid "RE:"
 msgstr "RE:"
 
 #. AUTOTEXT_MAIL_4
-#: po/tmp/ap_String_Id.h.h:1855
+#: po/tmp/ap_String_Id.h.h:1887
 msgid "REGISTERED MAIL"
 msgstr "SURAT BERDAFTAR"
 
 #. MENU_LABEL_FMT_DIRECTION_DD_RTL
-#: po/tmp/ap_String_Id.h.h:1857
+#: po/tmp/ap_String_Id.h.h:1889
 msgid "RTL &Paragraph"
 msgstr "&Perenggan RTL"
 
 #. DLG_FR_ReplaceWithLabel
-#: po/tmp/ap_String_Id.h.h:1859
+#: po/tmp/ap_String_Id.h.h:1891
 msgid "Re&place with:"
 msgstr "&Ganti dengan:"
 
 #. DLG_FR_ReverseFind
-#: po/tmp/ap_String_Id.h.h:1861
+#: po/tmp/ap_String_Id.h.h:1893
 msgid "Re&verse find"
 msgstr "Carian undur"
 
 #. MENU_LABEL_FILE_REVERT
-#: po/tmp/ap_String_Id.h.h:1863
+#: po/tmp/ap_String_Id.h.h:1895
 msgid "Re&vert"
 msgstr "&Berbalik"
 
 #. MENU_LABEL_FILE_RECENT
-#: po/tmp/ap_String_Id.h.h:1865
+#: po/tmp/ap_String_Id.h.h:1897
 msgid "Recent &Files"
 msgstr "&Fail Terbaru"
 
 #. TOOLBAR_LABEL_EDIT_REDO
-#: po/tmp/ap_String_Id.h.h:1867
+#: po/tmp/ap_String_Id.h.h:1899
 msgid "Redo"
 msgstr "Buat semula"
 
 #. TOOLBAR_STATUSLINE_EDIT_REDO
 #. TOOLBAR_TOOLTIP_EDIT_REDO
-#: po/tmp/ap_String_Id.h.h:1870
+#: po/tmp/ap_String_Id.h.h:1902
 msgid "Redo editing"
 msgstr "Buat semula suntingan"
 
 #. MENU_STATUSLINE_EDIT_REDO
-#: po/tmp/ap_String_Id.h.h:1872
+#: po/tmp/ap_String_Id.h.h:1904
 msgid "Redo previously undone editing"
 msgstr "Buat semula suntingan yang belum siap sebelumnya"
 
 #. MENU_STATUSLINE_VIEW_ZOOM_MENU
 #. MENU_STATUSLINE_VIEW_ZOOM
-#: po/tmp/ap_String_Id.h.h:1875
+#: po/tmp/ap_String_Id.h.h:1907
 msgid "Reduce or enlarge the document display"
 msgstr "Kecil atau besarkan paparan dokumen"
 
 #. AUTOTEXT_REFERENCE_3
 #. MENU_LABEL_AUTOTEXT_REFERENCE
-#: po/tmp/ap_String_Id.h.h:1878
+#: po/tmp/ap_String_Id.h.h:1910
 msgid "Reference:"
 msgstr "Rujukan:"
 
 #. AUTOTEXT_CLOSING_5
-#: po/tmp/ap_String_Id.h.h:1880
+#: po/tmp/ap_String_Id.h.h:1912
 msgid "Regards,"
 msgstr "Salam,"
 
 #. DLG_MetaData_Relation_LBL
-#: po/tmp/ap_String_Id.h.h:1882
+#: po/tmp/ap_String_Id.h.h:1914
 msgid "Relation:"
 msgstr "Kaitan:"
 
 #. DLG_Styles_RemoveButton
-#: po/tmp/ap_String_Id.h.h:1884
+#: po/tmp/ap_String_Id.h.h:1916
 msgid "Remove"
 msgstr "Buang"
 
@@ -4436,7 +4516,7 @@ msgstr "Buang"
 #. TOOLBAR_LABEL_EDIT_REMOVEFOOTER
 #. TOOLBAR_STATUSLINE_EDIT_REMOVEFOOTER
 #. TOOLBAR_TOOLTIP_EDIT_REMOVEFOOTER
-#: po/tmp/ap_String_Id.h.h:1889
+#: po/tmp/ap_String_Id.h.h:1921
 msgid "Remove Footer"
 msgstr "Buang Footer"
 
@@ -4444,135 +4524,135 @@ msgstr "Buang Footer"
 #. TOOLBAR_LABEL_EDIT_REMOVEHEADER
 #. TOOLBAR_STATUSLINE_EDIT_REMOVEHEADER
 #. TOOLBAR_TOOLTIP_EDIT_REMOVEHEADER
-#: po/tmp/ap_String_Id.h.h:1894
+#: po/tmp/ap_String_Id.h.h:1926
 msgid "Remove Header"
 msgstr "Buang Header"
 
 #. DLG_Styles_RemoveLab
-#: po/tmp/ap_String_Id.h.h:1896
+#: po/tmp/ap_String_Id.h.h:1928
 msgid "Remove Property from Style"
 msgstr "Buang Ciri-ciri daripada Gaya"
 
 #. MENU_STATUSLINE_EDIT_REMOVEFOOTER
-#: po/tmp/ap_String_Id.h.h:1898
+#: po/tmp/ap_String_Id.h.h:1930
 msgid "Remove the Footer on this page from the Document"
 msgstr "Buang Footer pada halaman ini daripada Dokumen"
 
 #. MENU_STATUSLINE_EDIT_REMOVEHEADER
-#: po/tmp/ap_String_Id.h.h:1900
+#: po/tmp/ap_String_Id.h.h:1932
 msgid "Remove the Header on this page from the Document"
 msgstr "Buang Header pada halaman ini daripada Dokumen"
 
 #. MENU_STATUSLINE_EDIT_DELETEFRAME
-#: po/tmp/ap_String_Id.h.h:1902
+#: po/tmp/ap_String_Id.h.h:1934
 msgid "Remove the Text Box from the Document"
 msgstr "Buang Kekotak Teks daripada Dokumen"
 
 #. MENU_STATUSLINE_TOOLS_REVISIONS_REJECT_REVISION
-#: po/tmp/ap_String_Id.h.h:1904
+#: po/tmp/ap_String_Id.h.h:1936
 msgid "Remove the suggested change"
 msgstr "Buang perubahan yang dicadangkan"
 
 #. MENU_LABEL_TABLE_HEADING_ROWS_REPEAT
 #. MENU_STATUSLINE_TABLE_HEADING_ROWS_REPEAT
-#: po/tmp/ap_String_Id.h.h:1907
+#: po/tmp/ap_String_Id.h.h:1939
 msgid "Repeat Row as Heading"
 msgstr "Ulang Baris sebagai Heading"
 
 #. DLG_FR_ReplaceTitle
-#: po/tmp/ap_String_Id.h.h:1909
+#: po/tmp/ap_String_Id.h.h:1941
 msgid "Replace"
 msgstr "Ganti"
 
 #. DLG_FR_ReplaceAllButton
-#: po/tmp/ap_String_Id.h.h:1911
+#: po/tmp/ap_String_Id.h.h:1943
 msgid "Replace &All"
 msgstr "G&anti Semua"
 
 #. MENU_STATUSLINE_EDIT_REPLACE
-#: po/tmp/ap_String_Id.h.h:1913
+#: po/tmp/ap_String_Id.h.h:1945
 msgid "Replace the specified text with different text"
 msgstr "Ganti teks dinyatakan dengan teks berlainan"
 
 #. MENU_LABEL_HELP_REPORT_BUG
-#: po/tmp/ap_String_Id.h.h:1915
+#: po/tmp/ap_String_Id.h.h:1947
 msgid "Report a &Bug"
 msgstr "&Lapor Pepijat"
 
 #. MENU_STATUSLINE_HELP_REPORT_BUG
-#: po/tmp/ap_String_Id.h.h:1917
+#: po/tmp/ap_String_Id.h.h:1949
 msgid "Report a bug and help AbiWord become a better product"
 msgstr "Lapor pepijat dan bantu Abiword menjadi produk yang lebih baik"
 
 #. MENU_STATUSLINE_VIEW_DEFAULT_TB_LAYOUT
-#: po/tmp/ap_String_Id.h.h:1919
+#: po/tmp/ap_String_Id.h.h:1951
 msgid "Reset the current toolbar layout to its defaults"
 msgstr "Ulangtetap susunatur bar alat semasa kepada asal"
 
 #. MENU_STATUSLINE_FMT_IMAGE
-#: po/tmp/ap_String_Id.h.h:1921
+#: po/tmp/ap_String_Id.h.h:1953
 msgid "Resize this image"
 msgstr "Ubahsaiz imej ini"
 
 #. AUTOTEXT_CLOSING_6
-#: po/tmp/ap_String_Id.h.h:1923
+#: po/tmp/ap_String_Id.h.h:1955
 msgid "Respectfully yours,"
 msgstr "Dengan hormatnya,"
 
 #. AUTOTEXT_CLOSING_7
-#: po/tmp/ap_String_Id.h.h:1925
+#: po/tmp/ap_String_Id.h.h:1957
 msgid "Respectfully,"
 msgstr "Yang dihormati,"
 
 #. DLG_HdrFtr_RestartNumbers
-#: po/tmp/ap_String_Id.h.h:1927
+#: po/tmp/ap_String_Id.h.h:1959
 msgid "Restart numbering at:"
 msgstr "Ulangmula nombor pada:"
 
 #. DLG_FormatFootnotes_FootRestartPage
-#: po/tmp/ap_String_Id.h.h:1929
+#: po/tmp/ap_String_Id.h.h:1961
 msgid "Restart on each page"
 msgstr "Ulangmula pada setiap halaman"
 
 #. DLG_FormatFootnotes_FootRestartSec
 #. DLG_FormatFootnotes_EndRestartSec
-#: po/tmp/ap_String_Id.h.h:1932
+#: po/tmp/ap_String_Id.h.h:1964
 msgid "Restart on each section"
 msgstr "Ulangmula pada setiap seksyen"
 
 #. DLG_HdrFtr_RestartCheck
-#: po/tmp/ap_String_Id.h.h:1934
+#: po/tmp/ap_String_Id.h.h:1966
 msgid "Restart page numbers on new sections"
 msgstr "Ulangmula nombor halaman pada seksyen baru"
 
 #. DLG_Lists_Resume_Previous_List
-#: po/tmp/ap_String_Id.h.h:1936
+#: po/tmp/ap_String_Id.h.h:1968
 msgid "Resume Previous List"
 msgstr "Sambung Senarai Terdahulu"
 
 #. MENU_STATUSLINE_TOOLS_REVISIONS_AUTO
-#: po/tmp/ap_String_Id.h.h:1938
+#: po/tmp/ap_String_Id.h.h:1970
 msgid "Retain all document changes"
 msgstr "Kekalkan semua perubahan dokumen"
 
 #. MSG_RevertFile
-#: po/tmp/ap_String_Id.h.h:1940
+#: po/tmp/ap_String_Id.h.h:1972
 msgid "Revert file to last unsaved state?"
 msgstr "Berbalik fail kepada keadaan akhir tidak disimpan?"
 
 #. MENU_STATUSLINE_FILE_REVERT
-#: po/tmp/ap_String_Id.h.h:1942
+#: po/tmp/ap_String_Id.h.h:1974
 msgid "Revert the document to the last saved state"
 msgstr "Berbalik dokumen kepada keadaan akhir tidak disimpan"
 
 #. MSG_RevertBuffer
-#: po/tmp/ap_String_Id.h.h:1944
+#: po/tmp/ap_String_Id.h.h:1976
 #, c-format
 msgid "Revert to saved copy of %s?"
 msgstr "Berbalik kepada salinan disimpan %s?"
 
 #. DLG_ListRevisions_Column1Label
-#: po/tmp/ap_String_Id.h.h:1946
+#: po/tmp/ap_String_Id.h.h:1978
 msgid "Revision ID"
 msgstr "ID Rujukan"
 
@@ -4580,125 +4660,125 @@ msgstr "ID Rujukan"
 #. DLG_Tab_Radio_Right
 #. DLG_PageNumbers_Right
 #. TOOLBAR_LABEL_ALIGN_RIGHT
-#: po/tmp/ap_String_Id.h.h:1951
+#: po/tmp/ap_String_Id.h.h:1983
 msgid "Right"
 msgstr "Kanan"
 
 #. RightIndentStatus
-#: po/tmp/ap_String_Id.h.h:1953
+#: po/tmp/ap_String_Id.h.h:1985
 #, c-format
 msgid "Right Indent [%s]"
 msgstr "Indent Kanan [%s]"
 
 #. RightMarginStatus
-#: po/tmp/ap_String_Id.h.h:1955
+#: po/tmp/ap_String_Id.h.h:1987
 #, c-format
 msgid "Right Margin [%s]"
 msgstr "Margin Kanan [%s]"
 
 #. TabToggleRightTab
-#: po/tmp/ap_String_Id.h.h:1957
+#: po/tmp/ap_String_Id.h.h:1989
 msgid "Right Tab"
 msgstr "Tab Kanan"
 
 #. TOOLBAR_STATUSLINE_ALIGN_RIGHT
 #. TOOLBAR_TOOLTIP_ALIGN_RIGHT
-#: po/tmp/ap_String_Id.h.h:1960
+#: po/tmp/ap_String_Id.h.h:1992
 msgid "Right alignment"
 msgstr "Jajaran kanan"
 
 #. MENU_STATUSLINE_ALIGN_RIGHT
-#: po/tmp/ap_String_Id.h.h:1962
+#: po/tmp/ap_String_Id.h.h:1994
 msgid "Right-align the paragraph"
 msgstr "Jajar kanan perenggan"
 
 #. DLG_Para_DomDirection
-#: po/tmp/ap_String_Id.h.h:1964
+#: po/tmp/ap_String_Id.h.h:1996
 msgid "Right-to-left &dominant"
 msgstr "&Dominan kanan-ke-kiri"
 
 #. FIELD_Document_Rights
-#: po/tmp/ap_String_Id.h.h:1966
+#: po/tmp/ap_String_Id.h.h:1998
 msgid "Rights"
 msgstr "Kanan"
 
 #. DLG_MetaData_Rights_LBL
-#: po/tmp/ap_String_Id.h.h:1968
+#: po/tmp/ap_String_Id.h.h:2000
 msgid "Rights:"
 msgstr "Kanan:"
 
 #. DLG_FormatTable_Apply_To_Row
-#: po/tmp/ap_String_Id.h.h:1970
+#: po/tmp/ap_String_Id.h.h:2002
 msgid "Row"
 msgstr "Baris"
 
 #. MENU_LABEL_TABLE_INSERT_ROWS_BEFORE
-#: po/tmp/ap_String_Id.h.h:1972
+#: po/tmp/ap_String_Id.h.h:2004
 msgid "Rows &Above"
 msgstr "Baris &Atas"
 
 #. MENU_LABEL_TABLE_INSERT_ROWS_AFTER
-#: po/tmp/ap_String_Id.h.h:1974
+#: po/tmp/ap_String_Id.h.h:2006
 msgid "Rows &Below"
 msgstr "Baris &Bawah"
 
 #. MENU_LABEL_TOOLS_SCRIPTS
-#: po/tmp/ap_String_Id.h.h:1976
+#: po/tmp/ap_String_Id.h.h:2008
 msgid "S&cripts"
 msgstr "&Skrip"
 
 #. MENU_LABEL_TOOLS_REVISIONS_SHOW
-#: po/tmp/ap_String_Id.h.h:1978
+#: po/tmp/ap_String_Id.h.h:2010
 msgid "S&how revisions"
 msgstr "Papar semakan"
 
 #. MENU_LABEL_TABLE_SPLIT_CELLS
-#: po/tmp/ap_String_Id.h.h:1980
+#: po/tmp/ap_String_Id.h.h:2012
 msgid "S&plit Cells"
 msgstr "&Pisah Sel"
 
 #. AUTOTEXT_MAIL_5
-#: po/tmp/ap_String_Id.h.h:1982
+#: po/tmp/ap_String_Id.h.h:2014
 msgid "SPECIAL DELIVERY"
 msgstr "PENGHANTARAN ISTIMEWA"
 
 #. DLG_Options_Btn_Save
-#: po/tmp/ap_String_Id.h.h:1984
+#: po/tmp/ap_String_Id.h.h:2016
 msgid "Sa&ve"
 msgstr "&Simpan"
 
 #. MENU_LABEL_AUTOTEXT_SALUTATION
-#: po/tmp/ap_String_Id.h.h:1986
+#: po/tmp/ap_String_Id.h.h:2018
 msgid "Salutation:"
 msgstr "Penghormatan:"
 
 #. MENU_LABEL_FILE_EXPORT
-#: po/tmp/ap_String_Id.h.h:1988
+#: po/tmp/ap_String_Id.h.h:2020
 msgid "Sav&e Copy"
 msgstr "Simpan Salinan"
 
 #. TOOLBAR_LABEL_FILE_SAVE
-#: po/tmp/ap_String_Id.h.h:1990
+#: po/tmp/ap_String_Id.h.h:2022
 msgid "Save"
 msgstr "Simpan"
 
 #. MENU_LABEL_FILE_SAVEAS
-#: po/tmp/ap_String_Id.h.h:1992
+#: po/tmp/ap_String_Id.h.h:2024
 msgid "Save &As"
 msgstr "Simp&an Sebagai"
 
 #. MENU_LABEL_FILE_SAVE_TEMPLATE
-#: po/tmp/ap_String_Id.h.h:1994
+#: po/tmp/ap_String_Id.h.h:2026
 msgid "Save &Template"
 msgstr "Simpan &Template"
 
 #. TOOLBAR_LABEL_FILE_SAVEAS
-#: po/tmp/ap_String_Id.h.h:1996
+#: po/tmp/ap_String_Id.h.h:2028
 msgid "Save As"
 msgstr "Simpan Sebagai"
 
 #. MSG_ConfirmSave
-#: po/tmp/ap_String_Id.h.h:1998
+#: po/tmp/ap_String_Id.h.h:2030
 #, c-format
 msgid "Save changes to document %s before closing?"
 msgstr "Simpan perubahan ke dokumen %s sebelum menutup?"
@@ -4706,275 +4786,275 @@ msgstr "Simpan perubahan ke dokumen %s sebelum menutup?"
 #. MENU_STATUSLINE_FILE_SAVE
 #. TOOLBAR_STATUSLINE_FILE_SAVE
 #. TOOLBAR_TOOLTIP_FILE_SAVE
-#: po/tmp/ap_String_Id.h.h:2002
+#: po/tmp/ap_String_Id.h.h:2034
 msgid "Save the document"
 msgstr "Simpan dokumen"
 
 #. MENU_STATUSLINE_FILE_SAVE_TEMPLATE
-#: po/tmp/ap_String_Id.h.h:2004
+#: po/tmp/ap_String_Id.h.h:2036
 msgid "Save the document as a template"
 msgstr "Simpan dokumen sebagai template"
 
 #. MENU_STATUSLINE_FILE_SAVEAS
 #. TOOLBAR_STATUSLINE_FILE_SAVEAS
 #. TOOLBAR_TOOLTIP_FILE_SAVEAS
-#: po/tmp/ap_String_Id.h.h:2008
+#: po/tmp/ap_String_Id.h.h:2040
 msgid "Save the document under a different name"
 msgstr "Simpan dokumen dengan nama lain"
 
 #. MENU_STATUSLINE_FILE_EXPORT
-#: po/tmp/ap_String_Id.h.h:2010
+#: po/tmp/ap_String_Id.h.h:2042
 msgid "Save the document without changing the current name"
 msgstr "Simpan dokumen tanpa mengubah nama semasa"
 
 #. MENU_STATUSLINE_FILE_SAVEIMAGE
-#: po/tmp/ap_String_Id.h.h:2012
+#: po/tmp/ap_String_Id.h.h:2044
 msgid "Save the selected image to a file"
 msgstr "Simpan imej dipilih kedalam fail"
 
 #. DLG_Options_Label_SaveContextGlyphs
-#: po/tmp/ap_String_Id.h.h:2014
+#: po/tmp/ap_String_Id.h.h:2046
 msgid "Save visual glyph shapes"
 msgstr "Simpan bentuk glyph visual"
 
 #. DLG_PageSetup_Scale
-#: po/tmp/ap_String_Id.h.h:2016
+#: po/tmp/ap_String_Id.h.h:2048
 msgid "Scale..."
 msgstr "Skala..."
 
 #. MENU_STATUSLINE_HELP_SEARCH
-#: po/tmp/ap_String_Id.h.h:2018
+#: po/tmp/ap_String_Id.h.h:2050
 msgid "Search for help about..."
 msgstr "Cari bantuan mengenai..."
 
 #. DLG_WordCount_Update_Rate
-#: po/tmp/ap_String_Id.h.h:2020
+#: po/tmp/ap_String_Id.h.h:2052
 msgid "Seconds between updates"
 msgstr "Saat antara kemaskini"
 
 #. FIELD_DateTime_Epoch
-#: po/tmp/ap_String_Id.h.h:2022
+#: po/tmp/ap_String_Id.h.h:2054
 msgid "Seconds since the epoch"
 msgstr "Saat semenjak permulaan zaman"
 
 #. DLG_Break_SectionBreaks_Capital
-#: po/tmp/ap_String_Id.h.h:2024
+#: po/tmp/ap_String_Id.h.h:2056
 msgid "Section Breaks"
 msgstr "Pecahan Seksyen"
 
 #. DLG_Break_SectionBreaks
-#: po/tmp/ap_String_Id.h.h:2026
+#: po/tmp/ap_String_Id.h.h:2058
 msgid "Section breaks"
 msgstr "Pecahan Seksyen"
 
 #. MENU_STATUSLINE_TOOLS_HISTORY
-#: po/tmp/ap_String_Id.h.h:2028
+#: po/tmp/ap_String_Id.h.h:2060
 msgid "See history of the current document"
 msgstr "Lihat sejarah dokumen semasa"
 
 #. MENU_STATUSLINE_TABLE_SELECT
-#: po/tmp/ap_String_Id.h.h:2030
+#: po/tmp/ap_String_Id.h.h:2062
 #: po/tmp/xap_String_Id.h.h:578
 msgid "Select"
 msgstr "Pilih"
 
 #. MENU_LABEL_EDIT_SELECTALL
-#: po/tmp/ap_String_Id.h.h:2032
+#: po/tmp/ap_String_Id.h.h:2064
 msgid "Select A&ll"
 msgstr "Pi&lih Semua"
 
 #. MENU_STATUSLINE_TABLE_SELECT_CELL
-#: po/tmp/ap_String_Id.h.h:2034
+#: po/tmp/ap_String_Id.h.h:2066
 msgid "Select Cell"
 msgstr "Pilih Sel"
 
 #. MENU_STATUSLINE_TABLE_SELECT_COLUMN
-#: po/tmp/ap_String_Id.h.h:2036
+#: po/tmp/ap_String_Id.h.h:2068
 msgid "Select Column"
 msgstr "Pilih Lajur"
 
 #. DLG_ListRevisions_Title
-#: po/tmp/ap_String_Id.h.h:2038
+#: po/tmp/ap_String_Id.h.h:2070
 msgid "Select Revision"
 msgstr "Pilih Semakan"
 
 #. MENU_STATUSLINE_TABLE_SELECT_ROW
-#: po/tmp/ap_String_Id.h.h:2040
+#: po/tmp/ap_String_Id.h.h:2072
 msgid "Select Row"
 msgstr "Pilih Baris"
 
 #. MENU_STATUSLINE_TABLE_SELECT_TABLE
-#: po/tmp/ap_String_Id.h.h:2042
+#: po/tmp/ap_String_Id.h.h:2074
 msgid "Select Table"
 msgstr "Pilih Jadual"
 
 #. MENU_LABEL_EDIT_SELECT_FRAME
-#: po/tmp/ap_String_Id.h.h:2044
+#: po/tmp/ap_String_Id.h.h:2076
 msgid "Select Text Box"
 msgstr "Pilih Kekotak Teks"
 
 #. DLG_InsertHyperlink_Msg
-#: po/tmp/ap_String_Id.h.h:2046
+#: po/tmp/ap_String_Id.h.h:2078
 msgid "Select a target bookmark from the list."
 msgstr "Pilih sasaran tandabuku daripada senarai."
 
 #. DLG_FormatFrame_SelectImage
 #. DLG_FormatTable_SelectImage
-#: po/tmp/ap_String_Id.h.h:2049
+#: po/tmp/ap_String_Id.h.h:2081
 msgid "Select image from File"
 msgstr "Pilih imej dari Fail"
 
 #. MENU_STATUSLINE_EDIT_SELECT_FRAME
-#: po/tmp/ap_String_Id.h.h:2051
+#: po/tmp/ap_String_Id.h.h:2083
 msgid "Select the Text Box"
 msgstr "Pilih Kekotak Teks"
 
 #. MENU_STATUSLINE_EDIT_SELECTALL
-#: po/tmp/ap_String_Id.h.h:2053
+#: po/tmp/ap_String_Id.h.h:2085
 msgid "Select the entire document"
 msgstr "Pilih seluruh dokumen"
 
 #. DLG_FormatTable_Apply_To_Selection
-#: po/tmp/ap_String_Id.h.h:2055
+#: po/tmp/ap_String_Id.h.h:2087
 #: po/tmp/xap_String_Id.h.h:586
 msgid "Selection"
 msgstr "Pilihan"
 
 #. DLG_ToggleCase_SentenceCase
-#: po/tmp/ap_String_Id.h.h:2057
+#: po/tmp/ap_String_Id.h.h:2089
 msgid "Sentence case"
 msgstr "Case perkataan"
 
 #. DLG_Tab_Button_Set
-#: po/tmp/ap_String_Id.h.h:2059
+#: po/tmp/ap_String_Id.h.h:2091
 msgid "Set"
 msgstr "Tetap"
 
 #. MENU_LABEL_FMT_LANGUAGE
-#: po/tmp/ap_String_Id.h.h:2061
+#: po/tmp/ap_String_Id.h.h:2093
 msgid "Set &Language"
 msgstr "&Tetap Bahasa"
 
 #. DLG_Lists_SetDefault
-#: po/tmp/ap_String_Id.h.h:2063
+#: po/tmp/ap_String_Id.h.h:2095
 msgid "Set Default Values"
 msgstr "Tetap Nilai Default"
 
 #. DLG_FormatFrame_SetImage
 #. DLG_FormatTable_SetImage
-#: po/tmp/ap_String_Id.h.h:2066
+#: po/tmp/ap_String_Id.h.h:2098
 msgid "Set Image"
 msgstr "Tetap Imej"
 
 #. MENU_STATUSLINE_FMT_BACKGROUND_PAGE_IMAGE
-#: po/tmp/ap_String_Id.h.h:2068
+#: po/tmp/ap_String_Id.h.h:2100
 msgid "Set an image as a background for your page"
 msgstr "Tetapkan imej sebagai latarbelakang untuk halaman anda"
 
 #. MENU_STATUSLINE_FMT_DIRECTION_DD_RTL
-#: po/tmp/ap_String_Id.h.h:2070
+#: po/tmp/ap_String_Id.h.h:2102
 msgid "Set dominant direction of paragraph to RTL"
 msgstr "Ubah arah utama perenggan kepada RTL"
 
 #. MENU_STATUSLINE_FILE_PROPERTIES
-#: po/tmp/ap_String_Id.h.h:2072
+#: po/tmp/ap_String_Id.h.h:2104
 msgid "Set meta-data properties"
 msgstr "Tetap ciri-ciri meta-data"
 
 #. DLG_FormatFrame_NoImageBackground
 #. DLG_FormatTable_NoImageBackground
-#: po/tmp/ap_String_Id.h.h:2075
+#: po/tmp/ap_String_Id.h.h:2107
 msgid "Set no image"
 msgstr "Tetap tiada imej"
 
 #. MENU_STATUSLINE_TOOLS_OPTIONS
-#: po/tmp/ap_String_Id.h.h:2077
+#: po/tmp/ap_String_Id.h.h:2109
 msgid "Set preferences"
 msgstr "Tetap keutamaan"
 
 #. MENU_STATUSLINE_FMT_TABS
-#: po/tmp/ap_String_Id.h.h:2079
+#: po/tmp/ap_String_Id.h.h:2111
 msgid "Set tab stops"
 msgstr "Tetap hentian tab"
 
 #. MENU_STATUSLINE_FMT_TABLEOFCONTENTS
-#: po/tmp/ap_String_Id.h.h:2081
+#: po/tmp/ap_String_Id.h.h:2113
 msgid "Set the type and styles of the Table Of Contents"
 msgstr "Tetap jenis dan gaya Senarai Kandungan"
 
 #. MENU_STATUSLINE_FMT_FOOTNOTES
-#: po/tmp/ap_String_Id.h.h:2083
+#: po/tmp/ap_String_Id.h.h:2115
 msgid "Set the types of Footnotes and Endnotes"
 msgstr "Tetap jenis Notakaki dan Notaakhir"
 
 #. MENU_STATUSLINE_FMT_HDRFTR
-#: po/tmp/ap_String_Id.h.h:2085
+#: po/tmp/ap_String_Id.h.h:2117
 msgid "Set the types of Headers and Footers"
 msgstr "Tetap jenis Header dan Footer"
 
 #. MENU_STATUSLINE_TOOLS_SPELLPREFS
-#: po/tmp/ap_String_Id.h.h:2087
+#: po/tmp/ap_String_Id.h.h:2119
 msgid "Set your spelling preferences"
 msgstr "Tetap keutamaan ejaan anda"
 
 #. MENU_STATUSLINE_FMT_DOCUMENT
-#: po/tmp/ap_String_Id.h.h:2089
+#: po/tmp/ap_String_Id.h.h:2121
 msgid "Setup your document's page properties such as page size and margins"
 msgstr "Menetapkan ciri-ciri dokumen anda seperti saiz halaman dan margin"
 
 #. DLG_Styles_ModifyShortCut
-#: po/tmp/ap_String_Id.h.h:2091
+#: po/tmp/ap_String_Id.h.h:2123
 msgid "Shortcut Key"
 msgstr "Kekunci Pintasan"
 
 #. DLG_Options_Label_Show
-#: po/tmp/ap_String_Id.h.h:2093
+#: po/tmp/ap_String_Id.h.h:2125
 #: po/tmp/xap_String_Id.h.h:594
 msgid "Show"
 msgstr "Papar"
 
 #. MENU_LABEL_VIEW_RULER
-#: po/tmp/ap_String_Id.h.h:2095
+#: po/tmp/ap_String_Id.h.h:2127
 msgid "Show &Ruler"
 msgstr "Papa&r Pembaris"
 
 #. TOOLBAR_LABEL_VIEW_SHOWPARA
-#: po/tmp/ap_String_Id.h.h:2097
+#: po/tmp/ap_String_Id.h.h:2129
 msgid "Show All"
 msgstr "Papar Semua"
 
 #. MENU_LABEL_VIEW_SHOWPARA
-#: po/tmp/ap_String_Id.h.h:2099
+#: po/tmp/ap_String_Id.h.h:2131
 msgid "Show For&matting Marks"
 msgstr "Papar Tanda &Memformat"
 
 #. MENU_LABEL_TOOLS_REVISIONS_SHOW_BEFORE
-#: po/tmp/ap_String_Id.h.h:2101
+#: po/tmp/ap_String_Id.h.h:2133
 msgid "Show document &before revisions"
 msgstr "Papar dokumen sebelum semakan"
 
 #. MENU_LABEL_TOOLS_REVISIONS_SHOW_AFTER
-#: po/tmp/ap_String_Id.h.h:2103
+#: po/tmp/ap_String_Id.h.h:2135
 msgid "Show document a&fter revisions"
 msgstr "Papar dokumen selepas semakan"
 
 #. MENU_LABEL_TOOLS_REVISIONS_SHOW_AFTERPREV
-#: po/tmp/ap_String_Id.h.h:2105
+#: po/tmp/ap_String_Id.h.h:2137
 msgid "Show document after &previous revisions"
 msgstr "&Papar dokumen selepas semakan terdahulu"
 
 #. MENU_STATUSLINE_WINDOW_MORE
-#: po/tmp/ap_String_Id.h.h:2107
+#: po/tmp/ap_String_Id.h.h:2139
 msgid "Show full list of documents"
 msgstr "Papar senarai penuh dokumen"
 
 #. MENU_STATUSLINE_VIEW_RULER
-#: po/tmp/ap_String_Id.h.h:2109
+#: po/tmp/ap_String_Id.h.h:2141
 msgid "Show or hide the rulers"
 msgstr "Papar atau sembunyi pembaris"
 
 #. MENU_STATUSLINE_VIEW_STATUSBAR
-#: po/tmp/ap_String_Id.h.h:2111
+#: po/tmp/ap_String_Id.h.h:2143
 msgid "Show or hide the status bar"
 msgstr "Papar atau sembunyi bar status"
 
@@ -4982,528 +5062,544 @@ msgstr "Papar atau sembunyi bar status"
 #. MENU_STATUSLINE_VIEW_TB_2
 #. MENU_STATUSLINE_VIEW_TB_3
 #. MENU_STATUSLINE_VIEW_TB_4
-#: po/tmp/ap_String_Id.h.h:2116
+#: po/tmp/ap_String_Id.h.h:2148
 msgid "Show or hide the toolbar"
 msgstr "Papar atau sembunyi bar alat"
 
 #. MENU_STATUSLINE_TOOLS_REVISIONS_SHOW
-#: po/tmp/ap_String_Id.h.h:2118
+#: po/tmp/ap_String_Id.h.h:2150
 msgid "Show revisions that are present in document"
 msgstr "Papar semakan yang wujud dalam dokumen"
 
 #. DLG_Options_Label_ShowSplash
-#: po/tmp/ap_String_Id.h.h:2120
+#: po/tmp/ap_String_Id.h.h:2152
 msgid "Show the AbiWord splash screen on application startup"
 msgstr "Papar skrin percikan Abiword ketika permulaan aplikasi"
 
 #. MENU_STATUSLINE_TOOLS_REVISIONS_SHOW_AFTERPREV
-#: po/tmp/ap_String_Id.h.h:2122
+#: po/tmp/ap_String_Id.h.h:2154
 msgid "Show what the document looks like after previous revisions"
 msgstr "Papar bagaimana dokumen kelihatan selepas semakan terdahulu"
 
 #. MENU_STATUSLINE_TOOLS_REVISIONS_SHOW_AFTER
-#: po/tmp/ap_String_Id.h.h:2124
+#: po/tmp/ap_String_Id.h.h:2156
 msgid "Show what the document looks like after revisions"
 msgstr "Papar bagaimana dokumen kelihatan selepas semakan"
 
 #. MENU_STATUSLINE_TOOLS_REVISIONS_SHOW_BEFORE
-#: po/tmp/ap_String_Id.h.h:2126
+#: po/tmp/ap_String_Id.h.h:2158
 msgid "Show what the document looks like before revisions"
 msgstr "Papar bagaimana dokumen kelihatan sebelum semakan"
 
 #. DLG_Options_Label_ViewShowHide
-#: po/tmp/ap_String_Id.h.h:2128
+#: po/tmp/ap_String_Id.h.h:2160
 msgid "Show..."
 msgstr "Papar..."
 
 #. TOOLBAR_STATUSLINE_VIEW_SHOWPARA
 #. TOOLBAR_TOOLTIP_VIEW_SHOWPARA
-#: po/tmp/ap_String_Id.h.h:2131
+#: po/tmp/ap_String_Id.h.h:2163
 msgid "Show/hide formatting marks"
 msgstr "Papar/sembunyi tanda memformat"
 
 #. AUTOTEXT_CLOSING_8
-#: po/tmp/ap_String_Id.h.h:2133
+#: po/tmp/ap_String_Id.h.h:2165
 msgid "Sincerely yours,"
 msgstr "Dengan ikhlas,"
 
 #. DLG_Para_SpacingSingle
-#: po/tmp/ap_String_Id.h.h:2135
+#: po/tmp/ap_String_Id.h.h:2167
 msgid "Single"
 msgstr "Tunggal"
 
 #. TOOLBAR_LABEL_SINGLE_SPACE
-#: po/tmp/ap_String_Id.h.h:2137
+#: po/tmp/ap_String_Id.h.h:2169
 msgid "Single Spacing"
 msgstr "Selangan Tunggal"
 
 #. TOOLBAR_STATUSLINE_SINGLE_SPACE
 #. TOOLBAR_TOOLTIP_SINGLE_SPACE
-#: po/tmp/ap_String_Id.h.h:2140
+#: po/tmp/ap_String_Id.h.h:2172
 msgid "Single spacing"
 msgstr "Selangan tunggal"
 
 #. MENU_LABEL_TABLE_SORT
-#: po/tmp/ap_String_Id.h.h:2142
+#: po/tmp/ap_String_Id.h.h:2174
 msgid "So&rt Table"
 msgstr "&Isih Jadual"
 
 #. MENU_STATUSLINE_TABLE_SORT
-#: po/tmp/ap_String_Id.h.h:2144
+#: po/tmp/ap_String_Id.h.h:2176
 msgid "Sort Table"
 msgstr "Isih Jadual"
 
 #. DLG_MetaData_Source_LBL
-#: po/tmp/ap_String_Id.h.h:2146
+#: po/tmp/ap_String_Id.h.h:2178
 msgid "Source:"
 msgstr "Sumber:"
 
 #. DLG_Column_Space_After
-#: po/tmp/ap_String_Id.h.h:2148
+#: po/tmp/ap_String_Id.h.h:2180
 msgid "Space after Column"
 msgstr "Ruang selepas Lajur"
 
 #. TOOLBAR_STATUSLINE_PARA_12BEFORE
 #. TOOLBAR_TOOLTIP_PARA_12BEFORE
-#: po/tmp/ap_String_Id.h.h:2151
+#: po/tmp/ap_String_Id.h.h:2183
 msgid "Space before: 12 pt"
 msgstr "Ruang sebelum: 12 pt"
 
 #. TOOLBAR_STATUSLINE_PARA_0BEFORE
 #. TOOLBAR_TOOLTIP_PARA_0BEFORE
-#: po/tmp/ap_String_Id.h.h:2154
+#: po/tmp/ap_String_Id.h.h:2186
 msgid "Space before: None"
 msgstr "Ruang sebelum: Tiada"
 
 #. DLG_Para_LabelSpacing
-#: po/tmp/ap_String_Id.h.h:2156
+#: po/tmp/ap_String_Id.h.h:2188
 msgid "Spacing"
 msgstr "Ruang"
 
 #. TOOLBAR_LABEL_SPELLCHECK
-#: po/tmp/ap_String_Id.h.h:2158
+#: po/tmp/ap_String_Id.h.h:2190
 msgid "Spellcheck"
 msgstr "Semakejaan"
 
 #. TOOLBAR_STATUSLINE_SPELLCHECK
 #. TOOLBAR_TOOLTIP_SPELLCHECK
-#: po/tmp/ap_String_Id.h.h:2161
+#: po/tmp/ap_String_Id.h.h:2193
 msgid "Spellcheck the document"
 msgstr "Semakejaan dokumen"
 
 #. DLG_Spell_SpellTitle
 #. DLG_Options_TabLabel_Spelling
-#: po/tmp/ap_String_Id.h.h:2164
+#: po/tmp/ap_String_Id.h.h:2196
 msgid "Spelling"
 msgstr "Ejaan"
 
 #. MENU_LABEL_TOOLS_SPELLPREFS
-#: po/tmp/ap_String_Id.h.h:2166
+#: po/tmp/ap_String_Id.h.h:2198
 msgid "Spelling &Options"
 msgstr "&Pilihan Ejaan"
 
 #. MENU_LABEL_TABLE_SPLIT_TABLE
-#: po/tmp/ap_String_Id.h.h:2168
+#: po/tmp/ap_String_Id.h.h:2200
 msgid "Spli&t Table"
 msgstr "&Pisah Jadual"
 
 #. DLG_SplitCellsTitle
 #. DLG_SplitCells_Frame
 #. MENU_STATUSLINE_TABLE_SPLIT_CELLS
-#: po/tmp/ap_String_Id.h.h:2172
+#: po/tmp/ap_String_Id.h.h:2204
 msgid "Split Cells"
 msgstr "Pisah Sel"
 
 #. MENU_STATUSLINE_TABLE_SPLIT_TABLE
-#: po/tmp/ap_String_Id.h.h:2174
+#: po/tmp/ap_String_Id.h.h:2206
 msgid "Split Table"
 msgstr "Pisah Jadual"
 
 #. TOOLBAR_LABEL_SPLIT_CELLS
-#: po/tmp/ap_String_Id.h.h:2176
+#: po/tmp/ap_String_Id.h.h:2208
 msgid "Split cells"
 msgstr "Pisah sel"
 
 #. DLG_SplitCells_HoriMid
 #. DLG_SplitCells_VertMid
-#: po/tmp/ap_String_Id.h.h:2179
+#: po/tmp/ap_String_Id.h.h:2211
 msgid "Split in Middle"
 msgstr "Pisah di Pertengahan"
 
 #. DLG_SplitCells_Below
-#: po/tmp/ap_String_Id.h.h:2181
+#: po/tmp/ap_String_Id.h.h:2213
 msgid "Split on Bottom Side"
 msgstr "Pisah pada Bahagian Bawah"
 
 #. DLG_SplitCells_Left
-#: po/tmp/ap_String_Id.h.h:2183
+#: po/tmp/ap_String_Id.h.h:2215
 msgid "Split on Left Side"
 msgstr "Pisah pada Bahagian Kiri"
 
 #. DLG_SplitCells_Right
-#: po/tmp/ap_String_Id.h.h:2185
+#: po/tmp/ap_String_Id.h.h:2217
 msgid "Split on Right Side"
 msgstr "Pisah pada Bahagian Kanan"
 
 #. DLG_SplitCells_Above
-#: po/tmp/ap_String_Id.h.h:2187
+#: po/tmp/ap_String_Id.h.h:2219
 msgid "Split on Top Side"
 msgstr "Pisah pada Bahagian Atas"
 
 #. TOOLBAR_STATUSLINE_SPLIT_CELLS
 #. TOOLBAR_TOOLTIP_SPLIT_CELLS
-#: po/tmp/ap_String_Id.h.h:2190
+#: po/tmp/ap_String_Id.h.h:2222
 msgid "Split this cell"
 msgstr "Pisah sel ini"
 
 #. DLG_Lists_Square_List
-#: po/tmp/ap_String_Id.h.h:2192
+#: po/tmp/ap_String_Id.h.h:2224
 #: po/tmp/xap_String_Id.h.h:606
 msgid "Square List"
 msgstr "Senarai Petak"
 
 #. MENU_LABEL_FMT_STYLE
-#: po/tmp/ap_String_Id.h.h:2194
+#: po/tmp/ap_String_Id.h.h:2226
 msgid "St&yle"
 msgstr "Ga&ya"
 
 #. TB_Standard
-#: po/tmp/ap_String_Id.h.h:2196
+#: po/tmp/ap_String_Id.h.h:2228
 msgid "Standard"
 msgstr "Standard"
 
 #. DLG_Options_Label_ViewStandardTB
-#: po/tmp/ap_String_Id.h.h:2198
+#: po/tmp/ap_String_Id.h.h:2230
 msgid "Standard Toolbar"
 msgstr "Bar Alat Piawai"
 
 #. DLG_Lists_Star_List
-#: po/tmp/ap_String_Id.h.h:2200
+#: po/tmp/ap_String_Id.h.h:2232
 #: po/tmp/xap_String_Id.h.h:608
 msgid "Star List"
 msgstr "Senarai Bintang"
 
 #. DLG_Lists_Start
-#: po/tmp/ap_String_Id.h.h:2202
+#: po/tmp/ap_String_Id.h.h:2234
 msgid "Start At:"
 msgstr "Mula Pada:"
 
 #. DLG_Lists_Start_New_List
 #. DLG_Lists_Start_New
-#: po/tmp/ap_String_Id.h.h:2205
+#: po/tmp/ap_String_Id.h.h:2237
 msgid "Start New List"
 msgstr "Mula Senarai Baru"
 
 #. DLG_Lists_Start_Sub
-#: po/tmp/ap_String_Id.h.h:2207
+#: po/tmp/ap_String_Id.h.h:2239
 msgid "Start Sublist"
 msgstr "Mula Subsenarai"
 
 #. DLG_MarkRevisions_Check2Label
-#: po/tmp/ap_String_Id.h.h:2209
+#: po/tmp/ap_String_Id.h.h:2241
 msgid "Start a new revision"
 msgstr "Mula semakan baru"
 
 #. DLG_WordCount_Statistics
-#: po/tmp/ap_String_Id.h.h:2211
+#: po/tmp/ap_String_Id.h.h:2243
 msgid "Statistics:"
 msgstr "Statistik:"
 
 #. DLG_Lists_Stop_Current_List
-#: po/tmp/ap_String_Id.h.h:2213
+#: po/tmp/ap_String_Id.h.h:2245
 msgid "Stop Current List"
 msgstr "Henti Senarai Semasa"
 
 #. MENU_LABEL_FMT_STRIKE
-#: po/tmp/ap_String_Id.h.h:2215
+#: po/tmp/ap_String_Id.h.h:2247
 msgid "Stri&ke"
 msgstr "&Potong"
 
 #. TOOLBAR_LABEL_FMT_STRIKE
 #. TOOLBAR_STATUSLINE_FMT_STRIKE
 #. TOOLBAR_TOOLTIP_FMT_STRIKE
-#: po/tmp/ap_String_Id.h.h:2219
+#: po/tmp/ap_String_Id.h.h:2251
 #: po/tmp/xap_String_Id.h.h:610
 msgid "Strike"
 msgstr "Potong"
 
 #. MENU_STATUSLINE_FMT_STRIKE
-#: po/tmp/ap_String_Id.h.h:2221
+#: po/tmp/ap_String_Id.h.h:2253
 msgid "Strikeout the selection (toggle)"
 msgstr "Potonghuruf pilihan (toggle)"
 
 #. MENU_LABEL_FMT_STYLIST
-#: po/tmp/ap_String_Id.h.h:2223
+#: po/tmp/ap_String_Id.h.h:2255
 msgid "Sty&list"
 msgstr "Penggaya"
 
 #. TOOLBAR_LABEL_FMT_STYLE
 #. TOOLBAR_STATUSLINE_FMT_STYLE
 #. TOOLBAR_TOOLTIP_FMT_STYLE
-#: po/tmp/ap_String_Id.h.h:2227
+#: po/tmp/ap_String_Id.h.h:2259
 msgid "Style"
 msgstr "Gaya"
 
 #. DLG_Styles_ErrNotTitle1
-#: po/tmp/ap_String_Id.h.h:2229
+#: po/tmp/ap_String_Id.h.h:2261
 msgid "Style Name - "
 msgstr "Nama Gaya - "
 
 #. DLG_Styles_ModifyName
-#: po/tmp/ap_String_Id.h.h:2231
+#: po/tmp/ap_String_Id.h.h:2263
 msgid "Style Name:"
 msgstr "Nama Gaya:"
 
 #. DLG_Styles_ModifyType
-#: po/tmp/ap_String_Id.h.h:2233
+#: po/tmp/ap_String_Id.h.h:2265
 msgid "Style Type"
 msgstr "Jenis Gaya"
 
 #. DLG_Styles_ModifyFollowing
-#: po/tmp/ap_String_Id.h.h:2235
+#: po/tmp/ap_String_Id.h.h:2267
 msgid "Style for following paragraph"
 msgstr "Gaya untuk perenggan berikutnya"
 
 #. DLG_Styles_ErrBlankName
-#: po/tmp/ap_String_Id.h.h:2237
+#: po/tmp/ap_String_Id.h.h:2269
 msgid "Style name cannot be left blank"
 msgstr "Nama gaya tidak boleh dibiarkan kosong"
 
 #. DLG_Lists_Style
-#: po/tmp/ap_String_Id.h.h:2239
+#: po/tmp/ap_String_Id.h.h:2271
 #: po/tmp/xap_String_Id.h.h:612
 msgid "Style:"
 msgstr "Gaya:"
 
 #. DLG_Styles_StylesTitle
 #. DLG_Stylist_Styles
-#: po/tmp/ap_String_Id.h.h:2242
+#: po/tmp/ap_String_Id.h.h:2274
 msgid "Styles"
 msgstr "Gaya"
 
 #. DLG_Stylist_Title
-#: po/tmp/ap_String_Id.h.h:2244
+#: po/tmp/ap_String_Id.h.h:2276
 msgid "Stylist"
 msgstr "Penggaya"
 
 #. FIELD_Document_Subject
 #. AUTOTEXT_SUBJECT_1
-#: po/tmp/ap_String_Id.h.h:2247
+#: po/tmp/ap_String_Id.h.h:2279
 msgid "Subject"
 msgstr "Tajuk"
 
 #. DLG_MetaData_Subject_LBL
 #. AUTOTEXT_EMAIL_3
 #. MENU_LABEL_AUTOTEXT_SUBJECT
-#: po/tmp/ap_String_Id.h.h:2251
+#: po/tmp/ap_String_Id.h.h:2283
 msgid "Subject:"
 msgstr "Tajuk:"
 
 #. TOOLBAR_LABEL_FMT_SUBSCRIPT
 #. TOOLBAR_STATUSLINE_FMT_SUBSCRIPT
 #. TOOLBAR_TOOLTIP_FMT_SUBSCRIPT
-#: po/tmp/ap_String_Id.h.h:2255
+#: po/tmp/ap_String_Id.h.h:2287
 #: po/tmp/xap_String_Id.h.h:616
 msgid "Subscript"
 msgstr "Subskrip"
 
 #. DLG_Spell_Suggestions
-#: po/tmp/ap_String_Id.h.h:2257
+#: po/tmp/ap_String_Id.h.h:2289
 msgid "Sugg&estions:"
 msgstr "&Cadangan:"
 
 #. DLG_Options_Label_SpellMainOnly
-#: po/tmp/ap_String_Id.h.h:2259
+#: po/tmp/ap_String_Id.h.h:2291
 msgid "Suggest from &main dictionary only"
 msgstr "Cadang dari ka&mus utama sahaja"
 
 #. DLG_MetaData_TAB_Summary
-#: po/tmp/ap_String_Id.h.h:2261
+#: po/tmp/ap_String_Id.h.h:2293
 msgid "Summary"
 msgstr "Ringkasan"
 
 #. MENU_LABEL_FMT_SUPERSCRIPT
-#: po/tmp/ap_String_Id.h.h:2263
+#: po/tmp/ap_String_Id.h.h:2295
 msgid "Supe&rscript"
 msgstr "Supe&rskrip"
 
 #. TOOLBAR_LABEL_FMT_SUPERSCRIPT
 #. TOOLBAR_STATUSLINE_FMT_SUPERSCRIPT
 #. TOOLBAR_TOOLTIP_FMT_SUPERSCRIPT
-#: po/tmp/ap_String_Id.h.h:2267
+#: po/tmp/ap_String_Id.h.h:2299
 #: po/tmp/xap_String_Id.h.h:618
 msgid "Superscript"
 msgstr "Superskrip"
 
 #. MENU_LABEL_INSERT_SYMBOL
-#: po/tmp/ap_String_Id.h.h:2269
+#: po/tmp/ap_String_Id.h.h:2301
 msgid "Sy&mbol"
 msgstr "&Simbol"
 
 #. TOOLBAR_LABEL_INSERT_SYMBOL
-#: po/tmp/ap_String_Id.h.h:2271
+#: po/tmp/ap_String_Id.h.h:2303
 msgid "Symbol"
 msgstr "Simbol"
 
 #. MENU_LABEL_TABLE
-#: po/tmp/ap_String_Id.h.h:2273
+#: po/tmp/ap_String_Id.h.h:2305
 msgid "T&able"
 msgstr "J&adual"
 
-#. DLG_FormatTOC_TabLeader
-#: po/tmp/ap_String_Id.h.h:2275
-msgid "Tab Leader"
-msgstr "Awalan Tab"
-
 #. TabStopStatus
-#: po/tmp/ap_String_Id.h.h:2277
+#: po/tmp/ap_String_Id.h.h:2307
 #, c-format
 msgid "Tab Stop [%s]"
 msgstr "Hentian Tab [%s]"
 
 #. DLG_Tab_Label_TabPosition
-#: po/tmp/ap_String_Id.h.h:2279
+#: po/tmp/ap_String_Id.h.h:2309
 msgid "Tab stop position:"
 msgstr "Posisi hentian tab:"
 
 #. DLG_Tab_Label_TabToClear
-#: po/tmp/ap_String_Id.h.h:2281
+#: po/tmp/ap_String_Id.h.h:2311
 msgid "Tab stops to be cleared:"
 msgstr "Hentian tab yang perlu dibuang:"
 
 #. DLG_FormatTable_Apply_To_Table
 #. MENU_STATUSLINE_TABLE
 #. TB_Table
-#: po/tmp/ap_String_Id.h.h:2285
+#: po/tmp/ap_String_Id.h.h:2315
 #: po/tmp/xap_String_Id.h.h:622
 msgid "Table"
 msgstr "Jadual"
 
 #. DLG_InsertTable_TableSize_Capital
-#: po/tmp/ap_String_Id.h.h:2287
+#: po/tmp/ap_String_Id.h.h:2317
 msgid "Table Size"
 msgstr "Saiz Jadual"
 
 #. DLG_Options_Label_ViewTableTB
-#: po/tmp/ap_String_Id.h.h:2289
+#: po/tmp/ap_String_Id.h.h:2319
 msgid "Table Toolbar"
 msgstr "Bar alat Jadual"
 
 #. TOC_TocHeading
 #. MENU_LABEL_INSERT_TABLEOFCONTENTS
 #. MENU_LABEL_FMT_TABLEOFCONTENTS
-#: po/tmp/ap_String_Id.h.h:2293
+#: po/tmp/ap_String_Id.h.h:2323
 msgid "Table of Contents"
 msgstr "Senarai Kandungan"
 
 #. FIELD_Numbers_TOCListLabel
-#: po/tmp/ap_String_Id.h.h:2295
+#: po/tmp/ap_String_Id.h.h:2325
 msgid "Table of Contents List Label"
 msgstr "Label Senarai Kandungan"
 
 #. FIELD_Numbers_TOCPageNumber
-#: po/tmp/ap_String_Id.h.h:2297
+#: po/tmp/ap_String_Id.h.h:2327
 msgid "Table of Contents Page"
 msgstr "Mukasurat Senarai Kandungan"
 
 #. DLG_InsertTable_TableSize
-#: po/tmp/ap_String_Id.h.h:2299
+#: po/tmp/ap_String_Id.h.h:2329
 msgid "Table size"
 msgstr "Saiz jadual"
 
 #. DLG_Styles_ModifyTabs
 #. DLG_Tab_TabTitle
-#: po/tmp/ap_String_Id.h.h:2302
+#: po/tmp/ap_String_Id.h.h:2332
 msgid "Tabs"
 msgstr "Tab"
 
+#. DLG_FormatTOC_DetailsTabPage
+#: po/tmp/ap_String_Id.h.h:2334
+msgid "Tabs and Page Numbering"
+msgstr "Tab dan Nombor Halaman"
+
 #. AUTOTEXT_CLOSING_9
-#: po/tmp/ap_String_Id.h.h:2304
+#: po/tmp/ap_String_Id.h.h:2336
 msgid "Take care,"
 msgstr "Jaga diri,"
 
 #. MENU_LABEL_FMT
-#: po/tmp/ap_String_Id.h.h:2306
+#: po/tmp/ap_String_Id.h.h:2338
 msgid "Te&xt Formatting"
 msgstr "&Memformat Teks"
 
 #. DLG_Options_Label_Text
-#: po/tmp/ap_String_Id.h.h:2308
+#: po/tmp/ap_String_Id.h.h:2340
 msgid "Text"
 msgstr "Teks"
 
+#. DLG_FormatTOC_TextAfter
+#: po/tmp/ap_String_Id.h.h:2342
+msgid "Text &after:"
+msgstr "Teks selep&as:"
+
+#. DLG_FormatTOC_TextBefore
+#: po/tmp/ap_String_Id.h.h:2344
+msgid "Text &before:"
+msgstr "Teks se&belum:"
+
 #. DLG_Lists_Align
-#: po/tmp/ap_String_Id.h.h:2310
+#: po/tmp/ap_String_Id.h.h:2346
 msgid "Text Align:"
 msgstr "Jajaran Teks:"
 
 #. MENU_LABEL_INSERT_TEXTBOX
-#: po/tmp/ap_String_Id.h.h:2312
+#. MENU_LABEL_FMT_FRAME
+#: po/tmp/ap_String_Id.h.h:2349
 msgid "Text Box"
 msgstr "Kekotak Teks"
 
+#. DLG_Lists_PageFolding
+#: po/tmp/ap_String_Id.h.h:2351
+msgid "Text Folding"
+msgstr "Gulungan Teks"
+
 #. DLG_Options_Label_Both
-#: po/tmp/ap_String_Id.h.h:2314
+#: po/tmp/ap_String_Id.h.h:2353
 msgid "Text and Icon"
 msgstr "Teks dan Ikon"
 
 #. AUTOTEXT_CLOSING_10
-#: po/tmp/ap_String_Id.h.h:2316
+#: po/tmp/ap_String_Id.h.h:2355
 msgid "Thank you,"
 msgstr "Terima kasih,"
 
 #. AUTOTEXT_CLOSING_11
-#: po/tmp/ap_String_Id.h.h:2318
+#: po/tmp/ap_String_Id.h.h:2357
 msgid "Thanks,"
 msgstr "Terima kasih,"
 
 #. MSG_MergeDocsNotRelated
-#: po/tmp/ap_String_Id.h.h:2320
+#: po/tmp/ap_String_Id.h.h:2359
 msgid "The documents you are trying to merge are unrelated. AbiWord will attempt to merge them, but the result might be meaningless."
 msgstr "Dokumen yang anda cuba hendak gabung tidak berkait. AbiWord akan cuba untuk menggabungkan mereka, tetapi hasilnya mungkin tidak bermakna."
 
 #. DLG_PageSetup_ErrBigMargins
-#: po/tmp/ap_String_Id.h.h:2322
+#: po/tmp/ap_String_Id.h.h:2361
 msgid "The margins selected are too large to fit on the page."
 msgstr "Margin yang dipilih terlalu besar untuk dimuatkan pada halaman."
 
 #. MSG_SpellDone
-#: po/tmp/ap_String_Id.h.h:2324
+#: po/tmp/ap_String_Id.h.h:2363
 msgid "The spelling check is complete."
 msgstr "Semakan ejaan selesai."
 
 #. MSG_HyperlinkCrossesBoundaries
-#: po/tmp/ap_String_Id.h.h:2326
+#: po/tmp/ap_String_Id.h.h:2365
 msgid "The text to which the hyperlink is to be attached must be within a single paragraph."
 msgstr "Teks dimana hiperlink hendak disertakan mesti didalam satu perenggan."
 
 #. FIELD_DateTime_Wkday
-#: po/tmp/ap_String_Id.h.h:2328
+#: po/tmp/ap_String_Id.h.h:2367
 msgid "The weekday"
 msgstr "Hari minggu"
 
 #. DLG_FormatTable_Thickness
-#: po/tmp/ap_String_Id.h.h:2330
+#: po/tmp/ap_String_Id.h.h:2369
 msgid "Thickness:"
 msgstr "Ketebalan:"
 
 #. MSG_AfterRestartNew
-#: po/tmp/ap_String_Id.h.h:2332
+#: po/tmp/ap_String_Id.h.h:2371
 msgid "This change will only take effect when you restart AbiWord or create a new document."
 msgstr "Perubahan ini hanya akan berkesan apabila anda memulakan kembali Abiword atau mencipta dokumen baru."
 
 #. MSG_HiddenRevisions
-#: po/tmp/ap_String_Id.h.h:2334
+#: po/tmp/ap_String_Id.h.h:2373
 msgid "This document contains revisions which are currently hidden from view. Please see AbiWord documentation for information on working with revisions."
 msgstr "Dokumen ini mengandungi semakan yang sekarang ini disorok dari pandangan. Sila lihat dokumentasi AbiWord untuk maklumat bagaimana bekerja dengan semakan."
 
 #. DLG_Para_PreviewSampleFallback
-#: po/tmp/ap_String_Id.h.h:2336
+#: po/tmp/ap_String_Id.h.h:2375
 msgid "This paragraph represents words as they might appear in your document.  To see text from your document used in this preview, position your cursor in a document paragraph with some text in it and open this dialog."
 msgstr "Perenggan ini menggambarkan perkataan seperti yang mungkin kelihatan didalam dokumen anda.  Untuk melihat teks daripada dokumen anda digunakan didalam pralihat ini, letakkan kursor anda didalam perenggan dokumen dengan beberapa teks didalamnya dan buka dialog ini."
 
 #. DLG_Styles_ErrStyleNot
-#: po/tmp/ap_String_Id.h.h:2338
+#: po/tmp/ap_String_Id.h.h:2377
 msgid ""
 "This style does not exist \n"
 " so it cannot be modified"
@@ -5512,54 +5608,54 @@ msgstr ""
 " jadi ia tidak boleh diubahsuai"
 
 #. DLG_Column_Three
-#: po/tmp/ap_String_Id.h.h:2340
+#: po/tmp/ap_String_Id.h.h:2379
 msgid "Three"
 msgstr "Tiga"
 
 #. DLG_Lists_Tick_List
-#: po/tmp/ap_String_Id.h.h:2342
+#: po/tmp/ap_String_Id.h.h:2381
 #: po/tmp/xap_String_Id.h.h:640
 msgid "Tick List"
 msgstr "Senarai Tick"
 
 #. FIELD_DateTime_TimeZone
-#: po/tmp/ap_String_Id.h.h:2344
+#: po/tmp/ap_String_Id.h.h:2383
 msgid "Time Zone"
 msgstr "Zon Masa"
 
 #. FIELD_Document_Title
-#: po/tmp/ap_String_Id.h.h:2346
+#: po/tmp/ap_String_Id.h.h:2385
 msgid "Title"
 msgstr "Tajuk"
 
 #. DLG_ToggleCase_TitleCase
-#: po/tmp/ap_String_Id.h.h:2348
+#: po/tmp/ap_String_Id.h.h:2387
 msgid "Title Case"
 msgstr "Case Tajuk"
 
 #. DLG_MetaData_Title_LBL
-#: po/tmp/ap_String_Id.h.h:2350
+#: po/tmp/ap_String_Id.h.h:2389
 #: po/tmp/xap_String_Id.h.h:642
 msgid "Title:"
 msgstr "Tajuk:"
 
 #. AUTOTEXT_SALUTATION_4
-#: po/tmp/ap_String_Id.h.h:2352
+#: po/tmp/ap_String_Id.h.h:2391
 msgid "To Whom It May Concern:"
 msgstr "Kepada Sesiapa Yang Berkenaan:"
 
 #. AUTOTEXT_EMAIL_1
-#: po/tmp/ap_String_Id.h.h:2354
+#: po/tmp/ap_String_Id.h.h:2393
 msgid "To:"
 msgstr "Ke:"
 
 #. DLG_Options_Label_Toolbars
-#: po/tmp/ap_String_Id.h.h:2356
+#: po/tmp/ap_String_Id.h.h:2395
 msgid "Toolbars"
 msgstr "Bar alat"
 
 #. TopMarginStatus
-#: po/tmp/ap_String_Id.h.h:2358
+#: po/tmp/ap_String_Id.h.h:2397
 #, c-format
 msgid "Top Margin [%s]"
 msgstr "Margin Atas [%s]"
@@ -5568,137 +5664,137 @@ msgstr "Margin Atas [%s]"
 #. TOOLBAR_LABEL_FMT_TOPLINE
 #. TOOLBAR_STATUSLINE_FMT_TOPLINE
 #. TOOLBAR_TOOLTIP_FMT_TOPLINE
-#: po/tmp/ap_String_Id.h.h:2363
+#: po/tmp/ap_String_Id.h.h:2402
 #: po/tmp/xap_String_Id.h.h:648
 msgid "Topline"
 msgstr "Garisatas"
 
 #. DLG_Lists_Triangle_List
-#: po/tmp/ap_String_Id.h.h:2365
+#: po/tmp/ap_String_Id.h.h:2404
 #: po/tmp/xap_String_Id.h.h:650
 msgid "Triangle List"
 msgstr "Senarai"
 
 #. DLG_Column_Two
-#: po/tmp/ap_String_Id.h.h:2367
+#: po/tmp/ap_String_Id.h.h:2406
 msgid "Two"
 msgstr "Dua"
 
 #. FIELD_Document_Type
-#: po/tmp/ap_String_Id.h.h:2369
+#: po/tmp/ap_String_Id.h.h:2408
 msgid "Type"
 msgstr "Jenis"
 
 #. DLG_InsertBookmark_Msg
-#: po/tmp/ap_String_Id.h.h:2371
+#: po/tmp/ap_String_Id.h.h:2410
 msgid "Type a name for the bookmark, or select an existing from the list."
 msgstr "Taip nama untuk tandabuku, atau pilih sedia wujud dari senarai."
 
 #. DLG_Lists_Type
-#: po/tmp/ap_String_Id.h.h:2373
+#: po/tmp/ap_String_Id.h.h:2412
 msgid "Type:"
 msgstr "Jenis:"
 
 #. DLG_ToggleCase_UpperCase
-#: po/tmp/ap_String_Id.h.h:2375
+#: po/tmp/ap_String_Id.h.h:2414
 msgid "UPPERCASE"
 msgstr "HURUFBESAR"
 
 #. TOOLBAR_LABEL_FMT_UNDERLINE
 #. TOOLBAR_STATUSLINE_FMT_UNDERLINE
 #. TOOLBAR_TOOLTIP_FMT_UNDERLINE
-#: po/tmp/ap_String_Id.h.h:2379
+#: po/tmp/ap_String_Id.h.h:2418
 #: po/tmp/xap_String_Id.h.h:668
 msgid "Underline"
 msgstr "Garisbawah"
 
 #. MENU_STATUSLINE_FMT_UNDERLINE
-#: po/tmp/ap_String_Id.h.h:2381
+#: po/tmp/ap_String_Id.h.h:2420
 msgid "Underline the selection (toggle)"
 msgstr "Garisbawah pilihan (toggle)"
 
 #. TOOLBAR_LABEL_EDIT_UNDO
-#: po/tmp/ap_String_Id.h.h:2383
+#: po/tmp/ap_String_Id.h.h:2422
 msgid "Undo"
 msgstr "Nyahbuat"
 
 #. MENU_STATUSLINE_EDIT_UNDO
 #. TOOLBAR_STATUSLINE_EDIT_UNDO
 #. TOOLBAR_TOOLTIP_EDIT_UNDO
-#: po/tmp/ap_String_Id.h.h:2387
+#: po/tmp/ap_String_Id.h.h:2426
 msgid "Undo editing"
 msgstr "Nyahbuat suntingan"
 
 #. DLG_Lists_Upper_Case_List
-#: po/tmp/ap_String_Id.h.h:2389
+#: po/tmp/ap_String_Id.h.h:2428
 #: po/tmp/xap_String_Id.h.h:702
 msgid "Upper Case List"
 msgstr "Senarai Huruf Besar"
 
 #. DLG_Lists_Upper_Roman_List
-#: po/tmp/ap_String_Id.h.h:2391
+#: po/tmp/ap_String_Id.h.h:2430
 #: po/tmp/xap_String_Id.h.h:704
 msgid "Upper Roman List"
 msgstr "Senarai Roman Besar"
 
 #. DLG_Column_RtlOrder
-#: po/tmp/ap_String_Id.h.h:2393
+#: po/tmp/ap_String_Id.h.h:2432
 msgid "Use RTL Order"
 msgstr "Guna Susunan RTL"
 
 #. DLG_Options_Label_HebrewContextGlyphs
-#: po/tmp/ap_String_Id.h.h:2395
+#: po/tmp/ap_String_Id.h.h:2434
 msgid "Use glyph shaping for Hebrew"
 msgstr "Guna pembentukan glyph untuk Hebrew"
 
 #. DLG_Options_Label_UILang
-#: po/tmp/ap_String_Id.h.h:2397
+#: po/tmp/ap_String_Id.h.h:2436
 msgid "User Interface Language"
 msgstr "Bahasa Antaramuka Pengguna"
 
 #. DLG_Stylist_UserStyles
-#: po/tmp/ap_String_Id.h.h:2399
+#: po/tmp/ap_String_Id.h.h:2438
 msgid "User defined Styles"
 msgstr "Gaya ditakrif pengguna"
 
 #. DLG_Styles_LBL_UserDefined
-#: po/tmp/ap_String_Id.h.h:2401
+#: po/tmp/ap_String_Id.h.h:2440
 msgid "User-defined styles"
 msgstr "Gaya takrifan-pengguna"
 
 #. AUTOTEXT_MAIL_6
-#: po/tmp/ap_String_Id.h.h:2403
+#: po/tmp/ap_String_Id.h.h:2442
 msgid "VIA AIRMAIL"
 msgstr "MELALUII MEL UDARA"
 
 #. AUTOTEXT_MAIL_7
-#: po/tmp/ap_String_Id.h.h:2405
+#: po/tmp/ap_String_Id.h.h:2444
 msgid "VIA FACSIMILE"
 msgstr "MELALUI FAKSIMILI"
 
 #. AUTOTEXT_MAIL_8
-#: po/tmp/ap_String_Id.h.h:2407
+#: po/tmp/ap_String_Id.h.h:2446
 msgid "VIA OVERNIGHT MAIL"
 msgstr "MELALUI MEL SEMALAMAN"
 
 #. FIELD_Application_Version
-#: po/tmp/ap_String_Id.h.h:2409
+#: po/tmp/ap_String_Id.h.h:2448
 #: po/tmp/xap_String_Id.h.h:708
 msgid "Version"
 msgstr "Versi"
 
 #. DLG_Options_TabLabel_View
-#: po/tmp/ap_String_Id.h.h:2411
+#: po/tmp/ap_String_Id.h.h:2450
 msgid "View"
 msgstr "Lihat"
 
 #. MENU_STATUSLINE_TOOLS_HISTORY_SHOW
-#: po/tmp/ap_String_Id.h.h:2413
+#: po/tmp/ap_String_Id.h.h:2452
 msgid "View document history"
 msgstr "Lihat sejarah dokumen"
 
 #. MENU_STATUSLINE_VIEW_FULLSCREEN
-#: po/tmp/ap_String_Id.h.h:2415
+#: po/tmp/ap_String_Id.h.h:2454
 msgid "View the document in full screen mode"
 msgstr "Lihat dokumen dalam mod skrin penuh"
 
@@ -5711,193 +5807,193 @@ msgstr "Lihat dokumen dalam mod skrin penuh"
 #. MENU_STATUSLINE_WINDOW_7
 #. MENU_STATUSLINE_WINDOW_8
 #. MENU_STATUSLINE_WINDOW_9
-#: po/tmp/ap_String_Id.h.h:2425
+#: po/tmp/ap_String_Id.h.h:2464
 msgid "View this document"
 msgstr "Lihat dokumen ini"
 
 #. DLG_Options_Label_ViewTooltips
-#: po/tmp/ap_String_Id.h.h:2427
+#: po/tmp/ap_String_Id.h.h:2466
 msgid "View tooltips"
 msgstr "Lihat tip alat"
 
 #. DLG_Options_Label_ViewViewFrame
-#: po/tmp/ap_String_Id.h.h:2429
+#: po/tmp/ap_String_Id.h.h:2468
 msgid "View..."
 msgstr "Lihat..."
 
 #. DLG_Options_Label_Visible
-#: po/tmp/ap_String_Id.h.h:2431
+#: po/tmp/ap_String_Id.h.h:2470
 msgid "Visible"
 msgstr "Kelihatan"
 
 #. MSG_HyperlinkNoBookmark
-#: po/tmp/ap_String_Id.h.h:2433
+#: po/tmp/ap_String_Id.h.h:2472
 #, c-format
 msgid "Warning: the bookmark you provided [%s] does not exist."
 msgstr "Amaran: tandabuku yang anda berikan [%s] tidak wujud."
 
 #. MENU_STATUSLINE_VIEW_WEB
-#: po/tmp/ap_String_Id.h.h:2435
+#: po/tmp/ap_String_Id.h.h:2474
 msgid "Web Layout"
 msgstr "Susunatur Web"
 
 #. DLG_Styles_LBL_TxtMsg
-#: po/tmp/ap_String_Id.h.h:2437
+#: po/tmp/ap_String_Id.h.h:2476
 msgid "What Hath God Wrought"
 msgstr "What Hath God Wrought"
 
 #. DLG_Options_Label_WithExtension
-#: po/tmp/ap_String_Id.h.h:2439
+#: po/tmp/ap_String_Id.h.h:2478
 msgid "With extension:"
 msgstr "Dengan penghujung:"
 
 #. DLG_WordCount_WordCountTitle
 #. FIELD_Numbers_WordCount
-#: po/tmp/ap_String_Id.h.h:2442
+#: po/tmp/ap_String_Id.h.h:2481
 msgid "Word Count"
 msgstr "Kiraan Perkataan"
 
 #. DLG_NEW_Tab1
-#: po/tmp/ap_String_Id.h.h:2444
+#: po/tmp/ap_String_Id.h.h:2483
 msgid "Wordprocessing"
 msgstr "Pemproses perkataan"
 
 #. DLG_Options_Label_SpellUppercase
-#: po/tmp/ap_String_Id.h.h:2446
+#: po/tmp/ap_String_Id.h.h:2485
 msgid "Words in &UPPERCASE"
 msgstr "Perkataan dalam H&URUFBESAR"
 
 #. DLG_Options_Label_SpellNumbers
-#: po/tmp/ap_String_Id.h.h:2448
+#: po/tmp/ap_String_Id.h.h:2487
 msgid "Words with num&bers"
 msgstr "Perkataan dengan nom&bor"
 
 #. DLG_WordCount_Words
-#: po/tmp/ap_String_Id.h.h:2450
+#: po/tmp/ap_String_Id.h.h:2489
 msgid "Words:"
 msgstr "Perkataan:"
 
 #. MSG_SaveFailedWrite
-#: po/tmp/ap_String_Id.h.h:2452
+#: po/tmp/ap_String_Id.h.h:2491
 #, c-format
 msgid "Writing error when attempting to save %s"
 msgstr "Ralat menulis ketika cuba menyimpan %s"
 
 #. MSG_DefaultDirectionChg
-#: po/tmp/ap_String_Id.h.h:2454
+#: po/tmp/ap_String_Id.h.h:2493
 msgid "You have changed the default direction."
 msgstr "Anda telah mengubah arah default."
 
 #. MSG_DirectionModeChg
-#: po/tmp/ap_String_Id.h.h:2456
+#: po/tmp/ap_String_Id.h.h:2495
 msgid "You have changed the direction mode."
 msgstr "Anda telah mengubah mod arah."
 
 #. MSG_HyperlinkNoSelection
-#: po/tmp/ap_String_Id.h.h:2458
+#: po/tmp/ap_String_Id.h.h:2497
 msgid "You must select a portion of the document before inserting a hyperlink."
 msgstr "Anda mesti memilih sebahagian daripada dokumen sebelum memasukkan hiperlink."
 
 #. DLG_Options_Label_InvalidRangeForAutoSave
-#: po/tmp/ap_String_Id.h.h:2460
+#: po/tmp/ap_String_Id.h.h:2499
 msgid "You should choose a range from 1 to 120 for the auto save frequency"
 msgstr "Anda seharusnya memilih julat dari 1 ke 120 untuk kekerapan simpanan auto"
 
 #. MSG_ConfirmSaveSecondary
-#: po/tmp/ap_String_Id.h.h:2462
+#: po/tmp/ap_String_Id.h.h:2501
 msgid "Your changes will be lost if you don't save them."
 msgstr "Perubahan anda akan hilang jika anda tidak menyimpannya."
 
 #. AUTOTEXT_CLOSING_12
-#: po/tmp/ap_String_Id.h.h:2464
+#: po/tmp/ap_String_Id.h.h:2503
 msgid "Yours truly,"
 msgstr "Yang benar,"
 
 #. TOOLBAR_LABEL_ZOOM
 #. TOOLBAR_STATUSLINE_ZOOM
 #. TOOLBAR_TOOLTIP_ZOOM
-#: po/tmp/ap_String_Id.h.h:2468
+#: po/tmp/ap_String_Id.h.h:2507
 #: po/tmp/xap_String_Id.h.h:755
 msgid "Zoom"
 msgstr "Zoom"
 
 #. MENU_LABEL_VIEW_ZOOM_100
-#: po/tmp/ap_String_Id.h.h:2470
+#: po/tmp/ap_String_Id.h.h:2509
 msgid "Zoom to &100%"
 msgstr "Zoom kepada &100%"
 
 #. MENU_LABEL_VIEW_ZOOM_200
-#: po/tmp/ap_String_Id.h.h:2472
+#: po/tmp/ap_String_Id.h.h:2511
 msgid "Zoom to &200%"
 msgstr "Zoom kepada &200%"
 
 #. MENU_LABEL_VIEW_ZOOM_50
-#: po/tmp/ap_String_Id.h.h:2474
+#: po/tmp/ap_String_Id.h.h:2513
 msgid "Zoom to &50%"
 msgstr "Zoom kepada &50%"
 
 #. MENU_LABEL_VIEW_ZOOM_75
-#: po/tmp/ap_String_Id.h.h:2476
+#: po/tmp/ap_String_Id.h.h:2515
 msgid "Zoom to &75%"
 msgstr "Zoom kepada &75%"
 
 #. MENU_STATUSLINE_VIEW_ZOOM_100
-#: po/tmp/ap_String_Id.h.h:2478
+#: po/tmp/ap_String_Id.h.h:2517
 msgid "Zoom to 100%"
 msgstr "Zoom kepada 100%"
 
 #. MENU_STATUSLINE_VIEW_ZOOM_200
-#: po/tmp/ap_String_Id.h.h:2480
+#: po/tmp/ap_String_Id.h.h:2519
 msgid "Zoom to 200%"
 msgstr "Zoom kepada 200%"
 
 #. MENU_STATUSLINE_VIEW_ZOOM_50
-#: po/tmp/ap_String_Id.h.h:2482
+#: po/tmp/ap_String_Id.h.h:2521
 msgid "Zoom to 50%"
 msgstr "Zoom kepada 50%"
 
 #. MENU_STATUSLINE_VIEW_ZOOM_75
-#: po/tmp/ap_String_Id.h.h:2484
+#: po/tmp/ap_String_Id.h.h:2523
 msgid "Zoom to 75%"
 msgstr "Zoom kepada 75%"
 
 #. MENU_STATUSLINE_VIEW_ZOOM_WIDTH
-#: po/tmp/ap_String_Id.h.h:2486
+#: po/tmp/ap_String_Id.h.h:2525
 msgid "Zoom to page width"
 msgstr "Zoom kepada lebar halaman"
 
 #. MENU_STATUSLINE_VIEW_ZOOM_WHOLE
-#: po/tmp/ap_String_Id.h.h:2488
+#: po/tmp/ap_String_Id.h.h:2527
 msgid "Zoom to whole page"
 msgstr "Zoom kepada seluruh halaman"
 
 #. DLG_Options_Label_CustomDict
-#: po/tmp/ap_String_Id.h.h:2490
+#: po/tmp/ap_String_Id.h.h:2529
 msgid "custom.dic"
 msgstr "kamus sendiri"
 
 #. FIELD_DateTime_DDMMYY
-#: po/tmp/ap_String_Id.h.h:2492
+#: po/tmp/ap_String_Id.h.h:2531
 msgid "dd/mm/yy"
 msgstr "dd/mm/yy"
 
 #. DLG_ToggleCase_LowerCase
-#: po/tmp/ap_String_Id.h.h:2494
+#: po/tmp/ap_String_Id.h.h:2533
 msgid "lowercase"
 msgstr "hurufkecil"
 
 #. DLG_Options_Label_Minutes
-#: po/tmp/ap_String_Id.h.h:2496
+#: po/tmp/ap_String_Id.h.h:2535
 msgid "minutes"
 msgstr "minit"
 
 #. FIELD_DateTime_MMDDYY
-#: po/tmp/ap_String_Id.h.h:2498
+#: po/tmp/ap_String_Id.h.h:2537
 msgid "mm/dd/yy"
 msgstr "mm/dd/yy"
 
 #. DLG_ToggleCase_ToggleCase
-#: po/tmp/ap_String_Id.h.h:2500
+#: po/tmp/ap_String_Id.h.h:2539
 msgid "tOGGLE cASE"
 msgstr "tOGGLE hURUF"
 
