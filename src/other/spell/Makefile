@@ -21,6 +21,7 @@
 # TODO we should move this down into src/other/spell/xp
 
 ABI_ROOT:=$(shell pwd)/../../..
+ABI_PEER:=/spell
 
 include $(ABI_ROOT)/src/config/abi_defs.mk
 

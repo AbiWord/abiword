@@ -251,7 +251,16 @@ endef
 ## $DIST/				contains the final archives
 ##					of all distribution binaries.
 ##
-## (The final archives will be named $DISTBASENAME.<suffix>)
+## We just use the abi tree if nothing specified.  Set both
+## of these on the command line if you want to keep your
+## source tree pristine.
+
+DIST			= $(ABI_ROOT)/dist
+OUT			= $(ABI_ROOT)/src
+
+##################################################################
+##################################################################
+## Symbols to uniquely identify the build.
 ##
 ## ABI_BUILD_VERSION	should be set to the build version (1.0.0)
 ##			for a numbered build.
@@ -263,15 +272,21 @@ endef
 ABI_BUILD_VERSION	= unnumbered
 ABI_BUILD_ID		=
 
-DIST			= $(ABI_ROOT)/dist
-OUT			= $(ABI_ROOT)/src
+##################################################################
+##################################################################
+## ABI_PEER is an empty symbol.  It is used by the various third-
+## party libraries to specify a subdirectory name (under OBJDIR)
+## of the .o's from the library.  This prevents filename collisions
+## between the various libraries that we use.  (For example, both
+## zlib and wv have a file called crc32.c -- which are different.)
 
 ##################################################################
-## set everything else from the above four variables....
+##################################################################
+## set everything else from the above variables....
 
 OUTDIR			= $(OUT)/$(OS_NAME)_$(OS_RELEASE)_$(OS_ARCH)_$(OBJ_DIR_SFX)
-OBJDIR			= $(OUTDIR)/obj
-LIBDIR			= $(OUTDIR)/lib
+OBJDIR			= $(OUTDIR)/obj$(ABI_PEER)
+LIBDIR			= $(OUTDIR)/obj
 BINDIR			= $(OUTDIR)/bin
 CANONDIR		= $(OUTDIR)/AbiSuite
 
@@ -285,7 +300,7 @@ USERDIR			= $(ABI_ROOT)/user
 ## application (abi/src/{wp,show,...}/main/{win,unix,...}/Makefile,
 ## the following variables:
 ##
-##    ABI_APPLIBS should be for ABI_ versioned things in $(OBJDIR)
+##    ABI_APPLIBS should be for ABI_ versioned things in $(LIBDIR)
 ##    ABI_LIBS should be for other system libraries
 ##    ABI_APPLIBDEP should be ABI_APPLIBS without duplicates.
 ##
@@ -294,14 +309,14 @@ USERDIR			= $(ABI_ROOT)/user
 ##              checking dependencies in the final link.
 
 ifeq ($(OS_NAME),WIN32)
-EXTRA_LIBS	= 	$(addprefix $(OBJDIR)/lib,$(addsuffix $(ABI_VERSION)_s.lib,$(ABI_APPLIBS)))	\
+EXTRA_LIBS	= 	$(addprefix $(LIBDIR)/lib,$(addsuffix $(ABI_VERSION)_s.lib,$(ABI_APPLIBS)))	\
 			$(addsuffix .lib,$(ABI_LIBS))
-EXTRA_LIBDEP	=	$(addprefix $(OBJDIR)/lib,$(addsuffix $(ABI_VERSION)_s.lib,$(ABI_APPLIBDEP)))
+EXTRA_LIBDEP	=	$(addprefix $(LIBDIR)/lib,$(addsuffix $(ABI_VERSION)_s.lib,$(ABI_APPLIBDEP)))
 else
-EXTRA_LIBS	=	-L$(OBJDIR) 							\
+EXTRA_LIBS	=	-L$(LIBDIR) 							\
 			$(addprefix -l,$(addsuffix $(ABI_VERSION),$(ABI_APPLIBS)))	\
 			$(addprefix -l,$(ABI_LIBS))
-EXTRA_LIBDEP	=	$(addprefix $(OBJDIR)/lib,$(addsuffix $(ABI_VERSION).a,$(ABI_APPLIBDEP)))
+EXTRA_LIBDEP	=	$(addprefix $(LIBDIR)/lib,$(addsuffix $(ABI_VERSION).a,$(ABI_APPLIBDEP)))
 endif
 
 ##################################################################
