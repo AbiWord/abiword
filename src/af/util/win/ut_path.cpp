@@ -28,7 +28,7 @@
 	a char* pointing to "bar.ext".
  */
 
-const char* basename(const char* path)
+const char* UT_basename(const char* path)
 {
 	size_t len = strlen(path);
 	const char* str = &path[len];

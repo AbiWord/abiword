@@ -20,6 +20,6 @@
 #ifndef UT_PATH_H
 #define UT_PATH_H
 
-const char* basename(const char* path);
+const char* UT_basename(const char* path);
 
 #endif /* UT_PATH_H */

@@ -1766,7 +1766,7 @@ bool s_HTML_Listener::populate(PL_StruxFmtHandle /*sfh*/,
 					m_pie->write("<img alt=\"AbiWord Image");
 					m_pie->write(buf);
 					m_pie->write("\" src=\"");
-					m_pie->write(basename(m_pie->getFileName()));
+					m_pie->write(UT_basename(m_pie->getFileName()));
 					m_pie->write("_d/");
 					m_pie->write(buf);
 					m_pie->write("\" />\r\n");
