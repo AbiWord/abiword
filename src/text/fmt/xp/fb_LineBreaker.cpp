@@ -56,7 +56,13 @@ int fb_SimpleLineBreaker::breakParagraph(fl_BlockLayout* pBlock)
 		{
 			goto skip_to_next_line;
 		}
-		
+
+		/*
+		  As a first step, we check to see if the line
+		  has any forced line breaks.  If so, we take any
+		  runs after the break and bump them to the next
+		  line.
+		*/
 		{
 			fp_Run* pWalkingRun = pLine->getFirstRun();
 			for (;;)
@@ -100,6 +106,12 @@ int fb_SimpleLineBreaker::breakParagraph(fl_BlockLayout* pBlock)
 				}
 			}
 		}
+
+		/*
+		  Now, we compare the actual width of the line with the its
+		  maximum allowed width and process the line differently
+		  depending upon whether the line is overfull or underfull.
+		*/
 		
 		iMaxLineWidth = pLine->getMaxWidth();
 		iCurLineWidth = pLine->getWidth();
@@ -303,7 +315,7 @@ int fb_SimpleLineBreaker::breakParagraph(fl_BlockLayout* pBlock)
 		{
 			/*
 			  The current line has extra room in it.  we should check
-			  to see if something from the next line can be slurped
+			  to see if something from the next line(s) can be slurped
 			  into this one.  Of course, if there is no next line,
 			  then there's not much we can do, is there?  :-)
 			*/
@@ -330,9 +342,17 @@ int fb_SimpleLineBreaker::breakParagraph(fl_BlockLayout* pBlock)
 					fp_Run* pBoundaryRun = NULL;
 					UT_Bool bFoundSplit = UT_FALSE;
 					UT_Bool bFoundBreakAfter = UT_FALSE;
+					UT_Bool bFoundForcedBreak = UT_FALSE;
 
 					while (pWorkingRun)
 					{
+						if (pWorkingRun->getType() == FPRUN_FORCEDLINEBREAK)
+						{
+							pBoundaryRun = pWorkingRun;
+							bFoundForcedBreak = UT_TRUE;
+							break;
+						}
+						
 						if ((iWorkingWidth + (UT_sint32) pWorkingRun->getWidth()) > iExtraLineWidth)
 						{
 							// We've gone too far.  This one won't fit.
@@ -370,7 +390,12 @@ int fb_SimpleLineBreaker::breakParagraph(fl_BlockLayout* pBlock)
 						  OK.  We found a boundary run.
 						*/
 
-						if (!bFoundSplit)
+						if (bFoundForcedBreak)
+						{
+							pWorkingRun = pBoundaryRun;
+							bFoundBreakAfter = UT_TRUE;
+						}
+						else if (!bFoundSplit)
 						{
 							/*
 							  The boundary run wouldn't split.  We'll have to look
@@ -410,7 +435,8 @@ int fb_SimpleLineBreaker::breakParagraph(fl_BlockLayout* pBlock)
 						}
 
 						/*
-						  OK, our slurp search is done.
+						  OK, our slurp search is done.  Time to actually DO
+						  the slurping.
 						*/
 
 						if (bFoundSplit || bFoundBreakAfter)

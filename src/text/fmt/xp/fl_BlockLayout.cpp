@@ -1328,6 +1328,7 @@ UT_Bool	fl_BlockLayout::_doInsertRun(fp_Run* pNewRun)
 		m_pFirstRun = NULL;
 
 		m_pFirstRun = pNewRun;
+		pNewRun->calcWidths(&m_gbCharWidths);
 		m_pLastLine->addRun(pNewRun);
 
 		return UT_TRUE;
