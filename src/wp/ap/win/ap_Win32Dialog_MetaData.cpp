@@ -154,11 +154,11 @@ BOOL AP_Win32Dialog_MetaData_General::_onInitDialog(HWND hWnd, WPARAM wParam, LP
 		localizeControlText(rgMapping[i].controlId, rgMapping[i].stringId);						
 	
 	// Setup previous text	
-	setControlText(AP_RID_DIALOG_META_GENERAL_EDIT_TITLE,				getContainer()->getTitle().c_str());									
-	setControlText(AP_RID_DIALOG_META_GENERAL_EDIT_SUBJECT,		getContainer()->getSubject().c_str());									
-	setControlText(AP_RID_DIALOG_META_GENERAL_EDIT_AUTHOR,		getContainer()->getAuthor().c_str());									
-	setControlText(AP_RID_DIALOG_META_GENERAL_EDIT_PUBLISHER,		getContainer()->getPublisher().c_str());									
-	setControlText(AP_RID_DIALOG_META_GENERAL_EDIT_CONTRIBUTOR,	getContainer()->getCoAuthor().c_str());									
+	setControlText(AP_RID_DIALOG_META_GENERAL_EDIT_TITLE,				getContainer()->getTitle().utf8_str());									
+	setControlText(AP_RID_DIALOG_META_GENERAL_EDIT_SUBJECT,		getContainer()->getSubject().utf8_str());									
+	setControlText(AP_RID_DIALOG_META_GENERAL_EDIT_AUTHOR,		getContainer()->getAuthor().utf8_str());									
+	setControlText(AP_RID_DIALOG_META_GENERAL_EDIT_PUBLISHER,		getContainer()->getPublisher().utf8_str());									
+	setControlText(AP_RID_DIALOG_META_GENERAL_EDIT_CONTRIBUTOR,	getContainer()->getCoAuthor().utf8_str());									
 	
 	
 	HWND hParent = GetParent(getHandle());						
@@ -244,10 +244,10 @@ BOOL AP_Win32Dialog_MetaData_Summary::_onInitDialog(HWND hWnd, WPARAM wParam, LP
 		localizeControlText(rgMapping[i].controlId, rgMapping[i].stringId);				
 
 	// Setup previous text	
-	setControlText(AP_RID_DIALOG_META_SUMMARY_EDIT_CATEGORY,	getContainer()->getCategory().c_str());									
-	setControlText(AP_RID_DIALOG_META_SUMMARY_EDIT_KEYWORDS,	getContainer()->getKeywords().c_str());									
-	setControlText(AP_RID_DIALOG_META_SUMMARY_EDIT_LANGUAGE,	getContainer()->getLanguages().c_str());									
-	setControlText(AP_RID_DIALOG_META_SUMMARY_EDIT_DESCRIPTION,	getContainer()->getDescription().c_str());									
+	setControlText(AP_RID_DIALOG_META_SUMMARY_EDIT_CATEGORY,	getContainer()->getCategory().utf8_str());									
+	setControlText(AP_RID_DIALOG_META_SUMMARY_EDIT_KEYWORDS,	getContainer()->getKeywords().utf8_str());									
+	setControlText(AP_RID_DIALOG_META_SUMMARY_EDIT_LANGUAGE,	getContainer()->getLanguages().utf8_str());									
+	setControlText(AP_RID_DIALOG_META_SUMMARY_EDIT_DESCRIPTION,	getContainer()->getDescription().utf8_str());									
 
 	return true;
 }
@@ -325,10 +325,10 @@ BOOL AP_Win32Dialog_MetaData_Permissions::_onInitDialog(HWND hWnd, WPARAM wParam
 		localizeControlText(rgMapping[i].controlId, rgMapping[i].stringId);				
 
 	// Setup previous text	
-	setControlText(AP_RID_DIALOG_META_PERMISSIONS_EDIT_SOURCE,	getContainer()->getSource().c_str());											
-	setControlText(AP_RID_DIALOG_META_PERMISSIONS_EDIT_RELATION,	getContainer()->getRelation().c_str());											
-	setControlText(AP_RID_DIALOG_META_PERMISSIONS_EDIT_COVERAGE,	getContainer()->getCoverage().c_str());											
-	setControlText(AP_RID_DIALOG_META_PERMISSIONS_EDIT_RIGHTS,	getContainer()->getRights().c_str());
+	setControlText(AP_RID_DIALOG_META_PERMISSIONS_EDIT_SOURCE,	getContainer()->getSource().utf8_str());											
+	setControlText(AP_RID_DIALOG_META_PERMISSIONS_EDIT_RELATION,	getContainer()->getRelation().utf8_str());											
+	setControlText(AP_RID_DIALOG_META_PERMISSIONS_EDIT_COVERAGE,	getContainer()->getCoverage().utf8_str());											
+	setControlText(AP_RID_DIALOG_META_PERMISSIONS_EDIT_RIGHTS,	getContainer()->getRights().utf8_str());
 
 	return true;									
 

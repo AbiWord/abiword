@@ -220,10 +220,10 @@ void AP_Win32Dialog_WordCount::_setDlgItemInt(UINT nCtrl, int nValue)
 
 	sprintf(szUnFormatted, "%u", nValue);
 
-	GetNumberFormat(LOCALE_USER_DEFAULT, 0, szUnFormatted,
-		NULL, szFormatted, sizeof (szFormatted)/sizeof(char));		
+	GetNumberFormatA(LOCALE_USER_DEFAULT, 0, szUnFormatted,
+		NULL, szFormatted, sizeof (szFormatted)/sizeof(char)); //TODO Using ANSI Function		
 
-	SetDlgItemText(m_hWnd, nCtrl, szFormatted);		
+	SetDlgItemTextA(m_hWnd, nCtrl, szFormatted); //TODO Using ANSI Function		
 }						
 					
 					
