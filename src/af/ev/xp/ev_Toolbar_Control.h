@@ -43,6 +43,7 @@ public:
 
 	UT_uint32			getMaxLength(void) const;
 	UT_uint32			getPixelWidth(void) const;
+	virtual UT_uint32   getDroppedWidth(void) const {return getPixelWidth();}
 	bool				shouldSort(void) const;
 
 protected:
