@@ -740,7 +740,7 @@ void AP_QNXDialog_Styles::setDescription(const char * desc) const
 
 const char * AP_QNXDialog_Styles::getCurrentStyle (void) const
 {
-	static UT_String szStyleBuf;
+	static UT_UTF8String szStyleBuf;
 	char **items;
 
 	UT_ASSERT(m_wclistStyles);

@@ -993,7 +993,7 @@ void AP_QNXDialog_Options::_gatherAutoSaveFileExt(UT_String &stRetVal)
 
 void AP_QNXDialog_Options::_setAutoSaveFileExt(const UT_String &stExt)
 {
-	PtSetResource(m_wAutoSaveFileExt, Pt_ARG_TEXT_STRING, stExt.utf8_str(), 0);
+	PtSetResource(m_wAutoSaveFileExt, Pt_ARG_TEXT_STRING, stExt.c_str(), 0);
 }
 
 void AP_QNXDialog_Options::_gatherAutoSaveFilePeriod(UT_String &stRetVal)
@@ -1007,7 +1007,7 @@ void AP_QNXDialog_Options::_gatherAutoSaveFilePeriod(UT_String &stRetVal)
 
 void AP_QNXDialog_Options::_setAutoSaveFilePeriod(const UT_String &stPeriod)
 {
-	PtSetResource(m_wAutoSaveFilePeriod, Pt_ARG_NUMERIC_VALUE, atoi(stPeriod.utf8_str()), 0);
+	PtSetResource(m_wAutoSaveFilePeriod, Pt_ARG_NUMERIC_VALUE, atoi(stPeriod.c_str()), 0);
 }
 
 UT_Dimension AP_QNXDialog_Options::_gatherViewRulerUnits(void)

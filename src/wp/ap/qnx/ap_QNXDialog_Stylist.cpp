@@ -31,32 +31,40 @@
 
 #include "ap_Strings.h"
 #include "ap_Dialog_Id.h"
-#include "ap_Dialog_Field.h"
-#include "ap_QNXDialog_Field.h"
-#include "ap_QNXDialog_Modeless.h"
+#include "ap_Dialog_Stylist.h"
+#include "ap_QNXDialog_Stylist.h"
 #include "ut_qnxHelper.h"
 
 
 /*****************************************************************/
 
-XAP_Dialog * AP_QNXDialog_Modeless::static_constructor(XAP_DialogFactory * pFactory,
+XAP_Dialog * AP_QNXDialog_Stylist::static_constructor(XAP_DialogFactory * pFactory,
 													 XAP_Dialog_Id id)
 {
-	AP_QNXDialog_Modeless * p = new AP_QNXDialog_Modeless(pFactory,id);
+	AP_QNXDialog_Stylist * p = new AP_QNXDialog_Stylist(pFactory,id);
 	return p;
 }
 
-AP_QNXDialog_Modeless::AP_QNXDialog_Modeless(XAP_DialogFactory * pDlgFactory,
+void AP_QNXDialog_Stylist::destroy()
+{
+
+}
+void AP_QNXDialog_Stylist::activate()
+{
+
+}
+
+AP_QNXDialog_Stylist::AP_QNXDialog_Stylist(XAP_DialogFactory * pDlgFactory,
 											   XAP_Dialog_Id id)
-	: AP_Dialog_Modeless(pDlgFactory,id)
+	: AP_Dialog_Stylist(pDlgFactory,id)
 {
 }
 
-AP_QNXDialog_Modeless::~AP_QNXDialog_Modeless(void)
+AP_QNXDialog_Stylist::~AP_QNXDialog_Stylist(void)
 {
 }
 
-void AP_QNXDialog_Modeless::runModeless(XAP_Frame * pFrame)
+void AP_QNXDialog_Stylist::runModeless(XAP_Frame * pFrame)
 {
 	UT_ASSERT(pFrame);
 
