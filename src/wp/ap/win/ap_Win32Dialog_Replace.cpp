@@ -17,36 +17,37 @@
  * 02111-1307, USA.
  */
 
-// TODO get rid of this (it's used for printf, which should be changed to
-// UT_DEBUGMSG())
-#include <stdio.h>
+// TODO make this entire file work -- as is, it's just a
+// Unix hacker's stubs, do with this file as you wish.  Even
+// worse, this code was branched before the Unix replace dialog
+// got finished, so there's no interaction with the document.  
 
-#include <gtk/gtk.h>
-#include <stdlib.h>
-#include <string.h>
+// here's a start?  :)
+#include <windows.h>
+
 #include "ut_string.h"
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
 
 #include "xap_Dialog_Id.h"
-#include "xap_UnixApp.h"
-#include "xap_UnixFrame.h"
+#include "xap_Win32App.h"
+#include "xap_Win32Frame.h"
 
 #include "ap_Dialog_Replace.h"
-#include "ap_UnixDialog_Replace.h"
+#include "ap_Win32Dialog_Replace.h"
 
 #define FREEP(p)	do { if (p) free(p); (p)=NULL; } while (0)
 
 /*****************************************************************/
-AP_Dialog * AP_UnixDialog_Replace::static_constructor(AP_DialogFactory * pFactory,
-															 AP_Dialog_Id id)
+AP_Dialog * AP_Win32Dialog_Replace::static_constructor(AP_DialogFactory * pFactory,
+													   AP_Dialog_Id id)
 {
-	AP_UnixDialog_Replace * p = new AP_UnixDialog_Replace(pFactory,id);
+	AP_Win32Dialog_Replace * p = new AP_Win32Dialog_Replace(pFactory,id);
 	return p;
 }
 
-AP_UnixDialog_Replace::AP_UnixDialog_Replace(AP_DialogFactory * pDlgFactory,
-														   AP_Dialog_Id id)
+AP_Win32Dialog_Replace::AP_Win32Dialog_Replace(AP_DialogFactory * pDlgFactory,
+											   AP_Dialog_Id id)
 	: AP_Dialog_Replace(pDlgFactory,id)
 {
 
@@ -55,35 +56,15 @@ AP_UnixDialog_Replace::AP_UnixDialog_Replace(AP_DialogFactory * pDlgFactory,
     matchCase = true;
 }
 
-AP_UnixDialog_Replace::~AP_UnixDialog_Replace(void)
+AP_Win32Dialog_Replace::~AP_Win32Dialog_Replace(void)
 {
 }
-
-#if 0
-/*****************************************************************/
-
-static void s_ok_clicked(GtkWidget * widget,
-						 AP_Dialog_Replace::tAnswer * answer)
-{
-	*answer = AP_Dialog_Replace::a_OK;
-	gtk_main_quit();
-}
-
-static void s_cancel_clicked(GtkWidget * widget,
-							 AP_Dialog_Replace::tAnswer * answer)
-{
-	*answer = AP_Dialog_Replace::a_CANCEL;
-	gtk_main_quit();
-}
-
-/*****************************************************************/
-#endif
-
 
 // FindCallback()  - called when user hits enter in the Find text field
 //  				 or when the <Find Next> button is hit
-static void FindCallback(GtkWidget *widget, AP_UnixDialog_Replace  *repDialog)
+static void FindCallback(GtkWidget *widget, AP_Win32Dialog_Replace  *repDialog)
 {
+#if 0
 	gchar *entryText;
 
 	/* TODO:  know who allocates and frees this memory returned from
@@ -92,6 +73,7 @@ static void FindCallback(GtkWidget *widget, AP_UnixDialog_Replace  *repDialog)
 	entryText = gtk_entry_get_text(GTK_ENTRY(repDialog->findEntry));
 	printf("Entry contents: \"%s\"\n", ((entryText) ? entryText : "NULL"));
 
+#endif
 /*
 	AdvancePointer();
 	Highlight();
@@ -100,8 +82,9 @@ static void FindCallback(GtkWidget *widget, AP_UnixDialog_Replace  *repDialog)
 
 
 static void ReplaceCallback(GtkWidget *widget, 
-							AP_UnixDialog_Replace  *repDialog)
+							AP_Win32Dialog_Replace  *repDialog)
 {
+#if 0
 	gchar *replaceText;
 
 	/* TODO:  know who allocates and frees this memory returned from
@@ -113,11 +96,13 @@ static void ReplaceCallback(GtkWidget *widget,
 
 	replaceText = gtk_entry_get_text(GTK_ENTRY(repDialog->replaceEntry));
 	printf("replace contents: \"%s\"\n",((replaceText) ? replaceText : "NULL"));
+#endif
 }
 
 static void ReplaceAllCallback(GtkWidget *widget, 
-							AP_UnixDialog_Replace  *repDialog)
+							AP_Win32Dialog_Replace  *repDialog)
 {
+#if 0
 	gchar *replaceText;
 
 	/* TODO:  know who allocates and frees this memory returned from
@@ -126,24 +111,31 @@ static void ReplaceAllCallback(GtkWidget *widget,
 	printf("ReplaceCallback... called\n");
 	replaceText = gtk_entry_get_text(GTK_ENTRY(repDialog->replaceEntry));
 	printf("replace contents: \"%s\"\n", replaceText);
+#endif
 }
 
 static void MatchCaseCallback(GtkWidget *checkbutton, GtkWidget *entry)
 {
+#if 0
 	gtk_entry_set_visibility(GTK_ENTRY(entry),
 						GTK_TOGGLE_BUTTON(checkbutton)->active);
 	printf("MatchCaseCallback(): I've been called\n");
+#endif
 }
 
 static void CancelCallback(GtkWidget *button, GtkWidget *entry)
 {
-   printf("Cancel button called \n");
+#if 0
+	printf("Cancel button called \n");
+#endif
 }
 
 
 
-void AP_UnixDialog_Replace::runModal(AP_Frame * pFrame)
+void AP_Win32Dialog_Replace::runModal(AP_Frame * pFrame)
 {
+	// this is probably completely useless, right?
+#if 0
 	GtkWidget *topLevel;
 	GtkWidget *vbox;
 	GtkWidget *findBox;
@@ -294,8 +286,7 @@ void AP_UnixDialog_Replace::runModal(AP_Frame * pFrame)
 
  	gtk_widget_show(topLevel);
 
-
-
+#endif
 }
 
 

@@ -35,6 +35,8 @@
 #	include "xap_Win32Dialog_Print.h"
 #	include "xap_Win32Dialog_FontChooser.h"
 
+#	include "ap_Win32Dialog_Replace.h"
+
 	// ... add new dialogs here ...
 
 #else
@@ -46,6 +48,8 @@
 	DeclareDialog(XAP_DIALOG_ID_PRINTTOFILE,	AP_Win32Dialog_FileOpenSaveAs)
 	DeclareDialog(XAP_DIALOG_ID_FONT,			AP_Win32Dialog_FontChooser)
 
+	DeclareDialog(AP_DIALOG_ID_REPLACE,			AP_Win32Dialog_Replace)
+	
 	// ... also add new dialogs here ...
 
 #endif

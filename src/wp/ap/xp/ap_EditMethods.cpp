@@ -31,7 +31,10 @@
 #include "xap_App.h"
 #include "xap_Frame.h"
 #include "xap_EditMethods.h"
+
 #include "ap_Dialog_Id.h"
+#include "ap_Dialog_Replace.h"
+
 #include "xap_DialogFactory.h"
 #include "xap_Dialog_MessageBox.h"
 #include "xap_Dialog_FileOpenSaveAs.h"
@@ -1399,9 +1402,52 @@ Defun0(go)
 	return UT_TRUE;
 }
 
-Defun0(replace)
+
+static UT_Bool s_doReplaceDlg(FV_View * pView)
 {
-	return UT_TRUE;
+	AP_Frame * pFrame = (AP_Frame *) pView->getParentData();
+	UT_ASSERT(pFrame);
+
+	pFrame->raise();
+
+	AP_Dialog_Id id = AP_DIALOG_ID_REPLACE;
+	
+	AP_DialogFactory * pDialogFactory
+		= (AP_DialogFactory *)(pFrame->getDialogFactory());
+
+	AP_Dialog_Replace * pDialog
+		= (AP_Dialog_Replace *)(pDialogFactory->requestDialog(id));
+	UT_ASSERT(pDialog);
+
+	// stuff in any initial values....
+
+	// run the dialog
+	
+	pDialog->runModal(pFrame);
+
+	// extract what they did
+
+	UT_Bool bOK = ( 1 == 1 );
+
+#if 0
+ = (pDialog->getAnswer() == AP_Dialog_Replace::a_CANCEL);
+
+	if (bOK)
+	{
+		// TODO do we need to do anything here or is it already done during the dialog run ??
+	}
+#endif
+		
+	pDialogFactory->releaseDialog(pDialog);
+
+	return bOK;
+}
+
+Defun1(replace)
+{
+	ABIWORD_VIEW;
+
+	return s_doReplaceDlg(pView);
 }
 
 /*****************************************************************/

@@ -25,6 +25,7 @@ include $(ABI_DEPTH)/config/abi_defs.mk
 ABI_WP_INCS+=	/wp/ap/xp	/wp/ap/$(ABI_NATIVE)
 
 CPPSRCS=		ap_$(ABI_FE)DialogFactory.cpp		\
+			ap_$(ABI_FE)Dialog_Replace.cpp		\
 			ap_$(ABI_FE)Frame.cpp			\
 			ap_$(ABI_FE)Toolbar_FontCombo.cpp	\
 			ap_$(ABI_FE)Toolbar_SizeCombo.cpp	\

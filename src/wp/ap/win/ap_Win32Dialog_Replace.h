@@ -1,4 +1,4 @@
-/* AbiWord
+/* AbiSource Application Framework
  * Copyright (C) 1998 AbiSource, Inc.
  * 
  * This program is free software; you can redistribute it and/or
@@ -17,25 +17,33 @@
  * 02111-1307, USA.
  */
 
+#ifndef AP_WIN32DIALOG_REPLACE_H
+#define AP_WIN32DIALOG_REPLACE_H
 
-#ifndef AP_DIALOG_ID_H
-#define AP_DIALOG_ID_H
+#include "ap_Dialog_Replace.h"
+class AP_Win32Frame;
 
-// see the note in xap_Dialog_Id.h on number space partitioning.
+/*****************************************************************/
 
-#include "xap_Dialog_Id.h"
-
-typedef enum _AP_Dialog_Id
+class AP_Win32Dialog_Replace: public AP_Dialog_Replace
 {
-	AP_DIALOG_ID__FIRST__			= XAP_DIALOG_ID__LAST__+1,	/* must be first */
+public:
+	AP_Win32Dialog_Replace(AP_DialogFactory * pDlgFactory, AP_Dialog_Id id);
+	virtual ~AP_Win32Dialog_Replace(void);
 
-	AP_DIALOG_ID_FILE_PAGESETUP,
-	AP_DIALOG_ID_REPLACE,
+	virtual void			runModal(AP_Frame * pFrame);
 
-	/* ... add others here ... */
+	static AP_Dialog *		static_constructor(AP_DialogFactory *, AP_Dialog_Id id);
 
-	AP_DIALOG_ID__LAST__				/* must be last */
+	// yank these
+	/* 
+   	GtkWidget				*findEntry;
+	GtkWidget 				*matchCaseCheck;
+    GtkWidget 				*replaceEntry;
+	*/
+
+protected:
 
 };
 
-#endif /* AP_DIALOG_ID_H */
+#endif /* AP_WIN32DIALOG_REPLACE_H */
