@@ -100,6 +100,7 @@ void AP_CocoaDialog_Tab::runModal(XAP_Frame * pFrame)
 		break;
 	};
 	
+	[m_dlg close];
 	[m_dlg release];
 	m_dlg = nil;
 }

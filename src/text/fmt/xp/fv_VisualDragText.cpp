@@ -17,6 +17,7 @@
  * 02111-1307, USA.
  */
 
+#include <math.h>
 #include "fv_VisualDragText.h"
 #include "fl_DocLayout.h"
 #include "pd_Document.h"
@@ -29,6 +30,8 @@
 #include "fp_TableContainer.h"
 #include "fv_View.h"
 #include "gr_Painter.h"
+
+#define MIN_DRAG_PIXELS 8
 
 FV_VisualDragText::FV_VisualDragText (FV_View * pView)
 	: m_pView (pView), 
@@ -47,7 +50,8 @@ FV_VisualDragText::FV_VisualDragText (FV_View * pView)
 	  m_recCursor(0,0,0,0),
 	  m_pAutoScrollTimer(NULL),
 	  m_xLastMouse(1),
-	  m_yLastMouse(1)
+	  m_yLastMouse(1),
+	  m_bDoingCopy(false)
 {
 	UT_ASSERT (pView);
 }
@@ -147,13 +151,46 @@ void FV_VisualDragText::_autoScroll(UT_Worker * pWorker)
 
 void FV_VisualDragText::mouseDrag(UT_sint32 x, UT_sint32 y)
 {
-	if((m_iVisualDragMode != FV_VisualDrag_DRAGGING) && (m_iVisualDragMode != FV_VisualDrag_WAIT_FOR_MOUSE_DRAG) )
+        if(m_iVisualDragMode == FV_VisualDrag_NOT_ACTIVE)
+        {
+	  m_iInitialOffX = x;
+	  m_iInitialOffY = y;
+	  m_iVisualDragMode = FV_VisualDrag_WAIT_FOR_MOUSE_DRAG;
+	  UT_DEBUGMSG(("Initial call for drag -1\n"));
+	  return;
+	}
+	if((m_iInitialOffX == 0) && (m_iInitialOffY == 0))
+	{
+	  m_iInitialOffX = x;
+	  m_iInitialOffY = y;
+	  m_iVisualDragMode = FV_VisualDrag_WAIT_FOR_MOUSE_DRAG;
+	  UT_DEBUGMSG(("Initial call for drag -2 \n"));
+	}
+	if(m_iVisualDragMode == FV_VisualDrag_WAIT_FOR_MOUSE_DRAG)
+	{
+          float diff = sqrt((static_cast<float>(x) - static_cast<float>(m_iInitialOffX))*(static_cast<float>(x) - static_cast<float>(m_iInitialOffX)) +
+                              (static_cast<float>(y) - static_cast<float>(m_iInitialOffY))*(static_cast<float>(y) - static_cast<float>(m_iInitialOffY)));
+          if(diff < static_cast<float>(getGraphics()->tlu(MIN_DRAG_PIXELS)))
+          {
+	    UT_DEBUGMSG(("Not yet dragged enough.%f \n", diff));
+            //
+            // Have to drag 4 pixels before initiating the drag
+            //
+            return;
+          }
+	  else
+	  {
+	    m_iVisualDragMode = FV_VisualDrag_START_DRAGGING;	    
+	  }
+        }
+	if((m_iVisualDragMode != FV_VisualDrag_DRAGGING) && (m_iVisualDragMode != FV_VisualDrag_WAIT_FOR_MOUSE_DRAG) && !m_bDoingCopy)
 	{
 //
 // Haven't started the drag yet so create our image and cut the text.
 //
+
 		m_pView->getDocument()->beginUserAtomicGlob();
-		mouseCut(x,y);
+		mouseCut(m_iInitialOffX,m_iInitialOffY);
 		m_bTextCut = true;
 
 	}
@@ -550,7 +587,7 @@ void FV_VisualDragText::getImageFromSelection(UT_sint32 x, UT_sint32 y)
 void FV_VisualDragText::mouseCut(UT_sint32 x, UT_sint32 y)
 {
 	getImageFromSelection(x,y);
-	bool bPasteTableCol = (m_pView->getPrevSelectionMode() == FV_SelectionMode_TableColumn);
+	bool bPasteTableCol = (m_pView->getSelectionMode() == FV_SelectionMode_TableColumn);
 	if(bPasteTableCol)
 	{
 		m_pView->cmdCut();
@@ -593,8 +630,9 @@ void FV_VisualDragText::mouseCopy(UT_sint32 x, UT_sint32 y)
 	}
 	m_pView->updateScreen(false);
 	drawImage();
-	m_iVisualDragMode= FV_VisualDrag_WAIT_FOR_MOUSE_DRAG;
+	m_iVisualDragMode= FV_VisualDrag_START_DRAGGING;
 	m_bTextCut = false;
+	m_bDoingCopy = true;
 	m_pView->_resetSelection();
 }
 
@@ -617,11 +655,12 @@ PT_DocPosition FV_VisualDragText::getPosFromXY(UT_sint32 x, UT_sint32 y)
  */
 void FV_VisualDragText::mouseRelease(UT_sint32 x, UT_sint32 y)
 {
-	if(m_pAutoScrollTimer != NULL)
+        if(m_pAutoScrollTimer != NULL)
 	{
 		m_pAutoScrollTimer->stop();
 		DELETEP(m_pAutoScrollTimer);
 	}
+	m_bDoingCopy = false;
 	clearCursor();
 	if(m_iVisualDragMode != FV_VisualDrag_DRAGGING)
 	{
@@ -633,6 +672,15 @@ void FV_VisualDragText::mouseRelease(UT_sint32 x, UT_sint32 y)
 	}
 	PT_DocPosition posAtXY = getPosFromXY(x,y);
 	m_pView->setPoint(posAtXY);
+	fl_BlockLayout * pCurB = m_pView->getCurrentBlock();
+	if(pCurB)
+	{
+	    fl_ContainerLayout * pCL = pCurB->myContainingLayout();
+	    if(pCL && pCL->getContainerType() == FL_CONTAINER_SHADOW)
+	    {
+	         m_pView->setHdrFtrEdit(static_cast<fl_HdrFtrShadow *>(pCL));
+	    }
+	}
 	getGraphics()->setClipRect(&m_recCurFrame);
 	m_pView->updateScreen(false);
 	getGraphics()->setClipRect(NULL);

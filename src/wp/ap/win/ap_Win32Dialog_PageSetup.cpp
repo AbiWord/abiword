@@ -687,7 +687,6 @@ int CALLBACK AP_Win32Dialog_PageSetup_Margin::s_pageWndProc(HWND hWnd, UINT msg,
 
 void AP_Win32Dialog_PageSetup_Margin::doSpinControl(UT_uint32 id, UT_sint32 delta)
 {
-	char buf[BUFSIZE];
 	int updatedData =  0;
 	int pageScale   = ( m_pParent->getPageUnits()   == DIM_MM ) ? 1 : 10;
 	int marginScale = ( m_pParent->getMarginUnits() == DIM_MM ) ? 1 : 10;

@@ -1,3 +1,5 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
  * Copyright (C) 2003 Hubert Figuiere
@@ -159,26 +161,37 @@ void AP_CocoaDialog_PageNumbers::runModal(XAP_Frame * pFrame)
 -(void)windowDidLoad
 {
 	if (_xap) {
-		const XAP_StringSet *pSS = XAP_App::getApp()->getStringSet();
-		LocalizeControl([self window], pSS, AP_STRING_ID_DLG_PageNumbers_Title);
-		LocalizeControl(_okBtn, pSS, XAP_STRING_ID_DLG_OK);
-		LocalizeControl(_cancelBtn, pSS, XAP_STRING_ID_DLG_Cancel);
-		LocalizeControl(_positionBox, pSS, AP_STRING_ID_DLG_PageNumbers_Position);
-		LocalizeControl(_headerBtn, pSS, AP_STRING_ID_DLG_PageNumbers_Header);
+		const XAP_StringSet * pSS = XAP_App::getApp()->getStringSet();
+
+		LocalizeControl([self window],	pSS, AP_STRING_ID_DLG_PageNumbers_Title);
+
+		LocalizeControl(_okBtn,			pSS, XAP_STRING_ID_DLG_OK);
+		LocalizeControl(_cancelBtn,		pSS, XAP_STRING_ID_DLG_Cancel);
+
+		LocalizeControl(_positionBox,	pSS, AP_STRING_ID_DLG_PageNumbers_Position);
+
+		LocalizeControl(_headerBtn,		pSS, AP_STRING_ID_DLG_PageNumbers_Header);
+		LocalizeControl(_footerBtn,		pSS, AP_STRING_ID_DLG_PageNumbers_Footer);
+
+		LocalizeControl(_alignmentBox,	pSS, AP_STRING_ID_DLG_PageNumbers_Alignment);
+
+		LocalizeControl(_leftBtn,		pSS, AP_STRING_ID_DLG_PageNumbers_Left);
+		LocalizeControl(_centerBtn,		pSS, AP_STRING_ID_DLG_PageNumbers_Center);
+		LocalizeControl(_rightBtn,		pSS, AP_STRING_ID_DLG_PageNumbers_Right);
+
+		LocalizeControl(_previewBox,	pSS, AP_STRING_ID_DLG_PageNumbers_Preview);
+
 		[_headerBtn setTag:AP_Dialog_PageNumbers::id_HDR];
-		LocalizeControl(_footerBtn, pSS, AP_STRING_ID_DLG_PageNumbers_Footer);
 		[_footerBtn setTag:AP_Dialog_PageNumbers::id_FTR];
-		LocalizeControl(_alignmentBox, pSS, AP_STRING_ID_DLG_PageNumbers_Alignment);
-		LocalizeControl(_rightBtn, pSS, AP_STRING_ID_DLG_PageNumbers_Right);
-		[_rightBtn setTag:AP_Dialog_PageNumbers::id_RALIGN];
-		LocalizeControl(_leftBtn, pSS, AP_STRING_ID_DLG_PageNumbers_Left);
-		[_leftBtn setTag:AP_Dialog_PageNumbers::id_LALIGN];
-		LocalizeControl(_centerBtn, pSS, AP_STRING_ID_DLG_PageNumbers_Center);
+
+		[  _leftBtn setTag:AP_Dialog_PageNumbers::id_LALIGN];
 		[_centerBtn setTag:AP_Dialog_PageNumbers::id_CALIGN];
-		LocalizeControl(_previewBox, pSS, AP_STRING_ID_DLG_PageNumbers_Preview);
+		[ _rightBtn setTag:AP_Dialog_PageNumbers::id_RALIGN];
+
+		[_positionMatrix  selectCellWithTag:((int) ((_xap->isHeader()) ? AP_Dialog_PageNumbers::id_HDR : AP_Dialog_PageNumbers::id_FTR))];
+		[_alignmentMatrix selectCellWithTag:((int) _xap->getAlignment())];
 	}
 }
-
 
 - (IBAction)alignmentAction:(id)sender
 {

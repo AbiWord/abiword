@@ -1,3 +1,5 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
  * Copyright (C) 2003 Marc Maurer
@@ -50,13 +52,34 @@ AP_Dialog_FormatFrame::AP_Dialog_FormatFrame(XAP_DialogFactory * pDlgFactory, XA
 	: XAP_Dialog_Modeless(pDlgFactory,id, "interface/dialogformattable"),
 	  m_borderColor(0,0,0),
 	  m_lineStyle(LS_NORMAL),
-	  m_bgFillStyle(NULL),
 	
 	  m_answer(a_OK),
 	  m_pFormatFramePreview(NULL),
 	  m_bSettingsChanged(false),
+
+	  m_borderColorRight(0,0,0),
+	  m_borderColorLeft(0,0,0),
+	  m_borderColorTop(0,0,0),
+	  m_borderColorBottom(0,0,0),
+
+	  m_borderLineStyleRight(LS_NORMAL),
+	  m_borderLineStyleLeft(LS_NORMAL),
+	  m_borderLineStyleTop(LS_NORMAL),
+	  m_borderLineStyleBottom(LS_NORMAL),
+
+	  m_borderThicknessRight(1.0f),
+	  m_borderThicknessLeft(1.0f),
+	  m_borderThicknessTop(1.0f),
+	  m_borderThicknessBottom(1.0f),
+
+	  m_sBorderThickness("1.00pt"),
+
+	  m_sBorderThicknessRight("1.00pt"),
+	  m_sBorderThicknessLeft("1.00pt"),
+	  m_sBorderThicknessTop("1.00pt"),
+	  m_sBorderThicknessBottom("1.00pt"),
+
 	  m_pAutoUpdaterMC(NULL),
-	  m_borderToggled(false),
 	  m_bDestroy_says_stopupdating(false),
 	  m_bAutoUpdate_happening_now(false),
 	  m_iOldPos(0),
@@ -64,16 +87,13 @@ AP_Dialog_FormatFrame::AP_Dialog_FormatFrame(XAP_DialogFactory * pDlgFactory, XA
 	  m_iGraphicType(0),
 	  m_pImage(NULL),
 	  m_pGraphic(NULL),
-	  m_bSetWrapping(false)
+	  m_bSensitive(false),
+	  m_bSetWrapping(false),
+	  m_bLineToggled(false),
+	  m_iFramePositionTo(FL_FRAME_POSITIONED_TO_BLOCK)
 {
 	if(m_vecProps.getItemCount() > 0)
 		m_vecProps.clear();
-	  
-	if(m_vecPropsAdjRight.getItemCount() > 0)
-		m_vecPropsAdjRight.clear();
-	  
-	if(m_vecPropsAdjBottom.getItemCount() > 0)
-		m_vecPropsAdjBottom.clear();
 }
 
 AP_Dialog_FormatFrame::~AP_Dialog_FormatFrame(void)
@@ -141,7 +161,6 @@ void AP_Dialog_FormatFrame::autoUpdateMC(UT_Worker * pTimer)
 	if( pDialog->m_bDestroy_says_stopupdating != true)
 	{
 		pDialog->m_bAutoUpdate_happening_now = true;
-		pDialog->setAllSensitivities();
 		pDialog->setCurFrameProps();
 		pDialog->m_bAutoUpdate_happening_now = false;
 	}
@@ -328,88 +347,187 @@ void AP_Dialog_FormatFrame::ShowErrorBox(UT_String & sFile, UT_Error errorCode)
  */
 void AP_Dialog_FormatFrame::setAllSensitivities(void)
 {
-	XAP_Frame *frame = m_pApp->getLastFocussedFrame();
+	XAP_Frame * frame = m_pApp->getLastFocussedFrame();
 	if (frame) {
-		FV_View * pView = static_cast<FV_View *>(frame->getCurrentView());
-		setSensitivity(pView->isInFrame(pView->getPoint()));
+		if (FV_View * pView = static_cast<FV_View *>(frame->getCurrentView())) {
+			bool bInFrame = m_bSensitive; // pView->isInFrame(pView->getPoint());
+			setSensitivity(bInFrame);
+		}
+		else {
+			setSensitivity(false);
+		}
+	}
+	else {
+		setSensitivity(false);
 	}
 }
 
 void AP_Dialog_FormatFrame::setCurFrameProps(void)
 {
-	XAP_Frame *frame = m_pApp->getLastFocussedFrame();
-	if (frame) {
-		FV_View * pView = static_cast<FV_View *>(frame->getCurrentView());
-
-		if (m_bSettingsChanged || 
-			m_iOldPos == pView->getPoint()) // comparing the actual cell pos would be even better; but who cares :)
-			return;
-		
-		m_iOldPos = pView->getPoint();
-
-		XML_Char * bgColor = NULL;
-		if (pView->getCellProperty ("background-color", bgColor)) // erm, getCELLPropery? shouldn't that function be renamed in fv_View then ? - MARCM
-		{
-			m_vecProps.addOrReplaceProp("background-color", bgColor);
+	XAP_Frame * frame = m_pApp->getLastFocussedFrame();
+	if (!frame) {
+		if (m_bSensitive) {
+			m_bSensitive = false;
+			setAllSensitivities();
 		}
-		else
-		{
-			m_vecProps.removeProp("background-color");
+		return;
+	}
+
+	FV_View * pView = static_cast<FV_View *>(frame->getCurrentView());
+	if (!pView) {
+		if (m_bSensitive) {
+			m_bSensitive = false;
+			setAllSensitivities();
 		}
-		if(pView->isImageAtStrux(m_iOldPos,PTX_SectionFrame))
+		return;
+	}
+
+	PT_DocPosition pos = pView->getPoint();
+
+	if (/* m_bSettingsChanged || */ m_iOldPos == pos) {
+		// comparing the actual cell pos would be even better; but who cares :)
+		return;
+	}
+	m_iOldPos = pos;
+
+	if (!pView->isInFrame(pos)) {
+		if (m_bSensitive) {
+			m_bSensitive = false;
+			setAllSensitivities();
+		}
+		return;
+	}
+
+	m_bLineToggled = false;
+
+	m_borderLineStyleRight  = LS_NORMAL;
+	m_borderLineStyleLeft   = LS_NORMAL;
+	m_borderLineStyleTop    = LS_NORMAL;
+	m_borderLineStyleBottom = LS_NORMAL;
+
+	UT_RGBColor black(0,0,0);
+	UT_RGBColor white(255,255,255);
+
+	m_borderColor = black;
+
+	m_borderColorRight  = black;
+	m_borderColorLeft   = black;
+	m_borderColorTop    = black;
+	m_borderColorBottom = black;
+
+	m_borderThicknessRight  = 1.0f;
+	m_borderThicknessLeft   = 1.0f;
+	m_borderThicknessTop    = 1.0f;
+	m_borderThicknessBottom = 1.0f;
+
+	m_sBorderThickness = "1.00pt",
+
+	m_sBorderThicknessRight  = "1.00pt";
+	m_sBorderThicknessLeft   = "1.00pt";
+	m_sBorderThicknessTop    = "1.00pt";
+	m_sBorderThicknessBottom = "1.00pt";
+
+	m_backgroundColor = white;
+
+	m_bSetWrapping = false;
+
+	m_iFramePositionTo = FL_FRAME_POSITIONED_TO_BLOCK;
+
+	PD_Document * pDoc = pView->getDocument();
+
+	PL_StruxDocHandle sdh;
+
+	m_bSensitive = false;
+
+	if (pDoc->getStruxOfTypeFromPosition(pos, PTX_SectionFrame, &sdh))
+		if (PT_AttrPropIndex api = pDoc->getAPIFromSDH(sdh)) {
+			const PP_AttrProp * pAP = 0;
+			if (pDoc->getAttrProp(api, &pAP))
+				if (pAP) {
+					m_bSensitive = true;
+
+#define REPLACE_CELL_PROPERTY(X) \
+	do { \
+		const XML_Char * prop = 0; \
+		if (pAP->getProperty(X, prop)) \
+			m_vecProps.addOrReplaceProp(X, prop); \
+		else \
+			m_vecProps.removeProp(X); \
+	} while (0)
+
+					REPLACE_CELL_PROPERTY("right-style");
+					REPLACE_CELL_PROPERTY("left-style");
+					REPLACE_CELL_PROPERTY("top-style");
+					REPLACE_CELL_PROPERTY("bot-style");
+
+					REPLACE_CELL_PROPERTY("right-thickness");
+					REPLACE_CELL_PROPERTY("left-thickness");
+					REPLACE_CELL_PROPERTY("top-thickness");
+					REPLACE_CELL_PROPERTY("bot-thickness");
+
+					REPLACE_CELL_PROPERTY("right-color");
+					REPLACE_CELL_PROPERTY("left-color");
+					REPLACE_CELL_PROPERTY("top-color");
+					REPLACE_CELL_PROPERTY("bot-color");
+
+					REPLACE_CELL_PROPERTY("background-color");
+
+					REPLACE_CELL_PROPERTY("wrap-mode");
+					REPLACE_CELL_PROPERTY("position-to");
+				}
+		}
+	if (!m_bSensitive) {
+		setAllSensitivities();
+		return;
+	}
+
+	if(pView->isImageAtStrux(m_iOldPos,PTX_SectionFrame))
+	{
+		if(true /* pView->isInFrame(pView->getPoint()) */)
 		{
-			if(pView->isInFrame(pView->getPoint()))
+			fl_BlockLayout * pBL = pView->getCurrentBlock();
+			fl_FrameLayout * pFrame = static_cast<fl_FrameLayout *>(pBL->myContainingLayout());
+			if(pFrame->getContainerType() != FL_CONTAINER_FRAME)
 			{
-				fl_BlockLayout * pBL = pView->getCurrentBlock();
-				fl_FrameLayout * pFrame = static_cast<fl_FrameLayout *>(pBL->myContainingLayout());
-				if(pFrame->getContainerType() != FL_CONTAINER_FRAME)
-				{
-					UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
-					DELETEP(m_pGraphic);
-					DELETEP(m_pImage);
-					m_sImagePath.clear();
-				}
-				else
-				{
-					FG_Graphic * pFG = FG_GraphicRaster::createFromStrux(pFrame);
-					if(pFG)
-					{
-						DELETEP(m_pGraphic);
-						DELETEP(m_pImage);
-						m_sImagePath.clear();
-						m_pGraphic = pFG;
-						m_sImagePath = pFG->getDataId();
-						GR_Graphics * pG = m_pFormatFramePreview->getGraphics();
-						if(m_pGraphic->getType() == FGT_Raster)
-						{
-							UT_sint32 iImageWidth;
-							UT_sint32 iImageHeight;
-							UT_ByteBuf * pBB = static_cast<FG_GraphicRaster *>(pFG)->getRaster_PNG();
-							UT_PNG_getDimensions(pBB, iImageWidth, iImageHeight);
-							m_pImage = static_cast<GR_Image *>(
-								pG->createNewImage( m_sImagePath.c_str(),
-													pBB,
-													iImageWidth,
-													iImageHeight,
-													GR_Image::GRT_Raster));
-						}
-						else
-						{
-							m_pImage = static_cast<GR_Image *>(
-								pG->createNewImage( m_sImagePath.c_str(),
-													static_cast<FG_GraphicVector *>(pFG)->getVector_SVG(),
-													m_pFormatFramePreview->getWindowWidth()-2,
-													m_pFormatFramePreview->getWindowHeight()-2,
-													GR_Image::GRT_Vector));
-						}
-					}
-				}
-			}
-			else
-			{
+				UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 				DELETEP(m_pGraphic);
 				DELETEP(m_pImage);
 				m_sImagePath.clear();
+			}
+			else
+			{
+				FG_Graphic * pFG = FG_GraphicRaster::createFromStrux(pFrame);
+				if(pFG)
+				{
+					DELETEP(m_pGraphic);
+					DELETEP(m_pImage);
+					m_sImagePath.clear();
+					m_pGraphic = pFG;
+					m_sImagePath = pFG->getDataId();
+					GR_Graphics * pG = m_pFormatFramePreview->getGraphics();
+					if(m_pGraphic->getType() == FGT_Raster)
+					{
+						UT_sint32 iImageWidth;
+						UT_sint32 iImageHeight;
+						UT_ByteBuf * pBB = static_cast<FG_GraphicRaster *>(pFG)->getRaster_PNG();
+						UT_PNG_getDimensions(pBB, iImageWidth, iImageHeight);
+						m_pImage = static_cast<GR_Image *>(
+							pG->createNewImage( m_sImagePath.c_str(),
+												pBB,
+												iImageWidth,
+												iImageHeight,
+												GR_Image::GRT_Raster));
+					}
+					else
+					{
+						m_pImage = static_cast<GR_Image *>(
+							pG->createNewImage( m_sImagePath.c_str(),
+												static_cast<FG_GraphicVector *>(pFG)->getVector_SVG(),
+												m_pFormatFramePreview->getWindowWidth()-2,
+												m_pFormatFramePreview->getWindowHeight()-2,
+												GR_Image::GRT_Vector));
+					}
+				}
 			}
 		}
 		else
@@ -418,46 +536,199 @@ void AP_Dialog_FormatFrame::setCurFrameProps(void)
 			DELETEP(m_pImage);
 			m_sImagePath.clear();
 		}
-
-		UT_String bstmp = UT_String_sprintf("%d", FS_FILL);
-		m_vecProps.addOrReplaceProp("bg-style", bstmp.c_str());
-		
-		// draw the preview with the changed properties
-		if(m_pFormatFramePreview)
-			m_pFormatFramePreview->draw();
 	}
+	else
+	{
+		DELETEP(m_pGraphic);
+		DELETEP(m_pImage);
+		m_sImagePath.clear();
+	}
+
+	UT_String bstmp = UT_String_sprintf("%d", FS_FILL);
+	m_vecProps.addOrReplaceProp("bg-style", bstmp.c_str()); // FIXME ??
+		
+	const XML_Char * pszStyle = 0;
+	m_vecProps.getProp("background-color", pszStyle);
+	if (pszStyle) {
+		m_backgroundColor.setColor(pszStyle);
+	}
+
+	/* update border properties
+	 */
+	long linestyle;
+
+	pszStyle = 0;
+	m_vecProps.getProp("right-style", pszStyle);
+	if (pszStyle) {
+		linestyle = LS_NORMAL;
+		sscanf(pszStyle, "%ld", &linestyle);
+		m_borderLineStyleRight = linestyle;
+	}
+	pszStyle = 0;
+	m_vecProps.getProp("left-style", pszStyle);
+	if (pszStyle) {
+		linestyle = LS_NORMAL;
+		sscanf(pszStyle, "%ld", &linestyle);
+		m_borderLineStyleLeft = linestyle;
+	}
+	pszStyle = 0;
+	m_vecProps.getProp("top-style", pszStyle);
+	if (pszStyle) {
+		linestyle = LS_NORMAL;
+		sscanf(pszStyle, "%ld", &linestyle);
+		m_borderLineStyleTop = linestyle;
+	}
+	pszStyle = 0;
+	m_vecProps.getProp("bot-style", pszStyle);
+	if (pszStyle) {
+		linestyle = LS_NORMAL;
+		sscanf(pszStyle, "%ld", &linestyle);
+		m_borderLineStyleBottom = linestyle;
+	}
+
+	pszStyle = 0;
+	m_vecProps.getProp("right-color", pszStyle);
+	if (pszStyle) {
+		m_borderColorRight.setColor(pszStyle);
+	}
+	pszStyle = 0;
+	m_vecProps.getProp("left-color", pszStyle);
+	if (pszStyle) {
+		m_borderColorLeft.setColor(pszStyle);
+	}
+	pszStyle = 0;
+	m_vecProps.getProp("top-color", pszStyle);
+	if (pszStyle) {
+		m_borderColorTop.setColor(pszStyle);
+	}
+	pszStyle = 0;
+	m_vecProps.getProp("bot-color", pszStyle);
+	if (pszStyle) {
+		m_borderColorBottom.setColor(pszStyle);
+	}
+
+	UT_UTF8String thickness;
+
+	pszStyle = 0;
+	m_vecProps.getProp("right-thickness", pszStyle);
+	if (pszStyle) {
+		thickness = pszStyle;
+		setBorderThicknessRight(thickness);
+	}
+	pszStyle = 0;
+	m_vecProps.getProp("left-thickness", pszStyle);
+	if (pszStyle) {
+		thickness = pszStyle;
+		setBorderThicknessLeft(thickness);
+	}
+	pszStyle = 0;
+	m_vecProps.getProp("top-thickness", pszStyle);
+	if (pszStyle) {
+		thickness = pszStyle;
+		setBorderThicknessTop(thickness);
+	}
+	pszStyle = 0;
+	m_vecProps.getProp("bot-thickness", pszStyle);
+	if (pszStyle) {
+		thickness = pszStyle;
+		setBorderThicknessBottom(thickness);
+	}
+
+	/* update wrap properties
+	 */
+	pszStyle = 0;
+	m_vecProps.getProp("wrap-mode", pszStyle);
+	if (pszStyle) {
+		if (strcmp (pszStyle, "wrapped-both") == 0) {
+			m_bSetWrapping = true;
+		}
+	}
+
+	/* update position properties
+	 */
+	pszStyle = 0;
+	m_vecProps.getProp("position-to", pszStyle);
+	if (pszStyle) {
+		if (strcmp (pszStyle, "block-above-text") == 0) {
+			m_iFramePositionTo = FL_FRAME_POSITIONED_TO_BLOCK;
+		}
+		else if (strcmp (pszStyle, "column-above-text") == 0) {
+			m_iFramePositionTo = FL_FRAME_POSITIONED_TO_COLUMN;
+		}
+		else if (strcmp (pszStyle, "page-above-text") == 0) {
+			m_iFramePositionTo = FL_FRAME_POSITIONED_TO_PAGE;
+		}
+	}
+
+	/* draw the preview with the changed properties
+	 */
+	if(m_pFormatFramePreview) {
+		m_pFormatFramePreview->draw();
+	}
+
+	m_bSettingsChanged = false;
+	setActiveFrame(frame); // this is just to trigger the subclass to update the dialog
+}
+
+void AP_Dialog_FormatFrame::setPositionMode(FL_FrameFormatMode mode)
+{
+	switch (mode) {
+	default:
+	case FL_FRAME_POSITIONED_TO_BLOCK:
+		m_iFramePositionTo = FL_FRAME_POSITIONED_TO_BLOCK;
+		m_vecProps.addOrReplaceProp("position-to", "block-above-text");
+		break;
+
+	case FL_FRAME_POSITIONED_TO_COLUMN:
+		m_iFramePositionTo = FL_FRAME_POSITIONED_TO_COLUMN;
+		m_vecProps.addOrReplaceProp("position-to", "column-above-text");
+		break;
+
+	case FL_FRAME_POSITIONED_TO_PAGE:
+		m_iFramePositionTo = FL_FRAME_POSITIONED_TO_PAGE;
+		m_vecProps.addOrReplaceProp("position-to", "page-above-text");
+		break;
+	}
+	m_bSettingsChanged = true;
+}
+
+void AP_Dialog_FormatFrame::setWrapping(bool bWrap)
+{
+	m_bSetWrapping = bWrap;
+
+	if (m_bSetWrapping)
+		m_vecProps.addOrReplaceProp("wrap-mode", "wrapped-both");
+	else
+		m_vecProps.addOrReplaceProp("wrap-mode", "above-text");
+
+	m_bSettingsChanged = true;
 }
 
 void AP_Dialog_FormatFrame::applyChanges()
 {
-	UT_DEBUGMSG(("Doing apply changes number props %d \n",m_vecProps.getItemCount()));
-	if (m_vecProps.getItemCount() == 0)
+	UT_sint32 count = m_vecProps.getItemCount();
+
+	UT_DEBUGMSG(("Doing apply changes number props %d \n", count));
+	if (!count)
 		return;
 
-    FV_View * pView = static_cast<FV_View *>(m_pApp->getLastFocussedFrame()->getCurrentView());
-	const XML_Char ** propsArray  = new const XML_Char * [m_vecProps.getItemCount()+4];
-	propsArray[m_vecProps.getItemCount()+2] = NULL;
-	propsArray[m_vecProps.getItemCount()+3] = NULL;
-	
-	UT_sint32 i = m_vecProps.getItemCount();
-	UT_sint32 j;
-	for(j= 0; j<i; j=j+2)
+	FV_View * pView = static_cast<FV_View *>(m_pApp->getLastFocussedFrame()->getCurrentView());
+	if (!pView)
+		return;
+
+	const XML_Char ** propsArray  = new const XML_Char * [count + 2];
+
+	for (UT_sint32 j = 0; j < count; j = j + 2)
 	{
-		propsArray[j] = static_cast<XML_Char *>(m_vecProps.getNthItem(j));
+		propsArray[j  ] = static_cast<XML_Char *>(m_vecProps.getNthItem(j));
 		propsArray[j+1] = static_cast<XML_Char *>(m_vecProps.getNthItem(j+1));
 	}
-	propsArray[j] = "wrap-mode";
-	j++;
-	if(getWrapping())
-	{
-		propsArray[j] = "wrapped-both";
-	}
-	else
-	{
-		propsArray[j] = "above-text";
-	}
-	pView->setFrameFormat(propsArray,m_pGraphic,m_sImagePath);
+	propsArray[count  ] = 0;
+	propsArray[count+1] = 0;
+
+	pView->setFrameFormat(propsArray, m_pGraphic, m_sImagePath);
 	delete [] propsArray;
+
 	m_bSettingsChanged = false;
 }
 
@@ -479,66 +750,279 @@ void AP_Dialog_FormatFrame::toggleLineType(toggle_button btn, bool enabled)
 	{
 		case toggle_left:
 		{
+			m_borderLineStyleLeft = enabled ? LS_NORMAL : LS_OFF;
+			m_borderColorLeft = m_borderColor;
+			setBorderThicknessLeft(m_sBorderThickness);
 			m_vecProps.addOrReplaceProp("left-style", sTmp.c_str());
 			m_vecProps.addOrReplaceProp("left-color", cTmp.c_str());
-			m_vecProps.addOrReplaceProp("left-thickness",m_sBorderThickness.utf8_str());		}
+			m_vecProps.addOrReplaceProp("left-thickness",m_sBorderThickness.utf8_str());
+		}
 		break;
+
 		case toggle_right:
 		{	
+			m_borderLineStyleRight = enabled ? LS_NORMAL : LS_OFF;
+			m_borderColorRight = m_borderColor;
+			setBorderThicknessRight(m_sBorderThickness);
 			m_vecProps.addOrReplaceProp("right-style", sTmp.c_str());
 			m_vecProps.addOrReplaceProp("right-color", cTmp.c_str());
-			m_vecProps.addOrReplaceProp("right-thickness",m_sBorderThickness.utf8_str());		}
+			m_vecProps.addOrReplaceProp("right-thickness",m_sBorderThickness.utf8_str());
+		}
 		break;
+
 		case toggle_top:
 		{			
+			m_borderLineStyleTop = enabled ? LS_NORMAL : LS_OFF;
+			m_borderColorTop = m_borderColor;
+			setBorderThicknessTop(m_sBorderThickness);
 			m_vecProps.addOrReplaceProp("top-style", sTmp.c_str());
 			m_vecProps.addOrReplaceProp("top-color", cTmp.c_str());
-			m_vecProps.addOrReplaceProp("top-thickness",m_sBorderThickness.utf8_str());		}
+			m_vecProps.addOrReplaceProp("top-thickness",m_sBorderThickness.utf8_str());
+		}
 		break;
+
 		case toggle_bottom:
 		{			
+			m_borderLineStyleBottom = enabled ? LS_NORMAL : LS_OFF;
+			m_borderColorBottom = m_borderColor;
+			setBorderThicknessBottom(m_sBorderThickness);
 			m_vecProps.addOrReplaceProp("bot-style", sTmp.c_str());
 			m_vecProps.addOrReplaceProp("bot-color", cTmp.c_str());
-			m_vecProps.addOrReplaceProp("bot-thickness",m_sBorderThickness.utf8_str());		}
+			m_vecProps.addOrReplaceProp("bot-thickness",m_sBorderThickness.utf8_str());
+		}
+		break;
+
+	default:
+		// should not happen
 		break;
 	}
-	
-	m_borderToggled = true;
+	m_bLineToggled = true;
 	m_bSettingsChanged = true;
 }
 
+void AP_Dialog_FormatFrame::setBorderLineStyleRight (UT_sint32 linestyle)
+{
+	char buf[16];
+	sprintf (buf, "%ld", static_cast<unsigned long>(linestyle));
 
-void AP_Dialog_FormatFrame::setBorderThickness(UT_UTF8String & sThick)
+	m_vecProps.addOrReplaceProp("right-style", buf);
+
+	m_borderLineStyleRight = linestyle;
+	m_bSettingsChanged = true;
+}
+
+void AP_Dialog_FormatFrame::setBorderLineStyleLeft (UT_sint32 linestyle)
+{
+	char buf[16];
+	sprintf (buf, "%ld", static_cast<unsigned long>(linestyle));
+
+	m_vecProps.addOrReplaceProp("left-style", buf);
+
+	m_borderLineStyleLeft = linestyle;
+	m_bSettingsChanged = true;
+}
+
+void AP_Dialog_FormatFrame::setBorderLineStyleTop (UT_sint32 linestyle)
+{
+	char buf[16];
+	sprintf (buf, "%ld", static_cast<unsigned long>(linestyle));
+
+	m_vecProps.addOrReplaceProp("top-style", buf);
+
+	m_borderLineStyleTop = linestyle;
+	m_bSettingsChanged = true;
+}
+
+void AP_Dialog_FormatFrame::setBorderLineStyleBottom (UT_sint32 linestyle)
+{
+	char buf[16];
+	sprintf (buf, "%ld", static_cast<unsigned long>(linestyle));
+
+	m_vecProps.addOrReplaceProp("bot-style", buf);
+
+	m_borderLineStyleBottom = linestyle;
+	m_bSettingsChanged = true;
+}
+
+void AP_Dialog_FormatFrame::setBorderThickness(const UT_UTF8String & sThick)
 {
 	m_sBorderThickness = sThick;
-	if(m_borderToggled)
-		return;
-	m_vecProps.addOrReplaceProp("left-thickness", m_sBorderThickness.utf8_str());
-	m_vecProps.addOrReplaceProp("right-thickness",m_sBorderThickness.utf8_str());
-	m_vecProps.addOrReplaceProp("top-thickness",m_sBorderThickness.utf8_str());
-	m_vecProps.addOrReplaceProp("bot-thickness",m_sBorderThickness.utf8_str());
-	
-	m_bSettingsChanged = true;
 
+	m_bSettingsChanged = true;
 }
 
+void AP_Dialog_FormatFrame::setBorderThicknessAll(const UT_UTF8String & sThick)
+{
+	setBorderThicknessRight(sThick);
+	setBorderThicknessLeft(sThick);
+	setBorderThicknessTop(sThick);
+	setBorderThicknessBottom(sThick);
+
+	m_bSettingsChanged = true;
+}
+
+static UT_UTF8String s_canonical_thickness (float thickness)
+{
+	UT_UTF8String sThick;
+
+	if (thickness < 0.01) {
+		sThick = "0.01pt";
+	}
+	else if (thickness > 99.99) {
+		sThick = "99.99pt";
+	}
+	else {
+		char buf[16];
+		sprintf(buf, "%.2fpt", thickness);
+		sThick = buf;
+	}
+	return sThick;
+}
+
+static UT_UTF8String s_canonical_thickness (const UT_UTF8String & sThickness, float & thickness)
+{
+	thickness = static_cast<float>(UT_convertToPoints(sThickness.utf8_str()));
+
+	UT_UTF8String sThick;
+
+	if (thickness < 0.01) {
+		thickness = 0.01;
+		sThick = "0.01pt";
+	}
+	else if (thickness > 99.99) {
+		thickness = 99.99;
+		sThick = "99.99pt";
+	}
+	else {
+		char buf[16];
+		sprintf(buf, "%.2fpt", thickness);
+		sThick = buf;
+	}
+	return sThick;
+}
+
+void AP_Dialog_FormatFrame::setBorderThicknessRight (const UT_UTF8String & sThick)
+{
+	m_sBorderThicknessRight = s_canonical_thickness(sThick, m_borderThicknessRight);
+
+	m_vecProps.addOrReplaceProp("right-thickness", m_sBorderThicknessRight.utf8_str());
+
+	m_bSettingsChanged = true;
+}
+
+void AP_Dialog_FormatFrame::setBorderThicknessLeft (const UT_UTF8String & sThick)
+{
+	m_sBorderThicknessLeft = s_canonical_thickness(sThick, m_borderThicknessLeft);
+
+	m_vecProps.addOrReplaceProp("left-thickness", m_sBorderThicknessLeft.utf8_str());
+
+	m_bSettingsChanged = true;
+}
+
+void AP_Dialog_FormatFrame::setBorderThicknessTop (const UT_UTF8String & sThick)
+{
+	m_sBorderThicknessTop = s_canonical_thickness(sThick, m_borderThicknessTop);
+
+	m_vecProps.addOrReplaceProp("top-thickness", m_sBorderThicknessTop.utf8_str());
+
+	m_bSettingsChanged = true;
+}
+
+void AP_Dialog_FormatFrame::setBorderThicknessBottom (const UT_UTF8String & sThick)
+{
+	m_sBorderThicknessBottom = s_canonical_thickness(sThick, m_borderThicknessBottom);
+
+	m_vecProps.addOrReplaceProp("bot-thickness", m_sBorderThicknessBottom.utf8_str());
+
+	m_bSettingsChanged = true;
+}
+
+void AP_Dialog_FormatFrame::setBorderThicknessAll (float thickness)
+{
+	setBorderThicknessAll(s_canonical_thickness(thickness));
+}
+
+void AP_Dialog_FormatFrame::setBorderThicknessRight (float thickness)
+{
+	setBorderThicknessRight(s_canonical_thickness(thickness));
+}
+
+void AP_Dialog_FormatFrame::setBorderThicknessLeft (float thickness)
+{
+	setBorderThicknessLeft(s_canonical_thickness(thickness));
+}
+
+void AP_Dialog_FormatFrame::setBorderThicknessTop (float thickness)
+{
+	setBorderThicknessTop(s_canonical_thickness(thickness));
+}
+
+void AP_Dialog_FormatFrame::setBorderThicknessBottom (float thickness)
+{
+	setBorderThicknessBottom(s_canonical_thickness(thickness));
+}
 
 void AP_Dialog_FormatFrame::setBorderColor(UT_RGBColor clr)
 {
 	m_borderColor = clr;
-	
-	if (m_borderToggled)
-		return;
 
+	if (!m_bLineToggled)
+		{
+			setBorderColorAll(clr);
+		}
+	m_bSettingsChanged = true;
+}
+
+void AP_Dialog_FormatFrame::setBorderColorAll(UT_RGBColor clr)
+{
+	setBorderColorRight(clr);
+	setBorderColorLeft(clr);
+	setBorderColorTop(clr);
+	setBorderColorBottom(clr);
+	
+	m_bSettingsChanged = true;
+}
+
+void AP_Dialog_FormatFrame::setBorderColorRight (const UT_RGBColor & clr)
+{
+	m_borderColorRight = clr;
+	
+	UT_String s = UT_String_sprintf("%02x%02x%02x", clr.m_red, clr.m_grn, clr.m_blu);	
+
+	m_vecProps.addOrReplaceProp("right-color", s.c_str());
+	
+	m_bSettingsChanged = true;
+}
+
+void AP_Dialog_FormatFrame::setBorderColorLeft (const UT_RGBColor & clr)
+{
+	m_borderColorLeft = clr;
+	
 	UT_String s = UT_String_sprintf("%02x%02x%02x", clr.m_red, clr.m_grn, clr.m_blu);	
 
 	m_vecProps.addOrReplaceProp("left-color", s.c_str());
-	m_vecProps.addOrReplaceProp("right-color", s.c_str());
-	m_vecProps.addOrReplaceProp("top-color", s.c_str());
-	m_vecProps.addOrReplaceProp("bot-color", s.c_str());
 	
-	m_vecPropsAdjRight.addOrReplaceProp("left-color", s.c_str());
-	m_vecPropsAdjBottom.addOrReplaceProp("top-color", s.c_str());
+	m_bSettingsChanged = true;
+}
+
+void AP_Dialog_FormatFrame::setBorderColorTop (const UT_RGBColor & clr)
+{
+	m_borderColorTop = clr;
+	
+	UT_String s = UT_String_sprintf("%02x%02x%02x", clr.m_red, clr.m_grn, clr.m_blu);	
+
+	m_vecProps.addOrReplaceProp("top-color", s.c_str());
+	
+	m_bSettingsChanged = true;
+}
+
+void AP_Dialog_FormatFrame::setBorderColorBottom (const UT_RGBColor & clr)
+{
+	m_borderColorBottom = clr;
+	
+	UT_String s = UT_String_sprintf("%02x%02x%02x", clr.m_red, clr.m_grn, clr.m_blu);	
+
+	m_vecProps.addOrReplaceProp("bot-color", s.c_str());
 	
 	m_bSettingsChanged = true;
 }
@@ -556,6 +1040,8 @@ void AP_Dialog_FormatFrame::clearImage(void)
 
 void AP_Dialog_FormatFrame::setBGColor(UT_RGBColor clr)
 {
+	m_backgroundColor = clr;
+
 	UT_String bgcol = UT_String_sprintf("%02x%02x%02x", clr.m_red, clr.m_grn, clr.m_blu);
 
 	m_vecProps.removeProp ("bg-style");
@@ -594,27 +1080,6 @@ bool AP_Dialog_FormatFrame::_getToggleButtonStatus(const char * lineStyle)
 	else
 		return false;
 }
-
-bool AP_Dialog_FormatFrame::getTopToggled()
-{
-	return _getToggleButtonStatus("top-style");
-}
-
-bool AP_Dialog_FormatFrame::getBottomToggled()
-{
-	return _getToggleButtonStatus("bot-style");
-}
-
-bool AP_Dialog_FormatFrame::getRightToggled()
-{
-	return _getToggleButtonStatus("right-style");
-}
-
-bool AP_Dialog_FormatFrame::getLeftToggled()
-{
-	return _getToggleButtonStatus("left-style");
-}
-
 //////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////
 
@@ -726,112 +1191,83 @@ void AP_FormatFrame_preview::draw(void)
 //
 //  Draw the cell borders
 //
-	
-	// top border
-	if (m_pFormatFrame->getTopToggled())
+	// right border
+	if (m_pFormatFrame->getRightToggled())
 	{
-		const XML_Char * pszTopColor = NULL;
-		m_pFormatFrame->getPropVector().getProp("top-color", pszTopColor);
-		if (pszTopColor)
-		{
-			UT_parseColor(pszTopColor, tmpCol);
-			m_gc->setColor(tmpCol);
-		}
+		UT_sint32 linestyle = m_pFormatFrame->borderLineStyleRight();
+		if (linestyle == LS_DOTTED)
+			m_gc->setLineProperties(1, GR_Graphics::JOIN_MITER, GR_Graphics::CAP_BUTT, GR_Graphics::LINE_DOTTED);
+		else if (linestyle == LS_DASHED)
+			m_gc->setLineProperties(1, GR_Graphics::JOIN_MITER, GR_Graphics::CAP_BUTT, GR_Graphics::LINE_ON_OFF_DASH);
 		else
-			m_gc->setColor(black);
-		const XML_Char * pszTopThickness = NULL;
-		m_pFormatFrame->getPropVector().getProp("top-thickness", pszTopThickness);
-		if(pszTopThickness)
-		{
-			UT_sint32 iTopThickness = UT_convertToLogicalUnits(pszTopThickness);
-			m_gc->setLineWidth(iTopThickness);
-		}
-		else
-		{
-			m_gc->setLineWidth(m_gc->tlu(1));
-		}
-		painter.drawLine(pageRect.left + border, pageRect.top + border,
-					   pageRect.left + pageRect.width - border, pageRect.top + border);
+			m_gc->setLineProperties(1, GR_Graphics::JOIN_MITER, GR_Graphics::CAP_BUTT, GR_Graphics::LINE_SOLID);
+
+		m_gc->setColor(m_pFormatFrame->borderColorRight());
+
+		UT_sint32 iRightThickness = UT_convertToLogicalUnits(m_pFormatFrame->getBorderThicknessRight().utf8_str());
+		m_gc->setLineWidth(iRightThickness);
+
+		painter.drawLine(pageRect.left + pageRect.width - border, pageRect.top + border,
+						 pageRect.left + pageRect.width - border, pageRect.top + pageRect.height - border);
 	}
 
 	// left border
 	if (m_pFormatFrame->getLeftToggled())
 	{
-		const XML_Char * pszLeftColor = NULL;
-		m_pFormatFrame->getPropVector().getProp("left-color", pszLeftColor);
-		if (pszLeftColor)
-		{
-			UT_parseColor(pszLeftColor, tmpCol);
-			m_gc->setColor(tmpCol);
-		}
+		UT_sint32 linestyle = m_pFormatFrame->borderLineStyleLeft();
+		if (linestyle == LS_DOTTED)
+			m_gc->setLineProperties(1, GR_Graphics::JOIN_MITER, GR_Graphics::CAP_BUTT, GR_Graphics::LINE_DOTTED);
+		else if (linestyle == LS_DASHED)
+			m_gc->setLineProperties(1, GR_Graphics::JOIN_MITER, GR_Graphics::CAP_BUTT, GR_Graphics::LINE_ON_OFF_DASH);
 		else
-			m_gc->setColor(black);
-		const XML_Char * pszLeftThickness = NULL;
-		m_pFormatFrame->getPropVector().getProp("left-thickness", pszLeftThickness);
-		if(pszLeftThickness)
-		{
-			UT_sint32 iLeftThickness = UT_convertToLogicalUnits(pszLeftThickness);
-			m_gc->setLineWidth(iLeftThickness);
-		}
-		else
-		{
-			m_gc->setLineWidth(m_gc->tlu(1));
-		}
+			m_gc->setLineProperties(1, GR_Graphics::JOIN_MITER, GR_Graphics::CAP_BUTT, GR_Graphics::LINE_SOLID);
+
+		m_gc->setColor(m_pFormatFrame->borderColorLeft());
+
+		UT_sint32 iLeftThickness = UT_convertToLogicalUnits(m_pFormatFrame->getBorderThicknessLeft().utf8_str());
+		m_gc->setLineWidth(iLeftThickness);
+
 		painter.drawLine(pageRect.left + border, pageRect.top + border,
-					   pageRect.left + border, pageRect.top + pageRect.height - border);
+						 pageRect.left + border, pageRect.top + pageRect.height - border);
 	}
 
-	// right border
-	if (m_pFormatFrame->getRightToggled())
+	// top border
+	if (m_pFormatFrame->getTopToggled())
 	{
-		const XML_Char * pszRightColor = NULL;
-		m_pFormatFrame->getPropVector().getProp("right-color", pszRightColor);
-		if (pszRightColor)
-		{
-			UT_parseColor(pszRightColor, tmpCol);
-			m_gc->setColor(tmpCol);
-		}
+		UT_sint32 linestyle = m_pFormatFrame->borderLineStyleTop();
+		if (linestyle == LS_DOTTED)
+			m_gc->setLineProperties(1, GR_Graphics::JOIN_MITER, GR_Graphics::CAP_BUTT, GR_Graphics::LINE_DOTTED);
+		else if (linestyle == LS_DASHED)
+			m_gc->setLineProperties(1, GR_Graphics::JOIN_MITER, GR_Graphics::CAP_BUTT, GR_Graphics::LINE_ON_OFF_DASH);
 		else
-			m_gc->setColor(black);
-		const XML_Char * pszRightThickness = NULL;
-		m_pFormatFrame->getPropVector().getProp("right-thickness", pszRightThickness);
-		if(pszRightThickness)
-		{
-			UT_sint32 iRightThickness = UT_convertToLogicalUnits(pszRightThickness);
-			m_gc->setLineWidth(iRightThickness);
-		}
-		else
-		{
-			m_gc->setLineWidth(m_gc->tlu(1));
-		}
-		painter.drawLine(pageRect.left + pageRect.width - border, pageRect.top + border,
-					   pageRect.left + pageRect.width - border, pageRect.top + pageRect.height - border);
+			m_gc->setLineProperties(1, GR_Graphics::JOIN_MITER, GR_Graphics::CAP_BUTT, GR_Graphics::LINE_SOLID);
+
+		m_gc->setColor(m_pFormatFrame->borderColorTop());
+
+		UT_sint32 iTopThickness = UT_convertToLogicalUnits(m_pFormatFrame->getBorderThicknessTop().utf8_str());
+		m_gc->setLineWidth(iTopThickness);
+
+		painter.drawLine(pageRect.left + border, pageRect.top + border,
+						 pageRect.left + pageRect.width - border, pageRect.top + border);
 	}
-	
+
 	// bottom border
 	if (m_pFormatFrame->getBottomToggled())
 	{
-		const XML_Char * pszBottomColor = NULL;
-		m_pFormatFrame->getPropVector().getProp("bot-color", pszBottomColor);
-		if (pszBottomColor)
-		{
-			UT_parseColor(pszBottomColor, tmpCol);
-			m_gc->setColor(tmpCol);
-		}
+		UT_sint32 linestyle = m_pFormatFrame->borderLineStyleBottom();
+		if (linestyle == LS_DOTTED)
+			m_gc->setLineProperties(1, GR_Graphics::JOIN_MITER, GR_Graphics::CAP_BUTT, GR_Graphics::LINE_DOTTED);
+		else if (linestyle == LS_DASHED)
+			m_gc->setLineProperties(1, GR_Graphics::JOIN_MITER, GR_Graphics::CAP_BUTT, GR_Graphics::LINE_ON_OFF_DASH);
 		else
-			m_gc->setColor(black);
-		const XML_Char * pszBotThickness = NULL;
-		m_pFormatFrame->getPropVector().getProp("bot-thickness", pszBotThickness);
-		if(pszBotThickness)
-		{
-			UT_sint32 iBotThickness = UT_convertToLogicalUnits(pszBotThickness);
-			m_gc->setLineWidth(iBotThickness);
-		}
-		else
-		{
-			m_gc->setLineWidth(m_gc->tlu(1));
-		}
+			m_gc->setLineProperties(1, GR_Graphics::JOIN_MITER, GR_Graphics::CAP_BUTT, GR_Graphics::LINE_SOLID);
+
+		m_gc->setColor(m_pFormatFrame->borderColorBottom());
+
+		UT_sint32 iBottomThickness = UT_convertToLogicalUnits(m_pFormatFrame->getBorderThicknessBottom().utf8_str());
+		m_gc->setLineWidth(iBottomThickness);
+
 		painter.drawLine(pageRect.left + border, pageRect.top + pageRect.height - border,
-					   pageRect.left + pageRect.width - border, pageRect.top + pageRect.height - border);
+						 pageRect.left + pageRect.width - border, pageRect.top + pageRect.height - border);
 	}
 }

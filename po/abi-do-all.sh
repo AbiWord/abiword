@@ -32,6 +32,7 @@ echo ""
 ./abi-extract.pl -N ta-IN
 ./abi-extract.pl -N qu-BO
 ./abi-extract.pl -N ast-ES
+./abi-extract.pl -N ku
 
 ./update.pl gl-ES
 ./update.pl nb-NO
@@ -63,4 +64,5 @@ echo ""
 ./update.pl ta-IN
 ./update.pl qu-BO
 ./update.pl ast-ES
+./update.pl ku
 

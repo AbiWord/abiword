@@ -28,6 +28,7 @@
 
 #import "xap_CocoaApp.h"
 #import "xap_CocoaAppController.h"
+#import "xap_CocoaFont.h"
 #import "xap_CocoaToolPalette.h"
 #import "xap_CocoaToolbar_Icons.h"
 
@@ -235,8 +236,8 @@ enum _XAP_CocoaTool_Id
 }
 
 #define PALETTE_ELEMENT_ORIGIN_X  -3
-#define PALETTE_ELEMENT_WIDTH    240
-#define PALETTE_PANEL_WIDTH      234
+#define PALETTE_ELEMENT_WIDTH    219
+#define PALETTE_PANEL_WIDTH      213
 
 - (void)sync
 {
@@ -262,12 +263,50 @@ enum _XAP_CocoaTool_Id
 
 	NSRect frame;
 
+	UT_uint32 vh_remember = view_height;
+
+	/* Adjust frames of individual palettes
+	 */
+	for (i = 0; i < count; i++)
+		{
+			XAP_CocoaPalette * palette = (XAP_CocoaPalette *) [m_Palette objectAtIndex:i];
+
+			UT_uint32 height = [palette heightTitle];
+
+			view_height -= height;
+
+			/* Title
+			 */
+
+			/* Box
+			 */
+			height = [palette heightBox];
+
+			if ([palette isExpanded])
+				{
+					view_height -= height;
+				}
+			else // move it out of sight
+				{
+					[self setNeedsDisplayInRect:[[palette Box] frame]];
+
+					frame.origin.x    = PALETTE_ELEMENT_WIDTH;
+					frame.origin.y    = static_cast<float>(view_height);
+					frame.size.width  = PALETTE_ELEMENT_WIDTH;
+					frame.size.height = static_cast<float>(height);
+					[[palette Box] setFrame:frame];
+				}
+		}
+	[self displayIfNeeded];
+
+	view_height = vh_remember;
+
 	/* Update panel size, if in a panel, else set the frame size
 	 */
 	NSWindow * window = [self window];
 	if (window)
 		{
-			[self setNeedsDisplay:NO];
+			// [self setNeedsDisplay:NO];
 
 			NSRect current = [window frame];
 
@@ -282,7 +321,7 @@ enum _XAP_CocoaTool_Id
 			frame = [NSWindow frameRectForContentRect:content styleMask:(NSTitledWindowMask|NSClosableWindowMask|NSUtilityWindowMask)];
 			frame.origin.x = current.origin.x;
 			frame.origin.y = static_cast<float>(y - static_cast<int>(frame.size.height));
-			[window setFrame:frame display:YES];
+			[window setFrame:frame display:YES animate:YES];
 		}
 	else
 		{
@@ -310,6 +349,8 @@ enum _XAP_CocoaTool_Id
 			frame.size.width  = PALETTE_ELEMENT_WIDTH;
 			frame.size.height = static_cast<float>(height);
 			[[palette Title] setFrame:frame];
+			[[palette Title] setNeedsDisplay:YES];
+			[[palette Title] displayIfNeeded];
 
 			/* Box
 			 */
@@ -324,6 +365,8 @@ enum _XAP_CocoaTool_Id
 					frame.size.width  = PALETTE_ELEMENT_WIDTH;
 					frame.size.height = static_cast<float>(height);
 					[[palette Box] setFrame:frame];
+					[[palette Box] setNeedsDisplay:YES];
+					[[palette Box] displayIfNeeded];
 				}
 			else // move it out of sight
 				{
@@ -787,6 +830,8 @@ static XAP_CocoaToolPalette * s_instance = 0;
 			m_pToolbarActionSet = 0;
 			m_pEditMethodContainer = 0;
 			m_pFontFamilies = 0;
+			m_pCurrentFontFamily = 0;
+			m_pCurrentFontFamilyHelper = 0;
 			m_Listener = 0;
 
 			m_pCocoaApp = static_cast<XAP_CocoaApp *>(XAP_App::getApp());
@@ -908,6 +953,16 @@ static XAP_CocoaToolPalette * s_instance = 0;
 		{
 			[m_pFontFamilies release];
 			m_pFontFamilies = 0;
+		}
+	if (m_pCurrentFontFamily)
+		{
+			[m_pCurrentFontFamily release];
+			m_pCurrentFontFamily = 0;
+		}
+	if (m_pCurrentFontFamilyHelper)
+		{
+			[m_pCurrentFontFamilyHelper release];
+			m_pCurrentFontFamilyHelper = 0;
 		}
 	DELETEP(m_ToolChest);
 	DELETEP(m_Listener);
@@ -1035,8 +1090,12 @@ static XAP_CocoaToolPalette * s_instance = 0;
 			[oZoom setToolTip:[NSString stringWithUTF8String:tooltip]];
 		}
 
-	[oFontName removeAllItems];
-	[oFontName addItemsWithTitles:m_pFontFamilies];
+	[self rebuildFontFamilyPopUp];
+
+	[[oFontName       menu] setAutoenablesItems:NO];
+	[[oFontMemberName menu] setAutoenablesItems:NO];
+
+	[[oDocumentStyle menu] setAutoenablesItems:NO];
 
 	if (m_Properties_DataSource = [[XAP_PaletteProperties_DataSource alloc] initWithOutlineView:oProperties])
 		{
@@ -1166,10 +1225,12 @@ static XAP_CocoaToolPalette * s_instance = 0;
 
 - (IBAction)aSwitch_FG:(id)sender
 {
+	// TODO
 }
 
 - (IBAction)aSwitch_BG:(id)sender
 {
+	// TODO
 }
 
 - (IBAction)aTitle_click:(id)sender
@@ -1235,6 +1296,88 @@ static XAP_CocoaToolPalette * s_instance = 0;
 	UT_DEBUGMSG(("XAP_CocoaToolPalette -aFontName: have edit method\n"));
 
 	UT_UCS4String selection([[oFontName titleOfSelectedItem] UTF8String]);
+
+	const UT_UCS4Char * pData = selection.ucs4_str();
+	UT_uint32 dataLength = static_cast<UT_uint32>(selection.length());
+
+	EV_EditMethodCallData emcd(pData,dataLength);
+	pEM->Fn(m_pViewCurrent, &emcd);
+}
+
+- (IBAction)aFontMemberName:(id)sender
+{
+	if (!m_pViewCurrent)
+		return;
+
+	if (!m_pCurrentFontFamily || !m_pCurrentFontFamilyHelper)
+		{
+			return;
+		}
+
+	int index = [[oFontMemberName selectedItem] tag];
+
+	NSString * fontFamilyName = m_pCurrentFontFamily;
+
+	BOOL bBold   = ([oTB_text_bold   state] == NSOnState) ? YES : NO; // current state
+	BOOL bItalic = ([oTB_text_italic state] == NSOnState) ? YES : NO;
+
+	BOOL bSetBold   = NO;
+	BOOL bSetItalic = NO;
+
+	if (index == [m_pCurrentFontFamilyHelper indexBoldItalic])
+		{
+			bSetBold   = YES;
+			bSetItalic = YES;
+		}
+	else if (index == [m_pCurrentFontFamilyHelper indexBold])
+		{
+			bSetBold   = YES;
+		}
+	else if (index == [m_pCurrentFontFamilyHelper indexItalic])
+		{
+			bSetItalic = YES;
+		}
+	else if (index == [m_pCurrentFontFamilyHelper indexRegular])
+		{
+			// 
+		}
+	else // need to set an explicit font name rather than a font family name...
+		{
+			NSArray * fontNames = [m_pCurrentFontFamilyHelper fontNames];
+
+			fontFamilyName = [fontNames objectAtIndex:index];
+		}
+
+	/* fontFamilyName gets corrupted for some probably obvious reason, so copy it here and now...
+	 */
+	UT_UCS4String selection([fontFamilyName UTF8String]);
+
+	if (bBold != bSetBold)
+		{
+			[oTB_text_bold setState:(bSetBold ? NSOnState : NSOffState)];
+			[self aTB_click:oTB_text_bold];
+		}
+
+	if (bItalic != bSetItalic)
+		{
+			[oTB_text_italic setState:(bSetItalic ? NSOnState : NSOffState)];
+			[self aTB_click:oTB_text_italic];
+		}
+
+	const EV_Toolbar_Action * pAction = m_pToolbarActionSet->getAction(AP_TOOLBAR_ID_FMT_FONT);
+	UT_ASSERT(pAction);
+	if (!pAction)
+		return;
+
+	const char * szMethodName = pAction->getMethodName();
+	if (!szMethodName)
+		return;
+
+	EV_EditMethod * pEM = m_pEditMethodContainer->findEditMethodByName(szMethodName);
+	if (!pEM)
+		return;
+
+	UT_DEBUGMSG(("XAP_CocoaToolPalette -aFontMemberName: have edit method\n"));
 
 	const UT_UCS4Char * pData = selection.ucs4_str();
 	UT_uint32 dataLength = static_cast<UT_uint32>(selection.length());
@@ -1346,13 +1489,13 @@ static XAP_CocoaToolPalette * s_instance = 0;
 
 			if (tlbrid == AP_TOOLBAR_ID_COLOR_FORE)
 				{
-					[colorPanel setTitle:@"Foreground Color"]; // TODO: Localize
+					// [colorPanel setTitle:@"Foreground Color"]; // TODO: Localize
 					[colorPanel setColor:[oColor_FG color]];
 					[colorPanel setAction:@selector(aColor_FG:)];
 				}
 			else
 				{
-					[colorPanel setTitle:@"Background Color"]; // TODO: Localize
+					// [colorPanel setTitle:@"Background Color"]; // TODO: Localize
 					[colorPanel setColor:[oColor_BG color]];
 					[colorPanel setAction:@selector(aColor_BG:)];
 				}
@@ -1715,17 +1858,7 @@ static XAP_CocoaToolPalette * s_instance = 0;
 					// UT_ASSERT(szState); // This assert is triggered if the selection contains multiple fonts?
 					if (szState)
 						{
-							NSString * selection = [NSString stringWithUTF8String:szState];
-
-							if (![m_pFontFamilies containsObject:selection])
-								{
-									[m_pFontFamilies addObject:selection]; // use attributed strings? mark absent fonts in red? [TODO]
-									[m_pFontFamilies sortUsingSelector:@selector(compare:)];
-
-									[oFontName removeAllItems];
-									[oFontName addItemsWithTitles:m_pFontFamilies];
-								}
-							[oFontName selectItemWithTitle:selection];
+							[self syncPopUpsForFont:[NSString stringWithUTF8String:szState]];
 						}
 				}
 		}
@@ -1815,6 +1948,9 @@ static XAP_CocoaToolPalette * s_instance = 0;
 
 	/* Color buttons
 	 */
+	[oSwitch_FG setEnabled:NO]; // TODO
+	[oSwitch_BG setEnabled:NO]; // TODO
+
 	if (m_pViewCurrent)
 		{
 			FV_View * pFView = static_cast<FV_View *>(m_pViewCurrent);
@@ -1936,6 +2072,194 @@ static XAP_CocoaToolPalette * s_instance = 0;
 
 	if (bSync)
 		[self sync];
+}
+
+- (void)rebuildFontFamilyPopUp
+{
+	XAP_CocoaAppController * pController = (XAP_CocoaAppController *) [NSApp delegate];
+
+	[oFontName removeAllItems];
+
+	unsigned count = [m_pFontFamilies count];
+
+	BOOL bAttributedTitles = YES;
+
+	for (unsigned i = 0; i < count; i++)
+		{
+			NSString * Family = [m_pFontFamilies objectAtIndex:i];
+
+			[oFontName addItemWithTitle:Family];
+
+			NSMenuItem * item = [oFontName lastItem];
+
+			[item setTag:((int) i)];
+
+			if (i == 0)
+				{
+					bAttributedTitles = [item respondsToSelector:@selector(setAttributedTitle:)];
+				}
+			if (bAttributedTitles)
+				{
+					XAP_CocoaFontFamilyHelper * helper = [pController helperForFontFamily:Family];
+
+					[item setAttributedTitle:[helper attributedFontFamilyName]];
+				}
+		}
+}
+
+- (void)syncPopUpsForFont:(NSString *)requestedFontFamilyName
+{
+	/* requestedFontFamilyName is one of:
+	 * 
+	 * (a) a recognized font family name
+	 * (b) really a font name
+	 * (c) completely unknown, so we pretend it's a new font family name
+	 */
+
+	NSString * fontFamilyName = 0;
+
+	XAP_CocoaAppController * pController = (XAP_CocoaAppController *) [NSApp delegate];
+
+	XAP_CocoaFontReference * fontRef = 0;
+
+	XAP_CocoaFontFamilyHelper * helper = [pController helperForFontFamily:requestedFontFamilyName];
+
+	if (helper)
+		{
+			// (a) a recognized font family name
+
+			fontFamilyName = requestedFontFamilyName;
+		}
+	else if (fontRef = [pController helperReferenceForFont:requestedFontFamilyName])
+		{
+			// (b) really a font name
+
+			fontFamilyName = [fontRef fontFamily];
+
+			helper = [fontRef fontFamilyHelper];
+		}
+	else
+		{
+			// (c) completely unknown, so we pretend it's a new font family name
+
+			fontFamilyName = requestedFontFamilyName;
+
+			helper = [pController helperForUnknownFontFamily:requestedFontFamilyName];
+
+			/* In this case we need to modify the list of font families
+			 */
+
+			[m_pFontFamilies addObject:fontFamilyName];
+			[m_pFontFamilies sortUsingSelector:@selector(compare:)];
+
+			[self rebuildFontFamilyPopUp];
+		}
+
+	BOOL bRebuildMemberPopUp = YES;
+
+	if (m_pCurrentFontFamily)
+		{
+			if ([m_pCurrentFontFamily isEqualToString:fontFamilyName])
+				{
+					bRebuildMemberPopUp = NO;
+				}
+			[m_pCurrentFontFamily release];
+		}
+	m_pCurrentFontFamily = fontFamilyName;
+	[m_pCurrentFontFamily retain];
+
+	if (m_pCurrentFontFamilyHelper)
+		{
+			[m_pCurrentFontFamilyHelper release];
+		}
+	m_pCurrentFontFamilyHelper = helper;
+	[m_pCurrentFontFamilyHelper retain];
+
+	[oFontName selectItemWithTitle:m_pCurrentFontFamily];
+
+	unsigned count = [helper count];
+
+	NSArray * fontMembers = [helper fontMembers];
+
+	if (bRebuildMemberPopUp)
+		{
+			[oFontMemberName removeAllItems];
+
+			NSArray * attributedFontMembers = [helper attributedFontMembers];
+
+			BOOL bAttributedTitles = YES;
+
+			for (unsigned i = 0; i < count; i++)
+				{
+					NSString * fontMember = [fontMembers objectAtIndex:i];
+
+					[oFontMemberName addItemWithTitle:fontMember];
+
+					NSMenuItem * item = [oFontMemberName lastItem];
+
+					[item setTag:((int) i)];
+
+					if (i == 0)
+						{
+							bAttributedTitles = [item respondsToSelector:@selector(setAttributedTitle:)];
+						}
+					if (bAttributedTitles)
+						{
+							NSAttributedString * attr_title = [attributedFontMembers objectAtIndex:i];
+
+							[item setAttributedTitle:attr_title];
+						}
+				}
+			[oFontMemberName setEnabled:((count > 1) ? YES : NO)];
+		}
+	if (count == 1)
+		{
+			return;
+		}
+	if (fontRef)
+		{
+			[oFontMemberName selectItemAtIndex:((int) [fontRef index])];
+			return;
+		}
+
+	/* We have a font family name but we need to choose a particular member of the font...
+	 */
+	BOOL bBold   = ([oTB_text_bold   state] == NSOnState) ? YES : NO;
+	BOOL bItalic = ([oTB_text_italic state] == NSOnState) ? YES : NO;
+
+	if (bBold && bItalic)
+		{
+			int index = [helper indexBoldItalic];
+			if (index >= 0)
+				{
+					[oFontMemberName selectItemAtIndex:index];
+					return;
+				}
+		}
+	else if (bBold)
+		{
+			int index = [helper indexBold];
+			if (index >= 0)
+				{
+					[oFontMemberName selectItemAtIndex:index];
+					return;
+				}
+		}
+	else if (bItalic)
+		{
+			int index = [helper indexItalic];
+			if (index >= 0)
+				{
+					[oFontMemberName selectItemAtIndex:index];
+					return;
+				}
+		}
+	else
+		{
+			int index = [helper indexRegular];
+
+			[oFontMemberName selectItemAtIndex:((index >= 0) ? index : 0)];
+		}
 }
 
 @end

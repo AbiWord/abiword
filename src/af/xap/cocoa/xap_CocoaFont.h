@@ -93,4 +93,62 @@ private:
 	static NSTextContainer *	s_fontMetricsTextContainer;
 };
 
+@interface XAP_CocoaFontFamilyHelper : NSObject
+{
+	NSString *				m_FontFamilyName;
+	NSAttributedString *	m_AttributedFontFamilyName;
+
+	NSMutableArray *		m_FontNames;
+	NSMutableArray *		m_FontMembers;
+	NSMutableArray *		m_AttributedFontMembers;
+
+	unsigned				m_count;
+
+	int						m_indexRegular;
+	int						m_indexItalic;
+	int						m_indexBold;
+	int						m_indexBoldItalic;
+}
++ (NSMutableDictionary *)fontFamilyHelperDictionary:(NSMutableDictionary *)referenceDictionary;
+
+- (id)initWithFontFamilyName:(NSString *)fontFamilyName known:(BOOL)known;
+- (void)dealloc;
+
+- (NSString *)fontFamilyName;
+- (NSAttributedString *)attributedFontFamilyName;
+
+- (unsigned)count;
+
+- (NSArray *)fontNames;
+- (NSArray *)fontMembers;
+- (NSArray *)attributedFontMembers;
+
+/* These return -1 if there is no matching font member.
+ */
+- (int)indexRegular;
+- (int)indexItalic;
+- (int)indexBold;
+- (int)indexBoldItalic;
+
+- (void)addFontReferences:(NSMutableDictionary *)referenceDictionary;
+@end
+
+@interface XAP_CocoaFontReference : NSObject
+{
+	NSString *						m_FontFamily;
+
+	XAP_CocoaFontFamilyHelper *		m_FontFamilyHelper;
+
+	unsigned						m_index;
+}
+- (id)initWithFontFamily:(NSString *)fontFamily helper:(XAP_CocoaFontFamilyHelper *)helper index:(unsigned)index;
+- (void)dealloc;
+
+- (NSString *)fontFamily;
+
+- (XAP_CocoaFontFamilyHelper *)fontFamilyHelper;
+
+- (unsigned)index;
+@end
+
 #endif /* XAP_COCOAFONT_H */

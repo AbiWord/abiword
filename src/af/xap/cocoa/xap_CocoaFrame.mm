@@ -59,7 +59,6 @@
 	[[NSNotificationCenter defaultCenter] addObserver:self
 					selector:@selector(hasBeenResized:)
 					name:NSViewFrameDidChangeNotification object:self];
-
 	return self;
 }
 
@@ -185,7 +184,7 @@
 		{
 			pView->setWindowSize((UT_sint32)rint(rect.size.width), (UT_sint32)rint(rect.size.height));
 			// m_pGR->_callUpdateCallback(&rect);
-			// m_pFrame->quickZoom(); // was update zoom
+			m_pFrame->quickZoom(); // was update zoom
 		}
 	}
 }
@@ -200,14 +199,20 @@
 
 - (void)mouseDown:(NSEvent *)theEvent
 {
+	if (NSInputManager * inputManager = [NSInputManager currentInputManager])
+		[inputManager markedTextAbandoned:[theEvent window]];
 	[_eventDelegate mouseDown:theEvent from:self];
 }
 - (void)rightMouseDown:(NSEvent *)theEvent
 {
+	if (NSInputManager * inputManager = [NSInputManager currentInputManager])
+		[inputManager markedTextAbandoned:[theEvent window]];
 	[_eventDelegate mouseDown:theEvent from:self];
 }
 - (void)otherMouseDown:(NSEvent *)theEvent
 {
+	if (NSInputManager * inputManager = [NSInputManager currentInputManager])
+		[inputManager markedTextAbandoned:[theEvent window]];
 	[_eventDelegate mouseDown:theEvent from:self];
 }
 

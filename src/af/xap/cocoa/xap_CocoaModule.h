@@ -54,16 +54,18 @@ public:
 
 	static void		loadAllPlugins (); // called on start-up, and *only* then
 
+	/* used by CocoaAppController to auto-load plugins selected through the Finder
+	 */
+	static bool		loadPlugin (const UT_UTF8String & path);
+	static bool		hasPluginExtension (const UT_UTF8String & path);
+
 private:
 	UT_UTF8String	m_szname;
 	UT_UTF8String	m_module_path;
 
 	void *			m_module;
-	void *			m_cocoa_plugin;
 
 	bool			m_bLoaded;
-	bool			m_bBundle;
-	bool			m_bCocoa;
 };
 
 #endif /* XAP_COCOAMODULE_H */

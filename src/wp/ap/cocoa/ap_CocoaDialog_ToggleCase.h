@@ -1,3 +1,5 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+
 /* AbiWord
  * Copyright (C) 2000 AbiSource, Inc.
  * Copyright (C) 2001, 2003 Hubert Figuiere
@@ -23,26 +25,29 @@
 #define AP_COCOADIALOG_ToggleCase_H
 
 #include <Cocoa/Cocoa.h>
+
 #include "ap_Dialog_ToggleCase.h"
 
 class AP_CocoaDialog_ToggleCase;
 
 @interface AP_CocoaDialog_ToggleCaseController : NSWindowController <XAP_CocoaDialogProtocol>
 {
-    IBOutlet NSButton *_cancelBtn;
-    IBOutlet NSMatrix *_caseMatrix;
-    IBOutlet NSButtonCell *_initialBtn;
-    IBOutlet NSButtonCell *_lowerBtn;
-    IBOutlet NSButton *_okBtn;
-    IBOutlet NSButtonCell *_sentenceBtn;
-    IBOutlet NSButtonCell *_titleBtn;
-    IBOutlet NSButtonCell *_toggleBtn;
-    IBOutlet NSButtonCell *_upperBtn;
-	AP_CocoaDialog_ToggleCase *_xap;
+	IBOutlet NSButton *		_okBtn;
+	IBOutlet NSButton *		_cancelBtn;
+
+	IBOutlet NSMatrix *		_caseMatrix;
+
+	IBOutlet NSButtonCell *	_initialBtn;
+	IBOutlet NSButtonCell *	_lowerBtn;
+	IBOutlet NSButtonCell *	_sentenceBtn;
+//  IBOutlet NSButtonCell *	_titleBtn;
+	IBOutlet NSButtonCell *	_toggleBtn;
+	IBOutlet NSButtonCell *	_upperBtn;
+
+	AP_CocoaDialog_ToggleCase *	_xap;
 }
 - (IBAction)cancelAction:(id)sender;
 - (IBAction)okAction:(id)sender;
-- (IBAction)setAction:(id)sender;
 @end
 
 /*****************************************************************/

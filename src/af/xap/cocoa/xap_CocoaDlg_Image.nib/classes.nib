@@ -10,6 +10,7 @@
                 preserveAction = id; 
                 widthChanged = id; 
                 widthNumStepperChanged = id; 
+                wrapAction = id; 
             }; 
             CLASS = "XAP_CocoaDialog_ImageController"; 
             LANGUAGE = ObjC; 

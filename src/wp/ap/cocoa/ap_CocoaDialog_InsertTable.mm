@@ -1,3 +1,5 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
  * Copyright (C) 2003 Hubert Figuiere
@@ -126,34 +128,50 @@ void AP_CocoaDialog_InsertTable::_storeWindowData(void)
 
 - (void)setXAPOwner:(XAP_Dialog *)owner
 {
-	_xap = dynamic_cast<AP_CocoaDialog_InsertTable*>(owner);
+	_xap = dynamic_cast<AP_CocoaDialog_InsertTable *>(owner);
 }
 
 -(void)windowDidLoad
 {
 	if (_xap) {
-		const XAP_StringSet *pSS = XAP_App::getApp()->getStringSet();
+		const XAP_StringSet * pSS = XAP_App::getApp()->getStringSet();
 
-		LocalizeControl([self window], pSS, AP_STRING_ID_DLG_InsertTable_TableTitle);
-		LocalizeControl(_okBtn, pSS, XAP_STRING_ID_DLG_OK);
-		LocalizeControl(_cancelBtn, pSS, XAP_STRING_ID_DLG_Cancel);
-		LocalizeControl(_tableSizeBox, pSS, AP_STRING_ID_DLG_InsertTable_TableSize_Capital);
-		LocalizeControl(_numOfColLabel, pSS, AP_STRING_ID_DLG_InsertTable_NumCols);
+		LocalizeControl([self window],		pSS, AP_STRING_ID_DLG_InsertTable_TableTitle);
+
+		LocalizeControl(_okBtn,				pSS, XAP_STRING_ID_DLG_OK);
+		LocalizeControl(_cancelBtn,			pSS, XAP_STRING_ID_DLG_Cancel);
+		LocalizeControl(_tableSizeBox,		pSS, AP_STRING_ID_DLG_InsertTable_TableSize_Capital);
+		LocalizeControl(_numOfColLabel,		pSS, AP_STRING_ID_DLG_InsertTable_NumCols);
+		LocalizeControl(_numOfRowLabel,		pSS, AP_STRING_ID_DLG_InsertTable_NumRows);
+		LocalizeControl(_autofitBox,		pSS, AP_STRING_ID_DLG_InsertTable_AutoFit_Capital);
+		LocalizeControl(_autoColBtn,		pSS, AP_STRING_ID_DLG_InsertTable_AutoColSize);
+		LocalizeControl(_fixedColSizeBtn,	pSS, AP_STRING_ID_DLG_InsertTable_FixedColSize);
+
 		[_numOfColData setIntValue:_xap->getNumCols()];
-		LocalizeControl(_numOfRowLabel, pSS, AP_STRING_ID_DLG_InsertTable_NumRows);
 		[_numOfRowData setIntValue:_xap->getNumRows()];
-		LocalizeControl(_autofitBox, pSS, AP_STRING_ID_DLG_InsertTable_AutoFit_Capital);
-		LocalizeControl(_autoColBtn, pSS, AP_STRING_ID_DLG_InsertTable_AutoColSize);
-		[_autoColBtn setTag:(int)AP_Dialog_InsertTable::b_AUTOSIZE];
-		LocalizeControl(_fixedColSizeBtn, pSS, AP_STRING_ID_DLG_InsertTable_FixedColSize);
+
+		[_autoColBtn      setTag:(int)AP_Dialog_InsertTable::b_AUTOSIZE];
 		[_fixedColSizeBtn setTag:(int)AP_Dialog_InsertTable::b_FIXEDSIZE];
-		[_fixedColSizeData setFloatValue:_xap->getColumnWidth()];
+
+		[_fixedColSizeData    setFloatValue:_xap->getColumnWidth()];
+		[_fixedColSizeStepper setFloatValue:_xap->getColumnWidth()];
+
+		[_fixedColSizeData    setEnabled:NO];
+		[_fixedColSizeStepper setEnabled:NO];
 	}
 }
 
 - (IBAction)cancelAction:(id)sender
 {
 	_xap->event_Cancel();
+}
+
+- (IBAction)colSizeAction:(id)sender
+{
+	BOOL bEnabled = (AP_Dialog_InsertTable::b_FIXEDSIZE == (AP_Dialog_InsertTable::columnType) [[_radioMatrix selectedCell] tag]) ? YES : NO;
+
+	[_fixedColSizeData    setEnabled:bEnabled];
+	[_fixedColSizeStepper setEnabled:bEnabled];
 }
 
 - (IBAction)fixedColSizeAction:(id)sender
@@ -168,7 +186,12 @@ void AP_CocoaDialog_InsertTable::_storeWindowData(void)
 
 - (IBAction)numColAction:(id)sender
 {
-	[_numOfColStepper setIntValue:[sender intValue]];
+	int count = [sender intValue];
+
+	count = (count < 1) ? 1 : ((count > 64) ? 64 : count);
+
+	[_numOfColData    setIntValue:count];
+	[_numOfColStepper setIntValue:count];
 }
 
 - (IBAction)numColStepperAction:(id)sender
@@ -178,7 +201,12 @@ void AP_CocoaDialog_InsertTable::_storeWindowData(void)
 
 - (IBAction)numRowAction:(id)sender
 {
-	[_numOfRowStepper setIntValue:[sender intValue]];
+	int count = [sender intValue];
+
+	count = (count < 1) ? 1 : ((count > 500) ? 500 : count);
+
+	[_numOfRowData    setIntValue:count];
+	[_numOfRowStepper setIntValue:count];
 }
 
 - (IBAction)numRowStepperAction:(id)sender
@@ -193,12 +221,20 @@ void AP_CocoaDialog_InsertTable::_storeWindowData(void)
 
 - (int)numRows
 {
-	return [_numOfRowData intValue];
+	int count = [_numOfRowData intValue];
+
+	count = (count < 1) ? 1 : ((count > 500) ? 500 : count);
+
+	return count;
 }
 
 - (int)numCols
 {
-	return [_numOfColData intValue];
+	int count = [_numOfColData intValue];
+
+	count = (count < 1) ? 1 : ((count > 64) ? 64 : count);
+
+	return count;
 }
 
 - (float)colWidth
