@@ -254,7 +254,7 @@ There are 2 ways to build and run AbiWord:
     help AbiWord find the dictionary and other support files.
 
 [2] End-User Style:  just cd to abi and type 'make distribution ABI_BUILD_VERSION=x.y.z'
-    This will build a QNX 'Repository in a File'(src/build/qnx/abiword-x.y.z.qpr).
+    This will build a QNX 'Repository in a File'(src/pkg/qnx/abiword-x.y.z.qpr).
 		Install this with 'pkg-installer -u abiword-x.y.z.qpr'.
 
 Components that you will need to checkout from CVS, or have installed, are:
@@ -265,17 +265,10 @@ Components that you will need to checkout from CVS, or have installed, are:
 		a distribution (ie [2])
 	wv
 		This contains the Word converter library
-	expat
-		This contains the XML parser library
-	zlib
-		This is used for compression
-	libpng
-		This is used for AbiWord's internal graphics representation
-	libiconv
-		This is used for internationalization and character support
-	psiconv
-		This is used for the Psion importer.
-	
+
+	You also need to have libpng,libiconv, libfribidi and libxml2. All except libfribidi is availible from the QNX 3rd party CD.
+	FriBiDi can be downloaded from http://www.qnxzone.com/~travis/packages/fribidi_x86-0.10.4-x86-public.qpr
+
 
 Build Instructions -- BeOS
 --------------------------
