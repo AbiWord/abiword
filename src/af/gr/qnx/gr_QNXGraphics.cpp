@@ -191,10 +191,7 @@ UT_uint32 GR_QNXGraphics::_getResolution(void) const
       the printing values vs the screen values?
 	*/
 
-	/*
-	return 96;
-	*/
-	return _UL(96);
+	return _UL(72);
 }
 
 void GR_QNXGraphics::flush(void)
@@ -227,7 +224,7 @@ void GR_QNXGraphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
 	_UUD(yoff);
 
 
-	pos.x = xoff;
+	pos.x = xoff - (iCharOffset +1);
 	pos.y = yoff + _UD(getFontAscent());
 
 	GR_CaretDisabler caretDisabler(getCaret());
@@ -235,7 +232,7 @@ void GR_QNXGraphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
 
 	PgSetFont(m_pFont->getFont());
 	PgSetTextColor(m_currentColor);
-	utf8=(char*)UT_convert((char*)pChars,(iLength)*sizeof(pChars[0]),UCS_INTERNAL,"UTF-8",NULL,&len);
+	utf8=(char*)UT_convert((char*)(pChars+iCharOffset),(iLength)*sizeof(pChars[0]),UCS_INTERNAL,"UTF-8",NULL,&len);
 
 	//Faster to copy and not flush or to not copy and flush?
 /*
@@ -276,7 +273,7 @@ PfExtent(&rect,NULL,font,NULL,NULL,(const char*)&mychr,sizeof(mychr),PF_WIDE_CHA
 
 //fprintf(stderr,"Font is: %s char is %c and size is %d\nPfExtent claims = %d,%d",font,c,size,rect.ul.x,rect.lr.x);
 //return _UL(size);
-return _UL((rect.lr.x - min(rect.ul.x,0) +1));
+return _UL((rect.lr.x - min(rect.ul.x,0))+1 );
 }
 
 
