@@ -934,6 +934,15 @@ bool pt_PieceTable::_deleteComplexSpan(PT_DocPosition dpos1,
 				}
 				break;
 			}
+			else if(isEndFootnote(pfs))
+			{
+//
+// Attempting to delete an EndFootnote end strux without a matching begin.
+// terminate the loop now.
+//
+				return false;
+
+			}
 //
 // Look to see if we've reached the end of a footnote section.
 //
