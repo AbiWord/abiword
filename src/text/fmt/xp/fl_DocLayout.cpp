@@ -692,7 +692,7 @@ void FL_DocLayout::rebuildFromHere( fl_DocSectionLayout * pFirstDSL)
 	// add page view dimensions
 #if 1
 	UT_DEBUGMSG(("SEVIOR: Rebuild from section %x \n",pFirstDSL));
-	UT_ASSERT(0);
+//	UT_ASSERT(0);
 	for(UT_uint32 k=0; k< m_vecPages.getItemCount(); k++)
 	{
 		fp_Page * pPage = (fp_Page *) m_vecPages.getNthItem(k);

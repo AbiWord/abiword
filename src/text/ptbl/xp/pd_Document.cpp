@@ -731,6 +731,26 @@ bool PD_Document::insertStruxNoUpdateBefore(PL_StruxDocHandle sdh, PTStruxType p
 }
 
 /*!
+ * This method examines the frag immediately before the given sdh and decides
+ * if it matches the strux type given.
+ */
+bool PD_Document::isStruxBeforeThis(PL_StruxDocHandle sdh,  PTStruxType pts)
+{
+	pf_Frag_Strux * pfs = (pf_Frag_Strux *) sdh;
+	pf_Frag * pfb = pfs->getPrev();
+	if(pfb->getType() != pf_Frag::PFT_Strux)
+	{
+		return false;
+	}
+	pf_Frag_Strux * pfsb = (pf_Frag_Strux *) pfb;
+	if(pfsb->getStruxType() == pts)
+	{
+		return true;
+	}
+	return false;
+}
+
+/*!
  * This method deletes a strux without throwing a change record.
  * sdh is the StruxDocHandle that gets deleted..
  * Use with extreme care. Should only be used for document import.

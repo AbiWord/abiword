@@ -290,6 +290,7 @@ public:
 	bool                    changeStruxAttsNoUpdate(PL_StruxDocHandle sdh, const char * attr, const char * attvalue);
 	bool                    deleteStruxNoUpdate(PL_StruxDocHandle sdh);
 	bool                    insertStruxNoUpdateBefore(PL_StruxDocHandle sdh, PTStruxType pts,const XML_Char ** attributes );
+	bool                    isStruxBeforeThis(PL_StruxDocHandle sdh,  PTStruxType pts);
 	PT_AttrPropIndex        getAPIFromSDH(PL_StruxDocHandle sdh);
     bool                    getAttributeFromSDH(PL_StruxDocHandle sdh, const char * szAttribute, const char ** pszValue);
     bool                    getPropertyFromSDH(PL_StruxDocHandle sdh, const char * szProperty, const char ** pszValue);

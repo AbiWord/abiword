@@ -915,7 +915,7 @@ void fl_DocSectionLayout::updateLayout(void)
 	bool bShowHidden = pView && pView->getShowPara();
 	FPVisibility eHidden;
 	bool bHidden;
-
+	bool bReformat = false;
 	while (pBL)
 	{
 		eHidden  = pBL->isHidden();
@@ -926,17 +926,22 @@ void fl_DocSectionLayout::updateLayout(void)
  		if(!bHidden)
  		{
  			if (pBL->needsReformat())
+			{
 				pBL->format();
-
-			if (pBL->getContainerType() != FL_CONTAINER_BLOCK)
+				bReformat = true;
+			}
+			if (pBL->getContainerType() != FL_CONTAINER_BLOCK && !getDocument()->isDontImmediateLayout())
+			{
 				pBL->updateLayout();
+			}
 		}
 
 		pBL = pBL->getNext();
 	}
-
-	fb_ColumnBreaker::breakSection(this);
-
+	if(bReformat)
+	{
+		fb_ColumnBreaker::breakSection(this);
+	}
 	if(needsRebuild())
 	{
 //		UT_ASSERT(0);

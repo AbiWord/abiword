@@ -278,6 +278,10 @@ void fl_TableLayout::format(void)
 		m_bIsDirty = false;
 	}
 	m_bNeedsFormat = m_bIsDirty;
+	if(m_bNeedsFormat)
+	{
+		xxx_UT_DEBUGMSG(("SEVIOR: After format in TableLayout need another format \n"));
+	}
 }
 
 void fl_TableLayout::markAllRunsDirty(void)
@@ -292,6 +296,10 @@ void fl_TableLayout::markAllRunsDirty(void)
 
 void fl_TableLayout::updateLayout(void)
 {
+	if(getDocument()->isDontImmediateLayout())
+	{
+		return;
+	}
 	fl_ContainerLayout*	pBL = getFirstLayout();
 	while (pBL)
 	{
@@ -307,6 +315,10 @@ void fl_TableLayout::updateLayout(void)
 
 void fl_TableLayout::redrawUpdate(void)
 {
+	if(getDocument()->isDontImmediateLayout())
+	{
+		return;
+	}
 	fl_ContainerLayout*	pBL = getFirstLayout();
 	while (pBL)
 	{

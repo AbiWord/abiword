@@ -1381,7 +1381,7 @@ void FV_View::_moveInsPtNextPrevLine(bool bNext)
 	else
 	{
 		pPage->mapXYToPosition(xClick, yClick, iNewPoint, bBOL, bEOL);
-		while((iNewPoint == iOldPoint) && (yClick < m_pLayout->getHeight()) && (yClick > 0))
+		while(pPage && (iNewPoint == iOldPoint) && (yClick < m_pLayout->getHeight()) && (yClick > 0))
 		{
 			if (bNext)
 			{
@@ -1391,7 +1391,20 @@ void FV_View::_moveInsPtNextPrevLine(bool bNext)
 			{
 				yClick -= 2;
 			}
-			pPage->mapXYToPosition(xClick, yClick, iNewPoint, bBOL, bEOL);
+			if(yClick > pPage->getHeight())
+			{
+				pPage = pPage->getNext();
+				yClick -= pPage->getHeight();
+			}
+			if(yClick < 0)
+			{
+				pPage = pPage->getPrev();
+				yClick += pPage->getHeight();
+			}
+			if(pPage)
+			{
+				pPage->mapXYToPosition(xClick, yClick, iNewPoint, bBOL, bEOL);
+			}
 		}
 	}
 //
@@ -1517,91 +1530,164 @@ void FV_View::_moveInsPtNextPrevScreen(bool bNext)
 	UT_sint32 x,y,x2,y2;
 	UT_uint32 iHeight;
 	bool bDirection;
-
+	bool bBOL,bEOL;
+	UT_sint32 iYnext,iYscroll;
+	PT_DocPosition iNewPoint;
 	_findPositionCoords(getPoint(),false,x,y,x2,y2,iHeight,bDirection,&pBlock,&pRun);
 	if(!pRun)
 		return;
+
 	fp_Line * pLine = pRun->getLine();
-	UT_ASSERT(pLine);
-
-	fp_Line * pOrigLine = pLine;
-	fp_Line * pPrevLine = pLine;
-	fp_Container * pCont = pLine->getContainer();
-	fp_Page * pPage  = pCont->getPage();
-	getPageYOffset(pPage, y);
-
-	y += pCont->getY() + pLine->getY();
-
-	if(bNext)
-		y-= pLine->getHeight();
-
-	UT_uint32 iLineCount = 0;
-
-	while(pLine)
+	UT_return_if_fail(pLine);
+	fp_Page * pPage = pLine->getPage();
+	UT_return_if_fail(pPage);
+	if(isHdrFtrEdit())
 	{
-		iLineCount++;
-		pCont = pLine->getContainer();
-		pPage = pCont->getPage();
-		getPageYOffset(pPage, y2);
-		y2 += pCont->getY() + pLine->getY();
-		if(!bNext)
-			y2 -= pLine->getHeight();
-
-		if(abs(y - y2) >=  m_iWindowHeight)
-			break;
-
-		pPrevLine = pLine;
-		pLine = bNext ? (fp_Line *) pLine->getNext() : (fp_Line *) pLine->getPrev();
-		if(!pLine)
+		clearHdrFtrEdit();
+		warpInsPtToXY(0,0,false);
+	}
+	UT_sint32 xoff,yoff;
+//
+// get Screen coordinates of the top of the page and add the y location to this.
+//
+	getPageScreenOffsets(pPage, xoff,yoff);
+	yoff = y - yoff;
+	bool bSuccess = true;
+	if(bNext)
+	{
+		iYnext = yoff + m_iWindowHeight;
+		iYscroll = m_yScrollOffset + m_iWindowHeight;
+		UT_DEBUGMSG(("SEVIOR:!!!!!! Yoff %d iYnext %d page %x \n",yoff,iYnext,pPage));
+		while(pPage && (iYnext > pPage->getHeight()))
 		{
-			fl_BlockLayout * pPrevBlock = pBlock;
-			pBlock = bNext ? (fl_BlockLayout *)  pPrevLine->getBlock()->getNext() : (fl_BlockLayout *) pPrevLine->getBlock()->getPrev();
-			if(!pBlock)
+			iYnext -= pPage->getHeight();
+			iYnext -= getPageViewSep();
+			pPage = pPage->getNext();
+		}
+		UT_DEBUGMSG(("SEVIOR:!!!!!! Set to iYnext %d page %x \n",iYnext,pPage));
+		if(pPage == NULL)
+		{
+			return;
+		}
+		if(iYnext < 0)
+		{
+			iYnext = 0;
+		}
+		UT_sint32 newX,newY;
+		UT_uint32 newHeight;
+		pPage->mapXYToPosition(x, iYnext, iNewPoint, bBOL, bEOL);
+		_findPositionCoords(iNewPoint,false,newX,newY,x2,y2,newHeight,bDirection,&pBlock,&pRun);
+		if(!pRun)
+		{
+			_moveInsPtNextPrevLine(bNext);
+			return;
+		}
+		fp_Line * pNewLine = (fp_Line *) pRun->getLine();
+		if(pNewLine == NULL)
+		{
+			_moveInsPtNextPrevLine(bNext);
+			return;
+		}
+		if((pNewLine->getPage() == pLine->getPage()) && (pNewLine->getY() < pLine->getY()))
+		{
+			_moveInsPtNextPrevLine(bNext);
+			return;
+		}
+
+//
+// Couldn't advance! Try scanning x across the page at this new iYnext.
+//
+		if(pLine == pNewLine)
+		{
+			bSuccess = false;
+			UT_sint32 width = pPage->getWidth();
+			UT_sint32 step = width/20 + 1;
+			for(x=0; (x < width) && !bSuccess; x += step)
 			{
-				// see if there is another section after/before this block
-				fl_SectionLayout* pSection = bNext ? (fl_SectionLayout *) pPrevBlock->getSectionLayout()->getNext()
-												   : (fl_SectionLayout *) pPrevBlock->getSectionLayout()->getPrev();
-
-				if(pSection && (pSection->getType() == FL_SECTION_DOC || pSection->getType() == FL_SECTION_ENDNOTE))
-					pBlock = bNext ? (fl_BlockLayout *) pSection->getFirstLayout() : (fl_BlockLayout *) pSection->getLastLayout();
+				pPage->mapXYToPosition(x, iYnext, iNewPoint, bBOL, bEOL);
+				_findPositionCoords(iNewPoint,false,newX,newY,x2,y2,newHeight,bDirection,&pBlock,&pRun);
+				pNewLine = (fp_Line *) pRun->getLine();
+				if(pLine != pNewLine)
+				{
+					bSuccess = true;
+				}
 			}
-
-			if(pBlock)
-				pLine = bNext ? (fp_Line *) pBlock->getFirstContainer() : (fp_Line *) pBlock->getLastContainer();
+		}
+		if(!bSuccess)
+		{
+			_moveInsPtNextPrevLine(bNext);
+			return;
 		}
 	}
-
-	// if we do not have pLine, we will use pPrevLine
-	// also, if we processed less than 3 lines, i.e, there is
-	// a wide gap between our line an the next line, we want to
-	// move to the next line even though we will not be able to
-	// see the current line on screen any more
-	if(iLineCount > 2 || !pLine)
-		pLine  = pPrevLine;
-
-	UT_ASSERT(pLine);
-	if(!pLine)
-		return;
-
-	if(pLine == pOrigLine)
+	else
 	{
-		_ensureInsertionPointOnScreen();
-		return;
+		iYnext = yoff  - m_iWindowHeight;
+		iYscroll = m_yScrollOffset - m_iWindowHeight;
+		if(iYscroll < 0)
+		{
+			return;
+		}
+		while(pPage && (iYnext < 0))
+		{
+			iYnext += pPage->getHeight();
+			iYnext += getPageViewSep();
+			pPage = pPage->getPrev();
+		}
+		if(pPage == NULL)
+		{
+			return;
+		}
+		pPage->mapXYToPosition(x, iYnext, iNewPoint, bBOL, bEOL);
+		UT_sint32 newX,newY;
+		UT_uint32 newHeight;
+		_findPositionCoords(iNewPoint,false,newX,newY,x2,y2,newHeight,bDirection,&pBlock,&pRun);
+		if(!pRun)
+		{
+			_moveInsPtNextPrevLine(bNext);
+			return;
+		}
+		fp_Line * pNewLine = (fp_Line *) pRun->getLine();
+		if(pNewLine == NULL)
+		{
+			_moveInsPtNextPrevLine(bNext);
+			return;
+		}
+		if((pNewLine->getPage() == pLine->getPage()) && (pNewLine->getY() > pLine->getY()))
+		{
+			_moveInsPtNextPrevLine(bNext);
+			return;
+		}
+//
+// Couldn't advance! Try scanning x across the page at this new iYnext.
+//
+		if(pNewLine == pLine)
+		{
+			bSuccess = false;
+			UT_sint32 width = pPage->getWidth();
+			UT_sint32 step = width/20 + 1;
+			for(x=0; (x < width) && !bSuccess; x += step)
+			{
+				pPage->mapXYToPosition(x, iYnext, iNewPoint, bBOL, bEOL);
+				_findPositionCoords(iNewPoint,false,newX,newY,x2,y2,newHeight,bDirection,&pBlock,&pRun);
+				fp_Line * pNewLine = (fp_Line *) pRun->getLine();
+				if(pLine != pNewLine)
+				{
+					bSuccess = true;
+				}
+			}
+		}
+		if(!bSuccess)
+		{
+			_moveInsPtNextPrevLine(bNext);
+			return;
+		}
 	}
-
-
-	pRun = pLine->getFirstRun();
-	UT_ASSERT(pRun);
-	if(!pRun)
-		return;
-
-	pBlock = pRun->getBlock();
-	UT_ASSERT(pBlock);
-	if(!pBlock)
-		return;
-
-	moveInsPtTo(pBlock->getPosition(false) + pRun->getBlockOffset());
-	_ensureInsertionPointOnScreen();
+	_setPoint(iNewPoint);
+	sendVerticalScrollEvent(iYscroll);
+	if (!_ensureInsertionPointOnScreen())
+	{
+		_fixInsertionPointCoords();
+	}
 }
 
 

@@ -1537,6 +1537,15 @@ void IE_Imp_RTF::HandleCell(void)
 		FlushStoredChars();		
 		UT_DEBUGMSG(("SEVIOR: Non posonrow %d \n",getTable()->getPosOnRow()));
 		getDoc()->appendStrux(PTX_EndCell,NULL);
+//
+// Look to see if this is just has a cell/endCell with no content. If so
+// repair it.
+//
+		PL_StruxDocHandle * sdhEndCell = getDoc()->getLastStruxOfType(PTX_EndCell);
+		if(getDoc()->isStruxBeforeThis(sdhEndCell,PTX_SectionCell))
+		{
+			getDoc()->insertStruxNoUpdateBefore(sdhEndCell,PTX_Block,NULL);
+		}
 		getTable()->CloseCell();
 		getDoc()->appendStrux(PTX_SectionCell,NULL);
 		m_lastCellSDH = getDoc()->getLastStruxOfType(PTX_SectionCell);

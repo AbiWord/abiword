@@ -722,8 +722,8 @@ void fp_Page::_reformat(void)
 #if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
 			UT_DEBUGMSG(("SEVIOR: Page incorrectly laid out iYlayoutuints= %d  \n",iYLayoutUnits));
 #endif
-
 			m_pOwner->markForRebuild();
+			UT_ASSERT(0);
 			return;
 //			break;
 		}
@@ -845,16 +845,18 @@ void fp_Page::_reformat(void)
 			if( (iYLayoutUnits + 3*iYLayoutNext) < (getHeightInLayoutUnits() - iBottomMarginLayoutUnits))
 #else
 			UT_sint32 iYNext = 0;
+			bool bIsTable = false;
 			if(pFirstNextContainer->getContainerType() == FP_CONTAINER_TABLE)
 			{
 				fp_TableContainer * pTC = static_cast<fp_TableContainer *>(pFirstNextContainer);
 				iYNext = pTC->getHeight();
+				bIsTable = true;
 			}
 			else
 			{
 				iYNext = pFirstNextContainer->getHeight();
 			}
-			if( (iY + 3*iYNext) < (getHeight() - iBottomMargin))
+			if( !bIsTable && (iY + 3*iYNext) < (getHeight() - iBottomMargin))
 #endif
 			{
 #if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)

@@ -510,13 +510,13 @@ void fp_CellContainer::drawLines(fp_TableContainer * pBroke)
 		if(iTop < col_y)
 		{
 			iTop = col_y;
-			bDrawTop = false;
+//			bDrawTop = false;
 		}
 		UT_DEBUGMSG(("SEVIOR: After ibot = %d  sum %d \n",iBot,col_y + pCol->getHeight()));
 		if(iBot > col_y + pCol->getHeight())
 		{
 			iBot =  col_y + pCol->getHeight();
-			bDrawBot = false;
+//			bDrawBot = false;
 		}
 		if(m_bDrawLeft)
 		{
