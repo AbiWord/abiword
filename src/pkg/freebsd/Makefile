@@ -37,20 +37,35 @@ include $(ABI_ROOT)/src/config/abi_rules.mk
 ## their respective distributions would expect to find them.  These
 ## targets will be called by package tools like RPM.
 
+# If tgz is inside $ABI_DIST_TARGET
+ifneq ($(findstring tgz,$(ABI_DIST_TARGET)),)
+        DIST_DEPS += tgz
+endif
+
+# If pkg is inside $ABI_DIST_TARGET
+ifneq ($(findstring pkg,$(ABI_DIST_TARGET)),)
+        DIST_DEPS += pkg
+endif
+
+# Native FreeBSD package
+pkg::
+	@echo "Producing native FreeBSD PKG from PLIST in $(DIST)..."
+	@TARGET=$(prefix)/AbiSuite BINDIR=$(prefix)/bin OUTFILE=$(DIST)/PLIST \
+		$(ABI_ROOT)/src/pkg/freebsd/scripts/mkplist.sh
+	@echo "Producing package to" \
+		"$(DIST)/AbiWord-$(ABI_BUILD_VERSION).tgz"
+	@pkg_create -c pkg/COMMENT -d pkg/COMMENT -D pkg/MESSAGE \
+		-f $(DIST)/PLIST $(DIST)/AbiWord-$(ABI_BUILD_VERSION).tgz
+	@echo "Cleaning up..."
+	@rm -f $(DIST)/PLIST
+
+# tgz target is provided by a common Unix makefile
+include $(ABI_ROOT)/src/pkg/common/unix/tgz.mk
+
 # The plain "install" common to all Unix targets
 install:
 	@TARGET=$(prefix)/AbiSuite BINDIR=$(prefix)/bin SRCDIR=$(OUTDIR) \
 		SCRIPTDIR=$(ABI_ROOT)/src/pkg/common/unix/scripts \
 		$(ABI_ROOT)/src/pkg/common/unix/scripts/install.sh
 
-distribution:
-	@echo "Producing PLIST to /tmp"
-	@TARGET=$(prefix)/AbiSuite BINDIR=$(prefix)/bin OUTFILE=/tmp/PLIST \
-		$(ABI_ROOT)/src/pkg/freebsd/scripts/mkplist.sh
-	@echo "Producing package to" \
-		"$(ABI_ROOT)/../AbiWord-$(ABI_BUILD_VERSION).tgz"
-	@pkg_create -c pkg/COMMENT  -d pkg/COMMENT -D pkg/MESSAGE \
-		-f /tmp/PLIST $(ABI_ROOT)/../AbiWord-$(ABI_BUILD_VERSION).tgz
-	@echo "Remove /tmp/PLIST"
-	@rm -f /tmp/PLIST
-
+distribution: $(DIST_DEPS)
