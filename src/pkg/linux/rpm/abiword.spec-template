@@ -72,8 +72,8 @@ Prefix: %{prefix}
 Packager: __ABI_BUILD_PACKAGER__
 Distribution: Fedora Alternatives 2
 # Basic requirements
-Requires: gtk2 >= 2.0.0 glib2 >= 2.0.0 /usr/lib/libfribidi.so fontconfig >= 2.0 libtool
-BuildRequires: gtk2-devel >= 2.0.0 glib2 >= 2.0.0 fontconfig-devel >= 2.0 /usr/include/fribidi/fribidi.h
+Requires: gtk2 >= 2.4.0 glib2 >= 2.4.0 /usr/lib/libfribidi.so fontconfig >= 2.0 libtool
+BuildRequires: gtk2-devel >= 2.4.0 glib2-devel >= 2.4.0 fontconfig-devel >= 2.0 /usr/include/fribidi/fribidi.h
 
 # Using Epoch is very bad, but RedHat/Fedora is forcing this matter.
 # I'm fed up with complaints from RH/FC users downgrading on upgrade just
