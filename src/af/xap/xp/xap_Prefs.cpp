@@ -656,6 +656,7 @@ UT_Bool XAP_Prefs::savePrefsFile(void)
 	fprintf(fp,"<!-- =====================================================================  -->\n");
 	fprintf(fp,"\n");
 
+#ifdef DEBUG
 	if (XAP_App::s_szBuild_ID && XAP_App::s_szBuild_ID[0])
 	{
 		fprintf(fp,"<!--         Build_ID          = ");
@@ -692,6 +693,7 @@ UT_Bool XAP_Prefs::savePrefsFile(void)
 		fprintf(fp,XAP_App::s_szBuild_CompileDate);
 		fprintf(fp," -->\n");
 	}
+#endif
 	
 	// end of prolog.
 	// now we begin the actual document.

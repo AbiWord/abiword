@@ -387,6 +387,7 @@ s_AbiWord_1_Listener::s_AbiWord_1_Listener(PD_Document * pDocument,
 	m_pie->write("<!-- =====================================================================  -->\n");
 	m_pie->write("\n");
 
+#if DEBUG
 	if (XAP_App::s_szBuild_ID && XAP_App::s_szBuild_ID[0])
 	{
 		m_pie->write("<!--         Build_ID          = ");
@@ -423,8 +424,8 @@ s_AbiWord_1_Listener::s_AbiWord_1_Listener(PD_Document * pDocument,
 		m_pie->write(XAP_App::s_szBuild_CompileDate);
 		m_pie->write(" -->\n");
 	}
-	
 	m_pie->write("\n");
+#endif /* DEBUG */
 
 	// end of preamble.
 	// now we begin the actual document.
