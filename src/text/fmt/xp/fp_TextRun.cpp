@@ -903,7 +903,13 @@ void fp_TextRun::_getPartRect(UT_Rect* pRect,
 		return;
 	}
 
+	//Should this be an error condition? I treat it as a zero length run, but other might not	
 	const UT_uint16 * pCharWidths = pgbCharWidths->getPointer(0);
+	UT_ASSERT(pCharWidths);
+	if (!pCharWidths) {
+		UT_DEBUGMSG(("TODO: Investigate why pCharWidths is NULL?"));
+		return;
+	}
 
 	UT_uint32 i;
 	if (iStart > m_iOffsetFirst)
@@ -948,6 +954,11 @@ void fp_TextRun::_drawPart(UT_sint32 xoff,
 
 	UT_uint32 iLeftWidth = 0;
 	const UT_uint16 * pCharWidths = pgbCharWidths->getPointer(0);
+	UT_ASSERT(pCharWidths);
+	if (!pCharWidths) {
+		UT_DEBUGMSG(("TODO: Investigate why pCharWidths is NULL?"));
+		return;
+	}
 	
 	UT_uint32 i;
 	for (i=m_iOffsetFirst; i<iStart; i++)

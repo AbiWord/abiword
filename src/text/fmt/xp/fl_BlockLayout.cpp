@@ -2107,7 +2107,7 @@ UT_Bool fl_BlockLayout::_checkMultiWord(const UT_UCSChar* pBlockText,
 	UT_Bool bFound;
 	UT_Bool bAllUpperCase, bHasNumeric;
 	
-	UT_DEBUGMSG(("fl_BlockLayout::_checkMultiWord\n"));
+	UT_DEBUGMSG(("fl_BlockLayout::_checkMultiWord"));
 
 	while (wordBeginning < eor)
 	{

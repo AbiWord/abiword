@@ -151,7 +151,7 @@ UT_sint32 fb_LineBreaker::breakParagraph(fl_BlockLayout* pBlock)
 					UT_Bool bRes = pLine->findNextTabStopInLayoutUnits(m_iWorkingLineWidth, iPos, iType, iLeader);
 					if (bRes)
 					{
-						UT_DEBUGMSG(("%s:%d tab run: type=%d leader=%d height=%d width=%d offset=%d length=%d\n",
+						UT_DEBUGMSG(("%s:%d tab run: type=%d leader=%d height=%d width=%d offset=%d length=%d",
 								 __FILE__, __LINE__,
 								(int)iType,
 								(int)iLeader,
@@ -168,7 +168,7 @@ UT_sint32 fb_LineBreaker::breakParagraph(fl_BlockLayout* pBlock)
 						switch ( iType ) 
 						{
 						case FL_TAB_BAR:
-							UT_DEBUGMSG(("BAR - not implemented - defaulting to LEFT\n"));
+							UT_DEBUGMSG(("BAR - not implemented - defaulting to LEFT"));
 
 						case FL_TAB_LEFT:
 							m_iWorkingLineWidth = iPos;
