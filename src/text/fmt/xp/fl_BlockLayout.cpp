@@ -560,6 +560,8 @@ fp_Run* fl_BlockLayout::getFirstRun()
 int	fl_BlockLayout::addLine(fp_Line* pLine)
 {
 	UT_ASSERT(pLine);
+	UT_ASSERT(m_pCurrentSlice);
+	
 	m_pCurrentSlice->addLine(pLine);
 
 	pLine->setNext(NULL);

@@ -237,6 +237,11 @@ int fp_Column::insertBlockSliceAfter(fp_BlockSlice*	pBS, fp_BlockSlice*	pAfter, 
 
 		pNewNode->pPrev = NULL;
 		pNewNode->pNext = m_pFirstSlice;
+		if (m_pFirstSlice)
+		{
+			m_pFirstSlice->pPrev = pNewNode;
+		}
+		
 		m_pFirstSlice = pNewNode;
 		
 		pNewNode->yoff = _calcSliceOffset(pNewNode, iLineHeight);
