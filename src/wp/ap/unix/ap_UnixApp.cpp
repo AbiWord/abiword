@@ -28,6 +28,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <unistd.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 
@@ -638,15 +639,16 @@ ReturnThisBuffer:
 static GtkWidget * wSplash = NULL;
 static GR_Image * pSplashImage = NULL;
 static GR_UnixGraphics * pUnixGraphics = NULL;
-static guint timeout_handler = 0;
 static UT_Bool firstExpose = FALSE;
 static UT_uint32 splashTimeoutValue = 0;
+
+static guint death_timeout_handler = 0;
 
 static gint s_hideSplash(gpointer /*data*/)
 {
 	if (wSplash)
 	{
-		gtk_timeout_remove(timeout_handler);
+		gtk_timeout_remove(death_timeout_handler);
 		gtk_widget_destroy(wSplash);
 		wSplash = NULL;
 		DELETEP(pUnixGraphics);
@@ -654,12 +656,6 @@ static gint s_hideSplash(gpointer /*data*/)
 	}
 	return TRUE;
 }
-
-// GTK never seems to let me have this event on a pop-up style window
-//static void s_key_event(GtkWidget * /*window*/, GdkEventKey * /*key*/)
-//{
-//	s_hideSplash(NULL);
-//}
 
 static void s_button_event(GtkWidget * /*window*/)
 {
@@ -677,7 +673,8 @@ static gint s_drawingarea_expose(GtkWidget * /* widget */,
 		if (!firstExpose)
 		{
 			firstExpose = UT_TRUE;
-			timeout_handler = gtk_timeout_add(splashTimeoutValue, s_hideSplash, NULL);
+			// kill the window after splashTimeoutValue ms
+			death_timeout_handler = gtk_timeout_add(splashTimeoutValue, s_hideSplash, NULL);
 		}
 	}
 
@@ -733,8 +730,6 @@ GR_Image * AP_UnixApp::_showSplash(UT_uint32 delay)
 		gtk_widget_set_usize(da, iSplashWidth, iSplashHeight);
 		gtk_signal_connect(GTK_OBJECT(da), "expose_event",
 						   GTK_SIGNAL_FUNC(s_drawingarea_expose), NULL);
-//		gtk_signal_connect(GTK_OBJECT(da), "key_press_event",
-//						   GTK_SIGNAL_FUNC(s_key_event), NULL);
 		gtk_signal_connect(GTK_OBJECT(da), "button_press_event",
 						   GTK_SIGNAL_FUNC(s_button_event), NULL);
 		gtk_container_add(GTK_CONTAINER(frame), da);
@@ -745,13 +740,16 @@ GR_Image * AP_UnixApp::_showSplash(UT_uint32 delay)
 
 		// create the window so we can attach a GC to it
 		gtk_widget_show(wSplash);
-
+		
 		// create image context
 		pUnixGraphics = new GR_UnixGraphics(da->window, NULL);
 		pSplashImage = pUnixGraphics->createNewImage("splash", pBB, iSplashWidth, iSplashHeight);
 
 		// another for luck (to bring it up forward and paint)
 		gtk_widget_show(wSplash);
+
+		// trigger an expose event to get us started
+		s_drawingarea_expose(da, NULL);
 	}
 
 	DELETEP(pBB);
@@ -794,7 +792,7 @@ int AP_UnixApp::main(const char * szAppName, int argc, char ** argv)
 	
 	if (bShowSplash)
 		_showSplash(2000);
-			
+
 	AP_UnixApp * pMyUnixApp = new AP_UnixApp(&Args, szAppName);
 
 	// if the initialize fails, we don't have icons, fonts, etc.
