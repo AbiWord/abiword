@@ -1365,7 +1365,15 @@ bool FV_View::cmdTextToTable(bool bIgnoreSpaces)
 			posStart = endPos+1;
 		}
 	}
+	if(numCols == 0)
+	{
+		return false;
+	}
 	UT_uint32 numRows = vecBlocks.getItemCount();
+	if(numRows == 0)
+	{
+		return false;
+	}
 	pBL = vecBlocks.getNthItem(numRows-1);
 	PT_DocPosition posTableStart = pBL->getPosition(true) + pBL->getLength();
 
