@@ -38,7 +38,7 @@
 
 
 ifdef LIBRARY_NAME
-ifeq ($(OS_NAME), WINNT)
+ifeq ($(OS_NAME), WIN32)
 LIBRARY		= $(OBJDIR)/lib$(LIBRARY_NAME)$(LIBRARY_VERSION)_s.lib
 SHARED_LIBRARY	= $(OBJDIR)/lib$(LIBRARY_NAME)$(LIBRARY_VERSION).dll
 IMPORT_LIBRARY	= $(OBJDIR)/lib$(LIBRARY_NAME)$(LIBRARY_VERSION).lib
@@ -52,7 +52,7 @@ endif
 endif
 
 ifndef TARGETS
-ifeq ($(OS_NAME), WINNT)
+ifeq ($(OS_NAME), WIN32)
 TARGETS		= $(LIBRARY) $(SHARED_LIBRARY) $(IMPORT_LIBRARY)
 else
 TARGETS		= $(LIBRARY) $(SHARED_LIBRARY)
@@ -71,7 +71,7 @@ OBJS		= $(addprefix $(OBJDIR)/,$(CSRCS:.c=.$(OBJ_SUFFIX)))		\
 		  $(addprefix $(OBJDIR)/,$(ASFILES:.s=.$(OBJ_SUFFIX)))
 endif
 
-ifeq ($(OS_NAME), WINNT)
+ifeq ($(OS_NAME), WIN32)
 OBJS += $(RES)
 endif
 
@@ -125,7 +125,7 @@ realclean clobber_all::
 
 $(PROGRAM): $(OBJS)
 	@$(MAKE_OBJDIR)
-ifeq ($(OS_NAME),WINNT)
+ifeq ($(OS_NAME),WIN32)
 	@$(CC) -nologo $(OBJS) -Fe$@ -link $(LDFLAGS) $(OS_LIBS) $(EXTRA_LIBS)
 else
 	@$(CCC) -o $@ $(CFLAGS) $(OBJS) $(LDFLAGS)
@@ -140,13 +140,13 @@ $(LIBRARY): $(OBJS)
 $(SHARED_LIBRARY): $(OBJS)
 	@$(MAKE_OBJDIR)
 	@rm -f $@
-ifeq ($(OS_NAME), WINNT)
+ifeq ($(OS_NAME), WIN32)
 	@$(LINK_DLL) -MAP $(DLLBASE) $(OS_LIBS) $(EXTRA_LIBS) $(OBJS)
 else
 	$(MKSHLIB) -o $@ $(OBJS) $(EXTRA_LIBS) $(OS_LIBS)
 endif
 
-ifeq ($(OS_NAME), WINNT)
+ifeq ($(OS_NAME), WIN32)
 $(RES): $(RESNAME)
 	@$(MAKE_OBJDIR)
 	@$(RC) -Fo$(RES) $(RESNAME)
@@ -155,7 +155,7 @@ endif
 
 $(OBJDIR)/%.$(OBJ_SUFFIX): %.cpp
 	@$(MAKE_OBJDIR)
-ifeq ($(OS_NAME), WINNT)
+ifeq ($(OS_NAME), WIN32)
 	@$(CCC) -Fo$@ -c $(CFLAGS) $<
 else
 	@echo $<:
@@ -164,7 +164,7 @@ endif
 
 $(OBJDIR)/%.$(OBJ_SUFFIX): %.c
 	@$(MAKE_OBJDIR)
-ifeq ($(OS_NAME), WINNT)
+ifeq ($(OS_NAME), WIN32)
 	@$(CC) -Fo$@ -c $(CFLAGS) $*.c
 else
 	@echo $<:

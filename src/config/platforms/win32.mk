@@ -19,7 +19,7 @@
 ## 02111-1307, USA.
 
 ##############################################################################
-## WinNT platform defines
+## Win32 platform defines
 ##############################################################################
 
 # Define tools
@@ -42,7 +42,7 @@ DLL_SUFFIX = dll
 # Compiler flags (do we really need -GT?)
 OS_CFLAGS 	= -W3 -nologo -GF -Gy -MDd -GT
 OPTIMIZER 	= -Od -Z7
-DEFINES 	= -DDEBUG -D_DEBUG -UNDEBUG -D_CRTDBG_MAP_ALLOC -DWIN32 -DWINNT -D_X86_
+DEFINES 	= -DDEBUG -D_DEBUG -UNDEBUG -D_CRTDBG_MAP_ALLOC -DWIN32 -D_X86_
 
 # note that we only build debug.  TODO
 DBG_OR_NOT = DBG
@@ -55,4 +55,4 @@ OS_DLLFLAGS 	= -nologo -DLL -SUBSYSTEM:WINDOWS -PDB:NONE
 ABI_NATIVE	= win
 ABI_FE		= Win32
 
-# End of winnt defs
+# End of win32 defs

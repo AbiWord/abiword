@@ -59,13 +59,16 @@ INSTALL		= install
 #### Include the proper platform defs.  Add another if clause for
 #### any new platforms you port to.
 
-# Defer CYGWIN32 to the normal NT build process
+# Defer CYGWIN32 to the normal WIN32 build process
 ifeq ($(OS_NAME), CYGWIN32_NT)
-OS_NAME = WINNT
+OS_NAME = WIN32
+endif
+ifeq ($(OS_NAME), CYGWIN32_95)
+OS_NAME = WIN32
 endif
 
-ifeq ($(OS_NAME), WINNT)
-include $(ABI_DEPTH)/config/platforms/winnt.mk
+ifeq ($(OS_NAME), WIN32)
+include $(ABI_DEPTH)/config/platforms/win32.mk
 endif
 
 ifeq ($(OS_NAME), Linux)
@@ -118,7 +121,7 @@ ABI_VERSION=	0_0
 ##    ABI_OTHLIBS should be for MOD_ versioned things in $(DIST)/lib (from abi/src/other)
 ##    ABI_LIBS should be for the X11 libraries and the like
 
-ifeq ($(OS_NAME),WINNT)
+ifeq ($(OS_NAME),WIN32)
 EXTRA_LIBS	= 	$(addprefix $(DIST)/lib/lib,$(addsuffix $(ABI_VERSION)_s.lib,$(ABI_APPLIBS)))	\
 			$(addprefix $(DIST)/lib/lib,$(addsuffix $(MOD_VERSION)_s.lib,$(ABI_OTHLIBS)))	\
 			$(addsuffix .lib,$(ABI_LIBS))

@@ -31,7 +31,7 @@
 
 UT_sint32 UT_stricmp(const char *s1, const char *s2)
 {
-#ifdef WINNT
+#ifdef WIN32
 	return stricmp(s1,s2);
 #else
 	return strcasecmp(s1,s2);
@@ -40,7 +40,7 @@ UT_sint32 UT_stricmp(const char *s1, const char *s2)
 
 UT_sint32 UT_strnicmp(const char *s1, const char *s2, int lenS1)
 {
-#ifdef WINNT
+#ifdef WIN32
 	return strnicmp(s1,s2,lenS1);
 #else
 	return strncasecmp(s1,s2,lenS1);
