@@ -10473,7 +10473,9 @@ Defun(clearSetCols)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
-	return true;
+	bool bres = pView->cmdAutoSizeTable();
+	pView->setDragTableLine(false);
+	return bres;
 }
 
 Defun(clearSetRows)

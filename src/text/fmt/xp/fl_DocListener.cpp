@@ -1459,7 +1459,7 @@ bool fl_DocListener::insertStrux(PL_StruxFmtHandle sfh,
 			   // OK this finishes a cell in the table
 
 			   fl_ContainerLayout * pCL = static_cast<fl_ContainerLayout *>(pL);
-			   xxx_UT_DEBUGMSG(("Doing Insert EndCell Correctly \n"));
+			   UT_DEBUGMSG(("Doing Insert EndCell Correctly \n"));
 //
 // This gets us a fl_SectionCell.
 //
@@ -1470,6 +1470,7 @@ bool fl_DocListener::insertStrux(PL_StruxFmtHandle sfh,
 		   }
 		default:
 		   {
+			   m_pDoc->miniDump(pL->getStruxDocHandle(),6);
 			   UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 			   return false;
 		   }
@@ -1504,6 +1505,7 @@ bool fl_DocListener::insertStrux(PL_StruxFmtHandle sfh,
 		default:
 		   {
 			   UT_DEBUGMSG(("Illegal strux type after table %d \n",pcrx->getStruxType()));
+			   m_pDoc->miniDump(pL->getStruxDocHandle(),6);
 			   UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 			   return false;
 		   }
@@ -1527,7 +1529,7 @@ bool fl_DocListener::insertStrux(PL_StruxFmtHandle sfh,
 			  fl_TableLayout * pTL = static_cast<fl_TableLayout *>(pConL->myContainingLayout());
 			  UT_ASSERT(pTL->getContainerType() == FL_CONTAINER_TABLE);
 			  fl_CellLayout * pCL = static_cast<fl_CellLayout *>(pConL);
-			  xxx_UT_DEBUGMSG(("Doing Insert Cell Correctly \n"));
+			  UT_DEBUGMSG(("Doing Insert Cell after endcell Correctly \n"));
 			  bool bResult = pTL->bl_doclistener_insertCell(pCL, pcrx,sdh,lid,pfnBindHandles);
 			  return bResult;
 		  }
@@ -1542,13 +1544,14 @@ bool fl_DocListener::insertStrux(PL_StruxFmtHandle sfh,
 			  fl_TableLayout * pTL = static_cast<fl_TableLayout *>(pConL->myContainingLayout());
 			  UT_ASSERT(pTL->getContainerType() == FL_CONTAINER_TABLE);
 			  fl_CellLayout * pCL = static_cast<fl_CellLayout *>(pL);
-			  xxx_UT_DEBUGMSG(("Doing Insert EndTable Correctly \n"));
+			  UT_DEBUGMSG(("Doing Insert Cell after EndTable Correctly \n"));
 			   bool bResult = pTL->bl_doclistener_insertEndTable(pCL,pcrx,sdh,lid,pfnBindHandles);
 			   return bResult;
 		   }
 		default:
 		   {
 			   UT_DEBUGMSG(("Illegal strux type after endcell %d \n",pcrx->getStruxType()));
+			   m_pDoc->miniDump(pL->getStruxDocHandle(),6);
 			   UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 			   return false;
 		   }
@@ -1563,7 +1566,7 @@ bool fl_DocListener::insertStrux(PL_StruxFmtHandle sfh,
 			   // The immediately prior strux is a section.  So, this
 			   // will become the first block of the section and have no
 			   // text.
-			  xxx_UT_DEBUGMSG(("Inserting block into CEll \n"));
+			  UT_DEBUGMSG(("Inserting block into CEll \n"));
 			  fl_SectionLayout * pSL = static_cast<fl_SectionLayout *>(pL);
 			  UT_ASSERT(pSL->getContainerType() == FL_CONTAINER_CELL);
 			  bool bResult = pSL->bl_doclistener_insertBlock(NULL, pcrx,sdh,lid,pfnBindHandles);
@@ -1581,7 +1584,7 @@ bool fl_DocListener::insertStrux(PL_StruxFmtHandle sfh,
 			  fl_TableLayout * pTL = static_cast<fl_TableLayout *>(pConL->myContainingLayout());
 			  UT_ASSERT(pTL->getContainerType() == FL_CONTAINER_TABLE);
 			  fl_CellLayout * pCL = static_cast<fl_CellLayout *>(pL);
-			  xxx_UT_DEBUGMSG(("Doing Insert EndTable Correctly \n"));
+			  UT_DEBUGMSG(("Doing Insert EndTable Correctly \n"));
 			   bool bResult = pTL->bl_doclistener_insertEndTable(pCL,pcrx,sdh,lid,pfnBindHandles);
 			   return bResult;
 		   }
@@ -1597,13 +1600,14 @@ bool fl_DocListener::insertStrux(PL_StruxFmtHandle sfh,
 			  fl_TableLayout * pTL = static_cast<fl_TableLayout *>(pConL->myContainingLayout());
 			  UT_ASSERT(pTL->getContainerType() == FL_CONTAINER_TABLE);
 			  fl_CellLayout * pCL = static_cast<fl_CellLayout *>(pConL);
-			  xxx_UT_DEBUGMSG(("Doing Insert Cell Correctly \n"));
+			  UT_DEBUGMSG(("Doing Insert Cell Correctly \n"));
 			  bool bResult = pTL->bl_doclistener_insertCell(pCL, pcrx,sdh,lid,pfnBindHandles);
 			  return bResult;
 		  }
 		default:
 		   {
 			   UT_DEBUGMSG(("Illegal strux type after cell %d \n",pcrx->getStruxType()));
+			   m_pDoc->miniDump(pL->getStruxDocHandle(),6);
 			   UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 			   return false;
 		   }

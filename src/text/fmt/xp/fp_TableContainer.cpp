@@ -634,7 +634,7 @@ void fp_CellContainer::drawLines(fp_TableContainer * pBroke)
 		}
 		if(m_bDrawRight)
 		{
-			UT_DEBUGMSG(("RightThickness %d \n",m_iRightThickness));
+			xxx_UT_DEBUGMSG(("RightThickness %d \n",m_iRightThickness));
 			getGraphics()->setLineWidth(m_iRightThickness >=0 ? m_iRightThickness : pTab->getLineThickness());
 			_drawLine(m_cRightColor, m_iRightStyle, iRight, iTop, iRight, iBot);
 		}
@@ -2493,7 +2493,7 @@ void fp_TableContainer::draw(dg_DrawArgs* pDA)
 //
 // Don't draw if the table is still being constructed.
 //
-	UT_DEBUGMSG(("TablecONTAINER enter draw \n"));
+	xxx_UT_DEBUGMSG(("TablecONTAINER enter draw \n"));
 	if(getSectionLayout()->getDocument()->isDontImmediateLayout())
 	{
 		UT_DEBUGMSG(("TablecONTAINER leave draw dont immediately layout \n"));

@@ -874,17 +874,16 @@ void fl_TableLayout::_lookupProperties(void)
 			for (j=i; (j<sizes) && (sProps[j] != '/') ; j++) {}
 			if((j+1)>i && sProps[j] == '/')
 			{
-				char * pszSub = UT_strdup(sProps.substr(i,(j-i)).c_str());
+				UT_String sSub = UT_strdup(sProps.substr(i,(j-i)).c_str());
 				i = j + 1;
 				fl_ColProps * pColP = new fl_ColProps;
 #if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-				pColP->m_iColWidth = UT_convertToLayoutUnits(pszSub);
+				pColP->m_iColWidth = UT_convertToLayoutUnits(sSub.c_str());
 #else
-				pColP->m_iColWidth = m_pLayout->getGraphics()->convertDimension(pszSub);
+				pColP->m_iColWidth = m_pLayout->getGraphics()->convertDimension(sSub.c_str());
 #endif
 				m_vecColProps.addItem((void *) pColP);
-				UT_DEBUGMSG(("SEVIOR: width char %s width layout %d \n",pszSub,pColP->m_iColWidth));
-				delete [] pszSub;
+				UT_DEBUGMSG(("SEVIOR: width char %s width layout %d \n",sSub.c_str(),pColP->m_iColWidth));
 			}
 		}
  	}
