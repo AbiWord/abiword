@@ -475,8 +475,6 @@ void  XAP_UnixEncodingManager::initialize()
 	LanguageISOName = "en";
 	LanguageISOTerritory = "US";   
 
-	XAP_EncodingManager::initialize();
-
 	if (!*locname || !strcmp(locname,"C"))
 	{ 	/* paranoic case - broken system */
 		; /*already initialized*/
@@ -583,5 +581,7 @@ void  XAP_UnixEncodingManager::initialize()
 			FREEP(mod);
 		}
 	}
+	// Moved to end so that we correctly detect if the locale is CJK.
+	XAP_EncodingManager::initialize(); 
 	describe();
 }
