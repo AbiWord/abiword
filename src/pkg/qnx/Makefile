@@ -70,8 +70,12 @@ UNIX_CAN_BUILD_STATIC = $(QNX_CAN_BUILD_STATIC)
 include $(ABI_ROOT)/src/pkg/common/unix/tgz.mk
 include $(ABI_ROOT)/src/pkg/common/unix/tbz.mk
 
-include qpkg.mk
-
 # This target should build all packages 
 distribution: $(DIST_DEPS)
+	sed "s|ABI_BUILD_VERSION|$(ABI_BUILD_VERSION)|g; s|OUTDIR|$(OUTDIR)|g" package.qpg > abipackage.qpg
+	@rm *.qp[rmk]
+	packager  abipackage.qpg
+	tar -cvzf abiword-$(ABI_BUILD_VERSION).qpr *.qp[mk]
+	rm *.qp[mk]
 	@echo "Finished building distributions"
+	
