@@ -68,6 +68,11 @@ public:
 	void         event_Modify_OK(void);
 	void         event_Modify_Cancel(void);
 	void         event_ModifyDelete(void);
+	void         event_ModifyParagraph();
+	void         event_ModifyFont();
+	void         event_ModifyNumbering();
+	void         event_ModifyTabs();
+
 	void         modifyRunModal(void);
 
 protected:
@@ -114,7 +119,7 @@ protected:
 	void        _connectModifySignals(void);
 	void        _constructModifyDialogContents(GtkWidget * modifyDialog);
 	virtual void setModifyDescription( const char * desc);
-	void        _populateModify(void);
+	bool        _populateModify(void);
 
 	GtkWidget *	m_wModifyDialog;
 	GtkWidget *	m_wStyleNameEntry;
@@ -134,7 +139,9 @@ protected:
 	GtkWidget *	m_wModifyParagraph;
 	GtkWidget *	m_wModifyFont;
 	GtkWidget *	m_wModifyNumbering;
-
+	GtkWidget *	m_wModifyTabs;
+	GList *     m_gbasedOnStyles;
+	GList *     m_gfollowedByStyles;
 };
 
 #endif /* AP_UnixDialog_Styles_H */

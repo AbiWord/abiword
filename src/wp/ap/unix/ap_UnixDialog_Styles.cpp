@@ -64,6 +64,28 @@ AP_UnixDialog_Styles::AP_UnixDialog_Styles(XAP_DialogFactory * pDlgFactory,
 	m_wclistStyles = NULL;
 	m_wlistTypes = NULL;
 	m_wlabelDesc = NULL;
+
+	m_wModifyDialog = NULL;
+	m_wStyleNameEntry = NULL;
+	m_wBasedOnCombo = NULL;
+	m_wBasedOnEntry = NULL;
+	m_wFollowingCombo = NULL;
+	m_wFollowingEntry = NULL;
+	m_wModifyDrawingArea = NULL;
+	m_wLabDescription = NULL;
+
+	m_wModifyOk = NULL;
+	m_wModifyCancel = NULL;
+	m_wFormatMenu = NULL;
+	m_wModifyShortCutKey = NULL;
+
+	m_wFormat = NULL;
+	m_wModifyParagraph = NULL;
+	m_wModifyFont = NULL;
+	m_wModifyNumbering = NULL;
+	m_gbasedOnStyles = NULL;
+	m_gfollowedByStyles = NULL;
+
 }
 
 AP_UnixDialog_Styles::~AP_UnixDialog_Styles(void)
@@ -175,6 +197,38 @@ static void s_modify_delete_clicked(GtkWidget * /* widget */, gpointer /* data *
 	me->event_ModifyDelete();
 }
 
+
+static void s_modify_paragraph(GtkWidget * /* widget */, 
+			     AP_UnixDialog_Styles * me)
+{
+	UT_ASSERT(me);
+	me->event_ModifyParagraph();
+}
+
+static void s_modify_font(GtkWidget * /* widget */, 
+			     AP_UnixDialog_Styles * me)
+{
+	UT_ASSERT(me);
+	me->event_ModifyFont();
+}
+
+
+static void s_modify_numbering(GtkWidget * /* widget */,
+			     AP_UnixDialog_Styles * me)
+{
+	UT_ASSERT(me);
+	me->event_ModifyNumbering();
+}
+
+
+static void s_modify_tabs(GtkWidget * /* widget */,
+			     AP_UnixDialog_Styles * me)
+{
+	UT_ASSERT(me);
+	me->event_ModifyTabs();
+}
+
+
 /*****************************************************************/
 
 void AP_UnixDialog_Styles::runModal(XAP_Frame * pFrame)
@@ -284,14 +338,7 @@ void AP_UnixDialog_Styles::runModal(XAP_Frame * pFrame)
 	DELETEP (m_pCharPreviewWidget);
 	
 	if(mainWindow && GTK_IS_WIDGET(mainWindow)) 
-	{
-		UT_DEBUGMSG(("SEVIOR: Destroyed Main window \n"));
 	    gtk_widget_destroy(mainWindow);
-	}
-	else
-	{
-		UT_DEBUGMSG(("SEVIOR: Main window not Destroyed = %x \n",mainWindow));
-	}
 }
 
 /*****************************************************************/
@@ -744,9 +791,10 @@ GtkWidget *  AP_UnixDialog_Styles::_constructModifyDialog(void)
 //
 	_constructGnomeModifyButtons(dialog_action_area);
 //
-// Signals
+// Connect signals
 //
 	_connectModifySignals();
+
 	return modifyDialog;
 }
 
@@ -829,7 +877,7 @@ void  AP_UnixDialog_Styles::_constructModifyDialogContents(GtkWidget * modifyDia
 	basedOnEntry = GTK_COMBO (basedOnCombo)->entry;
 	gtk_widget_show (basedOnEntry);
 	gtk_widget_set_usize (basedOnEntry, 158, -2);
-
+	
 	followingCombo = gtk_combo_new ();
 	gtk_widget_show (followingCombo);
 	gtk_table_attach (GTK_TABLE (comboTable), followingCombo, 1, 2, 2, 3,
@@ -962,6 +1010,7 @@ void  AP_UnixDialog_Styles::_constructFormatList(GtkWidget * FormatMenu)
 	m_wModifyParagraph = wParagraph;
 	m_wModifyFont = wFont;
 	m_wModifyNumbering = wNumbering;
+	m_wModifyTabs = wTabs;
 }
 
 void AP_UnixDialog_Styles::_connectModifySignals(void)
@@ -975,6 +1024,28 @@ void AP_UnixDialog_Styles::_connectModifySignals(void)
 	gtk_signal_connect(GTK_OBJECT(m_wModifyCancel),
 					   "clicked",
 					   GTK_SIGNAL_FUNC(s_modify_cancel_clicked),
+					   (gpointer) this);
+
+	gtk_signal_connect(GTK_OBJECT(m_wModifyParagraph),
+					   "activate",
+					   GTK_SIGNAL_FUNC(s_modify_paragraph),
+					   (gpointer) this);
+
+
+	gtk_signal_connect(GTK_OBJECT(m_wModifyFont),
+					   "activate",
+					   GTK_SIGNAL_FUNC(s_modify_font),
+					   (gpointer) this);
+
+
+	gtk_signal_connect(GTK_OBJECT(m_wModifyNumbering),
+					   "activate",
+					   GTK_SIGNAL_FUNC(s_modify_numbering),
+					   (gpointer) this);
+
+	gtk_signal_connect(GTK_OBJECT(m_wModifyTabs),
+					   "activate",
+					   GTK_SIGNAL_FUNC(s_modify_tabs),
 					   (gpointer) this);
 
 	// the catch-alls
@@ -1026,7 +1097,12 @@ void  AP_UnixDialog_Styles::modifyRunModal(void)
 //
 // populate the dialog with useful info
 //
-    _populateModify();
+    if(!_populateModify())
+	{
+		if(m_wModifyDialog && GTK_IS_WIDGET(m_wModifyDialog)) 
+			gtk_widget_destroy(m_wModifyDialog);
+		return;
+	}
 
 	// so it won't get lost underneath
 	centerDialog(m_windowMain, m_wModifyDialog);
@@ -1053,14 +1129,13 @@ void AP_UnixDialog_Styles::event_ModifyClicked(void)
 //
 
 //
-// Destroy the old window
+// Hide the old window
 //
 	UT_DEBUGMSG(("SEVIOR: Hiding main window \n"));
     gtk_widget_hide( m_windowMain);
 //
 // fill the data structures needed for the Modify dialog
 //
-//  _fill
 	modifyRunModal();
 	UT_DEBUGMSG(("SEVIOR: Finished Modify \n"));
 	if(m_answer == AP_Dialog_Styles::a_OK)
@@ -1091,10 +1166,110 @@ void  AP_UnixDialog_Styles::setModifyDescription( const char * desc)
 	gtk_label_set_text (GTK_LABEL(m_wLabDescription), desc);
 }
 
-void  AP_UnixDialog_Styles::_populateModify(void)
+bool  AP_UnixDialog_Styles::_populateModify(void)
 {
 	setModifyDescription( m_curStyleDesc.c_str());
+//
+// Get Style name and put in in the text entry
+//
+	const char * szCurrentStyle = NULL;
+	szCurrentStyle= getCurrentStyle();
+	if(!szCurrentStyle)
+	{
+		messageBoxOK("No Style selected \n so it cannot be modified");
+		m_answer = AP_Dialog_Styles::a_CANCEL;
+		return false;
+	}
+	gtk_entry_set_text (GTK_ENTRY(m_wStyleNameEntry), getCurrentStyle());
+	gtk_entry_set_editable( GTK_ENTRY(m_wStyleNameEntry),FALSE );
+//
+// Next interogate the current style and find the based on and followed by
+// Styles
+//
+	PD_Style * pStyle = NULL;
+	m_pDoc->getStyle(szCurrentStyle,&pStyle);
+	if(!pStyle)
+	{
+		messageBoxOK("This style does not exist \n so it cannot be modified");
+		m_answer = AP_Dialog_Styles::a_CANCEL;
+		return false;
+	}
+//
+// Valid style get the Based On and followed by values
+//
+	PD_Style * pBasedOnStyle = pStyle->getBasedOn();
+	const char * szBasedOn = NULL;
+ 
+	PD_Style * pFollowedByStyle = pStyle->getFollowedBy();
+	const char * szFollowedBy = NULL;
+//
+// Next make a glists of all styles and attach them to the BasedOn and FollowedBy
+//
+	if(m_gbasedOnStyles != NULL)
+	{	
+		g_list_free (m_gbasedOnStyles);
+		m_gbasedOnStyles = NULL;
+	}
+
+	if(m_gfollowedByStyles != NULL)
+	{
+		g_list_free (m_gfollowedByStyles);
+		m_gbasedOnStyles = NULL;
+	}
+
+	size_t nStyles = m_pDoc->getStyleCount();
+	const char * name = NULL;
+	const PD_Style * pcStyle = NULL;
+	for (UT_uint32 i = 0; i < nStyles; i++)
+	{
+	    m_pDoc->enumStyles(i, &name, &pcStyle);
+
+		if(pcStyle == pBasedOnStyle)
+			szBasedOn = name;
+
+		if(pcStyle == pFollowedByStyle)
+			szFollowedBy = name;
+
+		m_gbasedOnStyles = g_list_append (m_gbasedOnStyles, (gpointer) name);
+		m_gfollowedByStyles = g_list_append (m_gfollowedByStyles, (gpointer) name);
+	}
+
+//
+// Set the popdown list
+//
+	gtk_combo_set_popdown_strings( GTK_COMBO(m_wBasedOnCombo),m_gbasedOnStyles);
+	gtk_combo_set_popdown_strings( GTK_COMBO(m_wFollowingCombo),m_gfollowedByStyles);
+
+//
+// OK here we set intial values for the basedOn and followedBy
+//
+	gtk_entry_set_text (GTK_ENTRY(GTK_COMBO(m_wBasedOnCombo)->entry),szBasedOn);
+	gtk_entry_set_editable(GTK_ENTRY(GTK_COMBO(m_wBasedOnCombo)->entry),FALSE );
+	gtk_entry_set_text (GTK_ENTRY(GTK_COMBO(m_wFollowingCombo)->entry),szFollowedBy);
+	gtk_entry_set_editable(GTK_ENTRY(GTK_COMBO(m_wFollowingCombo)->entry),FALSE );
+	return true;
 }
 
+void   AP_UnixDialog_Styles::event_ModifyParagraph()
+{
+	UT_DEBUGMSG(("SEVIOR: Modify Paragraphs properties \n"));
+}
+
+void   AP_UnixDialog_Styles::event_ModifyFont()
+{
+	UT_DEBUGMSG(("SEVIOR: Modify Character properties \n"));
+}
+
+
+void   AP_UnixDialog_Styles::event_ModifyNumbering()
+{
+	UT_DEBUGMSG(("SEVIOR: Modify List properties \n"));
+}
+
+
+void   AP_UnixDialog_Styles::event_ModifyTabs()
+{
+	UT_DEBUGMSG(("SEVIOR: Modify Tab properties \n"));
+}
 
 
