@@ -33,14 +33,14 @@
 OS_ARCH		:=$(shell uname -m)
 
 # Compiler defaults should be fine for Intel.
-i386_ARCH_FLAGS		=
-PPC_ARCH_FLAGS		=
-
+i386_ARCH_FLAGS		= -Vgcc_ntox86_gpp
+PPC_ARCH_FLAGS		= # I don't know, don't have a ppc machine.
+ARMLE_ARCH_FLAGS  = -Vgcc_ntoarmle_gpp
 # Define tools (should gcc be cc/qcc ... same for ar?)
-CC		= qcc
-CCC		= QCC -Vgcc_ntox86_gpp
+CC		=  qcc 
+CCC		=  QCC -Wl,-E 
 RANLIB		= touch
-
+LD		=  QCC -Wl,-E
 # Suffixes
 OBJ_SUFFIX	= o
 LIB_SUFFIX	= a
@@ -49,7 +49,7 @@ AR		= qcc -a $@
 
 # Compiler flags
 ifeq ($(ABI_OPT_DEBUG),1)
-OPTIMIZER	= -g -Wall
+OPTIMIZER	= -O0 -g -Wall
 DEFINES		= -DDEBUG -UNDEBUG
 OBJ_DIR_SFX	= DBG
 else
@@ -58,26 +58,35 @@ DEFINES		=
 OBJ_DIR_SFX	= OBJ
 endif
 
-# Includes
-OS_INCLUDES	= -I$(ABI_ROOT)/../libiconv/include
-G++INCLUDES	=
+ifndef ARCH_TARGET
+ARCH_TARGET = $(OS_ARCH)
+endif
 
-# Compiler flags
-PLATFORM_FLAGS	= 
-#PORT_FLAGS	= -D_POSIX_SOURCE -D_BSD_SOURCE -DHAVE_STRERROR -D_XOPEN_SOURCE -D__USE_XOPEN_EXTENDED
-PORT_FLAGS	= 
-OS_CFLAGS	= $(DSO_CFLAGS) $(PLATFORM_FLAGS) $(PORT_FLAGS)
+# Includes
+OS_INCLUDES	= -I/usr/include
 
 # Architecture-specific flags
-ifeq ($(OS_ARCH), x86pc)
+ifeq ($(ARCH_TARGET), x86pc)
 PLATFORM_FLAGS	+= $(i386_ARCH_FLAGS)
 OS_ENDIAN	= LittleEndian32
+OBJ_DIR_SFX := $(OBJ_DIR_SFX)_x86pc
 endif
 
-ifeq ($(OS_ARCH), ppc)
+ifeq ($(ARCH_TARGET), ppc)
 PLATFORM_FLAGS	+= $(PPC_ARCH_FLAGS)
 OS_ENDIAN	= BigEndian32
+OBJ_DIR_SFX := $(OBJ_DIR_SFX)_ppc
 endif
+
+ifeq ($(ARCH_TARGET), armle)
+PLATFORM_FLAGS += $(ARMLE_ARCH_FLAGS)
+OS_ENDIAN = LittleEndian32
+OBJ_DIR_SFX := $(OBJ_DIR_SFX)_armle
+endif
+
+# Compiler flags
+PORT_FLAGS	=
+OS_CFLAGS	= $(DSO_CFLAGS) $(PLATFORM_FLAGS) $(PORT_FLAGS)
 
 # ...
 
@@ -85,12 +94,12 @@ GLIB_CONFIG		=
 GTK_CONFIG		=
 LIBXML_CONFIG		= xml2-config
 # Shared library flags
-MKSHLIB			= $(LD) $(DSO_LDOPTS) -soname $(@:$(OBJDIR)/%.so=%.so)
+MKSHLIB			= $(LD) $(DSO_LDOPTS) -shared
 
 # Which links can this platform create.  Define one or
 # both of these options.
 QNX_CAN_BUILD_DYNAMIC=1
-QNX_CAN_BUILD_STATIC=1
+QNX_CAN_BUILD_STATIC=0 #Change if you need to build static. most often this is unecessary.
 
 # Compiler options for static and dynamic linkage
 DL_LIBS		=
