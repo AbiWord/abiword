@@ -270,7 +270,7 @@ bool XAP_UnixClipboard::_getDataFromServer(T_AllowGet tFrom, const char** format
 
 bool XAP_UnixClipboard::canPaste(T_AllowGet tFrom)
 {
-#if 1
+#if 0
   bool found = false;
   GtkClipboard * clipboard = gtkClipboardForTarget(tFrom);
   GtkSelectionData * selection = gtk_clipboard_wait_for_contents (clipboard, gdk_atom_intern("TARGETS", FALSE));
