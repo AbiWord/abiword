@@ -890,7 +890,6 @@ void FV_FrameEdit::mouseRelease(UT_sint32 x, UT_sint32 y)
 			getDoc()->endUserAtomicGlob();
 			return;
 		}
-
 //
 // OK get the properties of the current frame, update them with the new
 // the position and size of this drag.
@@ -1131,6 +1130,9 @@ void FV_FrameEdit::mouseRelease(UT_sint32 x, UT_sint32 y)
 		sVal = sHeight;
 		UT_String_setProperty(sFrameProps,sProp,sVal);		
 
+		PT_DocPosition oldPoint = m_pView->getPoint();
+		PT_DocPosition oldFramePoint = m_pFrameLayout->getPosition(true);
+		UT_uint32 oldFrameLen = m_pFrameLayout->getLength();
 
 		// Signal PieceTable Change
 		m_pView->_saveAndNotifyPieceTableChange();
@@ -1139,6 +1141,8 @@ void FV_FrameEdit::mouseRelease(UT_sint32 x, UT_sint32 y)
 
 		getDoc()->disableListUpdates();
 		getDoc()->beginUserAtomicGlob();
+
+		m_pView->_clearSelection();
 
 // Copy the content of the frame to the clipboard
 
@@ -1209,6 +1213,34 @@ void FV_FrameEdit::mouseRelease(UT_sint32 x, UT_sint32 y)
 
 	// Signal PieceTable Changes have finished
 		m_pView->_restorePieceTableState();
+//
+// OK get a pointer to the new frameLayout
+//
+		m_pFrameLayout = m_pView->getFrameLayout(posFrame+2);
+		UT_ASSERT(m_pFrameLayout);
+
+// Set the point back to the same position on the screen
+
+		PT_DocPosition newFramePoint = m_pFrameLayout->getPosition(true);
+		UT_sint32 newFrameLen = m_pFrameLayout->getLength();
+		PT_DocPosition newPoint = 0;
+		if((oldPoint < oldFramePoint) && (newFramePoint < oldPoint))
+		{
+			newPoint = oldPoint + newFrameLen;
+		}
+		else if((oldPoint < oldFramePoint) && (oldPoint <= newFramePoint))
+		{
+			newPoint = oldPoint;
+		}
+		else if((oldPoint >= oldFramePoint) && (oldPoint >= newFramePoint))
+		{
+			newPoint = oldPoint  - oldFrameLen + newFrameLen;;
+		}
+		else // oldPoint >= oldFramePoint && (oldPoint < newFramePoint)
+		{
+			newPoint = oldPoint - oldFrameLen;
+		}
+		m_pView->setPoint(newPoint);
 		m_pView->notifyListeners(AV_CHG_HDRFTR);
 		m_pView->_fixInsertionPointCoords();
 		m_pView->_ensureInsertionPointOnScreen();
@@ -1225,11 +1257,6 @@ void FV_FrameEdit::mouseRelease(UT_sint32 x, UT_sint32 y)
 // Finish up by putting the editmode back to existing selected.
 //	
 		DELETEP(m_pFrameImage);
-//
-// OK get a pointer to the new frameLayout
-//
-		m_pFrameLayout = m_pView->getFrameLayout(posFrame+2);
-		UT_ASSERT(m_pFrameLayout);
 		m_iFrameEditMode = FV_FrameEdit_EXISTING_SELECTED;
 		m_pFrameContainer = static_cast<fp_FrameContainer *>(m_pFrameLayout->getFirstContainer());
 		drawFrame(true);
