@@ -129,61 +129,64 @@ void AP_Dialog_Stylist::autoUpdate(UT_Worker * pTimer)
  */
 void AP_Dialog_Stylist::updateDialog(void)
 {
-	// Handshaking code
-	FV_View * pView = static_cast<FV_View *>(getActiveFrame()->getCurrentView());
-	if(pView->getPoint() == 0)
-	{
-		return;
-	}
-	PD_Document * pDoc = pView->getDocument();
-	if(m_pStyleTree == NULL)
-	{
-		m_pStyleTree = new Stylist_tree(pDoc);
-	}
-	if((m_iTick != pView->getTick()) || (m_pDoc != pDoc))
-	{
-		m_iTick = pView->getTick();
-		if((pDoc != m_pDoc) || (static_cast<UT_sint32>(pDoc->getStyleCount()) != getNumStyles()))
+	XAP_Frame * frame = getActiveFrame();
+	if (frame) {
+		// Handshaking code
+		FV_View * pView = static_cast<FV_View *>(frame->getCurrentView());
+		if(pView->getPoint() == 0)
 		{
-			m_pDoc = pDoc;
-			m_pStyleTree->buildStyles(pDoc);
-			if(!m_bIsModal) // fill the current style if Modal
+			return;
+		}
+		PD_Document * pDoc = pView->getDocument();
+		if(m_pStyleTree == NULL)
+		{
+			m_pStyleTree = new Stylist_tree(pDoc);
+		}
+		if((m_iTick != pView->getTick()) || (m_pDoc != pDoc))
+		{
+			m_iTick = pView->getTick();
+			if((pDoc != m_pDoc) || (static_cast<UT_sint32>(pDoc->getStyleCount()) != getNumStyles()))
 			{
-				const char * pszStyle;
-				pView->getStyle(&pszStyle);
-				m_sCurStyle =  pszStyle;
+				m_pDoc = pDoc;
+				m_pStyleTree->buildStyles(pDoc);
+				if(!m_bIsModal) // fill the current style if Modal
+				{
+					const char * pszStyle;
+					pView->getStyle(&pszStyle);
+					m_sCurStyle =  pszStyle;
+				}
+				m_bStyleTreeChanged =true;
+				setStyleInGUI();
+				return;
 			}
-			m_bStyleTreeChanged =true;
-			setStyleInGUI();
-			return;
-		}
-		const char * pszStyle;
-		pView->getStyle(&pszStyle);
-		UT_UTF8String sCurViewStyle;
-		if(!m_bIsModal)
-		{
-			sCurViewStyle = pszStyle;
-		}
-		else
-		{
-			m_bStyleChanged =true;
-			setStyleInGUI();
-			return;
-		}
+			const char * pszStyle;
+			pView->getStyle(&pszStyle);
+			UT_UTF8String sCurViewStyle;
+			if(!m_bIsModal)
+			{
+				sCurViewStyle = pszStyle;
+			}
+			else
+			{
+				m_bStyleChanged =true;
+				setStyleInGUI();
+				return;
+			}
 
-		if((sCurViewStyle.size ()) > 0 && m_sCurStyle.size() == 0)
-		{
-			m_sCurStyle = sCurViewStyle;
-			m_bStyleChanged =true;
-			setStyleInGUI();
-			return;
-		}
-		if(sCurViewStyle != m_sCurStyle)
-		{
-			m_sCurStyle = sCurViewStyle;
-			m_bStyleChanged =true;
-			setStyleInGUI();
-			return;
+			if((sCurViewStyle.size ()) > 0 && m_sCurStyle.size() == 0)
+			{
+				m_sCurStyle = sCurViewStyle;
+				m_bStyleChanged =true;
+				setStyleInGUI();
+				return;
+			}
+			if(sCurViewStyle != m_sCurStyle)
+			{
+				m_sCurStyle = sCurViewStyle;
+				m_bStyleChanged =true;
+				setStyleInGUI();
+				return;
+			}
 		}
 	}
 }			
