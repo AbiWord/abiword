@@ -1041,15 +1041,15 @@ GtkWidget* AP_UnixDialog_Options::_constructWindow ()
 
 	buttonCancel = abiAddStockButton(GTK_DIALOG(mainWindow), GTK_STOCK_CANCEL, BUTTON_CANCEL);
 
-	buttonApply = gtk_button_new_from_stock(GTK_STOCK_APPLY);
-	gtk_widget_show (buttonApply);
-	gtk_container_add (GTK_CONTAINER (GTK_DIALOG(mainWindow)->action_area), buttonApply);
-	GTK_WIDGET_SET_FLAGS (buttonApply, GTK_CAN_DEFAULT);
-
 	buttonDefaults = gtk_button_new_from_stock (GTK_STOCK_REVERT_TO_SAVED);
 	gtk_widget_show (buttonDefaults);
 	gtk_container_add (GTK_CONTAINER (GTK_DIALOG(mainWindow)->action_area), buttonDefaults);
 	GTK_WIDGET_SET_FLAGS (buttonDefaults, GTK_CAN_DEFAULT);
+
+	buttonApply = gtk_button_new_from_stock(GTK_STOCK_APPLY);
+	gtk_widget_show (buttonApply);
+	gtk_container_add (GTK_CONTAINER (GTK_DIALOG(mainWindow)->action_area), buttonApply);
+	GTK_WIDGET_SET_FLAGS (buttonApply, GTK_CAN_DEFAULT);
 
 	buttonOk = abiAddStockButton(GTK_DIALOG(mainWindow), GTK_STOCK_OK, BUTTON_OK);
 
