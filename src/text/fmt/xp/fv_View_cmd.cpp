@@ -3457,8 +3457,12 @@ void FV_View::cmdCharDelete(bool bForward, UT_uint32 count)
 // Later we want to be clever about moving the frame into a valid position
 // in the new merged block. Just fix the crash for now.
 //
-		if((m_pDoc->isFrameAtPos(posCur) || m_pDoc->isEndFrameAtPos(posCur))  
-			&& isInFrame(posCur+amt)  )
+		if(m_pDoc->isFrameAtPos(posCur) && isInFrame(posCur+amt)  )
+		{
+			return;
+		}
+
+		if(m_pDoc->isEndFrameAtPos(posCur) && !isInFrame(posCur+amt)  )
 		{
 			return;
 		}
