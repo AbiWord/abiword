@@ -117,7 +117,8 @@ private:
 	bool				_addupCharWidths(void);
 	virtual void        _lookupProperties(const PP_AttrProp * pSpanAP,
 										   const PP_AttrProp * pBlockAP,
-										   const PP_AttrProp * pSectionAP);
+										   const PP_AttrProp * pSectionAP,
+										  GR_Graphics * pG);
 
 #ifdef FMT_TEST
 public:
@@ -157,7 +158,8 @@ protected:
 									  UT_uint32 iStart,
 									  UT_uint32 iLen,
 									  const UT_GrowBuf * pgbCharWidths,
-									  UT_Rect & rect);
+									  UT_Rect & rect,
+									  GR_Graphics * pG);
 #if 0
 	enum
 	{

@@ -56,7 +56,8 @@ public:
 protected:
 	virtual void			_lookupProperties(const PP_AttrProp * pSpanAP,
 											  const PP_AttrProp * pBlockAP,
-											  const PP_AttrProp * pSectionAP);
+											  const PP_AttrProp * pSectionAP,
+											  GR_Graphics * pG);
 
 	virtual void			_draw(dg_DrawArgs*);
 	virtual void       		_clearScreen(bool bFullLineHeightRect);

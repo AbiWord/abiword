@@ -53,17 +53,22 @@ fp_FmtMarkRun::fp_FmtMarkRun(fl_BlockLayout* pBL,
 
 void fp_FmtMarkRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 									  const PP_AttrProp * pBlockAP,
-									  const PP_AttrProp * pSectionAP)
+									  const PP_AttrProp * pSectionAP,
+									  GR_Graphics * pG)
 {
+	if(pG == NULL)
+	{
+		pG = getGraphics();
+	}
 	// look for fonts in this DocLayout's font cache
 	FL_DocLayout * pLayout = getBlock()->getDocLayout();
 	GR_Font * pFont = const_cast<GR_Font *>(pLayout->findFont(pSpanAP,
 									   pBlockAP,
 									   pSectionAP));
 
-	_setAscent(getGraphics()->getFontAscent(pFont));
-	_setDescent(getGraphics()->getFontDescent(pFont));
-	_setHeight(getGraphics()->getFontHeight(pFont));
+	_setAscent(pG->getFontAscent(pFont));
+	_setDescent(pG->getFontDescent(pFont));
+	_setHeight(pG->getFontHeight(pFont));
 	xxx_UT_DEBUGMSG(("fmtmark lookup properties: Font Ascent %d  Font Descent %d Font %x Span %x \n",getAscent(),getDescent(),pFont,pSpanAP));
 	PD_Document * pDoc = getBlock()->getDocument();
 

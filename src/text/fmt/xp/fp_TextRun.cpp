@@ -139,11 +139,15 @@ bool fp_TextRun::hasLayoutProperties(void) const
 
 void fp_TextRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 									const PP_AttrProp * pBlockAP,
-									const PP_AttrProp * pSectionAP)
+									const PP_AttrProp * pSectionAP,
+								   GR_Graphics * pG)
 {
 	// we should only need this if the props have changed
 	//clearScreen();
-
+	if(pG == NULL)
+	{
+		pG = getGraphics();
+	}
 	bool bChanged = false;
 	bool bDontClear = false;
 	if(_getFont() == NULL)
@@ -245,13 +249,13 @@ void fp_TextRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 	{
 		_setRecalcWidth(true);
 		_setFont(pFont);
-		_setAscent(getGraphics()->getFontAscent(pFont));
-		_setDescent(getGraphics()->getFontDescent(pFont));
-		_setHeight(getGraphics()->getFontHeight(pFont));
+		_setAscent(pG->getFontAscent(pFont));
+		_setDescent(pG->getFontDescent(pFont));
+		_setHeight(pG->getFontHeight(pFont));
 		bChanged = true;
 	}
 
-	getGraphics()->setFont(_getFont());
+	pG->setFont(_getFont());
 
 	//set the language member
 	UT_Language lls;
@@ -1448,7 +1452,6 @@ void fp_TextRun::_draw(dg_DrawArgs* pDA)
 	// 	(2) draw any selection background where needed over the basic background
 	// 	(3) draw the whole text in a single go over the composite background
 
-	UT_RGBColor clrPageBackground(_getColorPG());
 	UT_RGBColor clrNormalBackground(_getColorHL());
 	UT_RGBColor clrSelBackground = _getView()->getColorSelBackground();
 
@@ -1502,13 +1505,13 @@ void fp_TextRun::_draw(dg_DrawArgs* pDA)
 				if (iSel2 >= (iRunBase + getLength()))
 				{
 					// the whole run is selected
-					_fillRect(clrSelBackground, pDA->xoff, yTopOfSel, getBlockOffset(), getLength(), pgbCharWidths, rSegment);
+					_fillRect(clrSelBackground, pDA->xoff, yTopOfSel, getBlockOffset(), getLength(), pgbCharWidths, rSegment,pG);
 					bSegmentSelected[0] = true;
 				}
 				else
 				{
 					// the first part is selected, the second part is not
-					_fillRect(clrSelBackground, pDA->xoff, yTopOfSel, getBlockOffset(), iSel2 - iRunBase, pgbCharWidths, rSegment);
+					_fillRect(clrSelBackground, pDA->xoff, yTopOfSel, getBlockOffset(), iSel2 - iRunBase, pgbCharWidths, rSegment,pG);
 					iSegmentCount = 2;
 					bSegmentSelected[0] = true;
 					bSegmentSelected[1] = false;
@@ -1524,7 +1527,7 @@ void fp_TextRun::_draw(dg_DrawArgs* pDA)
 			if (iSel2 >= (iRunBase + getLength()))
 			{
 				// the second part is selected
-				_fillRect(clrSelBackground, pDA->xoff, yTopOfSel, iSel1 - iBase, getLength() - (iSel1 - iRunBase), pgbCharWidths, rSegment);
+				_fillRect(clrSelBackground, pDA->xoff, yTopOfSel, iSel1 - iBase, getLength() - (iSel1 - iRunBase), pgbCharWidths, rSegment,pG);
 
 				iSegmentCount = 2;
 				bSegmentSelected[0] = false;
@@ -1537,7 +1540,7 @@ void fp_TextRun::_draw(dg_DrawArgs* pDA)
 			else
 			{
 				// a midle section is selected
-				_fillRect(clrSelBackground, pDA->xoff, yTopOfSel, iSel1 - iBase, iSel2 - iSel1, pgbCharWidths, rSegment);
+				_fillRect(clrSelBackground, pDA->xoff, yTopOfSel, iSel1 - iBase, iSel2 - iSel1, pgbCharWidths, rSegment,pG);
 
 				iSegmentCount = 3;
 				bSegmentSelected[0] = false;
@@ -1698,8 +1701,11 @@ void fp_TextRun::_draw(dg_DrawArgs* pDA)
 	}
 
 	// TODO: draw this underneath (ie, before) the text and decorations
-	m_bSquiggled = false;
-	getBlock()->findSquigglesForRun(this);
+	if(pG->queryProperties(GR_Graphics::DGP_SCREEN))
+	{
+		m_bSquiggled = false;
+		getBlock()->findSquigglesForRun(this);
+	}
 }
 
 void fp_TextRun::_fillRect(UT_RGBColor& clr,
@@ -1708,7 +1714,8 @@ void fp_TextRun::_fillRect(UT_RGBColor& clr,
 						   UT_uint32 iPos1,
 						   UT_uint32 iLen,
 						   const UT_GrowBuf * pgbCharWidths,
-						   UT_Rect &r)
+						   UT_Rect &r,
+						   GR_Graphics * pG)
 {
 	/*
 	  Upon entry to this function, yoff is the TOP of the run,
@@ -1724,7 +1731,7 @@ void fp_TextRun::_fillRect(UT_RGBColor& clr,
 		_getPartRect(&r, xoff, yoff, iPos1, iLen, pgbCharWidths);
 		r.height = getLine()->getHeight();
 		r.top = r.top + getAscent() - getLine()->getAscent();
-		getGraphics()->fillRect(clr, r.left, r.top, r.width, r.height);
+		pG->fillRect(clr, r.left, r.top, r.width, r.height);
 	}
 }
 

@@ -686,7 +686,7 @@ void fg_FillType::Fill(GR_Graphics * pG, UT_sint32 & srcX, UT_sint32 & srcY, UT_
 			m_iGraphicTick = m_pDocLayout->getGraphicTick();
 			fp_Run * pRun = static_cast<fp_Run *>(m_pContainer);
 			pRun->_setFont(NULL);
-			pRun->lookupProperties();
+			pRun->lookupProperties(pG);
 			if((m_FillType == FG_FILL_IMAGE) && (m_pDocImage == NULL))
 			{
 				_regenerateImage(pG);

@@ -64,9 +64,10 @@ void fp_FieldListLabelRun::_draw(dg_DrawArgs* pDA)
 
 void fp_FieldListLabelRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 											 const PP_AttrProp * pBlockAP,
-											 const PP_AttrProp * pSectionAP)
+											 const PP_AttrProp * pSectionAP,
+											 GR_Graphics * pG)
 {
-  fp_FieldRun::_lookupProperties (pSpanAP, pBlockAP, pSectionAP) ;
+  fp_FieldRun::_lookupProperties (pSpanAP, pBlockAP, pSectionAP,pG) ;
 }
 
 

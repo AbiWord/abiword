@@ -118,7 +118,9 @@ fp_Run::fp_Run(fl_BlockLayout* pBL,
 	m_pRevisions(NULL),
 	m_eHidden(FP_VISIBLE),
 	m_bIsCleared(true),
-	m_FillType(NULL,static_cast<fp_ContainerObject *>(this),FG_FILL_TRANSPARENT)
+	m_FillType(NULL,static_cast<fp_ContainerObject *>(this),FG_FILL_TRANSPARENT),
+	m_bPrinting(false),
+	m_pG(NULL)
 {
 	xxx_UT_DEBUGMSG(("fp_Run %x created!!! \n",this));
 	m_FillType.setDocLayout(m_pBL->getDocLayout());
@@ -171,7 +173,7 @@ void fp_Run::Fill(GR_Graphics * pG, UT_sint32 x, UT_sint32 y, UT_sint32 width,
 	}
 }
 
-void fp_Run::lookupProperties()
+void fp_Run::lookupProperties(GR_Graphics * pG)
 {
 	const PP_AttrProp * pSpanAP = NULL;
 	const PP_AttrProp * pBlockAP = NULL;
@@ -213,8 +215,11 @@ void fp_Run::lookupProperties()
 	const char * pszBGcolor = PP_evalProperty("bgcolor",pSpanAP,pBlockAP,pSectionAP, pDoc, true);
 	_setColorHL(pszBGcolor);
 	m_FillType.setColor(pszBGcolor);
-
-	_lookupProperties(pSpanAP, pBlockAP, pSectionAP);
+	if(pG == NULL)
+	{
+		pG = getGraphics();
+	}
+	_lookupProperties(pSpanAP, pBlockAP, pSectionAP,pG);
 
 	if(m_pRevisions)
 	{
@@ -329,7 +334,14 @@ fp_Run::_inheritProperties(void)
 
 GR_Graphics * fp_Run::getGraphics(void) const
 {
-	return getBlock()->getDocLayout()->getGraphics();
+	if(m_bPrinting)
+	{
+		return m_pG;
+	}
+	else
+	{
+		return getBlock()->getDocLayout()->getGraphics();
+	}
 }
 
 void fp_Run::insertIntoRunListBeforeThis(fp_Run& newRun)
@@ -781,6 +793,11 @@ void fp_Run::draw(dg_DrawArgs* pDA)
 	if (((pDA->yoff < -imax) || (pDA->yoff > imax)) && pG->queryProperties(GR_Graphics::DGP_SCREEN))
 	     return;
 
+	if(pG->queryProperties(GR_Graphics::DGP_PAPER))
+	{
+		m_bPrinting = true;
+		m_pG = pG;
+	}
 	pG->setColor(getFGColor());
 
 	_draw(pDA);
@@ -790,7 +807,7 @@ void fp_Run::draw(dg_DrawArgs* pDA)
 		const PP_Revision * r = m_pRevisions->getLastRevision();
 		PP_RevisionType r_type = r->getType();
 
-		getGraphics()->setColor(getFGColor());
+		pG->setColor(getFGColor());
 
 		UT_uint32 iWidth = getDrawingWidth();
 
@@ -811,7 +828,6 @@ void fp_Run::draw(dg_DrawArgs* pDA)
 
 			pG->fillRect(s_fgColor,pDA->xoff, pDA->yoff - m_iHeight/3, iWidth, getGraphics()->tlu(2));
 		}
-
 	}
 
 	if(m_pHyperlink && pG->queryProperties(GR_Graphics::DGP_SCREEN))
@@ -839,6 +855,12 @@ void fp_Run::draw(dg_DrawArgs* pDA)
 
 	}
 	_setDirty(false);
+
+	if(pG->queryProperties(GR_Graphics::DGP_PAPER))
+	{
+		m_bPrinting = false;
+		m_pG = NULL;
+	}
 }
 
 bool fp_Run::canContainPoint(void) const
@@ -1241,14 +1263,18 @@ fp_TabRun::fp_TabRun(fl_BlockLayout* pBL, UT_uint32 iOffsetFirst, UT_uint32 iLen
 
 void fp_TabRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 								  const PP_AttrProp * pBlockAP,
-								  const PP_AttrProp * pSectionAP)
+								  const PP_AttrProp * pSectionAP,
+								  GR_Graphics * pG)
 {
 	bool bChanged = false;
 
 	fd_Field * fd = NULL;
 	getBlock()->getField(getBlockOffset(),fd);
 	_setField(fd);
-
+	if(pG == NULL)
+	{
+		pG = getGraphics();
+	}
 	UT_RGBColor clrFG;
 	UT_parseColor(PP_evalProperty("color",pSpanAP,pBlockAP,pSectionAP, getBlock()->getDocument(), true), clrFG);
 	bChanged |= (clrFG != _getColorFG());
@@ -1261,9 +1287,9 @@ void fp_TabRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 	if (pFont != _getFont())
 	{
 	    _setFont(pFont);
-	    _setAscent(getGraphics()->getFontAscent(pFont));
-	    _setDescent(getGraphics()->getFontDescent(pFont));
-	    _setHeight(getGraphics()->getFontHeight(pFont));
+	    _setAscent(pG->getFontAscent(pFont));
+	    _setDescent(pG->getFontDescent(pFont));
+	    _setHeight(pG->getFontHeight(pFont));
 		bChanged = true;
 	}
 
@@ -1662,13 +1688,17 @@ fp_ForcedLineBreakRun::fp_ForcedLineBreakRun(fl_BlockLayout* pBL,UT_uint32 iOffs
 
 void fp_ForcedLineBreakRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 											  const PP_AttrProp * pBlockAP,
-											  const PP_AttrProp * pSectionAP)
+											  const PP_AttrProp * pSectionAP,
+											  GR_Graphics * pG)
 {
 	//UT_DEBUGMSG(("fp_ForcedLineBreakRun::lookupProperties\n"));
 	fd_Field * fd = NULL;
 	getBlock()->getField(getBlockOffset(),fd);
 	_setField(fd);
-
+	if(pG == NULL)
+	{
+		pG = getGraphics();
+	}
 	_inheritProperties();
 	FV_View* pView = _getView();
 	if (pView && pView->getShowPara())
@@ -1681,7 +1711,7 @@ void fp_ForcedLineBreakRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 		if (pPropRun && (FPRUN_TEXT == pPropRun->getType()))
 		{
 			fp_TextRun* pTextRun = static_cast<fp_TextRun*>(pPropRun);
-			getGraphics()->setFont(pTextRun->getFont());
+			pG->setFont(pTextRun->getFont());
 		}
 		else
 		{
@@ -1891,7 +1921,8 @@ fp_FieldStartRun::fp_FieldStartRun(fl_BlockLayout* pBL, UT_uint32 iOffsetFirst, 
 
 void fp_FieldStartRun::_lookupProperties(const PP_AttrProp * /*pSpanAP*/,
 										 const PP_AttrProp * /*pBlockAP*/,
-										 const PP_AttrProp * /*pSectionAP*/)
+										 const PP_AttrProp * /*pSectionAP*/,
+										 GR_Graphics *)
 {
 	fd_Field * fd = NULL;
 	getBlock()->getField(getBlockOffset(),fd);
@@ -1950,7 +1981,8 @@ fp_FieldEndRun::fp_FieldEndRun(fl_BlockLayout* pBL, UT_uint32 iOffsetFirst, UT_u
 
 void fp_FieldEndRun::_lookupProperties(const PP_AttrProp * /*pSpanAP*/,
 									   const PP_AttrProp * /*pBlockAP*/,
-									   const PP_AttrProp * /*pSectionAP*/)
+									   const PP_AttrProp * /*pSectionAP*/,
+									   GR_Graphics *)
 {
 	fd_Field * fd = NULL;
 	getBlock()->getField(getBlockOffset(),fd);
@@ -2033,7 +2065,8 @@ bool fp_BookmarkRun::isComrade(fp_BookmarkRun *pBR) const
 
 void fp_BookmarkRun::_lookupProperties(const PP_AttrProp * /*pSpanAP*/,
 									   const PP_AttrProp * /*pBlockAP*/,
-									   const PP_AttrProp * /*pSectionAP*/)
+									   const PP_AttrProp * /*pSectionAP*/,
+									   GR_Graphics *)
 {
 }
 
@@ -2212,7 +2245,8 @@ fp_HyperlinkRun::~fp_HyperlinkRun()
 
 void fp_HyperlinkRun::_lookupProperties(const PP_AttrProp * /*pSpanAP*/,
 									   const PP_AttrProp * /*pBlockAP*/,
-									   const PP_AttrProp * /*pSectionAP*/)
+									   const PP_AttrProp * /*pSectionAP*/,
+									   GR_Graphics *)
 {
 }
 
@@ -2279,7 +2313,8 @@ bool fp_EndOfParagraphRun::recalcWidth(void)
 
 void fp_EndOfParagraphRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 											 const PP_AttrProp * pBlockAP,
-											 const PP_AttrProp * pSectionAP)
+											 const PP_AttrProp * pSectionAP,
+											 GR_Graphics * pG)
 {
 	//UT_DEBUGMSG(("fp_EndOfParagraphRun::lookupProperties\n"));
 	_inheritProperties();
@@ -2301,6 +2336,10 @@ void fp_EndOfParagraphRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 	}
 
 	FV_View* pView = _getView();
+	if(pG == NULL)
+	{
+		pG = getGraphics();
+	}
 	if (pView && pView->getShowPara())
 	{
 		// Find width of Pilcrow
@@ -2311,7 +2350,7 @@ void fp_EndOfParagraphRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 		if (pPropRun && (FPRUN_TEXT == pPropRun->getType()))
 		{
 			fp_TextRun* pTextRun = static_cast<fp_TextRun*>(pPropRun);
-			getGraphics()->setFont(pTextRun->getFont());
+			pG->setFont(pTextRun->getFont());
 		}
 		else
 		{
@@ -2319,9 +2358,9 @@ void fp_EndOfParagraphRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 			FL_DocLayout * pLayout = getBlock()->getDocLayout();
 
 			GR_Font * pFont = const_cast<GR_Font *>(pLayout->findFont(pSpanAP,pBlockAP,pSectionAP));
-			getGraphics()->setFont(pFont);
+			pG->setFont(pFont);
 		}
-		m_iDrawWidth  = getGraphics()->measureString(pEOP, 0, iTextLen, NULL);
+		m_iDrawWidth  = pG->measureString(pEOP, 0, iTextLen, NULL);
 		xxx_UT_DEBUGMSG(("fp_EndOfParagraphRun::lookupProperties: width %d\n", getWidth()));
 	}
 	else
@@ -2569,7 +2608,8 @@ void fp_ImageRun::regenerateImage(GR_Graphics * pG)
 
 void fp_ImageRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 									const PP_AttrProp * /*pBlockAP*/,
-									const PP_AttrProp * /*pSectionAP*/)
+									const PP_AttrProp * /*pSectionAP*/,
+									GR_Graphics * pG)
 {
 	fd_Field * fd = NULL;
 	m_pSpanAP = pSpanAP;
@@ -2583,6 +2623,10 @@ void fp_ImageRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 	}
 	const XML_Char * szHeight = NULL;
 	pSpanAP->getProperty("height", szHeight);
+	if(pG == NULL)
+	{
+		pG = getGraphics();
+	}
 	if(szHeight == NULL)
 	{
 		szHeight = "0in";
@@ -2613,7 +2657,7 @@ void fp_ImageRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 		m_sCachedWidthProp = szWidth;
 		m_sCachedHeightProp = szHeight;
 		DELETEP(m_pImage);
-		m_pImage = m_pFGraphic->generateImage(getGraphics(), pSpanAP, maxW, maxH);
+		m_pImage = m_pFGraphic->generateImage(pG, pSpanAP, maxW, maxH);
 		markAsDirty();
 		if(getLine())
 		{
@@ -2622,8 +2666,8 @@ void fp_ImageRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 	}
 	if (m_pImage)
 	{
-		_setWidth(getGraphics()->tlu(m_pImage->getDisplayWidth()));
-		_setHeight(getGraphics()->tlu(m_pImage->getDisplayHeight()));
+		_setWidth(pG->tlu(m_pImage->getDisplayWidth()));
+		_setHeight(pG->tlu(m_pImage->getDisplayHeight()));
 	}
 	else
 	{
@@ -2651,7 +2695,7 @@ void fp_ImageRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 	{
 		_setFont(pFont);
 	}
-	m_iPointHeight = getGraphics()->getFontAscent(pFont) + getGraphics()->getFontDescent(pFont);
+	m_iPointHeight = pG->getFontAscent(pFont) + getGraphics()->getFontDescent(pFont);
 }
 
 bool fp_ImageRun::canBreakAfter(void) const
@@ -3045,9 +3089,14 @@ bool fp_FieldRun::_setValue(const UT_UCSChar *p_new_value)
 
 void fp_FieldRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 									const PP_AttrProp * pBlockAP,
-									const PP_AttrProp * pSectionAP)
+									const PP_AttrProp * pSectionAP,
+									GR_Graphics * pG)
 {
 	UT_ASSERT(pSpanAP);
+	if(pG == NULL)
+	{
+		pG = getGraphics();
+	}
 	PD_Document * pDoc = getBlock()->getDocument();
 	fd_Field * fd = NULL;
 	getBlock()->getField(getBlockOffset()+1,fd); // Next Pos?
@@ -3075,7 +3124,7 @@ void fp_FieldRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 // with lists. I think this is a good solution for now. However it does mean
 // field-color of "ffffff", pure white is actually transparent.
 //
-	if(pszFieldColor && UT_strcmp(pszFieldColor,"transparent") != 0 && UT_strcmp(pszFieldColor,"ffffff" ) != 0 && getGraphics()->queryProperties(GR_Graphics::DGP_SCREEN))
+	if(pszFieldColor && UT_strcmp(pszFieldColor,"transparent") != 0 && UT_strcmp(pszFieldColor,"ffffff" ) != 0 && pG->queryProperties(GR_Graphics::DGP_SCREEN))
 	{
 		UT_RGBColor r;
 		UT_parseColor(pszFieldColor, r);
@@ -3138,9 +3187,9 @@ void fp_FieldRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 		_setFont(const_cast<GR_Font *>(pLayout->findFont(pSpanAP,pBlockAP,pSectionAP, false)));
 	}
 
-	_setAscent(getGraphics()->getFontAscent(_getFont()));
-	_setDescent(getGraphics()->getFontDescent(_getFont()));
-	_setHeight(getGraphics()->getFontHeight(_getFont()));
+	_setAscent(pG->getFontAscent(_getFont()));
+	_setDescent(pG->getFontDescent(_getFont()));
+	_setHeight(pG->getFontHeight(_getFont()));
 
 	const XML_Char * pszPosition = PP_evalProperty("text-position",pSpanAP,pBlockAP,pSectionAP, pDoc, true);
 
@@ -4475,7 +4524,8 @@ fp_ForcedColumnBreakRun::fp_ForcedColumnBreakRun(fl_BlockLayout* pBL,UT_uint32 i
 
 void fp_ForcedColumnBreakRun::_lookupProperties(const PP_AttrProp * /*pSpanAP*/,
 												const PP_AttrProp * /*pBlockAP*/,
-												const PP_AttrProp * /*pSectionAP*/)
+												const PP_AttrProp * /*pSectionAP*/,
+												GR_Graphics *)
 {
 	fd_Field * fd = NULL;
 
@@ -4589,7 +4639,8 @@ fp_ForcedPageBreakRun::fp_ForcedPageBreakRun(fl_BlockLayout* pBL, UT_uint32 iOff
 
 void fp_ForcedPageBreakRun::_lookupProperties(const PP_AttrProp * /*pSpanAP*/,
 											  const PP_AttrProp * /*pBlockAP*/,
-											  const PP_AttrProp * /*pSectionAP*/)
+											  const PP_AttrProp * /*pSectionAP*/,
+											  GR_Graphics *)
 {
 	fd_Field * fd = NULL;
 

@@ -224,7 +224,7 @@ public:
 	virtual bool			findFirstNonBlankSplitPoint(fp_RunSplitInfo& /*si*/) { return false; }
 	virtual void			mapXYToPosition(UT_sint32 xPos, UT_sint32 yPos, PT_DocPosition& pos, bool& bBOL, bool& bEOL) = 0;
 	virtual void 			findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y, UT_sint32& x2, UT_sint32& y2, UT_sint32& height, bool& bDirection) = 0;
-	void			        lookupProperties(void);
+	void			        lookupProperties(GR_Graphics * pG=NULL);
 	virtual bool			doesContainNonBlankData(void) const { return true; }	// Things like text whould return false if it is all spaces.
 	void                    drawDecors(UT_sint32 xoff, UT_sint32 yoff, GR_Graphics * pG);
 	virtual bool			isSuperscript(void) const { return false; }
@@ -327,7 +327,8 @@ protected:
 	void					_setRefreshDrawBuffer(bool b) { m_bRefreshDrawBuffer = b; }
 	virtual void	        _lookupProperties(const PP_AttrProp * pSpanAP,
 											  const PP_AttrProp * pBlockAP,
-											  const PP_AttrProp * pSectionAP) = 0;
+											  const PP_AttrProp * pSectionAP, 
+											  GR_Graphics * pG = NULL) = 0;
 
 	virtual bool            _canContainPoint(void) const;
 
@@ -391,6 +392,8 @@ private:
 	FPVisibility            m_eHidden;
 	bool                    m_bIsCleared;
 	fg_FillType             m_FillType;
+	bool                    m_bPrinting;
+	GR_Graphics *           m_pG;
 };
 
 class ABI_EXPORT fp_TabRun : public fp_Run
@@ -414,7 +417,8 @@ protected:
 	virtual void			_clearScreen(bool bFullLineHeightRect);
 	virtual void			_lookupProperties(const PP_AttrProp * pSpanAP,
 											  const PP_AttrProp * pBlockAP,
-											  const PP_AttrProp * pSectionAP);
+											  const PP_AttrProp * pSectionAP,
+											  GR_Graphics * pG = NULL);
 private:
 	//UT_RGBColor			    m_colorFG;
 private:
@@ -435,7 +439,8 @@ public:
 protected:
 	virtual void			_lookupProperties(const PP_AttrProp * pSpanAP,
 											  const PP_AttrProp * pBlockAP,
-											  const PP_AttrProp * pSectionAP);
+											  const PP_AttrProp * pSectionAP,
+											  GR_Graphics * pG = NULL);
 
 	virtual void			_draw(dg_DrawArgs*);
 	virtual void			_clearScreen(bool bFullLineHeightRect);
@@ -454,7 +459,8 @@ public:
 protected:
 	virtual void			_lookupProperties(const PP_AttrProp * pSpanAP,
 											  const PP_AttrProp * pBlockAP,
-											  const PP_AttrProp * pSectionAP);
+											  const PP_AttrProp * pSectionAP,
+											  GR_Graphics * pG = NULL);
 
 	virtual void			_draw(dg_DrawArgs*);
 	virtual void			_clearScreen(bool bFullLineHeightRect);
@@ -473,7 +479,8 @@ public:
 protected:
 	virtual void			_lookupProperties(const PP_AttrProp * pSpanAP,
 											  const PP_AttrProp * pBlockAP,
-											  const PP_AttrProp * pSectionAP);
+											  const PP_AttrProp * pSectionAP,
+											  GR_Graphics * pG = NULL);
 
 	virtual void			_draw(dg_DrawArgs*);
 	virtual void			_clearScreen(bool bFullLineHeightRect);
@@ -493,7 +500,8 @@ public:
 protected:
 	virtual void			_lookupProperties(const PP_AttrProp * pSpanAP,
 											  const PP_AttrProp * pBlockAP,
-											  const PP_AttrProp * pSectionAP);
+											  const PP_AttrProp * pSectionAP,
+											  GR_Graphics * pG = NULL);
 
 	virtual void			_draw(dg_DrawArgs*);
 	virtual void			_clearScreen(bool bFullLineHeightRect);
@@ -513,7 +521,8 @@ public:
 protected:
 	virtual void			_lookupProperties(const PP_AttrProp * pSpanAP,
 											  const PP_AttrProp * pBlockAP,
-											  const PP_AttrProp * pSectionAP);
+											  const PP_AttrProp * pSectionAP,
+											  GR_Graphics * pG = NULL);
 
 	virtual void			_draw(dg_DrawArgs*);
 	virtual void			_clearScreen(bool bFullLineHeightRect);
@@ -539,7 +548,8 @@ public:
 protected:
 	virtual void			_lookupProperties(const PP_AttrProp * pSpanAP,
 											  const PP_AttrProp * pBlockAP,
-											  const PP_AttrProp * pSectionAP);
+											  const PP_AttrProp * pSectionAP,
+											  GR_Graphics * pG = NULL);
 
 	virtual void			_draw(dg_DrawArgs*);
 	virtual void       		_clearScreen(bool bFullLineHeightRect);
@@ -583,7 +593,8 @@ public:
 private:
 	virtual void			_lookupProperties(const PP_AttrProp * pSpanAP,
 											  const PP_AttrProp * pBlockAP,
-											  const PP_AttrProp * pSectionAP);
+											  const PP_AttrProp * pSectionAP,
+											  GR_Graphics * pG = NULL);
 
 	virtual void _clearScreen(bool /* bFullLineHeightRect */);
 	virtual void _draw(dg_DrawArgs* /*pDA */);
@@ -626,7 +637,8 @@ public:
 private:
 	virtual void			_lookupProperties(const PP_AttrProp * pSpanAP,
 											  const PP_AttrProp * pBlockAP,
-											  const PP_AttrProp * pSectionAP);
+											  const PP_AttrProp * pSectionAP,
+											  GR_Graphics * pG = NULL);
 
 	virtual void _clearScreen(bool /* bFullLineHeightRect */);
 	virtual void _draw(dg_DrawArgs* /*pDA */);
@@ -654,7 +666,8 @@ public:
 protected:
 	virtual void			_lookupProperties(const PP_AttrProp * pSpanAP,
 											  const PP_AttrProp * pBlockAP,
-											  const PP_AttrProp * pSectionAP);
+											  const PP_AttrProp * pSectionAP,
+											  GR_Graphics * pG = NULL);
 
 	virtual void			_draw(dg_DrawArgs*);
 	virtual void			_drawResizeBox(UT_Rect box);
@@ -760,7 +773,8 @@ public:
 protected:
 	virtual void			_lookupProperties(const PP_AttrProp * pSpanAP,
 											  const PP_AttrProp * pBlockAP,
-											  const PP_AttrProp * pSectionAP);
+											  const PP_AttrProp * pSectionAP,
+											  GR_Graphics * pG = NULL);
 
 	virtual void			_draw(dg_DrawArgs*) {};
 	virtual void			_defaultDraw(dg_DrawArgs*);
@@ -1368,7 +1382,8 @@ public:
 protected:
 	virtual void			_lookupProperties(const PP_AttrProp * pSpanAP,
 											  const PP_AttrProp * pBlockAP,
-											  const PP_AttrProp * pSectionAP);
+											  const PP_AttrProp * pSectionAP,
+											  GR_Graphics * pG = NULL);
 
 	virtual void			_draw(dg_DrawArgs*);
 	virtual void			_clearScreen(bool bFullLineHeightRect);

@@ -71,11 +71,15 @@ bool fp_DirectionMarkerRun::recalcWidth(void)
 
 void fp_DirectionMarkerRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 											  const PP_AttrProp * pBlockAP,
-											  const PP_AttrProp * pSectionAP)
+											  const PP_AttrProp * pSectionAP,
+											  GR_Graphics * pG)
 {
 	//UT_DEBUGMSG(("fp_DirectionMarkerRun::lookupProperties\n"));
 	_inheritProperties();
-
+	if(pG == NULL)
+	{
+		pG = getGraphics();
+	}
 	const XML_Char* pRevision = NULL;
 
 	if(pBlockAP && pBlockAP->getAttribute("revision", pRevision))
@@ -97,7 +101,7 @@ void fp_DirectionMarkerRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 	if (pPropRun && (FPRUN_TEXT == pPropRun->getType()))
 	{
 		fp_TextRun* pTextRun = static_cast<fp_TextRun*>(pPropRun);
-		getGraphics()->setFont(pTextRun->getFont());
+		pG->setFont(pTextRun->getFont());
 	}
 	else
 	{
@@ -105,11 +109,11 @@ void fp_DirectionMarkerRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 		FL_DocLayout * pLayout = getBlock()->getDocLayout();
 
 		GR_Font * pFont = const_cast<GR_Font *>(pLayout->findFont(pSpanAP,pBlockAP,pSectionAP));
-		getGraphics()->setFont(pFont);
+		pG->setFont(pFont);
 	}
 
 	UT_UCS4Char cM = m_iMarker == UCS_LRM ? (UT_UCS4Char)'>' : (UT_UCS4Char)'<';
-	m_iDrawWidth  = getGraphics()->measureString(&cM, 0, 1, NULL);
+	m_iDrawWidth  = pG->measureString(&cM, 0, 1, NULL);
 	xxx_UT_DEBUGMSG(("fp_DirectionMarkerRun::lookupProperties: width %d\n", getWidth()));
 }
 
