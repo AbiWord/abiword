@@ -1897,26 +1897,6 @@ bool IE_Imp_RTF::StuffCurrentGroup(UT_ByteBuf & buf)
 
 
 /*!
-  Tell if we can handle the picture format
-  \param format the picture format
-  \return true if we can handle it.
-  \desc This function should check with the image importer
-  if there is a correct importer for the corresponding image 
-  type. 
-  \todo we should really check against importer
-  \todo we may provide a beginning of the buffer to sniff data
-  content. 
- */
-bool IE_Imp_RTF::CanHandlePictFormat(PictFormat format)
-{
-	return (format == picPNG) || (format == picBMP) 
-#ifdef HAVE_LIBJPEG
-		|| (format == picJPEG)
-#endif
-		;
-}
-
-/*!
   Load the picture data
   \param format the Picture Format.
   \param image_name the name of the image. Must be unique.
@@ -1972,53 +1952,43 @@ bool IE_Imp_RTF::LoadPictData(PictFormat format, char * image_name,
 	// We let the caller handle this
 	SkipBackChar(ch);
 
-	// Handle the specified format appropiately
-	if (CanHandlePictFormat (format))
+	// TODO: investigate whether pictData is leaking memory or not
+	IE_ImpGraphic * pGraphicImporter = NULL;
+	
+	UT_Error error = IE_ImpGraphic::constructImporter(pictData, IEGFT_Unknown, &pGraphicImporter);
+	
+	if ((error == UT_OK) && pGraphicImporter) 
 	{
-		// TODO: investigate whether pictData is leaking memory or not
-		IE_ImpGraphic * pGraphicImporter = NULL;
+		FG_Graphic* pFG = 0;
 		
-		UT_Error error = IE_ImpGraphic::constructImporter(pictData, IEGFT_Unknown, &pGraphicImporter);
-
-		if (pGraphicImporter) 
+		// TODO: according with IE_ImpGraphic header, we shouldn't free
+		// TODO: the buffer. Confirm that.
+		error = pGraphicImporter->importGraphic(pictData, &pFG);
+		DELETEP(pGraphicImporter);
+		
+		if (error != UT_OK || !pFG) 
 		{
-			FG_Graphic* pFG;
-			
-			// TODO: according with IE_ImpGraphic header, we shouldn't free
-			// TODO: the buffer. Confirm that.
-			error = pGraphicImporter->importGraphic(pictData, &pFG);
-			DELETEP(pGraphicImporter);
-
-			if (error != UT_OK) 
-			{
-				UT_DEBUGMSG(("Error parsing embedded PNG\n"));
-				delete pictData;
-				return false;
-			}
-			
-			UT_ByteBuf * buf;
-			buf = static_cast<FG_GraphicRaster *>(pFG)->getRaster_PNG();
-			imgProps.width = static_cast<FG_GraphicRaster *>(pFG)->getWidth ();
-			imgProps.height = static_cast<FG_GraphicRaster *>(pFG)->getHeight ();
-			// Not sure whether this is the right way, but first, we should
-			// insert any pending chars
-			if (!FlushStoredChars(true))
-			{
-				UT_DEBUGMSG(("Error flushing stored chars just before inserting a picture\n"));
-				delete pictData;
-				return false;
-			} 
-			
-			ok = InsertImage (buf, image_name, imgProps);
-			if (!ok) 
-			{
-				delete pictData;
-				return false;
-			}
+			UT_DEBUGMSG(("Error parsing embedded PNG\n"));
+			delete pictData;
+			return false;
 		}
-		else 
+		
+		UT_ByteBuf * buf = 0;
+		buf = static_cast<FG_GraphicRaster *>(pFG)->getRaster_PNG();
+		imgProps.width = (UT_uint32)static_cast<FG_GraphicRaster *>(pFG)->getWidth ();
+		imgProps.height = (UT_uint32)static_cast<FG_GraphicRaster *>(pFG)->getHeight ();
+		// Not sure whether this is the right way, but first, we should
+		// insert any pending chars
+		if (!FlushStoredChars(true))
 		{
-			UT_DEBUGMSG(("RTF: Unable to translate image\n"));
+			UT_DEBUGMSG(("Error flushing stored chars just before inserting a picture\n"));
+			delete pictData;
+			return false;
+		} 
+		
+		ok = InsertImage (buf, image_name, imgProps);
+		if (!ok) 
+		{
 			delete pictData;
 			return false;
 		}
@@ -2281,20 +2251,15 @@ bool IE_Imp_RTF::HandlePicture()
 			// It this a conforming rtf, this should be the pict data
 			// if we know how to handle this format, we insert the picture
 		
-			if (CanHandlePictFormat(format))
-			{
-				char image_name[256];
-				sprintf(image_name,"image_%d",++nImage);
-
-				// the first char belongs to the picture too
-				SkipBackChar(ch);
-				LoadPictData(format, image_name, imageProps);
-			}
-			else 
-			{
+			char image_name[256];
+			sprintf(image_name,"image_%d",++nImage);
+			
+			// the first char belongs to the picture too
+			SkipBackChar(ch);
+			
+			if (!LoadPictData(format, image_name, imageProps))
 				if (!SkipCurrentGroup())
 					return false;
-			}
 
 			bPictProcessed = true;
 		}
