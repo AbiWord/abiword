@@ -95,11 +95,9 @@ public:
     virtual bool				_macGrow(void);
 	WindowPtr _getMacWindow (void) { UT_ASSERT (m_MacWindow != NULL); return m_MacWindow; } ;
 protected:
-	virtual EV_Toolbar *		_newToolbar(XAP_App *app, XAP_Frame *frame, const char *, const char *) 
-										{ UT_ASSERT (UT_NOT_IMPLEMENTED); };
+	virtual EV_Toolbar *		_newToolbar(XAP_App *app, XAP_Frame *frame, const char *, const char *);
 
 	void						_createTopLevelWindow(void);
-	void						_createToolbars(void);
 	void						_createDocumentWindow(void);
 	WindowPtr					m_MacWindow;
     GrafPtr						m_MacWindowPort;
@@ -113,9 +111,13 @@ private:
 	void						MacWindowInit ();
 	void						_calcVertScrollBarRect(Rect & rect);
 	void						_calcHorizScrollBarRect(Rect & rect);
+        void						_calcPlacardRect ();
+        void						_calcToolbarRect ();
 
         ControlHandle					m_HScrollBar;
         ControlHandle					m_VScrollBar;
+        Rect						m_placardRect;
+        Rect						m_toolbarRect;
 };
 
 #endif /* XAP_MACFRAME_H */

@@ -211,9 +211,26 @@ bool	XAP_MacFrame::updateTitle(void)
 */
 bool	XAP_MacFrame::_macUpdate(void)
 {
+	ThemeDrawState			drawState;
+       	
+        GrafPtr savePort;
 	::BeginUpdate (m_MacWindow);
-	::DrawControls (m_MacWindow);
+	
+        ::DrawControls (m_MacWindow);
 	::DrawGrowIcon (m_MacWindow);
+        ::GetPort (&savePort);
+        ::SetPort (m_MacWindowPort);
+        // Get theme state
+        drawState = ::IsWindowHilited (m_MacWindow) ?
+                        (ThemeDrawState)kThemeStateActive :
+                        (ThemeDrawState)kThemeStateDisabled;
+        // Draw the window header where toolbar reside
+        ::DrawThemeWindowHeader (&m_toolbarRect, drawState);
+
+	::DrawThemePlacard( &m_placardRect, drawState );
+
+        ::SetPort (savePort);
+
 	::EndUpdate (m_MacWindow);
 	return true;
 }
@@ -231,6 +248,8 @@ bool XAP_MacFrame::_macGrow (void)
 	::MoveControl (m_HScrollBar, newRect.left, newRect.top);
 	::SizeControl (m_HScrollBar, newRect.right - newRect.left, newRect.bottom - newRect.top);
 	
+        _calcToolbarRect();
+        _calcPlacardRect();
 	return true;
 }
 
@@ -247,6 +266,31 @@ XAP_DialogFactory *XAP_MacFrame::getDialogFactory(void)
 	return &m_dialogFactory;
 }
 
+EV_Toolbar * XAP_MacFrame::_newToolbar(XAP_App *app, XAP_Frame *frame, const char *szLayout, const char *szLanguage)
+{
+    // TODO: eventually move this to EV_MacToolbar. Probably better.
+    ThemeDrawState			drawState;
+    
+    GrafPtr savePort;
+    ::GetPort (&savePort);
+    ::SetPort (m_MacWindowPort);
+    // Get theme state
+    drawState = ::IsWindowHilited (m_MacWindow) ?
+                    (ThemeDrawState)kThemeStateActive :
+                    (ThemeDrawState)kThemeStateDisabled;
+    _calcToolbarRect ();
+    ::DrawThemeWindowHeader (&m_toolbarRect, drawState);
+
+    _calcPlacardRect ();
+    ::DrawThemePlacard( &m_placardRect, drawState );
+
+    ::SetPort (savePort);
+    
+    return (new EV_MacToolbar(static_cast<XAP_MacApp *>(app), 
+                              static_cast<XAP_MacFrame *>(frame), szLayout, szLanguage));
+}
+
+
 void XAP_MacFrame::_createTopLevelWindow(void)
 {
 	::SetRect(&m_winBounds, 100, 100, 500, 500);
@@ -261,7 +305,7 @@ void XAP_MacFrame::_createTopLevelWindow(void)
     ::SetWRefCon (m_MacWindow, (long)this);
 
 #if TARGET_API_MAC_CARBON
-    ::GetWindowPortBounds (m_MacWindow, &m_winBounds);
+    ::GetPortBounds (m_MacWindowPort, &m_winBounds);
 #else
 	m_winBounds = m_MacWindowPort->portRect;
 #endif
@@ -275,23 +319,35 @@ void XAP_MacFrame::_createTopLevelWindow(void)
 //        m_pMacStatusBarView = _createStatusBarWindow ();
 }
 
-void XAP_MacFrame::_createToolbars(void)
+
+void XAP_MacFrame::_calcToolbarRect ()
 {
-        Rect rect;
-       	ThemeDrawState			drawState;
-       	
-        // Get theme state
-        drawState = ::IsWindowHilited (m_MacWindow) ?
-                        (ThemeDrawState)kThemeStateActive :
-                        (ThemeDrawState)kThemeStateDisabled;
-        // Draw the window header where toolbar reside
-        rect = m_winBounds;
-        ::InsetRect( &rect, -1, -1 );
-        rect.bottom = rect.top + 40;
-        ::DrawThemeWindowHeader (&rect, drawState);
-        
-        // TODO: place the buttons
-        // TODO 2: make sure it is redrawn during refresh
+    Rect rect;
+#if TARGET_API_MAC_CARBON
+    ::GetPortBounds (m_MacWindowPort, &rect);
+#else
+    rect = m_MacWindowPort->portRect;
+#endif
+    // Draw the window header where toolbar reside
+    m_toolbarRect = rect;
+    ::InsetRect( &m_toolbarRect, -1, -1 );
+    m_toolbarRect.bottom = m_toolbarRect.top + 40;
+}
+
+void XAP_MacFrame::_calcPlacardRect ()
+{
+    Rect rect;
+#if TARGET_API_MAC_CARBON
+    ::GetPortBounds (m_MacWindowPort, &rect);
+#else
+    rect = m_MacWindowPort->portRect;
+#endif
+
+    m_placardRect = rect;
+    m_placardRect.bottom++;
+    m_placardRect.left--;
+    m_placardRect.top = m_placardRect.bottom - 16;
+    m_placardRect.right--;
 }
 
 
@@ -328,7 +384,7 @@ void XAP_MacFrame::_calcVertScrollBarRect (Rect & rect)
 #endif
     rect.right++;
 	rect.left = rect.right - 16;
-	rect.bottom -= 14;
+	rect.bottom -= 30;
 	rect.top = 38;
 }
 
@@ -340,8 +396,8 @@ void XAP_MacFrame::_calcHorizScrollBarRect (Rect & rect)
 #else
 	rect = m_MacWindowPort->portRect;
 #endif
-	rect.bottom++;
-	rect.left = rect.left + 120;
+	rect.bottom -= 15;
+	rect.left-- ;
 	rect.top = rect.bottom - 16;
 	rect.right -= 14;
 }
