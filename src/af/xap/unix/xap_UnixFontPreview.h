@@ -23,11 +23,7 @@
 #include <gtk/gtk.h>
 #include "xap_App.h"
 #include "xap_FontPreview.h"
-#ifndef WITH_PANGO
 #include "xap_UnixFontManager.h"
-#else
-#include "xap_PangoFontManager.h"
-#endif
 
 class XAP_Frame;
 class GR_UnixGraphics;

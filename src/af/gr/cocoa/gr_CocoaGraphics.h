@@ -38,21 +38,18 @@ class GR_CocoaGraphics : public GR_Graphics
 	~GR_CocoaGraphics();
 
     // HACK: I need more speed
-#ifndef WITH_PANGO
 	virtual void      drawGlyph(UT_uint32 glyph_idx, UT_sint32 xoff, UT_sint32 yoff) 
 		{ UT_ASSERT (UT_NOT_IMPLEMENTED); };
 	virtual void		drawChars(const UT_UCSChar* pChars, int iCharOffset,
 								  int iLength, UT_sint32 xoff, UT_sint32 yoff,
 								  int * pCharWidhths = NULL);
-#endif
+
 	virtual void		setFont(GR_Font* pFont);
 	virtual void        clearFont(void) { m_pFont = NULL;}
 	virtual UT_uint32	getFontHeight();
 
-#ifndef WITH_PANGO
 	virtual UT_uint32 measureUnRemappedChar(const UT_UCSChar c);
 	virtual void getCoverage(UT_Vector& coverage);
-#endif
 
 	virtual void		setColor(const UT_RGBColor& clr);
 	virtual void		getColor(UT_RGBColor& clr);

@@ -115,7 +115,6 @@ bool PS_Graphics::queryProperties(GR_Graphics::Properties gp) const
 	}
 }
 
-#ifndef WITH_PANGO
 void PS_Graphics::setFont(GR_Font* pFont)
 {
 	UT_ASSERT(pFont);
@@ -184,7 +183,6 @@ UT_uint32 PS_Graphics::measureUnRemappedChar(const UT_UCSChar c)
 		* ((double)getResolution() / (double)getDeviceResolution());
 	return static_cast<UT_uint32>(rint(fWidth));
 }
-#endif //#ifndef WITH_PANGO
 
 UT_uint32 PS_Graphics::getDeviceResolution(void) const
 {
@@ -269,7 +267,6 @@ GR_Font * PS_Graphics::_findFont(const char* pszFontFamily,
 	return pFont;
 }
 
-#ifndef WITH_PANGO
 void PS_Graphics::drawGlyph(UT_uint32 Char, UT_sint32 xoff, UT_sint32 yoff)
 {
 	UT_ASSERT_NOT_REACHED ();
@@ -456,7 +453,6 @@ void PS_Graphics::_drawCharsUTF8(const UT_UCSChar* pChars, UT_uint32 iCharOffset
 	if(ae)
 		delete ae;
 }
-#endif // #ifndef WITH_PANGO
 
 void PS_Graphics::drawLine(UT_sint32 x1, UT_sint32 y1, UT_sint32 x2, UT_sint32 y2)
 {
@@ -1340,18 +1336,6 @@ void PS_Graphics::setPageSize(char* pageSizeName, UT_uint32 iwidth, UT_uint32 ih
 	m_iHeight = iheight;
 }
 
-#ifdef WITH_PANGO
-
-/*!
-  This is a dummy function that should never be called, since the PS graphics ovewrited the
-  whole drawPangoGlyphString function (not implemented yet)
- */
-void PS_Graphics::_drawFT2Bitmap(UT_sint32 x, UT_sint32 y, FT_Bitmap * pBitmap) const
-{
-	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-}
-
-#endif
 
 /***************************************************************************/
 /***************************************************************************/

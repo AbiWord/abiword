@@ -37,12 +37,6 @@ class XAP_PrefsScheme;
 class XAP_Frame;
 class UT_String;
 
-#ifndef WITH_PANGO
-// some functions that are pure virtual in the non-Pango implementation, are
-// XP, and consequently implemented, in the Pango version. The following define
-// is used in place of the =0 with these functions
-#define PURE_VIRTUAL_IF_NOT_PANGO =0
-
 /*!
   GR_Font is a reference to a font.  As it happens, everything about fonts
   is platform-specific, so the class contains nothing.  All of its behavior
@@ -117,26 +111,6 @@ class ABI_EXPORT GR_Font
 	UT_uint32        m_iAllocNo;
 	mutable GR_CharWidths*	m_pCharWidths;
 };
-#else
-#define GR_Font PangoFont
-#define PURE_VIRTUAL_IF_NOT_PANGO
-#include "xap_PangoFontManager.h"
-
-/*
-  When using Pango the XP GR_Graphics class implements most of the needed methods
-  using the FreeType2 font backend. On platforms on which we use this backend
-  the derived graphics class needs to implement only the pure virtual _drawFT2Bitmap();
-
-  On platforms that use other (native) font backend, the derived graphics class has to
-  implement the following virtual functions:
-
-      drawPangoGlyphsString();
-      _createFontManager();
-      _createPangoContext();
-
-  as well as to implement a platform specific class derived from XAP_PangoFontManager
-*/
-#endif
 
 
 /*
@@ -164,7 +138,6 @@ class ABI_EXPORT GR_Graphics
 	UT_sint32	ftlu(UT_sint32 fontUnits) const;
 	double		ftluD(double fontUnits) const;
 
-#ifndef WITH_PANGO
 	virtual void      drawGlyph(UT_uint32 glyph_idx, UT_sint32 xoff, UT_sint32 yoff) = 0;
 	virtual void      drawChars(const UT_UCSChar* pChars,
 								int iCharOffset,
@@ -172,45 +145,13 @@ class ABI_EXPORT GR_Graphics
 								UT_sint32 xoff,
 								UT_sint32 yoff,
 								int* pCharWidths = NULL) = 0;
-#else
-	// this XP method works with the FT2 backend; for any platform specific backends
-	// just provide implementation in the derived class
-	// pGlyphString is a GList of PangoGlyphString's
-	virtual void      drawPangoGlyphString(GList * pGlyphString,
-										   UT_sint32 xoff,
-										   UT_sint32 yoff) const;
 
-	// draw single glyph -- very inefficient, use it with discretion
-	virtual void      drawPangoGlyphString(PangoGlyphString * pGlyphString,
-										   UT_sint32 xoff,
-										   UT_sint32 yoff) const;
-
-
-	// the caller must free the glyph strings using pango_glyph_string_free() and the GList
-	GList * getPangoGlyphString(const UT_UCS4Char * pChars, UT_uint32 iLen) const;
-
-	// handle a single character -- this is very inefficient, and should be used with
-	// discretion
-	PangoGlyphString * getPangoGlyphString(const UT_UCS4Char iChar) const;
-
-	// this method can be used to directly draw Unicode strings; it is very inefficient
-	// and should be used only where this is not an issue (i.e., drawing GUI strings, etc.
-	// it must not be used in the main editing window !!!
-	void      drawCharsDirectly(const UT_UCS4Char* pChars,
-								UT_uint32 iCharOffset,
-								UT_uint32 iLength,
-								UT_sint32 xoff,
-								UT_sint32 yoff) const;
-
-#endif
-
-	virtual void      setFont(GR_Font* pFont) PURE_VIRTUAL_IF_NOT_PANGO;
+	virtual void      setFont(GR_Font* pFont) = 0;
     virtual void      clearFont(void) = 0;
-	virtual UT_uint32 getFontAscent()         PURE_VIRTUAL_IF_NOT_PANGO;
-	virtual UT_uint32 getFontDescent()        PURE_VIRTUAL_IF_NOT_PANGO;
-	virtual UT_uint32 getFontHeight()         PURE_VIRTUAL_IF_NOT_PANGO;
+	virtual UT_uint32 getFontAscent() = 0;
+	virtual UT_uint32 getFontDescent() = 0;
+	virtual UT_uint32 getFontHeight() = 0;
 
-#ifndef WITH_PANGO
 	virtual UT_uint32 measureString(const UT_UCSChar*s,
 									int iOffset,
 									int num,
@@ -218,18 +159,13 @@ class ABI_EXPORT GR_Graphics
 
 	virtual UT_uint32 measureUnRemappedChar(const UT_UCSChar c) = 0;
 	virtual void getCoverage(UT_Vector& coverage) = 0;
-#endif
 	
 	/* GR_Font versions of the above -- TODO: should I add drawChar* methods too? */
-	virtual UT_uint32 getFontAscent(GR_Font *)  PURE_VIRTUAL_IF_NOT_PANGO;
-	virtual UT_uint32 getFontDescent(GR_Font *) PURE_VIRTUAL_IF_NOT_PANGO;
-	virtual UT_uint32 getFontHeight(GR_Font *)  PURE_VIRTUAL_IF_NOT_PANGO;
+	virtual UT_uint32 getFontAscent(GR_Font *)  = 0;
+	virtual UT_uint32 getFontDescent(GR_Font *) = 0;
+	virtual UT_uint32 getFontHeight(GR_Font *)  = 0;
 
-#ifndef WITH_PANGO
 	UT_uint32         getMaxCharacterWidth(const UT_UCSChar*s, UT_uint32 Length);
-#else
-	UT_sint32         getApproxCharWidth();
-#endif
 
 	virtual void      setColor(const UT_RGBColor& clr) = 0;
 	virtual void      getColor(UT_RGBColor& clr) = 0;
@@ -468,7 +404,7 @@ class ABI_EXPORT GR_Graphics
 								const char* pszFontVariant,
 								const char* pszFontWeight,
 								const char* pszFontStretch,
-								const char* pszFontSize) PURE_VIRTUAL_IF_NOT_PANGO;
+								const char* pszFontSize) = 0;
 
  private:
 	virtual bool       _setTransform(const GR_Transform & tr)
@@ -477,30 +413,6 @@ class ABI_EXPORT GR_Graphics
 							  return false;
 						  }
 	
-#ifdef WITH_PANGO
- private:
-	// draws the given FT_Bitmap, translating the grayscale into the current colour.
-	virtual void                   _drawFT2Bitmap(UT_sint32 x, UT_sint32 y, FT_Bitmap * pBitmap) const = 0;
-	virtual PangoContext *         _createPangoContext();
-	virtual XAP_PangoFontManager * _createFontManager();
-	void                           _initPangoContext();
-	void                           _initFontManager();
-
- public:
-	void                           setLanguage(const char * lang);
-
- 	static const XAP_PangoFontManager * getFontManager()
-		{
-			return const_cast<const XAP_PangoFontManager *>(s_pPangoFontManager);
-		}
-
-	static const PangoContext * getPangoContext()
-		{
-			return const_cast<const PangoContext *>(s_pPangoContext);
-		}
-
-#endif
-
  public:
 	// TODO -- this should not be public, create access methods !!!
 	//
@@ -540,14 +452,6 @@ class ABI_EXPORT GR_Graphics
 //
 	UT_sint32        m_iPrevYOffset;
 	UT_sint32        m_iPrevXOffset;
-#ifdef WITH_PANGO
-	PangoFont *      m_pPangoFont;
-	PangoLanguage *  m_pLanguage;
-
-	static PangoContext *   s_pPangoContext;
-	static XAP_PangoFontManager * s_pPangoFontManager;
-	static UT_uint32 m_instanceCount;
-#endif
 	GR_Transform     m_Transform;
 
 	UT_StringPtrMap		m_hashFontCache;

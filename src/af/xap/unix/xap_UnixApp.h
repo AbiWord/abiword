@@ -30,10 +30,7 @@
 class XAP_Args;
 class AP_UnixToolbar_Icons;
 class AV_View;
-
-#ifndef WITH_PANGO
 class XAP_UnixFontManager;
-#endif
 
 /*****************************************************************
 ******************************************************************
@@ -73,9 +70,7 @@ public:
 																const char **pszFormatFound) = 0;
 	virtual void							cacheCurrentSelection(AV_View *) = 0;
 
-#ifndef WITH_PANGO
 	XAP_UnixFontManager *					getFontManager();
-#endif
 	
 	enum
 	{
@@ -101,18 +96,14 @@ public:
     virtual XAP_App::BidiSupportType  theOSHasBidiSupport() const {return BIDI_SUPPORT_GUI;}
 
 protected:
-#ifndef WITH_PANGO	
 	bool							_loadFonts();
-#endif
 	
 	void							_setAbiSuiteLibDir();
 
 	AP_UnixToolbar_Icons *			m_pUnixToolbarIcons;
 	AP_UnixDialogFactory			m_dialogFactory;
 	AP_UnixToolbar_ControlFactory	m_controlFactory;
-#ifndef WITH_PANGO	
 	XAP_UnixFontManager *			m_fontManager;
-#endif
 	
 	windowGeometry			m_geometry;
 	UT_uint32					m_eventTime; // e->time field of a recent X event

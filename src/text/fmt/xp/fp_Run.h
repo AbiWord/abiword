@@ -43,13 +43,7 @@
 class UT_GrowBuf;
 class fp_Line;
 class GR_Graphics;
-
-#ifndef WITH_PANGO
 class GR_Font;
-#else
-struct PangoFont;
-#endif
-
 class GR_Image;
 class PD_Document;
 class PP_AttrProp;
@@ -310,12 +304,6 @@ protected:
 	FriBidiCharType			_getVisDirection(void) const { return m_iVisDirection; }
 	GR_Font *				_getFont(void) const { return m_pFont; }
 	void  					_setFont(GR_Font * f) { m_pFont = f; }
-	
-#ifdef WITH_PANGO
-	PangoFont *				_getPangoFont(void) const { return m_pPangoFont; }
-	void  					_setPangoFont(Pango * f) { m_pPangoFont = f; }
-#endif
-
 	unsigned char			_getDecorations(void) const { return m_fDecorations; }
 	void					_setDecorations(unsigned char d) {m_fDecorations = d;}
 	
@@ -384,9 +372,6 @@ private:
 	UT_RGBColor             m_pColorHL;
 
 	GR_Font * 				m_pFont;
-#if defined(WITH_PANGO)
-	PangoFont * 			m_pPangoFont;
-#endif
 
 	bool					m_bRecalcWidth;
 

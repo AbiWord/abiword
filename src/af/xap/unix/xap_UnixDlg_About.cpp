@@ -98,11 +98,7 @@ void XAP_UnixDialog_About::runModal(XAP_Frame * pFrame)
 	// attach a new graphics context
 	XAP_App *pApp = m_pFrame->getApp();
   
-#ifndef WITH_PANGO	
 	m_gc = new GR_UnixGraphics(m_drawingareaGraphic->window, NULL, pApp);
-#else
-	m_gc = new GR_UnixGraphics(m_drawingareaGraphic->window, pApp);
-#endif
 	
 	switch ( abiRunModalDialog ( GTK_DIALOG(mainWindow), pFrame, this, BUTTON_CLOSE, true ) )
 	{

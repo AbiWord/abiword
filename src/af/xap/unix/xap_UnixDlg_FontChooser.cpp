@@ -809,15 +809,9 @@ void XAP_UnixDialog_FontChooser::runModal(XAP_Frame * pFrame)
 	// displays.
 
 	// establish the font manager before dialog creation
-#ifndef WITH_PANGO
 	XAP_App * app = m_pFrame->getApp();
 	XAP_UnixApp * unixapp = static_cast<XAP_UnixApp *> (app);
 	m_fontManager = unixapp->getFontManager();
-#else
-	XAP_App *pApp = m_pFrame->getApp();
-	m_gc = new GR_UnixGraphics(m_preview->window, pApp);
-	m_fontManager = m_gc->getFontManager();
-#endif
 
 	// build the dialog
 	GtkWidget * cf = constructWindow();
@@ -832,19 +826,11 @@ void XAP_UnixDialog_FontChooser::runModal(XAP_Frame * pFrame)
 	gtk_clist_clear(GTK_CLIST(m_fontList));
 
 	// throw them in the hash save duplicates
-#ifndef WITH_PANGO
 	UT_Vector * fonts = m_fontManager->getAllFonts();
 	for (UT_uint32 i = 0; i < fonts->size(); i++)
 	{
 		XAP_UnixFont * pFont = static_cast<XAP_UnixFont *>(fonts->getNthItem(i));
 		const char * fName = pFont->getName();
-#else
-	for(UT_uint32 i = 0;
-		i < m_fontManager->getAvailableFontFamiliesCount();
-		i++)
-	{
-		const char * fName = m_fontManager->getNthAvailableFontFamily(i);
-#endif
 
 		if (!fontHash.contains(fName, NULL))
 		  {
@@ -855,9 +841,7 @@ void XAP_UnixDialog_FontChooser::runModal(XAP_Frame * pFrame)
 		  }
 	}
 
-#ifndef WITH_PANGO
 	DELETEP(fonts);
-#endif
 
 	gtk_clist_thaw(GTK_CLIST(m_fontList));
 
@@ -946,10 +930,8 @@ void XAP_UnixDialog_FontChooser::runModal(XAP_Frame * pFrame)
 
 	// attach a new graphics context
 	gtk_widget_show ( cf ) ;
-#ifndef WITH_PANGO
 	XAP_App *pApp = pFrame->getApp();
 	m_gc = new GR_UnixGraphics(m_preview->window, m_fontManager, pApp);
-#endif
 	_createFontPreviewFromGC(m_gc,m_preview->allocation.width,m_preview->allocation.height);
 //
 // This enables callbacks on the preview area with a widget pointer to

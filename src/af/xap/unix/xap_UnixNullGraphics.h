@@ -106,11 +106,6 @@ public:
 	virtual void	  saveRectangle(UT_Rect & r, UT_uint32 iIndx) {}
 	virtual void	  restoreRectangle(UT_uint32 iIndx) {}
 
-#ifdef WITH_PANGO
-private:
-	virtual void _drawFT2Bitmap(UT_sint32 x, UT_sint32 y, FT_Bitmap * pBitmap) const;
-#endif	
-
 protected:
 	virtual GR_Font* _findFont(const char* pszFontFamily, 
 							   const char* pszFontStyle, 

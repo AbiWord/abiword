@@ -831,11 +831,7 @@ gint XAP_UnixDialog_FileOpenSaveAs::previewPicture (void)
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
 
 	// attach and clear the area immediately
-#ifndef WITH_PANGO	
 	GR_UnixGraphics* pGr = new GR_UnixGraphics(m_preview->window, unixapp->getFontManager(), m_pApp);
-#else
-	GR_UnixGraphics* pGr = new GR_UnixGraphics(m_preview->window, m_pApp);
-#endif
 	
 	pGr->clearArea(0, 0, pGr->tlu(m_preview->allocation.width), pGr->tlu(m_preview->allocation.height));
 
@@ -860,11 +856,7 @@ gint XAP_UnixDialog_FileOpenSaveAs::previewPicture (void)
 
 	if (!buf)
 	  {
-#ifndef WITH_PANGO 		  
 	    pGr->drawChars (str.ucs4_str().ucs4_str(), 0, str.size(), pGr->tlu(12), pGr->tlu(35));
-#else
-		pGr->drawCharsDirectly(str.ucs4_str().ucs4_str(),0,str.size(),pGr->tlu(12),pGr->tlu(35));
-#endif		
 	    goto Cleanup;
 	  }
 
@@ -872,20 +864,12 @@ gint XAP_UnixDialog_FileOpenSaveAs::previewPicture (void)
 	struct stat st;
 	if (!stat (buf, &st)) {
 		if (!S_ISREG(st.st_mode)) {
-#ifndef WITH_PANGO 		  
 			pGr->drawChars (str.ucs4_str().ucs4_str(), 0, str.size(), pGr->tlu(12), pGr->tlu(35));
-#else
-			pGr->drawCharsDirectly(str.ucs4_str().ucs4_str(),0,str.size(),pGr->tlu(12),pGr->tlu(35));
-#endif		
 			goto Cleanup;
 		}
 	}
 	else {
-#ifndef WITH_PANGO 		  
 		pGr->drawChars (str.ucs4_str().ucs4_str(), 0, str.size(), pGr->tlu(12), pGr->tlu(35));
-#else
-		pGr->drawCharsDirectly(str.ucs4_str().ucs4_str(),0,str.size(),pGr->tlu(12),pGr->tlu(35));
-#endif		
 		goto Cleanup;
 	}
 
@@ -898,11 +882,7 @@ gint XAP_UnixDialog_FileOpenSaveAs::previewPicture (void)
 	if ((errorCode != UT_OK) || !pIEG)
 	{
 		DELETEP(pBB);
-#ifndef WITH_PANGO 		  
 		pGr->drawChars (str.ucs4_str().ucs4_str(), 0, str.size(), pGr->tlu(12), pGr->tlu(35));
-#else
-		pGr->drawCharsDirectly(str.ucs4_str().ucs4_str(),0,str.size(),pGr->tlu(12),pGr->tlu(35));
-#endif		
 		goto Cleanup;
 	}
 
@@ -910,11 +890,7 @@ gint XAP_UnixDialog_FileOpenSaveAs::previewPicture (void)
 
 	if ((errorCode != UT_OK) || !pGraphic)
 	  {
-#ifndef WITH_PANGO 		  
 		pGr->drawChars (str.ucs4_str().ucs4_str(), 0, str.size(), pGr->tlu(12), pGr->tlu(35));
-#else
-		pGr->drawCharsDirectly(str.ucs4_str().ucs4_str(),0,str.size(),pGr->tlu(12),pGr->tlu(35));
-#endif		
 	    goto Cleanup;
 	  }
 

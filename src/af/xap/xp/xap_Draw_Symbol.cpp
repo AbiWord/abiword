@@ -81,11 +81,9 @@ void XAP_Draw_Symbol::setFontToGC(GR_Graphics *p_gc, UT_uint32 MaxWidthAllowable
 
 	int SizeOK = false;
 
-#ifndef WITH_PANGO	
 	UT_UCSChar p_buffer[224];
 	for(int i = 0; i < 224; i++)
 		p_buffer[i] = i + 32;
-#endif
 
 	char temp[10];
 	while (!SizeOK)
@@ -157,13 +155,7 @@ void XAP_Draw_Symbol::draw(void)
 			unsigned short w = m_gc->measureUnRemappedChar(j);
 			UT_uint32 x = (pos % 32) * tmpw + (tmpw - w) / 2;
 			UT_uint32 y = pos / 32 * tmph;
-#ifndef WITH_PANGO
 			m_gc->drawChars(&j, 0, 1, x, y);
-#else
-			PangoGlyphString * pGlyph = m_gc->getPangoGlyphString(c);
-			m_gc->drawPangoGlyphString(pGlyph, x, y);
-			pango_glyph_string_free(pGlyph);
-#endif			
 			++pos;
 		}
 	}
@@ -265,27 +257,14 @@ void XAP_Draw_Symbol::drawarea(UT_UCSChar c, UT_UCSChar p)
 	// Note: That's bogus.  measureString will give us the horizontal advance of "c",
 	// but we need the bounding box of "c" instead.  To get it, we should use with FreeType face->bbox,
 	// in windows we should use the (FIXME: find the right name, it was something as getCharABC(...)
-	// NOTE: The Pango version has the same problem
-#ifndef WITH_PANGO 	
 	unsigned short w1 = m_areagc->measureUnRemappedChar(c);
-#else	
-	PangoGlyphString* pGlyph = m_areagc->getPangoGlyphString(c);
-	PangoRectangle ink_rect;
-	unsigned short w1;
-
-	pango_glyph_string_extents(pGlyph, m_pFont, &ink_rect, NULL);
-	w1 = ink_rect.width;
-#endif	
 
 	x = (m_drawareaWidth - w1) / 2;
 	y = (m_drawareaHeight - m_areagc->getFontHeight()) / 2;
 
 	m_areagc->clearArea(0, 0, wwidth, wheight);
-#ifndef WITH_PANGO	
 	m_areagc->drawChars(&c, 0, 1, x, y);
-#else
-	m_areagc->drawPangoGlyphString(pGlyph, x, y);
-#endif
+
 	//
 	// Calculate the cordinates of the current and previous symbol
 	// along with the widths of the appropriate boxes.
@@ -314,24 +293,12 @@ void XAP_Draw_Symbol::drawarea(UT_UCSChar c, UT_UCSChar p)
 
 	// Redraw the Previous Character in black on White
 	m_gc->clearArea(px + m_areagc->tlu(1), py + m_areagc->tlu(1), tmpw - m_areagc->tlu(1), tmph - m_areagc->tlu(1));
-#ifndef WITH_PANGO	
 	m_gc->drawChars(&p, 0, 1, px + (tmpw - wp) / 2, py);
-#else
-	PangoGlyphString * pGlyph2 = m_gc->getPangoGlyphString(p);
-	m_gc->drawPangoGlyphString(pGlyph2, px + m_areagc->tlu(2), py);
-#endif
 
 	// Redraw the Current Character in black on Blue
 	UT_RGBColor colour(128, 128, 192);
 	m_gc->fillRect(colour, cx + m_areagc->tlu(1), cy + m_areagc->tlu(1), tmpw - m_areagc->tlu(1), tmph - m_areagc->tlu(1));
-#ifndef WITH_PANGO
 	m_gc->drawChars(&c, 0, 1, cx + (tmpw - wc) / 2, cy);
-#else
-	m_gc->drawPangoGlyphString(pGlyph, cx + m_areagc->tlu(2), cy);
-
-	pango_glyph_string_free(pGlyph);
-	pango_glyph_string_free(pGlyph2);
-#endif	
 }
 
 void XAP_Draw_Symbol::onLeftButtonDown(UT_sint32 x, UT_sint32 y)

@@ -54,9 +54,6 @@ protected:
 	UT_Vector * m_vecProps;
 	UT_RGBColor m_clrBackground;
 	const UT_UCSChar * m_pszChars;
-#ifdef WITH_PANGO
-	GList * m_pGlyphString;
-#endif
 	
 private:
 

@@ -106,9 +106,6 @@ fp_Run::fp_Run(fl_BlockLayout* pBL,
 	m_bRefreshDrawBuffer(true),
 	m_pColorHL(255,255,255,true), // set highlight colour to transparent
 	m_pFont(0),
-#if defined(WITH_PANGO)
-	m_pPangoFont(0),
-#endif
 	m_bRecalcWidth(false),
 	m_fDecorations(0),
 	m_iLineWidth(0),
@@ -315,17 +312,6 @@ fp_Run::_inheritProperties(void)
 
 		FL_DocLayout * pLayout = getBlock()->getDocLayout();
 
-#if defined (WITH_PANGO)
-		PangoFont* pFont = pLayout->findFont(pSpanAP,pBlockAP,pSectionAP);
-
-		if (pFont != _getPangoFont())
-		{
-			_setPangoFont(pFont);
-		    _setAscent(getGraphics()->getFontAscent(pFont));
-		    _setDescent(getGraphics()->getFontDescent(pFont));
-		    _setHeight(getGraphics()->getFontHeight(pFont));
-		}
-#else
 		GR_Font * pFont = const_cast<GR_Font *>(pLayout->findFont(pSpanAP,pBlockAP,pSectionAP));
 
 		if (pFont != _getFont())
@@ -335,7 +321,7 @@ fp_Run::_inheritProperties(void)
 			_setDescent(getGraphics()->getFontDescent(pFont));
 		    _setHeight(getGraphics()->getFontHeight(pFont));
 		}
-#endif
+
 		if(bDeleteSpanAP)
 			delete pSpanAP;
 	}
@@ -1270,18 +1256,6 @@ void fp_TabRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 
 	// look for fonts in this DocLayout's font cache
 	FL_DocLayout * pLayout = getBlock()->getDocLayout();
-#if defined (WITH_PANGO)
-	PangoFont* pFont = pLayout->findFont(pSpanAP,pBlockAP,pSectionAP);
-
-	if (pFont != _getPangoFont())
-	{
-	    _setPangoFont(pFont);
-	    _setAscent(getGraphics()->getFontAscent(pFont));
-	    _setDescent(getGraphics()->getFontDescent(pFont));
-	    _setHeight(getGraphics()->getFontHeight(pFont));
-		bChanged = true;
-	}
-#else
 	GR_Font * pFont = const_cast<GR_Font *>(pLayout->findFont(pSpanAP,pBlockAP,pSectionAP));
 
 	if (pFont != _getFont())
@@ -1292,7 +1266,6 @@ void fp_TabRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 	    _setHeight(getGraphics()->getFontHeight(pFont));
 		bChanged = true;
 	}
-#endif
 
 	if(getDirection() != FRIBIDI_TYPE_WS)
 	{
@@ -2953,11 +2926,7 @@ bool fp_FieldRun::recalcWidth()
 	// when formatting changes - Tomas
 	//lookupProperties();
 
-#ifndef WITH_PANGO
 	getGraphics()->setFont(_getFont());
-#else
-	getGraphics()->setFont(_getPangoFont());
-#endif
 
 	UT_sint32 iNewWidth = getGraphics()->measureString(m_sFieldValue, 0, UT_UCS4_strlen(m_sFieldValue), aCharWidths);
 	UT_DEBUGMSG(("fp_FieldRun::recalcWidth: old width %d, new width %d\n", getWidth(), iNewWidth));
@@ -3057,11 +3026,8 @@ bool fp_FieldRun::_setValue(const UT_UCSChar *p_new_value)
 			// formatting changes - Tomas
 			// lookupProperties();
 
-#ifndef WITH_PANGO
 			getGraphics()->setFont(_getFont());
-#else
-			getGraphics()->setFont(m_pPangoFont);
-#endif
+
 			UT_sint32 iNewWidth = getGraphics()->measureString(m_sFieldValue, 0, UT_UCS4_strlen(m_sFieldValue), aCharWidths);
 			if (iNewWidth != getWidth())
 			{

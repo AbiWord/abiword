@@ -27,9 +27,6 @@
 
 XAP_Preview_Zoom::XAP_Preview_Zoom(GR_Graphics * gc)
 	: XAP_Preview(gc)
-#ifdef WITH_PANGO
-	  ,m_pGlyphString(NULL)
-#endif	
 {
 	m_string = NULL;
 	m_pFont = NULL;
@@ -41,24 +38,10 @@ XAP_Preview_Zoom::XAP_Preview_Zoom(GR_Graphics * gc)
 
 }
 
-#ifdef WITH_PANGO
-void XAP_Preview_Zoom::_freeGlyphString()
-{
-	if(m_pGlyphString)
-	{
-		g_list_foreach(m_pGlyphString, UT_free1PangoGlyphString, NULL);
-		g_list_free(m_pGlyphString);
-		m_pGlyphString = NULL;
-	}
-}
-#endif
 
 XAP_Preview_Zoom::~XAP_Preview_Zoom()
 {
 	FREEP(m_string);
-#ifdef WITH_PANGO
-	_freeGlyphString();
-#endif
 }
 
 void XAP_Preview_Zoom::setDrawAtPosition(XAP_Preview_Zoom::tPos pos)
@@ -117,12 +100,6 @@ bool XAP_Preview_Zoom::setString(const char * string)
 	
 	FREEP(m_string);
 
-#ifdef WITH_PANGO
-	// free the glyph string and set it to NULL, we will leave it to the draw() routine
-	// to refill it
-	_freeGlyphString();
-#endif
-	
 	bool foo = UT_UCS4_cloneString_char(&m_string, string);
 	return foo;
 }
@@ -133,12 +110,6 @@ bool XAP_Preview_Zoom::setString(UT_UCSChar * string)
 	UT_ASSERT(string);
 	
 	FREEP(m_string);
-
-#ifdef WITH_PANGO
-	// free the glyph string and set it to NULL, we will leave it to the draw() routine
-	// to refill it
-	_freeGlyphString();
-#endif
 
 	bool foo = UT_UCS4_cloneString(&m_string, string);
 	return foo;
@@ -164,14 +135,7 @@ void XAP_Preview_Zoom::draw(void)
 	// set the cliprect to our page size, so we don't draw over our borders
 	m_gc->setClipRect(&pageRect);
 
-#ifndef WITH_PANGO
 	m_gc->drawChars(m_string, 0, UT_UCS4_strlen(m_string), pageRect.left, pageRect.top);
-#else
-	if(!m_pGlyphString)
-		m_pGlyphString = m_gc->getPangoGlyphString(m_string,UT_UCS4_strlen(m_string));
-
-	m_gc->drawPangoGlyphString(m_pGlyphString, pageRect.left, pageRect.top);
-#endif
 
 	UT_Rect rr (0, 0, iWidth, iHeight);
 	m_gc->setClipRect(&rr);

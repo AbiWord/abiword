@@ -91,13 +91,9 @@ fp_TextRun::fp_TextRun(fl_BlockLayout* pBL,
 	_setRecalcWidth(true);
 	markDrawBufferDirty();
 
-#ifndef WITH_PANGO
 	m_pSpanBuff = new UT_UCSChar[getLength() + 1];
 	m_iSpanBuffSize = getLength();
 	UT_ASSERT(m_pSpanBuff);
-#else
-	m_pGlyphString = pango_glyph_string_new();
-#endif
 
 	if(!s_iClassInstanceCount)
 	{
@@ -131,12 +127,7 @@ fp_TextRun::~fp_TextRun()
 		s_iCharAdvanceSize = 0;
 	}
 
-#ifndef WITH_PANGO
 	delete[] m_pSpanBuff;
-#else
-	pango_glyph_string_free();
-#endif
-
 	delete getRevisions();
 }
 
@@ -246,7 +237,6 @@ void fp_TextRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 
 	bChanged |= (oldPos != m_fPosition);
 
-#if !defined(WITH_PANGO)
 	GR_Font * pFont;
 
 	pFont = const_cast<GR_Font *>(pLayout->findFont(pSpanAP,pBlockAP,pSectionAP));
@@ -259,19 +249,6 @@ void fp_TextRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 		_setHeight(getGraphics()->getFontHeight(pFont));
 		bChanged = true;
 	}
-#else
-	PangoFont * pFont;
-	pFont = pLayout->findFont(pSpanAP,pBlockAP,pSectionAP);
-	if (_getPangoFont() != pFont)
-	  {
-		_setRecalcWidth(true);
-		_setPangoFont(pFont);
-		_setAscent(getGraphics()->getFontAscent(_getPangoFont()));
-		_setDescent(getGraphics()->getFontDescent(_getPangoFont()));
-		_setHeight(getGraphics()->getFontHeight(_getPangoFont()));
-		bChanged = true;
-	  }
-#endif
 
 	getGraphics()->setFont(_getFont());
 
@@ -1283,11 +1260,8 @@ UT_sint32 fp_TextRun::simpleRecalcWidth(UT_sint32 iLength)
 
 		for (UT_sint32 i=0; i<iLength; i++)
 		{
-#ifndef WITH_PANGO
-			// with PANGO this is taken care of by _refreshDrawBuffer()
 			getGraphics()->measureString(m_pSpanBuff + i, 0, 1,
 								   static_cast<UT_GrowBufElement*>(pCharWidths) + getBlockOffset() + i);
-#endif
 			UT_uint32 iCW = pCharWidths[i + getBlockOffset()] > 0 ? pCharWidths[i + getBlockOffset()] : 0;
 
 			iWidth += iCW;
@@ -1329,8 +1303,6 @@ bool fp_TextRun::recalcWidth(void)
 		// in the cache
 		_refreshDrawBuffer();
 
-#ifndef WITH_PANGO
-		// with Pango the width gets recalcuated in _refreshDrawBuffer()
 		UT_GrowBuf * pgbCharWidths = getBlock()->getCharWidths()->getCharWidths();
 		UT_GrowBufElement* pCharWidths = pgbCharWidths->getPointer(0);
 		_setWidth(0);
@@ -1377,7 +1349,6 @@ bool fp_TextRun::recalcWidth(void)
 				_setWidth(getWidth() + iCW);
 			}
 		}
-#endif // #ifndef WITH_PANGO
 
 		return true;
 	}
@@ -1893,6 +1864,7 @@ inline void fp_TextRun::_getContext(const UT_UCSChar *pSpan,
 									UT_UCSChar * prev,
 									UT_UCSChar * after) const
 {
+#if 1
 	// first the char preceding this part of the run, which is simple
 	// NB. cannot call getSpanPtr with negative offset, or we will get
 	// into the undo buffer
@@ -1947,6 +1919,11 @@ inline void fp_TextRun::_getContext(const UT_UCSChar *pSpan,
 
 	// now we have our trailing chars, so we null-terminate the array
 	after[i] = 0;
+	
+#else
+	prev[0] = 0;
+	after[0] = 0;
+#endif
 }
 
 
@@ -2030,133 +2007,6 @@ void fp_TextRun::_refreshDrawBuffer()
 		_setRefreshDrawBuffer(false);
 	} //if(m_bRefreshDrawBuffer)
 }
-
-
-#ifdef WITH_PANGO
-void fp_TextRun::shape()
-{
-	if(m_bRefreshDrawBuffer)
-	{
-		m_bRefreshDrawBuffer = false;
-		_freeGlyphString();
-
-		FriBidiCharType iVisDir = getVisDirection();
-
-		const UT_UCSChar* pSpan = NULL;
-		UT_uint32 lenSpan = 0;
-		UT_uint32 offset = 0;
-		UT_uint32 len = getLength();
-		bool bContinue = true;
-
-		UT_UCSChar * pWholeSpan = new UT_UCSChar [getLength()];
-		UT_ASSERT(pWholeSpan);
-
-		UT_UCSChar * pWholeSpanPtr = pWholeSpan;
-
-		for(;;) // retrive the span and do any necessary processing
-		{
-			bContinue = getBlock()->getSpanPtr(offset + getBlockOffset(), &pSpan, &lenSpan);
-
-			//this sometimes happens with fields ...
-			if(!bContinue)
-				break;
-
-			UT_uint32 iTrueLen = (lenSpan > len) ? len : lenSpan;
-		 	UT_UCS4_strncpy(pWholeSpanPtr, iTrueLen);
-
-			if(iTrueLen == len)
-			{
-				break;
-			}
-
-			offset += iTrueLen;
-			len -= iTrueLen;
-
-		} // for(;;)
-
-		// now convert the whole span into UTF-8
-		UT_UTF8String wholeStringUtf8 (pWholeString, getLength());
-
-		// let Pango to analyse the string
-		GList * pItems = pango_itemize(getGraphics()->getPangoContext(),
-									   wholeStringUtf8.utf8_str(),
-									   0,
-									   wholeStringUtf8.byteLength(),
-									   NULL, // PangoAttrList, not sure about this
-									   NULL
-									   );
-
-		// now do the shaping
-		GList * pListItem = g_list_first(pItems);
-		UT_ASSERT(m_pGlyphString == NULL);
-
-		while(pListItem)
-		{
-			PangoItem * pItem = static_cast<PangoItem*>(pListItem->data);
-			PangoGlyphString * pGString = pango_glyph_string_new();
-
-			pango_shape(wholeStringUtf8.utf8_str(),
-						pItem->offset,
-						pItem->length,
-						&pItem->analysis,
-						pGString);
-
-			m_pGlyphString = g_list_append(static_cast<gpointer>(pGString));
-			pListItem = pListItem->next;
-		}
-
-		// next we need to refresh our character widths
-		m_bRecalcWidth = false;
-
-		UT_GrowBuf * pgbCharWidths = getBlock()->getCharWidths()->getCharWidths();
-		UT_GrowBufElement * pCharWidths = pgbCharWidths->getPointer(0) + getBlockOffset();
-
-		_setWidth(0);
-
-		// the display width are easy ...
-		GList * pListGlyph = g_list_first(m_pGlyphString);
-		pListItem = g_list_first(pItems);
-
-		UT_GrowBufElement * pCharWidthDisplayPtr = pCharWidthsDisplay;
-		const gchar * text = wholeStringUtf8.utf8_str();
-		PangoRectangle ink_rect;
-		_setWidth(0);
-
-		while(pListGlyph)
-		{
-			UT_ASSERT(pListItem);
-
-			PangoGlyphString * pGString = static_cast<PangoGlyphString *>(pListGlyph->data);
-			PangoItem *        pItem    = static_cast<PangoItem *>(pListItem->data);
-
-			pango_glyph_string_get_logical_widths(pGString,
-											  text,
-											  pItem->length,
-											  iVisDir == FRIBIDI_TYPE_RTL ? 1 : 0,
-											  pCharWidthsDisplayPtr);
-
-#if 0
-			// not sure whether we need to do this, or can just add up below ...
-			pango_glyph_string_extents(pGString, _getPangoFont(), &ink_rect,NULL);
-			_setWidth(getWidth() + ink_rect.width);
-#endif
-			for(UT_sint32 j = 0; j < pItem->num_chars; j++)
-				_setWidth(getWidth() + pCharWidthsDisplayPtr[j]);
-
-			text += pItem->length;
-			pCharWidthsDisplayPtr += pItem->num_chars;
-
-			pListGlyph = pListGlyph->next;
-			pListItem = pListItem->next;
-		}
-
-		// now clear up the item's list
-		g_list_foreach(pItems, UT_free1PangoItem, NULL);
-		g_list_free(pItems);
-
-	} //if(m_bRefreshDrawBuffer)
-}
-#endif
 
 
 /*
@@ -3115,18 +2965,6 @@ void fp_TextRun::breakMeAtDirBoundaries(FriBidiCharType iNewOverride)
 	}
 }
 
-
-#ifdef WITH_PANGO
-void fp_TextRun::_freeGlyphString()
-{
-	if(m_pGlyphString)
-	{
-		g_list_foreach(m_pGlyphString, UT_free1PangoGlyphString, NULL);
-		g_list_free(m_pGlyphString);
-		m_pGlyphString = NULL;
-	}
-}
-#endif
 
 /*!
     returns the original width of space before justification or -1 if

@@ -35,10 +35,6 @@
 #define MAX_SPAN_LEN 250   //initial size for m_pSpanBuff, realocated if needed
 #include "ut_timer.h"
 
-#ifdef WITH_PANGO
-#include "ut_abi-pango.h"
-#endif
-
 class ABI_EXPORT fp_TextRun : public fp_Run
 {
 public:
@@ -62,11 +58,7 @@ public:
 	void                    appendTextToBuf(UT_GrowBuf & buf);
 	virtual bool			hasLayoutProperties(void) const;
 	//virtual void			fetchCharWidths(fl_CharWidths * pgbCharWidths);
-#ifndef WITH_PANGO
 	virtual bool			recalcWidth(void);
-#else
-	virtual bool            shape(void);
-#endif
 	virtual bool			canContainPoint(void) const;
 	bool					canMergeWithNext(void);
 	void					mergeWithNext(void);
@@ -107,15 +99,8 @@ public:
 	void					breakMeAtDirBoundaries(FriBidiCharType iNewOverride);
 
 
-#ifdef WITH_PANGO
- private:
-	void _freeGlyphString();
-
-	GList *             m_pGlyphString;
-#else
 	UT_UCSChar *		m_pSpanBuff;
 	UT_uint32			m_iSpanBuffSize;
-#endif
 	static UT_uint32	s_iClassInstanceCount;
 	FriBidiCharType 	m_iDirOverride;
 	static bool 		s_bBidiOS;
@@ -126,9 +111,7 @@ private:
 									UT_uint32 offset,
 									UT_UCSChar * prev,
 									UT_UCSChar * next) const;
-#ifndef WITH_PANGO
 	void				_refreshDrawBuffer();
-#endif
 
 private:
 	bool				_addupCharWidths(void);

@@ -42,11 +42,7 @@ XAP_UnixFontPreview::XAP_UnixFontPreview(XAP_Frame * pFrame, UT_sint32 left, UT_
 	gtk_window_move(GTK_WINDOW(m_pPreviewWindow), m_left, m_top);
 
 	XAP_App *pApp = m_pFrame->getApp();
-#ifndef WITH_PANGO
 	m_gc = new GR_UnixGraphics(GTK_WIDGET(m_pDrawingArea)->window, static_cast<XAP_UnixApp*>(pApp)->getFontManager(), pApp);	
-#else
-	m_gc = new GR_UnixGraphics(GTK_WIDGET(m_pDrawingArea)->window, pApp);
-#endif
 	
 	_createFontPreviewFromGC(m_gc, m_pPreviewWindow->allocation.width, m_pPreviewWindow->allocation.height);
 }

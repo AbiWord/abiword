@@ -43,10 +43,7 @@
 #include "xap_Unix_TB_CFactory.h"
 #include "xap_Prefs.h"
 #include "xap_UnixEncodingManager.h"
-
-#ifndef WITH_PANGO
 #include "xap_UnixFontManager.h"
-#endif
 
 #include "xap_UnixNullGraphics.h"
 UnixNull_Graphics * abi_unixnullgraphics_instance = 0;
@@ -79,10 +76,7 @@ XAP_UnixApp::XAP_UnixApp(XAP_Args * pArgs, const char * szAppName)
 XAP_UnixApp::~XAP_UnixApp()
 {
 	DELETEP(m_pUnixToolbarIcons);
-
-#ifndef WITH_PANGO
 	delete m_fontManager;
-#endif	
 }
 
 bool XAP_UnixApp::initialize(bool have_display)
@@ -95,13 +89,11 @@ bool XAP_UnixApp::initialize(bool have_display)
 
 	/*******************************/
 
-#ifndef WITH_PANGO	
 	// load the font stuff from the font directory
 	UT_DEBUGMSG(("Loading Fonts\n"));
 	if (!_loadFonts())
 		return false;
 	UT_DEBUGMSG(("Fonts Loaded \n"));
-#endif
 	
 	/*******************************/
 	
@@ -134,12 +126,10 @@ XAP_Toolbar_ControlFactory * XAP_UnixApp::getControlFactory()
 	return &m_controlFactory;
 }
 
-#ifndef WITH_PANGO
 XAP_UnixFontManager * XAP_UnixApp::getFontManager()
 {
 	return m_fontManager;
 }
-#endif
 
 void XAP_UnixApp::setWinGeometry(int x, int y, UT_uint32 width, UT_uint32 height,
 								 UT_uint32 flags)
@@ -190,7 +180,6 @@ const char * XAP_UnixApp::getUserPrivateDirectory()
 	return buf;
 }
 
-#ifndef WITH_PANGO
 bool XAP_UnixApp::_loadFonts()
 {
 	// create a font manager for our app to use
@@ -206,7 +195,6 @@ bool XAP_UnixApp::_loadFonts()
 	UT_DEBUGMSG(("Scavange Fonts finished \n"));
 	return true;
 }
-#endif //#ifndef WITH_PANGO
 
 void XAP_UnixApp::_setAbiSuiteLibDir()
 {

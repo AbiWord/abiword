@@ -522,20 +522,12 @@ const char* GR_Graphics::findNearestFont(const char* pszFontFamily,
 
 UT_uint32 				GR_UnixGraphics::s_iInstanceCount = 0;
 
-#ifndef WITH_PANGO
-GR_UnixGraphics::GR_UnixGraphics(GdkWindow * win, XAP_UnixFontManager * fontManager, XAP_App * app)
-#else
-	GR_UnixGraphics::GR_UnixGraphics(GdkWindow * win, XAP_App * app)
-#endif
-		:
-         m_iLineWidth(tlu(1))
+GR_UnixGraphics::GR_UnixGraphics(GdkWindow * win, XAP_UnixFontManager * fontManager, XAP_App * app):m_iLineWidth(tlu(1))
 {
 	m_pApp = app;
 	m_pWin = win;
-#ifndef WITH_PANGO
 	m_pFontManager = fontManager;
 	m_pFont = NULL;
-#endif
 	m_pSingleByteFont = NULL;
 	m_pMultiByteFont = NULL;
 	m_pFontGUI = NULL;
@@ -599,13 +591,11 @@ GR_UnixGraphics::GR_UnixGraphics(GdkWindow * win, XAP_UnixFontManager * fontMana
 	m_bIsSymbol = false;
 	m_bIsDingbat = false;
 
-#ifndef WITH_PANGO
 	if (m_pFontManager)
 		m_pFallBackFontHandle = new XAP_UnixFontHandle(m_pFontManager->getDefaultFont(),
 													   FALLBACK_FONT_SIZE);
 	else
 		m_pFallBackFontHandle = NULL;
-#endif
 }
 
 GR_UnixGraphics::~GR_UnixGraphics()
@@ -618,9 +608,7 @@ GR_UnixGraphics::~GR_UnixGraphics()
 	if (m_pXftDraw)
 		free(m_pXftDraw);
 
-#ifndef WITH_PANGO
 	delete m_pFallBackFontHandle;
-#endif
 
 	UT_VECTOR_PURGEALL(UT_Rect*, m_vSaveRect);
 
@@ -1003,7 +991,6 @@ void GR_UnixGraphics::_setColor(GdkColor & c)
 
 GR_Font * GR_UnixGraphics::getGUIFont(void)
 {
-#ifndef WITH_PANGO
 	if (!m_pFontManager)
 		return NULL;
 
@@ -1024,12 +1011,10 @@ GR_Font * GR_UnixGraphics::getGUIFont(void)
 		m_pFontGUI = new XAP_UnixFontHandle(font, static_cast<UT_uint32>(12*100.0/getZoomPercentage()));
 		UT_ASSERT(m_pFontGUI);
 	}
-#endif
-	// TODO provide PANGO implementation
+
 	return m_pFontGUI;
 }
 
-#ifndef WITH_PANGO
 /**
  * Finds a font which match the family, style, variant, weight and size
  * asked.  It will do a fuzzy match to find the font (using the aliases
@@ -1099,7 +1084,6 @@ UT_uint32 GR_UnixGraphics::getFontDescent()
 {
 	return getFontDescent(m_pFont);
 }
-#endif //#ifndef WITH_PANGO
 
 
 void GR_UnixGraphics::drawLine(UT_sint32 x1, UT_sint32 y1,
@@ -1723,7 +1707,6 @@ void GR_UnixGraphics::polygon(UT_RGBColor& c,UT_Point *pts,UT_uint32 nPoints)
 	gdk_gc_set_foreground(m_pGC, &oColor);
 }
 
-#ifndef WITH_PANGO
 //////////////////////////////////////////////////////////////////
 // This is a static method in the GR_Font base class implemented
 // in platform code.

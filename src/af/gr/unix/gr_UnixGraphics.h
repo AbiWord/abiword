@@ -44,14 +44,9 @@ class GR_UnixGraphics : public GR_Graphics
 {
 	friend class GR_UnixImage;
  public:
-#ifndef WITH_PANGO
  	GR_UnixGraphics(GdkWindow * win, XAP_UnixFontManager * fontManager, XAP_App *app);
-#else
- 	GR_UnixGraphics(GdkWindow * win, XAP_App *app);
-#endif
 	virtual ~GR_UnixGraphics();
 
-#ifndef WITH_PANGO 
 	virtual void        drawGlyph(UT_uint32 glyph_idx, UT_sint32 xoff, UT_sint32 yoff);
 	virtual void		drawChars(const UT_UCSChar* pChars, int iCharOffset,
 								  int iLength, UT_sint32 xoff, UT_sint32 yoff,
@@ -61,20 +56,19 @@ class GR_UnixGraphics : public GR_Graphics
 	virtual UT_uint32	getFontHeight();
 	// virtual UT_uint32	measureString(const UT_UCSChar*s, int iOffset, int num, unsigned short* pWidths);
 	virtual UT_uint32 measureUnRemappedChar(const UT_UCSChar c);
-#endif	
+
 	virtual void		setColor(const UT_RGBColor& clr);
 	virtual void        getColor(UT_RGBColor &clr);
 
 	virtual GR_Font*	getGUIFont();
 
-#ifndef WITH_PANGO 	
 	virtual GR_Font*	getDefaultFont(UT_String& fontFamily);
 
 	virtual UT_uint32	getFontAscent();
 	virtual UT_uint32	getFontDescent();
 
 	virtual void		getCoverage(UT_Vector& coverage);
-#endif	
+
 	virtual void		drawLine(UT_sint32, UT_sint32, UT_sint32, UT_sint32);
 	virtual void		setLineWidth(UT_sint32);
 	virtual void		xorLine(UT_sint32, UT_sint32, UT_sint32, UT_sint32);
@@ -128,15 +122,10 @@ class GR_UnixGraphics : public GR_Graphics
 					 GR_Graphics::CapStyle inCapStyle   = CAP_BUTT,
 					 GR_Graphics::LineStyle inLineStyle = LINE_SOLID ) ;
 
-#ifndef WITH_PANGO 	
 	/* GR_Font versions of the above -- TODO: should I add drawChar* methods too? */
 	virtual UT_uint32 getFontAscent(GR_Font *);
 	virtual UT_uint32 getFontDescent(GR_Font *);
 	virtual UT_uint32 getFontHeight(GR_Font *);
-#else
- private:
-	virtual void _drawFT2Bitmap(UT_sint32 x, UT_sint32 y, FT_Bitmap * pBitmap) const;
-#endif
     virtual GR_Image * genImageFromRectangle(const UT_Rect & r);
 	virtual void	  saveRectangle(UT_Rect & r, UT_uint32 iIndx);
 	virtual void	  restoreRectangle(UT_uint32 iIndx);
@@ -146,28 +135,24 @@ class GR_UnixGraphics : public GR_Graphics
 
  protected:
 
-#ifndef WITH_PANGO	
 	virtual GR_Font*	_findFont(const char* pszFontFamily, 
 								  const char* pszFontStyle, 
 								  const char* pszFontVariant, 
 								  const char* pszFontWeight, 
 								  const char* pszFontStretch, 
 								  const char* pszFontSize);
-#endif
 
 	void				_setColor(GdkColor & c);
-#ifndef WITH_PANGO
+
 	XAP_UnixFontManager * 	m_pFontManager;
-#endif	
 
 	GdkGC*       			m_pGC;
 	GdkGC*  	      		m_pXORGC;
 	GdkWindow*  	  		m_pWin;
 
-#ifndef WITH_PANGO	
 	// our currently requested font by handle
 	XAP_UnixFontHandle *	m_pFont;
-#endif
+
 	// Current GDK fonts corresponding to this. Calling m_pFont->explodeGdkFont
 	// causes gdk_font_load to be called and memory to be allocated. This should
 	// not happen on every draw
@@ -186,9 +171,7 @@ class GR_UnixGraphics : public GR_Graphics
 	
 	GdkColor				m_3dColors[COUNT_3D_COLORS];
 private:
-#ifndef WITH_PANGO 	
 	XAP_UnixFontHandle *	m_pFallBackFontHandle;
-#endif
 
 	XftDraw*				m_pXftDraw;
 	XftColor				m_XftColor;
