@@ -35,7 +35,9 @@ XAP_Dialog_Image::XAP_Dialog_Image(XAP_DialogFactory * pDlgFactory, XAP_Dialog_I
 	m_WidthString("0.0in"),
 	m_bHeightChanged(false),
 	m_bWidthChanged(false),
-	m_PreferedUnits(DIM_IN)
+	m_PreferedUnits(DIM_IN),
+	m_iWrappingType(WRAP_INLINE),	
+	m_iPositionTo(POSITION_TO_PARAGRAPH)
 {
 }
 
@@ -226,6 +228,16 @@ void XAP_Dialog_Image::setWidth(UT_sint32 iWidth)
 {
 	setWidth( ((double) iWidth)/72.0, false );
 }	
+
+void XAP_Dialog_Image::setWrapping(WRAPPING_TYPE iWrap)
+{
+	m_iWrappingType = iWrap;
+}
+
+void XAP_Dialog_Image::setPositionTo(POSITION_TO iPos)
+{
+	m_iPositionTo = iPos;
+}
 
 /*!
  * Set the member string variable m_HeightString from the pixel value of 

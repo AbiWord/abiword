@@ -188,6 +188,9 @@ void AP_UnixDialog_Replace::event_Find(void)
 	// utf8->ucs4
 	setFindString(UT_UCS4String(findEntryText).ucs4_str());
 
+	char * replaceEntryText = (char *) gtk_entry_get_text(GTK_ENTRY(GTK_COMBO(m_comboReplace)->entry));
+	setReplaceString(UT_UCS4String(replaceEntryText).ucs4_str());
+
 	if (!getReverseFind())	
 		findNext();
 	else

@@ -861,7 +861,7 @@ void UT_UTF8String::append (const char * sz, size_t n /* == 0 => null-terminatio
 
 void UT_UTF8String::appendBuf (const UT_ByteBuf & buf, UT_UCS4_mbtowc & converter)
 {
-	int i;
+	UT_uint32 i;
 	UT_UCS4Char wc;
 	const UT_Byte *ptr = buf.getPointer(0);
 	

@@ -36,7 +36,7 @@
 #include "ut_vector.h"
 #include <time.h>
 
-class UT_String;
+class UT_UTF8String;
 
 
 /* UUID Variant definitions */
@@ -94,15 +94,15 @@ class ABI_EXPORT UT_UUID
 	
 	/* These generate new UUIDs */
 	bool            makeUUID();                // changes internal state
-	bool            makeUUID(UT_String & out); // does not change internal state !!!
+	bool            makeUUID(UT_UTF8String & out); // does not change internal state !!!
 
 	/* these set m_uuid to given UUID, i.e., force internal state change */ 
-	bool            setUUID(const UT_String &s);
+	bool            setUUID(const UT_UTF8String &s);
 	bool            setUUID(const char *s);
 
 	/* translate internal state into string representation; do not change
 	   internal state */
-	bool            toString(UT_String & to) const;
+	bool            toString(UT_UTF8String & to) const;
 
 	/* create FNV hash of the uuid -- use UT_UUIDGenerator::getUUID*()
 	   instead of these; it provides collision correction*/
@@ -148,7 +148,7 @@ class ABI_EXPORT UT_UUID
 	/* various protected constructors */
 	
 	UT_UUID(); // constructs NULL uuid; subsequent call to makeUUID() needed to initialise
-	UT_UUID(const UT_String &s); // initialises from string
+	UT_UUID(const UT_UTF8String &s); // initialises from string
 	UT_UUID(const char *s);      // initialises from string
 	UT_UUID(const UT_UUID &u);   // copy constructor
 
@@ -161,7 +161,7 @@ class ABI_EXPORT UT_UUID
 	bool            _parse(const char * in, struct uuid &u) const;
 	
 	bool            _makeUUID(struct uuid & u);
-	bool            _toString(const struct uuid &uu, UT_String & s) const;
+	bool            _toString(const struct uuid &uu, UT_UTF8String & s) const;
 
 	time_t          _getTime(const struct uuid & uu) const;
 	UT_sint32       _getType(const struct uuid &uu) const;
@@ -203,7 +203,7 @@ class ABI_EXPORT UT_UUIDGenerator
 	// to call makeUUID() with this one
 	virtual UT_UUID * createUUID(){UT_UUID *p = new UT_UUID(); if(p)p->makeUUID(); return p;}
 
-	virtual UT_UUID * createUUID(const UT_String &s){return new UT_UUID(s);}
+	virtual UT_UUID * createUUID(const UT_UTF8String &s){return new UT_UUID(s);}
 	virtual UT_UUID * createUUID(const char *s){return new UT_UUID(s);}
 	virtual UT_UUID * createUUID(const UT_UUID &u){return new UT_UUID(u);}
 

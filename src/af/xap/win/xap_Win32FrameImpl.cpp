@@ -951,7 +951,7 @@ LRESULT CALLBACK XAP_Win32FrameImpl::_FrameWndProc(HWND hwnd, UINT iMsg, WPARAM 
 
 						DELETEP(pIEG);					
 
-						errorCode = pView->cmdInsertGraphic(pFG, szFileName);
+						errorCode = pView->cmdInsertGraphic(pFG);
 						if (errorCode != UT_OK)
 						{
 							s_CouldNotLoadFileMessage(f, szFileName, errorCode);							
@@ -1007,4 +1007,3 @@ LRESULT CALLBACK XAP_Win32FrameImpl::_FrameWndProc(HWND hwnd, UINT iMsg, WPARAM 
 
 	return DefWindowProc(hwnd, iMsg, wParam, lParam);
 }
-

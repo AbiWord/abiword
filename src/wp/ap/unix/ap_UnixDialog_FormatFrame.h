@@ -82,6 +82,8 @@ protected:
 	GtkWidget * m_wBorderThickness;
 	guint       m_iBorderThicknessConnect;
 	double      m_dThickness[FORMAT_FRAME_NUMTHICKNESS];
+	GtkWidget * m_wWrapButton;
+
 };
 
 #endif /* AP_UNIXDIALOG_FORMATFRAME_H */

@@ -61,7 +61,8 @@ fl_EmbedLayout::fl_EmbedLayout(FL_DocLayout* pLayout, fl_DocSectionLayout* pDocS
 	  m_bNeedsFormat(true),
 	  m_bIsOnPage(false),
 	  m_pDocSL(pDocSL),
-	  m_bHasEndFootnote(false)
+	  m_bHasEndFootnote(false),
+	  m_iOldSize(0)
 {
 	UT_ASSERT(m_pDocSL->getContainerType() == FL_CONTAINER_DOCSECTION);
 }
@@ -255,7 +256,8 @@ bool fl_EmbedLayout::doclistener_deleteStrux(const PX_ChangeRecord_Strux * pcrx)
 //
 // Fix the offsets for the block
 //
-	pEncBlock->updateOffsets(prevPos,0);
+	m_bHasEndFootnote = false;
+	pEncBlock->updateOffsets(prevPos,0,-getOldSize());
 
 	fl_ContainerLayout * pPrev = getPrev();
 	fl_ContainerLayout * pNext = getNext();
@@ -347,7 +349,7 @@ fl_FootnoteLayout::~fl_FootnoteLayout()
  */
 void fl_FootnoteLayout::_createFootnoteContainer(void)
 {
-	_lookupProperties();
+	lookupProperties();
 	fp_FootnoteContainer * pFootnoteContainer = new fp_FootnoteContainer(static_cast<fl_SectionLayout *>(this));
 	setFirstContainer(pFootnoteContainer);
 	setLastContainer(pFootnoteContainer);
@@ -477,20 +479,18 @@ void fl_FootnoteLayout::format(void)
 	m_bNeedsReformat = false;
 }
 
-void fl_FootnoteLayout::_lookupProperties(void)
+
+/*!
+    this function is only to be called by fl_ContainerLayout::lookupProperties()
+    all other code must call lookupProperties() instead
+*/
+void fl_FootnoteLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 {
-
-//  Find the folded Level of the strux
-
-	lookupFoldedLevel();
-
- 	const PP_AttrProp* pSectionAP = NULL;
-
-	getAP(pSectionAP);
+	UT_return_if_fail(pSectionAP);
 	// I can't think of any properties we need for now.
 	// If we need any later, we'll add them. -PL
 	const XML_Char *pszFootnotePID = NULL;
-	if(!pSectionAP || !pSectionAP->getAttribute("footnote-id",pszFootnotePID))
+	if(!pSectionAP->getAttribute("footnote-id",pszFootnotePID))
 	{
 		m_iFootnotePID = 0;
 	}
@@ -602,7 +602,7 @@ fl_EndnoteLayout::~fl_EndnoteLayout()
  */
 void fl_EndnoteLayout::_createEndnoteContainer(void)
 {
-	_lookupProperties();
+	lookupProperties();
 	fp_EndnoteContainer * pEndnoteContainer = new fp_EndnoteContainer(static_cast<fl_SectionLayout *>(this));
 	setFirstContainer(pEndnoteContainer);
 	setLastContainer(pEndnoteContainer);
@@ -705,20 +705,17 @@ void fl_EndnoteLayout::format(void)
 }
 
 
-void fl_EndnoteLayout::_lookupProperties(void)
+/*!
+    this function is only to be called by fl_ContainerLayout::lookupProperties()
+    all other code must call lookupProperties() instead
+*/
+void fl_EndnoteLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 {
-
-//  Find the folded Level of the strux
-
-	lookupFoldedLevel();
-
- 	const PP_AttrProp* pSectionAP = NULL;
-
-	getAP(pSectionAP);
+	UT_return_if_fail(pSectionAP);
 	// I can't think of any properties we need for now.
 	// If we need any later, we'll add them. -PL
 	const XML_Char *pszEndnotePID = NULL;
-	if(!pSectionAP || !pSectionAP->getAttribute("endnote-id",pszEndnotePID))
+	if(!pSectionAP->getAttribute("endnote-id",pszEndnotePID))
 	{
 		m_iEndnotePID = 0;
 	}

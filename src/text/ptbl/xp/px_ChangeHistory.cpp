@@ -41,6 +41,18 @@ px_ChangeHistory::~px_ChangeHistory()
 	UT_VECTOR_PURGEALL(PX_ChangeRecord *,m_vecChangeRecords);
 }
 
+// this function is used when restoring an older version of a document
+// when maintaining full history, since that makes the info in the
+// undo meaningless (and causes crashes)
+void px_ChangeHistory::clearHistory()
+{
+	UT_VECTOR_PURGEALL(PX_ChangeRecord *,m_vecChangeRecords);
+	m_vecChangeRecords.clear();
+	m_undoPosition = 0;
+	m_savePosition = 0;
+}
+
+
 void px_ChangeHistory::_invalidateRedo(void)
 {
 	UT_uint32 kLimit = m_vecChangeRecords.getItemCount();

@@ -48,7 +48,7 @@ public:
 	inline bool isEnabled() const { return m_nDisableCount == 0; }
 	
 	void setBlink(bool bBlink);
-
+	void forceDraw(void);
 	// When you call setCoords, the cursor is explicitly shown
 	// and the timer restarts from 0 for the next 500ms cycle.
 	void setCoords(UT_sint32 x, UT_sint32 y, UT_uint32 h,

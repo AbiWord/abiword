@@ -595,6 +595,7 @@ bool fl_DocListener::populateStrux(PL_StruxDocHandle sdh,
 		}
 		else
 		{
+			UT_return_val_if_fail( m_pCurrentSL,false );
 			pCL = m_pCurrentSL->append(sdh, pcr->getIndexAP(),FL_CONTAINER_BLOCK);
 			if (!pCL)
 			{
@@ -1606,7 +1607,9 @@ bool fl_DocListener::insertStrux(PL_StruxFmtHandle sfh,
 														 PL_StruxFmtHandle sfhNew))
 {
 	UT_DEBUGMSG(("fl_DocListener::insertStrux at pos %d \n",pcr->getPosition()));
+	UT_return_val_if_fail( sdh && pcr, false );
 	UT_ASSERT(pcr->getType() == PX_ChangeRecord::PXT_InsertStrux);
+	
 	const PX_ChangeRecord_Strux * pcrx = static_cast<const PX_ChangeRecord_Strux *> (pcr);
 #if DEBUG
 #if 1
@@ -2124,10 +2127,30 @@ bool fl_DocListener::insertStrux(PL_StruxFmtHandle sfh,
 			   // will become the first block of the Frame.
 
 			  UT_DEBUGMSG(("Inserting block into frame \n"));
+//
+// Actually the block could be being inserted right *after* the frame.
+// We need to detect this and deal with this. We can do this in fl_FrameLayout
+//
 			  fl_SectionLayout * pSL = static_cast<fl_SectionLayout *>(pL);
 			  UT_ASSERT(pSL->getContainerType() == FL_CONTAINER_FRAME);
-			  bool bResult = pSL->bl_doclistener_insertBlock(NULL, pcrx,sdh,lid,pfnBindHandles);
-			  return bResult;
+			  fl_FrameLayout * pFL = static_cast<fl_FrameLayout *>(pL);
+			  if(!pFL->isEndFrameIn())
+			  {
+				  bool bResult = pSL->bl_doclistener_insertBlock(NULL, pcrx,sdh,lid,pfnBindHandles);
+				  return bResult;
+			  }
+			  PT_DocPosition posEnd = pFL->getPosition(true) + pFL->getLength()-1;
+			  if(posEnd >= pcrx->getPosition())
+			  {
+				  bool bResult = pSL->bl_doclistener_insertBlock(NULL, pcrx,sdh,lid,pfnBindHandles);
+				  return bResult;
+			  }
+			  else
+			  {
+				  bool bResult = pFL->insertBlockAfter(NULL, pcrx,sdh,lid,pfnBindHandles);
+				  return bResult;
+
+			  }
 		   }
 		case PTX_SectionHdrFtr:
 		   {
@@ -2138,6 +2161,21 @@ bool fl_DocListener::insertStrux(PL_StruxFmtHandle sfh,
 			   bool bResult = pCLSL->bl_doclistener_insertSection(pCL, FL_SECTION_HDRFTR, pcrx,sdh,lid,pfnBindHandles);
 			   return bResult;
 			   
+		   }
+		case PTX_EndFrame:
+		   {
+			   UT_DEBUGMSG(("Inserting EndFrame immediately after Frame \n"));
+//
+// This gets us a fl_FrameLayout
+//
+			   fl_FrameLayout* pCLSL = static_cast<fl_FrameLayout *>( pL);
+			   if(pCLSL->getContainerType() != FL_CONTAINER_FRAME)
+			   {
+				   m_pDoc->miniDump(pL->getStruxDocHandle(),6);
+			   }
+			   UT_ASSERT(pCLSL->getContainerType() == FL_CONTAINER_FRAME);
+			   bool bResult = pCLSL->bl_doclistener_insertEndFrame(NULL, pcrx,sdh,lid,pfnBindHandles);
+			   return bResult;
 		   }
 		default:
 		   {

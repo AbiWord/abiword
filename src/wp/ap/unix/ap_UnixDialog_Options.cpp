@@ -91,9 +91,12 @@ void AP_UnixDialog_Options::runModal(XAP_Frame * pFrame)
 	_populateWindowData();
 
 	// Don't destroy the dialog if the user pressed defaults or help
-	while (abiRunModalDialog (GTK_DIALOG (mainWindow), pFrame,
-				  this, GTK_RESPONSE_CLOSE, FALSE) != GTK_RESPONSE_CLOSE)
-		;
+	gint response;
+	do
+	{
+		response = abiRunModalDialog (GTK_DIALOG (mainWindow), pFrame,
+										this, GTK_RESPONSE_CLOSE, FALSE);
+	} while (response != GTK_RESPONSE_CLOSE && response != GTK_RESPONSE_DELETE_EVENT);
 
 	abiDestroyWidget (mainWindow);
 }
@@ -251,9 +254,7 @@ void AP_UnixDialog_Options::_setupUnitMenu (GtkWidget *optionmenu, const XAP_Str
 void AP_UnixDialog_Options::_constructWindowContents (GladeXML *xml)
 {
 	const XAP_StringSet *pSS = m_pApp->getStringSet();
-	TBData *tb_data;
-	const UT_Vector & vec = m_pApp->getToolbarFactory()->getToolbarNames();
-	UT_uint32 i;
+	//const UT_Vector & vec = m_pApp->getToolbarFactory()->getToolbarNames();
 
 	GtkWidget *tmp;
 

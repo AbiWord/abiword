@@ -19,7 +19,7 @@
  * 02111-1307, USA.
  */
 
-
+#include <ctype.h>
 #include "ut_types.h"
 #include "ut_misc.h"
 #include "ut_string.h"
@@ -66,6 +66,223 @@ bool pt_PieceTable::appendStrux(PTStruxType pts, const XML_Char ** attributes, p
 	if (ppfs_ret)
 		*ppfs_ret = pfs;
 	return true;
+}
+
+pf_Frag * pt_PieceTable::_findLastStruxOfType(pf_Frag * pfStart, PTStruxType pst, bool bSkipEmbededSections)
+{
+	UT_return_val_if_fail( pfStart, NULL );
+
+	pf_Frag * pf = pfStart;
+	
+	while(pf)
+	{
+		if(pf->getType() == pf_Frag::PFT_Strux)
+		{
+			pf_Frag_Strux * pfs = static_cast<pf_Frag_Strux*>(pf);
+
+			if(pfs->getStruxType() == pst)
+				break;
+
+			if(bSkipEmbededSections)
+			{
+				if(pfs->getStruxType() == PTX_EndTOC)
+				{
+					while(pf)
+					{
+						if(pf->getType() == pf_Frag::PFT_Strux)
+						{
+							pf_Frag_Strux * pfs = static_cast<pf_Frag_Strux*>(pf);
+
+							if(pfs->getStruxType() == PTX_SectionTOC)
+								break;
+						}
+
+						pf = pf->getPrev();
+					}
+				}
+				if(pfs->getStruxType() == PTX_EndFrame)
+				{
+					while(pf)
+					{
+						if(pf->getType() == pf_Frag::PFT_Strux)
+						{
+							pf_Frag_Strux * pfs = static_cast<pf_Frag_Strux*>(pf);
+
+							if(pfs->getStruxType() == PTX_SectionFrame)
+								break;
+						}
+
+						pf = pf->getPrev();
+					}
+				}
+
+				if(pfs->getStruxType() == PTX_EndEndnote)
+				{
+					while(pf)
+					{
+						if(pf->getType() == pf_Frag::PFT_Strux)
+						{
+							pf_Frag_Strux * pfs = static_cast<pf_Frag_Strux*>(pf);
+
+							if(pfs->getStruxType() == PTX_SectionEndnote)
+								break;
+						}
+
+						pf = pf->getPrev();
+					}
+				}
+				if(pfs->getStruxType() == PTX_EndFootnote)
+				{
+					while(pf)
+					{
+						if(pf->getType() == pf_Frag::PFT_Strux)
+						{
+							pf_Frag_Strux * pfs = static_cast<pf_Frag_Strux*>(pf);
+
+							if(pfs->getStruxType() == PTX_SectionFootnote)
+								break;
+						}
+
+						pf = pf->getPrev();
+					}
+				}
+				if(pfs->getStruxType() == PTX_EndMarginnote)
+				{
+					while(pf)
+					{
+						if(pf->getType() == pf_Frag::PFT_Strux)
+						{
+							pf_Frag_Strux * pfs = static_cast<pf_Frag_Strux*>(pf);
+
+							if(pfs->getStruxType() == PTX_SectionMarginnote)
+								break;
+						}
+
+						pf = pf->getPrev();
+					}
+				}
+				if(pfs->getStruxType() == PTX_EndCell)
+				{
+					while(pf)
+					{
+						if(pf->getType() == pf_Frag::PFT_Strux)
+						{
+							pf_Frag_Strux * pfs = static_cast<pf_Frag_Strux*>(pf);
+
+							if(pfs->getStruxType() == PTX_SectionCell)
+								break;
+						}
+
+						pf = pf->getPrev();
+					}
+				}
+				if(pfs->getStruxType() == PTX_EndTable)
+				{
+					while(pf)
+					{
+						if(pf->getType() == pf_Frag::PFT_Strux)
+						{
+							pf_Frag_Strux * pfs = static_cast<pf_Frag_Strux*>(pf);
+
+							if(pfs->getStruxType() == PTX_SectionTable)
+								break;
+						}
+
+						pf = pf->getPrev();
+					}
+				}
+			
+			}
+		}
+		
+		pf = pf->getPrev();
+	}
+
+	return pf;
+}
+
+
+/*!
+    Changes formating of the last strux of type pts
+    bSkipEmbededSections indicates whether when an end of an embeded section is
+    encountered, the entire section is to be skipped over, for example if the end of the
+    document looks like
+
+    <p><footnote><p></p></footnote>
+
+    when searching for <p> if bSkipEmbededSections == true the paragraph before <footnote>
+    will be modified
+*/
+bool pt_PieceTable::appendLastStruxFmt(PTStruxType pst, const XML_Char ** attributes, const XML_Char ** props,
+									   bool bSkipEmbededSections)
+{
+	// can only be used while loading the document
+	UT_return_val_if_fail (m_pts==PTS_Loading,false);
+
+	// Only a strux can be appended to an empty document
+	UT_return_val_if_fail (NULL != m_fragments.getFirst(), false);
+	if (!m_fragments.getFirst())
+		return false;
+
+	pf_Frag * pf = m_fragments.getLast();
+
+	UT_return_val_if_fail ( pf, false );
+
+	pf = _findLastStruxOfType(pf, pst, bSkipEmbededSections);
+	
+	UT_return_val_if_fail( pf, false );
+	
+	PT_AttrPropIndex currentAP = pf->getIndexAP();
+
+	const PP_AttrProp * pOldAP;
+    if(!getAttrProp(currentAP,&pOldAP))
+		return false;
+
+	PP_AttrProp * pNewAP = pOldAP->cloneWithReplacements(attributes,props,false);
+	pNewAP->markReadOnly();
+
+	PT_AttrPropIndex indexAP;
+	if (!m_varset.addIfUniqueAP(pNewAP,&indexAP))
+		return false;
+
+	pf->setIndexAP(indexAP);
+
+	return true;
+}
+
+/*!
+    As above, but props represented by a single XML string
+    
+*/
+bool pt_PieceTable::appendLastStruxFmt(PTStruxType pst, const XML_Char ** attributes, const XML_Char * props,
+									   bool bSkipEmbededSections)
+{
+	if(props && *props)
+	{
+		// we parse the xml props string into separate field by simply duplicating it and then
+		// replacing ; and : with '0';
+	
+		// foolproofing
+		if(*props == ';')
+			props++;
+		
+		char * pProps = UT_strdup(props);
+
+		const XML_Char ** pPropsArray = UT_splitPropsToArray(pProps);
+		UT_return_val_if_fail( pPropsArray, false );
+		
+		bool bRet = appendLastStruxFmt(pst, attributes, pPropsArray, bSkipEmbededSections);
+
+		delete [] pPropsArray;
+		FREEP(pProps);
+
+		return bRet;
+	}
+	else
+	{
+		const XML_Char ** pPropsArray = NULL;
+		return appendLastStruxFmt(pst, attributes, pPropsArray, bSkipEmbededSections);
+	}
 }
 
 /*! changes formatting of a strux while loading document */

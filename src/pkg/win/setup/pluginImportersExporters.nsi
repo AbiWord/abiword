@@ -13,9 +13,16 @@
 ; Note: plugins that are not yet setup to build are
 ; wrapped with !ifdef 0 !endif
 
-
 !ifndef VERSION_MAJOR
 !define VERSION_MAJOR "2"
+!endif
+
+!ifndef VERSION_MINOR
+!define VERSION_MINOR "1"
+!endif
+
+!ifndef VERSION_MICRO
+!define VERSION_MICRO "6"
 !endif
 
 ; Do a Cyclic Redundancy Check to make sure the installer 
@@ -32,7 +39,7 @@ UninstallIcon "..\..\pkg\win\setup\setup.ico"
 ;Icon "..\..\pkg\win\setup\setup_tm.ico"
 ;UninstallIcon "..\..\pkg\win\setup\setup_tm.ico"
 
-OutFile "AbiWord_IE_Plugins.exe"
+OutFile "abiword-plugins-impexp-${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_MICRO}.exe"
 
 ; License Information
 LicenseText "This program is Licensed under the GNU General Public License (GPL)."
@@ -81,15 +88,16 @@ Section
 SectionEnd
 
 ;SectionDivider
+!ifdef 0
+
 ; OPTIONAL
 SubSection /e "Image Manipulation"
 
-!ifdef 0
 Section "ImageMagick Plugin"
 	SectionIn 1 2
 
 	; Testing clause to Overwrite Existing Version - if exists
-	IfFileExists "$INSTDIR\AbiWord\plugins\libAbiMagick.dll" 0 DoInstall
+	IfFileExists "$INSTDIR\AbiWord\plugins\AbiMagick.dll" 0 DoInstall
 	
 	MessageBox MB_YESNO "Overwrite Existing ImageMagick Plugin?" IDYES DoInstall
 	
@@ -97,19 +105,18 @@ Section "ImageMagick Plugin"
 	Goto End
 
 	DoInstall:
-	File "libAbiMagick.dll"
+	File "AbiMagick.dll"
   
 	End:
 SectionEnd
 
 ;SectionDivider
-!endif
 
 Section "AbiBitmap (*.bmp) Plugin"
 	SectionIn 1 2
 
 	; Testing clause to Overwrite Existing Version - if exists
-	IfFileExists "$INSTDIR\AbiWord\plugins\libAbi_IEG_BMP.dll" 0 DoInstall
+	IfFileExists "$INSTDIR\AbiWord\plugins\Abi_IEG_BMP.dll" 0 DoInstall
 	
 	MessageBox MB_YESNO "Overwrite Existing AbiBitmap Plugin?" IDYES DoInstall
 	
@@ -117,7 +124,7 @@ Section "AbiBitmap (*.bmp) Plugin"
 	Goto End
 
 	DoInstall:
-	File "libAbi_IEG_BMP.dll"
+	File "Abi_IEG_BMP.dll"
   
 	End:
 SectionEnd
@@ -128,7 +135,7 @@ Section "AbiJPEG (*.jpg) Plugin"
 	SectionIn 1 2
 
 	; Testing clause to Overwrite Existing Version - if exists
-	IfFileExists "$INSTDIR\AbiWord\plugins\libAbi_IEG_jpeg.dll" 0 DoInstall
+	IfFileExists "$INSTDIR\AbiWord\plugins\Abi_IEG_jpeg.dll" 0 DoInstall
 	
 	MessageBox MB_YESNO "Overwrite Existing AbiJPEG Plugin?" IDYES DoInstall
 	
@@ -136,19 +143,18 @@ Section "AbiJPEG (*.jpg) Plugin"
 	Goto End
 
 	DoInstall:
-	File "libAbi_IEG_jpeg.dll"
+	File "Abi_IEG_jpeg.dll"
   
 	End:
 SectionEnd
 
 ;SectionDivider
 
-!ifdef 0
 Section "AbiSVG Plugin"
 	SectionIn 1 2
 
 	; Testing clause to Overwrite Existing Version - if exists
-	IfFileExists "$INSTDIR\AbiWord\plugins\libAbi_IEG_svg.dll" 0 DoInstall
+	IfFileExists "$INSTDIR\AbiWord\plugins\Abi_IEG_svg.dll" 0 DoInstall
 	
 	MessageBox MB_YESNO "Overwrite Existing AbiSVG Plugin?" IDYES DoInstall
 	
@@ -156,7 +162,7 @@ Section "AbiSVG Plugin"
 	Goto End
 
 	DoInstall:
-	File "libAbi_IEG_svg.dll"
+	File "Abi_IEG_svg.dll"
   
 	End:
 SectionEnd
@@ -167,7 +173,7 @@ Section "AbiWindowsMetaFile (*.wmf) Plugin"
 	SectionIn 1 2
 
 	; Testing clause to Overwrite Existing Version - if exists
-	IfFileExists "$INSTDIR\AbiWord\plugins\libAbi_IEG_wmf.dll" 0 DoInstall
+	IfFileExists "$INSTDIR\AbiWord\plugins\Abi_IEG_wmf.dll" 0 DoInstall
 	
 	MessageBox MB_YESNO "Overwrite Existing AbiWindowsMetaFile Plugin?" IDYES DoInstall
 	
@@ -175,14 +181,14 @@ Section "AbiWindowsMetaFile (*.wmf) Plugin"
 	Goto End
 
 	DoInstall:
-	File "libAbi_IEG_wmf.dll"
+	File "Abi_IEG_wmf.dll"
   
 	End:
 SectionEnd
 
 ;SectionDivider
-!endif
 SubSectionEnd
+!endif
 
 SubSection /e "File Format Importers/Exporters"
 
@@ -190,7 +196,7 @@ Section "AbiApplix Plugin"
 	SectionIn 2
 
 	; Testing clause to Overwrite Existing Version - if exists
-	IfFileExists "$INSTDIR\AbiWord\plugins\libAbiApplix.dll" 0 DoInstall
+	IfFileExists "$INSTDIR\AbiWord\plugins\AbiApplix.dll" 0 DoInstall
 	
 	MessageBox MB_YESNO "Overwrite Existing AbiApplix Plugin?" IDYES DoInstall
 	
@@ -198,27 +204,30 @@ Section "AbiApplix Plugin"
 	Goto End
 
 	DoInstall:
-	File "libAbiApplix.dll"
+	File "AbiApplix.dll"
   
 	End:
 SectionEnd
 
 ;SectionDivider
 
-SubSection "BZ2ABW (*.bzabw) Plugin"
+SubSection "AbiBZ2ABW (*.bzabw) Plugin"
 Section "The .bzabw Plugin"
 	SectionIn 1 2
 
 	; Testing clause to Overwrite Existing Version - if exists
-	IfFileExists "$INSTDIR\AbiWord\plugins\libBZ2Abw.dll" 0 DoInstall
+	IfFileExists "$INSTDIR\AbiWord\plugins\AbiBZ2Abw.dll" 0 DoInstall
 	
 	MessageBox MB_YESNO "Overwrite Existing BZ2ABW Plugin?" IDYES DoInstall
 	
-	DetailPrint "Skipping BZ2ABW Plugin (already exists)!"
+	DetailPrint "Skipping AbiBZ2ABW Plugin (already exists)!"
 	Goto End
 
 	DoInstall:
-	File "libBZ2Abw.dll"
+	SetOutPath $INSTDIR\AbiWord\bin
+	File "libbz2.dll" 
+	SetOutPath $INSTDIR\AbiWord\plugins
+	File "AbiBZ2Abw.dll"
 
 	End:
 SectionEnd
@@ -228,7 +237,7 @@ Section "Add .bzabw Association (to Registry)"
 	SectionIn 1 2
 
 	; Skip adding registry entries if plugin doesn't exist
-	IfFileExists "$INSTDIR\AbiWord\plugins\libBZ2Abw.dll" 0 End
+	IfFileExists "$INSTDIR\AbiWord\plugins\AbiBZ2Abw.dll" 0 End
 
 	; Write File Associations
 	WriteRegStr HKCR ".bzabw" "" "AbiSuite.AbiWord"
@@ -244,7 +253,7 @@ Section "AbiClarisWorks Plugin"
 	SectionIn 2
 
 	; Testing clause to Overwrite Existing Version - if exists
-	IfFileExists "$INSTDIR\AbiWord\plugins\libAbiClarisWorks.dll" 0 DoInstall
+	IfFileExists "$INSTDIR\AbiWord\plugins\AbiClarisWorks.dll" 0 DoInstall
 	
 	MessageBox MB_YESNO "Overwrite Existing AbiClarisWorks Plugin?" IDYES DoInstall
 	
@@ -252,26 +261,7 @@ Section "AbiClarisWorks Plugin"
 	Goto End
 
 	DoInstall:
-	File "libAbiClarisWorks.dll"
-  
-	End:
-SectionEnd
-
-;SectionDivider
-
-Section "AbiCoquille Plugin"
-	SectionIn 2
-
-	; Testing clause to Overwrite Existing Version - if exists
-	IfFileExists "$INSTDIR\AbiWord\plugins\libAbiCoquille.dll" 0 DoInstall
-	
-	MessageBox MB_YESNO "Overwrite Existing AbiCoquille Plugin?" IDYES DoInstall
-	
-	DetailPrint "Skipping AbiCoquille Plugin (already exists)!"
-	Goto End
-
-	DoInstall:
-	File "libAbiCoquille.dll"
+	File "AbiClarisWorks.dll"
   
 	End:
 SectionEnd
@@ -282,15 +272,15 @@ Section "AbiDocbook Plugin"
 	SectionIn 2
 
 	; Testing clause to Overwrite Existing Version - if exists
-	IfFileExists "$INSTDIR\AbiWord\plugins\libAbiDocBook.dll" 0 DoInstall
+	IfFileExists "$INSTDIR\AbiWord\plugins\AbiDocBook.dll" 0 DoInstall
 	
-	MessageBox MB_YESNO "Overwrite Existing AbiDocbook Plugin?" IDYES DoInstall
+	MessageBox MB_YESNO "Overwrite Existing AbiDocbook/Coquille Plugin?" IDYES DoInstall
 	
-	DetailPrint "Skipping AbiDocbook Plugin (already exists)!"
+	DetailPrint "Skipping AbiDocbook/Coquille Plugin (already exists)!"
 	Goto End
 
 	DoInstall:
-	File "libAbiDocBook.dll"
+	File "AbiDocBook.dll"
   
 	End:
 SectionEnd
@@ -301,7 +291,7 @@ Section "AbiEML Plugin"
 	SectionIn 1 2
 
 	; Testing clause to Overwrite Existing Version - if exists
-	IfFileExists "$INSTDIR\AbiWord\plugins\libAbiEML.dll" 0 DoInstall
+	IfFileExists "$INSTDIR\AbiWord\plugins\AbiEML.dll" 0 DoInstall
 	
 	MessageBox MB_YESNO "Overwrite Existing AbiEML Plugin?" IDYES DoInstall
 	
@@ -309,7 +299,7 @@ Section "AbiEML Plugin"
 	Goto End
 
 	DoInstall:
-	File "libAbiEML.dll"
+	File "AbiEML.dll"
   
 	End:
 SectionEnd
@@ -321,7 +311,7 @@ Section "AbiHancom Plugin"
 	SectionIn 2
 
 	; Testing clause to Overwrite Existing Version - if exists
-	IfFileExists "$INSTDIR\AbiWord\plugins\libAbiHancom.dll" 0 DoInstall
+	IfFileExists "$INSTDIR\AbiWord\plugins\AbiHancom.dll" 0 DoInstall
 	
 	MessageBox MB_YESNO "Overwrite Existing AbiHancom Plugin?" IDYES DoInstall
 	
@@ -329,10 +319,11 @@ Section "AbiHancom Plugin"
 	Goto End
 
 	DoInstall:
-	File "libAbiHancom.dll"
+	File "AbiHancom.dll"
   
 	End:
 SectionEnd
+!endif
 
 ;SectionDivider
 
@@ -340,7 +331,7 @@ Section "AbiHrtext Plugin"
 	SectionIn 2
 
 	; Testing clause to Overwrite Existing Version - if exists
-	IfFileExists "$INSTDIR\AbiWord\plugins\libAbiHrtext.dll" 0 DoInstall
+	IfFileExists "$INSTDIR\AbiWord\plugins\AbiHrtext.dll" 0 DoInstall
 	
 	MessageBox MB_YESNO "Overwrite Existing AbiHrtext Plugin?" IDYES DoInstall
 	
@@ -348,18 +339,18 @@ Section "AbiHrtext Plugin"
 	Goto End
 
 	DoInstall:
-	File "libAbiHrtext.dll"
+	File "AbiHrtext.dll"
   
 	End:
 SectionEnd
 
 ;SectionDivider
 
-Section "AbiIscii-text Plugin"
+Section "AbiISCII-Text Plugin"
 	SectionIn 2
 
 	; Testing clause to Overwrite Existing Version - if exists
-	IfFileExists "$INSTDIR\AbiWord\plugins\libAbiIsciitext.dll" 0 DoInstall
+	IfFileExists "$INSTDIR\AbiWord\plugins\AbiISCII_Text.dll" 0 DoInstall
 	
 	MessageBox MB_YESNO "Overwrite Existing AbiIscii-text Plugin?" IDYES DoInstall
 	
@@ -367,18 +358,19 @@ Section "AbiIscii-text Plugin"
 	Goto End
 
 	DoInstall:
-	File "libAbiIsciitext.dll"
+	File "AbiISCII_Text.dll"
   
 	End:
 SectionEnd
 
 ;SectionDivider
 
+!ifdef EXPERIMENTALPLUGINS
 Section "AbiKword Plugin"
 	SectionIn 2
 
 	; Testing clause to Overwrite Existing Version - if exists
-	IfFileExists "$INSTDIR\AbiWord\plugins\libAbiKword.dll" 0 DoInstall
+	IfFileExists "$INSTDIR\AbiWord\plugins\AbiKword.dll" 0 DoInstall
 	
 	MessageBox MB_YESNO "Overwrite Existing AbiKword Plugin?" IDYES DoInstall
 	
@@ -386,19 +378,19 @@ Section "AbiKword Plugin"
 	Goto End
 
 	DoInstall:
-	File "libAbiKword.dll"
+	File "AbiKword.dll"
   
 	End:
 SectionEnd
+!endif
 
 ;SectionDivider
-!endif
 
 Section "AbiLaTeX Plugin"
 	SectionIn 2
 
 	; Testing clause to Overwrite Existing Version - if exists
-	IfFileExists "$INSTDIR\AbiWord\plugins\libAbiLaTeX.dll" 0 DoInstall
+	IfFileExists "$INSTDIR\AbiWord\plugins\AbiLaTeX.dll" 0 DoInstall
 	
 	MessageBox MB_YESNO "Overwrite Existing AbiLaTeX Plugin?" IDYES DoInstall
 	
@@ -406,7 +398,7 @@ Section "AbiLaTeX Plugin"
 	Goto End
 
 	DoInstall:
-	File "libAbiLaTeX.dll"
+	File "AbiLaTeX.dll"
   
 	End:
 SectionEnd
@@ -418,7 +410,7 @@ Section "AbiMIF Plugin"
 	SectionIn 2
 
 	; Testing clause to Overwrite Existing Version - if exists
-	IfFileExists "$INSTDIR\AbiWord\plugins\libAbiMIF.dll" 0 DoInstall
+	IfFileExists "$INSTDIR\AbiWord\plugins\AbiMIF.dll" 0 DoInstall
 	
 	MessageBox MB_YESNO "Overwrite Existing AbiMIF Plugin?" IDYES DoInstall
 	
@@ -426,7 +418,7 @@ Section "AbiMIF Plugin"
 	Goto End
 
 	DoInstall:
-	File "libAbiMIF.dll"
+	File "AbiMIF.dll"
   
 	End:
 SectionEnd
@@ -438,7 +430,7 @@ Section "MSWrite (*.wri) Plugin"
 	SectionIn 1 2
 
 	; Testing clause to Overwrite Existing Version - if exists
-	IfFileExists "$INSTDIR\AbiWord\plugins\libAbiMSWrite.dll" 0 DoInstall
+	IfFileExists "$INSTDIR\AbiWord\plugins\AbiMSWrite.dll" 0 DoInstall
 	
 	MessageBox MB_YESNO "Overwrite Existing AbiMSWrite Plugin?" IDYES DoInstall
 	
@@ -446,7 +438,7 @@ Section "MSWrite (*.wri) Plugin"
 	Goto End
 
 	DoInstall:
-	File "libAbiMSWrite.dll"
+	File "AbiMSWrite.dll"
   
 	End:
 SectionEnd
@@ -458,7 +450,7 @@ Section "AbiNroff Plugin"
 	SectionIn 2
 
 	; Testing clause to Overwrite Existing Version - if exists
-	IfFileExists "$INSTDIR\AbiWord\plugins\libAbiNroff.dll" 0 DoInstall
+	IfFileExists "$INSTDIR\AbiWord\plugins\AbiNroff.dll" 0 DoInstall
 	
 	MessageBox MB_YESNO "Overwrite Existing AbiNroff Plugin?" IDYES DoInstall
 	
@@ -466,7 +458,7 @@ Section "AbiNroff Plugin"
 	Goto End
 
 	DoInstall:
-	File "libAbiNroff.dll"
+	File "AbiNroff.dll"
   
 	End:
 SectionEnd
@@ -478,7 +470,7 @@ Section "AbiPalmDoc (*.pdb) Plugin"
 	SectionIn 2
 
 	; Testing clause to Overwrite Existing Version - if exists
-	IfFileExists "$INSTDIR\AbiWord\plugins\libAbiPalmDoc.dll" 0 DoInstall
+	IfFileExists "$INSTDIR\AbiWord\plugins\AbiPalmDoc.dll" 0 DoInstall
 	
 	MessageBox MB_YESNO "Overwrite Existing AbiPalmDoc Plugin?" IDYES DoInstall
 	
@@ -486,7 +478,7 @@ Section "AbiPalmDoc (*.pdb) Plugin"
 	Goto End
 
 	DoInstall:
-	File "libAbiPalmDoc.dll"
+	File "AbiPalmDoc.dll"
   
 	End:
 SectionEnd
@@ -498,7 +490,7 @@ Section "AbiPDF (*.pdf) Exporter Plugin"
 	SectionIn 2
 
 	; Testing clause to Overwrite Existing Version - if exists
-	IfFileExists "$INSTDIR\AbiWord\plugins\libAbiPDF.dll" 0 DoInstall
+	IfFileExists "$INSTDIR\AbiWord\plugins\AbiPDF.dll" 0 DoInstall
 	
 	MessageBox MB_YESNO "Overwrite Existing AbiPDF exporter Plugin?" IDYES DoInstall
 	
@@ -506,19 +498,18 @@ Section "AbiPDF (*.pdf) Exporter Plugin"
 	Goto End
 
 	DoInstall:
-	File "libAbiPDF.dll"
+	File "AbiPDF.dll"
   
 	End:
 SectionEnd
 
 ;SectionDivider
-!endif
 
 Section "AbiPsion (*.psiword) Plugin"
 	SectionIn 2
 
 	; Testing clause to Overwrite Existing Version - if exists
-	IfFileExists "$INSTDIR\AbiWord\plugins\libAbi_psion.dll" 0 DoInstall
+	IfFileExists "$INSTDIR\AbiWord\plugins\AbiPsion.dll" 0 DoInstall
 	
 	MessageBox MB_YESNO "Overwrite Existing AbiPsion Plugin?" IDYES DoInstall
 	
@@ -526,11 +517,11 @@ Section "AbiPsion (*.psiword) Plugin"
 	Goto End
 
 	DoInstall:
-	File "libAbi_psion.dll"
+	File "AbiPsion.dll"
   
 	End:
 SectionEnd
-
+!endif
 ;SectionDivider
 
 !ifdef 0
@@ -539,7 +530,7 @@ Section "AbiPatheticWriter Plugin"
 	SectionIn 2
 
 	; Testing clause to Overwrite Existing Version - if exists
-	IfFileExists "$INSTDIR\AbiWord\plugins\libAbiPW.dll" 0 DoInstall
+	IfFileExists "$INSTDIR\AbiWord\plugins\AbiPW.dll" 0 DoInstall
 	
 	MessageBox MB_YESNO "Overwrite Existing AbiPatheticWriter Plugin?" IDYES DoInstall
 	
@@ -547,7 +538,7 @@ Section "AbiPatheticWriter Plugin"
 	Goto End
 
 	DoInstall:
-	File "libAbiPW.dll"
+	File "AbiPW.dll"
   
 	End:
 SectionEnd
@@ -559,7 +550,7 @@ Section "AbiT602 importer Plugin"
 	SectionIn 2
 
 	; Testing clause to Overwrite Existing Version - if exists
-	IfFileExists "$INSTDIR\AbiWord\plugins\libAbiT602.dll" 0 DoInstall
+	IfFileExists "$INSTDIR\AbiWord\plugins\AbiT602.dll" 0 DoInstall
 	
 	MessageBox MB_YESNO "Overwrite Existing AbiT602 Plugin?" IDYES DoInstall
 	
@@ -567,7 +558,7 @@ Section "AbiT602 importer Plugin"
 	Goto End
 
 	DoInstall:
-	File "libAbiT602.dll"
+	File "AbiT602.dll"
   
 	End:
 SectionEnd
@@ -579,7 +570,7 @@ Section "AbiWML (*.wml) Plugin"
 	SectionIn 2
 
 	; Testing clause to Overwrite Existing Version - if exists
-	IfFileExists "$INSTDIR\AbiWord\plugins\libAbiWML.dll" 0 DoInstall
+	IfFileExists "$INSTDIR\AbiWord\plugins\AbiWML.dll" 0 DoInstall
 	
 	MessageBox MB_YESNO "Overwrite Existing AbiWML Plugin?" IDYES DoInstall
 	
@@ -587,7 +578,7 @@ Section "AbiWML (*.wml) Plugin"
 	Goto End
 
 	DoInstall:
-	File "libAbiWML.dll"
+	File "AbiWML.dll"
   
 	End:
 SectionEnd
@@ -599,7 +590,7 @@ Section "AbiXSL-FO Plugin"
 	SectionIn 2
 
 	; Testing clause to Overwrite Existing Version - if exists
-	IfFileExists "$INSTDIR\AbiWord\plugins\libAbiXSLFO.dll" 0 DoInstall
+	IfFileExists "$INSTDIR\AbiWord\plugins\AbiXSLFO.dll" 0 DoInstall
 	
 	MessageBox MB_YESNO "Overwrite Existing AbiXSL-FO Plugin?" IDYES DoInstall
 	
@@ -607,12 +598,232 @@ Section "AbiXSL-FO Plugin"
 	Goto End
 
 	DoInstall:
-	File "libAbiXSLFO.dll"
+	File "AbiXSLFO.dll"
+  
+	End:
+SectionEnd
+
+; Additional File Format importer/exporters
+SubSectionEnd
+
+
+;SectionDivider
+
+
+SubSection /e "Glib/GSF based I/E importer and exporter plugins"
+
+!macro dlFileMacro remoteFname localFname errMsg
+	!define retryDLlbl retryDL_${__FILE__}${__LINE__}
+	!define dlDonelbl dlDoneDL_${__FILE__}${__LINE__}
+
+	;Call ConnectInternet	; try to establish connection if not connected
+	;StrCmp $0 "online" 0 ${dlDonelbl}
+
+	${retryDLlbl}:
+	NSISdl::download "${remoteFname}" "${localFname}"
+	Pop $0 ;Get the return value
+	StrCmp $0 "success" ${dlDonelbl}
+		; Couldn't download the file
+		DetailPrint "${errMsg}"
+		DetailPrint "Remote URL: ${remoteFname}"
+		DetailPrint "Local File: ${localFname}"
+		DetailPrint "NSISdl::download returned $0"
+		MessageBox MB_RETRYCANCEL|MB_ICONEXCLAMATION|MB_DEFBUTTON1 "${errMsg}" IDRETRY ${retryDLlbl}
+	${dlDonelbl}:
+	!undef retryDLlbl
+	!undef dlDonelbl
+!macroend
+!define dlFile "!insertmacro dlFileMacro"
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; Macro for unzipping a file from an archive with error reporting
+!macro unzipFileMacro archiveFname destinationPath fnameToExtract errMsg
+	!define uzDonelbl uzDone_${__FILE__}${__LINE__}
+
+	ZipDLL::extractfile "${archiveFname}" "${destinationPath}" "${fnameToExtract}"
+	Pop $0 ; Get return value
+	StrCmp $0 "success" ${uzDonelbl}
+		; Couldn't unzip the file
+		DetailPrint "${errMsg}"
+		MessageBox MB_OK|MB_ICONEXCLAMATION|MB_DEFBUTTON1 "${errMsg}" IDOK
+	${uzDonelbl}:
+	!undef uzDonelbl
+!macroend
+!define unzipFile "!insertmacro unzipFileMacro"
+
+
+; Not required if Glib is already available, otherwise is required
+Section "Download glib 2.4"
+	SectionIn 2
+
+	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+	; Unzip glib and its dependencies into same directory as AbiWord.exe
+	SetOutPath $INSTDIR\AbiWord
+
+	;;;;;;;
+	; iconv
+	${dlFile} "http://www.gimp.org/~tml/gimp/win32/libiconv-1.9.1.bin.woe32.zip" "$TEMP\libiconv-1.9.1.bin.woe32.zip" "ERROR: failed to download http://www.gimp.org/~tml/gimp/win32/libiconv-1.9.1.bin.woe32.zip"
+	StrCmp $0 "success" 0 doCleanup
+	${unzipFile} "$TEMP\libiconv-1.9.1.bin.woe32.zip" "$INSTDIR" "bin\iconv.dll" "ERROR: failed to extract iconv.dll from libiconv-1.9.1.bin.woe32.zip"
+	StrCmp $0 "success" 0 doCleanup
+
+	;;;;;;
+	; intl
+	${dlFile} "http://www.gimp.org/~tml/gimp/win32/gettext-runtime-0.13.1.zip" "$TEMP\gettext-runtime-0.13.1.zip" "ERROR: failed to download http://www.gimp.org/~tml/gimp/win32/gettext-runtime-0.13.1.zip"
+	StrCmp $0 "success" 0 doCleanup
+	${unzipFile} "$TEMP\gettext-runtime-0.13.1.zip" "$INSTDIR" "bin\intl.dll" "ERROR: failed to extract intl.dll from gettext-runtime-0.13.1.zip"
+	StrCmp $0 "success" 0 doCleanup
+
+	;;;;;;;;;;;;;;;;;;
+	; glib and gobject
+	${dlFile} "http://www.gimp.org/~tml/gimp/win32/glib-2.4.5.zip" "$TEMP\glib-2.4.5.zip" "ERROR: failed to download http://www.gimp.org/~tml/gimp/win32/glib-2.4.5.zip"
+	StrCmp $0 "success" 0 doCleanup
+	${unzipFile} "$TEMP\glib-2.4.5.zip" "$INSTDIR" "bin\libglib-2.0-0.dll" "ERROR: failed to extract libglib-2.0-0.dll from glib-2.4.5.zip"
+	StrCmp $0 "success" 0 doCleanup
+	${unzipFile} "$TEMP\glib-2.4.5.zip" "$INSTDIR" "bin\libgobject-2.0-0.dll" "ERROR: failed to extract libgobject-2.0-0.dll from glib-2.4.5.zip"
+	StrCmp $0 "success" 0 doCleanup
+
+	;;;;;;;;
+	; libgsf
+	${dlFile} "http://www.gimp.org/~tml/gimp/win32/libgsf-1.8.2-20040121.zip" "$TEMP\libgsf-1.8.2-20040121.zip" "ERROR: failed to download http://www.gimp.org/~tml/gimp/win32/libgsf-1.8.2-20040121.zip"
+	StrCmp $0 "success" 0 doCleanup
+	${unzipFile} "$TEMP\libgsf-1.8.2-20040121.zip" "$INSTDIR" "bin\libgsf-1-1.dll" "ERROR: failed to extract libgsf-1-1.dll from libgsf-1.8.2-20040121.zip"
+	StrCmp $0 "success" 0 doCleanup
+
+	;;;;;;;;;
+	; libxml2
+	${dlFile} "http://dl.sourceforge.net/gnuwin32/libxml2-2.4.12-bin.zip" "$TEMP\libxml2-2.4.12-bin.zip" "ERROR: failed to download http://dl.sourceforge.net/gnuwin32/libxml2-2.4.12-bin.zip"
+	StrCmp $0 "success" 0 doCleanup
+	${unzipFile} "$TEMP\libxml2-2.4.12-bin.zip" "$INSTDIR" "bin\libxml2.dll" "ERROR: failed to extract libxml2.dll from libxml2-2.4.12-bin.zip"
+	StrCmp $0 "success" 0 doCleanup
+
+
+	doCleanup:
+		; Delete temporary files
+		Delete "$TEMP\libiconv-1.9.1.bin.woe32.zip"
+		Delete "$TEMP\gettext-runtime-0.13.1.zip"
+		Delete "$TEMP\glib-2.4.5.zip"
+		Delete "$TEMP\libgsf-1.8.2-20040121.zip"
+		Delete "$TEMP\libxml2-2.4.12-bin.zip"
+
+	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+	; Set output path back to the plugins directory.
+	SetOutPath $INSTDIR\AbiWord\plugins
+SectionEnd
+
+;SectionDivider
+!ifdef 0
+; OPTIONAL
+SubSection /e "Image Manipulation"
+
+Section "AbiRSVG Plugin"
+	SectionIn 2
+
+	; Testing clause to Overwrite Existing Version - if exists
+	IfFileExists "$INSTDIR\AbiWord\plugins\Abi_IEG_RSVG.dll" 0 DoInstall
+	
+	MessageBox MB_YESNO "Overwrite Existing AbiRSVG Plugin?" IDYES DoInstall
+	
+	DetailPrint "Skipping AbiRSVG Plugin (already exists)!"
+	Goto End
+
+	DoInstall:
+	File "Abi_IEG_RSVG.dll"
   
 	End:
 SectionEnd
 
 ;SectionDivider
+SubSectionEnd
+!endif
+
+SubSection /e "File Format Importers/Exporters"
+
+Section "OpenWriter (*.sxw) Plugin"
+	SectionIn 2
+
+	; Testing clause to Overwrite Existing Version - if exists
+	IfFileExists "$INSTDIR\AbiWord\plugins\AbiOpenWriter.dll" 0 DoInstall
+	
+	MessageBox MB_YESNO "Overwrite Existing AbiOpenWriter Plugin?" IDYES DoInstall
+	
+	DetailPrint "Skipping AbiOpenWriter Plugin (already exists)!"
+	Goto End
+
+	DoInstall:
+	File "AbiOpenWriter.dll"
+  
+	End:
+SectionEnd
+
+;SectionDivider
+
+Section "AbiSDW (*.sdw) Plugin"
+	SectionIn 2
+
+	; Testing clause to Overwrite Existing Version - if exists
+	IfFileExists "$INSTDIR\AbiWord\plugins\AbiSDW.dll" 0 DoInstall
+	
+	MessageBox MB_YESNO "Overwrite Existing AbiSDW Plugin?" IDYES DoInstall
+	
+	DetailPrint "Skipping AbiSDW Plugin (already exists)!"
+	Goto End
+
+	DoInstall:
+	File "AbiSDW.dll"
+  
+	End:
+SectionEnd
+
+;SectionDivider
+
+Section "AbiWordPerfect (*.wpd) Plugin"
+	SectionIn 2
+
+	; Testing clause to Overwrite Existing Version - if exists
+	IfFileExists "$INSTDIR\AbiWord\plugins\AbiWordPerfect.dll" 0 DoInstall
+	
+	MessageBox MB_YESNO "Overwrite Existing AbiWordPerfect Plugin?" IDYES DoInstall
+	
+	DetailPrint "Skipping AbiWordPerfect Plugin (already exists)!"
+	Goto End
+
+	DoInstall:
+        SetOutPath $INSTDIR\AbiWord\bin
+        File "libwpd-1.dll"
+        SetOutPath $INSTDIR\AbiWord\plugins
+	File "AbiWordPerfect.dll"
+
+  
+	End:
+SectionEnd
+
+;SectionDivider
+
+!ifdef 0
+Section "AbiXHTML (*.xhtml) Plugin"
+	SectionIn 2
+
+	; Testing clause to Overwrite Existing Version - if exists
+	IfFileExists "$INSTDIR\AbiWord\plugins\AbiXHTML.dll" 0 DoInstall
+	
+	MessageBox MB_YESNO "Overwrite Existing AbiXHTML Plugin?" IDYES DoInstall
+	
+	DetailPrint "Skipping AbiXHTML Plugin (already exists)!"
+	Goto End
+
+	DoInstall:
+	File "libAbiXHTML.dll"
+  
+	End:
+SectionEnd
+
+;SectionDivider
+!endif
+
+SubSectionEnd  ; Additional File Format importer/exporters
+
+SubSectionEnd  ; glib based plugins
 
 ; uncomment [here and in uninstall] & change .ext if this plugin adds support for new type (with new extension)
 ; OPTIONAL Registry Settings
@@ -624,8 +835,7 @@ SectionEnd
 ;
 ;SectionEnd
 
-; Additional File Format importer/exporters
-SubSectionEnd
+;SectionDivider
 
 
 ; OPTIONAL Create Uninstaller for Plugin
@@ -664,9 +874,47 @@ Section "Uninstall"
 	DeleteRegKey HKCR ".bzabw"
 
 	; remove files used
-	Delete "$INSTDIR\libBZ2Abw.dll"
-	Delete "$INSTDIR\libAbiEML.dll"
-	Delete "$INSTDIR\libAbiMagick.dll"
+	Delete "$INSTDIR\AbiApplix.dll"
+	Delete "$INSTDIR\AbiBZ2Abw.dll"
+	Delete "$INSTDIR\AbiClarisWorks.dll"
+	Delete "$INSTDIR\AbiDocBook.dll"
+	Delete "$INSTDIR\AbiEML.dll"
+	Delete "$INSTDIR\AbiHancom.dll"
+	Delete "$INSTDIR\AbiHrtext.dll"
+	Delete "$INSTDIR\AbiISCII_Text.dll"
+	Delete "$INSTDIR\AbiKword.dll"
+	Delete "$INSTDIR\AbiLaTeX.dll"
+	Delete "$INSTDIR\AbiMIF.dll"
+	Delete "$INSTDIR\AbiMSWrite.dll"
+	Delete "$INSTDIR\AbiNroff.dll"
+	Delete "$INSTDIR\AbiOpenWriter.dll"
+	Delete "$INSTDIR\AbiPalmDoc.dll"
+	Delete "$INSTDIR\AbiPsion.dll"
+	Delete "$INSTDIR\AbiSDW.dll"
+	Delete "$INSTDIR\AbiT602.dll"
+	Delete "$INSTDIR\AbiWML.dll"
+	Delete "$INSTDIR\AbiWordPerfect.dll"
+	Delete "$INSTDIR\AbiXSLFO.dll"
+
+	Delete "$INSTDIR\..\bin\iconv.dll"
+	Delete "$INSTDIR\..\bin\intl.dll"
+	Delete "$INSTDIR\..\bin\libbz2.dll"
+	Delete "$INSTDIR\..\bin\libglib-2.0-0.dll"
+	Delete "$INSTDIR\..\bin\libgobject-2.0-0.dll"
+	Delete "$INSTDIR\..\bin\libgsf-1-1.dll"
+	Delete "$INSTDIR\..\bin\libwpd-1.dll"
+	Delete "$INSTDIR\..\bin\libxml2.dll"
+
+!ifdef 0
+	Delete "$INSTDIR\AbiMagick.dll"
+	Delete "$INSTDIR\Abi_IEG_BMP.dll"
+	Delete "$INSTDIR\Abi_IEG_jpeg.dll"
+	Delete "$INSTDIR\Abi_IEG_svg.dll"
+	Delete "$INSTDIR\Abi_IEG_wmf.dll"
+	Delete "$INSTDIR\AbiPDF.dll"
+	Delete "$INSTDIR\AbiPW.dll"
+	Delete "$INSTDIR\AbiXHTML.dll"
+!endif
 
 	Delete /REBOOTOK "$INSTDIR\UninstallAbiWordIEPlugins.exe"
 

@@ -3,20 +3,24 @@
 
 
 SubSection /e "$(TITLE_ssection_dictionary)" ssection_dictionary
+Section "" section_dictionary_required
+	SetOutPath $INSTDIR\dictionary
+	File "..\AbiSuite\dictionary\ispell_dictionary_list.xml"
+SectionEnd
 
 ; OPTIONAL Installation of Default Dictionary
 Section "$(TITLE_section_dictinary_def_English)" section_dictinary_def_English
 	SectionIn 1 2 ${DLSECT}
-	SetOutPath $INSTDIR
-	File /r "..\AbiSuite\dictionary"
+	SetOutPath $INSTDIR\dictionary
+	File "..\AbiSuite\dictionary\american.hash"
 SectionEnd
 !macro Remove_${section_dictinary_def_English}
 	;Removes this component
 	DetailPrint "*** Removing or skipping install of en-US dictionary..."
 
 	; remove dictionary
-	;Delete "$INSTDIR\dictionary\american.hash"
-	Delete "$INSTDIR\dictionary\*.hash"
+	Delete "$INSTDIR\dictionary\american.hash"
+	;Delete "$INSTDIR\dictionary\*.hash"
 !macroend
 
 

@@ -522,7 +522,8 @@ GtkWidget * XAP_UnixDialog_Insert_Symbol::_constructWindow(void)
 	m_areaCurrentSym = _previewNew (60, 45);
 	gtk_box_pack_start(GTK_BOX(hbox), m_areaCurrentSym, TRUE, FALSE, 0);
 #else
-	m_SymbolMap = gucharmap_charmap_new ();
+	m_SymbolMap = gucharmap_charmap_new (
+		GUCHARMAP_CHAPTERS(gucharmap_block_chapters_new ()));
 	gtk_widget_show (m_SymbolMap);
 	gtk_box_pack_start (GTK_BOX (tmp), m_SymbolMap, TRUE, TRUE, 0);
 	gtk_container_set_border_width (GTK_CONTAINER (m_SymbolMap), 5);

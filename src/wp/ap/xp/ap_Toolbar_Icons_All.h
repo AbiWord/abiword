@@ -122,6 +122,7 @@
 #	include "tb_merge_cells.xpm"
 #	include "tb_split_cells.xpm"
 #	include "tb_transparent.xpm"
+#	include "tb_WrapButton.xpm"
 
 	// ... add new icons here (don't forget to add below the #else) ...
 
@@ -274,7 +275,8 @@
 	DefineToolbarIcon(tb_delete_column_xpm)
 	DefineToolbarIcon(tb_merge_cells_xpm)
 	DefineToolbarIcon(tb_split_cells_xpm)
-	DefineToolbarIcon(tb_transparent_xpm)
+    DefineToolbarIcon(tb_transparent_xpm)
+	DefineToolbarIcon(tb_WrapButton_xpm)
 
 	DefineToolbarIcon(menu_copy_xpm)
 	DefineToolbarIcon(menu_cut_xpm)

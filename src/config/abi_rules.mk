@@ -204,13 +204,13 @@ $(SHARED_LIBRARY): $(OBJS)
 	@rm -f $@
 ifeq ($(ABI_FE), Win32)
 ifeq ($(OS_NAME), MINGW32)
-	dllwrap --dllname=$(LIBDIR)/$(LIBRARY_NAME).dll \
+	@dllwrap --dllname=$(LIBDIR)/$(LIBRARY_NAME).dll \
 	--implib=$(LIBDIR)/lib$(LIBRARY_NAME)dll.a \
 	--driver-name=g++  \
 	$(OBJS) $(EXTRA_LIBS) $(OS_LIBS)
 else
 	$(LINK_DLL) -MAP $(DLLBASE) $(OS_LIBS) \
-	-implib:$(LIBRARY)	\
+	-implib:$(shell echo $(LIBRARY) | $(TRANSFORM_TO_DOS_PATH) )	\
 	$(shell echo $(EXTRA_LIBS) | $(TRANSFORM_TO_DOS_PATH) ) \
 	$(shell echo $(OBJS) | $(TRANSFORM_TO_DOS_PATH) )
 endif
@@ -225,7 +225,7 @@ $(PLUGIN): $(OBJS)
 	@rm -f $@
 ifeq ($(ABI_FE), Win32)
 ifeq ($(OS_NAME), MINGW32)
-	dllwrap --dllname=$(PLUGINDIR)/$(LIBRARY_NAME).dll \
+	@dllwrap --dllname=$(PLUGINDIR)/$(LIBRARY_NAME).dll \
 	--implib=$(PLUGINDIR)/lib$(LIBRARY_NAME)dll.a \
 	--driver-name=g++  \
 	$(OBJS) $(EXTRA_LIBS) $(OS_LIBS)

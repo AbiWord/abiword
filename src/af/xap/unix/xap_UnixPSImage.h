@@ -48,7 +48,13 @@ public:
 	virtual GR_Image* createImageSegment(GR_Graphics*, const UT_Rect&)
 		{ UT_ASSERT_NOT_REACHED(); return NULL; }
 
+	bool getHasAlpha() const {
+		return m_hasAlpha;
+	}
+
 private:
+
+	bool m_hasAlpha;
 
 	PSFatmap * m_image;
 };

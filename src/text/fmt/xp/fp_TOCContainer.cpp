@@ -549,6 +549,7 @@ fp_ContainerObject * fp_TOCContainer::VBreakAt(UT_sint32 vpos)
 void fp_TOCContainer::setY(UT_sint32 i)
 {
 	bool bIsFirstBroken = false;
+	UT_sint32 iOldY = getY();
 	xxx_UT_DEBUGMSG(("fp_TOCContainer: setY set to %d \n",i));
 	if(isThisBroken())
 	{
@@ -568,7 +569,7 @@ void fp_TOCContainer::setY(UT_sint32 i)
 	{
 		VBreakAt(0);
 	}
-	UT_sint32 iOldY = getY();
+	iOldY = getY();
 	if(i == iOldY)
 	{
 		return;

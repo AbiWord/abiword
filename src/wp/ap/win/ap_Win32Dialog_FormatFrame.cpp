@@ -194,11 +194,12 @@ BOOL AP_Win32Dialog_FormatFrame::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM 
 	startUpdater();
 	setAllSensitivities();
 
-	/* Default status for the push bottons*/
+	/* Default status for the dialog controls */
 	CheckDlgButton(m_hwndDlg, AP_RID_DIALOG_FORMATFRAME_BMP_TOP, getTopToggled() ? BST_CHECKED: BST_UNCHECKED);
 	CheckDlgButton(m_hwndDlg, AP_RID_DIALOG_FORMATFRAME_BMP_BOTTOM, getBottomToggled() ? BST_CHECKED: BST_UNCHECKED);
 	CheckDlgButton(m_hwndDlg, AP_RID_DIALOG_FORMATFRAME_BMP_RIGHT, getRightToggled() ? BST_CHECKED: BST_UNCHECKED);
 	CheckDlgButton(m_hwndDlg, AP_RID_DIALOG_FORMATFRAME_BMP_LEFT, getLeftToggled() ? BST_CHECKED: BST_UNCHECKED);
+	CheckDlgButton(m_hwndDlg, AP_RID_DIALOG_FORMATFRAME_CHK_TEXTWRAP, getWrapping() ? BST_CHECKED: BST_UNCHECKED);
 
 	// This might should just be removed but whatever.
 #if 0	
@@ -322,7 +323,21 @@ BOOL AP_Win32Dialog_FormatFrame::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lPa
 
 			return 1;
 		}			
-		
+
+		case AP_RID_DIALOG_FORMATFRAME_CHK_TEXTWRAP:
+{
+                        bool bChecked;
+			bChecked = (bool)(IsDlgButtonChecked(m_hwndDlg, AP_RID_DIALOG_FORMATFRAME_CHK_TEXTWRAP)==BST_CHECKED);
+
+			setWrapping(bChecked);
+
+			// Not necessary now, but we may some day show
+			// text wrapping in the preview.
+                        event_previewExposed();
+                        return 1;
+}
+
+			
 		case AP_RID_DIALOG_FORMATFRAME_BTN_CANCEL:			
 			m_answer = AP_Dialog_FormatFrame::a_CLOSE;
 			destroy();
@@ -365,6 +380,7 @@ void AP_Win32Dialog_FormatFrame::setSensitivity(bool bSens)
 	CheckDlgButton(m_hwndDlg, AP_RID_DIALOG_FORMATFRAME_BMP_BOTTOM, getBottomToggled() ? BST_CHECKED: BST_UNCHECKED);
 	CheckDlgButton(m_hwndDlg, AP_RID_DIALOG_FORMATFRAME_BMP_RIGHT, getRightToggled() ? BST_CHECKED: BST_UNCHECKED);
 	CheckDlgButton(m_hwndDlg, AP_RID_DIALOG_FORMATFRAME_BMP_LEFT, getLeftToggled() ? BST_CHECKED: BST_UNCHECKED);	
+	CheckDlgButton(m_hwndDlg, AP_RID_DIALOG_FORMATFRAME_CHK_TEXTWRAP, getWrapping()?  BST_CHECKED: BST_UNCHECKED);
 }
 
 void AP_Win32Dialog_FormatFrame::destroy(void) 

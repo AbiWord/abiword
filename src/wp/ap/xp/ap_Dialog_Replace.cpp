@@ -284,11 +284,16 @@ bool AP_Dialog_Replace::findNext()
 	
 	// manage the list of find strings
 	UT_UCSChar* findString = getFindString();
-	if (_manageList(&m_findList, findString))
+	UT_UCSChar* replaceString = getReplaceString();
+
+	bool var1 = _manageList(&m_findList, findString);
+	bool var2 = _manageList(&m_replaceList, replaceString);
+	if (var1 || var2)
 	{
 		_updateLists();
 	}
 	FREEP(findString);
+	FREEP(replaceString);
 	
 	bool bDoneEntireDocument = false;
 
@@ -319,10 +324,14 @@ bool AP_Dialog_Replace::findReplaceReverse()
 
 bool AP_Dialog_Replace::findReplace()
 {
+	
+	// manage the list of find strings
+	UT_UCSChar* findString = getFindString();
+	UT_UCSChar* replaceString = getReplaceString();
 
 	// manage the list of find & replace strings
-	bool var1 = _manageList(&m_findList, m_findString);
-	bool var2 = _manageList(&m_replaceList, m_replaceString);
+	bool var1 = _manageList(&m_findList, findString);
+	bool var2 = _manageList(&m_replaceList, replaceString);
 	if (var1 || var2)
 	{
 		_updateLists();
@@ -345,6 +354,7 @@ bool AP_Dialog_Replace::findReplaceAll()
 	// manage the list of find & replace strings
 	UT_UCSChar* findString = getFindString();
 	UT_UCSChar* replaceString = getReplaceString();
+
 	bool var1 = _manageList(&m_findList, findString);
 	bool var2 = _manageList(&m_replaceList, replaceString);
 	if (var1 || var2)

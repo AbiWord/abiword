@@ -617,14 +617,11 @@ void abiSetupModalDialog(GtkDialog * me, XAP_Frame *pFrame, XAP_Dialog * pDlg, g
 	
 	sAddHelpButton (me, pDlg);
 
-	// show the window
-	gtk_widget_show ( GTK_WIDGET(me) ) ;
-	
-	// grab the dialog
-	//gtk_grab_add ( GTK_WIDGET(me) ) ;
-	
 	// and make it modal
 	gtk_window_set_modal ( GTK_WINDOW(me), TRUE ) ;
+
+	// show the window
+	gtk_widget_show ( GTK_WIDGET(me) ) ;
 }
 
 gint abiRunModalDialog(GtkDialog * me, bool destroyDialog, AtkRole role)
@@ -696,17 +693,14 @@ void abiSetupModelessDialog(GtkDialog * me, XAP_Frame * pFrame, XAP_Dialog * pDl
 	gtk_dialog_set_default_response ( me, dfl_response ) ;
 
 	sAddHelpButton (me, pDlg);
-	
-	// show the window
-	gtk_widget_show ( GTK_WIDGET(me) ) ;
-	
-	// grab the dialog
-	//gtk_grab_add ( GTK_WIDGET(me) ) ;
-	
+
 	// and mark it as modeless
 	gtk_window_set_modal ( GTK_WINDOW(me), FALSE ) ;
 
 	atk_object_set_role (gtk_widget_get_accessible (GTK_WIDGET (me)), ATK_ROLE_ALERT);
+	
+	// show the window
+	gtk_widget_show ( GTK_WIDGET(me) ) ;
 }
 
 /*!

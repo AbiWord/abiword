@@ -79,8 +79,11 @@ public:
 		{ m_bHasEndFootnote = true;}
 	PT_DocPosition           getDocPosition(void);
 	UT_uint32                getLength(void);
+	UT_sint32                getOldSize(void) const
+		{ return m_iOldSize;}
+	void                     setOldSize(UT_sint32 i)
+		{ m_iOldSize = i;}
 protected:
-	virtual void		     _lookupProperties(void) = 0;
 	virtual void             _purgeLayout(void);
 	bool                     m_bNeedsRebuild;
 	bool                     m_bNeedsFormat;
@@ -89,6 +92,7 @@ private:
 
 	fl_DocSectionLayout*	 m_pDocSL;
 	bool                     m_bHasEndFootnote;
+	UT_sint32                m_iOldSize;
 };
 
 class ABI_EXPORT fl_FootnoteLayout : public fl_EmbedLayout
@@ -110,7 +114,7 @@ public:
 	UT_uint32                getFootnotePID(void) const
 		{return m_iFootnotePID;}
 protected:
-	virtual void		     _lookupProperties(void);
+	virtual void		     _lookupProperties(const PP_AttrProp* pAP);
 private:
 	void                     _createFootnoteContainer(void);
 	void                     _insertFootnoteContainer(fp_Container * pNewFC);
@@ -134,7 +138,7 @@ public:
 	UT_uint32                getEndnotePID(void) const
 		{return m_iEndnotePID;}
 protected:
-	virtual void		     _lookupProperties(void);
+	virtual void		     _lookupProperties(const PP_AttrProp* pAP);
 private:
 	void                     _createEndnoteContainer(void);
 	void                     _insertEndnoteContainer(fp_Container * pNewFC);

@@ -43,6 +43,7 @@ public:
 	virtual void            setStyleInGUI(void);
 protected:
 	HWND                    m_hWnd;
+	BOOL					m_modeless;
 
 	BOOL					_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam);
 	BOOL					_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam);

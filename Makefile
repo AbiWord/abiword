@@ -107,6 +107,11 @@ canonical:
 distribution: compile canonical
 	$(MAKE) ABI_ROOT=$(ABI_ROOT) prefix=$(prefix) -C src distribution
 
+disttools: compile canonical
+	$(MAKE) ABI_ROOT=$(ABI_ROOT) prefix=$(prefix) -C src disttools
+
+distimpexp: compile canonical
+	$(MAKE) ABI_ROOT=$(ABI_ROOT) prefix=$(prefix) -C src distimpexp
 ##################################################################
 ## Targets to clean up the mess that we make
 

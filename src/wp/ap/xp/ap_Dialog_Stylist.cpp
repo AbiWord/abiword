@@ -46,13 +46,13 @@
 
 AP_Dialog_Stylist::AP_Dialog_Stylist(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id)
 	: XAP_Dialog_Modeless(pDlgFactory,id),
+	  m_bIsModal(false),
 	  m_pAutoUpdater(0),
 	  m_iTick(0),
 	  m_sCurStyle(""),
 	  m_pStyleTree(NULL),
 	  m_bStyleTreeChanged(true),
-	  m_bStyleChanged(true),
-	  m_bIsModal(false)
+	  m_bStyleChanged(true)
 {
 }
 

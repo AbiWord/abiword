@@ -461,6 +461,10 @@ void XAP_UnixDialog_Print::_raisePrintDialog(XAP_Frame * pFrame)
 	else
 	  gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (buttonAll), TRUE);
 	
+	// by default embed the fonts... users need it, looking at the bugreports,
+	// so leave this enabled by default
+	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (buttonEmbedFonts), TRUE);
+	
 	switch (m_persistPrintDlg.colorSpace)
 	  {
 	  case GR_Graphics::GR_COLORSPACE_BW:
@@ -623,4 +627,3 @@ Fail:
 	m_answer = a_CANCEL;
 	return;
 }
-

@@ -790,7 +790,7 @@ fl_DocSectionLayout::fl_DocSectionLayout(FL_DocLayout* pLayout, PL_StruxDocHandl
 	
 	m_sPaperColor.clear();
 	m_sScreenColor.clear();
-	_lookupProperties();
+	lookupProperties();
 }
 
 fl_DocSectionLayout::~fl_DocSectionLayout()
@@ -989,7 +989,7 @@ void fl_DocSectionLayout::setHdrFtr(HdrFtrType iType, fl_HdrFtrSectionLayout* pH
 void fl_DocSectionLayout::_HdrFtrChangeCallback(UT_Worker * pWorker)
 {
 	UT_ASSERT(pWorker);
-
+	UT_DEBUGMSG(("Doing HdrFtr change callback \n"));
 	// Get the docSectionLayout
 	fl_DocSectionLayout * pDSL = static_cast<fl_DocSectionLayout *>(pWorker->getInstanceData());
 	UT_ASSERT(pDSL);
@@ -1043,6 +1043,7 @@ void fl_DocSectionLayout::_HdrFtrChangeCallback(UT_Worker * pWorker)
 //
 	pDoc->signalListeners(PD_SIGNAL_UPDATE_LAYOUT);
 	pDoc->notifyPieceTableChangeEnd();
+	pDSL->m_sHdrFtrChangeProps.clear();
 //
 // Put the point at the right point in the header/footer on the right page.
 //
@@ -1064,7 +1065,18 @@ void fl_DocSectionLayout::_HdrFtrChangeCallback(UT_Worker * pWorker)
 // Stop the resizer and delete and clear it's pointer. It's job is done now.
 //
 	pDSL->m_pHdrFtrChangeTimer->stop();
-	DELETEP(pDSL->m_pHdrFtrChangeTimer);
+	fl_DocSectionLayout * pOrig = pDSL;
+	while(pDSL)
+	{
+
+		if(pDSL->getContainerType() == FL_CONTAINER_DOCSECTION)
+		{
+			static_cast<fl_DocSectionLayout *>(pDSL)->completeBreakSection();
+			static_cast<fl_DocSectionLayout *>(pDSL)->checkAndRemovePages();
+		}
+		pDSL = static_cast<fl_DocSectionLayout *>(pDSL->getNext());
+	}
+	DELETEP(pOrig->m_pHdrFtrChangeTimer);
 }
 /*!
  * Signal a PT change at the next opportunity to change the height of a Hdr
@@ -1087,11 +1099,7 @@ bool fl_DocSectionLayout::setHdrFtrHeightChange(bool bHdrFtr, UT_sint32 newHeigh
 		{
 			return false;
 		}
-		if(newHeight <= getDocument()->getNewHdrHeight())
-		{
-			m_iNewHdrHeight = newHeight;
-			return false;
-		}
+		m_iNewHdrHeight = newHeight;
 		getDocument()->setNewHdrHeight(newHeight);
 		UT_sint32 fullHeight = newHeight + getHeaderMargin();
 		UT_String sHeight = m_pLayout->getGraphics()->invertDimension(DIM_IN, static_cast<double>(fullHeight));
@@ -1104,11 +1112,7 @@ bool fl_DocSectionLayout::setHdrFtrHeightChange(bool bHdrFtr, UT_sint32 newHeigh
 		{
 			return false;
 		}
-		if(newHeight <= getDocument()->getNewFtrHeight())
-		{
-			m_iNewFtrHeight = newHeight;
-			return false;
-		}
+		m_iNewFtrHeight = newHeight;
 		getDocument()->setNewFtrHeight(newHeight);
 		UT_sint32 fullHeight = newHeight + getFooterMargin();
 		UT_String sHeight = m_pLayout->getGraphics()->invertDimension(DIM_IN, static_cast<double>(fullHeight));
@@ -1674,7 +1678,7 @@ void fl_DocSectionLayout::updateDocSection(void)
 
 	const XML_Char* pszSectionType = NULL;
 	pAP->getAttribute("type", pszSectionType);
-	_lookupProperties();
+	lookupProperties();
 
 	// clear all the columns
     // Assume that all columns and formatting have already been removed via a collapseDocSection()
@@ -1711,13 +1715,9 @@ void fl_DocSectionLayout::updateDocSection(void)
 	return;
 }
 
-void fl_DocSectionLayout::_lookupProperties(void)
+void fl_DocSectionLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 {
-
-//  Find the folded Level of the strux
-
-	lookupFoldedLevel();
-
+	UT_return_if_fail(pSectionAP);
 // Now turn off the HdrFtr size change locks.
 
 	m_iNewHdrHeight = 0;
@@ -1726,9 +1726,6 @@ void fl_DocSectionLayout::_lookupProperties(void)
 	getDocument()->setNewFtrHeight(0);
 	m_sHdrFtrChangeProps.clear();
 
-	const PP_AttrProp* pSectionAP = NULL;
-	getAP(pSectionAP);
-	UT_return_if_fail(pSectionAP);
 
 	/*
 	  TODO shouldn't we be using PP_evalProperty like
@@ -3039,6 +3036,14 @@ bool fl_HdrFtrSectionLayout::doclistener_deleteStrux(const PX_ChangeRecord_Strux
 		pPrevSL->add(pBL);
 	}
 //
+// Remove the pointer to this hdrftr
+//
+//
+// Null out pointer to this HdrFtrSection in the attached DocLayoutSection
+// This prevent a new page being created in the format statement that follows.
+//
+	m_pDocSL->setHdrFtr(m_iHFType, NULL);
+//
 // Format the new section containing the blocks.
 //
 	pPrevSL->format();
@@ -3447,6 +3452,12 @@ void fl_HdrFtrSectionLayout::updateLayout(void)
 {
 	bool bredraw = false;
 	fl_ContainerLayout*	pBL = getFirstLayout();
+	if(needsReformat())
+	{
+		format();
+		bredraw = true;
+		setNeedsReformat(false);
+	}
 	while (pBL)
 	{
 		if (pBL->needsReformat())
@@ -3557,7 +3568,11 @@ bool fl_HdrFtrSectionLayout::doclistener_changeStrux(const PX_ChangeRecord_Strux
 	return false;
 }
 
-void fl_HdrFtrSectionLayout::_lookupProperties(void)
+/*!
+    this function is only to be called by fl_ContainerLayout::lookupProperties()
+    all other code must call lookupProperties() instead
+*/
+void fl_HdrFtrSectionLayout::_lookupProperties(const PP_AttrProp* pAP)
 {
 }
 
@@ -4056,7 +4071,7 @@ bool fl_HdrFtrSectionLayout::bl_doclistener_insertBlock(fl_ContainerLayout* pBL,
 //
 	UT_uint32 iCount = m_vecPages.getItemCount();
 	fl_ContainerLayout * pShadowBL = NULL;
-	xxx_UT_DEBUGMSG(("fl_HdrFtrSectionLayout: insertBlock \n"));
+	UT_DEBUGMSG(("fl_HdrFtrSectionLayout: insertBlock \n"));
 	m_pDoc->setDontChangeInsPoint();
 	for (UT_uint32 i=0; i<iCount; i++)
 	{
@@ -4103,6 +4118,7 @@ bool fl_HdrFtrSectionLayout::bl_doclistener_insertBlock(fl_ContainerLayout* pBL,
 // Mark the Block as HdrFtr
 //
 		static_cast<fl_BlockLayout *>(ppBL->getNext())->setHdrFtr();
+		setNeedsReformat();
 	}
 	else
 //
@@ -4118,6 +4134,7 @@ bool fl_HdrFtrSectionLayout::bl_doclistener_insertBlock(fl_ContainerLayout* pBL,
 		bResult = bResult && static_cast<fl_BlockLayout *>(pNewBL)->doclistener_insertFirstBlock(pcrx, sdh,
 													lid, pfnBindHandles);
 		static_cast<fl_BlockLayout *>(pNewBL)->setHdrFtr();
+		setNeedsReformat();
 	}
 	return bResult;
 }
@@ -4440,7 +4457,7 @@ fl_ContainerLayout* fl_HdrFtrShadow::findMatchingContainer(fl_ContainerLayout* p
 	}
 	if(ppBL == NULL)
 	{
-		UT_ASSERT(0);
+		//UT_ASSERT(0);
 		m_pDoc->miniDump(pBL->getStruxDocHandle(),6);
 		if(pBL->getContainerType() == FL_CONTAINER_BLOCK)
 		{
@@ -4503,7 +4520,6 @@ fl_ContainerLayout * fl_HdrFtrShadow::findBlockAtPosition(PT_DocPosition pos)
 	}
 	fl_ContainerLayout* pNext = NULL;
 	pNext = pBL->getNextBlockInDocument();
-	bool bInTable = false;
 	bool doNext = false;
 	if(pNext != NULL)
 	{
@@ -4639,6 +4655,10 @@ void fl_HdrFtrShadow::redrawUpdate(void)
 				pBL->format();
 			}
 		}
+		else
+		{
+			pBL->recalculateFields(getDocLayout()->getRedrawCount());
+		}
 		
 		if(pView && pBL->needsRedraw())
 		{
@@ -4661,8 +4681,11 @@ bool fl_HdrFtrShadow::doclistener_changeStrux(const PX_ChangeRecord_StruxChange 
 	return false;
 }
 
-
-void fl_HdrFtrShadow::_lookupProperties(void)
+/*!
+    this function is only to be called by fl_ContainerLayout::lookupProperties()
+    all other code must call lookupProperties() instead
+*/
+void fl_HdrFtrShadow::_lookupProperties(const PP_AttrProp* pAP)
 {
 }
 

@@ -93,7 +93,10 @@ public:
 	void                                ConstructWindowName(void);
 	void                                event_update(void);
 	void                                finalize(void);
-	
+	void                                setWrapping(bool bWrap)
+		{m_bSetWrapping = bWrap;}
+	bool                                getWrapping(void) const
+		{return m_bSetWrapping;}
 	void                                setBorderThickness(UT_UTF8String & sThick);
 	virtual void                        setBorderThicknessInGUI(UT_UTF8String & sThick) = 0;
 	
@@ -150,7 +153,9 @@ private:
 	UT_String                           m_sImagePath;
 	IEGraphicFileType                   m_iGraphicType;
 	GR_Image *                          m_pImage;
-	FG_Graphic *                        m_pGraphic;    
+	FG_Graphic *                        m_pGraphic;
+
+    bool                                m_bSetWrapping;
 };
 
 #endif /* AP_DIALOG_FORMATFRAME_H */

@@ -85,6 +85,72 @@ Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_ScriptsActive)
   return s;
 }
 
+Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_BookmarkOK)
+{
+	ABIWORD_VIEW;
+	CHECK_INC_LOAD;
+	EV_Toolbar_ItemState s = EV_TIS_ZERO;
+
+	if(pView->isTOCSelected())
+	{
+	    s = EV_TIS_Gray ;
+		return s;
+	}
+	PT_DocPosition posStart = pView->getPoint();
+	PT_DocPosition posEnd = pView->getSelectionAnchor();
+	fl_BlockLayout * pBL1 = pView->getBlockAtPosition(posStart);
+	fl_BlockLayout * pBL2 = pView->getBlockAtPosition(posEnd);
+	if((pBL1 == NULL) || (pBL2 == NULL)) // make sure we get valid blocks from selection beginning and end
+	{
+		s = EV_TIS_Gray;
+		return s;
+	}
+	if(pBL1 != pBL2) // don't allow Insert bookmark if selection spans multiple blocks
+	{
+	    s = EV_TIS_Gray ;
+		return s;
+	}
+
+	return s ;
+}
+
+Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_HyperlinkOK)
+{
+	ABIWORD_VIEW ;
+	CHECK_INC_LOAD;
+	UT_return_val_if_fail (pView, EV_TIS_Gray);
+
+	EV_Toolbar_ItemState s = EV_TIS_ZERO;
+
+
+	if ( pView->isSelectionEmpty () )
+	  {
+	    s = EV_TIS_Gray ;
+		return s;
+	  }
+	if(pView->isTOCSelected())
+	{
+	    s = EV_TIS_Gray ;
+		return s;
+	}
+	PT_DocPosition posStart = pView->getPoint();
+	PT_DocPosition posEnd = pView->getSelectionAnchor();
+	fl_BlockLayout * pBL1 = pView->getBlockAtPosition(posStart);
+	fl_BlockLayout * pBL2 = pView->getBlockAtPosition(posEnd);
+	if((pBL1 == NULL) || (pBL2 == NULL)) // make sure we get valid blocks from selection beginning and end
+	{
+		s = EV_TIS_Gray;
+		return s;
+	}
+	if(pBL1 != pBL2) // don't allow Insert Hyperlink if selection spans multiple blocks
+	{
+	    s = EV_TIS_Gray ;
+		return s;
+	}
+
+	return s ;
+}
+
 Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_Spelling)
 {
 	//ABIWORD_VIEW;
@@ -778,7 +844,7 @@ Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_Table)
   ABIWORD_VIEW;
   UT_return_val_if_fail (pView, EV_TIS_Gray);
   
-  if(pView->isInTable(pView->getPoint()-1) && pView->isInTable() )
+  if(pView->isInTable() )
   {
 	  return EV_TIS_ZERO;
   }
@@ -791,7 +857,7 @@ Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_TableOK)
   ABIWORD_VIEW;
   UT_return_val_if_fail (pView, EV_TIS_Gray);
   
-  if(pView->isInTable(pView->getPoint()-1) && pView->isInTable() && pView->isHdrFtrEdit())
+  if(pView->isInTable() && pView->isHdrFtrEdit())
   {
 	  return EV_TIS_Gray;
   }
@@ -812,7 +878,7 @@ Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_TableMerged)
   ABIWORD_VIEW;
   UT_return_val_if_fail (pView, EV_TIS_Gray);
   
-  if(pView->isInTable(pView->getPoint()-1) && pView->isInTable())
+  if(pView->isInTable())
   {
 	  return EV_TIS_ZERO;
   }

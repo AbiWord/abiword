@@ -661,6 +661,7 @@ void pt_PieceTable::_deleteHdrFtrStruxWithNotify( pf_Frag_Strux * pfFragStruxHdr
 // the HdrFtr to be properly recreated on undo (Since it needs blocks to be
 // present before it can be created.)
 //
+	m_fragments.cleanFrags();
 	bres = _deleteStruxWithNotify(pfFragStruxHdrFtr->getPos(),pfFragStruxHdrFtr,NULL,NULL);
 	m_fragments.cleanFrags();
 	for(i=1; i<count; i++)
