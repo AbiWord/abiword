@@ -1459,7 +1459,7 @@ IE_Imp_RTF::~IE_Imp_RTF()
 				{
 					insertStrux(PTX_EndTable);
 					
-					insertStrux(PTX_Block);
+//					insertStrux(PTX_Block); // we don't need this now
 				}
 			}
 			else
