@@ -233,7 +233,15 @@ static void convertFontFace(char *szDest, const char *szFrom)
 {
   // TODO: make me better
   // TODO: and handle things like comma lists of font faces
-  strcpy(szDest, szFrom);
+  char *newFont;
+
+  // default...
+  if(szFrom == NULL)
+    newFont = "Times New Roman";
+  else
+    newFont = (char*)szFrom;
+
+  strcpy(szDest, newFont);
 }
 
 static void convertFontSize(char *szDest, const char *szFrom)
@@ -244,7 +252,11 @@ static void convertFontSize(char *szDest, const char *szFrom)
 
   int sz = 12;
 
-  if(UT_UCS_isdigit(*szFrom))
+  if(szFrom == NULL)
+    {
+      sz = 12;
+    }
+  else if(UT_UCS_isdigit(*szFrom))
     {
       sz = atoi(szFrom);
     }
@@ -285,7 +297,7 @@ static void convertFontSize(char *szDest, const char *szFrom)
   else if(sz < 8)
     sz = 8;
 
-  sprintf(szDest, "%2dpt", sz);
+  sprintf(szDest, "%2d", sz);
 }
 
 static void convertFontColor(char *szDest, const char *szFrom)
@@ -297,6 +309,10 @@ static void convertFontColor(char *szDest, const char *szFrom)
 
   int col = 0; // black
 
+  if(szFrom == NULL)
+    {
+      col = 0;
+    }
   if(*szFrom == '#')
     {
       col = atoi(szFrom+1);
@@ -379,7 +395,7 @@ void IE_Imp_XHTML::_startElement(const XML_Char *name, const XML_Char **atts)
 	X_EatIfAlreadyError();				// xml parser keeps running until buffer consumed
 	                                                // this just avoids all the processing if there is an error
 
-#define NEW_ATTR_SZ 5
+#define NEW_ATTR_SZ 3
  	const XML_Char *new_atts[NEW_ATTR_SZ];
 	XML_Char * sz = NULL;
 
@@ -391,13 +407,13 @@ void IE_Imp_XHTML::_startElement(const XML_Char *name, const XML_Char **atts)
 	switch (s_Tokens[tokenIndex].m_type)
 	{
 	case TT_DOCUMENT:
-		UT_DEBUGMSG(("Init %d\n", m_parseState));
+	  //UT_DEBUGMSG(("Init %d\n", m_parseState));
 		X_VerifyParseState(_PS_Init);
 		m_parseState = _PS_Doc;
 		return;
 
 	case TT_BODY:
-		UT_DEBUGMSG(("Doc %d\n", m_parseState));
+	  //UT_DEBUGMSG(("Doc %d\n", m_parseState));
 		X_VerifyParseState(_PS_Doc);
 		m_parseState = _PS_Block;
 
@@ -407,7 +423,7 @@ void IE_Imp_XHTML::_startElement(const XML_Char *name, const XML_Char **atts)
 		return;		
 
 	case TT_DIV:
-		UT_DEBUGMSG(("B %d\n", m_parseState));
+	  //UT_DEBUGMSG(("B %d\n", m_parseState));
 		X_VerifyParseState(_PS_Block);
 		m_parseState = _PS_Block;
 		X_CheckError(m_pDocument->appendStrux(PTX_Section,NULL));
@@ -421,7 +437,7 @@ void IE_Imp_XHTML::_startElement(const XML_Char *name, const XML_Char **atts)
 	case TT_ADDRESS:
 	case TT_CITE:
 	case TT_I:
-		UT_DEBUGMSG(("B %d\n", m_parseState));
+	  //UT_DEBUGMSG(("B %d\n", m_parseState));
 		X_VerifyParseState(_PS_Block);
 		UT_XML_cloneString(sz, PT_PROPS_ATTRIBUTE_NAME);
 		new_atts[0]=sz;
@@ -436,7 +452,7 @@ void IE_Imp_XHTML::_startElement(const XML_Char *name, const XML_Char **atts)
 	case TT_STRONG:
 	case TT_EM:
 	case TT_B:
-		UT_DEBUGMSG(("B %d\n", m_parseState));
+	  //UT_DEBUGMSG(("B %d\n", m_parseState));
 		X_VerifyParseState(_PS_Block);
 		UT_XML_cloneString(sz, PT_PROPS_ATTRIBUTE_NAME);
 		new_atts[0]=sz;
@@ -447,7 +463,7 @@ void IE_Imp_XHTML::_startElement(const XML_Char *name, const XML_Char **atts)
 		return;
 
 	case TT_UNDERLINE:
-		UT_DEBUGMSG(("B %d\n", m_parseState));
+	  //UT_DEBUGMSG(("B %d\n", m_parseState));
 		X_VerifyParseState(_PS_Block);
 		UT_XML_cloneString(sz, PT_PROPS_ATTRIBUTE_NAME);
 		new_atts[0]=sz;
@@ -459,7 +475,7 @@ void IE_Imp_XHTML::_startElement(const XML_Char *name, const XML_Char **atts)
 
 	case TT_SUP:
 	case TT_SUB:
-	  UT_DEBUGMSG(("Super or Subscript\n"));
+	  //UT_DEBUGMSG(("Super or Subscript\n"));
 	  X_VerifyParseState(_PS_Block);
 	  UT_XML_cloneString(sz, PT_PROPS_ATTRIBUTE_NAME);
 	  new_atts[0]=sz;
@@ -474,7 +490,7 @@ void IE_Imp_XHTML::_startElement(const XML_Char *name, const XML_Char **atts)
 
 	case TT_S:
 	case TT_STRIKE:
-	  UT_DEBUGMSG(("Strike\n"));
+	  //UT_DEBUGMSG(("Strike\n"));
 	  X_VerifyParseState(_PS_Block);
 	  UT_XML_cloneString(sz, PT_PROPS_ATTRIBUTE_NAME);
 	  new_atts[0]=sz;
@@ -483,14 +499,32 @@ void IE_Imp_XHTML::_startElement(const XML_Char *name, const XML_Char **atts)
 	  new_atts[1]=sz;
 	  X_CheckError(m_pDocument->appendFmt(new_atts));
 	  return;
-	  
+  
 	case TT_FONT:
 	  UT_DEBUGMSG(("Font tag encountered\n"));
-	  // TODO: code this
 	  {
-	    // get font color
-	    // get font size
-	    // get font face
+	    const XML_Char *p_val;
+	    char color[7], size[3], face[64];
+	    XML_Char output[128];
+
+	    p_val = _getXMLPropValue("color", atts);
+	    convertFontColor(color, p_val);
+
+	    p_val = _getXMLPropValue("size", atts);
+	    convertFontSize(size, p_val);
+
+	    p_val = _getXMLPropValue("face", atts);
+	    convertFontFace(face, p_val);
+
+	    sprintf(output, "color:%s; font-family:%s; size:%spt", color, face, size);
+	    UT_DEBUGMSG(("Font properties: %s\n", output));
+
+	    UT_XML_cloneString(sz, PT_PROPS_ATTRIBUTE_NAME);
+	    new_atts[0] = sz;
+	    sz = NULL;
+	    UT_XML_cloneString(sz, output);
+	    new_atts[1] = sz;
+	    X_CheckError(m_pDocument->appendFmt(new_atts));
 	  }
 	  return;
 
@@ -498,9 +532,34 @@ void IE_Imp_XHTML::_startElement(const XML_Char *name, const XML_Char **atts)
 	case TT_H1:
 	case TT_H2:
 	case TT_H3:
-	        UT_DEBUGMSG(("B %d\n", m_parseState));
+	  {
+	    //    UT_DEBUGMSG(("B %d\n", m_parseState));
 		X_VerifyParseState(_PS_Block);
-		X_CheckError(m_pDocument->appendStrux(PTX_Block,NULL));
+
+		const XML_Char *p_val;
+
+		p_val = _getXMLPropValue("align", atts);
+		if(p_val == NULL)
+		  X_CheckError(m_pDocument->appendStrux(PTX_Block,NULL));
+		else
+		  {
+		    sz = NULL;
+		    
+		    if(!UT_XML_stricmp(p_val, "right"))
+		      UT_XML_cloneString(sz, "text-align:right");
+		    else if(!UT_XML_stricmp(p_val, "center"))
+		      UT_XML_cloneString(sz, "text-align:center");
+		    
+		    if(sz != NULL)
+		      {
+			new_atts[1] = sz;
+			UT_XML_cloneString(sz, PT_PROPS_ATTRIBUTE_NAME);
+			new_atts[0] = sz;		      
+		      }
+
+		    X_CheckError(m_pDocument->appendStrux(PTX_Block,new_atts));
+		  }
+
 		UT_XML_cloneString(sz, PT_STYLE_ATTRIBUTE_NAME);
 		new_atts[0]=sz;
 		sz = NULL;
@@ -517,27 +576,65 @@ void IE_Imp_XHTML::_startElement(const XML_Char *name, const XML_Char **atts)
 		new_atts[1]=sz;
 		X_CheckError(m_pDocument->appendFmt(new_atts));
 		return;
+	  }
 
 	case TT_P:
 	case TT_TR:
 	case TT_H4:
 	case TT_H5:
 	case TT_H6:
-		UT_DEBUGMSG(("B %d\n", m_parseState));
+	  //UT_DEBUGMSG(("B %d\n", m_parseState));
+	  {
 		X_VerifyParseState(_PS_Block);
 		m_parseState = _PS_Block;
-		X_CheckError(m_pDocument->appendStrux(PTX_Block,NULL));
-		return;
 		
+		const XML_Char *p_val;
+
+		p_val = _getXMLPropValue("align", atts);
+		if(p_val == NULL)
+		  X_CheckError(m_pDocument->appendStrux(PTX_Block,NULL));
+		else
+		  {
+		    sz = NULL;
+
+		    if(!UT_XML_stricmp(p_val, "right"))
+		      UT_XML_cloneString(sz, "text-align:right");
+		    else if(!UT_XML_stricmp(p_val, "center"))
+		      UT_XML_cloneString(sz, "text-align:center");
+		    
+		    if(sz != NULL)
+		      {
+			new_atts[1] = sz;
+			UT_XML_cloneString(sz, PT_PROPS_ATTRIBUTE_NAME);
+			new_atts[0] = sz;
+		      }
+
+		    X_CheckError(m_pDocument->appendStrux(PTX_Block,new_atts));
+		  }
+		return;
+	  }
+
 	case TT_INLINE:
-		UT_DEBUGMSG(("B %d\n", m_parseState));
+	  //UT_DEBUGMSG(("B %d\n", m_parseState));
 		X_VerifyParseState(_PS_Block);
-		X_CheckError(_pushInlineFmt(atts));
+		const XML_Char *p_val;
+
+		p_val = _getXMLPropValue("style", atts);
+		if(p_val)
+		  {
+		    UT_XML_cloneString(sz, PT_PROPS_ATTRIBUTE_NAME);
+		    new_atts[0] = sz;
+		    sz = NULL;
+		    UT_XML_cloneString(sz, p_val);
+		    new_atts[1] = sz;
+		  }
+
+		X_CheckError(_pushInlineFmt(new_atts));
 		X_CheckError(m_pDocument->appendFmt(&m_vecInlineFmt));
 		return;
 
 	case TT_BREAK:
-		UT_DEBUGMSG(("B %d\n", m_parseState));
+	  //UT_DEBUGMSG(("B %d\n", m_parseState));
 		X_VerifyParseState(_PS_Block);
 		{
 			UT_UCSChar ucs = UCS_LF;
@@ -566,19 +663,19 @@ void IE_Imp_XHTML::_endElement(const XML_Char *name)
 	switch (s_Tokens[tokenIndex].m_type)
 	{
 	case TT_DOCUMENT:
-		UT_DEBUGMSG(("Init %d\n", m_parseState));
+	  //UT_DEBUGMSG(("Init %d\n", m_parseState));
 		X_VerifyParseState(_PS_Doc);
 		m_parseState = _PS_Init;
 		return;
 
 	case TT_BODY:
-		UT_DEBUGMSG(("Doc %d\n", m_parseState));
+	  //UT_DEBUGMSG(("Doc %d\n", m_parseState));
 		X_VerifyParseState(_PS_Block);
 		m_parseState = _PS_Doc;
 		return;
 
 	case TT_DIV:
-		UT_DEBUGMSG(("B %d\n", m_parseState));
+	  //UT_DEBUGMSG(("B %d\n", m_parseState));
 		X_VerifyParseState(_PS_Block);
 		m_parseState = _PS_Block;
 		return;
@@ -592,8 +689,8 @@ void IE_Imp_XHTML::_endElement(const XML_Char *name)
 	case TT_H5:
 	case TT_H6:
 	case TT_BLOCKQUOTE:
-		UT_ASSERT(m_lenCharDataSeen==0);
-		UT_DEBUGMSG(("B %d\n", m_parseState));
+	  UT_ASSERT(m_lenCharDataSeen==0);
+	  //UT_DEBUGMSG(("B %d\n", m_parseState));
 		X_VerifyParseState(_PS_Block);
 		m_parseState = _PS_Block;
 		X_CheckDocument(_getInlineDepth()==0);
@@ -619,9 +716,9 @@ void IE_Imp_XHTML::_endElement(const XML_Char *name)
 	case TT_B:
 	case TT_I:
 	case TT_UNDERLINE:
-	  //case TT_FONT:
+	case TT_FONT:
 		UT_ASSERT(m_lenCharDataSeen==0);
-		UT_DEBUGMSG(("B %d\n", m_parseState));
+		//UT_DEBUGMSG(("B %d\n", m_parseState));
 		X_VerifyParseState(_PS_Block);
 		X_CheckDocument(_getInlineDepth()==0);
 		//_popInlineFmt();
@@ -630,7 +727,7 @@ void IE_Imp_XHTML::_endElement(const XML_Char *name)
 		
 	case TT_INLINE:
 		UT_ASSERT(m_lenCharDataSeen==0);
-		UT_DEBUGMSG(("B %d\n", m_parseState));
+		//UT_DEBUGMSG(("B %d\n", m_parseState));
 		X_VerifyParseState(_PS_Block);
 		X_CheckDocument(_getInlineDepth()>0);
 		_popInlineFmt();
@@ -639,7 +736,7 @@ void IE_Imp_XHTML::_endElement(const XML_Char *name)
 
 	case TT_BREAK:						// not a container, so we don't pop stack
 		UT_ASSERT(m_lenCharDataSeen==0);
-		UT_DEBUGMSG(("B %d\n", m_parseState));
+		//UT_DEBUGMSG(("B %d\n", m_parseState));
 		X_VerifyParseState(_PS_Block);
 		return;
 
