@@ -1031,15 +1031,35 @@ void fp_Run::drawSquiggle(UT_uint32 iOffset, UT_uint32 iLen)
 
 		_getPartRect( &rect, xoff, yoff, iOffset, iLen, pgbCharWidths);
 
+
 		// Is this correct? 
 		m_pG->setColor(redSquiggle);
 
+
+
 		// TODO ----> is this the correct coordinate space?
-		m_pG->drawLine(xoff + rect.left, yoff + rect.height + 1, xoff + rect.width, yoff + rect.height + 1);
+//		m_pG->drawLine(xoff + rect.left, yoff + rect.height + 1, 
+//						xoff + rect.left + rect.width, yoff + rect.height + 1);
 
-		UT_DEBUGMSG(("Drawing squiggle from xoff = %d, yoff = %d, left=%d, height=%d, width=%d\n", 
-							xoff,yoff, rect.left, rect.height, rect.width));
-		UT_DEBUGMSG(("Drawing squiggle from (%d,%d) to (%d,%d) \n", xoff + rect.left, yoff + rect.height+1, 
-							xoff + rect.width, yoff + rect.height +1));
+		m_pG->drawLine(rect.left, rect.top + rect.height + 1, 
+						rect.left + rect.width,  rect.top + rect.height + 1);
 
+
+
+
+
+
+
+		UT_DEBUGMSG(("xoff = %d, yoff = %d, left=%d, top = %d,height=%d, width=%d", 
+							xoff,yoff, rect.left, rect.top, rect.height, 
+							rect.width));
+//		UT_DEBUGMSG(("Drawing squiggle (%d,%d) to (%d,%d):offset=%d,len=%d", 
+//						xoff + rect.left, yoff + rect.height+1, 
+//						xoff + rect.left + rect.width, yoff + rect.height +1,
+//						iOffset, iLen));
+
+		UT_DEBUGMSG(("Drawing squiggle (%d,%d) to (%d,%d):offset=%d,len=%d", 
+						rect.left,              rect.top + rect.height + 1, 
+						rect.left + rect.width, rect.top + rect.height + 1,
+						iOffset, iLen));
 }
