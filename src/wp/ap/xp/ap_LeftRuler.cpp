@@ -246,6 +246,8 @@ void AP_LeftRuler::mousePress(EV_EditModifierState /* ems */, EV_EditMouseButton
 	
   	UT_Rect rTopMargin, rBottomMargin;
   	_getMarginMarkerRects(&m_infoCache,rTopMargin,rBottomMargin);
+	rTopMargin.width = getWidth();
+	rBottomMargin.width = getWidth();
  	if (rTopMargin.containsPoint(x,y))
  	{
  		m_bValidMouseClick = true;
@@ -828,7 +830,10 @@ void AP_LeftRuler::mouseMotion(EV_EditModifierState ems, UT_sint32 x, UT_sint32 
 		}
 		return;
 	}
-	pView->getLeftRulerInfo(&m_infoCache);
+	if(!m_bValidMouseClick)
+	{
+		pView->getLeftRulerInfo(&m_infoCache);
+	}
 	UT_ASSERT(m_infoCache.m_yTopMargin >= 0);
 
 	// if they drag vertically off the ruler, we ignore the whole thing.
@@ -853,6 +858,8 @@ void AP_LeftRuler::mouseMotion(EV_EditModifierState ems, UT_sint32 x, UT_sint32 
 	
 		UT_Rect rTopMargin, rBottomMargin;
 		_getMarginMarkerRects(&m_infoCache,rTopMargin,rBottomMargin);
+		rTopMargin.width = getWidth();
+		rBottomMargin.width = getWidth();
 		if (rTopMargin.containsPoint(x,y))
 		{
 			if(m_pG)
@@ -992,6 +999,15 @@ void AP_LeftRuler::mouseMotion(EV_EditModifierState ems, UT_sint32 x, UT_sint32 
 			return;
 		}
 
+		if (m_draggingWhat == DW_TOPMARGIN)
+		{
+			m_infoCache.m_yTopMargin += m_draggingCenter - oldDragCenter;
+		}
+		if (m_draggingWhat == DW_BOTTOMMARGIN)
+		{
+			m_infoCache.m_yBottomMargin -= m_draggingCenter - oldDragCenter;
+		}
+				
 		draw(NULL, &m_infoCache);
 		_xorGuide();
 		m_bBeforeFirstMotion = false;
