@@ -95,13 +95,6 @@ void AP_UnixDialog_InsertTable::event_Cancel(void)
 	m_answer = AP_Dialog_InsertTable::a_CANCEL;
 }
 
-/*
-void AP_UnixDialog_InsertTable::event_WindowDelete(void)
-{
-	m_answer = AP_Dialog_InsertTable::a_CANCEL;	
-	gtk_main_quit();
-}*/
-
 /*****************************************************************/
 
 GtkWidget * AP_UnixDialog_InsertTable::_constructWindow(void)

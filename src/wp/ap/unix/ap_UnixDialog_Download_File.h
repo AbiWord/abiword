@@ -44,17 +44,19 @@ public:
 	virtual void 		event_PBExpose(void);
 	
  protected:
-
+	typedef enum
+	{
+		BUTTON_CANCEL
+	} ResponseId ;
+		
 	GtkWidget			*_constructWindow(void);
 
 	// for easy Gnome overriding
-	virtual GtkWidget	*_constructButtonCancel(void);
 	virtual GtkWidget 	*_constructProgressBar(void);
 
 	void				_populateWindowData(void);
 	
 	GtkWidget			*m_windowMain;
-	GtkWidget			*m_buttonCancel;
 	GtkWidget			*m_progressBar;
 	
 	GR_UnixGraphics		*m_gc;

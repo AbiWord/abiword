@@ -42,7 +42,6 @@
 #include "ut_png.h"
 #include "ut_worker.h"
 
-
 XAP_Dialog * AP_UnixDialog_Download_File::static_constructor(XAP_DialogFactory * pFactory,
 													 XAP_Dialog_Id id)
 {
@@ -55,7 +54,7 @@ AP_UnixDialog_Download_File::AP_UnixDialog_Download_File(XAP_DialogFactory * pDl
 	: AP_Dialog_Download_File(pDlgFactory,id)
 {
 	m_windowMain = NULL;
-	m_buttonCancel = NULL;
+
 	m_gc = NULL;
 
 	m_pG = NULL;
@@ -70,24 +69,6 @@ AP_UnixDialog_Download_File::~AP_UnixDialog_Download_File(void)
 /*****************************************************************/
 
 // These are all static callbacks, bound to GTK or GDK events.
-
-static void s_cancel_clicked(GtkWidget * widget,
-						 AP_UnixDialog_Download_File * dlg)
-{
-	UT_ASSERT(widget && dlg);
-	
-	dlg->event_Cancel();
-	
-}
-
-static void s_delete_clicked(GtkWidget * /* widget */,
-							 gpointer /* data */,
-							 AP_UnixDialog_Download_File * dlg)
-{
-	UT_ASSERT(dlg);
-
-	dlg->event_WindowDelete();
-}
 
 static gint s_PBConfigure(GtkWidget* w, GdkEventConfigure *e)
 {
@@ -112,33 +93,9 @@ static gint s_PBExpose(GtkWidget * w, GdkEventExpose * /*pExposeEvent*/)
 
 void AP_UnixDialog_Download_File::_runModal(XAP_Frame * pFrame)
 {
-	// stash away the frame
-	m_pFrame = static_cast<XAP_UnixFrame *>(pFrame);
-
 	// Build the window's widgets and arrange them
 	GtkWidget * mainWindow = _constructWindow();
-	UT_ASSERT(mainWindow);
-
-	connectFocus(GTK_WIDGET(mainWindow),pFrame);
-	
-	// To center the dialog, we need the frame of its parent.
-	XAP_UnixFrame * pUnixFrame = static_cast<XAP_UnixFrame *>(pFrame);
-	UT_ASSERT(pUnixFrame);
-	
-	// Get the GtkWindow of the parent frame
-	GtkWidget * parentWindow = pUnixFrame->getTopLevelWindow();
-	UT_ASSERT(parentWindow);
-	
-	// Center our new dialog in its parent and make it a transient
-	// so it won't get lost underneath
-	centerDialog(parentWindow, mainWindow);
-
-	// Show the top level dialog,
-	gtk_widget_show(mainWindow);
-
-	// Make it modal, and stick it up top
-	gtk_grab_add(mainWindow);
-
+	UT_return_if_fail(mainWindow);	
 	
 	/*
 	 * Init a graphical context for the progressbar
@@ -157,12 +114,14 @@ void AP_UnixDialog_Download_File::_runModal(XAP_Frame * pFrame)
 	UT_ASSERT(pFont);
 	m_pG->setFont(pFont);
 
+	switch ( abiRunModalDialog ( GTK_DIALOG(mainWindow),
+								 pFrame, this, BUTTON_CANCEL, false ) )
+	{
+		default:
+			event_Cancel () ; break ;
+	}
 
-	// Run into the GTK event loop for this window.
-	gtk_main();
-
-	if(mainWindow && GTK_IS_WIDGET(mainWindow))
-	  gtk_widget_destroy(mainWindow);
+	abiDestroyWidget ( mainWindow ) ;
 }
 
 void
@@ -171,15 +130,14 @@ AP_UnixDialog_Download_File::_abortDialog(void)
 	event_WindowDelete();
 }
 
+void AP_UnixDialog_Download_File::event_WindowDelete(void)
+{
+	abiDestroyWidget ( m_windowMain ) ;
+}
+
 void AP_UnixDialog_Download_File::event_Cancel(void)
 {
 	_setUserAnswer(a_CANCEL);
-	gtk_main_quit();
-}
-
-void AP_UnixDialog_Download_File::event_WindowDelete(void)
-{
-	gtk_main_quit();
 }
 
 void AP_UnixDialog_Download_File::event_PBConfigure(GdkEventConfigure *e)
@@ -201,18 +159,6 @@ void AP_UnixDialog_Download_File::event_PBExpose(void)
 }
 
 /*****************************************************************/
-GtkWidget * AP_UnixDialog_Download_File::_constructButtonCancel(void)
-{
-	GtkWidget *buttonCancel;
-	const XAP_StringSet * pSS = m_pApp->getStringSet();
-
-	buttonCancel = gtk_button_new_with_label(pSS->getValue(XAP_STRING_ID_DLG_Cancel));
-	gtk_widget_show (buttonCancel);
-	gtk_widget_set_usize (buttonCancel, 85, 0);
-
-	return buttonCancel;
-}
-
 GtkWidget * AP_UnixDialog_Download_File::_constructProgressBar(void)
 {
 	GtkWidget *pb;
@@ -230,26 +176,20 @@ GtkWidget * AP_UnixDialog_Download_File::_constructProgressBar(void)
 GtkWidget * AP_UnixDialog_Download_File::_constructWindow(void)
 {
 	GtkWidget *windowDL;
-	GtkWidget *hbox;
 	GtkWidget *vboxMain;
 	GtkWidget *label;
 	GtkWidget *progressBar;
-	GtkWidget *buttonboxAction;
-	GtkWidget *buttonCancel;
 
 	// we use this for all sorts of strings that can't appear in the string sets
 	char buf[4096];
 
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
 
-	windowDL = gtk_window_new(GTK_WINDOW_DIALOG);
+	windowDL = abiDialogNew ( true, getTitle());	
 	g_object_set_data (G_OBJECT (windowDL), "windowDL", windowDL);
-	gtk_window_set_title (GTK_WINDOW (windowDL), getTitle());
-	gtk_window_set_policy (GTK_WINDOW (windowDL), FALSE, FALSE, FALSE);
+	//gtk_window_set_policy (GTK_WINDOW (windowDL), FALSE, FALSE, FALSE);
 	
-	vboxMain = gtk_vbox_new (FALSE, 0);
-	gtk_widget_show (vboxMain);
-	gtk_container_add (GTK_CONTAINER (windowDL), vboxMain);
+	vboxMain = GTK_DIALOG(windowDL)->vbox;
 	
 	sprintf(buf, pSS->getValue(AP_STRING_ID_DLG_DlFile_Status), getDescription(), getURL());
 	label = gtk_label_new (buf);
@@ -261,33 +201,8 @@ GtkWidget * AP_UnixDialog_Download_File::_constructWindow(void)
 	progressBar = _constructProgressBar();
 	gtk_box_pack_start (GTK_BOX (vboxMain), progressBar, FALSE, TRUE, 0);
 	
-	buttonboxAction = gtk_hbutton_box_new ();
-	gtk_widget_show (buttonboxAction);
-	gtk_box_pack_start (GTK_BOX (vboxMain), buttonboxAction, FALSE, TRUE, 0);
-	gtk_container_border_width (GTK_CONTAINER (buttonboxAction), 11);
-
-	buttonCancel = _constructButtonCancel();
-	g_object_set_data (G_OBJECT (buttonboxAction), "buttonCancel", buttonCancel);
-	gtk_box_pack_start (GTK_BOX(buttonboxAction), buttonCancel, FALSE, FALSE, 0);
- 	GTK_WIDGET_SET_FLAGS (buttonCancel, GTK_CAN_DEFAULT);
-	gtk_widget_grab_default (buttonCancel);
-
-	
-	g_signal_connect(G_OBJECT(buttonCancel),
-					   "clicked",
-					   G_CALLBACK(s_cancel_clicked),
-					   (gpointer) this);
-	
-	g_signal_connect(G_OBJECT(windowDL),
-							 "delete_event",
-							 G_CALLBACK(s_delete_clicked),
-							 (gpointer) this);
-
-	g_signal_connect_after(G_OBJECT(windowDL),
-							 "destroy",
-							 NULL,
-							 NULL);
-
+	abiAddStockButton ( GTK_DIALOG(windowDL), GTK_STOCK_CANCEL, BUTTON_CANCEL ) ;
+		
 	gtk_widget_set_events(GTK_WIDGET(progressBar), (GDK_EXPOSURE_MASK));
 	g_signal_connect(G_OBJECT(progressBar), 
 						"expose_event", 
@@ -299,12 +214,10 @@ GtkWidget * AP_UnixDialog_Download_File::_constructWindow(void)
 						G_CALLBACK(s_PBConfigure), 
 						NULL);
 
-
 	// Update member variables with the important widgets that
 	// might need to be queried or altered later.
 	m_windowMain = windowDL;
 	m_progressBar = progressBar;
-	m_buttonCancel = buttonCancel;
 
 	return windowDL;
 }
