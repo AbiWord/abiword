@@ -1,6 +1,6 @@
 /* AbiSource Program Utilities
  * Copyright (C) 1998 AbiSource, Inc.
- * Copyright (C) 2001-2002 Hubert Figuiere
+ * Copyright (C) 2001-2003 Hubert Figuiere
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -28,6 +28,7 @@
 #include "ev_EditMethod.h"
 #include "ev_EditBinding.h"
 #include "ev_EditEventMapper.h"
+#include "gr_Graphics.h"
 #include "xav_View.h"
 
 EV_CocoaMouse::EV_CocoaMouse(EV_EditEventMapper * pEEM)
@@ -46,7 +47,7 @@ void EV_CocoaMouse::mouseUp(AV_View* pView, NSEvent* e, NSView* hitView)
 	EV_EditMouseOp mop;
 	EV_EditMouseContext emc = 0;
 	
-	UT_DEBUGMSG (("Received mouse up...\n"));
+	xxx_UT_DEBUGMSG (("Received mouse up...\n"));
 	
 	ems = _convertModifierState ([e modifierFlags]);
 	emb = _convertMouseButton ([e buttonNumber]);
@@ -70,7 +71,10 @@ void EV_CocoaMouse::mouseUp(AV_View* pView, NSEvent* e, NSView* hitView)
 			UT_ASSERT(pEM);
 			NSPoint pt = [e locationInWindow];
 			pt = [hitView convertPoint:pt fromView:nil];
-			invokeMouseMethod(pView, pEM, (UT_sint32) pt.x, (UT_sint32) pt.y);
+			pt.y = [hitView bounds].size.height - pt.y;
+			GR_Graphics* pG = pView->getGraphics();
+			invokeMouseMethod(pView, pEM, static_cast<UT_sint32>(pG->tluD(pt.x)), 
+										static_cast<UT_sint32>(pG->tluD(pt.y)));
 		}
 		return;
 	case EV_EEMR_INCOMPLETE:
@@ -117,8 +121,11 @@ void EV_CocoaMouse::mouseClick(AV_View* pView, NSEvent* e, NSView *hitView)
 
 	pt = [e locationInWindow];
 	pt = [hitView convertPoint:pt fromView:nil];
-	pt.y = [hitView bounds].size.width - pt.y;
-	emc = pView->getMouseContext((UT_sint32)pt.x, (UT_sint32)pt.y);
+	pt.y = [hitView bounds].size.height - pt.y;
+	GR_Graphics* pG = pView->getGraphics();
+	UT_DEBUGMSG(("Mouse click at x=%f y=%f\n", pt.x, pt.y));
+	emc = pView->getMouseContext(static_cast<UT_sint32>(pG->tluD(pt.x)), 
+										static_cast<UT_sint32>(pG->tluD(pt.y)));
 	
 	m_clickState = mop;					// remember which type of click
 	m_contextState = emc;				// remember context of click
@@ -128,8 +135,11 @@ void EV_CocoaMouse::mouseClick(AV_View* pView, NSEvent* e, NSView *hitView)
 	switch (result)
 	{
 	case EV_EEMR_COMPLETE:
-		UT_ASSERT(pEM);
-		invokeMouseMethod(pView,pEM,(UT_sint32)pt.x, (UT_sint32)pt.y);
+		{
+			UT_ASSERT(pEM);
+			invokeMouseMethod(pView, pEM, static_cast<UT_sint32>(pG->tluD(pt.x)), 
+										static_cast<UT_sint32>(pG->tluD(pt.y)));
+		}
 		return;
 	case EV_EEMR_INCOMPLETE:
 		// I'm not sure this makes any sense, but we allow it.
@@ -163,11 +173,14 @@ void EV_CocoaMouse::mouseMotion(AV_View* pView, NSEvent *e, NSView *hitView)
 	// TODO mouse button that we did the capture on.
 	pt = [e locationInWindow];
 	pt = [hitView convertPoint:pt fromView:nil];
+	pt.y = [hitView bounds].size.height - pt.y;
+	GR_Graphics* pG = pView->getGraphics();
 
 	if (m_clickState == 0)
 	{
 		mop = EV_EMO_DRAG;
-		emc = pView->getMouseContext((UT_sint32)pt.x,(UT_sint32)pt.y);
+		emc = pView->getMouseContext(static_cast<UT_sint32>(pG->tluD(pt.x)), 
+										static_cast<UT_sint32>(pG->tluD(pt.y)));
 	}
 	else if (m_clickState == EV_EMO_SINGLECLICK)
 	{
@@ -190,8 +203,11 @@ void EV_CocoaMouse::mouseMotion(AV_View* pView, NSEvent *e, NSView *hitView)
 	switch (result)
 	{
 	case EV_EEMR_COMPLETE:
-		UT_ASSERT(pEM);
-		invokeMouseMethod(pView,pEM,(UT_sint32)pt.x,(UT_sint32)pt.y);
+		{
+			UT_ASSERT(pEM);
+			invokeMouseMethod(pView, pEM, static_cast<UT_sint32>(pG->tluD(pt.x)), 
+										static_cast<UT_sint32>(pG->tluD(pt.y)));
+		}
 		return;
 	case EV_EEMR_INCOMPLETE:
 		// I'm not sure this makes any sense, but we allow it.

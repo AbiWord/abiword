@@ -81,7 +81,7 @@ public:									// we create...
 		size_t dataSize = 0;
 	    if (wd->m_id == AP_TOOLBAR_ID_FMT_SIZE)
 		{
-			NSString* tmp = [NSString stringWithCString:XAP_EncodingManager::fontsizes_mapping.lookupByTarget([str cString])];
+			NSString* tmp = [NSString stringWithUTF8String:XAP_EncodingManager::fontsizes_mapping.lookupByTarget([str cString])];
 			dataSize = [tmp length];
 		    data = (UT_UCS2Char*)malloc((dataSize + 1)*sizeof(UT_UCS2Char));
 			[str getCharacters:data];
@@ -689,7 +689,7 @@ bool EV_CocoaToolbar::synthesize(void)
 						{
 							char * sz = (char *)v->getNthItem(m);
 							
-							NSString * str = [NSString stringWithCString:sz];	// autoreleased
+							NSString * str = [NSString stringWithUTF8String:sz];	// autoreleased
 							[comboBox addItemWithObjectValue:str];
 						}
 						if (items > 0) {
@@ -899,10 +899,17 @@ bool EV_CocoaToolbar::refreshToolbar(AV_View * pView, AV_ChangeMask mask)
 					[item setEnabled:(bGrayed?NO:YES)];
 					NSString* value;
 					if (wd->m_id==AP_TOOLBAR_ID_FMT_SIZE) {
-					    value = [NSString stringWithCString:XAP_EncodingManager::fontsizes_mapping.lookupBySource(szState)];
+						const char *str = XAP_EncodingManager::fontsizes_mapping.lookupBySource(szState);
+						if (str) {
+							value = [NSString stringWithUTF8String:str];
+						}
+						else {
+							UT_DEBUGMSG(("%s:%d fontSize not found.... !!!! FIXME", __FILE__, __LINE__));
+							value = [NSString stringWithUTF8String:szState];							
+						}
 					}
 					else {
-						value = [NSString stringWithCString:szState];
+						value = [NSString stringWithUTF8String:szState];
 					}
 
 					[item selectItemWithObjectValue:value];
@@ -1020,7 +1027,7 @@ bool EV_CocoaToolbar::repopulateStyles(void)
 	for (UT_uint32 m=0; m < items; m++)
 	{
 		char * sz = (char *)v->getNthItem(m);
-		NSString * str = [NSString stringWithCString:sz];		//autorelased
+		NSString * str = [NSString stringWithUTF8String:sz];		//autorelased
 		[item addItemWithObjectValue:str];
 	}
 	delete pStyleC;

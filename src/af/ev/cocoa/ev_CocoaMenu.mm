@@ -306,10 +306,10 @@ bool EV_CocoaMenu::synthesizeMenu(NSMenu * wMenuRoot)
 				NSString * str = nil;
 				if (szLabelName) {
 					_convertLabelToMac(buf, sizeof (buf), szLabelName);
-					str = [NSString stringWithCString:buf];	// autoreleased
+					str = [NSString stringWithUTF8String:buf];
 				}
 				else {
-					str = [NSString string];	// autoreleased
+					str = [NSString string];
 				}
 				switch (menuid) {
 				
@@ -362,7 +362,7 @@ bool EV_CocoaMenu::synthesizeMenu(NSMenu * wMenuRoot)
 			NSString * str = nil;
 			if (szLabelName) {
 				_convertLabelToMac(buf, sizeof (buf), szLabelName);
-				str = [NSString stringWithCString:buf];	// autoreleased
+				str = [NSString stringWithUTF8String:buf];	
 			}
 			else {
 				str = [NSString string]; // autoreleased
@@ -779,7 +779,7 @@ NSString* EV_CocoaMenu::_getItemCmd (const char * mnemonic, unsigned int & modif
 		p++;
 	}
 
-	return [[NSString stringWithCString:p] lowercaseString];
+	return [[NSString stringWithUTF8String:p] lowercaseString];
 }
 
 
