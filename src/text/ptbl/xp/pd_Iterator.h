@@ -49,14 +49,20 @@ class pf_Frag;
  * sequential
  * 
  */
-class ABI_EXPORT PD_DocIterator : UT_TextIterator
+class ABI_EXPORT PD_DocIterator : public UT_TextIterator
 {
   public:
 	PD_DocIterator(PD_Document & doc, PT_DocPosition dpos = 0);
 
 	virtual UT_UCS4Char  getChar(); // return character at present position
+
+	virtual UT_uint32 getPosition() const {return m_pos;}
+	virtual void setPosition(UT_uint32 pos);
+
 	virtual UTIterStatus getStatus() const {return m_status;}
 
+	virtual UT_TextIterator * makeCopy();
+	
 	virtual UT_TextIterator & operator ++ ();
 	virtual UT_TextIterator & operator -- ();
 	virtual UT_TextIterator & operator +=  (UT_sint32 i);
@@ -65,6 +71,9 @@ class ABI_EXPORT PD_DocIterator : UT_TextIterator
 	virtual UT_UCS4Char   operator [](UT_uint32 dpos);
 
   private:
+	// private constructor
+	PD_DocIterator(pt_PieceTable & pt):m_pt(pt){};
+
 	bool _findFrag();
 
 	pt_PieceTable & m_pt;
@@ -84,13 +93,20 @@ class ABI_EXPORT PD_DocIterator : UT_TextIterator
  *
  */
 
-class ABI_EXPORT PD_StruxIterator : UT_TextIterator
+class ABI_EXPORT PD_StruxIterator : public UT_TextIterator
 {
   public:
-	PD_StruxIterator(PD_Document & doc, PL_StruxDocHandle sdh, UT_uint32 offset = 0);
+	PD_StruxIterator(PL_StruxDocHandle sdh,
+					 UT_uint32 offset = 0, UT_uint32 maxoffset = 0xffffffff);
 
 	virtual UT_UCS4Char getChar(); // return character at present position
+
+	virtual UT_uint32 getPosition() const {return m_offset;}
+	virtual void setPosition(UT_uint32 pos);
+
 	virtual UTIterStatus getStatus() const {return m_status;}
+
+	virtual UT_TextIterator * makeCopy();
 
 	virtual UT_TextIterator & operator ++ ();
 	virtual UT_TextIterator & operator -- ();
@@ -100,9 +116,13 @@ class ABI_EXPORT PD_StruxIterator : UT_TextIterator
 	virtual UT_UCS4Char   operator [](UT_uint32 dpos);
 
   private:
-	bool _findFrag();
+	// private default constructor
+	PD_StruxIterator(){};
 	
-	pt_PieceTable &   m_pt;
+	bool _findFrag();
+	bool _incrementPos(UT_sint32 d);
+	
+	pt_PieceTable *   m_pPT;
 	UT_uint32         m_offset;
 	UT_uint32         m_frag_offset;
 	PL_StruxDocHandle m_sdh;
@@ -110,6 +130,8 @@ class ABI_EXPORT PD_StruxIterator : UT_TextIterator
 	const pf_Frag * m_frag;
 
 	UTIterStatus    m_status;
+	UT_uint32       m_max_offset;
+	UT_uint32       m_strux_len;
 };
 
 #endif //PD_ITERATOR_H

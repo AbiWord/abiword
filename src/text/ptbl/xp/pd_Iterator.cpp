@@ -17,6 +17,7 @@
  * 02111-1307, USA.
  */
 
+#include "ut_debugmsg.h"
 #include "pd_Iterator.h"
 #include "pt_PieceTable.h"
 #include "pf_Frag.h"
@@ -47,6 +48,19 @@ PD_DocIterator::PD_DocIterator(PD_Document &doc, PT_DocPosition dpos)
 	// find the frag at requested postion
 	_findFrag();
 }
+
+UT_TextIterator * PD_DocIterator::makeCopy()
+{
+	PD_DocIterator * t = new PD_DocIterator(m_pt);
+	UT_return_val_if_fail(t, NULL);
+	
+	t->m_pos = m_pos;
+	t->m_frag = m_frag;
+	t->m_status = m_status;
+
+	return t;
+}
+
 
 /*! find the PT fragment that contains current postion (m_pos)
  */
@@ -251,6 +265,11 @@ UT_UCS4Char PD_DocIterator::operator [](UT_uint32 dpos)
 	return getChar();
 }
 
+void PD_DocIterator::setPosition(UT_uint32 dpos)
+{
+	m_pos = (PT_DocPosition)dpos;
+	_findFrag();
+}
 
 ///////////////////////////////////////////////////////////////////////
 //
@@ -261,22 +280,54 @@ UT_UCS4Char PD_DocIterator::operator [](UT_uint32 dpos)
     \param doc - the document which we want to iterate
     \param sdh - handle of the strux we want to start from
     \param offset - offset relative to strux we want to start from
+    \param maxOffset - the upper limit of offset
 */
-PD_StruxIterator::PD_StruxIterator(PD_Document &doc, PL_StruxDocHandle sdh, UT_uint32 offset)
-	: m_pt(*doc.getPieceTable()), m_offset(offset), m_sdh(sdh),
+PD_StruxIterator::PD_StruxIterator(PL_StruxDocHandle sdh,UT_uint32 offset,
+								   UT_uint32 maxOffset)
+	: m_pPT(NULL), m_offset(offset), m_sdh(sdh),
 	  m_frag_offset(0), m_frag(NULL),
-	  m_status(UTIter_OK)
+	  m_status(UTIter_OK),
+	  m_max_offset(maxOffset),
+	  m_strux_len(0)
 {
 	UT_return_if_fail(m_sdh);
 	m_frag = static_cast<const pf_Frag *>(m_sdh);
-	
+	m_pPT = const_cast<pf_Frag *>(m_frag)->getPieceTable();
+
+	// save the length of this strux, so we can test for out of bounds
+	// condition on the low end
+	m_strux_len = m_frag->getLength();
+		
 	_findFrag();
+	xxx_UT_DEBUGMSG(("sizeof PD_StruxIterator: %d\n", sizeof(PD_StruxIterator)));
+}
+
+UT_TextIterator * PD_StruxIterator::makeCopy()
+{
+	PD_StruxIterator * t = new PD_StruxIterator();
+	UT_return_val_if_fail(t, NULL);
+	
+	t->m_pPT = m_pPT;
+	t->m_offset = m_offset;
+	t->m_frag = m_frag;
+	t->m_status = m_status;
+	t->m_frag_offset = m_frag_offset;
+	t->m_max_offset = m_max_offset;
+	t->m_sdh = m_sdh;
+	t->m_strux_len = m_strux_len;
+
+	return t;
 }
 
 // strux relative iteration
 bool PD_StruxIterator::_findFrag()
 {
-
+	if(!m_frag)
+	{
+		m_frag = static_cast<const pf_Frag *>(m_sdh);
+		m_frag_offset = 0;
+	}
+	
 	while(m_frag)
 	{
 		if(m_frag_offset <= m_offset && m_frag_offset + m_frag->getLength() > m_offset)
@@ -310,13 +361,14 @@ bool PD_StruxIterator::_findFrag()
  */
 UT_UCS4Char PD_StruxIterator::getChar()
 {
-	UT_return_val_if_fail(m_frag && m_status == UTIter_OK, UT_IT_ERROR);
+	if(!m_frag || m_status != UTIter_OK)
+		return UT_IT_ERROR;
 
 	if(m_frag->getType() == pf_Frag::PFT_Text)
 	{
 		const pf_Frag_Text * pft = static_cast<const pf_Frag_Text*>(m_frag);
 
-		const UT_UCS4Char * p = m_pt.getPointer(pft->getBufIndex());
+		const UT_UCS4Char * p = m_pPT->getPointer(pft->getBufIndex());
 
 		if(!p)
 		{
@@ -339,13 +391,31 @@ UT_UCS4Char PD_StruxIterator::getChar()
 	return UT_IT_NOT_CHARACTER;
 }
 
+bool PD_StruxIterator::_incrementPos(UT_sint32 d)
+{
+	if(m_status == UTIter_OK)
+	{
+		// data starts at pos m_strux_len
+		if(   ((UT_sint32)m_offset + d) >= (UT_sint32)m_strux_len
+		   && (UT_uint32)((UT_sint32)m_offset + d) <= m_max_offset)
+		{
+			m_offset += d;
+			return true;
+		}
+
+		m_status = UTIter_OutOfBounds;
+		return false;
+	}
+
+	return false;
+}
+
 /*! various increment operators
  */
 UT_TextIterator & PD_StruxIterator::operator ++ ()
 {
-	if(m_status == UTIter_OK)
+	if(_incrementPos(1))
 	{
-		m_offset++;
 		_findFrag();
 	}
 	
@@ -354,17 +424,9 @@ UT_TextIterator & PD_StruxIterator::operator ++ ()
 
 UT_TextIterator & PD_StruxIterator::operator -- ()
 {
-	if(m_status == UTIter_OK)
+	if(_incrementPos(-1))
 	{
-		if(m_offset > 0)
-		{
-			m_offset--;
-			_findFrag();
-		}
-		else
-		{
-			m_status = UTIter_OutOfBounds;
-		}
+		_findFrag();
 	}
 	
 	return *this;
@@ -372,17 +434,9 @@ UT_TextIterator & PD_StruxIterator::operator -- ()
 	
 UT_TextIterator & PD_StruxIterator::operator +=  (UT_sint32 i)
 {
-	if(m_status == UTIter_OK)
+	if(_incrementPos(i))
 	{
-		if(i >= -(UT_sint32)m_offset)
-		{
-			m_offset += i;
-			_findFrag();
-		}
-		else
-		{
-			m_status = UTIter_OutOfBounds;
-		}
+		_findFrag();
 	}
 	
 	return *this;
@@ -390,17 +444,9 @@ UT_TextIterator & PD_StruxIterator::operator +=  (UT_sint32 i)
 	
 UT_TextIterator & PD_StruxIterator::operator -=  (UT_sint32 i)
 {
-	if(m_status == UTIter_OK)
+	if(_incrementPos(-i))
 	{
-		if((UT_sint32)m_offset >= i)
-		{
-			m_offset -= i;
-			_findFrag();
-		}
-		else
-		{
-			m_status = UTIter_OutOfBounds;
-		}
+		_findFrag();
 	}
 	
 	return *this;
@@ -411,10 +457,21 @@ UT_TextIterator & PD_StruxIterator::operator -=  (UT_sint32 i)
 */
 UT_UCS4Char PD_StruxIterator::operator [](UT_uint32 dpos)
 {
-	m_offset = dpos;
-	_findFrag();
-
+	setPosition(dpos);
 	return getChar();
+}
+
+void PD_StruxIterator::setPosition(UT_uint32 pos)
+{
+	if(pos >= m_strux_len && pos <= m_max_offset)
+	{
+		m_offset = pos;
+		_findFrag();
+	}
+	else
+	{
+		m_status = UTIter_OutOfBounds;
+	}
 }
 
 
