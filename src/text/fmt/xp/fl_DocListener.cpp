@@ -515,14 +515,24 @@ bool fl_DocListener::populateStrux(PL_StruxDocHandle sdh,
 	{
 		UT_ASSERT(m_pCurrentSL);
 		
-		// Append a new TableLayout to that SectionLayout
-		fl_ContainerLayout*	pCL = m_pCurrentSL->
-			append(sdh, pcr->getIndexAP(),FL_CONTAINER_TABLE);
-		UT_DEBUGMSG(("SEVIOR: Appending Table: Table layout is %x \n",pCL));
-		if (!pCL)
+		// Append a new TableLayout to the SectionLayout or CellLayout
+		
+		fl_ContainerLayout * pCon = getTopContainerLayout();
+		fl_ContainerLayout*	pCL = NULL;
+		if(pCon == NULL)
 		{
-			UT_DEBUGMSG(("no memory for TableLayout"));
-			return false;
+			pCL = m_pCurrentSL->append(sdh, pcr->getIndexAP(),FL_CONTAINER_TABLE);
+			UT_DEBUGMSG(("SEVIOR: Appending Table: Table layout is %x \n",pCL));
+			if (!pCL)
+			{
+				UT_DEBUGMSG(("no memory for TableLayout"));
+				return false;
+			}
+		}
+		else
+		{
+			fl_CellLayout * pCell = (fl_CellLayout *) pCon;
+			pCL = pCell->append(sdh,pcr->getIndexAP(),FL_CONTAINER_TABLE);
 		}
 		pushContainerLayout(pCL);
 		*psfh = (PL_StruxFmtHandle)pCL;
