@@ -1951,8 +1951,34 @@ bool s_HTML_Listener::populate(PL_StruxFmtHandle /*sfh*/,
 
 				// todo: support these
 			case PTO_Hyperlink:
+				if(bHaveProp && pAP && pAP->getAttribute("xlink:href", szValue))
+				{
+					m_pie->write("<a href=\"");
+					m_pie->write(szValue);
+					m_pie->write("\">");
+				}
+				else
+				{
+					m_pie->write("</a>");
+				}
+				return true;
+
 			case PTO_Bookmark:
-			  return true;
+				if(bHaveProp && pAP && pAP->getAttribute("type", szValue))
+				{
+					if( UT_XML_stricmp(szValue, "start") == 0 )
+					{
+						pAP->getAttribute("name", szValue);
+						m_pie->write("<a name=\"");
+						m_pie->write(szValue);
+						m_pie->write("\">");
+					}
+					else
+					{
+						m_pie->write("</a>");
+					}
+				}
+				return true;
 
 			default:
 				UT_ASSERT(0);

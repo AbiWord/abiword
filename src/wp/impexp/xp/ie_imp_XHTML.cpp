@@ -285,10 +285,14 @@ IE_Imp_XHTML::~IE_Imp_XHTML()
 
 #define TT_PRE					40				// preformatted tag
 
+#define TT_HREF                 41              // <a> anchor tag
+
+
 // This certainly leaves off lots of tags, but with HTML, this is inevitable - samth
 
 static struct xmlToIdMapping s_Tokens[] =
 {
+	{       "a",              	    TT_HREF                 },
 	{       "address",              TT_ADDRESS              },
 	{       "b",                    TT_B                    },
 	{       "blockquote",           TT_BLOCKQUOTE           },
@@ -889,6 +893,34 @@ void IE_Imp_XHTML::startElement(const XML_Char *name, const XML_Char **atts)
 		}
 		return;
 
+	case TT_HREF:
+	{
+		X_VerifyParseState(_PS_Block);
+		const XML_Char *p_val;
+		p_val = _getXMLPropValue((const XML_Char *)"href", atts);
+		if( p_val )
+		{
+		    UT_XML_cloneString(sz, "xlink:href");
+		    new_atts[0] = sz;
+	    	sz = NULL;
+		    UT_XML_cloneString(sz, p_val);
+		    new_atts[1] = sz;
+			X_CheckError(getDoc()->appendObject(PTO_Hyperlink,new_atts));
+		}
+		else
+		{
+			p_val = _getXMLPropValue((const XML_Char *)"name", atts);
+			if( p_val )
+		    UT_XML_cloneString(sz, "name");
+		    new_atts[0] = sz;
+	    	sz = NULL;
+		    UT_XML_cloneString(sz, p_val);
+		    new_atts[1] = sz;
+			X_CheckError(getDoc()->appendObject(PTO_Bookmark,new_atts));
+		}
+		return;
+	}
+
 	case TT_HEAD:
 	case TT_TITLE:
 	case TT_META:
@@ -1013,6 +1045,7 @@ void IE_Imp_XHTML::endElement(const XML_Char *name)
 	case TT_TITLE:
 	case TT_META:
 	case TT_STYLE:
+	case TT_HREF:
 		return;
 
 	case TT_PRE:
@@ -1033,13 +1066,21 @@ void IE_Imp_XHTML::endElement(const XML_Char *name)
 
 void IE_Imp_XHTML::charData (const XML_Char * buffer, int length)
 {
-  if( m_parseState == _PS_Sec )
-       { 
-               // Sets a block Strux and falls through.  
-               // Hack to work around the need for <p> etc to enter data 
-               // from HTML. 
-               X_CheckError(getDoc()->appendStrux(PTX_Block,NULL)); 
-       } 
+	bool bResetState = false;
+	if( m_parseState == _PS_Sec )
+    { 
+		// Sets a block Strux and falls through.  
+		// Hack to work around the need for <p> etc to enter data 
+		// from HTML. 
+		X_CheckError(getDoc()->appendStrux(PTX_Block,NULL)); 
+		m_parseState = _PS_Block;
+		bResetState = true;
+	} 
 
-  IE_Imp_XML::charData ( buffer, length );
+	IE_Imp_XML::charData ( buffer, length );
+
+	if( bResetState )
+	{
+		m_parseState = _PS_Sec;
+	}
 }
