@@ -6151,11 +6151,25 @@ void fl_BlockLayout::_createListLabel(void)
 	UT_ASSERT(m_pAutoNum);
 
 	FV_View* pView = m_pLayout->getView();
-	const  XML_Char ** blockatt;
 	PT_DocPosition offset = pView->getPoint() - getPosition();
+#if 0
+	const  XML_Char ** blockatt;
 	pView->getCharFormat(&blockatt,true);
 	pView->setBlockFormat(blockatt);
 	FREEP(blockatt);
+#endif
+	XML_Char * blockatt[3] = {"list-tag",NULL,NULL};
+	XML_Char tagID[12];
+	UT_uint32 itag = UT_rand();
+	while( itag < 10000)
+	{
+		itag = UT_rand();
+	}
+	sprintf(tagID,"%d",itag);
+	blockatt[1] = (XML_Char *) &tagID;
+
+	m_pDoc->changeSpanFmt(PTC_AddFmt,getPosition(),getPosition(),NULL,(const char **)blockatt);
+
 	const XML_Char*	attributes[] = {
 		"type","list_label",
 		NULL, NULL

@@ -680,7 +680,8 @@ RTFProps_bCharProps::RTFProps_bCharProps(void):
 	bm_hasColour(false),
 	bm_colourNumber(false),
 	bm_hasBgColour(false),
-	bm_bgcolourNumber(false)
+	bm_bgcolourNumber(false),
+	bm_listTag(false)
 {
 }
 
@@ -929,6 +930,7 @@ RTFProps_CharProps::RTFProps_CharProps(void)
 	m_hasBgColour = false;
 	m_bgcolourNumber = 0;
 	m_styleNumber = -1;
+	m_listTag = 0;
 }; 
 
 RTFProps_CharProps::~RTFProps_CharProps(void)
@@ -2998,6 +3000,10 @@ bool IE_Imp_RTF::TranslateKeyword(unsigned char* pKeyword, long param, bool fPar
 							return HandleBotline(parameterUsed_star ? 
 												  (parameter_star != 0): true);
 						}
+						else if( strcmp((char*)keyword_star,"listtag") == 0)
+						{ 
+							return HandleListTag(parameter_star);
+						}
 					}
 				}
 				UT_DEBUGMSG (("RTF: star keyword %s not handled\n", keyword_star));
@@ -3145,6 +3151,12 @@ bool IE_Imp_RTF::ApplyCharacterAttributes()
 			tempBuffer[16] = 0;
 			strcat(propBuffer, tempBuffer);
 		}
+	}
+	if(m_currentRTFState.m_charProps.m_listTag != 0)
+	{
+// List Tag to hang lists off
+		sprintf(tempBuffer, " list-tag:%d; ",m_currentRTFState.m_charProps.m_listTag);
+		strcat(propBuffer, tempBuffer);
 	}
 
 	const XML_Char* propsArray[3];
@@ -4298,6 +4310,11 @@ bool IE_Imp_RTF::ParseCharParaProps( unsigned char * pKeyword, long param, bool 
 	{
 		pbParas->bm_indentLeft = true;
 		pParas->m_indentLeft = param;
+	}
+	else if (strcmp((char*)pKeyword, "listtag") == 0)
+	{
+		pbChars->bm_listTag = true;
+		pChars->m_listTag = param;
 	}
 	else if (strcmp((char*)pKeyword,"ol") == 0)
 	{
@@ -5525,6 +5542,12 @@ bool IE_Imp_RTF::HandleU32CharacterProp(UT_uint32 val, UT_uint32* pProp)
 	return ok;
 }
 
+bool IE_Imp_RTF::HandleListTag(long id)
+{
+	UT_uint32 sid = (UT_uint32) id;
+	return HandleU32CharacterProp(sid, &m_currentRTFState.m_charProps.m_listTag);
+}
+
 bool IE_Imp_RTF::HandleFace(UT_uint32 fontNumber)
 {
 	RTFFontTableItem* pFont = GetNthTableFont(fontNumber);
@@ -6313,6 +6336,12 @@ bool IE_Imp_RTF::buildAllProps(char * propBuffer,  RTFProps_ParaProps * pParas,
 				strcat(propBuffer, tempBuffer);
 			}
 		}
+	}
+// List Tag to hang lists off
+	if(pbChars->bm_listTag)
+	{
+		sprintf(tempBuffer, " list-tag:%d; ",pChars->m_listTag);
+		strcat(propBuffer, tempBuffer);
 	}
 //
 // Now remove any trailing ";"'s

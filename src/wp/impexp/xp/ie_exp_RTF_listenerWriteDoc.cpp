@@ -1066,3 +1066,15 @@ void s_RTF_ListenerWriteDoc::_writeImageInRTF(const PX_ChangeRecord_Object * pcr
 	}
 	m_pie->_rtf_close_brace();
 }
+
+
+
+
+
+
+
+
+
+
+
+

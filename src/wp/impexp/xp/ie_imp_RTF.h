@@ -84,6 +84,7 @@ public:
 	bool    m_hasBgColour; // if false, ignore colour number
 	UT_uint32    m_bgcolourNumber; // index into colour table
 	UT_sint32  m_styleNumber ; //index into the style table
+	UT_uint32  m_listTag; // tag for lists to hang off
 };                  
 
 class RTFProps_bCharProps
@@ -110,6 +111,7 @@ public:
 	bool bm_colourNumber;	// index into colour table
 	bool bm_hasBgColour; // if false, ignore colour number
 	bool bm_bgcolourNumber; // index into colour table
+	bool bm_listTag; // tag for lists to hanfg off
 };
 
 struct _rtfListTable
@@ -503,6 +505,7 @@ private:
 	bool HandleSubscript(bool state);
 	bool HandleSubscriptPosition(UT_uint32 pos);
 	bool HandleFontSize(long sizeInHalfPoints);
+	bool HandleListTag(long id);
 
 	// Generic handlers
 	bool HandleFloatCharacterProp(double val, double* pProp);
