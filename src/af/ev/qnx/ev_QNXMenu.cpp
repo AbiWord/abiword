@@ -403,11 +403,10 @@ bool EV_QNXMenu::synthesizeMenu(PtWidget_t * wMenuRoot)
 
 				// create the item widget
 				int n = 0;
-				PtSetArg(&args[n], Pt_ARG_TEXT_STRING, buf, 0); n++;
-				PtSetArg(&args[n], Pt_ARG_ACCEL_KEY, accel, 0); n++;
-				//PtSetArg(&args[n], Pt_ARG_ACCEL_KEY, accel, 0); n++;
+				PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, buf, 0); 
+				PtSetArg(&args[n++], Pt_ARG_ACCEL_KEY, accel, 0);
 				if (wParent != wMenuRoot) {
-					PtSetArg(&args[n], Pt_ARG_BUTTON_TYPE, Pt_MENU_RIGHT, Pt_MENU_RIGHT); n++;
+					PtSetArg(&args[n++], Pt_ARG_BUTTON_TYPE, Pt_MENU_RIGHT, Pt_MENU_RIGHT);
 				}
 				wbutton = PtCreateWidget(PtMenuButton, wParent, n, args); 
 
@@ -457,10 +456,14 @@ bool EV_QNXMenu::synthesizeMenu(PtWidget_t * wMenuRoot)
 			m_vecMenuWidgets.addItem(w);
 			break;
 		}
-
+//Adding 0 so we can still use the same logic wParent == wMenuRoot in the submenu.
 		case EV_MLF_BeginPopupMenu:
+			stack.push(NULL);
+			break;
 		case EV_MLF_EndPopupMenu:
+			PtWidget_t *woid;
 			//Reserve slot for later
+			stack.pop((void**)&woid);
 			m_vecMenuWidgets.addItem(NULL);	
 			break;
 			
@@ -479,7 +482,7 @@ static void set_menu_enabled(PtWidget_t *w, int enabled, int checked) {
 
 /* Photon funniness ... why can't ghosting work? */
 	flags =  (enabled == true) ? Pt_SELECTABLE : (Pt_BLOCKED | Pt_GHOST)  ;
-	flags |= (checked == true) ? Pt_SET : 0;
+	flags |= (checked == true) ? Pt_SET : Pt_FALSE;
 	PtSetResource(w, Pt_ARG_FLAGS, flags, Pt_BLOCKED | Pt_GHOST | Pt_SET | Pt_SELECTABLE);
 }
 
@@ -597,11 +600,6 @@ bool EV_QNXMenu::_refreshMenu(AV_View * pView, void * wMenuRoot)
 						n = 0;
 						PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, labelbuf, 0); 
 						PtSetArg(&args[n++], Pt_ARG_ACCEL_KEY, accel, 0); 
-						/*
-						if (szMnemonicName && *szMnemonicName) {
-							PtSetArg(&args[n++], Pt_ARG_ACCEL_TEXT, szMnemonicName, 0); 
-						}
-						*/
 
 						if (pAction->isCheckable()) {
 							PtSetArg(&args[n++], Pt_ARG_FLAGS,
@@ -624,15 +622,6 @@ bool EV_QNXMenu::_refreshMenu(AV_View * pView, void * wMenuRoot)
 						PtAddCallback(item, Pt_CB_ACTIVATE, s_menu_activate, mcb);
 						PtAddCallback(item, Pt_CB_ARM, s_menu_select, mcb);
 						PtAddCallback(item, Pt_CB_DISARM, s_menu_deselect, mcb);
-
-						/*
-						if (szMnemonicName && *szMnemonicName && get_hotkey_key(szMnemonicName) != '\0') {
-							PtAddHotkeyHandler(PtGetParent(wMenuRoot, PtWindow),
-									   get_hotkey_key(szMnemonicName), 
-									   get_hotkey_code(szMnemonicName),
-										0, mcb, s_menu_activate); 
-						}
-						*/
 
 						//Now that we have an item, add it to the vector
 						m_vecMenuWidgets.setNthItem(k, item, NULL);
@@ -784,7 +773,7 @@ static int popup_unrealized(PtWidget_t *w, void *data, PtCallbackInfo_t *info) {
 	XAP_QNXFrame *pQNXFrame = (XAP_QNXFrame *)data; 
 
 	PtArg_t arg;
-	PtSetArg(&arg, Pt_ARG_FLAGS, 0, Pt_BLOCKED);
+	PtSetArg(&arg, Pt_ARG_FLAGS,Pt_FALSE, Pt_BLOCKED);
 	PtSetResources(pQNXFrame->getTopLevelWindow(), 1, &arg);
 
 	pQNXFrame->setPopupDone(1);
