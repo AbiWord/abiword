@@ -44,6 +44,7 @@
 #include "fg_GraphicVector.h"
 #include "ut_bytebuf.h"
 #include "ut_rand.h"
+#include "pd_Style.h"
 
 #include "xap_App.h"
 #include "fv_View.h"
@@ -925,6 +926,7 @@ RTFProps_CharProps::RTFProps_CharProps(void)
 	m_colourNumber = 0;
 	m_hasBgColour = false;
 	m_bgcolourNumber = 0;
+	m_styleNumber = -1;
 }; 
 
 RTFProps_CharProps::~RTFProps_CharProps(void)
@@ -955,6 +957,7 @@ RTFProps_ParaProps::RTFProps_ParaProps(void)
 	m_curTabLeader = FL_LEADER_NONE;
 	m_iOveride = 0;
 	m_iOverideLevel = 0;
+	m_styleNumber = -1;
 };                  
 
 
@@ -1024,6 +1027,7 @@ RTFProps_ParaProps& RTFProps_ParaProps::operator=(const RTFProps_ParaProps& othe
 			m_curTabLeader = FL_LEADER_NONE;
 		}
 		m_rtfListTable = other.m_rtfListTable;
+		m_styleNumber = other.m_styleNumber;
 	}
 
 	return *this;
@@ -1114,16 +1118,27 @@ IE_Imp_RTF::~IE_Imp_RTF()
 	}
 
 	// and the font table (can't use the macro as we allow NULLs in the vector
-	const int size = m_fontTable.getItemCount();
-	for (int i = size-1; i>=0; i--)
+	UT_sint32 size = m_fontTable.getItemCount();
+	UT_sint32 i =0;
+	for (i = size-1; i>=0; i--)
 	{
 		RTFFontTableItem* pItem = (RTFFontTableItem*) m_fontTable.getNthItem(i);
 		delete pItem;
+	}
+
+	// and the styleName table.
+
+	size = m_styleTable.getItemCount();
+	for (i = size-1; i>=0; i--)
+	{
+		char * pItem = (char *) m_styleTable.getNthItem(i);
+		delete [] pItem;
 	}
 	UT_VECTOR_PURGEALL(_rtfAbiListTable *,m_vecAbiListTable);
 	UT_VECTOR_PURGEALL(RTFHdrFtr *, m_hdrFtrTable);
 	UT_VECTOR_PURGEALL(RTF_msword97_list *, m_vecWord97Lists);
 	UT_VECTOR_PURGEALL(RTF_msword97_listOveride *, m_vecWord97ListOveride);
+	
 }
 
 
@@ -2768,9 +2783,7 @@ bool IE_Imp_RTF::TranslateKeyword(unsigned char* pKeyword, long param, bool fPar
 	case 's':
 		if (strcmp((char*)pKeyword, "stylesheet") == 0)
 		{
-			// TODO Ignore stylesheet as ABIWord doesn't do styles (at the moment)
-			// In the text all applied styles also have their equivlent effects on too
-			m_currentRTFState.m_destinationState = RTFStateStore::rdsSkip;
+			return HandleStyleDefinition();
 		}
 		else if (strcmp((char*)pKeyword, "strike") == 0  ||  strcmp((char*)pKeyword, "striked") == 0)
 		{
@@ -3315,7 +3328,7 @@ bool IE_Imp_RTF::ApplyParagraphAttributes()
 	}
 
 	// tabs
-	if (m_currentRTFState.m_paraProps.m_tabStops.getItemCount() > 0)
+	if (m_currentRTFState.m_paraProps.m_tabStops.getItemCount() > 0 || (pOver != NULL && pOver->isTab(iLevel)))
 	{
 		UT_ASSERT(m_currentRTFState.m_paraProps.m_tabStops.getItemCount() ==
 					m_currentRTFState.m_paraProps.m_tabTypes.getItemCount() );
@@ -5738,6 +5751,451 @@ void IE_Imp_RTF::pasteFromBuffer(PD_DocumentRange * pDocRange,
 
 	return;
 }
+
+// This should probably be defined in pt_Types.h
+#define PT_MAX_ATTRIBUTES 8
+
+/*!
+Define a new style, here is the formal syntax:
+<style>	'{' <styledef>?<keycode>? <formatting> <additive>? <based>? <next>? 
+            <stylename>? ';' '}'
+<styledef>	\s  |\*\cs  | \ds
+<keycode>	'{' \keycode <keys> '}'
+<additive>	\additive
+<based>	\sbasedon
+<next>	\snext
+<autoupd>	\sautoupd
+<hidden>	\shidden
+<formatting>	(<brdrdef> | <parfmt> | <apoctl> | <tabdef> | <shading> | <chrfmt>)+
+<stylename>	#PCDATA
+<keys>	( \shift? & \ctrl? & \alt?) <key>
+<key>	\fn | #PCDATA
+
+The style definition is located within a {\stylesheet } sequence.
+
+The minimum (useless) example would be {}
+A more typical set of styles would be 
+{\stylesheet
+    {\fs20 \sbasedon222\snext0{\*\keycode \shift\ctrl n} Normal;}
+	{\s1\qr \fs20 \sbasedon0\snext1 FLUSHRIGHT;}
+	{\s2\fi-720\li720\fs20\ri2880\sbasedon0\snext2 IND;}
+}
+
+*/
+bool IE_Imp_RTF::HandleStyleDefinition(void)
+{
+	bool status = true;
+	int nesting = 1;
+	unsigned char ch;
+	UT_sint32 i;
+	char * styleType = "P";
+	RTFProps_ParaProps * pParas =  new RTFProps_ParaProps();
+	RTFProps_CharProps *  pChars = new	RTFProps_CharProps();
+	RTFProps_bParaProps * pbParas =  new RTFProps_bParaProps();
+	RTFProps_bCharProps *  pbChars = new	RTFProps_bCharProps();
+	static char  propBuffer[1024];
+	propBuffer[0] = NULL;
+
+	UT_Vector attribs;
+	UT_String styleName = "";
+	UT_sint32 styleNumber = 0;
+	while ((nesting > 0) && status)
+	{
+        unsigned char keyword[MAX_KEYWORD_LEN];
+        long parameter = 0;
+	    bool parameterUsed = false;
+        
+		if (!ReadCharFromFile(&ch)) {
+		    return false;
+		}
+		
+		switch(ch)
+		{
+		case '\\':
+            status = ReadKeyword(keyword, &parameter, &parameterUsed, MAX_KEYWORD_LEN);
+			if (!status) {
+				return status;
+			}
+			else if (UT_strcmp((char *)keyword, "sbasedon") == 0)
+			{
+				if (parameter >= styleNumber)
+				{
+					UT_DEBUGMSG(("Cannot base this style on style %d when I am style %d. Ignoring that.\n", parameter, styleNumber));
+					// ignore
+					//return false;
+				}
+				else {
+					char * val = (char *)m_styleTable.getNthItem(parameter);
+					if (val != NULL)
+					{
+						attribs.addItem((void *)PT_BASEDON_ATTRIBUTE_NAME);
+						attribs.addItem(val);
+					}
+				}
+			}
+			else if (UT_strcmp((char *)keyword, "snext") == 0)
+			{
+				if (parameter != styleNumber)
+				{
+					if (styleNumber < m_styleTable.getItemCount()) {
+						char * val = (char *)m_styleTable.getNthItem(parameter);
+						if (val != NULL)
+						{
+							attribs.addItem((void *)PT_FOLLOWEDBY_ATTRIBUTE_NAME);
+							attribs.addItem(val);
+						}
+					}
+					else {
+						UT_DEBUGMSG (("Next style %d for style %d is not yet defined !\n", parameter, styleNumber));
+					}
+				}
+			}
+			else if ((UT_strcmp((char *)keyword, "s") == 0) ||
+				     (UT_strcmp((char *)keyword, "ds") == 0) ||
+				     (UT_strcmp((char *)keyword, "cs") == 0))
+			{
+				styleNumber = parameter;
+			}
+			else if (UT_strcmp((char *)keyword, "*") == 0)
+			{
+				break;
+			}
+			else 
+			{
+			    status = ParseCharParaProps((unsigned char *) keyword, parameter, parameterUsed,pChars,pParas,pbChars,pbParas);
+			}
+			break;
+		case '{':
+			nesting++;
+			break;
+		case '}':
+			nesting--;
+			break;
+		default:
+			// The only thing that should be left is the style name
+
+//  			if (m_styleTable.size() >0)
+//  			{
+//  				UT_DEBUGMSG(("RTF: m_styleTable already parsed once, something is wrong"));
+//  				return false;
+//  			}
+			while (ch != '}' && ch != ';')
+			{
+				styleName += ch;
+                if (!ReadCharFromFile(&ch)) {
+		            return false;
+				}
+				if (ch =='}')
+				{
+					UT_DEBUGMSG(("RTF: Badly formatted style name, no ';'"));
+					nesting--;
+				}
+			}
+			char * buffer  = strdup(styleName.c_str());
+			char * oldbuffer;
+			m_styleTable.setNthItem(styleNumber,(void *)buffer,(void **)&oldbuffer);
+			break;
+		}
+		if (nesting == 1)
+		{
+			// Reached the end of a single style definition.
+			// Use it.
+			const char * attributes[16];
+			for (i=0;i< (UT_sint32) attribs.size(); i++)
+			{
+				attributes[i] = (char *)attribs.getNthItem(i);
+			}
+			// TODO: Turn the properties structure into a string
+			attributes[i++] = PT_PROPS_ATTRIBUTE_NAME;
+			buildAllProps((char *) &propBuffer ,pParas,pChars,pbParas,pbChars);
+			attributes[i++] = (const char *) &propBuffer;
+			UT_DEBUGMSG(("SEVIOR: Loading props definition %s \n",propBuffer));
+			// ApplyParagraphAttributes()
+
+			attributes[i++] = PT_NAME_ATTRIBUTE_NAME;
+			attributes[i++] = (const char *)m_styleTable[styleNumber];
+
+			attributes[i++] = PT_TYPE_ATTRIBUTE_NAME;
+			attributes[i++] = styleType;
+			attributes[i++] = NULL;
+			const char * szName = (const char *)m_styleTable[styleNumber];
+			PD_Style * pStyle = NULL;
+//
+// If style exists we have to redefine it like this
+//
+			if(getDoc()->getStyle(szName, &pStyle))
+			{
+				pStyle->addAttributes(attributes);
+				pStyle->getBasedOn();
+				pStyle->getFollowedBy();
+			}
+			else
+			{
+				getDoc()->appendStyle(attributes);
+			}
+
+			// Reset
+			attribs.clear();
+			styleNumber = 0;
+			styleName = "";
+			styleType = "P";
+			DELETEP(pParas);
+			DELETEP(pChars);
+			DELETEP(pbParas);
+			DELETEP(pbChars);
+			pParas =  new RTFProps_ParaProps();
+			pChars = new	RTFProps_CharProps();
+			pbParas =  new RTFProps_bParaProps();
+			pbChars = new	RTFProps_bCharProps();
+			propBuffer[0] = NULL;
+		}
+	}
+	DELETEP(pParas);
+	DELETEP(pChars);
+	DELETEP(pbParas);
+	DELETEP(pbChars);
+	
+	status = PopRTFState();
+	return status;
+
+}
+
+/*!
+ * This method builds the property list from Paragraph and character classes pParas
+ * and pChars
+ */
+bool IE_Imp_RTF::buildAllProps(char * propBuffer,  RTFProps_ParaProps * pParas, 
+							   RTFProps_CharProps * pChars, 
+							   RTFProps_bParaProps * pbParas, 
+							   RTFProps_bCharProps * pbChars)
+{
+//
+// Tab stops.
+//
+	XML_Char tempBuffer[128];
+	UT_sint32 count =pParas->m_tabStops.getItemCount();
+	if(count > 0)
+		strcat(propBuffer, "tabstops:");
+	UT_sint32 i=0;
+	for (i = 0; i < count; i++)
+	{
+		if (i > 0)
+			strcat(propBuffer, ",");
+		
+		UT_sint32 tabTwips = (UT_sint32) pParas->m_tabStops.getNthItem(i);
+		double tabIn = tabTwips/(20.0*72.);
+		UT_uint32 idum = (UT_uint32)  pParas->m_tabTypes.getNthItem(i);
+		eTabType tabType = (eTabType) idum;
+		idum = (UT_uint32) (pParas->m_tabLeader.getNthItem(i));
+		eTabLeader tabLeader = (eTabLeader) idum;
+		char  cType = ' ';
+		switch(tabType)
+		{
+		case FL_TAB_LEFT:
+			cType ='L';
+			break;
+		case FL_TAB_RIGHT:
+			cType ='R';
+			break;
+		case FL_TAB_CENTER:
+			cType ='C';
+			break;
+		case FL_TAB_DECIMAL:
+			cType ='D';
+			break;
+		case FL_TAB_BAR:
+			cType ='B';
+			break;
+		default:
+			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		}
+		char cLeader = '0' + (char) tabLeader;
+		sprintf(tempBuffer, "%s/%c%c", UT_convertInchesToDimensionString(DIM_IN,tabIn,"04"),cType,cLeader); 
+		strcat(propBuffer, tempBuffer);
+	}
+	if( count > 0)
+		strcat(propBuffer, "; ");
+//
+// Top and bottom paragraph margins
+//
+	if(pbParas->bm_spaceBefore)
+	{
+		sprintf(tempBuffer, "margin-top:%s; ",		UT_convertInchesToDimensionString(DIM_IN, (double) pParas->m_spaceBefore/1440));
+		strcat(propBuffer, tempBuffer);
+	}
+	if(pbParas->bm_spaceAfter)
+	{
+		sprintf(tempBuffer, "margin-bottom:%s; ",	UT_convertInchesToDimensionString(DIM_IN, (double) pParas->m_spaceAfter/1440));
+		strcat(propBuffer, tempBuffer);
+	}
+//
+// Left and right margins
+//
+	if(pbParas->bm_indentLeft)
+	{
+		sprintf(tempBuffer, "margin-left:%s; ",		UT_convertInchesToDimensionString(DIM_IN, (double) pParas->m_indentLeft/1440));
+		strcat(propBuffer, tempBuffer);
+	}
+	if(pbParas->bm_indentRight)
+	{
+		sprintf(tempBuffer, "margin-right:%s; ",	UT_convertInchesToDimensionString(DIM_IN, (double) pParas->m_indentRight/1440));
+		strcat(propBuffer, tempBuffer);
+	}
+    //
+	// line spacing
+    //
+	if (pParas->m_lineSpaceExact)
+	{
+		// ABIWord doesn't (yet) support exact line spacing we'll just fall back to single
+		sprintf(tempBuffer, "line-height:1.0;");
+	}
+	else
+	{
+		sprintf(tempBuffer, "line-height:%s;",	UT_convertToDimensionlessString(fabs(pParas->m_lineSpaceVal/240)));
+	}
+	strcat(propBuffer, tempBuffer);
+//
+// Character Properties.
+//
+	// bold
+	if(pbChars->bm_bold)
+	{
+		strcat(propBuffer, "font-weight:");
+		strcat(propBuffer, pChars->m_bold ? "bold" : "normal");
+		strcat(propBuffer,";");
+	}
+	// italic
+	if(pbChars->bm_italic)
+	{
+		strcat(propBuffer, " font-style:");
+		strcat(propBuffer, pChars->m_italic ? "italic" : "normal");
+		strcat(propBuffer,";");
+	}
+	// underline & overline & strike-out
+	if(pbChars->bm_underline || pbChars->bm_strikeout || pbChars->bm_overline
+	   || pbChars->bm_topline || pbChars->bm_botline )
+	{
+		strcat(propBuffer, "; text-decoration:");
+		static UT_String decors;
+		decors.clear();
+		if (pChars->m_underline)
+		{
+			decors += "underline ";
+		}
+		if (pChars->m_strikeout)
+		{
+			decors += "line-through ";
+		}
+		if (pChars->m_overline)
+		{
+			decors += "line-through ";
+		}
+		if (pChars->m_topline)
+		{
+			decors += "line-through ";
+		}
+		if (pChars->m_botline)
+		{
+			decors += "line-through ";
+		}
+		if(!pChars->m_underline  &&  
+		   !pChars->m_strikeout && 
+		   !pChars->m_overline &&
+		   !pChars->m_topline &&
+		   !pChars->m_botline)
+		{
+			decors = "none";
+		}
+		strcat(propBuffer, decors.c_str());
+		strcat(propBuffer,";");
+	}
+	//superscript and subscript
+	if(pbChars->bm_superscript || pbChars->bm_subscript)
+	{
+		strcat(propBuffer, " text-position:");
+		if (pChars->m_superscript)
+		{
+			if (pbChars->bm_superscript_pos) 
+			{
+				UT_DEBUGMSG (("RTF: TODO: Handle text position in pt.\n"));
+			}
+			strcat(propBuffer, "superscript;");
+		}
+		else if (pChars->m_subscript)
+		{
+			if (pbChars->bm_subscript_pos) 
+			{
+				UT_DEBUGMSG (("RTF: TODO: Handle text position in pt.\n"));
+			}
+			strcat(propBuffer, "subscript;");
+		}
+		else
+		{
+			strcat(propBuffer, "normal;");
+		}
+	}
+
+	// font size
+	if(pbChars->bm_fontSize)
+	{
+		sprintf(tempBuffer, " font-size:%spt;", std_size_string((float)pChars->m_fontSize));	
+		strcat(propBuffer, tempBuffer);
+	}
+	// typeface
+	if(pbChars->bm_fontNumber)
+	{
+		RTFFontTableItem* pFont = GetNthTableFont(pChars->m_fontNumber);
+		if (pFont != NULL)
+		{
+			strcat(propBuffer, " font-family:");
+			strcat(propBuffer, pFont->m_pFontName);
+			strcat(propBuffer, ";");
+		}
+	}
+	// Foreground Colour
+	if(pbChars->bm_hasColour)
+	{
+		if (pChars->m_hasColour) 
+		{
+			// colour, only if one has been set. See bug 1324
+			UT_uint32 colour = GetNthTableColour(pChars->m_colourNumber);
+			sprintf(tempBuffer, " color:%06x;", colour);
+			tempBuffer[14] = 0;
+			strcat(propBuffer, tempBuffer);
+			strcat(propBuffer, ";");
+		}
+	}
+	// BackGround Colour
+	if (pbChars->bm_hasBgColour)
+	{
+		if(pbChars->bm_hasBgColour)
+		{
+			// colour, only if one has been set. See bug 1324
+			UT_sint32 bgColour = GetNthTableBgColour(pChars->m_bgcolourNumber);		
+			if (bgColour != -1) // invalid and should be white
+			{		
+				sprintf(tempBuffer, " bgcolor:%06x;", bgColour);	   		
+				tempBuffer[17] = 0;
+				strcat(propBuffer, tempBuffer);
+				strcat(propBuffer, ";");
+			}
+		}
+	}
+//
+// Now remove any trailing ";"'s
+//
+	UT_sint32 eol = strlen(propBuffer);
+	while(eol >= 0 && (propBuffer[eol] == ' ' || propBuffer[eol] == 0))
+	{
+		eol--;
+	}
+	if(propBuffer[eol] == ';')
+	{
+		propBuffer[eol] = 0;
+	}
+	return true;
+}
+
 
 
 

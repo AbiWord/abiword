@@ -83,6 +83,7 @@ public:
     UT_uint32    m_colourNumber;	// index into colour table
 	bool    m_hasBgColour; // if false, ignore colour number
 	UT_uint32    m_bgcolourNumber; // index into colour table
+	UT_sint32  m_styleNumber ; //index into the style table
 };                  
 
 class RTFProps_bCharProps
@@ -173,6 +174,7 @@ struct RTFProps_ParaProps
 	UT_uint32       m_iOveride;          // 1's index to overide table
 	UT_uint32       m_iOverideLevel;     // 0's index to the level
 	_rtfListTable   m_rtfListTable; 
+	UT_sint32  m_styleNumber ; //index into the style table
 };                  
 
 // These are set true if changed in list definitions.
@@ -457,6 +459,7 @@ private:
 	bool HandlePicture();
 	bool HandleObject();
 	bool HandleField();
+	bool HandleStyleDefinition(void);
 	bool HandleHeaderFooter(RTFHdrFtr::HdrFtrType hftype, UT_uint32 & headerID);
 	bool SkipCurrentGroup(bool bConsumeLastBrace = false);
 	bool StuffCurrentGroup(UT_ByteBuf & buf);
@@ -475,6 +478,11 @@ private:
 	bool ParseCharParaProps( unsigned char * pKeyword, long param, bool fParam, RTFProps_CharProps * pChars, RTFProps_ParaProps * pParas, RTFProps_bCharProps * pbChars, RTFProps_bParaProps * pbParas);
 	bool ReadListOverideTable(void);
 	bool HandleTableListOveride(void);
+	
+	bool buildAllProps( char * propBuffer,  RTFProps_ParaProps * pParas, 
+					   RTFProps_CharProps * pChars, 
+					   RTFProps_bParaProps * pbParas, 
+					   RTFProps_bCharProps * pbChars);
 
 
 	// Character property handlers
@@ -553,6 +561,7 @@ private:
 	UT_Vector m_fontTable;
 	UT_Vector m_colourTable;
 	UT_Vector m_hdrFtrTable;
+	UT_Vector m_styleTable;
 
 	struct _rtfAbiListTable
 	{      
