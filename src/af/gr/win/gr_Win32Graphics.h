@@ -88,6 +88,7 @@ public:
 
 	virtual void setCursor(GR_Graphics::Cursor c);
 	virtual GR_Graphics::Cursor getCursor(void) const;
+	virtual void GR_Win32Graphics::handleSetCursorMessage(void);
 
 protected:
 	UT_RGBColor			m_clr;

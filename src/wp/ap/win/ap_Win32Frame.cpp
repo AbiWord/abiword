@@ -302,7 +302,7 @@ UT_Bool AP_Win32Frame::RegisterClass(AP_Win32App * app)
 	wndclass.cbWndExtra    = 0;
 	wndclass.hInstance     = app->getInstance();
 	wndclass.hIcon         = NULL;
-	wndclass.hCursor       = LoadCursor(NULL, IDC_ARROW);
+	wndclass.hCursor       = NULL;
 	wndclass.hbrBackground = NULL;
 	wndclass.lpszMenuName  = NULL;
 	wndclass.lpszClassName = s_DocumentWndClassName;
@@ -709,6 +709,15 @@ LRESULT CALLBACK AP_Win32Frame::_DocumentWndProc(HWND hwnd, UINT iMsg, WPARAM wP
 	{
 	case WM_CREATE:
 		return 0;
+
+	case WM_SETCURSOR:
+		{
+			FV_View * pFV = static_cast<FV_View *>(pView);
+			GR_Graphics * pG = pFV->getGraphics();
+			GR_Win32Graphics * pGWin32 = static_cast<GR_Win32Graphics *>(pG);
+			pGWin32->handleSetCursorMessage();
+		}
+		return 1;
 
 	case WM_LBUTTONDOWN:
 		pMouse->onButtonDown(pView,hwnd,EV_EMB_BUTTON1,wParam,LOWORD(lParam),HIWORD(lParam));

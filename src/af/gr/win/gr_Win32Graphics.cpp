@@ -601,32 +601,35 @@ HWND GR_Win32Graphics::getHwnd(void) const
 
 void GR_Win32Graphics::setCursor(GR_Graphics::Cursor c)
 {
-	if (m_cursor == c)
-		return;
-	
+	// set the cursor type, but wait for a WM_SETCURSOR
+	// to do anything about it.
 	m_cursor = c;
-	
-	switch (c)
-	{
-	default:
-	case GR_CURSOR_DEFAULT:
-//		cursor_number = GDK_TOP_LEFT_ARROW;
-		break;
-		
-	case GR_CURSOR_IBEAM:
-//		cursor_number = GDK_XTERM;
-		break;
-	}
-
-	// TODO set the window cursor
-	// 
-	// TODO because of the weird way Win32 cursors are handled
-	// TODO we may need to add code to the WinProc() to catch
-	// TODO WM_SETCURSOR or whatever its called....
 }
 
 GR_Graphics::Cursor GR_Win32Graphics::getCursor(void) const
 {
 	return m_cursor;
+}
+
+void GR_Win32Graphics::handleSetCursorMessage(void)
+{
+	// deal with WM_SETCURSOR message.
+
+	LPCTSTR cursor_name;
+	
+	switch (m_cursor)
+	{
+	default:
+	case GR_CURSOR_DEFAULT:
+		cursor_name = IDC_ARROW;
+		break;
+		
+	case GR_CURSOR_IBEAM:
+		cursor_name = IDC_IBEAM;
+		break;
+	}
+
+	HCURSOR hCursor = LoadCursor(NULL,cursor_name);
+	SetCursor(hCursor);
 }
 
