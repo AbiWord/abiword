@@ -169,7 +169,7 @@ ABI_FAR_CALL
 int abi_plugin_supports_version (UT_uint32 major, UT_uint32 minor, 
 								 UT_uint32 release)
 {
-	return isCurrentAbiVersion(major, minor, release);
+  return 1;
 }
 
 #endif
