@@ -35,6 +35,7 @@
 OS_ARCH		:= $(shell uname -m | sed -e s/i.86/i386/ -e s/sun4u/sparc64/ -e s/arm.*/arm/ -e s/sa110/arm/ | sed "s/\//-/")
 OS_ENDIAN	= BigEndian32
 
+
 # Define tools
 CC		= gcc
 CCC		= g++
@@ -46,6 +47,18 @@ LIB_SUFFIX	= a
 DLL_SUFFIX	= sl
 AR		= ar cr $@
 
+## nessecary changes for systems without snprintf() like hp-ux 10.20 from Martin Gansser mgansser@ngi.de
+## settings for systems with HP-UX Developer`s Toolkit for 10.0: (Product B3392BA) and both DevKit`s
+## PHSS_21957   B.10.00.00.AA  X11R5/Motif1.2 DevKit AUG2000 Periodic Patch 
+## PHSS_23519   B.10.00.00.AA  X11R6/Motif1.2 DevKit JUL2001 Periodic Patch
+## build binaries from glib/gtk+ sources, without nls (libiconv/gettext) support and set
+## OS_LIBS += -L/opt/snprintf/lib -lsnprintf
+##
+## settings for system without X11R6 developer kit:
+## add X11R5 include path -I/usr/include/X11R5 to OS_INCLUDES and set
+## OS_LIBS += -L/opt/libiconv/lib -liconv -L/opt/snprintf/lib -lsnprintf and
+
+HPUX_MAJOR= $(shell uname -r|sed 's/^[^.]*\.\([^.]*\).*/\1/')
 # Compiler flags
 ifeq ($(ABI_OPT_DEBUG),1)
 OPTIMIZER	= -g -Wall -ansi -pedantic
@@ -58,12 +71,28 @@ OBJ_DIR_SFX	= OBJ
 endif
 
 # Includes
-OS_INCLUDES		= -I/usr/contrib/include -I/usr/local/include
 G++INCLUDES		= -I/usr/include/g++
 
-# Compiler flags
-PLATFORM_FLAGS		= -L/usr/contrib/lib -L/usr/local/lib
-PORT_FLAGS		= -DHAVE_STRERROR -D_HPUX_SOURCE -DSETENV_MISSING
+ifeq ($(HPUX_MAJOR), 10)
+  USE_EXTERNAL_SNPRINTF = 1
+  # Includes
+  OS_INCLUDES		= -I/usr/contrib/include -I/usr/local/include \
+                          -I/opt/libpng/include -I/opt/zlib/include
+  # Compiler flags
+  PLATFORM_FLAGS	= -L/usr/contrib/lib -L/usr/local/lib -L/opt/libpng/lib -L/opt/zlib/lib
+  PORT_FLAGS		= -DHAVE_STRERROR -D_HPUX_SOURCE -DSETENV_MISSING -DSNPRINTF_MISSING
+else
+  # Includes
+  OS_INCLUDES		= -I/usr/contrib/include -I/usr/local/include
+  # Compiler flags
+  PLATFORM_FLAGS	= -L/usr/contrib/lib -L/usr/local/lib
+  PORT_FLAGS		= -DHAVE_STRERROR -D_HPUX_SOURCE -DSETENV_MISSING
+endif
+
+ifeq ($(USE_EXTERNAL_SNPRINTF),1)
+  OS_LIBS += -L/opt/snprintf/lib -lsnprintf
+endif
+
 OS_CFLAGS		= $(DSO_CFLAGS) $(PLATFORM_FLAGS) $(PORT_FLAGS)
 
 PLATFORM_FLAGS		+= 

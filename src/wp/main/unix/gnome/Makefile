@@ -77,7 +77,7 @@ ifeq ($(UNIX_CAN_BUILD_DYNAMIC),1)
 	@$(MAKE_OBJDIR)
 	@echo Linking dynamic $(PROGRAM)
 	$(CCC) -o $@ $(CFLAGS) $(OBJS) $(DYNAMIC_LDFLAGS) \
--L/usr/local/lib $(LDFLAGS) $(EXTRA_LIBS) $(XLDFLAGS) -lSM -lICE
+-L/usr/local/lib $(LDFLAGS) $(EXTRA_LIBS) $(OS_LIBS) $(XLDFLAGS) -lSM -lICE
 else
 	@echo "Not linking dynamic $(PROGRAM)"
 	@echo "    UNIX_CAN_BUILD_DYNAMIC not defined for this platform."

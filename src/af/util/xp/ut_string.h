@@ -142,6 +142,10 @@ ABI_EXPORT bool UT_UCS_isspace(UT_UCSChar c);
 
 #endif /* WIN32 */
 
+#if defined (SNPRINTF_MISSING)
+  extern int snprintf(char *str, size_t size, const  char  *format, ...);
+#endif
+
 /*
  this one prints floating point value but using dot as fractional serparator
  independent of the current locale's settings.
