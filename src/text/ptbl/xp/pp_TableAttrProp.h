@@ -53,9 +53,11 @@ public:
 									  UT_uint32 * pSubscript) const;
 	
 	const PP_AttrProp *		getAP(UT_uint32 subscript) const;
+	void					sortTable(void);
 
 protected:
 	UT_Vector				m_vecTable;
+	UT_Vector				m_vecTableSorted;
 };
 
 #endif /* PP_TABLEATTRPROP_H */

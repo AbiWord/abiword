@@ -25,6 +25,42 @@
 #include "pp_AttrProp.h"
 #include "pp_TableAttrProp.h"
 
+
+/*!
+ * This static function is used to compare PP_AttrProp's for the qsort method of UT_Vector
+\param vX1 pointer to a PP_AttrProp value.
+\param vX2 pointer to a second PP_AttrProp value
+*/
+static UT_sint32 compareAP(const void * vX1, const void * vX2)
+{
+	PP_AttrProp *x1 = *(PP_AttrProp **)(vX1);
+	PP_AttrProp *x2 = *(PP_AttrProp **)(vX2);
+
+	UT_uint32 u1 = x1->getCheckSum();
+	UT_uint32 u2 = x2->getCheckSum();
+
+	if (u1 < u2) return -1;
+	if (u1 > u2) return 1;
+	return 0;
+}
+
+/*!
+ * This static function is used to compare PP_AttrProp's for the
+ * binarysearch method of UT_Vector
+\param vX1 pointer to a PP_AttrProp value.
+\param vX2 pointer to a second PP_AttrProp value
+*/
+static UT_sint32 compareAPBinary(const void * vX1, const void * vX2)
+{
+	const UT_uint32 x1 = reinterpret_cast<UT_uint32>(vX1);
+	PP_AttrProp *x2 = *(PP_AttrProp **)(vX2);
+	UT_uint32 u2 = x2->getCheckSum();
+
+	if (x1 < u2) return -1;
+	if (x1 > u2) return 1;
+	return 0;
+}
+
 pp_TableAttrProp::pp_TableAttrProp()
 {
 }
@@ -37,7 +73,21 @@ pp_TableAttrProp::~pp_TableAttrProp()
 bool pp_TableAttrProp::addAP(PP_AttrProp * pAP,
 								UT_uint32 * pSubscript)
 {
-	return (m_vecTable.addItem(pAP,pSubscript) == 0);
+ 	UT_uint32 u;
+ 	bool result = (m_vecTable.addItem(pAP,&u) == 0);
+ 
+ 	if (result)
+ 	{
+ 		if (pSubscript)
+ 		{
+ 			*pSubscript = u;
+ 		}
+ 		pAP->setIndex(u);	//$HACK
+ 		result = (m_vecTableSorted.addItem(pAP,NULL) == 0);
+ 	}
+ 	sortTable();
+ 
+ 	return result;
 }
 
 bool pp_TableAttrProp::createAP(UT_uint32 * pSubscript)
@@ -45,11 +95,19 @@ bool pp_TableAttrProp::createAP(UT_uint32 * pSubscript)
 	PP_AttrProp * pNew = new PP_AttrProp();
 	if (!pNew)
 		return false;
-	if (m_vecTable.addItem(pNew,pSubscript) != 0)
+ 	UT_uint32 u;
+ 	if (m_vecTable.addItem(pNew,&u) != 0)
 	{
 		delete pNew;
 		return false;
 	}
+	if (pSubscript)
+ 	{
+ 		*pSubscript = u;
+ 	}
+ 
+ 	pNew->setIndex(u);	//$HACK
+ 	m_vecTableSorted.addItem(pNew, NULL);
 
 	return true;
 }
@@ -68,6 +126,8 @@ bool pp_TableAttrProp::createAP(const XML_Char ** attributes,
 		return false;
 
 	pAP->markReadOnly();
+
+	sortTable();
 	
 	*pSubscript = subscript;
 	return true;
@@ -86,6 +146,8 @@ bool pp_TableAttrProp::createAP(const UT_Vector * pVector,
 		return false;
 	
 	pAP->markReadOnly();
+
+	sortTable();
 	
 	*pSubscript = subscript;
 	return true;
@@ -100,17 +162,34 @@ bool pp_TableAttrProp::findMatch(const PP_AttrProp * pMatch,
 
 	UT_uint32 kLimit = m_vecTable.getItemCount();
 	UT_uint32 k;
-
-	for (k=0; (k < kLimit); k++)
-	{
-		const PP_AttrProp * pK = (const PP_AttrProp *)m_vecTable.getNthItem(k);
-		if (pMatch->isExactMatch(pK))
-		{
-			*pSubscript = k;
+  
+ 	//$HACK ???
+ 	// VC6 complains about not being able to convert from
+ 	// 'const class UT_Vector *' to 'class UT_Vector &'
+ 	// so I put in the cast to shut it up
+ 	k = ((UT_Vector &)m_vecTableSorted).binarysearch(reinterpret_cast<void *>(pMatch->getCheckSum()), compareAPBinary);
+ 	UT_uint32 cksum = pMatch->getCheckSum();
+ 
+ 	if (k == -1)
+ 	{
+ 		k = kLimit;
+ 	}
+ 
+ 	for (; (k < kLimit); k++)
+  	{
+ 		PP_AttrProp * pK = (PP_AttrProp *)m_vecTableSorted.getNthItem(k);
+ 		if (cksum != pK->getCheckSum())
+ 		{
+ 			break;
+ 		}
+  		if (pMatch->isExactMatch(pK))
+  		{
+ 			// Need to return an index of the element in the MAIN
+ 			// vector table
+			*pSubscript = pK->getIndex();
 			return true;
 		}
 	}
-	
 	return false;
 }
 
@@ -122,4 +201,10 @@ const PP_AttrProp * pp_TableAttrProp::getAP(UT_uint32 subscript) const
 		return (const PP_AttrProp *)m_vecTable.getNthItem(subscript);
 	else
 		return NULL;
+}
+
+  
+void pp_TableAttrProp::sortTable(void)
+{
+ 	m_vecTableSorted.qsort(compareAP);
 }

@@ -132,6 +132,8 @@ Dom Lachowicz <cinamod@hotmail.com> 			glib and Word export,
 							current wvWare
 							maintainer
 Johnny C. Lam <lamj@stat.cmu.edu>			NetBSD
+Johnny Lee <typo_pl@hotmail.com>                        Massive Speed 
+                                                        improvement (5291)
 Patrick Lam <plam@mit.edu>				tab leaders, left ruler
 							grippies
 Birger Langkjer <birger.langkjer@image.dk>		GNOME icon/menu

@@ -87,6 +87,8 @@ public:
 	UT_uint32 getCheckSum(void) const;
 
 	void operator = (const PP_AttrProp &Other);
+	UT_uint32 getIndex(void);	//$HACK
+	void setIndex(UT_uint32 i);	//$HACK
 
 protected:
 	void _computeCheckSum(void);
@@ -99,6 +101,7 @@ protected:
 	UT_StringPtrMap * m_pProperties;
 	bool				m_bIsReadOnly;
 	UT_uint32			m_checkSum;
+	UT_uint32			m_index;	//$HACK
 };
 
 #endif /* PP_ATTRPROP_H */

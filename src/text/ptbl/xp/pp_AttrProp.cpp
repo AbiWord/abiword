@@ -946,55 +946,98 @@ Failed:
 	return NULL;
 }
 
+  
+static UT_uint32 hashcodeBytesAP(UT_uint32 init, const void * pv, UT_uint32 cb)
+{
+ 	// modified from ut_string_class.cpp's hashcode() which got it from glib
+ 	UT_uint32 h = init;
+ 	const unsigned char * pb = static_cast<const unsigned char *>(pv);
+ 
+ 	if (cb)
+ 	{
+ 		// for AP data, limit hash to consume at most 8 bytes
+ 		if (cb > 8) { cb = 8; }
+ 
+ 		for (; cb != 0; pb += 1, cb -= 1)
+ 		{
+ 			h = (h << 5) - h + *pb;
+ 		}
+ 	}
+ 	
+ 	return h;
+}
+
+
 void PP_AttrProp::_computeCheckSum(void)
 {
 	m_checkSum = 0;
-
-	// compute some easy-to-compute checksum for this AP. something
-	// that is guaranteed to return the same result for the same input.
-	// something that we can use like a hash for a quick check in
-	// isExactMatch() to quickly dismiss different APs.  it should be
-	// based strictly on the content of the name/value pairs and be
-	// pointer- and order-independent.
-
-	if (!m_pAttributes || !m_pProperties)
-		return;
-
+ 
+ 	if (!m_pAttributes && !m_pProperties)
+  		return;
+ 
 	const XML_Char * s1, *s2;
-
-	UT_StringPtrMap::UT_Cursor c1(m_pAttributes);
-	UT_StringPtrMap::UT_Cursor c2(m_pProperties);
-
-	const void *val = c1.first();
-
-	while (val != NULL)
-	{
-		s1 = static_cast<const XML_Char *>(c1.key().c_str());
-		s2 = static_cast<const XML_Char *>(val);
-
-		m_checkSum += UT_XML_strlen(s1);
-		m_checkSum += UT_XML_strlen(s2);
-
-		if (!c1.is_valid())
-			break;
-		val = c1.next();
+ 	UT_uint32	cch = 0;
+ 	XML_Char	rgch[9];
+  
+ 	rgch[8] = 0;
+  
+ 	if (m_pAttributes)
+  	{
+ 		UT_StringPtrMap::UT_Cursor c1(m_pAttributes);
+ 		const void *val = c1.first();
+ 
+ 		while (val != NULL)
+ 		{
+ 			s1 = static_cast<const XML_Char *>(c1.key().c_str());
+ 			s2 = static_cast<const XML_Char *>(val);
+  
+ 			cch = UT_XML_strlen(s1);
+  
+ 			m_checkSum = hashcodeBytesAP(m_checkSum, s1, cch);
+ 
+ 			cch = UT_XML_strlen(s2);
+ 
+ 			UT_XML_strncpy(rgch, 8, s2);
+ 			UT_lowerString(rgch);
+  
+ 			m_checkSum = hashcodeBytesAP(m_checkSum, rgch, cch);
+  
+ 			if (!c1.is_valid())
+ 				break;
+ 			val = c1.next();
+ 		}
+ 	}
+ 
+ 	if (m_pProperties)
+  	{
+ 		UT_StringPtrMap::UT_Cursor c2(m_pProperties);
+ 		const void *val;
+ 
+ 		val = c2.first();
+ 		while (val != NULL)
+ 		{
+ 			s1 = static_cast<const XML_Char *>(c2.key().c_str());
+ 			s2 = static_cast<XML_Char *const>(static_cast<const UT_Pair*>(val)->first());
+ 
+ 			cch = UT_XML_strlen(s1);
+ 
+ 			UT_XML_strncpy(rgch, 8, s1);
+ 			UT_lowerString(rgch);
+ 
+ 			m_checkSum = hashcodeBytesAP(m_checkSum, rgch, cch);
+  
+ 			cch = UT_XML_strlen(s2);
+  
+ 			UT_XML_strncpy(rgch, 8, s2);
+ 			UT_lowerString(rgch);
+ 
+ 			m_checkSum = hashcodeBytesAP(m_checkSum, rgch, cch);
+ 
+ 			if (!c2.is_valid())
+ 				break;
+ 			val = c2.next();
+ 		}
 	}
-
-
-	val = c2.first();
-	while (val != NULL)
-	{
-		s1 = static_cast<const XML_Char *>(c2.key().c_str());
-		s2 = static_cast<XML_Char *const>(static_cast<const UT_Pair*>(val)->first());
-
-		m_checkSum += UT_XML_strlen(s1);
-		m_checkSum += UT_XML_strlen(s2);
-
-		if (!c2.is_valid())
-			break;
-		val = c2.next();
-	}
-
 	return;
 }
 
@@ -1033,3 +1076,12 @@ void PP_AttrProp::operator = (const PP_AttrProp &Other)
 
 }
 
+UT_uint32 PP_AttrProp::getIndex(void)
+{
+	return m_index;
+}
+
+void PP_AttrProp::setIndex(UT_uint32 i)
+{
+	m_index = i;
+}
