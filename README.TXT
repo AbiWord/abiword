@@ -24,6 +24,10 @@ dist
 	The dist directory is initially absent, since nothing is placed
 	there until it has been built.
 
+shots
+	Screen shots for each product. 
+
+
 test
 	Test files for each product. 
 
