@@ -142,6 +142,15 @@ protected:
 
 	AP_TopRulerInfo		m_infoCache;
 	UT_Bool				m_bValidMouseClick;
+
+	enum _draggingWhat { DW_NOTHING,
+						 DW_LEFTMARGIN,
+						 DW_RIGHTMARGIN,
+						 DW_COLUMNGAP,
+						 DW_LEFTINDENT,
+						 DW_RIGHTINDENT,
+						 DW_FIRSTLINEINDENT 
+	} DraggingWhat;
 	
 	/* static const*/ UT_uint32	s_iFixedHeight /* =32 */;	/* size we draw stuff w/o regard to window size */
 	/* static const*/ UT_uint32	s_iFixedWidth  /* =32 */;	/* minimum width of non-scrolling area on left */

@@ -1987,9 +1987,8 @@ void FV_View::extSelToXY(UT_sint32 xPos, UT_sint32 yPos, UT_Bool bDrag)
 		{
 			if (m_pAutoScrollTimer)
 			{
-				// timer not needed any more, so clear it
-				DELETEP(m_pAutoScrollTimer);
-				m_pAutoScrollTimer = NULL;
+				// timer not needed any more, so stop it
+				m_pAutoScrollTimer->stop();
 			}
 		}
 		else
@@ -2002,11 +2001,14 @@ void FV_View::extSelToXY(UT_sint32 xPos, UT_sint32 yPos, UT_Bool bDrag)
 			if (!m_pAutoScrollTimer)
 			{
 				m_pAutoScrollTimer = UT_Timer::static_constructor(_autoScroll, this);
-
 				if (m_pAutoScrollTimer)
 					m_pAutoScrollTimer->set(AUTO_SCROLL_MSECS);
 			}
-
+			else
+			{
+				m_pAutoScrollTimer->start();
+			}
+			
 			// postpone selection until timer fires
 			bPostpone = UT_TRUE;
 		}
@@ -2041,9 +2043,9 @@ void FV_View::endDrag(UT_sint32 xPos, UT_sint32 yPos)
 		m_pAutoScrollTimer->fire();
 	}
 
-	// timer not needed any more, so clear it
-	DELETEP(m_pAutoScrollTimer);
-	m_pAutoScrollTimer = NULL;
+	// timer not needed any more, so stop it
+	m_pAutoScrollTimer->stop();
+	
 }
 // ---------------- start goto ---------------
 

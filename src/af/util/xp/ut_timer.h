@@ -44,7 +44,9 @@ public:
 	void setInstanceData(void*);
 	void* getInstanceData();
 	
-	virtual UT_sint32 set(UT_uint32 iMilliseconds) = 0;
+	virtual UT_sint32 set(UT_uint32 iMilliseconds) = 0;	/* set freq and start */
+	virtual void stop(void) = 0;		/* suspend events */
+	virtual void start(void) = 0;		/* resume events */
 	void fire();
 	
 	void setIdentifier(UT_uint32);

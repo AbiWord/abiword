@@ -65,6 +65,8 @@ FL_DocLayout::~FL_DocLayout()
 
 	DELETEP(m_pDocListener);
 
+	if (m_pSpellCheckTimer)
+		m_pSpellCheckTimer->stop();
 	DELETEP(m_pSpellCheckTimer);
 	DELETEP(m_pPendingWord);
 
@@ -414,13 +416,10 @@ void FL_DocLayout::_spellCheck(UT_Timer * pTimer)
 		}
 	}
 
-	// TODO: might be safer to return BOOL and let timer kill itself
-	// ALT: just call pDocLayout->dequeueBlock(pB)
 	if (i == 0)
 	{
-		// timer not needed any more, so clear it
-		DELETEP(pDocLayout->m_pSpellCheckTimer);
-		pDocLayout->m_pSpellCheckTimer = NULL;
+		// timer not needed any more, so suspend it
+		pDocLayout->m_pSpellCheckTimer->stop();
 	}
 }
 
@@ -437,9 +436,12 @@ void FL_DocLayout::queueBlockForSpell(fl_BlockLayout *pBlock, UT_Bool bHead)
 	if (!m_pSpellCheckTimer)
 	{
 		m_pSpellCheckTimer = UT_Timer::static_constructor(_spellCheck, this);
-
 		if (m_pSpellCheckTimer)
 			m_pSpellCheckTimer->set(SPELL_CHECK_MSECS);
+	}
+	else
+	{
+		m_pSpellCheckTimer->start();
 	}
 
 	UT_sint32 i = m_vecUncheckedBlocks.findItem(pBlock);
@@ -469,8 +471,5 @@ void FL_DocLayout::dequeueBlock(fl_BlockLayout *pBlock)
 
 	// when queue is empty, kill timer
 	if (m_vecUncheckedBlocks.getItemCount() == 0)
-	{
-		DELETEP(m_pSpellCheckTimer);
-		m_pSpellCheckTimer = NULL;
-	}
+		m_pSpellCheckTimer->stop();
 }

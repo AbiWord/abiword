@@ -26,27 +26,27 @@
 
 /*****************************************************************/
 	
-UT_Timer* UT_Timer::static_constructor(UT_TimerCallback pCallback,
-									   void* pData)
+UT_Timer* UT_Timer::static_constructor(UT_TimerCallback pCallback, void* pData)
 {
 	UT_ASSERT(pCallback);
-
-	UT_Timer * p = new UT_UNIXTimer();
-
-	if (p)
-	{
-		p->setCallback(pCallback);
-		p->setInstanceData(pData);
-	}
+	UT_UNIXTimer * p = new UT_UNIXTimer(pCallback, pData);
 
 	return p;
+}
+
+UT_UNIXTimer::UT_UNIXTimer(UT_TimerCallback pCallback, void* pData)
+{
+	setCallback(pCallback);
+	setInstanceData(pData);
+	m_bStarted = UT_FALSE;
+	m_iMilliseconds = 0;
 }
 
 UT_UNIXTimer::~UT_UNIXTimer()
 {
 	UT_DEBUGMSG(("ut_unixTimer.cpp:  timer destructor\n"));
-	
-	gtk_timeout_remove(getIdentifier());
+
+	stop();
 }
 
 /*****************************************************************/
@@ -65,9 +65,15 @@ static int _Timer_Proc(void *p)
 	  timer was designed to emulate the semantics of Win32 timers,
 	  which continually fire until they are killed.
 	*/
-	pTimer->reset();
 
+	pTimer->resetIfStarted();
 	return 0;
+}
+
+void UT_UNIXTimer::resetIfStarted(void)
+{
+	if (m_bStarted)
+		set(m_iMilliseconds);
 }
 
 UT_sint32 UT_UNIXTimer::set(UT_uint32 iMilliseconds)
@@ -83,17 +89,37 @@ UT_sint32 UT_UNIXTimer::set(UT_uint32 iMilliseconds)
 	  for other platforms.
 	*/
 
+	//UT_DEBUGMSG(("ut_unixTimer.cpp: timer set\n"));
+
 	UT_sint32 idTimer = gtk_timeout_add(iMilliseconds, _Timer_Proc, this);
 	
 	setIdentifier(idTimer);
 	
 	m_iMilliseconds = iMilliseconds;
+	m_bStarted = UT_TRUE;
 
 	return 0;
 }
 
-void UT_UNIXTimer::reset(void)
+void UT_UNIXTimer::stop(void)
 {
-	set(m_iMilliseconds);
+	// stop the delivery of timer events.
+	// stop the OS timer from firing, but do not delete the class.
+
+	if (m_bStarted)
+		gtk_timeout_remove(getIdentifier());
+	m_bStarted = UT_FALSE;
+
+	//UT_DEBUGMSG(("ut_unixTimer.cpp: timer stopped\n"));
+}
+
+void UT_UNIXTimer::start(void)
+{
+	// resume the delivery of events.
+
+	UT_ASSERT(m_iMilliseconds > 0);
+	
+	if (!m_bStarted)
+		set(m_iMilliseconds);
 }
 

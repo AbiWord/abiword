@@ -27,12 +27,17 @@
 class UT_UNIXTimer : public UT_Timer
 {
 public:
-	virtual UT_sint32 set(UT_uint32 iMilliseconds);
-	virtual void reset(void);
+	UT_UNIXTimer::UT_UNIXTimer(UT_TimerCallback pCallback, void* pData);
 	virtual ~UT_UNIXTimer();
+
+	virtual UT_sint32 set(UT_uint32 iMilliseconds);
+	virtual void stop(void);
+	virtual void start(void);
+	virtual void resetIfStarted(void);
 	
 protected:
 	UT_sint32 m_iMilliseconds;
+	UT_Bool m_bStarted;
 };
 
 #endif /* UT_UNIXTIMER_H */

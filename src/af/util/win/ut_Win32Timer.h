@@ -27,9 +27,16 @@
 class UT_Win32Timer : public UT_Timer
 {
 public:
+	UT_Win32Timer(UT_TimerCallback pCallback, void* pData);
 	~UT_Win32Timer();
 
 	virtual UT_sint32 set(UT_uint32 iMilliseconds);
+	virtual void stop(void);
+	virtual void start(void);
+
+protected:
+	UT_sint32 m_iMilliseconds;
+	UT_Bool m_bStarted;
 };
 
 #endif /* UT_WIN32TIMER_H */
