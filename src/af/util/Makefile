@@ -54,6 +54,7 @@ ifeq ($(ABI_NATIVE), beos)
 PLATFORM_OBJS=	$(ABI_NATIVE)/$(OBJDIR)/ut_$(ABI_FE)Assert.$(OBJ_SUFFIX)	\
 		$(ABI_NATIVE)/$(OBJDIR)/ut_$(ABI_FE)String.$(OBJ_SUFFIX)	\
 		$(ABI_NATIVE)/$(OBJDIR)/ut_$(ABI_FE)Timer.$(OBJ_SUFFIX)		\
+		$(ABI_NATIVE)/$(OBJDIR)/ut_Xpm2Bitmap.$(OBJ_SUFFIX)		\
 		$(ABI_NATIVE)/$(OBJDIR)/ut_debugmsg.$(OBJ_SUFFIX)
 endif
 
