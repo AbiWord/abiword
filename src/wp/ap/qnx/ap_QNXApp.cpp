@@ -32,10 +32,14 @@
 #include <signal.h>
 #include <sys/types.h>
 #include <sys/stat.h>
+#include <sys/dir.h>
 
 #include "ut_debugmsg.h"
 #include "ut_string.h"
 #include "ut_misc.h"
+
+#include "ut_Script.h"
+#include "ut_PerlBindings.h"
 
 #include "xap_Args.h"
 #include "ap_Convert.h"
@@ -49,8 +53,12 @@
 #include "xap_Dlg_MessageBox.h"
 #include "xap_Dialog_Id.h"
 #include "xap_Menu_ActionSet.h"
+#include "xap_Menu_Layouts.h"
 #include "xap_Toolbar_ActionSet.h"
+#include "xap_ModuleManager.h"
+#include "xap_Module.h"
 #include "xav_View.h"
+
 
 #include "gr_Graphics.h"
 #include "gr_QNXGraphics.h"
@@ -176,37 +184,6 @@ bool AP_QNXApp::initialize(void)
 	//////////////////////////////////////////////////////////////////
 	IE_ImpExp_RegisterXP();
 
-#if 0
-	//////////////////////////////////////////////////////////////////
-	// initializes the spell checker.
-	//////////////////////////////////////////////////////////////////
-	
-	{
-		const char * szISpellDirectory = NULL;
-		getPrefsValueDirectory(false,AP_PREF_KEY_SpellDirectory,&szISpellDirectory);
-		UT_ASSERT((szISpellDirectory) && (*szISpellDirectory));
-
-		const char * szSpellCheckWordList = NULL;
-		getPrefsValue(AP_PREF_KEY_SpellCheckWordList,&szSpellCheckWordList);
-		UT_ASSERT((szSpellCheckWordList) && (*szSpellCheckWordList));
-		
-		char * szPathname = (char *)UT_calloc(sizeof(char),strlen(szISpellDirectory)+strlen(szSpellCheckWordList)+2);
-		UT_ASSERT(szPathname);
-		
-		sprintf(szPathname,"%s%s%s",
-				szISpellDirectory,
-				((szISpellDirectory[strlen(szISpellDirectory)-1]=='/') ? "" : "/"),
-				szSpellCheckWordList);
-
-		UT_DEBUGMSG(("TODO: Clean up the spell check stuff \n"));
-//		UT_DEBUGMSG(("Loading SpellCheckWordList [%s]\n",szPathname));
-//		SpellCheckInit(szPathname);
-		free(szPathname);
-		
-		// we silently go on if we cannot load it....
-	}
-#endif
-	
 	//////////////////////////////////////////////////////////////////
 	// load the dialog and message box strings
 	//////////////////////////////////////////////////////////////////
@@ -277,6 +254,32 @@ bool AP_QNXApp::initialize(void)
 	}
 
 	//////////////////////////////////////////////////////////////////
+
+    ///////////////////////////////////////////////////////////////////////
+    /// Build a labelset so the plugins can add themselves to something ///
+    ///////////////////////////////////////////////////////////////////////
+
+	const char * szMenuLabelSetName = NULL;
+	if (getPrefsValue( AP_PREF_KEY_MenuLabelSet, (const XML_Char**)&szMenuLabelSetName) && (szMenuLabelSetName) && (*szMenuLabelSetName))
+	{
+	}
+	else
+		szMenuLabelSetName = AP_PREF_DEFAULT_MenuLabelSet ;
+
+	getMenuFactory()->buildMenuLabelSet(szMenuLabelSetName);
+
+	bool bLoadPlugins = true;
+	bool bFound = getPrefsValueBool(XAP_PREF_KEY_AutoLoadPlugins,&bLoadPlugins);
+	if(bLoadPlugins || !bFound)
+	{
+		loadAllPlugins();
+	}
+
+#ifdef ABI_OPT_PERL
+    // hack to keep the perl bindings working on unix
+    UT_ScriptLibrary& instance = UT_ScriptLibrary::instance(); 
+    instance.registerScript(new UT_PerlScriptSniffer());
+#endif
 
 	return true;
 }
@@ -1115,5 +1118,138 @@ void AP_QNXApp::catchSignals(int sig_num)
 
 	// Abort and dump core
 	abort();
+}
+
+/*Taken from unix july 1'th.*/
+static int so_only (struct dirent *d)
+{
+	const char * name = d->d_name;
+	
+	if ( name )
+	{
+		int len = strlen (name);
+		
+		if (len >= 7)
+		{
+			if(!strcmp(name+(len-7), ".bundle"))
+				return 1;
+		}
+		
+		if (len >= 3)
+		{
+			if(!strcmp(name+(len-3), ".so"))
+    return 1;
+		}
+	}
+	return 0;
+}
+
+void AP_QNXApp::loadAllPlugins ()
+{
+  struct direct **namelist;
+  int n = 0;
+
+  UT_String pluginList[2];
+  UT_String pluginDir;
+
+  // the global plugin directory
+  pluginDir = getAbiSuiteAppDir();
+  pluginDir += "/plugins/";
+  pluginList[0] = pluginDir;
+
+  // the user-local plugin directory
+  pluginDir = getUserPrivateDirectory ();
+  pluginDir += "/AbiWord/plugins/";
+  pluginList[1] = pluginDir;
+
+  for(UT_uint32 i = 0; i < (sizeof(pluginList)/sizeof(pluginList[0])); i++)
+  {
+      pluginDir = pluginList[i];
+
+      n = scandir((char*)pluginDir.c_str(), &namelist, so_only, alphasort);
+      UT_DEBUGMSG(("DOM: found %d plugins in %s\n", n, pluginDir.c_str()));
+
+      if (n > 0)
+	  {
+		  while(n--) 
+		  {
+			  UT_String plugin (pluginDir + namelist[n]->d_name);
+
+			  UT_DEBUGMSG(("DOM: loading plugin %s\n", plugin.c_str()));
+
+			  struct stat pluginInfo;
+			  if (stat (plugin.c_str(), &pluginInfo) != 0)
+			  {
+				  UT_DEBUGMSG(("FJF: stat failed... odd.\n"));
+				  free(namelist[n]);
+				  continue;
+			  }
+#ifdef S_ISDIR
+			  bool pluginIsBundle = (S_ISDIR (pluginInfo.st_mode) != 0);
+#else
+			  bool pluginIsBundle = ((pluginInfo.st_mode & S_IFDIR) != 0);
+#endif
+			  /* Bundles "*.bundle" are directories, plugins "*.so" are modules.
+			   * so_only checks only the suffix, so we need to confirm nature here:
+			   */
+			  if (pluginIsBundle)
+			  {
+				  int len = strlen (namelist[n]->d_name);
+				  if (len < 8)
+				  {
+					  UT_DEBUGMSG(("FJF: bad name for a bundle\n"));
+					  free(namelist[n]);
+					  continue;
+				  }
+				  if(strcmp (namelist[n]->d_name+(len-7), ".bundle") != 0)
+				  {
+					  UT_DEBUGMSG(("FJF: not really a bundle?\n"));
+					  free(namelist[n]);
+					  continue;
+				  }
+			  }
+			  else
+			  {
+				  int len = strlen (namelist[n]->d_name);
+				  if (len < 4)
+				  {
+					  UT_DEBUGMSG(("FJF: bad name for a plugin\n"));
+					  free(namelist[n]);
+					  continue;
+				  }
+				  if(strcmp (namelist[n]->d_name+(len-3), ".so") != 0)
+				  {
+					  UT_DEBUGMSG(("FJF: not really a plugin?\n"));
+					  free(namelist[n]);
+					  continue;
+				  }
+			  }
+			  if (pluginIsBundle)
+			  {
+				  if (XAP_ModuleManager::instance().loadBundle (plugin.c_str(), namelist[n]->d_name))
+				  {
+					  UT_DEBUGMSG(("FJF: loaded bundle: %s\n", namelist[n]->d_name));
+				  }
+				  else
+				  {
+					  UT_DEBUGMSG(("FJF: didn't load bundle: %s\n", namelist[n]->d_name));
+				  }
+				  free(namelist[n]);
+				  continue;
+			  }
+
+			  if (XAP_ModuleManager::instance().loadModule (plugin.c_str()))
+			  {
+				  UT_DEBUGMSG(("DOM: loaded plugin: %s\n", namelist[n]->d_name));
+			  }
+			  else
+			  {
+				  UT_DEBUGMSG(("DOM: didn't load plugin: %s\n", namelist[n]->d_name));
+			  }
+			  free(namelist[n]);
+		  }
+		  free(namelist);
+      }
+  }
 }
 

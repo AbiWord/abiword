@@ -268,6 +268,8 @@ while(tmp=strchr(tmp,';')) tmp[0]=',';
 
 	if (ret != -1 && (info.ret == Pt_FSDIALOG_BTN1)) {
 		m_answer = XAP_Dialog_FileOpenSaveAs::a_OK;
+		
+		m_nFileType= XAP_DIALOG_FILEOPENSAVEAS_FILE_TYPE_AUTO;
 
 		if (bCheckWritePermission)	 {  //Save/Print dialogs
 			//If the file didn't have a suffix, then append one

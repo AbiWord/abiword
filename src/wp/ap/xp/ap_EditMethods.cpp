@@ -8960,8 +8960,15 @@ static bool s_AskForScriptName(XAP_Frame * pFrame,
 			stPathname += szResultPathname;
 			stPathname += "\"";
 		}
-#endif
+#else
+	const char* szResultPathname = pDialog->getPathname();
 
+		if (szResultPathname && *szResultPathname)
+		{
+			stPathname += szResultPathname;
+		}
+#endif
+ 
 		UT_sint32 type = pDialog->getFileType();
 		dflFileType = type;
 
