@@ -188,7 +188,7 @@ UT_Bool XAP_Prefs::setCurrentScheme(const XML_Char * szSchemeName)
 	if (!p)
 		return UT_FALSE;
 
-	UT_DEBUGMSG(("Preferences::setCurrentScheme [%s].",szSchemeName));
+	UT_DEBUGMSG(("Preferences::setCurrentScheme [%s].\n",szSchemeName));
 	
 	m_currentScheme = p;
 	return UT_TRUE;
@@ -252,7 +252,7 @@ void XAP_Prefs::_startElement(const XML_Char *name, const XML_Char **atts)
 			if (UT_XML_stricmp(a[0], "app") == 0)
 			{
 				const char * szThisApp = m_pApp->getApplicationName();
-				UT_DEBUGMSG(("Found preferences for application [%s] (this is [%s]).",
+				UT_DEBUGMSG(("Found preferences for application [%s] (this is [%s]).\n",
 							a[1],szThisApp));
 				if (UT_XML_stricmp(a[1],szThisApp) != 0)
 				{
@@ -351,7 +351,7 @@ void XAP_Prefs::_startElement(const XML_Char *name, const XML_Char **atts)
 				if (!pNewScheme->setSchemeName(a[1]))
 					goto MemoryError;
 
-				UT_DEBUGMSG(("Found Preferences scheme [%s].",a[1]));
+				UT_DEBUGMSG(("Found Preferences scheme [%s].\n",a[1]));
 			}
 			else
 			{
@@ -555,16 +555,14 @@ UT_Bool XAP_Prefs::savePrefsFile(void)
 		fprintf(fp," -->\n");
 	}
 	
-	fprintf(fp,"\n");
-
 	// end of prolog.
 	// now we begin the actual document.
 
-	fprintf(fp,"<AbiPreferences\n\t\tapp=\"%s\"\n\t\tver=\"%s\">\n",
+	fprintf(fp,"\n<AbiPreferences\n\t\tapp=\"%s\"\n\t\tver=\"%s\">\n",
 			m_pApp->getApplicationName(),
 			"1.0");
 	{
-		fprintf(fp,"\t<Select\n\t\tscheme=\"%s\"\n\t\tautosave=\"%ld\" />\n",
+		fprintf(fp,"\n\t<Select\n\t\tscheme=\"%s\"\n\t\tautosave=\"%ld\" />\n",
 				m_currentScheme->getSchemeName(),
 				(UT_uint32)m_bAutoSave);
 
@@ -581,7 +579,12 @@ UT_Bool XAP_Prefs::savePrefsFile(void)
 			const XML_Char * szThisSchemeName = p->getSchemeName();
 
 			if (UT_XML_stricmp(szThisSchemeName, szBuiltinSchemeName) == 0)
-				continue;				// omit this scheme from the output
+			{
+				fprintf(fp,"\n\t<!-- Scheme %s contains the built-in application defaults.  It is         -->\n",
+						szBuiltinSchemeName);
+				fprintf(fp,"\t<!-- ignored on input.  It is only written here as a reference.  But then        -->\n");
+				fprintf(fp,"\t<!-- as the comment above says, you shouldn't be editing this file anyway.  :-)  -->\n");
+			}
 
 			fprintf(fp,"\n\t<Scheme\n\t\tname=\"%s\"\n",szThisSchemeName);
 
@@ -595,7 +598,7 @@ UT_Bool XAP_Prefs::savePrefsFile(void)
 		}
 	}
 
-	fprintf(fp,"</AbiPreferences>\n");
+	fprintf(fp,"\n</AbiPreferences>\n");
 	
 Cleanup:
 	if (fp)
