@@ -703,10 +703,10 @@ void fp_TextRun::_clearScreen(UT_Bool /* bFullLineHeightRect */)
 		if(!m_pLine->isEmpty() && m_pLine->getFirstRun() == this)
 		{
 			// First run on the line so add extra at start to clear any glyph before margin.
+			// Left margin only.
+			UT_sint32 halfcolumnGap = m_pLine->getColumnGap() / 2;
 
-			UT_sint32 columnGap = m_pLine->getColumnGap();
-
-			m_pG->clearArea(xoff - columnGap / 2, yoff, m_iWidth + columnGap, m_pLine->getHeight());
+			m_pG->clearArea(xoff - halfcolumnGap, yoff, m_iWidth + halfcolumnGap, m_pLine->getHeight());
 		}
 		else
 		{
