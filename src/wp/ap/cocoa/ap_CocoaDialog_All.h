@@ -85,6 +85,7 @@
 #	include "ap_CocoaDialog_FormatFrame.h"
 #	include "ap_CocoaDialog_FormatTOC.h"
 #	include "ap_CocoaDialog_Stylist.h"
+#	include "ap_CocoaDialog_MailMerge.h"
 #if 0
 #	include "ap_CocoaDialog_Download_File.h"
 #endif
@@ -153,7 +154,7 @@
 	DeclareDialog(AP_DIALOG_ID_FORMAT_FOOTNOTES,		AP_CocoaDialog_FormatFootnotes)
 	DeclareDialog(AP_DIALOG_ID_FORMAT_TOC,		AP_CocoaDialog_FormatTOC)
 	DeclareDialog(AP_DIALOG_ID_STYLIST,		AP_CocoaDialog_Stylist)
-//PORT	 DeclareDialog(AP_DIALOG_ID_MAILMERGE,		AP_UnixDialog_MailMerge)
+	DeclareDialog(AP_DIALOG_ID_MAILMERGE,		AP_CocoaDialog_MailMerge)
 #if 0
 	DeclareDialog(AP_DIALOG_ID_DOWNLOAD_FILE,	AP_CocoaDialog_Download_File)
 #endif

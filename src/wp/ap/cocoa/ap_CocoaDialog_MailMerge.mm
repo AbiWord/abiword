@@ -1,6 +1,9 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+
 /* AbiWord
  * Copyright (C) 2000 AbiSource, Inc.
  * Copyright (C) 2001-2002 Hubert Figuiere
+ * Copyright (C) 2005 Francis James Franklin
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -18,71 +21,245 @@
  * 02111-1307, USA.
  */
 
-#import <Cocoa/Cocoa.h>
-
 #include <stdlib.h>
 #include <time.h>
 
-#include "ut_string.h"
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
+#include "ut_string.h"
 
 #include "xap_App.h"
 #include "xap_CocoaApp.h"
 #include "xap_CocoaFrame.h"
+#include "xap_Strings.h"
 
-#include "ap_Strings.h"
 #include "ap_Dialog_Id.h"
 #include "ap_Dialog_MailMerge.h"
+#include "ap_Strings.h"
+
 #include "ap_CocoaDialog_MailMerge.h"
 
 /*****************************************************************/
 
-XAP_Dialog * AP_CocoaDialog_MailMerge::static_constructor(XAP_DialogFactory * pFactory,
-													 XAP_Dialog_Id id)
+XAP_Dialog * AP_CocoaDialog_MailMerge::static_constructor(XAP_DialogFactory * pFactory, XAP_Dialog_Id dlgid)
 {
-	AP_CocoaDialog_MailMerge * p = new AP_CocoaDialog_MailMerge(pFactory,id);
+	AP_CocoaDialog_MailMerge * p = new AP_CocoaDialog_MailMerge(pFactory, dlgid);
 	return p;
 }
 
-AP_CocoaDialog_MailMerge::AP_CocoaDialog_MailMerge(XAP_DialogFactory * pDlgFactory,
-										 XAP_Dialog_Id id)
-	: AP_Dialog_MailMerge(pDlgFactory,id)
+AP_CocoaDialog_MailMerge::AP_CocoaDialog_MailMerge(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id dlgid) :
+	AP_Dialog_MailMerge(pDlgFactory, dlgid),
+	m_dlg(nil)
 {
+	// 
 }
 
 AP_CocoaDialog_MailMerge::~AP_CocoaDialog_MailMerge(void)
 {
+	destroy();
 }
 
 void AP_CocoaDialog_MailMerge::runModeless(XAP_Frame * pFrame)
 {
-	UT_ASSERT(pFrame);
+	if (m_dlg = [[AP_CocoaDialog_MailMerge_Controller alloc] initFromNib])
+		{
+			[m_dlg setXAPOwner:this];
+			[m_dlg window];
 
-/*
-	NOTE: This template can be used to create a working stub for a 
-	new dialog on this platform.  To do so:
-	
-	1.  Copy this file (and its associated header file) and rename 
-		them accordingly. 
+			// TODO
 
-	2.  Do a case sensitive global replace on the words MailMerge and STUB
-		in both files. 
+			// Save dialog the ID number and pointer to the widget
+			UT_sint32 sid = (UT_sint32) getDialogId();
+			m_pApp->rememberModelessId(sid, (XAP_Dialog_Modeless *) m_pDialog);
 
-	3.  Add stubs for any required methods expected by the XP class. 
-		If the build fails because you didn't do this step properly,
-		you've just broken the donut rule.  
+			if (XAP_Frame * pFrame = XAP_App::getApp()->getLastFocussedFrame())
+				{
+					setActiveFrame(pFrame);
+					init();
+				}
 
-	4.	Replace this useless comment with specific instructions to 
-		whoever's porting your dialog so they know what to do.
-		Skipping this step may not cost you any donuts, but it's 
-		rude.  
-
-	This file should *only* be used for stubbing out platforms which 
-	you don't know how to implement.  When implementing a new dialog 
-	for your platform, you're probably better off starting with code
-	from another working dialog.  
-*/	
-
-	UT_ASSERT(UT_NOT_IMPLEMENTED);
+			activate();
+		}
 }
+
+void AP_CocoaDialog_MailMerge::activate(void)
+{
+	if (m_dlg)
+		{
+			[m_dlg windowToFront];
+			[m_dlg updateAvailableFields];
+		}
+}
+
+void AP_CocoaDialog_MailMerge::destroy(void)
+{
+	if (m_dlg)
+		{
+			[m_dlg close];
+			[m_dlg release];
+
+			modeless_cleanup();
+		}
+	m_dlg = 0;
+}
+
+void AP_CocoaDialog_MailMerge::eventInsert(NSString * field_name)
+{
+	UT_UTF8String name([field_name UTF8String]);
+
+	setMergeField(name);
+	addClicked();
+}
+
+void AP_CocoaDialog_MailMerge::setFieldList()
+{
+	if (m_dlg)
+		{
+			[m_dlg updateAvailableFields];
+		}
+}
+
+@implementation AP_CocoaDialog_MailMerge_Controller
+
+- (id)initFromNib
+{
+	if (self = [super initWithWindowNibName:@"ap_CocoaDialog_MailMerge"])
+		{
+			_xap = 0;
+
+			m_AvailableFields = [[NSMutableArray alloc] initWithCapacity:32];
+			if (!m_AvailableFields)
+				{
+					[self release];
+					self = nil;
+				}
+		}
+	return self;
+}
+
+- (void)dealloc
+{
+	if (m_AvailableFields)
+		{
+			[m_AvailableFields release];
+			m_AvailableFields = 0;
+		}
+	[super dealloc];
+}
+
+- (void)setXAPOwner:(XAP_Dialog *)owner
+{
+	_xap = static_cast<AP_CocoaDialog_MailMerge *>(owner);
+}
+
+- (void)discardXAP
+{
+	_xap = 0;
+}
+
+- (void)windowDidLoad
+{
+	const XAP_StringSet * pSS = XAP_App::getApp()->getStringSet();
+
+	LocalizeControl([self window],    pSS, AP_STRING_ID_DLG_MailMerge_MailMergeTitle);
+
+	LocalizeControl(oAvailableFields, pSS, AP_STRING_ID_DLG_MailMerge_AvailableFields);
+	LocalizeControl(oFieldNameCell,   pSS, AP_STRING_ID_DLG_MailMerge_Insert_No_Colon);
+	LocalizeControl(oOpenFile,        pSS, AP_STRING_ID_DLG_MailMerge_OpenFile);
+	LocalizeControl(oClose,           pSS,XAP_STRING_ID_DLG_Close);
+	LocalizeControl(oInsert,          pSS, AP_STRING_ID_DLG_InsertButton);
+
+	[oFieldsTable setDataSource:self];
+	[oFieldsTable setDelegate:self];
+}
+
+- (void)windowToFront
+{
+	[[self window] makeKeyAndOrderFront:self];
+	[[self window] makeFirstResponder:oFieldName];
+}
+
+- (IBAction)aFieldsTable:(id)sender
+{
+	// 
+}
+
+- (IBAction)aFieldName:(id)sender
+{
+	[self aInsert:sender];
+}
+
+- (IBAction)aOpenFile:(id)sender
+{
+	if (_xap)
+		if (XAP_Frame * pFrame = XAP_App::getApp()->getLastFocussedFrame())
+			{
+				_xap->setActiveFrame(pFrame);
+				_xap->eventOpen();
+			}
+}
+
+- (IBAction)aClose:(id)sender
+{
+	if (_xap)
+		_xap->destroy();
+}
+
+- (IBAction)aInsert:(id)sender
+{
+	NSString * field_name = [oFieldName stringValue];
+
+	if ([field_name length])
+		if (_xap)
+			_xap->eventInsert(field_name);
+}
+
+- (void)updateAvailableFields
+{
+	if (_xap)
+		{
+			[m_AvailableFields removeAllObjects];
+
+			UT_uint32 count = _xap->fieldCount();
+
+			for (UT_uint32 i = 0; i < count; i++)
+				{
+					[m_AvailableFields addObject:[NSString stringWithUTF8String:(_xap->field(i).utf8_str())]];
+				}
+			[oFieldsTable reloadData];
+		}
+}
+
+/* NSTableViewDataSource methods
+ */
+- (int)numberOfRowsInTableView:(NSTableView *)aTableView
+{
+	return (int) [m_AvailableFields count];
+}
+
+- (id)tableView:(NSTableView *)aTableView objectValueForTableColumn:(NSTableColumn *)aTableColumn row:(int)rowIndex
+{
+	return [m_AvailableFields objectAtIndex:rowIndex];
+}
+
+/* NSTableView delegate methods
+ */
+- (void)tableViewSelectionDidChange:(NSNotification *)aNotification
+{
+	int row = [oFieldsTable selectedRow];
+	if (row >= 0)
+		{
+			[oFieldName setStringValue:[m_AvailableFields objectAtIndex:row]];
+		}
+	else
+		{
+			[oFieldName setStringValue:@""];
+		}
+}
+
+- (void)tableView:(NSTableView *)aTableView willDisplayCell:(id)aCell forTableColumn:(NSTableColumn *)aTableColumn row:(int)rowIndex
+{
+	[aCell setFont:[NSFont systemFontOfSize:10.0f]];
+}
+
+@end
