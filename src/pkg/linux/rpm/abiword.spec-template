@@ -7,6 +7,7 @@
 %define no_static UNIX_CAN_BUILD_STATIC=__UNIX_CAN_BUILD_STATIC__
 %define debug ABI_OPT_DEBUG=__ABI_OPT_DEBUG__
 %define gnome ABI_OPT_GNOME=__ABI_OPT_GNOME__
+%define bidi ABI_OPT_BIDI=__ABI_OPT_BIDI__
 %define perl ABI_OPT_PERL=__ABI_OPT_PERL__
 %define jpeg ABI_OPT_LIBJPEG=__ABI_OPT_LIBJPEG__
 %define libxml2 ABI_OPT_LIBXML2=__ABI_OPT_LIBXML2__
@@ -125,12 +126,12 @@ rm -rf $RPM_BUILD_ROOT
 
 %build
 
-make %{version_flag} %{debug} %{libxml2} %{no_static} %{gnome} %{jpeg} %{perl} %{optimize} compile canonical prefix=$RPM_BUILD_ROOT%{ABIPREFIX}
+make %{version_flag} %{debug} %{libxml2} %{no_static} %{gnome} %{bidi} %{jpeg} %{perl} %{optimize} compile canonical prefix=$RPM_BUILD_ROOT%{ABIPREFIX}
 
 %install
 umask 022
 
-make %{version_flag} %{debug} %{libxml2} %{no_static} %{gnome} %{jpeg} %{perl} %{optimize} install prefix=$RPM_BUILD_ROOT%{ABIPREFIX}
+make %{version_flag} %{debug} %{libxml2} %{no_static} %{gnome} %{bidi} %{jpeg} %{perl} %{optimize} install prefix=$RPM_BUILD_ROOT%{ABIPREFIX}
 
 # Manual fixes to Abi package
 
@@ -163,6 +164,7 @@ cp $RPM_BUILD_DIR/%{name}-%{version}/abidistfiles/clipart/*.png $RPM_BUILD_ROOT%
 chmod 644 $RPM_BUILD_ROOT%{ABIPREFIX}/AbiSuite/fonts/*
 chmod 644 $RPM_BUILD_ROOT%{ABIPREFIX}/AbiSuite/icons/*
 chmod 644 $RPM_BUILD_ROOT%{ABIPREFIX}/AbiSuite/clipart/*
+chmod 644 $RPM_BUILD_ROOT%{ABIPREFIX}/AbiSuite/dictionary/*
 chmod 644 $RPM_BUILD_ROOT%{ABIPREFIX}/AbiSuite/templates/*
 
 %clean
