@@ -36,7 +36,6 @@
     I don't there there could be reason for defining WITHOUT_MB, since
     UT_Mbtowc and UT_Wctomb use iconv internally, which works fine everywhere.
 */
-
 #ifndef WITHOUT_MB
 #include "ut_mbtowc.h"
 #include "ut_wctomb.h"
@@ -705,8 +704,8 @@ UT_UCS2Char * UT_UCS2_strcpy_char(UT_UCS2Char * dest, const char * src)
 	unsigned char * s	= (unsigned char *) src;
 
 #ifndef WITHOUT_MB
-	static UT_Mbtowc m;
-	wchar_t wc;
+	static UT_UCS2_mbtowc m;
+	UT_UCS2Char wc;
 #endif
 
 	while (*s != 0)
@@ -782,8 +781,8 @@ bool UT_UCS2_cloneString_char(UT_UCS2Char ** dest, const char * src)
 		UT_UCS2Char * d= *dest;
 		unsigned char * s	= (unsigned char *) src;
 
-		UT_Mbtowc m;
-		wchar_t wc;
+		UT_UCS2_mbtowc m;
+		UT_UCS2Char wc;
 
 		while (*s != 0)
 		{
@@ -1461,8 +1460,8 @@ UT_UCS4Char * UT_UCS4_strcpy_char(UT_UCS4Char * dest, const char * src)
 	unsigned char * s	= (unsigned char *) src;
 
 #ifndef WITHOUT_MB
-	static UT_Mbtowc m;
-	wchar_t wc;
+	static UT_UCS4_mbtowc m;
+	UT_UCS4Char wc;
 #endif
 
 	while (*s != 0)
@@ -1538,8 +1537,8 @@ bool UT_UCS4_cloneString_char(UT_UCS4Char ** dest, const char * src)
 		UT_UCS4Char * d= *dest;
 		unsigned char * s	= (unsigned char *) src;
 
-		UT_Mbtowc m;
-		wchar_t wc;
+		UT_UCS4_mbtowc m;
+		UT_UCS4Char wc;
 
 		while (*s != 0)
 		{

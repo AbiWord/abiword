@@ -390,7 +390,7 @@ int UT_UCS2_mbtowc::mbtowc (UT_UCS2Char & wc, char mb)
 
 UT_UCS4_mbtowc::Converter::Converter (const char * from_charset) :
   m_count(1),
-  m_cd(UT_iconv_open ("UCS_INTERNAL", from_charset))
+  m_cd(UT_iconv_open ("UCS-4", from_charset))
 {
   // 
 }
