@@ -529,7 +529,11 @@ Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_SectionFmt)
 	  {
 	    switch(id)
 	      {	
+		// only 1 column allowed
 	      case AP_TOOLBAR_ID_1COLUMN:
+		return EV_TIS_Toggled;
+
+		// not allowed
 	      case AP_TOOLBAR_ID_2COLUMN:
 	      case AP_TOOLBAR_ID_3COLUMN:
 	        return EV_TIS_Gray;
