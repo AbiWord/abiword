@@ -1870,10 +1870,15 @@ bool FV_View::setStyle(const XML_Char * style, bool bDontGeneralUpdate)
 		return false;
 	}
 
+	fl_BlockLayout * pBL = getCurrentBlock();
+	bool bisListStyle = (NOT_A_LIST != pBL->getListTypeFromStyle( style));
+
 	bool bCharStyle = pStyle->isCharStyle();
 
 	const XML_Char * attribs[] = { PT_STYLE_ATTRIBUTE_NAME, 0, 0 };
 	attribs[1] = style;
+	if(bisListStyle)
+		m_pDoc->beginUserAtomicGlob();
 
 	if (bCharStyle)
 	{
@@ -1974,6 +1979,15 @@ bool FV_View::setStyle(const XML_Char * style, bool bDontGeneralUpdate)
 #endif		
 	}
 
+	if(bisListStyle)
+	{
+		while(pBL->isListItem())
+		{
+			m_pDoc->StopList(pBL->getStruxDocHandle());
+		}     
+		pBL->StartList(style);
+		m_pDoc->endUserAtomicGlob();
+	}
 	if(!bDontGeneralUpdate)
 	{
 		_generalUpdate();
@@ -3651,7 +3665,9 @@ void FV_View::_moveInsPtNextPrevLine(bool bNext)
 
 	UT_DEBUGMSG(("iNewPoint=%d, iOldPoint=%d, xClick=%d, yClick=%d\n",iNewPoint, iOldPoint, xClick, yClick));
 	UT_ASSERT(iNewPoint != iOldPoint);
-	if((iNewPoint >= posBOD) && (iNewPoint <= posEOD) && ((bNext && (iNewPoint >= iOldPoint)) || (!bNext && (iNewPoint <= iOldPoint))))
+	 if((iNewPoint >= posBOD) && (iNewPoint <= posEOD) && 
+		((bNext && (iNewPoint >= iOldPoint)) 
+	  || (!bNext && (iNewPoint <= iOldPoint))))
 		_setPoint(iNewPoint, bEOL);
 
 	if (!_ensureThatInsertionPointIsOnScreen())
@@ -8145,17 +8161,7 @@ bool FV_View::insertHeaderFooter(const XML_Char ** props, bool ftr)
 // inherited into the header.
 //
 	setStyle("Normal",true);
-//
-// This moves the insertion point and screws up other commands to the piecetable
-// so put them back
-//
-//	m_pDoc->notifyPieceTableChangeStart();
-//	m_pDoc->disableListUpdates();
 
-//	if(isSelectionEmpty())
-//		_eraseInsertionPoint();
-
-	//
 	// Now Insert the footer section.
 	// Doing things this way will grab the previously inserted block
 	// and put into the footer section.

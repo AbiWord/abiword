@@ -2761,6 +2761,11 @@ Defun1(insertParagraphBreak)
 Defun1(insertSectionBreak)
 {
 	ABIWORD_VIEW;
+//
+// No section breaks in header/Footers
+//
+	if(pView->isHdrFtrEdit())
+		return true;
 	pView->insertSectionBreak();
 	return true;
 }
@@ -2794,6 +2799,11 @@ Defun1(insertLineBreak)
 Defun1(insertColumnBreak)
 {
 	ABIWORD_VIEW;
+//
+// No column breaks in header/Footers
+//
+	if(pView->isHdrFtrEdit())
+		return true;
 	UT_UCSChar c = UCS_VTAB;
 	pView->cmdCharInsert(&c,1);
 	return true;
@@ -2803,6 +2813,11 @@ Defun1(insertPageBreak)
 {
 	ABIWORD_VIEW;
 	UT_UCSChar c = UCS_FF;
+//
+// No page breaks in header/Footers
+//
+	if(pView->isHdrFtrEdit())
+		return true;
 	pView->cmdCharInsert(&c,1);
 	return true;
 }
