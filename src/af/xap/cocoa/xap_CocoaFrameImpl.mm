@@ -38,6 +38,7 @@
 #import "xap_App.h"
 #import "xap_CocoaApp.h"
 #import "xap_CocoaFrameImpl.h"
+#import "xap_CocoaTextView.h"
 #import "xap_CocoaTimer.h"
 #import "xap_FrameImpl.h"
 #import "xap_Frame.h"
@@ -563,7 +564,12 @@ void XAP_CocoaFrameImpl::setToolbarRect(const NSRect &r)
 
 - (void)windowDidBecomeKey:(NSNotification *)aNotification
 {
-	UT_DEBUGMSG(("windowDidBecomeKey:\n"));
+	UT_DEBUGMSG(("windowDidBecomeKey: '%s'\n", [[[self window] title] UTF8String]));
+
+	XAP_Frame * frame = m_frame->getFrame ();
+	XAP_App * App = frame->getApp ();
+	App->rememberFocussedFrame (static_cast<void *>(frame));
+
 	[[NSNotificationCenter defaultCenter] postNotificationName:XAP_CocoaFrameImpl::XAP_FrameNeedToolbar 
 			object:self];
 }
@@ -577,6 +583,12 @@ void XAP_CocoaFrameImpl::setToolbarRect(const NSRect &r)
 
 - (void)windowDidResignKey:(NSNotification *)aNotification
 {
+	UT_DEBUGMSG(("windowDidResignKey: '%s'\n", [[[self window] title] UTF8String]));
+
+	XAP_Frame * frame = m_frame->getFrame ();
+	XAP_App * App = frame->getApp ();
+	App->clearLastFocussedFrame ();
+
 //	[[NSNotificationCenter defaultCenter] postNotificationName:XAP_CocoaFrameImpl::XAP_FrameReleaseToolbar 
 //			object:self];
 }
