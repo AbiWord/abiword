@@ -33,6 +33,7 @@
 #include "xap_ViewListener.h"
 #include "ev_EditMethod.h"
 #include "xav_View.h"
+#include "xap_prefs.h"
 
 #ifdef _MSC_VER
 #pragma warning(disable: 4355)	// 'this' used in base member initializer list
@@ -123,29 +124,47 @@ void XAP_Win32FrameImpl::_createTopLevelWindow(void)
 {
 	RECT r;
 	UT_uint32 iHeight, iWidth;
+	UT_sint32 iPosX, iPosY;
+	static bool firstWindow = true;	/* position only 1st window! */
 
 	// create a top-level window for us.
 	// get the default window size from preferences or something.
-	// TODO should set size for all, but position only on 1st created
+	// should set size for all, but position only on 1st created
+	// TODO determine where to save & restore from Window flag (since
+	//      we can't use the geometry flag (its some other junk about validity of pos & size)
+	//      so we can properly restore Maximized/Minimized/Normal mode windows
 
 	// get window width & height from preferences
-	UT_sint32 t_x,t_y;  // dummy variables
-	UT_uint32 t_flag;
-	if ( !(XAP_App::getApp()->getGeometry(&t_x,&t_y,&iWidth,&iHeight,&t_flag)) ||
+	UT_uint32 t_flag;		// dummy variable
+	if ( !(XAP_App::getApp()->getGeometry(&iPosX,&iPosY,&iWidth,&iHeight,&t_flag)) ||
            !((iWidth > 0) && (iHeight > 0)) )
 	{
+		UT_DEBUGMSG(("Unable to obtain saved geometry, using window defaults!\n"));
 		iWidth = CW_USEDEFAULT;
 		iHeight = CW_USEDEFAULT;
+		iPosX = CW_USEDEFAULT;
+		iPosY = CW_USEDEFAULT;
 	}
+	/* let Windows(R) place the Window for all but 1st one, for stairstep effect */
+	if (!firstWindow)
+	{
+		iPosX = CW_USEDEFAULT;
+		iPosY = CW_USEDEFAULT;
+	}
+	else firstWindow = false;
+
+	UT_DEBUGMSG(("KJD: Window Frame should be %d x %d [width x height]\n", iWidth, iHeight));
+
 
 	XAP_Win32App *pWin32App = static_cast<XAP_Win32App *>(XAP_App::getApp());
 
 	m_hwndFrame = CreateWindow(pWin32App->getApplicationName(),
 							   pWin32App->getApplicationTitleForTitleBar(),
 							   WS_OVERLAPPEDWINDOW | WS_CLIPCHILDREN,
-							   CW_USEDEFAULT, CW_USEDEFAULT, iWidth, iHeight,
+							   iPosX, iPosY, iWidth, iHeight,
 							   NULL, NULL, pWin32App->getInstance(), NULL);
 	UT_ASSERT(m_hwndFrame);
+
 
 	// bind this frame to its window
 	// WARNING: We assume in many places this refers to a XAP_Frame or descendant!!!
@@ -242,7 +261,11 @@ bool XAP_Win32FrameImpl::_close(void)
 				wndPlacement.rcNormalPosition.top, 
 				wndPlacement.rcNormalPosition.right - wndPlacement.rcNormalPosition.left,
 				wndPlacement.rcNormalPosition.bottom - wndPlacement.rcNormalPosition.top,
+				/* flag is meant for info about the position & size info stored, not a generic flag
+				 * TODO: figure out where to store this then, so we can max/min/normal again
 				wndPlacement.showCmd
+				*/
+				PREF_FLAG_GEOMETRY_POS | PREF_FLAG_GEOMETRY_SIZE
 		);
 	}
 	else
