@@ -12,7 +12,7 @@
 /* Reduced Gobals needed by ispell code.                                   */
 /***************************************************************************/
 
-#if 0		//These things declared twice
+#if 0		/*These things declared twice*/
 	int              numhits;
 struct success          hits[MAX_HITS];
 
@@ -54,7 +54,7 @@ ichar_t  Try[SET_SIZE + MAXSTRINGCHARS];
 
 #endif
 
-//These things not declared twice (or at least not referenced)
+/*These things not declared twice (or at least not referenced)*/
 
 /*this is used for converting form unsigned short to UCS-2*/
 static unsigned short  ucs2[INPUTWORDLEN + MAXAFFIXLEN];
