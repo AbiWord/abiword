@@ -2626,7 +2626,14 @@ bool FV_View::setStyleAtPos(const XML_Char * style, PT_DocPosition posStart1, PT
 			if(i == 0)
 				pBL->StartList(style);
 			else
-				pBL->resumeList(static_cast<fl_BlockLayout *>(pBL->getPrev()));
+			{
+				fl_BlockLayout * pPrevBL = pBL->getPrevBlockInDocument();
+				if(pPrevBL)
+				{
+					pBL->resumeList(pPrevBL);
+
+				}
+			}
 		}
 	}
 //
