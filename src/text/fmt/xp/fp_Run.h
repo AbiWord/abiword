@@ -497,6 +497,7 @@ public:
 	bool					_setValue(UT_UCSChar *p_new_value);					
 
 	virtual bool			calculateValue(void);
+	virtual bool			recalcWidth(void);
 	
 protected:
 	virtual void			_draw(dg_DrawArgs*) {};

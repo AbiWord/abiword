@@ -1931,6 +1931,27 @@ fp_FieldRun::fp_FieldRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffset
 	m_sFieldValue[0] = 0;
 }
 
+bool fp_FieldRun::recalcWidth()
+{
+	unsigned short aCharWidths[FPFIELD_MAX_LENGTH];
+	lookupProperties();
+	m_pG->setFont(m_pFont);
+	UT_sint32 iNewWidth = m_pG->measureString(m_sFieldValue, 0, UT_UCS_strlen(m_sFieldValue), aCharWidths);
+	xxx_UT_DEBUGMSG(("fp_FieldRun::recalcWidth: old width %d, new width %d\n", m_iWidth, iNewWidth));
+	if (iNewWidth != m_iWidth)
+	{
+		clearScreen();
+		m_iWidth = iNewWidth;
+
+		m_pG->setFont(m_pFontLayout);
+		m_iWidthLayoutUnits = m_pG->measureString(m_sFieldValue, 0, UT_UCS_strlen(m_sFieldValue), aCharWidths);
+
+		return true;
+	}
+
+	return false;
+}
+
 bool fp_FieldRun::_setValue(UT_UCSChar *p_new_value)
 {
 

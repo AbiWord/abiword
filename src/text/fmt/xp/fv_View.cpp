@@ -2018,6 +2018,8 @@ bool FV_View::setStyleAtPos(const XML_Char * style, PT_DocPosition posStart1, PT
 		}
 	}
 
+	UT_DEBUGMSG(("Style to set %s \n",style));
+	
 	// lookup the current style
 	PD_Style * pStyle = NULL;
 	m_pDoc->getStyle((char*)style, &pStyle);
@@ -7708,7 +7710,7 @@ UT_Error FV_View::cmdInsertField(const char* szName, const XML_Char ** extra_att
 	attributes[i++] = szName;
 	attributes[i++] = NULL;
 	attributes[i++] = NULL;
-
+	
 /*
   currently unused
   fl_BlockLayout* pBL = _findBlockAtPosition(getPoint());
@@ -7732,8 +7734,7 @@ UT_Error FV_View::cmdInsertField(const char* szName, const XML_Char ** extra_att
 	else
 	{
 		_eraseInsertionPoint();
-		bResult = m_pDoc->insertObject(getPoint(), PTO_Field, attributes, NULL, &pField);
-		if(pField != NULL)
+		bResult = m_pDoc->insertObject(getPoint(), PTO_Field, attributes, NULL, &pField);		if(pField != NULL)
 		{
 			pField->update();
 		}
@@ -9129,15 +9130,32 @@ bool FV_View::insertEndnote()
 	};
 
 	//get ready to apply Endonote Reference style
-	PT_DocPosition posStart = getPoint();
-	PT_DocPosition posEnd = posStart + 1;
+	/*	NOTES ON THE ENDNOTE STYLE MECHANISM
+		I have tried to ways. (1) apply the character style at insertion
+		point and insert the Endnote reference; this does not work, the
+		field does not honour the style. (2) Insert the endnote, in the
+		process remembering the postions where the styles should be applied, then
+		when the insertion is finished, apply the styles together. This
+		works, but the endonote fields fail to adjust their sizes to the
+		new formating. Also, there are some redrawing problems.
+	*/
 	
+	PT_DocPosition ErefStart = getPoint();
+	PT_DocPosition ErefEnd = ErefStart + 1;
+	PT_DocPosition EanchStart;
+	PT_DocPosition EanchEnd;
+	PT_DocPosition EbodyEnd;
+	
+	//const XML_Char *cur_style;
+	//getStyle(&cur_style);
+	
+		
 	if (cmdInsertField("endnote_ref", attrs)==false)
 		return false;
-#if 0
-	UT_DEBUGMSG(("setting Endonote Reference style (1), start %d, end %d\n", posStart, posEnd));
-	setStyleAtPos("Endnote Reference", posStart, posEnd,true);
-#endif				
+
+	//UT_DEBUGMSG(("reseting style [%s] after endnote reference, start %d, end %d, point %d\n", cur_style, ErefStart, ErefEnd, getPoint()));
+	//setStyleAtPos(cur_style, ErefEnd, ErefEnd,true);
+			
 	// Current bogosity: c type="endnote_ref".  What's up with that?
 	// Also endnote-id should not follow to next paras.
 
@@ -9182,18 +9200,49 @@ bool FV_View::insertEndnote()
 
 	// add endnote anchor
 	//get ready to apply Endnote Reference style
-	posStart = getPoint();
-	posEnd = posStart + 1;
-
+	EanchStart = getPoint();
+	
 	if (cmdInsertField("endnote_anchor", attrs)==false)
 		return false;
-#if 0	
-	UT_DEBUGMSG(("setting Endnote Reference style (2), start %d, end %d, point %d\n", posStart, posEnd, getPoint()));
-	setStyleAtPos("Endnote Text", posEnd, posEnd,true);
-	setStyleAtPos("Endnote Reference", posStart, posEnd,false);
+	EanchEnd = getPoint();
+	
+	//insert a space after the anchor
+	UT_UCSChar space = UCS_SPACE;
+	m_pDoc->insertSpan(EanchEnd, &space, 1);
+
+	EbodyEnd = getPoint();
+	
+	xxx_UT_DEBUGMSG(("applying [Endnote Reference] style to endnote, start %d, end %d, point %d\n", ErefStart, ErefEnd, getPoint()));
+	setStyleAtPos("Endnote Reference", ErefStart, ErefEnd,true);
+
+	xxx_UT_DEBUGMSG(("applying [Endnote Text] style to endnote body, start %d, end %d, point %d\n", EbodyEnd, EbodyEnd, getPoint()));
+	setStyleAtPos("Endnote Text", EbodyEnd, EbodyEnd,true);
+	
+	xxx_UT_DEBUGMSG(("applying [Endnote Reference] style to anchor, start %d, end %d, point %d\n", EanchStart, EanchEnd, getPoint()));
+	setStyleAtPos("Endnote Reference", EanchStart, EanchEnd,true);
+
+	/*	some magic to make the endnote reference and anchor recalculate
+		its widths
+	*/
+	fl_BlockLayout* pBL = _findBlockAtPosition(ErefStart);
+    UT_ASSERT(pBL != 0);
+    UT_sint32 x, y, x2, y2, height;
+    bool bDirection;
+
+	fp_Run* pRun = pBL->findPointCoords(ErefStart, false, x, y, x2, y2, height, bDirection);
+	UT_ASSERT(pRun != 0);
+	bool bWidthChange = pRun->recalcWidth();
+    xxx_UT_DEBUGMSG(("run type %d, width change %d\n", pRun->getType(),bWidthChange));
+    if(bWidthChange) pBL->setNeedsReformat();
+
+
+    pBL = _findBlockAtPosition(EanchStart);
+    UT_ASSERT(pBL != 0);
+    bWidthChange = pBL->getFirstLine()->getFirstRun()->getNext()->recalcWidth();
+    xxx_UT_DEBUGMSG(("run type %d, width change %d\n", pBL->getFirstLine()->getFirstRun()->getNext()->getType(),bWidthChange));
+    if(bWidthChange) pBL->setNeedsReformat();
 	
 	_generalUpdate();
-#endif
 	return true;
 }
 
