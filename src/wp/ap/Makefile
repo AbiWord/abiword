@@ -134,6 +134,7 @@ OBJS=		$(PLATFORM_OBJS)				\
 		$(OBJDIR)/ap_Dialog_Lists.$(OBJ_SUFFIX)	\
 		$(OBJDIR)/ap_Dialog_Options.$(OBJ_SUFFIX)	\
 		$(OBJDIR)/ap_Dialog_PageNumbers.$(OBJ_SUFFIX)   \
+		$(OBJDIR)/ap_Dialog_MergeCells.$(OBJ_SUFFIX)    \
 		$(OBJDIR)/ap_Dialog_PageSetup.$(OBJ_SUFFIX)     \
 		$(OBJDIR)/ap_Dialog_Paragraph.$(OBJ_SUFFIX)	\
 		$(OBJDIR)/ap_Dialog_Replace.$(OBJ_SUFFIX)	\
