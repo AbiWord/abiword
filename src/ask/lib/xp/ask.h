@@ -82,6 +82,7 @@ long ASK_getFileSetTotalSizeInBytes(ASK_FileSet* pFileSet);
 long ASK_getFileSetTotalSizeInBytesToCopy(ASK_FileSet* pFileSet);
 long ASK_getFileSetTotalFilesToCopy(ASK_FileSet* pFileSet);
 void ASK_convertBytesToString(long n, char* pszStrings);
+void ASK_convert64BitsToString(long high, long low, char* pszStrings);
 int ASK_isFileNewer(char* pszFileName, unsigned int iModTime);
 
 /*
@@ -94,7 +95,7 @@ unsigned int ASK_getFileModTime(const char* pszFileName);
 void ASK_setFileModTime(const char* pszFileName, unsigned int iModTime);
 unsigned int ASK_getFileAttributes(const char* pszFileName);
 void ASK_setFileAttributes(const char* pszFileName, unsigned int iAttributes);
-long ASK_getDiskFreeSpace(const char* pszDir);
+int ASK_getDiskFreeSpace(const char* pszDir, long *HighPart, long *LowPart);
 void ASK_fixSlashes(char* pszPath);
 int ASK_isDirectory(char* pszFile);
 int ASK_fileExists(char* pszFile);

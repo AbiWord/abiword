@@ -25,12 +25,49 @@
 #include <sys/utime.h>
 
 #include "ask.h"
+#include "ut_assert.h"
 
-long ASK_getDiskFreeSpace(const char* pszDir)
+typedef BOOL (WINAPI *PF_GETDISKFREE)(LPCTSTR, PULARGE_INTEGER, PULARGE_INTEGER, PULARGE_INTEGER);
+
+int ASK_getDiskFreeSpace(const char* pszDir, long *HighPart, long *LowPart)
 {
-	// TODO GetDiskFreeSpaceEx()
+	int iResult;
+	PF_GETDISKFREE pGetDiskFreeSpaceEx = NULL;
+	
+	HMODULE hModule = GetModuleHandle("kernel32.dll");
+	UT_ASSERT(hModule);
+	pGetDiskFreeSpaceEx = (PF_GETDISKFREE)GetProcAddress (hModule,
+		"GetDiskFreeSpaceExA");
 
-	return 0;
+	if(pGetDiskFreeSpaceEx)
+	{
+		ULARGE_INTEGER iFreeBytesAvailableToCaller;
+		ULARGE_INTEGER iTotalNumberOfBytes;
+		ULARGE_INTEGER iTotalNumberOfFreeBytes;
+
+		iResult = pGetDiskFreeSpaceEx(pszDir, &iFreeBytesAvailableToCaller, 
+			&iTotalNumberOfBytes, &iTotalNumberOfFreeBytes);
+		*HighPart = iResult != 0 ? iFreeBytesAvailableToCaller.HighPart : 0;
+		*LowPart = iResult != 0 ? iFreeBytesAvailableToCaller.LowPart : 0;
+	}
+	else
+	{
+		DWORD iSectorsPerCluster;
+		DWORD iBytesPerSector;
+		DWORD iNumberOfFreeClusters;
+		DWORD iTotalNumberOfClusters;
+
+		iResult = GetDiskFreeSpace(pszDir,
+						 &iSectorsPerCluster,
+						 &iBytesPerSector,
+						 &iNumberOfFreeClusters,
+						 &iTotalNumberOfClusters);
+
+		*HighPart = 0;
+		*LowPart = (iResult != 0 ? iNumberOfFreeClusters : 0)
+			* iSectorsPerCluster * iBytesPerSector;
+	}
+	return iResult;
 }
 
 unsigned int ASK_getFileModTime(const char* pszFileName)

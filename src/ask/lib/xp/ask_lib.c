@@ -276,6 +276,23 @@ void ASK_convertBytesToString(long n, char* pszStrings)
 	sprintf(pszStrings, "%4.1f MB", n / (1024 * 1024.0));
 }
 
+void ASK_convert64BitsToString(long high, long low, char* pszStrings)
+{
+	unsigned long iMegaByte = low;
+	iMegaByte /= (1024 * 1024);
+
+	if (high || iMegaByte >= 1024)
+	{
+		iMegaByte |= high << 12;
+		sprintf(pszStrings, "%5.2f GB", iMegaByte / 1024.0);
+	}
+	else
+	{
+		ASK_convertBytesToString(low, pszStrings);
+	}
+	return;
+}
+
 int ASK_isFileNewer(char* pszFileName, unsigned int iModTime)
 {
 	if(ASK_fileExists(pszFileName))

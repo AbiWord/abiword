@@ -160,11 +160,7 @@ void _updateDirAndSpace(char* pszPath)
 {
 	char szBuf[256];
 	char* p;
-	DWORD iSectorsPerCluster;
-	DWORD iBytesPerSector;
-	DWORD iNumberOfFreeClusters;
-	DWORD iTotalNumberOfClusters;
-	DWORD iBytes;
+	long iBytesLow, iBytesHigh;
 	int iResult;
 
 	if (g_pSet_BrowseDir->pszDirName &&g_pSet_BrowseDir->pszDirName[0])
@@ -187,17 +183,10 @@ void _updateDirAndSpace(char* pszPath)
 	p++;
 	*p = 0;
 	
-	iResult = GetDiskFreeSpace(szBuf,
-					 &iSectorsPerCluster,
-					 &iBytesPerSector,
-					 &iNumberOfFreeClusters,
-					 &iTotalNumberOfClusters);
-
-	iBytes = (iResult != 0 ? iNumberOfFreeClusters : 0)
-		* iSectorsPerCluster * iBytesPerSector;
+	iResult = ASK_getDiskFreeSpace(szBuf, &iBytesHigh, &iBytesLow);
 
 	// and set it into the static text display
-	ASK_convertBytesToString(iBytes, szBuf);
+	ASK_convert64BitsToString(iBytesHigh, iBytesLow, szBuf);
 	SetWindowText(g_hwndStatic_DiskSpace, szBuf);
 
 	if(iResult == 0)
