@@ -224,6 +224,8 @@ public:
 	UT_uint32               getOffsetFirstVis();
 	UT_uint32               getOffsetLog(UT_uint32 iVisOff);
 	//virtual void            setDirectionProperty(FriBidiCharType dir);	
+	fp_Run *				getNextVisual();
+	fp_Run *				getPrevVisual();
 #endif	
 
 #ifdef FMT_TEST

@@ -296,6 +296,7 @@ void fp_Line::mapXYToPosition(UT_sint32 x, UT_sint32 y, PT_DocPosition& pos,
 	bBOL = false;
 	if (x < pFirstRun->getX())
 	{
+		xxx_UT_DEBUGMSG(("fp_Line::mapXYToPosition [0x%x]: x=%d, first run x=%d\n", this, x, pFirstRun->getX()));
 		bBOL = true;
 
 		UT_sint32 y2 = y - pFirstRun->getY() - m_iAscent + pFirstRun->getAscent();
@@ -3210,6 +3211,20 @@ UT_uint32 fp_Line::_getRunVisIndx(UT_uint32 indx)
 	return(s_pMapOfRunsL2V[indx]);
 }
 
+UT_uint32	fp_Line::getVisIndx(fp_Run* pRun)
+{
+	UT_sint32 i = m_vecRuns.findItem((void *) pRun);
+	UT_ASSERT(i >= 0);
+	return _getRunVisIndx((UT_uint32) i);
+}
+
+fp_Run *	fp_Line::getRunAtVisPos(UT_uint32 i)
+{
+	if(i >= m_vecRuns.getItemCount())
+		return NULL;
+	return (fp_Run*) m_vecRuns.getNthItem(_getRunLogIndx(i));
+}
+
 fp_Run * fp_Line::getLastVisRun()
 {
 	if(!m_iRunsRTLcount)
@@ -3229,6 +3244,8 @@ fp_Run * fp_Line::getFirstVisRun()
 	_createMapOfRuns();
 	return((fp_Run *) m_vecRuns.getNthItem(s_pMapOfRunsV2L[0]));
 }
+
+
 
 ////////////////////////////////////////////////////////////////////
 //

@@ -193,6 +193,8 @@ public:
 #ifdef BIDI_ENABLED
 	fp_Run *	getLastVisRun();
 	fp_Run *	getFirstVisRun();
+	UT_uint32	getVisIndx(fp_Run* pRun);
+	fp_Run *	getRunAtVisPos(UT_uint32 i);
 	void		setMapOfRunsDirty(){m_bMapDirty = true;};
 	void		addDirectionUsed(FriBidiCharType dir, bool bRefreshMap = true);
 	void		removeDirectionUsed(FriBidiCharType dir, bool bRefreshMap = true);

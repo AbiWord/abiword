@@ -4359,6 +4359,29 @@ UT_uint32 fp_Run::getOffsetLog(UT_uint32 iVisOff)
     else return (iVisOff);
 }
 
+fp_Run * fp_Run::getNextVisual()
+{
+	if(!m_pLine)
+		return NULL;
+	
+	UT_uint32 iIndxVis = m_pLine->getVisIndx(this);
+	
+	return m_pLine->getRunAtVisPos(iIndxVis + 1);
+}
+
+fp_Run * fp_Run::getPrevVisual()
+{
+	if(!m_pLine)
+		return NULL;
+	
+	UT_uint32 iIndxVis = m_pLine->getVisIndx(this);
+	
+	if(!iIndxVis)
+		return NULL;
+
+	return m_pLine->getRunAtVisPos(iIndxVis - 1);
+}
+
 void fp_Run::setDirection(FriBidiCharType iDir)
 {
     xxx_UT_DEBUGMSG(("fp_Run::SetDirection, m_iDirection %d, iDir %d, run type %d\n", m_iDirection, iDir, getType()));
