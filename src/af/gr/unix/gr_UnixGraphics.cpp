@@ -162,6 +162,9 @@ static bool fallback_used;
 void GR_UnixGraphics::drawChar(UT_UCSChar Char, UT_sint32 xoff, UT_sint32 yoff)
 {
 	UT_UCSChar Wide_char = remapGlyph(Char, false);
+	if(Wide_char == 0x200B || Wide_char == 0xFEFF) //zero width spaces
+		return;
+		
 	GdkFont *font = XAP_EncodingManager::get_instance()->is_cjk_letter(Wide_char) ? m_pMultiByteFont : m_pSingleByteFont;
 
 	if(XAP_EncodingManager::get_instance()->isUnicodeLocale())
@@ -215,6 +218,9 @@ void GR_UnixGraphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
   	for(pC=pChars+iCharOffset, x=xoff; pC<pChars+iCharOffset+iLength; ++pC)
 	{
 		UT_UCSChar actual = remapGlyph(*pC,false);
+		if(actual == 0x200B || actual == 0xFEFF) //zero width spaces
+			continue;
+			
 		font=XAP_EncodingManager::get_instance()->is_cjk_letter(actual)? m_pMultiByteFont: m_pSingleByteFont;
 		
 		if(XAP_EncodingManager::get_instance()->isUnicodeLocale())
@@ -338,6 +344,10 @@ UT_uint32 GR_UnixGraphics::measureUnRemappedChar(const UT_UCSChar c)
 	// but its not (for presumed performance reasons).  Also, a difference
 	// is that measureString() uses remapping to get past zero-width
 	// character cells.
+	
+	if(c == 0x200B || c == 0xFEFF) // 0-with spaces
+		return 0;
+		
 	if (!m_pFontManager)
 		return 0;
 
@@ -443,6 +453,9 @@ UT_uint32 GR_UnixGraphics::measureString(const UT_UCSChar* s, int iOffset,
 	for (int i = 0; i < num; i++)
     {
 		cChar = remapGlyph(s[i + iOffset], true);
+		if(cChar == 0x200B || cChar == 0xFEFF)
+			continue;
+			
 		width = gdk_char_width_wc (pFont, cChar);
 		charWidth += width;
 		if (pWidths)

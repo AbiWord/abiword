@@ -243,7 +243,13 @@ UT_UCSChar GR_Graphics::remapGlyph(const UT_UCSChar actual_, bool noMatterWhat)
 			}
 		}
 	}
-	if (!m_bRemapGlyphsMasterSwitch) return (actual);
+	if (!m_bRemapGlyphsMasterSwitch
+		|| actual == 0x200B  // zero width space
+		|| actual == 0xFEFF) // zero width non-breaking space
+	{
+		return (actual);
+	}
+	
 	UT_uint32 width = 0xFFFF;
 	if (noMatterWhat  ||  m_bRemapGlyphsNoMatterWhat  ||  !(width = measureUnRemappedChar(actual)))
 	{
