@@ -106,7 +106,9 @@ BeginSet(id,ID,UT_TRUE)
 	MenuLabel(AP_MENU_ID_FMT_SUPERSCRIPT,		"Huruf &atas",			"Menaikkan posisi tulisan yang telah diseleksi")
 	MenuLabel(AP_MENU_ID_FMT_SUBSCRIPT,		"Huruf ba&wah",			"Menurunkan posisi tulisan yang telah diseleksi")
 
+	MenuLabel(AP_MENU_ID_TOOLS,				"&Alat-alat",			NULL)
 	MenuLabel(AP_MENU_ID_TOOLS_SPELL,		"&Ejaan",			"Memeriksa ejaan")
+	MenuLabel(AP_MENU_ID_TOOLS_WORDCOUNT,		"&Hitung Kata",			"Menghitung berapa banyak kata di dalam dokumen")
 	MenuLabel(AP_MENU_ID_TOOLS_OPTIONS,		"P&ilihan",			"Menentukan opsi")
 
 	MenuLabel(AP_MENU_ID_ALIGN,				"&Aturan",			NULL)
