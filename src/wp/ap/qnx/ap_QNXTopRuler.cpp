@@ -49,7 +49,6 @@ PtWidget_t * AP_QNXTopRuler::createWidget(void)
 {
 	PtArg_t args[10];
 	PhArea_t area;
-	void 	*data = this;
 	int n = 0;
 	UT_ASSERT(!m_pG && !m_wTopRuler);
 
@@ -76,7 +75,7 @@ PtWidget_t * AP_QNXTopRuler::createWidget(void)
 	n = 0;
 	PtSetArg(&args[n++], Pt_ARG_DIM, &area.size, 0); 
 	PtSetArg(&args[n++], Pt_ARG_RAW_DRAW_F, &(_fe::expose), 1);
-	PtSetArg(&args[n++], Pt_ARG_USER_DATA, &data, sizeof(this)); 
+	PtSetArg(&args[n++], Pt_ARG_POINTER, this, 0); 
    PtSetArg(&args[n++], Pt_ARG_FLAGS, Pt_FALSE, Pt_GETS_FOCUS); 
 	m_wTopRuler = PtCreateWidget(PtRaw, m_wTopRulerGroup, n, args);
 	PtAddEventHandler(m_wTopRuler, Ph_EV_PTR_MOTION_BUTTON /* Ph_EV_PTR_MOTION */, 
@@ -276,15 +275,12 @@ int AP_QNXTopRuler::_fe::resize(PtWidget_t* w, void *data,  PtCallbackInfo_t *in
 
 int AP_QNXTopRuler::_fe::expose(PtWidget_t * w, PhTile_t *damage)
 {
-	PtArg_t args[1];
 	PhRect_t rect;
 
 	PtCalcCanvas(w, &rect);
 
-	AP_QNXTopRuler ** ppQNXRuler = NULL, *pQNXRuler = NULL;
-	PtSetArg(&args[0], Pt_ARG_USER_DATA, &ppQNXRuler, 0);
-	PtGetResources(w, 1, args);
-	pQNXRuler = (ppQNXRuler) ? *ppQNXRuler : NULL;
+	AP_QNXTopRuler *pQNXRuler = NULL;
+	PtGetResource(w, Pt_ARG_POINTER,&pQNXRuler,0);
 	FV_View * pView = (FV_View *) pQNXRuler->getView();
 
 	if (!pQNXRuler || !pView) {

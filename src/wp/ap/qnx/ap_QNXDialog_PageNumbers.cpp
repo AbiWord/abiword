@@ -66,18 +66,14 @@ static int s_delete_clicked(PtWidget_t * w, void *data, PtCallbackInfo_t *info)
 
 static int s_preview_exposed(PtWidget_t * w, PhTile_t * damage) 
 {
-	PtArg_t args[1];
-
    	PhRect_t rect;
    	PtSuperClassDraw(PtBasic, w, damage);
    	PtBasicWidgetCanvas(w, &rect);
 	//clip to our basic canvas (it's only polite).
     PtClipAdd( w, &rect );
 
-	AP_QNXDialog_PageNumbers *pQNXDlg, **ppQNXDlg = NULL;
-	PtSetArg(&args[0], Pt_ARG_USER_DATA, &ppQNXDlg, 0);
-	PtGetResources(w, 1, args);
-	pQNXDlg = (ppQNXDlg) ? *ppQNXDlg : NULL;
+	AP_QNXDialog_PageNumbers *pQNXDlg;
+	PtGetResource(w, Pt_ARG_POINTER, &pQNXDlg,0);
 
 	UT_ASSERT(pQNXDlg);
 	pQNXDlg->event_PreviewExposed();
@@ -275,9 +271,8 @@ PtAddCallback(m_toggleAlignmentCenter, Pt_CB_ACTIVATE, s_alignment_changed, this
 PtAddCallback(m_toggleAlignmentRight, Pt_CB_ACTIVATE, s_alignment_changed, this);
 
 	//Create the preview area
-	void *data = (void *)this;
 	m_previewArea = abiPhabLocateWidget(m_window,"rawPreview"); 
-	PtSetResource(m_previewArea, Pt_ARG_USER_DATA, &data, sizeof(this)); 
+	PtSetResource(m_previewArea, Pt_ARG_POINTER,this, 0); 
 	PtSetResource(m_previewArea, Pt_ARG_RAW_DRAW_F, &s_preview_exposed, 1); 
 
 	m_buttonOK = abiPhabLocateWidget(m_window,"btnOK");

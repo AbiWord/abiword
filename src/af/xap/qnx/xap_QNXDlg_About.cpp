@@ -110,10 +110,8 @@ static int s_drawingarea_expose(PtWidget_t * w, PhTile_t * damage)
 	PtCalcCanvas(w, &raw_canvas);
 	PtClipAdd(w, &raw_canvas);
 
-	XAP_QNXDialog_About *pQNXAbout, **ppQNXAbout = NULL;
-	PtSetArg(&args[0], Pt_ARG_USER_DATA, &ppQNXAbout, 0);
-    PtGetResources(w, 1, args);
-    pQNXAbout = (ppQNXAbout) ? *ppQNXAbout : NULL;
+	XAP_QNXDialog_About *pQNXAbout;
+    PtGetResource(w, Pt_ARG_POINTER, &pQNXAbout,0);
 
     UT_ASSERT(pQNXAbout);
 	pQNXAbout->event_DrawingAreaExpose();
@@ -212,9 +210,8 @@ PtWidget_t * XAP_QNXDialog_About::_constructWindow(void)
 	PtAddCallback(windowAbout, Pt_CB_WINDOW_CLOSING, s_delete_clicked, this);
 	PtAddHotkeyHandler(windowAbout,Pk_F1,0,Pt_HOTKEY_SYM,this,OpenHelp);
 
-	void *data = this;
 	drawingareaGraphic = abiPhabLocateWidget(windowAbout,"rawGraphic"); 
-	PtSetResource(drawingareaGraphic, Pt_ARG_USER_DATA, &data, sizeof(this));
+	PtSetResource(drawingareaGraphic, Pt_ARG_POINTER, this,0);
 	PtSetResource(drawingareaGraphic, Pt_ARG_RAW_DRAW_F,  &s_drawingarea_expose, 1);
 
 	PtSetResource(abiPhabLocateWidget(windowAbout,"lblAppName"), Pt_ARG_TEXT_STRING, m_pApp->getApplicationName(), 0);

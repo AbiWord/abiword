@@ -504,7 +504,6 @@ static GR_Image * _showSplash(PtWidget_t *spwin, UT_uint32 delay)
 		n = 0;
 		PtSetArg(&args[n++], Pt_ARG_WIDTH, iSplashWidth, 0);
 		PtSetArg(&args[n++], Pt_ARG_HEIGHT, iSplashHeight, 0);
-		//PtSetArg(&args[n++], Pt_ARG_USER_DATA, &data, sizeof(this)); 
 		PtSetArg(&args[n++], Pt_ARG_RAW_DRAW_F, &s_drawingarea_expose, 1);
 		PtWidget_t *da = PtCreateWidget(PtRaw, spwin, n, args);
 		PtAddEventHandler(da, Ph_EV_BUT_RELEASE, s_hideSplash, NULL);

@@ -152,7 +152,6 @@ static int s_spin_Percent_changed(PtWidget_t *w, void *data, PtCallbackInfo_t *i
 }
 
 static int s_preview_exposed(PtWidget_t * w, PhTile_t * damage) {
-	PtArg_t args[1];
 
    	PhRect_t rect;
    	PtSuperClassDraw(PtBasic, w, damage);
@@ -160,10 +159,8 @@ static int s_preview_exposed(PtWidget_t * w, PhTile_t * damage) {
 	//clip to our basic canvas (it's only polite).
     PtClipAdd( w, &rect );
 
-	XAP_QNXDialog_Zoom *pQNXDlg, **ppQNXDlg = NULL;
-	PtSetArg(&args[0], Pt_ARG_USER_DATA, &ppQNXDlg, 0);
-	PtGetResources(w, 1, args);
-	pQNXDlg = (ppQNXDlg) ? *ppQNXDlg : NULL;
+	XAP_QNXDialog_Zoom *pQNXDlg;
+	PtGetResource(w, Pt_ARG_POINTER, &pQNXDlg,0);
 
 	UT_ASSERT(pQNXDlg);
 	pQNXDlg->event_PreviewAreaExposed();
@@ -379,9 +376,8 @@ PtWidget_t * XAP_QNXDialog_Zoom::_constructWindow(void)
 	PtAddCallback(spinbuttonPercent, Pt_CB_ACTIVATE, s_spin_Percent_changed, this);
 
 
-	void *data = (void *)this;
 	drawingareaPreview = abiPhabLocateWidget(windowZoom,"rawPreview"); 
-	PtSetResource(drawingareaPreview, Pt_ARG_USER_DATA, &data, sizeof(this)); 
+	PtSetResource(drawingareaPreview, Pt_ARG_POINTER, this,0 ); 
 	PtSetResource(drawingareaPreview, Pt_ARG_RAW_DRAW_F, &s_preview_exposed, 1); 
 
 	buttonOK = abiPhabLocateWidget(windowZoom,"btnOK"); 

@@ -286,10 +286,9 @@ int XAP_QNXFrameImpl::_fe::expose(PtWidget_t * w, PhTile_t * damage)
 
  	PtCalcCanvas(w, &rect);
  	PtWidgetOffset(w, &pnt);
-	XAP_FrameImpl *pQNXFrameImpl, **ppQNXFrameImpl = NULL;
-	PtSetArg(&args[0], Pt_ARG_USER_DATA, &ppQNXFrameImpl, 0);
-	PtGetResources(w, 1, args);
-	pQNXFrameImpl = (ppQNXFrameImpl) ? *ppQNXFrameImpl : NULL;
+
+	XAP_FrameImpl *pQNXFrameImpl;
+	PtGetResource(w,Pt_ARG_POINTER, &pQNXFrameImpl,0);
 
 	UT_ASSERT(pQNXFrameImpl);
 
@@ -621,7 +620,6 @@ void XAP_QNXFrameImpl::createTopLevelWindow(void)
 #define INIT_HEIGHT 400
 	/*** Create the main window ***/
 	//ndim.w = m_geometry.width; ndim.h = m_geometry.height;
-	void *data = this;
 	area.pos.x = 0; area.pos.y = 0;
 	area.size.w = INIT_WIDTH; area.size.h = INIT_HEIGHT;
 
@@ -636,7 +634,7 @@ void XAP_QNXFrameImpl::createTopLevelWindow(void)
 	n = 0;
 	PtSetArg(&args[n++], Pt_ARG_DIM, &area.size, 0);
 	PtSetArg(&args[n++], Pt_ARG_WINDOW_TITLE, m_pQNXApp->getApplicationTitleForTitleBar(), 0);
-	PtSetArg(&args[n++], Pt_ARG_USER_DATA, &data, sizeof(this));
+	PtSetArg(&args[n++], Pt_ARG_POINTER, this, 0);
 	PtSetArg(&args[n++], Pt_ARG_WINDOW_MANAGED_FLAGS, Ph_WM_HELP, Ph_WM_CLOSE|Ph_WM_HELP);
 	PtSetArg(&args[n++], Pt_ARG_WINDOW_NOTIFY_FLAGS, Ph_WM_CLOSE, Ph_WM_CLOSE);
 	PtSetArg(&args[n++], Pt_ARG_WINDOW_RENDER_FLAGS,Pt_TRUE,Ph_WM_RENDER_HELP);

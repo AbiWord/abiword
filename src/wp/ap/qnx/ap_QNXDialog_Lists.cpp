@@ -134,18 +134,14 @@ static int s_deleteClicked (PtWidget_t *widget, void *data, PtCallbackInfo_t *in
 
 static int s_preview_exposed(PtWidget_t * w, PhTile_t * damage)
 {
-	PtArg_t args[1];
-
    	PhRect_t rect;
    	PtSuperClassDraw(PtBasic, w, damage);
    	PtBasicWidgetCanvas(w, &rect);
 	//clip to our basic canvas (it's only polite).
     PtClipAdd( w, &rect );
 
-	AP_QNXDialog_Lists *pQNXDlg, **ppQNXDlg = NULL;
-	PtSetArg(&args[0], Pt_ARG_USER_DATA, &ppQNXDlg, 0);
-	PtGetResources(w, 1, args);
-	pQNXDlg = (ppQNXDlg) ? *ppQNXDlg : NULL;
+	AP_QNXDialog_Lists *pQNXDlg;
+	PtGetResource(w, Pt_ARG_POINTER, &pQNXDlg,0);
 
 	UT_ASSERT(pQNXDlg);
 	pQNXDlg->previewExposed();
@@ -459,9 +455,8 @@ text = pSS->getValueUTF8(AP_STRING_ID_DLG_Lists_Type_numbered).c_str();
 
 	 PtSetResource(abiPhabLocateWidget(m_mainWindow,"grpPreview"),Pt_ARG_TITLE,_(AP,DLG_Lists_Preview),0);
 
-	void *data = (void *)this;
 	m_wPreviewArea = abiPhabLocateWidget(m_mainWindow,"rawPreview"); 
-	PtSetResource(m_wPreviewArea, Pt_ARG_USER_DATA, &data, sizeof(this));
+	PtSetResource(m_wPreviewArea, Pt_ARG_POINTER, this, 0);
 	PtSetResource(m_wPreviewArea, Pt_ARG_RAW_DRAW_F, &s_preview_exposed, 1);
 
 	radnewlist = abiPhabLocateWidget(m_mainWindow,"toggleNew"); 

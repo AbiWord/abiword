@@ -228,10 +228,8 @@ static int s_preview_exposed(PtWidget_t * w, PhTile_t * damage)
 	//clip to our basic canvas (it's only polite).
     PtClipAdd( w, &rect );
 
-	AP_QNXDialog_Paragraph *pQNXDlg, **ppQNXDlg = NULL;
-	PtSetArg(&args[0], Pt_ARG_USER_DATA, &ppQNXDlg, 0);
-	PtGetResources(w, 1, args);
-	pQNXDlg = (ppQNXDlg) ? *ppQNXDlg : NULL;
+	AP_QNXDialog_Paragraph *pQNXDlg;
+	PtGetResource(w, Pt_ARG_POINTER, &pQNXDlg,0);
 
 	UT_ASSERT(pQNXDlg);
 	pQNXDlg->event_PreviewAreaExposed();
@@ -751,7 +749,7 @@ PtWidget_t * AP_QNXDialog_Paragraph::_constructWindow(void)
 										 sizeof(args26) / sizeof(PtArg_t), args26);
 	n = 0;
 	void *data = (void *)this;
-	PtSetArg(&args[n++], Pt_ARG_USER_DATA, &data, sizeof(this)); 
+	PtSetArg(&args[n++], Pt_ARG_POINTER, this, 0); 
 	PtSetArg(&args[n++], Pt_ARG_RAW_DRAW_F, &s_preview_exposed, 1); 
 	PtSetResources(drawingareaPreview, n, args);
 

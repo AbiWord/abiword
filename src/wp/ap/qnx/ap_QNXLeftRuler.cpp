@@ -48,7 +48,6 @@ PtWidget_t * AP_QNXLeftRuler::createWidget(void)
 {
 	PtArg_t args[10];
 	PhArea_t area;
-	void    *data = this;
 	int n = 0;
 	UT_ASSERT(!m_pG && !m_wLeftRuler);
 
@@ -74,7 +73,7 @@ PtWidget_t * AP_QNXLeftRuler::createWidget(void)
 	n = 0;
 	PtSetArg(&args[n++], Pt_ARG_DIM, &area.size, 0); 
 	PtSetArg(&args[n++], Pt_ARG_RAW_DRAW_F, &(_fe::expose), 1);
-	PtSetArg(&args[n++], Pt_ARG_USER_DATA, &data, sizeof(this)); 
+	PtSetArg(&args[n++], Pt_ARG_POINTER, this, 0); 
 	PtSetArg(&args[n++], Pt_ARG_FLAGS, Pt_TRUE, Pt_GETS_FOCUS|Pt_SELECTABLE); 
 
 	m_wLeftRuler = PtCreateWidget(PtRaw, Pt_DEFAULT_PARENT, n, args);
@@ -225,15 +224,11 @@ int AP_QNXLeftRuler::_fe::motion_notify_event(PtWidget_t* w, void *data, PtCallb
 		
 int AP_QNXLeftRuler::_fe::expose(PtWidget_t * w, PhTile_t * damage)
 {
-	PtArg_t args[1];
 	PhRect_t rect;
-
 	PtCalcCanvas(w, &rect);
 
-	AP_QNXLeftRuler ** ppQNXRuler = NULL, *pQNXRuler = NULL;
-	PtSetArg(&args[0], Pt_ARG_USER_DATA, &ppQNXRuler, 0);
-	PtGetResources(w, 1, args);
-	pQNXRuler = (ppQNXRuler) ? *ppQNXRuler : NULL;
+	AP_QNXLeftRuler *pQNXRuler = NULL;
+	PtGetResource(w, Pt_ARG_POINTER, &pQNXRuler,0);
 
 	if (!pQNXRuler)
 		return 0;

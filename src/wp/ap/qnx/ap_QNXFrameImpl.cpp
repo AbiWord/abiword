@@ -84,7 +84,6 @@ void AP_QNXFrameImpl::_showOrHideStatusbar()
 PtWidget_t * AP_QNXFrameImpl::_createDocumentWindow()
 {
 	PhArea_t area, savedarea;
-	void * data = this;
 	XAP_Frame *pFrame = getFrame();
 	AP_FrameData *pData = static_cast<AP_FrameData *>(pFrame->getFrameData());
 	PtArg_t args[10];
@@ -180,13 +179,13 @@ PtWidget_t * AP_QNXFrameImpl::_createDocumentWindow()
 		     Pt_TOP_ANCHORED_TOP | Pt_BOTTOM_ANCHORED_BOTTOM)
 	PtSetArg(&args[n++], Pt_ARG_ANCHOR_FLAGS, _DA_ANCHOR_, _DA_ANCHOR_);
 	PtSetArg(&args[n++], Pt_ARG_GROUP_FLAGS,Pt_TRUE,Pt_GROUP_STRETCH_VERTICAL|Pt_GROUP_STRETCH_HORIZONTAL);
-	PtSetArg(&args[n++], Pt_ARG_USER_DATA, &data, sizeof(this)); 
+	PtSetArg(&args[n++], Pt_ARG_POINTER, this, 0); 
 	m_dAreaGroup = PtCreateWidget(PtGroup, getTopLevelWindow(), n, args);
 	PtAddCallback(m_dAreaGroup, Pt_CB_RESIZE,_fe::resize, this);
 	
 	n = 0;
 	PtSetArg(&args[n++], Pt_ARG_DIM, &area.size, 0); 
-	PtSetArg(&args[n++], Pt_ARG_USER_DATA, &data, sizeof(this)); 
+	PtSetArg(&args[n++], Pt_ARG_POINTER, this, 0); 
 	PtSetArg(&args[n++], Pt_ARG_RAW_DRAW_F, &(_fe::expose), 1); 
 	PtSetArg(&args[n++], Pt_ARG_FLAGS, Pt_GETS_FOCUS| Pt_CALLBACKS_ACTIVE, Pt_GETS_FOCUS|Pt_CALLBACKS_ACTIVE); 
 	m_dArea = PtCreateWidget(PtRaw, m_dAreaGroup, n, args); 
