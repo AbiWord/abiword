@@ -65,7 +65,7 @@ bool pt_PieceTable::_loadBuiltinStyles(void)
 	_s("Block Text","P", "Normal", "Current Settings", "margin-left:1in; margin-right:1in; margin-bottom:6pt;  field-font:NULL");
 
 	sprintf(list_fmt_tmp, list_fmt, "Numbered List", "1",LIST_DEFAULT_INDENT, LIST_DEFAULT_INDENT_LABEL, "transparent", "%L.", "NULL", ".");
-	_s("Numbered List","P", "Normal", "Current Settings", list_fmt_tmp);
+	_s("Numbered List","P", "", "Current Settings", list_fmt_tmp);
 
 	sprintf(list_fmt_tmp, list_fmt, "Lower Case List","1", LIST_DEFAULT_INDENT, LIST_DEFAULT_INDENT_LABEL, "transparent", "%L)", "NULL", ".");
 	_s("Lower Case List","P", "Numbered List", "Current Settings", list_fmt_tmp);
@@ -80,36 +80,36 @@ bool pt_PieceTable::_loadBuiltinStyles(void)
 
 	sprintf(list_fmt_tmp, list_fmt, "Bullet List","0", LIST_DEFAULT_INDENT, LIST_DEFAULT_INDENT_LABEL, "transparent", "%L", "Symbol", "NULL");
 
-	_s("Bullet List", "P", "Normal", "Current Settings", list_fmt_tmp);
+	_s("Bullet List", "P", "", "Current Settings", list_fmt_tmp);
 	sprintf(list_fmt_tmp, list_fmt, "Implies List","0", LIST_DEFAULT_INDENT, LIST_DEFAULT_INDENT_LABEL, "transparent", "%L", "Symbol", "NULL");
-	_s("Implies List", "P", "Normal", "Current Settings", list_fmt_tmp);
+	_s("Implies List", "P", "", "Current Settings", list_fmt_tmp);
 
 	sprintf(list_fmt_tmp, list_fmt, "Dashed List","0", LIST_DEFAULT_INDENT, LIST_DEFAULT_INDENT_LABEL, "transparent", "%L", "NULL", "NULL");
-	_s("Dashed List", "P", "Normal", "Current Settings", list_fmt_tmp);
+	_s("Dashed List", "P", "", "Current Settings", list_fmt_tmp);
 
 	sprintf(list_fmt_tmp, list_fmt, "Square List","0", LIST_DEFAULT_INDENT, LIST_DEFAULT_INDENT_LABEL, "transparent", "%L", "Dingbats", "NULL");
-	_s("Square List", "P", "Normal", "Current Settings", list_fmt_tmp);
+	_s("Square List", "P", "", "Current Settings", list_fmt_tmp);
 
 	sprintf(list_fmt_tmp, list_fmt, "Triangle List","0", LIST_DEFAULT_INDENT, LIST_DEFAULT_INDENT_LABEL, "transparent", "%L", "Dingbats", "NULL");
-	_s("Triangle List", "P", "Normal", "Current Settings", list_fmt_tmp);
+	_s("Triangle List", "P", "", "Current Settings", list_fmt_tmp);
 
 	sprintf(list_fmt_tmp, list_fmt, "Diamond List","0", LIST_DEFAULT_INDENT, LIST_DEFAULT_INDENT_LABEL, "transparent", "%L", "Dingbats", "NULL");
-	_s("Diamond List", "P", "Normal", "Current Settings", list_fmt_tmp);
+	_s("Diamond List", "P", "", "Current Settings", list_fmt_tmp);
 
 	sprintf(list_fmt_tmp, list_fmt, "Star List","0", LIST_DEFAULT_INDENT, LIST_DEFAULT_INDENT_LABEL, "transparent", "%L", "Dingbats", "NULL");
-	_s("Star List", "P", "Normal", "Current Settings", list_fmt_tmp);
+	_s("Star List", "P", "", "Current Settings", list_fmt_tmp);
 
 	sprintf(list_fmt_tmp, list_fmt, "Tick List","0", LIST_DEFAULT_INDENT, LIST_DEFAULT_INDENT_LABEL, "transparent", "%L", "Dingbats", "NULL");
-	_s("Tick List", "P", "Normal", "Current Settings", list_fmt_tmp);
+	_s("Tick List", "P", "", "Current Settings", list_fmt_tmp);
 
 	sprintf(list_fmt_tmp, list_fmt, "Box List","0", LIST_DEFAULT_INDENT, LIST_DEFAULT_INDENT_LABEL, "transparent", "%L", "Dingbats", "NULL");
-	_s("Box List", "P", "Normal", "Current Settings", list_fmt_tmp);
+	_s("Box List", "P", "", "Current Settings", list_fmt_tmp);
 
 	sprintf(list_fmt_tmp, list_fmt, "Hand List","0", LIST_DEFAULT_INDENT, LIST_DEFAULT_INDENT_LABEL, "transparent", "%L", "Dingbats", "NULL");
-	_s("Hand List", "P", "Normal", "Current Settings", list_fmt_tmp);
+	_s("Hand List", "P", "", "Current Settings", list_fmt_tmp);
 
 	sprintf(list_fmt_tmp, list_fmt, "Heart List","0", LIST_DEFAULT_INDENT, LIST_DEFAULT_INDENT_LABEL, "transparent", "%L", "Dingbats", "NULL");
-	_s("Heart List", "P", "Normal", "Current Settings", list_fmt_tmp);
+	_s("Heart List", "P", "", "Current Settings", list_fmt_tmp);
 
     _s("Numbered Heading 1","P","Heading 1","Normal Clean","tabstops:0.3in/L0; list-style:Numbered List; start-value:1; margin-left:0.0in; text-indent:0.0in; field-color:transparent; list-delim:%L; field-font:Arial; list-decimal: ");
 
