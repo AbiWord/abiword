@@ -30,7 +30,7 @@
 #include "ap_Ruler.h"
 #include "ev_EditBits.h"
 #include "gr_Graphics.h"
-#include "XAP_strings.h"
+#include "xap_Strings.h"
 
 class XAP_App;
 class XAP_Frame;

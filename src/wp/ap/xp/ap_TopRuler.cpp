@@ -32,7 +32,7 @@
 #include "fv_View.h"
 #include "ap_FrameData.h"
 #include "ap_StatusBar.h"
-#include "AP_Strings.h"
+#include "ap_Strings.h"
 
 // HACK: private copy of constants from fl_BlockLayout.h
 // TODO: find a better way of passing iType for tabs?
