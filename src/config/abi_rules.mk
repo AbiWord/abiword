@@ -120,7 +120,7 @@ tidy::
 
 # The directories used for documentation generation are listed in .doxygen.cfg
 # in the INPUT variable.
-dox:
+dox::
 	doxygen .doxygen.cfg
 
 ################################################################################
