@@ -26,7 +26,7 @@ have_cmap=false
 GUCHARMAP_CFLAGS=""
 GUCHARMAP_LIBS=""
 
-AC_ARG_ENABLE(cmap,[  --disable-gucharmap  Turn off gucharmap ], [
+AC_ARG_ENABLE(gucharmap,[  --disable-gucharmap  Turn off gucharmap ], [
 	if test "x$enableval" = "xno"; then
 		test_cmap=false
 	fi
