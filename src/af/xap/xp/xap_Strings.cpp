@@ -71,13 +71,18 @@ UT_String XAP_StringSet::getValue(XAP_String_Id id, const char * inEncoding) con
 }
 
 UT_String XAP_StringSet::getValueUTF8(XAP_String_Id id) const
-{
-#if 0
-  // HACK- wildly sub-optimal. TODO: cache a UT_iconv_t cd
-  return getValue(id, "UTF-8");
-#else
-  return UT_String(getValue(id));
-#endif
+{	
+	//TODO: We can return early and avoid conversion if string is already in UTF-8	
+	const char * toTranslate = getValue(id);                                                     	
+	auto_iconv cd(m_encoding.c_str(), "UTF-8");                                                                                                        
+	char * translated = UT_convert_cd(toTranslate, -1, cd, NULL, NULL);       
+
+	UT_ASSERT(translated);                                                    
+
+	UT_String toReturn(translated);                                           
+
+	free(translated);       
+	return toReturn;  	
 }
 
 void XAP_StringSet::setEncoding(const XML_Char * inEncoding)

@@ -26,7 +26,7 @@
 #include "ap_Win32StatusBar.h"
 #include "xap_Win32App.h"
 #include "ap_Win32Frame.h"
-#include "xap_EncodingManager.h"
+#include "ap_Win32App.h"
 
 LRESULT APIENTRY StatusbarWndProc (HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) { 
 
@@ -130,19 +130,10 @@ private:
 
 void ap_usb_TextListener::notify()
 {
-	UT_uint32 uRead, uWrite;
-	
-	UT_ASSERT(m_hWnd);
+	UT_ASSERT(m_hWnd);	
 	AP_StatusBarField_TextInfo * textInfo = ((AP_StatusBarField_TextInfo *)m_pStatusBarField);
-
-	char *pText = UT_convert (textInfo->getBuf().utf8_str(),
-							  textInfo->getBuf().length(),
-							  "UTF-8",
-							  XAP_EncodingManager::get_instance()->getNative8BitEncodingName(),
-							  &uRead, &uWrite);
-	
-	SendMessage(m_hWnd, SB_SETTEXT, m_nID, (LPARAM)  pText);
-	FREEP(pText);	
+	UT_String 	s =	AP_Win32App::s_fromUTF8ToAnsi(textInfo->getBuf().utf8_str());	
+	SendMessage(m_hWnd, SB_SETTEXT, m_nID, (LPARAM)  s.c_str());
 
 }
 

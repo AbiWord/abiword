@@ -273,9 +273,11 @@ bool AP_DiskStringSet::setValue(XAP_String_Id id, const XML_Char * szString)
 			}
 		}
 
+		/* We setup the real encoding for the strings we are storing*/
+		setEncoding(XAP_App::getApp()->getDefaultEncoding());
 		
 		UT_Wctomb wctomb_conv(XAP_App::getApp()->getDefaultEncoding());
-		char letter_buf[20];
+		char letter_buf[20];										  
 		int length;
 		for (int k=0; k<kLimit; k++)
 		{

@@ -32,7 +32,7 @@
 #include "ap_Strings.h"
 #include "fl_DocLayout.h"
 #include "fv_View.h"
-
+#include "xap_EncodingManager.h"
 #include "ut_timer.h"
 
 //////////////////////////////////////////////////////////////////
@@ -74,6 +74,7 @@ class ap_sbf_PageInfo : public AP_StatusBarField_TextInfo
 {
 public:
     ap_sbf_PageInfo(AP_StatusBar * pSB);
+	~ap_sbf_PageInfo();
 
     virtual void		notify(AV_View * pView, const AV_ChangeMask mask);
 
@@ -89,11 +90,10 @@ ap_sbf_PageInfo::ap_sbf_PageInfo(AP_StatusBar * pSB)
 {
     m_pageNr = 0;
     m_nrPages = 0;
-
-    m_szFormat = pSB->getFrame()->getApp()->getStringSet()->getValue(AP_STRING_ID_PageInfoField);
+	UT_String s = pSB->getFrame()->getApp()->getStringSet()->getValueUTF8(AP_STRING_ID_PageInfoField);
+	UT_XML_cloneString((XML_Char *&)m_szFormat,s.c_str());	
     m_fillMethod = REPRESENTATIVE_STRING;
     m_alignmentMethod = LEFT;
-
     UT_UTF8String_sprintf(m_sRepresentativeString,m_szFormat,AP_STATUSBAR_MAX_PAGES,AP_STATUSBAR_MAX_PAGES);
 }
 
@@ -124,6 +124,13 @@ void ap_sbf_PageInfo::notify(AV_View * pavView, const AV_ChangeMask mask)
 	    getListener()->notify();
 
     }
+}
+
+ap_sbf_PageInfo::~ap_sbf_PageInfo()
+{
+	if (m_szFormat)
+		free(const_cast<XML_Char *>(m_szFormat));
+
 }
 
 //////////////////////////////////////////////////////////////////
