@@ -207,9 +207,12 @@ void GR_BeOSGraphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
 	//text by the ascent, descent, leading values ...
 	font_height fh;
 	m_pShadowView->GetFontHeight(&fh);
-	//int offset = (int)(fh.ascent + fh.descent + fh.leading + 0.5);
 	int offset = (int)(fh.ascent + 0.5);
+
+	drawing_mode oldmode = m_pShadowView->DrawingMode();
+	m_pShadowView->SetDrawingMode(B_OP_COPY); 
 	m_pShadowView->DrawString(buffer, BPoint(xoff, yoff + offset));
+	m_pShadowView->SetDrawingMode(oldmode); 
 
 	//m_pShadowView->SetLowColor(old);
 	m_pShadowView->Window()->Unlock();
@@ -485,6 +488,7 @@ void GR_BeOSGraphics::polyLine(UT_Point * pts, UT_uint32 nPoints)
 	DPRINTF(printf("GR: Poly Line \n"));
 	for (UT_uint32 k=1; k<nPoints; k++)
 		drawLine(pts[k-1].x,pts[k-1].y, pts[k].x,pts[k].y); 
+	UPDATE_VIEW
 }
 
 
@@ -508,7 +512,7 @@ void GR_BeOSGraphics::invertRect(const UT_Rect* pRect)
 	if (m_pShadowView->Window()->Lock()) {
 		drawing_mode oldmode = m_pShadowView->DrawingMode();
 		m_pShadowView->SetDrawingMode(B_OP_INVERT);	//or B_OP_BLEND
-		m_pShadowView->StrokeRect(BRect(pRect->left, pRect->top,
+		m_pShadowView->FillRect(BRect(pRect->left, pRect->top,
 										pRect->left + pRect->width,
 										pRect->top + pRect->height));
 		m_pShadowView->SetDrawingMode(oldmode);
