@@ -283,6 +283,8 @@ if test "$PLATFORM" = "unix"; then
 		else
 			PLATFORM_CFLAGS="$GMODULE_CFLAGS $GTK_CFLAGS -DSUPPORTS_UT_IDLE=1"			
 			PLATFORM_LIBS=
+		fi
+	fi
 fi
 dnl AUTOCONF SUCKS
 if test "$PLATFORM" = "mac"; then
