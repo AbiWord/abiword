@@ -172,7 +172,6 @@ protected:
 
  private:	
 	s_RTF_ListenerWriteDoc *	m_pListenerWriteDoc;
-	s_RTF_ListenerGetProps *	m_pListenerGetProps;
 	UT_Vector					m_vecColors;			/* vector of "const char * szColor" */
 	UT_Vector					m_vecFonts;				/* vector of struct _font */
 	bool						m_bNeedUnicodeText;		/* doc has unicode chars */

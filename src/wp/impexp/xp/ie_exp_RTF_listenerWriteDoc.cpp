@@ -37,6 +37,7 @@
 #include "ie_exp_RTF_listenerWriteDoc.h"
 #include "ie_exp_RTF_AttrProp.h"
 #include "pd_Document.h"
+#include "pf_Frag_Strux.h"
 #include "pp_AttrProp.h"
 #include "pp_Property.h"
 #include "px_ChangeRecord.h"
@@ -375,7 +376,8 @@ void s_RTF_ListenerWriteDoc::_outputData(const UT_UCSChar * data, UT_uint32 leng
 
 s_RTF_ListenerWriteDoc::s_RTF_ListenerWriteDoc(PD_Document * pDocument,
 											   IE_Exp_RTF * pie,
-											   bool bToClipboard)
+											   bool bToClipboard, 
+											   bool bHasMultiBlock)
   : m_wctomb(XAP_EncodingManager::get_instance()->getNative8BitEncodingName())
 {
 	// The overall syntax for an RTF file is:
@@ -424,6 +426,7 @@ s_RTF_ListenerWriteDoc::s_RTF_ListenerWriteDoc(PD_Document * pDocument,
 	m_bOpennedFootnote = false;
 	m_iFirstTop = 0;
 	m_bHyperLinkOpen = false;
+	m_bOpenBlockForSpan = bHasMultiBlock;
 	// <section>+ will be handled by the populate code.
 }
 
@@ -463,6 +466,27 @@ bool s_RTF_ListenerWriteDoc::populate(PL_StruxFmtHandle /*sfh*/,
 						return true;
 				}
 			}
+
+			if (m_bOpenBlockForSpan)
+			{
+				m_bOpenBlockForSpan = false;
+
+				pf_Frag * pf1 = m_pDocument->getFragFromPosition(pcr->getPosition());
+				if (pf1 != NULL)
+				{
+					// scan backwards for the block props of this span.
+					while (pf1 != NULL)
+					{
+						if (pf1->getType() == pf_Frag::PFT_Strux)
+						{
+							m_apiThisBlock = ((pf_Frag_Strux*)pf1)->getIndexAP();
+							break;
+						}
+						pf1 = pf1->getPrev();
+					}
+				}
+			}
+
 			_openSpan(api);
 			_outputData(pData,length,pcr->getPosition(),false);
 

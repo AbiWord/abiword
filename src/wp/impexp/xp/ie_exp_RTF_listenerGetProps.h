@@ -54,6 +54,7 @@ public:
 															PL_StruxFmtHandle sfhNew));
 
 	virtual bool		signal(UT_uint32 iSignal);
+	bool				hasBlock() { return m_bHasBlock; }
 
 protected:
 	void				_closeSection(void);
@@ -77,6 +78,8 @@ protected:
 	PT_AttrPropIndex	m_apiThisSection;
 	PT_AttrPropIndex	m_apiThisBlock;
 	PT_AttrPropIndex	m_apiSavedBlock;
+	/*! true if we have a multi-block paste. */
+	bool				m_bHasBlock;
 };
 
 #endif /* IE_EXP_RTF_LISTENERGETPROPS */

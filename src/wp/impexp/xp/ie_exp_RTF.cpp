@@ -56,7 +56,6 @@ IE_Exp_RTF::IE_Exp_RTF(PD_Document * pDocument)
 {
 	m_error = 0;
 	m_pListenerWriteDoc = NULL;
-	m_pListenerGetProps = NULL;
 	m_bNeedUnicodeText = false;
 	m_braceLevel = 0;
 	m_bLastWasKeyword = false;
@@ -69,7 +68,6 @@ IE_Exp_RTF::IE_Exp_RTF(PD_Document * pDocument,bool atticFormat)
 {
 	m_error = 0;
 	m_pListenerWriteDoc = NULL;
-	m_pListenerGetProps = NULL;
 	m_bNeedUnicodeText = false;
 	m_braceLevel = 0;
 	m_bLastWasKeyword = false;
@@ -205,14 +203,20 @@ UT_Error IE_Exp_RTF::_writeDocument(void)
 	_addColor("000000");				// load black as color 0.
 	_addColor("ffffff");                // load white as color 1.
 
-	m_pListenerGetProps = new s_RTF_ListenerGetProps(getDoc(),this);
-	if (!m_pListenerGetProps)
+	s_RTF_ListenerGetProps * listenerGetProps = new s_RTF_ListenerGetProps(getDoc(),this);
+	if (!listenerGetProps)
 		return UT_IE_NOMEMORY;
 	if (getDocRange())
-		getDoc()->tellListenerSubset(static_cast<PL_Listener *>(m_pListenerGetProps),getDocRange());
+		getDoc()->tellListenerSubset(listenerGetProps,getDocRange());
 	else
-		getDoc()->tellListener(static_cast<PL_Listener *>(m_pListenerGetProps));
-	DELETEP(m_pListenerGetProps);
+		getDoc()->tellListener(listenerGetProps);
+
+	// if the bit to be pasted contains a new block anywhere within it,
+	// then we also want the block props for the first block in the
+	// clipboard.  mark this info down here, use it in the listener.
+	bool hasBlock = listenerGetProps->hasBlock();
+
+	DELETEP(listenerGetProps);
 
 	// Important: This must come before the header is written so
         // every font used in a style is properly entered in the font table.
@@ -226,13 +230,13 @@ UT_Error IE_Exp_RTF::_writeDocument(void)
 	// create and install a listener to receive the document
 	// and write its content in rtf.
 
-	m_pListenerWriteDoc = new s_RTF_ListenerWriteDoc(getDoc(),this, (getDocRange()!=NULL));
+	m_pListenerWriteDoc = new s_RTF_ListenerWriteDoc(getDoc(),this, (getDocRange()!=NULL), hasBlock);
 	if (!m_pListenerWriteDoc)
 		return UT_IE_NOMEMORY;
 	if (getDocRange())
-		getDoc()->tellListenerSubset(static_cast<PL_Listener *>(m_pListenerWriteDoc),getDocRange());
+		getDoc()->tellListenerSubset(m_pListenerWriteDoc,getDocRange());
 	else
-		getDoc()->tellListener(static_cast<PL_Listener *>(m_pListenerWriteDoc));
+		getDoc()->tellListener(m_pListenerWriteDoc);
 	DELETEP(m_pListenerWriteDoc);
 
 	// write any rtf trailer matter

@@ -40,7 +40,8 @@ class ABI_EXPORT s_RTF_ListenerWriteDoc : public PL_Listener
 public:
 	s_RTF_ListenerWriteDoc(PD_Document * pDocument,
 						   IE_Exp_RTF * pie,
-						   bool bToClipboard);
+						   bool bToClipboard,
+						   bool bHasMultiBlock);
 	virtual ~s_RTF_ListenerWriteDoc();
 
 	virtual bool		populate(PL_StruxFmtHandle sfh,
@@ -136,6 +137,7 @@ protected:
 	UT_String           m_sLastColor;
 	UT_sint32           m_iFirstTop;
 	bool                m_bHyperLinkOpen;
+	bool                m_bOpenBlockForSpan;
 };
 
 #endif /* IE_EXP_RTF_LISTENERWRITEDOC */

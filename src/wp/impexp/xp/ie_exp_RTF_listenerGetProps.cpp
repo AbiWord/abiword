@@ -119,6 +119,7 @@ s_RTF_ListenerGetProps::s_RTF_ListenerGetProps(PD_Document * pDocument,
 	m_apiLastSpan = 0;
 	m_apiThisSection = 0;
 	m_apiThisBlock = 0;
+	m_bHasBlock = false;
 }
 
 s_RTF_ListenerGetProps::~s_RTF_ListenerGetProps()
@@ -262,6 +263,7 @@ bool s_RTF_ListenerGetProps::populateStrux(PL_StruxDocHandle /*sdh*/,
 			_closeSpan();
 			_closeBlock();
 			m_bInBlock = true;
+			m_bHasBlock = true;
 			m_apiThisBlock = pcr->getIndexAP();
 			return true;
 		}
