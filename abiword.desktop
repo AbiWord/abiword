@@ -1,14 +1,4 @@
 [Desktop Entry]
-Name=Word Processor
-Name[de]=Textverarbeitung
-Name[nb]=Tekstbehandling
-Name[nn]=Tekstbehandling
-Name[pt]=Processador de Texto
-Comment=AbiWord Word Processor
-Comment[de]=AbiWord Textverarbeitung
-Comment[nb]=Tekstbehandlingsprogrammet AbiWord
-Comment[nn]=Tekstbehandlingsprogrammet AbiWord
-Comment[pt]=Processor de Texto AbiWord
 Exec=abiword
 Icon=abiword_48.png
 Terminal=false
@@ -16,4 +6,17 @@ Type=Application
 Categories=Application;Office;WordProcessor;X-Red-Hat-Base;
 StartupNotify=true
 Encoding=UTF-8
-
+X-Desktop-File-Install-Version=0.4
+MimeType=application/x-abiword; text/x-abiword; text/x-xml-abiword; text/plain;
+Name=Word Processor
+Comment=AbiWord Word Processor
+Name[de]=Textverarbeitung
+Comment[de]=AbiWord Textverarbeitung
+Name[nb]=Tekstbehandling
+Comment[nb]=Tekstbehandlingsprogrammet AbiWord
+Name[nn]=Tekstbehandling
+Comment[nn]=Tekstbehandlingsprogrammet AbiWord
+Name[no]=Tekstredigeringsprogram
+Comment[no]=AbiWord Tekstredigeringsprogram
+Name[pt]=Processador de Texto
+Comment[pt]=Processor de Texto AbiWord
