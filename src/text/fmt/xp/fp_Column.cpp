@@ -356,10 +356,8 @@ void fp_VerticalContainer::getOffsets(fp_ContainerObject* pContainer, UT_sint32&
 	}
 	if(pCon && pCon->getContainerType() == FP_CONTAINER_COLUMN_SHADOW)
 	{
-		fp_ShadowContainer * pCol = static_cast<fp_ShadowContainer *>(pCon);
-		pCol->getPage()->getScreenOffsets(pCol, col_x, col_y);
-		xoff = my_xoff + pOrig->getX() + col_x;
-		yoff = my_yoff + pOrig->getY() + col_y;
+		xoff = pCon->getX() + my_xoff + pOrig->getX();
+		yoff = pCon->getY() + my_yoff + pOrig->getY();
 		return;
 	}
 	if(pCon)
@@ -1595,7 +1593,7 @@ void fp_ShadowContainer::draw(dg_DrawArgs* pDA)
  */
 void fp_ShadowContainer::_drawHdrFtrBoundaries(dg_DrawArgs * pDA)
 {
-	if(pDA->pG->queryProperties(GR_Graphics::DGP_SCREEN))
+	if(!pDA->pG->queryProperties(GR_Graphics::DGP_SCREEN))
 	{
 		return;
 	}
