@@ -28,7 +28,54 @@
 #include "xap_BeOSApp.h"
 #include "xap_BeOSFrame.h"
 
+#include "ut_Rehydrate.h"
+
 /*****************************************************************/
+class FontWin:public BWindow {
+	public:
+		FontWin(BMessage *data);
+		void SetDlg(XAP_BeOSDialog_FontChooser *font);
+		virtual void DispatchMessage(BMessage *msg, BHandler *handler);
+		virtual bool QuitRequested(void);
+		
+	private:
+		int 			spin;
+		XAP_BeOSDialog_FontChooser *m_FontChooser;
+};
+
+FontWin::FontWin(BMessage *data) 
+	  :BWindow(data) {
+	spin = 1;	
+} //FontWin::FontWin
+
+void FontWin::SetDlg(XAP_BeOSDialog_FontChooser *font) {
+	m_FontChooser = font;
+
+//	We need to tie up the caller thread for a while ...
+	Show();
+	while (spin) { snooze(1); }
+	Hide();
+}
+
+void FontWin::DispatchMessage(BMessage *msg, BHandler *handler) {
+	switch(msg->what) {
+	default:
+		BWindow::DispatchMessage(msg, handler);
+	}
+} 
+
+//Behave like a good citizen
+bool FontWin::QuitRequested() {
+/*
+	UT_ASSERT(m_DlgFont);
+	m_DlgFont->setAnswer(AP_Dialog_Font::a_CANCEL);
+*/
+	spin = 0;
+	return(true);
+}
+
+/*****************************************************************/
+
 XAP_Dialog * XAP_BeOSDialog_FontChooser::static_constructor(XAP_DialogFactory * pFactory,
 														 XAP_Dialog_Id id)
 {
@@ -49,4 +96,12 @@ XAP_BeOSDialog_FontChooser::~XAP_BeOSDialog_FontChooser(void)
 
 void XAP_BeOSDialog_FontChooser::runModal(XAP_Frame * pFrame)
 {
+	BMessage msg;
+	FontWin  *newwin;
+	if (RehydrateWindow("FontWindow", &msg)) {
+                newwin = new FontWin(&msg);
+		newwin->SetDlg(this);
+		//Take the information here ...
+		newwin->Close();
+        }                                                
 }
