@@ -51,6 +51,9 @@ dcl(MSG_RevertFile, "Revert file to last unsaved state?")
 dcl(MSG_PrintingDoc, "Printing Document..")
 dcl(MSG_NoBreakInsideTable, "Can not insert a Break inside a table")
 
+// Abi has just crashed
+dcl(MSG_Exception, "A fatal error has just occurred. Abiword is going to shutdown.\nThe current document has been saved to disc with a \".saved\" extension.")
+
 // Status Bar Messages
 dcl(PageInfoField,				"Page: %d/%d")
 dcl(LeftMarginStatus,			"Left Margin [%s]")

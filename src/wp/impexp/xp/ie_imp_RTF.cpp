@@ -92,7 +92,7 @@ static const UT_uint32 PT_MAX_ATTRIBUTES = 8;
 //////////////////////////////////////////////////////////////////
 
 IE_Imp_RTF_Sniffer::IE_Imp_RTF_Sniffer ()
-	: IE_ImpSniffer(IE_IMPEXPNAME_RTF)
+	: IE_ImpSniffer(IE_IMPEXPNAME_RTF, true)
 {
 	// 
 }

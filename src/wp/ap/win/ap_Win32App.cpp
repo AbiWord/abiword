@@ -1376,10 +1376,21 @@ __except (1)
 		UT_ASSERT(curFrame);
 		
 		if (NULL == curFrame->getFilename())
-		  curFrame->backup(".abw~");
+		  curFrame->backup(".abw.saved");
 		else
-		  curFrame->backup(".CRASHED");
+		  curFrame->backup(".saved");
+
 	}	
+
+	// Tell the user was has just happened
+	AP_Win32Frame * curFrame = (AP_Win32Frame*)pApp->m_vecFrames[0];
+	if (curFrame)
+	{
+		curFrame->showMessageBox(AP_STRING_ID_MSG_Exception,XAP_Dialog_MessageBox::b_O, XAP_Dialog_MessageBox::a_OK);
+		
+	}
+		
+
 }// end of except
 #endif
 
