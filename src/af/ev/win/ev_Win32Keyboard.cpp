@@ -57,10 +57,9 @@
 **    be processed as is -- or if it should be translated
 **    to a character before being processed.  This gives
 **    us the flexibility that we want, but also lets the
-**    system deal with upper/lowercase issues.  (And,
-**    hopefully, deal with the various character locale
-**    compose conventions used to enter non-7bit
-**    characters.)  TODO check this last statement.
+**    system deal with upper/lowercase issues.  And deal
+**    deal with the various character locale compose
+**    conventions used to enter non-7bit characters.
 **
 ** When a WM_KEYDOWN or WM_SYSKEYDOWN occurs, we first check to
 ** see if the key is a "named key that we have interest in".  A
@@ -97,18 +96,16 @@
 **    This lets the system keys (like VK_LWIN)
 **    do their thing.
 **
-**    If it is not a "named key" (nvk==0), we translate
-**    it to a character using the VkKeyScan table that
-**    we build during initialization -- using only the
-**    the vk and SHIFT state.  This takes care of both
-**    capitalization for letters and the OEM/keyboard-
-**    dependencies for the various punctuation symbols
-**    (for example, on my EnUS keyboard, '<' is shift-',').
-**    After this mapping, we use the character and the
-**    ALT and CONTROL state to see if there is a binding.
-**    
-
+**    If it is not a "named key" (nvk==0), we ask the
+**    system to translate it to a character using
+**    ToAsciiEx() and the current keyboard layout.
+**    Depending upon the result we either process the
+**    resulting character or strip off the modifiers
+**    and retranslate the key and process that.  (more
+**    details are given in the function.)
+**
 ** In a nutshell, this algorithm provides the following:
+**
 ** [] cannot bind to named keys we don't want rebound
 **    (such as VK_LWIN) either at the start of sequence
 **    or in the middle.
@@ -116,8 +113,8 @@
 **    we don't have to rely on the ASCII control code
 **    scheme (ie, Control-h) (and are free to use them
 **    differently).
-** [] keys like ALT-F4 are processed by us, if bound,
-**    and by the system, if not.
+** [] keys like ALT-F4 and ALT-F are processed by us,
+**    if bound, and by the system, if not.
 ** [] an unbound system keys (like ALT-F4) will not
 **    be sent to the system in the middle of a sequence.
 **    (another way of saying this is that unbound system
@@ -147,36 +144,20 @@
 ** and '@', 'control @', 'alt @', and 'alt control @' -- note
 ** that the shift is implied in the latter set.
 **
-**
-**
-** TODO Add code to prevent ALT press and release from
-** TODO sending focus to the menu or system menu.
-**
-**
-** TODO Currently all of the tables are static (and thus
-** TODO shared by all instances of this class).  When we
-** TODO receive a WM_INPUTLANGCHANGE we remap the keys
-** TODO into the static tables -- therefore all windows
-** TODO will change language -- even though only one frame
-** TODO window gets the message.  If we move these tables
-** TODO into the class, then each window could have it's
-** TODO own language, but I'm not sure that the user will
-** TODO be expecting -- and my be inconsistent with the
-** TODO NT and/or 95/98 GUI.  I think they want to set the
-** TODO language based upon process or thread and not by
-** TODO top-level window.  Decide if we should do pursue
-** TODO this.
+** Note: If the user presses ALT and releases it, focus moves
+** to the menu bar.  We don't have control of it.
 **
 ******************************************************************
 *****************************************************************/
 
+// Note: these variables are static and thus shared by all
+// Note: instances of this class, but then so is the physical
+// Note: keyboard.
+
 static UT_Bool s_bMapped = UT_FALSE;
 static HKL s_hKeyboardLayout = 0;
 
-void s_load_VK_To_Char_Table(void);
 static EV_EditBits s_mapVirtualKeyCodeToNVK(WPARAM nVirtKey);
-UT_Bool s_map_VK_To_Char(WPARAM nVirtKey, EV_EditModifierState ems,
-						 UT_uint16 * pChar, EV_EditModifierState * pemsLeftover);
 
 /*****************************************************************/
 /*****************************************************************/
@@ -192,7 +173,6 @@ ev_Win32Keyboard::ev_Win32Keyboard(EV_EditEventMapper * pEEM)
 void ev_Win32Keyboard::remapKeyboard(HKL hKeyboardLayout)
 {
 	s_hKeyboardLayout = hKeyboardLayout;
-	s_load_VK_To_Char_Table();
 }
 
 /*****************************************************************/
@@ -207,7 +187,7 @@ UT_Bool ev_Win32Keyboard::onKeyDown(AV_View * pView,
 
 	// For now, we choose to ignore the repeat count.
 
-	MSG(keyData,(("%s: %p %p\n",((iMsg==WM_KEYDOWN)?"onKeyDown":"onSysKeyDown"),nVirtKey,keyData)));
+	//MSG(keyData,(("%s: %p %p\n",((iMsg==WM_KEYDOWN)?"onKeyDown":"onSysKeyDown"),nVirtKey,keyData)));
 
 	///////////////////////////////////////////////////////////////////
 	//
@@ -320,7 +300,7 @@ UT_Bool ev_Win32Keyboard::onKeyDown(AV_View * pView,
 		// note: translating it is probably unnecessary,
 		// note: but we must run it thru DefWindowProc().
 
-		MSG(keyData,(("    NVK_Ignore: %p\n",nVirtKey)));
+		//MSG(keyData,(("    NVK_Ignore: %p\n",nVirtKey)));
 		_translateMessage(hWnd,iMsg,nVirtKey,keyData);
 		return UT_FALSE;
 	}
@@ -329,10 +309,10 @@ UT_Bool ev_Win32Keyboard::onKeyDown(AV_View * pView,
 	{
 		// a named-virtual-key that we have an interest in.
 		
-		MSG(keyData,(("    NVK: %s (%s %s %s)\n",EV_NamedVirtualKey::getName(nvk),
-					  (ems&EV_EMS_SHIFT)?"shift":"",
-					  (ems&EV_EMS_CONTROL)?"control":"",
-					  (ems&EV_EMS_ALT)?"alt":"")));
+		//MSG(keyData,(("    NVK: %s (%s %s %s)\n",EV_NamedVirtualKey::getName(nvk),
+		//			  (ems&EV_EMS_SHIFT)?"shift":"",
+		//			  (ems&EV_EMS_CONTROL)?"control":"",
+		//			  (ems&EV_EMS_ALT)?"alt":"")));
 
 		result = m_pEEM->Keystroke(EV_EKP_PRESS|ems|nvk,&pEM,&iPrefix);
 		switch (result)
@@ -378,7 +358,7 @@ UT_Bool ev_Win32Keyboard::onKeyDown(AV_View * pView,
 	if (count == -1)
 	{
 		// a possible dead-char -- ignore it and wait for possible completed sequence.
-		UT_DEBUGMSG(("    Received possible dead-char: %x\n",nVirtKey));
+		//UT_DEBUGMSG(("    Received possible dead-char: %x\n",nVirtKey));
 		return UT_TRUE;
 	}
 		
@@ -392,7 +372,7 @@ UT_Bool ev_Win32Keyboard::onKeyDown(AV_View * pView,
 		// the system re-interpret the vk.  take that result and
 		// use the Control+Alt settings in our tables.
 
-		UT_DEBUGMSG(("    Received non-character-producing key: %x\n",nVirtKey));
+		//UT_DEBUGMSG(("    Received non-character-producing key: %x\n",nVirtKey));
 		EV_EditModifierState ems2 = ems & (EV_EMS_CONTROL|EV_EMS_ALT);
 
 		keyState[VK_CONTROL] &= ~0x80;
@@ -406,19 +386,19 @@ UT_Bool ev_Win32Keyboard::onKeyDown(AV_View * pView,
 
 		if (count == 1)
 		{
-			UT_DEBUGMSG(("        Remapped char to: %c (%s %s)\n",
-						 buffer[0],
-						 ((ems&EV_EMS_CONTROL)?"control":""),
-						 ((ems&EV_EMS_ALT)?"alt":"")));
+			//UT_DEBUGMSG(("        Remapped char to: %c (%s %s)\n",
+			//			 buffer[0],
+			//			 ((ems&EV_EMS_CONTROL)?"control":""),
+			//			 ((ems&EV_EMS_ALT)?"alt":"")));
 
 			_emitChar(pView,hWnd,iMsg,nVirtKey,keyData,buffer[0],ems2);
 		}
 		else
 		{
-			UT_DEBUGMSG(("        Could not decode char stripped of (%s %s) [result %d], ignoring.\n",
-						 ((ems&EV_EMS_CONTROL)?"control":""),
-						 ((ems&EV_EMS_ALT)?"alt":""),
-						 count));
+			//UT_DEBUGMSG(("        Could not decode char stripped of (%s %s) [result %d], ignoring.\n",
+			//			 ((ems&EV_EMS_CONTROL)?"control":""),
+			//			 ((ems&EV_EMS_ALT)?"alt":""),
+			//			 count));
 		}
 		return UT_TRUE;
 	}
@@ -432,7 +412,7 @@ UT_Bool ev_Win32Keyboard::onKeyDown(AV_View * pView,
 		// have the settings for when the dead-char was pressed -- we only
 		// have the settings as of the second character.
 			
-		UT_DEBUGMSG(("    Emitting dead-char as plain char: %c\n",buffer[0]));
+		//UT_DEBUGMSG(("    Emitting dead-char as plain char: %c\n",buffer[0]));
 		_emitChar(pView,hWnd,iMsg,nVirtKey,keyData,buffer[0],0);
 		buffer[0] = buffer[1];
 	}
@@ -478,19 +458,19 @@ UT_Bool ev_Win32Keyboard::onKeyDown(AV_View * pView,
 
 		if (count == 1)
 		{
-			UT_DEBUGMSG(("        Remapped ControlChar to: %c (%s %s)\n",
-						 buffer[0],
-						 ((ems2&EV_EMS_CONTROL)?"control":""),
-						 ((ems2&EV_EMS_ALT)?"alt":"")));
+			//UT_DEBUGMSG(("        Remapped ControlChar to: %c (%s %s)\n",
+			//			 buffer[0],
+			//			 ((ems2&EV_EMS_CONTROL)?"control":""),
+			//			 ((ems2&EV_EMS_ALT)?"alt":"")));
 
 			_emitChar(pView,hWnd,iMsg,nVirtKey,keyData,buffer[0],ems2);
 		}
 		else
 		{
-			UT_DEBUGMSG(("        Could not decode ControlChar stripped of (%s %s) [result %d], ignoring.\n",
-						 ((ems2&EV_EMS_CONTROL)?"control":""),
-						 ((ems2&EV_EMS_ALT)?"alt":""),
-						 count));
+			//UT_DEBUGMSG(("        Could not decode ControlChar stripped of (%s %s) [result %d], ignoring.\n",
+			//			 ((ems2&EV_EMS_CONTROL)?"control":""),
+			//			 ((ems2&EV_EMS_ALT)?"alt":""),
+			//			 count));
 		}
 		return UT_TRUE;
 	}
@@ -502,10 +482,10 @@ void ev_Win32Keyboard::_emitChar(AV_View * pView,
 {
 	// do the dirty work of pumping this character thru the state machine.
 
-	UT_DEBUGMSG(("        Char: %c (%s %s %s)\n",b,
-				 (ems&EV_EMS_SHIFT)?"shift":"",
-				 (ems&EV_EMS_CONTROL)?"control":"",
-				 (ems&EV_EMS_ALT)?"alt":""));
+	//UT_DEBUGMSG(("        Char: %c (%s %s %s)\n",b,
+	//			 (ems&EV_EMS_SHIFT)?"shift":"",
+	//			 (ems&EV_EMS_CONTROL)?"control":"",
+	//			 (ems&EV_EMS_ALT)?"alt":""));
 
 	UT_uint16 charData = (UT_uint16)b;
 
@@ -516,7 +496,7 @@ void ev_Win32Keyboard::_emitChar(AV_View * pView,
 	switch (result)
 	{
 	case EV_EEMR_BOGUS_START:
-		UT_DEBUGMSG(("    Unbound StartChar: %c\n",b));
+		//UT_DEBUGMSG(("    Unbound StartChar: %c\n",b));
 #ifdef HACK_FOR_MENU
 		// Let Alt+F and friends raise menus.
 		if ((ems & (EV_EMS_CONTROL|EV_EMS_ALT)) == EV_EMS_ALT)
@@ -525,7 +505,7 @@ void ev_Win32Keyboard::_emitChar(AV_View * pView,
 		break;
 
 	case EV_EEMR_BOGUS_CONT:
-		UT_DEBUGMSG(("    Unbound ContChar: %c\n",b));
+		//UT_DEBUGMSG(("    Unbound ContChar: %c\n",b));
 		break;
 
 	case EV_EEMR_COMPLETE:
@@ -534,7 +514,7 @@ void ev_Win32Keyboard::_emitChar(AV_View * pView,
 		break;
 
 	case EV_EEMR_INCOMPLETE:
-		MSG(keyData,(("    Non-Terminal-Char: %c\n",b)));
+		//MSG(keyData,(("    Non-Terminal-Char: %c\n",b)));
 		break;
 
 	default:
@@ -546,68 +526,13 @@ void ev_Win32Keyboard::_emitChar(AV_View * pView,
 }
 
 
-
-#if 0
-
-			////if (s_map_VK_To_Char(nVirtKey,ems,&charData,&ems2))
-
-			MSG(keyData,(("    Char: %c\n",buffer[k])));
-
-			result = m_pEEM->Keystroke(EV_EKP_PRESS|buffer[k],&pEM,&iPrefix);
-			switch (result)
-			{
-			case EV_EEMR_BOGUS_START:
-#ifdef HACK_FOR_MENU
-				// TODO this is temporary until we get the real menu system
-				// TODO going.  if we get an unbound SysKeyDown, send it on
-				// TODO to the system -- so that things like ALT-f will cause
-				// TODO the normal menubar to activate.
-				if (ems2 & EV_EMS_ALT)
-				{
-					_translateMessage(hWnd,iMsg,nVirtKey,keyData);
-					return UT_FALSE;
-				}
-				// FALL THRU INTENDED
-#endif
-			case EV_EEMR_BOGUS_CONT:
-				// if bogus character (in either the beginning or middle of
-				// a sequence), silently eat it.  (this prevents system the
-				// system from beeping at us for things like ALT-f (when it is
-				// not bound.))
-				return UT_TRUE;
-
-			case EV_EEMR_COMPLETE:
-				UT_ASSERT(pEM);
-//				invokeKeyboardMethod(pView,pEM,iPrefix,&buffer[k],1);
-				return UT_TRUE;
-
-			case EV_EEMR_INCOMPLETE:
-				return UT_TRUE;
-
-			default:
-				UT_ASSERT(0);
-				return UT_TRUE;
-			}
-		}
-
-		// we don't know how to map it to a character ??
-		// let's give it the traditional processing and
-		// see what happens...
-		// note: translating it is probably unnecessary,
-		// note: but we probably should run it thru DefWindowProc().
-
-		_translateMessage(hWnd,iMsg,nVirtKey,keyData);
-		return UT_FALSE;
-#endif
-
-
 UT_Bool ev_Win32Keyboard::onChar(AV_View * pView,
 								 HWND hWnd, UINT iMsg, WPARAM nVirtKey, LPARAM keyData)
 {
 	// process the char message.  since we have taken care of everything
 	// on the KeyDown, we have nothing to do here.
 
-	MSG(keyData,(("%s: %p %p\n",((iMsg==WM_CHAR)?"wm_char":"wm_syschar"),nVirtKey,keyData)));
+	//MSG(keyData,(("%s: %p %p\n",((iMsg==WM_CHAR)?"wm_char":"wm_syschar"),nVirtKey,keyData)));
 
 	UT_Bool bIgnoreCharacter = UT_TRUE;
 #ifdef HACK_FOR_MENU
@@ -649,124 +574,6 @@ void ev_Win32Keyboard::_translateMessage(HWND hwnd, UINT iMsg, WPARAM wParam, LP
 	TranslateMessage(&new_msg);
 }
 
-/*****************************************************************/
-/*****************************************************************/
-
-static WPARAM s_Table_VK_To_Char[256][2];
-
-void s_load_VK_To_Char_Table(void)
-{
-	// since the characters represented by a given virtual
-	// key and modifier mask vary by keyboard (depending
-	// upon the language/local/vendor/etc).  we construct
-	// a table to map each character into the VirtKey and
-	// ModifierMask necessary for the keyboard to generate
-	// it.  later, when a keydown occurs, we can use the
-	// vk and mod of the keydown as indicies to get back
-	// the character (and bypass TranslateMessage() and the
-	// ambiguities it introduces).
-	//
-	// we only use this to deal with shifted and unshifted
-	// characters:
-	//     '2' --> vk(0x32) mod(0)
-	//     '@' --> vk(0x32) mod(1)  [on my EnUS keyboard, anyway]
-	//     'a' --> vk(0x41) mod(0)
-	//     'A' --> vk(0x41) mod(1)
-	//
-	// note: i did not find any documentation stating the
-	// note: modifier bit values in the VkKeyScan() return
-	// note: code, but experimentation showed that 1 was
-	// note: shift, 2 was control, and 4 was menu(alt).
-	//
-	// we throw out the ASCII control character representation
-	// (for things like '\x01' (Control-A) as vk(0x41) mod(2)).
-	//
-	// when we put it in the table, we OR on the high bit as
-	// a flag to indicate that the cell is not empty (rather
-	// then an ASCII nul).
-
-	memset(s_Table_VK_To_Char,0,sizeof(s_Table_VK_To_Char));
-	for (UT_uint16 ch=0; ch<256; ch++)
-	{
-		UT_uint16 s = VkKeyScan((TCHAR)ch);
-//		UT_DEBUGMSG(("VkKeyScan(0x%x) ==> 0x%x\n",(TCHAR)ch,s));
-		if (s != 0xffff)
-			if ((s & 0x0600) == 0)		// if doesn't require ALT or CONTROL
-			{
-				UT_uint16 vk = s & 0x00ff;
-				UT_uint16 mod = (s >> 8) & 0x0001;
-				s_Table_VK_To_Char[vk][mod] = ch | 0x8000;
-			}
-	}
-}
-
-// TODO find out what (if anything) we should map VK_SEPARATOR(0x6c) to.
-
-const static WPARAM s_TableNumpadVK_To_VK[16] =
-{ 0x30, 0x31, 0x32, 0x33,		/* kp-0..kp-3 --> 0..3 */
-  0x34, 0x35, 0x36, 0x37,		/* kp-4..kp-7 --> 4..7 */
-  0x38, 0x39, 0x2a, 0x2b,		/* kp-8,kp-9,kp-*,kp-+ --> 8,9,*,+ */
-  0x6c, 0x2d, 0x2e, 0x2f		/* kp-separator??,kp--,kp-.,kp-/ --> ??,-,.,/ */
-};
-
-static WPARAM _handleCapsLock(WPARAM nVirtKey, UT_uint32 bShift)
-{
-	// caps lock is down
-	// value of SHIFT is in bShift
-	// return effective value of SHIFT (character dependent).
-	// CAPSLOCK and SHIFT act as XOR for letters.
-	// CAPSLOCK is ignored for symbols and other keys.
-
-	WPARAM cLower = s_Table_VK_To_Char[nVirtKey][0];
-	WPARAM cUpper = s_Table_VK_To_Char[nVirtKey][1];
-
-	if ((cLower & 0x8000) && (cUpper & 0x8000))			// if both values defined
-	{
-		WPARAM cLowerChar = cLower & 0x00ff;
-		WPARAM cUpperChar = cUpper & 0x00ff;
-		if ((WPARAM)tolower(cUpperChar) == cLowerChar)	// if it is a letter
-			return 1 ^ bShift;
-	}
-	return bShift;
-}
-  
-UT_Bool s_map_VK_To_Char(WPARAM nVirtKey, EV_EditModifierState ems,
-						 UT_uint16 * pChar, EV_EditModifierState * pemsLeftover)
-{
-	// fold the number pad onto the main keys (when
-	// they come as numbers).  this will not be used
-	// when numlock is off (and they come in as
-	// direction keys).
-
-	if ((nVirtKey >= VK_NUMPAD0) && (nVirtKey <= VK_DIVIDE))
-	{
-		*pChar = s_TableNumpadVK_To_VK[nVirtKey-VK_NUMPAD0];
-		*pemsLeftover = ems & (EV_EMS_ALT|EV_EMS_CONTROL);
-		return UT_TRUE;
-	}
-	
-	// strip ALT and CONTROL off of the given ems
-	// and see if we have a mapping.  return the
-	// character found and the remaining bits in
-	// ems.
-
-	UT_uint32 mod = EV_EMS_ToNumber(ems) & 0x0001;
-	if (GetKeyState(VK_CAPITAL))
-		mod = _handleCapsLock(nVirtKey,mod);
-	WPARAM cLookup = s_Table_VK_To_Char[nVirtKey][mod];
-	if (cLookup & 0x8000)
-	{
-		*pChar = cLookup & 0x00ff;
-		*pemsLeftover = ems & (EV_EMS_ALT|EV_EMS_CONTROL);
-		return UT_TRUE;
-	}
-
-	// we don't have a character mapping for this vk.
-	
-	return UT_FALSE;
-}
-
-	
 /*****************************************************************/
 /*****************************************************************/
 
