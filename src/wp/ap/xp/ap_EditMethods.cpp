@@ -236,6 +236,7 @@ public:
 	static EV_EditMethod_Fn deleteCell;
 	static EV_EditMethod_Fn deleteHyperlink;
 	static EV_EditMethod_Fn deleteRows;
+	static EV_EditMethod_Fn deleteTable;
 
 	static EV_EditMethod_Fn insertBookmark;
 	static EV_EditMethod_Fn insertHyperlink;
@@ -650,6 +651,7 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(deleteColumns),   		0,	""),
 	EV_EditMethod(NF(deleteHyperlink),		0,	""),
 	EV_EditMethod(NF(deleteRows),   		0,	""),
+	EV_EditMethod(NF(deleteTable),   		0,	""),
 	EV_EditMethod(NF(dlgAbout), 			0,	""),
 	EV_EditMethod(NF(dlgBackground),		0,	""),
 	EV_EditMethod(NF(dlgBorders),			0,	""),
@@ -4376,6 +4378,15 @@ Defun1(deleteRows)
 	ABIWORD_VIEW;
 
 	pView->cmdDeleteRow(pView->getPoint());
+	return true;
+}
+
+Defun1(deleteTable)
+{
+	CHECK_FRAME;
+	ABIWORD_VIEW;
+
+	pView->cmdDeleteTable(pView->getPoint());
 	return true;
 }
 

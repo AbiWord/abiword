@@ -1364,6 +1364,64 @@ bool FV_View::cmdDeleteCol(PT_DocPosition posCol)
 	return true;
 }
 
+
+/*!
+ * Delete the table containing the position posRow
+ */
+bool FV_View::cmdDeleteTable(PT_DocPosition posTable)
+{
+	PL_StruxDocHandle tableSDH,endTableSDH;
+	PT_DocPosition posStartTable,posEndTable;
+	bool bRes = m_pDoc->getStruxOfTypeFromPosition(posTable,PTX_SectionTable,&tableSDH);
+	if(!bRes)
+	{
+		return false;
+	}
+	posStartTable = m_pDoc->getStruxPosition(tableSDH);
+	endTableSDH = m_pDoc->getEndTableStruxFromTableSDH(tableSDH);
+	posEndTable = m_pDoc->getStruxPosition(endTableSDH);
+//
+// Got all we need, now set things up to do the delete nicely
+//
+	// Signal PieceTable Change
+	_saveAndNotifyPieceTableChange();
+
+	// Turn off list updates
+
+	m_pDoc->disableListUpdates();
+	m_pDoc->beginUserAtomicGlob();
+	if (!isSelectionEmpty())
+	{
+		m_pDoc->beginUserAtomicGlob();
+		PP_AttrProp AttrProp_Before;
+		_deleteSelection(&AttrProp_Before);
+		m_pDoc->endUserAtomicGlob();
+	}
+	m_pDoc->setDontImmediatelyLayout(true);
+//
+// OK do the delete
+//
+	UT_uint32 iRealDeleteCount;
+	m_pDoc->deleteSpan( posStartTable, posEndTable, NULL,iRealDeleteCount,true);
+//
+// OK finish everything off with the various parameters which allow the formatter to
+// be updated.
+//
+	m_pDoc->endUserAtomicGlob();
+	m_pDoc->setDontImmediatelyLayout(false);
+	_generalUpdate();
+
+	// restore updates and clean up dirty lists
+	m_pDoc->enableListUpdates();
+	m_pDoc->updateDirtyLists();
+
+	// Signal PieceTable Changes have finished
+	_restorePieceTableState();
+	_ensureInsertionPointOnScreen();
+
+	return true;
+}
+
 /*!
  * Delete the row containing the position posRow
  */

@@ -210,8 +210,8 @@ EV_Menu_ActionSet * AP_CreateMenuActionSet(void)
     _s(AP_MENU_ID_TABLE_INSERT_ROWS_BEFORE,0,0,0,"insertRowsBefore", ap_GetState_InTable, NULL);
     _s(AP_MENU_ID_TABLE_INSERT_ROWS_AFTER,0,0,0,"insertRowsAfter", ap_GetState_InTable, NULL);
      _s(AP_MENU_ID_TABLE_INSERT_CELLS,0,0,0, NULL, ap_GetState_InTable, NULL);
-   _s(AP_MENU_ID_TABLE_DELETE,1,0,0, NULL, ap_GetState_InTable, NULL);
-    _s(AP_MENU_ID_TABLE_DELETE_TABLE,0,0,0, NULL, ap_GetState_InTable, NULL);
+    _s(AP_MENU_ID_TABLE_DELETE,1,0,0, NULL, ap_GetState_InTable, NULL);
+    _s(AP_MENU_ID_TABLE_DELETE_TABLE,0,0,0, "deleteTable", ap_GetState_InTable, NULL);
     _s(AP_MENU_ID_TABLE_DELETE_COLUMNS,0,0,0, "deleteColumns", ap_GetState_InTable, NULL);
     _s(AP_MENU_ID_TABLE_DELETE_ROWS,0,0,0, "deleteRows", ap_GetState_InTable, NULL);
     _s(AP_MENU_ID_TABLE_DELETE_CELLS,0,0,0, "deleteCell", ap_GetState_InTable, NULL);
