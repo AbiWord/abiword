@@ -64,7 +64,7 @@ _PSICONV_:
 		echo "Found psiconv in peer directory"; 		\
 		if [ ! -r $(ABI_ROOT)/../psiconv/Makefile ]; then 	\
 			cd $(ABI_ROOT)/../psiconv; 			\
-			$(PSICONV_PLATFORM_DEFS) CFLAGS=-O2 ./configure --disable-shared --enable-static; 	\
+			$(PSICONV_PLATFORM_DEFS) ./configure --disable-shared --enable-static; 	\
 		fi; 							\
 		$(MAKE) -f Makefile -C $(ABI_ROOT)/../psiconv; 		\
 	elif [ -d /usr/include/psiconv -o -d /usr/local/include/psiconv ]; then 			\
