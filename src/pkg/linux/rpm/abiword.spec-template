@@ -77,8 +77,8 @@ BuildRequires: libjpeg-devel
 %{!?_with_enchant:Requires: pspell >= 0.11.1}
 %{!?_with_enchant:BuildRequires: pspell-devel >= 0.11.1}
 %endif
-%{?_with_enchant:Requires: enchant >= 0.4.0}
-%{?_with_enchant:BuildRequires: enchant-devel >= 0.4.0}
+%{?_with_enchant:Requires: enchant >= 1.1.0}
+%{?_with_enchant:BuildRequires: enchant-devel >= 1.1.0}
 
 %if %{enable_expat}
 Requires: expat >= 1.95.1
@@ -222,16 +222,11 @@ cd ../abi
 %__mkdir_p $RPM_BUILD_ROOT/%{_prefix}/share/pixmaps
 %__cp $RPM_BUILD_DIR/%{name}-%{version}/abidistfiles/icons/abiword_48.png $RPM_BUILD_ROOT/%{_prefix}/share/pixmaps/abiword_48.png
 %__mkdir_p $RPM_BUILD_ROOT/%{_prefix}/share/applications/
-%__cp $RPM_BUILD_DIR/%{name}-%{version}/abi/src/pkg/linux/rpm/data/abiword.desktop $RPM_BUILD_ROOT/%{_datadir}/applications/abiword.desktop
+%__cp $RPM_BUILD_DIR/%{name}-%{version}/abi/abiword.desktop $RPM_BUILD_ROOT/%{_datadir}/applications/abiword.desktop
 %__perl -p -i -e "s|Exec=abiword|Exec=abiword-2.0|" $RPM_BUILD_ROOT/%{_datadir}/applications/abiword.desktop
 
 # Copies oaf files
-#%__mkdir_p $RPM_BUILD_ROOT/%{_libdir}/oaf
-#%__cp $RPM_BUILD_DIR/%{name}-%{version}/abidistfiles/*.oaf $RPM_BUILD_ROOT/%{_datadir}/oaf
-#%__mkdir_p $RPM_BUILD_ROOT/%{_datadir}/gnome-2.0/ui
-#%__mv $RPM_BUILD_ROOT/%{_datadir}/%{AbiSuite}/abi-nautilus-view-file.xml $RPM_BUILD_ROOT/%{_datadir}/gnome-2.0/ui/ ???
 %__mkdir_p $RPM_BUILD_ROOT/%{_libdir}/bonobo/servers
-#%__mv $RPM_BUILD_ROOT/%{_datadir}/%{AbiSuite}/GNOME_AbiWord_Control_2_0.server $RPM_BUILD_ROOT/%{_libdir}/bonobo/servers/
 
 # Fix for wrong file rights on fonts,icons,clipart
 %__chmod 644 $RPM_BUILD_ROOT/%{_datadir}/%{AbiSuite}/icons/*
@@ -239,8 +234,6 @@ cd ../abi
 %__chmod 644 $RPM_BUILD_ROOT/%{_datadir}/%{AbiSuite}/templates/*
 
 # this files are installed but they've already been copied to a better place
-#%__rm -f $RPM_BUILD_ROOT/%{_datadir}/%{AbiSuite}/GNOME_AbiWord_Control_1_0.oaf
-#%__rm -f $RPM_BUILD_ROOT/%{_datadir}/%{AbiSuite}/Nautilus_View_AbiWord.oaf
 %__rm -f $RPM_BUILD_ROOT/%{_datadir}/%{AbiSuite}/nautilus-abiword-content-view-ui.xml
 %__rm -f $RPM_BUILD_ROOT/%{_bindir}/abiword
 
@@ -329,7 +322,6 @@ cd ../abi
 %{?_with_libgsf:%{_libdir}/%{AbiWord}/plugins/libAbiSDW.so}
 %{_libdir}/%{AbiWord}/plugins/libAbiT602.so
 %{_libdir}/%{AbiWord}/plugins/libAbiWML.so
-#%{_libdir}/%{AbiWord}/plugins/libAbiWordPerfect.so
 %{_libdir}/%{AbiWord}/plugins/libAbiXHTML.so
 %{_libdir}/%{AbiWord}/plugins/libAbiXSLFO.so
 %endif
