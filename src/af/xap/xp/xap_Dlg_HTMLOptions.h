@@ -33,6 +33,7 @@
 #include "xap_Dialog.h"
 
 class XAP_App;
+class UT_UTF8String;
 
 struct XAP_Exp_HTMLOptions
 {
@@ -41,6 +42,7 @@ struct XAP_Exp_HTMLOptions
 	bool	bDeclareXML;
 	bool	bAllowAWML;
 	bool	bEmbedCSS;
+	bool    bLinkCSS;
 	bool	bEmbedImages;
 
 	/* other options, not set/saved/restore by options dialog
@@ -68,12 +70,16 @@ protected:
 	inline bool		get_Declare_XML ()  const { return m_exp_opt->bDeclareXML; }
 	inline bool		get_Allow_AWML ()   const { return m_exp_opt->bAllowAWML; }
 	inline bool		get_Embed_CSS ()    const { return m_exp_opt->bEmbedCSS; }
+	inline bool		get_Link_CSS ()    const { return m_exp_opt->bLinkCSS; }
 	inline bool		get_Embed_Images () const { return m_exp_opt->bEmbedImages; }
 	inline bool		get_Multipart ()    const { return m_exp_opt->bMultipart; }
 
+	UT_UTF8String & get_Link_CSS_File() const { return *m_pLinkCSS; }
+	
 	inline bool		can_set_Declare_XML ()  const { return m_exp_opt->bIs4 ? false : true; }
 	inline bool		can_set_Allow_AWML ()   const { return m_exp_opt->bIs4 ? false : true; }
 	inline bool		can_set_Embed_CSS ()    const { return m_exp_opt->bIsAbiWebDoc ? false : true; }
+	inline bool		can_set_Link_CSS ()    const { return true; }
 	inline bool		can_set_Embed_Images () const { return m_exp_opt->bMultipart ? false : true; }
 
 	void			set_HTML4 (bool enable);
@@ -81,8 +87,11 @@ protected:
 	void			set_Declare_XML (bool enable);
 	void			set_Allow_AWML (bool enable);
 	void			set_Embed_CSS (bool enable);
+	void			set_Link_CSS (bool enable);
 	void			set_Embed_Images (bool enable);
 
+	void            set_Link_CSS_File (const char * file);
+	
 	void			saveDefaults ();
 	void			restoreDefaults ();
 
@@ -91,6 +100,7 @@ protected:
 private:
 	XAP_Exp_HTMLOptions *	m_exp_opt;
 	XAP_App *				m_app;
+	UT_UTF8String *         m_pLinkCSS;
 };
 
 #endif /* XAP_DIALOG_HTMLOPTIONS_H */

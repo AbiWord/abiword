@@ -35,14 +35,18 @@ XAP_Dialog_HTMLOptions::XAP_Dialog_HTMLOptions (XAP_DialogFactory * pDlgFactory,
 	: XAP_Dialog_NonPersistent(pDlgFactory,id),
 	  m_bShouldSave(true),
 	  m_exp_opt(NULL),
-	  m_app(NULL)
+	  m_app(NULL),
+	  m_pLinkCSS(NULL)
 {
-	// 
+	//
+	m_pLinkCSS = new UT_UTF8String;
 }
 
 XAP_Dialog_HTMLOptions::~XAP_Dialog_HTMLOptions(void)
 {
-	// 
+	//
+	if(m_pLinkCSS)
+		delete m_pLinkCSS;
 }
 
 void XAP_Dialog_HTMLOptions::setHTMLOptions (XAP_Exp_HTMLOptions * exp_opt, XAP_App * app)
@@ -78,6 +82,25 @@ void XAP_Dialog_HTMLOptions::set_Allow_AWML (bool enable)
 void XAP_Dialog_HTMLOptions::set_Embed_CSS (bool enable)
 {
 	if (can_set_Embed_CSS ()) m_exp_opt->bEmbedCSS = enable;
+}
+
+void XAP_Dialog_HTMLOptions::set_Link_CSS (bool enable)
+{
+	if (can_set_Link_CSS ())
+	{
+		m_exp_opt->bLinkCSS = enable;
+
+		if(enable)
+			m_exp_opt->bEmbedCSS = false;
+	}
+}
+
+void XAP_Dialog_HTMLOptions::set_Link_CSS_File (const char * file)
+{
+	if(!m_pLinkCSS || !file || !can_set_Link_CSS ())
+		return;
+	
+	*m_pLinkCSS = file;
 }
 
 void XAP_Dialog_HTMLOptions::set_Embed_Images (bool enable)
@@ -122,6 +145,11 @@ void XAP_Dialog_HTMLOptions::saveDefaults ()
 		{
 			if (pref.byteLength ()) pref += ",";
 			pref += "+CSS";
+		}
+	if (m_exp_opt->bLinkCSS)
+		{
+			if (pref.byteLength ()) pref += ",";
+			pref += "LinkCSS";
 		}
 	if (m_exp_opt->bEmbedImages)
 		{
@@ -170,6 +198,7 @@ void XAP_Dialog_HTMLOptions::getHTMLDefaults (XAP_Exp_HTMLOptions * exp_opt, XAP
 			exp_opt->bDeclareXML  = (strstr (pref, "?xml")        == NULL) ? false : true;
 			exp_opt->bAllowAWML   = (strstr (pref, "xmlns:awml")  == NULL) ? false : true;
 			exp_opt->bEmbedCSS    = (strstr (pref, "+CSS")        == NULL) ? false : true;
+			exp_opt->bLinkCSS    = (strstr (pref, "LinkCSS")      == NULL) ? false : true;
 			exp_opt->bEmbedImages = (strstr (pref, "data:base64") == NULL) ? false : true;
 
 			if (exp_opt->bIs4) exp_opt->bIsAbiWebDoc = false;
