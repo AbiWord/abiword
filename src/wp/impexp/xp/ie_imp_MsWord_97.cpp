@@ -449,7 +449,8 @@ int SpecCharProc(wvParseStruct *ps, U16 eachchar, CHP* achp)
 		}
 		
 		pos = wvStream_tell(ps->data);
-		
+
+#if 0	
 		wvStream_goto(ps->data, achp->fcPic_fcObj_lTagObj);
 		
 		wvGetPICF(wvQuerySupported(&ps->fib, NULL), &picf, ps->data);
@@ -464,7 +465,9 @@ int SpecCharProc(wvParseStruct *ps, U16 eachchar, CHP* achp)
 		{
 			xxx_UT_DEBUGMSG(("Dom: strange no graphic data 1\n"));
 		}
-		
+#else
+		UT_DEBUGMSG(("DOM: 0x01 graphics support is buggy at the moment\n"));
+#endif
 		wvStream_goto(ps->data, pos);
 		
 		return 0;
