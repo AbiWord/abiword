@@ -66,8 +66,12 @@ public:
 
 	const UT_UTF8String & name () const { return m_name; }
 
+	bool getCanCopy () const {
+		return m_bCanCopy;
+	}
+	
 protected:
-	IE_ExpSniffer(const char * name);
+	IE_ExpSniffer(const char * name, bool canCopy = false);
 
 private:
 	const UT_UTF8String	m_name;
@@ -75,6 +79,8 @@ private:
 	// only IE_Exp ever calls this
 	inline void setFileType (IEFileType type) {m_type = type;}
 	IEFileType m_type;
+
+	bool m_bCanCopy;
 };
 
 class ABI_EXPORT IE_Exp

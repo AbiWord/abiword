@@ -204,9 +204,10 @@ PD_Document * IE_Imp::getDoc () const
 /*****************************************************************/
 /*****************************************************************/
 
-IE_ImpSniffer::IE_ImpSniffer(const char * name)
+IE_ImpSniffer::IE_ImpSniffer(const char * name, bool canPaste)
 	: m_name(name),
-	  m_type(IEFT_Bogus)
+	  m_type(IEFT_Bogus),
+	  m_bCanPaste(canPaste)
 {
 }
 

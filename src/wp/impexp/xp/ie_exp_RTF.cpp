@@ -86,7 +86,7 @@ IE_Exp_RTF::~IE_Exp_RTF()
 /*****************************************************************/
 
 IE_Exp_RTF_Sniffer::IE_Exp_RTF_Sniffer ()
-	: IE_ExpSniffer(IE_IMPEXPNAME_RTF)
+	: IE_ExpSniffer(IE_IMPEXPNAME_RTF, true)
 {
 	// 
 }
@@ -126,7 +126,7 @@ bool IE_Exp_RTF_Sniffer::getDlgLabels(const char ** pszDesc,
 /*for attic*/
 
 IE_Exp_RTF_attic_Sniffer::IE_Exp_RTF_attic_Sniffer ()
-	: IE_ExpSniffer(IE_IMPEXPNAME_RTFATTIC)
+	: IE_ExpSniffer(IE_IMPEXPNAME_RTFATTIC, false)
 {
 	// 
 }

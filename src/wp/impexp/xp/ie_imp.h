@@ -77,8 +77,12 @@ public:
 	
 	const UT_UTF8String & name () const { return m_name; }
 
+	bool getCanPaste () const {
+		return m_bCanPaste;
+	}
+
 protected:
-	IE_ImpSniffer(const char * name);
+	IE_ImpSniffer(const char * name, bool canPaste = false);
 
 private:
 	const UT_UTF8String	m_name;
@@ -86,6 +90,8 @@ private:
 	// only IE_Imp ever calls this
 	inline void setFileType (IEFileType type) {m_type = type;}
 	IEFileType m_type;
+
+	bool m_bCanPaste;
 };
 
 class ABI_EXPORT IE_Imp

@@ -89,7 +89,7 @@
 
 IE_Exp_HTML_Sniffer::IE_Exp_HTML_Sniffer ()
 #ifdef HTML_NAMED_CONSTRUCTORS
-	: IE_ExpSniffer(IE_IMPEXPNAME_XHTML)
+	: IE_ExpSniffer(IE_IMPEXPNAME_XHTML, true)
 #endif
 {
 	// 
@@ -126,7 +126,7 @@ bool IE_Exp_HTML_Sniffer::getDlgLabels (const char ** pszDesc,
 
 IE_Exp_HTML4_Sniffer::IE_Exp_HTML4_Sniffer ()
 #ifdef HTML_NAMED_CONSTRUCTORS
-	: IE_ExpSniffer(IE_IMPEXPNAME_HTML)
+	: IE_ExpSniffer(IE_IMPEXPNAME_HTML, true)
 #endif
 {
 	// 
@@ -164,7 +164,7 @@ bool IE_Exp_HTML4_Sniffer::getDlgLabels (const char ** pszDesc,
 
 IE_Exp_PHTML_Sniffer::IE_Exp_PHTML_Sniffer ()
 #ifdef HTML_NAMED_CONSTRUCTORS
-	: IE_ExpSniffer(IE_IMPEXPNAME_PHTML)
+	: IE_ExpSniffer(IE_IMPEXPNAME_PHTML, false)
 #endif
 {
 	// 
@@ -202,7 +202,7 @@ bool IE_Exp_PHTML_Sniffer::getDlgLabels(const char ** pszDesc,
 
 IE_Exp_MHTML_Sniffer::IE_Exp_MHTML_Sniffer ()
 #ifdef HTML_NAMED_CONSTRUCTORS
-	: IE_ExpSniffer(IE_IMPEXPNAME_MHTML)
+	: IE_ExpSniffer(IE_IMPEXPNAME_MHTML, true)
 #endif
 {
 	// 

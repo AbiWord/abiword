@@ -42,9 +42,10 @@ static UT_Vector m_sniffers(20);
 /*****************************************************************/
 /*****************************************************************/
 
-IE_ExpSniffer::IE_ExpSniffer (const char * name)
+IE_ExpSniffer::IE_ExpSniffer (const char * name, bool canCopy)
 	: m_name(name),
-	  m_type(IEFT_Bogus)
+	  m_type(IEFT_Bogus),
+	  m_bCanCopy(canCopy)
 {
 }
 

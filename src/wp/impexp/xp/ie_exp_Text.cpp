@@ -101,7 +101,7 @@ IE_Exp_Text::IE_Exp_Text(PD_Document * pDocument, const char * encoding)
 /*****************************************************************/
 
 IE_Exp_Text_Sniffer::IE_Exp_Text_Sniffer ()
-	: IE_ExpSniffer(IE_IMPEXPNAME_TEXT)
+	: IE_ExpSniffer(IE_IMPEXPNAME_TEXT, true)
 {
 	// 
 }
@@ -150,7 +150,7 @@ bool IE_Exp_Text_Sniffer::getDlgLabels(const char ** pszDesc,
 /*****************************************************************/
 
 IE_Exp_EncodedText_Sniffer::IE_Exp_EncodedText_Sniffer ()
-	: IE_ExpSniffer(IE_IMPEXPNAME_TEXTENC)
+	: IE_ExpSniffer(IE_IMPEXPNAME_TEXTENC, false)
 {
 	// 
 }

@@ -280,7 +280,7 @@ bool IE_Imp_Text::_insertSpan(UT_GrowBuf &b)
 /*****************************************************************/
 
 IE_Imp_Text_Sniffer::IE_Imp_Text_Sniffer ()
-	: IE_ImpSniffer(IE_IMPEXPNAME_TEXT)
+	: IE_ImpSniffer(IE_IMPEXPNAME_TEXT, true)
 {
 	// 
 }

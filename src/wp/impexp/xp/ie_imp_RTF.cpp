@@ -1,5 +1,6 @@
 /* -*- c-basic-offset: 4; tab-width: 4; indent-tabs-mode: t -*- */
 /* AbiWord
+ * Copyright (C) Peter Arnold <petera@intrinsica.co.uk>
  * Copyright (C) 1999 AbiSource, Inc.
  * Copyright (C) 2003 Tomas Frydrych <tomas@frydrych.uklinux.net>
  * Copyright (C) 2003 Martin Sevior <msevior@physics.unimelb.edu.au> 
@@ -19,9 +20,6 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
  * 02111-1307, USA.
  */
-
-
-/* RTF importer by Peter Arnold <petera@intrinsica.co.uk> */
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -92,7 +90,7 @@ static const UT_uint32 PT_MAX_ATTRIBUTES = 8;
 //////////////////////////////////////////////////////////////////
 
 IE_Imp_RTF_Sniffer::IE_Imp_RTF_Sniffer ()
-	: IE_ImpSniffer(IE_IMPEXPNAME_RTF)
+	: IE_ImpSniffer(IE_IMPEXPNAME_RTF, true)
 {
 	// 
 }
