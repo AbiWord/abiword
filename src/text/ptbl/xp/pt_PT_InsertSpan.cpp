@@ -39,6 +39,7 @@
 #include "px_CR_SpanChange.h"
 #include "px_CR_Strux.h"
 #include "fd_Field.h"
+#include "pp_Revision.h"
 /****************************************************************/
 /****************************************************************/
 
@@ -47,7 +48,24 @@ bool pt_PieceTable::insertSpan(PT_DocPosition dpos,
 								  const UT_UCSChar * p,
 							   UT_uint32 length, fd_Field * pField)
 {
-	return _realInsertSpan(dpos, p, length, pField);
+	if(!_realInsertSpan(dpos, p, length, pField))
+		return false;
+
+	if(m_pDocument->isMarkRevisions())
+	{
+		PP_RevisionAttr Revisions(NULL);
+		Revisions.addRevision(m_pDocument->getRevisionId(),PP_REVISION_ADDITION,NULL,NULL);
+
+		const XML_Char name[] = "revision";
+		const XML_Char * ppRevAttrib[3];
+		ppRevAttrib[0] = name;
+		ppRevAttrib[1] = Revisions.getXMLstring();
+		ppRevAttrib[2] = NULL;
+
+		return _realChangeSpanFmt(PTC_AddFmt, dpos, dpos + length, ppRevAttrib,NULL);
+	}
+
+	return true;
 }
 
 

@@ -1209,36 +1209,7 @@ void FV_View::_deleteSelection(PP_AttrProp *p_AttrProp_Before)
 	_eraseSelection();
 	_resetSelection();
 
-	if(isMarkRevisions())
-	{
-		const fl_BlockLayout * pBL = getCurrentBlock();
-
-		// not entirely sure whether we can get away witht he
-		// const_cast here, we might have to make a copy ... #TF
-		pBL->getSpanAttrProp(getPoint() - pBL->getPosition(false),false,const_cast<const PP_AttrProp **>(&p_AttrProp_Before));
-		bool bMyAttrProp = false;
-
-		const XML_Char * ppRevAttrib[4];
-		const XML_Char name[] = "revision";
-
-		const XML_Char * pRevision = NULL;
-
-		if(p_AttrProp_Before)
-			p_AttrProp_Before->getAttribute("revision", pRevision);
-
-		PP_RevisionAttr Revisions(pRevision);
-		Revisions.addRevision(m_pDoc->getRevisionId(),PP_REVISION_DELETION,NULL,NULL);
-
-		ppRevAttrib[0] = name;
-		ppRevAttrib[1] = Revisions.getXMLstring();
-		ppRevAttrib[2] = NULL;
-		ppRevAttrib[3] = NULL;
-		m_pDoc->changeSpanFmt(PTC_AddFmt, iLow, iHigh, ppRevAttrib, NULL);
-	}
-	else
-	{
-		m_pDoc->deleteSpan(iLow, iHigh, p_AttrProp_Before);
-	}
+	m_pDoc->deleteSpan(iLow, iHigh, p_AttrProp_Before);
 
 //
 // Can't leave list-tab on a line
@@ -1921,22 +1892,6 @@ bool FV_View::cmdCharInsert(UT_UCSChar * text, UT_uint32 count, bool bForce)
 		PP_AttrProp AttrProp_Before;
 		_deleteSelection(&AttrProp_Before);
 
-		if(isMarkRevisions())
-		{
-			// need to set the revision attribute to current id
-			const XML_Char * pRevision = NULL;
-			AttrProp_Before.getAttribute("revision", pRevision);
-
-			PP_RevisionAttr Revisions(pRevision);
-			Revisions.addRevision(m_pDoc->getRevisionId(),PP_REVISION_ADDITION,NULL,NULL);
-
-			AttrProp_Before.setAttribute("revision", Revisions.getXMLstring());
-		}
-		else
-		{
-			AttrProp_Before.setAttribute("revision", NULL);
-		}
-
 		bResult = m_pDoc->insertSpan(getPoint(), text, count, &AttrProp_Before);
 		m_pDoc->endUserAtomicGlob();
 	}
@@ -1994,51 +1949,7 @@ bool FV_View::cmdCharInsert(UT_UCSChar * text, UT_uint32 count, bool bForce)
 		}
 		if (doInsert == true)
 		{
-			const PP_AttrProp *pAttrProp;
-			const fl_BlockLayout * pBL = getCurrentBlock();
-			PP_AttrProp * pMyAP = NULL;
-			const XML_Char rev_s[] = "revision";
-
-			// not entirely sure whether we can get away witht he
-			// const_cast here, we might have to make a copy ... #TF
-			pBL->getSpanAttrProp(getPoint() - pBL->getPosition(false),false,&pAttrProp);
-
-			if(isMarkRevisions())
-			{
-				// need to set the revision attribute to current id
-				const XML_Char * pRevision = NULL;
-				//XML_Char pTestRevision[] = "2{font-family:Arial},!3{font-family:Courier},-4";
-
-				pMyAP = new PP_AttrProp;
-
-				if(pAttrProp)
-				{
-					pAttrProp->getAttribute(rev_s, pRevision);
-					*pMyAP = *pAttrProp;
-				}
-
-				PP_RevisionAttr Revisions(pRevision);
-				Revisions.addRevision(m_pDoc->getRevisionId(), PP_REVISION_ADDITION, NULL, NULL);
-
-				pMyAP->setAttribute(rev_s, Revisions.getXMLstring());
-			}
-			else
-			{
-				if(pAttrProp)
-				{
-					const XML_Char * pAttr[3];
-					pAttr[0] = rev_s;
-					pAttr[1] = 0;
-					pAttr[2] = 0;
-
-					pMyAP = pAttrProp->cloneWithElimination(NULL, pAttr);
-				}
-
-			}
-
-			bResult = m_pDoc->insertSpan(getPoint(), text, count, pMyAP);
-
-			delete pMyAP;
+			bResult = m_pDoc->insertSpan(getPoint(), text, count, NULL);
 
 			if(!bResult)
 			{

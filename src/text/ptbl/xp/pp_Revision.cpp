@@ -511,7 +511,7 @@ bool PP_RevisionAttr::isVisible()
 /*! adds id to the revision vector handling the special cases where id
     is already present in this attribute.
 */
-void PP_RevisionAttr::addRevision(UT_uint32 iId, PP_RevisionType eType, const XML_Char ** pProps, const XML_Char ** pAttrs)
+void PP_RevisionAttr::addRevision(UT_uint32 iId, PP_RevisionType eType, const XML_Char ** pAttrs, const XML_Char ** pProps)
 {
 	for(UT_uint32 i = 0; i < m_vRev.getItemCount(); i++)
 	{

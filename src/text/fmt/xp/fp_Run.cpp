@@ -670,13 +670,12 @@ UT_RGBColor fp_Run::getFGColor(void) const
 			case 1: UT_setColor(fgColor,171,4,254); break;
 			case 2: UT_setColor(fgColor,171,20,119); break;
 			case 3: UT_setColor(fgColor,255,151,8); break;
-			case 4: UT_setColor(fgColor,255,162,117); break;
-			case 5: UT_setColor(fgColor,158,179,69); break;
-			case 6: UT_setColor(fgColor,15,179,5); break;
-			case 7: UT_setColor(fgColor,8,179,248); break;
-			case 8: UT_setColor(fgColor,4,206,195); break;
-			case 9: UT_setColor(fgColor,4,133,195); break;
-			case 10: UT_setColor(fgColor,7,18,195); break;
+			case 4: UT_setColor(fgColor,158,179,69); break;
+			case 5: UT_setColor(fgColor,15,179,5); break;
+			case 6: UT_setColor(fgColor,8,179,248); break;
+			case 7: UT_setColor(fgColor,4,206,195); break;
+			case 8: UT_setColor(fgColor,4,133,195); break;
+			case 9: UT_setColor(fgColor,7,18,195); break;
 			default:
 				UT_setColor(fgColor,255,0,0); // everything else red
 		}

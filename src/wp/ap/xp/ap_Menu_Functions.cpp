@@ -957,9 +957,21 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_RevisionPresent)
 	ABIWORD_VIEW;
 	UT_ASSERT(pView);
 
-        if(pView->getInsertionPointContext(NULL,NULL) != EV_EMC_REVISION) {
-            return EV_MIS_Gray;
-        }
+	if(pView->isMarkRevisions())
+		return EV_MIS_Gray;
+    else if(pView->getInsertionPointContext(NULL,NULL) != EV_EMC_REVISION)
+        return EV_MIS_Gray;
 
         return EV_MIS_ZERO;
+}
+
+Defun_EV_GetMenuItemState_Fn(ap_GetState_RevisionPresentContext)
+{
+	ABIWORD_VIEW;
+	UT_ASSERT(pView);
+
+	if(pView->isMarkRevisions())
+		return EV_MIS_Gray;
+
+    return EV_MIS_ZERO;
 }

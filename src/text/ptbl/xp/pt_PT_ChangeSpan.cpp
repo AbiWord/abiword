@@ -39,6 +39,7 @@
 #include "px_CR_SpanChange.h"
 #include "px_CR_Strux.h"
 #include "pd_Style.h"
+#include "pp_Revision.h"
 
 #define SETP(p,v)	do { if (p) (*(p)) = (v); } while (0)
 
@@ -51,7 +52,57 @@ bool pt_PieceTable::changeSpanFmt(PTChangeFmt ptc,
 									 const XML_Char ** attributes,
 								  const XML_Char ** properties)
 {
-	return _realChangeSpanFmt(ptc, dpos1, dpos2, attributes, properties);
+	if(m_pDocument->isMarkRevisions())
+	{
+		const XML_Char name[] = "revision";
+		const XML_Char * pRevision = NULL;
+
+		// first retrive the starting and ending fragments
+		pf_Frag * pf1, * pf2;
+		PT_BlockOffset Offset1, Offset2;
+
+		if(!getFragsFromPositions(dpos1,dpos2, &pf1, &Offset1, &pf2, &Offset2))
+			return false;
+
+		// now we have to traverse the fragments and change their
+		// formatting
+
+		pf_Frag * pTemp;
+		pf_Frag * pEnd = pf2->getNext();
+
+		for(pTemp = pf1; pTemp != pEnd; pTemp = pTemp->getNext())
+		{
+			// get attributes for this fragement
+			const PP_AttrProp * pAP;
+			if(_getSpanAttrPropHelper(pTemp, &pAP))
+			{
+				if(!pAP->getAttribute(name, pRevision))
+					pRevision = NULL;
+
+				PP_RevisionAttr Revisions(pRevision);
+				Revisions.addRevision(m_pDocument->getRevisionId(),PP_REVISION_FMT_CHANGE,attributes,properties);
+				const XML_Char * ppRevAttrib[3];
+				ppRevAttrib[0] = name;
+				ppRevAttrib[1] = Revisions.getXMLstring();
+				ppRevAttrib[2] = NULL;
+
+				PT_DocPosition dposEnd = UT_MIN(dpos2,dpos1 + pTemp->getLength());
+
+				if(!_realChangeSpanFmt(PTC_AddFmt, dpos1, dposEnd, ppRevAttrib,NULL))
+					return false;
+
+				dpos1 = dposEnd;
+			}
+			else
+				return false;
+		}
+
+		return true;
+	}
+	else
+	{
+		return _realChangeSpanFmt(ptc, dpos1, dpos2, attributes, properties);
+	}
 }
 
 bool pt_PieceTable::_fmtChangeSpan(pf_Frag_Text * pft, UT_uint32 fragOffset, UT_uint32 length,

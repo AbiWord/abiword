@@ -105,8 +105,8 @@ class PP_RevisionAttr
 
 	void                  addRevision(UT_uint32 iId,
 									  PP_RevisionType eType,
-									  const XML_Char ** pProp,
-									  const XML_Char ** pAttrs);
+									  const XML_Char ** pAttrs,
+									  const XML_Char ** pProps);
 
 	void                  removeRevisionIdWithType(UT_uint32 iId, PP_RevisionType eType);
 	void                  removeRevisionIdTypeless(UT_uint32 iId);

@@ -85,8 +85,12 @@ bool pt_PieceTable::deleteSpan(PT_DocPosition dpos1,
 				ppRevAttrib[1] = Revisions.getXMLstring();
 				ppRevAttrib[2] = NULL;
 
-				if(! _realChangeSpanFmt(PTC_AddFmt, dpos1, dpos2, ppRevAttrib,NULL))
+				PT_DocPosition dposEnd = UT_MIN(dpos2,dpos1 + pTemp->getLength());
+
+				if(! _realChangeSpanFmt(PTC_AddFmt, dpos1, dposEnd, ppRevAttrib,NULL))
 					return false;
+
+				dpos1 = dposEnd;
 			}
 			else
 				return false;
