@@ -49,7 +49,6 @@ public:
 protected:
 	bool				_refreshMenu(AV_View * pView, GtkWidget * wMenuRoot);
 	bool				_isItemPresent(XAP_Menu_Id id) const;
-
 	virtual bool		_doAddMenuItem(UT_uint32 layout_pos);
 
 protected: // FIXME! These variables should be private.
@@ -62,7 +61,9 @@ protected: // FIXME! These variables should be private.
 	// actual GTK menu widgets
 	UT_Vector			m_vecMenuWidgets;
 private:	
-	const char * EV_UnixMenu::s_getStockPixmapFromId (int id);
+        void _convertStringToAccel(const char *s, guint &accel_key, GdkModifierType &ac_mods);   
+        const char * s_getStockPixmapFromId (int id);
+        GtkWidget * s_createNormalMenuEntry(const XAP_Menu_Id id, const bool isCheckable, const char *szLabelName, const char *szMnemonicName);
 };
 
 #endif /* EV_UNIXMENU_H */
