@@ -28,7 +28,9 @@
 #include "ut_assert.h"
 
 #define CURSOR_BLINK_TIME 600 /* milliseconds */
+#define CURSOR_DELAY_TIME 10
 
+// Description of m_enabler:
 // The problem is that a complicated draw operation will be somewhat
 // inefficient & ugly, because the caret gets drawn/undrawn every time
 // one of the primitive draw operations takes place.  The solution
@@ -53,21 +55,39 @@ GR_Caret::GR_Caret(GR_Graphics * pG)
 		(s_work, this, UT_WorkerFactory::TIMER, outMode, pG));
 	UT_ASSERT(outMode == UT_WorkerFactory::TIMER);
 	m_worker->set(CURSOR_BLINK_TIME);
+
+	m_enabler = static_cast<UT_Timer *>(UT_WorkerFactory::static_constructor
+		(s_enable, this, UT_WorkerFactory::TIMER, outMode, pG));
+	UT_ASSERT(outMode == UT_WorkerFactory::TIMER);
+	m_enabler->set(CURSOR_DELAY_TIME);
 }
 
 void GR_Caret::s_work(UT_Worker * _w)
 {
 	GR_Caret * c = static_cast<GR_Caret *>(_w->getInstanceData());
 
-// 	UT_DEBUGMSG(("blinking cursor %d\n", c->m_nDisableCount));
+ 	xxx_UT_DEBUGMSG(("blinking cursor %d\n", c->m_nDisableCount));
 
 	if (c->m_nDisableCount == 0)
 		c->_blink(false);
 }
 
+/** One-time enabler. */
+void GR_Caret::s_enable(UT_Worker * _w)
+{
+	GR_Caret * c = static_cast<GR_Caret *>(_w->getInstanceData());
+
+ 	xxx_UT_DEBUGMSG(("enabling cursor %d\n", c->m_nDisableCount));
+
+	c->_blink();
+	c->m_worker->start();
+	c->m_enabler->stop();
+}
+
 GR_Caret::~GR_Caret()
 {
 	m_worker->stop();
+	m_enabler->stop();
 }
 
 void GR_Caret::setCoords(UT_sint32 x, UT_sint32 y, UT_uint32 h,
@@ -75,24 +95,30 @@ void GR_Caret::setCoords(UT_sint32 x, UT_sint32 y, UT_uint32 h,
 						 bool bPointDirection, UT_RGBColor * pClr)
 {
 	// if visible, then hide while we change positions.
-	if (m_bCursorIsOn)
-		_blink();
+ 	if (m_bCursorIsOn)
+ 		_blink();
 
 	m_xPoint = x; m_yPoint = y; m_iPointHeight = h;
 	m_xPoint2 = x2; m_yPoint2 = y2; m_iPointHeight2 = h2;
 	m_bPointDirection = bPointDirection; m_pClr = pClr;
 	m_bPositionSet = true;
 
-	// now show the cursor, if it's enabled.
+	// now show the cursor, if it's enabled, and restart the timer.
+	// if we don't do this, the cursor is invisible during cursor motion.
 	if (m_nDisableCount == 0)
-		_blink();
+	{
+ 		_blink(false);
+ 		_blink();
+	}
 }
 
 
 void GR_Caret::enable()
 {
-  	xxx_UT_DEBUGMSG(("GR_Caret::enable(), this=%p, count = %d\n", this, m_nDisableCount));
+	if (m_bRecursiveDraw)
+		return;
 
+  	xxx_UT_DEBUGMSG(("GR_Caret::enable(), this=%p, count = %d\n", this, m_nDisableCount));
 	if (m_nDisableCount == 0)
 	{
 		// If the caret is already enabled, we re-draw the caret
@@ -108,14 +134,16 @@ void GR_Caret::enable()
 	if (m_nDisableCount)
 		return;
 
-	// Always start out with the caret in drawn state
-// 	UT_ASSERT(!m_bCursorIsOn);
-	_blink();
-	m_worker->start();
+	// stop pending enables; in 10 ms, really enable blinking.
+	m_enabler->stop();
+	m_enabler->start();
 }
 
 void GR_Caret::disable(bool bNoMulti)
 {
+	if (m_bRecursiveDraw)
+		return;
+
    	xxx_UT_DEBUGMSG(("GR_Caret::disable(), this=%p, count = %d\n", this, m_nDisableCount));
 	if (bNoMulti && (m_nDisableCount > 0))
 		return;
@@ -125,6 +153,7 @@ void GR_Caret::disable(bool bNoMulti)
 		_blink(true, true);
 
 	m_worker->stop();
+	m_enabler->stop();
 	// Caret should never be "on" when leaving disable().
   	UT_ASSERT(m_bRecursiveDraw || !m_bPositionSet || !m_bCursorBlink ||
 			  (m_nDisableCount != 0) || !m_bCursorIsOn);

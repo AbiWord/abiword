@@ -59,6 +59,7 @@ private:
 	// After a draw, explicitly show the cursor (setting it to m_CursorIsOn).
 // 	void _show();
 	static void s_work(UT_Worker * w);
+	static void s_enable(UT_Worker * w);
 
 	UT_sint32			m_xPoint;
 	UT_sint32			m_yPoint;
@@ -77,6 +78,7 @@ private:
 	void	_blink(bool bExplicit = true, bool bForceClear = false);
 	
 	UT_Timer *    m_worker;
+	UT_Timer *	  m_enabler;
 
 	// m_nDisableCount > 0 implies a disabled cursor.
 	// m_nDisableCount should never be negative.
