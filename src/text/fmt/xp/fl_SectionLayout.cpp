@@ -683,6 +683,16 @@ bool fl_DocSectionLayout::doclistener_changeStrux(const PX_ChangeRecord_StruxCha
 	setAttrPropIndex(pcrxc->getIndexAP());
 
 	_lookupProperties();
+	//
+	// Clear the header/footers first
+	//
+  	if(m_pHeaderSL)
+  	        m_pHeaderSL->collapse();
+  	if(m_pFooterSL)
+  	        m_pFooterSL->collapse();
+
+	m_pFirstColumn = NULL;
+	m_pLastColumn = NULL;
 
 	// clear all the columns
 	fp_Column* pCol = m_pFirstColumn;
@@ -731,16 +741,6 @@ bool fl_DocSectionLayout::doclistener_changeStrux(const PX_ChangeRecord_StruxCha
 
 		pCol = pNext;
 	}
-	//
-	// Clear the header/footers too
-	///  /
-  	if(m_pHeaderSL)
-  	        m_pHeaderSL->collapse();
-  	if(m_pFooterSL)
-  	        m_pFooterSL->collapse();
-
-	m_pFirstColumn = NULL;
-	m_pLastColumn = NULL;
 
 	/*
 	  TODO to more closely mirror the architecture we're using for BlockLayout, this code
@@ -1143,10 +1143,10 @@ bool fl_DocSectionLayout::doclistener_deleteStrux(const PX_ChangeRecord_Strux * 
 	pPrevSL->format();
 	
 	FV_View* pView = m_pLayout->getView();
-	if (pView)
-	{
-		pView->_setPoint(pcrx->getPosition());
-	}
+//      if (pView)
+//  	{
+//  		pView->_setPoint(pcrx->getPosition());
+//  	}
 
 	delete this;			// TODO whoa!  this construct is VERY dangerous.
 	
@@ -1672,11 +1672,11 @@ void fl_HdrFtrSectionLayout::changeStrux( fl_DocSectionLayout * pSL)
 	UT_ASSERT(pBL);
 
 	FV_View* pView = m_pLayout->getView();
-	if (pView)
-	{
-	        UT_uint32 pos = (UT_uint32) pBL->getPosition(true);
-		pView->setPoint(pos);
-	}
+//  	if (pView)
+//  	{
+//  	        UT_uint32 pos = (UT_uint32) pBL->getPosition(true);
+//  		pView->setPoint(pos);
+//  	}
 
 	// Finished! we now have a header/footer
 }
@@ -1691,12 +1691,17 @@ void fl_HdrFtrSectionLayout::addPage(fp_Page* pPage)
 
 	pPair->pPage = pPage;
 	pPair->pShadow = new fl_HdrFtrShadow(m_pLayout, pPage, this, m_sdh, m_apIndex);
-	
+	//
+	// Make sure we register the shadow before populating it.
+	//
+	m_vecPages.addItem(pPair);
+	//
+	// Populate the shadow
+	//
 	fl_ShadowListener* pShadowListener = new fl_ShadowListener(this, pPair->pShadow);
 	m_pDoc->tellListener(pShadowListener);
 
 	delete pShadowListener;
-	m_vecPages.addItem(pPair);
 
 	//
 	// Now generate the container for this page

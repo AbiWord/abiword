@@ -6100,6 +6100,10 @@ bool FV_View::setSectionFormat(const XML_Char * properties[])
 {
 	bool bRet;
 
+	//
+	// Insertion point should not change during this.
+	//
+	m_pDoc->setDontChangeInsPoint();
 	// Signal PieceTable Change 
 	m_pDoc->notifyPieceTableChangeStart();
 
@@ -6127,9 +6131,14 @@ bool FV_View::setSectionFormat(const XML_Char * properties[])
 	// Signal PieceTable Changes have finished
 	m_pDoc->notifyPieceTableChangeEnd();
 
+	//
+	// Restore insertion point motion
+	//
+	m_pDoc->allowChangeInsPoint();
+
+	_fixInsertionPointCoords();
 	if (isSelectionEmpty())
 	{
-		_fixInsertionPointCoords();
 		_drawInsertionPoint();
 	}
 
