@@ -792,7 +792,7 @@ XML_Char *UT_decodeXMLstring(XML_Char *in)
 		UT_DEBUGMSG(("XML parsing error %s; %s:%d\n", XML_ErrorString(XML_GetErrorCode(parser)), __FILE__, __LINE__));
 	}
 	// TODO: who owns the storage for this?
-	out = strdup(out);
+	out = UT_strdup(out);
 	if (parser) XML_ParserFree(parser);
 	return out;
 	
