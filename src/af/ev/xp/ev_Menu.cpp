@@ -127,8 +127,8 @@ EV_Menu::addMenuItem(const UT_String &path, const UT_String& description)
 	// and now we create the menu item
 	index = m_pMenuLayout->addLayoutItem(last_pos, EV_MLF_Normal);
 //	pMenuActionSet->addAction(new EV_Menu_Action(index, false, false, false, "scriptPlay", NULL, NULL));
-	m_pMenuLabelSet->addLabel(new EV_Menu_Label(index, ((UT_String *) names->back())->c_str(),
-												((UT_String *) names->back())->c_str()));
+	m_pMenuLabelSet->addLabel(new EV_Menu_Label(index, (static_cast<const UT_String *>(names->back()))->c_str(),
+												(static_cast<const UT_String *>(names->back()))->c_str()));
 
 	if (!_doAddMenuItem(last_pos))
 	{

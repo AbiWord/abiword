@@ -88,7 +88,7 @@ void EV_UnixMouse::mouseUp(AV_View* pView, GdkEventButton* e)
 	{
 	case EV_EEMR_COMPLETE:
 		UT_ASSERT(pEM);
-		invokeMouseMethod(pView, pEM, (UT_sint32) _UL(e->x), (UT_sint32) _UL(e->y));
+		invokeMouseMethod(pView, pEM, static_cast<UT_sint32>(_UL(e->x)), static_cast<UT_sint32>(_UL(e->y)));
 		return;
 	case EV_EEMR_INCOMPLETE:
 		// I'm not sure this makes any sense, but we allow it.
@@ -147,7 +147,7 @@ void EV_UnixMouse::mouseClick(AV_View* pView, GdkEventButton* e)
 		return;
 	}
 
-	emc = pView->getMouseContext((UT_sint32)_UL(e->x),(UT_sint32)_UL(e->y));
+	emc = pView->getMouseContext(static_cast<UT_sint32>(_UL(e->x)),static_cast<UT_sint32>(_UL(e->y)));
 	
 	m_clickState = mop;					// remember which type of click
 	m_contextState = emc;				// remember context of click
@@ -158,7 +158,7 @@ void EV_UnixMouse::mouseClick(AV_View* pView, GdkEventButton* e)
 	{
 	case EV_EEMR_COMPLETE:
 		UT_ASSERT(pEM);
-		invokeMouseMethod(pView,pEM,(UT_sint32)_UL(e->x),(UT_sint32)_UL(e->y));
+		invokeMouseMethod(pView,pEM,static_cast<UT_sint32>(_UL(e->x)),static_cast<UT_sint32>(_UL(e->y)));
 		return;
 	case EV_EEMR_INCOMPLETE:
 		// I'm not sure this makes any sense, but we allow it.
@@ -204,7 +204,7 @@ void EV_UnixMouse::mouseMotion(AV_View* pView, GdkEventMotion *e)
 	if (m_clickState == 0)
 	{
 		mop = EV_EMO_DRAG;
-		emc = pView->getMouseContext((UT_sint32)_UL(e->x),(UT_sint32)_UL(e->y));
+		emc = pView->getMouseContext(static_cast<UT_sint32>(_UL(e->x)),static_cast<UT_sint32>(_UL(e->y)));
 	}
 	else if (m_clickState == EV_EMO_SINGLECLICK)
 	{
@@ -228,7 +228,7 @@ void EV_UnixMouse::mouseMotion(AV_View* pView, GdkEventMotion *e)
 	{
 	case EV_EEMR_COMPLETE:
 		UT_ASSERT(pEM);
-		invokeMouseMethod(pView,pEM,(UT_sint32)_UL(e->x),(UT_sint32)_UL(e->y));
+		invokeMouseMethod(pView,pEM,static_cast<UT_sint32>(_UL(e->x)),static_cast<UT_sint32>(_UL(e->y)));
 		return;
 	case EV_EEMR_INCOMPLETE:
 		// I'm not sure this makes any sense, but we allow it.
@@ -283,7 +283,7 @@ void EV_UnixMouse::mouseScroll(AV_View* pView, GdkEventScroll *e)
 		// TODO this shouldn't really happen at all
 	}
 
-	emc = pView->getMouseContext((UT_sint32)_UL(e->x),(UT_sint32)_UL(e->y));
+	emc = pView->getMouseContext(static_cast<UT_sint32>(_UL(e->x)),static_cast<UT_sint32>(_UL(e->y)));
 	
 	m_clickState = mop;					// remember which type of click
 	m_contextState = emc;				// remember context of click
@@ -294,7 +294,7 @@ void EV_UnixMouse::mouseScroll(AV_View* pView, GdkEventScroll *e)
 	{
 	case EV_EEMR_COMPLETE:
 		UT_ASSERT(pEM);
-		invokeMouseMethod(pView,pEM,(UT_sint32)_UL(e->x),(UT_sint32)_UL(e->y));
+		invokeMouseMethod(pView,pEM,static_cast<UT_sint32>(_UL(e->x)),static_cast<UT_sint32>(_UL(e->y)));
 		return;
 	case EV_EEMR_INCOMPLETE:
 		// I'm not sure this makes any sense, but we allow it.

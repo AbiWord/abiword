@@ -199,7 +199,7 @@ EV_EditMethod * EV_EditMethodContainer::getNthEditMethod(UT_uint32 ndx)
 	if (ndx < m_countStatic)
 		return &m_arrayStaticEditMethods[ndx];
 	else
-		return (EV_EditMethod *)m_vecDynamicEditMethods.getNthItem(ndx-m_countStatic);
+		return static_cast<EV_EditMethod *>(m_vecDynamicEditMethods.getNthItem(ndx-m_countStatic));
 }
 
 // for use in a binary search of an EV_EditMethod array
@@ -208,8 +208,8 @@ extern "C"
 #endif
 static int ev_compar (const void * a, const void * b)
 {
-	const char * str = (const char *)a;
-	EV_EditMethod * ev = (EV_EditMethod *)(b);
+	const char * str = static_cast<const char *>(a);
+	const EV_EditMethod * ev = static_cast<const EV_EditMethod *>(b);
 
 	return (strcmp (str, ev->getName()));
 }
@@ -229,20 +229,20 @@ EV_EditMethod * EV_EditMethodContainer::findEditMethodByName(const char * szName
 
 	const void * entry = emHash.pick (szName);
 	if (entry)
-	    return (EV_EditMethod *)entry;
+	    return static_cast<EV_EditMethod *>(const_cast<void *>(entry));
 
 	// nope, bsearch for it in our private array
-	mthd = (EV_EditMethod *)bsearch(szName, 
+	mthd = static_cast<EV_EditMethod *>(bsearch(szName, 
 					m_arrayStaticEditMethods, 
 					m_countStatic, 
 					sizeof (EV_EditMethod),
-					ev_compar);
+					ev_compar));
 
 	if (mthd)
 	{
 	    // found it, insert it into our hash table for quicker lookup
 	    // in the future and return
-	    emHash.insert(szName, (void *)mthd);
+	    emHash.insert(szName, static_cast<void *>(mthd));
 	    return mthd;
 	}
 
@@ -253,7 +253,7 @@ EV_EditMethod * EV_EditMethodContainer::findEditMethodByName(const char * szName
 	kLast = m_vecDynamicEditMethods.getItemCount();
 	for (k=0; k<kLast; k++)
 	{
-		EV_EditMethod * pem = (EV_EditMethod *)m_vecDynamicEditMethods.getNthItem(k);
+		EV_EditMethod * pem = static_cast<EV_EditMethod *>(m_vecDynamicEditMethods.getNthItem(k));
 		if (strcmp(szName,pem->getName()) == 0)
 			return pem;
 	}
@@ -293,13 +293,13 @@ bool ev_EditMethod_invoke (const EV_EditMethod * pEM,
 
 bool ev_EditMethod_invoke (const EV_EditMethod * pEM, const UT_String & data)
 {
-  EV_EditMethodCallData callData ( data.c_str(), (UT_uint32)data.size() ) ;
+  EV_EditMethodCallData callData ( data.c_str(), static_cast<UT_uint32>(data.size()) ) ;
   return ev_EditMethod_invoke ( pEM, &callData ) ;
 }
 
 bool ev_EditMethod_invoke (const EV_EditMethod * pEM, const UT_UCS4String & data)
 {
-  EV_EditMethodCallData callData ( data.ucs4_str(), (UT_uint32)data.size() ) ;
+  EV_EditMethodCallData callData ( data.ucs4_str(), static_cast<UT_uint32>(data.size()) ) ;
   return ev_EditMethod_invoke ( pEM, &callData ) ;
 }
 

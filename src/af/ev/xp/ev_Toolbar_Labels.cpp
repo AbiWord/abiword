@@ -107,7 +107,7 @@ EV_Toolbar_Label::EV_Toolbar_Label(XAP_Toolbar_Id id,
 				{
 					if(mbtowc_conv.mbtowc(wc,szStr[i]))
 					{
-						fbdStr[j++] = (FriBidiChar) wc;
+						fbdStr[j++] = static_cast<FriBidiChar>(wc);
 					}
 				}
 
@@ -130,7 +130,7 @@ EV_Toolbar_Label::EV_Toolbar_Label(XAP_Toolbar_Id id,
 				{
 					if (wctomb_conv.wctomb(letter_buf,length,fbdStr2[i]))
 					{
-						for(k = 0; k < (unsigned)length; k++)
+						for(k = 0; k < static_cast<unsigned>(length); k++)
 							szStr[i++] = letter_buf[k];
 						i--;
 					}
@@ -188,7 +188,7 @@ EV_Toolbar_LabelSet::EV_Toolbar_LabelSet(const char * szLanguage,
 	// TODO tis bad to call malloc/calloc from a constructor, since we cannot report failure.
 	// TODO move this allocation to somewhere else.
 	UT_cloneString(m_szLanguage,szLanguage);
-	m_labelTable = (EV_Toolbar_Label **)UT_calloc((last-first+1),sizeof(EV_Toolbar_Label *));
+	m_labelTable = static_cast<EV_Toolbar_Label **>(UT_calloc((last-first+1),sizeof(EV_Toolbar_Label *)));
 	m_first = first;
 	m_last = last;
 }

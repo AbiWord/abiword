@@ -91,7 +91,7 @@ public:									// we create...
 		// this is a static callback method and does not have a 'this' pointer.
 		// map the user_data into an object and dispatch the event.
 
-		_wd * wd = (_wd *) callback_data;
+		_wd * wd = static_cast<_wd *>(callback_data);
 		UT_ASSERT(wd);
 
 		wd->m_pUnixMenu->menuEvent(wd->m_id);
@@ -101,7 +101,7 @@ public:									// we create...
 	{
 		UT_ASSERT(widget && data);
 
-		_wd * wd = (_wd *) data;
+		_wd * wd = static_cast<_wd *>(data);
 		UT_ASSERT(wd && wd->m_pUnixMenu);
 
 		// WL_REFACTOR: redundant code
@@ -124,7 +124,7 @@ public:									// we create...
 	{
 		UT_ASSERT(widget && data);
 
-		_wd * wd = (_wd *) data;
+		_wd * wd = static_cast<_wd *>(data);
 		UT_ASSERT(wd && wd->m_pUnixMenu);
 
 		XAP_Frame * pFrame = wd->m_pUnixMenu->getFrame();
@@ -135,14 +135,14 @@ public:									// we create...
 
 	static void s_onInitMenu(GtkMenuItem * menuItem, gpointer callback_data)
 	{
-		_wd * wd = (_wd *) callback_data;
+		_wd * wd = static_cast<_wd *>(callback_data);
 		UT_ASSERT(wd);
 		wd->m_pUnixMenu->refreshMenu(wd->m_pUnixMenu->getFrame()->getCurrentView());
 	}
 
 	static void s_onDestroyMenu(GtkMenuItem * menuItem, gpointer callback_data)
 	{
-		_wd * wd = (_wd *) callback_data;
+		_wd * wd = static_cast<_wd *>(callback_data);
 		UT_ASSERT(wd);
 
 		// we always clear the status bar when a menu goes away, so we don't
@@ -261,17 +261,17 @@ void EV_UnixMenu::_convertStringToAccel(const char *str,
 		return;
 
 	if (strncmp (str, "Ctrl+", 5) == 0) {
-		ac_mods = (GdkModifierType) (ac_mods | GDK_CONTROL_MASK);
+		ac_mods = static_cast<GdkModifierType>(ac_mods | GDK_CONTROL_MASK);
 		str += 5;
 	}
 
 	if (strncmp (str, "Alt+", 4) == 0) {
-		ac_mods = (GdkModifierType) (ac_mods | GDK_MOD1_MASK);
+		ac_mods = static_cast<GdkModifierType>(ac_mods | GDK_MOD1_MASK);
 		str += 4;
 	}
 
 	if (strncmp (str, "Shift+", 6) == 0) {
-		ac_mods = (GdkModifierType) (ac_mods | GDK_SHIFT_MASK);
+		ac_mods = static_cast<GdkModifierType>(ac_mods | GDK_SHIFT_MASK);
 		str += 6;
 	}
 
@@ -284,7 +284,7 @@ void EV_UnixMenu::_convertStringToAccel(const char *str,
 		accel_key = 0xFFBD + atoi(str + 1);
 	}
 	else {
-		accel_key = (guint) str[0];
+		accel_key = static_cast<guint>(str[0]);
 	}
 }
 
@@ -308,22 +308,22 @@ EV_UnixMenu::EV_UnixMenu(XAP_UnixApp * pUnixApp,
 		
 		// NOTE: KEEP THE ORDER OF THESE TWO STATIC ARRAYS THE SAME
 		static const GtkStockItem items[] = {
-			{ "Menu_AbiWord_About", "_GTK!", (GdkModifierType)0, 0, NULL },
-			{ "Menu_AbiWord_Add_Column", "_GTK!", (GdkModifierType)0, 0, NULL },
-			{ "Menu_AbiWord_Add_Row", "_GTK!", (GdkModifierType)0, 0, NULL },
-			{ "Menu_AbiWord_Book", "_GTK!", (GdkModifierType)0, 0, NULL },
-			{ "Menu_AbiWord_Credits", "_GTK!", (GdkModifierType)0, 0, NULL },
-			{ "Menu_AbiWord_Delete_Column", "_GTK!", (GdkModifierType)0, 0, NULL },
-			{ "Menu_AbiWord_Delete_Row", "_GTK!", (GdkModifierType)0, 0, NULL },
-			{ "Menu_AbiWord_Export", "_GTK!", (GdkModifierType)0, 0, NULL },
-			{ "Menu_AbiWord_Import", "_GTK!", (GdkModifierType)0, 0, NULL },
-			{ "Menu_AbiWord_Insert_Hyperlink", "_GTK!", (GdkModifierType)0, 0, NULL },
-			{ "Menu_AbiWord_Insert_Image", "_GTK!", (GdkModifierType)0, 0, NULL },
-			{ "Menu_AbiWord_Insert_Symbol", "_GTK!", (GdkModifierType)0, 0, NULL },
-			{ "Menu_AbiWord_Insert_Table", "_GTK!", (GdkModifierType)0, 0, NULL },
-			{ "Menu_AbiWord_Merge_Cells", "_GTK!", (GdkModifierType)0, 0, NULL },
-			{ "Menu_AbiWord_New_Window", "_GTK!", (GdkModifierType)0, 0, NULL },
-			{ "Menu_AbiWord_Split_Cells", "_GTK!", (GdkModifierType)0, 0, NULL }
+			{ "Menu_AbiWord_About", "_GTK!", static_cast<GdkModifierType>(0), 0, NULL },
+			{ "Menu_AbiWord_Add_Column", "_GTK!", static_cast<GdkModifierType>(0), 0, NULL },
+			{ "Menu_AbiWord_Add_Row", "_GTK!", static_cast<GdkModifierType>(0), 0, NULL },
+			{ "Menu_AbiWord_Book", "_GTK!", static_cast<GdkModifierType>(0), 0, NULL },
+			{ "Menu_AbiWord_Credits", "_GTK!", static_cast<GdkModifierType>(0), 0, NULL },
+			{ "Menu_AbiWord_Delete_Column", "_GTK!", static_cast<GdkModifierType>(0), 0, NULL },
+			{ "Menu_AbiWord_Delete_Row", "_GTK!", static_cast<GdkModifierType>(0), 0, NULL },
+			{ "Menu_AbiWord_Export", "_GTK!", static_cast<GdkModifierType>(0), 0, NULL },
+			{ "Menu_AbiWord_Import", "_GTK!", static_cast<GdkModifierType>(0), 0, NULL },
+			{ "Menu_AbiWord_Insert_Hyperlink", "_GTK!", static_cast<GdkModifierType>(0), 0, NULL },
+			{ "Menu_AbiWord_Insert_Image", "_GTK!", static_cast<GdkModifierType>(0), 0, NULL },
+			{ "Menu_AbiWord_Insert_Symbol", "_GTK!", static_cast<GdkModifierType>(0), 0, NULL },
+			{ "Menu_AbiWord_Insert_Table", "_GTK!", static_cast<GdkModifierType>(0), 0, NULL },
+			{ "Menu_AbiWord_Merge_Cells", "_GTK!", static_cast<GdkModifierType>(0), 0, NULL },
+			{ "Menu_AbiWord_New_Window", "_GTK!", static_cast<GdkModifierType>(0), 0, NULL },
+			{ "Menu_AbiWord_Split_Cells", "_GTK!", static_cast<GdkModifierType>(0), 0, NULL }
 		};
 		static struct AbiWordStockPixmap{
 			const char * name;
@@ -622,7 +622,7 @@ bool EV_UnixMenu::synthesizeMenu(GtkWidget * wMenuRoot)
 				w = s_createNormalMenuEntry(id, pAction->isCheckable(), szLabelName, szMnemonicName);
 				// find parent menu item
 				GtkWidget * wParent;
-				bResult = stack.viewTop((void **)&wParent);
+				bResult = stack.viewTop(reinterpret_cast<void **>(&wParent));
 				UT_ASSERT(bResult);
 
 				// bury in parent
@@ -661,7 +661,7 @@ bool EV_UnixMenu::synthesizeMenu(GtkWidget * wMenuRoot)
 				UT_ASSERT(wd);
 				// find parent menu item
 				GtkWidget * wParent;
-				bResult = stack.viewTop((void **)&wParent);
+				bResult = stack.viewTop(reinterpret_cast<void **>(&wParent));
 				UT_ASSERT(bResult);
 
 				// bury the widget in parent menu
@@ -775,7 +775,7 @@ bool EV_UnixMenu::synthesizeMenu(GtkWidget * wMenuRoot)
 		{
 			// pop and inspect
 			GtkWidget * w;
-			bResult = stack.pop((void **)&w);
+			bResult = stack.pop(reinterpret_cast<void **>(&w));
 			UT_ASSERT(bResult);
 
 			// item is created (albeit empty in this case), add to vector
@@ -789,7 +789,7 @@ bool EV_UnixMenu::synthesizeMenu(GtkWidget * wMenuRoot)
 			gtk_object_set_user_data(GTK_OBJECT(w),this);
 
 			GtkWidget * wParent;
-			bResult = stack.viewTop((void **)&wParent);
+			bResult = stack.viewTop(reinterpret_cast<void **>(&wParent));
 			UT_ASSERT(bResult);
 
 			gtk_widget_show(w);
@@ -813,7 +813,7 @@ bool EV_UnixMenu::synthesizeMenu(GtkWidget * wMenuRoot)
 
 	// make sure our last item on the stack is the one we started with
 	GtkWidget * wDbg = NULL;
-	bResult = stack.pop((void **)&wDbg);
+	bResult = stack.pop(reinterpret_cast<void **>(&wDbg));
 	UT_ASSERT(bResult);
 	UT_ASSERT(wDbg == wMenuRoot);
 
@@ -896,7 +896,7 @@ bool EV_UnixMenu::_refreshMenu(AV_View * pView, GtkWidget * wMenuRoot)
 
 					// find parent menu item
 					GtkWidget * wParent;
-					bResult = stack.viewTop((void **)&wParent);
+					bResult = stack.viewTop(reinterpret_cast<void **>(&wParent));
 					UT_ASSERT(bResult);
 
 					// bury in parent
@@ -934,7 +934,7 @@ bool EV_UnixMenu::_refreshMenu(AV_View * pView, GtkWidget * wMenuRoot)
 				// if no dynamic label, all we need to do
 				// is enable/disable and/or check/uncheck it.
 
-				GtkWidget * item = (GtkWidget *) m_vecMenuWidgets.getNthItem(k);
+				GtkWidget * item = static_cast<GtkWidget *>(m_vecMenuWidgets.getNthItem(k));
 				UT_ASSERT(item);
 
 				// check boxes 
@@ -951,7 +951,7 @@ bool EV_UnixMenu::_refreshMenu(AV_View * pView, GtkWidget * wMenuRoot)
 			}
 
 			// Get the item
-			GtkWidget * item = (GtkWidget *) m_vecMenuWidgets.getNthItem(k);
+			GtkWidget * item = static_cast<GtkWidget *>(m_vecMenuWidgets.getNthItem(k));
 
 			// if item is null, there is no widget for it, so ignore its attributes for
 			// this pass
@@ -1002,7 +1002,7 @@ bool EV_UnixMenu::_refreshMenu(AV_View * pView, GtkWidget * wMenuRoot)
 				  // finally, enable/disable and/or check/uncheck it.
 				  if (GTK_IS_CHECK_MENU_ITEM(item))
 					GTK_CHECK_MENU_ITEM(item)->active = bCheck;
-				gtk_widget_set_sensitive((GtkWidget *) item, bEnable);
+				gtk_widget_set_sensitive(static_cast<GtkWidget *>(item), bEnable);
 			  }
 			
 			// we are done with this menu item
@@ -1019,7 +1019,7 @@ bool EV_UnixMenu::_refreshMenu(AV_View * pView, GtkWidget * wMenuRoot)
 
 			// we need to nest sub menus to have some sort of context so
 			// we can parent menu items
-			GtkWidget * item = (GtkWidget *) m_vecMenuWidgets.getNthItem(k);
+			GtkWidget * item = static_cast<GtkWidget *>(m_vecMenuWidgets.getNthItem(k));
 			UT_ASSERT(item);
 
 			bool bEnable = true;
@@ -1029,7 +1029,7 @@ bool EV_UnixMenu::_refreshMenu(AV_View * pView, GtkWidget * wMenuRoot)
 				if (mis & EV_MIS_Gray)
 					bEnable = false;
 			}
-			gtk_widget_set_sensitive((GtkWidget *) item, bEnable);
+			gtk_widget_set_sensitive(static_cast<GtkWidget *>(item), bEnable);
 
 			// must have an entry for each and every layout item in the vector
 			stack.push(item);
@@ -1038,7 +1038,7 @@ bool EV_UnixMenu::_refreshMenu(AV_View * pView, GtkWidget * wMenuRoot)
 		case EV_MLF_EndSubMenu:
 		{
 			GtkWidget * item = NULL;
-			bResult = stack.pop((void **)&item);
+			bResult = stack.pop(reinterpret_cast<void **>(&item));
 			UT_ASSERT(bResult);
 
 			break;
@@ -1055,7 +1055,7 @@ bool EV_UnixMenu::_refreshMenu(AV_View * pView, GtkWidget * wMenuRoot)
 	}
 
 	GtkWidget * wDbg = NULL;
-	bResult = stack.pop((void **)&wDbg);
+	bResult = stack.pop(reinterpret_cast<void **>(&wDbg));
 	UT_ASSERT(bResult);
 	UT_ASSERT(wDbg == wMenuRoot);
 

@@ -83,7 +83,7 @@ EV_Toolbar_ActionSet::EV_Toolbar_ActionSet(XAP_Toolbar_Id first, XAP_Toolbar_Id 
 {
 	// TODO tis bad to call malloc/calloc from a constructor, since we cannot report failure.
 	// TODO move this allocation to somewhere else.
-	m_actionTable = (EV_Toolbar_Action **)UT_calloc((last-first+1),sizeof(EV_Toolbar_Action *));
+	m_actionTable = static_cast<EV_Toolbar_Action **>(UT_calloc((last-first+1),sizeof(EV_Toolbar_Action *)));
 	m_first = first;
 	m_last = last;
 }

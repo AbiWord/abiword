@@ -84,13 +84,13 @@ EV_Menu_LabelSet::EV_Menu_LabelSet(EV_Menu_LabelSet * pLabelSet)
 	UT_uint32 i = 0;
 	for(i=0; i< vecLabels->getItemCount(); i++)
 	{
-	    EV_Menu_Label * pEvl = (EV_Menu_Label *) vecLabels->getNthItem(i);
+	    EV_Menu_Label * pEvl = static_cast<EV_Menu_Label *>(vecLabels->getNthItem(i));
 		EV_Menu_Label * pNewLab = NULL;
 		if(pEvl != NULL)
 		{
 		    pNewLab = new EV_Menu_Label(pEvl->getMenuId(),pEvl->getMenuLabel(),pEvl->getMenuStatusMessage());
 		}
-		m_labelTable.addItem( (void *) pNewLab);
+		m_labelTable.addItem(static_cast<void *>(pNewLab));
 	}
 }
 
@@ -144,7 +144,7 @@ EV_Menu_Label * EV_Menu_LabelSet::getLabel(XAP_Menu_Id id) const
 		
 		// Add to label table so memory is freed.
 		// Note: Need to cast away constness so we can add the label.
-		((EV_Menu_LabelSet *)this)->addLabel(pLabel);
+		(static_cast<EV_Menu_LabelSet *>(const_cast<EV_Menu_LabelSet *>(this)))->addLabel(pLabel);
 	}
 
 	UT_ASSERT(pLabel && (pLabel->getMenuId() == id));
@@ -170,7 +170,7 @@ bool EV_Menu_LabelSet::addLabel(EV_Menu_Label *pLabel)
 //	UT_ASSERT(pLabel->getMenuId() == size_table + m_first);
 	m_labelTable.push_back(pLabel);
 
-	return (size_table + 1 == (XAP_Menu_Id) m_labelTable.size());
+	return (size_table + 1 == static_cast<XAP_Menu_Id>(m_labelTable.size()));
 }
 
 const char * EV_Menu_LabelSet::getLanguage() const

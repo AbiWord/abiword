@@ -417,7 +417,7 @@ const char * EV_EditBindingMap::getShortcutFor(const EV_EditMethod * pEM) const
 	if (bChar)
 	{
 		int len = strlen(buf);
-		buf[len] = (char)(i-1);
+		buf[len] = static_cast<char>(i-1);
 	}
 	else
 	{

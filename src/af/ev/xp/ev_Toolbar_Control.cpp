@@ -49,7 +49,7 @@ const UT_Vector * EV_Toolbar_Control::getContents(void) const
 
 XML_Char * EV_Toolbar_Control::getNthItem(UT_uint32 n) const
 {
-	return (XML_Char *) m_vecContents.getNthItem(n);
+	return static_cast<XML_Char *>(m_vecContents.getNthItem(n));
 }
 
 UT_uint32 EV_Toolbar_Control::getPixelWidth(void) const

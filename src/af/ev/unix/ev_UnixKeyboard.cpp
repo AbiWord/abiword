@@ -91,7 +91,7 @@ bool ev_UnixKeyboard::keyPressEvent(AV_View* pView, GdkEventKey* e)
 			return false;
 		default:
 
-			result = m_pEEM->Keystroke((UT_uint32)EV_EKP_PRESS|state|nvk,&pEM);
+			result = m_pEEM->Keystroke(static_cast<UT_uint32>(EV_EKP_PRESS|state|nvk),&pEM);
 
 			switch (result)
 			{
@@ -127,7 +127,7 @@ bool ev_UnixKeyboard::keyPressEvent(AV_View* pView, GdkEventKey* e)
 	  {
 	    // TODO: is this necessary?
 	    charData = gdk_keyval_to_unicode (charData);
-	    UT_UTF8String utf8 ((const UT_UCS4Char *)&charData, 1);
+	    UT_UTF8String utf8 (static_cast<const UT_UCS4Char *>(&charData), 1);
 	    return charDataEvent (pView, state, utf8.utf8_str(), utf8.byteLength());
 	  }
 
@@ -146,7 +146,7 @@ bool ev_UnixKeyboard::charDataEvent(AV_View* pView, EV_EditBits state, const cha
 
 	UT_UCS4String ucs (text, len);
 
-	UT_uint32 charData = (UT_uint32)ucs[0];
+	UT_uint32 charData = static_cast<UT_uint32>(ucs[0]);
 	
 	xxx_UT_DEBUGMSG(("DOM: charData: %d | length: %d | string: '%s'\n", charData, len, text));
 	if (charData == 32)
@@ -178,7 +178,7 @@ bool ev_UnixKeyboard::charDataEvent(AV_View* pView, EV_EditBits state, const cha
 	      UT_ASSERT(pEM);
 
 	      invokeKeyboardMethod(pView,pEM,
-				   const_cast<UT_UCS4Char *>(ucs.ucs4_str()), (UT_uint32)ucs.size());
+				   const_cast<UT_UCS4Char *>(ucs.ucs4_str()), static_cast<UT_uint32>(ucs.size()));
 	      return true;	      
 	    }
 	  case EV_EEMR_INCOMPLETE:
@@ -533,5 +533,5 @@ static GdkModifierType s_getAltMask(void)
 	if (!alt_mask)						// if nothing set, fall back to MOD1
 		alt_mask = GDK_MOD1_MASK;
 
-	return (GdkModifierType)alt_mask;
+	return static_cast<GdkModifierType>(alt_mask);
 }

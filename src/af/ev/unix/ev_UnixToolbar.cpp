@@ -112,7 +112,7 @@ public:									// we create...
 		// this is a static callback method and does not have a 'this' pointer.
 		// map the user_data into an object and dispatch the event.
 	
-		_wd * wd = (_wd *) user_data;
+		_wd * wd = static_cast<_wd *>(user_data);
 		UT_ASSERT(wd);
 		GdkEvent * event = gtk_get_current_event();
 		wd->m_pUnixToolbar->setCurrentEvent(event);
@@ -127,13 +127,13 @@ public:									// we create...
 		// this is a static callback method and does not have a 'this' pointer.
 		// map the user_data into an object and dispatch the event.
 	
-		_wd * wd = (_wd *) user_data;
+		_wd * wd = reinterpret_cast<_wd *>(user_data);
 		UT_ASSERT(wd);
 		GdkEvent * event = gtk_get_current_event();
 		wd->m_pUnixToolbar->setCurrentEvent(event);
 		if (!wd->m_blockSignal && (rows > 0) && (cols > 0))
 		{
-			FV_View * pView = (FV_View *) wd->m_pUnixToolbar->getFrame()->getCurrentView();
+			FV_View * pView = static_cast<FV_View *>(wd->m_pUnixToolbar->getFrame()->getCurrentView());
 			pView->cmdInsertTable(rows,cols,NULL);
 		}
 	}
@@ -141,9 +141,9 @@ public:									// we create...
 	static void s_drag_begin(GtkWidget  *widget,
 							GdkDragContext     *context)
 	{
-		_wd * wd = (_wd *) g_object_get_data(G_OBJECT(widget),"wd_pointer");
+		_wd * wd = static_cast<_wd *>(g_object_get_data(G_OBJECT(widget),"wd_pointer"));
 		XAP_Frame * pFrame = static_cast<XAP_Frame *>(wd->m_pUnixToolbar->getFrame());
-		EV_Toolbar * pTBsrc = (EV_Toolbar *) wd->m_pUnixToolbar;
+		EV_Toolbar * pTBsrc = static_cast<EV_Toolbar *>(wd->m_pUnixToolbar);
 		pFrame->dragBegin(wd->m_id,pTBsrc);
 	};
 
@@ -152,12 +152,12 @@ public:									// we create...
 							GdkDragContext     *context,
 							gint x, gint y, guint time )
 	{
-		_wd * wd = (_wd *) g_object_get_data(G_OBJECT(widget),"wd_pointer");
+		_wd * wd = static_cast<_wd *>(g_object_get_data(G_OBJECT(widget),"wd_pointer"));
 		GtkWidget * src = gtk_drag_get_source_widget(context);
-		_wd * wdSrc = (_wd *)  g_object_get_data(G_OBJECT(src),"wd_pointer");
+		_wd * wdSrc = static_cast<_wd *>(g_object_get_data(G_OBJECT(src),"wd_pointer"));
 		
 		XAP_Frame * pFrame = static_cast<XAP_Frame *>(wd->m_pUnixToolbar->getFrame());
-		EV_Toolbar * pTBdest = (EV_Toolbar *) wd->m_pUnixToolbar;
+		EV_Toolbar * pTBdest = static_cast<EV_Toolbar *>(wd->m_pUnixToolbar);
 		EV_Toolbar * pTBsrc = (EV_Toolbar *) wdSrc->m_pUnixToolbar;
 		pFrame->dragDropToIcon(wdSrc->m_id,wd->m_id,pTBsrc,pTBdest);
 	};
@@ -666,7 +666,7 @@ bool EV_UnixToolbar::synthesize(void)
 				{
 					wd->m_widget = gtk_toolbar_append_item(GTK_TOOLBAR(m_wToolbar),
 														   pLabel->getToolbarLabel(),
-														   szToolTip,(const char *)NULL,
+														   szToolTip,static_cast<const char *>(NULL),
 														   wPixmap,
 														   G_CALLBACK(_wd::s_callback),
 														   wd);
@@ -680,7 +680,7 @@ bool EV_UnixToolbar::synthesize(void)
 					gtk_widget_show(abi_table);
 					UT_DEBUGMSG(("SEVIOR: Made insert table widget \n"));
 					g_signal_connect(abi_table, "selected",
-											 G_CALLBACK (_wd::s_new_table), (gpointer) wd);
+											 G_CALLBACK (_wd::s_new_table), static_cast<gpointer>(wd));
 
 					UT_DEBUGMSG(("SEVIOR: Made connected to callback \n"));
 					abi_table_embed_on_toolbar(ABI_TABLE(abi_table), GTK_TOOLBAR(m_wToolbar));
@@ -718,9 +718,9 @@ bool EV_UnixToolbar::synthesize(void)
 
 					wd->m_widget = gtk_toolbar_append_element(GTK_TOOLBAR(m_wToolbar),
 															  GTK_TOOLBAR_CHILD_TOGGLEBUTTON,
-															  (GtkWidget *)NULL,
+															  static_cast<GtkWidget *>(NULL),
 															  pLabel->getToolbarLabel(),
-															  szToolTip,(const char *)NULL,
+															  szToolTip,static_cast<const char *>(NULL),
 															  wPixmap,
 															  G_CALLBACK(_wd::s_callback),
 															  wd);
@@ -735,7 +735,7 @@ bool EV_UnixToolbar::synthesize(void)
 									s_AbiTBTargets,1,
 									GDK_ACTION_COPY);
 				setDragIcon(wwd, GTK_IMAGE(wPixmap));
-				gtk_drag_dest_set(wwd,(GtkDestDefaults) GTK_DEST_DEFAULT_ALL,
+				gtk_drag_dest_set(wwd,static_cast<GtkDestDefaults>(GTK_DEST_DEFAULT_ALL),
 									s_AbiTBTargets,1,
 									GDK_ACTION_COPY);
 				g_signal_connect(G_OBJECT(wd->m_widget),"drag_begin",G_CALLBACK(_wd::s_drag_begin), wd);
@@ -809,7 +809,7 @@ bool EV_UnixToolbar::synthesize(void)
 						UT_uint32 items = v->getItemCount();
 						for (UT_uint32 m=0; m < items; m++)
 						{
-							char * sz = (char *)v->getNthItem(m);
+							char * sz = static_cast<char *>(v->getNthItem(m));
 							GtkWidget * li = gtk_list_item_new_with_label(sz);
 							gtk_widget_show(li);
 							gtk_container_add (GTK_CONTAINER(GTK_COMBO(comboBox)->list), li);
@@ -824,7 +824,7 @@ bool EV_UnixToolbar::synthesize(void)
 				toolbar_append_with_eventbox(GTK_TOOLBAR(m_wToolbar),
 							     comboBox,
 							     szToolTip,
-							     (const char *)NULL);
+							     static_cast<const char *>(NULL));
 				wd->m_widget = comboBox;
 
 				// for now, we never repopulate, so can just toss it
@@ -845,7 +845,7 @@ bool EV_UnixToolbar::synthesize(void)
 
 				wd->m_widget = gtk_toolbar_append_item(GTK_TOOLBAR(m_wToolbar),
 													   pLabel->getToolbarLabel(),
-													   szToolTip,(const char *)NULL,
+													   szToolTip,static_cast<const char *>(NULL),
 													   wPixmap,
 													   G_CALLBACK(_wd::s_ColorCallback),
 													   wd);
@@ -860,7 +860,7 @@ bool EV_UnixToolbar::synthesize(void)
 									s_AbiTBTargets,1,
 									GDK_ACTION_COPY);
 				setDragIcon(wwd, GTK_IMAGE(wPixmap));
-				gtk_drag_dest_set(wwd,(GtkDestDefaults) GTK_DEST_DEFAULT_ALL,
+				gtk_drag_dest_set(wwd,static_cast<GtkDestDefaults>(GTK_DEST_DEFAULT_ALL),
 									s_AbiTBTargets,1,
 									GDK_ACTION_COPY);
 				g_signal_connect(G_OBJECT(wd->m_widget),"drag_begin",G_CALLBACK(_wd::s_drag_begin), wd);
@@ -977,7 +977,7 @@ bool EV_UnixToolbar::refreshToolbar(AV_View * pView, AV_ChangeMask mask)
 				{
 					bool bGrayed = EV_TIS_ShouldBeGray(tis);
 
-					_wd * wd = (_wd *) m_vecToolbarWidgets.getNthItem(k);
+					_wd * wd = static_cast<_wd *>(m_vecToolbarWidgets.getNthItem(k));
 					UT_ASSERT(wd);
 					GtkButton * item = GTK_BUTTON(wd->m_widget);
 					UT_ASSERT(item);
@@ -993,7 +993,7 @@ bool EV_UnixToolbar::refreshToolbar(AV_View * pView, AV_ChangeMask mask)
 					bool bGrayed = EV_TIS_ShouldBeGray(tis);
 					bool bToggled = EV_TIS_ShouldBeToggled(tis);
 
-					_wd * wd = (_wd *) m_vecToolbarWidgets.getNthItem(k);
+					_wd * wd = static_cast<_wd *>(m_vecToolbarWidgets.getNthItem(k));
 					UT_ASSERT(wd);
 					GtkToggleButton * item = GTK_TOGGLE_BUTTON(wd->m_widget);
 					UT_ASSERT(item);
@@ -1017,7 +1017,7 @@ bool EV_UnixToolbar::refreshToolbar(AV_View * pView, AV_ChangeMask mask)
 				{
 					bool bGrayed = EV_TIS_ShouldBeGray(tis);
 					
-					_wd * wd = (_wd *) m_vecToolbarWidgets.getNthItem(k);
+					_wd * wd = static_cast<_wd *>(m_vecToolbarWidgets.getNthItem(k));
 					UT_ASSERT(wd);
 					GtkCombo * item = GTK_COMBO(wd->m_widget);
 					UT_ASSERT(item);
@@ -1052,7 +1052,7 @@ bool EV_UnixToolbar::refreshToolbar(AV_View * pView, AV_ChangeMask mask)
                 {
 					bool bGrayed = EV_TIS_ShouldBeGray(tis);
 					
-					_wd * wd = (_wd *) m_vecToolbarWidgets.getNthItem(k);
+					_wd * wd = static_cast<_wd *>(m_vecToolbarWidgets.getNthItem(k));
 					UT_ASSERT(wd);
 					UT_ASSERT(wd->m_widget);
 					gtk_widget_set_sensitive(GTK_WIDGET(wd->m_widget), !bGrayed);   // Disable/enable toolbar item
@@ -1125,7 +1125,7 @@ bool EV_UnixToolbar::repopulateStyles(void)
 	{
 		pLayoutItem = m_pToolbarLayout->getLayoutItem(i);
 		id = pLayoutItem->getToolbarId();
-		wd = (_wd *) m_vecToolbarWidgets.getNthItem(i);
+		wd = static_cast<_wd *>(m_vecToolbarWidgets.getNthItem(i));
 		if(id == AP_TOOLBAR_ID_FMT_STYLE)
 			break;
 	}
@@ -1163,7 +1163,7 @@ bool EV_UnixToolbar::repopulateStyles(void)
 	UT_uint32 items = v->getItemCount();
 	for (UT_uint32 m=0; m < items; m++)
 	{
-		char * sz = (char *)v->getNthItem(m);
+		char * sz = static_cast<char *>(v->getNthItem(m));
 		GtkWidget * li = gtk_list_item_new_with_label(sz);
 		gtk_widget_show(li);
 		gtk_container_add (GTK_CONTAINER(GTK_COMBO(item)->list), li);
