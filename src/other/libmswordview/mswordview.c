@@ -59,7 +59,7 @@ int list_author_key=0;
 
 int nofontfaces=0;
 int riskbadole=0;
-int NORMAL=12;	/* sterwill: was 20 */
+int NORMAL=20;	/* sterwill: was 20 */
 int inunderline = 0;
 int inbold = 0;
 int incenter= 0;
@@ -3374,7 +3374,7 @@ void decode_s_chp(chp *achp, ffn *fontnamelist)
 			}
 			if ( (((achp->fontsize/2)-NORMAL/2) != 0) && (achp->fontsize!=NORMAL))
 				{
-				spewString("font-size:%dpt", (int) currentfontsize + (achp->fontsize/2)-NORMAL/2);
+				spewString("font-size:%dpt", (int) currentfontsize - 10 + (achp->fontsize/2)-NORMAL/2);
 				inafont=1;
 				morethanoneprop = 1;
 				}
@@ -3483,8 +3483,7 @@ void decode_s_chp(chp *achp, ffn *fontnamelist)
 		{
 			/* sterwill: hey!  We do this! */
 			/* error(erroroutput,"STRIKETHROUGH"); */
-/* sterwill: TESTING			 */
-/*		spewString("<c PROPS=\"text-decoration:strikethrough\">"); */
+		spewString("<c PROPS=\"text-decoration:strikethrough\">");
 		instrike=1;
 		}
 	}
@@ -3708,8 +3707,7 @@ void decode_e_chp(chp *achp)
 
 		if (instrike)
 		{
-/* sterwill: TESTING			 */
-/* 			spewString("</c>"); */
+ 			spewString("</c>");
 			instrike=0;
 		}
 
