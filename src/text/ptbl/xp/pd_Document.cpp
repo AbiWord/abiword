@@ -1001,7 +1001,11 @@ void PD_Document::setDontChangeInsPoint(void)
 		pf_Frag_Strux * pfs = ( pf_Frag_Strux *) currentFrag;
 		PT_AttrPropIndex pAppIndex = pfs->getIndexAP();
 		PT_DocPosition pos = getStruxPosition(pfs);
+#ifndef __MRC__
 		const PX_ChangeRecord * pcr = new PX_ChangeRecord(PX_ChangeRecord::PXT_DontChangeInsPoint,pos,pAppIndex);
+#else
+		PX_ChangeRecord * pcr = new PX_ChangeRecord(PX_ChangeRecord::PXT_DontChangeInsPoint,pos,pAppIndex);
+#endif
 		notifyListeners(pfs, pcr);
 		delete pcr;		
 	}
@@ -1034,7 +1038,11 @@ void PD_Document::allowChangeInsPoint(void)
 		pf_Frag_Strux * pfs = ( pf_Frag_Strux *) currentFrag;
 		PT_AttrPropIndex pAppIndex = pfs->getIndexAP();
 		PT_DocPosition pos = getStruxPosition(pfs);
+#ifndef __MRC__
 		const PX_ChangeRecord * pcr = new PX_ChangeRecord(PX_ChangeRecord::PXT_AllowChangeInsPoint,pos,pAppIndex);
+#else
+		PX_ChangeRecord * pcr = new PX_ChangeRecord(PX_ChangeRecord::PXT_AllowChangeInsPoint,pos,pAppIndex);
+#endif
 		notifyListeners(pfs, pcr);
 		delete pcr;
 	}
@@ -1138,7 +1146,11 @@ void PD_Document::listUpdate(PL_StruxDocHandle sdh )
 	pf_Frag_Strux * pfs = (pf_Frag_Strux *) sdh;
 	PT_AttrPropIndex pAppIndex = pfs->getIndexAP();
 	PT_DocPosition pos = getStruxPosition(sdh);
+#ifndef __MRC__
 	const PX_ChangeRecord * pcr = new PX_ChangeRecord(PX_ChangeRecord::PXT_ListUpdate,pos,pAppIndex);
+#else
+	PX_ChangeRecord * pcr = new PX_ChangeRecord(PX_ChangeRecord::PXT_ListUpdate,pos,pAppIndex);
+#endif
 	notifyListeners(pfs, pcr);
 	delete pcr;
 }
@@ -1152,7 +1164,11 @@ void PD_Document::StopList(PL_StruxDocHandle sdh )
 	pf_Frag_Strux * pfs = (pf_Frag_Strux *) sdh;
 	PT_AttrPropIndex pAppIndex = pfs->getIndexAP();
 	PT_DocPosition pos = getStruxPosition(sdh);
+#ifndef __MRC__
 	const PX_ChangeRecord * pcr = new PX_ChangeRecord(PX_ChangeRecord::PXT_StopList,pos,pAppIndex);
+#else
+	PX_ChangeRecord * pcr = new PX_ChangeRecord(PX_ChangeRecord::PXT_StopList,pos,pAppIndex);
+#endif
 	notifyListeners(pfs, pcr);
 	delete pcr;
 }
@@ -1282,7 +1298,11 @@ void PD_Document::removeList(fl_AutoNum * pAutoNum, PL_StruxDocHandle sdh )
 		pf_Frag_Strux * pfs = (pf_Frag_Strux *) sdh;
 		PT_AttrPropIndex pAppIndex = pfs->getIndexAP();
 		PT_DocPosition pos = getStruxPosition(sdh);
+#ifndef __MRC__
 		const PX_ChangeRecord * pcr = new PX_ChangeRecord(PX_ChangeRecord::PXT_RemoveList,pos,pAppIndex);
+#else
+		PX_ChangeRecord * pcr = new PX_ChangeRecord(PX_ChangeRecord::PXT_RemoveList,pos,pAppIndex);
+#endif
 		notifyListeners(pfs, pcr);
 		delete pcr;						  
 		m_vecLists.deleteNthItem(ndx);
