@@ -17,7 +17,8 @@
  * 02111-1307, USA.
  */
 
-/* traduction fcella@mahj.org du 24/05/1999  */
+/* traduction fcella@mahj.org du 24/05/1999
+ * complétée par Philippe Duperron <duperron@mail.dotcom.fr> 08/06/1999  */
 
 /*****************************************************************
 ******************************************************************
@@ -42,14 +43,14 @@
 
 BeginSet(FrFR)
 
-	ToolbarLabel(AP_TOOLBAR_ID__BOGUS1__,		NULL,		NoIcon,			NULL,NULL)
+	ToolbarLabel(AP_TOOLBAR_ID__BOGUS1__,		NULL,		NoIcon,		NULL, NULL)
 
-	//          (id, 		                    szLabel,	IconName,     	szToolTip,      szStatusMsg)
+	//          (id, 		                szLabel,	IconName,     	szToolTip,      szStatusMsg)
 
 	ToolbarLabel(AP_TOOLBAR_ID_FILE_NEW,		"Nouveau", 	tb_new_xpm,	NULL, "Creer un nouveau document")	
 	ToolbarLabel(AP_TOOLBAR_ID_FILE_OPEN,		"Ouvrir",	tb_open_xpm,	NULL, "Ouvrir un document existant")
 	ToolbarLabel(AP_TOOLBAR_ID_FILE_SAVE,		"Enregistrer", 	tb_save_xpm,	NULL, "Enregistrer le document")
-	ToolbarLabel(AP_TOOLBAR_ID_FILE_SAVEAS,		"Enregistrer sous", 	tb_save_as_xpm,	NULL, "Enregistrer le document sous un autre nom")
+	ToolbarLabel(AP_TOOLBAR_ID_FILE_SAVEAS,		"Enregistrer sous", 	tb_save_as_xpm,	NULL, "Enregistrer le document sous un nouveau nom")
 	ToolbarLabel(AP_TOOLBAR_ID_FILE_PRINT,		"Imprimer",	tb_print_xpm,	NULL, "Imprimer le document")
 
 	ToolbarLabel(AP_TOOLBAR_ID_EDIT_UNDO,		"Annuler",	tb_undo_xpm,	NULL, "Annuler la frappe")
@@ -58,31 +59,31 @@ BeginSet(FrFR)
 	ToolbarLabel(AP_TOOLBAR_ID_EDIT_COPY,		"Copier",	tb_copy_xpm,	NULL, "Copier")
 	ToolbarLabel(AP_TOOLBAR_ID_EDIT_PASTE,		"Coller",	tb_paste_xpm,	NULL, "Coller")
 
-	ToolbarLabel(AP_TOOLBAR_ID_FMT_STYLE,		"Style",	NoIcon,		NULL, "Style")
-	ToolbarLabel(AP_TOOLBAR_ID_FMT_FONT,		"Polices",	NoIcon,		NULL, "Polices")
-	ToolbarLabel(AP_TOOLBAR_ID_FMT_SIZE,		"Taille",	NoIcon,		NULL, "Taille")
-	ToolbarLabel(AP_TOOLBAR_ID_FMT_BOLD,		"Gras",		tb_text_bold_xpm,	NULL, "Gras")
+	ToolbarLabel(AP_TOOLBAR_ID_FMT_STYLE,		"Style",	NoIcon,			NULL, "Style")
+	ToolbarLabel(AP_TOOLBAR_ID_FMT_FONT,		"Police",	NoIcon,			NULL, "Police")
+	ToolbarLabel(AP_TOOLBAR_ID_FMT_SIZE,		"Taille",	NoIcon,			NULL, "Taille")
+	ToolbarLabel(AP_TOOLBAR_ID_FMT_BOLD,		"Gras",		tb_text_bold_G_xpm,	NULL, "Gras")
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_ITALIC,		"Italique",	tb_text_italic_xpm,	NULL, "Italique")
-	ToolbarLabel(AP_TOOLBAR_ID_FMT_UNDERLINE,	"Souligné",tb_text_underline_xpm,	NULL, "Souligné")
-	ToolbarLabel(AP_TOOLBAR_ID_FMT_STRIKE,		"Strike",   tb_text_strikeout_xpm,	NULL, "Strikeout")
+	ToolbarLabel(AP_TOOLBAR_ID_FMT_UNDERLINE,	"Souligné",	tb_text_underline_S_xpm,	NULL, "Souligné")
+	ToolbarLabel(AP_TOOLBAR_ID_FMT_STRIKE,		"Barré",   	tb_text_strikeout_B_xpm,	NULL, "Barré")
 
-	ToolbarLabel(AP_TOOLBAR_ID_ALIGN_LEFT,		"Gauche",		tb_text_align_left_xpm,		NULL, "Alignement Gauche")
-	ToolbarLabel(AP_TOOLBAR_ID_ALIGN_CENTER,	"Centrer",	tb_text_center_xpm,	NULL, "Alignement Centrer")
-	ToolbarLabel(AP_TOOLBAR_ID_ALIGN_RIGHT,		"Droite",	tb_text_align_right_xpm,	NULL, "Alignement Droite")
-	ToolbarLabel(AP_TOOLBAR_ID_ALIGN_JUSTIFY,	"Justifier",	tb_text_justify_xpm,	NULL, "Justify paragraph")
+	ToolbarLabel(AP_TOOLBAR_ID_ALIGN_LEFT,		"Gauche",	tb_text_align_left_xpm,		NULL, "Alignement à gauche")
+	ToolbarLabel(AP_TOOLBAR_ID_ALIGN_CENTER,	"Centré",	tb_text_center_xpm,		NULL, "Paragraphe centré")
+	ToolbarLabel(AP_TOOLBAR_ID_ALIGN_RIGHT,		"Droite",	tb_text_align_right_xpm,	NULL, "Alignement à droite")
+	ToolbarLabel(AP_TOOLBAR_ID_ALIGN_JUSTIFY,	"Justifié",	tb_text_justify_xpm,		NULL, "Paragraphe justifié")
 
-	ToolbarLabel(AP_TOOLBAR_ID_PARA_0BEFORE,	"None before",		tb_para_0before_xpm,	NULL, "Space before: None")
-	ToolbarLabel(AP_TOOLBAR_ID_PARA_12BEFORE,	"12 pt before",		tb_para_12before_xpm,	NULL, "Space before: 12 pt")
+	ToolbarLabel(AP_TOOLBAR_ID_PARA_0BEFORE,	"Pas d'espacement avant",		tb_para_0before_xpm,	NULL, "Espacement avant: aucun")
+	ToolbarLabel(AP_TOOLBAR_ID_PARA_12BEFORE,	"Espacement de 12 pt avant",		tb_para_12before_xpm,	NULL, "Espacement avant: 12 pt")
 
-	ToolbarLabel(AP_TOOLBAR_ID_SINGLE_SPACE,	"Single Spacing",	tb_line_single_space_xpm,	NULL, "Single spacing")
-	ToolbarLabel(AP_TOOLBAR_ID_MIDDLE_SPACE,	"1.5 Spacing",		tb_line_middle_space_xpm,	NULL, "1.5 spacing")
-	ToolbarLabel(AP_TOOLBAR_ID_DOUBLE_SPACE,	"Double Spacing",	tb_line_double_space_xpm,	NULL, "Double spacing")
+	ToolbarLabel(AP_TOOLBAR_ID_SINGLE_SPACE,	"Interligne simple",	tb_line_single_space_xpm,	NULL, "Interligne simple")
+	ToolbarLabel(AP_TOOLBAR_ID_MIDDLE_SPACE,	"Interligne : 1,5 lignes",		tb_line_middle_space_xpm,	NULL, "Interligne : 1,5 lignes")
+	ToolbarLabel(AP_TOOLBAR_ID_DOUBLE_SPACE,	"Interligne double",	tb_line_double_space_xpm,	NULL, "Interligne double")
 
-	ToolbarLabel(AP_TOOLBAR_ID_1COLUMN,			"1 Column",			tb_1column_xpm,			NULL, "1 Column")
-	ToolbarLabel(AP_TOOLBAR_ID_2COLUMN,			"2 Columns",		tb_2column_xpm,			NULL, "2 Columns")
-	ToolbarLabel(AP_TOOLBAR_ID_3COLUMN,			"3 Columns",		tb_3column_xpm,			NULL, "3 Columns")
+	ToolbarLabel(AP_TOOLBAR_ID_1COLUMN,		"Une colonne",		tb_1column_xpm,			NULL, "Une colonne")
+	ToolbarLabel(AP_TOOLBAR_ID_2COLUMN,		"Deux colonnes",	tb_2column_xpm,			NULL, "Deux colonnes")
+	ToolbarLabel(AP_TOOLBAR_ID_3COLUMN,		"Trois colonnes",	tb_3column_xpm,			NULL, "Trois colonnes")
 
-	ToolbarLabel(AP_TOOLBAR_ID_ZOOM,			"Zoom",		NoIcon,			NULL, "Zoom")
+	ToolbarLabel(AP_TOOLBAR_ID_ZOOM,		"Zoom",			NoIcon,			NULL, "Zoom")
 	
 	// ... add others here ...
 
