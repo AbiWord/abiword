@@ -2399,6 +2399,18 @@ fp_Line *  fl_BlockLayout::getNextWrappedLine(UT_sint32 iX,
 {
 	UT_sint32 iMaxX = m_pVertContainer->getWidth();
 	UT_sint32 iXDiff = getLeftMargin();
+	UT_ASSERT(iHeight > 0);
+	if(iHeight == 0)
+	{
+		if(getLastContainer())
+		{
+			iHeight = getLastContainer()->getHeight();
+		}
+		if(iHeight == 0)
+		{
+			iHeight = m_pLayout->getGraphics()->tlu(2);
+		}
+	}
 	iMaxX -=  getLeftMargin();
 	iMaxX -= getRightMargin();
 	if (getFirstContainer() == NULL)
