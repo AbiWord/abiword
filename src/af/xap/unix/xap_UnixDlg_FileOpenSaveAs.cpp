@@ -97,16 +97,56 @@ UT_Bool XAP_UnixDialog_FileOpenSaveAs::_run_gtk_main(XAP_Frame * pFrame,
 	  bCheckWritePermission.
 	*/
 
-	if (!bCheckWritePermission)
-	{
-		gtk_main();
-		return (m_answer == a_OK);
-	}		
-
 	char * szTestFilename = NULL;		// we must free this
 	char * pLastSlash;
 	struct stat buf;
 	int err;
+
+	if (!bCheckWritePermission)
+	{
+		while (1)
+		{
+			gtk_main();
+
+			// TODO  check for symlinks, because even symlinks to dirs won't
+			// TODO  show up with S_ISDIR().
+
+			// TODO  check to make sure a file exists before we close off the
+			// TODO  loop
+			
+			// We can't just return, because we might have some dialog work to
+			// do.  For example, the user might have typed in a directory, not
+			// a file, so we have to catch it, change the dialog, and not return
+			// any filename yet.
+
+			UT_cloneString(szTestFilename, gtk_file_selection_get_filename(pFS));
+			UT_ASSERT(szTestFilename);
+
+			err = stat(szTestFilename, &buf);
+			UT_ASSERT(err == 0 || err == -1);
+			
+			// Check for a directory entered as filename.  When true,
+			// set the filter properly and continue in the selection
+			if (err == 0 && S_ISDIR(buf.st_mode))
+			{
+				GString * s = g_string_new(szTestFilename);
+				if (s->str[s->len - 1] != '/')
+				{
+					g_string_append_c(s, '/');
+				}
+				gtk_file_selection_set_filename(pFS, s->str);
+				g_string_free(s, TRUE);
+
+				// free the string and continue along
+				FREEP(szTestFilename);
+				continue;
+			}
+
+			// if we got here, the text wasn't a directory, so it's a file,
+			// and life is good
+			return (m_answer == a_OK);
+		}
+	}		
 		
 	while(1)
 	{
