@@ -807,7 +807,6 @@ void AP_Dialog_Lists::fillDialogFromBlock(void)
  */
 void AP_Dialog_Lists::PopulateDialogData(void)
 {
-	const XAP_StringSet * pSS = m_pApp->getStringSet();
 	m_isListAtPoint = getBlock()->isListItem();
 	if(m_isListAtPoint == true)
 	{

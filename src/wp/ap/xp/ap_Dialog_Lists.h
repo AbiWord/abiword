@@ -62,8 +62,6 @@ protected:
 		
 class AP_Dialog_Lists : public XAP_Dialog_Modeless
 {
-	friend class AP_Preview_Paragraph;
-	friend class AP_Preview_Paragraph_Block;
 
 public:
 	AP_Dialog_Lists(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
@@ -150,6 +148,9 @@ protected:
 	void                        setAnswer(AP_Dialog_Lists::tAnswer ans ) {m_Answer = ans;}
     void copyCharToWindowName(const char* pszName) { sprintf(m_WindowName,"%s",pszName);}
     const char * getWindowName( void) { return (const char *) m_WindowName;}  
+	AP_Lists_preview* getListsPreview() { return m_pListsPreview; }
+
+
 private:
 
 
