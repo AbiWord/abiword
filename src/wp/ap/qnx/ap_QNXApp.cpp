@@ -400,7 +400,7 @@ void AP_QNXApp::pasteFromClipboard(PD_DocumentRange * pDocRange, bool bUseClipbo
 		// TODO figure out what to do with an image....
 		UT_DEBUGMSG(("PasteFromClipboard: No TEXT or RTF data in clipboard. TODO: Add Image support"));
 	}
-	
+	FREEP(pData);
 	return;
 }
 
