@@ -160,6 +160,7 @@ public:
 
 private:
 	// Unix call back handlers
+	static void s_toolbars_toggled		( GtkWidget *, gpointer );
 	static void s_apply_clicked			( GtkWidget *, gpointer );
 	static void s_defaults_clicked		( GtkWidget *, gpointer );
 	static void s_ignore_reset_clicked	( GtkWidget *, gpointer );

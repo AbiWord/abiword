@@ -217,9 +217,15 @@ bool XAP_App::initialize()
 	if(bAllowCustom)
 		setToolbarsCustomizable(true);
 	else
+	{
 		setToolbarsCustomizable(false);
-
+		setToolbarsCustomized(false);
+	}
 	m_pToolbarFactory->restoreToolbarsFromCurrentScheme();
+	if(!bAllowCustom)
+	{
+		m_pToolbarFactory->resetAllToolbarsToDefault();
+	}
 //
 // Set Smooth Scrolling
 //

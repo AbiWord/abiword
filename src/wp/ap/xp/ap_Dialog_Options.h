@@ -107,6 +107,8 @@ class AP_Dialog_Options : public XAP_Dialog_NonPersistent
 	//
 	const XML_Char * _gatherColorForTransparent(void);									
 	void _setColorForTransparent(const XML_Char * pzsColorForTransparent);
+	bool  isInitialPopulationHappenning(void)
+		{ return m_bInitialPop; }
 
  protected:
 
@@ -184,7 +186,6 @@ class AP_Dialog_Options : public XAP_Dialog_NonPersistent
 	SET_GATHER			(NotebookPageNum,	int );
 
 #undef SET_GATHER
-
  protected:
 
 
@@ -193,11 +194,13 @@ class AP_Dialog_Options : public XAP_Dialog_NonPersistent
 	XML_Char			m_CurrentTransparentColor[10];
 
 	int m_pageNum;
-
 	// AP level handlers	
 	void _event_IgnoreReset(void);
 	void _event_IgnoreEdit(void);
 	void _event_DictionaryEdit(void);
+private:
+	bool                m_bInitialPop;
+
 };
 
 #endif /* AP_DIALOG_PARAGRAPH_H */

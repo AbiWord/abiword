@@ -611,6 +611,10 @@ bool  XAP_Toolbar_Factory::restoreToolbarsFromCurrentScheme(void)
 				sTBBase += buf;
 				const XML_Char * szCurId = NULL;
 				pScheme->getValue((const XML_Char *)sTBBase.c_str(),&szCurId);
+				if(szCurId == NULL)
+				{
+					continue;
+				}
 				UT_ASSERT(szCurId && *szCurId);
 				XAP_Toolbar_Id curId = (XAP_Toolbar_Id) atoi(szCurId);
 //
@@ -630,15 +634,17 @@ bool  XAP_Toolbar_Factory::restoreToolbarsFromCurrentScheme(void)
 				sTBBase += buf;
 				const XML_Char * szCurFlag = NULL;
 				pScheme->getValue((const XML_Char *)sTBBase.c_str(),&szCurFlag);
-				UT_ASSERT(szCurFlag && *szCurFlag);
-				EV_Toolbar_LayoutFlags curFlag = (EV_Toolbar_LayoutFlags) atoi(szCurFlag);
+				if(szCurFlag != NULL)
+				{
+					EV_Toolbar_LayoutFlags curFlag = (EV_Toolbar_LayoutFlags) atoi(szCurFlag);
 //
 // Build element and add it into the Toolbar layout
 //
-				XAP_Toolbar_Factory_lt * plt = new XAP_Toolbar_Factory_lt;
-				plt->m_id = curId;
-				plt->m_flags = curFlag;
-				pVec->add_lt(plt);
+					XAP_Toolbar_Factory_lt * plt = new XAP_Toolbar_Factory_lt;
+					plt->m_id = curId;
+					plt->m_flags = curFlag;
+					pVec->add_lt(plt);
+				}
 			}
 		}
 //

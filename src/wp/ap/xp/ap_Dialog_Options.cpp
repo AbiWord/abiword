@@ -44,7 +44,8 @@ AP_Dialog_Options::AP_Dialog_Options(XAP_DialogFactory * pDlgFactory, XAP_Dialog
 	: XAP_Dialog_NonPersistent(pDlgFactory,id, "interface/dialogpreferences"),
 	  m_answer(a_OK),
 	  m_pFrame(0),	// needs to be set from runModal for some of the event_'s to work
-	  m_pageNum(-1)
+	  m_pageNum(-1),
+	  m_bInitialPop(false)
 {
 }
 
@@ -262,7 +263,7 @@ void AP_Dialog_Options::_populateWindowData(void)
 	bool			b;
 	XAP_Prefs		*pPrefs = 0;
 	const XML_Char	*pszBuffer = 0;
-
+	m_bInitialPop = true;
 	// TODO: move this logic when we get a PrefsListener API and turn this
 	//		 dialog into an app-specific
 
@@ -374,6 +375,7 @@ void AP_Dialog_Options::_populateWindowData(void)
 	
 	// enable/disable controls
 	_initEnableControls();
+	m_bInitialPop = false;
 }
 
 

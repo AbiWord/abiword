@@ -743,7 +743,7 @@ GtkWidget* AP_UnixDialog_Options::_constructWindowContents (GtkWidget * vbox)
 	checkEnableSmoothScrolling = gtk_check_button_new_with_label (pSS->getValueUTF8(AP_STRING_ID_DLG_Options_Label_CheckEnableSmoothScrolling).c_str());
 	gtk_widget_show (checkEnableSmoothScrolling);
 	gtk_box_pack_start (GTK_BOX (vbox58), checkEnableSmoothScrolling, TRUE, TRUE, 0);
-	gtk_container_set_border_width (GTK_CONTAINER (checkAllowCustomToolbars), 2);
+	gtk_container_set_border_width (GTK_CONTAINER (checkEnableSmoothScrolling), 2);
 
 
 
@@ -907,6 +907,15 @@ GtkWidget* AP_UnixDialog_Options::_constructWindowContents (GtkWidget * vbox)
 	m_pushbuttonNewTransparentColor = pushChooseColorForTransparent;
 
 	m_checkbuttonAllowCustomToolbars      = checkAllowCustomToolbars;
+//
+// Have to reset the toolbar is the result of a toggle is to turn off 
+// custom toolabrs
+//
+	g_signal_connect(G_OBJECT(m_checkbuttonAllowCustomToolbars),
+			   "toggled",
+			   G_CALLBACK(s_toolbars_toggled),
+			   static_cast<gpointer>(this));
+
 	m_checkbuttonEnableSmoothScrolling      = checkEnableSmoothScrolling;
 	m_checkbuttonAutoLoadPlugins      = checkAutoLoadPlugins;
 
@@ -1392,6 +1401,30 @@ void    AP_UnixDialog_Options::_setNotebookPageNum(int pn)
 }
 
 /*****************************************************************/
+//
+// Reset custom toolbars
+//
+/* static */ void AP_UnixDialog_Options::s_toolbars_toggled(GtkWidget * widget, gpointer data )
+{
+	AP_UnixDialog_Options * dlg = static_cast<AP_UnixDialog_Options *>(data);
+	UT_ASSERT(widget && dlg);
+	if(dlg->isInitialPopulationHappenning())
+	{
+		return;
+	}
+//
+// Save the new toolbar state
+//
+	dlg->event_OK();
+//
+// If the toolbar preference is now off, reset to default.
+//
+	if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(widget)) == FALSE)
+	{
+		XAP_App * pApp = XAP_App::getApp();
+		pApp->resetToolbarsToDefault();
+	}
+}
 
 /*static*/ void AP_UnixDialog_Options::s_apply_clicked(GtkWidget * widget, gpointer data )
 {
