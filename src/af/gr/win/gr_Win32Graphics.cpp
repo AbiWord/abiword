@@ -1389,6 +1389,7 @@ GR_Win32Font::~GR_Win32Font()
 
 UT_sint32 GR_Win32Font::measureUnremappedCharForCache(UT_UCSChar cChar) const
 {
+#ifndef ABI_GRAPHICS_PLUGIN_NO_WIDTHS
 	// first of all, handle 0-width spaces ...
 	if(cChar == 0xFEFF || cChar == 0x200b || cChar == UCS_LIGATURE_PLACEHOLDER)
 		return 0;
@@ -1406,6 +1407,9 @@ UT_sint32 GR_Win32Font::measureUnremappedCharForCache(UT_UCSChar cChar) const
 	_getCharWidths()->setCharWidthsOfRange(hdc, base, limit);
 	DeleteDC(hdc);
 	return _getCharWidths()->getWidth(cChar);
+#else
+	UT_return_val_if_fail(UT_NOT_IMPLEMENTED,0);
+#endif
 }
 
 /*!
@@ -1414,7 +1418,11 @@ UT_sint32 GR_Win32Font::measureUnremappedCharForCache(UT_UCSChar cChar) const
  */
 GR_CharWidths* GR_Win32Font::newFontWidths(void) const
 {
+#ifndef ABI_GRAPHICS_PLUGIN_NO_WIDTHS
 	return new GR_Win32CharWidths();
+#else
+	UT_return_val_if_fail(UT_NOT_IMPLEMENTED,NULL);
+#endif
 }
 
 HFONT GR_Win32Font::getFontFromCache(UT_uint32 pixelsize, bool /*bIsLayout*/, UT_uint32 /*zoomPercentage*/) const
@@ -1490,12 +1498,16 @@ void GR_Win32Font::setupFontInfo()
 
 UT_sint32 GR_Win32Font::Acq::measureUnRemappedChar(GR_Win32Font& font, UT_UCSChar c)
 {
+#ifndef ABI_GRAPHICS_PLUGIN_NO_WIDTHS
 	// first of all, handle 0-width spaces ...
 	if(c == 0xFEFF || c == 0x200b || c == UCS_LIGATURE_PLACEHOLDER)
 		return 0;
 
 	UT_sint32 iWidth = font.getCharWidthFromCache(c);
 	return iWidth;
+#else
+	UT_return_val_if_fail(UT_NOT_IMPLEMENTED,0);
+#endif
 }
 
 void GR_Win32Font::Acq::selectFontIntoDC(GR_Win32Font& font, GR_Graphics * pGr, HDC hdc)
@@ -1830,6 +1842,7 @@ GR_Image * GR_Win32Graphics::genImageFromRectangle(const UT_Rect & r) {
 
 GR_Graphics * GR_Win32Graphics::graphicsAllocator(GR_AllocInfo &info)
 {
+#ifndef ABI_GRAPHICS_PLUGIN
 	UT_return_val_if_fail(info.getType() == GRID_WIN32, NULL);
 	
 	GR_Win32AllocInfo &AI = (GR_Win32AllocInfo&)info;
@@ -1844,5 +1857,8 @@ GR_Graphics * GR_Win32Graphics::graphicsAllocator(GR_AllocInfo &info)
 		// screen graphics required
 		return new GR_Win32Graphics(AI.m_hdc, AI.m_hwnd, AI.m_pApp);
 	}
+#else
+	UT_return_val_if_fail(UT_NOT_IMPLEMENTED,NULL);
+#endif
 }
 

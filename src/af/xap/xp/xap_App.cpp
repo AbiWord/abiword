@@ -294,7 +294,32 @@ bool XAP_App::initialize(const char * szKeyBindingsKey, const char * szKeyBindin
 	bResult2 = m_pInputModes->setCurrentMap(szBindings);
 	UT_ASSERT(bResult2);
 
+	// check if the prefs are set to use specific graphics class
+	const char * pszGraphics = NULL;
+	if(getPrefsValue(XAP_PREF_KEY_DefaultGraphics, &pszGraphics))
+	{
+		UT_uint32 iID = 0;
+		sscanf(pszGraphics,"%i", &iID);
+		if(iID != 0)
+		{
+			UT_DEBUGMSG(("Graphics %d requested as default\n", iID));
 
+			// first of all, check that it is registered
+			GR_GraphicsFactory * pGF = getGraphicsFactory();
+			UT_return_val_if_fail(pGF,false);
+
+			if(pGF->isRegistered(iID))
+			{
+				pGF->registerAsDefault(iID, true);
+				pGF->registerAsDefault(iID, false);
+			}
+			else
+			{
+				UT_DEBUGMSG(("Graphics not loaded\n"));
+			}
+		}
+	}
+	
 	return true;
 }
 

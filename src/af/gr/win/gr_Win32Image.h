@@ -38,6 +38,9 @@ public:
 	void				setDIB(BITMAPINFO *pDIB) { m_pDIB = pDIB; if (m_pDIB) setDisplaySize(m_pDIB->bmiHeader.biWidth,m_pDIB->bmiHeader.biHeight); }
 	inline BITMAPINFO*	getDIB(void) const { return m_pDIB; }
 
+	virtual GR_Image *  createImageSegment(GR_Graphics * pG, const UT_Rect & rec)
+	                                 {UT_return_val_if_fail(UT_NOT_IMPLEMENTED,NULL)};
+
 protected:
 	BITMAPINFO*		m_pDIB;
 };

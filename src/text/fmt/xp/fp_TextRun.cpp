@@ -348,14 +348,14 @@ bool fp_TextRun::canBreakAfter(void) const
 	if (getLength() > 0)
 	{
 		PD_StruxIterator text(getBlock()->getStruxDocHandle(),
-							  getBlockOffset() + fl_BLOCK_STRUX_OFFSET + getLength() - 1);
-		
+							  getBlockOffset() + fl_BLOCK_STRUX_OFFSET);
 		UT_return_val_if_fail(text.getStatus() == UTIter_OK, false);
-		text.setUpperLimit(text.getPosition());
+		text.setUpperLimit(text.getPosition() + getLength() - 1);
 		
 		UT_return_val_if_fail(m_pRenderInfo, false);
 		m_pRenderInfo->m_pText = &text;
 		m_pRenderInfo->m_iOffset = getLength() - 1;
+		m_pRenderInfo->m_iLength = getLength();
 
 		UT_sint32 iNext;
 		if (getGraphics()->canBreak(*m_pRenderInfo, iNext))
@@ -389,6 +389,7 @@ bool fp_TextRun::canBreakBefore(void) const
 		UT_return_val_if_fail(m_pRenderInfo, false);
 		m_pRenderInfo->m_pText = &text;
 		m_pRenderInfo->m_iOffset = 0;
+		m_pRenderInfo->m_iLength = getLength();
 		UT_sint32 iNext;
 		
 		if (getGraphics()->canBreak(*m_pRenderInfo, iNext))
@@ -523,6 +524,8 @@ bool	fp_TextRun::findMaxLeftFitSplitPoint(UT_sint32 iMaxLeftWidth, fp_RunSplitIn
 						  offset + fl_BLOCK_STRUX_OFFSET);
 
 	m_pRenderInfo->m_pText = &text;
+	text.setUpperLimit(text.getPosition() + getLength() - 1);
+	UT_uint32 iPosStart = text.getPosition();
 	
 	bool bReverse = (getVisDirection() == FRIBIDI_TYPE_RTL);
 	UT_sint32 iNext = -1;
@@ -538,12 +541,22 @@ bool	fp_TextRun::findMaxLeftFitSplitPoint(UT_sint32 iMaxLeftWidth, fp_RunSplitIn
 		iRightWidth -= iCW;
 
 		UT_UCS4Char c = text.getChar();
+		bool bCanBreak = false;
+		// GR_Graphics::canBreak can be expensive, so we only call it
+		// when necessary
+		if(!bForce && iNext != (UT_sint32)i)
+		{
+			// need to reposition the iterator
+			UT_uint32 iPos = text.getPosition();
+			text.setPosition(iPosStart);
+			
+			m_pRenderInfo->m_iLength = getLength();
+			bCanBreak = getGraphics()->canBreak(*m_pRenderInfo, iNext);
+
+			text.setPosition(iPos);
+		}
 		
-		// order is significant here; iNext == i happens when in the
-		// previous call to canBreak we were told where the next break
-		// point is -- canBreak() can be quite expensive for complex
-		// scripts, so we do not want to call it unnecessarily
-		if (bForce || iNext == (UT_sint32)i || getGraphics()->canBreak(*m_pRenderInfo, iNext))
+		if (bForce || iNext == (UT_sint32)i || bCanBreak)
 		   //	&& ((i + offset) != (getBlockOffset() + getLength() - 1))
 		{
 			UT_sint32 ispace = 0;
@@ -574,7 +587,8 @@ bool	fp_TextRun::findMaxLeftFitSplitPoint(UT_sint32 iMaxLeftWidth, fp_RunSplitIn
 					{
 						UT_uint32 l = bReverse ? getLength() - j - 1: j;
 						//iSpaceW += RI.m_pWidths[l];
-						m_pRenderInfo->m_iOffset = l;  // m_iLength already set
+						m_pRenderInfo->m_iOffset = l;
+						m_pRenderInfo->m_iLength = 1;
 						iSpaceW += getGraphics()->getTextWidth(*m_pRenderInfo);
 						j--;
 						--text2;

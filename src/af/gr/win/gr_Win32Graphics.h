@@ -68,7 +68,11 @@ public:
 protected:
 	GR_Win32CharWidths * _getCharWidths() const
 	{
+#ifndef ABI_GRAPHICS_PLUGIN_NO_WIDTHS
 		return reinterpret_cast<GR_Win32CharWidths *>(GR_Font::_getCharWidths());
+#else
+		UT_return_val_if_fail(UT_NOT_IMPLEMENTED,NULL);
+#endif
 	}	
    	
 private:

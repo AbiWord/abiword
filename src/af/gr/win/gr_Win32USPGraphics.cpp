@@ -114,7 +114,10 @@ class GR_Win32USPRenderInfo : public GR_RenderInfo
 		{
 			s_pAdvances = new int [200];
 			s_pJustify  = new int [200];
-			UT_ASSERT(s_pAdvances && s_pJustify);
+			s_pLogAttr  = new SCRIPT_LOGATTR[200]; // log attr. correspont to characters, not glyphs, but since there are
+												   // always at least as many glyphs, this is OK
+			s_pChars    = new WCHAR[200];
+			UT_ASSERT(s_pAdvances && s_pJustify && s_pLogAttr && s_pChars);
 			s_iAdvancesSize = 200;
 		}
 		
@@ -131,6 +134,8 @@ class GR_Win32USPRenderInfo : public GR_RenderInfo
 			{
 				delete [] s_pAdvances; s_pAdvances = NULL;
 				delete [] s_pJustify;  s_pJustify  = NULL;
+				delete [] s_pLogAttr;  s_pLogAttr  = NULL;
+				delete [] s_pChars;    s_pChars    = NULL;
 				s_iAdvancesSize = 0;
 
 				s_pOwner = NULL;
@@ -166,6 +171,9 @@ class GR_Win32USPRenderInfo : public GR_RenderInfo
 	static UT_uint32 s_iInstanceCount;
 	static UT_uint32 s_iAdvancesSize;
 	static int *     s_pJustify;
+	static SCRIPT_LOGATTR * s_pLogAttr;
+	static WCHAR *   s_pChars;
+	
 	
 	static GR_RenderInfo * s_pOwner;
 };
@@ -174,6 +182,8 @@ int *           GR_Win32USPRenderInfo::s_pAdvances      = NULL;
 int *           GR_Win32USPRenderInfo::s_pJustify       = NULL;
 UT_uint32       GR_Win32USPRenderInfo::s_iInstanceCount = 0;
 UT_uint32       GR_Win32USPRenderInfo::s_iAdvancesSize  = 0;
+SCRIPT_LOGATTR *GR_Win32USPRenderInfo::s_pLogAttr       = NULL;
+WCHAR *         GR_Win32USPRenderInfo::s_pChars         = NULL;
 GR_RenderInfo * GR_Win32USPRenderInfo::s_pOwner         = NULL;
 
 
@@ -211,7 +221,7 @@ if(!name)                                            \
 #define logScript(iId)                                                                                            \
 {                                                                                                                 \
 	UT_String s;                                                                                                  \
-	UT_String_sprintf(s, "script id %d, lang: %s (%d)",                                                           \
+	UT_String_sprintf(s, "script id %d, lang: %s (0x%04x)",                                                       \
 					  iId, wvLIDToLangConverter(PRIMARYLANGID((WORD)s_ppScriptProperties[iId]->langid)),          \
 					  s_ppScriptProperties[iId]->langid);                                                         \
 	UT_DEBUGMSG(("Uniscribe %s\n", s.c_str()));                                                                   \
@@ -741,6 +751,12 @@ void GR_Win32USPGraphics::prepareToRenderChars(GR_RenderInfo & ri)
 		delete [] RI.s_pAdvances; delete [] RI.s_pJustify;
 		RI.s_pAdvances = new int [RI.m_iIndicesCount];
 		RI.s_pJustify  = new int [RI.m_iIndicesCount];
+		// also need to realloc s_pLogAttr and s_pChars, since we do not keep track
+		// of is size separately
+		delete [] RI.s_pLogAttr; delete [] RI.s_pChars;
+		RI.s_pLogAttr = new SCRIPT_LOGATTR[RI.m_iIndicesCount];
+		RI.s_pChars   = new WCHAR[RI.m_iIndicesCount];
+		
 		RI.s_iAdvancesSize = RI.m_iIndicesCount;
 	}
 
@@ -893,12 +909,83 @@ void GR_Win32USPGraphics::appendRenderedCharsToBuff(GR_RenderInfo & ri, UT_GrowB
 {
 	UT_return_if_fail( UT_NOT_IMPLEMENTED );
 }
+/*!
+    returns true on success
+ */
+bool GR_Win32USPGraphics::_scriptBreak(GR_Win32USPRenderInfo &ri)
+{
+	UT_return_val_if_fail(ri.getType() == GRRI_WIN32_UNISCRIBE && ri.m_pText && ri.m_pItem, false);
+	
+	if(ri.s_pOwner != &ri)
+	{
+		UT_return_val_if_fail(ri.m_pText->getStatus() == UTIter_OK, false);
+		UT_uint32 iPosStart = ri.m_pText->getPosition();
+		UT_uint32 iPosEnd   = ri.m_pText->getUpperLimit();
+		UT_return_val_if_fail(iPosEnd < 0xffffffff && iPosEnd >= iPosStart, false);
+
+		UT_uint32 iLen = iPosEnd - iPosStart + 1; // including iPosEnd
+
+		ri.s_pOwner = &ri;
+		
+		for(UT_uint32 i = 0; i < iLen; ++i, ++(*(ri.m_pText)))
+		{
+			ri.s_pChars[i] = (WCHAR)ri.m_pText->getChar();
+		}
+
+		GR_Win32USPItem &I = (GR_Win32USPItem &)*ri.m_pItem;
+		HRESULT hRes = ScriptBreak(ri.s_pChars, iLen, &I.m_si.a, ri.s_pLogAttr);
+
+		UT_return_val_if_fail(!hRes,false);
+	}
+
+	return true;
+}
+
 
 bool GR_Win32USPGraphics::canBreak(GR_RenderInfo & ri, UT_sint32 &iNext)
 {
-	// until I can find a better way of doing this, fall back on
-	// GR_Graphics
-	return GR_Graphics::canBreak(ri, iNext);
+	// for now we will call ScriptBreak from here; should this be too
+	// much of a bottle neck, we will store the values (but we are
+	// already storing loads of data per char)
+	UT_return_val_if_fail(ri.getType() == GRRI_WIN32_UNISCRIBE, false);
+	GR_Win32USPRenderInfo & RI = (GR_Win32USPRenderInfo &)ri;
+	iNext = -1;
+	
+	if(!_scriptBreak(RI))
+		return false;
+
+	if(_needsSpecialBreaking(RI))
+	{
+		if(RI.s_pLogAttr[ri.m_iOffset].fSoftBreak)
+			return true;
+
+		// find the next break
+		for(UT_uint32 i = RI.m_iOffset; i < RI.m_iLength; ++i)
+		{
+			if(RI.s_pLogAttr[i].fSoftBreak)
+			{
+				iNext = i;
+				break;
+			}
+		}
+	}
+	else
+	{
+		if(RI.s_pLogAttr[ri.m_iOffset].fWhiteSpace)
+			return true;
+
+		// find the next break
+		for(UT_uint32 i = RI.m_iOffset; i < RI.m_iLength; ++i)
+		{
+			if(RI.s_pLogAttr[i].fWhiteSpace)
+			{
+				iNext = i;
+				break;
+			}
+		}
+	}
+	
+	return false;
 }
 
 bool GR_Win32USPGraphics::_needsSpecialBreaking(GR_Win32USPRenderInfo &ri)

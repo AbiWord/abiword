@@ -89,6 +89,7 @@ public:
   protected:
 	inline bool       _needsSpecialBreaking(GR_Win32USPRenderInfo &ri);
 	inline bool       _needsSpecialCaretPositioning(GR_Win32USPRenderInfo &ri);
+	inline bool       _scriptBreak(GR_Win32USPRenderInfo &ri);
 
   public:
 	virtual const UT_VersionInfo & getVersion() const {return s_Version;}

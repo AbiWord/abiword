@@ -126,7 +126,7 @@ XAP_Win32App::XAP_Win32App(HINSTANCE hInstance, XAP_Args * pArgs, const char * s
 			// on its own behalf
 			
 			FreeLibrary(hUniscribe);
-#ifdef DEBUG
+#if 0 //def DEBUG
 			// create a dummy instance of the USP graphics to print
 			// various debug info ...
 			GR_Win32AllocInfo ai;

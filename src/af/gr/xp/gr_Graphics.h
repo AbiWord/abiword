@@ -39,6 +39,7 @@
 #else
 #define VIRTUAL_SFX
 #endif
+
 class UT_RGBColor;
 class UT_TextIterator;
 class XAP_App;
@@ -90,47 +91,45 @@ class ABI_EXPORT GR_Font
 		Measure the unremapped char to be put into the cache.
 		That means measuring it for a font size of 120
 	 */
-#ifndef ABI_GRAPHICS_PLUGIN_NO_WIDTHS
 	virtual UT_sint32 measureUnremappedCharForCache(UT_UCSChar cChar) const = 0;
 	virtual const UT_String & hashKey(void) const;
+	
 	UT_sint32 getCharWidthFromCache (UT_UCSChar c) const;
-	virtual GR_CharWidths* newFontWidths(void) const; /*reimplement if you want to instanciate something else */
-#endif
+
+	/*reimplement if you want to instanciate something else */	
+	virtual GR_CharWidths* newFontWidths(void) const; 
 	/*
 	   implemented using character widths; platforms might want to
 	   provide different implementation
 	   NB: it is essential that this function is fast
 	*/
 	virtual bool doesGlyphExist(UT_UCS4Char g);
+
 	static  bool s_doesGlyphExist(UT_UCS4Char g, void *instance)
 	{
 		UT_return_val_if_fail(instance, false);
 		GR_Font * pThis = static_cast<GR_Font*>(instance);
 		return pThis->doesGlyphExist(g);
 	}
-
+	
   protected:
 
 	GR_Font();
 
 	virtual ~GR_Font();
 
-#ifndef ABI_GRAPHICS_PLUGIN_NO_WIDTHS
 	GR_CharWidths * _getCharWidths() const {return m_pCharWidths;}
 	/*! 
 	  hash key for font cache. Must be initialized in ctor
 	 otherwise override hashKey() method 
 	*/
 	mutable UT_String		m_hashKey;
-#endif
 
   private:
 
 	static UT_uint32 s_iAllocCount;
 	UT_uint32        m_iAllocNo;
-#ifndef ABI_GRAPHICS_PLUGIN_NO_WIDTHS
 	mutable GR_CharWidths*	m_pCharWidths;
-#endif
 };
 
 
@@ -588,8 +587,9 @@ class ABI_EXPORT GR_Graphics
 	virtual void measureRenderedCharWidths(GR_RenderInfo & ri) VIRTUAL_SFX;
 	
 	// expects ri.m_iOffset set to the run offset condsidered for break
-	//         ri.m_pText set positioned at place corresponding to
-	//                    m_iOffset, upper bounds set appropriately
+	//         ri.m_pText set positioned at start of the run
+	//         represented by ri, its uper limit set appropriately
+	//         ri.m_iLength is set to the run length
 	// iNext -- if break is not possible at the given offset, the
 	//          class might return the next possible break offset in
 	//          iNext, relative to start of the text represented by ri
