@@ -1,3 +1,5 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+
 <!-- ==============================================================  -->
 <!-- This file contains AbiWord Strings.  AbiWord is an Open Source  -->
 <!-- word processor developed by AbiSource, Inc.  Information about  -->
@@ -7,7 +9,7 @@
 <!-- ==============================================================  -->
 
 <!-- Finnish translations provided by Jarmo Karvonen <jarmo@dawn.joensuu.fi> -->
-<!-- auml (xe4) is not correct character -->
+
 
 <AbiStrings app="AbiWord Personal" ver="1.0" language="FiFI">
 
@@ -67,6 +69,10 @@ DLG_UP_Collate="J&#xe4;rjest&#xe4;"
 DLG_UP_Copies="Kopioita: "
 DLG_UP_PrintButton="Tulosta"
 DLG_UP_InvalidPrintString="Tulostus komentorivi on virheellinen."
+DLG_UP_PrintIn="Tulostetaan: "
+DLG_UP_BlackWhite="Mustavalkoisena"
+DLG_UP_Grayscale="Harmaasävyinä"
+DLG_UP_Color="Värillisenä"
 />
 
 <Strings	class="AP"
@@ -85,7 +91,7 @@ DLG_FR_FindNextButton="Etsi seuraava"
 DLG_FR_ReplaceButton="Korvaa"
 DLG_FR_ReplaceAllButton="Korvaa kaikki"
 DLG_Break_BreakTitle="V&#xe4;li"
-DLG_Break_Insert="L&#x10f6;&#x6e4;iis&#xe4;&#xe4;"
+DLG_Break_Insert="Lis&#xe4;&#xe4;"
 DLG_Break_SectionBreaks="Kappale vaihto"
 DLG_Break_PageBreak="Sivun vaihto"
 DLG_Break_ColumnBreak="Palstan vaihto"
