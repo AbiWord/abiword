@@ -91,6 +91,7 @@ protected:
 	void				_openBlock(PT_AttrPropIndex api);
 	void				_openSection(PT_AttrPropIndex api);
 	void				_openSpan(PT_AttrPropIndex api, PT_BlockOffset pos, UT_uint32 len);
+	void                _writeMarginSize(PT_AttrPropIndex api, char * name);
 
 private:
 	PD_Document *		m_pDocument;
@@ -106,6 +107,10 @@ private:
 
 	int                 m_iImgCnt;
 };
+
+// KWord version 1 width/height are in mm
+static const UT_Dimension kword_1_unit_ut = DIM_MM;
+static const fp_PageSize::Unit kword_1_unit_fp = fp_PageSize::mm;
 
 /*****************************************************************/
 /*****************************************************************/
@@ -545,6 +550,23 @@ abiPageSizeToKoPageFormat (fp_PageSize abi_page_size)
 			break;
 	}
 }
+
+void s_KWord_1_Listener::_writeMarginSize(PT_AttrPropIndex api, char * name)
+{
+	char buf[20]; 
+	const XML_Char * szValue;
+	const PP_AttrProp * pAP = NULL;
+	bool bHaveProp = m_pDocument->getAttrProp(api,&pAP);
+	UT_ASSERT((bHaveProp));
+
+	sprintf(buf, "page-margin-%s", name);
+	szValue = PP_evalProperty(buf, 
+							  NULL, NULL, pAP, m_pDocument, true);
+	sprintf((char *) buf," %s=\"%f",name, UT_convertToDimension(szValue, kword_1_unit_ut));
+	m_pie->write((char *)buf);
+	m_pie->write("\"");
+
+}
 		
 void s_KWord_1_Listener::_handlePageSize(PT_AttrPropIndex api)
 {
@@ -560,9 +582,6 @@ void s_KWord_1_Listener::_handlePageSize(PT_AttrPropIndex api)
 
 	m_pie->write("<PAPER");
 
-	// KWord version 1 width/height are in mm
-	const fp_PageSize::Unit kword_1_unit = fp_PageSize::mm;
-	
 	m_pie->write(" format=\"");
 	m_pie->write(abiPageSizeToKoPageFormat(m_pDocument->m_docPageSize));
 	m_pie->write("\"");
@@ -582,12 +601,12 @@ void s_KWord_1_Listener::_handlePageSize(PT_AttrPropIndex api)
 	
 	char buf[20]; 
 	m_pie->write(" width=\"");
-	sprintf((char *) buf,"%f",m_pDocument->m_docPageSize.Width(kword_1_unit));
+	sprintf((char *) buf,"%f",m_pDocument->m_docPageSize.Width(kword_1_unit_fp));
 	m_pie->write((char *)buf);
 	m_pie->write("\"");
 
 	m_pie->write(" height=\"");
-	sprintf((char *) buf,"%f",m_pDocument->m_docPageSize.Height(kword_1_unit));
+	sprintf((char *) buf,"%f",m_pDocument->m_docPageSize.Height(kword_1_unit_fp));
 	m_pie->write((char *)buf);
 	m_pie->write("\"");
 	
@@ -595,26 +614,11 @@ void s_KWord_1_Listener::_handlePageSize(PT_AttrPropIndex api)
 	
 	// PAPERBORDERS
 	m_pie->write("<PAPERBORDERS");
-	
-	m_pie->write(" left=\"");
-	sprintf((char *) buf,"%f",m_pDocument->m_docPageSize.MarginLeft(kword_1_unit));
-	m_pie->write((char *)buf);
-	m_pie->write("\"");
 
-	m_pie->write(" right=\"");
-	sprintf((char *) buf,"%f",m_pDocument->m_docPageSize.MarginRight(kword_1_unit));
-	m_pie->write((char *)buf);
-	m_pie->write("\"");
-
-	m_pie->write(" top=\"");
-	sprintf((char *) buf,"%f",m_pDocument->m_docPageSize.MarginTop(kword_1_unit));
-	m_pie->write((char *)buf);
-	m_pie->write("\"");
-
-	m_pie->write(" bottom=\"");
-	sprintf((char *) buf,"%f",m_pDocument->m_docPageSize.MarginBottom(kword_1_unit));
-	m_pie->write((char *)buf);
-	m_pie->write("\"");
+	_writeMarginSize(api, "left");
+	_writeMarginSize(api, "right");
+	_writeMarginSize(api, "top");
+	_writeMarginSize(api, "bottom");
 
 	m_pie->write("/>\n");
 	
