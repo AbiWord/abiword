@@ -448,13 +448,17 @@ UT_StringPtrMap::find_slot(const UT_String& k,
 			slot = nSlot;
 			key_found = true;
 			
-			if (v)
+			if (v_found)
 			{
-			  if (v_found)
-			    *v_found = (sl->value() == v);
-			} else {
-			  if (v_found)
-			    *v_found = true; // return true if the key was found and value was null
+				// so, if v_found is non-null, we should set it.
+				// if v is also non-null, sl->value() must match v
+				// otherwise we already have a key match, so we win!
+				if (v)
+				{
+					*v_found = (sl->value() == v);
+				} else {
+					*v_found = true; 
+				}
 			}
 
 			xxx_UT_DEBUGMSG(("DOM: found something #1\n"));
@@ -507,9 +511,14 @@ UT_StringPtrMap::find_slot(const UT_String& k,
 			sl = tmp_sl;
 			key_found = true;
 			
-			if (v)
+			if (v_found)
 			{
-				*v_found = (sl->value() == (void*)v);
+				if (v)
+				{
+					*v_found = (sl->value() == v);
+				} else {
+					*v_found = true; 
+				}
 			}
 			break;
 		}

@@ -474,7 +474,6 @@ bool XAP_Dictionary::isWord(const UT_UCSChar * pWord, UT_uint32 len) const
 //
 // This original code does not work. I believe it is a bug in the hash table.
 //
-#if 0
 	char * key = (char*) calloc(len+1, sizeof(char));
 	if (!key)
 	{
@@ -496,47 +495,5 @@ bool XAP_Dictionary::isWord(const UT_UCSChar * pWord, UT_uint32 len) const
 	FREEP(key);
 	FREEP(key2);
 	return contains;
-#else
-//
-// This code is a work around for the buggy "contains" method used above.
-//
-	char * key = (char*) calloc(len+1, sizeof(char));
-	if (!key)
-	{
-		UT_DEBUGMSG(("mem failure looking up word in dictionary\n"));
-		FREEP(key);
-		return false;
-	}
-	UT_uint32 i =0;
-	for (i = 0; i < len; i++)
-	{
-		key[i] =  (char) static_cast<unsigned char>( pWord[i]);
-		xxx_UT_DEBUGMSG(("isword key[%d] = %c %d \n",i,key[i],key[i]));
-		if(key[i] == 0)
-			break;
-	}
-	key[i] = 0;
-	char * key2 = UT_strdup(key);
-
-	UT_Vector * pVec = m_hashWords.enumerate();
-	UT_ASSERT(pVec);
-
-	UT_uint32 size = pVec->size();
-	bool bFound = false;
-	for (i = 0; (i < size) && !bFound; i++)
-	{
-		UT_UCSChar * pWord = (UT_UCSChar *) pVec->getNthItem(i);
-		UT_uint32 lenstr = UT_UCS_strlen(pWord);
-		char * szV = (char *)  calloc(lenstr+1, sizeof(char));
-		UT_UCS_strcpy_to_char(szV,pWord);
-		xxx_UT_DEBUGMSG(("isWord: Comparing key %s to entry %s \n",key2,szV));
-		bFound = (strcmp(szV,key2) == 0); 
-		FREEP(szV);
-	}
-	FREEP(key);
-	FREEP(key2);
-	delete pVec;
-	return bFound;
-#endif
 }
 
