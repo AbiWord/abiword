@@ -39,6 +39,10 @@
 
 /*****************************************************************/
 
+#define BUTTON_INSERT 1
+
+/*****************************************************************/
+
 XAP_Dialog * AP_UnixDialog_InsertBookmark::static_constructor(XAP_DialogFactory * pFactory,
 													 XAP_Dialog_Id id)
 {
@@ -72,9 +76,9 @@ void AP_UnixDialog_InsertBookmark::runModal(XAP_Frame * pFrame)
 	_setList();
 
 	switch(abiRunModalDialog(GTK_DIALOG(mainWindow), pFrame, this,
-				 BUTTON_CANCEL, false))
+				 BUTTON_INSERT, false))
 	  {
-	  case BUTTON_OK:
+	  case BUTTON_INSERT:
 	    event_OK () ; break ;
 	  case BUTTON_DELETE:
 	    event_Delete () ; break ;
@@ -153,11 +157,11 @@ void  AP_UnixDialog_InsertBookmark::_constructWindowContents(GtkWidget * contain
 
   label1 = gtk_label_new (pSS->getValueUTF8(AP_STRING_ID_DLG_InsertBookmark_Msg).c_str());
   gtk_widget_show (label1);
-  gtk_box_pack_start (GTK_BOX (container), label1, TRUE, FALSE, 3);
+  gtk_box_pack_start (GTK_BOX (container), label1, FALSE, FALSE, 0);
 
   m_comboBookmark = gtk_combo_new ();
   gtk_widget_show (m_comboBookmark);
-  gtk_box_pack_start (GTK_BOX (container), m_comboBookmark, FALSE, FALSE, 3);
+  gtk_box_pack_start (GTK_BOX (container), m_comboBookmark, FALSE, FALSE, 0);
 
   m_comboEntry = GTK_COMBO (m_comboBookmark)->entry;
   gtk_widget_show (m_comboEntry);
@@ -166,29 +170,24 @@ void  AP_UnixDialog_InsertBookmark::_constructWindowContents(GtkWidget * contain
 
 GtkWidget*  AP_UnixDialog_InsertBookmark::_constructWindow(void)
 {
-  GtkWidget *frame1;
-  GtkWidget *vbox2;
+  GtkWidget *vbox;
 
   const XAP_StringSet * pSS = m_pApp->getStringSet();
 
   m_windowMain = abiDialogNew("insert bookmark dialog", TRUE, pSS->getValueUTF8(AP_STRING_ID_DLG_InsertBookmark_Title).c_str());
 
-  frame1 = gtk_frame_new (NULL);
-  gtk_widget_show (frame1);
-  gtk_container_add (GTK_CONTAINER (GTK_DIALOG(m_windowMain)->vbox), frame1);
-  gtk_container_set_border_width (GTK_CONTAINER (frame1), 4);
-  gtk_frame_set_shadow_type(GTK_FRAME(frame1), GTK_SHADOW_NONE);
+  
+  vbox = gtk_vbox_new (FALSE, 6);
+  gtk_widget_show (vbox);
+  gtk_container_add (GTK_CONTAINER (GTK_DIALOG (m_windowMain)->vbox), vbox);
+  gtk_container_set_border_width (GTK_CONTAINER (vbox), 5);
 
-  vbox2 = gtk_vbox_new (FALSE, 5);
-  gtk_widget_show (vbox2);
-  gtk_container_add (GTK_CONTAINER (frame1), vbox2);
-  gtk_container_set_border_width (GTK_CONTAINER (vbox2), 5);
-
-  _constructWindowContents ( vbox2 );
+  _constructWindowContents ( vbox );
 
   abiAddStockButton(GTK_DIALOG(m_windowMain), GTK_STOCK_CANCEL, BUTTON_CANCEL);
   abiAddStockButton(GTK_DIALOG(m_windowMain), GTK_STOCK_DELETE, BUTTON_DELETE);
-  abiAddStockButton(GTK_DIALOG(m_windowMain), GTK_STOCK_ADD, BUTTON_OK);
+  m_buttonInsert = abiAddButton(GTK_DIALOG(m_windowMain), "", BUTTON_INSERT);
+  localizeButtonUnderline (m_buttonInsert, pSS, AP_STRING_ID_DLG_InsertButton);
 
   gtk_widget_grab_focus (m_comboEntry);
   gtk_widget_grab_default (m_comboEntry);

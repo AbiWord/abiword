@@ -56,7 +56,8 @@ protected:
 
 	GtkWidget * m_comboEntry;
 	GtkWidget * m_comboBookmark;
-		
+
+	GtkWidget * m_buttonInsert;
 };
 
 #endif /* AP_UNIXDIALOG_INSERTBOOKMARK_H */
