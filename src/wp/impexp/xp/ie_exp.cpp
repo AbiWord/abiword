@@ -37,6 +37,7 @@
 
 #include "ie_exp_RTF.h"
 #include "ie_exp_Text.h"
+#include "ie_exp_HRText.h"
 #include "ie_exp_HTML.h"
 #include "ie_exp_UTF8.h"
 #include "ie_exp_LaTeX.h"
@@ -89,6 +90,7 @@ static struct _xp s_expTable[] =
 	DeclareExporter(IE_Exp_RTF),
 	DeclareExporter_sub(IE_Exp_RTF,attic),
 	DeclareExporter(IE_Exp_Text),
+	DeclareExporter(IE_Exp_HRText),
 	DeclareExporter(IE_Exp_UTF8),
 	DeclareExporter(IE_Exp_WML),
 	DeclareExporter(IE_Exp_GZipAbiWord)

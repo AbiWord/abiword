@@ -29,6 +29,7 @@ CPPSRCS=		ie_exp.cpp				\
 			ie_exp_HTML.cpp				\
 		        ie_exp_MsWord_97.cpp                    \
 			ie_exp_Text.cpp				\
+			ie_exp_HRText.cpp			\
 			ie_exp_RTF.cpp				\
 			ie_exp_RTF_listenerGetProps.cpp		\
 			ie_exp_RTF_listenerWriteDoc.cpp		\

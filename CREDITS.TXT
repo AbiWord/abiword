@@ -44,6 +44,7 @@ Harald Fernengel <harry@bnro.de>                RTF compatibility fixes
 Hubert Figuiere <hfiguiere@teaser.fr>           RTF export fixes
 Albert Fluegel <albert.fluegel@hl.siemens.de>   Solaris
 Tomas Frydrych <tomas@frydrych.uklinux.net>	ttf, utf8 locale, bidi
+David Given <dg@tao-group.com>			Human Readable Text Export
 Ashleigh Gordon <gordonac@ocean.com.au>         English help files
 Peter Haight <peterh@sapros.com>                Fonts location bug fix
 Vlad Harchev <hvv@hippo.ru>                     Support for non latin-1 Languages
