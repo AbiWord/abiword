@@ -53,8 +53,8 @@ XAP_Draw_Symbol::~XAP_Draw_Symbol(void)
 
 void XAP_Draw_Symbol::setWindowSize( UT_uint32 width, UT_uint32 height)
 {
-	m_drawWidth = width;
-	m_drawHeight = height;
+	m_drawWidth = _UL(width);
+	m_drawHeight = _UL(height);
 }
 
 void XAP_Draw_Symbol::setAreaGc( GR_Graphics * gc)
@@ -64,8 +64,8 @@ void XAP_Draw_Symbol::setAreaGc( GR_Graphics * gc)
 
 void XAP_Draw_Symbol::setAreaSize( UT_uint32 width, UT_uint32 height)
 {
-	m_drawareaWidth = width;
-	m_drawareaHeight = height;
+	m_drawareaWidth = _UL(width);
+	m_drawareaHeight = _UL(height);
 	setFontStringarea();
 }
 
@@ -100,7 +100,6 @@ void XAP_Draw_Symbol::setFontToGC(GR_Graphics *p_gc, UT_uint32 MaxWidthAllowable
 		if (font->getFamily())
 			m_stFont = font->getFamily();
 		
-		m_stFont = font->getFamily();
 		p_gc->setFont(font);
 		
 		UT_uint32 MaxWidth = p_gc->getMaxCharacterWidth(p_buffer, 224);
@@ -176,14 +175,14 @@ void XAP_Draw_Symbol::draw(void)
 	y = 0;
 	for(i = 0; i <= 6; i++)
 	{
-		m_gc->drawLine(0, y, wwidth - 1, y);
+		m_gc->drawLine(0, y, wwidth - _UL(1), y);
 		y += tmph;
 	}
 
 	x = 0;
 	for(i = 0; i <= 31; i++)
 	{
-		m_gc->drawLine(x, 0, x, wheight - 1);
+		m_gc->drawLine(x, 0, x, wheight - _UL(1));
 		x += tmpw;
 	}
 }
@@ -196,6 +195,7 @@ UT_UCSChar XAP_Draw_Symbol::calcSymbol(UT_uint32 x, UT_uint32 y)
 	UT_uint32 iy;
 	UT_uint32 index;
 	UT_uint32 count;
+
 	
 	if (x > width || y > height)
 		return (UT_UCSChar) 0;
@@ -315,21 +315,21 @@ void XAP_Draw_Symbol::drawarea(UT_UCSChar c, UT_UCSChar p)
 	py1 = py + tmph;
 
 	// Redraw the Previous Character in black on White
-	m_gc->clearArea(px + 1, py + 1, tmpw - 1, tmph - 1);
+	m_gc->clearArea(px + _UL(1), py + _UL(1), tmpw - _UL(1), tmph - _UL(1));
 #ifndef WITH_PANGO	
 	m_gc->drawChars(&p, 0, 1, px + (tmpw - wp) / 2, py);
 #else
 	PangoGlyphString * pGlyph2 = m_gc->getPangoGlyphString(p);
-	m_gc->drawPangoGlyphString(pGlyph2, px + 2, py);
+	m_gc->drawPangoGlyphString(pGlyph2, px + _UL(2), py);
 #endif
 
 	// Redraw the Current Character in black on Blue
 	UT_RGBColor colour(128, 128, 192);
-	m_gc->fillRect(colour, cx + 1, cy + 1, tmpw - 1, tmph - 1);
+	m_gc->fillRect(colour, cx + _UL(1), cy + _UL(1), tmpw - _UL(1), tmph - _UL(1));
 #ifndef WITH_PANGO
 	m_gc->drawChars(&c, 0, 1, cx + (tmpw - wc) / 2, cy);
 #else
-	m_gc->drawPangoGlyphString(pGlyph, cx + 2, cy);
+	m_gc->drawPangoGlyphString(pGlyph, cx + _UL(2), cy);
 
 	pango_glyph_string_free(pGlyph);
 	pango_glyph_string_free(pGlyph2);
@@ -338,5 +338,7 @@ void XAP_Draw_Symbol::drawarea(UT_UCSChar c, UT_UCSChar p)
 
 void XAP_Draw_Symbol::onLeftButtonDown(UT_sint32 x, UT_sint32 y)
 {
+	_UUL(x);
+	_UUL(y);
 	setCurrent(calcSymbol(x, y));
 }
