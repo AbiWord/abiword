@@ -1619,7 +1619,7 @@ void FV_View::_moveInsPtNextPrevLine(UT_Bool bNext)
 
 	UT_ASSERT(iNewPoint != iOldPoint);
 
-	_setPoint(iNewPoint);
+	_setPoint(iNewPoint, bEOL);
 
 	if (!_ensureThatInsertionPointIsOnScreen())
 	{
