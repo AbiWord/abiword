@@ -500,6 +500,7 @@ UT_Bool fp_TextRun::split(UT_uint32 iSplitOffset)
 	pNew->m_pFontLayout = this->m_pFontLayout;
 	pNew->m_fDecorations = this->m_fDecorations;
 	pNew->m_colorFG = this->m_colorFG;
+        pNew->m_fPosition = this->m_fPosition;
 
 	pNew->m_iAscent = this->m_iAscent;
 	pNew->m_iDescent = this->m_iDescent;
