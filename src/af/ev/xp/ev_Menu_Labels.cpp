@@ -98,7 +98,11 @@ UT_Bool EV_Menu_LabelSet::setLabel(XAP_Menu_Id id,
 	return (m_labelTable[index] != NULL);
 }
 
+#ifdef __MRC__
+EV_Menu_Label * EV_Menu_LabelSet::getLabel(XAP_Menu_Id id)
+#else
 EV_Menu_Label * EV_Menu_LabelSet::getLabel(XAP_Menu_Id id) const
+#endif
 {
 	if ((id < m_first) || (id > m_last))
 		return NULL;
