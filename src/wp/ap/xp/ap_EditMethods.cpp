@@ -2883,9 +2883,6 @@ Defun(fileNew)
 		if (str.size())
 		{
 			// we want to create from a template
-		  if ( pDialog->getOpenType() == AP_Dialog_New::open_Existing )
-		    bOK = ::fileOpen(pFrame, str.c_str(), IEFT_Unknown) == UT_OK;
-		  else
 		    bOK = s_importFile (pFrame, str.c_str(), IEFT_Unknown) == UT_OK;
 		}
 		else
