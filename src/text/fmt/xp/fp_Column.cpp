@@ -570,84 +570,59 @@ void fp_VerticalContainer::_setMaxContainerHeight( UT_sint32 iLineHeight)
  */
 void fp_VerticalContainer::draw(dg_DrawArgs* pDA)
 {
-	UT_sint32 count = countCons();
 	const UT_Rect * pClipRect = pDA->pG->getClipRect();
-	UT_sint32 ytop,ybot;
-	UT_sint32 i;
-	UT_sint32 imax = (UT_sint32)(((UT_uint32)(1<<31)) - 1);
+	UT_sint32 ytop = 0, ybot = (UT_sint32)(((UT_uint32)(1<<31)) - 1);
+
 	if(pClipRect)
 	{
-		ybot = UT_MAX(pClipRect->height,_getMaxContainerHeight());
 		ytop = pClipRect->top;
-        ybot += ytop + _UL(1);
+		ybot = UT_MAX(pClipRect->height,_getMaxContainerHeight()) 
+			+ ytop + _UL(1);
 		xxx_UT_DEBUGMSG(("clipRect height %d \n",pClipRect->height));
 	}
-	else
-	{
-		ytop = 0;
-		ybot = imax;
-	}
-	bool bStop = false;
-	bool bStart = false;
 
 //
 // Only draw the lines in the clipping region.
 //
+	bool bStartedDrawing = false;
 	dg_DrawArgs da = *pDA;
-	for ( i = 0; (i<count && !bStop); i++)
+	UT_uint32 count = countCons();
+	for (UT_uint32 i = 0; i < count; i++)
 	{
 		fp_ContainerObject* pContainer = (fp_ContainerObject*) getNthCon(i);
-		UT_sint32 ydiff = 0;
-		bool bTable = false;
+		bool bInTable = false;
+
+		da.xoff = pDA->xoff + pContainer->getX();
+		da.yoff = pDA->yoff + pContainer->getY();
+
 		if(pContainer->getContainerType() == FP_CONTAINER_TABLE)
 		{
 			fp_TableContainer * pTab = (fp_TableContainer *) pContainer;
 			if(pTab->isThisBroken())
-			{
 				da.xoff = pDA->xoff + pTab->getMasterTable()->getX();
-			}
-			else
-			{
-				da.xoff = pDA->xoff + pTab->getX();
-			}
-			da.yoff = pDA->yoff + pTab->getY();
-			ydiff = da.yoff + pContainer->getHeight();
-			UT_sint32 iTableTop = da.yoff;
-			UT_sint32 iTableBot = iTableTop + pTab->getHeight();
-			if(iTableBot < ytop || iTableTop > ybot)
-			{
-				bTable = false;
-			}
-			else
-			{
-				bTable = true;
-			}
+
+			UT_sint32 iTableBot = da.yoff + pTab->getHeight();
+			/* we're in the table if iTableBot < ytop, or table top > ybot */
+			bInTable = (iTableBot < ytop || da.yoff > ybot);
 		}
-		else
-		{
-			da.xoff = pDA->xoff + pContainer->getX();
-			da.yoff = pDA->yoff + pContainer->getY();
-			ydiff = da.yoff + pContainer->getHeight();
-		}
+
 		UT_sint32 sumHeight = pContainer->getHeight() + (ybot-ytop);
-		UT_sint32 totDiff = 0;
+		UT_sint32 totDiff;
 		if(da.yoff < ytop)
-		{
 			totDiff = ybot - da.yoff;
-		}
 		else
-		{
-			totDiff = ydiff - ytop;
-		}
+			totDiff = da.yoff + pContainer->getHeight() - ytop;
+
 //		if(bTable || (da.yoff >= ytop && da.yoff <= ybot) || (ydiff >= ytop && ydiff <= ybot))
-		if(bTable || (totDiff < sumHeight)  || (pClipRect == NULL))
+		if(bInTable || (totDiff < sumHeight)  || (pClipRect == NULL))
 		{
-			bStart = true;
+			bStartedDrawing = true;
 			pContainer->draw(&da);
 		}
-		else if(bStart)
+		else if(bStartedDrawing)
 		{
-			bStop = true;
+			// we've started drawing and now we're not, so we're done.
+			break;
 		}
 	}
     _drawBoundaries(pDA);
