@@ -94,6 +94,8 @@ typedef UT_uint32 AV_ChangeMask;
 class AV_Listener
 {
 public:
+	virtual ~AV_Listener() {}
+
 	virtual bool		notify(AV_View * pView, const AV_ChangeMask mask) = 0;
 	virtual AV_ListenerType    getType(void) = 0;
 };
