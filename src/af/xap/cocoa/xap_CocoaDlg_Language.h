@@ -61,6 +61,8 @@ private:
 	IBOutlet NSButton *		oOK;
 	IBOutlet NSButton *		oDocumentDefault;
 
+	IBOutlet NSTextField *	oDocumentCurrent;
+
 	IBOutlet NSTableView *	oLanguageTable;
 
 	NSMutableArray *		m_Languages;
