@@ -47,6 +47,10 @@ bool pt_PieceTable::_unlinkStrux(pf_Frag_Strux * pfs,
 	case PTX_Section:
 	case PTX_SectionHdrFtr:
 	case PTX_SectionEndnote:
+	case PTX_SectionTable:
+	case PTX_SectionCell:
+	case PTX_EndCell:
+	case PTX_EndTable:
 		return _unlinkStrux_Section(pfs,ppfEnd,pfragOffsetEnd);
 		
 	case PTX_Block:
@@ -136,6 +140,19 @@ bool pt_PieceTable::_unlinkStrux_Block(pf_Frag_Strux * pfs,
 		_unlinkFrag(pfs,ppfEnd,pfragOffsetEnd);
 		return true;
 
+
+	case PTX_SectionTable:
+	case PTX_SectionCell:
+	case PTX_EndCell:
+	case PTX_EndTable:
+//
+// deleting tables and cells is a mutlti-step process and we can make no assumptions
+// along the way.
+//		
+		_unlinkFrag(pfs,ppfEnd,pfragOffsetEnd);
+		return true;
+
+
 	default:
 		UT_ASSERT(0);
 		return false;
@@ -146,8 +163,12 @@ bool pt_PieceTable::_unlinkStrux_Section(pf_Frag_Strux * pfs,
 											pf_Frag ** ppfEnd, UT_uint32 * pfragOffsetEnd)
 {
 	UT_ASSERT(pfs->getStruxType()==PTX_Section
-	|| pfs->getStruxType()==PTX_SectionHdrFtr
-	|| pfs->getStruxType()==PTX_SectionEndnote);
+			  || pfs->getStruxType()==PTX_SectionHdrFtr
+			  || pfs->getStruxType()==PTX_SectionEndnote
+			  || pfs->getStruxType()==PTX_SectionTable
+			  || pfs->getStruxType()==PTX_SectionCell
+			  || pfs->getStruxType()==PTX_EndCell
+			  || pfs->getStruxType()==PTX_EndTable );
 	
 	// unlink this Section strux from the document.
 	// the caller is responsible for deleting pfs.
@@ -185,6 +206,33 @@ bool pt_PieceTable::_unlinkStrux_Section(pf_Frag_Strux * pfs,
 		// in to the previous section (that is, the container of
 		// this block).
 
+		_unlinkFrag(pfs,ppfEnd,pfragOffsetEnd);
+		return true;
+	case PTX_SectionTable:
+        //
+        // deleting tables is a multi-step process that can't make assumptions
+        // on a single step
+		_unlinkFrag(pfs,ppfEnd,pfragOffsetEnd);
+		return true;
+
+	case PTX_SectionCell:
+        //
+        // deleting tables is a multi-step process that can't make assumptions
+        // on a single step
+		_unlinkFrag(pfs,ppfEnd,pfragOffsetEnd);
+		return true;
+
+	case PTX_EndCell:
+        //
+        // deleting tables is a multi-step process that can't make assumptions
+        // on a single step
+		_unlinkFrag(pfs,ppfEnd,pfragOffsetEnd);
+		return true;
+
+	case PTX_EndTable:
+        //
+        // deleting tables is a multi-step process that can't make assumptions
+        // on a single step
 		_unlinkFrag(pfs,ppfEnd,pfragOffsetEnd);
 		return true;
 

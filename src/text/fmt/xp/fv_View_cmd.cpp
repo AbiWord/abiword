@@ -800,11 +800,16 @@ void FV_View::cmdUndo(UT_uint32 count)
 	// Turn off list updates
 	m_pDoc->disableListUpdates();
 
+// Don't update tables until finished
+
+	m_pDoc->setDontImmediatelyLayout(true);
+
 	// Remember the current position, We might need it later.
 	rememberCurrentPosition();
 	UT_DEBUGMSG(("SEVIOR: undoing %d operations \n",count));
 	m_pDoc->undoCmd(count);
 	allowChangeInsPoint();
+	m_pDoc->setDontImmediatelyLayout(false);
 //
 // Now do a general update to make everything look good again.
 //
@@ -854,6 +859,8 @@ void FV_View::cmdRedo(UT_uint32 count)
 
 	// Turn off list updates
 	m_pDoc->disableListUpdates();
+	m_pDoc->setDontImmediatelyLayout(true);
+
 	// Remember the current position, We might need it later.
 	rememberCurrentPosition();
 
@@ -869,6 +876,7 @@ void FV_View::cmdRedo(UT_uint32 count)
 		_setPoint(getSavedPosition());
 		clearSavedPosition();
 	}
+	m_pDoc->setDontImmediatelyLayout(false);
 
 	// restore updates and clean up dirty lists
 	m_pDoc->enableListUpdates();

@@ -863,7 +863,30 @@ bool fl_DocListener::change(PL_StruxFmtHandle sfh,
 			m_pLayout->updateLayout();
 			goto finish_up;
 		}
-
+		case PTX_SectionTable:
+		{
+			fl_Layout * pL = (fl_Layout *)sfh;
+			UT_ASSERT(pL->getType() == PTX_SectionTable);
+			fl_TableLayout * pTL = (fl_TableLayout *) pL;
+			pTL->doclistener_deleteStrux(pcrx);
+			goto finish_up;
+		}
+		case PTX_SectionCell:
+		{
+			fl_Layout * pL = (fl_Layout *)sfh;
+			UT_ASSERT(pL->getType() == PTX_SectionCell);
+			fl_CellLayout * pCellL = (fl_CellLayout *) pL;
+			pCellL->doclistener_deleteStrux(pcrx);
+			goto finish_up;
+		}
+		case PTX_EndTable:
+		{
+			goto finish_up;
+		}
+		case PTX_EndCell:
+		{
+			goto finish_up;
+		}
 		default:
 			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 			bResult = false;

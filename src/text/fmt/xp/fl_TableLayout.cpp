@@ -1500,8 +1500,13 @@ void fl_CellLayout::collapse(void)
 	// Delete our Cell. One Cell per layout.
 
 	fp_CellContainer *pCell = (fp_CellContainer *) getFirstContainer();
+//
+// Remove it from the table container
+//
 	if (pCell)
 	{
+		fp_TableContainer * pTabCon = (fp_TableContainer *) pCell->getContainer();
+		pTabCon->removeContainer(pCell);
 		delete pCell;
 	}
 	setFirstContainer(NULL);
