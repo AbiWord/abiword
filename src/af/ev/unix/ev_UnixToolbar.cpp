@@ -495,6 +495,7 @@ UT_Bool EV_UnixToolbar::refreshToolbar(AV_View * pView, AV_ChangeMask mask)
 					break;
 				case EV_TBIT_ComboBox:
 				{
+#if 0					
 					UT_Bool bGrayed = EV_TIS_ShouldBeGray(tis);
 
 					_wd * wd = (_wd *) m_vecToolbarWidgets.getNthItem(k);
@@ -526,6 +527,7 @@ UT_Bool EV_UnixToolbar::refreshToolbar(AV_View * pView, AV_ChangeMask mask)
 								 m_pToolbarLabelSet->getLabel(id)->getToolbarLabel(),
 								 ((bGrayed) ? "disabled" : "enabled"),
 								 ((bString) ? szState : "no state")));
+#endif
 				}
 				break;
 				case EV_TBIT_StaticLabel:
