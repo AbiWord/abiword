@@ -353,7 +353,7 @@ endif
 endif
 
 # Catch all for undefined platform (CC will always be defined on a working platform)
-ifndef $(CC)
+ifndef CC
 fake-target::
 	@echo
 	@echo "    I can't seem to figure out which platform you are using."
