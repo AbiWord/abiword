@@ -58,10 +58,9 @@
  *    - if 0'd initializeArray()
  *  modified: AbiSource, Inc. Jun 14 1999
  *    - introduced initializeArray() back to metric parsing
+ *  modified: SourceGear, Inc. May 29 2000
+ *    - removed Win32 specific code.  
  */
-#ifdef WIN32
-#pragma warning (disable : 4244)        /* conversion from 'double' to 'float', possible loss of data */
-#endif
 
 #include <stdio.h>
 #include <errno.h>
