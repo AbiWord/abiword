@@ -21,8 +21,6 @@
 ** Only one of these is created by the application.
 *****************************************************************/
 
-#define AW_WIN32_USE_NEW_SPELL_CHECKER
-
 #define WIN32_LEAN_AND_MEAN
 #include <stdlib.h>
 #include <windows.h>
@@ -42,11 +40,8 @@
 #include "ap_Convert.h"
 #include "ap_Win32Frame.h"
 #include "ap_Win32App.h"
-#ifdef AW_WIN32_USE_NEW_SPELL_CHECKER
 #include "spell_manager.h"
-#else
-#include "sp_spell.h"
-#endif
+
 #include "ap_Strings.h"
 #include "ap_LoadBindings.h"
 #include "xap_EditMethods.h"
@@ -84,10 +79,6 @@ AP_Win32App::AP_Win32App(HINSTANCE hInstance, XAP_Args * pArgs, const char * szA
 
 AP_Win32App::~AP_Win32App(void)
 {
-#ifndef AW_WIN32_USE_NEW_SPELL_CHECKER
-	SpellCheckCleanup();
-#endif
-
 	DELETEP(m_pStringSet);
 	DELETEP(m_pClipboard);
 
@@ -164,30 +155,7 @@ bool AP_Win32App::initialize(void)
 	//////////////////////////////////////////////////////////////////
 	
 	{
-#ifdef AW_WIN32_USE_NEW_SPELL_CHECKER
 		SpellManager::instance().requestDictionary(xap_encoding_manager_get_language_iso_name());
-#else
-		const char * szISpellDirectory = NULL;
-		getPrefsValueDirectory(false,AP_PREF_KEY_SpellDirectory,&szISpellDirectory);
-		UT_ASSERT((szISpellDirectory) && (*szISpellDirectory));
-
-		const char * szSpellCheckWordList = NULL;
-		getPrefsValue(AP_PREF_KEY_SpellCheckWordList,&szSpellCheckWordList);
-		UT_ASSERT((szSpellCheckWordList) && (*szSpellCheckWordList));
-		
-		char * szPathname = (char *)calloc(sizeof(char),strlen(szISpellDirectory)+strlen(szSpellCheckWordList)+2);
-		UT_ASSERT(szPathname);
-		
-		sprintf(szPathname,"%s%s%s",
-				szISpellDirectory,
-				((szISpellDirectory[strlen(szISpellDirectory)-1]=='\\') ? "" : "\\"),
-				szSpellCheckWordList);
-
-		UT_DEBUGMSG(("Loading SpellCheckWordList [%s]\n",szPathname));
-		SpellCheckInit(szPathname);
-		free(szPathname);
-#endif	
-		// we silently go on if we cannot load it....
 	}
 	
 	//////////////////////////////////////////////////////////////////
