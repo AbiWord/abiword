@@ -480,8 +480,8 @@ void AP_Preview_Paragraph::draw(void)
 
 UT_Bool AP_Preview_Paragraph::_loadDrawFont(void)
 {
-	// we draw at 5 points in this preview
-	GR_Font * font = m_gc->findFont("Times New Roman", "normal", "", "normal", "", "5pt");
+	// we draw at 7 points in this preview
+	GR_Font * font = m_gc->findFont("Times New Roman", "normal", "", "normal", "", "7pt");
 	
 	if (font)
 	{

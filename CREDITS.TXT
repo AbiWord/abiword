@@ -40,6 +40,7 @@ Hubert Figuiere <hfiguiere@teaser.fr>           RTF export fixes
 Albert Fluegel <albert.fluegel@hl.siemens.de>   Solaris
 Ashleigh Gordon <gordonac@ocean.com.au>         English help files
 Peter Haight <peterh@sapros.com>                Fonts location bug fix
+Vlad Harchev <hvv@hippo.ru>                     Support for non latin-1 Languages
 Stephen Hack <shack@uiuc.edu>                   options dialog
 Martin Willemoes Hansen <mwh@stampede.org>
 hj <huangj@citiz.net>                           XIM, focus
