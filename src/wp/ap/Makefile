@@ -83,7 +83,10 @@ OBJS=		$(PLATFORM_OBJS)						\
 		$(OBJDIR)/ap_Toolbar_Icons.$(OBJ_SUFFIX)			\
 		$(OBJDIR)/ap_Toolbar_LabelSet.$(OBJ_SUFFIX)			\
 		$(OBJDIR)/ap_Toolbar_Layouts.$(OBJ_SUFFIX)			\
-		$(OBJDIR)/ap_TopRuler.$(OBJ_SUFFIX)
+		$(OBJDIR)/ap_TopRuler.$(OBJ_SUFFIX)				\
+		$(OBJDIR)/ap_wp_splash.$(OBJ_SUFFIX)				\
+		$(OBJDIR)/ap_wp_sidebar.$(OBJ_SUFFIX)
+
 
 include $(ABI_DEPTH)/config/abi_rules.mk
 

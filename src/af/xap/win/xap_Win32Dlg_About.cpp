@@ -33,7 +33,15 @@
 #include "xap_Win32Dlg_About.h"
 
 #include "xap_Win32Resources.rc2"
+#include "gr_Win32Graphics.h"
+#include "gr_Win32Image.h"
+#include "ut_ByteBuf.h"
+#include "ut_png.h"
 
+/*****************************************************************/
+
+extern unsigned char g_pngSidebar[];		// see ap_wp_sidebar.cpp
+extern unsigned long g_pngSidebar_sizeof;	// see ap_wp_sidebar.cpp
 
 /*****************************************************************/
 XAP_Dialog * XAP_Win32Dialog_About::static_constructor(XAP_DialogFactory * pFactory,
@@ -47,10 +55,12 @@ XAP_Win32Dialog_About::XAP_Win32Dialog_About(XAP_DialogFactory * pDlgFactory,
 											 XAP_Dialog_Id id)
 	: XAP_Dialog_About(pDlgFactory,id)
 {
+	m_pGrImageSidebar = NULL;
 }
 
 XAP_Win32Dialog_About::~XAP_Win32Dialog_About(void)
 {
+	DELETEP(m_pGrImageSidebar);
 }
 
 void XAP_Win32Dialog_About::runModal(XAP_Frame * pFrame)
@@ -102,32 +112,47 @@ BOOL XAP_Win32Dialog_About::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lPara
 	sprintf(buf, XAP_ABOUT_TITLE, szAppName);
 	SetWindowText(hWnd, buf);
 
-	{
-		HWND hwndStatic;
+	HWND hwndStatic;
 		
-		hwndStatic = GetDlgItem(hWnd, XAP_RID_DIALOG_ABOUT_DESCRIPTION);
-		sprintf(buf, XAP_ABOUT_DESCRIPTION, szAppName);
-		SetWindowText(hwndStatic, buf);
+	hwndStatic = GetDlgItem(hWnd, XAP_RID_DIALOG_ABOUT_DESCRIPTION);
+	sprintf(buf, XAP_ABOUT_DESCRIPTION, szAppName);
+	SetWindowText(hwndStatic, buf);
 
-		hwndStatic = GetDlgItem(hWnd, XAP_RID_DIALOG_ABOUT_COPYRIGHT);
-		SetWindowText(hwndStatic, XAP_ABOUT_COPYRIGHT);
+	hwndStatic = GetDlgItem(hWnd, XAP_RID_DIALOG_ABOUT_COPYRIGHT);
+	SetWindowText(hwndStatic, XAP_ABOUT_COPYRIGHT);
 
-		hwndStatic = GetDlgItem(hWnd, XAP_RID_DIALOG_ABOUT_GPL);
-		sprintf(buf, XAP_ABOUT_GPL, szAppName);
-		SetWindowText(hwndStatic, buf);
+	hwndStatic = GetDlgItem(hWnd, XAP_RID_DIALOG_ABOUT_GPL);
+	sprintf(buf, XAP_ABOUT_GPL, szAppName);
+	SetWindowText(hwndStatic, buf);
 
-		hwndStatic = GetDlgItem(hWnd, XAP_RID_DIALOG_ABOUT_VERSION);
-		sprintf(buf, XAP_ABOUT_VERSION, XAP_App::s_szBuild_Version); 
-		SetWindowText(hwndStatic, buf);
+	hwndStatic = GetDlgItem(hWnd, XAP_RID_DIALOG_ABOUT_VERSION);
+	sprintf(buf, XAP_ABOUT_VERSION, XAP_App::s_szBuild_Version); 
+	SetWindowText(hwndStatic, buf);
 
-		hwndStatic = GetDlgItem(hWnd, XAP_RID_DIALOG_ABOUT_URL);
-		SetWindowText(hwndStatic, XAP_ABOUT_URL);
+	hwndStatic = GetDlgItem(hWnd, XAP_RID_DIALOG_ABOUT_URL);
+	SetWindowText(hwndStatic, XAP_ABOUT_URL);
 
-		hwndStatic = GetDlgItem(hWnd, XAP_RID_DIALOG_ABOUT_BUILD);
-		sprintf(buf, XAP_ABOUT_BUILD, XAP_App::s_szBuild_Options);
-		SetWindowText(hwndStatic, buf);
-	}		
+	hwndStatic = GetDlgItem(hWnd, XAP_RID_DIALOG_ABOUT_BUILD);
+	sprintf(buf, XAP_ABOUT_BUILD, XAP_App::s_szBuild_Options);
+	SetWindowText(hwndStatic, buf);
 
+	hwndStatic = GetDlgItem(hWnd, XAP_RID_DIALOG_ABOUT_SIDEBAR);
+	m_sidebarDefaultWndProc = (WNDPROC)SetWindowLong(hwndStatic,GWL_WNDPROC,(LONG)s_mySidebarWndProc);
+	SetWindowLong(hwndStatic,GWL_USERDATA,(LONG)(this));
+
+	UT_ByteBuf * pBB = new UT_ByteBuf(g_pngSidebar_sizeof);
+	pBB->ins(0,g_pngSidebar,g_pngSidebar_sizeof);
+
+	m_pGrImageSidebar = new GR_Win32Image(NULL,NULL);
+	// TODO for now, we stretch the image to fit the window,
+	// TODO we ****assume**** that both have the same aspect
+	// TODO ratio.
+	RECT rSidebar;
+	GetClientRect(hwndStatic,&rSidebar);
+	m_pGrImageSidebar->convertFromPNG(pBB,rSidebar.right,rSidebar.bottom);
+
+	DELETEP(pBB);
+		
 	return 1;							// 1 == we did not call SetFocus()
 }
 
@@ -147,6 +172,32 @@ BOOL XAP_Win32Dialog_About::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
 	default:							// we did not handle this notification
 		UT_DEBUGMSG(("WM_Command for id %ld\n",wId));
 		return 0;						// return zero to let windows take care of it.
+	}
+}
+
+LRESULT APIENTRY XAP_Win32Dialog_About::s_mySidebarWndProc(HWND hwnd, UINT uMsg,
+														   WPARAM wParam, LPARAM lParam)
+{
+	// this is a static function.  (this) is in GWL_USERDATA.
+	
+	XAP_Win32Dialog_About * pThis = (XAP_Win32Dialog_About *)GetWindowLong(hwnd,GWL_USERDATA);
+
+	switch (uMsg)
+	{
+	case WM_CREATE:
+		UT_DEBUGMSG(("Sidebar create\n"));
+	default:
+		return pThis->m_sidebarDefaultWndProc(hwnd,uMsg,wParam,lParam);
+
+	case WM_PAINT:
+		{
+			PAINTSTRUCT ps;
+			HDC hdc = BeginPaint(hwnd, &ps);
+			GR_Win32Graphics gr(hdc,hwnd);
+			gr.drawImage(pThis->m_pGrImageSidebar,0,0);
+			EndPaint(hwnd,&ps);
+			return 0;
+		}
 	}
 }
 

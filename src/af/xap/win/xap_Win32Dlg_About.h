@@ -21,6 +21,7 @@
 #define XAP_WIN32DIALOG_ABOUT_H
 
 #include "xap_Dlg_About.h"
+class GR_Win32Image;
 
 /*****************************************************************/
 
@@ -38,6 +39,11 @@ public:
 protected:
 	BOOL					_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam);
 	BOOL					_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam);
+
+	WNDPROC					m_sidebarDefaultWndProc;
+	GR_Win32Image *			m_pGrImageSidebar;
+	
+	static LRESULT APIENTRY	s_mySidebarWndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 };
 
 #endif /* XAP_WIN32DIALOG_ABOUT_H */

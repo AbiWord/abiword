@@ -104,5 +104,7 @@ int main(int argc, char** argv)
 	_dumpHexCBytes(stdout, pBytes, iLen);
 	printf("};\n");
 
+	printf("unsigned long %s_sizeof = sizeof(%s);\n",argv[2],argv[2]);
+	
 	return 0;
 }
