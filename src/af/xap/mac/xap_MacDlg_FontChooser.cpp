@@ -62,7 +62,7 @@ void XAP_MacDialog_FontChooser::runModal(XAP_Frame * pFrame)
 				 ((m_pFontStyle) ? m_pFontStyle : ""),
 				 ((m_pColor) ? m_pColor : "" ),
 				 (m_bUnderline),
-				 (m_bStrikeOut)));
+				 (m_bStrikeout)));
 	
 	/*
 	   WARNING: any changes to this function should be closely coordinated
