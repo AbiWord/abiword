@@ -25,7 +25,7 @@
 #include "ut_bytebuf.h"
 
 PS_Image::PS_Image(const char* szName)
-	: m_image(0), m_hasAlpha(false)
+	: m_hasAlpha(false), m_image(0)
 {
 	if (szName)
 	{
@@ -153,10 +153,8 @@ bool PS_Image::convertFromBuffer(const UT_ByteBuf* pBB, UT_sint32 iDisplayWidth,
 	if (color_type & PNG_COLOR_MASK_ALPHA) {
 #if 1
 		png_set_strip_alpha(png_ptr);
-		m_hasAlpha = true;		
-#else
-		m_hasAlpha = true;		
 #endif
+		m_hasAlpha = true;		
 	}
 
 	UT_uint32 iBytesInRow;
@@ -195,7 +193,7 @@ bool PS_Image::convertFromBuffer(const UT_ByteBuf* pBB, UT_sint32 iDisplayWidth,
 	m_image->height = height;
 
 	// allocate for 3 or 4 bytes
-	m_image->data = static_cast<guchar *>(UT_calloc(m_image->width * iBytesInRow, sizeof(guchar)));
+	m_image->data = static_cast<guchar *>(UT_calloc(m_image->height * iBytesInRow, sizeof(guchar)));
 	
 	if (!m_image->data)
 	{
