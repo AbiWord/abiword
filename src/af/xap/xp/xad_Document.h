@@ -24,6 +24,7 @@
 // TODO should the filename be UT_UCSChar rather than char ?
 
 #include "ut_types.h"
+#include "ut_alphahash.h"
 
 class AD_Document
 {
@@ -41,12 +42,20 @@ public:
 	virtual UT_Bool			canDo(UT_Bool bUndo) const = 0;
 	virtual UT_Bool			undoCmd(UT_uint32 repeatCount) = 0;
 	virtual UT_Bool			redoCmd(UT_uint32 repeatCount) = 0;
-	
+
+   	// "ingore all" list for spell check
+   	UT_Bool				appendIgnore(const UT_UCSChar * pszWord);
+   	UT_Bool				isIgnore(UT_UCSChar * pszWord) const;
+   	UT_Bool				enumIgnores(UT_uint32 k, const UT_UCSChar * pszWord) const;
+   	UT_Bool				clearIgnores(void);
+   
 protected:
 	virtual ~AD_Document();		//  Use unref() instead.
 
 	int				m_iRefCount;
 	const char *			m_szFilename;
+
+	UT_AlphaHashTable *		m_pIgnoreList;
 };
 
 
