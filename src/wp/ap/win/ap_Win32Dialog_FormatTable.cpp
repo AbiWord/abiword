@@ -353,15 +353,15 @@ void AP_Win32Dialog_FormatTable::event_previewExposed(void)
 }
 
 
-void AP_Win32Dialog_FormatTable::setBackgroundColorInGUI(UT_RGBColor clr);
+void AP_Win32Dialog_FormatTable::setBackgroundColorInGUI(UT_RGBColor clr)
 {
 	UT_ASSERT_HARMLESS(UT_NOT_IMPLEMENTED);
-};
+}
 
 void AP_Win32Dialog_FormatTable::setBorderThicknessInGUI(UT_UTF8String & sThick)
 {
 	UT_ASSERT_HARMLESS(UT_NOT_IMPLEMENTED);
-};
+}
 
 
 void AP_Win32Dialog_FormatTable::setSensitivity(bool bSens)
