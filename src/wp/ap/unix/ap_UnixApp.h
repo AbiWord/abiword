@@ -64,8 +64,20 @@ public:
 	virtual bool					parseCommandLine(void);
 
 	virtual void					setSelectionStatus(AV_View * pView);
-        virtual void                                    setViewSelection( AV_View * pView);
-        virtual AV_View *                               getViewSelection( void);
+
+	/*!
+	  Sets the view selection
+	  \param pView The veiw the selection view is to be set to.
+	*/
+        inline virtual void                             setViewSelection( AV_View * pView)
+	  { m_pViewSelection = pView; }
+
+	/*!
+	  Gets the View Selection
+	  /return The View currently selected.
+	*/
+	inline virtual AV_View *                        getViewSelection(void)
+	  { return m_pViewSelection; }
 	virtual void					clearSelection(void);
 	virtual bool					getCurrentSelection(const char** formatList,
 									    void ** ppData, UT_uint32 * pLen,
