@@ -719,32 +719,54 @@ gint XAP_UnixDialog_FileOpenSaveAs::previewPicture (void)
 	XAP_UnixApp * unixapp = static_cast<XAP_UnixApp *> (m_pApp);
 	UT_ASSERT(unixapp);
 
+	const XAP_StringSet * pSS = m_pApp->getStringSet();
+
 	// attach and clear the area immediately
 	GR_UnixGraphics* pGr = new GR_UnixGraphics(m_preview->window, unixapp->getFontManager(), m_pApp);
 	pGr->clearArea(0, 0, m_preview->allocation.width, m_preview->allocation.height);
 
 	gchar * buf = gtk_file_selection_get_filename (m_FS);
 
-	if (!buf)
-	  return 0;
+	GR_Font * fnt = pGr->findFont("Times New Roman", "normal", "", "normal", "", "12pt");
+	pGr->setFont(fnt);
 
-	xxx_UT_DEBUGMSG(("DOM: filename is '%s'\n", buf));
+	const XML_Char * str = pSS->getValue(XAP_STRING_ID_DLG_IP_No_Picture_Label);
+	int len = strlen (str);
+	UT_UCSChar * ucstext = new UT_UCSChar [len + 1]; 
+	UT_UCS_strcpy_char (ucstext, str);
+
+	int answer = 0;
+
+	UT_ByteBuf *pBB = NULL, *pTempBB = NULL; 
+	IEGraphicFileType iegft = IEGFT_Unknown;
+	IE_ImpGraphic* pIEG = NULL;
+	UT_Error errorCode = UT_OK;
+	GR_UnixImage *pImage = NULL;
+
+	double		scale_factor = 0.0;
+	UT_sint32	scaled_width,scaled_height;
+	UT_sint32	iImageWidth,iImageHeight;
+	UT_Byte     *pszWidth,*pszHeight;
+
+	if (!buf)
+	  {
+	    pGr->drawChars (ucstext, 0, len, 12, 35);
+	    goto Cleanup;
+	  }
 
 	// Load File into memory
-	UT_ByteBuf* pBB     = new UT_ByteBuf(0);
-	UT_ByteBuf* pTempBB = new UT_ByteBuf(0);
+	pBB     = new UT_ByteBuf(0);
+	pTempBB = new UT_ByteBuf(0);
 	pBB->insertFromFile(0, buf);
 
 	// Build an Import Graphic based on file type
-	IEGraphicFileType iegft = IEGFT_Unknown;
-	IE_ImpGraphic* pIEG;
-	UT_Error errorCode;
 	errorCode = IE_ImpGraphic::constructImporter(buf, iegft, &pIEG);
 	if (errorCode)
 	{
 		DELETEP(pBB);
 		DELETEP(pTempBB);
-		return 0;
+		pGr->drawChars (ucstext, 0, len, 12, 35);
+		goto Cleanup;
 	}
 	iegft = pIEG->fileTypeForContents( (const char *) pBB->getPointer(0), 50);
 
@@ -759,17 +781,13 @@ gint XAP_UnixDialog_FileOpenSaveAs::previewPicture (void)
 			DELETEP(pIEG);
 			DELETEP(pBB);
 			DELETEP(pTempBB);
-			return 0;
+			pGr->drawChars (ucstext, 0, len, 12, 35);
+			goto Cleanup;
 		}
 	}
 	// Reset file type based on conversion
 	iegft = pIEG->fileTypeForContents( (const char *) pBB->getPointer(0), 50);
 	DELETEP(pIEG);
-
-	double		scale_factor = 0.0;
-	UT_sint32	scaled_width,scaled_height;
-	UT_sint32	iImageWidth,iImageHeight;
-	UT_Byte     *pszWidth,*pszHeight;
 
 	if (iegft == IEGFT_PNG)
 	{
@@ -782,8 +800,6 @@ gint XAP_UnixDialog_FileOpenSaveAs::previewPicture (void)
 		iImageHeight = (UT_sint32)(*pszHeight);
 	}
 
-	UT_DEBUGMSG(("DOM: allocated width %d, height %d\n", m_preview->allocation.width, m_preview->allocation.height));
-
 	if (m_preview->allocation.width >= iImageWidth && m_preview->allocation.height >= iImageHeight)
 		scale_factor = 1.0;
 	else
@@ -793,16 +809,21 @@ gint XAP_UnixDialog_FileOpenSaveAs::previewPicture (void)
 	scaled_width  = (int) (scale_factor * iImageWidth);
 	scaled_height = (int) (scale_factor * iImageHeight);
 
-	GR_UnixImage* pImage = new GR_UnixImage(NULL);
+	pImage = new GR_UnixImage(NULL);
 	pImage->convertFromBuffer(pBB, scaled_width, scaled_height);
 
 	pGr->drawImage(pImage,
 		       (m_preview->allocation.width  - scaled_width ) / 2,
 		       (m_preview->allocation.height - scaled_height) / 2);
 
+	answer = 1;
+
+ Cleanup:
 	DELETEP(pBB);
 	DELETEP(pImage);
 	DELETEP(pGr);
+	DELETEP(fnt);
+	DELETEPV(ucstext);
 
-	return 1;
+	return answer;
 }
