@@ -31,7 +31,10 @@ borderstyle="none">
 <table border="0" cellpadding="5" borderstyle="none">
 <tbody>    <tr>
         <td valign="top" bgcolor="#F0F8FF" nowrap><a
-        href="index.html"><font size="2">A propos<br>
+        href="index.html"><font size="2">A propos</font></a><font size="2"><a href="comindex.html"><br>
+          Commandes</a><a href="contents.html"><br>
+          Sommaire</a></font><a
+        href="index.html"><font size="2"><br>
         </font></a><a href="why.html"><font size="2">Pourquoi
         AbiWord?</font></a><font size="2"><br>
         </font><a href="general.html"><font size="2">Généralités</font></a><br>
@@ -82,7 +85,7 @@ borderstyle="none">
         href="shortcuts.html"><font size="2"><br>
         Raccourcis clavier</font></a><font size="2"><br>
         </font><a href="about.html"><font size="2">abisource.com<br>
-        </font><a href="faq.html"><font size="2">FAQ</font></a><a
+        </font></a><a href="faq.html"><font size="2">FAQ</font></a><a
         href="credits.html"><font size="2"><br>
         Crédits</font></a></td>
         <td width="1">&nbsp; </td>
@@ -90,12 +93,13 @@ borderstyle="none">
         Intel</h2>
         <p>Bienvenue dans la communauté des utilisateurs
         d'AbiWord!</p>
-        <p>La dernière version d'AbiWord doit
+         <p>La dernière version d'AbiWord doit
         correctement s'installer et fonctionner sur les systèmes
-        Linux avec processeur Intel compatible. Abiword a été
+        Linux avec processeur Intel compatible. AbiWord a été
         &quot;packagé&quot; dans plusieurs formats de
         distribution afin de simplifier son installation sur
-        votre système.</p>
+        votre système. Il existe également une implémentation spécifique d'AbiWord
+          pour GNOME afin de mieux y être intégré.</p>
         <ul>
             <li><a
                 href="http://www.abisource.com/dl_linux_intel.phtml#deb">DEB</a>
@@ -123,6 +127,19 @@ borderstyle="none">
             <li>En tant que superviseur, taper la commande:<pre>  rpm -Uvh abisuite-x.x.x-1.i386.rpm
 </pre>
             </li>
+            <li>Si vous utilisez KDE, effectuez un clic droit sur le fichier rpm,
+              et sélectionner kpackage du menu contextuel.
+            </li>
+        </ol>
+          <p align="center"><img border="0" src="../en-US/images/kpack1.gif" alt="kpackage du menu contextuel" width="135" height="171"></p>
+          <blockquote>
+            <p align="left">Quand la fenêtre kpackage apparaît, cliquez sur le
+            bouton Install. Si vous avez des librairies partagées non
+            installées, vous aurez à les installer avant de pouvoir installer
+            AbiWord.</p>
+            <p align="center"><img border="0" src="../en-US/images/kpack2.gif" alt="La fenêtre kpackage" width="608" height="428"></p>
+          </blockquote>
+        <ol start="4">
             <li>Cela installera AbiWord et ses fichiers dans le
                 dossier <tt>/usr/share/abisuite</tt>. Des liens
                 par défauts appelés <tt>AbiWord</tt> et <tt>abiword</tt>
@@ -132,8 +149,7 @@ borderstyle="none">
                 remplacer les versions précédentes d'AbiWord
                 pour ceux qui veulent installer une mise à jour.
             </li>
-            <li>Pour des informations complémentaires sur les
-                pachages RPM, veuillez consulter le fichier <a
+            <li>Pour des informations complémentaires sur les packages RPM, veuillez consulter le fichier <a
                 href="http://www.abisource.com/binaries/0.7.6/linux/README">README</a>.
             </li>
         </ol>
@@ -149,14 +165,13 @@ borderstyle="none">
                 par défauts appelés <tt>AbiWord</tt> et <tt>abiword</tt>
                 seront stockés dans <tt>/usr/bin/X11</tt> et
                 pointeront sur les exécutables.</li>
-            <li>Pour des informations complémentaires sur les
-                pachages DEB, veuillez consulter le fichier <a
+            <li>Pour des informations complémentaires sur les packages DEB, veuillez consulter le fichier <a
                 href="http://www.abisource.com/binaries/0.7.6/linux/README">README</a>.
             </li>
         </ol>
         <h3><a name="slp">SLP</a></h3>
-        <p>Le processus d'installation SLP doit être aussi
-        simple que les processus d'installation DEB ou RPM. Nouss
+          <p>Le processus d'installation SLP doit être aussi
+        simple que les processus d'installation DEB ou RPM. Nous
         ne disposons pas pour le moment de distribution Stampede
         Linux installée et nous n'avons donc pas testé nos
         packages Stampede Linux. Ces fichiers ont été
@@ -165,8 +180,7 @@ borderstyle="none">
         <p>Si vous essayez la distribution SLP, nous vous
         encourageons à nous envoyer un message dans <a
         href="mailto:abiword-dev@abisource.com">la liste de
-        développement d'AbiWord</a> faisant part de votre
-        expérence. </p>
+        développement d'AbiWord</a> faisant part de votre expérience. </p>
         <ol>
             <li><a href="http://www.abisource.com/free.phtml">Télécharger</a> l'archive (abisuite-x.x.x.slp). </li>
             <li>Installer AbiWord via le manager de package
@@ -176,20 +190,18 @@ borderstyle="none">
                 par défauts appelés <tt>AbiWord</tt> et <tt>abiword</tt>
                 seront stockés dans <tt>/usr/bin/X11</tt> et
                 pointeront sur les exécutables.</li>
-            <li>Pour des informations complémentaires sur les
-                pachages SLP, veuillez consulter le fichier <a
+            <li>Pour des informations complémentaires sur les packages SLP, veuillez consulter le fichier <a
                 href="http://www.abisource.com/binaries/0.7.6/linux/README">README</a>.
             </li>
         </ol>
         <h3><a name="tar">TAR</a></h3>
         <p>Il existe deux versions des archives Tar: une version
-        liens-statiques et une versions liens-dynamiques. La
-        version dynamiques est moins grosse (2.6Mb contre 3.3Mb),
+        liens-statiques et une version liens-dynamiques. La
+        version dynamique est moins grosse (2.6Mb contre 3.3Mb),
         mais utilise un nombre considérable de librairies
         partagées de votre système. Si vous ne saisissez pas la
         différence, choisissez la version statique</p>
-        <p>Le processus d'installation de l'archive statique Tar
-        parrait complexe mais est actuellement assez simple. </p>
+        <p>Le processus d'installation de l'archive statique Tar parait complexe mais est actuellement assez simple. </p>
         <ol>
             <li><a href="http://www.abisource.com/free.phtml">Télécharger</a> l'archive (abisuite-x.x.x-Linux_i386_static.tar.gz). </li>
             <li>Copiez l'archive dans un dossier accessible par
@@ -217,13 +229,60 @@ borderstyle="none">
                 href="http://www.abisource.com/binaries/0.7.6/linux/README">README</a>
                 pour des informations complémentaires. </li>
         </ol>
-        <p>Le processus d'installation de <a href="http://www.abisource.com/free.phtml"> l'archive dynamique</a> (abisuite-x.x.x-Linux_i386_dynamic.tar.gz) est identique. Remplacer simplement <tt>_dynamic</tt>
-        for <tt>_static</tt> dans les étapes 1 et 2 ci-dessus.
+          <p>Le processus d'installation de <a href="http://www.abisource.com/free.phtml"> l'archive dynamique</a> (abisuite-x.x.x-Linux_i386_dynamic.tar.gz) est identique. Remplacer simplement <tt>_dynamic</tt>
+          par <tt>_static</tt> dans les étapes 1 et 2 ci-dessus.
         Si vous voulez plus d'informations à propos des
         librairies et des versions que la version dynamique
         utilise, veuillez consulter le fichier <a
         href="http://www.abisource.com/binaries/0.7.6/linux/README">README</a>.
         </p>
+          <hr>
+          <h3>L'enregistrement sous Linux</h3>
+          <p>Si vous enregistrer vos documents sous Linux, il est recommandé de
+          les placer dans le dossier /home, à moins que vous n'utilisiez le
+          &quot;dual boot&quot; (vois ci-dessous). Si vous avez un nombre
+          considérable de documents vous devriez les placer par exemple dans le
+          dossier /home/documents.&nbsp;<br>
+          <br>
+          Pour enregistrer un document, souvenez vous que vous devez avoir la
+          permission de l'écrire. Parfois, vous pouvez ne pas pouvoir
+          enregistrer un document simplement parce que vous n'en avez pas la
+          permission. Dans ce cas, il est possible de l'&quot;Enregistrer
+          sous...&quot; afin de l'enregistrer dans un autre dossier.</p>
+          <h3>Linux et Windows en &quot;Dual Boot&quot;</h3>
+          <p>Si vous avez à la fois Windows et Linux installé sur deux
+          partitions différentes de votre disque dur, et que vous vouliez
+          utiliser vos documents AbiWord sur les deux systèmes d'exploitation,
+          vous aurez à enregistrer vos documents sur une partition FAT ou FAT32,
+          ou alors sur une disquette. Cela parce que Windows ne peut avoir
+          accès aux partitions Linux . Là encore il est préférable
+          d'enregistrer vos documents sous le dossier par défaut de Windows: "Mes
+          Documents". Souvenez vous toujours que sous Linux, vous devez avoir la
+          permission d'écrire dans ce dossier.</p>
+          <h3>BeOS et Linux en &quot;Dual Boot&quot;</h3>
+          <p>Si vous avez à la fois Beos et Linux installés sur deux partitions
+          différentes de votre disque dur, il est ici préférable
+          d'enregistrer vos documents dans le système de fichier natif propre
+          à BeOS.</p>
+          <h3>KDE and AbiWord</h3>
+          <p>Après avoir installé AbiWord sur votre machine, vous pouvez
+          correctement configurer AbiWord de manière à ce qu'il soit
+          optimisé pour KDE. Pour cela, effectuer un clic droit sur le bureau
+          de KDE et sélectionner Nouveau du menu contextuel, puis Application.</p>
+          <p align="center"><img border="0" src="../en-US/images/kde1.gif" alt="Sélectionner Application du menu contextuel. " width="160" height="165"></p>
+          <p>Taper maintenant &quot;AbiWord&quot; dans la fenêtre comme celle
+          ci-dessous.</p>
+          <p align="center"><img border="0" src="../en-US/images/kde2.gif" width="269" height="96"></p>
+          <p>Ensuite, taper &quot;abiword&quot; dans la fenêtre &quot;Execute&quot;
+          en respectant la casse (tout en minuscule).<br>
+          Si vous voulez un icône AbiWord sur votre bureau, copiez-le du dossier
+          /usr/share/Abisuite/icons vers le dossier /usr/share/icons. Vous devriez
+          obtenir une fenêtre semblable à celle ci-dessous.</p>
+          <p align="center"><img border="0" src="../en-US/images/kde3.gif" width="408" height="428"></p>
+          <p align="left">Pour terminer, cliquer sur le bouton OK : l'icône d'AbiWord
+          apparaît alors sur le bureau de KDE. Vous pouvez également le placer
+          dans la barre des tâches simplement en y effectuant un &quot;Drag
+          &amp; Drop&quot;.
         </td>
     </tr>
 </tbody></table>

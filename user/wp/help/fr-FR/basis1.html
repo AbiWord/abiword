@@ -23,7 +23,10 @@ borderstyle="none">
 <table border="0" cellpadding="5" borderstyle="none">
 <tbody>    <tr>
         <td valign="top" bgcolor="#F0F8FF" nowrap><a
-        href="index.html"><font size="2">A propos<br>
+        href="index.html"><font size="2">A propos</font></a><font size="2"><a href="comindex.html"><br>
+          Commandes</a><a href="contents.html"><br>
+          Sommaire</a></font><a
+        href="index.html"><font size="2"><br>
         </font></a><a href="why.html"><font size="2">Pourquoi
         AbiWord?</font></a><font size="2"><br>
         </font><a href="general.html"><font size="2">Généralités</font></a><br>
@@ -74,7 +77,7 @@ borderstyle="none">
         href="shortcuts.html"><font size="2"><br>
         Raccourcis clavier</font></a><font size="2"><br>
         </font><a href="about.html"><font size="2">abisource.com<br>
-        </font><a href="faq.html"><font size="2">FAQ</font></a><a
+        </font></a><a href="faq.html"><font size="2">FAQ</font></a><a
         href="credits.html"><font size="2"><br>
         Crédits</font></a></td>
         <td width="1">&nbsp; </td>
@@ -83,16 +86,15 @@ borderstyle="none">
         cependant essentielles et quasiment communes à toute
         autre application:</p>
         <blockquote>
-            <p>* Ouvrir AbiWord<br>
-            * Créer un nouveau document<br>
-            * Enregistrer un document<br>
-            * Ouvrir un document<br>
-            * Quitter AbiWord</p>
+            <p>* <a href="#open"> Ouvrir AbiWord</a><br>
+            * <a href="#new"> Créer un nouveau document</a><br>
+            * <a href="#save"> Enregistrer un document</a><br>
+            * <a href="#opendoc"> Ouvrir un document</a><br>
+            * <a href="#exit"> Quitter AbiWord</a></p>
         </blockquote>
-        <h3>Ouvrir AbiWord</h3>
+        <h3><a name="open">Ouvrir AbiWord</a></h3>
         <p>Si AbiWord a été correctement installé, vous
-        devriez pouvoir le lancer de deux manières différentes
-        (Windows)</p>
+        devriez pouvoir le lancer de deux manières différentes (<i>Windows</i>)</p>
         <ol>
             <li>La plus simple est de double-cliquer sur l'icone
                 situé sur le bureau de Windows.<img
@@ -107,12 +109,21 @@ borderstyle="none">
         <p align="center"><img src="images/start.jpg"
         alt="Démarrer/Programmes/AbiWord/AbiWord" width="382"
         height="248"></p>
-        <h3>Créer un nouveau document</h3>
+        <p align="left">De même sous <i>Linux</i>, vous devriez pouvoir lancer
+        là aussi AbiWord de deux manières différentes:</p>
+          <ol>
+            <li>
+              <p align="left">Cliquer sur l'icone d'AbiWord situé sur le bureau
+              ou dans le menu Gnome ou KDE</li>
+            <li>
+              <p align="left">Taper &quot;abiword&quot; dans une fenêtre X</li>
+          </ol>
+        <h3><a name="new">Créer un nouveau document</a></h3>
         <p>A l'ouverture d'AbiWord, un nouveau document est
         créé et vous pouvez commencer à taper votre texte sur
         la page vierge. Nous verrons ensuite comment mettre en
         page ce texte et l'agrémenter.</p>
-        <p>Pour créer un nouveau document, il y a trois
+        <p>Pour créer un nouveau document, il y a quatre
         possibilités:</p>
         <blockquote>
             <ol type="a">
@@ -208,23 +219,23 @@ borderstyle="none">
                 sous...&quot;</li>
             <li>AbiWord permet d'enregistrer des documents sous
                 plusieurs formats:<br>
-                *.ABW : c'est le format par défaut d'AbiWord. Il
+              *.abw : c'est le format par défaut d'AbiWord. Il
                 est équivalent au format XML<br>
-                *.ZABW : le format ABW compressé qui permet de
+              *.zabw : le format ABW compressé qui permet de
                 réduire la taille du fichier<br>
-                *.RTF : ce format standard est&nbsp;
+              *.rtf : ce format standard est&nbsp;
                 &quot;passe-partout&quot; (conserve le texte mis
                 en forme)<br>
-                *.TXT : fichier texte qui supprime toute mise en
+              *.txt : fichier texte qui supprime toute mise en
                 forme. (la taille du fichier en est réduite)<br>
-                *.UTF8 :&nbsp; c'est un fichier texte appelé
+              *.utf8 :&nbsp; c'est un fichier texte appelé
                 &quot;texte clair&quot; et à représentation
                 multi-bits.<br>
-                *.HTML : format des pages Internet ; standard et
+              *.html : format des pages Internet ; standard et
                 universel.<br>
-                *.LATEX : fichier au format LaTeX.</li>
+              *.latex : fichier au format LaTeX.</li>
         </ol>
-        <h3>Ouvrir un document</h3>
+        <h3><a name="opendoc">Ouvrir un document</a></h3>
         <p>Pour ouvrir un document après l'avoir enregistré, il
         y a là encore trois possibilités:</p>
         <blockquote>
@@ -257,11 +268,11 @@ borderstyle="none">
         <p align="left">AbiWord permet d'ouvrir des fichiers
         provenant de différentes sources:</p>
         <blockquote>
-            <p align="left">*.ABW, *.ZABW, *.RTF, *.TXT, *.UTF8<br>
-            *.DOC : fichiers en provenance de Microsoft Word
+            <p align="left">*.abw, *.zabw, *.rtf, *.txt, *.utf8<br>
+            *.doc : fichiers en provenance de Microsoft Word
             (toutes versions)</p>
         </blockquote>
-        <h3>Quitter AbiWord</h3>
+        <h3><a name="exit">Quitter AbiWord</a></h3>
         <p>Pour quitter AbiWord, ici encore trois manières:</p>
         <ol type="a">
             <li>Aller dans le menu Fichier puis cliquer sur
@@ -285,7 +296,9 @@ borderstyle="none">
             cliquant sur le bouton <img src="../images/maximis.png"
             alt="Restaurer/Agrandir" width="15" height="13">dans
             la barre des titres. Un double clique sur la barre
-            des titres d'AbiWord aura le même effet.</p>
+            des titres d'AbiWord aura le même effet.<br>
+            * Sous Unix, faire rouler la fenêtre de Abiword sur la barre des taches aura pour effet 
+            de la réduire. Sous KDE, le fait de double cliquer sur la barre de titre de AbiWord, réduit la fenêtre.</p>
         </blockquote>
         <p><strong>PS:</strong></p>
         <ol>

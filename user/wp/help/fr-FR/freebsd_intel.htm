@@ -1,6 +1,6 @@
 <html>
 <head>
-<title>AbiSource -- Solaris Install</title>
+<title>AbiSource -- FreeBSD / Intel Install</title>
 <style type="text/css">
 </head>
 
@@ -18,9 +18,9 @@ Verdanna,Arial,Helvetica } </style>
 borderstyle="none">
 <tbody>    <tr>
         <td bgcolor="#280066" height="70"><img
-        src="../images/topbar_logo.png" alt="AbiSource logo"
+        src="images/topbar_logo.gif" alt="AbiSource logo"
         align="left" hspace="0" width="294" height="70"> <img
-        src="../images/topbar_right.png" alt="AbiSource banner"
+        src="images/topbar_right.gif" alt="AbiSource banner"
         align="right" hspace="0" width="303" height="70"> </td>
     </tr>
 <!--        <tr>        <td bgcolor="#280066" align="right">        <div align="right"><B>        <A HREF = "/" STYLE = "color: white;        text-decoration: none">        <font color="white" face="Arial,Helvetica,Geneva" size="2">        Home</FONT></A> |        <A HREF = "/developer.phtml" STYLE = "color: white;        text-decoration: none">        <font color="white" face="Arial,Helvetica,Geneva" size="2">        Developer</FONT></A>&nbsp;&nbsp;</div>        </font></td> </tr>--></tbody></table>
@@ -90,65 +90,83 @@ borderstyle="none">
         Crédits</font></a></td>
         <td width="1">&nbsp; </td>
         <td valign="top">
-          <h2>Installation d'AbiWord sur Solaris</h2>
+          <h2>Installation d'AbiWord sur FreeBSD / Intel</h2>
           <p>Bienvenue dans la communauté des utilisateurs d'AbiWord!</p>
           <p>La dernière version d'AbiWord doit correctement s'installer et
-          fonctionner sur les systèmes Solaris 7 avec processeur Sparc32.
-          AbiWord est disponible à la fois au format natif Solaris &quot;pkg&quot;
-          et au format gzipped tar.</p>
-          <p>L'installation du fichier au format natif Solaris &quot;pkg&quot;
-          est assez simple et sera familière aux utilisateurs de Solaris.</p>
+          fonctionner sur les systèmes FreeBSD 3.2 avec processeur Intel
+          compatible. Abiword a été &quot;packagé&quot; dans plusieurs
+          formats de distribution afin de simplifier son installation sur votre
+          système.</p>
+          <ul>
+            <li><a href="http://www.abisource.com/dl_freebsd_intel.phtml#tgz">TGZ</a>
+              -- Package FreeBSD 3.2 natif</li>
+            <li><a href="http://www.abisource.com/dl_freebsd_intel.phtml#tar">TAR</a>
+              -- Tourne sur les anciennes versions de FreeBSD en liens-statiques</li>
+          </ul>
+          <p>Une version plus exhaustive du processus d'installation est
+          disponible dans le fichier <a href="http://www.abisource.com/binaries/0.7.6/freebsd/README">README</a>.</p>
+          <hr>
+          <h3><a name="tgz">TGZ</a></h3>
+          <p>Le processus d'installation TGZ est très simple.</p>
           <ol>
             <li><a href="http://www.abisource.com/free.phtml">Télécharger</a>
-              l'archive (abisuite.x.x.x.sparc32.SunOS.5.5.1.pkg.tar.gz).
-            <li>Copiez l'archive dans un dossier accessible par vous et ouvrez
-              l'archive:
-              <pre>  gunzip -C abisuite.x.x.x.sparc32.SunOS.5.5.1.pkg.tar.gz | tar xvf -
-</pre>
-              <p>... ou, si votre commande tar accepte les tags 'z':</p>
-              <pre>  tar xvzf abisuite.x.x.x.sparc32.SunOS.5.5.1.pkg.tar.gz
-</pre>
-              <p>Les deux commandes créeront un dossier <tt>abisuite</tt>.</p>
+              l'archive (AbiSuite-x.x.x.tgz).</li>
             <li>En tant que superviseur, taper la commande:
-              <pre>  pkgadd -D . abisuite
+              <pre>  pkg_add AbiSuite-x.x.x.tgz
 </pre>
-            <li>Par défaut, Cela installera AbiWord dans le dossier <tt>/usr/local/AbiSuite</tt>
-              de votre disque dur. Vous pouvez changer le dossier par défaut si
-              souhaité.
-            <li>Vous pourrez également créer les liens vers les exécutables
-              dans un dossier <tt>bin</tt> . Par défaut ce lien est <tt>/usr/local/bin</tt>.
-            <li>Merci de consulter le fichier <a href="http://www.abisource.com/binaries/0.7.6/solaris/README">README</a>
-              pour des informations complémentaires.</li>
+            </li>
+            <li>Cela installera AbiWord et ses fichiers dans le dossier <tt>/usr/local/AbiSuite/</tt>.
+              Des liens par défauts appelés <tt>AbiWord</tt> et <tt>abiword</tt>
+              seront stockés dans <tt>/usr/local/bin/</tt> et pointeront sur
+              les exécutables.</li>
+            <li>Pour des informations complémentaires sur les pachages TGZ,
+              veuillez consulter le fichier <a href="http://www.abisource.com/binaries/0.7.6/freebsd/README">README</a>.</li>
           </ol>
-          <p>Le processus d'installation de l'archive Tar est très simple.</p>
+          <h3><a name="tar">TAR</a></h3>
+          <p>Il existe deux versions des archives Tar: une version
+          liens-statiques et une versions liens-dynamiques. La version
+          dynamiques est moins grosse (2.7Mb contre 3.3Mb), mais utilise un
+          nombre considérable de librairies partagées de votre système. Si
+          vous utilisez FreeBSD 3.2 ou ultérieur, le package dynamique devrais
+          fonctionner. Si vous rencontrez des problèmes d'exécutions avec le
+          package dynamique, essayez le package statique.</p>
+          <p>Le processus d'installation de l'archive statique Tar parait complexe mais est actuellement assez simple.</p>
           <ol>
             <li><a href="http://www.abisource.com/free.phtml">Télécharger</a>
-              l'archive (abisuite-x.x.x-SunOS_sparc32_dynamic.tar.gz).
+              l'archive (abisuite-x.x.x-FreeBSD_i386_static.tar.gz).</li>
             <li>Copiez l'archive dans un dossier accessible par vous et ouvrez
               l'archive:
-              <pre>  gunzip -C abisuite-x.x.x-SunOS_sparc32_dynamic.tar.gz | tar xvf -
+              <pre>  gunzip -c abisuite-x.x.x-FreeBSD_i386_static.tar.gz | tar xvf -
 </pre>
               <p>... ou, si votre commande tar accepte les tags 'z':</p>
-              <pre>  tar xvzf abisuite-x.x.x-SunOS_sparc32_dynamic.tar.gz
+              <pre>  tar xvzf abisuite-x.x.x-FreeBSD_i386_static.tar.gz
 </pre>
-              <p>Les deux commandes créeront un dossier <tt>abisuite-x.x.x-SunOS_sparc32_dynamic</tt>.</p>
-            <li>Allez dans ce dossier en tant que superviseur.
+              <p>Les deux commandes créeront un dossier <tt>abisuite-x.x.x-FreeBSD_i386_static</tt>.</p>
+            </li>
+            <li>Allez dans ce dossier en tant que superviseur.</li>
             <li>Lancez le script d'installation:
               <pre>  ./install.sh
 </pre>
+            </li>
             <li>Par défaut, Cela installera AbiWord dans le dossier <tt>/usr/local/AbiSuite</tt>
               de votre disque dur. Vous pouvez changer le dossier par défaut si
-              souhaité.
+              souhaité.</li>
             <li>Vous pourrez également créer les liens vers les exécutables
-              dans un dossier <tt>bin</tt> . Par défaut ce lien est <tt>/usr/local/bin</tt>.
-            <li>Merci de consulter le fichier <a href="http://www.abisource.com/binaries/0.7.6/solaris/README">README</a>
+              dans un dossier <tt>bin</tt> . Par défaut ce lien est <tt>/usr/local/bin</tt>.</li>
+            <li>Merci de consulter le fichier <a href="http://www.abisource.com/binaries/0.7.6/freebsd/README">README</a>
               pour des informations complémentaires.</li>
           </ol>
-          <ol start="2">
-            <li>Consultez le fichier README pour de plus amples informations.</li>
-          </ol>
+          <p>Le processus d'installation de <a href="http://www.abisource.com/free.phtml">l'archive
+          dynamique</a> (abisuite-x.x.x-FreeBSD_i386_dynamic.tar.gz) est
+          identique. Remplacer simplement <tt>_dynamic</tt> for <tt>_static</tt>
+          dans les étapes 1 et 2 ci-dessus. Si vous voulez plus d'informations
+          à propos des librairies et des versions que la version dynamique
+          utilise, veuillez consulter le fichier <a href="http://www.abisource.com/binaries/0.7.6/freebsd/README">README</a>.
         </td>
     </tr>
 </tbody></table>
 
+<table border="0" cellpadding="0" cellspacing="0" width="100%"
+bordersyle="none">
+<!--        <tr>        <td bgcolor="#280066" align="right">        <div align="right"><B>        <A HREF = "/" STYLE = "color: white;        text-decoration: none">        <font color="white" face="Arial,Helvetica,Geneva" size="2">        Home</FONT></A> |        <A HREF = "/developer.phtml" STYLE = "color: white;        text-decoration: none">        <font color="white" face="Arial,Helvetica,Geneva" size="2">        Developer</FONT></A>&nbsp;&nbsp;</div>        </font></td> </tr>--><tbody></tbody></table>
 </html>
