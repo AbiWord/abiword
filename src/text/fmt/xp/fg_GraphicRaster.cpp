@@ -142,7 +142,7 @@ GR_Image* FG_GraphicRaster::generateImage(GR_Graphics* pG)
 		else
 #endif						
 		{
-			double fScale = pG->getResolution() / 72.0;
+			double fScale = pG->getResolution() / 100.0;
 			
 			iDisplayWidth = (UT_sint32) (iImageWidth * fScale);
 			iDisplayHeight = (UT_sint32) (iImageHeight * fScale);
