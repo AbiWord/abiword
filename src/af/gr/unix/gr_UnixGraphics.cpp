@@ -617,7 +617,7 @@ void GR_UnixGraphics::setCursor(GR_Graphics::Cursor c)
 	
 	m_cursor = c;
 	
-	enum GdkCursorType cursor_number;
+	GdkCursorType cursor_number;
 	
 	switch (c)
 	{
