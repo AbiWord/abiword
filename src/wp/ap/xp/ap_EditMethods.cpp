@@ -5415,7 +5415,7 @@ Defun(formatPainter)
   // prereqs: !pView->isSelectionEmpty() && XAP_App::getApp()->canPasteFromClipboard()
   // taken care of in ap_Toolbar_Functions.cpp::ap_ToolbarGetState_Clipboard
 
-  UT_DEBUGMSG(("DOM: FORMAT PAINTER!!\n"));
+  xxx_UT_DEBUGMSG(("DOM: FORMAT PAINTER!!\n"));
 
   bool retval = false;
 
@@ -5430,8 +5430,14 @@ Defun(formatPainter)
   PD_Document * pNewDoc = new PD_Document(XAP_App::getApp());
   pNewDoc->newDocument();
 
+  xxx_UT_DEBUGMSG(("Created new document\n"));
+
   FL_DocLayout *pDocLayout = new FL_DocLayout(pNewDoc, pView->getGraphics());
   FV_View pPasteView (XAP_App::getApp(), 0, pDocLayout);
+  pDocLayout->fillLayouts();
+  pDocLayout->formatAll();
+
+  xxx_UT_DEBUGMSG(("Created paste view\n"));
 
   // paste contents
   pPasteView.cmdPaste ();
@@ -5442,7 +5448,7 @@ Defun(formatPainter)
   // re-select it so that we still have those contents on the clipboard
   pPasteView.cmdCopy ();
 
-  UT_DEBUGMSG(("DOM: Selected and copied\n"));
+  xxx_UT_DEBUGMSG(("DOM: Selected and copied\n"));
 
   // get the paragraph and span/character formatting properties of 
   // the clipboard selection
