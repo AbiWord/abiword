@@ -310,7 +310,7 @@ gint XAP_UnixFrame::_fe::delete_event(GtkWidget * w, GdkEvent * /*event*/, gpoin
 	const EV_EditMethodContainer * pEMC = pApp->getEditMethodContainer();
 	UT_ASSERT(pEMC);
 	
-	const EV_EditMethod * pEM = pEMC->findEditMethodByName("closeWindow");
+	const EV_EditMethod * pEM = pEMC->findEditMethodByName("closeWindowX");
 	UT_ASSERT(pEM);
 	
 	if (pEM)

@@ -140,10 +140,13 @@
 
 #define AP_PREF_KEY_DefaultSaveFormat "DefaultSaveFormat"
 #define AP_PREF_DEFAULT_DefaultSaveFormat ".abw"
+#define AP_PREF_KEY_CloseOnLastDoc "CloseOnLastDoc"
+#define AP_PREF_DEFAULT_CloseOnLastDoc "0"
 
 #else /* AP_PREFS_SCHEMEIDS_H */
 #ifdef dcl
 
+dcl(CloseOnLastDoc)
 dcl(DefaultSaveFormat)
 dcl(CursorBlink)
 dcl(AutoSpellCheck)

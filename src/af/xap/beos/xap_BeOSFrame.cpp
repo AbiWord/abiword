@@ -328,7 +328,7 @@ bool be_Window::QuitRequested(void) {
 	UT_ASSERT(pEMC);
 
 	// make sure it's bound to something
-	EV_EditMethod * pEM = pEMC->findEditMethodByName("closeWindow");
+	EV_EditMethod * pEM = pEMC->findEditMethodByName("closeWindowX");
 	UT_ASSERT(pEM);                                         
 
 	if (pEM) {

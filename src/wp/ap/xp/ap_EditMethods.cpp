@@ -397,6 +397,7 @@ public:
 	static EV_EditMethod_Fn cycleWindows;
 	static EV_EditMethod_Fn cycleWindowsBck;
 	static EV_EditMethod_Fn closeWindow;
+  static EV_EditMethod_Fn closeWindowX;
 	static EV_EditMethod_Fn querySaveAndExit;
 
 	static EV_EditMethod_Fn setEditVI;
@@ -544,6 +545,7 @@ static EV_EditMethod s_arrayEditMethods[] =
 
 	// c
 	EV_EditMethod(NF(closeWindow),			0,	""),
+	EV_EditMethod(NF(closeWindowX), 0, ""),
 	EV_EditMethod(NF(colorBackTB), _D_, ""),
 	EV_EditMethod(NF(colorForeTB), _D_, ""),
 	EV_EditMethod(NF(contextMenu),			0,	""),
@@ -1600,8 +1602,6 @@ s_importFile (XAP_Frame * pFrame, const char * pNewFile, IEFileType ieft)
 	UT_DEBUGMSG(("fileOpen: loading [%s]\n",pNewFile));
 	XAP_App * pApp = pFrame->getApp();
 	UT_ASSERT(pApp);
-	XAP_Prefs * pPrefs = pApp->getPrefs();
-	UT_ASSERT(pPrefs);
 
 	XAP_Frame * pNewFrame = NULL;
 	// not needed bool bRes = false;
@@ -2353,7 +2353,7 @@ Defun1(cycleWindowsBck)
 
 static bool
 s_closeWindow (AV_View * pAV_View, EV_EditMethodCallData * pCallData,
-			   bool bCanExit)
+	       bool bCanExit)
 {
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
 	UT_ASSERT(pFrame);
@@ -2430,9 +2430,22 @@ s_closeWindow (AV_View * pAV_View, EV_EditMethodCallData * pCallData,
 
 Defun(closeWindow)
 {
-	// TODO: change this back to false after I find out what's causing a
-	// TODO: SEGV when clicking the WM 'X' button
-	return s_closeWindow (pAV_View, pCallData, true);
+	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
+	UT_ASSERT(pFrame);
+	XAP_App * pApp = pFrame->getApp();
+	UT_ASSERT(pApp);
+
+	XAP_Prefs * pPrefs = pApp->getPrefs();
+	UT_ASSERT(pPrefs);
+
+	bool close = false;
+	pPrefs->getPrefsValueBool((XML_Char*)AP_PREF_KEY_CloseOnLastDoc, &close);
+	return s_closeWindow (pAV_View, pCallData, close);
+}
+
+Defun(closeWindowX)
+{
+  return s_closeWindow (pAV_View, pCallData, true);
 }
 
 Defun(querySaveAndExit)

@@ -173,7 +173,7 @@ int XAP_QNXFrame::_fe::window_delete(PtWidget_t *w, void *data, PtCallbackInfo_t
 	const EV_EditMethodContainer * pEMC = pApp->getEditMethodContainer();
 	UT_ASSERT(pEMC);
 	
-	const EV_EditMethod * pEM = pEMC->findEditMethodByName("closeWindow");
+	const EV_EditMethod * pEM = pEMC->findEditMethodByName("closeWindowX");
 	UT_ASSERT(pEM);
 
 	if (pEM)

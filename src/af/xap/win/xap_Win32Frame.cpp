@@ -558,7 +558,7 @@ LRESULT CALLBACK XAP_Win32Frame::_FrameWndProc(HWND hwnd, UINT iMsg, WPARAM wPar
 		const EV_EditMethodContainer * pEMC = pApp->getEditMethodContainer();
 		UT_ASSERT(pEMC);
 
-		EV_EditMethod * pEM = pEMC->findEditMethodByName("closeWindow");
+		EV_EditMethod * pEM = pEMC->findEditMethodByName("closeWindowX");
 		UT_ASSERT(pEM);						// make sure it's bound to something
 
 		if (pEM)
