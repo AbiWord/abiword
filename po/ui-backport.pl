@@ -63,25 +63,32 @@ print FILE
 "<!-- ==============================================================  -->\n\n".
 "<AbiStrings app=\"AbiWord\" ver=\"1.0\" language=\"$lang\">\n\n";
 
+my @tags = ();
 while (<IN>) {
     if ($cont == "1") { 
-       if (m@^\"(.*)\"@)  { $str .= $1; next; } else 
+       if (m@^\"(.*)\"@)  { $str .= $1; next; } else
+       { for $tag (@tags)
        { 
           if ($kind == 1) { push @xap_strings, "$tag=\"$str\""; $cont=0; next; }
           if ($kind == 2) { push @ap_strings,  "$tag=\"$str\""; $cont=0; next; }
+        }
+        @tags = ();
        }
     }
 
-    if (m@^#\.\s(\w+)@)            { $tag  = $1; next; } 
+    if (m@^#\.\s(\w+)@)            { push (@tags, $1); next; } 
     if (m@^#:\s(.*)/xap[^/.]+\.h@) { $kind =  1; next; } 
     if (m@^#:\s(.*)/ap[^/.]+\.h@)  { $kind =  2; next; }
     if (m@^msgstr\s\"(.*)\"@)      { $str  = $1; $cont=1; next; }
 
-	if ($cont == "1") {
-	    {
-		if ($kind == 1) { push @xap_strings, "$tag=\"$str\""; $cont=0; next; }
-		if ($kind == 2) { push @ap_strings,  "$tag=\"$str\""; $cont=0; next; }
-	    }
+    if ($cont == "1") {
+        for $tag (@tags) { 
+        {
+        if ($kind == 1) { push @xap_strings, "$tag=\"$str\""; $cont=0; next; }
+        if ($kind == 2) { push @ap_strings,  "$tag=\"$str\""; $cont=0; next; }
+        } # for tags
+        @tags = ();
+        }
 }
     
 }

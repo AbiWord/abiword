@@ -128,8 +128,8 @@ sub Version{
 #-------------------  
 sub Help{
     print "Usage: ui-extract.pl [FILENAME] [OPTIONS] ...\n";
-    print "Generates a headerfile from an xml source.\n\nGraps all strings ";
-    print "between <_translatable_node> and it's end tag,\nwhere tag are all allowed ";
+    print "Generates a headerfile from an xml source.\n\nGreps all strings ";
+    print "between <_translatable_node> and its end tag,\nwhere tag are all allowed ";
     print "xml tags. Read the docs for more info.\n\n"; 
     print "  -V, --version                shows the version\n";
     print "  -H, --help                   shows this help page\n";
@@ -230,7 +230,11 @@ sub Convert($) {
         if ($FILE =~ /\/xp\/(.*)\.h$/sg){
         while ($input =~ /\((\w+),(\s*)\"(.*)\"/g) {
                my $tag = $1;
-               $string{$3} = [$tag];
+		if (defined($string{$3})) {
+			push @{$string{$3}}, $tag;
+		} else {
+			$string{$3} = [$tag];
+		}
         }}
 
     }
@@ -238,7 +242,7 @@ sub Convert($) {
 sub addMessages{
 
     foreach my $theMessage (sort keys %string) {
-	my ($tag) = @{ $string{$theMessage} };
+	my (@tag) = @{ $string{$theMessage} };
 
     # Replace XML codes for special chars to
     # geniune gettext syntax
@@ -270,8 +274,10 @@ sub addMessages{
 
 	} else {
 
-            if ($tag) { print OUT "/* $tag */\n"; }		
-	    print OUT "gchar *s = N_(\"$theMessage\");\n";
+	    for my $value (@tag) {
+			if ($value) { print OUT "/* $value */\n"; }		
+	    }
+		print OUT "gchar *s = N_(\"$theMessage\");\n";
 
 	}
 	    
