@@ -123,7 +123,7 @@ else
     exit
 fi
 
-Check to make sure we don't stomp on anything
+# Check to make sure we don't stomp on anything
 if [ -z "\$currentFonts" ]
 then
     # Set post run-time font path
