@@ -25,6 +25,7 @@
 
 #include "ut_debugmsg.h"
 #include "ut_assert.h"
+#include "ut_string.h"
 #include "ut_Win32OS.h"
 
 /*****************************************************************/
@@ -697,3 +698,73 @@ void GR_Win32Graphics::fillRect(GR_Color3D c, UT_Rect &r)
 	fillRect(c,r.left,r.top,r.width,r.height);
 }
 
+//////////////////////////////////////////////////////////////////
+// This is a static method in the GR_Font base class implemented
+// in platform code.
+//////////////////////////////////////////////////////////////////
+
+void GR_Font::s_getGenericFontProperties(const char * szFontName,
+										 FontFamilyEnum * pff,
+										 FontPitchEnum * pfp,
+										 UT_Bool * pbTrueType)
+{
+	// describe in generic terms the named font.
+	
+	// we borrow some code from GR_Win32Graphics::findFont()
+
+	LOGFONT lf;
+	memset(&lf, 0, sizeof(lf));
+	TEXTMETRIC tm;
+	memset(&tm,0,sizeof(tm));
+
+	// TODO i'm not sure why we special case these, but the other
+	// TODO code did, so i'm going to here.
+	
+	if (UT_stricmp(szFontName, "serif") == 0)
+		lf.lfPitchAndFamily = DEFAULT_PITCH | FF_ROMAN;
+	else if (UT_stricmp(szFontName, "sans-serif") == 0)
+		lf.lfPitchAndFamily = DEFAULT_PITCH | FF_SWISS;
+	else if (UT_stricmp(szFontName, "cursive") == 0)
+		lf.lfPitchAndFamily = DEFAULT_PITCH | FF_SCRIPT;
+	else if (UT_stricmp(szFontName, "fantasy") == 0)
+		lf.lfPitchAndFamily = DEFAULT_PITCH | FF_DECORATIVE;
+	else if (UT_stricmp(szFontName, "monospace") == 0)
+		lf.lfPitchAndFamily = DEFAULT_PITCH | FF_MODERN;
+	else
+		strcpy(lf.lfFaceName, szFontName);
+
+	// let the system create the font with the given name or
+	// properties and then query it and see what was actually
+	// created.  hopefully, this will let us more accurately
+	// reflect what is being seen on screen.
+	
+	HFONT hFont = CreateFontIndirect(&lf);
+	HDC hdc = CreateDC("DISPLAY",NULL,NULL,NULL);
+	HFONT hFontOld = SelectObject(hdc,hFont);
+	GetTextMetrics(hdc,&tm);
+	SelectObject(hdc,hFontOld);
+	DeleteObject(hFont);
+	DeleteDC(hdc);
+
+	BYTE xx = tm.tmPitchAndFamily;
+	
+	switch (xx & 0xf0)
+	{
+	default:
+	case FF_DONTCARE:	*pff = FF_Unknown;		break;
+	case FF_ROMAN:		*pff = FF_Roman;		break;
+	case FF_SWISS:		*pff = FF_Swiss;		break;
+	case FF_MODERN:		*pff = FF_Modern;		break;
+	case FF_SCRIPT:		*pff = FF_Script;		break;
+	case FF_DECORATIVE:	*pff = FF_Decorative;	break;
+	}
+
+	if ((xx & TMPF_FIXED_PITCH) == TMPF_FIXED_PITCH)
+		*pfp = FP_Variable;				// yes these look backwards
+	else								// but that is how windows
+		*pfp = FP_Fixed;				// defines the bits...
+
+	*pbTrueType = ((xx & TMPF_TRUETYPE) == TMPF_TRUETYPE);
+	
+	return;
+}

@@ -34,6 +34,7 @@
 #include "px_CR_Strux.h"
 #include "xap_App.h"
 #include "pd_Style.h"
+#include "gr_Graphics.h"
 
 /*****************************************************************/
 /*****************************************************************/
@@ -382,6 +383,13 @@ void IE_Exp_RTF::_rtf_semi(void)
 	m_bLastWasKeyword = UT_FALSE;
 }
 
+void IE_Exp_RTF::_rtf_fontname(const char * szFontName)
+{
+	write(" ");
+	write(szFontName);
+	_rtf_semi();
+}
+
 void IE_Exp_RTF::_rtf_chardata(const char * pbuf, UT_uint32 buflen)
 {
 	if (m_bLastWasKeyword)
@@ -419,14 +427,29 @@ UT_Bool IE_Exp_RTF::_write_rtf_header(void)
 	for (k=0; k<kLimit; k++)
 	{
 		const _rtf_font_info * pk = (const _rtf_font_info *)m_vecFonts.getNthItem(k);
+		const char * szFontName = NULL;
+		const char * szFamily = NULL;
+		int pitch;
+		UT_Bool bTrueType;
+		
+		_rtf_compute_font_properties(pk,&szFontName,&szFamily,&pitch,&bTrueType);
+		
 		_rtf_nl();
 		_rtf_open_brace();
 		_rtf_keyword("f",k);								// font index number
-		_rtf_keyword(_rtf_compute_font_family(pk));			// {\fnil,\froman,\fswiss,...}
+		_rtf_keyword(szFamily);								// {\fnil,\froman,\fswiss,...}
 		_rtf_keyword("fcharset",0);							// TODO find correct value here
-		_rtf_keyword("fprq",_rtf_compute_font_pitch(pk));	// {0==default,1==fixed,2==variable}
+		_rtf_keyword("fprq",pitch);							// {0==default,1==fixed,2==variable}
+		_rtf_keyword((bTrueType) ? "fttruetype" : "ftnil");	// {\fttruetype,\ftnil}
+		
 		// we do nothing with or use default values for
 		// \falt \panose \fname \fbias \ftnil \fttruetype \fontfile
+
+		// after we write the various generic font properties, we write
+		// the actual font name and a semicolon -- i couldn't see this
+		// described in the specification, but it was in other RTF files
+		// that i saw and really seems to help Word and WordPad....
+		_rtf_fontname(szFontName);
 		
 		_rtf_close_brace();
 	}
@@ -503,24 +526,36 @@ void IE_Exp_RTF::_addFont(const _rtf_font_info * pfi)
 	return;
 }
 
-const char * IE_Exp_RTF::_rtf_compute_font_family(const _rtf_font_info * pfi) const
+void IE_Exp_RTF::_rtf_compute_font_properties(const _rtf_font_info * pfi,
+											  const char ** p_sz_font_name,
+											  const char ** p_sz_rtf_family,
+											  int * p_rtf_pitch,
+											  UT_Bool * p_rtf_bTrueType) const
 {
+	static const char * t_ff[] = { "fnil", "froman", "fswiss", "fmodern", "fscript", "fdecor", "ftech", "fbidi" };
+
 	const XML_Char * szFontFamily = PP_evalProperty("font-family",
 													pfi->m_pSpanAP,pfi->m_pBlockAP,pfi->m_pSectionAP,
 													m_pDocument,UT_TRUE);
 
-	// TODO use font properties (and possibly platform-specific font name)
-	// TODO to compute the rtf family { fnil, froman, fswiss, ... )
-	// TODO for now just return nil
+	GR_Font::FontFamilyEnum ff;
+	GR_Font::FontPitchEnum fp;
+	UT_Bool tt;
 	
-	return "fnil";
-}
+	GR_Font::s_getGenericFontProperties(szFontFamily, &ff, &fp, &tt);
 
-UT_uint32 IE_Exp_RTF::_rtf_compute_font_pitch(const _rtf_font_info * pfi) const
-{
-	// TODO use font properties (and possibly platform-specific font name)
-	// TODO to compute the rtf pitch { 0==default, 1==fixed, 2==variable }
-	// TODO for now just return default.
+	// TODO there is a general confusion in this program between fontname and fontfamily.
+	// TODO one is "Courier New" and the other is "Modern".  it seems that we interchange
+	// TODO these in a few places....
+	
+	*p_sz_font_name = szFontFamily;
+	
+	if ((ff >= 0) && (ff < NrElements(t_ff)))
+		*p_sz_rtf_family = t_ff[ff];
+	else
+		*p_sz_rtf_family = t_ff[GR_Font::FF_Unknown];
 
-	return 0;
+	*p_rtf_pitch = fp;
+
+	*p_rtf_bTrueType = tt;
 }

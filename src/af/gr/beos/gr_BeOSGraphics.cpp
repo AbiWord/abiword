@@ -749,3 +749,26 @@ void GR_BEOSGraphics::fillRect(GR_Color3D c, UT_Rect &r)
         fillRect(c,r.left,r.top,r.width,r.height);
 }                               
 
+//////////////////////////////////////////////////////////////////
+// This is a static method in the GR_Font base class implemented
+// in platform code.
+//////////////////////////////////////////////////////////////////
+
+void GR_Font::s_getGenericFontProperties(const char * szFontName,
+										 FontFamilyEnum * pff,
+										 FontPitchEnum * pfp,
+										 UT_Bool * pbTrueType)
+{
+	// describe in generic terms the named font.
+
+	// Note: most of the unix font handling code is in abi/src/af/xap/unix
+	// Note: rather than in the graphics class.  i'm not sure this matters,
+	// Note: but it is just different....
+
+	// TODO add code to map the given font name into one of the
+	// TODO enums in GR_Font and set *pff and *pft.
+
+	*pff = FF_Unknown;
+	*pfp = FP_Unknown;
+	*pbTrueType = UT_TRUE;
+}

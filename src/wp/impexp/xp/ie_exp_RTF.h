@@ -66,14 +66,18 @@ protected:
 	void				_rtf_keyword_ifnotdefault(const char * szKey, const char * szValue, UT_sint32 defaultValue);
 	void				_rtf_keyword_ifnotdefault_twips(const char * szKey, const char * szValue, UT_sint32 defaultValue);
 	void				_rtf_semi(void);
+	void				_rtf_fontname(const char * szFontName);
 	void				_rtf_chardata(const char * pbuf, UT_uint32 buflen);
 	void				_rtf_nl(void);
 	UT_Bool				_write_rtf_header(void);
 	UT_Bool				_write_rtf_trailer(void);
 	UT_sint32			_findFont(const _rtf_font_info * pfi) const;
 	void				_addFont(const _rtf_font_info * pfi);
-	const char *		_rtf_compute_font_family(const _rtf_font_info * pfi) const;
-	UT_uint32			_rtf_compute_font_pitch(const _rtf_font_info * pfi) const;
+	void				_rtf_compute_font_properties(const _rtf_font_info * pfi,
+													 const char ** p_sz_font_name,
+													 const char ** p_sz_rtf_family,
+													 int * p_rtf_pitch,
+													 UT_Bool * pbTrueType) const;
 	
 	s_RTF_ListenerWriteDoc *	m_pListenerWriteDoc;
 	s_RTF_ListenerGetProps *	m_pListenerGetProps;

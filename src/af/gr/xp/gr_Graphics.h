@@ -35,6 +35,17 @@ class UT_RGBColor;
 */
 class GR_Font
 {
+public:
+	typedef enum { FF_Unknown=0, FF_Roman=1, FF_Swiss=2, FF_Modern=3,
+				   FF_Script=4, FF_Decorative=5, FF_Technical=6, FF_BiDi=7 } FontFamilyEnum;
+	typedef enum { FP_Unknown=0, FP_Fixed=1, FP_Variable=2 } FontPitchEnum;
+
+	// The following is actually implemented in platform code.
+	// It is primarily used to characterize fonts for RTF export.
+	static void s_getGenericFontProperties(const char * szFontName,
+										   FontFamilyEnum * pff,
+										   FontPitchEnum * pfp,
+										   UT_Bool * pbTrueType);
 };
 
 /*
