@@ -17,7 +17,7 @@
  * 02111-1307, USA.
  */
 
-// Swedish translations provided by Henrik Berg <henrik@lansen.se>
+// Swedish translations provided by Per Larsson <tucker@algonet.se>
 
 /*****************************************************************
 ******************************************************************
@@ -69,15 +69,17 @@ BeginSetEnc(sv,SE,true,"iso-8859-1")
 	MenuLabel(AP_MENU_ID_EDIT_CUT,			"&Klipp ut",		"Klipper ut markeringen och placerar den i Urklippet")
 	MenuLabel(AP_MENU_ID_EDIT_COPY,			"K&opiera",			"Kopierar markeringen och placerar den i Urklippet")
 	MenuLabel(AP_MENU_ID_EDIT_PASTE,		"K&listra in",		"Infogar innehållet i Urklipp")
-	MenuLabel(AP_MENU_ID_EDIT_PASTE,		"Klistra in spe&cial",		"Infogar innehållet i Urklipp oformaterat")
+	MenuLabel(AP_MENU_ID_EDIT_PASTE_SPECIAL,	"Klistra in spe&cial",	"Infogar innehållet i Urklipp oformaterat")
 	MenuLabel(AP_MENU_ID_EDIT_CLEAR,		"&Radera",			"Raderar markeringen")
 	MenuLabel(AP_MENU_ID_EDIT_SELECTALL,	"&Markera allt",	"Markerar hela dokumentet")
 	MenuLabel(AP_MENU_ID_EDIT_FIND,			"&Sök",				"Söker efter angiven text")
 	MenuLabel(AP_MENU_ID_EDIT_REPLACE,		"&Ersätt",			"Ersätter angiven text med annan text")
 	MenuLabel(AP_MENU_ID_EDIT_GOTO,			"&Gå till",			"Gå till en ny plats i dokumentet")
-        MenuLabel(AP_MENU_ID_EDIT_EDITHEADER,                   "Redigera sid&huvud",                "Redigera text vid dokumenthuvud")
-        MenuLabel(AP_MENU_ID_EDIT_EDITFOOTER,                   "Redigera sid&fot",                "Redigera text vid dokumentfot")
-     
+        MenuLabel(AP_MENU_ID_EDIT_EDITHEADER,                   "Redigera sid&huvud",                "Redigera text vid början av sidan")
+        MenuLabel(AP_MENU_ID_EDIT_EDITFOOTER,                   "Redigera sid&fot",                "Redigera text vid slutet av sidan")
+     	MenuLabel(AP_MENU_ID_EDIT_REMOVEHEADER,			"Ta bort sidhuvud",			"Ta bort sidhuvudet på denna sida i dokumentet")
+	MenuLabel(AP_MENU_ID_EDIT_REMOVEFOOTER,			"Ta bort sidfot",			"Ta bort sidfoten på denna sida i dokumentet")
+
 	MenuLabel(AP_MENU_ID_VIEW,				"Vi&sa",			NULL)
      MenuLabel(AP_MENU_ID_VIEW_NORMAL, "&Normalläge", "Normalläge")
      MenuLabel(AP_MENU_ID_VIEW_WEB, "&Webblayoutläge", "Webblayoutläge")
@@ -91,7 +93,16 @@ BeginSetEnc(sv,SE,true,"iso-8859-1")
 	MenuLabel(AP_MENU_ID_VIEW_SHOWPARA,		"&Visa alla",		"Visar alla icke utskrivbara tecken")
 	MenuLabel(AP_MENU_ID_VIEW_HEADFOOT,		"&Sidhuvud och sidfot",	"Redigera text vid huvud eller fot på varje sida")
         MenuLabel(AP_MENU_ID_VIEW_FULLSCREEN, "&Helsida", "Visa dokumentet som helsida")
+
+     MenuLabel(AP_MENU_ID_VIEW_ZOOM_MENU,			"&Zooma",			"Minska eller förstora visningen av dokumentet")
 	MenuLabel(AP_MENU_ID_VIEW_ZOOM,			"&Zooma",			"Minska eller förstora visningen av dokumentet")
+     MenuLabel(AP_MENU_ID_VIEW_ZOOM_200, "Zooma till &200%", "Zooma till 200%")
+     MenuLabel(AP_MENU_ID_VIEW_ZOOM_100, "Zooma till &100%", "Zooma till 100%")
+     MenuLabel(AP_MENU_ID_VIEW_ZOOM_75, "Zooma till &75%", "Zooma till 75%")
+     MenuLabel(AP_MENU_ID_VIEW_ZOOM_50, "Zooma till &50%", "Zooma till 50%")
+     MenuLabel(AP_MENU_ID_VIEW_ZOOM_WIDTH, "Zooma till &Sidbredd", "Zooma till sidbredd")
+     MenuLabel(AP_MENU_ID_VIEW_ZOOM_WHOLE, "Zooma till &Hel sida", "Zooma till hel sida")
+
 
 	MenuLabel(AP_MENU_ID_INSERT,			"&Infoga",			NULL)
 	MenuLabel(AP_MENU_ID_INSERT_BREAK,		"&Brytning",		"Infogar sid-, spalt-, eller styckebrytning")
@@ -127,11 +138,14 @@ BeginSetEnc(sv,SE,true,"iso-8859-1")
 
 	MenuLabel(AP_MENU_ID_TOOLS,				"&Verktyg",			NULL)
         MenuLabel(AP_MENU_ID_TOOLS_SPELLING, "&Stavning", NULL)
-	MenuLabel(AP_MENU_ID_TOOLS_SPELL,		"&Stavning",		"Kontroller stavningen i dokumentet")
+	MenuLabel(AP_MENU_ID_TOOLS_SPELL,		"&Stavning",		"Kontrollerar stavningen i dokumentet")
         MenuLabel(AP_MENU_ID_TOOLS_AUTOSPELL, "&Automatisk Stavningskontroll","Automatisk stavningskontroll av dokumentet")
  	MenuLabel(AP_MENU_ID_TOOLS_WORDCOUNT,	"&Ordstatistik",	"Räkna antal ord, rader, paragrafer, osv i dokumentet")
 	MenuLabel(AP_MENU_ID_TOOLS_OPTIONS,		"&Alternativ",		"Anger alternativ")
         MenuLabel(AP_MENU_ID_TOOLS_LANGUAGE, "S&pråk", "Ändra språk på den markerade texten")
+	MenuLabel(AP_MENU_ID_TOOLS_PLUGINS, "&Insticksprogram", "Hantera insticksprogram")
+	MenuLabel(AP_MENU_ID_TOOLS_SCRIPTS, "S&kript", "Utför skript")
+
 
 	MenuLabel(AP_MENU_ID_ALIGN,				"&Justering",		NULL)
 	MenuLabel(AP_MENU_ID_ALIGN_LEFT,		"&Vänster",			"Vänsterjustera aktuellt eller markerade stycken")
@@ -163,7 +177,9 @@ BeginSetEnc(sv,SE,true,"iso-8859-1")
 	MenuLabel(AP_MENU_ID_HELP_SEARCH,		"&Search for Help",	"Söker i hjälpen")
 	MenuLabel(AP_MENU_ID_HELP_ABOUT,		"&Om %s",			"Visar programinformation, versionsnummer, och copyright")
 	MenuLabel(AP_MENU_ID_HELP_ABOUTOS,		"About &Open Source",	"Visar information om Open Source")
-
+     MenuLabel(AP_MENU_ID_HELP_ABOUT_GNU, "Om &GNU Free Software", "Om the GNU project")
+     MenuLabel(AP_MENU_ID_HELP_ABOUT_GNOMEOFFICE, "Om G&NOME Office", "Om the GNOME Office project")
+ 
 	MenuLabel(AP_MENU_ID_SPELL_SUGGEST_1,	"%s",				"Ändrar till föreslagen stavning")
 	MenuLabel(AP_MENU_ID_SPELL_SUGGEST_2,	"%s",				"Ändrar till föreslagen stavning")
 	MenuLabel(AP_MENU_ID_SPELL_SUGGEST_3,	"%s",				"Ändrar till föreslagen stavning")

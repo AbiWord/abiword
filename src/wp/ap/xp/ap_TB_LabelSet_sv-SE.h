@@ -17,7 +17,7 @@
  * 02111-1307, USA.
  */
 
-// Swedish translations provided by Henrik Berg <henrik@lansen.se>
+// Swedish translations provided by Per Larsson <tucker@algonet.se>
 
 /*****************************************************************
 ******************************************************************
@@ -58,9 +58,13 @@ BeginSetEnc(sv,SE,true,"iso-8859-1")
 
 	ToolbarLabel(AP_TOOLBAR_ID_EDIT_UNDO,		"Ångra",		tb_undo_xpm,				NULL, "Ångra inmatningen")
 	ToolbarLabel(AP_TOOLBAR_ID_EDIT_REDO,		"Upprepa",		tb_redo_xpm,				NULL, "Upprepa inmatningen")
-	ToolbarLabel(AP_TOOLBAR_ID_EDIT_CUT,		"Klipp ut",		tb_cut_xpm,					NULL, "Klipp ut")
+	ToolbarLabel(AP_TOOLBAR_ID_EDIT_CUT,		"Klipp ut",		tb_cut_xpm,			      	NULL, "Klipp ut")
 	ToolbarLabel(AP_TOOLBAR_ID_EDIT_COPY,		"Kopiera",		tb_copy_xpm,				NULL, "Kopiera")
 	ToolbarLabel(AP_TOOLBAR_ID_EDIT_PASTE,		"Klistra in", 	tb_paste_xpm,				NULL, "Klistra in")
+	ToolbarLabel(AP_TOOLBAR_ID_EDIT_HEADER,	 "Redigera sidhuvud",		tb_edit_editheader_xpm,			NULL, "Redigera sidhuvud")
+	ToolbarLabel(AP_TOOLBAR_ID_EDIT_FOOTER,	 "Redigera sidfot",		tb_edit_editfooter_xpm,			NULL, "Redigera sidfot")
+	ToolbarLabel(AP_TOOLBAR_ID_EDIT_REMOVEHEADER, "Ta bort sidhuvud",		tb_edit_removeheader_xpm, 	NULL, "Ta bort sidhuvud)
+	ToolbarLabel(AP_TOOLBAR_ID_EDIT_REMOVEFOOTER, "Ta bort sidfot",		tb_edit_removefooter_xpm,		NULL, "Ta bort sidfot")
 
         ToolbarLabel(AP_TOOLBAR_ID_SPELLCHECK,          "Stavningskontroll", tb_spellcheck_xpm,              NULL, "Kontrollera stavningen i dokumentet")
         ToolbarLabel(AP_TOOLBAR_ID_IMG,                         "Infoga bild",tb_insert_graphic_xpm,  NULL, "Infoga en bild till dokumentet")
