@@ -64,7 +64,8 @@ public:
 	
 protected:
 	UT_Timer();		// should only be called from static_constructor()
-
+	UT_Vector & _getVecTimers () 
+		{ return static_vecTimers; };
  private:
 	void* m_pInstanceData;
 	UT_TimerCallback m_pCallback;

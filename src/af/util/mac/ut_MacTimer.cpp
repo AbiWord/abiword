@@ -183,16 +183,17 @@ void UT_MacTimer::stop (void)
 	m_bStarted = false;
 }
 
- UT_uint32 UT_MacTimer::_createIdentifier(void)
+
+UT_uint32 UT_MacTimer::_createIdentifier(void)
 {
-	UT_Timer::static_vecTimers.qsort(_compareIdentifiers); 
+	UT_Timer::_getVecTimers().qsort(_compareIdentifiers); 
 
 	// Take the first unused identifier number different from zero
 	UT_uint32 iIdentifier = 0;
-	UT_uint32 count = static_vecTimers.getItemCount();
+	UT_uint32 count = _getVecTimers().getItemCount();
 	for (UT_uint32 i=0; i<count; i++, iIdentifier++)
 	{
-		UT_Timer* pTimer = (UT_Timer*) static_vecTimers.getNthItem(i);
+		UT_Timer* pTimer = (UT_Timer*) _getVecTimers().getNthItem(i);
 		UT_ASSERT(pTimer);
 		
 		UT_uint32 iTimerId = pTimer->getIdentifier();
