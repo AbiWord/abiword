@@ -741,6 +741,7 @@ const XAP_LangInfo XAP_EncodingManager::langinfo[] =
     {{   "Manx Gaelic",       "gv",     "",       "langGailck",                        "141"   }},
     {{   "Maori",             "mi",     "",       "",                                  ""      }},
     {{   "Marathi",           "mr",     "",       "langMarathi",                       "66"    }},
+    {{   "Marshallese",       "mh",     "",       "",                                  ""      }},
     {{   "Moldavian",         "mo",     "",       "langMoldavian",                     "53"    }},
     {{   "Mongolian",         "mn",     "",       "langMongolian(Mongolian)",          "57"    }},
     {{   "Mongolian",         "mn",     "",       "langMongolianCyr(Cyrillic)",        "58"    }},

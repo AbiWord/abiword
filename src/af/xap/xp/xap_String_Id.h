@@ -310,6 +310,8 @@ dcl(LANG_KO_KR, 							"Korean")
 dcl(LANG_LA_IT, 							"Latin (Renaissance)")	// Is _IT the right thing here?
 dcl(LANG_LV_LV, 							"Latvian")
 dcl(LANG_LT_LT, 							"Lithuanian")
+dcl(LANG_MH_MH, 							"Marshallese (Marshall Islands)")
+dcl(LANG_MH_NR, 							"Marshallese (Nauru)")
 dcl(LANG_NB_NO, 							"Norwegian Bokmal")
 dcl(LANG_NN_NO, 							"Norwegian Nynorsk")
 dcl(LANG_PL_PL, 							"Polish")

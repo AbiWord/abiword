@@ -66,6 +66,8 @@ static const Ispell2Lang_t m_mapping[] = {
   { "italian.hash",    "it-CH" },
   { "mlatin.hash",     "la-IT" },
   { "lietuviu.hash",   "lt-LT" },
+  { "marshallese.hash","mh-MH" },
+  { "marshallese.hash","mh-NR" },
   { "nederlands.hash", "nl-NL" },
   { "nederlands.hash", "nl-BE" },
   { "norsk.hash",      "nb-NO" },
