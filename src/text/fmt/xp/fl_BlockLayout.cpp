@@ -6476,11 +6476,14 @@ void fl_BlockLayout::shuffleEmbeddedIfNeeded(fl_BlockLayout * pBlock, UT_uint32 
 		{
 			getDocument()->getNextStruxOfType(sdhStart,PTX_EndFootnote, &sdhEnd);
 		}
-		else
+		else if(pEmbedCL->getContainerType() == FL_CONTAINER_ENDNOTE)
 		{
 			getDocument()->getNextStruxOfType(sdhStart,PTX_EndEndnote, &sdhEnd);
 		}
-		
+		else if( pEmbedCL->getContainerType() == FL_CONTAINER_TOC)
+		{
+			getDocument()->getNextStruxOfType(sdhStart,PTX_EndTOC, &sdhEnd);
+		}		
 		UT_return_if_fail(sdhEnd != NULL);
 		PT_DocPosition posStart = getDocument()->getStruxPosition(sdhStart);
 		PT_DocPosition posEnd = getDocument()->getStruxPosition(sdhEnd);

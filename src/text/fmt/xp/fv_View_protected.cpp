@@ -5466,7 +5466,7 @@ void FV_View::_adjustDeletePosition(UT_uint32 &iDocPos, UT_uint32 &iCount)
 		UT_ASSERT_HARMLESS( iLen <= pEndRun->getLength());
 			
 		pEndRun->adjustDeletePosition(iEndRunOffset, iLen);
-
+		UT_DEBUGMSG(("iCount adjusted from %d to %d \n",iCount,iEndRunOffset + iLen - pos1));
 		iCount  = iEndRunOffset + iLen - pos1;
 	}
 	else

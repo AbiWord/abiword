@@ -4371,6 +4371,15 @@ void fp_TableContainer::setToAllocation(void)
 		xxx_UT_DEBUGMSG(("Old table Height %d New allocation %d \n",fp_VerticalContainer::getHeight(),m_MyAllocation.height));
 		bDeleteBrokenTables = true;
 	}
+	//
+	// clear and delete broken tables before their height changes.
+	// Doing this clear at this point makes a table flicker when changing
+	// height but it does remove the last the pixel dirt with tables.
+	// 
+	if(bDeleteBrokenTables)
+	{
+		deleteBrokenTables(true,true);
+	}
 	setHeight(m_MyAllocation.height);
 	setMaxHeight(m_MyAllocation.height);
 	xxx_UT_DEBUGMSG(("SEVIOR: Height is set to %d \n",m_MyAllocation.height));
@@ -4386,10 +4395,6 @@ void fp_TableContainer::setToAllocation(void)
 	{
 		pCon->setLineMarkers();
 		pCon = static_cast<fp_CellContainer *>(pCon->getNext());
-	}
-	if(bDeleteBrokenTables)
-	{
-		deleteBrokenTables(true,true);
 	}
 	setYBottom(m_MyAllocation.height);
 }
@@ -4521,6 +4526,7 @@ void  fp_TableContainer::clearScreen(void)
 	{
 		return;
 	}
+	xxx_UT_DEBUGMSG(("Doing clear screen on %x \n",this));
 	fp_CellContainer * pCell = static_cast<fp_CellContainer *>(getNthCon(0));
 	while(pCell)
 	{
