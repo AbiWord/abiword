@@ -2271,46 +2271,46 @@ fl_DocSectionLayout* FL_DocLayout::findSectionForHdrFtr(const char* pszHdrFtrID)
 	while (pDocSL)
 	{
 		pszAtt = pDocSL->getAttribute("header");
-		if ( pszAtt	&& (0 == UT_stricmp(pszAtt, pszHdrFtrID)))
+		if ( pszAtt	&& (0 == strcmp(pszAtt, pszHdrFtrID)))
 		{
 			return pDocSL;
 		}
 
 		pszAtt = pDocSL->getAttribute("footer");
-		if (pszAtt && (0 == UT_stricmp(pszAtt, pszHdrFtrID)))
+		if (pszAtt && (0 == strcmp(pszAtt, pszHdrFtrID)))
 		{
 			return pDocSL;
 		}
 		pszAtt = pDocSL->getAttribute("header-even");
-		if ( pszAtt	&& (0 == UT_stricmp(pszAtt, pszHdrFtrID)))
+		if ( pszAtt	&& (0 == strcmp(pszAtt, pszHdrFtrID)))
 		{
 			return pDocSL;
 		}
 
 		pszAtt = pDocSL->getAttribute("footer-even");
-		if (pszAtt && (0 == UT_stricmp(pszAtt, pszHdrFtrID)))
+		if (pszAtt && (0 == strcmp(pszAtt, pszHdrFtrID)))
 		{
 			return pDocSL;
 		}
 		pszAtt = pDocSL->getAttribute("header-last");
-		if ( pszAtt	&& (0 == UT_stricmp(pszAtt, pszHdrFtrID)))
+		if ( pszAtt	&& (0 == strcmp(pszAtt, pszHdrFtrID)))
 		{
 			return pDocSL;
 		}
 
 		pszAtt = pDocSL->getAttribute("footer-last");
-		if (pszAtt && (0 == UT_stricmp(pszAtt, pszHdrFtrID)))
+		if (pszAtt && (0 == strcmp(pszAtt, pszHdrFtrID)))
 		{
 			return pDocSL;
 		}
 		pszAtt = pDocSL->getAttribute("header-first");
-		if ( pszAtt	&& (0 == UT_stricmp(pszAtt, pszHdrFtrID)))
+		if ( pszAtt	&& (0 == strcmp(pszAtt, pszHdrFtrID)))
 		{
 			return pDocSL;
 		}
 
 		pszAtt = pDocSL->getAttribute("footer-first");
-		if (pszAtt && (0 == UT_stricmp(pszAtt, pszHdrFtrID)))
+		if (pszAtt && (0 == strcmp(pszAtt, pszHdrFtrID)))
 		{
 			return pDocSL;
 		}

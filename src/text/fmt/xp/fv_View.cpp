@@ -1121,7 +1121,7 @@ bool FV_View::notifyListeners(const AV_ChangeMask hint)
 					break;
 				}
 
-				if (UT_stricmp(propsBlock[i], m_chg.propsBlock[i]))
+				if (strcmp(propsBlock[i], m_chg.propsBlock[i]))
 				{
 					bMatch = false;
 					break;
@@ -1170,7 +1170,7 @@ bool FV_View::notifyListeners(const AV_ChangeMask hint)
 					break;
 				}
 
-				if (UT_stricmp(propsChar[i], m_chg.propsChar[i]))
+				if (strcmp(propsChar[i], m_chg.propsChar[i]))
 				{
 					bMatch = false;
 					break;
@@ -1217,7 +1217,7 @@ bool FV_View::notifyListeners(const AV_ChangeMask hint)
 					break;
 				}
 
-				if (UT_stricmp(propsSection[i], m_chg.propsSection[i]))
+				if (strcmp(propsSection[i], m_chg.propsSection[i]))
 				{
 					bMatch = false;
 					break;
@@ -2651,7 +2651,7 @@ bool FV_View::getStyle(const XML_Char ** style)
 			{
 				const XML_Char* sz = x_getStyle(pBlockAP, true);
 
-				if (UT_stricmp(sz, szBlock))
+				if (strcmp(sz, szBlock))
 				{
 					// doesn't match, so stop looking
 					szBlock = NULL;
@@ -2742,7 +2742,7 @@ bool FV_View::getStyle(const XML_Char ** style)
 					const XML_Char* sz = x_getStyle(pSpanAP, true);
 					bool bHere = (sz && sz[0]);
 
-					if ((bCharStyle != bHere) || (UT_stricmp(sz, szChar)))
+					if ((bCharStyle != bHere) || (strcmp(sz, szChar)))
 					{
 						// doesn't match, so stop looking
 						bCharStyle = false;
@@ -3152,7 +3152,7 @@ bool FV_View::getCharFormat(const XML_Char *** pProps, bool bExpandStyles, PT_Do
 					const XML_Char * value = PP_evalProperty(f->m_prop,pSpanAP,pBlockAP,pSectionAP,m_pDoc,bExpandStyles);
 
 					// prune anything that doesn't match
-					if (value && UT_stricmp(f->m_val, value))
+					if (value && strcmp(f->m_val, value))
 					{
 						DELETEP(f);
 						v.deleteNthItem(i-1);
@@ -3798,7 +3798,7 @@ bool FV_View::getSectionFormat(const XML_Char ***pProps)
 						DELETEP(f);
 						v.deleteNthItem(i-1);
 					}
-					else if (UT_stricmp(f->m_val, value))
+					else if (strcmp(f->m_val, value))
 					{
 						DELETEP(f);
 						v.deleteNthItem(i-1);
@@ -3948,7 +3948,7 @@ bool FV_View::getBlockFormat(const XML_Char *** pProps,bool bExpandStyles)
 					UT_ASSERT(value);
 
 					// prune anything that doesn't match
-					if (UT_stricmp(f->m_val, value))
+					if (strcmp(f->m_val, value))
 					{
 						DELETEP(f);
 						v.deleteNthItem(i-1);

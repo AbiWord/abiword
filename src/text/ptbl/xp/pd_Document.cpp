@@ -1183,28 +1183,28 @@ bool PD_Document::verifySectionID(const XML_Char * pszId)
 				 UT_ASSERT(pAP);
 				 const XML_Char * pszIDName = NULL;
 				 (pAP)->getAttribute("header", pszIDName);
-				 if(pszIDName && UT_XML_stricmp(pszIDName,pszId) == 0)
+				 if(pszIDName && strcmp(pszIDName,pszId) == 0)
 					 return true;
 				 (pAP)->getAttribute("header-first", pszIDName);
-				 if(pszIDName && UT_XML_stricmp(pszIDName,pszId) == 0)
+				 if(pszIDName && strcmp(pszIDName,pszId) == 0)
 					 return true;
 				 (pAP)->getAttribute("header-last", pszIDName);
-				 if(pszIDName && UT_XML_stricmp(pszIDName,pszId) == 0)
+				 if(pszIDName && strcmp(pszIDName,pszId) == 0)
 					 return true;
 				 (pAP)->getAttribute("header-even", pszIDName);
-				 if(pszIDName && UT_XML_stricmp(pszIDName,pszId) == 0)
+				 if(pszIDName && strcmp(pszIDName,pszId) == 0)
 					 return true;
 				 (pAP)->getAttribute("footer", pszIDName);
-				 if(pszIDName && UT_XML_stricmp(pszIDName,pszId) == 0)
+				 if(pszIDName && strcmp(pszIDName,pszId) == 0)
 					 return true;
 				 (pAP)->getAttribute("footer-first", pszIDName);
-				 if(pszIDName && UT_XML_stricmp(pszIDName,pszId) == 0)
+				 if(pszIDName && strcmp(pszIDName,pszId) == 0)
 					 return true;
 				 (pAP)->getAttribute("footer-last", pszIDName);
-				 if(pszIDName && UT_XML_stricmp(pszIDName,pszId) == 0)
+				 if(pszIDName && strcmp(pszIDName,pszId) == 0)
 					 return true;
 				 (pAP)->getAttribute("footer-even", pszIDName);
-				 if(pszIDName && UT_XML_stricmp(pszIDName,pszId) == 0)
+				 if(pszIDName && strcmp(pszIDName,pszId) == 0)
 					 return true;
 		     }
 		}
@@ -1246,7 +1246,7 @@ PL_StruxDocHandle PD_Document::findHdrFtrStrux(const XML_Char * pszHdrFtr,
 				 const XML_Char * pszHeaderName = NULL;
 				 (pAP)->getAttribute(PT_TYPE_ATTRIBUTE_NAME, pszHeaderName);
 				 (pAP)->getAttribute(PT_ID_ATTRIBUTE_NAME, pszIDName);
-				 if(pszIDName && pszHeaderName && (UT_XML_stricmp(pszIDName,pszHdrFtrID) == 0) && (UT_XML_stricmp(pszHeaderName,pszHdrFtr) == 0))
+				 if(pszIDName && pszHeaderName && (strcmp(pszIDName,pszHdrFtrID) == 0) && (strcmp(pszHeaderName,pszHdrFtr) == 0))
 					 return static_cast<PL_StruxDocHandle>(pfSec) ;
 			 }
 		}
@@ -3359,17 +3359,17 @@ bool PD_Document::appendList(const XML_Char ** attributes)
 
 	for (const XML_Char ** a = attributes; (*a); a++)
 	{
-		if (UT_XML_stricmp(a[0],"id") == 0)
+		if (strcmp(a[0],"id") == 0)
 			szID = a[1];
-		else if (UT_XML_stricmp(a[0], "parentid") == 0)
+		else if (strcmp(a[0], "parentid") == 0)
 			szPid = a[1];
-		else if (UT_XML_stricmp(a[0], "type") == 0)
+		else if (strcmp(a[0], "type") == 0)
 			szType = a[1];
-		else if (UT_XML_stricmp(a[0], "start-value") == 0)
+		else if (strcmp(a[0], "start-value") == 0)
 			szStart = a[1];
-		else if (UT_XML_stricmp(a[0], "list-delim") == 0)
+		else if (strcmp(a[0], "list-delim") == 0)
 			szDelim = a[1];
-		else if (UT_XML_stricmp(a[0], "list-decimal") == 0)
+		else if (strcmp(a[0], "list-decimal") == 0)
 			szDec = a[1];
 	}
 
@@ -3530,17 +3530,17 @@ bool PD_Document:: setPageSizeFromFile(const XML_Char ** attributes)
 
 	for (const XML_Char ** a = attributes; (*a); a++)
 	{
-		if (UT_XML_stricmp(a[0],"pagetype") == 0)
+		if (strcmp(a[0],"pagetype") == 0)
 		        szPageSize = a[1];
-		else if (UT_XML_stricmp(a[0], "orientation") == 0)
+		else if (strcmp(a[0], "orientation") == 0)
 			szOrientation = a[1];
-		else if (UT_XML_stricmp(a[0], "width") == 0)
+		else if (strcmp(a[0], "width") == 0)
 			szWidth = a[1];
-		else if (UT_XML_stricmp(a[0], "height") == 0)
+		else if (strcmp(a[0], "height") == 0)
 			szHeight = a[1];
-		else if (UT_XML_stricmp(a[0], "units") == 0)
+		else if (strcmp(a[0], "units") == 0)
 			szUnits = a[1];
-		else if (UT_XML_stricmp(a[0], "page-scale") == 0)
+		else if (strcmp(a[0], "page-scale") == 0)
 			szPageScale = a[1];
 	}
 
@@ -3556,11 +3556,11 @@ bool PD_Document:: setPageSizeFromFile(const XML_Char ** attributes)
 		  {
 		    width = UT_convertDimensionless(szWidth);
 		    height = UT_convertDimensionless(szHeight);
-		    if(UT_XML_stricmp(szUnits,"cm") == 0)
+		    if(strcmp(szUnits,"cm") == 0)
 		      u = DIM_CM;
-		    else if(UT_XML_stricmp(szUnits,"mm") == 0)
+		    else if(strcmp(szUnits,"mm") == 0)
 		      u = DIM_MM;
-		    else if(UT_XML_stricmp(szUnits,"inch") == 0)
+		    else if(strcmp(szUnits,"inch") == 0)
 		      u = DIM_IN;
 		    m_docPageSize.Set(width,height,u);
 		  }

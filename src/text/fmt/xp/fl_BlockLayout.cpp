@@ -407,7 +407,7 @@ void fl_BlockLayout::_lookupProperties(void)
 		
 	FriBidiCharType iOldDirection = m_iDomDirection;
 		
-	if(!UT_stricmp(pszDir,"rtl"))
+	if(!strcmp(pszDir,"rtl"))
 	{
 		m_iDomDirection = FRIBIDI_TYPE_RTL;
 	}

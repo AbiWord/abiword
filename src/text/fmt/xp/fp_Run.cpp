@@ -3212,7 +3212,7 @@ void fp_FieldRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 	{
 		for( i = 0; fp_FieldFmts[i].m_Tag != NULL; i++ )
 		{
-			if (0 == UT_stricmp(pszType, fp_FieldFmts[i].m_Tag))
+			if (0 == strcmp(pszType, fp_FieldFmts[i].m_Tag))
 			{
 				m_iFieldType = fp_FieldFmts[i].m_Num;
 				break;

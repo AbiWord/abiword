@@ -208,7 +208,7 @@ bool	PP_AttrProp::setAttribute(const XML_Char * szName, const XML_Char * szValue
 	// TODO when this assert fails, switch this file to use UT_XML_ version of str*() functions.
 	UT_ASSERT(sizeof(char)==sizeof(XML_Char));
 
-	if (0 == UT_strcmp(szName, PT_PROPS_ATTRIBUTE_NAME) && *szValue)	// PROPS -- cut value up into properties
+	if (0 == strcmp(szName, PT_PROPS_ATTRIBUTE_NAME) && *szValue)	// PROPS -- cut value up into properties
 	{
 		char * pOrig = NULL;
 		
@@ -329,7 +329,7 @@ bool	PP_AttrProp::setProperty(const XML_Char * szName, const XML_Char * szValue)
 		// hack. don't do it.
 		void* tmp = const_cast<void*> (p->first());
 		UT_ASSERT(!m_bIsReadOnly);
-		if(UT_strcmp(szName,"line-height") == 0)
+		if(strcmp(szName,"line-height") == 0)
 		{
 			UT_DEBUGMSG(("Found line-height, Old value %s new value is %s \n",tmp,szValue));
 		}
@@ -499,7 +499,7 @@ bool PP_AttrProp::areAlreadyPresent(const XML_Char ** attributes, const XML_Char
 			const XML_Char * szValue = NULL;
 			if (!getAttribute(p[0],szValue))
 				return false;		// item not present
-			if (UT_XML_stricmp(p[1],szValue)!=0)
+			if (strcmp(p[1],szValue)!=0)
 				return false;		// item has different value
 			p += 2;
 		}
@@ -519,7 +519,7 @@ bool PP_AttrProp::areAlreadyPresent(const XML_Char ** attributes, const XML_Char
 			const XML_Char * szValue = NULL;
 			if (!getProperty(p[0],szValue))
 				return false;		// item not present
-			if (UT_XML_stricmp(p[1],szValue)!=0)
+			if (strcmp(p[1],szValue)!=0)
 				return false;		// item has different value
 			p += 2;
 		}
@@ -611,13 +611,13 @@ bool PP_AttrProp::isExactMatch(const PP_AttrProp * pMatch) const
 			const XML_Char *l1 = static_cast<const XML_Char *>(ca1.key().c_str());
 			const XML_Char *l2 = static_cast<const XML_Char *>(ca2.key().c_str());
 
-			if (UT_XML_stricmp(l1, l2) != 0)
+			if (strcmp(l1, l2) != 0)
 				return false;
 
 			l1 = static_cast<const XML_Char *>(v1);
 			l2 = static_cast<const XML_Char *>(v2);
 
-			if (UT_XML_stricmp(l1,l2) != 0)
+			if (strcmp(l1,l2) != 0)
 				return false;
 
 			v1 = ca1.next();
@@ -638,13 +638,13 @@ bool PP_AttrProp::isExactMatch(const PP_AttrProp * pMatch) const
 			const XML_Char *l1 = static_cast<const XML_Char *>(cp1.key().c_str());
 			const XML_Char *l2 = static_cast<const XML_Char *>(cp2.key().c_str());
 
-			if (UT_XML_stricmp(l1, l2) != 0)
+			if (strcmp(l1, l2) != 0)
 				return false;
 
 			l1 = (XML_Char *) (static_cast<const UT_Pair*>(v1))->first();;
 			l2 = (XML_Char *) (static_cast<const UT_Pair*>(v2))->first();;
 
-			if (UT_XML_stricmp(l1,l2) != 0)
+			if (strcmp(l1,l2) != 0)
 				return false;
 
 			v1 = cp1.next();
@@ -696,7 +696,7 @@ PP_AttrProp * PP_AttrProp::cloneWithReplacements(const XML_Char ** attributes,
 		// TODO them from this?  or should we expand it and override
 		// TODO individual properties?
 		// TODO for now, we just barf on it.
-		UT_ASSERT(UT_XML_stricmp(n,PT_PROPS_ATTRIBUTE_NAME)!=0); // cannot handle PROPS here
+		UT_ASSERT(strcmp(n,PT_PROPS_ATTRIBUTE_NAME)!=0); // cannot handle PROPS here
 		if (!papNew->getAttribute(n,vNew))
 			if (!papNew->setAttribute(n,v))
 				goto Failed;
@@ -813,8 +813,8 @@ PP_AttrProp * PP_AttrProp::cloneWithElimination(const XML_Char ** attributes,
 			const XML_Char ** p = attributes;
 			while (*p)
 			{
-				UT_ASSERT(UT_XML_stricmp(p[0],PT_PROPS_ATTRIBUTE_NAME)!=0); // cannot handle PROPS here
-				if (UT_XML_stricmp(n,p[0])==0)		// found it, so we don't put it in the result.
+				UT_ASSERT(strcmp(p[0],PT_PROPS_ATTRIBUTE_NAME)!=0); // cannot handle PROPS here
+				if (strcmp(n,p[0])==0)		// found it, so we don't put it in the result.
 					goto DoNotIncludeAttribute;
 				p += 2;								// skip over value
 			}
@@ -840,7 +840,7 @@ PP_AttrProp * PP_AttrProp::cloneWithElimination(const XML_Char ** attributes,
 			const XML_Char ** p = properties;
 			while (*p)
 			{
-				if (UT_XML_stricmp(n,p[0])==0)		// found it, so we don't put it in the result.
+				if (strcmp(n,p[0])==0)		// found it, so we don't put it in the result.
 					goto DoNotIncludeProperty;
 				p += 2;
 			}
@@ -897,8 +897,8 @@ PP_AttrProp * PP_AttrProp::cloneWithEliminationIfEqual(const XML_Char ** attribu
 			const XML_Char ** p = attributes;
 			while (*p)
 			{
-				UT_ASSERT(UT_XML_stricmp(p[0],PT_PROPS_ATTRIBUTE_NAME)!=0); // cannot handle PROPS here
-				if (UT_XML_stricmp(n,p[0])==0 && UT_XML_stricmp(n,p[1])==0)		// found it, so we don't put it in the result.
+				UT_ASSERT(strcmp(p[0],PT_PROPS_ATTRIBUTE_NAME)!=0); // cannot handle PROPS here
+				if (strcmp(n,p[0])==0 && strcmp(n,p[1])==0)		// found it, so we don't put it in the result.
 					goto DoNotIncludeAttribute;
 				p += 2;								// skip over value
 			}
@@ -924,7 +924,7 @@ PP_AttrProp * PP_AttrProp::cloneWithEliminationIfEqual(const XML_Char ** attribu
 			const XML_Char ** p = properties;
 			while (*p)
 			{
-				if (UT_XML_stricmp(n,p[0])==0 && UT_XML_stricmp(n,p[1])==0)		// found it, so we don't put it in the result.
+				if (strcmp(n,p[0])==0 && strcmp(n,p[1])==0)		// found it, so we don't put it in the result.
 					goto DoNotIncludeProperty;
 				p += 2;
 			}

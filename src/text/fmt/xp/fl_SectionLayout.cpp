@@ -494,7 +494,7 @@ void fl_DocSectionLayout::setHdrFtr(HdrFtrType iType, fl_HdrFtrSectionLayout* pH
 	const char* pszAtt = NULL;
 
 	pszAtt = getAttribute("header");
-	if (pszAtt && (0 == UT_stricmp(pszAtt, pszID)) )
+	if (pszAtt && (0 == strcmp(pszAtt, pszID)) )
 	{
 		m_pHeaderSL = pHFSL;
 		checkAndRemovePages();
@@ -502,7 +502,7 @@ void fl_DocSectionLayout::setHdrFtr(HdrFtrType iType, fl_HdrFtrSectionLayout* pH
 	}
 
 	pszAtt = getAttribute("header-even");
-	if (pszAtt && (0 == UT_stricmp(pszAtt, pszID)) )
+	if (pszAtt && (0 == strcmp(pszAtt, pszID)) )
 	{
 		m_pHeaderEvenSL = pHFSL;
 		checkAndRemovePages();
@@ -510,7 +510,7 @@ void fl_DocSectionLayout::setHdrFtr(HdrFtrType iType, fl_HdrFtrSectionLayout* pH
 	}
 
 	pszAtt = getAttribute("header-first");
-	if (pszAtt && (0 == UT_stricmp(pszAtt, pszID)) )
+	if (pszAtt && (0 == strcmp(pszAtt, pszID)) )
 	{
 		m_pHeaderFirstSL = pHFSL;
 		checkAndRemovePages();
@@ -518,7 +518,7 @@ void fl_DocSectionLayout::setHdrFtr(HdrFtrType iType, fl_HdrFtrSectionLayout* pH
 	}
 
 	pszAtt = getAttribute("header-last");
-	if (pszAtt && (0 == UT_stricmp(pszAtt, pszID)) )
+	if (pszAtt && (0 == strcmp(pszAtt, pszID)) )
 	{
 		m_pHeaderLastSL = pHFSL;
 		checkAndRemovePages();
@@ -526,7 +526,7 @@ void fl_DocSectionLayout::setHdrFtr(HdrFtrType iType, fl_HdrFtrSectionLayout* pH
 	}
 
 	pszAtt = getAttribute("footer");
-	if (pszAtt && (0 == UT_stricmp(pszAtt, pszID))	)
+	if (pszAtt && (0 == strcmp(pszAtt, pszID))	)
 	{
 		m_pFooterSL = pHFSL;
 		checkAndRemovePages();
@@ -534,7 +534,7 @@ void fl_DocSectionLayout::setHdrFtr(HdrFtrType iType, fl_HdrFtrSectionLayout* pH
 	}
 
 	pszAtt = getAttribute("footer-even");
-	if (pszAtt && (0 == UT_stricmp(pszAtt, pszID))	)
+	if (pszAtt && (0 == strcmp(pszAtt, pszID))	)
 	{
 		m_pFooterEvenSL = pHFSL;
 		checkAndRemovePages();
@@ -542,7 +542,7 @@ void fl_DocSectionLayout::setHdrFtr(HdrFtrType iType, fl_HdrFtrSectionLayout* pH
 	}
 
 	pszAtt = getAttribute("footer-first");
-	if (pszAtt && (0 == UT_stricmp(pszAtt, pszID))	)
+	if (pszAtt && (0 == strcmp(pszAtt, pszID))	)
 	{
 		m_pFooterFirstSL = pHFSL;
 		checkAndRemovePages();
@@ -550,7 +550,7 @@ void fl_DocSectionLayout::setHdrFtr(HdrFtrType iType, fl_HdrFtrSectionLayout* pH
 	}
 
 	pszAtt = getAttribute("footer-last");
-	if (pszAtt && (0 == UT_stricmp(pszAtt, pszID))	)
+	if (pszAtt && (0 == strcmp(pszAtt, pszID))	)
 	{
 		m_pFooterLastSL = pHFSL;
 		checkAndRemovePages();

@@ -293,9 +293,9 @@ void fp_TextRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 	// called "nobidi"
 	if(!pszDirection)
 		iNewOverride = FRIBIDI_TYPE_UNSET;
-	else if(!UT_stricmp(pszDirection, "ltr"))
+	else if(!strcmp(pszDirection, "ltr"))
 		iNewOverride = FRIBIDI_TYPE_LTR;
-	else if(!UT_stricmp(pszDirection, "rtl"))
+	else if(!strcmp(pszDirection, "rtl"))
 		iNewOverride = FRIBIDI_TYPE_RTL;
 	else
 		iNewOverride = FRIBIDI_TYPE_UNSET;
