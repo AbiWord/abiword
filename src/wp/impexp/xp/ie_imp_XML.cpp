@@ -26,10 +26,10 @@
 
 #include "ut_types.h"
 #include "ut_assert.h"
+#include "ut_misc.h"
 #include "ut_debugmsg.h"
 #include "ut_string.h"
 #include "ut_bytebuf.h"
-#include "ut_hash.h"
 #include "ut_string_class.h"
 
 #ifdef ENABLE_RESOURCE_MANAGER
@@ -75,22 +75,18 @@ extern "C" { // for MRC compiler (Mac)
 int IE_Imp_XML::_mapNameToToken (const char * name,
 								 struct xmlToIdMapping * idlist, int len)
 {
-	static UT_StringPtrMap tokens(30);
-
 	xmlToIdMapping * id = NULL;
 
-	const void * pEntry = tokens.pick (name);
+	const void * pEntry = m_tokens.pick (name);
 
 	if (pEntry)
-	{
 		return (int)pEntry;
-	}
 
 	id = (xmlToIdMapping *)bsearch (name, idlist, len,
 									sizeof (xmlToIdMapping), s_str_compare);
 	if (id)
     {
-		tokens.insert (name, (void *)id->m_type);
+		m_tokens.insert (name, (void *)id->m_type);
 		return id->m_type;
     }
 	return -1;
@@ -108,20 +104,14 @@ UT_Error IE_Imp_XML::importFile(const char * szFilename)
 	if (m_pReader) parser.setReader (m_pReader);
 	UT_Error err =parser.parse (szFilename);
 	if ((err != UT_OK) && (err != UT_IE_SKIPINVALID))
-	{
 		m_error = UT_IE_BOGUSDOCUMENT;
-	}
-	if (m_error)
+
+	if (m_error != UT_OK)
 	{
 		UT_DEBUGMSG(("Problem reading document\n"));
 		if(m_error != UT_IE_SKIPINVALID)
-		{
-			goto Cleanup;
-		}
+			m_szFileName = 0;
 	}
-	m_error = UT_OK;
-Cleanup:
-	m_szFileName = 0;
 
 	return m_error;
 }
@@ -141,7 +131,7 @@ IE_Imp_XML::IE_Imp_XML(PD_Document * pDocument, bool whiteSignificant)
 	  m_lenCharDataSeen(0), m_lenCharDataExpected(0),
 	  m_iOperationCount(0), m_bSeenCR(false),
 	  m_bWhiteSignificant(whiteSignificant), m_bWasSpace(false),
-	  m_currentDataItemName(NULL), m_currentDataItemMimeType(NULL)
+	  m_currentDataItemName(NULL), m_currentDataItemMimeType(NULL), m_tokens(30)
 {
 	XAP_App *pApp = getDoc()->getApp();
 	UT_return_if_fail(pApp);
@@ -240,9 +230,7 @@ void IE_Imp_XML::charData(const XML_Char *s, int len)
 				XAP_InternalResource * ri = dynamic_cast<XAP_InternalResource *>(resource);
 				
 				if (m_currentDataItemEncoded) // base64-encoded data
-					{
 						ri->buffer (s, len, true);
-					}
 				else // old file-format keeping MathML & SVG in CDATA section :-(
 					{
 						/* since SVG import was only ever a DEBUG option, and is currently disabled (why?),
@@ -282,9 +270,7 @@ void IE_Imp_XML::charData(const XML_Char *s, int len)
 						return;
 					}
 				else
-					{
 						m_currentDataItem.append((UT_Byte*)s, len);
-					}
 #undef MyIsWhite
 #endif /* ENABLE_RESOURCE_MANAGER */
 			}
@@ -337,20 +323,9 @@ void IE_Imp_XML::_popInlineFmt(void)
 }
 
 const XML_Char * IE_Imp_XML::_getXMLPropValue(const XML_Char *name,
-					      const XML_Char ** atts)
+											  const XML_Char ** atts)
 {
-  // find the 'name="value"' pair and return the "value".
-  // ignore everything else
-
-  // quick out
-  if(!name || !atts)
-    return NULL;
-
-  for (const XML_Char ** a = atts; (*a); a++)
-    if(a[0] && (UT_XML_strcmp(a[0],name) == 0))
-      return a[1];
-
-  return NULL;
+	return UT_getAttribute(name, atts);
 }
 
 

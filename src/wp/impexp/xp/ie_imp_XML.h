@@ -32,6 +32,8 @@
 #include "ie_imp.h"
 #include "ut_bytebuf.h"
 #include "ut_string_class.h"
+#include "ut_hash.h"
+
 class PD_Document;
 
 struct ABI_EXPORT xmlToIdMapping {
@@ -137,6 +139,8 @@ protected:
 
     UT_String		m_currentMetaDataName;
 	UT_uint32       m_currentRevisionId;
+
+	UT_StringPtrMap m_tokens;
 };
 
 #endif /* IE_IMP_XML_H */
