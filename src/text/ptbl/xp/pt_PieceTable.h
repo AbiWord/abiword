@@ -85,10 +85,10 @@ public:
 									   PT_DocPosition dpos2,
 									   PP_AttrProp *p_AttrProp_Before);
 	bool					insertSpan_norec(PT_DocPosition dpos,
-									   const UT_UCSChar * p,
-									   UT_uint32 length, fd_Field * pField = NULL);
+											 const UT_UCSChar * p,
+											 UT_uint32 length, fd_Field * pField = NULL);
 
-        bool                 deleteFieldFrag(pf_Frag * pf);
+	bool                	deleteFieldFrag(pf_Frag * pf);
 	bool					changeSpanFmt(PTChangeFmt ptc,
 										  PT_DocPosition dpos1,
 										  PT_DocPosition dpos2,
@@ -106,25 +106,23 @@ public:
 										   PTStruxType pts);
 
 	bool					insertFmtMark(PTChangeFmt ptc,
-														 PT_DocPosition dpos,
-														 PP_AttrProp *p_AttrProp)
-								{
-								return _insertFmtMarkFragWithNotify(ptc,
-														 dpos,
-														 p_AttrProp);
-								}
+										  PT_DocPosition dpos,
+										  PP_AttrProp *p_AttrProp)
+		{
+			return _insertFmtMarkFragWithNotify(ptc,dpos,p_AttrProp);
+		}
 	// the append- methods are only available while importing
 	// the document.
 
-        PD_Document *                           getDocument(void);
+	PD_Document *			getDocument(void);
 	bool					appendStrux(PTStruxType pts, const XML_Char ** attributes);
 	bool					appendFmt(const XML_Char ** attributes);
 	bool					appendFmt(const UT_Vector * pVecAttributes);
 	bool					appendSpan(UT_UCSChar * p, UT_uint32 length);
 	bool					appendObject(PTObjectType pto, const XML_Char ** attributes);
 	bool					appendStyle(const XML_Char ** attributes);
-	bool                                    removeStyle(const XML_Char * name);
-	size_t                                  getStyleCount(void);
+	bool					removeStyle(const XML_Char * name);
+	size_t					getStyleCount(void);
 
 	bool					tellListener(PL_Listener * pListener);
 	bool					tellListenerSubset(PL_Listener * pListener,
@@ -139,13 +137,13 @@ public:
 											const PP_AttrProp ** ppAP) const;
 
 	inline const UT_UCSChar *getPointer(PT_BufIndex bi) const
-	{
-		// the pointer that we return is NOT a zero-terminated
-		// string.  the caller is responsible for knowing how
-		// long the data is within the span/fragment.
+		{
+			// the pointer that we return is NOT a zero-terminated
+			// string.  the caller is responsible for knowing how
+			// long the data is within the span/fragment.
 
-		return m_varset.getPointer(bi);
-	}
+			return m_varset.getPointer(bi);
+		}
 
 	bool					getSpanPtr(PL_StruxDocHandle sdh, UT_uint32 offset,
 									   const UT_UCSChar ** ppSpan, UT_uint32 * pLength) const;
@@ -159,23 +157,19 @@ public:
 												pf_Frag ** ppf,
 												PT_BlockOffset * pOffset) const;
 
-	bool					getStruxOfTypeFromPosition(
-						PL_ListenerId listenerId,
-						PT_DocPosition docPos,
-						PTStruxType pts,
-						PL_StruxFmtHandle * psfh) 
-	                                        const;
+	bool					getStruxOfTypeFromPosition(PL_ListenerId listenerId,
+													   PT_DocPosition docPos,
+													   PTStruxType pts,
+													   PL_StruxFmtHandle * psfh) const;
 
 
-	bool					getStruxOfTypeFromPosition(
-						PT_DocPosition docPos,   
-						PTStruxType pts,  
-						PL_StruxDocHandle * sdh) const;
+	bool					getStruxOfTypeFromPosition(PT_DocPosition docPos,   
+													   PTStruxType pts,  
+													   PL_StruxDocHandle * sdh) const;
 
-	bool                                 getStruxFromPosition(
-                                                PL_ListenerId listenerId,
-						PT_DocPosition docPos,
-						PL_StruxFmtHandle * psfh) const;
+	bool					getStruxFromPosition(PL_ListenerId listenerId,
+												 PT_DocPosition docPos,
+												 PL_StruxFmtHandle * psfh) const;
 
 	bool					getFragsFromPositions(PT_DocPosition dPos1, PT_DocPosition dPos2,
 												  pf_Frag ** ppf1, PT_BlockOffset * pOffset1,
@@ -246,17 +240,17 @@ protected:
 	bool					_doTheDo(const PX_ChangeRecord * pcr, bool bUndo);
 	bool					_struxHasContent(pf_Frag_Strux * pfs) const;
 	bool					_unlinkStrux(pf_Frag_Strux * pfs,
-											   pf_Frag ** ppfEnd, UT_uint32 * pfragOffsetEnd);
+										 pf_Frag ** ppfEnd, UT_uint32 * pfragOffsetEnd);
 	bool					_unlinkStrux_Block(pf_Frag_Strux * pfs,
 											   pf_Frag ** ppfEnd, UT_uint32 * pfragOffsetEnd);
 	bool					_unlinkStrux_Section(pf_Frag_Strux * pfs,
 												 pf_Frag ** ppfEnd, UT_uint32 * pfragOffsetEnd);
 
 	bool					_deleteSpan_norec(PT_DocPosition dpos,
-												  pf_Frag_Text * pft, UT_uint32 fragOffset,
-												  UT_uint32 length,
-												  pf_Frag_Strux * pfs,
-												  pf_Frag ** ppfEnd, UT_uint32 * pfragOffsetEnd);
+											  pf_Frag_Text * pft, UT_uint32 fragOffset,
+											  UT_uint32 length,
+											  pf_Frag_Strux * pfs,
+											  pf_Frag ** ppfEnd, UT_uint32 * pfragOffsetEnd);
 	bool					_canCoalesceDeleteSpan(PX_ChangeRecord_Span * pcrSpan) const;
 
 	bool					_deleteSpanWithNotify(PT_DocPosition dpos,
@@ -284,7 +278,7 @@ protected:
 
 
 	bool					_deleteComplexSpan_norec(PT_DocPosition dpos1,
-											   PT_DocPosition dpos2);
+													 PT_DocPosition dpos2);
 	
 	bool					_deleteObject(pf_Frag_Object * pfo,
 										  pf_Frag ** ppfEnd, UT_uint32 * pfragOffsetEnd);
@@ -298,18 +292,18 @@ protected:
 
 	
 	bool					_deleteObject_norec(PT_DocPosition dpos,
-													pf_Frag_Object * pfo, UT_uint32 fragOffset,
-													UT_uint32 length,
-													pf_Frag_Strux * pfs,
-													pf_Frag ** ppfEnd, UT_uint32 * pfragOffsetEnd);
+												pf_Frag_Object * pfo, UT_uint32 fragOffset,
+												UT_uint32 length,
+												pf_Frag_Strux * pfs,
+												pf_Frag ** ppfEnd, UT_uint32 * pfragOffsetEnd);
 
 	bool					_deleteStruxWithNotify(PT_DocPosition dpos,
 												   pf_Frag_Strux * pfs,
 												   pf_Frag ** ppfEnd, UT_uint32 * pfragOffsetEnd);
 
 	bool					_deleteStrux_norec(PT_DocPosition dpos,
-												   pf_Frag_Strux * pfs,
-												   pf_Frag ** ppfEnd, UT_uint32 * pfragOffsetEnd);
+											   pf_Frag_Strux * pfs,
+											   pf_Frag ** ppfEnd, UT_uint32 * pfragOffsetEnd);
 
 
 	bool					_fmtChangeStrux(pf_Frag_Strux * pfs,
