@@ -1408,16 +1408,9 @@ bool fl_CellLayout::isCellSelected(void)
 	posStartCell = m_pDoc->getStruxPosition(sdhStart) +1;
 	m_pDoc->getNextStruxOfType(sdhStart, PTX_EndCell, &sdhEnd);
 	posEndCell = m_pDoc->getStruxPosition(sdhEnd) -1;
-	PT_DocPosition iAnchor = pView->getSelectionAnchor();
-	PT_DocPosition iPoint = pView->getPoint();
-	if(iAnchor > iPoint)
+	if(pView->isPosSelected(posStartCell) && pView->isPosSelected(posEndCell))
 	{
-		PT_DocPosition swap = iPoint;
-		iPoint = iAnchor;
-		iAnchor = swap;
-	}
-	if(iAnchor <= posStartCell && iPoint >= posEndCell)
-	{
+		UT_DEBUGMSG(("Cell at top %d left %d selected \n",m_iTopAttach,m_iLeftAttach));
 		return true;
 	}
 	return false;

@@ -319,10 +319,7 @@ BeginLayout(Main,0)
 
    		BeginSubMenu(AP_MENU_ID_TABLE_SELECT)
 			MenuItem(AP_MENU_ID_TABLE_SELECT_TABLE)
-#if 0
-// Not for 2.0
 			MenuItem(AP_MENU_ID_TABLE_SELECT_COLUMN)
-#endif
 			MenuItem(AP_MENU_ID_TABLE_SELECT_ROW)
 			MenuItem(AP_MENU_ID_TABLE_SELECT_CELL)
 		EndSubMenu()

@@ -237,6 +237,7 @@ public:
 	static EV_EditMethod_Fn selectTable;
 	static EV_EditMethod_Fn selectRow;
 	static EV_EditMethod_Fn selectCell;
+	static EV_EditMethod_Fn selectColumn;
 
 	static EV_EditMethod_Fn delLeft;
 	static EV_EditMethod_Fn delRight;
@@ -1017,6 +1018,7 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(selectAll),			0,	""),
 	EV_EditMethod(NF(selectBlock),			0,	""),
 	EV_EditMethod(NF(selectCell),			0,	""),
+	EV_EditMethod(NF(selectColumn),			0,	""),
 	EV_EditMethod(NF(selectFrame),			0,	""),
 	EV_EditMethod(NF(selectLine),			0,	""),
 	EV_EditMethod(NF(selectObject), 		0,	""),
@@ -4397,6 +4399,19 @@ Defun1(selectCell)
 	}
 	posEndCell = pDoc->getStruxPosition(endCellSDH)+1;
 	pView->cmdSelect(posStartCell,posEndCell);
+	return true;
+}
+
+
+Defun1(selectColumn)
+{
+	CHECK_FRAME;
+	ABIWORD_VIEW;
+	if(!pView->isInTable())
+	{
+		return false;
+	}
+	pView->cmdSelectColumn(pView->getPoint());
 	return true;
 }
 

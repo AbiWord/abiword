@@ -186,26 +186,49 @@ void FV_View::_clearSelection(void)
 	}
 
 	UT_uint32 iPos1, iPos2;
-
-	if (m_Selection.getSelectionAnchor() < getPoint())
+	if(m_Selection.getSelectionMode() < FV_SelectionMode_Multiple)
 	{
-		iPos1 = m_Selection.getSelectionAnchor();
-		iPos2 = getPoint();
+		if (m_Selection.getSelectionAnchor() < getPoint())
+		{
+			iPos1 = m_Selection.getSelectionAnchor();
+			iPos2 = getPoint();
+		}
+		else
+		{
+			iPos1 = getPoint();
+			iPos2 = m_Selection.getSelectionAnchor();
+		}
+
+		bool bres = _clearBetweenPositions(iPos1, iPos2, true);
+		if(!bres)
+			return;
+	
+		_resetSelection();
+		m_iLowDrawPoint = 0;
+		m_iHighDrawPoint = 0;
+
+ 		_drawBetweenPositions(iPos1, iPos2);
 	}
 	else
 	{
-		iPos1 = getPoint();
-		iPos2 = m_Selection.getSelectionAnchor();
+		UT_sint32 i = 0;
+		for(i=0; i<m_Selection.getNumSelections();i++)
+		{
+			PD_DocumentRange * pDocR = m_Selection.getNthSelection(i);
+			if(pDocR)
+			{
+				iPos1 = pDocR->m_pos1;
+				iPos2 = pDocR->m_pos2;
+				bool bres = _clearBetweenPositions(iPos1, iPos2, true);
+				if(!bres)
+					return;
+				_drawBetweenPositions(iPos1, iPos2);
+			}
+		}
 	}
-
-	bool bres = _clearBetweenPositions(iPos1, iPos2, true);
-	if(!bres)
-		return;
 	_resetSelection();
 	m_iLowDrawPoint = 0;
 	m_iHighDrawPoint = 0;
-
-	_drawBetweenPositions(iPos1, iPos2);
 }
 
 void FV_View::_drawSelection()
@@ -213,7 +236,7 @@ void FV_View::_drawSelection()
 	UT_return_if_fail(!isSelectionEmpty());
 //	CHECK_WINDOW_SIZE
 	UT_DEBUGMSG(("_drawSelection getPoint() %d m_Selection.getSelectionAnchor() %d \n",getPoint(),m_Selection.getSelectionAnchor()));
-//	if(m_iLowDrawPoint == 0 && m_iHighDrawPoint == 0)
+	if(m_Selection.getSelectionMode() < FV_SelectionMode_Multiple)
 	{
 		if (m_Selection.getSelectionAnchor() < getPoint())
 		{
@@ -223,24 +246,23 @@ void FV_View::_drawSelection()
 		{
 			_drawBetweenPositions(getPoint(), m_Selection.getSelectionAnchor());
 		}
+		m_iLowDrawPoint = UT_MIN(m_Selection.getSelectionAnchor(),getPoint());
+		m_iHighDrawPoint = UT_MAX(m_Selection.getSelectionAnchor(),getPoint());
 	}
-#if 0
 	else
 	{
-		PT_DocPosition iLow = UT_MIN(m_Selection.getSelectionAnchor(),getPoint());
-		PT_DocPosition iHigh =  UT_MAX(m_Selection.getSelectionAnchor(),getPoint());
-		if(iLow < m_iLowDrawPoint)
+		UT_sint32 i = 0;
+		for(i=0; i<m_Selection.getNumSelections();i++)
 		{
-			_drawBetweenPositions(iLow, m_iLowDrawPoint);
+			PD_DocumentRange * pDocR = m_Selection.getNthSelection(i);
+			if(pDocR)
+			{
+				_drawBetweenPositions(pDocR->m_pos1, pDocR->m_pos2);
+			}
 		}
-		if(iHigh > m_iHighDrawPoint)
-		{
-			_drawBetweenPositions(m_iHighDrawPoint, iHigh);
-		}
+		m_iLowDrawPoint = 0;
+		m_iHighDrawPoint = 0;
 	}
-#endif
-	m_iLowDrawPoint = UT_MIN(m_Selection.getSelectionAnchor(),getPoint());
-	m_iHighDrawPoint = UT_MAX(m_Selection.getSelectionAnchor(),getPoint());
 }
 
 // Note that isClearSelection() might change its tune in one of two ways.

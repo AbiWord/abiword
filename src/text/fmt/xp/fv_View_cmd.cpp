@@ -662,6 +662,81 @@ bool FV_View::cmdSplitCells(AP_Dialog_SplitCells::SplitType iSplitType)
 }
 
 /*!
+ * Select the column of the table  identified by the document position 
+ * posOfColumn
+ */
+bool FV_View::cmdSelectColumn(PT_DocPosition posOfColumn)
+{
+	PL_StruxDocHandle cellSDH,tableSDH;
+	PT_DocPosition posTable,posCell;
+	UT_sint32 iLeft,iRight,iTop,iBot;
+	UT_sint32 Left,Right,Top,Bot;
+	bool bEOL;
+	PT_DocPosition posCol = getPoint();
+	if(!isInTable(posOfColumn))
+	{
+		return false;
+	}
+	getCellParams(posCol, &iLeft, &iRight,&iTop,&iBot);
+	bool bRes = m_pDoc->getStruxOfTypeFromPosition(posCol,PTX_SectionCell,&cellSDH);
+	bRes = m_pDoc->getStruxOfTypeFromPosition(posCol,PTX_SectionTable,&tableSDH);
+	UT_return_val_if_fail(bRes, false);
+
+	posTable = m_pDoc->getStruxPosition(tableSDH) + 1;
+	posCell = m_pDoc->getStruxPosition(cellSDH);
+
+//
+// Now find the number of rows and columns inthis table. 
+//
+	UT_sint32 numRows = 0;
+	UT_sint32 numCols = 0;
+	m_pDoc->getRowsColsFromTableSDH(tableSDH, &numRows, &numCols);
+//
+// Ok set the selection type to that of a column
+//
+	m_Selection.setMode(FV_SelectionMode_TableColumn);
+
+	fl_BlockLayout * pBlock = NULL;
+	fp_Run * pRun = NULL;
+	UT_sint32 xCaret, yCaret;
+	UT_uint32 heightCaret;
+	UT_sint32 xCaret2, yCaret2;
+	bool bDirection;
+	_findPositionCoords(posOfColumn, bEOL, xCaret, yCaret, xCaret2, yCaret2, heightCaret, bDirection, &pBlock, &pRun);
+	UT_return_val_if_fail(pBlock,false);
+	fl_ContainerLayout * pCL = pBlock->myContainingLayout();
+	UT_return_val_if_fail(pCL,false);
+	pCL = pCL->myContainingLayout();
+	UT_return_val_if_fail(pCL,false);
+	UT_return_val_if_fail((pCL->getContainerType() == FL_CONTAINER_TABLE),false);
+	fl_TableLayout * pTL = static_cast<fl_TableLayout *>(pCL);
+	m_Selection.setTableLayout(pTL);
+//
+// Now loop through the column and collect all the cells.
+//
+	UT_sint32 j = 0;
+	UT_sint32 jPrev = 0;
+	for(j=0; j<numRows; j++)
+	{
+		PT_DocPosition posWork = findCellPosAt(posTable,j,iLeft) +1;
+		getCellParams(posWork,&Left,&Right,&Top,&Bot);
+		if(Top == jPrev)
+		{
+			continue;
+		}
+		_findPositionCoords(posWork, bEOL, xCaret, yCaret, xCaret2, yCaret2, heightCaret, bDirection, &pBlock, &pRun);
+		UT_return_val_if_fail(pBlock,false);
+		fl_ContainerLayout * pCL = pBlock->myContainingLayout();
+		UT_return_val_if_fail((pCL->getContainerType() == FL_CONTAINER_CELL),false);
+		fl_CellLayout * pCell = static_cast<fl_CellLayout *>(pCL);
+		m_Selection.addCellToSelection(pCell);
+		jPrev = j;
+	}
+	return true;
+}
+
+
+/*!
  * Merge the cells located at posSource with posDestination by copying the data from 
  * source to destination. Then deleting source and expanding destination into it's location
  * in the table.

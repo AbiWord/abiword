@@ -22,25 +22,42 @@
 
 #include "pt_Types.h"
 #include "ut_vector.h"
+#include "ut_string_class.h"
 
 typedef enum _FV_SelectionMode
 {
 	FV_SelectionMode_NONE,
 	FV_SelectionMode_Single,
 	FV_SelectionMode_Multiple,
-	FV_SelectionMode_TableColumn
+	FV_SelectionMode_TableColumn,
+	FV_SelectionMode_TableRow
 } FV_SelectionMode;
 
 class FL_DocLayout;
 class PD_Document;
 class FV_View;
 class fl_TableLayout;
-
+class fl_CellLayout;
 class ABI_EXPORT FV_Selection
 {
 	friend class fv_View;
 
 public:
+class ABI_EXPORT FV_SelectionCellProps
+{
+public:
+	FV_SelectionCellProps(void):m_iLeft(0),
+								m_iRight(0),
+								m_iTop(0),
+								m_iBot(0),
+								m_sProps("")
+		{}
+	UT_sint32 m_iLeft;
+	UT_sint32 m_iRight;
+	UT_sint32 m_iTop;
+	UT_sint32 m_iBot;
+	UT_String m_sProps;
+};
 
 	FV_Selection(FV_View * pView);
 	~FV_Selection();
@@ -56,10 +73,13 @@ public:
 	PT_DocPosition        getSelectionRightAnchor(void) const;
 	void                  setSelectionRightAnchor(PT_DocPosition pos);
 	UT_sint32             getNumSelections(void);
+	PD_DocumentRange *    getNthSelection(UT_sint32 i);
 	void                  addSelectedRange(PT_DocPosition posLow, PT_DocPosition posHigh, bool bAddData);
 	bool                  isPosSelected(PT_DocPosition pos) const;
 	bool                  isSelected(void) const;
 	void                  clearSelection(void);
+	void                  setTableLayout(fl_TableLayout * pFL);
+	void                  addCellToSelection(fl_CellLayout * pCell);
 private:
 	FV_View *             m_pView;
 	FV_SelectionMode      m_iSelectionMode;
@@ -69,6 +89,7 @@ private:
 	fl_TableLayout *      m_pTableOfSelectedColumn;
 	UT_Vector             m_vecSelRanges;
 	UT_Vector             m_vecSelRTFBuffers;
+	UT_Vector             m_vecSelCellProps;
 };
 
 #endif /* FV_Selection_H */

@@ -191,7 +191,6 @@ public:
 	virtual inline PT_DocPosition   getPoint(void) const { return m_iInsPoint; }
 	PT_DocPosition	getSelectionAnchor(void) const;
 
-
 	virtual void focusChange(AV_Focus focus);
 
 	virtual void	setXScrollOffset(UT_sint32);
@@ -557,7 +556,7 @@ public:
 	bool                cmdInsertRow(PT_DocPosition posTable, bool bBfore);
 	bool                cmdInsertCol(PT_DocPosition posTable, bool bBefore);
 	bool                cmdSplitCells(AP_Dialog_SplitCells::SplitType iSplitType);
-
+	bool                cmdSelectColumn(PT_DocPosition posOfColumn);
 	bool                cmdMergeCells(PT_DocPosition posSource, PT_DocPosition posDestination);
 	bool                _MergeCells( PT_DocPosition posDestination,PT_DocPosition posSource, bool bBefore);
 	bool                getCellParams(PT_DocPosition posCol, UT_sint32 *iLeft, 

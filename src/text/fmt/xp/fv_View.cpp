@@ -6003,6 +6003,13 @@ UT_uint32 FV_View::undoCount (bool bUndo) const
   return m_pDoc->undoCount ( bUndo );
 }
 
+/*!
+ * Returns true of the point presented is within a selection.
+ */
+bool FV_View::isPosSelected(PT_DocPosition pos) const
+{
+	return m_Selection.isPosSelected(pos);
+}
 
 void FV_View::getDocumentRangeOfCurrentSelection(PD_DocumentRange * pdr)
 {
@@ -7124,25 +7131,6 @@ void FV_View::getLeftRulerInfo(PT_DocPosition pos, AP_LeftRulerInfo * pInfo)
 	return;
 }
 
-
-
-bool FV_View::isPosSelected(PT_DocPosition pos) const
-{
-	if (!isSelectionEmpty())
-	{
-		PT_DocPosition posStart = getPoint();
-		PT_DocPosition posEnd = posStart;
-
-		if (m_Selection.getSelectionAnchor() < posStart)
-			posStart = m_Selection.getSelectionAnchor();
-		else
-			posEnd = m_Selection.getSelectionAnchor();
-
-		return ((pos >= posStart) && (pos <= posEnd));
-	}
-
-	return false;
-}
 
 bool FV_View::isXYSelected(UT_sint32 xPos, UT_sint32 yPos) const
 {
