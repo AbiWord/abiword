@@ -391,6 +391,19 @@ bool pt_PieceTable::_tweakDeleteSpanOnce(PT_DocPosition & dpos1,
 
 			if (pt_BeforeType == PTX_Block && pt_LastType == PTX_Block)
 			{
+				//  Check that there is something between the pf_Before and pf_Last, otherwise
+                //  This leads to a segfault from continually pushing pf_Before onto the stack
+                //  if we delete a whole lot of blank lines. These get popped off then deleted
+                //  only to find the same pointer waiting to come off the stack.
+				pf_Frag * pScan = pf_Before->getNext();
+				UT_uint32 count = 0;
+				while(pScan && pScan != pf_Last && (pScan->getType() != pf_Frag::PFT_Strux))
+				{
+					pScan = pScan->getNext();
+				}
+				if(pScan == pf_Last)
+				{
+
 				//  If we are the structure of the document is
 				//  '[Block] ... [Block]' and we are deleting the
 				//  '... [Block]' part, then the user is probably expecting
@@ -402,17 +415,18 @@ bool pt_PieceTable::_tweakDeleteSpanOnce(PT_DocPosition & dpos1,
 				//  want to delete the '...' first, and then get around
 				//  to deleting the block later.
 
-				pf_Frag_Strux * pfs_BeforeSection, * pfs_LastSection;
-				_getStruxOfTypeFromPosition(dpos1 - 1, 
-											PTX_Section, &pfs_BeforeSection);
-				_getStruxOfTypeFromPosition(dpos2 - 1, 
-											PTX_Section, &pfs_LastSection);
-
-				if (pfs_BeforeSection == pfs_LastSection)
-				{
-					dpos2 -= pf_Last->getLength();
-					pstDelayStruxDelete->push(pf_Before);
-					return true;
+					pf_Frag_Strux * pfs_BeforeSection, * pfs_LastSection;
+					_getStruxOfTypeFromPosition(dpos1 - 1, 
+												PTX_Section, &pfs_BeforeSection);
+					_getStruxOfTypeFromPosition(dpos2 - 1, 
+												PTX_Section, &pfs_LastSection);
+					
+					if ((pfs_BeforeSection == pfs_LastSection) && (dpos2 > dpos1 +1))
+					{
+						dpos2 -= pf_Last->getLength();
+						pstDelayStruxDelete->push(pf_Before);
+						return true;
+					}
 				}
 			}
 		}
@@ -754,7 +768,9 @@ bool pt_PieceTable::deleteSpan(PT_DocPosition dpos1,
 		//  first, and then the actual spans.  Also, glob all
 		//  changes together.
 		if(!bDontGlob)
+		{
 			beginMultiStepGlob();
+		}
 		_changePointWithNotify(old_dpos2);
 
 		bSuccess = _deleteFormatting(dpos1, dpos2);
@@ -765,7 +781,6 @@ bool pt_PieceTable::deleteSpan(PT_DocPosition dpos1,
 		{
 			pf_Frag_Strux * pfs;
 			stDelayStruxDelete.pop((void **)&pfs);
-
 			_deleteFormatting(dpos1 - pfs->getLength(), dpos1);
 
  			pf_Frag *pf;

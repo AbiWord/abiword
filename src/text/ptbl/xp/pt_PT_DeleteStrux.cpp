@@ -83,6 +83,15 @@ bool pt_PieceTable::_unlinkStrux_Block(pf_Frag_Strux * pfs,
 		pf = pf->getPrev();
 	}
 	UT_ASSERT(pfsPrev);			// we have a block that's not in a section ??
+	//
+	// Code to prevent a crash. But this should not happen and if it does not everything will
+    // be deleted - Sevior.
+	//
+	if(pfsPrev == NULL)
+	{
+		_unlinkFrag(pfs,ppfEnd,pfragOffsetEnd);
+		return false;
+	}
 
 	switch (pfsPrev->getStruxType())
 	{
