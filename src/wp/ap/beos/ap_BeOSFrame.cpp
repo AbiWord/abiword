@@ -431,7 +431,9 @@ void AP_BeOSFrame::killFrameData(void)
 	m_pData = NULL;
 }
 
-UT_Error AP_BeOSFrame::_loadDocument(const char * szFilename, IEFileType ieft)
+UT_Error AP_BeOSFrame::_loadDocument(const char * szFilename, IEFileType ieft,
+				     bool createNew)
+	
 {
 	// are we replacing another document?
 	if (m_pDoc)
@@ -453,14 +455,32 @@ UT_Error AP_BeOSFrame::_loadDocument(const char * szFilename, IEFileType ieft)
 		goto ReplaceDocument;
 	}
 
-	UT_Error err; 
-	err = pNewDoc->readFromFile(szFilename, ieft);
-	if (!err)
+	UT_Error errorCode; 
+	errorCode = pNewDoc->readFromFile(szFilename, ieft);
+	if (!errorCode)
 		goto ReplaceDocument;
+
+	if (createNew)
+	  {
+	    // we have a file name but couldn't load it
+	    pNewDoc->newDocument();
+
+	    // here, we want to open a new document if it doesn't exist.
+	    // errorCode could also take several other values, indicating
+	    // that the document exists but for some reason we could not
+	    // open it. in those cases, we do not wish to overwrite the
+	    // existing documents, but instead open a new blank document.
+	    // this fixes bug 1668 - DAL
+	    if ( UT_IE_FILENOTFOUND == errorCode )
+	      errorCode = pNewDoc->saveAs(szFilename, ieft);
+	  }
+	if (!errorCode)
+	  goto ReplaceDocument;
+
 	
 	UT_DEBUGMSG(("ap_Frame: could not open the file [%s]\n",szFilename));
 	UNREFP(pNewDoc);
-	return err;
+	return errorCode;
 
 ReplaceDocument:
 	getApp()->forgetClones(this);
@@ -507,35 +527,38 @@ ReplaceDocument:
 	return UT_OK;
 }
 	
-XAP_Frame * AP_BeOSFrame::cloneFrame(void)
+XAP_Frame * AP_BeOSFrame::buildFrame(XAP_Frame * pF)
 {
-	AP_BeOSFrame * pClone = new AP_BeOSFrame(this);
-	ENSUREP(pClone);
-	return pClone
+	UT_Error error = UT_OK;
+	AP_BeOSFrame * pFrame = static_cast<AP_BeOSFrame *>(pF);
+	ENSUREP(pFrame);
+	return pFrame;
 
+	if (!pFrame->initialize())
+		goto Cleanup;
+
+	error = pFrame->_showDocument();
+	if (error)
+		goto Cleanup;
+
+	pFrame->show();
+	return static_cast<XAP_Frame *>(pFrame);
+								                             
 Cleanup:
 	// clean up anything we created here
-	if (pClone)
+	if (pFrame)
 	{
-		m_pBeOSApp->forgetFrame(pClone);
-		delete pClone;
+		m_pBeOSApp->forgetFrame(pFrame);
+		delete pFrame;
 	}
 
 	return NULL;
 }
-	
-XAP_Frame * AP_BeOSFrame::cloneFrame(XAP_Frame * pF)
+
+XAP_Frame * AP_BeOSFrame::cloneFrame(void)
 {
-	AP_BeOSFrame * pClone = static_cast<AP_BeOSFrame *>(pF);
+	AP_BeOSFrame * pClone = new AP_BeOSFrame(this);
 	ENSUREP(pClone);
-	if (!pClone->initialize())
-		goto Cleanup;
-	error = pClone->_showDocument();
-	if (error)
-		goto Cleanup;
-
-	pClone->show();
-
 	return pClone;
 
 Cleanup:
@@ -548,14 +571,13 @@ Cleanup:
 
 	return NULL;
 }
-
-UT_Error AP_BeOSFrame::loadDocument(const char * szFilename, int ieft, bool createNew)
+	
+UT_Error AP_BeOSFrame::loadDocument(const char * szFilename, int ieft)
 {
-  UT_ASSERT(UT_TODO);
-  return UT_OK;
+  return loadDocument(szFilename, ieft, false);
 }
 
-UT_Error AP_BeOSFrame::loadDocument(const char * szFilename, int ieft)
+UT_Error AP_BeOSFrame::loadDocument(const char * szFilename, int ieft, bool createNew)
 {
 	bool bUpdateClones;
 	UT_Vector vClones;
@@ -568,7 +590,7 @@ UT_Error AP_BeOSFrame::loadDocument(const char * szFilename, int ieft)
 	}
 
 	UT_Error err;
-	err = _loadDocument(szFilename, (IEFileType) ieft); 
+	err = _loadDocument(szFilename, (IEFileType) ieft, createNew); 
 	if (err)
 	{
 		// we could not load the document.

@@ -35,6 +35,7 @@ public:
 
 	virtual bool				initialize(void);
 	virtual	XAP_Frame *			cloneFrame(void);
+	virtual XAP_Frame *			buildFrame(XAP_Frame * pF);
 	virtual UT_Error 			loadDocument(const char * szFilename, int ieft);
 	virtual UT_Error 			loadDocument(const char * szFilename, int ieft, bool createNew);
 	virtual UT_Error 			importDocument(const char * szFilename, int ieft, bool markClean = false);
@@ -58,7 +59,7 @@ public:
 
 protected:
 	//virtual GtkWidget *			_createDocumentWindow(void);
-	UT_Error	 				_loadDocument(const char * szFilename, IEFileType ieft);
+	UT_Error	 			_loadDocument(const char * szFilename, IEFileType ieft, bool createNew);
 	UT_Error					_showDocument(UT_uint32 zoom=100);
 	static void					_scrollFuncX(void * pData, UT_sint32 xoff, UT_sint32 xlimit);
 	static void					_scrollFuncY(void * pData, UT_sint32 yoff, UT_sint32 ylimit);
