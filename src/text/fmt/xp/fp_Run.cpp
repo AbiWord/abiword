@@ -3503,7 +3503,10 @@ void fp_FieldRun::_defaultDraw(dg_DrawArgs* pDA)
 	getGR()->setFont(m_pFont);
 	getGR()->setColor(_getColorFG());
 
-	getGR()->drawChars(m_sFieldValue, 0, UT_UCS4_strlen(m_sFieldValue), pDA->xoff,iYdraw);
+	UT_GrowBufElement aCharWidths[FPFIELD_MAX_LENGTH];
+	UT_uint32 len = UT_UCS4_strlen(m_sFieldValue);
+	UT_sint32 iNewWidth = getGR()->measureString(m_sFieldValue, 0, len, aCharWidths);
+	getGR()->drawChars(m_sFieldValue, 0, len, pDA->xoff,iYdraw, aCharWidths);
 //
 // Draw underline/overline/strikethough
 //
