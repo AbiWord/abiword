@@ -91,6 +91,19 @@ void AP_UnixFrameImpl::_showOrHideStatusbar()
 	static_cast<AP_UnixFrame *>(pFrame)->toggleStatusBar(bShowStatusBar);
 }
 
+static void
+focus_in_event (GtkWidget * drawing_area, GdkEventCrossing *event, AP_UnixFrameImpl * me)
+{
+  gtk_widget_grab_focus (drawing_area);
+  me->focusIMIn ();
+}
+
+static void
+focus_out_event (GtkWidget * drawing_area, GdkEventCrossing * event, AP_UnixFrameImpl * me)
+{
+  me->focusIMOut ();
+}
+
 GtkWidget * AP_UnixFrameImpl::_createDocumentWindow()
 {
 	XAP_Frame* pFrame = getFrame();
@@ -151,14 +164,18 @@ GtkWidget * AP_UnixFrameImpl::_createDocumentWindow()
 
 	// create a drawing area in the for our document window.
 	m_dArea = createDrawingArea ();
-	
+	GTK_WIDGET_SET_FLAGS (m_dArea, GTK_CAN_FOCUS);	// allow it to be focussed
+
 	gtk_object_set_user_data(GTK_OBJECT(m_dArea), this);
 	gtk_widget_set_events(GTK_WIDGET(m_dArea), (GDK_EXPOSURE_MASK |
-												GDK_BUTTON_PRESS_MASK |
-												GDK_POINTER_MOTION_MASK |
-												GDK_BUTTON_RELEASE_MASK |
-												GDK_KEY_PRESS_MASK |
-												GDK_KEY_RELEASE_MASK));
+						    GDK_BUTTON_PRESS_MASK |
+						    GDK_POINTER_MOTION_MASK |
+						    GDK_BUTTON_RELEASE_MASK |
+						    GDK_KEY_PRESS_MASK |
+						    GDK_KEY_RELEASE_MASK |
+						    GDK_ENTER_NOTIFY_MASK |
+						    GDK_LEAVE_NOTIFY_MASK));
+
 	gtk_widget_set_double_buffered(GTK_WIDGET(m_dArea), FALSE);
 	g_signal_connect(G_OBJECT(m_dArea), "expose_event",
 					   G_CALLBACK(XAP_UnixFrameImpl::_fe::expose), NULL);
@@ -177,6 +194,10 @@ GtkWidget * AP_UnixFrameImpl::_createDocumentWindow()
 
 	g_signal_connect(G_OBJECT(m_dArea), "configure_event",
 					   G_CALLBACK(XAP_UnixFrameImpl::_fe::configure_event), NULL);
+
+	// focus and XIM related
+	g_signal_connect(G_OBJECT(m_dArea), "enter_notify_event", G_CALLBACK(focus_in_event), this);
+	g_signal_connect(G_OBJECT(m_dArea), "leave_notify_event", G_CALLBACK(focus_out_event), this);
 
 	// create a table for scroll bars, rulers, and drawing area
 

@@ -106,6 +106,7 @@ static void wmspec_change_layer(bool fullscreen, GdkWindow *window)
 XAP_UnixFrameImpl::XAP_UnixFrameImpl(XAP_Frame *pFrame, XAP_UnixApp * pApp) : 
 	XAP_FrameImpl(pFrame),
 	m_imContext(NULL),
+	need_im_reset (false),
 	m_bDoZoomUpdate(false),
 	m_iZoomUpdateID(0),
 	m_iAbiRepaintID(0),
@@ -155,6 +156,27 @@ gint XAP_UnixFrameImpl::_fe::focusOut(GtkWidget * /* w*/, GdkEvent * /*e*/,gpoin
   return FALSE;
 }
 
+void XAP_UnixFrameImpl::focusIMIn ()
+{
+	need_im_reset = true;
+	gtk_im_context_focus_in(getIMContext());
+}
+
+void XAP_UnixFrameImpl::focusIMOut ()
+{
+	need_im_reset = true;
+	gtk_im_context_focus_in(getIMContext());
+}
+
+void XAP_UnixFrameImpl::resetIMContext()
+{
+  if (need_im_reset)
+    {
+      need_im_reset = false;
+      gtk_im_context_reset (getIMContext());
+    }
+}
+
 gboolean XAP_UnixFrameImpl::_fe::focus_in_event(GtkWidget *w,GdkEvent */*event*/,gpointer /*user_data*/)
 {
 	XAP_UnixFrameImpl * pFrameImpl = (XAP_UnixFrameImpl *) gtk_object_get_user_data(GTK_OBJECT(w));
@@ -164,7 +186,7 @@ gboolean XAP_UnixFrameImpl::_fe::focus_in_event(GtkWidget *w,GdkEvent */*event*/
 						GINT_TO_POINTER(TRUE));
 	if (pFrame->getCurrentView())
 		pFrame->getCurrentView()->focusChange(gtk_grab_get_current() == NULL || gtk_grab_get_current() == w ? AV_FOCUS_HERE : AV_FOCUS_NEARBY);
-	gtk_im_context_focus_in(pFrameImpl->getIMContext());
+	pFrameImpl->focusIMIn ();
 	return FALSE;
 }
 
@@ -177,7 +199,7 @@ gboolean XAP_UnixFrameImpl::_fe::focus_out_event(GtkWidget *w,GdkEvent */*event*
 						GINT_TO_POINTER(FALSE));
 	if (pFrame->getCurrentView())
 		pFrame->getCurrentView()->focusChange(AV_FOCUS_NONE);
-	gtk_im_context_focus_out(pFrameImpl->getIMContext());
+	pFrameImpl->focusIMOut();
 	return FALSE;
 }
 
@@ -190,6 +212,9 @@ gint XAP_UnixFrameImpl::_fe::button_press_event(GtkWidget * w, GdkEventButton * 
 	EV_UnixMouse * pUnixMouse = static_cast<EV_UnixMouse *>(pFrame->getMouse());
 
 	gtk_grab_add(w);
+
+	if (e->state & GDK_SHIFT_MASK)
+		pUnixFrameImpl->resetIMContext ();
 
 	if (pView)
 		pUnixMouse->mouseClick(pView,e);
@@ -342,18 +367,29 @@ gint XAP_UnixFrameImpl::_fe::scroll_notify_event(GtkWidget* w, GdkEventScroll* e
 	return 1;
 }
 
-gint XAP_UnixFrameImpl::_fe::key_press_event(GtkWidget* w, GdkEventKey* e)
+gint XAP_UnixFrameImpl::_fe::key_release_event(GtkWidget* w, GdkEventKey* e)
 {
 	XAP_UnixFrameImpl * pUnixFrameImpl = (XAP_UnixFrameImpl *)gtk_object_get_user_data(GTK_OBJECT(w));
 
 	// Let IM handle the event first.
 	if (gtk_im_context_filter_keypress(pUnixFrameImpl->getIMContext(), e)) {
 	    xxx_UT_DEBUGMSG(("IMCONTEXT keyevent swallow: %lu\n", e->keyval));
+		pUnixFrameImpl->queueIMReset ();
+	    return 0;
+	}
+	return TRUE;
+}
+
+gint XAP_UnixFrameImpl::_fe::key_press_event(GtkWidget* w, GdkEventKey* e)
+{
+	XAP_UnixFrameImpl * pUnixFrameImpl = (XAP_UnixFrameImpl *)gtk_object_get_user_data(GTK_OBJECT(w));
+
+	// Let IM handle the event first.
+	if (gtk_im_context_filter_keypress(pUnixFrameImpl->getIMContext(), e)) {
+		pUnixFrameImpl->queueIMReset ();
 	    return 0;
 	}
 
-	xxx_UT_DEBUGMSG(("IMCONTEXT keyevent pass: %lu\n", e->keyval));
-	
 	XAP_Frame* pFrame = pUnixFrameImpl->getFrame();
 	pUnixFrameImpl->setTimeOfLastEvent(e->time);
 	AV_View * pView = pFrame->getCurrentView();
@@ -791,11 +827,12 @@ void XAP_UnixFrameImpl::createTopLevelWindow(void)
 		gtk_widget_realize(m_wTopLevelWindow);
 	}
 
-
 	_createIMContext(m_wTopLevelWindow->window);
 
 	g_signal_connect(G_OBJECT(m_wTopLevelWindow), "key_press_event",
 					   G_CALLBACK(_fe::key_press_event), NULL);
+	g_signal_connect(G_OBJECT(m_wTopLevelWindow), "key_release_event",
+					   G_CALLBACK(_fe::key_release_event), NULL);
 
 
 	_createToolbars();
@@ -834,7 +871,60 @@ void XAP_UnixFrameImpl::_createIMContext(GdkWindow *w)
 	gtk_im_context_set_use_preedit (m_imContext, TRUE);
 	gtk_im_context_set_client_window(m_imContext, w);
 	g_signal_connect(G_OBJECT(m_imContext), "commit", 
-					 GTK_SIGNAL_FUNC(_imCommit_cb), this);
+					 G_CALLBACK(_imCommit_cb), this);
+	g_signal_connect (m_imContext, "preedit_changed",
+					  G_CALLBACK (_imPreeditChanged_cb), this);
+	g_signal_connect (m_imContext, "retrieve_surrounding",
+					  G_CALLBACK (_imRetrieveSurrounding_cb), this);
+	g_signal_connect (m_imContext, "delete_surrounding",
+					  G_CALLBACK (_imDeleteSurrounding_cb), this);
+}
+
+void XAP_UnixFrameImpl::_imPreeditChanged_cb (GtkIMContext *context, gpointer data)
+{
+	UT_DEBUGMSG(("Preedit Changed\n"));
+
+#if 0
+	gchar *preedit_string;
+	gint cursor_pos;
+	
+	gtk_im_context_get_preedit_string (context,
+									   &preedit_string, NULL,
+									   &cursor_pos);
+	entry->preedit_length = strlen (preedit_string);
+	cursor_pos = CLAMP (cursor_pos, 0, g_utf8_strlen (preedit_string, -1));
+	entry->preedit_cursor = cursor_pos;
+	g_free (preedit_string);
+	
+	gtk_entry_recompute (entry);
+#endif
+}
+
+gint XAP_UnixFrameImpl::_imRetrieveSurrounding_cb (GtkIMContext *context, gpointer data)
+{
+	UT_DEBUGMSG(("Retrieve Surrounding\n"));
+
+#if 0
+  gtk_im_context_set_surrounding (context,
+				  entry->text,
+				  entry->n_bytes,
+				  g_utf8_offset_to_pointer (entry->text, entry->current_pos) - entry->text);
+#endif
+
+	return TRUE;
+}
+
+gint XAP_UnixFrameImpl::_imDeleteSurrounding_cb (GtkIMContext *slave, gint offset, gint n_chars, gpointer data)
+{
+	UT_DEBUGMSG(("Delete Surrounding: %d %d\n", offset, n_chars));
+
+#if 0
+  gtk_editable_delete_text (GTK_EDITABLE (entry),
+			    entry->current_pos + offset,
+			    entry->current_pos + offset + n_chars);
+#endif
+
+	return TRUE;
 }
 
 // Actual keyboard commit should be done here.
@@ -851,8 +941,7 @@ void XAP_UnixFrameImpl::_imCommit(GtkIMContext *imc, const gchar * text)
 	AV_View * pView   = pFrame->getCurrentView();
 	ev_UnixKeyboard * pUnixKeyboard = static_cast<ev_UnixKeyboard *>(pFrame->getKeyboard());
 
-	if (pView)
-		pUnixKeyboard->charDataEvent(pView, (EV_EditBits)0, text, strlen(text));
+	pUnixKeyboard->charDataEvent(pView, (EV_EditBits)0, text, strlen(text));
 }
 
 GtkIMContext * XAP_UnixFrameImpl::getIMContext()

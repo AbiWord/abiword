@@ -54,13 +54,22 @@ class XAP_UnixFrameImpl : public XAP_FrameImpl
 	void setTopLevelWindow(GtkWidget * window) { m_wTopLevelWindow = window; }
 	void createTopLevelWindow(void);
 	GtkWidget * getVBoxWidget() const;
-	GtkIMContext* getIMContext();
+
+	void focusIMIn ();
+	void focusIMOut ();
+	void queueIMReset () {
+	  need_im_reset = true;
+	}
+	void resetIMContext ();
 
 private:
 	void _setGeometry ();
 
 protected:
 	GtkIMContext *		    m_imContext;
+	bool need_im_reset;
+
+	GtkIMContext * getIMContext();
 
 	virtual bool _close();
 	virtual bool _raise();
@@ -77,6 +86,10 @@ protected:
 	bool _updateTitle();
 	void _createIMContext(GdkWindow* w);
 	static void _imCommit_cb(GtkIMContext *imc, const gchar* text, gpointer data);
+	static void _imPreeditChanged_cb (GtkIMContext *context, gpointer data);
+	static gint _imRetrieveSurrounding_cb (GtkIMContext *context, gpointer data);
+	static gint _imDeleteSurrounding_cb (GtkIMContext *slave, gint offset, gint n_chars, gpointer data);
+
 	void _imCommit (GtkIMContext * imc, const gchar * text);
 	UT_sint32 _setInputMode(const char * szName);
 	virtual void _setCursor(GR_Graphics::Cursor cursor);
@@ -109,6 +122,7 @@ protected:
 		static gint motion_notify_event(GtkWidget* w, GdkEventMotion* e);
 		static gint scroll_notify_event(GtkWidget* w, GdkEventScroll* e);
 		static gint key_press_event(GtkWidget* w, GdkEventKey* e);
+		static gint key_release_event(GtkWidget* w, GdkEventKey* e);
 		static gint delete_event(GtkWidget * w, GdkEvent * /*event*/, gpointer /*data*/);
 		static gint expose(GtkWidget * w, GdkEventExpose* pExposeEvent);
 		static gint abi_expose_repaint( gpointer /* xap_UnixFrame * */ p);
