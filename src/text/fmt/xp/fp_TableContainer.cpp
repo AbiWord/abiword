@@ -2591,7 +2591,7 @@ void fp_CellContainer::setLineMarkers(void)
 // Set the boundary markers for line draing.
 //
 	fp_TableContainer * pTab = static_cast<fp_TableContainer *>(getContainer());
-
+	fl_TableLayout * pTL = static_cast<fl_TableLayout *>(pTab->getSectionLayout());
 	m_iLeft = getX() - 
 		static_cast<UT_sint32>(pTab->getNthCol(getLeftAttach())->spacing);
 	fp_CellContainer * pCell = pTab->getCellAtRowColumn(getTopAttach(),getRightAttach());
@@ -2646,7 +2646,7 @@ void fp_CellContainer::setLineMarkers(void)
 // table. Otherwise we just get height of the first broken table.
 //
 		fp_VerticalContainer * pVert = static_cast<fp_VerticalContainer *>(pTab);
-		m_iBotY = pTab->getYOfRow(0) + pVert->getHeight() - getGraphics()->tlu(1);
+		m_iBotY = pTab->getYOfRow(0) + pVert->getHeight() -pTL->getBottomOffset() - getGraphics()->tlu(1);
 		m_iBotY -= static_cast<UT_sint32>(2.0 * static_cast<double>(pTab->getBorderWidth()));
 		m_iBotY +=  pTab->getNthRow(pTab->getNumRows()-1)->spacing/2;
 	}
@@ -2937,10 +2937,16 @@ UT_sint32 fp_TableContainer::getYOfRow(UT_sint32 row)
 	{
 		return 0;
 	}
+	fp_CellContainer * pCell = getCellAtRowColumn(0,0);
+
 	UT_sint32 iYRow = 0;
+	if(pCell != NULL)
+	{
+		iYRow = pCell->getY();
+	}
 	for(i=0; i< numCols; i++)
 	{
-		fp_CellContainer * pCell = getCellAtRowColumn(0,i);
+		pCell = getCellAtRowColumn(0,i);
 		if(pCell)
 		{
 			UT_sint32 Y = pCell->getY();
@@ -4366,14 +4372,15 @@ void fp_TableContainer::layout(void)
 		return;
 	}
 	xxx_UT_DEBUGMSG(("Doing Table layout %x \n",this));
+	fl_TableLayout * pTL = static_cast<fl_TableLayout *>(getSectionLayout());
 	static fp_Requisition requisition;
 	static fp_Allocation alloc;
 	sizeRequest(&requisition);
 	setX(m_iBorderWidth);
 	alloc.x = getX();
-	alloc.y = getY();
+	alloc.y = getY() + pTL->getTopOffset();
 	alloc.width = getWidth();
-	alloc.height = requisition.height;
+	alloc.height = requisition.height + pTL->getTopOffset() + pTL->getBottomOffset();
 	sizeAllocate(&alloc);
 	setToAllocation();
 }

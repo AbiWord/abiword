@@ -124,6 +124,8 @@ public:
 		abi_right_color,
 		abi_right_style,
 		abi_right_thickness,
+		abi_section_footnote_line_thickness,
+		abi_section_footnote_yoff,
 		abi_section_max_column_height,
 		abi_section_restart,
 		abi_section_restart_value,

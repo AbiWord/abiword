@@ -804,6 +804,7 @@ fl_DocSectionLayout::fl_DocSectionLayout(FL_DocLayout* pLayout, PL_StruxDocHandl
 	  m_iMaxSectionColumnHeight(0),
 	  m_dMaxSectionColumnHeight(0.0),
 	  m_iFootnoteLineThickness(0),
+	  m_iFootnoteYoff(0),
 
 	  m_bForceNewPage(false),
 	  m_pFirstColumn(NULL),
@@ -2084,6 +2085,18 @@ void fl_DocSectionLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 	else
 	{
 		m_iFootnoteLineThickness = UT_convertToLogicalUnits("0.005in");
+	}
+
+
+	const XML_Char * pszFootnoteYoff = NULL;
+	pSectionAP->getProperty("section-footnote-yoff", (const XML_Char *&)pszFootnoteYoff);
+	if (pszFootnoteYoff && pszFootnoteYoff[0])
+	{
+		m_iFootnoteYoff = UT_convertToLogicalUnits(pszFootnoteYoff);
+	}
+	else
+	{
+		m_iFootnoteYoff = UT_convertToLogicalUnits("0.01in");
 	}
 
 	const XML_Char * pszDataID = NULL;

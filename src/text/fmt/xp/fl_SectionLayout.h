@@ -236,6 +236,8 @@ public:
 	UT_sint32                   getColumnGap(void) const;
 	UT_uint32			        getFootnoteLineThickness(void) const
 		{ return m_iFootnoteLineThickness;}
+	UT_uint32			        getFootnoteYoff(void) const
+		{ return m_iFootnoteYoff;}
 
 	void                completeBreakSection(void);
 	bool                arePageNumbersRestarted (void) const { return m_bRestart;}
@@ -334,6 +336,7 @@ private:
 	UT_sint32           m_iMaxSectionColumnHeight;
 	double              m_dMaxSectionColumnHeight;
 	UT_sint32           m_iFootnoteLineThickness;
+	UT_sint32           m_iFootnoteYoff;
 	
 	bool				m_bForceNewPage;
 

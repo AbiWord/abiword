@@ -1069,7 +1069,7 @@ void fl_TableLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 		break;
 
 	}
-	defaultOffset = "0.005in";	// TODO: what to do with this. was 0.01in
+	defaultOffset = "0.01in";	// TODO: what to do with this. was 0.01in
 	if(pszLeftOffset && pszLeftOffset[0])
 	{
 		m_iLeftOffset = UT_convertToLogicalUnits(pszLeftOffset);
@@ -2232,7 +2232,7 @@ void fl_CellLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 		break;
 
 	}
-	defaultOffset = "0.002in";
+	defaultOffset = "0.01in";
 	if(pszLeftOffset && pszLeftOffset[0])
 	{
 		m_iLeftOffset = UT_convertToLogicalUnits(pszLeftOffset);

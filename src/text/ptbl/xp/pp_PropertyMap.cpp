@@ -111,6 +111,8 @@ static const char * AbiPropertyName[PP_PropertyMap::abi__count] = {
 	"right-color",
 	"right-style",
 	"right-thickness",
+	"section-footnote-line-thickness",
+	"section-footnote-yoff",
 	"section-max-column-height",
 	"section-restart",
 	"section-restart-value",
