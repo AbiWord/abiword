@@ -55,8 +55,10 @@ include $(ABI_DEPTH)/config/abi_rules.mk
 ##LDFLAGS +=		-shared
 
 # ACK!  TODO - do we really want a directory pattern match here in a makefile?
+# 	TODO - using $(shell) is just slightly better than letting the compiler
+#              do the expansion
 
-THE_LIBS=		$(DIST)/lib/*
+THE_LIBS=		$(shell ls $(DIST)/lib/*)
 
 # we override the $(PROGRAM) rule.
 
