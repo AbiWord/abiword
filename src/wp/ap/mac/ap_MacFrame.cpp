@@ -563,10 +563,14 @@ void AP_MacFrame::toggleLeftRuler(bool bRulerOn)
 
 void AP_MacFrame::_createStatusBar(void)
 {
+    ControlHandle control;
     _calcPlacardRect ();
 	AP_MacStatusBar * pMacStatusBar = new AP_MacStatusBar(this);
 	UT_ASSERT(pMacStatusBar);
 
 	((AP_FrameData *)m_pData)->m_pStatusBar = pMacStatusBar;
+    
+    control = pMacStatusBar->createWidget ();
+    // TODO add the control to the window ?
 }
 

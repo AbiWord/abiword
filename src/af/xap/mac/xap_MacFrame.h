@@ -96,6 +96,7 @@ public:
     virtual bool				_macGrow(void);
 	WindowPtr					_getMacWindow (void) { UT_ASSERT (m_MacWindow != NULL); return m_MacWindow; } ;
 	GrafPtr						_getMacPort (void) { UT_ASSERT (m_MacWindowPort != NULL); return m_MacWindowPort; } ;
+    void						_getStatusBarRect (Rect & rect) { rect = m_placardRect; };
 protected:
 	virtual EV_Toolbar *		_newToolbar(XAP_App *app, XAP_Frame *frame, const char *, const char *);
 
@@ -115,7 +116,7 @@ private:
 	void						MacWindowInit ();
 	void						_calcVertScrollBarRect(Rect & rect);
 	void						_calcHorizScrollBarRect(Rect & rect);
-    void						_drawStatusPlacard (void);
+    void						_drawStatusPlacard (void);		// TODO remove me.
 
 
         ControlHandle					m_HScrollBar;
