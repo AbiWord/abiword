@@ -60,8 +60,8 @@ AP_QNXDialog_Replace::AP_QNXDialog_Replace(XAP_DialogFactory * pDlgFactory,
 {
 	m_windowMain = NULL;
 
-	m_entryFind = NULL;
-	m_entryReplace = NULL;
+	m_comboFind = NULL;
+	m_comboReplace = NULL;
 	m_checkbuttonMatchCase = NULL;
 
 	m_buttonFindNext = NULL;
@@ -170,6 +170,28 @@ void AP_QNXDialog_Replace::runModal(XAP_Frame * pFrame)
 	UT_ASSERT(0);
 }
 
+void AP_QNXDialog_Replace::_updateLists() {
+	_updateList(m_comboFind,&m_findList);
+	_updateList(m_comboReplace,&m_replaceList);
+}
+
+void AP_QNXDialog_Replace::_updateList(PtWidget_t *w,UT_Vector *list)
+{
+	UT_uint32 i=0;
+	if(!w) return;
+	if(!list) return;
+	
+	PtListDeleteAllItems(w);
+
+	for(i = 0;i<list->getItemCount();i++)
+	{
+		UT_UCS4String ucs4s((UT_UCS4Char*)list->getNthItem(i),0);
+		const char *str = ucs4s.utf8_str();
+		PtListAddItems(w,&str,1,0);
+	}
+PtListSelectPos(w,1);
+}
+
 void AP_QNXDialog_Replace::runModeless(XAP_Frame * pFrame)
 {
 	// get the Dialog Id number
@@ -188,8 +210,8 @@ void AP_QNXDialog_Replace::runModeless(XAP_Frame * pFrame)
 	// Populate the window's data items
 	_populateWindowData();
 
-	// this dialog needs this
-//	setView((FV_View *) (getActiveFrame()->getCurrentView()));
+// this dialog needs this
+	setView((FV_View *) (getActiveFrame()->getCurrentView()));
 
 //	UT_QNXCenterWindow(NULL, m_windowMain);
 
@@ -210,19 +232,13 @@ void AP_QNXDialog_Replace::event_Find(void)
 {
 	char * findEntryText = NULL;
 
-	if (!(findEntryText = s_get_text_string(m_entryFind))) {
+	if (!(findEntryText = s_get_text_string(m_comboFind)) || strlen(findEntryText) == 0) {
 		return;
 	}
 	
-	UT_UCS4Char * findString;
-
-	UT_UCS4_cloneString_char(&findString, findEntryText);
 	
-	setFindString(findString);
-	
+	setFindString(UT_UCS4String(findEntryText).ucs4_str());
 	findNext();
-
-	FREEP(findString);
 }
 		
 void AP_QNXDialog_Replace::event_Replace(void)
@@ -230,25 +246,17 @@ void AP_QNXDialog_Replace::event_Replace(void)
 	char * findEntryText;
 	char * replaceEntryText;
 
-	findEntryText = s_get_text_string(m_entryFind);
-	replaceEntryText = s_get_text_string(m_entryReplace);
+	findEntryText = s_get_text_string(m_comboFind);
+	replaceEntryText = s_get_text_string(m_comboReplace);
 	if (!findEntryText || !replaceEntryText) {
 		return;
 	}
 	
-	UT_UCS4Char * findString;
-	UT_UCS4Char * replaceString;
-
-	UT_UCS4_cloneString_char(&findString, findEntryText);
-	UT_UCS4_cloneString_char(&replaceString, replaceEntryText);
-	
-	setFindString(findString);
-	setReplaceString(replaceString);
+	setFindString(UT_UCS4String(findEntryText).ucs4_str());
+	setReplaceString(UT_UCS4String(replaceEntryText).ucs4_str());
 	
 	findReplace();
 
-	FREEP(findString);
-	FREEP(replaceString);
 }
 
 void AP_QNXDialog_Replace::event_ReplaceAll(void)
@@ -256,25 +264,16 @@ void AP_QNXDialog_Replace::event_ReplaceAll(void)
 	char * findEntryText;
 	char * replaceEntryText;
 
-	findEntryText = s_get_text_string(m_entryFind);
-	replaceEntryText = s_get_text_string(m_entryReplace);
+	findEntryText = s_get_text_string(m_comboFind);
+	replaceEntryText = s_get_text_string(m_comboReplace);
 	if (!findEntryText || !replaceEntryText) {
 		return;
 	}
 		
-	UT_UCS4Char * findString;
-	UT_UCS4Char * replaceString;
-
-	UT_UCS4_cloneString_char(&findString, findEntryText);
-	UT_UCS4_cloneString_char(&replaceString, replaceEntryText);
-	
-	setFindString(findString);
-	setReplaceString(replaceString);
-	
+	setFindString(UT_UCS4String(findEntryText).ucs4_str());
+	setReplaceString(UT_UCS4String(replaceEntryText).ucs4_str());	
 	findReplaceAll();
 
-	FREEP(findString);
-	FREEP(replaceString);
 }
 
 void AP_QNXDialog_Replace::event_MatchCaseToggled(void)
@@ -306,10 +305,9 @@ void AP_QNXDialog_Replace::event_WindowDelete(void)
 PtWidget_t * AP_QNXDialog_Replace::_constructWindow(void)
 {
 	PtWidget_t *windowReplace;
-	PtWidget_t *entryFind;
-	PtWidget_t *entryReplace;
+	PtWidget_t *comboFind;
+	PtWidget_t *comboReplace;
 	PtWidget_t *checkbuttonMatchCase;
-	PtWidget_t *hbuttonbox1;
 	PtWidget_t *buttonFindNext;
 	PtWidget_t *buttonReplace;
 	PtWidget_t *buttonReplaceAll;
@@ -331,18 +329,18 @@ PtWidget_t * AP_QNXDialog_Replace::_constructWindow(void)
 
 	PtSetResource(abiPhabLocateWidget(windowReplace,"lblFind"),Pt_ARG_TEXT_STRING,_(AP,DLG_FR_FindLabel),0);
 	
-	entryFind = abiPhabLocateWidget(windowReplace,"textFind"); 
-	PtAddCallback(entryFind, Pt_CB_ACTIVATE, s_find_entry_activate, this);
+	comboFind = abiPhabLocateWidget(windowReplace,"comboFind"); 
+	PtAddCallback(comboFind, Pt_CB_ACTIVATE, s_find_entry_activate, this);
 
 	// the replace label and field are only visible if we're a "replace" dialog
 	if (m_id == AP_DIALOG_ID_REPLACE)
 	{	
 		PtSetResource(abiPhabLocateWidget(windowReplace,"lblReplace"), Pt_ARG_TEXT_STRING, _(AP,DLG_FR_ReplaceWithLabel), 0);
 	
-		entryReplace = abiPhabLocateWidget(windowReplace,"textReplace"); 
-		PtAddCallback(entryReplace, Pt_CB_ACTIVATE, s_replace_entry_activate, this);
+		comboReplace = abiPhabLocateWidget(windowReplace,"comboReplace"); 
+		PtAddCallback(comboReplace, Pt_CB_ACTIVATE, s_replace_entry_activate, this);
 	} else {
-		entryReplace = NULL;
+		comboReplace = NULL;
 	}
 	
 	buttonFindNext = abiPhabLocateWidget(windowReplace,"btnFindNext"); 
@@ -368,14 +366,15 @@ PtWidget_t * AP_QNXDialog_Replace::_constructWindow(void)
 	PtAddCallback(buttonCancel, Pt_CB_ACTIVATE, s_cancel_clicked, this);
 	
 	checkbuttonMatchCase = abiPhabLocateWidget(windowReplace,"toggleCase");
+	
 	PtSetResource(checkbuttonMatchCase, Pt_ARG_TEXT_STRING, _(AP,DLG_FR_MatchCase), 0);
 	PtAddCallback(checkbuttonMatchCase, Pt_CB_ACTIVATE, s_match_case_toggled, this);
 
 	// save pointers to members
 	m_windowMain = windowReplace;
 
-	m_entryFind = entryFind;
-	m_entryReplace = entryReplace;
+	m_comboFind = comboFind;
+	m_comboReplace = comboReplace;
 	m_checkbuttonMatchCase = checkbuttonMatchCase;
 
 	m_buttonFindNext = buttonFindNext;
@@ -391,7 +390,9 @@ PtWidget_t * AP_QNXDialog_Replace::_constructWindow(void)
 
 void AP_QNXDialog_Replace::_populateWindowData(void)
 {
-	UT_ASSERT(m_entryFind && m_checkbuttonMatchCase);
+	UT_ASSERT(m_comboFind && m_checkbuttonMatchCase);
+	int start=0;
+	int end=300;
 
 	// last used find string
 	{
@@ -400,7 +401,7 @@ void AP_QNXDialog_Replace::_populateWindowData(void)
 		UT_UCS4_strcpy_to_char(bufferNormal, bufferUnicode);
 		FREEP(bufferUnicode);
 		
-		PtSetResource(m_entryFind, Pt_ARG_TEXT_STRING, bufferNormal, 0);
+		PtSetResource(m_comboFind, Pt_ARG_TEXT_STRING, bufferNormal, 0);
 
 		FREEP(bufferNormal);
 	}
@@ -409,21 +410,24 @@ void AP_QNXDialog_Replace::_populateWindowData(void)
 	// last used replace string
 	if (m_id == AP_DIALOG_ID_REPLACE)
 	{
-		UT_ASSERT(m_entryReplace);
+		UT_ASSERT(m_comboReplace);
 		
 		UT_UCS4Char * bufferUnicode = getReplaceString();
 		char * bufferNormal = (char *) UT_calloc(UT_UCS4_strlen(bufferUnicode) + 1, sizeof(char));
 		UT_UCS4_strcpy_to_char(bufferNormal, bufferUnicode);
 		FREEP(bufferUnicode);
 		
-		PtSetResource(m_entryReplace, Pt_ARG_TEXT_STRING, bufferNormal, 0);
+		PtSetResource(m_comboReplace, Pt_ARG_TEXT_STRING, bufferNormal, 0);
 
 		FREEP(bufferNormal);
 	}
+	_updateLists();
 
 	// match case button
 	PtSetResource(m_checkbuttonMatchCase, Pt_ARG_FLAGS, (getMatchCase()) ? Pt_SET : 0, Pt_SET); 
 
+	PtGiveFocus(m_comboFind,NULL);
+	PtTextSetSelection(m_comboFind,&start,&end);
 }
 
 void AP_QNXDialog_Replace::_storeWindowData(void)
