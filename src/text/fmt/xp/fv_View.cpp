@@ -1648,17 +1648,58 @@ void FV_View::_autoScroll(UT_Timer * pTimer)
 	FV_View * pView = (FV_View *) pTimer->getInstanceData();
 	UT_ASSERT(pView);
 
+	PT_DocPosition iOldPoint = pView->_getPoint();
+
 	/*
 		NOTE: We update the selection here, so that the timer can keep 
 		triggering autoscrolls even if the mouse doesn't move.  
 	*/
 	pView->extSelToXY(pView->m_xLastMouse, pView->m_yLastMouse, UT_FALSE);
 
-	// do the autoscroll
-	if (!pView->_ensureThatInsertionPointIsOnScreen())
+	if (pView->_getPoint() != iOldPoint)
 	{
-		pView->_fixInsertionPointCoords();
-//		pView->_drawInsertionPoint();
+		// do the autoscroll
+		if (!pView->_ensureThatInsertionPointIsOnScreen())
+		{
+			pView->_fixInsertionPointCoords();
+//			pView->_drawInsertionPoint();
+		}
+	}
+	else
+	{
+		// not far enough to change the selection ... do we still need to scroll?
+		UT_sint32 xPos = pView->m_xLastMouse;
+		UT_sint32 yPos = pView->m_yLastMouse;
+
+		// TODO: clamp xPos, yPos to viewable area??
+
+		UT_Bool bOnScreen = UT_TRUE;
+
+		if ((xPos < 0 || xPos > pView->m_iWindowWidth) || 
+			(yPos < 0 || yPos > pView->m_iWindowHeight))
+			bOnScreen = UT_FALSE;
+		
+		if (!bOnScreen) 
+		{
+			// yep, do it manually 
+			if (yPos < 0)
+			{
+				pView->cmdScroll(AV_SCROLLCMD_LINEUP, (UT_uint32) (-(yPos)));
+			}
+			else if (((UT_uint32) (yPos)) >= ((UT_uint32) pView->m_iWindowHeight))
+			{
+				pView->cmdScroll(AV_SCROLLCMD_LINEDOWN, (UT_uint32)(yPos - pView->m_iWindowHeight));
+			}
+
+			if (xPos < 0)
+			{
+				pView->cmdScroll(AV_SCROLLCMD_LINELEFT, (UT_uint32) (-(xPos)));
+			}
+			else if (((UT_uint32) (xPos)) >= ((UT_uint32) pView->m_iWindowWidth))
+			{
+				pView->cmdScroll(AV_SCROLLCMD_LINERIGHT, (UT_uint32)(xPos - pView->m_iWindowWidth));
+			}
+		}
 	}
 }
 
