@@ -21,6 +21,7 @@
 
 #include "ie_impGraphic_BMP.h"
 #include "fg_GraphicRaster.h"
+#include "ut_debugmsg.h"
 
 static void _write_png( png_structp png_ptr, 
 		        png_bytep data, 
@@ -44,10 +45,10 @@ UT_Bool IE_ImpGraphic_BMP::RecognizeContents(const char * szBuf, UT_uint32 iNumb
 }
 
 UT_Bool IE_ImpGraphic_BMP::GetDlgLabels(const char ** pszDesc,
-									   const char ** pszSuffixList,
-									   IEGraphicFileType * ft)
+					const char ** pszSuffixList,
+					IEGraphicFileType * ft)
 {
-	*pszDesc = "Window's Bitmap (.bmp)";
+	*pszDesc = "Windows Bitmap (.bmp)";
 	*pszSuffixList = "*.bmp";
 	*ft = IEGFT_BMP;
 	return UT_TRUE;
@@ -55,7 +56,8 @@ UT_Bool IE_ImpGraphic_BMP::GetDlgLabels(const char ** pszDesc,
 
 UT_Bool IE_ImpGraphic_BMP::SupportsFileType(IEGraphicFileType ft)
 {
-	return (IEGFT_BMP == ft);
+	return ((IEGFT_BMP == ft) ||
+		(IEGFT_DIB == ft));
 }
 
 UT_Error IE_ImpGraphic_BMP::StaticConstructor(IE_ImpGraphic **ppieg)
@@ -67,12 +69,9 @@ UT_Error IE_ImpGraphic_BMP::StaticConstructor(IE_ImpGraphic **ppieg)
 	return UT_OK;
 }
 
-
-//  This actually creates our FG_Graphic object for a PNG
-UT_Error IE_ImpGraphic_BMP::importGraphic(UT_ByteBuf* pBB, 
-										  FG_Graphic ** ppfg)
+UT_Error IE_ImpGraphic_BMP::_convertGraphic(UT_ByteBuf * pBB)
 {
-	UT_Error err;
+   	UT_Error err;
 	InitializePrivateClassData();
 
 	/* Read Header Data */
@@ -86,15 +85,36 @@ UT_Error IE_ImpGraphic_BMP::importGraphic(UT_ByteBuf* pBB,
 	}
 	else
 	{
-		png_set_IHDR ( m_pPNG,
-			           m_pPNGInfo,
-					   m_iWidth,
-					   m_iHeight,
-					   m_iBitsPerPlane,
-					   PNG_COLOR_TYPE_RGB,
-					   PNG_INTERLACE_NONE,
-					   PNG_COMPRESSION_TYPE_DEFAULT,
-					   PNG_FILTER_TYPE_DEFAULT );
+		UT_uint16 bitsPerChannel;
+	   	UT_uint16 colorType;
+	   	if (m_iBitsPerPlane == 24) {
+		   bitsPerChannel = 8;
+		   colorType = PNG_COLOR_TYPE_RGB;
+		} else if (m_iBitsPerPlane == 32) {
+		   bitsPerChannel = 8;
+		   colorType = PNG_COLOR_TYPE_RGB_ALPHA;
+		} else if (m_iBitsPerPlane == 48) {
+		   bitsPerChannel = 16;
+		   colorType = PNG_COLOR_TYPE_RGB;
+		} else if (m_iBitsPerPlane == 64) {
+		   bitsPerChannel = 16;
+		   colorType = PNG_COLOR_TYPE_RGB_ALPHA;
+		} else {
+		   // wow! this is one impression graphic coming at us.
+		   // i would have though 64 bits of RGBA glory would 
+		   // hold us for a while, but alas, we are obsolete...
+		   return UT_ERROR;
+		}
+
+	   	png_set_IHDR ( m_pPNG,
+			       m_pPNGInfo,
+			       m_iWidth,
+			       m_iHeight,
+			       bitsPerChannel,
+			       colorType,
+			       PNG_INTERLACE_NONE,
+			       PNG_COMPRESSION_TYPE_DEFAULT,
+			       PNG_FILTER_TYPE_DEFAULT );
 
 	}
 	if ((err = Convert_BMP(pBB))) return err;
@@ -104,8 +124,31 @@ UT_Error IE_ImpGraphic_BMP::importGraphic(UT_ByteBuf* pBB,
 	FREEP(m_pPNGInfo->palette);
 	DELETEP(pBB);
 	png_destroy_write_struct(&m_pPNG, &m_pPNGInfo);
+   
+   	return UT_OK;
+}
 
-	/* Send Data back to AbiWord as PNG */
+UT_Error IE_ImpGraphic_BMP::convertGraphic(UT_ByteBuf* pBB,
+					   UT_ByteBuf** ppBB)
+{
+   	if (!ppBB) return UT_ERROR;
+
+   	UT_Error err = _convertGraphic(pBB);
+   	if (err != UT_OK) return err;
+   
+	*ppBB = m_pBB;
+   
+   	return UT_OK;
+}
+
+//  This actually creates our FG_Graphic object for a PNG
+UT_Error IE_ImpGraphic_BMP::importGraphic(UT_ByteBuf* pBB, 
+					  FG_Graphic ** ppfg)
+{
+	UT_Error err = _convertGraphic(pBB); 
+   	if (err != UT_OK) return err;
+   
+   	/* Send Data back to AbiWord as PNG */
 	FG_GraphicRaster *pFGR;
 	pFGR = new FG_GraphicRaster();
 
@@ -198,14 +241,14 @@ UT_Error IE_ImpGraphic_BMP::Initialize_PNG()
 									  NULL );
 	if( m_pPNG == NULL )
 	{
-		return UT_FALSE;
+		return UT_ERROR;
 	}
 
 	m_pPNGInfo = png_create_info_struct(m_pPNG);
 	if ( m_pPNGInfo == NULL )
 	{
 		png_destroy_write_struct(&m_pPNG, (png_infopp) NULL);
-		return UT_FALSE;
+		return UT_ERROR;
 	}
 
 	/* Set error handling if you are using the setjmp/longjmp method (this is
@@ -218,7 +261,7 @@ UT_Error IE_ImpGraphic_BMP::Initialize_PNG()
 		png_destroy_write_struct(&m_pPNG, &m_pPNGInfo);
 	  
 		/* If we get here, we had a problem reading the file */
-		return UT_FALSE;
+		return UT_ERROR;
 	}
 	m_pBB = new UT_ByteBuf;  /* Byte Buffer for Converted Data */
 
@@ -234,7 +277,7 @@ UT_Error IE_ImpGraphic_BMP::Convert_BMP_Pallet(UT_ByteBuf* pBB)
 	if (setjmp(m_pPNG->jmpbuf))
 	{
 		png_destroy_write_struct(&m_pPNG, &m_pPNGInfo);
-		return UT_FALSE;
+		return UT_ERROR;
 	}
 
 	png_set_IHDR ( m_pPNG,
@@ -274,14 +317,14 @@ UT_Error IE_ImpGraphic_BMP::Convert_BMP(UT_ByteBuf* pBB)
 	if (setjmp(m_pPNG->jmpbuf))
 	{
 		png_destroy_write_struct(&m_pPNG, &m_pPNGInfo);
-		return UT_FALSE;
+		return UT_ERROR;
 	}
 	png_write_info(m_pPNG,m_pPNGInfo);
 
 	UT_Byte*  row_data;
 	UT_sint32 row;
 	UT_uint32 position;
-	UT_uint32 row_width = m_iWidth;
+	UT_uint32 row_width = m_iWidth * m_iBitsPerPlane / 8;
 	while ((row_width & 3) != 0) row_width++;
 
 	switch (m_iBitsPerPlane)
@@ -293,8 +336,8 @@ UT_Error IE_ImpGraphic_BMP::Convert_BMP(UT_ByteBuf* pBB)
 	case 24:
 		for (row=m_iHeight-1; row >= 0; row--)
 		{
-			/* Calculatin the start of each row */
-			position=m_iOffset + row*row_width*m_iBitsPerPlane/8;
+			/* Calculating the start of each row */
+			position=m_iOffset + row*row_width;
 			row_data = (unsigned char *) pBB->getPointer(position);
 			png_write_rows(m_pPNG,&row_data,1);
 		}	

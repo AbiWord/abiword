@@ -36,6 +36,8 @@ public:
 
         virtual UT_Error	importGraphic(UT_ByteBuf* pBB, 
 					      FG_Graphic ** ppfg);
+        virtual UT_Error	convertGraphic(UT_ByteBuf* pBB, 
+					       UT_ByteBuf** ppBB);
 };
 
 #endif /* IE_IMPGRAPHIC_SVG_H */

@@ -38,8 +38,10 @@ public:
 	static UT_Bool 		SupportsFileType(IEGraphicFileType ft);
 	static UT_Error		StaticConstructor(IE_ImpGraphic **ppieg);
 
-    virtual UT_Error	importGraphic(UT_ByteBuf* pBB, 
-									  FG_Graphic ** ppfg);
+    	virtual UT_Error	importGraphic(UT_ByteBuf* pBB, 
+					      FG_Graphic ** ppfg);
+    	virtual UT_Error	convertGraphic(UT_ByteBuf* pBB, 
+					       UT_ByteBuf** ppBB);
 
 private:
 	// PNG structures used
@@ -80,7 +82,8 @@ private:
 	UT_Bool		m_bHeaderDone;		// Check to see if finshed Reading Header
 
 	void InitializePrivateClassData();
-
+	UT_Error _convertGraphic(UT_ByteBuf * pBB);
+   
 	// Functions for Reading Bitmaps
 	UT_Error Read_BMP_Header    (UT_ByteBuf* pBB);
 

@@ -33,6 +33,9 @@
 #include "ie_types.h"
 #include "ie_imp_MsWord_97.h"
 
+#include "ie_impGraphic.h"
+
+
 #define X_ReturnIfFail(exp,error)     do { UT_Bool b = (exp); if (!b) return (error); } while (0)
 #define X_ReturnNoMemIfError(exp)   X_ReturnIfFail(exp,UT_IE_NOMEMORY)
 
@@ -820,27 +823,41 @@ UT_Error IE_Imp_MsWord_97::_handleImage(Blip * b, long width, long height)
    const char * mimetype = NULL;
    
    UT_ByteBuf * buf = new UT_ByteBuf();
+   IE_ImpGraphic * converter = NULL;
+
+   // extract data from temp file
+   while (EOF != (data = getc((FILE*)(b->blip.bitmap.m_pvBits))))
+     buf->append((UT_Byte*)&data, 1);
+
+   UT_Error err = UT_OK;
    
    switch(b->type)
      {
+      case msoblipDIB:
+	// this is just a BMP file, so we'll use the BMP image importer
+	// to convert it to a PNG for us.
+	err = IE_ImpGraphic::constructImporter("", IEGFT_DIB, &converter);
+	mimetype = strdup("image/png");
+	break;
       case msoblipPNG:
 	// conveniently, PNG is the internal format, so we do nothing here
-	// but copy the bitstream
-	while (EOF != (data = getc((FILE*)(b->blip.bitmap.m_pvBits))))
-	  buf->append((UT_Byte*)&data, 1);
-	mimetype = strdup("image/png");
+ 	mimetype = strdup("image/png");
 	break;
       case msoblipWMF:
       case msoblipEMF:
       case msoblipPICT:
       case msoblipJPEG:
-      case msoblipDIB:
       default:
 	// TODO: support other image types
 	DELETEP(buf);
 	return UT_OK;
 	break;
      }
+
+   if (err != UT_OK) {
+      delete buf;
+      return err;
+   }
 
    XML_Char propBuffer[128];
    propBuffer[0] = 0;
@@ -858,9 +875,17 @@ UT_Error IE_Imp_MsWord_97::_handleImage(Blip * b, long width, long height)
    propsArray[3] = propsName;
    propsArray[4] = NULL;
 
+   UT_ByteBuf * pBBPNG;
+   if (converter == NULL) pBBPNG = buf;
+   else {
+      err = converter->convertGraphic(buf, &pBBPNG);
+      delete converter;
+      if (err != UT_OK) return err;
+   }
+
    X_ReturnNoMemIfError(m_pDocument->appendObject(PTO_Image, propsArray));
    X_CheckError0(m_pDocument->createDataItem(propsName, UT_FALSE,
-					     buf, (void*)mimetype, NULL));
+					     pBBPNG, (void*)mimetype, NULL));
 
    DELETEP(buf);
 

@@ -94,3 +94,11 @@ UT_Error IE_ImpGraphic_SVG::importGraphic(UT_ByteBuf* pBB,
 	*ppfg = (FG_Graphic *) pFGR;
 	return UT_OK;
 }
+
+UT_Error IE_ImpGraphic_SVG::convertGraphic(UT_ByteBuf* pBB,
+					   UT_ByteBuf** ppBB)
+{
+   	if (!ppBB) return UT_ERROR;
+   	*ppBB = pBB;
+   	return UT_OK;
+}

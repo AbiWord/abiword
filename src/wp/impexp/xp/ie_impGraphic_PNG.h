@@ -35,7 +35,9 @@ public:
 	static UT_Error		StaticConstructor(IE_ImpGraphic **ppieg);
 
         virtual UT_Error	importGraphic(UT_ByteBuf* pBB, 
-									  FG_Graphic ** ppfg);
+					      FG_Graphic ** ppfg);
+        virtual UT_Error	convertGraphic(UT_ByteBuf* pBB, 
+					       UT_ByteBuf** ppBB);
 };
 
 #endif /* IE_IMPGRAPHIC_PNG_H */
