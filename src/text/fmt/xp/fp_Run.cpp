@@ -2497,6 +2497,11 @@ bool fp_ImageRun::letPointPass(void) const
 	return false;
 }
 
+bool fp_ImageRun::hasLayoutProperties(void) const
+{
+	return true;
+}
+
 void fp_ImageRun::mapXYToPosition(UT_sint32 x, UT_sint32 /*y*/, PT_DocPosition& pos, bool& bBOL, bool& bEOL)
 {
 	if (x > m_iWidth)

@@ -528,6 +528,7 @@ public:
 	virtual bool			canBreakBefore(void) const;
 	virtual bool			letPointPass(void) const;
 	const char *            getDataId(void) const;
+	virtual bool 			hasLayoutProperties(void) const;
 protected:
 	virtual void			_draw(dg_DrawArgs*);
 	virtual void			_clearScreen(bool bFullLineHeightRect);
