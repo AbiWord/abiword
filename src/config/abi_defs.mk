@@ -149,7 +149,8 @@ endif
 LINK_DLL	= $(LINK) $(OS_DLLFLAGS) $(DLLFLAGS)
 
 CFLAGS		= $(OPTIMIZER) $(OS_CFLAGS) $(DEFINES) $(INCLUDES) $(XCFLAGS)	\
-			$(ABI_TMDEFS) $(ABI_NAMEDEFS) $(ABI_DBGDEFS) $(ABI_INCS)
+			$(ABI_TMDEFS) $(ABI_NAMEDEFS) $(ABI_APPLIBDIRDEF)	\
+			$(ABI_DBGDEFS) $(ABI_INCS)
 
 ##################################################################
 ##################################################################

@@ -62,6 +62,7 @@ public:
 	virtual ~XAP_Prefs(void);
 
 	UT_Bool					loadPrefsFile(void);
+	UT_Bool					loadSystemDefaultPrefsFile(const char * szSystemDefaultPrefsPathname);
 	UT_Bool					savePrefsFile(void);
 	
 	XAP_PrefsScheme *		getNthScheme(UT_uint32 k) const;
@@ -99,10 +100,11 @@ protected:
 	UT_uint32				m_iMaxRecent;
 	UT_Vector				m_vecRecent;		/* vector of (char *) */
 
-public:						/* these 3 are needed by the XML parser interface */
+public:						/* these are needed by the XML parser interface */
 	void					_startElement(const XML_Char *name, const XML_Char **atts);
 	void					_endElement(const XML_Char *name);
 	void					_charData(const XML_Char *s, int len);
+	void					_startElement_SystemDefaultFile(const XML_Char *name, const XML_Char **atts);
 
 private:
 	struct

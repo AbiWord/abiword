@@ -345,6 +345,13 @@ static void charData(void* userData, const XML_Char *s, int len)
 	XAP_Prefs * pPrefs = (XAP_Prefs *)userData;
 	pPrefs->_charData(s,len);
 }
+
+static void startElement_SystemDefaultFile(void *userData, const XML_Char *name, const XML_Char **atts)
+{
+	XAP_Prefs * pPrefs = (XAP_Prefs *)userData;
+	pPrefs->_startElement_SystemDefaultFile(name,atts);
+}
+
 /*****************************************************************/
 
 void XAP_Prefs::_startElement(const XML_Char *name, const XML_Char **atts)
@@ -368,6 +375,12 @@ void XAP_Prefs::_startElement(const XML_Char *name, const XML_Char **atts)
 
 			if (UT_XML_stricmp(a[0], "app") == 0)
 			{
+				// TODO the following test will fail if you are running
+				// TODO both an AbiWord (release) build and an AbiWord
+				// TODO Personal (development/personal) build.  That is,
+				// TODO you'll lose your MRU list if you alternate between
+				// TODO the two types of executables.
+				
 				const char * szThisApp = m_pApp->getApplicationName();
 				UT_DEBUGMSG(("Found preferences for application [%s] (this is [%s]).\n",
 							a[1],szThisApp));
@@ -740,11 +753,13 @@ UT_Bool XAP_Prefs::savePrefsFile(void)
 
 			if (bIsBuiltin)
 			{
-				fprintf(fp,"\n\t<!-- Scheme %s contains the built-in application defaults.  It is         -->\n",
+				fprintf(fp,("\n"
+							"\t<!-- The following scheme, %s, contains the built-in application\n"
+							"\t**** defaults and adjusted by the installation system defaults.  This scheme\n"
+							"\t**** is only written here as a reference.  Any schemes following this one\n"
+							"\t**** only list values that deviate from the built-in values.\n"
+							"\t-->\n"),
 						szBuiltinSchemeName);
-				fprintf(fp,"\t<!-- ignored on input.  It is only written here as a reference.  But then        -->\n");
-				fprintf(fp,"\t<!-- as the comment above says, you shouldn't be editing this file anyway.  :-)  -->\n");
-				fprintf(fp,"\t<!-- Other Schemes only list values which deviate from the built-in values.      -->\n");
 			}
 
 			fprintf(fp,"\n\t<Scheme\n\t\tname=\"%s\"\n",szThisSchemeName);
@@ -796,4 +811,120 @@ Cleanup:
 		fclose(fp);
 	return bResult;
 
+}
+
+/*****************************************************************/
+
+void XAP_Prefs::_startElement_SystemDefaultFile(const XML_Char *name, const XML_Char **atts)
+{
+	// routine to parse system default preferences file and
+	// overlay values onto the builtin scheme.
+	
+	if (!m_parserState.m_parserStatus)		// eat if already had an error
+		return;
+
+	if (UT_XML_stricmp(name, "SystemDefaults") == 0)
+	{
+		// we found the system default preferences scheme.
+		//
+		// we expect something of the form:
+		// <SystemDefaults n0="v0" n1="v1" ... />
+		// where the [nk,vk] are arbitrary name/value pairs
+		// that mean something to the application.
+		//
+		// if there are duplicated name/value pairs our behavior is
+		// undefined -- we remember the last one that the XML parser
+		// give us.
+
+		const XML_Char ** a = atts;
+		while (*a)
+		{
+			UT_ASSERT(a[1] && *a[1]);	// require a value for each attribute keyword
+
+			// we ignore "name=<schemename>" just incase they copied and
+			// pasted a user-profile into the system file.
+			
+			if (UT_XML_stricmp(a[0], "name") != 0)
+				if (!m_builtinScheme->setValue(a[0],a[1]))
+					goto MemoryError;
+
+			a += 2;
+		}
+	}
+	else
+	{
+		UT_DEBUGMSG(("Ignoring tag [%s] in system default preferences file.\n",name));
+	}
+
+	return;								// success
+
+MemoryError:
+	UT_DEBUGMSG(("Memory error parsing preferences file.\n"));
+InvalidFileError:
+	m_parserState.m_parserStatus = UT_FALSE;			// cause parser driver to bail
+	return;
+}
+
+/*****************************************************************/
+
+UT_Bool XAP_Prefs::loadSystemDefaultPrefsFile(const char * szSystemDefaultPrefsPathname)
+{
+	UT_ASSERT(szSystemDefaultPrefsPathname && *szSystemDefaultPrefsPathname);
+	
+	UT_Bool bResult = UT_FALSE;			// assume failure
+	FILE * fp = NULL;
+	XML_Parser parser = NULL;
+	int done = 0;
+	char buf[4096];
+
+	m_parserState.m_parserStatus = UT_TRUE;
+
+	fp = fopen(szSystemDefaultPrefsPathname, "r");
+	if (!fp)
+	{
+		UT_DEBUGMSG(("could not open system default preferences file [%s].\n",szSystemDefaultPrefsPathname));
+		goto Cleanup;
+	}
+	
+	parser = XML_ParserCreate(NULL);
+	if (!parser)
+	{
+		UT_DEBUGMSG(("could not create parser for system default preferences file.\n"));
+		goto Cleanup;
+	}
+	
+	XML_SetUserData(parser, this);
+	XML_SetElementHandler(parser, startElement_SystemDefaultFile, endElement);
+	XML_SetCharacterDataHandler(parser, charData);
+
+	while (!done)
+	{
+		size_t len = fread(buf, 1, sizeof(buf), fp);
+		done = (len < sizeof(buf));
+
+		if (!XML_Parse(parser, buf, len, done)) 
+		{
+			UT_DEBUGMSG(("%s at line %d\n",
+						XML_ErrorString(XML_GetErrorCode(parser)),
+						XML_GetCurrentLineNumber(parser)));
+			goto Cleanup;
+		}
+
+		if (!m_parserState.m_parserStatus)
+		{
+			UT_DEBUGMSG(("Problem reading document\n"));
+			goto Cleanup;
+		}
+	} 
+
+	// we succeeded in parsing the file,
+
+	bResult = UT_TRUE;
+
+Cleanup:
+	if (parser)
+		XML_ParserFree(parser);
+	if (fp)
+		fclose(fp);
+	return bResult;
 }

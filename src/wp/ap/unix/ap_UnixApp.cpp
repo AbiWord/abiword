@@ -143,14 +143,12 @@ UT_Bool AP_UnixApp::initialize(void)
 	
 	{
 		const char * szISpellDirectory = NULL;
-		getPrefsValueDirectory(AP_PREF_KEY_SpellDirectory,&szISpellDirectory);
+		getPrefsValueDirectory(UT_FALSE,AP_PREF_KEY_SpellDirectory,&szISpellDirectory);
 		UT_ASSERT((szISpellDirectory) && (*szISpellDirectory));
 
 		const char * szSpellCheckWordList = NULL;
-		if ((getPrefsValue(AP_PREF_KEY_SpellCheckWordList,&szSpellCheckWordList)) && (szSpellCheckWordList) && (*szSpellCheckWordList))
-			;
-		else
-			szSpellCheckWordList = AP_PREF_DEFAULT_SpellCheckWordList;
+		getPrefsValue(AP_PREF_KEY_SpellCheckWordList,&szSpellCheckWordList);
+		UT_ASSERT((szSpellCheckWordList) && (*szSpellCheckWordList));
 		
 		char * szPathname = (char *)calloc(sizeof(char),strlen(szISpellDirectory)+strlen(szSpellCheckWordList)+2);
 		UT_ASSERT(szPathname);
@@ -189,7 +187,7 @@ UT_Bool AP_UnixApp::initialize(void)
 			&& (*szStringSet)
 			&& (UT_stricmp(szStringSet,AP_PREF_DEFAULT_StringSet) != 0))
 		{
-			getPrefsValueDirectory(AP_PREF_KEY_StringSetDirectory,&szDirectory);
+			getPrefsValueDirectory(UT_TRUE,AP_PREF_KEY_StringSetDirectory,&szDirectory);
 			UT_ASSERT((szDirectory) && (*szDirectory));
 
 			char * szPathname = (char *)calloc(sizeof(char),strlen(szDirectory)+strlen(szStringSet)+100);
@@ -255,7 +253,8 @@ UT_Bool AP_UnixApp::getPrefsValue(const XML_Char * szKey, const XML_Char ** pszV
 	return m_prefs->getPrefsValue(szKey,pszValue);
 }
 
-UT_Bool AP_UnixApp::getPrefsValueDirectory(const XML_Char * szKey, const XML_Char ** pszValue) const
+UT_Bool AP_UnixApp::getPrefsValueDirectory(UT_Bool bAppSpecific,
+										   const XML_Char * szKey, const XML_Char ** pszValue) const
 {
 	if (!m_prefs)
 		return UT_FALSE;
@@ -270,12 +269,25 @@ UT_Bool AP_UnixApp::getPrefsValueDirectory(const XML_Char * szKey, const XML_Cha
 		return UT_TRUE;
 	}
 
+	const XML_Char * dir = ((bAppSpecific) ? getAbiSuiteAppDir() : getAbiSuiteLibDir());
+
 	static XML_Char buf[1024];
-	UT_ASSERT((strlen(getAbiSuiteLibDir()) + strlen(psz) + 2) < sizeof(buf));
+	UT_ASSERT((strlen(dir) + strlen(psz) + 2) < sizeof(buf));
 	
-	sprintf(buf,"%s/%s",getAbiSuiteLibDir(),psz);
+	sprintf(buf,"%s/%s",dir,psz);
 	*pszValue = buf;
 	return UT_TRUE;
+}
+
+const char * AP_UnixApp::getAbiSuiteAppDir(void) const
+{
+	// we return a static string, use it quickly.
+	
+	static XML_Char buf[1024];
+	UT_ASSERT((strlen(getAbiSuiteLibDir()) + strlen(ABIWORD_APP_LIBDIR) + 2) < sizeof(buf));
+
+	sprintf(buf,"%s/%s",getAbiSuiteLibDir(),ABIWORD_APP_LIBDIR);
+	return buf;
 }
 
 const XAP_StringSet * AP_UnixApp::getStringSet(void) const

@@ -17,7 +17,9 @@
  * 02111-1307, USA.
  */
 
+#include <stdio.h>
 #include "ap_Prefs.h"
+#include "xap_App.h"
 
 /*****************************************************************/
 
@@ -38,6 +40,16 @@ const XML_Char * AP_Prefs::getBuiltinSchemeName(void) const
 
 UT_Bool AP_Prefs::loadBuiltinPrefs(void)
 {
+	// we have a built-in table of name/value pairs
+	// (see {xap,ap}_Prefs_SchemeIds.h) that we
+	// load into a prefs objects.
+	//
+	// we then overlay any name/value pairs in the
+	// system default file.  this is installed in
+	// a system library directory (see the canonical
+	// layout).  we let the System Administrator to
+	// override our built-in values.
+	
 	const XML_Char * szBuiltinSchemeName = getBuiltinSchemeName();
 	
 	XAP_PrefsScheme * pScheme = new XAP_PrefsScheme(szBuiltinSchemeName);
@@ -65,10 +77,23 @@ UT_Bool AP_Prefs::loadBuiltinPrefs(void)
 		if (!pScheme->setValue(_t[k].m_szKey, _t[k].m_szValue))
 			goto Failed;
 
-	addScheme(pScheme);
+	addScheme(pScheme);					// set the builtin scheme in the base class
+	overlaySystemPrefs();				// so that the base class parser can overlay it.
+	
 	return setCurrentScheme(szBuiltinSchemeName);
 	
 Failed:
 	DELETEP(pScheme);
 	return UT_FALSE;
+}
+
+void AP_Prefs::overlaySystemPrefs(void)
+{
+	// read system prefs file and overlay builtin values.
+
+	const char * szSystemDefaultPrefsDir = m_pApp->getAbiSuiteAppDir();
+	char buf[1024];
+	sprintf(buf,"%s/%s",szSystemDefaultPrefsDir,"system.profile");
+
+	loadSystemDefaultPrefsFile(buf);
 }

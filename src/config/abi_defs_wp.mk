@@ -27,6 +27,13 @@ include $(ABI_ROOT)/src/config/abi_defs.mk
 
 ##################################################################
 ## Deal with branding issues.
+##
+## ABI_NAMEDEFS defines a -D symbol containing the
+##              official name of the application
+##              that the user will see -- whether
+##              the branded version or the personal
+##              version.  The Win32 crap is here 
+##              because of command line quoting issues....
 
 ifdef ABISOURCE_LICENSED_TRADEMARKS
 
@@ -44,6 +51,19 @@ else
 ABI_NAMEDEFS=	-DABIWORD_APP_NAME="\"AbiWord Personal\""
 endif
 
+endif
+
+################################################################
+## ABI_APPLIBDIR defines the name of the root of the app-specific
+##               library directory in the canonical layout.
+## ABI_APPLIBDIRDEF is the same value properly quoted for use
+##                  within the application.
+
+ABI_APPLIBDIR=AbiWord
+ifeq ($(OS_NAME),WIN32)
+ABI_APPLIBDIRDEF= -DABIWORD_APP_LIBDIR=\"\"AbiWord\"\"
+else
+ABI_APPLIBDIRDEF= -DABIWORD_APP_LIBDIR="\"AbiWord\""
 endif
 
 ##################################################################

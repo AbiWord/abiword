@@ -48,6 +48,7 @@ public:
 	virtual UT_Bool					getPrefsValue(const XML_Char * szKey, const XML_Char ** pszValue) const;
 	virtual UT_Bool					getPrefsValueDirectory(const XML_Char * szKey, const XML_Char ** pszValue) const;
 	virtual const XAP_StringSet *	getStringSet(void) const;
+	virtual const char *			getAbiSuiteAppDir(void) const;
 	virtual void					copyToClipboard(PD_DocumentRange * pDocRange);
 	virtual void					pasteFromClipboard(PD_DocumentRange * pDocRange);
 	virtual UT_Bool					canPasteFromClipboard(void);

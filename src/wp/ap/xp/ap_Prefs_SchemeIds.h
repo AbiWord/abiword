@@ -69,7 +69,7 @@
 #define AP_PREF_DEFAULT_SpellDirectory				"dictionary" 				/* if relative, use prefix "getAbiSuiteLibDir()" */
 
 #define AP_PREF_KEY_StringSetDirectory				"StringSetDirectory"		/* where we find StringSets */
-#define AP_PREF_DEFAULT_StringSetDirectory			"AbiWord/strings"			/* if relative, use prefix "getAbiSuiteLibDir()" */
+#define AP_PREF_DEFAULT_StringSetDirectory			"strings"					/* if relative, use prefix "getAbiSuiteAppDir()" */
 
 #else /* AP_PREFS_SCHEMEIDS_H */
 #ifdef dcl

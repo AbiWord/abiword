@@ -34,7 +34,7 @@ include $(ABI_ROOT)/src/config/abi_rules.mk
 
 ## CANON_AppDir is where we put application-specific stuff in the
 ## canonical layout.
-CANON_AppDir=	$(CANONDIR)/AbiWord
+CANON_AppDir=	$(CANONDIR)/$(ABI_APPLIBDIR)
 
 ## CANON_Lang is a wildcard to match language strings like "EnUS"
 ## and "FiFI" (and not "CVS").
@@ -46,6 +46,7 @@ canonical:
 	@$(subst xxxx,$(CANON_AppDir)/help,$(VERIFY_DIRECTORY))
 	@$(subst xxxx,$(CANON_AppDir)/sample,$(VERIFY_DIRECTORY))
 	@$(ABICOPY) $(USERDIR)/wp/readme.txt $(CANON_AppDir)
+	@$(ABICOPY) $(USERDIR)/wp/system.profile $(CANON_AppDir)
 	@$(ABICOPY) $(USERDIR)/wp/strings/*.strings $(CANON_AppDir)/strings
 	(cd $(USERDIR)/wp/help; tar -cf - $(CANON_Lang)/*.*) | (cd $(CANON_AppDir)/help; tar -xf -)
 	(cd $(USERDIR)/wp/sample; tar -cf - $(CANON_Lang)/*.*) | (cd $(CANON_AppDir)/sample; tar -xf -)
