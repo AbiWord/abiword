@@ -180,7 +180,7 @@ ABI_ZLIB_ROOT = $(ABI_ROOT)/../libs/zlib
 OS_LIBS += -L$(ABI_ZLIB_ROOT)/lib
 ABI_ZLIB_INC = $(ABI_ZLIB_ROOT)/include
 ABI_ZLIB_LIB = -lzdll
-ABI_LIBS += $(ABI_ZLIB_LIB)
+ABI_LIBS += zdll 
 
 # so <fribidi.h> works
 OS_INCLUDES += -I$(ABI_ROOT)/../fribidi	
