@@ -25,12 +25,12 @@
 #include "ut_misc.h"
 #include "pl_Listener.h"
 
-#include "wvexporter.h"
-
 // forward declarations
 //
 class PD_Document;
 class s_MsWord_97_Listener;
+
+typedef struct _wvExporter wvExporter;
 
 // The exporter/writer for the MsWord 97 format
 

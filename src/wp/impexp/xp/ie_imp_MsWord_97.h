@@ -23,7 +23,6 @@
 
 //#include <stdlib.h>
 #include <stdio.h>
-#include "wv.h"
 #include "ut_xml.h"
 #include "ut_vector.h"
 #include "ut_stack.h"
@@ -33,12 +32,16 @@ class PD_Document;
 
 // The importer/reader for Microsoft Word 97, 95, and 6.0
 
+typedef struct _wvParseStruct wvParseStruct;
+typedef struct _Blip Blip;
+
 class IE_Imp_MsWord_97_Sniffer : public IE_ImpSniffer
 {
 	friend class IE_Imp;
 
 public:
 	IE_Imp_MsWord_97_Sniffer() {}
+
 	virtual ~IE_Imp_MsWord_97_Sniffer() {}
 
 	virtual bool recognizeContents (const char * szBuf, 
@@ -74,9 +77,9 @@ public:
    
    	// the callbacks need access to these, so they have to be public
    	int				_charData(UT_UCSChar *, int);
-	int 				_docProc(wvParseStruct *ps,wvTag tag);
-	int 				_eleProc(wvParseStruct *ps,wvTag tag,void *props,int dirty);
-	int                             _fieldProc(wvParseStruct *ps, U16 eachchar, U8 chartype, U16 lid);
+	int 				_docProc(wvParseStruct *ps, UT_uint32 tag);
+	int 				_eleProc(wvParseStruct *ps, UT_uint32 tag,void *props,int dirty);
+	int                             _fieldProc(wvParseStruct *ps, UT_uint16 eachchar, UT_Byte chartype, UT_uint16 lid);
    	UT_Error _handleImage(Blip *, long, long);
    	
 

@@ -22,6 +22,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "wv.h"
+
 #include "ut_types.h"
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
@@ -542,7 +544,7 @@ int IE_Imp_MsWord_97::_charData(UT_UCSChar * charstr, int len)
 	return(0);
 }
 
-int IE_Imp_MsWord_97::_docProc(wvParseStruct * ps, wvTag tag)
+int IE_Imp_MsWord_97::_docProc(wvParseStruct * ps, UT_uint32 tag)
 {
 	if (m_iTextRunLength)
 	{
@@ -553,7 +555,7 @@ int IE_Imp_MsWord_97::_docProc(wvParseStruct * ps, wvTag tag)
 	}
 
 	/* we don't do anything with these */
-	switch(tag)
+	switch((wvTag)tag)
 	{
 	case DOCBEGIN:
 	case DOCEND:	
@@ -724,7 +726,7 @@ int IE_Imp_MsWord_97::_fieldProc(wvParseStruct *ps, U16 eachchar,
 	return ret;
 }
 
-int IE_Imp_MsWord_97::_eleProc(wvParseStruct *ps, wvTag tag, 
+int IE_Imp_MsWord_97::_eleProc(wvParseStruct *ps, UT_uint32 tag, 
 							   void *props, int dirty)
 {
 	XML_Char propBuffer[1024];
@@ -738,7 +740,7 @@ int IE_Imp_MsWord_97::_eleProc(wvParseStruct *ps, wvTag tag,
 	SEP *asep;
 	int iRes;
 	
-	switch(tag)
+	switch((wvTag)tag)
 	{
 	case SECTIONBEGIN:
 		

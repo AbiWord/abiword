@@ -264,6 +264,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "wvexporter.h"
+
 /* These following included files can probably be thinned down a bit/lot */
 
 #include "ut_string.h"
