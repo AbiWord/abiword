@@ -8500,13 +8500,12 @@ Defun(insAutotext_subject_1)
 }
 
 static bool s_AskForScriptName(XAP_Frame * pFrame,
-				   char ** ppPathname,
-				   UT_ScriptIdType * ieft)
+							   UT_String& stPathname,
+							   UT_ScriptIdType * ieft)
 {
-	UT_ASSERT(ppPathname);
 	UT_ASSERT(ieft);
 
-	*ppPathname = NULL;
+	stPathname.clear();
 
 	pFrame->raise();
 
@@ -8535,10 +8534,10 @@ static bool s_AskForScriptName(XAP_Frame * pFrame,
 
 	while (instance.enumerateDlgLabels(k, &szDescList[k], 
 					   &szSuffixList[k], &nTypeList[k]))
-	  k++;
+		k++;
 	
 	pDialog->setFileTypeList(szDescList, szSuffixList, 
-				 (const UT_sint32 *) nTypeList);
+							 (const UT_sint32 *) nTypeList);
 
 	UT_ScriptIdType dflFileType = -1; 
 	pDialog->setDefaultFileType(dflFileType);
@@ -8550,9 +8549,9 @@ static bool s_AskForScriptName(XAP_Frame * pFrame,
 
 	if (bOK)
 	{
-		const char * szResultPathname = pDialog->getPathname();
+		const char* szResultPathname = pDialog->getPathname();
 		if (szResultPathname && *szResultPathname)
-			UT_cloneString(*ppPathname,szResultPathname);
+			stPathname = szResultPathname;
 
 		UT_sint32 type = pDialog->getFileType();
 		dflFileType = type;
@@ -8591,35 +8590,35 @@ Defun1(scriptPlay)
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> (pAV_View->getParentData());
 	UT_ASSERT(pFrame);
 
-	char * pNewFile = NULL;
+	UT_String pNewFile;
 
 	UT_ScriptLibrary &instance = UT_ScriptLibrary::instance ();
 
-	if ( 0 == instance.getNumScripts () )
-	  {
+	if (0 == instance.getNumScripts())
+	{
 		pFrame->showMessageBox(AP_STRING_ID_SCRIPT_NOSCRIPTS,
 				   XAP_Dialog_MessageBox::b_O,
 				   XAP_Dialog_MessageBox::a_OK);
 		return true;
-	  }
+	}
 
 	UT_ScriptIdType ieft = -1;
 
-	bool bOK = s_AskForScriptName(pFrame, &pNewFile, &ieft);
+	bool bOK = s_AskForScriptName(pFrame, pNewFile, &ieft);
 
-	if (!bOK || !pNewFile)
+	if (!bOK || pNewFile.empty())
 		return false;
 
-	UT_DEBUGMSG(("scriptPlay (trying to play [%s])\n", pNewFile));
+	UT_DEBUGMSG(("scriptPlay (trying to play [%s])\n", pNewFile.c_str()));
 
-	if ( UT_OK != instance.execute ( pNewFile, ieft ) )
-	  {
+	if (UT_OK != instance.execute(pNewFile.c_str(), ieft))
+	{
 		// TODO: better error message
 		pFrame->showMessageBox(AP_STRING_ID_SCRIPT_CANTRUN,
 				   XAP_Dialog_MessageBox::b_O,
 				   XAP_Dialog_MessageBox::a_OK,
-				   pNewFile);
-	  }
+				   pNewFile.c_str());
+	}
 
 	return true;
 }
@@ -8633,14 +8632,14 @@ Defun(executeScript)
 	
 	UT_ScriptLibrary &instance = UT_ScriptLibrary::instance ();
 
-	if ( UT_OK != instance.execute ( pCallData->getScriptName().c_str() ) )
-	  {
+	if (UT_OK != instance.execute(pCallData->getScriptName().c_str()))
+	{
 		// TODO: better error message
 		pFrame->showMessageBox(AP_STRING_ID_SCRIPT_CANTRUN,
 				   XAP_Dialog_MessageBox::b_O,
 				   XAP_Dialog_MessageBox::a_OK,
 				   pCallData->getScriptName().c_str());
-	  }
+	}
 	
 	return true;
 }
