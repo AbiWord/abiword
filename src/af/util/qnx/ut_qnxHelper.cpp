@@ -16,70 +16,15 @@
 
 
 int  UT_QNXCenterWindow(PtWidget_t *parent, PtWidget_t *widget) {
-	PtArg_t  args[2];
-	PhRect_t rect;
 	PhPoint_t pos;
 
 	UT_ASSERT(widget);
 
-/* TODO: Change the code so centering on a parent works */
-	if (1 || !parent) {		//Center on the screen
-#if 0
-		PgHWCaps_t 			caps;
-		PgVideoModeInfo_t 	mode;
+	//Force a re-calculation of size
+	PtExtentWidgetFamily(widget);	
+	PtCalcAbsPosition(parent, NULL, PtWidgetDim(widget, NULL), &pos);
 
-		if (PgGetGraphicsHWCaps(&caps) == -1) {
-			return -1;
-		}
-
-		if (PgGetVideoModeInfo(caps.current_video_mode, &mode) == -1) {
-			return -2;
-		}
-
-		rect.ul.x =
-		rect.ul.y = 0;
-
-		rect.lr.x = mode.width;
-		rect.lr.y = mode.height;
-#else
-		PhWindowQueryVisible(Ph_QUERY_GRAPHICS, 0, 1, &rect);
-#endif
-	}
-	else {		// Center on the widget
-		PhArea_t *parea;
-
-		//Assume that the parent is visible already.
-		//PtExtentWidget(widget);		//Force a re-calculation of size
-		PtSetArg(&args[0], Pt_ARG_AREA, &parea, 0);
-		PtGetResources(parent, 1, args);
-
-		rect.ul.x = 
-		rect.lr.x = parea->pos.x;
-		rect.ul.y = 
-		rect.lr.y = parea->pos.y;
-
-		rect.lr.x += parea->size.w;
-		rect.lr.y += parea->size.h;
-	}
-
-	// Now position the widget ...
-	PtExtentWidget(widget);		//Force a re-calculation of size
-	PtSetArg(&args[0], Pt_ARG_WIDTH, 0, 0);
-	PtSetArg(&args[1], Pt_ARG_HEIGHT, 0, 0);
-	PtGetResources(widget, 2, args);
-
-/*
-	printf("Centering on window %d,%d - %d,%d Widget %d/%d \n",
-		rect.ul.x, rect.ul.y, rect.lr.x, rect.lr.y, args[0].value, args[1].value);
-*/
-	pos.x = rect.ul.x;
-	pos.y = rect.ul.y;
-
-	pos.x += (rect.lr.x - rect.ul.x - args[0].value) / 2;
-	pos.y += (rect.lr.y - rect.ul.y - args[1].value) / 2;
-//	printf("Final position %d,%d \n", pos.x, pos.y); 
-	PtSetArg(&args[0], Pt_ARG_POS, &pos, 0);
-	PtSetResources(widget, 1, args);
+	PtSetResource(widget, Pt_ARG_POS, &pos, 0);
 
 	return 0;
 }
