@@ -744,10 +744,10 @@
 
         <row>
           <cell>Tools / WordCount</cell>
-          <cell value="later"><pow uri="http://www.abisource.com/mailinglists/abiword-dev/99/October/0143.html"/></cell>
+          <cell value="yes"/
           <cell value="yes"/>
-          <cell value="unknown"/>
-          <cell value="unknown"/>
+          <cell value="yes"/>
+          <cell value="yes"/>
           <cell value="unknown"/>
           <cell value="unknown"/>
           <cell value="unknown"/>
