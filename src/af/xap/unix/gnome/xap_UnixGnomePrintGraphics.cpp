@@ -349,7 +349,7 @@ GR_Image* XAP_UnixGnomePrintGraphics::createNewImage(const char* pszName,
 	GR_Image* pImg = NULL;
 
    	if (iType == GR_Image::GRT_Raster)
-		pImg = new GR_UnixImage(pszName,iType,true);
+		pImg = new GR_UnixImage(pszName,iType);
    	else if (iType == GR_Image::GRT_Vector)
 		pImg = new GR_VectorImage(pszName);
    
@@ -649,23 +649,26 @@ capToPS (GR_Graphics::CapStyle cs)
   return 1;
 }
 
-static double*
+static const double*
 dashToPS (GR_Graphics::LineStyle ls, gint & n_values, double &offset)
 {
-  switch(ls)
-    {
-    case GR_Graphics::LINE_SOLID:
-		offset = 0.; n_values = 0; return 0;
-    case GR_Graphics::LINE_ON_OFF_DASH: 
-		offset = 0.; n_values = 2; return {1., 1.};
-    case GR_Graphics::LINE_DOUBLE_DASH: 
-		offset = 0.; n_values = 2; return {1., 2.};
-    case GR_Graphics::LINE_DOTTED: 
-		UT_ASSERT(UT_TODO);
-		offset = 0.; n_values = 0; return 0;
-    }
+	static const double on_off_dash [] = {1., 1.};
+	static const double double_dash [] = {1., 2.};
 
-  n_values = 0; offset = 0.; return 0;
+	switch(ls)
+		{
+		case GR_Graphics::LINE_SOLID:
+			offset = 0.; n_values = 0; return NULL;
+		case GR_Graphics::LINE_ON_OFF_DASH: 
+			offset = 0.; n_values = 2; return on_off_dash;
+		case GR_Graphics::LINE_DOUBLE_DASH: 
+			offset = 0.; n_values = 2; return double_dash;
+		case GR_Graphics::LINE_DOTTED: 
+			UT_ASSERT(UT_TODO);
+			offset = 0.; n_values = 0; return NULL;
+		}
+	
+	n_values = 0; offset = 0.; return NULL;
 }
 
 void XAP_UnixGnomePrintGraphics::setLineProperties (double inWidthPixels,
@@ -679,9 +682,9 @@ void XAP_UnixGnomePrintGraphics::setLineProperties (double inWidthPixels,
 
 	gint n_values = 0;
 	double offset = 0;
-	double * dash = 0;
+	const double * dash = NULL;
 
-	dash = dashToPS (inLineStyle);
+	dash = dashToPS (inLineStyle, n_values, offset);
 	gnome_print_setdash (m_gpc, n_values, dash, offset);
 
 #if 0
