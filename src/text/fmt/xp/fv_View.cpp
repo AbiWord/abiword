@@ -1834,6 +1834,22 @@ void FV_View::insertParagraphBreak(void)
 		m_pDoc->StopList(sdh);
 		_setPoint(getCurrentBlock()->getPosition());
 	}
+
+	const XML_Char* style = NULL;
+	PD_Style* pStyle = NULL;
+	if(getStyle(&style))
+	{
+		m_pDoc->getStyle((char*) style, &pStyle);
+		if(pStyle->getFollowedBy())
+			pStyle = pStyle->getFollowedBy();
+
+		const XML_Char* szValue = NULL;
+		pStyle->getAttribute(PT_NAME_ATTRIBUTE_NAME, szValue);
+
+		UT_ASSERT((szValue));
+		setStyle(szValue);
+	}
+
 	m_pDoc->endUserAtomicGlob();
 
 	_generalUpdate();
