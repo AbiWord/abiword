@@ -2073,36 +2073,41 @@ void IE_Imp_RTF::HandleShapeText(void)
 	sV = "block-above-text";
 	UT_UTF8String_setProperty(sPropString,sP,sV); // fixme make other types
 
-	double dV = static_cast<double>(m_currentFrame.m_iLeftPos)/1440.0;
-	sV= UT_UTF8String_sprintf("%fin",dV);
-	sP= "xpos";
-	UT_UTF8String_setProperty(sPropString,sP,sV);
+	{
+		UT_LocaleTransactor(LC_NUMERIC, "C");
 
-	dV = static_cast<double>(m_currentFrame.m_iTopPos)/1440.0;
-	sV= UT_UTF8String_sprintf("%fin",dV);
-	sP= "ypos";
-	UT_UTF8String_setProperty(sPropString,sP,sV);
-
-	dV = static_cast<double>(m_currentFrame.m_iRightPos - m_currentFrame.m_iLeftPos)/1440.0;
-	sV= UT_UTF8String_sprintf("%fin",dV);
-	sP= "frame-width";
-	UT_UTF8String_setProperty(sPropString,sP,sV); 
-
-	dV = static_cast<double>(m_currentFrame.m_iBotPos - m_currentFrame.m_iTopPos)/1440.0;
-	sV= UT_UTF8String_sprintf("%fin",dV);
-	sP= "frame-height";
-	UT_UTF8String_setProperty(sPropString,sP,sV); 
-
-	dV = static_cast<double>(m_currentFrame.m_iRightPad + m_currentFrame.m_iLeftPad)/9114400.0; // EMU
-	sV= UT_UTF8String_sprintf("%fin",dV);
-	sP= "xpad";
-	UT_UTF8String_setProperty(sPropString,sP,sV); 
-
-	dV = static_cast<double>(m_currentFrame.m_iBotPad + m_currentFrame.m_iTopPad)/9114400.0; //EMU
-	sV= UT_UTF8String_sprintf("%fin",dV);
-	sP= "ypad";
-	UT_UTF8String_setProperty(sPropString,sP,sV); 
+		double dV = static_cast<double>(m_currentFrame.m_iLeftPos)/1440.0;
+		sV= UT_UTF8String_sprintf("%fin",dV);
+		sP= "xpos";
+		UT_UTF8String_setProperty(sPropString,sP,sV);
+		
+		dV = static_cast<double>(m_currentFrame.m_iTopPos)/1440.0;
+		sV= UT_UTF8String_sprintf("%fin",dV);
+		sP= "ypos";
+		UT_UTF8String_setProperty(sPropString,sP,sV);
+		
+		dV = static_cast<double>(m_currentFrame.m_iRightPos - m_currentFrame.m_iLeftPos)/1440.0;
+		sV= UT_UTF8String_sprintf("%fin",dV);
+		sP= "frame-width";
+		UT_UTF8String_setProperty(sPropString,sP,sV); 
+		
+		dV = static_cast<double>(m_currentFrame.m_iBotPos - m_currentFrame.m_iTopPos)/1440.0;
+		sV= UT_UTF8String_sprintf("%fin",dV);
+		sP= "frame-height";
+		UT_UTF8String_setProperty(sPropString,sP,sV); 
+		
+		dV = static_cast<double>(m_currentFrame.m_iRightPad + m_currentFrame.m_iLeftPad)/9114400.0; // EMU
+		sV= UT_UTF8String_sprintf("%fin",dV);
+		sP= "xpad";
+		UT_UTF8String_setProperty(sPropString,sP,sV); 
+		
+		dV = static_cast<double>(m_currentFrame.m_iBotPad + m_currentFrame.m_iTopPad)/9114400.0; //EMU
+		sV= UT_UTF8String_sprintf("%fin",dV);
+		sP= "ypad";
+		UT_UTF8String_setProperty(sPropString,sP,sV); 
+	}
 	attribs[1] = sPropString.utf8_str();
+
 
 	if(!bUseInsertNotAppend())
 	{
@@ -4463,7 +4468,10 @@ bool IE_Imp_RTF::TranslateKeyword(unsigned char* pKeyword, UT_sint16 param, bool
 	{
 		double dWidth = static_cast<double>(param)/1440; // convert to inches
 		UT_String sWidth;
-		UT_String_sprintf(sWidth,"%fin",dWidth);
+		{
+			UT_LocaleTransactor(LC_NUMERIC, "C");
+			UT_String_sprintf(sWidth,"%fin",dWidth);
+		}
 		if (m_currentRTFState.m_cellProps.m_iCurBorder == rtfCellBorderTop)
 		{
 			_setStringProperty(m_currentRTFState.m_cellProps.m_sCellProps,"top-thickness",sWidth.c_str());
