@@ -1,4 +1,4 @@
-/* AbiWord
+/* Abiword
  * Copyright (C) 1998 AbiSource, Inc.
  * 
  * This program is free software; you can redistribute it and/or
@@ -74,18 +74,18 @@ int IE_Imp_XML::_mapNameToToken (const char * name,
 
 	xmlToIdMapping * id = NULL;
 
-	UT_HashEntry * pEntry = tokens.findEntry (name);
+	HashValType pEntry = tokens.pick ((HashKeyType)name);
 
 	if (pEntry)
 	{
-		return (int)pEntry->pData;
+		return (int)pEntry;
 	}
 	
 	id = (xmlToIdMapping *)bsearch (name, idlist, len, 
 									sizeof (xmlToIdMapping), s_str_compare);
 	if (id)
     {
-		tokens.addEntry (name, 0, (void *)id->m_type);
+		tokens.insert ((HashKeyType)name, (void *)id->m_type);
 		return id->m_type;
     }
 	return -1;

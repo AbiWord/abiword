@@ -24,7 +24,7 @@
 #include <stdio.h>
 
 #include "ut_types.h"
-#include "ut_alphahash.h"
+#include "ut_hash.h"
 
 /*
 	A simple custom dictionary class, which allows the user to add words 
@@ -58,7 +58,7 @@ protected:
 	const char *		m_szFilename;
 
 	bool				m_bDirty;
-	UT_AlphaHashTable	m_hashWords;
+	UT_HashTable	    m_hashWords;
 
 private:
 	FILE *				m_fp;

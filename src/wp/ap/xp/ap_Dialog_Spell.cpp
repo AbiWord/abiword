@@ -118,7 +118,7 @@ AP_Dialog_Spell::~AP_Dialog_Spell(void)
 	}
 
 	DELETEP(m_pBlockBuf);
-	UT_HASH_PURGEDATA(UT_UCSChar*,(*m_pChangeAll));
+	UT_HASH_PURGEDATA(UT_UCSChar*,m_pChangeAll, free);
 	DELETEP(m_pChangeAll);
 	DELETEP(m_pIgnoreAll);
 
@@ -383,13 +383,13 @@ bool AP_Dialog_Spell::inChangeAll(void)
    char * bufferNormal = (char *) calloc(UT_UCS_strlen(bufferUnicode) + 1, sizeof(char));
    UT_UCS_strcpy_to_char(bufferNormal, bufferUnicode);
    FREEP(bufferUnicode);
-   UT_HashEntry * ent = m_pChangeAll->findEntry(bufferNormal);
+   HashValType ent = m_pChangeAll->pick((HashKeyType)bufferNormal);
    FREEP(bufferNormal);
 
    if (ent == NULL) return false;
    else {
       makeWordVisible();
-      bool bRes = changeWordWith( (UT_UCSChar*) (ent->pData) ); 
+      bool bRes = changeWordWith( (UT_UCSChar*) (ent) ); 
       return bRes;
    }
 }
@@ -405,12 +405,11 @@ bool AP_Dialog_Spell::addChangeAll(UT_UCSChar * newword)
    UT_UCSChar * newword2 = (UT_UCSChar*) calloc(UT_UCS_strlen(newword) + 1, sizeof(UT_UCSChar));
    UT_UCS_strcpy(newword2, newword);
    
-   UT_sint32 iRes = m_pChangeAll->addEntry(bufferNormal, NULL, (void*) newword2);
+   m_pChangeAll->insert((HashKeyType)bufferNormal, (HashValType) newword2);
 
    FREEP(bufferNormal);
    
-   if (iRes < 0) return false;
-   else return true;
+   return true;
 }
 
 bool AP_Dialog_Spell::changeWordWith(UT_UCSChar * newword)

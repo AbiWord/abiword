@@ -44,7 +44,8 @@ XAP_UnixFontManager::XAP_UnixFontManager(void) : m_fontHash(256)
 XAP_UnixFontManager::~XAP_UnixFontManager(void)
 {
 	UT_VECTOR_PURGEALL(char *, m_searchPaths);
-	UT_HASH_PURGEDATA(XAP_UnixFont *, m_fontHash);
+
+	UT_HASH_PURGEDATA(XAP_UnixFont *, &m_fontHash, delete);
 }
 
 bool XAP_UnixFontManager::setFontPath(const char * searchpath)
@@ -218,31 +219,12 @@ bool XAP_UnixFontManager::scavengeFonts(void)
 	return true;
 }
 
-UT_uint32 XAP_UnixFontManager::getCount(void)
+UT_Vector * XAP_UnixFontManager::getAllFonts(void)
 {
-	return (UT_uint32) m_fontHash.getEntryCount();
-}
+	UT_Vector * pVec = m_fontHash.enumerate();
+	UT_ASSERT(pVec);
 
-XAP_UnixFont ** XAP_UnixFontManager::getAllFonts(void)
-{
-	UT_uint32 count = getCount();
-
-	UT_DEBUGMSG(("XAP_UnixFontManager::getAllFonts [count %d]\n", count));
-		
-	XAP_UnixFont ** table = new XAP_UnixFont * [count];
-
-	UT_ASSERT(table);
-
-	UT_HashEntry * entry = NULL;
-	for (UT_uint32 i = 0; i < count; i++)
-	{
-		entry = m_fontHash.getNthEntry(i);
-		UT_ASSERT(entry && entry->pData);
-		
-		table[i] = (XAP_UnixFont *) entry->pData;
-	}
-
-	return table;
+	return pVec;
 }
 
 XAP_UnixFont * XAP_UnixFontManager::getDefaultFont(void)
@@ -279,11 +261,11 @@ XAP_UnixFont * XAP_UnixFontManager::getFont(const char * fontname,
 
 	FREEP(copy);
 	
-	UT_HashEntry * entry = m_fontHash.findEntry(keyBuffer);
+	HashValType entry = m_fontHash.pick((HashKeyType)keyBuffer);
 
 	//UT_DEBUGMSG(("Found font [%p] in table.\n", entry));
 	
-	return (entry && entry->pData) ? ((XAP_UnixFont *) entry->pData) : NULL;
+	return static_cast<XAP_UnixFont *>(entry);
 }
 
 void XAP_UnixFontManager::_allocateThisFont(const char * line,
@@ -454,26 +436,23 @@ void XAP_UnixFontManager::_addFont(XAP_UnixFont * newfont)
 {
 	// we index fonts by a combined "name" and "style"
 	const char* fontkey = newfont->getFontKey();
-	UT_HashEntry* curfont_entry = m_fontHash.findEntry(fontkey);
-	if (!curfont_entry || !curfont_entry->pData)
+	HashValType curfont_entry = m_fontHash.pick((HashKeyType)fontkey);
+	if (curfont_entry)
 	{
-		m_fontHash.addEntry(fontkey, NULL, (void *) newfont);
+		XAP_UnixFont* curfont = static_cast<XAP_UnixFont*>(curfont_entry);
+		delete curfont;     
+		m_fontHash.remove ((HashKeyType)fontkey, 0);
 	} 
-	else 
-	{
-		/* 
-                  since "standard fonts" folder is read first and then
-                  current charset-specific subdirectory, it's obvious that
-                  the recent version is current charset-specific font, 
-                  so we replace original font (that is standard) 
-                  unconditionally.
-		*/
-                XAP_UnixFont* curfont = static_cast<XAP_UnixFont*>(curfont_entry->pData);               
-                delete curfont;
-                curfont_entry->pData = (void*)newfont;
 
-	       
-	}
+	/* 
+	   since "standard fonts" folder is read first and then
+	   current charset-specific subdirectory, it's obvious that
+	   the recent version is current charset-specific font, 
+	   so we replace original font (that is standard) 
+	   unconditionally.
+	*/
+
+	m_fontHash.insert((HashKeyType)fontkey,(HashValType) newfont);		
 }
 
 void XAP_UnixFontManager::_allocateCJKFont(const char * line,

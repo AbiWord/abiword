@@ -66,7 +66,12 @@ typedef ISpellChecker SpellCheckerClass;
  */
 SpellManager::~SpellManager ()
 {
-	UT_HASH_PURGEDATA (SpellCheckerClass *, m_map);
+	UT_Vector * pVec = m_map.enumerate();
+	UT_ASSERT(pVec);
+
+	UT_VECTOR_PURGEALL (SpellCheckerClass *, (*pVec));
+
+	DELETEP(pVec);
 }
 
 /*!
@@ -95,22 +100,21 @@ SpellManager::requestDictionary (const char * szLang)
 	SpellCheckerClass * checker = 0;
 	
 	// first look up the entry in the hashtable
-	UT_HashEntry * pEntry = m_map.findEntry (szLang);
-	if (pEntry)
-		return (SpellCheckerClass *)pEntry->pData;
+	if (m_map.contains ((HashKeyType)szLang, 0))
+		return (SpellCheckerClass *)m_map.pick ((HashKeyType)szLang);
 	
 	// not found, so insert it
 	checker = new SpellCheckerClass ();
 	
 	if (checker->requestDictionary (szLang))
     {      
-		m_map.addEntry (szLang, 0, checker);
+		m_map.insert ((HashKeyType)szLang, (HashValType)checker);
 		m_lastDict = checker;
 		return checker;
     }
 	else
     {
-		m_map.addEntry (szLang, 0, 0); // add a null entry for this lang
+		m_map.insert ((HashKeyType)szLang, (HashValType)0); // add a null entry for this lang
 		delete checker;
 		return 0;
     }

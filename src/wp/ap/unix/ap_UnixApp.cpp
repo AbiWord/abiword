@@ -263,7 +263,7 @@ bool AP_UnixApp::initialize(void)
     
     m_prefs = new AP_UnixPrefs(this);
     m_prefs->fullInit();
-    
+
     // now that preferences are established, let the xap init
 		   
     m_pClipboard = new AP_UnixClipboard(this);

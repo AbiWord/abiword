@@ -90,7 +90,7 @@ bool pt_PieceTable::appendFmt(const UT_Vector * pVecAttributes)
 	return true;
 }
 
-bool pt_PieceTable::appendSpan(UT_UCSChar * pbuf, UT_uint32 length)
+bool pt_PieceTable::appendSpan(const UT_UCSChar * pbuf, UT_uint32 length)
 {
 	// can only be used while loading the document
 	UT_ASSERT(m_pts==PTS_Loading);

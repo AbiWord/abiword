@@ -23,6 +23,9 @@
 //
 
 #include <stdlib.h>	// size_t
+#include "ut_types.h" // UT_UCSChar
+
+// yes, i know that this is screaming for templates... -Dom
 
 class UT_Stringbuf
 {
@@ -58,6 +61,39 @@ private:
 	size_t		m_size;
 };
 
+class UT_UCS2Stringbuf
+{
+public:
+	typedef UT_UCSChar char_type;
+
+	UT_UCS2Stringbuf();
+	UT_UCS2Stringbuf(const UT_UCS2Stringbuf& rhs);
+	UT_UCS2Stringbuf(const char_type* sz, size_t n);
+	~UT_UCS2Stringbuf();
+
+	void		operator=(const UT_UCS2Stringbuf& rhs);
+
+	void		assign(const char_type* sz, size_t n);
+	void		append(const char_type* sz, size_t n);
+	void		append(const UT_UCS2Stringbuf& rhs);
+
+	void		swap(UT_UCS2Stringbuf& rhs);
+	void		clear();
+
+	bool				empty()		const { return m_psz == m_pEnd; }
+	size_t				size()		const { return m_pEnd - m_psz; }
+	size_t				capacity()	const { return m_size; }
+	const char_type*	data()		const { return m_psz; }
+	char_type*			data() 			  { return m_psz; }
+
+private:
+	void	grow_nocopy(size_t n);
+	void	grow_copy(size_t n);
+
+	char_type*	m_psz;
+	char_type*	m_pEnd;
+	size_t		m_size;
+};
 
 #endif	// UT_STRINGBUF_H
 

@@ -22,7 +22,7 @@
 #define PP_ATTRPROP_H
 
 #include "ut_types.h"
-#include "ut_alphahash.h"
+#include "ut_hash.h"
 #include "ut_vector.h"
 #include "ut_xml.h"
 #include "pp_Property.h"
@@ -82,8 +82,8 @@ public:
 protected:
 	void _computeCheckSum(void);
 	
-	UT_AlphaHashTable * m_pAttributes;
-	UT_AlphaHashTable * m_pProperties;
+	UT_HashTable * m_pAttributes;
+	UT_HashTable * m_pProperties;
 	bool				m_bIsReadOnly;
 	UT_uint32			m_checkSum;
 };

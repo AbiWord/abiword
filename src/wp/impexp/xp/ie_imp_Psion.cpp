@@ -69,25 +69,20 @@
 // we use a reference-counted sniffer
 static IE_Imp_Psion_Word_Sniffer * m_word_sniffer = 0;
 static IE_Imp_Psion_TextEd_Sniffer * m_texted_sniffer = 0;
-static UT_sint32 m_refs = 0;
 
 ABI_FAR extern "C"
 int abi_plugin_register (XAP_ModuleInfo * mi)
 {
 
-	if (!m_refs && !m_word_sniffer && !m_texted_sniffer)
+	if (!m_word_sniffer && !m_texted_sniffer)
 	{
 		m_word_sniffer = new IE_Imp_Psion_Word_Sniffer ();
 		m_texted_sniffer = new IE_Imp_Psion_TextEd_Sniffer ();
-		m_refs++;
-	}
-	else if (m_refs && m_word_sniffer && m_texted_sniffer)
-	{
-		m_refs++;
 	}
 	else
 	{
-		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		m_word_sniffer->ref();
+		m_texted_sniffer->ref();
 	}
 
 	mi->name = "Psion Importer";
@@ -110,15 +105,12 @@ int abi_plugin_unregister (XAP_ModuleInfo * mi)
 	mi->author = 0;
 	mi->usage = 0;
 
-	UT_ASSERT (m_refs && m_word_sniffer && m_texted_sniffer);
+	UT_ASSERT (m_word_sniffer && m_texted_sniffer);
 
-	m_refs--;
 	IE_Imp::unregisterImporter (m_word_sniffer);
 	IE_Imp::unregisterImporter (m_texted_sniffer);
-	if (!m_refs)
+	if (!m_word_sniffer->unref() || m_texted_sniffer->unref())
 	{
-		delete m_word_sniffer;
-		delete m_texted_sniffer;
 		m_word_sniffer = 0;
 		m_texted_sniffer = 0;
 	}

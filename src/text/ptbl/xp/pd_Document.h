@@ -26,7 +26,7 @@
 #include <stdio.h>
 #include "ut_types.h"
 #include "ut_vector.h"
-#include "ut_alphahash.h"
+#include "ut_hash.h"
 #include "xad_Document.h"
 #include "ut_xml.h"
 #include "pt_Types.h"
@@ -119,7 +119,7 @@ public:
 	bool					appendStrux(PTStruxType pts, const XML_Char ** attributes);
 	bool					appendFmt(const XML_Char ** attributes);
 	bool					appendFmt(const UT_Vector * pVecAttributes);
-	bool					appendSpan(UT_UCSChar * p, UT_uint32 length);
+	bool					appendSpan(const UT_UCSChar * p, UT_uint32 length);
 	bool					appendObject(PTObjectType pto, const XML_Char ** attributes);
 	bool					appendFmtMark(void);
 	bool					appendStyle(const XML_Char ** attributes);
@@ -219,7 +219,8 @@ public:
 	void					setDoingPaste(void);
 	void					clearDoingPaste(void);
 	bool					isDoingPaste(void);
-	
+
+	// PageSize functions
 	fp_PageSize				m_docPageSize;
 	void					setDefaultPageSize(void);
 	const char *			getDefaultPageSize(void);
@@ -243,7 +244,7 @@ protected:
 	UT_Vector				m_vecListeners;
 	UT_Vector				m_vecLists;
 	
-	UT_AlphaHashTable		m_hashDataItems;
+	UT_HashTable		    m_hashDataItems;
 
 	IEFileType				m_lastSavedAsType;
 	XAP_App *				m_pApp;

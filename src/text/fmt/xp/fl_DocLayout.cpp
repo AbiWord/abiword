@@ -134,7 +134,7 @@ FL_DocLayout::~FL_DocLayout()
 		m_pFirstSection = pNext;
 	}
 
-	UT_HASH_PURGEDATA(GR_Font *, m_hashFontCache);
+	UT_HASH_PURGEDATA(GR_Font *, &m_hashFontCache, delete);
 }
 
 void FL_DocLayout::setView(FV_View* pView)
@@ -259,7 +259,7 @@ GR_Font* FL_DocLayout::findFont(const PP_AttrProp * pSpanAP,
 	char key[500];
 	sprintf(key,"%s;%s;%s;%s;%s;%s,%i",pszFamily, pszStyle, pszVariant, pszWeight, pszStretch, pszSize, iUseLayoutResolution);
 	
-	UT_HashEntry* pEntry = m_hashFontCache.findEntry(key);
+	HashValType pEntry = m_hashFontCache.pick((HashKeyType)key);
 	if (!pEntry)
 	{
 		// TODO -- note that we currently assume font-family to be a single name,
@@ -274,12 +274,11 @@ GR_Font* FL_DocLayout::findFont(const PP_AttrProp * pSpanAP,
 		UT_ASSERT(pFont);
 
 		// add it to the cache
-		UT_sint32 res = m_hashFontCache.addEntry(key, NULL, pFont);
-		UT_ASSERT(res==0);
+		m_hashFontCache.insert((HashKeyType)key, (HashValType)pFont);
 	}
 	else
 	{
-		pFont = (GR_Font*) pEntry->pData;
+		pFont = (GR_Font*) pEntry;
 	}
 
 	return pFont;
@@ -318,7 +317,7 @@ GR_Font* FL_DocLayout::findFont(const PP_AttrProp * pSpanAP,
 		pszFamily = pszField;
 	}
 	sprintf(key,"%s;%s;%s;%s;%s;%s,%i",pszFamily, pszStyle, pszVariant, pszWeight, pszStretch, pszSize, iUseLayoutResolution);
-	UT_HashEntry* pEntry = m_hashFontCache.findEntry(key);
+	HashValType pEntry = m_hashFontCache.pick((HashKeyType)key);
 	if (!pEntry)
 	{
 		// TODO -- note that we currently assume font-family to be a single name,
@@ -333,12 +332,11 @@ GR_Font* FL_DocLayout::findFont(const PP_AttrProp * pSpanAP,
 		UT_ASSERT(pFont);
 
 		// add it to the cache
-		UT_sint32 res = m_hashFontCache.addEntry(key, NULL, pFont);
-		UT_ASSERT(res==0);
+		m_hashFontCache.insert((HashKeyType)key, (HashValType)pFont);
 	}
 	else
 	{
-		pFont = (GR_Font*) pEntry->pData;
+		pFont = (GR_Font*) pEntry;
 	}
 
 	return pFont;
@@ -1126,7 +1124,7 @@ fl_DocSectionLayout* FL_DocLayout::findSectionForHdrFtr(const char* pszHdrFtrID)
 /*static*/ void FL_DocLayout::_prefsListener (
 	XAP_App				*pApp,
 	XAP_Prefs			*pPrefs,
-	UT_AlphaHashTable	* /*phChanges*/,  // not used
+	UT_HashTable	* /*phChanges*/,  // not used
 	void				*data
 	) 
 {
@@ -1253,7 +1251,7 @@ void FL_DocLayout::setPendingSmartQuote(fl_BlockLayout *bl, UT_uint32 of)
 
 This algorithm is based on my observation of how people actually use
 quotation marks, sometimes in contravention of generally accepted
-principals of punctuation.  It is certainly also true that my
+principles of punctuation.  It is certainly also true that my
 observations are overwhelmingly of American English text, with a
 smattering of various other languages observed from time to time.  I
 don't believe that any algorithm for this can ever be perfect.  There

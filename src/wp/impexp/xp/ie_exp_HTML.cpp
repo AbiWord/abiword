@@ -58,24 +58,18 @@
 
 // we use a reference-counted sniffer
 static IE_Exp_HTML_Sniffer * m_sniffer = 0;
-static UT_sint32 m_refs = 0;
 
 ABI_FAR extern "C"
 int abi_plugin_register (XAP_ModuleInfo * mi)
 {
 
-	if (!m_refs && !m_sniffer)
+	if (!m_sniffer)
 	{
 		m_sniffer = new IE_Exp_HTML_Sniffer ();
-		m_refs++;
-	}
-	else if (m_refs && m_sniffer)
-	{
-		m_refs++;
 	}
 	else
 	{
-		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		m_sniffer->ref();
 	}
 
 	mi->name = "HTML Exporter";
@@ -97,13 +91,11 @@ int abi_plugin_unregister (XAP_ModuleInfo * mi)
 	mi->author = 0;
 	mi->usage = 0;
 
-	UT_ASSERT (m_refs && m_sniffer);
+	UT_ASSERT (m_sniffer);
 
-	m_refs--;
 	IE_Exp::unregisterExporter (m_sniffer);
-	if (!m_refs)
+	if (!m_sniffer->unref())
 	{
-		delete m_sniffer;
 		m_sniffer = 0;
 	}
 
@@ -380,22 +372,21 @@ void s_HTML_Listener::_openTag(PT_AttrPropIndex api)
 	
 	if (bHaveProp && pAP)
 	{
-		const XML_Char * szValue = 0;
-		char * pValue = 0;
+		const XML_Char * szValue;
 		//const XML_Char * szLevel;
 		const XML_Char * szListID;
 
 		if (
-			(pAP->getAttribute("style", szValue))
-			)
+		   (pAP->getAttribute("style", szValue))
+		   )
 		{
-			pValue = removeWhiteSpace((const char *)szValue);
+			char * value = removeWhiteSpace((char*) szValue);
 			if(pAP->getAttribute("listid", szListID) &&
 			   0 != UT_strcmp(szListID, "0"))
 			{	// we're in a list
 				if(!m_bInList)
 				{
-					if(0 != UT_strcmp(pValue, "BulletList"))
+					if(0 != UT_strcmp(value, "BulletList"))
 					{
 						m_iBlockType = BT_NUMBEREDLIST;
 						m_pie->write("<ol class=\"");
@@ -405,7 +396,7 @@ void s_HTML_Listener::_openTag(PT_AttrPropIndex api)
 						m_iBlockType = BT_BULLETLIST;
 						m_pie->write("<ul class=\"");
 					}
-					_outputInheritanceLine(pValue);
+					_outputInheritanceLine((const char*) value);
 					m_pie->write("\">\n");
 					m_bInList = true;
 				}
@@ -415,6 +406,7 @@ void s_HTML_Listener::_openTag(PT_AttrPropIndex api)
 				}
 				m_pie->write("<li");
 				wasWritten = true;	
+				DELETEPV(value);			
 			}
 			else 
 			{
@@ -426,78 +418,78 @@ void s_HTML_Listener::_openTag(PT_AttrPropIndex api)
 						m_pie->write("</li>\n</ul>\n");
 					m_bInList = false;
 				}
-				
-				if(0 == UT_strcmp(pValue, "Heading1") ||
-				   _inherits(pValue, "Heading1")) 
+
+				if(0 == UT_strcmp(szValue, "Heading1") ||
+					_inherits((const char*) szValue, "Heading1")) 
 				{
 					// <p style="Heading 1"> ...
-					
+
 					m_iBlockType = BT_HEADING1;
 					m_pie->write("\n<h1");
-					if(_inherits(pValue, "Heading1"))
+					if(_inherits((const char*) szValue, "Heading1"))
 					{
 						m_pie->write(" class=\"");
-						_outputInheritanceLine(pValue);
+						_outputInheritanceLine((const char*) szValue);
 						m_pie->write("\"");
 					}
 					wasWritten = true;
 				}
-				else if(0 == UT_strcmp(pValue, "Heading2") ||
-						_inherits(pValue, "Heading2")) 
+				else if(0 == UT_strcmp(szValue, "Heading2") ||
+					_inherits((const char*) szValue, "Heading2")) 
 				{
 					// <p style="Heading 2"> ...
-					
+
 					m_iBlockType = BT_HEADING2;
 					m_pie->write("\n<h2");
-					if(_inherits(pValue, "Heading2"))
+					if(_inherits((const char*) szValue, "Heading2"))
 					{
 						m_pie->write(" class=\"");
-						_outputInheritanceLine(pValue);
+						_outputInheritanceLine((const char*) szValue);
 						m_pie->write("\"");
 					}
 					wasWritten = true;
 				}
-				else if(0 == UT_strcmp(pValue, "Heading3") ||
-						_inherits(pValue, "Heading3")) 
+				else if(0 == UT_strcmp(szValue, "Heading3") ||
+					_inherits((const char*) szValue, "Heading3")) 
 				{
 					// <p style="Heading 3"> ...
-					
+
 					m_iBlockType = BT_HEADING3;
 					m_pie->write("\n<h3");
-					if(_inherits(pValue, "Heading3"))
+					if(_inherits((const char*) szValue, "Heading3"))
 					{
 						m_pie->write(" class=\"");
-						_outputInheritanceLine(pValue);
+						_outputInheritanceLine((const char*) szValue);
 						m_pie->write("\"");
 					}
 					wasWritten = true;
 				}
-				else if(0 == UT_strcmp(pValue, "BlockText") || 
-						_inherits(pValue, "BlockText"))
+				else if(0 == UT_strcmp(szValue, "BlockText") || 
+					_inherits((const char*) szValue, "BlockText"))
 				{
 					// <p style="Block Text"> ...
-					
+
 					m_iBlockType = BT_BLOCKTEXT;
 					m_pie->write("<blockquote");
-					if(_inherits(pValue, "BlockText"))
+					if(_inherits((const char*) szValue, "BlockText"))
 					{
 						m_pie->write(" class=\"");
-						_outputInheritanceLine(pValue);
+						_outputInheritanceLine((const char*) szValue);
 						m_pie->write("\"");
 					}
 					wasWritten = true;
 				}
-				else if(0 == UT_strcmp(pValue, "PlainText") ||
-						_inherits(pValue, "PlainText"))
+				else if(0 == UT_strcmp(szValue, "PlainText") ||
+					_inherits((const char*) szValue, "PlainText"))
 				{
 					// <p style="Plain Text"> ...
-					
+
 					m_iBlockType = BT_PLAINTEXT;
 					m_pie->write("<pre");
-					if(_inherits(pValue, "PlainText"))
+					if(_inherits((const char*) szValue, "PlainText"))
 					{
 						m_pie->write(" class=\"");
-						_outputInheritanceLine(pValue);
+						_outputInheritanceLine((const char*) szValue);
 						m_pie->write("\"");
 					}
 					wasWritten = true;
@@ -505,15 +497,14 @@ void s_HTML_Listener::_openTag(PT_AttrPropIndex api)
 				else 
 				{
 					// <p style="<anything else!>"> ...
-					
+
 			        m_iBlockType = BT_NORMAL;
 			      	m_pie->write("<p class=\"");
-					m_pie->write(pValue);
+					m_pie->write(szValue);
 					m_pie->write("\"");
 					wasWritten = true;
 				}	
 			}
-			DELETEPV(pValue);
 		}
 		else 
 		{
@@ -1197,10 +1188,10 @@ void s_HTML_Listener::_outputData(const UT_UCSChar * data, UT_uint32 length)
 bool s_HTML_Listener::_inherits(const char* style, const char* from)
 {
 	bool bret = false;
-	UT_HashEntry* p_uthe = m_pStylesHash->findEntry(style);
+	HashValType p_uthe = m_pStylesHash->pick((HashKeyType)style);
 	if(p_uthe)
 	{
-		PD_Style* pStyle = static_cast<PD_Style*>(p_uthe->pData);
+		PD_Style* pStyle = static_cast<PD_Style*>(p_uthe);
 		char* szName = NULL;
 		const XML_Char * pName = NULL;
 
@@ -1223,14 +1214,14 @@ bool s_HTML_Listener::_inherits(const char* style, const char* from)
 
 void s_HTML_Listener::_outputInheritanceLine(const char* ClassName)
 {
-	UT_HashEntry* p_uthe = m_pStylesHash->findEntry(ClassName);
+	HashValType p_uthe = m_pStylesHash->pick((HashKeyType)ClassName);
 	PD_Style* pStyle = NULL;
 	PD_Style* pBasedOn = NULL;
 	const XML_Char* szName = NULL;
 
 	if(p_uthe)
 	{
-		pStyle = static_cast<PD_Style*>(p_uthe->pData);
+		pStyle = static_cast<PD_Style*>(p_uthe);
 	}
 	if(pStyle)
 	{
@@ -1325,17 +1316,17 @@ void s_HTML_Listener::_outputBegin(PT_AttrPropIndex api)
 
 	_storeStyles();
 
-	UT_HashEntry* p_uthe;
 	PD_Style* p_pds;
 	const XML_Char* szName;
 	const XML_Char* szValue;
 	const PP_AttrProp * pAP_style = NULL;
 
-	for(int i = 0; i < m_pStylesHash->getEntryCount(); i++)
+	_hash_cursor c(m_pStylesHash);
+	HashValType entry = (HashValType)c.first();
+
+	while (true)
 	{
-		p_uthe = m_pStylesHash->getNthEntry(i);
-		UT_ASSERT((p_uthe));
-		p_pds = static_cast<PD_Style*>(p_uthe->pData);
+		p_pds = static_cast<PD_Style*>(entry);
 		UT_ASSERT((p_pds));
 
 		PT_AttrPropIndex api = p_pds->getIndexAP();
@@ -1348,21 +1339,21 @@ void s_HTML_Listener::_outputBegin(PT_AttrPropIndex api)
 			 *	it gets fixed, but all the functionality remains,
 			 *	regardless.
 			 */
-			if(UT_strcmp(p_uthe->pszLeft, "Heading1") == 0)
+			if(UT_strcmp(c.key(), "Heading1") == 0)
 				m_pie->write("h1, ");
-			else if(UT_strcmp(p_uthe->pszLeft, "Heading2") == 0)
+			else if(UT_strcmp(c.key(), "Heading2") == 0)
 				m_pie->write("h2, ");
-			else if(UT_strcmp(p_uthe->pszLeft, "Heading3") == 0)
+			else if(UT_strcmp(c.key(), "Heading3") == 0)
 				m_pie->write("h3, ");
-			else if(UT_strcmp(p_uthe->pszLeft, "BlockText") == 0)
+			else if(UT_strcmp(c.key(), "BlockText") == 0)
 				m_pie->write("blockquote, ");
-			else if(UT_strcmp(p_uthe->pszLeft, "PlainText") == 0)
+			else if(UT_strcmp(c.key(), "PlainText") == 0)
 				m_pie->write("pre, ");
-			else if(UT_strcmp(p_uthe->pszLeft, "Normal") == 0)
+			else if(UT_strcmp(c.key(), "Normal") == 0)
 				m_pie->write("p, ");
 
 			m_pie->write(".");			// generic class qualifier, CSS
-			m_pie->write(p_uthe->pszLeft);
+			m_pie->write(c.key());
 			m_pie->write("\n{");
 
 			UT_uint32 i = 0, j = 0;
@@ -1406,9 +1397,12 @@ void s_HTML_Listener::_outputBegin(PT_AttrPropIndex api)
 				m_pie->write(";");
 			}
 
-
 			m_pie->write("\n}\n\n");
 		}
+
+		if (!c.more())
+			break;
+		entry = (HashValType)c.next();
 	}
 		
 	m_pie->write("-->\n</style>\n");
@@ -1771,7 +1765,7 @@ void s_HTML_Listener::_storeStyles(void)
 	{
 		pData = reinterpret_cast<void*>(const_cast<PD_Style*>(pStyle));
 		char * szName = removeWhiteSpace(pszName);
-		m_pStylesHash->addEntry(szName, NULL, pData);
+		m_pStylesHash->insert(szName, pData);
 		DELETEPV(szName);
 	}
 

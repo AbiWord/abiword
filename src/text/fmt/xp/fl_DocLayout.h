@@ -187,7 +187,7 @@ protected:
 	void				_toggleAutoSmartQuotes(bool bSQ);
 	
 	static void			_prefsListener(class XAP_App *, class XAP_Prefs *, 
-									   class UT_AlphaHashTable *, void *);
+									   class UT_HashTable *, void *);
 
 
 	static void			_redrawUpdate(UT_Timer * pTimer);

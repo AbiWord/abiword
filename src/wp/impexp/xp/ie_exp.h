@@ -25,6 +25,8 @@
 #include "ut_types.h"
 #include "ie_types.h"
 
+#include "xap_AbiObject.h"
+
 class PD_Document;
 class PD_DocumentRange;
 class UT_ByteBuf;
@@ -40,7 +42,7 @@ class UT_ByteBuf;
 
 class IE_Exp;
 
-class IE_ExpSniffer
+class IE_ExpSniffer : public XAP_AbiObject
 {
 	friend class IE_Exp;
 

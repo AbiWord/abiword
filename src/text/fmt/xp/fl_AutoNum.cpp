@@ -69,7 +69,7 @@ fl_AutoNum::fl_AutoNum(	UT_uint32 id,
  	addItem(pFirst);	
 
 	m_pDoc->addList(this);
-	// New 6/11/200. m_pParentItem is the item in the parent list
+	// New 6/11/2000. m_pParentItem is the item in the parent list
 	// that the new list points
 }
 

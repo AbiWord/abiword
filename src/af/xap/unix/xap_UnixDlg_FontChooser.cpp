@@ -25,6 +25,7 @@
 #include "ut_debugmsg.h"
 #include "ut_string.h"
 #include "ut_misc.h"
+#include "ut_hash.h"
 #include "ut_units.h"
 #include "ut_dialogHelper.h"
 #include "xap_UnixDlg_FontChooser.h"
@@ -409,7 +410,7 @@ void XAP_UnixDialog_FontChooser::sizeRowChanged(void)
 		UT_ASSERT(text && text[0]);
 		
 		g_snprintf(szFontSize, 50, "%spt", 
-				   XAP_EncodingManager::fontsizes_list.getFirst(text[0]));
+				   (XML_Char *)XAP_EncodingManager::fontsizes_mapping.lookupByTarget(text[0]));
 
 //		g_snprintf(szFontSize, 50, "%spt",(UT_convertToPoints(text[0]))); 
 //		g_snprintf(szFontSize, 50, "%spt",text[0]); 
@@ -975,12 +976,12 @@ GtkWidget * XAP_UnixDialog_FontChooser::constructWindowContents(GtkObject *paren
 	gtk_clist_clear(GTK_CLIST(m_sizeList));
 	// TODO perhaps populate the list based on the selected font/style?
 	{
-	    int sz = XAP_EncodingManager::fontsizes_list.size();
-	    for(int i=0;i<sz;++i) 
+		int sz = XAP_EncodingManager::fontsizes_mapping.size();
+		for (int i = 0; i < sz; ++i)
 		{
-			text[0]=(char*)XAP_EncodingManager::fontsizes_list.nth2(i);
+			text[0]=(char*)XAP_EncodingManager::fontsizes_mapping.nth2(i);
 			gtk_clist_append(GTK_CLIST(m_sizeList), text);
-	    };
+	    }
 	}
 	gtk_clist_thaw(GTK_CLIST(m_sizeList));
 
@@ -1027,26 +1028,34 @@ void XAP_UnixDialog_FontChooser::runModal(XAP_Frame * pFrame)
 	UT_HashTable fontHash(256);
 
 	// throw them in the hash save duplicates
-	XAP_UnixFont ** fonts = m_fontManager->getAllFonts();
-	for (UT_uint32 i = 0; i < m_fontManager->getCount(); i++)
+	UT_Vector * fonts = m_fontManager->getAllFonts();
+	for (UT_uint32 i = 0; i < fonts->size(); i++)
 	{
-		if (!fontHash.findEntry(fonts[i]->getName()))
-			fontHash.addEntry((char *) fonts[i]->getName(),
-							  (char *) fonts[i]->getName(), NULL);
+		XAP_UnixFont * pFont = (XAP_UnixFont *)fonts->getNthItem(i);
+		const char * fName = pFont->getName();
+		if (!fontHash.contains((HashKeyType) fName, 0))
+			fontHash.insert((HashKeyType) fName,
+							(HashValType) fName);
 	}
-	DELETEPV(fonts);
+	DELETEP(fonts);
 
 	// fetch them out
-	UT_HashEntry * entry;
 	gtk_clist_freeze(GTK_CLIST(m_fontList));
 	gtk_clist_clear(GTK_CLIST(m_fontList));
-	for (UT_uint32 k = 0; k < (UT_uint32) fontHash.getEntryCount(); k++)
+
+	UT_Vector * pVec = fontHash.enumerate();
+	UT_ASSERT(pVec);
+
+	UT_uint32 pVecSize = pVec->size();
+
+	for (UT_uint32 ndx = 0; ndx < pVecSize; ndx++)
 	{
-		entry = fontHash.getNthEntry((int) k);
-		UT_ASSERT(entry);
-		text[0] = (gchar *) entry->pszLeft;
+		text[0] = (gchar *)pVec->getNthItem(ndx);
 		gtk_clist_append(GTK_CLIST(m_fontList), text);
 	}
+
+	DELETEP(pVec);
+	
 	gtk_clist_thaw(GTK_CLIST(m_fontList));
 
 	// Set the defaults in the list boxes according to dialog data
@@ -1094,8 +1103,7 @@ void XAP_UnixDialog_FontChooser::runModal(XAP_Frame * pFrame)
 		gtk_clist_select_row(GTK_CLIST(m_styleList), st, 0);
 
 	g_snprintf(sizeString, 60, "%s", std_size_string(UT_convertToPoints(getVal("font-size"))));
-	foundAt = searchCList(GTK_CLIST(m_sizeList), (char *)XAP_EncodingManager::fontsizes_list.getSecond(sizeString));
-	
+	foundAt = searchCList(GTK_CLIST(m_sizeList), (char *)XAP_EncodingManager::fontsizes_mapping.lookupBySource(sizeString));
 
 	if (foundAt >= 0)
 	{

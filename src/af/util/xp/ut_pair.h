@@ -2,33 +2,22 @@
 #define UT_PAIR_H
 
 #include <stdlib.h>
+
+typedef void* pair_type;
+
 class UT_Pair
 {
 public:
-
-    UT_Pair();
+    UT_Pair(const pair_type car, const pair_type cdr);
     ~UT_Pair();
-    
-    /*NULL is returned if item not found. */
-    const char *getFirst(const char *s)	 const;
-    const char *getSecond(const char *s) const;
-    void  add(const char *f, const char *s);    
-    
-    struct pair_data
-    {
-	const char* s1,*s2;
-    };
-    
-    /*the array is terminated by record with s1 or s2 == NULL*/    
-    void add(const pair_data* items);
-    size_t size() 		const;
-    const char* nth1(size_t idx) const;
-    const char* nth2(size_t idx) const;    
-    void clear();
+
+	inline const pair_type& car() const { return car_; }
+	inline const pair_type& cdr() const { return cdr_; }
+	inline pair_type& car() { return car_; }
+	inline pair_type& cdr() { return cdr_; }
+
 private:
-    int m_n;
-    char **m_first;
-    char **m_second;
+    pair_type car_, cdr_;
 };
 
 #endif

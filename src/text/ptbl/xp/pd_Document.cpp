@@ -416,7 +416,7 @@ bool PD_Document::appendFmt(const UT_Vector * pVecAttributes)
 	return m_pPieceTable->appendFmt(pVecAttributes);
 }
 
-bool PD_Document::appendSpan(UT_UCSChar * pbuf, UT_uint32 length)
+bool PD_Document::appendSpan(const UT_UCSChar * pbuf, UT_uint32 length)
 {
 	UT_ASSERT(m_pPieceTable);
 	
@@ -863,14 +863,13 @@ bool PD_Document::createDataItem(const char * szName, bool bBase64, const UT_Byt
 	pPair->pBuf = pNew;
 	pPair->pToken = pToken;
 	
-	if (m_hashDataItems.addEntry(szName,NULL,(void *)pPair) == -1)
-		goto Failed;
+	m_hashDataItems.insert((HashKeyType)szName, (HashValType)pPair);
 
 	// give them back a handle if they want one
 	
 	if (ppHandle)
 	{
-		UT_HashEntry * pHashEntry = m_hashDataItems.findEntry(szName);
+		HashValType pHashEntry = m_hashDataItems.pick((HashKeyType)szName);
 		UT_ASSERT(pHashEntry);
 		*ppHandle = (void *)pHashEntry;
 	}
@@ -890,11 +889,11 @@ bool PD_Document::getDataItemDataByName(const char * szName,
 {
 	UT_ASSERT(szName && *szName);
 	
-	UT_HashEntry * pHashEntry = m_hashDataItems.findEntry(szName);
+	HashValType pHashEntry = m_hashDataItems.pick((HashKeyType)szName);
 	if (!pHashEntry)
 		return false;
 
-	struct _dataItemPair* pPair = (struct _dataItemPair*) pHashEntry->pData;
+	struct _dataItemPair* pPair = (struct _dataItemPair*) pHashEntry;
 	UT_ASSERT(pPair);
 	
 	if (ppByteBuf)
@@ -920,9 +919,7 @@ bool PD_Document::setDataItemToken(void * pHandle,
 {
 	UT_ASSERT(pHandle);
 	
-	UT_HashEntry * pHashEntry = (UT_HashEntry *)pHandle;
-
-	struct _dataItemPair* pPair = (struct _dataItemPair*) pHashEntry->pData;
+	struct _dataItemPair* pPair = (struct _dataItemPair*) pHandle;
 	UT_ASSERT(pPair);
 
 	pPair->pToken = pToken;
@@ -937,9 +934,7 @@ bool PD_Document::getDataItemData(void * pHandle,
 {
 	UT_ASSERT(pHandle);
 	
-	UT_HashEntry * pHashEntry = (UT_HashEntry *)pHandle;
-
-	struct _dataItemPair* pPair = (struct _dataItemPair*) pHashEntry->pData;
+	struct _dataItemPair* pPair = (struct _dataItemPair*) pHandle;
 	UT_ASSERT(pPair);
 	
 	if (ppByteBuf)
@@ -954,7 +949,9 @@ bool PD_Document::getDataItemData(void * pHandle,
 
 	if (pszName)
 	{
-		*pszName = pHashEntry->pszLeft;
+		UT_ASSERT(UT_TODO);
+		*pszName = 0;
+		//*pszName = pHashEntry->pszLeft;
 	}
 	
 	return true;
@@ -965,17 +962,26 @@ bool PD_Document::enumDataItems(UT_uint32 k,
 {
 	// return the kth data item.
 
-	UT_uint32 kLimit = m_hashDataItems.getEntryCount();
+	UT_uint32 kLimit = m_hashDataItems.size();
 	if (k >= kLimit)
 		return false;
 	
-	const UT_HashEntry * pHashEntry = m_hashDataItems.getNthEntryAlpha(k);
-	UT_ASSERT(pHashEntry);
+	_hash_cursor c(&m_hashDataItems);
+	HashValType pHashEntry = c.first();
+	UT_uint32 i = 0;
+
+	do
+	{		
+		UT_ASSERT(pHashEntry);
+		if (i == k)
+			break;
+		pHashEntry = c.next();
+	} while (c.more());
 
 	if (ppHandle)
 		*ppHandle = (void *)pHashEntry;
 
-	struct _dataItemPair* pPair = (struct _dataItemPair*) pHashEntry->pData;
+	struct _dataItemPair* pPair = (struct _dataItemPair*)pHashEntry;
 	UT_ASSERT(pPair);
 	
 	if (ppByteBuf)
@@ -990,7 +996,7 @@ bool PD_Document::enumDataItems(UT_uint32 k,
 	
 	if (pszName)
 	{
-		*pszName = pHashEntry->pszLeft;
+		*pszName = c.key();
 	}
 	
 	return true;
@@ -998,20 +1004,26 @@ bool PD_Document::enumDataItems(UT_uint32 k,
 
 void PD_Document::_destroyDataItemData(void)
 {
-	UT_uint32 kLimit = m_hashDataItems.getEntryCount();
+	if (m_hashDataItems.size() == 0)
+		return;
 
-	for (UT_uint32 k=0; (k<kLimit); k++)
+	_hash_cursor c(&m_hashDataItems);
+	HashValType val = c.first();
+
+	while (true)
 	{
-		UT_HashEntry * pHE = m_hashDataItems.getNthEntry(k);
-		
-		struct _dataItemPair* pPair = (struct _dataItemPair*) pHE->pData;
+		struct _dataItemPair* pPair = (struct _dataItemPair*) val;
 		UT_ASSERT(pPair);
+
+		m_hashDataItems.remove (c.key(), 0);
 
 		delete pPair->pBuf;
 		FREEP(pPair->pToken);
 		delete pPair;
 
-		pHE->pData = NULL;
+		if (!c.more())
+			break;
+		val = c.next();
 	}
 }
 

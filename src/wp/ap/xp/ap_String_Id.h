@@ -159,6 +159,8 @@ dcl(DLG_Styles_ErrNotTitle1,     "Style Name - ")
 dcl(DLG_Styles_ErrNotTitle2,     " - Reserved. \n You cannot use this name. Choose Another \n")
 dcl(DLG_Styles_ErrNoStyle,       "No Style selected \n so it cannot be modified")
 dcl(DLG_Styles_ErrStyleNot,      "This style does not exist \n so it cannot be modified")
+dcl(DLG_Styles_ErrStyleBuiltin, "Cannot modify a builtin style")
+dcl(DLG_Styles_ErrStyleCantDelete, "Cannot delete this style")
 
 
 /* Paragraph dialog */

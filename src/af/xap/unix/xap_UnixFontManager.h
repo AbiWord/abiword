@@ -45,9 +45,7 @@ public:
 	bool					setFontPath(const char * searchpath);
 	bool					scavengeFonts(void);
 
-	UT_uint32				getCount(void);
-
-	XAP_UnixFont **			getAllFonts(void);
+	UT_Vector *			    getAllFonts(void);
 	XAP_UnixFont *			getDefaultFont(void);
 	XAP_UnixFont *			getFont(const char * fontname,
 									XAP_UnixFont::style s);

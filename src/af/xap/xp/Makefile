@@ -23,6 +23,7 @@ ABI_ROOT:=$(shell pwd)/../../../..
 include $(ABI_ROOT)/src/config/abi_defs.mk
 
 CPPSRCS=	xad_Document.cpp		\
+		xap_AbiObject.cpp		\
 		xap_App.cpp			\
 		xap_Args.cpp			\
 		xap_Clipboard.cpp		\

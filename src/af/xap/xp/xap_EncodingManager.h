@@ -22,7 +22,7 @@
 #define XAP_ENCMGR_H
 
 #include "ut_types.h"
-#include "ut_pair.h"
+#include "ut_bijection.h"
 
 #include "ut_xml.h"
 
@@ -246,9 +246,9 @@ public:
 		XAP_LangInfo::fieldidx column);
 		
 	/*word uses non-ascii names of fonts in .doc*/
-	static UT_Pair				cjk_word_fontname_mapping,
+	static UT_Bijection cjk_word_fontname_mapping,
 		/* CJK users need slightly different set of fontsizes*/
-		fontsizes_list;
+		fontsizes_mapping;
 protected:
 	void describe();
 	XAP_EncodingManager();

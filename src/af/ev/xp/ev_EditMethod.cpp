@@ -179,24 +179,24 @@ EV_EditMethod * EV_EditMethodContainer::findEditMethodByName(const char * szName
 	// TODO: should this be class-wide instead of static here?
 	static UT_HashTable emHash (m_countStatic);
 
-	UT_HashEntry * entry = emHash.findEntry (szName);
+	HashValType entry = emHash.pick ((HashKeyType)szName);
 	if (entry)
 	  {
-	    return (EV_EditMethod *)entry->pData;
+	    return (EV_EditMethod *)entry;
 	  }
 
 	// nope, bsearch for it in our private array
 	mthd = (EV_EditMethod *)bsearch(szName, 
-					m_arrayStaticEditMethods, 
-					m_countStatic, 
-					sizeof (EV_EditMethod),
-					ev_compar);
+									m_arrayStaticEditMethods, 
+									m_countStatic, 
+									sizeof (EV_EditMethod),
+									ev_compar);
 
 	if (mthd)
 	  {
 	    // found it, insert it into our hash table for quicker lookup
 	    // in the future and return
-	    emHash.addEntry (szName, NULL, mthd);
+	    emHash.insert((HashKeyType)szName, (HashValType)mthd);
 	    return mthd;
 	  }
 

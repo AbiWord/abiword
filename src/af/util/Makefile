@@ -78,26 +78,26 @@ endif
 ###		$(OBJDIR)/ut_regex.$(OBJ_SUFFIX)			\
 
 OBJS=		$(PLATFORM_OBJS)						\
-		$(OBJDIR)/ut_alphahash.$(OBJ_SUFFIX)		\
 		$(OBJDIR)/ut_base64.$(OBJ_SUFFIX)		\
-		$(OBJDIR)/ut_base64_TestRoutines.$(OBJ_SUFFIX)		\
+		$(OBJDIR)/ut_base64_TestRoutines.$(OBJ_SUFFIX)	\
 		$(OBJDIR)/ut_bytebuf.$(OBJ_SUFFIX)		\
 		$(OBJDIR)/ut_growbuf.$(OBJ_SUFFIX)		\
 		$(OBJDIR)/ut_hash.$(OBJ_SUFFIX)			\
-		$(OBJDIR)/ut_mbtowc.$(OBJ_SUFFIX)			\
+		$(OBJDIR)/ut_mbtowc.$(OBJ_SUFFIX)		\
 		$(OBJDIR)/ut_misc.$(OBJ_SUFFIX)			\
 		$(OBJDIR)/ut_png.$(OBJ_SUFFIX)			\
 		$(OBJDIR)/ut_svg.$(OBJ_SUFFIX)			\
 		$(OBJDIR)/ut_pool.$(OBJ_SUFFIX)			\
-		$(OBJDIR)/ut_stack.$(OBJ_SUFFIX)			\
+		$(OBJDIR)/ut_stack.$(OBJ_SUFFIX)		\
 		$(OBJDIR)/ut_string.$(OBJ_SUFFIX)		\
 		$(OBJDIR)/ut_string_class.$(OBJ_SUFFIX)		\
 		$(OBJDIR)/ut_stringbuf.$(OBJ_SUFFIX)		\
 		$(OBJDIR)/ut_test.$(OBJ_SUFFIX)			\
-		$(OBJDIR)/ut_timer.$(OBJ_SUFFIX)			\
-		$(OBJDIR)/ut_units.$(OBJ_SUFFIX)			\
-		$(OBJDIR)/ut_vector.$(OBJ_SUFFIX)			\
+		$(OBJDIR)/ut_timer.$(OBJ_SUFFIX)		\
+		$(OBJDIR)/ut_units.$(OBJ_SUFFIX)		\
 		$(OBJDIR)/ut_pair.$(OBJ_SUFFIX)			\
+		$(OBJDIR)/ut_bijection.$(OBJ_SUFFIX)		\
+		$(OBJDIR)/ut_vector.$(OBJ_SUFFIX)		\
 		$(OBJDIR)/ut_wctomb.$(OBJ_SUFFIX)       \
 		$(OBJDIR)/ut_AdobeEncoding.$(OBJ_SUFFIX) \
 		$(OBJDIR)/ut_OverstrikingChars.$(OBJ_SUFFIX) \

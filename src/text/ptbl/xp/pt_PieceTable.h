@@ -23,7 +23,7 @@
 #include <stdio.h>
 #include "ut_types.h"
 #include "ut_growbuf.h"
-#include "ut_alphahash.h"
+#include "ut_hash.h"
 #include "ut_stack.h"
 #include "pt_Types.h"
 #include "pp_TableAttrProp.h"
@@ -118,7 +118,7 @@ public:
 	bool					appendStrux(PTStruxType pts, const XML_Char ** attributes);
 	bool					appendFmt(const XML_Char ** attributes);
 	bool					appendFmt(const UT_Vector * pVecAttributes);
-	bool					appendSpan(UT_UCSChar * p, UT_uint32 length);
+	bool					appendSpan(const UT_UCSChar * p, UT_uint32 length);
 	bool					appendObject(PTObjectType pto, const XML_Char ** attributes);
 	bool					appendFmtMark(void);
 	bool					appendStyle(const XML_Char ** attributes);
@@ -387,7 +387,7 @@ protected:
 	pt_VarSet				m_varset;
 	px_ChangeHistory		m_history;
 	pf_Fragments			m_fragments;
-	UT_AlphaHashTable		m_hashStyles;
+	UT_HashTable		    m_hashStyles;
 	
 	struct {
 		PT_AttrPropIndex	m_indexCurrentInlineAP;

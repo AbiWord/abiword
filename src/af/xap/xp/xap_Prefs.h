@@ -22,7 +22,7 @@
 
 #include "ut_types.h"
 #include "ut_vector.h"
-#include "ut_alphahash.h"
+#include "ut_hash.h"
 #include "ut_string.h"
 #include "ut_xml.h"
 #include "xap_App.h"
@@ -40,7 +40,7 @@ enum {
 typedef void (*PrefsListener) (
 	XAP_App				*pApp,
 	XAP_Prefs			*pPrefs,
-	UT_AlphaHashTable	*phChanges,
+	UT_HashTable	    *phChanges,
 	void				*data
 	);
 
@@ -81,7 +81,7 @@ public:
 	
 protected:
 	XML_Char *			m_szName;
-	UT_AlphaHashTable	m_hash;
+	UT_HashTable	    m_hash;
 	XAP_Prefs *			m_pPrefs;
 	UT_uint32			m_uTick;   // ticks up every time setValue() or setValueBool() is called
 };
@@ -152,9 +152,9 @@ protected:
 	UT_Vector				m_vecRecent;		/* vector of (char *) */
 
 	UT_Vector				m_vecPrefsListeners;	/* vectory of struct PrefListnersPair */
-	UT_AlphaHashTable		m_ahashChanges;
+	UT_HashTable		    m_ahashChanges;
 	bool					m_bInChangeBlock;
-	void					_sendPrefsSignal( UT_AlphaHashTable *hash );
+	void					_sendPrefsSignal( UT_HashTable *hash );
 
 	typedef struct {
 		UT_uint32				m_width, m_height;	/* Default width and height */

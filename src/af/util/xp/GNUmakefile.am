@@ -24,7 +24,7 @@ noinst_LIBRARIES = libUtil_xp.a
 
 libUtil_xp_a_SOURCES=\
 	ut_AdobeEncoding.cpp 	\
-	ut_alphahash.cpp	\
+	ut_AbiObject.cpp	\
 	ut_base64.cpp		\
 	ut_base64_TestRoutines.cpp	\
 	ut_bytebuf.cpp		\
@@ -47,4 +47,5 @@ libUtil_xp_a_SOURCES=\
 	ut_vector.cpp		\
 	ut_wctomb.cpp		\
 	ut_OverstrikingChars.cpp \
-	ut_pair.cpp
+	ut_pair.cpp		\
+	ut_bijection.cpp

@@ -24,8 +24,11 @@
 #include "ut_debugmsg.h"
 #include "ut_string.h"
 #include "ut_growbuf.h"
+#include "ut_hash.h"
+#include "ut_types.h"
 
 #include "xap_Dictionary.h"
+#include "ut_string_class.h"
 
 /*****************************************************************/
 /*****************************************************************/
@@ -58,7 +61,7 @@ XAP_Dictionary::~XAP_Dictionary()
 
 	FREEP(m_szFilename);
 
-	UT_HASH_PURGEDATA(UT_UCSChar *, m_hashWords);
+  	UT_HASH_PURGEDATA(UT_UCSChar *, (&m_hashWords), free);
 }
 
 const char * XAP_Dictionary::getShortName(void) const
@@ -121,7 +124,7 @@ void XAP_Dictionary::_abortFile(void)
 
 bool XAP_Dictionary::load(void)
 {
-	UT_ASSERT(m_hashWords.getEntryCount() == 0);
+	UT_ASSERT(m_hashWords.size() == 0);
 
 	if (!_openFile("r"))
 		return false;
@@ -268,19 +271,21 @@ bool XAP_Dictionary::save(void)
 	if (!_openFile("w"))
 		return false;
 
-	UT_sint32 k;
-	for (k=0; (k < m_hashWords.getEntryCount()); k++)
-	{
-		UT_HashEntry * pHE = m_hashWords.getNthEntryAlpha(k);
-		UT_ASSERT(pHE);
+	UT_Vector * pVec = m_hashWords.enumerate();
+	UT_ASSERT(pVec);
 
-		UT_UCSChar * pWord = (UT_UCSChar *) pHE->pData;
+	UT_uint32 size = pVec->size();
+
+	for (UT_uint32 i = 0; i < size; i++)
+	{
+		UT_UCSChar * pWord = (UT_UCSChar *) pVec->getNthItem(i);
 		_outputUTF8(pWord, UT_UCS_strlen(pWord));
 		_writeBytes((UT_Byte *)"\n");
 	}
 
 	_closeFile();
 
+	delete pVec;
 	m_bDirty = false;
 
 	return true;
@@ -288,34 +293,24 @@ bool XAP_Dictionary::save(void)
 
 void XAP_Dictionary::_outputUTF8(const UT_UCSChar * data, UT_uint32 length)
 {
-#define MY_BUFFER_SIZE		1024
-#define MY_HIGHWATER_MARK	20
-	char buf[MY_BUFFER_SIZE];
-	char * pBuf;
+	UT_String buf;
 	const UT_UCSChar * pData;
 
-	for (pBuf=buf, pData=data; (pData<data+length); /**/)
+	for (pData = data; (pData<data+length); /**/)
 	{
-		if (pBuf >= (buf+MY_BUFFER_SIZE-MY_HIGHWATER_MARK))
-		{
-			_writeBytes((UT_Byte *)buf,(pBuf-buf));
-			pBuf = buf;
-		}
-
 		if (*pData > 0x007f)
 		{
 			const XML_Char * s = UT_encodeUTF8char(*pData++);
 			while (*s)
-				*pBuf++ = *s++;
+				buf += (char)*s++;
 		}
 		else
 		{
-			*pBuf++ = (UT_Byte)*pData++;
+			buf += (char)*pData++;
 		}
 	}
 
-	if (pBuf > buf)
-		_writeBytes((UT_Byte *)buf,(pBuf-buf));
+	_writeBytes((UT_Byte *)buf.c_str(),buf.size());
 }
 
 //////////////////////////////////////////////////////////////////
@@ -344,19 +339,13 @@ bool XAP_Dictionary::addWord(const UT_UCSChar * pWord, UT_uint32 len)
 		copy[i] = currentChar;
 	}
 
-	UT_sint32 iRes = m_hashWords.addEntry(key, NULL, (void*) copy);
+	m_hashWords.insert((HashKeyType)key, (HashValType) copy);
 
 	FREEP(key);
 
-	if (iRes == 0)
-	{
-		m_bDirty = true;
-		return true;
-	}
-	else
-	{
-		return false;
-	}
+	// TODO: is this right?
+	m_bDirty = true;
+	return true;
 }
 
 bool XAP_Dictionary::isWord(const UT_UCSChar * pWord, UT_uint32 len) const
@@ -374,12 +363,8 @@ bool XAP_Dictionary::isWord(const UT_UCSChar * pWord, UT_uint32 len) const
 		key[i] = (char) pWord[i];
 	}
 
-	UT_HashEntry * pHE = m_hashWords.findEntry(key);
-
+	bool contains = m_hashWords.contains ((HashKeyType)key, 0);
 	FREEP(key);
 
-	if (pHE != NULL)
-		return true;
-	else 
-		return false;
+	return contains;
 }

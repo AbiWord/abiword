@@ -57,7 +57,7 @@ pt_PieceTable::pt_PieceTable(PD_Document * pDocument)
 
 pt_PieceTable::~pt_PieceTable()
 {
-	UT_HASH_PURGEDATA(PD_Style *, m_hashStyles);
+	UT_HASH_PURGEDATA(PD_Style *, &m_hashStyles, delete);
 }
 
 void pt_PieceTable::setPieceTableState(PTState pts)

@@ -26,7 +26,7 @@
 #include "ut_types.h"
 
 // fwd. decl.
-class UT_AlphaHashTable;
+class UT_HashTable;
 
 
 class AD_Document
@@ -64,9 +64,9 @@ protected:
 	virtual ~AD_Document();		//  Use unref() instead.
 
 	int				m_iRefCount;
-	const char *			m_szFilename;
+	const char *	m_szFilename;
 
-	UT_AlphaHashTable *		m_pIgnoreList;
+	UT_HashTable *	m_pIgnoreList;
 };
 
 

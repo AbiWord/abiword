@@ -561,15 +561,16 @@ GtkWidget *XAP_UnixDialog_Insert_Symbol::_previewNew (int w, int h)
 GList *XAP_UnixDialog_Insert_Symbol::_getGlistFonts (void)
 {	  
 	XAP_UnixApp * unixapp = static_cast<XAP_UnixApp *> (m_pApp);
-	UT_uint32 count = unixapp->getFontManager()->getCount();
-	XAP_UnixFont ** list = unixapp->getFontManager()->getAllFonts();
+	UT_Vector * list = unixapp->getFontManager()->getAllFonts();
+	UT_uint32 count = list->size();
 	GList *glFonts = NULL;
 	gchar currentfont[50] = "\0";
 	UT_uint32 j = 0;
 	
 	for (UT_uint32 i = 0; i < count; i++)
 	{
-		gchar * lgn  = (gchar *) list[i]->getName();
+		XAP_UnixFont * pFont = (XAP_UnixFont *)list->getNthItem(i);
+		gchar * lgn  = (gchar *) pFont->getName();
 		if((strstr(currentfont,lgn)==NULL) || (strlen(currentfont)!=strlen(lgn)) )
 		{
 			strncpy(currentfont, lgn, 50);

@@ -54,9 +54,9 @@ bool AP_UnixToolbar_SizeCombo::populate(void)
 	m_vecContents.clear();
 	{
 	    // populate the vector	
-	    int sz = XAP_EncodingManager::fontsizes_list.size();
+	    int sz = XAP_EncodingManager::fontsizes_mapping.size();
 	    for(int i=0;i<sz;++i) {
-		m_vecContents.addItem((void *) XAP_EncodingManager::fontsizes_list.nth2(i));
+		m_vecContents.addItem((void *) XAP_EncodingManager::fontsizes_mapping.nth2(i));
 	    };
 	}
 	// TODO: may want to populate this based on current font instead?

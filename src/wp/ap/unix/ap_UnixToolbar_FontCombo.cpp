@@ -45,13 +45,12 @@ EV_Toolbar_Control * AP_UnixToolbar_FontCombo::static_constructor(EV_Toolbar * p
 }
 
 AP_UnixToolbar_FontCombo::AP_UnixToolbar_FontCombo(EV_Toolbar * pToolbar,
-													 XAP_Toolbar_Id id)
+												   XAP_Toolbar_Id id)
 	: EV_Toolbar_Control(pToolbar/*,id*/)
 {
-	UT_ASSERT(id==AP_TOOLBAR_ID_FMT_FONT);
-
-	m_nPixels = 150;		// TODO: do a better calculation
-	m_nLimit = 32;			// TODO: honor this?  :)
+	UT_ASSERT(id == AP_TOOLBAR_ID_FMT_FONT);
+	m_nPixels = 150;
+	m_nLimit = 32;
 }
 
 AP_UnixToolbar_FontCombo::~AP_UnixToolbar_FontCombo(void)
@@ -67,37 +66,36 @@ bool AP_UnixToolbar_FontCombo::populate(void)
 	// request all fonts and ask them their names.
 	EV_UnixToolbar * toolbar = static_cast<EV_UnixToolbar *>(m_pToolbar);
 	
-	UT_uint32 count = toolbar->getApp()->getFontManager()->getCount();
-	
-	XAP_UnixFont ** list = toolbar->getApp()->getFontManager()->getAllFonts();
+	UT_Vector * list = toolbar->getApp()->getFontManager()->getAllFonts();
 	UT_ASSERT(list);
+
+	UT_uint32 count = list->size();
 
 	m_vecContents.clear();
 
-	// Cheesy little way to eliminate string duplicates from the
-	// font engine
-	UT_HashTable stringTable(256);
-	
 	for (UT_uint32 i = 0; i < count; i++)
 	{
-		if (!stringTable.findEntry(list[i]->getName()))
-			stringTable.addEntry(list[i]->getName(), list[i]->getName(), (void *) list[i]->getName());
-	}
-	DELETEPV(list);
+		// sort-out duplicates
+		XAP_UnixFont * pFont = (XAP_UnixFont *)list->getNthItem(i);
+		const char * fName = pFont->getName();
 
-	// We can populate the family list with what's in our hash table
-	int totalStringsInHash = stringTable.getEntryCount();
-	for (int hashIndex = 0; hashIndex < totalStringsInHash; hashIndex++)
-	{
-		UT_HashEntry * item = stringTable.getNthEntry(hashIndex);
-		
-		if (item && item->pData)
-			m_vecContents.addItem(item->pData);
-		else
+		int foundAt = -1;
+
+		for (int j = 0; j < m_vecContents.size(); j++)
 		{
-			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+			// sort out dups
+			char * str = (char *)m_vecContents.getNthItem(j);
+			if (str && !UT_strcmp (str, fName))
+			{
+				foundAt = j;
+				break;
+			}
 		}
+
+		if (foundAt == -1)
+			m_vecContents.addItem((void *)(fName));
 	}
+	DELETEP(list);
 
 	return true;
 }

@@ -22,7 +22,7 @@
 
 #include "ut_types.h"
 #include "ut_vector.h"
-#include "ut_alphahash.h"
+#include "ut_hash.h"
 #include "ut_string.h"
 #include "xap_App.h"
 

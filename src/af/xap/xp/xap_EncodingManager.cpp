@@ -23,6 +23,7 @@
 #include "ut_string.h"
 #include "ut_string_class.h"
 #include "ut_assert.h"
+#include "ut_bijection.h"
 
 #include <stdio.h>
 #include <string.h>
@@ -449,7 +450,7 @@ static const _rmap langcode_to_wincharsetcode[]=
 	{NULL}
 };
 
-static const UT_Pair::pair_data zh_CN_big5[]=
+static const UT_Bijection::pair_data zh_CN_big5[]=
 {
 /*
     This data was constructed from the HJ's patch for support  of Big5 to 
@@ -731,8 +732,8 @@ const XAP_LangInfo* XAP_EncodingManager::findLangInfo(const char* key,XAP_LangIn
 bool XAP_EncodingManager::swap_utos = 0;
 bool XAP_EncodingManager::swap_stou = 0;
 
-UT_Pair XAP_EncodingManager::cjk_word_fontname_mapping;
-UT_Pair XAP_EncodingManager::fontsizes_list;
+UT_Bijection XAP_EncodingManager::cjk_word_fontname_mapping;
+UT_Bijection XAP_EncodingManager::fontsizes_mapping;
 
 void XAP_EncodingManager::initialize()
 {	
@@ -799,20 +800,21 @@ void XAP_EncodingManager::initialize()
 	}
 	if (cjk_locale()) {
 	    /* load fontname mapping */
-	    UT_Pair::pair_data* data = (UT_Pair::pair_data* )search_rmap_with_opt_suffix(
+	    UT_Bijection::pair_data* data = (UT_Bijection::pair_data* )search_rmap_with_opt_suffix(
 		    cjk_word_fontname_mapping_data,SEARCH_PARAMS);
 	    if (data)
-		cjk_word_fontname_mapping.add(data);
+			cjk_word_fontname_mapping.add(data);
 	};
 	{
-	    fontsizes_list.clear();
-	    const char** fontsizes = cjk_locale() ? cjk_fontsizes: non_cjk_fontsizes;
+	    fontsizes_mapping.clear();
+	    const char** fontsizes = cjk_locale() ? cjk_fontsizes : non_cjk_fontsizes;
 	    char buf[30];
-	    for(const char** cur=fontsizes; *cur; ++cur) {
-		sprintf(buf," %s ",*cur);
-		fontsizes_list.add(*cur,buf);
-	    };
-	};
+	    for(const char** cur=fontsizes; *cur; ++cur) 
+		{
+			snprintf(buf, sizeof(buf), " %s ",*cur);
+			fontsizes_mapping.add(*cur, buf);
+	    }
+	}
 	
 	init_values(this); /*do this unconditionally! */	
 	{

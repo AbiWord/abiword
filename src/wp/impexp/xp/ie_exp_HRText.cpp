@@ -64,24 +64,18 @@
 
 // we use a reference-counted sniffer
 static IE_Exp_HRText_Sniffer * m_sniffer = 0;
-static UT_sint32 m_refs = 0;
 
 ABI_FAR extern "C"
 int abi_plugin_register (XAP_ModuleInfo * mi)
 {
 
-	if (!m_refs && !m_sniffer)
+	if (!m_sniffer)
 	{
 		m_sniffer = new IE_Exp_HRText_Sniffer ();
-		m_refs++;
-	}
-	else if (m_refs && m_sniffer)
-	{
-		m_refs++;
 	}
 	else
 	{
-		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		m_sniffer->ref();
 	}
 
 	mi->name = "HRText Exporter";
@@ -103,14 +97,12 @@ int abi_plugin_unregister (XAP_ModuleInfo * mi)
 	mi->author = 0;
 	mi->usage = 0;
 
-	UT_ASSERT (m_refs && m_sniffer);
+	UT_ASSERT (m_sniffer);
 
-	m_refs--;
 	IE_Exp::unregisterExporter (m_sniffer);
-	if (!m_refs)
+	if (!m_sniffer->unref())
 	{
 		delete m_sniffer;
-		m_sniffer = 0;
 	}
 
 	return 1;

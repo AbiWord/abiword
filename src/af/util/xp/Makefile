@@ -22,8 +22,7 @@ ABI_ROOT:=$(shell pwd)/../../../..
 
 include $(ABI_ROOT)/src/config/abi_defs.mk
 
-CPPSRCS=	ut_alphahash.cpp	\
-		ut_base64.cpp		\
+CPPSRCS=	ut_base64.cpp		\
 		ut_base64_TestRoutines.cpp	\
 		ut_bytebuf.cpp		\
 		ut_growbuf.cpp		\
@@ -42,6 +41,7 @@ CPPSRCS=	ut_alphahash.cpp	\
 		ut_vector.cpp		\
 		ut_wctomb.cpp		\
 		ut_pair.cpp		\
+		ut_bijection.cpp	\
 		ut_string_class.cpp	\
 		ut_stringbuf.cpp  \
 		ut_AdobeEncoding.cpp \

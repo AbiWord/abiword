@@ -103,7 +103,7 @@ public:									// we create...
 				{
 					UT_UCSChar * text = (UT_UCSChar *) 
 					    (wd->m_id == AP_TOOLBAR_ID_FMT_SIZE ? 
-					    XAP_EncodingManager::fontsizes_list.getFirst(wd->m_comboEntryBuffer) :
+					    XAP_EncodingManager::fontsizes_mapping.lookupByTarget(wd->m_comboEntryBuffer) :
 					    wd->m_comboEntryBuffer);
 					
 					UT_ASSERT(text);					
@@ -604,10 +604,13 @@ bool EV_UnixToolbar::refreshToolbar(AV_View * pView, AV_ChangeMask mask)
 					if (szState) {
 						gtk_entry_set_text(GTK_ENTRY(item->entry), 
 						    wd->m_id==AP_TOOLBAR_ID_FMT_SIZE ?
-						    XAP_EncodingManager::fontsizes_list.getSecond(szState) 
+						    XAP_EncodingManager::fontsizes_mapping.lookupBySource(szState) 
 						    : szState);
-					} else
+					} 
+					else {
 						gtk_entry_set_text(GTK_ENTRY(item->entry), "");
+					}					
+
 					wd->m_blockSignal = wasBlocked;
 					
 					//UT_DEBUGMSG(("refreshToolbar: ComboBox [%s] is %s and %s\n",

@@ -24,9 +24,9 @@
 #include "ut_types.h"
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
-#include "ut_alphahash.h"
 #include "ut_string.h"
 #include "ut_vector.h"
+#include "ut_pair.h"
 #include "pt_Types.h"
 #include "pp_AttrProp.h"
 
@@ -41,34 +41,65 @@ PP_AttrProp::PP_AttrProp()
 
 PP_AttrProp::~PP_AttrProp()
 {
-	DELETEP(m_pAttributes);
+	if (m_pAttributes)
+	{
+		_hash_cursor c1(m_pAttributes);
+
+		XML_Char * s = (XML_Char *)c1.first();
+
+		while (true) {
+			FREEP(s);
+
+			if (!c1.more())
+				break;
+
+			s = (XML_Char *)c1.next();
+		}
+
+		delete m_pAttributes;
+	}
 
 	// delete any PP_Property_types;
 
 	if(m_pProperties)
 	{
-		int Count = m_pProperties->getEntryCount();
-		for(int i = 0; i < Count; i++)
+		_hash_cursor c(m_pProperties);
+		UT_Pair * entry = (UT_Pair*)c.first();
+		while (true)
 		{
-			UT_HashEntry *pEntry = m_pProperties->getNthEntry(i);
-
-			if(pEntry)
+			if(entry)
 			{
-				delete (PP_PropertyType *)pEntry->pData;
+				if (entry->car())
+					free ((XML_Char *)entry->car());
+				if (entry->cdr())
+					delete (PP_PropertyType *)entry->cdr();
+
+				delete entry;
 			}
+
+			if (!c.more())
+				break;
+			entry = (UT_Pair*)c.next();
 		}
+
+		delete m_pProperties;
 	}
-	DELETEP(m_pProperties);
 }
 
+/*!
+ * Returns the number of properties in this PP_AttrProp.
+ */
 size_t PP_AttrProp::getPropertyCount (void) const
 {
-	return m_pProperties->getEntryCount();
-//
-// sevior 24/5/2001  was why???
-///        return m_pAttributes->getEntryCount();
+	return m_pProperties->size();
 }
 
+/*!
+ * Sets attributes as given in the NULL-terminated input array
+ * of (attribute, value) pairs.
+ *
+ * \param attributes An array of strings, read in (attribute, value) form.
+ */
 bool	PP_AttrProp::setAttributes(const XML_Char ** attributes)
 {
 	if (!attributes)
@@ -84,6 +115,12 @@ bool	PP_AttrProp::setAttributes(const XML_Char ** attributes)
 	return true;
 }
 
+/*!
+ * Sets attributes as given in the UT_Vector of strings, read as
+ * (attribute, value) pairs.
+ *
+ * \param attributes A UT_Vector of strings, read in (attribute, value) form.
+ */
 bool PP_AttrProp::setAttributes(const UT_Vector * pVector)
 {
 	UT_uint32 kLimit = pVector->getItemCount();
@@ -97,7 +134,10 @@ bool PP_AttrProp::setAttributes(const UT_Vector * pVector)
 	return true;
 }
 
-
+/*!
+ * Sets attributes as given in the NULL-terminated input array
+ * of (attribute, value) pairs.
+ */
 bool	PP_AttrProp::setProperties(const XML_Char ** properties)
 {
 	if (!properties)
@@ -113,6 +153,14 @@ bool	PP_AttrProp::setProperties(const XML_Char ** properties)
 	return true;
 }
 
+/*!
+ * Sets given attribute in this PP_AttrProp bundle.
+ * Deals correctly with setting the PT_PROPS_ATTRIBUTE_NAME property:
+ * intercepts this call and appends properties instead. 
+ *
+ * Because all mutations of attributes go through here, it is always the
+ * case that the props attribute is correctly handled.
+ */
 bool	PP_AttrProp::setAttribute(const XML_Char * szName, const XML_Char * szValue)
 {
 	// TODO when this assert fails, switch this file to use UT_XML_ version of str*() functions.
@@ -184,7 +232,7 @@ bool	PP_AttrProp::setAttribute(const XML_Char * szName, const XML_Char * szValue
 	{
 		if (!m_pAttributes)
 		{
-			m_pAttributes = new UT_AlphaHashTable(5);
+			m_pAttributes = new UT_HashTable(5);
 			if (!m_pAttributes)
 			{
 				UT_DEBUGMSG(("setAttribute: could not allocate hash table.\n"));
@@ -203,11 +251,12 @@ bool	PP_AttrProp::setAttribute(const XML_Char * szName, const XML_Char * szValue
 
 		UT_lowerString(copy);
 			
-		bool bRet = (m_pAttributes->addEntry(copy, (char*)szValue, NULL) == 0);
+		m_pAttributes->insert((HashKeyType)copy, (HashValType)(UT_strdup(szValue)));
 
-		FREEP(copy);
+		// TODO: give hashtables sane memory semantics!
+//  		FREEP(copy);
 
-		return bRet;
+		return true;
 	}
 }
 
@@ -215,7 +264,7 @@ bool	PP_AttrProp::setProperty(const XML_Char * szName, const XML_Char * szValue)
 {
 	if (!m_pProperties)
 	{
-		m_pProperties = new UT_AlphaHashTable(5);
+		m_pProperties = new UT_HashTable(5);
 		if (!m_pProperties)
 		{
 			UT_DEBUGMSG(("setProperty: could not allocate hash table.\n"));
@@ -223,29 +272,51 @@ bool	PP_AttrProp::setProperty(const XML_Char * szName, const XML_Char * szValue)
 		}
 	}
 
-	UT_HashEntry* pEntry = m_pProperties->findEntry((char*)szName);
+	HashValType pEntry = m_pProperties->pick((HashKeyType)szName);
 	if (pEntry)
 	{
-		delete (PP_PropertyType *)pEntry->pData;
-		return (m_pProperties->setEntry(pEntry, (char*)szValue, NULL) == 0);
+		m_pProperties->set((HashKeyType)UT_strdup(szName), (HashValType)new UT_Pair(UT_strdup(szValue), (void *)NULL));
+		UT_Pair* p = (UT_Pair*) pEntry;
+
+		if (p->car())
+			delete[] ((XML_Char *)p->car());
+		if (p->cdr())
+			delete (PP_PropertyType *)p->cdr();
+
+		delete p;
 	}
 	else
 	{
-		return (m_pProperties->addEntry((char*)szName, (char*)szValue, NULL) == 0);
+		m_pProperties->insert((HashKeyType)UT_strdup(szName), (HashValType)new UT_Pair(UT_strdup(szValue), (void *)NULL));
 	}
+	return true;
 }
 
 bool	PP_AttrProp::getNthAttribute(int ndx, const XML_Char *& szName, const XML_Char *& szValue) const
 {
 	if (!m_pAttributes)
 		return false;
-	if (ndx >= m_pAttributes->getEntryCount())
+	if ((UT_uint32)ndx >= m_pAttributes->size())
 		return false;
-	UT_HashEntry * pEntry = m_pAttributes->getNthEntryAlpha(ndx);
-	if (!pEntry)
-		return false;
-	szName = pEntry->pszLeft;
-	szValue = pEntry->pszRight;
+
+	int i = 0;
+	_hash_cursor c(m_pAttributes);
+	HashValType val = c.first();
+
+	while (true)
+	{
+		if (i == ndx)
+		{
+			szName = (XML_Char*) c.key();
+			szValue = (XML_Char*) val;
+			break;
+		}
+		i++;
+		if (!c.more())
+			return false;
+		val = c.next();
+	}
+
 	return true;
 }
 
@@ -253,14 +324,29 @@ bool	PP_AttrProp::getNthProperty(int ndx, const XML_Char *& szName, const XML_Ch
 {
 	if (!m_pProperties)
 		return false;
-	if (ndx >= m_pProperties->getEntryCount())
-		return false;
-	UT_HashEntry * pEntry = m_pProperties->getNthEntryAlpha(ndx);
-	if (!pEntry)
-		return false;
-	szName = pEntry->pszLeft;
-	szValue = pEntry->pszRight;
-	return true;
+
+ 	if ((UT_uint32)ndx >= m_pProperties->size())
+  		return false;
+ 
+ 	int i = 0;
+ 	_hash_cursor c(m_pProperties);
+ 	HashValType val = c.first();
+ 
+ 	while (true)
+ 	{
+ 		if (i == ndx)
+ 		{
+ 			szName = (XML_Char*) c.key();
+ 			szValue = (XML_Char*) ((UT_Pair*)val)->car();
+ 			break;
+ 		}
+ 		i++;
+		if (!c.more())
+			return false;
+ 		val = c.next();
+ 	}
+ 
+  	return true;
 }
 
 bool PP_AttrProp::getProperty(const XML_Char * szName, const XML_Char *& szValue) const
@@ -268,11 +354,11 @@ bool PP_AttrProp::getProperty(const XML_Char * szName, const XML_Char *& szValue
 	if (!m_pProperties)
 		return false;
 	
-	UT_HashEntry* pEntry = m_pProperties->findEntry((char*)szName);
+	HashValType pEntry = m_pProperties->pick((HashKeyType)szName);
 	if (!pEntry)
 		return false;
 
-	szValue = pEntry->pszRight;
+	szValue = (XML_Char *) ((UT_Pair*)pEntry)->car();
 
 	return true;
 }
@@ -282,16 +368,21 @@ const PP_PropertyType *PP_AttrProp::getPropertyType(const XML_Char * szName, tPr
 	if (!m_pProperties)
 		return NULL;
 	
-	UT_HashEntry* pEntry = m_pProperties->findEntry((char*)szName);
+	UT_Pair * pEntry = (UT_Pair *)m_pProperties->pick((HashKeyType)szName);
 	if (!pEntry)
 		return NULL;
 
-	if(!pEntry->pData)
+	if(!pEntry->cdr())
 	{
-		pEntry->pData = PP_PropertyType::createPropertyType(Type, pEntry->pszRight);
+		m_pProperties->set((HashKeyType)szName, new UT_Pair
+						   (pEntry->car(), 
+							PP_PropertyType::createPropertyType(Type, 
+												  (XML_Char *)pEntry->car())));
+		delete pEntry;
+		pEntry = (UT_Pair *)m_pProperties->pick((HashKeyType)szName);
 	}
 
-	return (PP_PropertyType *)pEntry->pData;
+	return (PP_PropertyType *)pEntry->cdr();
 }
 
 bool PP_AttrProp::getAttribute(const XML_Char * szName, const XML_Char *& szValue) const
@@ -299,11 +390,11 @@ bool PP_AttrProp::getAttribute(const XML_Char * szName, const XML_Char *& szValu
 	if (!m_pAttributes)
 		return false;
 	
-	UT_HashEntry* pEntry = m_pAttributes->findEntry((char*)szName);
+	HashValType pEntry = m_pAttributes->pick((HashKeyType)szName);
 	if (!pEntry)
 		return false;
 
-	szValue = pEntry->pszRight;
+	szValue = (XML_Char *)pEntry;
 
 	return true;
 }
@@ -313,7 +404,7 @@ bool PP_AttrProp::hasProperties(void) const
 	if (!m_pProperties)
 		return false;
 
-	return (m_pProperties->getEntryCount() > 0);
+	return (m_pProperties->size() > 0);
 }
 
 bool PP_AttrProp::areAlreadyPresent(const XML_Char ** attributes, const XML_Char ** properties) const
@@ -423,41 +514,73 @@ bool PP_AttrProp::isExactMatch(const PP_AttrProp * pMatch) const
 	s_PassedCheckSum++;
 #endif
 
-	UT_uint32 countMyAttrs = ((m_pAttributes) ? m_pAttributes->getEntryCount() : 0);
-	UT_uint32 countMatchAttrs = ((pMatch->m_pAttributes) ? pMatch->m_pAttributes->getEntryCount() : 0);
+	UT_uint32 countMyAttrs = ((m_pAttributes) ? m_pAttributes->size() : 0);
+	UT_uint32 countMatchAttrs = ((pMatch->m_pAttributes) ? pMatch->m_pAttributes->size() : 0);
 	if (countMyAttrs != countMatchAttrs)
 		return false;
 
-	UT_uint32 countMyProps = ((m_pProperties) ? m_pProperties->getEntryCount() : 0);
-	UT_uint32 countMatchProps = ((pMatch->m_pProperties) ? pMatch->m_pProperties->getEntryCount() : 0);
+	UT_uint32 countMyProps = ((m_pProperties) ? m_pProperties->size() : 0);
+	UT_uint32 countMatchProps = ((pMatch->m_pProperties) ? pMatch->m_pProperties->size() : 0);
 	if (countMyProps != countMatchProps)
 		return false;
 
-	UT_uint32 k;
-
-	for (k=0; (k < countMyAttrs); k++)
+	if (countMyAttrs != 0)
 	{
-		UT_HashEntry * pMyEntry = m_pAttributes->getNthEntryAlpha(k);
-		UT_HashEntry * pMatchEntry = pMatch->m_pAttributes->getNthEntryAlpha(k);
-		if (UT_XML_stricmp(pMyEntry->pszLeft,pMatchEntry->pszLeft) != 0)
-			return false;
-		if (UT_XML_stricmp(pMyEntry->pszRight,pMatchEntry->pszRight) != 0)
-			return false;
+		_hash_cursor ca1(m_pAttributes);
+		_hash_cursor ca2(pMatch->m_pAttributes);
+
+		HashValType v1 = ca1.first();
+		HashValType v2 = ca2.first();
+	
+		do
+		{
+			XML_Char *l1 = (XML_Char *)ca1.key();
+			XML_Char *l2 = (XML_Char *)ca2.key();
+	
+			if (UT_XML_stricmp(l1, l2) != 0)
+				return false;
+			
+			l1 = (XML_Char *)v1;
+			l2 = (XML_Char *)v2;
+	
+			if (UT_XML_stricmp(l1,l2) != 0)
+				return false;
+	
+			v1 = ca1.next();
+			v2 = ca2.next();
+		} while (ca1.more());
 	}
 
-	for (k=0; (k < countMyProps); k++)
+	if (countMyProps > 0)
 	{
-		UT_HashEntry * pMyEntry = m_pProperties->getNthEntryAlpha(k);
-		UT_HashEntry * pMatchEntry = pMatch->m_pProperties->getNthEntryAlpha(k);
-		if (UT_XML_stricmp(pMyEntry->pszLeft,pMatchEntry->pszLeft) != 0)
-			return false;
-		if (UT_XML_stricmp(pMyEntry->pszRight,pMatchEntry->pszRight) != 0)
-			return false;
+		_hash_cursor cp1(m_pProperties);
+		_hash_cursor cp2(pMatch->m_pProperties);
+	
+		HashValType v1 = cp1.first();
+		HashValType v2 = cp2.first();
+	
+		do
+		{
+			XML_Char *l1 = (XML_Char *)cp1.key();
+			XML_Char *l2 = (XML_Char *)cp2.key();
+	
+			if (UT_XML_stricmp(l1, l2) != 0)
+				return false;
+			
+			l1 = (XML_Char *) ((UT_Pair*)v1)->car();;
+			l2 = (XML_Char *) ((UT_Pair*)v2)->car();;
+	
+			if (UT_XML_stricmp(l1,l2) != 0)
+				return false;
+	
+			v1 = cp1.next();
+			v2 = cp2.next();
+		} while (cp1.more());
+	
+	#ifdef PT_TEST
+		s_Matches++;
+	#endif
 	}
-
-#ifdef PT_TEST
-	s_Matches++;
-#endif
 
 	return true;
 }
@@ -616,20 +739,41 @@ void PP_AttrProp::_computeCheckSum(void)
 	// based strictly on the content of the name/value pairs and be
 	// pointer- and order-independent.
 
-	UT_uint32 k;
-	UT_uint32 countMyAttrs = ((m_pAttributes) ? m_pAttributes->getEntryCount() : 0);
-	for (k=0; (k < countMyAttrs); k++)
+	if (!m_pAttributes || !m_pProperties)
+		return;
+
+	XML_Char * s1, *s2;
+
+	_hash_cursor c1(m_pAttributes);
+	_hash_cursor c2(m_pProperties);
+
+	HashValType val = c1.first();
+	while (val != NULL)
 	{
-		UT_HashEntry * pMyEntry = m_pAttributes->getNthEntryAlpha(k);
-		m_checkSum += UT_XML_strlen(pMyEntry->pszLeft);
-		m_checkSum += UT_XML_strlen(pMyEntry->pszRight);
+		s1 = (XML_Char *)c1.key();
+		s2 = (XML_Char *)val;
+
+		m_checkSum += UT_XML_strlen(s1);
+		m_checkSum += UT_XML_strlen(s2);
+
+		if (!c1.more())
+			break;
+		val = c1.next();
 	}
-	UT_uint32 countMyProps = ((m_pProperties) ? m_pProperties->getEntryCount() : 0);
-	for (k=0; (k < countMyProps); k++)
+
+
+	val = c2.first();
+	while (val != NULL)
 	{
-		UT_HashEntry * pMyEntry = m_pProperties->getNthEntryAlpha(k);
-		m_checkSum += UT_XML_strlen(pMyEntry->pszLeft);
-		m_checkSum += UT_XML_strlen(pMyEntry->pszRight);
+		s1 = (XML_Char *)c2.key();
+		s2 = (XML_Char *) ((UT_Pair*)val)->car();
+
+		m_checkSum += UT_XML_strlen(s1);
+		m_checkSum += UT_XML_strlen(s2);
+
+		if (!c2.more())
+			break;
+		val = c2.next();
 	}
 
 	return;
@@ -643,7 +787,7 @@ UT_uint32 PP_AttrProp::getCheckSum(void) const
 
 void PP_AttrProp::operator = (const PP_AttrProp &Other)
 {
-	UT_uint32 countMyAttrs = ((Other.m_pAttributes) ? Other.m_pAttributes->getEntryCount() : 0);
+	UT_uint32 countMyAttrs = ((Other.m_pAttributes) ? Other.m_pAttributes->size() : 0);
 
 	UT_uint32 Index;
 	for(Index = 0; Index < countMyAttrs; Index++)
@@ -656,7 +800,7 @@ void PP_AttrProp::operator = (const PP_AttrProp &Other)
 		}
 	}
 
-	UT_uint32 countMyProps = ((Other.m_pProperties) ? Other.m_pProperties->getEntryCount() : 0);
+	UT_uint32 countMyProps = ((Other.m_pProperties) ? Other.m_pProperties->size() : 0);
 
 	for(Index = 0; Index < countMyProps; Index++)
 	{

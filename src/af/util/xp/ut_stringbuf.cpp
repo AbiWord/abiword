@@ -22,7 +22,7 @@
 #include "ut_stringbuf.h"
 
 
-// this class keeps zero terminated strings.
+// these classes keep zero terminated strings.
 // if size() != 0, capacity() is always at least size() + 1.
 
 //////////////////////////////////////////////////////////////////
@@ -198,3 +198,165 @@ void UT_Stringbuf::grow_copy(size_t n)
 }
 #endif
 
+/***************************************************************************/
+/***************************************************************************/
+
+UT_UCS2Stringbuf::UT_UCS2Stringbuf()
+:	m_psz(0),
+	m_pEnd(0),
+	m_size(0)
+{
+}
+
+UT_UCS2Stringbuf::UT_UCS2Stringbuf(const UT_UCS2Stringbuf& rhs)
+:	m_psz(new char_type[rhs.capacity()]),
+	m_pEnd(m_psz + rhs.size()),
+	m_size(rhs.capacity())
+{
+	memcpy(m_psz, rhs.m_psz, rhs.capacity());
+}
+
+UT_UCS2Stringbuf::UT_UCS2Stringbuf(const char_type* sz, size_t n)
+:	m_psz(new char_type[n+1]),
+	m_pEnd(m_psz + n),
+	m_size(n+1)
+{
+	memcpy(m_psz, sz, n);
+	m_psz[n] = 0;
+}
+
+UT_UCS2Stringbuf::~UT_UCS2Stringbuf()
+{
+	clear();
+}
+
+
+void UT_UCS2Stringbuf::operator=(const UT_UCS2Stringbuf& rhs)
+{
+	if (this != &rhs) {
+		clear();
+		assign(rhs.m_psz, rhs.size());
+	}
+}
+
+void UT_UCS2Stringbuf::assign(const char_type* sz, size_t n)
+{
+	if (n) {
+		if (n >= capacity()) {
+			grow_nocopy(n);
+		}
+		memcpy(m_psz, sz, n);
+		m_psz[n] = 0;
+		m_pEnd = m_psz + n;
+	} else {
+		clear();
+	}
+}
+
+void UT_UCS2Stringbuf::append(const char_type* sz, size_t n)
+{
+	if (!n) {
+		return;
+	}
+	if (!capacity()) {
+		assign(sz, n);
+		return;
+	}
+	const size_t nLen = size();
+	grow_copy(nLen + n);
+	memcpy(m_psz + nLen, sz, n);
+	m_psz[nLen + n] = 0;
+	m_pEnd += n;
+}
+
+void UT_UCS2Stringbuf::append(const UT_UCS2Stringbuf& rhs)
+{
+	append(rhs.m_psz, rhs.size());
+}
+
+
+static inline
+void my_ut_swap(UT_UCS2Stringbuf::char_type*&  a, UT_UCS2Stringbuf::char_type*&  b)
+	{ UT_UCS2Stringbuf::char_type*  t = a; a = b; b = t; }
+
+void UT_UCS2Stringbuf::swap(UT_UCS2Stringbuf& rhs)
+{
+	my_ut_swap(m_psz , rhs.m_psz );
+	my_ut_swap(m_pEnd, rhs.m_pEnd);
+	my_ut_swap(m_size, rhs.m_size);
+}
+
+void UT_UCS2Stringbuf::clear()
+{
+	if (m_psz)
+	{
+		delete[] m_psz;
+		m_psz = 0;
+		m_pEnd = 0;
+		m_size = 0;
+	}
+}
+
+#if 0 // Mike growing functions
+void UT_UCS2Stringbuf::grow_nocopy(size_t n)
+{
+	++n;	// allow for zero termination
+	if (n > capacity()) {
+		const size_t nCurSize = size();
+		delete[] m_psz;
+		n += g_nGrowExtraBytes;
+		m_psz  = new char_type[n];
+		m_pEnd = m_psz + nCurSize;
+		m_size = n;
+	}
+}
+
+void UT_UCS2Stringbuf::grow_copy(size_t n)
+{
+	++n;	// allow for zero termination
+	if (n > capacity()) {
+		n += g_nGrowExtraBytes;
+		char_type* p = new char_type[n];
+		const size_t nCurSize = size();
+		if (m_psz) {
+			memcpy(p, m_psz, size() + 1);
+			delete[] m_psz;
+		}
+		m_psz  = p;
+		m_pEnd = m_psz + nCurSize;
+		m_size = n;
+	}
+}
+
+#else // JCA growing functions
+
+void UT_UCS2Stringbuf::grow_nocopy(size_t n)
+{
+	++n;	// allow for zero termination
+	if (n > capacity()) {
+		const size_t nCurSize = size();
+		n = priv_max(n, (size_t)(nCurSize * g_rGrowBy));
+		delete[] m_psz;
+		m_psz  = new char_type[n];
+		m_pEnd = m_psz + nCurSize;
+		m_size = n;
+	}
+}
+
+void UT_UCS2Stringbuf::grow_copy(size_t n)
+{
+	++n;	// allow for zero termination
+	if (n > capacity()) {
+		const size_t nCurSize = size();
+		n = priv_max(n, (size_t)(nCurSize * g_rGrowBy));
+		char_type* p = new char_type[n];
+		if (m_psz) {
+			memcpy(p, m_psz, size() + 1);
+			delete[] m_psz;
+		}
+		m_psz  = p;
+		m_pEnd = m_psz + nCurSize;
+		m_size = n;
+	}
+}
+#endif

@@ -74,9 +74,7 @@ void IE_Imp::registerImporter (IE_ImpSniffer * s)
 
 void IE_Imp::unregisterImporter (IE_ImpSniffer * s)
 {
-	UT_uint32 ndx = 0;
-
-	ndx = s->getFileType(); // 1:1 mapping
+	UT_uint32 ndx = s->getFileType(); // 1:1 mapping
 
 	UT_ASSERT(ndx >= 0);
 

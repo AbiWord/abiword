@@ -466,7 +466,17 @@ void AP_UnixDialog_Styles::event_DeleteClicked(void)
 
 		UT_DEBUGMSG(("DOM: attempting to delete style %s\n", style));
 
-		getDoc()->removeStyle(style); // actually remove the style
+
+		if (!getDoc()->removeStyle(style)) // actually remove the style
+		{
+			const XAP_StringSet * pSS = m_pApp->getStringSet();
+			const XML_Char * msg = pSS->getValue (AP_STRING_ID_DLG_Styles_ErrStyleCantDelete);
+		
+			getFrame()->showMessageBox ((const char *)msg,
+										XAP_Dialog_MessageBox::b_O,
+										XAP_Dialog_MessageBox::a_OK);
+			return;
+		}
 		_populateWindowData(); // force a refresh
     }
 }
@@ -1478,20 +1488,24 @@ void AP_UnixDialog_Styles::event_ModifyClicked(void)
 		return;
 	}
 
-#if 0	
 	if (!pStyle->isUserDefined ())
 	{
 		// can't change builtin, error message
+		const XAP_StringSet * pSS = m_pApp->getStringSet();
+		const XML_Char * msg = pSS->getValue (AP_STRING_ID_DLG_Styles_ErrStyleBuiltin);
+		
+		getFrame()->showMessageBox ((const char *)msg,
+									XAP_Dialog_MessageBox::b_O,
+									XAP_Dialog_MessageBox::a_OK);
 		return;
 	}
-#endif
 	
 	
 #ifndef HAVE_GNOME
 //
 // Hide the old window
 //
-    gtk_widget_hide( m_windowMain);
+    gtk_widget_hide(m_windowMain);
 #endif
 //
 // fill the data structures needed for the Modify dialog

@@ -107,6 +107,7 @@ endif
 
 OBJS=		$(PLATFORM_OBJS)						\
 		$(OBJDIR)/xad_Document.$(OBJ_SUFFIX)				\
+		$(OBJDIR)/xap_AbiObject.$(OBJ_SUFFIX)				\
 		$(OBJDIR)/xap_App.$(OBJ_SUFFIX)					\
 		$(OBJDIR)/xap_Args.$(OBJ_SUFFIX)				\
 		$(OBJDIR)/xap_Clipboard.$(OBJ_SUFFIX)				\

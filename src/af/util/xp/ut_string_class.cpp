@@ -22,6 +22,7 @@
 //
 #include <stdlib.h>				// size_t
 #include <string.h>				// strcmp
+#include "ut_string.h"
 #include "ut_string_class.h"
 #include "ut_stringbuf.h"
 #include "ut_debugmsg.h"		// UT_DEBUGMSG
@@ -224,6 +225,211 @@ char UT_String::operator[](size_t iPos) const
 }
 
 char& UT_String::operator[](size_t iPos)
+{
+	UT_ASSERT(iPos <= size());
+	return pimpl->data()[iPos];
+}
+
+/**************************************************************************/
+/*************************************************************************/
+
+//static const UT_UCSChar ucsEmpty[] = "";
+static const UT_UCSChar *ucsEmpty = 0;
+
+UT_UCS2String::UT_UCS2String()
+:	pimpl(new UT_UCS2Stringbuf)
+{
+}
+
+UT_UCS2String::UT_UCS2String(const UT_UCSChar* sz, size_t n)
+:	pimpl(new UT_UCS2Stringbuf(sz, n ? n : (sz) ? UT_UCS_strlen(sz) : 0))
+{
+}
+
+UT_UCS2String::UT_UCS2String(const UT_UCS2String& rhs)
+:	pimpl(new UT_UCS2Stringbuf(*rhs.pimpl))
+{
+}
+
+UT_UCS2String::~UT_UCS2String()
+{
+	delete pimpl;
+}
+
+
+//////////////////////////////////////////////////////////////////
+// accessors
+
+size_t UT_UCS2String::size() const
+{
+	return pimpl->size();
+}
+
+bool UT_UCS2String::empty() const
+{
+	return pimpl->empty();
+}
+
+void UT_UCS2String::clear() const
+{
+	pimpl->clear();
+}
+
+UT_UCS2String UT_UCS2String::substr(size_t iStart, size_t nChars) const
+{
+	const size_t nSize = pimpl->size();
+
+	if (iStart >= nSize || !nChars) {
+		return UT_UCS2String();
+	}
+
+	const UT_UCSChar* p = pimpl->data() + iStart;
+	if (iStart + nChars > nSize) {
+		nChars = nSize - iStart;
+	}
+
+	return UT_UCS2String(p, nChars);
+}
+
+const UT_UCSChar* UT_UCS2String::ucs_str() const
+{
+	return pimpl->size() ? pimpl->data() : ucsEmpty;
+}
+
+
+//////////////////////////////////////////////////////////////////
+// mutators
+
+UT_UCS2String& UT_UCS2String::operator=(const UT_UCS2String& rhs)
+{
+	if (this != &rhs) {
+		*pimpl = *rhs.pimpl;
+	}
+	return *this;
+}
+
+UT_UCS2String& UT_UCS2String::operator=(const UT_UCSChar* rhs)
+{
+	pimpl->assign(rhs, UT_UCS_strlen(rhs));
+	return *this;
+}
+
+UT_UCS2String& UT_UCS2String::operator+=(const UT_UCS2String& rhs)
+{
+	if (this != &rhs) {
+		pimpl->append(*rhs.pimpl);
+	} else {
+		UT_UCS2Stringbuf t(*rhs.pimpl);
+		pimpl->append(t);
+	}
+	return *this;
+}
+
+UT_UCS2String& UT_UCS2String::operator+=(const UT_UCSChar* rhs)
+{
+	pimpl->append(rhs, UT_UCS_strlen(rhs));
+	return *this;
+}
+
+UT_UCS2String& UT_UCS2String::operator+=(UT_UCSChar rhs)
+{
+	UT_UCSChar cs = rhs;
+	pimpl->append(&cs, 1);
+	return *this;
+}
+
+UT_UCS2String& UT_UCS2String::operator+=(char rhs)
+{
+	UT_UCSChar cs;
+	char rs[2];
+
+	// TODO: is this nonsense needed?
+	rs[0] = rhs; rs[1] = 0;
+	UT_UCS_strcpy_char (&cs, rs);
+
+	pimpl->append(&cs, 1);
+	return *this;
+}
+
+UT_UCS2String& UT_UCS2String::operator+=(unsigned char rhs)
+{
+	UT_UCSChar cs;
+	char rs[2];
+
+	// TODO: is this nonsense needed?
+	rs[0] = (char)rhs; rs[1] = 0; // TODO: is this loss of 'unsigned' safe?
+	UT_UCS_strcpy_char (&cs, rs);
+
+	pimpl->append(&cs, 1);
+	return *this;
+}
+
+void UT_UCS2String::swap(UT_UCS2String& rhs)
+{
+	UT_UCS2Stringbuf* p = pimpl;
+	pimpl = rhs.pimpl;
+	rhs.pimpl = p;
+}
+
+
+//////////////////////////////////////////////////////////////////
+// End of class members, start of free functions
+//////////////////////////////////////////////////////////////////
+
+//////////////////////////////////////////////////////////////////
+// Helpers
+
+bool operator==(const UT_UCS2String& s1, const UT_UCS2String& s2)
+{
+	return UT_UCS_strcmp(s1.ucs_str(), s2.ucs_str()) == 0;
+}
+
+bool operator==(const UT_UCS2String& s1, const UT_UCSChar* s2)
+{
+	return UT_UCS_strcmp(s1.ucs_str(), s2) == 0;
+}
+
+bool operator==(const UT_UCSChar* s1, const UT_UCS2String& s2)
+{
+	return s2 == s1;
+}
+
+bool operator!=(const UT_UCS2String& s1, const UT_UCS2String& s2)
+{
+	return !(s1 == s2);
+}
+
+bool operator!=(const UT_UCS2String& s1, const UT_UCSChar*  s2)
+{
+	return !(s1 == s2);
+}
+
+bool operator!=(const UT_UCSChar* s1, const UT_UCS2String& s2)
+{
+	return !(s2 == s1);
+}
+
+bool operator<(const UT_UCS2String& s1, const UT_UCS2String& s2)
+{
+	return UT_UCS_strcmp(s1.ucs_str(), s2.ucs_str()) < 0;
+}
+
+UT_UCS2String operator+(const UT_UCS2String& s1, const UT_UCS2String& s2)
+{
+	UT_UCS2String s(s1);
+	s += s2;
+	return s;
+}
+
+UT_UCSChar UT_UCS2String::operator[](size_t iPos) const
+{
+	UT_ASSERT(iPos <= size());
+	if (iPos == size())
+		return '\0';
+	return pimpl->data()[iPos];
+}
+
+UT_UCSChar& UT_UCS2String::operator[](size_t iPos)
 {
 	UT_ASSERT(iPos <= size());
 	return pimpl->data()[iPos];
