@@ -37,9 +37,9 @@
 /*
 	What are we doing here
 	
-	Originally Abiword foxs tried to handle the keyboard their "own 
-	way", that included not calling TranslateMessage() and trying to do 
-	interpreted the keyboard tru WM_KEYDOWN ignoring most WM_CHAR. This 
+	Originally Abiword foxes tried to handle the keyboard their "own 
+	way", that included not calling TranslateMessage() and trying to
+	interpret the keyboard thru WM_KEYDOWN ignoring most WM_CHAR. This 
 	caused serval problems, including ALT+XXX not working and other 
 	keyboard related issues.
 	
@@ -51,10 +51,10 @@
 	as all the applications do
 	
 	- We process all the WM_CHAR messages except the ones that occur when
-	the user has the ALT key activated and we pass them to Windows because
-	we undertand that they are menu hotkeys called.
+	the user has the ALT key activated, and we pass those to Windows because
+	we undertand that they are menu hotkeys.
 	
-	- We process only the special keys tru WM_KEYDOWN message.
+	- We process only the special keys thru WM_KEYDOWN message.
 	
 	Jordi 10/11/2002
 	
@@ -265,7 +265,7 @@ bool ev_Win32Keyboard::onChar(AV_View * pView,
 	// The user is pressing ALT+x. If x is from a to a is a Hotkey for sure	
 	if (GetKeyState(VK_MENU) & 0x8000)
 	{
-		UT_DEBUGMSG(("WM_CHAR discarting char because is a menu accesskey\n"));
+		UT_DEBUGMSG(("WM_CHAR discarding char because it's a menu access key\n"));
 		if (b>='a' && b<='z')
 			return true;		
 	}
