@@ -135,15 +135,28 @@ int fb_SimpleLineBreaker::reLayoutParagraph(fl_BlockLayout* pBlock)
 						{
 							// this run can't be split - remove it and
 							// all following runs to the next line.
-							// TODO However, if we are the first run on the
-							// TODO line, this line can't be broken.  Skip
-							// TODO it ?
 
 							if (pRun == pLine->getFirstRun())
 							{
-								pLine->align();
-								pLine->draw(pRun->getGraphics());
-								return 0;
+								// this is the first run on the line, and it doesn't fit, and we can't break it.
+								// force it.
+
+								bFoundSplit = pRun->findMaxLeftFitSplitPoint(iMaxWidth - rWidth, si, UT_TRUE);
+								if (bFoundSplit)
+								{
+									pRun->split(si);	// TODO err check this
+									UT_ASSERT((UT_sint32)pRun->getWidth() == si.iLeftWidth);
+
+									pRun = pRun->getNext();
+									pLine->shrink(pRun->getWidth());
+								}
+								else
+								{
+									// this should be ultra-rare.
+									pLine->align();
+									pLine->draw(pRun->getGraphics());
+									return 0;
+								}
 							}
 							 
 							UT_ASSERT(pLastRun == pLine->getLastRun());
@@ -611,9 +624,24 @@ int fb_SimpleLineBreaker::breakParagraph(fl_BlockLayout* pBlock)
 						else
 						{
 							// nothing could be split.  We just force it and add anyway.  this is a bug.
-							pLine->addRun(pCurRun);
-							pCurRun = pCurRun->getNext();
-							bDoneWithLine = UT_TRUE;
+							bFoundSplit = pRunLooking->findMaxLeftFitSplitPoint(iMaxLineWidth - (iCurLineWidth + iWidthLooking), si, UT_TRUE);
+							if (bFoundSplit)
+							{
+								pCurRun->split(si);	// TODO err check this
+
+								pLine->addRun(pCurRun);
+								iCurLineWidth += pCurRun->getWidth();
+
+								pCurRun = pCurRun->getNext();
+								UT_ASSERT(pCurRun);	// after a split, there is always a next.
+								bDoneWithLine = UT_TRUE;
+							}
+							else
+							{
+								pLine->addRun(pCurRun);
+								pCurRun = pCurRun->getNext();
+								bDoneWithLine = UT_TRUE;
+							}
 						}
 					}
 				}

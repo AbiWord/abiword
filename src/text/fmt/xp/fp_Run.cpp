@@ -358,7 +358,7 @@ UT_Bool fp_Run::split(UT_uint32 splitOffset, UT_Bool bInsertBlock)
 	return UT_TRUE;
 }
 
-UT_Bool	fp_Run::findMaxLeftFitSplitPoint(UT_sint32 iMaxLeftWidth, fp_RunSplitInfo& si)
+UT_Bool	fp_Run::findMaxLeftFitSplitPoint(UT_sint32 iMaxLeftWidth, fp_RunSplitInfo& si, UT_Bool bForce)
 {
 	UT_GrowBuf * pgbCharWidths = m_pBL->getCharWidths();
 	UT_uint16* pCharWidths = pgbCharWidths->getPointer(0);
@@ -384,7 +384,7 @@ UT_Bool	fp_Run::findMaxLeftFitSplitPoint(UT_sint32 iMaxLeftWidth, fp_RunSplitInf
 			iLeftWidth += pCharWidths[i + offset];
 			iRightWidth -= pCharWidths[i + offset];
 
-			if (32 == pSpan[i])
+			if ((32 == pSpan[i]) || bForce)
 			{
 				if (iLeftWidth <= iMaxLeftWidth)
 				{
