@@ -184,6 +184,7 @@ John Profic <profic@linux.ru.net>               Russian
 Eutanazy Sercxemulo <szperacz@free.net.pl>      Polish
 Giovanni dos Reis Nunes <giovanni@skydome.net>  Portugese (Brazil)
 Rui M. Silva Seabra <rms@greymalkin.yi.org>     Portugese
+Tânia M. G. Ferreira <tmgferreira@hotmail.com>  Portugese
 Martin Lacko <lacko@host.sk>                    Slovak
 Christian Terboven <cterboven@gmx.net>          German
 Owen Thomas <owen@llanilar.freeserve.co.uk>     Welsh
