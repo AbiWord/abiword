@@ -413,10 +413,17 @@ PtWidget_t * AP_QNXDialog_PageSetup::_constructWindow (void)
 
 	n = 0;
 	PtSetArg(&args[n++], Pt_ARG_GROUP_ORIENTATION, Pt_GROUP_VERTICAL, 0);
+	PtSetArg(&args[n++], Pt_ARG_GROUP_FLAGS, Pt_GROUP_STRETCH_VERTICAL, Pt_GROUP_STRETCH_VERTICAL);
+	PtSetArg(&args[n++], Pt_ARG_RESIZE_FLAGS, Pt_RESIZE_XY_AS_REQUIRED, 
+											  Pt_RESIZE_XY_AS_REQUIRED | Pt_RESIZE_XY_ALWAYS);
+	PtSetArg(&args[n++], Pt_ARG_ANCHOR_OFFSETS, &zero, 0);
+	PtSetArg(&args[n++], Pt_ARG_ANCHOR_FLAGS, _ANCHOR, _ANCHOR);
 	PtWidget_t *vpanel = PtCreateWidget(PtGroup, panel, n, args);
 
 	/** Paper Section **/
 	n = 0;
+	PtSetArg(&args[n++], Pt_ARG_ANCHOR_OFFSETS, &zero, 0);
+	PtSetArg(&args[n++], Pt_ARG_ANCHOR_FLAGS, _ANCHOR, _ANCHOR);
 	hgroup = PtCreateWidget(PtGroup, vpanel, n, args);
 	pretty_group(hgroup, _(AP, DLG_PageSetup_Paper));
 
@@ -508,6 +515,8 @@ PtWidget_t * AP_QNXDialog_PageSetup::_constructWindow (void)
 	PtSetArg(&args[n++], Pt_ARG_GROUP_FLAGS, 
 			Pt_GROUP_EQUAL_SIZE_HORIZONTAL | Pt_GROUP_EXCLUSIVE, 
 			Pt_GROUP_EQUAL_SIZE_HORIZONTAL | Pt_GROUP_EXCLUSIVE);
+	PtSetArg(&args[n++], Pt_ARG_ANCHOR_OFFSETS, &zero, 0);
+	PtSetArg(&args[n++], Pt_ARG_ANCHOR_FLAGS, _ANCHOR, _ANCHOR);
 	hgroup = PtCreateWidget(PtGroup, vpanel, n, args);
 	pretty_group(hgroup, _(AP, DLG_PageSetup_Orient));
 
@@ -532,6 +541,8 @@ PtWidget_t * AP_QNXDialog_PageSetup::_constructWindow (void)
 
 	/** Scale Section **/
 	n = 0;
+	PtSetArg(&args[n++], Pt_ARG_ANCHOR_OFFSETS, &zero, 0);
+	PtSetArg(&args[n++], Pt_ARG_ANCHOR_FLAGS, _ANCHOR, _ANCHOR);
 	hgroup = PtCreateWidget(PtGroup, vpanel, n, args);
 	pretty_group(hgroup, _(AP, DLG_PageSetup_Scale));
 	n = 0;
