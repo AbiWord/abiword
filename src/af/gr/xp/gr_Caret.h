@@ -50,8 +50,11 @@ public:
 	// When you call setCoords, the cursor is explicitly shown
 	// and the timer restarts from 0 for the next 500ms cycle.
 	void setCoords(UT_sint32 x, UT_sint32 y, UT_uint32 h,
-				   UT_sint32 x2 = 0, UT_sint32 y2 = 0, UT_uint32 h2 = 0,
+				   UT_sint32 x2 = 0, UT_sint32 y2 = 0, UT_uint32 h2 = 0, 
 				   bool bPointDirection = false, UT_RGBColor * pClr = NULL);
+
+	// The caret needs to know about this to clip the save/restore rects.
+	void setWindowSize(UT_uint32 width, UT_uint32 height);
 
 	bool getInsertMode () {return m_insertMode;}
 	void setInsertMode (bool mode) {m_insertMode = mode;}
@@ -70,6 +73,9 @@ private:
 	bool				m_bPointDirection;
 	UT_RGBColor *		m_pClr;
 	GR_Graphics *		m_pG;
+
+	UT_uint32			m_iWindowWidth;
+	UT_uint32			m_iWindowHeight;
 
 	GR_Caret(); // no impl
 	GR_Caret(const GR_Caret& rhs);			// no impl.

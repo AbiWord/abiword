@@ -100,6 +100,11 @@ void GR_Caret::s_enable(UT_Worker * _w)
 	c->m_enabler->stop();
 }
 
+void GR_Caret::setWindowSize(UT_uint32 width, UT_uint32 height)
+{
+	m_iWindowWidth = width; m_iWindowHeight = height;
+}
+
 void GR_Caret::setCoords(UT_sint32 x, UT_sint32 y, UT_uint32 h,
 						 UT_sint32 x2, UT_sint32 y2, UT_uint32 h2,
 						 bool bPointDirection, UT_RGBColor * pClr)
@@ -112,17 +117,12 @@ void GR_Caret::setCoords(UT_sint32 x, UT_sint32 y, UT_uint32 h,
 	m_bPointDirection = bPointDirection; m_pClr = pClr;
 	m_bPositionSet = true;
 
-	// This is a partial on-screen logic; we currently only check for
-	// negative coordinances, i.e., caret above and/or to the left of
-	// the editing window. To check for the other side would be more
-	// complicated, we would need to have a listener watching for
-	// window resizing. Tomas Jan 18, 2003
-	if(x <= 0 || y <= 0)
+	if(x < m_pG->tlu(3)+1 || y <= 0 || x > m_iWindowWidth || y > m_iWindowHeight)
 		m_bCaret1OnScreen = false;
 	else
 		m_bCaret1OnScreen = true;
 	
-	if(x2 <= 0 || y2 <= 0)
+	if(x2 < m_pG->tlu(3)+1 || y2 <= 0 || x2 > m_iWindowWidth || y2 > m_iWindowHeight)
 		m_bCaret2OnScreen = false;
 	else
 		m_bCaret2OnScreen = true;

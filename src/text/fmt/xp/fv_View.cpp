@@ -1252,6 +1252,9 @@ bool FV_View::notifyListeners(const AV_ChangeMask hint)
 		}
 	}
 
+	if (mask & AV_CHG_WINDOWSIZE)
+		m_pG->getCaret()->setWindowSize(getWindowWidth(), getWindowHeight());
+
 	// base class does the rest
 	xxx_UT_DEBUGMSG(("FV_View: notifyListeners: this %x \n",this));
 	return AV_View::notifyListeners(mask);
