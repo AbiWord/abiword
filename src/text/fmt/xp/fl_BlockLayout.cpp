@@ -2686,11 +2686,6 @@ fl_BlockLayout::checkWord(fl_PartOfBlock* pPOB)
 		if (0 == iLength)
 			break;
 
-		// For some reason, the spell checker fails on all 1-char
-		// words & really big ones
-		if ((iLength <= 1) || (iLength > INPUTWORDLEN))
-			break;
-
 		// Get the block content
 		UT_GrowBuf pgb(1024);
 		bool bRes = getBlockBuf(&pgb);
@@ -2701,6 +2696,11 @@ fl_BlockLayout::checkWord(fl_PartOfBlock* pPOB)
 			break;
 
 		const UT_UCSChar* pWord = &pBlockText[iBlockPos];
+
+		// For some reason, the spell checker fails on all 1-char
+		// words & really big ones
+		if ((iLength <= 1) || (iLength > INPUTWORDLEN))
+			break;
 
 		UT_ASSERT((UT_uint32)iBlockPos <= pgb.getLength());
 		UT_ASSERT((UT_uint32)(iBlockPos+iLength) <= pgb.getLength());
@@ -7493,11 +7493,11 @@ fl_BlockSpellIterator::nextWordForSpellChecking(const UT_UCSChar*& pWord, UT_sin
 		// Now we have the starting position of the word in
 		// m_iWordOffset.
 
-		// Ignore initial apostrophe
-		if ('\'' == m_pText[m_iWordOffset])
-		{
+		// Ignore some initial characters
+		if (_ignoreFirstWordCharacter(m_pText[m_iWordOffset]))
+        {
 			m_iWordOffset++;
-		}
+        }
 
 		// We're at the start of a word. Find end of word while
 		// keeping track of numerics and case of letters. Again, only
@@ -7562,8 +7562,8 @@ fl_BlockSpellIterator::nextWordForSpellChecking(const UT_UCSChar*& pWord, UT_sin
 		// Find length of word
 		UT_uint32 iWordLength = iWordEnd - m_iWordOffset;
 
-		// ignore terminal apostrophe
-		if (m_pText[m_iWordOffset + iWordLength - 1] == '\'')
+		// ignore some terminal characters
+		if (_ignoreLastWordCharacter(m_pText[m_iWordOffset + iWordLength - 1]))
 		{
 			iWordLength--;
 		}
@@ -7808,4 +7808,32 @@ void
 fl_BlockSpellIterator::revertToPreviousWord()
 {
 	m_iStartIndex = m_iPrevStartIndex;
+}
+
+bool
+fl_BlockSpellIterator::_ignoreFirstWordCharacter(const UT_UCSChar c) const
+{
+    switch (c) {
+    case '\'':
+    case '"':
+    case UCS_LDBLQUOTE:         // smart quoute, open double
+    case UCS_LQUOTE:            // smart quoute, open
+        return true;
+    default:
+        return false;
+    }
+}
+
+bool
+fl_BlockSpellIterator::_ignoreLastWordCharacter(const UT_UCSChar c) const
+{
+    switch (c) {
+    case '\'':
+    case '"':
+    case UCS_RDBLQUOTE:         // smart quote, close double
+    case UCS_RQUOTE:            // smart quote, close
+        return true;
+    default:
+        return false;
+    }
 }

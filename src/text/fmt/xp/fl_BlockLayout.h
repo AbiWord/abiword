@@ -612,6 +612,9 @@ class ABI_EXPORT fl_BlockSpellIterator
 	UT_sint32       m_iSentenceStart;
 	UT_sint32       m_iSentenceEnd;
 
+    bool            _ignoreFirstWordCharacter(const UT_UCSChar c) const;
+    bool            _ignoreLastWordCharacter(const UT_UCSChar c) const;
+
 public:
 	fl_BlockSpellIterator(fl_BlockLayout* pBL, UT_sint32 iPos = 0);
 	~fl_BlockSpellIterator();
