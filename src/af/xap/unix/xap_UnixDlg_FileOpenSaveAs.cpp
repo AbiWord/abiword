@@ -451,25 +451,11 @@ void XAP_UnixDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 		bCheckWritePermission = false;
 		break;
 	}
-	case XAP_DIALOG_ID_FILE_SAVEAS:
-	{
-		szTitle = pSS->getValue(XAP_STRING_ID_DLG_FOSA_SaveAsTitle);
-		szFileTypeLabel = pSS->getValue(XAP_STRING_ID_DLG_FOSA_FileOpenTypeLabel);
-		bCheckWritePermission = true;
-		break;
-	}
 	case XAP_DIALOG_ID_FILE_IMPORT:
 	  {
 		szTitle = pSS->getValue(XAP_STRING_ID_DLG_FOSA_ImportTitle);
 		szFileTypeLabel = pSS->getValue(XAP_STRING_ID_DLG_FOSA_FileOpenTypeLabel);
 		bCheckWritePermission = false;
-	    break;
-	  }
-	case XAP_DIALOG_ID_FILE_EXPORT:
-	  {
-		szTitle = pSS->getValue(XAP_STRING_ID_DLG_FOSA_ExportTitle);
-		szFileTypeLabel = pSS->getValue(XAP_STRING_ID_DLG_FOSA_FileSaveTypeLabel);
-		bCheckWritePermission = true;
 	    break;
 	  }
 	case XAP_DIALOG_ID_INSERT_FILE:
@@ -478,6 +464,20 @@ void XAP_UnixDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 		szFileTypeLabel = pSS->getValue(XAP_STRING_ID_DLG_FOSA_FileOpenTypeLabel);
 		bCheckWritePermission = false;
 		break;
+	  }
+	case XAP_DIALOG_ID_FILE_SAVEAS:
+	{
+		szTitle = pSS->getValue(XAP_STRING_ID_DLG_FOSA_SaveAsTitle);
+		szFileTypeLabel = pSS->getValue(XAP_STRING_ID_DLG_FOSA_FileSaveTypeLabel);
+		bCheckWritePermission = true;
+		break;
+	}
+	case XAP_DIALOG_ID_FILE_EXPORT:
+	  {
+		szTitle = pSS->getValue(XAP_STRING_ID_DLG_FOSA_ExportTitle);
+		szFileTypeLabel = pSS->getValue(XAP_STRING_ID_DLG_FOSA_FileSaveTypeLabel);
+		bCheckWritePermission = true;
+	    break;
 	  }
 	case XAP_DIALOG_ID_PRINTTOFILE:
 	{
