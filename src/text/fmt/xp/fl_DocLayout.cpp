@@ -49,16 +49,17 @@ FL_DocLayout::FL_DocLayout(PD_Document* doc, GR_Graphics* pG)
 	m_pDoc = doc;
 	m_pG = pG;
 	m_pView = NULL;
-	m_pSpellCheckTimer = NULL;
+	m_pBackgroundCheckTimer = NULL;
 	m_pPendingBlock = NULL;
 	m_pPendingWord = NULL;
 	m_pFirstSection = NULL;
 	m_pLastSection = NULL;
-	m_bAutoSpellCheck = UT_FALSE;
 	m_bSpellCheckCaps = UT_TRUE;
 	m_bSpellCheckNumbers = UT_TRUE;
 	m_bSpellCheckInternet = UT_TRUE;
 	m_pPrefs = NULL;
+
+	m_uBackgroundCheckReasons = 0;
 
 	m_pRedrawUpdateTimer = UT_Timer::static_constructor(_redrawUpdate, this, m_pG);
 	if (m_pRedrawUpdateTimer)
@@ -93,12 +94,12 @@ FL_DocLayout::~FL_DocLayout()
 
 	DELETEP(m_pDocListener);
 
-	if (m_pSpellCheckTimer)
+	if (m_pBackgroundCheckTimer)
 	{
-		m_pSpellCheckTimer->stop();
+		m_pBackgroundCheckTimer->stop();
 	}
 	
-	DELETEP(m_pSpellCheckTimer);
+	DELETEP(m_pBackgroundCheckTimer);
 	DELETEP(m_pPendingWord);
 
 	if (m_pRedrawUpdateTimer)
@@ -150,6 +151,11 @@ void FL_DocLayout::setView(FV_View* pView)
 
 			// keep updating itself	
 			pPrefs->addListener ( _prefsListener, this ); 
+			UT_Bool b;
+			if (m_pPrefs->getPrefsValueBool("DebugFlash",&b))
+			{
+				addBackgroundCheckReason(bgcrDebugFlash);
+			}
 		}
 	}
 }
@@ -526,29 +532,24 @@ void FL_DocLayout::__dump(FILE * fp) const
 }
 #endif
 
-#define SPELL_CHECK_MSECS 100
+#define BACKGROUND_CHECK_MSECS 100
 
 void FL_DocLayout::_toggleAutoSpell(UT_Bool bSpell)
 {
-	UT_Bool bOldAutoSpell = m_bAutoSpellCheck;
-	m_bAutoSpellCheck = bSpell;
+	UT_Bool bOldAutoSpell = getAutoSpellCheck();
+	if (bSpell)
+	{
+		addBackgroundCheckReason(bgcrSpelling);
+	}
+	else
+	{
+		removeBackgroundCheckReason(bgcrSpelling);
+	}
 
 	UT_DEBUGMSG(("FL_DocLayout::_toggleAutoSpell (%s)\n", bSpell ? "UT_TRUE" : "UT_FALSE" ));
 
 	if (bSpell)
 	{
-		// make sure the timer is started
-		if (!m_pSpellCheckTimer)
-		{
-			m_pSpellCheckTimer = UT_Timer::static_constructor(_spellCheck, this, m_pG);
-			if (m_pSpellCheckTimer)
-				m_pSpellCheckTimer->set(SPELL_CHECK_MSECS);
-		}
-		else
-		{
-			m_pSpellCheckTimer->start();
-		}
-
 		// recheck the whole doc
 		fl_DocSectionLayout * pSL = getFirstSection();
 		while (pSL)
@@ -558,7 +559,7 @@ void FL_DocLayout::_toggleAutoSpell(UT_Bool bSpell)
 			{
 				// TODO: just check and remove matching squiggles
 				// for now, destructively recheck the whole thing
-				queueBlockForSpell(b, UT_FALSE);
+				queueBlockForBackgroundCheck(bgcrSpelling, b);
 				b = b->getNext();
 			}
 			pSL = (fl_DocSectionLayout *) pSL->getNext();
@@ -566,10 +567,6 @@ void FL_DocLayout::_toggleAutoSpell(UT_Bool bSpell)
 	}
 	else
 	{
-		// make sure the timer is stopped
-		if (m_pSpellCheckTimer)
-			m_pSpellCheckTimer->stop();	
-	
 		// remove the squiggles, too
 		fl_DocSectionLayout * pSL = getFirstSection();
 		while (pSL)
@@ -593,7 +590,7 @@ void FL_DocLayout::_toggleAutoSpell(UT_Bool bSpell)
 	}
 }
 
-void FL_DocLayout::_spellCheck(UT_Timer * pTimer)
+void FL_DocLayout::_backgroundCheck(UT_Timer * pTimer)
 {
 	UT_ASSERT(pTimer);
 
@@ -617,6 +614,10 @@ void FL_DocLayout::_spellCheck(UT_Timer * pTimer)
 	}
 	
 
+	// prevent getting a new timer hit before we've finished this one by
+	// temporarily disabling the timer
+	pDocLayout->m_pBackgroundCheckTimer->stop();
+
 	UT_Vector* vecToCheck = &pDocLayout->m_vecUncheckedBlocks;
 	UT_ASSERT(vecToCheck);
 
@@ -628,43 +629,71 @@ void FL_DocLayout::_spellCheck(UT_Timer * pTimer)
 
 		if (pB != NULL)
 		{
-			vecToCheck->deleteNthItem(0);
-			i--;
-
-			//	note that we remove this block from queue before checking it
-			//	(otherwise asserts could trigger redundant recursive calls)
-			pB->checkSpelling();
+			for (unsigned int bitdex=0; bitdex<8*sizeof(pB->m_uBackgroundCheckReasons); ++bitdex)
+			{
+				// This looping seems like a lot of wasted effort when we
+				// don't define meaning for most of the bits, but it's small
+				// effort compared to all that squiggle stuff that goes on
+				// for the spelling stuff.
+				UT_uint32 mask;
+				mask = (1 << bitdex);
+				if (pB->hasBackgroundCheckReason(mask))
+				{
+					//	note that we remove this reason from queue before checking it
+					//	(otherwise asserts could trigger redundant recursive calls)
+					pB->removeBackgroundCheckReason(mask);
+					switch (mask)
+					{
+					case bgcrDebugFlash:
+						pB->debugFlashing();
+						break;
+					case bgcrSpelling:
+						pB->checkSpelling();
+						break;
+					case bgcrSmartQuotes:
+					default:
+						break;
+					}
+				}
+			}
+			if (!pB->m_uBackgroundCheckReasons)
+			{
+				vecToCheck->deleteNthItem(0);
+				i--;
+			}
 		}
 	}
 
-	if (i == 0)
+	if (i != 0)
 	{
-		// timer not needed any more, so suspend it
-		pDocLayout->m_pSpellCheckTimer->stop();
+		// restart timer unless it's not needed any more
+		pDocLayout->m_pBackgroundCheckTimer->start();
 	}
 }
 
-void FL_DocLayout::queueBlockForSpell(fl_BlockLayout *pBlock, UT_Bool bHead)
+void FL_DocLayout::queueBlockForBackgroundCheck(UT_uint32 reason, fl_BlockLayout *pBlock, UT_Bool bHead)
 {
 	/*
-		This routine queues up blocks for timer-driven spell checking.  
+		This routine queues up blocks for timer-driven spell checking, etc.  
 		By default, this is a FIFO queue, but it can be explicitly 
 		reprioritized by setting bHead == UT_TRUE.  
 	*/
-
-	if (m_bAutoSpellCheck)
+	if (!m_pBackgroundCheckTimer)
 	{
-		if (!m_pSpellCheckTimer)
-		{
-			m_pSpellCheckTimer = UT_Timer::static_constructor(_spellCheck, this, m_pG);
-			if (m_pSpellCheckTimer)
-				m_pSpellCheckTimer->set(SPELL_CHECK_MSECS);
-		}
-		else
-		{
-			m_pSpellCheckTimer->start();
-		}
+		m_pBackgroundCheckTimer = UT_Timer::static_constructor(_backgroundCheck, this, m_pG);
+		if (m_pBackgroundCheckTimer)
+			m_pBackgroundCheckTimer->set(BACKGROUND_CHECK_MSECS);
 	}
+	else
+	{
+		m_pBackgroundCheckTimer->start();
+	}
+
+	if (hasBackgroundCheckReason(bgcrDebugFlash))
+	{
+		pBlock->addBackgroundCheckReason(bgcrDebugFlash);
+	}
+	pBlock->addBackgroundCheckReason(reason);
 
 	UT_sint32 i = m_vecUncheckedBlocks.findItem(pBlock);
 
@@ -684,7 +713,7 @@ void FL_DocLayout::queueBlockForSpell(fl_BlockLayout *pBlock, UT_Bool bHead)
 	}
 }
 
-void FL_DocLayout::dequeueBlock(fl_BlockLayout *pBlock)
+void FL_DocLayout::dequeueBlockForBackgroundCheck(fl_BlockLayout *pBlock)
 {
 	UT_sint32 i = m_vecUncheckedBlocks.findItem(pBlock);
 
@@ -696,7 +725,7 @@ void FL_DocLayout::dequeueBlock(fl_BlockLayout *pBlock)
 	// when queue is empty, kill timer
 	if (m_vecUncheckedBlocks.getItemCount() == 0)
 	{
-		m_pSpellCheckTimer->stop();
+		m_pBackgroundCheckTimer->stop();
 	}
 }
 

@@ -2017,7 +2017,7 @@ UT_Bool fl_ShadowListener::populateStrux(PL_StruxDocHandle sdh,
 		
 		// BUGBUG: this is *not* thread-safe, but should work for now
 		if (m_bScreen)
-			m_pLayout->queueBlockForSpell(pBL);
+			m_pLayout->queueBlockForBackgroundCheck(bgcrSpelling, pBL);
 #endif
 
 	}

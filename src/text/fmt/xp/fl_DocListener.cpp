@@ -241,7 +241,7 @@ UT_Bool fl_DocListener::populateStrux(PL_StruxDocHandle sdh,
 
 		// BUGBUG: this is *not* thread-safe, but should work for now
 		if (m_bScreen)
-			m_pLayout->queueBlockForSpell(pBL);
+			m_pLayout->queueBlockForBackgroundCheck(FL_DocLayout::bgcrSpelling, pBL);
 
 		*psfh = (PL_StruxFmtHandle)pBL;
 	}

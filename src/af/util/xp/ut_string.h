@@ -59,6 +59,7 @@ UT_Bool UT_XML_cloneString(XML_Char *& rszDest, const XML_Char * szSource);
 UT_Bool UT_XML_cloneList(XML_Char **& rszDest, const XML_Char ** szSource);
 UT_Bool UT_XML_replaceList(XML_Char **& rszDest, const XML_Char ** szSource);
 UT_sint32 UT_XML_stricmp(const XML_Char * sz1, const XML_Char * sz2);
+UT_sint32 UT_XML_strnicmp(const XML_Char * sz1, const XML_Char * sz2, const UT_uint32 n);
 UT_sint32 UT_XML_strcmp(const XML_Char * sz1, const XML_Char * sz2);
 UT_uint32 UT_XML_strncpy(XML_Char * szDest, UT_uint32 nLen, const XML_Char * szSource);
 

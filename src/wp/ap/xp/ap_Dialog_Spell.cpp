@@ -128,7 +128,7 @@ UT_Bool AP_Dialog_Spell::nextMisspelledWord(void)
 	 // since we're done with this current block, put it
 	 // in the block spell queue so squiggles will be updated
 	 FL_DocLayout * docLayout = m_pSection->getDocLayout();
-	 docLayout->queueBlockForSpell(m_pBlock, UT_FALSE);
+	 docLayout->queueBlockForBackgroundCheck(FL_DocLayout::bgcrSpelling, m_pBlock);
 	 
 	 m_pBlock = m_pBlock->getNext();
 

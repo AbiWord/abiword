@@ -126,8 +126,8 @@ public:
 	void		setPendingWord(fl_BlockLayout *pBlock, fl_PartOfBlock* pWord);
 	UT_Bool		checkPendingWord(void);
 	
-	void 		queueBlockForSpell(fl_BlockLayout *pBlock, UT_Bool bHead=UT_FALSE);
-	void 		dequeueBlock(fl_BlockLayout *pBlock);
+	void 		queueBlockForBackgroundCheck(UT_uint32 reason, fl_BlockLayout *pBlock, UT_Bool bHead=UT_FALSE);
+	void 		dequeueBlockForBackgroundCheck(fl_BlockLayout *pBlock);
 
 	void		addSection(fl_DocSectionLayout*);
 	void		removeSection(fl_DocSectionLayout*);
@@ -141,12 +141,26 @@ public:
 	void 				deleteEmptyPages(void);
 
 
-	UT_Bool		getAutoSpellCheck(void) const { return m_bAutoSpellCheck; }
+	UT_Bool		getAutoSpellCheck(void) const { return (hasBackgroundCheckReason(bgcrSpelling)); }
 	UT_Bool		getSpellCheckCaps(void) const { return m_bSpellCheckCaps; }
 	UT_Bool		getSpellCheckNumbers(void) const { return m_bSpellCheckNumbers; }
 	UT_Bool		getSpellCheckInternet(void) const { return m_bSpellCheckInternet; }
 
 	void		recheckIgnoredWords();
+
+	inline void			addBackgroundCheckReason(UT_uint32 reason) {m_uBackgroundCheckReasons |= reason;}
+	inline void			removeBackgroundCheckReason(UT_uint32 reason) {m_uBackgroundCheckReasons &= ~reason;}
+	inline UT_Bool		hasBackgroundCheckReason(UT_uint32 reason) const {return (m_uBackgroundCheckReasons & reason);}
+	inline UT_uint32	getBackgroundCheckReasons() const {return (m_uBackgroundCheckReasons);}
+
+	// These are used as bit flags in a UT_uint32.  The enum is here just
+	// to get the namespace protection.
+	enum backgroundCheckReason
+	{
+		bgcrDebugFlash   = (1 <<  0),
+		bgcrSpelling     = (1 <<  1),
+		bgcrSmartQuotes  = (1 <<  2)
+	};
 
 #ifdef FMT_TEST
 	static		FL_DocLayout* m_pDocLayout;
@@ -155,7 +169,7 @@ public:
 #endif
 	
 protected:
-	static void			_spellCheck(UT_Timer * pTimer);
+	static void			_backgroundCheck(UT_Timer * pTimer);
 	void				_toggleAutoSpell(UT_Bool bSpell);
 	
 	static void			_prefsListener(class XAP_App *, class XAP_Prefs *, 
@@ -178,14 +192,15 @@ protected:
 	UT_HashTable		m_hashFontCache;
 
 	// spell check stuff
-	UT_Timer*			m_pSpellCheckTimer; 
 	UT_Vector			m_vecUncheckedBlocks;
 	fl_BlockLayout*		m_pPendingBlock;	// if NULL, then ignore m_pPendingWord
 	fl_PartOfBlock*		m_pPendingWord;
-	UT_Bool				m_bAutoSpellCheck;
 	UT_Bool				m_bSpellCheckCaps;
 	UT_Bool				m_bSpellCheckNumbers;
 	UT_Bool				m_bSpellCheckInternet;
+
+	UT_Timer*			m_pBackgroundCheckTimer; 
+	UT_uint32			m_uBackgroundCheckReasons;  // bit flags
 
 	XAP_Prefs *			m_pPrefs;
 

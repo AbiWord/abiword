@@ -5489,7 +5489,7 @@ void FV_View::cmdContextIgnoreAll(void)
 			{
 				// TODO: just check and remove matching squiggles
 				// for now, destructively recheck the whole thing
-				m_pLayout->queueBlockForSpell(b, UT_FALSE);
+				m_pLayout->queueBlockForBackgroundCheck(FL_DocLayout::bgcrSpelling, b);
 				b = b->getNext();
 			}
 			pSL = (fl_DocSectionLayout *) pSL->getNext();
@@ -5525,7 +5525,7 @@ void FV_View::cmdContextAdd(void)
 			{
 				// TODO: just check and remove matching squiggles
 				// for now, destructively recheck the whole thing
-				m_pLayout->queueBlockForSpell(b, UT_FALSE);
+				m_pLayout->queueBlockForBackgroundCheck(FL_DocLayout::bgcrSpelling, b);
 				b = b->getNext();
 			}
 			pSL = (fl_DocSectionLayout *) pSL->getNext();

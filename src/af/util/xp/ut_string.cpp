@@ -172,6 +172,12 @@ UT_sint32 UT_XML_stricmp(const XML_Char * sz1, const XML_Char * sz2)
 	return UT_stricmp(sz1,sz2);
 }
 
+UT_sint32 UT_XML_strnicmp(const XML_Char * sz1, const XML_Char * sz2, const UT_uint32 n)
+{
+	UT_ASSERT(sizeof(char) == sizeof(XML_Char));
+	return UT_strnicmp(sz1,sz2, n);
+}
+
 UT_sint32 UT_XML_strcmp(const XML_Char * sz1, const XML_Char * sz2)
 {
 	UT_ASSERT(sizeof(char) == sizeof(XML_Char));

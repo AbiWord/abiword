@@ -25,6 +25,7 @@
 
 #include "ut_debugmsg.h"
 #include "ut_growbuf.h"
+#include "ut_string.h"
 #include "xap_Prefs.h"
 
 /*****************************************************************/
@@ -393,6 +394,8 @@ UT_Bool XAP_Prefs::setCurrentScheme(const XML_Char * szSchemeName)
 }
 
 /*****************************************************************/
+static const XML_Char DEBUG_PREFIX[] = "DeBuG";  // case insensitive
+static const XML_Char NO_PREF_VALUE[] = "";
 
 UT_Bool XAP_Prefs::getPrefsValue(const XML_Char * szKey, const XML_Char ** pszValue) const
 {
@@ -404,6 +407,14 @@ UT_Bool XAP_Prefs::getPrefsValue(const XML_Char * szKey, const XML_Char ** pszVa
 		return UT_TRUE;
 	if (m_builtinScheme->getValue(szKey,pszValue))
 		return UT_TRUE;
+	// It is legal for there to be arbitrary preference tags that start with 
+	// "Debug", and Abi apps won't choke.  The idea is that developers can use
+	// these to selectively trigger development-time behaviors.
+	if (UT_XML_strnicmp(szKey, DEBUG_PREFIX, sizeof(DEBUG_PREFIX) - 1) == 0)
+	{
+		*pszValue = NO_PREF_VALUE;
+		return UT_TRUE;
+	}
 
 	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 	return UT_FALSE;
@@ -419,6 +430,14 @@ UT_Bool XAP_Prefs::getPrefsValueBool(const XML_Char * szKey, UT_Bool * pbValue) 
 		return UT_TRUE;
 	if (m_builtinScheme->getValueBool(szKey,pbValue))
 		return UT_TRUE;
+	// It is legal for there to be arbitrary preference tags that start with 
+	// "Debug", and Abi apps won't choke.  The idea is that developers can use
+	// these to selectively trigger development-time behaviors.
+	if (UT_XML_strnicmp(szKey, DEBUG_PREFIX, sizeof(DEBUG_PREFIX) - 1) == 0)
+	{
+		*pbValue = UT_FALSE;
+		return UT_TRUE;
+	}
 
 	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 	return UT_FALSE;
@@ -921,9 +940,17 @@ UT_Bool XAP_Prefs::savePrefsFile(void)
 				{
 					// for non-builtin sets, we only print the values which are different
 					// from the builtin set.
-					const XML_Char * szBuiltinValue;
+					const XML_Char * szBuiltinValue = NO_PREF_VALUE;
 					UT_Bool bHaveBuiltinValue = m_builtinScheme->getValue(szKey,&szBuiltinValue);
-					UT_ASSERT(bHaveBuiltinValue);
+					if (UT_XML_strnicmp(szKey, DEBUG_PREFIX, sizeof(DEBUG_PREFIX) - 1))
+					{
+						UT_DEBUGMSG(("Strange preference '%s=\"%s\"', ASSERT follows...\n", szKey, szValue));
+						UT_ASSERT(bHaveBuiltinValue);
+					}
+					else
+					{
+						need_print = UT_TRUE;  // always print "Debug..." values
+					}
 					if (UT_XML_strcmp(szValue,szBuiltinValue) != 0)
 						need_print = UT_TRUE;
 				}

@@ -21,6 +21,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
+#include <unistd.h>
 
 #include "fl_BlockLayout.h"
 #include "fl_Layout.h"
@@ -95,7 +96,8 @@ fl_BlockLayout::fl_BlockLayout(PL_StruxDocHandle sdh,
 	m_bStartList = UT_FALSE;
 	m_bStopList = UT_FALSE;
 	m_bListLabelCreated = UT_FALSE;
-        m_bCursorErased = UT_FALSE;
+	m_bCursorErased = UT_FALSE;
+	m_uBackgroundCheckReasons = 0;
 
 	m_pLayout = m_pSectionLayout->getDocLayout();
 	m_pDoc = m_pLayout->getDocument();
@@ -2962,7 +2964,7 @@ UT_Bool fl_BlockLayout::doclistener_deleteStrux(const PX_ChangeRecord_Strux* pcr
 	}
 
 	// in case we've never checked this one
-	m_pLayout->dequeueBlock(this);
+	m_pLayout->dequeueBlockForBackgroundCheck(this);
 
 	FV_View* pView = pSL->getDocLayout()->getView();
 	if (pView)
@@ -3217,8 +3219,8 @@ UT_Bool fl_BlockLayout::doclistener_insertBlock(const PX_ChangeRecord_Strux * pc
 	{
 		// this block may never have been checked
 		// just to be safe, let's make sure both will
-		m_pLayout->queueBlockForSpell(this);
-		m_pLayout->queueBlockForSpell(pNewBL);
+		m_pLayout->queueBlockForBackgroundCheck(FL_DocLayout::bgcrSpelling, this);
+		m_pLayout->queueBlockForBackgroundCheck(FL_DocLayout::bgcrSpelling, pNewBL);
 	}
 
 	return UT_TRUE;
@@ -4249,7 +4251,33 @@ void fl_BlockLayout::setStopping( UT_Bool bValue)
 	m_bStopList = bValue;
 }
 
+void fl_BlockLayout::debugFlashing(void)
+{
+	// Trivial background checker which puts on and takes off squiggles from
+	// the entire block that's being checked.  This sort of messes up the
+	// spelling squiggles, but it's just a debug thing anyhow.  Enable it
+	// by setting a preference DebugFlash="1"
+	UT_DEBUGMSG(("fl_BlockLayout::debugFlashing() was called\n"));
+	UT_GrowBuf pgb(1024);
+	UT_Bool bRes = getBlockBuf(&pgb);
+	UT_ASSERT(bRes);
 
+	UT_uint32 eor = pgb.getLength(); /* end of region */
 
+	FV_View* pView = m_pLayout->getView();
 
+	_addSquiggle(0, eor, UT_FALSE);
 
+	pView->_eraseInsertionPoint();
+	pView->updateScreen();
+	pView->_drawInsertionPoint();
+	usleep(250000);
+
+	//_deleteSquiggles(0, eor);
+
+	pView->_eraseInsertionPoint();
+	pView->updateScreen();
+	pView->_drawInsertionPoint();
+
+	return;
+}

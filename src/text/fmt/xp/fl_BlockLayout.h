@@ -224,6 +224,7 @@ public:
 	void checkForEndOnForcedBreak(void);
 
 	void checkSpelling(void);
+	void debugFlashing(void);
 	UT_Bool	findNextTabStop(UT_sint32 iStartX, UT_sint32 iMaxX, UT_sint32& iPosition, unsigned char& iType);
 	UT_Bool	findNextTabStopInLayoutUnits(UT_sint32 iStartX, UT_sint32 iMaxX, UT_sint32& iPosition, unsigned char& iType);
 	inline UT_sint32 getDefaultTabInterval(void) const { return m_iDefaultTabInterval; }
@@ -279,6 +280,14 @@ public:
 
 	static UT_Bool			s_EnumTabStops(void * myThis, UT_uint32 k, UT_sint32 & iPosition, unsigned char & iType, UT_uint32 & iOffset);
 	
+	inline void			addBackgroundCheckReason(UT_uint32 reason) {m_uBackgroundCheckReasons |= reason;}
+	inline void			removeBackgroundCheckReason(UT_uint32 reason) {m_uBackgroundCheckReasons &= ~reason;}
+	inline UT_Bool		hasBackgroundCheckReason(UT_uint32 reason) const {return (m_uBackgroundCheckReasons & reason);}
+
+	// The following is a set of bit flags giving the reason this block is
+	// queued for background checking.  See specific values in fl_DocLayout.h
+	UT_uint32				m_uBackgroundCheckReasons;
+
 #ifdef FMT_TEST
 	void					__dump(FILE * fp) const;
 #endif
@@ -395,6 +404,7 @@ protected:
 
 	// spell check stuff
 	UT_Vector				m_vecSquiggles;
+
 };
 
 /*
