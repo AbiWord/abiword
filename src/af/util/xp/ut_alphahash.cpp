@@ -41,7 +41,7 @@ UT_sint32 UT_AlphaHashTable::addEntry(const char* psLeft, const char* psRight, v
 	UT_sint32 addHashError = UT_HashTable::addEntry(psLeft,psRight,pData);
 	UT_ASSERT(addHashError == 0);
 
-	int ndxEntryAdded = (m_iEntryCount-1);
+	int ndxEntryAdded = (getEntryCount()-1);
 	
 	// find spot for this key in our alphabetically-sorted vector of
 	// keys.  ***WE RELY ON THE HASHTABLE TO ACTUALLY STORE THE STRINGS
@@ -52,7 +52,7 @@ UT_sint32 UT_AlphaHashTable::addEntry(const char* psLeft, const char* psRight, v
 	for (k=0; (k < kLimit); k++)
 	{
 		UT_sint32 ndxK = (UT_sint32)m_vecAlpha.getNthItem(k);
-		const char * szK = m_pEntries[ndxK].pszLeft;
+		const char * szK = getNthEntry(ndxK)->pszLeft;
 		UT_sint32 cmp = UT_stricmp(psLeft,szK);
 		if (cmp < 0)					// new key should be before the k-th one.
 		{

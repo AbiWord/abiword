@@ -35,6 +35,9 @@
 #include"xap_App.h"
 
 
+#ifdef HAVE_GNOME
+#include <gnome.h>
+#endif
 
 
 // default GTK message box button width, in GTK screen units (pixels)
@@ -318,8 +321,20 @@ void centerDialog(GtkWidget * parent, GtkWidget * child)
 	UT_ASSERT(parent);
 	UT_ASSERT(child);
 
-	gtk_window_set_transient_for(GTK_WINDOW(child),
-				     GTK_WINDOW(parent));
+#ifdef HAVE_GNOME
+	// if it's a gnome dialog, we want this behavior
+	if (GNOME_IS_DIALOG (child))
+	  gnome_dialog_set_parent (GNOME_DIALOG (child),
+				   GTK_WINDOW (parent));
+	else
+	  {
+#endif
+	    // gtk dialog 
+	    gtk_window_set_transient_for(GTK_WINDOW(child),
+					 GTK_WINDOW(parent));
+#ifdef HAVE_GNOME
+	  }
+#endif
 }
 
 gint searchCList(GtkCList * clist, char * compareText)
