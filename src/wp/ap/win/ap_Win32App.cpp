@@ -386,7 +386,7 @@ static GR_Image * _showSplash(HINSTANCE hInstance, XAP_Args * pArgs, const char 
 
 	UT_ByteBuf* pBB = NULL;
 	UT_Bool bShowSplash = UT_TRUE;
-	const char * szFile = "splash.png";
+	const char * szFile = NULL;
 
 	// Win32 does not put the program name in argv[0], so [0] is the first argument
 	int nFirstArg = 0;
@@ -427,7 +427,7 @@ static GR_Image * _showSplash(HINSTANCE hInstance, XAP_Args * pArgs, const char 
 
 	pBB = new UT_ByteBuf();
 	if (
-		(pBB->insertFromFile(0, szFile))
+		(szFile && szFile[0] && (pBB->insertFromFile(0, szFile)))
 		|| (pBB->ins(0, g_pngSplash, g_pngSplash_sizeof))
 		)
 	{
