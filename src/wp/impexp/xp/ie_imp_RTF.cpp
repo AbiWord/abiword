@@ -4643,7 +4643,7 @@ bool IE_Imp_RTF::TranslateKeyword(unsigned char* pKeyword, UT_sint16 param, bool
 			m_currentRTFState.m_cellProps.m_bHorizontalMerged = true;
 			return true;
 		}
-		else if (strcmp(reinterpret_cast<char*>(pKeyword), "clmrgf") == 0)
+		else if (strcmp(reinterpret_cast<char*>(pKeyword), "clmgf") == 0)
 		{
 			m_currentRTFState.m_cellProps.m_bHorizontalMergedFirst = true;
 			return true;
