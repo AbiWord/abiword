@@ -1719,14 +1719,15 @@ void AP_UnixApp::catchSignals(int sig_num)
 	}
 #endif
     UT_uint32 i = 0;
+	IEFileType abiType = IE_Imp::fileTypeForSuffix("abw");
     for(;i<m_vecFrames.getItemCount();i++)
     {
 		AP_UnixFrame * curFrame = const_cast<AP_UnixFrame*>(static_cast<const AP_UnixFrame*>(m_vecFrames[i]));
 		UT_ASSERT(curFrame);
 		if (NULL == curFrame->getFilename())
-		  curFrame->backup(".abw.CRASHED");
+		  curFrame->backup(".abw.saved", abiType);
 		else
-		  curFrame->backup(".CRASHED");
+		  curFrame->backup(".saved", abiType);
     }
     
     fflush(stdout);
