@@ -302,6 +302,7 @@ IEFileType IE_Exp::fileTypeForSuffix(const char * szSuffix)
 	for (UT_uint32 k=0; k < nrElements; k++)
 	{
 		IE_ExpSniffer * s = static_cast<IE_ExpSniffer*>(m_sniffers.getNthItem(k));
+		UT_ASSERT(s);
 		if (s->recognizeSuffix(szSuffix))
 		{
 			for (UT_uint32 a = 0; a < nrElements; a++)
@@ -538,6 +539,7 @@ bool IE_Exp::enumerateDlgLabels(UT_uint32 ndx,
 	if (ndx < getExporterCount())
 	{
 		IE_ExpSniffer * s = static_cast<IE_ExpSniffer*>(m_sniffers.getNthItem (ndx));
+		UT_return_val_if_fail(s, false);
 		return s->getDlgLabels(pszDesc,pszSuffixList,ft);
 	}
 
