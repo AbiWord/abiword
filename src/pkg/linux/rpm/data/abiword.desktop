@@ -5,6 +5,7 @@ Name[de]=AbiWord
 Comment=AbiWord Wordprocessor
 Comment[da]=AbiWord tekstbehandlingsprogram
 Comment[de]=AbiWord Textverarbeitungsprogramm
+Comment[pt]=Processador de Texto Abiword
 Exec=abiword
 Icon=abiword_48.png
 Terminal=0
