@@ -106,8 +106,18 @@ UT_Bool EV_Win32Toolbar::synthesize(void)
     m_hwnd = CreateWindowEx(0, 
 				TOOLBARCLASSNAME,		// window class name
 				(LPSTR) NULL,			// window caption
-				WS_CHILD | WS_BORDER | WS_VISIBLE | TBSTYLE_TOOLTIPS
-				| CCS_NOPARENTALIGN | CCS_NOMOVEY | CCS_NODIVIDER
+				WS_CHILD | WS_VISIBLE 
+#ifndef REBAR
+				| WS_BORDER 
+#endif
+				| WS_CLIPCHILDREN | WS_CLIPSIBLINGS 
+				| TBSTYLE_TOOLTIPS | TBSTYLE_FLAT
+				| CCS_NOPARENTALIGN | CCS_NODIVIDER
+#ifdef REBAR
+				| CCS_NORESIZE
+#else
+				| CCS_NOMOVEY
+#endif
 				,						// window style
 				0,						// initial x position
 				0,						// initial y position
@@ -220,13 +230,14 @@ UT_Bool EV_Win32Toolbar::synthesize(void)
 	SendMessage(m_hwnd, TB_AUTOSIZE, 0, 0);  
 
 #ifdef REBAR
-	RECT r;
-	GetWindowRect(m_hwnd, &r);
+	// Get the height of the toolbar.
+	DWORD dwBtnSize = SendMessage(m_hwnd, TB_GETBUTTONSIZE, 0,0);
 
-#if 0
+	// HACK: guess the length of the toolbar
+	RECT r;
 	UT_ASSERT(last_id > 0);
 	SendMessage(m_hwnd, TB_GETRECT, (WPARAM) last_id, (LPARAM)(LPRECT) &r);  
-#endif
+	UINT iWidth = r.right + 13;
 
 	// add this bar to the rebar
 	REBARBANDINFO  rbbi;
@@ -236,6 +247,7 @@ UT_Bool EV_Win32Toolbar::synthesize(void)
 	rbbi.fMask = RBBIM_COLORS |	// clrFore and clrBack are valid
 		RBBIM_CHILD |				// hwndChild is valid
 		RBBIM_CHILDSIZE |			// cxMinChild and cyMinChild are valid
+		RBBIM_SIZE |				// fStyle is valid
 		RBBIM_STYLE |				// fStyle is valid
 //		RBBIM_ID |					// wID is valid
 //		RBBIM_TEXT |				// lpText is valid
@@ -249,8 +261,9 @@ UT_Bool EV_Win32Toolbar::synthesize(void)
 //	rbbi.hbmBack = LoadBitmap(hInst, MAKEINTRESOURCE(IDB_BACK));
 //	rbbi.lpText = TEXT("Cool sites:");
 	rbbi.hwndChild = m_hwnd;
-	rbbi.cxMinChild = r.right - r.left;
-	rbbi.cyMinChild = r.bottom - r.top;
+	rbbi.cxMinChild = 0;
+	rbbi.cyMinChild = HIWORD(dwBtnSize);
+	rbbi.cx = iWidth;
 
 	// Add it at the the end
 	SendMessage(hwndParent, RB_INSERTBAND, (WPARAM)-1, (LPARAM)&rbbi);

@@ -59,7 +59,7 @@ UT_Bool AP_Win32Frame::RegisterClass(AP_Win32App * app)
 	wndclass.hInstance     = app->getInstance() ;
 	wndclass.hIcon         = LoadIcon (NULL, IDI_APPLICATION) ;
 	wndclass.hCursor       = LoadCursor (NULL, IDC_ARROW) ;
-	wndclass.hbrBackground = (HBRUSH) GetStockObject (WHITE_BRUSH) ;
+	wndclass.hbrBackground = GetSysColorBrush(COLOR_BTNFACE) ;
 	wndclass.lpszMenuName  = NULL ;
 	wndclass.lpszClassName = app->getApplicationName() ;
 	wndclass.hIconSm       = LoadIcon (NULL, IDI_APPLICATION) ;
@@ -254,8 +254,8 @@ void AP_Win32Frame::_createTopLevelWindow(void)
 				NULL,
                 WS_VISIBLE | WS_BORDER | WS_CHILD | WS_CLIPCHILDREN |
                   WS_CLIPSIBLINGS | CCS_NODIVIDER | CCS_NOPARENTALIGN |
-				  /* RBS_VARHEIGHT | */ RBS_BANDBORDERS,
-				0, 0, 400, 275,
+				  RBS_VARHEIGHT | RBS_BANDBORDERS,
+				0, 0, 0, 0,
 				m_hwndFrame,
 				NULL,
 				m_pWin32App->getInstance(),
@@ -305,26 +305,30 @@ void AP_Win32Frame::_createTopLevelWindow(void)
 	// force rebar to resize itself
 	MoveWindow(m_hwndRebar, 0, 0, iWidth, iHeight, TRUE);
 
-	// TODO: ask rebar how tall it is
+	// ask rebar how tall it is
+	GetClientRect(m_hwndRebar, &r);
+	m_iBarHeight = r.bottom - r.top + 6;
 #endif
 
 	UT_ASSERT(iHeight > m_iBarHeight);
 	iHeight -= m_iBarHeight;
 
 	// create a child window for us.
-	m_hwndChild = CreateWindow (CHILDWINCLASS,	// window class name
+	m_hwndChild = CreateWindowEx(
+				WS_EX_CLIENTEDGE,
+				CHILDWINCLASS,			// window class name
 				NULL,					// window caption
 				WS_CHILD | WS_VISIBLE
 				| WS_VSCROLL
-				,					     // window style
-				0,						 // initial x position
-				m_iBarHeight,            // initial y position
-				iHeight,                 // initial x size
-				iWidth,                  // initial y size
-				m_hwndFrame,             // parent window handle
-				NULL,                    // window menu handle
-				m_pWin32App->getInstance(),       // program instance handle
-				NULL) ;		             // creation parameters
+				,						// window style
+				0,						// initial x position
+				m_iBarHeight,			// initial y position
+				iHeight,				// initial x size
+				iWidth,					// initial y size
+				m_hwndFrame,			// parent window handle
+				NULL,					// window menu handle
+				m_pWin32App->getInstance(),		// program instance handle
+				NULL) ;					// creation parameters
 
 	UT_ASSERT(m_hwndChild);
 
@@ -591,6 +595,28 @@ LRESULT CALLBACK AP_Win32Frame::_WndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LP
 			}
 			break;
 
+#ifdef REBAR
+		case RBN_HEIGHTCHANGE:
+			{
+				RECT r;
+				GetClientRect(f->m_hwndFrame, &r);
+				int nWidth = r.right - r.left;
+				int nHeight = r.bottom - r.top;
+
+				GetClientRect(f->m_hwndRebar, &r);
+				f->m_iBarHeight = r.bottom - r.top + 6;
+
+				if (f->m_hwndChild)
+				{
+					// leave room for the toolbars
+					nHeight -= f->m_iBarHeight;
+
+					MoveWindow(f->m_hwndChild, 0, f->m_iBarHeight, nWidth, nHeight, TRUE);
+				}
+			}
+			break;
+#endif
+
 		// Process other notifications here
         default:
 			break;
@@ -602,7 +628,14 @@ LRESULT CALLBACK AP_Win32Frame::_WndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LP
 		int nWidth = LOWORD(lParam);
 		int nHeight = HIWORD(lParam);
 
-#ifndef REBAR
+#ifdef REBAR
+		MoveWindow(f->m_hwndRebar, 0, 0, LOWORD(lParam), HIWORD(lParam), TRUE); 
+
+		// ask rebar how tall it is
+		RECT r;
+		GetClientRect(f->m_hwndRebar, &r);
+		f->m_iBarHeight = r.bottom - r.top + 6;
+#else
 		// keep toolbars full width
 		f->m_iBarHeight = 0;
 	
