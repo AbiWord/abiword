@@ -27,6 +27,8 @@
 #include "ut_stack.h"
 #include "ut_vector.h"
 
+class UT_svg;
+class UT_SVGMatrix;
 class GR_Graphics;
 
 class GR_VectorImage : public GR_Image
@@ -38,19 +40,28 @@ public:
    	virtual bool		convertToBuffer(UT_ByteBuf** ppBB) const;
 	virtual bool		convertFromBuffer(const UT_ByteBuf* pBB, UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight);
 
-   	virtual GRType		getType() { return GRT_Vector; }
+   	virtual GRType		getType() const { return GRT_Vector; }
    	virtual bool		render(GR_Graphics *pGR, UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight);
 
-   	void _startElement(const XML_Char* name, const XML_Char **atts);
-   	void _endElement(const XML_Char* name);
-   	void _charData(const XML_Char* text, int len);
-   
 private:
-
    	bool m_status;
    	UT_Stack *m_context;
 	UT_Vector m_elements;  
    
+	UT_sint32 m_iDisplayOx;
+	UT_sint32 m_iDisplayOy;
+
+	UT_svg *m_pSVG;
+	UT_ByteBuf *m_pBB_Image;
+public:
+	UT_sint32 getDisplayOx() const { return m_iDisplayOx; }
+	UT_sint32 getDisplayOy() const { return m_iDisplayOy; }
+
+	UT_svg *getSVG() const { return m_pSVG; }
+
+	UT_sint32 m_iTreeLevel;
+	UT_Vector m_SVG_Matrix;
+	UT_SVGMatrix *m_CurrentMatrix;
 };
 
 #endif /* GR_VECTORIMAGE */

@@ -18,6 +18,7 @@
  */
 
 #include "ut_string.h"
+#include "ut_svg.h"
 
 #include "ie_impGraphic_SVG.h"
 #include "fg_GraphicVector.h"
@@ -29,26 +30,7 @@ bool IE_ImpGraphic_SVG::RecognizeSuffix(const char * szSuffix)
 
 bool IE_ImpGraphic_SVG::RecognizeContents(const char * szBuf, UT_uint32 iNumbytes)
 {
-	UT_uint32 off = 0;
-   	for (;;) {
-      		while (off < iNumbytes &&
-		       (szBuf[off] == ' ' || szBuf[off] == '\t' ||
-			szBuf[off] == '\n' || szBuf[off] == '\r')) off++;
-      		if (szBuf[off] == '<') {
-		   	if ((szBuf[off+1] == 's' || szBuf[off+1] == 'S') &&
-			    (szBuf[off+2] == 'v' || szBuf[off+2] == 'V') &&
-			    (szBuf[off+3] == 'g' || szBuf[off+3] == 'G') &&
-			    (szBuf[off+4] == ' ' || szBuf[off+4] == '\t' ||
-			     szBuf[off+4] == '\n' || szBuf[off+4] == '\r'))
-		     		return true;
-		   	else {
-			   	off++;
-			   	while (off < iNumbytes && szBuf[off] != '>') off++;
-			}
-		}
-	   	else return false;
-	}
-   	return false;
+	return UT_SVG_recognizeContent(szBuf,iNumbytes);
 }
 
 bool IE_ImpGraphic_SVG::GetDlgLabels(const char ** pszDesc,

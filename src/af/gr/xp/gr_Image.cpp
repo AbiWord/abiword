@@ -21,7 +21,7 @@
 
 #include "gr_Image.h"
 #include "ut_bytebuf.h"
-
+#include "ut_svg.h"
 #include "ut_assert.h"
 
 GR_Image::GR_Image()
@@ -60,33 +60,18 @@ void GR_Image::setName ( const UT_String & name )
 GR_Image::GRType GR_Image::getBufferType(const UT_ByteBuf * pBB)
 {
    const char * buf = (const char*)pBB->getPointer(0);
+   UT_uint32 len = pBB->getLength();
+
+   if (len < 6) return GR_Image::GRT_Unknown;
+
    char * comp1 = "\211PNG";
    char * comp2 = "<89>PNG";
    if (!(strncmp((const char*)buf, comp1, 4)) || !(strncmp((const char*)buf, comp2, 6)))
      return GR_Image::GRT_Raster;
-   else {
-      UT_uint32 len = pBB->getLength();
-      if (len > 1000) len = 1000; // only scan first 1000 bytes
-      UT_uint32 off = 0;
-      for (;;) {
-	 while (off < len &&
-		(buf[off] == ' ' || buf[off] == '\t' || 
-		 buf[off] == '\n' || buf[off] == '\r')) off++;
-	 if (buf[off] == '<') {
-	    if ((buf[off+1] == 's' || buf[off+1] == 'S') &&
-		(buf[off+2] == 'v' || buf[off+2] == 'V') &&
-		(buf[off+3] == 'g' || buf[off+3] == 'G') &&
-		(buf[off] == ' ' || buf[off] == '\t' ||
-		 buf[off] == '\n' || buf[off] == '\r'))
-	      return GR_Image::GRT_Vector;
-	    else {
-	       off++;
-	       while (off < len && buf[off] != '>') off++;
-	    }
-	 }
-	 else return GR_Image::GRT_Unknown;
-      }
-   }
+
+   if (UT_SVG_recognizeContent (buf,len))
+     return GR_Image::GRT_Vector;
+
    return GR_Image::GRT_Unknown;
 }
 
@@ -145,7 +130,7 @@ GR_Image::GRType GR_Image::getType() const
 	return GRT_Raster;
 }
 
-bool GR_Image::render(GR_Graphics *pGR, UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight) const 
+bool GR_Image::render(GR_Graphics *pGR, UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight)
 { 
   return false; 
 }

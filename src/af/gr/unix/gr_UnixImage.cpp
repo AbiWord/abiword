@@ -23,14 +23,17 @@
 #include "gr_UnixImage.h"
 #include "ut_assert.h"
 #include "ut_bytebuf.h"
-
+#include "ut_debugmsg.h"
 Fatmap::Fatmap ()
   : width (0), height(0), data(0)
 {
 }
 
 GR_UnixImage::GR_UnixImage(const char* szName)
-  : m_image(0)
+  : m_image(0),
+    m_grtype(GRT_Raster), // Probably the safest default.
+    m_iDisplayWidth(0),
+    m_iDisplayHeight(0)
 {
 	if (szName)
 	{
@@ -85,11 +88,13 @@ GR_UnixImage::~GR_UnixImage()
 
 UT_sint32	GR_UnixImage::getDisplayWidth(void) const
 {
+   if (m_image == 0) return m_iDisplayWidth;
    return m_image->width;
 }
 
 UT_sint32	GR_UnixImage::getDisplayHeight(void) const
 {
+   if (m_image == 0) return m_iDisplayHeight;
    return m_image->height;
 }
 
@@ -200,6 +205,31 @@ bool		GR_UnixImage::convertToBuffer(UT_ByteBuf** ppBB) const
 }
 
 bool	GR_UnixImage::convertFromBuffer(const UT_ByteBuf* pBB, UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight)
+{
+	const char *buffer = (const char *) pBB->getPointer(0);
+	UT_uint32 buflen = pBB->getLength();
+
+	if (buflen < 6) return false;
+
+	char str1[10] = "\211PNG";
+	char str2[10] = "<89>PNG";
+
+	if ( !(strncmp(buffer, str1, 4)) || !(strncmp(buffer, str2, 6)) )
+	{
+		m_grtype = GRT_Raster;
+		return _convertPNGFromBuffer(pBB, iDisplayWidth, iDisplayHeight);
+	}
+
+	// Otherwise, assume SVG. Do scaling when drawing; save size for then:
+	m_grtype = GRT_Vector;
+
+	m_iDisplayWidth  = iDisplayWidth;
+	m_iDisplayHeight = iDisplayHeight;
+
+	return true;
+}
+
+bool GR_UnixImage::_convertPNGFromBuffer(const UT_ByteBuf* pBB, UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight)
 {
       png_structp png_ptr;
       png_infop info_ptr;
@@ -418,3 +448,14 @@ bool	GR_UnixImage::convertFromBuffer(const UT_ByteBuf* pBB, UT_sint32 iDisplayWi
       return true;
 
 }
+
+bool GR_UnixImage::render(GR_Graphics *pGR, UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight)
+{
+UT_DEBUGMSG(("Choosing not to render what can't be a raster image!\n"));
+	return false;
+}
+
+
+
+
+

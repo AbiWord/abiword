@@ -520,7 +520,6 @@ UINT XAP_Win32Dialog_FileOpenSaveAs::_previewPicture(HWND hDlg)
 	double		scale_factor = 0.0;
 	UT_sint32	scaled_width,scaled_height;
 	UT_sint32	iImageWidth,iImageHeight;
-	UT_Byte     *pszWidth,*pszHeight;
 	RECT		r;
 
 	GetClientRect (hThumbnail, &r);
@@ -532,9 +531,9 @@ UINT XAP_Win32Dialog_FileOpenSaveAs::_previewPicture(HWND hDlg)
 	}
 	else
 	{
-		UT_SVG_getDimensions(pBB, &pszWidth, &pszHeight);
-		iImageWidth  = (UT_sint32)(*pszWidth);
-		iImageHeight = (UT_sint32)(*pszHeight);
+		UT_sint32 layoutWidth;
+		UT_sint32 layoutHeight;
+		UT_SVG_getDimensions(pBB, pGr, iImageWidth, iImageHeight, layoutWidth, layoutHeight);
 	}
 
 	// Update Height and Width Strings

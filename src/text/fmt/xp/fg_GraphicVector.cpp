@@ -21,6 +21,7 @@
 #include <stdlib.h>
 
 #include "ut_assert.h"
+#include "ut_debugmsg.h"
 #include "ut_svg.h"
 #include "ut_string.h"
 #include "ut_bytebuf.h"
@@ -130,48 +131,9 @@ GR_Image* FG_GraphicVector::generateImage(GR_Graphics* pG)
 	}
 	else
 	{
-		// the SVG dimensions might be in a variety of units. let's see what we have.
-	   	UT_SVG_getDimensions(m_pbbSVG, (UT_Byte**)(&pszWidth), (UT_Byte**)(&pszHeight));
-
-	   	UT_sint32 dimWidth = UT_determineDimension((const char*)pszWidth, DIM_PX);
-	   	UT_sint32 dimHeight = UT_determineDimension((const char*)pszHeight, DIM_PX);
-	   
-	   	if (dimWidth != DIM_PX && dimWidth != DIM_none) 
-		{
-		   	iDisplayWidth = pG->convertDimension((char*)pszWidth);
-		   	iLayoutWidth = UT_convertToLayoutUnits(pszWidth);
-		
-		} else {
-	   
-		   	double iImageWidth = UT_convertDimensionless(pszWidth);
-		   
-		   	double fScale = pG->getResolution() / 72.0;
-			iDisplayWidth = (UT_sint32) (iImageWidth * fScale);
-
-			fScale = 1440.0 / 72.0;
-			iLayoutWidth = (UT_sint32) (iImageWidth * fScale);
-		}
-	   
-	   	if (dimHeight != DIM_PX && dimHeight != DIM_none) 
-		{
-		   	iDisplayHeight = pG->convertDimension((char*)pszHeight);
-		   	iLayoutHeight = UT_convertToLayoutUnits(pszHeight);
-
-		} else {
-
-		   	double iImageHeight = UT_convertDimensionless(pszHeight);
-		   
-		   	double fScale = pG->getResolution() / 72.0;
-   			iDisplayHeight = (UT_sint32) (iImageHeight * fScale);
-
-		   	fScale = 1440.0 / 72.0;
-		   	iLayoutHeight = (UT_sint32) (iImageHeight * fScale);
-		}
-	 
-	 	FREEP(pszWidth);
-	 	FREEP(pszHeight);
+		UT_SVG_getDimensions(m_pbbSVG, pG, iDisplayWidth, iDisplayHeight, iLayoutWidth, iLayoutHeight);
 	}
-
+UT_DEBUGMSG(("SVG image: width = %d, height = %d\n",(int)iDisplayWidth,(int)iDisplayHeight));
 	UT_ASSERT(iDisplayWidth > 0);
 	UT_ASSERT(iDisplayHeight > 0);
 
@@ -239,24 +201,10 @@ bool FG_GraphicVector::setVector_SVG(UT_ByteBuf* pBB)
 	m_pbbSVG = pBB;
 	m_bOwnSVG = true;
 
-	//  We want to calculate the dimensions of the image here.
-	UT_Byte * pszWidth, * pszHeight;
-	if (!UT_SVG_getDimensions(pBB, &pszWidth, &pszHeight)) return false;
+	UT_sint32 layoutWidth;
+	UT_sint32 layoutHeight;
 
-	if (UT_determineDimension((const char*)pszWidth, DIM_PX) != DIM_PX)
-		m_iWidth = (UT_sint32)(UT_convertToInches((const char*)pszWidth) * 72);
-	else
-		m_iWidth = (UT_sint32)(UT_convertDimensionless((const char*)pszWidth));
-   
-	if (UT_determineDimension((const char*)pszHeight, DIM_PX) != DIM_PX)
-		m_iHeight = (UT_sint32)(UT_convertToInches((const char*)pszHeight) * 72);
-	else
-		m_iHeight = (UT_sint32)(UT_convertDimensionless((const char*)pszHeight));
-
-   	FREEP(pszWidth); 
-   	FREEP(pszHeight);
-   
-	return true;
+	return UT_SVG_getDimensions(pBB, 0, m_iWidth, m_iHeight, layoutWidth, layoutHeight);
 }
 
 UT_ByteBuf* FG_GraphicVector::getVector_SVG(void)

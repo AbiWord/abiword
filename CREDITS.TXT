@@ -47,7 +47,7 @@ Harald Fernengel <harry@bnro.de>                RTF compatibility fixes
 Hubert Figuiere <hfiguiere@teaser.fr>           RTF import/export work, MacOS (X) maintainer, MacOS X makefiles and autoconf, JPEG import, Applix import
 Albert Fluegel <albert.fluegel@hl.siemens.de>   Solaris
 Ben Fowler <bpfowler@hotmail.com>               MacOS 8/9 work
-F J Franklin <F.J.Franklin@sheffield.ac.uk>
+F J Franklin <F.J.Franklin@sheffield.ac.uk>     SVG work.
 Stephane Fritsch <sfritsch@noos.fr>             BeOS
 Tomas Frydrych <tomas@frydrych.uklinux.net>     ttf, utf8 locale, bidi
 David Given <dg@tao-group.com>                  Human Readable Text Export

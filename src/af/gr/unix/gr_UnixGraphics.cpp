@@ -964,6 +964,12 @@ void GR_UnixGraphics::drawImage(GR_Image* pImg, UT_sint32 xDest, UT_sint32 yDest
 
    	Fatmap * image = pUnixImage->getData();
 
+	if (image == 0)
+	{
+		UT_DEBUGMSG(("Found no image data. This is probably SVG masquerading as a raster!\n"));
+		return;
+	}
+
    	UT_sint32 iImageWidth = pUnixImage->getDisplayWidth();
    	UT_sint32 iImageHeight = pUnixImage->getDisplayHeight();
 

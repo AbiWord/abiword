@@ -745,7 +745,7 @@ gint XAP_UnixDialog_FileOpenSaveAs::previewPicture (void)
 
 	int answer = 0;
 
-	UT_ByteBuf *pBB = NULL, *pTempBB = NULL; 
+	UT_ByteBuf *pBB = NULL;
 	IEGraphicFileType iegft = IEGFT_Unknown;
 	IE_ImpGraphic* pIEG = NULL;
 	UT_Error errorCode = UT_OK;
@@ -754,7 +754,6 @@ gint XAP_UnixDialog_FileOpenSaveAs::previewPicture (void)
 	double		scale_factor = 0.0;
 	UT_sint32	scaled_width,scaled_height;
 	UT_sint32	iImageWidth,iImageHeight;
-	UT_Byte     *pszWidth,*pszHeight;
 
 	if (!buf)
 	  {
@@ -777,7 +776,6 @@ gint XAP_UnixDialog_FileOpenSaveAs::previewPicture (void)
 
 	// Load File into memory
 	pBB     = new UT_ByteBuf(0);
-	pTempBB = new UT_ByteBuf(0);
 	pBB->insertFromFile(0, buf);
 
 	// Build an Import Graphic based on file type
@@ -785,40 +783,43 @@ gint XAP_UnixDialog_FileOpenSaveAs::previewPicture (void)
 	if (errorCode)
 	{
 		DELETEP(pBB);
-		DELETEP(pTempBB);
 		pGr->drawChars (ucstext, 0, len, 12, 35);
 		goto Cleanup;
 	}
-	iegft = pIEG->fileTypeForContents( (const char *) pBB->getPointer(0), 50);
+	iegft = pIEG->fileTypeForContents( (const char *) pBB->getPointer(0), pBB->getLength());
 
 	// Skip import if PNG or SVG file
-	if (iegft != IEGFT_PNG || iegft != IEGFT_SVG)
+	if (iegft != IEGFT_PNG && iegft != IEGFT_SVG)
 	{
 		// Convert to PNG or SVG (pBB Memoried freed in function
+		UT_ByteBuf *pTempBB = NULL; 
 		errorCode = pIEG->convertGraphic(pBB, &pTempBB);  
 		pBB = pTempBB;
 		if (errorCode)
 		{
 			DELETEP(pIEG);
 			DELETEP(pBB);
-			DELETEP(pTempBB);
 			pGr->drawChars (ucstext, 0, len, 12, 35);
 			goto Cleanup;
 		}
 	}
 	// Reset file type based on conversion
-	iegft = pIEG->fileTypeForContents( (const char *) pBB->getPointer(0), 50);
+	iegft = pIEG->fileTypeForContents( (const char *) pBB->getPointer(0), pBB->getLength());
 	DELETEP(pIEG);
 
 	if (iegft == IEGFT_PNG)
 	{
 		UT_PNG_getDimensions(pBB, iImageWidth, iImageHeight);
 	}
+	else if (iegft == IEGFT_SVG)
+	{
+		UT_sint32 layoutWidth;
+		UT_sint32 layoutHeight;
+		UT_SVG_getDimensions(pBB, pGr, iImageWidth, iImageHeight, layoutWidth, layoutHeight);
+	}
 	else
 	{
-		UT_SVG_getDimensions(pBB, &pszWidth, &pszHeight);
-		iImageWidth  = (UT_sint32)(*pszWidth);
-		iImageHeight = (UT_sint32)(*pszHeight);
+		UT_ASSERT(UT_SHOULD_NOT_HAPPEN); // But it could, I think.
 	}
 
 	if (m_preview->allocation.width >= iImageWidth && m_preview->allocation.height >= iImageHeight)
@@ -830,11 +831,18 @@ gint XAP_UnixDialog_FileOpenSaveAs::previewPicture (void)
 	scaled_width  = (int) (scale_factor * iImageWidth);
 	scaled_height = (int) (scale_factor * iImageHeight);
 
+	if (iegft == IEGFT_PNG)
+	{
 #if defined(HAVE_GNOME)
-	pImage = new GR_UnixGnomeImage(NULL,false);
+		pImage = new GR_UnixGnomeImage(NULL,false);
 #else
-	pImage = new GR_UnixImage(NULL);
+		pImage = new GR_UnixImage(NULL);
 #endif
+	}
+	else // if (iegft == IEGFT_SVG)
+	{
+		pImage = new GR_VectorImage(NULL);
+	}
 
 	pImage->convertFromBuffer(pBB, scaled_width, scaled_height);
 

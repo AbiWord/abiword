@@ -56,7 +56,7 @@ public:
    
 	static GRType		getBufferType(const UT_ByteBuf* pBB);
    	virtual GRType		getType() const;
-   	virtual bool		render(GR_Graphics *pGR, UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight) const;
+   	virtual bool		render(GR_Graphics *pGR, UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight);
 
  protected:
 	void setName ( const char * szName );

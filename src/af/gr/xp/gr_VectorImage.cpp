@@ -22,9 +22,15 @@
 #include "gr_VectorImage.h"
 #include "ut_bytebuf.h"
 #include "gr_Graphics.h"
-
+#include "ut_svg.h"
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
+
+static void _startElement(void * userdata, const char * name, const char ** atts);
+static void _endElement(void * userdata, const char * name);
+static void _charData(void * userdata, UT_ByteBuf * pBB);
+
+static void render_init(GR_VectorImage* pImage);
 
 #define TT_SVG 0
 #define TT_GROUP 1
@@ -77,7 +83,7 @@ struct drawPath : public drawBase {
    
 
 GR_VectorImage::GR_VectorImage(const char* szName)
-  : m_status(false), m_context(0)
+  : m_status(false), m_context(0), m_pSVG(0), m_pBB_Image(0)
 {
    if (szName)
      {
@@ -91,61 +97,63 @@ GR_VectorImage::GR_VectorImage(const char* szName)
 
 GR_VectorImage::~GR_VectorImage()
 {
+  FREEP(m_pSVG);
+  FREEP(m_pBB_Image);
+  UT_VECTOR_PURGEALL(UT_SVGMatrix*,m_SVG_Matrix);
 }
-
-#ifndef HAVE_GNOME
-static void startElement(void *userData, const XML_Char* name, const XML_Char** atts)
-{
-   GR_VectorImage * reader = (GR_VectorImage*)userData;
-   reader->_startElement(name, atts);
-}
-
-static void endElement(void *userData, const XML_Char* name)
-{
-   GR_VectorImage * reader = (GR_VectorImage*)userData;
-   reader->_endElement(name);
-}
-
-static void charData(void *userData, const XML_Char* text, int len)
-{
-   GR_VectorImage * reader = (GR_VectorImage*)userData;
-   reader->_charData(text, len);
-}
-#endif /* HAVE_GNOME */
 
 bool GR_VectorImage::convertToBuffer(UT_ByteBuf** ppBB) const
 {
-   UT_DEBUGMSG(("writing vector image data (TODO)\n"));
-   return false;
+  UT_ByteBuf* pBB = new UT_ByteBuf;
+
+  bool bCopied = pBB->append(m_pBB_Image->getPointer(0), m_pBB_Image->getLength());
+
+  if (!bCopied) FREEP(pBB);
+
+  *ppBB = pBB;
+
+  return bCopied;
 }
 
 bool GR_VectorImage::convertFromBuffer(const UT_ByteBuf* pBB, UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight)
 {
   setDisplaySize ( iDisplayWidth, iDisplayHeight );
 
-   UT_DEBUGMSG(("reading vector image data (TODO)\n"));
-   return false;
-/*
-   XML_Parser parser = XML_CreateParser(NULL);
-   XML_SetUserData(parser, this);
-   XML_SetElementHandler(parser, startElement, endElement);
-   XML_SetCharacterDataHandler(parser, charData);
+  FREEP(m_pBB_Image);
 
-   m_status = true;
-   
-   if (!XML_Parse(parser, pBB->getPointer(0), pBB->getLength(), 1))
-     m_status = false;
-   
-   if (parser) XML_ParserFree(parser);
-   
-   return m_status;
-  */ 
+  m_pBB_Image = new UT_ByteBuf;
+
+  bool bCopied = m_pBB_Image->append(pBB->getPointer(0), pBB->getLength());
+
+  if (!bCopied) FREEP(m_pBB_Image);
+
+  return bCopied;
 }
 
 bool GR_VectorImage::render(GR_Graphics* pGR, UT_sint32 xDest, UT_sint32 yDest)
 {
-   UT_sint32 iDisplayWidth = getDisplayWidth();
-   UT_sint32 iDisplayHeight = getDisplayHeight();
+  // Set origin
+  m_iDisplayOx = xDest;
+  m_iDisplayOy = yDest;
+
+  DELETEP(m_pSVG);
+  m_pSVG = new UT_svg(pGR);
+
+  m_pSVG->cb_userdata = (void*) this;
+
+  m_pSVG->cb_start = _startElement;
+  m_pSVG->cb_end = _endElement;
+  m_pSVG->cb_text = _charData;
+
+  m_iTreeLevel = 0;
+
+  bool bParsed = m_pSVG->parse(m_pBB_Image);
+
+  FREEP(m_pSVG);
+
+  return bParsed;
+
+   /*
    UT_RGBColor col(0, 0xff, 0);
 
    pGR->fillRect(col, xDest, yDest, iDisplayWidth, iDisplayHeight);
@@ -157,19 +165,103 @@ bool GR_VectorImage::render(GR_Graphics* pGR, UT_sint32 xDest, UT_sint32 yDest)
    pGR->drawLine(xDest + iDisplayWidth/2, yDest+iDisplayHeight, xDest, yDest+iDisplayHeight/2);
 		 
    return true;
+   */
 }
 
-#ifndef HAVE_GNOME
-void GR_VectorImage::_startElement(const XML_Char * name, const XML_Char ** atts)
+static void _startElement(void* userdata, const char* name, const char** atts)
 {
+  GR_VectorImage* pImage = (GR_VectorImage*) userdata;
+
+  UT_svg* pSVG = pImage->getSVG();
+
+  if (pImage->m_iTreeLevel == 0)
+    {
+      render_init (pImage);
+    }
+  else
+    {
+      pImage->m_CurrentMatrix = new UT_SVGMatrix(*(pImage->m_CurrentMatrix));
+      if (pImage->m_SVG_Matrix.push_back((void*)(pImage->m_CurrentMatrix)))
+	{
+	  UT_DEBUGMSG(("SVG: Matrix stack/vector: Insufficient memory?\n"));
+	  pSVG->m_bSVG = false;
+	  pSVG->m_bContinue = false;
+	}
+    }
+  if (pSVG->m_bContinue == false) return; // error somewhere
+  pImage->m_iTreeLevel++;
+
+  // First apply specified transform, if any; not all element should have this though, I think
+  pImage->m_CurrentMatrix->applyTransform(pImage->m_CurrentMatrix, pSVG->getAttribute("transform", atts));
+
+  //
 }
 
-void GR_VectorImage::_endElement(const XML_Char * name)
+static void _endElement(void* userdata, const char* name)
 {
+  GR_VectorImage* pImage = (GR_VectorImage*) userdata;
+
+  UT_svg* pSVG = pImage->getSVG();
+
+  if (pImage->m_iTreeLevel > 0)
+    {
+      FREEP(pImage->m_CurrentMatrix);
+      pImage->m_SVG_Matrix.pop_back();
+      pImage->m_CurrentMatrix = 0;
+    }
+  pImage->m_iTreeLevel--;
+  if (pImage->m_iTreeLevel > 0)
+      pImage->m_CurrentMatrix = (UT_SVGMatrix*)(pImage->m_SVG_Matrix.getLastItem());
+
+  //
 }
 
-void GR_VectorImage::_charData(const XML_Char * text, int len)
+static void _charData(void* userdata, UT_ByteBuf* pBB)
 {
-}
-#endif /* HAVE_GNOME */
+  GR_VectorImage* pImage = (GR_VectorImage*) userdata;
 
+  // ByteBuf holds complete text, probably in UTF-8
+
+  FREEP(pBB);
+}
+ 
+static void render_init(GR_VectorImage* pImage)
+{
+  UT_svg* pSVG = pImage->getSVG();
+
+  // White backgound (I think)
+  GR_Graphics* pGR = pSVG->m_pG;
+
+  // UT_RGBColor col(0xff,0xff,0xff);
+
+  // pGR->fillRect(col, pImage->getDisplayOx(), pImage->getDisplayOy(), pImage->getDisplayWidth(), pImage->getDisplayHeight());
+
+  // Set initial transformation matrix
+  float x_origin = (float) pImage->getDisplayOx();
+  float y_origin = (float) pImage->getDisplayOy();
+
+  float x_scale = (float) ((double) (pImage->getDisplayWidth())  / (double) (pSVG->m_iDisplayWidth));
+  float y_scale = (float) ((double) (pImage->getDisplayHeight()) / (double) (pSVG->m_iDisplayHeight));
+
+  while (pImage->m_SVG_Matrix.getItemCount() > 0)
+    {
+      UT_SVGMatrix* matrix = (UT_SVGMatrix*) pImage->m_SVG_Matrix.getLastItem();
+      if (matrix) delete matrix;
+      pImage->m_SVG_Matrix.pop_back();
+    }
+
+  UT_SVGMatrix matrix;
+  matrix = matrix.translate (x_origin,y_origin);
+  matrix = matrix.scaleNonUniform (x_scale,y_scale);
+
+  pImage->m_CurrentMatrix = new UT_SVGMatrix(matrix);
+  if (pImage->m_SVG_Matrix.push_back((void*)(pImage->m_CurrentMatrix)))
+    {
+      UT_DEBUGMSG(("SVG: Matrix stack/vector: Insufficient memory?\n"));
+      pSVG->m_bSVG = false;
+      pSVG->m_bContinue = false;
+      return;
+    }
+
+  //
+}
