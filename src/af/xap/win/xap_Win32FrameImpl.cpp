@@ -34,6 +34,8 @@
 #include "ev_EditMethod.h"
 #include "xav_View.h"
 #include "xap_prefs.h"
+#include "ie_impGraphic.h"
+#include "fv_View.h"
 
 #ifdef _MSC_VER
 #pragma warning(disable: 4355)	// 'this' used in base member initializer list
@@ -875,46 +877,82 @@ LRESULT CALLBACK XAP_Win32FrameImpl::_FrameWndProc(HWND hwnd, UINT iMsg, WPARAM 
 			HDROP hDrop = (HDROP) wParam; 
 			// How many files were dropped?
 			int count = DragQueryFile(hDrop, 0xFFFFFFFF, NULL, 0);
-			char bufsize[_MAX_PATH];
+			char szFileName[_MAX_PATH];
 			int i,pathlength;
 			for (i=0; i<count; i++)
 			{
 				pathlength = DragQueryFile(hDrop, i, NULL, 0);
 				if (pathlength < _MAX_PATH)
 				{
-					DragQueryFile(hDrop, i, bufsize, _MAX_PATH);
+					DragQueryFile(hDrop, i, szFileName, _MAX_PATH);
 					XAP_App * pApp = f->getApp();
 					UT_ASSERT(pApp);
-					
+					FV_View* pView = (FV_View *) f->getCurrentView();
 					XAP_Frame * pNewFrame = 0;
+					IEGraphicFileType iegft = IEGFT_Unknown;					
+					IE_ImpGraphic *pIEG;
+					FG_Graphic* pFG;
+					UT_Error errorCode;
 
-					// Check if the current document is empty.
-					if (f->isDirty() || f->getFilename() ||
-                        (f->getViewNumber() > 0))
-					{
-						pNewFrame = pApp->newFrame();
-						if (pNewFrame == NULL)
+					/*
+						The user may be dropping every kind of file
+						Check first if the file is a graphic. If it's a graphics. I we insert it 
+						in the document, if not we assume that it's document 		
+					*/								
+					// If there is no import graphic, it's a document...
+					errorCode = IE_ImpGraphic::constructImporter(szFileName, iegft, &pIEG);
+					if(errorCode == UT_OK)
+					{						
+						errorCode = pIEG->importGraphic(szFileName, &pFG);
+						if(errorCode != UT_OK || !pFG)
 						{
-							f->setStatusMessage("Could not open another window");
+							s_CouldNotLoadFileMessage(f, szFileName, errorCode);							
+							DELETEP(pIEG);
 							return 0;
 						}
-					}
-					else
-					{
-						pNewFrame = f;
-					}
 
-					UT_Error error = pNewFrame->loadDocument(bufsize, IEFT_Unknown);
-					if (error != UT_OK)
-					{
-						if (f != pNewFrame)
-							pNewFrame->close();
-						s_CouldNotLoadFileMessage(f, bufsize, error);
-					}
+						DELETEP(pIEG);					
+
+						errorCode = pView->cmdInsertGraphic(pFG, szFileName);
+						if (errorCode != UT_OK)
+						{
+							s_CouldNotLoadFileMessage(f, szFileName, errorCode);							
+							DELETEP(pFG);
+							return 0;
+						}
+						
+						DELETEP(pFG);
+					  }
 					else
-					{
-						pNewFrame->show();
-					}
+					{	
+						// Check if the current document is empty.
+						if (f->isDirty() || f->getFilename() ||
+							(f->getViewNumber() > 0))
+						{
+							pNewFrame = pApp->newFrame();
+							if (pNewFrame == NULL)
+							{
+								f->setStatusMessage("Could not open another window");
+								return 0;
+							}
+						}
+						else
+						{
+							pNewFrame = f;
+						}
+
+						UT_Error error = pNewFrame->loadDocument(szFileName, IEFT_Unknown);
+						if (error != UT_OK)
+						{
+							if (f != pNewFrame)
+								pNewFrame->close();
+							s_CouldNotLoadFileMessage(f, szFileName, error);
+						}
+						else
+						{
+							pNewFrame->show();
+						}
+					  }
 				}
 				else
 				{
