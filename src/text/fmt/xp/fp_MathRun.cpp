@@ -299,6 +299,9 @@ void fp_MathRun::_draw(dg_DrawArgs* pDA)
 	GR_Graphics *pG = pDA->pG;
 	UT_DEBUGMSG(("Draw with class %x \n",pG));
 	UT_DEBUGMSG(("Contents of fp MathRun \n %s \n",m_sMathML.utf8_str()));
+	scaled x = getAbiContext()->fromAbiLayoutUnits(pDA->xoff);
+	scaled y = getAbiContext()->fromAbiLayoutUnits(pDA->yoff+getAscent());
+	m_pMathView->render(*getAbiContext(), x, y);
 }
 
 
