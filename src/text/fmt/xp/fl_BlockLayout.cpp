@@ -3593,9 +3593,10 @@ bool    fl_BlockLayout::_doInsertDirectionMarkerRun(PT_BlockOffset blockOffset, 
 	UT_ASSERT( pNewRun );
 
 	bool bResult = _doInsertRun(pNewRun);
+#if 0
 	if (bResult)
 		_breakLineAfterRun(pNewRun);
-
+#endif
 	return bResult;
 }
 
@@ -3672,11 +3673,12 @@ bool	fl_BlockLayout::_doInsertBookmarkRun(PT_BlockOffset blockOffset)
 	
 	UT_ASSERT(pNewRun);
 	bool bResult = _doInsertRun(pNewRun);
+#if 0
 	if (bResult)
 	{
 		_breakLineAfterRun(pNewRun);
 	}
-
+#endif
 	return bResult;
 
 }
@@ -3715,7 +3717,7 @@ bool	fl_BlockLayout::_doInsertHyperlinkRun(PT_BlockOffset blockOffset)
 				}
 			}
 
-			_breakLineAfterRun(pNewRun);
+			//_breakLineAfterRun(pNewRun);
 		}
 	}
 	else
