@@ -21,7 +21,7 @@
 #include "ut_vector.h"
 #include "ap_UnixToolbar_SizeCombo.h"
 #include "ap_Toolbar_Id.h"
-#include "ap_Frame.h"
+#include "xap_Frame.h"
 
 /*****************************************************************/
 EV_Toolbar_Control * AP_UnixToolbar_SizeCombo::static_constructor(EV_Toolbar * pToolbar,

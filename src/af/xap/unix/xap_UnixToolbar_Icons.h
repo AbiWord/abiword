@@ -23,7 +23,7 @@
 #include <gtk/gtk.h>
 #include <gdk/gdk.h>
 #include "ut_types.h"
-#include "ap_Toolbar_Icons.h"
+#include "xap_Toolbar_Icons.h"
 
 /*****************************************************************/
 

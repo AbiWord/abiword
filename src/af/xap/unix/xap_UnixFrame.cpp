@@ -22,16 +22,16 @@
 #include "ut_types.h"
 #include "ut_debugmsg.h"
 #include "ut_assert.h"
-#include "ap_ViewListener.h"
-#include "ap_UnixApp.h"
-#include "ap_UnixFrame.h"
+#include "xap_ViewListener.h"
+#include "xap_UnixApp.h"
+#include "xap_UnixFrame.h"
 #include "ev_UnixKeyboard.h"
 #include "ev_UnixMouse.h"
 #include "ev_UnixMenu.h"
 #include "ev_UnixToolbar.h"
 #include "ev_EditMethod.h"
-#include "av_View.h"
-#include "ad_Document.h"
+#include "xav_View.h"
+#include "xad_Document.h"
 
 #define DELETEP(p)		do { if (p) delete p; } while (0)
 #define REPLACEP(p,q)	do { if (p) delete p; p = q; } while (0)

@@ -20,7 +20,7 @@
 #include "ut_types.h"
 #include "ut_vector.h"
 #include "ev_Toolbar.h"
-#include "ap_Toolbar_ControlFactory.h"
+#include "xap_Toolbar_ControlFactory.h"
 
 /*****************************************************************/
 

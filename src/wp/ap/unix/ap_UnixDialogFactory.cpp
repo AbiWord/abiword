@@ -22,7 +22,7 @@
 // get the class definitions
 
 #include "ap_Dialog_Id.h"
-#include "ap_UnixDialogFactory.h"
+#include "xap_UnixDialogFactory.h"
 #include "ap_UnixDialog_All.h"
 
 // fill in the table

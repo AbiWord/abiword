@@ -25,9 +25,9 @@
 #include "ut_string.h"
 #include "ut_assert.h"
 #include "xap_Dialog_Id.h"
-#include "ap_UnixDialog_Print.h"
-#include "ap_UnixApp.h"
-#include "ap_UnixFrame.h"
+#include "xap_UnixDialog_Print.h"
+#include "xap_UnixApp.h"
+#include "xap_UnixFrame.h"
 #include "ps_Graphics.h"
 #include <gtk/gtk.h>
 #include <glib.h>

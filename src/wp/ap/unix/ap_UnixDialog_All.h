@@ -30,10 +30,10 @@
 
 #	define AP_UNIXDIALOG_ALL_H
 
-#	include "ap_UnixDialog_MessageBox.h"
-#	include "ap_UnixDialog_FileOpenSaveAs.h"
-#	include "ap_UnixDialog_Print.h"
-#	include "ap_UnixDialog_FontChooser.h"
+#	include "xap_UnixDialog_MessageBox.h"
+#	include "xap_UnixDialog_FileOpenSaveAs.h"
+#	include "xap_UnixDialog_Print.h"
+#	include "xap_UnixDialog_FontChooser.h"
 
 	// ... add new dialogs here ...
 

@@ -29,8 +29,8 @@
 #include "ev_Toolbar.h"
 #include "ev_EditMethod.h"
 #include "ev_EditBinding.h"
-#include "ap_Toolbar_Layouts.h"
-#include "ap_Toolbar_LabelSet.h"
+#include "xap_Toolbar_Layouts.h"
+#include "xap_Toolbar_LabelSet.h"
 
 
 #define DELETEP(p)	do { if (p) delete p; } while (0)

@@ -17,7 +17,7 @@
  * 02111-1307, USA.
  */
 
-#include "ap_UnixApp.h"
+#include "xap_UnixApp.h"
 
 int main(int argc, char ** argv)
 {

@@ -19,7 +19,7 @@
 
 #include "ut_types.h"
 #include "ut_string.h"
-#include "ap_Toolbar_Icons.h"
+#include "xap_Toolbar_Icons.h"
 
 #define NrElements(a)	((sizeof(a)/sizeof(a[0])))
 

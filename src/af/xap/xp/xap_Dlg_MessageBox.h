@@ -20,7 +20,7 @@
 #ifndef AP_DIALOG_MESSAGEBOX_H
 #define AP_DIALOG_MESSAGEBOX_H
 
-#include "ap_Dialog.h"
+#include "xap_Dialog.h"
 
 class AP_Dialog_MessageBox : public AP_Dialog_NonPersistent
 {

@@ -19,7 +19,7 @@
 
 #include "ut_types.h"
 #include "ut_assert.h"
-#include "ap_UnixToolbar_Icons.h"
+#include "xap_UnixToolbar_Icons.h"
 
 AP_UnixToolbar_Icons::AP_UnixToolbar_Icons(void)
 {

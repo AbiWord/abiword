@@ -22,20 +22,20 @@ ABI_DEPTH = ../..
 
 include $(ABI_DEPTH)/config/abi_defs.mk
 
-CPPSRCS=	ad_Document.cpp				\
-		ap_App.cpp						\
-		ap_Args.cpp						\
-		ap_Dialog.cpp					\
-		ap_DialogFactory.cpp			\
-		ap_Dialog_FileOpenSaveAs.cpp	\
-		ap_Dialog_FontChooser.cpp		\
-		ap_Dialog_MessageBox.cpp		\
-		ap_Dialog_Print.cpp				\
-		ap_Frame.cpp					\
-		ap_Scrollbar_ViewListener.cpp	\
-		ap_Toolbar_ControlFactory.cpp	\
-		ap_ViewListener.cpp				\
-		av_View.cpp
+CPPSRCS=	xad_Document.cpp		\
+		xap_App.cpp			\
+		xap_Args.cpp			\
+		xap_Dialog.cpp			\
+		xap_DialogFactory.cpp		\
+		xap_Dialog_FileOpenSaveAs.cpp	\
+		xap_Dialog_FontChooser.cpp	\
+		xap_Dialog_MessageBox.cpp	\
+		xap_Dialog_Print.cpp		\
+		xap_Frame.cpp			\
+		xap_Scrollbar_ViewListener.cpp	\
+		xap_Toolbar_ControlFactory.cpp	\
+		xap_ViewListener.cpp		\
+		xav_View.cpp
 
 TARGETS=		$(OBJS)
 

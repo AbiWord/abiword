@@ -22,9 +22,9 @@
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
 
-#include "ap_Frame.h"
+#include "xap_Frame.h"
 #include "ap_FrameData.h"
-#include "ad_Document.h"
+#include "xad_Document.h"
 #include "pd_Document.h"
 
 

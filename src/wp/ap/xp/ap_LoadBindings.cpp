@@ -28,7 +28,7 @@
 #include "ut_assert.h"
 #include "ut_types.h"
 #include "ut_string.h"
-#include "ap_LoadBindings.h"
+#include "xap_LoadBindings.h"
 #include "ap_LoadBindings_Default.h"
 
 /****************************************************************/

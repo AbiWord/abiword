@@ -28,11 +28,11 @@ PS_DIRS=	ps
 endif
 
 # ifeq ($(T), all)
-# DIRS=		ver other util $(PS_DIRS) ev ap wp calc
+# DIRS=		ver other util $(PS_DIRS) ev xap wp calc
 # endif
 
 ifeq ($(T), abiword)
-DIRS=		ver other util $(PS_DIRS) ev ap wp
+DIRS=		ver other util $(PS_DIRS) ev xap wp
 endif
 
 ifeq ($(T), abicalc)

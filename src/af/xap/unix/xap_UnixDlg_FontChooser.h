@@ -20,7 +20,7 @@
 #ifndef AP_UNIXDIALOG_FONTCHOOSER_H
 #define AP_UNIXDIALOG_FONTCHOOSER_H
 
-#include "ap_Dialog_FontChooser.h"
+#include "xap_Dialog_FontChooser.h"
 class AP_UnixFrame;
 
 /*****************************************************************/

@@ -22,14 +22,14 @@ ABI_DEPTH = ../..
 
 include $(ABI_DEPTH)/config/abi_defs.mk
 
-CPPSRCS=		ap_UnixApp.cpp				\
-			ap_UnixDialog_FileOpenSaveAs.cpp	\
-			ap_UnixDialog_FontChooser.cpp		\
-			ap_UnixDialog_MessageBox.cpp		\
-			ap_UnixDialog_Print.cpp			\
-			ap_UnixFrame.cpp			\
-			ap_UnixMain.cpp				\
-			ap_UnixToolbar_Icons.cpp
+CPPSRCS=		xap_UnixApp.cpp				\
+			xap_UnixDialog_FileOpenSaveAs.cpp	\
+			xap_UnixDialog_FontChooser.cpp		\
+			xap_UnixDialog_MessageBox.cpp		\
+			xap_UnixDialog_Print.cpp		\
+			xap_UnixFrame.cpp			\
+			xap_UnixMain.cpp			\
+			xap_UnixToolbar_Icons.cpp
 
 TARGETS=		$(OBJS)
 

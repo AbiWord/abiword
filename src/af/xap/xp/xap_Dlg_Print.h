@@ -20,7 +20,7 @@
 #ifndef AP_DIALOG_PRINT_H
 #define AP_DIALOG_PRINT_H
 
-#include "ap_Dialog.h"
+#include "xap_Dialog.h"
 class DG_Graphics;
 
 /*****************************************************************/

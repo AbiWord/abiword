@@ -21,9 +21,9 @@
 #ifndef AP_UNIXAPP_H
 #define AP_UNIXAPP_H
 
-#include "ap_App.h"
-#include "ap_UnixDialogFactory.h"
-#include "ap_UnixToolbar_ControlFactory.h"
+#include "xap_App.h"
+#include "xap_UnixDialogFactory.h"
+#include "xap_UnixToolbar_ControlFactory.h"
 class AP_Args;
 class AP_UnixToolbar_Icons;
 

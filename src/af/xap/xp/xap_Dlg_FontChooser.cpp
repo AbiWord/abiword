@@ -22,7 +22,7 @@
 #include <string.h>
 #include "ut_string.h"
 #include "ut_debugmsg.h"
-#include "ap_Dialog_FontChooser.h"
+#include "xap_Dialog_FontChooser.h"
 
 #define FREEP(p)	do { if (p) free(p); (p) = NULL; } while (0)
 #define DELETEP(p)	do { if (p) delete(p); (p) = NULL; } while (0)

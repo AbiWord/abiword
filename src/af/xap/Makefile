@@ -32,30 +32,30 @@ TARGETS=		$(LIBRARY)
 # note: and add a line to the intall section which copies it to
 # note: the $(DIST)/bin directory on Windows.
 
-PLATFORM_OBJS=	$(ABI_NATIVE)/$(OBJDIR)/ap_$(ABI_FE)App.$(OBJ_SUFFIX)			\
-		$(ABI_NATIVE)/$(OBJDIR)/ap_$(ABI_FE)Dialog_FileOpenSaveAs.$(OBJ_SUFFIX)	\
-		$(ABI_NATIVE)/$(OBJDIR)/ap_$(ABI_FE)Dialog_FontChooser.$(OBJ_SUFFIX)	\
-		$(ABI_NATIVE)/$(OBJDIR)/ap_$(ABI_FE)Dialog_MessageBox.$(OBJ_SUFFIX)	\
-		$(ABI_NATIVE)/$(OBJDIR)/ap_$(ABI_FE)Dialog_Print.$(OBJ_SUFFIX)		\
-		$(ABI_NATIVE)/$(OBJDIR)/ap_$(ABI_FE)Frame.$(OBJ_SUFFIX)			\
-		$(ABI_NATIVE)/$(OBJDIR)/ap_$(ABI_FE)Main.$(OBJ_SUFFIX)			\
-		$(ABI_NATIVE)/$(OBJDIR)/ap_$(ABI_FE)Toolbar_Icons.$(OBJ_SUFFIX)
+PLATFORM_OBJS=	$(ABI_NATIVE)/$(OBJDIR)/xap_$(ABI_FE)App.$(OBJ_SUFFIX)				\
+		$(ABI_NATIVE)/$(OBJDIR)/xap_$(ABI_FE)Dialog_FileOpenSaveAs.$(OBJ_SUFFIX)	\
+		$(ABI_NATIVE)/$(OBJDIR)/xap_$(ABI_FE)Dialog_FontChooser.$(OBJ_SUFFIX)		\
+		$(ABI_NATIVE)/$(OBJDIR)/xap_$(ABI_FE)Dialog_MessageBox.$(OBJ_SUFFIX)		\
+		$(ABI_NATIVE)/$(OBJDIR)/xap_$(ABI_FE)Dialog_Print.$(OBJ_SUFFIX)			\
+		$(ABI_NATIVE)/$(OBJDIR)/xap_$(ABI_FE)Frame.$(OBJ_SUFFIX)			\
+		$(ABI_NATIVE)/$(OBJDIR)/xap_$(ABI_FE)Main.$(OBJ_SUFFIX)				\
+		$(ABI_NATIVE)/$(OBJDIR)/xap_$(ABI_FE)Toolbar_Icons.$(OBJ_SUFFIX)
 
-OBJS=		$(PLATFORM_OBJS)									\
-		xp/$(OBJDIR)/ad_Document.$(OBJ_SUFFIX)					\
-		xp/$(OBJDIR)/ap_App.$(OBJ_SUFFIX)						\
-		xp/$(OBJDIR)/ap_Args.$(OBJ_SUFFIX)						\
-		xp/$(OBJDIR)/ap_Dialog.$(OBJ_SUFFIX)					\
-		xp/$(OBJDIR)/ap_DialogFactory.$(OBJ_SUFFIX)				\
-		xp/$(OBJDIR)/ap_Dialog_FileOpenSaveAs.$(OBJ_SUFFIX)		\
-		xp/$(OBJDIR)/ap_Dialog_FontChooser.$(OBJ_SUFFIX)		\
-		xp/$(OBJDIR)/ap_Dialog_MessageBox.$(OBJ_SUFFIX)			\
-		xp/$(OBJDIR)/ap_Dialog_Print.$(OBJ_SUFFIX)				\
-		xp/$(OBJDIR)/ap_Frame.$(OBJ_SUFFIX)						\
-		xp/$(OBJDIR)/ap_Scrollbar_ViewListener.$(OBJ_SUFFIX)		\
-		xp/$(OBJDIR)/ap_Toolbar_ControlFactory.$(OBJ_SUFFIX)	\
-		xp/$(OBJDIR)/ap_ViewListener.$(OBJ_SUFFIX)				\
-		xp/$(OBJDIR)/av_View.$(OBJ_SUFFIX)
+OBJS=		$(PLATFORM_OBJS)						\
+		xp/$(OBJDIR)/xad_Document.$(OBJ_SUFFIX)				\
+		xp/$(OBJDIR)/xap_App.$(OBJ_SUFFIX)				\
+		xp/$(OBJDIR)/xap_Args.$(OBJ_SUFFIX)				\
+		xp/$(OBJDIR)/xap_Dialog.$(OBJ_SUFFIX)				\
+		xp/$(OBJDIR)/xap_DialogFactory.$(OBJ_SUFFIX)			\
+		xp/$(OBJDIR)/xap_Dialog_FileOpenSaveAs.$(OBJ_SUFFIX)		\
+		xp/$(OBJDIR)/xap_Dialog_FontChooser.$(OBJ_SUFFIX)		\
+		xp/$(OBJDIR)/xap_Dialog_MessageBox.$(OBJ_SUFFIX)		\
+		xp/$(OBJDIR)/xap_Dialog_Print.$(OBJ_SUFFIX)			\
+		xp/$(OBJDIR)/xap_Frame.$(OBJ_SUFFIX)				\
+		xp/$(OBJDIR)/xap_Scrollbar_ViewListener.$(OBJ_SUFFIX)		\
+		xp/$(OBJDIR)/xap_Toolbar_ControlFactory.$(OBJ_SUFFIX)		\
+		xp/$(OBJDIR)/xap_ViewListener.$(OBJ_SUFFIX)			\
+		xp/$(OBJDIR)/xav_View.$(OBJ_SUFFIX)
 
 include $(ABI_DEPTH)/config/abi_rules.mk
 

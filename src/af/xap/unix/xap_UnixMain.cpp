@@ -24,9 +24,9 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "ap_Args.h"
-#include "ap_UnixApp.h"
-#include "ap_UnixFrame.h"
+#include "xap_Args.h"
+#include "xap_UnixApp.h"
+#include "xap_UnixFrame.h"
 
 int AP_UnixApp::main(const char * szAppName, int argc, char ** argv)
 {

@@ -22,14 +22,14 @@ ABI_DEPTH = ../..
 
 include $(ABI_DEPTH)/config/abi_defs.mk
 
-CPPSRCS=		ap_Win32App.cpp				\
-			ap_Win32Dialog_FileOpenSaveAs.cpp	\
-			ap_Win32Dialog_FontChooser.cpp		\
-			ap_Win32Dialog_MessageBox.cpp		\
-			ap_Win32Dialog_Print.cpp		\
-			ap_Win32Frame.cpp			\
-			ap_Win32Main.cpp			\
-			ap_Win32Toolbar_Icons.cpp
+CPPSRCS=		xap_Win32App.cpp			\
+			xap_Win32Dialog_FileOpenSaveAs.cpp	\
+			xap_Win32Dialog_FontChooser.cpp		\
+			xap_Win32Dialog_MessageBox.cpp		\
+			xap_Win32Dialog_Print.cpp		\
+			xap_Win32Frame.cpp			\
+			xap_Win32Main.cpp			\
+			xap_Win32Toolbar_Icons.cpp
 
 TARGETS=		$(OBJS)
 

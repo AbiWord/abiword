@@ -26,7 +26,7 @@
 #include "ut_debugmsg.h"
 #include "ap_UnixToolbar_FontCombo.h"
 #include "ap_Toolbar_Id.h"
-#include "ap_Frame.h"
+#include "xap_Frame.h"
 
 #define MAX_FONTS 32767
 #define PROPERTY_ARRAY_INCREMENT	16

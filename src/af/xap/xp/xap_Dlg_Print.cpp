@@ -24,10 +24,10 @@
 #include "ut_string.h"
 #include "ut_debugmsg.h"
 #include "xap_Dialog_Id.h"
-#include "ap_Dialog_Print.h"
-#include "ap_Frame.h"
-#include "ap_DialogFactory.h"
-#include "ap_Dialog_FileOpenSaveAs.h"
+#include "xap_Dialog_Print.h"
+#include "xap_Frame.h"
+#include "xap_DialogFactory.h"
+#include "xap_Dialog_FileOpenSaveAs.h"
 
 
 #define FREEP(p)	do { if (p) free(p); (p)=NULL; } while (0)

@@ -65,7 +65,7 @@ DISTBASE 	= $(ABI_DEPTH)/../dist
 ##    reference for header files.
 
 ABI_XAP_INCS=	/config					\
-		/ap/xp		/ap/$(ABI_NATIVE)	\
+		/xap/xp		/xap/$(ABI_NATIVE)	\
 		/ev/xp		/ev/$(ABI_NATIVE)	\
 		/ps/xp					\
 		/util/xp	/util/$(ABI_NATIVE)	\

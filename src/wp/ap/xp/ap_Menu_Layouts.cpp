@@ -22,7 +22,7 @@
 #include "ut_string.h"
 #include "ut_assert.h"
 #include "ev_Menu_Layouts.h"
-#include "ap_Menu_Layouts.h"
+#include "xap_Menu_Layouts.h"
 #include "ap_Menu_Id.h"
 
 #define NrElements(a)	((sizeof(a)/sizeof(a[0])))

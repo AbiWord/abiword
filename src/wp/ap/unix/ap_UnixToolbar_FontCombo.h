@@ -21,7 +21,7 @@
 #define AP_UNIXTOOLBAR_FONTCOMBO_H
 
 #include <glib.h>
-#include "ap_Types.h"
+#include "xap_Types.h"
 #include "ev_Toolbar_Control.h"
 class EV_Toolbar;
 

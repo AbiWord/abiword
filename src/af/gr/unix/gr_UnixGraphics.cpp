@@ -478,16 +478,19 @@ void UNIXGraphics::clearArea(UT_sint32 x, UT_sint32 y,
 UT_Bool UNIXGraphics::startPrint(void)
 {
 	UT_ASSERT(0);
+	return UT_FALSE;
 }
 
 UT_Bool UNIXGraphics::startPage(const char * /*szPageLabel*/, UT_uint32 /*pageNumber*/,
 								UT_Bool /*bPortrait*/, UT_uint32 /*iWidth*/, UT_uint32 /*iHeight*/)
 {
 	UT_ASSERT(0);
+	return UT_FALSE;
 }
 
 UT_Bool UNIXGraphics::endPrint(void)
 {
 	UT_ASSERT(0);
+	return UT_FALSE;
 }
 

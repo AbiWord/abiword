@@ -18,11 +18,11 @@
  */
 
 #include <gtk/gtk.h>
-#include "ap_Args.h"
-#include "ap_UnixApp.h"
-#include "ap_UnixFrame.h"
-#include "ap_UnixToolbar_Icons.h"
-#include "ap_UnixToolbar_ControlFactory.h"
+#include "xap_Args.h"
+#include "xap_UnixApp.h"
+#include "xap_UnixFrame.h"
+#include "xap_UnixToolbar_Icons.h"
+#include "xap_UnixToolbar_ControlFactory.h"
 
 #define DELETEP(p)	do { if (p) delete p; } while (0)
 

@@ -20,8 +20,8 @@
 #include "ut_types.h"
 #include "ut_debugmsg.h"
 #include "ut_assert.h"
-#include "ap_Scrollbar_ViewListener.h"
-#include "ap_Frame.h"
+#include "xap_Scrollbar_ViewListener.h"
+#include "xap_Frame.h"
 
 /*****************************************************************/
 

@@ -20,7 +20,7 @@
 #ifndef AP_UNIXDIALOGFACTORY_H
 #define AP_UNIXDIALOGFACTORY_H
 
-#include "ap_DialogFactory.h"
+#include "xap_DialogFactory.h"
 
 class AP_UnixDialogFactory : public AP_DialogFactory
 {

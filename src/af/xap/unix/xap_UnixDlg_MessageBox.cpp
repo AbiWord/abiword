@@ -19,9 +19,9 @@
 
 #include <gtk/gtk.h>
 #include "ut_assert.h"
-#include "ap_UnixDialog_MessageBox.h"
-#include "ap_UnixApp.h"
-#include "ap_UnixFrame.h"
+#include "xap_UnixDialog_MessageBox.h"
+#include "xap_UnixApp.h"
+#include "xap_UnixFrame.h"
 
 /*****************************************************************/
 AP_Dialog * AP_UnixDialog_MessageBox::static_constructor(AP_DialogFactory * pFactory,

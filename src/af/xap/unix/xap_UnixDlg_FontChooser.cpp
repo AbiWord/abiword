@@ -17,14 +17,17 @@
  * 02111-1307, USA.
  */
 
+#include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
 #include <gtk/gtk.h>
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
 #include "ut_string.h"
 #include "ut_misc.h"
-#include "ap_UnixDialog_FontChooser.h"
-#include "ap_UnixApp.h"
-#include "ap_UnixFrame.h"
+#include "xap_UnixDialog_FontChooser.h"
+#include "xap_UnixApp.h"
+#include "xap_UnixFrame.h"
 
 /*****************************************************************/
 AP_Dialog * AP_UnixDialog_FontChooser::static_constructor(AP_DialogFactory * pFactory,

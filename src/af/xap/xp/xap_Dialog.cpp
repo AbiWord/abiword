@@ -17,7 +17,7 @@
  * 02111-1307, USA.
  */
 
-#include "ap_Dialog.h"
+#include "xap_Dialog.h"
 #include "ut_assert.h"
 
 /*****************************************************************/

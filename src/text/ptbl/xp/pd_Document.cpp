@@ -27,7 +27,7 @@
 #include "ut_debugmsg.h"
 #include "ut_assert.h"
 #include "pd_Document.h"
-#include "ad_Document.h"
+#include "xad_Document.h"
 #include "pt_PieceTable.h"
 #include "pl_Listener.h"
 #include "ie_imp.h"

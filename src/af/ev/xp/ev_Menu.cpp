@@ -29,8 +29,8 @@
 #include "ev_Menu.h"
 #include "ev_EditMethod.h"
 #include "ev_EditBinding.h"
-#include "ap_Menu_Layouts.h"
-#include "ap_Menu_LabelSet.h"
+#include "xap_Menu_Layouts.h"
+#include "xap_Menu_LabelSet.h"
 
 
 #define DELETEP(p)	do { if (p) delete p; } while (0)

@@ -26,7 +26,7 @@
 #include "ut_misc.h"
 #include "ut_string.h"
 
-#include "av_View.h"
+#include "xav_View.h"
 #include "fv_View.h"
 #include "fl_DocLayout.h"
 #include "fl_BlockLayout.h"
@@ -2073,12 +2073,12 @@ void FV_View::draw(UT_sint32 x, UT_sint32 y,
 }
 
 #if defined(PT_TEST) || defined(FMT_TEST)
-static int _s_Test_Dump_counter = 0;
+static UT_uint32 _s_Test_Dump_counter = 0;
 
 void FV_View::Test_Dump(void)
 {
 	char buf[100];
-	int x = _s_Test_Dump_counter++;
+	UT_uint32 x = _s_Test_Dump_counter++;
 	
 #if defined(PT_TEST)
 	sprintf(buf,"dump.ptbl.%ld",x);

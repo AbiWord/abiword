@@ -22,7 +22,7 @@
 
 #include "ut_types.h"
 #include "xmlparse.h"
-#include "ap_Dialog.h"
+#include "xap_Dialog.h"
 class DG_Graphics;
 
 /*****************************************************************/

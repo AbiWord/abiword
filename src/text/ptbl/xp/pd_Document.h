@@ -26,7 +26,7 @@
 #include <stdio.h>
 #include "ut_types.h"
 #include "ut_vector.h"
-#include "ad_Document.h"
+#include "xad_Document.h"
 #include "xmlparse.h"
 #include "pt_Types.h"
 #include "pl_Listener.h"

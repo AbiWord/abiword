@@ -34,8 +34,8 @@
 ****************************************************************/
 
 #include "ut_types.h"
-#include "ap_Types.h"
-#include "av_Listener.h"
+#include "xap_Types.h"
+#include "xav_Listener.h"
 
 class AP_App;
 class AV_View;

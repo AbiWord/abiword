@@ -21,7 +21,7 @@
 #define AP_DIALOG_H
 
 #include "ut_types.h"
-#include "ap_Types.h"
+#include "xap_Types.h"
 class AP_DialogFactory;
 class AP_Frame;
 

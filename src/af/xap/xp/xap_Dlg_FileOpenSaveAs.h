@@ -20,7 +20,7 @@
 #ifndef AP_DIALOG_FILEOPENSAVEAS_H
 #define AP_DIALOG_FILEOPENSAVEAS_H
 
-#include "ap_Dialog.h"
+#include "xap_Dialog.h"
 
 /*****************************************************************
 ** This is the XAP and XP base-class for the file-open and

@@ -26,7 +26,7 @@
 #include "ev_EditBinding.h"
 #include "ev_EditEventMapper.h"
 #include "ev_EditMethod.h"
-#include "av_View.h"
+#include "xav_View.h"
 #include "ev_NamedVirtualKey.h"
 #include "ev_UnixKeyboard.h"
 

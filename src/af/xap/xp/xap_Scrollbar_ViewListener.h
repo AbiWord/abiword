@@ -20,7 +20,7 @@
 #ifndef AP_SCROLLBAR_VIEWLISTENER_H
 #define AP_SCROLLBAR_VIEWLISTENER_H
 
-#include "av_Listener.h"
+#include "xav_Listener.h"
 class AV_View;
 class AP_Frame;
 

@@ -20,7 +20,7 @@
 #ifndef EV_MENU_LABELS_H
 #define EV_MENU_LABELS_H
 
-#include "ap_Types.h"
+#include "xap_Types.h"
 
 
 /*****************************************************************

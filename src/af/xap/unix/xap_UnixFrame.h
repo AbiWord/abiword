@@ -22,9 +22,9 @@
 #define AP_UNIXFRAME_H
 
 #include <gtk/gtk.h>
-#include "ap_Frame.h"
+#include "xap_Frame.h"
 #include "ut_vector.h"
-#include "ap_UnixDialogFactory.h"
+#include "xap_UnixDialogFactory.h"
 class AP_UnixApp;
 class ev_UnixKeyboard;
 class EV_UnixMouse;

@@ -22,17 +22,17 @@
 #include "ut_types.h"
 #include "ut_debugmsg.h"
 #include "ut_assert.h"
-#include "ap_ViewListener.h"
+#include "xap_ViewListener.h"
 #include "ap_FrameData.h"
-#include "ap_UnixFrame.h"
+#include "xap_UnixFrame.h"
 #include "ev_UnixToolbar.h"
-#include "av_View.h"
-#include "ad_Document.h"
+#include "xav_View.h"
+#include "xad_Document.h"
 #include "fv_View.h"
 #include "fl_DocLayout.h"
 #include "pd_Document.h"
 #include "gr_UnixGraphics.h"
-#include "ap_Scrollbar_ViewListener.h"
+#include "xap_Scrollbar_ViewListener.h"
 
 #define DELETEP(p)		do { if (p) delete p; } while (0)
 #define REPLACEP(p,q)	do { if (p) delete p; p = q; } while (0)

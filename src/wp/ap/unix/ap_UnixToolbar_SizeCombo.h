@@ -20,7 +20,7 @@
 #ifndef AP_UNIXTOOLBAR_SIZECOMBO_H
 #define AP_UNIXTOOLBAR_SIZECOMBO_H
 
-#include "ap_Types.h"
+#include "xap_Types.h"
 #include "ev_Toolbar_Control.h"
 class EV_Toolbar;
 

@@ -19,9 +19,9 @@
 
 #include "ut_types.h"
 #include "ut_vector.h"
-#include "ap_App.h"
-#include "ap_Frame.h"
-#include "ap_DialogFactory.h"
+#include "xap_App.h"
+#include "xap_Frame.h"
+#include "xap_DialogFactory.h"
 
 /*****************************************************************/
 
