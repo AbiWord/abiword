@@ -727,6 +727,96 @@ bool pt_PieceTable::_tweakDeleteSpan(PT_DocPosition & dpos1,
 									 PT_DocPosition & dpos2,
 									 UT_Stack * pstDelayStruxDelete) const
 {
+	//
+// First we want to handle hyperlinks. If we delete all the text within
+// a hyperlink, then we should also delete the start and end point of the
+// hyperlink.
+//
+	pf_Frag * pf_First;
+	pf_Frag * pf_End;
+	PT_BlockOffset fragOffset_First;
+	PT_BlockOffset fragOffset_End;
+
+	bool bFound = getFragsFromPositions(dpos1,dpos2,&pf_First,&fragOffset_First,&pf_End,&fragOffset_End);
+	UT_return_val_if_fail (bFound,false);
+	while(pf_First && (pf_First->getLength() == 0))
+	{
+		pf_First = pf_First->getNext();
+	}
+	if(pf_First)
+	{
+		while(pf_End && (pf_End->getLength() == 0))
+		{
+			pf_End = pf_End->getPrev();
+		}
+		bool bDoit = false;
+		if(pf_End && ((pf_End->getPos() + pf_End->getLength() - pf_First->getPos())  == (dpos2 - dpos1 +1)))
+		{
+			bDoit = true;
+		}
+		if(pf_End && ((pf_End->getPos() + pf_End->getLength() - pf_First->getPos())  == (dpos2 - dpos1)))
+		{
+			bDoit = true;
+		}
+		if(bDoit)
+		{
+//
+// OK these frags are entirely contained by dpos1  and dpos2
+// OK now look to see if there is a hyperlink just before and after these
+//
+			if(pf_End->getType() != pf_Frag::PFT_Object)
+			{
+				pf_End = pf_End->getNext();
+			}
+			while(pf_End && (pf_End->getLength() == 0))
+			{
+				pf_End = pf_End->getNext();
+			}
+			if(pf_First->getType() != pf_Frag::PFT_Object)
+			{
+				pf_First = pf_First->getPrev();
+			}
+			while(pf_First && (pf_First->getLength() == 0))
+			{
+				pf_First = pf_First->getPrev();
+			}
+			if(pf_First->getType() == pf_Frag::PFT_Object)
+			{
+				pf_Frag_Object *pFO = static_cast<pf_Frag_Object *>(pf_First);
+				bool bFoundBook = false;
+				bool bFoundHype = false;
+				if(pFO->getObjectType() == PTO_Bookmark)
+				{
+					bFoundBook = true;
+				}
+				if(pFO->getObjectType() == PTO_Hyperlink)
+				{
+					bFoundHype = true;
+				}
+				if(pf_End->getType() == pf_Frag::PFT_Object)
+				{
+					pFO = static_cast<pf_Frag_Object *>(pf_End);
+					if(pFO->getObjectType() == PTO_Bookmark && bFoundBook)
+					{
+//
+// Found a bookmark which will have all contents deleted so delete it too
+//
+						dpos1--;
+						dpos2++;
+					}
+					else if(pFO->getObjectType() == PTO_Hyperlink && bFoundHype)
+					{
+//
+// Found a Hyperlink which will have all contents deleted so delte it too
+//
+						dpos1--;
+						dpos2++;
+					}
+				}
+			}
+		}
+	}
+
 	//  We want to keep tweaking the delete span until there is nothing
 	//  more to tweak.  We check to see if nothing has changed in the
 	//  last tweak, and if so, we are done.
@@ -1607,7 +1697,7 @@ bool pt_PieceTable::_realDeleteSpan(PT_DocPosition dpos1,
 		{
 			const PP_AttrProp *p_AttrProp;
 			getAttrProp(static_cast<pf_Frag_Text *>(pf1)->getIndexAP(), &p_AttrProp);
-
+		  
 			AttrProp_Before = *p_AttrProp;
 			if(p_AttrProp_Before)
 				*p_AttrProp_Before = *p_AttrProp;
