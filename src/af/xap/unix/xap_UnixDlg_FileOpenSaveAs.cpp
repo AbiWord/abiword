@@ -47,10 +47,12 @@ XAP_UnixDialog_FileOpenSaveAs::XAP_UnixDialog_FileOpenSaveAs(XAP_DialogFactory *
 														   XAP_Dialog_Id id)
 	: XAP_Dialog_FileOpenSaveAs(pDlgFactory,id)
 {
+	m_szFinalPathnameCandidate = NULL;
 }
 
 XAP_UnixDialog_FileOpenSaveAs::~XAP_UnixDialog_FileOpenSaveAs(void)
 {
+	FREEP(m_szFinalPathnameCandidate);
 }
 
 /*****************************************************************/
@@ -76,8 +78,9 @@ static void s_delete_clicked(GtkWidget * /* widget*/, gpointer /* data */, XAP_D
 }
 
 UT_Bool XAP_UnixDialog_FileOpenSaveAs::_run_gtk_main(XAP_Frame * pFrame,
-													void * pFSvoid,
-													UT_Bool bCheckWritePermission)
+													 void * pFSvoid,
+													 UT_Bool bCheckWritePermission,
+													 GtkWidget * filetypes_pulldown)
 {
 	GtkFileSelection * pFS = (GtkFileSelection *)pFSvoid;
 
@@ -98,11 +101,16 @@ UT_Bool XAP_UnixDialog_FileOpenSaveAs::_run_gtk_main(XAP_Frame * pFrame,
 	  bCheckWritePermission.
 	*/
 
-	char * szTestFilename = NULL;		// we must free this
+	char * szDialogFilename = NULL;		// this is the string returned from the dialog
+	char * szFinalPathname = NULL;		// this is the file after any suffix additions
+	char * szFinalPathnameCopy = NULL;	// one to mangle when looking for dirs, etc.
+
 	char * pLastSlash;
 	struct stat buf;
 	int err;
 
+	// if bCheckWritePermission is not set, we're looking to OPEN a file.
+	
 	if (!bCheckWritePermission)
 	{
 		while (1)
@@ -122,17 +130,17 @@ UT_Bool XAP_UnixDialog_FileOpenSaveAs::_run_gtk_main(XAP_Frame * pFrame,
 			// a file, so we have to catch it, change the dialog, and not return
 			// any filename yet.
 
-			UT_cloneString(szTestFilename, gtk_file_selection_get_filename(pFS));
-			UT_ASSERT(szTestFilename);
+			UT_cloneString(szDialogFilename, gtk_file_selection_get_filename(pFS));
+			UT_ASSERT(szDialogFilename);
 
-			err = stat(szTestFilename, &buf);
+			err = stat(szDialogFilename, &buf);
 			UT_ASSERT(err == 0 || err == -1);
 			
 			// Check for a directory entered as filename.  When true,
 			// set the filter properly and continue in the selection
 			if (err == 0 && S_ISDIR(buf.st_mode))
 			{
-				GString * s = g_string_new(szTestFilename);
+				GString * s = g_string_new(szDialogFilename);
 				if (s->str[s->len - 1] != '/')
 				{
 					g_string_append_c(s, '/');
@@ -141,7 +149,7 @@ UT_Bool XAP_UnixDialog_FileOpenSaveAs::_run_gtk_main(XAP_Frame * pFrame,
 				g_string_free(s, TRUE);
 
 				// free the string and continue along
-				FREEP(szTestFilename);
+				FREEP(szDialogFilename);
 				continue;
 			}
 
@@ -151,18 +159,85 @@ UT_Bool XAP_UnixDialog_FileOpenSaveAs::_run_gtk_main(XAP_Frame * pFrame,
 		}
 	}		
 		
+	// if bCheckWritePermission is set, we're looking to SAVE a file.
+
 	while(1)
 	{
 		gtk_main();
 		if (m_answer == a_CANCEL)			// The easy way out
 			return UT_FALSE;
-		
+
 		// Give us a filename we can mangle
 
-		UT_cloneString(szTestFilename, gtk_file_selection_get_filename(pFS));
-		UT_ASSERT(szTestFilename);
+		UT_cloneString(szDialogFilename, gtk_file_selection_get_filename(pFS));
+		UT_ASSERT(szDialogFilename);
 
-		err = stat(szTestFilename, &buf);
+		// We append the suffix of the default type, so the user doesn't
+		// have to.  This is adapted from the Windows front-end code
+		// (xap_Win32Dlg_FileOpenSaveAs.cpp), since it should act the same.
+		{
+			//UT_uint32 end = UT_pointerArrayLength((void **) m_szSuffixes);
+
+			GtkWidget * activeItem = gtk_menu_get_active(GTK_MENU(
+				gtk_option_menu_get_menu(GTK_OPTION_MENU(filetypes_pulldown))));
+			UT_ASSERT(activeItem);
+
+			UT_sint32 nFileType = GPOINTER_TO_INT(gtk_object_get_user_data(
+				GTK_OBJECT(activeItem)));
+
+			// set to first item, which should probably be auto detect
+			// TODO : "probably" isn't very good.
+			UT_uint32 nIndex = 0;
+			
+			// the index in the types table will match the index in the suffix
+			// table.  nFileType is the data we are searching for.
+			for (UT_uint32 i = 0; m_nTypeList[i]; i++)
+			{
+				if (m_nTypeList[i] == nFileType)
+				{
+					nIndex = i;
+					break;
+				}
+			}
+
+			// if the file doesn't have a suffix already, and the file type
+			// is normal (special types are negative, like auto detect),
+			// slap a suffix on it.
+			if ((!UT_pathSuffix(szDialogFilename)) &&
+				(nFileType > 0))
+			{
+				// add suffix based on selected file type
+
+				const char * szSuffix = UT_pathSuffix(m_szSuffixes[nIndex]);
+				UT_ASSERT(szSuffix);
+
+				UT_uint32 length = strlen(szDialogFilename) + strlen(szSuffix) + 1;
+				szFinalPathname = (char *)calloc(length,sizeof(char));
+				if (szFinalPathname)
+				{
+					char * p = szFinalPathname;
+
+					strcpy(p,szDialogFilename);
+					strcat(p,szSuffix);
+				}
+			}
+			else
+			{
+				// the file type is special (auto detect)
+
+				// set to plain name, and let the auto detector in the
+				// exporter figure it out
+				UT_cloneString(szFinalPathname,szDialogFilename);
+			}
+			// free szDialogFilename since it's been put into szFinalPathname (with
+			// or without changes) and it's invalid (missing an extension which
+			// might have been appended)
+			FREEP(szDialogFilename);
+		}
+
+		UT_cloneString(szFinalPathnameCopy, szFinalPathname);
+		
+		err = stat(szFinalPathnameCopy, &buf);
 		UT_ASSERT(err == 0 || err == -1);
 			
 		// Does the filename already exist?
@@ -171,7 +246,7 @@ UT_Bool XAP_UnixDialog_FileOpenSaveAs::_run_gtk_main(XAP_Frame * pFrame,
 		{
 			// we have an existing file, ask to overwrite
 
-			if (_askOverwrite_YesNo(pFrame, szTestFilename))
+			if (_askOverwrite_YesNo(pFrame, szFinalPathname))
 				goto ReturnTrue;
 
 			goto ContinueLoop;
@@ -182,7 +257,7 @@ UT_Bool XAP_UnixDialog_FileOpenSaveAs::_run_gtk_main(XAP_Frame * pFrame,
 
 		if (err == 0 && S_ISDIR(buf.st_mode))
 		{
-			GString * s = g_string_new(szTestFilename);
+			GString * s = g_string_new(szFinalPathnameCopy);
 			if (s->str[s->len - 1] != '/')
 			{
 				g_string_append_c(s, '/');
@@ -197,7 +272,7 @@ UT_Bool XAP_UnixDialog_FileOpenSaveAs::_run_gtk_main(XAP_Frame * pFrame,
 		// for a matching directory.  We can then proceed with the file
 		// if another stat of that dir passes.
 
-		pLastSlash = rindex(szTestFilename,'/');
+		pLastSlash = rindex(szFinalPathnameCopy,'/');
 		if (!pLastSlash)
 		{
 			_notifyError_OKOnly(pFrame,XAP_STRING_ID_DLG_InvalidPathname);
@@ -211,7 +286,7 @@ UT_Bool XAP_UnixDialog_FileOpenSaveAs::_run_gtk_main(XAP_Frame * pFrame,
 
 		// Stat the directory left over
 
-		err = stat(szTestFilename, &buf);
+		err = stat(szFinalPathnameCopy, &buf);
 		UT_ASSERT(err == 0 || err == -1);
 
 		// If this directory doesn't exist, we have been feed garbage
@@ -228,26 +303,31 @@ UT_Bool XAP_UnixDialog_FileOpenSaveAs::_run_gtk_main(XAP_Frame * pFrame,
 
 		UT_ASSERT(S_ISDIR(buf.st_mode));
 
-		if (!access(szTestFilename, W_OK))
+		if (!access(szFinalPathnameCopy, W_OK))
+		{
+			// we've got what we need, save it to the candidate
+			UT_cloneString(m_szFinalPathnameCandidate, szFinalPathname);
 			goto ReturnTrue;
+		}
 
 		// complain about write permission on the directory.
 		// lop off ugly trailing slash only if we don't have
 		// the root dir ('/') for a path
 
-		if (pLastSlash > szTestFilename)
+		if (pLastSlash > szFinalPathnameCopy)
 			*pLastSlash = 0;
 
 		_notifyError_OKOnly(pFrame,XAP_STRING_ID_DLG_NoSaveFile_DirNotWriteable,
-							szTestFilename);
+							szFinalPathname);
 	ContinueLoop:
-		FREEP(szTestFilename);
+		FREEP(szFinalPathnameCopy);
 	}
 
 	/*NOTREACHED*/
 
 ReturnTrue:
-	FREEP(szTestFilename);
+	FREEP(szFinalPathnameCopy);
+	FREEP(szFinalPathname);
 	return UT_TRUE;
 }
 
@@ -423,6 +503,8 @@ void XAP_UnixDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 			gtk_widget_show(thismenuitem);
 			gtk_menu_append(GTK_MENU(menu), thismenuitem);
 
+			UT_uint32 activeItemIndex = 0;
+			
 			// add list items
 			{
 				UT_ASSERT(UT_pointerArrayLength((void **) m_szSuffixes) ==
@@ -433,6 +515,10 @@ void XAP_UnixDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 			  
 				for (UT_uint32 i = 0; i < end; i++)
 				{
+					// If this type is default, save its index (i) for later use
+					if (m_nTypeList[i] == m_nDefaultFileType)
+						activeItemIndex = i;
+					
 					g_snprintf(buffer, 1024, "%s", m_szDescriptions[i]);
 					thismenuitem = gtk_menu_item_new_with_label(buffer);
 					gtk_object_set_user_data(GTK_OBJECT(thismenuitem), GINT_TO_POINTER(m_nTypeList[i]));
@@ -441,6 +527,9 @@ void XAP_UnixDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 				}
 			}
 
+			// Set menu item to default type from index (i) above
+			gtk_menu_set_active(GTK_MENU(menu), activeItemIndex + 1);
+				
 			gtk_widget_show(menu);
 			
 			// add menu to the option menu widget
@@ -522,7 +611,7 @@ void XAP_UnixDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 		}
 	}
 
-	// get top level window and it's GtkWidget *
+	// get top level window and its GtkWidget *
 	XAP_UnixFrame * frame = static_cast<XAP_UnixFrame *>(pFrame);
 	UT_ASSERT(frame);
 	GtkWidget * parent = frame->getTopLevelWindow();
@@ -534,13 +623,15 @@ void XAP_UnixDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 	gtk_widget_show(GTK_WIDGET(pFS));
 	gtk_grab_add(GTK_WIDGET(pFS));
 
-	UT_Bool bResult = _run_gtk_main(pFrame,pFS,bCheckWritePermission);
+	UT_Bool bResult = _run_gtk_main(pFrame,pFS,bCheckWritePermission,filetypes_pulldown);
 	
 	if (bResult)
 	{
 		// store final path name and file type
-		UT_cloneString(m_szFinalPathname, gtk_file_selection_get_filename(pFS));
+		UT_cloneString(m_szFinalPathname, m_szFinalPathnameCandidate);
 
+		FREEP(m_szFinalPathnameCandidate);
+		
 		// what a long ugly line of code
 		GtkWidget * activeItem = gtk_menu_get_active(GTK_MENU(gtk_option_menu_get_menu(GTK_OPTION_MENU(filetypes_pulldown))));
 		UT_ASSERT(activeItem);

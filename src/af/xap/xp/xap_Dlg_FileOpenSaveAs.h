@@ -55,8 +55,9 @@ public:
 	// enumerated (any encoding, really) values for each type.
 	void								setFileTypeList(const char ** szDescriptions,
 														const char ** szSuffixes,
-														const UT_uint32 * nTypeList);
-
+														const UT_sint32 * nTypeList);
+	void								setDefaultFileType(UT_sint32 nType);
+	
 	// this dialog reserves the negative number space to return an
 	// "automatically detected" type, so the caller should NOT supply one
 	// in the list.  This is done because each platform has a different notion
@@ -72,11 +73,12 @@ protected:
 
 	const char **						m_szDescriptions;
 	const char ** 						m_szSuffixes;
-	const UT_uint32 *					m_nTypeList;
+	const UT_sint32 *					m_nTypeList;
 
 	// derived classes set this for query
 	UT_sint32							m_nFileType;
-	
+	UT_sint32							m_nDefaultFileType;
+		
 	UT_Bool								m_bSuggestName;
 	XAP_Dialog_FileOpenSaveAs::tAnswer	m_answer;
 };

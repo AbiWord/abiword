@@ -908,8 +908,11 @@ static UT_Bool s_AskForPathname(XAP_Frame * pFrame,
 		while (IE_Imp::enumerateDlgLabels(k, &szDescList[k], &szSuffixList[k], &nTypeList[k]))
 			k++;
 
-	pDialog->setFileTypeList(szDescList, szSuffixList, (const UT_uint32 *) nTypeList);
-	
+	pDialog->setFileTypeList(szDescList, szSuffixList, (const UT_sint32 *) nTypeList);
+
+	// AbiWord uses IEFT_AbiWord_1 as the default
+	pDialog->setDefaultFileType((UT_sint32) IEFT_AbiWord_1);
+		
 	pDialog->runModal(pFrame);
 
 	XAP_Dialog_FileOpenSaveAs::tAnswer ans = pDialog->getAnswer();
@@ -1003,7 +1006,7 @@ static UT_Bool s_AskForGraphicPathname(XAP_Frame * pFrame,
 	while (IE_ImpGraphic::enumerateDlgLabels(k, &szDescList[k], &szSuffixList[k], &nTypeList[k]))
 		k++;
 
-	pDialog->setFileTypeList(szDescList, szSuffixList, (const UT_uint32 *) nTypeList);
+	pDialog->setFileTypeList(szDescList, szSuffixList, (const UT_sint32 *) nTypeList);
 	
 	pDialog->runModal(pFrame);
 

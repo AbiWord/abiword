@@ -131,12 +131,18 @@ const char * XAP_Dialog_FileOpenSaveAs::getPathname(void) const
 
 void XAP_Dialog_FileOpenSaveAs::setFileTypeList(const char ** szDescriptions,
 												const char ** szSuffixes,
-												const UT_uint32 * nTypeList)
+												const UT_sint32 * nTypeList)
 {
 	m_szDescriptions = szDescriptions;
 	m_szSuffixes = szSuffixes;
 	m_nTypeList = nTypeList;
 }
+
+void XAP_Dialog_FileOpenSaveAs::setDefaultFileType(UT_sint32 nType)
+{
+	m_nDefaultFileType = nType;
+}
+
 
 UT_sint32 XAP_Dialog_FileOpenSaveAs::getFileType(void) const
 {
