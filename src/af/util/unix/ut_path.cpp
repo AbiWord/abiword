@@ -21,6 +21,7 @@
 #include "ut_path.h"
 #include <string.h>
 #include <sys/stat.h>
+#include <sys/types.h>
 #include <unistd.h>
 
 /*!	This function takes a char* representing a path to a file and returns
@@ -38,7 +39,7 @@ const char* UT_basename(const char* path)
 	while(len > 0 && path[len-1] != '/')
 		str = &path[--len];
 
-	return str;_S_IFREG
+	return str;
 }
 
 /*!
@@ -50,9 +51,9 @@ bool UT_directoryExists(const char* dir)
 {
     struct stat buf;
     
-    if (lstat(dir, &buf) != -1)
+    if (stat(dir, &buf) != -1)
     {
-	return buf.st_mode & S_IFDIR;
+		return S_ISDIR (buf.st_mode);
     }
     
     return false;
@@ -62,9 +63,9 @@ bool UT_isRegularFile(const char* filename)
 {
     struct stat buf;
     
-    if (lstat(dir, &buf) != -1)
+    if (stat(filename, &buf) != -1)
     {
-	return buf.st_mode & S_IFREG;
+		return S_ISREG (buf.st_mode);
     }
     
     return false;
