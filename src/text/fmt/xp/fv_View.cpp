@@ -7218,20 +7218,14 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 				adjustedLeft += 3;
 				adjustedBottom += 1;
 				m_pG->drawLine(adjustedLeft, adjustedBottom, adjustedRight+1, adjustedBottom);
-			}
-			if(!isPreview() && (getViewMode() == VIEW_PRINT))
-			{
+
 				adjustedBottom += 1;
 				m_pG->drawLine(adjustedLeft, adjustedBottom, adjustedRight+1, adjustedBottom);
-			}
-			if(!isPreview() && (getViewMode() == VIEW_PRINT))
-			{
+
 				adjustedTop += 3;
 				adjustedRight += 1;
 				m_pG->drawLine(adjustedRight, adjustedTop, adjustedRight, adjustedBottom);
-			}
-			if(!isPreview() && (getViewMode() == VIEW_PRINT))
-			{
+
 				adjustedRight += 1;
 				m_pG->drawLine(adjustedRight, adjustedTop, adjustedRight, adjustedBottom);
 			}
@@ -7256,17 +7250,6 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 		m_pG->setClipRect(NULL);
 	}
 
-#if 0
-	{
-		// Some test code for the graphics interface.
-		UT_RGBColor clrRed(255,0,0);
-		m_pG->setColor(clrRed);
-		m_pG->drawLine(10,10,20,10);
-		m_pG->drawLine(20,11,30,11);
-		m_pG->fillRect(clrRed,50,10,10,10);
-		m_pG->fillRect(clrRed,60,20,10,10);
-	}
-#endif
 }
 
 void FV_View::cmdScroll(AV_ScrollCmd cmd, UT_uint32 iPos)
