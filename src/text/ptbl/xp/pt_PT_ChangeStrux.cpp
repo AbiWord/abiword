@@ -180,7 +180,8 @@ bool pt_PieceTable::changeStruxFmt(PTChangeFmt ptc,
 // style (they exist there) to specifc values in strux (if not overridden by 
 // the style) then finally to default value.
 //
-		const XML_Char * szStyle = UT_getAttribute("style",attributes);
+		const XML_Char * szStyle = UT_getAttribute(PT_NAME_ATTRIBUTE_NAME,attributes);
+
 		PD_Style * pStyle = NULL;
 		getDocument()->getStyle(szStyle,&pStyle);
 		UT_ASSERT(pStyle);

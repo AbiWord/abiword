@@ -140,7 +140,7 @@ void fp_TextRun::lookupProperties(void)
 	getPageColor();
 
 	const XML_Char* pszStyle = NULL;
-	if(pSpanAP && pSpanAP->getAttribute(PT_STYLE_ATTRIBUTE_NAME, pszStyle))
+	if(pSpanAP && pSpanAP->getAttribute(PT_NAME_ATTRIBUTE_NAME, pszStyle))
 	{
 		PD_Style *pStyle = NULL;
 		pDoc->getStyle((const char*) pszStyle, &pStyle);

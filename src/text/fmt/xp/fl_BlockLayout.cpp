@@ -466,8 +466,14 @@ void fl_BlockLayout::_lookupProperties(void)
 		const PP_AttrProp * pBlockAP = NULL;
 		getAttrProp(&pBlockAP);
 
-		if (!pBlockAP || !pBlockAP->getAttribute(PT_STYLE_ATTRIBUTE_NAME, m_szStyle))
+		if(!pBlockAP)
+		{
 			m_szStyle = NULL;
+		}
+		else if (!pBlockAP->getAttribute(PT_NAME_ATTRIBUTE_NAME, m_szStyle) && !pBlockAP->getAttribute(PT_STYLE_ATTRIBUTE_NAME, m_szStyle))
+		{
+			m_szStyle = NULL;
+		}
 	}
 
 	{
@@ -717,7 +723,14 @@ void fl_BlockLayout::_lookupProperties(void)
 			style = getProperty("list-style",true);
 			if(!style)
 			{
-				pBlockAP->getAttribute(PT_STYLE_ATTRIBUTE_NAME,style);
+				pBlockAP->getAttribute(PT_NAME_ATTRIBUTE_NAME,style);
+//
+// For legacy documents.
+//
+				if(!style)
+				{
+					pBlockAP->getAttribute(PT_STYLE_ATTRIBUTE_NAME,style);
+				}
 			}
 			UT_ASSERT(style);
 			List_Type lType = getListTypeFromStyle( style);
@@ -5282,15 +5295,11 @@ void fl_BlockLayout::remItemFromList(void)
 		if (currLevel == 0)
 		{
 #ifndef __MRC__
-//
-// Sevior lists hacks
-//			const XML_Char * attribs[] = { 	"listid", lid,
-//											"level", buf,"style","Normal", NULL, NULL };
-		const XML_Char * attribs[] = { 	"listid", lid,
+			const XML_Char * attribs[] = { 	"listid", lid,
 										"level", buf, NULL, NULL };
 #else
 			const XML_Char * attribs[] = { 	"listid", NULL,
-											"level", NULL,"style","Normal", NULL, NULL };
+											"level", NULL, NULL, NULL };
 			attribs [1] = lid;
 			attribs [3] = buf;
 #endif
@@ -5403,7 +5412,14 @@ void    fl_BlockLayout::getListAttributesVector( UT_Vector * va)
 
 	const PP_AttrProp * pBlockAP = NULL;
 	getAttrProp(&pBlockAP);
-	pBlockAP->getAttribute(PT_STYLE_ATTRIBUTE_NAME,style);
+	pBlockAP->getAttribute(PT_NAME_ATTRIBUTE_NAME,style);
+//
+// For legacy documents
+//
+	if(!style)
+	{
+		pBlockAP->getAttribute(PT_NAME_ATTRIBUTE_NAME,style);
+	}
 	pBlockAP->getAttribute((const XML_Char *)"listid",lid);
 	level = getAutoNum()->getLevel();
 	sprintf(buf,"%i",level);
@@ -5420,7 +5436,7 @@ void    fl_BlockLayout::getListAttributesVector( UT_Vector * va)
 	}
 	if(style != NULL)
 	{
-		va->addItem( (void *) "style");	va->addItem( (void *) style);
+		va->addItem( (void *) PT_NAME_ATTRIBUTE_NAME  );	va->addItem( (void *) style);
 		count++;
 	}
 	if(count == 0)
@@ -5545,9 +5561,6 @@ void    fl_BlockLayout::StartList( List_Type lType, UT_uint32 start,const XML_Ch
 	vp.addItem( (void *) "field-font");     vp.addItem( (void *) fFont);
 	vp.addItem( (void *) "list-style");	    vp.addItem( (void *) style);
 	xxx_UT_DEBUGMSG(("SEVIOR: Starting List with font %s \n",fFont));
-//
-// Sevior lists hack
-//	va.addItem( (void *) "style");	        va.addItem( (void *) style);
 
 
 	pAutoNum = new fl_AutoNum(id, iParentID, lType, start, lDelim, lDecimal, m_pDoc);
@@ -5758,10 +5771,10 @@ void    fl_BlockLayout::StopList(void)
 	{
 #ifndef _MRC_
 		const XML_Char * attribs[] = { 	"listid", lid,
-										"style","Normal", NULL, NULL };
+										 PT_NAME_ATTRIBUTE_NAME,"Normal", NULL, NULL };
 #else
 		const XML_Char * attribs[] = { 	"listid", NULL,
-										"style","Normal", NULL, NULL };
+										PT_NAME_ATTRIBUTE_NAME,"Normal", NULL, NULL };
 		attribs [1] = lid;
 #endif
 		bRet = m_pDoc->changeStruxFmt(PTC_AddFmt, getPosition(), getPosition(), attribs, props, PTX_Block);

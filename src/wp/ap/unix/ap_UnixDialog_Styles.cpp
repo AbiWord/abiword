@@ -1502,7 +1502,10 @@ void AP_UnixDialog_Styles::event_ModifyClicked(void)
 		// TODO: error message - nothing selected
 		return;
 	}
-
+//
+// Allow built-ins to be modified
+//
+#if 0
 	if (!pStyle->isUserDefined ())
 	{
 		// can't change builtin, error message
@@ -1513,8 +1516,8 @@ void AP_UnixDialog_Styles::event_ModifyClicked(void)
 									XAP_Dialog_MessageBox::b_O,
 									XAP_Dialog_MessageBox::a_OK);
 		return;
-	}
-	
+	}	
+#endif
 	
 #ifndef HAVE_GNOME
 //

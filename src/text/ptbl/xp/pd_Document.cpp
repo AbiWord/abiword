@@ -514,7 +514,7 @@ bool PD_Document::removeStyle(const XML_Char * pszName)
 	{
 //
 // get indexAP
-// get PT_STYLE_ATTRIBUTE_NAME
+// get PT_NAME_ATTRIBUTE_NAME
 // if it matches style name or is contained in a basedon name or followedby
 // 
 //
@@ -543,7 +543,14 @@ bool PD_Document::removeStyle(const XML_Char * pszName)
 		m_pPieceTable->getAttrProp(indexAP,&pAP);
 		UT_ASSERT(pAP);
 		const XML_Char * pszStyleName = NULL;
-		(pAP)->getAttribute(PT_STYLE_ATTRIBUTE_NAME, pszStyleName);
+		(pAP)->getAttribute(PT_NAME_ATTRIBUTE_NAME, pszStyleName);
+//
+// Legacy stuff
+//
+		if(!pszStyleName)
+		{
+			(pAP)->getAttribute(PT_STYLE_ATTRIBUTE_NAME, pszStyleName);
+		}
 //
 // It does so remember this frag and set the old indexAP to Normal
 //
@@ -1489,7 +1496,14 @@ PL_StruxDocHandle PD_Document::findPreviousStyleStrux(const XML_Char * szStyle, 
 			m_pPieceTable->getAttrProp(indexAP,&pAP);
 			UT_ASSERT(pAP);
 			const XML_Char * pszStyleName = NULL;
-			(pAP)->getAttribute(PT_STYLE_ATTRIBUTE_NAME, pszStyleName);
+			(pAP)->getAttribute(PT_NAME_ATTRIBUTE_NAME, pszStyleName);
+//
+// Legacy stuff
+//
+			if(!pszStyleName)
+			{
+				(pAP)->getAttribute(PT_STYLE_ATTRIBUTE_NAME, pszStyleName);
+			}
 			if(pszStyleName != NULL && strcmp(pszStyleName,szStyle)==0)
 			{
 				bFound = true;
@@ -1538,7 +1552,11 @@ PL_StruxDocHandle PD_Document::findForwardStyleStrux(const XML_Char * szStyle, P
 			m_pPieceTable->getAttrProp(indexAP,&pAP);
 			UT_ASSERT(pAP);
 			const XML_Char * pszStyleName = NULL;
-			(pAP)->getAttribute(PT_STYLE_ATTRIBUTE_NAME, pszStyleName);
+			(pAP)->getAttribute(PT_NAME_ATTRIBUTE_NAME, pszStyleName);
+			if(!pszStyleName)
+			{
+				(pAP)->getAttribute(PT_STYLE_ATTRIBUTE_NAME, pszStyleName);
+			}
 			if(pszStyleName != NULL && strcmp(pszStyleName,szStyle)==0)
 			{
 				bFound = true;
@@ -1582,7 +1600,7 @@ bool   PD_Document::updateDocForStyleChange(const XML_Char * szStyle,
 	{
 //
 // get indexAP
-// get PT_STYLE_ATTRIBUTE_NAME
+// get PT_NAME_ATTRIBUTE_NAME
 // if it matches style name do a notify listeners call.
 		if(isParaStyle)
 		{
@@ -1597,7 +1615,7 @@ bool   PD_Document::updateDocForStyleChange(const XML_Char * szStyle,
 				m_pPieceTable->getAttrProp(indexAP,&pAP);
 				UT_ASSERT(pAP);
 				const XML_Char * pszStyleName = NULL;
-				(pAP)->getAttribute(PT_STYLE_ATTRIBUTE_NAME, pszStyleName);
+				(pAP)->getAttribute(PT_NAME_ATTRIBUTE_NAME, pszStyleName);
 				bool bUpdate = false;
 //
 // It does so signal all the layouts to update themselves for the new definition
@@ -1658,7 +1676,12 @@ bool   PD_Document::updateDocForStyleChange(const XML_Char * szStyle,
 				m_pPieceTable->getAttrProp(indexAP,&pAP);
 				UT_ASSERT(pAP);
 				const XML_Char * pszStyleName = NULL;
-				(pAP)->getAttribute(PT_STYLE_ATTRIBUTE_NAME, pszStyleName);
+				(pAP)->getAttribute(PT_NAME_ATTRIBUTE_NAME, pszStyleName);
+				if(!pszStyleName)
+				{
+					(pAP)->getAttribute(PT_STYLE_ATTRIBUTE_NAME, pszStyleName);
+				}
+
 //
 // It does so signal all the layouts to update themselves for the new definition
 // of the style.

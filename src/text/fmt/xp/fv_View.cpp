@@ -2023,8 +2023,19 @@ bool FV_View::setStyleAtPos(const XML_Char * style, PT_DocPosition posStart1, PT
 	m_pDoc->getStyle((char*)style, &pStyle);
 	if (!pStyle)
 	{
+		m_pDoc->enableListUpdates();
+		UT_DEBUGMSG(("restoring PieceTable state (2)\n"));
+		_restorePieceTableState();
 		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 		return false;
+	}
+	UT_DEBUGMSG(("SEVIOR: Setting style %s \n",style));
+	if(strcmp(style,"None") == 0)
+	{
+		m_pDoc->enableListUpdates();
+		UT_DEBUGMSG(("restoring PieceTable state (2)\n"));
+		_restorePieceTableState();
+		return true; // do nothing.
 	}
 //
 // Get This info before it's lost from the following processing
@@ -2049,7 +2060,7 @@ bool FV_View::setStyleAtPos(const XML_Char * style, PT_DocPosition posStart1, PT
 	}
 
 	bool bCharStyle = pStyle->isCharStyle();
-	const XML_Char * attribs[] = { PT_STYLE_ATTRIBUTE_NAME, 0, 0 };
+	const XML_Char * attribs[] = { PT_NAME_ATTRIBUTE_NAME, 0, 0 };
 	attribs[1] = style;
 	if(bisListStyle)
 	{
@@ -2364,12 +2375,20 @@ static const XML_Char * x_getStyle(const PP_AttrProp * pAP, bool bBlock)
 	UT_ASSERT(pAP);
 	const XML_Char* sz = NULL;
 
-	pAP->getAttribute(PT_STYLE_ATTRIBUTE_NAME, sz);
+	pAP->getAttribute(PT_NAME_ATTRIBUTE_NAME, sz);
 
 	// TODO: should we have an explicit default for char styles?
 	if (!sz && bBlock)
-		sz = "Normal";
-
+	{
+//
+// For legacy documents
+//
+		pAP->getAttribute(PT_STYLE_ATTRIBUTE_NAME, sz);
+		if(!sz)
+		{
+			sz = "None";
+		}
+	}
 	return sz;
 }
 
@@ -3182,7 +3201,7 @@ void FV_View::changeListStyle(	fl_AutoNum* pAuto,
 	_eraseInsertionPoint();
 //
 // This is depeciated..
-	va.addItem( (void *) "style");	va.addItem( (void *) style);
+	va.addItem( (void *) PT_NAME_ATTRIBUTE_NAME);	va.addItem( (void *) style);
 
 	pAuto->setListType(lType);
 	sprintf(pszStart, "%i" , startv);
@@ -3234,7 +3253,6 @@ void FV_View::changeListStyle(	fl_AutoNum* pAuto,
 	}
 	props[i] = (XML_Char *) NULL;
 
- 	//const XML_Char * attrib_list[] = {"style", style, 0 };
 	_eraseInsertionPoint();
 	i = 0;
 	sdh = (PL_StruxDocHandle) pAuto->getNthBlock(i);

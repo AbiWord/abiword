@@ -199,7 +199,18 @@ static PD_Style * _getStyle(const PP_AttrProp * pAttrProp, PD_Document * pDoc)
 	PD_Style * pStyle = NULL;
 
 	const XML_Char * szValue = NULL;
-	if (pAttrProp->getAttribute(PT_STYLE_ATTRIBUTE_NAME, szValue))
+	if (pAttrProp->getAttribute(PT_NAME_ATTRIBUTE_NAME, szValue))
+	{
+		UT_ASSERT(szValue && szValue[0]);
+		if (pDoc)
+			pDoc->getStyle((char*)szValue, &pStyle);
+
+		// NOTE: we silently fail if style is referenced, but not defined
+	}
+//
+// This code is for legacy documents. Read it but don't write it ever.
+//
+	else if(pAttrProp->getAttribute(PT_STYLE_ATTRIBUTE_NAME, szValue))
 	{
 		UT_ASSERT(szValue && szValue[0]);
 		if (pDoc)

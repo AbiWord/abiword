@@ -29,8 +29,10 @@
 #include "ie_imp_AbiWord_1.h"
 #include "ie_types.h"
 #include "pd_Document.h"
+#include "pd_Style.h"
 #include "ut_bytebuf.h"
 #include "xap_EncodingManager.h"
+#include "ut_misc.h"
 
 /*****************************************************************/
 /*****************************************************************/
@@ -422,11 +424,26 @@ void IE_Imp_AbiWord_1::_startElement(const XML_Char *name, const XML_Char **atts
 		return;
 
 	case TT_STYLE:
+	{
 		X_VerifyParseState(_PS_StyleSec);
 		m_parseState = _PS_Style;
-		X_CheckError(getDoc()->appendStyle(atts));
+//
+// Have to see if the style already exists. If it does, replace it with this.
+//
+		const XML_Char * szName = UT_getAttribute(PT_NAME_ATTRIBUTE_NAME,atts);
+		PD_Style * pStyle = NULL;
+		if(getDoc()->getStyle(szName, &pStyle))
+		{
+			X_CheckError(pStyle->addAttributes(atts));
+			pStyle->getBasedOn();
+			pStyle->getFollowedBy();
+		}
+		else
+		{
+			X_CheckError(getDoc()->appendStyle(atts));
+		}
 		return;
-		
+	}
 	case TT_LISTSECTION:
 		X_VerifyParseState(_PS_Doc);
 		m_parseState = _PS_ListSec;

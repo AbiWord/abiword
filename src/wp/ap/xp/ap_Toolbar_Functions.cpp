@@ -165,9 +165,12 @@ Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_Style)
 	case AP_TOOLBAR_ID_FMT_STYLE:
 		{
 			const XML_Char * sz;
-
 			if (!pView->getStyle(&sz))
-				return s;
+			{
+				static const char * sz2 ="None";
+				*pszState = sz2;
+				s = EV_TIS_UseString;
+			}
 
 			if (sz)
 			{	
@@ -176,7 +179,12 @@ Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_Style)
 				*pszState = sz2;
 				s = EV_TIS_UseString;
 			}
-
+			else
+			{
+				static const char * sz2 ="None";
+				*pszState = sz2;
+				s = EV_TIS_UseString;
+			}
 			break;
 		}
 
@@ -184,7 +192,6 @@ Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_Style)
 		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 		break;
 	}
-
 	return s;
 }
 
