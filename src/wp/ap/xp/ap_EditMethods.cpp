@@ -1242,11 +1242,10 @@ Defun0(extSelPageUp)
 	return UT_TRUE;
 }
 
-Defun1(selectAll)
+Defun(selectAll)
 {
 	ABIWORD_VIEW;
-	pView->moveInsPtTo(FV_DOCPOS_BOD);
-	pView->extSelTo(FV_DOCPOS_EOD);
+	pView->cmdSelect(pCallData->m_xPos, pCallData->m_yPos, FV_DOCPOS_BOD, FV_DOCPOS_EOD);
 	return UT_TRUE;
 }
 
