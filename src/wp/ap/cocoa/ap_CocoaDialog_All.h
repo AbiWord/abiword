@@ -50,6 +50,7 @@
 
 #	include "ap_CocoaDialog_Replace.h"
 #	include "ap_CocoaDialog_Break.h"
+#	include "ap_CocoaDialog_FormatFootnotes.h"
 #	include "ap_CocoaDialog_Goto.h"
 #   include "ap_CocoaDialog_PageNumbers.h"
 #   include "ap_CocoaDialog_PageSetup.h"
@@ -131,7 +132,7 @@
 //PORT     DeclareDialog(AP_DIALOG_ID_INSERT_TABLE,		AP_CocoaDialog_InsertTable)
 //PORT     DeclareDialog(AP_DIALOG_ID_MERGE_CELLS,		AP_CocaDialog_MergeCells)
 //PORT	 DeclareDialog(AP_DIALOG_ID_FORMAT_TABLE,		AP_CocoaDialog_FormatTable)
-//PORT	 DeclareDialog(AP_DIALOG_ID_FORMAT_FOOTNOTES,		AP_CocoaDialog_FormatFootnotes)
+	DeclareDialog(AP_DIALOG_ID_FORMAT_FOOTNOTES,		AP_CocoaDialog_FormatFootnotes)
 //PORT	 DeclareDialog(AP_DIALOG_ID_MAILMERGE,		AP_UnixDialog_MailMerge)
 #if 0
 	DeclareDialog(AP_DIALOG_ID_DOWNLOAD_FILE,	AP_CocoaDialog_Download_File)
