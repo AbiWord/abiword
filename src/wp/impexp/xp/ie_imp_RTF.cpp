@@ -3116,6 +3116,7 @@ bool IE_Imp_RTF::ApplyCharacterAttributes()
 	RTFFontTableItem* pFont = GetNthTableFont(m_currentRTFState.m_charProps.m_fontNumber);
 	if (pFont != NULL)
 	{
+		UT_ASSERT(pFont->m_pFontName != NULL);
 		strcat(propBuffer, "; font-family:");
 		strcat(propBuffer, pFont->m_pFontName);
 	}
@@ -4613,9 +4614,8 @@ bool IE_Imp_RTF::ReadFontTable()
 		// multiple entries in font table
 		while (ch != '}')
 		{
-			if (ch == '{')
+			if (ch != '{')
 			{
-				if (!ReadCharFromFile(&ch))
 					return false;
 			}
 			
@@ -4647,6 +4647,8 @@ bool IE_Imp_RTF::ReadOneFontFromTable()
 	long parameter = 0;
 	bool paramUsed = false;
 
+	int nesting = 0;
+
 	// run though the item reading in these values
 	RTFFontTableItem::FontFamilyEnum fontFamily = RTFFontTableItem::ffNone;
 	RTFFontTableItem::FontPitch pitch = RTFFontTableItem::fpDefault;
@@ -4657,11 +4659,17 @@ bool IE_Imp_RTF::ReadOneFontFromTable()
 	memset(panose, 0, sizeof(unsigned char));
 	char* pFontName = NULL;
 	char* pAlternativeFontName = NULL;
+	RTFTokenType tokenType;
 
-	// Read the font index (must be specified)
-	if (!ReadKeyword(keyword, &parameter, &paramUsed, MAX_KEYWORD_LEN)  ||
-		 (strcmp((char*)keyword, "f") != 0)  ||
-		!paramUsed)
+	//TODO - this should be intialized once for the whole RTF reader.
+	UT_StringPtrMap keywordMap;
+	keywordMap.insert("fcharset",&charSet);
+	keywordMap.insert("cpg",&codepage);
+	//TODO - handle the other keywords
+	int * pValue;
+
+	tokenType = NextToken(keyword,&parameter,&paramUsed,MAX_KEYWORD_LEN);
+	if (tokenType != RTF_TOKEN_KEYWORD || (strcmp((char*)keyword, "f") != 0))
 	{
 		return false;
 	}
@@ -4671,9 +4679,8 @@ bool IE_Imp_RTF::ReadOneFontFromTable()
 	}
 
 	// Read the font family (must be specified)
-	if (!ReadCharFromFile(&ch)  ||
-		 ch != '\\'  ||
-	    !ReadKeyword(keyword, &parameter, &paramUsed, MAX_KEYWORD_LEN))
+	tokenType = NextToken(keyword,&parameter,&paramUsed,MAX_KEYWORD_LEN);
+	if (tokenType != RTF_TOKEN_KEYWORD)
 	{
 		return false;
 	}
@@ -4700,70 +4707,77 @@ bool IE_Imp_RTF::ReadOneFontFromTable()
 			fontFamily = RTFFontTableItem::ffNone;
 		}
 	}
-
 	// Now (possibly) comes some optional keyword before the fontname
-	if (!ReadCharFromFile(&ch))
-		return false;
-	int nesting = 0;
-	while (ch == '\\'  ||  ch == '{')
+	while (tokenType != RTF_TOKEN_DATA || nesting > 0)
 	{
-		if (ch == '{')
+    	tokenType = NextToken(keyword,&parameter,&paramUsed,MAX_KEYWORD_LEN);
+		switch (tokenType)
 		{
-			++nesting;
-			if (!ReadCharFromFile(&ch))
-				return false;
-		}
-
-		if (!ReadKeyword(keyword, &parameter, &paramUsed, MAX_KEYWORD_LEN))
-			return false;
-
-		if (strcmp((char*)keyword, "fcharset") == 0)
-		{
-			UT_ASSERT(paramUsed);	
-			charSet = parameter;
-		}
-		else if (strcmp((char*)keyword, "cpg") == 0)
-		{
-			UT_ASSERT(paramUsed);	
-			codepage = parameter;
-		}
-		else if (strcmp((char*)keyword, "panose") == 0)
-		{
-			if (!ReadCharFromFile(&ch))
-				return false;
-
-			if (isdigit(ch))
+		case RTF_TOKEN_OPEN_BRACE:
+			nesting ++;
+			break;
+		case RTF_TOKEN_CLOSE_BRACE:
+			nesting --;
+			break;
+		case RTF_TOKEN_DATA:
+			break;
+		case RTF_TOKEN_KEYWORD:
+			pValue = (int*)keywordMap.pick((char*)keyword);
+			if (pValue != NULL)
 			{
-				 SkipBackChar(ch);
+				UT_ASSERT(paramUsed);	
+				*pValue = parameter;
 			}
-
-			for (int i = 0; i < 10; i++)
+			if (strcmp((char*)keyword,"panose") == 0)
 			{
-				unsigned char buf[3];
-
-				if ( !ReadCharFromFile(&(buf[0]))  ||  !ReadCharFromFile(&(buf[1])) )
+				// These take the form of {\*\panose 020b0604020202020204}
+				// Panose numbers are used to classify Latin-1 fonts for matching
+				// If you are really interested, see
+				// http://www.w3.org/TR/REC-CSS2/notes.html#panose
+				if (!ReadCharFromFile(&ch)) 
 				{
 					return false;
 				}
-				unsigned char val = (unsigned char)(atoi((char*)buf));
-				panose[i] = val;
+				
+				if (isdigit(ch))
+				{
+					SkipBackChar(ch);
+				}
+				
+				for (int i = 0; i < 10; i++)
+				{
+					// TODO: MattiPicus commented out the original code
+					// since he read the web page above and realized it
+					// is broken.  Perhpas someone can explain what the
+					// original author's intent was? The code now just
+					// grabs the second char from each byte of the number
+					//
+					//unsigned char buf[3] = "00";
+					//if ( !ReadCharFromFile(&(buf[0]))  ||  !ReadCharFromFile(&(buf[1])) )
+					//{
+					//	return false;
+					//}
+					//unsigned char val = (unsigned char)(atoi((char*)buf));
+					//panose[i] = val;
+					if ( !ReadCharFromFile(&ch)  ||  !ReadCharFromFile(&ch) )
+					{
+						return false;
+					}
+					panose[i] = ch;
+				}				
 			}
-		}
-
-		//TODO - handle the other keywords
-
-		if (!ReadCharFromFile(&ch))
-			return false;
-
-		if (ch == '}' && (nesting-- > 0))
-		{
-			if (!ReadCharFromFile(&ch))
-				return false;
+			break;
+		default:
+			//TODO: handle errors
+			break;
 		}
 	}
-	//we fall back here when space between parameter of keyword and font name
-	//is seen
+	if (nesting == -1)
+	{
+		UT_DEBUGMSG(("RTF: Font name not found in font definition %d",fontIndex));
+	}
 	// Now comes the font name, terminated by either a close brace or a slash or a semi-colon
+	ch = keyword[0];
 	int count = 0;
 	/*
 	    FIXME: CJK font names come in form \'aa\'cd\'ef - so we have to 
@@ -4773,40 +4787,58 @@ bool IE_Imp_RTF::ReadOneFontFromTable()
 	{
 		keyword[count++] = ch;
 		if (!ReadCharFromFile(&ch))
+		{
 			return false;
+		}
 	}
 	if (ch=='{')
+	{
 		++nesting;
+	}
 		
 	keyword[count] = 0;
 	/*work around "helvetica" font name -replace it with "Helvetic"*/
 	if (!UT_stricmp((const char*)keyword,"helvetica"))
+	{
 		strcpy((char*)keyword,"Helvetic");
+	}
 
 	if (!UT_cloneString(pFontName, (char*)keyword))
 	{
 		// TODO outofmem
 	}			
-	for(int i=0;i<=nesting;++i)
+	for (int i=0; i <= nesting; ++i)
 	{
 		// Munch the remaining control words down to the close brace
 		while (ch != '}')
 		{
 			if (!ReadCharFromFile(&ch))
+			{
 				return false;
+			}
 			if (ch=='{')
+			{
 				++nesting;
+			}
 		}
 		if (nesting>0 && i!=nesting) //we need to skip '}' we've just seen.
+		{
 			if (!ReadCharFromFile(&ch))
-				return false;		
+			{
+				return false;
+			}
+		}
 	}
 
 	// Create the font entry and put it into the font table
-	RTFFontTableItem* pNewFont = new RTFFontTableItem(fontFamily, charSet, codepage, pitch,
-						panose, pFontName, pAlternativeFontName);
+	RTFFontTableItem* pNewFont = new RTFFontTableItem(fontFamily, charSet, 
+													  codepage, pitch,
+													  panose, pFontName, 
+													  pAlternativeFontName);
 	if (pNewFont == NULL)
+	{
 		return false;
+	}
 
 	// ensure that the font table is large enough for this index
 	while (m_fontTable.getItemCount() <= fontIndex)
@@ -5597,14 +5629,16 @@ IE_Imp_RTF::RTFTokenType IE_Imp_RTF::NextToken (unsigned char *pKeyword, long* p
 	UT_ASSERT (pParam);
 	*pParam = 0;
 	*pParamUsed = false;
-	*pKeyword = 0;
-	pKeyword [1] = 0;
+	pKeyword [0] = ' ';
 
+	while( pKeyword[0] == ' ')
+	{
 	if (!ReadCharFromFile(pKeyword))
 	{
 		tokenType = RTF_TOKEN_ERROR;
 	}
-	else switch (*pKeyword)
+	}
+	switch (*pKeyword)
 	{
 	case '\\':
 		tokenType = RTF_TOKEN_KEYWORD;
