@@ -635,6 +635,10 @@ void fp_CellContainer::_drawLine (const PP_PropertyMap::Line & style,
 {
 	GR_Graphics * pGr = getGraphics ();
 
+	if (style.m_t_linestyle == PP_PropertyMap::linestyle_none &&
+		!getGraphics()->queryProperties(GR_Graphics::DGP_SCREEN))
+		return; // do not draw the dotted line when printing	
+	
 	GR_Graphics::JoinStyle js = GR_Graphics::JOIN_MITER;
 	GR_Graphics::CapStyle  cs = GR_Graphics::CAP_BUTT;
 
