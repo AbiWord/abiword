@@ -2442,15 +2442,15 @@ void fp_ImageRun::lookupProperties(void)
 			m_iWidthLayoutUnits = (UT_sint32) dnwL;
 #endif
 		}
-		if(getLine()->getContainer() != NULL && 
+		if(getLine()->getContainer() != NULL &&
 		   static_cast<fp_VerticalContainer *>(getLine()->getContainer())->getMaxHeight() - 1 < m_iHeight)
 		{
 			double dh = (double) static_cast<fp_VerticalContainer *>(getLine()->getContainer())->getMaxHeight();
 			m_iHeight = static_cast<fp_VerticalContainer *>(getLine()->getContainer())->getMaxHeight() -1;
 			double rat = (dh - 1.0)/dh;
-#ifndef WITH_PANGO			
+#ifndef WITH_PANGO
 			double dhL = (double) static_cast<fp_VerticalContainer *>(getLine()->getContainer())->getMaxHeightInLayoutUnits();
-			double dnhL = dhL - dhL*rat; 
+			double dnhL = dhL - dhL*rat;
 			m_iHeightLayoutUnits = (UT_sint32) dnhL;
 #endif
 		}
@@ -2725,8 +2725,8 @@ bool fp_FieldRun::_setValue(UT_UCSChar *p_new_value)
 
 		if(iLen > 1 && !XAP_App::getApp()->theOSHasBidiSupport())
 		{
-			FriBidiChar * fVisStr = new FriBidiChar[iLen];
-			FriBidiChar * fLogStr = new FriBidiChar[iLen];
+			FriBidiChar * fVisStr = new FriBidiChar[iLen+1];
+			FriBidiChar * fLogStr = new FriBidiChar[iLen+1];
 			UT_ASSERT(fVisStr && fLogStr);
 
 			for(UT_uint32 i = 0; i < iLen; i++)

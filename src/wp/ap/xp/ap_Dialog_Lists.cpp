@@ -1171,8 +1171,8 @@ void AP_Lists_preview::draw(void)
 
 				if(len > 1 && !XAP_App::getApp()->theOSHasBidiSupport())
 				{
-					FriBidiChar * fLogStr = new FriBidiChar[len];
-					FriBidiChar * fVisStr = new FriBidiChar[len];
+					FriBidiChar * fLogStr = new FriBidiChar[len+1];
+					FriBidiChar * fVisStr = new FriBidiChar[len+1];
 					UT_ASSERT(fLogStr && fVisStr);
 
 					for(j=0; j<=len;j++)
