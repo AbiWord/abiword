@@ -1401,26 +1401,20 @@ Defun1(paste)
 	return UT_TRUE;
 }
 
-Defun0(find)
-{
-	return UT_TRUE;
-}
-
 Defun0(go)
 {
 	return UT_TRUE;
 }
 
+/*****************************************************************/
 
-static UT_Bool s_doReplaceDlg(FV_View * pView)
+static UT_Bool s_doFindOrFindReplaceDlg(FV_View * pView, AP_Dialog_Id id)
 {
 	AP_Frame * pFrame = (AP_Frame *) pView->getParentData();
 	UT_ASSERT(pFrame);
 
 	pFrame->raise();
 
-	AP_Dialog_Id id = AP_DIALOG_ID_REPLACE;
-	
 	AP_DialogFactory * pDialogFactory
 		= (AP_DialogFactory *)(pFrame->getDialogFactory());
 
@@ -1441,9 +1435,6 @@ static UT_Bool s_doReplaceDlg(FV_View * pView)
 		
 	// run the dialog
 	pDialog->runModal(pFrame);
-
-	// extract what they did
-	// TODO: nothing?
 	
 	UT_Bool bOK = UT_TRUE;
 
@@ -1452,11 +1443,20 @@ static UT_Bool s_doReplaceDlg(FV_View * pView)
 	return bOK;
 }
 
+Defun1(find)
+{
+	ABIWORD_VIEW;
+	AP_Dialog_Id id = AP_DIALOG_ID_FIND;
+
+	return s_doFindOrFindReplaceDlg(pView,id);
+}
+
 Defun1(replace)
 {
 	ABIWORD_VIEW;
+	AP_Dialog_Id id = AP_DIALOG_ID_REPLACE;
 
-	return s_doReplaceDlg(pView);
+	return s_doFindOrFindReplaceDlg(pView,id);
 }
 
 /*****************************************************************/

@@ -49,6 +49,7 @@
 	DeclareDialog(XAP_DIALOG_ID_FONT,			AP_UnixDialog_FontChooser)
 
 	DeclareDialog(AP_DIALOG_ID_REPLACE,			AP_UnixDialog_Replace)
+	DeclareDialog(AP_DIALOG_ID_FIND,			AP_UnixDialog_Replace)
 	
 	// ... also add new dialogs here ...
 

@@ -17,6 +17,10 @@
  * 02111-1307, USA.
  */
 
+//////////////////////////////////////////////////////////////////
+// THIS CODE RUNS BOTH THE "Find" AND THE "Find-Replace" DIALOGS.
+//////////////////////////////////////////////////////////////////
+
 #include <windows.h>
 
 #include "ut_string.h"
@@ -110,12 +114,15 @@ void AP_Win32Dialog_Replace::_initButtons(HWND hWnd)
 	DWORD lenReplace = GetWindowTextLength(hWndEditReplace);
 
 	BOOL bEnableFind = (lenFind > 0);
-	BOOL bEnableReplace = bEnableFind && (lenReplace > 0);
-
 	EnableWindow(GetDlgItem(hWnd,AP_RID_DIALOG_REPLACE_BTN_FINDNEXT),bEnableFind);
-	EnableWindow(GetDlgItem(hWnd,AP_RID_DIALOG_REPLACE_BTN_REPLACE),bEnableReplace);
-	EnableWindow(GetDlgItem(hWnd,AP_RID_DIALOG_REPLACE_BTN_REPLACEALL),bEnableReplace);
 
+	if (m_id == AP_DIALOG_ID_REPLACE)
+	{
+		BOOL bEnableReplace = bEnableFind && (lenReplace > 0);
+		EnableWindow(GetDlgItem(hWnd,AP_RID_DIALOG_REPLACE_BTN_REPLACE),bEnableReplace);
+		EnableWindow(GetDlgItem(hWnd,AP_RID_DIALOG_REPLACE_BTN_REPLACEALL),bEnableReplace);
+	}
+	
 	return;
 }
 
@@ -133,6 +140,7 @@ BOOL AP_Win32Dialog_Replace::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lPar
 		}
 		FREEP(bufferUnicode);
 	}
+	if (m_id == AP_DIALOG_ID_REPLACE)
 	{
 		UT_UCSChar * bufferUnicode = getReplaceString();
 		UT_uint32 lenUnicode = UT_UCS_strlen(bufferUnicode);
@@ -222,6 +230,8 @@ FreeMemory:
 
 BOOL AP_Win32Dialog_Replace::_onBtn_Replace(HWND hWnd)
 {
+	UT_ASSERT((m_id == AP_DIALOG_ID_REPLACE));
+
 	char * pBufFromDialogFind = NULL;
 	char * pBufFromDialogReplace = NULL;
 	UT_UCSChar * pUCSFind = NULL;
@@ -272,6 +282,8 @@ FreeMemory:
 
 BOOL AP_Win32Dialog_Replace::_onBtn_ReplaceAll(HWND hWnd)
 {
+	UT_ASSERT((m_id == AP_DIALOG_ID_REPLACE));
+
 	UT_DEBUGMSG(("TODO do ReplaceAll\n"));
 	return 1;
 }
