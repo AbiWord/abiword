@@ -670,7 +670,35 @@ void AD_Document::setAutoRevisioning(bool b)
 			setShowRevisionId(PD_MAX_REVISION);
 			setShowRevisions(false);
 		}
+		else
+		{
+			// we have to wipe out all of the revision information
+			// from the document; this is because non-revisioned items
+			// are treated as revision level 0 and so any
+			// revisions in the document would overshadow any
+			// subsequent changes -- see bug 7183
 
+			// step out of revision mode ...
+			_setMarkRevisions(false);
+			m_bAutoRevisioning = false;
+
+			if(acceptAllRevisions())
+			{
+				// we succeeded in restoring the document, so now clear the
+				// history record
+				_purgeRevisionTable();
+				
+				m_bDoNotAdjustHistory = true;
+				save();
+				m_bDoNotAdjustHistory = false;
+			}
+
+			// go back to revisioning mode so that the
+			// setMarkRevisions() below triggers rebuild ...
+			_setMarkRevisions(true);
+
+		}
+		
 		setMarkRevisions(b);
 	}
 }

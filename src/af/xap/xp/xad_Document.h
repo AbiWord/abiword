@@ -246,6 +246,9 @@ public:
 											 UT_uint32 iLevel) = 0;
 
 	virtual bool        rejectAllHigherRevisions(UT_uint32 iLevel) = 0;
+
+	virtual bool        acceptAllRevisions() = 0;
+	
 	
 protected:
 	void            _purgeRevisionTable();
