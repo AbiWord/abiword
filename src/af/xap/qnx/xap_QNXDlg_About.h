@@ -44,21 +44,21 @@ public:
 	virtual void			event_DrawingAreaExpose(void);
 	
  protected:
-#if 0
-	GtkWidget * _constructWindow(void);
+	PtWidget_t * _constructWindow(void);
 	void		_populateWindowData(void);
 	void		_preparePicture(void);
-#endif
 	
-	void * m_windowMain;
-	void * m_buttonOK;
-	void * m_buttonURL;
-	void * m_drawingareaGraphic;
+	PtWidget_t * m_windowMain;
+	PtWidget_t * m_buttonOK;
+	PtWidget_t * m_buttonURL;
+	PtWidget_t * m_drawingareaGraphic;
 	
 	GR_QNXGraphics * m_gc;
 
 	GR_QNXImage * m_pGrImageSidebar;
 	XAP_QNXFrame * m_pFrame;
+
+	int 			done;
 };
 
 #endif /* XAP_QNXDIALOG_ABOUT_H */

@@ -37,6 +37,8 @@
 #include "ut_bytebuf.h"
 #include "ut_png.h"
 
+#include <stdio.h>
+
 /*****************************************************************/
 
 extern unsigned char g_pngSidebar[];		// see ap_wp_sidebar.cpp
@@ -70,67 +72,85 @@ XAP_QNXDialog_About::~XAP_QNXDialog_About(void)
 }
 
 /*****************************************************************/
-
-// These are all static callbacks, bound to GTK or GDK events.
-#if 0
-static void s_ok_clicked(GtkWidget * widget,
-						 XAP_QNXDialog_About * dlg)
+static int s_ok_clicked(PtWidget_t *widget, void *data, PtCallbackInfo_t *info)
 {
-	UT_ASSERT(widget && dlg);
+	UT_ASSERT(widget && data);
+	XAP_QNXDialog_About * dlg = (XAP_QNXDialog_About *)data;
 
 	dlg->event_OK();
+	return Pt_CONTINUE;
 }
 
-static void s_url_clicked(GtkWidget * widget,
-						  XAP_QNXDialog_About * dlg)
+static int s_url_clicked(PtWidget_t *widget, void *data, PtCallbackInfo_t *info)
 {
-	UT_ASSERT(widget && dlg);
+	UT_ASSERT(widget && data);
+	XAP_QNXDialog_About * dlg = (XAP_QNXDialog_About *)data;
 
 	dlg->event_URL();
+	return Pt_CONTINUE;
 }
 
-static void s_delete_clicked(GtkWidget * /* widget */,
-							 gpointer /* data */,
-							 XAP_QNXDialog_About * dlg)
+static int s_delete_clicked(PtWidget_t *widget, void *data, PtCallbackInfo_t *info)
 {
-	UT_ASSERT(dlg);
+	UT_ASSERT(data);
+	XAP_QNXDialog_About * dlg = (XAP_QNXDialog_About *)data;
 
 	dlg->event_WindowDelete();
+	return Pt_CONTINUE;
 }
 
-static int s_drawingarea_expose(GtkWidget * /* widget */,
-								 GdkEventExpose * /* pExposeEvent */,
-								 XAP_QNXDialog_About * dlg)
+static int s_drawingarea_expose(PtWidget_t * w, PhTile_t * damage)
 {
-	UT_ASSERT(dlg);
+	PtArg_t args[1];
+	PhRect_t raw_canvas;
+
+	PtSuperClassDraw(PtBasic, w, damage);
+	PtBasicWidgetCanvas(w, &raw_canvas);
+	PtClipAdd(w, &raw_canvas);
+
+	XAP_QNXDialog_About *pQNXAbout, **ppQNXAbout = NULL;
+	PtSetArg(&args[0], Pt_ARG_USER_DATA, &ppQNXAbout, 0);
+    PtGetResources(w, 1, args);
+    pQNXAbout = (ppQNXAbout) ? *ppQNXAbout : NULL;
+
+    UT_ASSERT(pQNXAbout);
+	pQNXAbout->event_DrawingAreaExpose();
+
+	PtClipRemove();
+	return Pt_CONTINUE;
+}
+/*
+static int s_drawingarea_expose(PtWidget_t *widget, void *data, PtCallbackInfo_t *info)
+{
+	UT_ASSERT(data);
+	XAP_QNXDialog_About * dlg = (XAP_QNXDialog_About *)data;
 
 	dlg->event_DrawingAreaExpose();
-
-	return FALSE;
+	return Pt_CONTINUE;
 }
-#endif
+*/
 
 /*****************************************************************/
 
 void XAP_QNXDialog_About::runModal(XAP_Frame * pFrame)
 {
-#if 0
 	// stash away the frame
 	m_pFrame = static_cast<XAP_QNXFrame *>(pFrame);
 
 	// Build the window's widgets and arrange them
-	GtkWidget * mainWindow = _constructWindow();
+	PtWidget_t * mainWindow = _constructWindow();
 	UT_ASSERT(mainWindow);
 
 	// assemble an image
 	_preparePicture();
 	
+#if 0
 	// To center the dialog, we need the frame of its parent.
 	XAP_QNXFrame * pQNXFrame = static_cast<XAP_QNXFrame *>(pFrame);
 	UT_ASSERT(pQNXFrame);
 	
 	// Get the GtkWindow of the parent frame
-	GtkWidget * parentWindow = pQNXFrame->getTopLevelWindow();
+	PtWidget_t * parentWindow = pQNXFrame->getTopLevelWindow();
 	UT_ASSERT(parentWindow);
 	
 	// Center our new dialog in its parent and make it a transient
@@ -144,21 +164,31 @@ void XAP_QNXDialog_About::runModal(XAP_Frame * pFrame)
 	// Make it modal, and stick it up top
 	gtk_grab_add(mainWindow);
 
-	// attach a new graphics context
-	m_gc = new GR_QNXGraphics(m_drawingareaGraphic->window, NULL);
 	
 	// Run into the GTK event loop for this window.
 	gtk_main();
 
 	gtk_widget_destroy(mainWindow);
 #endif
+
+	// attach a new graphics context
+	m_gc = new GR_QNXGraphics(mainWindow, m_drawingareaGraphic);
+
+	printf("Running the about main window loop \n");
+	PtRealizeWidget(mainWindow);
+	int count = PtModalStart();
+	done = 0;
+	while(!done) {
+		PtProcessEvent();
+	}
+	PtModalEnd(count);
+
+	PtDestroyWidget(mainWindow);
 }
 
 void XAP_QNXDialog_About::event_OK(void)
 {
-#if 0
-	gtk_main_quit();
-#endif
+	done = 1;
 }
 
 void XAP_QNXDialog_About::event_URL(void)
@@ -168,148 +198,113 @@ void XAP_QNXDialog_About::event_URL(void)
 
 void XAP_QNXDialog_About::event_WindowDelete(void)
 {
-#if 0
-	gtk_main_quit();
-#endif
+	done = 1;
 }
 
-void XAP_QNXDialog_About::event_DrawingAreaExpose(void)
-{
-#if 0
+void XAP_QNXDialog_About::event_DrawingAreaExpose(void) {
 	if (!m_gc)
 		return;
 
 	m_gc->drawImage(m_pGrImageSidebar, 0, 0);
-#endif
 }
 
 /*****************************************************************/
-#if 0
-GtkWidget * XAP_QNXDialog_About::_constructWindow(void)
+PtWidget_t * XAP_QNXDialog_About::_constructWindow(void)
 {
-	GtkWidget *windowAbout;
-	GtkWidget *hboxAbout;
-	GtkWidget *drawingareaGraphic;
-	GtkWidget *vboxInfo;
-	GtkWidget *labelTitle;
-	GtkWidget *labelVersion;
-	GtkWidget *textCopyright;
-	GtkWidget *hbox2;
-	GtkWidget *buttonURL;
-	GtkWidget *buttonOK;
+	PtWidget_t *windowAbout;
+	PtWidget_t *hboxAbout;
+	PtWidget_t *drawingareaGraphic;
+	PtWidget_t *vboxInfo;
+	PtWidget_t *labelTitle;
+	PtWidget_t *labelVersion;
+	PtWidget_t *textCopyright;
+	PtWidget_t *hbox2;
+	PtWidget_t *buttonURL;
+	PtWidget_t *buttonOK;
 
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
+
+	PtArg_t args[10];
+	int		n;
+
 	
 	// we use this for all sorts of strings that can't appear in the string sets
 	char buf[4096];
 
-	g_snprintf(buf, 4096, XAP_ABOUT_TITLE, m_pApp->getApplicationName());
+	snprintf(buf, 4096, XAP_ABOUT_TITLE, m_pApp->getApplicationName());
 
-	windowAbout = gtk_window_new (GTK_WINDOW_DIALOG);
-	gtk_object_set_data (GTK_OBJECT (windowAbout), "windowAbout", windowAbout);
-	gtk_widget_set_usize (windowAbout, 0, 350);
-	gtk_window_set_title (GTK_WINDOW (windowAbout), buf);
-	gtk_window_set_policy (GTK_WINDOW (windowAbout), FALSE, FALSE, FALSE);
+#define WIN_WIDTH  300
+#define WIN_HEIGHT 250
+	n = 0;
+	PtSetArg(&args[n++], Pt_ARG_WINDOW_TITLE, buf, 0);
+	PtSetArg(&args[n++], Pt_ARG_WIDTH, WIN_WIDTH, 0);
+	PtSetArg(&args[n++], Pt_ARG_HEIGHT, WIN_HEIGHT, 0);
+	PtSetArg(&args[n++], Pt_ARG_WINDOW_RENDER_FLAGS, 0, Ph_WM_RENDER_RESIZE);
+	PtSetParentWidget(NULL);
+	windowAbout = PtCreateWidget(PtWindow, NULL, n, args);
 
-	hboxAbout = gtk_hbox_new (FALSE, 0);
-	gtk_object_set_data (GTK_OBJECT (windowAbout), "hboxAbout", hboxAbout);
-	gtk_widget_show (hboxAbout);
-	gtk_container_add (GTK_CONTAINER (windowAbout), hboxAbout);
 
-	drawingareaGraphic = gtk_drawing_area_new ();
-	gtk_object_set_data (GTK_OBJECT (windowAbout), "drawingareaGraphic", drawingareaGraphic);
-	gtk_widget_set_events(drawingareaGraphic, GDK_EXPOSURE_MASK);
-	gtk_signal_connect (GTK_OBJECT(drawingareaGraphic), "expose_event",
-						GTK_SIGNAL_FUNC(s_drawingarea_expose), (gpointer) this);
-	gtk_widget_show (drawingareaGraphic);
-	gtk_box_pack_start (GTK_BOX (hboxAbout), drawingareaGraphic, TRUE, TRUE, 0);
-	// This size is kinda arbitrary, and will need to be adjusted as the graphics change
-	gtk_widget_set_usize (drawingareaGraphic, 200, 350);
-
-	vboxInfo = gtk_vbox_new (FALSE, 0);
-	gtk_object_set_data (GTK_OBJECT (windowAbout), "vboxInfo", vboxInfo);
-	gtk_widget_show (vboxInfo);
-	gtk_box_pack_start (GTK_BOX (hboxAbout), vboxInfo, TRUE, TRUE, 8);
-
-	labelTitle = gtk_label_new (m_pApp->getApplicationName());
-	gtk_object_set_data (GTK_OBJECT (windowAbout), "labelTitle", labelTitle);
-	gtk_widget_show (labelTitle);
-	gtk_box_pack_start (GTK_BOX (vboxInfo), labelTitle, FALSE, TRUE, 18);
-
-	// make the font really big
-	GtkStyle * bigstyle = gtk_style_copy(gtk_widget_get_style(labelTitle));
-	UT_ASSERT(bigstyle);
-	gdk_font_unref(bigstyle->font);
-	bigstyle->font = gdk_font_load("-*-helvetica-bold-r-*-*-*-240-*-*-*-*-*-*");
-	gtk_widget_set_style(labelTitle, bigstyle);
+	n = 0; 
+	PtSetArg(&args[n++], Pt_ARG_WIDTH, WIN_WIDTH, 0);
+	PtSetArg(&args[n++], Pt_ARG_HEIGHT, WIN_HEIGHT, 0);
+	PtSetArg(&args[n++], Pt_ARG_GROUP_FLAGS, Pt_GROUP_STRETCH_FILL, Pt_GROUP_STRETCH_FILL);
+	PtSetArg(&args[n++], Pt_ARG_GROUP_VERT_ALIGN, Pt_GROUP_VERT_CENTER, 0);
+	//PtSetArg(&args[n++], Pt_ARG_GROUP_HORZ_ALIGN, Pt_GROUP_HORZ_CENTER, 0);
+	hboxAbout = PtCreateWidget(PtGroup, windowAbout, n, args);
 	
-	g_snprintf(buf, 4096, XAP_ABOUT_VERSION, XAP_App::s_szBuild_Version);
-	
-	labelVersion = gtk_label_new (buf);
-	gtk_object_set_data (GTK_OBJECT (windowAbout), "labelVersion", labelVersion);
-	gtk_widget_show (labelVersion);
-	gtk_box_pack_start (GTK_BOX (vboxInfo), labelVersion, FALSE, FALSE, 0);
+	n = 0;
+	void *data = this;
+	PtSetArg(&args[n++], Pt_ARG_USER_DATA, &data, sizeof(this));
+	PtSetArg(&args[n++], Pt_ARG_RAW_DRAW_F,  &s_drawingarea_expose, 1);
+	PtSetArg(&args[n++], Pt_ARG_WIDTH,  WIN_WIDTH / 2, 0);
+	PtSetArg(&args[n++], Pt_ARG_HEIGHT,  WIN_HEIGHT, 0);
+	drawingareaGraphic = PtCreateWidget(PtRaw, hboxAbout, n, args);
 
+	n = 0;
+	PtSetArg(&args[n++], Pt_ARG_WIDTH, WIN_WIDTH, 0);
+	PtSetArg(&args[n++], Pt_ARG_HEIGHT, WIN_HEIGHT, 0);
+	PtSetArg(&args[n++], Pt_ARG_GROUP_ORIENTATION, Pt_GROUP_VERTICAL, Pt_GROUP_VERTICAL);
+	PtSetArg(&args[n++], Pt_ARG_GROUP_FLAGS, Pt_GROUP_STRETCH_HORIZONTAL, Pt_GROUP_STRETCH_HORIZONTAL);
+	vboxInfo = PtCreateWidget(PtGroup, hboxAbout, n, args);
+
+	n = 0;
+	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, m_pApp->getApplicationName(), 0);
+	PtSetArg(&args[n++], Pt_ARG_TEXT_FONT, "helv18b", 0);
+	PtSetArg(&args[n++], Pt_ARG_HORIZONTAL_ALIGNMENT, Pt_CENTER, 0);
+	labelTitle = PtCreateWidget(PtLabel, vboxInfo, n, args);
+
+	snprintf(buf, 4096, XAP_ABOUT_VERSION, XAP_App::s_szBuild_Version);
+	n = 0;
+	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, buf, 0);
+	PtSetArg(&args[n++], Pt_ARG_HORIZONTAL_ALIGNMENT, Pt_CENTER, 0);
+	labelVersion = PtCreateWidget(PtLabel, vboxInfo, n, args);
+	
 	char buf2[4096];
-	g_snprintf(buf2, 4096, XAP_ABOUT_GPL_LONG_LINE_BROKEN, m_pApp->getApplicationName());
+	snprintf(buf2, 4096, XAP_ABOUT_GPL_LONG_LINE_BROKEN, m_pApp->getApplicationName());
+	snprintf(buf, 4096, "%s\n\n%s", XAP_ABOUT_COPYRIGHT, buf2);
 	
-	g_snprintf(buf, 4096, "%s\n\n%s", XAP_ABOUT_COPYRIGHT, buf2);
-	
-	textCopyright = gtk_text_new (NULL, NULL);
-	gtk_object_set_data (GTK_OBJECT (windowAbout), "textCopyright", textCopyright);
-	gtk_widget_show (textCopyright);
-	gtk_box_pack_start (GTK_BOX (vboxInfo), textCopyright, TRUE, FALSE, 10);
-	gtk_widget_set_usize (textCopyright, 290, 200);
-	gtk_widget_realize (textCopyright);
-	gtk_text_insert (GTK_TEXT (textCopyright), NULL, NULL, NULL, buf, strlen(buf));
+	n = 0;
+	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, buf, 0);
+	//make the font smaller?
+	textCopyright = PtCreateWidget(PtLabel, vboxInfo, n, args);
 
-	// make the font slightly smaller
-	GtkStyle * smallstyle = gtk_style_copy(gtk_widget_get_style(textCopyright));
-	UT_ASSERT(smallstyle);
-	gdk_font_unref(smallstyle->font);
-	smallstyle->font = gdk_font_load("-*-helvetica-medium-r-*-*-*-100-*-*-*-*-*-*");
-	gtk_widget_set_style(textCopyright, smallstyle);
-	
-	hbox2 = gtk_hbox_new (FALSE, 10);
-	gtk_object_set_data (GTK_OBJECT (windowAbout), "hbox2", hbox2);
-	gtk_widget_show (hbox2);
-	gtk_box_pack_start (GTK_BOX (vboxInfo), hbox2, FALSE, TRUE, 10);
+	n = 0;
+	PtSetArg(&args[n++], Pt_ARG_GROUP_FLAGS, Pt_GROUP_EQUAL_SIZE, Pt_GROUP_EQUAL_SIZE);
+	PtSetArg(&args[n++], Pt_ARG_GROUP_HORZ_ALIGN, Pt_GROUP_HORZ_RIGHT, 0);
+	hbox2 = PtCreateWidget(PtGroup, vboxInfo, n, args);
 
-	buttonURL = gtk_button_new_with_label ("www.abisource.com");
-	gtk_object_set_data (GTK_OBJECT (windowAbout), "buttonURL", buttonURL);
-	gtk_widget_show (buttonURL);
-	gtk_box_pack_start (GTK_BOX (hbox2), buttonURL, FALSE, TRUE, 0);
-	gtk_widget_set_usize (buttonURL, 140, 24);
+#define BUTTON_WIDTH 80
+	n = 0;
+	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, "www.abisource.com", 0);
+	PtSetArg(&args[n++], Pt_ARG_WIDTH, BUTTON_WIDTH, 0);
+	buttonURL = PtCreateWidget(PtButton, hbox2, n, args);
+	PtAddCallback(buttonURL, Pt_CB_ACTIVATE, s_url_clicked, this);
 
-	buttonOK = gtk_button_new_with_label (pSS->getValue(XAP_STRING_ID_DLG_OK));
-	gtk_object_set_data (GTK_OBJECT (windowAbout), "buttonOK", buttonOK);
-	gtk_widget_show (buttonOK);
-	gtk_box_pack_end (GTK_BOX (hbox2), buttonOK, FALSE, TRUE, 0);
-	gtk_widget_set_usize (buttonOK, 85, 24);
-
-	// Since we do drawing, we need a graphics context which can
-	// understand PNG data.
-	
-	
-	gtk_signal_connect(GTK_OBJECT(buttonOK),
-					   "clicked",
-					   GTK_SIGNAL_FUNC(s_ok_clicked),
-					   (gpointer) this);
-	
-	gtk_signal_connect(GTK_OBJECT(buttonURL),
-					   "clicked",
-					   GTK_SIGNAL_FUNC(s_url_clicked),
-					   (gpointer) this);
-
-	gtk_signal_connect_after(GTK_OBJECT(windowAbout),
-							 "delete_event",
-							 GTK_SIGNAL_FUNC(s_delete_clicked),
-							 (gpointer) this);
-
-	gtk_signal_connect_after(GTK_OBJECT(windowAbout),
-							 "destroy",
-							 NULL,
-							 NULL);
+	n = 0;
+	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, pSS->getValue(XAP_STRING_ID_DLG_OK), 0);
+	PtSetArg(&args[n++], Pt_ARG_WIDTH, BUTTON_WIDTH, 0);
+	buttonOK = PtCreateWidget(PtButton, hbox2, n, args);
+	PtAddCallback(buttonOK, Pt_CB_ACTIVATE, s_ok_clicked, this);
 
 	// Update member variables with the important widgets that
 	// might need to be queried or altered later.
@@ -337,4 +332,3 @@ void XAP_QNXDialog_About::_preparePicture(void)
 
 	DELETEP(pBB);
 }
-#endif
