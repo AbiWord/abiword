@@ -65,8 +65,9 @@
 #	include "ap_Win32Dialog_InsertBookmark.h"
 #	include "ap_Win32Dialog_InsertHyperlink.h"
 #	include "ap_Win32Dialog_New.h"
-#   include "ap_Win32Dialog_MarkRevisions.h"
-#   include "ap_Win32Dialog_ListRevisions.h"
+#  	include "ap_Win32Dialog_MarkRevisions.h"
+#  	include "ap_Win32Dialog_ListRevisions.h"
+#   	include "ap_Win32Dialog_InsertTable.h"
 	// ... add new dialogs here ...
 
 #else
@@ -115,6 +116,7 @@
 	DeclareDialog(AP_DIALOG_ID_FILE_NEW,		AP_Win32Dialog_New)
 	DeclareDialog(AP_DIALOG_ID_MARK_REVISIONS,	AP_Win32Dialog_MarkRevisions)
 	DeclareDialog(AP_DIALOG_ID_LIST_REVISIONS,	AP_Win32Dialog_ListRevisions)
+	DeclareDialog(AP_DIALOG_ID_INSERT_TABLE,	AP_Win32Dialog_InsertTable)
  	// ... also add new dialogs here ...
 
 #endif
