@@ -166,6 +166,8 @@ virtual DG_Font* PS_Graphics::getGUIFont()
 {
 	// getGUIFont is only used for drawing UI widgets, which does not apply on paper.
 	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+
+	return NULL;
 }
 
 DG_Font* PS_Graphics::findFont(const char* pszFontFamily, 
