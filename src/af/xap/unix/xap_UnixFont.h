@@ -36,9 +36,9 @@
 
 #include "ut_AdobeEncoding.h"
 
-#include <X11/Xft/Xft.h>
 #include <ft2build.h>
 #include FT_FREETYPE_H
+#include <X11/Xft/Xft.h>
 
 class ps_Generate;
 class XAP_UnixFontManager;
