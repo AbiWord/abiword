@@ -10,7 +10,7 @@
 %define enable_pspell __ABI_OPT_PSPELL__
 
 # PLUGIN OPTIONS: 1 for yes, 0 for no
-%define enable_aiksaurus 0
+%define enable_aiksaurus 1
 %define enable_gdict 0
 %define enable_babelfish 1
 %define enable_urldict 1
@@ -253,6 +253,18 @@ Requires: abiword
 Plugin to allow abiword to connect with freetranslation.
 %endif
 
+%if %{enable_aiksaurus}
+%package plugin-aiksaurus
+Summary: Plugin to allow abiword to connect with AikSaurus.
+Group: Applications/Productivity
+BuildRequires: Aiksaurus, AiksaurusGTK
+Requires: abiword, Aiksaurus, AiksaurusGTK
+
+%description plugin-aiksaurus
+Plugin to allow abiword to connect with AikSaurus.
+Go to http://www.aiksaurus.com and download AikSaurus and AikSaurusGTK.
+%endif
+
 %package fonts
 Summary: AbiWord Fonts
 Group: Applications/Productivity
@@ -300,7 +312,7 @@ rm -rf $RPM_BUILD_ROOT
 make %{version_flag} ABI_OPT_DEBUG=%{enable_debug} ABI_OPT_LIBXML2=%{enable_xml2} UNIX_CAN_BUILD_STATIC=%{enable_static} ABI_OPT_GNOME=%{enable_gnome} ABI_OPT_LIBJPEG=%{enable_jpeg} ABI_OPT_BIDI_ENABLED=%{enable_bidi} ABI_OPT_PERL=%{enable_perl} ABI_OPT_OPTIMIZE=%{enable_optimize} compile canonical prefix=$RPM_BUILD_ROOT%{ABIPREFIX}
 
 cd ../abiword-plugins
-
+./autogen.sh
 ./configure --prefix=$RPM_BUILD_ROOT%{ABIPREFIX}/AbiSuite %{plugin_aiksaurus} %{plugin_gdict} %{plugin_babelfish} %{plugin_urldict} %{plugin_wikipedia} %{plugin_freetranslation} %{plugin_bz2abw} %{plugin_imagemagick} %{plugin_gdkpixbuf} %{plugin_openwriter} %{plugin_eml} %{plugin_html} %{plugin_tests}
 make
 
@@ -391,6 +403,11 @@ rm -rf $RPM_BUILD_ROOT $RPM_BUILD_DIR/file.list.%{name}
 %if %{enable_freetranslation}
 %files plugin-freetranslation
 %{ABIPREFIX}/AbiSuite/AbiWord/plugins/libAbiFreeTranslation.*
+%endif
+
+%if %{enable_aiksaurus}
+%files plugin-aiksaurus
+%{ABIPREFIX}/AbiSuite/AbiWord/plugins/libAikSaurusABI.*
 %endif
 
 %if %{enable_bz2abw}
