@@ -421,6 +421,7 @@ public:
 	static EV_EditMethod_Fn insMailMerge;
 	static EV_EditMethod_Fn insSymbol;
 	static EV_EditMethod_Fn insFile;
+	static EV_EditMethod_Fn insTOC;
 	static EV_EditMethod_Fn insFootnote;
 	static EV_EditMethod_Fn insEndnote;
 
@@ -442,6 +443,7 @@ public:
 	static EV_EditMethod_Fn dlgStyle;
 	static EV_EditMethod_Fn dlgStylist;
 	static EV_EditMethod_Fn dlgTabs;
+	static EV_EditMethod_Fn formatTOC;
 	static EV_EditMethod_Fn formatFootnotes;
 	static EV_EditMethod_Fn dlgToggleCase;
 	static EV_EditMethod_Fn rotateCase;
@@ -652,6 +654,7 @@ public:
 
 	static EV_EditMethod_Fn insertTable;
 
+
 	static EV_EditMethod_Fn noop;
 
 	// Test routines
@@ -852,6 +855,7 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(fontSizeIncrease),		0,	""),
 	EV_EditMethod(NF(formatFootnotes),        0,  ""),
 	EV_EditMethod(NF(formatPainter),		0,	""),
+	EV_EditMethod(NF(formatTOC),			0,		""),
 	EV_EditMethod(NF(formatTable),			0,		""),
 
 	// g
@@ -916,6 +920,7 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(insMailMerge), 		0,		""),
 	EV_EditMethod(NF(insPageNo),			0,		""),
 	EV_EditMethod(NF(insSymbol),			0,		""),
+	EV_EditMethod(NF(insTOC),			0,		""),
 	EV_EditMethod(NF(insTextBox),			0,		""),
 	EV_EditMethod(NF(insertAbovedotData),	_D_,	""),
 	EV_EditMethod(NF(insertAcuteData),		_D_,	""),
@@ -5133,6 +5138,17 @@ Defun1(formatTable)
 	return true;
 }
 
+
+Defun1(formatTOC)
+{
+	CHECK_FRAME;
+	ABIWORD_VIEW;
+	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pView->getParentData());
+	s_TellNotImplemented(pFrame, "Table of Contents dialog", __LINE__);
+
+	return true;
+}
+
 /***********************************************************************************/
 
 Defun1(deleteCell)
@@ -8797,6 +8813,16 @@ Defun1(insFootnote)
 	ABIWORD_VIEW;
 
 	return pView->insertFootnote(true);
+}
+
+
+Defun1(insTOC)
+{
+	CHECK_FRAME;
+	ABIWORD_VIEW;
+
+	pView->cmdInsertTOC();
+	return true;
 }
 
 

@@ -180,6 +180,7 @@ public:
 	UT_Error		cmdDeleteBookmark(const char* szName);
 	UT_Error		cmdInsertHyperlink(const char* szName);
 	UT_Error		cmdDeleteHyperlink();
+	UT_Error		cmdInsertTOC(void);
 	UT_Error		cmdHyperlinkStatusBar(UT_sint32 xPos, UT_sint32 yPos);
 
 	UT_Error		cmdInsertGraphic(FG_Graphic*, const char*);

@@ -3763,6 +3763,44 @@ UT_Error FV_View::cmdInsertBookmark(const char * szName)
 
 
 /*****************************************************************/
+
+
+UT_Error FV_View::cmdInsertTOC(void)
+{
+	// Signal PieceTable Change
+	_saveAndNotifyPieceTableChange();
+	m_pDoc->beginUserAtomicGlob();
+	bool bRet;
+
+
+	if (!isSelectionEmpty())
+	{
+		_deleteSelection();
+	}
+//
+// Close off the current block
+//
+	insertParagraphBreak();
+//
+// insert just before this block to make the TOC get inserted just BEFORE
+// the Block we just created.
+//
+	PT_DocPosition pos = getPoint()-2; 
+	m_pDoc->insertStrux(pos,PTX_SectionTOC);
+	pos++;
+	m_pDoc->insertStrux(pos,PTX_EndTOC);
+	m_pDoc->endUserAtomicGlob();
+	_generalUpdate();
+
+	// Signal piceTable is stable again
+	_restorePieceTableState();
+
+	return bRet;
+
+}
+
+
+/*****************************************************************/
 UT_Error FV_View::cmdInsertField(const char* szName, const XML_Char ** extra_attrs, const XML_Char ** extra_props)
 {
 	bool bResult;

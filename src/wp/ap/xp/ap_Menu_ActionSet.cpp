@@ -153,6 +153,7 @@ EV_Menu_ActionSet * AP_CreateMenuActionSet(void)
 	_s(AP_MENU_ID_INSERT_MAILMERGE,		0,1,0,0,	"insMailMerge",			NULL,					NULL);
 	_s(AP_MENU_ID_INSERT_FILE, 0,1,0,0, "insFile", NULL, NULL);
 	_s(AP_MENU_ID_INSERT_SYMBOL,	0,1,0,0,	"insSymbol",		NULL,					NULL);
+	_s(AP_MENU_ID_INSERT_TABLEOFCONTENTS,	0,0,0,0,	"insTOC",	NULL, NULL);
 	_s(AP_MENU_ID_INSERT_FOOTNOTE,	0,0,0,0,	"insFootnote",		ap_GetState_InFootnote,					NULL);
 	_s(AP_MENU_ID_INSERT_ENDNOTE,	0,0,0,0,	"insEndnote",		ap_GetState_InFootnote,					NULL);
 #ifdef HAVE_GNOME
@@ -184,6 +185,7 @@ EV_Menu_ActionSet * AP_CreateMenuActionSet(void)
 	_s(AP_MENU_ID_FMT_BACKGROUND_PAGE_COLOR, 0,1,0,0, "dlgBackground", NULL, NULL);
 	_s(AP_MENU_ID_FMT_BACKGROUND_PAGE_IMAGE, 0,1,0,0, "fileInsertPageBackgroundGraphic", NULL, NULL);
 	_s(AP_MENU_ID_FMT_HDRFTR,     0,1,0,0, "dlgHdrFtr", NULL, NULL);
+	_s(AP_MENU_ID_FMT_TABLEOFCONTENTS, 0,1,0,0, "formatTOC", ap_GetState_InTOC, NULL);
 	_s(AP_MENU_ID_FMT_FOOTNOTES,     0,1,0,0, "formatFootnotes", NULL, NULL);
 	_s(AP_MENU_ID_FMT_IMAGE, 0,1,0,0, "dlgFmtImage", NULL, NULL);
 	_s(AP_MENU_ID_FMT_STYLE_DEFINE,		0,1,0,0,	"dlgStyle",			NULL,					NULL);

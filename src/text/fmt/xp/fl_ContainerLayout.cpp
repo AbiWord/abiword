@@ -31,6 +31,7 @@
 #include "fl_Layout.h"
 #include "fl_DocLayout.h"
 #include "fl_BlockLayout.h"
+#include "fl_TOCLayout.h"
 #include "fl_TableLayout.h"
 #include "fp_TableContainer.h"
 #include "fp_Page.h"
@@ -358,6 +359,16 @@ fl_ContainerLayout * fl_ContainerLayout::insert(PL_StruxDocHandle sdh, fl_Contai
 	{
 		fl_DocSectionLayout * pDSL = getDocSectionLayout();
 		pL = static_cast<fl_ContainerLayout *>(new fl_FootnoteLayout(getDocLayout(), 
+					  pDSL, 
+					  sdh, indexAP, this));
+		if (pPrev)
+			pPrev->_insertIntoList(pL);
+		break;
+	}
+	case FL_CONTAINER_TOC:
+	{
+		fl_DocSectionLayout * pDSL = getDocSectionLayout();
+		pL = static_cast<fl_ContainerLayout *>(new fl_TOCLayout(getDocLayout(), 
 					  pDSL, 
 					  sdh, indexAP, this));
 		if (pPrev)

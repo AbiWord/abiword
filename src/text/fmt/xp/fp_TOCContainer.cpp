@@ -171,6 +171,16 @@ bool fp_TOCContainer::isVBreakable(void)
 	return false;
 }
 
+fp_ContainerObject * fp_TOCContainer::VBreakAt(UT_sint32 vpos)
+{
+	return NULL;
+}
+
+UT_sint32  fp_TOCContainer::wantVBreakAt(UT_sint32 vpos)
+{
+	return vpos;
+}
+
 /*!
  * vpos is relative to the height of the TOC container, except if the
  * previous container was broken, in which case it's relative to the height

@@ -43,6 +43,7 @@
 #include "fl_ContainerLayout.h"
 #include "fl_FootnoteLayout.h"
 #include "fl_TableLayout.h"
+#include "fl_TOCLayout.h"
 #include "fp_Line.h"
 #include "fp_Run.h"
 #include "gr_Graphics.h"
@@ -431,6 +432,32 @@ bool fl_DocListener::populateStrux(PL_StruxDocHandle sdh,
 		}
 		UT_ASSERT(m_pCurrentSL);
 		UT_ASSERT(m_pCurrentSL->getContainerType() == FL_CONTAINER_DOCSECTION);
+		break;
+	}
+	case PTX_SectionTOC:
+	{
+		UT_ASSERT(m_pCurrentSL);
+	    fl_SectionLayout * pSL = NULL;
+		UT_DEBUGMSG(("fl_DocListener::populateStrux for 'SectionTOC'\n"));
+		pSL = (fl_SectionLayout *) m_pCurrentSL->append(sdh, pcr->getIndexAP(),FL_CONTAINER_TOC);
+		*psfh = (PL_StruxFmtHandle)pSL;
+		m_pCurrentSL = (fl_SectionLayout*)pSL;
+		break;
+	}
+
+	case PTX_EndTOC:
+	{
+//
+// CurrentSL is a TOC. Return this and set the m_pCurrentSL to it's 
+// container
+//
+		fl_ContainerLayout * pCL = m_pCurrentSL;
+#if DEBUG
+		UT_DEBUGMSG(("fl_DocListener::populateStrux for 'EndTOC'\n"));
+		UT_ASSERT(pCL->getContainerType() == FL_CONTAINER_TOC);
+#endif
+		*psfh = (PL_StruxFmtHandle) pCL;
+		m_pCurrentSL = (fl_SectionLayout *) static_cast<fl_TOCLayout *>(m_pCurrentSL)->getDocSectionLayout();
 		break;
 	}
 	case PTX_SectionHdrFtr:
@@ -960,6 +987,14 @@ bool fl_DocListener::change(PL_StruxFmtHandle sfh,
 			m_pLayout->updateLayout();
 			goto finish_up;
 		}
+		case PTX_SectionTOC:
+		{
+			fl_Layout * pL = (fl_Layout *)sfh;
+			UT_ASSERT(pL->getType() == PTX_SectionFootnote);
+			fl_TOCLayout * pFL = static_cast<fl_TOCLayout *>(pL);
+			pFL->doclistener_deleteStrux(pcrx);
+			goto finish_up;
+		}
 		case PTX_SectionFootnote:
 		{
 			fl_Layout * pL = (fl_Layout *)sfh;
@@ -1009,6 +1044,10 @@ bool fl_DocListener::change(PL_StruxFmtHandle sfh,
 			goto finish_up;
 		}
 		case PTX_EndCell:
+		{
+			goto finish_up;
+		}
+		case PTX_EndTOC:
 		{
 			goto finish_up;
 		}
@@ -1466,6 +1505,14 @@ bool fl_DocListener::insertStrux(PL_StruxFmtHandle sfh,
 	{
 		UT_DEBUGMSG(("Inserting EndFootnote strux at pos %d \n",pcr->getPosition()));
 	}
+	else if(pcrx->getStruxType() == PTX_SectionTOC)
+	{
+		UT_DEBUGMSG(("Inserting SectionTOC strux at pos %d \n",pcr->getPosition()));
+	}
+	else if(pcrx->getStruxType() == PTX_EndTOC)
+	{
+		UT_DEBUGMSG(("Inserting EndToc strux at pos %d \n",pcr->getPosition()));
+	}
 	else if(pcrx->getStruxType() == PTX_SectionEndnote)
 	{
 		UT_DEBUGMSG(("Inserting SectionEndnote strux at pos %d \n",pcr->getPosition()));
@@ -1516,6 +1563,7 @@ bool fl_DocListener::insertStrux(PL_StruxFmtHandle sfh,
 		case PTX_SectionHdrFtr:			//  ... or a HdrFtr section.
 		case PTX_SectionFootnote:        //  ... or a Footnote section.
 		case PTX_SectionEndnote:        //  ... or a Endnote section.
+		case PTX_SectionTOC:  //  ... or a Table Of Contents.
 			// We are inserting a section immediately after a section
 			// (with no intervening block).  This is probably a bug,
 			// because there should at least be an empty block between
@@ -1549,6 +1597,30 @@ bool fl_DocListener::insertStrux(PL_StruxFmtHandle sfh,
 			return false;
 		}
 	}	
+	case PTX_SectionTOC:        //  ... or a TOC section.
+	{
+		switch (pcrx->getStruxType())	// see what we are inserting.
+		{
+		case PTX_EndTOC:
+		   {
+			   fl_TOCLayout * pCL = static_cast<fl_TOCLayout*>(pL);
+
+			   fl_DocSectionLayout* pDSL = 
+				   static_cast<fl_DocSectionLayout *>(pCL->myContainingLayout());
+			   UT_ASSERT(pCL->getContainerType() == FL_CONTAINER_TOC);
+			   UT_ASSERT(pDSL->getContainerType() == FL_CONTAINER_DOCSECTION);
+			   bool bResult = pCL->bl_doclistener_insertEndTOC(pCL, pcrx,sdh,lid,pfnBindHandles);
+			   m_pCurrentSL = static_cast<fl_SectionLayout *>(pDSL);
+			   return bResult;
+		   }
+		default:
+		   {
+			   m_pDoc->miniDump(pL->getStruxDocHandle(),6);
+			   UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+			   return false;
+		   }
+		}
+	}
     case PTX_Block:						// the immediately prior strux is a block.
     {
 		switch (pcrx->getStruxType())	// see what we are inserting.
@@ -1602,6 +1674,14 @@ bool fl_DocListener::insertStrux(PL_StruxFmtHandle sfh,
 			   xxx_UT_DEBUGMSG(("Doing Insert Strux HdrFtr Into Prev Block \n"));
 			   fl_SectionLayout* pCLSL = pCL->getSectionLayout();
 			   bool bResult = pCLSL->bl_doclistener_insertSection(pCL, FL_SECTION_HDRFTR, pcrx,sdh,lid,pfnBindHandles);
+			   return bResult;
+		   }
+		case PTX_SectionTOC:
+		   {
+			   fl_ContainerLayout * pCL = static_cast<fl_ContainerLayout *>(pL);
+			   fl_SectionLayout* pCLSL = pCL->getSectionLayout();
+
+			   bool bResult = pCLSL->bl_doclistener_insertSection(pCL, FL_SECTION_TOC, pcrx,sdh,lid,pfnBindHandles);
 			   return bResult;
 		   }
 		case PTX_SectionFootnote:

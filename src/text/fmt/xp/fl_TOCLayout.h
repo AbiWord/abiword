@@ -42,10 +42,8 @@ public:
 				   fl_DocSectionLayout * pDocSL, 
 				   PL_StruxDocHandle sdh, 
 				   PT_AttrPropIndex ap, 
-				   fl_ContainerLayout * pMyContainerLayout,
-				   SectionType iSecType,
-				   fl_ContainerType myType,
-				   PTStruxType myStruxType);
+				 fl_ContainerLayout * pMyContainerLayout);
+
 	virtual ~fl_TOCLayout();
 
 	virtual bool 	doclistener_changeStrux(const PX_ChangeRecord_StruxChange * pcrxc);

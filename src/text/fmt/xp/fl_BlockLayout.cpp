@@ -2730,6 +2730,14 @@ fl_BlockLayout* fl_BlockLayout::getNextBlockInDocument(void) const
 		{
 			pNext = pNext->getFirstLayout();
 		}
+		else if(pNext->getContainerType() == FL_CONTAINER_TOC)
+		{
+			pNext = pNext->getNext();
+			if(pNext == NULL)
+			{
+				goto next_is_null;
+			}
+		}
 		else if(pNext->getContainerType() == FL_CONTAINER_FOOTNOTE)
 		{
 			pNext = pNext->getNext();
@@ -2809,6 +2817,10 @@ fl_BlockLayout* fl_BlockLayout::getPrevBlockInDocument(void) const
 			pPrev = pPrev->getLastLayout();
 		}
 		else if(pPrev->getContainerType() == FL_CONTAINER_FOOTNOTE)
+		{
+			pPrev = pPrev->getLastLayout();
+		}
+		else if(pPrev->getContainerType() == FL_CONTAINER_TOC)
 		{
 			pPrev = pPrev->getLastLayout();
 		}
@@ -5643,6 +5655,7 @@ bool fl_BlockLayout::doclistener_insertSection(const PX_ChangeRecord_Strux * pcr
 																	   PL_StruxFmtHandle sfhNew))
 {
 	UT_ASSERT(iType == FL_SECTION_DOC || iType == FL_SECTION_HDRFTR
+			  || iType == FL_SECTION_TOC
 			  || iType == FL_SECTION_FOOTNOTE || iType == FL_SECTION_ENDNOTE);
 
 	_assertRunListIntegrity();
@@ -5791,6 +5804,44 @@ bool fl_BlockLayout::doclistener_insertSection(const PX_ChangeRecord_Strux * pcr
 		UT_ASSERT(bres);
 		pAP->getAttribute("id", pszNewID);
 		break;
+	}
+	case FL_SECTION_TOC:
+	{
+		// Most of the time, we would insert a new section
+		// after the previous section.
+		// But, here we insert our TOCLayout after this(?)
+		PT_AttrPropIndex indexAP = pcrx->getIndexAP();
+		pSL = static_cast<fl_SectionLayout *>(static_cast<fl_ContainerLayout *>(getSectionLayout())->insert(sdh,this,indexAP, FL_CONTAINER_TOC));
+
+		// Must call the bind function to complete the exchange of handles
+		// with the document (piece table) *** before *** anything tries
+		// to call down into the document (like all of the view
+		// listeners).
+
+		PL_StruxFmtHandle sfhNew = static_cast<PL_StruxFmtHandle>(pSL);
+		//
+		// Don't bind to shadows
+		//
+		if(pfnBindHandles)
+		{
+			pfnBindHandles(sdh,lid,sfhNew);
+		}
+		//
+		// That's all we need to do except update the view pointers I guess..
+		//
+		FV_View* pView = getView();
+		if (pView && (pView->isActive() || pView->isPreview()))
+		{
+			pView->_setPoint(pcrx->getPosition() + fl_BLOCK_STRUX_OFFSET);
+		}
+		else if(pView && pView->getPoint() > pcrx->getPosition())
+		{
+			//
+			// For EndTOC
+			//
+			pView->_setPoint(pView->getPoint() + fl_BLOCK_STRUX_OFFSET + fl_BLOCK_STRUX_OFFSET);
+		}
+		return true;
 	}
 	default:
 		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);

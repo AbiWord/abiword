@@ -79,7 +79,7 @@ void AP_Dialog_Stylist::startUpdater(void)
  */
 void AP_Dialog_Stylist::Apply(void)
 {
-	FV_View * pView = static_cast<FV_View *>(getApp()->getLastFocussedFrame()->getCurrentView());
+	FV_View * pView = static_cast<FV_View *>(getActiveFrame()->getCurrentView());
 	if(pView->getPoint() == 0)
 	{
 		return;
