@@ -38,11 +38,14 @@ public:
 	virtual bool		populate(void);
 	bool				repopulate(void);
 
+	UT_uint32			getDroppedWidth() const { return m_nDroppedWidth; }
+
 	static EV_Toolbar_Control *		static_constructor(EV_Toolbar *, XAP_Toolbar_Id id);
 
 protected:
-    PD_Document * m_pDocument;
-	XAP_Win32Frame * m_pFrame;
+	UT_uint32		m_nDroppedWidth;	// width of the dropped-down list
+    PD_Document*	m_pDocument;
+	XAP_Win32Frame*	m_pFrame;
 };
 
 #endif /* AP_WIN32TOOLBAR_STYLECOMBO_H */
