@@ -25,6 +25,7 @@
 #include "xap_QNXApp.h"
 #include "gr_QNXGraphics.h"
 #include "gr_QNXImage.h"
+#include "gr_CharWidths.h"
 
 #include "ut_debugmsg.h"
 #include "ut_assert.h"
