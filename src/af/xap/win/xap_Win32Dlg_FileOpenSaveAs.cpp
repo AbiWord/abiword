@@ -266,7 +266,6 @@ void XAP_Win32Dialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 		break;
 
 	case XAP_DIALOG_ID_PRINTTOFILE:
-		// TODO localize
 		ofn.lpstrTitle = pSS->getValue(XAP_STRING_ID_DLG_FOSA_PrintToFileTitle);
 		ofn.Flags |= OFN_OVERWRITEPROMPT;
 		bDialogResult = GetSaveFileName(&ofn);
@@ -280,6 +279,7 @@ void XAP_Win32Dialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 		ofn.Flags |= OFN_ENABLEHOOK;
 		bDialogResult = GetSaveFileName(&ofn);
 		break;
+
 	case XAP_DIALOG_ID_INSERT_PICTURE:
 		ofn.lpstrTitle     = pSS->getValue(XAP_STRING_ID_DLG_IP_Title);
 		ofn.hInstance      = pWin32App->getInstance();
@@ -290,6 +290,22 @@ void XAP_Win32Dialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 		ofn.Flags |= OFN_ENABLEHOOK;
 		bDialogResult = GetOpenFileName(&ofn);
 		break;
+
+	case XAP_DIALOG_ID_FILE_IMPORT:
+		ofn.lpstrTitle = pSS->getValue(XAP_STRING_ID_DLG_FOSA_ImportTitle);
+		ofn.Flags |= OFN_FILEMUSTEXIST;
+		bDialogResult = GetOpenFileName(&ofn);
+		break;
+
+	case XAP_DIALOG_ID_FILE_EXPORT:
+		ofn.lpstrTitle = pSS->getValue(XAP_STRING_ID_DLG_FOSA_ExportTitle);
+		ofn.lpfnHook       = (LPOFNHOOKPROC) s_hookSaveAsProc;
+		ofn.Flags |= OFN_OVERWRITEPROMPT;
+		ofn.Flags |= OFN_EXPLORER;
+		ofn.Flags |= OFN_ENABLEHOOK;
+		bDialogResult = GetSaveFileName(&ofn);
+		break;
+
 	default:
 		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 		break;
