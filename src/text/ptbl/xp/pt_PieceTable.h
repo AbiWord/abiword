@@ -346,7 +346,7 @@ protected:
 	void					_unlinkFrag(pf_Frag * pf,
 										pf_Frag ** ppfEnd, UT_uint32 * pfragOffsetEnd);
 	bool					_getStruxFromPosition(PT_DocPosition docPos,
-												  pf_Frag_Strux ** ppfs) const;
+												  pf_Frag_Strux ** ppfs, bool bSkipFootnotes = false) const;
 	bool					_getStruxOfTypeFromPosition(PT_DocPosition dpos,
 														PTStruxType pts,
 														pf_Frag_Strux ** ppfs) const;
