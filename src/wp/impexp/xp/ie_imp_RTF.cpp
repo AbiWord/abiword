@@ -1851,7 +1851,6 @@ void IE_Imp_RTF::HandleNoteReference(void)
 		{
 			attribs[0] = "endnote-id";
 		}
-		
 		UT_String footpid;
 		if(m_bInFootnote && !m_bFtnReferencePending)
 		{
@@ -1872,11 +1871,12 @@ void IE_Imp_RTF::HandleNoteReference(void)
 		else if(m_bInFootnote && m_bFtnReferencePending)
 		{
 			// we have a pending reference mark; since the \footnote
-			// keyword pushed the stack on us, we need to temporarily
-			// pop if for the insertion
-			RTFStateStore* pState = NULL;
-			m_stateStack.pop(reinterpret_cast<void**>(&pState));
+			// has removed the RTF state, we need to temporarily
+			// place the saved RTF state on the stack. We pop it afterwards
 
+			m_stateStack.push(&m_currentRTFState);
+			m_stateStack.push(&m_FootnoteRefState);
+			m_currentRTFState = m_FootnoteRefState;
 			m_iLastFootnoteId = getDoc()->getUID(UT_UniqueId::Footnote);
 			UT_String_sprintf(footpid,"%i",m_iLastFootnoteId);
 			attribs[1] = footpid.c_str();
@@ -1892,13 +1892,19 @@ void IE_Imp_RTF::HandleNoteReference(void)
 			
 			m_bFtnReferencePending = false;
 
-			// now push the the previous top of the stack back
-			// on
-			m_stateStack.push(pState);
+			// now we pop the saved state off and restore the current state
+			RTFStateStore* pState = NULL;
+			m_stateStack.pop(reinterpret_cast<void**>(&pState));
+			m_stateStack.pop(reinterpret_cast<void**>(&pState));
+			m_currentRTFState = *pState;
 		}
 		else
 		{
 			m_bFtnReferencePending = true;
+//
+// Save current RTF state.
+//
+			m_FootnoteRefState = m_currentRTFState;
 		}
 }
 
@@ -4226,11 +4232,13 @@ bool IE_Imp_RTF::TranslateKeyword(unsigned char* pKeyword, long param, bool fPar
 		}
 		else if (strcmp(reinterpret_cast<char*>(pKeyword), "clvmrg") == 0)
 		{
+			UT_DEBUGMSG(("Found Vertical merge cell clvmrg \n"));
 			m_currentRTFState.m_cellProps.m_bVerticalMerged = true;
 			return true;
 		}
 		else if (strcmp(reinterpret_cast<char*>(pKeyword), "clvmgf") == 0)
 		{
+			UT_DEBUGMSG(("Found Vertical merge cell first clvmgf \n"));
 			m_currentRTFState.m_cellProps.m_bVerticalMergedFirst = true;
 			return true;
 		}

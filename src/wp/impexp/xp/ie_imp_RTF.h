@@ -771,6 +771,7 @@ private:
 	UT_sint32             m_iStackLevelAtRow;
 	bool                  m_bDoCloseTable;
 	UT_sint32             m_iNoCellsSinceLastRow;
+	RTFStateStore         m_FootnoteRefState;
 };
 
 #endif /* IE_IMP_RTF_H */
