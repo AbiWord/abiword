@@ -89,6 +89,7 @@ IEStatus IE_Imp_MsWord_97::importFile(const char * szFilename)
 	if (wvInitParser(&ps,fp))
 		{
 		UT_DEBUGMSG(("Could not open file %s\n",szFilename));
+		wvOLEFree();
 		m_iestatus = IES_BogusDocument;
 		return m_iestatus;
 		}
@@ -101,6 +102,7 @@ IEStatus IE_Imp_MsWord_97::importFile(const char * szFilename)
 
 	wvText(&ps);
 
+	wvOLEFree();
 	m_iestatus = IES_OK;
 
 	return m_iestatus;
@@ -392,6 +394,8 @@ int IE_Imp_MsWord_97::_eleProc(wvParseStruct *ps,wvTag tag, void *props)
 		    strcat(propBuffer, "font-family:");
 		    strcat(propBuffer, fname);
 		    strcat(propBuffer, ";");
+
+			FREEP(fname);
 		   
 		   // font size (hps is half-points)
 		   sprintf(propBuffer + strlen(propBuffer), 
