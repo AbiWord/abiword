@@ -504,6 +504,7 @@ public:
 
 	bool				insertPageNum(const XML_Char ** props, HdrFtrType hfType);
 	void				setPoint(PT_DocPosition pt);
+	void                ensureInsertionPointOnScreen(void);
 
 // -----------------------
 	void                killBlink(void);

@@ -5960,6 +5960,10 @@ bool FV_View::isLeftMargin(UT_sint32 xPos, UT_sint32 yPos)
 	return bBOL;
 }
 
+void FV_View::ensureInsertionPointOnScreen(void)
+{
+	_ensureInsertionPointOnScreen();
+}
 
 
 void FV_View::setPoint(PT_DocPosition pt)
