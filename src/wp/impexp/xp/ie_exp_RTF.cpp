@@ -1203,6 +1203,10 @@ void IE_Exp_RTF::_write_charfmt(const s_RTF_AttrPropAdapter & apa)
 	if(szColor)
 	{
 		UT_sint32 ndxColor = _findColor((char*)szColor);
+		if( ndxColor == -1)
+		{
+			return;
+		}
 		UT_return_if_fail (ndxColor != -1);
 
 		if (ndxColor != 0) // black text, the default

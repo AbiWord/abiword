@@ -525,12 +525,15 @@ void FV_VisualDragText::getImageFromSelection(UT_sint32 x, UT_sint32 y)
 		m_recOrigRight.width = m_recCurFrame.left + m_recCurFrame.width - xHigh;
 		m_recOrigRight.top = yy - pLineHigh->getHeight();
 		m_recOrigRight.height = pLineHigh->getHeight();
+
 	}
 	m_iLastX = x;
 	m_iLastY = y;
 	m_iInitialOffX = x - m_recCurFrame.left;
 	m_iInitialOffY = y - m_recCurFrame.top;
 	GR_Painter painter(getGraphics());
+	UT_RGBColor black(0,0,0);
+	UT_RGBColor trans(0,0,0,true);
 	m_pDragImage = painter.genImageFromRectangle(m_recCurFrame);
 }
 
@@ -624,5 +627,47 @@ void FV_VisualDragText::drawImage(void)
 		return;
 	}
 	GR_Painter painter(getGraphics());
+	if( m_recOrigLeft.width > 0 || m_recOrigRight.width>0 )
+	{
+		UT_Rect dest;
+		dest.left = m_recCurFrame.left +  m_recOrigLeft.width;
+		dest.top = m_recCurFrame.top;
+		dest.width = m_recCurFrame.width -  m_recOrigLeft.width;
+		dest.height = m_recOrigLeft.height;
+		UT_Rect src;
+		src.left = m_recOrigLeft.width;
+		src.top = 0;
+		src.height =  m_recOrigLeft.height;
+		src.width = dest.width;
+		if(src.height > 3)
+		{
+			painter.fillRect(m_pDragImage,&src,&dest);
+		}
+		dest.left = m_recCurFrame.left;
+		dest.top = m_recCurFrame.top + m_recOrigLeft.height ;
+		dest.width = m_recCurFrame.width;
+		dest.height = m_recCurFrame.height - m_recOrigLeft.height - m_recOrigRight.height;
+		src.left = 0;
+		src.top  = m_recOrigLeft.height ;
+		src.width = m_recCurFrame.width;
+		src.height = dest.height;
+		if(src.height > 3)
+		{
+			painter.fillRect(m_pDragImage,&src,&dest);
+		}
+		dest.left = m_recCurFrame.left;
+		dest.top = m_recCurFrame.top + m_recCurFrame.height - m_recOrigRight.height;
+		dest.width = m_recCurFrame.width - m_recOrigRight.width;
+		dest.height = m_recOrigRight.height;
+		src.top = m_recCurFrame.height - m_recOrigRight.height;
+		src.left = 0;
+		src.width = m_recCurFrame.width - m_recOrigRight.width;
+		src.height = m_recOrigRight.height;
+		if(src.height > 3)
+		{
+			painter.fillRect(m_pDragImage,&src,&dest);
+		}
+		return;
+	}
 	painter.drawImage(m_pDragImage,m_recCurFrame.left,m_recCurFrame.top);
 }
