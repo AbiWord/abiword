@@ -153,113 +153,16 @@ ABI_VERSION=	0_0
 ##    ABI_LIBS should be for the X11 libraries and the like
 
 ifeq ($(OS_NAME),WINNT)
-ifeq ($(BUILDWXWIN),)
 EXTRA_LIBS=	$(addprefix $(DIST)/lib/lib,$(addsuffix $(ABI_VERSION)_s.lib,$(ABI_APPLIBS)))	\
 		$(addprefix $(DIST)/lib/lib,$(addsuffix $(MOD_VERSION)_s.lib,$(ABI_OTHLIBS)))	\
 		$(addsuffix .lib,$(ABI_LIBS))
 else
-ifeq ($(WXINCDIR),)
-bogusincdir:
-	@echo To compile the WXWindows version of Abiword, you must set the following
-	@echo variables in your environment:
-	@echo    WXLIBDIR - directory where the wx.lib library is
-	@echo    WXINCDIR - directory for wxwin include files
-	@echo
-	@echo an example for bash:
-	@echo export WXLIBDIR=c:/wxwin/lib
-	@echo export WXINCDIR=c:/wxwin/include
-	@echo
-	@echo for csh/tsch:
-	@echo setenv WXLIBDIR c:/wxwin/lib
-	@echo setenv WXINCDIR c:/wxwin/include
-	@echo set BUILDWXWIN=something to build the wxWindows version
-	@echo
-	@echo unset the BUILDWXWIN variable in your environment to not build with wxWin
-endif
-ifeq ($(WXLIBDIR),)
-boguslibdir:
-	@echo To compile the WXWindows version of Abiword, you must set the following
-	@echo variables in your environment:
-	@echo    WXLIBDIR - directory where the wx.lib library is
-	@echo    WXINCDIR - directory for wxwin include files
-	@echo
-	@echo an example for bash:
-	@echo export WXLIBDIR=c:/wxwin/lib
-	@echo export WXINCDIR=c:/wxwin/include
-	@echo
-	@echo for csh/tsch:
-	@echo setenv WXLIBDIR c:/wxwin/lib
-	@echo setenv WXINCDIR c:/wxwin/include
-	@echo
-	@echo unset the BUILDWXWIN variable in your environment to not build with wxWin
-endif
-EXTRA_LIBS=	$(addprefix $(DIST)/lib/lib,$(addsuffix $(ABI_VERSION)_s.lib,$(ABI_APPLIBS)))	\
-		$(addprefix $(DIST)/lib/lib,$(addsuffix $(MOD_VERSION)_s.lib,$(ABI_OTHLIBS)))	\
-		$(addsuffix .lib,$(ABI_LIBS))	\
-		$(WXLIBDIR)/wx.lib
-
-WXINCLUDE=	-D__WXMSW__ -D__WIN95__ -I$(WXINCDIR)
-endif
-else
-ifeq ($(BUILDWXWIN),)
 EXTRA_LIBS=	-L$(DIST)/lib 							\
 		$(addprefix -l,$(addsuffix $(ABI_VERSION),$(ABI_APPLIBS)))	\
 		$(addprefix -l,$(addsuffix $(MOD_VERSION),$(ABI_OTHLIBS)))	\
 		$(addprefix -l,$(ABI_LIBS))	\
 		`gtk-config --libs`
-else
-ifeq ($(WXINCDIR),)
-bogusincdir:
-	@echo To compile the WXWindows version of Abiword, you must set the following
-	@echo variables in your environment:
-	@echo    WXLIBDIR - directory where the wx library is
-	@echo    WXINCDIR - directory for wxwin include files
-	@echo
-	@echo an example for bash:
-	@echo export WXLIBDIR=/usr/src/wxGTK/lib/Linux
-	@echo export WXINCDIR=/usr/src/wxGTK/include
-	@echo
-	@echo for csh/tsch:
-	@echo setenv WXLIBDIR /usr/src/wxGTK/lib/Linux
-	@echo setenv WXINCDIR /usr/src/wxGTK/include
-	@echo
-	@echo unset the BUILDWXWIN variable in your environment to not build with wxWin
-endif
-ifeq ($(WXLIBDIR),)
-boguslibdir:
-	@echo To compile the WXWindows version of Abiword, you must set the following
-	@echo variables in your environment:
-	@echo    WXLIBDIR - directory where the wx library is
-	@echo    WXINCDIR - directory for wxwin include files
-	@echo
-	@echo an example for bash:
-	@echo export WXLIBDIR=/usr/src/wxGTK/lib/Linux
-	@echo export WXINCDIR=/usr/src/wxGTK/include
-	@echo
-	@echo for csh/tsch:
-	@echo setenv WXLIBDIR /usr/src/wxGTK/lib/Linux
-	@echo setenv WXINCDIR /usr/src/wxGTK/include
-	@echo
-	@echo unset the BUILDWXWIN variable in your environment to not build with wxWin
-endif
-EXTRA_LIBS=	-L$(DIST)/lib 						\
-		$(addprefix -l,$(addsuffix $(ABI_VERSION),$(ABI_APPLIBS))) \
-		$(addprefix -l,$(addsuffix $(MOD_VERSION),$(ABI_OTHLIBS))) \
-		$(addprefix -l,$(ABI_LIBS))	\
-		`gtk-config --libs`	\
-		-L$(WXLIBDIR) -lwx_gtk -ldl
-
-WXINCLUDE=	-D__WXGTK__ -I$(WXINCDIR)
-endif
 endif
 
-##################################################################
-# enable temporary clipboard stuff for those with the right wxGtk build
-
-ifeq ($(USE_NEW_WXGTK_CLIPBOARD),1)
-WXINCLUDE+=	-DUSE_NEW_WXGTK_CLIPBOARD
-endif
-
-##################################################################
 ##################################################################
 
