@@ -10,7 +10,7 @@
 
 set -e
 
-if autoconf --version | head -1 | grep '2\.50' > /dev/null 2>&1; then
+if autoconf --version | head -1 | grep '2\.5' > /dev/null 2>&1; then
   cp configure.in-v2.50 configure.in
 else
   cp configure.in-v2.13 configure.in
