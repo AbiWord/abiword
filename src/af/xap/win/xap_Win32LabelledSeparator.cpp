@@ -141,7 +141,7 @@ static LRESULT CALLBACK _LabelledSeparatorWndProc(HWND hwnd, UINT iMsg, WPARAM w
 		break;
 	}
 
-	return s_pfnWndProc(hwnd, iMsg, wParam, lParam);
+	return CallWindowProc(s_pfnWndProc, hwnd, iMsg, wParam, lParam);   	
 }
 
 /*!
