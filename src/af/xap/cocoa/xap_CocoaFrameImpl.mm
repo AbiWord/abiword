@@ -318,6 +318,12 @@ void XAP_CocoaFrameImpl::_createTopLevelWindow(void)
 		userSize.height = screenFrame.size.height;
 		userSize.width  = rintf(screenFrame.size.height * 0.9f);
 
+		if (m_pCocoaApp->getFrameCount() == 1)
+		{
+			s_iNewFrameOffsetX = 0;
+			s_iNewFrameOffsetY = 0;
+		}
+
 		screenFrame.origin.x    += s_iNewFrameOffsetX;
 		screenFrame.size.height -= s_iNewFrameOffsetY;
 
@@ -332,23 +338,6 @@ void XAP_CocoaFrameImpl::_createTopLevelWindow(void)
 
 		[theWindow setFrame:windowFrame display:YES];
 	}
-
-
-	// Because we're clever, we only honor this flag when we
-	// are the first (well, only) top level frame available.
-	// This is so the user's window manager can find better
-	// places for new windows, instead of having our windows
-	// pile upon each other.
-
-#if 0
-	if (m_pCocoaApp->getFrameCount() <= 1)
-		if (f & XAP_CocoaApp::GEOMETRY_FLAG_POS)
-			gtk_widget_set_uposition(m_wTopLevelWindow,
-									 x,
-									 y);
-#endif
-
-	return;
 }
 
 /*!
@@ -408,6 +397,10 @@ bool XAP_CocoaFrameImpl::_show()
 	UT_DEBUGMSG (("XAP_CocoaFrame::show()\n"));
 	[[m_frameController window] makeKeyAndOrderFront:m_frameController];
 	[[NSNotificationCenter defaultCenter] postNotificationName:XAP_FrameNeedToolbar object:m_frameController];
+
+	XAP_CocoaTextView * textView = (XAP_CocoaTextView *) [m_frameController textView];
+	[textView hasBeenResized:nil];
+
 	return true;
 }
 
