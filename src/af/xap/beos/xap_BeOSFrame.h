@@ -94,6 +94,8 @@ class be_Window: public BWindow {
 
 class XAP_BeOSFrame : public XAP_Frame
 {
+friend class be_Window;		// HACK: to allow access to _createToolbars
+
 public:
 	XAP_BeOSFrame(XAP_BeOSApp * app);
 	XAP_BeOSFrame(XAP_BeOSFrame * f);
