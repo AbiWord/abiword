@@ -300,16 +300,26 @@ void GR_Win32Graphics::polyLine(UT_Point * pts, UT_uint32 nPoints)
 
 void GR_Win32Graphics::fillRect(UT_RGBColor& c, UT_sint32 x, UT_sint32 y, UT_sint32 w, UT_sint32 h)
 {
-	HBRUSH hBrush = CreateSolidBrush(RGB(c.m_red, c.m_grn, c.m_blu));
-
 	RECT r;
 	r.left = x;
 	r.top = y;
 	r.right = r.left + w;
 	r.bottom = r.top + h;
 
+#if 0
+	// This is what one might think is reasonable. Forget it,
+	// CreateSolidBrush is dog slow.
+	HBRUSH hBrush = CreateSolidBrush(RGB(c.m_red, c.m_grn, c.m_blu));
+
 	FillRect(m_hdc, &r, hBrush);
 	DeleteObject(hBrush);
+#else
+	// This might look wierd (and I think it is), but it's MUCH faster.
+	HDC hdc = m_hdc;
+	const COLORREF cr = ::SetBkColor(hdc, RGB(c.m_red, c.m_grn, c.m_blu));
+	::ExtTextOut(hdc, 0, 0, ETO_OPAQUE, &r, NULL, 0, NULL);
+	::SetBkColor(hdc, cr);
+#endif
 }
 
 void GR_Win32Graphics::fillRect(UT_RGBColor& c, UT_Rect &r)
@@ -372,11 +382,7 @@ UT_Bool GR_Win32Graphics::endPrint(void)
  **/
 void GR_Win32Graphics::scroll(UT_sint32 dx, UT_sint32 dy)
 {
-	RECT rInvalid;
-	
-	ScrollWindowEx(m_hwnd, -dx, -dy, NULL, NULL, NULL, &rInvalid, 0);
-//	HBRUSH hBrush = (HBRUSH) GetStockObject(WHITE_BRUSH);
-//	FillRect(m_hdc, &rInvalid, hBrush);
+	ScrollWindowEx(m_hwnd, -dx, -dy, NULL, NULL, NULL, 0, SW_INVALIDATE);
 }
 
 void GR_Win32Graphics::scroll(UT_sint32 x_dest, UT_sint32 y_dest,
