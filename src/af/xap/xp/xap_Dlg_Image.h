@@ -41,10 +41,12 @@ public:
 
 	double getWidth () const { return m_width; }
 	double getHeight () const { return m_height; }
+	bool getPerserveAspect() const { return m_bAspect; }
 
 	// needed to set the initial width & height
-	void setWidth (double w) { m_width = w; }
-	void setHeight (double h) { m_height = h; }
+	void setWidth (double w) { setWidth(w,false); }
+	void setHeight (double h) { setHeight(h,false); }
+	void setPreserveAspect( bool b ) { m_bAspect = b; }
 
 
 	// needed to set the initial width & height
@@ -73,6 +75,7 @@ public:
 	void _convertToPreferredUnits(const char *sz, UT_String & pRet);
 
  private:
+	bool   m_bAspect;
 	double m_width;
 	double m_height;
 	double m_maxWidth;
@@ -83,6 +86,9 @@ public:
 	bool m_bHeightChanged;
 	bool m_bWidthChanged;
 	UT_Dimension m_PreferedUnits;
+
+	void setWidth (double w, bool checkaspect);
+	void setHeight (double h, bool checkaspect);
 };
 
 #endif /* XAP_DIALOG_IMAGE_H */

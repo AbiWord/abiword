@@ -42,6 +42,7 @@
 #	include "xap_Win32Dlg_Encoding.h"
 #	include "xap_Win32Dlg_PluginManager.h"
 #	include "xap_Win32Dlg_Password.h"
+#	include "xap_Win32Dlg_Image.h"
 
 #	include "ap_Win32Dialog_Replace.h"
 #	include "ap_Win32Dialog_Break.h"
@@ -85,6 +86,7 @@
 	DeclareDialog(XAP_DIALOG_ID_ENCODING,		XAP_Win32Dialog_Encoding)
 	DeclareDialog(XAP_DIALOG_ID_PLUGIN_MANAGER, XAP_Win32Dialog_PluginManager)
 	DeclareDialog(XAP_DIALOG_ID_PASSWORD,		XAP_Win32Dialog_Password)
+	DeclareDialog(XAP_DIALOG_ID_IMAGE,			XAP_Win32Dialog_Image)
 
 	DeclareDialog(AP_DIALOG_ID_REPLACE,			AP_Win32Dialog_Replace)
 	DeclareDialog(AP_DIALOG_ID_FIND,			AP_Win32Dialog_Replace)

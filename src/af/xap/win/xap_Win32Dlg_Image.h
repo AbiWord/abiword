@@ -21,11 +21,13 @@
 #define XAP_WIN32DIALOG_IMAGE_H
 
 #include "xap_Dlg_Image.h"
+#include "xap_Win32DialogHelper.h"
+
 class XAP_Win32Frame;
 
 /*****************************************************************/
 
-class XAP_Win32Dialog_Image: public XAP_Dialog_Image
+class XAP_Win32Dialog_Image: public XAP_Dialog_Image, XAP_Win32Dialog
 {
 public:
 	XAP_Win32Dialog_Image(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
@@ -34,9 +36,15 @@ public:
 	virtual void			runModal(XAP_Frame * pFrame);
 
 	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
+
+private:
+	HWND						m_hThisDlg;
+	XAP_Win32DialogHelper		_win32Dialog;
 	
 protected:
-
+	BOOL					_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam);
+	BOOL					_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam);
+	BOOL					_onDeltaPos(NM_UPDOWN * pnmud);
 };
 
 #endif /* XAP_WIN32DIALOG_IMAGE_H */

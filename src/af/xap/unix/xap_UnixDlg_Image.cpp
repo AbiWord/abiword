@@ -108,6 +108,7 @@ void XAP_UnixDialog_Image::aspectCheckbox()
 	{
 		m_bAspect = false;
 	}
+	setPreserveAspect( m_bAspect );
 }
 
 void XAP_UnixDialog_Image::doHeightSpin(void)
@@ -197,11 +198,11 @@ void XAP_UnixDialog_Image::adjustHeightForAspect(void)
 {
 	if(m_bAspect)
 	{
-		double width = UT_convertToInches(getWidthString());
-		double height = width*m_dHeightWidth;
-		UT_Dimension dim = UT_determineDimension(getHeightString(),DIM_none);
-		const char * szHeight = UT_convertInchesToDimensionString(dim,height);
-		setHeight(szHeight);
+//		double width = UT_convertToInches(getWidthString());
+//		double height = width*m_dHeightWidth;
+//		UT_Dimension dim = UT_determineDimension(getHeightString(),DIM_none);
+//		const char * szHeight = UT_convertInchesToDimensionString(dim,height);
+//		setHeight(szHeight);
 		setHeightEntry();
 	}
 }
@@ -210,11 +211,11 @@ void XAP_UnixDialog_Image::adjustWidthForAspect(void)
 {
 	if(m_bAspect)
 	{
-		double height = UT_convertToInches(getHeightString());
-		double width = height/m_dHeightWidth;
-		UT_Dimension dim = UT_determineDimension(getWidthString(),DIM_none);
-		const char * szWidth = UT_convertInchesToDimensionString(dim,width);
-		setWidth(szWidth);
+//		double height = UT_convertToInches(getHeightString());
+//		double width = height/m_dHeightWidth;
+//		UT_Dimension dim = UT_determineDimension(getWidthString(),DIM_none);
+//		const char * szWidth = UT_convertInchesToDimensionString(dim,width);
+//		setWidth(szWidth);
 		setWidthEntry();
 	}
 }
@@ -399,8 +400,8 @@ void XAP_UnixDialog_Image::_constructWindowContents (GtkWidget * dialog_vbox1)
   m_wAspectCheck = gtk_check_button_new_with_label(pSS->getValue(XAP_STRING_ID_DLG_Image_Aspect));
   gtk_widget_show(m_wAspectCheck);
   gtk_box_pack_start (GTK_BOX (dialog_vbox1), m_wAspectCheck, TRUE, TRUE, 0);
-  gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (m_wAspectCheck), TRUE);
-  m_bAspect = true;
+  gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (m_wAspectCheck), getPreserveAspect());
+  m_bAspect = getPreserveAspect();
 
   m_wHeightSpin = HeightSpin_dum;
   m_wHeightEntry = HeightEntry;

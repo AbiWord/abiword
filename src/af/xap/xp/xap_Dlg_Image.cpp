@@ -30,6 +30,7 @@ XAP_Dialog_Image::XAP_Dialog_Image(XAP_DialogFactory * pDlgFactory, XAP_Dialog_I
 	m_WidthString("0.0in"),
 	m_bHeightChanged(false),
 	m_bWidthChanged(false),
+	m_bAspect(true),
 	m_PreferedUnits(DIM_IN)
 {
 }
@@ -69,33 +70,21 @@ double XAP_Dialog_Image::getIncrement(const char * sz)
 {
 	double inc = 0.1;
 	UT_Dimension dim =  UT_determineDimension(sz);
-	if(dim == DIM_IN)
+	switch( dim )
 	{
+	default:
+	case DIM_IN:
 		inc = 0.02;
-	}
-	else if(dim == DIM_CM)
-	{
+		break;
+	case DIM_CM:
 		inc = 0.1;
-	}
-	else if(dim == DIM_MM)
-	{
+		break;
+	case DIM_MM:
+	case DIM_PI:
+	case DIM_PT:
+	case DIM_PX:
 		inc = 1.0;
-	}
-	else if(dim == DIM_PI)
-	{
-		inc = 1.0;
-	}
-	else if(dim == DIM_PT)
-	{
-		inc = 1.0;
-	}
-	else if(dim == DIM_PX)
-	{
-		inc = 1.0;
-	}
-	else
-	{
-		inc = 0.02;
+		break;
 	}
 	return inc;
 }
@@ -112,20 +101,10 @@ void XAP_Dialog_Image::incrementHeight(bool bIncrement)
 	{
 		inc = -inc;
 	}
-	UT_Dimension dim = UT_determineDimension(getHeightString(), DIM_none);
+	
 	m_HeightString = UT_incrementDimString(m_HeightString.c_str(),inc);
-	double dum = UT_convertToInches(getHeightString());
-	m_height = dum*72.0;
-	if(dum < 0.0)
-	{
-		m_HeightString = UT_convertInchesToDimensionString(dim,0.0);
-	}
-	else if((dum*72.0) > m_maxHeight)
-	{
-		m_height = m_maxHeight;
-		dum = (m_maxHeight - 1)/72.0;
-		m_HeightString = UT_convertInchesToDimensionString(dim,dum);
-	}
+	setPreferedUnits( UT_determineDimension(getHeightString(), DIM_none) );
+	setHeight( UT_convertToInches(getHeightString()), true );			
 }
 
 /*!
@@ -139,21 +118,10 @@ void XAP_Dialog_Image::incrementWidth(bool bIncrement)
 	{
 		inc = -inc;
 	}
-	UT_Dimension dim = UT_determineDimension(getWidthString(), DIM_none);
+
 	m_WidthString = UT_incrementDimString(m_WidthString.c_str(),inc);
-	double dum = UT_convertToInches(getWidthString());
-	m_width = dum*72.0;
-	if(dum < 0.0)
-	{
-		m_width = 0.0;
-		m_WidthString = UT_convertInchesToDimensionString(dim,0.0);
-	}
-	else if((dum*72.0) > m_maxWidth)
-	{
-		m_width = m_maxWidth;
-		dum = (m_maxWidth - 1)/72.0;
-		m_WidthString = UT_convertInchesToDimensionString(dim,dum);
-	}
+	setPreferedUnits( UT_determineDimension(getWidthString(), DIM_none) );
+	setWidth( UT_convertToInches(getWidthString()), true );			
 }
 
 
@@ -168,22 +136,38 @@ void XAP_Dialog_Image::setHeight(const char * szHeight)
 	{
 		m_bHeightChanged = true;
 		m_HeightString = szHeight;
-		double dum = UT_convertToInches(getHeightString());
-		m_height = dum*72.0;
-		if(dum < 0.0)
-		{
-			m_height = 0.0;
-			m_HeightString = UT_convertInchesToDimensionString(dim,0.0);
-		}
-		else if((dum*72.0) > m_maxHeight)
-		{
-			m_height = m_maxHeight;
-			dum = (m_maxHeight - 1)/72.0;
-			m_HeightString = UT_convertInchesToDimensionString(dim,dum);
-		}
+		setPreferedUnits( dim );
+		setHeight( UT_convertToInches(getHeightString()), true );			
 	}
 }
 
+/*!
+ * Set the member string variable m_HeightString from the a double value of 
+ * the image. 
+\params double dHeight is the height of the image in inches.
+*/
+void XAP_Dialog_Image::setHeight(double  dHeight, bool checkaspect)
+{
+	double orig_height = m_height;
+	m_height = dHeight*72.0;
+	if(m_height < 0.0)
+	{
+		m_height = 0.0;
+		dHeight  = 0.0;
+	}
+	else if(m_height > m_maxWidth)
+	{
+		m_height = m_maxHeight;
+		dHeight = (m_maxHeight - 1)/72.0;
+	}
+	m_HeightString = UT_convertInchesToDimensionString(getPreferedUnits(),dHeight);
+
+	// Update For Aspect Ratio
+	if( checkaspect && m_bAspect && orig_height!=0.0 )
+	{
+		setWidth(m_width*m_height/orig_height/72.0, false);
+	}
+}
 
 /*!
  * Set the member string variable m_HeightString
@@ -196,23 +180,38 @@ void XAP_Dialog_Image::setWidth(const char * szWidth)
 	{
 		m_bWidthChanged = true;
 		m_WidthString = szWidth;
-		double dum = UT_convertToInches(getWidthString());
-		m_width = dum*72.0;
-		if(dum < 0.0)
-		{
-			m_width = 0.0;
-			m_WidthString = UT_convertInchesToDimensionString(dim,0.0);
-		}
-		else if((dum*72.0) > m_maxWidth)
-		{
-			m_width = m_maxWidth;
-			dum = (m_maxWidth - 1)/72.0;
-			m_WidthString = UT_convertInchesToDimensionString(dim,dum);
-		}
-			
+		setPreferedUnits( dim );
+		setWidth( UT_convertToInches(getWidthString()), true );			
 	}
 }
 
+/*!
+ * Set the member string variable m_WidthString from the a double value of 
+ * the image. 
+\params double dWidth is the width of the image in inches.
+*/
+void XAP_Dialog_Image::setWidth(double  dWidth, bool checkaspect)
+{
+	double orig_width = m_width;
+	m_width = dWidth*72.0;
+	if(m_width < 0.0)
+	{
+		m_width = 0.0;
+		dWidth  = 0.0;
+	}
+	else if(m_width > m_maxWidth)
+	{
+		m_width = m_maxWidth;
+		dWidth = (m_maxWidth - 1)/72.0;
+	}
+	m_WidthString = UT_convertInchesToDimensionString(getPreferedUnits(),dWidth);
+
+	// Update For Aspect Ratio
+	if( checkaspect && m_bAspect && orig_width!=0.0 )
+	{
+		setHeight(m_height*m_width/orig_width/72.0, false);
+	}
+}
 
 /*!
  * Set the member string variable m_WidthString from the pixel value of 
@@ -221,10 +220,7 @@ void XAP_Dialog_Image::setWidth(const char * szWidth)
 */
 void XAP_Dialog_Image::setWidth(UT_sint32 iWidth)
 {
-	UT_Dimension dim = getPreferedUnits();
-	double dum = ((float) iWidth)/72.0;
-	m_width = dum*72.0;
-	m_WidthString = UT_convertInchesToDimensionString(dim,dum);
+	setWidth( ((double) iWidth)/72.0, false );
 }	
 
 /*!
@@ -234,16 +230,12 @@ void XAP_Dialog_Image::setWidth(UT_sint32 iWidth)
 */
 void XAP_Dialog_Image::setHeight(UT_sint32 iHeight)
 {
-	UT_Dimension dim = getPreferedUnits();
-	double dum = ((float) iHeight)/72.0;
-	m_height = dum*72.0;
-	m_HeightString = UT_convertInchesToDimensionString(dim,dum);
+	setHeight( ((double) iHeight)/72.0, false );
 }	
-
 
 /*!
  * Converts the string sz into the units seleced for the ruler.
-\params const char * sz is the string containing the old value
+\params const char * sz is the strinewheightng containing the old value
 \params UT_String & pRet is the string to which the new value is copied.
 */
 void XAP_Dialog_Image::_convertToPreferredUnits(const char *sz, UT_String & pRet)
@@ -267,11 +259,5 @@ UT_Dimension XAP_Dialog_Image::getPreferedUnits(void)
 {
 	return m_PreferedUnits;
 }
-
-
-
-
-
-
 
 

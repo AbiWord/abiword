@@ -34,6 +34,7 @@
 
 #include "xap_Win32Resources.rc2"
 
+#define BUFSIZE 1024
 /*****************************************************************/
 
 XAP_Dialog * XAP_Win32Dialog_Image::static_constructor(XAP_DialogFactory * pFactory,
@@ -43,9 +44,13 @@ XAP_Dialog * XAP_Win32Dialog_Image::static_constructor(XAP_DialogFactory * pFact
 	return p;
 }
 
+#ifdef _MSC_VER	// MSVC++ warns about using 'this' in initializer list.
+#pragma warning(disable: 4355)
+#endif
+
 XAP_Win32Dialog_Image::XAP_Win32Dialog_Image(XAP_DialogFactory * pDlgFactory,
 										 XAP_Dialog_Id id)
-	: XAP_Dialog_Image(pDlgFactory,id)
+	: XAP_Dialog_Image(pDlgFactory,id), _win32Dialog(this), m_hThisDlg(NULL)
 {
 }
 
@@ -56,32 +61,121 @@ XAP_Win32Dialog_Image::~XAP_Win32Dialog_Image(void)
 void XAP_Win32Dialog_Image::runModal(XAP_Frame * pFrame)
 {
 	UT_ASSERT(pFrame);
-
-/*
-	NOTE: This template can be used to create a working stub for a 
-	new dialog on this platform.  To do so:
-	
-	1.  Copy this file (and its associated header file) and rename 
-		them accordingly. 
-
-	2.  Do a case sensitive global replace on the words Stub and STUB
-		in both files. 
-
-	3.  Add stubs for any required methods expected by the XP class. 
-		If the build fails because you didn't do this step properly,
-		you've just broken the donut rule.  
-
-	4.	Replace this useless comment with specific instructions to 
-		whoever's porting your dialog so they know what to do.
-		Skipping this step may not cost you any donuts, but it's 
-		rude.  
-
-	This file should *only* be used for stubbing out platforms which 
-	you don't know how to implement.  When implementing a new dialog 
-	for your platform, you're probably better off starting with code
-	from another working dialog.  
-*/	
-
-	UT_ASSERT(UT_NOT_IMPLEMENTED);
+	_win32Dialog.runModal( pFrame, 
+                           XAP_DIALOG_ID_IMAGE, 
+                           XAP_RID_DIALOG_IMAGE, 
+                           this );
 }
 
+#define _DSX(c,s)	SetDlgItemText(hWnd,XAP_RID_DIALOG_##c,pSS->getValue(XAP_STRING_ID_##s))
+
+BOOL XAP_Win32Dialog_Image::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam)
+{
+	XAP_Win32App * app = static_cast<XAP_Win32App *> (m_pApp);
+	UT_ASSERT(app);
+
+	m_hThisDlg = hWnd;
+	const XAP_StringSet * pSS = m_pApp->getStringSet();
+	
+	// localize dialog title
+	_win32Dialog.setDialogTitle( pSS->getValue(XAP_STRING_ID_DLG_Image_Title));
+
+	// localize controls
+	_DSX(IMAGE_BTN_OK,				DLG_OK);
+	_DSX(IMAGE_BTN_CANCEL,			DLG_Cancel);
+	_DSX(IMAGE_LBL_HEIGHT,			DLG_Image_Height);
+	_DSX(IMAGE_LBL_WIDTH,			DLG_Image_Width);
+	_DSX(IMAGE_CHK_ASPECT,			DLG_Image_Aspect);
+
+	// Initialize controls
+	_win32Dialog.setControlText( XAP_RID_DIALOG_IMAGE_EBX_HEIGHT, getHeightString() );
+	_win32Dialog.setControlText( XAP_RID_DIALOG_IMAGE_EBX_WIDTH, getWidthString() );
+	_win32Dialog.checkButton( XAP_RID_DIALOG_IMAGE_CHK_ASPECT, getPerserveAspect() );
+
+	return TRUE;
+}
+
+BOOL XAP_Win32Dialog_Image::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
+{
+	WORD wNotifyCode = HIWORD(wParam);
+	WORD wId = LOWORD(wParam);
+	HWND hWndCtrl = (HWND)lParam;
+
+	switch (wId)
+	{
+	case IDCANCEL:						// also AP_RID_DIALOG_COLUMN_BTN_CANCEL
+		setAnswer( a_Cancel );
+		EndDialog(hWnd,0);
+		return 1;
+
+	case IDOK:							// also AP_RID_DIALOG_COLUMN_BTN_OK
+		setAnswer( a_OK );
+		EndDialog(hWnd,0);
+		return 1;
+
+	case XAP_RID_DIALOG_IMAGE_EBX_HEIGHT:
+		if( wNotifyCode == EN_KILLFOCUS )
+		{
+			char buf[BUFSIZE];
+			GetDlgItemText( hWnd, wId, buf, BUFSIZE );
+			setHeight( buf );
+			_win32Dialog.setControlText( XAP_RID_DIALOG_IMAGE_EBX_HEIGHT, getHeightString() );
+			_win32Dialog.setControlText( XAP_RID_DIALOG_IMAGE_EBX_WIDTH, getWidthString() );
+		}
+		return 1;
+
+	case XAP_RID_DIALOG_IMAGE_EBX_WIDTH:
+		if( wNotifyCode == EN_KILLFOCUS )
+		{
+			char buf[BUFSIZE];
+			GetDlgItemText( hWnd, wId, buf, BUFSIZE );
+			setWidth( buf );
+			_win32Dialog.setControlText( XAP_RID_DIALOG_IMAGE_EBX_HEIGHT, getHeightString() );
+			_win32Dialog.setControlText( XAP_RID_DIALOG_IMAGE_EBX_WIDTH, getWidthString() );
+		}
+		return 1;
+
+	case XAP_RID_DIALOG_IMAGE_CHK_ASPECT:
+		setPreserveAspect( _win32Dialog.isChecked(wId)!=0 );
+		return 1;
+
+	default:							// we did not handle this notification
+		UT_DEBUGMSG(("WM_Command for id %ld\n",wId));
+		return 0;						// return zero to let windows take care of it.
+	}
+}
+
+BOOL XAP_Win32Dialog_Image::_onDeltaPos(NM_UPDOWN * pnmud)
+{
+	switch( pnmud->hdr.idFrom )
+	{
+	case XAP_RID_DIALOG_IMAGE_SPN_WIDTH:
+		if( pnmud->iDelta < 0 )
+		{
+			incrementWidth( true );
+		}
+		else
+		{
+			incrementWidth( false );
+		}
+		_win32Dialog.setControlText( XAP_RID_DIALOG_IMAGE_EBX_HEIGHT, getHeightString() );
+		_win32Dialog.setControlText( XAP_RID_DIALOG_IMAGE_EBX_WIDTH, getWidthString() );
+		return 1;
+
+	case XAP_RID_DIALOG_IMAGE_SPN_HEIGHT:
+		if( pnmud->iDelta < 0 )
+		{
+			incrementHeight( true );
+		}
+		else
+		{
+			incrementHeight( false );
+		}
+		_win32Dialog.setControlText( XAP_RID_DIALOG_IMAGE_EBX_HEIGHT, getHeightString() );
+		_win32Dialog.setControlText( XAP_RID_DIALOG_IMAGE_EBX_WIDTH, getWidthString() );
+		return 1;
+
+	default:
+		return 0;
+	}
+}
