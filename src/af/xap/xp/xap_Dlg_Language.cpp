@@ -21,6 +21,7 @@
 #include <stdio.h>
 #include <string.h>
 #include "ut_string.h"
+#include "ut_string_class.h"
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
 #include "ut_Language.h"
@@ -38,7 +39,9 @@ static int s_compareQ(const void * a, const void * b)
 /*****************************************************************/
 
 XAP_Dialog_Language::XAP_Dialog_Language(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id)
-	: XAP_Dialog_NonPersistent(pDlgFactory,id, "interface/dialoglanguage")
+	: XAP_Dialog_NonPersistent(pDlgFactory,id, "interface/dialoglanguage"),
+	  m_bDocDefault(false),
+	  m_pDocLang(NULL)
 {
 	UT_uint32 nDontSort = 0, nSort = 0;
 	UT_uint32 i;	
@@ -133,9 +136,9 @@ XAP_Dialog_Language::tAnswer XAP_Dialog_Language::getAnswer(void) const
 	return m_answer;
 }
 
-bool XAP_Dialog_Language::getChangedLangProperty(const XML_Char ** pszLangProp) const
+bool XAP_Dialog_Language::getLangProperty(const XML_Char ** pszLangProp) const
 {
-	UT_ASSERT(pszLangProp);
+	UT_return_val_if_fail(pszLangProp,false);
 	*pszLangProp = m_pLangProperty;
 	return m_bChangedLanguage;
 }
@@ -163,6 +166,49 @@ UT_Vector* XAP_Dialog_Language::getAvailableDictionaries()
 	}
 
 	return vecRslt;
+}
+
+/*!
+    Fills s with the string to be used as a label for the the default language checkbox
+*/
+void XAP_Dialog_Language::getDocDefaultLangCheckboxLabel(UT_UTF8String &s)
+{
+	s.clear();
+	const XAP_StringSet * pSS = XAP_App::getApp()->getStringSet();
+	UT_return_if_fail(pSS);
+
+	s = pSS->getValue(XAP_STRING_ID_DLG_ULANG_DefaultLangChkbox);
+}
+
+/*!
+    Fills s with the string to be displayed in the default language static control
+*/
+void XAP_Dialog_Language::getDocDefaultLangDescription(UT_UTF8String & s)
+{
+	s.clear();
+	const XAP_StringSet * pSS = XAP_App::getApp()->getStringSet();
+	UT_return_if_fail(pSS);
+
+	s = pSS->getValue(XAP_STRING_ID_DLG_ULANG_DefaultLangLabel);
+
+	UT_return_if_fail( m_pDocLang );
+	
+	s += m_pDocLang;
+}
+
+/*!
+    Initialises the dialogue to the current default lanaguage
+    pLang is a standard lang property (e.g., en-GB)
+ */
+void XAP_Dialog_Language::setDocumentLanguage(const XML_Char * pLang)
+{
+	UT_return_if_fail( pLang );
+	UT_return_if_fail(m_pLangTable);
+	
+	UT_uint32 indx = m_pLangTable->getIndxFromCode(pLang);
+
+	// NB: m_pDocLang holds the translated language name, not the tag
+	m_pDocLang	    = m_pLangTable->getNthLangName(indx);
 }
 
 

@@ -6701,6 +6701,24 @@ UT_return_val_if_fail(pDialog, false);
 		FREEP(props_in);
 	}
 
+	PD_Document * pDoc = pView->getDocument();
+	UT_return_val_if_fail( pDoc, false );
+
+	const PP_AttrProp *  pAP = pDoc->getAttrProp();
+	UT_return_val_if_fail( pAP, false );
+
+	const XML_Char * pLang = NULL;
+	bool bRet = pAP->getProperty("lang", pLang);
+
+	if(bRet)
+	{
+		pDialog->setDocumentLanguage(pLang);
+	}
+	else
+	{
+		UT_ASSERT_HARMLESS( UT_SHOULD_NOT_HAPPEN );
+	}
+	
 	// run the dialog
 
 	pDialog->runModal(pFrame);
@@ -6712,23 +6730,25 @@ UT_return_val_if_fail(pDialog, false);
 	if (bOK)
 	{
 		//UT_DEBUGMSG(("pressed OK\n"));
-		UT_uint16 k = 0;
+		UT_uint32 k = 0;
 		const XML_Char * props_out[3];
-		const XML_Char * s;
-		static XML_Char szLang[50];
+		const XML_Char * s = NULL;
 
-		if (pDialog->getChangedLangProperty(&s))
+		bool bChange = pDialog->getLangProperty(&s);
+		
+		if (s)
 		{
-			//UT_DEBUGMSG(("some change\n"));
-			sprintf(szLang,"%s",s);
 			props_out[k++] = "lang";
-			props_out[k++] = static_cast<const XML_Char *>(szLang);
+			props_out[k++] = s;
 		}
 
 		props_out[k] = 0;						// put null after last pair.
 
-		if (k > 0)								// if something changed
+		if(k > 0 && bChange)								// if something changed
 			pView->setCharFormat(props_out);
+
+		if(k > 0 &&pDialog->isMakeDocumentDefault())
+			pDoc->setProperties(props_out);
 	}
 
 	pDialogFactory->releaseDialog(pDialog);

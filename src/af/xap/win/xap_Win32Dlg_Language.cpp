@@ -242,6 +242,14 @@ BOOL XAP_Win32Dialog_Language::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lP
 	SetWindowLong(hTree, GWL_WNDPROC, (LONG)s_treeProc);
 	SetWindowLong(hTree, GWL_USERDATA, (LONG)this);
 	
+	CheckDlgButton(hWnd, XAP_RID_DIALOG_LANGUAGE_DOCLANG_CHKBOX, BST_UNCHECKED );
+
+	UT_UTF8String s;
+	getDocDefaultLangDescription(s);
+	SetDlgItemText(hWnd, XAP_RID_DIALOG_LANGUAGE_DOCLANG_STATIC,s.utf8_str());
+
+	getDocDefaultLangCheckboxLabel(s);
+	SetDlgItemText(hWnd, XAP_RID_DIALOG_LANGUAGE_DOCLANG_CHKBOX,s.utf8_str());
 	
 	XAP_Win32DialogHelper::s_centerDialog(hWnd);	
 			
@@ -258,39 +266,46 @@ BOOL XAP_Win32Dialog_Language::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lPara
 	switch (wId)
 	{
 
-	case IDCANCEL:						// also XAP_RID_DIALOG_LANGUAGE_BTN_CANCEL
-		m_answer = a_CANCEL;
-		EndDialog(hWnd,0);
-		return 1;
-
-	case IDOK:							// also XAP_RID_DIALOG_LANGUAGE_BTN_OK
-	{
-		TVITEM tvi;		
-		HWND hWndTree = GetDlgItem(hWnd, XAP_RID_DIALOG_LANGUAGE_TREE_LANGUAGE);
-		
-		// Selected item
-		tvi.hItem =  (HTREEITEM)::SendMessage(hWndTree, TVM_GETNEXTITEM, TVGN_CARET, 0);
-		
-		if (tvi.hItem)
-		{				
-			// Associated data		 
-			tvi.mask = TVIF_PARAM;
-			SendMessage(hWndTree, TVM_GETITEM, 0, (LPARAM)&tvi);		
-			_setLanguage( m_ppLanguages[tvi.lParam]);
-			m_bChangedLanguage = true;
-			m_answer = a_OK;
-		}
-		else
-		{
+		case IDCANCEL:						// also XAP_RID_DIALOG_LANGUAGE_BTN_CANCEL
 			m_answer = a_CANCEL;
-		}	
+			EndDialog(hWnd,0);
+			return 1;
 
-		EndDialog(hWnd,0);
-		return 1;
-	}
-	default:							// we did not handle this notification
-		UT_DEBUGMSG(("WM_Command for id %ld\n",wId));
-		return 0;						// return zero to let windows take care of it.
+		case IDOK:							// also XAP_RID_DIALOG_LANGUAGE_BTN_OK
+			{
+				TVITEM tvi;		
+				HWND hWndTree = GetDlgItem(hWnd, XAP_RID_DIALOG_LANGUAGE_TREE_LANGUAGE);
+		
+				// Selected item
+				tvi.hItem =  (HTREEITEM)::SendMessage(hWndTree, TVM_GETNEXTITEM, TVGN_CARET, 0);
+		
+				if (tvi.hItem)
+				{				
+					// Associated data		 
+					tvi.mask = TVIF_PARAM;
+					SendMessage(hWndTree, TVM_GETITEM, 0, (LPARAM)&tvi);		
+					_setLanguage( m_ppLanguages[tvi.lParam]);
+					m_bChangedLanguage = true;
+					m_answer = a_OK;
+				}
+				else
+				{
+					m_answer = a_CANCEL;
+				}	
+
+				EndDialog(hWnd,0);
+				return 1;
+			}
+
+		case XAP_RID_DIALOG_LANGUAGE_DOCLANG_CHKBOX:
+		{
+			bool b = (IsDlgButtonChecked(hWnd,XAP_RID_DIALOG_LANGUAGE_DOCLANG_CHKBOX)==BST_CHECKED);
+			setMakeDocumentDefault(b);
+		}
+			
+		default:							// we did not handle this notification
+			UT_DEBUGMSG(("WM_Command for id %ld\n",wId));
+			return 0;						// return zero to let windows take care of it.
 	}
 
 	return 0;	

@@ -541,6 +541,17 @@ const XML_Char * PP_evalProperty (const XML_Char *  pszName,
 						szValue = NULL;
 			}
 		}
+
+	if(szValue == NULL && pDoc && (bInherit || pProp->canInherit ()))
+	{
+		// see if the doc has a value for this prop
+		const PP_AttrProp *  pAP = pDoc->getAttrProp();
+		if(pAP)
+		{
+			pAP->getProperty(pszName, szValue);
+		}
+	}
+	
 	if (szValue == NULL)
 		szValue = pProp->getInitial (); // which may itself be NULL, but that is a bad thing - FIXME!!
 

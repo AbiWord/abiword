@@ -445,7 +445,7 @@ void AP_Dialog_Styles::ModifyLang(void)
 		static XML_Char lang[50];
 		const XML_Char * s;
 
-		pDialog->getChangedLangProperty(&s);
+		pDialog->getLangProperty(&s);
 		sprintf(lang,"%s",s);
 		addOrReplaceVecProp("lang", lang);
 	}
