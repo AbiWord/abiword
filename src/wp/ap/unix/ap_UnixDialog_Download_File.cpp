@@ -100,6 +100,7 @@ void AP_UnixDialog_Download_File::_runModal(XAP_Frame * pFrame)
 	/*
 	 * Init a graphical context for the progressbar
 	 */
+	m_pFrame = (XAP_UnixFrame *)pFrame;
 	XAP_UnixApp * app = static_cast<XAP_UnixApp *>(m_pFrame->getApp());
 	XAP_UnixFontManager * fontManager = app->getFontManager();
 	GR_UnixGraphics * pG = new GR_UnixGraphics(m_progressBar->window, fontManager, m_pFrame->getApp());
@@ -117,6 +118,9 @@ void AP_UnixDialog_Download_File::_runModal(XAP_Frame * pFrame)
 	switch ( abiRunModalDialog ( GTK_DIALOG(mainWindow),
 								 pFrame, this, BUTTON_CANCEL, false ) )
 	{
+		case GTK_RESPONSE_OK:
+			break;
+		
 		default:
 			event_Cancel () ; break ;
 	}
@@ -127,7 +131,7 @@ void AP_UnixDialog_Download_File::_runModal(XAP_Frame * pFrame)
 void
 AP_UnixDialog_Download_File::_abortDialog(void)
 {
-	event_WindowDelete();
+	gtk_dialog_response (GTK_DIALOG(m_windowMain), GTK_RESPONSE_OK);
 }
 
 void AP_UnixDialog_Download_File::event_WindowDelete(void)
@@ -142,7 +146,8 @@ void AP_UnixDialog_Download_File::event_Cancel(void)
 
 void AP_UnixDialog_Download_File::event_PBConfigure(GdkEventConfigure *e)
 {
-	_setHeight((UT_uint32)e->height);
+	UT_uint32 iHeight = (UT_uint32)e->height;
+	_setHeight(iHeight);
 
 	UT_uint32 iWidth = (UT_uint32)e->width;
 	if (iWidth != _getWidth())
@@ -168,7 +173,7 @@ GtkWidget * AP_UnixDialog_Download_File::_constructProgressBar(void)
 	gtk_object_set_user_data(GTK_OBJECT(pb),this);
 	gtk_widget_show(pb);
 	/* Set minimum wanted width */
-	gtk_widget_set_usize(pb, _getWidth(), s_iPBFixedHeight);
+	gtk_widget_set_size_request(pb, _getWidth(), s_iPBFixedHeight);
 
 	return pb;
 }
