@@ -332,11 +332,11 @@ public:
 	virtual bool			isCollapsed(void) const
 		{return m_bIsCollapsed;}
 	void					coalesceRuns(void);
-	virtual void			setNeedsReformat(UT_uint32 offset = 0); 
-	inline bool 		    needsReformat(void) const 
+	virtual void			setNeedsReformat(UT_uint32 offset = 0);
+	inline bool 		    needsReformat(void) const
 		{ return (m_iNeedsReformat >= 0); }
 	virtual void			setNeedsRedraw(void);
-	virtual bool 		    needsRedraw(void) const 
+	virtual bool 		    needsRedraw(void) const
 		{ return m_bNeedsRedraw; }
 	virtual void			markAllRunsDirty(void);
 	bool					checkWord(fl_PartOfBlock* pPOB);
@@ -389,6 +389,7 @@ protected:
 	bool					_doInsertTabRun(PT_BlockOffset blockOffset);
 	bool					_doInsertImageRun(PT_BlockOffset blockOffset, FG_Graphic* pFG);
 	bool					_doInsertFieldRun(PT_BlockOffset blockOffset, const PX_ChangeRecord_Object * pcro);
+	bool                    _doInsertDirectionMarkerRun(PT_BlockOffset blockOffset, UT_UCS4Char iM);
 	bool					_deleteFmtMark(PT_BlockOffset blockOffset);
 
 	void					_lookupProperties(void);
@@ -546,7 +547,7 @@ class ABI_EXPORT fl_BlockSpellIterator
 public:
 	fl_BlockSpellIterator(fl_BlockLayout* pBL, UT_sint32 iPos = 0);
 	~fl_BlockSpellIterator();
-		
+
 	bool            nextWordForSpellChecking(const UT_UCSChar*& pWord,
 											 UT_sint32& iLength,
 											 UT_sint32& iBlockPos);

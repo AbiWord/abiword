@@ -53,6 +53,7 @@ libFmt_a_SOURCES= \
 	fp_TextRun.cpp			\
 	fp_TestRoutines.cpp		\
 	fp_FieldListLabelRun.cpp	\
+	fp_DirectionMarkerRun.cpp \
 	fg_Graphic.cpp			\
 	fg_GraphicRaster.cpp		\
 	fp_ContainerObject.cpp		\

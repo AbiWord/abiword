@@ -42,6 +42,7 @@
 #include "fp_Run.h"
 #include "fp_TextRun.h"
 #include "fp_FieldListLabelRun.h"
+#include "fp_DirectionMarkerRun.h"
 #include "pd_Document.h"
 #include "fd_Field.h"
 #include "pd_Style.h"
@@ -2859,6 +2860,8 @@ bool fl_BlockLayout::doclistener_populateSpan(const PX_ChangeRecord_Span * pcrs,
 		case UCS_LRO:	// explicit direction overrides
 		case UCS_RLO:
 		case UCS_PDF:
+		case UCS_LRM:
+		case UCS_RLM:
 
 			if (bNormal)
 			{
@@ -2909,6 +2912,11 @@ bool fl_BlockLayout::doclistener_populateSpan(const PX_ChangeRecord_Span * pcrs,
 				break;
 			case UCS_PDF:
 				m_iDirOverride = FRIBIDI_TYPE_UNSET;
+				break;
+
+			case UCS_LRM:
+			case UCS_RLM:
+				_doInsertDirectionMarkerRun(i + blockOffset,pChars[i]);
 				break;
 
 			default:
@@ -2994,8 +3002,8 @@ bool	fl_BlockLayout::_doInsertTextSpan(PT_BlockOffset blockOffset, UT_uint32 len
 				// it
 				bool bIgnore = false;
 #if 0
-				// this assumption is not true; for instance the in
-				// the sequence ") " the parenthesis and the space can
+				// this assumption is not true; for instance in the
+				// sequence ") " the parenthesis and the space can
 				// resolve to different directions
 				// 
 				// I am leaving it here so that I do not add it one
@@ -3031,6 +3039,8 @@ bool	fl_BlockLayout::_doInsertTextSpan(PT_BlockOffset blockOffset, UT_uint32 len
 							break;
 						}
 
+						// if the next character is strong, we cannot
+						// ignore the boundary
 						if(FRIBIDI_IS_STRONG(iNextType))
 							break;
 					}
@@ -3088,6 +3098,22 @@ bool	fl_BlockLayout::_doInsertForcedLineBreakRun(PT_BlockOffset blockOffset)
 
 	return bResult;
 }
+
+bool    fl_BlockLayout::_doInsertDirectionMarkerRun(PT_BlockOffset blockOffset, UT_UCS4Char iM)
+{
+	UT_DEBUGMSG(("fl_BlockLayout::_doInsertDirectionMarkerRun: offset %d, marker 0x%04x\n",
+				 blockOffset, iM));
+	
+	fp_Run * pNewRun = new fp_DirectionMarkerRun(this, m_pLayout->getGraphics(), blockOffset, iM);
+	UT_ASSERT( pNewRun );
+
+	bool bResult = _doInsertRun(pNewRun);
+	if (bResult)
+		_breakLineAfterRun(pNewRun);
+
+	return bResult;
+}
+
 #if 0
 bool	fl_BlockLayout::_deleteBookmarkRun(PT_BlockOffset blockOffset)
 {
@@ -3745,6 +3771,8 @@ bool fl_BlockLayout::doclistener_insertSpan(const PX_ChangeRecord_Span * pcrs)
 		case UCS_LRO:	// explicit direction overrides
 		case UCS_RLO:
 		case UCS_PDF:
+		case UCS_LRM:
+		case UCS_RLM:
 
 			if (bNormal)
 			{
@@ -3795,6 +3823,11 @@ bool fl_BlockLayout::doclistener_insertSpan(const PX_ChangeRecord_Span * pcrs)
 				break;
 			case UCS_PDF:
 				m_iDirOverride = FRIBIDI_TYPE_UNSET;
+				break;
+
+			case UCS_LRM:
+			case UCS_RLM:
+				_doInsertDirectionMarkerRun(i + blockOffset,pChars[i]);
 				break;
 
 			default:
