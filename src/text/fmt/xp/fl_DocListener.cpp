@@ -70,12 +70,12 @@ UT_Bool fl_DocListener::populate(PL_StruxFmtHandle sfh,
 	{
 	case PTX_Block:
 		{
-			FL_BlockLayout * pBL = static_cast<FL_BlockLayout *>(pL);
+			fl_BlockLayout * pBL = static_cast<fl_BlockLayout *>(pL);
 			PT_DocPosition docPosBlock = m_pDoc->getStruxPosition(pBL->m_sdh);
 			PT_BlockOffset blockOffset = (pcr->getPosition() - docPosBlock);
 
-			FP_Run * pRun = pBL->m_pFirstRun;
-			FP_Run * pLastRun = NULL;
+			fp_Run * pRun = pBL->m_pFirstRun;
+			fp_Run * pLastRun = NULL;
 			UT_uint32 offset = 0;
 
 			while (pRun)
@@ -87,7 +87,7 @@ UT_Bool fl_DocListener::populate(PL_StruxFmtHandle sfh,
 
 			UT_ASSERT(offset==blockOffset);
 			UT_uint32 len = pcrs->getLength();
-			FP_Run * pNewRun = new FP_Run(pBL, m_pLayout->getGraphics(), offset, len);
+			fp_Run * pNewRun = new fp_Run(pBL, m_pLayout->getGraphics(), offset, len);
 			if (!pNewRun)
 			{
 				UT_DEBUGMSG(("Could not allocate run\n"));
@@ -134,7 +134,7 @@ UT_Bool fl_DocListener::populateStrux(PL_StruxDocHandle sdh,
 	case PTX_Section:
 		{
 			// append a SectionLayout to this DocLayout
-			FL_SectionLayout* pSL = new FL_SectionLayout(m_pLayout, sdh);
+			fl_SectionLayout* pSL = new fl_SectionLayout(m_pLayout, sdh);
 			if (!pSL)
 			{
 				UT_DEBUGMSG(("no memory for SectionLayout"));
@@ -152,9 +152,9 @@ UT_Bool fl_DocListener::populateStrux(PL_StruxDocHandle sdh,
 			// locate the last SectionLayout
 			int countSections = m_pLayout->m_vecSectionLayouts.getItemCount();
 			UT_ASSERT(countSections > 0);
-			FL_SectionLayout* pSL = (FL_SectionLayout*) m_pLayout->m_vecSectionLayouts.getNthItem(countSections - 1);
+			fl_SectionLayout* pSL = (fl_SectionLayout*) m_pLayout->m_vecSectionLayouts.getNthItem(countSections - 1);
 			UT_ASSERT(pSL);
-			FL_ColumnSetLayout * pCSL = new FL_ColumnSetLayout(pSL,sdh);
+			fl_ColumnSetLayout * pCSL = new fl_ColumnSetLayout(pSL,sdh);
 			if (!pCSL)
 			{
 				UT_DEBUGMSG(("no memory for ColumnSetLayout"));
@@ -173,11 +173,11 @@ UT_Bool fl_DocListener::populateStrux(PL_StruxDocHandle sdh,
 			// locate the last SectionLayout
 			int countSections = m_pLayout->m_vecSectionLayouts.getItemCount();
 			UT_ASSERT(countSections > 0);
-			FL_SectionLayout* pSL = (FL_SectionLayout*) m_pLayout->m_vecSectionLayouts.getNthItem(countSections - 1);
+			fl_SectionLayout* pSL = (fl_SectionLayout*) m_pLayout->m_vecSectionLayouts.getNthItem(countSections - 1);
 			UT_ASSERT(pSL);
-			FL_ColumnSetLayout * pCSL =	pSL->getColumnSetLayout();
+			fl_ColumnSetLayout * pCSL =	pSL->getColumnSetLayout();
 			UT_ASSERT(pCSL);
-			FL_ColumnLayout * pCL = new FL_ColumnLayout(pCSL,sdh);
+			fl_ColumnLayout * pCL = new fl_ColumnLayout(pCSL,sdh);
 			if (!pCL)
 			{
 				UT_DEBUGMSG(("no memory for ColumnLayout"));
@@ -195,11 +195,11 @@ UT_Bool fl_DocListener::populateStrux(PL_StruxDocHandle sdh,
 			// locate the last SectionLayout
 			int countSections = m_pLayout->m_vecSectionLayouts.getItemCount();
 			UT_ASSERT(countSections > 0);
-			FL_SectionLayout* pSL = (FL_SectionLayout*) m_pLayout->m_vecSectionLayouts.getNthItem(countSections - 1);
+			fl_SectionLayout* pSL = (fl_SectionLayout*) m_pLayout->m_vecSectionLayouts.getNthItem(countSections - 1);
 			UT_ASSERT(pSL);
 
 			// append a new BlockLayout to that SectionLayout
-			FL_BlockLayout*	pBL = pSL->appendBlock(sdh);
+			fl_BlockLayout*	pBL = pSL->appendBlock(sdh);
 			if (!pBL)
 			{
 				UT_DEBUGMSG(("no memory for BlockLayout"));
@@ -236,7 +236,7 @@ UT_Bool fl_DocListener::change(PL_StruxFmtHandle sfh,
 			{
 			case PTX_Block:
 				{
-					FL_BlockLayout * pBL = static_cast<FL_BlockLayout *>(pL);
+					fl_BlockLayout * pBL = static_cast<fl_BlockLayout *>(pL);
 					FV_View* pView = m_pLayout->m_pView;
 					PT_DocPosition docPosBlock = m_pDoc->getStruxPosition(pBL->m_sdh);
 					PT_BlockOffset blockOffset = (pcr->getPosition() - docPosBlock);
@@ -247,7 +247,7 @@ UT_Bool fl_DocListener::change(PL_StruxFmtHandle sfh,
 
 					UT_Bool bFormat = UT_FALSE;
 	
-					FP_Run* pRun = pBL->m_pFirstRun;
+					fp_Run* pRun = pBL->m_pFirstRun;
 					/*
 						Having fixed the char widths array, we need to update 
 						all the run offsets.  We call each run individually to 
@@ -339,7 +339,7 @@ UT_Bool fl_DocListener::change(PL_StruxFmtHandle sfh,
 			{
 			case PTX_Block:
 				{
-					FL_BlockLayout * pBL = static_cast<FL_BlockLayout *>(pL);
+					fl_BlockLayout * pBL = static_cast<fl_BlockLayout *>(pL);
 					PT_DocPosition docPosBlock = m_pDoc->getStruxPosition(pBL->m_sdh);
 					PT_BlockOffset blockOffset = (pcr->getPosition() - docPosBlock);
 					UT_uint32 len = pcrs->getLength();
@@ -347,7 +347,7 @@ UT_Bool fl_DocListener::change(PL_StruxFmtHandle sfh,
 
 					pBL->m_gbCharWidths.del(blockOffset, len);
 	
-					FP_Run* pRun = pBL->m_pFirstRun;
+					fp_Run* pRun = pBL->m_pFirstRun;
 					/*
 						Having fixed the char widths array, we need to update 
 						all the run offsets.  We call each run individually to 
@@ -362,13 +362,13 @@ UT_Bool fl_DocListener::change(PL_StruxFmtHandle sfh,
 						if (pRun->getLength() == 0)
 						{
 							// remove empty runs from their line
-							FP_Line* pLine = pRun->getLine();
+							fp_Line* pLine = pRun->getLine();
 							UT_ASSERT(pLine);
 
 							pLine->removeRun(pRun);
 
-							FP_Run* pNuke = pRun;
-							FP_Run* pPrev = pNuke->getPrev();
+							fp_Run* pNuke = pRun;
+							fp_Run* pPrev = pNuke->getPrev();
 
 							// sneak in our iterator here  :-)
 							pRun = pNuke->getNext();
@@ -420,7 +420,7 @@ UT_Bool fl_DocListener::change(PL_StruxFmtHandle sfh,
 			{
 			case PTX_Block:
 				{
-					FL_BlockLayout * pBL = static_cast<FL_BlockLayout *>(pL);
+					fl_BlockLayout * pBL = static_cast<fl_BlockLayout *>(pL);
 					PT_DocPosition docPosBlock = m_pDoc->getStruxPosition(pBL->m_sdh);
 					PT_BlockOffset blockOffset = (pcr->getPosition() - docPosBlock);
 					UT_uint32 len = pcrsc->getLength();
@@ -433,7 +433,7 @@ UT_Bool fl_DocListener::change(PL_StruxFmtHandle sfh,
 							
 							We may need to split runs at one or both ends.
 						*/
-						FP_Run* pRun = pBL->m_pFirstRun;
+						fp_Run* pRun = pBL->m_pFirstRun;
 						while (pRun)
 						{
 							UT_uint32 iWhere = pRun->containsOffset(blockOffset+len);
@@ -516,8 +516,8 @@ UT_Bool fl_DocListener::change(PL_StruxFmtHandle sfh,
 					{
 					case PTX_Block:
 						{
-							FL_BlockLayout * pBL = static_cast<FL_BlockLayout *>(pL);
-							FL_BlockLayout*	pPrevBL = pBL->m_pPrev;
+							fl_BlockLayout * pBL = static_cast<fl_BlockLayout *>(pL);
+							fl_BlockLayout*	pPrevBL = pBL->m_pPrev;
 							if (!pPrevBL)
 							{
 								UT_DEBUGMSG(("no prior BlockLayout"));
@@ -531,8 +531,8 @@ UT_Bool fl_DocListener::change(PL_StruxFmtHandle sfh,
 							if (pBL->m_pFirstRun)
 							{
 								// figure out where the merge point is
-								FP_Run * pRun = pPrevBL->m_pFirstRun;
-								FP_Run * pLastRun = NULL;
+								fp_Run * pRun = pPrevBL->m_pFirstRun;
+								fp_Run * pLastRun = NULL;
 								UT_uint32 offset = 0;
 
 								while (pRun)
@@ -561,7 +561,7 @@ UT_Bool fl_DocListener::change(PL_StruxFmtHandle sfh,
 									pRun->m_pBL = pPrevBL;
 
 									// detach from their line
-									FP_Line* pLine = pRun->getLine();
+									fp_Line* pLine = pRun->getLine();
 									UT_ASSERT(pLine);
 									
 									pLine->removeRun(pRun);
@@ -586,7 +586,7 @@ UT_Bool fl_DocListener::change(PL_StruxFmtHandle sfh,
 							if (pBL->m_pNext)
 								pBL->m_pNext->m_pPrev = pPrevBL;
 
-							FL_SectionLayout* pSL = pBL->m_pSectionLayout;
+							fl_SectionLayout* pSL = pBL->m_pSectionLayout;
 							UT_ASSERT(pSL);
 							pSL->removeBlock(pBL);
 							delete pBL;
@@ -639,7 +639,7 @@ UT_Bool fl_DocListener::change(PL_StruxFmtHandle sfh,
 					
 			case PTX_Block:
 				{
-					FL_BlockLayout * pBL = static_cast<FL_BlockLayout *>(pL);
+					fl_BlockLayout * pBL = static_cast<fl_BlockLayout *>(pL);
 
 					// erase the old version
 					pBL->clearScreen(m_pLayout->getGraphics());
@@ -701,10 +701,10 @@ UT_Bool fl_DocListener::insertStrux(PL_StruxFmtHandle sfh,
 			{
 			case PTX_Block:
 				{
-					FL_BlockLayout * pBL = static_cast<FL_BlockLayout *>(pL);
-					FL_SectionLayout* pSL = pBL->m_pSectionLayout;
+					fl_BlockLayout * pBL = static_cast<fl_BlockLayout *>(pL);
+					fl_SectionLayout* pSL = pBL->m_pSectionLayout;
 					UT_ASSERT(pSL);
-					FL_BlockLayout*	pNewBL = pSL->insertBlock(sdh, pBL);
+					fl_BlockLayout*	pNewBL = pSL->insertBlock(sdh, pBL);
 					if (!pNewBL)
 					{
 						UT_DEBUGMSG(("no memory for BlockLayout"));
@@ -731,7 +731,7 @@ UT_Bool fl_DocListener::insertStrux(PL_StruxFmtHandle sfh,
 					PT_DocPosition docPosBlock = m_pDoc->getStruxPosition(pBL->m_sdh);
 					PT_BlockOffset blockOffset = (pcr->getPosition() - docPosBlock);
 
-					FP_Run* pRun = pBL->m_pFirstRun;
+					fp_Run* pRun = pBL->m_pFirstRun;
 					while (pRun)
 					{			
 						UT_uint32 iWhere = pRun->containsOffset(blockOffset);
@@ -755,7 +755,7 @@ UT_Bool fl_DocListener::insertStrux(PL_StruxFmtHandle sfh,
 						pRun = pRun->getNext();
 					}
 
-					FP_Run* pFirstNewRun = NULL;
+					fp_Run* pFirstNewRun = NULL;
 					if (pRun)
 					{
 						pFirstNewRun = pRun->getNext();

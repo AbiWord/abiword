@@ -29,7 +29,7 @@
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
 
-FP_Line::FP_Line(UT_sint32 maxWidth) 
+fp_Line::fp_Line(UT_sint32 maxWidth) 
 {
 	m_iMaxWidth = maxWidth;
 	m_iWidth = 0;
@@ -39,84 +39,84 @@ FP_Line::FP_Line(UT_sint32 maxWidth)
 	m_bDirty = UT_FALSE;
 }
 
-fp_RunInfo::fp_RunInfo(FP_Run* p)
+fp_RunInfo::fp_RunInfo(fp_Run* p)
 {
 	pRun = p;
 	xoff = 0;
 	yoff = 0;
 }
 
-FP_Line::~FP_Line()
+fp_Line::~fp_Line()
 {
 	UT_VECTOR_PURGEALL(fp_RunInfo, m_vecRunInfos);
 }
 
-void FP_Line::setBlockSlice(FP_BlockSlice* pBlockSlice, void* p)
+void fp_Line::setBlockSlice(fp_BlockSlice* pBlockSlice, void* p)
 {
 	m_pBlockSlice = pBlockSlice;
 	m_pBlockSliceData = p;
 }
 
-FP_BlockSlice* FP_Line::getBlockSlice() const
+fp_BlockSlice* fp_Line::getBlockSlice() const
 {
 	return m_pBlockSlice;
 }
 
-UT_uint32 FP_Line::getHeight() const
+UT_uint32 fp_Line::getHeight() const
 {
 	return m_iHeight;
 }
 
-UT_uint32 FP_Line::getWidth() const
+UT_uint32 fp_Line::getWidth() const
 {
 	return m_iWidth;
 }
 
-UT_uint32 FP_Line::getMaxWidth() const
+UT_uint32 fp_Line::getMaxWidth() const
 {
 	return m_iMaxWidth;
 }
 
-void FP_Line::setNext(FP_Line* p)
+void fp_Line::setNext(fp_Line* p)
 {
 	m_pNext = p;
 }
 
-void FP_Line::setPrev(FP_Line* p)
+void fp_Line::setPrev(fp_Line* p)
 {
 	m_pPrev = p;
 }
 
-FP_Line* FP_Line::getNext() const
+fp_Line* fp_Line::getNext() const
 {
 	return m_pNext;
 }
 
-FP_Line* FP_Line::getPrev() const
+fp_Line* fp_Line::getPrev() const
 {
 	return m_pPrev;
 }
 
-int FP_Line::countRuns() const
+int fp_Line::countRuns() const
 {
 	return m_vecRunInfos.getItemCount();
 }
 
-FP_Run* FP_Line::getFirstRun() const
+fp_Run* fp_Line::getFirstRun() const
 {
 	fp_RunInfo* pRI = (fp_RunInfo*) m_vecRunInfos.getFirstItem();
 
 	return pRI->pRun;
 }
 
-FP_Run* FP_Line::getLastRun() const
+fp_Run* fp_Line::getLastRun() const
 {
 	fp_RunInfo* pRI = (fp_RunInfo*) m_vecRunInfos.getLastItem();
 
 	return pRI->pRun;
 }
 
-UT_Bool FP_Line::removeRun(FP_Run* pRun)
+UT_Bool fp_Line::removeRun(fp_Run* pRun)
 {
 	int numRuns = m_vecRunInfos.getItemCount();
 	UT_Bool bAdjust = UT_FALSE;
@@ -157,7 +157,7 @@ UT_Bool FP_Line::removeRun(FP_Run* pRun)
 	return UT_FALSE;
 }
 
-void FP_Line::insertRun(FP_Run* pRun, UT_Bool bClear, UT_Bool bNewData)
+void fp_Line::insertRun(fp_Run* pRun, UT_Bool bClear, UT_Bool bNewData)
 {
 	fp_RunInfo* pRI = (fp_RunInfo*) pRun->getLineData();
 	
@@ -191,7 +191,7 @@ void FP_Line::insertRun(FP_Run* pRun, UT_Bool bClear, UT_Bool bNewData)
 	_recalcHeight();
 }
 
-void FP_Line::addRun(FP_Run* pRun)
+void fp_Line::addRun(fp_Run* pRun)
 {
 	fp_RunInfo* pRI;
 	
@@ -206,7 +206,7 @@ void FP_Line::addRun(FP_Run* pRun)
 	_recalcHeight();
 }
 
-void FP_Line::splitRunInLine(FP_Run* pRun1, FP_Run* pRun2)
+void fp_Line::splitRunInLine(fp_Run* pRun1, fp_Run* pRun2)
 {
 	// insert run2 after run1 in the current line.
 	
@@ -233,7 +233,7 @@ void FP_Line::splitRunInLine(FP_Run* pRun1, FP_Run* pRun2)
 	// assume the space in run2 came from run1.
 }
 
-UT_uint32 FP_Line::getNumChars() const
+UT_uint32 fp_Line::getNumChars() const
 {
 	UT_uint32 iCountChars = 0;
 	
@@ -248,7 +248,7 @@ UT_uint32 FP_Line::getNumChars() const
 	return iCountChars;
 }
 
-void FP_Line::runSizeChanged(void *p, UT_sint32 oldWidth, UT_sint32 newWidth)
+void fp_Line::runSizeChanged(void *p, UT_sint32 oldWidth, UT_sint32 newWidth)
 {
 	fp_RunInfo* pRI = (fp_RunInfo*) p;
 
@@ -293,7 +293,7 @@ void FP_Line::runSizeChanged(void *p, UT_sint32 oldWidth, UT_sint32 newWidth)
 	m_pBlockSlice->alignOneLine(this, m_pBlockSliceData);
 }
 
-void FP_Line::remove()
+void fp_Line::remove()
 {
 	if (m_pNext)
 		m_pNext->setPrev(m_pPrev);
@@ -304,7 +304,7 @@ void FP_Line::remove()
 	m_pBlockSlice->removeLine(this, m_pBlockSliceData);
 }
 
-void FP_Line::mapXYToPosition(UT_sint32 x, UT_sint32 y, PT_DocPosition& pos, UT_Bool& bRight)
+void fp_Line::mapXYToPosition(UT_sint32 x, UT_sint32 y, PT_DocPosition& pos, UT_Bool& bRight)
 {
 	if (x < 0)
 	{
@@ -338,7 +338,7 @@ void FP_Line::mapXYToPosition(UT_sint32 x, UT_sint32 y, PT_DocPosition& pos, UT_
 	UT_ASSERT(UT_NOT_IMPLEMENTED);
 }
 
-void FP_Line::getOffsets(FP_Run* pRun, void* p, UT_sint32& xoff, UT_sint32& yoff)
+void fp_Line::getOffsets(fp_Run* pRun, void* p, UT_sint32& xoff, UT_sint32& yoff)
 {
 	UT_sint32 my_xoff;
 	UT_sint32 my_yoff;
@@ -352,7 +352,7 @@ void FP_Line::getOffsets(FP_Run* pRun, void* p, UT_sint32& xoff, UT_sint32& yoff
 	yoff = my_yoff + pRI->yoff + m_iAscent - pRun->getAscent();
 }
 
-void FP_Line::getScreenOffsets(FP_Run* pRun, void* p, UT_sint32& xoff,
+void fp_Line::getScreenOffsets(fp_Run* pRun, void* p, UT_sint32& xoff,
 							   UT_sint32& yoff, UT_sint32& width,
 							   UT_sint32& height)
 {
@@ -370,7 +370,7 @@ void FP_Line::getScreenOffsets(FP_Run* pRun, void* p, UT_sint32& xoff,
 }
 
 #if UNUSED
-void FP_Line::getAbsoluteCoords(UT_sint32& x, UT_sint32& y)
+void fp_Line::getAbsoluteCoords(UT_sint32& x, UT_sint32& y)
 {
 	UT_sint32 my_xoff;
 	UT_sint32 my_yoff;
@@ -382,7 +382,7 @@ void FP_Line::getAbsoluteCoords(UT_sint32& x, UT_sint32& y)
 }
 #endif
 
-void FP_Line::_recalcHeight()
+void fp_Line::_recalcHeight()
 {
 	UT_sint32 count = m_vecRunInfos.getItemCount();
 	UT_sint32 i;
@@ -414,7 +414,7 @@ void FP_Line::_recalcHeight()
 	m_iHeight = iMaxAscent + iMaxDescent;
 }
 
-void FP_Line::expandWidthTo(UT_uint32 iNewWidth)
+void fp_Line::expandWidthTo(UT_uint32 iNewWidth)
 {
 	UT_uint32 iPrevWidth = m_iWidth;
 	UT_ASSERT(iNewWidth > iPrevWidth);
@@ -445,12 +445,12 @@ void FP_Line::expandWidthTo(UT_uint32 iNewWidth)
 	}
 }
 
-void FP_Line::shrink(UT_sint32 width)
+void fp_Line::shrink(UT_sint32 width)
 {
 	m_iWidth -= width;
 }
 
-void FP_Line::clearScreen()
+void fp_Line::clearScreen()
 {
 	int count = m_vecRunInfos.getItemCount();
 
@@ -462,7 +462,7 @@ void FP_Line::clearScreen()
 	}
 }
 
-void FP_Line::draw(DG_Graphics* pG)
+void fp_Line::draw(DG_Graphics* pG)
 {
 	UT_ASSERT(m_iWidth <= m_iMaxWidth);
 	
@@ -497,7 +497,7 @@ void FP_Line::draw(DG_Graphics* pG)
 	}
 }
 
-void FP_Line::draw(dg_DrawArgs* pDA)
+void fp_Line::draw(dg_DrawArgs* pDA)
 {
 	const UT_sint32 height = pDA->height;
 	const UT_sint32 y = pDA->y;
@@ -528,14 +528,14 @@ void FP_Line::draw(dg_DrawArgs* pDA)
 	}
 }
 
-void FP_Line::align()
+void fp_Line::align()
 {
 	UT_ASSERT(m_pBlockSlice);
 	
 	m_pBlockSlice->alignOneLine(this, m_pBlockSliceData);
 }
 
-void FP_Line::dumpRunInfo(const FP_Run* pRun, void *p)
+void fp_Line::dumpRunInfo(const fp_Run* pRun, void *p)
 {
 	fp_RunInfo* pRI = (fp_RunInfo*) p;
 	UT_ASSERT(pRI->pRun == pRun);

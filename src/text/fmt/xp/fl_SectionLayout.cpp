@@ -39,7 +39,7 @@
 
 #include "ut_assert.h"
 
-FL_SectionLayout::FL_SectionLayout(FL_DocLayout* pLayout, PL_StruxDocHandle sdh)
+fl_SectionLayout::fl_SectionLayout(FL_DocLayout* pLayout, PL_StruxDocHandle sdh)
 	: fl_Layout(PTX_Section, sdh)
 {
 	UT_ASSERT(pLayout);
@@ -52,20 +52,20 @@ FL_SectionLayout::FL_SectionLayout(FL_DocLayout* pLayout, PL_StruxDocHandle sdh)
 	m_pLastBlock = NULL;
 }
 
-fp_ColumnInfo::fp_ColumnInfo(FP_Column* _pCol, UT_sint32 _iXoff, UT_sint32 _iYoff)
+fp_ColumnInfo::fp_ColumnInfo(fp_Column* _pCol, UT_sint32 _iXoff, UT_sint32 _iYoff)
 {
 	pColumn = _pCol;
 	xoff = _iXoff;
 	yoff = _iYoff;
 }
 
-FL_SectionLayout::~FL_SectionLayout()
+fl_SectionLayout::~fl_SectionLayout()
 {
 	// NB: be careful about the order of these
 	_purgeLayout();
 
-	UT_VECTOR_PURGEALL(FP_SectionSlice, m_vecSlices);
-	UT_VECTOR_PURGEALL(FP_Column, m_vecColumns);
+	UT_VECTOR_PURGEALL(fp_SectionSlice, m_vecSlices);
+	UT_VECTOR_PURGEALL(fp_Column, m_vecColumns);
 
 	if (m_pColumnSetLayout)
 		delete m_pColumnSetLayout;
@@ -74,12 +74,12 @@ FL_SectionLayout::~FL_SectionLayout()
 		delete m_pLB;
 }
 
-FL_DocLayout* FL_SectionLayout::getLayout()
+FL_DocLayout* fl_SectionLayout::getLayout()
 {
 	return m_pLayout;
 }
 
-FP_Column* FL_SectionLayout::getNewColumn()
+fp_Column* fl_SectionLayout::getNewColumn()
 {
 	/*
 		get the current page.
@@ -89,8 +89,8 @@ FP_Column* FL_SectionLayout::getNewColumn()
 		return the first column in the new space.
 	*/
 
-	FP_SectionSlice* pSlice = NULL;
-	FP_Page* pPage = NULL;
+	fp_SectionSlice* pSlice = NULL;
+	fp_Page* pPage = NULL;
 	if (m_pLayout->countPages() > 0)
 	{
 		pPage = m_pLayout->getLastPage();
@@ -115,7 +115,7 @@ FP_Column* FL_SectionLayout::getNewColumn()
 	UT_sint32 iWidthSlice = pSlice->getWidth();
 	UT_sint32 iHeightSlice = pSlice->getHeight();
 
-	FL_ColumnSetLayout * pCSL = m_pColumnSetLayout;
+	fl_ColumnSetLayout * pCSL = m_pColumnSetLayout;
 #if 0									// TODO support default column model on document
 	if (!pCSL)
 		pCSL = m_pLayout->getColumnSetLayout();
@@ -123,24 +123,24 @@ FP_Column* FL_SectionLayout::getNewColumn()
 	UT_ASSERT(pCSL);
 
 	// walk thru the list of column layouts and
-	// let each one instantiate a FP_Column of
+	// let each one instantiate a fp_Column of
 	// the right type and size.
 	
-	FL_ColumnLayout * pCL = pCSL->getFirstColumnLayout();
+	fl_ColumnLayout * pCL = pCSL->getFirstColumnLayout();
 	UT_ASSERT(pCL);
 	while (pCL)
 	{
 		UT_sint32 xoff, yoff;
-		FP_Column* pCol = NULL;
+		fp_Column* pCol = NULL;
 		pCL->getNewColumn(iWidthSlice,iHeightSlice, &pCol,&xoff,&yoff);
 		UT_ASSERT(pCol);
 
-		// append the FP_Column to the list of columns.
+		// append the fp_Column to the list of columns.
 		
 		pSlice->addColumn(pCol, xoff, yoff);
 		if (m_vecColumns.getItemCount())
 		{
-			FP_Column* pcLast = (FP_Column*) m_vecColumns.getLastItem();
+			fp_Column* pcLast = (fp_Column*) m_vecColumns.getLastItem();
 			pcLast->setNext(pCol);
 		}
 		m_vecColumns.addItem(pCol);
@@ -151,10 +151,10 @@ FP_Column* FL_SectionLayout::getNewColumn()
 	return pSlice->getFirstColumn();
 }
 
-int FL_SectionLayout::format()
+int fl_SectionLayout::format()
 {
 	UT_Bool bStillGoing = UT_TRUE;
-	FL_BlockLayout*	pBL = m_pFirstBlock;
+	fl_BlockLayout*	pBL = m_pFirstBlock;
 
 	while (pBL && bStillGoing)
 	{
@@ -165,10 +165,10 @@ int FL_SectionLayout::format()
 	return 0;	// TODO return code
 }
 
-UT_Bool FL_SectionLayout::reformat()
+UT_Bool fl_SectionLayout::reformat()
 {
 	UT_Bool bResult = UT_FALSE;
-	FL_BlockLayout*	pBL = m_pFirstBlock;
+	fl_BlockLayout*	pBL = m_pFirstBlock;
 
 	while (pBL)
 	{
@@ -185,13 +185,13 @@ UT_Bool FL_SectionLayout::reformat()
 	return bResult;
 }
 
-void FL_SectionLayout::_purgeLayout()
+void fl_SectionLayout::_purgeLayout()
 {
-	FL_BlockLayout*	pBL = m_pFirstBlock;
+	fl_BlockLayout*	pBL = m_pFirstBlock;
 
 	while (pBL)
 	{
-		FL_BlockLayout* pNuke = pBL;
+		fl_BlockLayout* pNuke = pBL;
 
 		pBL = pBL->getNext();
 
@@ -201,29 +201,29 @@ void FL_SectionLayout::_purgeLayout()
 	return;
 }
 
-void FL_SectionLayout::setColumnSetLayout(FL_ColumnSetLayout * pcsl)
+void fl_SectionLayout::setColumnSetLayout(fl_ColumnSetLayout * pcsl)
 {
 	m_pColumnSetLayout = pcsl;
 }
 
-FL_ColumnSetLayout * FL_SectionLayout::getColumnSetLayout(void) const
+fl_ColumnSetLayout * fl_SectionLayout::getColumnSetLayout(void) const
 {
 	return m_pColumnSetLayout;
 }
 
-FL_BlockLayout * FL_SectionLayout::getFirstBlock(void) const
+fl_BlockLayout * fl_SectionLayout::getFirstBlock(void) const
 {
 	return m_pFirstBlock;
 }
 
-FL_BlockLayout * FL_SectionLayout::appendBlock(PL_StruxDocHandle sdh)
+fl_BlockLayout * fl_SectionLayout::appendBlock(PL_StruxDocHandle sdh)
 {
 	return insertBlock(sdh, m_pLastBlock);
 }
 
-FL_BlockLayout * FL_SectionLayout::insertBlock(PL_StruxDocHandle sdh, FL_BlockLayout * pPrev)
+fl_BlockLayout * fl_SectionLayout::insertBlock(PL_StruxDocHandle sdh, fl_BlockLayout * pPrev)
 {
-	FL_BlockLayout*	pBL = new FL_BlockLayout(sdh, _getLineBreaker(), pPrev, this);
+	fl_BlockLayout*	pBL = new fl_BlockLayout(sdh, _getLineBreaker(), pPrev, this);
 	if (!pBL)
 		return pBL;
 
@@ -245,7 +245,7 @@ FL_BlockLayout * FL_SectionLayout::insertBlock(PL_StruxDocHandle sdh, FL_BlockLa
 	return pBL;
 }
 
-FL_BlockLayout * FL_SectionLayout::removeBlock(FL_BlockLayout * pBL)
+fl_BlockLayout * fl_SectionLayout::removeBlock(fl_BlockLayout * pBL)
 {
 	if (!pBL)
 		return pBL;
@@ -259,11 +259,11 @@ FL_BlockLayout * FL_SectionLayout::removeBlock(FL_BlockLayout * pBL)
 	return pBL;
 }
 
-FB_LineBreaker * FL_SectionLayout::_getLineBreaker(void)
+fb_LineBreaker * fl_SectionLayout::_getLineBreaker(void)
 {
 	if (!m_pLB)
 	{
-		SimpleLineBreaker* slb = new SimpleLineBreaker();
+		fb_SimpleLineBreaker* slb = new fb_SimpleLineBreaker();
 
 		m_pLB = slb;
 	}

@@ -31,9 +31,9 @@
 
 class FL_DocLayout;
 class fl_DocListener;
-class FL_BlockLayout;
-class FP_Page;
-class FP_Run;
+class fl_BlockLayout;
+class fp_Page;
+class fp_Run;
 class PD_Document;
 class DG_Graphics;
 
@@ -67,8 +67,8 @@ public:
 	// TODO some of these functions should move into protected
 	
 	void moveInsPtToBOD();
-	void getPageScreenOffsets(FP_Page* pPage, UT_sint32& xoff, UT_sint32& yoff, UT_sint32& width, UT_sint32& height);
-	void getPageYOffset(FP_Page* pPage, UT_sint32& yoff);
+	void getPageScreenOffsets(fp_Page* pPage, UT_sint32& xoff, UT_sint32& yoff, UT_sint32& width, UT_sint32& height);
+	void getPageYOffset(fp_Page* pPage, UT_sint32& yoff);
 	void invertBetweenPositions(PT_DocPosition left, PT_DocPosition right);
 
 	void insertParagraphBreak();
@@ -110,9 +110,9 @@ protected:
 											UT_uint32& x,
 											UT_uint32& y,
 											UT_uint32& height,
-											FL_BlockLayout** ppBlock,
-											FP_Run** ppRun);
-	FL_BlockLayout* 	_findBlockAtPosition(PT_DocPosition pos);
+											fl_BlockLayout** ppBlock,
+											fp_Run** ppRun);
+	fl_BlockLayout* 	_findBlockAtPosition(PT_DocPosition pos);
 
 	UT_Bool				_isSelectionEmpty();
 	void				_moveToSelectionEnd(UT_Bool bForward);

@@ -30,11 +30,11 @@
 
 #include "ut_assert.h"
 
-FB_LineBreaker::FB_LineBreaker()
+fb_LineBreaker::fb_LineBreaker()
 {
 }
 
-SimpleLineBreaker::SimpleLineBreaker() 
+fb_SimpleLineBreaker::fb_SimpleLineBreaker() 
 {
 }
 
@@ -45,10 +45,10 @@ SimpleLineBreaker::SimpleLineBreaker()
   have moved on the screen.  If they have indeed moved, we need to repaint
   them
 */
-int SimpleLineBreaker::reLayoutParagraph(FL_BlockLayout* pBlock)
+int fb_SimpleLineBreaker::reLayoutParagraph(fl_BlockLayout* pBlock)
 {
 	UT_Bool bDone = UT_FALSE;
-	FP_Line* pLine = pBlock->getFirstLine();
+	fp_Line* pLine = pBlock->getFirstLine();
 	fp_RunSplitInfo si;
 	UT_Bool bRedrawLine = UT_FALSE;
 	UT_Bool bLineOnScreen = UT_TRUE;
@@ -67,7 +67,7 @@ int SimpleLineBreaker::reLayoutParagraph(FL_BlockLayout* pBlock)
 			{
 				if (pLine->countRuns() != 0)
 				{
-					FP_Run* pRun = pLine->getFirstRun();
+					fp_Run* pRun = pLine->getFirstRun();
 					pLine->getScreenOffsets(pRun, pRun->getLineData(), xoff,
 											yoff, screenWidth, screenHeight);
 
@@ -82,9 +82,9 @@ int SimpleLineBreaker::reLayoutParagraph(FL_BlockLayout* pBlock)
 			// this line no longer fits ...
 			if (pLine->getWidth() > pLine->getMaxWidth())
 			{
-				FP_Run* pRun = pLine->getFirstRun();
-				FP_Run* pLastRun = pLine->getLastRun();
-				FP_Run* pNewLastRun = NULL;
+				fp_Run* pRun = pLine->getFirstRun();
+				fp_Run* pLastRun = pLine->getLastRun();
+				fp_Run* pNewLastRun = NULL;
 				
 				while (pRun && pRun != pLastRun->getNext())
 				{
@@ -113,7 +113,7 @@ int SimpleLineBreaker::reLayoutParagraph(FL_BlockLayout* pBlock)
 							// run - remove all runs after this one.
 							if (pRun != pLine->getLastRun())
 							{
-								FP_Run *tmp = pRun->getNext();
+								fp_Run *tmp = pRun->getNext();
 
 								while (tmp != pLine->getLastRun())
 								{
@@ -152,7 +152,7 @@ int SimpleLineBreaker::reLayoutParagraph(FL_BlockLayout* pBlock)
 							}
 							else
 							{
-								FP_Run* pTmpRun = pLastRun;
+								fp_Run* pTmpRun = pLastRun;
 							
 								UT_ASSERT(pLastRun == pLine->getLastRun());
 								while (pTmpRun != pNewLastRun)
@@ -178,7 +178,7 @@ int SimpleLineBreaker::reLayoutParagraph(FL_BlockLayout* pBlock)
 							UT_uint32 iMaxLineWidth = pBlock->requestLineSpace(iGuessLineHeight);
 							UT_ASSERT(iMaxLineWidth > 0);
 							
-							pLine = new FP_Line(iMaxLineWidth);
+							pLine = new fp_Line(iMaxLineWidth);
 							pLine->m_bDirty = UT_TRUE;
 							bAddLine = UT_TRUE;
 						}
@@ -187,7 +187,7 @@ int SimpleLineBreaker::reLayoutParagraph(FL_BlockLayout* pBlock)
 
 						iMaxWidth = pLine->getMaxWidth();
 
-						FP_Run* pTmpRun = pLastRun;
+						fp_Run* pTmpRun = pLastRun;
 							
 						// if this is the newly created run from
 						// a split, we need to create a new
@@ -246,8 +246,8 @@ int SimpleLineBreaker::reLayoutParagraph(FL_BlockLayout* pBlock)
 			}
 			else
 			{
-				FP_Line* pRealNextLine = pLine->getNext();
-				FP_Line* pNextLine = pRealNextLine;
+				fp_Line* pRealNextLine = pLine->getNext();
+				fp_Line* pNextLine = pRealNextLine;
 				UT_uint32 iWidthLooking = 0;
 				UT_uint32 iSpaceLeft = pLine->getMaxWidth() - pLine->getWidth();
 				
@@ -266,9 +266,9 @@ int SimpleLineBreaker::reLayoutParagraph(FL_BlockLayout* pBlock)
 						return 0;
 					}
 
-					FP_Run* pCurRun = pNextLine->getFirstRun();
-					FP_Run* pRunLooking = pCurRun;
-					FP_Run* pLastRun = pNextLine->getLastRun();
+					fp_Run* pCurRun = pNextLine->getFirstRun();
+					fp_Run* pRunLooking = pCurRun;
+					fp_Run* pLastRun = pNextLine->getLastRun();
 					
 					fp_RunSplitInfo si;
 
@@ -289,7 +289,7 @@ int SimpleLineBreaker::reLayoutParagraph(FL_BlockLayout* pBlock)
 								
 								// snarf up any runs previous to us who
 								// said they couldn't be broken after ...
-								FP_Run* pTmp = pCurRun;
+								fp_Run* pTmp = pCurRun;
 								while (pTmp != pRunLooking)
 								{
 									pNextLine->removeRun(pTmp);
@@ -368,10 +368,10 @@ int SimpleLineBreaker::reLayoutParagraph(FL_BlockLayout* pBlock)
 							
 							pRunLooking->split(si);
 							
-							FP_Run* pOtherRun = pRunLooking->getNext();
+							fp_Run* pOtherRun = pRunLooking->getNext();
 							UT_ASSERT(pOtherRun);
 							
-							FP_Run* pTmp = pCurRun;
+							fp_Run* pTmp = pCurRun;
 							while (pTmp != pRunLooking)
 							{
 								pNextLine->removeRun(pTmp);
@@ -443,9 +443,9 @@ int SimpleLineBreaker::reLayoutParagraph(FL_BlockLayout* pBlock)
 	return 0;
 }
 
-int SimpleLineBreaker::breakParagraph(FL_BlockLayout* pBlock)
+int fb_SimpleLineBreaker::breakParagraph(fl_BlockLayout* pBlock)
 {
-	FP_Run*	pCurRun = pBlock->getFirstRun();
+	fp_Run*	pCurRun = pBlock->getFirstRun();
 
 	/*
 	  As long as there are runs left, we try to build lines.
@@ -458,13 +458,13 @@ int SimpleLineBreaker::breakParagraph(FL_BlockLayout* pBlock)
 		UT_uint32 iMaxLineWidth = pBlock->requestLineSpace(iGuessLineHeight);
 		UT_ASSERT(iMaxLineWidth > 0);
 
-		FP_Line*	pLine = new FP_Line(iMaxLineWidth);
+		fp_Line*	pLine = new fp_Line(iMaxLineWidth);
 		
 		UT_Bool bDoneWithLine = 0;
 		UT_uint32 iCurLineWidth = 0;
 		fp_RunSplitInfo si;
 
-		FP_Run*		pRunLooking = pCurRun;
+		fp_Run*		pRunLooking = pCurRun;
 		UT_uint32	iWidthLooking = 0;
 		
 		while (!bDoneWithLine)
@@ -477,7 +477,7 @@ int SimpleLineBreaker::breakParagraph(FL_BlockLayout* pBlock)
 					
 					iCurLineWidth += iWidthLooking;
 					
-					FP_Run* pRunLoop = pCurRun;
+					fp_Run* pRunLoop = pCurRun;
 
 					while (pRunLoop)
 					{
@@ -506,7 +506,7 @@ int SimpleLineBreaker::breakParagraph(FL_BlockLayout* pBlock)
 					iCurLineWidth += iWidthLooking;
 					iCurLineWidth += iRunWidth;
 					
-					FP_Run* pRunLoop = pCurRun;
+					fp_Run* pRunLoop = pCurRun;
 
 					for (;;)
 					{
@@ -544,7 +544,7 @@ int SimpleLineBreaker::breakParagraph(FL_BlockLayout* pBlock)
 					iCurLineWidth += iWidthLooking;
 					iCurLineWidth += iRunWidth;
 					
-					FP_Run* pRunLoop = pCurRun;
+					fp_Run* pRunLoop = pCurRun;
 
 					for (;;)
 					{

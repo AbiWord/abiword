@@ -43,10 +43,10 @@
 
 #define EXTRA_CHARWIDTH_SPACE 256
 
-FL_BlockLayout::FL_BlockLayout(PL_StruxDocHandle sdh,
-							   FB_LineBreaker* pBreaker,
-							   FL_BlockLayout* pPrev,
-							   FL_SectionLayout* pSectionLayout)
+fl_BlockLayout::fl_BlockLayout(PL_StruxDocHandle sdh,
+							   fb_LineBreaker* pBreaker,
+							   fl_BlockLayout* pPrev,
+							   fl_SectionLayout* pSectionLayout)
 	: fl_Layout(PTX_Block, sdh)
 {
 	m_pSectionLayout = pSectionLayout;
@@ -77,7 +77,7 @@ FL_BlockLayout::FL_BlockLayout(PL_StruxDocHandle sdh,
 	}
 }
 
-FL_BlockLayout::~FL_BlockLayout()
+fl_BlockLayout::~fl_BlockLayout()
 {
 	_purgeLayout(UT_FALSE);
 }
@@ -87,25 +87,25 @@ FL_BlockLayout::~FL_BlockLayout()
 	which is already in progress.  This routine is not used to create the first
 	slice of the block.
 */
-void FL_BlockLayout::_createNewSlice()
+void fl_BlockLayout::_createNewSlice()
 {
 	UT_ASSERT(m_pCurrentSlice);
 
-	FP_Column* pCol = m_pCurrentSlice->getColumn();
+	fp_Column* pCol = m_pCurrentSlice->getColumn();
 	UT_ASSERT(pCol);
 
 	pCol = pCol->getNext();
 	if (!pCol)
 	{
 		/*
-			This happens when we have hit the last column in the FL_SectionLayout
+			This happens when we have hit the last column in the fl_SectionLayout
 		*/
 		pCol = m_pSectionLayout->getNewColumn();
 	}
 
 	// Could it be NULL due to outofmem?  Perhaps we shouldn't assert - TODO
 
-	FP_BlockSlice* pNewSlice = new FP_BlockSlice(this);
+	fp_BlockSlice* pNewSlice = new fp_BlockSlice(this);
 	_addSlice(pNewSlice);
 
 	UT_ASSERT(m_pFirstRun);
@@ -121,7 +121,7 @@ void FL_BlockLayout::_createNewSlice()
 	find the first page which has a column into which our flow can be placed, and
 	create a new slice at the top of that column.
 */
-void FL_BlockLayout::_verifyCurrentSlice()
+void fl_BlockLayout::_verifyCurrentSlice()
 {
 	if (m_pCurrentSlice)
 	{
@@ -130,10 +130,10 @@ void FL_BlockLayout::_verifyCurrentSlice()
 
 	// There is no current slice.  We need to start one.
 
-	FP_BlockSlice* pNewSlice = new FP_BlockSlice(this);
+	fp_BlockSlice* pNewSlice = new fp_BlockSlice(this);
 	_addSlice(pNewSlice);
 
-	UT_DEBUGMSG(("_verifyCurrentSlice: FL_BlockLayout=0x%x, m_pPrev=0x%x\n", this, m_pPrev));
+	UT_DEBUGMSG(("_verifyCurrentSlice: fl_BlockLayout=0x%x, m_pPrev=0x%x\n", this, m_pPrev));
 
 	UT_uint32 iLineHeight;
 	if (m_pFirstRun)
@@ -149,11 +149,11 @@ void FL_BlockLayout::_verifyCurrentSlice()
 	
 	if (m_pPrev)
 	{
-		FP_BlockSlice* pPrevSlice = m_pPrev->getLastSlice();
+		fp_BlockSlice* pPrevSlice = m_pPrev->getLastSlice();
 		UT_ASSERT(pPrevSlice);
 		UT_DEBUGMSG(("_verifyCurrentSlice:  pPrevSlice=0x%x\n", pPrevSlice));
 
-		FP_Column* pCol = pPrevSlice->getColumn();
+		fp_Column* pCol = pPrevSlice->getColumn();
 		UT_ASSERT(pCol);
 		UT_DEBUGMSG(("_verifyCurrentSlice:  pCol=0x%x\n", pCol));
 
@@ -173,7 +173,7 @@ void FL_BlockLayout::_verifyCurrentSlice()
 			in the section.  We need to ask our section for a column.
 		*/
 
-		FP_Column *pCol = m_pSectionLayout->getNewColumn();
+		fp_Column *pCol = m_pSectionLayout->getNewColumn();
 
 		int err = pCol->insertBlockSliceAfter(pNewSlice, NULL, iLineHeight);
 		UT_ASSERT(err==0);
@@ -185,37 +185,37 @@ void FL_BlockLayout::_verifyCurrentSlice()
 	where we ensure that m_pCurrentSlice is always up to date with the most
 	recent slice for flow purposes.
 */
-void FL_BlockLayout::_addSlice(FP_BlockSlice* p)
+void fl_BlockLayout::_addSlice(fp_BlockSlice* p)
 {
 	m_vecSlices.addItem(p);
 	m_pCurrentSlice = p;
 }
 
-void FL_BlockLayout::draw(DG_Graphics* pG)
+void fl_BlockLayout::draw(DG_Graphics* pG)
 {
 	int countSlices = m_vecSlices.getItemCount();
 	for (int i=0; i<countSlices; i++)
 	{
-		FP_BlockSlice* pSlice = (FP_BlockSlice*) m_vecSlices.getNthItem(i);
+		fp_BlockSlice* pSlice = (fp_BlockSlice*) m_vecSlices.getNthItem(i);
 		UT_ASSERT(pSlice);
 
 		pSlice->draw(pG);
 	}
 }
 
-void FL_BlockLayout::clearScreen(DG_Graphics* pG)
+void fl_BlockLayout::clearScreen(DG_Graphics* pG)
 {
 	int countSlices = m_vecSlices.getItemCount();
 	for (int i=0; i<countSlices; i++)
 	{
-		FP_BlockSlice* pSlice = (FP_BlockSlice*) m_vecSlices.getNthItem(i);
+		fp_BlockSlice* pSlice = (fp_BlockSlice*) m_vecSlices.getNthItem(i);
 		UT_ASSERT(pSlice);
 
 		pSlice->clearScreen(pG);
 	}
 }
 
-void FL_BlockLayout::setAlignment(UT_uint32 iAlignCmd)
+void fl_BlockLayout::setAlignment(UT_uint32 iAlignCmd)
 {
 #ifdef PROPERTY
 	switch (iAlignCmd)
@@ -241,7 +241,7 @@ void FL_BlockLayout::setAlignment(UT_uint32 iAlignCmd)
 	_align();
 }
 
-UT_uint32 FL_BlockLayout::getAlignment()
+UT_uint32 fl_BlockLayout::getAlignment()
 {
 	const char* pszAlign = getProperty("text-align");
 
@@ -268,19 +268,19 @@ UT_uint32 FL_BlockLayout::getAlignment()
 	}
 }
 
-void FL_BlockLayout::_align()
+void fl_BlockLayout::_align()
 {
 	int countSlices = m_vecSlices.getItemCount();
 	for (int i=0; i<countSlices; i++)
 	{
-		FP_BlockSlice* pSlice = (FP_BlockSlice*) m_vecSlices.getNthItem(i);
+		fp_BlockSlice* pSlice = (fp_BlockSlice*) m_vecSlices.getNthItem(i);
 		UT_ASSERT(pSlice);
 
 		pSlice->align();
 	}
 }
 
-int FL_BlockLayout::reformat()
+int fl_BlockLayout::reformat()
 {
 	UT_ASSERT(m_pLayout->getGraphics()->queryProperties(DG_Graphics::DGP_SCREEN));
 	UT_DEBUGMSG(("BEGIN reformat block: 0x%x\n", this));
@@ -288,7 +288,7 @@ int FL_BlockLayout::reformat()
 	UT_ASSERT(!m_bFormatting);
 	m_bFormatting = UT_TRUE;
 
-	m_pCurrentSlice = (FP_BlockSlice*) m_vecSlices.getNthItem(0);
+	m_pCurrentSlice = (fp_BlockSlice*) m_vecSlices.getNthItem(0);
 
 	m_pBreaker->reLayoutParagraph(this);
 
@@ -300,12 +300,12 @@ int FL_BlockLayout::reformat()
 	return 0;
 }
 
-void FL_BlockLayout::_purgeLayout(UT_Bool bVisible)
+void fl_BlockLayout::_purgeLayout(UT_Bool bVisible)
 {
 	int countSlices = m_vecSlices.getItemCount();
 	for (int i=0; i<countSlices; i++)
 	{
-		FP_BlockSlice* pSlice = (FP_BlockSlice*) m_vecSlices.getNthItem(i);
+		fp_BlockSlice* pSlice = (fp_BlockSlice*) m_vecSlices.getNthItem(i);
 		UT_ASSERT(pSlice);
 		if (bVisible)
 			pSlice->clearScreen(m_pLayout->getGraphics());
@@ -325,7 +325,7 @@ void FL_BlockLayout::_purgeLayout(UT_Bool bVisible)
 	m_pFirstLine = m_pLastLine = NULL;
 	while (m_pFirstRun)
 	{
-		FP_Run* pNext = m_pFirstRun->getNext();
+		fp_Run* pNext = m_pFirstRun->getNext();
 		delete m_pFirstRun;
 		m_pFirstRun = pNext;
 	}
@@ -333,7 +333,7 @@ void FL_BlockLayout::_purgeLayout(UT_Bool bVisible)
 	m_pCurrentSlice = NULL;
 }
 
-UT_Bool FL_BlockLayout::truncateLayout(FP_Run* pTruncRun)
+UT_Bool fl_BlockLayout::truncateLayout(fp_Run* pTruncRun)
 {
 	// special case, nothing to do
 	if (!pTruncRun)
@@ -350,10 +350,10 @@ UT_Bool FL_BlockLayout::truncateLayout(FP_Run* pTruncRun)
 		m_pFirstRun = NULL;
 
 	// remove runs from lines
-	FP_Run* pRun = pTruncRun;
+	fp_Run* pRun = pTruncRun;
 	while (pRun)
 	{
-		FP_Line* pLine = pRun->getLine();
+		fp_Line* pLine = pRun->getLine();
 		UT_ASSERT(pLine);
 
 		pRun->clearScreen();
@@ -368,7 +368,7 @@ UT_Bool FL_BlockLayout::truncateLayout(FP_Run* pTruncRun)
 		if (m_pLastLine->countRuns())
 			break;
 
-		FP_Line* pLine = m_pLastLine;
+		fp_Line* pLine = m_pLastLine;
 		m_pLastLine = m_pLastLine->getPrev();
 
 		pLine->remove();
@@ -378,7 +378,7 @@ UT_Bool FL_BlockLayout::truncateLayout(FP_Run* pTruncRun)
 	int countSlices = m_vecSlices.getItemCount();
 	for (int i=countSlices-1; i>=0; i--)
 	{
-		FP_BlockSlice* pSlice = (FP_BlockSlice*) m_vecSlices.getNthItem(i);
+		fp_BlockSlice* pSlice = (fp_BlockSlice*) m_vecSlices.getNthItem(i);
 		UT_ASSERT(pSlice);
 
 		if ((pSlice->countLines()) || (i == 0))
@@ -398,7 +398,7 @@ UT_Bool FL_BlockLayout::truncateLayout(FP_Run* pTruncRun)
 	return UT_TRUE;
 }
 
-int FL_BlockLayout::format()
+int fl_BlockLayout::format()
 {
 	UT_DEBUGMSG(("BEGIN Formatting block: 0x%x\n", this));
 
@@ -417,7 +417,7 @@ int FL_BlockLayout::format()
 		int countSlices = m_vecSlices.getItemCount();
 		for (int i=0; i<countSlices; i++)
 		{
-			FP_BlockSlice* pSlice = (FP_BlockSlice*) m_vecSlices.getNthItem(i);
+			fp_BlockSlice* pSlice = (fp_BlockSlice*) m_vecSlices.getNthItem(i);
 			UT_ASSERT(pSlice);
 			
 			pSlice->clearScreen(m_pLayout->getGraphics());
@@ -429,14 +429,14 @@ int FL_BlockLayout::format()
 #if 0
 		while (m_pFirstRun)
 		{
-			FP_Run* pNext = m_pFirstRun->getNext();
+			fp_Run* pNext = m_pFirstRun->getNext();
 			delete m_pFirstRun;
 			m_pFirstRun = pNext;
 		}
 
 		m_gbCharWidths.truncate(0);
 #endif
-		m_pCurrentSlice = (FP_BlockSlice*) m_vecSlices.getNthItem(0);
+		m_pCurrentSlice = (fp_BlockSlice*) m_vecSlices.getNthItem(0);
 	}
 	
 	_createRuns();
@@ -455,7 +455,7 @@ int FL_BlockLayout::format()
 		// the run is empty 
 		DG_Graphics* pG = m_pLayout->getGraphics();
 
-		m_pFirstRun = new FP_Run(this, pG, 0, 0);
+		m_pFirstRun = new fp_Run(this, pG, 0, 0);
 		m_pFirstRun->calcWidths(&m_gbCharWidths);
 
 		// the line just contains the empty run
@@ -464,7 +464,7 @@ int FL_BlockLayout::format()
 		UT_uint32 iMaxLineWidth = requestLineSpace(iGuessLineHeight);
 		UT_ASSERT(iMaxLineWidth > 0);
 
-		FP_Line*	pLine = new FP_Line(iMaxLineWidth);
+		fp_Line*	pLine = new fp_Line(iMaxLineWidth);
 		pLine->addRun(m_pFirstRun);
 		addLine(pLine);
 	}
@@ -472,7 +472,7 @@ int FL_BlockLayout::format()
 	int countSlices = m_vecSlices.getItemCount();
 	for (int i=0; i<countSlices; i++)
 	{
-		FP_BlockSlice* pSlice = (FP_BlockSlice*) m_vecSlices.getNthItem(i);
+		fp_BlockSlice* pSlice = (fp_BlockSlice*) m_vecSlices.getNthItem(i);
 		UT_ASSERT(pSlice);
 
 		pSlice->returnExtraSpace();
@@ -490,12 +490,12 @@ int FL_BlockLayout::format()
 }
 
 /*
-	requestLineSpace is called by the FB_LineBreaker when it needs to ask for space in which
+	requestLineSpace is called by the fb_LineBreaker when it needs to ask for space in which
 	to put a new line of content.  The return value is the width of the line.  LineBreakers
-	do not know which slice a line is stored in.  That is managed entirely by the FL_BlockLayout
+	do not know which slice a line is stored in.  That is managed entirely by the fl_BlockLayout
 	itself.
 */
-int	FL_BlockLayout::requestLineSpace(int iHeight)
+int	fl_BlockLayout::requestLineSpace(int iHeight)
 {
 	_verifyCurrentSlice();
 
@@ -507,10 +507,10 @@ int	FL_BlockLayout::requestLineSpace(int iHeight)
 		UT_sint32 ndx = m_vecSlices.findItem(m_pCurrentSlice);
 		UT_ASSERT(ndx >= 0);
 
-		FP_BlockSlice* pNextSlice;
+		fp_BlockSlice* pNextSlice;
 		if (m_vecSlices.getItemCount() > (UT_uint32)(ndx+1))
 		{
-			pNextSlice = (FP_BlockSlice*) m_vecSlices.getNthItem(ndx+1);
+			pNextSlice = (fp_BlockSlice*) m_vecSlices.getNthItem(ndx+1);
 		}
 		else
 		{
@@ -543,12 +543,12 @@ int	FL_BlockLayout::requestLineSpace(int iHeight)
 	return wid;
 }
 
-FP_Run* FL_BlockLayout::getFirstRun()
+fp_Run* fl_BlockLayout::getFirstRun()
 {
 	return m_pFirstRun;
 }
 
-int	FL_BlockLayout::addLine(FP_Line* pLine)
+int	fl_BlockLayout::addLine(fp_Line* pLine)
 {
 	UT_ASSERT(pLine);
 	m_pCurrentSlice->addLine(pLine);
@@ -575,24 +575,24 @@ int	FL_BlockLayout::addLine(FP_Line* pLine)
 	return 0; // TODO return code
 }
 
-void FL_BlockLayout::_createRuns()
+void fl_BlockLayout::_createRuns()
 {
 	// TODO -- this is obsolete now, right?
 	// ==>: if not, trigger fl_Listener::populate() via PD_Document downcall 
 	// EX:  m_pDoc->repopulate(m_sdh, this);	// or get lid from m_pLayout
 }
 
-void FL_BlockLayout::setNeedsReformat(UT_Bool b)
+void fl_BlockLayout::setNeedsReformat(UT_Bool b)
 {
 	m_bNeedsReformat = b;
 }
 
-UT_Bool FL_BlockLayout::needsReformat()
+UT_Bool fl_BlockLayout::needsReformat()
 {
 	return m_bNeedsReformat;
 }
 
-const char*	FL_BlockLayout::getProperty(const XML_Char * pszName)
+const char*	fl_BlockLayout::getProperty(const XML_Char * pszName)
 {
 	const PP_AttrProp * pSpanAP = NULL;
 	const PP_AttrProp * pBlockAP = NULL;
@@ -603,31 +603,31 @@ const char*	FL_BlockLayout::getProperty(const XML_Char * pszName)
 	return PP_evalProperty(pszName,pSpanAP,pBlockAP,pSectionAP);
 }
 
-UT_uint32 FL_BlockLayout::getPosition() const
+UT_uint32 fl_BlockLayout::getPosition() const
 {
 	PT_DocPosition pos = m_pDoc->getStruxPosition(m_sdh);
 
 	return pos;
 }
 
-UT_GrowBuf * FL_BlockLayout::getCharWidths(void)
+UT_GrowBuf * fl_BlockLayout::getCharWidths(void)
 {
 	return &m_gbCharWidths;
 }
 
 
-UT_Bool FL_BlockLayout::getSpanPtr(UT_uint32 offset, const UT_UCSChar ** ppSpan, UT_uint32 * pLength) const
+UT_Bool fl_BlockLayout::getSpanPtr(UT_uint32 offset, const UT_UCSChar ** ppSpan, UT_uint32 * pLength) const
 {
 	return m_pDoc->getSpanPtr(m_sdh, offset, ppSpan, pLength);
 }
 
-FP_Run* FL_BlockLayout::findPointCoords(PT_DocPosition iPos, UT_Bool bRight, UT_uint32& x, UT_uint32& y, UT_uint32& height)
+fp_Run* fl_BlockLayout::findPointCoords(PT_DocPosition iPos, UT_Bool bRight, UT_uint32& x, UT_uint32& y, UT_uint32& height)
 {
 	// find the run which has this position inside it.
 	UT_ASSERT(iPos >= getPosition());
 	UT_uint32 iRelOffset = iPos - getPosition();
 
-	FP_Run* pRun = m_pFirstRun;
+	fp_Run* pRun = m_pFirstRun;
 	while (pRun)
 	{
 		UT_uint32 iWhere = pRun->containsOffset(iRelOffset);
@@ -678,31 +678,31 @@ FP_Run* FL_BlockLayout::findPointCoords(PT_DocPosition iPos, UT_Bool bRight, UT_
 	return NULL;
 }
 
-FP_Line* FL_BlockLayout::getLastLine()
+fp_Line* fl_BlockLayout::getLastLine()
 {
-	FP_BlockSlice* pLastSlice = (FP_BlockSlice*) m_vecSlices.getNthItem(m_vecSlices.getItemCount()-1);
-	FP_Line* pLastLine = pLastSlice->getNthLine(pLastSlice->countLines()-1);
+	fp_BlockSlice* pLastSlice = (fp_BlockSlice*) m_vecSlices.getNthItem(m_vecSlices.getItemCount()-1);
+	fp_Line* pLastLine = pLastSlice->getNthLine(pLastSlice->countLines()-1);
 	return pLastLine;
 }
 
-FP_Line* FL_BlockLayout::getFirstLine()
+fp_Line* fl_BlockLayout::getFirstLine()
 {
-	FP_BlockSlice* pSlice = (FP_BlockSlice*) m_vecSlices.getNthItem(0);
-	FP_Line* pLine = pSlice->getNthLine(0);
+	fp_BlockSlice* pSlice = (fp_BlockSlice*) m_vecSlices.getNthItem(0);
+	fp_Line* pLine = pSlice->getNthLine(0);
 	return pLine;
 }
 
-FP_Line* FL_BlockLayout::findPrevLineInDocument(FP_Line* pLine)
+fp_Line* fl_BlockLayout::findPrevLineInDocument(fp_Line* pLine)
 {
 	int count = m_vecSlices.getItemCount();
-	FP_Line* pPrev = NULL;
+	fp_Line* pPrev = NULL;
 	for (int i=0; i<count; i++)
 	{
-		FP_BlockSlice* pBS = (FP_BlockSlice*) m_vecSlices.getNthItem(i);
+		fp_BlockSlice* pBS = (fp_BlockSlice*) m_vecSlices.getNthItem(i);
 		int count2 = pBS->countLines();
 		for (int j=0; j<count2; j++)
 		{
-			FP_Line* pL = pBS->getNthLine(j);
+			fp_Line* pL = pBS->getNthLine(j);
 			if (pL == pLine)
 			{
 				if (pPrev)
@@ -729,7 +729,7 @@ FP_Line* FL_BlockLayout::findPrevLineInDocument(FP_Line* pLine)
 	return NULL;
 }
 
-FP_Line* FL_BlockLayout::findNextLineInDocument(FP_Line* pLine)
+fp_Line* fl_BlockLayout::findNextLineInDocument(fp_Line* pLine)
 {
 	if (pLine->getNext())
 	{
@@ -739,11 +739,11 @@ FP_Line* FL_BlockLayout::findNextLineInDocument(FP_Line* pLine)
 	int count = m_vecSlices.getItemCount();
 	for (int i=0; i<count; i++)
 	{
-		FP_BlockSlice* pBS = (FP_BlockSlice*) m_vecSlices.getNthItem(i);
+		fp_BlockSlice* pBS = (fp_BlockSlice*) m_vecSlices.getNthItem(i);
 		int count2 = pBS->countLines();
 		for (int j=0; j<count2; j++)
 		{
-			FP_Line* pL = pBS->getNthLine(j);
+			fp_Line* pL = pBS->getNthLine(j);
 			if (pL == pLine)
 			{
 				// found the line.
@@ -752,7 +752,7 @@ FP_Line* FL_BlockLayout::findNextLineInDocument(FP_Line* pLine)
 				if ((i+1) < count)
 				{
 					// grab the first line from the next blockslice
-					pBS = (FP_BlockSlice*) m_vecSlices.getNthItem(i+1);
+					pBS = (fp_BlockSlice*) m_vecSlices.getNthItem(i+1);
 					return pBS->getNthLine(0);
 				}
 				else if (m_pNext)
@@ -773,41 +773,41 @@ FP_Line* FL_BlockLayout::findNextLineInDocument(FP_Line* pLine)
 	return NULL;
 }
 
-FL_BlockLayout* FL_BlockLayout::getNext() const
+fl_BlockLayout* fl_BlockLayout::getNext() const
 {
 	return m_pNext;
 }
 
-FL_BlockLayout* FL_BlockLayout::getPrev() const
+fl_BlockLayout* fl_BlockLayout::getPrev() const
 {
 	return m_pPrev;
 }
 
-FP_BlockSlice* FL_BlockLayout::getFirstSlice()
+fp_BlockSlice* fl_BlockLayout::getFirstSlice()
 {
-	return (FP_BlockSlice*) m_vecSlices.getNthItem(0);
+	return (fp_BlockSlice*) m_vecSlices.getNthItem(0);
 }
 
-FP_BlockSlice* FL_BlockLayout::getLastSlice()
+fp_BlockSlice* fl_BlockLayout::getLastSlice()
 {
-	return (FP_BlockSlice*) m_vecSlices.getNthItem(m_vecSlices.getItemCount()-1);
+	return (fp_BlockSlice*) m_vecSlices.getNthItem(m_vecSlices.getItemCount()-1);
 }
 
-void FL_BlockLayout::dump()
+void fl_BlockLayout::dump()
 {
 	int count = m_vecSlices.getItemCount();
-	UT_DEBUGMSG(("FL_BlockLayout 0x%x is from element 0x%x and contains %d slices.\n", this, m_sdh, count));
+	UT_DEBUGMSG(("fl_BlockLayout 0x%x is from element 0x%x and contains %d slices.\n", this, m_sdh, count));
 
 	for (int i=0; i<count; i++)
 	{
-		FP_BlockSlice* p = (FP_BlockSlice*) m_vecSlices.getNthItem(i);
+		fp_BlockSlice* p = (fp_BlockSlice*) m_vecSlices.getNthItem(i);
 
-		UT_DEBUGMSG(("FL_BlockLayout::dump(0x%x) - FP_BlockSlice 0x%x, height=%d, in column 0x%x\n", this, p, p->getHeight(), p->getColumn()));
+		UT_DEBUGMSG(("fl_BlockLayout::dump(0x%x) - fp_BlockSlice 0x%x, height=%d, in column 0x%x\n", this, p, p->getHeight(), p->getColumn()));
 	}
 
-	UT_DEBUGMSG(("FL_BlockLayout 0x%x contains the following runs:\n",this));
+	UT_DEBUGMSG(("fl_BlockLayout 0x%x contains the following runs:\n",this));
 
-	FP_Run * pRun = getFirstRun();
+	fp_Run * pRun = getFirstRun();
 	while (pRun)
 	{
 		pRun->dumpRun();

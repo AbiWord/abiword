@@ -30,10 +30,10 @@
 #include "fl_Layout.h"
 
 class FL_DocLayout;
-class FL_ColumnSetLayout;
-class FL_BlockLayout;
-class FB_LineBreaker;
-class FP_Column;
+class fl_ColumnSetLayout;
+class fl_BlockLayout;
+class fb_LineBreaker;
+class fp_Column;
 class PD_Document;
 class PP_AttrProp;
 
@@ -41,37 +41,37 @@ class PP_AttrProp;
 	A section keeps track of all of its columns, as well as all of its
 	section slices.
 */
-class FL_SectionLayout : public fl_Layout
+class fl_SectionLayout : public fl_Layout
 {
 	friend class fl_DocListener;
 
 public:
-	FL_SectionLayout(FL_DocLayout* pLayout, PL_StruxDocHandle sdh);
-	~FL_SectionLayout();
+	fl_SectionLayout(FL_DocLayout* pLayout, PL_StruxDocHandle sdh);
+	~fl_SectionLayout();
 
 	FL_DocLayout *		getLayout();
-	FP_Column *			getNewColumn();
+	fp_Column *			getNewColumn();
 	int					format();
 	UT_Bool				reformat();
 
-	void				setColumnSetLayout(FL_ColumnSetLayout * pcsl);
-	FL_ColumnSetLayout*	getColumnSetLayout(void) const;
+	void				setColumnSetLayout(fl_ColumnSetLayout * pcsl);
+	fl_ColumnSetLayout*	getColumnSetLayout(void) const;
 
-	FL_BlockLayout *	getFirstBlock(void) const;
-	FL_BlockLayout *	appendBlock(PL_StruxDocHandle sdh);
-	FL_BlockLayout *	insertBlock(PL_StruxDocHandle sdh, FL_BlockLayout * pPrev);
-	FL_BlockLayout *	removeBlock(FL_BlockLayout * pBL);
+	fl_BlockLayout *	getFirstBlock(void) const;
+	fl_BlockLayout *	appendBlock(PL_StruxDocHandle sdh);
+	fl_BlockLayout *	insertBlock(PL_StruxDocHandle sdh, fl_BlockLayout * pPrev);
+	fl_BlockLayout *	removeBlock(fl_BlockLayout * pBL);
 
 protected:
 	void				_purgeLayout();
-	FB_LineBreaker *	_getLineBreaker(void);
+	fb_LineBreaker *	_getLineBreaker(void);
 
 	FL_DocLayout*		m_pLayout;
-	FB_LineBreaker*		m_pLB;
-	FL_ColumnSetLayout*	m_pColumnSetLayout;
+	fb_LineBreaker*		m_pLB;
+	fl_ColumnSetLayout*	m_pColumnSetLayout;
 
-	FL_BlockLayout*		m_pFirstBlock;
-	FL_BlockLayout*		m_pLastBlock;
+	fl_BlockLayout*		m_pFirstBlock;
+	fl_BlockLayout*		m_pLastBlock;
 	
 	UT_Vector			m_vecSlices;
 	UT_Vector			m_vecColumns;

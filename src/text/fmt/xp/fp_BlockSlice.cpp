@@ -37,7 +37,7 @@
 #include "ut_string.h"
 #include "ut_vector.h"
 
-FP_BlockSlice::FP_BlockSlice(FL_BlockLayout *pBlock)
+fp_BlockSlice::fp_BlockSlice(fl_BlockLayout *pBlock)
 {
 	m_pBlock = pBlock;
 	m_pColumn = NULL;
@@ -46,7 +46,7 @@ FP_BlockSlice::FP_BlockSlice(FL_BlockLayout *pBlock)
 	m_iTotalLineHeight = 0;
 }
 
-fp_LineInfo::fp_LineInfo(FP_Line* l, UT_sint32 _base_xoff, UT_sint32 _xoff, UT_sint32 _yoff)
+fp_LineInfo::fp_LineInfo(fp_Line* l, UT_sint32 _base_xoff, UT_sint32 _xoff, UT_sint32 _yoff)
 {
 	pLine = l;
 	xoff = _xoff;
@@ -54,40 +54,40 @@ fp_LineInfo::fp_LineInfo(FP_Line* l, UT_sint32 _base_xoff, UT_sint32 _xoff, UT_s
 	base_xoff = _base_xoff;
 }
 
-FP_BlockSlice::~FP_BlockSlice()
+fp_BlockSlice::~fp_BlockSlice()
 {
 	UT_VECTOR_PURGEALL(fp_Sliver, m_vecSlivers);
 	
 	deleteLines();
 }
 
-UT_uint32 FP_BlockSlice::getHeight()
+UT_uint32 fp_BlockSlice::getHeight()
 {
 	return m_iHeight;
 }
 
-FP_Column* FP_BlockSlice::getColumn()
+fp_Column* fp_BlockSlice::getColumn()
 {
 	return m_pColumn;
 }
 
-void FP_BlockSlice::setColumn(FP_Column* pCol, void* pData)
+void fp_BlockSlice::setColumn(fp_Column* pCol, void* pData)
 {
 	UT_ASSERT(pCol);
 	UT_ASSERT(!m_pColumn);
 
-	UT_DEBUGMSG(("setColumn: FP_BlockSlice=0x%x,  column=0x%x\n", this, pCol));
+	UT_DEBUGMSG(("setColumn: fp_BlockSlice=0x%x,  column=0x%x\n", this, pCol));
 
 	m_pColumn = pCol;
 	m_pColumnData = pData;
 }
 
-FL_BlockLayout* FP_BlockSlice::getBlock()
+fl_BlockLayout* fp_BlockSlice::getBlock()
 {
 	return m_pBlock;
 }
 
-UT_Bool FP_BlockSlice::isFirstSliceInBlock(void)
+UT_Bool fp_BlockSlice::isFirstSliceInBlock(void)
 {
 	if (m_pBlock->getFirstSlice() == this)
 	{
@@ -99,7 +99,7 @@ UT_Bool FP_BlockSlice::isFirstSliceInBlock(void)
 	}
 }
 
-UT_Bool FP_BlockSlice::isLastSliceInBlock(void)
+UT_Bool fp_BlockSlice::isLastSliceInBlock(void)
 {
 	if (m_pBlock->getLastSlice() == this)
 	{
@@ -111,7 +111,7 @@ UT_Bool FP_BlockSlice::isLastSliceInBlock(void)
 	}
 }
 
-fp_Sliver* FP_BlockSlice::addSliver(UT_uint32 iX, UT_uint32 iWidth, UT_uint32 iHeight)
+fp_Sliver* fp_BlockSlice::addSliver(UT_uint32 iX, UT_uint32 iWidth, UT_uint32 iHeight)
 {
 	m_iHeight += iHeight;
 
@@ -141,22 +141,22 @@ fp_Sliver* FP_BlockSlice::addSliver(UT_uint32 iX, UT_uint32 iWidth, UT_uint32 iH
 	return pSliver;
 }
 
-int FP_BlockSlice::countSlivers()
+int fp_BlockSlice::countSlivers()
 {
 	return m_vecSlivers.getItemCount();
 }
 
-fp_Sliver* FP_BlockSlice::getNthSliver(int n)
+fp_Sliver* fp_BlockSlice::getNthSliver(int n)
 {
 	return (fp_Sliver*) m_vecSlivers.getNthItem(n);
 }
 
-UT_uint32 FP_BlockSlice::countLines()
+UT_uint32 fp_BlockSlice::countLines()
 {
 	return m_vecLineInfos.getItemCount();
 }
 
-FP_Line* FP_BlockSlice::getNthLine(UT_uint32 n)
+fp_Line* fp_BlockSlice::getNthLine(UT_uint32 n)
 {
 	UT_ASSERT(n < m_vecLineInfos.getItemCount());
 
@@ -168,7 +168,7 @@ FP_Line* FP_BlockSlice::getNthLine(UT_uint32 n)
 	return pLI->pLine;
 }
 
-void FP_BlockSlice::deleteLines()
+void fp_BlockSlice::deleteLines()
 {
 	int count=m_vecLineInfos.getItemCount();
 	for (int i=0; i<count; i++)
@@ -183,7 +183,7 @@ void FP_BlockSlice::deleteLines()
 	m_iTotalLineHeight = 0;
 }
 
-void FP_BlockSlice::removeLine(FP_Line* pLine, void* p)
+void fp_BlockSlice::removeLine(fp_Line* pLine, void* p)
 {
 	fp_LineInfo* pLI = (fp_LineInfo*) p;
 	UT_ASSERT(pLI);
@@ -201,7 +201,7 @@ void FP_BlockSlice::removeLine(FP_Line* pLine, void* p)
 	}
 }
 
-int	FP_BlockSlice::addLine(FP_Line* pLine)
+int	fp_BlockSlice::addLine(fp_Line* pLine)
 {
 	fp_Sliver* pSliver = NULL;
 	UT_sint32 iLineHeight = pLine->getHeight();
@@ -248,7 +248,7 @@ int	FP_BlockSlice::addLine(FP_Line* pLine)
 	return 0;
 }
 
-void FP_BlockSlice::verifyColumnFit()
+void fp_BlockSlice::verifyColumnFit()
 {
 	int iCountSlivers = countSlivers();
 	UT_uint32 iY = 0;
@@ -284,7 +284,7 @@ void FP_BlockSlice::verifyColumnFit()
 	}
 }
 
-void FP_BlockSlice::returnExtraSpace()
+void fp_BlockSlice::returnExtraSpace()
 {
 	int count = m_vecLineInfos.getItemCount();
 
@@ -339,7 +339,7 @@ void FP_BlockSlice::returnExtraSpace()
 	}
 }
 
-UT_uint32 FP_BlockSlice::requestLineSpace(UT_uint32 iHeightNeeded)
+UT_uint32 fp_BlockSlice::requestLineSpace(UT_uint32 iHeightNeeded)
 {
 	UT_uint32 iX;
 	UT_uint32 iWidth;
@@ -373,7 +373,7 @@ UT_uint32 FP_BlockSlice::requestLineSpace(UT_uint32 iHeightNeeded)
 	}
 }
 
-void FP_BlockSlice::mapXYToPosition(UT_sint32 x, UT_sint32 y, PT_DocPosition& pos, UT_Bool& bRight)
+void fp_BlockSlice::mapXYToPosition(UT_sint32 x, UT_sint32 y, PT_DocPosition& pos, UT_Bool& bRight)
 {
 	int count = m_vecLineInfos.getItemCount();
 	for (int i = 0; i<count; i++)
@@ -408,7 +408,7 @@ void FP_BlockSlice::mapXYToPosition(UT_sint32 x, UT_sint32 y, PT_DocPosition& po
 	UT_ASSERT(UT_NOT_IMPLEMENTED);
 }
 
-void FP_BlockSlice::getOffsets(FP_Line* pLine, void* p, UT_sint32& xoff, UT_sint32& yoff)
+void fp_BlockSlice::getOffsets(fp_Line* pLine, void* p, UT_sint32& xoff, UT_sint32& yoff)
 {
 	UT_sint32 my_xoff;
 	UT_sint32 my_yoff;
@@ -422,7 +422,7 @@ void FP_BlockSlice::getOffsets(FP_Line* pLine, void* p, UT_sint32& xoff, UT_sint
 	yoff = my_yoff + pLI->yoff;
 }
 
-void FP_BlockSlice::getScreenOffsets(FP_Line* pLine, void* p,
+void fp_BlockSlice::getScreenOffsets(fp_Line* pLine, void* p,
 									 UT_sint32& xoff, UT_sint32& yoff,
 									 UT_sint32& width, UT_sint32& height)
 {
@@ -439,7 +439,7 @@ void FP_BlockSlice::getScreenOffsets(FP_Line* pLine, void* p,
 	yoff = my_yoff + pLI->yoff;
 }
 
-void FP_BlockSlice::clearScreen(DG_Graphics* pG)
+void fp_BlockSlice::clearScreen(DG_Graphics* pG)
 {
 	UT_ASSERT(pG->queryProperties(DG_Graphics::DGP_SCREEN));
 	
@@ -459,7 +459,7 @@ void FP_BlockSlice::clearScreen(DG_Graphics* pG)
 	}
 }
 
-void FP_BlockSlice::draw(DG_Graphics* pG)
+void fp_BlockSlice::draw(DG_Graphics* pG)
 {
 	UT_ASSERT(pG->queryProperties(DG_Graphics::DGP_SCREEN));
 	
@@ -474,7 +474,7 @@ void FP_BlockSlice::draw(DG_Graphics* pG)
 	}
 }
 
-void FP_BlockSlice::draw(dg_DrawArgs* pDA)
+void fp_BlockSlice::draw(dg_DrawArgs* pDA)
 {
 	// draw each line in the slice.
 
@@ -490,12 +490,12 @@ void FP_BlockSlice::draw(dg_DrawArgs* pDA)
 	}
 }
 
-void FP_BlockSlice::remove()
+void fp_BlockSlice::remove()
 {
 	m_pColumn->removeBlockSlice(this);
 }
 
-void FP_BlockSlice::align()
+void fp_BlockSlice::align()
 {
 	int count = m_vecLineInfos.getItemCount();
 	for (int i = 0; i<count; i++)
@@ -505,7 +505,7 @@ void FP_BlockSlice::align()
 	}
 }
 
-void FP_BlockSlice::alignOneLine(fp_LineInfo* pLI)
+void fp_BlockSlice::alignOneLine(fp_LineInfo* pLI)
 {
 	UT_sint32 iExtraWidth = pLI->pLine->getMaxWidth() - pLI->pLine->getWidth();
 	UT_uint32 iAlignCmd = m_pBlock->getAlignment();
@@ -538,7 +538,7 @@ void FP_BlockSlice::alignOneLine(fp_LineInfo* pLI)
 	}
 }
 
-void FP_BlockSlice::alignOneLine(FP_Line* pLine, void* p)
+void fp_BlockSlice::alignOneLine(fp_Line* pLine, void* p)
 {
 	fp_LineInfo* pLI = (fp_LineInfo*) p;
 	UT_ASSERT(pLI->pLine == pLine);
@@ -546,13 +546,13 @@ void FP_BlockSlice::alignOneLine(FP_Line* pLine, void* p)
 	alignOneLine(pLI);
 }
 
-void FP_BlockSlice::dump()
+void fp_BlockSlice::dump()
 {
 	int count = m_vecLineInfos.getItemCount();
 	for (int i = 0; i<count; i++)
 	{
 		fp_LineInfo* pLI = (fp_LineInfo*) m_vecLineInfos.getNthItem(i);
 
-		UT_DEBUGMSG(("FP_BlockSlice::dump(0x%x) - FP_Line 0x%x\n", pLI->pLine));
+		UT_DEBUGMSG(("fp_BlockSlice::dump(0x%x) - fp_Line 0x%x\n", pLI->pLine));
 	}
 }

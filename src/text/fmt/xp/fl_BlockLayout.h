@@ -33,11 +33,11 @@
 #include "fl_Layout.h"
 
 class FL_DocLayout;
-class FL_SectionLayout;
-class FB_LineBreaker;
-class FP_BlockSlice;
-class FP_Line;
-class FP_Run;
+class fl_SectionLayout;
+class fb_LineBreaker;
+class fp_BlockSlice;
+class fp_Line;
+class fp_Run;
 class DG_Graphics;
 class PD_Document;
 class PP_Property;
@@ -52,33 +52,33 @@ class PP_Property;
 	This object keeps track of all the CSS block properties which were 
 	specified for this paragraph.
 
-	Since a paragraph may be split across 2 or more pages, a FL_BlockLayout 
+	Since a paragraph may be split across 2 or more pages, a fl_BlockLayout 
 	may be split into slices.  Each slice is represented by an instance of 
-	FP_BlockSlice, declared below.
+	fp_BlockSlice, declared below.
 
-	The FL_BlockLayout is responsible for managing margins, borders, padding, 
+	The fl_BlockLayout is responsible for managing margins, borders, padding, 
 	background colors, first-line-indent, tabs, widow/orphan control and other 
 	paragraph-level settings regarding the block element which is contained 
 	within it.
 
-	The FL_BlockLayout's primary function is managing the space required for 
+	The fl_BlockLayout's primary function is managing the space required for 
 	the layout of its paragraph.  It accomplishes this by acting as a proxy 
-	for space requests from the FB_LineBreaker.  When the FB_LineBreaker asks 
-	for space, using requestLineSpace, the FL_BlockLayout tries (if necessary) 
+	for space requests from the fb_LineBreaker.  When the fb_LineBreaker asks 
+	for space, using requestLineSpace, the fl_BlockLayout tries (if necessary) 
 	to grow one of its BlockSlices enough to accomodate the line.  This 
-	involves requesting room to grow from the FP_Column which contains the 
+	involves requesting room to grow from the fp_Column which contains the 
 	slice.
 
-	requestLineSpace is called by the FB_LineBreaker to ask the FL_BlockLayout 
-	for space which will be filled with a FP_Line.  The iHeight argument 
+	requestLineSpace is called by the fb_LineBreaker to ask the fl_BlockLayout 
+	for space which will be filled with a fp_Line.  The iHeight argument 
 	specifies how much height we need.  The return value is the maximum width 
 	available for a line of the given height.  The underlying state is not 
-	modified.  No space is actually reserved until the FP_Line is actually 
+	modified.  No space is actually reserved until the fp_Line is actually 
 	added.
 
-	Usually, the way to use this within a FB_LineBreaker is to guess the 
+	Usually, the way to use this within a fb_LineBreaker is to guess the 
 	height of the line by checking the height of the default font.  Then, ask 
-	the FL_BlockLayout for the width of a line that high.  Go ahead and format 
+	the fl_BlockLayout for the width of a line that high.  Go ahead and format 
 	the line as if it were that wide.  After you're done, check to see if the 
 	height of the resulting line is the same as (or smaller than, I suppose) 
 	what you guessed.  If it's larger, you need to call requestLineSpace() to 
@@ -87,19 +87,19 @@ class PP_Property;
 	you know that it fits, or else addLine() will fail in a non-user-friendly 
 	way.
 
-	requestLineSpace works by finding the bottom of the last child FP_Line.
+	requestLineSpace works by finding the bottom of the last child fp_Line.
 	Then, it tries to find space for a rectangle of the given height, 
-	immediately below that last FP_Line.
+	immediately below that last fp_Line.
 
 	If the return value is 0, then there is no room for a line of that height.
 */
-class FL_BlockLayout : public fl_Layout
+class fl_BlockLayout : public fl_Layout
 {
 	friend class fl_DocListener;
 
 public:
-	FL_BlockLayout(PL_StruxDocHandle sdh, FB_LineBreaker*, FL_BlockLayout*, FL_SectionLayout*);
-	~FL_BlockLayout();
+	fl_BlockLayout(PL_StruxDocHandle sdh, fb_LineBreaker*, fl_BlockLayout*, fl_SectionLayout*);
+	~fl_BlockLayout();
 
 	void setNeedsReformat(UT_Bool);
 	UT_Bool needsReformat();
@@ -107,30 +107,30 @@ public:
 	int format();
 	int reformat();
 	int	requestLineSpace(int iHeight);
-	int	addLine(FP_Line*);
+	int	addLine(fp_Line*);
 
 	const char*	getProperty(const XML_Char * pszName);
 	void setAlignment(UT_uint32 iAlignCmd);
 	UT_uint32 getAlignment();
 
-	FL_BlockLayout* getNext() const;
-	FL_BlockLayout* getPrev() const;
-	FP_BlockSlice* getFirstSlice();
-	FP_BlockSlice* getLastSlice();
-	FP_Line* getFirstLine();
-	FP_Line* getLastLine();
-	FP_Line* findPrevLineInDocument(FP_Line*);
-	FP_Line* findNextLineInDocument(FP_Line*);
-	FP_Run* getFirstRun();
+	fl_BlockLayout* getNext() const;
+	fl_BlockLayout* getPrev() const;
+	fp_BlockSlice* getFirstSlice();
+	fp_BlockSlice* getLastSlice();
+	fp_Line* getFirstLine();
+	fp_Line* getLastLine();
+	fp_Line* findPrevLineInDocument(fp_Line*);
+	fp_Line* findNextLineInDocument(fp_Line*);
+	fp_Run* getFirstRun();
 
 	UT_GrowBuf * getCharWidths(void);
 
 	PT_DocPosition getPosition() const;
-	FP_Run* findPointCoords(PT_DocPosition position, UT_Bool bRight, UT_uint32& x, UT_uint32& y, UT_uint32& height);
+	fp_Run* findPointCoords(PT_DocPosition position, UT_Bool bRight, UT_uint32& x, UT_uint32& y, UT_uint32& height);
 
 	UT_Bool getSpanPtr(UT_uint32 offset, const UT_UCSChar ** ppSpan, UT_uint32 * pLength) const;
 
-	UT_Bool truncateLayout(FP_Run* pTruncRun);
+	UT_Bool truncateLayout(fp_Run* pTruncRun);
 
 	void draw(DG_Graphics*);
 	void clearScreen(DG_Graphics*);
@@ -139,14 +139,14 @@ public:
 
 	/*
 		Blocks are stored in a linked list which contains all of the blocks in
-		the normal flow, in order.  A FL_BlockLayout knows in which FP_Column each
-		of its slices is, but it does not know the FP_Column-relative Y coordinate
-		of any slice.  Rather, it simply knows which FL_BlockLayout is right before it
+		the normal flow, in order.  A fl_BlockLayout knows in which fp_Column each
+		of its slices is, but it does not know the fp_Column-relative Y coordinate
+		of any slice.  Rather, it simply knows which fl_BlockLayout is right before it
 		in the normal flow.
 	*/
 
 protected:
-	void _addSlice(FP_BlockSlice*);
+	void _addSlice(fp_BlockSlice*);
 	void _createNewSlice();
 	void _createRuns();
 	void _align();
@@ -159,17 +159,17 @@ protected:
 	UT_Vector				m_vecSlices;
 
 	FL_DocLayout*	       	m_pLayout;
-	FB_LineBreaker*			m_pBreaker;
+	fb_LineBreaker*			m_pBreaker;
 
-	FL_BlockLayout*			m_pPrev;
-	FL_BlockLayout*			m_pNext;
+	fl_BlockLayout*			m_pPrev;
+	fl_BlockLayout*			m_pNext;
 
-	FP_BlockSlice*			m_pCurrentSlice;
-	FP_Run*					m_pFirstRun;
-	FL_SectionLayout*		m_pSectionLayout;
+	fp_BlockSlice*			m_pCurrentSlice;
+	fp_Run*					m_pFirstRun;
+	fl_SectionLayout*		m_pSectionLayout;
 
-	FP_Line*				m_pFirstLine;
-	FP_Line*				m_pLastLine;
+	fp_Line*				m_pFirstLine;
+	fp_Line*				m_pLastLine;
 
 	int						m_bFormatting;
 };

@@ -20,38 +20,38 @@
 **  
 */
 
-#ifndef FL_COLUMNLAYOUT_H
-#define FL_COLUMNLAYOUT_H
+#ifndef fl_ColumnLayout_H
+#define fl_ColumnLayout_H
 
 #include "ut_types.h"
 #include "pt_Types.h"
 #include "fl_Layout.h"
 
-class FL_ColumnSetLayout;
-class FP_Column;
+class fl_ColumnSetLayout;
+class fp_Column;
 class PP_AttrProp;
 
-class FL_ColumnLayout : public fl_Layout
+class fl_ColumnLayout : public fl_Layout
 {
 public:
-	FL_ColumnLayout(FL_ColumnSetLayout * pCSL, PL_StruxDocHandle sdh);
-	~FL_ColumnLayout();
+	fl_ColumnLayout(fl_ColumnSetLayout * pCSL, PL_StruxDocHandle sdh);
+	~fl_ColumnLayout();
 
-	FL_ColumnLayout *		setNext(FL_ColumnLayout * pCL);
-	FL_ColumnLayout *		setPrev(FL_ColumnLayout * pCL);
-	FL_ColumnLayout *		getNext(void) const;
-	FL_ColumnLayout *		getPrev(void) const;
+	fl_ColumnLayout *		setNext(fl_ColumnLayout * pCL);
+	fl_ColumnLayout *		setPrev(fl_ColumnLayout * pCL);
+	fl_ColumnLayout *		getNext(void) const;
+	fl_ColumnLayout *		getPrev(void) const;
 
-	void					setColumnSetLayout(FL_ColumnSetLayout * pcsl);
-	FL_ColumnSetLayout *	getColumnSetLayout(void) const;
+	void					setColumnSetLayout(fl_ColumnSetLayout * pcsl);
+	fl_ColumnSetLayout *	getColumnSetLayout(void) const;
 	UT_Bool					getNewColumn(UT_uint32 iWidthGiven, UT_uint32 iHeightGiven,
-										 FP_Column ** ppCol,
+										 fp_Column ** ppCol,
 										 UT_sint32 * piXoff, UT_sint32 * piYoff) const;
 	
 protected:
-	FL_ColumnLayout *		m_prev;
-	FL_ColumnLayout *		m_next;
-	FL_ColumnSetLayout *	m_pColumnSetLayout;
+	fl_ColumnLayout *		m_prev;
+	fl_ColumnLayout *		m_next;
+	fl_ColumnSetLayout *	m_pColumnSetLayout;
 };
 
-#endif /* FL_COLUMNLAYOUT_H */
+#endif /* fl_ColumnLayout_H */

@@ -248,12 +248,12 @@ void FV_View::moveInsPtToBOL()
 	}
 	
 	PT_DocPosition iPoint = _getPoint();
-	FL_BlockLayout* pBlock = _findBlockAtPosition(iPoint);
-	FP_Run* pRun = pBlock->findPointCoords(_getPoint(), UT_TRUE,
+	fl_BlockLayout* pBlock = _findBlockAtPosition(iPoint);
+	fp_Run* pRun = pBlock->findPointCoords(_getPoint(), UT_TRUE,
 										   xPoint, yPoint, iPointHeight);
-	FP_Line* pLine = pRun->getLine();
+	fp_Line* pLine = pRun->getLine();
 
-	FP_Run* pFirstRun = pLine->getFirstRun();
+	fp_Run* pFirstRun = pLine->getFirstRun();
 
 	PT_DocPosition iPos = pFirstRun->getBlockOffset() + pBlock->getPosition();
 	
@@ -274,12 +274,12 @@ void FV_View::moveInsPtToEOL()
 	}
 	
 	PT_DocPosition iPoint = _getPoint();
-	FL_BlockLayout* pBlock = _findBlockAtPosition(iPoint);
-	FP_Run* pRun = pBlock->findPointCoords(_getPoint(), UT_TRUE,
+	fl_BlockLayout* pBlock = _findBlockAtPosition(iPoint);
+	fp_Run* pRun = pBlock->findPointCoords(_getPoint(), UT_TRUE,
 										   xPoint, yPoint, iPointHeight);
-	FP_Line* pLine = pRun->getLine();
+	fp_Line* pLine = pRun->getLine();
 
-	FP_Run* pLastRun = pLine->getLastRun();
+	fp_Run* pLastRun = pLine->getLastRun();
 
 	PT_DocPosition iPos = pLastRun->getBlockOffset() + pLastRun->getLength() -	1 + pBlock->getPosition();
 
@@ -307,7 +307,7 @@ void FV_View::cmdCharMotion(UT_Bool bForward, UT_uint32 count)
 	}
 }
 
-FL_BlockLayout* FV_View::_findBlockAtPosition(PT_DocPosition pos)
+fl_BlockLayout* FV_View::_findBlockAtPosition(PT_DocPosition pos)
 {
 	return m_pLayout->findBlockAtPosition(pos);
 }
@@ -408,11 +408,11 @@ void FV_View::_moveInsPtNextPrevLine(UT_Bool bNext)
 	// first, find the line we are on now
 	UT_uint32 iOldPoint = _getPoint();
 
-	FL_BlockLayout* pOldBlock = _findBlockAtPosition(iOldPoint);
-	FP_Run* pOldRun = pOldBlock->findPointCoords(_getPoint(), UT_TRUE, xPoint, yPoint, iPointHeight);
-	FP_Line* pOldLine = pOldRun->getLine();
+	fl_BlockLayout* pOldBlock = _findBlockAtPosition(iOldPoint);
+	fp_Run* pOldRun = pOldBlock->findPointCoords(_getPoint(), UT_TRUE, xPoint, yPoint, iPointHeight);
+	fp_Line* pOldLine = pOldRun->getLine();
 
-	FP_Line* pDestLine;
+	fp_Line* pDestLine;
 	if (bNext)
 	{
 		pDestLine = pOldBlock->findNextLineInDocument(pOldLine);
@@ -424,7 +424,7 @@ void FV_View::_moveInsPtNextPrevLine(UT_Bool bNext)
 
 	if (pDestLine)
 	{
-		FL_BlockLayout* pNewBlock = pDestLine->getBlockSlice()->getBlock();
+		fl_BlockLayout* pNewBlock = pDestLine->getBlockSlice()->getBlock();
 		
 		if (bNext)
 		{
@@ -436,12 +436,12 @@ void FV_View::_moveInsPtNextPrevLine(UT_Bool bNext)
 		}
 	
 		// how many characters are we from the front of our current line?
-		FP_Run* pFirstRunOnOldLine = pOldLine->getFirstRun();
+		fp_Run* pFirstRunOnOldLine = pOldLine->getFirstRun();
 		PT_DocPosition iFirstPosOnOldLine = pFirstRunOnOldLine->getBlockOffset() + pOldBlock->getPosition();
 		UT_ASSERT(iFirstPosOnOldLine <= iOldPoint);
 		UT_sint32 iNumChars = _getDataCount(iFirstPosOnOldLine, iOldPoint);
 		
-		FP_Run* pFirstRunOnNewLine = pDestLine->getFirstRun();
+		fp_Run* pFirstRunOnNewLine = pDestLine->getFirstRun();
 		PT_DocPosition iFirstPosOnNewLine = pFirstRunOnNewLine->getBlockOffset() + pNewBlock->getPosition();
 		if (bNext)
 		{
@@ -462,7 +462,7 @@ void FV_View::_moveInsPtNextPrevLine(UT_Bool bNext)
 		_charMotion(UT_TRUE, iNumChars);
 
 		// check to see if the run is on the screen, if not bump down/up ...
-		FP_Line* pLine = pFirstRunOnNewLine->getLine();
+		fp_Line* pLine = pFirstRunOnNewLine->getLine();
 		UT_sint32 xoff, yoff, width, height;
 		pLine->getScreenOffsets(pFirstRunOnNewLine,
 								pFirstRunOnNewLine->getLineData(), xoff, yoff,
@@ -573,7 +573,7 @@ void FV_View::extSelToXY(UT_sint32 xPos, UT_sint32 yPos)
 	*/
 
 	UT_sint32 yClick = yPos + m_yScrollOffset;
-	FP_Page* pPage = m_pLayout->getFirstPage();
+	fp_Page* pPage = m_pLayout->getFirstPage();
 	while (pPage)
 	{
 		UT_sint32 iPageHeight = pPage->getHeight();
@@ -713,7 +713,7 @@ void FV_View::warpInsPtToXY(UT_sint32 xPos, UT_sint32 yPos)
 	*/
 
 	UT_sint32 yClick = yPos + m_yScrollOffset;
-	FP_Page* pPage = m_pLayout->getFirstPage();
+	fp_Page* pPage = m_pLayout->getFirstPage();
 	while (pPage)
 	{
 		UT_sint32 iPageHeight = pPage->getHeight();
@@ -747,13 +747,13 @@ void FV_View::warpInsPtToXY(UT_sint32 xPos, UT_sint32 yPos)
 	_updateInsertionPoint();
 }
 
-void FV_View::getPageScreenOffsets(FP_Page* pThePage, UT_sint32& xoff,
+void FV_View::getPageScreenOffsets(fp_Page* pThePage, UT_sint32& xoff,
 										 UT_sint32& yoff, UT_sint32& width,
 										 UT_sint32& height)
 {
 	UT_uint32 y = 0;
 	
-	FP_Page* pPage = m_pLayout->getFirstPage();
+	fp_Page* pPage = m_pLayout->getFirstPage();
 	while (pPage)
 	{
 		if (pPage == pThePage)
@@ -771,11 +771,11 @@ void FV_View::getPageScreenOffsets(FP_Page* pThePage, UT_sint32& xoff,
 	width = m_iWindowWidth;
 }
 
-void FV_View::getPageYOffset(FP_Page* pThePage, UT_sint32& yoff)
+void FV_View::getPageYOffset(fp_Page* pThePage, UT_sint32& yoff)
 {
 	UT_uint32 y = 0;
 	
-	FP_Page* pPage = m_pLayout->getFirstPage();
+	fp_Page* pPage = m_pLayout->getFirstPage();
 	while (pPage)
 	{
 		if (pPage == pThePage)
@@ -797,15 +797,15 @@ void FV_View::invertBetweenPositions(PT_DocPosition iPos1, PT_DocPosition iPos2)
 {
 	UT_ASSERT(iPos1 < iPos2);
 	
-	FP_Run* pRun1;
-	FP_Run* pRun2;
+	fp_Run* pRun1;
+	fp_Run* pRun2;
 
 	{
 		UT_uint32 x;
 		UT_uint32 y;
 		UT_uint32 height;
-		FL_BlockLayout* pBlock1;
-		FL_BlockLayout* pBlock2;
+		fl_BlockLayout* pBlock1;
+		fl_BlockLayout* pBlock2;
 
 		/*
 		  we don't really care about the coords.  We're calling these
@@ -816,7 +816,7 @@ void FV_View::invertBetweenPositions(PT_DocPosition iPos1, PT_DocPosition iPos2)
 	}
 
 	UT_Bool bDone = UT_FALSE;
-	FP_Run* pCurRun = pRun1;
+	fp_Run* pCurRun = pRun1;
 
 	while (!bDone)
 	{
@@ -825,7 +825,7 @@ void FV_View::invertBetweenPositions(PT_DocPosition iPos1, PT_DocPosition iPos2)
 			bDone = UT_TRUE;
 		}
 		
-		FL_BlockLayout* pBlock = pCurRun->getBlock();
+		fl_BlockLayout* pBlock = pCurRun->getBlock();
 		UT_ASSERT(pBlock);
 		UT_uint32 iBlockBase = pBlock->getPosition();
 
@@ -854,7 +854,7 @@ void FV_View::invertBetweenPositions(PT_DocPosition iPos1, PT_DocPosition iPos2)
 		pCurRun = pCurRun->getNext();
 		if (!pCurRun)
 		{
-			FL_BlockLayout* pNextBlock;
+			fl_BlockLayout* pNextBlock;
 			
 			pNextBlock = pBlock->getNext();
 			if (pNextBlock)
@@ -870,19 +870,19 @@ void FV_View::_findPositionCoords(PT_DocPosition pos,
 										UT_uint32& x,
 										UT_uint32& y,
 										UT_uint32& height,
-										FL_BlockLayout** ppBlock,
-										FP_Run** ppRun)
+										fl_BlockLayout** ppBlock,
+										fp_Run** ppRun)
 {
 	UT_uint32 xPoint;
 	UT_uint32 yPoint;
 	UT_uint32 iPointHeight;
 
-	FL_BlockLayout* pBlock = _findBlockAtPosition(pos);
+	fl_BlockLayout* pBlock = _findBlockAtPosition(pos);
 	UT_ASSERT(pBlock);
-	FP_Run* pRun = pBlock->findPointCoords(pos, bRight, xPoint, yPoint, iPointHeight);
+	fp_Run* pRun = pBlock->findPointCoords(pos, bRight, xPoint, yPoint, iPointHeight);
 
 	// we now have coords relative to the page containing the ins pt
-	FP_Page* pPointPage = pRun->getLine()->getBlockSlice()->getColumn()->getSectionSlice()->getPage();
+	fp_Page* pPointPage = pRun->getLine()->getBlockSlice()->getColumn()->getSectionSlice()->getPage();
 
 	UT_sint32 iPageOffset;
 	getPageYOffset(pPointPage, iPageOffset);
@@ -1036,7 +1036,7 @@ void FV_View::draw(UT_sint32 x, UT_sint32 y, UT_sint32 width,
 	_eraseSelectionOrInsertionPoint();
 	
 	UT_sint32 curY = 0;
-	FP_Page* pPage = m_pLayout->getFirstPage();
+	fp_Page* pPage = m_pLayout->getFirstPage();
 	while (pPage)
 	{
 		UT_sint32 iPageHeight = pPage->getHeight();
@@ -1188,7 +1188,7 @@ void FV_View::cmdScroll(UT_sint32 iScrollCmd, UT_uint32 iPos)
 		sendScrollEvent(m_xScrollOffset, 0);
 		break;
 	case DG_SCROLLCMD_TOBOTTOM:
-		FP_Page* pPage = m_pLayout->getFirstPage();
+		fp_Page* pPage = m_pLayout->getFirstPage();
 		UT_sint32 iDocHeight = 0;
 		while (pPage)
 		{

@@ -20,34 +20,34 @@
 **  
 */
 
-#ifndef FL_COLUMNSETLAYOUT_H
-#define FL_COLUMNSETLAYOUT_H
+#ifndef fl_ColumnSetLayout_H
+#define fl_ColumnSetLayout_H
 
 #include "ut_types.h"
 #include "pt_Types.h"
 #include "fl_Layout.h"
 
-class FL_ColumnLayout;
-class FL_SectionLayout;
+class fl_ColumnLayout;
+class fl_SectionLayout;
 class PP_AttrProp;
 
-class FL_ColumnSetLayout : public fl_Layout
+class fl_ColumnSetLayout : public fl_Layout
 {
 public:
-	FL_ColumnSetLayout(FL_SectionLayout * pSectionLayout, PL_StruxDocHandle sdh);
-	~FL_ColumnSetLayout();
+	fl_ColumnSetLayout(fl_SectionLayout * pSectionLayout, PL_StruxDocHandle sdh);
+	~fl_ColumnSetLayout();
 
-	FL_SectionLayout *	getSectionLayout(void) const;
-	FL_ColumnLayout *	getFirstColumnLayout(void) const;
-	void				appendColumnLayout(FL_ColumnLayout * pCL);
+	fl_SectionLayout *	getSectionLayout(void) const;
+	fl_ColumnLayout *	getFirstColumnLayout(void) const;
+	void				appendColumnLayout(fl_ColumnLayout * pCL);
 	
-	void				setColumnSetLayout(FL_ColumnSetLayout * pcsl);
-	FL_ColumnSetLayout*	getColumnSetLayout(void) const;
+	void				setColumnSetLayout(fl_ColumnSetLayout * pcsl);
+	fl_ColumnSetLayout*	getColumnSetLayout(void) const;
 
 protected:
-	FL_SectionLayout *	m_pSectionLayout;
-	FL_ColumnLayout *	m_pFirstColumnLayout;
-	FL_ColumnLayout *	m_pLastColumnLayout;
+	fl_SectionLayout *	m_pSectionLayout;
+	fl_ColumnLayout *	m_pFirstColumnLayout;
+	fl_ColumnLayout *	m_pLastColumnLayout;
 };
 
-#endif /* FL_COLUMNSETLAYOUT_H */
+#endif /* fl_ColumnSetLayout_H */

@@ -38,7 +38,7 @@
 #include "ut_growbuf.h"
 
 
-FP_Run::FP_Run(FL_BlockLayout* pBL, DG_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen, UT_Bool bLookupProperties)
+fp_Run::fp_Run(fl_BlockLayout* pBL, DG_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen, UT_Bool bLookupProperties)
 {
 	m_pG = pG;
 	m_pBL = pBL;
@@ -63,63 +63,63 @@ FP_Run::FP_Run(FL_BlockLayout* pBL, DG_Graphics* pG, UT_uint32 iOffsetFirst, UT_
 		lookupProperties();
 }
 
-void FP_Run::setLine(FP_Line* pLine, void* p)
+void fp_Run::setLine(fp_Line* pLine, void* p)
 {
 	m_pLine = pLine;
 	m_pLineData = p;
 }
 
-FP_Line* FP_Run::getLine() const
+fp_Line* fp_Run::getLine() const
 {
 	return m_pLine;
 }
 
-void* FP_Run::getLineData()
+void* fp_Run::getLineData()
 {
 	return m_pLineData;
 }
 
-FL_BlockLayout* FP_Run::getBlock() const
+fl_BlockLayout* fp_Run::getBlock() const
 {
 	return m_pBL;
 }
 
-DG_Graphics* FP_Run::getGraphics() const
+DG_Graphics* fp_Run::getGraphics() const
 {
 	return m_pG;
 }
 
-UT_uint32	FP_Run::getHeight() const
+UT_uint32	fp_Run::getHeight() const
 {
 	return m_iHeight;
 }
 
-UT_uint32	FP_Run::getWidth() const
+UT_uint32	fp_Run::getWidth() const
 {
 	return m_iWidth;
 }
 
-UT_uint32 FP_Run::getAscent()
+UT_uint32 fp_Run::getAscent()
 {
 	return m_iAscent;
 }
 
-UT_uint32 FP_Run::getDescent()
+UT_uint32 fp_Run::getDescent()
 {
 	return m_iDescent;
 }
 
-UT_uint32 FP_Run::getLength() const
+UT_uint32 fp_Run::getLength() const
 {
 	return m_iLen;
 }
 
-UT_uint32 FP_Run::getBlockOffset() const
+UT_uint32 fp_Run::getBlockOffset() const
 {
 	return m_iOffsetFirst;
 }
 
-void FP_Run::lookupProperties(void)
+void fp_Run::lookupProperties(void)
 {
 	const PP_AttrProp * pSpanAP = NULL;
 	const PP_AttrProp * pBlockAP = NULL;
@@ -167,32 +167,32 @@ void FP_Run::lookupProperties(void)
 	m_iHeight = m_pG->getFontHeight();
 }
 
-void FP_Run::setNext(FP_Run* p)
+void fp_Run::setNext(fp_Run* p)
 {
 	m_pNext = p;
 }
 
-void FP_Run::setPrev(FP_Run* p)
+void fp_Run::setPrev(fp_Run* p)
 {
 	m_pPrev = p;
 }
 
-FP_Run* FP_Run::getPrev() const
+fp_Run* fp_Run::getPrev() const
 {
 	return m_pPrev;
 }
 
-FP_Run* FP_Run::getNext() const
+fp_Run* fp_Run::getNext() const
 {
 	return m_pNext;
 }
 
-UT_Bool FP_Run::canSplit() const
+UT_Bool fp_Run::canSplit() const
 {
 	return m_bCanSplit;
 }
 
-UT_Bool FP_Run::canBreakAfter() const
+UT_Bool fp_Run::canBreakAfter() const
 {
 	const UT_UCSChar* pSpan;
 	UT_uint32 lenSpan;
@@ -234,7 +234,7 @@ UT_Bool FP_Run::canBreakAfter() const
 	return UT_FALSE;
 }
 
-UT_Bool FP_Run::canBreakBefore() const
+UT_Bool fp_Run::canBreakBefore() const
 {
 	const UT_UCSChar* pSpan;
 	UT_uint32 lenSpan;
@@ -252,22 +252,22 @@ UT_Bool FP_Run::canBreakBefore() const
 	return UT_FALSE;
 }
 
-UT_Bool FP_Run::getLineBreakBefore() const
+UT_Bool fp_Run::getLineBreakBefore() const
 {
 	return m_iLineBreakBefore;
 }
 
-UT_Bool FP_Run::getLineBreakAfter() const
+UT_Bool fp_Run::getLineBreakAfter() const
 {
 	return m_iLineBreakAfter;
 }
 
-int FP_Run::split(fp_RunSplitInfo& si)
+int fp_Run::split(fp_RunSplitInfo& si)
 {
 	UT_ASSERT(si.iOffset >= (UT_sint32)m_iOffsetFirst);
 	UT_ASSERT(si.iOffset < (UT_sint32)(m_iOffsetFirst + m_iLen));
 
-	FP_Run* pNew = new FP_Run(m_pBL, m_pG, si.iOffset+1, m_iLen - (si.iOffset - m_iOffsetFirst) - 1, UT_FALSE);
+	fp_Run* pNew = new fp_Run(m_pBL, m_pG, si.iOffset+1, m_iLen - (si.iOffset - m_iOffsetFirst) - 1, UT_FALSE);
 	UT_ASSERT(pNew);
 	pNew->m_pFont = this->m_pFont;
 	pNew->m_fDecorations = this->m_fDecorations;
@@ -297,13 +297,13 @@ int FP_Run::split(fp_RunSplitInfo& si)
 	return 1;
 }
 
-UT_Bool FP_Run::split(UT_uint32 splitOffset)
+UT_Bool fp_Run::split(UT_uint32 splitOffset)
 {
 	UT_ASSERT(splitOffset >= m_iOffsetFirst);
 	UT_ASSERT(splitOffset < (m_iOffsetFirst + m_iLen));
 	UT_GrowBuf * pgbCharWidths = m_pBL->getCharWidths();
 
-	FP_Run* pNew = new FP_Run(m_pBL, m_pG, splitOffset, m_iLen - (splitOffset - m_iOffsetFirst), UT_FALSE);
+	fp_Run* pNew = new fp_Run(m_pBL, m_pG, splitOffset, m_iLen - (splitOffset - m_iOffsetFirst), UT_FALSE);
 	UT_ASSERT(pNew);
 	pNew->m_pFont = this->m_pFont;
 	pNew->m_fDecorations = this->m_fDecorations;
@@ -331,7 +331,7 @@ UT_Bool FP_Run::split(UT_uint32 splitOffset)
 	return UT_TRUE;
 }
 
-UT_Bool	FP_Run::findMaxLeftFitSplitPoint(UT_sint32 iMaxLeftWidth, fp_RunSplitInfo& si)
+UT_Bool	fp_Run::findMaxLeftFitSplitPoint(UT_sint32 iMaxLeftWidth, fp_RunSplitInfo& si)
 {
 	UT_GrowBuf * pgbCharWidths = m_pBL->getCharWidths();
 	UT_uint16* pCharWidths = pgbCharWidths->getPointer(0);
@@ -396,7 +396,7 @@ UT_Bool	FP_Run::findMaxLeftFitSplitPoint(UT_sint32 iMaxLeftWidth, fp_RunSplitInf
 	return UT_TRUE;
 }
 
-UT_Bool	FP_Run::findMinLeftFitSplitPoint(fp_RunSplitInfo& si)
+UT_Bool	fp_Run::findMinLeftFitSplitPoint(fp_RunSplitInfo& si)
 {
 	const UT_GrowBuf * pgbCharWidths = m_pBL->getCharWidths();
 	const UT_uint16* pCharWidths = pgbCharWidths->getPointer(0);
@@ -455,7 +455,7 @@ UT_Bool	FP_Run::findMinLeftFitSplitPoint(fp_RunSplitInfo& si)
 	return UT_TRUE;
 }
 
-void FP_Run::_calcWidths(UT_GrowBuf * pgbCharWidths)
+void fp_Run::_calcWidths(UT_GrowBuf * pgbCharWidths)
 {
 	UT_uint16* pCharWidths = pgbCharWidths->getPointer(0);
 
@@ -490,7 +490,7 @@ void FP_Run::_calcWidths(UT_GrowBuf * pgbCharWidths)
 	}
 }
 
-void FP_Run::calcWidths(UT_GrowBuf * pgbCharWidths)
+void fp_Run::calcWidths(UT_GrowBuf * pgbCharWidths)
 {
 	UT_sint32 iOldWidth = m_iWidth;
 
@@ -501,7 +501,7 @@ void FP_Run::calcWidths(UT_GrowBuf * pgbCharWidths)
 		m_pLine->runSizeChanged(m_pLineData, iOldWidth, m_iWidth);
 }
 
-void FP_Run::expandWidthTo(UT_uint32 iNewWidth)
+void fp_Run::expandWidthTo(UT_uint32 iNewWidth)
 {
 #if 0	// this does not work yet
 	m_iExtraWidth = iNewWidth - m_iWidth;
@@ -509,7 +509,7 @@ void FP_Run::expandWidthTo(UT_uint32 iNewWidth)
 #endif
 }
 
-void FP_Run::mapXYToPosition(UT_sint32 x, UT_sint32 y, PT_DocPosition& pos, UT_Bool& bRight)
+void fp_Run::mapXYToPosition(UT_sint32 x, UT_sint32 y, PT_DocPosition& pos, UT_Bool& bRight)
 {
 	const UT_GrowBuf * pgbCharWidths = m_pBL->getCharWidths();
 	const UT_uint16* pCharWidths = pgbCharWidths->getPointer(0);
@@ -543,7 +543,7 @@ void FP_Run::mapXYToPosition(UT_sint32 x, UT_sint32 y, PT_DocPosition& pos, UT_B
 	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 }
 
-void FP_Run::getOffsets(UT_uint32& xoff, UT_uint32& yoff)
+void fp_Run::getOffsets(UT_uint32& xoff, UT_uint32& yoff)
 {
 	UT_uint32 h;
 	
@@ -557,7 +557,7 @@ void FP_Run::getOffsets(UT_uint32& xoff, UT_uint32& yoff)
   point can be ambiguous if it is only expressed in terms of a buffer
   offset.
 */
-UT_uint32 FP_Run::containsOffset(UT_uint32 iOffset)
+UT_uint32 fp_Run::containsOffset(UT_uint32 iOffset)
 {
 	/*
 	  Seems like I keep changing this.  the second comparison below is
@@ -578,7 +578,7 @@ UT_uint32 FP_Run::containsOffset(UT_uint32 iOffset)
 	}
 }
 
-void FP_Run::findPointCoords(UT_uint32 iOffset, UT_uint32& x, UT_uint32& y, UT_uint32& height)
+void fp_Run::findPointCoords(UT_uint32 iOffset, UT_uint32& x, UT_uint32& y, UT_uint32& height)
 {
 	// UT_ASSERT(FP_RUN_INSIDE == containsOffset(iOffset));
 	
@@ -599,7 +599,7 @@ void FP_Run::findPointCoords(UT_uint32 iOffset, UT_uint32& x, UT_uint32& y, UT_u
 	height = m_iHeight;
 }
 
-void FP_Run::clearScreen(void)
+void fp_Run::clearScreen(void)
 {
 	UT_ASSERT(m_pG->queryProperties(DG_Graphics::DGP_SCREEN));
 	UT_sint32 xoff = 0, yoff = 0, width, height;
@@ -608,7 +608,7 @@ void FP_Run::clearScreen(void)
 	m_pG->clearArea(xoff, yoff, m_iWidth, m_iHeight);
 }
 
-void FP_Run::invert(UT_uint32 iStart, UT_uint32 iLen)
+void fp_Run::invert(UT_uint32 iStart, UT_uint32 iLen)
 {
 	UT_ASSERT(m_pG->queryProperties(DG_Graphics::DGP_SCREEN));
 	UT_sint32 xoff = 0, yoff = 0, width, height;
@@ -621,7 +621,7 @@ void FP_Run::invert(UT_uint32 iStart, UT_uint32 iLen)
 	m_pG->invertRect(&r);
 }
 
-void FP_Run::draw(dg_DrawArgs* pDA)
+void fp_Run::draw(dg_DrawArgs* pDA)
 {
 	UT_ASSERT(pDA->pG == m_pG);
 	const UT_GrowBuf * pgbCharWidths = m_pBL->getCharWidths();
@@ -633,7 +633,7 @@ void FP_Run::draw(dg_DrawArgs* pDA)
 	_drawDecors(pDA->xoff, pDA->yoff);
 }
 
-void FP_Run::_getPartRect(UT_Rect* pRect, UT_sint32 xoff, UT_sint32 yoff, UT_uint32 iStart, UT_uint32 iLen,
+void fp_Run::_getPartRect(UT_Rect* pRect, UT_sint32 xoff, UT_sint32 yoff, UT_uint32 iStart, UT_uint32 iLen,
 						  const UT_GrowBuf * pgbCharWidths)
 {
 	pRect->left = xoff;
@@ -661,7 +661,7 @@ void FP_Run::_getPartRect(UT_Rect* pRect, UT_sint32 xoff, UT_sint32 yoff, UT_uin
 	}
 }
 
-void FP_Run::_drawPart(UT_sint32 xoff, UT_sint32 yoff, UT_uint32 iStart, UT_uint32 iLen,
+void fp_Run::_drawPart(UT_sint32 xoff, UT_sint32 yoff, UT_uint32 iStart, UT_uint32 iLen,
 					   const UT_GrowBuf * pgbCharWidths)
 {
 	const UT_UCSChar* pSpan;
@@ -714,7 +714,7 @@ void FP_Run::_drawPart(UT_sint32 xoff, UT_sint32 yoff, UT_uint32 iStart, UT_uint
 	}
 }
 
-void FP_Run::_drawDecors(UT_sint32 xoff, UT_sint32 yoff)
+void fp_Run::_drawDecors(UT_sint32 xoff, UT_sint32 yoff)
 {
 	/*
 		TODO these decorations have problems.  They're getting drawn
@@ -740,7 +740,7 @@ void FP_Run::_drawDecors(UT_sint32 xoff, UT_sint32 yoff)
 	}
 }
 
-void FP_Run::dumpRun(void) const
+void fp_Run::dumpRun(void) const
 {
 	UT_DEBUGMSG(("Run: 0x%08lx offset %8d length %4d  width=%d\n",this,m_iOffsetFirst,m_iLen,m_iWidth));
 	m_pLine->dumpRunInfo(this, m_pLineData);
@@ -748,7 +748,7 @@ void FP_Run::dumpRun(void) const
 	return;
 }
 
-UT_Bool FP_Run::ins(UT_uint32 iOffset, UT_uint32 iCount, UT_Bool bLeftSide, PT_AttrPropIndex indexAP)
+UT_Bool fp_Run::ins(UT_uint32 iOffset, UT_uint32 iCount, UT_Bool bLeftSide, PT_AttrPropIndex indexAP)
 {
 	UT_ASSERT(m_pG->queryProperties(DG_Graphics::DGP_SCREEN));
 	if ((m_iOffsetFirst + m_iLen) < iOffset)
@@ -769,7 +769,7 @@ UT_Bool FP_Run::ins(UT_uint32 iOffset, UT_uint32 iCount, UT_Bool bLeftSide, PT_A
 	return UT_TRUE;
 }
 
-UT_Bool FP_Run::del(UT_uint32 iOffset, UT_uint32 iCount)
+UT_Bool fp_Run::del(UT_uint32 iOffset, UT_uint32 iCount)
 {
 	UT_ASSERT(m_pG->queryProperties(DG_Graphics::DGP_SCREEN));
 	

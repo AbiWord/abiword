@@ -29,58 +29,58 @@
 #include "ut_vector.h"
 #include "pt_Types.h"
 
-class FP_BlockSlice;
-class FP_Run;
+class fp_BlockSlice;
+class fp_Run;
 class DG_Graphics;
 struct dg_DrawArgs;
 
 // ----------------------------------------------------------------
 /*
-	FP_Line represents a single line.  A FP_Line is a collection of 
+	fp_Line represents a single line.  A fp_Line is a collection of 
 	Runs.
 */
 
 struct fp_RunInfo
 {
-	fp_RunInfo(FP_Run*);
+	fp_RunInfo(fp_Run*);
 
-	FP_Run*	pRun;
+	fp_Run*	pRun;
 	UT_uint32 xoff;
 	UT_uint32 yoff;
 };
 
-class FP_Line
+class fp_Line
 {
 public:
-	FP_Line(UT_sint32);
-	~FP_Line();
+	fp_Line(UT_sint32);
+	~fp_Line();
 
-	void		setBlockSlice(FP_BlockSlice*, void*);
-	FP_BlockSlice* getBlockSlice() const;
+	void		setBlockSlice(fp_BlockSlice*, void*);
+	fp_BlockSlice* getBlockSlice() const;
 
 	UT_uint32 	getHeight() const;
 	UT_uint32 	getWidth() const;
 	UT_uint32 	getMaxWidth() const;
 
-	FP_Line*	getNext() const;
-	void		setNext(FP_Line*);
-	void        setPrev(FP_Line*);
-	FP_Line*    getPrev() const;
+	fp_Line*	getNext() const;
+	void		setNext(fp_Line*);
+	void        setPrev(fp_Line*);
+	fp_Line*    getPrev() const;
 
-	void 		addRun(FP_Run*);
-	void		splitRunInLine(FP_Run* pRun1, FP_Run* pRun2);
-	void        insertRun(FP_Run*, UT_Bool bClear, UT_Bool bNewData = UT_FALSE);
-    UT_Bool     removeRun(FP_Run*);
+	void 		addRun(fp_Run*);
+	void		splitRunInLine(fp_Run* pRun1, fp_Run* pRun2);
+	void        insertRun(fp_Run*, UT_Bool bClear, UT_Bool bNewData = UT_FALSE);
+    UT_Bool     removeRun(fp_Run*);
 	int 		countRuns() const;
-	FP_Run*     getFirstRun() const;
-	FP_Run*     getLastRun() const;
+	fp_Run*     getFirstRun() const;
+	fp_Run*     getLastRun() const;
 	UT_uint32	getNumChars() const;
  	void        runSizeChanged(void*, UT_sint32 oldWidth, UT_sint32 newWidth);
 	void		remove();
 
 	void		mapXYToPosition(UT_sint32 xPos, UT_sint32 yPos, PT_DocPosition& pos, UT_Bool& bRight);
-	void		getOffsets(FP_Run* pRun, void* p, UT_sint32& xoff, UT_sint32& yoff);
-	void		getScreenOffsets(FP_Run* pRun, void* p, UT_sint32& xoff, UT_sint32& yoff, UT_sint32& width, UT_sint32& height);
+	void		getOffsets(fp_Run* pRun, void* p, UT_sint32& xoff, UT_sint32& yoff);
+	void		getScreenOffsets(fp_Run* pRun, void* p, UT_sint32& xoff, UT_sint32& yoff, UT_sint32& width, UT_sint32& height);
 #if UNUSED
 	void		getAbsoluteCoords(UT_sint32& x, UT_sint32& y);
 #endif
@@ -92,14 +92,14 @@ public:
 	void        draw(DG_Graphics*);
 	void		align();
 
-	void		dumpRunInfo(const FP_Run* pRun, void* p);
+	void		dumpRunInfo(const fp_Run* pRun, void* p);
 	
 	UT_Bool         m_bDirty;
 
 protected:
 	void		_recalcHeight();
 
-	FP_BlockSlice*	m_pBlockSlice;
+	fp_BlockSlice*	m_pBlockSlice;
 	void*			m_pBlockSliceData;
 	
 	UT_uint32	 	m_iWidth;
@@ -108,8 +108,8 @@ protected:
 	UT_uint32 		m_iAscent;
 	UT_Vector		m_vecRunInfos;
 
-	FP_Line*		m_pNext;
-	FP_Line*        m_pPrev;
+	fp_Line*		m_pNext;
+	fp_Line*        m_pPrev;
 };
 
 #endif /* LINE_H */

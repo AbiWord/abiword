@@ -29,29 +29,29 @@
 #include "pt_Types.h"
 
 class FL_DocLayout;
-class FL_SectionLayout;
-class FP_SectionSlice;
+class fl_SectionLayout;
+class fp_SectionSlice;
 class FV_View;
 class DG_Graphics;
 struct dg_DrawArgs;
 
 // ----------------------------------------------------------------
 /*
-	FP_Page is a concrete class used to represent a page.  A FP_Page manages
-	a group of children, each of which must be a FP_SectionSlice.
+	fp_Page is a concrete class used to represent a page.  A fp_Page manages
+	a group of children, each of which must be a fp_SectionSlice.
 */
 struct fp_SectionSliceInfo
 {
-	fp_SectionSliceInfo(FP_SectionSlice*, UT_uint32, UT_uint32);
-	FP_SectionSlice*		pSlice;
+	fp_SectionSliceInfo(fp_SectionSlice*, UT_uint32, UT_uint32);
+	fp_SectionSlice*		pSlice;
 	UT_uint32 xoff;
 	UT_uint32 yoff;
 };
 
-class FP_Page
+class fp_Page
 {
  public:
-	FP_Page(FL_DocLayout*,
+	fp_Page(FL_DocLayout*,
 			FV_View*,
 			UT_uint32 iWidth,
 			UT_uint32 iHeight,
@@ -59,20 +59,20 @@ class FP_Page
 			UT_uint32 iTop,
 			UT_uint32 iRight,
 			UT_uint32 iBottom);
-	~FP_Page();
+	~fp_Page();
 
-	UT_Bool 		requestSpace(FL_SectionLayout*, FP_SectionSlice** si);
+	UT_Bool 		requestSpace(fl_SectionLayout*, fp_SectionSlice** si);
 
 	int				getWidth();
 	int				getHeight();
-	FP_Page*		getNext();
-	void			setNext(FP_Page*);
+	fp_Page*		getNext();
+	void			setNext(fp_Page*);
 	FL_DocLayout*	getLayout();
 	void            setView(FV_View*);
 
 	void			mapXYToPosition(UT_sint32 xPos, UT_sint32 yPos, PT_DocPosition& pos, UT_Bool& bRight);
-	void			getOffsets(FP_SectionSlice*, void*, UT_sint32& xoff, UT_sint32& yoff);
-	void			getScreenOffsets(FP_SectionSlice*, void*, UT_sint32& xoff, UT_sint32& yoff, UT_sint32& width, UT_sint32& height);
+	void			getOffsets(fp_SectionSlice*, void*, UT_sint32& xoff, UT_sint32& yoff);
+	void			getScreenOffsets(fp_SectionSlice*, void*, UT_sint32& xoff, UT_sint32& yoff, UT_sint32& width, UT_sint32& height);
 
 	void			draw(dg_DrawArgs*);
 	void			dump();
@@ -80,7 +80,7 @@ class FP_Page
  protected:
 	FL_DocLayout*		m_pLayout;
 	FV_View*      m_pView;
-	FP_Page*			m_pNext;
+	fp_Page*			m_pNext;
 
 	UT_sint32			m_iWidth;
 	UT_sint32			m_iHeight;

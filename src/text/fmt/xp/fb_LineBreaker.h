@@ -26,16 +26,16 @@
 
 #include "ut_vector.h"
 
-class FL_BlockLayout;
-class FP_Line;
+class fl_BlockLayout;
+class fp_Line;
 
 // ----------------------------------------------------------------
 /*
-	FB_LineBreaker is a Strategy pattern for encapsulating the line breaking
+	fb_LineBreaker is a Strategy pattern for encapsulating the line breaking
 	algorithm.  Its purpose is to take a given paragraph and calculate where
 	all the line breaks should occur.
 
-	FB_LineBreaker is abstract.  Subclasses of FB_LineBreaker provide 
+	fb_LineBreaker is abstract.  Subclasses of fb_LineBreaker provide 
 	implementation for different line breaking algorithms.  We'll implement 
 	the simplest one first, but we'll eventually support things like the TeX 
 	algorithm as well.
@@ -47,28 +47,28 @@ class FP_Line;
 		not a separate step.
 
 	TODO We might even allow a CSS property which lets the author specify 
-	which FB_LineBreaker algorithm to use for a given paragraph.
+	which fb_LineBreaker algorithm to use for a given paragraph.
 
-	The FB_LineBreaker works by requesting space for each line from the 
-	FL_BlockLayout provided.  The FL_BlockLayout manages all of the lines and 
+	The fb_LineBreaker works by requesting space for each line from the 
+	fl_BlockLayout provided.  The fl_BlockLayout manages all of the lines and 
 	keeps track of where they are all located.  A given paragraph may be split 
-	across more than one column, but FB_LineBreaker remains oblivious, as 
-	FL_BlockLayout hides the complexity of this.
+	across more than one column, but fb_LineBreaker remains oblivious, as 
+	fl_BlockLayout hides the complexity of this.
 */
-class FB_LineBreaker
+class fb_LineBreaker
 {
 public:
-	FB_LineBreaker();
-	virtual int reLayoutParagraph(FL_BlockLayout* pBlock) = 0;
-	virtual int breakParagraph(FL_BlockLayout*) = 0;
+	fb_LineBreaker();
+	virtual int reLayoutParagraph(fl_BlockLayout* pBlock) = 0;
+	virtual int breakParagraph(fl_BlockLayout*) = 0;
 };
 
-class SimpleLineBreaker : public FB_LineBreaker
+class fb_SimpleLineBreaker : public fb_LineBreaker
 {
 public:
-	SimpleLineBreaker(); 
-	virtual int breakParagraph(FL_BlockLayout*);
-	virtual int reLayoutParagraph(FL_BlockLayout* pBlock);
+	fb_SimpleLineBreaker(); 
+	virtual int breakParagraph(fl_BlockLayout*);
+	virtual int reLayoutParagraph(fl_BlockLayout* pBlock);
 
 };
 

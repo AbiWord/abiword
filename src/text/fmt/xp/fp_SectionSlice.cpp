@@ -30,7 +30,7 @@
 
 #include "ut_assert.h"
 
-FP_SectionSlice::FP_SectionSlice(UT_sint32 iWidth, UT_sint32 iHeight)
+fp_SectionSlice::fp_SectionSlice(UT_sint32 iWidth, UT_sint32 iHeight)
 {
 	m_pPage = NULL;
 	m_pPageData = NULL;
@@ -38,46 +38,46 @@ FP_SectionSlice::FP_SectionSlice(UT_sint32 iWidth, UT_sint32 iHeight)
 	m_iHeight = iHeight;
 }
 
-FP_SectionSlice::~FP_SectionSlice()
+fp_SectionSlice::~fp_SectionSlice()
 {
 	UT_VECTOR_PURGEALL(fp_ColumnInfo, m_vecColumnInfos);
 }
 
-void FP_SectionSlice::setPage(FP_Page* pPage, void* p)
+void fp_SectionSlice::setPage(fp_Page* pPage, void* p)
 {
 	m_pPage = pPage;
 	m_pPageData = p;
 }
 
-FP_Page* FP_SectionSlice::getPage() const
+fp_Page* fp_SectionSlice::getPage() const
 {
 	return m_pPage;
 }
 
-UT_sint32 FP_SectionSlice::getWidth()
+UT_sint32 fp_SectionSlice::getWidth()
 {
 	return m_iWidth;
 }
 
-UT_sint32 FP_SectionSlice::getHeight()
+UT_sint32 fp_SectionSlice::getHeight()
 {
 	return m_iHeight;
 }
 
-FP_Column* FP_SectionSlice::getFirstColumn()
+fp_Column* fp_SectionSlice::getFirstColumn()
 {
 	fp_ColumnInfo* pCI = (fp_ColumnInfo*) m_vecColumnInfos.getNthItem(0);
 	return pCI->pColumn;
 }
 
-void FP_SectionSlice::addColumn(FP_Column* pCol, UT_sint32 xoff, UT_sint32 yoff)
+void fp_SectionSlice::addColumn(fp_Column* pCol, UT_sint32 xoff, UT_sint32 yoff)
 {
 	fp_ColumnInfo* pCI = new fp_ColumnInfo(pCol, xoff, yoff);
 	pCol->setSectionSlice(this, pCI);
 	m_vecColumnInfos.addItem(pCI);
 }
 
-void FP_SectionSlice::mapXYToPosition(UT_sint32 x, UT_sint32 y, PT_DocPosition& pos, UT_Bool& bRight)
+void fp_SectionSlice::mapXYToPosition(UT_sint32 x, UT_sint32 y, PT_DocPosition& pos, UT_Bool& bRight)
 {
 	int count = m_vecColumnInfos.getItemCount();
 	UT_uint32 iMinDist = 0xffffffff;
@@ -104,7 +104,7 @@ void FP_SectionSlice::mapXYToPosition(UT_sint32 x, UT_sint32 y, PT_DocPosition& 
 	pMinDist->pColumn->mapXYToPosition(x - pMinDist->xoff, y - pMinDist->yoff, pos, bRight);
 }
 
-void FP_SectionSlice::getOffsets(FP_Column* pCol, void* p, UT_sint32& xoff, UT_sint32& yoff)
+void fp_SectionSlice::getOffsets(fp_Column* pCol, void* p, UT_sint32& xoff, UT_sint32& yoff)
 {
 	UT_sint32 my_xoff;
 	UT_sint32 my_yoff;
@@ -118,7 +118,7 @@ void FP_SectionSlice::getOffsets(FP_Column* pCol, void* p, UT_sint32& xoff, UT_s
 	yoff = my_yoff + pCI->yoff;
 }
 
-void FP_SectionSlice::getScreenOffsets(FP_Column* pCol, void* p,
+void fp_SectionSlice::getScreenOffsets(fp_Column* pCol, void* p,
 									   UT_sint32& xoff, UT_sint32& yoff,
 									   UT_sint32& width, UT_sint32& height)
 {
@@ -135,7 +135,7 @@ void FP_SectionSlice::getScreenOffsets(FP_Column* pCol, void* p,
 	yoff = my_yoff + pCI->yoff;
 }
 
-void FP_SectionSlice::draw(dg_DrawArgs* pDA)
+void fp_SectionSlice::draw(dg_DrawArgs* pDA)
 {
 	int count = m_vecColumnInfos.getItemCount();
 	for (int i=0; i<count; i++)
@@ -149,6 +149,6 @@ void FP_SectionSlice::draw(dg_DrawArgs* pDA)
 	}
 }
 
-void FP_SectionSlice::dump()
+void fp_SectionSlice::dump()
 {
 }

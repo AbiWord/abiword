@@ -37,7 +37,7 @@
 #include "ut_assert.h"
 #include "ut_units.h"
 
-FP_Page::FP_Page(FL_DocLayout* pLayout, FV_View* pView,
+fp_Page::fp_Page(FL_DocLayout* pLayout, FV_View* pView,
 				 UT_uint32 iWidth, UT_uint32 iHeight,
 				 UT_uint32 iLeft,
 				 UT_uint32 iTop, 
@@ -63,30 +63,30 @@ FP_Page::FP_Page(FL_DocLayout* pLayout, FV_View* pView,
 	m_pNext = NULL;
 }
 
-fp_SectionSliceInfo::fp_SectionSliceInfo(FP_SectionSlice* p, UT_uint32 x, UT_uint32 y)
+fp_SectionSliceInfo::fp_SectionSliceInfo(fp_SectionSlice* p, UT_uint32 x, UT_uint32 y)
 {
 	pSlice = p;
 	xoff = x;
 	yoff = y;
 }
 
-FP_Page::~FP_Page()
+fp_Page::~fp_Page()
 {
 	UT_VECTOR_PURGEALL(fp_SectionSliceInfo, m_vecSliceInfos);
 }
 
 
-int FP_Page::getWidth()
+int fp_Page::getWidth()
 {
 	return m_iWidth;
 }
 
-int FP_Page::getHeight()
+int fp_Page::getHeight()
 {
 	return m_iHeight;
 }
 
-void FP_Page::getOffsets(FP_SectionSlice* pSS, void* pData, UT_sint32& xoff, UT_sint32& yoff)
+void fp_Page::getOffsets(fp_SectionSlice* pSS, void* pData, UT_sint32& xoff, UT_sint32& yoff)
 {
 	fp_SectionSliceInfo* pSSI = (fp_SectionSliceInfo*) pData;
 	UT_ASSERT(pSS == pSSI->pSlice);
@@ -95,7 +95,7 @@ void FP_Page::getOffsets(FP_SectionSlice* pSS, void* pData, UT_sint32& xoff, UT_
 	yoff = pSSI->yoff;
 }
 
-void FP_Page::getScreenOffsets(FP_SectionSlice* pSS, void* pData, UT_sint32& xoff, UT_sint32& yoff, UT_sint32& width, UT_sint32& height)
+void fp_Page::getScreenOffsets(fp_SectionSlice* pSS, void* pData, UT_sint32& xoff, UT_sint32& yoff, UT_sint32& width, UT_sint32& height)
 {
 	fp_SectionSliceInfo* pSSI = (fp_SectionSliceInfo*) pData;
 	UT_ASSERT(pSS == pSSI->pSlice);
@@ -108,28 +108,28 @@ void FP_Page::getScreenOffsets(FP_SectionSlice* pSS, void* pData, UT_sint32& xof
 	yoff += pSSI->yoff;
 }
 
-FP_Page* FP_Page::getNext()
+fp_Page* fp_Page::getNext()
 {
 	return m_pNext;
 }
 
-void FP_Page::setNext(FP_Page* p)
+void fp_Page::setNext(fp_Page* p)
 {
 	m_pNext = p;
 }
 
-FL_DocLayout* FP_Page::getLayout()
+FL_DocLayout* fp_Page::getLayout()
 {
 	return m_pLayout;
 }
 
-void FP_Page::draw(dg_DrawArgs* pDA)
+void fp_Page::draw(dg_DrawArgs* pDA)
 {
 	/*
 		draw each slice on the page
 	*/
 	int count = m_vecSliceInfos.getItemCount();
-	FP_SectionSlice* p;
+	fp_SectionSlice* p;
 
 	for (int i=0; i<count; i++)
 	{
@@ -143,22 +143,22 @@ void FP_Page::draw(dg_DrawArgs* pDA)
 	}
 }
 
-void FP_Page::dump()
+void fp_Page::dump()
 {
 	int count = m_vecSliceInfos.getItemCount();
-	FP_SectionSlice* p;
+	fp_SectionSlice* p;
 
 	for (int i=0; i<count; i++)
 	{
 		fp_SectionSliceInfo* pci = (fp_SectionSliceInfo*) m_vecSliceInfos.getNthItem(i);
 		p = pci->pSlice;
 
-		UT_DEBUGMSG(("FP_Page::dump(0x%x) - FP_SectionSlice 0x%x\n", this, p));
+		UT_DEBUGMSG(("fp_Page::dump(0x%x) - fp_SectionSlice 0x%x\n", this, p));
 		p->dump();
 	}
 }
 
-UT_Bool FP_Page::requestSpace(FL_SectionLayout*, FP_SectionSlice** ppsi)
+UT_Bool fp_Page::requestSpace(fl_SectionLayout*, fp_SectionSlice** ppsi)
 {
 	UT_sint32 iHeight = 0;
 	int count = m_vecSliceInfos.getItemCount();
@@ -173,7 +173,7 @@ UT_Bool FP_Page::requestSpace(FL_SectionLayout*, FP_SectionSlice** ppsi)
 
 	if (iAvailable > 0)
 	{
-		FP_SectionSlice* pSS = new FP_SectionSlice(m_iWidth - (m_iRight + m_iLeft), iAvailable);
+		fp_SectionSlice* pSS = new fp_SectionSlice(m_iWidth - (m_iRight + m_iLeft), iAvailable);
 		fp_SectionSliceInfo* pSSI = new fp_SectionSliceInfo(pSS, m_iLeft, yBottom);
 		pSS->setPage(this, pSSI);
 		m_vecSliceInfos.addItem(pSSI);
@@ -187,10 +187,10 @@ UT_Bool FP_Page::requestSpace(FL_SectionLayout*, FP_SectionSlice** ppsi)
 	}
 }
 
-void FP_Page::mapXYToPosition(UT_sint32 x, UT_sint32 y, PT_DocPosition& pos, UT_Bool& bRight)
+void fp_Page::mapXYToPosition(UT_sint32 x, UT_sint32 y, PT_DocPosition& pos, UT_Bool& bRight)
 {
 	int count = m_vecSliceInfos.getItemCount();
-	FP_SectionSlice* p;
+	fp_SectionSlice* p;
 	UT_uint32 iMinDist = 0xffffffff;
 	fp_SectionSliceInfo* pMinDist = NULL;
 	
@@ -228,7 +228,7 @@ void FP_Page::mapXYToPosition(UT_sint32 x, UT_sint32 y, PT_DocPosition& pos, UT_
 	pMinDist->pSlice->mapXYToPosition(x - pMinDist->xoff, y - pMinDist->yoff, pos, bRight);
 }
 
-void FP_Page::setView(FV_View* pView)
+void fp_Page::setView(FV_View* pView)
 {
 	m_pView = pView;
 }

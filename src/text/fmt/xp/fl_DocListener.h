@@ -33,8 +33,8 @@ class FL_DocLayout;
 class PD_Document;
 
 /*
-	The fl_DocListener class notifications from a PD_Document to its 
-	associated FL_DocLayout. 
+	The fl_DocListener class handles notifications from a PD_Document 
+	to its associated FL_DocLayout. 
 */
 
 class fl_DocListener : public PL_Listener

@@ -29,15 +29,15 @@
 #include "pt_Types.h"
 
 class UT_GrowBuf;
-class FL_BlockLayout;
-class FP_Line;
+class fl_BlockLayout;
+class fp_Line;
 class DG_Graphics;
 class DG_Font;
 class PD_Document;
 struct dg_DrawArgs;
 
 /*
-	Note that FP_Run encapsulates all text measurement issues, as well as
+	Note that fp_Run encapsulates all text measurement issues, as well as
 	any intercharacter spacing problems such as kerning, ligatures, justification,
 	and so on.  We could probably even bury hyphenation in here without affecting the
 	line breaker algorithm itself.
@@ -62,18 +62,18 @@ struct fp_RunSplitInfo
 #define FP_RUN_JUSTAFTER   2
 #define FP_RUN_NOT         3
 
-class FP_Run
+class fp_Run
 {
 	friend class fl_DocListener;
 
  public:
-	FP_Run(FL_BlockLayout* pBL, DG_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen, UT_Bool bLookupProperties=UT_TRUE);
+	fp_Run(fl_BlockLayout* pBL, DG_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen, UT_Bool bLookupProperties=UT_TRUE);
 
-	void					setLine(FP_Line*, void*);
-	FP_Line*				getLine() const;
+	void					setLine(fp_Line*, void*);
+	fp_Line*				getLine() const;
 	void*                   getLineData();
 
-	FL_BlockLayout*			getBlock() const;
+	fl_BlockLayout*			getBlock() const;
 	DG_Graphics*            getGraphics() const;
 	UT_uint32				getHeight() const;
 	UT_uint32				getWidth() const;
@@ -83,10 +83,10 @@ class FP_Run
 	UT_uint32				getBlockOffset() const;
 	void					lookupProperties(void);
 
-	void					setNext(FP_Run*);
-	void					setPrev(FP_Run*);
-	FP_Run* 				getNext() const;
-	FP_Run*					getPrev() const;
+	void					setNext(fp_Run*);
+	void					setPrev(fp_Run*);
+	fp_Run* 				getNext() const;
+	fp_Run*					getPrev() const;
 
 	UT_Bool					canSplit() const;
 	UT_Bool					canBreakAfter() const;
@@ -122,10 +122,10 @@ class FP_Run
 									  const UT_GrowBuf * pgbCharWidths);
 	void 					_calcWidths(UT_GrowBuf * pgbCharWidths);
 
-	FP_Line*				m_pLine;
+	fp_Line*				m_pLine;
 	void*					m_pLineData;
-	FP_Run*					m_pPrev;
-	FP_Run*					m_pNext;
+	fp_Run*					m_pPrev;
+	fp_Run*					m_pNext;
 	UT_uint32				m_iOffsetFirst;
 	UT_uint32				m_iLen;
 	UT_sint32				m_iWidth;
@@ -155,7 +155,7 @@ class FP_Run
 	*/
 	DG_Font*			m_pFont;
 	UT_RGBColor			m_colorFG;
-	FL_BlockLayout*                 m_pBL;
+	fl_BlockLayout*                 m_pBL;
 	DG_Graphics*                    m_pG;
 };
 

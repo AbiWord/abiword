@@ -43,7 +43,7 @@
 // TODO bezier curve enclosed column ?
 // TODO TeX parshape-style column, which simply specifies the length of each line.
 
-FP_Column::FP_Column(FL_SectionLayout* pSectionLayout)
+fp_Column::fp_Column(fl_SectionLayout* pSectionLayout)
 {
 	m_pNext = NULL;
 	m_pSectionSlice = NULL;
@@ -53,7 +53,7 @@ FP_Column::FP_Column(FL_SectionLayout* pSectionLayout)
 	m_pG = m_pSectionLayout->getLayout()->getGraphics();
 }
 
-fp_BlockSliceInfo::fp_BlockSliceInfo(FP_BlockSlice* p)
+fp_BlockSliceInfo::fp_BlockSliceInfo(fp_BlockSlice* p)
 {
 	UT_ASSERT(p);
 
@@ -61,7 +61,7 @@ fp_BlockSliceInfo::fp_BlockSliceInfo(FP_BlockSlice* p)
 	yoff = 0;
 }
 
-FP_Column::~FP_Column()
+fp_Column::~fp_Column()
 {
 	while (m_pFirstSlice)
 	{
@@ -71,38 +71,38 @@ FP_Column::~FP_Column()
 	}
 }
 
-void FP_Column::setSectionSlice(FP_SectionSlice* pSectionSlice, void* p)
+void fp_Column::setSectionSlice(fp_SectionSlice* pSectionSlice, void* p)
 {
 	m_pSectionSlice = pSectionSlice;
 	m_pSectionSliceData = p;
 }
 
-FP_SectionSlice* FP_Column::getSectionSlice() const
+fp_SectionSlice* fp_Column::getSectionSlice() const
 {
 	return m_pSectionSlice;
 }
 
-void FP_Column::setNext(FP_Column*p)
+void fp_Column::setNext(fp_Column*p)
 {
 	m_pNext = p;
 }
 
-void FP_Column::setPrev(FP_Column*p)
+void fp_Column::setPrev(fp_Column*p)
 {
 	m_pPrev = p;
 }
 
-FP_Column* FP_Column::getNext()
+fp_Column* fp_Column::getNext()
 {
 	return m_pNext;
 }
 
-FP_Column* FP_Column::getPrev()
+fp_Column* fp_Column::getPrev()
 {
 	return m_pPrev;
 }
 
-void FP_Column::getOffsets(FP_BlockSlice* pBS, void* pData, UT_sint32& xoff, UT_sint32& yoff)
+void fp_Column::getOffsets(fp_BlockSlice* pBS, void* pData, UT_sint32& xoff, UT_sint32& yoff)
 {
 	UT_sint32 my_xoff;
 	UT_sint32 my_yoff;
@@ -117,7 +117,7 @@ void FP_Column::getOffsets(FP_BlockSlice* pBS, void* pData, UT_sint32& xoff, UT_
 	yoff = my_yoff + pBSI->yoff;
 }
 
-void FP_Column::getScreenOffsets(FP_BlockSlice* pBS, void* pData,
+void fp_Column::getScreenOffsets(fp_BlockSlice* pBS, void* pData,
 								 UT_sint32& xoff, UT_sint32& yoff,
 								 UT_sint32& width, UT_sint32& height)
 {
@@ -134,7 +134,7 @@ void FP_Column::getScreenOffsets(FP_BlockSlice* pBS, void* pData,
 	yoff = my_yoff + pBSI->yoff;
 }
 
-fp_BlockSliceInfo*		FP_Column::_findSlice(FP_BlockSlice* p)
+fp_BlockSliceInfo* fp_Column::_findSlice(fp_BlockSlice* p)
 {
 	fp_BlockSliceInfo*	pNode = m_pFirstSlice;
 
@@ -146,7 +146,7 @@ fp_BlockSliceInfo*		FP_Column::_findSlice(FP_BlockSlice* p)
 	return pNode;
 }
 
-void FP_Column::removeBlockSlice(FP_BlockSlice* p)
+void fp_Column::removeBlockSlice(fp_BlockSlice* p)
 {
 	fp_BlockSliceInfo*	pNode = m_pFirstSlice;
 	fp_BlockSliceInfo*  pPrev = NULL;
@@ -174,10 +174,10 @@ void FP_Column::removeBlockSlice(FP_BlockSlice* p)
 	_repositionSlices();
 }
 
-int FP_Column::insertBlockSliceAfter(FP_BlockSlice*	pBS, FP_BlockSlice*	pAfter, int iLineHeight)
+int fp_Column::insertBlockSliceAfter(fp_BlockSlice*	pBS, fp_BlockSlice*	pAfter, int iLineHeight)
 {
 	UT_ASSERT(pBS);
-	UT_DEBUGMSG(("FP_Column::insertBlockSliceAfter - FP_Column=0x%x  slice=0x%x  pAfter=0x%x\n",
+	UT_DEBUGMSG(("fp_Column::insertBlockSliceAfter - fp_Column=0x%x  slice=0x%x  pAfter=0x%x\n",
 				 this,
 				 pBS,
 				 pAfter));
@@ -254,7 +254,7 @@ int FP_Column::insertBlockSliceAfter(FP_BlockSlice*	pBS, FP_BlockSlice*	pAfter, 
 	}
 }
 
-UT_uint32 FP_Column::_calcSliceOffset(fp_BlockSliceInfo* pBSI, UT_uint32 iLineHeight)
+UT_uint32 fp_Column::_calcSliceOffset(fp_BlockSliceInfo* pBSI, UT_uint32 iLineHeight)
 {
 	if (pBSI->pPrev)
 	{
@@ -281,7 +281,7 @@ UT_uint32 FP_Column::_calcSliceOffset(fp_BlockSliceInfo* pBSI, UT_uint32 iLineHe
 	}
 }
 
-UT_Bool FP_Column::requestSliver(FP_BlockSlice* pBS, UT_uint32 iMoreHeightNeeded,
+UT_Bool fp_Column::requestSliver(fp_BlockSlice* pBS, UT_uint32 iMoreHeightNeeded,
 		UT_uint32* pX,
 		UT_uint32* pWidth,
 		UT_uint32* pHeight)
@@ -311,7 +311,7 @@ UT_Bool FP_Column::requestSliver(FP_BlockSlice* pBS, UT_uint32 iMoreHeightNeeded
 	return UT_TRUE;
 }
 
-UT_Bool FP_Column::verifySliverFit(FP_BlockSlice* pBS, fp_Sliver* pSliver, UT_sint32 iY)
+UT_Bool fp_Column::verifySliverFit(fp_BlockSlice* pBS, fp_Sliver* pSliver, UT_sint32 iY)
 {
 	UT_ASSERT(pBS);
 	UT_ASSERT(pSliver);
@@ -331,7 +331,7 @@ UT_Bool FP_Column::verifySliverFit(FP_BlockSlice* pBS, fp_Sliver* pSliver, UT_si
 	}
 }
 
-void FP_Column::reportSliceHeightChanged(FP_BlockSlice* pBS, UT_uint32 iNewHeight)
+void fp_Column::reportSliceHeightChanged(fp_BlockSlice* pBS, UT_uint32 iNewHeight)
 {
 	fp_BlockSliceInfo*	pNode = _findSlice(pBS);
 	UT_ASSERT(pNode);
@@ -349,7 +349,7 @@ void FP_Column::reportSliceHeightChanged(FP_BlockSlice* pBS, UT_uint32 iNewHeigh
 	}
 }
 
-int FP_Column::_repositionSlices()
+int fp_Column::_repositionSlices()
 {
 	UT_ASSERT(m_pG->queryProperties(DG_Graphics::DGP_SCREEN));
 		
@@ -404,9 +404,9 @@ int FP_Column::_repositionSlices()
 	return 0;
 }
 
-void FP_Column::draw(dg_DrawArgs* pDA)
+void fp_Column::draw(dg_DrawArgs* pDA)
 {
-	// draw each FP_BlockSlice on in the column
+	// draw each fp_BlockSlice on in the column
 
 	fp_BlockSliceInfo* pListNode = m_pFirstSlice;
 	while (pListNode)
@@ -418,12 +418,12 @@ void FP_Column::draw(dg_DrawArgs* pDA)
 	}
 }
 
-void FP_Column::dump()
+void fp_Column::dump()
 {
 	fp_BlockSliceInfo* pListNode = m_pFirstSlice;
 	while (pListNode)
 	{
-		UT_DEBUGMSG(("FP_Column::dump(0x%x) - FP_BlockSlice 0x%x in FL_BlockLayout 0x%x.  Offset=%d, height=%d\n", 
+		UT_DEBUGMSG(("fp_Column::dump(0x%x) - fp_BlockSlice 0x%x in FL_BlockLayout 0x%x.  Offset=%d, height=%d\n", 
 			this, 
 			pListNode->pSlice, 
 			pListNode->pSlice->getBlock(), 
@@ -435,15 +435,15 @@ void FP_Column::dump()
 	}
 }
 
-const XML_Char * FP_BoxColumn::myTypeName(void)
+const XML_Char * fp_BoxColumn::myTypeName(void)
 {
 	return "Box";
 }
 
-FP_BoxColumn::FP_BoxColumn(FL_SectionLayout * pSL, const PP_AttrProp * pAP,
+fp_BoxColumn::fp_BoxColumn(fl_SectionLayout * pSL, const PP_AttrProp * pAP,
 								 UT_uint32 iWidthGiven, UT_uint32 iHeightGiven,
 								 UT_sint32 * piXoff, UT_sint32 * piYoff)
-	: FP_Column(pSL)
+	: fp_Column(pSL)
 {
 	const XML_Char * szLeft = "0";
 	const XML_Char * szTop = "0";
@@ -459,11 +459,11 @@ FP_BoxColumn::FP_BoxColumn(FL_SectionLayout * pSL, const PP_AttrProp * pAP,
 	pSL->getLayout()->getGraphics()->scaleDimensions(szTop,szHeight,iHeightGiven, piYoff,&m_iHeight);
 }
 
-FP_BoxColumn::~FP_BoxColumn()
+fp_BoxColumn::~fp_BoxColumn()
 {
 }
 
-UT_uint32 FP_BoxColumn::_getSliverWidth(UT_uint32 iY, UT_uint32 iHeight, UT_uint32* pX)
+UT_uint32 fp_BoxColumn::_getSliverWidth(UT_uint32 iY, UT_uint32 iHeight, UT_uint32* pX)
 {
 	if ((iY + iHeight) >= m_iHeight)
 	{
@@ -478,15 +478,15 @@ UT_uint32 FP_BoxColumn::_getSliverWidth(UT_uint32 iY, UT_uint32 iHeight, UT_uint
 	return m_iWidth;
 }
 
-const XML_Char * FP_CircleColumn::myTypeName(void)
+const XML_Char * fp_CircleColumn::myTypeName(void)
 {
 	return "Circle";
 }
 
-FP_CircleColumn::FP_CircleColumn(FL_SectionLayout * pSL, const PP_AttrProp * pAP,
+fp_CircleColumn::fp_CircleColumn(fl_SectionLayout * pSL, const PP_AttrProp * pAP,
 								 UT_uint32 iWidthGiven, UT_uint32 iHeightGiven,
 								 UT_sint32 * piXoff, UT_sint32 * piYoff)
-	: FP_Column(pSL)
+	: fp_Column(pSL)
 {
 	const XML_Char * szLeft = "0";
 	const XML_Char * szTop = "0";
@@ -518,11 +518,11 @@ FP_CircleColumn::FP_CircleColumn(FL_SectionLayout * pSL, const PP_AttrProp * pAP
 	m_iRadius = myRadius;
 }
 
-FP_CircleColumn::~FP_CircleColumn()
+fp_CircleColumn::~fp_CircleColumn()
 {
 }
 
-UT_uint32 FP_CircleColumn::_getSliverWidth(UT_uint32 iY, UT_uint32 iHeight, UT_uint32* pX)
+UT_uint32 fp_CircleColumn::_getSliverWidth(UT_uint32 iY, UT_uint32 iHeight, UT_uint32* pX)
 {
 	UT_uint32 halfwidth;
 
@@ -545,17 +545,17 @@ UT_uint32 FP_CircleColumn::_getSliverWidth(UT_uint32 iY, UT_uint32 iHeight, UT_u
 	return 2 * halfwidth;
 }
 
-UT_uint32 FP_BoxColumn::getTopOffset(UT_uint32 iLineHeight)
+UT_uint32 fp_BoxColumn::getTopOffset(UT_uint32 iLineHeight)
 {
 	return 0;
 }
 
-UT_uint32 FP_CircleColumn::getTopOffset(UT_uint32 iLineHeight)
+UT_uint32 fp_CircleColumn::getTopOffset(UT_uint32 iLineHeight)
 {
 	return iLineHeight;
 }
 
-UT_Bool FP_BoxColumn::containsPoint(UT_sint32 x, UT_sint32 y)
+UT_Bool fp_BoxColumn::containsPoint(UT_sint32 x, UT_sint32 y)
 {
 	if ((x < 0) || (x >= (UT_sint32)m_iWidth))
 	{
@@ -569,7 +569,7 @@ UT_Bool FP_BoxColumn::containsPoint(UT_sint32 x, UT_sint32 y)
 	return UT_TRUE;
 }
 
-void FP_Column::mapXYToPosition(UT_sint32 x, UT_sint32 y, PT_DocPosition& pos, UT_Bool& bRight)
+void fp_Column::mapXYToPosition(UT_sint32 x, UT_sint32 y, PT_DocPosition& pos, UT_Bool& bRight)
 {
 	fp_BlockSliceInfo* pListNode = m_pFirstSlice;
 	UT_uint32 iMinDist = 0xffffffff;
@@ -619,7 +619,7 @@ void FP_Column::mapXYToPosition(UT_sint32 x, UT_sint32 y, PT_DocPosition& pos, U
 	return;
 }
 
-UT_Bool FP_CircleColumn::containsPoint(UT_sint32 x, UT_sint32 y)
+UT_Bool fp_CircleColumn::containsPoint(UT_sint32 x, UT_sint32 y)
 {
 	if ((sqrt(((y - m_iRadius) * (y - m_iRadius)) + ((x - m_iRadius) * (x - m_iRadius)))) > m_iRadius)
 	{
@@ -629,13 +629,13 @@ UT_Bool FP_CircleColumn::containsPoint(UT_sint32 x, UT_sint32 y)
 	return UT_TRUE;
 }
 
-UT_uint32 	FP_CircleColumn::distanceFromPoint(UT_sint32 x, UT_sint32 y)
+UT_uint32 	fp_CircleColumn::distanceFromPoint(UT_sint32 x, UT_sint32 y)
 {
 	UT_uint32 dist = (UT_uint32) ((sqrt(((y - m_iRadius) * (y - m_iRadius)) + ((x - m_iRadius) * (x - m_iRadius)))));
 	return dist - m_iRadius;
 }
 
-UT_uint32	FP_BoxColumn::distanceFromPoint(UT_sint32 x, UT_sint32 y)
+UT_uint32	fp_BoxColumn::distanceFromPoint(UT_sint32 x, UT_sint32 y)
 {
 	UT_sint32 dx;
 	UT_sint32 dy;

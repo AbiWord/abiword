@@ -32,7 +32,7 @@
 #include "fl_DocLayout.h"
 
 
-FL_ColumnSetLayout::FL_ColumnSetLayout(FL_SectionLayout * pSectionLayout, PL_StruxDocHandle sdh)
+fl_ColumnSetLayout::fl_ColumnSetLayout(fl_SectionLayout * pSectionLayout, PL_StruxDocHandle sdh)
 	: fl_Layout(PTX_ColumnSet, sdh)
 {
 	m_pSectionLayout = pSectionLayout;
@@ -41,11 +41,11 @@ FL_ColumnSetLayout::FL_ColumnSetLayout(FL_SectionLayout * pSectionLayout, PL_Str
 	m_pLastColumnLayout = NULL;
 }
 
-FL_ColumnSetLayout::~FL_ColumnSetLayout()
+fl_ColumnSetLayout::~fl_ColumnSetLayout()
 {
 	while (m_pFirstColumnLayout)
 	{
-		FL_ColumnLayout* pNext = m_pFirstColumnLayout->getNext();
+		fl_ColumnLayout* pNext = m_pFirstColumnLayout->getNext();
 		delete m_pFirstColumnLayout;
 		m_pFirstColumnLayout = pNext;
 	}
@@ -53,17 +53,17 @@ FL_ColumnSetLayout::~FL_ColumnSetLayout()
 	m_pLastColumnLayout = NULL;
 }
 
-FL_SectionLayout * FL_ColumnSetLayout::getSectionLayout(void) const
+fl_SectionLayout * fl_ColumnSetLayout::getSectionLayout(void) const
 {
 	return m_pSectionLayout;
 }
 
-FL_ColumnLayout * FL_ColumnSetLayout::getFirstColumnLayout(void) const
+fl_ColumnLayout * fl_ColumnSetLayout::getFirstColumnLayout(void) const
 {
 	return m_pFirstColumnLayout;
 }
 
-void FL_ColumnSetLayout::appendColumnLayout(FL_ColumnLayout * pCL)
+void fl_ColumnSetLayout::appendColumnLayout(fl_ColumnLayout * pCL)
 {
 	if (!m_pLastColumnLayout)
 	{

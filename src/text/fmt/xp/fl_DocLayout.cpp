@@ -67,8 +67,8 @@ FL_DocLayout::~FL_DocLayout()
 	if (m_pDocListener)
 		delete m_pDocListener;
 
-	UT_VECTOR_PURGEALL(FP_Page, m_vecPages);
-	UT_VECTOR_PURGEALL(FL_SectionLayout, m_vecSectionLayouts);
+	UT_VECTOR_PURGEALL(fp_Page, m_vecPages);
+	UT_VECTOR_PURGEALL(fl_SectionLayout, m_vecSectionLayouts);
 
 	if (m_pDoc)
 		delete m_pDoc;
@@ -78,7 +78,7 @@ void FL_DocLayout::setView(FV_View* pView)
 {
 	m_pView = pView;
 
-	FP_Page* pPage = getFirstPage();
+	fp_Page* pPage = getFirstPage();
 	
 	while (pPage)
 	{
@@ -105,7 +105,7 @@ UT_uint32 FL_DocLayout::getHeight()
 
 	for (int i=0; i<count; i++)
 	{
-		FP_Page* p = (FP_Page*) m_vecPages.getNthItem(i);
+		fp_Page* p = (fp_Page*) m_vecPages.getNthItem(i);
 
 		iHeight += p->getHeight();
 	}
@@ -120,7 +120,7 @@ UT_uint32 FL_DocLayout::getWidth()
 
 	for (int i=0; i<count; i++)
 	{
-		FP_Page* p = (FP_Page*) m_vecPages.getNthItem(i);
+		fp_Page* p = (fp_Page*) m_vecPages.getNthItem(i);
 
 		iWidth += p->getWidth();
 	}
@@ -133,30 +133,30 @@ int FL_DocLayout::countPages()
 	return m_vecPages.getItemCount();
 }
 
-FP_Page* FL_DocLayout::getNthPage(int n)
+fp_Page* FL_DocLayout::getNthPage(int n)
 {
 	UT_ASSERT(m_vecPages.getItemCount() > 0);
 
-	return (FP_Page*) m_vecPages.getNthItem(n);
+	return (fp_Page*) m_vecPages.getNthItem(n);
 }
 
-FP_Page* FL_DocLayout::getFirstPage()
+fp_Page* FL_DocLayout::getFirstPage()
 {
 	UT_ASSERT(m_vecPages.getItemCount() > 0);
 
-	return (FP_Page*) m_vecPages.getNthItem(0);
+	return (fp_Page*) m_vecPages.getNthItem(0);
 }
 
-FP_Page* FL_DocLayout::getLastPage()
+fp_Page* FL_DocLayout::getLastPage()
 {
 	UT_ASSERT(m_vecPages.getItemCount() > 0);
 
-	return (FP_Page*) m_vecPages.getNthItem(m_vecPages.getItemCount()-1);
+	return (fp_Page*) m_vecPages.getNthItem(m_vecPages.getItemCount()-1);
 }
 
-FP_Page* FL_DocLayout::addNewPage()
+fp_Page* FL_DocLayout::addNewPage()
 {
-	FP_Page*		pLastPage;
+	fp_Page*		pLastPage;
 
 	if (countPages() > 0)
 	{
@@ -168,7 +168,7 @@ FP_Page* FL_DocLayout::addNewPage()
 	}
 	
 	// TODO pass the margins.  which ones?
-	FP_Page*		pPage = new FP_Page(this, m_pView, 850, 1100, 100, 100, 100, 100);
+	fp_Page*		pPage = new fp_Page(this, m_pView, 850, 1100, 100, 100, 100, 100);
 	if (pLastPage)
 	{
 		UT_ASSERT(pLastPage->getNext() == NULL);
@@ -180,9 +180,9 @@ FP_Page* FL_DocLayout::addNewPage()
 	return pPage;
 }
 
-FL_BlockLayout* FL_DocLayout::findBlockAtPosition(PT_DocPosition pos)
+fl_BlockLayout* FL_DocLayout::findBlockAtPosition(PT_DocPosition pos)
 {
-	FL_BlockLayout* pBL = NULL;
+	fl_BlockLayout* pBL = NULL;
 	PL_StruxFmtHandle sfh;
 
 	if (m_pDoc->getStruxFromPosition(m_lid, pos, &sfh))
@@ -191,7 +191,7 @@ FL_BlockLayout* FL_DocLayout::findBlockAtPosition(PT_DocPosition pos)
 		switch (pL->getType())
 		{
 		case PTX_Block:
-			pBL = static_cast<FL_BlockLayout *>(pL);
+			pBL = static_cast<fl_BlockLayout *>(pL);
 			break;
 				
 		case PTX_Section:
@@ -224,7 +224,7 @@ int FL_DocLayout::formatAll()
 		
 		for (int i=0; i<countSections; i++)
 		{
-			FL_SectionLayout* pSL = (FL_SectionLayout*) m_vecSectionLayouts.getNthItem(i);
+			fl_SectionLayout* pSL = (fl_SectionLayout*) m_vecSectionLayouts.getNthItem(i);
 
 			bStillGoing = pSL->format() || bStillGoing;
 		}
@@ -245,7 +245,7 @@ int FL_DocLayout::reformat()
 		
 		for (int i=0; i<countSections; i++)
 		{
-			FL_SectionLayout* pSL = (FL_SectionLayout*) m_vecSectionLayouts.getNthItem(i);
+			fl_SectionLayout* pSL = (fl_SectionLayout*) m_vecSectionLayouts.getNthItem(i);
 
 			bStillGoing = pSL->reformat() || bStillGoing;
 		}
@@ -261,7 +261,7 @@ void FL_DocLayout::dump()
 
 	for (int i=0; i<count; i++)
 	{
-		FP_Page* p = (FP_Page*) m_vecPages.getNthItem(i);
+		fp_Page* p = (fp_Page*) m_vecPages.getNthItem(i);
 
 		p->dump();
 	}

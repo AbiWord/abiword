@@ -36,7 +36,7 @@
 #include "fp_Column.h"
 
 
-FL_ColumnLayout::FL_ColumnLayout(FL_ColumnSetLayout * pCSL, PL_StruxDocHandle sdh)
+fl_ColumnLayout::fl_ColumnLayout(fl_ColumnSetLayout * pCSL, PL_StruxDocHandle sdh)
 	: fl_Layout(PTX_Column, sdh)
 {
 	m_pColumnSetLayout = pCSL;
@@ -45,42 +45,42 @@ FL_ColumnLayout::FL_ColumnLayout(FL_ColumnSetLayout * pCSL, PL_StruxDocHandle sd
 	m_next = NULL;
 }
 
-FL_ColumnLayout::~FL_ColumnLayout()
+fl_ColumnLayout::~fl_ColumnLayout()
 {
 }
 
-FL_ColumnLayout * FL_ColumnLayout::setNext(FL_ColumnLayout * pCL)
+fl_ColumnLayout * fl_ColumnLayout::setNext(fl_ColumnLayout * pCL)
 {
-	FL_ColumnLayout * pOld = m_next;
+	fl_ColumnLayout * pOld = m_next;
 	m_next = pCL;
 	return pOld;
 }
 
-FL_ColumnLayout * FL_ColumnLayout::setPrev(FL_ColumnLayout * pCL)
+fl_ColumnLayout * fl_ColumnLayout::setPrev(fl_ColumnLayout * pCL)
 {
-	FL_ColumnLayout * pOld = m_prev;
+	fl_ColumnLayout * pOld = m_prev;
 	m_prev = pCL;
 	return pOld;
 }
 
-FL_ColumnLayout * FL_ColumnLayout::getNext(void) const
+fl_ColumnLayout * fl_ColumnLayout::getNext(void) const
 {
 	return m_next;
 }
 
-FL_ColumnLayout * FL_ColumnLayout::getPrev(void) const
+fl_ColumnLayout * fl_ColumnLayout::getPrev(void) const
 {
 	return m_prev;
 }
 
-UT_Bool FL_ColumnLayout::getNewColumn(UT_uint32 iWidthGiven, UT_uint32 iHeightGiven,
-									  FP_Column ** ppCol,
+UT_Bool fl_ColumnLayout::getNewColumn(UT_uint32 iWidthGiven, UT_uint32 iHeightGiven,
+									  fp_Column ** ppCol,
 									  UT_sint32 * piXoff, UT_sint32 * piYoff) const
 {
 	// TODO make this routine fail rather than assert.
 	
 	UT_Bool bResult;
-	FL_SectionLayout * pSL = m_pColumnSetLayout->getSectionLayout();
+	fl_SectionLayout * pSL = m_pColumnSetLayout->getSectionLayout();
 	PD_Document * pDoc = pSL->getLayout()->getDocument();
 	UT_ASSERT(pDoc);
 
@@ -93,11 +93,11 @@ UT_Bool FL_ColumnLayout::getNewColumn(UT_uint32 iWidthGiven, UT_uint32 iHeightGi
 	bResult = pAP->getAttribute("type",szValueType);
 	UT_ASSERT(bResult);
 
-	FP_Column * pCol = NULL;
-	if (UT_XML_stricmp(szValueType,FP_BoxColumn::myTypeName()) == 0)
-		pCol = new FP_BoxColumn(pSL,pAP,iWidthGiven,iHeightGiven, piXoff,piYoff);
-	else if (UT_XML_stricmp(szValueType,FP_CircleColumn::myTypeName()) == 0)
-		pCol = new FP_CircleColumn(pSL,pAP,iWidthGiven,iHeightGiven, piXoff,piYoff);
+	fp_Column * pCol = NULL;
+	if (UT_XML_stricmp(szValueType,fp_BoxColumn::myTypeName()) == 0)
+		pCol = new fp_BoxColumn(pSL,pAP,iWidthGiven,iHeightGiven, piXoff,piYoff);
+	else if (UT_XML_stricmp(szValueType,fp_CircleColumn::myTypeName()) == 0)
+		pCol = new fp_CircleColumn(pSL,pAP,iWidthGiven,iHeightGiven, piXoff,piYoff);
 	else
 	{
 		UT_DEBUGMSG(("unknown column type\n"));
