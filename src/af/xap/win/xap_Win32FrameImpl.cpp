@@ -319,17 +319,17 @@ bool XAP_Win32FrameImpl::_close(void)
 	wndPlacement.length = sizeof(WINDOWPLACEMENT); // must do
 	if (GetWindowPlacement(m_hwndFrame, &wndPlacement))
 	{
+		UT_uint32 nFlags = PREF_FLAG_GEOMETRY_POS | PREF_FLAG_GEOMETRY_SIZE;
+
+		if (wndPlacement.showCmd == SW_SHOWMAXIMIZED)
+			nFlags |= PREF_FLAG_GEOMETRY_MAXIMIZED;
+
 		XAP_App::getApp()->setGeometry(wndPlacement.rcNormalPosition.left, 
 				wndPlacement.rcNormalPosition.top, 
 				wndPlacement.rcNormalPosition.right - wndPlacement.rcNormalPosition.left,
-				wndPlacement.rcNormalPosition.bottom - wndPlacement.rcNormalPosition.top,
-				/* flag is meant for info about the position & size info stored, not a generic flag
-				 * TODO: figure out where to store this then, so we can max/min/normal again
-				wndPlacement.showCmd
-				*/
-				PREF_FLAG_GEOMETRY_POS | PREF_FLAG_GEOMETRY_SIZE
-		);
-	}
+				wndPlacement.rcNormalPosition.bottom - wndPlacement.rcNormalPosition.top,	
+				nFlags);
+	}	
 	else
 	{
 		// if failed to get placement then invalidate stored settings

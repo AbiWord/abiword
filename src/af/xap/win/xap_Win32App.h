@@ -82,7 +82,7 @@ public:
 	virtual UT_sint32					makeDirectory(const char * szPath, const UT_sint32 mode ) const;
 	virtual UT_sint32 				setupWindowFromPrefs(UT_sint32 iCmdShow, HWND hwndFrame);
     virtual XAP_App::BidiSupportType        theOSHasBidiSupport() const {return m_eBidiOS;}
-
+	void									getDefaultGeometry(UT_uint32& width, UT_uint32& height, UT_uint32& flags);
 protected:
 	UT_uint32								_getExeDir(char* pDirBuf, UT_uint32 iBufLen);
 	void									_setAbiSuiteLibDir(void);

@@ -32,6 +32,7 @@
 #include "xap_Win32_TB_CFactory.h"
 #include "xap_Win32Slurp.h"
 #include "xap_Win32EncodingManager.h"
+#include "xap_Prefs.h"
 
 #ifdef _MSC_VER
 #pragma warning(disable:4355)	// 'this' used in base member initializer list
@@ -499,6 +500,7 @@ const char * XAP_Win32App::getUTF8String (const WCHAR * p_str)
 	}
 }
 
+
 #else
 const char * XAP_Win32App::getWideString (const char * utf8input)
 {
@@ -512,4 +514,12 @@ const char * XAP_Win32App::getUTF8String (const char * p_str)
 
 #endif
 
+
+void XAP_Win32App::getDefaultGeometry(UT_uint32& width, UT_uint32& height, UT_uint32& flags)
+{
+	flags |= PREF_FLAG_GEOMETRY_MAXIMIZED;
+	
+	width = GetSystemMetrics(SM_CXFULLSCREEN);
+	height = GetSystemMetrics(SM_CYFULLSCREEN);	
+}
 
