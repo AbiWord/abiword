@@ -7239,6 +7239,7 @@ void FV_View::setShowPara(bool bShowPara)
 	{
 		m_bShowPara = bShowPara;
 
+		m_pLayout->rebuildFromHere(static_cast<fl_DocSectionLayout *>(m_pLayout->getFirstSection()));
 		if(getPoint() > 0)
 		{
 			draw();
