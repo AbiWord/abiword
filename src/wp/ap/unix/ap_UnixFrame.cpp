@@ -292,7 +292,10 @@ void AP_UnixFrame::translateDocumentToScreen(UT_sint32 &x, UT_sint32 &y)
 
 void AP_UnixFrame::setStatusMessage(const char * szMsg)
 {
-	((AP_FrameData *)m_pData)->m_pStatusBar->setStatusMessage(szMsg);
+	if(getFrameMode() == XAP_NormalFrame)
+	{
+		((AP_FrameData *)m_pData)->m_pStatusBar->setStatusMessage(szMsg);
+	}
 }
 
 void AP_UnixFrame::toggleTopRuler(bool bRulerOn)

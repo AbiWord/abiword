@@ -858,8 +858,10 @@ void AP_LeftRuler::_ignoreEvent(bool bDone)
 	// Clear messages from status bar.
 
 	AP_FrameData * pFrameData = (AP_FrameData *)m_pFrame->getFrameData();
-	pFrameData->m_pStatusBar->setStatusMessage("");
-
+	if(m_pFrame->getFrameMode() == XAP_NormalFrame)
+	{
+		pFrameData->m_pStatusBar->setStatusMessage("");
+	}
 	// erase the widget that we are dragging.   remember what we
 	// are dragging, clear it, and then restore it at the bottom.
 	
@@ -1508,6 +1510,9 @@ void AP_LeftRuler::_displayStatusMessage(XAP_String_Id messageID, const ap_Ruler
 	sprintf(temp, pzMessageFormat, pText);
 
 	AP_FrameData * pFrameData = (AP_FrameData *)m_pFrame->getFrameData();
-	pFrameData->m_pStatusBar->setStatusMessage(temp);
+	if(m_pFrame->getFrameMode() == XAP_NormalFrame)
+	{
+		pFrameData->m_pStatusBar->setStatusMessage(temp);
+	}
 }
 

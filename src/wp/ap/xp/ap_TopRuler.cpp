@@ -1552,7 +1552,10 @@ bool AP_TopRuler::isMouseOverTab(UT_uint32 x, UT_uint32 y)
 
 
 	AP_FrameData * pFrameData = (AP_FrameData *)m_pFrame->getFrameData();
-	pFrameData->m_pStatusBar->setStatusMessage("");
+	if(m_pFrame->getFrameMode() == XAP_NormalFrame)
+	{
+		pFrameData->m_pStatusBar->setStatusMessage("");
+	}
 	return false;
 }
 
@@ -3604,8 +3607,10 @@ void AP_TopRuler::_ignoreEvent(bool bDone)
 	// Clear messages from status bar.
 
 	AP_FrameData * pFrameData = (AP_FrameData *)m_pFrame->getFrameData();
-	pFrameData->m_pStatusBar->setStatusMessage("");
-
+	if(m_pFrame->getFrameMode() == XAP_NormalFrame)
+	{
+		pFrameData->m_pStatusBar->setStatusMessage("");
+	}
 
 	// erase the widget that we are dragging.   remember what we
 	// are dragging, clear it, and then restore it at the bottom.
@@ -4048,7 +4053,10 @@ void AP_TopRuler::_displayStatusMessage(XAP_String_Id messageID, const ap_RulerT
 	UT_String temp(UT_String_sprintf(pzMessageFormat.c_str(), pText));
 
 	AP_FrameData * pFrameData = (AP_FrameData *)m_pFrame->getFrameData();
-	pFrameData->m_pStatusBar->setStatusMessage(temp.c_str());
+	if(m_pFrame->getFrameMode() == XAP_NormalFrame)
+	{
+		pFrameData->m_pStatusBar->setStatusMessage(temp.c_str());
+	}
 }
 
 void AP_TopRuler::_displayStatusMessage(XAP_String_Id messageID, const ap_RulerTicks &tick, double dValue1, double dValue2)
@@ -4062,7 +4070,10 @@ void AP_TopRuler::_displayStatusMessage(XAP_String_Id messageID, const ap_RulerT
 	UT_String temp(UT_String_sprintf(pzMessageFormat.c_str(), buf1, pText));
 
 	AP_FrameData * pFrameData = (AP_FrameData *)m_pFrame->getFrameData();
-	pFrameData->m_pStatusBar->setStatusMessage(temp.c_str());
+	if(m_pFrame->getFrameMode() == XAP_NormalFrame)
+	{
+		pFrameData->m_pStatusBar->setStatusMessage(temp.c_str());
+	}
 }
 
 void AP_TopRuler::_displayStatusMessage(XAP_String_Id FormatMessageID, UT_sint32 iCol, const char * /*format*/)
@@ -4072,7 +4083,10 @@ void AP_TopRuler::_displayStatusMessage(XAP_String_Id FormatMessageID, UT_sint32
 	UT_String_sprintf(sCell,pzMessageFormat.c_str(),iCol);
 
 	AP_FrameData * pFrameData = (AP_FrameData *)m_pFrame->getFrameData();
-	pFrameData->m_pStatusBar->setStatusMessage(sCell.c_str());
+	if(m_pFrame->getFrameMode() == XAP_NormalFrame)
+	{
+		pFrameData->m_pStatusBar->setStatusMessage(sCell.c_str());
+	}
 }
 
 
@@ -4081,7 +4095,10 @@ void AP_TopRuler::_displayStatusMessage(XAP_String_Id FormatMessageID)
 	UT_String pzMessageFormat(m_pFrame->getApp()->getStringSet()->getValue(FormatMessageID, XAP_App::getApp()->getDefaultEncoding()));
 
 	AP_FrameData * pFrameData = (AP_FrameData *)m_pFrame->getFrameData();
-	pFrameData->m_pStatusBar->setStatusMessage(pzMessageFormat.c_str());
+	if(m_pFrame->getFrameMode() == XAP_NormalFrame)
+	{
+		pFrameData->m_pStatusBar->setStatusMessage(pzMessageFormat.c_str());
+	}
 }
 
 /* lambda */ void AP_TopRuler::_autoScroll(UT_Worker * pWorker)

@@ -329,9 +329,10 @@ UT_Error AP_Frame::_showDocument(UT_uint32 iZoom)
 	if (!_createScrollBarListeners(pView, pScrollObj, pViewListener, pScrollbarViewListener,
 				       lid, lidScrollbarViewListener))
 		goto Cleanup;
-
-	_bindToolbars(pView);	
-
+	if(getFrameMode() ==XAP_NormalFrame)
+	{
+		_bindToolbars(pView);	
+	}
 	_replaceView(pG, pDocLayout, pView, pScrollObj, pViewListener, pOldDoc, 
 		     pScrollbarViewListener, lid, lidScrollbarViewListener, iZoom);
 

@@ -1135,9 +1135,10 @@ void XAP_UnixFrameImpl::createTopLevelWindow(void)
 	g_signal_connect(G_OBJECT(m_wTopLevelWindow), "key_release_event",
 					   G_CALLBACK(_fe::key_release_event), NULL);
 
-
-	_createToolbars();
-
+	if(m_iFrameMode == XAP_NormalFrame)
+	{
+		_createToolbars();
+	}
 	// Let the app-specific frame code create the contents of
 	// the child area of the window (between the toolbars and
 	// the status bar).
@@ -1150,9 +1151,12 @@ void XAP_UnixFrameImpl::createTopLevelWindow(void)
 	// window (a peer with toolbars and the overall sunkenbox)
 	// so that it will appear outside of the scrollbars.
 	m_wStatusBar = NULL;
-	m_wStatusBar = _createStatusBarWindow();
-
-	if (m_wStatusBar) {
+	if(m_iFrameMode == XAP_NormalFrame)
+	{
+		m_wStatusBar = _createStatusBarWindow();
+	}
+	if (m_wStatusBar) 
+	{
 		gtk_widget_show(m_wStatusBar);
 		gtk_box_pack_end(GTK_BOX(m_wVBox), m_wStatusBar, FALSE, FALSE, 0);
 	}
@@ -1160,8 +1164,10 @@ void XAP_UnixFrameImpl::createTopLevelWindow(void)
 	gtk_widget_show(m_wVBox);
 
 	// set the icon
-	_setWindowIcon();
-
+	if(m_iFrameMode == XAP_NormalFrame)
+	{
+		_setWindowIcon();
+	}
 	// we let our caller decide when to show m_wTopLevelWindow.
 	return;
 }

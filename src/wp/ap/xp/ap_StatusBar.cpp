@@ -434,6 +434,10 @@ bool AP_StatusBar::notify(AV_View * pView, const AV_ChangeMask mask)
 	// to hang around and clear it at some point in the future.
 	// This way, message will get cleared any time the user does
 	// something with the window.
+	if(getFrame()->getFrameMode() != XAP_NormalFrame)
+	{
+		return true;
+	}
 
 	if (*m_bufUCS)
 		setStatusMessage((UT_UCSChar *)NULL);
@@ -458,6 +462,11 @@ bool AP_StatusBar::notify(AV_View * pView, const AV_ChangeMask mask)
 
 void AP_StatusBar::setStatusMessage(UT_UCSChar * pBufUCS, int redraw)
 {
+	if(getFrame()->getFrameMode() != XAP_NormalFrame)
+	{
+		return;
+	}
+
 	memset(m_bufUCS, 0, sizeof(m_bufUCS));
 
 	if (pBufUCS && *pBufUCS) {
@@ -472,6 +481,11 @@ void AP_StatusBar::setStatusMessage(UT_UCSChar * pBufUCS, int redraw)
 
 void AP_StatusBar::setStatusMessage(const char * pBuf, int redraw)
 {
+	if(getFrame()->getFrameMode() != XAP_NormalFrame)
+	{
+		return;
+	}
+
 	UT_uint32 len = ((pBuf && *pBuf) ? strlen(pBuf) : 0);
 	UT_ASSERT(len*MB_LEN_MAX < AP_MAX_MESSAGE_FIELD);
 
