@@ -904,6 +904,10 @@ bool FV_View::isInFrame(PT_DocPosition pos)
 	{
 		return true;
 	}
+	if(m_pDoc->isFrameAtPos(pos-1) && !m_pDoc->isEndFrameAtPos(pos))
+	{
+		return true;
+	}
 	fl_BlockLayout* pBlock = _findBlockAtPosition(pos);
 
 	if(pBlock)

@@ -8795,17 +8795,14 @@ bool IE_Imp_RTF::insertStrux(PTStruxType pts , const XML_Char ** attrs, const XM
 		if(pView->isInFrame(m_dposPaste))
 		{
 			PT_DocPosition pos = m_dposPaste;
-			while(pView->isInFrame(pos) && pos <= posEOD)
+			
+			while(( getDoc()->isFrameAtPos(pos) || pView->isInFrame(pos)) && pos <= posEOD)
 			{
 				pos++;
 			} 
 			if(pos > posEOD)
 			{
-				pos = m_dposPaste;
-				while(pView->isInFrame(pos) && pos > 2)
-				{
-					pos--;
-				} 
+				pos = posEOD;
 			}
 			m_dposPaste = pos;
 		}
