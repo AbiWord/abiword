@@ -97,7 +97,7 @@ FV_View::FV_View(void* pParentData, FL_DocLayout* pLayout)
 	m_iSelectionAnchor = _getPoint();
 	_resetSelection();
 	_fixInsertionPointCoords();
-	//spellCheckTimer = NULL;
+	spellCheckTimer = NULL;
 
 	findReset();
 }
