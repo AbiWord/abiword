@@ -115,7 +115,7 @@ void XAP_UnixDialog_Password::runModal(XAP_Frame * pFrame)
 	gtk_grab_add (cf);
 
 	// grab focus from the keyboard to the current window
-	// stops password snooping supposedly
+	// reduces chances of password snooping
 	window = gtk_widget_get_parent_window(GTK_WIDGET(cf));
 	gdk_keyboard_grab(window, FALSE, GDK_CURRENT_TIME);
 
