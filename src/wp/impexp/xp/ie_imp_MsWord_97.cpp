@@ -26,6 +26,7 @@
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
 #include "ut_string.h"
+#include "ut_growbuf.h"
 #include "ie_imp_MsWord_97.h"
 #include "pd_Document.h"
 
@@ -38,9 +39,11 @@ IEStatus IE_Imp_MsWord_97::importFile(const char * szFilename)
 	unsigned long header[2];
 	FIB fib;
 	int nBytes;
-	UT_UCSChar *charBuffer = NULL;
+	UT_GrowBuf gbBlock;
+	int offset = 0;
+
 	UT_Bool bResult;
-	const char *attr[] = {"type", "Box", "left", "0pt", "top", "0pt", "width", "400pt", "height", "500pt", NULL};
+	const char *attr[] = {"type", "Box", "left", "0pt", "top", "0pt", "width", "*", "height", "*", NULL};
 
 	FILE *fp = NULL;
 
@@ -77,8 +80,11 @@ IEStatus IE_Imp_MsWord_97::importFile(const char * szFilename)
 	fseek(fp, 0x200 + fib.fcMin, SEEK_SET);
 
 	nBytes = fib.fcMac - fib.fcMin;
-
-	charBuffer = new UT_UCSChar[nBytes];
+	
+	m_pDocument->appendStrux(PTX_Section, NULL);
+	m_pDocument->appendStrux(PTX_ColumnSet, NULL);
+	m_pDocument->appendStrux(PTX_Column, attr);
+	m_pDocument->appendStrux(PTX_Block, NULL);
 
 	while (i < nBytes)
 	{
@@ -87,23 +93,30 @@ IEStatus IE_Imp_MsWord_97::importFile(const char * szFilename)
 		readUByte(fp, &c, 1);
 
 		if (c == 13)
-			charBuffer[i] = ' ';
+		{
+			m_pDocument->appendStrux(PTX_Block, NULL);
+
+			if (gbBlock.getLength() > 0)
+			{
+				bResult = m_pDocument->appendSpan(gbBlock.getPointer(0), gbBlock.getLength());
+				gbBlock.truncate(0);
+			}
+			offset = 0;
+		}
 		else
-			charBuffer[i] = c;
+		{
+			// HACK: this cast is bogus
+			UT_UCSChar * uc = (UT_UCSChar *) &c;
+
+			gbBlock.ins(offset, 1);
+			gbBlock.overwrite(offset, uc, 1);
+			offset++;
+		}
 
 		++i;
 	}
-	
-	m_pDocument->appendStrux(PTX_Section, NULL);
-	m_pDocument->appendStrux(PTX_ColumnSet, NULL);
-	m_pDocument->appendStrux(PTX_Column, attr);
-	m_pDocument->appendStrux(PTX_Block, NULL);
-
-	bResult = m_pDocument->appendSpan(charBuffer, i);
 
 	m_iestatus = IES_OK;
-
-	delete []charBuffer;
 
 Cleanup:
 	if (fp)
@@ -122,6 +135,7 @@ IE_Imp_MsWord_97::IE_Imp_MsWord_97(PD_Document * pDocument)
 	m_parseState = _PS_Init;
 }
 
+#if 0	// save this for later?
 /*****************************************************************/
 /*****************************************************************/
 
@@ -182,6 +196,7 @@ static UT_uint32 s_mapNameToToken(const XML_Char * name)
 
 /*****************************************************************/
 /*****************************************************************/
+#endif
 
 int IE_Imp_MsWord_97::readUByte(FILE *fp, unsigned char *c, int num)
 {
@@ -248,7 +263,7 @@ int IE_Imp_MsWord_97::readShort(FILE *fp, short *s, int num)
 int IE_Imp_MsWord_97::readULong(FILE *fp, unsigned long *l, int num)
 {
 	unsigned char b[4];
-	int ret, i;
+	int i;
 
 	for (i = 0; i < num; i++)
 	{
@@ -264,7 +279,7 @@ int IE_Imp_MsWord_97::readULong(FILE *fp, unsigned long *l, int num)
 int IE_Imp_MsWord_97::readLong(FILE *fp, long *l, int num)
 {
 	unsigned char b[4];
-	int ret, i;
+	int i;
 
 	for (i = 0; i < num; i++)
 	{
