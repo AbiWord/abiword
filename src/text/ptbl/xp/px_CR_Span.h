@@ -38,6 +38,7 @@ public:
 	virtual PX_ChangeRecord * reverse(void) const;
 
 	UT_uint32				getLength(void) const;
+	PT_BufIndex				getBufIndex(void) const;
 	
 protected:
 	PT_BufIndex				m_bufIndex;	/* bufIndex to our text */

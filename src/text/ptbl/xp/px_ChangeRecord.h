@@ -47,6 +47,7 @@ public:
 	UT_Byte					getFlags(void) const;
 	PT_DocPosition			getPosition(void) const;
 	PT_AttrPropIndex		getIndexAP(void) const;
+	UT_Bool					getSide(void) const;
 
 	virtual PX_ChangeRecord * reverse(void) const;
 	UT_Byte					getRevFlags(void) const;

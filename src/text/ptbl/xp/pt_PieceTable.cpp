@@ -887,6 +887,56 @@ void pt_PieceTable::endUserAtomicGlob(void)
 	m_history.addChangeRecord(pcr);
 }
 
+UT_Bool pt_PieceTable::_doTheDo(const PX_ChangeRecord * pcr)
+{
+	// actually do the work of the undo or redo.
+
+	switch (pcr->getType())
+	{
+	case PX_ChangeRecord::PXT_UserAtomicGlobMarker:
+		return UT_TRUE;
+		
+	case PX_ChangeRecord::PXT_InsertSpan:
+		{
+			const PX_ChangeRecord_Span * pcrSpan = static_cast<const PX_ChangeRecord_Span *>(pcr);
+			pf_Frag_Strux * pfs = NULL;
+			pf_Frag_Text * pft = NULL;
+			PT_BlockOffset fragOffset = 0;
+			if (!getTextFragFromPosition(pcrSpan->getPosition(),pcrSpan->getSide(),&pfs,&pft,&fragOffset))
+				return UT_FALSE;
+			UT_ASSERT(pft->getIndexAP() == pcrSpan->getIndexAP());
+			if (!_insertSpan(pft,pcrSpan->getBufIndex(),pcrSpan->getSide(),fragOffset,pcrSpan->getLength()))
+				return UT_FALSE;
+			m_pDocument->notifyListeners(pfs,pcr);
+		}
+		return UT_TRUE;
+		
+	case PX_ChangeRecord::PXT_DeleteSpan:
+		{
+			// Our deleteSpan is much simpler than the main routine.
+			// We can do this becase the change history is composed
+			// of atomic operations, whereas the main routine has to
+			// to deal with whatever the user chose to do (and cut
+			// it into a series of steps).
+
+			const PX_ChangeRecord_Span * pcrSpan = static_cast<const PX_ChangeRecord_Span *>(pcr);
+			pf_Frag_Strux * pfs = NULL;
+			pf_Frag_Text * pft = NULL;
+			PT_BlockOffset fragOffset = 0;
+			if (!getTextFragFromPosition(pcrSpan->getPosition(),UT_FALSE,&pfs,&pft,&fragOffset))
+				return UT_FALSE;
+			UT_ASSERT(pft->getIndexAP() == pcrSpan->getIndexAP());
+			_deleteSpan(pft,fragOffset,pcrSpan->getBufIndex(),pcrSpan->getLength());
+			m_pDocument->notifyListeners(pfs,pcr);
+		}
+		return UT_TRUE;
+		
+	default:
+		UT_ASSERT(0);
+		return UT_FALSE;
+	}
+}
+
 UT_Bool pt_PieceTable::undoCmd(void)
 {
 	// do a user-atomic undo.
@@ -907,14 +957,13 @@ UT_Bool pt_PieceTable::undoCmd(void)
 	UT_Byte flagsFirst = pcr->getFlags();
 	while (m_history.getUndo(&pcr))
 	{
-		PX_ChangeRecord * pcrRev = pcr->reverse();
+		PX_ChangeRecord * pcrRev = pcr->reverse(); // we must delete this.
 		UT_ASSERT(pcrRev);
 		UT_Byte flagsRev = pcrRev->getFlags();
-//TODO update fragments
-		pf_Frag_Strux * pfs = NULL;
-		UT_Bool bResult = _getStruxFromPosition(pcrRev->getPosition(),&pfs);
-		m_pDocument->notifyListeners(pfs,pcrRev);
+		UT_Bool bResult = _doTheDo(pcrRev);
 		delete pcrRev;
+		if (!bResult)
+			return UT_FALSE;
 		m_history.didUndo();
 		if (flagsRev == flagsFirst)		// stop when we have a matching end
 			break;
@@ -940,16 +989,13 @@ UT_Bool pt_PieceTable::redoCmd(void)
 	// for a multi-step or user-atomic we loop until we do the
 	// corresponding other end.
 	
-	UT_Byte flagsFirst = pcr->getFlags();
+	UT_Byte flagsRevFirst = pcr->getRevFlags();
 	while (m_history.getRedo(&pcr))
 	{
-		UT_Byte flagsRev = pcr->getRevFlags();
-//TODO update fragments
-		pf_Frag_Strux * pfs = NULL;
-		UT_Bool bResult = _getStruxFromPosition(pcr->getPosition(),&pfs);
-		m_pDocument->notifyListeners(pfs,pcr);
+		if (!_doTheDo(pcr))
+			return UT_FALSE;
 		m_history.didRedo();
-		if (flagsRev == flagsFirst)		// stop when we have a matching end
+		if (flagsRevFirst == pcr->getFlags())		// stop when we have a matching end
 			break;
 	}
 

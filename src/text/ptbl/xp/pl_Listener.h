@@ -52,17 +52,17 @@ public:
 	// sfh refers to the strux preceeding the new one.
 
 	virtual UT_Bool		populate(PL_StruxFmtHandle sfh,
-								 PX_ChangeRecord * pcr) = 0;
+								 const PX_ChangeRecord * pcr) = 0;
 
 	virtual UT_Bool		populateStrux(PL_StruxDocHandle sdh,
-									  PX_ChangeRecord * pcr,
+									  const PX_ChangeRecord * pcr,
 									  PL_StruxFmtHandle * psfh) = 0;
 
 	virtual UT_Bool		change(PL_StruxFmtHandle sfh,
-							   PX_ChangeRecord * pcr) = 0;
+							   const PX_ChangeRecord * pcr) = 0;
 
 	virtual UT_Bool		insertStrux(PL_StruxFmtHandle sfh,
-									PX_ChangeRecord * pcr,
+									const PX_ChangeRecord * pcr,
 									PL_StruxDocHandle sdh,
 									PL_StruxFmtHandle * psfh) = 0;
 };

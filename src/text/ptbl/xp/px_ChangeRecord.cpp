@@ -41,6 +41,11 @@ PT_AttrPropIndex PX_ChangeRecord::getIndexAP(void) const
 	return m_indexAP;
 }
 
+UT_Bool PX_ChangeRecord::getSide(void) const
+{
+	return m_bLeftSide;
+}
+
 PX_ChangeRecord * PX_ChangeRecord::reverse(void) const
 {
 	PX_ChangeRecord * pcr

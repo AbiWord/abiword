@@ -101,6 +101,7 @@ protected:
 	void					_deleteTextFrag(pf_Frag_Text * pft);
 	UT_Bool					_getStruxFromPosition(PT_DocPosition docPos,
 												  pf_Frag_Strux ** ppfs) const;
+	UT_Bool					_doTheDo(const PX_ChangeRecord * pcr);
 
 	PTState					m_pts;		/* are we loading or editing */
 	pt_VarSet				m_varset;

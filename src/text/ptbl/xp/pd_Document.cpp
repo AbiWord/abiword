@@ -263,7 +263,7 @@ UT_Bool PD_Document::removeListener(PL_ListenerId listenerId)
 	return (m_vecListeners.setNthItem(listenerId,NULL,NULL) == 0);
 }
 
-UT_Bool PD_Document::notifyListeners(pf_Frag_Strux * pfs, PX_ChangeRecord * pcr) const
+UT_Bool PD_Document::notifyListeners(pf_Frag_Strux * pfs, const PX_ChangeRecord * pcr) const
 {
 	PL_ListenerId lid;
 	PL_ListenerId lidCount = m_vecListeners.getItemCount();

@@ -35,3 +35,8 @@ UT_uint32 PX_ChangeRecord_Span::getLength(void) const
 {
 	return m_length;
 }
+
+PT_BufIndex PX_ChangeRecord_Span::getBufIndex(void) const
+{
+	return m_bufIndex;
+}
