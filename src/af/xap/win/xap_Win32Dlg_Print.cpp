@@ -26,11 +26,12 @@
 #include "xap_Win32Dlg_Print.h"
 #include "xap_Win32App.h"
 #include "xap_Win32FrameImpl.h"
+#include "xav_View.h"
 #include "gr_Win32Graphics.h"
 
 /*****************************************************************/
-
-/*static UINT CALLBACK s_PrintHookProc(
+/*
+static UINT CALLBACK s_PrintHookProc(
   HWND hdlg,      // handle to the dialog box window
   UINT uiMsg,     // message identifier
   WPARAM wParam,  // message parameter
@@ -42,12 +43,27 @@
 	if(uiMsg == WM_INITDIALOG)
 	{
 		PRINTDLG * pDlgInfo = (PRINTDLG*)lParam;
+#if 0
 		if(pDlgInfo->Flags & PD_NOSELECTION)
 		{
 			HWND wPrintSelectionRadio = GetDlgItem(hdlg, rad2);
 			ShowWindow(wPrintSelectionRadio, SW_HIDE);
 		}
+#endif
+#if 0
+		// notify layout of currently selected printer
+		GR_Win32Graphics* pG=(GR_Win32Graphics*)XAP_App::getApp()->getLastFocussedFrame()->getCurrentView()->getGraphics();
+		UT_return_val_if_fail( pG, 0 );
+		pG->setPrintDC(pDlgInfo->hDC);
 	}
+	else
+	{
+		UT_DEBUGMSG(("PrintDlg notification: 0x%x\n", uiMsg));
+#endif
+	}
+	
+
+	// we want to respond to changes to printer selection ...
 	
 	return 0;
 }*/
@@ -125,7 +141,7 @@ void XAP_Win32Dialog_Print::runModal(XAP_Frame * pFrame)
 	m_pPersistPrintDlg->nToPage		= (WORD)m_nLastPage;
 	m_pPersistPrintDlg->nMinPage		= (WORD)m_nFirstPage;
 	m_pPersistPrintDlg->nMaxPage		= (WORD)m_nLastPage;
-	m_pPersistPrintDlg->Flags		= PD_ALLPAGES | PD_RETURNDC;
+	m_pPersistPrintDlg->Flags		= PD_ALLPAGES | PD_RETURNDC /*| PD_ENABLEPRINTHOOK*/;
 	//m_pPersistPrintDlg->lpfnPrintHook   = s_PrintHookProc;
 	// we do not need this at the moment, but one day it will come handy in the hook procedure
 	m_pPersistPrintDlg->lCustData       = (DWORD)this;
@@ -229,6 +245,12 @@ void XAP_Win32Dialog_Print::_extractResults(XAP_Frame *pFrame)
 	}
 
 	m_answer = a_OK;
+	{
+		// notify layout of printer (this results in redoing doc layout !!!)
+		GR_Win32Graphics* pG=(GR_Win32Graphics*)XAP_App::getApp()->getLastFocussedFrame()->getCurrentView()->getGraphics();
+		UT_return_if_fail( pG );
+		pG->setPrintDC(m_pPersistPrintDlg->hDC);
+	}
 	return;
 
 Fail:

@@ -7652,8 +7652,9 @@ UT_return_val_if_fail(pDialog, false);
 		UT_uint32 nFromPage, nToPage;
 		static_cast<void>(pDialog->getDoPrintRange(&nFromPage,&nToPage));
 
-		if (nToPage > pLayout->countPages())
-		  nToPage = pLayout->countPages();
+		// must use the layout of the print view here !!!
+		if (nToPage > pPrintView->getLayout()->countPages())
+		  nToPage = pPrintView->getLayout()->countPages();
 
 		// TODO add code to handle getDoPrintSelection()
 

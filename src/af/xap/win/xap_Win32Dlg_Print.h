@@ -23,6 +23,7 @@
 #include "xap_Dlg_Print.h"
 #include "xap_Frame.h"
 
+#include <commdlg.h>
 /*****************************************************************/
 
 class XAP_Win32Dialog_Print : public XAP_Dialog_Print
@@ -37,11 +38,13 @@ public:
 
 	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
 
+	PRINTDLG *              getPrintDlg() const {return m_pPersistPrintDlg;}
+
 protected:
 	void					_extractResults(XAP_Frame *pFrame);
 	
 	PRINTDLG *				m_pPersistPrintDlg;
-	DOCINFO				m_DocInfo;
+	DOCINFO				    m_DocInfo;
 };
 
 #endif /* XAP_WIN32DIALOG_PRINT_H */

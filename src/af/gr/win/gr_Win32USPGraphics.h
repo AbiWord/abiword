@@ -38,19 +38,22 @@
 class ABI_EXPORT GR_Win32USPFont : public GR_Win32Font
 {
   public:
-	static  GR_Win32USPFont * newFont(LOGFONT & lf);
+	static  GR_Win32USPFont * newFont(LOGFONT & lf, double fPoints);
 	virtual ~GR_Win32USPFont();
 
 	SCRIPT_CACHE * getScriptCache() {return &m_sc;}
+	HDC            getPrintDC() const {return m_printHDC;}
+	void           setPrintDC(HDC dc) {m_printHDC = dc;}
 
   protected:
 	// all construction has to be done via the graphics class
-	GR_Win32USPFont(LOGFONT & lf): GR_Win32Font(lf), m_sc(NULL){};
+	GR_Win32USPFont(LOGFONT & lf, double fPoints): GR_Win32Font(lf, fPoints), m_sc(NULL), m_printHDC(NULL){};
 	
 	virtual void _clearAnyCachedInfo();
 
   private:
 	SCRIPT_CACHE m_sc;
+	HDC          m_printHDC;
 };
 
 class GR_Win32USPRenderInfo;
@@ -114,6 +117,9 @@ public:
 
   public:
 	virtual const UT_VersionInfo & getVersion() const {return s_Version;}
+
+	virtual void          setPrintDC(HDC dc);
+
 	
   protected:
 	// all instances have to be created via GR_GraphicsFactory; see gr_Graphics.h
@@ -122,13 +128,14 @@ public:
 	
   private:
 	bool      _constructorCommonCode();
-	virtual GR_Win32Font * _newFont(LOGFONT & lf);
+	virtual GR_Win32Font * _newFont(LOGFONT & lf, double fPoints);
 
 	void   _setupFontOnDC(GR_Win32USPFont *pFont, bool bZoomMe);
 
 	UT_uint32 m_iDCFontAllocNo;
 	bool   m_bConstructorSucceeded;
-
+	int    m_nPrintLogPixelsY;
+	
 	static HINSTANCE s_hUniscribe;
 	static UT_uint32 s_iInstanceCount;
 	static UT_VersionInfo s_Version;

@@ -672,6 +672,8 @@ public:
 	const XML_Char **   getViewPersistentProps();
 	FV_BIDI_Order	    getBidiOrder()const {return m_eBidiOrder;}
 	void                setBidiOrder(FV_BIDI_Order o) {m_eBidiOrder = o;}
+
+	virtual void        remeasureChars();
 	
 protected:
 	void				_saveAndNotifyPieceTableChange(void);

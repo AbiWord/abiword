@@ -154,6 +154,9 @@ public:
 	virtual UT_uint32	  getPoint(void) const =0;
 	virtual void setCursorWait(void) = 0;
 	virtual void clearCursorWait(void) = 0;
+
+	virtual void remeasureChars(void) = 0;
+	
 protected:
 	XAP_App *			m_pApp;
 	void*				m_pParentData;

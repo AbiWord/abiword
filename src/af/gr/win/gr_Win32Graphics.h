@@ -36,7 +36,7 @@ class UT_ByteBuf;
 class ABI_EXPORT GR_Win32Font : public GR_Font
 {
 public:
-	static GR_Win32Font * newFont(LOGFONT & lf);
+	static GR_Win32Font * newFont(LOGFONT & lf, double fPoints);
 	virtual ~GR_Win32Font();
 
 	UT_uint32	getAscent()  const { return m_tm.tmAscent; }
@@ -65,10 +65,11 @@ public:
 	// (The handle returned by getFontHandle() can be used for things that are not
 	// affected by zoom, such as retrieving face names, etc.)
 	HFONT       getFontHandle() const {return m_layoutFont;}
+	double      getPointSize() const {return m_fPointSize;}
 	
 protected:
 	// all construction has to be done via the graphics class
-	GR_Win32Font(LOGFONT & lf);
+	GR_Win32Font(LOGFONT & lf, double fPoints);
 
 	GR_Win32CharWidths * _getCharWidths() const
 	{
@@ -111,6 +112,7 @@ private:
 	// a cache of 'allocFont *' at a given size
 	mutable UT_Vector		m_allocFonts;
 	bool                    m_bGUIFont;
+	double                  m_fPointSize;
 };
 
 //////////////////////////////////////////////////////////////////
@@ -228,7 +230,10 @@ public:
 	virtual void		  restoreRectangle(UT_uint32 iIndx);
 	virtual void 		  flush(void);
 	void setBrush(HBRUSH hBrush){ m_hClearBrush = hBrush;};
-	
+
+
+	virtual void          setPrintDC(HDC dc);
+	HDC                   getPrintDC() const {return m_printHDC;}
 	
 	
 protected:
@@ -249,12 +254,12 @@ protected:
 	void					_setColor(DWORD clrRef);
 
   private:
-	virtual GR_Win32Font *          _newFont(LOGFONT & lf);
+	virtual GR_Win32Font *          _newFont(LOGFONT & lf, double fPointSize);
 
   protected:
 
 	HDC						m_hdc;
-	HDC                     m_printerDC;
+	HDC                     m_printHDC;
 	HWND 					m_hwnd;
 	const DOCINFO *			m_pDocInfo;
 	bool					m_bPrint;
@@ -291,7 +296,6 @@ private:
 	HBRUSH					m_hClearBrush;
 	int						m_nLogPixelsY;
 	HGLOBAL					m_hDevMode;
-	
 	
 	typedef struct
 	{

@@ -32,6 +32,9 @@
 #include <xap_Win32Res_Cursors.rc2>
 
 #include "xap_Prefs.h"
+#include "xap_Frame.h"
+#include "xap_Dialog_Id.h"
+#include "xap_Win32Dlg_Print.h"
 
 #include "ut_debugmsg.h"
 #include "ut_assert.h"
@@ -99,6 +102,7 @@ void GR_Win32Graphics::_constructorCommonCode(HDC hdc)
 	UT_ASSERT(hdc);
 
 	m_hdc = hdc;
+	m_printHDC = NULL;
 	m_hwnd = 0;
 	m_iLineWidth = 0;	// default to a hairline
 	m_bPrint = false;
@@ -148,7 +152,45 @@ GR_Win32Graphics::GR_Win32Graphics(HDC hdc, HWND hwnd, XAP_App * app)
 	_constructorCommonCode(hdc);
 	m_pApp = app;
 	m_hwnd = hwnd;
+
+#if 0
+	// do not do this, because the dialgue is frame persistent -- when the graphics is
+	// created, the frame is new, and so the dialogue has not been yet used
+	XAP_Frame * pFrame = XAP_App::getApp()->getLastFocussedFrame();
+	if(pFrame)
+	{
+		XAP_DialogFactory * pDialogFactory = static_cast<XAP_DialogFactory *>(pFrame->getDialogFactory());
+		
+		XAP_Win32Dialog_Print * pDialog =
+			static_cast<XAP_Win32Dialog_Print *>(pDialogFactory->requestDialog(XAP_DIALOG_ID_PRINT));
+
+		PRINTDLG * pPDLG = pDialog->getPrintDlg();
+
+		if(pPDLG)
+		{
+			m_printHDC = pPDLG->hDC;
+		}
+
+		// it is likely that m_printHDC == NULL, if the user has not chosen the printer
+		// we should probably find out which is the default printer and use it to
+		// CreateDC, but for now we will just leave it
+	}
+#endif
+
 }
+
+void GR_Win32Graphics::setPrintDC(HDC dc)
+{
+	if(!m_bPrint)
+	{
+		// only do this for screen graphics
+		m_printHDC = dc;
+
+		// now make our views to rebuild themselves ...
+		// (the win32 graphics currently cannot take advantate of the print dc, so we do nothing
+	}
+}
+
 
 GR_Win32Graphics::GR_Win32Graphics(HDC hdc, const DOCINFO * pDocInfo, XAP_App * app, HGLOBAL hDevMode)
 {
@@ -205,9 +247,9 @@ bool GR_Win32Graphics::queryProperties(GR_Graphics::Properties gp) const
 	}
 }
 
-GR_Win32Font * GR_Win32Graphics::_newFont(LOGFONT & lf)
+GR_Win32Font * GR_Win32Graphics::_newFont(LOGFONT & lf, double fPoints)
 {
-	return GR_Win32Font::newFont(lf);
+	return GR_Win32Font::newFont(lf, fPoints);
 }
 
 GR_Font* GR_Win32Graphics::getGUIFont(void)
@@ -218,7 +260,7 @@ GR_Font* GR_Win32Graphics::getGUIFont(void)
 		HFONT f = (HFONT) GetStockObject(DEFAULT_GUI_FONT);
 		LOGFONT lf;
 		int iRes = GetObject(f, sizeof(LOGFONT), &lf);
-		m_pFontGUI = _newFont(lf);
+		m_pFontGUI = _newFont(lf, 0);
 		UT_ASSERT(m_pFontGUI);
 		DeleteObject(f);
 	}
@@ -264,7 +306,8 @@ GR_Font* GR_Win32Graphics::_findFont(const char* pszFontFamily,
 	// simply means to divide points by 72 and multiply by device Y resolution
 
 	// See: http://support.microsoft.com/support/kb/articles/Q74/2/99.asp
-	UT_sint32 iHeight = (UT_sint32)UT_convertToPoints(pszFontSize);
+	double fPointSize = UT_convertToPoints(pszFontSize);
+	UT_sint32 iHeight = (UT_sint32)fPointSize;
 	lf.lfHeight = -MulDiv(iHeight, GetDeviceCaps(m_hdc, LOGPIXELSY), 72);		
 
 	// TODO note that we don't support all those other ways of expressing weight.
@@ -303,7 +346,7 @@ GR_Font* GR_Win32Graphics::_findFont(const char* pszFontFamily,
 
 	ReleaseDC(NULL, hDC);
 
-	return _newFont(lf);
+	return _newFont(lf, fPointSize);
 }
 
 void GR_Win32Graphics::drawGlyph(UT_uint32 Char, UT_sint32 xoff, UT_sint32 yoff)
@@ -1354,12 +1397,13 @@ void GR_Font::s_getGenericFontProperties(const char * szFontName,
 	return;
 }
 
-GR_Win32Font::GR_Win32Font(LOGFONT & lf)
+GR_Win32Font::GR_Win32Font(LOGFONT & lf, double fPoints)
 :	m_oldHDC(0),
 	m_layoutFont (0),
 	m_defaultCharWidth(0),
 	m_tm(TEXTMETRIC()),
-	m_bGUIFont(false)
+	m_bGUIFont(false),
+	m_fPointSize(fPoints)
 {
 	m_iHeight = abs(lf.lfHeight);
 
@@ -1419,9 +1463,9 @@ GR_Win32Font::GR_Win32Font(LOGFONT & lf)
 	}
 }
 
-GR_Win32Font * GR_Win32Font::newFont(LOGFONT &lf)
+GR_Win32Font * GR_Win32Font::newFont(LOGFONT &lf, double fPoints)
 {
-	GR_Win32Font * f = new GR_Win32Font(lf);
+	GR_Win32Font * f = new GR_Win32Font(lf, fPoints);
 
 	if(!f || !f->getFontHandle())
 	{
