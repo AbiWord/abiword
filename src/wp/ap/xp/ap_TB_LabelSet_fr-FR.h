@@ -114,6 +114,8 @@ BeginSetEnc(fr,FR,true,"iso-8859-1")
 
 	ToolbarLabel(AP_TOOLBAR_ID_SCRIPT_PLAY,		"Script",				tb_script_play_xpm,			NULL, "Exécuter un script")
 
+    ToolbarLabel(AP_TOOLBAR_ID_FMTPAINTER, 		"Peindre la mise en forme", tb_stock_paint_xpm, NULL, "Appliquer au texte sélectionné, la mise en forme du paragraphe copié")
+
 	// ... add others here ...
 
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_DIR_OVERRIDE_LTR,	"Oriente le texte de gauche à droite",		tb_text_direction_ltr_xpm,	NULL, "Forcer la direction du texte de gauche à droite")
