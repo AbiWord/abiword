@@ -22,15 +22,18 @@ ABI_ROOT:=$(shell pwd)/../../../..
 
 include $(ABI_ROOT)/src/config/abi_defs.mk
 
-REQUIRE=	_ZLIB_ _LIBPNG_ _LIBWV_ _POPT_ _NSIS_ _FRIBIDI_
+# If peer iconv is used, it must be built before wv, or at least
+# iconv.h must be generated (or copied from template) before building wv
+
+REQUIRE=	_ZLIB_ _LIBPNG_ 
+ifneq ($(ABI_REQUIRE_PEER_ICONV),0)
+REQUIRE+=	_LIBICONV_
+endif
+REQUIRE+=	_LIBWV_ _POPT_ _NSIS_ _FRIBIDI_
 #REQUIREREALCLEAN=	realclean_LIBICONV_ realclean_LIBWV_ clean_POPT_
 
 ifeq ($(ABI_OPT_CURL),1)
 REQUIRE += _PEER_LIBCURL_
-endif
-
-ifneq ($(ABI_REQUIRE_PEER_ICONV),0)
-REQUIRE += _LIBICONV_
 endif
 
 TARGET=		build
