@@ -53,8 +53,8 @@ XAP_Draw_Symbol::~XAP_Draw_Symbol(void)
 
 void XAP_Draw_Symbol::setWindowSize( UT_uint32 width, UT_uint32 height)
 {
-	m_drawWidth = m_areagc->tlu(width);
-	m_drawHeight = m_areagc->tlu(height);
+	m_drawWidth = m_gc->tlu(width);
+	m_drawHeight = m_gc->tlu(height);
 }
 
 void XAP_Draw_Symbol::setAreaGc( GR_Graphics * gc)
