@@ -330,11 +330,10 @@ void FV_View::insertParagraphBreak()
 		_deleteSelection();
 	}
 
-	/*
-		TODO: figure out how to populate attr/prop at this point
-		HYP:  decide which para to mimic, based on m_bInsPoint?
-	*/
-	m_pDoc->insertStrux(_getPoint(), /* !m_bInsPointRight, */ PTX_Block, NULL, NULL);
+	// insert a new paragraph with the same attributes/properties
+	// as the previous (or none if the first paragraph in the section).
+
+	m_pDoc->insertStrux(_getPoint(), !m_bInsPointRight, PTX_Block);
 
 	m_bInsPointRight = UT_TRUE;
 

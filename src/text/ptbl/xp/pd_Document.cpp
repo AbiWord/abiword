@@ -211,11 +211,10 @@ UT_Bool PD_Document::deleteFmt(PT_DocPosition dpos1,
 }
 
 UT_Bool PD_Document::insertStrux(PT_DocPosition dpos,
-								   PTStruxType pts,
-								   const XML_Char ** attributes,
-								   const XML_Char ** properties)
+								 UT_Bool bLeftSide,
+								 PTStruxType pts)
 {
-	return UT_TRUE;
+	return m_pPieceTable->insertStrux(dpos,bLeftSide,pts);
 }
 
 UT_Bool PD_Document::deleteStrux(PT_DocPosition dpos)
@@ -314,6 +313,37 @@ UT_Bool PD_Document::notifyListeners(pf_Frag_Strux * pfs, const PX_ChangeRecord 
 		{
 			PL_StruxFmtHandle sfh = pfs->getFmtHandle(lid);
 			pListener->change(sfh,pcr);
+		}
+	}
+
+	return UT_TRUE;
+}
+
+UT_Bool PD_Document::notifyListeners(pf_Frag_Strux * pfs,
+									 pf_Frag_Strux * pfsNew,
+									 const PX_ChangeRecord * pcr) const
+{
+	// notify listeners of a new strux.  this is slightly
+	// different from the other one because we need to exchange
+	// handles with the listener for the new strux.
+	
+	PL_ListenerId lid;
+	PL_ListenerId lidCount = m_vecListeners.getItemCount();
+
+	// for each listener in our vector, we send a notification.
+	// we step over null listners (for listeners which have been
+	// removed (views that went away)).
+	
+	for (lid=0; lid<lidCount; lid++)
+	{
+		PL_Listener * pListener = (PL_Listener *)m_vecListeners.getNthItem(lid);
+		if (pListener)
+		{
+			PL_StruxDocHandle sdhNew = (PL_StruxDocHandle)pfsNew;
+			PL_StruxFmtHandle sfhNew = 0;
+			PL_StruxFmtHandle sfh = pfs->getFmtHandle(lid);
+			if (pListener->insertStrux(sfh,pcr,sdhNew,&sfhNew))
+				pfsNew->setFmtHandle(lid,sfhNew);
 		}
 	}
 

@@ -63,8 +63,8 @@ public:
 
 	virtual UT_Bool		insertStrux(PL_StruxFmtHandle sfh,
 									const PX_ChangeRecord * pcr,
-									PL_StruxDocHandle sdh,
-									PL_StruxFmtHandle * psfh) = 0;
+									PL_StruxDocHandle sdhNew,
+									PL_StruxFmtHandle * psfhNew) = 0;
 };
 	
 #endif /* PL_LISTENER_H */

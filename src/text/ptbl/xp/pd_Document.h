@@ -54,9 +54,9 @@ public:
 									  const XML_Char ** properties);
 
 	UT_Bool					insertStrux(PT_DocPosition dpos,
-										PTStruxType pts,
-										const XML_Char ** attributes,
-										const XML_Char ** properties);
+										UT_Bool bLeftSide,
+										PTStruxType pts);
+
 	UT_Bool					deleteStrux(PT_DocPosition dpos);
 
 	// the append- methods are only available while importing
@@ -70,6 +70,9 @@ public:
 	UT_Bool					addListener(PL_Listener * pListener, PL_ListenerId * pListenerId);
 	UT_Bool					removeListener(PL_ListenerId listenerId);
 	UT_Bool					notifyListeners(pf_Frag_Strux * pfs, const PX_ChangeRecord * pcr) const;
+	UT_Bool					notifyListeners(pf_Frag_Strux * pfs,
+											pf_Frag_Strux * pfsNew,
+											const PX_ChangeRecord * pcr) const;
 
 	UT_Bool					getAttrProp(PT_AttrPropIndex indexAP, const PP_AttrProp ** ppAP) const;
 	UT_Bool					getSpanAttrProp(PL_StruxDocHandle sdh, UT_uint32 offset,

@@ -44,6 +44,11 @@ UT_Bool pf_Frag_Strux::setFmtHandle(PL_ListenerId lid, PL_StruxFmtHandle sfh)
 	return UT_FALSE;
 }
 
+PT_AttrPropIndex pf_Frag_Strux::getIndexAP(void) const
+{
+	return m_indexAP;
+}
+
 UT_Bool pf_Frag_Strux::createSpecialChangeRecord(PX_ChangeRecord ** ppcr) const
 {
 	UT_ASSERT(ppcr);

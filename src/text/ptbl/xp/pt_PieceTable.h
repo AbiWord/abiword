@@ -45,13 +45,13 @@ public:
 									  PT_DocPosition dpos2,
 									  const XML_Char ** attributes,
 									  const XML_Char ** properties);
+#endif
 
 	UT_Bool					insertStrux(PT_DocPosition dpos,
-										PTStruxType pts,
-										const XML_Char ** attributes,
-										const XML_Char ** properties);
+										UT_Bool bLeftSide,
+										PTStruxType pts);
+
 	UT_Bool					deleteStrux(PT_DocPosition dpos);
-#endif
 	
 	// the append- methods are only available while importing
 	// the document.
@@ -90,6 +90,16 @@ public:
 	void					dump(FILE * fp) const;
 	
 protected:
+
+	UT_Bool					_createStrux(PTStruxType pts,
+										 PT_AttrPropIndex indexAP,
+										 pf_Frag_Strux ** ppfs);
+
+	void					_insertStrux(pf_Frag_Strux * pfsPrev,
+										 pf_Frag_Text * pft,
+										 PT_BlockOffset fragOffset,
+										 UT_Bool bLeftSide,
+										 pf_Frag_Strux * pfsNew);
 
 	UT_Bool					_insertSpan(pf_Frag_Text * pft,
 										PT_BufIndex bi,

@@ -28,6 +28,7 @@ public:
 	UT_Bool					setFmtHandle(PL_ListenerId lid, PL_StruxFmtHandle sfh);
 	
 	virtual UT_Bool			createSpecialChangeRecord(PX_ChangeRecord ** ppcr) const;
+	PT_AttrPropIndex		getIndexAP(void) const;
 
 	virtual void			dump(FILE * fp) const = 0;
 	
