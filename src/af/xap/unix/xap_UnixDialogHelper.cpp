@@ -827,15 +827,10 @@ void abiDestroyWidget(GtkWidget * me)
     gtk_widget_destroy(me);
 }
 
-#if ABI_GTK_DEPRECATED
-GdkWindowPrivate * getRootWindow(GtkWidget * widget)
+GdkWindow * getRootWindow(GtkWidget * widget)
 {
 	UT_ASSERT(widget);
 
-	GdkWindowPrivate * priv = (GdkWindowPrivate *) widget->window;
-	while (priv->parent && ((GdkWindowPrivate*) priv->parent)->parent)
-		priv = (GdkWindowPrivate*) priv->parent;
-
-	return (GdkWindowPrivate *) priv;
+	// BROKEN!!!!
+	return gdk_get_default_root_window() ;//widget->window ;
 }
-#endif

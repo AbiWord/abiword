@@ -26,6 +26,7 @@
 /*****************************************************************/
 
 #include <gtk/gtk.h>
+#include <gdk/gdk.h>
 #include "ut_types.h"
 #include "ap_TopRuler.h"
 #include "gr_UnixGraphics.h"
@@ -46,13 +47,13 @@ public:
 	// cheats for the callbacks
 	void 				getWidgetPosition(gint * x, gint * y);
 	GtkWidget * 		getWidget(void) { return m_wTopRuler; };
-	GdkWindowPrivate * 	getRootWindow(void);
+	GdkWindow * 	getRootWindow(void);
 
 	void _ruler_style_changed (void);
 	
 protected:
 	GtkWidget *			m_wTopRuler;
-	GdkWindowPrivate *	m_rootWindow;
+	GdkWindow *	m_rootWindow;
 
 	class _fe
 	{

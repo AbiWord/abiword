@@ -184,7 +184,7 @@ void AP_UnixLeftRuler::getWidgetPosition(gint * x, gint * y)
 	gdk_window_get_position(m_wLeftRuler->window, x, y);
 }
 
-GdkWindowPrivate * AP_UnixLeftRuler::getRootWindow(void)
+GdkWindow * AP_UnixLeftRuler::getRootWindow(void)
 {
 	// TODO move this function somewhere more logical, like
 	// TODO the XAP_Frame level, since that's where the

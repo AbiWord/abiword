@@ -614,19 +614,22 @@ void AP_UnixDialog_PageSetup::_constructWindowContents (GtkWidget *container)
   gtk_box_pack_start (GTK_BOX (container), notebook, TRUE, TRUE, 0);
   gtk_container_set_border_width (GTK_CONTAINER (notebook), 7);
 
+#ifdef ABI_GTK_DEPRECATED 
   packerPage = gtk_packer_new ();
   gtk_packer_set_default_border_width (GTK_PACKER (packerPage), 2);
   gtk_packer_set_default_pad (GTK_PACKER (packerPage), 8, 8);
   gtk_packer_set_default_ipad (GTK_PACKER (packerPage), 2, 2);
+  gtk_packer_add_defaults (GTK_PACKER (packerPage), framePaper, GTK_SIDE_TOP,
+                           GTK_ANCHOR_CENTER, (GtkPackerOptions) (GTK_FILL_X));
+#else
+  packerPage = gtk_hbox_new ( true, 8 ) ;  
+#endif
   gtk_widget_show (packerPage);
   gtk_container_add (GTK_CONTAINER (notebook), packerPage);
   gtk_container_set_border_width (GTK_CONTAINER (packerPage), 2);
 
   framePaper = gtk_frame_new (_(AP, DLG_PageSetup_Paper));
   gtk_widget_show (framePaper);
-  gtk_packer_add_defaults (GTK_PACKER (packerPage), framePaper, GTK_SIDE_TOP,
-                           GTK_ANCHOR_CENTER, (GtkPackerOptions) (GTK_FILL_X));
-
   tablePaper = gtk_table_new (3, 4, TRUE);
   gtk_widget_show (tablePaper);
   gtk_container_add (GTK_CONTAINER (framePaper), tablePaper);
@@ -720,8 +723,11 @@ void AP_UnixDialog_PageSetup::_constructWindowContents (GtkWidget *container)
 
   frameOrientation = gtk_frame_new (_(AP, DLG_PageSetup_Orient));
   gtk_widget_show (frameOrientation);
+
+#ifdef ABI_GTK_DEPRECATED
   gtk_packer_add_defaults (GTK_PACKER (packerPage), frameOrientation, GTK_SIDE_TOP,
                            GTK_ANCHOR_CENTER, (GtkPackerOptions) (GTK_FILL_X));
+#endif
 
   tableOrientation = gtk_table_new (2, 2, TRUE);
   gtk_widget_show (tableOrientation);
@@ -761,9 +767,12 @@ void AP_UnixDialog_PageSetup::_constructWindowContents (GtkWidget *container)
 
   frameScale = gtk_frame_new (_(AP, DLG_PageSetup_Scale));
   gtk_widget_show (frameScale);
+
+#ifdef ABI_GTK_DEPRECATED 
   gtk_packer_add_defaults (GTK_PACKER (packerPage), frameScale, GTK_SIDE_TOP,
                            GTK_ANCHOR_CENTER, (GtkPackerOptions) (GTK_FILL_X));
-
+#endif
+  
   table1 = gtk_table_new (1, 4, TRUE);
   gtk_widget_show (table1);
   gtk_container_add (GTK_CONTAINER (frameScale), table1);

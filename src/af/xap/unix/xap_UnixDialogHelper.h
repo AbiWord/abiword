@@ -78,11 +78,9 @@ void abiDestroyWidget(GtkWidget * me);
 GtkWidget * abiDialogNew(gboolean resizable = FALSE);
 GtkWidget * abiDialogNew(gboolean resizable, const char * title, ...);
 
-#if ABI_GTK_DEPRECATED
 // Returns the root window of the X display, useful for doing
 // pointer or coordinate measurement on an absolute scale.
-GdkWindowPrivate * getRootWindow(GtkWidget * widget);
-#endif
+GdkWindow * getRootWindow(GtkWidget * widget);
 
 #endif /* UT_DIALOGHELPER_H */
 
