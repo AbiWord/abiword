@@ -13,7 +13,6 @@ contributors
 ------------
 Matthew Allen <fret@ozemail.com.au>             MouseWheel fix.
 Peter Arnold <petera@intrinsica.co.uk>          RTF import
-Jesus Bravo Alvarez <jba@pobox.com>		Galician translation
 Darren Benham <gecko@benham.net>                Debian package, ispell whiz
 Henrik Berg <henrik@lansen.se>                  ispell i18n
 Daniel Berlin <db003g@mail.rochester.edu>       BeOS whiz
@@ -78,10 +77,12 @@ Robert G. Werner <rwerner@lx1.microbsys.com>    VI keybindings
 John Wood <jyonw@asu.edu>                       NetBSD
 Alan Young <ayoung@teleport.com>                Alpha/NT
 Michael D. Pritchett <MPritchett@attlobal.net>  Cygwin 1.1.0 build fixes
+
 translators
 -----------
 Albi <albi@linuxfan.com> <onderste@casema.net>  Dutch
 Tim & Rita Allen <tim@proximity.com.au>         Indonesian
+Jesus Bravo Alvarez <jba@pobox.com>             Galician
 Henrik Berg <henrik@lansen.se>                  Swedish
 Frédéric CELLA <fcella@mahj.org>                French
 Mauro Colorio <macolori@tin.it>                 Italian
