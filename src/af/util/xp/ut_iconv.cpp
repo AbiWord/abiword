@@ -200,7 +200,7 @@ void UT_iconv_reset(UT_iconv_t cd)
 };
 
 /*!
- * Borrowed from GLib 2.0 and modified
+ * Borrowed from GLib 2.0 and (heavily) modified
  *
  * str - Pointer to the input string.
  * len - Length of the input string to convert.
@@ -310,7 +310,7 @@ char * UT_convert_cd(const char *str,
 
 		      /* glibc's iconv can return E2BIG even if there is space
 		       * remaining if an internal buffer is exhausted. The
-		       * folllowing is a heuristic to catch this. The 16 is
+		       * following is a heuristic to catch this. The 16 is
 		       * pretty arbitrary.
 		       */
 		      if (used + 16 > outbuf_size)

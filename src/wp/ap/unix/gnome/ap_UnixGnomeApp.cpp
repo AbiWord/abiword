@@ -634,8 +634,8 @@ print_document (GnomePrintContext         *ctx,
 		const Bonobo_PrintScissor *opt_scissor,
 		gpointer                   user_data)
 {
-  fprintf ( bonobo_logfile, "DOM: printing!!\n" ) ;
-  fflush ( bonobo_logfile ) ;
+  //fprintf ( bonobo_logfile, "DOM: printing!!\n" ) ;
+  //fflush ( bonobo_logfile ) ;
 
   // assert pre-conditions
   g_return_if_fail (user_data != NULL);
@@ -656,8 +656,8 @@ print_document (GnomePrintContext         *ctx,
   PD_Document * pDoc = pView->getDocument () ;
   UT_return_if_fail(pDoc!=NULL);
 
-  fprintf ( bonobo_logfile, "DOM: past round #1\n" ) ;
-  fflush ( bonobo_logfile ) ;
+  //fprintf ( bonobo_logfile, "DOM: past round #1\n" ) ;
+  //fflush ( bonobo_logfile ) ;
 
   // get the current app
   XAP_UnixGnomeApp * pApp = (XAP_UnixGnomeApp*) XAP_App::getApp () ;
@@ -666,8 +666,8 @@ print_document (GnomePrintContext         *ctx,
   GR_Graphics *pGraphics = new XAP_UnixGnomePrintGraphics ( ctx, pApp->getFontManager(), pApp ) ;
   UT_return_if_fail(pGraphics!=NULL);
 
-  fprintf ( bonobo_logfile, "DOM: created gfx\n" ) ;
-  fflush ( bonobo_logfile ) ;
+  //fprintf ( bonobo_logfile, "DOM: created gfx\n" ) ;
+  //fflush ( bonobo_logfile ) ;
 
   // layout the document
   FL_DocLayout * pDocLayout = new FL_DocLayout(pDoc,pGraphics);
@@ -680,8 +680,8 @@ print_document (GnomePrintContext         *ctx,
   // fill the layouts
   pDocLayout->fillLayouts();
 
-  fprintf ( bonobo_logfile, "DOM: got view, filled layouts\n" ) ;
-  fflush ( bonobo_logfile ) ;
+  //fprintf ( bonobo_logfile, "DOM: got view, filled layouts\n" ) ;
+  //fflush ( bonobo_logfile ) ;
 
   // get the best fit width & height of the printed pages
   UT_sint32 iWidth  =  pDocLayout->getWidth();
@@ -695,9 +695,9 @@ print_document (GnomePrintContext         *ctx,
   if (iPagesToPrint < 1)
     iPagesToPrint = 1;
 
-  fprintf ( bonobo_logfile, "DOM: %g\n", pDoc->m_docPageSize.Height(DIM_PT) ) ;
-  fprintf ( bonobo_logfile, "DOM: printing 0x%X 0x%X 0x%X bonobo_printed_document 1 false %d %d 1 %d\n", pDoc, pGraphics, pPrintView, width, height, iPagesToPrint ) ;
-  fflush ( bonobo_logfile ) ;
+  //fprintf ( bonobo_logfile, "DOM: %g\n", pDoc->m_docPageSize.Height(DIM_PT) ) ;
+  //fprintf ( bonobo_logfile, "DOM: printing 0x%X 0x%X 0x%X bonobo_printed_document 1 false %d %d 1 %d\n", pDoc, pGraphics, pPrintView, width, height, iPagesToPrint ) ;
+  //fflush ( bonobo_logfile ) ;
 
   // actually print
   s_actuallyPrint ( pDoc, pGraphics,
@@ -728,8 +728,8 @@ static void zoom_level_func(GObject * z, float lvl, gpointer data)
 
   AbiWidget * abi = ABI_WIDGET(data);
 
-  fprintf ( bonobo_logfile, "DOM: zooming to %g!!\n", lvl ) ;
-  fflush ( bonobo_logfile ) ;
+  //fprintf ( bonobo_logfile, "DOM: zooming to %g!!\n", lvl ) ;
+  //fflush ( bonobo_logfile ) ;
 
   if ( lvl <= 0.0 )
     return ;
@@ -748,8 +748,8 @@ static void zoom_in_func(GObject * z, gpointer data)
 
   AbiWidget * abi = ABI_WIDGET(data);
 
-  fprintf ( bonobo_logfile, "DOM: zooming in!!\n" ) ;
-  fflush ( bonobo_logfile ) ;
+  //fprintf ( bonobo_logfile, "DOM: zooming in!!\n" ) ;
+  //fflush ( bonobo_logfile ) ;
 
   XAP_Frame * pFrame = abi_widget_get_frame ( abi ) ;
   UT_return_if_fail ( pFrame != NULL ) ;
@@ -768,8 +768,8 @@ static void zoom_out_func(GObject * z, gpointer data)
 
   AbiWidget * abi = ABI_WIDGET(data);
 
-  fprintf ( bonobo_logfile, "DOM: zooming out!!\n" ) ;
-  fflush ( bonobo_logfile ) ;
+  //fprintf ( bonobo_logfile, "DOM: zooming out!!\n" ) ;
+  //fflush ( bonobo_logfile ) ;
 
   XAP_Frame * pFrame = abi_widget_get_frame ( abi ) ;
   UT_return_if_fail ( pFrame != NULL ) ;
@@ -791,8 +791,8 @@ static void zoom_to_fit_func(GObject * z, gpointer data)
 
   AbiWidget * abi = ABI_WIDGET(data);
 
-  fprintf ( bonobo_logfile, "DOM: zooming to fit!!\n" ) ;
-  fflush ( bonobo_logfile ) ;
+  //fprintf ( bonobo_logfile, "DOM: zooming to fit!!\n" ) ;
+  //fflush ( bonobo_logfile ) ;
 
   XAP_Frame * pFrame = abi_widget_get_frame ( abi ) ;
   UT_return_if_fail ( pFrame != NULL ) ;
@@ -812,8 +812,8 @@ static void zoom_to_default_func(GObject * z, gpointer data)
 
   AbiWidget * abi = ABI_WIDGET(data);
 
-  fprintf ( bonobo_logfile, "DOM: zooming default!!\n" ) ;
-  fflush ( bonobo_logfile ) ;
+  //fprintf ( bonobo_logfile, "DOM: zooming default!!\n" ) ;
+  //fflush ( bonobo_logfile ) ;
 
   XAP_Frame * pFrame = abi_widget_get_frame ( abi ) ;
   UT_return_if_fail ( pFrame != NULL ) ;
@@ -1020,8 +1020,8 @@ static int mainBonobo(int argc, char * argv[])
 	CORBA_ORB 		 orb;
 
 	bonobo_logfile = stdout ; // fopen ( "/home/dom/abictl.log", "w" ) ;
-	fprintf ( bonobo_logfile, "Opened log file\n" ) ;
-	fflush ( bonobo_logfile ) ;	
+	//fprintf ( bonobo_logfile, "Opened log file\n" ) ;
+	//fflush ( bonobo_logfile ) ;	
 
 	/*
 	 * initialize oaf and bonobo

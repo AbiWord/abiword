@@ -188,7 +188,7 @@ LIBXML_CONFIG		= xml2-config
 
 # Shared library flags
 MKSHLIB			= $(LD) $(DSO_LDOPTS) -soname $(@:$(OBJDIR)/%.so=%.so)
-#MKSHLIB			= g++ -shrared -o  $(@:$(OBJDIR)/%.so=%.so)
+#MKSHLIB			= g++ -shared -o  $(@:$(OBJDIR)/%.so=%.so)
 
 
 # Which links can this platform create.  Define one or
