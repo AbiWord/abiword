@@ -669,7 +669,6 @@ endif
 ifdef ABI_OPT_PERL
     ifeq ($(OS_NAME), WIN32)
 		EXTRA_LIBS += $(shell perl -MExtUtils::Embed -e ldopts | sed 's|[a-zA-Z0-9~:\\]*msvcrt\.lib||g' | sed 's|\([-/]release\|[-/]nodefaultlib\|[-/]nologo\|[-/]machine:[a-zA-Z0-9]*\)||g' | sed 's|\\|\\\\\\\\|g')
-		EXTRA_LIBS += "C:\\\\Pritchett\\\\Compilers\\\\Perl\\\\lib\\\\CORE\\\\perl56.lib"
 		CFLAGS += -DABI_OPT_PERL $(shell perl -MExtUtils::Embed -e ccopts | sed 's/\(-O1\|-MD\)//g')
     else
 		EXTRA_LIBS += $(shell perl -MExtUtils::Embed -e ldopts)
