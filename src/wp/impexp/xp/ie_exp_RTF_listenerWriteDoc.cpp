@@ -148,6 +148,25 @@ void s_RTF_ListenerWriteDoc::_openSpan(PT_AttrPropIndex apiSpan)
 			m_pie->_rtf_keyword("sub");
 	}
 
+#if 0
+	const XML_Char * szLang = PP_evalProperty("lang",pSpanAP,pBlockAP,pSectionAP,m_pDocument,true);
+	// TODO: convert lang to numerical code
+#endif
+
+#ifdef BIDI_ENABLED
+
+	const XML_Char * szDir = PP_evalProperty("dir",pSpanAP,pBlockAP,pSectionAP,m_pDocument,true);
+
+	if (szDir)
+	{
+		if (!UT_strcmp (szDir, "ltr"))
+			m_pie->_rtf_keyword ("ltrch");
+		else
+			m_pie->_rtf_keyword ("rtlch");
+	}
+
+#endif
+
 	// TODO do something with our font-stretch and font-variant properties
 	// note: we assume that kerning has been turned off at global scope.
 	
@@ -605,6 +624,22 @@ void s_RTF_ListenerWriteDoc::_rtf_open_section(PT_AttrPropIndex api)
 	const XML_Char * szColumnGap = PP_evalProperty("column-gap",
 												   pSpanAP,pBlockAP,pSectionAP,
 												   m_pDocument,true);
+
+	const XML_Char * szColumnLine = PP_evalProperty("column-line",
+													pSpanAP,pBlockAP,pSectionAP,
+													m_pDocument,true);
+
+	const XML_Char * szHeaderY = PP_evalProperty("page-margin-header",
+												 pSpanAP,pBlockAP,pSectionAP,
+												 m_pDocument,true);
+
+	const XML_Char * szFooterY = PP_evalProperty("page-margin-footer",
+												 pSpanAP,pBlockAP,pSectionAP,
+												 m_pDocument,true);
+
+	bool bColLine = false;
+	if (szColumnLine && !UT_strcmp (szColumnLine, "on"))
+		bColLine = true;
 		
 	// TODO add other properties here
 
@@ -621,6 +656,11 @@ void s_RTF_ListenerWriteDoc::_rtf_open_section(PT_AttrPropIndex api)
 	m_pie->_rtf_keyword_ifnotdefault("cols",(char*)szColumns,1);
 	m_pie->_rtf_keyword_ifnotdefault_twips("colsx",(char*)szColumnGap,720);
 
+	if (bColLine)
+		m_pie->_rtf_keyword ("linebetcol");
+
+	m_pie->_rtf_keyword_ifnotdefault_twips("headery", (char*)szHeaderY, 720);
+	m_pie->_rtf_keyword_ifnotdefault_twips("footery", (char*)szFooterY, 720);
 }
 
 //////////////////////////////////////////////////////////////////
@@ -774,6 +814,21 @@ void s_RTF_ListenerWriteDoc::_rtf_open_block(PT_AttrPropIndex api)
 		m_pie->_rtf_keyword_ifnotdefault_twips("ri",(char*)szRightIndent,0);
 		m_pie->_rtf_keyword_ifnotdefault_twips("sb",(char*)szTopMargin,0);
 		m_pie->_rtf_keyword_ifnotdefault_twips("sa",(char*)szBottomMargin,0);
+
+#ifdef BIDI_ENABLED
+
+		const XML_Char * szBidiDir = PP_evalProperty("dom-dir",pSpanAP,pBlockAP,pSectionAP,m_pDocument,true);
+
+		if (szBidiDir)
+		{
+			if (!UT_strcmp (szBidiDir, "ltr"))
+				m_pie->_rtf_keyword ("ltrpar");
+			else
+				m_pie->_rtf_keyword ("rtlpar");
+		}
+
+#endif
+
 		fl_AutoNum * pAuto = m_pDocument->getListByID(id);
 		UT_ASSERT(pAuto);
 		if(pAuto->getType()==BULLETED_LIST)
