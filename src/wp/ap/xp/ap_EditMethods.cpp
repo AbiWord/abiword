@@ -6940,6 +6940,16 @@ static bool s_doPrint(FV_View * pView, bool bTryToSuppressDialog,bool bPrintDire
 
 		UT_ASSERT(pGraphics->queryProperties(GR_Graphics::DGP_PAPER));
 
+		/*
+		We need to re-layout the document for now, so the UnixPSGraphics class will
+		get it's font list filled. When we find a better way to fill the UnixPSGraphics
+		font list, we can remove the 4 lines below. - MARCM
+		*/
+		FL_DocLayout * pDocLayout = new FL_DocLayout(doc,pGraphics);
+        FV_View * pPrintView = new FV_View(pFrame->getApp(),0,pDocLayout);
+		pPrintView->getLayout()->fillLayouts();
+		pPrintView->getLayout()->formatAll();
+		
 		UT_uint32 nFromPage, nToPage;
 		static_cast<void>(pDialog->getDoPrintRange(&nFromPage,&nToPage));
 
@@ -6957,9 +6967,12 @@ static bool s_doPrint(FV_View * pView, bool bTryToSuppressDialog,bool bPrintDire
 		UT_sint32 iHeight = pLayout->getHeight() / pLayout->countPages();
 
 		const char *pDocName = ((doc->getFilename()) ? doc->getFilename() : pFrame->getNonDecoratedTitle());
-		s_actuallyPrint(doc, pGraphics, pView, pDocName, nCopies, bCollate,
+		s_actuallyPrint(doc, pGraphics, pPrintView, pDocName, nCopies, bCollate,
 				iWidth,  iHeight, nToPage, nFromPage);
 
+		delete pDocLayout;
+		delete pPrintView;
+		
 		pDialog->releasePrinterGraphicsContext(pGraphics);
 
 //
@@ -7008,7 +7021,17 @@ static bool s_doPrintPreview(FV_View * pView)
 	GR_Graphics * pGraphics = pDialog->getPrinterGraphicsContext();
 	UT_ASSERT(pGraphics->queryProperties(GR_Graphics::DGP_PAPER));
 
-
+	/*
+	We need to re-layout the document for now, so the UnixPSGraphics class will
+	get it's font list filled. When we find a better way to fill the UnixPSGraphics
+	font list, we can remove the 4 lines below. - MARCM
+	*/
+	FL_DocLayout * pDocLayout = new FL_DocLayout(doc,pGraphics);
+	FV_View * pPrintView = new FV_View(pFrame->getApp(),0,pDocLayout);
+	pPrintView->getLayout()->fillLayouts();
+	pPrintView->getLayout()->formatAll();
+	
+	
 	UT_uint32 nFromPage = 1, nToPage = pLayout->countPages(), nCopies = 1;
 	bool bCollate  = false;
 
@@ -7019,8 +7042,11 @@ static bool s_doPrintPreview(FV_View * pView)
 
 	const char *pDocName = ((doc->getFilename()) ? doc->getFilename() : pFrame->getNonDecoratedTitle());
 
-	s_actuallyPrint(doc, pGraphics, pView, pDocName, nCopies, bCollate,
+	s_actuallyPrint(doc, pGraphics, pPrintView, pDocName, nCopies, bCollate,
 					iWidth,  iHeight, nToPage, nFromPage);
+
+	delete pDocLayout;
+	delete pPrintView;
 
 	pDialog->releasePrinterGraphicsContext(pGraphics);
 
