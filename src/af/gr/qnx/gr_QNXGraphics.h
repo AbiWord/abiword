@@ -25,6 +25,7 @@
 #include "gr_Graphics.h"
 #include <string.h>
 #include <Pt.h>
+#include <photon/PhRender.h>
 
 #include <ut_string.h>
 
@@ -157,7 +158,11 @@ class GR_QNXGraphics : public GR_Graphics
  	bool             m_bPrintNextPage;    
 	PpPrintContext_t *  m_pPrintContext;
 private:
-	virtual bool _setTransform(const GR_Transform & tr);
+	virtual bool            _setTransform(const GR_Transform & tr);
+	virtual void saveRectangle(UT_Rect &r);
+	UT_Rect *m_saveRect;
+	PhImage_t	*m_pImg;
+	virtual void restoreRectangle();
 
 };
 
