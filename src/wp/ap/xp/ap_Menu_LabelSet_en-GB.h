@@ -32,7 +32,7 @@
 // If the third argument is true, then this is the fall-back for
 // this language (named in the first argument).
 
-BeginSet(en,GB,true)
+BeginSet(en,GB,false)
 
 	MenuLabel(AP_MENU_ID__BOGUS1__,			NULL,				NULL)
 
