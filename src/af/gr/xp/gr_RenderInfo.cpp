@@ -132,10 +132,9 @@ bool GR_XPRenderInfo::append(GR_RenderInfo &ri, bool bReverse)
 		xxx_UT_DEBUGMSG(("GR_RenderInfo::append: reallocating span buffer\n"));
 		m_iBufferSize = m_iLength + RI.m_iLength + 1;
 		UT_UCS4Char * pSB = new UT_UCS4Char[m_iBufferSize];
-		UT_sint32 * pAB = new UT_sint32[m_iBufferSize];
 		UT_sint32 * pWB = new UT_sint32[m_iBufferSize];
 		
-		UT_return_val_if_fail(pSB && pAB, false);
+		UT_return_val_if_fail(pSB && pWB, false);
 		
 		if(bReverse)
 		{
@@ -224,11 +223,13 @@ bool  GR_XPRenderInfo::split (GR_RenderInfo *&pri, UT_uint32 offset, bool bRever
 	m_iLength = iPart1Len;
 	pRI->m_iLength = iPart2Len;
 
+	// the question is whether we want to shrink the buffer here (and
+	// save memory) or leave it too big (and save time); go for memory
+	// for now
 	UT_UCS4Char * pSB = new UT_UCS4Char[m_iLength + 1];
-	UT_sint32   * pAB = new UT_sint32[m_iLength + 1];
 	UT_sint32   * pWB = new UT_sint32[m_iLength + 1];
 	
-	UT_return_val_if_fail(pSB && pAB && pWB, false);
+	UT_return_val_if_fail(pSB && pWB, false);
 	
 	m_iBufferSize = iPart1Len;
 	
