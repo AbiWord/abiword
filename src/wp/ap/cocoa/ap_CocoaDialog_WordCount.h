@@ -31,7 +31,6 @@ class AP_CocoaDialog_WordCount;
 
 @interface AP_CocoaDialog_WordCountController : NSWindowController <XAP_CocoaDialogProtocol>
 {
-    IBOutlet NSButton *_autoUpdateBtn;
     IBOutlet NSTextField *_charNoSpaceCount;
     IBOutlet NSTextField *_charNoSpaceLabel;
     IBOutlet NSTextField *_charSpaceCount;
@@ -42,22 +41,11 @@ class AP_CocoaDialog_WordCount;
     IBOutlet NSTextField *_pageLabel;
     IBOutlet NSTextField *_paraCount;
     IBOutlet NSTextField *_paraLabel;
-    IBOutlet NSButton *_refreshBtn;
-    IBOutlet NSTextField *_secondsData;
-    IBOutlet NSTextField *_secondsLabel;
-    IBOutlet NSStepper *_stepper;
     IBOutlet NSTextField *_wordCount;
     IBOutlet NSTextField *_wordLabel;
 	AP_CocoaDialog_WordCount*	_xap;
 }
-- (IBAction)autoUpdateAction:(id)sender;
-- (IBAction)refreshAction:(id)sender;
-- (IBAction)secondsUpdated:(id)sender;
-- (IBAction)stepperAction:(id)sender;
-- (void)setSeconds:(float)sec;
-- (float)seconds;
 - (void)setCounts:(FV_DocCount*)count;
-- (void)_syncControls;
 @end
 
 /*****************************************************************/
@@ -75,12 +63,9 @@ public:
 
 	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id dlgid);
 	static void			autoupdateWC(UT_Worker * pTimer);
-	virtual void			setUpdateCounter(void);
 	// callbacks can fire these events
 
 	virtual void			event_Update(void);
-	virtual void			event_Checkbox(bool enabled);
-	virtual void			event_Spin(void);
 	void 					event_CloseWindow(void);
 
 private:
@@ -88,8 +73,6 @@ private:
 	void 				_updateWindowData(void);       
 
 	UT_Timer * m_pAutoUpdateWC;
-	bool m_bAutoWC;
-	unsigned int m_Update_rate;
 
 	// Handshake variables
 	bool m_bDestroy_says_stopupdating;

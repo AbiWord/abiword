@@ -40,8 +40,6 @@
 
 /*****************************************************************/
 
-static UT_sint32 i_WordCountunix_first_time = 0;
-
 XAP_Dialog * AP_CocoaDialog_WordCount::static_constructor(XAP_DialogFactory * pFactory, XAP_Dialog_Id dlgid)
 {
 	AP_CocoaDialog_WordCount * p = new AP_CocoaDialog_WordCount(pFactory,dlgid);
@@ -99,30 +97,9 @@ void AP_CocoaDialog_WordCount::runModeless(XAP_Frame * pFrame)
 	// Now construct the timer for auto-updating
 	GR_Graphics * pG = NULL;
 	m_pAutoUpdateWC = UT_Timer::static_constructor(autoupdateWC, this, pG);
-
-	if (i_WordCountunix_first_time == 0) {	
-		//  Set it update evey second to start with
-		m_Update_rate = 1000;
-		m_bAutoWC = true;
-		i_WordCountunix_first_time = 1;
-	}
-
-	setUpdateCounter();
+	m_pAutoUpdateWC->set(1000);
 }
 
-void    AP_CocoaDialog_WordCount::setUpdateCounter(void)
-{
-	m_bDestroy_says_stopupdating = false;
-	m_bAutoUpdate_happening_now = false;
-
-	float f_Update_rate = ((float)m_Update_rate) / 1000.0;
-	[m_dlg setSeconds:f_Update_rate];
-	if (m_bAutoWC == true)	{
-		m_pAutoUpdateWC->stop();
-		m_pAutoUpdateWC->set(m_Update_rate);
-	}
-	[m_dlg _syncControls];
-}
          
 void    AP_CocoaDialog_WordCount::autoupdateWC(UT_Worker * pTimer)
 {
@@ -149,38 +126,6 @@ void AP_CocoaDialog_WordCount::event_Update(void)
 	_updateWindowData();
 }
 
-
-void AP_CocoaDialog_WordCount::event_Checkbox(bool enabled)
-{
-	if (enabled)
-	{
-		m_pAutoUpdateWC->stop();
-		// This actually does gtk_timer_add...
-		m_pAutoUpdateWC->set(m_Update_rate);
-		m_bAutoWC = true;
-	}
-	else
-	{
-		m_pAutoUpdateWC->stop();
-		m_bAutoWC = false;
-	}
-	[m_dlg _syncControls];
-}
-
-void AP_CocoaDialog_WordCount::event_Spin(void)
-{
-	m_Update_rate = lrintf([m_dlg seconds] * 1000);
-
-	// We need this because calling adds a new timer to the gtk list!
-	// So we have to stop the timer to remove it from the gtk list before
-	// changing the speed of the timer.
-
-	m_pAutoUpdateWC->stop();
-
-	// This actually does gtk_timer_add...
-
-	m_pAutoUpdateWC->set(m_Update_rate);
-}
 
 void AP_CocoaDialog_WordCount::event_CloseWindow(void)
 {
@@ -213,8 +158,6 @@ void AP_CocoaDialog_WordCount::destroy(void)
 void AP_CocoaDialog_WordCount::_updateWindowData(void)
 {
 	[m_dlg setCounts:&m_count];
-
-//	gtk_frame_set_label (GTK_FRAME(m_pTableframe), getActiveFrame ()->getTitle (60));
 }
 
 
@@ -246,9 +189,6 @@ void AP_CocoaDialog_WordCount::_populateWindowData(void)
 - (void)windowDidLoad
 {
 	const XAP_StringSet * pSS = XAP_App::getApp()->getStringSet();
-	LocalizeControl(_refreshBtn, pSS, XAP_STRING_ID_DLG_Update);
-	LocalizeControl(_autoUpdateBtn, pSS, AP_STRING_ID_DLG_WordCount_Auto_Update);
-	LocalizeControl(_secondsLabel, pSS, AP_STRING_ID_DLG_WordCount_Update_Rate);
 	LocalizeControl(_wordCount, pSS, AP_STRING_ID_DLG_WordCount_Words);
 	LocalizeControl(_paraLabel, pSS, AP_STRING_ID_DLG_WordCount_Paragraphs);
 	LocalizeControl(_charSpaceLabel, pSS, AP_STRING_ID_DLG_WordCount_Characters_Sp);
@@ -262,54 +202,6 @@ void AP_CocoaDialog_WordCount::_populateWindowData(void)
 	_xap->event_CloseWindow();
 }
 
-
-- (IBAction)autoUpdateAction:(id)sender
-{
-	_xap->event_Checkbox([sender state] == NSOnState);
-}
-
-- (void)_syncControls
-{
-	if ([_autoUpdateBtn state] == NSOnState) {
-		[_secondsData setEnabled:YES];
-		[_secondsLabel setEnabled:YES];
-		[_stepper setEnabled:YES];
-	}
-	else {
-		[_secondsData setEnabled:NO];
-		[_secondsLabel setEnabled:NO];
-		[_stepper setEnabled:NO];
-	}
-}
-
-- (IBAction)refreshAction:(id)sender
-{
-	_xap->event_Update();
-}
-
-- (IBAction)secondsUpdated:(id)sender
-{
-	[_stepper setFloatValue:[sender floatValue]];
-	_xap->event_Spin();
-}
-
-- (IBAction)stepperAction:(id)sender
-{
-	[_secondsData setFloatValue:[sender floatValue]];
-	_xap->event_Spin();
-}
-
-
-- (void)setSeconds:(float)sec
-{
-	[_secondsData setFloatValue:sec];
-	[_stepper setFloatValue:sec];	
-}
-
-- (float)seconds
-{
-	return [_secondsData floatValue];
-}
 
 - (void)setCounts:(FV_DocCount*)count
 {
