@@ -1235,7 +1235,6 @@ bool AP_UnixApp::parseCommandLine()
 			{
 				// [-dumpstrings]
 #ifdef DEBUG
-#error "YIAAAAAAHHHHH"
 				// dump the string table in english as a template for translators.
 				// see abi/docs/AbiSource_Localization.abw for details.
 				AP_BuiltinStringSet * pBuiltinStringSet = new AP_BuiltinStringSet(this,(XML_Char*)AP_PREF_DEFAULT_StringSet);
