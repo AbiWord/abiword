@@ -286,7 +286,8 @@ gint XAP_UnixFrame::_fe::delete_event(GtkWidget * w, GdkEvent * /*event*/, gpoin
 	const EV_EditMethodContainer * pEMC = pApp->getEditMethodContainer();
 	UT_ASSERT(pEMC);
 
-	const EV_EditMethod * pEM = pEMC->findEditMethodByName("closeWindowX");
+	// was "closeWindowX", FALSE, TRUE
+	const EV_EditMethod * pEM = pEMC->findEditMethodByName("closeWindow");
 	UT_ASSERT(pEM);
 
 	if (pEM)
@@ -296,13 +297,13 @@ gint XAP_UnixFrame::_fe::delete_event(GtkWidget * w, GdkEvent * /*event*/, gpoin
 			// returning FALSE means destroy the window, continue along the
 			// chain of Gtk destroy events
 
-			return FALSE;
+			return TRUE;
 		}
 	}
 
 	// returning TRUE means do NOT destroy the window; halt the message
 	// chain so it doesn't see destroy
-	return TRUE;
+	return FALSE;
 }
 
 gint XAP_UnixFrame::_fe::expose(GtkWidget * w, GdkEventExpose* pExposeEvent)
@@ -697,7 +698,7 @@ void XAP_UnixFrame::_createTopLevelWindow(void)
 	gtk_object_set_user_data(GTK_OBJECT(m_wTopLevelWindow),this);
 
 	// This is now done with --geometry parsing.
-	//gtk_widget_set_usize(GTK_WIDGET(m_wTopLevelWindow), 700, 650);
+	gtk_widget_set_usize(GTK_WIDGET(m_wTopLevelWindow), 700, 650);
 
 	g_signal_connect(G_OBJECT(m_wTopLevelWindow), "realize",
 					   G_CALLBACK(_fe::realize), NULL);

@@ -69,11 +69,11 @@ public:									// we create...
 		m_pUnixMenu = pUnixMenu;
 		m_id = id;
 		m_accelGroup = NULL;
-	};
+	}
 	
 	~_wd(void)
 	{
-	};
+	}
 
 	static void s_onActivate(GtkWidget * /* widget */, gpointer callback_data)
 	{
@@ -84,7 +84,7 @@ public:									// we create...
 		UT_ASSERT(wd);
 
 		wd->m_pUnixMenu->menuEvent(wd->m_id);
-	};
+	}
 
 	static void s_onMenuItemSelect(GtkWidget * widget, gpointer data)
 	{
@@ -107,7 +107,7 @@ public:									// we create...
 			szMsg = "TODO This menu item doesn't have a StatusMessage defined.";
 	
 		pFrame->setStatusMessage(szMsg);
-	};
+	}
 	
 	static void s_onMenuItemDeselect(GtkWidget * widget, gpointer data)
 	{
@@ -120,7 +120,7 @@ public:									// we create...
 		UT_ASSERT(pFrame);
 
 		pFrame->setStatusMessage(NULL);
-	};
+	}
 
 	static void s_onInitMenu(GtkMenuItem * menuItem, gpointer callback_data)
 	{
@@ -133,7 +133,7 @@ public:									// we create...
 		// WL: AFAIK this isn't necessary?
 		//_gtk_accel_group_attach(wd->m_accelGroup, G_OBJECT(menuItem));
 		//gtk_accel_group_lock(wd->m_accelGroup);
-	};
+	}
 
 	static void s_onDestroyMenu(GtkMenuItem * menuItem, gpointer callback_data)
 	{
@@ -151,7 +151,7 @@ public:									// we create...
 		// WL: AFAIK this isn't necessary?
 		//_gtk_accel_group_detach(wd->m_accelGroup, G_OBJECT(menuItem));
 		//gtk_accel_group_unlock(wd->m_accelGroup);
-	};
+	}
 
 	// GTK wants to run popup menus asynchronously, but we want synchronous,
 	// so we need to do a gtk_main_quit() on our own to show we're done
@@ -161,7 +161,7 @@ public:									// we create...
 		// do the grunt work
 		s_onDestroyMenu(menuItem, callback_data);
 		gtk_main_quit();
-	};
+	}
 
 	GtkAccelGroup *		m_accelGroup;
 	EV_UnixMenu *		m_pUnixMenu;
@@ -307,7 +307,7 @@ EV_UnixMenu::EV_UnixMenu(XAP_UnixApp * pUnixApp, XAP_UnixFrame * pUnixFrame,
 		s_init = true;
 		
 		// NOTE: KEEP THE ORDER OF THESE TWO STATIC ARRAYS THE SAME
-		static GtkStockItem items[] = {
+		static const GtkStockItem items[] = {
 			{ "Menu_AbiWord_Import", "_GTK!", (GdkModifierType)0, 0, NULL },
 			{ "Menu_AbiWord_Export", "_GTK!", (GdkModifierType)0, 0, NULL },
 			{ "Menu_AbiWord_InsertSymbol", "_GTK!", (GdkModifierType)0, 0, NULL },
@@ -550,7 +550,6 @@ const char * EV_UnixMenu::s_getStockPixmapFromId (int id)
 
 bool EV_UnixMenu::synthesizeMenu(GtkWidget * wMenuRoot)
 {
-	UT_DEBUGMSG(("EV_UnixMenu::synthesizeMenu\n"));
 	// create a GTK menu from the info provided.
 	const EV_Menu_ActionSet * pMenuActionSet = m_pUnixApp->getMenuActionSet();
 	UT_ASSERT(pMenuActionSet);
@@ -598,7 +597,7 @@ bool EV_UnixMenu::synthesizeMenu(GtkWidget * wMenuRoot)
 				GtkWidget * wParent;
 				bResult = stack.viewTop((void **)&wParent);
 				UT_ASSERT(bResult);
-				g_object_set_data(G_OBJECT(wMenuRoot), szLabelName, w);
+
 				// bury in parent
 				gtk_menu_append(GTK_MENU(wParent), w);
 			}
@@ -637,15 +636,12 @@ bool EV_UnixMenu::synthesizeMenu(GtkWidget * wMenuRoot)
 				GtkWidget * wParent;
 				bResult = stack.viewTop((void **)&wParent);
 				UT_ASSERT(bResult);
-				g_object_set_data(G_OBJECT(wMenuRoot), szLabelName, w);
+
 				// bury the widget in parent menu
 				gtk_container_add(GTK_CONTAINER(wParent), w);
 				
 				// since we are starting a new sub menu, create a shell for new items
 				GtkWidget * wsub = gtk_menu_new();
-				GtkWidget * tearoff = gtk_tearoff_menu_item_new () ;
-				gtk_widget_show ( tearoff ) ;
-				gtk_container_add ( GTK_CONTAINER (wsub), tearoff ) ;
 
 				// Here's the tricky part:
 				// If the underlined character conflicts with ANY accelerator
@@ -732,7 +728,6 @@ bool EV_UnixMenu::synthesizeMenu(GtkWidget * wMenuRoot)
 				gtk_object_set_user_data(GTK_OBJECT(wsub),this);
 
 				// add to menu bar
-				g_object_set_data(G_OBJECT(wMenuRoot), _ev_FakeName(szLabelName, tmp++), wsub);
 				gtk_menu_item_set_submenu(GTK_MENU_ITEM(w), wsub);
 				stack.push(wsub);
 
@@ -763,8 +758,7 @@ bool EV_UnixMenu::synthesizeMenu(GtkWidget * wMenuRoot)
 		}
 		case EV_MLF_Separator:
 		{	
-			GtkWidget * w = gtk_menu_item_new();
-			UT_ASSERT(w);
+			GtkWidget * w = gtk_separator_menu_item_new();
 			gtk_widget_set_sensitive(w, FALSE);
 			gtk_object_set_user_data(GTK_OBJECT(w),this);
 
@@ -772,7 +766,6 @@ bool EV_UnixMenu::synthesizeMenu(GtkWidget * wMenuRoot)
 			bResult = stack.viewTop((void **)&wParent);
 			UT_ASSERT(bResult);
 
-			g_object_set_data(G_OBJECT(wMenuRoot), _ev_FakeName("separator",tmp++), w);
 			gtk_widget_show(w);
 			gtk_menu_append(GTK_MENU(wParent),w);
 
@@ -880,8 +873,6 @@ bool EV_UnixMenu::_refreshMenu(AV_View * pView, GtkWidget * wMenuRoot)
 					bResult = stack.viewTop((void **)&wParent);
 					UT_ASSERT(bResult);
 
-					// set parent data stuff
-					g_object_set_data(G_OBJECT(wMenuRoot), szLabelName, w);
 					// bury in parent
 					gtk_menu_insert(GTK_MENU(GTK_MENU_ITEM(wParent)->submenu), w, (nPositionInThisMenu+1));
 					
@@ -1054,10 +1045,8 @@ bool EV_UnixMenu::_refreshMenu(AV_View * pView, GtkWidget * wMenuRoot)
  */
 bool EV_UnixMenu::_doAddMenuItem(UT_uint32 layout_pos)
 {
-	UT_DEBUGMSG(("JCA: layout_pos = [%d]\n", layout_pos));
 	if (layout_pos > 0)
 	{
- 		UT_DEBUGMSG(("Trying to insert at [%d] in a vector of size [%d].\n", layout_pos, m_vecMenuWidgets.size()));
 		UT_sint32 err = m_vecMenuWidgets.insertItemAt(NULL, layout_pos);
 
 		if (err != 0)
@@ -1085,31 +1074,19 @@ EV_UnixMenuBar::~EV_UnixMenuBar()
 
 void  EV_UnixMenuBar::destroy(void)
 {
-	gtk_widget_destroy(m_wHandleBox);
+	gtk_widget_destroy(m_wMenuBar);
 }
 
 bool EV_UnixMenuBar::synthesizeMenuBar()
 {
 	GtkWidget * wVBox = m_pUnixFrame->getVBoxWidget();
 
-	m_wHandleBox = gtk_handle_box_new();
-	UT_ASSERT(m_wHandleBox);
-
-	// Just create, don't show the menu bar yet.  It is later added
-	// to a 3D handle box and shown
+	// Just create, don't show the menu bar yet.  It is later added and shown
 	m_wMenuBar = gtk_menu_bar_new();
-
 	synthesizeMenu(m_wMenuBar);
-	
-	// show up the properly connected menu structure
 	gtk_widget_show(m_wMenuBar);
 
-	// pack it in a handle box
-	gtk_container_add(GTK_CONTAINER(m_wHandleBox), m_wMenuBar);
-	gtk_widget_show(m_wHandleBox);
-	
-	// put it at position 1 in the vbox
- 	gtk_box_pack_start(GTK_BOX(wVBox), m_wHandleBox, FALSE, TRUE, 0);
+	gtk_box_pack_start(GTK_BOX(wVBox), m_wMenuBar, FALSE, TRUE, 0);
 
 	return true;
 }
@@ -1119,9 +1096,6 @@ bool EV_UnixMenuBar::rebuildMenuBar()
 {
 	GtkWidget * wVBox = m_pUnixFrame->getVBoxWidget();
 
-	m_wHandleBox = gtk_handle_box_new();
-	UT_ASSERT(m_wHandleBox);
-
 	// Just create, don't show the menu bar yet.  It is later added
 	// to a 3D handle box and shown
 	m_wMenuBar = gtk_menu_bar_new();
@@ -1131,13 +1105,8 @@ bool EV_UnixMenuBar::rebuildMenuBar()
 	// show up the properly connected menu structure
 	gtk_widget_show(m_wMenuBar);
 
-	// pack it in a handle box
-	gtk_container_add(GTK_CONTAINER(m_wHandleBox), m_wMenuBar);
-	gtk_widget_show(m_wHandleBox);
-	
-	// put it at position 1 in the vbox
- 	gtk_box_pack_start(GTK_BOX(wVBox), m_wHandleBox, FALSE, TRUE, 0); // was start
-	gtk_box_reorder_child(GTK_BOX(wVBox), m_wHandleBox,0);
+	gtk_box_pack_start(GTK_BOX(wVBox), m_wMenuBar, FALSE, TRUE, 0);
+	gtk_box_reorder_child(GTK_BOX(wVBox), m_wMenuBar, 0);
 
 	return true;
 }
@@ -1202,12 +1171,6 @@ bool EV_UnixMenuPopup::refreshMenu(AV_View * pView)
 
 GtkWidget * EV_UnixMenu::s_createNormalMenuEntry(int id, const bool isCheckable, const char *szLabelName, const char *szMnemonicName)
 {
-	/*
-	if (szMnemonicName && *szMnemonicName)
-	  UT_DEBUGMSG(("MENU-CREATE: Label: %s Mnemonic: %s\n", szLabelName, szMnemonicName));
-	else
-	  UT_DEBUGMSG(("MENU-CREATE: Label: %s\n", szLabelName));
-	*/
 	// create the item with the underscored label
 	GtkWidget * w;
 	char buf[1024];
@@ -1235,13 +1198,7 @@ GtkWidget * EV_UnixMenu::s_createNormalMenuEntry(int id, const bool isCheckable,
 	else
 	  {
 		  w = gtk_check_menu_item_new_with_mnemonic(buf);
-
-		  // Make the checkbox visible at all times. Much more informative to the user
-		  // and less confusing.
-		  // WL: this function is deprecated, probably should just use the default?
-		  //gtk_check_menu_item_set_show_toggle (GTK_CHECK_MENU_ITEM(w), TRUE);
-	  }
-	
+	  }	
 	
 	if (szMnemonicName && *szMnemonicName)
 	  {

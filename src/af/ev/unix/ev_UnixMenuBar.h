@@ -51,8 +51,7 @@ public:
     virtual void        destroy(void);
 
 protected:
-	GtkWidget *			m_wMenuBar;
-	GtkWidget * 		m_wHandleBox;
+	GtkWidget *		m_wMenuBar;
 };
 
 #endif /* EV_UNIXMENUBAR_H */
