@@ -10,135 +10,31 @@
 %define enable_pspell __ABI_OPT_PSPELL__
 
 # PLUGIN OPTIONS: 1 for yes, 0 for no
-%define enable_abicommand 0
-%define enable_abigimp 0
-%define enable_aiksaurus 0
-%define enable_babelfish 0
-%define enable_bz2abw 0
-%define enable_eg 0
-%define enable_eml 0
-%define enable_festvox 0
-%define enable_freetranslation 0
-%define enable_gdict 0
-%define enable_gdkpixbuf 0
-%define enable_html 0
-%define enable_imagemagick 0
-%define enable_openwriter 0
-%define enable_shell 0
-%define enable_urldict 0
-%define enable_wikipedia 0
+%define enable_tools __ABI_PLUGINS_TOOLS__
+%define enable_impexp __ABI_PLUGINS_IMPEXP__
 
 %define name abiword
 %define prefix /usr
 %define version __ABI_BUILD_VERSION__
 %define release	__ABI_RELEASE_NUMBER__
 
-%if %{enable_gnome}
-%define enable_gdkpixbuf 0
-%endif
-
-%if %{enable_abicommand}
-%define plugin_abicommand --enable-abicommand
+%if !%{enable_gnome}
+%define enable_gdkpixbuf --enable-gdkpixbuf
 %else
-%define plugin_abicommand --disable-abicommand
+%define enable_gdkpixbuf --disable-gdkpixbuf
 %endif
 
-%if %{enable_abigimp}
-%define plugin_abigimp --enable-abigimp
+%if %{enable_tools}
+%define plugin_tools --enable-eml --enable-wikipedia --enable-urldict --enable-shell --enable-magick --enable-gdict --enable-babelfish --enable-abicommand --enable-abigimp --enable-aiksaurus
 %else
-%define plugin_abigimp --disable-abigimp
+%define plugin_tools --disable-eml --disable-wikipedia --disable-urldict --disable-shell --disable-magick --disable-gdict --disable-babelfish --disable-abicommand --disable-abigimp --disable-aiksaurus
 %endif
 
-%if %{enable_aiksaurus}
-%define plugin_aiksaurus --enable-aiksaurus
+%if %{enable_impexp}
+%define plugin_bz2abw --enable-bz2abw %{enable_gdkpixbuf} --enable-html --enable-openwriter
 %else
-%define plugin_aiksaurus --disable-aiksaurus
+%define plugin_bz2abw --disable-bz2abw --disable-gdkpixbuf --disable-html --disable-openwriter
 %endif
-
-%if %{enable_babelfish}
-%define plugin_babelfish --enable-babelfish
-%else
-%define plugin_babelfish --disable-babelfish
-%endif
-
-%if %{enable_bz2abw}
-%define plugin_bz2abw --enable-bz2abw
-%else
-%define plugin_bz2abw --disable-bz2abw
-%endif
-
-%if %{enable_eg}
-%define plugin_tests --enable-eg
-%else
-%define plugin_tests --disable-eg
-%endif
-
-%if %{enable_eml}
-%define plugin_eml --enable-eml
-%else
-%define plugin_eml --disable-eml
-%endif
-
-%if %{enable_festvox}
-%define plugin_festvox --enable-festvox
-%else
-%define plugin_festvox --disable-festvox
-%endif
-
-%if %{enable_freetranslation}
-%define plugin_freetranslation --enable-freetranslation
-%else
-%define plugin_freetranslation --disable-freetranslation
-%endif
-
-%if %{enable_gdict}
-%define plugin_gdict --enable-gdict
-%else
-%define plugin_gdict --disable-gdict
-%endif
-
-%if %{enable_gdkpixbuf}
-%define plugin_gdkpixbuf --enable-gdkpixbuf
-%else
-%define plugin_gdkpixbuf --disable-gdkpixbuf
-%endif
-
-%if %{enable_html}
-%define plugin_html --enable-html
-%else
-%define plugin_html --disable-html
-%endif
-
-%if %{enable_imagemagick}
-%define plugin_imagemagick --enable-magick
-%else
-%define plugin_imagemagick --disable-magick
-%endif
-
-%if %{enable_openwriter}
-%define plugin_openwriter --enable-OpenWriter
-%else
-%define plugin_openwriter --disable-OpenWriter
-%endif
-
-%if %{enable_shell}
-%define plugin_shell --enable-shell
-%else
-%define plugin_shell --disable-shell
-%endif
-
-%if %{enable_urldict}
-%define plugin_urldict --enable-urldict
-%else
-%define plugin_urldict --disable-urldict
-%endif
-
-%if %{enable_wikipedia}
-%define plugin_wikipedia --enable-wikipedia
-%else
-%define plugin_wikipedia --disable-wikipedia
-%endif
-
 
 %define version_flag ABI_BUILD_VERSION=%{version}
 
@@ -185,10 +81,12 @@ Requires: gnome-libs >= 1.0.57
 Requires: gal >= 0.8
 Requires: gnome-print >= 0.29
 Requires: gnome-vfs
+Requires: bonobo
 BuildRequires: gnome-libs-devel
 BuildRequires: gal-devel
 BuildRequires: gnome-print-devel
 BuildRequires: gnome-vfs-devel
+BuildRequires: bonobo-devel
 
 %description
 AbiWord is a multi-platform word processor with a GTK+ interface on the UNIX platform. For extended functionality and integration this version is compiled with GNOME support. Abiword with the GNOME front-end is part of the GNOME Office Suite. AbiWord is made available under the GNU GPL license.
@@ -219,159 +117,37 @@ BuildRequires: perl >= 5.005
 Perl Module containing classes for AbiWord Scripting.
 %endif
 
-%if %{enable_abicommand}
-%package plugin-abicommand
-Summary: Enables AbiWord to be used as a commanded daemon.
+%if %{enable_tools}
+%package plugins-tools
+Summary: Various tools that can be used to extend AbiWord's capabilities.
 Group: Applications/Productivity
 Requires: abiword
 
-%description plugin-abicommand
-Installing this plugin will enable you to use AbiWord as a commanded daemon.
+%description plugins-tools
+This is a set of plugins for AbiWord.  It includes
+        eml: Use mathematical notation in AbiWord.
+ abicommand: Perform AbiWord operations from the command prompt.
+    abigimp: Process images in AbiWord using the Gimp.
+  abimagick: Process images in AbiWord using ImageMagick.
+  wikipedia: Access the Wikipedia reference from AbiWord.
+    urldict: Cross-platform url dictionary plugin.
+      gdict: Use the gnome dictionary application from within AbiWord.
+  aiksaurus: Use the Aiksaurus thesaurus in AbiWord.
+  babelfish: Translate text online using Babelfish.
+ScriptHappy: Run other programs in a shell and direct the output to AbiWord.
+
 %endif
 
-%if %{enable_abigimp}
-%package plugin-abigimp
-Summary: Enables editing of your images in The GIMP.
+%if %{enable_impexp}
+%package plugins-impexp
+Summary: Plugins to import and export otherwise unsupported formats.
 Group: Applications/Productivity
 Requires: abiword
 
-%description plugin-abigimp
-Installing this plugin will allow AbiWord to transfer images to The GIMP for editing.
-%endif
-
-%if %{enable_aiksaurus}
-%package plugin-aiksaurus
-Summary: Plugin to allow abiword to connect with AikSaurus.
-Group: Applications/Productivity
-BuildRequires: Aiksaurus, AiksaurusGTK
-Requires: abiword, Aiksaurus, AiksaurusGTK
-
-%description plugin-aiksaurus
-Plugin to allow abiword to connect with AikSaurus.
-Go to http://www.aiksaurus.com and download AikSaurus and AikSaurusGTK.
-%endif
-
-%if %{enable_babelfish}
-%package plugin-babelfish
-Summary: Plugin to allow abiword to show babelfish translations.
-Group: Applications/Productivity
-Requires: abiword
-
-%description plugin-babelfish
-Installing this plugin will allow abiword fetch babelfish translations for selected text.
-%endif
-
-%if %{enable_bz2abw}
-%package plugin-bz2abw
-Summary: Plugin to allow abiword documents compressed with bzip2
-Group: Applications/Productivity
-Requires: bzip2, abiword
-BuildRequires: bzip2-devel
-
-%description plugin-bz2abw
-Installing this plugin will allow abiword to open abiword documents compressed with bzip2.
-%endif
-
-%if %{enable_festvox}
-%package plugin-festvox
-Summary: Plugin for festvox
-Group: Applications/Productivity
-Requires: abiword
-
-%description plugin-festvox
-Plugin for festvox
-%endif
-
-%if %{enable_freetranslation}
-%package plugin-freetranslation
-Summary: Plugin to allow abiword to connect with freetranslation.
-Group: Applications/Productivity
-Requires: abiword
-
-%description plugin-freetranslation
-Plugin to allow abiword to connect with freetranslation.
-%endif
-
-%if %{enable_gdict}
-%package plugin-gdict
-Summary: Plugin to allow abiword to use gdict
-Group: Applications/Productivity
-Requires: abiword
-
-%description plugin-gdict
-Plugin to allow abiword to use gdict
-%endif
-
-%if %{enable_gdkpixbuf} && ! %{enable_gnome}
-%package plugin-gdkpixbuf
-Summary: Plugin to allow abiword to import several image types with gdk-pixbuf
-Group: Applications/Productivity
-Requires: gdk-pixbuf, abiword
-BuildRequires: gdk-pixbuf-devel
-
-%description plugin-gdkpixbuf
-Installing this plugin will allow abiword to import all image types supported by gdk-pixbuf.
-%endif
-
-%if %{enable_html}
-%package plugin-html
-Summary: Plugin to enable import of arbitrary HTML documents (experimental)
-Group: Applications/Productivity
-Requires: libxml2, abiword
-BuildRequires: libxml2-devel
-
-%description plugin-html
-Installing this plugin will allow abiword to import of arbitrary HTML documents (experimental)
-%endif
-
-%if %{enable_imagemagick}
-%package plugin-imagemagick
-Summary: Plugin to allow abiword to use imagemagick.
-Group: Applications/Productivity
-Requires: abiword
-
-%description plugin-imagemagick
-Installing this plugin will allow abiword to use imagemagick.
-%endif
-
-%if %{enable_openwriter}
-%package plugin-openwriter
-Summary: Plugin to allow abiword to read/write OpenWriter and StartWriter documents
-Group: Applications/Productivity
-Requires: abiword
-
-%description plugin-openwriter
-Plugin to allow abiword to read/write OpenWriter and StartWriter documents
-%endif
-
-%if %{enable_shell}
-%package plugin-shell
-Summary: Enables redirection of shell output into AbiWord.
-Group: Applications/Productivity
-Requires: abiword
-
-%description plugin-shell
-Installing this plugin will allow AbiWord to read output of shell commands.
-%endif
-
-%if %{enable_urldict}
-%package plugin-urldict
-Summary: Plugin to allow abiword to use dict through a web browser
-Group: Applications/Productivity
-Requires: abiword
-
-%description plugin-urldict
-Installing this plugin will allow abiword to use dict through a web browser on selected text.
-%endif
-
-%if %{enable_wikipedia}
-%package plugin-wikipedia
-Summary: Plugin to allow abiword to connect with WikiPedia.
-Group: Applications/Productivity
-Requires: abiword
-
-%description plugin-wikipedia
-Plugin to allow abiword to connect with WikiPedia.
+%description plugins-impexp
+This is a set of plugins for AbiWord.  It includes support for OpenWriter,
+bzipped AbiWord, and (x)html document formats.  Additionally, it adds support
+for certain image types to AbiWord builds that were not gnome-enabled.
 %endif
 
 %package fonts
@@ -389,13 +165,6 @@ Group: Applications/Productivity
 %description clipart
 This is the clipart portfolio used by AbiWord.
 
-#%package help-de-DE
-#Summary: AbiWord Help for de-DE
-#Group: Documentation
-#
-#%description help-de-DE
-#This is the AbiWord Manual for German.
-
 %prep
 %__rm -rf $RPM_BUILD_ROOT
 
@@ -403,12 +172,11 @@ This is the clipart portfolio used by AbiWord.
 
 %build
 
-#make %{version_flag} ABI_OPT_DEBUG=%{enable_debug} ABI_OPT_LIBXML2=%{enable_xml2} UNIX_CAN_BUILD_STATIC=%{enable_static} ABI_OPT_GNOME=%{enable_gnome} ABI_OPT_LIBJPEG=%{enable_jpeg} ABI_OPT_BIDI_ENABLED=%{enable_bidi} ABI_OPT_PERL=%{enable_perl} ABI_OPT_OPTIMIZE=%{enable_optimize} compile canonical prefix=$RPM_BUILD_ROOT%{ABIPREFIX}
 %__make %{version_flag} ABI_OPT_DEBUG=%{enable_debug} ABI_OPT_LIBXML2=%{enable_xml2} UNIX_CAN_BUILD_STATIC=%{enable_static} ABI_OPT_GNOME=%{enable_gnome} ABI_OPT_LIBJPEG=%{enable_jpeg} ABI_OPT_PERL=%{enable_perl} ABI_OPT_OPTIMIZE=%{enable_optimize} compile canonical prefix=$RPM_BUILD_ROOT%{ABIPREFIX}
 
 cd ../abiword-plugins
 ./nextgen.sh
-./configure --prefix=$RPM_BUILD_ROOT%{ABIPREFIX}/AbiSuite --disable-all %{plugin_abicommand} %{plugin_abigimp} %{plugin_aiksaurus} %{plugin_babelfish} %{plugin_bz2abw} %{plugin_eml} %{plugin_festvox} %{plugin_freetranslation} %{plugin_gdict} %{plugin_gdkpixbuf} %{plugin_html} %{plugin_imagemagick} %{plugin_openwriter} %{plugin_shell} %{plugin_urldict} %{plugin_wikipedia} %{plugin_tests}
+./configure --prefix=$RPM_BUILD_ROOT%{ABIPREFIX}/AbiSuite --disable-all %{plugin_tools} %{plugin_impexp}
 %__make
 
 cd ../abi
@@ -420,7 +188,6 @@ cd ../abiword-plugins
 %__make install
 cd ../abi
 
-#%__make %{version_flag} ABI_OPT_DEBUG=%{enable_debug} ABI_OPT_LIBXML2=%{enable_xml2} UNIX_CAN_BUILD_STATIC=%{enable_static} ABI_OPT_GNOME=%{enable_gnome} ABI_OPT_LIBJPEG=%{enable_jpeg} ABI_OPT_BIDI_ENABLED=%{enable_bidi} ABI_OPT_PERL=%{enable_perl} ABI_OPT_OPTIMIZE=%{enable_optimize} install prefix=$RPM_BUILD_ROOT%{ABIPREFIX}
 %__make %{version_flag} ABI_OPT_DEBUG=%{enable_debug} ABI_OPT_LIBXML2=%{enable_xml2} UNIX_CAN_BUILD_STATIC=%{enable_static} ABI_OPT_GNOME=%{enable_gnome} ABI_OPT_LIBJPEG=%{enable_jpeg} ABI_OPT_PERL=%{enable_perl} ABI_OPT_OPTIMIZE=%{enable_optimize} install prefix=$RPM_BUILD_ROOT%{ABIPREFIX}
 
 # Manual fixes to Abi package
@@ -450,7 +217,6 @@ cp $RPM_BUILD_DIR/%{name}-%{version}/abi/src/pkg/linux/rpm/data/abiword.desktop 
 %__chmod 644 $RPM_BUILD_ROOT%{ABIPREFIX}/AbiSuite/fonts/*
 %__chmod 644 $RPM_BUILD_ROOT%{ABIPREFIX}/AbiSuite/icons/*
 %__chmod 644 $RPM_BUILD_ROOT%{ABIPREFIX}/AbiSuite/clipart/*
-%__chmod 644 $RPM_BUILD_ROOT%{ABIPREFIX}/AbiSuite/dictionary/*
 %__chmod 644 $RPM_BUILD_ROOT%{ABIPREFIX}/AbiSuite/templates/*
 
 %clean
@@ -469,80 +235,35 @@ cp $RPM_BUILD_DIR/%{name}-%{version}/abi/src/pkg/linux/rpm/data/abiword.desktop 
 %{ABIPREFIX}/AbiSuite/icons
 %{ABIPREFIX}/AbiSuite/templates
 %attr(644,root,root) %{prefix}/share/pixmaps/abiword_48.png
+%{ABIPREFIX}/oaf
 %if %{enable_gnome}
 %attr(644,root,root) %{prefix}/share/gnome/apps/Applications/abiword.desktop
-##%attr(644,root,root) %{ABIPREFIX}/AbiSuite/AbiWord/plugins/libAbiGdkPixbuf.*
+%attr(644,root,root) %{ABIPREFIX}/AbiSuite/AbiWord/plugins/libAbiGdkPixbuf.*
 %endif
 
-%if %{enable_abicommand}
-%files plugin-abicommand
-%attr(-,root,root) %{ABIPREFIX}/AbiSuite/AbiWord/plugins/libAbiCommand.*
+%if %{enable_tools}
+%files plugins-tools
+%defattr(644,root,root)
+%{ABIPREFIX}/AbiSuite/AbiWord/plugins/libAbiCommand.*
+%{ABIPREFIX}/AbiSuite/AbiWord/plugins/libAbiGimp.*
+%{ABIPREFIX}/AbiSuite/AbiWord/plugins/libAikSaurusABI.*
+%{ABIPREFIX}/AbiSuite/AbiWord/plugins/libAbiBabelfish.*
+%{ABIPREFIX}/AbiSuite/AbiWord/plugins/libGdictAbiPlugin.*
+%{ABIPREFIX}/AbiSuite/AbiWord/plugins/libScriptHappy.*
+%{ABIPREFIX}/AbiSuite/AbiWord/plugins/libAbiWikipedia.*
+%{ABIPREFIX}/AbiSuite/AbiWord/plugins/libAbiURLDict.*
 %endif
 
-%if %{enable_abigimp}
-%files plugin-abigimp
-%attr(-,root,root) %{ABIPREFIX}/AbiSuite/AbiWord/plugins/libAbiGimp.*
+%if %{enable_impexp}
+%files plugins-impexp
+%defattr(644,root,root)
+%{ABIPREFIX}/AbiSuite/AbiWord/plugins/libBZ2Abw.*
+%if ! %{enable_gnome}
+%{ABIPREFIX}/AbiSuite/AbiWord/plugins/libAbiGdkPixbuf.*
 %endif
-
-%if %{enable_aiksaurus}
-%files plugin-aiksaurus
-%attr(-,root,root) %{ABIPREFIX}/AbiSuite/AbiWord/plugins/libAikSaurusABI.*
-%endif
-
-%if %{enable_babelfish}
-%files plugin-babelfish
-%attr(-,root,root) %{ABIPREFIX}/AbiSuite/AbiWord/plugins/libAbiBabelfish.*
-%endif
-
-%if %{enable_bz2abw}
-%files plugin-bz2abw
-%attr(-,root,root) %{ABIPREFIX}/AbiSuite/AbiWord/plugins/libBZ2Abw.*
-%endif
-
-%if %{enable_festvox}
-%files plugin-festvox
-%attr(-,root,root) %{ABIPREFIX}/AbiSuite/AbiWord/plugins/libAbiFestVox.*
-%endif
-
-%if %{enable_freetranslation}
-%files plugin-freetranslation
-%attr(-,root,root) %{ABIPREFIX}/AbiSuite/AbiWord/plugins/libAbiFreeTranslation.*
-%endif
-
-%if %{enable_gdict}
-%files plugin-gdict
-%attr(-,root,root) %{ABIPREFIX}/AbiSuite/AbiWord/plugins/libGdictAbiPlugin.*
-%endif
-
-%if %{enable_gdkpixbuf} && ! %{enable_gnome}
-%files plugin-gdkpixbuf
-%attr(-,root,root) %{ABIPREFIX}/AbiSuite/AbiWord/plugins/libAbiGdkPixbuf.*
-%endif
-
-%if %{enable_html}
-%files plugin-html
-%attr(-,root,root) %{ABIPREFIX}/AbiSuite/AbiWord/plugins/libAbiHTML.*
-%endif
-
-%if %{enable_openwriter}
-%files plugin-openwriter
-%attr(-,root,root) %{ABIPREFIX}/AbiSuite/AbiWord/plugins/libOpenWriter.*
-%attr(-,root,root) %{ABIPREFIX}/AbiSuite/AbiWord/plugins/libAbiSDW.*
-%endif
-
-%if %{enable_shell}
-%files plugin-shell
-%attr(-,root,root) %{ABIPREFIX}/AbiSuite/AbiWord/plugins/libScriptHappy.*
-%endif
-
-%if %{enable_urldict}
-%files plugin-urldict
-%attr(-,root,root) %{ABIPREFIX}/AbiSuite/AbiWord/plugins/libAbiURLDict.*
-%endif
-
-%if %{enable_wikipedia}
-%files plugin-wikipedia
-%attr(-,root,root) %{ABIPREFIX}/AbiSuite/AbiWord/plugins/libAbiWikipedia.*
+%{ABIPREFIX}/AbiSuite/AbiWord/plugins/libAbiHTML.*
+%{ABIPREFIX}/AbiSuite/AbiWord/plugins/libOpenWriter.*
+%{ABIPREFIX}/AbiSuite/AbiWord/plugins/libAbiSDW.*
 %endif
 
 %files clipart
@@ -558,10 +279,6 @@ cp $RPM_BUILD_DIR/%{name}-%{version}/abi/src/pkg/linux/rpm/data/abiword.desktop 
 %{ABIPREFIX}/AbiSuite/fonts/*.pfb
 %{ABIPREFIX}/AbiSuite/fonts/*.e2u
 %{ABIPREFIX}/AbiSuite/fonts/*.u2g
-
-#%files help-de-DE
-#%defattr(-,root,root)
-#%{ABIPREFIX}/AbiSuite/AbiWord/help/de-DE
 
 %post
 
@@ -589,11 +306,15 @@ if test ! -e %{ABIPREFIX}/AbiSuite/fonts/fonts.dir ; then
 fi
 
 %changelog
+* Sun Jun  9 2002 Mark Gilbert <webmaster@dofty.zzn.com>
+                  Rui M. Silva Seabra <rms@1407.org>
+- Pretty much a total rewrite of the way plugins are handled.
+  
 * Wed May 14 2002 J.M. Maurer <j.m.maurer@student.utwente.nl>
 - Require libxml2 instead of libxml for the XML build
   
-* Sat Apr 6 2002 Joaquín Cuenca Abela <cuenca@ie2.u-psud.fr>
-                 Rui M. Silva Seabra <rms@1407.org>
+* Sat Apr  6 2002 Joaquín Cuenca Abela <cuenca@ie2.u-psud.fr>
+                  Rui M. Silva Seabra <rms@1407.org>
 - Add %post fonts and %postun fonts to use (if found) redhat's chkfontpath
   program to add abiword's font path on install and remove it on uninstall
 
