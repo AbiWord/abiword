@@ -127,6 +127,28 @@ AM_CONDITIONAL(DEBUG, test x$debug = xtrue)
 
 ABI_GNOME_QUICK
 
+abi_build_shared=yes
+abi_build_static=no
+
+AC_ARG_ENABLE(shared,[  --disable-shared   don't build shared AbiWord (UNIX/GTK builds only)],[
+	if test "x$enableval" = "xno"; then
+		if test "$PLATFORM" = "unix" -a "$gnome" != "true"; then
+			abi_build_shared=no
+			abi_build_static=yes
+		fi
+	fi
+])
+AC_ARG_ENABLE(static,[  --enable-static          build static AbiWord (UNIX/GTK builds only)],[
+	if test "x$enableval" != "xno"; then
+		if test "$PLATFORM" = "unix" -a "$gnome" != "true"; then
+			abi_build_static=yes
+		fi
+	fi
+])
+
+AM_CONDITIONAL(ABI_BUILD_SHARED,[test $abi_build_shared = yes])
+AM_CONDITIONAL(ABI_BUILD_STATIC,[test $abi_build_static = yes])
+
 ABI_SPELL
 
 AC_ARG_WITH(libjpeg,
