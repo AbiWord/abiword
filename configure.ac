@@ -71,6 +71,7 @@ dnl Define here ABI_FE, ABI_BE, PLATFORM_CFLAGS, PLATFORM_LIBS
 with_unix=false
 with_macosx=false
 with_cocoa=false
+with_qnx=false
 if test "$PLATFORM" = "unix"; then
 	ABI_FE="Unix"
 	ABI_BE="$ABI_FE"
@@ -95,6 +96,7 @@ fi
 AM_CONDITIONAL(WITH_UNIX,$with_unix)
 AM_CONDITIONAL(WITH_MACOSX,$with_macosx)
 AM_CONDITIONAL(WITH_COCOA,$with_cocoa)
+AM_CONDITIONAL(WITH_QNX,$with_qnx)
 AC_SUBST(OBJCXX)
 AC_SUBST(OBJCXXFLAGS)
 AC_SUBST(OBJCXXDEPMODE)
@@ -396,17 +398,21 @@ AC_CONFIG_FILES([GNUmakefile
  src/af/ev/GNUmakefile
  src/af/ev/xp/GNUmakefile
  src/af/ev/cocoa/GNUmakefile
+ src/af/ev/qnx/GNUmakefile
  src/af/ev/unix/GNUmakefile
  src/af/gr/GNUmakefile
  src/af/gr/xp/GNUmakefile
  src/af/gr/cocoa/GNUmakefile
  src/af/gr/unix/GNUmakefile
+ src/af/gr/qnx/GNUmakefile
  src/af/util/GNUmakefile
  src/af/util/xp/GNUmakefile
  src/af/util/unix/GNUmakefile
+ src/af/util/qnx/GNUmakefile
  src/af/xap/GNUmakefile
  src/af/xap/xp/GNUmakefile
  src/af/xap/cocoa/GNUmakefile
+ src/af/xap/qnx/GNUmakefile
  src/af/xap/unix/GNUmakefile
  src/af/xap/unix/gnome/GNUmakefile
  src/other/GNUmakefile
@@ -423,11 +429,13 @@ AC_CONFIG_FILES([GNUmakefile
  src/wp/ap/GNUmakefile
  src/wp/ap/xp/GNUmakefile
  src/wp/ap/cocoa/GNUmakefile
+ src/wp/ap/qnx/GNUmakefile
  src/wp/ap/unix/GNUmakefile
  src/wp/ap/unix/gnome/GNUmakefile
  src/wp/impexp/GNUmakefile
  src/wp/impexp/cocoa/GNUmakefile
  src/wp/impexp/unix/GNUmakefile
+ src/wp/impexp/qnx/GNUmakefile
  src/wp/impexp/xp/GNUmakefile
  src/wp/main/GNUmakefile
  src/wp/main/xp/GNUmakefile
@@ -440,6 +448,7 @@ AC_CONFIG_FILES([GNUmakefile
  src/wp/main/cocoa/AbiWord.app/Contents/Frameworks/GNUmakefile
  src/wp/main/cocoa/AbiWord.app/Contents/Resources/GNUmakefile
  src/wp/main/cocoa/AbiWord.app/Contents/Resources/English.lproj/GNUmakefile
+ src/wp/main/qnx/GNUmakefile
  src/wp/main/unix/GNUmakefile
  src/tools/GNUmakefile
  src/tools/cdump/GNUmakefile

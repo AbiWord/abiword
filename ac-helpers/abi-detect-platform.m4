@@ -197,6 +197,10 @@ case "$OS_NAME" in
 			;;
 		esac
 		;;
+	QNX|procnto)
+		WARNING_CLFAGS="-w9 -ansi -D_POSIX_SOURCE"
+		LDFLAGS="-lph -lphrender -lAp"
+		;;
 	*)
 		case "$GCC" in
 			yes)

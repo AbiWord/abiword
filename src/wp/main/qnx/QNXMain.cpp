@@ -23,3 +23,7 @@ int main(int argc, const char ** argv)
 {
 	return AP_QNXApp::main(ABIWORD_APP_NAME, argc, argv);
 }
+
+#ifdef ABI_PLUGIN_BUILTIN
+#include "abi_plugin_builtin.h"
+#endif

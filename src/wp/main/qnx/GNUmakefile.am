@@ -21,22 +21,18 @@ include $(top_srcdir)/includes.mk
 CLEANFILES = abi_ver.cpp
 
 indirectdir=$(bindir)
-indirect_PROGRAMS = AbiWord_d AbiWord_s
+indirect_PROGRAMS = AbiWord_d
 
 INCLUDES=\
 	 -DABIWORD_APP_NAME="\"$(ABIWORD_APP_NAME)\"" \
 	$(AF_INCLUDES) $(WP_INCLUDES) $(OTHER_INCLUDES) \
-	$(TEXT_INCLUDES) @GMODULE_CFLAGS@ @GTK_CFLAGS@ 
-
-AbiWord_s_LDFLAGS = -all-static
+	$(TEXT_INCLUDES) @GMODULE_CFLAGS@ @GTK_CFLAGS@ -I$(top_srcdir)/../abiword-plugins/
 
 AbiWord_d_SOURCES = abi_ver.cpp QNXMain.cpp
-AbiWord_s_SOURCES = abi_ver.cpp QNXMain.cpp
 
 REPEAT_LIBS = $(ABI_LIBS) $(ABI_LIBS) $(ABI_LIBS) $(ABI_LIBS)
 
-AbiWord_d_LDADD = $(REPEAT_LIBS) @GTK_LIBS@ @GMODULE_LIBS@ $(OTHER_LIBS) 
-AbiWord_s_LDADD = $(REPEAT_LIBS) @GTK_LIBS@ @GMODULE_LIBS@ $(OTHER_LIBS) 
+AbiWord_d_LDADD = $(REPEAT_LIBS) $(OTHER_LIBS) 
 
 abi_ver.cpp:
 	cp $(srcdir)/../xp/abi_ver.cpp .

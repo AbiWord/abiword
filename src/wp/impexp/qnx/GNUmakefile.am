@@ -25,4 +25,4 @@ INCLUDES= $(PSICONV_INCLUDES) $(WP_INCLUDES) \
 
 noinst_LIBRARIES = libImpExp_qnx.a
 
-libImpExp_qnx_a_SOURCES = ie_impexp_RegisterQnx.cpp
+libImpExp_qnx_a_SOURCES = ie_impexp_RegisterQNX.cpp

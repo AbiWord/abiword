@@ -18,7 +18,7 @@
 
 include $(top_srcdir)/includes.mk
 
-INCLUDES= $(AF_INCLUDES) $(WP_INCLUDES) $(TEXT_INCLUDES) $(ICONV_INCLUDES)
+INCLUDES= $(AF_INCLUDES) $(WP_INCLUDES) $(TEXT_INCLUDES) $(ICONV_INCLUDES) $(OTHER_INCLUDES)
 
 noinst_LIBRARIES = libXap_qnx.a
 
@@ -29,6 +29,7 @@ libXap_qnx_a_SOURCES=		\
 	xap_QNXDlg_ClipArt.cpp	\
 	xap_QNXDlg_Encoding.cpp	\
 	xap_QNXDlg_FileOpenSaveAs.cpp	\
+	xap_QNXDlg_HTMLOptions.cpp \
 	xap_QNXDlg_FontChooser.cpp	\
 	xap_QNXDlg_Image.cpp	\
 	xap_QNXDlg_Insert_Symbol.cpp	\
@@ -38,11 +39,11 @@ libXap_qnx_a_SOURCES=		\
 	xap_QNXDlg_PluginManager.cpp		\
 	xap_QNXDlg_Print.cpp	\
 	xap_QNXDlg_PrintPreview.cpp	\
-	xap_QNXDlg_Stub.cpp	\
 	xap_QNXDlg_WindowMore.cpp	\
 	xap_QNXDlg_Zoom.cpp	\
 	xap_QNXEncodingManager.cpp	\
-	xap_QNXFrame.cpp	\
+	xap_QNXFontPreview.cpp \
+	xap_QNXFrameImpl.cpp	\
 	xap_QNXModule.cpp	\
 	xap_QNXToolbar_Icons.cpp
 

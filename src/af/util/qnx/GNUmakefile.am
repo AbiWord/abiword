@@ -30,5 +30,6 @@ libUtil_qnx_a_SOURCES=		\
 	ut_qnxAssert.cpp	\
 	ut_qnxTimer.cpp     \
 	ut_debugmsg.cpp		\
-	ut_path.cpp
+	ut_path.cpp \
+	ut_qnxHelper.cpp
 
