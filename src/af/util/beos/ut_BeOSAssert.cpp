@@ -22,8 +22,11 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include <be/support/Debug.h>
 #include "ut_assert.h"
 #include "ut_BeOSAssert.h"
+#include <Application.h>
+#include <Alert.h>
 
 void UT_BeOSAssertMsg(const char * szMsg, const char * szFile, int iLine)
 {
@@ -32,6 +35,22 @@ void UT_BeOSAssertMsg(const char * szMsg, const char * szFile, int iLine)
 	printf("\n");
 	printf("**** (%d) Assert ****\n", ++count);
 	printf("**** (%d) %s at %s:%d ****\n", count,szMsg,szFile,iLine);
+	if (be_app) {
+		BAlert *alert = new BAlert("AbiWord assert failed", szMsg, 
+			"Exit", "Debug", "Continue", 
+			B_WIDTH_AS_USUAL, B_OFFSET_SPACING, B_WARNING_ALERT);
+		switch (alert->Go()) {
+		case 0:
+			exit(1);
+			break;
+		case 1:
+			debugger(szMsg);
+			break;
+		case 2:
+			return;
+		}
+	}
+
 	while (1)
 	{
 		printf("**** (%d) Continue ? (y/n) [y] : ", count);
