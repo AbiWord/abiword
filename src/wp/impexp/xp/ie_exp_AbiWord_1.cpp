@@ -17,6 +17,8 @@
  * 02111-1307, USA.
  */
 
+#include <locale.h>
+
 #include "ut_string.h"
 #include "ut_types.h"
 #include "ut_bytebuf.h"
@@ -830,8 +832,11 @@ void s_AbiWord_1_Listener::_handlePageSize(void)
   //
   // Code to write out the PageSize Definitions to disk
   // 
+	char *old_locale;
+
 	char buf[20];
 
+	old_locale = setlocale (LC_NUMERIC, "C");
         m_pie->write("<pagesize pagetype=\"");
 	m_pie->write(m_pDocument->m_docPageSize.getPredefinedName());
 	m_pie->write("\"");
@@ -866,6 +871,7 @@ void s_AbiWord_1_Listener::_handlePageSize(void)
 	m_pie->write("\"");
 
 	m_pie->write("/>\n");
+	setlocale (LC_NUMERIC, old_locale);
 	return;
 }
 
