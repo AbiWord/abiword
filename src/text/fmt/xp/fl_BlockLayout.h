@@ -191,6 +191,7 @@ public:
 	List_Type getListType(void);
 	XML_Char* getListStyleString( List_Type iListType);
 
+	void StartList( const XML_Char * style);
 	void StopList(void);
 	XML_Char * getListLabel(void);
 	void transferListFlags(void);

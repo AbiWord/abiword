@@ -4133,7 +4133,7 @@ void fl_BlockLayout::_stopList()
 	fl_AutoNum * pAutoNum = NULL;
 
 	UT_ASSERT(m_pAutoNum);
-	
+
 	m_bStopList = UT_TRUE;
 
 	//	UT_sint32 loc = m_pAutoNum->getPositionInList(this);
@@ -4165,6 +4165,7 @@ void fl_BlockLayout::_stopList()
 	}
 	m_bStopList = UT_FALSE;
 	m_pAutoNum = pAutoNum;	
+
 //	FV_View* pView = m_pLayout->getView();
 //	if(pView != NULL)
 //	        pView->_generalUpdate();
@@ -4180,6 +4181,9 @@ void fl_BlockLayout::remItemFromList(void)
 	        m_bListLabelCreated = UT_FALSE;
 	        FV_View* pView = m_pLayout->getView();
 	        UT_ASSERT(pView);
+
+		m_pDoc->beginUserAtomicGlob();
+
 		UT_uint32 currLevel = getLevel();
 		UT_ASSERT(currLevel > 0);
 		currLevel--;
@@ -4206,6 +4210,8 @@ void fl_BlockLayout::remItemFromList(void)
 		       listUpdate();
 		}
        		//format();
+		m_pDoc->endUserAtomicGlob();
+
                 pView->AV_View::notifyListeners(AV_CHG_FMTBLOCK);
 		pView->_fixInsertionPointCoords();
 		pView->_generalUpdate();
@@ -4213,20 +4219,61 @@ void fl_BlockLayout::remItemFromList(void)
 	}
 }
 
-void    fl_BlockLayout::StopList(void)
+void    fl_BlockLayout::StartList( const XML_Char * style)
 {
+  //
+  // Starts a new list at the current block
+  //
 	XML_Char lid[15], buf[5];
 	UT_Bool bRet;
 	UT_uint32 id;
 	FV_View* pView = m_pLayout->getView();
 	UT_ASSERT(pView);
 
+	m_pDoc->beginUserAtomicGlob();
+
+	id = rand();
+	sprintf(lid, "%i", id);
+        pView->_eraseInsertionPoint();
+
+	UT_uint32 currLevel = getLevel();
+	currLevel++;
+	sprintf(buf, "%i", currLevel);
+
+	const XML_Char * attribs[] = {  "listid", lid,
+					"level", buf,
+					"style", style, 0 };
+	setStarting( UT_FALSE);
+	bRet = m_pDoc->changeStruxFmt(PTC_AddFmt, getPosition(), getPosition(), attribs, NULL, PTX_Block);
+	pView->_ensureThatInsertionPointIsOnScreen();
+	pView->_eraseInsertionPoint();
+
+	listUpdate();
+	m_pDoc->endUserAtomicGlob();
+	pView->_generalUpdate();
+	pView->_ensureThatInsertionPointIsOnScreen();
+}
+
+void    fl_BlockLayout::StopList(void)
+{
+  //
+  // Stops the list in the current block
+  //
+	XML_Char lid[15], buf[5];
+	UT_Bool bRet;
+	UT_uint32 id;
+	FV_View* pView = m_pLayout->getView();
+	UT_ASSERT(pView);
+
+	m_pDoc->beginUserAtomicGlob();
+
 	UT_uint32 currLevel = getLevel();
 
 	UT_ASSERT(currLevel > 0);
 	currLevel--;
 	sprintf(buf, "%i", currLevel);
-	
+	PT_DocPosition offset = pView->getPoint() - getPosition();
+
 	if (currLevel == 0)
 	{
 		id = 0;
@@ -4255,13 +4302,23 @@ void    fl_BlockLayout::StopList(void)
 		listUpdate();
 	}
 	// format();
-	pView->_fixInsertionPointCoords();
+	if(offset > 0 )
+                pView->_setPoint(pView->getPoint()+offset-2);  
+
+	m_pDoc->endUserAtomicGlob();
 	pView->_generalUpdate();
-	pView->_drawInsertionPoint();
+	if (!pView->_ensureThatInsertionPointIsOnScreen())
+	{
+		pView->_fixInsertionPointCoords();
+		pView->_drawInsertionPoint();
+	}
 }
 
 fl_BlockLayout * fl_BlockLayout::getPreviousList(UT_uint32 level)
 {
+  //
+  // Find the most recent list item that matches the level given
+  //
 	fl_BlockLayout * pPrev = getPrev();
 	UT_Bool bmatchLevel =  UT_FALSE;
 	if( pPrev != NULL && pPrev->isListItem())
@@ -4281,6 +4338,9 @@ fl_BlockLayout * fl_BlockLayout::getPreviousList(UT_uint32 level)
 
 fl_BlockLayout * fl_BlockLayout::getPreviousList( void)
 {
+  //
+  // Find the most recent block with a list
+  //
 	fl_BlockLayout * pPrev = getPrev();
 	while(pPrev != NULL && !pPrev->isListItem()) 
 	{ 
@@ -4291,8 +4351,13 @@ fl_BlockLayout * fl_BlockLayout::getPreviousList( void)
 
 void  fl_BlockLayout::resumeList( fl_BlockLayout * prevList)
 {
+  //
+  // Make the current block the next element of the list in the block prevList
+  //
         UT_ASSERT(prevList);
 	XML_Char lid[15], buf[5];
+
+	m_pDoc->beginUserAtomicGlob();
 
 	List_Type rType = prevList->getListType();
 	XML_Char * style = getListStyleString(rType);
@@ -4308,17 +4373,20 @@ void  fl_BlockLayout::resumeList( fl_BlockLayout * prevList)
         m_bStopList = UT_FALSE; 
 	FV_View* pView = m_pLayout->getView();
 	UT_ASSERT(pView);
-	pView->moveInsPtTo(FV_DOCPOS_BOB);  // put point at begining of Block
         pView->_eraseInsertionPoint();
         m_bListLabelCreated = UT_FALSE;
 	m_pDoc->changeStruxFmt(PTC_AddFmt, getPosition(), getPosition(), attribs, NULL, PTX_Block);
         m_bListItem = UT_TRUE;
         listUpdate();
+	m_pDoc->endUserAtomicGlob();
         pView->_generalUpdate();
 }
 
 void fl_BlockLayout::listUpdate(void)
 {
+  //
+  // Update the list on the screen to reflect changes made. 
+  //
 	if (m_pAutoNum == NULL)
 		return;
 	
@@ -4342,8 +4410,11 @@ void fl_BlockLayout::listUpdate(void)
 
 void fl_BlockLayout::transferListFlags(void)
 {
+  //
+  // Transfer list flags from a block to the following list blocks
+  //
 	UT_ASSERT(m_pNext);
-	if (m_pNext->isListItem())
+	if (m_pNext->isListItem()) // this is wrong. It should be next in the list.
 	{
 	        UT_uint32 nId = m_pNext->getAutoNum()->getID();
 	        UT_uint32 cId=0, pId=0;
@@ -4372,6 +4443,9 @@ void fl_BlockLayout::transferListFlags(void)
 void fl_BlockLayout::_createListLabel(void)
 {
 /*	This is a temporary hack, we need to find out more about the field */
+  //
+  // Put the current list label into this block.
+  //
 	if(!m_pFirstRun)
 		return;
 	if (m_pFirstRun->getType() == FPRUN_FIELD)
@@ -4379,28 +4453,46 @@ void fl_BlockLayout::_createListLabel(void)
 		m_bListLabelCreated = UT_TRUE;
 		return;
 	}
-	
 	UT_ASSERT(m_pAutoNum);
 	FV_View* pView = m_pLayout->getView();
 	const  XML_Char ** blockatt;
+	PT_DocPosition offset = pView->getPoint() - getPosition();
        	pView->getCharFormat(&blockatt,UT_TRUE);
         pView->setBlockFormat(blockatt);
 	FREEP(blockatt);
-
-	pView->cmdInsertField("list_label");
-	UT_UCSChar c = UCS_TAB;
-	pView->cmdCharInsert(&c,1);
+	const XML_Char*	attributes[] = {
+	  "type","list_label",
+		NULL, NULL
+	};
+	UT_Bool bResult = m_pDoc->insertObject(getPosition(), PTO_Field, attributes, NULL);
+       	pView->_generalUpdate();
+        UT_UCSChar c = UCS_TAB;
+	bResult = m_pDoc->insertSpan(getPosition()+1,&c,1);
+	pView->_setPoint(pView->getPoint()+offset);  
+       	pView->_generalUpdate();
+	if (!pView->_ensureThatInsertionPointIsOnScreen())
+	{
+		pView->_fixInsertionPointCoords();
+		pView->_drawInsertionPoint();
+	}
 	m_bListLabelCreated = UT_TRUE;
 }
 
 void fl_BlockLayout::_deleteListLabel(void)
 {
+  //
+  // Remove the current list label from the block. This code does not assume the
+  // label is at the first position in the block
+  //
 	PD_Document * pDoc = m_pLayout->getDocument();
 	UT_uint32 posBlock = getPosition();
 	// Find List Label
         fp_Run * pRun = getFirstRun();
 	UT_Bool bStop = UT_FALSE;
 	m_bListLabelCreated = UT_FALSE;
+	//
+	// Search within the block for the list label
+	//
 	while(bStop == UT_FALSE && pRun != NULL)
 	{
 		if(pRun->getType() == FPRUN_FIELD)
@@ -4434,7 +4526,9 @@ void fl_BlockLayout::_deleteListLabel(void)
 XML_Char * fl_BlockLayout::getListLabel(void) 
 {
   //	UT_ASSERT(m_pAutoNum);
-
+  //
+  // Return the calculated list label for the block 
+  //
 	if(m_pAutoNum != NULL)
 		return m_pAutoNum->getLabel(this);
 	else
@@ -4443,6 +4537,9 @@ XML_Char * fl_BlockLayout::getListLabel(void)
 
 inline void fl_BlockLayout::_addBlockToPrevList( fl_BlockLayout * prevBlockInList)
 {
+  //
+  // Insert the current block to the list at the point after prevBlockInList
+  //
 	UT_ASSERT(prevBlockInList);
 	m_pAutoNum = prevBlockInList->getAutoNum();
 	m_pAutoNum->insertItem(this, prevBlockInList);

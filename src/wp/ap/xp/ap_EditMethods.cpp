@@ -4457,12 +4457,8 @@ Defun1(doBullets)
         fl_BlockLayout * pBlock = pView->getCurrentBlock();
 	if(pBlock->getListType() == BULLETED_LIST)
 	{
-	        const char * tmp = pBlock->getAutoNum()->getType();
-	        if(strstr(tmp,"%b")!= NULL)
-	        {
-       		       pBlock->listUpdate();
-	               pView->cmdStopList();
-		}
+	        pBlock->listUpdate();
+	        pBlock->StopList();
 	}
 	else
 	{
@@ -4495,12 +4491,8 @@ Defun1(doNumbers)
         fl_BlockLayout * pBlock = pView->getCurrentBlock();
 	if(pBlock->getListType() == NUMBERED_LIST)
 	{
-	        const char * tmp = pBlock->getAutoNum()->getType();
-	        if(strstr(tmp,"%*%d.")!= NULL)
-	        {
-	       	       pBlock->listUpdate();
-	               pView->cmdStopList();
-		}
+	        pBlock->listUpdate();
+		pBlock->StopList();
 	}
 	else
 	{

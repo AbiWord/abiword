@@ -1143,14 +1143,59 @@ UT_Bool FV_View::dontSpellCheckRightNow(void)
         return m_bdontSpellCheckRightNow;
 } 
 
+UT_Bool FV_View::isCurrentListBlockEmpty(void)
+{
+  // 
+  // If the current block is a list and is otherwise empty return true
+  //
+        fl_BlockLayout * pBlock = getCurrentBlock(); 
+	UT_Bool bEmpty = UT_TRUE;
+	if(pBlock->isListItem() == UT_FALSE)
+	{
+	         return UT_FALSE;
+	}
+	
+	  //
+	  // Now look to see if the current block is otherwise empty
+	  //
+	fp_Run * pRun = pBlock->getFirstRun();
+	UT_uint32 ifield =0;
+	while((bEmpty == UT_TRUE) && (pRun != NULL))//sevior here
+	{
+	         FP_RUN_TYPE runtype = (FP_RUN_TYPE) pRun->getType();	
+		 if((runtype == FPRUN_TAB) || 
+		    ( runtype == FPRUN_FIELD)  ||
+		    (runtype == FPRUN_FMTMARK))
+		 {
+		          if(runtype == FPRUN_FIELD)
+			  {
+			         ifield++;
+				 if(ifield > 1) 
+				 {
+				        bEmpty = UT_FALSE;
+					break;
+				 }
+			  }
+			  pRun = pRun->getNext();
+		 }
+		 else
+		 {
+		          bEmpty = UT_FALSE;
+		 }
+	}
+	return bEmpty;
+}
+
 void FV_View::insertParagraphBreak(void)
 {
 	UT_Bool bDidGlob = UT_FALSE;
 
+	m_pDoc->beginUserAtomicGlob();
+
 	if (!isSelectionEmpty())
 	{
 		bDidGlob = UT_TRUE;
-		m_pDoc->beginUserAtomicGlob();
+		//	m_pDoc->beginUserAtomicGlob();
 		_deleteSelection();
 	}
 	else
@@ -1164,11 +1209,20 @@ void FV_View::insertParagraphBreak(void)
 
 	// insert a new paragraph with the same attributes/properties
 	// as the previous (or none if the first paragraph in the section).
-
+	//
+	// But first check to see if we're in a list and the current block is
+	// otherwise blank.
+	//
+	fl_BlockLayout * pBlock = getCurrentBlock();
+	if(isCurrentListBlockEmpty() == UT_TRUE)
+	{
+	         pBlock->StopList();
+	}
 	m_pDoc->insertStrux(getPoint(), PTX_Block);
 	_findGetCurrentBlock()->listUpdate();
-	if (bDidGlob)
-		m_pDoc->endUserAtomicGlob();
+	//	if (bDidGlob)
+	//	m_pDoc->endUserAtomicGlob();
+	m_pDoc->endUserAtomicGlob();
 
 	_generalUpdate();
 	if (!_ensureThatInsertionPointIsOnScreen())
@@ -1711,33 +1765,10 @@ UT_Bool FV_View::setBlockFormat(const XML_Char * properties[])
 
 UT_Bool FV_View::cmdStartList(const XML_Char * style)
 {
-	XML_Char lid[15], buf[5];
-	UT_Bool bRet;
-	UT_uint32 id;
 
-	fl_BlockLayout * pBlock = _findBlockAtPosition(getPoint());
-
-	id = rand();
-	sprintf(lid, "%i", id);
-        moveInsPtTo(FV_DOCPOS_BOB); // put point at Beginning of the Block
-        _eraseInsertionPoint();
-
-	UT_uint32 currLevel = pBlock->getLevel();
-	currLevel++;
-	sprintf(buf, "%i", currLevel);
-
-	const XML_Char * attribs[] = {  "listid", lid,
-					"level", buf,
-					"style", style, 0 };
-	pBlock->setStarting( UT_FALSE);
-	_eraseInsertionPoint();
-	bRet = m_pDoc->changeStruxFmt(PTC_AddFmt, getPoint(), getPoint(), attribs, NULL, PTX_Block);
-	_ensureThatInsertionPointIsOnScreen();
-	_eraseInsertionPoint();
-	pBlock->listUpdate();
-	_generalUpdate();
-	_ensureThatInsertionPointIsOnScreen();
-	return bRet;
+        fl_BlockLayout * pBlock = getCurrentBlock();
+	pBlock->StartList( style);
+	return UT_TRUE;
 }
 
 void    FV_View::changeListStyle( fl_AutoNum * pAuto, XML_Char * style)
