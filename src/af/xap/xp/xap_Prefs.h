@@ -140,7 +140,7 @@ public:
 	const char *			getRecent(UT_uint32 k) const;		// one-based
 	void					addRecent(const char * szRecent);
 	void					removeRecent(UT_uint32 k);			// one-based
-	void                    setIgorneNextRecent(void)
+	void                    setIgnoreNextRecent(void)
 		{ m_bIgnoreThisOne = true;}
 	bool					setGeometry(UT_sint32 posx, UT_sint32 posy, UT_uint32 width, UT_uint32 height, UT_uint32 flags = 0);
 	bool					getGeometry(UT_sint32 *posx, UT_sint32 *posy, UT_uint32 *width, UT_uint32 *height, UT_uint32 *flags = 0);

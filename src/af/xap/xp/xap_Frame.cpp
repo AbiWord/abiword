@@ -131,20 +131,20 @@ XAP_Frame::XAP_Frame(XAP_Frame * f)
 
 XAP_Frame::~XAP_Frame(void)
 {
-  // if we're auto-saving files and now we're exiting normally
-  // delete/unlink the file
-  bool autosave = true;
-  getApp()->getPrefsValueBool(XAP_PREF_KEY_AutoSaveFile, &autosave);
-  if (autosave)
-    {
-      UT_String backupName = makeBackupName ();
-      UT_DEBUGMSG(("DOM: removing backup file %s\n", backupName.c_str()));
-      UT_unlink ( backupName.c_str() );
-    }
+	/* if we're auto-saving files and now we're exiting normally
+	 * delete/unlink the file
+	 */
+	// bool autosave = true;
+	// getApp()->getPrefsValueBool(XAP_PREF_KEY_AutoSaveFile, &autosave);
+	if (/* autosave && */ m_stAutoSaveNamePrevious.size())
+	{
+		UT_DEBUGMSG(("DOM: removing backup file %s\n", m_stAutoSaveNamePrevious.c_str()));
+		UT_unlink ( m_stAutoSaveNamePrevious.c_str() );
+	}
 
 	// only delete the things that we created...
-    // I do not like this; we should be deleting all our members,
-    // since they are no-one else's bussines (Tomas, Jan 30, 2003)
+	// I do not like this; we should be deleting all our members,
+	// since they are no-one else's bussines (Tomas, Jan 30, 2003)
 
 	if (m_pView)
 		m_pView->removeListener(m_lid);
@@ -849,12 +849,21 @@ UT_Error XAP_Frame::backup(const char* szExt, UT_sint32 iEFT)
 	m_bBackupInProgress = true;
 
 	UT_String backupName = makeBackupName ( szExt );
+
+	if (m_stAutoSaveNamePrevious.size() && (backupName != m_stAutoSaveNamePrevious))
+	{
+		/* If the user does a Save-As to rename the file then the auto-save name also changes, so
+		 * need to remove the old backup file...
+		 */
+		UT_unlink(m_stAutoSaveNamePrevious.c_str());
+	}
+	m_stAutoSaveNamePrevious = backupName;
 	
 	UT_Error error;
 //
 // Don't put this auto-save in the most recent list.
 //
-	getApp()->getPrefs()->setIgorneNextRecent();
+	getApp()->getPrefs()->setIgnoreNextRecent();
 
 	if(iEFT < 0)
 	{

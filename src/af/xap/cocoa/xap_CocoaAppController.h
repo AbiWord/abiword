@@ -43,6 +43,7 @@ class XAP_Frame;
 
 - (BOOL)application:(NSApplication *)sender delegateHandlesKey:(NSString *)key;
 
+- (void)applicationWillFinishLaunching:(NSNotification *)aNotification;
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification;
 
 - (void)applicationWillTerminate:(NSNotification *)aNotification;

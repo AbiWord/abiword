@@ -251,6 +251,7 @@ private:
 	UT_uint32					m_iIdAutoSaveTimer;
 	UT_uint32					m_iAutoSavePeriod;
 	UT_String					m_stAutoSaveExt;
+	UT_String					m_stAutoSaveNamePrevious;
 	bool						m_bBackupRunning;
 	bool						m_bBackupInProgress;
 	

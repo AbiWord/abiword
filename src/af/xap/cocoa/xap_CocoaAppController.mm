@@ -65,6 +65,16 @@ XAP_CocoaAppController* XAP_AppController_Instance = nil;
 	return [key isEqualToString:@"orderedDocuments"];
 }
 
+- (void)applicationWillFinishLaunching:(NSNotification *)aNotification
+{
+	if (const char * home = getenv("HOME"))
+		{
+			NSString * desktop = [[NSString stringWithUTF8String:home] stringByAppendingPathComponent:@"Desktop"];
+
+			[[NSFileManager defaultManager] changeCurrentDirectoryPath:desktop];
+		}
+}
+
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification
 {
 	UT_DEBUGMSG(("[XAP_CocoaAppController -applicationDidFinishLaunching:]\n"));

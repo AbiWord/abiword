@@ -1,3 +1,5 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
  * Copyright (C) 2002-2003 Hubert Figuiere
@@ -56,7 +58,7 @@ public:
 			obj->_event_SetDefaults();
 		};
 private:
-	AP_CocoaDialog_OptionsController_proxy ();	//don't allow contruction
+	AP_CocoaDialog_OptionsController_proxy ();	// don't allow construction
 };
 
 #if 0
@@ -648,11 +650,23 @@ void AP_CocoaDialog_Options::_storeWindowData(void)
 - (IBAction)autoSaveStepperAction:(id)sender
 {
 	[m_prefsAutoSaveMinField setIntValue:[sender intValue]];
+
+	m_xap->_storeDataForControl(AP_Dialog_Options::id_TEXT_AUTO_SAVE_FILE_PERIOD);
 }
 
 - (IBAction)autoSaveFieldAction:(id)sender
 {
-	[m_prefsAutoSaveMinStepper setIntValue:[sender intValue]];
+	int value = [sender intValue];
+
+	if (value < 1)
+		value = 1;
+	if (value > 59)
+		value = 59;
+
+	[m_prefsAutoSaveMinField   setIntValue:value];
+	[m_prefsAutoSaveMinStepper setIntValue:value];
+
+	m_xap->_storeDataForControl(AP_Dialog_Options::id_TEXT_AUTO_SAVE_FILE_PERIOD);
 }
 
 - (IBAction)_defaultControlAction:(id)sender;
