@@ -1432,12 +1432,6 @@ void fp_TextRun::_draw(dg_DrawArgs* pDA)
 	// 	(2) draw any selection background where needed over the basic background
 	// 	(3) draw the whole text in a single go over the composite background
 
-	// draw the background for the whole run, but only in sreen context or if
-	// it is not white
-	// static const UT_RGBColor clrWhite(255,255,255); // FIXME: should not be hardwired?!
-	bool bDrawBckg = (getGR()->queryProperties(GR_Graphics::DGP_SCREEN)
-			  /* || clrNormalBackground != clrWhite */);
-
 	UT_RGBColor clrPageBackground(_getColorPG());
 	UT_RGBColor clrNormalBackground(_getColorHL());
 	UT_RGBColor clrSelBackground = _getView()->getColorSelBackground();
@@ -1449,21 +1443,22 @@ void fp_TextRun::_draw(dg_DrawArgs* pDA)
 		clrSelBackground -= color_offset;
 	}
 
-	if(bDrawBckg)
-	{
-		if (!clrPageBackground.isTransparent ())
-			getGR()->fillRect(clrPageBackground,
-						pDA->xoff,
-						yTopOfSel + getAscent() - getLine()->getAscent(),
-						getWidth(),
-						getLine()->getHeight());
-		if (!clrNormalBackground.isTransparent ())
-			getGR()->fillRect(clrNormalBackground,
-						pDA->xoff,
-						yTopOfSel + getAscent() - getLine()->getAscent(),
-						getWidth(),
-						getLine()->getHeight());
-	}
+	// draw the page background if we are in the screen context, and the page color is set (ie. non-transparent).
+	if (getGR()->queryProperties(GR_Graphics::DGP_SCREEN) &&
+		!clrPageBackground.isTransparent ())
+		getGR()->fillRect(clrPageBackground,
+					pDA->xoff,
+					yTopOfSel + getAscent() - getLine()->getAscent(),
+					getWidth(),
+					getLine()->getHeight());
+	
+	// draw the highlighting of this run, if any
+	if (!clrNormalBackground.isTransparent ())
+		getGR()->fillRect(clrNormalBackground,
+					pDA->xoff,
+					yTopOfSel + getAscent() - getLine()->getAscent(),
+					getWidth(),
+					getLine()->getHeight());
 
 	// calculate selection rectangles ...
 	UT_uint32 iBase = getBlock()->getPosition();
@@ -1495,7 +1490,7 @@ void fp_TextRun::_draw(dg_DrawArgs* pDA)
 
 	const UT_GrowBuf * pgbCharWidths = getBlock()->getCharWidths()->getCharWidths();
 
-	if (/* pView->getFocus()!=AV_FOCUS_NONE && */ iSel1 != iSel2 && bDrawBckg)
+	if (/* pView->getFocus()!=AV_FOCUS_NONE && */ iSel1 != iSel2 && getGR()->queryProperties(GR_Graphics::DGP_SCREEN))
 	{
 		if (iSel1 <= iRunBase)
 		{
@@ -1601,7 +1596,7 @@ void fp_TextRun::_draw(dg_DrawArgs* pDA)
 		the sreen, a Windows printer can behave like this).
 	*/
 
-	if(bDrawBckg && getGR()->queryProperties(GR_Graphics::DGP_OPAQUEOVERLAY))
+	if(getGR()->queryProperties(GR_Graphics::DGP_SCREEN) && getGR()->queryProperties(GR_Graphics::DGP_OPAQUEOVERLAY))
 	{
 		fp_Run * pNext = getNextVisual();
 		fp_Run * pPrev = getPrevVisual();
@@ -3360,4 +3355,3 @@ bool fp_TextRun::_checkAndFixStaticBuffers(UT_uint32 iLen)
 
 	return true;
 }
-
