@@ -25,8 +25,11 @@ public:
 
 	void					setPieceTableState(PTState pts);
 
+	void					beginMultiStepGlob(void);
+	void					endMultiStepGlob(void);
 	void					beginUserAtomicGlob(void);
 	void					endUserAtomicGlob(void);
+	
 	UT_Bool					undoCmd(void);
 	UT_Bool					redoCmd(void);
 
@@ -34,6 +37,7 @@ public:
 									   UT_Bool bLeftSide,
 									   UT_UCSChar * p,
 									   UT_uint32 length);
+
 	UT_Bool					deleteSpan(PT_DocPosition dpos,
 									   UT_Bool bLeftSide1,
 									   UT_Bool bLeftSide2,
@@ -46,11 +50,6 @@ public:
 										  UT_Bool bLeftSide2,
 										  const XML_Char ** attributes,
 										  const XML_Char ** properties);
-
-	UT_Bool					deleteFmt(PT_DocPosition dpos1,
-									  PT_DocPosition dpos2,
-									  const XML_Char ** attributes,
-									  const XML_Char ** properties);
 
 	UT_Bool					insertStrux(PT_DocPosition dpos,
 										UT_Bool bLeftSide,
@@ -127,25 +126,22 @@ protected:
 	UT_Bool					_deleteSpanWithNotify(PT_DocPosition dpos, UT_Bool bLeftSide,
 												  pf_Frag_Text * pft, UT_uint32 fragOffset,
 												  UT_uint32 length,
-												  UT_Byte changeFlags,
 												  pf_Frag_Strux * pfs,
 												  pf_Frag ** ppfEnd, UT_uint32 * pfragOffsetEnd);
 	UT_Bool					_deleteStruxWithNotify(PT_DocPosition dpos, UT_Bool bLeftSide,
 												   pf_Frag_Strux * pfs,
-												   UT_Byte changeFlags,
 												   pf_Frag ** ppfEnd, UT_uint32 * pfragOffsetEnd);
 
 	UT_Bool					_fmtChangeStruxWithNotify(PTChangeFmt ptc,
 													  pf_Frag_Strux * pfs,
 													  const XML_Char ** attributes,
 													  const XML_Char ** properties,
-													  UT_Byte changeFlag,
 													  pf_Frag ** ppfNewEnd,
 													  UT_uint32 * pfragOffsetNewEnd);
 
-	UT_Bool					_fmtChange(pf_Frag_Text * pft, UT_uint32 fragOffset, UT_uint32 length,
-									   PT_AttrPropIndex indexNewAP,
-									   pf_Frag ** ppfNewEnd, UT_uint32 * pfragOffsetNewEnd);
+	UT_Bool					_fmtChangeSpan(pf_Frag_Text * pft, UT_uint32 fragOffset, UT_uint32 length,
+										   PT_AttrPropIndex indexNewAP,
+										   pf_Frag ** ppfNewEnd, UT_uint32 * pfragOffsetNewEnd);
 	
 	UT_Bool					_fmtChangeSpanWithNotify(PTChangeFmt ptc,
 													 pf_Frag_Text * pft, UT_uint32 fragOffset,
@@ -153,7 +149,6 @@ protected:
 													 UT_uint32 length,
 													 const XML_Char ** attributes,
 													 const XML_Char ** properties,
-													 UT_Byte changeFlag,
 													 pf_Frag_Strux * pfs,
 													 pf_Frag ** ppfNewEnd,
 													 UT_uint32 * pfragOffsetNewEnd);

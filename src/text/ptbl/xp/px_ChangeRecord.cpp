@@ -59,8 +59,8 @@ PX_ChangeRecord::PXType PX_ChangeRecord::getRevType(void) const
 {
 	switch (m_type)
 	{
-	case PX_ChangeRecord::PXT_UserAtomicGlobMarker:
-		return PX_ChangeRecord::PXT_UserAtomicGlobMarker;
+	case PX_ChangeRecord::PXT_GlobMarker:
+		return PX_ChangeRecord::PXT_GlobMarker;
 		
 	case PX_ChangeRecord::PXT_InsertSpan:
 		return PX_ChangeRecord::PXT_DeleteSpan;
@@ -69,7 +69,7 @@ PX_ChangeRecord::PXType PX_ChangeRecord::getRevType(void) const
 		return PX_ChangeRecord::PXT_InsertSpan;
 
 	case PX_ChangeRecord::PXT_ChangeSpan:
-		return PX_ChangeRecord::PXT_ChangeSpan;	// we are our own inverse
+		return PX_ChangeRecord::PXT_ChangeSpan;				// we are our own inverse
 		
 	case PX_ChangeRecord::PXT_InsertStrux:
 		return PX_ChangeRecord::PXT_DeleteStrux;
@@ -77,9 +77,12 @@ PX_ChangeRecord::PXType PX_ChangeRecord::getRevType(void) const
 	case PX_ChangeRecord::PXT_DeleteStrux:
 		return PX_ChangeRecord::PXT_InsertStrux;
 
+	case PX_ChangeRecord::PXT_ChangeStrux:
+		return PX_ChangeRecord::PXT_ChangeStrux;			// we are our own inverse
+		
 	default:
 		UT_ASSERT(0);
-		return PX_ChangeRecord::PXT_UserAtomicGlobMarker; // bogus
+		return PX_ChangeRecord::PXT_GlobMarker;				// bogus
 	}
 }
 
@@ -114,12 +117,13 @@ void PX_ChangeRecord::dump(void) const
 	
 	switch (m_type)
 	{
-	case PX_ChangeRecord::PXT_UserAtomicGlobMarker:		name = "UserAtom";	break;
+	case PX_ChangeRecord::PXT_GlobMarker:				name = "GlobGlob";	break;
 	case PX_ChangeRecord::PXT_InsertSpan:				name = "InstSpan";	break;
 	case PX_ChangeRecord::PXT_DeleteSpan:				name = "DeleSpan";	break;
 	case PX_ChangeRecord::PXT_ChangeSpan:				name = "ChngSpan";	break;
 	case PX_ChangeRecord::PXT_InsertStrux:				name = "InstStrx";	break;
 	case PX_ChangeRecord::PXT_DeleteStrux:				name = "DeleStrx";	break;
+	case PX_ChangeRecord::PXT_ChangeStrux:				name = "ChngStrx";	break;
 	}
 	
 	UT_DEBUGMSG(("CRec: T[%s] [b %x] [ap %d]\n", name,m_atomic,m_indexAP));

@@ -66,6 +66,14 @@ CPPSRCS=		pd_Document.cpp			\
 			pp_Property.cpp			\
 			pp_TableAttrProp.cpp		\
 			pt_PieceTable.cpp		\
+			pt_PieceTable_Append.cpp	\
+			pt_PieceTable_ChangeSpan.cpp	\
+			pt_PieceTable_Glob.cpp		\
+			pt_PieceTable_DeleteSpan.cpp	\
+			pt_PieceTable_DeleteStrux.cpp	\
+			pt_PieceTable_InsertSpan.cpp	\
+			pt_PieceTable_InsertStrux.cpp	\
+			pt_PieceTable_Undo.cpp		\
 			pt_VarSet.cpp			\
 			px_ChangeHistory.cpp		\
 			px_ChangeRecord.cpp		\
