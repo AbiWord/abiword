@@ -21,6 +21,7 @@
 #define XAP_DIALOG_FILEOPENSAVEAS_H
 
 #include "xap_Dialog.h"
+class XAP_App;
 
 /*****************************************************************
 ** This is the XAP and XP base-class for the file-open and
@@ -50,7 +51,7 @@ protected:
 	char *								m_szFinalPathname;
 	UT_Bool								m_bSuggestName;
 	XAP_Dialog_FileOpenSaveAs::tAnswer	m_answer;
-
+	XAP_App *							m_pApp;
 };
 
 #endif /* XAP_DIALOG_FILEOPENSAVEAS_H */

@@ -31,6 +31,7 @@
 #include "xap_UnixDlg_FileOpenSaveAs.h"
 #include "xap_UnixApp.h"
 #include "xap_UnixFrame.h"
+#include "xap_Strings.h"
 
 #define FREEP(p)	do { if (p) free(p); (p)=NULL; } while (0)
 
@@ -199,7 +200,7 @@ UT_Bool XAP_UnixDialog_FileOpenSaveAs::_run_gtk_main(XAP_Frame * pFrame,
 		pLastSlash = rindex(szTestFilename,'/');
 		if (!pLastSlash)
 		{
-			_notifyError_OKOnly(pFrame,"Invalid pathname.");
+			_notifyError_OKOnly(pFrame,XAP_STRING_ID_DLG_InvalidPathname);
 			goto ContinueLoop;
 		}
 
@@ -218,9 +219,7 @@ UT_Bool XAP_UnixDialog_FileOpenSaveAs::_run_gtk_main(XAP_Frame * pFrame,
 
 		if (err == -1)
 		{
-			_notifyError_OKOnly(pFrame,
-								"This file cannot be saved in this directory\n"
-								"because the directory does not exist.");
+			_notifyError_OKOnly(pFrame,XAP_STRING_ID_DLG_NoSaveFile_DirNotExist);
 			goto ContinueLoop;
 		}
 
@@ -239,8 +238,7 @@ UT_Bool XAP_UnixDialog_FileOpenSaveAs::_run_gtk_main(XAP_Frame * pFrame,
 		if (pLastSlash > szTestFilename)
 			*pLastSlash = 0;
 
-		_notifyError_OKOnly(pFrame,
-							"This file cannot be saved here because the directory\n'%s' is write-protected.",
+		_notifyError_OKOnly(pFrame,XAP_STRING_ID_DLG_NoSaveFile_DirNotWriteable,
 							szTestFilename);
 	ContinueLoop:
 		FREEP(szTestFilename);
@@ -264,7 +262,9 @@ UT_Bool XAP_UnixDialog_FileOpenSaveAs::_askOverwrite_YesNo(XAP_Frame * pFrame, c
 		= (XAP_Dialog_MessageBox *)(pDialogFactory->requestDialog(XAP_DIALOG_ID_MESSAGE_BOX));
 	UT_ASSERT(pDialog);
 
-	pDialog->setMessage("File already exists.  Overwrite file '%s'?", fileName);
+	const XAP_StringSet * pSS = m_pApp->getStringSet();
+
+	pDialog->setMessage(pSS->getValue(XAP_STRING_ID_DLG_OverwriteFile), fileName);
 	pDialog->setButtons(XAP_Dialog_MessageBox::b_YN);
 	pDialog->setDefaultAnswer(XAP_Dialog_MessageBox::a_NO);	// should this be YES?
 
@@ -276,9 +276,8 @@ UT_Bool XAP_UnixDialog_FileOpenSaveAs::_askOverwrite_YesNo(XAP_Frame * pFrame, c
 
 	return (ans == XAP_Dialog_MessageBox::a_YES);
 }
-
 	
-void XAP_UnixDialog_FileOpenSaveAs::_notifyError_OKOnly(XAP_Frame * pFrame, const char * message)
+void XAP_UnixDialog_FileOpenSaveAs::_notifyError_OKOnly(XAP_Frame * pFrame, XAP_String_Id sid)
 {
 	AP_DialogFactory * pDialogFactory
 		= (AP_DialogFactory *)(pFrame->getDialogFactory());
@@ -287,19 +286,20 @@ void XAP_UnixDialog_FileOpenSaveAs::_notifyError_OKOnly(XAP_Frame * pFrame, cons
 		= (XAP_Dialog_MessageBox *)(pDialogFactory->requestDialog(XAP_DIALOG_ID_MESSAGE_BOX));
 	UT_ASSERT(pDialog);
 
-	pDialog->setMessage(message);
+	const XAP_StringSet * pSS = m_pApp->getStringSet();
+
+	pDialog->setMessage(pSS->getValue(sid));
 	pDialog->setButtons(XAP_Dialog_MessageBox::b_O);
 	pDialog->setDefaultAnswer(XAP_Dialog_MessageBox::a_OK);
 
 	pDialog->runModal(pFrame);
-
-//	XAP_Dialog_MessageBox::tAnswer ans = pDialog->getAnswer();
 
 	pDialogFactory->releaseDialog(pDialog);
 }
 
 void XAP_UnixDialog_FileOpenSaveAs::_notifyError_OKOnly(XAP_Frame * pFrame,
-													   const char * message, const char * sz1)
+														XAP_String_Id sid,
+														const char * sz1)
 {
 	AP_DialogFactory * pDialogFactory
 		= (AP_DialogFactory *)(pFrame->getDialogFactory());
@@ -308,13 +308,13 @@ void XAP_UnixDialog_FileOpenSaveAs::_notifyError_OKOnly(XAP_Frame * pFrame,
 		= (XAP_Dialog_MessageBox *)(pDialogFactory->requestDialog(XAP_DIALOG_ID_MESSAGE_BOX));
 	UT_ASSERT(pDialog);
 
-	pDialog->setMessage(message,sz1);
+	const XAP_StringSet * pSS = m_pApp->getStringSet();
+
+	pDialog->setMessage(pSS->getValue(sid),sz1);
 	pDialog->setButtons(XAP_Dialog_MessageBox::b_O);
 	pDialog->setDefaultAnswer(XAP_Dialog_MessageBox::a_OK);
 
 	pDialog->runModal(pFrame);
-
-//	XAP_Dialog_MessageBox::tAnswer ans = pDialog->getAnswer();
 
 	pDialogFactory->releaseDialog(pDialog);
 }
@@ -324,8 +324,14 @@ void XAP_UnixDialog_FileOpenSaveAs::_notifyError_OKOnly(XAP_Frame * pFrame,
 
 void XAP_UnixDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 {
+	// NOTE: this work could be done in XP code
+	m_pApp = pFrame->getApp();
+	UT_ASSERT(m_pApp);
+
 	m_pUnixFrame = (XAP_UnixFrame *)pFrame;
 	UT_ASSERT(m_pUnixFrame);
+
+	const XAP_StringSet * pSS = m_pApp->getStringSet();
 
 	// do we want to let this function handle stating the Unix
 	// directory for writability?  Save/Export operations will want
@@ -333,24 +339,24 @@ void XAP_UnixDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 
 	UT_Bool bCheckWritePermission;
 	
-	char * szTitle;
+	const XML_Char * szTitle;
 	switch (m_id)
 	{
 	case XAP_DIALOG_ID_FILE_OPEN:
 	{
-		szTitle = "Open File";
+		szTitle = pSS->getValue(XAP_STRING_ID_DLG_FOSA_OpenTitle);
 		bCheckWritePermission = UT_FALSE;
 		break;
 	}
 	case XAP_DIALOG_ID_FILE_SAVEAS:
 	{
-		szTitle = "Save File As";
+		szTitle = pSS->getValue(XAP_STRING_ID_DLG_FOSA_SaveAsTitle);
 		bCheckWritePermission = UT_TRUE;
 		break;
 	}
 	case XAP_DIALOG_ID_PRINTTOFILE:
 	{
-		szTitle = "Print To File";
+		szTitle = pSS->getValue(XAP_STRING_ID_DLG_FOSA_PrintToFileTitle);
 		bCheckWritePermission = UT_TRUE;
 		break;
 	}
@@ -358,6 +364,11 @@ void XAP_UnixDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 		break;
 	}
+
+	// NOTE: we use our string mechanism to localize the dialog's
+	// NOTE: title and the error/confirmation message boxes.  we
+	// NOTE: let GTK take care of the localization of the actual
+	// NOTE: buttons and labels on the FileSelection dialog.
 	
 	GtkFileSelection *pFS = (GtkFileSelection *)gtk_file_selection_new(szTitle);
 	

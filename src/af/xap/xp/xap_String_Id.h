@@ -47,4 +47,11 @@ dcl(DLG_StyleItalic,		"Italic")
 dcl(DLG_StyleBold,			"Bold")
 dcl(DLG_StyleBoldItalic,	"Bold Italic")
 
-	
+/* Unix FileOpenSaveAs Dialog */
+dcl(DLG_FOSA_OpenTitle,					"Open File")
+dcl(DLG_FOSA_SaveAsTitle,				"Save File As")
+dcl(DLG_FOSA_PrintToFileTitle,			"Print To File")
+dcl(DLG_InvalidPathname,				"Invalid pathname.")
+dcl(DLG_NoSaveFile_DirNotExist,			"A directory in the given pathname does not exist.")
+dcl(DLG_NoSaveFile_DirNotWriteable,		"The directory '%s' is write-protected.")
+dcl(DLG_OverwriteFile,					"File already exists.  Overwrite file '%s'?")

@@ -21,6 +21,7 @@
 #define XAP_UNIXDIALOG_FILEOPENSAVEAS_H
 
 #include "xap_Dlg_FileOpenSaveAs.h"
+#include "xap_Strings.h"
 class XAP_UnixFrame;
 
 /*****************************************************************/
@@ -38,8 +39,8 @@ public:
 protected:
 
 	UT_Bool					_run_gtk_main(XAP_Frame * pFrame, void * pFSvoid, UT_Bool bCheckWritePermission);
-	void 					_notifyError_OKOnly(XAP_Frame * pFrame, const char * message);
-	void 					_notifyError_OKOnly(XAP_Frame * pFrame, const char * message, const char * sz1);
+	void 					_notifyError_OKOnly(XAP_Frame * pFrame, XAP_String_Id sid);
+	void 					_notifyError_OKOnly(XAP_Frame * pFrame, XAP_String_Id sid, const char * sz1);
 	UT_Bool 				_askOverwrite_YesNo(XAP_Frame * pFrame, const char * fileName);
 	
 	XAP_UnixFrame *			m_pUnixFrame;
