@@ -1502,13 +1502,31 @@ void AP_TopRuler::mouseMotion(EV_EditModifierState ems, UT_sint32 x, UT_sint32 y
 	// the whole thing.  but this may interact with the current scroll.
 
 	UT_sint32 xFixed = (UT_sint32)MyMax(m_iLeftRulerWidth,s_iFixedWidth);
+	UT_sint32 xStartPixel = xFixed + (UT_sint32) m_infoCache.m_xPageViewMargin;
 	UT_sint32 xAbsRight = _getFirstPixelInColumn(&m_infoCache, m_infoCache.m_iNumColumns - 1) + 
 		m_infoCache.u.c.m_xColumnWidth + m_infoCache.u.c.m_xaRightMargin;
 	ap_RulerTicks tick(m_pG,m_dim);
 
-	if ((x < xFixed + (UT_sint32) m_infoCache.m_xPageViewMargin)
-		|| (x > xAbsRight))
+	if (x < xStartPixel)
 	{
+		m_dragging2Center += (xStartPixel - m_draggingCenter);
+		m_draggingCenter = xStartPixel;
+		if (m_dragging2Center < xStartPixel)
+		{
+			m_draggingCenter += (xStartPixel - m_dragging2Center);
+			m_dragging2Center = xStartPixel;
+		}
+		return;
+	}
+	else if (x > xAbsRight)
+	{
+		m_dragging2Center -= (xAbsRight - m_draggingCenter);
+		m_draggingCenter = xAbsRight;
+		if (m_dragging2Center > xAbsRight)
+		{
+			m_draggingCenter -= (xAbsRight - m_dragging2Center);
+			m_dragging2Center = xAbsRight;
+		}
 		return;
 	}
 
