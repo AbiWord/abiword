@@ -213,13 +213,13 @@ public:
 										  const XML_Char ** properties);
 
 	bool					insertStrux(PT_DocPosition dpos,
-										PTStruxType pts);
+										PTStruxType pts, pf_Frag_Strux ** ppfs_ret = 0);
 
 
 	bool					insertStrux(PT_DocPosition dpos,
 										PTStruxType pts,
 										  const XML_Char ** attributes,
-										  const XML_Char ** properties);
+										  const XML_Char ** properties, pf_Frag_Strux ** ppfs_ret = 0);
 
 	void                    deleteHdrFtrStrux(PL_StruxDocHandle sdh);
 
@@ -236,7 +236,7 @@ public:
 	// the append- and insertBeforeFrag methods are only available while importing
 	// the document.
 
-	bool					appendStrux(PTStruxType pts, const XML_Char ** attributes);
+	bool					appendStrux(PTStruxType pts, const XML_Char ** attributes, pf_Frag_Strux ** ppfs_ret = 0);
 	bool					appendStruxFmt(pf_Frag_Strux * pfs, const XML_Char ** attributes);
 	bool					appendFmt(const XML_Char ** attributes);
 	bool					appendFmt(const UT_Vector * pVecAttributes);
@@ -287,6 +287,8 @@ public:
 													   PTStruxType pts,
 													   PL_StruxFmtHandle * psfh) const;
 	bool					getStruxOfTypeFromPosition(PT_DocPosition, PTStruxType pts, PL_StruxDocHandle * sdh) const;
+
+	pf_Frag *				getFragFromPosition(PT_DocPosition docPos) const;
 
 	bool					getNextStruxOfType(PL_StruxDocHandle sdh,PTStruxType pts,
 											   PL_StruxDocHandle * nextsdh);

@@ -43,13 +43,15 @@
 /****************************************************************/
 /****************************************************************/
 
-bool pt_PieceTable::appendStrux(PTStruxType pts, const XML_Char ** attributes)
+bool pt_PieceTable::appendStrux(PTStruxType pts, const XML_Char ** attributes, pf_Frag_Strux ** ppfs_ret)
 {
 	pf_Frag_Strux * pfs = NULL;
 	if(!_makeStrux(pts, attributes, pfs) || !pfs)
 		return false;
 
 	m_fragments.appendFrag(pfs);
+	if (ppfs_ret)
+		*ppfs_ret = pfs;
 	return true;
 }
 

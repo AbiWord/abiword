@@ -259,6 +259,12 @@ private:
 
 class ABI_EXPORT IE_Imp_TableHelper
 {
+public:
+	static bool			Strux (PD_Document * pDocument, PTStruxType pts,
+							   const XML_Char ** attributes,
+							   pf_Frag * pf,
+							   pf_Frag_Strux *& pfs_ret, bool bImport);
+
 private:
 	enum TableZone
 		{
@@ -394,7 +400,10 @@ private:
 
 	IE_Imp_TableHelper **	m_stack;
 
+	pf_Frag *				m_pfInsertionPoint;
+
 public:
+	IE_Imp_TableHelperStack (PD_Document * pDocument, PT_DocPosition docPos);
 	IE_Imp_TableHelperStack (PD_Document * pDocument);
 
 	~IE_Imp_TableHelperStack ();

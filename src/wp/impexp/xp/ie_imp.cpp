@@ -86,7 +86,7 @@ bool IE_Imp::appendStrux (PTStruxType pts, const XML_Char ** attributes)
 		return m_pDocument->appendStrux (pts, attributes);
 	else
 		{
-			bool bRes = m_pDocument->insertStrux (m_dpos, PTX_Block, attributes, NULL);
+			bool bRes = m_pDocument->insertStrux (m_dpos, pts, attributes, NULL);
 			m_dpos++;
 			return bRes;
 		}

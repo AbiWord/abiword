@@ -115,9 +115,9 @@ protected:
 
 	bool					_realInsertStrux(PT_DocPosition dpos,
 											 PTStruxType pts,
-											 const XML_Char ** attributes=NULL,
-											 const XML_Char ** properties=NULL
-											 );
+											 const XML_Char ** attributes,
+											 const XML_Char ** properties,
+											 pf_Frag_Strux ** ppfs_ret);
 
 	bool					_realChangeStruxFmt(PTChangeFmt ptc,
 										   PT_DocPosition dpos1,
@@ -181,12 +181,14 @@ public:
 										  const XML_Char ** properties);
 
 	bool					insertStrux(PT_DocPosition dpos,
-										PTStruxType pts);
+										PTStruxType pts,
+										pf_Frag_Strux ** ppfs_ret = 0);
 
 	bool					insertStrux(PT_DocPosition dpos,
 										PTStruxType pts,
 										const XML_Char ** attributes,
-										const XML_Char ** properties
+										const XML_Char ** properties,
+										pf_Frag_Strux ** ppfs_ret = 0
 										);
 
 	bool					changeStruxFmt(PTChangeFmt ptc,
@@ -214,7 +216,7 @@ public:
 	// the document.
 
 	PD_Document *			getDocument(void);
-	bool					appendStrux(PTStruxType pts, const XML_Char ** attributes);
+	bool					appendStrux(PTStruxType pts, const XML_Char ** attributes, pf_Frag_Strux ** ppfs_ret = 0);
 	bool					appendStruxFmt(pf_Frag_Strux * pfs, const XML_Char ** attributes);
 	bool					appendFmt(const XML_Char ** attributes);
 	bool					appendFmt(const UT_Vector * pVecAttributes);

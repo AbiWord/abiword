@@ -1,3 +1,5 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
  *
@@ -41,9 +43,10 @@
 /****************************************************************/
 /****************************************************************/
 bool pt_PieceTable::insertStrux(PT_DocPosition dpos,
-								PTStruxType pts)
+								PTStruxType pts,
+								pf_Frag_Strux ** ppfs_ret)
 {
-	if(!_realInsertStrux(dpos,pts))
+	if(!_realInsertStrux(dpos,pts,0,0,ppfs_ret))
 		return false;
 
 	if(m_pDocument->isMarkRevisions())
@@ -98,10 +101,13 @@ bool pt_PieceTable::insertStrux(PT_DocPosition dpos,
 }
 
 bool pt_PieceTable::insertStrux(PT_DocPosition dpos,
-								PTStruxType pts,const XML_Char ** attributes,const XML_Char ** properties  )
+								PTStruxType pts,
+								const XML_Char ** attributes,
+								const XML_Char ** properties,
+								pf_Frag_Strux ** ppfs_ret)
 {
 
-	if(!_realInsertStrux(dpos,pts,attributes,properties))
+	if(!_realInsertStrux(dpos,pts,attributes,properties,ppfs_ret))
 		return false;
 
 	if(m_pDocument->isMarkRevisions())
@@ -325,7 +331,8 @@ void pt_PieceTable::_insertStrux(pf_Frag * pf,
 bool pt_PieceTable::_realInsertStrux(PT_DocPosition dpos,
 									 PTStruxType pts,
 									 const XML_Char ** attributes,
-									 const XML_Char ** properties)
+									 const XML_Char ** properties,
+									 pf_Frag_Strux ** ppfs_ret)
 {
 	// insert a new structure fragment at the given document position.
 	// this function can only be called while editing the document.
@@ -421,6 +428,8 @@ bool pt_PieceTable::_realInsertStrux(PT_DocPosition dpos,
 
 	// insert this frag into the fragment list. Update the container strux as needed
 	_insertStrux(pf,fragOffset,pfsNew);
+	if (ppfs_ret)
+		*ppfs_ret = pfsNew;
 
 	// create a change record to describe the change, add
 	// it to the history, and let our listeners know about it.

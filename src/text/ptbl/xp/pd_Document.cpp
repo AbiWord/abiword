@@ -793,18 +793,18 @@ bool PD_Document::changeSpanFmt(PTChangeFmt ptc,
 }
 
 bool PD_Document::insertStrux(PT_DocPosition dpos,
-							  PTStruxType pts)
+							  PTStruxType pts, pf_Frag_Strux ** ppfs_ret)
 {
-	return m_pPieceTable->insertStrux(dpos,pts);
+	return m_pPieceTable->insertStrux(dpos,pts,ppfs_ret);
 }
 
 
 bool PD_Document::insertStrux(PT_DocPosition dpos,
 							  PTStruxType pts,
 							  const XML_Char ** attributes,
-							  const XML_Char ** properties)
+							  const XML_Char ** properties, pf_Frag_Strux ** ppfs_ret)
 {
-	return m_pPieceTable->insertStrux(dpos,pts, attributes,properties);
+	return m_pPieceTable->insertStrux(dpos,pts, attributes,properties,ppfs_ret);
 }
 
 
@@ -840,7 +840,7 @@ bool PD_Document::changeStruxForLists(PL_StruxDocHandle sdh, const char * pszPar
 //////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////
 
-bool PD_Document::appendStrux(PTStruxType pts, const XML_Char ** attributes)
+bool PD_Document::appendStrux(PTStruxType pts, const XML_Char ** attributes, pf_Frag_Strux ** ppfs_ret)
 {
 	UT_ASSERT(m_pPieceTable);
 
@@ -851,7 +851,7 @@ bool PD_Document::appendStrux(PTStruxType pts, const XML_Char ** attributes)
 	XAP_Frame * pFrame = m_pApp->getLastFocussedFrame();
 	if(pFrame)
 		pFrame->nullUpdate();
-	return m_pPieceTable->appendStrux(pts,attributes);
+	return m_pPieceTable->appendStrux(pts,attributes,ppfs_ret);
 }
 
 bool  PD_Document::appendStruxFmt(pf_Frag_Strux * pfs, const XML_Char ** attributes)
@@ -2327,6 +2327,12 @@ bool PD_Document::getNextStrux(PL_StruxDocHandle sdh,
 	return false;
 }
 
+pf_Frag * PD_Document::getFragFromPosition(PT_DocPosition docPos) const
+{
+	pf_Frag * pf = 0;
+	m_pPieceTable->getFragFromPosition(docPos,&pf,0);
+	return pf;
+}
 
 ///
 /// Return the sdh of type pts immediately after sdh

@@ -48,6 +48,8 @@ current table via ie_Table::get* methods.
 
 #include "pd_Document.h"
 
+#include "pf_Frag_Strux.h"
+
 #include "pp_AttrProp.h"
 
 #include "ie_Table.h"
@@ -1689,6 +1691,31 @@ bool ie_imp_table_control::NewRow(void)
 
 #ifdef USE_IE_IMP_TABLEHELPER
 
+bool IE_Imp_TableHelper::Strux (PD_Document * pDocument, PTStruxType pts,
+								const XML_Char ** attributes,
+								pf_Frag * pf,
+								pf_Frag_Strux *& pfs_ret, bool bImport)
+{
+	bool okay = true;
+
+	if (bImport)
+		{
+			if (pf) // insert
+				{
+					okay = pDocument->insertStruxBeforeFrag (pf, pts, attributes, &pfs_ret);
+				}
+			else // append
+				{
+					okay = pDocument->appendStrux (pts, attributes, &pfs_ret);
+				}
+		}
+	else // paste
+		{
+			okay = pDocument->insertStrux (pf->getPos (), pts, attributes, 0, &pfs_ret);
+		}
+	return okay;
+}
+
 IE_Imp_TableHelper::CellHelper::CellHelper () :
 	m_style(""),
 	m_pfsCell(0),
@@ -2318,11 +2345,22 @@ appendTableCell ()
 }
 #endif
 
+IE_Imp_TableHelperStack::IE_Imp_TableHelperStack (PD_Document * pDocument, PT_DocPosition docPos) :
+	m_pDocument(pDocument),
+	m_count(0),
+	m_max(0),
+	m_stack(0),
+	m_pfInsertionPoint(pDocument->getFragFromPosition (docPos)) // paste-mode
+{
+	// 
+}
+
 IE_Imp_TableHelperStack::IE_Imp_TableHelperStack (PD_Document * pDocument) :
 	m_pDocument(pDocument),
 	m_count(0),
 	m_max(0),
-	m_stack(0)
+	m_stack(0),
+	m_pfInsertionPoint(0) // import-mode
 {
 	// 
 }
