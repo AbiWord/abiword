@@ -2705,6 +2705,12 @@ bool _helpOpenURL(XAP_Frame * pFrame, const char* helpURL)
 	return true;
 }
 
+bool _helpOpenURL(AV_View* pAV_View, const char* helpURL)
+{
+	XAP_Frame* pFrame = static_cast<XAP_Frame*> (pAV_View->getParentData());
+	return _helpOpenURL ( pFrame, helpURL ) ;
+}
+
 inline void _catPath(UT_String& st, const char* st2)
 {
 	if (st.size() > 0)
