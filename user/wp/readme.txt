@@ -3,7 +3,7 @@
 Release Notes
 ----------------
 
-Thank you for your interest in this Preview Release of AbiWord!
+Thank you for your interest in this release of AbiWord!
 
 ---- About AbiWord
 
@@ -26,38 +26,24 @@ be free.  It is developed in a public fashion, by members of the
 software community from all over the world, communicating and
 collaborating together via the Internet.
 
----- Using AbiWord
-
-Please remember that AbiWord is not yet a shipping product.  Many
-features are still missing, and the application has not yet undergone
-extensive testing.
-
-Our primary reason for making AbiWord available to you now is to allow
-everyone the opportunity to see its current status.  AbiWord is under
-constant development, and new releases are being made available on a
-frequent basis.  The software is improving steadily, with each new
-release containing more features and more stability.  You may download
-new releases as often as you like.
-
-Despite these disclaimers, you may very well find AbiWord to be useful
-even now.  A number of people have successfully used AbiWord to write
-a variety of documents.
-
 ---- Getting Help
 
-Unfortunately, neither technical support nor a user manual is
-available yet.  These will be available from AbiSource in the near
-future.
+There is some documentation at <http://www.abisource.com/support/>.
+However, due to the lack of time and people to contribute to the
+documentation effort, it is far from complete, and does not cover all
+features, including many of the new features available in the 2.0
+release series.
 
-In the meantime, your best resources for getting help with AbiWord are:
+Another, sometimes more useful place to get help is the AbiWord user
+mailing list <http://www.abisource.com/support/help/maillist.phtml>.
+Users are strongly encouraged to join the mailing list in order to
+ask and answer questions freely.  Please keep discussion limited to
+AbiWord related subjects.
 
-- Visit the AbiSource website at www.abisource.com.  Here you will
-  find a growing amount of information, including Frequently Asked
-  Questions.  You may also download the latest version of AbiWord.
-
-- Interact with other users of AbiWord.  AbiSource provides an email
-  list for AbiWord users.  Information about subscribing to this list
-  is available on the AbiSource website.
+Also, IRC provides a more realtime medium of communication, and can
+elicit more immediate response, depending on who's online and
+responsive.  See <http://www.abisource.com/support/help/irc.phtml>
+for details.
 
 ---- Helping
 
@@ -69,30 +55,46 @@ If you are in fact a programmer, and would like to work on the
 project, see the developer information on our website, join the
 abiword-dev mailing list, and ask what needs to be done.  There are
 always features or ports which need attention.
+Be aware that because the site does not receive too much attention,
+http://www.abisource.com/developers/ is obsolete in some areas and
+you will probably find the developers on list and irc more helpful.
 
 If you are not a programmer, you can still join the abiword-dev
 mailing list and contribute in other ways.  The easiest way to help is
 to simply use the program and report any bugs you find.  A tool called
 Bugzilla is available on our website for exactly this purpose.
+Contributions can be easily made in the areas of documentation,
+site maintenance, quality assurance (bug-checking, a little harder),
+and product promotion.  Whatever you're good at, the friendly folks
+on abiword-dev are perfectly willing to find a use for it, and there's
+always plenty of work to be done.  We appreciate any help we can get.
 
 ---- Supported Platforms
 
-AbiWord is a cross-platform application, meaning that it was designed
+AbiWord is a multi-platform application, meaning that it was designed
 to work well on multiple types of computers and operating systems.
 
 At the present time, AbiWord is supported on Windows (including
-Windows 95, Windows 98, and Windows NT 4.0), Linux (including Intel
-and Alpha), and a variety of other UNIX-like systems (including
-Solaris, and *BSD).
+Windows 95 through Windows XP), MacOS (see note below), Linux, a
+variety of other UNIX-like systems (including everything from Solaris
+to *BSD to RTEMS), and QNX (though beware that there is currently only
+one active QNX-port developer).  The BeOS port is no longer actively
+maintained in AbiWord 2.0, but there are external parties that submit
+patches from time to time, so it may still be usable on BeOS.  If you
+can help us with any of these ports or provide and maintain a new one,
+you are more than welcome to.
 
-Other operating systems will be supported in the future.
+Other operating systems will likely be supported in the future.
 
-AbiWord is not yet available for the Macintosh, but efforts to remedy
-this situation have begun.
+AbiWord's port to MacOS prior to OSX (Carbon) has been removed due to the
+extensive and unmet developer resource requirements.  However, the
+OSX (Cocoa) port is still under development and according to its
+maintainer, has reached a quite usable state, though it is not quite
+on par with the Unix port yet.
 
 ---- Legalese
 
-Copyright 1998,1999,2000  AbiSource, Inc.
+Copyright 1998-2003 AbiSource, Inc.
 All Rights Reserved
 
 This program is free software; you can redistribute it and/or
