@@ -47,7 +47,7 @@ double UT_convertToInches(const char* s)
 
 	double f = atof(s);
 	const char *p = s;
-	while ((*p) && (isdigit(*p) || (*p == '.')))
+	while ((*p) && (isdigit(*p) || (*p == '-') || (*p == '.')))
 	{
 		p++;
 	}
