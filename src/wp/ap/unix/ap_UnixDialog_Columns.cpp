@@ -427,7 +427,7 @@ void AP_UnixDialog_Columns::_constructWindowContents(GtkWidget * windowColumns)
 	wPreviewFrame = gtk_frame_new ( pSS->getValue(AP_STRING_ID_DLG_Column_Preview));
 	gtk_widget_show(wPreviewFrame );
 	gtk_box_pack_start (GTK_BOX (hbox1), wPreviewFrame, TRUE, TRUE, 4);
-//	gtk_widget_set_usize (wPreviewFrame, 100, -2); // was -2
+	gtk_widget_set_usize (wPreviewFrame, 100, -2); // was -2
 
 	wDrawFrame = gtk_frame_new (NULL);
 	gtk_widget_show(wDrawFrame );
