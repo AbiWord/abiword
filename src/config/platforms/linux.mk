@@ -46,6 +46,7 @@ PPC_ARCH_FLAGS		= -fsigned-char -fno-schedule-insns2
 
 ALPHA_ARCH_FLAGS 	= 
 SPARC_ARCH_FLAGS 	= 
+IA64_ARCH_FLAGS		=
 
 # Define tools
 CC		= gcc
@@ -109,6 +110,11 @@ endif
 ifeq ($(OS_ARCH), m68k)
 PLATFORM_FLAGS		+= $(M68K_ARCH_FLAGS)
 OS_ENDIAN		= BigEndian32
+endif
+
+ifeq ($(OS_ARCH), ia64)
+PLATFORM_FLAGS		+= $(IA64_ARCH_FLAGS)
+OS_ENDIAN		= LittleEndian32
 endif
 
 GLIB_CONFIG		= glib-config
