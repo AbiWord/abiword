@@ -219,9 +219,9 @@ private:
 	/* private implementations. Allow esasy selection accross various ways */
 	void _initMetricsLayouts(void);
 	float _measureUnRemappedCharCached(const UT_UCSChar c);
-	void _setCapStyle(CapStyle inCapStyle);
-	void _setJoinStyle(JoinStyle inJoinStyle);
-	void _setLineStyle (LineStyle inLineStyle);
+	void _setCapStyle(CapStyle inCapStyle, CGContextRef * context = 0);
+	void _setJoinStyle(JoinStyle inJoinStyle, CGContextRef * context = 0);
+	void _setLineStyle (LineStyle inLineStyle, CGContextRef * context = 0);
 	void _restartPaint(void);
 	//
 	StNSViewLocker* m_viewLocker;

@@ -1,3 +1,5 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
  * Copyright (C) 2002-2003 Hubert Figuiere.
@@ -45,7 +47,8 @@ XAP_Dialog * AP_CocoaDialog_Break::static_constructor(XAP_DialogFactory * pFacto
 AP_CocoaDialog_Break::AP_CocoaDialog_Break(XAP_DialogFactory * pDlgFactory,
 										 XAP_Dialog_Id dlgid)
 	: AP_Dialog_Break(pDlgFactory,dlgid),
-		m_dlg(nil)
+	  m_dlg(nil),
+	  m_breakType(AP_Dialog_Break::b_PAGE)
 {
 }
 
@@ -82,46 +85,7 @@ void AP_CocoaDialog_Break::_populateWindowData(void)
 
 void AP_CocoaDialog_Break::_storeWindowData(void)
 {
-	m_break = _getActiveRadioItem();
-}
-
-
-AP_Dialog_Break::breakType AP_CocoaDialog_Break::_getActiveRadioItem(void)
-{
-	int x, y;
-	NSMatrix* insertMatrix = [m_dlg insertMatrix];
-	NSMatrix* sectionMatrix = [m_dlg sectionMatrix];
-	y = [insertMatrix selectedRow];
-	switch (y) {
-	case 0:
-		return AP_Dialog_Break::b_PAGE;
-		break;
-	case 1:
-		return AP_Dialog_Break::b_COLUMN;
-		break;
-	case 2:
-		x = [sectionMatrix selectedColumn];
-		y = [sectionMatrix selectedRow];
-		if (x == 0) {
-			if (y == 0) {
-				return AP_Dialog_Break::b_NEXTPAGE;
-			}
-			else if (y == 1) {
-				return AP_Dialog_Break::b_EVENPAGE;
-			}
-		}
-		else if (x == 1) {
-			if (y == 0) {
-				return AP_Dialog_Break::b_CONTINUOUS;
-			}
-			else if (y == 1) {
-				return AP_Dialog_Break::b_ODDPAGE;
-			}		
-		}
-		break;
-	}
-	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-	return AP_Dialog_Break::b_PAGE;
+	m_break = m_breakType;
 }
 
 
@@ -129,15 +93,17 @@ AP_Dialog_Break::breakType AP_CocoaDialog_Break::_getActiveRadioItem(void)
 
 - (AP_CocoaDialog_BreakController *)initFromNib
 {
-	self =[super initWithWindowNibName:@"ap_CocoaDialog_Break"];
+	if (self = [super initWithWindowNibName:@"ap_CocoaDialog_Break"])
+		{
+			m_xap = 0;
+		}
 	return self;
 }
-
 
 - (void)setXAPOwner:(XAP_Dialog *)owner
 {
 	m_xap = dynamic_cast<AP_CocoaDialog_Break*>(owner);
-	UT_ASSERT (m_xap);
+	UT_ASSERT(m_xap);
 }
 
 - (void)discardXAP
@@ -145,11 +111,11 @@ AP_Dialog_Break::breakType AP_CocoaDialog_Break::_getActiveRadioItem(void)
 	m_xap = nil;
 }
 
-
 - (void)windowDidLoad
 {
 	// we get all our strings from the application string set
 	const XAP_StringSet * pSS = XAP_App::getApp()->getStringSet();
+
 	LocalizeControl([self window], pSS, AP_STRING_ID_DLG_Break_BreakTitle);
 	LocalizeControl(m_insertGrp, pSS, AP_STRING_ID_DLG_Break_Insert);
 	LocalizeControl(m_pgBrkBtn, pSS, AP_STRING_ID_DLG_Break_PageBreak);
@@ -164,18 +130,55 @@ AP_Dialog_Break::breakType AP_CocoaDialog_Break::_getActiveRadioItem(void)
 
 - (IBAction)cancelAction:(id)sender
 {
-	UT_ASSERT (m_xap);
+	UT_ASSERT(m_xap);
 	m_xap->_setAnswer(AP_Dialog_Break::a_CANCEL);
 	[NSApp stopModal];
 }
 
 - (IBAction)okAction:(id)sender
 {
-	UT_ASSERT (m_xap);
+	UT_ASSERT(m_xap);
+
+	AP_Dialog_Break::breakType type = AP_Dialog_Break::b_PAGE;
+
+	switch ([m_insertRadioBtns selectedRow]) {
+	case 0:
+		type = AP_Dialog_Break::b_PAGE;
+		break;
+	case 1:
+		type = AP_Dialog_Break::b_COLUMN;
+		break;
+	case 2:
+		{
+			int y = [m_sectionBreakBtns selectedRow];
+
+			if ([m_sectionBreakBtns selectedColumn]) {
+				if (y == 0) {
+					type = AP_Dialog_Break::b_EVENPAGE;
+				}
+				else {
+					type = AP_Dialog_Break::b_ODDPAGE;
+				}
+			}
+			else {
+				if (y == 0) {
+					type = AP_Dialog_Break::b_NEXTPAGE;
+				}
+				else {
+					type = AP_Dialog_Break::b_CONTINUOUS;
+				}
+			}
+			break;
+		}
+	default:
+		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		break;
+	}
+	m_xap->_setBreakType(type);
 	m_xap->_setAnswer(AP_Dialog_Break::a_OK);
+
 	[NSApp stopModal];
 }
-
 
 - (IBAction)insertAction:(id)sender;
 {
@@ -190,18 +193,6 @@ AP_Dialog_Break::breakType AP_CocoaDialog_Break::_getActiveRadioItem(void)
 	else {
 		[m_sectionBreakBtns setEnabled:NO];
 	}
-}
-
-
-- (NSMatrix*)insertMatrix
-{
-	return m_insertRadioBtns;
-}
-
-
-- (NSMatrix*)sectionMatrix
-{
-	return m_sectionBreakBtns;
 }
 
 @end

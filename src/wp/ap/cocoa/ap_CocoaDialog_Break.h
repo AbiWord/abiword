@@ -1,3 +1,5 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
  * Copyright (C) 2001, 2003 Hubert Figuiere
@@ -49,8 +51,6 @@ class AP_CocoaDialog_Break;
 - (IBAction)insertAction:(id)sender;
 
 - (void)_updateButtonsState;
-- (NSMatrix*)insertMatrix;
-- (NSMatrix*)sectionMatrix;
 @end
 
 /*****************************************************************/
@@ -66,28 +66,28 @@ public:
 	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
 
 	void _setAnswer (AP_Dialog_Break::tAnswer answer)
-		{ 	m_answer = answer; };
+		{ 	m_answer = answer; }
+	void _setBreakType(AP_Dialog_Break::breakType type)
+		{ 	m_breakType = type; }
+
 protected:
-	AP_Dialog_Break::breakType _getActiveRadioItem(void);
 #if 0
 	// private construction functions
 	virtual GtkWidget * _constructWindow(void);
-
 	
 	// group of radio buttons for easy traversal
 	// see m_dlg Obj-C instance.
 	GSList *	m_radioGroup;
-
 #endif
+
 private:
 	void		_populateWindowData(void);
 	void 		_storeWindowData(void);
 
 	NSButtonCell * _findRadioByID(AP_Dialog_Break::breakType b);
 
-	AP_CocoaDialog_BreakController	*m_dlg;
+	AP_CocoaDialog_BreakController *	m_dlg;
+	AP_Dialog_Break::breakType			m_breakType;
 };
-
-
 
 #endif /* AP_COCOADIALOG_BREAK_H */

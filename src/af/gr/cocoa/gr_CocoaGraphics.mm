@@ -1,3 +1,5 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
  * Copyright (C) 2001-2004 Hubert Figuiere
@@ -268,65 +270,64 @@ void GR_CocoaGraphics::setLineProperties ( double    inWidth,
 	}
 }
 
-void GR_CocoaGraphics::_setCapStyle(CapStyle inCapStyle)
+void GR_CocoaGraphics::_setCapStyle(CapStyle inCapStyle, CGContextRef * context)
 {
 	switch (inCapStyle) {
 	case CAP_BUTT:
-		::CGContextSetLineCap (m_CGContext, kCGLineCapButt);
+		::CGContextSetLineCap((context ? *context : m_CGContext), kCGLineCapButt);
 		break;
 	case CAP_ROUND:
-		::CGContextSetLineCap (m_CGContext, kCGLineCapRound);
+		::CGContextSetLineCap((context ? *context : m_CGContext), kCGLineCapRound);
 		break;
 	case CAP_PROJECTING:
-		::CGContextSetLineCap (m_CGContext, kCGLineCapSquare);
+		::CGContextSetLineCap((context ? *context : m_CGContext), kCGLineCapSquare);
 		break;
 	default:
 		UT_ASSERT (UT_SHOULD_NOT_HAPPEN);
 	}
 }
 
-void GR_CocoaGraphics::_setJoinStyle(JoinStyle inJoinStyle)
+void GR_CocoaGraphics::_setJoinStyle(JoinStyle inJoinStyle, CGContextRef * context)
 {
 	switch (inJoinStyle) {
 	case JOIN_MITER:
-		::CGContextSetLineJoin (m_CGContext, kCGLineJoinMiter);
+		::CGContextSetLineJoin((context ? *context : m_CGContext), kCGLineJoinMiter);
 		break;
 	case JOIN_ROUND:
-		::CGContextSetLineJoin (m_CGContext, kCGLineJoinRound);
+		::CGContextSetLineJoin((context ? *context : m_CGContext), kCGLineJoinRound);
 		break;
 	case JOIN_BEVEL:
-		::CGContextSetLineJoin (m_CGContext, kCGLineJoinBevel);
+		::CGContextSetLineJoin((context ? *context : m_CGContext), kCGLineJoinBevel);
 		break;
 	default:
 		UT_ASSERT (UT_SHOULD_NOT_HAPPEN);
 	}
 }
 
-
-void GR_CocoaGraphics::_setLineStyle (LineStyle inLineStyle)
+void GR_CocoaGraphics::_setLineStyle (LineStyle inLineStyle, CGContextRef * context)
 {
 	switch (inLineStyle) {
 	case LINE_SOLID:
 		{
-			::CGContextSetLineDash (m_CGContext, 0, NULL, 0);
+			::CGContextSetLineDash((context ? *context : m_CGContext), 0, NULL, 0);
 		}
 		break;
 	case LINE_ON_OFF_DASH:
 		{
 			float dash_list[2] = { 4, 5 };
-			::CGContextSetLineDash (m_CGContext, 0, dash_list, 2);
+			::CGContextSetLineDash((context ? *context : m_CGContext), 0, dash_list, 2);
 		}
 		break;
 	case LINE_DOUBLE_DASH:
 		{
 			float dash_list[4] = { 1, 3, 4, 2 };
-			::CGContextSetLineDash (m_CGContext, 0, dash_list, 4);
+			::CGContextSetLineDash((context ? *context : m_CGContext), 0, dash_list, 4);
 		}
 		break;
 	case LINE_DOTTED:
 		{
 			float dash_list[2] = { 1, 4 };
-			::CGContextSetLineDash (m_CGContext, 0, dash_list, 2);
+			::CGContextSetLineDash((context ? *context : m_CGContext), 0, dash_list, 2);
 		}
 		break;
 	default:
@@ -737,7 +738,7 @@ void GR_CocoaGraphics::fillRect(const UT_RGBColor& clr, UT_sint32 x, UT_sint32 y
 	LOCK_CONTEXT__;
 	::CGContextSaveGState(m_CGContext);
 	[c set];	
-	::CGContextFillRect(m_CGContext, ::CGRectMake (TDUX(x), _tduY(y), _tduR(w), _tduR(h)));
+	::CGContextFillRect(m_CGContext, ::CGRectMake (tdu(x), tdu(y), tdu(w), tdu(h)));
 	::CGContextRestoreGState(m_CGContext);
 }
 
@@ -749,7 +750,7 @@ void GR_CocoaGraphics::fillRect(GR_Color3D c, UT_sint32 x, UT_sint32 y, UT_sint3
 	LOCK_CONTEXT__;
 	::CGContextSaveGState(m_CGContext);
 	[m_3dColors[c] set];
-	::CGContextFillRect (m_CGContext, ::CGRectMake (TDUX(x), _tduY(y), _tduR(w), _tduR(h)));
+	::CGContextFillRect (m_CGContext, ::CGRectMake (tdu(x), tdu(y), tdu(w), tdu(h)));
 	::CGContextRestoreGState(m_CGContext);
 }
 
@@ -889,13 +890,22 @@ void GR_CocoaGraphics::scroll(UT_sint32 x_dest, UT_sint32 y_dest,
 						  UT_sint32 x_src, UT_sint32 y_src,
 						  UT_sint32 width, UT_sint32 height)
 {
-	UT_sint32 dx, dy;
-	dx = tdu(x_src - x_dest);
-	dy = tdu(y_src - y_dest);
-	printf ("scrollrect: %f %f %f %f -> %d %d\n", (float)tdu(x_src), (float)tdu(y_src), 
-			(float)tdu(width), (float)tdu(height), -dx, dy);
-	[m_pWin scrollRect:NSMakeRect(tduD(x_src), tduD(y_src), tduD(width), tduD(height)) 
-				by:NSMakeSize(-dx,dy)];
+	UT_sint32 dx = x_src - x_dest;
+	UT_sint32 dy = y_src - y_dest;
+
+	UT_sint32 oldDX = tdu(getPrevXOffset());
+	UT_sint32 oldDY = tdu(getPrevYOffset());
+
+	UT_sint32 newX = getPrevXOffset() + dx;
+	UT_sint32 newY = getPrevYOffset() + dy;
+
+	UT_sint32 ddx = oldDX - tdu(newX);
+	UT_sint32 ddy = oldDY - tdu(newY);
+
+	[m_pWin scrollRect:NSMakeRect(tdu(x_dest)-ddx, tdu(y_dest)-ddy, _tduR(width), _tduR(height)) by:NSMakeSize(ddx,ddy)];
+
+	setPrevXOffset(newX);
+	setPrevYOffset(newY);
 }
 
 void GR_CocoaGraphics::clearArea(UT_sint32 x, UT_sint32 y,
@@ -1254,28 +1264,30 @@ void GR_CocoaGraphics::restoreRectangle(UT_uint32 iIndx)
 	NSImage* cache = m_cacheArray.getNthItem(iIndx);
 	NSPoint pt = cacheRect->origin;
 	pt.x -= 1;		/* I don't know why this offset, but it is nicer no more pixeldirt */
-	pt.y += cacheRect->size.height;
+	pt.y += cacheRect->size.height - 1;
 	{
 		LOCK_CONTEXT__;
+		::CGContextSaveGState(m_CGContext); // ??
+		::CGContextTranslateCTM(m_CGContext, 0.5, 0.5);
 		[cache compositeToPoint:pt operation:NSCompositeCopy];
+		::CGContextRestoreGState(m_CGContext); // ??
 	}
 }
 
 UT_uint32 GR_CocoaGraphics::getDeviceResolution(void) const
 {
-	return _getResolution ();
+	return _getResolution();
 }
-
 
 void GR_CocoaGraphics::_resetContext(CGContextRef context)
 {
 	// TODO check that we properly reset parameters according to what has been saved.
-	::CGContextSetLineWidth (context, m_fLineWidth);
-	_setCapStyle(m_capStyle);
-	_setJoinStyle(m_joinStyle);
-	_setLineStyle(m_lineStyle);
-	::CGContextTranslateCTM (context, 0.5, 0.5);
-	::CGContextSetShouldAntialias (context, false);
+	::CGContextSetLineWidth(context, m_fLineWidth);
+	_setCapStyle(m_capStyle, &context);
+	_setJoinStyle(m_joinStyle, &context);
+	_setLineStyle(m_lineStyle, &context);
+	::CGContextTranslateCTM(context, 0.5, 0.5);
+	::CGContextSetShouldAntialias(context, false);
  	[m_currentColor set];
 }
 
@@ -1293,12 +1305,9 @@ float	GR_CocoaGraphics::_getScreenResolution(void)
 	return fResolution;
 }
 
-
 GR_Graphics *  GR_CocoaGraphics::graphicsAllocator(GR_AllocInfo& info)
 {
 	GR_CocoaAllocInfo & allocator = (GR_CocoaAllocInfo&)info;
 	
 	return new GR_CocoaGraphics(allocator.m_view, allocator.m_app);
 }
-
-
