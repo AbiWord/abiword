@@ -116,7 +116,8 @@ int abi_plugin_supports_version (UT_uint32 major, UT_uint32 minor,
 
 bool IE_Exp_HTML_Sniffer::recognizeSuffix(const char * szSuffix)
 {
-	return (!UT_stricmp(szSuffix,".html") || !UT_stricmp(szSuffix, ".htm"));
+	return (!(UT_stricmp(szSuffix,".html")) || !(UT_stricmp(szSuffix,".xhtml"))
+			|| !(UT_stricmp(szSuffix,".htm")));
 }
 
 UT_Error IE_Exp_HTML_Sniffer::constructExporter(PD_Document * pDocument,
@@ -131,8 +132,8 @@ bool IE_Exp_HTML_Sniffer::getDlgLabels(const char ** pszDesc,
 									   const char ** pszSuffixList,
 									   IEFileType * ft)
 {
-	*pszDesc = "XHTML (.html)";
-	*pszSuffixList = "*.htm; *.html";
+	*pszDesc = "XHTML (.html, .htm, .xhtml)";
+	*pszSuffixList = "*.html; *.htm; *.xhtml";
 	*ft = getFileType();
 	return true;
 }

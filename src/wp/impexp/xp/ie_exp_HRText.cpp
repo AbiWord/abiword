@@ -122,7 +122,7 @@ int abi_plugin_supports_version (UT_uint32 major, UT_uint32 minor,
 
 bool IE_Exp_HRText_Sniffer::recognizeSuffix(const char * szSuffix)
 {
-	return (UT_stricmp(szSuffix,".abw") == 0);
+	return (!UT_stricmp(szSuffix,".txt") || !UT_stricmp(szSuffix, ".text"));
 }
 
 UT_Error IE_Exp_HRText_Sniffer::constructExporter(PD_Document * pDocument,
@@ -137,8 +137,8 @@ bool IE_Exp_HRText_Sniffer::getDlgLabels(const char ** pszDesc,
 										 const char ** pszSuffixList,
 										 IEFileType * ft)
 {
-	*pszDesc = "Human Readable Text (.txt)";
-	*pszSuffixList = "*.txt";
+	*pszDesc = "Human Readable Text (.txt, .text)";
+	*pszSuffixList = "*.text; *.txt";
 	*ft = getFileType();
 	return true;
 }
