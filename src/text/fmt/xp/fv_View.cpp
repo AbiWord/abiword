@@ -7257,36 +7257,36 @@ void FV_View::getTopRulerInfo(PT_DocPosition pos,AP_TopRulerInfo * pInfo)
 // Now fill the full vector including merged cells.
 //
 		pInfo->m_vecFullTable = new UT_GenericVector<AP_TopRulerTableInfo *>();
+		fp_TableRowColumn * pRC = NULL;
+		UT_sint32 iCum = 0;
+		UT_sint32 ioff_x = 0;
+		fp_Container * pCon = static_cast<fp_Container*>(pTab->getContainer());
+		while(!pCon->isColumnType())
+		{
+			ioff_x += pCon->getX();
+			pCon = static_cast<fp_Container *>(pCon->getContainer());
+		}
+		ioff_x += pTab->getX();
+		pCur = pTab->getCellAtRowColumn(0,0);
+		ioff_x += pCur->getLeftPos();
+		pRC = pTab->getNthCol(0);
+		ioff_x -= pRC->spacing/2;
 		for( i=0;i < numcols;i++)
 		{
 			pCur = pTab->getCellAtRowColumn(0,i);
-			UT_sint32 j =0;
-			while(pCur && ((pCur->getLeftAttach()+1) != pCur->getRightAttach()) && (j <= numrows))
-			{
-				pCur = pTab->getCellAtRowColumn(j,i);
-				if(pCur)
-				{
-					j++;
-				}
-			}
-			UT_sint32 ioff_x = 0;
-			fp_Container * pCon = static_cast<fp_Container*>(pTab->getContainer());
-			while(!pCon->isColumnType())
-			{
-				ioff_x += pCon->getX();
-				pCon = static_cast<fp_Container *>(pCon->getContainer());
-			}
+			pRC = pTab->getNthCol(i);
+			UT_sint32 width = pRC->allocation + pRC->spacing;
 			if(pCur)
 			{
 				AP_TopRulerTableInfo *pTInfo = new  AP_TopRulerTableInfo;
 				pTInfo->m_pCell = pCur;
-				pTInfo->m_iLeftCellPos = pCur->getLeftPos() +ioff_x;
-				pTInfo->m_iRightCellPos = pCur->getRightPos() +ioff_x;
-				pTInfo->m_iLeftSpacing = (pCur->getX() - pCur->getLeftPos());
-				pTInfo->m_iRightSpacing = ( pCur->getRightPos() - pCur->getX()
-											- pCur->getWidth());
+				pTInfo->m_iLeftCellPos = iCum +ioff_x;
+				pTInfo->m_iRightCellPos = iCum + width +ioff_x;
+				pTInfo->m_iLeftSpacing = pRC->spacing/2;
+				pTInfo->m_iRightSpacing = pRC->spacing/2;
 				pInfo->m_vecFullTable->addItem(pTInfo);
 			}
+			iCum += width;
 		}
 	}
 	else if(pContainer->getContainerType() == FP_CONTAINER_FRAME)

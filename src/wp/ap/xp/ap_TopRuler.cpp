@@ -2989,8 +2989,8 @@ void AP_TopRuler::mouseRelease(EV_EditModifierState ems, EV_EditMouseButton /* e
 						UT_sint32 width = 0;
 				//
 						pTInfo = static_cast<AP_TopRulerTableInfo *>(m_infoCache.m_vecFullTable->getNthItem(i-1));
-						UT_DEBUGMSG(("ap_TopRuler: leftDrag %d i %d pTInfo->m_iLeftCellPos %d \n",leftDrag,i,pTInfo->m_iLeftCellPos));
-						if(rightDrag != pTInfo->m_iRightCellPos)
+						xxx_UT_DEBUGMSG(("ap_TopRuler: rightDrag %d i %d pTInfo->m_iRightCellPos %d \n",rightDrag,i,pTInfo->m_iRightCellPos));
+						if(abs(rightDrag - pTInfo->m_iRightCellPos) >10)
 						{
 							left = pTInfo->m_iLeftCellPos + xAbsLeft + pTInfo->m_iLeftSpacing;
 							if(i < iNumCells)
@@ -3003,9 +3003,9 @@ void AP_TopRuler::mouseRelease(EV_EditModifierState ems, EV_EditMouseButton /* e
 								right = pTInfo->m_iRightCellPos + xAbsLeft + pTInfo->m_iRightSpacing;
 							}
 							width = right - left;
-							if(width < 3*pTInfo->m_iLeftSpacing)
+							if(width < 5*pTInfo->m_iLeftSpacing)
 							{
-								width = 3*pTInfo->m_iLeftSpacing;
+								width = 5*pTInfo->m_iLeftSpacing;
 							}
 						}
 						else
@@ -3013,9 +3013,9 @@ void AP_TopRuler::mouseRelease(EV_EditModifierState ems, EV_EditMouseButton /* e
 							right =  m_draggingCenter;
 							left = pTInfo->m_iLeftCellPos + xAbsLeft + pTInfo->m_iLeftSpacing;
 							width = right - left;
-							if(width < 3*pTInfo->m_iLeftSpacing)
+							if(width < 5*pTInfo->m_iLeftSpacing)
 							{
-								width = 3*pTInfo->m_iLeftSpacing;
+								width = 5*pTInfo->m_iLeftSpacing;
 							}
 						}
 						dxrel = tick.scalePixelDistanceToUnits(width);
@@ -3025,7 +3025,7 @@ void AP_TopRuler::mouseRelease(EV_EditModifierState ems, EV_EditMouseButton /* e
 					}
 
 				}
-				UT_DEBUGMSG(("SEVIOR: COlumn Width string = %s \n",sColWidths.c_str()));
+				xxx_UT_DEBUGMSG(("SEVIOR: COlumn Width string = %s \n",sColWidths.c_str()));
 			}
 			m_draggingWhat = DW_NOTHING;
 			FV_View * pView = static_cast<FV_View *>(m_pView);
