@@ -2830,19 +2830,30 @@ UT_Bool FV_View::gotoTarget(AP_JumpTarget type, UT_UCSChar *data)
 		else
 		{
 			fp_Page* pOldPage = _getCurrentPage();
-			fp_Page* pPage;
+			fp_Page* pPage = pOldPage;
+			fp_Page* pTmpPage = pOldPage;
 
 			if (inc) // TODO:  What if number passes the number of pages?
 				for (UT_uint32 i = 0; i < number; i++)
-					pPage = pOldPage->getNext();
+				{
+					if ((pTmpPage = pPage->getNext ()) != NULL)
+						pPage = pTmpPage;
+					else
+						break;
+				}
 			else
 				for (UT_uint32 i = 0; i < number; i++)
-					pPage = pOldPage->getPrev();
+				{
+					if ((pTmpPage = pPage->getPrev ()) != NULL)
+						pPage = pTmpPage;
+					else
+						break;
+				}
 
 			if (!pPage) 
 				pPage = pOldPage;
 
-			_moveInsPtToPage(pPage);
+			_moveInsPtToPage (pPage);
 		}
 
 		break;
