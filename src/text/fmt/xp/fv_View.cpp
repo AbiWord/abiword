@@ -335,7 +335,6 @@ FV_View::FV_View(XAP_App * pApp, void* pParentData, FL_DocLayout* pLayout)
 	  pFrame->repopulateCombos();
 
 	m_pG->createCaret();
-	m_pG->getCaret()->enable();
 }
 
 FV_View::~FV_View()
