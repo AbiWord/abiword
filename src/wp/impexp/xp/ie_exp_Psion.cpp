@@ -517,13 +517,13 @@ bool s_Psion_Listener::_openParagraph(PT_AttrPropIndex api)
 	if (m_pDocument->getAttrProp(api,&pAP) && pAP) {
 		if (pAP->getProperty((XML_Char*)"margin-left",szValue))
 			m_currentParagraphPLayout->indent_left = 
-			              UT_convertToDimension((const char *) szValue,DIM_CM);
+			              (float)UT_convertToDimension((const char *) szValue,DIM_CM);
 		if (pAP->getProperty((XML_Char*)"margin-right",szValue)) 
 			m_currentParagraphPLayout->indent_right = 
-			              UT_convertToDimension((const char *) szValue,DIM_CM);
+			              (float)UT_convertToDimension((const char *) szValue,DIM_CM);
 		if (pAP->getProperty((XML_Char*)"text-indent",szValue)) 
 			m_currentParagraphPLayout->indent_first = 
-			              UT_convertToDimension((const char *) szValue,DIM_CM);
+			              (float)UT_convertToDimension((const char *) szValue,DIM_CM);
 		if (pAP->getProperty((XML_Char*)"text-align",szValue)) {
 			if (!UT_strcmp((const char *) szValue,"center"))
 				m_currentParagraphPLayout->justify_hor = psiconv_justify_centre;
@@ -542,15 +542,15 @@ bool s_Psion_Listener::_openParagraph(PT_AttrPropIndex api)
 			if (!m_currentParagraphPLayout->linespacing_exact)
 				tempstr[strlen((char *)szValue)-1] = '\000';
 			m_currentParagraphPLayout->linespacing = 
-			              UT_convertToDimension(tempstr,DIM_PT);
+			              (float)UT_convertToDimension(tempstr,DIM_PT);
 			free(tempstr);
 		}
 		if (pAP->getProperty((XML_Char*)"margin-top",szValue)) 
 			m_currentParagraphPLayout->space_above = 
-			              UT_convertToDimension((const char *) szValue,DIM_PT);
+			              (float)UT_convertToDimension((const char *) szValue,DIM_PT);
 		if (pAP->getProperty((XML_Char*)"margin-bottom",szValue)) 
 			m_currentParagraphPLayout->space_below = 
-			              UT_convertToDimension((const char *) szValue,DIM_PT);
+			              (float)UT_convertToDimension((const char *) szValue,DIM_PT);
 		if (pAP->getProperty((XML_Char*)"keep-together",szValue)) { 
 			if (!UT_strcmp((const char *) szValue,"yes"))
 				m_currentParagraphPLayout->keep_together = psiconv_bool_true;
@@ -574,7 +574,7 @@ bool s_Psion_Listener::_openParagraph(PT_AttrPropIndex api)
 		                   widowsorphans?psiconv_bool_false:psiconv_bool_true;
 		if (pAP->getProperty((XML_Char*)"default-tab-interval",szValue))  
 			m_currentParagraphPLayout->tabs->normal = 
-			              UT_convertToDimension((const char *) szValue,DIM_CM);
+			              (float)UT_convertToDimension((const char *) szValue,DIM_CM);
 		if (pAP->getProperty((XML_Char*)"tabstops",szValue))  
 			if (!_parseTabs((char *)szValue,
 			                m_currentParagraphPLayout->tabs->extras)) {
@@ -680,7 +680,7 @@ bool s_Psion_Listener::_addInLine(PT_AttrPropIndex api,UT_uint32 textlen)
 		}
 		if (pAP->getProperty((XML_Char*)"font-size",szValue))
 			curInLine.layout->font_size = 
-			              UT_convertToDimension((const char *) szValue,DIM_PT);
+			              (float)UT_convertToDimension((const char *) szValue,DIM_PT);
 		if (pAP->getProperty((XML_Char*)"font-weight",szValue)) {
 			if (!UT_strcmp((const char *) szValue,"bold"))
 				curInLine.layout->bold = psiconv_bool_true;
@@ -774,7 +774,7 @@ void s_Psion_Listener::_parseTab(char *input,psiconv_tab tab)
 			tab->kind = psiconv_tab_centre;
 		*slash = '\000';
 	}
-	tab->location = UT_convertToDimension(input,DIM_CM);
+	tab->location = (float)UT_convertToDimension(input,DIM_CM);
 }
 
 

@@ -345,7 +345,7 @@ void IE_Exp_PalmDoc::_compress( buffer *b )
         UT_DEBUGMSG(("copy_ahead=%i.\n", copy_ahead));
         if ( copy_ahead > 0 )
         {
-            b->buf[ b->position++ ] = copy_ahead;	//number of bytes ahead to copy
+            b->buf[ b->position++ ] = (unsigned char)copy_ahead;	//number of bytes ahead to copy
             for ( i = 0 ; i < copy_ahead ; ++i)
                 b->buf[ b->position++ ] = original->buf[current];
             ++current;
