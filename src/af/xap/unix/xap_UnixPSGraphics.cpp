@@ -642,3 +642,9 @@ void PS_Graphics::_emit_SetColor(void)
 			((float) m_currentColor.m_blu / 255.0));
 	m_ps->writeBytes(buf);
 }
+
+void PS_Graphics::drawImage(GR_Image* pImg, UT_sint32 xDest, UT_sint32 yDest, UT_sint32 iDestWidth, UT_sint32 iDestHeight)
+{
+	UT_ASSERT(UT_TODO);
+}
+

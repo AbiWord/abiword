@@ -17,7 +17,7 @@
  * 02111-1307, USA.
  */
 
-#include "gr_image.h"
+#include "gr_Image.h"
 
 GR_Image::GR_Image()
 {
