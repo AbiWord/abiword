@@ -412,9 +412,8 @@ msgstr "&Document"
 
 #. MENU_LABEL_WINDOW
 #: po/tmp/ap_String_Id.h.h:217
-#, fuzzy
 msgid "&Documents"
-msgstr "&Document"
+msgstr "&Documenten"
 
 #. DLG_Para_PushNoHyphenate
 #: po/tmp/ap_String_Id.h.h:219
@@ -631,9 +630,8 @@ msgstr "Cellen sa&menvoegen"
 
 #. MENU_LABEL_WINDOW_MORE
 #: po/tmp/ap_String_Id.h.h:304
-#, fuzzy
 msgid "&More Documents"
-msgstr "&Document"
+msgstr "&Meer documenten"
 
 #. DLG_Goto_Label_Name
 #: po/tmp/ap_String_Id.h.h:306
@@ -2245,9 +2243,8 @@ msgstr ""
 
 #. FIELD_Type_Document
 #: po/tmp/ap_String_Id.h.h:940
-#, fuzzy
 msgid "Document"
-msgstr "&Document"
+msgstr "Document"
 
 #. DLG_MetaData_Title
 #: po/tmp/ap_String_Id.h.h:942
@@ -6884,13 +6881,12 @@ msgstr "Viatnamees, Windows Code Pagina 1258"
 #: po/tmp/xap_String_Id.h.h:656
 #, fuzzy
 msgid "View Document"
-msgstr "&Document"
+msgstr "Document bekijken"
 
 #. DLG_MW_Activate
 #: po/tmp/xap_String_Id.h.h:658
-#, fuzzy
 msgid "View:"
-msgstr "Beeld"
+msgstr "Beeld:"
 
 #. LANG_CY_GB
 #: po/tmp/xap_String_Id.h.h:660
