@@ -199,6 +199,7 @@ public:
 									 IEFileType * ft);
 	static bool 		SupportsFileType(IEFileType ft);
 
+	enum PictFormat {picNone, picPNG};
 protected:
 	UT_Error			_parseFile(FILE * fp);
 	UT_Error			_writeHeader(FILE * fp);
@@ -228,7 +229,9 @@ private:
 	bool HandleField();
 	bool HandleHeader();
 	bool HandleFooter();
-	bool SkipCurrentGroup();
+	bool SkipCurrentGroup(bool bConsumeLastBrace = false);
+	bool CanHandlePictFormat(PictFormat format);
+	bool LoadPictData(PictFormat format, char * image_name);
 	
 	RTFFontTableItem* GetNthTableFont(UT_uint32 fontNum);
 	UT_uint32 GetNthTableColour(UT_uint32 colNum);

@@ -36,6 +36,11 @@
 #include "ie_imp_RTF.h"
 #include "pd_Document.h"
 #include "xap_EncodingManager.h"
+#include "ie_impGraphic_PNG.h"
+#include "fg_Graphic.h"
+#include "fg_GraphicRaster.h"
+#include "fg_GraphicVector.h"
+#include "ut_bytebuf.h"
 
 class fl_AutoNum;
 
@@ -313,6 +318,35 @@ UT_Error IE_Imp_RTF::_writeHeader(FILE * /*fp*/)
 }
 
 
+bool digVal(char ch, int& value, int base)
+{
+	value = ch - '0';
+
+	return (value >= 0) && (value < base);
+}
+
+bool hexVal(char c, int& value)
+{
+	bool ok = true;
+
+	if (isdigit(c))
+	{
+		ok = digVal(c, value, 10);
+	}
+	else if (islower(c))
+	{
+		ok = (c >= 'a' && c <= 'f');
+		value = c - 'a' + 10;
+	}
+	else
+	{
+		ok = (c >= 'A' && c <= 'F');
+		value = (char) c - 'A' + 10;
+	}
+
+	return ok;
+}
+
 UT_Error IE_Imp_RTF::_parseFile(FILE* fp)
 {
 	m_pImportFile = fp;
@@ -354,21 +388,12 @@ UT_Error IE_Imp_RTF::_parseFile(FILE* fp)
 					UT_ASSERT(m_currentRTFState.m_internalState == RTFStateStore::risHex);
 
 					b = b << 4;
-					if (isdigit(c))
-						b += (char) c - '0';
-					else
-					{
-						if (islower(c))
-						{
-							ok = (c >= 'a' && c <= 'f');
-							b += (char) c - 'a' + 10;
-						}
-						else
-						{
-							ok = (c >= 'A' && c <= 'F');
-							b += (char) c - 'A' + 10;
-						}
-					}
+					int digit;
+
+					// hexval calls digval
+					ok = hexVal((char) c, digit);
+					b += digit;
+
 					cNibble--;
 					if (!cNibble  &&  ok)
 					{
@@ -769,7 +794,7 @@ bool IE_Imp_RTF::SkipBackChar(unsigned char ch)
 	}
 }
 
-bool IE_Imp_RTF::SkipCurrentGroup()
+bool IE_Imp_RTF::SkipCurrentGroup(bool bConsumeLastBrace)
 {
 	int nesting = 1;
 	unsigned char ch;
@@ -789,19 +814,198 @@ bool IE_Imp_RTF::SkipCurrentGroup()
 	} while (nesting > 0);
 
 	// to avoid corrupting the state stack
+	// ( the caller indicates whether this is necesary or not)
+	if (!bConsumeLastBrace)
+		SkipBackChar(ch);
+
+	return true;
+}
+
+
+bool IE_Imp_RTF::CanHandlePictFormat(PictFormat format)
+{
+	return (format == picPNG);
+}
+
+// When we start adding code for handling other formats,
+// this method signature may change
+bool IE_Imp_RTF::LoadPictData(PictFormat format, char * image_name)
+{
+	// first, we load the actual data into a buffer
+
+	// TODO: We assume the data comes in hex. Check this assumption
+	// TODO: as we might have to handle binary data as well
+	const UT_uint16 chars_per_byte = 2;
+	const UT_uint16 BITS_PER_BYTE = 8;
+	const UT_uint16 bits_per_char = BITS_PER_BYTE / chars_per_byte;
+
+	UT_DEBUGMSG(("DOM: importing image\n"));
+
+	UT_ByteBuf * pictData = new UT_ByteBuf();
+	UT_uint16 chLeft = chars_per_byte;
+	UT_Byte pic_byte = 0;
+
+	unsigned char ch;
+
+	if (!ReadCharFromFile(&ch))
+		return false;
+
+	while (ch != '}')
+	{
+		int digit;
+
+		if (!hexVal(ch, digit))
+			return false;
+
+		pic_byte = (pic_byte << bits_per_char) + digit;
+
+		// if we have a complete byte, we put it in the buffer
+		if (--chLeft == 0)
+		{
+			pictData->append(&pic_byte, 1);
+			chLeft = chars_per_byte;
+			pic_byte = 0;
+		}
+
+		if (!ReadCharFromFile(&ch))
+			return false;
+	}
+
+	// We let the caller handle this
 	SkipBackChar(ch);
+
+	// Handle the specified format appropiately
+	if (format == picPNG)
+	{
+		// TODO: investigate whether pictData is leaking memory or not
+
+		const char * mimetype = NULL;
+		mimetype = UT_strdup("image/png");
+
+		UT_DEBUGMSG(("DOM: importing image1\n"));
+
+		// Not sure whether this is the right way, but first, we should
+		// insert any pending chars
+		if (!FlushStoredChars(true))
+		{
+			UT_DEBUGMSG(("Error just before inserting a picture\n"));
+			FREEP (mimetype);
+			return false;
+		} 
+			
+		// Now, we should insert the picture in the document
+		
+		const XML_Char* propsArray[3];
+		propsArray[0] = (XML_Char *)"DATAID";
+		propsArray[1] = (XML_Char *) image_name;
+		propsArray[2] = NULL;
+			
+		if (!m_pDocument->appendObject(PTO_Image, propsArray)) 
+		{
+			delete pictData;
+			FREEP (mimetype);
+			UT_DEBUGMSG(("DOM: importing image2\n"));
+			return UT_IE_NOMEMORY;
+		}
+
+		if (!m_pDocument->createDataItem(image_name, false,
+										 pictData, (void*)mimetype, NULL)) 
+		{
+			delete pictData;
+			FREEP (mimetype);
+			UT_DEBUGMSG(("DOM: importing image3\n"));
+			return UT_IE_NOMEMORY;
+		}
+		FREEP (mimetype);
+	} 
+	else
+	{
+		// if we're not inserting a graphic, we should destroy the buffer
+		delete pictData;
+	}
 
 	return true;
 }
 
 bool IE_Imp_RTF::HandlePicture()
 {
-	// in the future this method should load a picture from the file 
-	// and insert it in the document. To fix some open bugs, we just
-	// skip all the data and do nothing
-	
-	UT_DEBUGMSG(("TODO: Handle \\pict keyword properly\n"));
-	return SkipCurrentGroup();
+	// this method loads a picture from the file 
+	// and insert it in the document. 
+	static UT_uint32 nImage = 0;
+
+	unsigned char ch;
+	bool bPictProcessed = false;
+	PictFormat format = picNone;
+
+	unsigned char keyword[MAX_KEYWORD_LEN];
+	long parameter = 0;
+	bool parameterUsed = false;
+
+	do {
+		if (!ReadCharFromFile(&ch))
+			return false;
+
+		switch (ch) 
+		{
+		case '\\':
+			UT_ASSERT(!bPictProcessed);
+			// Process keyword
+
+			if (!ReadKeyword(keyword, &parameter, &parameterUsed, MAX_KEYWORD_LEN))
+			{
+				UT_DEBUGMSG(("Unexpected EOF during RTF import?\n"));
+			}
+
+			if (strcmp((char *)keyword, "pngblip") == 0)
+			{
+				format = picPNG;
+			}
+			break;
+		case '{':
+			UT_ASSERT(!bPictProcessed);
+
+			// We won't handle nested groups, at least in this version,
+			// we just skip them
+			SkipCurrentGroup(true);
+			break;
+		case '}':
+			// check if a pict was found ( and maybe inserted )
+			// as this would be the last iteration
+			if (!bPictProcessed)
+			{
+				UT_DEBUGMSG(("Bogus RTF: \\pict group without a picture\n"));
+				return false;
+			}
+			break;
+		default:
+			UT_ASSERT(!bPictProcessed);
+			// It this a conforming rtf, this should be the pict data
+			// if we know how to handle this format, we insert the picture
+		
+			if (CanHandlePictFormat(format))
+			{
+				char image_name[256];
+				sprintf(image_name,"image_%d",++nImage);
+
+				// the first char belongs to the picture too
+				SkipBackChar(ch);
+				LoadPictData(format, image_name);
+			}
+			else 
+			{
+				if (!SkipCurrentGroup())
+					return false;
+			}
+
+			bPictProcessed = true;
+		}
+	} while (ch != '}');
+
+	// The last brace is put back on the stream, so that the states stack
+	// doesn't get corrupted
+	SkipBackChar(ch);  
+
+	return true;
 }
 
 bool IE_Imp_RTF::HandleObject()
