@@ -183,6 +183,7 @@ public:
 	size_t		size () const;
 	bool		empty () const;
 	void		clear () const;
+	size_t		byteLength() const;
 
 	UT_UTF8String &	operator=(const char *          rhs);
 	UT_UTF8String &	operator=(const UT_UTF8String & rhs);

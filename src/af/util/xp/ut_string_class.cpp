@@ -693,6 +693,11 @@ size_t UT_UTF8String::size () const
 	return pimpl->utf8Length ();
 }
 
+size_t UT_UTF8String::byteLength () const
+{
+	return pimpl->byteLength ();
+}
+
 bool UT_UTF8String::empty () const
 {
 	return pimpl->empty ();
