@@ -1439,20 +1439,12 @@ void fl_BlockLayout::checkSpelling(void)
 				(!UT_UCS_isdigit(pBlockText[wordBeginning]) && 
 				(wordLength < 100)))
 			{
-				// see if it's in the ignore list
-				// TODO can we avoid having to calloc stuff for every word?
-			   	UT_UCSChar * ignoreWord = (UT_UCSChar*) calloc(wordLength+1, sizeof(UT_UCSChar));
-			   	UT_ASSERT(ignoreWord);
-			   
-			   	for (UT_uint32 charidx = 0; charidx < wordLength; charidx++)
-					ignoreWord[charidx] = pBlockText[wordBeginning+charidx];
-			   	ignoreWord[wordLength] = 0;
-			   
 				PD_Document * pDoc = m_pLayout->getDocument();
-			   	UT_Bool bIgnore = pDoc->isIgnore(ignoreWord);
-			   	FREEP(ignoreWord);
+				XAP_App * pApp = m_pLayout->getView()->getApp();
 
-			   	if (!bIgnore && !SpellCheckNWord16( &(pBlockText[wordBeginning]), wordLength))
+			   	if (!SpellCheckNWord16( &(pBlockText[wordBeginning]), wordLength) &&
+					!pDoc->isIgnore(    &(pBlockText[wordBeginning]), wordLength) &&
+					!pApp->isWordInDict(&(pBlockText[wordBeginning]), wordLength))
 				{
 					// unknown word...
 					if (!bUpdateScreen)

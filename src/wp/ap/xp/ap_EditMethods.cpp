@@ -2027,10 +2027,9 @@ Defun1(spellIgnoreAll)
 
 Defun1(spellAdd)
 {
-	XAP_Frame * pFrame = (XAP_Frame *) pAV_View->getParentData();
-	UT_ASSERT(pFrame);
+	ABIWORD_VIEW;
 
-	s_TellNotImplemented(pFrame, "Spell Add menu", __LINE__);
+	pView->cmdContextAdd();
 	return UT_TRUE;
 }
 

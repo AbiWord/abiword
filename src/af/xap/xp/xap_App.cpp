@@ -1,5 +1,5 @@
 /* AbiSource Application Framework
- * Copyright (C) 1998 AbiSource, Inc.
+ * Copyright (C) 1998,1999 AbiSource, Inc.
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -34,6 +34,7 @@
 #include "xap_Menu_ActionSet.h"
 #include "xap_Toolbar_ActionSet.h"
 #include "xap_LoadBindings.h"
+#include "xap_Dictionary.h"
 
 /*****************************************************************/
 
@@ -48,10 +49,16 @@ XAP_App::XAP_App(XAP_Args * pArgs, const char * szAppName) : m_hashClones(5)
 	m_pBindingSet = NULL;
 	m_pMenuActionSet = NULL;
 	m_pToolbarActionSet = NULL;
+	m_pDict = NULL;
 }
 
 XAP_App::~XAP_App(void)
 {
+	// HACK: for now, this works from XAP code
+	// TODO: where should this really go?
+	if (m_pDict)
+		m_pDict->save();
+
 	// run thru and destroy all frames on our window list.
 	UT_VECTOR_PURGEALL(XAP_Frame *, m_vecFrames);
 
@@ -60,6 +67,7 @@ XAP_App::~XAP_App(void)
 	DELETEP(m_pBindingSet);
 	DELETEP(m_pMenuActionSet);
 	DELETEP(m_pToolbarActionSet);
+	DELETEP(m_pDict);
 }
 
 UT_Bool XAP_App::initialize(void)
@@ -80,6 +88,16 @@ UT_Bool XAP_App::initialize(void)
 	m_pToolbarActionSet = AP_CreateToolbarActionSet();
 	UT_ASSERT(m_pToolbarActionSet);
 #endif
+
+	// HACK: for now, this works from XAP code
+	// TODO: where should this really go?
+	char * szPathname = UT_catPathname(getUserPrivateDirectory(),"custom.dic");
+	UT_ASSERT(szPathname);
+	m_pDict = new XAP_Dictionary(szPathname);
+	FREEP(szPathname);
+	UT_ASSERT(m_pDict);
+	m_pDict->load();
+
 	// TODO use m_pArgs->{argc,argv} to process any command-line
 	// TODO options that we need.
 
@@ -378,6 +396,22 @@ void XAP_App::_setAbiSuiteLibDir(const char * sz)
 const char * XAP_App::getAbiSuiteLibDir(void) const
 {
 	return m_szAbiSuiteLibDir;
+}
+
+UT_Bool XAP_App::addWordToDict(const UT_UCSChar * pWord, UT_uint32 len)
+{
+	if (!m_pDict)
+		return UT_FALSE;
+
+	return m_pDict->addWord(pWord, len);
+}
+
+UT_Bool XAP_App::isWordInDict(const UT_UCSChar * pWord, UT_uint32 len) const
+{
+	if (!m_pDict)
+		return UT_FALSE;
+
+	return m_pDict->isWord(pWord, len);
 }
 
 

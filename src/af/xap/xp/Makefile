@@ -1,7 +1,7 @@
 #! gmake
 
 ## AbiSource Application Framework
-## Copyright (C) 1998 AbiSource, Inc.
+## Copyright (C) 1998,1999 AbiSource, Inc.
 ##
 ## This program is free software; you can redistribute it and/or
 ## modify it under the terms of the GNU General Public License
@@ -28,6 +28,7 @@ CPPSRCS=	xad_Document.cpp		\
 		xap_Clipboard.cpp		\
 		xap_Dialog.cpp			\
 		xap_DialogFactory.cpp		\
+		xap_Dictionary.cpp		\
 		xap_Dlg_About.cpp		\
 		xap_Dlg_FileOpenSaveAs.cpp	\
 		xap_Dlg_FontChooser.cpp		\

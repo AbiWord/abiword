@@ -1,5 +1,5 @@
 /* AbiSource Application Framework
- * Copyright (C) 1998 AbiSource, Inc.
+ * Copyright (C) 1998,1999 AbiSource, Inc.
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -43,9 +43,9 @@ public:
 	virtual UT_Bool			undoCmd(UT_uint32 repeatCount) = 0;
 	virtual UT_Bool			redoCmd(UT_uint32 repeatCount) = 0;
 
-   	// "ingore all" list for spell check
-   	UT_Bool				appendIgnore(const UT_UCSChar * pszWord);
-   	UT_Bool				isIgnore(UT_UCSChar * pszWord) const;
+   	// "ignore all" list for spell check
+   	UT_Bool				appendIgnore(const UT_UCSChar * pWord, UT_uint32 len);
+   	UT_Bool				isIgnore(const UT_UCSChar * pWord, UT_uint32 len) const;
    	UT_Bool				enumIgnores(UT_uint32 k, const UT_UCSChar * pszWord) const;
    	UT_Bool				clearIgnores(void);
    

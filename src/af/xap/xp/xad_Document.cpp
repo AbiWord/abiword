@@ -1,5 +1,5 @@
 /* AbiSource Application Framework
- * Copyright (C) 1998 AbiSource, Inc.
+ * Copyright (C) 1998,1999 AbiSource, Inc.
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -19,6 +19,7 @@
 
 #include <stdlib.h>
 #include "ut_assert.h"
+#include "ut_debugmsg.h"
 #include "xad_Document.h"
 #include "ut_string.h"
 
@@ -72,43 +73,62 @@ const char * AD_Document::getFilename(void) const
 
 // Methods for maintaining document-wide "Ignore All" list
 
-UT_Bool AD_Document::appendIgnore(const UT_UCSChar * pszWord)
+UT_Bool AD_Document::appendIgnore(const UT_UCSChar * pWord, UT_uint32 len)
 {
-   UT_ASSERT(m_pIgnoreList);
+	UT_ASSERT(m_pIgnoreList);
 
-   char * cword = (char*) calloc(UT_UCS_strlen(pszWord)+1, sizeof(char));
-   UT_ASSERT(cword);
-   UT_UCS_strcpy_to_char(cword, pszWord);
-   
-   UT_UCSChar * copy = NULL;
-   UT_UCS_cloneString(&copy, pszWord);
-   
-   UT_sint32 iRes = m_pIgnoreList->addEntry(cword, NULL, (void*) copy);
-   
-   FREEP(cword);
-   
-   if (iRes == 0)
-     return UT_TRUE;
-   else
-     return UT_FALSE;
+	char * key = (char *) calloc(len+1, sizeof(char));
+	UT_UCSChar * copy = (UT_UCSChar *) calloc(len+1, sizeof(UT_UCSChar));
+
+	if (!key || !copy)
+	{
+		UT_DEBUGMSG(("mem failure adding word to dictionary\n"));
+		FREEP(key);
+		FREEP(copy);
+		return UT_FALSE;
+	}
+
+	for (UT_uint32 i = 0; i < len; i++)
+	{
+		key[i] = (char) pWord[i];
+		copy[i] = (UT_UCSChar) pWord[i];
+	}
+
+	UT_sint32 iRes = m_pIgnoreList->addEntry(key, NULL, (void*) copy);
+
+	FREEP(key);
+
+	if (iRes == 0)
+		return UT_TRUE;
+	else
+		return UT_FALSE;
 }
 
-UT_Bool AD_Document::isIgnore(UT_UCSChar * pszWord) const
+UT_Bool AD_Document::isIgnore(const UT_UCSChar * pWord, UT_uint32 len) const
 {
-   UT_ASSERT(m_pIgnoreList);
+	UT_ASSERT(m_pIgnoreList);
 
-   char * cword = (char*) calloc(UT_UCS_strlen(pszWord)+1, sizeof(char));
-   UT_ASSERT(cword);
-   UT_UCS_strcpy_to_char(cword, pszWord);
+	char * key = (char*) calloc(len+1, sizeof(char));
+	if (!key)
+	{
+		UT_DEBUGMSG(("mem failure looking up word in ignore all list\n"));
+		FREEP(key);
+		return UT_FALSE;
+	}
 
-   UT_HashEntry * pHE = m_pIgnoreList->findEntry(cword);
-   
-   FREEP(cword);
-   
-   if (pHE != NULL)
-     return UT_TRUE;
-   else 
-     return UT_FALSE;
+	for (UT_uint32 i = 0; i < len; i++)
+	{
+		key[i] = (char) pWord[i];
+	}
+
+	UT_HashEntry * pHE = m_pIgnoreList->findEntry(key);
+
+	FREEP(key);
+
+	if (pHE != NULL)
+		return UT_TRUE;
+	else 
+		return UT_FALSE;
    
 }
 

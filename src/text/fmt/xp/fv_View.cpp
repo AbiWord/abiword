@@ -4593,33 +4593,59 @@ void FV_View::cmdContextIgnoreAll(void)
 
 	const UT_UCSChar * pBuf = pgb.getPointer(pPOB->iOffset);
 
-	UT_UCSChar * szWord = (UT_UCSChar*) calloc(pPOB->iLength + 1, sizeof(UT_UCSChar));
-	if (szWord)
+	// make the change
+	if (m_pDoc->appendIgnore(pBuf, pPOB->iLength))
 	{
-		for (UT_uint32 i = 0; i < pPOB->iLength; i++) 
-			szWord[i] = (UT_UCSChar) pBuf[i];
-
-		// make the change
-		UT_Bool bRes = m_pDoc->appendIgnore(szWord);
-
 		// remove the squiggles, too
+		fl_DocSectionLayout * pSL = m_pLayout->getFirstSection();
+		while (pSL)
 		{
-			fl_DocSectionLayout * pSL = m_pLayout->getFirstSection();
-			while (pSL)
+			fl_BlockLayout* b = pSL->getFirstBlock();
+			while (b)
 			{
-				fl_BlockLayout* b = pSL->getFirstBlock();
-				while (b)
-				{
-					// TODO: just check and remove matching squiggles
-					// for now, destructively recheck the whole thing
-					m_pLayout->queueBlockForSpell(b, UT_FALSE);
-					b = b->getNext();
-				}
-				pSL = (fl_DocSectionLayout *) pSL->getNext();
+				// TODO: just check and remove matching squiggles
+				// for now, destructively recheck the whole thing
+				m_pLayout->queueBlockForSpell(b, UT_FALSE);
+				b = b->getNext();
 			}
+			pSL = (fl_DocSectionLayout *) pSL->getNext();
 		}
 	}
+}
 
-	FREEP(szWord);
+void FV_View::cmdContextAdd(void)
+{
+	// locate the squiggle
+	PT_DocPosition pos = getPoint();
+	fl_BlockLayout* pBL = _findBlockAtPosition(pos);
+	UT_ASSERT(pBL);
+	fl_PartOfBlock* pPOB = pBL->getSquiggle(pos - pBL->getPosition());
+	UT_ASSERT(pPOB);
+
+	// grab a copy of the word
+	UT_GrowBuf pgb(1024);
+	UT_Bool bRes = pBL->getBlockBuf(&pgb);
+	UT_ASSERT(bRes);
+
+	const UT_UCSChar * pBuf = pgb.getPointer(pPOB->iOffset);
+
+	// make the change
+	if (m_pApp->addWordToDict(pBuf, pPOB->iLength))
+	{
+		// remove the squiggles, too
+		fl_DocSectionLayout * pSL = m_pLayout->getFirstSection();
+		while (pSL)
+		{
+			fl_BlockLayout* b = pSL->getFirstBlock();
+			while (b)
+			{
+				// TODO: just check and remove matching squiggles
+				// for now, destructively recheck the whole thing
+				m_pLayout->queueBlockForSpell(b, UT_FALSE);
+				b = b->getNext();
+			}
+			pSL = (fl_DocSectionLayout *) pSL->getNext();
+		}
+	}
 }
 

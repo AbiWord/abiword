@@ -1,5 +1,5 @@
 /* AbiSource Application Framework
- * Copyright (C) 1998 AbiSource, Inc.
+ * Copyright (C) 1998,1999 AbiSource, Inc.
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -37,6 +37,7 @@ class EV_Toolbar_ActionSet;
 class XAP_BindingSet;
 class XAP_Prefs;
 class XAP_StringSet;
+class XAP_Dictionary;
 class PD_DocumentRange;
 class AV_View;
 
@@ -87,6 +88,9 @@ public:
 
 	XAP_Args *						getArgs(void) const;
 
+	UT_Bool							addWordToDict(const UT_UCSChar * pWord, UT_uint32 len);
+	UT_Bool							isWordInDict(const UT_UCSChar * pWord, UT_uint32 len) const;
+
 	virtual XAP_DialogFactory *				getDialogFactory(void) = 0;
 	virtual XAP_Toolbar_ControlFactory *	getControlFactory(void) = 0;
 
@@ -112,6 +116,7 @@ protected:
 	XAP_BindingSet *				m_pBindingSet;		/* the set of binding maps */
 	EV_Menu_ActionSet *				m_pMenuActionSet;	/* the set of all possible menu actions in the app */
 	EV_Toolbar_ActionSet *			m_pToolbarActionSet;
+	XAP_Dictionary *				m_pDict;
 
 	UT_Vector						m_vecFrames;
 	UT_HashTable					m_hashClones;

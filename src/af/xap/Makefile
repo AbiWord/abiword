@@ -1,7 +1,7 @@
 #! gmake
 
 ## AbiWord
-## Copyright (C) 1998 AbiSource, Inc.
+## Copyright (C) 1998,1999 AbiSource, Inc.
 ##
 ## This program is free software; you can redistribute it and/or
 ## modify it under the terms of the GNU General Public License
@@ -68,6 +68,7 @@ OBJS=		$(PLATFORM_OBJS)						\
 		$(OBJDIR)/xap_Clipboard.$(OBJ_SUFFIX)			\
 		$(OBJDIR)/xap_Dialog.$(OBJ_SUFFIX)				\
 		$(OBJDIR)/xap_DialogFactory.$(OBJ_SUFFIX)			\
+		$(OBJDIR)/xap_Dictionary.$(OBJ_SUFFIX)			\
 		$(OBJDIR)/xap_Dlg_About.$(OBJ_SUFFIX)			\
 		$(OBJDIR)/xap_Dlg_FileOpenSaveAs.$(OBJ_SUFFIX)		\
 		$(OBJDIR)/xap_Dlg_FontChooser.$(OBJ_SUFFIX)			\

@@ -61,7 +61,6 @@ class AP_Dialog_Spell : public XAP_Dialog_NonPersistent
    // used to find misspelled words
    UT_Bool nextMisspelledWord(void);
   
-   UT_Bool inIgnoreAll(void);
    UT_Bool addIgnoreAll(void);
    void ignoreWord(void);
    

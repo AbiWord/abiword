@@ -28,6 +28,7 @@
 #include "xap_Dialog_Id.h"
 #include "xap_DialogFactory.h"
 #include "xap_Dlg_MessageBox.h"
+#include "xap_App.h"
 
 #include "ap_FrameData.h"
 #include "fl_DocLayout.h"
@@ -200,13 +201,15 @@ UT_Bool AP_Dialog_Spell::nextMisspelledWord(void)
 		(!UT_UCS_isdigit(pBlockText[m_iWordOffset]) &&
 		 (m_iWordLength < 100))) {
 	    
-	       // try testing our current ignore all and change all lists
-	       if (!inIgnoreAll()) {
+	       // try testing our current change all lists
 		  if (!inChangeAll()) {
 		    
-		     // TODO: should try user dictionaries here
+		     // try ignore all list and user dictionaries here, too
+		     XAP_App * pApp = m_pFrame->getApp();
 
-		     if (! SpellCheckNWord16( &(pBlockText[m_iWordOffset]), m_iWordLength)) {
+		     if (!SpellCheckNWord16( &(pBlockText[m_iWordOffset]), m_iWordLength) &&
+				 !m_pDoc->isIgnore(  &(pBlockText[m_iWordOffset]), m_iWordLength) &&
+				 !pApp->isWordInDict(&(pBlockText[m_iWordOffset]), m_iWordLength)) {
 		  
 			// unknown word...
 			// prepare list of possibilities
@@ -235,7 +238,6 @@ UT_Bool AP_Dialog_Spell::nextMisspelledWord(void)
 		     iBlockLength = m_pBlockBuf->getLength();
 		     // the offset shouldn't change
 		  }
-	       }
 	    }
 		
 	    // correctly spelled, so continue on
@@ -258,23 +260,10 @@ UT_Bool AP_Dialog_Spell::makeWordVisible(void)
    return UT_TRUE;
 }
 
-UT_Bool AP_Dialog_Spell::inIgnoreAll(void)
-{
-   UT_UCSChar * word = _getCurrentWord();
-   UT_Bool bRes = m_pDoc->isIgnore(word);
-   FREEP(word);
-
-   return bRes;
-}
-
 UT_Bool AP_Dialog_Spell::addIgnoreAll(void)
 {
-   UT_UCSChar * word = _getCurrentWord();
-   UT_Bool bRes = m_pDoc->appendIgnore(word);
-   FREEP(word);
-   
-   
-   return bRes;
+	UT_UCSChar * pBuf = (UT_UCSChar *) m_pBlockBuf->getPointer(m_iWordOffset);
+	return m_pDoc->appendIgnore(pBuf,m_iWordLength);
 }
 
 void AP_Dialog_Spell::ignoreWord(void)
@@ -342,9 +331,11 @@ UT_Bool AP_Dialog_Spell::changeWordWith(UT_UCSChar * newword)
 
 UT_Bool AP_Dialog_Spell::addToDict(void)
 {
-   // TODO: add word to the current custom dictionary
-   // TODO: needs an implementation of xap_Spell
-   return UT_TRUE;
+	UT_UCSChar * pBuf = (UT_UCSChar *) m_pBlockBuf->getPointer(m_iWordOffset);
+	XAP_App * pApp = m_pFrame->getApp();
+
+	// add word to the current custom dictionary
+	return pApp->addWordToDict(pBuf,m_iWordLength);
 }
 
 UT_UCSChar * AP_Dialog_Spell::_getCurrentWord(void)
