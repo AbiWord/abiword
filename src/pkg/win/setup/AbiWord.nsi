@@ -39,7 +39,6 @@ EnabledBitmap  ..\..\pkg\win\setup\checkbox.bmp
 DisabledBitmap ..\..\pkg\win\setup\emptybox.bmp
 
 ; The stuff that must be installed
-; binary, license, and American dictionary
 Section "Abiword.exe (required)"
 	SectionIn 1 2 3	; included in Typical, Full, Minimal 
 	;;
