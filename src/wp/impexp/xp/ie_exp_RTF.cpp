@@ -1116,9 +1116,21 @@ UT_uint32 IE_Exp_RTF::_getStyleNumber(const PD_Style * pStyle)
  */
 UT_uint32 IE_Exp_RTF::_getStyleNumber(const XML_Char * szStyle)
 {
-  NumberedStyle * pns = (NumberedStyle*)m_hashStyles.pick(szStyle);
-  UT_ASSERT(pns);
-  return pns->n;
+	if(UT_XML_strcmp(szStyle, "Normal Clean")== 0)
+	{
+		szStyle = "Normal";
+	}
+	NumberedStyle * pns = (NumberedStyle*)m_hashStyles.pick(szStyle);
+	UT_ASSERT(pns);
+	if(pns != NULL )
+	{
+		return pns->n;
+	}
+	else
+	{
+		pns = (NumberedStyle*)m_hashStyles.pick("Normal");
+		return pns->n;
+	}
 }
 
 /*!

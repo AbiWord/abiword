@@ -3171,7 +3171,6 @@ bool fp_FieldCharCountRun::calculateValue(void)
 	sz_ucs_FieldValue[0] = 0;
 	
 	UT_String szFieldValue;
-	szFieldValue[0] = 0;
 
 	FV_View *pView = _getViewFromBlk(m_pBL);
 	if(!pView)
