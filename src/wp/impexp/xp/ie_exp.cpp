@@ -32,10 +32,8 @@
 #include "ie_exp_AbiWord_1.h"
 #include "ie_exp_GZipAbiWord.h"
 
-#ifdef DEBUG
-// Don't include until it works
 #include "ie_exp_MsWord_97.h"
-#endif
+#include "ie_exp_MIF.h"
 
 #include "ie_exp_RTF.h"
 #include "ie_exp_Text.h"
@@ -75,6 +73,10 @@ static struct _xp s_expTable[] =
 #endif
 	DeclareExporter(IE_Exp_HTML),
 	DeclareExporter(IE_Exp_LaTeX),
+#ifdef 0
+	DeclareExporter(IE_Exp_MIF),
+	//      Don't declare until it works
+#endif
 	DeclareExporter(IE_Exp_PalmDoc),
 	DeclareExporter(IE_Exp_Psion_TextEd),
 	DeclareExporter(IE_Exp_Psion_Word),

@@ -57,6 +57,9 @@ typedef enum _IEFileType { IEFT_Unknown,
                            IEFT_ClarisWorks,
 						   IEFT_Psion_TextEd,
 						   IEFT_Psion_Word,
+			   IEFT_EBOOK,
+			   IEFT_APPLIX,
+			   IEFT_MIF,
 						   IEFT_LAST_BOGUS } IEFileType;
 
 typedef enum _IEGraphicFileType { IEGFT_Unknown,
