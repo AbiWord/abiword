@@ -304,7 +304,7 @@ fp_Run::_inheritProperties(void)
 #else
 		GR_Font * pFont = const_cast<GR_Font *>(pLayout->findFont(pSpanAP,pBlockAP,pSectionAP));
 
-		if (pFont != _getFont())
+		if ((pFont != _getFont()) || (getType() == FPRUN_ENDOFPARAGRAPH))
 		{
 			_setFont(pFont);
 		    _setAscent(getGR()->getFontAscent(pFont));
