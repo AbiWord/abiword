@@ -34,8 +34,27 @@ public:
 	virtual void			runModal(XAP_Frame * pFrame);
 
 	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
-	
+
+	static BOOL CALLBACK	s_dlgProc(HWND,UINT,WPARAM,LPARAM);	
+
 protected:
+	UT_sint32	m_curSelection;
+
+
+	BOOL						_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam);
+	BOOL						_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam);   
+	BOOL						_onNotify(HWND hWnd, LPARAM lParam);
+	
+	static BOOL CALLBACK		s_tabProc(HWND,UINT,WPARAM,LPARAM);
+	BOOL						_onInitTab(HWND hWnd, WPARAM wParam, LPARAM lParam);
+	BOOL						_onCommandTab(HWND hWnd, WPARAM wParam, LPARAM lParam);
+
+	HWND						m_hwndDlg;		// parent dialog
+	HWND						m_hwndTab;		// tab control in parent dialog
+
+	int							m_nrSubDlgs;		// number of tabs on tab control
+	UT_Vector					m_vecSubDlgHWnd;	// hwnd to each sub-dialog
+
 
 };
 

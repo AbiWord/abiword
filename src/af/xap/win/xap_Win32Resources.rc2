@@ -34,6 +34,9 @@
 #define XAP_RID_DIALOG_LANGUAGE						104
 #define XAP_RID_DIALOG_FONT							105
 #define XAP_RID_DIALOG_ENCODING						106
+#define XAP_RID_DIALOG_PLUGIN_MANAGER				107
+#define XAP_RID_DIALOG_PLUGIN_MANAGER_LIST			108
+#define	XAP_RID_DIALOG_PLUGIN_MANAGER_DETAILS		109
 
 #include "xap_Win32Res_DlgWindowMore.rc2"
 #include "xap_Win32Res_DlgZoom.rc2"
@@ -42,3 +45,4 @@
 #include "xap_Win32Res_DlgLanguage.rc2"
 #include "xap_Win32Res_DlgFont.rc2"
 #include "xap_Win32Res_DlgEncoding.rc2"
+#include "xap_Win32Res_DlgPlugin.rc2"
