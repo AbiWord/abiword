@@ -729,6 +729,7 @@ GtkWidget * XAP_UnixDialog_FontChooser::constructWindowContents(GtkWidget *paren
     gtk_notebook_append_page(GTK_NOTEBOOK(notebookMain), hbox1,labelTabColor);
 
 	colorSelector = gtk_color_selection_new ();
+	gtk_color_selection_set_has_opacity_control(GTK_COLOR_SELECTION(colorSelector), FALSE);
 	gtk_widget_show (colorSelector);
 	gtk_box_pack_start (GTK_BOX (hbox1), colorSelector, TRUE, TRUE, 0);
 
@@ -748,6 +749,7 @@ GtkWidget * XAP_UnixDialog_FontChooser::constructWindowContents(GtkWidget *paren
     gtk_notebook_append_page(GTK_NOTEBOOK(notebookMain), vboxBG,labelTabBGColor);
 
 	colorBGSelector = gtk_color_selection_new ();
+	gtk_color_selection_set_has_opacity_control(GTK_COLOR_SELECTION(colorBGSelector), FALSE);
 	gtk_widget_show (colorBGSelector);
 	gtk_box_pack_start (GTK_BOX (vboxBG), colorBGSelector, TRUE, TRUE, 0);
 

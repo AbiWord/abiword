@@ -683,6 +683,7 @@ bool XAP_Frame::updateTitle()
 		strcat(m_szTitle, buf);
 	}
 
+	// only for non-untitled documents
 	if (m_pDoc->isDirty())
 	{
 		// append " *"
