@@ -37,6 +37,7 @@
 #include "fl_BlockLayout.h"
 #include <fribidi.h>
 #include  "ie_Table.h"
+#include "ie_imp_RTFParse.h"
 
 class IE_Imp_RTF;
 class RTF_msword97_list;
@@ -582,6 +583,10 @@ private:
 	bool ReadKeyword(unsigned char* pKeyword, UT_sint16* pParam, bool* pParamUsed,
 					 UT_uint32 keywordBuffLen);
 	bool TranslateKeyword(unsigned char* pKeyword, UT_sint16 param, bool fParam);
+
+	RTF_KEYWORD_ID KeywordToID(const char * keyword);
+	bool HandleStarKeyword();
+
 	bool ReadColourTable();
 	bool ReadFontTable();
 	bool ReadOneFontFromTable();
@@ -713,6 +718,10 @@ private:
 
 // import member vars
 private:
+	/* keyword for new gen parser */
+	static bool keywordSorted;
+	static void _initialKeywordSort(void);
+
 	UT_GrowBuf m_gbBlock;
 	char *m_szFileDirName;
 

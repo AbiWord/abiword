@@ -58,6 +58,8 @@
 #include "xap_Frame.h"
 #include "wv.h" // for wvLIDToLangConverter
 
+#include "ie_imp_RTFParse.h"
+
 class fl_AutoNum;
 
 /*!
@@ -1395,6 +1397,10 @@ IE_Imp_RTF::IE_Imp_RTF(PD_Document * pDocument)
 	m_sPendingShapeProp(""),
 	m_bEndFrameOpen(false)
 {
+	if (!IE_Imp_RTF::keywordSorted) {
+		_initialKeywordSort();
+	}
+
 	if(m_vecAbiListTable.getItemCount() != 0)
 	{
 		UT_VECTOR_PURGEALL(_rtfAbiListTable *,m_vecAbiListTable);
@@ -2700,50 +2706,6 @@ UT_sint32 IE_Imp_RTF::GetNthTableBgColour(UT_uint32 colNum)
 	else
 	{
 		return -1;	// invalid
-	}
-}
-
-// Pushes the current state RTF state onto the state stack
-//
-bool IE_Imp_RTF::PushRTFState(void)
-{
-	// Create a new object to store the state in
-	RTFStateStore* pState = new RTFStateStore;
-	if (pState == NULL)
-	{
-	    UT_DEBUGMSG (("PushRTFState(): no state\n"));
-	    return false;
-	}
-	*pState = m_currentRTFState;
-	m_stateStack.push(pState);
-
-	// Reset the current state
-	m_currentRTFState.m_internalState = RTFStateStore::risNorm;
-	return true;
-}
-
-
-
-// Pops the state off the top of the RTF stack and set the current state to it.
-//
-bool IE_Imp_RTF::PopRTFState(void)
-{
-	RTFStateStore* pState = NULL;
-	m_stateStack.pop(reinterpret_cast<void**>(&pState));
-
-	if (pState != NULL)
-	{
-		bool ok = FlushStoredChars();
-		m_currentRTFState = *pState;
-		delete pState;
-
-		m_currentRTFState.m_unicodeInAlternate = 0;
-		return ok;
-	}
-	else
-	{
-		UT_return_val_if_fail(pState != NULL, false);	// state stack should not be empty
-		return true; // was false
 	}
 }
 
@@ -4305,1582 +4267,1266 @@ bool IE_Imp_RTF::TranslateKeyword(unsigned char* pKeyword, UT_sint16 param, bool
 	// that if we are only loading styles, these are ignored
 	// (the docs say these can be scattered among the header tables)
 	xxx_UT_DEBUGMSG(("Translating keyword %s \n",pKeyword));
-	switch (*pKeyword)
-	{
-	case 'a':
-		if (strcmp(reinterpret_cast<char*>(pKeyword), "ansicpg") == 0)
-		{
-			const char *szEncoding = XAP_EncodingManager::get_instance()->charsetFromCodepage(static_cast<UT_uint32>(param));
-			m_mbtowc.setInCharset(szEncoding);
+	RTF_KEYWORD_ID keywordID = KeywordToID(reinterpret_cast<char *>(pKeyword));
 
-			if(!getLoadStylesOnly())
-				getDoc()->setEncodingName(szEncoding);
-			return true;
+	switch (keywordID)
+	{
+	case RTF_KW_ansicpg:
+	{
+		const char *szEncoding = XAP_EncodingManager::get_instance()->charsetFromCodepage(static_cast<UT_uint32>(param));
+		m_mbtowc.setInCharset(szEncoding);
+		
+		if(!getLoadStylesOnly()) {
+			getDoc()->setEncodingName(szEncoding);
 		}
-		else if (strcmp(reinterpret_cast<char*>(pKeyword), "abitopline") == 0)
-		{
-			return HandleTopline(true);
-		}
-		else if (strcmp(reinterpret_cast<char*>(pKeyword), "abibotline") == 0)
-		{
-			return HandleBotline(true);
-		}
-		else if (strcmp(reinterpret_cast<char*>(pKeyword), "abinodiroverride") == 0)
-		{
+		return true;
+	}
+	case RTF_KW_abitopline:
+		return HandleTopline(true);
+	case RTF_KW_abibotline:
+		return HandleBotline(true);
+	case RTF_KW_abinodiroverride:
+	{
 // this keyword will be immediately followed by either the
 // ltrch or rtlch keyword, which we need to eat up ...
-			unsigned char kwrd[MAX_KEYWORD_LEN];
-			UT_sint16 par = 0;
-			bool parUsed = false;
-			bool ok = true;
-			unsigned char c;
-
+		unsigned char kwrd[MAX_KEYWORD_LEN];
+		UT_sint16 par = 0;
+		bool parUsed = false;
+		bool ok = true;
+		unsigned char c;
+		
 // swallow "\" first
-			ok = ReadCharFromFileWithCRLF(&c);
-			if (ReadKeyword(kwrd, &par, &parUsed, MAX_KEYWORD_LEN))
-			{
-				if(!(0 == strncmp((const char*)&kwrd[0],"rtlch",MAX_KEYWORD_LEN) ||
-					 0 == strncmp((const char*)&kwrd[0],"ltrch",MAX_KEYWORD_LEN)))
-				{
-					UT_DEBUGMSG(("RTF import: keyword \\%s found where \\ltrch"
-								 " or \\rtlch expected\n", kwrd));
-				}
-			}
-			xxx_UT_DEBUGMSG(("abinoveride found - swallowed keyword %s \n",kwrd));
-			return true;
-		}
- 		else if (strcmp(reinterpret_cast<char*>(pKeyword), "ansi") == 0)
+		ok = ReadCharFromFileWithCRLF(&c);
+		if (ReadKeyword(kwrd, &par, &parUsed, MAX_KEYWORD_LEN))
 		{
-			// this is charset Windows-1252
-			const char *szEncoding = XAP_EncodingManager::get_instance()->charsetFromCodepage(1252);
-			m_mbtowc.setInCharset(szEncoding);
-			if(!getLoadStylesOnly())
-				getDoc()->setEncodingName(szEncoding);
-			return true;
-		}
-		else if (strcmp(reinterpret_cast<char*>(pKeyword), "aendnotes") == 0)
-		{
-			if(!getLoadStylesOnly())
+			if(!(0 == strncmp((const char*)&kwrd[0],"rtlch",MAX_KEYWORD_LEN) ||
+				 0 == strncmp((const char*)&kwrd[0],"ltrch",MAX_KEYWORD_LEN)))
 			{
-				const XML_Char * props[] = {"document-endnote-place-endsection", "1",
-											NULL};
-				getDoc()->setProperties(&props[0]);
-			}
-			
-		}
-		else if (strcmp(reinterpret_cast<char*>(pKeyword), "aenddoc") == 0)
-		{
-			if(!getLoadStylesOnly())
-			{
-				const XML_Char * props[] = {"document-endnote-place-enddoc", "1",
-											NULL};
-				getDoc()->setProperties(&props[0]);
+				UT_DEBUGMSG(("RTF import: keyword \\%s found where \\ltrch"
+							 " or \\rtlch expected\n", kwrd));
 			}
 		}
-		else if (strcmp(reinterpret_cast<char*>(pKeyword), "aftnstart") == 0)
-		{
-			if(!getLoadStylesOnly())
-			{
-				const XML_Char * props[] = {"document-endnote-initial", NULL,
-											NULL};
-				UT_String i;
-				UT_String_sprintf(i,"%d",param);
-				props[1] = i.c_str();
-				getDoc()->setProperties(&props[0]);
-			}
-		}
-		else if (strcmp(reinterpret_cast<char*>(pKeyword), "aftnrestart") == 0)
-		{
-			if(!getLoadStylesOnly())
-			{
-			
-				const XML_Char * props[] = {"document-endnote-restart-section", "1",
-											NULL};
-				getDoc()->setProperties(&props[0]);
-			}
-		}
-		else if (strcmp(reinterpret_cast<char*>(pKeyword), "aftnnar") == 0)
-		{
-			if(!getLoadStylesOnly())
-			{
-				const XML_Char * props[] = {"document-endnote-type", "numeric",
-											NULL};
-				getDoc()->setProperties(&props[0]);
-			}
-		}
-		else if (strcmp(reinterpret_cast<char*>(pKeyword), "aftnnalc") == 0)
-		{
-			if(!getLoadStylesOnly())
-			{
-				const XML_Char * props[] = {"document-endnote-type", "lower",
-											NULL};
-				getDoc()->setProperties(&props[0]);
-			}
-		}
-		else if (strcmp(reinterpret_cast<char*>(pKeyword), "aftnnauc") == 0)
-		{
-			if(!getLoadStylesOnly())
-			{
-				const XML_Char * props[] = {"document-endnote-type", "upper",
-											NULL};
-				getDoc()->setProperties(&props[0]);
-			}
-		}
-		else if (strcmp(reinterpret_cast<char*>(pKeyword), "aftnnrlc") == 0)
-		{
-			if(!getLoadStylesOnly())
-			{
-				const XML_Char * props[] = {"document-endnote-type", "lower-roman",
-											NULL};
-				getDoc()->setProperties(&props[0]);
-			}
-		}
-		else if (strcmp(reinterpret_cast<char*>(pKeyword), "aftnnruc") == 0)
-		{
-			if(!getLoadStylesOnly())
-			{
-				const XML_Char * props[] = {"document-footnote-type", "upper-roman",
-											NULL};
-				getDoc()->setProperties(&props[0]);
-			}
-		}
-		break;
-	case 'b':
-		if (strcmp(reinterpret_cast<char*>(pKeyword), "b") == 0)
-		{
-			// bold - either on or off depending on the parameter
-			return HandleBold(fParam ? false : true);
-		}
-		else if (strcmp(reinterpret_cast<char*>(pKeyword), "bullet") == 0)
-		{
-			return ParseChar(UCS_BULLET);
-		}
-		else if(strcmp(reinterpret_cast<char*>(pKeyword), "brdrs") == 0)
-		{
-			if (m_currentRTFState.m_cellProps.m_iCurBorder == rtfCellBorderTop)
-			{
-				_setStringProperty(m_currentRTFState.m_cellProps.m_sCellProps,"top-style","solid");
-			}
-			else if (m_currentRTFState.m_cellProps.m_iCurBorder == rtfCellBorderLeft)
-			{
-				_setStringProperty(m_currentRTFState.m_cellProps.m_sCellProps,"left-style","solid");
-			}
-			else if (m_currentRTFState.m_cellProps.m_iCurBorder == rtfCellBorderBot)
-			{
-				_setStringProperty(m_currentRTFState.m_cellProps.m_sCellProps,"bot-style","solid");
-			}
-			else if (m_currentRTFState.m_cellProps.m_iCurBorder == rtfCellBorderRight)
-			{
-				_setStringProperty(m_currentRTFState.m_cellProps.m_sCellProps,"right-style","solid");
-			}
-			return true;
-		}
-		else if(strcmp(reinterpret_cast<char*>(pKeyword), "brdrdot") == 0)
-		{
-			if (m_currentRTFState.m_cellProps.m_iCurBorder == rtfCellBorderTop)
-			{
-				_setStringProperty(m_currentRTFState.m_cellProps.m_sCellProps,"top-style","dotted");
-			}
-			else if (m_currentRTFState.m_cellProps.m_iCurBorder == rtfCellBorderLeft)
-			{
-				_setStringProperty(m_currentRTFState.m_cellProps.m_sCellProps,"left-style","dotted");
-			}
-			else if (m_currentRTFState.m_cellProps.m_iCurBorder == rtfCellBorderBot)
-			{
-				_setStringProperty(m_currentRTFState.m_cellProps.m_sCellProps,"bot-style","dotted");
-			}
-			else if (m_currentRTFState.m_cellProps.m_iCurBorder == rtfCellBorderRight)
-			{
-				_setStringProperty(m_currentRTFState.m_cellProps.m_sCellProps,"right-style","dotted");
-			}
-			return true;
-		}
-		else if(strcmp(reinterpret_cast<char*>(pKeyword), "brdrdash") == 0)
-		{
-			if (m_currentRTFState.m_cellProps.m_iCurBorder == rtfCellBorderTop)
-			{
-				_setStringProperty(m_currentRTFState.m_cellProps.m_sCellProps,"top-style","dashed");
-			}
-			else if (m_currentRTFState.m_cellProps.m_iCurBorder == rtfCellBorderLeft)
-			{
-				_setStringProperty(m_currentRTFState.m_cellProps.m_sCellProps,"left-style","dashed");
-			}
-			else if (m_currentRTFState.m_cellProps.m_iCurBorder == rtfCellBorderBot)
-			{
-				_setStringProperty(m_currentRTFState.m_cellProps.m_sCellProps,"bot-style","dashed");
-			}
-			else if (m_currentRTFState.m_cellProps.m_iCurBorder == rtfCellBorderRight)
-			{
-				_setStringProperty(m_currentRTFState.m_cellProps.m_sCellProps,"right-style","dashed");
-			}
-			return true;
-		}
-		else if(strcmp(reinterpret_cast<char*>(pKeyword), "brdrw") == 0)
-		{
-			double dWidth = static_cast<double>(param)/1440; // convert to inches
-			UT_String sWidth;
-			UT_String_sprintf(sWidth,"%fin",dWidth);
-			if (m_currentRTFState.m_cellProps.m_iCurBorder == rtfCellBorderTop)
-			{
-				_setStringProperty(m_currentRTFState.m_cellProps.m_sCellProps,"top-thickness",sWidth.c_str());
-			}
-			else if (m_currentRTFState.m_cellProps.m_iCurBorder == rtfCellBorderLeft)
-			{
-			   _setStringProperty(m_currentRTFState.m_cellProps.m_sCellProps,"left-thickness",sWidth.c_str());
-			}
-			else if (m_currentRTFState.m_cellProps.m_iCurBorder == rtfCellBorderBot)
-			{
-				_setStringProperty(m_currentRTFState.m_cellProps.m_sCellProps,"bot-thickness",sWidth.c_str());
-			}
-			else if (m_currentRTFState.m_cellProps.m_iCurBorder == rtfCellBorderRight)
-			{
-				_setStringProperty(m_currentRTFState.m_cellProps.m_sCellProps,"right-thickness",sWidth.c_str());
-			}
-			return true;
-		}
-		else if(strcmp(reinterpret_cast<char*>(pKeyword), "brdrcf") == 0)
-		{
-			UT_String sColor;
-			UT_sint32 iCol = static_cast<UT_sint32>(param);
-			UT_uint32 colour = GetNthTableColour(iCol);
-			UT_String_sprintf(sColor, "%06x", colour);
-			if (m_currentRTFState.m_cellProps.m_iCurBorder == rtfCellBorderTop)
-			{
-				_setStringProperty(m_currentRTFState.m_cellProps.m_sCellProps,"top-color",sColor.c_str());
-			}
-			else if (m_currentRTFState.m_cellProps.m_iCurBorder == rtfCellBorderLeft)
-			{
-			   _setStringProperty(m_currentRTFState.m_cellProps.m_sCellProps,"left-color",sColor.c_str());
-			}
-			else if (m_currentRTFState.m_cellProps.m_iCurBorder == rtfCellBorderBot)
-			{
-				_setStringProperty(m_currentRTFState.m_cellProps.m_sCellProps,"bot-color",sColor.c_str());
-			}
-			else if (m_currentRTFState.m_cellProps.m_iCurBorder == rtfCellBorderRight)
-			{
-				_setStringProperty(m_currentRTFState.m_cellProps.m_sCellProps,"right-color",sColor.c_str());
-			}
-			return true;
-		}
-		break;
-
-	case 'c':
-		if (strcmp(reinterpret_cast<char*>(pKeyword), "colortbl") == 0)
-		{
-			return ReadColourTable();
-		}
-		else if (strcmp(reinterpret_cast<char*>(pKeyword), "cf") == 0)
-		{
-			return HandleColour(fParam ? param : 0);
-		}
-		else if (strcmp(reinterpret_cast<char*>(pKeyword), "cb") == 0)
-		{
-			return HandleBackgroundColour (fParam ? param : 0);
-		}
-		else if (strcmp(reinterpret_cast<char*>(pKeyword), "cols") == 0)
-		{
-			m_currentRTFState.m_sectionProps.m_numCols = static_cast<UT_uint32>(param);
-			return true;
-		}
-		else if (strcmp(reinterpret_cast<char*>(pKeyword), "colsx") == 0)
-		{
-			m_currentRTFState.m_sectionProps.m_colSpaceTwips = static_cast<UT_uint32>(param);
-			return true;
-		}
-		else if (strcmp(reinterpret_cast<char*>(pKeyword), "column") == 0) // column break
-		{
-			return ParseChar(UCS_VTAB);
-		}
-		else if (strcmp(reinterpret_cast<char*>(pKeyword), "chdate") == 0)
-		{
-			return _appendField ("date");
-		}
-		else if (strcmp(reinterpret_cast<char*>(pKeyword), "chtime") == 0)
-		{
-			return _appendField ("time");
-		}
-		else if (strcmp(reinterpret_cast<char*>(pKeyword), "chdpl") == 0)
-		{
-			const XML_Char * attribs[3] ={"param",NULL,NULL};
-			attribs[1] = "%A, %B %d, %Y";
-			return _appendField ("datetime_custom", attribs);
-		}
-		else if (strcmp(reinterpret_cast<char*>(pKeyword), "chdpa") == 0)
-		{
-			const XML_Char * attribs[3] ={"param",NULL,NULL};
-			attribs[1] = "%a, %b %d, %Y";
-			return _appendField ("datetime_custom");
-		}
-		else if (strcmp(reinterpret_cast<char*>(pKeyword), "chpgn") == 0)
-		{
-			return _appendField ("page_number");
-		}
-		else if (strcmp(reinterpret_cast<char*>(pKeyword), "chftn") == 0)
-		{
-			HandleNoteReference();
-		}
- 		else if (strcmp(reinterpret_cast<char*>(pKeyword), "cs") == 0)
- 		{
- 			m_currentRTFState.m_charProps.m_styleNumber = param;
- 			return true;
- 		}
-		else if (strcmp(reinterpret_cast<char*>(pKeyword), "cell") == 0)
-		{
-			xxx_UT_DEBUGMSG(("SEVIOR: Processing cell \n"));
-			HandleCell();
-			return true;
-		}
-		else if (strcmp(reinterpret_cast<char*>(pKeyword), "cellx") == 0)
-		{
-			HandleCellX(param);
-			return true;
-		}
-		else if (strcmp(reinterpret_cast<char*>(pKeyword), "clvmrg") == 0)
-		{
-			xxx_UT_DEBUGMSG(("Found Vertical merge cell clvmrg \n"));
-			m_currentRTFState.m_cellProps.m_bVerticalMerged = true;
-			return true;
-		}
-		else if (strcmp(reinterpret_cast<char*>(pKeyword), "clvmgf") == 0)
-		{
-			xxx_UT_DEBUGMSG(("Found Vertical merge cell first clvmgf \n"));
-			m_currentRTFState.m_cellProps.m_bVerticalMergedFirst = true;
-			return true;
-		}
-		else if (strcmp(reinterpret_cast<char*>(pKeyword), "clmrg") == 0)
-		{
-			m_currentRTFState.m_cellProps.m_bHorizontalMerged = true;
-			return true;
-		}
-		else if (strcmp(reinterpret_cast<char*>(pKeyword), "clmgf") == 0)
-		{
-			m_currentRTFState.m_cellProps.m_bHorizontalMergedFirst = true;
-			return true;
-		}
-		else if (strcmp(reinterpret_cast<char*>(pKeyword), "clbrdrt") == 0)
-		{
-			m_currentRTFState.m_cellProps.m_iCurBorder = rtfCellBorderTop;
-			return true;
-		}
-		else if (strcmp(reinterpret_cast<char*>(pKeyword), "clbrdrl") == 0)
-		{
-			m_currentRTFState.m_cellProps.m_iCurBorder = rtfCellBorderLeft;
-			return true;
-		}
-		else if (strcmp(reinterpret_cast<char*>(pKeyword), "clbrdrb") == 0)
-		{
-			m_currentRTFState.m_cellProps.m_iCurBorder = rtfCellBorderBot;
-			return true;
-		}
-		else if (strcmp(reinterpret_cast<char*>(pKeyword), "clbrdrr") == 0)
-		{
-			m_currentRTFState.m_cellProps.m_iCurBorder = rtfCellBorderRight;
-			return true;
-		}
-		else if(strcmp(reinterpret_cast<char*>(pKeyword), "clcbpat") == 0)
-		{
-			UT_String sColor;
-			UT_sint32 iCol = static_cast<UT_sint32>(param);
-			UT_uint32 colour = GetNthTableColour(iCol);
-			UT_String_sprintf(sColor, "%06x", colour);
-			xxx_UT_DEBUGMSG(("Writing background color %s to properties \n",sColor.c_str()));
-			_setStringProperty(m_currentRTFState.m_cellProps.m_sCellProps,"background-color",sColor.c_str());
-		}
-		break;
-
-	case 'd':
-		if (strcmp(reinterpret_cast<char*>(pKeyword), "deleted") == 0)
-		{
-			// bold - either on or off depending on the parameter
-			return HandleDeleted(fParam ? false : true);
-		}
-		else if (strcmp(reinterpret_cast<char *>(pKeyword),"dn") == 0)
-		{
-			// subscript with position. Default is 6.
-			// superscript: see up keyword
-			return HandleSubscriptPosition (fParam ? param : 6);
-		}
-		break;
-	case 'e':
-		if (strcmp(reinterpret_cast<char*>(pKeyword), "emdash") == 0)
-		{
-			return ParseChar(UCS_EM_DASH);
-		}
-		else if (strcmp(reinterpret_cast<char*>(pKeyword), "endash") == 0)
-		{
-			return ParseChar(UCS_EN_DASH);
-		}
-		else if (strcmp(reinterpret_cast<char*>(pKeyword), "emspace") == 0)
-		{
-			return ParseChar(UCS_EM_SPACE);
-		}
-		else if (strcmp(reinterpret_cast<char*>(pKeyword), "enspace") == 0)
-		{
-			return ParseChar(UCS_EN_SPACE);
-		}
-		else if (strcmp(reinterpret_cast<char*>(pKeyword), "endnotes") == 0)
+		xxx_UT_DEBUGMSG(("abinoveride found - swallowed keyword %s \n",kwrd));
+		return true;
+	}
+	case RTF_KW_ansi:
+	{
+		// this is charset Windows-1252
+		const char *szEncoding = XAP_EncodingManager::get_instance()->charsetFromCodepage(1252);
+		m_mbtowc.setInCharset(szEncoding);
+		if(!getLoadStylesOnly())
+			getDoc()->setEncodingName(szEncoding);
+		return true;
+	}
+	case RTF_KW_aendnotes:
+		if(!getLoadStylesOnly())
 		{
 			const XML_Char * props[] = {"document-endnote-place-endsection", "1",
 										NULL};
 			getDoc()->setProperties(&props[0]);
-
 		}
-		else if (strcmp(reinterpret_cast<char*>(pKeyword), "enddoc") == 0)
+		break;
+	case RTF_KW_aenddoc:
+		if(!getLoadStylesOnly())
 		{
 			const XML_Char * props[] = {"document-endnote-place-enddoc", "1",
 										NULL};
 			getDoc()->setProperties(&props[0]);
 		}
 		break;
-	case 'f':
-		if (strcmp(reinterpret_cast<char*>(pKeyword), "fonttbl") == 0)
+	case RTF_KW_aftnstart:
+		if(!getLoadStylesOnly())
 		{
-			// read in the font table
-			return ReadFontTable();
+			const XML_Char * props[] = {"document-endnote-initial", NULL,
+										NULL};
+			UT_String i;
+			UT_String_sprintf(i,"%d",param);
+			props[1] = i.c_str();
+			getDoc()->setProperties(&props[0]);
 		}
-		else if (strcmp(reinterpret_cast<char*>(pKeyword), "fs") == 0)
+		break;
+	case RTF_KW_aftnrestart:
+		if(!getLoadStylesOnly())
 		{
-			return HandleFontSize(fParam ? param : 24);
+			
+			const XML_Char * props[] = {"document-endnote-restart-section", "1",
+										NULL};
+			getDoc()->setProperties(&props[0]);
 		}
-		else if (strcmp(reinterpret_cast<char*>(pKeyword), "f") == 0)
+		break;
+	case RTF_KW_aftnnar:
+		if(!getLoadStylesOnly())
 		{
-			return HandleFace(fParam ? param : 0); // TODO read the deff prop and use that instead of 0
+			const XML_Char * props[] = {"document-endnote-type", "numeric",
+										NULL};
+			getDoc()->setProperties(&props[0]);
 		}
-		else if (strcmp(reinterpret_cast<char*>(pKeyword), "fi") == 0)
+		break;
+	case RTF_KW_aftnnalc:
+		if(!getLoadStylesOnly())
 		{
-			m_currentRTFState.m_paraProps.m_indentFirst = param;
-			return true;
+			const XML_Char * props[] = {"document-endnote-type", "lower",
+										NULL};
+			getDoc()->setProperties(&props[0]);
 		}
-		else if (strcmp(reinterpret_cast<char*>(pKeyword), "field") == 0)
+		break;
+	case RTF_KW_aftnnauc:
+		if(!getLoadStylesOnly())
 		{
-			return HandleField ();
+			const XML_Char * props[] = {"document-endnote-type", "upper",
+										NULL};
+			getDoc()->setProperties(&props[0]);
 		}
-		else if (strcmp(reinterpret_cast<char*>(pKeyword), "fldrslt") == 0)
+		break;
+	case RTF_KW_aftnnrlc:
+		if(!getLoadStylesOnly())
 		{
-			if(m_bFieldRecognized && (m_iHyperlinkOpen== 0))
-			{
+			const XML_Char * props[] = {"document-endnote-type", "lower-roman",
+										NULL};
+			getDoc()->setProperties(&props[0]);
+		}
+		break;
+	case RTF_KW_aftnnruc:
+		if(!getLoadStylesOnly())
+		{
+			const XML_Char * props[] = {"document-footnote-type", "upper-roman",
+										NULL};
+			getDoc()->setProperties(&props[0]);
+		}
+		break;
+	case RTF_KW_b:
+		// bold - either on or off depending on the parameter
+		return HandleBold(fParam ? false : true);
+	case RTF_KW_bullet:
+		return ParseChar(UCS_BULLET);
+	case RTF_KW_brdrs:
+		if (m_currentRTFState.m_cellProps.m_iCurBorder == rtfCellBorderTop)
+		{
+			_setStringProperty(m_currentRTFState.m_cellProps.m_sCellProps,"top-style","solid");
+		}
+		else if (m_currentRTFState.m_cellProps.m_iCurBorder == rtfCellBorderLeft)
+		{
+			_setStringProperty(m_currentRTFState.m_cellProps.m_sCellProps,"left-style","solid");
+		}
+		else if (m_currentRTFState.m_cellProps.m_iCurBorder == rtfCellBorderBot)
+		{
+			_setStringProperty(m_currentRTFState.m_cellProps.m_sCellProps,"bot-style","solid");
+		}
+		else if (m_currentRTFState.m_cellProps.m_iCurBorder == rtfCellBorderRight)
+		{
+			_setStringProperty(m_currentRTFState.m_cellProps.m_sCellProps,"right-style","solid");
+		}
+		return true;
+	case RTF_KW_brdrdot:
+		if (m_currentRTFState.m_cellProps.m_iCurBorder == rtfCellBorderTop)
+		{
+			_setStringProperty(m_currentRTFState.m_cellProps.m_sCellProps,"top-style","dotted");
+		}
+		else if (m_currentRTFState.m_cellProps.m_iCurBorder == rtfCellBorderLeft)
+		{
+			_setStringProperty(m_currentRTFState.m_cellProps.m_sCellProps,"left-style","dotted");
+		}
+		else if (m_currentRTFState.m_cellProps.m_iCurBorder == rtfCellBorderBot)
+		{
+			_setStringProperty(m_currentRTFState.m_cellProps.m_sCellProps,"bot-style","dotted");
+		}
+		else if (m_currentRTFState.m_cellProps.m_iCurBorder == rtfCellBorderRight)
+		{
+			_setStringProperty(m_currentRTFState.m_cellProps.m_sCellProps,"right-style","dotted");
+		}
+		return true;
+	case RTF_KW_brdrdash:
+		if (m_currentRTFState.m_cellProps.m_iCurBorder == rtfCellBorderTop)
+		{
+			_setStringProperty(m_currentRTFState.m_cellProps.m_sCellProps,"top-style","dashed");
+		}
+		else if (m_currentRTFState.m_cellProps.m_iCurBorder == rtfCellBorderLeft)
+		{
+			_setStringProperty(m_currentRTFState.m_cellProps.m_sCellProps,"left-style","dashed");
+		}
+		else if (m_currentRTFState.m_cellProps.m_iCurBorder == rtfCellBorderBot)
+		{
+			_setStringProperty(m_currentRTFState.m_cellProps.m_sCellProps,"bot-style","dashed");
+		}
+		else if (m_currentRTFState.m_cellProps.m_iCurBorder == rtfCellBorderRight)
+		{
+			_setStringProperty(m_currentRTFState.m_cellProps.m_sCellProps,"right-style","dashed");
+		}
+		return true;
+	case RTF_KW_brdrw:
+	{
+		double dWidth = static_cast<double>(param)/1440; // convert to inches
+		UT_String sWidth;
+		UT_String_sprintf(sWidth,"%fin",dWidth);
+		if (m_currentRTFState.m_cellProps.m_iCurBorder == rtfCellBorderTop)
+		{
+			_setStringProperty(m_currentRTFState.m_cellProps.m_sCellProps,"top-thickness",sWidth.c_str());
+		}
+		else if (m_currentRTFState.m_cellProps.m_iCurBorder == rtfCellBorderLeft)
+		{
+			_setStringProperty(m_currentRTFState.m_cellProps.m_sCellProps,"left-thickness",sWidth.c_str());
+		}
+		else if (m_currentRTFState.m_cellProps.m_iCurBorder == rtfCellBorderBot)
+		{
+			_setStringProperty(m_currentRTFState.m_cellProps.m_sCellProps,"bot-thickness",sWidth.c_str());
+		}
+		else if (m_currentRTFState.m_cellProps.m_iCurBorder == rtfCellBorderRight)
+		{
+			_setStringProperty(m_currentRTFState.m_cellProps.m_sCellProps,"right-thickness",sWidth.c_str());
+		}
+		return true;
+	}
+	case RTF_KW_brdrcf:
+	{
+		UT_String sColor;
+		UT_sint32 iCol = static_cast<UT_sint32>(param);
+		UT_uint32 colour = GetNthTableColour(iCol);
+		UT_String_sprintf(sColor, "%06x", colour);
+		if (m_currentRTFState.m_cellProps.m_iCurBorder == rtfCellBorderTop)
+		{
+			_setStringProperty(m_currentRTFState.m_cellProps.m_sCellProps,"top-color",sColor.c_str());
+		}
+		else if (m_currentRTFState.m_cellProps.m_iCurBorder == rtfCellBorderLeft)
+		{
+			_setStringProperty(m_currentRTFState.m_cellProps.m_sCellProps,"left-color",sColor.c_str());
+		}
+		else if (m_currentRTFState.m_cellProps.m_iCurBorder == rtfCellBorderBot)
+		{
+			_setStringProperty(m_currentRTFState.m_cellProps.m_sCellProps,"bot-color",sColor.c_str());
+		}
+		else if (m_currentRTFState.m_cellProps.m_iCurBorder == rtfCellBorderRight)
+		{
+			_setStringProperty(m_currentRTFState.m_cellProps.m_sCellProps,"right-color",sColor.c_str());
+		}
+		return true;
+	}
+	case RTF_KW_colortbl:
+		return ReadColourTable();
+	case RTF_KW_cf:
+		return HandleColour(fParam ? param : 0);
+	case RTF_KW_cb:
+		return HandleBackgroundColour (fParam ? param : 0);
+	case RTF_KW_cols:
+		m_currentRTFState.m_sectionProps.m_numCols = static_cast<UT_uint32>(param);
+		return true;
+	case RTF_KW_colsx:
+		m_currentRTFState.m_sectionProps.m_colSpaceTwips = static_cast<UT_uint32>(param);
+		return true;
+	case RTF_KW_column:
+		return ParseChar(UCS_VTAB);
+	case RTF_KW_chdate:
+		return _appendField ("date");
+	case RTF_KW_chtime:
+		return _appendField ("time");
+	case RTF_KW_chdpl:
+	{
+		const XML_Char * attribs[3] ={"param",NULL,NULL};
+		attribs[1] = "%A, %B %d, %Y";
+		return _appendField ("datetime_custom", attribs);
+	}
+	case RTF_KW_chdpa:
+	{
+		const XML_Char * attribs[3] ={"param",NULL,NULL};
+		attribs[1] = "%a, %b %d, %Y";
+		return _appendField ("datetime_custom");
+	}
+	case RTF_KW_chpgn:
+		return _appendField ("page_number");
+	case RTF_KW_chftn:
+		HandleNoteReference();
+	case RTF_KW_cs:
+		m_currentRTFState.m_charProps.m_styleNumber = param;
+		return true;
+	case RTF_KW_cell:
+		xxx_UT_DEBUGMSG(("SEVIOR: Processing cell \n"));
+		HandleCell();
+		return true;
+	case RTF_KW_cellx:
+		HandleCellX(param);
+		return true;
+	case RTF_KW_clvmrg:
+		xxx_UT_DEBUGMSG(("Found Vertical merge cell clvmrg \n"));
+		m_currentRTFState.m_cellProps.m_bVerticalMerged = true;
+		return true;
+	case RTF_KW_clvmgf:
+		xxx_UT_DEBUGMSG(("Found Vertical merge cell first clvmgf \n"));
+		m_currentRTFState.m_cellProps.m_bVerticalMergedFirst = true;
+		return true;
+	case RTF_KW_clmrg:
+		m_currentRTFState.m_cellProps.m_bHorizontalMerged = true;
+		return true;
+	case RTF_KW_clmgf:
+		m_currentRTFState.m_cellProps.m_bHorizontalMergedFirst = true;
+		return true;
+	case RTF_KW_clbrdrt:
+		m_currentRTFState.m_cellProps.m_iCurBorder = rtfCellBorderTop;
+		return true;
+	case RTF_KW_clbrdrl:
+		m_currentRTFState.m_cellProps.m_iCurBorder = rtfCellBorderLeft;
+		return true;
+	case RTF_KW_clbrdrb:
+		m_currentRTFState.m_cellProps.m_iCurBorder = rtfCellBorderBot;
+		return true;
+	case RTF_KW_clbrdrr:
+		m_currentRTFState.m_cellProps.m_iCurBorder = rtfCellBorderRight;
+		return true;
+	case RTF_KW_clcbpat:
+	{
+		UT_String sColor;
+		UT_sint32 iCol = static_cast<UT_sint32>(param);
+		UT_uint32 colour = GetNthTableColour(iCol);
+		UT_String_sprintf(sColor, "%06x", colour);
+		xxx_UT_DEBUGMSG(("Writing background color %s to properties \n",sColor.c_str()));
+		_setStringProperty(m_currentRTFState.m_cellProps.m_sCellProps,"background-color",sColor.c_str());
+	}
+	case RTF_KW_deleted:
+		// bold - either on or off depending on the parameter
+		return HandleDeleted(fParam ? false : true);
+	case RTF_KW_dn:
+		// subscript with position. Default is 6.
+		// superscript: see up keyword
+		return HandleSubscriptPosition (fParam ? param : 6);
+	case RTF_KW_emdash:
+		return ParseChar(UCS_EM_DASH);
+	case RTF_KW_endash:
+		return ParseChar(UCS_EN_DASH);
+	case RTF_KW_emspace:
+		return ParseChar(UCS_EM_SPACE);
+	case RTF_KW_enspace:
+		return ParseChar(UCS_EN_SPACE);
+	case RTF_KW_endnotes:
+	{
+		const XML_Char * props[] = {"document-endnote-place-endsection", "1",
+									NULL};
+		getDoc()->setProperties(&props[0]);
+	}
+	break;
+	case RTF_KW_enddoc:
+	{
+		const XML_Char * props[] = {"document-endnote-place-enddoc", "1",
+									NULL};
+		getDoc()->setProperties(&props[0]);
+	}
+	break;
+	case RTF_KW_fonttbl:
+		// read in the font table
+		return ReadFontTable();
+	case RTF_KW_fs:
+		return HandleFontSize(fParam ? param : 24);
+	case RTF_KW_f:
+		return HandleFace(fParam ? param : 0); // TODO read the deff prop and use that instead of 0
+	case RTF_KW_fi:
+		m_currentRTFState.m_paraProps.m_indentFirst = param;
+		return true;
+	case RTF_KW_field:
+		return HandleField ();
+	case RTF_KW_fldrslt:
+		if(m_bFieldRecognized && (m_iHyperlinkOpen== 0))
+		{
 //
 // skip this until the next "}"
 //
-				SkipCurrentGroup();
-			}
-			else
-			{
+			SkipCurrentGroup();
+		}
+		else
+		{
 //
 // Just parse the text found
 //
-				return true;
-			}
-		}
-		else if (strcmp(reinterpret_cast<char*>(pKeyword), "footer") == 0)
-		{
-			UT_uint32 footerID = 0;
-			return HandleHeaderFooter (RTFHdrFtr::hftFooter, footerID);
-		}
-		else if (strcmp(reinterpret_cast<char*>(pKeyword), "footerf") == 0)
-		{
-			UT_uint32 footerID = 0;
-			return HandleHeaderFooter (RTFHdrFtr::hftFooterFirst, footerID);
-		}
-		else if (strcmp(reinterpret_cast<char*>(pKeyword), "footerr") == 0)
-		{
-			UT_uint32 footerID = 0;
-			return HandleHeaderFooter (RTFHdrFtr::hftFooterEven, footerID);
-		}
-		else if (strcmp(reinterpret_cast<char*>(pKeyword), "footerl") == 0)
-		{
-			UT_uint32 footerID = 0;
-			return HandleHeaderFooter (RTFHdrFtr::hftFooter, footerID);
-		}
-		else if( strcmp(reinterpret_cast<char *>(pKeyword), "gutter") == 0)
-		{
-			// Gap between text and left (or right) margin in twips
-			m_currentRTFState.m_sectionProps.m_gutterTwips = param;
-		}
-		else if( strcmp(reinterpret_cast<char *>(pKeyword), "footnote") == 0)
-		{
-			// can be both footnote and endnote ...
-			m_bFootnotePending = true;
 			return true;
-		}
-		else if( strcmp(reinterpret_cast<char *>(pKeyword), "ftnalt") == 0)
-		{
-			// should not be here, since this keyword is supposed to
-			// follow \footnote and is handled separately
-			UT_DEBUGMSG(("RTF Keyword \'ftnalt\' where it should not have been\n"));
-			return true;
-		}
-		else if (strcmp(reinterpret_cast<char*>(pKeyword), "ftnstart") == 0)
-		{
-			if(!getLoadStylesOnly())
-			{
-				const XML_Char * props[] = {"document-footnote-initial", NULL,
-											NULL};
-				UT_String i;
-				UT_String_sprintf(i,"%d",param);
-				props[1] = i.c_str();
-				getDoc()->setProperties(&props[0]);
-			}
-		}
-		else if (strcmp(reinterpret_cast<char*>(pKeyword), "ftnrstpg") == 0)
-		{
-			if(!getLoadStylesOnly())
-			{
-				const XML_Char * props[] = {"document-footnote-restart-page", "1",
-											NULL};
-				getDoc()->setProperties(&props[0]);
-			}
-		}
-		else if (strcmp(reinterpret_cast<char*>(pKeyword), "ftnrestart") == 0)
-		{
-			if(!getLoadStylesOnly())
-			{
-				const XML_Char * props[] = {"document-footnote-restart-section", "1",
-											NULL};
-				getDoc()->setProperties(&props[0]);
-			}
-		}
-		else if (strcmp(reinterpret_cast<char*>(pKeyword), "ftnnar") == 0)
-		{
-			if(!getLoadStylesOnly())
-			{
-				const XML_Char * props[] = {"document-footnote-type", "numeric",
-											NULL};
-				getDoc()->setProperties(&props[0]);
-			}
-		}
-		else if (strcmp(reinterpret_cast<char*>(pKeyword), "ftnnalc") == 0)
-		{
-			if(!getLoadStylesOnly())
-			{
-				const XML_Char * props[] = {"document-footnote-type", "lower",
-											NULL};
-				getDoc()->setProperties(&props[0]);
-			}
-		}
-		else if (strcmp(reinterpret_cast<char*>(pKeyword), "ftnnauc") == 0)
-		{
-			if(!getLoadStylesOnly())
-			{
-				const XML_Char * props[] = {"document-footnote-type", "upper",
-											NULL};
-				getDoc()->setProperties(&props[0]);
-			}
-		}
-		else if (strcmp(reinterpret_cast<char*>(pKeyword), "ftnnrlc") == 0)
-		{
-			if(!getLoadStylesOnly())
-			{
-				const XML_Char * props[] = {"document-footnote-type", "lower-roman",
-											NULL};
-				getDoc()->setProperties(&props[0]);
-			}
-		}
-		else if (strcmp(reinterpret_cast<char*>(pKeyword), "ftnnruc") == 0)
-		{
-			if(!getLoadStylesOnly())
-			{
-				const XML_Char * props[] = {"document-footnote-type", "upper-roman",
-											NULL};
-				getDoc()->setProperties(&props[0]);
-			}
 		}
 		break;
-	case 'h':
-		if( strcmp(reinterpret_cast<char *>(pKeyword), "headery") == 0)
+	case RTF_KW_footer:
+	{
+		UT_uint32 footerID = 0;
+		return HandleHeaderFooter (RTFHdrFtr::hftFooter, footerID);
+	}
+	case RTF_KW_footerf:
+	{
+		UT_uint32 footerID = 0;
+		return HandleHeaderFooter (RTFHdrFtr::hftFooterFirst, footerID);
+	}
+	case RTF_KW_footerr:
+	{
+		UT_uint32 footerID = 0;
+		return HandleHeaderFooter (RTFHdrFtr::hftFooterEven, footerID);
+	}
+	case RTF_KW_footerl:
+	{
+		UT_uint32 footerID = 0;
+		return HandleHeaderFooter (RTFHdrFtr::hftFooter, footerID);
+	}
+	case RTF_KW_gutter:
+		// Gap between text and left (or right) margin in twips
+		m_currentRTFState.m_sectionProps.m_gutterTwips = param;
+		break;
+	case RTF_KW_footnote:
+		// can be both footnote and endnote ...
+		m_bFootnotePending = true;
+		return true;
+	case RTF_KW_ftnalt:
+		// should not be here, since this keyword is supposed to
+		// follow \footnote and is handled separately
+		UT_DEBUGMSG(("RTF Keyword \'ftnalt\' where it should not have been\n"));
+		return true;
+	case RTF_KW_ftnstart:
+		if(!getLoadStylesOnly())
 		{
-			// Height ot the header in twips
-			m_currentRTFState.m_sectionProps.m_headerYTwips = param;
-		}
-		else if (strcmp(reinterpret_cast<char*>(pKeyword), "header") == 0)
-		{
-			UT_uint32 headerID = 0;
-			return HandleHeaderFooter (RTFHdrFtr::hftHeader, headerID);
-		}
-		else if (strcmp(reinterpret_cast<char*>(pKeyword), "headerf") == 0)
-		{
-			UT_uint32 headerID = 0;
-			return HandleHeaderFooter (RTFHdrFtr::hftHeaderFirst, headerID);
-		}
-		else if (strcmp(reinterpret_cast<char*>(pKeyword), "headerr") == 0)
-		{
-			UT_uint32 headerID = 0;
-			return HandleHeaderFooter (RTFHdrFtr::hftHeaderEven, headerID);
-		}
-		else if (strcmp(reinterpret_cast<char*>(pKeyword), "headerl") == 0)
-		{
-			UT_uint32 headerID = 0;
-			return HandleHeaderFooter (RTFHdrFtr::hftHeader, headerID);
-		}
-		else if (strcmp(reinterpret_cast<char*>(pKeyword), "highlight") == 0)
-		{
-			return HandleBackgroundColour(param);
+			const XML_Char * props[] = {"document-footnote-initial", NULL,
+										NULL};
+			UT_String i;
+			UT_String_sprintf(i,"%d",param);
+			props[1] = i.c_str();
+			getDoc()->setProperties(&props[0]);
 		}
 		break;
-	case 'i':
-		if (strcmp(reinterpret_cast<char*>(pKeyword), "i") == 0)
+	case RTF_KW_ftnrstpg:
+		if(!getLoadStylesOnly())
 		{
-			// italic - either on or off depending on the parameter
-			return HandleItalic(fParam ? false : true);
+			const XML_Char * props[] = {"document-footnote-restart-page", "1",
+										NULL};
+			getDoc()->setProperties(&props[0]);
 		}
-		else if (strcmp(reinterpret_cast<char*>(pKeyword), "info") == 0)
+		break;
+	case RTF_KW_ftnrestart:
+		if(!getLoadStylesOnly())
 		{
-			// TODO Ignore document info for the moment
-			m_currentRTFState.m_destinationState = RTFStateStore::rdsSkip;
+			const XML_Char * props[] = {"document-footnote-restart-section", "1",
+										NULL};
+			getDoc()->setProperties(&props[0]);
+		}
+		break;
+	case RTF_KW_ftnnar:
+		if(!getLoadStylesOnly())
+		{
+			const XML_Char * props[] = {"document-footnote-type", "numeric",
+										NULL};
+			getDoc()->setProperties(&props[0]);
+		}
+		break;
+	case RTF_KW_ftnnalc:
+		if(!getLoadStylesOnly())
+		{
+			const XML_Char * props[] = {"document-footnote-type", "lower",
+										NULL};
+			getDoc()->setProperties(&props[0]);
+		}
+		break;
+	case RTF_KW_ftnnauc:
+		if(!getLoadStylesOnly())
+		{
+			const XML_Char * props[] = {"document-footnote-type", "upper",
+										NULL};
+			getDoc()->setProperties(&props[0]);
+		}
+		break;
+	case RTF_KW_ftnnrlc:
+		if(!getLoadStylesOnly())
+		{
+			const XML_Char * props[] = {"document-footnote-type", "lower-roman",
+										NULL};
+			getDoc()->setProperties(&props[0]);
+		}
+		break;
+	case RTF_KW_ftnnruc:
+		if(!getLoadStylesOnly())
+		{
+			const XML_Char * props[] = {"document-footnote-type", "upper-roman",
+										NULL};
+			getDoc()->setProperties(&props[0]);
+		}
+		break;
+	case RTF_KW_headery:
+		// Height ot the header in twips
+		m_currentRTFState.m_sectionProps.m_headerYTwips = param;
+		break;
+	case RTF_KW_header:
+	{
+		UT_uint32 headerID = 0;
+		return HandleHeaderFooter (RTFHdrFtr::hftHeader, headerID);
+	}
+	case RTF_KW_headerf:
+	{
+		UT_uint32 headerID = 0;
+		return HandleHeaderFooter (RTFHdrFtr::hftHeaderFirst, headerID);
+	}
+	case RTF_KW_headerr:
+	{
+		UT_uint32 headerID = 0;
+		return HandleHeaderFooter (RTFHdrFtr::hftHeaderEven, headerID);
+	}
+	case RTF_KW_headerl:
+	{
+		UT_uint32 headerID = 0;
+		return HandleHeaderFooter (RTFHdrFtr::hftHeader, headerID);
+	}
+	case RTF_KW_highlight:
+		return HandleBackgroundColour(param);
+	case RTF_KW_i:
+		// italic - either on or off depending on the parameter
+		return HandleItalic(fParam ? false : true);
+	case RTF_KW_info:
+		// TODO Ignore document info for the moment
+		m_currentRTFState.m_destinationState = RTFStateStore::rdsSkip;
+		return true;
+	case RTF_KW_ilvl:
+		m_currentRTFState.m_paraProps.m_iOverrideLevel = static_cast<UT_uint32>(param);
+		return true;
+	case RTF_KW_intbl:
+		UT_DEBUGMSG(("done intbl \n"));
+		m_currentRTFState.m_paraProps.m_bInTable = true;
+		return true;
+	case RTF_KW_itap:
+		if(bUseInsertNotAppend())
+		{
 			return true;
 		}
-		else if (strcmp(reinterpret_cast<char*>(pKeyword), "ilvl") == 0)
-		{
-			m_currentRTFState.m_paraProps.m_iOverrideLevel = static_cast<UT_uint32>(param);
-			return true;
-		}
-		else if (strcmp(reinterpret_cast<char*>(pKeyword), "intbl") == 0)
-		{
-			UT_DEBUGMSG(("done intbl \n"));
-			m_currentRTFState.m_paraProps.m_bInTable = true;
-			return true;
-		}
-		else if (strcmp(reinterpret_cast<char*>(pKeyword), "itap") == 0)
-		{
-			if(bUseInsertNotAppend())
-			{
-				return true;
-			}
-			m_currentRTFState.m_paraProps.m_tableLevel = param;
+		m_currentRTFState.m_paraProps.m_tableLevel = param;
 //
 // Look to see if the nesting level of our tables has changed.
 //
-			xxx_UT_DEBUGMSG(("SEVIOR!!! itap m_tableLevel %d nestDepth %d \n",m_currentRTFState.m_paraProps.m_tableLevel,m_TableControl.getNestDepth()));
-			if(m_currentRTFState.m_paraProps.m_tableLevel > m_TableControl.getNestDepth())
+		xxx_UT_DEBUGMSG(("SEVIOR!!! itap m_tableLevel %d nestDepth %d \n",m_currentRTFState.m_paraProps.m_tableLevel,m_TableControl.getNestDepth()));
+		if(m_currentRTFState.m_paraProps.m_tableLevel > m_TableControl.getNestDepth())
+		{
+			while(m_currentRTFState.m_paraProps.m_tableLevel > m_TableControl.getNestDepth())
 			{
-				while(m_currentRTFState.m_paraProps.m_tableLevel > m_TableControl.getNestDepth())
-				{
-					xxx_UT_DEBUGMSG(("SEVIOR: Doing itap OpenTable \n"));
-					OpenTable();
-				}
-			}
-			else if(m_currentRTFState.m_paraProps.m_tableLevel < m_TableControl.getNestDepth())
-			{
-				while(m_currentRTFState.m_paraProps.m_tableLevel < m_TableControl.getNestDepth())
-				{
-					CloseTable();
-				}
-			}
-			xxx_UT_DEBUGMSG(("SEVIOR!!! After itap m_tableLevel %d nestDepth %d \n",m_currentRTFState.m_paraProps.m_tableLevel,m_TableControl.getNestDepth()));
-			return true;
-		}
-		break;
-
-	case 'l':
-		if (strcmp(reinterpret_cast<char*>(pKeyword), "lquote") == 0)
-		{
-			return ParseChar(UCS_LQUOTE);
-		}
-		else if (strcmp(reinterpret_cast<char*>(pKeyword), "ldblquote") == 0)
-		{
-			return ParseChar(UCS_LDBLQUOTE);
-		}
-		else if (strcmp(reinterpret_cast<char*>(pKeyword), "li") == 0)
-		{
-			m_currentRTFState.m_paraProps.m_indentLeft = param;
-			return true;
-		}
-		else if (strcmp(reinterpret_cast<char*>(pKeyword), "line") == 0)
-		{
-			return ParseChar(UCS_LF);
-		}
-		else if (strcmp(reinterpret_cast<char*>(pKeyword), "linebetcol") == 0)
-		{
-			m_currentRTFState.m_sectionProps.m_bColumnLine = true;
-			return true;
-		}
-		else if (strcmp(reinterpret_cast<char*>(pKeyword), "lang") == 0)
-		{
-			xxx_UT_DEBUGMSG(("DOM: lang code (0x%x, %s)\n", param, wvLIDToLangConverter(static_cast<unsigned short>(param))));
-			// mark language for spell checking
-			m_currentRTFState.m_charProps.m_szLang = wvLIDToLangConverter(static_cast<unsigned short>(param));
-			return true;
-		}
-		else if( strcmp(reinterpret_cast<char*>(pKeyword),"listoverridetable") == 0)
-		{
-			return ReadListOverrideTable();
-		}
-		else if (strcmp(reinterpret_cast<char*>(pKeyword), "listtext") == 0)
-		{
-			// This paragraph is a member of a list.
-			SkipCurrentGroup( false);
-			return true;
-		}
-		else if (strcmp(reinterpret_cast<char*>(pKeyword), "ls") == 0)
-		{
-			// This paragraph is a member of a list.
-			m_currentRTFState.m_paraProps.m_iOverride = static_cast<UT_uint32>(param);
-			m_currentRTFState.m_paraProps.m_isList = true;
-			return true;
-		}
-		else if(strcmp(reinterpret_cast<char*>(pKeyword), "landscape") == 0)
-		{
-//
-// Just set landscape mode.
-//
-		}
-		else if (strcmp(reinterpret_cast<char*>(pKeyword), "ltrpar") == 0)
-		{
-			xxx_UT_DEBUGMSG(("rtf imp.: ltrpar\n"));
-			m_currentRTFState.m_paraProps.m_RTL = false;
-			//reset doc bidi attribute
-			m_bBidiMode = false;
-			return true;
-		}
-		else if (strcmp(reinterpret_cast<char*>(pKeyword), "ltrsect") == 0)
-		{
-			xxx_UT_DEBUGMSG(("rtf imp.: ltrsect\n"));
-			m_currentRTFState.m_sectionProps.m_dir = FRIBIDI_TYPE_LTR;
-			return true;
-		}
-		else if (strcmp(reinterpret_cast<char*>(pKeyword), "ltrch") == 0)
-		{
-			xxx_UT_DEBUGMSG(("rtf imp.: ltrch\n"));
-			m_currentRTFState.m_charProps.m_RTL = false;
-
-			// we enter bidi mode if we encounter a character
-			// formatting inconsistent with the base direction of the
-			// paragraph; once in bidi mode, we have to stay there
-			// until the end of the current pragraph
-			m_bBidiMode = m_bBidiMode ||
-				(m_currentRTFState.m_charProps.m_RTL ^ m_currentRTFState.m_paraProps.m_RTL);
-			return true;
-		}
-		break;
-
-	case 'm':
-		if (strcmp(reinterpret_cast<char *>(pKeyword), "mac") == 0)
-		{
-			// TODO some iconv's may have a different name - "MacRoman"
-			// TODO EncodingManager should handle encoding names
-			m_mbtowc.setInCharset("MACINTOSH");
-			if(!getLoadStylesOnly())
-				getDoc()->setEncodingName("MacRoman");
-			return true;
-		}
-
-
-		if( strcmp(reinterpret_cast<char *>(pKeyword), "marglsxn") == 0 )
-		{
-			// Left margin of section
-			m_currentRTFState.m_sectionProps.m_leftMargTwips = param;
-		}
-		else if ( strcmp(reinterpret_cast<char *>(pKeyword), "margl") == 0 )
-			{
-				m_sectdProps.m_leftMargTwips = param ;
-			}
-
-		else if( strcmp(reinterpret_cast<char *>(pKeyword), "margrsxn") == 0 )
-		{
-			// Right margin of section
-			m_currentRTFState.m_sectionProps.m_rightMargTwips = param;
-		}
-		else if ( strcmp(reinterpret_cast<char *>(pKeyword), "margr") == 0 )
-			{
-				m_sectdProps.m_rightMargTwips = param;
-			}
-
-		else if ( strcmp(reinterpret_cast<char *>(pKeyword), "margtsxn") == 0 )
-		{
-			// top margin of section
-			m_currentRTFState.m_sectionProps.m_topMargTwips = param;
-		}
-		else if ( strcmp(reinterpret_cast<char *>(pKeyword), "margt") == 0 )
-			{
-				m_sectdProps.m_topMargTwips = param;
-			}
-
-		else if( strcmp(reinterpret_cast<char *>(pKeyword), "margbsxn") == 0 )
-		{
-			// bottom margin of section
-			m_currentRTFState.m_sectionProps.m_bottomMargTwips = param;
-		}
-		else if( strcmp(reinterpret_cast<char *>(pKeyword), "margb") == 0 )
-			{
-				m_sectdProps.m_bottomMargTwips = param;
-			}
-		break;
-
-	case 'n':
-		if( strcmp(reinterpret_cast<char *>(pKeyword), "nestrow") == 0 )
-		{
-			HandleRow();
-			return true;
-		}
-		else if( strcmp(reinterpret_cast<char *>(pKeyword), "nestcell") == 0 )
-		{
-			UT_DEBUGMSG(("SEVIOR: Processing nestcell \n"));
-			HandleCell();
-			return true;
-		}
-		else if( strcmp(reinterpret_cast<char *>(pKeyword), "nonesttables") == 0 )
-		{
-			//
-			// skip this!
-			//
-			UT_DEBUGMSG(("SEVIOR: doing nonesttables \n"));
-			SkipCurrentGroup();
-			return true;
-		}
-		else if (strcmp(reinterpret_cast<char*>(pKeyword),"noproof") == 0)
-		{
-			// Set language to none for \noproof
-			// TODO actually implement proofing flag separate to language setting
-			UT_DEBUGMSG(("HIPI: RTF import keyword \\noproof\n"));
-			// mark language for spell checking
-			m_currentRTFState.m_charProps.m_szLang = "-none-";
-			return true;
-		}
-		break;
-	case 'o':
-		if (strcmp(reinterpret_cast<char*>(pKeyword),"ol") == 0)
-		{
-			return HandleOverline(fParam ? (param != 0) : true);
-		}
-		else if (strcmp(reinterpret_cast<char*>(pKeyword), "object") == 0)
-		{
-			// get picture
-			return HandleObject();
-		}
-		break;
-	case 'p':
-		if (strcmp(reinterpret_cast<char*>(pKeyword), "par") == 0)
-		{
-			// start new paragraph, continue current attributes
-			xxx_UT_DEBUGMSG(("Done par \n"));
-			return StartNewPara();
-		}
-		else if (strcmp(reinterpret_cast<char*>(pKeyword), "plain") == 0)
-		{
-			// reset character attributes
-			return ResetCharacterAttributes();
-		}
-		else if (strcmp(reinterpret_cast<char*>(pKeyword), "pard") == 0)
-		{
-			// reset paragraph attributes
-			xxx_UT_DEBUGMSG(("Done pard \n"));
-			bool bres = ResetParagraphAttributes();
-
-			return bres;
-		}
-		else if (strcmp(reinterpret_cast<char*>(pKeyword), "page") == 0)
-		{
-			return ParseChar(UCS_FF);
-		}
-		else if (strcmp(reinterpret_cast<char*>(pKeyword), "pntext") == 0 )
-		{
-			//
-			// skip this!
-			//
-			//SkipCurrentGroup( false);
-			m_currentRTFState.m_destinationState = RTFStateStore::rdsSkip;
-			return true;
-		}
-		else if (strcmp(reinterpret_cast<char*>(pKeyword), "pict") == 0)
-		{
-			// get picture
-			return HandlePicture();
-		}
-		else if (strcmp(reinterpret_cast<char *>(pKeyword), "pc") == 0)
-		{
-			m_mbtowc.setInCharset(XAP_EncodingManager::get_instance()->charsetFromCodepage(437));
-			return true;
-		}
-		else if (strcmp(reinterpret_cast<char *>(pKeyword), "pca") == 0)
-		{
-			m_mbtowc.setInCharset(XAP_EncodingManager::get_instance()->charsetFromCodepage(850));
-			return true;
-		}
-		else if (strcmp(reinterpret_cast<char *>(pKeyword), "paperw") == 0)
-		{
-//
-// Just set the page width
-//
-			if(!getLoadStylesOnly())
-			{
-				double height = getDoc()->m_docPageSize.Height(DIM_IN);
-				double width = (static_cast<double>(param))/1440.0;
-				getDoc()->m_docPageSize.Set(width,height,DIM_IN);
-			}
-		}
-		else if (strcmp(reinterpret_cast<char *>(pKeyword), "paperh") == 0)
-		{
-//
-// Just set the page height
-//
-			if(!getLoadStylesOnly())
-			{
-				double width = getDoc()->m_docPageSize.Width(DIM_IN);
-				double height = (static_cast<double>(param))/1440.0;
-				getDoc()->m_docPageSize.Set(width,height,DIM_IN);
-			}
-		}
-		break;
-	case 'q':
-		if (strcmp(reinterpret_cast<char*>(pKeyword), "ql") == 0)
-		{
-			return SetParaJustification(RTFProps_ParaProps::pjLeft);
-		}
-		else if (strcmp(reinterpret_cast<char*>(pKeyword), "qc") == 0)
-		{
-			return SetParaJustification(RTFProps_ParaProps::pjCentre);
-		}
-		else if (strcmp(reinterpret_cast<char*>(pKeyword), "qr") == 0)
-		{
-			return SetParaJustification(RTFProps_ParaProps::pjRight);
-		}
-		else if (strcmp(reinterpret_cast<char*>(pKeyword), "qj") == 0)
-		{
-			return SetParaJustification(RTFProps_ParaProps::pjFull);
-		}
-		break;
-
-	case 'r':
-		if (strcmp(reinterpret_cast<char*>(pKeyword), "rquote") == 0)
-		{
-			return ParseChar(UCS_RQUOTE);
-		}
-		else if (strcmp(reinterpret_cast<char*>(pKeyword), "rdblquote") == 0)
-		{
-			return ParseChar(UCS_RDBLQUOTE);
-		}
-		else if (strcmp(reinterpret_cast<char*>(pKeyword), "ri") == 0)
-		{
-			m_currentRTFState.m_paraProps.m_indentRight = param;
-			return true;
-		}
-		else if (strcmp(reinterpret_cast<char*>(pKeyword), "rtf") == 0)
-		{
-			return true;
-		}
-		else if (strcmp(reinterpret_cast<char*>(pKeyword), "rtlpar") == 0)
-		{
-			xxx_UT_DEBUGMSG(("rtf imp.: rtlpar\n"));
-			m_currentRTFState.m_paraProps.m_RTL = true;
-			// reset the doc bidi attribute
-			m_bBidiMode = false;
-			return true;
-		}
-		else if (strcmp(reinterpret_cast<char*>(pKeyword), "rtlsect") == 0)
-		{
-			UT_DEBUGMSG(("rtf imp.: rtlsect\n"));
-			m_currentRTFState.m_sectionProps.m_dir = FRIBIDI_TYPE_RTL;
-			return true;
-		}
-		else if (strcmp(reinterpret_cast<char*>(pKeyword), "rtlch") == 0)
-		{
-			xxx_UT_DEBUGMSG(("rtf imp.: rtlch\n"));
-			m_currentRTFState.m_charProps.m_RTL = true;
-			// we enter bidi mode if we encounter a character
-			// formatting inconsistent with the base direction of the
-			// paragraph; once in bidi mode, we have to stay there
-			// until the end of the current pragraph
-			m_bBidiMode = m_bBidiMode ||
-				(m_currentRTFState.m_charProps.m_RTL ^ m_currentRTFState.m_paraProps.m_RTL);
-			return true;
-		}
-		else if(strcmp(reinterpret_cast<char*>(pKeyword), "row") == 0)
-		{
-			HandleRow();
-			return true;
-		}
-		break;
-
-	case 's':
-		if (strcmp(reinterpret_cast<char*>(pKeyword), "s")==0)
-		{
-			m_currentRTFState.m_paraProps.m_styleNumber = param;
-			return true;
-		}
-		else if (strcmp(reinterpret_cast<char*>(pKeyword), "stylesheet") == 0)
-		{
-			return HandleStyleDefinition();
-		}
-		else if (strcmp(reinterpret_cast<char*>(pKeyword), "strike") == 0  ||  strcmp(reinterpret_cast<char*>(pKeyword), "striked") == 0)
-		{
-			return HandleStrikeout(fParam ? (param != 0) : true);
-		}
-		else if (strcmp(reinterpret_cast<char*>(pKeyword), "sect") == 0 )
-		{
-			return StartNewSection();
-		}
-		else if (strcmp(reinterpret_cast<char*>(pKeyword), "sectd") == 0 )
-		{
-			return ResetSectionAttributes();
-		}
-		else if (strcmp(reinterpret_cast<char*>(pKeyword), "sa") == 0)
-		{
-			m_currentRTFState.m_paraProps.m_spaceAfter = param;
-			return true;
-		}
-		else if (strcmp(reinterpret_cast<char*>(pKeyword), "sb") == 0)
-		{
-			m_currentRTFState.m_paraProps.m_spaceBefore = param;
-			return true;
-		}
-		else if (strcmp(reinterpret_cast<char*>(pKeyword), "sbknone") == 0)
-		{
-			m_currentRTFState.m_sectionProps.m_breakType = RTFProps_SectionProps::sbkNone;
-			return true;
-		}
-		else if (strcmp(reinterpret_cast<char*>(pKeyword), "sbkcol") == 0)
-		{
-			m_currentRTFState.m_sectionProps.m_breakType = RTFProps_SectionProps::sbkColumn;
-			return true;
-		}
-		else if (strcmp(reinterpret_cast<char*>(pKeyword), "sbkpage") == 0)
-		{
-			m_currentRTFState.m_sectionProps.m_breakType = RTFProps_SectionProps::sbkPage;
-			return true;
-		}
-		else if (strcmp(reinterpret_cast<char*>(pKeyword), "sbkeven") == 0)
-		{
-			m_currentRTFState.m_sectionProps.m_breakType = RTFProps_SectionProps::sbkEven;
-			return true;
-		}
-		else if (strcmp(reinterpret_cast<char*>(pKeyword), "sbkodd") == 0)
-		{
-			m_currentRTFState.m_sectionProps.m_breakType = RTFProps_SectionProps::sbkOdd;
-			return true;
-		}
-		else if(strcmp(reinterpret_cast<char*>(pKeyword), "shp") == 0)
-		{
-// Found a positioned thingy
-			m_currentFrame.clear();
-			return true;
-		}
-   		else if (strcmp(reinterpret_cast<char*>(pKeyword), "sp") == 0) // A shape property
-		{
-			return true;
-		}
-		else if (strcmp(reinterpret_cast<char*>(pKeyword), "sn") == 0) 		
-		{
-			HandleShapeProp();
-			return true;
-		}
-		else if (strcmp(reinterpret_cast<char*>(pKeyword), "sv") == 0) // A shape value
-		{
-			HandleShapeVal();
-			return true;
-		}
-		else if (strcmp(reinterpret_cast<char*>(pKeyword), "shpleft") == 0) 
-		{
-			m_currentFrame.m_iLeftPos= param;
-			return true;
-		}
-		else if (strcmp(reinterpret_cast<char*>(pKeyword), "shpright") == 0) 
-		{
-			m_currentFrame.m_iRightPos= param;
-			return true;
-		}
-		else if (strcmp(reinterpret_cast<char*>(pKeyword), "shptop") == 0) 
-		{
-			m_currentFrame.m_iTopPos= param;
-			return true;
-		}
-		else if (strcmp(reinterpret_cast<char*>(pKeyword), "shpbottom") == 0) 
-		{
-			m_currentFrame.m_iBotPos= param;
-			return true;
-		}
-		else if (strcmp(reinterpret_cast<char*>(pKeyword), "shptxt") == 0) 
-		{
-			HandleShapeText();
-			return true;
-		}
-		else if (strcmp(reinterpret_cast<char*>(pKeyword), "sl") == 0)
-		{
-			if (!fParam  ||  param == 0)
-				m_currentRTFState.m_paraProps.m_lineSpaceVal = 360;
-			else
-				m_currentRTFState.m_paraProps.m_lineSpaceVal = param;
-			return true;
-		}
-		else if (strcmp(reinterpret_cast<char*>(pKeyword), "slmult") == 0)
-		{
-			m_currentRTFState.m_paraProps.m_lineSpaceExact = (!fParam  ||  param == 0);
-			return true;
-		}
-		else if (strcmp(reinterpret_cast<char*>(pKeyword), "super") == 0)
-		{
-			return HandleSuperscript(fParam ? false : true);
-		}
-		else if (strcmp(reinterpret_cast<char*>(pKeyword), "sub") == 0)
-		{
-			return HandleSubscript(fParam ? false : true);
-		}
-		break;
-
-	case 't':
-		if (strcmp(reinterpret_cast<char*>(pKeyword), "tab") == 0)
-		{
-			return ParseChar('\t');
-		}
-		else if (strcmp(reinterpret_cast<char*>(pKeyword), "tx") == 0)
-		{
-			UT_return_val_if_fail(fParam, false);	// tabstops should have parameters
-			bool bres = AddTabstop(param,
-								   m_currentRTFState.m_paraProps.m_curTabType,
-								   m_currentRTFState.m_paraProps.m_curTabLeader);
-			m_currentRTFState.m_paraProps.m_curTabType = FL_TAB_LEFT;
-//			m_currentRTFState.m_paraProps.m_curTabLeader = FL_LEADER_NONE;
-			return bres;
-		}
-		else if (strcmp(reinterpret_cast<char*>(pKeyword), "tb") == 0)
-		{
-			UT_return_val_if_fail(fParam, false);	// tabstops should have parameters
-
-			bool bres = AddTabstop(param,FL_TAB_BAR,
-								   m_currentRTFState.m_paraProps.m_curTabLeader);
-			m_currentRTFState.m_paraProps.m_curTabType = FL_TAB_BAR;
-//			m_currentRTFState.m_paraProps.m_curTabLeader = FL_LEADER_NONE;
-			return bres;
-		}
-		else if (strcmp(reinterpret_cast<char*>(pKeyword), "tqr") == 0)
-		{
-			m_currentRTFState.m_paraProps.m_curTabType = FL_TAB_RIGHT;
-			return true;
-		}
-		else if (strcmp(reinterpret_cast<char*>(pKeyword), "tqc") == 0)
-		{
-			m_currentRTFState.m_paraProps.m_curTabType = FL_TAB_CENTER;
-			return true;
-		}
-		else if (strcmp(reinterpret_cast<char*>(pKeyword), "tqdec") == 0)
-		{
-			m_currentRTFState.m_paraProps.m_curTabType = FL_TAB_DECIMAL;
-			return true;
-		}
-		else if (strcmp(reinterpret_cast<char*>(pKeyword), "tldot") == 0)
-		{
-			m_currentRTFState.m_paraProps.m_curTabLeader = FL_LEADER_DOT;
-			return true;
-		}
-		else if (strcmp(reinterpret_cast<char*>(pKeyword), "tlhyph") == 0)
-		{
-			m_currentRTFState.m_paraProps.m_curTabLeader = FL_LEADER_HYPHEN;
-			return true;
-		}
-		else if(strcmp(reinterpret_cast<char *>(pKeyword), "trautofit") == 0)
-		{
-			if(getTable())
-			{
-				if(param==1)
-				{
-					getTable()->setAutoFit(true);
-				}
-			}
-			return true;
-		}
-		else if(strcmp(reinterpret_cast<char *>(pKeyword), "trleft") == 0)
-		{
-			if(getTable())
-			{
-				double dLeftPos = static_cast<double>(param)/1440.0;
-				UT_String sLeftPos = UT_formatDimensionString(DIM_IN,dLeftPos,NULL);
-				getTable()->setProp("table-column-leftpos",sLeftPos);
-			}
-			return true;
-		}
-		else if (strcmp(reinterpret_cast<char*>(pKeyword), "tlul") == 0)
-		{
-			m_currentRTFState.m_paraProps.m_curTabLeader = FL_LEADER_UNDERLINE;
-			return true;
-		}
-		else if (strcmp(reinterpret_cast<char*>(pKeyword), "tleq") == 0)
-		{
-			m_currentRTFState.m_paraProps.m_curTabLeader = FL_LEADER_EQUALSIGN;
-			return true;
-		}
-		else if (strcmp(reinterpret_cast<char*>(pKeyword), "trowd") == 0)
-		{
-			m_bRowJustPassed = false;
-			m_bDoCloseTable = false;
-			if(getTable() == NULL)
-			{
+				xxx_UT_DEBUGMSG(("SEVIOR: Doing itap OpenTable \n"));
 				OpenTable();
-				m_currentRTFState.m_paraProps.m_tableLevel = m_TableControl.getNestDepth();
 			}
+		}
+		else if(m_currentRTFState.m_paraProps.m_tableLevel < m_TableControl.getNestDepth())
+		{
+			while(m_currentRTFState.m_paraProps.m_tableLevel < m_TableControl.getNestDepth())
+			{
+				CloseTable();
+			}
+		}
+		xxx_UT_DEBUGMSG(("SEVIOR!!! After itap m_tableLevel %d nestDepth %d \n",m_currentRTFState.m_paraProps.m_tableLevel,m_TableControl.getNestDepth()));
+		return true;
+	case RTF_KW_lquote:
+		return ParseChar(UCS_LQUOTE);
+	case RTF_KW_ldblquote:
+		return ParseChar(UCS_LDBLQUOTE);
+	case RTF_KW_li:
+		m_currentRTFState.m_paraProps.m_indentLeft = param;
+		return true;
+	case RTF_KW_line:
+		return ParseChar(UCS_LF);
+	case RTF_KW_linebetcol:
+		m_currentRTFState.m_sectionProps.m_bColumnLine = true;
+		return true;
+	case RTF_KW_lang:
+		xxx_UT_DEBUGMSG(("DOM: lang code (0x%x, %s)\n", param, wvLIDToLangConverter(static_cast<unsigned short>(param))));
+		// mark language for spell checking
+		m_currentRTFState.m_charProps.m_szLang = wvLIDToLangConverter(static_cast<unsigned short>(param));
+		return true;
+	case RTF_KW_listoverridetable:
+		return ReadListOverrideTable();
+	case RTF_KW_listtext:
+		// This paragraph is a member of a list.
+		SkipCurrentGroup( false);
+		return true;
+	case RTF_KW_ls:
+		// This paragraph is a member of a list.
+		m_currentRTFState.m_paraProps.m_iOverride = static_cast<UT_uint32>(param);
+		m_currentRTFState.m_paraProps.m_isList = true;
+		return true;
+	case RTF_KW_landscape:
+        // TODO
+        // Just set landscape mode.
+        //
+		break;
+	case RTF_KW_ltrpar:
+		xxx_UT_DEBUGMSG(("rtf imp.: ltrpar\n"));
+		m_currentRTFState.m_paraProps.m_RTL = false;
+		//reset doc bidi attribute
+		m_bBidiMode = false;
+		return true;
+	case RTF_KW_ltrsect:
+		xxx_UT_DEBUGMSG(("rtf imp.: ltrsect\n"));
+		m_currentRTFState.m_sectionProps.m_dir = FRIBIDI_TYPE_LTR;
+		return true;
+	case RTF_KW_ltrch:
+		xxx_UT_DEBUGMSG(("rtf imp.: ltrch\n"));
+		m_currentRTFState.m_charProps.m_RTL = false;
+		
+		// we enter bidi mode if we encounter a character
+		// formatting inconsistent with the base direction of the
+		// paragraph; once in bidi mode, we have to stay there
+		// until the end of the current pragraph
+		m_bBidiMode = m_bBidiMode ||
+			(m_currentRTFState.m_charProps.m_RTL ^ m_currentRTFState.m_paraProps.m_RTL);
+		return true;
+	case RTF_KW_mac:
+		// TODO some iconv's may have a different name - "MacRoman"
+		// TODO EncodingManager should handle encoding names
+		m_mbtowc.setInCharset("MACINTOSH");
+		if(!getLoadStylesOnly())
+			getDoc()->setEncodingName("MacRoman");
+		return true;
+	case RTF_KW_marglsxn:
+		// Left margin of section
+		m_currentRTFState.m_sectionProps.m_leftMargTwips = param;
+		break;
+	case RTF_KW_margl:
+		m_sectdProps.m_leftMargTwips = param ;
+		break;
+	case RTF_KW_margrsxn:
+		// Right margin of section
+		m_currentRTFState.m_sectionProps.m_rightMargTwips = param;
+		break;
+	case RTF_KW_margr:
+		m_sectdProps.m_rightMargTwips = param;
+		break;
+	case RTF_KW_margtsxn:
+		// top margin of section
+		m_currentRTFState.m_sectionProps.m_topMargTwips = param;
+		break;
+	case RTF_KW_margt:
+		m_sectdProps.m_topMargTwips = param;
+		break;
+	case RTF_KW_margbsxn:
+		// bottom margin of section
+		m_currentRTFState.m_sectionProps.m_bottomMargTwips = param;
+		break;
+	case RTF_KW_margb:
+		m_sectdProps.m_bottomMargTwips = param;
+		break;
+	case RTF_KW_nestrow:
+		HandleRow();
+		return true;
+	case RTF_KW_nestcell:
+		UT_DEBUGMSG(("SEVIOR: Processing nestcell \n"));
+		HandleCell();
+		return true;
+	case RTF_KW_nonesttables:
+		//
+		// skip this!
+		//
+		UT_DEBUGMSG(("SEVIOR: doing nonesttables \n"));
+		SkipCurrentGroup();
+		return true;
+	case RTF_KW_noproof:
+		// Set language to none for \noproof
+		// TODO actually implement proofing flag separate to language setting
+		UT_DEBUGMSG(("HIPI: RTF import keyword \\noproof\n"));
+		// mark language for spell checking
+		m_currentRTFState.m_charProps.m_szLang = "-none-";
+		return true;
+	case RTF_KW_ol:
+		return HandleOverline(fParam ? (param != 0) : true);
+	case RTF_KW_object:
+		// get picture
+		return HandleObject();
+	case RTF_KW_par:
+		// start new paragraph, continue current attributes
+		xxx_UT_DEBUGMSG(("Done par \n"));
+		return StartNewPara();
+	case RTF_KW_plain:
+		// reset character attributes
+		return ResetCharacterAttributes();
+	case RTF_KW_pard:
+	{
+		// reset paragraph attributes
+		xxx_UT_DEBUGMSG(("Done pard \n"));
+		bool bres = ResetParagraphAttributes();
+		
+		return bres;
+	}
+	case RTF_KW_page:
+		return ParseChar(UCS_FF);
+	case RTF_KW_pntext:
+		//
+		// skip this!
+		//
+		//SkipCurrentGroup( false);
+		m_currentRTFState.m_destinationState = RTFStateStore::rdsSkip;
+		return true;
+	case RTF_KW_pict:
+		// get picture
+		return HandlePicture();
+	case RTF_KW_pc:
+		m_mbtowc.setInCharset(XAP_EncodingManager::get_instance()->charsetFromCodepage(437));
+		return true;
+	case RTF_KW_pca:
+		m_mbtowc.setInCharset(XAP_EncodingManager::get_instance()->charsetFromCodepage(850));
+		return true;
+	case RTF_KW_paperw:
+        //
+        // Just set the page width
+        //
+		if(!getLoadStylesOnly())
+		{
+			double height = getDoc()->m_docPageSize.Height(DIM_IN);
+			double width = (static_cast<double>(param))/1440.0;
+			getDoc()->m_docPageSize.Set(width,height,DIM_IN);
+		}
+		break;
+	case RTF_KW_paperh:
+        //
+		// Just set the page height
+		//
+		if(!getLoadStylesOnly())
+		{
+			double width = getDoc()->m_docPageSize.Width(DIM_IN);
+			double height = (static_cast<double>(param))/1440.0;
+			getDoc()->m_docPageSize.Set(width,height,DIM_IN);
+		}
+		break;
+
+	case RTF_KW_ql:
+		return SetParaJustification(RTFProps_ParaProps::pjLeft);
+	case RTF_KW_qc:
+		return SetParaJustification(RTFProps_ParaProps::pjCentre);
+	case RTF_KW_qr:
+		return SetParaJustification(RTFProps_ParaProps::pjRight);
+	case RTF_KW_qj:
+		return SetParaJustification(RTFProps_ParaProps::pjFull);
+
+	case RTF_KW_rquote:
+		return ParseChar(UCS_RQUOTE);
+	case RTF_KW_rdblquote:
+		return ParseChar(UCS_RDBLQUOTE);
+	case RTF_KW_ri:
+		m_currentRTFState.m_paraProps.m_indentRight = param;
+		return true;
+	case RTF_KW_rtf:
+		return true;
+	case RTF_KW_rtlpar:
+		xxx_UT_DEBUGMSG(("rtf imp.: rtlpar\n"));
+		m_currentRTFState.m_paraProps.m_RTL = true;
+		// reset the doc bidi attribute
+		m_bBidiMode = false;
+		return true;
+	case RTF_KW_rtlsect:
+		UT_DEBUGMSG(("rtf imp.: rtlsect\n"));
+		m_currentRTFState.m_sectionProps.m_dir = FRIBIDI_TYPE_RTL;
+		return true;
+	case RTF_KW_rtlch:
+		xxx_UT_DEBUGMSG(("rtf imp.: rtlch\n"));
+		m_currentRTFState.m_charProps.m_RTL = true;
+		// we enter bidi mode if we encounter a character
+		// formatting inconsistent with the base direction of the
+		// paragraph; once in bidi mode, we have to stay there
+		// until the end of the current pragraph
+		m_bBidiMode = m_bBidiMode ||
+			(m_currentRTFState.m_charProps.m_RTL ^ m_currentRTFState.m_paraProps.m_RTL);
+		return true;
+	case RTF_KW_row:
+		HandleRow();
+		return true;
+
+	case RTF_KW_s:
+		m_currentRTFState.m_paraProps.m_styleNumber = param;
+		return true;
+	case RTF_KW_stylesheet:
+		return HandleStyleDefinition();
+	case RTF_KW_strike:
+	case RTF_KW_striked:
+		return HandleStrikeout(fParam ? (param != 0) : true);
+	case RTF_KW_sect:
+		return StartNewSection();
+	case RTF_KW_sectd:
+		return ResetSectionAttributes();
+	case RTF_KW_sa:
+		m_currentRTFState.m_paraProps.m_spaceAfter = param;
+		return true;
+	case RTF_KW_sb:
+		m_currentRTFState.m_paraProps.m_spaceBefore = param;
+		return true;
+	case RTF_KW_sbknone:
+		m_currentRTFState.m_sectionProps.m_breakType = RTFProps_SectionProps::sbkNone;
+		return true;
+	case RTF_KW_sbkcol:
+		m_currentRTFState.m_sectionProps.m_breakType = RTFProps_SectionProps::sbkColumn;
+		return true;
+	case RTF_KW_sbkpage:
+		m_currentRTFState.m_sectionProps.m_breakType = RTFProps_SectionProps::sbkPage;
+		return true;
+	case RTF_KW_sbkeven:
+		m_currentRTFState.m_sectionProps.m_breakType = RTFProps_SectionProps::sbkEven;
+		return true;
+	case RTF_KW_sbkodd:
+		m_currentRTFState.m_sectionProps.m_breakType = RTFProps_SectionProps::sbkOdd;
+		return true;
+	case RTF_KW_shp:
+// Found a positioned thingy
+		m_currentFrame.clear();
+		return true;
+	case RTF_KW_sp:
+		return true;
+	case RTF_KW_sn:
+		HandleShapeProp();
+		return true;
+	case RTF_KW_sv:
+		HandleShapeVal();
+		return true;
+	case RTF_KW_shpleft:
+		m_currentFrame.m_iLeftPos= param;
+		return true;
+	case RTF_KW_shpright:
+		m_currentFrame.m_iRightPos= param;
+		return true;
+	case RTF_KW_shptop:
+		m_currentFrame.m_iTopPos= param;
+		return true;
+	case RTF_KW_shpbottom:
+		m_currentFrame.m_iBotPos= param;
+		return true;
+	case RTF_KW_shptxt:
+		HandleShapeText();
+		return true;
+	case RTF_KW_sl:
+		if (!fParam  ||  param == 0) {
+			m_currentRTFState.m_paraProps.m_lineSpaceVal = 360;
+		}
+		else {
+			m_currentRTFState.m_paraProps.m_lineSpaceVal = param;
+		}
+		return true;
+	case RTF_KW_slmult:
+		m_currentRTFState.m_paraProps.m_lineSpaceExact = (!fParam  ||  param == 0);
+		return true;
+	case RTF_KW_super:
+		return HandleSuperscript(fParam ? false : true);
+	case RTF_KW_sub:
+		return HandleSubscript(fParam ? false : true);
+
+	case RTF_KW_tab:
+		return ParseChar('\t');
+	case RTF_KW_tx:
+	{
+		UT_return_val_if_fail(fParam, false);	// tabstops should have parameters
+		bool bres = AddTabstop(param,
+							   m_currentRTFState.m_paraProps.m_curTabType,
+							   m_currentRTFState.m_paraProps.m_curTabLeader);
+		m_currentRTFState.m_paraProps.m_curTabType = FL_TAB_LEFT;
+//			m_currentRTFState.m_paraProps.m_curTabLeader = FL_LEADER_NONE;
+		return bres;
+	}
+	case RTF_KW_tb:
+	{
+		UT_return_val_if_fail(fParam, false);	// tabstops should have parameters
+
+		bool bres = AddTabstop(param,FL_TAB_BAR,
+							   m_currentRTFState.m_paraProps.m_curTabLeader);
+		m_currentRTFState.m_paraProps.m_curTabType = FL_TAB_BAR;
+//			m_currentRTFState.m_paraProps.m_curTabLeader = FL_LEADER_NONE;
+		return bres;
+	}
+	case RTF_KW_tqr:
+		m_currentRTFState.m_paraProps.m_curTabType = FL_TAB_RIGHT;
+		return true;
+	case RTF_KW_tqc:
+		m_currentRTFState.m_paraProps.m_curTabType = FL_TAB_CENTER;
+		return true;
+	case RTF_KW_tqdec:
+		m_currentRTFState.m_paraProps.m_curTabType = FL_TAB_DECIMAL;
+		return true;
+	case RTF_KW_tldot:
+		m_currentRTFState.m_paraProps.m_curTabLeader = FL_LEADER_DOT;
+		return true;
+	case RTF_KW_tlhyph:
+		m_currentRTFState.m_paraProps.m_curTabLeader = FL_LEADER_HYPHEN;
+		return true;
+	case RTF_KW_trautofit:
+		if(getTable())
+		{
+			if(param==1)
+			{
+				getTable()->setAutoFit(true);
+			}
+		}
+		return true;
+	case RTF_KW_trleft:
+		if(getTable())
+		{
+			double dLeftPos = static_cast<double>(param)/1440.0;
+			UT_String sLeftPos = UT_formatDimensionString(DIM_IN,dLeftPos,NULL);
+			getTable()->setProp("table-column-leftpos",sLeftPos);
+		}
+		return true;
+	case RTF_KW_tlul:
+		m_currentRTFState.m_paraProps.m_curTabLeader = FL_LEADER_UNDERLINE;
+		return true;
+	case RTF_KW_tleq:
+		m_currentRTFState.m_paraProps.m_curTabLeader = FL_LEADER_EQUALSIGN;
+		return true;
+	case RTF_KW_trowd:
+		m_bRowJustPassed = false;
+		m_bDoCloseTable = false;
+		if(getTable() == NULL)
+		{
+			OpenTable();
+			m_currentRTFState.m_paraProps.m_tableLevel = m_TableControl.getNestDepth();
+		}
 //
 // Look to see if the nesting level of our tables has changed.
 //
-			if(m_currentRTFState.m_paraProps.m_tableLevel > m_TableControl.getNestDepth())
+		if(m_currentRTFState.m_paraProps.m_tableLevel > m_TableControl.getNestDepth())
+		{
+			xxx_UT_DEBUGMSG(("At trowd m_tableLevel %d nestDepth %d \n",m_currentRTFState.m_paraProps.m_tableLevel,m_TableControl.getNestDepth()));
+			while(m_currentRTFState.m_paraProps.m_tableLevel > m_TableControl.getNestDepth())
 			{
-				xxx_UT_DEBUGMSG(("At trowd m_tableLevel %d nestDepth %d \n",m_currentRTFState.m_paraProps.m_tableLevel,m_TableControl.getNestDepth()));
-				while(m_currentRTFState.m_paraProps.m_tableLevel > m_TableControl.getNestDepth())
-				{
-					xxx_UT_DEBUGMSG(("SEVIOR: Doing pard OpenTable \n"));
-					OpenTable();
-				}
-				xxx_UT_DEBUGMSG(("After trowd m_tableLevel %d nestDepth %d \n",m_currentRTFState.m_paraProps.m_tableLevel,m_TableControl.getNestDepth()));
+				xxx_UT_DEBUGMSG(("SEVIOR: Doing pard OpenTable \n"));
+				OpenTable();
 			}
-			else if(m_currentRTFState.m_paraProps.m_tableLevel < m_TableControl.getNestDepth())
+			xxx_UT_DEBUGMSG(("After trowd m_tableLevel %d nestDepth %d \n",m_currentRTFState.m_paraProps.m_tableLevel,m_TableControl.getNestDepth()));
+		}
+		else if(m_currentRTFState.m_paraProps.m_tableLevel < m_TableControl.getNestDepth())
+		{
+			xxx_UT_DEBUGMSG(("At trowd m_tableLevel %d nestDepth %d \n",m_currentRTFState.m_paraProps.m_tableLevel,m_TableControl.getNestDepth()));
+			while(m_currentRTFState.m_paraProps.m_tableLevel < m_TableControl.getNestDepth())
 			{
-				xxx_UT_DEBUGMSG(("At trowd m_tableLevel %d nestDepth %d \n",m_currentRTFState.m_paraProps.m_tableLevel,m_TableControl.getNestDepth()));
-				while(m_currentRTFState.m_paraProps.m_tableLevel < m_TableControl.getNestDepth())
-				{
-					xxx_UT_DEBUGMSG(("SEVIOR:Close Table trowd1  \n"));
-					CloseTable();
-					m_bCellBlank = true;
-				}
-				xxx_UT_DEBUGMSG(("After trowd m_tableLevel %d nestDepth %d \n",m_currentRTFState.m_paraProps.m_tableLevel,m_TableControl.getNestDepth()));
+				xxx_UT_DEBUGMSG(("SEVIOR:Close Table trowd1  \n"));
+				CloseTable();
+				m_bCellBlank = true;
 			}
+			xxx_UT_DEBUGMSG(("After trowd m_tableLevel %d nestDepth %d \n",m_currentRTFState.m_paraProps.m_tableLevel,m_TableControl.getNestDepth()));
+		}
 //
 // Look to see if m_bNestTableProps is true for nested tables.
 //
 // To all RTF hackers, getting these 0's and 1's is extremely important.
 // Don't change them unless you can verify that a huge range of RTF docs with
 // tables (nested and unnested) get imported corectly. Martin 10/5/2003
-			else if((m_TableControl.getNestDepth() > 0) && !m_bNestTableProps)
+		else if((m_TableControl.getNestDepth() > 0) && !m_bNestTableProps)
+		{
+			while(m_TableControl.getNestDepth() > 1)
 			{
-				while(m_TableControl.getNestDepth() > 1)
-				{
-					xxx_UT_DEBUGMSG(("SEVIOR:Close Table trowd2 \n"));
-					CloseTable();
-					m_bCellBlank = true;
-				}
-				m_currentRTFState.m_paraProps.m_tableLevel = 1; 
+				xxx_UT_DEBUGMSG(("SEVIOR:Close Table trowd2 \n"));
+				CloseTable();
+				m_bCellBlank = true;
 			}
+			m_currentRTFState.m_paraProps.m_tableLevel = 1; 
+		}
 //
 // If a trowd appears without  a preceding \cell we close the previous table
 //
-			if(!m_bCellBlank && !m_bNestTableProps)
-			{
-				xxx_UT_DEBUGMSG(("After trowd closing table coz no cell detected -1\n"));
-				CloseTable();
-			}
+		if(!m_bCellBlank && !m_bNestTableProps)
+		{
+			xxx_UT_DEBUGMSG(("After trowd closing table coz no cell detected -1\n"));
+			CloseTable();
+		}
 //
 // Another way of detecting if a trowd appears without a preceding \cell.
 // Close the previous table. This should always work.
-
-			else if(!m_bCellHandled && m_bContentFlushed)
-			{
-				xxx_UT_DEBUGMSG(("After trowd closing table coz no cell detected - 2\n"));
-				CloseTable();
-			}
-			m_bContentFlushed = false;
-			m_bNestTableProps = false;
-			ResetCellAttributes();
-			ResetTableAttributes();
+		
+		else if(!m_bCellHandled && m_bContentFlushed)
+		{
+			xxx_UT_DEBUGMSG(("After trowd closing table coz no cell detected - 2\n"));
+			CloseTable();
 		}
+		m_bContentFlushed = false;
+		m_bNestTableProps = false;
+		ResetCellAttributes();
+		ResetTableAttributes();
 		break;
 
-	case 'u':
-		if (strcmp(reinterpret_cast<char*>(pKeyword), "ul") == 0        ||  strcmp(reinterpret_cast<char*>(pKeyword), "uld") == 0  ||
-			strcmp(reinterpret_cast<char*>(pKeyword), "uldash") == 0    ||  strcmp(reinterpret_cast<char*>(pKeyword), "uldashd") == 0  ||
-			strcmp(reinterpret_cast<char*>(pKeyword), "uldashdd") == 0  ||  strcmp(reinterpret_cast<char*>(pKeyword), "uldb") == 0  ||
-			strcmp(reinterpret_cast<char*>(pKeyword), "ulth") == 0      ||  strcmp(reinterpret_cast<char*>(pKeyword), "ulw") == 0  ||
-			strcmp(reinterpret_cast<char*>(pKeyword), "ulwave") == 0)
-		{
-			return HandleUnderline(fParam ? (param != 0) : true);
-		}
-		else if (strcmp(reinterpret_cast<char*>(pKeyword), "ulnone") == 0)
-		{
-			return HandleUnderline(0);
-		}
-		else if (strcmp(reinterpret_cast<char*>(pKeyword),"uc") == 0)
-		{
-			// "\uc<n>" defines the number of chars immediately following
-			// any "\u<u>" unicode character that are needed to represent
-			// a reasonable approximation for the unicode character.
-			// generally, this is done by stripping off accents from latin-n
-			// characters so that they fold into latin1.
-			//
-			// the spec says that we need to allow any arbitrary length
-			// of chars for this and that we need to maintain a stack of
-			// these lengths (as content is nested within {} groups) so
-			// that different 'destinations' can have different approximations
-			// or have a local diversion for a hard-to-represent character
-			// or something like that.
-			//
-			// this is bullshit (IMHO) -- jeff
+	case RTF_KW_ul:
+	case RTF_KW_uld:
+	case RTF_KW_uldash:
+	case RTF_KW_uldashd:
+	case RTF_KW_uldashdd:
+	case RTF_KW_uldb:
+	case RTF_KW_ulth:
+	case RTF_KW_ulw:
+	case RTF_KW_ulwave:
+		return HandleUnderline(fParam ? (param != 0) : true);
+	case RTF_KW_ulnone:
+		return HandleUnderline(0);
+	case RTF_KW_uc:
+		// "\uc<n>" defines the number of chars immediately following
+		// any "\u<u>" unicode character that are needed to represent
+		// a reasonable approximation for the unicode character.
+		// generally, this is done by stripping off accents from latin-n
+		// characters so that they fold into latin1.
+		//
+		// the spec says that we need to allow any arbitrary length
+		// of chars for this and that we need to maintain a stack of
+		// these lengths (as content is nested within {} groups) so
+		// that different 'destinations' can have different approximations
+		// or have a local diversion for a hard-to-represent character
+		// or something like that.
+		//
+		// this is bullshit (IMHO) -- jeff
+		
+		m_currentRTFState.m_unicodeAlternateSkipCount = param;
+		m_currentRTFState.m_unicodeInAlternate = 0;
+		return true;
+	case RTF_KW_u:
+	{
+		bool bResult = ParseChar(static_cast<UT_UCSChar>(param));
+		m_currentRTFState.m_unicodeInAlternate = m_currentRTFState.m_unicodeAlternateSkipCount;
+		return bResult;
+	}
+	case RTF_KW_up:
+		// superscript with position. Default is 6.
+		// subscript: see dn keyword
+		return HandleSuperscriptPosition (fParam ? param : 6);
 
-			m_currentRTFState.m_unicodeAlternateSkipCount = param;
-			m_currentRTFState.m_unicodeInAlternate = 0;
-			return true;
-		}
-		else if (strcmp(reinterpret_cast<char*>(pKeyword),"u") == 0)
-		{
-			bool bResult = ParseChar(static_cast<UT_UCSChar>(param));
-			m_currentRTFState.m_unicodeInAlternate = m_currentRTFState.m_unicodeAlternateSkipCount;
-			return bResult;
-		}
-		else if (strcmp(reinterpret_cast<char *>(pKeyword),"up") == 0)
-		{
-			// superscript with position. Default is 6.
-			// subscript: see dn keyword
-			return HandleSuperscriptPosition (fParam ? param : 6);
-		}
+	case RTF_KW_STAR:
+		return HandleStarKeyword();
 		break;
-
-	case '*':
-		if (strcmp(reinterpret_cast<char*>(pKeyword), "*") == 0)
-		{
-			unsigned char keyword_star[MAX_KEYWORD_LEN];
-			UT_sint16 parameter_star = 0;
-			bool parameterUsed_star = false;
-
-			if (ReadKeyword(keyword_star, &parameter_star, &parameterUsed_star,
-							MAX_KEYWORD_LEN))
-		    {
-				xxx_UT_DEBUGMSG(("keyword_star %s read after * \n",keyword_star));
-				if( strcmp(reinterpret_cast<char*>(keyword_star), "\\")== 0)
-				{
-					if (ReadKeyword(keyword_star, &parameter_star, &parameterUsed_star,
-									MAX_KEYWORD_LEN))
-		            {
-						if( strcmp(reinterpret_cast<char*>(keyword_star),"ol") == 0)
-						{
-							return HandleOverline(parameterUsed_star ?
-												  (parameter_star != 0): true);
-						}
-						else if( strcmp(reinterpret_cast<char*>(keyword_star),"pn") == 0)
-						{
-							return HandleLists( m_currentRTFState.m_paraProps.m_rtfListTable);
-						}
-						else if( strcmp(reinterpret_cast<char*>(keyword_star),"listtable") == 0)
-						{
-							return ReadListTable();
-						}
-						else if( strcmp(reinterpret_cast<char*>(keyword_star),"listoverridetable") == 0)
-						{
-							return ReadListOverrideTable();
-						}
-						else if( strcmp(reinterpret_cast<char*>(keyword_star),"abilist") == 0)
-						{
-							return HandleAbiLists();
-						}
-						else if( strcmp(reinterpret_cast<char*>(keyword_star),"topline") == 0)
-						{
-							return HandleTopline(parameterUsed_star ?
-												  (parameter_star != 0): true);
-						}
-						else if( strcmp(reinterpret_cast<char*>(keyword_star),"botline") == 0)
-						{
-							return HandleBotline(parameterUsed_star ?
-												  (parameter_star != 0): true);
-						}
-						else if( strcmp(reinterpret_cast<char*>(keyword_star),"listtag") == 0)
-						{
-							return HandleListTag(parameter_star);
-						}
-						else if( strcmp(reinterpret_cast<char*>(keyword_star),"abicellprops") == 0)
-						{
-							if(!bUseInsertNotAppend())
-							{
-								xxx_UT_DEBUGMSG (("ignoring abicellprops on file import \n"));
-								m_currentRTFState.m_destinationState = RTFStateStore::rdsSkip;
-								return true;
-							}
-							if(m_iIsInHeaderFooter == 1)
-							{
-								m_currentRTFState.m_destinationState = RTFStateStore::rdsSkip;
-								return true;
-							}
-							return HandleAbiCell();
-						}
-						else if( strcmp(reinterpret_cast<char*>(keyword_star),"abitableprops") == 0)
-						{
-							if(!bUseInsertNotAppend())
-							{
-								UT_DEBUGMSG (("ignoring abictableprops on file import \n"));
-								m_currentRTFState.m_destinationState = RTFStateStore::rdsSkip;
-								return true;
-							}
-							if(m_iIsInHeaderFooter == 1)
-							{
-								m_currentRTFState.m_destinationState = RTFStateStore::rdsSkip;
-								return true;
-							}
-							if(m_iIsInHeaderFooter == 0)
-							{
-								XAP_Frame * pFrame = XAP_App::getApp()->getLastFocussedFrame();
-								if(pFrame == NULL)
-								{
-									m_iIsInHeaderFooter =1;
-									m_currentRTFState.m_destinationState = RTFStateStore::rdsSkip;
-									return true;
-								}
-								// TODO fix this as it appears to be a real hack. We shouldn't have access to 
-								// this from importers.
-								FV_View * pView = static_cast<FV_View*>(pFrame->getCurrentView());
-								if(pView == NULL)
-								{
-									m_iIsInHeaderFooter =1;
-									m_currentRTFState.m_destinationState = RTFStateStore::rdsSkip;
-									return true;
-								}
-								if(pView->isInEndnote() || pView->isInFootnote())
-								{
-									m_iIsInHeaderFooter =1;
-									m_currentRTFState.m_destinationState = RTFStateStore::rdsSkip;
-									return true;
-								}
-								m_iIsInHeaderFooter = 2;
-							}
-							return HandleAbiTable();
-						}
-						else if( strcmp(reinterpret_cast<char*>(keyword_star),"abiendtable") == 0)
-						{
-							if(!bUseInsertNotAppend())
-							{
-								UT_DEBUGMSG (("ignoring abiendtable on file import \n"));
-								m_currentRTFState.m_destinationState = RTFStateStore::rdsSkip;
-								return true;
-							}
-							if(m_iIsInHeaderFooter == 1)
-							{
-								m_currentRTFState.m_destinationState = RTFStateStore::rdsSkip;
-								return true;
-							}
-							return HandleAbiEndTable();
-						}
-						else if( strcmp(reinterpret_cast<char*>(keyword_star),"abiendcell") == 0)
-						{
-							if(!bUseInsertNotAppend())
-							{
-								UT_DEBUGMSG (("ignoring abiendcell on file import \n"));
-								m_currentRTFState.m_destinationState = RTFStateStore::rdsSkip;
-								return true;
-							}
-							if(m_iIsInHeaderFooter == 1)
-							{
-								m_currentRTFState.m_destinationState = RTFStateStore::rdsSkip;
-								return true;
-							}
-							return HandleAbiEndCell();
-						}
-						else if (strcmp(reinterpret_cast<char*>(keyword_star),"shppict") == 0)
-						{
-							UT_DEBUGMSG (("ignoring shppict\n"));
-							m_currentRTFState.m_destinationState = RTFStateStore::rdsSkip;
-							return true;
-						}
-						else if (strcmp(reinterpret_cast<char*>(keyword_star),"shpinst") == 0)
-						{
-							UT_DEBUGMSG(("Doing shpinst \n"));
-
-							m_iStackDepthAtFrame = m_stateStack.getDepth();
-							m_bFrameOpen = true;
-
-							return true;
-						}
-						else if (strcmp(reinterpret_cast<char*>(keyword_star),"nesttableprops") == 0)
-						{
-							UT_DEBUGMSG(("SEVIOR: Doing nestableprops opentable \n"));
-							m_bNestTableProps = true;
-							// OpenTable();
-							return true;
-						}
-						else if (strcmp(reinterpret_cast<char*>(keyword_star), "bkmkstart") == 0)
-						{
-							return HandleBookmark (RBT_START);
-						}
-						else if (strcmp(reinterpret_cast<char*>(keyword_star), "bkmkend") == 0)
-						{
-							return HandleBookmark (RBT_END);
-						}
-						else if (strcmp(reinterpret_cast<char*>(keyword_star), "cs") == 0)
-						{
-							UT_DEBUGMSG(("Found cs in readword stream \n"));
-						}
-#if 1
-//
-// Fixme I need to be able to handle footnotes inside tables in RTF
-//
-						else if (strcmp(reinterpret_cast<char*>(keyword_star), "footnote") == 0)
-						{
-							//HandleFootnote();
-							m_bFootnotePending = true;
-							return true;
-						}
-#endif
-//
-// Decode our own field extensions
-//
-						else if (strstr(reinterpret_cast<char*>(keyword_star), "abifieldD") != NULL)
-						{
-							char * pszField = strstr(reinterpret_cast<char *>(keyword_star),"D");
-							pszField++;
-							char * pszAbiField = UT_strdup(pszField);
-							char * pszD = strstr(pszAbiField,"D");
-							if(pszD)
-							{
-								*pszD = '_';
-								UT_DEBUGMSG(("Appending Abi field %s \n",pszAbiField));
-								return _appendField(pszAbiField);
-							}
-							FREEP(pszAbiField);
-						}
-						else if (strcmp(reinterpret_cast<char*>(keyword_star), "hlinkbase") == 0)
-						{
-							m_hyperlinkBase.clear();
-							unsigned char ch = 0;
-
-							if(!ReadCharFromFile(&ch))
-								return false;
-
-							while (ch != '}')
-							{
-								m_hyperlinkBase += ch;
-								if(!ReadCharFromFile(&ch))
-								   return false;
-							}
-							
-							PopRTFState();
-							return true;
-						}
-					}
-				}
-				UT_DEBUGMSG (("RTF: star keyword %s not handled\n", keyword_star));
-		    }
-
-			// Ignore all other \* tags
-			// TODO different destination (all unhandled at the moment, so enter skip mode)
-			//m_currentRTFState.m_destinationState = RTFStateStore::rdsSkip; was this
-			SkipCurrentGroup();
-			return true;
-		}
-		break;
-	case '\'':
-		if (strcmp(reinterpret_cast<char*>(pKeyword), "\'") == 0)
-		{
-			m_currentRTFState.m_internalState = RTFStateStore::risHex;
-			return true;
-		}
-		break;
-	case '{':
-	case '}':
-	case '\\':
-		ParseChar(*pKeyword);
+	case RTF_KW_QUOTE:
+		m_currentRTFState.m_internalState = RTFStateStore::risHex;
 		return true;
 		break;
-	case '~':
+	case RTF_KW_OPENCBRACE:
+		ParseChar('{');
+		return true;
+		break;
+	case RTF_KW_CLOSECBRACE:
+		ParseChar('}');
+		return true;
+		break;
+	case RTF_KW_BACKSLASH:
+		ParseChar('\\');
+		return true;
+		break;
+	case RTF_KW_TILDE:
 		ParseChar(UCS_NBSP);
 		return true;
 		break;
-	case '-':
+	case RTF_KW_HYPHEN:
 		// TODO handle optional hyphen. Currently simply ignore them.
 		xxx_UT_DEBUGMSG (("RTF: TODO handle optionnal hyphen\n"));
 		return true;
 		break;
-	case '_':
+	case RTF_KW_UNDERSCORE:
 		// currently simply make a standard hyphen
 		ParseChar('-');	// TODO - make these optional and nonbreaking
 		return true;
 		break;
-	case '\r':	// see bug 2174 ( Cocoa RTF)
-	case '\n':
+	case RTF_KW_CR:	// see bug 2174 ( Cocoa RTF)
+	case RTF_KW_LF:
 		return StartNewPara();
 		break;
+	default:
+		UT_DEBUGMSG(("Unhandled keyword in dispatcher: %s\n", pKeyword));
 	}
 
 	UT_DEBUGMSG (("RTF: unhandled keyword %s\n", pKeyword));
+	return true;
+}
+
+
+
+
+bool IE_Imp_RTF::HandleStarKeyword() 
+{
+	unsigned char keyword_star[MAX_KEYWORD_LEN];
+	UT_sint16 parameter_star = 0;
+	bool parameterUsed_star = false;
+		
+	if (ReadKeyword(keyword_star, &parameter_star, &parameterUsed_star,
+					MAX_KEYWORD_LEN))
+	{
+		xxx_UT_DEBUGMSG(("keyword_star %s read after * \n",keyword_star));
+
+		if( strcmp(reinterpret_cast<char*>(keyword_star), "\\")== 0)
+		{
+			if (ReadKeyword(keyword_star, &parameter_star, &parameterUsed_star,
+							MAX_KEYWORD_LEN))
+			{
+				RTF_KEYWORD_ID keywordID = KeywordToID(reinterpret_cast<char *>(keyword_star));
+				switch (keywordID) {
+				case RTF_KW_ol:
+					return HandleOverline(parameterUsed_star ?
+										  (parameter_star != 0): true);
+					break;
+				case RTF_KW_pn:
+					return HandleLists( m_currentRTFState.m_paraProps.m_rtfListTable);
+					break;
+				case RTF_KW_listtable:
+					return ReadListTable();
+					break;
+				case RTF_KW_listoverridetable:
+					return ReadListOverrideTable();
+					break;
+				case RTF_KW_abilist:
+					return HandleAbiLists();
+					break;
+				case RTF_KW_topline:
+					return HandleTopline(parameterUsed_star ?
+										 (parameter_star != 0): true);
+					break;
+				case RTF_KW_botline:
+					return HandleBotline(parameterUsed_star ?
+										 (parameter_star != 0): true);
+					break;
+				case RTF_KW_listtag:
+					return HandleListTag(parameter_star);
+					break;
+				case RTF_KW_abicellprops:
+					if(!bUseInsertNotAppend())
+					{
+						xxx_UT_DEBUGMSG (("ignoring abicellprops on file import \n"));
+						m_currentRTFState.m_destinationState = RTFStateStore::rdsSkip;
+						return true;
+					}
+					if(m_iIsInHeaderFooter == 1)
+					{
+						m_currentRTFState.m_destinationState = RTFStateStore::rdsSkip;
+						return true;
+					}
+					return HandleAbiCell();
+					break;
+				case RTF_KW_abitableprops:
+					if(!bUseInsertNotAppend())
+					{
+						UT_DEBUGMSG (("ignoring abictableprops on file import \n"));
+						m_currentRTFState.m_destinationState = RTFStateStore::rdsSkip;
+						return true;
+					}
+					if(m_iIsInHeaderFooter == 1)
+					{
+						m_currentRTFState.m_destinationState = RTFStateStore::rdsSkip;
+						return true;
+					}
+					if(m_iIsInHeaderFooter == 0)
+					{
+						XAP_Frame * pFrame = XAP_App::getApp()->getLastFocussedFrame();
+						if(pFrame == NULL)
+						{
+							m_iIsInHeaderFooter =1;
+							m_currentRTFState.m_destinationState = RTFStateStore::rdsSkip;
+							return true;
+						}
+						// TODO fix this as it appears to be a real hack. We shouldn't have access to 
+						// this from importers.
+						FV_View * pView = static_cast<FV_View*>(pFrame->getCurrentView());
+						if(pView == NULL)
+						{
+							m_iIsInHeaderFooter =1;
+							m_currentRTFState.m_destinationState = RTFStateStore::rdsSkip;
+							return true;
+						}
+						if(pView->isInEndnote() || pView->isInFootnote())
+						{
+							m_iIsInHeaderFooter =1;
+							m_currentRTFState.m_destinationState = RTFStateStore::rdsSkip;
+							return true;
+						}
+						m_iIsInHeaderFooter = 2;
+					}
+					return HandleAbiTable();
+					break;
+				case RTF_KW_abiendtable:
+					if(!bUseInsertNotAppend())
+					{
+						UT_DEBUGMSG (("ignoring abiendtable on file import \n"));
+						m_currentRTFState.m_destinationState = RTFStateStore::rdsSkip;
+						return true;
+					}
+					if(m_iIsInHeaderFooter == 1)
+					{
+						m_currentRTFState.m_destinationState = RTFStateStore::rdsSkip;
+						return true;
+					}
+					return HandleAbiEndTable();
+					break;
+				case RTF_KW_abiendcell:
+					if(!bUseInsertNotAppend())
+					{
+						UT_DEBUGMSG (("ignoring abiendcell on file import \n"));
+						m_currentRTFState.m_destinationState = RTFStateStore::rdsSkip;
+						return true;
+					}
+					if(m_iIsInHeaderFooter == 1)
+					{
+						m_currentRTFState.m_destinationState = RTFStateStore::rdsSkip;
+						return true;
+					}
+					return HandleAbiEndCell();
+					break;
+				case RTF_KW_shppict:
+					UT_DEBUGMSG (("ignoring shppict\n"));
+					m_currentRTFState.m_destinationState = RTFStateStore::rdsSkip;
+					return true;
+					break;
+				case RTF_KW_shpinst:
+					UT_DEBUGMSG(("Doing shpinst \n"));
+
+					m_iStackDepthAtFrame = m_stateStack.getDepth();
+					m_bFrameOpen = true;
+
+					return true;
+					break;
+				case RTF_KW_nesttableprops:
+					UT_DEBUGMSG(("SEVIOR: Doing nestableprops opentable \n"));
+					m_bNestTableProps = true;
+					// OpenTable();
+					return true;
+					break;
+				case RTF_KW_bkmkstart:
+					return HandleBookmark (RBT_START);
+					break;
+				case RTF_KW_bkmkend:
+					return HandleBookmark (RBT_END);
+				case RTF_KW_cs:
+					UT_DEBUGMSG(("Found cs in readword stream \n"));
+					break;
+#if 1
+//
+// Fixme I need to be able to handle footnotes inside tables in RTF
+//
+				case RTF_KW_footnote:
+						
+					//HandleFootnote();
+					m_bFootnotePending = true;
+					return true;
+					break;
+#endif
+//
+// Decode our own field extensions
+//
+				case RTF_KW_abifieldD:
+				{
+					char * pszField = strstr(reinterpret_cast<char *>(keyword_star),"D");
+					pszField++;
+					char * pszAbiField = UT_strdup(pszField);
+					char * pszD = strstr(pszAbiField,"D");
+					if(pszD)
+					{
+						*pszD = '_';
+						UT_DEBUGMSG(("Appending Abi field %s \n",pszAbiField));
+						return _appendField(pszAbiField);
+					}
+					FREEP(pszAbiField);
+					break;					
+				}
+				case RTF_KW_hlinkbase:
+				{
+					m_hyperlinkBase.clear();
+					unsigned char ch = 0;
+
+					if(!ReadCharFromFile(&ch))
+						return false;
+
+					while (ch != '}')
+					{
+						m_hyperlinkBase += ch;
+						if(!ReadCharFromFile(&ch))
+							return false;
+					}
+							
+					PopRTFState();
+					return true;
+				}
+				default:
+					UT_DEBUGMSG (("RTF: default case star keyword %s not handled\n", keyword_star));
+					break;
+				}
+			}
+		}
+		UT_DEBUGMSG (("RTF: star keyword %s not handled\n", keyword_star));
+	}
+
+	// Ignore all other \* tags
+	// TODO different destination (all unhandled at the moment, so enter skip mode)
+	//m_currentRTFState.m_destinationState = RTFStateStore::rdsSkip; was this
+	SkipCurrentGroup();
 	return true;
 }
 
@@ -10106,11 +9752,11 @@ bool IE_Imp_RTF::HandleStyleDefinition(void)
 //
 		for(j=0; j< nAtts; j++)
 		{
-			XML_Char * sz = (XML_Char*)pCurStyleVec->getNthItem(j);
+			const XML_Char * sz = pCurStyleVec->getNthItem(j);
 			if(sz != NULL)
 				// MUST NOT USED delete[] on strings allocated by malloc/calloc !!!
 				// delete [] sz;
-				FREEP(sz);
+				FREEP(const_cast<XML_Char*>(sz));
 		}
 		delete pCurStyleVec;
 
