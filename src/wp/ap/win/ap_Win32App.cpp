@@ -385,6 +385,9 @@ bool AP_Win32App::shutdown(void)
 	if (m_prefs->getAutoSavePrefs())
 		m_prefs->savePrefsFile();
 
+	delete m_prefs;
+	m_prefs = NULL;
+
 	return true;
 }
 

@@ -3202,6 +3202,10 @@ bool IE_Imp_RTF::HandlePicture()
 			{
 				format = picJPEG;
 			}
+			else if (strcmp(reinterpret_cast<char*>(&keyword[0]), "wmetafile") == 0)
+			{
+				format = picWMF;
+			}
 			else if (strcmp(reinterpret_cast<char*>(&keyword[0]), "picwgoal") == 0)
 			{
 				if (parameterUsed)
