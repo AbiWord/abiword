@@ -25,21 +25,18 @@ include $(ABI_DEPTH)/config/abi_defs_wp.mk
 CPPSRCS=		BeOSMain.cpp
 PROGRAM=		AbiWord
 
-LoadOrder=              AbiGr AbiFmt AbiPTbl AbiImpExp MsWordView AbiXAp AbiWPAp AbiEv AbiUtil AbiWordVer AbiSpell 
+LoadOrder=              AbiGr AbiFmt AbiPTbl AbiImpExp MsWordView AbiXAp AbiWPAp AbiEv AbiUtil AbiWordVer AbiSpell Abi_expat
 
 ifeq ($(OS_ARCH), BePC)
 ABI_APPLIBS=		$(LoadOrder) $(LoadOrder) $(LoadOrder)
-endif
-
-ifeq ($(OS_ARCH), ppc)
+else				#OS_ARCH ppc or BeBox
 ABI_APPLIBS=		$(LoadOrder) 
 endif
 
-#ABI_OTHLIBS=		expat $(ABI_JSLIBS) dl
-ABI_OTHLIBS=		Abi_expat
-
 ifeq ($(OS_ARCH), BePC)
 ABI_LIBS=		stdc++.r4 translation be tracker
+else				#OS_ARCH ppc or BeBox
+ABI_LIBS=	 	mslcpp be translation tracker
 endif
 
 TARGETS=		$(PROGRAM)
@@ -58,13 +55,16 @@ include $(ABI_DEPTH)/config/abi_rules.mk
 ##LDFLAGS +=		-static
 ##LDFLAGS +=		-shared 
 
-ifeq ($(OS_ARCH), ppc)
-CFLAGS += -lmslcpp -ltranslation -msg nodup
+ifneq ($(OS_ARCH), BePC)
+LDFLAGS += -msg nodup
 endif
 
 # ACK!  TODO - do we really want a directory pattern match here in a makefile?
+#THE_LIBS=		$(DIST)/lib/*
+#       TODO - using $(shell) is just slightly better than letting the compiler
+#              do the expansion
 
-THE_LIBS=		$(DIST)/lib/*
+THE_LIBS=               $(shell ls $(DIST)/lib/*)  
 
 # we override the $(PROGRAM) rule.
 
