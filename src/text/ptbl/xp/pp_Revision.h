@@ -54,6 +54,7 @@ class PP_Revision
 	UT_uint32        getId()    const {return m_iID;}
 	PP_RevisionType  getType()  const {return m_eType;}
 	const XML_Char * getPropsString();
+	const XML_Char * getAttrsString();
 	const UT_Vector* getPropsVector() const {return (const UT_Vector*)& m_vProps;}
 	const UT_Vector* getAttrsVector() const {return (const UT_Vector*)& m_vAttrs;}
 
@@ -73,7 +74,8 @@ class PP_Revision
 	PP_RevisionType  m_eType;
 	UT_Vector        m_vProps;
 	UT_Vector        m_vAttrs;
-	UT_String        m_sXMLstring;
+	UT_String        m_sXMLProps;
+	UT_String        m_sXMLAttrs;
 	bool             m_bDirty;
 };
 

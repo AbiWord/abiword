@@ -285,22 +285,43 @@ const XML_Char * PP_Revision::getPropsString()
 	if(m_bDirty)
 		_refreshString();
 
-	return (const XML_Char*) m_sXMLstring.c_str();
+	return (const XML_Char*) m_sXMLProps.c_str();
+}
+
+/*! converts the internal vector of attributes into XML string */
+const XML_Char * PP_Revision::getAttrsString()
+{
+	if(m_bDirty)
+		_refreshString();
+
+	return (const XML_Char*) m_sXMLAttrs.c_str();
 }
 
 void PP_Revision::_refreshString()
 {
+	m_sXMLProps.clear();
+	m_sXMLAttrs.clear();
+
+	UT_uint32 i;
 	UT_uint32 iCount = m_vProps.getItemCount();
 
-	m_sXMLstring.clear();
-
-	for(UT_uint32 i = 0; i < iCount; i += 2)
+	for(i = 0; i < iCount; i += 2)
 	{
-		m_sXMLstring += (char *)m_vProps.getNthItem(i);
-		m_sXMLstring += ":";
-		m_sXMLstring += (char *)m_vProps.getNthItem(i+1);
+		m_sXMLProps += (char *)m_vProps.getNthItem(i);
+		m_sXMLProps += ":";
+		m_sXMLProps += (char *)m_vProps.getNthItem(i+1);
 		if(i < iCount - 2)
-			m_sXMLstring += ";";
+			m_sXMLProps += ";";
+	}
+
+	iCount = m_vAttrs.getItemCount();
+	for(i = 0; i < iCount; i += 2)
+	{
+		m_sXMLAttrs += (char *)m_vAttrs.getNthItem(i);
+		m_sXMLAttrs += ":";
+		m_sXMLAttrs += (char *)m_vAttrs.getNthItem(i+1);
+		if(i < iCount - 2)
+			m_sXMLAttrs += ";";
 	}
 
 	m_bDirty = false;
@@ -845,6 +866,14 @@ void PP_RevisionAttr::_refreshString()
 			m_sXMLstring += "{";
 			m_sXMLstring += r->getPropsString();
 			m_sXMLstring += "}";
+
+			if(r->getAttrsVector()->getItemCount())
+			{
+				m_sXMLstring += "{";
+				m_sXMLstring += r->getPropsString();
+				m_sXMLstring += "}";
+			}
+
 		};
 
 		if(i != iCount - 1)
