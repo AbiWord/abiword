@@ -20,12 +20,15 @@
 #ifndef AP_WIN32DIALOG_NEW_H
 #define AP_WIN32DIALOG_NEW_H
 
+#include "xap_Win32DialogHelper.h"
 #include "ap_Dialog_New.h"
+
+class XAP_Frame;
 class XAP_Win32Frame;
 
 /*****************************************************************/
 
-class AP_Win32Dialog_New: public AP_Dialog_New
+class AP_Win32Dialog_New: public AP_Dialog_New, XAP_Win32Dialog
 {
 public:
 	AP_Win32Dialog_New(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
@@ -34,9 +37,20 @@ public:
 	virtual void			runModal(XAP_Frame * pFrame);
 
 	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
-	
-protected:
 
+private:
+	HWND						m_hThisDlg;
+	XAP_Win32DialogHelper		_win32Dialog;
+	XAP_Frame *					m_pFrame;
+	
+
+protected:
+	BOOL	_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam);
+	BOOL	_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam);
+	BOOL	_onDeltaPos(NM_UPDOWN * pnmud);
+
+	void	_doChoose();
+	void	_updateControls();
 };
 
 #endif /* AP_WIN32DIALOG_NEW_H */

@@ -17,13 +17,16 @@
  * 02111-1307, USA.
  */
 
+
 #include <windows.h>
+#include <io.h>
 
 #include "ut_string.h"
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
 
 #include "xap_App.h"
+#include "xap_Frame.h"
 #include "xap_Win32App.h"
 #include "xap_Win32Frame.h"
 
@@ -31,6 +34,11 @@
 #include "ap_Dialog_Id.h"
 #include "ap_Dialog_New.h"
 #include "ap_Win32Dialog_New.h"
+
+#include "xap_Dlg_FileOpenSaveAs.h"
+#include "ie_imp.h"
+#include "ie_types.h"
+#include "ut_string_class.h"
 
 #include "ap_Win32Resources.rc2"
 
@@ -43,9 +51,13 @@ XAP_Dialog * AP_Win32Dialog_New::static_constructor(XAP_DialogFactory * pFactory
 	return p;
 }
 
+#ifdef _MSC_VER	// MSVC++ warns about using 'this' in initializer list.
+#pragma warning(disable: 4355)
+#endif
+
 AP_Win32Dialog_New::AP_Win32Dialog_New(XAP_DialogFactory * pDlgFactory,
 										 XAP_Dialog_Id id)
-	: AP_Dialog_New(pDlgFactory,id)
+	: AP_Dialog_New(pDlgFactory,id), _win32Dialog(this), m_hThisDlg(NULL), m_pFrame(NULL)
 {
 }
 
@@ -55,33 +67,224 @@ AP_Win32Dialog_New::~AP_Win32Dialog_New(void)
 
 void AP_Win32Dialog_New::runModal(XAP_Frame * pFrame)
 {
+
 	UT_ASSERT(pFrame);
+	m_pFrame = pFrame;
 
-/*
-	NOTE: This template can be used to create a working stub for a 
-	new dialog on this platform.  To do so:
-	
-	1.  Copy this file (and its associated header file) and rename 
-		them accordingly. 
+	_win32Dialog.runModal( pFrame, 
+                           AP_DIALOG_ID_FILE_NEW, 
+                           AP_RID_DIALOG_NEW, 
+                           this );
+}
 
-	2.  Do a case sensitive global replace on the words Stub and STUB
-		in both files. 
+#define _DS(c,s)	SetDlgItemText(hWnd,AP_RID_DIALOG_##c,pSS->getValue(AP_STRING_ID_##s))
+#define _DSX(c,s)	SetDlgItemText(hWnd,AP_RID_DIALOG_##c,pSS->getValue(XAP_STRING_ID_##s))
 
-	3.  Add stubs for any required methods expected by the XP class. 
-		If the build fails because you didn't do this step properly,
-		you've just broken the donut rule.  
+BOOL AP_Win32Dialog_New::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam)
+{
+	m_hThisDlg = hWnd;
 
-	4.	Replace this useless comment with specific instructions to 
-		whoever's porting your dialog so they know what to do.
-		Skipping this step may not cost you any donuts, but it's 
-		rude.  
+	XAP_Win32App * app = static_cast<XAP_Win32App *> (m_pApp);
+	UT_ASSERT(app);
 
-	This file should *only* be used for stubbing out platforms which 
-	you don't know how to implement.  When implementing a new dialog 
-	for your platform, you're probably better off starting with code
-	from another working dialog.  
-*/	
+	const XAP_StringSet * pSS = m_pApp->getStringSet();
 
-	UT_ASSERT(UT_NOT_IMPLEMENTED);
+	_win32Dialog.setDialogTitle(pSS->getValue(AP_STRING_ID_DLG_NEW_Title));
+
+	// localize controls
+	_DSX(NEW_BTN_OK,		DLG_OK);
+	_DSX(NEW_BTN_CANCEL,	DLG_Cancel);
+	_DS(NEW_RDO_BLANK,		DLG_NEW_StartEmpty);
+	_DS(NEW_RDO_TEMPLATE,	DLG_NEW_Create);
+	_DS(NEW_RDO_EXISTING,	DLG_NEW_Open);
+    _DS(NEW_BTN_EXISTING,	DLG_NEW_Choose);
+
+	// set initial state
+	_win32Dialog.setControlText(AP_RID_DIALOG_NEW_EBX_EXISTING, 
+  								pSS->getValue(AP_STRING_ID_DLG_NEW_NoFile));
+
+	long findtag;
+	struct _finddata_t cfile;
+	UT_String templateName, searchDir;
+	templateName = XAP_App::getApp()->getUserPrivateDirectory(); 
+	searchDir = XAP_App::getApp()->getUserPrivateDirectory();
+	searchDir += "\\templates\\*.awt";
+	findtag = _findfirst( searchDir.c_str(), &cfile );
+	if( findtag != -1 )
+	{
+		do
+		{	
+			templateName = XAP_App::getApp()->getUserPrivateDirectory();
+			templateName += "\\templates\\";
+			templateName += cfile.name;
+			_win32Dialog.addItemToList( AP_RID_DIALOG_NEW_LBX_TEMPLATE, templateName.c_str() );
+		} while( _findnext( findtag, &cfile ) == 0 );
+	}
+	_findclose( findtag );
+
+	templateName = XAP_App::getApp()->getAbiSuiteLibDir(); 
+	searchDir = XAP_App::getApp()->getAbiSuiteLibDir();
+	searchDir += "\\templates\\*.awt";
+	findtag = _findfirst( searchDir.c_str(), &cfile );
+	if( findtag != -1 )
+	{
+		do
+		{	
+			templateName = XAP_App::getApp()->getAbiSuiteLibDir();
+			templateName += "\\templates\\";
+			templateName += cfile.name;
+			_win32Dialog.addItemToList( AP_RID_DIALOG_NEW_LBX_TEMPLATE, templateName.c_str() );
+		} while( _findnext( findtag, &cfile ) == 0 );
+	}
+	_findclose( findtag );
+
+	_updateControls();
+	return 1;	// 1 == we did not call SetFocus()
+}
+
+
+BOOL AP_Win32Dialog_New::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
+{
+	WORD wNotifyCode = HIWORD(wParam);
+	WORD wId = LOWORD(wParam);
+	HWND hWndCtrl = (HWND)lParam;
+
+	switch (wId)
+	{
+	case IDCANCEL:						// also AP_RID_DIALOG_NEW_BTN_CANCEL
+		setAnswer (AP_Dialog_New::a_CANCEL);
+		EndDialog(hWnd,0);
+		return 1;
+
+	case IDOK:							// also AP_RID_DIALOG_NEW_BTN_OK
+		setAnswer (AP_Dialog_New::a_OK);
+		EndDialog(hWnd,0);
+		return 1;
+
+	case AP_RID_DIALOG_NEW_LBX_TEMPLATE:
+		switch (HIWORD(wParam))
+		{
+		case LBN_SELCHANGE:
+			int nIndex = _win32Dialog.getListSelectedIndex(wId);
+			if( nIndex != LB_ERR )
+			{
+				char buf[_MAX_PATH];
+				_win32Dialog.getListText( wId, nIndex, buf );
+				setFileName(buf);
+			}
+			return 1;
+		}
+		return 0;
+
+	case AP_RID_DIALOG_NEW_BTN_EXISTING:
+		_doChoose();
+		return 1;
+
+	case AP_RID_DIALOG_NEW_RDO_BLANK:
+		setOpenType(AP_Dialog_New::open_New);
+		_updateControls();
+		return 1;
+
+	case AP_RID_DIALOG_NEW_RDO_TEMPLATE:
+		setOpenType(AP_Dialog_New::open_Template);
+		_updateControls();
+		return 1;
+
+	case AP_RID_DIALOG_NEW_RDO_EXISTING:
+		setOpenType(AP_Dialog_New::open_Existing);
+		_updateControls();
+		return 1;
+
+	default:							// we did not handle this notification
+		UT_DEBUGMSG(("WM_Command for id %ld\n",wId));
+		return 0;						// return zero to let windows take care of it.
+	}
+}
+
+BOOL AP_Win32Dialog_New::_onDeltaPos(NM_UPDOWN * pnmud)
+{
+	return 0;
+}
+
+void AP_Win32Dialog_New::_doChoose()
+{
+
+	XAP_Dialog_Id id = XAP_DIALOG_ID_FILE_OPEN;
+
+	XAP_DialogFactory * pDialogFactory
+		= (XAP_DialogFactory *) m_pFrame->getDialogFactory();
+
+	XAP_Dialog_FileOpenSaveAs * pDialog
+		= (XAP_Dialog_FileOpenSaveAs *)(pDialogFactory->requestDialog(id));
+	UT_ASSERT(pDialog);
+
+	pDialog->setCurrentPathname(0);
+	pDialog->setSuggestFilename(false);
+
+	UT_uint32 filterCount = IE_Imp::getImporterCount();
+	const char ** szDescList = (const char **) calloc(filterCount + 1,
+													  sizeof(char *));
+	const char ** szSuffixList = (const char **) calloc(filterCount + 1,
+														sizeof(char *));
+	IEFileType * nTypeList = (IEFileType *) calloc(filterCount + 1,
+												   sizeof(IEFileType));
+	UT_uint32 k = 0;
+
+	while (IE_Imp::enumerateDlgLabels(k, &szDescList[k], 
+									  &szSuffixList[k], &nTypeList[k]))
+			k++;
+
+	pDialog->setFileTypeList(szDescList, szSuffixList, 
+							 (const UT_sint32 *) nTypeList);
+
+	pDialog->setDefaultFileType(IE_Imp::fileTypeForSuffix(".abw"));
+
+	pDialog->runModal(m_pFrame);
+
+	XAP_Dialog_FileOpenSaveAs::tAnswer ans = pDialog->getAnswer();
+	bool bOK = (ans == XAP_Dialog_FileOpenSaveAs::a_OK);
+
+	if (bOK)
+	{
+		const char * szResultPathname = pDialog->getPathname();
+		if (szResultPathname && *szResultPathname)
+		{
+			// update the entry box
+			_win32Dialog.setControlText( AP_RID_DIALOG_NEW_EBX_EXISTING, 
+			                             szResultPathname);
+			setFileName (szResultPathname);
+		}
+	}
+}
+
+void AP_Win32Dialog_New::_updateControls()
+{
+	switch( getOpenType() )
+	{
+	case AP_Dialog_New::open_New:
+		_win32Dialog.enableControl( AP_RID_DIALOG_NEW_EBX_EXISTING, false );
+		_win32Dialog.enableControl( AP_RID_DIALOG_NEW_BTN_EXISTING, false );
+		_win32Dialog.enableControl( AP_RID_DIALOG_NEW_LBX_TEMPLATE, false );
+		_win32Dialog.checkButton( AP_RID_DIALOG_NEW_RDO_EXISTING, false );
+		_win32Dialog.checkButton( AP_RID_DIALOG_NEW_RDO_TEMPLATE, false );
+		_win32Dialog.checkButton( AP_RID_DIALOG_NEW_RDO_BLANK, true );
+		break;
+	case AP_Dialog_New::open_Template:
+		_win32Dialog.enableControl( AP_RID_DIALOG_NEW_EBX_EXISTING, false );
+		_win32Dialog.enableControl( AP_RID_DIALOG_NEW_BTN_EXISTING, false );
+		_win32Dialog.enableControl( AP_RID_DIALOG_NEW_LBX_TEMPLATE, true );
+		_win32Dialog.checkButton( AP_RID_DIALOG_NEW_RDO_EXISTING, false );
+		_win32Dialog.checkButton( AP_RID_DIALOG_NEW_RDO_TEMPLATE, true );
+		_win32Dialog.checkButton( AP_RID_DIALOG_NEW_RDO_BLANK, false );
+		break;
+	case AP_Dialog_New::open_Existing:
+		_win32Dialog.enableControl( AP_RID_DIALOG_NEW_EBX_EXISTING, true );
+		_win32Dialog.enableControl( AP_RID_DIALOG_NEW_BTN_EXISTING, true );
+		_win32Dialog.enableControl( AP_RID_DIALOG_NEW_LBX_TEMPLATE, false );
+		_win32Dialog.checkButton( AP_RID_DIALOG_NEW_RDO_EXISTING, true );
+		_win32Dialog.checkButton( AP_RID_DIALOG_NEW_RDO_TEMPLATE, false );
+		_win32Dialog.checkButton( AP_RID_DIALOG_NEW_RDO_BLANK, false );
+		break;
+	}
 }
 
