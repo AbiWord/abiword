@@ -70,7 +70,7 @@ fl_FootnoteLayout::~fl_FootnoteLayout()
 	while(pFC)
 	{
 		fp_FootnoteContainer * pNext = (fp_FootnoteContainer *) pFC->getNext();
-		if(pFC == (fp_FootnoteContainer *) getLastContainer());
+		if(pFC == (fp_FootnoteContainer *) getLastContainer())
 		{
 			pNext = NULL;
 		}
