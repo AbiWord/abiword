@@ -1247,11 +1247,13 @@ void AP_UnixDialog_Styles::event_ModifyPreviewExposed(void)
 
 void AP_UnixDialog_Styles::event_ModifyClicked(void)
 {
+#if 0
 //
 // Hide the old window
 //
 	UT_DEBUGMSG(("SEVIOR: Hiding main window \n"));
     gtk_widget_hide( m_windowMain);
+#endif
 //
 // fill the data structures needed for the Modify dialog
 //
@@ -1275,10 +1277,12 @@ void AP_UnixDialog_Styles::event_ModifyClicked(void)
 // Restore the values in the main dialog
 //
 
+#if 0
 //
 // Reveal main window again
 //
 	gtk_widget_show( m_windowMain);
+#endif
 }
 
 void  AP_UnixDialog_Styles::setModifyDescription( const char * desc)
