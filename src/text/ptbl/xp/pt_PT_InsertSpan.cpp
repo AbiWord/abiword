@@ -226,11 +226,13 @@ UT_Bool pt_PieceTable::insertSpan(PT_DocPosition dpos,
 	UT_Bool bFound = getFragFromPosition(dpos,&pf,&fragOffset);
 	UT_ASSERT(bFound);
 
+	pf_Frag_Text * pft = static_cast<pf_Frag_Text *>(pf);
+
 	PT_AttrPropIndex indexAP = 0;
 	if (m_bHaveTemporarySpanFmt)
 		indexAP = m_indexAPTemporarySpanFmt;
 	else if (pf->getType() == pf_Frag::PFT_Text)
-		indexAP = (static_cast<pf_Frag_Text *>(pf))->getIndexAP();
+		indexAP = pft->getIndexAP();
 
 	if (!_insertSpan(pf,bi,fragOffset,length,indexAP))
 		return UT_FALSE;
@@ -243,7 +245,7 @@ UT_Bool pt_PieceTable::insertSpan(PT_DocPosition dpos,
 	PX_ChangeRecord_Span * pcr
 		= new PX_ChangeRecord_Span(PX_ChangeRecord::PXT_InsertSpan,PX_ChangeRecord::PXF_Null,
 								   dpos,
-								   indexAP,indexAP,
+								   pft->getIndexAP(),indexAP,
 								   m_bHaveTemporarySpanFmt,UT_FALSE,
 								   bi,length);
 	UT_ASSERT(pcr);
