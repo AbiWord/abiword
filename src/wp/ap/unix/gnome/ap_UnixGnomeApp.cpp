@@ -219,7 +219,11 @@ int AP_UnixGnomeApp::main(const char * szAppName, int argc, char ** argv)
 		// turn over control to gtk
 		gtk_main();
 	}
-	
+	else
+	  {
+	    UT_DEBUGMSG(("DOM: not parsing command line or showing app\n"));
+	  }
+
 	// destroy the App.  It should take care of deleting all frames.
 	pMyUnixApp->shutdown();
 	delete pMyUnixApp;
@@ -332,7 +336,7 @@ bool AP_UnixGnomeApp::parseCommandLine()
 		delete conv;
 
 		if (!show)
-			return true;
+		  return false;
 	}
 	
 	if (printto) {
@@ -355,10 +359,11 @@ bool AP_UnixGnomeApp::parseCommandLine()
 	  else
 	    {
 	      // couldn't load document
-	      UT_DEBUGMSG(("DOM: Couldn't load frame\n"));
+	      printf("Error: no file to print!\n");
 	    }
-	  shutdown ();
-	  delete this;
+
+	  if (!show)
+	    return false;
 	}
 	
 	while ((file = poptGetArg (poptcon)) != NULL) {

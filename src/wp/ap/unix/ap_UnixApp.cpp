@@ -1206,10 +1206,14 @@ int AP_UnixApp::main(const char * szAppName, int argc, char ** argv)
     {
 		// turn over control to gtk
 		gtk_main();
-		pMyUnixApp->shutdown();
     }
+    else
+      {
+	UT_DEBUGMSG(("DOM: not parsing command line or showing app\n"));
+      }
     
     // destroy the App.  It should take care of deleting all frames.
+    pMyUnixApp->shutdown();
     delete pMyUnixApp;
     
     return 0;
