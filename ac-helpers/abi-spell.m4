@@ -58,15 +58,34 @@ if test $abi_spell != ispell; then
 		_abi_cppflags="$CPPFLAGS"
 		CPPFLAGS="$CPPFLAGS $abi_pspell_cflags"
 	fi
-	AC_CHECK_HEADER(pspell/pspell.h,[
-		AC_CHECK_LIB(pspell,new_pspell_config,[
+	AC_CHECK_HEADER(pspell/pspell.h,
+	[
+	    AC_CHECK_LIB(pspell,new_pspell_config,[
 			SPELL_LIBS="$abi_pspell_libs"
 			SPELL_CFLAGS="$abi_pspell_cflags -DHAVE_PSPELL=1"
-		],[	AC_MSG_ERROR([* * * pspell not found in system location * * *])
-		],$abi_pspell_libs)
-		abi_spell_default=no
-	],[	AC_MSG_WARN([* * * pspell not found in system location * * *])
-		abi_spell_default=yes
+			abi_spell_default=no
+			abi_have_new_pspell_config=yes
+	    ],[abi_have_new_pspell_config=no],
+	    $abi_pspell_libs)
+	    if test $abi_have_new_pspell_config = no; then
+	    AC_CHECK_LIB(pspell,new_aspell_config,[
+			SPELL_LIBS="$abi_pspell_libs"
+			SPELL_CFLAGS="$abi_pspell_cflags -DHAVE_PSPELL=1"
+			abi_spell_default=no
+			abi_have_new_aspell_config=yes
+	    ],[abi_have_new_aspell_config=no],
+	    $abi_pspell_libs)
+	    fi
+	    if test $abi_have_new_pspell_config = no; then
+	    if test $abi_have_new_aspell_config = no; then
+	    AC_MSG_WARN([* * * pspell not found in system location * * *])
+	    abi_spell_default=yes
+	    fi
+	    fi
+	],
+	[
+	    AC_MSG_WARN([* * * pspell not found in system location * * *])
+	    abi_spell_default=yes
 	])
 	if test $abi_spell = pspell; then
 		CPPFLAGS="$_abi_cppflags"
@@ -181,7 +200,8 @@ AC_DEFUN([ABI_PSPELL_OPT], [
 				abi_pspell_opt=no
 				AC_MSG_RESULT(no - $abi_pspell_major.$abi_pspell_minor.$abi_pspell_micro)
 			else
-				AC_MSG_RESULT(yes - $abi_pspell_version)
+				abi_real_pspell_version=`echo $abi_pspell_version | sed 's/00/0/'`
+				AC_MSG_RESULT(yes - $abi_real_pspell_version)
 			fi
 		else
 			AC_MSG_WARN([* * * problem obtaining pspell version... * * *])
