@@ -190,12 +190,17 @@ this tree with a subset of the tools.  There's 14 meg of stuff there,
 and we don't *really* need all of it.  However, we haven't had time or
 motivation to identify the specific set of apps we need.  Disk space
 is cheap.  If you decide to make the effort to do so, please let us
-know, and we'll share that information with other developers.
+know, and we'll share that information with other developers. Also note, 
+that you need to select "DOS Default Text File Type" during the 
+installation. Otherwise the make system will not work.
 
 You also need Visual C++ 5.0.  Obviously, we don't use the IDE at all,
 but we do use the compiler, headers, libraries, and so on.  You'll
 need them all to be in your PATH, since the Makefiles will expect them
 to be readily available.
+
+The new XML handling requires msxml3. This can be downloaded from Microsoft
+here: http://msdn.microsoft.com/downloads/sample.asp?url=/MSDN-FILES/027/001/772/msdncompositedoc.xml
 
 Additionally, AbiWord uses the PNG and zlib libraries.  Both of these are 
 available from our website [and included on the CD], and are peers of the
