@@ -60,7 +60,7 @@ public:
 	functions which are needed.
 */
 
-class GR_Graphics
+class ABI_EXPORT GR_Graphics
 {
 public:
 	GR_Graphics();
