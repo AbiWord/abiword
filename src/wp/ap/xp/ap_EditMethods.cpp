@@ -8642,6 +8642,10 @@ Defun1(dlgSpellPrefs)
 	CHECK_FRAME;
 	ABIWORD_VIEW;
 	
+#ifdef XP_TARGET_COCOA
+    return s_doOptionsDlg(pView, 4); // spelling tab
+#endif
+
 #if !defined (WIN32) && !defined (XP_UNIX_TARGET_GTK)
     return s_doOptionsDlg(pView, 1); // spelling tab
 #else
