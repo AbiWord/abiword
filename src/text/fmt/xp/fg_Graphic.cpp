@@ -48,7 +48,7 @@ FG_Graphic* FG_Graphic::createFromChangeRecord(const fl_Layout* pFL,
 	   
 			// figure out what type to create
 	   
-			if (!bFoundDataID || !pszMimeType || UT_strcmp(pszMimeType, "image/svg-xml") != 0) {
+			if (!bFoundDataID || !pszMimeType || UT_strcmp(pszMimeType, "image/svg+xml") != 0) {
 				return FG_GraphicRaster::createFromChangeRecord(pFL, pcro);
 			} else {
 				return FG_GraphicVector::createFromChangeRecord(pFL, pcro);
@@ -77,7 +77,7 @@ FG_Graphic* FG_Graphic::createFromStrux(const fl_Layout* pFL)
 	   
 			// figure out what type to create
 	   
-			if (!bFoundDataID || !pszMimeType || UT_strcmp(pszMimeType, "image/svg-xml") != 0) {
+			if (!bFoundDataID || !pszMimeType || UT_strcmp(pszMimeType, "image/svg+xml") != 0) {
 				return FG_GraphicRaster::createFromStrux(pFL);
 			} else {
 				return FG_GraphicVector::createFromStrux(pFL);
