@@ -532,24 +532,26 @@ void AP_UnixDialog_Spell::_storeWindowData(void)
 
 void AP_UnixDialog_Spell::event_Change()
 {
-   UT_UCSChar * replace = NULL;
-   if (m_iSelectedRow != -1)
-     {
-	replace = (UT_UCSChar*) m_Suggestions.word[m_iSelectedRow];
-	changeWordWith(replace);
-     }
-   else
-     {
-	replace = _convertFromMB((char*)gtk_entry_get_text(GTK_ENTRY(m_entryChange)));
-	if (!UT_UCS_strlen(replace)) {
-	   FREEP(replace);
-	   return;
+	UT_UCSChar * replace = NULL;
+	UT_DEBUGMSG(("m_iSelectedRow is %i\n", m_iSelectedRow));
+	if (m_iSelectedRow != -1)
+	{
+		replace = (UT_UCSChar*) m_Suggestions.word[m_iSelectedRow];
+		changeWordWith(replace);
 	}
-	changeWordWith(replace);
-	FREEP(replace);
+	else
+     {
+		 replace = _convertFromMB((char*)gtk_entry_get_text(GTK_ENTRY(m_entryChange)));
+		 if (!UT_UCS_strlen(replace)) {
+			 UT_DEBUGMSG(("replace is 0 length\n"));
+			 FREEP(replace);
+			 return;
+		 }
+		 changeWordWith(replace);
+		 FREEP(replace);
      }
-
-   gtk_main_quit();
+	
+	gtk_main_quit();
 }
 
 void AP_UnixDialog_Spell::event_ChangeAll()
@@ -650,45 +652,15 @@ void AP_UnixDialog_Spell::event_ReplacementChanged()
 // make a multibyte encoded version of a string
 char * AP_UnixDialog_Spell::_convertToMB(UT_UCSChar *wword)
 {
-   static char word[1024];
-   UT_UCS_strcpy_to_char(word,wword);
-   return word;
+	char *word = (char *) malloc (UT_UCS_strlen(wword)*2);
+	UT_UCS_strcpy_to_char(word,wword);
+	return word;
 }
 
 // make a wide string from a multibyte string
 UT_UCSChar * AP_UnixDialog_Spell::_convertFromMB(char *word)
 {
-   int wcindex = 0, mbindex = 0;
-   int wclength = 0;
-   int mblength = strlen(word);
-   while (mbindex < mblength) {
-      int len = mblen(word+mbindex, mblength-mbindex);
-      //      UT_ASSERT(len >= 0);
-      if(len >= 0)
-	{
-	  mblength += len;
-	}
-      mbindex++;
-   }
-   mbindex = 0;
-
-   wchar_t wch; // we only support two bytes, so this is a temp Unicode char holder
-   UT_UCSChar * wword = (UT_UCSChar*) calloc(wclength + 1, sizeof(UT_UCSChar));
-   if (wword == NULL) return NULL;
-     
-   while (wcindex < wclength) {
-      int len = mbtowc(&wch, word+mbindex, mblength-mbindex);
-      //      UT_ASSERT(len >= 0);
-      if(len >= 0)
-	{
-	  mblength += len;
-	}
-      wcindex++;
-   }
-   wword[wclength] = 0;
-   
-   UT_DEBUGMSG(("mb2wc: mb %i/%i - wc %i/%i\n", mbindex, mblength, wcindex, wclength));
-   UT_ASSERT(wclength >= wcindex);
-   
-   return (UT_UCSChar*)wword;
+	UT_UCSChar *wword = (UT_UCSChar *) malloc (strlen(word)*2);
+	UT_UCS_strcpy_char(wword,word);
+	return wword;
 }
