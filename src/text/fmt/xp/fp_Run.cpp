@@ -2834,6 +2834,11 @@ void fp_ImageRun::_drawResizeBox(UT_Rect box)
 	UT_sint32 right = box.left + box.width;
 	UT_sint32 bottom = box.top + box.height;
 	
+	getGR()->setLineProperties(1.0,
+								 GR_Graphics::JOIN_MITER,
+								 GR_Graphics::CAP_BUTT,
+								 GR_Graphics::LINE_SOLID);	
+	
 	// draw some really fancy box here
 	getGR()->setColor(UT_RGBColor(98,129,131));
 	getGR()->drawLine(left, box.top, right-1, box.top);
