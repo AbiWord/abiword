@@ -464,7 +464,15 @@ UT_Error AP_UnixFrame::_loadDocument(const char * szFilename, IEFileType ieft,
 	  {
 	    // we have a file name but couldn't load it
 	    pNewDoc->newDocument();
-	    errorCode = pNewDoc->saveAs(szFilename, ieft);
+
+	    // here, we want to open a new document if it doesn't exist.
+	    // errorCode could also take several other values, indicating
+	    // that the document exists but for some reason we could not
+	    // open it. in those cases, we do not wish to overwrite the
+	    // existing documents, but instead open a new blank document. 
+	    // this fixes bug 1668 - DAL
+	    if ( UT_IE_FILENOTFOUND == errorCode )
+	      errorCode = pNewDoc->saveAs(szFilename, ieft);
 	  }
 	if (!errorCode)
 	  goto ReplaceDocument;
