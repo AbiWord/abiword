@@ -75,6 +75,41 @@ WordPerfectTextAttributes::WordPerfectTextAttributes()
    m_fontSize = 12; // silly default. TODO: read from file.
 }
 
+static int wp_internationalCharacterMapping[32] = 
+{ 229, // lower case 'a' with a small circle
+     197, // upper case 'a' with a small circle
+     230, // lower case 'ae'
+     198, // upper case 'ae'
+     228, // lower case 'a' with diathesis
+     196, // upper case 'a' with diathesis
+     224, // lower case 'a' with acute
+     192, // lower case 'a' with grave
+     226, // lower case 'a' with circonflex
+     227, // lower case 'a' with tilde
+     195, // upper case 'a' with tilde
+     231, // lower case 'c' with hook
+     199, // upper case 'c' with hook
+     235, // lower case 'e' with diathesis
+     232, // lower case 'e' with acute
+     200, // upper case 'e' with acute
+     233, // lower case 'e' with grave
+     234, // lower case 'e' with circonflex
+     236, // lower case 'i' with acute
+     241, // lower case 'n' with tilde
+     209, // upper case 'n' with tilde
+     248, // lower case 'o' with stroke
+     216, // upper case 'o' with stroke
+     241, // lower case 'o' with tilde
+     213, // upper case 'o' with tilde
+     246, // lower case 'o' with diathesis
+     214, // upper case 'o' with diathesis
+     252, // lower case 'u' with diathesis
+     220, // upper case 'u' with diathesis
+     250, // lower case 'u' with acute
+     249, // lower case 'u' with grave
+     223 // double s
+};
+
 WordPerfectParagraphProperties::WordPerfectParagraphProperties()
 {
    m_lineSpacing = 1;
@@ -439,13 +474,19 @@ UT_Error IE_Imp_WordPerfect::_parseDocument()
 	int readVal = fgetc(m_importFile);
 	X_CheckFileError(readVal);
 	
-	if(readVal > 32 && readVal < 127 && !m_undoOn) // ASCII characters
+	if(readVal > 32 && readVal < 127 && !m_undoOn) // Standard ASCII characters
 	  {
 	     //UT_DEBUGMSG((" current char = %c \n",(char)readVal));
 	     wchar_t wc = 0;
 	     m_Mbtowc.mbtowc(wc, (char)readVal);
 	     m_textBuf.append( (UT_uint16 *)&wc, 1);
-	  }	     
+	  }
+	else if(readVal > 0 && readVal < 32 && !m_undoOn) // International Characters
+	  {
+	     UT_DEBUGMSG((" current char = %i \n",(int)readVal));
+	     UT_UCSChar internationalCharacter = wp_internationalCharacterMapping[(readVal-1)];
+	     m_textBuf.append( &internationalCharacter, 1);	     
+	  }
 	else 
 	  {
 	     
@@ -465,8 +506,8 @@ UT_Error IE_Imp_WordPerfect::_parseDocument()
    
    UT_DEBUGMSG(("WordPerfect: File Pointer at %i exceeds document length of %i\n", (int)ftell(m_importFile), (int)m_documentEnd));
    
-   if(m_textBuf.getLength() > 0)   
-     X_CheckDocumentError(getDoc()->appendSpan(m_textBuf.getPointer(0), m_textBuf.getLength()));
+   if(m_textBuf.getLength() > 0)
+     X_CheckWordPerfectError(_flushText());
    
    return UT_OK;
 }
