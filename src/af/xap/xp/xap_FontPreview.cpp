@@ -92,6 +92,12 @@ void XAP_FontPreview::setFontFamily(const XML_Char * pFontFamily)
 	addOrReplaceVecProp("font-family",pFontFamily);
 }
 
+void XAP_FontPreview::setText(const XML_Char * pFontFamily)
+{
+	UT_UCS4_cloneString_char (&m_drawString, pFontFamily);
+	m_pFontPreview->setDrawString(m_drawString);
+}
+
 void XAP_FontPreview::draw()
 {
 	m_pFontPreview->draw();

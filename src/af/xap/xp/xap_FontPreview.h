@@ -41,6 +41,7 @@ public:
 	void							addOrReplaceVecProp(const XML_Char * pszProp,
 														const XML_Char * pszVal);
 	void							setFontFamily(const XML_Char * pFontFamily);
+	void							setText(const XML_Char * pFontFamily);
 	void							draw(void);
 protected:
 	void                            _createFontPreviewFromGC(GR_Graphics * gc,

@@ -237,6 +237,7 @@ public:									// we create...
 								wd->m_pUnixToolbar->m_pFontPreview = new XAP_UnixFontPreview(pFrame, x, y);
 							}
 							wd->m_pUnixToolbar->m_pFontPreview->setFontFamily(buffer);
+							wd->m_pUnixToolbar->m_pFontPreview->setText(buffer);
 							wd->m_pUnixToolbar->m_pFontPreview->draw();							
 						}
 					}				   
