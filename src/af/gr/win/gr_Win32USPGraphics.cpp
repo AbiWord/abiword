@@ -141,7 +141,9 @@ class GR_Win32USPRenderInfo : public GR_RenderInfo
 				delete [] s_pChars;    s_pChars    = NULL;
 				s_iAdvancesSize = 0;
 
-				s_pOwner = NULL;
+				s_pOwnerDraw = NULL;
+				s_pOwnerCP   = NULL;
+				s_pOwnerChar = NULL;
 			}
 		}
 
@@ -180,18 +182,25 @@ class GR_Win32USPRenderInfo : public GR_RenderInfo
 	static SCRIPT_LOGATTR * s_pLogAttr;
 	static WCHAR *   s_pChars;
 	
+	// static buffer ownerhip: we use static buffers to store various positioning information; the
+	// following members identify the instance that last modified these buffers
 	
-	static GR_RenderInfo * s_pOwner;
+	static GR_RenderInfo * s_pOwnerDraw; // buffers used for drawing
+	static GR_RenderInfo * s_pOwnerCP;   // buffers used for xy <--> CP translation
+	static GR_RenderInfo * s_pOwnerChar; // buffers that store raw unicode text (used by
+										 // _scriptBreak, etc.)
 };
 
-int *           GR_Win32USPRenderInfo::s_pAdvances      = NULL;
+int *           GR_Win32USPRenderInfo::s_pAdvances          = NULL;
 int *           GR_Win32USPRenderInfo::s_pJustifiedAdvances = NULL;
-int *           GR_Win32USPRenderInfo::s_pJustify       = NULL;
-UT_uint32       GR_Win32USPRenderInfo::s_iInstanceCount = 0;
-UT_uint32       GR_Win32USPRenderInfo::s_iAdvancesSize  = 0;
-SCRIPT_LOGATTR *GR_Win32USPRenderInfo::s_pLogAttr       = NULL;
-WCHAR *         GR_Win32USPRenderInfo::s_pChars         = NULL;
-GR_RenderInfo * GR_Win32USPRenderInfo::s_pOwner         = NULL;
+int *           GR_Win32USPRenderInfo::s_pJustify           = NULL;
+UT_uint32       GR_Win32USPRenderInfo::s_iInstanceCount     = 0;
+UT_uint32       GR_Win32USPRenderInfo::s_iAdvancesSize      = 0;
+SCRIPT_LOGATTR *GR_Win32USPRenderInfo::s_pLogAttr           = NULL;
+WCHAR *         GR_Win32USPRenderInfo::s_pChars             = NULL;
+GR_RenderInfo * GR_Win32USPRenderInfo::s_pOwnerDraw         = NULL;
+GR_RenderInfo * GR_Win32USPRenderInfo::s_pOwnerCP           = NULL;
+GR_RenderInfo * GR_Win32USPRenderInfo::s_pOwnerChar         = NULL;
 
 
 GR_Win32USPGraphics::GR_Win32USPGraphics(HDC hdc, HWND hwnd, XAP_App * pApp)
@@ -715,6 +724,12 @@ bool GR_Win32USPGraphics::shape(GR_ShapingInfo & si, GR_RenderInfo *& ri)
 	{
 		delete [] pInChars;
 	}
+
+	if(RI->s_pOwnerChar == RI)
+	{
+		// this might not be strictly necessary, but it is safer to do so
+		RI->s_pOwnerChar = NULL;
+	}
 	
 	return true;
 }
@@ -782,7 +797,7 @@ void GR_Win32USPGraphics::prepareToRenderChars(GR_RenderInfo & ri)
 	GR_Win32USPRenderInfo & RI = (GR_Win32USPRenderInfo &)ri;
 	UT_uint32 iZoom = getZoomPercentage();
 	
-	if(iZoom == RI.m_iZoom && RI.s_pOwner == & ri)
+	if(iZoom == RI.m_iZoom && RI.s_pOwnerDraw == & ri)
 	{
 		// the buffer is up-to-date
 		return;
@@ -828,7 +843,7 @@ void GR_Win32USPGraphics::prepareToRenderChars(GR_RenderInfo & ri)
 	}
 
  	RI.m_iZoom  = iZoom;
-	RI.s_pOwner = &ri;
+	RI.s_pOwnerDraw = &ri;
 }
 
 void GR_Win32USPGraphics::renderChars(GR_RenderInfo & ri)
@@ -932,10 +947,16 @@ void GR_Win32USPGraphics::measureRenderedCharWidths(GR_RenderInfo & ri)
 	// remember the zoom at which we calculated this ...
 	RI.m_iZoom = iZoom;
 
-	if(RI.s_pOwner == & ri)
+	if(RI.s_pOwnerDraw == & ri)
 	{
 		// we currently own the static buffers; invalidate
-		RI.s_pOwner = NULL;
+		RI.s_pOwnerDraw = NULL;
+	}
+
+	if(RI.s_pOwnerCP == & ri)
+	{
+		// we currently own the static buffers; invalidate
+		RI.s_pOwnerCP = NULL;
 	}
 	
 	// now convert the whole lot to layout units
@@ -964,7 +985,7 @@ bool GR_Win32USPGraphics::_scriptBreak(GR_Win32USPRenderInfo &ri)
 {
 	UT_return_val_if_fail(ri.getType() == GRRI_WIN32_UNISCRIBE && ri.m_pText && ri.m_pItem, false);
 	
-	if(ri.s_pOwner != &ri)
+	if(ri.s_pOwnerChar != &ri)
 	{
 		UT_return_val_if_fail(ri.m_pText->getStatus() == UTIter_OK, false);
 		UT_uint32 iPosStart = ri.m_pText->getPosition();
@@ -973,7 +994,7 @@ bool GR_Win32USPGraphics::_scriptBreak(GR_Win32USPRenderInfo &ri)
 
 		UT_uint32 iLen = iPosEnd - iPosStart + 1; // including iPosEnd
 
-		ri.s_pOwner = &ri;
+		ri.s_pOwnerChar = &ri;
 		
 		for(UT_uint32 i = 0; i < iLen; ++i, ++(*(ri.m_pText)))
 		{
@@ -1078,8 +1099,11 @@ UT_sint32 GR_Win32USPGraphics::resetJustification(GR_RenderInfo & ri, bool bPerm
 		memset(RI.m_pJustify, 0, RI.m_iIndicesSize * sizeof(int));
 	}
 	
-	if(RI.s_pOwner == & RI)
-		RI.s_pOwner = NULL;
+	if(RI.s_pOwnerDraw == & RI)
+		RI.s_pOwnerDraw = NULL;
+
+	if(RI.s_pOwnerCP == & RI)
+		RI.s_pOwnerCP = NULL;
 	
 	return -iWidth2;
 }
@@ -1224,8 +1248,11 @@ void GR_Win32USPGraphics::justify(GR_RenderInfo & ri)
 		RI.m_pJustify = new int[RI.m_iIndicesSize];
 
 	// mark the static width caches dirty
-	if(RI.s_pOwner == & RI)
-		RI.s_pOwner = NULL;
+	if(RI.s_pOwnerDraw == & RI)
+		RI.s_pOwnerDraw = NULL;
+
+	if(RI.s_pOwnerCP == & RI)
+		RI.s_pOwnerCP = NULL;
 	
 	UT_return_if_fail(RI.m_pJustify);
 	memset(RI.m_pJustify, 0, RI.m_iIndicesSize * sizeof(int));
@@ -1267,7 +1294,7 @@ UT_uint32 GR_Win32USPGraphics::XYToPosition(const GR_RenderInfo & ri, UT_sint32 
 	int iTrail;
 	int * pAdvances = RI.m_pJustify ? RI.s_pJustifiedAdvances : RI.m_pAdvances;
 	
-	if(RI.m_pJustify && RI.s_pOwner != &RI)
+	if(RI.m_pJustify && RI.s_pOwnerCP != &RI)
 	{
 		UT_return_val_if_fail( RI.s_iAdvancesSize >= RI.m_iIndicesCount, 0 );
 		
@@ -1276,7 +1303,7 @@ UT_uint32 GR_Win32USPGraphics::XYToPosition(const GR_RenderInfo & ri, UT_sint32 
 			RI.s_pJustifiedAdvances[i] = RI.m_pAdvances[i] + RI.m_pJustify[i];
 		}
 
-		RI.s_pOwner = &RI;
+		RI.s_pOwnerCP = &RI;
 	}
 	
 	HRESULT hRes = fScriptXtoCP(x, RI.m_iLength, RI.m_iIndicesCount, RI.m_pClust, RI.m_pVisAttr, pAdvances,
@@ -1303,7 +1330,7 @@ void GR_Win32USPGraphics::positionToXY(const GR_RenderInfo & ri,
 
 	int * pAdvances = RI.m_pJustify ? RI.s_pJustifiedAdvances : RI.m_pAdvances;
 	
-	if(RI.m_pJustify && RI.s_pOwner != &RI)
+	if(RI.m_pJustify && RI.s_pOwnerCP != &RI)
 	{
 		UT_return_if_fail( RI.s_iAdvancesSize >= RI.m_iIndicesCount);
 		
@@ -1312,7 +1339,7 @@ void GR_Win32USPGraphics::positionToXY(const GR_RenderInfo & ri,
 			RI.s_pJustifiedAdvances[i] = RI.m_pAdvances[i] + RI.m_pJustify[i];
 		}
 
-		RI.s_pOwner = &RI;
+		RI.s_pOwnerCP = &RI;
 	}
 	
 	HRESULT hRes = fScriptCPtoX(RI.m_iOffset,
