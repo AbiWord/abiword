@@ -795,6 +795,13 @@ void PP_AttrProp::_clearEmptyProperties()
 	}
 }
 
+void PP_AttrProp::prune()
+{
+	_clearEmptyAttributes();
+	_clearEmptyProperties();
+}
+
+
 void PP_AttrProp::_clearEmptyAttributes()
 {
 	if(!m_pAttributes)

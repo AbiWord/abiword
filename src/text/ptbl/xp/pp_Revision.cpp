@@ -39,11 +39,13 @@ PP_Revision::PP_Revision(UT_uint32 Id, PP_RevisionType eType, const XML_Char * p
 		{
 			char * n = p;
 			p = strtok(NULL, ";");
-			UT_ASSERT_HARMLESS(p && n);
 
-			if(p && n)
+			// if we have no p, that means the property is being removed ...
+			char * v = p ? p : "";
+			
+			if(n)
 			{
-				setProperty(n,p);
+				setProperty(n,v);
 				p = strtok(NULL,":");
 			}
 			else
@@ -76,11 +78,11 @@ PP_Revision::PP_Revision(UT_uint32 Id, PP_RevisionType eType, const XML_Char * p
 		{
 			char * n = p;
 			p = strtok(NULL, ";");
-			UT_ASSERT_HARMLESS(p && n);
-
-			if(p && n)
+			char * v = p ? p : "";
+			
+			if(n)
 			{
-				setAttribute(n,p);
+				setAttribute(n,v);
 				p = strtok(NULL,":");
 			}
 			else
@@ -461,6 +463,9 @@ void PP_RevisionAttr::pruneForCumulativeResult()
 		--i;
 	}
 
+	// get rid of any empty props and attrs
+	r0->prune();
+	
 	// finally, remove the revision attribute if present
 	r0->setAttribute("revision", NULL);
 

@@ -135,9 +135,10 @@ public:
 
 	bool               getRevisionHidden() const {return m_bRevisionHidden;}
 
+	void prune();
+	
 protected:
 	void _computeCheckSum(void);
- private:
 	void _clearEmptyProperties();
 	void _clearEmptyAttributes();
 
