@@ -12315,28 +12315,10 @@ const XML_Char ** FV_View::getViewPersistentProps()
 	return pProps;
 }
 
-void FV_View::remeasureChars()
+void FV_View::rebuildLayout()
 {
-	fl_BlockLayout * pBL = getBlockAtPosition(2);
-
-	while(pBL)
-	{
-		pBL->setNeedsReformat();
-		
-		fp_Run * pRun = pBL->getFirstRun();
-		while(pRun)
-		{
-			pRun->markWidthDirty();
-			pRun = pRun->getNextRun();
-		}
-		
-		pBL = pBL->getNextBlockInDocument();
-	}
-	
-	
-	updateLayout();
+	m_pLayout->rebuildFromHere(static_cast<fl_DocSectionLayout *>(m_pLayout->getFirstSection()));	
 }
-
 
 fv_PropCache::fv_PropCache(void):
 	m_iTick(0),

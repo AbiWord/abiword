@@ -23,6 +23,7 @@
 #include "xap_Prefs.h"
 #include "xap_Frame.h"
 #include "xav_View.h"
+#include "ut_Win32OS.h"
 
 extern "C"  UT_uint16    wvLangToLIDConverter(const char * lang);
 extern "C"  const char * wvLIDToLangConverter(UT_uint16);
@@ -1279,21 +1280,29 @@ void GR_Win32USPGraphics::renderChars(GR_RenderInfo & ri)
 	// font; if we are drawing on screen and using printer metrics to do the layout, the
 	// ascent of the screen font can be smaller/greater and so we need to adjust the yoff
 	// accordingly
-	UT_sint32 iAscentScreen = pFont->getScreenAscent();
+	UT_sint32 yoff;
 
-	if(!iAscentScreen)
+	if(m_bPrint)
 	{
-		TEXTMETRIC tm = { 0 };
-		GetTextMetrics(m_hdc, &tm);
-		iAscentScreen = (UT_sint32)((double)tm.tmAscent*(double)getResolution()*100.0/
-									((double)getDeviceResolution()*(double)getZoomPercentage()));
-		
-		pFont->setScreenAscent(iAscentScreen);
+		yoff = _tduY(RI.m_yoff);
 	}
+	else
+	{
+		UT_sint32 iAscentScreen = pFont->getScreenAscent();
 
-	UT_sint32 iAscentPrint = pFont->getTextMetric().tmAscent * getResolution() / getDeviceResolution();
-	
-	UT_sint32 yoff = _tduY(RI.m_yoff + iAscentPrint - iAscentScreen);
+		if(!iAscentScreen)
+		{
+			TEXTMETRIC tm = { 0 };
+			GetTextMetrics(m_hdc, &tm);
+			iAscentScreen = (UT_sint32)((double)tm.tmAscent*(double)getResolution()*100.0/
+										((double)getDeviceResolution()*(double)getZoomPercentage()));
+		
+			pFont->setScreenAscent(iAscentScreen);
+		}
+
+		UT_sint32 iAscentPrint = pFont->getTextMetric().tmAscent * getResolution() / getDeviceResolution();
+		yoff = _tduY(RI.m_yoff + iAscentPrint - iAscentScreen);
+	}
 	
 	int * pJustify = RI.m_pJustify && RI.m_bRejustify ? RI.s_pJustify + iGlyphOffset : NULL;
 	
@@ -1334,7 +1343,6 @@ void GR_Win32USPGraphics::renderChars(GR_RenderInfo & ri)
 
 void GR_Win32USPGraphics::setPrintDC(HDC dc)
 {
-#if 1
 	// only do this for screen graphics
 	if(!m_bPrint && dc != m_printHDC)
 	{
@@ -1379,12 +1387,11 @@ void GR_Win32USPGraphics::setPrintDC(HDC dc)
 					GR_Graphics * pG = pView->getGraphics();
 
 					if(pG == this)
-						pView->remeasureChars();
+						pView->rebuildLayout();
 				}
 			}
 		}
 	}
-#endif
 }
 
 
@@ -1409,6 +1416,8 @@ void GR_Win32USPGraphics::measureRenderedCharWidths(GR_RenderInfo & ri)
 	UT_uint32 iPoints = (UT_uint32)pFont->getPointSize();
 #endif
 
+	bool bFontSetUpOnDC = false;
+	
 	// the script cache is always containing data for 100% zoom, we scale widths manually later
 	// but we need to refresh it if the printer changed
 	//if(iZoom != RI.m_iZoom)
@@ -1425,9 +1434,18 @@ void GR_Win32USPGraphics::measureRenderedCharWidths(GR_RenderInfo & ri)
 		{
 			// we also need to remeasure the font metrics as well
 			// and scale it down for the screen
+			_setupFontOnDC(pFont, false);
+			bFontSetUpOnDC = true;
+			
 			TEXTMETRIC tm = { 0 };
 			GetTextMetrics(getPrintDC(), &tm);
 
+#if 0 //def DEBUG
+			HDC printHDC = UT_GetDefaultPrinterDC();
+			TEXTMETRIC tm2 = { 0 };
+			GetTextMetrics(printHDC, &tm2);
+			DeleteDC(printHDC);
+#endif
 			pFont->setHeight(MulDiv(tm.tmHeight, getDeviceResolution(), m_nPrintLogPixelsY));
 			pFont->setAscent(MulDiv(tm.tmAscent, getDeviceResolution(), m_nPrintLogPixelsY));
 			pFont->setDescent(MulDiv(tm.tmDescent, getDeviceResolution(), m_nPrintLogPixelsY));
@@ -1442,7 +1460,12 @@ void GR_Win32USPGraphics::measureRenderedCharWidths(GR_RenderInfo & ri)
 	{
 		// need to make sure that the HDC has the correct font set
 		// we do not scale the font by zoom
-		_setupFontOnDC(pFont, false);
+		if(!bFontSetUpOnDC)
+		{
+			_setupFontOnDC(pFont, false);
+			bFontSetUpOnDC = true;
+		}
+		
 		hdc = m_printHDC ? m_printHDC : m_hdc;
 
 		// we remember the hdc for which we measured so we can remeasure when hdc changes
@@ -1468,6 +1491,8 @@ void GR_Win32USPGraphics::measureRenderedCharWidths(GR_RenderInfo & ri)
 	{
 		UT_ASSERT_HARMLESS( hdc == 0 );
 		_setupFontOnDC(pFont, false);
+		bFontSetUpOnDC = true;
+		
 		hdc = m_printHDC ? m_printHDC : m_hdc;
 
 		// we remember the hdc for which we measured so we can remeasure when hdc changes
@@ -2409,7 +2434,6 @@ void GR_Win32USPFont::_clearAnyCachedInfo()
 		m_sc = NULL;
 	}
 }
-
 
 GR_Win32USPFont::~GR_Win32USPFont()
 {

@@ -231,6 +231,7 @@ public:
 	virtual EV_EditMouseContext getMouseContext(UT_sint32 xPos, UT_sint32 yPos);
 	virtual EV_EditMouseContext getInsertionPointContext(UT_sint32 * pxPos, UT_sint32 * pyPos);
 	virtual void        updateLayout(void);
+	virtual void        rebuildLayout(void);
 	virtual bool		isSelectionEmpty(void) const;
 	virtual void		cmdUnselectSelection(void);
 	void				getDocumentRangeOfCurrentSelection(PD_DocumentRange * pdr);
@@ -706,8 +707,6 @@ public:
 	FV_BIDI_Order	    getBidiOrder()const {return m_eBidiOrder;}
 	void                setBidiOrder(FV_BIDI_Order o) {m_eBidiOrder = o;}
 
-	virtual void        remeasureChars();
-	
 protected:
 	void				_saveAndNotifyPieceTableChange(void);
 	void				_restorePieceTableState(void);
