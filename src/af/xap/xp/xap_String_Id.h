@@ -161,8 +161,8 @@ dcl(DLG_Zoom_PreviewFrame,				"Preview")
 
 /* Zoom tool bar -- Truncated to fit small combobox size*/
 dcl(TB_Zoom_PageWidth,					"Fit to Width")
-dcl(TB_Zoom_WholePage,					"Fit to Page")
-dcl(TB_Zoom_Percent, "Other")
+dcl(TB_Zoom_WholePage,					"Fit to Height")
+dcl(TB_Zoom_Percent, "Other...")
 
 /* Unix Print dialog */
 dcl(DLG_UP_PrintTitle,					"Print")
