@@ -746,7 +746,8 @@ bool FV_View::convertPositionedToInLine(fl_FrameLayout * pFrame)
 	UT_GenericVector<fl_BlockLayout *> vecBlocks;
 	fp_FrameContainer * pFC = static_cast<fp_FrameContainer *>(pFrame->getFirstContainer());
 	pFC->getBlocksAroundFrame(vecBlocks);
-	fl_BlockLayout * pBL = vecBlocks.getNthItem(0);
+	UT_sint32 iBlk = 0;
+	fl_BlockLayout * pBL = vecBlocks.getNthItem(iBlk);
 	fp_Line * pLine = static_cast<fp_Line *>(pBL->getFirstContainer());
 	bool bLoop = true;
 	while((pLine != NULL) && bLoop)
@@ -760,6 +761,15 @@ bool FV_View::convertPositionedToInLine(fl_FrameLayout * pFrame)
 				break;
 			}
 			pLine = static_cast<fp_Line *>(pLine->getNext());
+			if(pLine == NULL)
+			{
+				iBlk++;
+				if(iBlk < vecBlocks.getItemCount())
+				{
+					pBL = vecBlocks.getNthItem(iBlk);
+					pLine = static_cast<fp_Line *>(pBL->getFirstContainer());
+				}
+			}
 	}
 	if(pLine == NULL)
 	{
