@@ -19,7 +19,7 @@
 !endif
 !define VERSION "${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_MICRO}"
 
-!define INSTALLERNAME "setup_abiword.${VERSION_MAJOR}-${VERSION_MINOR}-${VERSION_MICRO}.exe"
+!define INSTALLERNAME "abiword-setup-${VERSION}.exe"
 
 !define APPSET  "AbiSuite"
 !define PROGRAMEXE "AbiWord.exe"
