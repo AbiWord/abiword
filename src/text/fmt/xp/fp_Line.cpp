@@ -2603,8 +2603,17 @@ void fp_Line::recalcMaxWidth(bool bDontClearIfNeeded)
 		iMaxWidth -= m_pBlock->getTextIndent();
 	}
 
-	// Check that there's actually room for content
-	UT_ASSERT(iMaxWidth > 0);
+	// Check that there's actually room for content -- assert is not good enough,
+	// we need to handle this; there are docs around that exhibit this (e.g. 6722)
+	// UT_ASSERT(iMaxWidth > 0);
+	if(iMaxWidth <= 0)
+	{
+		// we will ignore the block indents ...
+		// (we should probably change the block indents)
+		iX = 0;
+		iMaxWidth = getContainer()->getWidth();
+	}
+	
 	if(getPage())
 	{
 		UT_ASSERT(iMaxWidth <= getPage()->getWidth());

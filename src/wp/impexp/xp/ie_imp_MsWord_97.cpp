@@ -2431,7 +2431,7 @@ int IE_Imp_MsWord_97::_beginPara (wvParseStruct *ps, UT_uint32 tag,
 		  {
 //			  This can happen if a Table is the first strux in a HdrFtr
 			  UT_DEBUGMSG(("Inserting HdrFtr strux just before table \n"));
-			  _handleHeadersText(ps->currentcp+1, false);
+			  _handleHeadersText(ps->currentcp +1, false);
 		  }
 		  if (!m_bInTable) 
 		  {
@@ -2865,6 +2865,11 @@ int IE_Imp_MsWord_97::_beginChar (wvParseStruct *ps, UT_uint32 tag,
 	   ((m_iCurrentHeader < m_iHeadersCount && m_pHeaders &&
 		 m_pHeaders[m_iCurrentHeader].type == HF_Unsupported)))
 		return 0;
+
+	/*
+	if(ps->currentcp == m_iHeadersStart && !m_bInHeaders)
+		_handleHeadersText(ps->currentcp, false);
+	*/
 	
 	// the header/footnote/endnote sections are special; because the
 	// parser treats them as a continuation of the document, we end up
@@ -5812,6 +5817,7 @@ bool IE_Imp_MsWord_97::_handleHeadersText(UT_uint32 iDocPosition,bool bDoBlockIn
 				else
 				{
 					// just gobble the character ...
+					m_bInHeaders = true;
 					return false;
 				}
 			}
