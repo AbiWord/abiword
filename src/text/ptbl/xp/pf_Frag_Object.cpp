@@ -53,13 +53,15 @@ void pf_Frag_Object::setIndexAP(PT_AttrPropIndex indexNewAP)
 }
 
 UT_Bool pf_Frag_Object::createSpecialChangeRecord(PX_ChangeRecord ** ppcr,
-												  PT_DocPosition dpos) const
+												  PT_DocPosition dpos,
+												  PT_BlockOffset blockOffset) const
 {
 	UT_ASSERT(ppcr);
 	
 	PX_ChangeRecord_Object * pcr
 		= new PX_ChangeRecord_Object(PX_ChangeRecord::PXT_InsertObject,
-									 dpos, m_indexAP, m_objectType);
+									 dpos, m_indexAP, m_objectType,
+									 blockOffset);
 	if (!pcr)
 		return UT_FALSE;
 

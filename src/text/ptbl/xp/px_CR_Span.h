@@ -49,7 +49,8 @@ public:
 						 PT_DocPosition position,
 						 PT_AttrPropIndex indexAP,
 						 PT_BufIndex bufIndex,
-						 UT_uint32 length);
+						 UT_uint32 length,
+						 PT_BlockOffset blockOffset);
 	~PX_ChangeRecord_Span();
 
 	virtual PX_ChangeRecord * reverse(void) const;
@@ -57,10 +58,12 @@ public:
 	UT_uint32				getLength(void) const;
 	PT_BufIndex				getBufIndex(void) const;
 	void					coalesce(const PX_ChangeRecord_Span * pcr);
+	PT_BlockOffset			getBlockOffset(void) const;
 	
 protected:
 	PT_BufIndex				m_bufIndex;	/* bufIndex to our text */
 	UT_uint32				m_length;	/* length of our text */
+	PT_BlockOffset			m_blockOffset; /* offset of span from beginning of paragraph */
 };
 
 #endif /* PX_CHANGERECORD_SPAN_H */

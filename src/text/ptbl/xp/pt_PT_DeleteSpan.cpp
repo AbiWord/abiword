@@ -130,12 +130,14 @@ UT_Bool pt_PieceTable::_deleteSpanWithNotify(PT_DocPosition dpos,
 	// we do this before the actual change because various fields that
 	// we need are blown away during the delete.  we then notify all
 	// listeners of the change.
+
+	PT_BlockOffset blockOffset = _computeBlockOffset(pfs,pft) + fragOffset;
 		
 	PX_ChangeRecord_Span * pcr
 		= new PX_ChangeRecord_Span(PX_ChangeRecord::PXT_DeleteSpan,
 								   dpos, pft->getIndexAP(),
 								   m_varset.getBufIndex(pft->getBufIndex(),fragOffset),
-								   length);
+								   length,blockOffset);
 	UT_ASSERT(pcr);
 
 #ifndef PT_NOTIFY_BEFORE_DELETES
@@ -220,9 +222,8 @@ UT_Bool pt_PieceTable::deleteSpan(PT_DocPosition dpos1,
 	PT_BlockOffset fragOffset_First;
 	PT_BlockOffset fragOffset_End;
 	
-	UT_Bool bFound1 = getFragFromPosition(dpos1,&pf_First,&fragOffset_First);
-	UT_Bool bFound2 = getFragFromPosition(dpos2,&pf_End,&fragOffset_End);
-	UT_ASSERT(bFound1 && bFound2);
+	UT_Bool bFound = getFragsFromPositions(dpos1,dpos2,&pf_First,&fragOffset_First,&pf_End,&fragOffset_End);
+	UT_ASSERT(bFound);
 
 	if ((fragOffset_End==0) && pf_End->getPrev() && (pf_End->getPrev()->getType() == pf_Frag::PFT_Text))
 	{

@@ -271,6 +271,11 @@ UT_Bool pt_PieceTable::insertSpan(PT_DocPosition dpos,
 		pf = pf->getPrev();
 		fragOffset = pf->getLength();
 	}
+
+	pf_Frag_Strux * pfs = NULL;
+	UT_Bool bFoundStrux = _getStruxFromNonStruxFrag(pf,&pfs);
+	UT_ASSERT(bFoundStrux);
+	PT_BlockOffset blockOffset = _computeBlockOffset(pfs,pf) + fragOffset;
 	
 	PT_AttrPropIndex indexAP = _chooseIndexAP(pf,fragOffset);
 
@@ -284,12 +289,8 @@ UT_Bool pt_PieceTable::insertSpan(PT_DocPosition dpos,
 
 	PX_ChangeRecord_Span * pcr
 		= new PX_ChangeRecord_Span(PX_ChangeRecord::PXT_InsertSpan,
-								   dpos,indexAP,bi,length);
+								   dpos,indexAP,bi,length,blockOffset);
 	UT_ASSERT(pcr);
-
-	pf_Frag_Strux * pfs = NULL;
-	UT_Bool bFoundStrux = _getStruxFromPosition(pcr->getPosition(),&pfs);
-	UT_ASSERT(bFoundStrux);
 
 	if (_canCoalesceInsertSpan(pcr))
 	{

@@ -44,15 +44,18 @@ public:
 	PX_ChangeRecord_Object(PXType type,
 						   PT_DocPosition position,
 						   PT_AttrPropIndex indexAP,
-						   PTObjectType ObjectType);
+						   PTObjectType ObjectType,
+						   PT_BlockOffset blockOffset);
 	~PX_ChangeRecord_Object();
 
 	virtual PX_ChangeRecord * reverse(void) const;
 	
 	PTObjectType			getObjectType(void) const;
+	PT_BlockOffset			getBlockOffset(void) const;
 
 protected:
 	PTObjectType			m_objectType;		/* our type (image, etc.) */
+	PT_BlockOffset			m_blockOffset; /* offset of span from beginning of paragraph */
 };
 
 #endif /* PX_CHANGERECORD_OBJECT_H */

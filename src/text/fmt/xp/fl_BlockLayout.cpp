@@ -763,8 +763,11 @@ UT_Bool	fl_BlockLayout::getBlockBuf(UT_GrowBuf * pgb) const
 fp_Run* fl_BlockLayout::findPointCoords(PT_DocPosition iPos, UT_Bool bEOL, UT_sint32& x, UT_sint32& y, UT_sint32& height)
 {
 	// find the run which has this position inside it.
-	UT_ASSERT(iPos >= getPosition());
-	UT_uint32 iRelOffset = iPos - getPosition();
+
+	PT_DocPosition dPos = getPosition();
+	
+	UT_ASSERT(iPos >= dPos);
+	UT_uint32 iRelOffset = iPos - dPos;
 
 	if (!m_pFirstLine)
 	{
@@ -1840,10 +1843,9 @@ UT_Bool	fl_BlockLayout::_doInsertRun(fp_Run* pNewRun)
 UT_Bool fl_BlockLayout::doclistener_insertSpan(const PX_ChangeRecord_Span * pcrs)
 {
 	UT_ASSERT(pcrs->getType()==PX_ChangeRecord::PXT_InsertSpan);
-
-	UT_ASSERT(pcrs->getPosition() >= getPosition());
+	//UT_ASSERT(pcrs->getPosition() >= getPosition());		/* valid assert, but very expensive */
 	
-	PT_BlockOffset blockOffset = (pcrs->getPosition() - getPosition());
+	PT_BlockOffset blockOffset = pcrs->getBlockOffset();
 	UT_uint32 len = pcrs->getLength();
 	UT_ASSERT(len>0);
 
@@ -2068,7 +2070,7 @@ UT_Bool fl_BlockLayout::doclistener_deleteSpan(const PX_ChangeRecord_Span * pcrs
 {
 	UT_ASSERT(pcrs->getType()==PX_ChangeRecord::PXT_DeleteSpan);
 			
-	PT_BlockOffset blockOffset = (pcrs->getPosition() - getPosition());
+	PT_BlockOffset blockOffset = pcrs->getBlockOffset();
 	UT_uint32 len = pcrs->getLength();
 	UT_ASSERT(len>0);
 
@@ -2092,7 +2094,7 @@ UT_Bool fl_BlockLayout::doclistener_changeSpan(const PX_ChangeRecord_SpanChange 
 {
 	UT_ASSERT(pcrsc->getType()==PX_ChangeRecord::PXT_ChangeSpan);
 		
-	PT_BlockOffset blockOffset = (pcrsc->getPosition() - getPosition());
+	PT_BlockOffset blockOffset = pcrsc->getBlockOffset();
 	UT_uint32 len = pcrsc->getLength();
 	UT_ASSERT(len > 0);
 					
@@ -2613,7 +2615,7 @@ UT_Bool fl_BlockLayout::doclistener_insertObject(const PX_ChangeRecord_Object * 
 	case PTO_Image:
 	{
 		UT_DEBUGMSG(("Edit:InsertObject:Image:\n"));
-		blockOffset = (pcro->getPosition() - getPosition());
+		blockOffset = pcro->getBlockOffset();
 		_doInsertImageRun(blockOffset, pcro);
 		break;
 	}
@@ -2621,7 +2623,7 @@ UT_Bool fl_BlockLayout::doclistener_insertObject(const PX_ChangeRecord_Object * 
 	case PTO_Field:
 	{
 		UT_DEBUGMSG(("Edit:InsertObject:Field:\n"));
-		blockOffset = (pcro->getPosition() - getPosition());
+		blockOffset = pcro->getBlockOffset();
 		_doInsertFieldRun(blockOffset, pcro);
 		break;
 	}
@@ -2654,7 +2656,7 @@ UT_Bool fl_BlockLayout::doclistener_deleteObject(const PX_ChangeRecord_Object * 
 	case PTO_Image:
 	{
 		UT_DEBUGMSG(("Edit:DeleteObject:Image:\n"));
-		blockOffset = (pcro->getPosition() - getPosition());
+		blockOffset = pcro->getBlockOffset();
 		_delete(blockOffset, 1);
 		break;
 	}
@@ -2662,7 +2664,7 @@ UT_Bool fl_BlockLayout::doclistener_deleteObject(const PX_ChangeRecord_Object * 
 	case PTO_Field:
 	{
 		UT_DEBUGMSG(("Edit:DeleteObject:Field:\n"));
-		blockOffset = (pcro->getPosition() - getPosition());
+		blockOffset = pcro->getBlockOffset();
 		_delete(blockOffset, 1);
 		break;
 	}		
@@ -2698,7 +2700,7 @@ UT_Bool fl_BlockLayout::doclistener_changeObject(const PX_ChangeRecord_ObjectCha
 	case PTO_Field:
 	{
 		UT_DEBUGMSG(("Edit:ChangeObject:Field:\n"));
-		PT_BlockOffset blockOffset = (pcroc->getPosition() - getPosition());
+		PT_BlockOffset blockOffset = pcroc->getBlockOffset();
 		fp_Run* pRun = m_pFirstRun;
 		while (pRun)
 		{

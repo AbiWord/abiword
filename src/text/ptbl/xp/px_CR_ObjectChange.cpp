@@ -28,12 +28,14 @@ PX_ChangeRecord_ObjectChange::PX_ChangeRecord_ObjectChange(PXType type,
 														   PT_AttrPropIndex indexOldAP,
 														   PT_AttrPropIndex indexNewAP,
 														   PTObjectType pto,
-														   PTChangeFmt ptc)
+														   PTChangeFmt ptc,
+														   PT_BlockOffset blockOffset)
 	: PX_ChangeRecord(type, position, indexNewAP)
 {
 	m_ptc = ptc;
 	m_indexOldAP = indexOldAP;
 	m_objectType = pto;
+	m_blockOffset = blockOffset;
 }
 
 PX_ChangeRecord_ObjectChange::~PX_ChangeRecord_ObjectChange()
@@ -49,7 +51,8 @@ PX_ChangeRecord * PX_ChangeRecord_ObjectChange::reverse(void) const
 										   m_position,
 										   m_indexAP,m_indexOldAP,
 										   m_objectType,
-										   ptcRev);
+										   ptcRev,
+										   m_blockOffset);
 	UT_ASSERT(pcr);
 	return pcr;
 }
@@ -62,4 +65,9 @@ PT_AttrPropIndex PX_ChangeRecord_ObjectChange::getOldIndexAP(void) const
 PTObjectType PX_ChangeRecord_ObjectChange::getObjectType(void) const
 {
 	return m_objectType;
+}
+
+PT_BlockOffset PX_ChangeRecord_ObjectChange::getBlockOffset(void) const
+{
+	return m_blockOffset;
 }

@@ -38,7 +38,8 @@ public:
 
 	PTObjectType			getObjectType(void) const;
 	virtual UT_Bool			createSpecialChangeRecord(PX_ChangeRecord ** ppcr,
-													  PT_DocPosition dpos) const;
+													  PT_DocPosition dpos,
+													  PT_BlockOffset blockOffset) const;
 
 	PT_AttrPropIndex		getIndexAP(void) const;
 	void					setIndexAP(PT_AttrPropIndex indexNewAP);

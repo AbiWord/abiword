@@ -72,6 +72,11 @@ UT_Bool pt_PieceTable::insertObject(PT_DocPosition dpos,
 	UT_Bool bFound = getFragFromPosition(dpos,&pf,&fragOffset);
 	UT_ASSERT(bFound);
 
+	pf_Frag_Strux * pfs = NULL;
+	UT_Bool bFoundStrux = _getStruxFromNonStruxFrag(pf,&pfs);
+	UT_ASSERT(bFoundStrux);
+	PT_BlockOffset blockOffset = _computeBlockOffset(pfs,pf) + fragOffset;
+
 	if (!_insertObject(pf,fragOffset,pto,indexAP))
 		return UT_FALSE;
 	
@@ -80,12 +85,8 @@ UT_Bool pt_PieceTable::insertObject(PT_DocPosition dpos,
 
 	PX_ChangeRecord_Object * pcr
 		= new PX_ChangeRecord_Object(PX_ChangeRecord::PXT_InsertObject,
-									 dpos,indexAP,pto);
+									 dpos,indexAP,pto,blockOffset);
 	UT_ASSERT(pcr);
-
-	pf_Frag_Strux * pfs = NULL;
-	UT_Bool bFoundStrux = _getStruxFromPosition(pcr->getPosition(),&pfs);
-	UT_ASSERT(bFoundStrux);
 
 	m_history.addChangeRecord(pcr);
 	m_pDocument->notifyListeners(pfs,pcr);

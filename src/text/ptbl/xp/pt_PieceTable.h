@@ -130,6 +130,10 @@ public:
 													   PL_StruxFmtHandle * psfh) const;
 
 	void					clearTemporarySpanFmt(void);
+
+	UT_Bool					getFragsFromPositions(PT_DocPosition dPos1, PT_DocPosition dPos2,
+												  pf_Frag ** ppf1, PT_BlockOffset * pOffset1,
+												  pf_Frag ** ppf2, PT_BlockOffset * pOffset2) const;
 	
 	// TODO add stuff for objects like in-line images.
 
@@ -248,7 +252,9 @@ protected:
 														   const XML_Char ** properties);
 	void					_chooseBaseIndexAPForTempSpan(pf_Frag * pf, PT_BlockOffset fragOffset,
 														  PT_AttrPropIndex * papi) const;
-	
+
+	UT_Bool					_getStruxFromNonStruxFrag(pf_Frag * pfStart, pf_Frag_Strux ** ppfs) const;
+	UT_uint32				_computeBlockOffset(pf_Frag_Strux * pfs,pf_Frag * pfTarget) const;
 
 	PTState					m_pts;		/* are we loading or editing */
 	pt_VarSet				m_varset;

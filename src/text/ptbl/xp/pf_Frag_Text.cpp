@@ -54,14 +54,15 @@ void pf_Frag_Text::setIndexAP(PT_AttrPropIndex indexNewAP)
 }
 
 UT_Bool pf_Frag_Text::createSpecialChangeRecord(PX_ChangeRecord ** ppcr,
-												PT_DocPosition dpos) const
+												PT_DocPosition dpos,
+												PT_BlockOffset blockOffset) const
 {
 	UT_ASSERT(ppcr);
 	
 	PX_ChangeRecord * pcr
 		= new PX_ChangeRecord_Span(PX_ChangeRecord::PXT_InsertSpan,
 								   dpos, m_indexAP,
-								   m_bufIndex,m_length);
+								   m_bufIndex,m_length,blockOffset);
 	if (!pcr)
 		return UT_FALSE;
 

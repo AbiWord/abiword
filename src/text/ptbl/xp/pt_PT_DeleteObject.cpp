@@ -51,9 +51,12 @@ UT_Bool pt_PieceTable::_deleteObjectWithNotify(PT_DocPosition dpos,
 	UT_ASSERT(length == pfo->getLength());
 	UT_ASSERT(fragOffset == 0);
 
+	PT_BlockOffset blockOffset = _computeBlockOffset(pfs,pfo) + fragOffset;
+
 	PX_ChangeRecord_Object * pcr
 		= new PX_ChangeRecord_Object(PX_ChangeRecord::PXT_DeleteObject,
-									 dpos, pfo->getIndexAP(), pfo->getObjectType());
+									 dpos, pfo->getIndexAP(), pfo->getObjectType(),
+									 blockOffset);
 	UT_ASSERT(pcr);
 
 	// actually remove the fragment from the list and delete it.

@@ -75,7 +75,7 @@ UT_Bool fl_DocListener::populate(PL_StruxFmtHandle sfh,
 			fl_Layout * pL = (fl_Layout *)sfh;
 			UT_ASSERT(pL->getType() == PTX_Block);
 			fl_BlockLayout * pBL = static_cast<fl_BlockLayout *>(pL);
-			PT_BlockOffset blockOffset = (pcr->getPosition() - pBL->getPosition());
+			PT_BlockOffset blockOffset = pcrs->getBlockOffset();
 			UT_uint32 len = pcrs->getLength();
 			bResult = pBL->doclistener_populateSpan(pcrs, blockOffset, len);
 			goto finish_up;
@@ -88,7 +88,7 @@ UT_Bool fl_DocListener::populate(PL_StruxFmtHandle sfh,
 			fl_Layout * pL = (fl_Layout *)sfh;
 			UT_ASSERT(pL->getType() == PTX_Block);
 			fl_BlockLayout * pBL = static_cast<fl_BlockLayout *>(pL);
-			PT_BlockOffset blockOffset = (pcr->getPosition() - pBL->getPosition());
+			PT_BlockOffset blockOffset = pcro->getBlockOffset();
 
 			bResult = pBL->doclistener_populateObject(blockOffset,pcro);
 			goto finish_up;

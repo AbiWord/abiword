@@ -25,10 +25,12 @@
 PX_ChangeRecord_Object::PX_ChangeRecord_Object(PXType type,
 											   PT_DocPosition position,
 											   PT_AttrPropIndex indexAP,
-											   PTObjectType objectType)
+											   PTObjectType objectType,
+											   PT_BlockOffset blockOffset)
 	: PX_ChangeRecord(type, position, indexAP)
 {
 	m_objectType = objectType;
+	m_blockOffset = blockOffset;
 }
 
 PX_ChangeRecord_Object::~PX_ChangeRecord_Object()
@@ -38,7 +40,7 @@ PX_ChangeRecord_Object::~PX_ChangeRecord_Object()
 PX_ChangeRecord * PX_ChangeRecord_Object::reverse(void) const
 {
 	PX_ChangeRecord_Object * pcr
-		= new PX_ChangeRecord_Object(getRevType(),m_position,m_indexAP,m_objectType);
+		= new PX_ChangeRecord_Object(getRevType(),m_position,m_indexAP,m_objectType,m_blockOffset);
 	UT_ASSERT(pcr);
 	return pcr;
 }
@@ -46,4 +48,9 @@ PX_ChangeRecord * PX_ChangeRecord_Object::reverse(void) const
 PTObjectType PX_ChangeRecord_Object::getObjectType(void) const
 {
 	return m_objectType;
+}
+
+PT_BlockOffset PX_ChangeRecord_Object::getBlockOffset(void) const
+{
+	return m_blockOffset;
 }

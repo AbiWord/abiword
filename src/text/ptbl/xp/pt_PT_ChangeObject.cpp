@@ -64,6 +64,8 @@ UT_Bool pt_PieceTable::_fmtChangeObjectWithNotify(PTChangeFmt ptc,
 		SETP(pfragOffsetNewEnd, 0);
 		return UT_TRUE;
 	}
+
+	PT_BlockOffset blockOffset = _computeBlockOffset(pfs,pfo) + fragOffset;
 	
 	// we do this before the actual change because various fields that
 	// we need may be blown away during the change.  we then notify all
@@ -72,7 +74,7 @@ UT_Bool pt_PieceTable::_fmtChangeObjectWithNotify(PTChangeFmt ptc,
 	PX_ChangeRecord_ObjectChange * pcr
 		= new PX_ChangeRecord_ObjectChange(PX_ChangeRecord::PXT_ChangeObject,
 										   dpos, indexOldAP,indexNewAP,
-										   pfo->getObjectType(),ptc);
+										   pfo->getObjectType(),ptc,blockOffset);
 	UT_ASSERT(pcr);
 
 	// apply the change to this fragment

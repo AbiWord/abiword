@@ -405,6 +405,44 @@ UT_Bool pt_PieceTable::getFragFromPosition(PT_DocPosition docPos,
 
 	return UT_TRUE;
 }
+
+UT_Bool pt_PieceTable::getFragsFromPositions(PT_DocPosition dPos1, PT_DocPosition dPos2,
+											 pf_Frag ** ppf1, PT_BlockOffset * pOffset1,
+											 pf_Frag ** ppf2, PT_BlockOffset * pOffset2) const
+{
+	// compute the (fragment,offset) pairs for each position given.
+	
+	UT_ASSERT(dPos1 <= dPos2);
+	UT_ASSERT(ppf1);
+	UT_ASSERT(pOffset1);
+	
+	// the first set has to be done the hard way.
+	
+	if (!getFragFromPosition(dPos1,ppf1,pOffset1))
+		return UT_FALSE;
+
+	// now get the second set relative to the first.
+
+	PT_DocPosition deltaPos = dPos2 - dPos1;
+	PT_BlockOffset offset = *pOffset1;
+	pf_Frag * pf = *ppf1;
+	UT_uint32 length = pf->getLength();
+	while (offset+deltaPos >= length)
+	{
+		deltaPos -= (length - offset);
+		offset = 0;
+		if (pf->getType() == pf_Frag::PFT_EndOfDoc)
+			break;						// TODO if we haven't quite reached dPos2, we should probably complain...
+		pf = pf->getNext();
+		length = pf->getLength();
+	}
+
+	if (ppf2)
+		*ppf2 = pf;
+	if (pOffset2)
+		*pOffset2 = offset+deltaPos;
+	return UT_TRUE;
+}
 	
 UT_Bool pt_PieceTable::getStruxFromPosition(PL_ListenerId listenerId,
 											PT_DocPosition docPos,
@@ -505,3 +543,37 @@ UT_Bool pt_PieceTable::_getStruxOfTypeFromPosition(PT_DocPosition dpos,
 	
 	return UT_FALSE;
 }
+
+UT_Bool pt_PieceTable::_getStruxFromNonStruxFrag(pf_Frag * pfStart, pf_Frag_Strux ** ppfs) const
+{
+	// return the strux frag immediately prior to (containing)
+	// the given non-strux fragment.
+
+	UT_ASSERT((pfStart->getType() != pf_Frag::PFT_Strux));
+	*ppfs = NULL;
+
+	pf_Frag * pf;
+
+	for (pf=pfStart->getPrev(); (pf && (pf->getType() != pf_Frag::PFT_Strux)); pf=pf->getPrev())
+		;
+	if (!pf)
+		return UT_FALSE;
+
+	*ppfs = static_cast<pf_Frag_Strux *>(pf);
+	return UT_TRUE;
+}
+
+UT_uint32 pt_PieceTable::_computeBlockOffset(pf_Frag_Strux * pfs,pf_Frag * pfTarget) const
+{
+	// return the block offset of the beginning of pfTarget from the end of pfs.
+
+	UT_uint32 sum;
+	pf_Frag * pf;
+
+	for (pf=pfs->getNext(), sum=0; (pf!=pfTarget); sum+=pf->getLength(), pf=pf->getNext())
+		;
+
+	return sum;
+}
+
+	

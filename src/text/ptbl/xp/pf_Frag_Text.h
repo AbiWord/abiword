@@ -40,7 +40,8 @@ public:
 	virtual ~pf_Frag_Text();
 	
 	virtual UT_Bool			createSpecialChangeRecord(PX_ChangeRecord ** ppcr,
-													  PT_DocPosition dpos) const;
+													  PT_DocPosition dpos,
+													  PT_BlockOffset blockOffset) const;
 	PT_BufIndex				getBufIndex(void) const;
 	PT_AttrPropIndex		getIndexAP(void) const;
 	void					setIndexAP(PT_AttrPropIndex indexNewAP);

@@ -283,11 +283,13 @@ UT_Bool pt_PieceTable::_fmtChangeSpanWithNotify(PTChangeFmt ptc,
 	// we need may be blown away during the change.  we then notify all
 	// listeners of the change.
 
+	PT_BlockOffset blockOffset = _computeBlockOffset(pfs,pft) + fragOffset;
+
 	PX_ChangeRecord_SpanChange * pcr
 		= new PX_ChangeRecord_SpanChange(PX_ChangeRecord::PXT_ChangeSpan,
 										 dpos, indexOldAP,indexNewAP, ptc,
 										 m_varset.getBufIndex(pft->getBufIndex(),fragOffset),
-										 length);
+										 length,blockOffset);
 	UT_ASSERT(pcr);
 	UT_Bool bResult = _fmtChangeSpan(pft,fragOffset,length,indexNewAP,ppfNewEnd,pfragOffsetNewEnd);
 
@@ -324,10 +326,23 @@ UT_Bool pt_PieceTable::changeSpanFmt(PTChangeFmt ptc,
 	pf_Frag * pf_First;
 	pf_Frag * pf_End;
 	PT_BlockOffset fragOffset_First;
-	
-	UT_Bool bFound1 = getFragFromPosition(dpos1,&pf_First,&fragOffset_First);
-	UT_Bool bFound2 = getFragFromPosition(dpos2,&pf_End,NULL);
-	UT_ASSERT(bFound1 && bFound2);
+	PT_BlockOffset fragOffset_End;
+
+	UT_Bool bFound = getFragsFromPositions(dpos1,dpos2,&pf_First,&fragOffset_First,&pf_End,&fragOffset_End);
+	UT_ASSERT(bFound);
+
+#if 0
+	{
+		pf_Frag * pf1, * pf2;
+		PT_BlockOffset fo1, fo2;
+
+		UT_Bool bFound1 = getFragFromPosition(dpos1,&pf1,&fo1);
+		UT_Bool bFound2 = getFragFromPosition(dpos2,&pf2,&fo2);
+		UT_ASSERT(bFound1 && bFound2);
+		UT_ASSERT((pf1==pf_First) && (fragOffset_First==fo1));
+		UT_ASSERT((pf2==pf_End) && (fragOffset_End==fo2));
+	}
+#endif	
 
 	// see if the amount of text to be changed is completely
 	// contained within a single fragment.  if so, we have a
