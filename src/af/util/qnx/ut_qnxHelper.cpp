@@ -112,3 +112,26 @@ int  UT_QNXBlockWidget(PtWidget_t *widget, int block) {
 	return 0;
 }
 
+int  UT_QNXComboSetPos(PtWidget_t *widget, int index) {
+	PtArg_t  arg;
+
+	UT_ASSERT(widget);
+
+	PtSetArg(&arg, Pt_ARG_CBOX_SEL_ITEM, index, 0);
+	PtSetResources(widget, 1, &arg);
+
+	return 0;
+}
+
+int  UT_QNXComboGetPos(PtWidget_t *widget) {
+	PtArg_t  arg;
+	int      *index = NULL;
+
+	UT_ASSERT(widget);
+
+	PtSetArg(&arg, Pt_ARG_CBOX_SEL_ITEM, &index, 0);
+	PtGetResources(widget, 1, &arg);
+
+	return (index) ? *index : 0;
+}
+

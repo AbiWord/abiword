@@ -17,12 +17,13 @@
  * 02111-1307, USA.
  */
 
-#ifndef UT_QNXHELER_H
+#ifndef UT_QNXHELPER_H
 #define UT_QNXHELPER_H
 
 #include <Pt.h>
 
-#define ABI_DEFAULT_BUTTON_WIDTH 80
+#define ABI_DEFAULT_BUTTON_WIDTH 	80
+#define ABI_MODAL_MARGIN_SIZE 		10
 #define ABI_MODAL_WINDOW_RENDER_FLAGS (Ph_WM_RENDER_RESIZE | Ph_WM_RENDER_MIN | \
 									   Ph_WM_RENDER_MAX | Ph_WM_RENDER_HELP | \
 									   Ph_WM_RENDER_COLLAPSE | Ph_WM_RENDER_MENU | \
@@ -52,5 +53,11 @@ int UT_QNXGetWidgetArea(PtWidget_t *widget, short *x, short *y, unsigned short *
  a window.
 */
 int  UT_QNXBlockWidget(PtWidget_t *widget, int block);
+
+/*
+ Get and set the current combo box item selected.
+*/
+int  UT_QNXComboSetPos(PtWidget_t *widget, int index);
+int  UT_QNXComboGetPos(PtWidget_t *widget);
 
 #endif /* UT_QNXHELPER_H */
