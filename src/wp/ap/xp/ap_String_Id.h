@@ -1253,7 +1253,7 @@ dcl(MENU_STATUSLINE_FMT_DOCUMENT,"Setup your document's page properties such as 
 dcl(MENU_STATUSLINE_FMT_BORDERS,"Add borders and shading to the selection")
 dcl(MENU_STATUSLINE_FMT_HDRFTR,"Set the types of Headers and Footers")
 dcl(MENU_STATUSLINE_FMT_FOOTNOTES,"Set the types of Footnotes and Endnotes")
-dcl(MENU_STATUSLINE_FMT_TABLEOFCONTENTS,"Set the type and styles of the Table Of Contents")
+dcl(MENU_STATUSLINE_FMT_TABLEOFCONTENTS,"Set the type and styles of the Table of Contents")
 dcl(MENU_STATUSLINE_FMT_COLUMNS,"Change the number of columns")
 dcl(MENU_STATUSLINE_FMT_TOGGLECASE,"Change the case of the selected text")
 dcl(MENU_STATUSLINE_FMT_BACKGROUND,"Change your document's page background")
