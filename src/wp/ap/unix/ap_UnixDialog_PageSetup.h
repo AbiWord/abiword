@@ -37,7 +37,7 @@ public:
 	virtual void event_Cancel (void);
 	virtual void event_WindowDelete (void);
 
-	virtual void event_PageSizeChanged ();
+	virtual void event_PageSizeChanged (fp_PageSize::Predefined pageSize);
 	virtual void event_PageUnitsChanged ();
 	virtual void event_MarginUnitsChanged ();
 

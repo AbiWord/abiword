@@ -40,10 +40,15 @@ public:
 	{
 		// If you append a predefined pagesize here, don't forget
 		// to update the cpp accordingly.
-		A0, A1, A2, A3, A4, A5, A6,
-		B0, B1, B2, B3, B4, B5, B5_Japan, B6,
-		Legal, Folio, Letter, Half_Letter, 
 
+		// Metric sizes, DIN 476
+		DIN_4A, DIN_2A, A0, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10,
+		DIN_4B, DIN_2B, B0, B1, B2, B3, B4, B5, B6, B7, B8, B9, B10,
+		C0, C1, C2, C3, C4, C6, C7, C8, C9, C10,
+		// JIS P 0138-61 -- should call this JB5
+		B5_Japan,
+		
+		Legal, Folio, Letter, Half_Letter, Executive,
 		Tabloid_Ledger, Monarch, SuperB,
 		Envelope_Commercial, Envelope_Monarch,
 		Envelope_DL, Envelope_C5, EuroPostcard,

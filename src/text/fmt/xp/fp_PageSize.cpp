@@ -37,6 +37,10 @@ const private_pagesize_sizes
 pagesizes[fp_PageSize::_last_predefined_pagesize_dont_use_] =
 {
 	// the A sizes
+	{1682.0, 2378.0, fp_PageSize::mm,	"4A", 
+	  MARGIN_UNKNOWN, MARGIN_UNKNOWN, MARGIN_UNKNOWN, MARGIN_UNKNOWN },
+	{1189.0, 1682.0, fp_PageSize::mm,	"2A", 
+	  MARGIN_UNKNOWN, MARGIN_UNKNOWN, MARGIN_UNKNOWN, MARGIN_UNKNOWN },
 	{ 841.0, 1189.0, fp_PageSize::mm,	"A0", 
 	  MARGIN_UNKNOWN, MARGIN_UNKNOWN, MARGIN_UNKNOWN, MARGIN_UNKNOWN },
 	{ 594.0,  841.0, fp_PageSize::mm,	"A1",
@@ -48,8 +52,20 @@ pagesizes[fp_PageSize::_last_predefined_pagesize_dont_use_] =
 	{ 148.0,  210.0, fp_PageSize::mm,	"A5", 28.0, 28.0, 28.0, 28.0 },
 	{ 105.0,  148.0, fp_PageSize::mm,	"A6",
 	  MARGIN_UNKNOWN, MARGIN_UNKNOWN, MARGIN_UNKNOWN, MARGIN_UNKNOWN },
+	{  74.0,  105.0, fp_PageSize::mm,	"A7",
+	  MARGIN_UNKNOWN, MARGIN_UNKNOWN, MARGIN_UNKNOWN, MARGIN_UNKNOWN },
+	{  52.0,  74.0, fp_PageSize::mm,	"A8",
+	  MARGIN_UNKNOWN, MARGIN_UNKNOWN, MARGIN_UNKNOWN, MARGIN_UNKNOWN },
+	{  37.0,  52.0, fp_PageSize::mm,	"A9",
+	  MARGIN_UNKNOWN, MARGIN_UNKNOWN, MARGIN_UNKNOWN, MARGIN_UNKNOWN },
+	{  26.0,  37.0, fp_PageSize::mm,	"A10",
+	  MARGIN_UNKNOWN, MARGIN_UNKNOWN, MARGIN_UNKNOWN, MARGIN_UNKNOWN },
 
 	// the B sizes
+	{2000.0, 2828.0, fp_PageSize::mm,	"4B",
+	  MARGIN_UNKNOWN, MARGIN_UNKNOWN, MARGIN_UNKNOWN, MARGIN_UNKNOWN },
+	{1414.0, 2000.0, fp_PageSize::mm,	"2B",
+	  MARGIN_UNKNOWN, MARGIN_UNKNOWN, MARGIN_UNKNOWN, MARGIN_UNKNOWN },
 	{1000.0, 1414.0, fp_PageSize::mm,	"B0",
 	  MARGIN_UNKNOWN, MARGIN_UNKNOWN, MARGIN_UNKNOWN, MARGIN_UNKNOWN },
 	{ 707.0, 1000.0, fp_PageSize::mm,	"B1",
@@ -58,17 +74,53 @@ pagesizes[fp_PageSize::_last_predefined_pagesize_dont_use_] =
 	  MARGIN_UNKNOWN, MARGIN_UNKNOWN, MARGIN_UNKNOWN, MARGIN_UNKNOWN },
 	{ 353.0,  500.0, fp_PageSize::mm,	"B3",
 	  MARGIN_UNKNOWN, MARGIN_UNKNOWN, MARGIN_UNKNOWN, MARGIN_UNKNOWN },
-	{ 258.0,  365.0, fp_PageSize::mm,	"B4", 21.0, 21.0, 21.0, 21.0 },
+	{ 250.0,  353.0, fp_PageSize::mm,	"B4", 21.0, 21.0, 21.0, 21.0 },
 	{ 176.0,  250.0, fp_PageSize::mm,	"B5", 28.0, 28.0, 28.0, 28.0 },
-	{ 182.0,  258.0, fp_PageSize::mm,   "B5-Japan", 28.0, 28.0, 28.0, 28.0},
 	{ 125.0,  176.0, fp_PageSize::mm,	"B6",
 	  MARGIN_UNKNOWN, MARGIN_UNKNOWN, MARGIN_UNKNOWN, MARGIN_UNKNOWN },
+	{  88.0,  125.0, fp_PageSize::mm,	"B7",
+	  MARGIN_UNKNOWN, MARGIN_UNKNOWN, MARGIN_UNKNOWN, MARGIN_UNKNOWN },
+	{  62.0,   88.0, fp_PageSize::mm,	"B8",
+	  MARGIN_UNKNOWN, MARGIN_UNKNOWN, MARGIN_UNKNOWN, MARGIN_UNKNOWN },
+	{  44.0,   62.0, fp_PageSize::mm,	"B9",
+	  MARGIN_UNKNOWN, MARGIN_UNKNOWN, MARGIN_UNKNOWN, MARGIN_UNKNOWN },
+	{  31.0,   44.0, fp_PageSize::mm,	"B10",
+	  MARGIN_UNKNOWN, MARGIN_UNKNOWN, MARGIN_UNKNOWN, MARGIN_UNKNOWN },
+
+	// the C sizes
+	{ 917.0, 1297.0, fp_PageSize::mm,	"C0",
+	  MARGIN_UNKNOWN, MARGIN_UNKNOWN, MARGIN_UNKNOWN, MARGIN_UNKNOWN },
+	{ 648.0,  917.0, fp_PageSize::mm,	"C1",
+	  MARGIN_UNKNOWN, MARGIN_UNKNOWN, MARGIN_UNKNOWN, MARGIN_UNKNOWN },
+	{ 458.0,  648.0, fp_PageSize::mm,	"C2",
+	  MARGIN_UNKNOWN, MARGIN_UNKNOWN, MARGIN_UNKNOWN, MARGIN_UNKNOWN },
+	{ 324.0,  458.0, fp_PageSize::mm,	"C3",
+	  MARGIN_UNKNOWN, MARGIN_UNKNOWN, MARGIN_UNKNOWN, MARGIN_UNKNOWN },
+	{ 229.0,  324.0, fp_PageSize::mm,	"C4",
+	  MARGIN_UNKNOWN, MARGIN_UNKNOWN, MARGIN_UNKNOWN, MARGIN_UNKNOWN },
+	// FIXME: C5 is dealt with below, under envelopes
+	// FIXME: should prolly have C6/C5 here too, for completeness
+	{ 114.0,  162.0, fp_PageSize::mm,	"C6",
+	  MARGIN_UNKNOWN, MARGIN_UNKNOWN, MARGIN_UNKNOWN, MARGIN_UNKNOWN },
+	{  81.0,  114.0, fp_PageSize::mm,	"C7",
+	  MARGIN_UNKNOWN, MARGIN_UNKNOWN, MARGIN_UNKNOWN, MARGIN_UNKNOWN },
+	{  57.0,   81.0, fp_PageSize::mm,	"C8",
+	  MARGIN_UNKNOWN, MARGIN_UNKNOWN, MARGIN_UNKNOWN, MARGIN_UNKNOWN },
+	{  40.0,   57.0, fp_PageSize::mm,	"C9",
+	  MARGIN_UNKNOWN, MARGIN_UNKNOWN, MARGIN_UNKNOWN, MARGIN_UNKNOWN },
+	{  28.0,   40.0, fp_PageSize::mm,	"C10",
+	  MARGIN_UNKNOWN, MARGIN_UNKNOWN, MARGIN_UNKNOWN, MARGIN_UNKNOWN },
+	
+	// Japanese B sizes
+	// FIXME: should prolly have the other Japanese sizes
+	{ 182.0,  258.0, fp_PageSize::mm,   "B5-Japan", 28.0, 28.0, 28.0, 28.0},
 
 	// the rest
 	{   8.5,   14.0, fp_PageSize::inch,	"Legal", 1.0, 1.0, 1.0, 1.0	},
 	{   8.5,   13.0, fp_PageSize::inch,	"Folio", 1.0, 1.0, 1.0, 1.0	},
 	{   8.5,   11.0, fp_PageSize::inch,	"Letter", 1.0, 1.0, 1.0, 1.0 },
 	{   8.5,    5.5, fp_PageSize::inch, "Half-Letter", 1.0, 1.0, 1.0, 1.0 },
+	{   7.5,   10.0, fp_PageSize::inch, "Executive", 1.0, 1.0, 1.0, 1.0 },
 	{ 280.1,  267.0, fp_PageSize::mm,   "Tabloid/Ledger", 25.4, 25.4, 25.4, 25.4},
 	{  99.0,  191.0, fp_PageSize::mm,   "Monarch", 3.5, 3.5, 3.5, 3.5},
 	{ 297.0,  433.0, fp_PageSize::mm,   "SuperB", 28.2, 28.2, 28.2, 28.2},

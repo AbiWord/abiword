@@ -193,12 +193,13 @@ static void s_menu_item_activate (GtkWidget * widget)
 	gtk_object_set_data (GTK_OBJECT (option_menu), WIDGET_MENU_VALUE_TAG, p);
 }
 
-static void s_page_size_changed (GtkWidget * w, AP_UnixDialog_PageSetup *dlg)
+static void s_page_size_changed (GtkWidget * w, GtkWidget * child, 
+				 AP_UnixDialog_PageSetup *dlg)
 {
   UT_ASSERT(w && dlg);
 
-  s_menu_item_activate (w);
-  dlg->event_PageSizeChanged ();
+  fp_PageSize::Predefined pos = (fp_PageSize::Predefined)gtk_list_child_position (GTK_LIST(w), child);
+  dlg->event_PageSizeChanged (pos);
 }
 
 static void s_page_units_changed (GtkWidget * w, AP_UnixDialog_PageSetup *dlg)
@@ -286,11 +287,8 @@ void AP_UnixDialog_PageSetup::event_PageUnitsChanged (void)
   g_free (val);
 }
 
-void AP_UnixDialog_PageSetup::event_PageSizeChanged (void)
+void AP_UnixDialog_PageSetup::event_PageSizeChanged (fp_PageSize::Predefined pd)
 {
-
-  fp_PageSize::Predefined pd = (fp_PageSize::Predefined) GPOINTER_TO_INT (gtk_object_get_data (GTK_OBJECT (m_optionPageSize),
-											       WIDGET_MENU_VALUE_TAG));
   fp_PageSize ps(pd);
 
   float w, h;
@@ -563,7 +561,7 @@ void AP_UnixDialog_PageSetup::_constructWindowContents (GtkWidget *container)
                     (GtkAttachOptions) (0),
                     (GtkAttachOptions) (0), 0, 0);
 
-  optionPageSize = gtk_option_menu_new ();
+  optionPageSize = gtk_combo_new ();
   gtk_widget_show (optionPageSize);
   gtk_table_attach (GTK_TABLE (tablePaper), optionPageSize, 1, 2, 0, 3,
                     (GtkAttachOptions) (0),
@@ -572,16 +570,20 @@ void AP_UnixDialog_PageSetup::_constructWindowContents (GtkWidget *container)
   optionPageSize_menu = gtk_menu_new ();
 
   // create the drop-down menu with all of our supported page sizes
+  GList *popdown_items = NULL;
   for (int i = (int)fp_PageSize::A0; i < (int)fp_PageSize::_last_predefined_pagesize_dont_use_; i++)
     {
-      glade_menuitem = gtk_menu_item_new_with_label (fp_PageSize::PredefinedToName ((fp_PageSize::Predefined)i));
-      CONNECT_MENU_ITEM_SIGNAL_ACTIVATE (glade_menuitem, optionPageSize, i, s_page_size_changed);
-      gtk_widget_show (glade_menuitem);
-      gtk_menu_append (GTK_MENU (optionPageSize_menu), glade_menuitem);
+      popdown_items = g_list_append (popdown_items, (void*)fp_PageSize::PredefinedToName ((fp_PageSize::Predefined)i) );
     }
-  gtk_option_menu_set_menu (GTK_OPTION_MENU (optionPageSize), optionPageSize_menu);
+  gtk_combo_set_popdown_strings (GTK_COMBO (optionPageSize), popdown_items);
+
   last_page_size = fp_PageSize::NameToPredefined (getPageSize ().getPredefinedName ());
-  gtk_option_menu_set_history (GTK_OPTION_MENU (optionPageSize), (int)last_page_size);
+
+  GtkList * optionPageSizeList = GTK_LIST(GTK_COMBO(optionPageSize)->list);
+  gtk_list_select_item (optionPageSizeList, (gint)last_page_size);
+
+  gtk_signal_connect(GTK_OBJECT(optionPageSizeList), "select-child",
+		     GTK_SIGNAL_FUNC(s_page_size_changed), (gpointer)this);
 
   labelPageUnits = gtk_label_new (_(AP, DLG_PageSetup_Units));
   gtk_widget_show (labelPageUnits);
