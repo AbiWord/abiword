@@ -431,8 +431,13 @@ bool fp_Page::insertColumnLeader(fp_Column* pLeader, fp_Column* pAfter)
 	else
 	{
 		m_vecColumnLeaders.insertItemAt(pLeader, 0);
+		// Another urgh! This causes header/footer assertions to
+		// trigger when loading Dom's backend document. Uncomment
+		// until I grok all the implications.
+#if 0
 		m_pOwner = pLeader->getDocSectionLayout();
 		m_pOwner->addOwnedPage(this);
+#endif
 	}
 
 	fp_Column* pTmpCol = pLeader;
