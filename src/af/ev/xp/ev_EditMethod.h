@@ -147,24 +147,24 @@ protected:
 /*****************************************************************/
 /*****************************************************************/
 
-bool ABI_EXPORT ev_EditMethod_exists (const char * methodName);
-bool ABI_EXPORT ev_EditMethod_exists (const UT_String & methodName);
+ABI_EXPORT bool ev_EditMethod_exists (const char * methodName);
+ABI_EXPORT bool ev_EditMethod_exists (const UT_String & methodName);
 
 /*****************************************************************/
 /*****************************************************************/
 
-bool ABI_EXPORT ev_EditMethod_invoke (const EV_EditMethod * pEM, EV_EditMethodCallData * pData);
-bool ABI_EXPORT ev_EditMethod_invoke (const EV_EditMethod * pEM, const UT_String & data);
-bool ABI_EXPORT ev_EditMethod_invoke (const EV_EditMethod * pEM, const UT_UCS2String & data);
+ABI_EXPORT bool ev_EditMethod_invoke (const EV_EditMethod * pEM, EV_EditMethodCallData * pData);
+ABI_EXPORT bool ev_EditMethod_invoke (const EV_EditMethod * pEM, const UT_String & data);
+ABI_EXPORT bool ev_EditMethod_invoke (const EV_EditMethod * pEM, const UT_UCS2String & data);
 
-bool ABI_EXPORT ev_EditMethod_invoke (const char * methodName, const UT_String & data);
-bool ABI_EXPORT ev_EditMethod_invoke (const char * methodName, const UT_UCS2String & data);
-bool ABI_EXPORT ev_EditMethod_invoke (const char * methodName, const char * data);
-bool ABI_EXPORT ev_EditMethod_invoke (const char * methodName, const UT_UCSChar * data);
-bool ABI_EXPORT ev_EditMethod_invoke (const UT_String& methodName, const UT_String & data);
-bool ABI_EXPORT ev_EditMethod_invoke (const UT_String& methodName, const UT_UCS2String & data);
+ABI_EXPORT bool ev_EditMethod_invoke (const char * methodName, const UT_String & data);
+ABI_EXPORT bool ev_EditMethod_invoke (const char * methodName, const UT_UCS2String & data);
+ABI_EXPORT bool ev_EditMethod_invoke (const char * methodName, const char * data);
+ABI_EXPORT bool ev_EditMethod_invoke (const char * methodName, const UT_UCSChar * data);
+ABI_EXPORT bool ev_EditMethod_invoke (const UT_String& methodName, const UT_String & data);
+ABI_EXPORT bool ev_EditMethod_invoke (const UT_String& methodName, const UT_UCS2String & data);
 
-EV_EditMethod* ABI_EXPORT ev_EditMethod_lookup (const char * methodName);
-EV_EditMethod* ABI_EXPORT ev_EditMethod_lookup (const UT_String & methodName);
+ABI_EXPORT EV_EditMethod* ev_EditMethod_lookup (const char * methodName);
+ABI_EXPORT EV_EditMethod* ev_EditMethod_lookup (const UT_String & methodName);
 
 #endif /* EV_EDITMETHOD_H */

@@ -290,14 +290,16 @@ bool ev_EditMethod_invoke (const char * methodName, const UT_UCS2String & data)
 bool ev_EditMethod_invoke (const char * methodName, const char * data)
 {
   UT_ASSERT(data);
-  if(!data) return false;
+  if(!data) 
+    return false;
   return ev_EditMethod_invoke ( methodName, UT_String(data) ) ;
 }
 
 bool ev_EditMethod_invoke (const char * methodName, const UT_UCSChar * data)
 {
   UT_ASSERT(data);
-  if(!data) return false;
+  if(!data) 
+    return false;
   return ev_EditMethod_invoke ( methodName, UT_UCS2String(data) ) ;
 }
 
