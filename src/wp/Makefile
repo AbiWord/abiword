@@ -48,12 +48,9 @@ canonical:
 	@$(ABICOPY) $(USERDIR)/wp/system.profile* $(CANON_AppDir)
 	@$(ABICOPY) $(USERDIR)/wp/strings/*.strings $(CANON_AppDir)/strings
 ifeq ($(ABI_FE),Win32)
-	@if  [ -n $(ABI_DOC_SOURCE) ]; then 					    \
-	       echo "ABI_DOC_SOURCE specified - building help files";             \
-	       ABI_DOC_PROG="$(BINDIR)/AbiWord.exe" ABI_DOC_SOURCE="$(ABI_DOC_SOURCE)" ABI_DOC_DEST="$(CANON_AppDir)" make-html.sh \	
-	elif [ -d $(ABI_ROOT)/../abiword-docs ]; then				    \
+	@if [ -d $(ABI_ROOT)/../abiword-docs ]; then				    \
 		echo "Found abiword-docs in peer directory - building help files"; \
-		ABI_DOC_PROG="$(BINDIR)/AbiWord.exe" ABI_DOC_SOURCE="$(ABI_ROOT)/../abiword-docs" ABI_DOC_DEST="$(CANON_AppDir)" make-html.sh \
+		ABI_DOC_PROG="$(BINDIR)/AbiWord.exe" ABI_DOC_SOURCE="$(ABI_ROOT)/../abiword-docs" ABI_DOC_DEST="$(CANON_AppDir)" $(ABI_ROOT)/../abiword-docs/make-html.sh; \
 	else 										    \
 		echo "No abiword-docs directory - skipping help files"; 	    \
 	fi
