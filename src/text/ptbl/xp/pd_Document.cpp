@@ -397,6 +397,55 @@ UT_Error PD_Document::readFromFile(const char * szFilename, int ieft)
 	return UT_OK;
 }
 
+UT_Error PD_Document::importStyles(const char * szFilename, int ieft)
+{
+	if (!szFilename || !*szFilename)
+	{
+		UT_DEBUGMSG(("PD_Document::importStyles -- invalid filename\n"));
+		return UT_INVALIDFILENAME;
+	}
+
+	if ( !UT_isRegularFile(szFilename) )
+	{
+	  UT_DEBUGMSG (("PD_Document::importStyles -- file is not plain file\n"));
+	  return UT_INVALIDFILENAME;
+	}
+
+	if (!m_pPieceTable)
+	{
+		UT_DEBUGMSG(("PD_Document::importStyles -- could not construct piece table\n"));
+		return UT_NOPIECETABLE;
+	}
+
+	IE_Imp * pie = NULL;
+	UT_Error errorCode;
+
+	errorCode = IE_Imp::constructImporter(this, szFilename, static_cast<IEFileType>(ieft), &pie);
+	if (errorCode)
+	{
+		UT_DEBUGMSG(("PD_Document::importStyles -- could not construct importer\n"));
+		return errorCode;
+	}
+
+	if(!pie->supportsLoadStylesOnly())
+	{
+		UT_DEBUGMSG(("PD_Document::importStyles -- import of styles-only not supported\n"));
+		return UT_IE_IMPSTYLEUNSUPPORTED;
+	}
+	
+	pie->setLoadStylesOnly(true);
+	errorCode = pie->importFile(szFilename);
+	delete pie;
+
+	if (errorCode)
+	{
+		UT_DEBUGMSG(("PD_Document::importStyles -- could not import file\n"));
+		return errorCode;
+	}
+
+	return UT_OK;
+}
+
 UT_Error PD_Document::newDocument(void)
 {
 	UT_LocaleInfo locale(UT_LocaleInfo::system());

@@ -170,6 +170,8 @@ public:
 
 	virtual UT_Error		readFromFile(const char * szFilename, int ieft);
 	virtual UT_Error		importFile(const char * szFilename, int ieft, bool markClean = false);
+	virtual UT_Error		importStyles(const char * szFilename, int ieft);
+
 	virtual UT_Error		newDocument(void);
 	virtual bool			isDirty(void) const;
 
