@@ -31,7 +31,7 @@
 static XAP_CocoaToolbarWindow_Controller * pSharedToolbar = nil;
 
 
-@interface XAP_CocoaToolbarWindow : NSWindow
+@interface XAP_CocoaToolbarWindow : NSPanel
 - (BOOL)canBecomeKeyWindow;
 @end
 
@@ -64,9 +64,10 @@ static XAP_CocoaToolbarWindow_Controller * pSharedToolbar = nil;
 
 	NSRect windowFrame = [XAP_CocoaToolbarWindow_Controller defaultFrame:100.0f]; // TODO calc the bottom
 
-	NSWindow * myWindow = [[XAP_CocoaToolbarWindow alloc] initWithContentRect:windowFrame styleMask:NSBorderlessWindowMask 
-											backing:NSBackingStoreBuffered defer:YES];
+	NSPanel * myWindow = [[XAP_CocoaToolbarWindow alloc] initWithContentRect:windowFrame styleMask:NSBorderlessWindowMask backing:NSBackingStoreBuffered defer:YES];
 	UT_ASSERT (myWindow);
+
+	[myWindow setBecomesKeyOnlyIfNeeded:YES];
 	[myWindow setHidesOnDeactivate:YES];
 	[myWindow setReleasedWhenClosed:NO];
 	[myWindow setExcludedFromWindowsMenu:YES];

@@ -29,6 +29,7 @@
 #import "xap_CocoaApp.h"
 #import "xap_CocoaAppController.h"
 #import "xap_CocoaToolPalette.h"
+#import "xap_CocoaToolbar_Icons.h"
 
 #include "xap_Frame.h"
 #include "xap_Toolbar_LabelSet.h"
@@ -962,12 +963,21 @@ static XAP_CocoaToolPalette * s_instance = 0;
 		{
 			[m_ToolChest[i].button setTag:i];
 			[m_ToolChest[i].button setEnabled:NO];
+			[m_ToolChest[i].button setBordered:NO];
 
 			if (m_ToolChest[i].ttipid != AP_STRING_ID__FIRST__)
 				if (tooltip = pSS->getValue(m_ToolChest[i].ttipid))
 					{
 						[m_ToolChest[i].button setToolTip:[NSString stringWithUTF8String:tooltip]];
 					}
+
+			if ([m_ToolChest[i].button isKindOfClass:[XAP_CocoaToolbarButton class]])
+				{
+					NSButtonCell * cell = (NSButtonCell *) [m_ToolChest[i].button cell];
+
+					[cell setShowsStateBy:NSNoCellMask];
+					[cell setHighlightsBy:NSNoCellMask];
+				}
 		}
 
 	if (tooltip = pSS->getValue(AP_STRING_ID_TOOLBAR_TOOLTIP_FMT_STYLE))

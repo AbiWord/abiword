@@ -150,35 +150,56 @@ NSButton * EV_CocoaToolbar::_makeToolbarButton (int type, EV_Toolbar_Label * pLa
 	NSButton * btn = nil;
 	
 	NSRect btnFrame;
-	btnFrame.origin.x = btnX - 1.0f;
+	btnFrame.origin.x = btnX;
 	btnFrame.origin.y = 0;
 	btnFrame.size.width = BTN_WIDTH;
 	btnFrame.size.height = BTN_HEIGHT;
-	btnX += BTN_WIDTH - 3.0f;
+	btnX += BTN_WIDTH;
 	
-	btn = [[NSButton alloc] initWithFrame:btnFrame];
 	switch (type) {
 	case EV_TBIT_PushButton:
-		/*[btn setButtonType:NSToggleButton];*/
-		[btn setButtonType:NSMomentaryPushInButton]; 
+		{
+			btn = [[NSButton alloc] initWithFrame:btnFrame];
+
+		//  [btn setButtonType:NSToggleButton];
+			[btn setButtonType:NSMomentaryPushInButton];
+		}
 		break;
+
 	case EV_TBIT_ToggleButton:
 	case EV_TBIT_GroupButton:
-		[btn setButtonType:NSPushOnPushOffButton];
+		{
+			btn = [[XAP_CocoaToolbarButton alloc] initWithFrame:btnFrame];
+
+			[btn setButtonType:NSPushOnPushOffButton];
+
+			NSButtonCell * cell = (NSButtonCell *) [btn cell];
+
+			[cell setShowsStateBy:NSNoCellMask];
+			[cell setHighlightsBy:NSNoCellMask];
+		}
 		break;
 	default:
 		UT_ASSERT (UT_SHOULD_NOT_HAPPEN);
 	}
-	[btn setBezelStyle:NSRegularSquareBezelStyle];
-	UT_ASSERT(UT_stricmp(pLabel->getIconName(),"NoIcon")!=0);
-	NSImage * wPixmap = m_pCocoaToolbarIcons->getPixmapForIcon(pLabel->getIconName());		// autoreleased
-	UT_ASSERT(wPixmap);
-	[btn setImage:wPixmap];
-	[parent addSubview:btn];
-	[btn release];
-	[btn setTag:(int)tlbrid];
-	[btn setTarget:m_target];
-	[btn setAction:@selector(toolbarSelected:)];
+	if (btn) {
+		[btn setBezelStyle:NSRegularSquareBezelStyle];
+		[btn setBordered:NO];
+		[btn setTag:(int)tlbrid];
+		[btn setTarget:m_target];
+		[btn setAction:@selector(toolbarSelected:)];
+
+		UT_ASSERT(UT_stricmp(pLabel->getIconName(),"NoIcon")!=0);
+		NSImage * wPixmap = m_pCocoaToolbarIcons->getPixmapForIcon(pLabel->getIconName());		// autoreleased
+		UT_ASSERT(wPixmap);
+		[btn setImage:wPixmap];
+
+		if (const char * szToolTip = pLabel->getToolTip())
+			[btn setToolTip:[NSString stringWithUTF8String:szToolTip]];
+
+		[parent addSubview:btn];
+		[btn release];
+	}
 	return btn;
 }
 
@@ -400,7 +421,7 @@ bool EV_CocoaToolbar::synthesize(void)
 				btnFrame.origin.x = btnX + 1.0f;
 				btnFrame.size.width = fWidth;
 				btnFrame.size.height = (bIsCombo ? 26.0f : 25.0f);
-				btnFrame.origin.y = rintf((BTN_HEIGHT - btnFrame.size.height) / 2.0f);
+				btnFrame.origin.y = rintf((BTN_HEIGHT - 26.0f) / 2.0f /* - (bIsCombo ? 0.0f : 1.0f) */);
 
 				NSComboBox * comboBox = 0;
 				NSPopUpButton * popupButton = 0;
@@ -508,11 +529,11 @@ bool EV_CocoaToolbar::synthesize(void)
 			// which expects each item in the layout to have a place in the
 			// vector.
 			NSRect btnFrame;
-			btnFrame.origin.x = btnX + 2.0f;
+			btnFrame.origin.x = btnX + 1.0f;
 			btnFrame.size.width = 1.0f;
 			btnFrame.size.height = BTN_HEIGHT; 
 			btnFrame.origin.y = (BTN_HEIGHT - btnFrame.size.height) / 2;
-			btnX += btnFrame.size.width + 3.0f;
+			btnX += btnFrame.size.width + 2.0f;
 			
 			NSBox * box = [[NSBox alloc] initWithFrame:btnFrame];
 			UT_ASSERT(box);
