@@ -33,9 +33,10 @@ CPPSRCS=		xap_BeOSApp.cpp			\
 			xap_BeOSDlg_MessageBox.cpp	\
 			xap_BeOSDlg_Print.cpp		\
 			xap_BeOSDlg_PrintPreview.cpp    \
+			xap_BeOSEncodingManager.cpp	\
 			xap_BeOSModule.cpp              \
 			xap_BeOSDlg_Zoom.cpp		\
-			xap_BeOSDlg_Insert_Symbol.cpp		\
+			xap_BeOSDlg_Insert_Symbol.cpp	\
 			xap_BeOSFrame.cpp		\
 			xap_BeOSToolbar_Icons.cpp
 

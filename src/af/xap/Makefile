@@ -135,10 +135,6 @@ OBJS=		$(PLATFORM_OBJS)						\
 		$(OBJDIR)/xap_EncodingManager.$(OBJ_SUFFIX)			\
 		$(OBJDIR)/xap_Dlg_Language.$(OBJ_SUFFIX)
 
-ifneq ($(ABI_FE), Unix)
-OBJS +=		$(OBJDIR)/xap_NonUnixEncodingManager.$(OBJ_SUFFIX)
-endif
-
 include $(ABI_ROOT)/src/config/abi_rules.mk
 
 

@@ -23,20 +23,21 @@ ABI_ROOT:=$(shell pwd)/../../../..
 include $(ABI_ROOT)/src/config/abi_defs.mk
 
 CPPSRCS=		xap_MacApp.cpp			\
-			xap_MacClipboard.cpp			\
+			xap_MacClipboard.cpp		\
 			xap_MacDlg_About.cpp		\
 			xap_MacDlg_FileOpenSaveAs.cpp	\
-			xap_MacDlg_FontChooser.cpp		\
+			xap_MacDlg_FontChooser.cpp	\
 			xap_MacDlg_Language.cpp		\
 			xap_MacDlg_Insert_Symbol.cpp	\
-			xap_MacDlg_MessageBox.cpp		\
+			xap_MacDlg_MessageBox.cpp	\
 			xap_MacDlg_Print.cpp		\
 			xap_MacDlg_PrintPreview.cpp     \
 			xap_MacDlg_WindowMore.cpp	\
-			xap_MacDlg_Zoom.cpp	\
-			xap_MacFontManager.cpp	\
-			xap_MacFrame.cpp			\
-			xap_MacModule.cpp			\
+			xap_MacDlg_Zoom.cpp		\
+			xap_MacEncodingManager.cpp	\
+			xap_MacFontManager.cpp		\
+			xap_MacFrame.cpp		\
+			xap_MacModule.cpp		\
 			xap_MacTlbr_Icons.cpp
 
 REZSRCS=		xap_MacDlg_MessageBox.r		\
