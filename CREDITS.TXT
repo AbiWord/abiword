@@ -119,6 +119,7 @@ Matt Kimball <robozapp@xmission.com>			layout fixes
 Andrew Klassen <ak@dkp.com> 				Irix 64 fixes
 Michael Kobas <michael238@ozemail.com.au>		Win32 Setup icon and Installer mods
 Larry Kollar <kollar@alltel.net>			MkLinux
+Egmont Koblingen   egmont@uhulinux.hu                                     Encoding fix 4782
 Matt Kraai <kraai@subdimension.com>
 Tuomas Kuosmanen <tigert@gimp.org>			artist
 William Lachance <william.lachance@sympatico.ca>	WordPerfect import, 
