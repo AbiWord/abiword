@@ -173,6 +173,13 @@ void AP_Win32Frame::setYScrollRange(void)
 
 	UT_DEBUGMSG(("Setting vertical scroll: [pageLen %ld][nrPages %ld][height %ld]\n",
 				 pageLen,nrPages,height));
+			
+	UT_uint32 iWindowHeight, iHeight;
+	HWND hwnd = m_hwndChild;
+
+	RECT r;
+	GetClientRect(hwnd, &r);
+	iWindowHeight = r.bottom - r.top;
 
 	iHeight = m_pData->m_pDocLayout->getHeight();
 	SCROLLINFO si;
@@ -183,6 +190,6 @@ void AP_Win32Frame::setYScrollRange(void)
 	si.nMin = 0;
 	si.nMax = height;
 	si.nPos = ((m_pView) ? m_pView->getYScrollOffset() : 0);
-	si.nPage = height * 10 / 9;
+	si.nPage = iWindowHeight * 10 / 9;
 	SetScrollInfo(hwnd, SB_VERT, &si, TRUE);
 }
