@@ -33,6 +33,8 @@
 #include "ap_Dialog_PageNumbers.h"
 #include "ap_Win32Dialog_PageNumbers.h"
 
+#include "gr_Win32Graphics.h"
+
 #include "ap_Win32Resources.rc2"
 
 #include "fv_View.h"

@@ -27,7 +27,7 @@
 
 #include "ut_types.h"
 #include "ap_LeftRuler.h"
-#include "gr_Win32Graphics.h"
+
 class XAP_Win32App;
 class XAP_Frame;
 

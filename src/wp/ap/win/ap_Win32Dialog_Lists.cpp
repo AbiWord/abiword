@@ -34,6 +34,8 @@
 #include "ap_Dialog_Lists.h"
 #include "ap_Win32Dialog_Lists.h"
 
+#include "gr_Win32Graphics.h"
+
 #include "ap_Win32Resources.rc2"
 #include "xap_Win32Toolbar_Icons.h"
 #include "xap_Win32Dlg_FontChooser.h"

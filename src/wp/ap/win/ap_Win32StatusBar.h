@@ -25,7 +25,7 @@
 
 #include "ut_types.h"
 #include "ap_StatusBar.h"
-#include "gr_Win32Graphics.h"
+
 class XAP_Frame;
 class XAP_Win32App;
 

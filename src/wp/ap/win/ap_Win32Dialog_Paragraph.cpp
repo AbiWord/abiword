@@ -25,8 +25,6 @@
 #include "ut_debugmsg.h"
 #include "ut_Win32OS.h"
 
-#include "gr_Win32Graphics.h"
-
 #include "xap_App.h"
 #include "xap_Win32App.h"
 #include "xap_Win32Frame.h"
@@ -36,6 +34,8 @@
 #include "ap_Preview_Paragraph.h"
 #include "ap_Win32Dialog_Paragraph.h"
 #include "xap_Win32PreviewWidget.h"
+
+#include "gr_Win32Graphics.h"
 
 #include "ap_Win32Resources.rc2"
 

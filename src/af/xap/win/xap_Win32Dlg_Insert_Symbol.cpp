@@ -33,6 +33,8 @@
 #include "xap_Win32Dlg_Insert_Symbol.h"
 #include "xap_Win32PreviewWidget.h"
 
+#include "gr_Win32Graphics.h"
+
 #include "xap_Win32Resources.rc2"
 
 /*****************************************************************/

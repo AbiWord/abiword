@@ -27,9 +27,11 @@
 
 #include "ut_types.h"
 #include "xap_Win32App.h"
-#include "gr_Win32Graphics.h"
 #include "xap_Preview.h"
 #include "xap_Win32Dlg_Insert_Symbol.h"
+
+// fwd. decl
+class GR_Win32Graphics;
 
 //////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////
