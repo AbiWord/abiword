@@ -131,16 +131,21 @@ bool AP_UnixClipboard::addHtmlData(T_AllowGet tTo, void* pData, UT_sint32 iNumBy
   return false ;
 }
 
+bool AP_UnixClipboard::addPNGData(T_AllowGet tTo, void* pData, UT_sint32 iNumBytes)
+{
+  return addData ( tTo, AP_CLIPBOARD_IMAGE_PNG, pData, iNumBytes );
+}
+
 bool  AP_UnixClipboard::getSupportedData(T_AllowGet tFrom,
 					 void ** ppData, UT_uint32 * pLen,
 					 const char **pszFormatFound)
 {
-  // give priority to rich text, then text, then images
+  // give priority to rich text, then images, then text
   if (getData(tFrom, rtfszFormatsAccepted, ppData, pLen, pszFormatFound))
     return true;
-  else if (getTextData (tFrom, ppData, pLen, pszFormatFound))
-    return true;
   else if (getData(tFrom, imgszFormatsAccepted, ppData, pLen, pszFormatFound))
+    return true;
+  else if (getTextData (tFrom, ppData, pLen, pszFormatFound))
     return true;
 
   return false;

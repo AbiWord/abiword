@@ -510,6 +510,23 @@ void AP_UnixApp::copyToClipboard(PD_DocumentRange * pDocRange, bool bUseClipboar
     if (bufTEXT.getLength() > 0)
 		m_pClipboard->addTextData(target, (UT_Byte *)bufTEXT.getPointer(0),bufTEXT.getLength());
 
+    {
+      // TODO: we have to make a good way to tell if the current selection is just an image
+      FV_View * pView = static_cast<FV_View*>(getLastFocussedFrame()->getCurrentView());
+      if (pView && !pView->isSelectionEmpty())
+	{
+	  // don't own, don't free
+	  const UT_ByteBuf * png = 0;
+	  
+	  pView->saveSelectedImage (&png);
+	  if (png && png->getLength() > 0)
+	    {
+	      UT_DEBUGMSG(("CopyToClipboard: copying %d bytes in PNG format.\n", png->getLength()));
+	      m_pClipboard->addPNGData(target, (UT_Byte*)png->getPointer(0), png->getLength());
+	    }
+	}
+    }
+
     return;
 }
 
@@ -548,7 +565,7 @@ void AP_UnixApp::pasteFromClipboard(PD_DocumentRange * pDocRange, bool bUseClipb
 		UT_DEBUGMSG(("PasteFromClipboard: did not find anything to paste.\n"));
 		return;
     }
-	
+
     if (AP_UnixClipboard::isRichTextTag(szFormatFound))
     {
 		iLen = MyMin(iLen,strlen((const char *)pData));
@@ -571,31 +588,34 @@ void AP_UnixApp::pasteFromClipboard(PD_DocumentRange * pDocRange, bool bUseClipb
 
 	XAP_Frame * pFrame = getLastFocussedFrame ();
 
-	UT_ByteBuf bytes ;
+	UT_ByteBuf * bytes = new UT_ByteBuf( iLen );
 
-	bytes.append (pData, iLen);
+	bytes->append (pData, iLen);
 
-	error = IE_ImpGraphic::constructImporter(&bytes, iegft, &pIEG);
+	error = IE_ImpGraphic::constructImporter(bytes, iegft, &pIEG);
 	if(error)
 	  {
 	    UT_DEBUGMSG(("DOM: could not construct importer (%d)\n", 
 			 error));
+	    DELETEP(bytes);
 	    return;
 	  }
 	
-	error = pIEG->importGraphic(&bytes, &pFG);
-	if(error)
+	error = pIEG->importGraphic(bytes, &pFG);
+	if(!pFG || error)
 	  {
 	    UT_DEBUGMSG(("DOM: could not import graphic (%d)\n", error));
+	    DELETEP(bytes);
 	    DELETEP(pIEG);
 	    return;
 	  }
 	
-	DELETEP(pIEG);
-	
+	// at this point, 'bytes' is owned by pFG
 	FV_View * pView = static_cast<FV_View*>(pFrame->getCurrentView());
 	
 	UT_String newName = UT_String_sprintf ( "paste_image_%d", UT_newNumber() ) ;
+
+	DELETEP(pIEG);
 
 	error = pView->cmdInsertGraphic(pFG, newName.c_str());
 	if (error)
@@ -605,7 +625,7 @@ void AP_UnixApp::pasteFromClipboard(PD_DocumentRange * pDocRange, bool bUseClipb
 	    return;
 	  }
 	
-	DELETEP(pFG);       
+	DELETEP(pFG);
       }
     else // ( AP_UnixClipboard::isTextTag(szFormatFound) )
     {

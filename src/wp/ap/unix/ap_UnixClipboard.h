@@ -37,6 +37,7 @@ public:
 	bool addTextData(T_AllowGet tTo, void* pData, UT_sint32 iNumBytes);
 	bool addRichTextData(T_AllowGet tTo, void* pData, UT_sint32 iNumBytes);
 	bool addHtmlData(T_AllowGet tTo, void* pData, UT_sint32 iNumBytes);
+	bool addPNGData(T_AllowGet tTo, void* pData, UT_sint32 iNumBytes);
 
 	bool getSupportedData(T_AllowGet tFrom,
 			      void ** ppData, UT_uint32 * pLen,
