@@ -405,14 +405,15 @@ void AP_UnixApp::_printUsage(void)
 	// just print to stdout, not stderr
 	printf("Usage: %s [option]... [file]...\n\n", m_pArgs->m_argv[0]);
 
-	printf("  -s scriptfile,    --script=scriptfile     execute scriptfile\n");
 #ifdef DEBUG
-	printf("  -d,               --dumpstrings           dump strings strings to file\n");
+	printf("  -d,         --dumpstrings    dump strings strings to file\n");
 #endif
-	printf("  -l libdir,        --lib=libdir            use libdir for application components\n");
-	printf("  -n,               --nosplash              do not show splash screen\n");
+	printf("  -h,         --help           view this help summary\n");
+	printf("  -l dir,     --lib=dir        use dir for application components\n");
+	printf("  -n,         --nosplash       do not show splash screen\n");
+	printf("  -s file,    --script=file    execute file as script\n");
 #ifdef DEBUG	
-	printf("  -S pngfile,       --splash=pngfile        use pngfile for splash screen\n");
+	printf("  -S file,    --splash=file    use file for splash screen\n");
 #endif
 
 	printf("\n");
@@ -463,16 +464,20 @@ int AP_UnixApp::main(const char * szAppName, int argc, char ** argv)
 // TODO : move these out somewhere XP
 struct option longopts[] =
 {
-        {"script",      required_argument, 	NULL, 's'},
+	// TODO : maybe use constants for the final entry for each
+	// TODO : for better matching below.
+	
 #ifdef DEBUG
-        {"dumpstrings", no_argument, 		NULL, 'd'},
+    {"dumpstrings", no_argument, 		NULL, 'd'},
 #endif
-        {"lib",         required_argument, 	NULL, 'l'},
-		{"nosplash",	no_argument, 		NULL, 'n'},
+    {"help",        no_argument, 		NULL, 'h'},			
+    {"lib",         required_argument, 	NULL, 'l'},
+	{"nosplash",	no_argument, 		NULL, 'n'},
+	{"script",      required_argument, 	NULL, 's'},
 #ifdef DEBUG
-		{"splash",		required_argument, 	NULL, 'S'},
+	{"splash",		required_argument, 	NULL, 'S'},
 #endif
-        {0,             0, NULL,  0 }
+    {0,             0, 					NULL,  0 }
 };
 
 UT_Bool AP_UnixApp::parseCommandLine(void)
@@ -497,12 +502,6 @@ UT_Bool AP_UnixApp::parseCommandLine(void)
 	{
 		switch (k)
 		{
-		case 's':
-		{
-			// execute a script
-			UT_DEBUGMSG(("Scripting is not yet implemented.\n"));
-			break;
-		}
 		case 'd':
 		{
 			// dump strings out to file; only honored in debug
@@ -511,6 +510,11 @@ UT_Bool AP_UnixApp::parseCommandLine(void)
 			pBuiltinStringSet->dumpBuiltinSet("EnUS.strings");
 			delete pBuiltinStringSet;
 			break;
+		}
+		case 'h':
+		{
+			_printUsage();
+			return UT_FALSE;
 		}
 		case 'l':
 		{
@@ -525,6 +529,12 @@ UT_Bool AP_UnixApp::parseCommandLine(void)
 			bShowSplash = UT_FALSE;
 			break;
 		}
+		case 's':
+		{
+			// execute a script
+			UT_DEBUGMSG(("Scripting is not yet implemented.\n"));
+			break;
+		}
 		case 'S':
 		{
 			// user wants a custom splash screen, but only honored in
@@ -534,7 +544,6 @@ UT_Bool AP_UnixApp::parseCommandLine(void)
 		}
 		default:
 			// if we got this, they passed an argument we can't decipher
-			// this will also catch --help or -h
 			_printUsage();
 			return UT_FALSE;
 		}
@@ -570,10 +579,6 @@ UT_Bool AP_UnixApp::parseCommandLine(void)
 		}
 		optind++;
 	}
-
-	// TODO should this return success?
-	//if (pFirstUnixFrame == NULL)
-	//return UT_TRUE;
 
 	if (kWindowsOpened == 0)
 	{
