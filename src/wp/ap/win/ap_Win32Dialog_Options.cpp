@@ -444,7 +444,7 @@ BOOL AP_Win32Dialog_Options::_onInitTab(HWND hWnd, WPARAM wParam, LPARAM lParam)
 			ShowWindow( hwndBidiChk, SW_HIDE);
 #ifdef BIDI_ENABLED
 			ShowWindow( hwndBidiBox, SW_SHOW);
-			ShowWindow( hwndBid2iChk, SW_SHOW);
+			ShowWindow( hwndBidiChk, SW_SHOW);
 			_DS(OPTIONS_FRM_BidiOptions,			DLG_Options_Label_BiDiOptions);
 			_DS(OPTIONS_CHK_OtherDirectionRtl,		DLG_Options_Label_DirectionRtl);
 #endif					
