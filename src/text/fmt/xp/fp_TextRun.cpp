@@ -1263,12 +1263,11 @@ bool fp_TextRun::recalcWidth(void)
 		for (UT_uint32 i = 0; i < m_iLen; i++)
 		{
 			// this is a bit tricky, since we want the resulting widht array in
-			// visual order, so (1) if we reverse the draw buffer ourselves, we
-			// have to address the draw buffer in reverse (2) if we do not reverse
-			// the draw buffer but the OS does, we have to address the width array in reverse
+			// logical order, so if we reverse the draw buffer ourselves, we
+			// have to address the draw buffer in reverse 
 			j = bReverse ? m_iLen - i - 1 : i;
-			k = (!bReverse && iVisDirection == FRIBIDI_TYPE_RTL) ? m_iLen - i - 1: i;
-		    k += m_iOffsetFirst;
+			//k = (!bReverse && iVisDirection == FRIBIDI_TYPE_RTL) ? m_iLen - i - 1: i;
+		    k = i + m_iOffsetFirst;
 		
 			if(s_bUseContextGlyphs)
 			{
@@ -1846,8 +1845,16 @@ void fp_TextRun::_drawPart(UT_sint32 xoff,
 		// of the last character in this fragement in it, for that is where we
 		// start drawing from
 		m_pG->drawChars(m_pSpanBuff + (m_iLen + m_iOffsetFirst - iStart) - iLen, 0, iLen, xoff + m_iWidth - iLeftWidth, yoff);
-	else
+
+		// if the buffer is not reversed because this is simple LTR run, then
+		// iLeftWidth is precisely that
+	else if(iVisDirection == FRIBIDI_TYPE_LTR)
 		m_pG->drawChars(m_pSpanBuff + iStart - m_iOffsetFirst, 0, iLen, xoff + iLeftWidth, yoff);
+	else
+
+		// if the buffer is not reversed because the OS will reverse it, then we
+		// draw from it as if it was LTR buffer, but iLeftWidth is right width
+		m_pG->drawChars(m_pSpanBuff + iStart - m_iOffsetFirst, 0, iLen, xoff + m_iWidth - iLeftWidth, yoff);
 
 #else
 	while (bContinue)
