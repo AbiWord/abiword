@@ -255,7 +255,7 @@ BOOL AP_Win32Dialog_Goto::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
 		return 1;
 
 	case AP_RID_DIALOG_GOTO_LIST_WHAT:
-		switch (HIWORD(wParam))
+		switch( wNotifyCode )
 		{
 		case LBN_SELCHANGE:
 			m_iRow = (short) SendMessage(GetDlgItem(hWnd,AP_RID_DIALOG_GOTO_LIST_WHAT), LB_GETCURSEL, 0, 0);
@@ -275,12 +275,89 @@ BOOL AP_Win32Dialog_Goto::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
 			return 0;
 		}
 
+	case AP_RID_DIALOG_GOTO_LIST_BOOKMARKS:
+		switch( wNotifyCode )
+		{
+		case LBN_DBLCLK:
+		case LBN_SELCHANGE:
+			{
+				int nIndex = SendMessage( hWndCtrl, LB_GETCURSEL, 0, 0);
+				if( nIndex != LB_ERR )
+				{
+					if( m_pszOldValue )
+						DELETEP(m_pszOldValue);
+					m_pszOldValue = new char[1024];
+
+					SendMessage( hWndCtrl, LB_GETTEXT, (WPARAM) nIndex, (LPARAM) m_pszOldValue );
+					SetWindowText( GetDlgItem(hWnd,AP_RID_DIALOG_GOTO_EDIT_NUMBER), m_pszOldValue );
+					EnableWindow( GetDlgItem(hWnd,AP_RID_DIALOG_GOTO_BTN_GOTO), TRUE );
+					if( wNotifyCode == LBN_DBLCLK )
+						GoTo( m_pszOldValue );
+				}
+				return 1;
+			}
+
+		default:
+			return 0;
+		}
+
 	case AP_RID_DIALOG_GOTO_BTN_PREV:
-		GoTo("-1");
+		if( m_iRow == (short) AP_JUMPTARGET_BOOKMARK )
+		{
+			if( m_pszOldValue )
+				DELETEP(m_pszOldValue);
+			m_pszOldValue = new char[1024];
+
+			int nIndex = SendMessage( GetDlgItem(hWnd, AP_RID_DIALOG_GOTO_LIST_BOOKMARKS), LB_GETCURSEL, 0, 0);
+			if( nIndex == LB_ERR ) nIndex = 0;
+			if( nIndex == 0 )
+			{
+				SendMessage( GetDlgItem(hWnd, AP_RID_DIALOG_GOTO_LIST_BOOKMARKS), LB_SETCURSEL, (WPARAM) nIndex, 0);
+				SendMessage( GetDlgItem(hWnd, AP_RID_DIALOG_GOTO_LIST_BOOKMARKS), LB_GETTEXT,   (WPARAM) nIndex, (LPARAM) m_pszOldValue );
+			}
+			else
+			{
+				SendMessage( GetDlgItem(hWnd, AP_RID_DIALOG_GOTO_LIST_BOOKMARKS), LB_SETCURSEL, (WPARAM) nIndex-1, 0);
+				SendMessage( GetDlgItem(hWnd, AP_RID_DIALOG_GOTO_LIST_BOOKMARKS), LB_GETTEXT,   (WPARAM) nIndex-1, (LPARAM) m_pszOldValue );
+			}
+			SetWindowText( GetDlgItem(hWnd,AP_RID_DIALOG_GOTO_EDIT_NUMBER), m_pszOldValue );
+			EnableWindow( GetDlgItem(hWnd,AP_RID_DIALOG_GOTO_BTN_GOTO), TRUE );
+			GoTo( m_pszOldValue );		
+		}
+		else
+		{
+			GoTo("-1");
+		}
 		return 1;
 
 	case AP_RID_DIALOG_GOTO_BTN_NEXT:
-		GoTo("+1");
+		if( m_iRow == (short) AP_JUMPTARGET_BOOKMARK )
+		{
+			if( m_pszOldValue )
+				DELETEP(m_pszOldValue);
+			m_pszOldValue = new char[1024];
+
+			int nCount = SendMessage( GetDlgItem(hWnd, AP_RID_DIALOG_GOTO_LIST_BOOKMARKS), LB_GETCOUNT, 0, 0);
+			int nIndex = SendMessage( GetDlgItem(hWnd, AP_RID_DIALOG_GOTO_LIST_BOOKMARKS), LB_GETCURSEL, 0, 0);
+			if( nIndex == LB_ERR ) nIndex = nCount-1;
+			if( nIndex == nCount-1 )
+			{
+				SendMessage( GetDlgItem(hWnd, AP_RID_DIALOG_GOTO_LIST_BOOKMARKS), LB_SETCURSEL, (WPARAM) nIndex, 0);
+				SendMessage( GetDlgItem(hWnd, AP_RID_DIALOG_GOTO_LIST_BOOKMARKS), LB_GETTEXT,   (WPARAM) nIndex, (LPARAM) m_pszOldValue );
+			}
+			else
+			{
+				SendMessage( GetDlgItem(hWnd, AP_RID_DIALOG_GOTO_LIST_BOOKMARKS), LB_SETCURSEL, (WPARAM) nIndex+1, 0);
+				SendMessage( GetDlgItem(hWnd, AP_RID_DIALOG_GOTO_LIST_BOOKMARKS), LB_GETTEXT,   (WPARAM) nIndex+1, (LPARAM) m_pszOldValue );
+			}
+			SetWindowText( GetDlgItem(hWnd,AP_RID_DIALOG_GOTO_EDIT_NUMBER), m_pszOldValue );
+			EnableWindow( GetDlgItem(hWnd,AP_RID_DIALOG_GOTO_BTN_GOTO), TRUE );
+			GoTo( m_pszOldValue );		
+		}
+		else
+		{		
+			GoTo("+1");
+		}
 		return 1;
 
 	case AP_RID_DIALOG_GOTO_BTN_GOTO:
@@ -293,69 +370,91 @@ BOOL AP_Win32Dialog_Goto::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
 		{
 		case EN_UPDATE:
 			dwTextLength = GetWindowTextLength( GetDlgItem(hWnd,AP_RID_DIALOG_GOTO_EDIT_NUMBER) );
-			
-			if( dwTextLength )
+			if( m_iRow != (short) AP_JUMPTARGET_BOOKMARK )
 			{
-				pBuf = new char [ dwTextLength + 1 ];
-				if( !pBuf )
-					return 0;
-				
-				GetWindowText( GetDlgItem(hWnd,AP_RID_DIALOG_GOTO_EDIT_NUMBER), pBuf, dwTextLength + 1 );
-
-				// If the first character is + or -, skip over it in the
-				// check loop below
-				if( *pBuf == '-' || *pBuf == '+' )
-					dwStart = 1;
-				else
-					dwStart = 0;
-
-				// Make sure everything we have is numeric
-				for( dwCounter = dwStart; dwCounter < dwTextLength; dwCounter++ )
+				if( dwTextLength )
 				{
-					if( !UT_UCS_isdigit( pBuf[ dwCounter ] ) )
-					{
-						if( m_pszOldValue == NULL )
-						{
-							m_pszOldValue = new char[ 1 ];
-							*m_pszOldValue = '\0';
-						}
-						
-						SetWindowText( GetDlgItem(hWnd,AP_RID_DIALOG_GOTO_EDIT_NUMBER), m_pszOldValue );
-						
-						bValueOK = FALSE;
+					pBuf = new char [ dwTextLength + 1 ];
+					if( !pBuf )
+						return 0;
+				
+					GetWindowText( hWndCtrl, pBuf, dwTextLength + 1 );
 
-						break;
+					// If the first character is + or -, skip over it in the
+					// check loop below
+					if( *pBuf == '-' || *pBuf == '+' )
+						dwStart = 1;
+					else
+						dwStart = 0;
+
+					// Make sure everything we have is numeric
+					for( dwCounter = dwStart; dwCounter < dwTextLength; dwCounter++ )
+					{
+						if( !UT_UCS_isdigit( pBuf[ dwCounter ] ) )
+						{
+							if( m_pszOldValue == NULL )
+							{
+								m_pszOldValue = new char[ 1 ];
+								*m_pszOldValue = '\0';
+							}
+							
+							SetWindowText( hWndCtrl, m_pszOldValue );
+							
+							bValueOK = FALSE;
+
+							break;
+						}
+					}
+	
+					if( bValueOK )
+					{
+						if( m_pszOldValue != NULL )
+							DELETEP( m_pszOldValue );
+	
+						m_pszOldValue = pBuf;
+	
+						// Only enable the goto button if what we have actually contains a number
+						EnableWindow( GetDlgItem(hWnd,AP_RID_DIALOG_GOTO_BTN_GOTO), !(((pBuf[ 0 ] == '-') || (pBuf[ 0 ] == '+')) && (pBuf[ 1 ] == '\0')) );
+					}
+					else
+					{
+						FREEP( pBuf );
+		
+						EnableWindow( GetDlgItem(hWnd,AP_RID_DIALOG_GOTO_BTN_GOTO), FALSE );
 					}
 				}
-
-				if( bValueOK )
+				else
 				{
 					if( m_pszOldValue != NULL )
 						DELETEP( m_pszOldValue );
 
-					m_pszOldValue = pBuf;
-
-					// Only enable the goto button if what we have actually contains a number
-					EnableWindow( GetDlgItem(hWnd,AP_RID_DIALOG_GOTO_BTN_GOTO), !(((pBuf[ 0 ] == '-') || (pBuf[ 0 ] == '+')) && (pBuf[ 1 ] == '\0')) );
-				}
-				else
-				{
-					FREEP( pBuf );
-
+					m_pszOldValue = NULL;
+	
 					EnableWindow( GetDlgItem(hWnd,AP_RID_DIALOG_GOTO_BTN_GOTO), FALSE );
 				}
 			}
 			else
 			{
-				if( m_pszOldValue != NULL )
-					DELETEP( m_pszOldValue );
 
-				m_pszOldValue = NULL;
-
-				EnableWindow( GetDlgItem(hWnd,AP_RID_DIALOG_GOTO_BTN_GOTO), FALSE );
+				if( dwTextLength )
+				{
+					EnableWindow( GetDlgItem(hWnd,AP_RID_DIALOG_GOTO_BTN_GOTO), TRUE );		
+					if( m_pszOldValue )
+						DELETEP( m_pszOldValue );
+					m_pszOldValue = new char[dwTextLength+1];
+					GetWindowText( hWndCtrl, m_pszOldValue, dwTextLength + 1 );
+				}
+				else
+				{
+					EnableWindow( GetDlgItem(hWnd,AP_RID_DIALOG_GOTO_BTN_GOTO), FALSE );
+				}
 			}
-
 			return 1;
+
+		case EN_SETFOCUS:
+			SendMessage( GetDlgItem(hWnd, AP_RID_DIALOG_GOTO_LIST_BOOKMARKS), LB_SETCURSEL, (WPARAM) -1, 0);
+			return 1;
+
 		default:
 			return 0;
 		}
