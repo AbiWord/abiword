@@ -617,7 +617,7 @@ void s_LaTeX_Listener::_openSpan(PT_AttrPropIndex api)
 
 		if (pAP->getProperty("font-size", szValue))
 		{
-			if (!UT_strcmp (DEFAULT_SIZE, szValue))
+			if (UT_strcmp (DEFAULT_SIZE, szValue) != 0)
 			{
 				m_pie->write("{\\");
 				UT_String szSize;
@@ -1286,12 +1286,14 @@ static int wvConvertUnicodeToLaTeX(U16 char16,char*& out)
 			return(1);
 		case 30:
 		case 31:
-		case 45:
 		
 		case 12:
 		case 13:
 		case 14:
 		case 7:
+			return(1);
+		case 45:
+			printf("-");
 			return(1);
 		case 34:
 			printf("\"");

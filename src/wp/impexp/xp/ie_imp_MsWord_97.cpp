@@ -508,7 +508,7 @@ IE_Imp_MsWord_97::IE_Imp_MsWord_97(PD_Document * pDocument)
 /****************************************************************************/
 /****************************************************************************/
 
-#define ErrCleanupAndExit(code)  do {wvOLEFree (); return(code);} while(0)
+#define ErrCleanupAndExit(code)  do {wvOLEFree (&ps); return(code);} while(0)
 
 #define GetPassword() _getPassword ( getDoc()->getApp()->getLastFocussedFrame() )
 
@@ -627,7 +627,7 @@ UT_Error IE_Imp_MsWord_97::importFile(const char * szFilename)
   
   // HACK - this will do until i sort out some global stream ugliness in wv
   if ( !decrypted )
-    wvOLEFree();
+    wvOLEFree(&ps);
   
   // We can't be in a good state if we didn't add any sections!
   if (m_nSections == 0)

@@ -579,12 +579,6 @@ bool IE_Imp_Psion::applyParagraphAttributes(psiconv_paragraph_layout layout,
 	class UT_ByteBuf props(256);
 	const XML_Char* propsArray[11];
 
-	// HACK: there is no real setting to do this.
-	if (layout->on_next_page) {
-		UT_UCSChar ucs = UCS_FF;
-		if (!(getDoc()->appendSpan(&ucs,1)))
-			return false;
-	}
 	// Get all attributes into prop
 	if (!(getParagraphAttributes(layout,&props)))
 		return false;
@@ -635,6 +629,13 @@ bool IE_Imp_Psion::applyParagraphAttributes(psiconv_paragraph_layout layout,
 	if (!(getDoc()->appendStrux(PTX_Block,propsArray)))
 		return false;
 	
+	// HACK: there is no real setting to do this.
+	if (layout->on_next_page) {
+		UT_UCSChar ucs = UCS_FF;
+		if (!(getDoc()->appendSpan(&ucs,1)))
+			return false;
+	}
+
 	// We need to append a field and some other stuff...
 	if (layout->bullet->on) {
 		propsArray[0] = (const XML_Char *) "type";
