@@ -551,7 +551,7 @@ void fp_CellContainer::_clear(fp_TableContainer * pBroke)
 //		if (background.m_t_background != PP_PropertyMap::background_none)
 		{
 			xxx_UT_DEBUGMSG(("_clear: BRec.top %d  Brec.height %d \n",bRec.top,bRec.height));
-			UT_ASSERT((bRec.left + bRec.width) < getPage()->getWidth());
+			//			UT_ASSERT((bRec.left + bRec.width) < getPage()->getWidth());
 			getGraphics()->fillRect (page_color,bRec.left,bRec.top,bRec.width,bRec.height);
 		}
 	}
