@@ -216,6 +216,11 @@ typedef enum
   WLNF_HEBREW_NUMBERS  = 45  
 } MSWordListIdType;
 
+typedef struct{
+  UT_uint32 listId;
+  UT_uint32 level;
+} ListIdLevelPair;
+
 /*!
  * Map msword list enums back to abi's
  */
@@ -534,6 +539,8 @@ IE_Imp_MsWord_97::~IE_Imp_MsWord_97()
 		}
 		delete [] m_pBookmarks;
 	}
+
+	UT_VECTOR_PURGEALL(ListIdLevelPair *, m_vLists);
 }
 
 IE_Imp_MsWord_97::IE_Imp_MsWord_97(PD_Document * pDocument)
@@ -557,6 +564,8 @@ IE_Imp_MsWord_97::IE_Imp_MsWord_97(PD_Document * pDocument)
 	m_pBookmarks(NULL),
 	m_iBookmarksCount(0)
 {
+  for(UT_uint32 i = 0; i < 9; i++)
+	  m_iListIdIncrement[i] = 0;
 }
 
 /****************************************************************************/
@@ -1598,7 +1607,10 @@ int IE_Imp_MsWord_97::_beginPara (wvParseStruct *ps, UT_uint32 tag,
 
 	UT_uint32 myListId = 0;
 	LVLF * myLVLF = NULL;
-
+	UT_String szListId;
+	UT_String szParentId;
+	UT_String szStartValue;
+	UT_String szLevel;
 	/*
 	  The MS documentation on lists really sucks, but we've been able to decipher
 	  some meaning from it and get simple lists to sorta work. This code mostly prints out
@@ -1781,6 +1793,7 @@ int IE_Imp_MsWord_97::_beginPara (wvParseStruct *ps, UT_uint32 tag,
 
 	  // a hack -- see the note on myListId below
 	  myListId += myLVLF->nfc;
+	  myListId += apap->ilvl;
 	  
 	  /*
 		IMPORTANT now we have the list formatting sutff retrieved; it is found in several
@@ -1796,7 +1809,10 @@ int IE_Imp_MsWord_97::_beginPara (wvParseStruct *ps, UT_uint32 tag,
 		are separated by only empty paragraphs. As a hack, I have added the format number
 		to the list id, so gaining different id for different formattings (it is not foolproof,
 		for if id1 + format1 == id2 + format2 then we get two lists joined, but the probability
-		of that should be small).
+		of that should be small). Further problem is that in AW, list id refers to the set of
+		list elements on the same level, while in Word the id is that of the entire list. The
+		easiest way to tranform the Word id to AW id is to add the level to the id, which
+		is what has been done above
 		
 		PAPX		- the formatting information that needs to be added to the format
 		of this list
@@ -1825,20 +1841,47 @@ int IE_Imp_MsWord_97::_beginPara (wvParseStruct *ps, UT_uint32 tag,
 	  
 	  // If a given list id has already been defined, appending a new list with
 	  // same values will have a harmless effect
-	  
+
 	  // id, parentid, type, start value, list-delim, NULL
-	  const XML_Char * list_atts[11];
+	  const XML_Char * list_atts[13];
 	  
+
+	  // we will use this to keep track of how many entries of given level we have had
+	  // every time we get here, we increase the counter for all levels lower that ours
+	  // then we will add the counter for our level to myListId; this way subsections of
+	  // the list separated by a higher level list entry will have different id's
+	  
+	  
+	  for(j = apap->ilvl + 1; j < 9; j++)
+		  m_iListIdIncrement[j]++;
+
+	  myListId += m_iListIdIncrement[apap->ilvl];
+
 	  // list id number
 	  list_atts[0] = "id";
 	  sprintf(propBuffer, "%d", myListId);
-	  UT_String szListId ( propBuffer );
+	  szListId = propBuffer;
 	  list_atts[1] = szListId.c_str();
 	  
 	  // parent id
 	  list_atts[2] = "parentid";
-	  list_atts[3] = "0";
-	  
+
+	  // we will search backward our list vector for the first entry that has a lower level than we
+	  // and that will be our parent
+	  UT_uint32 myParentID = 0;
+	  for(UT_sint32 n = m_vLists.getItemCount(); n > 0; n--)
+	  {
+		  ListIdLevelPair * llp = (ListIdLevelPair *)(m_vLists.getNthItem(n - 1));
+		  if(llp->level < apap->ilvl)
+		  {
+			  myParentID = llp->listId;
+			  break;
+		  }
+	  }
+	  sprintf(propBuffer, "%d", myParentID);
+	  szParentId = propBuffer;
+	  list_atts[3] = szParentId.c_str();
+
 	  // list type
 	  list_atts[4] = "type";
 	  list_atts[5] = s_mapDocToAbiListId ((MSWordListIdType)myLVLF->nfc);
@@ -1846,16 +1889,27 @@ int IE_Imp_MsWord_97::_beginPara (wvParseStruct *ps, UT_uint32 tag,
 	  // start value
 	  list_atts[6] = "start-value";
 	  sprintf(propBuffer, "%d", myStartAt);
-	  UT_String szStartValue ( propBuffer );
+	  szStartValue = propBuffer;
 	  list_atts[7] = szStartValue.c_str();
 	  
 	  // list delimiter
 	  list_atts[8] = "list-delim";
 	  list_atts[9] = s_mapDocToAbiListDelim ((MSWordListIdType)myLVLF->nfc);
+
+	  list_atts[10] = "level";
+	  sprintf(propBuffer, "%d", apap->ilvl + 1); // Word level starts at 0, Abi's at 1
+	  szLevel = propBuffer;
+	  list_atts[11] = szLevel.c_str();
 	  
 	  // NULL
-	  list_atts[10] = 0;
-	  
+	  list_atts[12] = 0;
+
+	  // now add this to our vector of lists
+	  ListIdLevelPair * llp = new ListIdLevelPair;
+	  llp->listId = myListId;
+	  llp->level = apap->ilvl; 
+	  m_vLists.addItem((void*)llp);
+
 	  getDoc()->appendList(list_atts);
 	  UT_DEBUGMSG(("DOM: appended a list\n"));
 	  
@@ -1892,35 +1946,20 @@ list_error:
 	propsArray[0] = (XML_Char *)"props";
 	propsArray[1] = (XML_Char *)props.c_str();
 
+	UT_uint32 i = 2;
 	// level, or 0 for default, normal level
-	propsArray[2] = "level";
 	if (myListId > 0)
-	  {
-		sprintf(propBuffer, "%d", apap->ilvl+1);
-	  }
-	else
-	  {
-		sprintf(propBuffer, "0");
-	  }
-	UT_String szLevel ( propBuffer );
-	propsArray[3] = szLevel.c_str();
-
-	// list id - may be 0 which means no list
-	propsArray[4] = "listid";
-	sprintf(propBuffer, "%d", myListId);
-	UT_String szListId ( propBuffer );
-	propsArray[5] = szListId.c_str();
-
-	// parent id - no parent at the moment
-	propsArray[6] = "parentid";
-	propsArray[7] = "0";
-
-	// style: TODO - we could easily get the char and para style name
-	propsArray[8] = 0;
-	propsArray[9] = 0;
+	{
+		propsArray[i++] = "level";
+		propsArray[i++] = szLevel.c_str();
+		propsArray[i++] = "listid";
+		propsArray[i++] = szListId.c_str();
+		propsArray[i++] = "parentid";
+		propsArray[i++] = szParentId.c_str();
+	}
 
 	// NULL
-	propsArray[10] = 0;
+	propsArray[i] = 0;
 	
 	if (!getDoc()->appendStrux(PTX_Block, (const XML_Char **)propsArray))
 	{

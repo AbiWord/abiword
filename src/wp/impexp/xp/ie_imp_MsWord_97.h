@@ -140,6 +140,8 @@ private:
 	UT_uint32 m_iDocPosition;
 	bookmark * m_pBookmarks;
 	UT_uint32  m_iBookmarksCount;
+	UT_Vector m_vLists;
+	UT_uint32 m_iListIdIncrement[9];
 };
 
 #endif /* IE_IMP_MSWORD_H */
