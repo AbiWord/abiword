@@ -325,9 +325,10 @@ void fp_TextRun::appendTextToBuf(UT_GrowBuf & buf)
 #if DEBUG
 void fp_TextRun::printText(void)
 {
-	UT_ASSERT(m_pRenderInfo && m_pRenderInfo->getType() == GRRI_XP);
+	// do not assert, the pointer might be legitimately null
+	//UT_ASSERT(m_pRenderInfo);
 	
-	if(!m_pRenderInfo || m_pRenderInfo->getType() == GRRI_XP)
+	if(!m_pRenderInfo || m_pRenderInfo->getType() != GRRI_XP)
 		return;
 
 	UT_uint32 offset = getBlockOffset();
