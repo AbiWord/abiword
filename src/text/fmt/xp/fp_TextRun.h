@@ -151,11 +151,6 @@ protected:
 										   bool bSelection,
 										   GR_Graphics * pG);
 
-	UT_sint32               _getPrevContSpace(UT_sint32 i,
-											  UT_sint32 offset,
-											  const UT_UCSChar* pSpan,	
-											  UT_GrowBufElement* pCharWidths);
-
 	void					_fillRect(UT_RGBColor& clr,
 									  UT_sint32 xoff,
 									  UT_sint32 yoff,

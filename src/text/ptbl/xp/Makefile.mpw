@@ -22,6 +22,7 @@
 TARGETS = "fd_Field.o" ¶
 			"pd_Document.o" ¶
 			"pd_Style.o" ¶
+			"pd_Iterator.o" ¶
 			"pf_Frag.o" ¶
 			"pf_Frag_FmtMark.o" ¶
 			"pf_Frag_Object.o" ¶

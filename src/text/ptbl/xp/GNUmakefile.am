@@ -73,4 +73,5 @@ libPtbl_a_SOURCES= \
 	px_CR_Strux.cpp		\
 	px_CR_StruxChange.cpp	\
 	px_CR_TestRoutines.cpp  \
-	fd_Field.cpp
+	fd_Field.cpp	\
+	pd_Iterator.cpp

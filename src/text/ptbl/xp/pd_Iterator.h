@@ -22,62 +22,90 @@
 
 //////////////////////////////////////////////////////////////////////////////
 //
-//  The following class allows us to iterate sequentially and
+//  The following classes allow us to iterate sequentially and
 //  efficiently over the content of a document. 
-//
-//  For now I am really just interested in iterating over the text
-//  segements, so the only accessor implemented is getChar(), which
-//  will return the value PD_IT_NOT_CHARACTER if the iterrator points
-//  at a non-text fragment
 //
 //  Tomas, Nov 9, 2003
 //
 
-#define PD_IT_NOT_CHARACTER 0x20
-#define PD_IT_ERROR 0x20
-
-#include "ut_types.h"
+#include "ut_TextIterator.h"
 #include "pt_Types.h"
 
 class PD_Document;
 class pt_PieceTable;
 class pf_Frag;
 
-
-class ABI_EXPORT PD_Iterator
+/******************************************************************
+ *
+ * PD_DocIterator iterates over the contents of the whole document
+ *
+ * NB: because iterating over a document using document position
+ * requires that the PT fragments are clean, this iterator will clean
+ * the fragments whenever they are not clean. This has certain
+ * performance implications for long docs: it will be preferable to
+ * use the PD_StruxIterator below when accessing a limited portion of
+ * the document; PD_DocIterator is more suitable when access is
+ * required to large part of document and access is not strictly
+ * sequential
+ * 
+ */
+class ABI_EXPORT PD_DocIterator : UT_TextIterator
 {
   public:
-	PD_Iterator(PD_Document & doc, PT_DocPosition dpos = 0);
-	PD_Iterator(PD_Document & doc, PL_StruxDocHandle sdh, UT_uint32 offset=0);
+	PD_DocIterator(PD_Document & doc, PT_DocPosition dpos = 0);
 
-	bool setPosition(PL_StruxDocHandle sdh, UT_uint32 offset=0);
-	
-	UT_UCS4Char getChar() const; // return character at present position
+	virtual UT_UCS4Char getChar() const; // return character at present position
 
-	// advance position by 1
-	PD_Iterator & operator ++ ();
-	PD_Iterator & operator ++ (UT_sint32 i); // post-fix
+	virtual UT_TextIterator & operator ++ ();
+	virtual UT_TextIterator & operator -- ();
+	virtual UT_TextIterator & operator +=  (UT_sint32 i);
+	virtual UT_TextIterator & operator -=  (UT_sint32 i);
 	
-	// rewind position by 1
-	PD_Iterator & operator -- ();
-	PD_Iterator & operator -- (UT_sint32 i); // post-fix
-	
-	// advance/rewind position by i
-	PD_Iterator & operator +=  (UT_sint32 i);
-	PD_Iterator & operator -=  (UT_sint32 i);
-	
-	// get character at dpos
-	UT_UCS4Char   operator [](PT_DocPosition dpos);
+	virtual UT_UCS4Char   operator [](UT_uint32 dpos);
 
   private:
-	bool _findFragAtPosition();
-	
+	bool _findFrag();
+
 	pt_PieceTable & m_pt;
 	PT_DocPosition  m_pos;
-
+	
 	const pf_Frag * m_frag;
 
 };
 
+/******************************************************************
+ *
+ * PD_StruxIterator iterates over the contents of document from a
+ * given strux onwards; in contrast to PD_DocIterator above, it does
+ * not rely on PT fragments being clean, but calculates offest from
+ * the starting strux from lengths of individual fragments
+ *
+ */
+
+class ABI_EXPORT PD_StruxIterator : UT_TextIterator
+{
+  public:
+	PD_StruxIterator(PD_Document & doc, PL_StruxDocHandle sdh, UT_uint32 offset = 0);
+
+	virtual UT_UCS4Char getChar() const; // return character at present position
+
+	virtual UT_TextIterator & operator ++ ();
+	virtual UT_TextIterator & operator -- ();
+	virtual UT_TextIterator & operator +=  (UT_sint32 i);
+	virtual UT_TextIterator & operator -=  (UT_sint32 i);
+	
+	virtual UT_UCS4Char   operator [](UT_uint32 dpos);
+
+  private:
+	bool _findFrag();
+	
+	pt_PieceTable &   m_pt;
+	UT_uint32         m_offset;
+	UT_uint32         m_frag_offset;
+	PL_StruxDocHandle m_sdh;
+	
+	const pf_Frag * m_frag;
+
+};
 
 #endif //PD_ITERATOR_H

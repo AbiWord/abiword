@@ -31,6 +31,7 @@
 #include "gr_Graphics.h"
 #include "pd_Document.h"
 #include "pd_Style.h"
+#include "pd_Iterator.h"
 #include "gr_DrawArgs.h"
 #include "fv_View.h"
 #include "fb_Alignment.h"
@@ -341,45 +342,15 @@ void fp_TextRun::printText(void)
 #endif
 bool fp_TextRun::canBreakAfter(void) const
 {
-	const UT_UCSChar* pSpan = NULL;
-	UT_uint32 lenSpan = 0;
-	UT_uint32 offset = getBlockOffset();
-	UT_uint32 len = getLength();
-	bool bContinue = true;
-
-	if (len > 0)
+	if (getLength() > 0)
 	{
-		while (bContinue)
+		PD_StruxIterator text(*getBlock()->getDocument(),
+						 getBlock()->getStruxDocHandle(),
+						 getBlockOffset() + fl_BLOCK_STRUX_OFFSET + getLength() - 1);
+		
+		if (XAP_EncodingManager::get_instance()->can_break_at(text.getChar()))
 		{
-			bContinue = getBlock()->getSpanPtr(offset, &pSpan, &lenSpan);
-
-			if(!bContinue)
-			{
-				// this block has got a text run but no span in the PT,
-				// this is clearly a bug
-				// not sure want we should return !!!
-				UT_ASSERT( UT_SHOULD_NOT_HAPPEN );
-				return false;
-			}
-
-			UT_ASSERT(lenSpan>0);
-
-			if (len <= lenSpan)
-			{
-				UT_ASSERT(len>0);
-
-				if (XAP_EncodingManager::get_instance()->can_break_at(pSpan[len-1]))
-				{
-					return true;
-				}
-
-				bContinue = false;
-			}
-			else
-			{
-				offset += lenSpan;
-				len -= lenSpan;
-			}
+			return true;
 		}
 	}
 	else if (!getNextRun())
@@ -397,19 +368,16 @@ bool fp_TextRun::canBreakAfter(void) const
 
 bool fp_TextRun::canBreakBefore(void) const
 {
-	const UT_UCSChar* pSpan;
-	UT_uint32 lenSpan;
-
 	if (getLength() > 0)
 	{
-		if (getBlock()->getSpanPtr(getBlockOffset(), &pSpan, &lenSpan))
+		PD_StruxIterator text(*getBlock()->getDocument(),
+						 getBlock()->getStruxDocHandle(),
+						 getBlockOffset() + fl_BLOCK_STRUX_OFFSET );
+		
+		
+		if (XAP_EncodingManager::get_instance()->can_break_at(text.getChar()))
 		{
-			UT_ASSERT(lenSpan>0);
-
-			if (XAP_EncodingManager::get_instance()->can_break_at(pSpan[0]))
-			{
-				return true;
-			}
+			return true;
 		}
 	}
 	else
@@ -429,28 +397,20 @@ bool fp_TextRun::canBreakBefore(void) const
 
 bool fp_TextRun::alwaysFits(void) const
 {
-	const UT_UCSChar* pSpan;
-	UT_uint32 lenSpan;
-
-	// TODO we need to fix this code to use getSpanPtr the way it is used elsewhere in this file.
-
 	if (getLength() > 0)
 	{
-		if (getBlock()->getSpanPtr(getBlockOffset(), &pSpan, &lenSpan))
+		PD_StruxIterator text(*getBlock()->getDocument(),
+						 getBlock()->getStruxDocHandle(),
+						 getBlockOffset() + fl_BLOCK_STRUX_OFFSET);
+
+		for (UT_uint32 i=0; i< getLength(); i++, ++text)
 		{
-			UT_ASSERT(lenSpan>0);
-
-			for (UT_uint32 i=0; i<lenSpan; i++)
+			if (text.getChar() != UCS_SPACE)
 			{
-				if (pSpan[i] != UCS_SPACE)
-				{
-					return false;
-				}
+				return false;
 			}
-
-			return true;
 		}
-
+		
 		return false;
 	}
 
@@ -461,7 +421,7 @@ bool fp_TextRun::alwaysFits(void) const
 bool fp_TextRun::findFirstNonBlankSplitPoint(fp_RunSplitInfo& si)
 {
 	return false;
-#if 0
+#if 0 // if turning this back on, replace the while loop with PD_StruxIterator
 	UT_GrowBuf * pgbCharWidths = getBlock()->getCharWidths()->getCharWidths();
 	UT_sint32 iRightWidth = getWidth();
 	UT_GrowBufElement* pCharWidths = pgbCharWidths->getPointer(0);
@@ -538,130 +498,94 @@ bool	fp_TextRun::findMaxLeftFitSplitPoint(UT_sint32 iMaxLeftWidth, fp_RunSplitIn
 	UT_GrowBuf * pgbCharWidths = getBlock()->getCharWidths()->getCharWidths();
 	UT_sint32 iRightWidth = getWidth();
 	UT_GrowBufElement* pCharWidths = pgbCharWidths->getPointer(0);
+
 	if(pCharWidths == NULL)
 	{
 		return false;
 	}
+
 	UT_sint32 iLeftWidth = 0;
 
 	si.iOffset = -1;
 
-	const UT_UCSChar* pSpan;
-	UT_uint32 lenSpan;
 	UT_uint32 offset = getBlockOffset();
-	UT_uint32 len = getLength();
-	bool bContinue = true;
 
-	while (bContinue)
+	PD_StruxIterator text(*getBlock()->getDocument(),
+						  getBlock()->getStruxDocHandle(),
+						  offset + fl_BLOCK_STRUX_OFFSET);
+
+	for(UT_uint32 i = 0; i < getLength(); i++, ++text)
 	{
-		bContinue = getBlock()->getSpanPtr(offset, &pSpan, &lenSpan);
+		UT_sint32 iCW = pCharWidths[i + offset] > 0 ? pCharWidths[i + offset] : 0;
+		iLeftWidth += iCW;
+		iRightWidth -= iCW;
 
-		if(!bContinue)
-		{
-			// this block has got a text run but no span in the PT,
-			// this is clearly a bug
-			UT_ASSERT( UT_SHOULD_NOT_HAPPEN );
-			return false;
-		}
-
-		UT_ASSERT(lenSpan>0);
-
-		if (lenSpan > len)
-		{
-			lenSpan = len;
-		}
-		for (UT_uint32 i=0; i<lenSpan; i++)
-		{
-			UT_sint32 iCW = pCharWidths[i + offset] > 0 ? pCharWidths[i + offset] : 0;
-			iLeftWidth += iCW;
-			iRightWidth -= iCW;
+		UT_UCS4Char c = text.getChar();
 #if 0
-	/*
-	FIXME: this is a direct equivalent to HJ's patch, but other branch
-	could be more correct than this one. - VH
-	*/
-			if ( (XAP_EncodingManager::get_instance()->can_break_at(pSpan[i]) && pSpan[i]!=UCS_SPACE) ||
-				(
-					(UCS_SPACE == pSpan[i])
+		/*
+		  FIXME: this is a direct equivalent to HJ's patch, but other branch
+		  could be more correct than this one. - VH
+		*/
+		if ((XAP_EncodingManager::get_instance()->can_break_at(c) && c != UCS_SPACE)
+			||(UCS_SPACE == pSpan[i]) || bForce)
 #else
-			if (
-				(XAP_EncodingManager::get_instance()->can_break_at(pSpan[i])
+		if (XAP_EncodingManager::get_instance()->can_break_at(c) || bForce)
 #endif
-//					&& ((i + offset) != (getBlockOffset() + getLength() - 1))
-					)
-				|| bForce
-				)
+		   //	&& ((i + offset) != (getBlockOffset() + getLength() - 1))
+		{
+			UT_sint32 ispace = 0;
+			if(c == UCS_SPACE)
 			{
-				xxx_UT_DEBUGMSG(("Found Slit point is %d i %d span char %d contiguous space %d \n",iLeftWidth,i,pSpan[i],_getPrevContSpace(i,offset,pSpan,pCharWidths)));
-				UT_sint32 ispace = 0;
-				if(pSpan[i] == UCS_SPACE)
+				ispace = iCW;
+			} 
+			if (iLeftWidth <= iMaxLeftWidth)
+			{
+				si.iLeftWidth = iLeftWidth;
+				si.iRightWidth = iRightWidth;
+				si.iOffset = i + offset;
+			}
+			else
+			{
+				// Ignore trailing space when chosing break points
+				if(c == UCS_SPACE)
 				{
-					ispace = iCW;
-				} 
-				if (iLeftWidth <= iMaxLeftWidth)
-				{
-					si.iLeftWidth = iLeftWidth;
-					si.iRightWidth = iRightWidth;
-					si.iOffset = i + offset;
-				}
-				else
-				{
-//
-// Ignore trailing space when chosing break points
-//
-					if((pSpan[i] == UCS_SPACE) && ((iLeftWidth - _getPrevContSpace(i,offset,pSpan,pCharWidths)) <= iMaxLeftWidth ))
+					// calculate with of previous continuous space
+					UT_sint32 iSpaceW = 0;
+					PD_StruxIterator text2(*getBlock()->getDocument(),
+										   getBlock()->getStruxDocHandle(),
+										   offset + fl_BLOCK_STRUX_OFFSET + i);
+
+					UT_uint32 j = i;
+					while(j >= 0 && text2.getChar() == UCS_SPACE)
+					{
+						iSpaceW += pCharWidths[offset + j];
+						j--;
+						--text2;
+					}
+
+					if(iLeftWidth - iSpaceW <= iMaxLeftWidth)
 					{
 						si.iLeftWidth = iLeftWidth;
 						si.iRightWidth = iRightWidth;
 						si.iOffset = i + offset;
 					}
 					else
-					{
-						bContinue = false;
 						break;
-					}
 				}
-				xxx_UT_DEBUGMSG(("Candidate Slit point is %d \n",	si.iLeftWidth));
+				else
+					break;
 			}
-		}
-
-		if (len <= lenSpan)
-		{
-			bContinue = false;
-		}
-		else
-		{
-			offset += lenSpan;
-			len -= lenSpan;
+			xxx_UT_DEBUGMSG(("Candidate Slit point is %d \n",	si.iLeftWidth));
 		}
 	}
-
-	if (
-		(si.iOffset == -1)
-		|| (si.iLeftWidth == getWidth())
-		)
+	
+	if ((si.iOffset == -1) || (si.iLeftWidth == getWidth()))
 	{
 		// there were no split points which fit.
 		return false;
 	}
 
-
 	return true;
-}
-
-/*!
- * This method returns the space associated with contiguous space 
- * characters at and before the point in pchars given.
- */
-UT_sint32 fp_TextRun::_getPrevContSpace(UT_sint32 i,UT_sint32 offset,const UT_UCSChar* pSpan,	UT_GrowBufElement* pCharWidths)
-{
-	UT_sint32 width = 0;
-	while(i>=0 && pSpan[i] == UCS_SPACE)
-	{
-		width += pCharWidths[offset + i];
-		i--;
-	}
-	return width;
 }
 
 void fp_TextRun::mapXYToPosition(UT_sint32 x, UT_sint32 /*y*/,
@@ -2209,76 +2133,37 @@ UT_sint32 fp_TextRun::findCharacter(UT_uint32 startPosition, UT_UCSChar Characte
 {
 	// NOTE: startPosition is run-relative
 	// NOTE: return value is block-relative (don't ask me why)
-	const UT_UCSChar* pSpan = NULL;
-	UT_uint32 lenSpan = 0;
-	UT_uint32 offset = getBlockOffset() + startPosition;
-	UT_uint32 len = getLength() - startPosition;
-	bool bContinue = true;
-
 	if ((getLength() > 0) && (startPosition < getLength()))
 	{
-		UT_uint32 i;
+		PD_StruxIterator text(*getBlock()->getDocument(),
+							  getBlock()->getStruxDocHandle(),
+							  getBlockOffset() + fl_BLOCK_STRUX_OFFSET + startPosition);
 
-		while (bContinue)
+		for(UT_uint32 i = startPosition; i < getLength(); i++, ++text)
 		{
-			bContinue = getBlock()->getSpanPtr(offset, &pSpan, &lenSpan);
-			//if(!bContinue)
-			//	break;
-			//UT_ASSERT(lenSpan>0);
-
-			if (len <= lenSpan)
-			{
-				for(i = 0; i < len; i++)
-				{
-					if (pSpan[i] == Character)
-						return offset + i;
-				}
-
-				bContinue = false;
-			}
-			else
-			{
-				for(i = 0; i < lenSpan; i++)
-				{
-					if (pSpan[i] == Character)
-						return offset + i;
-				}
-
-				offset += lenSpan;
-				len -= lenSpan;
-
-				UT_ASSERT(offset >= getBlockOffset());
-				UT_ASSERT(offset + len <= getBlockOffset() + getLength());
-			}
+			if(text.getChar() == Character)
+				return i + getBlockOffset();
 		}
 	}
 
 	// not found
-
 	return -1;
 }
 
 bool fp_TextRun::getCharacter(UT_uint32 run_offset, UT_UCSChar &Character) const
 {
-	const UT_UCSChar* pSpan = NULL;
-	UT_uint32 lenSpan = 0;
+	if(getLength() == 0)
+		return false;
 
-	UT_ASSERT(run_offset < getLength());
+	PD_StruxIterator text(*getBlock()->getDocument(),
+					 getBlock()->getStruxDocHandle(),
+					 getBlockOffset() + fl_BLOCK_STRUX_OFFSET + run_offset);
 
-	if (getLength() > 0)
-	{
-		if (getBlock()->getSpanPtr(run_offset + getBlockOffset(), &pSpan, &lenSpan))
-		{
-			UT_ASSERT(lenSpan>0);
+	Character = text.getChar();
 
-			Character = pSpan[0];
-			return true;
-		}
-	}
-
-	// not found
-
-	return false;
+	xxx_UT_DEBUGMSG(("fp_TextRun::getCharacter offset %d, char 0x%04x\n",
+				 run_offset, Character));
+	return true;
 }
 
 bool fp_TextRun::isLastCharacter(UT_UCSChar Character) const
@@ -2310,58 +2195,18 @@ bool	fp_TextRun::doesContainNonBlankData(void) const
 {
 	if(getLength() > 0)
 	{
-		const UT_UCSChar* pSpan = NULL;
-		UT_uint32 lenSpan = 0;
-		UT_uint32 offset = getBlockOffset();
-		UT_uint32 len = getLength();
-		bool bContinue = true;
+		PD_StruxIterator text(*getBlock()->getDocument(),
+							  getBlock()->getStruxDocHandle(),
+							  getBlockOffset() + fl_BLOCK_STRUX_OFFSET);
 
-		UT_uint32 i;
-
-		while (bContinue)
+		for(UT_uint32 i = 0; i < getLength(); i++, ++text)
 		{
-			bContinue = getBlock()->getSpanPtr(offset, &pSpan, &lenSpan);
-			//if(!bContinue)
-			//	break; //no span found
-			if(lenSpan <= 0)
-			{
-				fp_Line * pLine = static_cast<fp_Line *>(getBlock()->getFirstContainer());
-				while(pLine)
-				{
-					pLine = static_cast<fp_Line *>(pLine->getNext());
-				}
-			}
-			//UT_ASSERT(lenSpan>0);
-
-			if (len <= lenSpan)
-			{
-				for(i = 0; i < len; i++)
-				{
-					if (pSpan[i] != UCS_SPACE)
-						return true;
-				}
-
-				bContinue = false;
-			}
-			else
-			{
-				for(i = 0; i < lenSpan; i++)
-				{
-					if (pSpan[i] != UCS_SPACE)
-						return true;
-				}
-
-				offset += lenSpan;
-				len -= lenSpan;
-
-				UT_ASSERT(offset >= getBlockOffset());
-				UT_ASSERT(offset + len <= getBlockOffset() + getLength());
-			}
+			if(text.getChar() != UCS_SPACE)
+				return true;
 		}
 	}
 
 	// Only spaces found;
-
 	return false;
 }
 
@@ -2386,12 +2231,15 @@ UT_sint32 fp_TextRun::findTrailingSpaceDistance(void) const
 	UT_sint32 iTrailingDistance = 0;
 	if(getLength() > 0)
 	{
-		UT_UCSChar c;
-
 		UT_sint32 i;
-		for (i = getLength() - 1; i >= 0; i--)
+
+		PD_StruxIterator text(*getBlock()->getDocument(),
+					 getBlock()->getStruxDocHandle(),
+					 getBlockOffset() + fl_BLOCK_STRUX_OFFSET + getLength() - 1);
+		
+		for (i = getLength() - 1; i >= 0; i--, --text)
 		{
-			if(getCharacter(i, c) && (UCS_SPACE == c))
+			if(UCS_SPACE == text.getChar())
 			{
 				xxx_UT_DEBUGMSG(("For i %d char is |%c| trail %d \n",i,c,iTrailingDistance));
 				iTrailingDistance += pCharWidths[i + getBlockOffset()];
@@ -2525,12 +2373,15 @@ UT_uint32 fp_TextRun::countTrailingSpaces(void) const
 
 	if(getLength() > 0)
 	{
-		UT_UCSChar c;
-
 		UT_sint32 i;
-		for (i = getLength() - 1; i >= 0; i--)
+
+		PD_StruxIterator text(*getBlock()->getDocument(),
+					 getBlock()->getStruxDocHandle(),
+					 getBlockOffset() + fl_BLOCK_STRUX_OFFSET + getLength() - 1);
+		
+		for (i = getLength() - 1; i >= 0; i--, --text)
 		{
-			if(getCharacter(i, c) && (UCS_SPACE == c))
+			if(UCS_SPACE == text.getChar())
 			{
 				iCount++;
 			}
@@ -2620,36 +2471,25 @@ UT_sint32 fp_TextRun::getStr(UT_UCSChar * pStr, UT_uint32 &iMax)
 
 	if (len > 0)
 	{
-		while (bContinue)
-		{
-			bContinue = getBlock()->getSpanPtr(offset, &pSpan, &lenSpan);
-			UT_ASSERT(lenSpan>0);
+		PD_StruxIterator text(*getBlock()->getDocument(),
+							  getBlock()->getStruxDocHandle(),
+							  getBlockOffset() + fl_BLOCK_STRUX_OFFSET);
 
-			if (len <= lenSpan) 	//copy the entire len to pStr and return 0
-			{
-				UT_ASSERT(len>0);
-						UT_UCS4_strncpy(pStrPos, pSpan, len);
-						pStr[len] = 0;						  //make sure the string is 00-terminated
-						iMax = getLength();
-						return(false);
-			}
-			else  //copy what we have got and move on to the next span
-			{
-				UT_UCS4_strncpy(pStrPos, pSpan, lenSpan);
-				offset += lenSpan;
-				len -= lenSpan;
-				pStrPos += lenSpan;
-			}
-		}
+		for(UT_uint32 i = 0; i < getLength(); i++, ++text)
+			pStr[i] = text.getChar();
+		
+		pStr[i] = 0;
+		iMax = getLength();
+		return(0);
 	}
 	else //this run is empty, fill pStr with 00 and return 0
 	{
 		*pStr = 0;
 		iMax = 0;
-		return false;
+		return 0;
 	}
 	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-	return false;
+	return -1;
 }
 
 

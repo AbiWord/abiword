@@ -26,55 +26,39 @@
 
 ////////////////////////////////////////////////////////////////////
 //
-//  PD_Iterator
+//  PD_DocIterator -- iterates over the whole PieceTable
+//  
+//  NB: because iterating over a document using document position
+//      requires that the PT fragments are clean, this iterator will
+//      clean the fragments whenever they are not clean. This has
+//      certain performance implications (it might be preferable
+//      to use the PD_StruxIterator when accessing a limited portion
+//      of the document)
 //
 //
 
-/*! the basic constructor, which will start looking for the position
-    from the beginning of the PT
+/*!     
     \param doc - the document which we want to iterate
     \param dpos - document position we want to start from
 */
-PD_Iterator::PD_Iterator(PD_Document &doc, PT_DocPosition dpos)
+PD_DocIterator::PD_DocIterator(PD_Document &doc, PT_DocPosition dpos)
 	: m_pt(*doc.getPieceTable()), m_pos(dpos), m_frag(NULL)
 {
 	// find the frag at requested postion
-	_findFragAtPosition();
-}
-
-/*! constructor which allows us to jump directly to the correct strux
-    in the PT if we have its handle
-    \param doc - the document which we want to iterate
-    \param sdh - handle of the strux we want to start from
-    \param offset - offset relative to strux we want to start from
-*/
-PD_Iterator::PD_Iterator(PD_Document &doc, PL_StruxDocHandle sdh, UT_uint32 offset)
-	: m_pt(*doc.getPieceTable()), m_pos(0), m_frag(NULL)
-{
-	setPosition(sdh, offset);
-}
-
-/*! set position to given strux and strux offset
-    \param sdh - handle of the strux we want to start from
-    \param offset - offset relative to strux we want to start from
-*/
-bool PD_Iterator::setPosition(PL_StruxDocHandle sdh, UT_uint32 offset)
-{
-	m_frag = static_cast<const pf_Frag *>(sdh);
-
-	if(!m_frag)
-		return false;
-
-	m_pos = m_frag->getPos() + offset;
-
-	// now we can find the frag at the position
-	return _findFragAtPosition();
+	_findFrag();
 }
 
 /*! find the PT fragment that contains current postion (m_pos)
  */
-bool PD_Iterator::_findFragAtPosition()
+bool PD_DocIterator::_findFrag()
 {
+	// need to make sure fragments are clean before we can use their
+	// doc positions
+	if(m_pt.getFragments().areFragsDirty())
+	{
+		m_pt.getFragments().cleanFrags();
+	}
+
 	if(m_frag)
 	{
 		// if we have a fragment, we can speed things up in certain
@@ -111,6 +95,33 @@ bool PD_Iterator::_findFragAtPosition()
 			
 			return false;
 		}
+
+		if(m_frag->getPos() > m_pos)
+		{
+			// keep going from here back
+			m_frag = m_frag->getPrev();
+			
+			while(m_frag)
+			{
+				if(m_frag->getPos() <= m_pos && m_frag->getPos() + m_frag->getLength() > m_pos)
+				{
+					// we have the correct fragment
+					return true;
+				}
+
+				m_frag = m_frag->getPrev();
+			}
+
+			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+
+			// set the pos to start of doc
+			m_frag = m_pt.getFragments().getFirst();
+			m_pos = 0;
+			
+			return false;
+		}
+		
+		
 	}
 
 	// do it the hard way
@@ -130,15 +141,17 @@ bool PD_Iterator::_findFragAtPosition()
 		m_pos = m_frag->getPos() + m_frag->getLength() - 1;
 	}
 	
-	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+	// this happens, for instance, when we try to move past end of doc
+	// (this can happen legitimately for example in the last increment
+	// of a for loop)
 	return false;
 }
 
 /*! get character at the curent position
  */
-UT_UCS4Char PD_Iterator::getChar() const
+UT_UCS4Char PD_DocIterator::getChar() const
 {
-	UT_return_val_if_fail(m_frag, PD_IT_ERROR);
+	UT_return_val_if_fail(m_frag, UT_IT_ERROR);
 
 	if(m_frag->getType() == pf_Frag::PFT_Text)
 	{
@@ -146,71 +159,51 @@ UT_UCS4Char PD_Iterator::getChar() const
 
 		const UT_UCS4Char * p = m_pt.getPointer(pft->getBufIndex());
 
-		UT_return_val_if_fail(p, PD_IT_ERROR);
-		UT_return_val_if_fail(m_pos - pft->getPos() < pft->getLength(), PD_IT_ERROR);
-
+		UT_return_val_if_fail(p, UT_IT_ERROR);
+		UT_return_val_if_fail(m_pos - pft->getPos() < pft->getLength(), UT_IT_ERROR);
 		return p[m_pos - pft->getPos()];
 	}
 
 	// we are in a non-text fragment
-	return PD_IT_NOT_CHARACTER;
+	return UT_IT_NOT_CHARACTER;
 }
 
 /*! various increment operators
  */
-PD_Iterator & PD_Iterator::operator ++ ()
+UT_TextIterator & PD_DocIterator::operator ++ ()
 {
 	m_pos++;
-	_findFragAtPosition();
-
-	return *this;
-}
-
-PD_Iterator & PD_Iterator::operator ++ (UT_sint32 i) // post-fix
-{
-	m_pos++;
-	_findFragAtPosition();
+	_findFrag();
 
 	return *this;
 }
 
 	
-PD_Iterator & PD_Iterator::operator -- ()
+UT_TextIterator & PD_DocIterator::operator -- ()
 {
 	if(m_pos > 0)
 	{
 		m_pos--;
-		_findFragAtPosition();
+		_findFrag();
 	}
 
 	return *this;
 }
 	
-PD_Iterator & PD_Iterator::operator -- (UT_sint32 i) // post-fix
-{
-	if(m_pos > 0)
-	{
-		m_pos--;
-		_findFragAtPosition();
-	}
-
-	return *this;
-}
-
-PD_Iterator & PD_Iterator::operator +=  (UT_sint32 i)
+UT_TextIterator & PD_DocIterator::operator +=  (UT_sint32 i)
 {
 	m_pos += i;
-	_findFragAtPosition();
+	_findFrag();
 
 	return *this;
 }
 	
-PD_Iterator & PD_Iterator::operator -=  (UT_sint32 i)
+UT_TextIterator & PD_DocIterator::operator -=  (UT_sint32 i)
 {
 	if((UT_sint32)m_pos >= i)
 	{
 		m_pos -= i;
-		_findFragAtPosition();
+		_findFrag();
 	}
 
 	return *this;
@@ -219,10 +212,144 @@ PD_Iterator & PD_Iterator::operator -=  (UT_sint32 i)
 /*! advance iterator to document position dpos  and return character
     at that position
 */
-UT_UCS4Char PD_Iterator::operator [](PT_DocPosition dpos)
+UT_UCS4Char PD_DocIterator::operator [](UT_uint32 dpos)
 {
-	m_pos = dpos;
-	_findFragAtPosition();
+	m_pos = (PT_DocPosition)dpos;
+	_findFrag();
+
+	return getChar();
+}
+
+
+///////////////////////////////////////////////////////////////////////
+//
+// PD_StruxIterator - iterate over Piece Table from the start of given
+// strux onwards
+
+/*! 
+    \param doc - the document which we want to iterate
+    \param sdh - handle of the strux we want to start from
+    \param offset - offset relative to strux we want to start from
+*/
+PD_StruxIterator::PD_StruxIterator(PD_Document &doc, PL_StruxDocHandle sdh, UT_uint32 offset)
+	: m_pt(*doc.getPieceTable()), m_offset(offset), m_sdh(sdh), m_frag_offset(0), m_frag(NULL)
+{
+	UT_return_if_fail(m_sdh);
+	m_frag = static_cast<const pf_Frag *>(m_sdh);
+	
+	_findFrag();
+}
+
+// strux relative iteration
+bool PD_StruxIterator::_findFrag()
+{
+
+	while(m_frag)
+	{
+		if(m_frag_offset <= m_offset && m_frag_offset + m_frag->getLength() > m_offset)
+		{
+			return true;
+		}
+
+		if(m_offset < m_frag_offset)
+		{
+			m_frag = m_frag->getPrev();
+			m_frag_offset -= m_frag->getLength();
+		}
+		else if(m_offset >= m_frag_offset + m_frag->getLength())
+		{
+			m_frag_offset += m_frag->getLength();
+			m_frag = m_frag->getNext();
+		}
+		
+	}
+
+	// this happens, for instance, when we try to move past end of doc
+	// (this can happen legitimately for example in the last increment
+	// of a for loop)
+	return false;
+}
+
+
+/*! get character at the curent position
+ */
+UT_UCS4Char PD_StruxIterator::getChar() const
+{
+	UT_return_val_if_fail(m_frag, UT_IT_ERROR);
+
+	if(m_frag->getType() == pf_Frag::PFT_Text)
+	{
+		const pf_Frag_Text * pft = static_cast<const pf_Frag_Text*>(m_frag);
+
+		const UT_UCS4Char * p = m_pt.getPointer(pft->getBufIndex());
+
+		UT_return_val_if_fail(p, UT_IT_ERROR);
+		UT_return_val_if_fail(m_offset - m_frag_offset < pft->getLength(), UT_IT_ERROR);
+		return p[m_offset - m_frag_offset];
+	}
+
+	// we are in a non-text fragment
+	return UT_IT_NOT_CHARACTER;
+}
+
+/*! various increment operators
+ */
+UT_TextIterator & PD_StruxIterator::operator ++ ()
+{
+	m_offset++;
+	_findFrag();
+
+	return *this;
+}
+
+UT_TextIterator & PD_StruxIterator::operator -- ()
+{
+	if(m_offset > 0)
+	{
+		m_offset--;
+		_findFrag();
+	}
+
+	return *this;
+}
+	
+UT_TextIterator & PD_StruxIterator::operator +=  (UT_sint32 i)
+{
+	if(i >= -(UT_sint32)m_offset)
+	{
+		m_offset += i;
+	}
+	else
+	{
+		m_offset = 0;
+	}
+	
+	_findFrag();
+	return *this;
+}
+	
+UT_TextIterator & PD_StruxIterator::operator -=  (UT_sint32 i)
+{
+	if((UT_sint32)m_offset >= i)
+	{
+		m_offset -= i;
+	}
+	else
+	{
+		m_offset = 0;
+	}
+
+	_findFrag();
+	return *this;
+}
+
+/*! advance iterator to document position dpos  and return character
+    at that position
+*/
+UT_UCS4Char PD_StruxIterator::operator [](UT_uint32 dpos)
+{
+	m_offset = dpos;
+	_findFrag();
 
 	return getChar();
 }

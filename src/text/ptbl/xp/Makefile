@@ -72,7 +72,8 @@ CPPSRCS=		pd_Document.cpp			\
 			px_CR_TestRoutines.cpp          \
 			px_CH_TestRoutines.cpp          \
 			fd_Field.cpp			\
-			po_Bookmark.cpp
+			po_Bookmark.cpp         \
+			pd_Iterator.cpp
 
 
 LIBRARY_NAME=		AbiPTbl
