@@ -737,6 +737,11 @@ bool pt_PieceTable::_getStruxOfTypeFromPosition(PT_DocPosition dpos,
 					*ppfs = pfsTemp;
 					return true;
 				}
+				else if( pfsTemp->getStruxType() == PTX_Block)
+				{
+					*ppfs = pfsTemp;
+					return true;
+				}
 			}
 		}
 
