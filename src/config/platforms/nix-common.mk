@@ -138,7 +138,7 @@ endif
 ifneq ($(ABI_OPT_PACIFY_COMPILER),1)
 WARNFLAGS	+= -Wall -ansi -pedantic
 else
-WARNFLAGS	+= -fpermissive
+WARNFLAGS	+= -fpermissive -w
 endif
 
 # Includes
