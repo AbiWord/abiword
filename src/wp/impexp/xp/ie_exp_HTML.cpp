@@ -4710,7 +4710,6 @@ bool s_HTML_Listener::populateStrux (PL_StruxDocHandle sdh,
 				if(pcrx->getStruxType () == PTX_EndFootnote)
 				{
 					m_pie->addFootnote(pDocRange);
-					UT_DEBUGMSG(("Footnote thingy: pDocRange = %x", pDocRange));
 				}
 				else
 				{
@@ -4731,23 +4730,11 @@ bool s_HTML_Listener::populateStrux (PL_StruxDocHandle sdh,
 			// because headers and footers live at the end of AW
 			// documents, we cannot just oputput them; until we find a
 			// smart way of representing hdr/ftr in html, we will
-			// ignore them --Author unknown
-			// Update: If number of Hdrs/Ftrs > 0, create a css box
-			// at the top/bottom of the page...it's size being some
-			// multiple of some unit percentage of the window in units
-			// of percent, such that both the body and the hdrftr are
-			// reasonably visible even at 640x480, as well as reasonably
-			// well-fitted at 1600x1200.  The contents of the box could be,
-			// like with images, either base64-encoded in the url, or a
-			// separate file, based on preference.  As for developing this,
-			// since AFAIK file-based image export is currently broken, it
-			// might make the most sense to focus on base64enc first.
-//		case PTX_SectionHdrFtr:
-//			m_bIgnoreTillEnd = true;
-//			return true;
-			// NB: IgnoreTillEnd DOES NOT WORK!!! Must leave unhandled or other pieces
-			// that we would be able to handle get left out.  Not sure how this code is
-			// supposed to work, but it doesn't. -mg
+			// ignore them
+		case PTX_SectionHdrFtr:
+			m_bIgnoreTillEnd = true;
+			return true;
+
 		default:
 			UT_DEBUGMSG(("WARNING: ie_exp_HTML.cpp: unhandled strux type!\n"));
 			return false;
@@ -5118,9 +5105,6 @@ bool s_StyleTree::populate (PL_StruxFmtHandle /*sfh*/, const PX_ChangeRecord * p
 		case PX_ChangeRecord::PXT_InsertSpan:
 			styleCheck (pcr->getIndexAP ());
 			break;
-		case PX_ChangeRecord::PXT_InsertObject:
-			styleCheck (pcr->getIndexAP ());
-			break;
 		default:
 			break;
 	}
@@ -5140,12 +5124,6 @@ bool s_StyleTree::populateStrux (PL_StruxDocHandle /*sdh*/,
 	switch (pcrx->getStruxType ())
 	{
 		case PTX_Block:
-			styleCheck (pcr->getIndexAP ());
-			break;
-		case PTX_SectionFootnote:
-			styleCheck (pcr->getIndexAP ());
-			break;
-		case PTX_SectionEndnote:
 			styleCheck (pcr->getIndexAP ());
 			break;
 		default:
@@ -5942,17 +5920,8 @@ UT_Error IE_Exp_HTML::_writeDocument (bool bClipBoard, bool bTemplateBody)
 	//
 	for(i=0; i< getNumFootnotes(); i++)
 	{
-		// TODO: get the format spec from the document
 		PD_DocumentRange * pDocRange = reinterpret_cast<PD_DocumentRange *>(m_vecFootnotes.getNthItem(i));
 		pListener->startEmbeddedStrux();
-		UT_UTF8String footnoteNum;
-		footnoteNum = "[";
-		char * fNStore = (char*)malloc(255);
-		memset(fNStore, 0, 255);
-		snprintf(fNStore, 255, "%d", (i + 1));
-		footnoteNum += fNStore;
-		footnoteNum += "] ";
-		write (footnoteNum.utf8_str (), footnoteNum.byteLength ());
 		okay = getDoc()->tellListenerSubset(pL,pDocRange);
 	}
 	//
