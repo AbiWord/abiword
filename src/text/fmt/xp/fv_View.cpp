@@ -5715,7 +5715,7 @@ bool FV_View::setCellFormat(const XML_Char * properties[], FormatTable applyTo)
 	
 	// Find the enclosing table. If just look for the first one we can get fooled by nested tables.
 	PL_StruxDocHandle tableSDH;
-	bRet = m_pDoc->getStruxOfTypeFromPosition(posStart,PTX_SectionTable,&tableSDH);
+	bRet = m_pDoc->getStruxOfTypeFromPosition(posStart+1,PTX_SectionTable,&tableSDH);
 	if(!bRet)
 	{
 		// Allow table updates
@@ -5723,6 +5723,7 @@ bool FV_View::setCellFormat(const XML_Char * properties[], FormatTable applyTo)
 
 		// Signal PieceTable Changes have finished
 		_restorePieceTableState();
+		clearCursorWait();
 		return false;
 	}
 	posTable = m_pDoc->getStruxPosition(tableSDH)+1;
@@ -5737,17 +5738,54 @@ bool FV_View::setCellFormat(const XML_Char * properties[], FormatTable applyTo)
         bRet = m_pDoc->getStruxOfTypeFromPosition(posStart,PTX_SectionCell,&cellSDH);
         if(!bRet)
         {
+//
+// Might have exactly selected the table start and end struxes
+//
+			bRet = m_pDoc->getStruxOfTypeFromPosition(posStart+2,PTX_SectionCell,&cellSDH);
+			if(!bRet)
+			{
                 // Allow table updates
                 m_pDoc->setDontImmediatelyLayout(false);
                                                                                                                                                                                                          
                 // Signal PieceTable Changes have finished
                 _restorePieceTableState();
+				clearCursorWait();
                 return false;
-        }
+			}
+		}
         posStart = m_pDoc->getStruxPosition(cellSDH)+1;
 		
 		// Do the actual change
 		bRet = m_pDoc->changeStruxFmt(PTC_AddFmt,posStart,posEnd,NULL,properties,PTX_SectionCell);	
+	}
+	else if(applyTo == FORMAT_TABLE_TABLE)
+	{
+		// Loop through the table cells to adjust their formatting		
+		// get the number of rows and columns in the current table
+		UT_sint32 numRows;
+		UT_sint32 numCols;
+		bRet = m_pDoc->getRowsColsFromTableSDH(tableSDH, &numRows, &numCols);
+		UT_sint32 i;
+		UT_sint32 j;
+		for (j = 0; j < numRows; j++)
+		{
+			for (i = 0; i < numCols; i++)
+			{
+				PL_StruxDocHandle cellSDH = m_pDoc->getCellSDHFromRowCol(tableSDH, j, i);
+				if(cellSDH)
+				{
+					// Remove these properties from the cell
+					posStart = m_pDoc->getStruxPosition(cellSDH)+1;
+					bRet = m_pDoc->changeStruxFmt(PTC_RemoveFmt,posStart,posStart,NULL,properties,PTX_SectionCell);
+				}
+				else
+					UT_DEBUGMSG(("MARCM: Yikes! There is no cell at position (%dx%d)!\n", j, i));
+			}
+		}
+
+// Now set the table format
+
+		bRet = m_pDoc->changeStruxFmt(PTC_AddFmt,posTable,posTable,NULL,properties,PTX_SectionTable);	
 	}
 	else
 	{
@@ -5784,32 +5822,26 @@ bool FV_View::setCellFormat(const XML_Char * properties[], FormatTable applyTo)
 		UT_sint32 colStart;
 		UT_sint32 colEnd;
 		
-		switch (applyTo)
+		if(applyTo == FORMAT_TABLE_ROW )
 		{
-	
-			// row
-			case FORMAT_TABLE_ROW:
-				rowStart = cell->getTopAttach();
-				rowEnd = cell->getTopAttach();
-				colStart = 0;
-				colEnd = numCols-1;
-				break;
-			// column
-			case FORMAT_TABLE_COLUMN:
-				rowStart = 0;
-				rowEnd = numRows-1;
-				colStart = cell->getLeftAttach();
-				colEnd = cell->getLeftAttach();
-				break;
-			// table
-			case FORMAT_TABLE_TABLE:
-				rowStart = 0;
-				rowEnd = numRows-1;
-				colStart = 0;
-				colEnd = numCols-1;
-				break;
+			rowStart = cell->getTopAttach();
+			rowEnd = cell->getTopAttach();
+			colStart = 0;
+			colEnd = numCols-1;
+		}
+		else if( applyTo == FORMAT_TABLE_COLUMN)
+		{
+			rowStart = 0;
+			rowEnd = numRows-1;
+			colStart = cell->getLeftAttach();
+			colEnd = cell->getLeftAttach();
 		}		
-		
+		else
+		{
+			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+			rowEnd = -1;
+			colEnd = -1;
+		}
 		// Loop through the table cells to adjust their formatting		
 		UT_sint32 i;
 		UT_sint32 j;
@@ -8666,35 +8698,7 @@ bool FV_View::isInTable()
 	{
 		pos = (m_iInsPoint < m_iSelectionAnchor ? m_iInsPoint : m_iSelectionAnchor);
 	}
-
-	UT_sint32 xPoint, yPoint, xPoint2, yPoint2, iPointHeight;
-	bool bDirection;
-
-	fl_BlockLayout * pBL =	m_pLayout->findBlockAtPosition(pos);
-	fp_Run * pRun;
-	if(pBL == NULL)
-	{
-		return false;
-	}
-	pRun = pBL->findPointCoords(pos, false, xPoint,
-							    yPoint, xPoint2, yPoint2,
-							    iPointHeight, bDirection);
-
-	if(!pRun)
-	{
-		return false;
-	}
-	fp_Line * pLine = pRun->getLine();
-	if(!pLine)
-	{
-		return false;
-	}
-	fp_Container * pCon = pLine->getContainer();
-	if(!pCon)
-	{
-		return false;
-	}
-	return pCon->getContainerType() == FP_CONTAINER_CELL;
+	return isInTable(pos);
 }
 
 /*!
@@ -8702,31 +8706,44 @@ bool FV_View::isInTable()
  */
 bool FV_View::isInTable( PT_DocPosition pos)
 {
-	UT_sint32 xPoint, yPoint, xPoint2, yPoint2, iPointHeight;
-	bool bDirection;
-
 	fl_BlockLayout * pBL =	m_pLayout->findBlockAtPosition(pos);
-	fp_Run * pRun;
-
-	pRun = pBL->findPointCoords(pos, false, xPoint,
-							    yPoint, xPoint2, yPoint2,
-							    iPointHeight, bDirection);
-
-	if(!pRun)
+	fl_ContainerLayout * pCL = pBL->myContainingLayout();
+	if(pCL->getContainerType() == FL_CONTAINER_CELL)
+	{
+		return true;
+	}
+	pCL = pBL->getNext();
+	if(pCL == NULL)
 	{
 		return false;
 	}
-	fp_Line * pLine = pRun->getLine();
-	if(!pLine)
+	if(pCL->getContainerType() == FL_CONTAINER_TABLE)
+	{
+		PT_DocPosition posTable = m_pDoc->getStruxPosition(pCL->getStruxDocHandle());
+		if(posTable == pos)
+		{
+			return true;
+		}
+	}
+	pCL = pBL->getPrev();
+	if(pCL == NULL)
 	{
 		return false;
 	}
-	fp_Container * pCon = pLine->getContainer();
-	if(!pCon)
+	if(pCL->getContainerType() == FL_CONTAINER_TABLE)
 	{
-		return false;
+		PL_StruxDocHandle sdh = pCL->getStruxDocHandle();
+		PL_StruxDocHandle sdhEnd = m_pDoc->getEndTableStruxFromTableSDH(sdh);
+		if(sdhEnd != NULL)
+		{
+			PT_DocPosition posEnd =  m_pDoc->getStruxPosition(sdhEnd);
+			if(posEnd == pos)
+			{
+				return true;
+			}
+		}
 	}
-	return pCon->getContainerType() == FP_CONTAINER_CELL;
+	return false;
 }
 
 /*!

@@ -287,6 +287,15 @@ void FV_View::_deleteSelection(PP_AttrProp *p_AttrProp_Before)
 	UT_uint32 iLow = UT_MIN(iPoint,iSelAnchor);
 	UT_uint32 iHigh = UT_MAX(iPoint,iSelAnchor);
 	bool bDeleteTables = !isInTable(iLow) && !isInTable(iHigh);
+	if(!bDeleteTables)
+	{
+		if(!isInTable(iLow-1) && isInTable(iHigh+1) && !isInTable(iHigh+2))
+		{
+			iLow = iLow;
+			iHigh = iHigh + 2;
+			bDeleteTables = true;
+		}
+	}
 	_resetSelection();
 	_clearBetweenPositions(iLow, iHigh, true);
 
@@ -778,34 +787,6 @@ PT_DocPosition FV_View::_getDocPosFromPoint(PT_DocPosition iPoint, FV_DocPos dp,
 	{
 		bool bRes = getEditableBounds(true, iPos);
 		UT_ASSERT(bRes);
-//
-// Handle endnotes if any.
-//
-		fp_Run* pRun;
-		fl_BlockLayout * pBL;
-		UT_sint32 x, y, x2, y2;
-		UT_uint32 height;
-		bool bDirection;
-		_findPositionCoords(iPos, false, x, y, x2, y2, height, bDirection,&pBL,&pRun);
-		fl_DocSectionLayout * pDSL = NULL;
-		if(pBL == NULL)
-		{
-			break;
-		}
-		pDSL = pBL->getDocSectionLayout();
-		if(pDSL == NULL)
-		{
-			break;
-		}
-		fp_Container * pECon = pDSL->getLastEndnoteContainer();
-		if(pECon == NULL)
-		{
-			break;
-		}
-		fp_Line * pLine = static_cast<fp_Line *>(pECon->getNthCon(pECon->countCons()-1));
-		pRun = pLine->getLastRun();
-		pBL = pRun->getBlock();
-		iPos = pBL->getPosition()+pRun->getBlockOffset()+pRun->getLength() -1;
 	}
 	break;
 

@@ -1470,7 +1470,7 @@ bool GR_Win32Graphics::_setTransform(const GR_Transform & tr)
 	{
 		// world tranforms are not supported, fiddle with the view
 		// port, etc
-		UT_sint32 iScale = (tlu(1) * getZoomPercentage())/100;
+		UT_sint32 iScale = static_cast<UT_sint32>((static_cast<float>(tlu(1)) * static_cast<float>(getZoomPercentage())/100.0);
 		
 		bool res = (SetWindowExtEx(m_hdc, iScale, iScale, NULL) != 0);
 		UT_ASSERT( res );
