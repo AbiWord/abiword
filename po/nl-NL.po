@@ -594,7 +594,7 @@ msgstr "&Reset"
 #: po/tmp/ap_String_Id.h.h:217
 #, fuzzy
 msgid "&Revisions"
-msgstr "&Wijzigingen bijhouden"
+msgstr "Wij&zigingen bijhouden"
 
 #. MENU_LABEL_ALIGN_RIGHT
 #: po/tmp/ap_String_Id.h.h:219
@@ -751,7 +751,7 @@ msgstr "&Venster"
 #. MENU_LABEL_TOOLS_WORDCOUNT
 #: po/tmp/ap_String_Id.h.h:277
 msgid "&Word Count"
-msgstr "Aantal &Woorden"
+msgstr "Aantal &woorden"
 
 #. MENU_LABEL_VIEW_ZOOM
 #: po/tmp/ap_String_Id.h.h:279
