@@ -940,18 +940,14 @@ UT_Bool XAP_Prefs::savePrefsFile(void)
 					// for non-builtin sets, we only print the values which are different
 					// from the builtin set.
 					const XML_Char * szBuiltinValue = NO_PREF_VALUE;
-					UT_Bool bHaveBuiltinValue = m_builtinScheme->getValue(szKey,&szBuiltinValue);
-					if (UT_XML_strnicmp(szKey, DEBUG_PREFIX, sizeof(DEBUG_PREFIX) - 1))
+					m_builtinScheme->getValue(szKey,&szBuiltinValue);
+					if (UT_strcmp(szValue,szBuiltinValue) != 0 ||
+						// Always print debug values
+						UT_XML_strnicmp(szKey, DEBUG_PREFIX,
+						                sizeof(DEBUG_PREFIX) - 1) == 0)
 					{
-						UT_DEBUGMSG(("Strange preference '%s=\"%s\"', ASSERT follows...\n", szKey, szValue));
-						UT_ASSERT(bHaveBuiltinValue);
-					}
-					else
-					{
-						need_print = UT_TRUE;  // always print "Debug..." values
-					}
-					if (UT_XML_strcmp(szValue,szBuiltinValue) != 0)
 						need_print = UT_TRUE;
+					}
 				}
 				if (need_print == UT_TRUE)
 				{
