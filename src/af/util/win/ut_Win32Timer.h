@@ -34,12 +34,18 @@ public:
 	virtual void stop(void);
 	virtual void start(void);
 
+	HWND getHWnd(void) { return m_hWnd; }
+	UINT getWin32Identifier(void) { return m_nIDEvent; }
+	static UT_Win32Timer* findWin32Timer(HWND hwnd, UINT win32ID);
+
 protected:
 	UT_sint32 m_iMilliseconds;
 	bool m_bStarted;
 	HWND m_hWnd;
+	UINT m_nIDEvent;	
 	static int _compareIdentifiers(const void* p1, const void* p2);
 	UT_uint32 _createIdentifier(void);
+	UINT _createWin32Identifier(void);
 };
 
 VOID CALLBACK Global_Win32TimerProc(HWND hwnd, 

@@ -327,8 +327,6 @@ bool XAP_Frame::initialize(const char * szKeyBindingsKey, const char * szKeyBind
 	UT_String stTmp;
 	bool autosave = true;
 
-	pApp->getPrefsValue(XAP_PREF_KEY_AutoSaveFilePeriod, stTmp);
-	m_iIdAutoSaveTimer = atoi(stTmp.c_str());
 	pApp->getPrefsValue(XAP_PREF_KEY_AutoSaveFileExt, m_stAutoSaveExt);
 	pApp->getPrefsValueBool(XAP_PREF_KEY_AutoSaveFile, &autosave);
 
