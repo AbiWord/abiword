@@ -85,6 +85,8 @@ public:
   virtual UT_Bool endPrint(void);
 
   virtual void flush(void);
+  virtual void setColorSpace(GR_Graphics::ColorSpace c);
+  virtual GR_Graphics::ColorSpace getColorSpace(void) const;
 
   virtual void setCursor(GR_Graphics::Cursor c);
   virtual GR_Graphics::Cursor getCursor(void) const;
