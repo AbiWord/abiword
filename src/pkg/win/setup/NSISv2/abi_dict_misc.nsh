@@ -143,6 +143,7 @@ Function getDictionary
 	; download the file
 	Call ConnectInternet	; try to establish connection if not connected
 	StrCmp $0 "online" 0 Finish
+	retryDL_dict:
 	DetailPrint "NSISdl::download '${DICTIONARY_BASE}/${DICT_FILENAME}' '$TEMP\${DICT_FILENAME}'"
 	NSISdl::download "${DICTIONARY_BASE}/${DICT_FILENAME}" "$TEMP\${DICT_FILENAME}"
 	Pop $0 ;Get the return value
@@ -150,7 +151,7 @@ Function getDictionary
 		; Couldn't download the file
 		DetailPrint "Could not download requested dictionary:"
 		DetailPrint "  ${DICTIONARY_BASE}/${DICT_FILENAME}"
-		MessageBox MB_OK|MB_ICONEXCLAMATION|MB_DEFBUTTON1 "Failed to download ${DICTIONARY_BASE}/${DICT_FILENAME}"
+		MessageBox MB_RETRYCANCEL|MB_ICONEXCLAMATION|MB_DEFBUTTON1 "Failed to download ${DICTIONARY_BASE}/${DICT_FILENAME}" IDRETRY retryDL_dict
 	Goto Finish
 !endif
 

@@ -580,14 +580,16 @@ Section "$(TITLE_section_crtlib_dl)" section_crtlib_dl
 	SectionIn 2	${DLSECT}	; select if full installation choosen
 	Call ConnectInternet	; try to establish connection if not connected
 	StrCmp $0 "online" 0 dlDone
+	retryDL_crtl:
 	NSISdl::download "${OPT_CRTL_URL}${OPT_CRTL_FILENAME}" "$INSTDIR\${PRODUCT}\bin\${OPT_CRTL_FILENAME}"
 	Pop $0 ;Get the return value
 	StrCmp $0 "success" dlDone
 		; Couldn't download the file
 		DetailPrint "$(PROMPT_CRTL_DL_FAILED)"
 		DetailPrint "NSISdl::download return $0"
-		MessageBox MB_OK|MB_ICONEXCLAMATION|MB_DEFBUTTON1 "$(PROMPT_CRTL_DL_FAILED)"
+		MessageBox MB_RETRYCANCEL|MB_ICONEXCLAMATION|MB_DEFBUTTON1 "$(PROMPT_CRTL_DL_FAILED)" IDRETRY retryDL_crtl
 
+	retryDL_cppl:
 	!ifdef OPT_CPPL_FILENAME
 	NSISdl::download "${OPT_CRTL_URL}${OPT_CRTL_FILENAME}" "$INSTDIR\${PRODUCT}\bin\${OPT_CPPL_FILENAME}"
 	Pop $0 ;Get the return value
@@ -595,7 +597,7 @@ Section "$(TITLE_section_crtlib_dl)" section_crtlib_dl
 		; Couldn't download the file
 		DetailPrint "*$(PROMPT_CRTL_DL_FAILED)"
 		DetailPrint "NSISdl::download return $0"
-		MessageBox MB_OK|MB_ICONEXCLAMATION|MB_DEFBUTTON1 "$(PROMPT_CRTL_DL_FAILED)"
+		MessageBox MB_RETRYCANCEL|MB_ICONEXCLAMATION|MB_DEFBUTTON1 "$(PROMPT_CRTL_DL_FAILED)" IDRETRY retryDL_cppl
 	!endif
 
 	dlDone:
@@ -760,6 +762,24 @@ Section "Uninstall"
 	Abort "Quitting the uninstall process"
 
 	DoUnInstall:
+	; remove start menu shortcuts. (tries to get folder name from registry)
+	;Delete "$SMPROGRAMS\${SM_PRODUCT_GROUP}\*.*"
+        !ifndef CLASSIC_UI
+                !insertmacro MUI_STARTMENU_GETFOLDER $0
+                ;RMDir /r "$0"
+        !else
+             StrCpy $0 "$(SM_PRODUCT_GROUP)"
+             ;RMDir /r "$SMPROGRAMS\$0"
+        !endif
+      RMDir /r "$SMPROGRAMS\$0"
+
+	; remove desktop shortcut.
+	StrCpy $0 "$(SHORTCUT_NAME)"
+	Delete "$DESKTOP\$0.lnk"
+
+	; remove directories used (and any files in them)
+	RMDir /r "$INSTDIR"
+
 	; remove registry keys
 	DeleteRegKey HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCT}${VERSION_MAJOR}"
 	DeleteRegKey HKLM SOFTWARE\${APPSET}\${PRODUCT}\v${VERSION_MAJOR}
@@ -775,23 +795,6 @@ Section "Uninstall"
 
 	; actual apptype entry
 	DeleteRegKey HKCR "${APPSET}.${PRODUCT}"
-
-	; remove start menu shortcuts.
-	;Delete "$SMPROGRAMS\${SM_PRODUCT_GROUP}\*.*"
-        !ifndef CLASSIC_UI
-                !insertmacro MUI_STARTMENU_GETFOLDER $0
-                RMDir /r "$0"
-        !else
-             StrCpy $0 "$(SM_PRODUCT_GROUP)"
-	     RMDir /r "$SMPROGRAMS\$0"
-        !endif
-
-	; remove desktop shortcut.
-	StrCpy $0 "$(SHORTCUT_NAME)"
-	Delete "$DESKTOP\$0.lnk"
-
-	; remove directories used (and any files in them)
-	RMDir /r "$INSTDIR"
 
 SectionEnd
 
