@@ -588,6 +588,7 @@ Cleanup:
 
 XAP_Frame * AP_QNXFrame::buildFrame(XAP_Frame * pF)
 {
+	UT_Error error = UT_OK;
 	AP_QNXFrame * pClone = static_cast<	AP_QNXFrame *>(pF);
 	ENSUREP(pClone);
 	if (!pClone->initialize())
@@ -981,6 +982,12 @@ void AP_QNXFrame::toggleStatusBar(bool bStatusBarOn) {
 void AP_QNXFrame::setDocumentFocus() {
 	PtContainerGiveFocus(m_dArea, NULL);
 }
+void XAP_QNXFrame::setCursor(GR_Graphics::Cursor c)
+{
+//XXX: gotta add content.
+}
+
+
 
 /*** THIS CODE WILL GO AWAY WITH AN INTELLIGENT LAYOUT THINGY ***/
 void AP_QNXFrame::_reflowLayout(int loweradj, int upperadj, int topruleradj, int leftruleradj) {

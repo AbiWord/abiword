@@ -158,6 +158,25 @@ int AP_QNXDialog_Options::s_allowTransparentColor(PtWidget_t *widget, void *data
 	return Pt_CONTINUE;
 }
 
+bool AP_QNXDialog_Options::_gatherAllowCustomToolbars(void)
+{
+	return false;
+}
+
+void AP_QNXDialog_Options::_setAllowCustomToolbars(const bool b)
+{
+}
+
+// TODO:  Add these item to dialog and impliment
+bool AP_QNXDialog_Options::_gatherAutoLoadPlugins(void)
+{
+	return false;
+}
+
+void AP_QNXDialog_Options::_setAutoLoadPlugins(const bool b)
+{
+}
+
 
 /*****************************************************************/
 

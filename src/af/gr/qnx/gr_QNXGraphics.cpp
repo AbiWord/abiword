@@ -339,8 +339,8 @@ GR_Font * GR_QNXGraphics::findFont(const char* pszFontFamily,
 	}
 
 //	printf("Looking for font [%s]@%d w/0x%x\n", pszFontFamily, size, style); 
-	if (PfGenerateFontName((const uchar_t *)pszFontFamily, 
-							style, size, (uchar_t *)fname) == NULL) {
+	if (PfGenerateFontName((const char *)pszFontFamily, 
+							style, size, (char *)fname) == NULL) {
 		//Punt ... give us another chance with a default font
 		sprintf(fname, "%s%d", "helv", size); 
 		switch (style & (PF_STYLE_BOLD | PF_STYLE_ITALIC)) {

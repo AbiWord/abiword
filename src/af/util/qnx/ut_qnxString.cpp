@@ -20,6 +20,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <unistd.h>
 #include <math.h>
 #include <ctype.h>
 
@@ -49,3 +50,8 @@ char * UT_tmpnam(char * base)
   return tmpnam(base);
 }
 
+void UT_unlink(const char*base)
+{
+
+unlink(base);
+}

@@ -162,7 +162,7 @@ void AP_QNXDialog_PageSetup::event_OK (void)
 	double *d;
 
 	index = UT_QNXComboGetPos(m_optionPageSize);
-	fp_PageSize::Predefined pd = (fp_PageSize::Predefined)((int)m_vecsize.getNthItem(index - 1));
+	fp_PageSize pd = (fp_PageSize::Predefined)((int)m_vecsize.getNthItem(index - 1));
 	
 	if(pd.Width(DIM_IN) < 1.0 || pd.Height(DIM_IN) < 1.0)
 	{
@@ -289,14 +289,14 @@ void AP_QNXDialog_PageSetup::event_MarginUnitsChanged (void)
 	header = *d;
 	PtGetResource(m_spinMarginFooter, Pt_ARG_NUMERIC_VALUE, &d, 0);
 	footer = *d;
-
+/* //XXX: FIND OUT WHAT THIS IS..
 	CONVERT_DIMENSIONS (top,    last_margin_unit, mu);
 	CONVERT_DIMENSIONS (bottom, last_margin_unit, mu);
 	CONVERT_DIMENSIONS (left,   last_margin_unit, mu);
 	CONVERT_DIMENSIONS (right,  last_margin_unit, mu);
 	CONVERT_DIMENSIONS (header, last_margin_unit, mu);
 	CONVERT_DIMENSIONS (footer, last_margin_unit, mu);
-
+*/
 	PtSetResource(m_spinMarginTop, Pt_ARG_NUMERIC_VALUE, &top, 0);
 	PtSetResource(m_spinMarginBottom, Pt_ARG_NUMERIC_VALUE, &bottom, 0);
 	PtSetResource(m_spinMarginLeft, Pt_ARG_NUMERIC_VALUE, &left, 0);

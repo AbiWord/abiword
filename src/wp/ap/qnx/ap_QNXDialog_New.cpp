@@ -111,11 +111,13 @@ void AP_QNXDialog_New::event_Ok ()
 	}
 	else if (PtGetResource(m_radioNew, Pt_ARG_FLAGS, &flags, 0) == 0 && *flags & Pt_SET)
 	{
-		setOpenType(AP_Dialog_New::open_Template);
 		/*Not in unix version */
 		PtTreeItem_t *item;
 		item = PtTreeGetCurrent(m_tree);
-		setTemplateName(item->string);
+//		setTemplateName(item->string); //XXX: was it right to change this?
+		setFileName(item->string);
+		setOpenType(AP_Dialog_New::open_Template);
+
 	}
 	else
 	{
@@ -134,7 +136,8 @@ void AP_QNXDialog_New::event_Cancel ()
 
 void AP_QNXDialog_New::event_ToggleUseTemplate (const char * name)
 {
-	setTemplateName (name);
+	setFileName(name); 
+//	setTemplateName (name); XXX: correct or not? 
 }
 
 void AP_QNXDialog_New::event_ToggleOpenExisting ()

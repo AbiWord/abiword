@@ -40,7 +40,7 @@ SPARC_ARCH_FLAGS 	=
 
 # Define tools (should gcc be cc/qcc ... same for ar?)
 CC		= qcc
-CCC		= qcc
+CCC		= QCC 
 RANLIB		= touch
 
 # Suffixes
