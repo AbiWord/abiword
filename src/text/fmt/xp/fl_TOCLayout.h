@@ -62,6 +62,8 @@ public:
 	bool                 doesInherit(void)
 		{ return m_bInherit;}
 	void                 setPosInList(UT_sint32 posInList);
+	UT_sint32            getPosInList(void)
+		{ return m_iPosInList;}
 	void                 calculateLabel(TOCEntry * pPrevLevel);
     UT_UTF8String *      getNumLabel(void) 
 		{ return & m_sLabel;}
@@ -132,6 +134,9 @@ public:
 	bool                     addBlock(fl_BlockLayout * pBlock);
 	bool                     removeBlock(fl_BlockLayout * pBlock);
 	fl_BlockLayout *         getMatchingBlock(fl_BlockLayout * pBlock);
+	UT_UTF8String *          getTOCListLabel(fl_BlockLayout * pBlock);
+	UT_UTF8String *          getTOCHeading(void)
+		{ return &m_sTOCHeading;}
 	UT_sint32                getCurrentLevel(void) const
 		{ return m_iCurrentLevel;}
 	FootnoteType             getNumType(UT_sint32 iLevel);
@@ -144,9 +149,10 @@ private:
 	bool                     _isStyleInTOC(UT_UTF8String & sStyle, UT_UTF8String & sTOCStyle);
 	void                     _insertTOCContainer(fp_TOCContainer * pNewTOC);
 	void                     _localCollapse();
-	void                      _addBlockInVec(fl_BlockLayout * pBlock,UT_UTF8String & sStyle);
-	void                      _removeBlockInVec(fl_BlockLayout * pBlock);
-	void                      _calculateLabels(void);
+	void                     _addBlockInVec(fl_BlockLayout * pBlock,UT_UTF8String & sStyle);
+	void                     _removeBlockInVec(fl_BlockLayout * pBlock);
+	void                     _calculateLabels(void);
+	UT_sint32                _getStartValue(TOCEntry * pEntry);
 	bool                     m_bNeedsRebuild;
 	bool                     m_bNeedsFormat;
 	bool                     m_bIsOnPage;
@@ -177,6 +183,7 @@ private:
 	UT_sint32                m_iCurrentLevel;
 	UT_UTF8String            m_sTOCHeading;
 	bool                     m_bTOCHeading;
+	UT_UTF8String            m_sTOCHeadingStyle;
 	FootnoteType             m_iLabType1;
 	FootnoteType             m_iLabType2;
 	FootnoteType             m_iLabType3;

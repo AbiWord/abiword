@@ -27,7 +27,7 @@
 #include "fl_DocLayout.h"
 #include "fp_Line.h"
 #include "ut_debugmsg.h"
-
+#include "fl_TOCLayout.h"
 #include <string.h>
 
 fp_FieldTOCNumRun::fp_FieldTOCNumRun(fl_BlockLayout* pBL,UT_uint32 iOffsetFirst, UT_uint32 iLen) : fp_FieldRun(pBL,iOffsetFirst, iLen)
@@ -102,6 +102,110 @@ void fp_FieldTOCNumRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 											 GR_Graphics * pG)
 {
   fp_FieldRun::_lookupProperties (pSpanAP, pBlockAP, pSectionAP,pG) ;
+}
+
+/////////////////////////////////////////////////////////////////////////////
+
+
+fp_FieldTOCListLabelRun::fp_FieldTOCListLabelRun(fl_BlockLayout* pBL,UT_uint32 iOffsetFirst, UT_uint32 iLen) : fp_FieldRun(pBL,iOffsetFirst, iLen)
+{
+    UT_ASSERT(pBL);
+	_setDirection(pBL->getDominantDirection());
+	_setLength(0);
+}
+
+bool fp_FieldTOCListLabelRun::calculateValue(void)
+{
+	UT_UCSChar sz_ucs_FieldValue[FPFIELD_MAX_LENGTH + 1];
+//
+// First get owning TOC.
+//
+	UT_ASSERT(getLength() == 0);
+	fl_TOCLayout * pTOCL = static_cast<fl_TOCLayout *>(getBlock()->myContainingLayout());
+	UT_ASSERT(pTOCL->getContainerType() == FL_CONTAINER_TOC);
+	UT_String str = pTOCL->getTOCListLabel(getBlock())->utf8_str();
+	if(str.size() == 0)
+	{
+		sz_ucs_FieldValue[0] = 0;
+		return _setValue(sz_ucs_FieldValue);
+	}
+	UT_sint32 i = 0;
+	bool bStop = false;
+	for(i=0; (i<FPFIELD_MAX_LENGTH) && !bStop; i++)
+	{
+		sz_ucs_FieldValue[i] = static_cast<UT_UCSChar>(str[i]);
+		if(str[i] == 0)
+		{
+			bStop = true;
+		}
+	}
+	return _setValue(sz_ucs_FieldValue);
+}
+
+void fp_FieldTOCListLabelRun::_draw(dg_DrawArgs* pDA)
+{
+	_defaultDraw(pDA);
+}
+
+void fp_FieldTOCListLabelRun::_lookupProperties(const PP_AttrProp * pSpanAP,
+											 const PP_AttrProp * pBlockAP,
+											 const PP_AttrProp * pSectionAP,
+											 GR_Graphics * pG)
+{
+  fp_FieldRun::_lookupProperties (pSpanAP, pBlockAP, pSectionAP,pG) ;
+  _setLength(0);
+}
+
+////////////////////////////////////////////////////////////////////////////
+
+
+fp_FieldTOCHeadingRun::fp_FieldTOCHeadingRun(fl_BlockLayout* pBL,UT_uint32 iOffsetFirst, UT_uint32 iLen) : fp_FieldRun(pBL,iOffsetFirst, iLen)
+{
+    UT_ASSERT(pBL);
+	_setDirection(pBL->getDominantDirection());
+	_setLength(0);
+}
+
+bool fp_FieldTOCHeadingRun::calculateValue(void)
+{
+	UT_UCSChar sz_ucs_FieldValue[FPFIELD_MAX_LENGTH + 1];
+//
+// First get owning TOC.
+//
+	UT_ASSERT(getLength() == 0);
+	fl_TOCLayout * pTOCL = static_cast<fl_TOCLayout *>(getBlock()->myContainingLayout());
+	UT_ASSERT(pTOCL->getContainerType() == FL_CONTAINER_TOC);
+	UT_String str = pTOCL->getTOCHeading()->utf8_str();
+	if(str.size() == 0)
+	{
+		sz_ucs_FieldValue[0] = 0;
+		return _setValue(sz_ucs_FieldValue);
+	}
+	UT_sint32 i = 0;
+	bool bStop = false;
+	for(i=0; (i<FPFIELD_MAX_LENGTH) && !bStop; i++)
+	{
+		sz_ucs_FieldValue[i] = static_cast<UT_UCSChar>(str[i]);
+		if(str[i] == 0)
+		{
+			bStop = true;
+		}
+	}
+	return _setValue(sz_ucs_FieldValue);
+}
+
+void fp_FieldTOCHeadingRun::_draw(dg_DrawArgs* pDA)
+{
+	_defaultDraw(pDA);
+}
+
+void fp_FieldTOCHeadingRun::_lookupProperties(const PP_AttrProp * pSpanAP,
+											 const PP_AttrProp * pBlockAP,
+											 const PP_AttrProp * pSectionAP,
+											 GR_Graphics * pG)
+{
+  fp_FieldRun::_lookupProperties (pSpanAP, pBlockAP, pSectionAP,pG) ;
+  _setLength(0);
 }
 
 

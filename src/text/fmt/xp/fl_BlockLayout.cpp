@@ -3863,6 +3863,26 @@ bool	fl_BlockLayout::_doInsertTOCTabRun(PT_BlockOffset blockOffset)
 	return _doInsertRun(pNewRun);
 }
 
+/*!
+ * Special TAB that follows a TOCListLabel. It has zero length since it's
+ * not in the document.
+ */
+bool	fl_BlockLayout::_doInsertTOCListTabRun(PT_BlockOffset blockOffset)
+{
+	fp_Run* pNewRun = new fp_TabRun(this,blockOffset, 0);
+	UT_ASSERT(pNewRun); // TODO check for outofmem
+	static_cast<fp_TabRun *>(pNewRun)->setTOCTabListLabel();
+	fp_Run * pRun = m_pFirstRun;
+	pRun->insertIntoRunListBeforeThis(*pNewRun);
+	m_pFirstRun = pNewRun;
+	pNewRun->markWidthDirty();
+	if(pRun->getLine())
+	{
+		pRun->getLine()->insertRunBefore(pNewRun, pRun);
+	}
+	return true;
+}
+
 bool	fl_BlockLayout::_doInsertImageRun(PT_BlockOffset blockOffset, FG_Graphic* pFG)
 {
 	fp_ImageRun* pNewRun = new fp_ImageRun(this, blockOffset, 1, pFG);
@@ -3907,6 +3927,22 @@ bool	fl_BlockLayout::_doInsertFieldRun(PT_BlockOffset blockOffset, const PX_Chan
 		else
 		{
 			fp_Run * pDumRun = new fp_DummyRun(this,blockOffset);
+			fp_Run * pRun = m_pFirstRun;
+			while(pRun && (pRun->getLength() == 0))
+			{
+				pRun = pRun->getNextRun();
+			}
+			if(pRun)
+			{
+				pRun->insertIntoRunListBeforeThis(*pDumRun);
+				pDumRun->markWidthDirty();
+				if(pRun->getLine())
+				{
+					pRun->getLine()->insertRunBefore(pDumRun, pRun);
+				}
+				recalculateFields(0);
+				return true;				
+			}
 			_doInsertRun(pDumRun);
 			recalculateFields(0);
 			return true;
@@ -4129,6 +4165,42 @@ bool	fl_BlockLayout::_doInsertFieldTOCRun(PT_BlockOffset blockOffset)
 	pNewRun = new fp_FieldTOCNumRun(this,   blockOffset, 1);
 	pNewRun->calculateValue();
 	_doInsertRun(pNewRun);
+	recalculateFields(0);
+	return true;
+}
+
+
+bool	fl_BlockLayout::_doInsertTOCListLabelRun(PT_BlockOffset blockOffset)
+{
+	fp_FieldRun* pNewRun;
+	pNewRun = new fp_FieldTOCListLabelRun(this,   blockOffset, 1);
+	pNewRun->calculateValue();
+	fp_Run * pRun = m_pFirstRun;
+	pRun->insertIntoRunListBeforeThis(*pNewRun);
+	m_pFirstRun = pNewRun;
+	pNewRun->markWidthDirty();
+	if(pRun->getLine())
+	{
+		pRun->getLine()->insertRunBefore(pNewRun, pRun);
+	}
+	recalculateFields(0);
+	return true;
+}
+
+
+bool	fl_BlockLayout::_doInsertTOCHeadingRun(PT_BlockOffset blockOffset)
+{
+	fp_FieldRun* pNewRun;
+	pNewRun = new fp_FieldTOCHeadingRun(this,   blockOffset, 1);
+	pNewRun->calculateValue();
+	fp_Run * pRun = m_pFirstRun;
+	pRun->insertIntoRunListBeforeThis(*pNewRun);
+	m_pFirstRun = pNewRun;
+	pNewRun->markWidthDirty();
+	if(pRun->getLine())
+	{
+		pRun->getLine()->insertRunBefore(pNewRun, pRun);
+	}
 	recalculateFields(0);
 	return true;
 }
@@ -4654,7 +4726,10 @@ fl_BlockLayout::_assertRunListIntegrityImpl(void)
 					|| (pRun->getNextRun()->getType() != FPRUN_FMTMARK)) );
 
 		// Verify that the Run has a non-zero length (or is a FmtMark)
-		UT_ASSERT( (FPRUN_FMTMARK == pRun->getType())
+		UT_ASSERT( (FPRUN_FMTMARK == pRun->getType()) || 
+					((FPRUN_TAB == pRun->getType()) 
+					  || (FPRUN_FIELD == pRun->getType())
+					  && isContainedByTOC())
 				   || (pRun->getLength() > 0) );
 
 		// Verify that if there is no next Run, this Run is the EOP Run.

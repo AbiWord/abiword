@@ -433,6 +433,8 @@ public:
 	bool                    isTOCTab(void);
 	void                    setTOCTab(void)
 	{ m_bIsTOC = true;}
+	void                    setTOCTabListLabel(void);
+
 protected:
 	virtual void			_drawArrow(UT_uint32 iLeft,UT_uint32 iTop,UT_uint32 iWidth, UT_uint32 iHeight);
 	virtual void			_draw(dg_DrawArgs*);
@@ -450,6 +452,7 @@ private:
 	eTabLeader			    m_leader;
     eTabType                m_TabType;
 	bool                    m_bIsTOC;
+	bool                    m_bIsTOCListLabel;
 };
 
 class ABI_EXPORT fp_ForcedLineBreakRun : public fp_Run

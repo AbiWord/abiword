@@ -1636,7 +1636,8 @@ void fp_Run::_drawTextLine(UT_sint32 xoff,UT_sint32 yoff,UT_uint32 iWidth,UT_uin
 //////////////////////////////////////////////////////////////////
 
 fp_TabRun::fp_TabRun(fl_BlockLayout* pBL, UT_uint32 iOffsetFirst, UT_uint32 iLen) : fp_Run(pBL, iOffsetFirst, iLen, FPRUN_TAB),
-																					m_bIsTOC(false)
+	m_bIsTOC(false),
+	m_bIsTOCListLabel(false)
 {
 	lookupProperties();
 }
@@ -1827,6 +1828,15 @@ void fp_TabRun::findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y, U
 bool fp_TabRun::isTOCTab(void)
 {
 	return m_bIsTOC;
+}
+
+
+void fp_TabRun::setTOCTabListLabel(void)
+{
+	m_bIsTOCListLabel = true;
+	_setLength(0);
+	m_leader = FL_LEADER_NONE;
+    m_TabType =	FL_TAB_LEFT;	
 }
 
 void fp_TabRun::setTabWidth(UT_sint32 iWidth)

@@ -43,4 +43,44 @@ private:
 };
 
 
+class ABI_EXPORT fp_FieldTOCListLabelRun : public fp_FieldRun
+{
+public:
+	fp_FieldTOCListLabelRun(fl_BlockLayout* pBL, UT_uint32 iOffsetFirst, UT_uint32 iLen);
+
+
+	virtual bool			calculateValue(void);
+	virtual bool            isListLabelField(void) { return false;}
+
+private:
+	virtual void			_lookupProperties(const PP_AttrProp * pSpanAP,
+											  const PP_AttrProp * pBlockAP,
+											  const PP_AttrProp * pSectionAP,
+											  GR_Graphics * pG);
+
+	virtual void			_draw(dg_DrawArgs*);
+
+};
+
+
+class ABI_EXPORT fp_FieldTOCHeadingRun : public fp_FieldRun
+{
+public:
+	fp_FieldTOCHeadingRun(fl_BlockLayout* pBL, UT_uint32 iOffsetFirst, UT_uint32 iLen);
+
+
+	virtual bool			calculateValue(void);
+	virtual bool            isListLabelField(void) { return false;}
+
+private:
+	virtual void			_lookupProperties(const PP_AttrProp * pSpanAP,
+											  const PP_AttrProp * pBlockAP,
+											  const PP_AttrProp * pSectionAP,
+											  GR_Graphics * pG);
+
+	virtual void			_draw(dg_DrawArgs*);
+
+};
+
+
 #endif	//FP_FIELD_TOC_NUM_H

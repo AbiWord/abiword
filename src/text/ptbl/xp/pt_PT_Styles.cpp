@@ -72,6 +72,7 @@ ST_LOCALISED_STYLES stLocalised[] =
 	{"Heading 2",           	XAP_STRING_ID_STYLE_HEADING2},		
 	{"Heading 3",           	XAP_STRING_ID_STYLE_HEADING3},		
 	{"Heading 4",           	XAP_STRING_ID_STYLE_HEADING4},		
+	{"Contents Header",         XAP_STRING_ID_STYLE_TOCHEADING},		
 	{"Contents 1",              XAP_STRING_ID_STYLE_TOCHEADING1},		
 	{"Contents 2",              XAP_STRING_ID_STYLE_TOCHEADING2},		
 	{"Contents 3",              XAP_STRING_ID_STYLE_TOCHEADING3},		
@@ -231,14 +232,28 @@ bool pt_PieceTable::_loadBuiltinStyles(void)
 					  "field-color:transparent; list-delim:%%L.; field-font:%s; "
 					  "list-decimal:", pszFamily);
 
+
     _s("Numbered Heading 1","P","Heading 1","Normal", stTmp.c_str());
     _s("Numbered Heading 2","P","Heading 2","Normal", stTmp.c_str());
     _s("Numbered Heading 3","P","Heading 3","Normal", stTmp.c_str());
 
+	// pszFamily is the nearest font to Arial found in the system
+
+	UT_String_sprintf(stTmp, list_fmt, "Numbered List", "1",LIST_DEFAULT_INDENT, LIST_DEFAULT_INDENT_LABEL, "transparent", "%L.", "NULL", ".");
+
     _s("Contents 1","P","Normal","Normal", stTmp.c_str());
+
+	UT_String_sprintf(stTmp, list_fmt, "Numbered List", "1",2*LIST_DEFAULT_INDENT, LIST_DEFAULT_INDENT_LABEL, "transparent", "%L.", "NULL", ".");
     _s("Contents 2","P","Normal","Normal", stTmp.c_str());
+	UT_String_sprintf(stTmp, list_fmt, "Numbered List", "1",3*LIST_DEFAULT_INDENT, LIST_DEFAULT_INDENT_LABEL, "transparent", "%L.", "NULL", ".");
     _s("Contents 3","P","Normal","Normal", stTmp.c_str());
+	UT_String_sprintf(stTmp, list_fmt, "Numbered List", "1",4*LIST_DEFAULT_INDENT, LIST_DEFAULT_INDENT_LABEL, "transparent", "%L.", "NULL", ".");
     _s("Contents 4","P","Normal","Normal", stTmp.c_str());
+
+	
+	szFmt = "font-family:%s; font-size:%dpt; font-weight:bold; margin-top:12pt; margin-bottom:6pt; text-align:center; keep-with-next:1";
+	UT_String_sprintf(stTmp, szFmt, pszFamily, 16);
+    _s("Contents Header","P","Normal","Normal", stTmp.c_str());
 
 
 	szFmt = "tabstops:1.1in/L0; list-style:Numbered List; "

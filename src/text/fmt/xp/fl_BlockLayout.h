@@ -411,6 +411,9 @@ protected:
 	bool					_doInsertForcedPageBreakRun(PT_BlockOffset blockOffset);
 	bool					_doInsertTabRun(PT_BlockOffset blockOffset);
 	bool					_doInsertTOCTabRun(PT_BlockOffset blockOffset);
+	bool					_doInsertTOCListLabelRun(PT_BlockOffset blockOffset);
+	bool					_doInsertTOCHeadingRun(PT_BlockOffset blockOffset);
+	bool                    _doInsertTOCListTabRun(PT_BlockOffset blockOffset);
 	bool					_doInsertImageRun(PT_BlockOffset blockOffset, FG_Graphic* pFG);
 	bool					_doInsertFieldRun(PT_BlockOffset blockOffset, const PX_ChangeRecord_Object * pcro);
 	bool					_doInsertFieldTOCRun(PT_BlockOffset blockOffset);
