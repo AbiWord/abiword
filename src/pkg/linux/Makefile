@@ -135,8 +135,11 @@ MODULE_LIST=abi expat unixfonts abidistfiles libpng zlib wv
 # This should work for RPM 3.x and RPM 4.x on stock redhat systems
 RPM_SOURCE_DIR=/usr/src/redhat
 
+
 # TODO : should this be specified outside the build process?  
-ABI_RELEASE_NUMBER=1
+ifndef $(ABI_RELEASE_NUMBER)
+  ABI_RELEASE_NUMBER=1
+endif
 
 pack_rpm:
 	@rm -rf $(PACK_ROOT)
