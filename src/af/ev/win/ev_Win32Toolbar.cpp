@@ -609,6 +609,7 @@ bool EV_Win32Toolbar::synthesize(void)
 						UT_ASSERT(hwndCombo);
 						
 						SendMessage(hwndCombo, WM_SETFONT, (WPARAM)GetStockObject(DEFAULT_GUI_FONT), MAKELPARAM(TRUE, 0));
+						SendMessage(hwndCombo, CB_SETDROPPEDWIDTH,(WPARAM)pControl->getDroppedWidth(), 0);
 
 						// populate it
 						if (pControl)
