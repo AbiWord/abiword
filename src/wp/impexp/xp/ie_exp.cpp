@@ -73,7 +73,7 @@ static struct _xp s_expTable[] =
 #endif
 	DeclareExporter(IE_Exp_HTML),
 	DeclareExporter(IE_Exp_LaTeX),
-#ifdef 0
+#if 0
 	DeclareExporter(IE_Exp_MIF),
 	//      Don't declare until it works
 #endif
