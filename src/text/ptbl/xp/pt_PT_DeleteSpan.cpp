@@ -790,8 +790,14 @@ bool pt_PieceTable::_StruxIsNotTable(pf_Frag_Strux * pfs)
 	return b;
 }
 
-bool pt_PieceTable::_deleteComplexSpan(PT_DocPosition dpos1,
-									   PT_DocPosition dpos2,
+/*
+    Because complex span can involve deletion of a bookmark the comrade of which is outside of the
+    deletion range, this function can change dpos1 and dpos2 to indicate which document positions
+    after the deletion correspond to the original values passed to the function -- the caller needs
+    to take this into account
+ */
+bool pt_PieceTable::_deleteComplexSpan(PT_DocPosition & origPos1,
+									   PT_DocPosition & origPos2,
 									   UT_Stack * stDelayStruxDelete)
 {
 	pf_Frag * pfNewEnd;
@@ -803,6 +809,9 @@ bool pt_PieceTable::_deleteComplexSpan(PT_DocPosition dpos1,
 	pf_Frag * pf_End;
 	PT_BlockOffset fragOffset_First;
 	PT_BlockOffset fragOffset_End;
+
+	PT_DocPosition dpos1 = origPos1;
+	PT_DocPosition dpos2 = origPos2;
 
 	bool bFound = getFragsFromPositions(dpos1,dpos2,&pf_First,&fragOffset_First,&pf_End,&fragOffset_End);
 	UT_return_val_if_fail (bFound, false);
@@ -1203,6 +1212,12 @@ bool pt_PieceTable::_deleteComplexSpan(PT_DocPosition dpos1,
 									m_pDocument->removeBookmark(pB1->getName());
 
 									posComrade = getFragPosition(pOb);
+									
+									if(posComrade < origPos1)
+									{
+										origPos1--;
+									}
+									
 									bFoundStrux2 = _getStruxFromPosition(posComrade,&pfsContainer2);
 									UT_return_val_if_fail (bFoundStrux2, false);
 

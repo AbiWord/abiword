@@ -2727,6 +2727,47 @@ PTStruxType PD_Document::getStruxType(PL_StruxDocHandle sdh) const
 	return pfs->getStruxType();
 }
 
+pf_Frag * PD_Document::findBookmark(const char * pName, bool bEnd, pf_Frag * pfStart)
+{
+	if(!pfStart)
+	{
+		pfStart = getPieceTable()->getFragments().getFirst();
+	}
+
+	UT_return_val_if_fail(pfStart, NULL);
+
+	pf_Frag * pf = pfStart;
+	while(pf)
+	{
+		if(pf->getType() == pf_Frag::PFT_Object)
+		{
+			pf_Frag_Object * po = (pf_Frag_Object*) pf;
+			if(po->getObjectType() == PTO_Bookmark)
+			{
+				po_Bookmark * pb = po->getBookmark();
+				if(!pb)
+				{
+					UT_ASSERT_HARMLESS( UT_SHOULD_NOT_HAPPEN );
+					pf = pf->getNext();
+					continue;
+				}
+
+				if(  (!bEnd && pb->getBookmarkType() == po_Bookmark::POBOOKMARK_START)
+				   ||( bEnd && pb->getBookmarkType() == po_Bookmark::POBOOKMARK_END))
+				{
+					if(0 == UT_strcmp(pName, pb->getName()))
+					   return pf;
+				}
+			}
+		}
+
+		pf = pf->getNext();
+	}
+
+	return NULL;
+}
+
+
 po_Bookmark * PD_Document::getBookmark(PL_StruxDocHandle sdh, UT_uint32 offset)
 {
 	const pf_Frag * pf = static_cast<const pf_Frag *>(sdh);

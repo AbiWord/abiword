@@ -383,6 +383,8 @@ public:
 									 UT_uint32 offset,
                                      fd_Field * &pField);
 	po_Bookmark * 			getBookmark(PL_StruxDocHandle sdh, UT_uint32 offset);
+	pf_Frag *               findBookmark(const char * pName, bool bEnd = false, pf_Frag * pfStart = NULL);
+	
 	void					setDontChangeInsPoint(void);
 	void					allowChangeInsPoint(void);
 	bool					getAllowChangeInsPoint(void) const;

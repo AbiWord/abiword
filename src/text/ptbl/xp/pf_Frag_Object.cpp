@@ -369,7 +369,7 @@ pf_Frag_Object::pf_Frag_Object(pt_PieceTable * pPT,
     else if (objectType==PTO_Bookmark)
     {
     	po_Bookmark::BookmarkType BT;
-
+		
 		if(!pszType) {
 			// see bug 6489...
 			UT_ASSERT_NOT_REACHED();

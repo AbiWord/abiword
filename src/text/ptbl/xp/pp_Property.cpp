@@ -214,6 +214,7 @@ static PP_Property _props[] =
 	{ "toc-page-type2",        "numeric",         false, NULL, PP_LEVEL_BLOCK},
 	{ "toc-page-type3",        "numeric",         false, NULL, PP_LEVEL_BLOCK},
 	{ "toc-page-type4",        "numeric",         false, NULL, PP_LEVEL_BLOCK},
+	{ "toc-range-bookmark",    "",                false, NULL, PP_LEVEL_BLOCK},
 	{ "toc-source-style1",     "Heading 1",       false, NULL, PP_LEVEL_BLOCK},
 	{ "toc-source-style2",     "Heading 2",       false, NULL, PP_LEVEL_BLOCK},
 	{ "toc-source-style3",     "Heading 3",       false, NULL, PP_LEVEL_BLOCK},

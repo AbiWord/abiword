@@ -393,8 +393,8 @@ protected:
 	bool					_deleteFormatting(PT_DocPosition dpos1,
 											  PT_DocPosition dpos2);
 
-	bool					_deleteComplexSpan(PT_DocPosition dpos1,
-											   PT_DocPosition dpos2,
+	bool					_deleteComplexSpan(PT_DocPosition & dpos1,
+											   PT_DocPosition & dpos2,
 											   UT_Stack *stDelayStruxDelete);
 
 
