@@ -128,6 +128,7 @@ protected:
 	void				_addColor(const char * szColor);
 	void				_rtf_open_brace(void);
 	void				_rtf_close_brace(void);
+	bool                _rtf_reopen_brace(void);
 	void				_rtf_keyword(const char * szKey);
 	void				_rtf_keyword(const char * szKey, UT_sint32 d);
 	void                _rtf_keyword(const char * szKey, const char * szValue);

@@ -60,8 +60,8 @@ public:
 
 protected:
 	void				_closeSection(void);
-	void				_closeBlock(void);
-	void				_closeSpan(void);
+	void				_closeBlock(PT_AttrPropIndex nextApi = 0);
+	void				_closeSpan();
 	void				_openSpan(PT_AttrPropIndex apiSpan,const PP_AttrProp * pSpanAP = NULL );
 	void				_openTag(const char * szPrefix, const char * szSuffix,
 								 bool bNewLineAfter, PT_AttrPropIndex api);
@@ -90,6 +90,7 @@ protected:
 	bool				m_bToClipboard;
 	PT_AttrPropIndex	m_apiLastSpan;
 	bool                m_bIsListBlock;
+
 	bool                m_bIsTabEaten;
 	PT_AttrPropIndex	m_apiThisSection;
 	PT_AttrPropIndex	m_apiThisBlock;
@@ -97,6 +98,7 @@ protected:
 	PL_StruxDocHandle       m_sdh;
 	UT_uint32           m_currID;
 	PT_DocPosition      m_posDoc;
+	bool                m_bBlankLine;
 };
 
 #endif /* IE_EXP_RTF_LISTENERWRITEDOC */

@@ -1226,12 +1226,15 @@ void IE_Exp_RTF::_write_listtable(void)
 // Found a child of pList97, it must be a multi-level list.
 //
 				{
+					UT_DEBUGMSG(("SEVIOR: Adding %x to multi-level \n",pAuto));
 					m_vecMultiLevel.addItem((void *) new ie_exp_RTF_MsWord97ListMulti(pAuto));
+					bFoundChild = true;
 					break;
 				}
 			}
 			if(!bFoundChild)
 			{
+				UT_DEBUGMSG(("SEVIOR: Adding %x to simple \n",pAuto));
 				m_vecSimpleList.addItem((void *) new ie_exp_RTF_MsWord97ListSimple(pAuto));
 			}
 		}
@@ -1365,11 +1368,12 @@ UT_uint32  IE_Exp_RTF::getOverideCount(void) const
  */
 UT_uint32 IE_Exp_RTF::getMatchingOverideNum(UT_uint32 ID)
 {
+	UT_uint32 baseid = ID;
 	UT_uint32 i=0;
 	for(i=0; i< getOverideCount(); i++)
 	{
 		ie_exp_RTF_ListOveride * pOver = getNthOveride(i);
-		if(pOver->doesOverideMatch(ID))
+		if(pOver->doesOverideMatch(baseid))
 		{
 			return pOver->getOverideID();
 		}
@@ -1447,8 +1451,8 @@ void IE_Exp_RTF::_output_LevelText(fl_AutoNum * pAuto, UT_uint32 iLevel, UT_UCSC
 		tmp += ";";
 		write(tmp.c_str());
 		_rtf_close_brace();
-		_rtf_keyword("levelnumbers");
 		_rtf_open_brace();
+		_rtf_keyword("levelnumbers");
 		write(LevelNumbers.c_str());
 		write(";");
 	}
@@ -1615,7 +1619,7 @@ void IE_Exp_RTF::_output_ListRTF(fl_AutoNum * pAuto, UT_uint32 iLevel)
 	}
 	else
 	{
-		return;
+		lType = NUMBERED_LIST;
 	}
 	switch(lType)
 	{
@@ -1709,24 +1713,39 @@ void IE_Exp_RTF::_output_ListRTF(fl_AutoNum * pAuto, UT_uint32 iLevel)
 	_rtf_keyword("levelstartat",startParam);
 	_rtf_keyword("levelspace",0);
 	_rtf_keyword("levelfollow",0);
+	if(pAuto == NULL)
+	{
+		float marg = LIST_DEFAULT_INDENT;
+		float indent =  LIST_DEFAULT_INDENT_LABEL;
+		UT_String smarg;
+		UT_String sindent;
+		marg = (((float) iLevel) +1.0) * marg;
+		UT_String_sprintf(smarg,"%fin",marg);
+		UT_String_sprintf(sindent,"%fin",indent);
+		_rtf_keyword_ifnotdefault_twips("li",(char*)smarg.c_str(),0);
+		_rtf_keyword_ifnotdefault_twips("fi",(char*)sindent.c_str(),0);
+	}
 //
 // Output the indents and alignments. Use the first sdh to get these.
 //
-	PL_StruxDocHandle sdh = pAuto->getFirstItem();
-	const char * szIndent = NULL;
-	const char * szAlign = NULL;
-	if(sdh != NULL)
+	else
 	{
-		bool bres = getDoc()->getPropertyFromSDH(sdh,"text-indent",&szIndent);
-		if(bres)
+		PL_StruxDocHandle sdh = pAuto->getFirstItem();
+		const char * szIndent = NULL;
+		const char * szAlign = NULL;
+		if(sdh != NULL)
 		{
-			_rtf_keyword_ifnotdefault_twips("fi",(char*)szIndent,0);
-		}		
-		bres = getDoc()->getPropertyFromSDH(sdh,"margin-left",&szAlign);
-		if(bres)
-		{
-			_rtf_keyword_ifnotdefault_twips("li",(char*)szAlign,0);
-		}		
+			bool bres = getDoc()->getPropertyFromSDH(sdh,"text-indent",&szIndent);
+			if(bres)
+			{
+				_rtf_keyword_ifnotdefault_twips("fi",(char*)szIndent,0);
+			}		
+			bres = getDoc()->getPropertyFromSDH(sdh,"margin-left",&szAlign);
+			if(bres)
+			{
+				_rtf_keyword_ifnotdefault_twips("li",(char*)szAlign,0);
+			}		
+		}
 	}
 
 // Leveltext and levelnumbers
@@ -1795,7 +1814,7 @@ void IE_Exp_RTF::_output_OveridesRTF(ie_exp_RTF_ListOveride * pOver, UT_uint32 i
 //
 // Strategy: Dump out all the list info for the first list in each level.
 // 
-//	_output_ListRTF(pAuto,0);
+	_output_ListRTF(pAuto,0);
 	_rtf_keyword("ls",pOver->getOverideID());
 	_rtf_close_brace();
 }

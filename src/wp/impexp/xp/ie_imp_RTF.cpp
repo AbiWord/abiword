@@ -1475,9 +1475,9 @@ UT_Error IE_Imp_RTF::_parseFile(FILE* fp)
 // 
 bool IE_Imp_RTF::StartNewPara()
 {
-	bool ok = FlushStoredChars(true);
 	
 	m_newParaFlagged = true;
+	bool ok = FlushStoredChars(true);
 
 	return ok;
 }
@@ -1522,6 +1522,16 @@ bool IE_Imp_RTF::FlushStoredChars(bool forceInsertPara)
 	if (ok  &&  m_newParaFlagged  &&  (forceInsertPara  ||  (m_gbBlock.getLength() > 0)) )
 	{
 		ok = ApplyParagraphAttributes();
+		if(m_gbBlock.getLength() == 0)
+		{
+//
+// This forces empty lines to have the same height as the previous line
+//
+			if(m_pImportFile != NULL)
+			{
+				getDoc()->appendFmtMark();
+			}
+		}
 		m_newParaFlagged = false;
 	}
 
@@ -4558,7 +4568,9 @@ bool IE_Imp_RTF::ApplySectionAttributes()
 		propBuffer += "; page-margin-left:";
 		double inch = (double) m_currentRTFState.m_sectionProps.m_leftMargTwips/1440.;
 		UT_String sinch;
+		setlocale(LC_NUMERIC, "C");
 		UT_String_sprintf(sinch,"%fin",inch);
+		setlocale(LC_NUMERIC, "");
 		propBuffer += sinch;
 	}
 	if(m_currentRTFState.m_sectionProps.m_rightMargTwips != 0)
@@ -4566,7 +4578,9 @@ bool IE_Imp_RTF::ApplySectionAttributes()
 		propBuffer += "; page-margin-right:";
 		double inch = (double) m_currentRTFState.m_sectionProps.m_rightMargTwips/1440.;
 		UT_String sinch;
+		setlocale(LC_NUMERIC, "C");
 		UT_String_sprintf(sinch,"%fin",inch);
+		setlocale(LC_NUMERIC, "");
 		propBuffer += sinch;
 	}
 	if(m_currentRTFState.m_sectionProps.m_topMargTwips != 0)
@@ -4574,7 +4588,9 @@ bool IE_Imp_RTF::ApplySectionAttributes()
 		propBuffer += "; page-margin-top:";
 		double inch = (double) m_currentRTFState.m_sectionProps.m_topMargTwips/1440.;
 		UT_String sinch;
+		setlocale(LC_NUMERIC, "C");
 		UT_String_sprintf(sinch,"%fin",inch);
+		setlocale(LC_NUMERIC, "");
 		propBuffer += sinch;
 	}
 	if(m_currentRTFState.m_sectionProps.m_bottomMargTwips != 0)
@@ -4582,7 +4598,9 @@ bool IE_Imp_RTF::ApplySectionAttributes()
 		propBuffer += "; page-margin-bottom:";
 		double inch = (double) m_currentRTFState.m_sectionProps.m_bottomMargTwips/1440.;
 		UT_String sinch;
+		setlocale(LC_NUMERIC, "C");
 		UT_String_sprintf(sinch,"%fin",inch);
+		setlocale(LC_NUMERIC, "");
 		propBuffer += sinch;
 	}
 	if(m_currentRTFState.m_sectionProps.m_headerYTwips != 0)
@@ -4605,7 +4623,9 @@ bool IE_Imp_RTF::ApplySectionAttributes()
 		propBuffer += "; page-margin-header:";
 		double inch = (double) sheader/1440.;
 		UT_String sinch;
+		setlocale(LC_NUMERIC, "C");
 		UT_String_sprintf(sinch,"%fin",inch);
+		setlocale(LC_NUMERIC, "");
 		propBuffer += sinch;
 	}
 	if(m_currentRTFState.m_sectionProps.m_footerYTwips != 0)
@@ -4628,7 +4648,9 @@ bool IE_Imp_RTF::ApplySectionAttributes()
 		propBuffer += "; page-margin-footer:";
 		double inch = (double) sfooter/1440.;
 		UT_String sinch;
+		setlocale(LC_NUMERIC, "C");
 		UT_String_sprintf(sinch,"%fin",inch);
+		setlocale(LC_NUMERIC, "");
 		propBuffer += sinch;
 	}
 			

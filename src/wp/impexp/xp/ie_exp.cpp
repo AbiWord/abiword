@@ -1,4 +1,3 @@
-
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
  * 
@@ -271,6 +270,19 @@ void IE_Exp::write(const char * sz)
 		m_error |= ! _writeBytes((UT_Byte *)sz);
 
 	return;
+}
+
+/*! 
+ * This method deletes the last char in the output buffer. 
+ * The value of the character at the last position is returned.
+ */
+char IE_Exp::rewindChar(void)
+{
+	UT_uint32 len = m_pByteBuf->getLength();
+	char * pchr = (char *) m_pByteBuf->getPointer(len-1);
+	char chr = *pchr;
+	m_pByteBuf->del(len-1,1);
+	return chr;
 }
 
 void IE_Exp::write(const char * sz, UT_uint32 length)

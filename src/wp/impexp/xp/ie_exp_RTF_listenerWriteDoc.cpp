@@ -60,17 +60,42 @@ void s_RTF_ListenerWriteDoc::_closeSection(void)
 	return;
 }
 
-void s_RTF_ListenerWriteDoc::_closeBlock(void)
+void s_RTF_ListenerWriteDoc::_closeBlock(PT_AttrPropIndex  nextApi)
 {
 //
-// Force the output of char properties for blank lines.
+// Force the output of char properties for blank lines or list items.
 //
- 	if(!m_bInSpan && m_sdh && m_pDocument->getStruxType(m_sdh) == PTX_Block )
+	bool bInList = false;
+	const XML_Char * szListid=NULL;
+	const PP_AttrProp * pBlockAP = NULL;
+	if(nextApi != 0)
+	{
+		m_pDocument->getAttrProp(nextApi,&pBlockAP);
+
+		if (!pBlockAP || !pBlockAP->getAttribute((const XML_Char*)"listid", szListid))
+		{		
+			szListid = NULL;
+		}
+		if(szListid != NULL)
+		{
+			bInList = true;
+		}
+	}
+ 	if(!m_bInSpan && m_sdh && (m_bBlankLine || bInList) && !m_bJustStartingSection && m_pDocument->getStruxType(m_sdh) == PTX_Block )
   	{
+//
+// This is a blankline or list item
+//
+// output the character properties for this break.
+//
 		const PP_AttrProp * pSpanAP = NULL;
 		m_pDocument->getSpanAttrProp(m_sdh,0,true,&pSpanAP);
   		_openSpan(m_apiThisBlock,pSpanAP);
-  		_closeSpan();
+	
+	}
+	else
+	{
+		m_bBlankLine = false;
 	}
 	m_apiThisBlock = 0;
 	m_sdh = NULL;
@@ -114,7 +139,7 @@ void s_RTF_ListenerWriteDoc::_openSpan(PT_AttrPropIndex apiSpan,  const PP_AttrP
 	}
 
 	m_pie->_write_charfmt(s_RTF_AttrPropAdapter_AP(pSpanAP, pBlockAP, pSectionAP, m_pDocument));
-
+	m_bBlankLine = false;
 	m_bInSpan = true;
 	m_apiLastSpan = apiSpan;
 }
@@ -506,7 +531,7 @@ const UT_UCSChar * s_RTF_ListenerWriteDoc::_getFieldValue(void)
 void	 s_RTF_ListenerWriteDoc::_openTag(const char * szPrefix, const char * szSuffix,
 								 bool bNewLineAfter, PT_AttrPropIndex api)
 {
-	 UT_DEBUGMSG(("TODO: Write code to go in here. In _openTag, szPrefix = %s  szSuffix = %s api = %x \n",szPrefix,szSuffix,api));
+	 xxx_UT_DEBUGMSG(("TODO: Write code to go in here. In _openTag, szPrefix = %s  szSuffix = %s api = %x \n",szPrefix,szSuffix,api));
 	 if(UT_XML_strcmp(szPrefix,"field") == 0)
 	 {
 		 const PP_AttrProp * pSpanAP = NULL;
@@ -922,11 +947,12 @@ bool s_RTF_ListenerWriteDoc::populateStrux(PL_StruxDocHandle sdh,
 	case PTX_Block:
 		{
 			_closeSpan();
-			_closeBlock();
+			_closeBlock(pcr->getIndexAP());
 			_setListBlock(false);
 			_setTabEaten(false);
 			m_sdh = sdh;
 			_rtf_open_block(pcr->getIndexAP());
+			m_bBlankLine = true;
 			return true;
 		}
 
@@ -1095,7 +1121,10 @@ void s_RTF_ListenerWriteDoc::_rtf_open_section(PT_AttrPropIndex api)
 	const XML_Char * szRestartAt = PP_evalProperty("section-restart-value",
 												 pSpanAP,pBlockAP,pSectionAP,
 												 m_pDocument,true);
-
+	const XML_Char * szHeaderExists = NULL;
+	pSectionAP->getAttribute("header", szHeaderExists);
+	const XML_Char * szFooterExists = NULL;
+	pSectionAP->getAttribute("footer", szFooterExists);
 #ifdef BIDI_ENABLED
 	const XML_Char * szDomDir = PP_evalProperty("dom-dir",
 												 pSpanAP,pBlockAP,pSectionAP,
@@ -1127,7 +1156,7 @@ void s_RTF_ListenerWriteDoc::_rtf_open_section(PT_AttrPropIndex api)
 	{
 		m_pie->_rtf_keyword ("linebetcol");
 	}
-	if(szHeaderY && szMarginTop)
+	if(szHeaderExists && szMarginTop)
 	{
 		UT_DEBUGMSG(("SEVIOR: szHeaderY = %s Margin Top %s \n",szHeaderY,szMarginTop));
 		double hMarg = UT_convertToInches(szHeaderY);
@@ -1141,20 +1170,41 @@ void s_RTF_ListenerWriteDoc::_rtf_open_section(PT_AttrPropIndex api)
 		UT_String_sprintf(sHeaderY,"%fin",HeaderY);
 		UT_DEBUGMSG(("SEVIOR: Header height is %s \n",sHeaderY.c_str()));
 		m_pie->_rtf_keyword_ifnotdefault_twips("headery", (char*)sHeaderY.c_str(), 720);
+		UT_String sRtfTop;
+		UT_String_sprintf(sRtfTop,"%fin",hMarg);
+		UT_DEBUGMSG(("SEVIOR: Top margin is %s \n",sRtfTop.c_str()));
+		m_pie->_rtf_keyword_ifnotdefault_twips("margtsxn", (char*)sRtfTop.c_str(), 1440);
 	}
-	if(szFooterY  && szMarginBottom)
+	else if(szMarginTop)
+	{
+		double tMarg = UT_convertToInches(szMarginTop);
+		UT_String sRtfTop;
+		UT_String_sprintf(sRtfTop,"%fin",tMarg);
+		m_pie->_rtf_keyword_ifnotdefault_twips("margtsxn", (char*)sRtfTop.c_str(), 1440);
+	}
+	if(szFooterExists  && szMarginBottom)
 	{
 		UT_DEBUGMSG(("SEVIOR: szFooterY = %s Margin Bot %s \n",szFooterY,szMarginBottom));
-		double fMarg = UT_convertToInches(szFooterY);
 		double bMarg = UT_convertToInches(szMarginBottom);
-		double FooterY = fMarg - bMarg;
-		if(FooterY < 0.0)
-		{
-			FooterY = 0.1;
-		}
+		double FooterY = bMarg;
 		UT_String sFooterY;
 		UT_String_sprintf(sFooterY,"%fin",FooterY);
 		m_pie->_rtf_keyword_ifnotdefault_twips("footery", (char*)sFooterY.c_str(), 720);
+		bMarg = bMarg - FooterY;
+		if(bMarg < 0.0)
+		{
+			bMarg = 0.0;
+		}
+		UT_String BotMrg;
+		UT_String_sprintf(BotMrg,"%fin",bMarg);
+		m_pie->_rtf_keyword_ifnotdefault_twips("margbsxn", (char*)BotMrg.c_str(), 1440);
+	}
+	else if(szMarginBottom)
+	{
+		double bMarg = UT_convertToInches(szMarginBottom);
+		UT_String sRtfBot;
+		UT_String_sprintf(sRtfBot,"%fin",bMarg);
+		m_pie->_rtf_keyword_ifnotdefault_twips("margbsxn", (char*)sRtfBot.c_str(), 1440);
 	}
 	if(szMarginLeft)
 	{
@@ -1164,14 +1214,7 @@ void s_RTF_ListenerWriteDoc::_rtf_open_section(PT_AttrPropIndex api)
 	{
 		m_pie->_rtf_keyword_ifnotdefault_twips("margrsxn", (char*)szMarginRight, 1440);
 	}
-	if(szMarginTop)
-	{
-		m_pie->_rtf_keyword_ifnotdefault_twips("margtsxn", (char*)szMarginTop, 1440);
-	}
-	if(szMarginBottom)
-	{
-		m_pie->_rtf_keyword_ifnotdefault_twips("margbsxn", (char*)szMarginBottom, 1440);
-	}
+
 	if(szRestartNumbering && UT_strcmp(szRestartNumbering,"1") == 0)
 	{
 		m_pie->_rtf_keyword("pgnrestart");
@@ -1257,92 +1300,21 @@ void s_RTF_ListenerWriteDoc::_rtf_open_block(PT_AttrPropIndex api)
 	else
 		m_pie->_rtf_keyword("par");		// begin a new paragraph
 	
-	m_pie->_rtf_keyword("pard");		// restore all defaults for this paragraph
-
-	// if string is "left" use "ql", but that is the default, so we don't need to write it out.
-	if (UT_strcmp(szTextAlign,"right")==0)		// output one of q{lrcj} depending upon paragraph alignment
-		m_pie->_rtf_keyword("qr");
-	else if (UT_strcmp(szTextAlign,"center")==0)
-		m_pie->_rtf_keyword("qc");
-	else if (UT_strcmp(szTextAlign,"justify")==0)
-		m_pie->_rtf_keyword("qj");
-
-	m_pie->_rtf_keyword_ifnotdefault_twips("fi",(char*)szFirstLineIndent,0);
-	m_pie->_rtf_keyword_ifnotdefault_twips("li",(char*)szLeftIndent,0);
-	m_pie->_rtf_keyword_ifnotdefault_twips("ri",(char*)szRightIndent,0);
-	m_pie->_rtf_keyword_ifnotdefault_twips("sb",(char*)szTopMargin,0);
-	m_pie->_rtf_keyword_ifnotdefault_twips("sa",(char*)szBottomMargin,0);
-
-#ifdef BIDI_ENABLED
-		const XML_Char * szBidiDir = PP_evalProperty("dom-dir",pSpanAP,pBlockAP,pSectionAP,m_pDocument,true);
-		xxx_UT_DEBUGMSG(("bidi paragraph: pSectionAp 0x%x, pBlockAP 0x%x, dom-dir\"%s\"\n",pSectionAP,pBlockAP,szBidiDir));
-		if (szBidiDir)
-		{
-			if (!UT_strcmp (szBidiDir, "ltr"))
-				m_pie->_rtf_keyword ("ltrpar");
-			else
-				m_pie->_rtf_keyword ("rtlpar");
-		}
-
-#endif
-	
-	const XML_Char * szStyle = NULL;
-	if (pBlockAP->getAttribute("style", szStyle)) 
+//
+// This close span is an open span on a blank line.
+//
+	if(m_bBlankLine)
 	{
-	    m_pie->_rtf_keyword("s", m_pie->_getStyleNumber(szStyle));
+		_closeSpan();
+		return;
 	}
-
-	///
-	/// OK if there is list info in this paragraph we encase it inside
-	/// the {\*\abilist..} extension
-	///
 	UT_uint32 id = 0;
 	if(szListid != NULL)
 		id = atoi(szListid);
-	if(id != 0 )
+	if(id == 0)
 	{
-		_setListBlock( true);
-		m_pie->_rtf_open_brace();
-		m_pie->_rtf_keyword("*");
-		m_pie->_rtf_keyword("abilist"); 
-		m_pie->_rtf_keyword_ifnotdefault("abilistid",(char *) szListid,-1);
-		m_pie->_rtf_keyword_ifnotdefault("abilistparentid",(char *) szParentid,-1);
-		m_pie->_rtf_keyword_ifnotdefault("abilistlevel",szLevel.c_str(),-1);
-		m_pie->_rtf_keyword_ifnotdefault("abistartat",szAbiStartValue.c_str(),-1);
-		/// field font
-
-		m_pie->_rtf_open_brace();
-		m_pie->_rtf_keyword("abifieldfont");
-		m_pie->_rtf_chardata( (const char *) szAbiFieldFont ,strlen(szAbiFieldFont));
-		m_pie->_rtf_close_brace();
-
-		/// list decimal
-	        
-		m_pie->_rtf_open_brace();
-		m_pie->_rtf_keyword("abilistdecimal");
-		m_pie->_rtf_chardata((const char *)  szAbiListDecimal ,strlen(szAbiListDecimal));
-		m_pie->_rtf_close_brace();
-
-		/// list delim
-	        
-		m_pie->_rtf_open_brace();
-		m_pie->_rtf_keyword("abilistdelim");
-		m_pie->_rtf_chardata((const char *)  szAbiListDelim ,strlen( szAbiListDelim));
-		m_pie->_rtf_close_brace();
-
-		/// list style
-	        
-		m_pie->_rtf_open_brace();
-		m_pie->_rtf_keyword("abiliststyle");
-		m_pie->_rtf_chardata((const char *)  szListStyle ,strlen( szListStyle));
-		m_pie->_rtf_close_brace();
-		
-		/// Finished!
-		
-		m_pie->_rtf_close_brace();
-
+		m_pie->_rtf_keyword("pard");		// restore all defaults for this paragraph
 	}
-
 	///
 	/// Output fallback numbered/bulleted label for rtf readers that don't 
 	/// know /*/pn
@@ -1352,6 +1324,7 @@ void s_RTF_ListenerWriteDoc::_rtf_open_block(PT_AttrPropIndex api)
 		m_pie->_rtf_open_brace();
 		m_pie->_rtf_keyword("listtext");
 		// if string is "left" use "ql", but that is the default, so we don't need to write it out.
+		m_pie->_rtf_keyword("pard");		// restore all defaults for this paragraph
 		if (UT_strcmp(szTextAlign,"right")==0)		// output one of q{lrcj} depending upon paragraph alignment
 			m_pie->_rtf_keyword("qr");
 		else if (UT_strcmp(szTextAlign,"center")==0)
@@ -1398,7 +1371,97 @@ void s_RTF_ListenerWriteDoc::_rtf_open_block(PT_AttrPropIndex api)
 		char tab = (char) 9;
 		m_pie->_rtf_chardata(&tab,1);
 		m_pie->_rtf_close_brace();
+//
+// Span was openned in a previous closeBlock because this is a list
+// Item.
+//
+		_closeSpan();
+//		m_pie->_rtf_keyword("pard");		// restore all defaults for this paragraph
 	}
+
+	// if string is "left" use "ql", but that is the default, so we don't need to write it out.
+	if (UT_strcmp(szTextAlign,"right")==0)		// output one of q{lrcj} depending upon paragraph alignment
+		m_pie->_rtf_keyword("qr");
+	else if (UT_strcmp(szTextAlign,"center")==0)
+		m_pie->_rtf_keyword("qc");
+	else if (UT_strcmp(szTextAlign,"justify")==0)
+		m_pie->_rtf_keyword("qj");
+
+
+	m_pie->_rtf_keyword_ifnotdefault_twips("fi",(char*)szFirstLineIndent,0);
+	m_pie->_rtf_keyword_ifnotdefault_twips("li",(char*)szLeftIndent,0);
+	m_pie->_rtf_keyword_ifnotdefault_twips("ri",(char*)szRightIndent,0);
+	m_pie->_rtf_keyword_ifnotdefault_twips("sb",(char*)szTopMargin,0);
+	m_pie->_rtf_keyword_ifnotdefault_twips("sa",(char*)szBottomMargin,0);
+
+#ifdef BIDI_ENABLED
+		const XML_Char * szBidiDir = PP_evalProperty("dom-dir",pSpanAP,pBlockAP,pSectionAP,m_pDocument,true);
+		xxx_UT_DEBUGMSG(("bidi paragraph: pSectionAp 0x%x, pBlockAP 0x%x, dom-dir\"%s\"\n",pSectionAP,pBlockAP,szBidiDir));
+		if (szBidiDir)
+		{
+			if (!UT_strcmp (szBidiDir, "ltr"))
+				m_pie->_rtf_keyword ("ltrpar");
+			else
+				m_pie->_rtf_keyword ("rtlpar");
+		}
+
+#endif
+	
+	const XML_Char * szStyle = NULL;
+	if (pBlockAP->getAttribute("style", szStyle)) 
+	{
+	    m_pie->_rtf_keyword("s", m_pie->_getStyleNumber(szStyle));
+	}
+
+	///
+	/// OK if there is list info in this paragraph we encase it inside
+	/// the {\*\abilist..} extension
+	///
+	if(id != 0 )
+	{
+		_setListBlock( true);
+
+		m_pie->_rtf_open_brace();
+		m_pie->_rtf_keyword("*");
+		m_pie->_rtf_keyword("abilist"); 
+		m_pie->_rtf_keyword_ifnotdefault("abilistid",(char *) szListid,-1);
+		m_pie->_rtf_keyword_ifnotdefault("abilistparentid",(char *) szParentid,-1);
+		m_pie->_rtf_keyword_ifnotdefault("abilistlevel",szLevel.c_str(),-1);
+		m_pie->_rtf_keyword_ifnotdefault("abistartat",szAbiStartValue.c_str(),-1);
+		/// field font
+
+		m_pie->_rtf_open_brace();
+		m_pie->_rtf_keyword("abifieldfont");
+		m_pie->_rtf_chardata( (const char *) szAbiFieldFont ,strlen(szAbiFieldFont));
+		m_pie->_rtf_close_brace();
+
+		/// list decimal
+	        
+		m_pie->_rtf_open_brace();
+		m_pie->_rtf_keyword("abilistdecimal");
+		m_pie->_rtf_chardata((const char *)  szAbiListDecimal ,strlen(szAbiListDecimal));
+		m_pie->_rtf_close_brace();
+
+		/// list delim
+	        
+		m_pie->_rtf_open_brace();
+		m_pie->_rtf_keyword("abilistdelim");
+		m_pie->_rtf_chardata((const char *)  szAbiListDelim ,strlen( szAbiListDelim));
+		m_pie->_rtf_close_brace();
+
+		/// list style
+	        
+		m_pie->_rtf_open_brace();
+		m_pie->_rtf_keyword("abiliststyle");
+		m_pie->_rtf_chardata((const char *)  szListStyle ,strlen( szListStyle));
+		m_pie->_rtf_close_brace();
+		
+		/// Finished!
+		
+		m_pie->_rtf_close_brace();
+
+	}
+
 	///
 	/// OK Now output word-95 style lists
 	///
@@ -1525,7 +1588,7 @@ void s_RTF_ListenerWriteDoc::_rtf_open_block(PT_AttrPropIndex api)
     /// a new list list structure. We need m_currID to track the previous list
     /// we were in. 
 	///
-
+	UT_DEBUGMSG(("SEVIOR: Doing output of list structure id = %d\n",id));
 	if(id != 0 )
 	{
 		UT_uint32 iOver = m_pie->getMatchingOverideNum(id);
@@ -1544,20 +1607,20 @@ void s_RTF_ListenerWriteDoc::_rtf_open_block(PT_AttrPropIndex api)
 			}
 			if(iLevel > 8)
 			{
+				UT_ASSERT(0);
 				iLevel = 8;
 			}
 			m_currID = id;
 		}
 		/* This is changed so that Word97 can see the numbers in 
 		   numbered lists */
-		if(pAuto->getType() < BULLETED_LIST) {
+		if(pAuto->getType() < BULLETED_LIST) 
+		{
 	        	m_pie->_rtf_keyword_ifnotdefault_twips("fn",(char*)szFirstLineIndent,0);
 	        	m_pie->_rtf_keyword_ifnotdefault_twips("li",(char*)szLeftIndent,0);
-			}
-		else {
-			m_pie->_rtf_keyword("ls",iOver);
-			m_pie->_rtf_keyword("ilvl",iLevel);
-			}
+		}
+		m_pie->_rtf_keyword("ls",iOver);
+		m_pie->_rtf_keyword("ilvl",iLevel);
 	}
 
 	if (strcmp(szLineHeight,"1.0") != 0)
