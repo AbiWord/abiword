@@ -87,7 +87,9 @@ public:
 	void							setTimeOfLastEvent(UT_uint32 eventTime);
 	UT_uint32	   					getTimeOfLastEvent() const { return m_eventTime; };
 	virtual UT_sint32				makeDirectory(const char * szPath, const UT_sint32 mode ) const;
-	
+	void                            setBonoboRunning(void) {m_bBonoboRunning = true;}
+	bool                            isBonoboRunning(void) const { return m_bBonoboRunning;}
+
 protected:
 	bool							_loadFonts();
 	void							_setAbiSuiteLibDir();
@@ -101,6 +103,8 @@ protected:
 	UT_uint32					m_eventTime; // e->time field of a recent X event
 										 // (we use this to sync clipboard
 										 // operations with the server).
+	bool                    m_bBonoboRunning;
+	
 };
 
 #endif /* XAP_UNIXAPP_H */

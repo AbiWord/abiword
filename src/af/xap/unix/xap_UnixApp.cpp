@@ -65,7 +65,7 @@ XAP_UnixApp::XAP_UnixApp(XAP_Args * pArgs, const char * szAppName)
 	// specify a --geometry argument, we only want to obey the
 	// size (which is set above), not a position.
 	m_geometry.flags = GEOMETRY_FLAG_SIZE;
-
+	m_bBonoboRunning = false;
 	// hack to ensure UnixNull_Graphics is linked properly
 	// this condition should be false always
 	if (this == 0)

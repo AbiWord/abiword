@@ -28,7 +28,7 @@
 #include "ut_assert.h"
 #include "fv_View.h"
 #include "ap_UnixFrame.h"
-
+#include  "xap_Args.h"
 #ifdef HAVE_GNOME
 #include "ap_UnixGnomeApp.h"
 #else
@@ -73,6 +73,10 @@ struct _AbiPrivData {
 	GdkICAttr            * ic_attr;
 	GdkIC                * ic;
 	bool                 externalApp;
+	bool                 m_bMappedToScreen;
+	bool                 m_bPendingFile;
+	bool                 m_bMappedEventProcessed;
+    bool                 m_bUnlinkFileAfterLoad;
 };
 
 /**************************************************************************/
@@ -86,6 +90,8 @@ enum {
   CURSOR_ON,
   INVOKE_NOARGS,
   MAP_TO_SCREEN,
+  IS_ABI_WIDGET,
+  UNLINK_AFTER_LOAD,
   DRAW,
   LOAD_FILE,
   ALIGNCENTER,
@@ -179,6 +185,9 @@ enum {
 
 // our parent class
 static GtkBinClass * parent_class = 0;
+
+static void s_abi_widget_map_cb(GtkObject * w,  GdkEvent *event,gpointer p);
+
 
 /**************************************************************************/
 /**************************************************************************/
@@ -341,17 +350,99 @@ static const guint32 ABI_DEFAULT_HEIGHT = 250 ;
 /**************************************************************************/
 /**************************************************************************/
 
+//
 static bool
 abi_widget_load_file(AbiWidget * abi, const char * pszFile)
 {
-  g_return_val_if_fail (abi, false);
+	if(abi->priv->m_szFilename)
+	{
+		free(abi->priv->m_szFilename);
+	}
+	abi->priv->m_szFilename = UT_strdup(pszFile);
+	if(!abi->priv->m_bMappedToScreen)
+	{
+	  abi->priv->m_bPendingFile = true;
+	  return false;
+	}
+	AP_UnixFrame * pFrame = (AP_UnixFrame *) abi->priv->m_pFrame;
+	if(pFrame == NULL)
+	{
+		return false;
+	}
 
-  AP_UnixFrame * pFrame = (AP_UnixFrame *) abi->priv->m_pFrame;
-  if(pFrame == NULL)
-    {
-      return false;
-    }
-  return ( UT_OK == pFrame->loadDocument(pszFile,IEFT_Unknown,true) );
+	bool res= ( UT_OK == pFrame->loadDocument(abi->priv->m_szFilename,IEFT_Unknown ,true));
+	if(abi->priv->m_bUnlinkFileAfterLoad)
+	{
+	  unlink(pszFile);
+	  abi->priv->m_bUnlinkFileAfterLoad = false;
+	}
+	return res;
+}
+
+static gint s_abi_widget_load_file(gpointer p)
+{
+  AbiWidget * abi = (AbiWidget *) p;
+//  int i =1;
+//  while(i == 1) usleep(10000);
+  if(!abi->priv->m_bMappedToScreen)
+  {
+	abi_widget_map_to_screen(abi);
+  }
+  if(abi->priv->m_bPendingFile)
+  {
+	char * pszFile = UT_strdup(abi->priv->m_szFilename);
+	abi_widget_load_file(abi, pszFile);
+	free(pszFile);
+  }
+  return FALSE;
+}
+	  
+
+static void s_abi_widget_map_cb(GtkObject * w,  GdkEvent *event,gpointer p)
+{
+  AbiWidget * abi = ABI_WIDGET(p);
+//  int i = 1;
+//  while(i == 1) usleep(10000);
+  if(!abi->priv->m_bMappedEventProcessed)
+  {
+	  abi->priv->m_bMappedEventProcessed = true;
+//	  gtk_idle_add( (GtkFunction) s_abi_widget_load_file,(gpointer) abi);
+	  s_abi_widget_load_file((gpointer) abi);
+  }
+  else
+  {
+	  return;
+  }
+}
+
+//
+// arguments to abiwidget
+//
+static void abi_widget_get_arg (GtkObject  *object,
+				GtkArg     *arg,
+				guint	arg_id)
+{
+    AbiWidget * abi = ABI_WIDGET(object);
+	switch(arg_id)
+	{
+	    case MAP_TO_SCREEN:
+		{
+			GTK_VALUE_BOOL(*arg) = (gboolean) abi->priv->m_bMappedToScreen;
+			break;
+		}
+	    case IS_ABI_WIDGET:
+		{
+			GTK_VALUE_BOOL(*arg) = (gboolean) true;
+			break;
+		}
+	    case UNLINK_AFTER_LOAD:
+		{
+			GTK_VALUE_BOOL(*arg) = (gboolean) abi->priv->m_bUnlinkFileAfterLoad;
+			break;
+		}
+	    default:
+			break;
+	}
 }
 
 //
@@ -387,6 +478,18 @@ static void abi_widget_set_arg (GtkObject  *object,
 		     if(GTK_VALUE_BOOL (*arg) == TRUE)
 			 {
 			      abi_widget_map_to_screen(abi);
+			 }
+			 break;
+		}
+	    case UNLINK_AFTER_LOAD:
+		{
+		     if(GTK_VALUE_BOOL (*arg) == TRUE)
+			 {
+			      abi->priv->m_bUnlinkFileAfterLoad = true;
+			 }
+			 else
+			 {
+			      abi->priv->m_bUnlinkFileAfterLoad = false;
 			 }
 			 break;
 		}
@@ -999,7 +1102,7 @@ abi_widget_realize (GtkWidget * widget)
 
 	GTK_WIDGET_SET_FLAGS (widget, GTK_REALIZED);
 	abi = ABI_WIDGET(widget);
-	
+
 	attributes.x = widget->allocation.x;
 	attributes.y = widget->allocation.y;
 	attributes.width = ABI_DEFAULT_WIDTH;
@@ -1102,6 +1205,16 @@ abi_widget_realize (GtkWidget * widget)
 	}
 	gtk_object_set_data(GTK_OBJECT(widget), "ic_attr", priv->ic_attr);
 	gtk_object_set_data(GTK_OBJECT(widget), "ic", priv->ic);
+	
+	//
+    // connect a signal handler to load files after abiword is mapped
+    //
+	gtk_signal_connect_after(GTK_OBJECT(widget),"map_event", 
+							 GTK_SIGNAL_FUNC (s_abi_widget_map_cb),
+							 (gpointer) abi);
+//	int i =1;
+//	while(i == 1) usleep(10000);
+	return;
 }
 
 static void
@@ -1119,8 +1232,11 @@ abi_widget_destroy (GtkObject *object)
 
 	if(abi->priv->m_pApp)
 	{
-		abi->priv->m_pApp->forgetFrame(abi->priv->m_pFrame);
-		delete abi->priv->m_pFrame;
+		if(abi->priv->m_pFrame)
+		{
+			abi->priv->m_pApp->forgetFrame(abi->priv->m_pFrame);
+			delete abi->priv->m_pFrame;
+		}
 		if(!abi->priv->externalApp)
 		{
 			abi->priv->m_pApp->shutdown();
@@ -1161,6 +1277,7 @@ abi_widget_class_init (AbiWidgetClass *abi_class)
 	// set our custom destroy method
 	object_class->destroy = abi_widget_destroy; 
 	object_class->set_arg = abi_widget_set_arg;
+	object_class->get_arg = abi_widget_get_arg;
 
 	// set our custom class methods
 	widget_class->realize       = abi_widget_realize;
@@ -1282,6 +1399,8 @@ abi_widget_class_init (AbiWidgetClass *abi_class)
 	gtk_object_add_arg_type ("AbiWidget::cursoron", GTK_TYPE_BOOL, GTK_ARG_READWRITE, CURSOR_ON);
 	gtk_object_add_arg_type ("AbiWidget::invoke_noargs", GTK_TYPE_STRING, GTK_ARG_READWRITE, INVOKE_NOARGS);
 	gtk_object_add_arg_type ("AbiWidget::map_to_screen", GTK_TYPE_BOOL, GTK_ARG_READWRITE, MAP_TO_SCREEN);
+	gtk_object_add_arg_type ("AbiWidget::unlink_after_load", GTK_TYPE_BOOL, GTK_ARG_READWRITE, UNLINK_AFTER_LOAD);
+	gtk_object_add_arg_type ("AbiWidget::is_abi_widget", GTK_TYPE_BOOL, GTK_ARG_READABLE, IS_ABI_WIDGET);
 	gtk_object_add_arg_type ("AbiWidget::draw", GTK_TYPE_BOOL, GTK_ARG_READWRITE, DRAW);
 	gtk_object_add_arg_type ("AbiWidget::load_file", GTK_TYPE_STRING, GTK_ARG_READWRITE, LOAD_FILE);
 	gtk_object_add_arg_type("AbiWidget::aligncenter", GTK_TYPE_BOOL, GTK_ARG_READWRITE,ALIGNCENTER);
@@ -1383,6 +1502,10 @@ abi_widget_construct (AbiWidget * abi, const char * file, AP_UnixApp * pApp)
 	priv->m_szFilename = NULL;
 	priv->ic_attr = NULL;
 	priv->ic = NULL;
+	priv->m_bMappedToScreen = false;
+	priv->m_bPendingFile = false;
+	priv->m_bMappedEventProcessed = false;
+	priv->m_bUnlinkFileAfterLoad = false;
 	if(pApp == NULL)
 	{
 		priv->m_pApp = NULL;
@@ -1400,6 +1523,9 @@ abi_widget_construct (AbiWidget * abi, const char * file, AP_UnixApp * pApp)
 		priv->m_szFilename = g_strdup (file);
 
 	abi->priv = priv;
+//	int i = 1;
+//	while(i == 1) usleep(10000);
+	return;
 }
 
 /**************************************************************************/
@@ -1415,10 +1541,12 @@ abi_widget_map_to_screen(AbiWidget * abi)
   // now we can set up Abi inside of this GdkWindow
 
 	XAP_Args *pArgs = 0;
-	if(abi->priv->externalApp)
+	abi->priv->m_bMappedToScreen = true;
+	if(!abi->priv->externalApp)
 	{
 		if (abi->priv->m_szFilename)
 		{
+			//pArgs = new XAP_Args (1, (const char **)&abi->priv->m_szFilename);
 			pArgs = new XAP_Args (1, (const char **)&abi->priv->m_szFilename);
 		}
 		else
@@ -1431,6 +1559,7 @@ abi_widget_map_to_screen(AbiWidget * abi)
 		AP_UnixApp   * pApp = new AP_UnixApp (pArgs, "AbiWidget");
 #endif
 		UT_ASSERT(pApp);
+		pApp->setBonoboRunning();
 		pApp->initialize();
 		abi->priv->m_pApp     = pApp;
 	}
@@ -1447,15 +1576,17 @@ abi_widget_map_to_screen(AbiWidget * abi)
 		delete pArgs;
 	}
 	abi->priv->m_pFrame->loadDocument(abi->priv->m_szFilename,IEFT_Unknown ,true);
-
 }
 
 extern "C" void 
 abi_widget_turn_on_cursor(AbiWidget * abi)
 {
-  g_return_if_fail (abi != 0);
-  FV_View * pV = (FV_View*) abi->priv->m_pFrame->getCurrentView();
-  pV->focusChange(AV_FOCUS_HERE);
+	if(abi->priv->m_pFrame)
+	{
+		g_return_if_fail (abi != 0);
+		FV_View * pV = (FV_View*) abi->priv->m_pFrame->getCurrentView();
+		pV->focusChange(AV_FOCUS_HERE);
+	}
 }
 
 extern "C" GtkType
@@ -1635,6 +1766,9 @@ abi_widget_invoke_ex (AbiWidget * w, const char * mthdName,
 	function = method->getFn();
 	g_return_val_if_fail (function != 0, FALSE);
 
+	// get a valid frame
+	g_return_val_if_fail (w->priv->m_pFrame != 0, FALSE);
+
 	// obtain a valid view
 	view = w->priv->m_pFrame->getCurrentView();
 	g_return_val_if_fail (view != 0, FALSE);
@@ -1651,11 +1785,14 @@ abi_widget_invoke_ex (AbiWidget * w, const char * mthdName,
 extern "C" void
 abi_widget_draw (AbiWidget * w)
 {
-  // obtain a valid view
-  g_return_if_fail (w != NULL);
-  
-  FV_View * view = (FV_View *) w->priv->m_pFrame->getCurrentView();
-  view->draw();
+	// obtain a valid view
+	if(w->priv->m_pFrame)
+	{
+		// obtain a valid view
+		g_return_if_fail (w != NULL);
+		FV_View * view = (FV_View *) w->priv->m_pFrame->getCurrentView();
+		view->draw();
+	}
 }
 
 

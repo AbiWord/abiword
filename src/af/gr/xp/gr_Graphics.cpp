@@ -36,7 +36,7 @@
 #include "ut_OverstrikingChars.h"
 #endif
 // static class member initializations
-bool GR_Graphics::m_bRemapGlyphsMasterSwitch = true;
+bool GR_Graphics::m_bRemapGlyphsMasterSwitch = false;
 bool GR_Graphics::m_bRemapGlyphsNoMatterWhat = false;
 UT_UCSChar GR_Graphics::m_ucRemapGlyphsDefault = 0xB0;
 UT_UCSChar *GR_Graphics::m_pRemapGlyphsTableSrc = 0;

@@ -38,6 +38,7 @@
 #include "ut_PerlBindings.h"
 #include "ut_Script.h"
 #include "ut_unixDirent.h"
+#include "ut_sleep.h"
 
 #include "xap_Args.h"
 #include "ap_Args.h"
@@ -1547,7 +1548,14 @@ void AP_UnixApp::catchSignals(int sig_num)
     // Reset the signal handler 
     // (not that it matters - this is mostly for race conditions)
     signal(SIGSEGV, signalWrapper);
-    
+
+#if 0 // !!! remove this!!!! before committing 
+	// Use for debug Bonobo server
+    while(1)
+	{
+		UT_usleep(1000);
+	}
+#endif
     s_signal_count = s_signal_count + 1;
     if(s_signal_count > 1)
     {
