@@ -2760,8 +2760,6 @@ void FV_View::insertParagraphBreak(void)
 	}
 
 
-	m_pDoc->endUserAtomicGlob();
-
 	// Signal piceTable is stable again
 	_restorePieceTableState();
 
@@ -2773,6 +2771,7 @@ void FV_View::insertParagraphBreak(void)
 	m_pDoc->enableListUpdates();
 	m_pDoc->updateDirtyLists();
 	_generalUpdate();
+	m_pDoc->endUserAtomicGlob();
 	_fixInsertionPointCoords();
 	_ensureInsertionPointOnScreen();
 	notifyListeners(AV_CHG_MOTION | AV_CHG_ALL);

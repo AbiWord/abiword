@@ -1376,7 +1376,8 @@ IE_Imp_RTF::IE_Imp_RTF(PD_Document * pDocument)
 	m_iNoCellsSinceLastRow(0),
 	m_bFieldRecognized(false),
 	m_iIsInHeaderFooter(0),
-	m_bSectionHasPara(false)
+	m_bSectionHasPara(false),
+	m_bStruxInserted(false)
 {
 	if (!IE_Imp_RTF::keywordSorted) {
 		_initialKeywordSort();
@@ -1413,14 +1414,12 @@ IE_Imp_RTF::~IE_Imp_RTF()
 		{
 			if(pPaste->m_bHasPastedCellStrux && !pPaste->m_bHasPastedBlockStrux)
 			{
-				getDoc()->insertStrux(m_dposPaste,PTX_Block);
-				m_dposPaste++;	
+				insertStrux(PTX_Block);
 				UT_DEBUGMSG(("Paste block in destructor 1 \n"));
 			}
 			if(pPaste->m_bHasPastedCellStrux)
 			{
-				getDoc()->insertStrux(m_dposPaste,PTX_EndCell);
-				m_dposPaste++;	
+				insertStrux(PTX_EndCell);
 				UT_DEBUGMSG(("Paste EndCell in destructor 1 \n"));
 			}
 			if(!pPaste->m_bPasteAfterRow)
@@ -1450,22 +1449,17 @@ IE_Imp_RTF::~IE_Imp_RTF()
 					UT_String_setProperty(sCellProps,sDum,sBot);
 					
 					attrs[1] = sCellProps.c_str();
-					getDoc()->insertStrux(m_dposPaste,PTX_SectionCell,attrs,NULL);
-					m_dposPaste++;	
+					insertStrux(PTX_SectionCell,attrs,NULL);
 					
-					getDoc()->insertStrux(m_dposPaste,PTX_Block);
-					m_dposPaste++;	
+					insertStrux(PTX_Block);
 					
-					getDoc()->insertStrux(m_dposPaste,PTX_EndCell);
-					m_dposPaste++;	
+					insertStrux(PTX_EndCell);
 				}
 				if(pPaste->m_bHasPastedTableStrux)
 				{
-					getDoc()->insertStrux(m_dposPaste,PTX_EndTable);
-					m_dposPaste++;	
+					insertStrux(PTX_EndTable);
 					
-					getDoc()->insertStrux(m_dposPaste,PTX_Block);
-					m_dposPaste++;	
+					insertStrux(PTX_Block);
 				}
 			}
 			else
@@ -2127,15 +2121,13 @@ void IE_Imp_RTF::HandleNote(void)
 	else
 	{
 		if(m_bNoteIsFNote)
-			getDoc()->insertStrux(m_dposPaste,PTX_SectionFootnote,attribs,NULL);
+			insertStrux(PTX_SectionFootnote,attribs,NULL);
 		else
-			getDoc()->insertStrux(m_dposPaste,PTX_SectionEndnote,attribs,NULL);
+			insertStrux(PTX_SectionEndnote,attribs,NULL);
 			
-		m_dposPaste++;
 		UT_DEBUGMSG((" Insert Block at 7 \n"));
 		markPasteBlock();
-		getDoc()->insertStrux(m_dposPaste,PTX_Block);
-		m_dposPaste++;
+		insertStrux(PTX_Block);
 	}
 }
 
@@ -2621,11 +2613,10 @@ bool IE_Imp_RTF::FlushStoredChars(bool forceInsertPara)
 		else
 		{
 			if(m_bNoteIsFNote)
-				ok = getDoc()->insertStrux(m_dposPaste,PTX_EndFootnote);
+				ok = insertStrux(PTX_EndFootnote);
 			else
-				ok = getDoc()->insertStrux(m_dposPaste,PTX_EndEndnote);
+				ok = insertStrux(PTX_EndEndnote);
 				
-			m_dposPaste++;
 		}
 		m_bInFootnote = false;
 		m_iDepthAtFootnote = 0;
@@ -6373,10 +6364,9 @@ bool IE_Imp_RTF::ApplyParagraphAttributes()
 		{
 			UT_DEBUGMSG(("Insert block at 1 \n"));
 			markPasteBlock();
-			bSuccess = getDoc()->insertStrux(m_dposPaste,PTX_Block);
+			insertStrux(PTX_Block);
 			m_newParaFlagged = false;
 			m_bSectionHasPara = true;
-			m_dposPaste++;
 			//
 			// Put the tab back in.
 			//
@@ -6440,10 +6430,9 @@ bool IE_Imp_RTF::ApplyParagraphAttributes()
 			}
 			UT_DEBUGMSG((" Insert block at 2 \n"));
 			markPasteBlock();
-			bSuccess = getDoc()->insertStrux(m_dposPaste,PTX_Block);
+			insertStrux(PTX_Block);
 			m_newParaFlagged = false;
 			m_bSectionHasPara = true;
-			m_dposPaste++;
 			bSuccess = getDoc()->changeStruxFmt(PTC_SetFmt,m_dposPaste,m_dposPaste, attribs,NULL,PTX_Block);
 			//
 			// Now check if this strux has associated list element. If so stop the list!
@@ -6776,10 +6765,11 @@ bool IE_Imp_RTF::ApplySectionAttributes()
 		// can be inserted into.
 		UT_DEBUGMSG(("Insert block at 3 \n"));
 		markPasteBlock();
-		bool bSuccess = getDoc()->insertStrux(m_dposPaste,PTX_Block);
+		bool bSuccess = insertStrux(PTX_Block);
 
 		if (bSuccess)
 		{
+			m_dposPaste--;
 			XAP_Frame * pFrame = XAP_App::getApp()->getLastFocussedFrame();
 			if(pFrame == NULL)
 			{
@@ -6794,10 +6784,9 @@ bool IE_Imp_RTF::ApplySectionAttributes()
 			{
 				return false;;
 			}
-			bSuccess = getDoc()->insertStrux(m_dposPaste,PTX_Section);
+			bSuccess = insertStrux(PTX_Section);
 			if (bSuccess)
 			{
-				m_dposPaste++;
 				bSuccess = getDoc()->changeStruxFmt(PTC_SetFmt,m_dposPaste,m_dposPaste,
 													   propsArray,NULL,PTX_Section);
 			}
@@ -8470,8 +8459,7 @@ bool IE_Imp_RTF::HandleAbiTable(void)
 // Insert the table strux at the same spot. This will make the table link correctly in the
 // middle of the broken text.
 		pPaste->m_bHasPastedTableStrux = true;
-		getDoc()->insertStrux(m_dposPaste,PTX_SectionTable,attrs,NULL);
-		m_dposPaste++;
+		insertStrux(PTX_SectionTable,attrs,NULL);
 	}	
 	return true;
 }
@@ -8535,8 +8523,7 @@ bool IE_Imp_RTF:: HandleAbiEndTable(void)
 		return true;
 	}
 
-	getDoc()->insertStrux(m_dposPaste,PTX_EndTable);
-	m_dposPaste++;	
+	insertStrux(PTX_EndTable);
 	m_pasteTableStack.pop((void**)(&pPaste));
 	delete pPaste;
 	return true;
@@ -8595,12 +8582,10 @@ bool IE_Imp_RTF::HandleAbiEndCell(void)
 	if(!pPaste->m_bHasPastedBlockStrux)
 	{
 		UT_DEBUGMSG(("Insert Block  -4 \n"));
-		getDoc()->insertStrux(m_dposPaste,PTX_Block);
-		m_dposPaste++;	
+	    insertStrux(PTX_Block);
 	}
 	UT_DEBUGMSG(("Insert EndCell -1!!!!!!!!!!!!!! \n"));
-	getDoc()->insertStrux(m_dposPaste,PTX_EndCell);
-	m_dposPaste++;	
+	insertStrux(PTX_EndCell);
 	pPaste->m_bHasPastedCellStrux = false;
 	pPaste->m_bHasPastedBlockStrux = false;
 	return true;
@@ -8661,13 +8646,74 @@ bool IE_Imp_RTF::HandleAbiCell(void)
 	UT_DEBUGMSG(("RTF_Import: Pos %d Paste: Cell props are: %s \n",m_dposPaste,sProps.c_str()));
 	const XML_Char * attrs[3] = {"props",NULL,NULL};
 	attrs[1] = sProps.c_str();
- 	getDoc()->insertStrux(m_dposPaste,PTX_SectionCell,attrs,NULL);
-	m_dposPaste++;	
+ 	insertStrux(PTX_SectionCell,attrs,NULL);
 	m_newParaFlagged = true;
 	m_bSectionHasPara = true;
 	return true;
 }
 
+/*!
+ * Handle context senstive inserts. Like inserting a table into a block
+ * Requires an extra block insert
+ * Insert into a hyperlink means the m_dposPate is additionally incremented
+ * to handle the extra end hyperlink run.
+ */
+bool IE_Imp_RTF::insertStrux(PTStruxType pts , const XML_Char ** attrs, const XML_Char ** props)
+{
+	bool bInHyperlink = false;
+	bool bDoExtraBlock = false;
+	bool res = false;
+	if(!m_bStruxInserted)
+	{
+		XAP_Frame * pFrame = XAP_App::getApp()->getLastFocussedFrame();
+		if(pFrame == NULL)
+		{
+			m_currentRTFState.m_destinationState = RTFStateStore::rdsSkip;
+			return true;
+		}
+		FV_View * pView = static_cast<FV_View*>(pFrame->getCurrentView());
+		if(pView == NULL)
+		{
+			m_currentRTFState.m_destinationState = RTFStateStore::rdsSkip;
+			return true;
+		}
+		if(pView->getHyperLinkRun(m_dposPaste) != NULL)
+		{
+			bInHyperlink = true;
+		}
+		fl_BlockLayout * pBL = pView->getBlockAtPosition(m_dposPaste);
+		if(pBL->getPosition() < m_dposPaste)
+		{
+			bDoExtraBlock = true;
+		}
+	}
+	if(bDoExtraBlock && (pts == PTX_SectionTable))
+	{
+		getDoc()->insertStrux(m_dposPaste,PTX_Block);
+		if(bInHyperlink)
+		{
+			m_dposPaste++;
+			bInHyperlink = false;
+		}
+	}
+	if(pts == PTX_SectionFrame)
+	{
+		pf_Frag_Strux * pfs = NULL;
+		res = getDoc()->insertStrux(m_dposPaste,pts,attrs,props,&pfs);
+		m_dposPaste = pfs->getPos()+1;
+		return res;
+	}
+	res = getDoc()->insertStrux(m_dposPaste,pts,attrs,props);
+	m_dposPaste++;
+	if(	bInHyperlink)
+	{
+		m_dposPaste++;
+	}
+	m_bStruxInserted = true;
+	return res;
+}
+
+		
 
 //////////////////////////////////////////////////////////////////////////////
 // AbiList table reader
@@ -9217,8 +9263,7 @@ bool IE_Imp_RTF::HandleBookmark (RTFBookmarkType type)
 		else
 		{
 			markPasteBlock();
-			getDoc()->insertStrux(m_dposPaste,PTX_Block);
-			m_dposPaste++;
+			insertStrux(PTX_Block);
 		}
 		m_bCellBlank = false;
 		m_bEndTableOpen = false;
@@ -9233,8 +9278,7 @@ bool IE_Imp_RTF::HandleBookmark (RTFBookmarkType type)
 		if(isBlockNeededForPasteTable())
 		{
 			markPasteBlock();
-			getDoc()->insertStrux(m_dposPaste,PTX_Block);
-			m_dposPaste++;
+			insertStrux(PTX_Block);
 		}
 		getDoc()->insertObject(m_dposPaste, PTO_Bookmark, props, NULL);
 		m_dposPaste++;

@@ -4375,7 +4375,18 @@ bool	fl_BlockLayout::_doInsertHyperlinkRun(PT_BlockOffset blockOffset)
 					pRun = pRun->getNextRun();
 				}
 			}
-
+			else
+			{
+				//
+				// clear out any hyperlinks
+				//
+				fp_Run * pRun = pNewRun->getNextRun();
+				while(pRun && (pRun->getType() != FPRUN_HYPERLINK && pRun->getType() != FPRUN_ENDOFPARAGRAPH))
+				{
+					pRun->setHyperlink(NULL);
+					pRun = pRun->getNextRun();
+				}
+			}
 			//_breakLineAfterRun(pNewRun);
 		}
 	}

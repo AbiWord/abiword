@@ -588,6 +588,7 @@ private:
 public:
 	bool TranslateKeywordID(RTF_KEYWORD_ID keywordID, 
 							UT_sint32 param, bool fParam);
+	bool insertStrux(PTStruxType pts , const XML_Char ** attrs=NULL, const XML_Char ** props=NULL);
 
 	/*  Parser stuff */
 	bool StandardKeywordParser(IE_Imp_RTFGroupParser *parser);
@@ -860,6 +861,7 @@ private:
 	bool                  m_bFieldRecognized;
 	UT_sint32             m_iIsInHeaderFooter;
 	bool                  m_bSectionHasPara;
+	bool                  m_bStruxInserted;
 };
 
 #endif /* IE_IMP_RTF_H */

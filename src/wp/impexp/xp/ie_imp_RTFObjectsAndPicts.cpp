@@ -910,9 +910,8 @@ void IE_Imp_RTF::HandleShape(void)
 		m_newParaFlagged = true;
 	}
 	else {
-		getDoc()->insertStrux(m_dposPaste, PTX_EndFrame);
+		insertStrux(PTX_EndFrame);
 		m_newParaFlagged = true;
-		m_dposPaste++;
 	}
 
 	delete parser;
@@ -991,12 +990,10 @@ void IE_Imp_RTF::HandleShapeText(RTFProps_FrameProps & frame)
 	}
 	else
 	{
-		getDoc()->insertStrux(m_dposPaste,PTX_SectionFrame,attribs,NULL);
-		m_dposPaste++;
+		insertStrux(PTX_SectionFrame,attribs,NULL);
 		UT_DEBUGMSG((" Insert Block at Frame \n"));
 		markPasteBlock();
-		getDoc()->insertStrux(m_dposPaste,PTX_Block);
-		m_dposPaste++;
+		insertStrux(PTX_Block);
 	}
 
 }

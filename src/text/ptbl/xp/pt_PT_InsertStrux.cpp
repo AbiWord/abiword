@@ -501,8 +501,34 @@ bool pt_PieceTable::_realInsertStrux(PT_DocPosition dpos,
 // This assert is to remind use to write the code to terminate
 // the hyperlink.
 //
-		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-		return false;
+		pf_Frag * pEndHype = _findNextHyperlink(pf);
+		PT_DocPosition posEnd = 0;
+		if(pEndHype)
+		{
+			posEnd = pEndHype->getPos();
+		}
+		//
+		// OK now insert a new end of hyperlink at pf
+		//
+		insertObject(dpos, PTO_Hyperlink,NULL,NULL);
+		m_fragments.cleanFrags();
+		dpos++;
+		if(posEnd > 0)
+		{
+			//
+			// Now delete the old endhyperlink.
+			//
+			pf_Frag * pfEnd = NULL;
+			UT_uint32 newOff = 0;
+			posEnd++; // from the insert
+			UT_uint32 offset = 0;
+			_deleteObjectWithNotify(posEnd,
+									static_cast<pf_Frag_Object*>(pEndHype),
+									offset,1,pfsContainer,&pfEnd,&newOff,true);
+		}
+		m_fragments.cleanFrags();
+		bFoundFrag = getFragFromPosition(dpos,&pf,&fragOffset);
+		UT_return_val_if_fail (bFoundFrag, false);
 	}	
 
 //
