@@ -2125,6 +2125,7 @@ UT_Error fileOpen(XAP_Frame * pFrame, const char * pNewFile, IEFileType ieft)
 			// the IEFileType here doesn't really matter since the file name is NULL
 			errorCode = pNewFrame->loadDocument(NULL, IEFT_Unknown);
 			if (!errorCode)
+				pNewFrame->updateZoom();
 				pNewFrame->show();
 			s_CouldNotLoadFileMessage(pNewFrame,pNewFile, errorCode);
 		}
@@ -2141,6 +2142,7 @@ UT_Error fileOpen(XAP_Frame * pFrame, const char * pNewFile, IEFileType ieft)
 	errorCode = pFrame->loadDocument(pNewFile, ieft);
 	if (!errorCode)
 	{
+		pFrame->updateZoom();
 		pFrame->show();
 	}
 	else
@@ -3232,6 +3234,7 @@ s_closeWindow (AV_View * pAV_View, EV_EditMethodCallData * pCallData,
 		{
 			// keep the app open with an empty document (in this frame)
 			pFrame->loadDocument(NULL, IEFT_Unknown);
+			pFrame->updateZoom();
 			pFrame->show();
 			return true;
 		}
