@@ -421,7 +421,7 @@ void AP_BeOSApp::pasteFromClipboard(PD_DocumentRange * pDocRange, UT_Bool)
 		UT_uint32 iLen = 0;
 		UT_Bool bResult = m_pClipboard->getClipboardData(AP_CLIPBOARD_RTF,(void**)&pData,&iLen);
 		UT_ASSERT(bResult);
-		iLen = MyMin(iLen,strlen(pData));
+		iLen = MyMin(iLen,strlen((const char *) pData));
 		UT_DEBUGMSG(("PasteFromClipboard: pasting %d bytes in RTF format.\n",iLen));
 		IE_Imp_RTF * pImpRTF = new IE_Imp_RTF(pDocRange->m_pDoc);
 		pImpRTF->pasteFromBuffer(pDocRange,pData,iLen);
@@ -435,7 +435,7 @@ void AP_BeOSApp::pasteFromClipboard(PD_DocumentRange * pDocRange, UT_Bool)
 		UT_uint32 iLen = 0;
 		UT_Bool bResult = m_pClipboard->getClipboardData(AP_CLIPBOARD_TEXTPLAIN_8BIT,(void**)&pData,&iLen);
 		UT_ASSERT(bResult);
-		iLen = MyMin(iLen,strlen(pData));
+		iLen = MyMin(iLen,strlen((const char *) pData));
 		UT_DEBUGMSG(("PasteFromClipboard: pasting %d bytes in TEXTPLAIN format.\n",iLen));
 		IE_Imp_Text * pImpText = new IE_Imp_Text(pDocRange->m_pDoc);
 		pImpText->pasteFromBuffer(pDocRange,pData,iLen);
