@@ -625,14 +625,8 @@ bool fl_TableLayout::bl_doclistener_insertCell(fl_ContainerLayout* pCell,
 																	  PL_StruxFmtHandle sfhNew))
 {
 	fl_ContainerLayout * pNewCL = NULL;
-	if(pCell == NULL)
-	{
-		pNewCL = append(sdh, pcrx->getIndexAP(),FL_CONTAINER_CELL);
-	}
-	else
-	{
-		pNewCL = insert(sdh,pCell,pcrx->getIndexAP(), FL_CONTAINER_CELL);
-	}
+	pNewCL = insert(sdh,pCell,pcrx->getIndexAP(), FL_CONTAINER_CELL);
+
 	
 		// Must call the bind function to complete the exchange of handles
 		// with the document (piece table) *** before *** anything tries

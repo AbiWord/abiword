@@ -75,8 +75,10 @@
 #	include "ap_CocoaDialog_MarkRevisions.h"
 #	include "ap_CocoaDialog_ListRevisions.h"
 #	include "ap_CocoaDialog_MergeCells.h"
+#	include "ap_CocoaDialog_SplitCells.h"
 #	include "ap_CocoaDialog_InsertTable.h"
 #	include "ap_CocoaDialog_FormatTable.h"
+#	include "ap_CocoaDialog_FormatFrame.h"
 #if 0
 #	include "ap_CocoaDialog_Download_File.h"
 #endif
@@ -133,7 +135,9 @@
 //PORT 	DeclareDialog(AP_DIALOG_ID_LIST_REVISIONS,	AP_CocoaDialog_ListRevisions)
 	DeclareDialog(AP_DIALOG_ID_INSERT_TABLE,		AP_CocoaDialog_InsertTable)
 	DeclareDialog(AP_DIALOG_ID_MERGE_CELLS,		AP_CocoaDialog_MergeCells)
+	DeclareDialog(AP_DIALOG_ID_SPLIT_CELLS,		AP_CocoaDialog_SplitCells)
 	DeclareDialog(AP_DIALOG_ID_FORMAT_TABLE,		AP_CocoaDialog_FormatTable)
+	DeclareDialog(AP_DIALOG_ID_FORMAT_FRAME,		AP_CocoaDialog_FormatFrame)
 	DeclareDialog(AP_DIALOG_ID_FORMAT_FOOTNOTES,		AP_CocoaDialog_FormatFootnotes)
 //PORT	 DeclareDialog(AP_DIALOG_ID_MAILMERGE,		AP_UnixDialog_MailMerge)
 #if 0

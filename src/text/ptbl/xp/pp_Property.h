@@ -140,6 +140,7 @@ typedef unsigned int tPropLevel;
 #define PP_LEVEL_OBJ   0x00000020
 #define PP_LEVEL_IMG   0x00000040
 #define PP_LEVEL_FIELD 0x00000080
+#define PP_LEVEL_FRAME 0x00000100
 
 class ABI_EXPORT PP_Property
 {

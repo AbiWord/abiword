@@ -218,6 +218,7 @@ BeginLayout(Main,0)
 		MenuItem(AP_MENU_ID_FMT_PARAGRAPH)
 		MenuItem(AP_MENU_ID_FMT_BULLETS)
 		MenuItem(AP_MENU_ID_FMT_DOCUMENT)
+		MenuItem(AP_MENU_ID_FMT_FRAME)
 #if 0 // someone code and turn this back on
 		MenuItem(AP_MENU_ID_FMT_BORDERS)
 #endif
@@ -325,9 +326,9 @@ BeginLayout(Main,0)
 
 		Separator()
 		MenuItem(AP_MENU_ID_TABLE_MERGE_CELLS)
+		MenuItem(AP_MENU_ID_TABLE_SPLIT_CELLS)
 #if 0
 // Not for 2.0
-		MenuItem(AP_MENU_ID_TABLE_SPLIT_CELLS)
 		MenuItem(AP_MENU_ID_TABLE_SPLIT_TABLE)
 #endif
 		MenuItem(AP_MENU_ID_TABLE_FORMAT)

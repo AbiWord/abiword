@@ -384,6 +384,7 @@ public:
 	void                queueResize(void);
 	UT_sint32           getYOfRow(UT_sint32 row);
 	fp_CellContainer *  getCellAtRowColumn(UT_sint32 row, UT_sint32 column);
+	fp_CellContainer *  getCellAtRowColumnLinear(UT_sint32 row, UT_sint32 column);
 	virtual fp_Container * getNextContainerInSection(void) const;
 	virtual fp_Container * getPrevContainerInSection(void) const;
 	fp_TableContainer * getMasterTable(void) const

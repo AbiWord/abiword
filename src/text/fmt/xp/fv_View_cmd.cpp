@@ -139,6 +139,306 @@ void FV_View::cmdCharMotion(bool bForward, UT_uint32 count)
 	notifyListeners(AV_CHG_MOTION);
 }
 
+
+/*!
+ * Split the merged cells located at the current point in the way specified
+ * by iSplitType
+  */
+bool FV_View::cmdSplitCells(AP_Dialog_SplitCells::SplitType iSplitType)
+{
+	PL_StruxDocHandle cellSDH,tableSDH,curSDH,endTableSDH;
+	PT_DocPosition posTable,posCell,posFirstInsert;
+	posFirstInsert = 0;
+	UT_sint32 iLeft,iRight,iTop,iBot;
+	UT_sint32 jLeft,jRight,jTop,jBot;
+	PT_DocPosition posCol = getPoint();
+	if(!isInTable(posCol))
+	{
+		return false;
+	}
+	getCellParams(posCol, &iLeft, &iRight,&iTop,&iBot);
+	UT_String sCellProps;
+	getCellFormat(posCol,sCellProps);
+//
+// Find the Row and column of the cell at the current point. The strategy
+// will be insert a new cell with the same (row/col depending on the split)
+// and to adjust the rest of the table past this point.
+//
+	UT_sint32 rowSpan = iBot - iTop;
+	UT_sint32 colSpan = iRight - iLeft;
+	bool bRes = m_pDoc->getStruxOfTypeFromPosition(posCol,PTX_SectionCell,&cellSDH);
+	bRes = m_pDoc->getStruxOfTypeFromPosition(posCol,PTX_SectionTable,&tableSDH);
+	UT_return_val_if_fail(bRes, false);
+
+	posTable = m_pDoc->getStruxPosition(tableSDH) + 1;
+	posCell = m_pDoc->getStruxPosition(cellSDH);
+//
+// Got all we need, now set things up to do the insert nicely
+//
+	// Signal PieceTable Change
+	_saveAndNotifyPieceTableChange();
+
+	// Turn off list updates
+
+	m_pDoc->disableListUpdates();
+	m_pDoc->beginUserAtomicGlob();
+	if (!isSelectionEmpty())
+	{
+		_clearSelection();
+	}
+	m_pDoc->setDontImmediatelyLayout(true);
+//
+// Now trigger a rebuild of the whole table by sending a changeStrux to the table strux
+// with a bogus line-type property. We'll restore it later.
+//
+	const char * pszTable[3] = {NULL,NULL,NULL};
+	pszTable[0] = "list-tag";
+	const char * szListTag = NULL;
+	UT_String sListTag;
+	UT_sint32 iListTag;
+	m_pDoc->getPropertyFromSDH(tableSDH,pszTable[0],&szListTag);
+	if(szListTag == NULL || *szListTag == '\0')
+	{
+		iListTag = 0;
+	}
+	else
+	{
+		iListTag = atoi(szListTag);
+		iListTag -= 1;
+	}
+	UT_String_sprintf(sListTag,"%d",iListTag);
+	pszTable[1] = sListTag.c_str();
+	UT_DEBUGMSG(("SEVIOR: Doing Table strux change of %s %s \n",pszTable[0],pszTable[1]));
+	m_pDoc->changeStruxFmt(PTC_AddFmt,posTable,posTable,NULL,pszTable,PTX_SectionTable);
+	UT_sint32 splitLeft,splitRight,splitTop,splitBot;
+	UT_sint32 newLeft,newRight,newTop,newBot;	
+	UT_sint32 numRows = 0;
+	UT_sint32 numCols = 0;
+	UT_sint32 i = 0;
+//
+// OK now insert the cell and do the update
+//
+	m_pDoc-> getRowsColsFromTableSDH(tableSDH, &numRows, &numCols);
+
+	if(iSplitType <= AP_Dialog_SplitCells::hori_right)
+	{
+//
+// This is similar to "insert column"
+//
+		if(iSplitType ==  AP_Dialog_SplitCells::hori_left)
+		{
+			splitLeft = iLeft;
+			splitRight = iLeft+1;
+		}
+		else if(iSplitType ==  AP_Dialog_SplitCells::hori_mid)
+		{
+			splitLeft = iLeft;
+			splitRight = iLeft + colSpan/2;
+		}
+		else if(iSplitType ==  AP_Dialog_SplitCells::hori_right)
+		{
+			splitLeft = iLeft;
+			splitRight = iRight -1;
+		}
+		splitTop = iTop;
+		splitBot = iBot;
+		newLeft = splitRight;
+		newRight = iRight;
+		newTop = iTop;
+		newBot = iBot;
+
+	}
+	else
+	{
+		if(iSplitType ==  AP_Dialog_SplitCells::vert_above)
+		{
+			newTop = iTop;
+			newBot = iTop +1;
+		}
+		else if(iSplitType ==  AP_Dialog_SplitCells::vert_mid)
+		{
+			newTop = iTop;
+			newBot = iTop + rowSpan/2;
+		}
+		else if(iSplitType ==  AP_Dialog_SplitCells::vert_below)
+		{
+			newTop = iTop;
+			newBot = iBot -1;
+		}
+//
+// we need to get the location of where to place this cell.
+//
+		splitLeft = iLeft;
+		splitRight = iRight;
+		newLeft = iLeft;
+		newRight = iRight;
+		splitTop = newBot;
+		splitBot = iBot;
+//
+// OK now we have to find the place to insert this. It should be the cell
+// immediately after (splitTop,splitLeft)
+//
+		jTop = splitTop;
+		jBot = jTop+1;
+		jLeft = splitRight;
+		if(jLeft >= numCols)
+		{
+			jLeft = 0;
+			jTop += 1;
+			jBot +=1;
+		}	
+		jRight = jLeft+1;
+		if(jTop >= numRows)
+		{
+//
+// Place right before endTable Strux
+//
+			endTableSDH = m_pDoc->getEndTableStruxFromTableSDH(tableSDH);
+			if(endTableSDH == NULL)
+			{
+				//
+				// Disaster! the table structure in the piecetable is screwed.
+				// we're totally stuffed now.
+				UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+				return false;
+			}
+			posCell = m_pDoc->getStruxPosition(endTableSDH);
+		}
+		else
+		{
+//
+// now we have to loop until we find a cell precisely at jLeft,jTop
+//
+			bool bFound = false;
+			while(!bFound)
+			{
+				curSDH = m_pDoc-> getCellSDHFromRowCol(tableSDH,jTop,jLeft);
+				if(curSDH == NULL)
+				{
+					endTableSDH = m_pDoc->getEndTableStruxFromTableSDH(tableSDH);
+					if(endTableSDH == NULL)
+					{
+						//
+						// Disaster! the table structure in the piecetable is screwed.
+						// we're totally stuffed now.
+						UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+						return false;
+					}
+					posCell = m_pDoc->getStruxPosition(endTableSDH);
+					bFound = true;
+				}
+				UT_sint32 kLeft,kRight,kTop,kBot;
+				PT_DocPosition posTmp = m_pDoc->getStruxPosition(curSDH)+1;
+				getCellParams(posTmp,&kLeft,&kRight,&kTop,&kBot);
+				if((kLeft == jLeft) && (kTop == jTop))
+				{
+					bFound = true;
+					posCell = m_pDoc->getStruxPosition(curSDH);
+				}
+				else
+				{
+					jLeft++;
+					jRight++;
+					if(jLeft >= numCols)
+					{
+						jLeft = 0;
+						jTop++;
+						jRight =1;
+						jBot++;
+					}
+					if(jTop >= numRows)
+					{
+						endTableSDH = m_pDoc->getEndTableStruxFromTableSDH(tableSDH);
+						if(endTableSDH == NULL)
+						{
+							//
+							// Disaster! the table structure in the piecetable is screwed.
+							// we're totally stuffed now.
+							UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+							return false;
+						}
+						posCell = m_pDoc->getStruxPosition(endTableSDH);
+						bFound = true;
+					}
+				}
+			}
+		}
+	}
+//
+// OK build the table properties
+//
+	UT_String sRowTop = "top-attach";
+	UT_String sRowBot = "bot-attach";
+	UT_String sColLeft = "left-attach";
+	UT_String sColRight = "right-attach";
+	UT_String sTop,sBot,sLeft,sRight;
+	UT_String_sprintf(sTop,"%d",splitTop);
+	UT_String_sprintf(sBot,"%d",splitBot);
+	UT_String_sprintf(sLeft,"%d",splitLeft);
+	UT_String_sprintf(sRight,"%d",splitRight);
+	UT_String_setProperty(sCellProps,sRowTop,sTop);
+	UT_String_setProperty(sCellProps,sRowBot,sBot);
+	UT_String_setProperty(sCellProps,sColLeft,sLeft);
+	UT_String_setProperty(sCellProps,sColRight,sRight);
+	UT_DEBUGMSG(("Cells props for new cell:\n  %s \n",sCellProps.c_str()));
+
+//
+// Insert the cell
+//
+	const XML_Char * atts[4] = {"props",NULL,NULL,NULL};
+	atts[1] = sCellProps.c_str();
+	bRes = m_pDoc->insertStrux(posCell,PTX_SectionCell,atts,NULL);
+	bRes = m_pDoc->insertStrux(posCell+1,PTX_Block);
+	posFirstInsert = posCell + 1;
+	bRes = m_pDoc->insertStrux(posCell+2,PTX_EndCell);
+
+// Changes the props of the new cell
+	UT_String_sprintf(sTop,"%d",newTop);
+	UT_String_sprintf(sBot,"%d",newBot);
+	UT_String_sprintf(sLeft,"%d",newLeft);
+	UT_String_sprintf(sRight,"%d",newRight);
+	UT_String_setProperty(sCellProps,sRowTop,sTop);
+	UT_String_setProperty(sCellProps,sRowBot,sBot);
+	UT_String_setProperty(sCellProps,sColLeft,sLeft);
+	UT_String_setProperty(sCellProps,sColRight,sRight);
+	posCell = m_pDoc->getStruxPosition(cellSDH)+1;
+	UT_DEBUGMSG(("New Cells props for old cell:\n  %s \n",sCellProps.c_str()));
+	atts[1] = sCellProps.c_str();
+	m_pDoc->changeStruxFmt(PTC_AddFmt,posCell,posCell,atts,NULL,PTX_SectionCell);
+	
+//
+// Now trigger a rebuild of the whole table by sending a changeStrux to the table strux
+// with the restored line-type property it has before.
+//
+	iListTag += 1;
+	UT_String_sprintf(sListTag,"%d",iListTag);
+	pszTable[1] = sListTag.c_str();
+	UT_DEBUGMSG(("SEVIOR: Doing Table strux change of %s %s \n",pszTable[0],pszTable[1]));
+	m_pDoc->changeStruxFmt(PTC_AddFmt,posTable,posTable,NULL,pszTable,PTX_SectionTable);
+//
+// OK finish everything off with the various parameters which allow the formatter to
+// be updated.
+//
+	m_pDoc->endUserAtomicGlob();
+	m_pDoc->setDontImmediatelyLayout(false);
+	_generalUpdate();
+
+
+	// restore updates and clean up dirty lists
+	m_pDoc->enableListUpdates();
+	m_pDoc->updateDirtyLists();
+
+	// Signal PieceTable Changes have finished
+	_restorePieceTableState();
+// Put the insertion point in a legal position
+//
+	setPoint(posFirstInsert);
+	notifyListeners(AV_CHG_MOTION);
+	_fixInsertionPointCoords();
+	_ensureInsertionPointOnScreen();
+	return true;
+}
+
 /*!
  * Merge the cells located at posSource with posDestination by copying the data from 
  * source to destination. Then deleting source and expanding destination into it's location
@@ -655,7 +955,7 @@ bool FV_View::cmdInsertCol(PT_DocPosition posCol, bool bBefore)
 	}
 	UT_String_sprintf(sListTag,"%d",iListTag);
 	pszTable[1] = sListTag.c_str();
-	UT_DEBUGMSG(("SEVIOR: Doing Table strux change of %s %s \n",pszTable[0],pszTable[1]));
+	UT_DEBUGMSG((" Doing Table strux change of %s %s \n",pszTable[0],pszTable[1]));
 	m_pDoc->changeStruxFmt(PTC_AddFmt,posTable,posTable,NULL,pszTable,PTX_SectionTable);
 //
 // OK loop through all the rows in this column and insert the entries in the specified

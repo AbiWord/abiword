@@ -41,6 +41,7 @@
 #include "ut_Script.h"
 #include "spell_manager.h"
 #include "ie_mailmerge.h"
+#include "fp_TableContainer.h"
 
 #ifdef _WIN32
 #include "ap_Win32App.h" 
@@ -1047,6 +1048,30 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_InTable)
 	if(pView->isInTable())
 		return EV_MIS_ZERO;
 
+    return EV_MIS_Gray;
+}
+
+Defun_EV_GetMenuItemState_Fn(ap_GetState_InTableMerged)
+{
+	ABIWORD_VIEW;
+	UT_ASSERT(pView);
+
+	if(pView->isInTable())
+	{
+		fp_CellContainer *  pCell = pView->getCellAtPos(pView->getPoint());
+		if(pCell == NULL)
+		{
+			return EV_MIS_Gray;
+		}
+		if(pCell->getRightAttach() > (pCell->getLeftAttach() + 1))
+		{
+			return EV_MIS_ZERO;
+		}
+		if(pCell->getBottomAttach() > (pCell->getTopAttach() + 1))
+		{
+			return EV_MIS_ZERO;
+		}
+	}
     return EV_MIS_Gray;
 }
 

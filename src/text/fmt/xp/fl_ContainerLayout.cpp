@@ -316,7 +316,13 @@ fl_ContainerLayout * fl_ContainerLayout::insert(PL_StruxDocHandle sdh, fl_Contai
 	case FL_CONTAINER_CELL:
 		pL = static_cast<fl_ContainerLayout *>(new fl_CellLayout(getDocLayout(),sdh, indexAP, this));
 		if (pPrev)
+		{
 			pPrev->_insertIntoList(pL);
+		}
+		else
+		{
+			_insertFirst(pL);
+		}
 		break;
 	case FL_CONTAINER_FRAME:
 	{
@@ -406,6 +412,27 @@ void fl_ContainerLayout::_insertIntoList(fl_ContainerLayout * pL)
 
 	if(pNext)
 		pNext->setPrev(pL);
+}
+
+
+/*! 
+   Inserts pL into the containment hierarchy at First Location;
+*/
+void fl_ContainerLayout::_insertFirst(fl_ContainerLayout * pL)
+{
+	if(m_pFirstL == NULL)
+	{
+		m_pFirstL = pL;
+		pL->setPrev(NULL);
+		pL->setNext(NULL);
+		m_pLastL = pL;
+		return;
+	}
+	fl_ContainerLayout * pOldFirst = m_pFirstL;
+	m_pFirstL = pL;
+	pL->setNext(pOldFirst);
+	pL->setPrev(NULL);
+	pOldFirst->setPrev(pL);
 }
 
 /*!

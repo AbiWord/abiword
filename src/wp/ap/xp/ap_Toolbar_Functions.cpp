@@ -43,7 +43,7 @@
 #include "ut_Script.h"
 #include "spell_manager.h"
 #include "ap_EditMethods.h"
-
+#include "fp_TableContainer.h"
 
 #define ABIWORD_VIEW  	FV_View * pView = static_cast<FV_View *>(pAV_View)
 
@@ -775,6 +775,30 @@ Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_Table)
   if(pView->isInTable())
     return EV_TIS_ZERO;
   
+  return EV_TIS_Gray;
+}
+
+Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_TableMerged)
+{
+  ABIWORD_VIEW;
+  UT_ASSERT(pView);
+  
+  if(pView->isInTable())
+  {
+	  fp_CellContainer *  pCell = pView->getCellAtPos(pView->getPoint());
+	  if(pCell == NULL)
+	  {
+		  return EV_TIS_Gray;
+	  }
+	  if(pCell->getRightAttach() > (pCell->getLeftAttach() + 1))
+	  {
+		  return EV_TIS_ZERO;
+	  }
+	  if(pCell->getBottomAttach() > (pCell->getTopAttach() + 1))
+	  {
+		  return EV_TIS_ZERO;
+	  }
+  }
   return EV_TIS_Gray;
 }
 

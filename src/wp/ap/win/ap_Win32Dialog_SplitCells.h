@@ -17,50 +17,50 @@
  * 02111-1307, USA.
  */
 
-#ifndef AP_WIN32DIALOG_FORMATFRAME_H
-#define AP_WIN32DIALOG_FORMATFRAME_H
+#ifndef AP_WIN32DIALOG_SPLITCELLS_H
+#define AP_WIN32DIALOG_SPLITCELLS_H
 
-#include "ap_Dialog_FormatFrame.h"
+#include "ap_Dialog_SplitCells.h"
 #include "xap_Frame.h"
-#include "xap_Win32PreviewWidget.h"
-#include "gr_Win32Graphics.h"
-#include "xap_Win32ColourButton.h"
+
 
 /*****************************************************************/
 
-class AP_Win32Dialog_FormatFrame: public AP_Dialog_FormatFrame
+class AP_Win32Dialog_SplitCells: public AP_Dialog_SplitCells
 {
 public:
-	AP_Win32Dialog_FormatFrame(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
-	virtual ~AP_Win32Dialog_FormatFrame(void);
+	AP_Win32Dialog_SplitCells(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
+	virtual ~AP_Win32Dialog_SplitCells(void);
 
 	virtual void			runModeless(XAP_Frame * pFrame);
 
 	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
 	
+	virtual BOOL			_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam);
+	static BOOL CALLBACK	s_dlgProc(HWND hWnd,UINT msg,WPARAM wParam,LPARAM lParam);
+	virtual BOOL 			_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam);
+
+	// callbacks can fire these events
 	virtual void			event_Close(void);
-	void					event_previewExposed(void);
-	virtual void            	setSensitivity(bool bsens);
-	virtual void            	destroy(void);
-	virtual void            	activate(void);
-	virtual void            	notifyActiveFrame(XAP_Frame * pFrame);
+	virtual void            setSensitivity(AP_Dialog_SplitCells::SplitType splitThis, bool bsens);
+	virtual void            destroy(void);
+	virtual void            activate(void);
+	virtual void            notifyActiveFrame(XAP_Frame * pFrame);
 	
 	HBITMAP 				_loadBitmap(HWND hWnd,UINT nId, char* pName, int x, int y, UT_RGBColor Color);
-	virtual BOOL			_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam);
-	virtual BOOL 			_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam);
-	static BOOL CALLBACK	s_dlgProc(HWND hWnd,UINT msg,WPARAM wParam,LPARAM lParam);
-	
-
+		
 protected:
-	HWND					m_hwndDlg;	//  dialog box Windows
-	HBITMAP					m_hBitmapBottom;
-	HBITMAP					m_hBitmapTop;
-	HBITMAP					m_hBitmapRight;
-	HBITMAP					m_hBitmapLeft;
-	XAP_Win32PreviewWidget*	m_pPreviewWidget;		 
-	XAP_Win32ColourButton	m_backgButton;
-	XAP_Win32ColourButton	m_borderButton;
+
+	HWND							m_hwndDlg;	//  dialog box Windows
+	HBITMAP						m_hBitmapLeft;
+	HBITMAP						m_hBitmapRight;
+	HBITMAP						m_hBitmapAbove;
+	HBITMAP						m_hBitmapBelow;
 	
+	typedef enum
+	{
+	    BUTTON_CLOSE
+	} ResponseId ;
 };
 
-#endif /* AP_WIN32DIALOG_FORMATTABLE_H */
+#endif /* AP_WIN32DIALOG_SPLITCELLS_H */

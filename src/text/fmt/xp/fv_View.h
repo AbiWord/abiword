@@ -37,6 +37,7 @@
 #include "ap_LeftRuler.h"
 #include "fv_FrameEdit.h"
 #include "fv_VisualDragText.h"
+#include "ap_Dialog_SplitCells.h"
 
 #define AUTO_SCROLL_MSECS	100
 
@@ -550,6 +551,8 @@ public:
 	bool                cmdDeleteTable(PT_DocPosition pos);
 	bool                cmdInsertRow(PT_DocPosition posTable, bool bBfore);
 	bool                cmdInsertCol(PT_DocPosition posTable, bool bBefore);
+	bool                cmdSplitCells(AP_Dialog_SplitCells::SplitType iSplitType);
+
 	bool                cmdMergeCells(PT_DocPosition posSource, PT_DocPosition posDestination);
 	bool                _MergeCells( PT_DocPosition posDestination,PT_DocPosition posSource, bool bBefore);
 	bool                getCellParams(PT_DocPosition posCol, UT_sint32 *iLeft, 
@@ -560,7 +563,8 @@ public:
 	bool				getCellBGColor(XML_Char * &color);
 	bool	            setTableFormat(const XML_Char * properties[]);
 	bool	            setTableFormat(PT_DocPosition pos,const XML_Char * properties[]);
-	
+	bool                getCellFormat(PT_DocPosition pos, UT_String & sCellProps);
+
 	UT_Error            cmdInsertTable(UT_sint32 numRows, UT_sint32 numCols, 
 									   const XML_Char * pPropsArray[]);
 	bool                _changeCellTo(PT_DocPosition posTable,UT_sint32 rowOld, 

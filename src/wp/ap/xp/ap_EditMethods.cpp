@@ -80,7 +80,9 @@
 #include "ap_Dialog_MarkRevisions.h"
 #include "ap_Dialog_ListRevisions.h"
 #include "ap_Dialog_MergeCells.h"
+#include "ap_Dialog_SplitCells.h"
 #include "ap_Dialog_FormatTable.h"
+#include "ap_Dialog_FormatFrame.h"
 #include "ap_Dialog_FormatFootnotes.h"
 #include "ap_Dialog_MailMerge.h"
 #include "fv_FrameEdit.h"
@@ -293,6 +295,7 @@ public:
 	static EV_EditMethod_Fn insertOgonekData;
 
 	static EV_EditMethod_Fn mergeCells;
+	static EV_EditMethod_Fn splitCells;
 	static EV_EditMethod_Fn formatTable;
 
 	static EV_EditMethod_Fn replaceChar;
@@ -1036,6 +1039,7 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(spellSuggest_7),		0,	""),
 	EV_EditMethod(NF(spellSuggest_8),		0,	""),
 	EV_EditMethod(NF(spellSuggest_9),		0,	""),
+	EV_EditMethod(NF(splitCells),           0,  ""),
 	EV_EditMethod(NF(style),				_D_,""),
 
 	// t
@@ -4962,6 +4966,44 @@ Defun1(mergeCells)
 	ABIWORD_VIEW;
 
 	s_doMergeCellsDlg(pView);
+	return true;
+}
+
+
+static bool s_doSplitCellsDlg(FV_View * pView)
+{
+	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pView->getParentData());
+	UT_ASSERT(pFrame);
+
+	pFrame->raise();
+
+	XAP_DialogFactory * pDialogFactory
+		= static_cast<XAP_DialogFactory *>(pFrame->getDialogFactory());
+
+	AP_Dialog_SplitCells * pDialog
+		= static_cast<AP_Dialog_SplitCells *>(pDialogFactory->requestDialog(AP_DIALOG_ID_SPLIT_CELLS));
+	UT_ASSERT(pDialog);
+	if (!pDialog)
+		return false;
+
+	if(pDialog->isRunning() == true)
+	{
+		pDialog->activate();
+	}
+	else
+	{
+		pDialog->runModeless(pFrame);
+	}
+	return true;
+}
+
+
+Defun1(splitCells)
+{
+	CHECK_FRAME;
+	ABIWORD_VIEW;
+
+	s_doSplitCellsDlg(pView);
 	return true;
 }
 
@@ -11727,6 +11769,28 @@ Defun(dlgFormatFrame)
 	CHECK_FRAME;
 	ABIWORD_VIEW;
 	UT_DEBUGMSG(("Format Frame \n"));
+	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pView->getParentData());
+	UT_ASSERT(pFrame);
+
+	pFrame->raise();
+
+	XAP_DialogFactory * pDialogFactory
+		= static_cast<XAP_DialogFactory *>(pFrame->getDialogFactory());
+
+	AP_Dialog_FormatFrame * pDialog
+		= static_cast<AP_Dialog_FormatFrame *>(pDialogFactory->requestDialog(AP_DIALOG_ID_FORMAT_FRAME));
+	UT_ASSERT(pDialog);
+	if (!pDialog)
+		return false;
+
+	if(pDialog->isRunning() == true)
+	{
+		pDialog->activate();
+	}
+	else
+	{
+		pDialog->runModeless(pFrame);
+	}
 	return true;
 }
 

@@ -1072,6 +1072,7 @@ void fp_CellContainer::drawLines(fp_TableContainer * pBroke,GR_Graphics * pG)
 	UT_sint32 iRight = col_x + m_iRight + offx;
 	UT_sint32 iTop = col_y + m_iTopY + offy;
 	UT_sint32 iBot = col_y + m_iBotY + offy;
+	xxx_UT_DEBUGMSG(("m_iBotY %d \n",m_iBotY));
 	m_bLinesDrawn = true;
 
 	if(pBroke != NULL)
@@ -2495,6 +2496,11 @@ static UT_sint32 compareCellPosBinary(const void * vX1, const void * vX2)
 	const fp_ContainerObject *pc = *(fp_ContainerObject **)(vX2);
 	const fp_CellContainer *pCell = static_cast<const fp_CellContainer *>(pc);
 
+	if((pCell->getTopAttach()) <= pt->y && (pCell->getBottomAttach() > pt->y)
+	   && (pCell->getLeftAttach() <= pt->x) && (pCell->getRightAttach() > pt->x))
+	{
+		return 0;
+	}
 	// compare cell's top and bottom first
 	if (pCell->getTopAttach() > pt->y)
 	{
@@ -2504,7 +2510,7 @@ static UT_sint32 compareCellPosBinary(const void * vX1, const void * vX2)
 	{
 		return 1;
 	}
-	// then compare cell's left and right next
+	// then compare cell's left position
 	if (pCell->getLeftAttach() > pt->x)
 	{
 		return -1;
@@ -2518,6 +2524,25 @@ static UT_sint32 compareCellPosBinary(const void * vX1, const void * vX2)
 }
 
 /*!
+ * Binary search failed. Do a simple Linear search instead
+ */
+fp_CellContainer * fp_TableContainer::getCellAtRowColumnLinear(UT_sint32 row, UT_sint32 col)
+{
+	UT_uint32 i = 0;
+	fp_CellContainer * pCell = NULL;
+	bool bFound = false;
+	for(i=0; (i<countCons()) && !bFound; i++)
+	{
+		pCell = static_cast<fp_CellContainer *>(getNthCon(i));
+		if((pCell->getTopAttach()) <= row && (pCell->getBottomAttach() > row)
+		   && (pCell->getLeftAttach() <= col) && (pCell->getRightAttach() > col))
+		{
+			return pCell;
+		}
+	}
+	return NULL;
+}
+/*!
  * Return the cell container at the specified row and column
  */
 fp_CellContainer * fp_TableContainer::getCellAtRowColumn(UT_sint32 row, UT_sint32 col)
@@ -2525,19 +2550,42 @@ fp_CellContainer * fp_TableContainer::getCellAtRowColumn(UT_sint32 row, UT_sint3
 	UT_Point pt;
 	pt.x = col;
 	pt.y = row;
-
-	UT_sint32 u = binarysearchCons(&pt, compareCellPosBinary);
+	fp_CellContainer * pSmall = NULL;
+	if((row >= getNumRows()) || (row <0))
+	{
+		return NULL;
+	}
+	if((col >= getNumCols()) || (col < 0))
+	{
+		return NULL;
+	}
+	UT_sint32 u =-1;
+	//
+	// Need to loop because locations with row spans > 1 may not be found if 
+	// the requested row is not the first row.
+	// 
+	while((u == -1) && (pt.y >= 0))
+	{
+		u = binarysearchCons(&pt, compareCellPosBinary);
+		if(u == -1)
+		{
+			pt.y--;
+		}
+	}
 	if (u != -1)
 	{
 		fp_CellContainer *pSmall = static_cast<fp_CellContainer *>(getNthCon(u));
-		if((pSmall->getTopAttach() > row) || (pSmall->getBottomAttach() < row)
-		   || (pSmall->getLeftAttach() > col) || (pSmall->getRightAttach() < col))
+		if((pSmall->getTopAttach() > row) || (pSmall->getBottomAttach() <= row)
+		   || (pSmall->getLeftAttach() > col) || (pSmall->getRightAttach() <= col))
 			{
-				return NULL;
+				xxx_UT_DEBUGMSG(("No cell found 1 at %d %d \n",row,col));
+				xxx_UT_DEBUGMSG(("Returned cell left %d right %d top %d bot %d pt.y %d \n",pSmall->getLeftAttach(),pSmall->getRightAttach(),pSmall->getTopAttach(),pSmall->getBottomAttach(),pt.y));
+				return getCellAtRowColumnLinear(row,col);
 			}
 		return pSmall;
 	}
-	return NULL;
+	xxx_UT_DEBUGMSG(("No cell found -2 at %d %d \n",row,col));
+	return getCellAtRowColumnLinear(row,col);
 }
 
 /* 

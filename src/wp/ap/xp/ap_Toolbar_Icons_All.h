@@ -47,6 +47,12 @@
 #   include "tb_MergeBelow.xpm"
 #   include "tb_MergeLeft.xpm"
 #   include "tb_MergeRight.xpm"
+#   include "tb_SplitAbove.xpm"
+#   include "tb_SplitVertMid.xpm"
+#   include "tb_SplitBelow.xpm"
+#   include "tb_SplitLeft.xpm"
+#   include "tb_SplitHoriMid.xpm"
+#   include "tb_SplitRight.xpm"
 #	include "tb_text_center.xpm"
 #	include "tb_text_justify.xpm"
 #	include "tb_text_align_left.xpm"
@@ -220,6 +226,14 @@
 	DefineToolbarIcon(tb_MergeBelow_xpm)
 	DefineToolbarIcon(tb_MergeLeft_xpm)
 	DefineToolbarIcon(tb_MergeRight_xpm)
+
+
+	DefineToolbarIcon(tb_SplitAbove_xpm)
+	DefineToolbarIcon(tb_SplitVertMid_xpm)
+	DefineToolbarIcon(tb_SplitBelow_xpm)
+	DefineToolbarIcon(tb_SplitLeft_xpm)
+	DefineToolbarIcon(tb_SplitHoriMid_xpm)
+	DefineToolbarIcon(tb_SplitRight_xpm)
 	
 	DefineToolbarIcon(tb_line_single_space_xpm)
 	DefineToolbarIcon(tb_line_middle_space_xpm)
