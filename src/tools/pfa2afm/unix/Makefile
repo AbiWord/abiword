@@ -21,6 +21,7 @@
 ABI_ROOT:=$(shell pwd)/../../..
 include $(ABI_ROOT)/src/config/abi_defs_wp.mk
 
+ABI_PEER:=/pfa2afm
 
 CSRCS= 	pfa2afm.c          \
 		splineutil.c       \
