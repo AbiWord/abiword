@@ -42,7 +42,11 @@
 
 /*
  * $Log$
+ * Revision 1.2  2003/01/25 03:16:05  hippietrail
+ * An UT_ICONV_INVALID fix which escaped the last commit.
+ *
  * Revision 1.1  2003/01/24 05:52:34  hippietrail
+ *
  * Refactored ispell code. Old ispell global variables had been put into
  * an allocated structure, a pointer to which was passed to many functions.
  * I have now made all such functions and variables private members of the
@@ -704,7 +708,7 @@ struct dent * ISpellChecker::ispell_lookup (ichar_t *s, int dotree)
 void ISpellChecker::alloc_ispell_struct()
 {
 	m_translate_in = 
-	m_translate_out = (UT_iconv_t)-1;
+	m_translate_out = UT_ICONV_INVALID;
 }
 
 void ISpellChecker::free_ispell_struct()
