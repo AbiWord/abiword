@@ -147,7 +147,7 @@ protected:
 	bool				m_bInSpan;
 	bool				m_bInTag;
 	bool				m_bInHyperlink;
-	bool                m_bInTable;
+	UT_sint32           m_iInTable;
 	bool                m_bInCell;
 	PT_AttrPropIndex	m_apiLastSpan;
     fd_Field *          m_pCurrentField;
@@ -172,11 +172,11 @@ void s_AbiWord_1_Listener::_closeSection(void)
 
 void s_AbiWord_1_Listener::_closeTable(void)
 {
-	if (!m_bInTable)
+	if (m_iInTable == 0)
 		return;
 
 	m_pie->write("</table>\n");
-	m_bInTable = false;
+	m_iInTable--;
 	return;
 }
 
@@ -708,7 +708,7 @@ bool s_AbiWord_1_Listener::populateStrux(PL_StruxDocHandle /*sdh*/,
             _closeHyperlink();
 			_closeBlock();
 			_openTag("table","",true,pcr->getIndexAP());
-			m_bInTable = true;
+			m_iInTable++;
 			return true;
 		}
 	case PTX_SectionCell:
