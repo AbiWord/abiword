@@ -299,7 +299,7 @@ void    fl_AutoNum::_getLabelstr( XML_Char labelStr[], UT_uint32 * insPoint,
 XML_Char * fl_AutoNum::getLabel(fl_Layout * pItem) const
 {
 
-	XML_Char label[100];
+	static XML_Char label[100];
 	UT_uint32  insPoint=0;
 	UT_uint32 depth;
 	depth = 0;
