@@ -18,6 +18,7 @@
  */
 
 #include <js.h>
+#include <string.h>
 
 #include "ap_UnixApp.h"
 #include "ap_UnixFrame.h"
@@ -44,27 +45,21 @@ int main(int argc, char ** argv)
 
 	{
 		int i;
+
 		for (i=1; i<argc; i++)
 		{
 			if (0 == strcmp(argv[i], "-script"))
 			{
 				i++;
-
+				
 				js_eval_file(pMyUnixApp->getInterp(), argv[i]);
 			}
 			else
 			{
-				if (argv[i][0] == '-')
-				{
-					// ignore any other options for now
-				}
-				else
-				{
-					pFirstUnixFrame->loadDocument(argv[i]);
-					break;	// for now we only load one file
-				}
+				break;
 			}
-		}	
+		}
+		pFirstUnixFrame->loadDocument(argv[i]);
 	}
 
 	// turn over control to gtk
