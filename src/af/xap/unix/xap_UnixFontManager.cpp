@@ -933,7 +933,7 @@ XAP_UnixFont * XAP_UnixFontManager::getDefaultFont(GR_Font::FontFamilyEnum f) co
 	xxx_UT_DEBUGMSG(("XAP_UnixFontManager::getDefaultFont\n"));
 
 	static bool fontInitted = false ;
-	static XAP_UnixFont m_f ;
+	static XAP_UnixFont m_f(this);
 
 	if ( !fontInitted )
 	{
@@ -955,7 +955,7 @@ XAP_UnixFont * XAP_UnixFontManager::getDefaultFont16Bit(void)
 	xxx_UT_DEBUGMSG(("XAP_UnixFontManager::getDefaultFont16Bit\n"));
 
 	static bool fontInitted = false;
-	static XAP_UnixFont m_f;
+	static XAP_UnixFont m_f(this);
 	
 	if (XAP_EncodingManager::get_instance()->isUnicodeLocale())
 	{
