@@ -1874,7 +1874,7 @@ UT_Bool _printDoc(AP_Frame * pFrame, FV_View * pView)
 	pDL->formatAll();
 
 	// Create the new view for the printer
-	FV_View* pV = new FV_View(NULL, pDL);	// TODO: fix first arg?
+	FV_View* pV = new FV_View(pWin32Frame, pDL);	// TODO: fix first arg?
 
 	// page range implementation
 	WORD nFromPage, nToPage;
@@ -2348,7 +2348,7 @@ UT_Bool _printDoc(AP_Frame * pFrame, FV_View * pView)
 		pFileNameOnly++;
 		
 	char *pSaveAsFile;
-	pSaveAsFile = (char *) malloc( (strlen(pFileNameOnly) + 4) * sizeof(char *) );
+	pSaveAsFile = new char[strlen(pFileNameOnly) + 4];
 	strcpy(pSaveAsFile, pFileNameOnly);
 	strcat(pSaveAsFile, ".ps");
 
@@ -2357,12 +2357,13 @@ UT_Bool _printDoc(AP_Frame * pFrame, FV_View * pView)
 	if(!pNewFile)
 	{
 		// User hit cancel
-		free(pSaveAsFile);
+		if(pSaveAsFile)
+			delete pSaveAsFile;
 		return UT_FALSE;
 	}
 
 	// create a new graphics for postscript
-	// TODO replace hardcoded AbiWord with variable from app
+	// TODO: replace hardcoded AbiWord with variable from app
 	PS_Graphics* ppG = new PS_Graphics(pNewFile, pTitle, "AbiWord");
 	UT_ASSERT(ppG);
 
@@ -2372,11 +2373,11 @@ UT_Bool _printDoc(AP_Frame * pFrame, FV_View * pView)
 	int nPagesInDoc = pDL->countPages();
 
 	// Create the new view for the printer
-	FV_View* pV = new FV_View(NULL, pDL);	// TODO: fix first arg?
+	FV_View* pV = new FV_View(pFrame, pDL);	// TODO: fix first arg?
 
 	dg_DrawArgs da;
 	da.pG = NULL;
-	// TODO -- really need actual page width/height for each page.
+	// TODO: really need actual page width/height for each page.
 	da.xoff = da.yoff = 0;
 	da.width = pDL->getWidth()/nPagesInDoc;
 	da.height = pDL->getHeight()/nPagesInDoc;
@@ -2384,18 +2385,15 @@ UT_Bool _printDoc(AP_Frame * pFrame, FV_View * pView)
 	ppG->startPrint();
 	for(int i = 0; i < nPagesInDoc; i++)	//page numbers are zero based
 	{
-		ppG->startPage(doc->getFilename(), i, TRUE,da.width, da.height);
+		ppG->startPage(pTitle, i, TRUE, da.width, da.height);
 		pV->draw(i, &da);
 	}
 	ppG->endPrint();
 
-	//char * printcommand = (char *) malloc( (strlen(pNewFile) +5) * sizeof(char*) );
-	//strcpy(printcommand, "lpr ");
-	//strcat(printcommand, pNewFile);
-	//system(printcommand);
-	
 	// Clean up
-	free(pSaveAsFile);
+	free(pNewFile);
+	if(pSaveAsFile)
+		delete pSaveAsFile;
 	if(pV)
 		delete pV;
 	if(ppG)
