@@ -43,7 +43,8 @@ AD_Document::AD_Document() :
 	m_szFilename(NULL),
 	m_szEncodingName(""), // Should this have a default? UTF-8, perhaps?
 	m_pIgnoreList(new UT_StringPtrMap(11)), // TODO do we need to auto-increase the bucket count, if the ignore list gets long?
-	m_lastSavedTime(time(NULL))
+	m_lastSavedTime(time(NULL)),
+	m_bPieceTableChanging(false)
 {
 	// 
 }
@@ -78,6 +79,7 @@ void AD_Document::ref(void)
 	m_iRefCount++;
 }
 
+
 void AD_Document::unref(void)
 {
 	UT_ASSERT(m_iRefCount > 0);
@@ -86,6 +88,12 @@ void AD_Document::unref(void)
 	{
 		delete this;
 	}
+}
+
+
+bool AD_Document::isPieceTableChanging(void)
+{
+        return m_bPieceTableChanging;
 }
 
 const char * AD_Document::getFilename(void) const

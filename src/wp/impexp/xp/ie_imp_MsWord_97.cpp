@@ -348,10 +348,12 @@ s_fieldFontForListStyle (MSWordListIdType id)
 	  return "Times New Roman";
 
 	case WLNF_BULLETS: // bullet list
+		UT_DEBUGMSG(("Fieldfont set to symbol \n"));
 	  return "Symbol";
 
 	case WLNF_ORDINAL: // ordinal
 	default:
+		UT_DEBUGMSG(("unknown list type %d field-font set to Times New Roman \n",id));
 	  return "Times New Roman";
 	}
 }

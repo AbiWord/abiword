@@ -1350,9 +1350,11 @@ static bool s_bFirstDrawDone = false;
 static void s_LoadingCursorCallback(UT_Worker * pTimer )
 {
 	UT_ASSERT(pTimer);
+	UT_DEBUGMSG(("Update Screen on load Frame %x \n",s_pLoadingFrame));
 	XAP_Frame * pFrame = s_pLoadingFrame;
 	if(pFrame == NULL)
 	{
+		s_bFirstDrawDone = false;
 		return;
 	}
 	const XAP_StringSet * pSS = pFrame->getApp()->getStringSet();
@@ -1376,7 +1378,10 @@ static void s_LoadingCursorCallback(UT_Worker * pTimer )
 			}
 			else
 			{
-				pView->updateScreen(true);
+				if(pView->getLayout()->countPages() > 1)
+				{
+					pView->updateScreen(true);
+				}
 			}
 			if(pView->getLayout()->countPages() >1)
 			{
@@ -1398,7 +1403,7 @@ static void s_LoadingCursorCallback(UT_Worker * pTimer )
 	else
 	{
 		UT_String msg =  pSS->getValue(XAP_STRING_ID_MSG_ImportingDoc);
-		pFrame->setStatusMessage ( static_cast<const XML_Char *>(msg.c_str()) );
+		pFrame->setStatusMessage ( static_cast<const XML_Char *>(msg.c_str()) );		s_bFirstDrawDone = false;
 	}
 }
 

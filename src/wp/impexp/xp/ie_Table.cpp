@@ -1007,12 +1007,11 @@ void ie_imp_table::writeTablePropsInDoc(void)
 		for(i=0; i< static_cast<UT_sint32>(m_vecCellX.getItemCount()); i++)
 		{
 			UT_sint32 iCellx = reinterpret_cast<UT_sint32>(m_vecCellX.getNthItem(i));
-			UT_DEBUGMSG(("final cellx import cellx %d iPrev %x \n",iCellx,iPrev));
+			xxx_UT_DEBUGMSG(("final cellx import cellx %d iPrev %x \n",iCellx,iPrev));
 			UT_sint32 iDiffCellx = iCellx - iPrev;
 			double dCellx = static_cast<double>(iDiffCellx)/1440.0 -dColSpace;
 			iPrev = iCellx;
 			UT_String sWidth = UT_formatDimensionString(DIM_IN,dCellx,NULL);
-			UT_DEBUGMSG(("sWidth is %s \n",sWidth.c_str()));
 			sColWidth += sWidth;
 			sColWidth += "/";
 		}

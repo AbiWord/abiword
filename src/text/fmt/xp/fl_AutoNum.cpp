@@ -430,7 +430,6 @@ void    fl_AutoNum::_getLabelstr( UT_UCSChar labelStr[], UT_uint32 * insPoint,
 			labelStr[(*insPoint)++] = CONV_TO_UCS leftDelim[i];
 		}
 	}
-
 	switch( m_List_Type)
 	{
 	case NUMBERED_LIST:

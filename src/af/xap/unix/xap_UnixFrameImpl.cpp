@@ -779,6 +779,7 @@ gint XAP_UnixFrameImpl::_fe::abi_expose_repaint(gpointer p)
 //
 // Grab our pointer so we can do useful stuff.
 //
+	UT_DEBUGMSG(("-----------------Doing Repaint----------------\n"));
 	UT_Rect localCopy;
 	XAP_UnixFrameImpl * pUnixFrameImpl = static_cast<XAP_UnixFrameImpl *>(p);
 	XAP_Frame* pFrame = pUnixFrameImpl->getFrame();
@@ -847,7 +848,7 @@ void XAP_UnixFrameImpl::_fe::destroy(GtkWidget * /*widget*/, gpointer /*data*/)
 
 void XAP_UnixFrameImpl::_nullUpdate() const
 {
-	for (UT_uint32 i = 0; (i < 5) && gtk_events_pending(); i++)
+   	for (UT_uint32 i = 0; (i < 5) && gtk_events_pending(); i++)
 		gtk_main_iteration ();
 }
 
@@ -867,13 +868,15 @@ void XAP_UnixFrameImpl::_initialize()
 	//
 	// Start background repaint
 	//
-	if(m_iAbiRepaintID == 0)
-		m_iAbiRepaintID = gtk_timeout_add(100,static_cast<GtkFunction>(XAP_UnixFrameImpl::_fe::abi_expose_repaint), static_cast<gpointer>(this));
-	else
-	{
-		gtk_timeout_remove(m_iAbiRepaintID);
-		m_iAbiRepaintID = gtk_timeout_add(100,static_cast<GtkFunction>(XAP_UnixFrameImpl::_fe::abi_expose_repaint), static_cast<gpointer>(this));
-	}
+#if 0
+	//	if(m_iAbiRepaintID == 0)
+	//	m_iAbiRepaintID = gtk_timeout_add(100,static_cast<GtkFunction>(XAP_UnixFrameImpl::_fe::abi_expose_repaint), static_cast<gpointer>(this));
+	//else
+	//{
+	//	gtk_timeout_remove(m_iAbiRepaintID);
+	//	m_iAbiRepaintID = gtk_timeout_add(100,static_cast<GtkFunction>(XAP_UnixFrameImpl::_fe::abi_expose_repaint), static_cast<gpointer>(this));
+	//}
+#endif
 }
 
 void XAP_UnixFrameImpl::_setCursor(GR_Graphics::Cursor c)

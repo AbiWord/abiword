@@ -87,7 +87,6 @@ PD_Document::PD_Document(XAP_App *pApp)
 	m_hashDataItems(11),
 	m_lastOpenedType(IEFT_Bogus), // used to be: IE_Imp::fileTypeForSuffix(".abw"))
     m_lastSavedAsType(IEFT_Bogus), // used to be: IE_Exp::fileTypeForSuffix(".abw")
-	m_bPieceTableChanging(false),
 	m_bDoingPaste(false),
 	m_bAllowInsertPointChange(true),
 	m_bRedrawHappenning(false),
@@ -266,6 +265,7 @@ void PD_Document::setMailMergeField(const UT_String & key,
 
 //////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////
+
 
 UT_Error PD_Document::importFile(const char * szFilename, int ieft,
 				 bool markClean)
@@ -736,7 +736,7 @@ bool PD_Document::appendStrux(PTStruxType pts, const XML_Char ** attributes)
 // Update frames during load.
 //
 	XAP_Frame * pFrame = m_pApp->getLastFocussedFrame();
-	if(pFrame)
+	if(pFrame )
 	{
 		pFrame->nullUpdate();
 	}
@@ -3141,21 +3141,16 @@ void PD_Document::notifyPieceTableChangeStart(void)
 	m_iVDLastPos = 0;
 }
 
-void PD_Document::invalidateCache(void)
-{
-	m_pVDBl = NULL;
-	m_pVDRun = NULL;
-	m_iVDLastPos = 0;
-}
-
 void PD_Document::notifyPieceTableChangeEnd(void)
 {
         m_bPieceTableChanging = false;
 }
 
-bool PD_Document::isPieceTableChanging(void)
+void PD_Document::invalidateCache(void)
 {
-        return m_bPieceTableChanging;
+	m_pVDBl = NULL;
+	m_pVDRun = NULL;
+	m_iVDLastPos = 0;
 }
 
 ////////////////////////////////////////////////////////////////

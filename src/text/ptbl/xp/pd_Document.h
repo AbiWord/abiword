@@ -348,9 +348,6 @@ public:
 	void					setDontChangeInsPoint(void);
 	void					allowChangeInsPoint(void);
 	bool					getAllowChangeInsPoint(void) const;
-	bool					isPieceTableChanging(void);
-	void					notifyPieceTableChangeStart(void);
-	void					notifyPieceTableChangeEnd(void);
 	// Footnote functions
 	bool                    isFootnoteAtPos(PT_DocPosition pos);
 	bool                    isEndFootnoteAtPos(PT_DocPosition pos);
@@ -415,6 +412,8 @@ public:
 	UT_Vector &             getRevisions() {return m_vRevisions;}
 	UT_uint32               getHighestRevisionId() const;
 	const PD_Revision *     getHighestRevision() const;
+	void					notifyPieceTableChangeStart(void);
+	void					notifyPieceTableChangeEnd(void);
 
 
 
@@ -498,7 +497,6 @@ private:
 	IEFileType				m_lastOpenedType;
 	IEFileType				m_lastSavedAsType;
 	XAP_App *				m_pApp;
-	bool					m_bPieceTableChanging;
 	bool					m_bDoingPaste;
 	bool					m_bAllowInsertPointChange;
 	bool                    m_bRedrawHappenning;

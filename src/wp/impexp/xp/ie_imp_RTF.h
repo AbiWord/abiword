@@ -456,6 +456,18 @@ typedef struct doc_prop
 */
 
 
+// 
+// Little class to be used for tracking pasted table state.
+//
+class ABI_EXPORT ABI_Paste_Table
+{
+public:
+	ABI_Paste_Table(void);
+    virtual ~ABI_Paste_Table(void);
+	bool                  m_bHasPastedTableStrux;
+	bool                  m_bHasPastedCellStrux;
+	UT_sint32             m_iRowNumberAtPaste;
+};
 
 // The importer/reader for Rich Text Format files
 
@@ -728,6 +740,7 @@ private:
 	UT_String             m_hyperlinkBase;
 	UT_uint32             m_iHyperlinkOpen;
 	bool                  m_bBidiDocument;
+	UT_Stack              m_pasteTableStack;
 };
 
 #endif /* IE_IMP_RTF_H */

@@ -3055,7 +3055,7 @@ bool fp_FieldRun::_setValue(UT_UCSChar *p_new_value)
 
 		}
 	}
-	xxx_UT_DEBUGMSG(("fp_FieldRun::_setValue: value has not changed\n"));
+	xxx_UT_DEBUGMSG(("fp_FieldRun::_setValue: value has not changed [0] %x \n", m_sFieldValue[0]));
 
 	return false;
 }

@@ -84,6 +84,7 @@ public:
    
 	void					setEncodingName(const char * szEncodingName);
 	const char *			getEncodingName() const;
+	bool					isPieceTableChanging(void);
 
 protected:
 	virtual ~AD_Document();		//  Use unref() instead.
@@ -94,6 +95,7 @@ protected:
 
 	UT_StringPtrMap *		m_pIgnoreList;
 	time_t          m_lastSavedTime;
+	bool			m_bPieceTableChanging;
 };
 
 

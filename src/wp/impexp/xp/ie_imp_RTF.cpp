@@ -453,6 +453,21 @@ bool RTF_msword97_level::ParseLevelText(const UT_String & szLevelText,const UT_S
 	}
 	return true;
 }
+
+///////////////////////////////
+// Paste Table class
+///////////////////////////////
+ABI_Paste_Table::ABI_Paste_Table(void):
+	m_bHasPastedTableStrux(false),
+	m_bHasPastedCellStrux(false),
+	m_iRowNumberAtPaste(0)
+{
+}
+
+ABI_Paste_Table::~ABI_Paste_Table(void)
+{
+}
+
 /////////////////////////////////////////////////////////////////////////////////////////
 
 RTF_msword97_list::RTF_msword97_list(IE_Imp_RTF * pie_rtf)
@@ -1280,8 +1295,6 @@ IE_Imp_RTF::IE_Imp_RTF(PD_Document * pDocument)
 	m_bParaWrittenForSection(false),
 	m_bCellBlank(true),
 	m_bEndTableOpen(false),
-	m_iHyperlinkOpen(0),
-	m_bBidiDocument(false),
 	m_pPasteBuffer(NULL),
 	m_lenPasteBuffer(0),
 	m_pCurrentCharInPasteBuffer(NULL),
@@ -1300,7 +1313,10 @@ IE_Imp_RTF::IE_Imp_RTF(PD_Document * pDocument)
 	m_szFileDirName(NULL),
 	m_bAppendAnyway(false),
 	m_bInFootnote(false),
-	m_iDepthAtFootnote(0)
+	m_iDepthAtFootnote(0),
+	m_iLastFootnoteId(0),
+	m_iHyperlinkOpen(0),
+	m_bBidiDocument(false)
 {
 	if(m_vecAbiListTable.getItemCount() != 0)
 	{
@@ -1308,6 +1324,7 @@ IE_Imp_RTF::IE_Imp_RTF(PD_Document * pDocument)
 	}
 	m_mbtowc.setInCharset(XAP_EncodingManager::get_instance()->getNativeEncodingName());
 	m_hyperlinkBase.clear();
+	m_pasteTableStack.push(NULL);
 }
 
 
@@ -1321,6 +1338,28 @@ IE_Imp_RTF::~IE_Imp_RTF()
 		delete pItem;
 	}
 
+//
+// Close off pasted lists
+//
+	while(m_pasteTableStack.getDepth() > 0)
+	{
+		ABI_Paste_Table * pPaste = NULL;
+		m_pasteTableStack.pop((void**)(&pPaste));
+		if(pPaste != NULL)
+		{
+			if(pPaste->m_bHasPastedCellStrux)
+			{
+				getDoc()->insertStrux(m_dposPaste,PTX_EndCell);
+				m_dposPaste++;	
+			}
+			if(pPaste->m_bHasPastedTableStrux)
+			{
+				getDoc()->insertStrux(m_dposPaste,PTX_EndTable);
+				m_dposPaste++;	
+			}
+			delete pPaste;
+		}
+	}
 	// and the font table (can't use the macro as we allow NULLs in the vector
 	UT_sint32 size = m_fontTable.getItemCount();
 	UT_sint32 i =0;
@@ -7525,15 +7564,18 @@ bool IE_Imp_RTF::HandleAbiTable(void)
 		if (!ReadCharFromFile(&ch))
 			return false;
 	}
+	ABI_Paste_Table * pPaste = new ABI_Paste_Table();
+	m_pasteTableStack.push(pPaste);
+	pPaste->m_bHasPastedTableStrux = true;
+	pPaste->m_iRowNumberAtPaste = 0;
+	
 	UT_DEBUGMSG(("RTF_Import: Paste: Tables props are: %s \n",sProps.c_str()));
 	const XML_Char * attrs[3] = {"props",NULL,NULL};
 	attrs[1] = sProps.c_str();
 //
 // insert a block to terminate the text before this.
 //
-	PT_DocPosition pointBreak = m_dposPaste;
-	PT_DocPosition pointTable = 0;
-	bool bSuccess = getDoc()->insertStrux(m_dposPaste,PTX_Block);
+	getDoc()->insertStrux(m_dposPaste,PTX_Block);
 //
 // Insert the table strux at the same spot. This will make the table link correctly in the
 // middle of the broken text.
@@ -7544,15 +7586,30 @@ bool IE_Imp_RTF::HandleAbiTable(void)
 
 bool IE_Imp_RTF:: HandleAbiEndTable(void)
 {
+	ABI_Paste_Table * pPaste = NULL;
+	m_pasteTableStack.viewTop((void**)(&pPaste));
+	if(pPaste == NULL)
+	{
+		return false;
+	}
 	getDoc()->insertStrux(m_dposPaste,PTX_EndTable);
 	m_dposPaste++;	
+	m_pasteTableStack.pop((void**)(&pPaste));
+	delete pPaste;
 	return true;
 }
 
 bool IE_Imp_RTF:: HandleAbiEndCell(void)
 {
+	ABI_Paste_Table * pPaste = NULL;
+	m_pasteTableStack.viewTop((void**)(&pPaste));
+	if(pPaste == NULL)
+	{
+		return false;
+	}
 	getDoc()->insertStrux(m_dposPaste,PTX_EndCell);
 	m_dposPaste++;	
+	pPaste->m_bHasPastedCellStrux = false;
 	return true;
 }
 
@@ -7573,6 +7630,13 @@ bool IE_Imp_RTF::HandleAbiCell(void)
 		if (!ReadCharFromFile(&ch))
 			return false;
 	}
+	ABI_Paste_Table * pPaste = NULL;
+	m_pasteTableStack.viewTop((void**)(&pPaste));
+	if(pPaste == NULL)
+	{
+		return false;
+	}
+	pPaste->m_bHasPastedCellStrux = true;
 	UT_DEBUGMSG(("RTF_Import: Paste: Cell props are: %s \n",sProps.c_str()));
 	const XML_Char * attrs[3] = {"props",NULL,NULL};
 	attrs[1] = sProps.c_str();

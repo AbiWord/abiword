@@ -1794,6 +1794,10 @@ void s_RTF_ListenerWriteDoc::_export_AbiWord_Table_props(PT_AttrPropIndex api)
 		sPropVal= pszBackgroundColor;
 		UT_String_setProperty(sTableProps,sProp,sPropVal);
 	}
+	if(sTableProps.size() == 0)
+	{
+		sTableProps += " ";
+	}
 	UT_DEBUGMSG(("Table props are %s \n",sTableProps.c_str()));
 	m_pie->_rtf_keyword("abitableprops ",sTableProps.c_str());
 

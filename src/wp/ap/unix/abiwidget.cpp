@@ -409,7 +409,10 @@ static gint s_abi_widget_load_file(gpointer p)
   AbiWidget * abi = (AbiWidget *) p;
 
   if(!abi->priv->m_bMappedToScreen)
+  {
 	abi_widget_map_to_screen(abi);
+	return TRUE;
+  }
   if(abi->priv->m_bPendingFile)
   {
 	char * pszFile = UT_strdup(abi->priv->m_szFilename);

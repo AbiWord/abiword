@@ -405,7 +405,11 @@ static void autoSaveCallback(UT_Worker *wkr)
 {
 	UT_DEBUGMSG(("Autosaving doc...\n"));
 	XAP_Frame *me = static_cast<XAP_Frame *> (wkr->getInstanceData());
-
+	AD_Document * pDoc = me->getCurrentDoc();
+	if(pDoc && pDoc->isPieceTableChanging())
+	{
+		UT_DEBUGMSG(("PieceTable is changing no backup made \n"));
+	}
 	if (me->isDirty())
 	{
 		UT_Error error = me->backup();
