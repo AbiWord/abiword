@@ -1501,7 +1501,18 @@ void fl_TOCLayout::_insertTOCContainer( fp_TOCContainer * pNewTOC)
 			else
 			{
 				pPrevCon = pPrevL->getLastContainer();
-				pUpCon = pPrevCon->getContainer();
+				if(pPrevCon)
+				{
+					pUpCon = pPrevCon->getContainer();
+				}
+				else if(pPrevL->getPrev() == NULL)
+				{
+					pUpCon = myContainingLayout()->getFirstContainer();
+				}
+				else
+				{
+					pUpCon = myContainingLayout()->getFirstContainer();
+				}
 			}
 		}
 		else
