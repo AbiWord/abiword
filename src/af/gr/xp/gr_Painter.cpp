@@ -35,16 +35,16 @@ GR_Painter::~GR_Painter ()
 	DELETEP(m_pCaretDisabler);
 }
 
-void GR_Painter::drawLine(UT_sint32 x, UT_sint32 y, UT_sint32 w, UT_sint32 h)
+void GR_Painter::drawLine(UT_sint32 x1, UT_sint32 y1, UT_sint32 x2, UT_sint32 y2)
 {
-	m_pGr->drawLine (x, y, w, h);
+	m_pGr->drawLine (x1, y1, x2, y2);
 }
 
 #if XAP_DONTUSE_XOR
 #else
-void GR_Painter::xorLine(UT_sint32 x, UT_sint32 y, UT_sint32 w, UT_sint32 h)
+void GR_Painter::xorLine(UT_sint32 x1, UT_sint32 y1, UT_sint32 x2, UT_sint32 y2)
 {
-	m_pGr->xorLine (x, y, w, h);
+	m_pGr->xorLine (x1, y1, x2, y2);
 }
 
 void GR_Painter::xorRect(UT_sint32 x, UT_sint32 y, UT_sint32 w, UT_sint32 h)
@@ -142,4 +142,3 @@ GR_Image * GR_Painter::genImageFromRectangle(const UT_Rect & r)
 {
 	return m_pGr->genImageFromRectangle(r);
 }
-

@@ -667,10 +667,10 @@ class ABI_EXPORT GR_Graphics
 							   const char* pszFontSize) = 0;
 
 	// only called by GR_Painter
-	virtual void drawLine(UT_sint32 x, UT_sint32 y, UT_sint32 w, UT_sint32 h) = 0;
+	virtual void drawLine(UT_sint32 x1, UT_sint32 y1, UT_sint32 x2, UT_sint32 y2) = 0;
 #if XAP_DONTUSE_XOR
 #else
-	virtual void xorLine(UT_sint32 x, UT_sint32 y, UT_sint32 w, UT_sint32 h) = 0;
+	virtual void xorLine(UT_sint32 x1, UT_sint32 y1, UT_sint32 x2, UT_sint32 y2) = 0;
 #endif
 	virtual void invertRect(const UT_Rect* pRect) = 0;
 #if XAP_DONTUSE_XOR
