@@ -34,10 +34,12 @@ public:
 	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
 
 	virtual void			runModeless(XAP_Frame * pFrame);
+	virtual void			activate();
+	virtual void			destroy();
 
 	// public so callbacks can access them
-   	GtkWidget *				targetList;
-	GtkWidget *				targetEntry;
+   	PtWidget_t *				targetList;
+	PtWidget_t *				targetEntry;
 
 protected:
 

@@ -17,13 +17,11 @@
  * 02111-1307, USA.
  */
 
-#include <gtk/gtk.h>
 #include <stdlib.h>
 #include <string.h>
 #include "ut_string.h"
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
-#include "ut_dialogHelper.h"
 
 #include "xap_Dialog_Id.h"
 #include "xap_QNXApp.h"
@@ -46,18 +44,20 @@ AP_QNXDialog_Goto::AP_QNXDialog_Goto(XAP_DialogFactory * pDlgFactory,
 									   XAP_Dialog_Id id)
 	: AP_Dialog_Goto(pDlgFactory,id)
 {
-
+#if 0
 	m_gotoString = NULL;
 	m_replaceString = NULL;
     m_matchCase = UT_TRUE;
+#endif
 }
 
 AP_QNXDialog_Goto::~AP_QNXDialog_Goto(void)
 {
 }
 
-static void s_gotoCallback(GtkWidget * widget, AP_QNXDialog_Goto * repDialog)
+static void s_gotoCallback(PtWidget_t * widget, AP_QNXDialog_Goto * repDialog)
 {
+#if 0
 	UT_ASSERT(widget);
 	UT_ASSERT(repDialog);
 
@@ -76,36 +76,48 @@ static void s_gotoCallback(GtkWidget * widget, AP_QNXDialog_Goto * repDialog)
 	repDialog->findNext();
 
 	FREEP(findString);
+#endif
 }
 
-static void s_closeCallback(GtkWidget * object, GtkWidget * data)
+static void s_closeCallback(PtWidget_t * object, PtWidget_t * data)
 {
+#if 0
 	UT_ASSERT(object);
 	gtk_main_quit();
+#endif
 }
 
-static void s_delete_clicked(GtkWidget * widget, gpointer data, gpointer extra)
+static void s_delete_clicked(PtWidget_t * widget, void * data, void * extra)
 {
+#if 0
 	// just quit out of the dialog
 	gtk_main_quit();
+#endif
+}
+
+void AP_QNXDialog_Goto::activate() {
+}
+
+void AP_QNXDialog_Goto::destroy() {
 }
 
 void AP_QNXDialog_Goto::runModeless(XAP_Frame * pFrame)
 {
-	GtkWidget * topLevel;
-	GtkWidget * vbox;
+#if 0
+	PtWidget_t * topLevel;
+	PtWidget_t * vbox;
 	
-	GtkWidget * targetList;
-	GtkWidget * findLabel;
-	GtkWidget * toggleBox;
-	GtkWidget * replaceBox;
-	GtkWidget * replaceLabel;
-	GtkWidget * separator;
-	GtkWidget * buttonBox;
-	GtkWidget * findButton;
-	GtkWidget * replaceButton;
-	GtkWidget * replaceAllButton;
-	GtkWidget * cancelButton;
+	PtWidget_t * targetList;
+	PtWidget_t * findLabel;
+	PtWidget_t * toggleBox;
+	PtWidget_t * replaceBox;
+	PtWidget_t * replaceLabel;
+	PtWidget_t * separator;
+	PtWidget_t * buttonBox;
+	PtWidget_t * findButton;
+	PtWidget_t * replaceButton;
+	PtWidget_t * replaceAllButton;
+	PtWidget_t * cancelButton;
 
 	// create a top level window, the actual dialog
 	topLevel = gtk_window_new(GTK_WINDOW_TOPLEVEL);
@@ -181,7 +193,7 @@ void AP_QNXDialog_Goto::runModeless(XAP_Frame * pFrame)
 	gtk_signal_connect(GTK_OBJECT(matchCaseCheck),
 					   "toggled",
 					   GTK_SIGNAL_FUNC(MatchCaseCallback),
-					   (gpointer) this);
+					   (void *) this);
 
 	if (m_id == AP_DIALOG_ID_REPLACE)
 	{
@@ -280,10 +292,10 @@ void AP_QNXDialog_Goto::runModeless(XAP_Frame * pFrame)
 	}
 	GTK_WIDGET_SET_FLAGS(cancelButton, GTK_CAN_DEFAULT);
 	
-	// get top level window and it's GtkWidget *
+	// get top level window and it's PtWidget_t *
 	XAP_QNXFrame * frame = static_cast<XAP_QNXFrame *>(pFrame);
 	UT_ASSERT(frame);
-	GtkWidget * parent = frame->getTopLevelWindow();
+	PtWidget_t * parent = frame->getTopLevelWindow();
 	UT_ASSERT(parent);
 	// center it
     centerDialog(parent, topLevel);
@@ -309,4 +321,5 @@ void AP_QNXDialog_Goto::runModeless(XAP_Frame * pFrame)
 	// clean up
 	gtk_widget_destroy(topLevel);
 
+#endif
 }
