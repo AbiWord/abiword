@@ -522,6 +522,7 @@ private:
 #ifdef HTML_TABLES_SUPPORTED
 	void	_openTable (PT_AttrPropIndex api);
 	void	_closeTable ();
+	void	_openRow (PT_AttrPropIndex api);
 	void	_openCell (PT_AttrPropIndex api);
 	void	_closeCell ();
 #endif
@@ -601,6 +602,7 @@ private:
 	void			tagOpenBroken  (const UT_UTF8String & content);
 	void			tagCloseBroken (const UT_UTF8String & content);
 	UT_uint32		tagTop ();
+	void			tagPop ();
 	void			tagPI (const char * target, const UT_UTF8String & content);
 	void			tagComment (const UT_UTF8String & content);
 	void			tagCommentOpen ();
@@ -907,6 +909,48 @@ UT_uint32 s_HTML_Listener::tagTop ()
 	void * vptr = 0;
 	if (m_tagStack.viewTop (&vptr)) return reinterpret_cast<UT_uint32>(vptr);
 	return 0;
+}
+
+void s_HTML_Listener::tagPop ()
+{
+	switch (tagTop ())
+		{
+		case TT_TD:
+			{
+				m_utf8_1 = "td";
+				tagClose (TT_TD, m_utf8_1);
+			}
+			break;
+		case TT_TR:
+			{
+				m_utf8_1 = "tr";
+				tagClose (TT_TR, m_utf8_1);
+			}
+			break;
+		case TT_TBODY:
+			{
+				m_utf8_1 = "tbody";
+				tagClose (TT_TBODY, m_utf8_1);
+			}
+			break;
+		case TT_TABLE:
+			{
+				m_utf8_1 = "table";
+				tagClose (TT_TABLE, m_utf8_1);
+			}
+			break;
+		case TT_DIV:
+			{
+				m_utf8_1 = "div";
+				tagClose (TT_DIV, m_utf8_1);
+			}
+			break;
+		default:
+			{
+				UT_DEBUGMSG(("tagPop: unhandled tag closure!\n"));
+			}
+			break;
+		}
 }
 
 void s_HTML_Listener::tagPI (const char * target, const UT_UTF8String & content)
@@ -1292,6 +1336,11 @@ void s_HTML_Listener::_outputBegin (PT_AttrPropIndex api)
 
 void s_HTML_Listener::_outputEnd ()
 {
+	if (m_bInBlock) _closeTag ();
+
+	while (tagTop () != TT_BODY) // hmm...
+		tagPop ();
+
 	if (get_PHTML ())
 		{
 			m_utf8_1 = "\r\n  include($DOCUMENT_ROOT.'/x-page-end.php');\r\n ";
@@ -2071,7 +2120,7 @@ void s_HTML_Listener::listPopToDepth (UT_uint16 depth)
 
 void s_HTML_Listener::_openTag (PT_AttrPropIndex api, PL_StruxDocHandle sdh)
 {
-	if (m_bFirstWrite) _outputBegin (api);
+	if (m_bFirstWrite) _openSection (api);
 
 	if (!m_bInSection) return;
 
@@ -2561,7 +2610,7 @@ void s_HTML_Listener::_closeTag (void)
 
 void s_HTML_Listener::_openSpan (PT_AttrPropIndex api)
 {
-	if (m_bFirstWrite) _outputBegin (api);
+	if (m_bFirstWrite) _openTag (api, 0);
 
 	if (!m_bInBlock) return;
 
@@ -2875,9 +2924,11 @@ void s_HTML_Listener::_fillColWidthsVector(void)
 
 void s_HTML_Listener::_openTable (PT_AttrPropIndex api)
 {
-	if (m_bFirstWrite) _outputBegin (api);
+	if (m_bFirstWrite) _openSection (api);
 
 	if (!m_bInSection) return;
+
+	if (m_bInBlock) _closeTag ();
 
 	const PP_AttrProp * pAP = NULL;
 	bool bHaveProp = m_pDocument->getAttrProp (api,&pAP);
@@ -3131,9 +3182,25 @@ void s_HTML_Listener::_setCellWidthInches(void)
 	m_dCellWidthInches = tot;
 }
 
+void s_HTML_Listener::_openRow (PT_AttrPropIndex api)
+{
+	if (tagTop () == TT_TR)
+		{
+			m_utf8_1 = "tr";
+			tagClose (TT_TR, m_utf8_1);
+		}
+	if (tagTop () != TT_TBODY)
+		{
+			_openTable (api);
+		}
+
+	m_utf8_1 = "tr style=\"border: inherit\"";
+	tagOpen (TT_TR, m_utf8_1);
+}
+
 void s_HTML_Listener::_openCell (PT_AttrPropIndex api)
 {
-	if (m_bFirstWrite) _outputBegin (api); // any point to this?
+	if (m_bFirstWrite) _openSection (api);
 
 	if (!m_bInSection) return;
 
@@ -3147,11 +3214,8 @@ void s_HTML_Listener::_openCell (PT_AttrPropIndex api)
 			UT_sint32 rowspan = m_TableHelper.getBot ()   - m_TableHelper.getTop ();
 			UT_sint32 colspan = m_TableHelper.getRight () - m_TableHelper.getLeft ();
 
-			if (m_TableHelper.getLeft () == 0) // beginning of a new row
-				{
-					m_utf8_1 = "tr style=\"border: inherit\"";
-					tagOpen (TT_TR, m_utf8_1);
-				}
+			if ((tagTop () != TT_TR) || (m_TableHelper.getLeft () == 0)) // beginning of a new row
+				_openRow (api);
 
 			UT_UTF8String styles;
 
