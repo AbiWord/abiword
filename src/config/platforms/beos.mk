@@ -30,15 +30,18 @@
 ## compiler/loader options are used.  It will probably also be used
 ## in constructing the name object file destination directory.
 
-OS_ARCH		:= $(shell uname -m | sed -e s/i.86/i386/ -e s/sun4u/sparc64/ -e s/arm.*/arm/ -e s/sa110/arm/ | sed "s/\//-/")
+OS_ARCH		:= $(shell uname -m | sed "s/\//-/" )
+#We should change this at some point in time to the generic x86/ppc
+#OS_ARCH		:= $(shell uname -m | sed "s/\//-/" | \
+#		           sed -e s/BePC/x86/ -e s/BeBox/ppc/ )
 
 # These are (probably) optional for your platform.
-i386_ARCH_FLAGS		= 
+x86_ARCH_FLAGS		= 
 PPC_ARCH_FLAGS		=
 
 # Define tools
-CC		= cc
-CCC		= cc
+CC		= $$BE_C_COMPILER $$BE_DEFAULT_C_FLAGS
+CCC		= $$BE_C_COMPILER $$BE_DEFAULT_C_FLAGS
 RANLIB		= ranlib
 
 # Suffixes
@@ -69,8 +72,8 @@ PLATFORM_FLAGS		= -DNO_SYS_ERRLIST
 OS_CFLAGS		= $(DSO_CFLAGS) $(PLATFORM_FLAGS) $(PORT_FLAGS)
 
 # Architecture-specific flags
-ifeq ($(OS_ARCH), BePC)
-PLATFORM_FLAGS		+= $(i386_ARCH_FLAGS)
+ifeq ($(OS_ARCH), x86)
+PLATFORM_FLAGS		+= $(x86_ARCH_FLAGS)
 endif
 
 ifeq ($(OS_ARCH), ppc)
@@ -78,7 +81,7 @@ PLATFORM_FLAGS		+= $(PPC_ARCH_FLAGS)
 endif
 
 # Shared library flags
-#MKSHLIB			= $(LD) $(DSO_LDOPTS) -soname $(@:$(OBJDIR)/%.so=%.so)
+#MKSHLIB		= $(LD) $(DSO_LDOPTS) -soname $(@:$(OBJDIR)/%.so=%.so)
 MKSHLIB			= $(LD) $(DSO_LDOPTS) -soname $(@:$(OBJDIR)/%.so=%.so)
 
 ABI_NATIVE	= beos
