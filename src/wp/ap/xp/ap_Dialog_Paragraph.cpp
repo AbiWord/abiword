@@ -172,11 +172,16 @@ UT_Bool AP_Dialog_Paragraph::setDialogData(const XML_Char ** pProps)
 				_setMenuItemValue(id_MENU_SPECIAL_INDENT, indent_NONE, op_INIT);
 			}
 
-			// TODO : FLIP THE SIGN ON THIS FIELD IF THE CASE IS "HANGING"!
-			
 			// set the value regardless; dialog will enable/disable field
-			// if spacing is "NONE"
-			_setSpinItemValue(id_SPIN_SPECIAL_INDENT, sz, op_INIT);
+			// if spacing is "NONE".  Must flip the sign (strip minus)
+			// to give illusion of Word's definitions of indent/margin.
+
+			const XML_Char * newSz = sz;
+
+			if (sz[0] == '-')
+				newSz++;
+			
+			_setSpinItemValue(id_SPIN_SPECIAL_INDENT, newSz, op_INIT);
 		}
 
 		sz = UT_getAttribute("line-height", pProps);

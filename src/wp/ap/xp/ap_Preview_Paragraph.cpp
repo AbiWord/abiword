@@ -142,6 +142,8 @@ void AP_Preview_Paragraph_Block::setText(const UT_UCSChar * text)
 #define STORE_CONVERTED(m, v) \
             if (v) m = (UT_uint32) (UT_convertToInches(v) * (double) DIMENSION_INCH_SCALE_FACTOR);
 
+#define SCALE_TO_PIXELS(s) ((UT_uint32) (UT_convertToInches(s) * (double) DIMENSION_INCH_SCALE_FACTOR))
+
 void AP_Preview_Paragraph_Block::setFormat(AP_Dialog_Paragraph::tAlignState align,
 										   const XML_Char * firstLineIndent,
 										   AP_Dialog_Paragraph::tIndentState indent,
@@ -151,22 +153,27 @@ void AP_Preview_Paragraph_Block::setFormat(AP_Dialog_Paragraph::tAlignState alig
 										   const XML_Char * afterSpacing,
 										   const XML_Char * lineSpacing,
 										   AP_Dialog_Paragraph::tSpacingState spacing)
-{	
+{
+	// align is always set
 	m_align = align;
 
 	// left margins are in or out from the default stop
 	if (leftMargin)
-		m_leftStop = DEFAULT_LEFT_STOP + (UT_uint32) (UT_convertToInches(leftMargin)
-													  * (double) DIMENSION_INCH_SCALE_FACTOR);
+	{
+		m_leftStop = DEFAULT_LEFT_STOP + SCALE_TO_PIXELS(leftMargin);
+		// NOTE : if we recomputed the leftMargin, we have to recompute
+		// NOTE : the firstLineLeftStop below
+	}
+	
 	// right margins are in or out from the default stop
 	if (rightMargin)
-		m_rightStop = DEFAULT_RIGHT_STOP + (UT_uint32) (UT_convertToInches(rightMargin)
-														* (double) DIMENSION_INCH_SCALE_FACTOR);
+		m_rightStop = DEFAULT_RIGHT_STOP + SCALE_TO_PIXELS(rightMargin);
 
 	STORE_CONVERTED(m_beforeSpacing, beforeSpacing);
 	STORE_CONVERTED(m_afterSpacing, afterSpacing);
 
-	if (firstLineIndent)
+	// if leftMargin or firstLineIndent changed, we have to recompute
+	if (leftMargin || firstLineIndent)
 	{
 		m_indent = indent;
 		switch (m_indent)
@@ -174,9 +181,10 @@ void AP_Preview_Paragraph_Block::setFormat(AP_Dialog_Paragraph::tAlignState alig
 			// the signage for these two is handled in the conversion through
 			// UT_convertToInches()
 		case AP_Dialog_Paragraph::indent_FIRSTLINE:
+			m_firstLineLeftStop = m_leftStop + SCALE_TO_PIXELS(firstLineIndent);
+			break;
 		case AP_Dialog_Paragraph::indent_HANGING:
-			m_firstLineLeftStop = m_leftStop
-				+ (UT_uint32) (UT_convertToInches(firstLineIndent) * (double) DIMENSION_INCH_SCALE_FACTOR);
+			m_firstLineLeftStop = m_leftStop - SCALE_TO_PIXELS(firstLineIndent);
 			break;
 		case AP_Dialog_Paragraph::indent_NONE:
 			m_firstLineLeftStop = m_leftStop;
@@ -201,17 +209,18 @@ void AP_Preview_Paragraph_Block::setFormat(AP_Dialog_Paragraph::tAlignState alig
 			m_lineSpacing = m_fontHeight;
 			break;
 		case AP_Dialog_Paragraph::spacing_ATLEAST:
-			// TODO : is this right?  I think we just use what they asked for
-			// TODO : unless it's less than the height of a line
-			if ((UT_uint32) (UT_convertToInches(lineSpacing) * (double) DIMENSION_INCH_SCALE_FACTOR) > m_fontHeight)
+			// we measure from top to top here, and use a minimum of the current
+			// line height
+			if (SCALE_TO_PIXELS(lineSpacing) > m_fontHeight)
 				m_lineSpacing = (UT_uint32) ((UT_convertToInches(lineSpacing)
 											  * (double) DIMENSION_INCH_SCALE_FACTOR) - (double) m_fontHeight);
+			else
+				m_lineSpacing = m_fontHeight;
 			break;
 		case AP_Dialog_Paragraph::spacing_EXACTLY:
-			// TODO : is this right?  I think we just use the spacing they asked
-			// TODO : for.  If it's less than one line height, oh well.
-			m_lineSpacing = (UT_uint32) (UT_convertToInches(lineSpacing)
-										 * (double) DIMENSION_INCH_SCALE_FACTOR);
+			// for exact, we always give them exactly what they asked for,
+			// overlapping and all
+			m_lineSpacing = SCALE_TO_PIXELS(lineSpacing);
 			break;
 		case AP_Dialog_Paragraph::spacing_MULTIPLE:
 			m_lineSpacing = (UT_uint32) ((double) m_fontHeight
