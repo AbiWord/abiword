@@ -388,21 +388,21 @@ UT_Error IE_Exp::constructExporter(PD_Document * pDocument,
 								   IE_Exp ** ppie,
 								   IEFileType * pieft)
 {
-	bool bUseGuesswork = (ieft != IEFT_Unknown);
-
 	UT_ASSERT(pDocument);
 	UT_ASSERT(ieft != IEFT_Unknown || (szFilename && *szFilename));
+	UT_ASSERT(ieft != IEFT_Bogus || (szFilename && *szFilename));
 	UT_ASSERT(ppie);
 
 	// no filter will support IEFT_Unknown, so we detect from the
 	// suffix of the filename, the real exporter to use and assign
 	// that back to ieft.
-	if (ieft == IEFT_Unknown && szFilename && *szFilename)
+	if ( (ieft == IEFT_Unknown || ieft == IEFT_Bogus) && szFilename && *szFilename)
 	{
 		ieft = IE_Exp::fileTypeForSuffix(UT_pathSuffix(szFilename));
 	}
 
 	UT_ASSERT(ieft != IEFT_Unknown);
+	UT_ASSERT(ieft != IEFT_Bogus);
 
    	// let the caller know what kind of exporter they're getting
    	if (pieft != NULL) 
@@ -448,3 +448,4 @@ UT_uint32 IE_Exp::getExporterCount(void)
 {
 	return m_sniffers.size();
 }
+
