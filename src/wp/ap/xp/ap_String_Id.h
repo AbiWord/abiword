@@ -285,8 +285,8 @@ dcl(DLG_Para_SpacingAtLeast,	"At least")
 dcl(DLG_Para_SpacingExactly,	"Exactly")
 dcl(DLG_Para_SpacingMultiple,	"Multiple")
 
-dcl(DLG_Para_TabLabelIndentsAndSpacing, "&Indents and Spacing")
-dcl(DLG_Para_TabLabelLineAndPageBreaks, "Line and &Page Breaks")
+dcl(DLG_Para_TabLabelIndentsAndSpacing, "Indents and Spacing")
+dcl(DLG_Para_TabLabelLineAndPageBreaks, "Line and Page Breaks")
 
 dcl(DLG_Para_LabelAlignment,	"Ali&gnment:")
 dcl(DLG_Para_LabelBy,			"B&y:")
