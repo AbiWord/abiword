@@ -89,10 +89,14 @@ void AP_UnixDialog_Download_File::_runModal(XAP_Frame * pFrame)
 void
 AP_UnixDialog_Download_File::_updateProgress(XAP_Frame *pFrame)
 {
+	char buf[10];
+	
 	if (getProgress() == -1)
 		return;
-
+	
+	sprintf(buf, "%.1f%%", ((double)(getProgress()))/((double)(getFileSize()))*100);
 	gtk_progress_bar_set_fraction(GTK_PROGRESS_BAR(m_progressBar), ((double)(getProgress()))/((double)(getFileSize())) );
+	gtk_progress_bar_set_text(GTK_PROGRESS_BAR(m_progressBar), buf);
 }
 
 void
