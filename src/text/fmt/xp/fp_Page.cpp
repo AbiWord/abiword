@@ -39,9 +39,9 @@
 #include "ut_units.h"
 
 fp_Page::fp_Page(FL_DocLayout* pLayout,
-				 FV_View* pView,
-				 const fp_PageSize& pageSize,
-				 fl_DocSectionLayout* pOwner)
+		 FV_View* pView,
+		 const fp_PageSize& pageSize,
+		 fl_DocSectionLayout* pOwner)
 	:	m_pLayout(pLayout),
 		m_pView(pView),
 		m_pNext(0),
