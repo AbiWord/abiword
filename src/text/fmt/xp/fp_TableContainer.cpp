@@ -54,7 +54,8 @@
 #include "fv_View.h"
 #include "fl_SectionLayout.h"
 #include "gr_DrawArgs.h"
-
+#include "ut_vector.h"
+#include "ut_types.h"
 #include "ut_debugmsg.h"
 #include "ut_assert.h"
 
@@ -69,15 +70,34 @@ fp_TableRowColumn::fp_TableRowColumn(void) :
         empty(true)
 {
 }
+
 fp_TableRowColumn::~fp_TableRowColumn(void)
 {
 }
+
 /*!
   Create Cell container
   \param iType Container type
   \param pSectionLayout Section layout type used for this container
  */
-fp_CellContainer::fp_CellContainer(fl_SectionLayout* pSectionLayout) : fp_VerticalContainer(FP_CONTAINER_CELL, pSectionLayout)
+fp_CellContainer::fp_CellContainer(fl_SectionLayout* pSectionLayout) 
+	: fp_VerticalContainer(FP_CONTAINER_CELL, pSectionLayout),
+	  m_iLeftAttach(0),
+	  m_iRightAttach(0),
+	  m_iTopAttach(0),
+	  m_iBottomAttach(0),
+	  m_iLeftPad(0),
+	  m_iRightPad(0),
+	  m_iTopPad(0),
+	  m_iBotPad(0),
+	  m_pNextInTable(NULL),
+	  m_pPrevInTable(NULL),
+	  m_bXexpand(true),
+	  m_bYexpand(true),
+	  m_bXshrink(false),
+	  m_bYshrink(true),
+	  m_bXfill(true),
+	  m_bYfill(true)
 {
 }
 
@@ -254,7 +274,12 @@ void fp_CellContainer::sizeAllocate(fp_Allocation * pAllocate)
   \param iType Container type
   \param pSectionLayout Section layout type used for this container
  */
-fp_TableContainer::fp_TableContainer(fl_SectionLayout* pSectionLayout) : fp_Container(FP_CONTAINER_TABLE, pSectionLayout)
+fp_TableContainer::fp_TableContainer(fl_SectionLayout* pSectionLayout) 
+	: fp_Container(FP_CONTAINER_TABLE, pSectionLayout),
+	  m_iRows(0),
+	  m_iCols(0),
+	  m_iBorderwidth(0),
+	  m_bIsHomogeneous(true)	  
 {
 }
 
@@ -267,6 +292,8 @@ fp_TableContainer::fp_TableContainer(fl_SectionLayout* pSectionLayout) : fp_Cont
  */
 fp_TableContainer::~fp_TableContainer()
 {
+	UT_VECTOR_PURGEALL(fp_TableRowColumn *, m_vecRows);
+	UT_VECTOR_PURGEALL(fp_TableRowColumn *, m_vecColumns);
 }
 
 void  fp_TableContainer::_size_request_init(void)

@@ -190,11 +190,6 @@ private:
 // m_iBottomAttach is the row immediately below the cell.
 
 	UT_sint32           m_iBottomAttach;
-
-// Local size request and allocation.
-
-	fp_Allocation       m_MyAllocation;
-	fp_Requisition      m_MyRequest;
 //
 // Padding left,right, top and bottom
 //
@@ -219,6 +214,11 @@ private:
 //
 	bool                m_bXfill;
 	bool                m_bYfill;
+
+// Local size request and allocation.
+
+	fp_Allocation       m_MyAllocation;
+	fp_Requisition      m_MyRequest;
 };
 
 class ABI_EXPORT fp_TableContainer : public fp_Container
@@ -270,17 +270,18 @@ private:
 	UT_uint32 				_getBottomOfLastContainer(void) const;
 	void					_drawBoundaries(dg_DrawArgs* pDA);
 
-	UT_Vector               m_vecRows;
-	UT_Vector               m_vecColumns;
 	UT_sint32               m_iRows;
 	UT_sint32               m_iCols;
+	UT_sint32               m_iBorderwidth;
+	bool                    m_bIsHomogeneous;
+
+	UT_Vector               m_vecRows;
+	UT_Vector               m_vecColumns;
 
 // Local size request and allocation.
 
 	fp_Allocation           m_MyAllocation;
 	fp_Requisition          m_MyRequest;
-	UT_sint32               m_iBorderwidth;
-	bool                    m_bIsHomogeneous;
 };
 
 #endif /* TABLECONTAINER_H */
