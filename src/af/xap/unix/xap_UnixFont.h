@@ -167,7 +167,6 @@ class XAP_UnixFontHandle : public GR_Font
 	XAP_UnixFont *getUnixFont()	const{ return m_font; }
 	GdkFont      *getMatchGdkFont()	{ return m_font? m_font->getMatchGdkFont(m_size): NULL; }
 	
-	GdkFont      *getGdkFontForUCSChar(UT_UCSChar Char);
 	void explodeGdkFonts(GdkFont* & non_cjk_one,GdkFont*& cjk_one);	
 };
 

@@ -135,7 +135,7 @@ public:
 	/*
 	    returns 1 if current langauge is CJK (chinese, japanese, korean)
 	*/
-	virtual bool cjk_locale() const;
+	inline virtual bool cjk_locale() const { return is_cjk_; }
 
 	/*  whether words can be broken at any character of the word (wide 
 	    character, not byte). True for japanese.
@@ -249,7 +249,11 @@ public:
 			/* CJK users need slightly different set of fontsizes*/
 						fontsizes_list;
 protected:
-	void describe();		
+	void describe();
+
+	const char* TexPrologue;
+	UT_uint32 WinLanguageCode,WinCharsetCode;
+	bool is_cjk_,can_break_words_; 
 };
 
 /*

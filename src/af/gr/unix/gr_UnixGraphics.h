@@ -109,6 +109,11 @@ class GR_UnixGraphics : public GR_Graphics
 	// our currently requested font by handle
 	XAP_UnixFontHandle *	m_pFont;
 
+	// Current GDK fonts corresponding to this. Calling m_pFont->explodeGdkFont
+	// causes gdk_font_load to be called and memory to be allocated. This should
+	// not happen on every draw
+	GdkFont * m_pSingleByteFont, * m_pMultiByteFont;
+
 	// our "OEM" system font, like a 10 point Helvetica for GUI items
 	XAP_UnixFontHandle * 	m_pFontGUI;
   

@@ -701,10 +701,6 @@ const XAP_LangInfo* XAP_EncodingManager::findLangInfo(const char* key,XAP_LangIn
 	return NULL;
 };
 
-static const char* TexPrologue;
-static UT_uint32 WinLanguageCode,WinCharsetCode;
-static bool is_cjk_,can_break_words_;
-
 bool XAP_EncodingManager::swap_utos = 0;
 bool XAP_EncodingManager::swap_stou = 0;
 
@@ -801,11 +797,6 @@ int XAP_EncodingManager__swap_stou,XAP_EncodingManager__swap_utos;
 bool XAP_EncodingManager::can_break_words() const
 {
     return can_break_words_;
-};
-
-bool XAP_EncodingManager::cjk_locale() const
-{
-    return is_cjk_;
 };
 
 /*

@@ -43,6 +43,8 @@ GR_UnixGraphics::GR_UnixGraphics(GdkWindow * win, XAP_UnixFontManager * fontMana
 	m_pWin = win;
 	m_pFontManager = fontManager;
 	m_pFont = NULL;
+	m_pSingleByteFont = NULL;
+	m_pMultiByteFont = NULL;
 	m_pFontGUI = NULL;
 	m_pGC = gdk_gc_new(m_pWin);
 	m_pXORGC = gdk_gc_new(m_pWin);
@@ -127,7 +129,8 @@ void GR_UnixGraphics::drawChar(UT_UCSChar Char, UT_sint32 xoff, UT_sint32 yoff)
 	UT_UCSChar Wide_char = remapGlyph(Char, UT_FALSE);
 	WCTOMB_DECLS;
 	CONVERT_TO_MBS(Wide_char);
-	GdkFont *font = m_pFont->getGdkFontForUCSChar(Wide_char);
+	GdkFont *font = XAP_EncodingManager::instance->is_cjk_letter(Wide_char) ? m_pMultiByteFont : m_pSingleByteFont;
+
 	gdk_draw_text(m_pWin,font,m_pGC,xoff,yoff+font->ascent,text,text_length);
 }
 
@@ -139,15 +142,12 @@ void GR_UnixGraphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
 	UT_ASSERT(m_pFont);
 	WCTOMB_DECLS;
 	GdkFont *font;
-	GdkFont *EnglishFont;
-	GdkFont *ChineseFont;
-	m_pFont->explodeGdkFonts(EnglishFont,ChineseFont);
 	UT_sint32 x;
 	const UT_UCSChar *pC;
   	for(pC=pChars+iCharOffset, x=xoff; pC<pChars+iCharOffset+iLength; ++pC)
 	  {
 		UT_UCSChar actual = remapGlyph(*pC,UT_FALSE);
-		font=XAP_EncodingManager::instance->is_cjk_letter(actual)? ChineseFont: EnglishFont;
+		font=XAP_EncodingManager::instance->is_cjk_letter(actual)? m_pMultiByteFont: m_pSingleByteFont;
 		CONVERT_TO_MBS(actual);
 		gdk_draw_text(m_pWin,font,m_pGC,x,yoff+font->ascent,text,text_length);
 		x+=gdk_text_width(font, text, text_length);
@@ -157,6 +157,9 @@ void GR_UnixGraphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
 
 void GR_UnixGraphics::setFont(GR_Font * pFont)
 {
+	if (m_pFont == pFont)
+		return;
+
 	if (!m_pFontManager)
 		return;
 
@@ -164,20 +167,13 @@ void GR_UnixGraphics::setFont(GR_Font * pFont)
 
 	XAP_UnixFontHandle * pUFont = static_cast<XAP_UnixFontHandle *> (pFont);
 
-	// want to only call this once, if possible, on a new font
-	GdkFont * newGdkFont = pUFont->getGdkFont();
-	UT_ASSERT(newGdkFont);
-
-#if 0
-	if (m_pFont && gdk_font_equal (newGdkFont, m_pFont->getGdkFont()))
-	{
-		return;
-	}
-#endif
-
 	m_pFont = pUFont;
+	m_pFont->explodeGdkFonts(m_pSingleByteFont,m_pMultiByteFont);
   
-	gdk_gc_set_font(m_pGC, newGdkFont);
+	if (m_pFont->getUnixFont()->is_CJK_font())
+		gdk_gc_set_font(m_pGC, m_pMultiByteFont);
+	else
+		gdk_gc_set_font(m_pGC, m_pSingleByteFont);
 }
 
 UT_uint32 GR_UnixGraphics::getFontHeight()
@@ -206,7 +202,8 @@ UT_uint32 GR_UnixGraphics::measureUnRemappedChar(const UT_UCSChar c)
 	CONVERT_TO_MBS(Wide_char);
 	if (fallback_used)
 	    return 0;
-	GdkFont *font = m_pFont->getGdkFontForUCSChar(Wide_char);
+	GdkFont *font = XAP_EncodingManager::instance->is_cjk_letter(Wide_char) ? m_pMultiByteFont : m_pSingleByteFont;
+
 	return gdk_text_width(font, text, text_length);
 
 }

@@ -1128,13 +1128,6 @@ GdkFont * XAP_UnixFont::getMatchGdkFont(UT_uint32 size)
   return pMatchUnixFont ? pMatchUnixFont->getGdkFont(size) : getGdkFont(size);
 }
 
-GdkFont      * XAP_UnixFontHandle::getGdkFontForUCSChar(UT_UCSChar Char)
-{
-    GdkFont* non_cjk_font,* cjk_font;
-    explodeGdkFonts(non_cjk_font,cjk_font);
-    return XAP_EncodingManager::instance->is_cjk_letter(Char)? cjk_font : non_cjk_font;
-};
-
 void XAP_UnixFontHandle::explodeGdkFonts(GdkFont* & non_cjk_one,GdkFont*& cjk_one)
 {
 	if(m_font->is_CJK_font())
