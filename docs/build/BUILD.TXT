@@ -29,7 +29,6 @@ AbiWord can also take advantage of the Xft2/FontConfig X11 font rendering extens
 AbiWord can be scripted (controlled and added onto via extensions) via a PERL interface if you so wish. PERL is available from http://www.perl.org/ See also: "configure --enable-scripting"
 
 AbiWord can make use of CURL - a neat little file downloading tool. It can automatically install things like dictionaries using CURL if you want it to. If you're using pspell, you don't want CURL. If not, you may want to grab it: http://curl.haxx.se/ See also: "configure --with-curl"
-
 Getting the source:
 
 Well, if you're here, you've probably downloaded the latest and greatest AbiWord sources. If not, you can always get the latest AbiWord source and binary packages from http://www.sourceforge.net/projects/abiword
@@ -51,7 +50,6 @@ if you don't have these already:
 	psiconv (if you want to build the psion importer plugin)
 and if you don't have FontConfig/Xft2 installed, you'll need
 	unixfonts
-
 Configuring what you want built:
 
 Because AbiWord uses the automake/autoconf build tools, you might already be familiar with this step and some of its more-common behaviors, quirks, and options.
@@ -92,12 +90,11 @@ or
 
 MSYS and MinGW provide a Windows port of popular GNU building tools and compilers.  MinGW provides the compiler, headers, and libraries to build Window binaries.  Information about it and how to download it can be found at http://www.mingw.org.  MSYS was developed   to provide MinGW an operating shell compliant with various GNU building scripts.  Information on MSYS can be found at http://www.mingw.org/msys.shtml.
 
-For builders/developers with Microsoft Visual C++ (MSVC) compilers, there are two alternatives to build AbiWord;  command line with cygwin tools(actively maintained and will work) or the Microsoft Developer Project files(unmaintained and might not work).
+For builders/developers with Microsoft Visual C++ (MSVC) compilers, there are two alternatives to build AbiWord;  command line with cygwin tools(actively maintained and will work) or the Microsoft Developer Project files(unmaintained and might not work).  MSVC 5 building is not actively done and will minimally require an updated Win32 platform SDK.
 
-Building via MSVC command line using cygwin tools is the traditional method for building AbiWord and is used for the release builds.  You can find information abut the cygwin tools at http://www.cygwin.com.  Only a small subset of the cygwin tools are necessary for build AbiWord.  They are: bash, sed, uname,
+Building via MSVC command line using cygwin tools is the traditional method for building AbiWord and is used for the release builds.  You can find information about the cygwin tools at http://www.cygwin.com.  Beyond the packages in the Base category during the Cygwin installation, only the libintl1, libiconv2 and make packages are required to build AbiWord.  The exact programs required are: cp, cut, echo, expr, make, mkdir, pwd, rm, sed, sh (bash), tar, uname, along with cygwin specific cygpath.exe and cygwin1.dll.  To obtain the source you may also want the cvs client.
 
 The second method is to try the MSVC6 project files that have been generated.  These project files are not actively maintained, and are only available for MSVC 6.0 and greater.  We are looking for volunteers to keep them in sync with development.  See "Getting the sources" section below to use CVS to download the latest versions of these project files.
-
 Getting the source:
 
 There are two methods for getting the AbiWord source code; source tar.gz files and CVS.
@@ -133,17 +130,21 @@ CVS modules required to check out are:
 	zlib
 optionally the following module may be checked out if attempting to use MSVC project files:
 	MSVC6
-optionally the following module may be checked out to enable JPEG images:
-	libjpeg
 
+If you wish to use JPEG images in AbiWord, you will need to download and install the libjpeg library.  More information on libjpeg can be found at http://www.ijg.org/   However building with JPEG support is obsolete, you should instead use the JPEG plugin or one of the other image supporting plugins (e.g. AbiMagick).
+
+If you wish to enable the automatic dictionary downloader you will need to download and install libcurl as well.  More information may be found at http://curl.haxx.se/
 Building AbiWord:
 
 If using the MSYS/MinGW build system, start MSYS.  
 
 If using MSVC with the cygwin system, start a command/cmd shell.  Run VCVARS32.BAT which sets appropriate environment variables pointing paths, includes, libs that come with MSVC.  You will find this batch function typically in the bin directory under VC98.  Once these environment variables are set, from the same shell, launch cygwin.  Typically this is done via a cygwin.bat batch file located where you installed cygwin.
 
-Change directory to the location of where you download/installed the abi
+Change directory to the location of where you download/installed the AbiWord source
 cd /path/to/abi
+If using MSVC with the cygwin system, you will need to change directory to the full path where the AbiWord source is located using the /cygdrive folder.  For example, if your AbiWord source is in the /usr/src/abi directory of your Cygwin installation and Cygwin is installed in C:\cygwin, you will need to change directory to
+cd /cygdrive/c/cygwin/usr/src/abi
+
 AbiWord uses a diving makefile build system.  Begin the build process by typing 
 make
 This will build the AbiWord application and any associated tools and libraries.  The binary will be located in a subdirectory src/WIN32_etc.../bin or src/MINGW32_etc.../bin  To build and installable executable, issue the following command
@@ -161,7 +162,7 @@ ABI_OPT_PERL=1			Enables Perl scripting
 ABI_OPT_LIBJPEG=1		Enables you to view JPEG images
 ABI_OPT_CURL=1			Enables automatic dictionary downloading
 
-If attempting to use the MSVC6 project files, follow the instructions in the README.TXT file.  
+If attempting to use the MSVC6 project files, follow the instructions in its README.TXT file.  
 
 QNX:
 
