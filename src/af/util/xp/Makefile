@@ -43,6 +43,8 @@ CPPSRCS=	ut_alphahash.cpp	\
 ###CSRCS=		ut_regex.c
 
 TARGETS=		$(OBJS)
+INCLUDES=		-I$(ABI_DEPTH)/../../libpng	\
+			-I$(ABI_DEPTH)/../../zlib
 
 include $(ABI_DEPTH)/config/abi_rules.mk
 

@@ -22,18 +22,12 @@ ABI_DEPTH = ../../..
 
 include $(ABI_DEPTH)/config/abi_defs.mk
 
-EXPORT_HEADERS=		gr_Win32Graphics.h	\
-			gr_Win32Image.h
-
-HEADERS=		$(EXPORT_HEADERS)
-
-RELEASE_HEADERS=	$(EXPORT_HEADERS)
-RELEASE_HEADERS_DEST=	$(RELEASE_INCLUDE_DIR)
-
 CPPSRCS=		gr_Win32Graphics.cpp	\
 			gr_Win32Image.cpp
 
 TARGETS=		$(OBJS)
+INCLUDES=		-I$(ABI_DEPTH)/../../libpng	\
+			-I$(ABI_DEPTH)/../../zlib
 
 include $(ABI_DEPTH)/config/abi_rules.mk
 

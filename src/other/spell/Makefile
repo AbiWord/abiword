@@ -24,13 +24,6 @@ ABI_DEPTH = ../..
 
 include $(ABI_DEPTH)/config/abi_defs.mk
 
-EXPORT_HEADERS= spell.h
-
-HEADERS= spell.h
-
-RELEASE_HEADERS=	$(EXPORT_HEADERS)
-RELEASE_HEADERS_DEST=	$(RELEASE_INCLUDE_DIR)
-
 CSRCS=		newMain.c good.c tgood.c lookup.c makedent.c hash.c
 
 LIBRARY_NAME=		AbiSpell
