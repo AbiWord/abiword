@@ -179,10 +179,10 @@ fi
 # Figure out which binary to run
 if [ -f \$ABISUITE_HOME/bin/AbiWord_d ]
 then
-    \$ABISUITE_HOME/bin/AbiWord_d \"\$@\"
+    \$ABISUITE_HOME/bin/AbiWord_d "\$@"
 elif [ -f \$ABISUITE_HOME/bin/AbiWord_s ]
 then
-    \$ABISUITE_HOME/bin/AbiWord_s \"\$@\"
+    \$ABISUITE_HOME/bin/AbiWord_s "\$@"
 else
     $ECHO "Error: can't find AbiWord executables:"
     $ECHO "    \$ABISUITE_HOME/bin/AbiWord_d"
