@@ -284,11 +284,17 @@ ABI_XAP_INCS=	/config						\
 		/af/xap/xp		/af/xap/$(ABI_NATIVE)	\
 		/af/ev/xp		/af/ev/$(ABI_NATIVE)	\
 		/af/util/xp		/af/util/$(ABI_NATIVE)	\
-		/af/gr/xp		/af/gr/$(ABI_NATIVE)
+		/af/gr/xp		/af/gr/$(ABI_NATIVE) \
+	        /wp/ap/xp \
+                /wp/ap/$(ABI_NATIVE) \
+                /text/ptbl/xp \
+                /text/fmt/xp \
+                /wp/impexp/xp \
+                /wp/ap/xp/ToolbarIcons
 
 ifdef ABI_OPT_GNOME
 ABI_XAP_INCS+=	/af/xap/$(ABI_NATIVE)/$(ABI_GNOME_DIR)	\
-		/af/ev/$(ABI_NATIVE)/$(ABI_GNOME_DIR)
+		/af/ev/$(ABI_NATIVE)/$(ABI_GNOME_DIR) 
 endif
 
 # consider adding some UNIX native includes because MacOS X is really hybrid.
@@ -307,6 +313,7 @@ endif
 ABI_PEER_INCS+=/../../wv/exporter
 
 ABI_ALL_INCS=	$(ABI_XAP_INCS) $(ABI_PEER_INCS) $(ABI_AP_INCS) $(ABI_OTH_INCS) $(ABI_TM_INCS)
+
 ifeq ($(OS_NAME), WIN32)
 ABI_XX_ROOT:=$(shell echo $(ABI_ROOT) | $(TRANSFORM_TO_DOS_PATH) | sed 's|\\\\|/|g')
 ABI_INCS=	$(addprefix -I$(ABI_XX_ROOT)/src,$(ABI_ALL_INCS))

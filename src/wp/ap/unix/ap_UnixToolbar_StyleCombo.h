@@ -22,6 +22,9 @@
 
 #include "xap_Types.h"
 #include "ev_Toolbar_Control.h"
+#include "pd_Document.h"
+#include "xap_UnixFrame.h"
+
 class EV_Toolbar;
 
 /*****************************************************************/
@@ -33,10 +36,18 @@ public:
 	virtual ~AP_UnixToolbar_StyleCombo(void);
 
 	virtual bool		populate(void);
-
+	bool                repopulate(void);
 	static EV_Toolbar_Control *		static_constructor(EV_Toolbar *, XAP_Toolbar_Id id);
 
 protected:
+    PD_Document * m_pDocument;
+	XAP_UnixFrame * m_pFrame;
 };
 
 #endif /* AP_UNIXTOOLBAR_STYLECOMBO_H */
+
+
+
+
+
+

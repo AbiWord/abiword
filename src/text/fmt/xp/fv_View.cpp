@@ -182,6 +182,12 @@ FV_View::FV_View(XAP_App * pApp, void* pParentData, FL_DocLayout* pLayout)
 	_resetSelection();
 	_clearOldPoint();
 	_fixInsertionPointCoords();
+//
+// Update the combo boxes on the frame with this documents info.
+//
+	XAP_Frame * pFrame = (XAP_Frame *) getParentData();
+	UT_ASSERT((pFrame));
+	pFrame->repopulateCombos();
 }
 
 FV_View::~FV_View()

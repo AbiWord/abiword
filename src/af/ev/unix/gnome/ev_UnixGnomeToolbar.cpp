@@ -38,6 +38,8 @@
 #include "xav_View.h"
 #include "xap_Prefs.h"
 #include "ev_UnixGnomeToolbar.h"
+#include "ap_Toolbar_Id.h"
+#include "ap_UnixToolbar_StyleCombo.h"
 
 // hack to support gal < 0.3 
 extern "C" {
@@ -723,3 +725,70 @@ bool EV_UnixGnomeToolbar::refreshToolbar(AV_View * pView, AV_ChangeMask mask)
 
 	return true;
 }
+
+
+/*!
+ * This method examines the current document and repopulates the Styles
+ * Combo box with what is in the document. It returns false if no styles 
+ * combo box was found. True if it all worked.
+ */
+
+bool EV_UnixGnomeToolbar::repopulateStyles(void)
+{
+//
+// First off find the Styles combobox in a toolbar somewhere
+//
+	UT_uint32 count = m_pToolbarLayout->getLayoutItemCount();
+	UT_uint32 i =0;
+	EV_Toolbar_LayoutItem * pLayoutItem = NULL;
+	XAP_Toolbar_Id id;
+	_wd * wd = NULL;
+	for(i=0; i < count; i++)
+	{
+		pLayoutItem = m_pToolbarLayout->getLayoutItem(i);
+		id = pLayoutItem->getToolbarId();
+		wd = (_wd *) m_vecToolbarWidgets.getNthItem(i);
+		if(id == AP_TOOLBAR_ID_FMT_STYLE)
+			break;
+	}
+	if(i>=count)
+		return false;
+//
+// GOT IT!
+//
+	UT_ASSERT(wd->m_id == AP_TOOLBAR_ID_FMT_STYLE);
+	XAP_Toolbar_ControlFactory * pFactory = m_pUnixApp->getControlFactory();
+	UT_ASSERT(pFactory);
+	EV_Toolbar_Control * pControl = pFactory->getControl(this, id);
+	AP_UnixToolbar_StyleCombo * pStyleC = static_cast<AP_UnixToolbar_StyleCombo *>(pControl);
+	pStyleC->repopulate();
+	GtkComboText * combo = GTK_COMBO_TEXT(wd->m_widget);
+//
+// Now the combo box has to be refilled from this
+//						
+	const UT_Vector * v = pControl->getContents();
+	UT_ASSERT(v);
+//
+// Now  we must remove and delete the old glist so we can attach the new
+// list of styles to the combo box.
+//
+// Try this....
+//
+	GtkList * oldlist = GTK_LIST(combo->list);
+	gtk_list_clear_items(oldlist,0,-1);
+//
+// Now make a new one
+//
+	UT_uint32 items = v->getItemCount();
+	// populate it
+	for (UT_uint32 m=0; m < items; m++)
+	{
+		char * sz = (char *)v->getNthItem(m);
+		gtk_combo_text_add_item(GTK_COMBO_TEXT (combo), sz, sz);
+	}
+//
+// I think we've finished!
+//
+	return true;
+}
+

@@ -26,6 +26,8 @@
 #include "xap_Types.h"
 #include "ev_Toolbar.h"
 #include "xav_Listener.h"
+#include "ap_Toolbar_Id.h"
+#include "ap_UnixToolbar_StyleCombo.h"
 
 class XAP_UnixApp;
 class XAP_UnixFrame;
@@ -47,7 +49,7 @@ public:
 	virtual bool synthesize(void);
 	bool bindListenerToView(AV_View * pView);
 	virtual bool refreshToolbar(AV_View * pView, AV_ChangeMask mask);
-
+	virtual bool repopulateStyles(void);
 	XAP_UnixApp *	getApp(void);
 	XAP_UnixFrame * getFrame(void);
 

@@ -45,7 +45,6 @@
 #include "xap_Scrollbar_ViewListener.h"
 #include "ev_Keyboard.h"
 #include "ev_Mouse.h"
-#include "ev_Toolbar.h"
 #include "xap_Strings.h"
 #include "xap_DialogFactory.h"
 #include "xap_Dialog_Id.h"
@@ -546,6 +545,30 @@ void XAP_Frame::setZoomPercentage(UT_uint32 /* iZoom */)
 UT_uint32 XAP_Frame::getZoomPercentage(void)
 {
 	return 100;	// default implementation
+}
+
+EV_Toolbar *  XAP_Frame::getToolbar(UT_uint32 ibar)
+{
+	if(ibar >= m_vecToolbars.getItemCount())
+		return NULL;
+	return (EV_Toolbar *) m_vecToolbars.getNthItem(ibar);
+}
+
+bool XAP_Frame::repopulateCombos(void)
+{
+  //
+// Update the styles combo box.
+//
+	EV_Toolbar * pTbar = NULL;
+	UT_uint32 ibar = 0;
+	do
+	{
+		pTbar = getToolbar(ibar++);
+		if(pTbar)
+			pTbar->repopulateStyles();
+	}
+	while(pTbar);
+	return true;
 }
 
 void XAP_Frame::_createToolbars(void)

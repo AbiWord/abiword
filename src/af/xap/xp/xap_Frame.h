@@ -27,6 +27,7 @@
 #include "xav_Listener.h"	// for AV_ListenerID
 #include "xap_Dlg_MessageBox.h"
 #include "xap_Strings.h"
+#include "ev_Toolbar.h"
 
 class XAP_App;
 class XAP_DialogFactory;
@@ -38,7 +39,7 @@ class EV_Menu_Layout;
 class EV_Menu_LabelSet;
 class EV_EditBindingMap;
 class EV_Mouse;
-class EV_Toolbar;
+//class EV_Toolbar;
 class EV_Keyboard;
 class AV_ScrollObj;
 class ap_Scrollbar_ViewListener;
@@ -140,7 +141,9 @@ public:
 
    	EV_Mouse *					getMouse(void);
 	EV_Keyboard *				getKeyboard(void);
+	EV_Toolbar *                getToolbar(UT_uint32 ibar);
 
+	bool                        repopulateCombos(void);
 	void						setAutoSaveFile(bool);
 	void						setAutoSaveFilePeriod(int);
 	void						setAutoSaveFileExt(const UT_String &);

@@ -240,8 +240,8 @@ public:
 	static EV_EditMethod_Fn printPreview;
 	static EV_EditMethod_Fn printDirectly;
 	static EV_EditMethod_Fn fileInsertGraphic;
-        static EV_EditMethod_Fn fileSaveAsWeb;
-        static EV_EditMethod_Fn filePreviewWeb;
+	static EV_EditMethod_Fn fileSaveAsWeb;
+	static EV_EditMethod_Fn filePreviewWeb;
 
 	static EV_EditMethod_Fn undo;
 	static EV_EditMethod_Fn redo;
@@ -265,7 +265,7 @@ public:
 	static EV_EditMethod_Fn viewHeadFoot;
 	static EV_EditMethod_Fn zoom;
 	static EV_EditMethod_Fn dlgZoom;
-        static EV_EditMethod_Fn viewFullScreen;
+	static EV_EditMethod_Fn viewFullScreen;
 
 	static EV_EditMethod_Fn insBreak;
 	static EV_EditMethod_Fn insPageNo;
@@ -283,10 +283,10 @@ public:
 	static EV_EditMethod_Fn dlgBorders;
 	static EV_EditMethod_Fn dlgColumns;
 	static EV_EditMethod_Fn style;
-        static EV_EditMethod_Fn dlgBackground;
+	static EV_EditMethod_Fn dlgBackground;
 	static EV_EditMethod_Fn dlgStyle;
 	static EV_EditMethod_Fn dlgTabs;
-        static EV_EditMethod_Fn dlgToggleCase;
+	static EV_EditMethod_Fn dlgToggleCase;
 	static EV_EditMethod_Fn dlgLanguage;
 	static EV_EditMethod_Fn language;
 	static EV_EditMethod_Fn fontFamily;
@@ -307,11 +307,11 @@ public:
 	static EV_EditMethod_Fn doBullets;
 	static EV_EditMethod_Fn doNumbers;
 
-        static EV_EditMethod_Fn colorForeTB;
-        static EV_EditMethod_Fn colorBackTB;
+	static EV_EditMethod_Fn colorForeTB;
+	static EV_EditMethod_Fn colorBackTB;
 
-        static EV_EditMethod_Fn toggleIndent;
-        static EV_EditMethod_Fn toggleUnIndent;
+	static EV_EditMethod_Fn toggleIndent;
+	static EV_EditMethod_Fn toggleUnIndent;
 
 	static EV_EditMethod_Fn alignLeft;
 	static EV_EditMethod_Fn alignCenter;
@@ -407,54 +407,54 @@ public:
 	static EV_EditMethod_Fn viCmd_yw;
 	static EV_EditMethod_Fn viCmd_yy;
 
-        static EV_EditMethod_Fn viewNormalLayout;
-        static EV_EditMethod_Fn viewPrintLayout;
-        static EV_EditMethod_Fn viewWebLayout;
+	static EV_EditMethod_Fn viewNormalLayout;
+	static EV_EditMethod_Fn viewPrintLayout;
+	static EV_EditMethod_Fn viewWebLayout;
 
-        static EV_EditMethod_Fn toggleAutoSpell;
+	static EV_EditMethod_Fn toggleAutoSpell;
 
-        static EV_EditMethod_Fn insAutotext_attn_1;
-        static EV_EditMethod_Fn insAutotext_attn_2;
+	static EV_EditMethod_Fn insAutotext_attn_1;
+	static EV_EditMethod_Fn insAutotext_attn_2;
+	
+	static EV_EditMethod_Fn insAutotext_closing_1;
+	static EV_EditMethod_Fn insAutotext_closing_2;
+	static EV_EditMethod_Fn insAutotext_closing_3;
+	static EV_EditMethod_Fn insAutotext_closing_4;
+	static EV_EditMethod_Fn insAutotext_closing_5;
+	static EV_EditMethod_Fn insAutotext_closing_6;
+	static EV_EditMethod_Fn insAutotext_closing_7;
+	static EV_EditMethod_Fn insAutotext_closing_8;
+	static EV_EditMethod_Fn insAutotext_closing_9;
+	static EV_EditMethod_Fn insAutotext_closing_10;
+	static EV_EditMethod_Fn insAutotext_closing_11;
+	static EV_EditMethod_Fn insAutotext_closing_12;
 
-        static EV_EditMethod_Fn insAutotext_closing_1;
-        static EV_EditMethod_Fn insAutotext_closing_2;
-        static EV_EditMethod_Fn insAutotext_closing_3;
-        static EV_EditMethod_Fn insAutotext_closing_4;
-        static EV_EditMethod_Fn insAutotext_closing_5;
-        static EV_EditMethod_Fn insAutotext_closing_6;
-        static EV_EditMethod_Fn insAutotext_closing_7;
-        static EV_EditMethod_Fn insAutotext_closing_8;
-        static EV_EditMethod_Fn insAutotext_closing_9;
-        static EV_EditMethod_Fn insAutotext_closing_10;
-        static EV_EditMethod_Fn insAutotext_closing_11;
-        static EV_EditMethod_Fn insAutotext_closing_12;
+	static EV_EditMethod_Fn insAutotext_mail_1;
+	static EV_EditMethod_Fn insAutotext_mail_2;
+	static EV_EditMethod_Fn insAutotext_mail_3;
+	static EV_EditMethod_Fn insAutotext_mail_4;
+	static EV_EditMethod_Fn insAutotext_mail_5;
+	static EV_EditMethod_Fn insAutotext_mail_6;
+	static EV_EditMethod_Fn insAutotext_mail_7;
+	static EV_EditMethod_Fn insAutotext_mail_8;
 
-        static EV_EditMethod_Fn insAutotext_mail_1;
-        static EV_EditMethod_Fn insAutotext_mail_2;
-        static EV_EditMethod_Fn insAutotext_mail_3;
-        static EV_EditMethod_Fn insAutotext_mail_4;
-        static EV_EditMethod_Fn insAutotext_mail_5;
-        static EV_EditMethod_Fn insAutotext_mail_6;
-        static EV_EditMethod_Fn insAutotext_mail_7;
-        static EV_EditMethod_Fn insAutotext_mail_8;
+	static EV_EditMethod_Fn insAutotext_reference_1;
+	static EV_EditMethod_Fn insAutotext_reference_2;
+	static EV_EditMethod_Fn insAutotext_reference_3;
 
-        static EV_EditMethod_Fn insAutotext_reference_1;
-        static EV_EditMethod_Fn insAutotext_reference_2;
-        static EV_EditMethod_Fn insAutotext_reference_3;
+	static EV_EditMethod_Fn insAutotext_salutation_1;
+	static EV_EditMethod_Fn insAutotext_salutation_2;
+	static EV_EditMethod_Fn insAutotext_salutation_3;
+	static EV_EditMethod_Fn insAutotext_salutation_4;
 
-        static EV_EditMethod_Fn insAutotext_salutation_1;
-        static EV_EditMethod_Fn insAutotext_salutation_2;
-        static EV_EditMethod_Fn insAutotext_salutation_3;
-        static EV_EditMethod_Fn insAutotext_salutation_4;
+	static EV_EditMethod_Fn insAutotext_subject_1;
 
-        static EV_EditMethod_Fn insAutotext_subject_1;
-
-        static EV_EditMethod_Fn insAutotext_email_1;
-        static EV_EditMethod_Fn insAutotext_email_2;
-        static EV_EditMethod_Fn insAutotext_email_3;
-        static EV_EditMethod_Fn insAutotext_email_4;
-        static EV_EditMethod_Fn insAutotext_email_5;
-        static EV_EditMethod_Fn insAutotext_email_6;
+	static EV_EditMethod_Fn insAutotext_email_1;
+	static EV_EditMethod_Fn insAutotext_email_2;
+	static EV_EditMethod_Fn insAutotext_email_3;
+	static EV_EditMethod_Fn insAutotext_email_4;
+	static EV_EditMethod_Fn insAutotext_email_5;
+	static EV_EditMethod_Fn insAutotext_email_6;
 
 	static EV_EditMethod_Fn noop;
 
@@ -1726,6 +1726,7 @@ static bool _activateWindow(AV_View* pAV_View, UT_uint32 ndx)
 	UT_ASSERT(ndx > 0);
 	UT_ASSERT(ndx <= pApp->getFrameCount());
 
+	
 	XAP_Frame * pSelFrame = pApp->getFrame(ndx - 1);
 
 	if (pSelFrame)
@@ -5471,6 +5472,31 @@ static bool s_doStylesDlg(FV_View * pView)
 
 	AP_Dialog_Styles::tAnswer ans = pDialog->getAnswer();
 	bool bOK = (ans == AP_Dialog_Styles::a_OK);
+//
+// update the combo box with the new styles.
+//	
+	if(bOK)
+	{
+		XAP_App * pApp = pFrame->getApp();
+		UT_ASSERT(pApp);
+		//
+		// Get all clones of this frame and set the new page dimensions
+		//
+		UT_Vector vClones;
+		if(pFrame->getViewNumber() > 0)
+		{
+			pApp->getClones(&vClones,pFrame);
+			for (UT_uint32 i = 0; i < vClones.getItemCount(); i++)
+			{
+			     XAP_Frame * f = (XAP_Frame *) vClones.getNthItem(i);
+			     f->repopulateCombos();
+			}
+		}
+		else
+		{
+			pFrame->repopulateCombos();
+		}
+	}
 	return bOK;
 }
 

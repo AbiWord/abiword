@@ -52,7 +52,7 @@ public:
 	virtual bool synthesize(void) { return (false); } // Abstract
 	virtual void show(void) {} // It must be abstract, but I don't want to screw
 	virtual void hide(void) {} // the platforms that don't implement show/hide
-
+    virtual bool repopulateStyles(void)  {return false;}
 protected:
 	EV_EditMethodContainer *	m_pEMC;
 	EV_Toolbar_Layout *			m_pToolbarLayout;

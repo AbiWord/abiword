@@ -47,7 +47,7 @@ public:
 	virtual void show(void);
 	virtual void hide(void);
 	virtual bool refreshToolbar(AV_View * pView, AV_ChangeMask mask);
-
+	virtual bool repopulateStyles(void);
 	// consider this function protected - it's needed in a callback
 	virtual void _orient_changed(GtkToolbar *toolbar,
 				GtkOrientation dir);

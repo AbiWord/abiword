@@ -22,6 +22,10 @@
 #include "ap_UnixToolbar_StyleCombo.h"
 #include "ap_Toolbar_Id.h"
 #include "xap_Frame.h"
+#include "pd_Style.h"
+#include "xad_Document.h"
+#include "xap_App.h"
+#include "ev_UnixToolbar.h"
 
 /*****************************************************************/
 
@@ -40,6 +44,7 @@ AP_UnixToolbar_StyleCombo::AP_UnixToolbar_StyleCombo(EV_Toolbar * pToolbar,
 
 	m_nPixels = 65;		// TODO: do a better calculation
 	m_nLimit = 20;
+	m_pFrame = static_cast<EV_UnixToolbar *>(pToolbar)->getFrame();
 }
 
 AP_UnixToolbar_StyleCombo::~AP_UnixToolbar_StyleCombo(void)
@@ -75,10 +80,38 @@ bool AP_UnixToolbar_StyleCombo::populate(void)
 
 	for (UT_uint32 k=0; (m_pDocument->enumStyles(k,&szName,&pStyle)); k++)
 	{
-		m_vecContents.addItem(szName);
+		m_vecContents.addItem((void *) szName);
 	}
 #endif 
 
 	return true;
 }
+
+
+bool AP_UnixToolbar_StyleCombo::repopulate(void)
+{
+	// repopulate the vector from the current document
+    // If ithere is one present
+
+	AD_Document * pAD_Doc = m_pFrame->getCurrentDoc();
+	if(!pAD_Doc)
+	{
+		return false;
+	}
+
+	// clear anything that's already there
+	m_vecContents.clear();
+
+	m_pDocument = static_cast<PD_Document *>(pAD_Doc);
+	const char * szName;
+	const PD_Style * pStyle;
+
+	for (UT_uint32 k=0; (m_pDocument->enumStyles(k,&szName,&pStyle)); k++)
+	{
+		m_vecContents.addItem((void *) szName);
+	}
+	return true;
+}
+
+
 
