@@ -116,6 +116,6 @@ ABI_FE		=QNX
 ## build a set of distribution archives (.deb, .rpm, .tgz, .exe, etc)
 ## This is relative to $(ABI_ROOT)/src/pkg
 
-ABIPKGDIR	= 
+ABIPKGDIR	= qnx
 
 # End of qnx defs
