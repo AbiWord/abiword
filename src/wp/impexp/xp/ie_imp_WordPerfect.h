@@ -281,6 +281,7 @@ public:
    bool m_bParagraphChanged;
    bool m_bParagraphExists;
    bool m_bInSection;
+   bool m_bFirstMargin;
    UT_Mbtowc m_Mbtowc;
    UT_GrowBuf m_textBuf;
    UT_Vector m_fontDescriptorList;

@@ -273,6 +273,7 @@ IE_Imp_WordPerfect::IE_Imp_WordPerfect(PD_Document * pDocument)
    m_bParagraphChanged = false;
    m_bParagraphExists = false;
    m_bInSection = false;
+   m_bFirstMargin = true;
 
    m_wordPerfectDispatchBytes.addItem(new WordPerfectByteTag(WP_TOP_SOFT_EOL, &IE_Imp_WordPerfect::_insertSpace));
    m_wordPerfectDispatchBytes.addItem(new WordPerfectByteTag(WP_TOP_SOFT_SPACE, &IE_Imp_WordPerfect::_insertSpace));
@@ -759,27 +760,68 @@ UT_Error IE_Imp_WordPerfect::_handleColumnGroup()
    unsigned char subGroup;
    UT_uint16 size;
    unsigned char flags;
-   unsigned char nonDeletableInfoSize;
 
    X_CheckWordPerfectError(_handleVariableGroupHeader(startPosition, subGroup, size, flags));
-   X_CheckFileReadElementError(fread(&nonDeletableInfoSize, sizeof(unsigned char), 1, m_importFile));
-   UT_DEBUGMSG(("WordPerfect: Size of non deletable data: %d\n", nonDeletableInfoSize));
     
    if(!m_undoOn)
    {
        UT_DEBUGMSG(("WordPerfect: Column subgroup: %d\n", subGroup));
        switch (subGroup)
        {
+		  // TODO: merge duplicate code in Left Margin Set (case 0) and Right Margin Set (case 1) 
+		   
           case 0: // Left Margin Set
-                  break;
-          case 1: // TODO: Right Margin Set
-                  break;
+	      case 1: // Right Margin Set
+				  {
+					  UT_uint16 margin; // WPU (WordPerfect Unit), which is one 1200th of an inch)
+					  float marginInch; 
+					  UT_uint16 nonDeletableInfoSize;
+
+					  // HACK HACK HACK! I will remove this ASAP, but I have a _very_ short RC1 deadline!
+					  // There always seem to be 2 Left Margin Sets at the beginning of a WP document, so
+					  // skip the first one
+					  if (m_bFirstMargin)
+					  {
+						  m_bFirstMargin = false;
+						  break;
+					  }
+					  
+					  X_CheckFileReadElementError(fread(&nonDeletableInfoSize, sizeof(UT_uint16), 1, m_importFile));
+					  X_CheckFileReadElementError(fread(&margin, sizeof(UT_uint16), 1, m_importFile));
+					  if (subGroup == 0)
+						  UT_DEBUGMSG(("WordPerfect: Left margin: %d WPUs\n", margin));
+					  else
+						  UT_DEBUGMSG(("WordPerfect: Right margin: %d WPUs\n", margin));
+					  marginInch = ((float)margin / 1200);
+
+					  // output the new margin setting
+					  UT_String propBuffer;
+					  if (subGroup == 0)
+						  UT_String_sprintf(propBuffer, "page-margin-left:%4.4fin", marginInch);
+					  else
+						  UT_String_sprintf(propBuffer, "page-margin-right:%4.4fin", marginInch);
+                             
+                      const XML_Char* propsArray[3];
+                      propsArray[0] = "props";
+                      propsArray[1] = propBuffer.c_str();
+                      propsArray[2] = NULL;
+					  
+                      X_CheckDocumentError(_appendSection(propsArray));
+					  X_CheckDocumentError(getDoc()->appendStrux(PTX_Block, NULL));
+                      // set m_bParagraphChanged to true so the paragraph properties will 
+                      // unconditionally be added in this new section
+                      m_bParagraphChanged = true;
+					  
+					  break;
+				  }
           case 2: // TODO: Define Text Columns, Partially implemented
                   unsigned char colType;
                   unsigned char rowSpacing[4]; // a WP SPacing type variable, which is 4 bytes
                   unsigned char unknown; 
                   unsigned char numCols;
-          
+			      unsigned char nonDeletableInfoSize; // 1 byte only this case
+
+				  X_CheckFileReadElementError(fread(&nonDeletableInfoSize, sizeof(unsigned char), 1, m_importFile));
                   X_CheckFileReadElementError(fread(&colType, sizeof(unsigned char), 1, m_importFile));
                   if (fread(&rowSpacing[0], sizeof(unsigned char), 4, m_importFile) != 4*sizeof(unsigned char))
                      return UT_IE_IMPORTERROR;
@@ -1265,8 +1307,62 @@ UT_Error IE_Imp_WordPerfect::_handleHeaderFooterGroup()
    unsigned char subGroup, flags;
    long startPosition;
    UT_uint16 size;
+   unsigned char numPfxIdRefs;
+   UT_uint16 nonDeletableInfoSize;
+   unsigned char occurence;
 
-   X_CheckWordPerfectError(_handleVariableGroupHeader(startPosition, subGroup, size, flags));
+   if(!m_undoOn)
+   {
+	   X_CheckWordPerfectError(_handleVariableGroupHeader(startPosition, subGroup, size, flags));
+	   X_CheckFileReadElementError(fread(&numPfxIdRefs, sizeof(unsigned char), 1, m_importFile));
+	   UT_DEBUGMSG(("WordPerfect: Number of Prefix ID References: %d\n", numPfxIdRefs));
+	
+	   for (int i=0; i<numPfxIdRefs; i++)
+	   {
+		   UT_uint16 PfxRef;
+		   UT_DEBUGMSG(("WordPerfect: Reading Prefix %d...\n", i));
+		   X_CheckFileReadElementError(fread(&PfxRef, sizeof(UT_uint16), 1, m_importFile));
+		   // TODO: handle the prefix reference here
+		   // ...
+	   }
+	   X_CheckFileReadElementError(fread(&nonDeletableInfoSize, sizeof(UT_uint16), 1, m_importFile));
+	   X_CheckFileReadElementError(fread(&occurence, sizeof(unsigned char), 1, m_importFile));
+	   UT_DEBUGMSG(("WordPerfect: Occurence: %d\n", occurence));
+   
+	   // TODO: handle to different occurences below
+	   if (occurence & 0x01)
+	   {
+		   // does occur on odd pages
+	   } else
+	   {
+		   // does not occur on odd pages
+	   }
+   
+	   if (occurence & 0x02)
+	   {
+		   // does occur on even pages
+	   } else
+	   {
+		   // does not occur on even pages
+	   }
+	   
+	   if (occurence & 0x04)
+	   {
+		   // vertical direction (top to bottom - East Asia)
+	   } else	
+	   {	
+		   // horizontal direction (left to right)
+	   }
+   
+	   if (occurence & 0x08)
+	   {
+		   // use space between headers and footers to display watermark
+	   } else
+	   {
+		   // use full page to display watermark
+	   }
+   }
+   
    X_CheckWordPerfectError(_skipGroup(startPosition, size));
 
    return UT_OK;
@@ -1475,7 +1571,6 @@ UT_Error IE_Imp_WordPerfect::_flushText()
    m_textBuf.truncate(0);
    UT_DEBUGMSG(("WordPerfect: Text flushed\n"));
      
-   
    return UT_OK;
 }
 
@@ -1582,6 +1677,7 @@ UT_Error IE_Imp_WordPerfect::_appendCurrentParagraphProperties()
 
 bool IE_Imp_WordPerfect::_appendSection( const XML_Char ** props )
 {
+  UT_DEBUGMSG(("WordPerfect: Appending section\n"));
   if (!getDoc()->appendStrux(PTX_Section, props))
     return false ;
 
