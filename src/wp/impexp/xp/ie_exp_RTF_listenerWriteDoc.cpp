@@ -844,54 +844,43 @@ void s_RTF_ListenerWriteDoc::_open_cell(PT_AttrPropIndex api)
 			m_pie->_rtf_open_brace();
 			_newRow();
 		}
-		if(!m_bNewTable)
+		else
 		{
 			bNewRow = true;
 			m_pie->_rtf_keyword("row");
 			m_pie->_rtf_nl();
-//			m_pie->_rtf_close_brace();
-//			m_pie->_rtf_open_brace();
-//			_newRow();
+			_newRow();
 		}
 	}
+//
+// reset api. It may have been screwed in _newRow
+//
+	m_Table.OpenCell(api);
 	if(bNewRow)
 	{
 //
-// Output mergecell markers for all vertically merged cells at the start of the row
+// Output cell markers for all vertically merged cells at the start of the row
 //
 		for(i = 0; i < m_Table.getLeft(); i++)
 		{
-			m_pie->_rtf_keyword("clvmrg");
 			m_pie->_rtf_keyword("cell");
 		}
 	}
+//
+// Now output vertically merged cell markers between the last right position and this cell's left.
+//
 	else
 	{
-//
-// Cover other vertically merged cells
-//
-		if(!m_bNewTable)
+		for(i = m_iRight; i < m_Table.getLeft(); i++)
 		{
-			for(i= m_iRight; i < m_Table.getLeft();i++)
-			{
-				m_pie->_rtf_keyword("clvmrg");
-				m_pie->_rtf_keyword("cell");
-			}
+			m_pie->_rtf_keyword("cell");
 		}
-	}			
+	}
 	m_bNewTable = false;
 	m_iLeft = m_Table.getLeft();
 	m_iRight = m_Table.getRight();
 	m_iTop = m_Table.getTop();
 	m_iBot = m_Table.getBot();
-	if(m_iRight > m_iLeft + 1 )
-	{
-		m_pie->_rtf_keyword("clmgf");
-	}
-	if(m_iBot > m_iTop + 1)
-	{
-		m_pie->_rtf_keyword("clvmgf");
-	}
 }
 
 void s_RTF_ListenerWriteDoc::_newRow(void)
@@ -955,7 +944,7 @@ void s_RTF_ListenerWriteDoc::_newRow(void)
 			{
 				char * pszSub = UT_strdup(sProps.substr(i,(j-i)).c_str());
 				i = j + 1;
-				double colWidth = UT_convertToInches(pszSub);
+				double colWidth = UT_convertToInches(pszSub)* 10000.0;
 				fl_ColProps * pColP = new fl_ColProps;
 				pColP->m_iColWidth = (UT_sint32) colWidth;
 				vecColProps.addItem((void *) pColP);
@@ -987,12 +976,19 @@ void s_RTF_ListenerWriteDoc::_newRow(void)
 	{
 		_outputTableBorders(1);
 	}
+//
+// OK now output all the cell properties, including merged cell controls.
+//
+	UT_sint32 row = m_Table.getTop();
+	UT_sint32 col = m_Table.getLeft();
 	double cellpos = cellLeftPos + dColSpace*0.5;
 	double colwidth = 0.0;
 	double dcells = (double) m_Table.getNumCols();
 	colwidth = (_getColumnWidthInches() - dColSpace*0.5)/dcells;
-	for(i=0; i < m_Table.getNumCols();i++)
+	for(i=0; i < m_Table.getNumCols(); i = m_Table.getRight())
 	{
+		m_Table.setCellRowCol(row,i);
+
 		m_pie->_rtf_keyword("clvertalt"); // Top aligned vertical alignment. ONly one for now
 		if(iThick > 0)
 		{
@@ -1005,22 +1001,68 @@ void s_RTF_ListenerWriteDoc::_newRow(void)
 		m_pie->_rtf_keyword("cltxlrtb"); // Text flow left to right, top to bottom
 		                                 // Hardwired for now.
 //
+// Look if we have a vertically merged cell at this (row,i)
+//
+		bool vMerge = false;
+		if(m_Table.getTop() < row)
+		{
+			m_pie->_rtf_keyword("clvmrg");
+			vMerge = true;
+		}
+#if 0
+//
+// Look to see if this is the first cell of a set of vertically merged cells
+//		
+		if(m_Table.getBot() > row +1)
+		{
+			m_pie->_rtf_keyword("clvmrgf");
+		}
+//
+// Look to see if we have a horizontally merged cell.
+//
+		if(m_bNewTable && (m_Table.getLeft() < i))
+		{
+			m_pie->_rtf_keyword("clmrg");
+		}
+//
+// Look to see if this is the first of a group of horizonatally merged cells.
+//
+		if(m_bNewTable && (m_Table.getRight() > i +1))
+		{
+			m_pie->_rtf_keyword("clmrgf");
+		}
+#endif
+//
 // output cellx for each cell
 //
+		double thisX = 0.0;
+		UT_sint32 j =0;
 		if(vecColProps.getItemCount() > 0)
 		{
-			fl_ColProps * pColP = (fl_ColProps *) vecColProps.getNthItem(i);
-			colwidth = pColP->m_iColWidth;
+			for(j= 0; j< m_Table.getRight(); j++)
+			{
+				fl_ColProps * pColP = (fl_ColProps *) vecColProps.getNthItem(j);
+				double bigWidth = (double)  pColP->m_iColWidth;
+				thisX += bigWidth/10000.0;
+			}
 		}
-		cellpos += colwidth;
+		else
+		{
+			for(j= 0; j< m_Table.getRight(); j++)
+			{
+				thisX += colwidth;
+			}
+		}
+		thisX += cellpos;
 		UT_sint32 iCellTwips = 0;
-		iCellTwips = (UT_sint32) (cellpos*1440.0);
+		iCellTwips = (UT_sint32) (thisX*1440.0);
 		m_pie->_rtf_keyword("cellx",iCellTwips);
 	}
 	if(vecColProps.getItemCount() > 0)
 	{
 		UT_VECTOR_PURGEALL(fl_ColProps *,vecColProps);
 	}
+	m_Table.setCellRowCol(row,col);
 }
 
 void s_RTF_ListenerWriteDoc::_outputTableBorders(UT_sint32 iThick)
@@ -1113,12 +1155,13 @@ void s_RTF_ListenerWriteDoc::_open_table(PT_AttrPropIndex api)
 void s_RTF_ListenerWriteDoc::_close_cell(void)
 {
 	m_pie->_rtf_keyword("cell");
+#if 0
 	UT_sint32 i = m_iLeft + 1;
 	for(i = m_iLeft +1; i< m_iRight; i++)
 	{
-		m_pie->_rtf_keyword("clmrg");
 		m_pie->_rtf_keyword("cell");
 	}
+#endif
 	m_Table.CloseCell();
 }
 

@@ -2645,16 +2645,14 @@ void FV_View::_findPositionCoords(PT_DocPosition pos,
 			xPoint2 += pRun->getWidth();
 		}
 	}
-	else if( (pRun == NULL) && (posEOD <= getPoint()))
+	else if( (pRun == NULL) && (posEOD == getPoint()))
 	{
 		pRun = pBlock->getFirstRun();
-		UT_DEBUGMSG(("SEVIOR: POs 2 -pRun %x getNext %x \n",pRun,pRun->getNext()));
 		while(pRun && (pRun->getNext() != NULL))
 		{
 			pRun = pRun->getNext();
 		}
 	}
-
 	if (pRun)
 	{
 		// we now have coords relative to the page containing the ins pt

@@ -311,7 +311,7 @@ void ie_Table::OpenCell(PT_AttrPropIndex iApi)
 
 
 /*!
- * Signal clase of cell from endCell strux
+ * Signal close of cell from endCell strux
  */
 void ie_Table::CloseCell(void)
 {
@@ -436,13 +436,17 @@ const char * ie_Table::getCellProp(const char * pProp)
 }
 /*!
  * Set the cell api on the top of the stack to that at location (row,col)
- */
+ * If there is no cell at the (row,col) the cellApi is not changed. 
+*/
 void ie_Table::setCellRowCol(UT_sint32 row, UT_sint32 col)
 {
 	ie_PartTable * pPT = NULL;
 	m_sLastTable.viewTop((void **) &pPT);
 	UT_return_if_fail(pPT);
 	PL_StruxDocHandle cellSDH = m_pDoc->getCellSDHFromRowCol(pPT->getTableSDH(),row,col);
-	PT_AttrPropIndex api = m_pDoc->getAPIFromSDH(cellSDH);
-	pPT->setCellApi(api);
+	if(cellSDH != NULL)
+	{
+		PT_AttrPropIndex api = m_pDoc->getAPIFromSDH(cellSDH);
+		pPT->setCellApi(api);
+	}
 }

@@ -29,11 +29,6 @@ class UT_Stack;
 class PX_ChangeRecord_Object;
 class PP_AttrProp;
 
-/******************************************************************
-** This file is considered private to ie_exp_RTF.cpp
-** This is a PL_Listener.  It's purpose is to actually write
-** the contents of the document to the RTF file.
-******************************************************************/
 
 class ABI_EXPORT ie_PartTable
 {
