@@ -64,6 +64,118 @@ void AP_Convert::setMergeSource (const char * source)
 
 /////////////////////////////////////////////////////////////////
 
+class Save_MailMerge_Listener : public IE_MailMerge::IE_MailMerge_Listener
+{
+public:
+	
+	explicit Save_MailMerge_Listener (PD_Document * pDoc,
+									  const UT_UTF8String & szOut,
+									  IEFileType out_ieft)
+		: IE_MailMerge::IE_MailMerge_Listener (), m_doc (pDoc),
+		  m_szFile(szOut), m_count(0), m_ieft(out_ieft)
+		{
+		}
+
+	virtual ~Save_MailMerge_Listener ()
+		{
+		}
+		
+	virtual PD_Document* getMergeDocument () const
+		{
+			return m_doc;
+		}
+	
+	virtual bool fireUpdate () 
+		{
+			if (!m_doc)
+				return false;
+
+			UT_UTF8String out_file (UT_UTF8String_sprintf("%s-%d",
+														  m_szFile.utf8_str(),
+														  m_count++));
+
+			if (UT_OK == m_doc->saveAs (out_file.utf8_str(), m_ieft))
+				return true;
+			return false;
+		}
+	
+private:
+	PD_Document *m_doc;
+	UT_UTF8String m_szFile;
+	UT_uint32 m_count;
+	IEFileType m_ieft;
+};
+
+class Print_MailMerge_Listener : public IE_MailMerge::IE_MailMerge_Listener
+{
+public:
+
+	explicit Print_MailMerge_Listener (PD_Document * pd,
+									   GR_GraphicsFactory & factory,
+									   const UT_UTF8String & szFile)
+		: IE_MailMerge::IE_MailMerge_Listener (), m_doc (pd),
+		  m_szFile(szFile), m_factory(factory)
+		{
+		}
+
+	virtual ~Print_MailMerge_Listener ()
+		{
+		}
+		
+	virtual PD_Document* getMergeDocument () const
+		{
+			return m_doc;
+		}
+	
+	virtual bool fireUpdate () 
+		{
+			GR_Graphics *pGraphics = m_factory.getGraphics();
+
+			FL_DocLayout *pDocLayout = new FL_DocLayout(m_doc,pGraphics);
+			FV_View printView(XAP_App::getApp(),0,pDocLayout);
+			pDocLayout->setView (&printView);
+			pDocLayout->fillLayouts();
+			pDocLayout->formatAll();
+			
+#ifdef XP_UNIX_TARGET_GTK
+			PS_Graphics *psGr = static_cast<PS_Graphics*>(pGraphics);
+			psGr->setColorSpace(GR_Graphics::GR_COLORSPACE_COLOR);
+			psGr->setPageSize(printView.getPageSize().getPredefinedName());
+#endif
+			
+			s_actuallyPrint (m_doc, pGraphics, 
+							 &printView, m_szFile.utf8_str(), 
+							 1, true, 
+							 pDocLayout->getWidth(), pDocLayout->getHeight() / pDocLayout->countPages(), 
+							 1, pDocLayout->countPages());
+			
+			DELETEP(pDocLayout);
+			
+			// sure, we'll process more data if it exists
+			return true;
+		}
+	
+private:
+	PD_Document *m_doc;
+	UT_UTF8String m_szFile;
+
+	GR_GraphicsFactory & m_factory;
+};
+
+static void handleMerge(const char * szMailMergeFile,
+						IE_MailMerge::IE_MailMerge_Listener & listener){
+	IE_MailMerge * pie = NULL;
+	UT_Error errorCode = IE_MailMerge::constructMerger(szMailMergeFile, IEMT_Unknown, &pie);
+	if (!errorCode)
+	{
+		pie->setListener (&listener);
+		pie->mergeFile (szMailMergeFile);
+		DELETEP(pie);
+	}
+}
+
+/////////////////////////////////////////////////////////////////
+
 void AP_Convert::convertTo(const char * szSourceFilename,
 						   IEFileType sourceFormat,
 						   const char * szTargetFilename,
@@ -76,10 +188,32 @@ void AP_Convert::convertTo(const char * szSourceFilename,
 
 	error = pNewDoc->readFromFile(szSourceFilename, sourceFormat);
 
-	switch (error) {
-	case UT_OK:
-		error = pNewDoc->saveAs(szTargetFilename, targetFormat);
+	if (error != UT_OK) {
+		switch (error) {
+		case UT_INVALIDFILENAME:
+			if (m_iVerbose > 0)
+				fprintf(stderr, "AbiWord: [%s] is not a valid file name.\n", szSourceFilename);
+			break;
+		case UT_IE_NOMEMORY:
+			if (m_iVerbose > 0)
+				fprintf(stderr, "AbiWord: Arrrgh... I don't have enough memory!\n");
+			break;
+		case UT_NOPIECETABLE:
+			// TODO
+		default:
+			if (m_iVerbose > 0)
+				fprintf(stderr, "AbiWord: could not open the file [%s]\n", szSourceFilename);
+		}
 		
+		return;
+	}
+
+	if (m_mergeSource.size()) {
+		IE_MailMerge::IE_MailMerge_Listener * listener = new Save_MailMerge_Listener (pNewDoc, szTargetFilename, targetFormat);
+		handleMerge (m_mergeSource.utf8_str(), *listener);
+		DELETEP(listener);
+	} else {
+		error = pNewDoc->saveAs(szTargetFilename, targetFormat);
 		switch (error) {
 		case UT_OK:
 			if (m_iVerbose > 1)
@@ -96,24 +230,9 @@ void AP_Convert::convertTo(const char * szSourceFilename,
 		default:
 			if (m_iVerbose > 0)
 				fprintf(stderr, "AbiWord: could not write the file [%s]\n", szTargetFilename);
+			break;
 		}
-
-		break;
-	case UT_INVALIDFILENAME:
-		if (m_iVerbose > 0)
-			fprintf(stderr, "AbiWord: [%s] is not a valid file name.\n", szSourceFilename);
-		break;
-	case UT_IE_NOMEMORY:
-		if (m_iVerbose > 0)
-			fprintf(stderr, "AbiWord: Arrrgh... I don't have enough memory!\n");
-		break;
-	case UT_NOPIECETABLE:
-		// TODO
-	default:
-		if (m_iVerbose > 0)
-			fprintf(stderr, "AbiWord: could not open the file [%s]\n", szSourceFilename);
 	}
-
 
 	UNREFP(pNewDoc);
 }
@@ -211,136 +330,6 @@ void AP_Convert::convertToPNG ( const char * szSourceFileName )
 	DELETEP (dest);
 
 	printf ("Conversion to PNG failed\n");
-}
-
-class Save_MailMerge_Listener : public IE_MailMerge::IE_MailMerge_Listener
-{
-public:
-	
-	explicit Save_MailMerge_Listener (const UT_UTF8String & szIn,
-									  const UT_UTF8String & szOut)
-		: IE_MailMerge::IE_MailMerge_Listener (), m_doc (0),
-		  m_szFile(szOut), m_count(0)
-		{
-			m_doc = new PD_Document(XAP_App::getApp());
-			UT_return_if_fail(m_doc);
-
-			if (UT_OK != m_doc->readFromFile(szIn.utf8_str(), IEFT_Unknown)){
-				UNREFP(m_doc);
-				m_doc = 0;
-			}
-		}
-
-	virtual ~Save_MailMerge_Listener ()
-		{
-			if (m_doc){
-				UNREFP(m_doc);
-			}
-		}
-		
-	virtual PD_Document* getMergeDocument () const
-		{
-			return m_doc;
-		}
-	
-	virtual bool fireUpdate () 
-		{
-			if (!m_doc)
-				return false;
-
-			UT_UTF8String out_file (UT_UTF8String_sprintf("%s-%d",
-														  m_szFile.utf8_str(),
-														  ++m_count));
-
-			IEFileType ieft = IE_Exp::fileTypeForSuffix(".abw");
-			
-			char *tmp = NULL;
-			
-			if(NULL != (tmp = strrchr(const_cast<char *>(m_szFile.utf8_str()), '.')))
-			{
-				// found an extension. use that instead, else just use AbiWord native format
-				if(strlen(tmp) > 1)
-					ieft = IE_Exp::fileTypeForSuffix(tmp);
-			}
-
-			m_doc->saveAs (out_file.utf8_str(), ieft);
-
-			return true;
-		}
-	
-private:
-	PD_Document *m_doc;
-	UT_UTF8String m_szFile;
-	UT_uint32 m_count;
-};
-
-class Print_MailMerge_Listener : public IE_MailMerge::IE_MailMerge_Listener
-{
-public:
-
-	explicit Print_MailMerge_Listener (PD_Document * pd,
-									   GR_GraphicsFactory & factory,
-									   const UT_UTF8String & szFile)
-		: IE_MailMerge::IE_MailMerge_Listener (), m_doc (pd),
-		  m_szFile(szFile), m_factory(factory)
-		{
-
-		}
-
-	virtual ~Print_MailMerge_Listener ()
-		{
-		}
-		
-	virtual PD_Document* getMergeDocument () const
-		{
-			return m_doc;
-		}
-	
-	virtual bool fireUpdate () 
-		{
-			GR_Graphics *pGraphics = m_factory.getGraphics();
-
-			FL_DocLayout *pDocLayout = new FL_DocLayout(m_doc,pGraphics);
-			FV_View printView(XAP_App::getApp(),0,pDocLayout);
-			pDocLayout->setView (&printView);
-			pDocLayout->fillLayouts();
-			pDocLayout->formatAll();
-			
-#ifdef XP_UNIX_TARGET_GTK
-			PS_Graphics *psGr = static_cast<PS_Graphics*>(pGraphics);
-			psGr->setColorSpace(GR_Graphics::GR_COLORSPACE_COLOR);
-			psGr->setPageSize(printView.getPageSize().getPredefinedName());
-#endif
-			
-			s_actuallyPrint (m_doc, pGraphics, 
-							 &printView, m_szFile.utf8_str(), 
-							 1, true, 
-							 pDocLayout->getWidth(), pDocLayout->getHeight() / pDocLayout->countPages(), 
-							 1, pDocLayout->countPages());
-			
-			DELETEP(pDocLayout);
-			
-			// sure, we'll process more data if it exists
-			return true;
-		}
-	
-private:
-	PD_Document *m_doc;
-	UT_UTF8String m_szFile;
-
-	GR_GraphicsFactory & m_factory;
-};
-
-static void handleMerge(const char * szMailMergeFile,
-						IE_MailMerge::IE_MailMerge_Listener & listener){
-	IE_MailMerge * pie = NULL;
-	UT_Error errorCode = IE_MailMerge::constructMerger(szMailMergeFile, IEMT_Unknown, &pie);
-	if (!errorCode)
-	{
-		pie->setListener (&listener);
-		pie->mergeFile (szMailMergeFile);
-		DELETEP(pie);
-	}
 }
 
 void AP_Convert::print(const char * szFile, GR_GraphicsFactory & pFactory)

@@ -143,6 +143,8 @@ bool AP_Args::doWindowlessArgs()
 	{
 		AP_Convert * conv = new AP_Convert();
 		conv->setVerbose(m_iVerbose);
+		if (m_sMerge)
+			conv->setMergeSource (m_sMerge);
 		while ((m_sFile = poptGetArg (poptcon)) != NULL)
 			conv->convertTo(m_sFile, m_sTo);
 		delete conv;
