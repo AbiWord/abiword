@@ -837,7 +837,7 @@ GtkWidget *AP_UnixDialog_Lists::_constructWindowContents (void)
 					  (GtkAttachOptions) (0), 0, 0);
 	gtk_misc_set_alignment (GTK_MISC (font_lb), 0.0, 0.5);
 
-	delimiter_lb = gtk_label_new (pSS->getValue(AP_STRING_ID_DLG_Lists_Level));
+	delimiter_lb = gtk_label_new (pSS->getValue(AP_STRING_ID_DLG_Lists_DelimiterString));
 	gtk_widget_show (delimiter_lb);
 	gtk_table_attach (GTK_TABLE (table2), delimiter_lb, 0, 1, 2, 3,
 					  (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
