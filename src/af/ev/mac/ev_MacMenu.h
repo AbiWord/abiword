@@ -71,6 +71,7 @@ private:
 	UT_Vector * m_callbacks;
 	
 	static void _convertToMac (char * buf, size_t bufSize, const char * label);
+	static char _getItemCmd (const char * mnemonic);
 };
 
 #endif /* EV_MACMENU_H */

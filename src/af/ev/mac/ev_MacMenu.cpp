@@ -181,6 +181,20 @@ void EV_MacMenu::_convertToMac (char * buf, size_t bufSize, const char * label)
 }
 
 
+char EV_MacMenu::_getItemCmd (const char * mnemonic)
+{
+	char * p;
+	p = strchr (mnemonic, '+');
+	p++;
+	if (strlen (p) == 1) {
+		return *p;
+	}
+	// TODO handle strange shortcuts
+	return 0;
+}
+
+
+
 bool EV_MacMenu::synthesize(void)
 {
 	int menuType;
@@ -238,6 +252,7 @@ bool EV_MacMenu::synthesize(void)
 		{
 		case EV_MLF_Normal:
 		{
+			char menuCmd = 0;
 			const char ** data = getLabelName(m_pMacApp, m_pMacFrame, pAction, pLabel);
 			szLabelName = data[0];
 			szMnemonicName = data[1];
@@ -251,6 +266,7 @@ bool EV_MacMenu::synthesize(void)
 				if (szMnemonicName && *szMnemonicName)
 				{
 					/* MAC TODO add the accelerator */
+					menuCmd = _getItemCmd (szMnemonicName);
 				}
 				C2PStr (menuLabel, buf);
 			}
@@ -265,7 +281,11 @@ bool EV_MacMenu::synthesize(void)
 			bResult = cbStack.viewTop ((void **)&cb);
 			UT_ASSERT(bResult);
 			currentItem = ::CountMenuItems (parentMenu);
-			::InsertMenuItem (parentMenu, menuLabel, currentItem + 1);
+			currentItem++;
+			::InsertMenuItem (parentMenu, menuLabel, currentItem);
+			if (menuCmd) {
+				::SetItemCmd (parentMenu, currentItem, menuCmd);
+			}
 			cb->items->addItem ((void *)id);
 			break;
 		}
@@ -292,13 +312,15 @@ bool EV_MacMenu::synthesize(void)
 					currentItem = ::CountMenuItems (parentMenu);
 					subMenu = ::NewMenu (m_lastSubMenuID, "\p");
 					UT_ASSERT (subMenu);
-					::InsertMenu (subMenu, -1);
+					::InsertMenu (subMenu, kInsertHierarchicalMenu);
+					currentItem++;
 					::InsertMenuItem (parentMenu, menuLabel, currentItem);
-					::SetItemMark (parentMenu, currentItem + 1, m_lastSubMenuID);
+					::SetItemCmd (parentMenu, currentItem, hMenuCmd);
+					::SetItemMark (parentMenu, currentItem, m_lastSubMenuID);
 				}
 				else if (menuType == EV_MAC_MENUBAR) {
 					subMenu = ::NewMenu (m_lastSubMenuID, menuLabel);
-					::InsertMenu (subMenu, 0);			
+					::InsertMenu (subMenu, 0);
 				}
 	
 				cb = new _menuCallback (m_lastSubMenuID, subMenu);
