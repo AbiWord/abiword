@@ -1655,14 +1655,15 @@ UT_Bool _chooseFont(AP_Frame * pFrame, FV_View * pView)
 	{
 		int i = 0;
 
-		// currently a maximum of six simultaneous properties
+		// currently a maximum of eight simultaneous properties
 		const XML_Char * props_out[] = { 
 			NULL, NULL, 
 			NULL, NULL, 
 			NULL, NULL, 
 			NULL, NULL, 
 			NULL, NULL, 
-			NULL, NULL, 
+			NULL, NULL,
+			NULL, NULL,	// XLFD space, set to null when saving any properties
 			0 };
 
 		if (lf.lfFaceName)
@@ -1740,7 +1741,16 @@ UT_Bool _chooseFont(AP_Frame * pFrame, FV_View * pView)
 
 		props_out[i] = "color";
 		props_out[i+1] = buf_color;
-
+		i += 2;
+		
+		/*
+		  XLFD is set to emtpy ("") on Windows so that X will
+		  force it self to read from the "updated" CSS-style
+		  properties first.
+		*/
+		props_out[i] = "font-xlfd";
+		props_out[i+2] = "";
+		
 		pView->setCharFormat(props_out);
 
 		return UT_TRUE;
@@ -2015,92 +2025,102 @@ UT_Bool _chooseFont(AP_Frame * pFrame, FV_View * pView)
 	gchar * fontString = new gchar[1024];
 	fontString[0] = NULL;
 	
-	// Query the view for attributes to enable in our font preview
-	// TODO: what about generic family names?
-	// TODO: also, I don't like doing two strcats to tack on the "-"
-	// seperator.  Maybe write wrappers for an XLFD string.
-
-	// we don't have a "foundry" attribute to match X's, fake it
-	strcat(fontString, "-*");
-
-	// family is *,[name]
-	s = UT_getAttribute("font-family", props_in);
+	/*
+	  logic note: if we have an XLFD, we use it to hint to the GTK+
+	  dialog.  If we don't have one, we build a substitute from the
+	  CSS-style attributes.
+	*/
+	s = UT_getAttribute("font-xlfd", props_in);
 	if (s)
 	{
-		if (!UT_stricmp(s, ""))
-		{
-			// this satisfies the condition the view doesn't have
-			// a family set
-			strcat(fontString, "-");
-			strcat(fontString, "Times");
-		}
-		else
-		{
-			strcat(fontString, "-");
-			strcat(fontString, s);
-		}
+		if (UT_stricmp(s, ""))
+			strcpy(fontString, s);
 	}
 	else
-		// this is kind of redundant, fix it
+	{
+		/* This is where the hairy code is */
+			
+		// we don't have a "foundry" attribute to match X's, fake it
 		strcat(fontString, "-*");
+
+		// family is *,[name]
+		s = UT_getAttribute("font-family", props_in);
+		if (s)
+		{
+			if (!UT_stricmp(s, ""))
+			{
+				// this satisfies the condition the view doesn't have
+				// a family set
+				strcat(fontString, "-");
+				strcat(fontString, "Times");
+			}
+			else
+			{
+				strcat(fontString, "-");
+				strcat(fontString, s);
+			}
+		}
+		else
+			// this is kind of redundant, fix it
+			strcat(fontString, "-*");
 	
-	// weight is *,black,bold,demibold,medium,regular
-	s = UT_getAttribute("font-weight", props_in);
-	if (s)
-	{
-		if (!UT_stricmp(s, "bold"))
-			strcat(fontString, "-bold");
+		// weight is *,black,bold,demibold,medium,regular
+		s = UT_getAttribute("font-weight", props_in);
+		if (s)
+		{
+			if (!UT_stricmp(s, "bold"))
+				strcat(fontString, "-bold");
+			else
+				strcat(fontString, "-medium");
+		}
 		else
-			strcat(fontString, "-medium");
-	}
-	else
-		strcat(fontString, "-*");
+			strcat(fontString, "-*");
 		
-	// slant is *,i,o,r
-	s = UT_getAttribute("font-style", props_in);
-	if (s)
-	{
-		if (!UT_stricmp(s, "italic"))
-			strcat(fontString, "-i");
+		// slant is *,i,o,r
+		s = UT_getAttribute("font-style", props_in);
+		if (s)
+		{
+			if (!UT_stricmp(s, "italic"))
+				strcat(fontString, "-i");
+			else
+				strcat(fontString, "-r");
+		}
 		else
-			strcat(fontString, "-r");
-	}
-	else
+			strcat(fontString, "-*");
+
+		// sWidth
+		strcat(fontString, "-*");
+		// adStyle
 		strcat(fontString, "-*");
 
-	// sWidth
-	strcat(fontString, "-*");
-	// adStyle
-	strcat(fontString, "-*");
+		// pxlsz (we use points)
+		strcat(fontString, "-*");
 
-	// pxlsz (we use points)
-	strcat(fontString, "-*");
+		// point size
+		s = UT_getAttribute("font-size", props_in);
+		if (s)
+		{
+			strcat(fontString, "-");
+			char fontSize[5];
+			snprintf(fontSize, 5, "%d", (pG->convertDimension(s)) * 10);
+			UT_DEBUGMSG(("font is size %s\n", fontSize));
+			strcat(fontString, fontSize);
+		}
+		else
+			// is this the default size?
+			strcat(fontString, "-12");
 
-	// point size
-	s = UT_getAttribute("font-size", props_in);
-	if (s)
-	{
-		strcat(fontString, "-");
-		char fontSize[5];
-		snprintf(fontSize, 5, "%d", (pG->convertDimension(s)) * 10);
-		UT_DEBUGMSG(("font is size %s\n", fontSize));
-		strcat(fontString, fontSize);
-	}
-	else
-		// is this the default size?
-		strcat(fontString, "-12");
-
-	// Fill in the last 6 attributes we don't touch
-	strcat(fontString, "-*");
-	strcat(fontString, "-*");
-	strcat(fontString, "-*");
-	strcat(fontString, "-*");
-	strcat(fontString, "-*");
-	strcat(fontString, "-*");
+		// Fill in the last 6 attributes we don't touch
+		strcat(fontString, "-*");
+		strcat(fontString, "-*");
+		strcat(fontString, "-*");
+		strcat(fontString, "-*");
+		strcat(fontString, "-*");
+		strcat(fontString, "-*");
 	
-	UT_DEBUGMSG(("Priming with XLFD: [%s]\n", fontString));
+		UT_DEBUGMSG(("Priming with XLFD: [%s]\n", fontString));
 	
-	// TODO make this work
+		// TODO make this work
 /*
   s = UT_getAttribute("text-decoration", props_in);
   if (s)
@@ -2124,8 +2144,8 @@ UT_Bool _chooseFont(AP_Frame * pFrame, FV_View * pView)
   }
 */
 	
-	// TODO color in X, GTK font dialog doesn't support
-	// color, we do that seperately.
+		// TODO color in X, GTK font dialog doesn't support
+		// color, we do that seperately.
 /*
   s = UT_getAttribute("color", props_in);
   if (s)
@@ -2139,6 +2159,7 @@ UT_Bool _chooseFont(AP_Frame * pFrame, FV_View * pView)
   cf.rgbColors = rgbCurrent;
   }
 */
+	}
 	if (!gtk_font_selection_dialog_set_font_name(cf, fontString))
 	{
 		// We couldn't set the name, which means we don't have it
@@ -2181,9 +2202,14 @@ UT_Bool _chooseFont(AP_Frame * pFrame, FV_View * pView)
 				NULL, NULL, 	// 4,5   weight
 				NULL, NULL, 	// 6,7   slant
 				NULL, NULL, 	// 8,9   decoration (strike or underline)
-				NULL, NULL, 	// 10,11 color (not used here)
+				NULL, NULL, 	// 10,11 xlfd
+				NULL, NULL,		// 12,13 color (not used here)
 				0 };
-		
+
+			// we always store the XLFD
+			props_out[10] = "font-xlfd";
+			props_out[11] = selectedFont;
+				
 			// duplicate and tokenize the XLFD
 			gchar * cloneString = strdup(selectedFont);
 			UT_ASSERT(cloneString);
@@ -2278,12 +2304,12 @@ UT_Bool _chooseFont(AP_Frame * pFrame, FV_View * pView)
 
 			// dummies
 			props_out[8] = "text_decoration";
-			props_out[9] ="none";
+			props_out[9] = "none";
 
 			char buf_color[6];
 			sprintf(buf_color, "%02x%02x%02x", 0, 0, 0);
-			props_out[10] = "color";
-			props_out[11] = buf_color;
+			props_out[12] = "color";
+			props_out[13] = buf_color;
 
 			// apply changes
 			pView->setCharFormat(props_out);
@@ -2307,7 +2333,7 @@ dlg_Answer _askUser(AP_Frame * pFrame, const char * szQ, dlg_Buttons b, int defB
 	AP_App * pApp = pFrame->getApp();
 	UT_ASSERT(pApp);
 
-	const char * szCaption = pApp->getApplicationTitleForTitleBar();
+	// const char * szCaption = pApp->getApplicationTitleForTitleBar();
 
 	/* TODO */
 
@@ -2320,7 +2346,7 @@ UT_Bool _printDoc(AP_Frame * pFrame, FV_View * pView)
 	FL_DocLayout* pLayout = pView->getLayout();
 	PD_Document * doc = pLayout->getDocument();
 
-	char* title = doc->getFilename();	// TODO get a real title
+	char* title = (char *) doc->getFilename();	// TODO get a real title
 
 	// create a new graphics 
 	PS_Graphics* ppG = new PS_Graphics("junk.ps", title, "AbiWord");

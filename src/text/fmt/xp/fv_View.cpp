@@ -18,7 +18,6 @@
  */
 
 
-
 #include <stdlib.h>
 #include <stdio.h>
 
@@ -772,6 +771,7 @@ UT_Bool FV_View::getCharFormat(const XML_Char *** pProps)
 	v.addItem(new _fmtPair("font-size",pSpanAP,pBlockAP,pSectionAP));
 	v.addItem(new _fmtPair("font-weight",pSpanAP,pBlockAP,pSectionAP));
 	v.addItem(new _fmtPair("font-style",pSpanAP,pBlockAP,pSectionAP));
+	v.addItem(new _fmtPair("font-xlfd",pSpanAP,pBlockAP,pSectionAP));
 	v.addItem(new _fmtPair("text-decoration",pSpanAP,pBlockAP,pSectionAP));
 	v.addItem(new _fmtPair("color",pSpanAP,pBlockAP,pSectionAP));
 

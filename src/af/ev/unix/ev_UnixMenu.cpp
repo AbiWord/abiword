@@ -19,10 +19,12 @@
 
 #include <gtk/gtk.h>
 #include <string.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include "ut_types.h"
 #include "ut_stack.h"
 #include "ut_string.h"
+#include "ut_debugmsg.h"
 #include "ap_Menu_Id.h"
 #include "ev_UnixMenu.h"
 #include "ap_UnixApp.h"
@@ -66,7 +68,20 @@ public:									// we create...
 	AP_Menu_Id			m_id;
 };
 
+
 /*****************************************************************/
+
+static gint _initMenuCallback(GtkWidget *widget, GdkEvent *event, gpointer data)
+{
+	UT_DEBUGMSG(("Got signal to refresh dynamic menu for widget [%p], event [%p].\n", widget, event));
+
+	/*
+	  TODO: implement call to refreshChanges with "data" set to
+	  instance of class, etc.
+	*/
+	
+	return NULL;
+}
 
 static const char * _ev_GetLabelName(AP_UnixApp * pUnixApp,
 									 EV_Menu_Action * pAction,
@@ -183,10 +198,13 @@ UT_Bool EV_UnixMenu::synthesize(void)
 
 	char bufMenuPathname[1024];
 	*bufMenuPathname = 0;
+
+	UT_Stack callbackPathStack;
 	
 	for (UT_uint32 k=0; (k < nrLabelItemsInLayout); k++)
 	{
 		const char * szLabelName;
+		char * tempPath = NULL;
 		
 		EV_Menu_LayoutItem * pLayoutItem = pMenuLayout->getLayoutItem(k);
 		UT_ASSERT(pLayoutItem);
@@ -209,6 +227,9 @@ UT_Bool EV_UnixMenu::synthesize(void)
 			szLabelName = _ev_GetLabelName(m_pUnixApp, pAction, pLabel);
 			if (szLabelName && *szLabelName)
 				_append_SubMenu(bufMenuPathname,szLabelName,id);
+			// push our pathnames on to a stack to be popped and deleted later
+			tempPath = strdup((const char *) bufMenuPathname);
+			callbackPathStack.push((void *) tempPath);
 			break;
 	
 		case EV_MLF_EndSubMenu:
@@ -224,13 +245,42 @@ UT_Bool EV_UnixMenu::synthesize(void)
 			break;
 		}
 	}
-
+ 
 	gtk_item_factory_create_items(m_wMenuBarItemFactory,
 								  m_nrActualFactoryItems,m_menuFactoryItems,
 								  NULL);
 	gtk_accel_group_attach(m_wAccelGroup,GTK_OBJECT(wTLW));
 
 	m_wMenuBar = gtk_item_factory_get_widget(m_wMenuBarItemFactory, szMenuBarName);
+
+	/*
+	  Pop strings off our stack and grab a pointer to the
+	  widget they represent.
+	*/
+	char ** ppString = new char *;
+	while (callbackPathStack.pop((void **) ppString))
+	{
+		GtkWidget * tlMenuItem = gtk_item_factory_get_widget(m_wMenuBarItemFactory,
+															 *ppString);
+		if (tlMenuItem)
+		{
+			// tip:  "map" is the signal that mimics WM_INITMENU although
+			// I'm not sure if it happens before or after the actual draw.
+			char ourSignal[] = "map";
+			if(!gtk_signal_connect(GTK_OBJECT(tlMenuItem),
+								   ourSignal,
+								   GTK_SIGNAL_FUNC(_initMenuCallback),
+								   (gpointer) this))
+			{
+				UT_DEBUGMSG(("*** Failed menu signal [%s] connect to [%p], menu item [%s].\n",
+							 ourSignal, tlMenuItem, *ppString));
+			}
+		}
+		delete *ppString;
+	}
+	delete ppString;
+
+	// show up the properly connected menu structure
 	gtk_widget_show(m_wMenuBar);
 
  	gtk_box_pack_start(GTK_BOX(wVBox),m_wMenuBar,FALSE,TRUE,0);

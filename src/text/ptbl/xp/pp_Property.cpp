@@ -41,6 +41,9 @@ static PP_Property _props[] =
 	{ "font-style",				"normal",			1},
 	{ "font-variant",			"normal",			1},
 	{ "font-weight",			"normal",			1},
+	// TODO this is X specific and the Win32 GUI should ignore it
+	{ "font-xlfd",				"", 				1}, // -adobe-times-medium-r-normal-*-14-140-75-75-p-*-iso8859-1",	1},
+	
 	{ "margin-bottom",			"0.25in",			0},
 	{ "margin-top",				"0.25in",			0},
 	{ "text-align",				"left",				1},

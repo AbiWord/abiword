@@ -227,47 +227,86 @@ DG_Font* UNIXGraphics::findFont(const char* pszFontFamily,
 								const char* /*pszFontVariant*/, 
 								const char* pszFontWeight, 
 								const char* /*pszFontStretch*/, 
-								const char* pszFontSize)
+								const char* pszFontSize,
+								const char* pszXLFD)
 {
 	UNIXFont* pFont = NULL;
-
-	/*
-	  TODO what a hack.  later, we need to write proper font matching code.
-	  for now, we'll cope with this hack, which just tries to do proper handling
-	  of times, courier, and helvetica.
-	*/
+	char xFontName[2048];
 
 	char szFamily[256];
-	if ((0 == UT_stricmp(pszFontFamily, "times"))
-		|| (0 == UT_stricmp(pszFontFamily, "times new roman"))
-		|| (0 == UT_stricmp(pszFontFamily, "serif"))
-		)
+	char szWeight[32];
+	char szSlant[8];
+
+	/*
+	  Semi-Hack:
+	  
+	  In order to accomodate the differences between X and CSS fonts
+	  and Windows fonts, the document stores an XLFD string which is
+	  consulted first for Unix font matching.  If this explicit load
+	  fails (the font is not installed), this function consults the
+	  CSS-style attributes to find a similar font.
+
+	  This should be further extended in the future to fall back to
+	  proper character sets and encodings, for Unicode fonts, for
+	  faces that more closely match the intended font.
+	*/
+
+	// First, try XLFD
+	if (UT_stricmp(pszXLFD, ""))
 	{
-		strcpy(szFamily, "times");
+		strcpy(xFontName, pszXLFD);
+		// if we know it's valid, return it
+		if (m_pFont && m_pFont->m_strFontName)
+		{	
+			if (!UT_strnicmp(m_pFont->m_strFontName, xFontName, strlen(m_pFont->m_strFontName)))
+			{
+				return m_pFont;
+			}
+		}
+
+		// try the match
+		GdkFont* pgFont = gdk_font_load(xFontName);
+
+		// did the XLFD match?
+		if (pgFont)
+		{
+			pFont = new UNIXFont(pgFont);
+  
+			pFont->m_strFontName = new char[strlen(xFontName) + 1];
+			strcpy(pFont->m_strFontName, xFontName);
+  
+			return pFont;
+		}
 	}
-	else if ((0 == UT_stricmp(pszFontFamily, "courier"))
-			 || (0 == UT_stricmp(pszFontFamily, "courier new"))
-			 || (0 == UT_stricmp(pszFontFamily, "monospace"))
-		)
+	
+
+	// We failed an XLFD lookup, so we go for fall-back CSS-style attributes
+
+	// family copied unless it maches a generic-font type or Windows, then it's cast 
+	if (!UT_stricmp(pszFontFamily, "times new roman") ||	// win font
+		!UT_stricmp(pszFontFamily, "serif") ||				// generic
+		!UT_stricmp(pszFontFamily, ""))						// our default font
+	{
+		strcpy(szFamily, "Times");
+	}
+	else if(!UT_stricmp(pszFontFamily, "courier new") ||	// win font
+			!UT_stricmp(pszFontFamily, "monospace"))		// generic
 	{
 		strcpy(szFamily, "courier");
 	}
-	else if ((0 == UT_stricmp(pszFontFamily, "helvetica"))
-			 || (0 == UT_stricmp(pszFontFamily, "arial"))
-			 || (0 == UT_stricmp(pszFontFamily, "sans-serif"))
-		)
-	{
+	else if (!UT_stricmp(pszFontFamily, "arial") ||			// win font
+			 !UT_stricmp(pszFontFamily, "sans-serif"))		// generic
+	{	
 		strcpy(szFamily, "helvetica");
 	}
 	else
 	{
-		strcpy(szFamily, "times");
+		// Font "foo" we don't know anything about
+		strcpy(szFamily, pszFontFamily);
 	}
 
-	UT_sint32 height = convertDimension(pszFontSize);
-
-	char szWeight[32];
-	if (0 == UT_stricmp(pszFontWeight, "bold"))
+	// weight 
+	if (!UT_stricmp(pszFontWeight, "bold"))
 	{
 		strcpy(szWeight, "bold");
 	}
@@ -276,11 +315,12 @@ DG_Font* UNIXGraphics::findFont(const char* pszFontFamily,
 		strcpy(szWeight, "medium");
 	}
 
-	char szSlant[8];
+	UT_sint32 height = convertDimension(pszFontSize);
+
 	if (0 == UT_stricmp(pszFontStyle, "italic"))
 	{
 		strcpy(szSlant, "o");
-		if (0 == strcmp(szFamily, "times"))
+		if (!UT_stricmp(szFamily, "times"))
 		{
 			strcpy(szSlant, "i");
 		}
@@ -290,7 +330,6 @@ DG_Font* UNIXGraphics::findFont(const char* pszFontFamily,
 		strcpy(szSlant, "r");
 	}
 
-	char xFontName[2048];
 	sprintf(xFontName, "-adobe-%s-%s-%s-normal--%ld-0-75-75-p-0-iso8859-1", szFamily, szWeight, szSlant, height);
 
 	if (m_pFont && m_pFont->m_strFontName)

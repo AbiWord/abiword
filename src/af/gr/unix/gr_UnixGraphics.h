@@ -54,7 +54,8 @@ public:
 		const char* pszFontVariant, 
 		const char* pszFontWeight, 
 		const char* pszFontStretch, 
-		const char* pszFontSize);
+		const char* pszFontSize,
+		const char* pszXLFD);
   virtual UT_uint32 getFontAscent();
   virtual UT_uint32 getFontDescent();
   virtual void drawLine(UT_sint32, UT_sint32, UT_sint32, UT_sint32);

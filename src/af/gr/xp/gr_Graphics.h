@@ -63,7 +63,8 @@ public:
 		const char* pszFontVariant, 
 		const char* pszFontWeight, 
 		const char* pszFontStretch, 
-		const char* pszFontSize) = 0;
+		const char* pszFontSize,
+		const char* pszXLFD) = 0;
 	UT_sint32 convertDimension(const char*) const;
 	UT_Bool scaleDimensions(const char * szLeftIn, const char * szWidthIn,
 				UT_uint32 iWidthAvail,

@@ -21,6 +21,7 @@
 #include <js.h>
 #endif /* ABI_OPT_JS */
 
+#include <stdio.h>
 #include <string.h>
 
 #include "ap_UnixApp.h"

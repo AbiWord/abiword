@@ -140,7 +140,8 @@ DG_Font* FL_DocLayout::findFont(const PP_AttrProp * pSpanAP,
 	const char* pszWeight	= PP_evalProperty("font-weight",pSpanAP,pBlockAP,pSectionAP);
 	const char* pszStretch	= PP_evalProperty("font-stretch",pSpanAP,pBlockAP,pSectionAP);
 	const char* pszSize		= PP_evalProperty("font-size",pSpanAP,pBlockAP,pSectionAP);
-
+	const char* pszXLFD		= PP_evalProperty("font-xlfd",pSpanAP,pBlockAP,pSectionAP);
+	
 	// NOTE: we currently favor a readable hash key to make debugging easier
 	// TODO: speed things up with a smaller key (the three AP pointers?) 
 	char key[500];
@@ -152,7 +153,7 @@ DG_Font* FL_DocLayout::findFont(const PP_AttrProp * pSpanAP,
 		// TODO -- note that we currently assume font-family to be a single name,
 		// TODO -- not a list.  This is broken.
 
-		pFont = m_pG->findFont(pszFamily, pszStyle, pszVariant, pszWeight, pszStretch, pszSize);
+		pFont = m_pG->findFont(pszFamily, pszStyle, pszVariant, pszWeight, pszStretch, pszSize, pszXLFD);
 		UT_ASSERT(pFont);
 
 		// add it to the cache
