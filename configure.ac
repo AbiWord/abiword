@@ -48,6 +48,8 @@ AC_MSG_RESULT($CFLAGS)
 AC_MSG_CHECKING(CXXFLAGS)
 AC_MSG_RESULT($CXXFLAGS)
 
+ABI_FEATURE_DEFS=""
+
 AC_PROG_INSTALL
 AC_PROG_LN_S
 AC_PROG_MAKE_SET
@@ -156,6 +158,18 @@ AM_CONDITIONAL(WITH_CURL, test x$abi_curl = xyes)
 ABI_SPELL
 
 ABI_FRIBIDI
+
+dnl The resource manager is a class (XAP_ResourceManager) designed to handle
+dnl images/objects/hyperlinks included by the document. Disabled by default.
+dnl 
+abi_resource_manager=no
+AC_ARG_ENABLE(resource-manager,[  --enable-resource-manager  Use the resource manager (experimental)],[
+	if test "x$enableval" = "xyes"; then
+		abi_resource_manager=yes
+		ABI_FEATURE_DEFS="$ABI_FEATURE_DEFS -DENABLE_RESOURCE_MANAGER=1"
+	fi
+])
+AM_CONDITIONAL(WITH_RESOURCE_MANAGER,[test "x$abi_resource_manager" = "xyes"])
 
 AC_ARG_ENABLE(profile,
     [  --enable-profile    Turn on profile ],
@@ -295,6 +309,7 @@ fi
 
 
 dnl SUBST all the variables we just defined
+AC_SUBST(ABI_FEATURE_DEFS)
 AC_SUBST(OPTIMIZE_CFLAGS)
 AC_SUBST(PROFILE_CFLAGS)
 AC_SUBST(LIBJPEG_LIBS)

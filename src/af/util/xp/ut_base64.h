@@ -20,12 +20,15 @@
 #ifndef UT_BASE64_H
 #define UT_BASE64_H
 
-#include "ut_assert.h"
 #include "ut_types.h"
-#include "ut_bytebuf.h"
 
-bool ABI_EXPORT UT_Base64Encode(UT_ByteBuf * pDest, const UT_ByteBuf * pSrc);
-bool ABI_EXPORT UT_Base64Decode(UT_ByteBuf * pDest, const UT_ByteBuf * pSrc);
+class UT_ByteBuf;
+
+ABI_EXPORT bool UT_Base64Encode(UT_ByteBuf * pDest, const UT_ByteBuf * pSrc);
+ABI_EXPORT bool UT_Base64Decode(UT_ByteBuf * pDest, const UT_ByteBuf * pSrc);
+
+ABI_EXPORT bool UT_UTF8_Base64Encode(char *& b64ptr, UT_uint32 & b64len, const char *& binptr, UT_uint32 & binlen);
+ABI_EXPORT bool UT_UTF8_Base64Decode(char *& binptr, UT_uint32 & binlen, const char *& b64ptr, UT_uint32 & b64len);
 
 #ifdef UT_TEST
 #include "ut_test.h"

@@ -22,6 +22,8 @@
 # the tree can just include this and then use some variables.  This
 # makes the job of dealing with regular make files much simpler.  
 
+DEFS = @DEFS@ @ABI_FEATURE_DEFS@
+
 # automake complains at us if we just if out the gnome-specific parts
 if WITH_GNOME
 AF_INCLUDES=-I'$(top_srcdir)/src/af/util/xp' 

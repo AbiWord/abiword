@@ -21,6 +21,12 @@ include $(top_srcdir)/includes.mk
 INCLUDES= @GMODULE_CFLAGS@ @GTK_CFLAGS@ \
 	$(TEXT_INCLUDES) $(AF_INCLUDES) $(WP_INCLUDES) $(OTHER_INCLUDES) $(ICONV_INCLUDES)
 
+if WITH_RESOURCE_MANAGER
+RESOURCE_MANAGER_OBJ = xap_Resource.cpp xap_ResourceManager.cpp
+else
+RESOURCE_MANAGER_OBJ = 
+endif
+
 if WITH_CURL
 CURL_SUPPORT_OBJ=xap_HashDownloader.cpp
 else
@@ -69,4 +75,5 @@ libXap_xp_a_SOURCES=\
 	xap_ViewListener.cpp		\
 	xav_View.cpp			\
 	$(CURL_SUPPORT_OBJ)		\
+	$(RESOURCE_MANAGER_OBJ)		\
 	xap_EncodingManager.cpp

@@ -21,6 +21,8 @@
 #ifndef UT_EXCEPTION_H
 #define UT_EXCEPTION_H
 
+#include "ut_types.h"
+
 //
 // I really want AbiWord to start using exceptions as soon as is possible
 // but there might be platforms/compilers that are brain-dead and don't
