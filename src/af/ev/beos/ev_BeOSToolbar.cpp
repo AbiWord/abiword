@@ -242,7 +242,13 @@ UT_Bool EV_BeOSToolbar::refreshToolbar(AV_View * pView, AV_ChangeMask mask) {
 						oldstate = item->state;
 						item->state = (bGrayed) ? 0 : ENABLED_MASK;
 						perform_update |= (oldstate == item->state) ? 0 : 1; 
+					if(perform_update)
+					{
+						//m_pTBView->Window()->Lock();
+						m_pTBView->Draw(item->rect);
+					//	m_pTBView->Window()->Unlock();
 					}
+						}
 				}
 				break;
 			
@@ -264,6 +270,13 @@ UT_Bool EV_BeOSToolbar::refreshToolbar(AV_View * pView, AV_ChangeMask mask) {
 						item->state = ((bGrayed) ? 0 : ENABLED_MASK) |
 						              ((bToggled) ? PRESSED_MASK : 0);
 						perform_update |= (oldstate == item->state) ? 0 : 1; 
+						if(perform_update)
+		        			{
+				//			 m_pTBView->Window()->Lock();
+		 					 m_pTBView->Draw(item->rect);
+		 		//			 m_pTBView->Window()->Unlock();
+						}	
+																															                                    
 					}
 				
 				}
@@ -333,11 +346,6 @@ UT_Bool EV_BeOSToolbar::refreshToolbar(AV_View * pView, AV_ChangeMask mask) {
 //TF Note ... without this we don't get updated properly
 //when a button state changes.  Instead put in hooks
 //that only update us as required.
-	if (perform_update) {
-		m_pTBView->Window()->Lock();
-		m_pTBView->Draw(m_pTBView->Bounds()); 	
-		m_pTBView->Window()->Unlock();
-	}
 #endif
 	return UT_TRUE;
 }
@@ -574,16 +582,17 @@ void ToolbarView::MessageReceived(BMessage *msg) {
 void ToolbarView::Draw(BRect clip) {
 	BRect 	r;
 	int 	i;
-	BPicture *mypict;
-	BeginPicture(new BPicture);
-	
+//	BPicture *mypict;
+//	BeginPicture(new BPicture);
+		
 	for (i=0; i<item_count; i++) {
 		r = items[i].rect;
-		if (items[i].bitmap /*&& clip.Intersects(r)*/) {
+		if (items[i].bitmap && clip.Intersects(r)) {
+			Window()->Lock();
 			//Draw the bitmap of the icon
-			//DrawBitmapAsync(items[i].bitmap, BPoint(r.left, r.top));
-			DrawBitmap(items[i].bitmap, BPoint(r.left, r.top));
-
+			DrawBitmapAsync(items[i].bitmap, BPoint(r.left, r.top));
+			//DrawBitmap(items[i].bitmap, BPoint(r.left, r.top));
+			
 			//Disabled icons should be greyed out ...
 			if (!(items[i].state & ENABLED_MASK)) {
 				drawing_mode oldmode = DrawingMode();
@@ -601,9 +610,9 @@ void ToolbarView::Draw(BRect clip) {
 
 			//We just draw normal icons when activated
 			else {
-				DrawBitmap(items[i].bitmap, BPoint(r.left, r.top));
+				DrawBitmapAsync(items[i].bitmap, BPoint(r.left, r.top));
 			}
-			
+			Window()->Unlock();
 		}
 		else if (items[i].type == SEPERATOR) {
 			HighLightItem(i, 1);
@@ -611,45 +620,57 @@ void ToolbarView::Draw(BRect clip) {
 	}
 	
 	//Draw a nice border around the toolbar
+	Window()->Lock();
 	r = Bounds();
 	SetHighColor(152,152,152);		//Dark grey
 	StrokeRect(r);
-
-	SetHighColor(192,192,192);		//Light Dark grey
-	StrokeLine(BPoint(r.left+1, r.bottom-1), BPoint(r.right-1, r.bottom-1));
-	StrokeLine(BPoint(r.right-1, r.top+1), BPoint(r.right-1, r.bottom-1));
-	SetHighColor(240,240,240);		//Almost white
-	StrokeLine(BPoint(r.left+1, r.bottom-1), BPoint(r.left+1, r.top+1));
-	StrokeLine(BPoint(r.left+1, r.top+1), BPoint(r.right-1, r.top+1));
-
-	if ((mypict = EndPicture())) {
-		DrawPicture(mypict, BPoint(0,0));
-		delete mypict;
-	}
+	rgb_color colortouse;
+	rgb_color dark={192,192,192};
+	rgb_color light={240,240,240};
+	//SetHighColor(192,192,192);		//Light Dark grey
+	colortouse=dark;
+	BeginLineArray(4);
+	AddLine(BPoint(r.left+1, r.bottom-1), BPoint(r.right-1, r.bottom-1),colortouse);
+	AddLine(BPoint(r.right-1, r.top+1), BPoint(r.right-1, r.bottom-1),colortouse);
+	colortouse=light;
+	//SetHighColor(240,240,240);		//Almost white
+	AddLine(BPoint(r.left+1, r.bottom-1), BPoint(r.left+1, r.top+1),colortouse);
+	AddLine(BPoint(r.left+1, r.top+1), BPoint(r.right-1, r.top+1),colortouse);
+//	if ((mypict = EndPicture())) {
+//		DrawPicture(mypict, BPoint(0,0));
+//		Sync();
+//		delete mypict;
+//	}
+	EndLineArray();
+Sync();
+Window()->Unlock();
 }
 
 void ToolbarView::HighLightItem(int index, int state) {
 	BRect r = items[index].rect;
+	rgb_color colortouse;
 	rgb_color dark = { 150, 150, 150, 255 };	//was 192
 	rgb_color light = { 240, 240, 240, 255 };	//was 240
-	
+	Window()->Lock();	
 	if (state == 1)				//UP look
-		SetHighColor(dark);		//Light Dark grey
+		colortouse=dark;		//Light Dark grey
 	else if (state == 2)			//DOWN look
-		SetHighColor(light);		//Almost white
-		
-	StrokeLine(BPoint(r.left, r.bottom), BPoint(r.right, r.bottom));
-	StrokeLine(BPoint(r.left+1, r.bottom-1), BPoint(r.right-1, r.bottom-1));
-	StrokeLine(BPoint(r.right, r.top), BPoint(r.right, r.bottom));
-	StrokeLine(BPoint(r.right-1, r.top+1), BPoint(r.right-1, r.bottom-1));
+		colortouse=light;		//Almost white
+	BeginLineArray(8);
+	AddLine(BPoint(r.left, r.bottom), BPoint(r.right, r.bottom),colortouse);
+	AddLine(BPoint(r.left+1, r.bottom-1), BPoint(r.right-1, r.bottom-1),colortouse);
+	AddLine(BPoint(r.right, r.top), BPoint(r.right, r.bottom),colortouse);
+	AddLine(BPoint(r.right-1, r.top+1), BPoint(r.right-1, r.bottom-1),colortouse);
 	if (state == 1)
-		SetHighColor(light);		//Almost white
+		colortouse=light;		//Almost white
 	else if (state == 2)
-		SetHighColor(dark);		//Light Dark grey
-	StrokeLine(BPoint(r.left, r.bottom), BPoint(r.left, r.top));
-	StrokeLine(BPoint(r.left+1, r.bottom-1), BPoint(r.left+1, r.top+1));
-	StrokeLine(BPoint(r.left, r.top), BPoint(r.right, r.top));
-	StrokeLine(BPoint(r.left+1, r.top+1), BPoint(r.right-1, r.top+1));
+		colortouse=dark;		//Light Dark grey
+	AddLine(BPoint(r.left, r.bottom), BPoint(r.left, r.top),colortouse);
+	AddLine(BPoint(r.left+1, r.bottom-1), BPoint(r.left+1, r.top+1),colortouse);
+	AddLine(BPoint(r.left, r.top), BPoint(r.right, r.top),colortouse);
+	AddLine(BPoint(r.left+1, r.top+1), BPoint(r.right-1, r.top+1),colortouse);
+	EndLineArray();
+	Window()->Unlock();
 }
 
 //Simple way of guaranteering a refresh
