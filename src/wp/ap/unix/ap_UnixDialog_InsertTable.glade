@@ -226,7 +226,7 @@
 		  <property name="update_policy">GTK_UPDATE_ALWAYS</property>
 		  <property name="snap_to_ticks">False</property>
 		  <property name="wrap">False</property>
-		  <property name="adjustment">5 1 500 1 5 5</property>
+		  <property name="adjustment">5 1 64 1 5 5</property>
 		</widget>
 		<packing>
 		  <property name="left_attach">1</property>
