@@ -86,7 +86,7 @@
           <cell value="na"/>
           <cell value="unknown"/>
           <cell value="yes"/>
-          <cell value="no"/>
+          <cell value="untested"/>
         </row>
 
       </body>
@@ -480,7 +480,7 @@
           <cell value="na"/>
           <cell value="unknown"/>
           <cell value="yes"/>
-          <cell value="no"/>
+          <cell value="partially"/>
         </row>
 
         <row>
