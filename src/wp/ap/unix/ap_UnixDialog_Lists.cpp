@@ -297,28 +297,18 @@ void  AP_UnixDialog_Lists::setMemberVariables(void)
 	        m_bStartNewList = UT_TRUE;
 		m_bApplyToCurrent = UT_FALSE;
                 m_bStartSubList = UT_FALSE;
-		m_bResumeList = UT_FALSE;
 	}
 	else if (GTK_TOGGLE_BUTTON (m_wApplyCurrent)->active)
 	{
 	        m_bStartNewList = UT_FALSE;
 		m_bApplyToCurrent = UT_TRUE;
                 m_bStartSubList = UT_FALSE;
-		m_bResumeList = UT_FALSE;
 	}
 	else if (GTK_TOGGLE_BUTTON (m_wStartSubList)->active)
 	{
 	        m_bStartNewList = UT_FALSE;
 		m_bApplyToCurrent = UT_FALSE;
                 m_bStartSubList = UT_TRUE;
-		m_bResumeList = UT_FALSE;
-	}
-	else if (GTK_TOGGLE_BUTTON (m_wResumeList)->active)
-	{
-	        m_bStartNewList = UT_FALSE;
-		m_bApplyToCurrent = UT_FALSE;
-                m_bStartSubList = UT_FALSE;
-		m_bResumeList = UT_TRUE;
 	}
 }
 
@@ -1089,6 +1079,8 @@ void AP_UnixDialog_Lists::_connectSignals(void)
 	gtk_signal_connect (GTK_OBJECT (m_oAlignList_adj), "value_changed",
 				      GTK_SIGNAL_FUNC (s_styleChanged), this);
 	gtk_signal_connect (GTK_OBJECT (m_oIndentAlign_adj), "value_changed",
+				      GTK_SIGNAL_FUNC (s_styleChanged), this);
+	gtk_signal_connect (GTK_OBJECT (GTK_ENTRY(m_wDelimEntry)), "value_changed",
 				      GTK_SIGNAL_FUNC (s_styleChanged), this);
 
 

@@ -68,7 +68,7 @@ UT_Bool fl_Layout::getSpanAttrProp(UT_uint32 offset, UT_Bool bLeftSide, const PP
 	return m_pDoc->getSpanAttrProp(m_sdh,offset,bLeftSide,ppAP);
 }
 
-inline void fl_Layout::setAutoNum(fl_AutoNum * pAutoNum)
+void fl_Layout::setAutoNum(fl_AutoNum * pAutoNum)
 {
 	m_pAutoNum = pAutoNum;
 }

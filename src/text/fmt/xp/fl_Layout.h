@@ -51,7 +51,7 @@ public:
 	
 	virtual	void		listUpdate(void) { return; }
 	inline fl_AutoNum *	getAutoNum(void) const { return m_pAutoNum; }
-	inline void		setAutoNum(fl_AutoNum * pAutoNum);
+	void    		setAutoNum(fl_AutoNum * pAutoNum);
 	
 	inline PD_Document *	getDocument(void) const { return m_pDoc; };
 	
