@@ -281,6 +281,8 @@ void FV_View::toggleCase (ToggleCase c)
   // 2. toggle case
   // 3. clear and replace
 
+  // TODO: we currently lose *all* formatting information. Fix this.
+
   if (isSelectionEmpty())
     return;
 
@@ -293,6 +295,8 @@ void FV_View::toggleCase (ToggleCase c)
 
   UT_uint32 replace_len = UT_UCS_strlen (cur);
   replace = new UT_UCSChar [replace_len + 1];
+
+  replace = cur;
 
   switch (c)
     {
@@ -327,6 +331,7 @@ void FV_View::toggleCase (ToggleCase c)
 
   _generalUpdate();
 
+  FREEP(cur);
   delete [] replace;
 }
 
