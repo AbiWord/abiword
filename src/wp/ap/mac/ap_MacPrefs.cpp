@@ -25,6 +25,7 @@
 #include <Folders.h>
 
 #include "ap_MacPrefs.h"
+#include "ut_stringbuf.h"
 
 //#include "FullPath.h"
 
@@ -43,10 +44,9 @@ const char * AP_MacPrefs::getPrefsPathname(void) const
 #define PATH_MAX 4096
 #endif
 
-	static char buf[PATH_MAX];
-	memset(buf,0,sizeof(buf));
-	
-	short	foundVRefNum, pathLen;
+	UT_Stringbuf buf;
+    	
+	short	foundVRefNum, pathLen = 0;
 	long	foundDirID;
 	OSErr err = ::FindFolder(kOnSystemDisk, kPreferencesFolderType, kCreateFolder,
 							&foundVRefNum, &foundDirID);
@@ -54,21 +54,24 @@ const char * AP_MacPrefs::getPrefsPathname(void) const
 	Handle bufHdl = ::NewHandle(PATH_MAX);
 	// FIXIT
         //::GetFullPath(foundVRefNum, foundDirID, NULL, &pathLen, &bufHdl);
-	strncpy(buf, *bufHdl, pathLen);
-	::DisposeHandle(bufHdl);
+	
+    buf.assign (*bufHdl, pathLen);
+    ::DisposeHandle(bufHdl);
 	
 	char * szFile = "AbiWord";
 
 	if(pathLen >= PATH_MAX || pathLen == 0)
 		return NULL;
 	
-	if(pathLen && (buf[pathLen-1] == ':'))
+	if(pathLen && (buf.data()[pathLen-1] == ':')) {
 		;
-	else
-		strcat(buf,":");
-	strcat(buf,szFile);
+    }
+	else {
+        buf.append (":", 1);
+    }
+    buf.append (szFile, strlen (szFile));
 
-	return buf;
+	return buf.data ();
 }
 
 void AP_MacPrefs::overlayEnvironmentPrefs(void)
