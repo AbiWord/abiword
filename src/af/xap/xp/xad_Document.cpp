@@ -173,7 +173,7 @@ UT_Bool AD_Document::clearIgnores(void)
 	for (int i = 0; i < m_pIgnoreList->getEntryCount(); i++)
 	{
 		UT_HashEntry * pHE = m_pIgnoreList->getNthEntry(i);
-		DELETEP((UT_UCSChar *)pHE->pData);
+		delete((UT_UCSChar *)pHE->pData);
 	}
    
 	DELETEP(m_pIgnoreList);
