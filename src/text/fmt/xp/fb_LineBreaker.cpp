@@ -506,7 +506,7 @@ bool fb_LineBreaker::_splitAtOrBeforeThisRun(fp_Run *pCurrentRun, UT_sint32 iTra
 		UT_ASSERT(!bFoundBreakAfter);
 
 		_splitRunAt(pRunToSplit, splitInfo);
-
+		m_pLastRunToKeep = pRunToSplit;
 	}
 
 
