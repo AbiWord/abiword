@@ -1,19 +1,19 @@
 /* AbiWord
  * Copyright (C) 1998-2000 AbiSource, Inc.
- *
+ * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- *
+ * 
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- *
+ * 
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
  * 02111-1307, USA.
  *
  * Translation by SoftCatalà (jesus@softcatala.org)
@@ -50,7 +50,7 @@ BeginSetEnc(ca,ES,true,"iso-8859-1")
 
 	//          (id, 		                    szLabel,	IconName,     	szToolTip,      szStatusMsg)
 
-	ToolbarLabel(AP_TOOLBAR_ID_FILE_NEW,		"Nou", 			tb_new_xpm,			NULL, "Crea un nou document")
+	ToolbarLabel(AP_TOOLBAR_ID_FILE_NEW,		"Nou", 			tb_new_xpm,			NULL, "Crea un nou document")	
 	ToolbarLabel(AP_TOOLBAR_ID_FILE_OPEN,		"Obre",			tb_open_xpm,			NULL, "Obre un document existent")
 	ToolbarLabel(AP_TOOLBAR_ID_FILE_SAVE,		"Desa", 		tb_save_xpm,			NULL, "Desa el document")
 	ToolbarLabel(AP_TOOLBAR_ID_FILE_SAVEAS,		"Anomena i desa", 	tb_save_as_xpm,			NULL, "Desa el document amb un altre nom")
@@ -62,7 +62,7 @@ BeginSetEnc(ca,ES,true,"iso-8859-1")
 	ToolbarLabel(AP_TOOLBAR_ID_EDIT_CUT,		"Retalla",		tb_cut_xpm,			NULL, "Retalla")
 	ToolbarLabel(AP_TOOLBAR_ID_EDIT_COPY,		"Copia",		tb_copy_xpm,			NULL, "Copia")
 	ToolbarLabel(AP_TOOLBAR_ID_EDIT_PASTE,		"Enganxa",		tb_paste_xpm,			NULL, "Enganxa")
-	ToolbarLabel(AP_TOOLBAR_ID_EDIT_HEADER,	 	"Modifica capçalera",	tb_edit_editheader_xpm,		NULL, "Modifica intestazione")
+	ToolbarLabel(AP_TOOLBAR_ID_EDIT_HEADER,	 	"Modifica capçalera",	tb_edit_editheader_xpm,		NULL, "Modifica capçalera")
 	ToolbarLabel(AP_TOOLBAR_ID_EDIT_FOOTER,	 	"Modifica peu de pàgina",tb_edit_editfooter_xpm,	NULL, "Modifica el peu de pàgina")
 	ToolbarLabel(AP_TOOLBAR_ID_EDIT_REMOVEHEADER, 	"Elimina capçalera",	tb_edit_removeheader_xpm,	NULL, "Elimina la capçalera")
 	ToolbarLabel(AP_TOOLBAR_ID_EDIT_REMOVEFOOTER, 	"Elimina peu de pàgina",tb_edit_removefooter_xpm,	NULL, "Elimina el peu de pàgina")
@@ -71,6 +71,10 @@ BeginSetEnc(ca,ES,true,"iso-8859-1")
 
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_STYLE,		"Estil",		NoIcon,				NULL, "Estil")
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_FONT,		"Tipus de lletra",	NoIcon,				NULL, "Tipus de lletra")
+	
+	ToolbarLabel(AP_TOOLBAR_ID_FMT_HYPERLINK, "Insert Hyperlink", tb_hyperlink, NULL, "Insereix un hiperenllaç al document")
+     	ToolbarLabel(AP_TOOLBAR_ID_FMT_BOOKMARK, "Insert Bookmark", tb_anchor, NULL, "Insereix una adreça d'interès al document")
+	
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_SIZE,		"Mida de la lletra", 	NoIcon,				NULL, "Mida de la lletra")
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_BOLD,		"Negreta",		tb_text_bold_N_xpm,		NULL, "Negreta")
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_ITALIC,		"Cursiva",		tb_text_italic_K_xpm,		NULL, "Cursiva")
@@ -105,12 +109,12 @@ BeginSetEnc(ca,ES,true,"iso-8859-1")
 	ToolbarLabel(AP_TOOLBAR_ID_ZOOM,		"Zoom",			NoIcon,				NULL, "Zoom")
 	ToolbarLabel(AP_TOOLBAR_ID_LISTS_BULLETS,	"Vinyetes",		tb_lists_bullets_xpm,		NULL, "Vinyetes")
 	ToolbarLabel(AP_TOOLBAR_ID_LISTS_NUMBERS,	"Llistes",		tb_lists_numbers_xpm,		NULL, "Llistes numerades")
-
+	
 	ToolbarLabel(AP_TOOLBAR_ID_COLOR_FORE,		"Color",		tb_text_fgcolor_xpm,		NULL, "Canvia el color")
-	ToolbarLabel(AP_TOOLBAR_ID_COLOR_BACK,		"Color de fons",	tb_text_bgcolor_xpm,		NULL, "Canvia el color de fons")
+	ToolbarLabel(AP_TOOLBAR_ID_COLOR_BACK,		"Resaltar el text",	tb_text_bgcolor_xpm,		NULL, "Resaltar el text")
 	ToolbarLabel(AP_TOOLBAR_ID_INDENT,		"Identació",		tb_text_indent_xpm,		NULL, "Augmenta la identació del paràgraf")
 	ToolbarLabel(AP_TOOLBAR_ID_UNINDENT,		"Desidentació",		tb_text_unindent_xpm,		NULL, "Disminueix la identació del paràgraf")
-
+	
 	// ... add others here ...
 
 	ToolbarLabel(AP_TOOLBAR_ID_SCRIPT_PLAY,		"Executa extensió",	tb_script_play_xpm,		NULL, "Executa l'extensió")
