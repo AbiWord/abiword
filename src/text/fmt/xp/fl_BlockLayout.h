@@ -88,6 +88,7 @@ public:
 	PT_DocPosition getPosition(UT_Bool bActualBlockPos=UT_FALSE) const;
 	fp_Run* findPointCoords(PT_DocPosition position, UT_Bool bEOL, UT_uint32& x, UT_uint32& y, UT_uint32& height);
 
+
 	UT_Bool getSpanPtr(UT_uint32 offset, const UT_UCSChar ** ppSpan, UT_uint32 * pLength) const;
 	UT_Bool	getBlockBuf(UT_GrowBuf * pgb) const;
 
@@ -104,6 +105,8 @@ public:
 	inline UT_sint32	getRightMargin(void) const { return m_iRightMargin; }
 	inline UT_sint32	getTopMargin(void) const { return m_iTopMargin; }
 	inline UT_sint32	getBottomMargin(void) const { return m_iBottomMargin; }
+
+	void getLineSpacing(double& dSpacing, UT_Bool& bExact) const;
 
 	UT_uint32 getOrphansProperty(void) const;
 	UT_uint32 getWidowsProperty(void) const;
@@ -181,6 +184,9 @@ protected:
 	UT_sint32				m_iLeftMargin;
 	UT_sint32				m_iRightMargin;
 	UT_sint32				m_iTextIndent;
+
+	double					m_dLineSpacing;
+	UT_Bool					m_bExactSpacing;
 
 	/*
 	  The following lists are used to keep track of the spell

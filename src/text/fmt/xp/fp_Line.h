@@ -101,6 +101,7 @@ public:
 	void		align();
 	UT_sint32	getAscent(void) const;
 	UT_Bool		recalculateFields(void);
+	void		recalcHeight();
 	
 	UT_Bool		isEmpty(void) const;
 
@@ -108,7 +109,6 @@ public:
 	UT_Bool 	isLastLineInBlock(void) const;
 	
 protected:
-	void			_recalcHeight();
 
 	fl_BlockLayout*	m_pBlock;
 	fp_Column*		m_pColumn;

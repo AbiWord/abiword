@@ -133,6 +133,11 @@ void fl_BlockLayout::_lookupProperties(void)
 	m_iLeftMargin = pG->convertDimension(getProperty("margin-left"));
 	m_iRightMargin = pG->convertDimension(getProperty("margin-right"));
 	m_iTextIndent = pG->convertDimension(getProperty("text-indent"));
+
+	// for now, just allow fixed multiples
+	// TODO: if units were used, convert to exact spacing required
+	m_dLineSpacing = atof(getProperty("line-height"));
+	m_bExactSpacing = UT_FALSE;
 }
 
 fl_BlockLayout::~fl_BlockLayout()
@@ -532,6 +537,12 @@ UT_uint32 fl_BlockLayout::getPosition(UT_Bool bActualBlockPos) const
 UT_GrowBuf * fl_BlockLayout::getCharWidths(void)
 {
 	return &m_gbCharWidths;
+}
+
+void fl_BlockLayout::getLineSpacing(double& dSpacing, UT_Bool& bExact) const
+{
+	dSpacing = m_dLineSpacing;
+	bExact = m_bExactSpacing;
 }
 
 UT_uint32 fl_BlockLayout::getOrphansProperty(void) const
@@ -2088,20 +2099,23 @@ UT_Bool fl_BlockLayout::doclistener_changeStrux(const PX_ChangeRecord_StruxChang
 	setAttrPropIndex(pcrxc->getIndexAP());
 
 	// TODO: may want to figure out the specific change and do less work
+	_lookupProperties();
+
 	fp_Column* pCol = NULL;
 	fp_Line* pLine = m_pFirstLine;
 	while (pLine)
 	{
+		pLine->recalcHeight();	// line-height
+
 		if (pLine->getColumn() != pCol)
 		{
 			pCol = pLine->getColumn();
-			pCol->setNeedsLayoutUpdate();
+			pCol->setNeedsLayoutUpdate();	// line-height, margin-top, margin-bottom
 		}
  
 		pLine = pLine->getNext();
 	}
 	
-	_lookupProperties();
 	format();
 
 	FV_View* pView = m_pLayout->getView();

@@ -96,6 +96,10 @@ EV_Toolbar_ActionSet * AP_CreateToolbarActionSet(void)
 	_s(AP_TOOLBAR_ID_PARA_0BEFORE,	EV_TBIT_ToggleButton,	"paraBefore0",	AV_CHG_FMTBLOCK,	ap_ToolbarGetState_BlockFmt);
 	_s(AP_TOOLBAR_ID_PARA_12BEFORE,	EV_TBIT_ToggleButton,	"paraBefore12",	AV_CHG_FMTBLOCK,	ap_ToolbarGetState_BlockFmt);
 
+	_s(AP_TOOLBAR_ID_SINGLE_SPACE,	EV_TBIT_ToggleButton,	"singleSpace",	AV_CHG_FMTBLOCK,	ap_ToolbarGetState_BlockFmt);
+	_s(AP_TOOLBAR_ID_MIDDLE_SPACE,	EV_TBIT_ToggleButton,	"middleSpace",	AV_CHG_FMTBLOCK,	ap_ToolbarGetState_BlockFmt);
+	_s(AP_TOOLBAR_ID_DOUBLE_SPACE,	EV_TBIT_ToggleButton,	"doubleSpace",	AV_CHG_FMTBLOCK,	ap_ToolbarGetState_BlockFmt);
+
 	// ... add others here ...
 	
 	_s(AP_TOOLBAR_ID__BOGUS2__,		EV_TBIT_BOGUS,			NULL,			0,					NULL);

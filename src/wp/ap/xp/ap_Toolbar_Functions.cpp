@@ -264,6 +264,21 @@ Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_BlockFmt)
 		bPoints = UT_TRUE;
 		break;
 
+	case AP_TOOLBAR_ID_SINGLE_SPACE:
+		prop = "line-height";
+		val = "1.0";
+		break;
+
+	case AP_TOOLBAR_ID_MIDDLE_SPACE:
+		prop = "line-height";
+		val = "1.5";
+		break;
+
+	case AP_TOOLBAR_ID_DOUBLE_SPACE:
+		prop = "line-height";
+		val = "2.0";
+		break;
+
 	default:
 		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 		break;

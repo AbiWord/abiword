@@ -140,7 +140,7 @@ UT_Bool fp_Line::removeRun(fp_Run* pRun)
 
 			pRun->setLine(NULL);
 
-			_recalcHeight();
+			recalcHeight();
 			
 			return UT_TRUE;
 		}
@@ -176,7 +176,7 @@ void fp_Line::insertRunBefore(fp_Run* pNewRun, fp_Run* pBefore)
 
 	m_iWidth += iNewRunWidth;
 	
-	_recalcHeight();
+	recalcHeight();
 }
 
 void fp_Line::insertRun(fp_Run* pRun)
@@ -204,7 +204,7 @@ void fp_Line::insertRun(fp_Run* pRun)
 		}
 	}
 	
-	_recalcHeight();
+	recalcHeight();
 }
 
 void fp_Line::addRun(fp_Run* pRun)
@@ -216,7 +216,7 @@ void fp_Line::addRun(fp_Run* pRun)
 	
 	m_iWidth += pRun->getWidth();
 
-	_recalcHeight();
+	recalcHeight();
 }
 
 void fp_Line::splitRunInLine(fp_Run* pRun1, fp_Run* pRun2)
@@ -300,7 +300,7 @@ void fp_Line::runSizeChanged(fp_Run* pRun, UT_sint32 oldWidth, UT_sint32 newWidt
 		UT_ASSERT(((signed)m_iWidth) >= 0);
 	}
 
-	_recalcHeight();
+	recalcHeight();
 
 	m_pBlock->alignOneLine(this);
 }
@@ -410,7 +410,7 @@ void fp_Line::getScreenOffsets(fp_Run* pRun,
 	height = m_iHeight;
 }
 
-void fp_Line::_recalcHeight()
+void fp_Line::recalcHeight()
 {
 	UT_sint32 count = m_vecRuns.getItemCount();
 	UT_sint32 i;
@@ -442,6 +442,18 @@ void fp_Line::_recalcHeight()
 
 	m_iAscent = iMaxAscent;
 	m_iHeight = iMaxAscent + iMaxDescent;
+
+	{
+		// adjust line height to include leading
+		double dLineSpace;
+		UT_Bool bExact;
+		m_pBlock->getLineSpacing(dLineSpace, bExact);
+
+		if (bExact)
+			m_iHeight += (UT_sint32) dLineSpace;
+		else
+			m_iHeight = (UT_sint32) (m_iHeight * dLineSpace);
+	}
 
 	if ((iOldHeight != m_iHeight) && m_pColumn)
 	{
