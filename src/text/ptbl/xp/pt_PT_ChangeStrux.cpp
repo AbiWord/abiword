@@ -444,7 +444,10 @@ bool pt_PieceTable::_realChangeStruxFmt(PTChangeFmt ptc,
 						bResult = _fmtChangeStruxWithNotify(ptc,pfsContainer,attributes,sProps);
 						UT_ASSERT(bResult);
 					}
-
+					if(!bEndSeen && isEndFootnote(static_cast<pf_Frag *>(pfsContainer)))
+					{
+						_getStruxFromFragSkip(pfNewEnd,&pfsContainer);
+					} 
 					if (pfsContainer == pfs_End)
 						bEndSeen = true;
 					else if (bEndSeen)
