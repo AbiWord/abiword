@@ -1072,8 +1072,32 @@ void XAP_UnixFrameImpl::_setCursor(GR_Graphics::Cursor c)
 	case GR_Graphics::GR_CURSOR_WAIT:
 		cursor_number = GDK_WATCH;
 		break;
-	}
 
+	case GR_Graphics::GR_CURSOR_HLINE_DRAG:
+		cursor_number = GDK_SB_V_DOUBLE_ARROW;
+		break;
+
+	case GR_Graphics::GR_CURSOR_VLINE_DRAG:
+		cursor_number = GDK_SB_H_DOUBLE_ARROW;
+		break;
+
+	case GR_Graphics::GR_CURSOR_CROSSHAIR:
+		cursor_number = GDK_CROSSHAIR;
+		break;
+
+	case GR_Graphics::GR_CURSOR_DOWNARROW:
+		cursor_number = GDK_SB_DOWN_ARROW;
+		break;
+
+	case GR_Graphics::GR_CURSOR_DRAGTEXT:
+		cursor_number = GDK_TARGET;
+		break;
+
+	case GR_Graphics::GR_CURSOR_COPYTEXT:
+		cursor_number = GDK_DRAPED_BOX;
+		break;
+	}
+	xxx_UT_DEBUGMSG(("Set cursor number in Frame %d to %d \n",c,cursor_number));
 	GdkCursor * cursor = gdk_cursor_new(cursor_number);
 	gdk_window_set_cursor(getTopLevelWindow()->window, cursor);
 	gdk_window_set_cursor(getVBoxWidget()->window, cursor);

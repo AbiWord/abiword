@@ -13486,11 +13486,25 @@ Defun(cutVisualText)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
+	XAP_Frame * pFrame = static_cast<XAP_Frame *>(pView->getParentData()); 
 	UT_DEBUGMSG(("Cut on Selection \n"));
 	UT_sint32 y = pCallData->m_yPos;
 	UT_sint32 x = pCallData->m_xPos;
-	pView->getGraphics()->setCursor(GR_Graphics::GR_CURSOR_IMAGE);
 	pView->cutVisualText(x,y);
+	if(pView->getVisualText()->isNotdraggingImage())
+	{
+	  pView->getGraphics()->setCursor(GR_Graphics::GR_CURSOR_DRAGTEXT);
+	  pFrame->setCursor(GR_Graphics::GR_CURSOR_DRAGTEXT);
+	  if(	pView->getVisualText()->isDoingCopy())
+	  {
+	    pView->getGraphics()->setCursor(GR_Graphics::GR_CURSOR_COPYTEXT);
+	    pFrame->setCursor(GR_Graphics::GR_CURSOR_COPYTEXT);
+	  }
+	}
+	else
+	{
+	  pView->getGraphics()->setCursor(GR_Graphics::GR_CURSOR_IMAGE);
+	}
 	return true;
 }
 
@@ -13499,11 +13513,25 @@ Defun(copyVisualText)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
+	XAP_Frame * pFrame = static_cast<XAP_Frame *>(pView->getParentData()); 
 	xxx_UT_DEBUGMSG(("Copy on Selection \n"));
 	UT_sint32 y = pCallData->m_yPos;
 	UT_sint32 x = pCallData->m_xPos;
-	pView->getGraphics()->setCursor(GR_Graphics::GR_CURSOR_IMAGE);
 	pView->copyVisualText(x,y);
+	if(pView->getVisualText()->isNotdraggingImage())
+	{
+	  pView->getGraphics()->setCursor(GR_Graphics::GR_CURSOR_DRAGTEXT);
+	  pFrame->setCursor(GR_Graphics::GR_CURSOR_DRAGTEXT);
+	  if(	pView->getVisualText()->isDoingCopy())
+	  {
+	    pView->getGraphics()->setCursor(GR_Graphics::GR_CURSOR_COPYTEXT);
+	    pFrame->setCursor(GR_Graphics::GR_CURSOR_COPYTEXT);
+	  }
+	}
+	else
+	{
+	  pView->getGraphics()->setCursor(GR_Graphics::GR_CURSOR_IMAGE);
+	}
 	return true;
 }
 
@@ -13512,6 +13540,7 @@ static bool sEndVisualDrag = false;
 static void sActualVisualDrag(AV_View *  pAV_View, EV_EditMethodCallData * pCallData)
 {
 	ABIWORD_VIEW;
+	XAP_Frame * pFrame = static_cast<XAP_Frame *>(pView->getParentData()); 
 	UT_sint32 y = pCallData->m_yPos;
 	UT_sint32 x = pCallData->m_xPos;
 	if(sEndVisualDrag)
@@ -13520,7 +13549,20 @@ static void sActualVisualDrag(AV_View *  pAV_View, EV_EditMethodCallData * pCall
 		pView->pasteVisualText(x,y);
 		return;
 	}
-	pView->getGraphics()->setCursor(GR_Graphics::GR_CURSOR_IMAGE);
+	if(pView->getVisualText()->isNotdraggingImage())
+	{
+	  pView->getGraphics()->setCursor(GR_Graphics::GR_CURSOR_DRAGTEXT);
+	  pFrame->setCursor(GR_Graphics::GR_CURSOR_DRAGTEXT);
+	  if(	pView->getVisualText()->isDoingCopy())
+	  {
+	    pView->getGraphics()->setCursor(GR_Graphics::GR_CURSOR_COPYTEXT);
+	    pFrame->setCursor(GR_Graphics::GR_CURSOR_COPYTEXT);
+	  }
+	}
+	else
+	{
+	  pView->getGraphics()->setCursor(GR_Graphics::GR_CURSOR_IMAGE);
+	}
 	pView->dragVisualText(x,y);
 }
 

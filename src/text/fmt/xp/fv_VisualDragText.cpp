@@ -51,7 +51,8 @@ FV_VisualDragText::FV_VisualDragText (FV_View * pView)
 	  m_pAutoScrollTimer(NULL),
 	  m_xLastMouse(1),
 	  m_yLastMouse(1),
-	  m_bDoingCopy(false)
+	  m_bDoingCopy(false),
+	  m_bNotDraggingImage(false)
 {
 	UT_ASSERT (pView);
 }
@@ -286,27 +287,30 @@ void FV_VisualDragText::mouseDrag(UT_sint32 x, UT_sint32 y)
 		expY.height = dy + 2*iext;
 	}
 
-	if(expX.width > 0)
+	if(!m_bNotDraggingImage && (expX.width > 0))
 	{
 		getGraphics()->setClipRect(&expX);
 		m_pView->updateScreen(false);
 	}
-	if(expY.height > 0)
+	if(!m_bNotDraggingImage && (expY.height > 0))
 	{
 		getGraphics()->setClipRect(&expY);
 		m_pView->updateScreen(false);
 	}
-	getGraphics()->setClipRect(NULL);
-	drawImage();
-	if(m_recOrigLeft.width > 0)
+	if(!m_bNotDraggingImage)
 	{
-		getGraphics()->setClipRect(&m_recOrigLeft);
-		m_pView->updateScreen(false);
-	}
-	if(m_recOrigRight.width > 0)
-	{
-		getGraphics()->setClipRect(&m_recOrigRight);
-		m_pView->updateScreen(false);
+	        getGraphics()->setClipRect(NULL);
+		drawImage();
+		if(m_recOrigLeft.width > 0)
+		{
+		     getGraphics()->setClipRect(&m_recOrigLeft);
+		     m_pView->updateScreen(false);
+		}
+		if(m_recOrigRight.width > 0)
+		{
+		     getGraphics()->setClipRect(&m_recOrigRight);
+		     m_pView->updateScreen(false);
+		}
 	}
 	m_iLastX = x;
 	m_iLastY = y;
@@ -378,6 +382,8 @@ void FV_VisualDragText::getImageFromSelection(UT_sint32 x, UT_sint32 y)
 	UT_sint32 xCaret2, yCaret2;
 	bool bDirection = false;
 	bool bEOL = false;
+	fp_Page * pPageLow = NULL;
+	fp_Page * pPageHigh = NULL;
 	if(m_pView->getSelectionMode() < 	FV_SelectionMode_Multiple)
 	{
 		if(m_pView->getSelectionAnchor() < m_pView->getPoint())
@@ -469,6 +475,48 @@ void FV_VisualDragText::getImageFromSelection(UT_sint32 x, UT_sint32 y)
 	fp_Run * pRunHigh = NULL;
 	m_pView->_findPositionCoords(posHigh, bEOL, xHigh, yHigh, xCaret2, yCaret2, heightCaret, bDirection, NULL, &pRunHigh);
 	fp_Line * pLineHigh = pRunHigh->getLine();
+	pPageLow = pLineLow->getPage();
+	pPageHigh = pLineHigh->getPage();
+	//
+	// Decide if the selection is fully on screen and all on the same page.
+	//
+	bool bOffscreen = false;
+	if(pPageLow != pPageHigh)
+	{
+	     bOffscreen = true;
+	}
+	if(!bOffscreen && ((yLow <0) || (yHigh >  m_pView->getWindowHeight())))
+	{
+	     bOffscreen = true;
+	}
+	if(!bOffscreen && ((xLow <0) || (xHigh <0) || (xLow >  m_pView->getWindowWidth()) ||(xLow >  m_pView->getWindowWidth())))
+	{
+	     bOffscreen = true;
+	}
+	if(bOffscreen)
+	{
+	     m_bNotDraggingImage = true;
+	     m_recCurFrame.left = x - 1;
+	     m_recCurFrame.top = y - 1;
+	     m_recCurFrame.width = 2;
+	     m_recCurFrame.height = 2;
+	     m_iInitialOffX = 1;
+	     m_iInitialOffY = 1;
+	     m_iLastX = x;
+	     m_iLastY = y;
+	     m_recOrigLeft.width = 2;
+	     m_recOrigLeft.height = 2;
+	     m_recOrigLeft.left = x-1;
+	     m_recOrigLeft.top = y-1;
+	     GR_Graphics::Cursor cursor = GR_Graphics::GR_CURSOR_DRAGTEXT;
+	     if(isDoingCopy())
+	     {
+	       cursor = GR_Graphics::GR_CURSOR_COPYTEXT;
+	     }
+	     getGraphics()->setCursor(cursor);
+	     return;
+	}
+	m_bNotDraggingImage = false;
 //
 // OK deal with the nice case of the selection just on the single line
 //
@@ -661,6 +709,7 @@ void FV_VisualDragText::mouseRelease(UT_sint32 x, UT_sint32 y)
 		DELETEP(m_pAutoScrollTimer);
 	}
 	m_bDoingCopy = false;
+	m_bNotDraggingImage = false;
 	clearCursor();
 	if(m_iVisualDragMode != FV_VisualDrag_DRAGGING)
 	{
@@ -726,6 +775,16 @@ void FV_VisualDragText::mouseRelease(UT_sint32 x, UT_sint32 y)
 
 void FV_VisualDragText::drawImage(void)
 {
+        if(m_bNotDraggingImage)
+	{ 
+	  GR_Graphics::Cursor cursor = GR_Graphics::GR_CURSOR_DRAGTEXT;
+	  if(isDoingCopy())
+	  {
+	      cursor = GR_Graphics::GR_CURSOR_COPYTEXT;
+	  }
+	  getGraphics()->setCursor(cursor);
+	  return;
+	}
 	if(m_pDragImage == NULL)
 	{
 		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);

@@ -1692,8 +1692,16 @@ void GR_UnixGraphics::setCursor(GR_Graphics::Cursor c)
 	case GR_CURSOR_DOWNARROW:
 		cursor_number = GDK_SB_DOWN_ARROW;
 		break;
-	}
 
+	case GR_CURSOR_DRAGTEXT:
+		cursor_number = GDK_TARGET;
+		break;
+
+	case GR_CURSOR_COPYTEXT:
+		cursor_number = GDK_DRAPED_BOX;
+		break;
+	}
+	xxx_UT_DEBUGMSG(("cursor set to %d  gdk %d \n",c,cursor_number));
 	GdkCursor * cursor = gdk_cursor_new(cursor_number);
 	gdk_window_set_cursor(m_pWin, cursor);
 	gdk_cursor_unref(cursor);

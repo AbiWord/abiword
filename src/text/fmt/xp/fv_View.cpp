@@ -9359,6 +9359,14 @@ void FV_View::setCursorToContext()
 		break;
 	case EV_EMC_VISUALTEXTDRAG:
 		cursor = GR_Graphics::GR_CURSOR_IMAGE;
+		if(m_VisualDragText.isNotdraggingImage())
+		{
+			cursor = GR_Graphics::GR_CURSOR_DRAGTEXT;
+			if(m_VisualDragText.isDoingCopy())
+			{
+				cursor = GR_Graphics::GR_CURSOR_COPYTEXT;
+			}
+		}
 		break;
 
 	case EV_EMC_FRAME:

@@ -59,7 +59,10 @@ public:
 	void                  drawCursor(PT_DocPosition newPos);
 	static void 		  _autoScroll(UT_Worker * pTimer);
 	void                  clearCursor(void);
-
+	bool                  isNotdraggingImage(void)
+	  { return m_bNotDraggingImage;}
+	bool                  isDoingCopy(void)
+	  { return m_bDoingCopy;}
 private:
 	FV_View *             m_pView;
 	FV_VisualDragMode     m_iVisualDragMode;
@@ -82,6 +85,7 @@ private:
 	UT_sint32			  m_yLastMouse;
 
 	bool                  m_bDoingCopy;
+	bool                  m_bNotDraggingImage;
 };
 
 #endif /* FV_VISUALDRAGTEXT_H */
