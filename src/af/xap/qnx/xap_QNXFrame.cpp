@@ -178,10 +178,10 @@ int XAP_QNXFrame::_fe::expose(PtWidget_t * w, PhTile_t * damage)
 			UT_DEBUGMSG(("Expose Rect is %d,%d  %d,%d ",
 			damage->rect.ul.x, damage->rect.ul.y, damage->rect.lr.x, damage->rect.lr.y));
 			/* At one point in time this required some fiddling to put it in the widget co-ordinates*/
-			rClip.width = damage->rect.lr.x - damage->rect.ul.x;
-			rClip.height = damage->rect.lr.y - damage->rect.ul.y;
-			rClip.left = damage->rect.ul.x /*- pnt.x*/;
-			rClip.top = damage->rect.ul.y /*- pnt.y*/;
+			rClip.width = (damage->rect.lr.x - damage->rect.ul.x) + 1;
+			rClip.height = (damage->rect.lr.y - damage->rect.ul.y) + 1;
+			rClip.left = damage->rect.ul.x - pnt.x;
+			rClip.top = damage->rect.ul.y - pnt.y;
 
 			UT_DEBUGMSG(("Adjusted Expose Rect %d,%d %d/%d ",
 				rClip.left, rClip.top, rClip.width, rClip.height));
@@ -311,10 +311,10 @@ UT_Bool XAP_QNXFrame::initialize(const char * szKeyBindingsKey, const char * szK
 	EV_EditEventMapper * pEEM = getEditEventMapper();
 	UT_ASSERT(pEEM);
 
-	m_pQNXKeyboard = new ev_QNXKeyboard(pEEM);
+	m_pKeyboard = new ev_QNXKeyboard(pEEM);
 	UT_ASSERT(m_pKeyboard);
 	
-	m_pQNXMouse = new EV_QNXMouse(pEEM);
+	m_pMouse = new EV_QNXMouse(pEEM);
 	UT_ASSERT(m_pMouse);
 
 	return UT_TRUE;

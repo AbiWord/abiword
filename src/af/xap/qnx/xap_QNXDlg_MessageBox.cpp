@@ -109,8 +109,6 @@ void XAP_QNXDialog_MessageBox::runModal(XAP_Frame * pFrame)
 						str3,
 						def_button);	
 
-	printf("Returned %d \n", ret);
-
 	switch (m_buttons)
 	{
 	case b_O: // OK

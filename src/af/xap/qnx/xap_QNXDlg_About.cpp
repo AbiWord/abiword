@@ -36,6 +36,7 @@
 #include "gr_QNXImage.h"
 #include "ut_bytebuf.h"
 #include "ut_png.h"
+#include "ut_qnxHelper.h"
 
 #include <stdio.h>
 
@@ -137,6 +138,13 @@ void XAP_QNXDialog_About::runModal(XAP_Frame * pFrame)
 	// stash away the frame
 	m_pFrame = static_cast<XAP_QNXFrame *>(pFrame);
 
+	// To center the dialog, we need the frame of its parent.
+	XAP_QNXFrame * pQNXFrame = static_cast<XAP_QNXFrame *>(pFrame);
+	UT_ASSERT(pQNXFrame);
+	PtWidget_t * parentWindow = pQNXFrame->getTopLevelWindow();
+	UT_ASSERT(parentWindow);
+	PtSetParentWidget(parentWindow);
+
 	// Build the window's widgets and arrange them
 	PtWidget_t * mainWindow = _constructWindow();
 	UT_ASSERT(mainWindow);
@@ -144,38 +152,14 @@ void XAP_QNXDialog_About::runModal(XAP_Frame * pFrame)
 	// assemble an image
 	_preparePicture();
 	
-#if 0
-	// To center the dialog, we need the frame of its parent.
-	XAP_QNXFrame * pQNXFrame = static_cast<XAP_QNXFrame *>(pFrame);
-	UT_ASSERT(pQNXFrame);
-	
-	// Get the GtkWindow of the parent frame
-	PtWidget_t * parentWindow = pQNXFrame->getTopLevelWindow();
-	UT_ASSERT(parentWindow);
-	
-	// Center our new dialog in its parent and make it a transient
-	// so it won't get lost underneath
-    centerDialog(parentWindow, mainWindow);
-	gtk_window_set_transient_for(GTK_WINDOW(mainWindow), GTK_WINDOW(parentWindow));
-
-	// Show the top level dialog,
-	gtk_widget_show(mainWindow);
-
-	// Make it modal, and stick it up top
-	gtk_grab_add(mainWindow);
-
-	
-	// Run into the GTK event loop for this window.
-	gtk_main();
-
-	gtk_widget_destroy(mainWindow);
-#endif
 
 	// attach a new graphics context
 	m_gc = new GR_QNXGraphics(mainWindow, m_drawingareaGraphic);
 
-	printf("Running the about main window loop \n");
+	UT_QNXCenterWindow(/*parentWindow | */ NULL, mainWindow);
+	UT_QNXBlockWidget(parentWindow, 1);
 	PtRealizeWidget(mainWindow);
+
 	int count = PtModalStart();
 	done = 0;
 	while(!done) {
@@ -183,6 +167,7 @@ void XAP_QNXDialog_About::runModal(XAP_Frame * pFrame)
 	}
 	PtModalEnd(count);
 
+	UT_QNXBlockWidget(parentWindow, 0);
 	PtDestroyWidget(mainWindow);
 }
 
@@ -240,8 +225,8 @@ PtWidget_t * XAP_QNXDialog_About::_constructWindow(void)
 	PtSetArg(&args[n++], Pt_ARG_WIDTH, WIN_WIDTH, 0);
 	PtSetArg(&args[n++], Pt_ARG_HEIGHT, WIN_HEIGHT, 0);
 	PtSetArg(&args[n++], Pt_ARG_WINDOW_RENDER_FLAGS, 0, Ph_WM_RENDER_RESIZE);
-	PtSetParentWidget(NULL);
 	windowAbout = PtCreateWidget(PtWindow, NULL, n, args);
+	PtAddCallback(windowAbout, Pt_CB_WINDOW_CLOSING, s_delete_clicked, this);
 
 
 	n = 0; 

@@ -22,19 +22,11 @@
 
 #include "xap_QNXFrame.h"
 #include "xap_Dlg_Print.h"
+#include <Pt.h>
+
 class XAP_QNXFrame;
-class PS_Graphics;
 
 /*****************************************************************/
-#if 0
-struct _printCBStruct
-{
-	GtkWidget * entry;
-	XAP_Frame * frame;
-	XAP_Dialog_Print::tAnswer * answer;
-};
-typedef struct _printCBStruct printCBStruct;
-#endif
 
 class XAP_QNXDialog_Print : public XAP_Dialog_Print
 {
@@ -53,19 +45,13 @@ public:
 
 protected:
 
-#if 0
-	printCBStruct			m_callbackData;
-	
+	XAP_QNXFrame *			m_pQNXFrame;
+	PpPrintContext_t  		*m_pPrintContext;
+
 	void					_raisePrintDialog(XAP_Frame * pFrame);
 	void					_getGraphics(void);
 
-//	void 					_notifyError_OKOnly(XAP_Frame * pFrame, const char * message);
-	
-	XAP_QNXFrame *			m_pQNXFrame;
-	PS_Graphics *			m_pPSGraphics;
-
-	struct
-	{
+	struct {
 		// add various fields here to persist between uses of the dialog....
 		UT_uint32	nFromPage;
 		UT_uint32	nToPage;
@@ -80,12 +66,7 @@ protected:
 		UT_Bool		bEnableSelection;
 		UT_Bool		bEnablePageRange;
 
-		GR_Graphics::ColorSpace		colorSpace;
-
-		char *		szPrintCommand;
-		
 	} m_persistPrintDlg;
-#endif	
 };
 
 #endif /* XAP_QNXDIALOG_PRINT_H */
