@@ -59,7 +59,7 @@ if test "$gnome" = true ; then
 fi
 
 if test "$gnome" = true ; then
-	gnomelibs="libbonobo-2.0 libgnomeui-2.0 gal-2.0 libgnomeprint-2.2 libgnomeprintui-2.2 gnome-vfs-2.0 gdk-pixbuf-2.0"
+	gnomelibs="libbonobo-2.0 libgnomeui-2.0 gal-2.0 libgnomeprint-2.2 libgnomeprintui-2.2"
 	gnomeliberrors=`pkg-config --cflags $gnomelibs 2>&1 | grep "Unknown library"`
 	if test "x$gnomeliberrors" != "x"; then
 		AC_MSG_ERROR([One or more gnome libraries not found; require: $gnomelibs])
