@@ -657,7 +657,7 @@ void PS_Graphics::_emit_PrologMacros(void)
 		"/BPP {BP SZ 0 HH translate} bind def",				// Begin Portrait Page.  <w> <h> <res> BPP
 		"/BPL {BP SZ 90 rotate} bind def",					// Begin Landscape Page. <w> <h> <res> BPP
 		"/EP  {grestore showpage} bind def",				// EP
-		"/ML  {neg moveto neg lineto} bind def",			// Move and Line. <x2> <y2> <x1> <y1> ML
+		"/ML  {neg moveto neg lineto stroke} bind def",		// Move and Line. <x2> <y2> <x1> <y1> ML
 		"/LAT {dup length dict begin",						// Change encoding vector for current font to Latin1
 		"       {1 index /FID ne {def} {pop pop} ifelse} forall",
 		"       /Encoding ISOLatin1Encoding def",
