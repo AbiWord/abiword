@@ -38,6 +38,7 @@ gladedir=$(pkgdatadir)/AbiWord/glade
 
 glade_DATA = \
 	ap_UnixDialog_Break.glade \
+	ap_UnixDialog_Field.glade \
 	ap_UnixDialog_HdrFtr.glade \
 	ap_UnixDialog_InsertTable.glade \
 	ap_UnixDialog_Insert_DateTime.glade \

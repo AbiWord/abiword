@@ -121,6 +121,8 @@ GtkWidget * AP_UnixDialog_Insert_DateTime::_constructWindow(void)
 {
 	GtkWidget * window;	
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
+	GtkCellRenderer *renderer;
+	GtkTreeViewColumn *column;	
 	
 	// get the path where our glade file is located
 	XAP_UnixApp * pApp = static_cast<XAP_UnixApp*>(m_pApp);
@@ -145,6 +147,15 @@ GtkWidget * AP_UnixDialog_Insert_DateTime::_constructWindow(void)
 	
 	localizeLabelMarkup(glade_xml_get_widget(xml, "lbAvailableFormats"), pSS, AP_STRING_ID_DLG_DateTime_AvailableFormats);
 	
+	// add a column to our TreeView
+	renderer = gtk_cell_renderer_text_new ();
+	column = gtk_tree_view_column_new_with_attributes ("Format",
+							 renderer,
+							 "text", 
+							 0,
+							 NULL);
+	gtk_tree_view_append_column( GTK_TREE_VIEW(m_tvFormats), column);	
+	
 	return window;
 }
 
@@ -168,8 +179,6 @@ void AP_UnixDialog_Insert_DateTime::_populateWindowData(void)
 	
 	GtkListStore *model;
 	GtkTreeIter iter;
-	GtkCellRenderer *renderer;
-	GtkTreeViewColumn *column;	
 	
 	model = gtk_list_store_new (2, 
 							    G_TYPE_STRING,
@@ -190,16 +199,6 @@ void AP_UnixDialog_Insert_DateTime::_populateWindowData(void)
 	}
 	
 	gtk_tree_view_set_model( GTK_TREE_VIEW(m_tvFormats), (GtkTreeModel *)model);
-
-	// create a column, and add it to the TreeView
-	renderer = gtk_cell_renderer_text_new ();
-	column = gtk_tree_view_column_new_with_attributes ("Format",
-							 renderer,
-							 "text", 
-							 0,
-							 NULL);
-	//gtk_tree_view_column_set_sort_column_id (column, COLUMN_DESCRIPTION);
-	gtk_tree_view_append_column( GTK_TREE_VIEW(m_tvFormats), column);	
 	
 	g_object_unref (model);
 	

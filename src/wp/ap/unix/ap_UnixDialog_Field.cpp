@@ -19,6 +19,7 @@
 
 #include <stdlib.h>
 #include <time.h>
+#include <glade/glade.h>
 
 #include "ut_string.h"
 #include "ut_assert.h"
@@ -68,11 +69,18 @@ AP_UnixDialog_Field::~AP_UnixDialog_Field(void)
 
 /*****************************************************************/
 
-static void s_types_clicked(GtkWidget * widget, gint row, gint column,
+/*static void s_types_clicked(GtkWidget * widget, gint row, gint column,
 							GdkEventButton *event, AP_UnixDialog_Field * dlg)
 {
 	UT_ASSERT(widget && dlg);
 	dlg->types_changed(row);
+}*/
+
+static void s_types_clicked(GtkTreeView *treeview,
+                            AP_UnixDialog_Field * dlg)
+{
+	UT_ASSERT(treeview && dlg);
+	dlg->types_changed(treeview);
 }
 
 /*****************************************************************/
@@ -80,23 +88,26 @@ static void s_types_clicked(GtkWidget * widget, gint row, gint column,
 void AP_UnixDialog_Field::runModal(XAP_Frame * pFrame)
 {
 	UT_return_if_fail(pFrame);
+	
 	// Build the window's widgets and arrange them
-	GtkWidget * mainWindow = _constructWindow();
-	UT_ASSERT(mainWindow);
+	m_windowMain = _constructWindow();
+	UT_ASSERT(m_windowMain);
 
 	// Populate the window's data items
 	_populateCatogries();
 
-	switch ( abiRunModalDialog ( GTK_DIALOG(mainWindow), pFrame, this,
-								 BUTTON_CANCEL, false ) )
+	switch ( abiRunModalDialog ( GTK_DIALOG(m_windowMain), pFrame, this,
+								 GTK_RESPONSE_CANCEL, false ) )
 	{
-		case BUTTON_OK:
-			event_OK (); break ;
+		case GTK_RESPONSE_OK:
+			event_OK();
+			break;
 		default:
-			event_Cancel () ; break ;
+			m_answer = AP_Dialog_Field::a_CANCEL;
+			break;
 	}
 
-	abiDestroyWidget ( mainWindow ) ;
+	abiDestroyWidget ( m_windowMain ) ;
 }
 
 
@@ -106,115 +117,144 @@ void AP_UnixDialog_Field::event_OK(void)
 	
 	// find item selected in the Types list box, save it to m_iTypeIndex
 
-	GList * typeslistitem = GTK_CLIST(m_listTypes)->selection;
+	GtkTreeSelection * selection;
+	GtkTreeIter iter;
+	GtkTreeModel * model;
 
-	// if there is no selection
+	selection = gtk_tree_view_get_selection( GTK_TREE_VIEW(m_listTypes) );
+
+	// if there is no selection, or the selection's data (GtkListItem widget)
 	// is empty, return cancel.  GTK can make this happen.
-	if (!(typeslistitem))
+	if ( !selection || 
+		 !gtk_tree_selection_get_selected (selection, &model, &iter)
+	   )
 	{
 		m_answer = AP_Dialog_Field::a_CANCEL;
 		return;
 	}
-	// since we only do single mode selection, there is only one
-	// item in the GList we just got back
 
-	// For a CList the data value is actually just the row number. We can
-	// use this as index to get the actual data value for the row.
+	// get the ID of the selected Type
+	gtk_tree_model_get (model, &iter, 1, &m_iTypeIndex, -1);
 
-	gint indexrow = GPOINTER_TO_INT (typeslistitem->data);
-	m_iTypeIndex =  GPOINTER_TO_INT (gtk_clist_get_row_data (GTK_CLIST (m_listTypes), indexrow));
 	
 	// find item selected in the Field list box, save it to m_iFormatIndex
-	GList * fieldslistitem = GTK_CLIST (m_listFields)->selection;
 
-	// if there is no selection
+	selection = gtk_tree_view_get_selection( GTK_TREE_VIEW(m_listFields) );
+
+	// if there is no selection, or the selection's data (GtkListItem widget)
 	// is empty, return cancel.  GTK can make this happen.
-	if (!(fieldslistitem))
+	if ( !selection || 
+		 !gtk_tree_selection_get_selected (selection, &model, &iter)
+	   )
 	{
 		m_answer = AP_Dialog_Field::a_CANCEL;
 		return;
 	}
 
-
-	// For a CList the data value is actually just the row number. We can
-	// use this as index to get the actual data value for the row.
-	indexrow = GPOINTER_TO_INT(fieldslistitem->data);
-	m_iFormatIndex = GPOINTER_TO_INT(gtk_clist_get_row_data( GTK_CLIST(m_listFields),indexrow));
+	// get the ID of the selected Type
+	gtk_tree_model_get (model, &iter, 1, &m_iFormatIndex, -1);
 	
-	setParameter(gtk_entry_get_text(GTK_ENTRY(m_entryParam)));
+	setParameter(gtk_entry_get_text(GTK_ENTRY(m_entryParam)));	
 	m_answer = AP_Dialog_Field::a_OK;
 }
 
 
-void AP_UnixDialog_Field::types_changed(gint row)
+void AP_UnixDialog_Field::types_changed(GtkTreeView *treeview)
 {
-	UT_ASSERT(m_windowMain && m_listTypes);
+	GtkTreeSelection * selection;
+	GtkTreeIter iter;
+	GtkTreeModel * model;
+
+	selection = gtk_tree_view_get_selection( GTK_TREE_VIEW(treeview) );
+
+	// if there is no selection, or the selection's data (GtkListItem widget)
+	// is empty, return cancel.  GTK can make this happen.
+	if ( !selection || 
+		 !gtk_tree_selection_get_selected (selection, &model, &iter)
+	   )
+	{
+		m_answer = AP_Dialog_Field::a_CANCEL;
+		return;
+	}	
 
 	// Update m_iTypeIndex with the row number
-	m_iTypeIndex = row;
+	gtk_tree_model_get (model, &iter, 1, &m_iTypeIndex, -1);	
 
 	// Update the fields list with this new Type
 	setFieldsList();
 }
 
-void AP_UnixDialog_Field::event_Cancel(void)
-{
-	m_answer = AP_Dialog_Field::a_CANCEL;
-}
-
 void AP_UnixDialog_Field::setTypesList(void)
 {
-	gint i;
-	gint cnt = 0;
-	GtkCList * c_listTypes = GTK_CLIST(m_listTypes);
-	for (i = 0;fp_FieldTypes[i].m_Desc != NULL;i++) 
+	UT_ASSERT(m_listTypes);
+	
+	UT_sint32 i;
+	
+	GtkListStore *model;
+	GtkTreeIter iter;
+	
+	model = gtk_list_store_new (2, 
+							    G_TYPE_STRING,
+								G_TYPE_INT
+	                            );
+	
+ 	// build a list of all items
+    for (i = 0; fp_FieldTypes[i].m_Desc != NULL; i++)
 	{
-		gtk_clist_append(c_listTypes, (gchar **) & fp_FieldTypes[i].m_Desc  );
-		// store index in data pointer
-		gtk_clist_set_row_data( c_listTypes, cnt, GINT_TO_POINTER(i));
-		cnt++;
+		// Add a new row to the model
+		gtk_list_store_append (model, &iter);
+		gtk_list_store_set (model, &iter,
+					  		0, fp_FieldTypes[i].m_Desc,
+							1, i,
+					  		-1);
 	}
+	
+	gtk_tree_view_set_model( GTK_TREE_VIEW(m_listTypes), (GtkTreeModel *)model);
+
+	g_object_unref (model);	
+	
 	// now select first item in box
-	if (i > 0)
-	{		
-		gtk_clist_select_row(c_listTypes, 0,0);
-		m_iTypeIndex = 0;
-	}
-	else
-	{
-		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-	}
+ 	gtk_widget_grab_focus (m_listTypes);
+	
+	m_iTypeIndex = 0;
 }
 
 void AP_UnixDialog_Field::setFieldsList(void)
 {
 	UT_ASSERT(m_listFields);
-	fp_FieldTypesEnum  FType = fp_FieldTypes[m_iTypeIndex].m_Type;
-	gint i;
-	GtkCList * c_listFields = GTK_CLIST(m_listFields);
-
-	gtk_clist_clear( c_listFields);
-
-	gint cnt = 0;
-	for (i = 0; fp_FieldFmts[i].m_Tag != NULL; i++) 
+	
+	fp_FieldTypesEnum FType = fp_FieldTypes[m_iTypeIndex].m_Type;
+	
+	UT_sint32 i;
+	
+	GtkListStore *model;
+	GtkTreeIter iter;
+	
+	model = gtk_list_store_new (2, 
+							    G_TYPE_STRING,
+								G_TYPE_INT
+	                            );
+	
+ 	// build a list of all items
+    for (i = 0; fp_FieldFmts[i].m_Tag != NULL; i++)
 	{
 		if (fp_FieldFmts[i].m_Type == FType)
 		{
-			gtk_clist_append(c_listFields, (gchar **) & fp_FieldFmts[i].m_Desc );
-			gtk_clist_set_row_data(c_listFields, cnt, GINT_TO_POINTER(i));
-			cnt++;
+			// Add a new row to the model
+			gtk_list_store_append (model, &iter);
+			gtk_list_store_set (model, &iter,
+								0, fp_FieldFmts[i].m_Desc,
+								1, i,
+								-1);
 		}
 	}
+	
+	gtk_tree_view_set_model( GTK_TREE_VIEW(m_listFields), (GtkTreeModel *)model);
 
+	g_object_unref (model);
+		
 	// now select first item in box
-	if (i > 0)
-	{		
-		gtk_clist_select_row( c_listFields, 0,0);
-	}
-	else 
-	{
-		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-	}
+ 	gtk_widget_grab_focus (m_listFields);
 }
 
 
@@ -223,25 +263,65 @@ void AP_UnixDialog_Field::setFieldsList(void)
 
 GtkWidget * AP_UnixDialog_Field::_constructWindow(void)
 {
-	const XAP_StringSet *pSS = m_pApp->getStringSet();
-
-    GtkWidget* contents;
-	GtkWidget* vbox ;
+	GtkWidget * window;
+	const XAP_StringSet * pSS = m_pApp->getStringSet();
+	GtkCellRenderer *renderer;
+	GtkTreeViewColumn *column;
 	
-	m_windowMain = abiDialogNew ( "field dialog", TRUE, pSS->getValueUTF8(AP_STRING_ID_DLG_Field_FieldTitle).c_str() ) ;
-
-	abiAddStockButton ( GTK_DIALOG(m_windowMain), GTK_STOCK_CANCEL, BUTTON_CANCEL ) ;
-	abiAddStockButton ( GTK_DIALOG(m_windowMain), GTK_STOCK_OK, BUTTON_OK ) ;
-
-	vbox = GTK_DIALOG(m_windowMain)->vbox ;
-    contents = _constructWindowContents(); 	
-
-	gtk_widget_show_all ( contents ) ;
+	// get the path where our glade file is located
+	XAP_UnixApp * pApp = static_cast<XAP_UnixApp*>(m_pApp);
+	UT_String glade_path( pApp->getAbiSuiteAppGladeDir() );
+	glade_path += "/ap_UnixDialog_Field.glade";
 	
-	gtk_container_add ( GTK_CONTAINER(vbox), contents ) ;
-	gtk_container_set_border_width (GTK_CONTAINER(m_windowMain), 8);
-    
-	return m_windowMain;
+	// load the dialog from the glade file
+	GladeXML *xml = abiDialogNewFromXML( glade_path.c_str() );
+
+	// Update our member variables with the important widgets that 
+	// might need to be queried or altered later
+	window = glade_xml_get_widget(xml, "ap_UnixDialog_Field");
+	m_listTypes = glade_xml_get_widget(xml, "tvTypes");
+	m_listFields = glade_xml_get_widget(xml, "tvFields");
+	m_entryParam = glade_xml_get_widget(xml, "edExtraParameters");
+	
+	// set the single selection mode for the TreeViews
+    gtk_tree_selection_set_mode (gtk_tree_view_get_selection (GTK_TREE_VIEW (m_listTypes)), GTK_SELECTION_SINGLE);	
+    gtk_tree_selection_set_mode (gtk_tree_view_get_selection (GTK_TREE_VIEW (m_listFields)), GTK_SELECTION_SINGLE);	
+
+	// set the dialog title
+	abiDialogSetTitle(window, pSS->getValueUTF8(AP_STRING_ID_DLG_Field_FieldTitle).c_str());	
+	
+	// localize the strings in our dialog, and set some userdata for some widg
+
+	localizeLabelMarkup(glade_xml_get_widget(xml, "lbTypes"), pSS, AP_STRING_ID_DLG_Field_Types);
+	localizeLabelMarkup(glade_xml_get_widget(xml, "lbFields"), pSS, AP_STRING_ID_DLG_Field_Fields);
+	localizeLabelMarkup(glade_xml_get_widget(xml, "lbExtraParameters"), pSS, AP_STRING_ID_DLG_Field_Parameters);
+
+	// add a column to our TreeViews
+
+	renderer = gtk_cell_renderer_text_new ();
+	column = gtk_tree_view_column_new_with_attributes ("Format",
+							 renderer,
+							 "text", 
+							 0,
+							 NULL);
+	gtk_tree_view_append_column( GTK_TREE_VIEW(m_listTypes), column);
+
+	renderer = gtk_cell_renderer_text_new ();
+	column = gtk_tree_view_column_new_with_attributes ("Format",
+							 renderer,
+							 "text", 
+							 0,
+							 NULL);
+	gtk_tree_view_append_column( GTK_TREE_VIEW(m_listFields), column);	
+
+	// connect a clicked signal to the column
+
+	g_signal_connect_after(G_OBJECT(m_listTypes),
+						   "cursor-changed",
+						   G_CALLBACK(s_types_clicked),
+						   (gpointer) this);
+
+	return window;
 }
 
 void AP_UnixDialog_Field::_populateCatogries(void)
@@ -249,79 +329,4 @@ void AP_UnixDialog_Field::_populateCatogries(void)
 	// Fill in the two lists
 	setTypesList();
 	setFieldsList();
-}
-	
-GtkWidget *AP_UnixDialog_Field::_constructWindowContents (void)
-{
-	GtkWidget *hbox;
-	GtkWidget *vboxTypes;
-	GtkWidget *vboxFields;
-	GtkWidget *labelTypes;
-	GtkWidget *labelFields;
-	GtkWidget *scrolledwindowTypes;
-	GtkWidget *scrolledwindowFields;
-	GtkWidget *labelParam;
-	XML_Char * unixstr = NULL;	// used for conversions
-	const XAP_StringSet * pSS = m_pApp->getStringSet();
-
-	hbox = gtk_hbox_new (FALSE, 7); // aiken: increase spacing from 5 to 7.
-
-	// Add the types list vbox
-	vboxTypes = gtk_vbox_new (FALSE, 2); // aiken: increase spacing from 0 to 2.
-	gtk_box_pack_start (GTK_BOX (hbox), vboxTypes, TRUE, TRUE, 0);
-
-	// Label the Types Box
-	UT_XML_cloneNoAmpersands(unixstr, pSS->getValueUTF8(AP_STRING_ID_DLG_Field_Types).c_str());
-	labelTypes = gtk_label_new (unixstr);
-	FREEP(unixstr);
-	gtk_box_pack_start (GTK_BOX (vboxTypes), labelTypes, FALSE, FALSE, 0);
-	gtk_misc_set_alignment (GTK_MISC (labelTypes), 0, 0.5);
-
-	// Put a scrolled window into the Types box
-	scrolledwindowTypes = gtk_scrolled_window_new (NULL, NULL);
-	gtk_widget_set_usize (scrolledwindowTypes, 200, 220);
-	gtk_box_pack_start (GTK_BOX (vboxTypes), scrolledwindowTypes, TRUE, TRUE, 0);
-	gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (scrolledwindowTypes), GTK_POLICY_NEVER, GTK_POLICY_AUTOMATIC);
-
-	m_listTypes = gtk_clist_new (1);
-	gtk_clist_set_selection_mode (GTK_CLIST (m_listTypes), GTK_SELECTION_SINGLE);
-	gtk_container_add (GTK_CONTAINER (scrolledwindowTypes), m_listTypes);
-
-	// Add the Fields list vbox
-	vboxFields = gtk_vbox_new (FALSE, 2); // aiken: increase spacing from 0 to 2.
-	gtk_box_pack_start (GTK_BOX (hbox), vboxFields, TRUE, TRUE, 4); // aiken: up spcg 0->4
-
-	// Label the Fields Box
-	UT_XML_cloneNoAmpersands(unixstr, pSS->getValueUTF8(AP_STRING_ID_DLG_Field_Fields).c_str());
-	labelFields = gtk_label_new (unixstr);
-	FREEP(unixstr);
-	gtk_box_pack_start (GTK_BOX (vboxFields), labelFields, FALSE, FALSE, 0);
-	gtk_misc_set_alignment (GTK_MISC (labelFields), 0, 0.5);
-
-	// Put a scrolled window into the Fields box
-	scrolledwindowFields = gtk_scrolled_window_new (NULL, NULL);
-	gtk_widget_set_usize (scrolledwindowFields, 200, 220);
-	gtk_box_pack_start (GTK_BOX (vboxFields), scrolledwindowFields, TRUE, TRUE, 0);
-	gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (scrolledwindowFields), GTK_POLICY_NEVER, GTK_POLICY_AUTOMATIC);
-
-	m_listFields = gtk_clist_new(1);
-	gtk_clist_set_selection_mode (GTK_CLIST (m_listFields), GTK_SELECTION_SINGLE);
-	gtk_widget_set_usize (m_listFields, 198, 218);
-	gtk_container_add (GTK_CONTAINER (scrolledwindowFields), m_listFields);
-
-	// add the entry for optional parameter
-	UT_XML_cloneNoAmpersands(unixstr, pSS->getValueUTF8(AP_STRING_ID_DLG_Field_Parameters).c_str());
-	labelParam = gtk_label_new (unixstr);
-	FREEP(unixstr);
-	gtk_box_pack_start (GTK_BOX (vboxFields), labelParam, FALSE, FALSE, 0);
-	gtk_misc_set_alignment (GTK_MISC (labelParam), 0, 0.5);
-	
-	m_entryParam = gtk_entry_new();
-	gtk_box_pack_start (GTK_BOX (vboxFields), m_entryParam, FALSE, FALSE, 0);
-	
-	g_signal_connect_after(G_OBJECT(m_listTypes),
-							 "select_row",
-							 G_CALLBACK(s_types_clicked),
-							 (gpointer) this);
-	return hbox;
 }
