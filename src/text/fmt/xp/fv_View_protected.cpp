@@ -1798,6 +1798,10 @@ void FV_View::_moveInsPtNextPrevLine(bool bNext)
 					delta -= pPage->getHeight();
 					pPage = pPage->getNext();
 				}
+				if(pPage == NULL)
+				{
+					return;
+				}
 				pPage->mapXYToPosition(xClick, yClick+delta, 
 									   iNewPoint, bBOL, bEOL,isTOC);
 				delta += iLineHeight;
@@ -1812,6 +1816,10 @@ void FV_View::_moveInsPtNextPrevLine(bool bNext)
 				{
 					delta += pPage->getHeight();
 					pPage = pPage->getPrev();
+				}
+				if(pPage == NULL)
+				{
+					return;
 				}
 				pPage->mapXYToPosition(xClick, yClick-delta, 
 									   iNewPoint, bBOL, bEOL,isTOC);
