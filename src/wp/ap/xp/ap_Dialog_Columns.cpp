@@ -385,8 +385,6 @@ AP_Columns_preview::~AP_Columns_preview()
 {
 }
 
-static const UT_sint32 iLinesToDraw = 16;
-
 void AP_Columns_preview::draw(void)
 {
 	UT_sint32 iWidth = m_gc->tlu(getWindowWidth());
@@ -431,7 +429,6 @@ void AP_Columns_preview_drawer::draw(GR_Graphics *gc, UT_Rect &rect, UT_sint32 i
 	UT_sint32 y_start = rect.top + iHalfColumnGap;
 	UT_sint32 y_end = rect.top + rect.height - iHalfColumnGap;
 
-	//UT_sint32 y_step = (y_end - y_start) / iLinesToDraw;
 	UT_sint32 y_step = gc->tlu(2);
 	maxHeightPercent /= 100.0;
 	SpacePercent /= 100.0;
@@ -479,9 +476,4 @@ void AP_Columns_preview_drawer::draw(GR_Graphics *gc, UT_Rect &rect, UT_sint32 i
 		}
 	}
 }
-
-
-
-
-
 
