@@ -895,7 +895,7 @@ void PS_Graphics::clearArea(UT_sint32 /*x*/, UT_sint32 /*y*/,
 
 }
 
-void PS_Graphics::scroll(UT_sint32, UT_sint32)
+void PS_Graphics::scroll(UT_sint32, UT_sint32, XAP_Frame *)
 {
 	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 }

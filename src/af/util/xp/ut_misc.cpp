@@ -38,7 +38,7 @@ UT_Rect::UT_Rect()
 	left = top = height = width = 0;
 }
 
-UT_Rect::UT_Rect(int iLeft, int iTop, int iWidth, int iHeight)
+UT_Rect::UT_Rect(UT_sint32 iLeft, UT_sint32 iTop, UT_sint32 iWidth, UT_sint32 iHeight)
 {
 	left = iLeft;
 	top = iTop;
@@ -52,6 +52,15 @@ UT_Rect::UT_Rect(const UT_Rect & r)
 	top = r.top;
 	width = r.width;
 	height = r.height;
+}
+
+
+UT_Rect::UT_Rect(const UT_Rect * r)
+{
+	left = r->left;
+	top = r->top;
+	width = r->width;
+	height = r->height;
 }
 
 bool UT_Rect::containsPoint(UT_sint32 x, UT_sint32 y) const
@@ -72,6 +81,31 @@ void UT_Rect::set(int iLeft, int iTop, int iWidth, int iHeight)
 	top = iTop;
 	width = iWidth;
 	height = iHeight;
+}
+
+/*!
+ * This method makes a union of the current rectangle with the one in the 
+ * parameter list. This rectangle is the smallest one that covers both
+ * rectangles.
+ */
+void UT_Rect::unionRect(const UT_Rect * pRect)
+{
+	UT_sint32 fx1,fx2,fy1,fy2;
+	if(left <= 0)
+	{
+		left = pRect->left;
+		top = pRect->top;
+		width = pRect->width;
+		height = pRect->height;
+	}
+	fx1 = UT_MIN(left,pRect->left);
+	fx2 = UT_MAX(left+width,pRect->left + pRect->width);
+	fy1 = UT_MIN(top,pRect->top);
+	fy2 = UT_MAX(top+height,pRect->top + pRect->height);
+	left = fx1;
+	width = fx2 - fx1;
+	top = fy1;
+	height = fy2 - fy1;
 }
 
 bool UT_Rect::intersectsRect(const UT_Rect * pRect) const

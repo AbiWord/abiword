@@ -321,15 +321,48 @@ void fp_Container::_drawBoundaries(dg_DrawArgs* pDA)
  */
 void fp_Container::draw(dg_DrawArgs* pDA)
 {
-	int count = m_vecLines.getItemCount();
-	for (int i = 0; i<count; i++)
+	UT_sint32 count = m_vecLines.getItemCount();
+	const UT_Rect * pClipRect = pDA->pG->getClipRect();
+	UT_sint32 ytop,ybot;
+	UT_sint32 i;
+	if(pClipRect)
+	{
+		ybot = pClipRect->height;
+		for(i = 0; i< count; i++)
+		{
+			fp_Line* pLine = (fp_Line*) m_vecLines.getNthItem(i);
+			ybot = UT_MAX(ybot,pLine->getHeight());
+		}
+		ytop = pClipRect->top;
+        ybot += ytop + 1;
+	}
+	else
+	{
+		ytop = 0;
+		ybot = 32700;
+	}
+	bool bStop = false;
+	bool bStart = false;
+//
+// Only draw the lines in the clipping region.
+//
+	for ( i = 0; (i<count && !bStop); i++)
 	{
 		fp_Line* pLine = (fp_Line*) m_vecLines.getNthItem(i);
 
 		dg_DrawArgs da = *pDA;
 		da.xoff += pLine->getX();
 		da.yoff += pLine->getY();
-		pLine->draw(&da);
+		UT_sint32 ydiff = da.yoff + pLine->getHeight();
+		if((da.yoff >= ytop && da.yoff <= ybot) || (ydiff >= ytop && ydiff <= ybot))
+		{
+			bStart = true;
+			pLine->draw(&da);
+		}
+		else if(bStart)
+		{
+			bStop = true;
+		}
 	}
 
     _drawBoundaries(pDA);

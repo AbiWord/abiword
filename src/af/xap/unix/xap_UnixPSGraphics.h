@@ -79,7 +79,7 @@ public:
 	virtual void fillRect(UT_RGBColor& c, UT_Rect &r);
 	virtual void invertRect(const UT_Rect*);
 	virtual void setClipRect(const UT_Rect*);
-	virtual void scroll(UT_sint32, UT_sint32);
+	virtual void scroll(UT_sint32, UT_sint32, XAP_Frame * pFrame=NULL);
 	virtual void scroll(UT_sint32 x_dest, UT_sint32 y_dest,
 						UT_sint32 x_src, UT_sint32 y_src,
 						UT_sint32 width, UT_sint32 height);

@@ -24,6 +24,7 @@
 #include "ut_string_class.h"
 #include "ut_types.h"
 #include "ut_vector.h"
+#include "ut_misc.h"
 #include "xav_Listener.h"	// for AV_ListenerID
 #include "xap_Dlg_MessageBox.h"
 #include "xap_Strings.h"
@@ -163,7 +164,16 @@ public:
 	// when the user selects hide statusbar, the Frame has to be
 	// resized in order to fill the gap leaved by the statusbar
 	virtual void				queue_resize() {}
-
+	const bool                  isSpawnedRedraw(void) const;
+	void                        setSpawnedRedraw(bool exposeState);
+	void                        setPendingRect( UT_sint32 x, UT_sint32 y, UT_sint32 width, UT_sint32 height);
+	void                        unionPendingRect( UT_Rect * pRect);
+	const UT_Rect *             getPendingRect(void) const;
+	const bool                  isExposePending(void) const;
+	void                        setExposePending(bool bExposePending);
+	const bool                  isExposedAreaAccessed(void) const;
+	void                        setExposedAreaAccessed(bool bAccessedState);
+	virtual void                doRepaint( UT_Rect * rClip) {}
 protected:
 	virtual void				_createToolbars(void);
 	virtual EV_Toolbar *		_newToolbar(XAP_App *app, XAP_Frame *frame, const char *, const char *)
@@ -206,6 +216,11 @@ private:
 	bool						m_bBackupRunning;
 	
 	static int					s_iUntitled;	
+	bool                        m_bSpawnedRedraw;
+	UT_Rect                     m_PendingExposeArea;
+	bool                        m_bExposePending;
+	bool                        m_bIsExposedAreaAccessed;
 };
 
 #endif /* XAP_Frame_H */
+

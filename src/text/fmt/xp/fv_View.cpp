@@ -6127,7 +6127,9 @@ void FV_View::setXScrollOffset(UT_sint32 v)
 	if (dx == 0)
 		return;
 	_fixInsertionPointCoords();
-	m_pG->scroll(dx, 0);
+	XAP_Frame * pFrame = (XAP_Frame *) getParentData();
+	UT_ASSERT((pFrame));
+	m_pG->scroll(dx, 0, pFrame);
 	m_xScrollOffset = v;
 	if (dx > 0)
 	{
@@ -6163,7 +6165,10 @@ void FV_View::setYScrollOffset(UT_sint32 v)
 	if (dy == 0)
 		return;
 	_fixInsertionPointCoords();
-	m_pG->scroll(0, dy);
+	XAP_Frame * pFrame = (XAP_Frame *) getParentData();
+	UT_ASSERT((pFrame));
+
+	m_pG->scroll(0, dy,pFrame);
 	m_yScrollOffset = v;
 	if (dy > 0)
 	{

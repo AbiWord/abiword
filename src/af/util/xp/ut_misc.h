@@ -50,13 +50,14 @@ class UT_Rect
 {
 public:
 	UT_Rect();
-	UT_Rect(int iLeft, int iTop, int iWidth, int iHeight);
+	UT_Rect(UT_sint32 iLeft, UT_sint32 iTop, UT_sint32 iWidth, UT_sint32 iHeight);
 	UT_Rect(const UT_Rect &);
+	UT_Rect(const UT_Rect * r);
 
 	bool containsPoint(UT_sint32 x, UT_sint32 y) const;
-	void set(int iLeft, int iTop, int iWidth, int iHeight);
+	void set(UT_sint32 iLeft, UT_sint32 iTop, UT_sint32 iWidth, UT_sint32 iHeight);
 	bool intersectsRect(const UT_Rect * pRect) const;
-	
+	void unionRect( const UT_Rect *pRect);
 	UT_sint32	left;
 	UT_sint32	top;
 	UT_sint32	width;

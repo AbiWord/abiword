@@ -1086,7 +1086,6 @@ bool AP_TopRuler::isMouseOverTab(UT_uint32 x, UT_uint32 y)
 
  	eTabType iType;
 	eTabLeader iLeader;
-	UT_DEBUGMSG(("SEVIOR: s_iFixedHeight = %d \n",s_iFixedHeight));
 	UT_sint32 iTab = _findTabStop(&m_infoCache, x, s_iFixedHeight/2 + s_iFixedHeight/4 - 3, iType, iLeader);
 	if (iTab >= 0)
 	{
@@ -1761,8 +1760,7 @@ void AP_TopRuler::mouseMotion(EV_EditModifierState ems, UT_sint32 x, UT_sint32 y
 
 	// if we are this far along, the mouse motion is significant
 	// we cannot ignore it.
-		
-	UT_DEBUGMSG(("SEVIOR: m_draggingwhat = %d \n",m_draggingWhat));
+
 	switch (m_draggingWhat)
 	{
 	case DW_NOTHING:

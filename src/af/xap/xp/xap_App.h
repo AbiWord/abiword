@@ -146,7 +146,7 @@ public:
 	// HACK: I don't think that perlEvalFile belongs to App
 	virtual void							perlEvalFile(const UT_String &filename) = 0;
 #endif
-	
+
 protected:
 	void									_setAbiSuiteLibDir(const char * sz);
 	virtual void							_printUsage();   
@@ -176,5 +176,8 @@ protected:
 };
 
 #endif /* XAP_APP_H */
+
+
+
 
 

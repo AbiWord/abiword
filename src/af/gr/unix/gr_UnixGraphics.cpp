@@ -27,6 +27,7 @@
 #include "xap_UnixFont.h"
 #include "gr_UnixGraphics.h"
 #include "gr_UnixImage.h"
+#include "ut_sleep.h"
 
 #ifdef HAVE_GNOME
 #include <gnome.h>
@@ -634,6 +635,7 @@ void GR_UnixGraphics::invertRect(const UT_Rect* pRect)
 
 void GR_UnixGraphics::setClipRect(const UT_Rect* pRect)
 {
+	m_pRect = pRect;
 	if (pRect)
 	{
 		GdkRectangle r;
@@ -687,13 +689,66 @@ void GR_UnixGraphics::fillRect(UT_RGBColor& c, UT_sint32 x, UT_sint32 y,
 	gdk_gc_set_foreground(m_pGC, &oColor);
 }
 
-void GR_UnixGraphics::scroll(UT_sint32 dx, UT_sint32 dy)
+void GR_UnixGraphics::scroll(UT_sint32 dx, UT_sint32 dy, XAP_Frame * pFrame)
 {
 	GdkWindowPrivate* pPWin = (GdkWindowPrivate*) m_pWin;
 
 	UT_sint32 winWidth = pPWin->width;
 	UT_sint32 winHeight = pPWin->height;
-  
+	bool doExposeEvent = false;
+	UT_Rect exposeArea;
+	if(pFrame != NULL)
+	{
+//
+// Handle pending expose 
+//
+		while(pFrame->isExposedAreaAccessed())
+		{
+			UT_usleep(10); // 10 microseconds
+		}
+		pFrame->setExposedAreaAccessed(true);
+		exposeArea.top = pFrame->getPendingRect()->top;
+		exposeArea.left = pFrame->getPendingRect()->left;
+		exposeArea.width = pFrame->getPendingRect()->width;
+		exposeArea.height = pFrame->getPendingRect()->height;
+		pFrame->setExposedAreaAccessed(false);
+		if(dy < 0)
+		{
+			//
+			// We're moving up so height is increased top is reduced.
+			//
+			exposeArea.height -= dy;
+			doExposeEvent = true;
+		}
+		if(dy > 0)
+		{
+			exposeArea.top -= dy;
+			exposeArea.height += dy;
+			doExposeEvent = true;
+		}
+		if(dx < 0)
+		{
+			exposeArea.width -= dx;
+			doExposeEvent = true;
+		}
+		if(dx > 0)
+		{
+			//
+			// We're moving left so left is reduced
+			//
+			exposeArea.left += dx;
+			exposeArea.width += dx;
+			doExposeEvent = true;
+		}
+		while(pFrame->isExposedAreaAccessed())
+		{
+			UT_usleep(10); // 10 microseconds
+		}
+		pFrame->setExposedAreaAccessed(true);
+		pFrame->unionPendingRect(&exposeArea);
+		pFrame->setExposedAreaAccessed(false);
+		pFrame->setExposePending(true);
+	}
 	if (dy > 0)
     {
 		if (dy < winHeight)
@@ -719,7 +774,11 @@ void GR_UnixGraphics::scroll(UT_sint32 dx, UT_sint32 dy)
 			gdk_window_copy_area(m_pWin, m_pGC, -dx, 0,
 								 m_pWin, 0, 0, winWidth + dx, winHeight);
     }
-	
+//
+// Now do a repaint of the expanded exposed area if needed.
+//	
+//	if(exposeArea.top > 0)
+//		pFrame->doRepaint( &exposeArea);
 }
 
 void GR_UnixGraphics::scroll(UT_sint32 x_dest, UT_sint32 y_dest,

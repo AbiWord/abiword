@@ -611,7 +611,7 @@ bool GR_Win32Graphics::endPrint(void)
  ** dx & dy are the change in x/y from the current scrolled position
  ** negative values indcate left/up movement, positive right/down movement
  **/
-void GR_Win32Graphics::scroll(UT_sint32 dx, UT_sint32 dy)
+void GR_Win32Graphics::scroll(UT_sint32 dx, UT_sint32 dy, XAP_Frame * pFrame)
 {
 	ScrollWindowEx(m_hwnd, -dx, -dy, NULL, NULL, NULL, 0, SW_INVALIDATE);
 }
@@ -658,7 +658,7 @@ void GR_Win32Graphics::invertRect(const UT_Rect* pRect)
 void GR_Win32Graphics::setClipRect(const UT_Rect* pRect)
 {
 	int res;
-
+	m_pRect = pRect;
 	if (pRect)
 	{
 		// set the clip rectangle

@@ -588,6 +588,7 @@ void GR_QNXGraphics::invertRect(const UT_Rect* pRect)
 
 void GR_QNXGraphics::setClipRect(const UT_Rect* pRect)
 {
+	m_pRect = pRect;
 	if (pRect)
 	{
 		PhRect_t r;
@@ -654,7 +655,7 @@ inline void adjust_rect(PhRect_t *rect, PhPoint_t *offset) {
 	}
 }
 
-void GR_QNXGraphics::scroll(UT_sint32 dx, UT_sint32 dy)
+void GR_QNXGraphics::scroll(UT_sint32 dx, UT_sint32 dy, XAP_Frame * pFrame)
 {
 
 	PhRect_t  rect;

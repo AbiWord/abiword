@@ -80,7 +80,7 @@ public:
 	
 	virtual void				toggleRuler(bool bRulerOn) = 0;
 	virtual void				queue_resize();
-
+	virtual void                doRepaint(UT_Rect * rClip);
 protected:
 	virtual GtkWidget *			_createDocumentWindow(void)=0;
 	virtual GtkWidget *			_createStatusBarWindow(void)=0;

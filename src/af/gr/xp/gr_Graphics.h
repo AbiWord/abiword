@@ -28,7 +28,7 @@
 class UT_RGBColor;
 class XAP_App;
 class XAP_PrefsScheme;
-
+class XAP_Frame;
 /*
 	GR_Font is a reference to a font.  As it happens, everything about fonts
 	is platform-specific, so the class contains nothing.  All of its behavior
@@ -121,7 +121,8 @@ public:
 	virtual void fillRect(UT_RGBColor& c, UT_Rect &r) = 0;
 	virtual void invertRect(const UT_Rect* pRect) = 0;
 	virtual void setClipRect(const UT_Rect* pRect) = 0;
-	virtual void scroll(UT_sint32, UT_sint32) = 0;
+	const UT_Rect * getClipRect(void) const { return m_pRect;}
+	virtual void scroll(UT_sint32, UT_sint32, XAP_Frame * pFrame = NULL) = 0;
 	virtual void scroll(UT_sint32 x_dest, UT_sint32 y_dest,
 						UT_sint32 x_src, UT_sint32 y_src,
 						UT_sint32 width, UT_sint32 height) = 0;
@@ -224,10 +225,11 @@ protected:
 	static UT_uint32 m_uTick;
 
 	static UT_uint32 m_instanceCount;
-
+	const UT_Rect *  m_pRect;
 private:
     bool _PtInPolygon(UT_Point * pts,UT_uint32 nPoints,UT_sint32 x,UT_sint32 y);
     bool m_bIsPortrait;
+
 };
 
 #endif /* GR_GRAPHICS_H */

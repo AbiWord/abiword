@@ -297,6 +297,7 @@ void GR_MacGraphics::setClipRect(const UT_Rect* pRect)
 	  Assume that doing an empty path will do an emtpy clipping.
 	  Check again later.
 	 */
+	m_pRect = pRect;
 	if (pRect) 
 	{
 		CGRect myRect;
@@ -315,7 +316,7 @@ void GR_MacGraphics::setClipRect(const UT_Rect* pRect)
 	}
 }
 
-void GR_MacGraphics::scroll(UT_sint32, UT_sint32)
+void GR_MacGraphics::scroll(UT_sint32, UT_sint32, XAP_Frame * )
 {
     UT_ASSERT (UT_NOT_IMPLEMENTED);
 }

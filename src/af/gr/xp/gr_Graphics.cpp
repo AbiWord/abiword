@@ -64,7 +64,9 @@ GR_Graphics::GR_Graphics()
 	m_bIsPortrait = true;
 
 	m_instanceCount++;
+	m_pRect = NULL;
 }
+
 
 GR_Graphics::~GR_Graphics()
 {

@@ -28,6 +28,7 @@
 #include "ut_debugmsg.h"
 #include "ut_assert.h"
 #include "ut_files.h"
+#include "ut_sleep.h"
 #include "xap_ViewListener.h"
 #include "xap_UnixApp.h"
 #include "xap_UnixFrame.h"
@@ -39,6 +40,53 @@
 #include "ev_EditMethod.h"
 #include "xav_View.h"
 #include "xad_Document.h"
+
+/*!
+ * Background abi repaint function.
+\param XAP_UnixFrame * p pointer to the Frame that initiated this background
+       repainter.
+ */
+static gint abi_expose_repaint( gpointer p)
+{
+//
+// Grab our pointer so we can do useful stuff.
+//
+	UT_Rect localCopy;
+	XAP_UnixFrame * pF = static_cast<XAP_UnixFrame *>(p);
+	if(pF->isSpawnedRedraw())
+		return FALSE;
+	pF->setSpawnedRedraw(true);
+	while(pF->isExposePending())
+	{
+		while(pF->isExposedAreaAccessed())
+		{
+			UT_usleep(10); // 10 microseconds
+		}
+		pF->setExposedAreaAccessed(true);
+		localCopy.set(pF->getPendingRect()->left,pF->getPendingRect()->top,
+					  pF->getPendingRect()->width,pF->getPendingRect()->height);
+//		pF->setPendingRect(localCopy.left,localCopy.top,0,0);
+		pF->setExposedAreaAccessed(false);
+
+//
+// Clear out this set of expose info
+//
+		pF->setExposePending(false);
+		AV_View * pView = pF->getCurrentView();
+		if (pView)
+		{
+			xxx_UT_DEBUGMSG(("Painting area:  left=%d, top=%d, width=%d, height=%d\n", localCopy.left, localCopy.top, localCopy.width, localCopy.height));
+
+			pView->draw(&localCopy);
+		}
+	}
+//
+// OK we've finshed. This process dies now.
+//
+	pF->setSpawnedRedraw(false);
+	UT_ASSERT(!pF->isExposePending());
+	return FALSE;
+}
 
 
 /*****************************************************************/
@@ -334,16 +382,87 @@ gint XAP_UnixFrame::_fe::expose(GtkWidget * w, GdkEventExpose* pExposeEvent)
 	rClip.top = pExposeEvent->area.y;
 	rClip.width = pExposeEvent->area.width;
 	rClip.height = pExposeEvent->area.height;
-	
-	//UT_DEBUGMSG(("gtk expose:  left=%d, top=%d, width=%d, height=%d\n", rClip.left, rClip.top, rClip.width, rClip.height));
-	
+	xxx_UT_DEBUGMSG(("gtk expose:  left=%d, top=%d, width=%d, height=%d\n", rClip.left, rClip.top, rClip.width, rClip.height));
 	XAP_UnixFrame * pUnixFrame = (XAP_UnixFrame *)gtk_object_get_user_data(GTK_OBJECT(w));
-	AV_View * pView = pUnixFrame->getCurrentView();
-	if (pView)
-	{
-		pView->draw(&rClip);
-	}
+	pUnixFrame->doRepaint(&rClip);
 	return 0;
+}
+
+void  XAP_UnixFrame::doRepaint( UT_Rect * rClip)
+{
+//
+// See if the redraw process has started. If not start it up.
+//
+	if(!isSpawnedRedraw())
+	{
+//
+// Look if we have a pending expose left over.
+//
+		if(isExposePending())
+		{
+		//
+        // If so merge in the current expose area
+        //
+
+			setExposedAreaAccessed(true);
+			unionPendingRect( rClip);
+			setExposedAreaAccessed(false);
+		}
+		else
+		{
+//
+// Otherwise Load the current expose area into the redraw area.
+//
+			setPendingRect(rClip->left,rClip->top,rClip->width,rClip->height);
+		}
+		setExposePending(true);
+		setExposedAreaAccessed(false);
+//
+// Start the background redraw
+//
+		gtk_timeout_add(1,(GtkFunction) abi_expose_repaint, (gpointer) this);
+//
+// OK accumulate expose events in the expose area
+//
+		return;
+	}
+//
+// Make certain we don't stomp on our shared area
+//
+	if(isExposePending())
+	{
+		while(isExposedAreaAccessed())
+		{
+			UT_usleep(10); // 10 microseconds
+		}
+		//
+        // Merge in the current expose area
+        //
+		setExposedAreaAccessed(true);
+		unionPendingRect( rClip);
+		setExposedAreaAccessed(false);
+        //
+        // Accumulate more expose events.
+        //
+	}
+	else
+	{
+//
+// If not, set this area for repaint
+//
+		setExposePending(true);
+		while(isExposedAreaAccessed())
+		{
+			UT_usleep(10); // 10 microseconds
+		}
+		setExposedAreaAccessed(true);
+		setPendingRect(rClip->left,rClip->top,rClip->width,rClip->height);
+		setExposedAreaAccessed(false);
+//
+// OK this event is handled.
+//
+	}
+	UT_ASSERT(isSpawnedRedraw());
 }
 	
 void XAP_UnixFrame::_fe::vScrollChanged(GtkAdjustment * w, gpointer /*data*/)
