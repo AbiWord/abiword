@@ -723,15 +723,15 @@ bool EV_UnixMenu::synthesizeMenu(GtkWidget * wMenuRoot)
 				if ((keyCode != GDK_VoidSymbol))
 				  {
 					  // bind to top level if parent is top level
-// 					  if (wParent == wMenuRoot)
-// 					    {
-// 						    gtk_widget_add_accelerator(w,
-// 									       ACTIVATE_ACCEL,
-// 									       m_accelGroup,
-// 									       keyCode,
-// 									       GDK_MOD1_MASK,
-// 									       ACCEL_FLAGS);
-// 					    }
+ 					  if (wParent == wMenuRoot)
+ 					    {
+ 						    gtk_widget_add_accelerator(w,
+ 									       ACTIVATE_ACCEL,
+ 									       m_accelGroup,
+ 									       keyCode,
+ 									       GDK_MOD1_MASK,
+ 									       ACCEL_FLAGS);
+ 					    }
 				  }
 				
 				// we always set an accel group, even if we don't actually bind any
@@ -1233,7 +1233,7 @@ GtkWidget * EV_UnixMenu::s_createNormalMenuEntry(int id, const bool isCheckable,
 		  _convertStringToAccel(szMnemonicName, accelKey, acMods);		  
 		  // the accel doesn't actually do anything, because all the keyboard actions
 		  // are handled at a lower level (we just get an accel label)
-		  //gtk_widget_add_accelerator (w, "activate", m_accelGroup, accelKey, acMods, GTK_ACCEL_VISIBLE);
+		  gtk_widget_add_accelerator (w, "activate", m_accelGroup, accelKey, acMods, GTK_ACCEL_VISIBLE);
 	  }
 	
 	gtk_widget_show(w);
