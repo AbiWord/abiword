@@ -5148,11 +5148,11 @@ void    fl_BlockLayout::StartList( const XML_Char * style)
 		else
 			startv = 1;
 		if (szAlign)
-			fAlign = (float)atof(szAlign);
+			fAlign = (float)UT_convertToInches(szAlign);
 		else
 			fAlign = (float) LIST_DEFAULT_INDENT;
 		if (szIndent)
-			fIndent = (float)atof(szIndent);
+			fIndent = (float)UT_convertToInches(szIndent);
 		else
 			fIndent =  (float)-LIST_DEFAULT_INDENT_LABEL;
 		if(!szFont)
@@ -5487,7 +5487,7 @@ void    fl_BlockLayout::StopList(void)
 			{
 				pStyle->getProperty((const XML_Char *)"margin-left", szAlign);
 				pStyle->getProperty((const XML_Char *)"text-indent", szIndent);
-				fAlign = (float)atof(szAlign);
+				fAlign = (float)UT_convertToInches(szAlign);
 				fAlign *= level;
 				UT_XML_strncpy(	align,
 								sizeof(align),
@@ -5702,7 +5702,7 @@ fl_BlockLayout * fl_BlockLayout::getPreviousListOfSameMargin(void)
 		{
 			szAlign = pPrev->getProperty("margin-left",true);
 			double dAlignThis = UT_convertToDimension(szAlign,DIM_IN);
-			float diff = fabs( (float) dAlignThis-dAlignMe);
+			float diff = (float)fabs( (float) dAlignThis-dAlignMe);
 			if(diff < 0.01)
 			{
 				pClosest = pPrev;
