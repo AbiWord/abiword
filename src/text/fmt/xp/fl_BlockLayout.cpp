@@ -3849,10 +3849,6 @@ UT_Bool fl_BlockLayout::doclistener_deleteObject(const PX_ChangeRecord_Object * 
 		if(m_pAutoNum)
 		{
 		       m_pAutoNum->markAsDirty();
-//  		       if(m_pAutoNum->doesItemHaveLabel(this)==UT_FALSE && m_pDoc->areListUpdatesAllowed() == UT_TRUE)
-//  		       {
-//  			     remItemFromList();
-//  		       }
 		}
 		break;
 	}		
@@ -4488,7 +4484,7 @@ void fl_BlockLayout::remItemFromList(void)
 
 		UT_uint32 currLevel = getLevel();
 		UT_ASSERT(currLevel > 0);
-		currLevel = 0; // was currLevel--;
+		currLevel =0; // was currLevel--;
 		sprintf(buf, "%i", currLevel);
 		setStopping(UT_FALSE);
 		pView->_eraseInsertionPoint();
@@ -4534,17 +4530,38 @@ void fl_BlockLayout::remItemFromList(void)
 		       props[i] = (XML_Char *) NULL;
 	  
 		}
+		else
+		{
+	               getListPropertyVector( &vp);
+		       UT_uint32 countp = vp.getItemCount() + 1;
+		       UT_uint32 i;
+		       props = (const XML_Char **) calloc(countp, sizeof(XML_Char *));
+		       for(i=0; i<vp.getItemCount();i++)
+		       {
+		               if( i > 0 && 
+				   UT_XML_strcmp(props[i-1], 
+						 (XML_Char *) "text-indent")==0)
+			       {
+				        props[i] = (XML_Char *) "0.0000in";
+			       }
+			       else
+			       {
+			                props[i] = (XML_Char *) vp.getNthItem(i);
+			       }
+		       }
+		       props[i] = (XML_Char *) NULL;
+		}
 		if (currLevel == 0)
 		{
 	               const XML_Char * attribs[] = { 	"listid", lid,
-							"level", buf,"style","Normal", 0 };
+							"level", buf,"style","normal", NULL, NULL };
 		       bRet = m_pDoc->changeStruxFmt(PTC_AddFmt, getPosition(), getPosition(), attribs, props, PTX_Block);
 		       m_bListItem = UT_FALSE;
 		}
 		else
 		{
 	               const XML_Char * attribs[] = { 	"listid", lid,
-							"level", buf,0 };
+							"level", buf,NULL,NULL };
 		       bRet = m_pDoc->changeStruxFmt(PTC_AddFmt,getPosition(), getPosition(), attribs, props, PTX_Block);
 		       m_pDoc->listUpdate(getStruxDocHandle());
 		}
@@ -4620,18 +4637,6 @@ void    fl_BlockLayout::StartList( const XML_Char * style)
 	fAlign *= (float)level;
 	
 	lType = getListTypeFromStyle(style);
-//  	if(lType < BULLETED_LIST)
-//  	{   
-//                 UT_XML_strncpy((XML_Char *) font,30,(const XML_Char *) "NULL");
-//  	}
-//  	else
-//  	{
-//                 UT_XML_strncpy((XML_Char *)font,20,(const XML_Char *) "NULL");
-//  	}	       
-//  	if(lType == BULLETED_LIST)
-//          {
-//                 UT_XML_strncpy((XML_Char *)font,30, (const XML_Char *)"Symbol");
-//  	}
 	StartList( lType, startv,szDelim, szDec, szFont, fAlign, fIndent, currID,level);
 }
 
@@ -4991,13 +4996,13 @@ void    fl_BlockLayout::StopList(void)
 	if (id == 0)
 	{
 	        const XML_Char * attribs[] = { 	"listid", lid,
-					"style","Normal", 0 };
+					"style","normal", NULL, NULL };
 		bRet = m_pDoc->changeStruxFmt(PTC_AddFmt, getPosition(), getPosition(), attribs, props, PTX_Block);
 		m_bListItem = UT_FALSE;
 	}
 	else
 	{
-	        const XML_Char * attribs[] = { 	"listid", lid,"level",pszlevel, 0 };
+	        const XML_Char * attribs[] = { 	"listid", lid,"level",pszlevel, NULL,NULL };
 		bRet = m_pDoc->changeStruxFmt(PTC_AddFmt,getPosition(), getPosition(), attribs, props, PTX_Block);
 		m_pDoc->listUpdate(getStruxDocHandle());
 	}
@@ -5467,3 +5472,6 @@ void fl_BlockLayout::debugFlashing(void)
 
 	return;
 }
+
+
+

@@ -1443,6 +1443,7 @@ void FV_View::insertParagraphBreak(void)
 {
 	UT_Bool bDidGlob = UT_FALSE;
 	UT_Bool bBefore = UT_FALSE;
+	UT_Bool bStopList = UT_FALSE;
 	m_pDoc->beginUserAtomicGlob();
 
 	// Prevent access to Piecetable for things like spellchecks until
@@ -1472,7 +1473,8 @@ void FV_View::insertParagraphBreak(void)
 	PL_StruxDocHandle sdh = pBlock->getStruxDocHandle();
 	if(isCurrentListBlockEmpty() == UT_TRUE)
 	{
-		m_pDoc->StopList(sdh);
+       		m_pDoc->StopList(sdh);
+		bStopList = UT_TRUE;
 	}
 	else if(isPointBeforeListLabel() == UT_TRUE)
 	{
@@ -1485,12 +1487,8 @@ void FV_View::insertParagraphBreak(void)
 		bBefore = UT_TRUE;
 		pBlock->deleteListLabel();
 	}
-
-	m_pDoc->insertStrux(getPoint(), PTX_Block);
-//	_generalUpdate();
-//	sdh = getCurrentBlock()->getStruxDocHandle();
-//	getCurrentBlock()->format();
-//	m_pDoc->listUpdate(sdh);
+	if(bStopList == UT_FALSE)
+	        m_pDoc->insertStrux(getPoint(), PTX_Block);
 	if(bBefore == UT_TRUE)
 	{
 		fl_BlockLayout * pPrev = getCurrentBlock()->getPrev();
@@ -1648,7 +1646,7 @@ static const XML_Char * x_getStyle(const PP_AttrProp * pAP, UT_Bool bBlock)
 
 	// TODO: should we have an explicit default for char styles? 
 	if (!sz && bBlock)
-		sz = "Normal";
+		sz = "normal";
 
 	return sz;
 }
@@ -2852,13 +2850,36 @@ void FV_View::cmdCharDelete(UT_Bool bForward, UT_uint32 count)
 		{
 			m_pDoc->disableListUpdates();
 
-			m_pDoc->deleteSpan(posCur, posCur+amt);
  			nBlock = _findBlockAtPosition(getPoint());
- 			if(nBlock->getAutoNum() != NULL && nBlock->isListLabelInBlock() == UT_FALSE)
+			fl_AutoNum * pAuto = nBlock->getAutoNum();
+ 			if(pAuto != NULL )
  			{
- 				nBlock->remItemFromList();
+	                        PL_StruxDocHandle sdh = nBlock->getStruxDocHandle();
+				if((bisList == UT_TRUE) && (pAuto->getFirstItem() == sdh || pAuto->getLastItem() == sdh))
+				{
+				        m_pDoc->StopList(sdh);
+					PT_DocPosition listPoint,posEOD;
+					UT_Bool bRes = m_pDoc->getBounds(UT_TRUE, posEOD);
+					listPoint = getPoint();
+					if(listPoint + 2 <= posEOD)
+					    _setPoint(listPoint+2); 
+					else
+					    _setPoint(posEOD);
+				}
+				else if(bisList == UT_TRUE)
+				{
+			                m_pDoc->deleteSpan(posCur, posCur+amt);
+ 				        nBlock->remItemFromList();
+				}
+				else
+				{
+			                m_pDoc->deleteSpan(posCur, posCur+amt);
+				}
  			}
- 			
+			else
+			{
+			        m_pDoc->deleteSpan(posCur, posCur+amt);
+ 			}
 			// restore updates and clean up dirty lists
 			m_pDoc->enableListUpdates();
 			m_pDoc->updateDirtyLists();
