@@ -35,6 +35,7 @@
 #include "ap_Dialog_Id.h"
 #include "ap_Dialog_Spell.h"
 #include "ap_QNXDialog_Spell.h"
+#include "ut_qnxHelper.h"
 
 
 XAP_Dialog * AP_QNXDialog_Spell::static_constructor(XAP_DialogFactory * pFactory, XAP_Dialog_Id id)
@@ -55,89 +56,70 @@ AP_QNXDialog_Spell::~AP_QNXDialog_Spell(void)
 /************************************************************/
 void AP_QNXDialog_Spell::runModal(XAP_Frame * pFrame)
 {
-   UT_DEBUGMSG(("beginning spelling check..."));
+	// class the base class method to initialize some basic xp stuff
+	AP_Dialog_Spell::runModal(pFrame);
    
-   // class the base class method to initialize some basic xp stuff
-   AP_Dialog_Spell::runModal(pFrame);
-   
-   m_bCancelled = UT_FALSE;
-   UT_Bool bRes = nextMisspelledWord();
-   
-   if (bRes) { // we need to prepare the dialog
-      PtWidget_t * mainWindow = _constructWindow();
-      UT_ASSERT(mainWindow);
-      
-      // Populate the window's data items
-      _populateWindowData();
-      
-#if 0
-      // To center the dialog, we need the frame of its parent.
-      XAP_QNXFrame * pQNXFrame = static_cast<XAP_QNXFrame *>(pFrame);
-      UT_ASSERT(pQNXFrame);
-      
-      // Get the GtkWindow of the parent frame
-      PtWidget_t * parentWindow = pQNXFrame->getTopLevelWindow();
-      UT_ASSERT(parentWindow);
-      
-      // Center our new dialog in its parent and make it a transient
-      // soo it won't get lost underneath
-      centerDialog(parentWindow, mainWindow);
-      gtk_window_set_transient_for(GTK_WINDOW(mainWindow), GTK_WINDOW(parentWindow));
-      
-      // Show the top level dialog
-      gtk_widget_show(mainWindow);
-      
-      // Make it modal, and stick it up top
-      gtk_grab_add(mainWindow);
-#endif
+	m_bCancelled = UT_FALSE;
+	UT_Bool bRes = nextMisspelledWord();
 
-	printf("Running the spell main window loop \n");
-	PtRealizeWidget(mainWindow);
+	// To center the dialog, we need the frame of its parent.
+	XAP_QNXFrame * pQNXFrame = static_cast<XAP_QNXFrame *>(pFrame);
+   	UT_ASSERT(pQNXFrame);
       
-     // now loop while there are still misspelled words
-     while (bRes) {
+   	// Get the Window of the parent frame
+   	PtWidget_t * parentWindow = pQNXFrame->getTopLevelWindow();
+   	UT_ASSERT(parentWindow);
+	PtSetParentWidget(parentWindow);
+    
+	if (bRes) { // we need to prepare the dialog
+      
+      	PtWidget_t * mainWindow = _constructWindow();
+      	UT_ASSERT(mainWindow);
+      
+      	// Populate the window's data items
+      	_populateWindowData();
+      
+		UT_QNXCenterWindow(parentWindow, mainWindow);
+		UT_QNXBlockWidget(parentWindow, 1);
+
+		PtRealizeWidget(mainWindow);
+      
+     	// now loop while there are still misspelled words
+     	while (bRes) {
 	 
-	 	// show word in main window
-	 	makeWordVisible();
+	 		// show word in main window
+	 		makeWordVisible();
 	 
-	 	// update dialog with new misspelled word info/suggestions
-	 	_showMisspelledWord();
+	 		// update dialog with new misspelled word info/suggestions
+	 		_showMisspelledWord();
 	 
-#if 0
-	 // run into the GTK event loop for this window
-	 gtk_main();
-#endif
-		int count = PtModalStart();
-		done = 0;
-		while(!done) {
-			PtProcessEvent();
-		}
-		PtModalEnd(count);
+			int count = PtModalStart();
+			done = 0;
+			while(!done) {
+				PtProcessEvent();
+			}
+			PtModalEnd(count);
 		 
-		for (int i = 0; i < m_Suggestions.count; i++) {
-			FREEP(m_Suggestions.word[i]);
-		}
-	 	FREEP(m_Suggestions.word);
-	 	FREEP(m_Suggestions.score);
-	 	m_Suggestions.count = 0;
+			for (int i = 0; i < m_Suggestions.count; i++) {
+				FREEP(m_Suggestions.word[i]);
+			}
+	 		FREEP(m_Suggestions.word);
+	 		FREEP(m_Suggestions.score);
+	 		m_Suggestions.count = 0;
 	 
-	 	if (m_bCancelled) {
-			break;
-		}
+	 		if (m_bCancelled) {
+				break;
+			}
 	 
-		// get the next unknown word
-		bRes = nextMisspelledWord();
+			// get the next unknown word
+			bRes = nextMisspelledWord();
+		}
+      
+		_storeWindowData();
+      
+		UT_QNXBlockWidget(parentWindow, 0);
+		PtDestroyWidget(mainWindow);
 	}
-      
-      _storeWindowData();
-      
-	  printf("Destroying the spell window \n");
-	PtDestroyWidget(mainWindow);
-   }
-
-   
-   // TODO: all done message?
-   UT_DEBUGMSG(("spelling check complete."));
 }
 
 /**********************************************************/

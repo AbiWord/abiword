@@ -38,6 +38,7 @@
 #include "ap_Dialog_Id.h"
 #include "ap_Dialog_Replace.h"
 #include "ap_QNXDialog_Replace.h"
+#include "ut_qnxHelper.h"
 
 /*****************************************************************/
 
@@ -126,6 +127,15 @@ static int s_replace_entry_activate(PtWidget_t *w, void *data, PtCallbackInfo_t 
 
 void AP_QNXDialog_Replace::runModal(XAP_Frame * pFrame)
 {
+	// To center the dialog, we need the frame of its parent.
+	XAP_QNXFrame * pQNXFrame = static_cast<XAP_QNXFrame *>(pFrame);
+	UT_ASSERT(pQNXFrame);
+	
+	// Get the GtkWindow of the parent frame
+	PtWidget_t * parentWindow = pQNXFrame->getTopLevelWindow();
+	UT_ASSERT(parentWindow);
+	PtSetParentWidget(parentWindow);
+	
 	// Build the window's widgets and arrange them
 	PtWidget_t * mainWindow = _constructWindow();
 	UT_ASSERT(mainWindow);
@@ -133,15 +143,8 @@ void AP_QNXDialog_Replace::runModal(XAP_Frame * pFrame)
 	// Populate the window's data items
 	_populateWindowData();
 	
+
 #if 0
-	// To center the dialog, we need the frame of its parent.
-	XAP_QNXFrame * pQNXFrame = static_cast<XAP_QNXFrame *>(pFrame);
-	UT_ASSERT(pQNXFrame);
-	
-	// Get the GtkWindow of the parent frame
-	GtkWidget * parentWindow = pQNXFrame->getTopLevelWindow();
-	UT_ASSERT(parentWindow);
-	
 	// Center our new dialog in its parent and make it a transient
 	// so it won't get lost underneath
     centerDialog(parentWindow, mainWindow);
@@ -157,7 +160,9 @@ void AP_QNXDialog_Replace::runModal(XAP_Frame * pFrame)
 	// this dialogs needs this
 	setView((FV_View *) (pFrame->getCurrentView()));
 
-	printf("Running the find main window loop \n");	
+	UT_QNXCenterWindow(parentWindow, m_windowMain);
+	UT_QNXBlockWidget(parentWindow, 1);
+
 	PtRealizeWidget(m_windowMain);
 	int count = PtModalStart();
 	done = 0;
@@ -168,6 +173,7 @@ void AP_QNXDialog_Replace::runModal(XAP_Frame * pFrame)
 
 	_storeWindowData();
 	
+	UT_QNXBlockWidget(parentWindow, 0);
 	PtDestroyWidget(mainWindow);
 }
 

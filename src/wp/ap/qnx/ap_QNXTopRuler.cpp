@@ -280,6 +280,7 @@ int AP_QNXTopRuler::_fe::motion_notify_event(PtWidget_t* w, void *data, PtCallba
 	get_stuff(info, &ems, NULL, &mx, &my);
 
 	pQNXTopRuler->mouseMotion(ems, mx, my);
+	PgFlush();
 
 	return Pt_CONTINUE;
 }

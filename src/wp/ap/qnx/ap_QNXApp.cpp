@@ -62,6 +62,7 @@
 #include "ut_bytebuf.h"
 #include "ut_png.h"
 #include "ut_debugmsg.h"
+#include "ut_qnxHelper.h"
 
 #include "fv_View.h"
 
@@ -631,55 +632,40 @@ static GR_QNXGraphics * pQNXGraphics = NULL;
 static UT_Bool firstExpose = UT_FALSE;
 static UT_uint32 splashTimeoutValue = 0;
 
-#if 0
-static int s_hideSplash(void * /*data*/)
+static int s_hideSplash(PtWidget_t *w, void *data, PtCallbackInfo_t *info)
 {
-	if (wSplash)
-	{
-		gtk_timeout_remove(timeout_handler);
-		gtk_widget_destroy(wSplash);
+	if (wSplash) {
+		PtDestroyWidget((PtWidget_t *)wSplash);
 		wSplash = NULL;
 		DELETEP(pQNXGraphics);
 		DELETEP(pSplashImage);
 	}
-	return UT_TRUE;
+	return Pt_CONTINUE;
 }
 
-// GTK never seems to let me have this event on a pop-up style window
-//static void s_key_event(GtkWidget * /*window*/, GdkEventKey * /*key*/)
-//{
-//	s_hideSplash(NULL);
-//}
-
-static void s_button_event(void * /*window*/)
-{
-	s_hideSplash(NULL);
-}
-
-static int s_drawingarea_expose(GtkWidget * /* widget */,
-								 GdkEventExpose * /* pExposeEvent */)
-{
-	if (pQNXGraphics && pSplashImage)
-	{
+static int s_drawingarea_expose(PtWidget_t *widget, PhTile_t *damage) {
+	if (pQNXGraphics && pSplashImage) {
 		pQNXGraphics->drawImage(pSplashImage, 0, 0);
 
 		// on the first full paint of the image, start a 2 second timer
-		if (!firstExpose)
-		{
+		if (!firstExpose) {
+			PtArg_t args[1];
+			PtSetArg(&args[0], Pt_ARG_TIMER_INITIAL, splashTimeoutValue, 0);
+			PtWidget_t *timer = PtCreateWidget(PtTimer, widget, 1, args);
+			PtAddCallback(timer, Pt_CB_TIMER_ACTIVATE, s_hideSplash, NULL);
+			PtRealizeWidget(timer);
 			firstExpose = UT_TRUE;
-			timeout_handler = gtk_timeout_add(splashTimeoutValue, s_hideSplash, NULL);
 		}
 	}
 
-	return FALSE;
+	return Pt_CONTINUE;
 }
-#endif
 
 // szFile is optional; a NULL pointer will use the default splash screen.
 // The delay is how long the splash should stay on screen in milliseconds.
-static GR_Image * _showSplash(UT_uint32 delay)
+static GR_Image * _showSplash(PtWidget_t *spwin, UT_uint32 delay)
 {
-	wSplash = NULL;
+	wSplash = spwin;
 	pSplashImage = NULL;
 
 	UT_ByteBuf* pBB = NULL;
@@ -694,57 +680,42 @@ static GR_Image * _showSplash(UT_uint32 delay)
 	extern unsigned long g_pngSplash_sizeof;	// see ap_wp_Splash.cpp
 
 	pBB = new UT_ByteBuf();
-	if (
-		(pBB->insertFromFile(0, szFile))
-		|| (pBB->ins(0, g_pngSplash, g_pngSplash_sizeof))
-		)
+	if ((pBB->insertFromFile(0, szFile)) || 
+        (pBB->ins(0, g_pngSplash, g_pngSplash_sizeof)))
 	{
-#if 0
+		PtArg_t	args[10];
+		int     n = 0;
+
 		// get splash size
 		UT_sint32 iSplashWidth;
 		UT_sint32 iSplashHeight;
 		UT_PNG_getDimensions(pBB, iSplashWidth, iSplashHeight);
 
 		// create a centered window the size of our image
-		wSplash = gtk_window_new(GTK_WINDOW_POPUP);
-		gtk_object_set_data(GTK_OBJECT(wSplash), "wSplash", wSplash);
-		gtk_widget_set_usize(wSplash, iSplashWidth, iSplashHeight);
-		gtk_window_set_policy(GTK_WINDOW(wSplash), FALSE, FALSE, FALSE);
+		PtSetArg(&args[n++], Pt_ARG_WIDTH, iSplashWidth, 0);
+		PtSetArg(&args[n++], Pt_ARG_HEIGHT, iSplashHeight, 0);
+		PtSetArg(&args[n++], Pt_ARG_WINDOW_RENDER_FLAGS, 
+				 0, 
+				Ph_WM_RENDER_RESIZE | Ph_WM_RENDER_TITLE | Ph_WM_RENDER_MENU);
+		PtSetResources(spwin, n, args);
+		UT_QNXCenterWindow(NULL, spwin);
 
 		// create a frame to add depth
-		GtkWidget * frame = gtk_frame_new(NULL);
-		gtk_object_set_data(GTK_OBJECT(wSplash), "frame", frame);
-		gtk_container_add(GTK_CONTAINER(wSplash), frame);
-		gtk_frame_set_shadow_type(GTK_FRAME(frame), GTK_SHADOW_OUT);
-		gtk_widget_show(frame);
 
 		// create a drawing area
-		GtkWidget * da = gtk_drawing_area_new ();
-		gtk_object_set_data(GTK_OBJECT(wSplash), "da", da);
-		gtk_widget_set_events(da, GDK_ALL_EVENTS_MASK);
-		gtk_widget_set_usize(da, iSplashWidth, iSplashHeight);
-		gtk_signal_connect(GTK_OBJECT(da), "expose_event",
-						   GTK_SIGNAL_FUNC(s_drawingarea_expose), NULL);
-//		gtk_signal_connect(GTK_OBJECT(da), "key_press_event",
-//						   GTK_SIGNAL_FUNC(s_key_event), NULL);
-		gtk_signal_connect(GTK_OBJECT(da), "button_press_event",
-						   GTK_SIGNAL_FUNC(s_button_event), NULL);
-		gtk_container_add(GTK_CONTAINER(frame), da);
-		gtk_widget_show(da);
-
-		// now bring the window up front & center
-		gtk_window_set_position(GTK_WINDOW(wSplash), GTK_WIN_POS_CENTER);
-
-		// create the window so we can attach a GC to it
-		gtk_widget_show(wSplash);
+		n = 0;
+		PtSetArg(&args[n++], Pt_ARG_WIDTH, iSplashWidth, 0);
+		PtSetArg(&args[n++], Pt_ARG_HEIGHT, iSplashHeight, 0);
+		//PtSetArg(&args[n++], Pt_ARG_USER_DATA, &data, sizeof(this)); 
+		PtSetArg(&args[n++], Pt_ARG_RAW_DRAW_F, &s_drawingarea_expose, 1);
+		PtWidget_t *da = PtCreateWidget(PtRaw, spwin, n, args);
+		PtAddEventHandler(da, Ph_EV_BUT_RELEASE, s_hideSplash, NULL);
 
 		// create image context
-		pQNXGraphics = new GR_QNXGraphics(da->window, NULL);
+		pQNXGraphics = new GR_QNXGraphics(spwin, da);
 		pSplashImage = pQNXGraphics->createNewImage("splash", pBB, iSplashWidth, iSplashHeight);
 
-		// another for luck (to bring it up forward and paint)
-		gtk_widget_show(wSplash);
-#endif
+		PtRealizeWidget(spwin);
 	}
 
 	DELETEP(pBB);
@@ -785,10 +756,11 @@ int AP_QNXApp::main(const char * szAppName, int argc, char ** argv)
 	PtWidget_t *spwin;
 	spwin = PtAppInit(NULL, NULL /* argc */, NULL /* argv */, 0, NULL);
 	if (bShowSplash) {
-		_showSplash(2000);
+		_showSplash(spwin, 2000);
 	}
-	//Delete that window here ...
-	PtDestroyWidget(spwin);
+	else {
+		PtDestroyWidget(spwin);
+	}
 	
 	AP_QNXApp * pMyQNXApp = new AP_QNXApp(&Args, szAppName);
 	gQNXApp = pMyQNXApp;

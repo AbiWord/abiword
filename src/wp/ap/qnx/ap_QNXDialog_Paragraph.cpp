@@ -37,6 +37,7 @@
 
 #include "ap_Preview_Paragraph.h"
 #include "ap_QNXDialog_Paragraph.h"
+#include "ut_qnxHelper.h"
 
 /*****************************************************************/
 
@@ -78,10 +79,10 @@ static int s_cancel_clicked(PtWidget_t * widget, void *data, PtCallbackInfo_t * 
 { UT_ASSERT(widget && data); AP_QNXDialog_Paragraph * dlg = (AP_QNXDialog_Paragraph *)data; dlg->event_Cancel(); return Pt_CONTINUE; }
 
 static int s_tabs_clicked(PtWidget_t * widget, void *data, PtCallbackInfo_t * info)
-{ UT_ASSERT(widget && dlg); AP_QNXDialog_Paragraph * dlg = (AP_QNXDialog_Paragraph *)data;	dlg->event_Tabs(); return Pt_CONTINUE; }
+{ UT_ASSERT(widget && data); AP_QNXDialog_Paragraph * dlg = (AP_QNXDialog_Paragraph *)data;	dlg->event_Tabs(); return Pt_CONTINUE; }
 
 static int s_delete_clicked(PtWidget_t * widget, void *data, PtCallbackInfo_t * info)
-{ UT_ASSERT(dlg);  AP_QNXDialog_Paragraph * dlg = (AP_QNXDialog_Paragraph *)data; dlg->event_WindowDelete(); return Pt_CONTINUE; }
+{ UT_ASSERT(data);  AP_QNXDialog_Paragraph * dlg = (AP_QNXDialog_Paragraph *)data; dlg->event_WindowDelete(); return Pt_CONTINUE; }
 
 static int s_spin_focus_out(PtWidget_t * widget, void *data, PtCallbackInfo_t * info)
 {
@@ -130,6 +131,15 @@ static int s_preview_exposed(PtWidget_t *widget, void *data, PtCallbackInfo_t * 
 
 void AP_QNXDialog_Paragraph::runModal(XAP_Frame * pFrame)
 {
+	// To center the dialog, we need the frame of its parent.
+	XAP_QNXFrame * pQNXFrame = static_cast<XAP_QNXFrame *>(pFrame);
+	UT_ASSERT(pQNXFrame);
+	
+	// Get the GtkWindow of the parent frame
+	PtWidget_t * parentWindow = pQNXFrame->getTopLevelWindow();
+	UT_ASSERT(parentWindow);
+	PtSetParentWidget(parentWindow);
+	
 	m_pFrame = pFrame;
 	
 	// Build the window's widgets and arrange them
@@ -144,25 +154,6 @@ void AP_QNXDialog_Paragraph::runModal(XAP_Frame * pFrame)
 	_connectCallbackSignals();
 
 #if 0
-	// To center the dialog, we need the frame of its parent.
-	XAP_QNXFrame * pQNXFrame = static_cast<XAP_QNXFrame *>(pFrame);
-	UT_ASSERT(pQNXFrame);
-	
-	// Get the GtkWindow of the parent frame
-	PtWidget_t * parentWindow = pQNXFrame->getTopLevelWindow();
-	UT_ASSERT(parentWindow);
-	
-	// Center our new dialog in its parent and make it a transient
-	// so it won't get lost underneath
-    centerDialog(parentWindow, mainWindow);
-	gtk_window_set_transient_for(GTK_WINDOW(mainWindow), GTK_WINDOW(parentWindow));
-
-	// Show the top level dialog,
-	gtk_widget_show(mainWindow);
-
-	// Make it modal, and stick it up top
-	gtk_grab_add(mainWindow);
-
 	// *** this is how we add the gc ***
 	{
 		// attach a new graphics context to the drawing area
@@ -184,13 +175,11 @@ void AP_QNXDialog_Paragraph::runModal(XAP_Frame * pFrame)
 	// HACK: the first arg gets ignored
 	_syncControls(id_MENU_ALIGNMENT, UT_TRUE);
 
-	// Run into the GTK event loop for this window.
-	gtk_main();
-
-	gtk_widget_destroy(mainWindow);
 #endif
 
-	printf("Running the paragraph main window loop \n");
+	UT_QNXCenterWindow(parentWindow, mainWindow);
+	UT_QNXBlockWidget(parentWindow, 1);
+
 	PtRealizeWidget(mainWindow);
 	int count = PtModalStart();
 	done = 0;
@@ -199,8 +188,8 @@ void AP_QNXDialog_Paragraph::runModal(XAP_Frame * pFrame)
 	}
 	PtModalEnd(count);
 
+	UT_QNXBlockWidget(parentWindow, 0);
 	PtDestroyWidget(mainWindow);
-	//m_answer = AP_Dialog_Paragraph::a_CANCEL;
 }
 
 /*****************************************************************/
@@ -400,7 +389,6 @@ PtWidget_t * AP_QNXDialog_Paragraph::_constructWindow(void)
 	PtSetArg(&args[n++], Pt_ARG_WINDOW_TITLE, unixstr, 0);
 	PtSetArg(&args[n++], Pt_ARG_WIDTH, 550, 0);
 	PtSetArg(&args[n++], Pt_ARG_HEIGHT, 400, 0);
-	PtSetParentWidget(NULL);
 	windowParagraph = PtCreateWidget(PtWindow, NULL, n, args);
 	PtAddCallback(windowParagraph, Pt_CB_WINDOW_CLOSING, s_delete_clicked, this);
 	FREEP(unixstr);

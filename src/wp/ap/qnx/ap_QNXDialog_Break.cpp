@@ -32,6 +32,7 @@
 #include "ap_Dialog_Id.h"
 #include "ap_Dialog_Break.h"
 #include "ap_QNXDialog_Break.h"
+#include "ut_qnxHelper.h"
 
 /*****************************************************************/
 
@@ -86,14 +87,6 @@ static int s_delete_clicked(PtWidget_t *w, void *data, PtCallbackInfo_t * e)
 
 void AP_QNXDialog_Break::runModal(XAP_Frame * pFrame)
 {
-	// Build the window's widgets and arrange them
-	PtWidget_t * mainWindow = _constructWindow();
-	UT_ASSERT(mainWindow);
-
-	// Populate the window's data items
-	_populateWindowData();
-
-#if 0	
 	// To center the dialog, we need the frame of its parent.
 	XAP_QNXFrame * pQNXFrame = static_cast<XAP_QNXFrame *>(pFrame);
 	UT_ASSERT(pQNXFrame);
@@ -101,26 +94,20 @@ void AP_QNXDialog_Break::runModal(XAP_Frame * pFrame)
 	// Get the GtkWindow of the parent frame
 	PtWidget_t * parentWindow = pQNXFrame->getTopLevelWindow();
 	UT_ASSERT(parentWindow);
-	
-	// Center our new dialog in its parent and make it a transient
-	// so it won't get lost underneath
-    centerDialog(parentWindow, mainWindow);
-	gtk_window_set_transient_for(GTK_WINDOW(mainWindow), GTK_WINDOW(parentWindow));
+	PtSetParentWidget(parentWindow);
 
-	// Show the top level dialog,
-	gtk_widget_show(mainWindow);
+	// Build the window's widgets and arrange them
+	PtWidget_t * mainWindow = _constructWindow();
+	UT_ASSERT(mainWindow);
 
-	// Make it modal, and stick it up top
-	gtk_grab_add(mainWindow);
+	// Populate the window's data items
+	_populateWindowData();
 
-	// Run into the GTK event loop for this window.
-	gtk_main();
-
-	
-	gtk_widget_destroy(mainWindow);
-#endif
-	printf("Running the break main window loop \n");
+		
+	UT_QNXCenterWindow(parentWindow, mainWindow);
+	UT_QNXBlockWidget(parentWindow, 1);
 	PtRealizeWidget(mainWindow);
+
 	int count = PtModalStart();
 	done = 0;
 	while(!done) {
@@ -130,6 +117,7 @@ void AP_QNXDialog_Break::runModal(XAP_Frame * pFrame)
 
 	_storeWindowData();
 
+	UT_QNXBlockWidget(parentWindow, 1);
 	PtDestroyWidget(mainWindow);
 }
 
@@ -191,7 +179,6 @@ PtWidget_t * AP_QNXDialog_Break::_constructWindow(void)
 	PtSetArg(&args[n++], Pt_ARG_HEIGHT, height, 0);
 	PtSetArg(&args[n++], Pt_ARG_WIDTH, width, 0);
     PtSetArg(&args[n++], Pt_ARG_WINDOW_RENDER_FLAGS, 0, Ph_WM_RENDER_RESIZE);
-	PtSetParentWidget(NULL);
 	windowBreak = PtCreateWidget(PtWindow, NULL, n, args);
 	PtAddCallback(windowBreak, Pt_CB_WINDOW_CLOSING, s_delete_clicked, this);
 

@@ -32,6 +32,8 @@
 #include "ap_Dialog_Id.h"
 #include "ap_Dialog_Field.h"
 #include "ap_QNXDialog_Field.h"
+#include "ap_QNXDialog_Stub.h"
+#include "ut_qnxHelper.h"
 
 
 /*****************************************************************/

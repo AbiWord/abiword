@@ -32,6 +32,7 @@
 #include "ap_Dialog_Id.h"
 #include "ap_Dialog_Goto.h"
 #include "ap_QNXDialog_Goto.h"
+#include "ut_qnxHelper.h"
 
 /*****************************************************************/
 XAP_Dialog * AP_QNXDialog_Goto::static_constructor(XAP_DialogFactory * pFactory,

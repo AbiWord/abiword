@@ -33,6 +33,7 @@
 
 #include "ap_Dialog_Field.h"
 #include "ap_QNXDialog_Field.h"
+#include "ut_qnxHelper.h"
 
 /*****************************************************************/
 

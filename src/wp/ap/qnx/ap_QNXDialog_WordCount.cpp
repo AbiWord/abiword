@@ -29,8 +29,7 @@
 #include "ap_Dialog_Id.h"
 #include "ap_Dialog_WordCount.h"
 #include "ap_QNXDialog_WordCount.h"
-
-#include "ut_Rehydrate.h"
+#include "ut_qnxHelper.h"
 
 /*****************************************************************/
 

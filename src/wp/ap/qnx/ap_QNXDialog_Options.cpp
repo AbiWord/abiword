@@ -39,6 +39,7 @@
 #include "ap_Strings.h"
 
 #include "ap_QNXDialog_Options.h"
+#include "ut_qnxHelper.h"
 
 /*****************************************************************/
 
