@@ -28,6 +28,7 @@
 #endif /* DLGHACK */
 
 #include <string.h>
+#include "ut_debugmsg.h"
 #include "ev_EditMethod.h"
 #include "fv_View.h"
 #include "fl_DocLayout.h"
@@ -907,6 +908,7 @@ Defun(fileOpen)
 
 	if (pNewFile)
 	{
+		UT_DEBUGMSG(("fileOpen: loading [%s]\n",pNewFile));
 		bRes = pFrame->loadDocument(pNewFile);
 		free(pNewFile);
 	}
@@ -941,6 +943,7 @@ Defun(fileSaveAs)
 
 	if (pNewFile)
 	{
+		UT_DEBUGMSG(("fileSaveAs: saving as [%s]\n",pNewFile));
 		pView->cmdSaveAs(pNewFile);
 		free(pNewFile);
 	}
@@ -1221,11 +1224,8 @@ char * _promptFile(AP_Frame * pFrame, UT_Bool bSaveAs)
 	gtk_signal_connect(GTK_OBJECT(pFS->cancel_button), "clicked",
 			    GTK_SIGNAL_FUNC(gtk_main_quit), NULL);
 
-	// TODO: not sure what these do, so I commented 'em out
-#if 0
 	gtk_window_position(GTK_WINDOW(pFS), GTK_WIN_POS_MOUSE);
 	gtk_file_selection_hide_fileop_buttons(pFS);
-#endif 
 
 	/* Run the dialog */
 	gtk_widget_show(GTK_WIDGET(pFS));
@@ -1234,12 +1234,12 @@ char * _promptFile(AP_Frame * pFrame, UT_Bool bSaveAs)
 
 	if (accepted)
 	{
-		fileName = gtk_file_selection_get_filename(pFS);
+		UT_cloneString(&fileName, gtk_file_selection_get_filename(pFS));
 	}
 
 	gtk_widget_destroy (GTK_WIDGET(pFS));
 
-	return (fileName ? strdup(fileName) : NULL);
+	return fileName;
 }
 
 #endif /* LINUX */
