@@ -140,6 +140,25 @@ int AP_QNXDialog_Options::s_menu_item_activate(PtWidget_t *widget, void *data, P
 	return Pt_CONTINUE;
 }
 
+
+int AP_QNXDialog_Options::s_chooseTransparentColor(PtWidget_t *widget, void *data, PtCallbackInfo_t *info)
+{ 
+	AP_QNXDialog_Options * dlg = (AP_QNXDialog_Options *)data;
+	UT_ASSERT(widget && dlg); 
+	dlg->event_ChooseTransparentColor(); 
+	return Pt_CONTINUE;
+}
+
+
+int AP_QNXDialog_Options::s_allowTransparentColor(PtWidget_t *widget, void *data, PtCallbackInfo_t *info)
+{ 
+	AP_QNXDialog_Options * dlg = (AP_QNXDialog_Options *)data;
+	UT_ASSERT(widget && dlg); 
+	dlg->event_AllowTransparentColor(); 
+	return Pt_CONTINUE;
+}
+
+
 /*****************************************************************/
 
 #define TR(str) UT_XML_transNoAmpersands((str)) 
@@ -266,6 +285,40 @@ void AP_QNXDialog_Options::event_WindowDelete(void)
 {
 	if (!done++)
 	    m_answer = AP_Dialog_Options::a_CANCEL;    
+}
+
+void AP_QNXDialog_Options::event_AllowTransparentColor(void)
+{
+#if 0
+	if(!GTK_TOGGLE_BUTTON (m_checkbuttonTransparentIsWhite)->active) {
+		strncpy(m_CurrentTransparentColor,(const XML_Char *) "ffffff",9);
+		gtk_widget_set_sensitive(m_pushbuttonNewTransparentColor,FALSE);
+	}
+	else
+		gtk_widget_set_sensitive(m_pushbuttonNewTransparentColor,TRUE);
+#endif
+	strcpy(m_CurrentTransparentColor, (const XML_Char *)"ffffff");
+}
+
+void AP_QNXDialog_Options::event_ChooseTransparentColor(void)
+{
+	//Do the colour selection ...
+}
+
+
+void AP_QNXDialog_Options::initializeTransperentToggle(void)
+{
+#if 0
+	if(UT_strcmp(m_CurrentTransparentColor,"ffffff") == 0)
+	{
+		gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (m_checkbuttonTransparentIsWhite), FALSE);
+	}
+	else
+	{
+		gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (m_checkbuttonTransparentIsWhite), TRUE);
+	}
+#endif
+	PtSetResource(m_wCheckWhiteTransparent, Pt_ARG_FLAGS, Pt_SET, Pt_SET);
 }
 
 /*****************************************************************/
@@ -427,7 +480,7 @@ PtWidget_t* AP_QNXDialog_Options::_constructWindow ()
 	PtSetArg(&args[n++], Pt_ARG_WIDTH,  ABI_DEFAULT_BUTTON_WIDTH, 0);
 	buttonSpellIgnoreEdit = PtCreateWidget(PtButton, hignorewords, n, args);
 
-	/* Preferences Tab */
+	/*** Preferences Tab ***/
 	n = 0;
 	PtSetArg(&args[n++], Pt_ARG_TITLE,  TR(pSS->getValue(AP_STRING_ID_DLG_Options_TabLabel_Preferences)), 0);
 	PtSetArg(&args[n++], Pt_ARG_WIDTH, TAB_WIDTH, 0);
@@ -579,6 +632,58 @@ PtWidget_t* AP_QNXDialog_Options::_constructWindow ()
 	PtSetArg(&args[n++], Pt_ARG_WIDTH,  2 * ABI_DEFAULT_BUTTON_WIDTH, 0);
 	m_checkbuttonSmartQuotesEnable = PtCreateWidget(PtToggleButton, vmiscgroup, n, args);
 
+	/** Autosave Options **/	
+	n = 0;
+	PtSetArg(&args[n++], Pt_ARG_GROUP_SPACING_X, 5, 0);
+	PtWidget_t *hautosavegroup = PtCreateWidget (PtGroup, vmiscgroup, n, args);
+
+	n = 0;
+	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, 
+		TR(pSS->getValue(AP_STRING_ID_DLG_Options_Label_AutoSaveCurrent)), 0);
+	m_checkbuttonAutoSaveFile = PtCreateWidget(PtToggleButton, hautosavegroup, n, args);
+
+	n = 0;
+	PtSetArg(&args[n++], Pt_ARG_NUMERIC_SUFFIX, 
+		TR(pSS->getValue(AP_STRING_ID_DLG_Options_Label_Minutes)), 0);
+	PtSetArg(&args[n++], Pt_ARG_NUMERIC_MIN, 0, 0);
+	PtSetArg(&args[n++], Pt_ARG_NUMERIC_MAX, 60, 0);
+	m_wAutoSaveFilePeriod = PtCreateWidget(PtNumericInteger, hautosavegroup, n, args);
+
+	n = 0;
+	PtSetArg(&args[n++], Pt_ARG_GROUP_SPACING_X, 5, 0);
+	hautosavegroup = PtCreateWidget (PtGroup, vmiscgroup, n, args);
+
+	n = 0;
+	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, 
+		TR(pSS->getValue(AP_STRING_ID_DLG_Options_Label_WithExtension)), 0);
+	PtCreateWidget(PtLabel, hautosavegroup, n, args);
+
+	n = 0;
+	PtSetArg(&args[n++], Pt_ARG_WIDTH,  ABI_DEFAULT_BUTTON_WIDTH, 0);
+	m_wAutoSaveFileExt = PtCreateWidget(PtText, hautosavegroup, n, args);
+
+	/** Colour Selector Options **/	
+	n = 0;
+	PtSetArg(&args[n++], Pt_ARG_GROUP_SPACING_X, 5, 0);
+	PtSetArg(&args[n++], Pt_ARG_GROUP_FLAGS, Pt_GROUP_EQUAL_SIZE_VERTICAL, Pt_GROUP_EQUAL_SIZE_VERTICAL);
+	PtWidget_t *hcolorgroup = PtCreateWidget (PtGroup, vmiscgroup, n, args);
+
+	n = 0;
+	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, 
+				pSS->getValue(AP_STRING_ID_DLG_Options_Label_ChooseForTransparent), 0);
+	PtCreateWidget(PtLabel, hcolorgroup, n, args);
+
+	n = 0;
+	PtSetArg(&args[n++], Pt_ARG_FLAGS, Pt_TOGGLE, Pt_TOGGLE);
+	PtSetArg(&args[n++], Pt_ARG_WIDTH,  ABI_DEFAULT_BUTTON_WIDTH, 0);
+	m_wChooseColorForTransparent = PtCreateWidget(PtColorWell, hcolorgroup, n, args);
+	//PtAddCallback(m_wCheckWhiteTransparent, Pt_CB_ACTIVATE, s_allowTransparentColor, this);
+
+	n = 0;
+	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, 
+		TR(pSS->getValue(AP_STRING_ID_DLG_Options_Label_CheckWhiteForTransparent)), 0);
+	m_wCheckWhiteTransparent = PtCreateWidget(PtToggleButton, vmiscgroup, n, args);
+	PtAddCallback(m_wCheckWhiteTransparent, Pt_CB_ACTIVATE, s_allowTransparentColor, this);
 
 #ifdef BIDI_ENABLED
 /*
@@ -739,6 +844,21 @@ PtWidget_t *AP_QNXDialog_Options::_lookupWidget ( tControl id )
 		return m_listDefaultPageSize;
 */
 
+	case id_CHECK_AUTO_SAVE_FILE:
+		return m_checkbuttonAutoSaveFile;
+
+	case id_TEXT_AUTO_SAVE_FILE_EXT:
+		return m_wAutoSaveFileExt;
+		
+	case id_TEXT_AUTO_SAVE_FILE_PERIOD:
+		return m_wAutoSaveFilePeriod;
+
+	case id_CHECK_COLOR_FOR_TRANSPARENT_IS_WHITE:
+		return  m_wCheckWhiteTransparent;
+
+	case id_PUSH_CHOOSE_COLOR_FOR_TRANSPARENT:
+		return  m_wChooseColorForTransparent;
+
 #ifdef BIDI_ENABLED
 	case id_CHECK_OTHER_DEFAULT_DIRECTION_RTL:
 		return m_checkbuttonOtherDirectionRtl;
@@ -877,26 +997,34 @@ DEFINE_GET_SET_BOOL(ViewShowStandardBar);
 DEFINE_GET_SET_BOOL(ViewShowFormatBar);
 DEFINE_GET_SET_BOOL(ViewShowExtraBar);
 DEFINE_GET_SET_BOOL(ViewShowStatusBar);
+
+/* File save options related stuff */
 DEFINE_GET_SET_BOOL(AutoSaveFile);
 
 void AP_QNXDialog_Options::_gatherAutoSaveFileExt(UT_String &stRetVal)
 {
-	// TODO: Auto save option
+	char *value;
+	PtGetResource(m_wAutoSaveFileExt, Pt_ARG_TEXT_STRING, &value, 0);
+    stRetVal = value;
 }
 
 void AP_QNXDialog_Options::_setAutoSaveFileExt(const UT_String &stExt)
 {
-	// TODO: Auto save option
+	PtSetResource(m_wAutoSaveFileExt, Pt_ARG_TEXT_STRING, stExt.c_str(), 0);
 }
 
 void AP_QNXDialog_Options::_gatherAutoSaveFilePeriod(UT_String &stRetVal)
 {
-	// TODO: Auto save option
+	int *value;
+	char nb[12];
+	PtGetResource(m_wAutoSaveFilePeriod, Pt_ARG_NUMERIC_VALUE, &value, 0);
+	snprintf(nb, sizeof(nb), "%d", (value) ? *value : 1);
+	stRetVal = nb;
 }
 
 void AP_QNXDialog_Options::_setAutoSaveFilePeriod(const UT_String &stPeriod)
 {
-	// TODO: Auto save option
+	PtSetResource(m_wAutoSaveFilePeriod, Pt_ARG_NUMERIC_VALUE, atoi(stPeriod.c_str()), 0);
 }
 
 UT_Dimension AP_QNXDialog_Options::_gatherViewRulerUnits(void) 
@@ -906,11 +1034,6 @@ UT_Dimension AP_QNXDialog_Options::_gatherViewRulerUnits(void)
 
 	UT_ASSERT(m_listViewRulerUnits && selection > 0);
 
-/*
- 	void *junk;
- 	junk = m_vecUnits.getNthItem(selection - 1);
- 	return (UT_Dimension)((int)junk);
-*/
  	return (UT_Dimension)((int)m_vecUnits.getNthItem(selection - 1));
 }
 

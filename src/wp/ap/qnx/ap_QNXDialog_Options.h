@@ -42,6 +42,9 @@ public:
     virtual void event_Cancel(void);
     virtual void event_Apply(void);
     virtual void event_WindowDelete(void);
+	virtual void event_AllowTransparentColor(void);
+	virtual void initializeTransperentToggle(void);
+	virtual void event_ChooseTransparentColor(void);
 
  protected:
 
@@ -104,6 +107,9 @@ public:
 	static int s_checkbutton_toggle	(PtWidget_t *, void *, PtCallbackInfo_t *info);
 	static int s_menu_item_activate	(PtWidget_t *, void *, PtCallbackInfo_t *info);
 
+	static int s_chooseTransparentColor	(PtWidget_t *, void *, PtCallbackInfo_t *info);
+	static int s_allowTransparentColor	(PtWidget_t *, void *, PtCallbackInfo_t *info);
+
 		
 	// private construction functions
 	PtWidget_t * _constructWindow(void);
@@ -141,12 +147,20 @@ public:
 	PtWidget_t * m_checkbuttonViewAll;
 	PtWidget_t * m_checkbuttonViewHiddenText;
 	PtWidget_t * m_checkbuttonViewUnprintable;
+
+	PtWidget_t * m_checkbuttonSmartQuotesEnable;
+
+	PtWidget_t * m_checkbuttonAutoSaveFile;
+	PtWidget_t * m_wAutoSaveFileExt;
+	PtWidget_t * m_wAutoSaveFilePeriod;
+
+	PtWidget_t * m_wChooseColorForTransparent;
+	PtWidget_t * m_wCheckWhiteTransparent;
+
 #ifdef BIDI_ENABLED
     PtWidget_t * m_checkbuttonOtherDirectionRtl;
 #endif
 
-	PtWidget_t * m_checkbuttonSmartQuotesEnable;
-	PtWidget_t * m_checkbuttonAutoSaveFile;
 
 	PtWidget_t * m_buttonSave;
 	PtWidget_t * m_buttonDefaults;
