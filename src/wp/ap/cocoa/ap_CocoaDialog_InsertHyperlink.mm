@@ -1,5 +1,6 @@
 /* AbiWord
  * Copyright (C) 2000 AbiSource, Inc.
+ * Copyright (C) 2003 Hubert Figuiere
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -24,9 +25,7 @@
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
 
-// This header defines some functions for Cocoa dialogs,
-// like centering them, measuring them, etc.
-#include "xap_CocoaDialogHelper.h"
+#include "xap_CocoaDialog_Utilities.h"
 
 #include "xap_App.h"
 #include "xap_CocoaApp.h"
@@ -41,228 +40,139 @@
 /*****************************************************************/
 
 XAP_Dialog * AP_CocoaDialog_InsertHyperlink::static_constructor(XAP_DialogFactory * pFactory,
-													 XAP_Dialog_Id id)
+													 XAP_Dialog_Id dlgid)
 {
-	AP_CocoaDialog_InsertHyperlink * p = new AP_CocoaDialog_InsertHyperlink(pFactory,id);
+	AP_CocoaDialog_InsertHyperlink * p = new AP_CocoaDialog_InsertHyperlink(pFactory, dlgid);
 	return p;
 }
 
 AP_CocoaDialog_InsertHyperlink::AP_CocoaDialog_InsertHyperlink(XAP_DialogFactory * pDlgFactory,
-										 XAP_Dialog_Id id)
-	: AP_Dialog_InsertHyperlink(pDlgFactory,id)
+										 XAP_Dialog_Id dlgid)
+	: AP_Dialog_InsertHyperlink(pDlgFactory, dlgid),
+		m_pBookmarks(nil),
+		m_dlg(nil)
 {
-	m_windowMain = 0;
-	m_buttonOK = 0;
-	m_buttonCancel = 0;
-	//m_comboEntry = 0;
-	m_clist = 0;
-	m_pBookmarks = 0;
-	m_iRow = -1;
-	m_entry = 0;
 }
 
 AP_CocoaDialog_InsertHyperlink::~AP_CocoaDialog_InsertHyperlink(void)
 {
 }
 
-/*****************************************************************/
-
-static void s_ok_clicked(GtkWidget * widget, AP_CocoaDialog_InsertHyperlink * dlg)
-{
-	UT_ASSERT(widget && dlg);
-	dlg->event_OK();
-}
-
-static void s_cancel_clicked(GtkWidget * widget, AP_CocoaDialog_InsertHyperlink * dlg)
-{
-	UT_ASSERT(widget && dlg);
-	dlg->event_Cancel();
-}
-
-static void s_blist_clicked(GtkWidget *clist, gint row, gint column,
-										  GdkEventButton *event, AP_CocoaDialog_InsertHyperlink *me)
-{
-	me->setRow(row);
-	gtk_entry_set_text(GTK_ENTRY(me->m_entry), me->m_pBookmarks[row]);
-}
 
 /***********************************************************************/
 void AP_CocoaDialog_InsertHyperlink::runModal(XAP_Frame * pFrame)
 {
-	UT_ASSERT(pFrame);
-	// Build the window's widgets and arrange them
-	GtkWidget * mainWindow = _constructWindow();
-	UT_ASSERT(mainWindow);
 
-	connectFocus(GTK_WIDGET(mainWindow),pFrame);
-
-	// select the first row of the list (this must come after the
- 	// call to _connectSignals)
- 	gtk_clist_unselect_row(GTK_CLIST(m_clist),0,0);
-
-	// To center the dialog, we need the frame of its parent.
-	XAP_CocoaFrame * pCocoaFrame = static_cast<XAP_CocoaFrame *>(pFrame);
-	UT_ASSERT(pCocoaFrame);
+	m_dlg = [[AP_CocoaDialog_InsertHyperlinkController alloc] initFromNib];
 	
-	// Get the GtkWindow of the parent frame
-	GtkWidget * parentWindow = pCocoaFrame->getTopLevelWindow();
-	UT_ASSERT(parentWindow);
-	
-	// Center our new dialog in its parent and make it a transient
-	// so it won't get lost underneath
-	centerDialog(parentWindow, mainWindow);
+	// used similarly to convert between text and numeric arguments
+	[m_dlg setXAPOwner:this];
 
-	// Make it modal, and stick it up top
-	gtk_grab_add(mainWindow);
+	// build the dialog
+	NSWindow * window = [m_dlg window];
+	UT_ASSERT(window);
+	m_pBookmarks = [[XAP_StringListDataSource alloc] init];
+  	for (int i = 0; i < (int)getExistingBookmarksCount(); i++) {
+		[m_pBookmarks addString:[NSString stringWithUTF8String:getNthExistingBookmark(i)]];
+	}
+	[m_dlg setDataSource:m_pBookmarks];
+	[NSApp runModalForWindow:window];
 
-	// Show the top level dialog,
-	gtk_widget_show_all(mainWindow);
-
-	// Run into the GTK event loop for this window.
-	gtk_main();
-
-	if(mainWindow && GTK_IS_WIDGET(mainWindow))
-	  gtk_widget_destroy(mainWindow);
-
+	[m_dlg discardXAP];
+	[m_dlg close];
+	[m_dlg release];
+	[m_pBookmarks release];
+	m_dlg = nil;
 }
 
 void AP_CocoaDialog_InsertHyperlink::event_OK(void)
 {
-	UT_ASSERT(m_windowMain);
-	// get the bookmark name, if any (return cancel if no name given)
-	gchar * res = gtk_entry_get_text(GTK_ENTRY(m_entry));
-	if(res && *res)	
-	{
+	NSString * str = [m_dlg bookmarkText];
+	if(str)	{
 		setAnswer(AP_Dialog_InsertHyperlink::a_OK);
-		setHyperlink((XML_Char*)res);
+		setHyperlink((XML_Char*)[str UTF8String]);
 	}
-	else
-	{
+	else {
 		setAnswer(AP_Dialog_InsertHyperlink::a_CANCEL);
 	}
 		
-	gtk_main_quit();
+	[NSApp stopModal];
 }
 
 void AP_CocoaDialog_InsertHyperlink::event_Cancel(void)
 {
 	setAnswer(AP_Dialog_InsertHyperlink::a_CANCEL);
-	gtk_main_quit();
+	[NSApp stopModal];
 }
 
-void AP_CocoaDialog_InsertHyperlink::_constructWindowContents ( GtkWidget * vbox2 )
+
+@implementation AP_CocoaDialog_InsertHyperlinkController
+
+- (id)initFromNib
 {
-  const XAP_StringSet * pSS = m_pApp->getStringSet();
-
-  GtkWidget *label1;
-
-  label1 = gtk_label_new (pSS->getValue(AP_STRING_ID_DLG_InsertHyperlink_Msg));
-  gtk_widget_show (label1);
-  gtk_box_pack_start (GTK_BOX (vbox2), label1, TRUE, FALSE, 3);
-
-  m_entry = gtk_entry_new();
-  gtk_box_pack_start (GTK_BOX (vbox2), m_entry, FALSE, FALSE, 0);
-  gtk_widget_show(m_entry);
-
-  // the bookmark list
-  m_swindow  = gtk_scrolled_window_new(NULL, NULL);
-  gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (m_swindow),GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
-  gtk_widget_show(m_swindow);
-  gtk_box_pack_start (GTK_BOX (vbox2), m_swindow, FALSE, FALSE, 0);
-	
-  m_clist = gtk_clist_new (1);
-  gtk_clist_set_selection_mode(GTK_CLIST(m_clist), GTK_SELECTION_BROWSE);
-  gtk_clist_column_titles_hide(GTK_CLIST(m_clist));
-  //gtk_box_pack_start (GTK_BOX (vbox2), m_blist, FALSE, FALSE, 0);
-
-  if(m_pBookmarks)
-  	  delete [] m_pBookmarks;
-  m_pBookmarks = new const XML_Char *[getExistingBookmarksCount()];
-	
-  for (int i = 0; i < (int)getExistingBookmarksCount(); i++)
-  	  m_pBookmarks[i] = getNthExistingBookmark(i);
-
-  int (*my_cmp)(const void *, const void *) =
-  	  (int (*)(const void*, const void*)) UT_XML_strcmp;
-    	
-  qsort(m_pBookmarks, getExistingBookmarksCount(),sizeof(XML_Char*),my_cmp);
-
-  for (int i = 0; i < (int)getExistingBookmarksCount(); i++)
-  	  gtk_clist_append (GTK_CLIST (m_clist), (gchar**) &m_pBookmarks[i]);
-
-  gtk_scrolled_window_add_with_viewport(GTK_SCROLLED_WINDOW(m_swindow),m_clist);
+	self = [super initWithWindowNibName:@"ap_CocoaDialog_InsertHyperlink"];
+	return self;
 }
 
-GtkWidget*  AP_CocoaDialog_InsertHyperlink::_constructWindow(void)
+-(void)discardXAP
 {
-  GtkWidget *vbox2;
-  GtkWidget *frame1;
-  GtkWidget *hbox1;
-  GtkWidget *hseparator1;
-
-  const XAP_StringSet * pSS = m_pApp->getStringSet();
-
-  m_windowMain = gtk_window_new (GTK_WINDOW_TOPLEVEL);
-  gtk_window_set_title (GTK_WINDOW (m_windowMain), pSS->getValue(AP_STRING_ID_DLG_InsertHyperlink_Title));
-
-  frame1 = gtk_frame_new (NULL);
-  gtk_widget_show (frame1);
-  gtk_container_add (GTK_CONTAINER (m_windowMain), frame1);
-  gtk_container_set_border_width (GTK_CONTAINER (frame1), 4);
-
-  vbox2 = gtk_vbox_new (FALSE, 6);
-  gtk_widget_show (vbox2);
-  gtk_container_add (GTK_CONTAINER (frame1), vbox2);
-  gtk_container_set_border_width (GTK_CONTAINER (vbox2), 5);
-
-  _constructWindowContents ( vbox2 );
-
-  hseparator1 = gtk_hseparator_new ();
-  gtk_widget_show (hseparator1);
-  gtk_box_pack_start (GTK_BOX (vbox2), hseparator1, TRUE, TRUE, 0);
-
-  hbox1 = gtk_hbox_new (TRUE, 0);
-  gtk_widget_show (hbox1);
-  gtk_box_pack_start (GTK_BOX (vbox2), hbox1, TRUE, TRUE, 0);
-
-  m_buttonOK = gtk_button_new_with_label (pSS->getValue(XAP_STRING_ID_DLG_OK));
-  gtk_widget_show (m_buttonOK);
-  gtk_box_pack_start (GTK_BOX (hbox1), m_buttonOK, FALSE, FALSE, 3);
-  gtk_widget_set_usize (m_buttonOK, DEFAULT_BUTTON_WIDTH, 0);
-
-  m_buttonCancel = gtk_button_new_with_label (pSS->getValue(XAP_STRING_ID_DLG_Cancel));
-  gtk_widget_show (m_buttonCancel);
-  gtk_box_pack_start (GTK_BOX (hbox1), m_buttonCancel, FALSE, FALSE, 3);
-  gtk_widget_set_usize (m_buttonCancel, DEFAULT_BUTTON_WIDTH, 0);
-
-  gtk_widget_grab_focus (m_clist);
-  gtk_widget_grab_default (m_buttonOK);
-
-  // connect all the signals
-  _connectSignals ();
-
-  return m_windowMain;
+	_xap = NULL; 
 }
 
-void AP_CocoaDialog_InsertHyperlink::_connectSignals (void)
+-(void)dealloc
 {
-	// the control buttons
-	g_signal_connect(G_OBJECT(m_buttonOK),
-					   "clicked",
-					   G_CALLBACK(s_ok_clicked),
-					   (gpointer) this);
-	
-	g_signal_connect(G_OBJECT(m_buttonCancel),
-					   "clicked",
-					   G_CALLBACK(s_cancel_clicked),
-					   (gpointer) this);
-					
-	g_signal_connect (G_OBJECT (m_clist), "select_row",
-						G_CALLBACK (s_blist_clicked), this);
-					
-	
-	g_signal_connect_after(G_OBJECT(m_windowMain),
-							 "destroy",
-							 NULL,
-							 NULL);
+	[super dealloc];
 }
+
+- (void)setXAPOwner:(XAP_Dialog *)owner
+{
+	_xap = dynamic_cast<AP_CocoaDialog_InsertHyperlink*>(owner);
+}
+
+-(void)windowDidLoad
+{
+	if (_xap) {
+		const XAP_StringSet *pSS = XAP_App::getApp()->getStringSet();
+		LocalizeControl([self window], pSS, AP_STRING_ID_DLG_InsertHyperlink_Title);
+		LocalizeControl(_addBtn, pSS, XAP_STRING_ID_DLG_OK);
+		LocalizeControl(_cancelBtn, pSS, XAP_STRING_ID_DLG_Cancel);
+		LocalizeControl(_hyperlinkLabel, pSS, AP_STRING_ID_DLG_InsertHyperlink_Msg);
+		const XML_Char* href = _xap->getHyperlink();
+		if (href) {
+			[_hyperlinkValue setStringValue:[NSString stringWithUTF8String:href]];
+		}
+		[_bookmarkList setAction:@selector(selectBtn:)];
+	}
+}
+
+- (void)setDataSource:(XAP_StringListDataSource*)datasource
+{
+	[_bookmarkList setDataSource:datasource];
+	[_bookmarkList deselectAll:self];
+	_datasource = datasource;
+}
+
+- (NSString*) bookmarkText
+{
+	return [_hyperlinkValue stringValue];
+}
+
+
+- (IBAction)addBtn:(id)sender
+{
+	_xap->event_OK();
+}
+
+- (IBAction)cancelBtn:(id)sender
+{
+	_xap->event_Cancel();
+}
+
+- (IBAction)selectBtn:(id)sender
+{
+	int row = [_bookmarkList selectedRow];
+	[_hyperlinkValue setStringValue:[[_datasource array] objectAtIndex:row]];
+}
+
+@end
+

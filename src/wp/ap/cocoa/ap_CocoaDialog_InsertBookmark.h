@@ -1,6 +1,6 @@
 /* AbiWord
  * Copyright (C) 2000 AbiSource, Inc.
- * Copyright (C) 2001 Hubert Figuiere
+ * Copyright (C) 2001, 2003 Hubert Figuiere
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -24,37 +24,41 @@
 #include "ap_Dialog_InsertBookmark.h"
 
 class XAP_CocoaFrame;
+@class AP_CocoaDialog_InsertBookmarkController;
+@protocol XAP_CocoaDialogProtocol;
 
 /*****************************************************************/
 
 class AP_CocoaDialog_InsertBookmark: public AP_Dialog_InsertBookmark
 {
 public:
-	AP_CocoaDialog_InsertBookmark(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
+	AP_CocoaDialog_InsertBookmark(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id dlgid);
 	virtual ~AP_CocoaDialog_InsertBookmark(void);
 
 	virtual void			runModal(XAP_Frame * pFrame);
 
-	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
+	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id dlgid);
 
 	void event_OK(void);
 	void event_Cancel(void);
 
-protected:
-#if 0
-	virtual GtkWidget *		_constructWindow(void);
-	void _constructWindowContents (GtkWidget * container);
-	void					_connectSignals (void);
-	void					_setList();
-
-	GtkWidget * m_windowMain;
-
-	GtkWidget * m_buttonOK;
-	GtkWidget * m_buttonCancel;
-
-	GtkWidget * m_comboEntry;
-	GtkWidget * m_comboBookmark;
-#endif		
+private:
+	AP_CocoaDialog_InsertBookmarkController* m_dlg;
 };
+
+
+
+@interface AP_CocoaDialog_InsertBookmarkController : NSWindowController <XAP_CocoaDialogProtocol>
+{
+    IBOutlet NSButton *_addBtn;
+    IBOutlet NSComboBox *_bookmarkCombo;
+    IBOutlet NSTextField *_bookmarkLabel;
+    IBOutlet NSButton *_cancelBtn;
+	AP_CocoaDialog_InsertBookmark* _xap;
+}
+- (NSString*)bookmarkText;
+- (IBAction)addBtn:(id)sender;
+- (IBAction)cancelBtn:(id)sender;
+@end
 
 #endif /* AP_COCOADIALOG_INSERTBOOKMARK_H */

@@ -74,6 +74,9 @@
 #	include "ap_CocoaDialog_MetaData.h"
 #	include "ap_CocoaDialog_MarkRevisions.h"
 #	include "ap_CocoaDialog_ListRevisions.h"
+#	include "ap_CocoaDialog_MergeCells.h"
+#	include "ap_CocoaDialog_InsertTable.h"
+#	include "ap_CocoaDialog_FormatTable.h"
 #if 0
 #	include "ap_CocoaDialog_Download_File.h"
 #endif
@@ -108,7 +111,7 @@
 	DeclareDialog(AP_DIALOG_ID_OPTIONS,			AP_CocoaDialog_Options)
 	DeclareDialog(AP_DIALOG_ID_INSERT_DATETIME,	AP_CocoaDialog_Insert_DateTime)
 	DeclareDialog(AP_DIALOG_ID_WORDCOUNT,		AP_CocoaDialog_WordCount)
-//PORT	DeclareDialog(AP_DIALOG_ID_FIELD,			AP_CocoaDialog_Field)
+	DeclareDialog(AP_DIALOG_ID_FIELD,			AP_CocoaDialog_Field)
 	DeclareDialog(AP_DIALOG_ID_LISTS,			AP_CocoaDialog_Lists)
 	DeclareDialog(AP_DIALOG_ID_COLUMNS,			AP_CocoaDialog_Columns)
 	DeclareDialog(AP_DIALOG_ID_TAB,				AP_CocoaDialog_Tab)
@@ -122,15 +125,15 @@
 	DeclareDialog(XAP_DIALOG_ID_FILE_EXPORT, XAP_CocoaDialog_FileOpenSaveAs)
 	DeclareDialog(XAP_DIALOG_ID_INSERT_FILE, XAP_CocoaDialog_FileOpenSaveAs)
 //PORT	DeclareDialog(XAP_DIALOG_ID_PASSWORD, XAP_CocoaDialog_Password)
-//PORT 	DeclareDialog(AP_DIALOG_ID_INSERTBOOKMARK,	AP_CocoaDialog_InsertBookmark)
-//PORT 	DeclareDialog(AP_DIALOG_ID_INSERTHYPERLINK,	AP_CocoaDialog_InsertHyperlink)
+	DeclareDialog(AP_DIALOG_ID_INSERTBOOKMARK,	AP_CocoaDialog_InsertBookmark)
+	DeclareDialog(AP_DIALOG_ID_INSERTHYPERLINK,	AP_CocoaDialog_InsertHyperlink)
 //PORT	DeclareDialog(XAP_DIALOG_ID_IMAGE, XAP_CocoaDialog_Image)
 	DeclareDialog(AP_DIALOG_ID_METADATA,		AP_CocoaDialog_MetaData)
 //PORT 	DeclareDialog(AP_DIALOG_ID_MARK_REVISIONS,	AP_CocoaDialog_MarkRevisions)
 //PORT 	DeclareDialog(AP_DIALOG_ID_LIST_REVISIONS,	AP_CocoaDialog_ListRevisions)
-//PORT     DeclareDialog(AP_DIALOG_ID_INSERT_TABLE,		AP_CocoaDialog_InsertTable)
-//PORT     DeclareDialog(AP_DIALOG_ID_MERGE_CELLS,		AP_CocaDialog_MergeCells)
-//PORT	 DeclareDialog(AP_DIALOG_ID_FORMAT_TABLE,		AP_CocoaDialog_FormatTable)
+	DeclareDialog(AP_DIALOG_ID_INSERT_TABLE,		AP_CocoaDialog_InsertTable)
+	DeclareDialog(AP_DIALOG_ID_MERGE_CELLS,		AP_CocoaDialog_MergeCells)
+	DeclareDialog(AP_DIALOG_ID_FORMAT_TABLE,		AP_CocoaDialog_FormatTable)
 	DeclareDialog(AP_DIALOG_ID_FORMAT_FOOTNOTES,		AP_CocoaDialog_FormatFootnotes)
 //PORT	 DeclareDialog(AP_DIALOG_ID_MAILMERGE,		AP_UnixDialog_MailMerge)
 #if 0

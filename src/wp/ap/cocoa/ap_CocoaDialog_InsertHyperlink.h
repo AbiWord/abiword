@@ -1,6 +1,6 @@
 /* AbiWord
  * Copyright (C) 2000 AbiSource, Inc.
- * Copyright (C) 2001 Hubert Figuiere
+ * Copyright (C) 2001, 2003 Hubert Figuiere
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -22,8 +22,11 @@
 #define AP_COCOADIALOG_INSERTHYPERLINK_H
 
 #include "ap_Dialog_InsertHyperlink.h"
+#import "xap_Cocoa_NSTableUtils.h"
 
 class XAP_CocoaFrame;
+@class AP_CocoaDialog_InsertHyperlinkController;
+@protocol XAP_CocoaDialogProtocol;
 
 /*****************************************************************/
 
@@ -39,29 +42,27 @@ public:
 
 	void event_OK(void);
 	void event_Cancel(void);
-	void setRow(int row) {m_iRow = row;}
-#if 0
-	GtkWidget * m_entry;
-	const XML_Char ** m_pBookmarks;
-	
- protected:
-	virtual GtkWidget *		_constructWindow(void);
-	void _constructWindowContents (GtkWidget * container);
-	void					_connectSignals (void);
-
-	GtkWidget * m_windowMain;
-
-	GtkWidget * m_buttonOK;
-	GtkWidget * m_buttonCancel;
-
- private:
-	//GtkWidget * m_comboEntry;
-	//GtkWidget * m_comboHyperlink;
-	GtkWidget * m_clist;
-	GtkWidget * m_swindow;
-#endif
-	int		m_iRow;
-		
+private:
+	XAP_StringListDataSource*	m_pBookmarks;
+	AP_CocoaDialog_InsertHyperlinkController* m_dlg;
 };
+
+@interface AP_CocoaDialog_InsertHyperlinkController : NSWindowController <XAP_CocoaDialogProtocol>
+{
+    IBOutlet NSButton *_addBtn;
+    IBOutlet NSTextField *_hyperlinkValue;
+    IBOutlet NSTextField *_hyperlinkLabel;
+	IBOutlet NSTableView *_bookmarkList;
+    IBOutlet NSButton *_cancelBtn;
+	AP_CocoaDialog_InsertHyperlink* _xap;
+	XAP_StringListDataSource *_datasource;
+}
+- (void)setDataSource:(XAP_StringListDataSource*)datasource;
+- (NSString*) bookmarkText;
+- (IBAction)addBtn:(id)sender;
+- (IBAction)cancelBtn:(id)sender;
+- (IBAction)selectBtn:(id)sender;
+@end
+
 
 #endif /* AP_COCOADIALOG_INSERTBOOKMARK_H */

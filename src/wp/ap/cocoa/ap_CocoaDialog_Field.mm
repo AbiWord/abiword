@@ -1,5 +1,6 @@
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
+ * Copyright (C) 2003 Hubert Figuiere
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -17,6 +18,8 @@
  * 02111-1307, USA.
  */
 
+#import <Cocoa/Cocoa.h>
+
 #include <stdlib.h>
 #include <time.h>
 
@@ -26,7 +29,7 @@
 
 // This header defines some functions for Cocoa dialogs,
 // like centering them, measuring them, etc.
-#include "xap_CocoaDialogHelper.h"
+#include "xap_CocoaDialog_Utilities.h"
 
 #include "xap_App.h"
 #include "xap_CocoaApp.h"
@@ -40,29 +43,21 @@
 
 /*****************************************************************/
 
-#define	LIST_ITEM_INDEX_KEY "index"
-
-/*****************************************************************/
 
 XAP_Dialog * AP_CocoaDialog_Field::static_constructor(XAP_DialogFactory * pFactory,
-													 XAP_Dialog_Id id)
+													 XAP_Dialog_Id dlgid)
 {
-	AP_CocoaDialog_Field * p = new AP_CocoaDialog_Field(pFactory,id);
+	AP_CocoaDialog_Field * p = new AP_CocoaDialog_Field(pFactory,dlgid);
 	return p;
 }
 
 AP_CocoaDialog_Field::AP_CocoaDialog_Field(XAP_DialogFactory * pDlgFactory,
-										 XAP_Dialog_Id id)
-	: AP_Dialog_Field(pDlgFactory,id)
+										 XAP_Dialog_Id dlgid)
+	: AP_Dialog_Field(pDlgFactory, dlgid),
+	m_typeList(nil),
+	m_fieldList(nil),
+	m_dlg(nil)
 {
-	m_windowMain = NULL;
-
-	m_buttonOK = NULL;
-	m_buttonCancel = NULL;
-
-	m_listTypes = NULL;
-	m_listFields = NULL;
-	m_entryParam = NULL;
 }
 
 AP_CocoaDialog_Field::~AP_CocoaDialog_Field(void)
@@ -72,127 +67,68 @@ AP_CocoaDialog_Field::~AP_CocoaDialog_Field(void)
 
 /*****************************************************************/
 
-static void s_ok_clicked(GtkWidget * widget, AP_CocoaDialog_Field * dlg)
-{
-	UT_ASSERT(widget && dlg);
-	dlg->event_OK();
-}
-
-static void s_cancel_clicked(GtkWidget * widget, AP_CocoaDialog_Field * dlg)
-{
-	UT_ASSERT(widget && dlg);
-	dlg->event_Cancel();
-}
-
-static void s_types_clicked(GtkWidget * widget, gint row, gint column,
-							GdkEventButton *event, AP_CocoaDialog_Field * dlg)
-{
-	UT_ASSERT(widget && dlg);
-	dlg->types_changed(row);
-}
-
-static void s_delete_clicked(GtkWidget * /* widget */,
-							 gpointer /* data */,
-							 AP_CocoaDialog_Field * dlg)
-{
-	UT_ASSERT(dlg);
-	dlg->event_WindowDelete();
-}
-
-
-/*****************************************************************/
-
 void AP_CocoaDialog_Field::runModal(XAP_Frame * pFrame)
 {
-	UT_ASSERT(pFrame);
-	// Build the window's widgets and arrange them
-	GtkWidget * mainWindow = _constructWindow();
-	UT_ASSERT(mainWindow);
-
-	connectFocus(GTK_WIDGET(mainWindow),pFrame);
-
-	// Populate the window's data items
-	_populateCatogries();
+	m_dlg = [[AP_CocoaDialog_FieldController alloc] initFromNib];
 	
-	// To center the dialog, we need the frame of its parent.
-	XAP_CocoaFrame * pCocoaFrame = static_cast<XAP_CocoaFrame *>(pFrame);
-	UT_ASSERT(pCocoaFrame);
-	
-	// Get the GtkWindow of the parent frame
-	GtkWidget * parentWindow = pCocoaFrame->getTopLevelWindow();
-	UT_ASSERT(parentWindow);
-	
-	// Center our new dialog in its parent and make it a transient
-	// so it won't get lost underneath
-	centerDialog(parentWindow, mainWindow);
+	// used similarly to convert between text and numeric arguments
+	[m_dlg setXAPOwner:this];
 
-	// Make it modal, and stick it up top
-	gtk_grab_add(mainWindow);
+	// build the dialog
+	NSWindow * window = [m_dlg window];
+	UT_ASSERT(window);
 
-	// Show the top level dialog,
-	gtk_widget_show_all(mainWindow);
+	m_fieldList = [[XAP_StringListDataSource alloc] init];
+	m_typeList = [[XAP_StringListDataSource alloc] init];
+	[m_dlg setTypeList:m_typeList andFieldList:m_fieldList];
+	_populateCategories();
+	[NSApp runModalForWindow:window];
 
-	// Run into the GTK event loop for this window.
-	gtk_main();
-
-	if(mainWindow && GTK_IS_WIDGET(mainWindow))
-	  gtk_widget_destroy(mainWindow);
+	[m_dlg discardXAP];
+	[m_dlg close];
+	[m_dlg release];
+	[m_typeList release];
+	[m_fieldList release];
+	m_dlg = nil;
 }
 
 
 void AP_CocoaDialog_Field::event_OK(void)
 {
-	UT_ASSERT(m_windowMain && m_listTypes && m_listFields);
-	
-	// find item selected in the Types list box, save it to m_iTypeIndex
+	int idx;
 
-	GList * typeslistitem = GTK_CLIST(m_listTypes)->selection;
+	idx = [m_dlg selectedType];
 
 	// if there is no selection
 	// is empty, return cancel.  GTK can make this happen.
-	if (!(typeslistitem))
+	if (idx == -1)
 	{
 		m_answer = AP_Dialog_Field::a_CANCEL;
-		gtk_main_quit();
+		[NSApp stopModal];
 		return;
 	}
-	// since we only do single mode selection, there is only one
-	// item in the GList we just got back
-
-	// For a CList the data value is actually just the row number. We can
-	// use this as index to get the actual data value for the row.
-
-	gint indexrow = GPOINTER_TO_INT (typeslistitem->data);
-	m_iTypeIndex =  GPOINTER_TO_INT (gtk_clist_get_row_data (GTK_CLIST (m_listTypes), indexrow));
+	m_iTypeIndex = idx;
 	
 	// find item selected in the Field list box, save it to m_iFormatIndex
-	GList * fieldslistitem = GTK_CLIST (m_listFields)->selection;
+	idx = [m_dlg selectedField];
 
-	// if there is no selection
-	// is empty, return cancel.  GTK can make this happen.
-	if (!(fieldslistitem))
+	if (idx == -1)
 	{
 		m_answer = AP_Dialog_Field::a_CANCEL;
-		gtk_main_quit();
+		[NSApp stopModal];
 		return;
 	}
 
-
-	// For a CList the data value is actually just the row number. We can
-	// use this as index to get the actual data value for the row.
-	indexrow = GPOINTER_TO_INT(fieldslistitem->data);
-	m_iFormatIndex = GPOINTER_TO_INT(gtk_clist_get_row_data( GTK_CLIST(m_listFields),indexrow));
+	m_iFormatIndex = idx;
 	
-	setParameter(gtk_entry_get_text(GTK_ENTRY(m_entryParam)));
+	setParameter([[m_dlg extraParam] UTF8String]);
 	m_answer = AP_Dialog_Field::a_OK;
-	gtk_main_quit();
+	[NSApp stopModal];
 }
 
 
-void AP_CocoaDialog_Field::types_changed(gint row)
+void AP_CocoaDialog_Field::types_changed(int row)
 {
-	UT_ASSERT(m_windowMain && m_listTypes);
-
 	// Update m_iTypeIndex with the row number
 	m_iTypeIndex = row;
 
@@ -203,223 +139,128 @@ void AP_CocoaDialog_Field::types_changed(gint row)
 void AP_CocoaDialog_Field::event_Cancel(void)
 {
 	m_answer = AP_Dialog_Field::a_CANCEL;
-	gtk_main_quit();
+	[NSApp stopModal];
 }
 
-void AP_CocoaDialog_Field::event_WindowDelete(void)
-{
-	m_answer = AP_Dialog_Field::a_CANCEL;	
-	gtk_main_quit();
-}
 
 
 void AP_CocoaDialog_Field::setTypesList(void)
 {
-	gint i;
-	gint cnt = 0;
-	GtkCList * c_listTypes = GTK_CLIST(m_listTypes);
-	for (i = 0;fp_FieldTypes[i].m_Desc != NULL;i++) 
-	{
-		gtk_clist_append(c_listTypes, (gchar **) & fp_FieldTypes[i].m_Desc  );
-		// store index in data pointer
-		gtk_clist_set_row_data( c_listTypes, cnt, GINT_TO_POINTER(i));
-		cnt++;
+	UT_ASSERT(m_typeList);
+	int i;
+	[m_typeList removeAllStrings];
+
+	for (i = 0; fp_FieldTypes[i].m_Desc != NULL; i++) {
+		[m_typeList addString:[NSString stringWithUTF8String:fp_FieldTypes[i].m_Desc]];
 	}
-	// now select first item in box
-	if (i > 0)
-	{		
-		gtk_clist_select_row(c_listTypes, 0,0);
-		m_iTypeIndex = 0;
-	}
-	else
-	{
-		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-	}
+	
+	m_iTypeIndex = 0;
 }
 
 void AP_CocoaDialog_Field::setFieldsList(void)
 {
-	UT_ASSERT(m_listFields);
+	UT_ASSERT(m_fieldList);
+	int i;
 	fp_FieldTypesEnum  FType = fp_FieldTypes[m_iTypeIndex].m_Type;
-	gint i;
-	GtkCList * c_listFields = GTK_CLIST(m_listFields);
 
-	gtk_clist_clear( c_listFields);
+	[m_fieldList removeAllStrings];
 
-	gint cnt = 0;
-	for (i = 0; fp_FieldFmts[i].m_Tag != NULL; i++) 
-	{
-		if (fp_FieldFmts[i].m_Type == FType)
-		{
-			gtk_clist_append(c_listFields, (gchar **) & fp_FieldFmts[i].m_Desc );
-			gtk_clist_set_row_data(c_listFields, cnt, GINT_TO_POINTER(i));
-			cnt++;
+	for (i = 0; fp_FieldFmts[i].m_Tag != NULL; i++) {
+		if (fp_FieldFmts[i].m_Type == FType) {
+			[m_fieldList addString:[NSString stringWithUTF8String:fp_FieldFmts[i].m_Desc]];
 		}
-	}
-
-	// now select first item in box
-	if (i > 0)
-	{		
-		gtk_clist_select_row( c_listFields, 0,0);
-	}
-	else 
-	{
-		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 	}
 }
 
 
 /*****************************************************************/
 
-
-GtkWidget * AP_CocoaDialog_Field::_constructWindow(void)
-{
-	GtkWidget *hboxMain;
-	GtkWidget *vbuttonboxButtons;
-	GtkWidget *contents;
-	const XAP_StringSet * pSS = m_pApp->getStringSet();
-
-	// Start with the main window
-	m_windowMain = gtk_window_new (GTK_WINDOW_DIALOG);
-	gtk_container_set_border_width (GTK_CONTAINER (m_windowMain), 10);
-	gtk_window_set_title (GTK_WINDOW (m_windowMain), pSS->getValue(AP_STRING_ID_DLG_Field_FieldTitle));
-	gtk_window_set_policy (GTK_WINDOW (m_windowMain), FALSE, FALSE, FALSE);
-
-	// Add the hbox to hold the contents and the vbox with the buttons
-	hboxMain = gtk_hbox_new (FALSE, 5);
-	gtk_widget_show (hboxMain);
-	gtk_container_add (GTK_CONTAINER (m_windowMain), hboxMain);
-
-	// Now the contents of the dialog box
-	contents = _constructWindowContents ();
-	gtk_box_pack_start (GTK_BOX (hboxMain), contents, FALSE, TRUE, 0);
-
-	// Now the two buttons
-	vbuttonboxButtons = gtk_vbutton_box_new ();
-	gtk_box_pack_start (GTK_BOX (hboxMain), 
-						vbuttonboxButtons, FALSE, TRUE, 0);
-	gtk_button_box_set_layout (GTK_BUTTON_BOX (vbuttonboxButtons), 
-							   GTK_BUTTONBOX_START);
-
-	m_buttonOK = gtk_button_new_with_label (pSS->getValue(XAP_STRING_ID_DLG_OK));
-	gtk_container_add (GTK_CONTAINER (vbuttonboxButtons), m_buttonOK);
-	GTK_WIDGET_SET_FLAGS (m_buttonOK, GTK_CAN_DEFAULT);
-
-	m_buttonCancel = gtk_button_new_with_label (pSS->getValue(XAP_STRING_ID_DLG_Cancel));
-	gtk_container_add (GTK_CONTAINER (vbuttonboxButtons), m_buttonCancel);
-	GTK_WIDGET_SET_FLAGS (m_buttonCancel, GTK_CAN_DEFAULT);
-
-	// connect all the signals
-	_connectSignals ();
-
-    // The main window is shown with gtk_widget_show_all() in runModal().
-    
-	return m_windowMain;
-}
-
-void AP_CocoaDialog_Field::_populateCatogries(void)
+void AP_CocoaDialog_Field::_populateCategories(void)
 {
 	// Fill in the two lists
 	setTypesList();
 	setFieldsList();
 }
 	
-GtkWidget *AP_CocoaDialog_Field::_constructWindowContents (void)
+
+
+
+@implementation AP_CocoaDialog_FieldController
+
+- (id)initFromNib
 {
-	GtkWidget *hbox;
-	GtkWidget *vboxTypes;
-	GtkWidget *vboxFields;
-	GtkWidget *labelTypes;
-	GtkWidget *labelFields;
-	GtkWidget *scrolledwindowTypes;
-	GtkWidget *scrolledwindowFields;
-	GtkWidget *labelParam;
-	XML_Char * unixstr = NULL;	// used for conversions
-	const XAP_StringSet * pSS = m_pApp->getStringSet();
-
-	hbox = gtk_hbox_new (FALSE, 5);
-
-	// Add the types list vbox
-	vboxTypes = gtk_vbox_new (FALSE, 0);
-	gtk_box_pack_start (GTK_BOX (hbox), vboxTypes, TRUE, TRUE, 0);
-
-	// Label the Types Box
-	UT_XML_cloneNoAmpersands(unixstr, pSS->getValue(AP_STRING_ID_DLG_Field_Types));
-	labelTypes = gtk_label_new (unixstr);
-	FREEP(unixstr);
-	gtk_box_pack_start (GTK_BOX (vboxTypes), labelTypes, FALSE, FALSE, 0);
-	gtk_misc_set_alignment (GTK_MISC (labelTypes), 0, 0.5);
-
-	// Put a scrolled window into the Types box
-	scrolledwindowTypes = gtk_scrolled_window_new (NULL, NULL);
-	gtk_widget_set_usize (scrolledwindowTypes, 200, 220);
-	gtk_box_pack_start (GTK_BOX (vboxTypes), scrolledwindowTypes, TRUE, TRUE, 0);
-	gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (scrolledwindowTypes), GTK_POLICY_NEVER, GTK_POLICY_AUTOMATIC);
-
-	m_listTypes = gtk_clist_new (1);
-	gtk_clist_set_selection_mode (GTK_CLIST (m_listTypes), GTK_SELECTION_SINGLE);
-	gtk_container_add (GTK_CONTAINER (scrolledwindowTypes), m_listTypes);
-
-	// Add the Fields list vbox
-	vboxFields = gtk_vbox_new (FALSE, 0);
-	gtk_box_pack_start (GTK_BOX (hbox), vboxFields, TRUE, TRUE, 0);
-
-	// Label the Fields Box
-	UT_XML_cloneNoAmpersands(unixstr, pSS->getValue(AP_STRING_ID_DLG_Field_Fields));
-	labelFields = gtk_label_new (unixstr);
-	FREEP(unixstr);
-	gtk_box_pack_start (GTK_BOX (vboxFields), labelFields, FALSE, FALSE, 0);
-	gtk_misc_set_alignment (GTK_MISC (labelFields), 0, 0.5);
-
-	// Put a scrolled window into the Fields box
-	scrolledwindowFields = gtk_scrolled_window_new (NULL, NULL);
-	gtk_widget_set_usize (scrolledwindowFields, 200, 220);
-	gtk_box_pack_start (GTK_BOX (vboxFields), scrolledwindowFields, TRUE, TRUE, 0);
-	gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (scrolledwindowFields), GTK_POLICY_NEVER, GTK_POLICY_AUTOMATIC);
-
-	m_listFields = gtk_clist_new(1);
-	gtk_clist_set_selection_mode (GTK_CLIST (m_listFields), GTK_SELECTION_SINGLE);
-	gtk_widget_set_usize (m_listFields, 198, 218);
-	gtk_container_add (GTK_CONTAINER (scrolledwindowFields), m_listFields);
-
-	// add the entry for optional parameter
-	UT_XML_cloneNoAmpersands(unixstr, pSS->getValue(AP_STRING_ID_DLG_Field_Parameters));
-	labelParam = gtk_label_new (unixstr);
-	FREEP(unixstr);
-	gtk_box_pack_start (GTK_BOX (vboxFields), labelParam, FALSE, FALSE, 0);
-	gtk_misc_set_alignment (GTK_MISC (labelParam), 0, 0.5);
-	
-	m_entryParam = gtk_entry_new();
-	gtk_box_pack_start (GTK_BOX (vboxFields), m_entryParam, FALSE, FALSE, 0);
-	
-	g_signal_connect_after(G_OBJECT(m_listTypes),
-							 "select_row",
-							 G_CALLBACK(s_types_clicked),
-							 (gpointer) this);
-	return hbox;
+	self = [super initWithWindowNibName:@"ap_CocoaDialog_Field"];
+	return self;
 }
 
-void AP_CocoaDialog_Field::_connectSignals (void)
+-(void)discardXAP
 {
-	// the control buttons
-	g_signal_connect(G_OBJECT(m_buttonOK),
-					   "clicked",
-					   G_CALLBACK(s_ok_clicked),
-					   (gpointer) this);
-	
-	g_signal_connect(G_OBJECT(m_buttonCancel),
-					   "clicked",
-					   G_CALLBACK(s_cancel_clicked),
-					   (gpointer) this);
-	
-	// the catch-alls
-	g_signal_connect(G_OBJECT(m_windowMain),
-			   "delete_event",
-			   G_CALLBACK(s_delete_clicked),
-			   (gpointer) this);
-
-	g_signal_connect_after(G_OBJECT(m_windowMain),
-							 "destroy",
-							 NULL,
-							 NULL);
+	_xap = NULL; 
 }
+
+-(void)dealloc
+{
+	[super dealloc];
+}
+
+- (void)setXAPOwner:(XAP_Dialog *)owner
+{
+	_xap = dynamic_cast<AP_CocoaDialog_Field*>(owner);
+}
+
+-(void)windowDidLoad
+{
+	if (_xap) {
+		const XAP_StringSet *pSS = XAP_App::getApp()->getStringSet();
+		LocalizeControl([self window], pSS, AP_STRING_ID_DLG_Field_FieldTitle);
+		LocalizeControl(_okBtn, pSS, XAP_STRING_ID_DLG_OK);
+		LocalizeControl(_cancelBtn, pSS, XAP_STRING_ID_DLG_Cancel);
+		LocalizeControl(_typesLabel, pSS, AP_STRING_ID_DLG_Field_Types);
+		LocalizeControl(_fieldsLabel, pSS, AP_STRING_ID_DLG_Field_Fields);
+		LocalizeControl(_extraParamLabel, pSS, AP_STRING_ID_DLG_Field_Parameters);
+		[_typesList setAction:@selector(typesAction:)];
+	}
+}
+
+- (int)selectedType
+{
+	return [_typesList selectedRow];
+}
+
+
+- (int)selectedField
+{
+	return [_fieldsList selectedRow];
+}
+
+
+- (void)setTypeList:(XAP_StringListDataSource*)tl andFieldList:(XAP_StringListDataSource*)fl
+{
+	[_fieldsList setDataSource:fl];
+	[_typesList setDataSource:tl];
+}
+
+- (NSString*)extraParam
+{
+	return [_extraParamData stringValue];
+}
+
+
+- (void)typesAction:(id)sender
+{
+	_xap->types_changed([_typesList selectedRow]);
+	[_fieldsList reloadData];
+}
+
+
+- (IBAction)cancelAction:(id)sender
+{
+	_xap->event_Cancel();
+}
+
+- (IBAction)okAction:(id)sender
+{
+	_xap->event_OK();
+}
+
+@end
