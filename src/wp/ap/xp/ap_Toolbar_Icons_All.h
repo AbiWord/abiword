@@ -49,6 +49,7 @@
 #	include "tb_text_overline.xpm"
 #	include "tb_text_superscript.xpm"
 # 	include "tb_text_subscript.xpm"
+#       include "tb_help.xpm"
 #ifdef BIDI_ENABLED
 #	include "tb_text_direction_rtl.xpm"	
 #	include "tb_text_dom_direction_rtl.xpm"	
@@ -130,6 +131,7 @@
 	DefineToolbarIcon(tb_text_overline_xpm)
 	DefineToolbarIcon(tb_text_superscript_xpm)	
 	DefineToolbarIcon(tb_text_subscript_xpm)
+        DefineToolbarIcon(tb_help_xpm)
 #ifdef BIDI_ENABLED
 	DefineToolbarIcon(tb_text_direction_rtl_xpm)
 	DefineToolbarIcon(tb_text_dom_direction_rtl_xpm)

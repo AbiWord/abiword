@@ -3786,7 +3786,7 @@ static bool s_actuallyPrint(PD_Document *doc,  GR_Graphics *pGraphics,
 		      // pGraphics->m_iRasterPosition when
 		      // iHeight is allowed to vary page to page
 		      pGraphics->m_iRasterPosition = (k-1)*iHeight;
-		      pGraphics->startPage(pDocName, k, true, iWidth, iHeight);
+		      pGraphics->startPage(pDocName, k, pGraphics->isPortrait(), iWidth, iHeight);
 		      pPrintView->draw(k-1, &da);
 		    }
 	      }
@@ -3799,7 +3799,7 @@ static bool s_actuallyPrint(PD_Document *doc,  GR_Graphics *pGraphics,
 		      // pGraphics->m_iRasterPosition when
 		      // iHeight is allowed to vary page to page
 		      pGraphics->m_iRasterPosition = (k-1)*iHeight;
-		      pGraphics->startPage(pDocName, k, true, iWidth, iHeight);
+		      pGraphics->startPage(pDocName, k, pGraphics->isPortrait(), iWidth, iHeight);
 		      pPrintView->draw(k-1, &da);
 		    }
 	      }

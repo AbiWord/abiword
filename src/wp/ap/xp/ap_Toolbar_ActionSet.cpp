@@ -78,6 +78,7 @@ EV_Toolbar_ActionSet * AP_CreateToolbarActionSet(void)
 	_s(AP_TOOLBAR_ID_FILE_PRINT_PREVIEW, EV_TBIT_PushButton, "printPreview", AV_CHG_NONE, NULL);
 	_s(AP_TOOLBAR_ID_SPELLCHECK, EV_TBIT_PushButton, "dlgSpell", AV_CHG_NONE, NULL);
 	_s(AP_TOOLBAR_ID_IMG, EV_TBIT_PushButton, "fileInsertGraphic", AV_CHG_NONE, NULL);
+	_s(AP_TOOLBAR_ID_HELP, EV_TBIT_PushButton, "helpContents", AV_CHG_NONE, NULL);
 	_s(AP_TOOLBAR_ID_COLOR_FORE, EV_TBIT_ColorFore, "colorForeTB", AV_CHG_NONE, NULL);
 	_s(AP_TOOLBAR_ID_COLOR_BACK, EV_TBIT_ColorBack, "colorBackTB", AV_CHG_NONE, NULL);
 	_s(AP_TOOLBAR_ID_EDIT_UNDO,		EV_TBIT_PushButton,		"undo",			AV_CHG_DO,			ap_ToolbarGetState_Changes);

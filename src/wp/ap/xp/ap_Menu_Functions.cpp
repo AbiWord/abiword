@@ -471,17 +471,14 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_Prefs)
 	XAP_Prefs * pPrefs = pApp->getPrefs();
 	UT_ASSERT(pPrefs);
 
-	XAP_PrefsScheme *pPrefsScheme = pPrefs->getCurrentScheme();
-	UT_ASSERT(pPrefsScheme);
-
 	EV_Menu_ItemState s = EV_MIS_ZERO;
 
-	bool b = false;
+	bool b = true;
 
 	switch (id)
 	  {
 	  case AP_MENU_ID_TOOLS_AUTOSPELL:
-	    pPrefsScheme->getValueBool((XML_Char*)AP_PREF_KEY_AutoSpellCheck, &b);
+	    pPrefs->getPrefsValueBool((XML_Char*)AP_PREF_KEY_AutoSpellCheck, &b);
 	    s = (b ? EV_MIS_Toggled : EV_MIS_ZERO);
 	    break;
 
