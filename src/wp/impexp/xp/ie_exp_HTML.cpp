@@ -383,7 +383,7 @@ void s_HTML_Listener::_openTable(PT_AttrPropIndex api)
 
 	  UT_sint32 nCols = mTableHelper.getNumCols();
 	  
-	  UT_String tableSpec = UT_String_sprintf("<table width=\"100%%\" cellpadding=\"%d\" border=\"%d\">\r\n",
+	  UT_String tableSpec = UT_String_sprintf("<table cellpadding=\"%d\" border=\"%d\" rules=\"all\">\r\n",
 						  cellPadding, border);
 	  m_pie->write(tableSpec.c_str(), tableSpec.size());
 
@@ -413,7 +413,7 @@ void s_HTML_Listener::_openCell(PT_AttrPropIndex api)
 
 	if (bHaveProp && pAP)
 	{
-	  UT_String bgcolor ("");
+
 
 	  UT_sint32 rowspan = 1, colspan = 1;
 
@@ -426,13 +426,23 @@ void s_HTML_Listener::_openCell(PT_AttrPropIndex api)
 	      m_pie->write("<tr>\r\n");
 	    }
 
+	  UT_String td ("<td");
+
 	  const char* pszBgColor = mTableHelper.getCellProp("bgcolor");
 	  if(pszBgColor && pszBgColor[0])
 	    {
-	      bgcolor = UT_String_sprintf(" bgcolor: %s;", pszBgColor);
+	      UT_String bgcolor (UT_String_sprintf(" bgcolor: %s;", pszBgColor));
+	      td += bgcolor;
 	    }
 	  
-	  UT_String td = UT_String_sprintf("<td%s rowspan=\"%d\" colspan=\"%d\">\r\n", bgcolor.c_str(), rowspan, colspan);
+	  if (rowspan > 1)
+	    td += UT_String_sprintf(" rowspan=\"%d\"", rowspan);
+
+	  if (colspan > 1)
+	    td += UT_String_sprintf(" colspan=\"%d\"", colspan);
+
+	  td += ">\r\n";
+
 	  m_pie->write(td.c_str());	  
 	}
 }
@@ -1747,7 +1757,7 @@ void s_HTML_Listener::_outputBegin(PT_AttrPropIndex api)
 		m_pie->write("; padding-right: ");
 		m_pie->write(szValue);
 
-		m_pie->write(";\r\n\t}\r\n}\r\n\r\n");
+		m_pie->write(";\r\n\t}\r\n}\r\n");
 	}
 
 	const PD_Style* p_pds;
@@ -1840,8 +1850,18 @@ void s_HTML_Listener::_outputBegin(PT_AttrPropIndex api)
 			}
 			FREEP(myStyleName);
 
-			m_pie->write("\r\n}\r\n\r\n");
+			m_pie->write("\r\n}\r\n");
 		}
+	}
+
+	{
+	  m_pie->write("\r\ntable\r\n{\r\n");
+	  m_pie->write("\twidth: 100%;\r\n}");
+	  
+	  m_pie->write("\r\n\r\ntd\r\n{\r\n");
+	  m_pie->write("\ttext-align: left;\r\n");
+	  m_pie->write("\tvertical-align: top;\r\n");
+	  m_pie->write("}\r\n\r\n");
 	}
 
 	m_pie->write("</style>\r\n");
