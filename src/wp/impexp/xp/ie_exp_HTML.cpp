@@ -969,6 +969,30 @@ void s_HTML_Listener::tagPop ()
 				tagClose(TT_P,m_utf8_1);
 			}
 			break;
+		case TT_H1:
+			{
+				m_utf8_1 = "h1";
+				tagClose(TT_H1,m_utf8_1);
+			}
+			break;
+		case TT_H2:
+			{
+				m_utf8_1 = "h2";
+				tagClose(TT_H2,m_utf8_1);
+			}
+			break;
+		case TT_H3:
+			{
+				m_utf8_1 = "h3";
+				tagClose(TT_H3,m_utf8_1);
+			}
+			break;
+		case TT_H4:
+			{
+				m_utf8_1 = "h4";
+				tagClose(TT_H4,m_utf8_1);
+			}
+			break;
 		default:
 			{
 				UT_DEBUGMSG(("tagPop: unhandled tag closure! %d\n",tagTop()));

@@ -349,6 +349,11 @@ bool fp_CellContainer::doesIntersectClip(fp_TableContainer * pBroke, UT_Rect * r
 	
 void fp_CellContainer::clearScreen(void)
 {
+	clearScreen(false);
+}
+
+void fp_CellContainer::clearScreen(bool bNoRecursive)
+{
 	fp_Container * pUpCon = getContainer();
 	if(pUpCon == NULL)
 	{
@@ -370,11 +375,13 @@ void fp_CellContainer::clearScreen(void)
 //	{
 		fp_Container * pCon = NULL;
 		UT_sint32 i = 0;
-
-		for(i=0; i< static_cast<UT_sint32>(countCons()); i++)
+		if(!bNoRecursive)
 		{
-			pCon = static_cast<fp_Container *>(getNthCon(i));
-			pCon->clearScreen();
+			for(i=0; i< static_cast<UT_sint32>(countCons()); i++)
+			{
+				pCon = static_cast<fp_Container *>(getNthCon(i));
+				pCon->clearScreen();
+			}
 		}
 	//}
 		fp_TableContainer * pTab = static_cast<fp_TableContainer *>(getContainer());
@@ -3424,7 +3431,7 @@ void  fp_TableContainer::clearScreen(void)
 		if(pPrev && pPrev->getContainerType() == FP_CONTAINER_CELL)
 		{
 			m_bRecursiveClear = true;
-			static_cast<fp_CellContainer *>(pPrev)->clearScreen();
+			static_cast<fp_CellContainer *>(pPrev)->clearScreen(true);
 		}
 	}
 	m_bRecursiveClear = false;

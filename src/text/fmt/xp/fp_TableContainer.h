@@ -114,6 +114,7 @@ public:
 	bool                doesOverlapBrokenTable(fp_TableContainer * pBroke);
 	void		        drawBroken(dg_DrawArgs* pDa, fp_TableContainer * pTab);
 	virtual void		clearScreen(void);
+	void		        clearScreen(bool bNoRecursive);
 	void                drawLines(fp_TableContainer * pBroke);
 	void                drawLinesAdjacent(void);
 	void                draw(fp_Line * pLine);
