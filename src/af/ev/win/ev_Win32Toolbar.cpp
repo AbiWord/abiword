@@ -462,10 +462,10 @@ bool EV_Win32Toolbar::synthesize(void)
 	// maxium before calling this, but this seems overkill since
 	// we know at compile time what all of the bitmaps are....
 	//
-	// Now bitmaps are cut down to requested size if to large - HB
+	// Now bitmaps are cut down to requested size if too large - HB
 	
-	const WORD MY_MAXIMUM_BITMAP_X = 21;
-	const WORD MY_MAXIMUM_BITMAP_Y = 21;
+	const WORD MY_MAXIMUM_BITMAP_X = 24;
+	const WORD MY_MAXIMUM_BITMAP_Y = 24;
 
 	if( bIcons )
 		SendMessage(m_hwnd, TB_SETBITMAPSIZE, 0,
