@@ -110,9 +110,6 @@ int GR_QNXGraphics::DrawTeardown() {
 	m_OffsetPoint.y *= -1; 									
 	PgSetTranslation(&m_OffsetPoint, 0); 						
 
-	/* Debugging  
-	PgFlush();
-	*/
 	return 0;
 }
 
@@ -173,6 +170,7 @@ void GR_QNXGraphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
 	PgSetTextColor(m_currentColor);
 	PgFlush();		/* Just to clear out any drawing to be done ... */
 
+#if 0	//Our widecharacter support doesn't work for printing
 	UT_UCSChar *pNChars, utb[150];  // arbitrary biggish size for utb
 	if (iLength < (sizeof(utb) / sizeof(utb[0]))) {
 		pNChars = utb;
@@ -183,29 +181,40 @@ void GR_QNXGraphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
 		pNChars[i] = remapGlyph(pChars[i + iCharOffset], UT_FALSE);
 	}
 
-#if 0
-	{
-	char *buffer;
-	if (buffer = (char *)malloc(iLength + 1)) {
-		for (j = 0; j < iLength; j++) {
-			buffer[j] = (char )pNChars[i];
-		}
-		buffer[j] = '\0';
-		printf("@ %d,%d w/ %s do:\n%s\n", pos.x, pos.y, m_pFont->getFont(), buffer);
-		
-		free(buffer);
-	}
-	}
-#endif
-
 	//Was: (char *)(&pChars[iCharOffset]), iLength*sizeof(UT_UCSChar), 
 	PgDrawTextmx((char *)pNChars, iLength*sizeof(UT_UCSChar), &pos, Pg_TEXT_WIDECHAR);
+#else
+	/* We have no idea in advance how big this result is going 
+	   to convert into, so we will guestimate with the MB_CUR_MAX,
+       which in theory is the max number of characters a wc will expand to.
+	*/
+	char *pNChars, utb[MB_CUR_MAX * 150];  // arbitrary biggish size for utb
+	int  blen, ipos;
+
+	if ((iLength * MB_CUR_MAX) < (sizeof(utb) / sizeof(utb[0]))) {
+		blen = sizeof(utb) / sizeof(utb[0]);
+		pNChars = utb;
+	} else {
+		blen = iLength * MB_CUR_MAX;
+		pNChars = new char[blen];
+	}
+
+	for (i = ipos = 0; i < iLength; i++) {
+		int tlen;
+
+		UT_ASSERT((ipos + MB_CUR_MAX) < blen);
+		tlen = wctomb(&pNChars[ipos], remapGlyph(pChars[i + iCharOffset], UT_FALSE));
+		UT_ASSERT(tlen > 0);
+		ipos += tlen;
+	}
+
+	PgDrawTextmx(pNChars, ipos, &pos, 0);
+#endif
+	PgFlush();
 
 	if (pNChars != utb) {
 		delete [] pNChars;
 	}
-
-	PgFlush();
 
 	DRAW_END
 }
@@ -274,54 +283,50 @@ UT_uint32 GR_QNXGraphics::measureUnRemappedChar(const UT_UCSChar c)
 {
 	PhRect_t rect;
 	const char *font;
-	char 	 buffer[2];
-	int 	 indices, penpos;
-
-	if (c >= 256) {
-		UT_DEBUGMSG(("TODO: Support wide characters properly "));
-		return 0;  // TODO: doesn't grok Unicode
-	}
+	char 	 buffer[MB_CUR_MAX + 1];
+	int 	 len, indices, penpos;
 
 	if (!m_pFont || !(font = m_pFont->getFont())) {
 		return 0;
 	}
 
-	buffer[0] = (char)c;
-	buffer[1] = '\0';
+	len = wctomb(buffer, c);
+	UT_ASSERT(len > 0);
+	buffer[len] = '\0';
 	indices = 1;			
 	penpos = 0;			
 
-#if 1
+
 	PfExtentTextCharPositions(&rect, 		/* Rect extent */
 				  NULL,			/* Position offset */
-				  buffer,	    	/* Buffer to hit */
+				  buffer,	   	/* Buffer to hit */
 				  font, 		/* Font buffer uses */
 				  &indices,		/* Where to get pen pos from */
 				  &penpos, 		/* Where to store pen pos */
 				  1,			/* Number of indices */
-				  0,			/* Flags TODO: PF_WIDE_CHARS */
-				  1,			/* Length of buffer (0 = use strlen) */
+				  0,			/* Flags TODO: PF_WIDE_CHARS and save convert? */
+				  len,			/* Length of buffer (0 = use strlen) */
 				  0, 			/* Number of characters to skip */
 				  NULL);		/* Clipping rectangle? */
 #if 0
 	printf("%s : %s gives width %d \n", font, buffer, penpos);
 #endif
-#else
-	PfExtentText(&rect,
-				 NULL,
-				 font,
-				 buffer,
-				 1);
-	penpos = (rect.lr.x - min(rect.ul.x, 0) + 1) - rect.ul.x;
-#endif
+
 	return penpos;
 }
 
 UT_uint32 GR_QNXGraphics::_getResolution(void) const
 {
+	//Unix comment
 	// this is hard-coded at 100 for X now, since 75 (which
 	// most X servers return when queried for a resolution)
 	// makes for tiny fonts on modern resolutions.
+
+	/*Photon comment
+	   This resolution should be variable between the printer
+	   and the screen.  For now we return a fixed value of 
+	   72 and use that for the source resolution when printing. 
+	*/
 
 	return 72 /* 100 */;
 }
