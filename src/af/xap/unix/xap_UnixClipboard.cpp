@@ -107,7 +107,7 @@ void XAP_UnixClipboard::common_get_func(GtkClipboard *clipboard,
   {
       if (needle == static_cast<GdkAtom>(m_vecFormat_GdkAtom.getNthItem(i)))
       {
-        const gchar * format_name = static_cast<const gchar*>(m_vecFormat_AP_Name.getNthItem(i));
+        const gchar * format_name = reinterpret_cast<gchar*>(m_vecFormat_AP_Name.getNthItem(i));
 
         if(which_clip.hasFormat(format_name))
             {
