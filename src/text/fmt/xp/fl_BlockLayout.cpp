@@ -7553,6 +7553,13 @@ fl_BlockSpellIterator::nextWordForSpellChecking(const UT_UCSChar*& pWord, UT_sin
 			m_iWordOffset++;
         }
 
+		// If we're at the end of the block after ignoring characters,
+		// nothing more to do
+		if (m_iWordOffset == m_iLength)
+        {
+            return false;
+        }
+
 		// We're at the start of a word. Find end of word while
 		// keeping track of numerics and case of letters. Again, only
 		// check until the last but one character to avoid followChar
