@@ -3551,9 +3551,9 @@ Defun1(extSelBOW)
 	ABIWORD_VIEW;
 #ifdef BIDI_ENABLED
 	if(pView->getCurrentBlock()->getDominantDirection()==FRIBIDI_TYPE_RTL)
-		pView->moveInsPtTo(FV_DOCPOS_EOW_MOVE);
+		pView->extSelTo(FV_DOCPOS_EOW_MOVE);
 	else
-		pView->moveInsPtTo(FV_DOCPOS_BOW);
+		pView->extSelTo(FV_DOCPOS_BOW);
 #else	
 	pView->extSelTo(FV_DOCPOS_BOW);
 #endif
@@ -3566,9 +3566,9 @@ Defun1(extSelEOW)
 	ABIWORD_VIEW;
 #ifdef BIDI_ENABLED
 	if(pView->getCurrentBlock()->getDominantDirection()==FRIBIDI_TYPE_RTL)
-		pView->moveInsPtTo(FV_DOCPOS_BOW);
+		pView->extSelTo(FV_DOCPOS_BOW);
 	else
-		pView->moveInsPtTo(FV_DOCPOS_EOW_MOVE);
+		pView->extSelTo(FV_DOCPOS_EOW_MOVE);
 #else	
 	pView->extSelTo(FV_DOCPOS_EOW_MOVE);
 #endif
