@@ -101,22 +101,22 @@
 /*****************************************************************/
 
 /* abbreviations:
-**   BOL    beginning of line
-**   EOL    end of line
-**   BOW    beginning of word
-**   EOW    end of word
-**   BOW    beginning of sentence
-**   EOS    end of sentence
-**   BOB    beginning of block
-**   EOB    end of block
-**   BOD    beginning of document
-**   EOD    end of document
+**	 BOL	beginning of line
+**	 EOL	end of line
+**	 BOW	beginning of word
+**	 EOW	end of word
+**	 BOW	beginning of sentence
+**	 EOS	end of sentence
+**	 BOB	beginning of block
+**	 EOB	end of block
+**	 BOD	beginning of document
+**	 EOD	end of document
 **
-**   warpInsPt    warp insertion point
-**   extSel       extend selection
-**   del          delete
-**   bck          backwards
-**   fwd          forwards
+**	 warpInsPt	  warp insertion point
+**	 extSel 	  extend selection
+**	 del		  delete
+**	 bck		  backwards
+**	 fwd		  forwards
 **/
 
 class ap_EditMethods
@@ -164,7 +164,7 @@ public:
 	static EV_EditMethod_Fn cursorImage;
 	static EV_EditMethod_Fn cursorImageSize;
 
-        static EV_EditMethod_Fn contextImage;
+		static EV_EditMethod_Fn contextImage;
 	static EV_EditMethod_Fn contextHyperlink;
 	static EV_EditMethod_Fn contextMenu;
 	static EV_EditMethod_Fn contextText;
@@ -288,8 +288,8 @@ public:
 	static EV_EditMethod_Fn replace;
 	static EV_EditMethod_Fn editHeader;
 	static EV_EditMethod_Fn editFooter;
-    static EV_EditMethod_Fn removeHeader;
-    static EV_EditMethod_Fn removeFooter;
+	static EV_EditMethod_Fn removeHeader;
+	static EV_EditMethod_Fn removeFooter;
 
 	static EV_EditMethod_Fn viewStd;
 	static EV_EditMethod_Fn viewFormat;
@@ -314,27 +314,27 @@ public:
 	static EV_EditMethod_Fn insDateTime;
 	static EV_EditMethod_Fn insField;
 	static EV_EditMethod_Fn insSymbol;
-        static EV_EditMethod_Fn insFile;
+		static EV_EditMethod_Fn insFile;
 	static EV_EditMethod_Fn insEndnote;
 
 	static EV_EditMethod_Fn dlgSpell;
-    static EV_EditMethod_Fn dlgSpellPrefs;
+	static EV_EditMethod_Fn dlgSpellPrefs;
 	static EV_EditMethod_Fn dlgWordCount;
 	static EV_EditMethod_Fn dlgOptions;
   
-   	static EV_EditMethod_Fn dlgFont;
+	static EV_EditMethod_Fn dlgFont;
 	static EV_EditMethod_Fn dlgParagraph;
 	static EV_EditMethod_Fn dlgBullets;
 	static EV_EditMethod_Fn dlgBorders;
 	static EV_EditMethod_Fn dlgColumns;
-        static EV_EditMethod_Fn dlgFmtImage;
+		static EV_EditMethod_Fn dlgFmtImage;
 	static EV_EditMethod_Fn dlgHdrFtr;
 	static EV_EditMethod_Fn style;
 	static EV_EditMethod_Fn dlgBackground;
 	static EV_EditMethod_Fn dlgStyle;
 	static EV_EditMethod_Fn dlgTabs;
 	static EV_EditMethod_Fn dlgToggleCase;
-	static EV_EditMethod_Fn	rotateCase;
+	static EV_EditMethod_Fn rotateCase;
 	static EV_EditMethod_Fn dlgLanguage;
 	static EV_EditMethod_Fn dlgPlugins;
 	static EV_EditMethod_Fn dlgColorPickerFore;
@@ -378,9 +378,9 @@ public:
 	static EV_EditMethod_Fn paraBefore0;
 	static EV_EditMethod_Fn paraBefore12;
 
-	static EV_EditMethod_Fn	sectColumns1;
-	static EV_EditMethod_Fn	sectColumns2;
-	static EV_EditMethod_Fn	sectColumns3;
+	static EV_EditMethod_Fn sectColumns1;
+	static EV_EditMethod_Fn sectColumns2;
+	static EV_EditMethod_Fn sectColumns3;
 
 	static EV_EditMethod_Fn singleSpace;
 	static EV_EditMethod_Fn middleSpace;
@@ -535,7 +535,7 @@ public:
 /*****************************************************************/
 /*****************************************************************/
 
-#define _D_				EV_EMT_REQUIREDATA
+#define _D_ 			EV_EMT_REQUIREDATA
 
 #define F(fn)			ap_EditMethods::fn
 #define N(fn)			#fn
@@ -553,21 +553,21 @@ static EV_EditMethod s_arrayEditMethods[] =
 {
 #if defined(PT_TEST) || defined(FMT_TEST) || defined(UT_TEST)
 	EV_EditMethod(NF(Test_Dump),			0,	""),
-	EV_EditMethod(NF(Test_Ftr),			0,	""),
+	EV_EditMethod(NF(Test_Ftr), 		0,	""),
 #endif
 
 	// a
-	EV_EditMethod(NF(activateWindow_1),		0,		""),
-	EV_EditMethod(NF(activateWindow_2),		0,		""),
-	EV_EditMethod(NF(activateWindow_3),		0,		""),
-	EV_EditMethod(NF(activateWindow_4),		0,		""),
-	EV_EditMethod(NF(activateWindow_5),		0,		""),
-	EV_EditMethod(NF(activateWindow_6),		0,		""),
-	EV_EditMethod(NF(activateWindow_7),		0,		""),
-	EV_EditMethod(NF(activateWindow_8),		0,		""),
-	EV_EditMethod(NF(activateWindow_9),		0,		""),
+	EV_EditMethod(NF(activateWindow_1), 	0,		""),
+	EV_EditMethod(NF(activateWindow_2), 	0,		""),
+	EV_EditMethod(NF(activateWindow_3), 	0,		""),
+	EV_EditMethod(NF(activateWindow_4), 	0,		""),
+	EV_EditMethod(NF(activateWindow_5), 	0,		""),
+	EV_EditMethod(NF(activateWindow_6), 	0,		""),
+	EV_EditMethod(NF(activateWindow_7), 	0,		""),
+	EV_EditMethod(NF(activateWindow_8), 	0,		""),
+	EV_EditMethod(NF(activateWindow_9), 	0,		""),
 	EV_EditMethod(NF(alignCenter),			0,		""),
-	EV_EditMethod(NF(alignJustify),			0,		""),
+	EV_EditMethod(NF(alignJustify), 		0,		""),
 	EV_EditMethod(NF(alignLeft),			0,		""),
 	EV_EditMethod(NF(alignRight),			0,		""),
 
@@ -578,12 +578,12 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(closeWindowX), 0, ""),
 	EV_EditMethod(NF(colorBackTB), _D_, ""),
 	EV_EditMethod(NF(colorForeTB), _D_, ""),
-	EV_EditMethod(NF(contextHyperlink),			0,	""),
+	EV_EditMethod(NF(contextHyperlink), 		0,	""),
 	EV_EditMethod(NF(contextImage), 0, ""),
 	EV_EditMethod(NF(contextMenu),			0,	""),
 	EV_EditMethod(NF(contextMisspellText),	0,	""),
 	EV_EditMethod(NF(contextText),			0,	""),
-	EV_EditMethod(NF(copy),					0,	""),
+	EV_EditMethod(NF(copy), 				0,	""),
 	EV_EditMethod(NF(cursorDefault),		0,	""),
 	EV_EditMethod(NF(cursorIBeam),			0,	""),
 	EV_EditMethod(NF(cursorImage),			0,	""),
@@ -591,10 +591,10 @@ static EV_EditMethod s_arrayEditMethods[] =
 #ifdef BIDI_ENABLED
 	EV_EditMethod(NF(cursorLeftArrow),		0,	""),
 #endif	
-	EV_EditMethod(NF(cursorRightArrow),		0,	""),
+	EV_EditMethod(NF(cursorRightArrow), 	0,	""),
 	EV_EditMethod(NF(cut),					0,	""),
 	EV_EditMethod(NF(cycleInputMode),		0,	""),
-	EV_EditMethod(NF(cycleWindows),			0,	""),
+	EV_EditMethod(NF(cycleWindows), 		0,	""),
 	EV_EditMethod(NF(cycleWindowsBck),		0,	""),
 
 	// d
@@ -609,42 +609,42 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(delEOS),				0,	""),
 	EV_EditMethod(NF(delEOW),				0,	""),
 	EV_EditMethod(NF(delLeft),				0,	""),
-	EV_EditMethod(NF(delRight),				0,	""),
+	EV_EditMethod(NF(delRight), 			0,	""),
 	EV_EditMethod(NF(deleteBookmark),		0,	""),
 	EV_EditMethod(NF(deleteHyperlink),		0,	""),
-	EV_EditMethod(NF(dlgAbout),				0,	""),
-	EV_EditMethod(NF(dlgBackground),        0,  ""),
+	EV_EditMethod(NF(dlgAbout), 			0,	""),
+	EV_EditMethod(NF(dlgBackground),		0,	""),
 	EV_EditMethod(NF(dlgBorders),			0,	""),
 	EV_EditMethod(NF(dlgBullets),			0,	""),
-	EV_EditMethod(NF(dlgColorPickerBack),   0,  ""),
-	EV_EditMethod(NF(dlgColorPickerFore),   0,  ""),
+	EV_EditMethod(NF(dlgColorPickerBack),	0,	""),
+	EV_EditMethod(NF(dlgColorPickerFore),	0,	""),
 	EV_EditMethod(NF(dlgColumns),			0,		""),
 	EV_EditMethod(NF(dlgFmtImage), 0, ""),
-	EV_EditMethod(NF(dlgFont),  			0,		""),
+	EV_EditMethod(NF(dlgFont),				0,		""),
 	EV_EditMethod(NF(dlgHdrFtr),			0,		""),
 	EV_EditMethod(NF(dlgLanguage),			0,		""),
 	EV_EditMethod(NF(dlgMoreWindows),		0,		""),
-	EV_EditMethod(NF(dlgOptions),			0,	        ""),
-	EV_EditMethod(NF(dlgParagraph),			0,		""),
+	EV_EditMethod(NF(dlgOptions),			0,			""),
+	EV_EditMethod(NF(dlgParagraph), 		0,		""),
 	EV_EditMethod(NF(dlgPlugins), 0, ""),
-	EV_EditMethod(NF(dlgSpell),			0,		""),
+	EV_EditMethod(NF(dlgSpell), 		0,		""),
 	EV_EditMethod(NF(dlgSpellPrefs), 0, ""),
-	EV_EditMethod(NF(dlgStyle),		       	0,		""),
-	EV_EditMethod(NF(dlgTabs),		       	0,		""),
-	EV_EditMethod(NF(dlgToggleCase),                0,              ""),
-	EV_EditMethod(NF(dlgWordCount),			0,		""),
-	EV_EditMethod(NF(dlgZoom),		       	0,		""),
+	EV_EditMethod(NF(dlgStyle), 			0,		""),
+	EV_EditMethod(NF(dlgTabs),				0,		""),
+	EV_EditMethod(NF(dlgToggleCase),				0,				""),
+	EV_EditMethod(NF(dlgWordCount), 		0,		""),
+	EV_EditMethod(NF(dlgZoom),				0,		""),
 	EV_EditMethod(NF(doBullets),			0,		""),
 	EV_EditMethod(NF(doNumbers),			0,		""),
 	EV_EditMethod(NF(doubleSpace),			0,		""),
-	EV_EditMethod(NF(dragToXY),				0,	""),
-	EV_EditMethod(NF(dragToXYword),			0,	""),
+	EV_EditMethod(NF(dragToXY), 			0,	""),
+	EV_EditMethod(NF(dragToXYword), 		0,	""),
 
 	// e
 	EV_EditMethod(NF(editFooter),			0,	""),
 	EV_EditMethod(NF(editHeader),			0,	""),
 	EV_EditMethod(NF(endDrag),			0,	""),
-	EV_EditMethod(NF(executeScript),		EV_EMT_REQUIRE_SCRIPT_NAME,	""),
+	EV_EditMethod(NF(executeScript),		EV_EMT_REQUIRE_SCRIPT_NAME, ""),
 	EV_EditMethod(NF(extSelBOB),			0,	""),
 	EV_EditMethod(NF(extSelBOD),			0,	""),
 	EV_EditMethod(NF(extSelBOL),			0,	""),
@@ -658,7 +658,7 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(extSelLeft),			0,	""),
 	EV_EditMethod(NF(extSelNextLine),		0,	""),
 	EV_EditMethod(NF(extSelPageDown),		0,	""),
-	EV_EditMethod(NF(extSelPageUp),			0,	""),
+	EV_EditMethod(NF(extSelPageUp), 		0,	""),
 	EV_EditMethod(NF(extSelPrevLine),		0,	""),
 	EV_EditMethod(NF(extSelRight),			0,	""),
 	EV_EditMethod(NF(extSelToXY),			0,	""),
@@ -668,16 +668,16 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(fileImport), 0, ""),
 	EV_EditMethod(NF(fileInsertGraphic),	0,	""),
 	EV_EditMethod(NF(fileNew),				0,	""),
-	EV_EditMethod(NF(fileOpen),				0,	""),
+	EV_EditMethod(NF(fileOpen), 			0,	""),
 	EV_EditMethod(NF(filePreviewWeb), 0, ""),
 	EV_EditMethod(NF(fileRevert), 0, ""),
-	EV_EditMethod(NF(fileSave),				0,	""),
+	EV_EditMethod(NF(fileSave), 			0,	""),
 	EV_EditMethod(NF(fileSaveAs),			0,	""),
-	EV_EditMethod(NF(fileSaveAsWeb),                0, ""),
-	EV_EditMethod(NF(find),					0,	""),
+	EV_EditMethod(NF(fileSaveAsWeb),				0, ""),
+	EV_EditMethod(NF(find), 				0,	""),
 	EV_EditMethod(NF(findAgain),			0,	""),	
 	EV_EditMethod(NF(fontFamily),			_D_,	""),
-	EV_EditMethod(NF(fontSize),				_D_,	""),
+	EV_EditMethod(NF(fontSize), 			_D_,	""),
 
 	// g
 	EV_EditMethod(NF(go),					0,	""),
@@ -686,8 +686,8 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(helpAboutGnomeOffice), 0, ""),
 	EV_EditMethod(NF(helpAboutGnu), 0, ""),
 	EV_EditMethod(NF(helpAboutOS),			0,		""),
-	EV_EditMethod(NF(helpCheckVer),			0,		""),
-	EV_EditMethod(NF(helpContents),			0,		""),
+	EV_EditMethod(NF(helpCheckVer), 		0,		""),
+	EV_EditMethod(NF(helpContents), 		0,		""),
 	EV_EditMethod(NF(helpCredits), 0, ""),
 	EV_EditMethod(NF(helpIndex),			0,		""),
 	EV_EditMethod(NF(helpReportBug), 0, ""),
@@ -731,10 +731,10 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(insAutotext_salutation_3), 0, ""),
 	EV_EditMethod(NF(insAutotext_salutation_4), 0, ""),
 	EV_EditMethod(NF(insAutotext_subject_1), 0, ""),
-	EV_EditMethod(NF(insBreak),			0,		""),
+	EV_EditMethod(NF(insBreak), 		0,		""),
 	EV_EditMethod(NF(insDateTime),			0,		""),
 	EV_EditMethod(NF(insEndnote),			0,		""),
-	EV_EditMethod(NF(insField),			0,		""),
+	EV_EditMethod(NF(insField), 		0,		""),
 	EV_EditMethod(NF(insFile), 0, ""),
 	EV_EditMethod(NF(insPageNo),			0,		""),
 	EV_EditMethod(NF(insSymbol),			0,		""),
@@ -744,7 +744,7 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(insertBreveData),		_D_,	""),
 	EV_EditMethod(NF(insertCaronData),		_D_,	""),
 	EV_EditMethod(NF(insertCedillaData),	_D_,	""),
-	EV_EditMethod(NF(insertCircumflexData),	_D_,	""),
+	EV_EditMethod(NF(insertCircumflexData), _D_,	""),
 	EV_EditMethod(NF(insertClipart), 0, ""),
 	EV_EditMethod(NF(insertColumnBreak),	0,	""),
 	EV_EditMethod(NF(insertData),			_D_,	""),
@@ -753,11 +753,11 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(insertGraveData),		_D_,	""),
 	EV_EditMethod(NF(insertHyperlink),		0,	""),
 	EV_EditMethod(NF(insertLineBreak),		0,	""),
-	EV_EditMethod(NF(insertMacronData),		_D_,	""),
+	EV_EditMethod(NF(insertMacronData), 	_D_,	""),
 	EV_EditMethod(NF(insertNBSpace),		0,	""),
-	EV_EditMethod(NF(insertOgonekData),		_D_,	""),
+	EV_EditMethod(NF(insertOgonekData), 	_D_,	""),
 	EV_EditMethod(NF(insertPageBreak),		0,	""),
-	EV_EditMethod(NF(insertParagraphBreak),	0,	""),
+	EV_EditMethod(NF(insertParagraphBreak), 0,	""),
 	EV_EditMethod(NF(insertSectionBreak),	0,	""),
 	EV_EditMethod(NF(insertSoftBreak),		0,	""),
 	EV_EditMethod(NF(insertSpace),			0,	""),
@@ -769,80 +769,80 @@ static EV_EditMethod s_arrayEditMethods[] =
 	// k
 
 	// l
-	EV_EditMethod(NF(language),			0,	""),
+	EV_EditMethod(NF(language), 		0,	""),
 
 	// m
 	EV_EditMethod(NF(middleSpace),			0,		""),
 
 	// n
 	EV_EditMethod(NF(newWindow),			0,	""),
-	EV_EditMethod(NF(noop),					0,	""),
+	EV_EditMethod(NF(noop), 				0,	""),
 
 	// o
-	EV_EditMethod(NF(openRecent_1),			0,		""),
-	EV_EditMethod(NF(openRecent_2),			0,		""),
-	EV_EditMethod(NF(openRecent_3),			0,		""),
-	EV_EditMethod(NF(openRecent_4),			0,		""),
-	EV_EditMethod(NF(openRecent_5),			0,		""),
-	EV_EditMethod(NF(openRecent_6),			0,		""),
-	EV_EditMethod(NF(openRecent_7),			0,		""),
-	EV_EditMethod(NF(openRecent_8),			0,		""),
-	EV_EditMethod(NF(openRecent_9),			0,		""),
+	EV_EditMethod(NF(openRecent_1), 		0,		""),
+	EV_EditMethod(NF(openRecent_2), 		0,		""),
+	EV_EditMethod(NF(openRecent_3), 		0,		""),
+	EV_EditMethod(NF(openRecent_4), 		0,		""),
+	EV_EditMethod(NF(openRecent_5), 		0,		""),
+	EV_EditMethod(NF(openRecent_6), 		0,		""),
+	EV_EditMethod(NF(openRecent_7), 		0,		""),
+	EV_EditMethod(NF(openRecent_8), 		0,		""),
+	EV_EditMethod(NF(openRecent_9), 		0,		""),
 	EV_EditMethod(NF(openTemplate), 0, ""),
 
 	// p
 	EV_EditMethod(NF(pageSetup),			0,	""),
 	EV_EditMethod(NF(paraBefore0),			0,		""),
-	EV_EditMethod(NF(paraBefore12),			0,		""),
+	EV_EditMethod(NF(paraBefore12), 		0,		""),
 		// intended for ^V and Menu[Edit/Paste]
 	EV_EditMethod(NF(paste),				0,	""),
-	        // intended for X11 middle mouse
+			// intended for X11 middle mouse
 	EV_EditMethod(NF(pasteSelection),		0,	""),
-	EV_EditMethod(NF(pasteSpecial),         0,  ""),
+	EV_EditMethod(NF(pasteSpecial), 		0,	""),
 	EV_EditMethod(NF(print),				0,	""),
 	EV_EditMethod(NF(printDirectly), 0, ""),
 	EV_EditMethod(NF(printPreview), 0, ""),
 	EV_EditMethod(NF(printTB),				0,	""),
 
 	// q
-	EV_EditMethod(NF(querySaveAndExit),		0,	""),
+	EV_EditMethod(NF(querySaveAndExit), 	0,	""),
 
 	// r
-	EV_EditMethod(NF(redo),					0,	""),
-	EV_EditMethod(NF(removeFooter),         0,  ""),
-	EV_EditMethod(NF(removeHeader),         0,  ""),
+	EV_EditMethod(NF(redo), 				0,	""),
+	EV_EditMethod(NF(removeFooter), 		0,	""),
+	EV_EditMethod(NF(removeHeader), 		0,	""),
 	EV_EditMethod(NF(replace),				0,	""),
 	EV_EditMethod(NF(replaceChar),			_D_,""),
-	EV_EditMethod(NF(rotateCase),           0,  ""),
+	EV_EditMethod(NF(rotateCase),			0,	""),
 
 	// s
 	EV_EditMethod(NF(scriptPlay),			0,	""),
 	EV_EditMethod(NF(scrollLineDown),		0,	""),
 	EV_EditMethod(NF(scrollLineLeft),		0,	""),
 	EV_EditMethod(NF(scrollLineRight),		0,	""),
-	EV_EditMethod(NF(scrollLineUp),			0,	""),
+	EV_EditMethod(NF(scrollLineUp), 		0,	""),
 	EV_EditMethod(NF(scrollPageDown),		0,	""),
 	EV_EditMethod(NF(scrollPageLeft),		0,	""),
 	EV_EditMethod(NF(scrollPageRight),		0,	""),
-	EV_EditMethod(NF(scrollPageUp),			0,	""),
+	EV_EditMethod(NF(scrollPageUp), 		0,	""),
 	EV_EditMethod(NF(scrollToBottom),		0,	""),
 	EV_EditMethod(NF(scrollToTop),			0,	""),
-	EV_EditMethod(NF(scrollWheelMouseDown),			0,	""),
+	EV_EditMethod(NF(scrollWheelMouseDown), 		0,	""),
 	EV_EditMethod(NF(scrollWheelMouseUp),			0,	""),
-	EV_EditMethod(NF(sectColumns1),			0,		""),
-	EV_EditMethod(NF(sectColumns2),			0,		""),
-	EV_EditMethod(NF(sectColumns3),			0,		""),
+	EV_EditMethod(NF(sectColumns1), 		0,		""),
+	EV_EditMethod(NF(sectColumns2), 		0,		""),
+	EV_EditMethod(NF(sectColumns3), 		0,		""),
 	EV_EditMethod(NF(selectAll),			0,	""),
 	EV_EditMethod(NF(selectBlock),			0,	""),   
 	EV_EditMethod(NF(selectLine),			0,	""),
 	EV_EditMethod(NF(selectWord),			0,	""),
 	EV_EditMethod(NF(setEditVI),			0,	""),
 	EV_EditMethod(NF(setInputVI),			0,	""),
-	EV_EditMethod(NF(setStyleHeading1),		0,		""),
-	EV_EditMethod(NF(setStyleHeading2),		0,		""),
-	EV_EditMethod(NF(setStyleHeading3),		0,		""),
+	EV_EditMethod(NF(setStyleHeading1), 	0,		""),
+	EV_EditMethod(NF(setStyleHeading2), 	0,		""),
+	EV_EditMethod(NF(setStyleHeading3), 	0,		""),
 	EV_EditMethod(NF(singleSpace),			0,		""),
-	EV_EditMethod(NF(spellAdd),				0,	""),
+	EV_EditMethod(NF(spellAdd), 			0,	""),
 	EV_EditMethod(NF(spellIgnoreAll),		0,	""),
 	EV_EditMethod(NF(spellSuggest_1),		0,	""),
 	EV_EditMethod(NF(spellSuggest_2),		0,	""),
@@ -858,27 +858,27 @@ static EV_EditMethod s_arrayEditMethods[] =
 	// t
 	EV_EditMethod(NF(toggleAutoSpell), 0, ""),
 	EV_EditMethod(NF(toggleBold),			0,		""),
-	EV_EditMethod(NF(toggleBottomline),		0,		""),
+	EV_EditMethod(NF(toggleBottomline), 	0,		""),
 #ifdef BIDI_ENABLED
-	EV_EditMethod(NF(toggleDirOverrideLTR),		0,		""),
-	EV_EditMethod(NF(toggleDirOverrideRTL),		0,		""),
+	EV_EditMethod(NF(toggleDirOverrideLTR), 	0,		""),
+	EV_EditMethod(NF(toggleDirOverrideRTL), 	0,		""),
 	EV_EditMethod(NF(toggleDomDirection),	0,		""),
 #endif
 	EV_EditMethod(NF(toggleIndent), 0, ""),
-	EV_EditMethod(NF(toggleInsertMode),         0,  ""),
-	EV_EditMethod(NF(toggleItalic),			0,		""),
+	EV_EditMethod(NF(toggleInsertMode), 		0,	""),
+	EV_EditMethod(NF(toggleItalic), 		0,		""),
 	EV_EditMethod(NF(toggleOline),			0,		""),
 	EV_EditMethod(NF(togglePlain),			0,		""),
-	EV_EditMethod(NF(toggleStrike),			0,		""),
+	EV_EditMethod(NF(toggleStrike), 		0,		""),
 	EV_EditMethod(NF(toggleSub),			0,		""),
 	EV_EditMethod(NF(toggleSuper),			0,		""),
-	EV_EditMethod(NF(toggleTopline),   		0,		""),
+	EV_EditMethod(NF(toggleTopline),		0,		""),
 	EV_EditMethod(NF(toggleUline),			0,		""),
 	EV_EditMethod(NF(toggleUnIndent), 0, ""),
 	EV_EditMethod(NF(toolbarNew), 0, ""),
 
 	// u
-	EV_EditMethod(NF(undo),					0,	""),
+	EV_EditMethod(NF(undo), 				0,	""),
 
 	// v
 	EV_EditMethod(NF(viCmd_A),		0,	""),
@@ -895,32 +895,32 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(viCmd_c5b),	0,	""),
 	EV_EditMethod(NF(viCmd_c5d),	0,	""),
 	EV_EditMethod(NF(viCmd_c5e),	0,	""),
-	EV_EditMethod(NF(viCmd_cb),		0,	""),
-	EV_EditMethod(NF(viCmd_cw),		0,	""),
+	EV_EditMethod(NF(viCmd_cb), 	0,	""),
+	EV_EditMethod(NF(viCmd_cw), 	0,	""),
 	EV_EditMethod(NF(viCmd_d24),		0,	""),
 	EV_EditMethod(NF(viCmd_d28),		0,	""),
 	EV_EditMethod(NF(viCmd_d29),		0,	""),
 	EV_EditMethod(NF(viCmd_d5b),		0,	""),
 	EV_EditMethod(NF(viCmd_d5d),		0,	""),
 	EV_EditMethod(NF(viCmd_d5e),		0,	""),
-	EV_EditMethod(NF(viCmd_db),		0,	""),
-	EV_EditMethod(NF(viCmd_dd),		0,	""),
-	EV_EditMethod(NF(viCmd_dw),		0,	""),
+	EV_EditMethod(NF(viCmd_db), 	0,	""),
+	EV_EditMethod(NF(viCmd_dd), 	0,	""),
+	EV_EditMethod(NF(viCmd_dw), 	0,	""),
 	EV_EditMethod(NF(viCmd_y24),	0,	""),
 	EV_EditMethod(NF(viCmd_y28),	0,	""),
 	EV_EditMethod(NF(viCmd_y29),	0,	""),
 	EV_EditMethod(NF(viCmd_y5b),	0,	""),
 	EV_EditMethod(NF(viCmd_y5d),	0,	""),
 	EV_EditMethod(NF(viCmd_y5e),	0,	""),
-	EV_EditMethod(NF(viCmd_yb),		0,	""),
-	EV_EditMethod(NF(viCmd_yw),		0,	""),
-	EV_EditMethod(NF(viCmd_yy),		0,	""),
+	EV_EditMethod(NF(viCmd_yb), 	0,	""),
+	EV_EditMethod(NF(viCmd_yw), 	0,	""),
+	EV_EditMethod(NF(viCmd_yy), 	0,	""),
 	EV_EditMethod(NF(viewExtra),			0,		""),
 	EV_EditMethod(NF(viewFormat),			0,		""),
 	EV_EditMethod(NF(viewFullScreen), 0, ""),
-	EV_EditMethod(NF(viewHeadFoot),			0,		""),
+	EV_EditMethod(NF(viewHeadFoot), 		0,		""),
 	EV_EditMethod(NF(viewNormalLayout), 0, ""),
-	EV_EditMethod(NF(viewPara),			0,		""),
+	EV_EditMethod(NF(viewPara), 		0,		""),
 	EV_EditMethod(NF(viewPrintLayout), 0, ""),
 	EV_EditMethod(NF(viewRuler),			0,		""),
 	EV_EditMethod(NF(viewStatus),			0,		""),
@@ -928,18 +928,18 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(viewWebLayout), 0, ""),
 
 	// w
-	EV_EditMethod(NF(warpInsPtBOB),			0,	""),
-	EV_EditMethod(NF(warpInsPtBOD),			0,	""),
-	EV_EditMethod(NF(warpInsPtBOL),			0,	""),
-	EV_EditMethod(NF(warpInsPtBOP),			0,	""),
-	EV_EditMethod(NF(warpInsPtBOS),			0,	""),
-	EV_EditMethod(NF(warpInsPtBOW),			0,	""),
-	EV_EditMethod(NF(warpInsPtEOB),			0,	""),
-	EV_EditMethod(NF(warpInsPtEOD),			0,	""),
-	EV_EditMethod(NF(warpInsPtEOL),			0,	""),
-	EV_EditMethod(NF(warpInsPtEOP),			0,	""),
-	EV_EditMethod(NF(warpInsPtEOS),			0,	""),
-	EV_EditMethod(NF(warpInsPtEOW),			0,	""),
+	EV_EditMethod(NF(warpInsPtBOB), 		0,	""),
+	EV_EditMethod(NF(warpInsPtBOD), 		0,	""),
+	EV_EditMethod(NF(warpInsPtBOL), 		0,	""),
+	EV_EditMethod(NF(warpInsPtBOP), 		0,	""),
+	EV_EditMethod(NF(warpInsPtBOS), 		0,	""),
+	EV_EditMethod(NF(warpInsPtBOW), 		0,	""),
+	EV_EditMethod(NF(warpInsPtEOB), 		0,	""),
+	EV_EditMethod(NF(warpInsPtEOD), 		0,	""),
+	EV_EditMethod(NF(warpInsPtEOL), 		0,	""),
+	EV_EditMethod(NF(warpInsPtEOP), 		0,	""),
+	EV_EditMethod(NF(warpInsPtEOS), 		0,	""),
+	EV_EditMethod(NF(warpInsPtEOW), 		0,	""),
 	EV_EditMethod(NF(warpInsPtLeft),		0,	""),
 	EV_EditMethod(NF(warpInsPtNextLine),	0,	""),
 	EV_EditMethod(NF(warpInsPtNextPage),	0,	""),
@@ -953,7 +953,7 @@ static EV_EditMethod s_arrayEditMethods[] =
 	// y
 
 	// z
-	EV_EditMethod(NF(zoom),			        0,     	""),
+	EV_EditMethod(NF(zoom), 				0,		""),
 	EV_EditMethod(NF(zoom100), 0, ""),
 	EV_EditMethod(NF(zoom200), 0, ""),
 	EV_EditMethod(NF(zoom50), 0, ""),
@@ -981,7 +981,7 @@ EV_EditMethodContainer * AP_GetEditMethods(void)
 /*****************************************************************/
 
 #define F(fn)		ap_EditMethods::fn
-#define Defun(fn)	bool F(fn)(AV_View*   pAV_View,   EV_EditMethodCallData *   pCallData  )
+#define Defun(fn)	bool F(fn)(AV_View*   pAV_View,   EV_EditMethodCallData *	pCallData  )
 #define Defun0(fn)	bool F(fn)(AV_View* /*pAV_View*/, EV_EditMethodCallData * /*pCallData*/)
 #define Defun1(fn)	bool F(fn)(AV_View*   pAV_View,   EV_EditMethodCallData * /*pCallData*/)
 #define EX(fn)		F(fn)(pAV_View, pCallData)
@@ -1129,11 +1129,11 @@ static void s_TellOpenFailed(XAP_Frame * pFrame, const char * fileName, UT_Error
   XAP_String_Id String_id;
 
   switch(errorCode)
-    {
-    default:
-      String_id = AP_STRING_ID_MSG_OpenFailed;
-      break;
-    }
+	{
+	default:
+	  String_id = AP_STRING_ID_MSG_OpenFailed;
+	  break;
+	}
 
   pFrame->showMessageBox(String_id,
 			 XAP_Dialog_MessageBox::b_O,
@@ -1158,16 +1158,16 @@ static void s_TellSaveFailed(XAP_Frame * pFrame, const char * fileName, UT_Error
 	  String_id = AP_STRING_ID_MSG_SaveFailed;
 
 	pFrame->showMessageBox(String_id,
-			       XAP_Dialog_MessageBox::b_O,
-			       XAP_Dialog_MessageBox::a_OK,
-			       fileName);
+				   XAP_Dialog_MessageBox::b_O,
+				   XAP_Dialog_MessageBox::a_OK,
+				   fileName);
 }
 
 static void s_TellSpellDone(XAP_Frame * pFrame)
 {
 	pFrame->showMessageBox(AP_STRING_ID_MSG_SpellDone,
-			       XAP_Dialog_MessageBox::b_O,
-			       XAP_Dialog_MessageBox::a_OK);
+				   XAP_Dialog_MessageBox::b_O,
+				   XAP_Dialog_MessageBox::a_OK);
 }
 
 static void s_TellNotImplemented(XAP_Frame * pFrame, const char * szWhat, int iLine)
@@ -1222,11 +1222,11 @@ static XAP_Dialog_MessageBox::tAnswer s_AskSaveFile(XAP_Frame * pFrame)
 }
 
 static bool s_AskForPathname(XAP_Frame * pFrame,
-			     bool bSaveAs,
-			     XAP_Dialog_Id id,
-			     const char * pSuggestedName,
-			     char ** ppPathname,
-			     IEFileType * ieft)
+				 bool bSaveAs,
+				 XAP_Dialog_Id id,
+				 const char * pSuggestedName,
+				 char ** ppPathname,
+				 IEFileType * ieft)
 {
 	// raise the file-open or file-save-as dialog.
 	// return a_OK or a_CANCEL depending on which button
@@ -1303,31 +1303,31 @@ static bool s_AskForPathname(XAP_Frame * pFrame,
 
 	if (ieft != NULL && *ieft != IEFT_Bogus)
 	  {
-	    // have a pre-existing file format, try to default to that
-	    UT_DEBUGMSG(("DOM: using filetype %d\n", *ieft));
-	    dflFileType = *ieft;
+		// have a pre-existing file format, try to default to that
+		UT_DEBUGMSG(("DOM: using filetype %d\n", *ieft));
+		dflFileType = *ieft;
 	  }
 	else if (bSaveAs)
 	  {
-	    XAP_App * pApp = pFrame->getApp();
-	    UT_ASSERT(pApp);
-	    XAP_Prefs * pPrefs = pApp->getPrefs();
-	    UT_ASSERT(pPrefs);
-	    
-	    const XML_Char * ftype = 0;
-	    
-	    pPrefs->getPrefsValue ((XML_Char*)AP_PREF_KEY_DefaultSaveFormat, &ftype);
-	    if (!ftype)
-	      ftype = ".abw";
-	    
-	    // load the default file format
-	    dflFileType = IE_Exp::fileTypeForSuffix (ftype);
-	    UT_DEBUGMSG(("DOM: reverting to default file type: %s (%d)\n", ftype, dflFileType));
+		XAP_App * pApp = pFrame->getApp();
+		UT_ASSERT(pApp);
+		XAP_Prefs * pPrefs = pApp->getPrefs();
+		UT_ASSERT(pPrefs);
+		
+		const XML_Char * ftype = 0;
+		
+		pPrefs->getPrefsValue ((XML_Char*)AP_PREF_KEY_DefaultSaveFormat, &ftype);
+		if (!ftype)
+		  ftype = ".abw";
+		
+		// load the default file format
+		dflFileType = IE_Exp::fileTypeForSuffix (ftype);
+		UT_DEBUGMSG(("DOM: reverting to default file type: %s (%d)\n", ftype, dflFileType));
 	  }
 	else
 	  {
-	    // try to load ABW by default
-	    dflFileType = IE_Imp::fileTypeForSuffix (".abw"); 
+		// try to load ABW by default
+		dflFileType = IE_Imp::fileTypeForSuffix (".abw"); 
 	  }
 
 	pDialog->setDefaultFileType(dflFileType);
@@ -1375,8 +1375,8 @@ static bool s_AskForPathname(XAP_Frame * pFrame,
 }
 
 static bool s_AskForGraphicPathname(XAP_Frame * pFrame,
-				       char ** ppPathname,
-				       IEGraphicFileType * iegft)
+					   char ** ppPathname,
+					   IEGraphicFileType * iegft)
 {
 	// raise the file-open dialog for inserting an image.
 	// return a_OK or a_CANCEL depending on which button
@@ -1398,7 +1398,7 @@ static bool s_AskForGraphicPathname(XAP_Frame * pFrame,
 
 	XAP_Dialog_FileOpenSaveAs * pDialog
 		= (XAP_Dialog_FileOpenSaveAs *)
-		      (pDialogFactory->requestDialog(XAP_DIALOG_ID_INSERT_PICTURE));
+			  (pDialogFactory->requestDialog(XAP_DIALOG_ID_INSERT_PICTURE));
 	UT_ASSERT(pDialog);
 
 	pDialog->setCurrentPathname(NULL);
@@ -1411,8 +1411,8 @@ static bool s_AskForGraphicPathname(XAP_Frame * pFrame,
 	
 	const char ** szDescList = (const char **) calloc(filterCount + 1,
 							  sizeof(char *));
- 	const char ** szSuffixList = (const char **) calloc(filterCount + 1,
-							    sizeof(char *));
+	const char ** szSuffixList = (const char **) calloc(filterCount + 1,
+								sizeof(char *));
 	IEGraphicFileType * nTypeList = (IEGraphicFileType *)
 		 calloc(filterCount + 1,	sizeof(IEGraphicFileType));
 	UT_uint32 k = 0;
@@ -1473,40 +1473,40 @@ XAP_Dialog_MessageBox::tAnswer s_CouldNotLoadFileMessage(XAP_Frame * pFrame, con
 	switch (errorCode)
 	  {
 	  case -301:
-	    String_id = AP_STRING_ID_MSG_IE_FileNotFound;
-	    break;
+		String_id = AP_STRING_ID_MSG_IE_FileNotFound;
+		break;
 
 	  case -302:
-	    String_id = AP_STRING_ID_MSG_IE_NoMemory;
-	    break;
+		String_id = AP_STRING_ID_MSG_IE_NoMemory;
+		break;
 
 	  case -303:
-	    String_id = AP_STRING_ID_MSG_IE_UnsupportedType;
-	    //AP_STRING_ID_MSG_IE_UnknownType;
-	    break;
+		String_id = AP_STRING_ID_MSG_IE_UnsupportedType;
+		//AP_STRING_ID_MSG_IE_UnknownType;
+		break;
 
 	  case -304:
-	    String_id = AP_STRING_ID_MSG_IE_BogusDocument;
-	    break;
+		String_id = AP_STRING_ID_MSG_IE_BogusDocument;
+		break;
 
 	  case -305:
-	    String_id = AP_STRING_ID_MSG_IE_CouldNotOpen;
-	    break;
+		String_id = AP_STRING_ID_MSG_IE_CouldNotOpen;
+		break;
 
 	  case -306:
-	    String_id = AP_STRING_ID_MSG_IE_CouldNotWrite;
-	    break;
+		String_id = AP_STRING_ID_MSG_IE_CouldNotWrite;
+		break;
 
 	  case -307:
-	    String_id = AP_STRING_ID_MSG_IE_FakeType;
-	    break;
+		String_id = AP_STRING_ID_MSG_IE_FakeType;
+		break;
 
 	  case -311:
-	    String_id = AP_STRING_ID_MSG_IE_UnsupportedType;
-	    break;
+		String_id = AP_STRING_ID_MSG_IE_UnsupportedType;
+		break;
 
 	  default:
-	    String_id = AP_STRING_ID_MSG_ImportError;
+		String_id = AP_STRING_ID_MSG_ImportError;
 	  }
 
 	return pFrame->showMessageBox(String_id,
@@ -1569,7 +1569,7 @@ UT_Error fileOpen(XAP_Frame * pFrame, const char * pNewFile, IEFileType ieft)
 		// open new document in a new frame.  if we fail,
 		// put up an error dialog on current frame (our
 		// new one is not completely instantiated) and
-		// return.  we do not create a new untitled document
+		// return.	we do not create a new untitled document
 		// in this case.
 		pNewFrame = pApp->newFrame();
 		if (!pNewFrame)
@@ -1672,7 +1672,7 @@ s_importFile (XAP_Frame * pFrame, const char * pNewFile, IEFileType ieft)
 		// open new document in a new frame.  if we fail,
 		// put up an error dialog on current frame (our
 		// new one is not completely instantiated) and
-		// return.  we do not create a new untitled document
+		// return.	we do not create a new untitled document
 		// in this case.
 
 		pNewFrame = pApp->newFrame();
@@ -1860,17 +1860,17 @@ Defun1(fileSaveAsWeb)
   bool bOK = s_AskForPathname(pFrame,true, XAP_DIALOG_ID_FILE_SAVEAS, pFrame->getFilename(),&pNewFile,&ieft);
   
   if (!bOK || !pNewFile)
-    return false;
+	return false;
 
   UT_Error errSaved;
   errSaved = pAV_View->cmdSaveAs(pNewFile, ieft);
   if (errSaved)
-    {
-      // throw up a dialog
-      s_TellSaveFailed(pFrame, pNewFile, errSaved);
-      free(pNewFile);
-      return false;
-    }
+	{
+	  // throw up a dialog
+	  s_TellSaveFailed(pFrame, pNewFile, errSaved);
+	  free(pNewFile);
+	  return false;
+	}
 
   return true;
 }
@@ -1904,11 +1904,11 @@ Defun1(filePreviewWeb)
   errSaved = pAV_View->cmdSaveAs(szTempFileName, IE_Exp::fileTypeForSuffix(".xhtml"), false);
 
   if(errSaved != UT_OK)
-    {
-      // throw up a dialog
-      s_TellSaveFailed(pFrame, szTempFileName, errSaved);
-      return false;
-    }
+	{
+	  // throw up a dialog
+	  s_TellSaveFailed(pFrame, szTempFileName, errSaved);
+	  return false;
+	}
 
   char * tmpUrl = NULL;
 
@@ -2149,10 +2149,10 @@ static bool s_doToggleCase(XAP_Frame * pFrame, FV_View * pView, XAP_Dialog_Id id
 	// the case to the word at editing position)
 	if (pView->isSelectionEmpty())
 	  {
-	    pFrame->showMessageBox(AP_STRING_ID_MSG_EmptySelection,
+		pFrame->showMessageBox(AP_STRING_ID_MSG_EmptySelection,
 				   XAP_Dialog_MessageBox::b_O,
 				   XAP_Dialog_MessageBox::a_OK); 
-	    return false;
+		return false;
 	  }
 #endif
 
@@ -2175,7 +2175,7 @@ static bool s_doToggleCase(XAP_Frame * pFrame, FV_View * pView, XAP_Dialog_Id id
 
 	pDialogFactory->releaseDialog(pDialog);
   
-        return bOK;
+		return bOK;
 }
 
 Defun1(dlgToggleCase)
@@ -2289,7 +2289,7 @@ Defun(fileNew)
 
 bool _helpOpenURL(AV_View* pAV_View, const char* helpURL)
 {
- 	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
+	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
 	UT_ASSERT(pFrame);
 	pFrame->openURL(helpURL);
 	return true;
@@ -2297,7 +2297,7 @@ bool _helpOpenURL(AV_View* pAV_View, const char* helpURL)
 
 bool _helpLocalizeAndOpenURL(AV_View* pAV_View, bool bLocal, const char* pathBeforeLang, const char* pathAfterLang)
 {
- 	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
+	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
 	UT_ASSERT(pFrame);
 	XAP_App * pApp = pFrame->getApp();
 	UT_ASSERT(pApp);
@@ -2313,8 +2313,8 @@ bool _helpLocalizeAndOpenURL(AV_View* pAV_View, bool bLocal, const char* pathBef
 
 	if (bLocal)
 	{
-		tmpURL = helpURL = UT_catPathname("file://", abiSuiteLibDir);
-		helpURL = UT_catPathname(helpURL, pathBeforeLang);
+		tmpURL = UT_catPathname("", abiSuiteLibDir);
+		helpURL = UT_catPathname(tmpURL, pathBeforeLang);
 		FREEP(tmpURL);
 
 		// check the existence of the localised help directory
@@ -2324,21 +2324,24 @@ bool _helpLocalizeAndOpenURL(AV_View* pAV_View, bool bLocal, const char* pathBef
 		tmpURL = helpURL;
 		if (UT_directoryExists(testURL))
 		{
-		    // the localised help exists, so use it
-		    helpURL = UT_catPathname(helpURL, abiSuiteLocString);
+			// the localised help exists, so use it
+			helpURL = UT_catPathname(helpURL, abiSuiteLocString);
 		}
 		else
 		{
-		    // the localised help directory does not exist, so fall back to the
-		    // en-US help localtion, which should always be available
-		    helpURL = UT_catPathname(helpURL, "en-US");
-		    UT_DEBUGMSG(("help does not exist, using en-US instead\n"));
+			// the localised help directory does not exist, so fall back to the
+			// en-US help localtion, which should always be available
+			helpURL = UT_catPathname(helpURL, "en-US");
+			UT_DEBUGMSG(("help does not exist, using en-US instead\n"));
 		}
 		FREEP(testURL);
 		FREEP(tmpURL);
-		
+
 		tmpURL = helpURL;
 		helpURL = UT_catPathname(helpURL, pathAfterLang);
+		FREEP(tmpURL);
+		tmpURL = helpURL;
+		helpURL = UT_catPathname("file://", helpURL);
 		FREEP(tmpURL);
 	}
 	else {
@@ -2355,19 +2358,19 @@ bool _helpLocalizeAndOpenURL(AV_View* pAV_View, bool bLocal, const char* pathBef
 
 Defun1(helpContents)
 {
- 	return _helpLocalizeAndOpenURL(pAV_View, true, "AbiWord/help", "contents.html");
+	return _helpLocalizeAndOpenURL(pAV_View, true, "AbiWord/help", "contents.html");
 }
 
 Defun1(helpIndex)
 {
- 	return _helpLocalizeAndOpenURL(pAV_View, true, "AbiWord/help", "index.html");
+	return _helpLocalizeAndOpenURL(pAV_View, true, "AbiWord/help", "index.html");
 }
 
 Defun1(helpCheckVer)
 {
 	UT_String versionURL = "http://www.abisource.com/users/check_version.phtml?version=";
 	versionURL += XAP_App::s_szBuild_Version;
- 	return _helpOpenURL(pAV_View, versionURL.c_str());
+	return _helpOpenURL(pAV_View, versionURL.c_str());
 }
 
 Defun1(helpReportBug)
@@ -2377,7 +2380,7 @@ Defun1(helpReportBug)
 
 Defun1(helpSearch)
 {
-        return _helpLocalizeAndOpenURL(pAV_View, true, "AbiWord/help", "search.html");
+		return _helpLocalizeAndOpenURL(pAV_View, true, "AbiWord/help", "search.html");
 }
 
 Defun1(helpCredits)
@@ -2397,7 +2400,7 @@ Defun1(helpAboutGnomeOffice)
 
 Defun1(helpAboutOS)
 {
- 	return _helpLocalizeAndOpenURL(pAV_View, true, "AbiWord/help", "aboutos.html");
+	return _helpLocalizeAndOpenURL(pAV_View, true, "AbiWord/help", "aboutos.html");
 }
 
 Defun1(cycleWindows)
@@ -2425,7 +2428,7 @@ Defun1(cycleWindows)
 
 Defun1(cycleWindowsBck)
 {
-    XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
+	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
 	UT_ASSERT(pFrame);
 	XAP_App * pApp = pFrame->getApp();
 	UT_ASSERT(pApp);
@@ -2448,7 +2451,7 @@ Defun1(cycleWindowsBck)
 
 static bool
 s_closeWindow (AV_View * pAV_View, EV_EditMethodCallData * pCallData,
-	       bool bCanExit)
+		   bool bCanExit)
 {
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
 	UT_ASSERT(pFrame);
@@ -2476,7 +2479,7 @@ s_closeWindow (AV_View * pAV_View, EV_EditMethodCallData * pCallData,
 		{
 			bool bRet = EX(fileSave);
 			if (!bRet)								// didn't successfully save,
-				return false;					//    so don't close
+				return false;					//	  so don't close
 		}
 		break;
 
@@ -2579,8 +2582,8 @@ Defun(querySaveAndExit)
 	if (bRet)
 	{
 
- 	        //  delete all open modeless dialogs
-	        pApp->closeModelessDlgs();
+			//	delete all open modeless dialogs
+			pApp->closeModelessDlgs();
 
 		// TODO: this shouldn't be necessary, but just in case
 		pApp->reallyExit();
@@ -2595,13 +2598,13 @@ Defun(querySaveAndExit)
 /*
 	NOTE: This file should really be split in two:
 	
-		1.  XAP methods (above)
-		2.  AbiWord-specific methods (below)
+		1.	XAP methods (above)
+		2.	AbiWord-specific methods (below)
 
 	Until we do the necessary architectural work, we just segregate
 	the methods within the same file.
 */
-#define ABIWORD_VIEW  	FV_View * pView = static_cast<FV_View *>(pAV_View)
+#define ABIWORD_VIEW	FV_View * pView = static_cast<FV_View *>(pAV_View)
 
 Defun(fileRevert)
 {
@@ -2610,9 +2613,9 @@ Defun(fileRevert)
   XAP_Frame * pFrame = static_cast<XAP_Frame *> (pAV_View->getParentData());
 
   if (XAP_Dialog_MessageBox::a_YES == pFrame->showMessageBox(AP_STRING_ID_MSG_RevertFile,
-							     XAP_Dialog_MessageBox::b_YN,
-							     XAP_Dialog_MessageBox::a_NO))
-    pView->cmdUndo ( pView->undoCount(true) );
+								 XAP_Dialog_MessageBox::b_YN,
+								 XAP_Dialog_MessageBox::a_NO))
+	pView->cmdUndo ( pView->undoCount(true) );
   return true;
 }
 
@@ -2711,7 +2714,7 @@ Defun1(fileInsertGraphic)
 	// we own storage for pNewFile and must free it.
 	UT_DEBUGMSG(("fileInsertGraphic: loading [%s]\n",pNewFile));
 
-    IE_ImpGraphic *pIEG;
+	IE_ImpGraphic *pIEG;
 	FG_Graphic* pFG;
 
 	UT_Error errorCode;
@@ -2765,7 +2768,7 @@ Defun1(warpInsPtLeft)
 {
 	ABIWORD_VIEW;
 #ifdef BIDI_ENABLED
-    pView->cmdCharMotion(pView->getCurrentBlock()->getDominantDirection() == FRIBIDI_TYPE_RTL,1);
+	pView->cmdCharMotion(pView->getCurrentBlock()->getDominantDirection() == FRIBIDI_TYPE_RTL,1);
 #else	
 	pView->cmdCharMotion(false,1);
 #endif
@@ -2776,7 +2779,7 @@ Defun1(warpInsPtRight)
 {
 	ABIWORD_VIEW;
 #ifdef BIDI_ENABLED
-    pView->cmdCharMotion(pView->getCurrentBlock()->getDominantDirection() != FRIBIDI_TYPE_RTL,1);
+	pView->cmdCharMotion(pView->getCurrentBlock()->getDominantDirection() != FRIBIDI_TYPE_RTL,1);
 #else	
 	pView->cmdCharMotion(true,1);
 #endif	
@@ -2911,7 +2914,7 @@ Defun1(cursorDefault)
 {
 	ABIWORD_VIEW;
 	GR_Graphics * pG = pView->getGraphics();
- 	if (pG)
+	if (pG)
 	{
 		pG->setCursor(GR_Graphics::GR_CURSOR_DEFAULT);
 	}
@@ -2922,7 +2925,7 @@ Defun1(cursorIBeam)
 {
 	ABIWORD_VIEW;
 	GR_Graphics * pG = pView->getGraphics();
- 	if (pG)
+	if (pG)
 	{
 		pG->setCursor(GR_Graphics::GR_CURSOR_IBEAM);
 	}
@@ -2933,7 +2936,7 @@ Defun1(cursorRightArrow)
 {
 	ABIWORD_VIEW;
 	GR_Graphics * pG = pView->getGraphics();
- 	if (pG)
+	if (pG)
 	{
 		pG->setCursor(GR_Graphics::GR_CURSOR_RIGHTARROW);
 	}
@@ -2945,7 +2948,7 @@ Defun1(cursorLeftArrow)
 {
 	ABIWORD_VIEW;
 	GR_Graphics * pG = pView->getGraphics();
- 	if (pG)
+	if (pG)
 	{
 		pG->setCursor(GR_Graphics::GR_CURSOR_LEFTARROW);
 	}
@@ -2957,7 +2960,7 @@ Defun1(cursorImage)
 {
 	ABIWORD_VIEW;
 	GR_Graphics * pG = pView->getGraphics();
- 	if (pG)
+	if (pG)
 	{
 		pG->setCursor(GR_Graphics::GR_CURSOR_IMAGE);
 	}
@@ -2970,7 +2973,7 @@ Defun1(cursorImageSize)
 	// TODO map cursor to one of the standard 8 resizers.
 	ABIWORD_VIEW;
 	GR_Graphics * pG = pView->getGraphics();
- 	if (pG)
+	if (pG)
 	{
 		pG->setCursor(GR_Graphics::GR_CURSOR_IBEAM);
 	}
@@ -2997,7 +3000,7 @@ Defun1(contextMenu)
 	if (!szContextMenuName)
 		return false;
 	pView->eraseInsertionPoint();
-	bool res =  pFrame->runModalContextMenu(pView,szContextMenuName,xPos,yPos);
+	bool res =	pFrame->runModalContextMenu(pView,szContextMenuName,xPos,yPos);
 	if(!pView->isCursorOn())
 	{
 		pView->drawInsertionPoint();
@@ -3015,7 +3018,7 @@ static bool s_doContextMenu_no_move( EV_EditMouseContext emc,
 	if (!szContextMenuName)
 		return false;
 	pView->eraseInsertionPoint();
-	bool res = 	pFrame->runModalContextMenu(pView,szContextMenuName,
+	bool res =	pFrame->runModalContextMenu(pView,szContextMenuName,
 									   xPos,yPos);
 	if(!pView->isCursorOn())
 	{
@@ -3062,16 +3065,16 @@ Defun(contextImage)
 	
 	if ( pView->isSelectionEmpty () )
 	  {
-	    // select the image if it isn't already
-	    UT_DEBUGMSG(("Selecting image\n"));
+		// select the image if it isn't already
+		UT_DEBUGMSG(("Selecting image\n"));
 #if 1
-	    pView->warpInsPtToXY(pCallData->m_xPos, pCallData->m_yPos, true);
-	    pView->moveInsPtTo(FV_DOCPOS_EOW_MOVE);
-	    pView->moveInsPtTo(FV_DOCPOS_BOW);
-	    pView->extSelTo(FV_DOCPOS_EOW_SELECT);    
+		pView->warpInsPtToXY(pCallData->m_xPos, pCallData->m_yPos, true);
+		pView->moveInsPtTo(FV_DOCPOS_EOW_MOVE);
+		pView->moveInsPtTo(FV_DOCPOS_BOW);
+		pView->extSelTo(FV_DOCPOS_EOW_SELECT);	  
 #else
-	    pView->cmdSelect(pCallData->m_xPos, pCallData->m_yPos, 
-			     FV_DOCPOS_BOW, FV_DOCPOS_EOW_SELECT);
+		pView->cmdSelect(pCallData->m_xPos, pCallData->m_yPos, 
+				 FV_DOCPOS_BOW, FV_DOCPOS_EOW_SELECT);
 #endif
 	  }
 	return s_doContextMenu(EV_EMC_IMAGE,pCallData->m_xPos, pCallData->m_yPos,pView,pFrame);
@@ -3430,7 +3433,11 @@ Defun(insertData)
 }
 
 /*****************************************************************/
-static bool s_doBookmarkDlg(FV_View * pView, bool bInsert)
+// TODO the bInsert parameter is currently not used; it would require
+// changes to the dialogues so that if bInsert == false the dialogue
+// would be labeled "Delete bookmark"
+
+static bool s_doBookmarkDlg(FV_View * pView, bool /*bInsert*/)
 {
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pView->getParentData());
 	UT_ASSERT(pFrame);
@@ -3445,26 +3452,24 @@ static bool s_doBookmarkDlg(FV_View * pView, bool bInsert)
 	UT_ASSERT(pDialog);
 	if (!pDialog)
 		return false;
-		
+
 	pDialog->setDoc(pView);
 
 	pDialog->runModal(pFrame);
 
 	AP_Dialog_InsertBookmark::tAnswer ans = pDialog->getAnswer();
-	bool bOK = (ans == AP_Dialog_InsertBookmark::a_OK);
 
-	if (bOK)
+	if (ans == AP_Dialog_InsertBookmark::a_OK)
 	{
-		if(bInsert)
 			pView->cmdInsertBookmark(pDialog->getBookmark());
-		else
-			pView->cmdDeleteBookmark(pDialog->getBookmark());
-
 	}
-
+	else if(ans == AP_Dialog_InsertBookmark::a_DELETE)
+	{
+			pView->cmdDeleteBookmark(pDialog->getBookmark());
+	}
 	pDialogFactory->releaseDialog(pDialog);
 
-	return bOK;
+	return (ans == AP_Dialog_InsertBookmark::a_DELETE || ans == AP_Dialog_InsertBookmark::a_OK);
 }
 
 Defun1(insertBookmark)
@@ -3570,11 +3575,11 @@ Defun1(insertSectionBreak)
 /*
   Note that within the piece table, we use the following
   representations:
-    char code					meaning
+	char code					meaning
 	UCS_TAB  (tab)				tab
-	UCS_LF   (line feed)		forced line break
-	UCS_VTAB (vertical tab)		forced column break
-	UCS_FF   (form feed)		forced page break
+	UCS_LF	 (line feed)		forced line break
+	UCS_VTAB (vertical tab) 	forced column break
+	UCS_FF	 (form feed)		forced page break
 */
 
 Defun1(insertTab)
@@ -3737,7 +3742,7 @@ Defun(insertCircumflexData)
 	ABIWORD_VIEW;
 
 	// This function provides an interlude.  All of the keys
-	// on the Dead_Circumflex map are mapped here.  The desired
+	// on the Dead_Circumflex map are mapped here.	The desired
 	// character is in the argument (just like in insertData()).
 	// We do the character mapping here.
 	//
@@ -3825,7 +3830,7 @@ Defun(insertMacronData)
 	ABIWORD_VIEW;
 
 	// This function provides an interlude.  All of the keys
-	// on the Dead_Macron map are mapped here.  The desired
+	// on the Dead_Macron map are mapped here.	The desired
 	// character is in the argument (just like in insertData()).
 	// We do the character mapping here.
 	//
@@ -3984,11 +3989,11 @@ Defun(insertDoubleacuteData)
 	switch (pCallData->m_pData[0])
 	{
 	// Latin-2 characters
-	case 0x4f:		doubleacuteChar=0x01d5;	break;	// Odoubleacute
-	case 0x55:		doubleacuteChar=0x01db;	break;	// Udoubleacute
+	case 0x4f:		doubleacuteChar=0x01d5; break;	// Odoubleacute
+	case 0x55:		doubleacuteChar=0x01db; break;	// Udoubleacute
 
-	case 0x6f:		doubleacuteChar=0x01f5;	break;	// odoubleacute
-	case 0x75:		doubleacuteChar=0x01fb;	break;	// udoubleacute
+	case 0x6f:		doubleacuteChar=0x01f5; break;	// odoubleacute
+	case 0x75:		doubleacuteChar=0x01fb; break;	// udoubleacute
 
 	default:
 		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
@@ -4060,25 +4065,25 @@ Defun(insertCedillaData)
 	UT_UCSChar cedillaChar = 0x0000;
 	switch (pCallData->m_pData[0])
 	{
-	case 0x43:		cedillaChar=0x00c7;	break;	// Ccedilla
-	case 0x63:		cedillaChar=0x00e7;	break;	// ccedilla
+	case 0x43:		cedillaChar=0x00c7; break;	// Ccedilla
+	case 0x63:		cedillaChar=0x00e7; break;	// ccedilla
 
 	// Latin-[24] characters
-	case 0x53:		cedillaChar=0x01aa;	break;	// Scedilla
-	case 0x54:		cedillaChar=0x01de;	break;	// Tcedilla
-	case 0x52:		cedillaChar=0x03a3;	break;	// Rcedilla
-	case 0x4c:		cedillaChar=0x03a6;	break;	// Lcedilla
-	case 0x47:		cedillaChar=0x03ab;	break;	// Gcedilla
-	case 0x4e:		cedillaChar=0x03d1;	break;	// Ncedilla
-	case 0x4b:		cedillaChar=0x03d3;	break;	// Kcedilla
+	case 0x53:		cedillaChar=0x01aa; break;	// Scedilla
+	case 0x54:		cedillaChar=0x01de; break;	// Tcedilla
+	case 0x52:		cedillaChar=0x03a3; break;	// Rcedilla
+	case 0x4c:		cedillaChar=0x03a6; break;	// Lcedilla
+	case 0x47:		cedillaChar=0x03ab; break;	// Gcedilla
+	case 0x4e:		cedillaChar=0x03d1; break;	// Ncedilla
+	case 0x4b:		cedillaChar=0x03d3; break;	// Kcedilla
 
-	case 0x73:		cedillaChar=0x01ba;	break;	// scedilla
-	case 0x74:		cedillaChar=0x01fe;	break;	// tcedilla
-	case 0x72:		cedillaChar=0x03b3;	break;	// rcedilla
-	case 0x6c:		cedillaChar=0x03b6;	break;	// lcedilla
-	case 0x67:		cedillaChar=0x03bb;	break;	// gcedilla
-	case 0x6e:		cedillaChar=0x03f1;	break;	// ncedilla
-	case 0x6b:		cedillaChar=0x03f3;	break;	// kcedilla
+	case 0x73:		cedillaChar=0x01ba; break;	// scedilla
+	case 0x74:		cedillaChar=0x01fe; break;	// tcedilla
+	case 0x72:		cedillaChar=0x03b3; break;	// rcedilla
+	case 0x6c:		cedillaChar=0x03b6; break;	// lcedilla
+	case 0x67:		cedillaChar=0x03bb; break;	// gcedilla
+	case 0x6e:		cedillaChar=0x03f1; break;	// ncedilla
+	case 0x6b:		cedillaChar=0x03f3; break;	// kcedilla
 
 	default:
 		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
@@ -4094,7 +4099,7 @@ Defun(insertOgonekData)
 	ABIWORD_VIEW;
 
 	// This function provides an interlude.  All of the keys
-	// on the Dead_Ogonek map are mapped here.  The desired
+	// on the Dead_Ogonek map are mapped here.	The desired
 	// character is in the argument (just like in insertData()).
 	// We do the character mapping here.
 	//
@@ -4256,10 +4261,10 @@ static bool s_doSpellDlg(FV_View * pView, XAP_Dialog_Id id)
    pFrame->raise();
 	
    XAP_DialogFactory * pDialogFactory
-     = (XAP_DialogFactory *)(pFrame->getDialogFactory());
+	 = (XAP_DialogFactory *)(pFrame->getDialogFactory());
 	
    AP_Dialog_Spell * pDialog
-     = (AP_Dialog_Spell *)(pDialogFactory->requestDialog(id));
+	 = (AP_Dialog_Spell *)(pDialogFactory->requestDialog(id));
    UT_ASSERT(pDialog);
    if (!pDialog)
 	   return false;
@@ -4317,14 +4322,14 @@ static bool s_doFindOrFindReplaceDlg(FV_View * pView, XAP_Dialog_Id id)
 	
 	// run the dialog (it should really be modeless if anyone
 	// gets the urge to make it safe that way)
-        // OK I Will
-        if(pDialog->isRunning() == true)
+		// OK I Will
+		if(pDialog->isRunning() == true)
 	{
-	       pDialog->activate();
+		   pDialog->activate();
 	}
-        else
+		else
 	{
-	       pDialog->runModeless(pFrame);
+		   pDialog->runModeless(pFrame);
 	}
 	bool bOK = true;
 	return bOK;
@@ -4801,7 +4806,7 @@ Defun1(dlgLanguage)
 Defun(language)
 {
 	ABIWORD_VIEW;
-	const XML_Char * properties[] =	{ "lang", NULL, 0};
+	const XML_Char * properties[] = { "lang", NULL, 0};
 	properties[1] = (const XML_Char *) pCallData->m_pData;
 	pView->setCharFormat(properties);
 	return true;
@@ -4819,7 +4824,7 @@ Defun1(dlgFont)
 Defun(fontFamily)
 {
 	ABIWORD_VIEW;
-	const XML_Char * properties[] =	{ "font-family", NULL, 0};
+	const XML_Char * properties[] = { "font-family", NULL, 0};
 	properties[1] = (const XML_Char *) pCallData->m_pData;
 	pView->setCharFormat(properties);
 	return true;
@@ -4828,7 +4833,7 @@ Defun(fontFamily)
 Defun(fontSize)
 {
 	ABIWORD_VIEW;
-	const XML_Char * properties[] =	{ "font-size", NULL, 0};
+	const XML_Char * properties[] = { "font-size", NULL, 0};
 
 	// BUGBUG: stupid casting trick will eventually bite us
 	const XML_Char * sz = (const XML_Char *) pCallData->m_pData;
@@ -4871,7 +4876,7 @@ static bool _toggleSpanOrBlock(FV_View * pView,
 	}
 
 	props_out[0] = prop;
-	props_out[1] = vOn;		// be optimistic
+	props_out[1] = vOn; 	// be optimistic
 
 	XML_Char * buf = NULL;
 
@@ -4901,7 +4906,7 @@ static bool _toggleSpanOrBlock(FV_View * pView,
 				UT_cloneString((char *&)q, buf);
 
 				if (q && strtok(q, " "))
-					props_out[1] = buf;		// yep, use it
+					props_out[1] = buf; 	// yep, use it
 				else
 					props_out[1] = vOff;	// nope, clear it
 
@@ -4957,10 +4962,10 @@ static bool _toggleSpan(FV_View * pView,
 /*****************************************************************/
 
 static bool s_actuallyPrint(PD_Document *doc,  GR_Graphics *pGraphics,
-			       FV_View * pPrintView, const char *pDocName,
-			       UT_uint32 nCopies, bool bCollate,
-			       UT_sint32 iWidth,  UT_sint32 iHeight,
-			       UT_uint32 nToPage, UT_uint32 nFromPage)
+				   FV_View * pPrintView, const char *pDocName,
+				   UT_uint32 nCopies, bool bCollate,
+				   UT_sint32 iWidth,  UT_sint32 iHeight,
+				   UT_uint32 nToPage, UT_uint32 nFromPage)
 {
 	UT_uint32 j,k;
 
@@ -4982,7 +4987,7 @@ static bool s_actuallyPrint(PD_Document *doc,  GR_Graphics *pGraphics,
 
 	  XML_Char msgBuf [1024];
 
-	    if (bCollate)
+		if (bCollate)
 		{
 			for (j=1; (j <= nCopies); j++)
 				for (k=nFromPage; (k <= nToPage); k++)
@@ -4991,7 +4996,7 @@ static bool s_actuallyPrint(PD_Document *doc,  GR_Graphics *pGraphics,
 					pFrame->setStatusMessage ( msgBuf );
 					pFrame->nullUpdate();
 
-		      // NB we will need a better way to calc
+			  // NB we will need a better way to calc
 					// pGraphics->m_iRasterPosition when
 					// iHeight is allowed to vary page to page
 					pGraphics->m_iRasterPosition = (k-1)*iHeight;
@@ -4999,7 +5004,7 @@ static bool s_actuallyPrint(PD_Document *doc,  GR_Graphics *pGraphics,
 					pPrintView->draw(k-1, &da);
 				}
 		}
-	    else
+		else
 		{
 			for (k=nFromPage; (k <= nToPage); k++)
 				for (j=1; (j <= nCopies); j++)
@@ -5016,8 +5021,8 @@ static bool s_actuallyPrint(PD_Document *doc,  GR_Graphics *pGraphics,
 					pPrintView->draw(k-1, &da);
 				}
 		}
-	    pGraphics->endPrint();
-	    pFrame->setStatusMessage (""); // reset/0 out status bar
+		pGraphics->endPrint();
+		pFrame->setStatusMessage (""); // reset/0 out status bar
 	}
 	
 	return true;
@@ -5122,8 +5127,8 @@ static bool s_doPrintPreview(FV_View * pView)
 	pDialog->setPaperSize (pView->getPageSize().getPredefinedName());
 	pDialog->setDocumentTitle(pFrame->getTempNameFromTitle());
 	pDialog->setDocumentPathname((doc->getFilename())
-				     ? doc->getFilename()
-				     : pFrame->getTempNameFromTitle());
+					 ? doc->getFilename()
+					 : pFrame->getTempNameFromTitle());
 
 	pDialog->runModal(pFrame);
 
@@ -5137,7 +5142,7 @@ static bool s_doPrintPreview(FV_View * pView)
 	
 	if (nToPage > pDocLayout->countPages())
 	  {
-	    nToPage = pDocLayout->countPages();
+		nToPage = pDocLayout->countPages();
 	  }
 		
 	UT_uint32 nCopies = 1;
@@ -5160,7 +5165,7 @@ static bool s_doPrintPreview(FV_View * pView)
 
 	pDialogFactory->releaseDialog(pDialog);
 				
-        return true;
+		return true;
 }
 
 static bool s_doZoomDlg(FV_View * pView)
@@ -5266,7 +5271,7 @@ Defun1(zoom75)
   pFrame->raise();
 
   UT_uint32 newZoom = 75;
-  pFrame->setZoomType(  XAP_Frame::z_75 );
+  pFrame->setZoomType(	XAP_Frame::z_75 );
 
   pFrame->setZoomPercentage(newZoom);
   return true;
@@ -5338,20 +5343,20 @@ static bool s_doBreakDlg(FV_View * pView)
 			pView->cmdCharInsert(&c,1);
 			break;
 		case AP_Dialog_Break::b_COLUMN:
-		        c = UCS_VTAB;
+				c = UCS_VTAB;
 			pView->cmdCharInsert(&c,1);
 			break;
 		case AP_Dialog_Break::b_NEXTPAGE:
-		        pView->insertSectionBreak(BreakSectionNextPage);
+				pView->insertSectionBreak(BreakSectionNextPage);
 			break;
 		case AP_Dialog_Break::b_CONTINUOUS:
-		        pView->insertSectionBreak(BreakSectionContinuous);
+				pView->insertSectionBreak(BreakSectionContinuous);
 			break;
 		case AP_Dialog_Break::b_EVENPAGE:
-		        pView->insertSectionBreak(BreakSectionEvenPage);
+				pView->insertSectionBreak(BreakSectionEvenPage);
 			break;
 		case AP_Dialog_Break::b_ODDPAGE:
-		        pView->insertSectionBreak(BreakSectionOddPage);
+				pView->insertSectionBreak(BreakSectionOddPage);
 			break;
 		default:
 			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
@@ -5367,13 +5372,13 @@ static UT_Dimension
 fp_2_dim (fp_PageSize::Unit u)
 {
   switch (u)
-    {
-    case fp_PageSize::cm   : return DIM_CM;
-    case fp_PageSize::mm   : return DIM_MM;
-    case fp_PageSize::inch :
-    default :
-      return DIM_IN;
-    }
+	{
+	case fp_PageSize::cm   : return DIM_CM;
+	case fp_PageSize::mm   : return DIM_MM;
+	case fp_PageSize::inch :
+	default :
+	  return DIM_IN;
+	}
 }
 
 static bool s_doPageSetupDlg (FV_View * pView)
@@ -5407,7 +5412,7 @@ static bool s_doPageSetupDlg (FV_View * pView)
 	//
 	pDialog->setPageSize(pSize);
 	AP_Dialog_PageSetup::Orientation orig_ori,final_ori;
-	orig_ori =  AP_Dialog_PageSetup::PORTRAIT;
+	orig_ori =	AP_Dialog_PageSetup::PORTRAIT;
 	if(pDoc->m_docPageSize.isPortrait() == false)
 		orig_ori = AP_Dialog_PageSetup::LANDSCAPE;
 	pDialog->setPageOrientation(orig_ori);
@@ -5521,7 +5526,7 @@ static bool s_doPageSetupDlg (FV_View * pView)
 	bool bOK = (ans == AP_Dialog_PageSetup::a_OK);
 
 	if(bOK == false)
-	       return true;
+		   return true;
 
 	final_def = pSize.NameToPredefined(pDialog->getPageSize().getPredefinedName());
 	final_ori = pDialog->getPageOrientation();
@@ -5556,7 +5561,7 @@ static bool s_doPageSetupDlg (FV_View * pView)
 			for (UT_uint32 i = 0; i < vClones.getItemCount(); i++)
 			{
 				XAP_Frame * f = (XAP_Frame *) vClones.getNthItem(i);
-				FV_View * pV =  (FV_View *) f->getCurrentView();
+				FV_View * pV =	(FV_View *) f->getCurrentView();
 				if(pV->isHdrFtrEdit())
 				{
 					pV->eraseInsertionPoint();
@@ -5569,7 +5574,7 @@ static bool s_doPageSetupDlg (FV_View * pView)
 		}
 		else
 		{
-			FV_View * pV =  (FV_View *) pFrame->getCurrentView();
+			FV_View * pV =	(FV_View *) pFrame->getCurrentView();
 			if(pV->isHdrFtrEdit())
 			{
 				pV->clearHdrFtrEdit();
@@ -5688,9 +5693,9 @@ class FV_View_Insert_symbol_listener : public XAP_Insert_symbol_listener
 	public:
 
 		void setView( AV_View * pJustFocussedView)
-	        {
+			{
 			p_view = (FV_View *) pJustFocussedView ;
-	        }
+			}
 		bool insertSymbol(UT_UCSChar Char, char *p_font_name)
 		{
 			UT_ASSERT(p_view != NULL);
@@ -5705,7 +5710,7 @@ class FV_View_Insert_symbol_listener : public XAP_Insert_symbol_listener
 	};
 
 
-static  FV_View_Insert_symbol_listener symbol_Listener;
+static	FV_View_Insert_symbol_listener symbol_Listener;
 
 static bool s_InsertSymbolDlg(FV_View * pView, XAP_Dialog_Id id  )
 {
@@ -5724,12 +5729,12 @@ static bool s_InsertSymbolDlg(FV_View * pView, XAP_Dialog_Id id  )
 	
 	if(pDialog->isRunning() == true)
 	{
-	       pDialog->activate();
+		   pDialog->activate();
 	}
-        else
+		else
 	{
-	       pDialog->setListener(&symbol_Listener);
-	       pDialog->runModeless(pFrame);
+		   pDialog->setListener(&symbol_Listener);
+		   pDialog->runModeless(pFrame);
 		
 	}
 	return true;
@@ -5761,7 +5766,7 @@ Defun1(printTB)
 
 Defun1(printPreview)
 {
-        ABIWORD_VIEW;
+		ABIWORD_VIEW;
 	return s_doPrintPreview(pView);
 }
 
@@ -6062,23 +6067,23 @@ Defun1(viewFullScreen)
   AP_FrameData *pFrameData = (AP_FrameData *)pFrame->getFrameData();
 
   if(!pFrameData->m_bIsFullScreen) // we're hiding stuff
-    {
-      pFrame->toggleBar(0, false);
-      pFrame->toggleBar(1, false);
-      pFrame->toggleBar(2, false);
-      pFrame->toggleStatusBar(false);
-      pFrame->toggleRuler(false);
-      pFrameData->m_bIsFullScreen = true;
-    }
+	{
+	  pFrame->toggleBar(0, false);
+	  pFrame->toggleBar(1, false);
+	  pFrame->toggleBar(2, false);
+	  pFrame->toggleStatusBar(false);
+	  pFrame->toggleRuler(false);
+	  pFrameData->m_bIsFullScreen = true;
+	}
   else // we're (possibly) unhiding stuff
-    {
-      pFrame->toggleBar(0, pFrameData->m_bShowBar[0]);
-      pFrame->toggleBar(1, pFrameData->m_bShowBar[1]);
-      pFrame->toggleBar(2, pFrameData->m_bShowBar[2]);
-      pFrame->toggleStatusBar(pFrameData->m_bShowStatusBar);
-      pFrame->toggleRuler(pFrameData->m_bShowRuler);
-      pFrameData->m_bIsFullScreen = false;
-    }
+	{
+	  pFrame->toggleBar(0, pFrameData->m_bShowBar[0]);
+	  pFrame->toggleBar(1, pFrameData->m_bShowBar[1]);
+	  pFrame->toggleBar(2, pFrameData->m_bShowBar[2]);
+	  pFrame->toggleStatusBar(pFrameData->m_bShowStatusBar);
+	  pFrame->toggleRuler(pFrameData->m_bShowRuler);
+	  pFrameData->m_bIsFullScreen = false;
+	}
 
   return true;
 }
@@ -6260,13 +6265,13 @@ static bool s_doInsertPageNumbers(FV_View * pView)
 	}
 	switch (pDialog->getAlignment())
 	{
-	    case AP_Dialog_PageNumbers::id_RALIGN : atts = right_attributes; break;
-	    case AP_Dialog_PageNumbers::id_LALIGN : atts = left_attributes; break;
-	    case AP_Dialog_PageNumbers::id_CALIGN : atts = center_attributes; break;
-	    default: UT_ASSERT(UT_SHOULD_NOT_HAPPEN); break;
+		case AP_Dialog_PageNumbers::id_RALIGN : atts = right_attributes; break;
+		case AP_Dialog_PageNumbers::id_LALIGN : atts = left_attributes; break;
+		case AP_Dialog_PageNumbers::id_CALIGN : atts = center_attributes; break;
+		default: UT_ASSERT(UT_SHOULD_NOT_HAPPEN); break;
 	}
 	pView->processPageNumber(pDialog->isFooter() ? 
-							      FL_HDRFTR_FOOTER : FL_HDRFTR_HEADER,
+								  FL_HDRFTR_FOOTER : FL_HDRFTR_HEADER,
 							 atts);
 	pDialogFactory->releaseDialog(pDialog);
 	return true;
@@ -6340,37 +6345,37 @@ Defun1(insFile)
 
   if (s_AskForPathname (pFrame, false, XAP_DIALOG_ID_INSERT_FILE,
 			NULL, &pathName, &fType))
-    {
-      UT_DEBUGMSG(("DOM: insertFile %s\n", pathName));
+	{
+	  UT_DEBUGMSG(("DOM: insertFile %s\n", pathName));
 
-      PD_Document * newDoc = new PD_Document(pApp);
-      UT_Error err = newDoc->readFromFile(pathName, IEFT_Unknown);
+	  PD_Document * newDoc = new PD_Document(pApp);
+	  UT_Error err = newDoc->readFromFile(pathName, IEFT_Unknown);
 
-      if ( err != UT_OK )
+	  if ( err != UT_OK )
 	{
 	  UNREFP(newDoc);
 	  s_TellOpenFailed(pFrame, pathName, err);
 	  return false;
 	}
 
-      UT_DEBUGMSG(("DOM: read from file\n"));
+	  UT_DEBUGMSG(("DOM: read from file\n"));
 
-      // create a new layout and view object for the doc
-      FL_DocLayout *pDocLayout = new FL_DocLayout(newDoc,pGraphics);
-      pDocLayout->formatAll();
-     
-      UT_DEBUGMSG(("DOM: new pDocLayout and formatted\n"));
+	  // create a new layout and view object for the doc
+	  FL_DocLayout *pDocLayout = new FL_DocLayout(newDoc,pGraphics);
+	  pDocLayout->formatAll();
+	 
+	  UT_DEBUGMSG(("DOM: new pDocLayout and formatted\n"));
 
-      FV_View copyView(pApp,0,pDocLayout); 
-      copyView.cmdSelect(0, 0, FV_DOCPOS_BOD, FV_DOCPOS_EOD); // select all the contents of the new doc
-      copyView.cmdCopy(); // copy the contents of the new document
-      pView->cmdPaste ( true ); // paste the contents into the existing document honoring the formatting
-      UT_DEBUGMSG(("DOM: copied and pasted\n"));
-      
-      DELETEP(pDocLayout);
-      UNREFP(newDoc);
-      return true;
-    }
+	  FV_View copyView(pApp,0,pDocLayout); 
+	  copyView.cmdSelect(0, 0, FV_DOCPOS_BOD, FV_DOCPOS_EOD); // select all the contents of the new doc
+	  copyView.cmdCopy(); // copy the contents of the new document
+	  pView->cmdPaste ( true ); // paste the contents into the existing document honoring the formatting
+	  UT_DEBUGMSG(("DOM: copied and pasted\n"));
+	  
+	  DELETEP(pDocLayout);
+	  UNREFP(newDoc);
+	  return true;
+	}
 
   return false;
 }
@@ -6488,10 +6493,10 @@ Defun(dlgFmtImage)
 	  // 72.0 is pixels/inch
 
 	  setlocale (LC_NUMERIC, "C");
-	  if (szWidth)	    
-	    width = UT_convertToInches (szWidth) * 72.0;
+	  if (szWidth)		
+		width = UT_convertToInches (szWidth) * 72.0;
 	  if (szHeight)
-	    height = UT_convertToInches (szHeight) * 72.0;
+		height = UT_convertToInches (szHeight) * 72.0;
 	  setlocale (LC_NUMERIC, 0);
 
 	  const fp_PageSize & page = pView->getPageSize ();
@@ -6513,34 +6518,34 @@ Defun(dlgFmtImage)
 	  bool bOK = (ans == XAP_Dialog_Image::a_OK);
 	  
 	  if (bOK)
-	    {
-	      // now get them back in inches
-	      width  = pDialog->getWidth () / 72.0;
-	      height = pDialog->getHeight () / 72.0;
+		{
+		  // now get them back in inches
+		  width  = pDialog->getWidth () / 72.0;
+		  height = pDialog->getHeight () / 72.0;
 
-	      char widthBuf[32];
-	      char heightBuf[32];
+		  char widthBuf[32];
+		  char heightBuf[32];
 
-	      // TODO: set format
-	      const XML_Char * properties[] = {"width", NULL, "height", NULL, 0};
-	      setlocale(LC_NUMERIC, "C");
-	      sprintf(widthBuf, "%fin", width);
-	      sprintf(heightBuf, "%fin", height);
-	      setlocale(LC_NUMERIC, 0);
+		  // TODO: set format
+		  const XML_Char * properties[] = {"width", NULL, "height", NULL, 0};
+		  setlocale(LC_NUMERIC, "C");
+		  sprintf(widthBuf, "%fin", width);
+		  sprintf(heightBuf, "%fin", height);
+		  setlocale(LC_NUMERIC, 0);
 
-	      UT_DEBUGMSG(("DOM: nw:%s nh:%s\n", widthBuf, heightBuf));
+		  UT_DEBUGMSG(("DOM: nw:%s nh:%s\n", widthBuf, heightBuf));
 
-	      properties[1] = widthBuf;
-	      properties[3] = heightBuf;
-	      pView->setCharFormat(properties);
-	    }
+		  properties[1] = widthBuf;
+		  properties[3] = heightBuf;
+		  pView->setCharFormat(properties);
+		}
 	  
 	  pDialogFactory->releaseDialog(pDialog);
 	  return true;
 	}
 	else
 	  {
-	    return false;
+		return false;
 	  }
 }
 
@@ -6573,9 +6578,9 @@ Defun(dlgColumns)
 	const XML_Char ** props_in = NULL;
 	const XML_Char * sz = NULL;
 
-    bool bResult = pView->getSectionFormat(&props_in);
+	bool bResult = pView->getSectionFormat(&props_in);
 
-    if (!bResult)
+	if (!bResult)
 	{
 		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 	}
@@ -6591,7 +6596,7 @@ Defun(dlgColumns)
 
 	if ( iColumns > 1 )
 	  {
-	    EX(viewPrintLayout);
+		EX(viewPrintLayout);
 	  }
 
 	if (props_in && props_in[0])
@@ -6664,10 +6669,10 @@ Defun(dlgColumns)
 			strcpy(buf3, "ltr");
 			strcpy(buf4, "left");
 		}
-#ifndef __MRC__         /* column-order */
-		const XML_Char * properties[] =	{ "columns", buf, "column-line", buf2, "dom-dir", buf3, "text-align", buf4, 0};
+#ifndef __MRC__ 		/* column-order */
+		const XML_Char * properties[] = { "columns", buf, "column-line", buf2, "dom-dir", buf3, "text-align", buf4, 0};
 #else
-		const XML_Char * properties[] =	{ "columns", NULL, "column-line", NULL, "dom-dir", NULL, "text-align", NULL, 0};
+		const XML_Char * properties[] = { "columns", NULL, "column-line", NULL, "dom-dir", NULL, "text-align", NULL, 0};
 		properties [1] = buf;
 		properties [3] = buf2;
 		properties [5] = buf3;
@@ -6678,9 +6683,9 @@ Defun(dlgColumns)
 
 
 #ifndef __MRC__
-		const XML_Char * properties[] =	{ "columns", buf, "column-line", buf2, 0};
+		const XML_Char * properties[] = { "columns", buf, "column-line", buf2, 0};
 #else
-		const XML_Char * properties[] =	{ "columns", NULL, "column-line", NULL, 0};
+		const XML_Char * properties[] = { "columns", NULL, "column-line", NULL, 0};
 		properties [1] = buf;
 		properties [3] = buf2;
 #endif
@@ -6808,9 +6813,9 @@ Defun1(dlgStyle)
 
 Defun1(dlgTabs)
 {
- 	ABIWORD_VIEW;
- 	
- 	return s_doTabDlg(pView);
+	ABIWORD_VIEW;
+	
+	return s_doTabDlg(pView);
 }
 
 Defun0(noop)
@@ -6851,7 +6856,7 @@ static bool s_doWordCountDlg(FV_View * pView)
 
 Defun1(dlgWordCount)
 {
-        ABIWORD_VIEW;
+		ABIWORD_VIEW;
 	
 	return s_doWordCountDlg(pView);
 }
@@ -6963,17 +6968,17 @@ Defun1(toggleDirOverrideRTL)
 Defun1(toggleDomDirection)
 {
 	ABIWORD_VIEW;
-	const XML_Char * properties[] =	{ "dom-dir", NULL, "text-align", NULL, 0};
-	const XML_Char drtl[]   = "rtl";
-	const XML_Char dltr[]   = "ltr";
+	const XML_Char * properties[] = { "dom-dir", NULL, "text-align", NULL, 0};
+	const XML_Char drtl[]	= "rtl";
+	const XML_Char dltr[]	= "ltr";
 	const XML_Char aright[] = "right";
-	const XML_Char aleft[]  = "left";
+	const XML_Char aleft[]	= "left";
 	XML_Char cur_alignment[10];
 	
-    fl_BlockLayout * pBl = pView->getCurrentBlock();
+	fl_BlockLayout * pBl = pView->getCurrentBlock();
 
-    strcpy(cur_alignment,pBl->getProperty("text-align"));
-    properties[3] = (XML_Char *) &cur_alignment;
+	strcpy(cur_alignment,pBl->getProperty("text-align"));
+	properties[3] = (XML_Char *) &cur_alignment;
 
 
 	if(pBl->getDominantDirection()== FRIBIDI_TYPE_RTL)
@@ -7035,7 +7040,7 @@ Defun(colorForeTB)
 
 Defun(colorBackTB)
 {
-        ABIWORD_VIEW;
+		ABIWORD_VIEW;
 
 	const XML_Char * properties[] = { "bgcolor", NULL, 0};
 	properties[1] = (const XML_Char *) pCallData->m_pData;
@@ -7054,7 +7059,7 @@ Defun0(togglePlain)
 Defun1(alignLeft)
 {
 	ABIWORD_VIEW;
-	const XML_Char * properties[] =	{ "text-align", "left", 0};
+	const XML_Char * properties[] = { "text-align", "left", 0};
 	pView->setBlockFormat(properties);
 	return true;
 }
@@ -7062,7 +7067,7 @@ Defun1(alignLeft)
 Defun1(alignCenter)
 {
 	ABIWORD_VIEW;
-	const XML_Char * properties[] =	{ "text-align", "center", 0};
+	const XML_Char * properties[] = { "text-align", "center", 0};
 	pView->setBlockFormat(properties);
 	return true;
 }
@@ -7070,7 +7075,7 @@ Defun1(alignCenter)
 Defun1(alignRight)
 {
 	ABIWORD_VIEW;
-	const XML_Char * properties[] =	{ "text-align", "right", 0};
+	const XML_Char * properties[] = { "text-align", "right", 0};
 	pView->setBlockFormat(properties);
 	return true;
 }
@@ -7078,7 +7083,7 @@ Defun1(alignRight)
 Defun1(alignJustify)
 {
 	ABIWORD_VIEW;
-	const XML_Char * properties[] =	{ "text-align", "justify", 0};
+	const XML_Char * properties[] = { "text-align", "justify", 0};
 	pView->setBlockFormat(properties);
 	return true;
 }
@@ -7114,7 +7119,7 @@ Defun1(sectColumns1)
 	if(pView->isHdrFtrEdit())
 		return false;
 
-	const XML_Char * properties[] =	{ "columns", "1", 0};
+	const XML_Char * properties[] = { "columns", "1", 0};
 	pView->setSectionFormat(properties);
 	return true;
 }
@@ -7124,7 +7129,7 @@ Defun(sectColumns2)
 	ABIWORD_VIEW;
 	if(pView->isHdrFtrEdit())
 		return false;
-	const XML_Char * properties[] =	{ "columns", "2", 0};
+	const XML_Char * properties[] = { "columns", "2", 0};
 	pView->setSectionFormat(properties);
 	EX(viewPrintLayout);
 	return true;
@@ -7135,7 +7140,7 @@ Defun(sectColumns3)
 	ABIWORD_VIEW;
 	if(pView->isHdrFtrEdit())
 		return false;
-	const XML_Char * properties[] =	{ "columns", "3", 0};
+	const XML_Char * properties[] = { "columns", "3", 0};
 	pView->setSectionFormat(properties);
 	EX(viewPrintLayout);
 	return true;
@@ -7144,7 +7149,7 @@ Defun(sectColumns3)
 Defun1(paraBefore0)
 {
 	ABIWORD_VIEW;
-	const XML_Char * properties[] =	{ "margin-top", "0pt", 0};
+	const XML_Char * properties[] = { "margin-top", "0pt", 0};
 	pView->setBlockFormat(properties);
 	return true;
 }
@@ -7152,7 +7157,7 @@ Defun1(paraBefore0)
 Defun1(paraBefore12)
 {
 	ABIWORD_VIEW;
-	const XML_Char * properties[] =	{ "margin-top", "12pt", 0};
+	const XML_Char * properties[] = { "margin-top", "12pt", 0};
 	pView->setBlockFormat(properties);
 	return true;
 }
@@ -7160,7 +7165,7 @@ Defun1(paraBefore12)
 Defun1(singleSpace)
 {
 	ABIWORD_VIEW;
-	const XML_Char * properties[] =	{ "line-height", "1.0", 0};
+	const XML_Char * properties[] = { "line-height", "1.0", 0};
 	pView->setBlockFormat(properties);
 	return true;
 }
@@ -7168,7 +7173,7 @@ Defun1(singleSpace)
 Defun1(middleSpace)
 {
 	ABIWORD_VIEW;
-	const XML_Char * properties[] =	{ "line-height", "1.5", 0};
+	const XML_Char * properties[] = { "line-height", "1.5", 0};
 	pView->setBlockFormat(properties);
 	return true;
 }
@@ -7176,7 +7181,7 @@ Defun1(middleSpace)
 Defun1(doubleSpace)
 {
 	ABIWORD_VIEW;
-	const XML_Char * properties[] =	{ "line-height", "2.0", 0};
+	const XML_Char * properties[] = { "line-height", "2.0", 0};
 	pView->setBlockFormat(properties);
 	return true;
 }
@@ -7526,7 +7531,7 @@ Defun(viCmd_yy)
 
 bool _insAutotext (FV_View *pView, int id)
 {
-        XAP_Frame * pFrame = static_cast<XAP_Frame *>(pView->getParentData());
+		XAP_Frame * pFrame = static_cast<XAP_Frame *>(pView->getParentData());
 	if (!pFrame)
 	  return false;
 
@@ -7554,223 +7559,223 @@ bool _insAutotext (FV_View *pView, int id)
 Defun(insAutotext_attn_1)
 {
   return _insAutotext(static_cast<FV_View *>(pAV_View), 
-		      AP_STRING_ID_AUTOTEXT_ATTN_1);
+			  AP_STRING_ID_AUTOTEXT_ATTN_1);
 }
 
 Defun(insAutotext_attn_2)
 {
   return _insAutotext(static_cast<FV_View *>(pAV_View), 
-		      AP_STRING_ID_AUTOTEXT_ATTN_2);
+			  AP_STRING_ID_AUTOTEXT_ATTN_2);
 }
 
 Defun(insAutotext_closing_1)
 {
   return _insAutotext(static_cast<FV_View *>(pAV_View), 
-		      AP_STRING_ID_AUTOTEXT_CLOSING_1);
+			  AP_STRING_ID_AUTOTEXT_CLOSING_1);
 }
 
 Defun(insAutotext_closing_2)
 {
   return _insAutotext(static_cast<FV_View *>(pAV_View), 
-		      AP_STRING_ID_AUTOTEXT_CLOSING_2);
+			  AP_STRING_ID_AUTOTEXT_CLOSING_2);
 }
 
 Defun(insAutotext_closing_3)
 {
   return _insAutotext(static_cast<FV_View *>(pAV_View), 
-		      AP_STRING_ID_AUTOTEXT_CLOSING_3);
+			  AP_STRING_ID_AUTOTEXT_CLOSING_3);
 }
 
 Defun(insAutotext_closing_4)
 {
   return _insAutotext(static_cast<FV_View *>(pAV_View), 
-		      AP_STRING_ID_AUTOTEXT_CLOSING_4);
+			  AP_STRING_ID_AUTOTEXT_CLOSING_4);
 }
 
 Defun(insAutotext_closing_5)
 {
   return _insAutotext(static_cast<FV_View *>(pAV_View), 
-		      AP_STRING_ID_AUTOTEXT_CLOSING_5);
+			  AP_STRING_ID_AUTOTEXT_CLOSING_5);
 }
 
 Defun(insAutotext_closing_6)
 {
   return _insAutotext(static_cast<FV_View *>(pAV_View), 
-		      AP_STRING_ID_AUTOTEXT_CLOSING_6);
+			  AP_STRING_ID_AUTOTEXT_CLOSING_6);
 }
 
 Defun(insAutotext_closing_7)
 {
   return _insAutotext(static_cast<FV_View *>(pAV_View), 
-		      AP_STRING_ID_AUTOTEXT_CLOSING_7);
+			  AP_STRING_ID_AUTOTEXT_CLOSING_7);
 }
 
 Defun(insAutotext_closing_8)
 {
   return _insAutotext(static_cast<FV_View *>(pAV_View), 
-		      AP_STRING_ID_AUTOTEXT_CLOSING_8);
+			  AP_STRING_ID_AUTOTEXT_CLOSING_8);
 }
 
 Defun(insAutotext_closing_9)
 {
   return _insAutotext(static_cast<FV_View *>(pAV_View), 
-		      AP_STRING_ID_AUTOTEXT_CLOSING_9);
+			  AP_STRING_ID_AUTOTEXT_CLOSING_9);
 }
 
 Defun(insAutotext_closing_10)
 {
   return _insAutotext(static_cast<FV_View *>(pAV_View), 
-		      AP_STRING_ID_AUTOTEXT_CLOSING_10);
+			  AP_STRING_ID_AUTOTEXT_CLOSING_10);
 }
 
 Defun(insAutotext_closing_11)
 {
   return _insAutotext(static_cast<FV_View *>(pAV_View), 
-		      AP_STRING_ID_AUTOTEXT_CLOSING_11);
+			  AP_STRING_ID_AUTOTEXT_CLOSING_11);
 }
 
 Defun(insAutotext_closing_12)
 {
   return _insAutotext(static_cast<FV_View *>(pAV_View), 
-		      AP_STRING_ID_AUTOTEXT_CLOSING_12);
+			  AP_STRING_ID_AUTOTEXT_CLOSING_12);
 }
 
 Defun(insAutotext_email_1)
 {
   return _insAutotext(static_cast<FV_View *>(pAV_View), 
-		      AP_STRING_ID_AUTOTEXT_EMAIL_1);
+			  AP_STRING_ID_AUTOTEXT_EMAIL_1);
 }
 
 Defun(insAutotext_email_2)
 {
   return _insAutotext(static_cast<FV_View *>(pAV_View), 
-		      AP_STRING_ID_AUTOTEXT_EMAIL_2);
+			  AP_STRING_ID_AUTOTEXT_EMAIL_2);
 }
 
 Defun(insAutotext_email_3)
 {
   return _insAutotext(static_cast<FV_View *>(pAV_View), 
-		      AP_STRING_ID_AUTOTEXT_EMAIL_3);
+			  AP_STRING_ID_AUTOTEXT_EMAIL_3);
 }
 
 Defun(insAutotext_email_4)
 {
   return _insAutotext(static_cast<FV_View *>(pAV_View), 
-		      AP_STRING_ID_AUTOTEXT_EMAIL_4);
+			  AP_STRING_ID_AUTOTEXT_EMAIL_4);
 }
 
 Defun(insAutotext_email_5)
 {
   return _insAutotext(static_cast<FV_View *>(pAV_View), 
-		      AP_STRING_ID_AUTOTEXT_EMAIL_5);
+			  AP_STRING_ID_AUTOTEXT_EMAIL_5);
 }
 
 Defun(insAutotext_email_6)
 {
   return _insAutotext(static_cast<FV_View *>(pAV_View), 
-		      AP_STRING_ID_AUTOTEXT_EMAIL_6);
+			  AP_STRING_ID_AUTOTEXT_EMAIL_6);
 }
 
 Defun(insAutotext_mail_1)
 {
   return _insAutotext(static_cast<FV_View *>(pAV_View), 
-		      AP_STRING_ID_AUTOTEXT_MAIL_1);
+			  AP_STRING_ID_AUTOTEXT_MAIL_1);
 }
 
 
 Defun(insAutotext_mail_2)
 {
   return _insAutotext(static_cast<FV_View *>(pAV_View), 
-		      AP_STRING_ID_AUTOTEXT_MAIL_2);
+			  AP_STRING_ID_AUTOTEXT_MAIL_2);
 }
 
 Defun(insAutotext_mail_3)
 {
   return _insAutotext(static_cast<FV_View *>(pAV_View), 
-		      AP_STRING_ID_AUTOTEXT_MAIL_3);
+			  AP_STRING_ID_AUTOTEXT_MAIL_3);
 }
 
 Defun(insAutotext_mail_4)
 {
   return _insAutotext(static_cast<FV_View *>(pAV_View), 
-		      AP_STRING_ID_AUTOTEXT_MAIL_4);
+			  AP_STRING_ID_AUTOTEXT_MAIL_4);
 }
 
 Defun(insAutotext_mail_5)
 {
   return _insAutotext(static_cast<FV_View *>(pAV_View), 
-		      AP_STRING_ID_AUTOTEXT_MAIL_5);
+			  AP_STRING_ID_AUTOTEXT_MAIL_5);
 }
 
 Defun(insAutotext_mail_6)
 {
   return _insAutotext(static_cast<FV_View *>(pAV_View), 
-		      AP_STRING_ID_AUTOTEXT_MAIL_6);
+			  AP_STRING_ID_AUTOTEXT_MAIL_6);
 }
 
 Defun(insAutotext_mail_7)
 {
   return _insAutotext(static_cast<FV_View *>(pAV_View), 
-		      AP_STRING_ID_AUTOTEXT_MAIL_7);
+			  AP_STRING_ID_AUTOTEXT_MAIL_7);
 }
 
 Defun(insAutotext_mail_8)
 {
   return _insAutotext(static_cast<FV_View *>(pAV_View), 
-		      AP_STRING_ID_AUTOTEXT_MAIL_8);
+			  AP_STRING_ID_AUTOTEXT_MAIL_8);
 }
 
 Defun(insAutotext_reference_1)
 {
   return _insAutotext(static_cast<FV_View *>(pAV_View), 
-		      AP_STRING_ID_AUTOTEXT_REFERENCE_1);
+			  AP_STRING_ID_AUTOTEXT_REFERENCE_1);
 }
 
 Defun(insAutotext_reference_2)
 {
   return _insAutotext(static_cast<FV_View *>(pAV_View), 
-		      AP_STRING_ID_AUTOTEXT_REFERENCE_2);
+			  AP_STRING_ID_AUTOTEXT_REFERENCE_2);
 }
 
 Defun(insAutotext_reference_3)
 {
   return _insAutotext(static_cast<FV_View *>(pAV_View), 
-		      AP_STRING_ID_AUTOTEXT_REFERENCE_3);
+			  AP_STRING_ID_AUTOTEXT_REFERENCE_3);
 }
 
 Defun(insAutotext_salutation_1)
 {
   return _insAutotext(static_cast<FV_View *>(pAV_View), 
-		      AP_STRING_ID_AUTOTEXT_SALUTATION_1);
+			  AP_STRING_ID_AUTOTEXT_SALUTATION_1);
 }
 
 Defun(insAutotext_salutation_2)
 {
   return _insAutotext(static_cast<FV_View *>(pAV_View), 
-		      AP_STRING_ID_AUTOTEXT_SALUTATION_2);
+			  AP_STRING_ID_AUTOTEXT_SALUTATION_2);
 }
 
 Defun(insAutotext_salutation_3)
 {
   return _insAutotext(static_cast<FV_View *>(pAV_View), 
-		      AP_STRING_ID_AUTOTEXT_SALUTATION_3);
+			  AP_STRING_ID_AUTOTEXT_SALUTATION_3);
 }
 
 Defun(insAutotext_salutation_4)
 {
   return _insAutotext(static_cast<FV_View *>(pAV_View), 
-		      AP_STRING_ID_AUTOTEXT_SALUTATION_4);
+			  AP_STRING_ID_AUTOTEXT_SALUTATION_4);
 }
 
 Defun(insAutotext_subject_1)
 {
   return _insAutotext(static_cast<FV_View *>(pAV_View), 
-		      AP_STRING_ID_AUTOTEXT_SUBJECT_1);
+			  AP_STRING_ID_AUTOTEXT_SUBJECT_1);
 }
 
 static bool s_AskForScriptName(XAP_Frame * pFrame,
-			       char ** ppPathname,
-			       UT_ScriptIdType * ieft)
+				   char ** ppPathname,
+				   UT_ScriptIdType * ieft)
 {
 	UT_ASSERT(ppPathname);
 	UT_ASSERT(ieft);
@@ -7797,7 +7802,7 @@ static bool s_AskForScriptName(XAP_Frame * pFrame,
 	const char ** szDescList = (const char **) calloc(filterCount + 1,
 							  sizeof(char *));
 	const char ** szSuffixList = (const char **) calloc(filterCount + 1,
-							    sizeof(char *));
+								sizeof(char *));
 	UT_ScriptIdType * nTypeList = (UT_ScriptIdType *) calloc(filterCount + 1,
 								 sizeof(UT_ScriptIdType));
 	UT_uint32 k = 0;
@@ -7865,10 +7870,10 @@ Defun1(scriptPlay)
 
 	if ( 0 == instance.getNumScripts () )
 	  {
-	    pFrame->showMessageBox(AP_STRING_ID_SCRIPT_NOSCRIPTS,
+		pFrame->showMessageBox(AP_STRING_ID_SCRIPT_NOSCRIPTS,
 				   XAP_Dialog_MessageBox::b_O,
 				   XAP_Dialog_MessageBox::a_OK);
-	    return true;
+		return true;
 	  }
 
 	UT_ScriptIdType ieft = -1;
@@ -7882,8 +7887,8 @@ Defun1(scriptPlay)
 
 	if ( UT_OK != instance.execute ( pNewFile, ieft ) )
 	  {
-	    // TODO: better error message
-	    pFrame->showMessageBox(AP_STRING_ID_SCRIPT_CANTRUN,
+		// TODO: better error message
+		pFrame->showMessageBox(AP_STRING_ID_SCRIPT_CANTRUN,
 				   XAP_Dialog_MessageBox::b_O,
 				   XAP_Dialog_MessageBox::a_OK,
 				   pNewFile);
@@ -7902,8 +7907,8 @@ Defun(executeScript)
 
 	if ( UT_OK != instance.execute ( pCallData->getScriptName().c_str() ) )
 	  {
-	    // TODO: better error message
-	    pFrame->showMessageBox(AP_STRING_ID_SCRIPT_CANTRUN,
+		// TODO: better error message
+		pFrame->showMessageBox(AP_STRING_ID_SCRIPT_CANTRUN,
 				   XAP_Dialog_MessageBox::b_O,
 				   XAP_Dialog_MessageBox::a_OK,
 				   pCallData->getScriptName().c_str());
@@ -7949,7 +7954,7 @@ Defun(dlgColorPickerFore)
 
 	if (bOK)
 	{
-	    const XML_Char * clr = pDialog->getColor();
+		const XML_Char * clr = pDialog->getColor();
 		const XML_Char * properties[] = { "color", NULL, 0};
 		properties[1] = clr;
 		pView->setCharFormat(properties);
@@ -7995,7 +8000,7 @@ Defun(dlgColorPickerBack)
 
 	if (bOK)
 	{
-	    const XML_Char * clr = pDialog->getColor();
+		const XML_Char * clr = pDialog->getColor();
 		const XML_Char * properties[] = { "bgcolor", NULL, 0};
 		properties[1] = clr;
 		pView->setCharFormat(properties);
@@ -8037,10 +8042,10 @@ Defun(dlgBackground)
 
 	if (bOK)
 	{
-	    // let the view set the proper value in the
-	    // document and refresh/redraw itself
-	    const XML_Char * clr = pDialog->getColor();
-	    pView->setPaperColor (clr);
+		// let the view set the proper value in the
+		// document and refresh/redraw itself
+		const XML_Char * clr = pDialog->getColor();
+		pView->setPaperColor (clr);
 	}
 
 	pDialogFactory->releaseDialog(pDialog);
@@ -8060,7 +8065,7 @@ Defun(dlgHdrFtr)
 	XAP_DialogFactory * pDialogFactory
 		= (XAP_DialogFactory *)(pFrame->getDialogFactory());
 
-    AP_Dialog_HdrFtr * pDialog = (AP_Dialog_HdrFtr *) (pDialogFactory->requestDialog(AP_DIALOG_ID_HDRFTR));
+	AP_Dialog_HdrFtr * pDialog = (AP_Dialog_HdrFtr *) (pDialogFactory->requestDialog(AP_DIALOG_ID_HDRFTR));
 	UT_ASSERT(pDialog);
 	if (!pDialog)
 		return false;
@@ -8079,10 +8084,10 @@ Defun(dlgHdrFtr)
 	bool bOldHdrEven = false;
 	bool bOldHdrFirst = false;
 	bool bOldHdrLast = false;
-    bool bOldFtr = false;
-    bool bOldFtrEven = false;
-    bool bOldFtrFirst = false;
-    bool bOldFtrLast = false;
+	bool bOldFtr = false;
+	bool bOldFtrEven = false;
+	bool bOldFtrFirst = false;
+	bool bOldFtrLast = false;
 	bool bOldBools[6];
 	UT_sint32 i = 0;
 	for(i=0; i<6; i++)
@@ -8158,8 +8163,8 @@ Defun(dlgHdrFtr)
 
 	if (bOK)
 	{
-	    // let the view set the proper value in the
-	    // document and refresh/redraw itself
+		// let the view set the proper value in the
+		// document and refresh/redraw itself
 //
 // Read back hdr/ftr type changes
 //
@@ -8264,7 +8269,7 @@ Defun(dlgHdrFtr)
 				props_out[1] = "0";
 				props_out[2] = NULL;
 			}
-		    pView->setSectionFormat((const char **) props_out);
+			pView->setSectionFormat((const char **) props_out);
 		}
 	}
 

@@ -59,9 +59,9 @@ void AP_Win32Dialog_InsertBookmark::runModal(XAP_Frame * pFrame)
 {
 	UT_ASSERT(pFrame);
 	_win32Dialog.runModal( pFrame, 
-                           AP_DIALOG_ID_INSERTBOOKMARK, 
-                           AP_RID_DIALOG_INSERTBOOKMARK, 
-                           this);
+						   AP_DIALOG_ID_INSERTBOOKMARK, 
+						   AP_RID_DIALOG_INSERTBOOKMARK, 
+						   this);
 
 
 }
@@ -83,10 +83,11 @@ BOOL AP_Win32Dialog_InsertBookmark::_onInitDialog(HWND hWnd, WPARAM wParam, LPAR
 	_win32Dialog.setDialogTitle( pSS->getValue(AP_STRING_ID_DLG_InsertBookmark_Title) );
 
 	// localize controls
-	_DSX(INSERTBOOKMARK_BTN_OK,				DLG_OK);
-	_DSX(INSERTBOOKMARK_BTN_CANCEL,			DLG_Cancel);
+	_DSX(INSERTBOOKMARK_BTN_OK, 			DLG_OK);
+	_DSX(INSERTBOOKMARK_BTN_DELETE, 		DLG_Delete);
+	_DSX(INSERTBOOKMARK_BTN_CANCEL, 		DLG_Cancel);
 
-	_DS(INSERTBOOKMARK_LBL_MESSAGE,			DLG_InsertBookmark_Msg);
+	_DS(INSERTBOOKMARK_LBL_MESSAGE, 		DLG_InsertBookmark_Msg);
 
 	// initial data
 	_win32Dialog.resetComboContent(AP_RID_DIALOG_INSERTBOOKMARK_CBX_BOOKMARK);
@@ -95,7 +96,7 @@ BOOL AP_Win32Dialog_InsertBookmark::_onInitDialog(HWND hWnd, WPARAM wParam, LPAR
 	for( UT_uint32 i = 0; i < count; i++)
 	{
 		_win32Dialog.addItemToCombo( AP_RID_DIALOG_INSERTBOOKMARK_CBX_BOOKMARK,
-                                     getNthExistingBookmark( i ) );
+									 getNthExistingBookmark( i ) );
 	}
 
 	return 1;
@@ -118,11 +119,23 @@ BOOL AP_Win32Dialog_InsertBookmark::_onCommand(HWND hWnd, WPARAM wParam, LPARAM 
 		{
 			XML_Char buf[BOOKMARK_SIZE_LIMIT+1];
 			_win32Dialog.getControlText( AP_RID_DIALOG_INSERTBOOKMARK_CBX_BOOKMARK,
-                            			 buf,
-                            			 BOOKMARK_SIZE_LIMIT );
+										 buf,
+										 BOOKMARK_SIZE_LIMIT );
 			setBookmark(buf);
 		}
 		setAnswer( a_OK );
+		EndDialog(hWnd, 0);
+		return 1;
+
+	case AP_RID_DIALOG_INSERTBOOKMARK_BTN_DELETE:
+		{
+			XML_Char buf[BOOKMARK_SIZE_LIMIT+1];
+			_win32Dialog.getControlText( AP_RID_DIALOG_INSERTBOOKMARK_CBX_BOOKMARK,
+										 buf,
+										 BOOKMARK_SIZE_LIMIT );
+			setBookmark(buf);
+		}
+		setAnswer( a_DELETE );
 		EndDialog(hWnd, 0);
 		return 1;
 
