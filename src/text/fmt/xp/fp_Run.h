@@ -152,7 +152,6 @@ public:
 	void            		clearScreen(UT_Bool bFullLineHeightRect = UT_FALSE);
 	void					markAsDirty(void)	{ m_bDirty = UT_TRUE; }
 	UT_Bool					isDirty(void) const { return m_bDirty; }
-	virtual UT_uint32 		containsOffset(UT_uint32 iOffset);
 	virtual UT_Bool			canContainPoint(void) const;
 	virtual const PP_AttrProp* getAP(void) const;
 	virtual void			fetchCharWidths(fl_CharWidths * pgbCharWidths);
@@ -252,7 +251,6 @@ class fp_ForcedLineBreakRun : public fp_Run
 	fp_ForcedLineBreakRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen);
 
 	virtual UT_Bool			canContainPoint(void) const;
-	virtual UT_uint32 		containsOffset(UT_uint32 iOffset);
 	virtual void			lookupProperties(void);
 	virtual void			mapXYToPosition(UT_sint32 xPos, UT_sint32 yPos, PT_DocPosition& pos, UT_Bool& bBOL, UT_Bool& bEOL);
 	virtual void 			findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y, UT_sint32& height);
@@ -272,7 +270,6 @@ class fp_FieldStartRun : public fp_Run
 	fp_FieldStartRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen);
 
 	virtual UT_Bool			canContainPoint(void) const;
-	virtual UT_uint32 		containsOffset(UT_uint32 iOffset);
 	virtual void			lookupProperties(void);
 	virtual void			mapXYToPosition(UT_sint32 xPos, UT_sint32 yPos, PT_DocPosition& pos, UT_Bool& bBOL, UT_Bool& bEOL);
 	virtual void 			findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y, UT_sint32& height);
@@ -292,7 +289,6 @@ class fp_FieldEndRun : public fp_Run
 	fp_FieldEndRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen);
 
 	virtual UT_Bool			canContainPoint(void) const;
-	virtual UT_uint32 		containsOffset(UT_uint32 iOffset);
 	virtual void			lookupProperties(void);
 	virtual void			mapXYToPosition(UT_sint32 xPos, UT_sint32 yPos, PT_DocPosition& pos, UT_Bool& bBOL, UT_Bool& bEOL);
 	virtual void 			findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y, UT_sint32& height);
@@ -312,7 +308,6 @@ class fp_ForcedColumnBreakRun : public fp_Run
 	fp_ForcedColumnBreakRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen);
 
 	virtual UT_Bool			canContainPoint(void) const;
-	virtual UT_uint32 		containsOffset(UT_uint32 iOffset);
 	virtual void			lookupProperties(void);
 	virtual void			mapXYToPosition(UT_sint32 xPos, UT_sint32 yPos, PT_DocPosition& pos, UT_Bool& bBOL, UT_Bool& bEOL);
 	virtual void 			findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y, UT_sint32& height);
@@ -332,7 +327,6 @@ class fp_ForcedPageBreakRun : public fp_Run
 	fp_ForcedPageBreakRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen);
 
 	virtual UT_Bool			canContainPoint(void) const;
-	virtual UT_uint32 		containsOffset(UT_uint32 iOffset);
 	virtual void			lookupProperties(void);
 	virtual void			mapXYToPosition(UT_sint32 xPos, UT_sint32 yPos, PT_DocPosition& pos, UT_Bool& bBOL, UT_Bool& bEOL);
 	virtual void 			findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y, UT_sint32& height);
@@ -508,7 +502,6 @@ public:
 	virtual UT_Bool			canBreakBefore(void) const;
 	virtual UT_Bool			letPointPass(void) const;
 	virtual UT_Bool			findMaxLeftFitSplitPointInLayoutUnits(UT_sint32 iMaxLeftWidth, fp_RunSplitInfo& si, UT_Bool bForce=UT_FALSE);
-	virtual UT_uint32 		containsOffset(UT_uint32 iOffset);
 	virtual const PP_AttrProp* getAP(void) const;
 	virtual UT_Bool			isSuperscript(void) const { return UT_FALSE; }
 	virtual UT_Bool			isSubscript(void)  const { return UT_FALSE; }

@@ -277,17 +277,6 @@ UT_Bool fp_Run::canContainPoint(void) const
 	return UT_TRUE;
 }
 
-UT_uint32 fp_Run::containsOffset(UT_uint32 iOffset)
-{
-	if ((iOffset >= m_iOffsetFirst) 
-	    && (iOffset < (m_iOffsetFirst + m_iLen)))
-	{
-		return FP_RUN_INSIDE;
-	}
-
-	return FP_RUN_NOT;
-}
-
 UT_Bool fp_Run::letPointPass(void) const
 {
 	return UT_TRUE;
@@ -543,11 +532,6 @@ UT_Bool fp_ForcedLineBreakRun::canContainPoint(void) const
 	return UT_FALSE;
 }
 
-UT_uint32 fp_ForcedLineBreakRun::containsOffset(UT_uint32 /* iOffset */)
-{
-	return FP_RUN_NOT;
-}
-
 UT_Bool fp_ForcedLineBreakRun::canBreakAfter(void) const
 {
 	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
@@ -619,11 +603,6 @@ UT_Bool fp_FieldStartRun::canContainPoint(void) const
 	return UT_FALSE;
 }
 
-UT_uint32 fp_FieldStartRun::containsOffset(UT_uint32 /* iOffset */)
-{
-	return FP_RUN_NOT;
-}
-
 UT_Bool fp_FieldStartRun::canBreakAfter(void) const
 {
 	return UT_TRUE;
@@ -686,11 +665,6 @@ void fp_FieldEndRun::lookupProperties(void)
 UT_Bool fp_FieldEndRun::canContainPoint(void) const
 {
 	return UT_FALSE;
-}
-
-UT_uint32 fp_FieldEndRun::containsOffset(UT_uint32 /* iOffset */)
-{
-	return FP_RUN_NOT;
 }
 
 UT_Bool fp_FieldEndRun::canBreakAfter(void) const
@@ -1392,11 +1366,6 @@ UT_Bool fp_ForcedColumnBreakRun::canContainPoint(void) const
 	return UT_FALSE;
 }
 
-UT_uint32 fp_ForcedColumnBreakRun::containsOffset(UT_uint32 /* iOffset */)
-{
-	return FP_RUN_NOT;
-}
-
 UT_Bool fp_ForcedColumnBreakRun::canBreakAfter(void) const
 {
 	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
@@ -1484,11 +1453,6 @@ void fp_ForcedPageBreakRun::lookupProperties(void)
 UT_Bool fp_ForcedPageBreakRun::canContainPoint(void) const
 {
 	return UT_FALSE;
-}
-
-UT_uint32 fp_ForcedPageBreakRun::containsOffset(UT_uint32 /* iOffset */)
-{
-	return FP_RUN_NOT;
 }
 
 UT_Bool fp_ForcedPageBreakRun::canBreakAfter(void) const

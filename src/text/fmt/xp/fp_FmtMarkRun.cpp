@@ -139,11 +139,6 @@ void fp_FmtMarkRun::findPointCoords(UT_uint32 /*iOffset*/, UT_sint32& x, UT_sint
 
 }
 
-UT_uint32 fp_FmtMarkRun::containsOffset(UT_uint32 /* iOffset */)
-{
-	return FP_RUN_NOT;
-}
-
 void fp_FmtMarkRun::_clearScreen(UT_Bool /* bFullLineHeightRect */)
 {
 #if 0

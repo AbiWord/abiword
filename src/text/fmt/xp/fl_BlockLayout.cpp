@@ -3032,6 +3032,15 @@ UT_Bool fl_BlockLayout::doclistener_deleteSpan(const PX_ChangeRecord_Span * pcrs
 	return UT_TRUE;
 }
 
+/*!
+  Change runs in the given span
+  \param pcrsc Specifies the span
+
+  This function makes all fp_Run objects within the given span lookup
+  new properties and recalculate their width. Runs at the ends of the
+  span that extend over the span border will be split, so runs fall
+  entirely inside or outside of the span.
+*/
 UT_Bool fl_BlockLayout::doclistener_changeSpan(const PX_ChangeRecord_SpanChange * pcrsc)
 {
 	UT_ASSERT(pcrsc->getType()==PX_ChangeRecord::PXT_ChangeSpan);
@@ -3039,42 +3048,69 @@ UT_Bool fl_BlockLayout::doclistener_changeSpan(const PX_ChangeRecord_SpanChange 
 	PT_BlockOffset blockOffset = pcrsc->getBlockOffset();
 	UT_uint32 len = pcrsc->getLength();
 	UT_ASSERT(len > 0);
-					
-	/*
-	  The idea here is to invalidate the charwidths for 
-	  the entire span whose formatting has changed.
-	  We may need to split runs at one or both ends.
-	*/
+
+	// First look for the first run inside the span
 	fp_Run* pRun = m_pFirstRun;
+	fp_Run* pPrevRun = NULL;
+	while (pRun && pRun->getBlockOffset() < blockOffset)
+	{
+		pPrevRun = pRun;
+		pRun = pRun->getNext();
+	}
+
+	// If pRun is now at the blockOffset, the span falls on an
+	// existing separation between runs. If not, we have to split the
+	// run (pPrevRun) which is extending over the border.
+	if (!pRun || (pRun->getBlockOffset() != blockOffset))
+	{
+		// Need to split previous Run.
+		// Note: That should be a fp_TextRun. If not, we'll keep going
+		// using the first run fully inside the span - but keep the
+		// assertion for alert in debug builds.
+		UT_ASSERT(pPrevRun);
+		UT_ASSERT(FPRUN_TEXT == pPrevRun->getType());
+		if (FPRUN_TEXT == pPrevRun->getType())
+		{
+			fp_TextRun* pTextRun = static_cast<fp_TextRun*>(pPrevRun);
+			pTextRun->split(blockOffset);
+		}
+		pRun = pPrevRun->getNext();
+	}
+
+	// When we get here, we have a clean separation on the left
+	// between what's outside and what's inside of the span. pRun is
+	// the first run inside the span.
+	UT_ASSERT(!pRun || (blockOffset == pRun->getBlockOffset()));
+
+	// Now start forcing the runs to update
 	while (pRun)
 	{
-		UT_uint32 runOffset = pRun->getBlockOffset();
+		// If the run is on the right of the span, we're done
+		if ((pRun->getBlockOffset() >= (blockOffset + len)))
+			break;
 
+		// If the run extends beyond the span, split it.
+		if ((pRun->getBlockOffset() + pRun->getLength()) > (blockOffset + len))
+		{
+			// Note: That should be a fp_TextRun. If not, we'll just
+			// have to update the entire run - but keep the assertion
+			// for alert in debug builds.
+			UT_ASSERT(FPRUN_TEXT == pRun->getType());
+			if (FPRUN_TEXT == pRun->getType())
+			{
+				fp_TextRun* pTextRun = static_cast<fp_TextRun*>(pRun);
+				pTextRun->split(blockOffset+len);
+			}
+		}
+
+		// Make the run update its properties and recalculate width as
+		// necessary.
 		if (pRun->getType() == FPRUN_TEXT)
 		{
-			UT_uint32 iWhere = pRun->containsOffset(blockOffset+len);
 			fp_TextRun* pTextRun = static_cast<fp_TextRun*>(pRun);
-			if ((iWhere == FP_RUN_INSIDE) && ((blockOffset+len) > runOffset))
-			{
-				// split at right end of span
-				pTextRun->split(blockOffset+len);
-//				pTextRun->getNext()->recalcWidth();
-			}
-
-			iWhere = pRun->containsOffset(blockOffset);
-			if ((iWhere == FP_RUN_INSIDE) && (blockOffset > runOffset))
-			{
-				// split at left end of span
-				pTextRun->split(blockOffset);
-//				pTextRun->getNext()->recalcWidth();
-			}
-
-			if ((runOffset >= blockOffset) && (runOffset < blockOffset + len))
-			{
-				pTextRun->lookupProperties();
-				pTextRun->fetchCharWidths(&m_gbCharWidths);
-				pTextRun->recalcWidth();
-			}
+			pTextRun->lookupProperties();
+			pTextRun->fetchCharWidths(&m_gbCharWidths);
+			pTextRun->recalcWidth();
 		}
 		else if (pRun->getType() == FPRUN_TAB)
 		{
@@ -3082,7 +3118,6 @@ UT_Bool fl_BlockLayout::doclistener_changeSpan(const PX_ChangeRecord_SpanChange 
 		}
 		// TODO: do we need to call lookupProperties for other run types.
 
-		UT_ASSERT(runOffset==pRun->getBlockOffset());
 		pRun = pRun->getNext();
 	}
 
