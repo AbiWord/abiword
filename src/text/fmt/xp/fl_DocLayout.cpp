@@ -25,10 +25,7 @@
 #include <stdlib.h>
 
 #include "ut_types.h"
-#include "pt_Types.h"
-#include "px_ChangeRecord.h"
-#include "px_ChangeRecord_Span.h"
-#include "px_ChangeRecord_Strux.h"
+#include "fl_DocListener.h"
 #include "fl_DocLayout.h"
 #include "fl_SectionLayout.h"
 #include "fl_ColumnSetLayout.h"
@@ -45,6 +42,16 @@ FL_DocLayout::FL_DocLayout(PD_Document* doc, DG_Graphics* pG)
 	m_pDoc = doc;
 	m_pG = pG;
 	m_pLayoutView = NULL;
+
+	m_pDocListener = new fl_DocListener(doc, this);
+
+	PL_ListenerId lid;
+	if (doc->addListener(static_cast<PL_Listener *>(m_pDocListener),&lid))
+	{
+		FILE * fpDump1 = fopen("dump1","w");
+		doc->dump(fpDump1);
+		fclose(fpDump1);
+	}
 }
 
 FL_DocLayout::~FL_DocLayout()
@@ -223,136 +230,3 @@ void FL_DocLayout::dump()
 
 	// TODO dump the section layouts
 }
-
-/*****************************************************************/
-/*****************************************************************/
-
-
-UT_Bool FL_DocLayout::populate(PL_StruxFmtHandle sfh,
-							   PX_ChangeRecord * pcr)
-{
-	UT_DEBUGMSG(("FL_DocLayout::populate\n"));
-	pcr->dump();
-
-	UT_ASSERT(pcr->getType() == PX_ChangeRecord::PXT_InsertSpan);
-	PX_ChangeRecord_Span * pcrs = static_cast<PX_ChangeRecord_Span *> (pcr);
-
-	// paul-- a span is a sequence of text with the same formatting.
-	// TODO -- span is block-relative, right?
-	// HYP: append as a new run to last block of last section
-	// ALT: if format same, append to last run of that block
-	// ==>: pass enough info to delegate the decision  :-)
-
-	return UT_TRUE;
-}
-
-UT_Bool FL_DocLayout::populateStrux(PL_StruxDocHandle sdh,
-									PX_ChangeRecord * pcr,
-									PL_StruxFmtHandle * psfh)
-{
-	UT_DEBUGMSG(("FL_DocLayout::populateStrux\n"));
-	pcr->dump();
-
-	UT_ASSERT(pcr->getType() == PX_ChangeRecord::PXT_InsertStrux);
-	PX_ChangeRecord_Strux * pcrx = static_cast<PX_ChangeRecord_Strux *> (pcr);
-
-	switch (pcrx->getStruxType())
-	{
-	case PTX_Section:
-		{
-			// append a SectionLayout to this DocLayout
-			FL_SectionLayout* pSL = new FL_SectionLayout(this, sdh);
-			if (!pSL)
-			{
-				UT_DEBUGMSG(("no memory for SectionLayout"));
-				return UT_FALSE;
-			}
-			pSL->setPTvars(pcr->getVarSetIndex(),pcr->getIndexAP());
-			m_vecSectionLayouts.addItem(pSL);
-
-			psfh = (PL_StruxFmtHandle *)pSL;
-		}
-		break;
-
-	case PTX_ColumnSet:
-		{
-			// locate the last SectionLayout
-			int countSections = m_vecSectionLayouts.getItemCount();
-			UT_ASSERT(countSections > 0);
-			FL_SectionLayout* pSL = (FL_SectionLayout*) m_vecSectionLayouts.getNthItem(countSections - 1);
-			UT_ASSERT(pSL);
-			FL_ColumnSetLayout * pCSL = new FL_ColumnSetLayout(pSL,sdh);
-			if (!pCSL)
-			{
-				UT_DEBUGMSG(("no memory for ColumnSetLayout"));
-				return UT_FALSE;
-			}
-			pCSL->setPTvars(pcr->getVarSetIndex(),pcr->getIndexAP());
-			UT_ASSERT(pSL->getColumnSetLayout()==NULL);
-			pSL->setColumnSetLayout(pCSL);
-
-			psfh = (PL_StruxFmtHandle *)pCSL;
-		}
-		break;
-			
-	case PTX_Column:
-		{
-			// locate the last SectionLayout
-			int countSections = m_vecSectionLayouts.getItemCount();
-			UT_ASSERT(countSections > 0);
-			FL_SectionLayout* pSL = (FL_SectionLayout*) m_vecSectionLayouts.getNthItem(countSections - 1);
-			UT_ASSERT(pSL);
-			FL_ColumnSetLayout * pCSL =	pSL->getColumnSetLayout();
-			UT_ASSERT(pCSL);
-			FL_ColumnLayout * pCL = new FL_ColumnLayout(pCSL,sdh);
-			if (!pCL)
-			{
-				UT_DEBUGMSG(("no memory for ColumnLayout"));
-				return UT_FALSE;
-			}
-			pCL->setPTvars(pcr->getVarSetIndex(),pcr->getIndexAP());
-			pCSL->appendColumnLayout(pCL);
-
-			psfh = (PL_StruxFmtHandle *)pCL;
-		}
-		break;
-			
-	case PTX_Block:
-		{
-			// locate the last SectionLayout
-			int countSections = m_vecSectionLayouts.getItemCount();
-			UT_ASSERT(countSections > 0);
-			FL_SectionLayout* pSL = (FL_SectionLayout*) m_vecSectionLayouts.getNthItem(countSections - 1);
-
-			// TODO -- append a new BlockLayout to that SectionLayout
-		}
-		break;
-			
-	default:
-		UT_ASSERT(0);
-		return UT_FALSE;
-	}
-
-	return UT_TRUE;
-}
-
-UT_Bool FL_DocLayout::change(PL_StruxFmtHandle sfh,
-							 PX_ChangeRecord * pcr)
-{
-	UT_DEBUGMSG(("FL_DocLayout::change\n"));
-	pcr->dump();
-
-	return UT_TRUE;
-}
-
-UT_Bool FL_DocLayout::insertStrux(PL_StruxFmtHandle sfh,
-								  PX_ChangeRecord * pcr,
-								  PL_StruxDocHandle sdh,
-								  PL_StruxFmtHandle * psfh)
-{
-	UT_DEBUGMSG(("FL_DocLayout::insertStrux\n"));
-	pcr->dump();
-
-	return UT_TRUE;
-}
-
