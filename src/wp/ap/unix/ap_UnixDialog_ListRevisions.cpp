@@ -131,6 +131,7 @@ void AP_UnixDialog_ListRevisions::constructWindowContents ( GtkWidget * vbDialog
   GtkWidget *swExistingRevisions;
   GtkWidget *clExistingRevisions;
   GtkWidget *lbColumnRevisionID;
+  GtkWidget *lbColumnDate;
   GtkWidget *lbColumnComment;
 
   vbContent = gtk_vbox_new (FALSE, 6);
@@ -148,7 +149,7 @@ void AP_UnixDialog_ListRevisions::constructWindowContents ( GtkWidget * vbDialog
   gtk_container_add (GTK_CONTAINER (vbContent), swExistingRevisions);
   gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (swExistingRevisions), GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
 
-  clExistingRevisions = gtk_clist_new (2);
+  clExistingRevisions = gtk_clist_new (3);
   gtk_widget_show (clExistingRevisions);
   gtk_container_add (GTK_CONTAINER (swExistingRevisions), clExistingRevisions);
   gtk_clist_set_column_width (GTK_CLIST (clExistingRevisions), 0, 80);
@@ -159,9 +160,13 @@ void AP_UnixDialog_ListRevisions::constructWindowContents ( GtkWidget * vbDialog
   gtk_widget_show (lbColumnRevisionID);
   gtk_clist_set_column_widget (GTK_CLIST (clExistingRevisions), 0, lbColumnRevisionID);
 
-  lbColumnComment = gtk_label_new (getColumn2Label());
+  lbColumnDate = gtk_label_new (getColumn2Label());
+  gtk_widget_show (lbColumnDate);
+  gtk_clist_set_column_widget (GTK_CLIST (clExistingRevisions), 1, lbColumnDate);
+
+  lbColumnComment = gtk_label_new (getColumn3Label());
   gtk_widget_show (lbColumnComment);
-  gtk_clist_set_column_widget (GTK_CLIST (clExistingRevisions), 1, lbColumnComment);
+  gtk_clist_set_column_widget (GTK_CLIST (clExistingRevisions), 2, lbColumnComment);
 
   gtk_clist_freeze ( GTK_CLIST ( clExistingRevisions ) ) ;
 
@@ -171,13 +176,14 @@ void AP_UnixDialog_ListRevisions::constructWindowContents ( GtkWidget * vbDialog
 
   for ( UT_uint32 i = 0; i < itemCnt; i++ )
   {
-    gchar * txt[3];
+    gchar * txt[4];
     gchar buf [ 35 ] ;
 
     sprintf ( buf, "%d", getNthItemId( i ) ) ;
     txt[0] = static_cast<gchar*>(buf);
-    txt[1] = static_cast<gchar*>(getNthItemText ( i ));
-    txt[2] = NULL;
+    txt[1] = const_cast<gchar*>(getNthItemTime ( i ));
+    txt[2] = static_cast<gchar*>(getNthItemText ( i ));
+    txt[3] = NULL;
 
     gtk_clist_append ( GTK_CLIST(clExistingRevisions), txt ) ;
 
