@@ -38,7 +38,7 @@ LoadOrder=              AbiGr AbiFmt AbiPTbl AbiImpExp MsWordView AbiXAp AbiWPAp
 ABI_APPLIBS=		$(LoadOrder) 
 
 #ABI_OTHLIBS=		expat $(ABI_JSLIBS) dl
-ABI_OTHLIBS=		expat $(ABI_JSLIBS) 
+ABI_OTHLIBS=		Abi_expat
 #ABI_LIBS=		stdc++
 
 TARGETS=		$(PROGRAM)
