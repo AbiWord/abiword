@@ -42,7 +42,8 @@
 #define XAP_UNIXBASEAPP XAP_UnixApp
 #endif
 	
-#define LOGFILE
+/* Define if your user name is msevior */
+/* #undef LOGFILE */
 #ifdef LOGFILE
 FILE * getlogfile(void);
 #endif
