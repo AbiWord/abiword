@@ -19,6 +19,7 @@
 
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
+#define _WIN32_IE 0x0300 // specify minimal comctl.dll v4.70 for toolbars
 #include <commctrl.h>   // includes the common control header
 
 #include "ut_assert.h"
