@@ -8641,6 +8641,11 @@ void FV_View::cmdRemoveHdrFtr( bool isHeader)
 bool FV_View::isHeaderOnPage(void)
 {
 	fp_Page * pPage = getCurrentPage();
+	UT_ASSERT(pPage);
+	if(pPage == NULL)
+	{
+		return false;
+	}
 	fp_ShadowContainer * pHFCon = NULL;
 	pHFCon = pPage->getHeaderP();
 	if(pHFCon == NULL)
@@ -8657,6 +8662,11 @@ bool FV_View::isHeaderOnPage(void)
 bool FV_View::isFooterOnPage(void)
 {
 	fp_Page * pPage = getCurrentPage();
+	UT_ASSERT(pPage);
+	if(pPage == NULL)
+	{
+		return false;
+	}
 	fp_ShadowContainer * pHFCon = NULL;
 	pHFCon = pPage->getFooterP();
 	if(pHFCon == NULL)
