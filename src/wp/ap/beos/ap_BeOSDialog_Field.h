@@ -28,6 +28,8 @@ class XAP_BeOSFrame;
 
 class AP_BeOSDialog_Field: public AP_Dialog_Field
 {
+	friend class FieldWindow;
+	
 public:
 	AP_BeOSDialog_Field(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
 	virtual ~AP_BeOSDialog_Field(void);
@@ -37,6 +39,7 @@ public:
 	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
 	
 protected:
+	virtual void			setAnswer(AP_Dialog_Field::tAnswer a) { m_answer = a; };
 
 };
 

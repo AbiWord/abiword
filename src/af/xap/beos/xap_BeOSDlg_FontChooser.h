@@ -35,6 +35,8 @@ public:
 
 	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
 
+	void setAnswer(XAP_Dialog_FontChooser::tAnswer answer);
+	
 protected:
 
 	UT_Bool bAbusingTheFontSize;

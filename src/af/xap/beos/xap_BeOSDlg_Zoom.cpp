@@ -44,15 +44,54 @@ class ZoomWin:public BWindow {
 		void GetAnswer(XAP_BeOSDialog_Zoom::zoomType &ZoomType,UT_uint32 &ZoomPercent);
 		void Quit(void);
 		
+		virtual bool QuitRequested();
+		
 	private:
-		int 			spin;
+		
 		XAP_BeOSDialog_Zoom 	*m_DlgZoom;
 		GR_BeOSGraphics		*m_BeOSGraphics;
 		BTextControl 		*m_CustomText;	
 		UT_uint32		 m_CurrentPercent;
 		XAP_BeOSDialog_Zoom::zoomType	 m_CurrentType;
 		UT_Bool			 m_Okay;
+		
+		sem_id modalSem;
+		status_t WaitForDelete(sem_id deleteSem);
+		
 };	
+
+status_t ZoomWin::WaitForDelete(sem_id blocker)
+{
+	status_t	result;
+	thread_id	this_tid = find_thread(NULL);
+	BLooper		*pLoop;
+	BWindow		*pWin = 0;
+
+	pLoop = BLooper::LooperForThread(this_tid);
+	if (pLoop)
+		pWin = dynamic_cast<BWindow*>(pLoop);
+
+	// block until semaphore is deleted (modal is finished)
+	if (pWin) {
+		do {
+			// update the window periodically			
+			pWin->UpdateIfNeeded();
+			result = acquire_sem_etc(blocker, 1, B_TIMEOUT, 10000);
+		} while (result != B_BAD_SEM_ID);
+	} else {
+		do {
+			// just wait for exit
+			result = acquire_sem(blocker);
+		} while (result != B_BAD_SEM_ID);
+	}
+	return result;
+}
+
+bool ZoomWin::QuitRequested()
+{
+	return (false); // We can't quit twice, so, the little close box would fail if we didn't do this.
+}
+
 void ZoomWin::GetAnswer(XAP_BeOSDialog_Zoom::zoomType &ZoomType, UT_uint32 &ZoomPercent)
 {
 	if (m_Okay==UT_TRUE)
@@ -70,8 +109,9 @@ ZoomWin::~ZoomWin()
 	DELETEP(m_BeOSGraphics);
 }
 ZoomWin::ZoomWin(BMessage *data) 
-	  :BWindow(data) {
-	spin = 1;	
+	  :BWindow(data) 
+{
+	
 	m_Okay=UT_FALSE;
 } //ZoomWin::ZoomWin
 void ZoomWin::MessageReceived(BMessage *msg)
@@ -132,7 +172,7 @@ void ZoomWin::MessageReceived(BMessage *msg)
 		{
 			printf("Setting okay to true\n");
 			m_Okay=UT_TRUE;
-			spin=0;
+			delete_sem(modalSem);
 		}
 		break;
 		default:
@@ -156,7 +196,12 @@ void ZoomWin::SetDlg(XAP_BeOSDialog_Zoom *dlg) {
 		ohbutton->SetValue(B_CONTROL_ON);
 		preview->Window()->Unlock();
 	}
-	while (spin) { snooze(1000); }
+
+//	while () { snooze(1000); }
+	modalSem = create_sem(0,"zoomsem");
+	
+	WaitForDelete(modalSem);
+	
 	Hide();
 }
 
@@ -168,12 +213,15 @@ void ZoomWin::DispatchMessage(BMessage *msg, BHandler *handler) {
 } 
 
 //Behave like a good citizen
-void ZoomWin::Quit() {
+void ZoomWin::Quit() 
+{
+
 #if 0
 	UT_ASSERT(m_DlgZoom);
 	m_DlgZoom->setAnswer(AP_Dialog_Zoom::a_CANCEL);
 #endif
-spin = 0;
+
+delete_sem(modalSem);
 BWindow::Quit();
 
 }
@@ -248,7 +296,7 @@ void XAP_BeOSDialog_Zoom::runModal(XAP_Frame * pFrame)
 				UT_DEBUGMSG(("Cancelling, m_zoomType=%d, m_zoomPercent=%d\n",m_zoomType,m_zoomPercent));
 				m_answer=XAP_Dialog_Zoom::a_CANCEL;
 			}
-			newwin->Unlock();
+			//newwin->Unlock();
 		}
 		newwin->Close();
 		

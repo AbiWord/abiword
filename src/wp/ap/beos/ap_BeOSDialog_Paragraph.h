@@ -28,6 +28,8 @@ class XAP_BeOSFrame;
 
 class AP_BeOSDialog_Paragraph: public AP_Dialog_Paragraph
 {
+	friend class ParagraphWin;
+
 public:
 	AP_BeOSDialog_Paragraph(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
 	virtual ~AP_BeOSDialog_Paragraph(void);
@@ -35,10 +37,17 @@ public:
 	virtual void			runModal(XAP_Frame * pFrame);
 
 	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
+	virtual void			setAnswer(AP_Dialog_Paragraph::tAnswer a) { m_answer = a; };
 
 protected:
 	virtual void			_syncControls(tControl changed, UT_Bool bAll = UT_FALSE);
-
+	virtual void			_populateWindowData();
+	
+	void _spinnerChanged(class BTextControl* pTextBox);
+	void _checkBoxChanged(class BCheckBox* pBox);
+	void _menuChanged(uint32 ID , uint32 itemIndex);
+	void _redrawPreview();
+	class ParagraphWin *newwin;
 };
 
 #endif /* XAP_BEOSDIALOG_PARAGRAPH_H */

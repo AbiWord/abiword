@@ -41,34 +41,74 @@ class FontWin:public BWindow {
 		void UpdateTypeList();
 		void UpdatePreview();
 		void FillInSizeList();
+		void SelectFontPrefs();
+		
 	private:
-		int 			spin;
 		XAP_BeOSDialog_FontChooser *m_FontChooser;
 		BFont m_CurrentFont;
 		rgb_color m_TextColor;
+		
+		status_t WaitForDelete(sem_id blocker);
+		sem_id modalSem;
 };
+
+status_t FontWin::WaitForDelete(sem_id blocker)
+{
+	status_t	result;
+	thread_id	this_tid = find_thread(NULL);
+	BLooper		*pLoop;
+	BWindow		*pWin = 0;
+
+	pLoop = BLooper::LooperForThread(this_tid);
+	if (pLoop)
+		pWin = dynamic_cast<BWindow*>(pLoop);
+
+	// block until semaphore is deleted (modal is finished)
+	if (pWin) {
+		do {
+			pWin->Unlock(); // Who will know?=)
+			snooze(100);
+			pWin->Lock();
+			
+			// update the window periodically			
+			pWin->UpdateIfNeeded();
+			result = acquire_sem_etc(blocker, 1, B_TIMEOUT, 1000);
+		} while (result != B_BAD_SEM_ID);
+	} else {
+		do {
+			// just wait for exit
+			result = acquire_sem(blocker);
+		} while (result != B_BAD_SEM_ID);
+	}
+	return result;
+}
+
 void FontWin::UpdateTypeList()
 {
 	Lock();
 	BStringItem *currItem;
 	BListView *typeList=(BListView *)FindView("typelist");
-
 	while ((currItem=dynamic_cast<BStringItem *>(typeList->RemoveItem(0L))))
 	{
 		delete currItem;
 	}
+
 	font_family currFamily;
 	font_style currStyle;
 	m_CurrentFont.GetFamilyAndStyle(&currFamily,&currStyle);
 	UT_uint32 numStyles=count_font_styles(currFamily);
 	UT_uint32 i;
 	UT_uint32 flags;
+
 	for (i=0;i<numStyles;i++)
 	{
 		if (get_font_style(currFamily,(long int)i,&currStyle,(uint32 *) &flags)==B_OK)
+		{
 			typeList->AddItem(new BStringItem(currStyle));
+		}
 	}
 	typeList->Select(0);
+	
 	Unlock();
 
 }
@@ -124,6 +164,9 @@ void FontWin::UpdateFontList()
 }
 void FontWin::MessageReceived(BMessage *msg)
 {
+	UT_Bool underline, overline, strikeout;
+	uint16 fontFace;
+	
 	switch (msg->what)
 	{
 		case 'fsel':
@@ -138,6 +181,7 @@ void FontWin::MessageReceived(BMessage *msg)
 				BStringItem *theItem=dynamic_cast<BStringItem *>(theView->ItemAt(index));
 
 				m_CurrentFont.SetFamilyAndStyle(theItem->Text(),NULL);
+				m_FontChooser->setFontFamily(theItem->Text());
 				UpdateTypeList();
 				UpdatePreview();
 			}
@@ -153,6 +197,15 @@ void FontWin::MessageReceived(BMessage *msg)
 			{
 				BStringItem *theItem=dynamic_cast<BStringItem *>(theView->ItemAt(index));
 				m_CurrentFont.SetFamilyAndStyle(NULL,theItem->Text());
+				
+				m_FontChooser->setFontWeight("normal"); //m_FontChooser->m_bChangedFontWeight = UT_TRUE;
+				m_FontChooser->setFontStyle("normal"); // m_FontChooser->m_bChangedFontStyle = UT_TRUE;
+						
+				if(*theItem->Text() == 'B')//m_FontChooser->setFontStyle(theItem->Text());
+					m_FontChooser->setFontWeight("bold");
+				if(strstr(theItem->Text() , "Italic") != NULL)
+					m_FontChooser->setFontStyle("italic");
+					
 				UpdatePreview();
 			}
 		}
@@ -161,12 +214,16 @@ void FontWin::MessageReceived(BMessage *msg)
 		{
 			UT_sint32 value=0;
 			msg->FindInt32("be:value",(int32 *)&value);
-			if (value)
-			{
-			}
-			else
-			{
-			}
+			fontFace = m_CurrentFont.Face();
+			fontFace = B_UNDERSCORE_FACE;
+			m_CurrentFont.SetFace(fontFace);
+			
+			m_FontChooser->getChangedUnderline(&underline);
+			m_FontChooser->getChangedOverline(&overline);
+			m_FontChooser->getChangedStrikeOut(&strikeout);
+
+			m_FontChooser->setFontDecoration(!underline,overline,strikeout);
+
 			UpdatePreview();
 		}
 		break;
@@ -174,12 +231,17 @@ void FontWin::MessageReceived(BMessage *msg)
 		{
 			UT_sint32 value=0;
 			msg->FindInt32("be:value",(int32 *) &value);
-			if (value)
-			{
-			}
-			else
-			{
-			}
+			
+			fontFace = m_CurrentFont.Face();
+			fontFace = B_STRIKEOUT_FACE;
+			m_CurrentFont.SetFace(fontFace);
+			
+			m_FontChooser->getChangedUnderline(&underline);
+			m_FontChooser->getChangedOverline(&overline);
+			m_FontChooser->getChangedStrikeOut(&strikeout);
+			
+			m_FontChooser->setFontDecoration(underline,overline,!strikeout);
+			
 			UpdatePreview();
 		}
 		break;
@@ -193,20 +255,38 @@ void FontWin::MessageReceived(BMessage *msg)
 			{
 				BStringItem *theItem=dynamic_cast<BStringItem *>(theView->ItemAt(index));
 				m_CurrentFont.SetSize(atoi(theItem->Text()));
+	
+				char bufSize[10];
+				if (atoi(theItem->Text()) > 0)
+					sprintf(bufSize,"%dpt",atoi(theItem->Text()));
+				else
+					bufSize[0] = 0;
+					
+				m_FontChooser->setFontSize(bufSize);
 				UpdatePreview();
 			}
 		}
 		break;
 		case 'csel':
 		{
+			char bufColor[10];
 			BColorControl *theColorControl;
 			msg->FindPointer("source",(void **)&theColorControl);
 
 			m_TextColor=theColorControl->ValueAsColor();
+			
+			sprintf(bufColor,"%02x%02x%02x",m_TextColor.red,m_TextColor.green,m_TextColor.blue);
+			m_FontChooser->setColor(bufColor);
+
 			UpdatePreview();
 		}
 		break;
-
+	
+		case 'okck':
+			m_FontChooser->setAnswer(m_FontChooser->a_OK);
+			PostMessage(B_QUIT_REQUESTED);
+			break;
+			
 		default:
 			BWindow::MessageReceived(msg);
 			break;
@@ -227,11 +307,88 @@ void FontWin::UpdatePreview()
 }
 
 FontWin::FontWin(BMessage *data) 
-	  :BWindow(data) {
-	spin = 1;	
+	  :BWindow(data) 
+{
+
 }
 
-void FontWin::SetDlg(XAP_BeOSDialog_FontChooser *font) {
+void FontWin::SelectFontPrefs()
+{
+	int i;
+	const XML_Char *fontFamily, *fontSize, *fontWeight , *fontStyled , *fontColor;
+	UT_Bool fontUnderline, fontOverline, fontStrikeOut;
+	
+	m_FontChooser->getChangedFontFamily(&fontFamily);
+	m_FontChooser->getChangedFontSize(&fontSize);
+	m_FontChooser->getChangedFontWeight(&fontWeight);
+	m_FontChooser->getChangedFontStyle(&fontStyled);
+	m_FontChooser->getChangedColor(&fontColor);
+	m_FontChooser->getChangedUnderline(&fontUnderline);
+	m_FontChooser->getChangedOverline(&fontOverline);
+	m_FontChooser->getChangedStrikeOut(&fontStrikeOut);
+
+	Lock();
+
+	// Select the family..
+
+	BListView *fontList=(BListView *)FindView("fontlist");
+	BStringItem *currItem;
+	int32 numItems = fontList->CountItems();
+	
+	for(i = 0; i < numItems; i ++)
+	{
+		currItem = (BStringItem *)fontList->ItemAt(i);
+		if( currItem)
+		{
+			const char* itemText = currItem->Text();
+			if(strcmp(itemText , fontFamily) == 0)
+				break;
+		}
+	}	
+	
+	if(i != numItems)
+		fontList->Select(i);
+		
+	BListView* sizeList=(BListView *)FindView("sizelist");
+	numItems = sizeList->CountItems();
+	
+	for(i = 0; i < numItems; i ++)
+	{
+		currItem = (BStringItem *)sizeList->ItemAt(i);
+		if(strncmp(currItem->Text() , fontSize , strlen(fontSize) - 2) == 0)
+			break;
+	}
+	
+	if(i != numItems)
+		sizeList->Select(i);
+		
+	// Set the underline / strikeout status, then our color.
+	BCheckBox* strikeOut = (BCheckBox *)FindView("undercheck");
+	BCheckBox* underLine = (BCheckBox *)FindView("strikecheck");
+	
+	strikeOut->SetValue((fontStrikeOut == UT_TRUE));
+	underLine->SetValue((fontUnderline == UT_TRUE));
+	
+	rgb_color textColor;
+	sscanf(fontColor,"%02x%02x%02x",&textColor.red,&textColor.green,&textColor.blue);
+	
+	m_TextColor = textColor;
+
+	BColorControl* colorControl= (BColorControl *)FindView("colourview");
+	if(!colorControl)
+	{
+		BTabView* pTabView = (BTabView *)FindView("fonttab");
+		if(pTabView)
+			colorControl = (BColorControl *)pTabView->TabAt(1)->View()->FindView("colourview");
+	}
+	
+	colorControl->SetValue(textColor);
+	
+	Unlock();
+}
+
+void FontWin::SetDlg(XAP_BeOSDialog_FontChooser *font) 
+{
 	m_FontChooser = font;
 	
 //	We need to tie up the caller thread for a while ...
@@ -239,16 +396,30 @@ void FontWin::SetDlg(XAP_BeOSDialog_FontChooser *font) {
 	UpdateFontList();
 	UpdateTypeList();
 	FillInSizeList();
+	
+	// Select the items in the dialog box they have set now.
+	SelectFontPrefs();
+	
 	UpdatePreview();
-	while (spin) { snooze(1000); }
+	
+	// Default answer, modified if the user hits OK.
+	m_FontChooser->setAnswer(m_FontChooser->a_OK);
+	
+	modalSem = create_sem(0,"ParagraphSem");
+	WaitForDelete(modalSem);
+	
 	Hide();
 }
-//Behave like a good citizen
-bool FontWin::QuitRequested() {
-/*
-	UT_ASSERT(m_DlgFont);
-	m_DlgFont->setAnswer(AP_Dialog_Font::a_CANCEL);
-*/
+
+bool FontWin::QuitRequested() 
+{
+
+	UT_ASSERT(m_FontChooser);
+
+	// We need to activate the first tab so we can find the view children.
+	BTabView* pTabView = (BTabView *)FindView("fonttab");
+	pTabView->Select(0);
+	
 	BListView *FontList=(BListView *)FindView("fontlist");
 	
 	BStringItem *TheItem;
@@ -267,8 +438,9 @@ bool FontWin::QuitRequested() {
 	{
 		delete(TheItem);
 	}
-	spin = 0;
-	return(true);
+
+	delete_sem(modalSem);
+	return(false);
 }
 
 /*****************************************************************/
@@ -291,13 +463,29 @@ XAP_BeOSDialog_FontChooser::~XAP_BeOSDialog_FontChooser(void)
 {
 }
 
+void XAP_BeOSDialog_FontChooser::setAnswer(XAP_Dialog_FontChooser::tAnswer answer)
+{
+	m_answer = answer;
+}
+
 void XAP_BeOSDialog_FontChooser::runModal(XAP_Frame * pFrame)
 {
 	BMessage msg;
 	if (RehydrateWindow("FontWindow", &msg)) {
                 FontWin *newwin = new FontWin(&msg);
-		newwin->SetDlg(this);
+		newwin->SetDlg(this);			
+	
+	m_bChangedFontFamily	= UT_TRUE;
+	m_bChangedFontSize		= UT_TRUE;
+	m_bChangedFontWeight	= UT_TRUE;
+	m_bChangedFontStyle		= UT_TRUE;
+	m_bChangedColor			= UT_TRUE;
+	m_bChangedUnderline		= UT_TRUE;
+	m_bChangedOverline		= UT_TRUE;
+	m_bChangedStrikeOut		= UT_TRUE;
+	
 		//Take the information here ...
-		newwin->Close();
+		newwin->Lock();
+		newwin->Quit();
         }                                                
 }

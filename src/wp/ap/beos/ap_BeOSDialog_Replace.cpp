@@ -35,6 +35,8 @@
 
 #include "ut_Rehydrate.h"
 
+// CJP Note: The problem described below is fixed since the dialog is now modeless
+
 /* 
  TF Note:
   This class is totally screwed.  We halt the main thread while
@@ -58,13 +60,11 @@ class FindWin:public BWindow {
 		virtual bool QuitRequested(void);
 		
 	private:
-		int 			spin;
 		AP_BeOSDialog_Replace 	*m_DlgReplace;
 };
 
 FindWin::FindWin(BMessage *data) 
 	  :BWindow(data) {
-	spin = 1;	
 } //FindWin::FindWin
 
 void FindWin::SetDlg(AP_BeOSDialog_Replace *repl) {
@@ -94,8 +94,6 @@ void FindWin::SetDlg(AP_BeOSDialog_Replace *repl) {
 
 //	For the find/replace dialog we can return right away
 	Show();
-	//while (spin) { snooze(1); }
-	//Hide();
 }
 
 void FindWin::DispatchMessage(BMessage *msg, BHandler *handler) {
@@ -128,8 +126,6 @@ void FindWin::DispatchMessage(BMessage *msg, BHandler *handler) {
         	m_DlgReplace->setFindString(findString);
 		m_DlgReplace->setMatchCase(case_sensitive);
 
-		spin = 0;		//Let the main thread free
-		sleep(1);
 		if (repltxt && replace_all)
         		m_DlgReplace->findReplaceAll();                       
 		else if (repltxt)
@@ -148,11 +144,56 @@ bool FindWin::QuitRequested() {
 	UT_ASSERT(m_DlgReplace);
 	m_DlgReplace->setAnswer(AP_Dialog_Replace::a_CANCEL);
 
-	spin = 0;
 	return(true);
 }
 
 /*****************************************************************/
+
+void AP_BeOSDialog_Replace::runModeless(XAP_Frame * pFrame)
+{
+	BMessage msg;
+	FindWin  *newwin;
+
+	// this dialogs needs this
+        setView(static_cast<FV_View *> (pFrame->getCurrentView()));          
+
+	if (m_id == AP_DIALOG_ID_FIND) 
+	{
+		if (RehydrateWindow("FindWindow", &msg)) 
+		{
+                	newwin = new FindWin(&msg);
+			newwin->SetDlg(this);
+		}
+    }                                                
+	else  
+	{
+		if (RehydrateWindow("ReplaceWindow", &msg)) {
+                	newwin = new FindWin(&msg);
+			newwin->SetDlg(this);
+		}
+	}
+}
+
+void AP_BeOSDialog_Replace::notifyActiveFrame(XAP_Frame *pFrame)
+{
+
+}
+
+void AP_BeOSDialog_Replace::notifyCloseFrame(XAP_Frame *pFrame)
+{
+    
+}
+
+void AP_BeOSDialog_Replace::destroy(void)
+{
+
+}
+
+void AP_BeOSDialog_Replace::activate(void)
+{
+
+}
+
 
 XAP_Dialog * AP_BeOSDialog_Replace::static_constructor(XAP_DialogFactory * pFactory,
 													  XAP_Dialog_Id id)

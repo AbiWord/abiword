@@ -44,14 +44,44 @@ class BreakWin:public BWindow {
 		virtual bool QuitRequested(void);
 		
 	private:
-		int 			spin;
 		AP_BeOSDialog_Break 	*m_DlgBreak;
+	
+		status_t WaitForDelete(sem_id blocker);
+		sem_id modalSem;	
 };
 
 BreakWin::BreakWin(BMessage *data) 
-	  :BWindow(data) {
-	spin = 1;	
+	  :BWindow(data)
+{
+
 } //BreakWin::BreakWin
+
+status_t BreakWin::WaitForDelete(sem_id blocker)
+{
+	status_t	result;
+	thread_id	this_tid = find_thread(NULL);
+	BLooper		*pLoop;
+	BWindow		*pWin = 0;
+
+	pLoop = BLooper::LooperForThread(this_tid);
+	if (pLoop)
+		pWin = dynamic_cast<BWindow*>(pLoop);
+
+	// block until semaphore is deleted (modal is finished)
+	if (pWin) {
+		do {
+			// update the window periodically			
+			pWin->UpdateIfNeeded();
+			result = acquire_sem_etc(blocker, 1, B_TIMEOUT, 10000);
+		} while (result != B_BAD_SEM_ID);
+	} else {
+		do {
+			// just wait for exit
+			result = acquire_sem(blocker);
+		} while (result != B_BAD_SEM_ID);
+	}
+	return result;
+}
 
 void BreakWin::SetDlg(AP_BeOSDialog_Break *brk) {
 	BRadioButton *on = NULL;
@@ -85,7 +115,10 @@ void BreakWin::SetDlg(AP_BeOSDialog_Break *brk) {
 
 //	We need to tie up the caller thread for a while ...
 	Show();
-	while (spin) { snooze(1); }
+
+	modalSem = create_sem(0, "semname");
+	WaitForDelete(modalSem);
+	
 	Hide();
 }
 
@@ -110,7 +143,8 @@ void BreakWin::DispatchMessage(BMessage *msg, BHandler *handler) {
  			m_DlgBreak->setBreakType(AP_Dialog_Break::b_CONTINUOUS);
 
 		m_DlgBreak->setAnswer(AP_Dialog_Break::a_OK);
-		spin = 0;
+		delete_sem(modalSem);
+		
 		break;
 	default:
 		BWindow::DispatchMessage(msg, handler);
@@ -122,8 +156,9 @@ bool BreakWin::QuitRequested() {
 	UT_ASSERT(m_DlgBreak);
 	m_DlgBreak->setAnswer(AP_Dialog_Break::a_CANCEL);
 
-	spin = 0;
-	return(true);
+	delete_sem(modalSem);
+	
+	return(false);
 }
 
 
@@ -175,7 +210,8 @@ void AP_BeOSDialog_Break::runModal(XAP_Frame * pFrame)
                 newwin = new BreakWin(&msg);
 		newwin->SetDlg(this);
 		//Take the information here ...
-		newwin->Close();
+		newwin->Lock();
+		newwin->Quit();
         }                                                
 }
 

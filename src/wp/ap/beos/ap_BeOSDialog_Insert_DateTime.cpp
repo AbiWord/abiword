@@ -40,15 +40,45 @@ class DateTimeWin:public BWindow {
 		virtual bool QuitRequested(void);
 		
 	private:
-		int 			spin;
 		AP_BeOSDialog_Insert_DateTime 	*m_DlgTime;
 		int currentSelectionIndex;
+
+		sem_id modalSem;
+		status_t WaitForDelete(sem_id deleteSem);
 };
 
+
+status_t DateTimeWin::WaitForDelete(sem_id blocker)
+{
+	status_t	result;
+	thread_id	this_tid = find_thread(NULL);
+	BLooper		*pLoop;
+	BWindow		*pWin = 0;
+
+	pLoop = BLooper::LooperForThread(this_tid);
+	if (pLoop)
+		pWin = dynamic_cast<BWindow*>(pLoop);
+
+	// block until semaphore is deleted (modal is finished)
+	if (pWin) {
+		do {
+			// update the window periodically			
+			pWin->UpdateIfNeeded();
+			result = acquire_sem_etc(blocker, 1, B_TIMEOUT, 10000);
+		} while (result != B_BAD_SEM_ID);
+	} else {
+		do {
+			// just wait for exit
+			result = acquire_sem(blocker);
+		} while (result != B_BAD_SEM_ID);
+	}
+	return result;
+}
+
 DateTimeWin::DateTimeWin(BMessage *data) 
-	  :BWindow(data) {
+	  :BWindow(data) 
+{
 	currentSelectionIndex = -1;
-	spin = 1;	
 } //BreakWin::BreakWin
 
 #include <ListItem.h>
@@ -77,7 +107,10 @@ void DateTimeWin::SetDlg(AP_BeOSDialog_Insert_DateTime *brk)
 
 	//	We need to tie up the caller thread for a while ...
 	Show();
-	while (spin) { snooze(1); }
+	
+	modalSem = create_sem(0,"datetimesem");
+	WaitForDelete(modalSem);
+	
 	Hide();
 }
 
@@ -105,8 +138,12 @@ void DateTimeWin::DispatchMessage(BMessage *msg, BHandler *handler)
 		pSource = (BListView *)FindView("FormatList");		
 		currentSelectionIndex = pSource->CurrentSelection();
 		 
-		m_DlgTime->setSelection(currentSelectionIndex);
-		spin = 0;
+		if(currentSelectionIndex > 0)
+			m_DlgTime->setSelection(currentSelectionIndex);
+		else
+			m_DlgTime->setAnswer(AP_Dialog_Insert_DateTime::a_CANCEL);
+			
+		delete_sem(modalSem);
 		
 		break;
 
@@ -119,9 +156,7 @@ bool DateTimeWin::QuitRequested()
 {
 	m_DlgTime->setAnswer(AP_Dialog_Insert_DateTime::a_CANCEL);
 	
-	spin = 0;
-	
-//	Lock();
+	delete_sem(modalSem);
 	
 	return(false);
 }

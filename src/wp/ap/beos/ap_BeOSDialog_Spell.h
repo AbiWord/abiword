@@ -28,6 +28,8 @@ class XAP_BeOSFrame;
 
 class AP_BeOSDialog_Spell: public AP_Dialog_Spell
 {
+	friend class SpellWin;
+	
  public:
    AP_BeOSDialog_Spell(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
    virtual ~AP_BeOSDialog_Spell(void);

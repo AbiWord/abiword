@@ -30,6 +30,175 @@
 #include "ap_Dialog_Goto.h"
 #include "ap_BeOSDialog_Goto.h"
 
+#include "ut_Rehydrate.h"
+#include "fv_View.h"
+
+/*****************************************************************/
+class GotoWin:public BWindow {
+	public:
+		GotoWin(BMessage *data);
+		void SetDlg(AP_BeOSDialog_Goto *brk);
+		virtual void DispatchMessage(BMessage *msg, BHandler *handler);
+		virtual bool QuitRequested(void);
+		
+	private:
+		// Called to save pointers to the dialogs controls.. avoids multiple FindView calls.
+		void _savePointers();
+		BListView* gotoWhat;
+		BTextControl* numberBox;
+		BStringView* infoBox;
+				
+		AP_BeOSDialog_Goto 	*m_DlgGoto;
+};
+
+GotoWin::GotoWin(BMessage *data) 
+	  :BWindow(data) 
+{
+
+} //BreakWin::BreakWin
+
+void GotoWin::SetDlg(AP_BeOSDialog_Goto *brk)
+{
+//	const XAP_StringSet * pSS = brk->m_pApp->getStringSet();
+	int iTarget;
+	char **ppszTargets;
+	
+	m_DlgGoto = brk;
+	 
+	_savePointers();
+	
+	BButton* gotoButton;
+	gotoButton = (BButton *)FindView("Goto");
+	gotoButton->SetEnabled(false);
+			
+	numberBox->MakeFocus(true);
+	 
+ 	m_DlgGoto->m_iRow = 0;
+
+	ppszTargets = m_DlgGoto->getJumpTargets();
+	for ( iTarget = 0; ppszTargets[ iTarget ] != NULL; iTarget++ )
+		gotoWhat->AddItem( new BStringItem( ppszTargets[ iTarget ]));
+
+	gotoWhat->Select(0);
+
+	Show();
+}
+
+void GotoWin::DispatchMessage(BMessage *msg, BHandler *handler)
+{
+	BListView* pSource = NULL;
+	int32 dwCounter , dwStart , dwTextLength;
+	UT_Bool bValueOK = TRUE;
+	char* pBuf = NULL;
+
+	switch(msg->what) 
+	{
+		case 'next':
+			m_DlgGoto->GoTo("+1");
+			break;
+		
+		case 'prev':
+			m_DlgGoto->GoTo("-1");
+			break;
+			
+		case 'goto':
+			m_DlgGoto->GoTo( m_DlgGoto->m_pszOldValue );
+			break;
+			
+		case 'lbch':
+			m_DlgGoto->m_iRow = gotoWhat->CurrentSelection();
+			break;
+			
+		case 'nued':
+			
+			BButton* gotoButton;
+			gotoButton = (BButton *)FindView("Goto");
+			
+			dwTextLength = strlen(numberBox->Text());
+			
+			if( dwTextLength )
+			{
+				pBuf = new char [ dwTextLength + 1 ];
+				if( !pBuf )
+					return ;
+				
+				strcpy(pBuf, numberBox->Text());//GetWindowText( GetDlgItem(hWnd,AP_RID_DIALOG_GOTO_EDIT_NUMBER), pBuf, dwTextLength + 1 );
+
+				// If the first character is + or -, skip over it in the
+				// check loop below
+				if( *pBuf == '-' || *pBuf == '+' )
+					dwStart = 1;
+				else
+					dwStart = 0;
+
+				// Make sure everything we have is numeric
+				for( dwCounter = dwStart; dwCounter < dwTextLength; dwCounter++ )
+				{
+					if( !UT_UCS_isdigit( pBuf[ dwCounter ] ) )
+					{
+						if( m_DlgGoto->m_pszOldValue == NULL )
+						{
+							m_DlgGoto->m_pszOldValue = new char[ 1 ];
+							*m_DlgGoto->m_pszOldValue = '\0';
+						}
+						
+						numberBox->SetText(m_DlgGoto->m_pszOldValue);//SetWindowText( GetDlgItem(hWnd,AP_RID_DIALOG_GOTO_EDIT_NUMBER), m_pszOldValue );
+						
+						bValueOK = FALSE;
+
+						break;
+					}
+				}
+
+				if( bValueOK )
+				{
+					if( m_DlgGoto->m_pszOldValue != NULL )
+						DELETEP( m_DlgGoto->m_pszOldValue );
+
+					m_DlgGoto->m_pszOldValue = pBuf;
+
+					// Only SetEnabled the goto button if what we have actually contains a number
+					gotoButton->SetEnabled( !(((pBuf[ 0 ] == '-') || (pBuf[ 0 ] == '+')) && (pBuf[ 1 ] == '\0')) );
+				}
+				else
+				{
+					FREEP( pBuf );
+
+					gotoButton->SetEnabled( FALSE );
+				}
+			}
+			else
+			{
+				if( m_DlgGoto->m_pszOldValue != NULL )
+					DELETEP( m_DlgGoto->m_pszOldValue );
+
+				m_DlgGoto->m_pszOldValue = NULL;
+
+				gotoButton->SetEnabled( FALSE );
+			}
+
+			break;
+					
+		default:
+			BWindow::DispatchMessage(msg, handler);
+	}
+} 
+
+
+bool GotoWin::QuitRequested()
+{		
+	m_DlgGoto->destroy();
+			
+	return(true);
+}
+
+void GotoWin::_savePointers()
+{
+	gotoWhat = (BListView *)FindView("gotoWhat");
+	numberBox = (BTextControl *)FindView("Number");
+	infoBox = (BStringView *)FindView("infoBox");
+}
+
 /*****************************************************************/
 
 XAP_Dialog * AP_BeOSDialog_Goto::static_constructor(XAP_DialogFactory * pFactory, XAP_Dialog_Id id)
@@ -40,6 +209,8 @@ XAP_Dialog * AP_BeOSDialog_Goto::static_constructor(XAP_DialogFactory * pFactory
 
 AP_BeOSDialog_Goto::AP_BeOSDialog_Goto(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id) : AP_Dialog_Goto(pDlgFactory,id)
 {
+	m_pszOldValue = NULL;
+	m_iRow = 0;
 }
 
 AP_BeOSDialog_Goto::~AP_BeOSDialog_Goto(void)
@@ -50,14 +221,14 @@ AP_BeOSDialog_Goto::~AP_BeOSDialog_Goto(void)
 void AP_BeOSDialog_Goto::activate(void)
 {
 
-	UT_ASSERT(UT_NOT_IMPLEMENTED);
+//	UT_ASSERT(UT_NOT_IMPLEMENTED);
 }
 
 
 void AP_BeOSDialog_Goto::destroy(void)
 {
 
-	UT_ASSERT(UT_NOT_IMPLEMENTED);
+//	UT_ASSERT(UT_NOT_IMPLEMENTED);
 }
 
 
@@ -65,34 +236,26 @@ void AP_BeOSDialog_Goto::runModeless(XAP_Frame * pFrame)
 {
 	UT_ASSERT(pFrame);
 
-/*
-	NOTE: This template can be used to create a working stub for a 
-	new dialog on this platform.  To do so:
+	UT_ASSERT(pFrame);
+		
+	BMessage msg;
+	GotoWin* newwin;
 	
-	1.  Copy this file (and its associated header file) and rename 
-		them accordingly. 
-
-	2.  Do a case sensitive global replace on the words Stub and STUB
-		in both files. 
-
-	3.  Add stubs for any required methods expected by the XP class. 
-		If the build fails because you didn't do this step properly,
-		you've just broken the donut rule.  
-
-	4.	Replace this useless comment with specific instructions to 
-		whoever's porting your dialog so they know what to do.
-		Skipping this step may not cost you any donuts, but it's 
-		rude.  
-
-	This file should *only* be used for stubbing out platforms which 
-	you don't know how to implement.  When implementing a new dialog 
-	for your platform, you're probably better off starting with code
-	from another working dialog.  
-*/	
-
-	UT_ASSERT(UT_NOT_IMPLEMENTED);
+	if (RehydrateWindow("GotoWindow", &msg))
+		{
+        newwin = new GotoWin(&msg);
+		newwin->SetDlg(this);
+        } 
 }
 
+void AP_BeOSDialog_Goto::GoTo (const char *number)
+{
+	UT_UCSChar *ucsnumber = (UT_UCSChar *) malloc (sizeof (UT_UCSChar) * (strlen(number) + 1));
+	UT_UCS_strcpy_char (ucsnumber, number);
+	int target = m_iRow;
+	this->getView()->gotoTarget ((AP_JumpTarget) target, ucsnumber);
+	free (ucsnumber);
+}
 
 
 

@@ -27,6 +27,8 @@ class XAP_BeOSFrame;
 /*****************************************************************/
 class AP_BeOSDialog_Options: public AP_Dialog_Options
 {
+	friend class OptionsWin;
+	
 public:
 	AP_BeOSDialog_Options(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
 	virtual ~AP_BeOSDialog_Options(void);
@@ -64,10 +66,14 @@ public:
  	SET_GATHER			(ViewUnprintable,	UT_Bool );
   
  	SET_GATHER			(NotebookPageNum,	int );
+
+	// Added cjp
+	SET_GATHER			(SmartQuotesEnable,	UT_Bool);
+
 #undef SET_GATHER
 	
  protected:
-	
+	class OptionsWin  *newwin;
 };
 
 #endif /* AP_BEOSDIALOG_OPTIONS_H */

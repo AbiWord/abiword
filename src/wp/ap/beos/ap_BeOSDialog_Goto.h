@@ -27,6 +27,8 @@ class XAP_BeOSFrame;
 
 class AP_BeOSDialog_Goto: public AP_Dialog_Goto
 {
+	friend class GotoWin;
+	
 public:
 	AP_BeOSDialog_Goto(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
 	virtual ~AP_BeOSDialog_Goto(void);
@@ -38,7 +40,11 @@ public:
 	virtual void			activate(void);
 
 protected:
+	char *					m_pszOldValue;
+	int                     m_iRow;
 
+	void					GoTo (const char *number);
+	
 };
 
 #endif /* AP_BEOSDIALOG_GOTO_H */
