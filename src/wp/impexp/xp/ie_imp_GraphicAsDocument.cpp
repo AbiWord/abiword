@@ -63,11 +63,11 @@ UT_Error IE_Imp_GraphicAsDocument::importFile(const char * szFilename)
    	const char * mimetype = NULL;
 	if (pFG->getType() == FGT_Raster) {
 	   buf = ((FG_GraphicRaster*)pFG)->getRaster_PNG();
-	   mimetype = strdup("image/png");
+	   mimetype = UT_strdup("image/png");
 	}
    	else if (pFG->getType() == FGT_Vector) { 
 	   buf = ((FG_GraphicVector*)pFG)->getVector_SVG();
-	   mimetype = strdup("image/svg-xml");
+	   mimetype = UT_strdup("image/svg-xml");
 	}
    	else {
 	   delete pFG;

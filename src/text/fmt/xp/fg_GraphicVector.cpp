@@ -22,6 +22,7 @@
 
 #include "ut_assert.h"
 #include "ut_svg.h"
+#include "ut_string.h"
 #include "ut_bytebuf.h"
 #include "fl_Layout.h"
 #include "px_CR_Object.h"
@@ -195,7 +196,7 @@ UT_Error FG_GraphicVector::insertIntoDocument(PD_Document* pDoc, double fDPI,
 	/*
 	  Create the data item
 	*/
-	char * mimetype = strdup("image/svg-xml");
+	char * mimetype = UT_strdup("image/svg-xml");
    	pDoc->createDataItem(szName, UT_FALSE, m_pbbSVG, mimetype, NULL);
 
 	/*

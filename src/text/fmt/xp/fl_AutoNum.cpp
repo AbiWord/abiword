@@ -518,5 +518,5 @@ char *  fl_AutoNum::dec2roman(UT_sint32 value, UT_Bool lower) const
 		}
 	}
 
-	return strdup(roman);
+	return UT_strdup(roman);
 }
