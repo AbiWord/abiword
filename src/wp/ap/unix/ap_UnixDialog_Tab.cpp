@@ -170,7 +170,9 @@ GtkWidget* AP_UnixDialog_Tab::_constructWindow (void )
 {
 	
 	GtkWidget *windowTabs;
+	GtkAccelGroup *accel_group;
 
+	accel_group = gtk_accel_group_new ();
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
 
 	windowTabs = gtk_window_new (GTK_WINDOW_TOPLEVEL);
@@ -179,6 +181,8 @@ GtkWidget* AP_UnixDialog_Tab::_constructWindow (void )
 	gtk_window_set_title (GTK_WINDOW (windowTabs), pSS->getValue( AP_STRING_ID_DLG_Tab_TabTitle));
 
 	_constructWindowContents(windowTabs);
+	gtk_window_add_accel_group (GTK_WINDOW (windowTabs), accel_group);
+
 	return windowTabs;
 }
 
@@ -277,11 +281,8 @@ void    AP_UnixDialog_Tab::_constructWindowContents( GtkWidget * windowTabs )
 	GtkWidget *label9;
 	GtkObject *spinbuttonTabstop_adj;
 	GtkWidget *spinbuttonTabstop;
-	GtkAccelGroup *accel_group;
 
-	accel_group = gtk_accel_group_new ();
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
-
 
 	table13 = gtk_table_new (5, 1, FALSE);
 	gtk_widget_ref (table13);
@@ -611,8 +612,6 @@ void    AP_UnixDialog_Tab::_constructWindowContents( GtkWidget * windowTabs )
 	gtk_widget_show (spinbuttonTabstop_dum);
 	gtk_widget_set_usize(spinbuttonTabstop_dum,10,-2);
 	gtk_box_pack_start (GTK_BOX (hbox12), spinbuttonTabstop_dum, FALSE,FALSE, 0);
-
-	gtk_window_add_accel_group (GTK_WINDOW (windowTabs), accel_group);
 
 
     //////////////////////////////////////////////////////////////////////
