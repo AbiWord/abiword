@@ -60,7 +60,7 @@
 
 #define XAP_PREF_KEY_RemapGlyphsTable			    "RemapGlyphsTable"
 /* pairwise table of originals and replacements, arbitrarily many pairs */
-#define XAP_PREF_DEFAULT_RemapGlyphsTable			"&#x2018;`&#x2019;'&#x201c;&quot;&#x201d;&quot;"
+#	define XAP_PREF_DEFAULT_RemapGlyphsTable			"&#x2018;`&#x2019;'&#x201c;&quot;&#x201d;&quot;"
 /* smart quotes */
 
 #define XAP_PREF_KEY_SmartQuotesEnable				"SmartQuotesEnable"

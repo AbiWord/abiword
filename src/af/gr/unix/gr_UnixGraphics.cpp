@@ -99,6 +99,7 @@ UT_Bool GR_UnixGraphics::queryProperties(GR_Graphics::Properties gp) const
 static UT_Wctomb* w = NULL;
 static char text[MB_LEN_MAX];
 static int text_length;
+static UT_Bool fallback_used;
 
 #define WCTOMB_DECLS \
 	if (!w) {	\
@@ -111,8 +112,14 @@ static int text_length;
 		/* this branch is to allow Lists to function */	\
 		text[0] = (unsigned char)c;			\
 		text_length = 1;				\
-	} else	\
-		w->wctomb_or_fallback(text,text_length,(wchar_t)c);	\
+		fallback_used = 0;				\
+	} else	{\
+		fallback_used = 0;	\
+		if (!w->wctomb(text,text_length,(wchar_t)c)) {	\
+		    w->wctomb_or_fallback(text,text_length,(wchar_t)c);	\
+		    fallback_used = 1;	\
+		}	\
+	}	
 
 // HACK: I need more speed
 void GR_UnixGraphics::drawChar(UT_UCSChar Char, UT_sint32 xoff, UT_sint32 yoff)
@@ -197,6 +204,8 @@ UT_uint32 GR_UnixGraphics::measureUnRemappedChar(const UT_UCSChar c)
 	UT_UCSChar Wide_char = c;
 	WCTOMB_DECLS;
 	CONVERT_TO_MBS(Wide_char);
+	if (fallback_used)
+	    return 0;
 	GdkFont *font = m_pFont->getGdkFontForUCSChar(Wide_char);
 	return gdk_text_width(font, text, text_length);
 
