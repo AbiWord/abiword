@@ -37,7 +37,7 @@ INCLUDES	= "{ABI_ROOT}src:af:ev:xp:,{ABI_ROOT}src:af:ev:mac:, ¶
 				{ABI_ROOT}:wv:,{ABI_ROOT}:wv:iconv:,{ABI_ROOT}:libpng:, ¶
 				{ABI_ROOT}:zlib:"
 
-DEFINES		= -define TARGET_OS_MAC
+DEFINES		= -define TARGET_OS_MAC -define NO_UNISTD
 
 COptions   	= -target ppc -includes unix -i {INCLUDES}	# MrC
 
