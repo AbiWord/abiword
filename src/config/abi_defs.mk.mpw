@@ -25,6 +25,7 @@
 CPP			= MrCPP
 C			= MrC
 LINK		= PPCLink
+REZ			= Rez
 
 INCLUDES	= "{ABI_ROOT}src:af:ev:xp:,{ABI_ROOT}src:af:ev:mac:, ¶
 				{ABI_ROOT}src:af:gr:xp:,{ABI_ROOT}src:af:gr:mac:, ¶
@@ -37,6 +38,8 @@ INCLUDES	= "{ABI_ROOT}src:af:ev:xp:,{ABI_ROOT}src:af:ev:mac:, ¶
 				{ABI_ROOT}:expat:lib:, ¶
 				{ABI_ROOT}:wv:,{ABI_ROOT}:wv:iconv:,{ABI_ROOT}:libpng:, ¶
 				{ABI_ROOT}:zlib:"
+				
+RezINCLUDES	= "{ABI_ROOT}src:af:xap:mac:"
 
 DEFINES		= -define TARGET_OS_MAC -define NO_UNISTD
 
@@ -47,7 +50,9 @@ CPPOptions = -target ppc -bool on -includes unix -inclpath ignoresys ¶
 
 LibLinkOptions = -xm library -c 'MPS ' -t 'XCOF'
 
-AppLinkOptions = -t 'APPL' -c 'ABIW'
+AppLinkOptions = -t 'APPL' -c 'AbiW'
+
+RezOptions	   = -t 'RSRC' -c 'RSED' -i {RezINCLUDES}
 
 #CPPOptions 	= -bool on -includes unix -inclpath ignoresys ¶
 #				-i {INCLUDES}  {DEFINES}	# SCPP 

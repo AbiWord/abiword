@@ -33,10 +33,15 @@ TARGETS = "xap_MacApp.o" ¶
 			"xap_MacFrame.o" ¶
 			"xap_MacTlbr_Icons.o"
 
+RSRC_TARGETS = "xap_MacResources.rsrc" ¶
+				"xap_MacDlg_MessageBox.rsrc"
 
 !include "{ABI_ROOT}src:config:abi_rules.mk.mpw"
 
-build ÄÄ "{OBJDIR}libxapmac.lib"
+build ÄÄ "{OBJDIR}libxapmac.lib" "{OBJDIR}libxapmac.rsrc"
 
 "{OBJDIR}libxapmac.lib" ÄÄ {TARGETS}
 	{LINK} {TARGETS} -o "{OBJDIR}libxapmac.lib" {LibLinkOptions} 
+
+"{OBJDIR}libxapmac.rsrc" ÄÄ {RSRC_TARGETS}
+	{REZ} {RezOptions} -o "{OBJDIR}libxapmac.rsrc" {RSRC_TARGETS}

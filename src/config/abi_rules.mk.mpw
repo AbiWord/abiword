@@ -46,12 +46,15 @@
 
 ################################################################################
 
-clean Ä
+clean ÄÄ
 	Delete -i Å.o
 
 ################################################################################
 
 # resource creation
+.rsrc Ä .r {MAKEFILE} "{ABI_ROOT}src:config:abi_rules.mk.mpw" "{ABI_ROOT}src:config:abi_defs.mk.mpw"
+	{REZ} "{DepDir}{Default}.r" -o "{Targ}"  {RezOptions} {LocalRezOptions}
+
 
 ###############################################################################
 ## Rule for building .cpp sources in the current directory into .o's in {OBJDIR)
