@@ -1,5 +1,7 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+
 /* AbiSource Application Framework
- * Copyright (C) 1998 AbiSource, Inc.
+ * Copyright (C) 1998-2002 AbiSource, Inc.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -173,6 +175,9 @@
 #define XAP_PREF_KEY_ModifyUnixFontPath  "ModifyUnixFontPath"
 #define XAP_PREF_DEFAULT_ModifyUnixFontPath "1"
 
+#define XAP_PREF_KEY_HTMLExportOptions  "HTML_Export_Options"
+#define XAP_PREF_DEFAULT_HTMLExportOptions "?xml,xmlns:awml,+CSS"
+
 #else /* XAP_PREFS_SCHEMEID_H */
 #ifdef dcl
 
@@ -220,7 +225,7 @@ dcl(ZoomType)
 dcl(DefaultSaveDirectory)
 dcl(ShowUnixFontWarning)
 dcl(ModifyUnixFontPath)
+dcl(HTMLExportOptions)
 
 #endif /* dcl */
 #endif /* XAP_PREFS_SCHEMEID_H */
-

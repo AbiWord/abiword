@@ -60,6 +60,11 @@
 #include "ie_impexp_HTML.h"
 #include "ie_exp_HTML.h"
 
+#ifdef HTML_DIALOG_OPTIONS
+#include "xap_Dialog_Id.h"
+#include "xap_DialogFactory.h"
+#endif
+
 #ifdef HTML_TABLES_SUPPORTED
 #include "ie_Table.h"
 #endif
@@ -178,12 +183,17 @@ bool IE_Exp_PHTML_Sniffer::getDlgLabels(const char ** pszDesc,
 /*****************************************************************/
 
 IE_Exp_HTML::IE_Exp_HTML (PD_Document * pDocument)
-	: IE_Exp(pDocument)
+	: IE_Exp(pDocument),
+	  m_bSuppressDialog(false)
 {
 	m_exp_opt.bIs4         = false;
 	m_exp_opt.bIsAbiWebDoc = false;
 
 	m_error = UT_OK;
+
+#ifdef HTML_DIALOG_OPTIONS
+	XAP_Dialog_HTMLOptions::getHTMLDefaults (&m_exp_opt, pDocument->getApp ());
+#endif
 }
 
 IE_Exp_HTML::~IE_Exp_HTML ()
@@ -266,7 +276,7 @@ class s_HTML_Listener : public PL_Listener
 {
 public:
 	s_HTML_Listener (PD_Document * pDocument, IE_Exp_HTML * pie, bool bClipBoard,
-					 const IE_Exp_HTML_Options & exp_opt);
+					 const XAP_Exp_HTMLOptions & exp_opt);
 
 	~s_HTML_Listener ();
 
@@ -2593,7 +2603,7 @@ void s_HTML_Listener::_outputData (const UT_UCSChar * data, UT_uint32 length)
 }
 
 s_HTML_Listener::s_HTML_Listener (PD_Document * pDocument, IE_Exp_HTML * pie, bool bClipBoard,
-								  const IE_Exp_HTML_Options & exp_opt) :
+								  const XAP_Exp_HTMLOptions & exp_opt) :
 	m_pDocument (pDocument),
 	m_pie(pie),
 	m_bClipBoard(bClipBoard),
@@ -3171,11 +3181,6 @@ bool s_HTML_Listener::signal (UT_uint32 /* iSignal */)
 
 UT_Error IE_Exp_HTML::_writeDocument ()
 {
-#ifdef HTML_DIALOG_OPTIONS
-	// if (!AP_Dialog_HtmlOptions::popup (m_exp_opt)) return UT_OK; // ??
-	/* where is the place to pop-up a dialog? what happens if the user cancels? */
-#endif
-
 	bool bClipBoard = (getDocRange () != NULL);
 
 	s_HTML_Listener * pListener = new s_HTML_Listener(getDoc(),this,bClipBoard,m_exp_opt);
@@ -3194,4 +3199,40 @@ UT_Error IE_Exp_HTML::_writeDocument ()
 	
 	if ((m_error == UT_OK) && (okay == true)) return UT_OK;
 	return UT_IE_COULDNOTWRITE;
+}
+
+bool IE_Exp_HTML::_openFile (const char * szFilename)
+{
+#ifdef HTML_DIALOG_OPTIONS
+	if (m_bSuppressDialog) return IE_Exp::_openFile (szFilename);
+
+	XAP_Dialog_Id id = XAP_DIALOG_ID_HTMLOPTIONS;
+
+	XAP_DialogFactory * pDialogFactory
+		= static_cast<XAP_DialogFactory *>(getDoc()->getApp()->getDialogFactory ());
+
+	XAP_Dialog_HTMLOptions * pDialog
+		= static_cast<XAP_Dialog_HTMLOptions *>(pDialogFactory->requestDialog (id));
+
+	UT_return_val_if_fail (pDialog, false);
+
+	pDialog->setHTMLOptions (&m_exp_opt, getDoc()->getApp ());
+
+	/* run the dialog
+	 */
+	XAP_Frame * pFrame = getDoc()->getApp()->getLastFocussedFrame ();
+
+	UT_return_val_if_fail (pFrame, false);
+
+	pDialog->runModal (pFrame);
+
+	/* extract what they did
+	 */
+	bool bSave = pDialog->shouldSave ();
+
+	pDialogFactory->releaseDialog (pDialog);
+
+	if (!bSave) return false;
+#endif
+	return IE_Exp::_openFile (szFilename);
 }

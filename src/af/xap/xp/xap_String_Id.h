@@ -1,3 +1,5 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+
 /* AbiSource Application Framework
  * Copyright (C) 1998-2000 AbiSource, Inc.
  *
@@ -453,14 +455,14 @@ dcl(ENC_UNIC_UCS_2LE,					"Unicode UCS-2 Little Endian")
 dcl(ENC_UNIC_UCS_4BE,					"Unicode UCS-4 Big Endian")
 dcl(ENC_UNIC_UCS_4LE,					"Unicode UCS-4 Little Endian")
 
-
-
-
-
-
-
-
-
-
-
-
+/* HTML Options Dialog */
+dcl(DLG_HTMLOPT_ExpTitle,				"HTML Export Options")
+dcl(DLG_HTMLOPT_ExpLabel,				"Select HTML export options:")
+dcl(DLG_HTMLOPT_ExpSave,				"Save Settings")
+dcl(DLG_HTMLOPT_ExpRestore,				"Restore Settings")
+dcl(DLG_HTMLOPT_ExpIs4,					"Export as HTML 4.01")
+dcl(DLG_HTMLOPT_ExpAbiWebDoc,			"Export with PHP instructions for AbiWord website")
+dcl(DLG_HTMLOPT_ExpDeclareXML,			"Declare as XML (version 1.0)")
+dcl(DLG_HTMLOPT_ExpAllowAWML,			"Allow extra markup in AWML namespace")
+dcl(DLG_HTMLOPT_ExpEmbedCSS,			"Embed (CSS) style sheet")
+dcl(DLG_HTMLOPT_ExpEmbedImages,			"Embed images in URLs (Base64-encoded)")

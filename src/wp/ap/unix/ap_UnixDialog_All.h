@@ -1,5 +1,7 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+
 /* AbiWord
- * Copyright (C) 1998 AbiSource, Inc.
+ * Copyright (C) 1998-2002 AbiSource, Inc.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -44,6 +46,7 @@
 #   include "xap_UnixDlg_PluginManager.h"
 #   include "xap_UnixDlg_ClipArt.h"
 #   include "xap_UnixDlg_Encoding.h"
+#   include "xap_UnixDlg_HTMLOptions.h"
 #include "xap_UnixDlg_Password.h"
 #include "xap_UnixDlg_Image.h"
 
@@ -170,6 +173,7 @@
 	DeclareDialog(AP_DIALOG_ID_FILE_NEW,        AP_UnixGnomeDialog_New)
 	DeclareDialog(XAP_DIALOG_ID_PLUGIN_MANAGER, XAP_UnixGnomeDialog_PluginManager)
 	DeclareDialog(XAP_DIALOG_ID_ENCODING,       XAP_UnixDialog_Encoding)
+	DeclareDialog(XAP_DIALOG_ID_HTMLOPTIONS,    XAP_UnixDialog_HTMLOptions)
         DeclareDialog(XAP_DIALOG_ID_FILE_IMPORT, XAP_UnixDialog_FileOpenSaveAs)
         DeclareDialog(XAP_DIALOG_ID_FILE_EXPORT, XAP_UnixDialog_FileOpenSaveAs)
      DeclareDialog(XAP_DIALOG_ID_INSERT_FILE, XAP_UnixDialog_FileOpenSaveAs)
@@ -222,6 +226,7 @@
 	DeclareDialog(XAP_DIALOG_ID_PLUGIN_MANAGER, XAP_UnixDialog_PluginManager)
 	DeclareDialog(XAP_DIALOG_ID_CLIPART,        XAP_UnixDialog_ClipArt)
 	DeclareDialog(XAP_DIALOG_ID_ENCODING,       XAP_UnixDialog_Encoding)
+	DeclareDialog(XAP_DIALOG_ID_HTMLOPTIONS,    XAP_UnixDialog_HTMLOptions)
         DeclareDialog(XAP_DIALOG_ID_FILE_IMPORT, XAP_UnixDialog_FileOpenSaveAs)
         DeclareDialog(XAP_DIALOG_ID_FILE_EXPORT, XAP_UnixDialog_FileOpenSaveAs)
      DeclareDialog(XAP_DIALOG_ID_INSERT_FILE, XAP_UnixDialog_FileOpenSaveAs)

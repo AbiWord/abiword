@@ -118,7 +118,14 @@ public:
 
 #endif /* HTML_ENABLE_PHTML */
 
-struct IE_Exp_HTML_Options
+#ifdef HTML_DIALOG_OPTIONS
+#include "xap_Dlg_HTMLOptions.h"
+#else
+
+/* This struct is defined in xap_Dlg_HTMLOptions.h, but that file does not
+ * exist in AbiWord-1.0.x so a reduced definition is provided here.
+ */
+struct XAP_Exp_HTMLOptions
 {
 	bool	bIs4;
 	bool	bIsAbiWebDoc;
@@ -127,6 +134,8 @@ struct IE_Exp_HTML_Options
 	//       2. save images as base-64 encoded data-URL
 	//       3. save styles to an external stylesheet
 };
+
+#endif /* HTML_DIALOG_OPTIONS */
 
 class ABI_EXPORT IE_Exp_HTML : public IE_Exp
 {
@@ -142,14 +151,18 @@ public:
 									  IEFileType * ft);
 	static bool 		SupportsFileType (IEFileType ft);
 
+	inline void			suppressDialog (bool disable = true) { m_bSuppressDialog = disable; }
+
 	inline void			set_HTML4 (bool enable = true) { m_exp_opt.bIs4 = enable; }
 	inline void			set_PHTML (bool enable = true) { m_exp_opt.bIsAbiWebDoc = enable; }
 
 protected:
+	virtual bool		_openFile (const char * szFilename);
 	virtual UT_Error	_writeDocument ();
 
 private:
-	IE_Exp_HTML_Options	m_exp_opt;
+	bool				m_bSuppressDialog;
+	XAP_Exp_HTMLOptions	m_exp_opt;
 };
 
 #endif /* IE_EXP_HTML_H */

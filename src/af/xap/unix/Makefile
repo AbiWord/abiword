@@ -36,6 +36,7 @@ CPPSRCS=		xap_UnixApp.cpp				\
 			xap_UnixDlg_Encoding.cpp		\
 			xap_UnixDlg_FileOpenSaveAs.cpp		\
 			xap_UnixDlg_FontChooser.cpp		\
+			xap_UnixDlg_HTMLOptions.cpp		\
 			xap_UnixDlg_MessageBox.cpp		\
 			xap_UnixDlg_Print.cpp			\
 			xap_UnixDlg_WindowMore.cpp		\

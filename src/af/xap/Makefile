@@ -31,6 +31,7 @@ PLATFORM_OBJS=	$(OBJDIR)/xap_$(ABI_FE)App.$(OBJ_SUFFIX)			\
 		$(OBJDIR)/xap_$(ABI_FE)Clipboard.$(OBJ_SUFFIX)			\
 		$(OBJDIR)/xap_$(ABI_FE)Dlg_FileOpenSaveAs.$(OBJ_SUFFIX)		\
 		$(OBJDIR)/xap_$(ABI_FE)Dlg_FontChooser.$(OBJ_SUFFIX)		\
+		$(OBJDIR)/xap_$(ABI_FE)Dlg_HTMLOptions.$(OBJ_SUFFIX)		\
 		$(OBJDIR)/xap_$(ABI_FE)Dlg_MessageBox.$(OBJ_SUFFIX)		\
 		$(OBJDIR)/xap_$(ABI_FE)Dlg_PluginManager.$(OBJ_SUFFIX)		\
 		$(OBJDIR)/xap_$(ABI_FE)Dlg_Print.$(OBJ_SUFFIX)			\
@@ -125,6 +126,7 @@ OBJS=		$(PLATFORM_OBJS)						\
 		$(OBJDIR)/xap_Dlg_ClipArt.$(OBJ_SUFFIX)				\
 		$(OBJDIR)/xap_Dlg_FileOpenSaveAs.$(OBJ_SUFFIX)			\
 		$(OBJDIR)/xap_Dlg_FontChooser.$(OBJ_SUFFIX)			\
+		$(OBJDIR)/xap_Dlg_HTMLOptions.$(OBJ_SUFFIX)			\
 		$(OBJDIR)/xap_Dlg_MessageBox.$(OBJ_SUFFIX)			\
 		$(OBJDIR)/xap_Dlg_Image.$(OBJ_SUFFIX)	\
 		$(OBJDIR)/xap_Dlg_Password.$(OBJ_SUFFIX)			\
