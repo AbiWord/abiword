@@ -20,6 +20,7 @@
 #define UT_THREADIMPL_H
 
 #include "ut_thread.h"
+#include "ut_debugmsg.h"
 #include <pthread.h>
 #include <sched.h>
 
@@ -46,23 +47,48 @@ class ABI_EXPORT UT_ThreadImpl
    */
   void start ()
     {
-      UT_Thread::Priority pri = mOwner->getPriority () ;
+			pthread_attr_t attr;
+			struct sched_param param;
 
-      // TODO: use the priority
+			pthread_attr_init(&attr);
+			int prio=10;    
+  UT_Thread::Priority pri = mOwner->getPriority () ;
+		if(pri == UT_Thread::PRI_LOW)
+			prio=8;
+		else if( pri == UT_Thread::PRI_HIGH)
+			prio=12;
+			
+			param.sched_priority=prio;
+			pthread_attr_setschedparam(&attr,&param);
 
-      if ( 0 != pthread_create ( &mThread, NULL, start_routine, this ) )
+      if ( 0 != pthread_create ( &mThread,&attr, start_routine, this ) )
 	{
-	  printf ( "thread create failed!!\n" ) ;
+	  UT_DEBUGMSG (( "thread create failed!!\n" )) ;
 	}
     }
+	/* Join thread */
+	void join()
+	{	
+		if(mThread != 0)
+			pthread_join(mThread,0);
+	}
 
   /*!
    * Sets this thread's priority
    */
   void setPriority ( UT_Thread::Priority pri )
     {
-      // TODO!!
-    }
+			struct sched_param sched;
+			sched.sched_priority=10;
+
+			if(pri == UT_Thread::PRI_LOW)
+				sched.sched_priority=8;
+			else if(pri == UT_Thread::PRI_HIGH)
+				sched.sched_priority=12;
+
+		if(mThread != NULL)
+    	pthread_setschedparam(mThread,SCHED_RR,&sched);
+		}
 
   /*!
    * Causes the current running thread to temporarily pause
@@ -78,7 +104,7 @@ class ABI_EXPORT UT_ThreadImpl
   static void * start_routine ( void * inPtr )
     {
       UT_Thread * thisPtr = static_cast<UT_ThreadImpl *>(inPtr)->mOwner;
-      printf ( "In the start routine: %d\n", thisPtr == NULL );
+      UT_DEBUGMSG (( "In the start routine: %d\n", thisPtr == NULL ));
       thisPtr->run () ;
       return NULL ;
     }
