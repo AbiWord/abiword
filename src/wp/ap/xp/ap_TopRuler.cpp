@@ -844,8 +844,7 @@ void AP_TopRuler::_drawTabProperties(const UT_Rect * pClipRect,
 		
 			m_pG->setColor3D(GR_Graphics::CLR3D_BevelDown);
 
-			UT_ASSERT(pInfo->m_iDefaultTabInterval > 0);
-			if (pInfo->m_iDefaultTabInterval > 0)			// prevent infinite loop -- just in case
+			if (pInfo->m_iDefaultTabInterval > 0)			// prevent infinite loop -- get this if we draw while loading
 			{
 				UT_sint32 iPos = xAbsLeft;
 				for (;iPos < xAbsRight; iPos += pInfo->m_iDefaultTabInterval)
