@@ -260,11 +260,11 @@ void AP_Dialog_FormatTable::setCurCellProps(void)
 	XML_Char * bgColor = NULL;
 	if (pView->getCellBGColor (bgColor))
 	{
-		addOrReplaceVecProp (m_vecProps, "background-color", bgColor);
+		addOrReplaceVecProp(m_vecProps, "background-color", bgColor);
 	}
 	else
 	{
-		removeVecProp (m_vecProps, "background-color");
+		removeVecProp(m_vecProps, "background-color");
 	}
 
 	UT_String bstmp = UT_String_sprintf("%d", FS_FILL);
@@ -273,8 +273,6 @@ void AP_Dialog_FormatTable::setCurCellProps(void)
 	// draw the preview with the changed properties
 	if(m_pFormatTablePreview)
 		m_pFormatTablePreview->draw();
-	
-	//m_bCurCellFormatDisplayed = TODO;
 }
 
 void AP_Dialog_FormatTable::applyChanges()
@@ -394,65 +392,39 @@ void AP_Dialog_FormatTable::_createPreviewFromGC(GR_Graphics * gc,
 	m_pFormatTablePreview->setWindowSize(width, height);
 }
 
-bool AP_Dialog_FormatTable::getTopToggled()
+bool AP_Dialog_FormatTable::_getToggleButtonStatus(const char * lineStyle)
 {
 	const XML_Char * pszStyle = NULL;
-	UT_String lineStyleString = UT_String_sprintf("%d", LS_OFF);	
+	UT_String lsOff = UT_String_sprintf("%d", LS_OFF);	
 
-	getVecProp(m_vecProps, "top-style", pszStyle);
+	getVecProp(m_vecProps, lineStyle, pszStyle);
 
-	if ((pszStyle && strcmp(pszStyle, lineStyleString.c_str())) || 
+	if ((pszStyle && strcmp(pszStyle, lsOff.c_str())) || 
 		!pszStyle)
 		return true;
 	else
 		return false;
+}
+
+bool AP_Dialog_FormatTable::getTopToggled()
+{
+	return _getToggleButtonStatus("top-style");
 }
 
 bool AP_Dialog_FormatTable::getBottomToggled()
 {
-	const XML_Char * pszStyle = NULL;
-	UT_String lineStyleString = UT_String_sprintf("%d", LS_OFF);	
-
-	getVecProp(m_vecProps, "bot-style", pszStyle);
-
-	if ((pszStyle && strcmp(pszStyle, lineStyleString.c_str())) || 
-		!pszStyle)
-		return true;
-	else
-		return false;
-	
+	return _getToggleButtonStatus("bot-style");
 }
 
 bool AP_Dialog_FormatTable::getRightToggled()
 {
-	const XML_Char * pszStyle = NULL;
-	UT_String lineStyleString = UT_String_sprintf("%d", LS_OFF);	
-
-	getVecProp(m_vecProps, "right-style", pszStyle);
-
-	if ((pszStyle && strcmp(pszStyle, lineStyleString.c_str())) || 
-		!pszStyle)
-		return true;
-	else
-		return false;
+	return _getToggleButtonStatus("right-style");
 }
 
 bool AP_Dialog_FormatTable::getLeftToggled()
 {
-
-	const XML_Char * pszStyle = NULL;
-	UT_String lineStyleString = UT_String_sprintf("%d", LS_OFF);	
-
-	getVecProp(m_vecProps, "left-style", pszStyle);
-
-	if ((pszStyle && strcmp(pszStyle, lineStyleString.c_str())) || 
-		!pszStyle)
-		return true;
-	else
-		return false;
+	return _getToggleButtonStatus("left-style");
 }
-
-
 
 //////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////
@@ -531,14 +503,9 @@ void AP_FormatTable_preview::draw(void)
 //
 //  Draw the cell borders
 //
-
-	UT_String lineStyleString = UT_String_sprintf("%d", LS_OFF);	
 	
 	// top border
-	const XML_Char * pszTopStyle = NULL;
-	m_pFormatTable->getVecProp(m_pFormatTable->m_vecProps, "top-style", pszTopStyle);
-	if ((pszTopStyle && strcmp(pszTopStyle, lineStyleString.c_str())) || 
-		!pszTopStyle)
+	if (m_pFormatTable->getTopToggled())
 	{
 		const XML_Char * pszTopColor = NULL;
 		m_pFormatTable->getVecProp(m_pFormatTable->m_vecProps, "top-color", pszTopColor);
@@ -554,10 +521,7 @@ void AP_FormatTable_preview::draw(void)
 	}
 
 	// left border
-	const XML_Char * pszLeftStyle = NULL;
-	m_pFormatTable->getVecProp(m_pFormatTable->m_vecProps, "left-style", pszLeftStyle);
-	if ((pszLeftStyle && strcmp(pszLeftStyle, lineStyleString.c_str())) || 
-		!pszLeftStyle)
+	if (m_pFormatTable->getLeftToggled())
 	{
 		const XML_Char * pszLeftColor = NULL;
 		m_pFormatTable->getVecProp(m_pFormatTable->m_vecProps, "left-color", pszLeftColor);
@@ -571,12 +535,9 @@ void AP_FormatTable_preview::draw(void)
 		m_gc->drawLine(pageRect.left + border, pageRect.top + border,
 					   pageRect.left + border, pageRect.top + pageRect.height - border);
 	}
-	
+
 	// right border
-	const XML_Char * pszRightStyle = NULL;
-	m_pFormatTable->getVecProp(m_pFormatTable->m_vecProps, "right-style", pszRightStyle);
-	if ((pszRightStyle && strcmp(pszRightStyle, lineStyleString.c_str())) || 
-		!pszRightStyle)
+	if (m_pFormatTable->getRightToggled())
 	{
 		const XML_Char * pszRightColor = NULL;
 		m_pFormatTable->getVecProp(m_pFormatTable->m_vecProps, "right-color", pszRightColor);
@@ -592,10 +553,7 @@ void AP_FormatTable_preview::draw(void)
 	}
 	
 	// bottom border
-	const XML_Char * pszBottomStyle = NULL;
-	m_pFormatTable->getVecProp(m_pFormatTable->m_vecProps, "bot-style", pszBottomStyle);
-	if ((pszBottomStyle && strcmp(pszBottomStyle, lineStyleString.c_str())) || 
-		!pszBottomStyle)
+	if (m_pFormatTable->getBottomToggled())
 	{
 		const XML_Char * pszBottomColor = NULL;
 		m_pFormatTable->getVecProp(m_pFormatTable->m_vecProps, "bot-color", pszBottomColor);
