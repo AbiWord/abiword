@@ -36,9 +36,6 @@ class ABI_EXPORT UT_ThreadImpl
 	
 	~UT_ThreadImpl ()
 	{
-		 // only exit if started
-		 if ( mOwner->mbStarted )
-			  g_thread_exit ( NULL ) ;
 	}
 	
 	/*!
@@ -49,13 +46,13 @@ class ABI_EXPORT UT_ThreadImpl
     {
 		 UT_Thread::Priority pri = mOwner->getPriority () ;
 		 
-		 GError * err = 0 ;
+		 GError * err = NULL ;
 		
 		 // TODO: use the priority
 			
-		 if ( (mThread = g_thread_create ( start_routine, this, TRUE, &err ) ) == 0 )
+		 if ( (mThread = g_thread_create ( start_routine, this, TRUE, &err ) ) == NULL )
 		 {
-			  UT_DEBUGMSG(( "thread create failed: %s!!\n", err->message ));
+			  UT_DEBUGMSG(( "Thread create failed: %s!!\n", err->message ));
 			  g_error_free ( err ) ;
 		 }
 	}
@@ -93,13 +90,13 @@ class ABI_EXPORT UT_ThreadImpl
 
  private:
 
-  static void * start_routine ( void * inPtr )
-  {
-	   UT_Thread * thisPtr = static_cast<UT_ThreadImpl *>(inPtr)->mOwner;
-	   UT_DEBUGMSG(( "In the start routine: %d\n", thisPtr == NULL ));
-	   thisPtr->run () ;
-	   return NULL ;
-  }
+	static void * start_routine ( void * inPtr )
+		{
+			UT_Thread * thisPtr = static_cast<UT_ThreadImpl *>(inPtr)->mOwner;
+			UT_DEBUGMSG(( "In the start routine: %d\n", thisPtr == NULL ));
+			thisPtr->run () ;
+			return NULL ;
+		}
 
 	 UT_Thread       * mOwner;
 	 GThread         * mThread;

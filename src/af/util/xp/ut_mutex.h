@@ -39,10 +39,11 @@ class UT_Mutex
 	UT_Mutex ();
 	~UT_Mutex ();
 
- private:
-  // only called by UT_MutexImpl
   void lock ();
   void unlock ();
+
+ private:
+
 
   // no impls
   UT_Mutex (const UT_Mutex & other);
