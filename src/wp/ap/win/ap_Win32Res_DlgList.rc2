@@ -1,0 +1,84 @@
+// AbiWord
+// Copyright (C) 1998 AbiSource, Inc.
+// 
+// This program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public License
+// as published by the Free Software Foundation; either version 2
+// of the License, or (at your option) any later version.
+// 
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software
+// Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+// 02111-1307, USA.
+//////////////////////////////////////////////////////////////////
+
+//////////////////////////////////////////////////////////////////
+// THIS FILE IS INCLUDED BY .cpp AND .rc FILES.
+//
+// *** RC.exe IS BRAIN-DAMAGED.  GIVING THIS FILE AN .rc2
+// *** EXTENSION MAKES #INCLUDING THIS FILE FROM Win32Main.rc
+// *** WORK -- IF THE SUFFIX IS .h ONLY THE #DEFINES WORK, THE
+// *** DIALOGS DO NOT GET COMPILED.
+//
+//////////////////////////////////////////////////////////////////
+
+#define AP_RID_DIALOG_LIST_BTN_CLOSE					1001
+#define AP_RID_DIALOG_LIST_BTN_APPLY					1002
+#define AP_RID_DIALOG_LIST_CHECK_START_NEW_LIST			1003
+#define AP_RID_DIALOG_LIST_CHECK_STOP_CURRENT_LIST		1004
+#define AP_RID_DIALOG_LIST_CHECK_CHANGE_CURRENT_LIST	1005
+#define AP_RID_DIALOG_LIST_COMBO_NEW_LIST_TYPE			1006
+#define AP_RID_DIALOG_LIST_EDIT_NEW_STARTING_VALUE		1007
+#define AP_RID_DIALOG_LIST_COMBO_CURRENT_LIST_TYPE		1008
+#define AP_RID_DIALOG_LIST_EDIT_CURRENT_STARTING_VALUE	1009
+#define AP_RID_DIALOG_LIST_GROUP_NEW_LIST				1010
+#define AP_RID_DIALOG_LIST_SPIN1						1011
+#define AP_RID_DIALOG_LIST_SPIN2						1012
+#define AP_RID_DIALOG_LIST_TYPE1						1013
+#define AP_RID_DIALOG_LIST_TYPE2						1014
+#define AP_RID_DIALOG_LIST_STARTING1					1015
+#define AP_RID_DIALOG_LIST_STARTING2					1016
+#define AP_RID_DIALOG_LIST_GROUP_CURRENT_LIST			1017
+
+#ifdef RC_INVOKED
+// NOTE -- these placeholder strings get overridden at runtime 
+// NOTE -- they're just here to make sizing easier
+
+AP_RID_DIALOG_LIST DIALOG DISCARDABLE  0, 0, 313, 204
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Lists for - "
+FONT 8, "MS Sans Serif"
+BEGIN
+    PUSHBUTTON      "Close",AP_RID_DIALOG_LIST_BTN_CLOSE,256,183,50,14
+    DEFPUSHBUTTON   "Apply",AP_RID_DIALOG_LIST_BTN_APPLY,196,183,50,14
+    CONTROL         "Start a New List",AP_RID_DIALOG_LIST_CHECK_START_NEW_LIST,"Button",BS_AUTOCHECKBOX | 
+                    WS_TABSTOP,7,25,66,10
+    GROUPBOX        "New list",AP_RID_DIALOG_LIST_GROUP_NEW_LIST,91,7,215,61
+    COMBOBOX        AP_RID_DIALOG_LIST_COMBO_NEW_LIST_TYPE,153,20,106,76,CBS_DROPDOWNLIST |
+                    WS_VSCROLL | WS_TABSTOP
+    EDITTEXT        AP_RID_DIALOG_LIST_EDIT_NEW_STARTING_VALUE,153,36,62,14,ES_AUTOHSCROLL | ES_NUMBER
+    CONTROL         "Spin1",AP_RID_DIALOG_LIST_SPIN1,"msctls_updown32",UDS_SETBUDDYINT | 
+                    UDS_ALIGNRIGHT | UDS_AUTOBUDDY | UDS_ARROWKEYS,215,38,11,
+                    14
+    LTEXT           "List Type",AP_RID_DIALOG_LIST_TYPE1,104,22,30,8
+    LTEXT           "Starting Value",AP_RID_DIALOG_LIST_STARTING1,104,38,45,8
+    CONTROL         "Change Current List",AP_RID_DIALOG_LIST_CHECK_CHANGE_CURRENT_LIST,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,7,109,78,10
+    GROUPBOX        "Current List",AP_RID_DIALOG_LIST_GROUP_CURRENT_LIST,91,87,215,75
+    CONTROL         "Stop Current List",AP_RID_DIALOG_LIST_CHECK_STOP_CURRENT_LIST,"Button",BS_AUTOCHECKBOX | 
+                    WS_TABSTOP,7,70,107,10
+    COMBOBOX        AP_RID_DIALOG_LIST_COMBO_CURRENT_LIST_TYPE,155,98,106,76,CBS_DROPDOWNLIST |
+                    WS_VSCROLL | WS_TABSTOP
+    EDITTEXT        AP_RID_DIALOG_LIST_EDIT_CURRENT_STARTING_VALUE,155,114,62,14,ES_AUTOHSCROLL | ES_NUMBER
+    CONTROL         "Spin1",AP_RID_DIALOG_LIST_SPIN2,"msctls_updown32",UDS_SETBUDDYINT | 
+                    UDS_ALIGNRIGHT | UDS_AUTOBUDDY | UDS_ARROWKEYS,217,116,
+                    11,14
+    LTEXT           "List Type",AP_RID_DIALOG_LIST_TYPE2,105,100,30,8
+    LTEXT           "Starting Value",AP_RID_DIALOG_LIST_STARTING2,105,116,45,8
+END
+#endif /* RC_INVOKED */

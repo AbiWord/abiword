@@ -374,22 +374,27 @@ class fp_FieldRun : public fp_Run
 {
 public:
 	fp_FieldRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen);
+	virtual ~fp_FieldRun() {};
 
 	virtual void			lookupProperties(void);
 	virtual void			mapXYToPosition(UT_sint32 xPos, UT_sint32 yPos, PT_DocPosition& pos, UT_Bool& bBOL, UT_Bool& bEOL);
 	virtual void 			findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y, UT_sint32& height);
 	virtual UT_Bool			canBreakAfter(void) const;
-        virtual fp_FieldsEnum           getFieldType(void) const;
+	virtual fp_FieldsEnum	getFieldType(void) const;
 	virtual UT_Bool			canBreakBefore(void) const;
 	virtual UT_Bool			letPointPass(void) const;
 	virtual UT_Bool			findMaxLeftFitSplitPointInLayoutUnits(UT_sint32 iMaxLeftWidth, fp_RunSplitInfo& si, UT_Bool bForce=UT_FALSE);
 
-	UT_Bool					calculateValue(void);
-        virtual UT_Bool                 isSuperscript(void) const;
-        virtual UT_Bool                 isSubscript(void) const;
+	virtual UT_Bool			isSuperscript(void) const;
+	virtual UT_Bool			isSubscript(void) const;
+
+	UT_Bool					_setValue(UT_UCSChar *p_new_value);					
+
+	virtual UT_Bool			calculateValue(void) = 0;
 	
 protected:
-	virtual void			_draw(dg_DrawArgs*);
+	virtual void			_draw(dg_DrawArgs*) = 0;
+	virtual void			_defaultDraw(dg_DrawArgs*);
 	virtual void       		_clearScreen(UT_Bool bFullLineHeightRect);
 
 	GR_Font*				m_pFont;
@@ -400,12 +405,43 @@ protected:
 	fp_FieldsEnum			m_iFieldType;
         enum
         {
-                TEXT_POSITION_NORMAL,
-                TEXT_POSITION_SUPERSCRIPT,
-                TEXT_POSITION_SUBSCRIPT
+			TEXT_POSITION_NORMAL,
+			TEXT_POSITION_SUPERSCRIPT,
+			TEXT_POSITION_SUBSCRIPT
         };
-        UT_Byte                         m_fPosition;
+	UT_Byte                         m_fPosition;
 };
+
+class fp_FieldTimeRun : public fp_FieldRun
+{
+public:
+	
+	fp_FieldTimeRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen);
+
+	virtual UT_Bool			calculateValue(void);
+	virtual void			_draw(dg_DrawArgs* pDA) { _defaultDraw(pDA); }
+};
+
+class fp_FieldPageNumberRun : public fp_FieldRun
+{
+public:
+	
+	fp_FieldPageNumberRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen);
+
+	virtual UT_Bool			calculateValue(void);
+	virtual void			_draw(dg_DrawArgs* pDA) { _defaultDraw(pDA); }
+};
+
+class fp_FieldPageCountRun : public fp_FieldRun
+{
+public:
+	
+	fp_FieldPageCountRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen);
+
+	virtual UT_Bool			calculateValue(void);
+	virtual void			_draw(dg_DrawArgs* pDA) { _defaultDraw(pDA); }
+};
+
 
 class fp_FmtMarkRun : public fp_Run
 {
@@ -429,9 +465,9 @@ protected:
 	virtual void       		_clearScreen(UT_Bool bFullLineHeightRect);
         enum
         {
-                TEXT_POSITION_NORMAL,
-                TEXT_POSITION_SUPERSCRIPT,
-                TEXT_POSITION_SUBSCRIPT
+            TEXT_POSITION_NORMAL,
+            TEXT_POSITION_SUPERSCRIPT,
+            TEXT_POSITION_SUBSCRIPT
         };
         UT_Byte                         m_fPosition;
 };

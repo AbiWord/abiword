@@ -831,109 +831,15 @@ fp_FieldRun::fp_FieldRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffset
 
 	m_sFieldValue[0] = 0;
 	
-	lookupProperties();
-
-	calculateValue();
 }
 
-UT_Bool fp_FieldRun::calculateValue(void)
+UT_Bool fp_FieldRun::_setValue(UT_UCSChar *p_new_value)
 {
-	UT_UCSChar sz_ucs_FieldValue[FPFIELD_MAX_LENGTH + 1];
-	sz_ucs_FieldValue[0] = 0;
-	
-	switch (m_iFieldType)
-	{
-	case FPFIELD_time:
-	{
-		char szFieldValue[FPFIELD_MAX_LENGTH + 1];
-
-		time_t	tim = time(NULL);
-		struct tm *pTime = localtime(&tim);
-	
-		strftime(szFieldValue, FPFIELD_MAX_LENGTH, "%I:%M:%S %p", pTime);
-
-		UT_UCS_strcpy_char(sz_ucs_FieldValue, szFieldValue);
-		break;
-	}
-	case FPFIELD_page_number:
-	{
-		char szFieldValue[FPFIELD_MAX_LENGTH + 1];
-
-		if (m_pLine && m_pLine->getContainer() && m_pLine->getContainer()->getPage())
-		{
-			fp_Page* pPage = m_pLine->getContainer()->getPage();
-			FL_DocLayout* pDL = pPage->getDocLayout();
-
-			UT_sint32 iPageNum = 0;
-			UT_uint32 iNumPages = pDL->countPages();
-			for (UT_uint32 i=0; i<iNumPages; i++)
-			{
-				fp_Page* pPg = pDL->getNthPage(i);
-
-				if (pPg == pPage)
-				{
-					iPageNum = i + 1;
-					break;
-				}
-			}
-
-			UT_ASSERT(iPageNum > 0);
-
-			sprintf(szFieldValue, "%d", iPageNum);
-		}
-		else
-		{
-			strcpy(szFieldValue, "?");
-		}
-
-		UT_UCS_strcpy_char(sz_ucs_FieldValue, szFieldValue);
-		break;
-	}
-	case FPFIELD_page_count:
-	{
-		char szFieldValue[FPFIELD_MAX_LENGTH + 1];
-		
-		if (m_pLine && m_pLine->getContainer() && m_pLine->getContainer()->getPage())
-		{
-
-			fp_Page* pPage = m_pLine->getContainer()->getPage();
-			FL_DocLayout* pDL = pPage->getDocLayout();
-
-			sprintf(szFieldValue, "%d", pDL->countPages());
-		}
-		else
-		{
-			strcpy(szFieldValue, "?");
-		}
-
-		UT_UCS_strcpy_char(sz_ucs_FieldValue, szFieldValue);
-		break;
-	}
-	case FPFIELD_list_label:
-	{
-		char szFieldValue[FPFIELD_MAX_LENGTH + 1];
-
-		char * listlabel =  m_pBL->getListLabel();
-                if(listlabel == NULL)
-		{
-		        sz_ucs_FieldValue[0] = NULL;
-		}
-		else
-		{
-		        UT_UCS_strcpy_char(sz_ucs_FieldValue, listlabel);
-			m_sFieldValue[0] =  NULL; // Force an update!!!
-		}
-		break;
-	}
-	default:
-		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-		return UT_FALSE;
-	}
-	if (0 != UT_UCS_strcmp(sz_ucs_FieldValue, m_sFieldValue))
+	if (0 != UT_UCS_strcmp(p_new_value, m_sFieldValue))
 	{
 		clearScreen();
 		
-		UT_UCS_strcpy(m_sFieldValue, sz_ucs_FieldValue);
+		UT_UCS_strcpy(m_sFieldValue, p_new_value);
 
 		{
 			unsigned short aCharWidths[FPFIELD_MAX_LENGTH];
@@ -973,12 +879,12 @@ void fp_FieldRun::lookupProperties(void)
 	FL_DocLayout * pLayout = m_pBL->getDocLayout();
 	if(m_iFieldType == FPFIELD_list_label)
 	{
-	        m_pFont = pLayout->findFont(pSpanAP,pBlockAP,pSectionAP, FL_DocLayout::FIND_FONT_AT_SCREEN_RESOLUTION,UT_TRUE);
+		m_pFont = pLayout->findFont(pSpanAP,pBlockAP,pSectionAP, FL_DocLayout::FIND_FONT_AT_SCREEN_RESOLUTION,UT_TRUE);
 		m_pFontLayout = pLayout->findFont(pSpanAP,pBlockAP,pSectionAP, FL_DocLayout::FIND_FONT_AT_LAYOUT_RESOLUTION,UT_TRUE);
 	}
 	else
 	{
-	        m_pFont = pLayout->findFont(pSpanAP,pBlockAP,pSectionAP, FL_DocLayout::FIND_FONT_AT_SCREEN_RESOLUTION);
+		m_pFont = pLayout->findFont(pSpanAP,pBlockAP,pSectionAP, FL_DocLayout::FIND_FONT_AT_SCREEN_RESOLUTION);
 		m_pFontLayout = pLayout->findFont(pSpanAP,pBlockAP,pSectionAP, FL_DocLayout::FIND_FONT_AT_LAYOUT_RESOLUTION);
 	}
 
@@ -1122,7 +1028,7 @@ void fp_FieldRun::_clearScreen(UT_Bool /* bFullLineHeightRect */)
 	m_pG->clearArea(xoff, yoff-1, m_iWidth, iLineHeight);
 }
 
-void fp_FieldRun::_draw(dg_DrawArgs* pDA)
+void fp_FieldRun::_defaultDraw(dg_DrawArgs* pDA)
 {
 	UT_ASSERT(pDA->pG == m_pG);
 
@@ -1183,6 +1089,101 @@ void fp_FieldRun::_draw(dg_DrawArgs* pDA)
 	
 	m_pG->drawChars(m_sFieldValue, 0, UT_UCS_strlen(m_sFieldValue), pDA->xoff,iYdraw);
 }
+
+fp_FieldTimeRun::fp_FieldTimeRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen) : fp_FieldRun(pBL, pG, iOffsetFirst, iLen)
+{
+}
+
+UT_Bool fp_FieldTimeRun::calculateValue(void)
+{
+	UT_UCSChar sz_ucs_FieldValue[FPFIELD_MAX_LENGTH + 1];
+	sz_ucs_FieldValue[0] = 0;
+	
+	char szFieldValue[FPFIELD_MAX_LENGTH + 1];
+
+	time_t	tim = time(NULL);
+	struct tm *pTime = localtime(&tim);
+
+	strftime(szFieldValue, FPFIELD_MAX_LENGTH, "%I:%M:%S %p", pTime);
+
+	UT_UCS_strcpy_char(sz_ucs_FieldValue, szFieldValue);
+
+	return _setValue(sz_ucs_FieldValue);
+}
+
+fp_FieldPageNumberRun::fp_FieldPageNumberRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen) : fp_FieldRun(pBL, pG, iOffsetFirst, iLen)
+{
+}
+
+UT_Bool fp_FieldPageNumberRun::calculateValue(void)
+{
+	UT_UCSChar sz_ucs_FieldValue[FPFIELD_MAX_LENGTH + 1];
+	sz_ucs_FieldValue[0] = 0;
+	
+	char szFieldValue[FPFIELD_MAX_LENGTH + 1];
+
+	if (m_pLine && m_pLine->getContainer() && m_pLine->getContainer()->getPage())
+	{
+		fp_Page* pPage = m_pLine->getContainer()->getPage();
+		FL_DocLayout* pDL = pPage->getDocLayout();
+
+		UT_sint32 iPageNum = 0;
+		UT_uint32 iNumPages = pDL->countPages();
+		for (UT_uint32 i=0; i<iNumPages; i++)
+		{
+			fp_Page* pPg = pDL->getNthPage(i);
+
+			if (pPg == pPage)
+			{
+				iPageNum = i + 1;
+				break;
+			}
+		}
+
+		UT_ASSERT(iPageNum > 0);
+
+		sprintf(szFieldValue, "%d", iPageNum);
+	}
+	else
+	{
+		strcpy(szFieldValue, "?");
+	}
+
+	UT_UCS_strcpy_char(sz_ucs_FieldValue, szFieldValue);
+
+	return _setValue(sz_ucs_FieldValue);
+}
+
+fp_FieldPageCountRun::fp_FieldPageCountRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen) : fp_FieldRun(pBL, pG, iOffsetFirst, iLen)
+{
+}
+
+UT_Bool fp_FieldPageCountRun::calculateValue(void)
+{
+	UT_UCSChar sz_ucs_FieldValue[FPFIELD_MAX_LENGTH + 1];
+	sz_ucs_FieldValue[0] = 0;
+	
+	char szFieldValue[FPFIELD_MAX_LENGTH + 1];
+	
+	if (m_pLine && m_pLine->getContainer() && m_pLine->getContainer()->getPage())
+	{
+
+		fp_Page* pPage = m_pLine->getContainer()->getPage();
+		FL_DocLayout* pDL = pPage->getDocLayout();
+
+		sprintf(szFieldValue, "%d", pDL->countPages());
+	}
+	else
+	{
+		strcpy(szFieldValue, "?");
+	}
+
+	UT_UCS_strcpy_char(sz_ucs_FieldValue, szFieldValue);
+
+	return _setValue(sz_ucs_FieldValue);
+}
+
+
 
 //////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////

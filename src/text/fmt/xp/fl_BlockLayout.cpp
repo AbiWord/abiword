@@ -21,7 +21,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
-#include <unistd.h>
+//#include <unistd.h>
 
 #include "fl_BlockLayout.h"
 #include "fl_Layout.h"
@@ -34,6 +34,7 @@
 #include "fp_Line.h"
 #include "fp_Run.h"
 #include "fp_TextRun.h"
+#include "fp_FieldListLabelRun.h"
 #include "pd_Document.h"
 #include "pp_Property.h"
 #include "pp_AttrProp.h"
@@ -2323,8 +2324,47 @@ UT_Bool	fl_BlockLayout::_doInsertImageRun(PT_BlockOffset blockOffset, FG_Graphic
 
 UT_Bool	fl_BlockLayout::_doInsertFieldRun(PT_BlockOffset blockOffset, const PX_ChangeRecord_Object * /* pcro */)
 {
-	fp_FieldRun* pNewRun = new fp_FieldRun(this, m_pLayout->getGraphics(), blockOffset, 1);
+	const PP_AttrProp * pSpanAP = NULL;
+	
+	getSpanAttrProp(blockOffset, UT_FALSE, &pSpanAP);
+	UT_ASSERT(pSpanAP);
+
+	// Get the field type.
+
+	const XML_Char* pszType = NULL;
+	pSpanAP->getAttribute((XML_Char*)"type", pszType);
+	UT_ASSERT(pszType);
+
+	// Create the field run.
+
+	fp_FieldRun* pNewRun;
+
+	if(UT_stricmp(pszType, "list_label") == 0)
+	{
+		pNewRun = new fp_FieldListLabelRun(this, m_pLayout->getGraphics(), blockOffset, 1);
+	}
+	else if(UT_stricmp(pszType, "time") == 0)
+	{
+		pNewRun = new fp_FieldTimeRun(this, m_pLayout->getGraphics(), blockOffset, 1);
+	}
+	else if(UT_stricmp(pszType, "page_number") == 0)
+	{
+		pNewRun = new fp_FieldPageNumberRun(this, m_pLayout->getGraphics(), blockOffset, 1);
+	}
+	else if(UT_stricmp(pszType, "page_count") == 0)
+	{
+		pNewRun = new fp_FieldPageCountRun(this, m_pLayout->getGraphics(), blockOffset, 1);
+	}
+	else
+	{
+		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		pNewRun = NULL;
+	}
+
 	UT_ASSERT(pNewRun);	// TODO check for outofmem
+	
+	pNewRun->lookupProperties();
+	pNewRun->calculateValue();
 
 	return _doInsertRun(pNewRun);
 }
@@ -4134,7 +4174,7 @@ void fl_BlockLayout::listUpdate(void)
 	FV_View* pView = m_pLayout->getView();
 	if (pView)
 	{
-	        pView->_fixInsertionPointCoords();
+		pView->_fixInsertionPointCoords();
 		pView->updateScreen();
 		pView->drawInsertionPoint();
 	}
@@ -4156,20 +4196,20 @@ void fl_BlockLayout::transferListFlags(void)
 void fl_BlockLayout::_createListLabel(void)
 {
 /*	This is a temporary hack, we need to find out more about the field */
-        if(!m_pFirstRun)
-	        return;
-        if (m_pFirstRun->getType() == FPRUN_FIELD)
+	if(!m_pFirstRun)
+		return;
+	if (m_pFirstRun->getType() == FPRUN_FIELD)
 	{
-	        m_bListLabelCreated = UT_TRUE;
+		m_bListLabelCreated = UT_TRUE;
 		return;
 	}
 	
 	UT_ASSERT(m_pAutoNum);
 	FV_View* pView = m_pLayout->getView();
 	const  XML_Char ** blockatt;
-        pView->getCharFormat(&blockatt,UT_TRUE);
+	pView->getCharFormat(&blockatt,UT_TRUE);
 	pView->setBlockFormat(blockatt);
-        FREEP(blockatt);
+	FREEP(blockatt);
 
 	pView->cmdInsertField("list_label");
 	UT_UCSChar c = UCS_TAB;
@@ -4189,29 +4229,29 @@ void fl_BlockLayout::_deleteListLabel(void)
 	{
 		if(pRun->getType() == FPRUN_FIELD)
 		{
-	                 fp_FieldRun * pFRun = (fp_FieldRun *) pRun;
-	                 if(pFRun->getFieldType() == FPFIELD_list_label)
-	                 {
-			          bStop = UT_TRUE;
-				  break;
-			 }
+			fp_FieldRun * pFRun = (fp_FieldRun *) pRun;
+			if(pFRun->getFieldType() == FPFIELD_list_label)
+			{
+				bStop = UT_TRUE;
+				break;
+			}
 		}
-	        pRun = pRun->getNext();
+		pRun = pRun->getNext();
 		if(pRun == NULL)
 		{
-		         bStop = UT_TRUE;
+			bStop = UT_TRUE;
 		}
 	}
 	if(pRun != NULL)
 	{ 
-	        UT_uint32 ioffset = pRun->getBlockOffset();
+		UT_uint32 ioffset = pRun->getBlockOffset();
 		UT_uint32 npos = 1;
 		UT_DEBUGMSG(("SEVIOR: First run type = %d \n",pRun->getType()));
 		fp_Run * tRun = pRun->getNext();
 		UT_DEBUGMSG(("SEVIOR: Next run type = %d \n",tRun->getType()));
 		if(tRun != NULL && tRun->getType()==FPRUN_TAB)
 		{
-		         npos = 2;
+			npos = 2;
 		}
 		pDoc->deleteSpan(posBlock+ioffset, posBlock+ioffset + npos);
 	}
@@ -4221,15 +4261,15 @@ XML_Char * fl_BlockLayout::getListLabel(void)
 {
   //	UT_ASSERT(m_pAutoNum);
 
-        if(m_pAutoNum != NULL)
-	       return m_pAutoNum->getLabel(this);
+	if(m_pAutoNum != NULL)
+		return m_pAutoNum->getLabel(this);
 	else
-	       return NULL;
+		return NULL;
 }
 
 inline void fl_BlockLayout::_addBlockToPrevList( fl_BlockLayout * prevBlockInList)
 {
-        UT_ASSERT(prevBlockInList);
+	UT_ASSERT(prevBlockInList);
 	m_pAutoNum = prevBlockInList->getAutoNum();
 	m_pAutoNum->insertItem(this, prevBlockInList);
 }
@@ -4253,6 +4293,7 @@ void fl_BlockLayout::setStopping( UT_Bool bValue)
 
 void fl_BlockLayout::debugFlashing(void)
 {
+/*
 	// Trivial background checker which puts on and takes off squiggles from
 	// the entire block that's being checked.  This sort of messes up the
 	// spelling squiggles, but it's just a debug thing anyhow.  Enable it
@@ -4262,12 +4303,15 @@ void fl_BlockLayout::debugFlashing(void)
 	UT_Bool bRes = getBlockBuf(&pgb);
 	UT_ASSERT(bRes);
 
-	UT_uint32 eor = pgb.getLength(); /* end of region */
+	UT_uint32 eor = pgb.getLength(); // end of region
 
 	FV_View* pView = m_pLayout->getView();
 
 	_addSquiggle(0, eor, UT_FALSE);
+>>>>>>> 1.174
 
+<<<<<<< fl_BlockLayout.cpp
+=======
 	pView->_eraseInsertionPoint();
 	pView->updateScreen();
 	pView->_drawInsertionPoint();
@@ -4280,4 +4324,5 @@ void fl_BlockLayout::debugFlashing(void)
 	pView->_drawInsertionPoint();
 
 	return;
+*/
 }

@@ -4183,13 +4183,13 @@ static UT_Bool s_doBullets(FV_View *pView)
 		= (AP_Dialog_Lists *)(pDialogFactory->requestDialog(AP_DIALOG_ID_LISTS));
 	UT_ASSERT(pDialog);
 
-        if(pDialog->isRunning() == UT_TRUE)
+	if(pDialog->isRunning() == UT_TRUE)
 	{
-	        pDialog->activate();
-        }
+		pDialog->activate();
+	}
 	else
-        {
-	        pDialog->runModeless(pFrame);
+	{
+		pDialog->runModeless(pFrame);
 	}
 	return UT_TRUE;
 }

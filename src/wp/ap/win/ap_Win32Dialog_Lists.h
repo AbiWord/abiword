@@ -1,5 +1,5 @@
 /* AbiWord
- * Copyright (C) 2000 AbiSource, Inc.
+ * Copyright (C) 1998 AbiSource, Inc.
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -17,84 +17,44 @@
  * 02111-1307, USA.
  */
 
-#ifndef AP_WIN32DIALOG_LISTS_H
-#define AP_WIN32DIALOG_LISTS_H
+#ifndef AP_Win32Dialog_List_H
+#define AP_Win32Dialog_List_H
 
 #include "ap_Dialog_Lists.h"
+#include "xap_Win32DialogHelper.h"
+#include "xap_Win32PreviewWidget.h"
+
+
 class XAP_Win32Frame;
 
 /*****************************************************************/
 
-class AP_Win32Dialog_Lists: public AP_Dialog_Lists
+class AP_Win32Dialog_Lists: public AP_Dialog_Lists, XAP_Win32Dialog
 {
 public:
 	AP_Win32Dialog_Lists(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
 	virtual ~AP_Win32Dialog_Lists(void);
 
 	virtual void			runModeless(XAP_Frame * pFrame);
-	virtual void			activate(void);
 	virtual void			destroy(void);
- 
+	virtual void			activate(void);
+
 	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
+	static void				autoupdateLists(UT_Timer * pTimer);
 
-        virtual void                    notifyActiveFrame(XAP_Frame *pFrame){};
 
-	/*	
-		All the Useful stuff from the Unix build
-
-	// CALLBACKS 
-
-        void                            startChanged(void);
-        void                            stopChanged(void);
-	void                            applyClicked(void);
-        void                            startvChanged(void);
-
-	// Just Plain Useful Functions 
-
-	void                            setAllSensitivity(void);
-	void                            updateDialog(void);
-	static void                     autoupdateLists(UT_Timer * pTimer);
+private:
+	XAP_Win32DialogHelper	_win32Dialog;
 
 protected:
-	virtual GtkWidget *		_constructWindow(void);
-	GtkWidget *				_constructWindowContents(void);
-	void					_populateWindowData(void);
-	void					_connectSignals(void);
+	BOOL					_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam);
+	BOOL					_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam);
+	
+	void					_fillListTypeMenu( int List_id);
+	void					enableControls(void);
+	void					_onApply();
 
-	UT_Bool                         m_bDestroy_says_stopupdating;
-	UT_Bool                         m_bAutoUpdate_happening_now;
-	UT_Timer *                      m_pAutoUpdateLists;
-
-	GtkWidget *				m_wMainWindow;
-
-	GtkWidget * m_wApply;
-	GtkWidget * m_wClose;
-	GtkWidget * m_wContents;
-	GtkWidget * m_wCheckstartlist;
-	GtkWidget * m_wCheckstoplist;
-	GtkWidget * m_wNewlisttypel;
-        GtkWidget * m_wOption_types;
-        GtkWidget * m_wOption_types_menu;
-	GtkWidget * m_wNew_startingvaluel;
-	GtkWidget * m_wNew_startingvaluev;
-	GtkWidget * m_wNew_list_labell;
-	GtkWidget * m_wnew_list_labelv;
-	GtkWidget * m_wCur_listtype;
-	GtkWidget * m_wCur_listtypev;
-	GtkWidget * m_wCur_listlabel;
-	GtkWidget * m_wCur_listlabelv;
-        GtkWidget * m_wCur_changestart_button;
-	GtkWidget * m_wCur_startingvaluel;
-	GtkWidget * m_wCur_startingvaluev;
-
+	UT_Timer *              m_pAutoUpdateLists;
 };
 
-// End of stuff from Unix build
-
-*/	
-
-protected:
-
-};
-
-#endif /* AP_WIN32DIALOG_LISTS_H */
+#endif /* AP_Win32Dialog_List_H */

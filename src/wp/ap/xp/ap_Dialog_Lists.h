@@ -43,20 +43,20 @@ public:
 		a_CLOSE
 	} tAnswer;
 
-        AP_Dialog_Lists::tAnswer	 	getAnswer(void) const;
-        void                                    ConstructWindowName(void);
-        void                                    StartList(void);
-        void                                    StopList(void);
-        void                                    Apply(void);
-        void                                    PopulateDialogData(void);
-        UT_Bool                                 isLastOnLevel(void);
+	AP_Dialog_Lists::tAnswer	 			getAnswer(void) const;
+	void                                    ConstructWindowName(void);
+	void                                    StartList(void);
+	void                                    StopList(void);
+	void                                    Apply(void);
+	void                                    PopulateDialogData(void);
+	UT_Bool                                 isLastOnLevel(void);
 	XML_Char *                              getListStyleString(void);
-        fl_AutoNum *                            getAutoNum(void);
+	fl_AutoNum *                            getAutoNum(void);
 	fl_BlockLayout *                        getBlock(void);
 
-  	UT_Bool						setView(FV_View * view);
-  	FV_View * 					getView(void);
-	void                                            setActiveFrame(XAP_Frame *pFrame);
+  	UT_Bool									setView(FV_View * view);
+  	FV_View * 								getView(void);
+	void									setActiveFrame(XAP_Frame *pFrame);
 
  protected:
 	
@@ -69,19 +69,19 @@ public:
 	char                                            m_WindowName[100];
 	UT_Bool                                         m_isListAtPoint;
 	UT_Bool                                         m_previousListExistsAtPoint;
-        char                                            m_curListType[100];
+	char                                            m_curListType[100];
 	char                                            m_newListType[100];
-        char                                            m_curListLabel[100];
+	char                                            m_curListLabel[100];
 	char                                            m_newListLabel[100];
 	UT_uint32                                       m_curStartValue;
 	UT_uint32                                       m_newStartValue;
-        UT_uint32                                       m_curListLevel;
-        UT_uint32                                       m_newListLevel;
-        UT_uint32                                       m_iListType;
- 
+	UT_uint32                                       m_curListLevel;
+	UT_uint32                                       m_newListLevel;
+	UT_uint32                                       m_iListType;
+
 	UT_Bool                                         m_bStartList;
 	UT_Bool                                         m_bStopList;
-        UT_Bool                                         m_bChangeStartValue;
+	UT_Bool                                         m_bChangeStartValue;
 };
 
 #endif /* AP_DIALOG_LISTS_H */
