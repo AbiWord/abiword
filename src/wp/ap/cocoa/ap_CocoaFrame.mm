@@ -74,7 +74,7 @@ void AP_CocoaFrame::setXScrollRange(void)
 	NSRect rect = [pFrameImpl->m_docAreaGRView frame];
 	UT_sint32 visibleWidth = pGr->tlu(lrintf(rect.size.width));
 	pFrameImpl->_setHVisible(visibleWidth);
-	UT_DEBUGMSG(("visibleWidth: %d, doc width:%d\n", visibleWidth, width));
+	xxx_UT_DEBUGMSG(("visibleWidth: %d, doc width:%d\n", visibleWidth, width));
 	if (m_pView == NULL) {
 		UT_DEBUGMSG(("m_pView is NULL\n"));
 	}
@@ -85,21 +85,11 @@ void AP_CocoaFrame::setXScrollRange(void)
 		newmax = 0;
 	else if (newvalue > newmax)
 		newvalue = newmax;
-	UT_DEBUGMSG (("newmax = %d, newvalue = %d\n", newmax, newvalue));
+	xxx_UT_DEBUGMSG (("newmax = %d, newvalue = %d\n", newmax, newvalue));
 	pFrameImpl->_setHScrollMax(newmax);
 	pFrameImpl->_setHScrollValue(newvalue);
 
 	m_pView->sendHorizontalScrollEvent(newvalue, newmax);
-#if 0
-	NSScroller* scroller = pFrameImpl->getHScrollbar();
-	float value = newvalue/newmax;
-	bool bDifferentPosition = (value != [scroller floatValue]);
-	if (m_pView && (bDifferentPosition || bDifferentLimits)) {
-		UT_DEBUGMSG(("Set X scroll to %f (%d/%d)\n", value, newvalue, newmax));
-		[scroller setFloatValue:value knobProportion:(visibleWidth/m_HMaxScroll)];
-		m_pView->sendHorizontalScrollEvent((int)newvalue, m_HMaxScroll);
-	}
-#endif
 }
 
 void AP_CocoaFrame::setYScrollRange(void)
@@ -110,7 +100,7 @@ void AP_CocoaFrame::setYScrollRange(void)
 	NSRect rect = [pFrameImpl->m_docAreaGRView frame];
 	UT_sint32 visibleHeight = pGr->tlu(lrintf(rect.size.height));
 	pFrameImpl->_setVVisible(visibleHeight);
-	UT_DEBUGMSG(("visibleHeight: %d, doc height:%d\n", visibleHeight, height));
+	xxx_UT_DEBUGMSG(("visibleHeight: %d, doc height:%d\n", visibleHeight, height));
 	if (m_pView == NULL) {
 		UT_DEBUGMSG(("m_pView is NULL\n"));
 	}
@@ -121,21 +111,12 @@ void AP_CocoaFrame::setYScrollRange(void)
 		newmax = 0;
 	else if (newvalue > newmax)
 		newvalue = newmax;
-	UT_DEBUGMSG (("newmax = %d, newvalue = %d\n", newmax, newvalue));
+	xxx_UT_DEBUGMSG (("newmax = %d, newvalue = %d\n", newmax, newvalue));
 	pFrameImpl->_setVScrollMax(newmax);
 	pFrameImpl->_setVScrollValue(newvalue);
 
 	// TODO optimize
 	m_pView->sendVerticalScrollEvent(newvalue, newmax);
-#if 0
-	NSScroller* scroller = pFrameImpl->getVScrollbar();
-	float value = newvalue/newmax;
-	bool bDifferentPosition = (value != [scroller floatValue]);
-	if (m_pView && (bDifferentPosition || bDifferentLimits)) {
-		UT_DEBUGMSG(("Set Y scroll to %f (%d/%d)\n", value, newvalue, newmax));
-		[scroller setFloatValue:value knobProportion:(windowHeight/m_VMaxScroll)];
-	}
-#endif
 }
 
 
@@ -225,7 +206,7 @@ void AP_CocoaFrame::_scrollFuncY(void * pData, UT_sint32 yoff, UT_sint32 /*yrang
 	}
 	pFrameImpl->_setVScrollValue(yoff);
 
-	pView->setYScrollOffset(pView->getGraphics()->tlu(yoff));
+	pView->setYScrollOffset(yoff);
 }
 
 void AP_CocoaFrame::_scrollFuncX(void * pData, UT_sint32 xoff, UT_sint32 /*xrange*/)
@@ -244,7 +225,7 @@ void AP_CocoaFrame::_scrollFuncX(void * pData, UT_sint32 xoff, UT_sint32 /*xrang
 	}
 	pFrameImpl->_setHScrollValue(xoff);
 
-	pView->setXScrollOffset(pView->getGraphics()->tlu(xoff));
+	pView->setXScrollOffset(xoff);
 }
 
 
