@@ -77,12 +77,13 @@ AP_LeftRuler::AP_LeftRuler(XAP_Frame * pFrame)
 
 AP_LeftRuler::~AP_LeftRuler(void)
 {
+	if(m_pView) {
 	// don't receive anymore scroll messages
 	m_pView->removeScrollListener(m_pScrollObj);
 
 	// no more view messages
 	m_pView->removeListener(m_lidLeftRuler);
-	
+	}
 	// no more prefs 
 	m_pFrame->getApp()->getPrefs()->removeListener( AP_LeftRuler::_prefsListener, (void *)this );
 

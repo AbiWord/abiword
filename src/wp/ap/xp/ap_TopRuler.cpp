@@ -88,12 +88,13 @@ AP_TopRuler::AP_TopRuler(XAP_Frame * pFrame)
 
 AP_TopRuler::~AP_TopRuler(void)
 {
+	if(m_pView) {
 	// don't receive anymore scroll messages
 	m_pView->removeScrollListener(m_pScrollObj);
 
 	// no more view messages
 	m_pView->removeListener(m_lidTopRuler);
-
+}
 	// no more prefs
 	m_pFrame->getApp()->getPrefs()->removeListener( AP_TopRuler::_prefsListener, (void *)this );
 
