@@ -217,6 +217,7 @@ LRESULT CALLBACK AP_Win32TopRuler::_TopRulerWndProc(HWND hwnd, UINT iMsg, WPARAM
 		{
 			GR_Win32Graphics * pG = static_cast<GR_Win32Graphics *>(pRuler->m_pG);
 			pG->handleSetCursorMessage();
+			return 0;
 		}
 
 	default:

@@ -240,7 +240,8 @@ private:
 								 DW_RIGHTINDENT,
 								 DW_FIRSTLINEINDENT,
 								 DW_LEFTINDENTWITHFIRST,
-								 DW_TABSTOP
+								 DW_TABSTOP,
+								 DW_TABTOGGLE
 	} DraggingWhat;
 
 	DraggingWhat		m_draggingWhat;

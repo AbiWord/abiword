@@ -1307,7 +1307,6 @@ bool AP_TopRuler::isMouseOverTab(UT_uint32 x, UT_uint32 y)
 	if (rToggle.containsPoint(x,y))
 	{
 		m_pG->setCursor(GR_Graphics::GR_CURSOR_EXCHANGE);
-		ap_RulerTicks tick(m_pG,m_dim);
 		XAP_String_Id baseTabName = AP_STRING_ID_TabToggleLeftTab-1;
 		_displayStatusMessage(baseTabName + m_iDefaultTabType);
 		return true;
@@ -1448,6 +1447,10 @@ void AP_TopRuler::mousePress(EV_EditModifierState /* ems */,
 		}
 		m_iDefaultTabType = (eTabType)currentTabType;
 		_drawTabToggle(NULL, true);
+		XAP_String_Id baseTabName = AP_STRING_ID_TabToggleLeftTab-1;
+		_displayStatusMessage(baseTabName + m_iDefaultTabType);
+		m_bValidMouseClick = true;
+		m_draggingWhat = DW_TABTOGGLE;
 		return;
 	}
 
@@ -1652,6 +1655,13 @@ void AP_TopRuler::mousePress(EV_EditModifierState /* ems */,
 
 void AP_TopRuler::mouseRelease(EV_EditModifierState /* ems */, EV_EditMouseButton /* emb */, UT_sint32 x, UT_sint32 y)
 {
+	if (m_bValidMouseClick && m_draggingWhat == DW_TABTOGGLE)
+	{
+		m_draggingWhat = DW_NOTHING;
+		m_bValidMouseClick = false;
+		return;
+	}
+
 	if (!m_bValidMouseClick || (m_bEventIgnored && m_draggingWhat != DW_TABSTOP))
 	{
 		m_draggingWhat = DW_NOTHING;
@@ -2100,7 +2110,7 @@ void AP_TopRuler::mouseMotion(EV_EditModifierState ems, UT_sint32 x, UT_sint32 y
 	
 	// by the way, my OGR client just hit 50% of the block!! i'm so excited!!! http://www.distributed.net
 
-	if (x < xFixed || x > (UT_sint32) m_iWidth)
+	if ((x < xFixed || x > (UT_sint32) m_iWidth) && m_draggingWhat != DW_TABTOGGLE)
 	{
 		// set m_aScrollDirection here instead of in the timer creation block because there is a change,
 		// though small, that the direction will change immediately with no on-ruler in-between state.
@@ -2163,7 +2173,10 @@ void AP_TopRuler::mouseMotion(EV_EditModifierState ems, UT_sint32 x, UT_sint32 y
 	case DW_NOTHING:
 		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 		return;
-		
+	
+	case DW_TABTOGGLE:
+		return;
+
 	case DW_LEFTMARGIN:
 		{
 		m_pG->setCursor(GR_Graphics::GR_CURSOR_GRAB);
@@ -2872,6 +2885,8 @@ void AP_TopRuler::_ignoreEvent(bool bDone)
 	
 	switch (dw)
 	{
+	case DW_TABTOGGLE:
+		break;
 	case DW_LEFTMARGIN:
 	case DW_RIGHTMARGIN:
 		draw(NULL, &m_infoCache);
