@@ -42,7 +42,8 @@
 #include "xap_UnixToolbar_Icons.h"
 #include "ut_debugmsg.h"
 
-enum {
+enum
+{
 	SELECTED,
 	LAST_SIGNAL
 };
@@ -56,8 +57,8 @@ static GtkObjectClass *abi_table_parent_class;
 const size_t cell_width = 24;
 const size_t cell_height = 24;
 const size_t cell_spacing = 4;
-const size_t init_rows = 4;
-const size_t init_cols = 5;
+const size_t init_rows = 0;
+const size_t init_cols = 0;
 
 static inline void
 cells_to_pixels(size_t cols, size_t rows, size_t* w, size_t* h)
@@ -86,7 +87,6 @@ abi_table_resize(AbiTable* table)
 	size_t height;
 	char* text;	
 	GtkRequisition size;
-	DBG;
 	
 	g_return_if_fail(table);
 
@@ -159,17 +159,15 @@ abi_table_embed_on_toolbar (AbiTable* abi_table, GtkToolbar* toolbar)
 	g_return_if_fail (toolbar);
 
 	gtk_widget_style_get (GTK_WIDGET (toolbar),
-			      "button_relief", &button_relief,
-			      NULL);
+						  "button_relief", &button_relief,
+						  NULL);
 
 	gtk_button_set_relief(GTK_BUTTON(abi_table), button_relief);
 	GTK_WIDGET_UNSET_FLAGS(abi_table, GTK_CAN_FOCUS);
 #if 0
 	if (gtk_toolbar_get_style(toolbar) == GTK_TOOLBAR_TEXT && abi_table->icon)
-	{
 		gtk_widget_hide(abi_table->icon);
-	}
-      	else if (gtk_toolbar_get_style(toolbar) == GTK_TOOLBAR_ICONS)
+	else if (gtk_toolbar_get_style(toolbar) == GTK_TOOLBAR_ICONS)
 		gtk_widget_hide(abi_table->label);
 #endif
 	const XAP_StringSet * pSS = XAP_App::getApp()->getStringSet();
@@ -186,16 +184,15 @@ on_drawing_area_event (GtkWidget *area, GdkEventExpose *ev, gpointer user_data)
 	size_t selected_cols = table->selected_cols;
 	size_t x;
 	size_t y;
-	DBG;
 	
 	// TODO: use gtk_paint_box, gtk_paint_line
 
 	gdk_draw_rectangle (area->window,
-			    area->style->bg_gc[GTK_STATE_NORMAL],
-			    TRUE,
-			    0, 0,
-			    area->allocation.width,
-			    area->allocation.height);
+						area->style->bg_gc[GTK_STATE_NORMAL],
+						TRUE,
+						0, 0,
+						area->allocation.width,
+						area->allocation.height);
 
 	for (i = 0; i < table->total_rows; ++i)
 		for (j = 0; j < table->total_cols; ++j)
@@ -203,53 +200,59 @@ on_drawing_area_event (GtkWidget *area, GdkEventExpose *ev, gpointer user_data)
 			cells_to_pixels(j, i, &x, &y);
 			
 			gdk_draw_rectangle (area->window,
-					    area->style->dark_gc[GTK_STATE_NORMAL],
-					    FALSE,
-					    x - 1, y - 1,
-					    cell_width + 1,
-					    cell_height + 1);
+								area->style->dark_gc[GTK_STATE_NORMAL],
+								FALSE,
+								x - 1, y - 1,
+								cell_width + 1,
+								cell_height + 1);
 
 			if (i < selected_rows && j < selected_cols)
 				gdk_draw_rectangle (area->window,
-						    table->selected_gc,
-						    TRUE,
-						    x, y,
-						    cell_width,
-						    cell_height);
+									table->selected_gc,
+									TRUE,
+									x, y,
+									cell_width,
+									cell_height);
 			else
 				gdk_draw_rectangle (area->window,
-						    area->style->white_gc,
-						    TRUE,
-						    x, y,
-						    cell_width,
-						    cell_height);
+									area->style->white_gc,
+									TRUE,
+									x, y,
+									cell_width,
+									cell_height);
 		}
 
 	/* black border line */
 	gdk_draw_line (area->window,
-		       area->style->black_gc,
-		       area->allocation.width - 1, 0, area->allocation.width - 1, area->allocation.height - 1);
+				   area->style->black_gc,
+				   area->allocation.width - 1, 0, area->allocation.width - 1, area->allocation.height - 1);
 	gdk_draw_line (area->window,
-		       area->style->black_gc,
-		       area->allocation.width - 1, area->allocation.height - 1, 0, area->allocation.height - 1);
+				   area->style->black_gc,
+				   area->allocation.width - 1, area->allocation.height - 1, 0, area->allocation.height - 1);
 
 	/* dark border line */
 	gdk_draw_line (area->window,
-		       area->style->dark_gc[GTK_STATE_NORMAL],
-		       area->allocation.width - 2, 1, area->allocation.width - 2, area->allocation.height - 2);
+				   area->style->dark_gc[GTK_STATE_NORMAL],
+				   area->allocation.width - 2, 1, area->allocation.width - 2, area->allocation.height - 2);
 	gdk_draw_line (area->window,
-		       area->style->dark_gc[GTK_STATE_NORMAL],
-		       area->allocation.width - 2, area->allocation.height - 2, 1, area->allocation.height - 2);
+				   area->style->dark_gc[GTK_STATE_NORMAL],
+				   area->allocation.width - 2, area->allocation.height - 2, 1, area->allocation.height - 2);
 
 	/* ligth border line */
 	gdk_draw_line (area->window,
-		       area->style->light_gc[GTK_STATE_NORMAL],
-		       0, 0, area->allocation.width - 3, 0);
+				   area->style->light_gc[GTK_STATE_NORMAL],
+				   0, 0, area->allocation.width - 3, 0);
 	gdk_draw_line (area->window,
-		       area->style->light_gc[GTK_STATE_NORMAL],
-		       0, 0, 0, area->allocation.height - 2);
+				   area->style->light_gc[GTK_STATE_NORMAL],
+				   0, 0, 0, area->allocation.height - 2);
 
 	return TRUE;
+}
+
+static inline size_t
+my_max(size_t a, size_t b)
+{
+	return a < b ? b : a;
 }
 
 static gboolean
@@ -273,11 +276,11 @@ on_motion_notify_event (GtkWidget *window, GdkEventMotion *ev, gpointer user_dat
 		table->selected_cols = selected_cols;
 		table->selected_rows = selected_rows;
 
-		if(table->selected_rows <= 0 || table->selected_cols <= 0)
+		if (table->selected_rows <= 0 || table->selected_cols <= 0)
 			table->selected_rows = table->selected_cols = 0;
 
-		table->total_rows = table->selected_rows + 1;
-		table->total_cols = table->selected_cols + 1;
+		table->total_rows = my_max(table->selected_rows + 1, 3);
+		table->total_cols = my_max(table->selected_cols + 1, 3);
 
 		abi_table_resize(table);
 		
@@ -299,10 +302,10 @@ restart_widget (AbiTable *table)
 {
 	table->selected_cols = init_cols;
 	table->selected_rows = init_rows;
-	table->total_cols = init_cols + 1;
-	table->total_rows = init_rows + 1;
+	table->total_cols = my_max(init_cols + 1, 5);
+	table->total_rows = my_max(init_rows + 1, 6);
 
-	//gtk_button_released(GTK_BUTTON(table));
+	gtk_button_released(GTK_BUTTON(table));
 
 	gtk_widget_hide(GTK_WIDGET(table->window));
 }
@@ -313,10 +316,15 @@ restart_widget (AbiTable *table)
 static void
 emit_selected (AbiTable *table)
 {
+	gtk_widget_hide(GTK_WIDGET(table->window));
+
+	while (gtk_events_pending())
+		gtk_main_iteration();
+
 	if (table->selected_rows > 0 && table->selected_cols > 0)
 		gtk_signal_emit (GTK_OBJECT (table),
-				 abi_table_signals [SELECTED],
-				 (int) table->selected_rows, (int) table->selected_cols);
+						 abi_table_signals [SELECTED],
+						 (int) table->selected_rows, (int) table->selected_cols);
 
 	restart_widget(table);
 }
@@ -347,8 +355,8 @@ on_button_release_event (GtkWidget *window, GdkEventButton *ev, gpointer user_da
 
 static gboolean
 on_leave_event (GtkWidget *area,
-		GdkEventCrossing *event,
-		gpointer user_data)
+				GdkEventCrossing *event,
+				gpointer user_data)
 {
 	AbiTable* table = (AbiTable*) user_data;
 	DBG;
@@ -359,8 +367,8 @@ on_leave_event (GtkWidget *area,
 
 		table->selected_rows = 0;
 		table->selected_cols = 0;
-		table->total_rows = table->selected_rows + 1;
-		table->total_cols = table->selected_cols + 1;
+		table->total_rows = my_max(table->selected_rows + 1, 3);
+		table->total_cols = my_max(table->selected_cols + 1, 3);
 
 		abi_table_resize(table);
 		
@@ -377,16 +385,16 @@ on_leave_event (GtkWidget *area,
 
 static gboolean
 popup_grab_on_window (GdkWindow *window,
-		      guint32    activate_time)
+					  guint32    activate_time)
 {
 	GdkEventMask emask = (GdkEventMask ) (GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK |
-		GDK_POINTER_MOTION_MASK | GDK_LEAVE_NOTIFY_MASK |
-		GDK_ENTER_NOTIFY_MASK) ;
+										  GDK_POINTER_MOTION_MASK | GDK_LEAVE_NOTIFY_MASK |
+										  GDK_ENTER_NOTIFY_MASK) ;
 	if ((gdk_pointer_grab (window, FALSE,emask,
-			       NULL, NULL, activate_time) == 0))
+						   NULL, NULL, activate_time) == 0))
 	{
 		if (gdk_keyboard_grab (window, FALSE,
-				       activate_time) == 0)
+							   activate_time) == 0)
 			return TRUE;
 		else
 		{
@@ -412,15 +420,15 @@ on_pressed(GtkButton* button, gpointer user_data)
 	 * notify events on subwidgets. If the grab fails, bail out.
 	 */
 	if (!popup_grab_on_window (GTK_WIDGET(button)->window,
-				   gtk_get_current_event_time ()))
+							   gtk_get_current_event_time ()))
 		return;
 
 	gdk_window_get_origin (GTK_WIDGET(table)->window, &left, &top);
 	gtk_window_move(table->window,
-			left + GTK_WIDGET(table)->allocation.x,
-			top + GTK_WIDGET(table)->allocation.y + GTK_WIDGET(table)->allocation.height);
+					left + GTK_WIDGET(table)->allocation.x,
+					top + GTK_WIDGET(table)->allocation.y + GTK_WIDGET(table)->allocation.height);
 	abi_table_resize(table);
-	
+
 	gtk_widget_show(GTK_WIDGET(table->window));
 	gtk_widget_grab_focus(GTK_WIDGET(table->window));
 
@@ -428,7 +436,7 @@ on_pressed(GtkButton* button, gpointer user_data)
 	 * should always succeed.
 	 */
 	popup_grab_on_window (GTK_WIDGET(table->area)->window,
-			      gtk_get_current_event_time ());
+						  gtk_get_current_event_time ());
 
 	selected_color.red = 0;
 	selected_color.green = 0;
@@ -486,8 +494,8 @@ on_key_event(GtkWidget *widget, GdkEventKey *event, gpointer user_data)
 	if(table->selected_rows == 0 || table->selected_cols == 0)
 		table->selected_rows = table->selected_cols = (grew ? 1 : 0) ;
 
-	table->total_rows = table->selected_rows + 1;
-	table->total_cols = table->selected_cols + 1;	
+	table->total_rows = my_max(table->selected_rows + 1, 3);
+	table->total_cols = my_max(table->selected_cols + 1, 3);
 
 	abi_table_resize(table);
 	
@@ -501,65 +509,66 @@ on_key_event(GtkWidget *widget, GdkEventKey *event, gpointer user_data)
 	return TRUE;
 }
 
+
 /* XPM */
 static char * widget_tb_insert_table_xpm[] = {
-"24 24 32 1",
-" 	c None",
-".	c #000000",
-"+	c #FFFFFF",
-"@	c #B1B1B1",
-"#	c #BABABA",
-"$	c #E4E4E4",
-"%	c #ECECEC",
-"&	c #A8A8A8",
-"*	c #ADADAD",
-"=	c #B9B9B9",
-"-	c #ABABAB",
-";	c #B8B8B8",
-">	c #B5B5B5",
-",	c #AAAAAA",
-"'	c #858585",
-")	c #828282",
-"!	c #707070",
-"~	c #BCBCBC",
-"{	c #A7A7A7",
-"]	c #8D8D8D",
-"^	c #737373",
-"/	c #ACACAC",
-"(	c #878787",
-"_	c #747474",
-":	c #A9A9A9",
-"<	c #E9E9E9",
-"[	c #C3C3C3",
-"}	c #BFBFBF",
-"|	c #757575",
-"1	c #7E7E7E",
-"2	c #BBBBBB",
-"3	c #A3A3A3",
-"                        ",
-"                        ",
-"                        ",
-"   ...................  ",
-"   .+++++@+++++#++++$.  ",
-"   .+%%%%&%%%%%*%%%%=.  ",
-"   .+%%%%-%%%%%-%%%%;.  ",
-"   .>&,,&'&----)&---!.  ",
-"   .+%%%%-%%%%%-%%%%~.  ",
-"   .+%%%%-%%%%%-%%%%~.  ",
-"   .+%%%%-%%%%%-%%%%~.  ",
-"   .#{---'-----]*---^.  ",
-"   .+%%%%-%%%%%-%%%%~.  ",
-"   .+%%%%-%%%%%-%%%%;.  ",
-"   .+%%%%-%%%%%-%%%%~.  ",
-"   .;&--/(&{--&'&---_.  ",
-"   .+%%%%-%%%%%-%%%%;.  ",
-"   .+%%%%&%%%%%:%%%%~.  ",
-"   .<[[[}|~~~~~1;~~23.  ",
-"   ...................  ",
-"                        ",
-"                        ",
-"                        ",
-"                        "};
+	"24 24 32 1",
+	" 	c None",
+	".	c #000000",
+	"+	c #FFFFFF",
+	"@	c #B1B1B1",
+	"#	c #BABABA",
+	"$	c #E4E4E4",
+	"%	c #ECECEC",
+	"&	c #A8A8A8",
+	"*	c #ADADAD",
+	"=	c #B9B9B9",
+	"-	c #ABABAB",
+	";	c #B8B8B8",
+	">	c #B5B5B5",
+	",	c #AAAAAA",
+	"'	c #858585",
+	")	c #828282",
+	"!	c #707070",
+	"~	c #BCBCBC",
+	"{	c #A7A7A7",
+	"]	c #8D8D8D",
+	"^	c #737373",
+	"/	c #ACACAC",
+	"(	c #878787",
+	"_	c #747474",
+	":	c #A9A9A9",
+	"<	c #E9E9E9",
+	"[	c #C3C3C3",
+	"}	c #BFBFBF",
+	"|	c #757575",
+	"1	c #7E7E7E",
+	"2	c #BBBBBB",
+	"3	c #A3A3A3",
+	"                        ",
+	"                        ",
+	"                        ",
+	"   ...................  ",
+	"   .+++++@+++++#++++$.  ",
+	"   .+%%%%&%%%%%*%%%%=.  ",
+	"   .+%%%%-%%%%%-%%%%;.  ",
+	"   .>&,,&'&----)&---!.  ",
+	"   .+%%%%-%%%%%-%%%%~.  ",
+	"   .+%%%%-%%%%%-%%%%~.  ",
+	"   .+%%%%-%%%%%-%%%%~.  ",
+	"   .#{---'-----]*---^.  ",
+	"   .+%%%%-%%%%%-%%%%~.  ",
+	"   .+%%%%-%%%%%-%%%%;.  ",
+	"   .+%%%%-%%%%%-%%%%~.  ",
+	"   .;&--/(&{--&'&---_.  ",
+	"   .+%%%%-%%%%%-%%%%;.  ",
+	"   .+%%%%&%%%%%:%%%%~.  ",
+	"   .<[[[}|~~~~~1;~~23.  ",
+	"   ...................  ",
+	"                        ",
+	"                        ",
+	"                        ",
+	"                        "};
 
 
 static void
@@ -675,6 +684,7 @@ abi_table_init (AbiTable* table)
 	gtk_widget_pop_colormap ();
 	gtk_widget_pop_visual ();
 
+	table->handlers = 0;
 	table->window_label = GTK_LABEL(gtk_label_new(text));
 	g_free(text);
 	
@@ -687,8 +697,8 @@ abi_table_init (AbiTable* table)
 	table->selected_rows = (int) init_rows;
 	table->selected_cols = (int) init_cols;
 
-	table->total_rows = (int) init_rows + 1;
-	table->total_cols = (int) init_cols + 1;
+	table->total_rows = (int) my_max(init_rows + 1, 5);
+	table->total_cols = (int) my_max(init_cols + 1, 6);
 
 	abi_table_resize(table);
 
@@ -713,32 +723,29 @@ abi_table_init (AbiTable* table)
 	}
 
 	gtk_container_add(GTK_CONTAINER(table), GTK_WIDGET(table->button_box));
-  
-	g_signal_connect(G_OBJECT(table), "pressed",
-			 (GtkSignalFunc) on_pressed, (gpointer) table);
 
+	g_signal_connect(G_OBJECT(table), "pressed",
+					 (GtkSignalFunc) on_pressed, (gpointer) table);
 	g_signal_connect(G_OBJECT(table->area), "expose_event",
-			 (GtkSignalFunc) on_drawing_area_event, (gpointer) table);
+					 (GtkSignalFunc) on_drawing_area_event, (gpointer) table);
 	g_signal_connect(G_OBJECT(table->area), "motion_notify_event",
-			   (GtkSignalFunc) on_motion_notify_event, (gpointer) table);
-#if 0
+					 (GtkSignalFunc) on_motion_notify_event, (gpointer) table);
 	g_signal_connect(G_OBJECT(table->area), "button_release_event",
-			 (GtkSignalFunc) on_button_release_event, (gpointer) table);
-#endif
+					 (GtkSignalFunc) on_button_release_event, (gpointer) table);
 	g_signal_connect(G_OBJECT(table->area), "button_press_event",
-			 (GtkSignalFunc) on_button_release_event, (gpointer) table);
+					 (GtkSignalFunc) on_button_release_event, (gpointer) table);
 	g_signal_connect(G_OBJECT(table->area), "leave_notify_event",
-			   (GtkSignalFunc) on_leave_event, (gpointer) table);
+					 (GtkSignalFunc) on_leave_event, (gpointer) table);
 	g_signal_connect(G_OBJECT(table->window), "key_press_event",
-			   (GtkSignalFunc) on_key_event, (gpointer) table);
+					 (GtkSignalFunc) on_key_event, (gpointer) table);
 
 	gtk_widget_set_events (GTK_WIDGET(table->area), GDK_EXPOSURE_MASK
-			       | GDK_LEAVE_NOTIFY_MASK
-			       | GDK_BUTTON_PRESS_MASK
-			       | GDK_BUTTON_RELEASE_MASK
-			       | GDK_POINTER_MOTION_MASK
-			       | GDK_KEY_PRESS_MASK
-			       | GDK_KEY_RELEASE_MASK);
+						   | GDK_LEAVE_NOTIFY_MASK
+						   | GDK_BUTTON_PRESS_MASK
+						   | GDK_BUTTON_RELEASE_MASK
+						   | GDK_POINTER_MOTION_MASK
+						   | GDK_KEY_PRESS_MASK
+						   | GDK_KEY_RELEASE_MASK);
 
 	gtk_button_set_relief (GTK_BUTTON (table), GTK_RELIEF_NORMAL);
 }
@@ -752,18 +759,18 @@ abi_table_get_type (void)
 	if (!type)
 	{
 		static const GTypeInfo info =
-		{
-			sizeof (AbiTableClass),
-			NULL,		/* base_init */
-			NULL,		/* base_finalize */
-			(GClassInitFunc) abi_table_class_init,
-			NULL,		/* class_finalize */
-			NULL,		/* class_data */
-			sizeof (AbiTable),
-			0,		/* n_preallocs */
-			(GInstanceInitFunc) abi_table_init,
-			NULL
-		};
+			{
+				sizeof (AbiTableClass),
+				NULL,		/* base_init */
+				NULL,		/* base_finalize */
+				(GClassInitFunc) abi_table_class_init,
+				NULL,		/* class_finalize */
+				NULL,		/* class_data */
+				sizeof (AbiTable),
+				0,		/* n_preallocs */
+				(GInstanceInitFunc) abi_table_init,
+				NULL
+			};
 
 		type = g_type_register_static (GTK_TYPE_BUTTON, "AbiTable", &info, (GTypeFlags) 0);
 	}

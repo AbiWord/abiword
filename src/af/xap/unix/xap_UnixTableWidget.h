@@ -45,6 +45,7 @@ typedef struct _AbiTable
 	GtkVBox* window_vbox;
 	GtkDrawingArea* area;
 	GtkLabel* window_label;
+	GSList* handlers;
 	
 	GdkGC* selected_gc;
 	
