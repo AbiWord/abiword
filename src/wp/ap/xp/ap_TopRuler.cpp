@@ -848,6 +848,7 @@ void AP_TopRuler::_drawMarginProperties(const UT_Rect * /* pClipRect */,
 	
 	/* I've #ifed out the dark bevels because we don't make them on the margin dragging gargets,
 	 * (even the square box on the left) so I don't think we should make them here either, to be consistent.
+         * Jamie (jamie@montogmerie.net)
 	 */
 #if 0
 	m_pG->setColor3D(GR_Graphics::CLR3D_BevelDown);

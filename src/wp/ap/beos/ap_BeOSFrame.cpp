@@ -666,6 +666,22 @@ void AP_BeOSFrame::toggleRuler(bool bRulerOn)
 	UT_ASSERT(pFrameData);
 }
 
+void AP_BeOSFrame::toggleTopRuler(bool bRulerOn)
+{
+	UT_DEBUGMSG(("AP_BeOSFrame::toggleRuler %d", bRulerOn));	
+ 
+	AP_FrameData *pFrameData = (AP_FrameData *)getFrameData();
+	UT_ASSERT(pFrameData);
+}
+
+void AP_BeOSFrame::toggleLeftRuler(bool bRulerOn)
+{
+	UT_DEBUGMSG(("AP_BeOSFrame::toggleRuler %d", bRulerOn));	
+ 
+	AP_FrameData *pFrameData = (AP_FrameData *)getFrameData();
+	UT_ASSERT(pFrameData);
+}
+
 void AP_BeOSFrame::translateDocumentToScreen(UT_sint32 &x, UT_sint32 &y)
 { 
 	// translate the given document mouse coordinates into absolute screen coordinates.

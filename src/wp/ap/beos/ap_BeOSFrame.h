@@ -46,6 +46,8 @@ public:
 	virtual void 				setStatusMessage(const char * szMsg);
 	
 	virtual void				toggleRuler(bool bRulerOn);
+	virtual void				toggleTopRuler(bool bRulerOn);
+	virtual void				toggleLeftRuler(bool bRulerOn);
 	virtual void  				translateDocumentToScreen(UT_sint32 &x, UT_sint32 &y);
 
 protected:

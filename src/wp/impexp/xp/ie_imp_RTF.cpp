@@ -25,7 +25,6 @@
 #include <string.h>
 #include <stddef.h>
 #include <ctype.h>
-#include <memory.h>
 #include <math.h>
 #include "ut_types.h"
 #include "ut_assert.h"
