@@ -646,7 +646,8 @@ void AP_TopRuler::_drawTabProperties(const UT_Rect * pClipRect,
 		_getTabStopRect(pInfo, anchor, &rect);
 
 		_drawTabStop(rect, m_draggingTabType, UT_FALSE);
-		_drawTabStop(m_draggingRect, m_draggingTabType, UT_TRUE);
+		if (m_draggingRect.left + m_draggingRect.width > (UT_sint32)MyMax(m_iLeftRulerWidth,s_iFixedWidth))
+			_drawTabStop(m_draggingRect, m_draggingTabType, UT_TRUE);
 	}
 	
 	/*
@@ -1516,14 +1517,10 @@ void AP_TopRuler::mouseMotion(EV_EditModifierState ems, UT_sint32 x, UT_sint32 y
 		m_infoCache.u.c.m_xColumnWidth + m_infoCache.u.c.m_xaRightMargin;
 	ap_RulerTicks tick(m_pG,m_dim);
 
-	if (x < xStartPixel)
-	{
+	if (x < xStartPixel - m_xScrollOffset)
 		x = xStartPixel;
-	}
-	else if (x > xAbsRight)
-	{
+	else if (x > xAbsRight - m_xScrollOffset)
 		x = xAbsRight;
-	}
 
 	// mouse motion was in the ruler portion of the window, we cannot ignore it.
 
@@ -1867,21 +1864,22 @@ void AP_TopRuler::mouseMotion(EV_EditModifierState ems, UT_sint32 x, UT_sint32 y
 
 	case DW_TABSTOP:
 		{
-			UT_sint32 xAbsLeft = _getFirstPixelInColumn(&m_infoCache,m_infoCache.m_iCurrentColumn);
-			UT_sint32 xrel = ((UT_sint32)x) - xAbsLeft;
+			if (x < xStartPixel - m_xScrollOffset + m_infoCache.u.c.m_xaLeftMargin)
+				return;
+			UT_sint32 xrel = ((UT_sint32)x) - xStartPixel - 1; // TODO why is the -1 necessary? w/o it problems arise.
 			UT_sint32 xgrid = _snapPixelToGrid(xrel,tick);
 			double dgrid = _scalePixelDistanceToUnits(xrel,tick);
 			UT_DEBUGMSG(("SettingTabStop: %s\n",m_pG->invertDimension(tick.dimType,dgrid)));
 			UT_sint32 oldDraggingCenter = m_draggingCenter;
 			UT_Rect oldDraggingRect = m_draggingRect;
-			m_draggingCenter = xAbsLeft + xgrid;
+			m_draggingCenter = xStartPixel + xgrid;
 			_getTabStopRect(&m_infoCache,m_draggingCenter,&m_draggingRect);
 			if (!m_bBeforeFirstMotion && (m_draggingCenter != oldDraggingCenter))
 				draw(&oldDraggingRect,&m_infoCache);
 			_drawTabProperties(NULL,&m_infoCache,UT_FALSE);
 			_xorGuide();
 
-			double dxrel = _scalePixelDistanceToUnits(m_draggingCenter - xAbsLeft,tick);
+			double dxrel = _scalePixelDistanceToUnits(m_draggingCenter - xStartPixel,tick);
 			_displayStatusMessage(AP_STRING_ID_TabStopStatus, tick, dxrel);
 		}
 		m_bBeforeFirstMotion = UT_FALSE;
