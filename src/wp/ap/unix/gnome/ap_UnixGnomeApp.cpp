@@ -268,6 +268,10 @@ void AP_UnixGnomeApp::initPopt(AP_Args *Args)
 // Bonobo Control factory stuff
 //-------------------------------------------------------------------
 
+/*****************************************************************/
+/* Implements the Bonobo/PropertyBag:1.0 interface
+/*****************************************************************/
+
 /* 
  * get a value from abiwidget
  */ 
@@ -585,6 +589,15 @@ save_document_to_file(BonoboPersistFile *pf, const CORBA_char *filename,
 
   return 0 ;
 }
+//
+// Data content for persist stream
+//
+static Bonobo_Persist_ContentTypeList *
+pstream_get_content_types (BonoboPersistStream *ps, void *closure,
+			   CORBA_Environment *ev)
+{
+	return bonobo_persist_generate_content_types (9, "application/msword", "application/rtf", "application/x-abiword", "application/x-applix-word", "application/wordperfect5.1", "appplication/vnd.palm", "text/abiword", "text/plain", "text/vnd.wap.wml");
+}
 
 /*****************************************************************/
 /* Implements the Bonobo/Print:1.0 Interface */
@@ -661,16 +674,6 @@ print_document (GnomePrintContext         *ctx,
   DELETEP(pDocLayout);
 
   return;
-}
-
-//
-// Data content for persist stream
-//
-static Bonobo_Persist_ContentTypeList *
-pstream_get_content_types (BonoboPersistStream *ps, void *closure,
-			   CORBA_Environment *ev)
-{
-	return bonobo_persist_generate_content_types (9, "application/msword", "application/rtf", "application/x-abiword", "application/x-applix-word", "application/wordperfect5.1", "appplication/vnd.palm", "text/abiword", "text/plain", "text/vnd.wap.wml");
 }
 
 /*****************************************************************/
@@ -886,14 +889,20 @@ static BonoboControl* 	AbiControl_construct(BonoboControl * control, AbiWidget *
 	prop_bag = bonobo_property_bag_new (get_prop, set_prop, abi);
 	bonobo_control_set_properties (control, prop_bag);
 
-	/* put all AbiWidget's arguments in the property bag - way cool!! */
+	// put all AbiWidget's arguments in the property bag - way cool!!
   
 	bonobo_property_bag_add_gtk_args (prop_bag,G_OBJECT(abi));
-//
-// persist_stream , persist_file interfaces/methods, item container
-// 
+
+	// now advertise that we implement the property-bag interface
+	bonobo_object_add_interface (BONOBO_OBJECT (control),
+				     BONOBO_OBJECT (prop_bag));
+
+	//
+	// persist_stream , persist_file interfaces/methods, item container
+	// 
+	
 	AbiControl_add_interfaces (ABI_WIDGET(abi),
-							   BONOBO_OBJECT(control));
+				   BONOBO_OBJECT(control));
 	/*
 	 *  we don't need the property bag anymore here, so unref it
 	 */
