@@ -1,6 +1,6 @@
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
- * Copyright (C) 2001 Hubert Figuiere
+ * Copyright (C) 2001, 2003 Hubert Figuiere
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -26,47 +26,54 @@
 
 class XAP_CocoaFrame;
 class GR_CocoaGraphics;
+@class AP_CocoaDialog_PageNumbersController;
+@protocol XAP_CocoaDialogProtocol;
 
 class AP_CocoaDialog_PageNumbers : public AP_Dialog_PageNumbers
 {
- public:
-  AP_CocoaDialog_PageNumbers(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
-  virtual ~AP_CocoaDialog_PageNumbers(void);
+public:
+	AP_CocoaDialog_PageNumbers(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id dlgid);
+	virtual ~AP_CocoaDialog_PageNumbers(void);
+	
+	virtual void runModal(XAP_Frame * pFrame);
+	
+	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id dlgid);
+	
+	void event_OK(void);
+	void event_Cancel(void);
+	void event_WindowDelete(void);
+	void event_PreviewExposed(void);
+	void event_AlignChanged(AP_Dialog_PageNumbers::tAlign);
+	void event_HdrFtrChanged(AP_Dialog_PageNumbers::tControl);
 
-  virtual void runModal(XAP_Frame * pFrame);
-
-  static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
-
-  void event_OK(void);
-  void event_Cancel(void);
-  void event_WindowDelete(void);
-  void event_PreviewExposed(void);
-  void event_AlignChanged(AP_Dialog_PageNumbers::tAlign);
-  void event_HdrFtrChanged(AP_Dialog_PageNumbers::tControl);
-
- protected:
-
-  // private construction functions
-#if 0
-  virtual GtkWidget * _constructWindow (void);
-  virtual void _constructWindowContents (GtkWidget * container);
-  virtual void _connectSignals (void);
-
-  // caches of the last known values for alignment and hdr/footer/both
-  AP_Dialog_PageNumbers::tAlign m_recentAlign;
-  AP_Dialog_PageNumbers::tControl m_recentControl;
-
-  GtkWidget * m_buttonOK;
-  GtkWidget * m_buttonCancel;
-  GtkWidget * m_window;
-
-  GtkWidget * m_previewArea;
-
-  GtkWidget * m_combo1;
-  GtkWidget * m_combo2;
-#endif
-
-  GR_CocoaGraphics * m_unixGraphics;
+private:
+	AP_Dialog_PageNumbers::tAlign m_recentAlign;
+	AP_Dialog_PageNumbers::tControl m_recentControl;
+	GR_CocoaGraphics * m_pG;
+	AP_CocoaDialog_PageNumbersController * m_dlg;
 };
+
+
+@interface AP_CocoaDialog_PageNumbersController : NSWindowController <XAP_CocoaDialogProtocol>
+{
+    IBOutlet NSBox *_alignmentBox;
+    IBOutlet NSButton *_cancelBtn;
+    IBOutlet NSButtonCell *_centerBtn;
+    IBOutlet NSButtonCell *_footerBtn;
+    IBOutlet NSButtonCell *_headerBtn;
+    IBOutlet NSButtonCell *_leftBtn;
+    IBOutlet NSButton *_okBtn;
+    IBOutlet NSBox *_positionBox;
+    IBOutlet XAP_CocoaNSView *_preview;
+    IBOutlet NSBox *_previewBox;
+    IBOutlet NSButtonCell *_rightBtn;
+	AP_CocoaDialog_PageNumbers*	_xap;
+}
+- (IBAction)alignmentAction:(id)sender;
+- (IBAction)cancelAction:(id)sender;
+- (IBAction)okAction:(id)sender;
+- (IBAction)positionAction:(id)sender;
+- (XAP_CocoaNSView*)preview;
+@end
 
 #endif /* AP_COCOADIALOG_PAGENUBMERS_H */

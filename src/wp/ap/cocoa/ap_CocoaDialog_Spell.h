@@ -1,6 +1,6 @@
 /* AbiWord
  * Copyright (C) 1998,1999 AbiSource, Inc.
- * Copyright (C) 2001 Hubert Figuiere
+ * Copyright (C) 2001, 2003 Hubert Figuiere
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -23,65 +23,74 @@
 
 #include "ap_Dialog_Spell.h"
 
+#import "xap_Cocoa_NSTableUtils.h"
+
 class XAP_CocoaFrame;
+@class AP_CocoaDialog_Spell_Controller;
+
 
 /*****************************************************************/
 
 class AP_CocoaDialog_Spell: public AP_Dialog_Spell
 {
- public:
-   AP_CocoaDialog_Spell(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
-   virtual ~AP_CocoaDialog_Spell(void);
+public:
+	AP_CocoaDialog_Spell(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id dlgid);
+	virtual ~AP_CocoaDialog_Spell(void);
+	
+	virtual void			runModal(XAP_Frame * pFrame);
+	
+	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id dlgid);
+	
+	// callbacks can fire these events
+	virtual void event_Change(void);
+	virtual void event_ChangeAll(void);
+	virtual void event_Ignore(void);
+	virtual void event_IgnoreAll(void);
+	virtual void event_AddToDict(void);
+	virtual void event_Cancel(void);
+	virtual void event_SuggestionSelected(int row, int column);
+	virtual void event_ReplacementChanged(void);
    
-   virtual void			runModal(XAP_Frame * pFrame);
+private:
+	void	    _populateWindowData(void);
+	void 	    _storeWindowData(void);
+	
+	void _showMisspelledWord(void);	
 
-   static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
-
-   // callbacks can fire these events
-   virtual void event_Change(void);
-   virtual void event_ChangeAll(void);
-   virtual void event_Ignore(void);
-   virtual void event_IgnoreAll(void);
-   virtual void event_AddToDict(void);
-   virtual void event_Cancel(void);
-   virtual void event_SuggestionSelected(int row, int column);
-   virtual void event_ReplacementChanged(void);
-   
- protected:
-#if 0
-   // private construction functions
-   virtual GtkWidget * _constructWindow(void);
-   virtual void        _constructWindowContents(GtkWidget *box);
-   virtual void        _createButtons(void);
-   void                _connectSignals(void);
-
-   void	    _populateWindowData(void);
-   void 	    _storeWindowData(void);
-
-   void _showMisspelledWord(void);	
-
-   char * _convertToMB(const UT_UCSChar *wword);
-   char * _convertToMB(const UT_UCSChar *wword, UT_sint32 iLength);
-   UT_UCSChar * _convertFromMB(const char *word);
-      
-   // pointers to widgets we need to query/set
-   GtkWidget * m_windowMain;
-   GtkWidget * m_textWord;
-   GtkWidget * m_entryChange;
-   GtkWidget * m_clistSuggestions;
-   
-   GtkWidget * m_buttonChange;
-   GtkWidget * m_buttonChangeAll;
-   GtkWidget * m_buttonIgnore;
-   GtkWidget * m_buttonIgnoreAll;
-   GtkWidget * m_buttonAddToDict;
-   GtkWidget * m_buttonCancel;
-
-   GdkColor m_highlight;
-
-   guint m_listHandlerID;
-   guint m_replaceHandlerID;
-#endif
+	AP_CocoaDialog_Spell_Controller* m_dlg;
+	XAP_StringListDataSource* m_suggestionList;
 };
+
+
+@interface AP_CocoaDialog_Spell_Controller : NSWindowController <XAP_CocoaDialogProtocol>
+{
+    IBOutlet NSButton *_addBtn;
+    IBOutlet NSButton *_cancelBtn;
+    IBOutlet NSButton *_changeAllBtn;
+    IBOutlet NSButton *_changeBtn;
+    IBOutlet NSButton *_ignoreAllBtn;
+    IBOutlet NSButton *_ignoreBtn;
+    IBOutlet NSTextField *_replData;
+    IBOutlet NSTextField *_replLabel;
+    IBOutlet NSTableView *_suggestionList;
+    IBOutlet NSTextView *_unknownData;
+    IBOutlet NSTextField *_unknownLabel;
+	AP_CocoaDialog_Spell* _xap;
+}
+- (IBAction)addToDictAction:(id)sender;
+- (IBAction)cancelAction:(id)sender;
+- (IBAction)changeAction:(id)sender;
+- (IBAction)changeAllAction:(id)sender;
+- (IBAction)ignoreAction:(id)sender;
+- (IBAction)ignoreAllAction:(id)sender;
+- (IBAction)replacementChanged:(id)sender;
+- (void)suggestionSelected:(id)sender;
+
+- (void)setMisspelled:(NSAttributedString*)attr;
+- (void)setReplace:(NSString*)str;
+- (void)selectSuggestion:(int)idx;
+- (void)setSuggestionList:(id)list;
+- (NSString*)replace;
+@end
 
 #endif /* AP_COCOADIALOG_SPELL_H */
