@@ -579,7 +579,7 @@ bool	fp_TextRun::findMaxLeftFitSplitPoint(UT_sint32 iMaxLeftWidth, fp_RunSplitIn
 					PD_StruxIterator text2(getBlock()->getStruxDocHandle(),
 										   offset + fl_BLOCK_STRUX_OFFSET + i);
 
-					UT_uint32 j = i;
+					UT_sint32 j = i;
 					while(j >= 0
 						  && text2.getStatus() == UTIter_OK
 						  && text2.getChar() == UCS_SPACE)
