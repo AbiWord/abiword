@@ -29,6 +29,7 @@
 #include "fl_SectionLayout.h"
 #include "fl_FootnoteLayout.h"
 #include "fl_BlockLayout.h"
+#include "fl_TOCLayout.h"
 #include "fl_ContainerLayout.h"
 #include "fl_Squiggles.h"
 #include "fl_AutoNum.h"
@@ -987,6 +988,198 @@ UT_sint32 FL_DocLayout::getEndnoteVal(UT_uint32 footpid)
 	return pos;
 }
 
+
+//
+//--------------------------------------------------------------------
+// Table of content Functions.
+//--------------------------------------------------------------------
+//
+
+UT_sint32 FL_DocLayout::getNumTOCs(void)
+{
+	return static_cast<UT_sint32 >(m_vecTOC.getItemCount());
+}
+
+fl_TOCLayout * FL_DocLayout::getNthTOC(UT_sint32 i)
+{
+	if( i >= getNumTOCs())
+	{
+		return NULL;
+	}
+	return static_cast<fl_TOCLayout *>(m_vecTOC.getNthItem(i));
+}
+
+/*!
+ * This method scans all the TOC in the document and adds or removes the
+ * supplied block if it needs to be either added or removed from a TOC.
+ * This method returns true if pBlock is in at least one TOC
+ */
+bool FL_DocLayout::addOrRemoveBlockFromTOC(fl_BlockLayout * pBlock)
+{
+	UT_sint32 count = getNumTOCs();
+	if(count == 0)
+	{
+		return false;
+	}
+	UT_UTF8String sStyle;
+	pBlock->getStyle(sStyle);
+	UT_sint32 i = 0;
+	UT_sint32 inTOC = count;
+	UT_sint32 addTOC = 0;
+	for(i=0; i<count; i++)
+	{
+		fl_TOCLayout * pTOC = getNthTOC(i);
+		if(pTOC->isBlockInTOC(pBlock))
+		{
+			if(!pTOC->isStyleInTOC(sStyle))
+			{
+				pTOC->removeBlock(pBlock);
+				inTOC--;
+			}
+		}
+		else
+		{
+			if(pTOC->isStyleInTOC(sStyle))
+			{
+				pTOC->addBlock(pBlock);
+				addTOC++;
+			}
+		}
+	}
+	if((inTOC <= 0) && (addTOC == 0))
+	{
+		return false;
+	}
+	return true;
+}
+
+/*!
+ * Remove pBlock from all the TOC's it's in.
+ * Return false if there are no TOC's in the Doc.
+ * return true otherwise.
+ */
+bool FL_DocLayout::removeBlockFromTOC(fl_BlockLayout *pBlock)
+{
+	UT_sint32 count = getNumTOCs();
+	if(count == 0)
+	{
+		return false;
+	}
+	UT_sint32 i = 0;
+	for(i=0; i<count; i++)
+	{
+		fl_TOCLayout * pTOC = getNthTOC(i);
+		if(pTOC->isBlockInTOC(pBlock))
+		{
+			pTOC->removeBlock(pBlock);
+		}
+	}
+	return true;
+}
+
+/*!
+ * returns true if the block is in at least one TOC.
+ */
+bool FL_DocLayout::isBlockInTOC(fl_BlockLayout * pBlock)
+{
+	UT_sint32 count = getNumTOCs();
+	if(count == 0)
+	{
+		return false;
+	}
+	UT_sint32 i = 0;
+	for(i=0; i<count; i++)
+	{
+		fl_TOCLayout * pTOC = getNthTOC(i);
+		if(pTOC->isBlockInTOC(pBlock))
+		{
+			return true;
+		}
+	}
+	return false;;
+}
+
+/*!
+ * Fill the supplied vector with pointers to the blocks matching the supplied
+ * Block.
+ * Return false if no matching block were found.
+ * true otherwise
+ */
+bool FL_DocLayout::getMatchingBlocksFromTOCs(fl_BlockLayout * pBlock, UT_Vector * pVecBlocks)
+{
+	UT_sint32 count = getNumTOCs();
+	if(count == 0)
+	{
+		return false;
+	}
+	UT_sint32 i = 0;
+	for(i=0; i<count; i++)
+	{
+		fl_TOCLayout * pTOC = getNthTOC(i);
+		if(pTOC->isBlockInTOC(pBlock))
+		{
+			fl_BlockLayout * pMatch = pTOC->getMatchingBlock(pBlock);
+			pVecBlocks->addItem(static_cast<void *>(pMatch));
+		}
+	}
+	return (pVecBlocks->getItemCount() > 0);
+}
+	
+bool FL_DocLayout::addTOC(fl_TOCLayout * pTOC)
+{
+	m_vecTOC.addItem(static_cast<void *>(pTOC));
+	return true;
+}
+
+bool FL_DocLayout::removeTOC(fl_TOCLayout * pTOC)
+{
+	UT_sint32 count = getNumTOCs();
+	if(count == 0)
+	{
+		return false;
+	}
+	UT_sint32 i = m_vecTOC.findItem(static_cast<void *>(pTOC));
+	if(i < 0)
+	{
+		return false;
+	}
+	m_vecTOC.deleteNthItem(i);
+	return true;
+}
+
+bool FL_DocLayout::fillTOC(fl_TOCLayout * pTOC)
+{
+	fl_DocSectionLayout * pDSL = m_pFirstSection;
+	fl_BlockLayout * pBlock = NULL;
+	fl_ContainerLayout * pCL = static_cast<fl_ContainerLayout *>(pDSL);
+	while(pCL && pCL->getContainerType() != FL_CONTAINER_BLOCK)
+	{
+		pCL = pCL->getFirstLayout();
+	}
+	if(pCL == NULL)
+	{
+		return false;
+	}
+	if(pCL->getContainerType() != FL_CONTAINER_BLOCK)
+	{
+		return false;
+	}
+	UT_UTF8String sStyle;
+	pBlock = static_cast<fl_BlockLayout *>(pCL);
+	bool filled = false;
+	while(pBlock)
+	{
+		pBlock->getStyle(sStyle);
+		if(pTOC->isStyleInTOC(sStyle))
+		{
+			filled = true;
+			pTOC->addBlock(pBlock);
+		}
+		pBlock = pBlock->getNextBlockInDocument();
+	}
+	return filled;
+}
+//------------------------------------------------------------------
 UT_sint32 FL_DocLayout::getHeight()
 {
 	UT_sint32 iHeight = 0;

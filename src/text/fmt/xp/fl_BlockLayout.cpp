@@ -34,6 +34,7 @@
 #include "fl_FootnoteLayout.h"
 #include "fl_TableLayout.h"
 #include "fl_AutoNum.h"
+#include "fl_TOCLayout.h"
 #include "fb_LineBreaker.h"
 #include "fb_Alignment.h"
 #include "fp_Column.h"
@@ -171,7 +172,9 @@ fl_BlockLayout::fl_BlockLayout(PL_StruxDocHandle sdh,
 	  m_szStyle(NULL),
 	  m_bIsCollapsed(true),
 	  m_iDomDirection(FRIBIDI_TYPE_UNSET),
-	  m_iDirOverride(FRIBIDI_TYPE_UNSET)
+	  m_iDirOverride(FRIBIDI_TYPE_UNSET),
+	  m_bIsTOC(false),
+	  m_bStyleInTOC(false)
 {
 	UT_DEBUGMSG(("BlockLayout %x created \n",this));
 	setPrev(pPrev);
@@ -199,13 +202,16 @@ fl_BlockLayout::fl_BlockLayout(PL_StruxDocHandle sdh,
 		if(pStyle != NULL)
 		{
 			pStyle->used(1);
-			if(pStyle->getBasedOn() != NULL)
+			UT_sint32 iLoop = 0;
+			while((pStyle->getBasedOn()) != NULL && (iLoop < 10))
 			{
 				pStyle->getBasedOn()->used(1);
+				pStyle = pStyle->getBasedOn();
+				iLoop++;
 			}
 		}
 	}
-
+	m_bIsTOC = (pSectionLayout->getContainerType() == FL_CONTAINER_TOC);
 	_lookupProperties();
 
 	if(!isHdrFtr() || (static_cast<fl_HdrFtrSectionLayout *>(getSectionLayout())->getDocSectionLayout() != NULL))
@@ -375,7 +381,11 @@ void fl_BlockLayout::_lookupProperties(void)
 
 	const PP_AttrProp * pBlockAP = NULL;
 	getAttrProp(&pBlockAP);
-
+	UT_UTF8String sOldStyle("");
+	if(m_szStyle)
+	{
+		sOldStyle = m_szStyle;
+	}
 	if(!pBlockAP)
 	{
 		m_szStyle = NULL;
@@ -383,6 +393,15 @@ void fl_BlockLayout::_lookupProperties(void)
 	else if (!pBlockAP->getAttribute(PT_STYLE_ATTRIBUTE_NAME, m_szStyle))
 	{
 		m_szStyle = NULL;
+	}
+	UT_UTF8String sNewStyle("");
+	if(m_szStyle)
+	{
+		sNewStyle = m_szStyle;
+	}
+	if(!(sNewStyle == sOldStyle))
+	{
+		m_bStyleInTOC = m_pLayout->addOrRemoveBlockFromTOC(this);
 	}
 	// Now work out our dominant direction
 	// First, test if this is not a block that is the wrapper around a
@@ -811,12 +830,17 @@ fl_BlockLayout::~fl_BlockLayout()
 //			if (m_pAutoNum->isEmpty())
 //				DELETEP(m_pAutoNum);
 //		}
-
+	m_pLayout->removeBlockFromTOC(this);
 	UT_ASSERT(m_pLayout != NULL);
 	m_pLayout->notifyBlockIsBeingDeleted(this);
 	m_pDoc = NULL;
 	m_pLayout = NULL;
 	UT_DEBUGMSG(("~fl_BlockLayout: Deleting block %x \n",this));
+}
+
+void fl_BlockLayout::getStyle(UT_UTF8String & sStyle)
+{
+	sStyle = m_szStyle;
 }
 
 /*!

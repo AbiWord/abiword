@@ -42,6 +42,8 @@
 #include "fl_ContainerLayout.h"
 #include "fl_SectionLayout.h"
 #include "fb_LineBreaker.h"
+#include "ut_string_class.h"
+
 // number of DocPositions occupied by the block strux
 #define fl_BLOCK_STRUX_OFFSET	1
 
@@ -245,6 +247,7 @@ public:
 
 	void clearScreen(GR_Graphics*);
 
+	void                getStyle(UT_UTF8String & sStyle);
 	inline UT_sint32	getTextIndent(void) const { return m_iTextIndent; }
 	inline UT_sint32	getLeftMargin(void) const { return m_iLeftMargin; }
 	inline UT_sint32	getRightMargin(void) const { return m_iRightMargin; }
@@ -467,6 +470,9 @@ protected:
 
 	FriBidiCharType 		m_iDomDirection;
 	FriBidiCharType 		m_iDirOverride;
+
+	bool                    m_bIsTOC;
+	bool                    m_bStyleInTOC;
 };
 
 /*

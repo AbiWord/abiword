@@ -55,6 +55,7 @@ class fl_DocListener;
 class fl_SectionLayout;
 class fl_DocSectionLayout;
 class fl_BlockLayout;
+class fl_TOCLayout;
 class fp_Page;
 class PD_Document;
 class PP_AttrProp;
@@ -211,6 +212,18 @@ public:
 		{ return m_bPlaceAtDocEnd;}
 	bool                getPlaceEndAtSecEnd(void) const
 		{ return m_bPlaceAtSecEnd;}
+// ---------------------------------------------------
+// Table of contents
+//----------------------------------------------------
+	UT_sint32           getNumTOCs(void);
+	fl_TOCLayout *      getNthTOC(UT_sint32 i);
+	bool                addOrRemoveBlockFromTOC(fl_BlockLayout * pBlock);
+	bool                removeBlockFromTOC(fl_BlockLayout * pBlock);
+	bool                isBlockInTOC(fl_BlockLayout * pBlock);
+	bool                getMatchingBlocksFromTOCs(fl_BlockLayout * pBlock, UT_Vector * pVecBlock);
+	bool                addTOC(fl_TOCLayout * pTOC);
+	bool                removeTOC(fl_TOCLayout * pTOC);
+	bool                fillTOC(fl_TOCLayout * pTOC);
 	
 // --------------------------------------------------------------------
 	bool		getAutoSpellCheck(void) const { return (hasBackgroundCheckReason(bgcrSpelling)); }
@@ -313,6 +326,7 @@ private:
 	bool                m_bPlaceAtDocEnd;
 	bool                m_bPlaceAtSecEnd;
 	UT_uint32           m_iGraphicTick;
+	UT_Vector           m_vecTOC;
 };
 
 #endif /* DOCLAYOUT_H */

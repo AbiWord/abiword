@@ -74,6 +74,11 @@ public:
 	UT_uint32                getLength(void);
 	UT_uint32                getTOCPID(void) const
 		{ return m_iTOCPID;}
+	bool                     isStyleInTOC(UT_UTF8String & sStyle);
+	bool                     isBlockInTOC(fl_BlockLayout * pBlock);
+	bool                     addBlock(fl_BlockLayout * pBlock);
+	bool                     removeBlock(fl_BlockLayout * pBlock);
+	fl_BlockLayout *         getMatchingBlock(fl_BlockLayout * pBlock);
 private:
 	virtual void             _purgeLayout(void);
 	virtual void		     _lookupProperties(void);
@@ -86,5 +91,17 @@ private:
 	UT_uint32                m_iTOCPID;
 	fl_DocSectionLayout*	 m_pDocSL;
 	bool                     m_bHasEndTOC;
+	UT_UTF8String            m_sSourceStyle1;
+	UT_UTF8String            m_sSourceStyle2;
+	UT_UTF8String            m_sSourceStyle3;
+	UT_UTF8String            m_sSourceStyle4;
+	UT_UTF8String            m_sDestStyle1;
+	UT_UTF8String            m_sDestStyle2;
+	UT_UTF8String            m_sDestStyle3;
+	UT_UTF8String            m_sDestStyle4;
+	UT_Vector                m_vecBlock1;
+	UT_Vector                m_vecBlock2;
+	UT_Vector                m_vecBlock3;
+	UT_Vector                m_vecBlock4;
 };
 #endif /* TOCLAYOUT_H */

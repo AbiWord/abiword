@@ -175,6 +175,34 @@ fl_SectionLayout * fl_TOCLayout::getSectionLayout(void) const
 	return NULL;
 }
 
+bool fl_TOCLayout::addBlock(fl_BlockLayout * pBlock)
+{
+	return true;
+}
+
+
+bool fl_TOCLayout::removeBlock(fl_BlockLayout * pBlock)
+{
+	return true;
+}
+
+
+bool fl_TOCLayout::isStyleInTOC(UT_UTF8String & sStyle)
+{
+	return true;
+}
+
+
+
+bool fl_TOCLayout::isBlockInTOC(fl_BlockLayout * pBlock)
+{
+	return true;
+}
+
+fl_BlockLayout * fl_TOCLayout::getMatchingBlock(fl_BlockLayout * pBlock)
+{
+	return pBlock;
+}
 
 bool fl_TOCLayout::doclistener_changeStrux(const PX_ChangeRecord_StruxChange * pcrxc)
 {
