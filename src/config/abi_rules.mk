@@ -114,13 +114,15 @@ realclean clobber_all::
 	rm -rf $(wildcard *.OBJ *.OBJD) dist $(ALL_TRASH)
 	+$(LOOP_OVER_DIRS)
 
-####$(PROGRAM): $(OBJS)
-####	@$(MAKE_OBJDIR)
-####ifeq ($(OS_NAME),WIN32)
-####	@$(CC) -nologo $(OBJS) -Fe$@ -link $(LDFLAGS) $(OS_LIBS) $(EXTRA_LIBS)
-####else
-####	@$(CCC) -o $@ $(CFLAGS) $(OBJS) $(LDFLAGS)
-####endif
+ifdef HELPER_PROGRAM
+$(HELPER_PROGRAM): $(OBJS)
+	@$(MAKE_OBJDIR)
+ifeq ($(OS_NAME),WIN32)
+	@$(CC) -nologo $(OBJS) -Fe$@ -link $(LDFLAGS) $(OS_LIBS) $(EXTRA_LIBS)
+else
+	@$(CCC) -o $@ $(CFLAGS) $(OBJS) $(LDFLAGS)
+endif
+endif
 
 $(LIBRARY): $(OBJS)
 	@$(MAKE_OBJDIR)
