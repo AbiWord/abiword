@@ -146,6 +146,8 @@ public:
 	virtual UT_sint32						makeDirectory(const char * szPath, const UT_sint32 mode ) const = 0;
 	XAP_Menu_Factory *                      getMenuFactory(void) const { return m_pMenuFactory;}
 	XAP_Toolbar_Factory *                   getToolbarFactory(void) const { return m_pToolbarFactory;}
+ 
+    virtual bool                            theOSHasBidiSupport() const {return false;}
 
 protected:
 	void									_setAbiSuiteLibDir(const char * sz);
