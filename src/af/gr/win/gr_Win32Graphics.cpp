@@ -1184,12 +1184,15 @@ UT_uint32 GR_Win32Font::Acq::measureUnRemappedChar(GR_Win32Font& font, UT_UCSCha
 	// if that fails, the char is probably not defined in
 	// the font, so we substitute the default char width.
 	iWidth = font.m_cw.getWidth(c);
-	if (!iWidth)
+	if (iWidth == GR_CW_UNKNOWN)
 	{
 		font.m_cw.setCharWidthsOfRange(font.m_oldHDC, c, c);
 		iWidth = font.m_cw.getWidth(c);
 		// [[Why the default width?  I think zero is better in that case?]]
-		if (!iWidth) iWidth = 0 /* m_defaultCharWidth */;
+		// because the win32 font rendering engine will remap the
+		// glyph to the default glyph, so we need to be advancing by
+		// the default glyph's width
+		if (iWidth == GR_CW_UNKNOWN) iWidth = font.m_defaultCharWidth;
 	}
 	return iWidth;
 }

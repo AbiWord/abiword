@@ -26,6 +26,7 @@
 #include "xap_EncodingManager.h"
 #include "xap_Prefs.h"
 #include "gr_Graphics.h"
+#include "gr_CharWidths.h"
 #include "ut_assert.h"
 #include "ut_string.h"
 #include "ut_units.h"
@@ -218,7 +219,9 @@ UT_uint32 GR_Graphics::measureString(const UT_UCSChar* s, int iOffset,
 		if(isOverstrikingChar(currentChar) == UT_NOT_OVERSTRIKING)
 		{
 			charWidth = measureUnRemappedChar(currentChar);
-			stringWidth += charWidth;
+
+			if(charWidth != GR_CW_UNKNOWN)
+				stringWidth += charWidth;
 		}
 		else
 			charWidth = 0;
@@ -355,8 +358,8 @@ UT_UCSChar GR_Graphics::remapGlyph(const UT_UCSChar actual_, bool noMatterWhat)
 		return (actual);
 	}
 
-	UT_uint32 width = 0xFFFF;
-	if (noMatterWhat  ||  m_bRemapGlyphsNoMatterWhat  ||  !(width = measureUnRemappedChar(actual)))
+	UT_sint32 width = 0xFFFF;
+	if (noMatterWhat  ||  m_bRemapGlyphsNoMatterWhat  ||  (width = measureUnRemappedChar(actual))== GR_CW_UNKNOWN)
 	{
 		bool try_default = true;
 		for (UT_uint32 tdex=0; tdex<m_iRemapGlyphsTableLen; ++tdex)
@@ -372,7 +375,7 @@ UT_UCSChar GR_Graphics::remapGlyph(const UT_UCSChar actual_, bool noMatterWhat)
 		if (try_default  &&  m_ucRemapGlyphsDefault)
 		{
 			if (width == 0xFFFF) width = measureUnRemappedChar(actual);
-			if (!width) remap = m_ucRemapGlyphsDefault;
+			if (width == GR_CW_UNKNOWN) remap = m_ucRemapGlyphsDefault;
 		}
 	}
 #if 0	

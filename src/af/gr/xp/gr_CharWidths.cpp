@@ -22,7 +22,7 @@
 
 GR_CharWidths::GR_CharWidths(void)
 {
-	memset(m_aLatin1.aCW,0,sizeof(m_aLatin1.aCW));
+	memset(m_aLatin1.aCW,GR_UNKNOWN_BYTE,sizeof(m_aLatin1.aCW));
 }
 
 GR_CharWidths::~GR_CharWidths(void)
@@ -32,7 +32,7 @@ GR_CharWidths::~GR_CharWidths(void)
 
 void GR_CharWidths::zeroWidths(void)
 {
-	memset(m_aLatin1.aCW,0,sizeof(m_aLatin1.aCW));
+	memset(m_aLatin1.aCW,GR_UNKNOWN_BYTE,sizeof(m_aLatin1.aCW));
 	UT_VECTOR_SPARSEPURGEALL(Array256*, m_vecHiByte);
 	m_vecHiByte.clear();
 }
@@ -58,7 +58,7 @@ void GR_CharWidths::setWidth(UT_UCSChar cIndex, UT_sint32 width)
 		pA = new Array256;
 		if (!pA)						// silently fail on memory problems
 			return;
-		memset(pA,0,sizeof(Array256));
+		memset(pA,GR_UNKNOWN_BYTE,sizeof(Array256));
 	}
 
 	m_vecHiByte.setNthItem(hi,pA,NULL);
@@ -85,5 +85,7 @@ UT_sint32 GR_CharWidths::getWidth(UT_UCSChar cIndex) const
 			return pA->aCW[lo];
 	}
 
-	return 0;
+	return GR_CW_UNKNOWN;
 }
+
+

@@ -24,6 +24,11 @@
 #include "ut_vector.h"
 
 //////////////////////////////////////////////////////////////////
+// we want GR_CHAR_WIDTH_UNKNOWN to be a large negative number
+// with the four bytes indentical to be able to use memset
+// so we choose 0x80808080
+#define GR_UNKNOWN_BYTE 0x80
+#define GR_CW_UNKNOWN (UT_sint32)0x80808080
 
 class ABI_EXPORT GR_CharWidths
 {
