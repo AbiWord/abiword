@@ -223,6 +223,36 @@ UT_Bool pt_PieceTable::deleteSpan(PT_DocPosition dpos1,
 		pf_End = pf_End->getPrev();
 		fragOffset_End = pf_End->getLength();
 	}
+
+	pf_Frag_Strux * pfsContainer = NULL;
+	UT_Bool bFoundStrux = _getStruxFromPosition(dpos1,&pfsContainer);
+	UT_ASSERT(bFoundStrux);
+
+	switch (pfsContainer->getStruxType())
+	{
+	default:
+		UT_ASSERT(0);
+		return UT_FALSE;
+		
+	case PTX_Section:
+		// if the previous container is a section, then pf_First
+		// must be the first block in the section.
+		UT_ASSERT((pf_First->getPrev() == pfsContainer));
+		UT_ASSERT((pf_First->getType() == pf_Frag::PFT_Strux));
+		UT_ASSERT(((static_cast<pf_Frag_Strux *>(pf_First))->getStruxType() == PTX_Block));
+		// since, we cannot delete the first block in a section, we
+		// secretly translate this into a request to delete the section;
+		// the block we have will then be slurped into the previous
+		// section.
+		// TODO consider just fixing up the variables that we have
+		// TODO computed so far, rather than making a recursive call.
+		return deleteSpan(dpos1-pfsContainer->getLength(),dpos1);
+
+	case PTX_Block:
+		// if the previous container is a block, we're ok.
+		// the loop below will take care of everything.
+		break;
+	}
 	
 	// see if the amount of text to be deleted is completely
 	// contained within the fragment found.  if so, we have
@@ -245,11 +275,6 @@ UT_Bool pt_PieceTable::deleteSpan(PT_DocPosition dpos1,
 	// loop to delete the amount requested, one text fragment at a time.
 	// if we encounter any non-text fragments along the way, we delete
 	// them too.  that is, we implicitly delete Strux and Objects here.
-
-	pf_Frag_Strux * pfsContainer = NULL;
-	UT_Bool bFoundStrux = _getStruxFromPosition(dpos1,&pfsContainer);
-	UT_ASSERT(bFoundStrux);
-	UT_ASSERT(pfsContainer->getStruxType() == PTX_Block);
 
 	pf_Frag * pfNewEnd;
 	UT_uint32 fragOffsetNewEnd;

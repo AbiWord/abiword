@@ -43,7 +43,9 @@
 UT_Bool pt_PieceTable::_unlinkStrux_Block(pf_Frag_Strux * pfs,
 										  pf_Frag ** ppfEnd, UT_uint32 * pfragOffsetEnd)
 {
-	// unlink this strux from the document.
+	UT_ASSERT(pfs->getStruxType()==PTX_Block);
+	
+	// unlink this Block strux from the document.
 	// the caller is responsible for deleting pfs.
 
 	if (ppfEnd)
@@ -96,6 +98,64 @@ UT_Bool pt_PieceTable::_unlinkStrux_Block(pf_Frag_Strux * pfs,
 		return UT_FALSE;
 	}
 }
+
+UT_Bool pt_PieceTable::_unlinkStrux_Section(pf_Frag_Strux * pfs,
+											pf_Frag ** ppfEnd, UT_uint32 * pfragOffsetEnd)
+{
+	UT_ASSERT(pfs->getStruxType()==PTX_Section);
+	
+	// unlink this Section strux from the document.
+	// the caller is responsible for deleting pfs.
+
+	if (ppfEnd)
+		*ppfEnd = pfs->getNext();
+	if (pfragOffsetEnd)
+		*pfragOffsetEnd = 0;
+	
+	// find the previous strux (either a paragraph or something else).
+
+	pf_Frag_Strux * pfsPrev = NULL;
+	pf_Frag * pf = pfs->getPrev();
+	while (pf && !pfsPrev)
+	{
+		if (pf->getType() == pf_Frag::PFT_Strux)
+			pfsPrev = static_cast<pf_Frag_Strux *> (pf);
+		pf = pf->getPrev();
+	}
+
+	if (!pfsPrev)
+	{
+		// first section in the document cannot be deleted.
+		// TODO decide if this should assesrt or just file...
+		UT_DEBUGMSG(("Cannot delete first section in document.\n"));
+		UT_ASSERT(0);
+		return UT_FALSE;
+	}
+	
+	switch (pfsPrev->getStruxType())
+	{
+	case PTX_Block:
+		// if there is a paragraph before us, we can delete this
+		// section knowing that our paragraphs will be assimilated
+		// in to the previous section (that is, the container of
+		// this block).
+
+		_unlinkFrag(pfs,ppfEnd,pfragOffsetEnd);
+		return UT_TRUE;
+
+	case PTX_Section:
+		// there are no blocks (paragraphs) between this section
+		// and the previous section.  this is not possible.
+		// TODO decide if this should assert or just fail...
+		UT_DEBUGMSG(("No blocks between sections ??\n"));
+		UT_ASSERT(0);
+		return UT_FALSE;
+
+	default:
+		UT_ASSERT(0);
+		return UT_FALSE;
+	}
+}
 			
 UT_Bool pt_PieceTable::_deleteStruxWithNotify(PT_DocPosition dpos,
 											  pf_Frag_Strux * pfs,
@@ -109,7 +169,7 @@ UT_Bool pt_PieceTable::_deleteStruxWithNotify(PT_DocPosition dpos,
 	switch (pfs->getStruxType())
 	{
 	case PTX_Section:
-		UT_ASSERT(0);					// TODO
+		// sections do not have a preferredSpanAPI
 		break;
 		
 	case PTX_Block:
@@ -137,7 +197,8 @@ UT_Bool pt_PieceTable::_deleteStruxWithNotify(PT_DocPosition dpos,
 	switch (pfs->getStruxType())
 	{
 	case PTX_Section:
-		UT_ASSERT(0);					// TODO
+		if (!_unlinkStrux_Section(pfs,ppfEnd,pfragOffsetEnd))
+			return UT_FALSE;
 		break;
 		
 	case PTX_Block:

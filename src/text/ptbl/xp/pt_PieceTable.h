@@ -181,6 +181,8 @@ protected:
 	UT_Bool					_struxHasContent(pf_Frag_Strux * pfs) const;
 	UT_Bool					_unlinkStrux_Block(pf_Frag_Strux * pfs,
 											   pf_Frag ** ppfEnd, UT_uint32 * pfragOffsetEnd);
+	UT_Bool					_unlinkStrux_Section(pf_Frag_Strux * pfs,
+												 pf_Frag ** ppfEnd, UT_uint32 * pfragOffsetEnd);
 
 	UT_Bool					_deleteSpanWithNotify(PT_DocPosition dpos,
 												  pf_Frag_Text * pft, UT_uint32 fragOffset,
