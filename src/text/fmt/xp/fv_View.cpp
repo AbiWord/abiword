@@ -9123,18 +9123,47 @@ void FV_View::populateThisHdrFtr(HdrFtrType hfType, bool bSkipPTSaves)
 // Save Old Position
 //
 	PT_DocPosition oldPos = getPoint();
-
-	fl_DocSectionLayout * pDSL = static_cast<fl_DocSectionLayout *>(getCurrentBlock()->getDocSectionLayout());
-	UT_ASSERT(pDSL->getContainerType() == FL_CONTAINER_DOCSECTION);
-	fl_HdrFtrSectionLayout * pHdrFtrSrc = NULL;
-	fl_HdrFtrSectionLayout * pHdrFtrDest = NULL;
-	if(hfType < FL_HDRFTR_FOOTER)
+	
+	fl_DocSectionLayout * pDSL = NULL;
+	fp_Page *pPage = getCurrentPage();
+	if(pPage)
 	{
-		pHdrFtrSrc = pDSL->getHeader();
+		pDSL = pPage->getOwningSection();
 	}
 	else
 	{
+		pDSL = getCurrentBlock()->getDocSectionLayout();
+	}
+	UT_ASSERT(pDSL->getContainerType() == FL_CONTAINER_DOCSECTION);
+	fl_HdrFtrSectionLayout * pHdrFtrSrc = NULL;
+	fl_HdrFtrSectionLayout * pHdrFtrDest = NULL;
+	if(pDSL && (hfType < FL_HDRFTR_FOOTER))
+	{
+		pHdrFtrSrc = pDSL->getHeader();
+	}
+	else if(pDSL)
+	{
 		pHdrFtrSrc = pDSL->getFooter();
+	}
+	if(pHdrFtrSrc == NULL)
+	{
+
+	// restore updates and clean up dirty lists
+		if(!bSkipPTSaves)
+		{
+			m_pDoc->enableListUpdates();
+			m_pDoc->updateDirtyLists();
+
+	// Signal PieceTable Changes have Ended
+
+			m_pDoc->notifyPieceTableChangeEnd();
+			m_iPieceTableState = 0;
+			m_pDoc->endUserAtomicGlob(); // End the big undo block
+			_generalUpdate();
+			_updateInsertionPoint();
+		}
+		clearCursorWait();
+		return;
 	}
 //
 // Make sure we have everythimng formatted.
