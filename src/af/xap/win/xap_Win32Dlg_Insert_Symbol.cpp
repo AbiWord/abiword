@@ -191,7 +191,16 @@ BOOL XAP_Win32Dialog_Insert_Symbol::_onInitDialog(HWND hWnd, WPARAM wParam, LPAR
 	// Fill the list box with symbol fonts.
 
 	HDC hDCScreen = CreateDC("DISPLAY", NULL, NULL, NULL);
-	EnumFontFamiliesEx(hDCScreen, (LPLOGFONT)NULL, (FONTENUMPROC)fontEnumProcedure, (LPARAM)this, 0);
+
+#if 0
+	EnumFontFamilies(hDCScreen, (LPLOGFONT)NULL, (FONTENUMPROC)fontEnumProcedure, (LPARAM)this, 0);
+#else
+	LOGFONT LogFont;
+	LogFont.lfCharSet = SYMBOL_CHARSET;
+	LogFont.lfFaceName[0] = '\0';
+	EnumFontFamiliesEx(hDCScreen, &LogFont, (FONTENUMPROC)fontEnumProcedure, (LPARAM)this, 0);
+#endif
+	
 	DeleteDC(hDCScreen);
 
 	// Select the current font.
