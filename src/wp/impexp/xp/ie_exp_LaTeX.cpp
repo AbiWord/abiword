@@ -269,10 +269,12 @@ void s_LaTeX_Listener::_openSection(PT_AttrPropIndex api)
 	if (m_pDocument->getAttrProp(api, &pAP) && pAP)
 	{
 		const XML_Char* pszNbCols = NULL;
-		pAP->getProperty("columns", pszNbCols);
+		const XML_Char* pszPageMarginLeft = NULL;
+		const XML_Char* pszPageMarginRight = NULL;
 
-		if (pszNbCols != NULL)
-			printf ("%s\n", pszNbCols);
+		pAP->getProperty("columns", pszNbCols);
+		pAP->getProperty("page-margin-right", pszPageMarginLeft);
+		pAP->getProperty("page-margin-left", pszPageMarginRight);
 
 		if (pszNbCols != NULL && ((0 == UT_stricmp(pszNbCols, "2"))
 								  || (0 == UT_stricmp(pszNbCols, "3"))))
@@ -282,7 +284,24 @@ void s_LaTeX_Listener::_openSection(PT_AttrPropIndex api)
 			m_pie->write("}\n");
 			m_bMultiCols = UT_TRUE;
 		}
+		if (pszPageMarginLeft != NULL)
+		{
+			m_pie->write("%\\setlength{\\oddsidemargin}{");
+			m_pie->write(pszPageMarginLeft);
+			m_pie->write("-1in");
+			m_pie->write("}\n");
+		}
+		if (pszPageMarginRight != NULL)
+		{
+			m_pie->write("%\\setlength{\\textwidth}{\\paperwidth - ");
+			m_pie->write(pszPageMarginRight);
+			m_pie->write("-");
+			m_pie->write(pszPageMarginLeft);
+			m_pie->write("}\n");
+		}
 	}
+
+	m_pie->write ("\\begin{document}\n");
 }
 
 void s_LaTeX_Listener::_convertColor(char* szDest, const char* pszColor)
@@ -569,29 +588,19 @@ void s_LaTeX_Listener::_outputData(const UT_UCSChar * data, UT_uint32 length)
 	char * pBuf;
 	const UT_UCSChar * pData;
 
-	for (pBuf=buf, pData=data; (pData<data+length); /**/)
+	for (pBuf = buf, pData = data; (pData < data + length); /**/)
 	{
-		if (pBuf >= (buf+MY_BUFFER_SIZE-MY_HIGHWATER_MARK))
+		if (pBuf >= (buf + MY_BUFFER_SIZE - MY_HIGHWATER_MARK))
 		{
-			m_pie->write(buf,(pBuf-buf));
+			m_pie->write (buf, (pBuf - buf));
 			pBuf = buf;
 		}
 
 		switch (*pData)
 		{
 		case '\\':
-			*pBuf++ = '$';
-			*pBuf++ = '\\';
-			*pBuf++ = 'b';
-			*pBuf++ = 'a';
-			*pBuf++ = 'c';
-			*pBuf++ = 'k';
-			*pBuf++ = 's';
-			*pBuf++ = 'l';
-			*pBuf++ = 'a';
-			*pBuf++ = 's';
-			*pBuf++ = 'h';
-			*pBuf++ = '$';
+			strncpy (pBuf, "\\ensuremath{\\backslash}}", MY_BUFFER_SIZE);
+			pBuf += strlen ("\\ensuremath{\\backslash}}");
 			pData++;
 			break;
 			
@@ -750,10 +759,11 @@ s_LaTeX_Listener::s_LaTeX_Listener(PD_Document * pDocument,
 	
 	m_pie->write("\\documentclass[12pt]{article}\n");
 	m_pie->write("\\usepackage[T1]{fontenc}\n");
+	m_pie->write("\\usepackage{calc}\n");
 	m_pie->write("\\usepackage{multicol}\t% TODO: I don't need this package if the document is a single column one.\n");
 	m_pie->write("\n");
-	m_pie->write("\\begin{document}\n");
-	m_pie->write("\n");
+	//	m_pie->write("\\begin{document}\n");  // I've to leave this step to the openSection, and that implies
+	//	m_pie->write("\n");                   // future problems when we will support several sections in the same doc...
 }
 
 s_LaTeX_Listener::~s_LaTeX_Listener()
