@@ -55,13 +55,13 @@ OPTIMIZER	= -g
 DEFINES		= -DDEBUG -UNDEBUG
 OBJ_DIR_SFX	= DBG
 else
-OPTIMIZER	= -O2 
+OPTIMIZER	= -p -O2 
 DEFINES		=
 OBJ_DIR_SFX	= OBJ
 endif
 
 # Includes
-OS_INCLUDES	=
+OS_INCLUDES	= -I$(ABI_ROOT)/../libiconv/include
 G++INCLUDES	=
 
 # Compiler flags
