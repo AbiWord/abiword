@@ -615,7 +615,7 @@ GNOME_LIBS   += $(shell gnome-vfs-config --libs)
 ABI_OPTIONS  +=GnomeVFS:On
 endif
 
-GNOME_CFLAGS += $(shell glib-config --cflags)
+GNOME_CFLAGS += $(shell $(GLIB_CONFIG) --cflags)
 
 # the bonobo target is known not to work properly yet
 ifeq ($(ABI_OPT_BONOBO),1)
@@ -645,7 +645,7 @@ else
 ABI_OPT_GNOME=
 GTK_CFLAGS	:=	$(shell $(GTK_CONFIG) --cflags)
 GTK_LIBS	:=	$(shell $(GTK_CONFIG) --libs)
-GLIB_CFLAGS     :=      $(shell glib-config --cflags)
+GLIB_CFLAGS     :=      $(shell $(GLIB_CONFIG) --cflags)
 CFLAGS 		+=	$(GTK_CFLAGS) $(GLIB_CFLAGS)
 EXTRA_LIBS	+=	$(GTK_LIBS)
 #

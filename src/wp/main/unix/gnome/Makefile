@@ -41,6 +41,16 @@ LoadOrder=		AbiGr AbiFmt AbiPTbl AbiImpExp AbiXAp AbiWPAp \
 			AbiEv AbiUtil AbiWordVer AbiSpell Abi_libwv
 endif
 
+# fribidi library
+ifeq ($(ABI_OPT_BIDI_ENABLED),1)
+LoadOrder += Abi_fribidi
+endif
+
+
+ifdef ABI_REQUIRE_PEER_ICONV
+LoadOrder+= Abi_libiconv
+endif
+
 ABI_APPLIBS=		$(LoadOrder) $(LoadOrder) $(LoadOrder)
 ABI_APPLIBDEP=		$(LoadOrder)
 

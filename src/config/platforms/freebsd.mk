@@ -124,6 +124,6 @@ PSICONV_PLATFORM_DEFS= CFLAGS='-O2'
 
 __FreeBSD__ = 1 #fix wchar.h stuff
 
-# ABI_REQUIRE_PEER_ICONV = 1
+ABI_REQUIRE_PEER_ICONV = 1
 
 # End of freebsd defs
