@@ -26,18 +26,14 @@
 #include "ut_bytebuf.h"
 
 #ifdef HAVE_LIBXML2
-  // Please keep the "/**/" to stop MSVC dependency generator complaining.
-  #include /**/ <libxml/parser.h>
-
-  /* XML_Char is the expat char def, xmlChar is the libxml2 def. I think they have
-   * different sign - which should be okay so long as expat isn't working in Unicode
-   * mode (in which case we're stuck)
+  /* XML_Char is the expat char def, xmlChar is the libxml2 def.
+   * xmlChar is unsigned char - which is a real pain in the ass for AbiWord,
+   * so I'm going to mis-define it here and use the correct sign only internally...
    */
-
   #ifdef XML_Char
   #undef XML_Char
   #endif
-  #define XML_Char xmlChar
+  #define XML_Char char
 
 #else /* EXPAT */
   #include <expat.h>
@@ -50,10 +46,54 @@ class ABI_EXPORT UT_XML
   UT_XML();
   ~UT_XML();
 
+  /* Strip "svg:" from "svg:svg" etc. in element names, pass any other namespace indicators
+   */
+  void setNameSpace (const char * xml_namespace);
+
+ private:
+  const char * m_namespace;
+  int m_nslength;
+
+ public:
+  /* Returns true iff the name of the first element is xml_type or opt_namespace:xml_type
+   */
+  bool sniff (const UT_ByteBuf * pBB, const char * xml_type);
+  bool sniff (const char * buffer, UT_uint32 length, const char * xml_type);
+
+ private:
+  bool m_bSniffing;
+  bool m_bValid;
+
+  const char * m_xml_type;
+
+ public:
   UT_Error parse (const char * szFilename);
   UT_Error parse (const UT_ByteBuf * pBB);
   UT_Error parse (const char * buffer, UT_uint32 length);
 
+ private:
+  UT_Error html (const char * szFilename);
+  UT_Error html (const char * buffer, UT_uint32 length);
+
+ public:
+  enum ParseMode
+  {
+    pm_XML,
+    pm_HTML // supported only via libxml2, but expat is AbiWord's default XML parser
+  };
+
+  bool setParseMode (ParseMode pm); // returns false if the mode isn't supported.
+
+ private:
+  ParseMode m_ParseMode;
+
+ public:
+  void stop () { m_bStopped = true; } // call this to stop callbacks and to stop the feed to the parser
+
+ private:
+  bool m_bStopped;
+
+ public:
   class ABI_EXPORT Listener
     {
     public:
@@ -66,6 +106,10 @@ class ABI_EXPORT UT_XML
 
   void setListener (Listener * pListener) { m_pListener = pListener; }
 
+ private:
+  Listener * m_pListener;
+
+ public:
   class ABI_EXPORT Reader
     {
     public:
@@ -78,12 +122,39 @@ class ABI_EXPORT UT_XML
 
   void setReader (Reader * pReader) { m_pReader = pReader; }
 
- protected:
-  UT_Error load_then_parse (const char * szFilename);
+ private:
+  Reader * m_pReader;
+
+ public:
+  bool startDecoder ();
+  void stopDecoder ();
+
+  XML_Char * decode (const XML_Char * in);
 
  private:
-  Listener * m_pListener;
-  Reader * m_pReader;
+  void * m_decoder;
+
+ public:
+  /* For UT_XML internal use only.
+   * 
+   * However, it should be possible to set up redirections from one UT_XML into another, if multiple
+   * namespaces require it - maybe something like:
+   * 
+   * UT_XML xhtml;
+   * xhtml.setListener (xhtml_listener);
+   * xhtml.setNameSpace ("xhtml");
+   * 
+   * UT_XML svg;
+   * svg.setListener (svg_listener);
+   * svg.setNameSpace ("svg");
+   * svg.redirectNameSpace (&xhtml,"xhtml"); // Not yet implemented...
+   * svg.parse (buffer);
+   * 
+   * or vice versa... ?
+   */
+  void startElement (const XML_Char * name, const XML_Char ** atts);
+  void endElement (const XML_Char * name);
+  void charData (const XML_Char * buffer, int length);
 };
 
 /* Kudos (sp?) to Joaquin Cuenca Abela for the good bits; the bad bits are likely my fault... (fjf)

@@ -22,7 +22,7 @@
 ///////////////////////////////////////////
 // UT_Set
 ///////////////////////////////////////////
-bool lesser(UT_RBTree::key_t x, UT_RBTree::key_t y)
+static bool lesser(UT_RBTree::key_t x, UT_RBTree::key_t y)
 {
 	return x < y;
 }

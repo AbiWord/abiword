@@ -23,9 +23,6 @@
 #include <string.h>
 #include <math.h>
 #include <ctype.h>
-#ifdef HAVE_LIBXML2
-#include <libxml/parserInternals.h>
-#endif
 
 #include "ut_types.h"
 #include "ut_misc.h"
@@ -922,62 +919,6 @@ XML_Char* UT_encodeUTF8char(UT_UCSChar cIn)
 	return sBuf;
 }
 #endif // --jeff
-
-#ifndef HAVE_LIBXML2
-/* these functions needs to be declared as plain C for MrCPP (Apple MPW C) */
-#ifdef __MRC__
-extern "C" {
-#endif
-static void endElement(void *userData, const XML_Char *name)
-{
-}
-
-static void startElement(void *userData, const XML_Char *name, const XML_Char **atts)
-{
-	XML_Char **pout = (XML_Char **)userData;
-	//What do we do with this, is this cast safe!?
-	*pout = (XML_Char *)atts[1];
-}
-#ifdef __MRC__
-};
-#endif
-#endif /* HAVE_LIBXML2 */
-
-XML_Char *UT_decodeXMLstring(XML_Char *in)
-{
-	XML_Char *out = 0;
-#ifdef HAVE_LIBXML2
-	xmlParserCtxtPtr p = xmlCreateDocParserCtxt((xmlChar*)in);
-	out = (XML_Char*)xmlStringDecodeEntities(p, (xmlChar*)in, XML_SUBSTITUTE_BOTH, 0, 0, 0);
-	xmlFreeParserCtxt (p);
-	return out;
-#else
-	// There has *got* to be an easier way to do this with expat, but I
-	// didn't spot it from looking at the expat source code.  Anyhow, this
-	// is just used during init to chomp the preference default value
-	// strings, so the amount of work done probably doesn't matter too
-	// much.
-	const char s1[] = "<fake blah=\"";
-	const char s2[] = "\"/>";
-	XML_Parser parser = 0;
-	parser = XML_ParserCreate(0);
-	XML_SetUserData(parser, &out);
-	XML_SetElementHandler(parser, startElement, endElement);
-	if (!XML_Parse(parser, s1, sizeof(s1)-1, 0)
-	||  !XML_Parse(parser, in, strlen(in), 0)
-	||  !XML_Parse(parser, s2, sizeof(s2)-1, 0))
-	{
-		UT_DEBUGMSG(("XML parsing error %s; %s:%d\n",
-			     XML_ErrorString(XML_GetErrorCode(parser)),
-			     __FILE__, __LINE__));
-	}
-	// TODO: who owns the storage for this?
-	// TMN: The caller of this function.
-	out = UT_strdup(out);
-	if (parser) XML_ParserFree(parser);
-	return out;
-#endif
-}
 
 bool UT_isSmartQuotableCharacter(UT_UCSChar c)
 {

@@ -54,7 +54,7 @@ bool ut_map_lexico_equal(UT_RBTree::key_t x, UT_RBTree::key_t y)
 ///////////////////////////////////////////
 // UT_Map
 ///////////////////////////////////////////
-bool lesser(UT_RBTree::key_t x, UT_RBTree::key_t y)
+static bool lesser(UT_RBTree::key_t x, UT_RBTree::key_t y)
 {
 	UT_Map::value_t x_ = static_cast<UT_Map::value_t> (x);
 	UT_Map::value_t y_ = static_cast<UT_Map::value_t> (y);

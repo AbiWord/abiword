@@ -100,9 +100,12 @@ ABI_EXPORT char *  UT_tmpnam(char *);
 ABI_EXPORT void    UT_unlink(const char *);
 
 ABI_EXPORT UT_UCSChar  UT_decodeUTF8char(const XML_Char * p, UT_uint32 len);
-void  UT_decodeUTF8string(const XML_Char * p, UT_uint32 len, UT_GrowBuf * pResult);
+ABI_EXPORT void  UT_decodeUTF8string(const XML_Char * p, UT_uint32 len, UT_GrowBuf * pResult);
 ABI_EXPORT XML_Char *  UT_encodeUTF8char(UT_UCSChar cIn);
-ABI_EXPORT XML_Char *  UT_decodeXMLstring(XML_Char *pcIn);
+
+/* ABI_EXPORT XML_Char *  UT_decodeXMLstring(XML_Char *pcIn);
+ * This has moved to ut_xml.cpp as UT_XML::decode ()
+ */
 
 ABI_EXPORT bool  UT_isSmartQuotableCharacter(UT_UCSChar c);
 ABI_EXPORT bool  UT_isSmartQuotedCharacter(UT_UCSChar c);

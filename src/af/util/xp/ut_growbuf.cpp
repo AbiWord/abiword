@@ -50,7 +50,7 @@ bool UT_GrowBuf::_growBuf(UT_uint32 spaceNeeded)
 	// round up to the next multiple of the chunk size.
 	
 	UT_uint32 newSize = ((m_iSize+spaceNeeded+m_iChunk-1)/m_iChunk)*m_iChunk;
-	UT_uint16 * pNew = (UT_uint16 *)calloc(newSize,sizeof(*m_pBuf));
+	UT_uint16 * pNew = (UT_uint16 *)calloc(newSize,sizeof(*m_pBuf)); // Why not use realloc ? - fjf
 	if (!pNew)
 		return false;
 	
@@ -176,10 +176,14 @@ bool UT_GrowBuf::overwrite(UT_uint32 position, UT_uint16 * pValue, UT_uint32 len
 
 void UT_GrowBuf::truncate(UT_uint32 position)
 {
+	if ((m_pBuf == 0) && (position == 0))
+		return;
+
 	if (position < m_iSize)
 		m_iSize = position;
 
 	UT_uint32 newSpace = ((m_iSize+m_iChunk-1)/m_iChunk)*m_iChunk; //Calculate the new space needed
+	if (newSpace == 0) newSpace = m_iChunk; // In case of UT_GrowBuf::truncate (0)
 	if (newSpace != m_iSpace)
 	{
 		m_pBuf = (UT_uint16 *)realloc(m_pBuf, newSpace*sizeof(*m_pBuf));  //Re-allocate to the smaller size

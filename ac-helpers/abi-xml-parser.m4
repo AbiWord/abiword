@@ -42,7 +42,7 @@ AC_ARG_WITH([expat],
 
 # check for expat
 
-if test "$abi_found_parser" = "no"; then
+if test "$abi_force_libxml2" = "no"; then
 	echo "checking for expat"
 	AC_CHECK_LIB(expat, XML_Parse,
 		abi_expat_libs="-lexpat" abi_found_parser="expat",

@@ -40,7 +40,7 @@
   #include "xap_QNXModule.h"
   #define MODULE_CLASS XAP_QNXModule
 
-#elif defined (__APPLE__) 
+#elif defined (__APPLE__) && defined (XP_MAC_TARGET_CARBON)
   #include <ConditionalMacros.h>
   #if defined(TARGET_RT_MAC_CFM) && (TARGET_RT_MAC_CFM == 1)
     #include "xap_MacCFMModule.h"

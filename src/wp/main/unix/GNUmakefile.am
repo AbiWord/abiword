@@ -48,8 +48,12 @@ abi_ver.cpp:
 endif
 
 # Install the wrapper
-install-exec-local:
-	@$(top_srcdir)/src/pkg/common/unix/scripts/makewrapper.sh AbiWord $(pkgdatadir) $(bindir) $(DESTDIR) && \
-	ln -sf $(DESTDIR)/$(bindir)/AbiWord $(DESTDIR)/$(bindir)/abiword
+install-exec-local:	install-wrapper
+	@if test -f $(DESTDIR)/$(bindir)/abiword; then \
+	  echo "$(DESTDIR)/$(bindir)/abiword is a regular file - I'm not going to create a link."; \
+	else \
+	  ln -sf $(DESTDIR)/$(bindir)/AbiWord $(DESTDIR)/$(bindir)/abiword; \
+	fi
 
-
+install-wrapper:	
+	@$(top_srcdir)/src/pkg/common/unix/scripts/makewrapper.sh AbiWord $(pkgdatadir) $(bindir) $(DESTDIR)

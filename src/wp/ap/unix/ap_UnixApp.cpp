@@ -531,7 +531,11 @@ bool AP_UnixApp::canPasteFromClipboard(void)
 }
 
 // return > 0 for directory entries ending in ".so"
+#if defined (__APPLE__)
+static int so_only (struct dirent *d)
+#else
 static int so_only (const struct dirent *d)
+#endif
 {
   const char * name = d->d_name;
 
