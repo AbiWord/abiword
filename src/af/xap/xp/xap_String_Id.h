@@ -161,6 +161,7 @@ dcl(LANG_12,								"Russian (Russia)")
 dcl(LANG_13,								"Danish")
 dcl(LANG_14,								"Dutch (Netherlands)")
 dcl(LANG_15,								"Finnish")
+dcl(LANG_16,                            "Swedish")
 
 
 

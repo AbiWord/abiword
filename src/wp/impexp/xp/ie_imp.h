@@ -86,7 +86,6 @@ public:
 										   const char ** pszSuffixList,
 										   IEFileType * ft);
 	static UT_uint32	getImporterCount(void);
-	static void init();
 
 	static void registerImporter (IE_ImpSniffer * sniffer);
 	static void unregisterImporter (IE_ImpSniffer * sniffer);

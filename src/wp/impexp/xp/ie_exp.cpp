@@ -33,61 +33,12 @@
 
 #include "ie_exp.h"
 #include "ie_exp_AbiWord_1.h"
-#include "ie_exp_GZipAbiWord.h"
-#include "ie_exp_MsWord_97.h"
-#include "ie_exp_MIF.h"
-#include "ie_exp_RTF.h"
-#include "ie_exp_Text.h"
-#include "ie_exp_HRText.h"
-#include "ie_exp_HTML.h"
-#include "ie_exp_LaTeX.h"
-#include "ie_exp_PalmDoc.h"
-#include "ie_exp_WML.h"
-#include "ie_exp_DocBook.h"
-#include "ie_exp_Psion.h"
-#include "ie_exp_Applix.h"
-#include "ie_exp_XSL-FO.h"
-#include "ie_exp_UTF8.h"
+
+#include "pd_Document.h"
 
 #define IEFT_AbiWord_1 IE_Exp::fileTypeForSuffix(".abw")
 
 static UT_Vector m_sniffers(20);
-
-/*****************************************************************/
-/*****************************************************************/
-
-/* static */
-void IE_Exp::init ()
-{
-	static bool b_init = false;
-
-	if (b_init)
-		return;
-
-	IE_Exp::registerExporter(new IE_Exp_AbiWord_1_Sniffer ());
-	IE_Exp::registerExporter(new IE_Exp_Applix_Sniffer ());
-	IE_Exp::registerExporter(new IE_Exp_DocBook_Sniffer ());
-	
-#ifdef DEBUG
-	IE_Exp::registerExporter(new IE_Exp_MsWord_97_Sniffer ());
-#endif
-	
-	IE_Exp::registerExporter(new IE_Exp_XSL_FO_Sniffer ());
-	IE_Exp::registerExporter(new IE_Exp_HTML_Sniffer ());
-	IE_Exp::registerExporter(new IE_Exp_LaTeX_Sniffer ());
-	IE_Exp::registerExporter(new IE_Exp_PalmDoc_Sniffer ());
-	IE_Exp::registerExporter(new IE_Exp_Psion_TextEd_Sniffer ());
-	IE_Exp::registerExporter(new IE_Exp_Psion_Word_Sniffer ());
-	IE_Exp::registerExporter(new IE_Exp_RTF_Sniffer ());
-	IE_Exp::registerExporter(new IE_Exp_RTF_attic_Sniffer ());
-	IE_Exp::registerExporter(new IE_Exp_Text_Sniffer ());
-	IE_Exp::registerExporter(new IE_Exp_HRText_Sniffer ());
-	IE_Exp::registerExporter(new IE_Exp_UTF8_Sniffer ());
-	IE_Exp::registerExporter(new IE_Exp_WML_Sniffer ());
-	IE_Exp::registerExporter(new IE_Exp_GZipAbiWord_Sniffer ());
-
-	b_init = true;
-}
 
 /*****************************************************************/
 /*****************************************************************/

@@ -87,8 +87,6 @@ public:
 										   IEFileType * ft);
 	static UT_uint32	getExporterCount(void);
 
-	static void init ();
-
 	static void registerExporter (IE_ExpSniffer *);
 	static void unregisterExporter (IE_ExpSniffer *);
 	

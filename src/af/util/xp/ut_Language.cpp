@@ -17,7 +17,7 @@
 static lang_entry s_Table[] = 
 {
 	//the property value, the localised translation, the numerical id
-        {"-none-",	        NULL, XAP_STRING_ID_LANG_0},
+    {"-none-",	    NULL, XAP_STRING_ID_LANG_0},
 	{"cs-CZ",		NULL, XAP_STRING_ID_LANG_4},
 	{"da-DK",		NULL, XAP_STRING_ID_LANG_13},
 	{"da-NL",		NULL, XAP_STRING_ID_LANG_14},
@@ -32,7 +32,8 @@ static lang_entry s_Table[] =
 	{"it-IT",		NULL, XAP_STRING_ID_LANG_9},
 	{"iw-IL",		NULL, XAP_STRING_ID_LANG_8},
 	{"pt-PT",		NULL, XAP_STRING_ID_LANG_11},
-	{"ru-RU",		NULL, XAP_STRING_ID_LANG_12}
+	{"ru-RU",		NULL, XAP_STRING_ID_LANG_12},
+	{"sv-SE",       NULL, XAP_STRING_ID_LANG_16},
 };
 
 static int s_compareQ(const void * a, const void *b)

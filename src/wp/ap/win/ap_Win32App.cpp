@@ -55,16 +55,43 @@
 
 #include "ap_Win32Resources.rc2"
 #include "ap_Clipboard.h"
-#include "ie_types.h"
-#include "ie_exp_Text.h"
-#include "ie_exp_RTF.h"
-#include "ie_exp_AbiWord_1.h"
-#include "ie_exp_HTML.h"
-#include "ie_imp_Text.h"
-#include "ie_imp_RTF.h"
 #include "ap_EditMethods.h"
 
 #include "fp_Run.h"
+
+#include "ie_exp.h"
+#include "ie_exp_AbiWord_1.h"
+#include "ie_exp_GZipAbiWord.h"
+#include "ie_exp_MsWord_97.h"
+#include "ie_exp_MIF.h"
+#include "ie_exp_RTF.h"
+#include "ie_exp_Text.h"
+#include "ie_exp_HRText.h"
+#include "ie_exp_HTML.h"
+#include "ie_exp_LaTeX.h"
+#include "ie_exp_PalmDoc.h"
+#include "ie_exp_WML.h"
+#include "ie_exp_DocBook.h"
+#include "ie_exp_Psion.h"
+#include "ie_exp_Applix.h"
+#include "ie_exp_XSL-FO.h"
+#include "ie_exp_UTF8.h"
+
+#include "ie_imp.h"
+#include "ie_imp_AbiWord_1.h"
+#include "ie_imp_GZipAbiWord.h"
+#include "ie_imp_MsWord_97.h"
+#include "ie_imp_RTF.h"
+#include "ie_imp_Text.h"
+#include "ie_imp_UTF8.h"
+#include "ie_imp_WML.h"
+#include "ie_imp_GraphicAsDocument.h"
+#include "ie_imp_XHTML.h"
+#include "ie_imp_DocBook.h"
+#include "ie_imp_PalmDoc.h"
+#include "ie_imp_Psion.h"
+#include "ie_imp_XSL-FO.h"
+#include "ie_imp_Applix.h"
 
 /*****************************************************************/
 
@@ -142,6 +169,48 @@ bool AP_Win32App::initialize(void)
 	{
 		UT_DEBUGMSG(("couldn't register class\n"));
 		return false;
+	}
+
+	//////////////////////////////////////////////////////////////////
+	// Initialize the importers/exporters
+	//////////////////////////////////////////////////////////////////
+	{
+		IE_Imp::registerImporter(new IE_Imp_AbiWord_1_Sniffer ());
+#ifdef DEBUG
+		IE_Imp::registerImporter(new IE_Imp_Applix_Sniffer ());
+#endif
+		IE_Imp::registerImporter(new IE_Imp_DocBook_Sniffer ());
+		IE_Imp::registerImporter(new IE_Imp_MsWord_97_Sniffer ());
+		IE_Imp::registerImporter(new IE_Imp_XSL_FO_Sniffer ());
+		IE_Imp::registerImporter(new IE_Imp_XHTML_Sniffer ());
+		IE_Imp::registerImporter(new IE_Imp_PalmDoc_Sniffer ());
+		IE_Imp::registerImporter(new IE_Imp_Psion_TextEd_Sniffer ());
+		IE_Imp::registerImporter(new IE_Imp_Psion_Word_Sniffer ());
+		IE_Imp::registerImporter(new IE_Imp_RTF_Sniffer ());
+		IE_Imp::registerImporter(new IE_Imp_Text_Sniffer ());
+		IE_Imp::registerImporter(new IE_Imp_UTF8_Sniffer ());
+		IE_Imp::registerImporter(new IE_Imp_WML_Sniffer ());
+		IE_Imp::registerImporter(new IE_Imp_GZipAbiWord_Sniffer ());
+
+		IE_Exp::registerExporter(new IE_Exp_AbiWord_1_Sniffer ());
+		IE_Exp::registerExporter(new IE_Exp_Applix_Sniffer ());
+		IE_Exp::registerExporter(new IE_Exp_DocBook_Sniffer ());		
+#ifdef DEBUG
+		IE_Exp::registerExporter(new IE_Exp_MsWord_97_Sniffer ());
+#endif	
+		IE_Exp::registerExporter(new IE_Exp_XSL_FO_Sniffer ());
+		IE_Exp::registerExporter(new IE_Exp_HTML_Sniffer ());
+		IE_Exp::registerExporter(new IE_Exp_LaTeX_Sniffer ());
+		IE_Exp::registerExporter(new IE_Exp_PalmDoc_Sniffer ());
+		IE_Exp::registerExporter(new IE_Exp_Psion_TextEd_Sniffer ());
+		IE_Exp::registerExporter(new IE_Exp_Psion_Word_Sniffer ());
+		IE_Exp::registerExporter(new IE_Exp_RTF_Sniffer ());
+		IE_Exp::registerExporter(new IE_Exp_RTF_attic_Sniffer ());
+		IE_Exp::registerExporter(new IE_Exp_Text_Sniffer ());
+		IE_Exp::registerExporter(new IE_Exp_HRText_Sniffer ());
+		IE_Exp::registerExporter(new IE_Exp_UTF8_Sniffer ());
+		IE_Exp::registerExporter(new IE_Exp_WML_Sniffer ());
+		IE_Exp::registerExporter(new IE_Exp_GZipAbiWord_Sniffer ());
 	}
 
 	//////////////////////////////////////////////////////////////////

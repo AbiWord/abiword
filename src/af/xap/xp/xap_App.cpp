@@ -41,9 +41,6 @@
 #include "xap_Prefs.h"
 #include "xap_EncodingManager.h"
 
-#include "ie_imp.h"
-#include "ie_exp.h"
-
 /*****************************************************************/
 
 XAP_App * XAP_App::m_pApp = NULL;
@@ -64,10 +61,6 @@ XAP_App::XAP_App(XAP_Args * pArgs, const char * szAppName)
 	UT_ASSERT(szAppName && *szAppName);
 	m_pApp = this;
 	clearIdTable();
-
-	// initialize the importers/exporters
-	IE_Imp::init();
-	IE_Exp::init();
 }
 
 XAP_App::~XAP_App()

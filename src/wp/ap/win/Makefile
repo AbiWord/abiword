@@ -77,4 +77,6 @@ INCLUDES= 		-I$(ABI_ROOT)/../libiconv/include
 endif
 endif
 
+INCLUDES+= -I$(ABI_XX_ROOT)/../wv -I$(ABI_XX_ROOT)/../wv/exporter -I$(ABI_XX_ROOT)/../zlib -I$(ABI_XX_ROOT)/../wv/libole2 -I$(ABI_XX_ROOT)/../libpng -I$(ABI_XX_ROOT)/../libiconv/include -I$(ABI_XX_ROOT)/../psiconv
+
 build:: $(TARGETS)

@@ -58,6 +58,8 @@ CPPSRCS=		ap_$(ABI_FE)App.cpp			\
 
 TARGETS=		$(OBJS)
 
+INCLUDES+= -I$(ABI_ROOT)/../wv -I$(ABI_ROOT)/../wv/exporter -I$(ABI_ROOT)/../wv/libole2 -I$(ABI_ROOT)/../libpng -I$(ABI_ROOT)/../psiconv
+
 include $(ABI_ROOT)/src/config/abi_rules.mk
 
 build:: $(TARGETS)

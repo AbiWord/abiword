@@ -382,8 +382,6 @@ void s_XSL_FO_Listener::_handlePageSize(PT_AttrPropIndex api)
   // 
 	char *old_locale;
 
-	char buf[20];
-
 	const PP_AttrProp * pAP = NULL;
 	bool bHaveProp = m_pDocument->getAttrProp(api,&pAP);
 
