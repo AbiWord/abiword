@@ -119,6 +119,7 @@ fp_Line::fp_Line(fl_SectionLayout * pSectionLayout) : fp_Container(FP_CONTAINER_
 	UT_ASSERT(s_pMapOfRunsL2V && s_pMapOfRunsV2L && s_pPseudoString && s_pEmbeddingLevels);
 
 	m_bNeedsRedraw = false;
+	m_bIsCleared = true;
 	++s_iClassInstanceCounter; // this tells us how many instances of Line are out there
 							   //we use this to decide whether the above should be
 							   //deleted by the destructor
@@ -700,7 +701,7 @@ void fp_Line::clearScreen(void)
 			UT_sint32 xoffLine, yoffLine;
 
 			((fp_VerticalContainer *)getContainer())->getScreenOffsets(this, xoffLine, yoffLine);
-			UT_RGBColor * pClr = pRun->getPageColor();
+			const UT_RGBColor * pClr = pRun->getPageColor();
 			// Note: we use getHeight here instead of m_iScreenHeight
 			// in case the line is asked to render before it's been
 			// assigned a height. Call it robustness, if you want.
@@ -779,7 +780,7 @@ void fp_Line::clearScreenFromRunToEnd(fp_Run * ppRun)
 			if(xoff == xoffLine)
 				leftClear = pRun->getDescent();
 
-			UT_RGBColor * pClr = pRun->getPageColor();
+			const UT_RGBColor * pClr = pRun->getPageColor();
 			pRun->getGraphics()->fillRect(*pClr,xoff - leftClear, yoff, m_iClearToPos + leftClear - (xoff - xoffLine) , getHeight());
 //
 // Sevior: I added this for robustness.
@@ -900,7 +901,7 @@ void fp_Line::clearScreenFromRunToEnd(UT_uint32 runIndex)
 		}
 		if(xoff == xoffLine)
 				leftClear = pRun->getDescent();
-		UT_RGBColor * pClr = pRun->getPageColor();
+		const UT_RGBColor * pClr = pRun->getPageColor();
 		pRun->getGraphics()->fillRect(*pClr,xoff - leftClear, yoff, m_iClearToPos  + leftClear - (xoff - xoffLine) , getHeight());
 //
 // Sevior: I added this for robustness.
@@ -2728,6 +2729,7 @@ void fp_Line::distributeJustificationAmongstSpaces(UT_sint32 iAmount)
 					{
 						UT_uint32 iMySpaces = abs(iSpacesInText);
 						UT_sint32 iJustifyAmountForRun = (int)((double)iAmount / (iSpaceCount-1) * iMySpaces);
+						if (iSpaceCount == 1) iJustifyAmountForRun = 0;
 						pTR->distributeJustificationAmongstSpaces(iJustifyAmountForRun, iMySpaces);
 
 						iAmount -= iJustifyAmountForRun;
