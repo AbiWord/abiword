@@ -255,7 +255,7 @@ bool Inserter::insertSpan(UT_GrowBuf &b)
 UT_Confidence_t IE_Imp_Text_Sniffer::recognizeContents(const char * /* szBuf */,
 											UT_uint32 /* iNumbytes */)
 {
-	return UT_CONFIDENCE_SOSO;
+  return UT_CONFIDENCE_POOR; // anything can be a text document - we'll unfairly weight this down
 }
 
 /*!

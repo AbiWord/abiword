@@ -392,16 +392,16 @@ UT_Confidence_t IE_Imp_MsWord_97_Sniffer::recognizeContents (const char * szBuf,
 		if (szBuf[0] == (char)0x31 && szBuf[1] == (char)0xbe &&
 			szBuf[2] == (char)0 && szBuf[3] == (char)0)
 		{
-			return UT_CONFIDENCE_POOR;
+		  return UT_CONFIDENCE_SOSO; //POOR
 		}
 
-		// this identifies staroffice dox
+		// this identifies staroffice dox as well
 		if (szBuf[0] == (char)0xd0 && szBuf[1] == (char)0xcf &&
 			szBuf[2] == (char)0x11 && szBuf[3] == (char)0xe0 &&
 			szBuf[4] == (char)0xa1 && szBuf[5] == (char)0xb1 &&
 			szBuf[6] == (char)0x1a && szBuf[7] == (char)0xe1)
 		{
-			return UT_CONFIDENCE_POOR;
+		  return UT_CONFIDENCE_SOSO; // POOR
 		}
 #endif
 		if (szBuf[0] == 'P' && szBuf[1] == 'O' &&
