@@ -43,7 +43,7 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_Window)
 	UT_ASSERT(id >= AP_MENU_ID_WINDOW_1);
 	UT_ASSERT(id <= AP_MENU_ID_WINDOW_9);
 	
-	UT_uint32 index = (id - AP_MENU_ID_WINDOW_1);
+	UT_uint32 ndx = (id - AP_MENU_ID_WINDOW_1);
 
 	EV_Menu_ItemState s = EV_MIS_ZERO;
 	
@@ -52,7 +52,7 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_Window)
 	AP_App * pApp = pFrame->getApp();
 	UT_ASSERT(pApp);
 
-	if (pFrame == pApp->getFrame(index))
+	if (pFrame == pApp->getFrame(ndx))
 		s = EV_MIS_Toggled;
 
 	return s;
@@ -70,18 +70,18 @@ Defun_EV_GetMenuItemComputedLabel_Fn(ap_GetLabel_Window)
 	UT_ASSERT(id >= AP_MENU_ID_WINDOW_1);
 	UT_ASSERT(id <= AP_MENU_ID_WINDOW_9);
 	
-	UT_uint32 index = (id - AP_MENU_ID_WINDOW_1);
+	UT_uint32 ndx = (id - AP_MENU_ID_WINDOW_1);
 
 	// use the applications window list and compute a menu label
 	// for the window with the computed index.  use the static
 	// menu label as as format string.
 
-	if (index < pApp->getFrameCount())
+	if (ndx < pApp->getFrameCount())
 	{
 		const char * szFormat = pLabel->getMenuLabel();
 		static char buf[128];
 
-		AP_Frame * pFrame = pApp->getFrame(index);
+		AP_Frame * pFrame = pApp->getFrame(ndx);
 		UT_ASSERT(pFrame);
 
 		const char * szTitle = pFrame->getTitle(128 - strlen(szFormat));

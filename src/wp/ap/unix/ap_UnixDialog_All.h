@@ -33,6 +33,7 @@
 #	include "ap_UnixDialog_MessageBox.h"
 #	include "ap_UnixDialog_FileOpenSaveAs.h"
 #	include "ap_UnixDialog_Print.h"
+#	include "ap_UnixDialog_FontChooser.h"
 
 	// ... add new dialogs here ...
 
@@ -43,6 +44,7 @@
 	DeclareDialog(XAP_DIALOG_ID_FILE_SAVEAS,	AP_UnixDialog_FileOpenSaveAs)
 	DeclareDialog(XAP_DIALOG_ID_PRINT,			AP_UnixDialog_Print)
 	DeclareDialog(XAP_DIALOG_ID_PRINTTOFILE,	AP_UnixDialog_FileOpenSaveAs)
+	DeclareDialog(XAP_DIALOG_ID_FONT,			AP_UnixDialog_FontChooser)
 	
 	// ... also add new dialogs here ...
 

@@ -34,6 +34,7 @@ TARGETS=		$(LIBRARY)
 
 PLATFORM_OBJS=	$(ABI_NATIVE)/$(OBJDIR)/ap_$(ABI_FE)App.$(OBJ_SUFFIX)			\
 		$(ABI_NATIVE)/$(OBJDIR)/ap_$(ABI_FE)Dialog_FileOpenSaveAs.$(OBJ_SUFFIX)	\
+		$(ABI_NATIVE)/$(OBJDIR)/ap_$(ABI_FE)Dialog_FontChooser.$(OBJ_SUFFIX)	\
 		$(ABI_NATIVE)/$(OBJDIR)/ap_$(ABI_FE)Dialog_MessageBox.$(OBJ_SUFFIX)	\
 		$(ABI_NATIVE)/$(OBJDIR)/ap_$(ABI_FE)Dialog_Print.$(OBJ_SUFFIX)		\
 		$(ABI_NATIVE)/$(OBJDIR)/ap_$(ABI_FE)Frame.$(OBJ_SUFFIX)			\
@@ -47,6 +48,7 @@ OBJS=		$(PLATFORM_OBJS)							\
 		xp/$(OBJDIR)/ap_Dialog.$(OBJ_SUFFIX)					\
 		xp/$(OBJDIR)/ap_DialogFactory.$(OBJ_SUFFIX)				\
 		xp/$(OBJDIR)/ap_Dialog_FileOpenSaveAs.$(OBJ_SUFFIX)			\
+		xp/$(OBJDIR)/ap_Dialog_FontChooser.$(OBJ_SUFFIX)			\
 		xp/$(OBJDIR)/ap_Dialog_MessageBox.$(OBJ_SUFFIX)				\
 		xp/$(OBJDIR)/ap_Dialog_Print.$(OBJ_SUFFIX)				\
 		xp/$(OBJDIR)/ap_Frame.$(OBJ_SUFFIX)					\

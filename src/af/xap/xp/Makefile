@@ -28,6 +28,7 @@ CPPSRCS=	ad_Document.cpp				\
 		ap_Dialog.cpp				\
 		ap_DialogFactory.cpp			\
 		ap_Dialog_FileOpenSaveAs.cpp		\
+		ap_Dialog_FontChooser.cpp		\
 		ap_Dialog_MessageBox.cpp		\
 		ap_Dialog_Print.cpp			\
 		ap_Frame.cpp				\

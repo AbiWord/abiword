@@ -45,14 +45,10 @@
 #include "ap_DialogFactory.h"
 #include "ap_Dialog_MessageBox.h"
 #include "ap_Dialog_FileOpenSaveAs.h"
+#include "ap_Dialog_FontChooser.h"
 #include "ap_Dialog_Print.h"
 
 #define FREEP(p)	do { if (p) free(p); (p)=NULL; } while (0)
-
-#ifdef DLGHACK
-UT_Bool _chooseFont(AP_Frame * pFrame, FV_View * pView);
-#endif /* DLGHACK */
-
 
 /*****************************************************************/
 /*****************************************************************/
@@ -1404,20 +1400,152 @@ Defun0(replace)
 	return UT_TRUE;
 }
 
-Defun1(dlgFont)
+/*****************************************************************/
+
+static UT_Bool s_doFontDlg(FV_View * pView)
 {
-	ABIWORD_VIEW;
 	AP_Frame * pFrame = (AP_Frame *) pView->getParentData();
 	UT_ASSERT(pFrame);
 
-#ifdef DLGHACK
-	return _chooseFont(pFrame, pView);
-#else
-	return UT_TRUE;
-#endif /* DLGHACK */
+	pFrame->raise();
+
+	AP_Dialog_Id id = XAP_DIALOG_ID_FONT;
+	
+	AP_DialogFactory * pDialogFactory
+		= (AP_DialogFactory *)(pFrame->getDialogFactory());
+
+	AP_Dialog_FontChooser * pDialog
+		= (AP_Dialog_FontChooser *)(pDialogFactory->requestDialog(id));
+	UT_ASSERT(pDialog);
+
+	// stuff the DG_Graphics into the dialog so that it
+	// can query the system for font info relative to our
+	// context.
+	
+	pDialog->setGraphicsContext(pView->getLayout()->getGraphics());
+
+	// get current font info from pView
+
+	const XML_Char ** props_in = NULL;
+	if (pView->getCharFormat(&props_in))
+	{
+		// stuff font properties into the dialog.
+		// for a/p which are constant across the selection (always
+		// present) we will set the field in the dialog.  for things
+		// which change across the selection, we ask the dialog not
+		// to set the field (by passing null).
+
+		pDialog->setFontFamily(UT_getAttribute("font-family", props_in));
+		pDialog->setFontSize(UT_getAttribute("font-size", props_in));
+		pDialog->setFontWeight(UT_getAttribute("font-weight", props_in));
+		pDialog->setFontStyle(UT_getAttribute("font-style", props_in));
+		pDialog->setColor(UT_getAttribute("color", props_in));
+
+		// these behave a little differently since they are
+		// probably just check boxes and we don't have to
+		// worry about initializing a combo box with a choice
+		// (and because they are all stuck under one CSS attribute).
+	
+		const XML_Char * s = UT_getAttribute("text-decoration", props_in);
+		UT_Bool bUnderline = (strstr(s, "underline") != NULL);
+		UT_Bool bStrikeOut = (strstr(s, "line-through") != NULL);
+		pDialog->setFontDecoration(bUnderline,bStrikeOut);
+
+		free(props_in);
+	}
+
+	// run the dialog
+	
+	pDialog->runModal(pFrame);
+
+	// extract what they did
+
+	UT_Bool bOK = (pDialog->getAnswer() == AP_Dialog_FontChooser::a_OK);
+
+	if (bOK)
+	{
+		UT_uint32  k = 0;
+		const XML_Char * props_out[17];
+		const XML_Char * s;
+		
+		if (pDialog->getChangedFontFamily(&s))
+		{
+			props_out[k++] = "font-family";
+			props_out[k++] = s;
+		}
+
+		if (pDialog->getChangedFontSize(&s))
+		{
+			props_out[k++] = "font-size";
+			props_out[k++] = s;
+		}
+
+		if (pDialog->getChangedFontWeight(&s))
+		{
+			props_out[k++] = "font-weight";
+			props_out[k++] = s;
+		}
+
+		if (pDialog->getChangedFontStyle(&s))
+		{
+			props_out[k++] = "font-style";
+			props_out[k++] = s;
+		}
+
+		if (pDialog->getChangedColor(&s))
+		{
+			props_out[k++] = "color";
+			props_out[k++] = s;
+		}
+		
+		UT_Bool bUnderline = UT_FALSE;
+		UT_Bool bChangedUnderline = pDialog->getChangedUnderline(&bUnderline);
+		UT_Bool bStrikeOut = UT_FALSE;
+		UT_Bool bChangedStrikeOut = pDialog->getChangedStrikeOut(&bStrikeOut);
+
+		if (bChangedUnderline || bChangedStrikeOut)
+		{
+			if (bUnderline && bStrikeOut)
+				s = "underline line-through";
+			else if (bUnderline)
+				s = "underline";
+			else if (bStrikeOut)
+				s = "line-through";
+			else
+				s = "none";
+			
+			props_out[k++] = "text-decoration";
+			props_out[k++] = s;
+		}
+
+		props_out[k] = 0;						// put null after last pair.
+		UT_ASSERT(k < NrElements(props_out));
+
+		if (k > 0)								// if something changed
+			pView->setCharFormat(props_out);
+	}
+		
+	pDialogFactory->releaseDialog(pDialog);
+
+	return bOK;
 }
 
-static UT_Bool _toggleSpan(FV_View * pView, const XML_Char * prop, const XML_Char * vOn, const XML_Char * vOff, UT_Bool bMultiple=UT_FALSE)
+/*****************************************************************/
+
+Defun1(dlgFont)
+{
+	ABIWORD_VIEW;
+
+	return s_doFontDlg(pView);
+}
+
+/*****************************************************************/
+
+static UT_Bool _toggleSpan(FV_View * pView,
+						   const XML_Char * prop,
+						   const XML_Char * vOn,
+						   const XML_Char * vOff,
+						   UT_Bool bMultiple=UT_FALSE)
 {
 	const XML_Char * props_out[] =	{ NULL, NULL, 0};
 
@@ -1502,7 +1630,7 @@ static UT_Bool _toggleSpan(FV_View * pView, const XML_Char * prop, const XML_Cha
 /*****************************************************************/
 /*****************************************************************/
 
-static UT_Bool _doPrint(FV_View * pView, UT_Bool bTryToSuppressDialog)
+static UT_Bool s_doPrint(FV_View * pView, UT_Bool bTryToSuppressDialog)
 {
 	AP_Frame * pFrame = (AP_Frame *) pView->getParentData();
 	UT_ASSERT(pFrame);
@@ -1518,7 +1646,6 @@ static UT_Bool _doPrint(FV_View * pView, UT_Bool bTryToSuppressDialog)
 
 	FL_DocLayout* pLayout = pView->getLayout();
 	PD_Document * doc = pLayout->getDocument();
-	int nPagesInDoc = pLayout->countPages();
 
 	pDialog->setDocumentTitle(pFrame->getTempNameFromTitle());
 	pDialog->setDocumentPathname((doc->getFilename())
@@ -1594,7 +1721,7 @@ static UT_Bool _doPrint(FV_View * pView, UT_Bool bTryToSuppressDialog)
 Defun1(print)
 {
 	ABIWORD_VIEW;
-	return _doPrint(pView,UT_FALSE);
+	return s_doPrint(pView,UT_FALSE);
 }
 
 Defun1(printTB)
@@ -1603,8 +1730,11 @@ Defun1(printTB)
 	// suppress the dialog if possible))
 	
 	ABIWORD_VIEW;
-	return _doPrint(pView,UT_TRUE);
+	return s_doPrint(pView,UT_TRUE);
 }
+
+/****************************************************************/
+/****************************************************************/
 
 Defun1(toggleBold)
 {
@@ -1700,645 +1830,3 @@ Defun1(Test_Dump)
 	return UT_TRUE;
 }
 
-/*****************************************************************/
-/*****************************************************************/
-
-#ifdef DLGHACK
-
-/*
-	Having these platform-specific IFDEFs here is a gruesome HACK.
-	The only excuse is that it makes things easier while we figure
-	out a better scheme for calling platform-specific dialogs from
-	XP code.
-*/
-
-/*****************************************************************/
-/*****************************************************************/
-
-#ifdef WIN32
-#include "ap_Win32App.h"
-#include "ap_Win32Frame.h"
-#include "gr_Win32Graphics.h"
-
-
-UT_Bool _chooseFont(AP_Frame * pFrame, FV_View * pView)
-{
-	/*
-	   WARNING: any changes to this function should be closely coordinated
-	   with the equivalent logic in Win32Graphics::FindFont()
-	*/
-	AP_Win32Frame * pWin32Frame = static_cast<AP_Win32Frame *>(pFrame);
-	AP_Win32App * pWin32App = static_cast<AP_Win32App *>(pFrame->getApp());
-	HWND hwnd = pWin32Frame->getTopLevelWindow();
-
-	CHOOSEFONT cf;				// common dialog box structure
-	LOGFONT lf;					// logical font structure
-
-	// Initialize CHOOSEFONT
-	memset(&cf, 0, sizeof(CHOOSEFONT));
-	memset(&lf, 0, sizeof(lf));
-	cf.lStructSize = sizeof(CHOOSEFONT);
-	cf.hwndOwner = hwnd;
-	cf.lpLogFont = &lf;
-	cf.Flags = CF_SCREENFONTS | CF_EFFECTS | CF_INITTOLOGFONTSTRUCT;
-	cf.hInstance = pWin32App->getInstance();
-
-	// get current font info from pView
-	const XML_Char ** props_in = NULL;
-	const XML_Char * s;
-	DG_Graphics * pG = pView->getLayout()->getGraphics();
-
-	if (!pView->getCharFormat(&props_in))
-		return UT_FALSE;
-
-	// TODO: what about generic family names?
-	s = UT_getAttribute("font-family", props_in);
-	if (s)
-		strcpy(lf.lfFaceName, s);
-	else
-		cf.Flags |= CF_NOFACESEL;
-
-	s = UT_getAttribute("font-size", props_in);
-	if (s)
-		lf.lfHeight = -(pG->convertDimension(s));
-	else
-		cf.Flags |= CF_NOSIZESEL;
-
-	s = UT_getAttribute("font-weight", props_in);
-	if (s)
-	{
-		if (0 == UT_stricmp(s, "bold"))
-			lf.lfWeight = 700;
-	}
-	else
-		cf.Flags |= CF_NOSTYLESEL;
-
-	s = UT_getAttribute("font-style", props_in);
-	if (s)
-	{
-		if (0 == UT_stricmp(s, "italic"))
-			lf.lfItalic = TRUE;
-	}
-	else
-		cf.Flags |= CF_NOSTYLESEL;
-
-	s = UT_getAttribute("text-decoration", props_in);
-	if (s)
-	{
-		XML_Char*	p = strdup(s);
-		UT_ASSERT(p);
-		XML_Char*	q = strtok(p, " ");
-
-		while (q)
-		{
-			if (0 == UT_stricmp(q, "underline"))
-				lf.lfUnderline = TRUE;
-
-			else if (0 == UT_stricmp(q, "line-through"))
-				lf.lfStrikeOut = TRUE;
-
-			q = strtok(NULL, " ");
-		}
-
-		free(p);
-	}
-
-	s = UT_getAttribute("color", props_in);
-	if (s)
-	{
-		UT_RGBColor c;
-		UT_parseColor(s, c);
-		DWORD rgbCurrent;		// current text color
-
-		rgbCurrent = RGB(c.m_red, c.m_grn, c.m_blu);
-
-		cf.rgbColors = rgbCurrent;
-	}
-
-	free(props_in);
-
-	// raise the dialog
-	if (ChooseFont(&cf)==TRUE)
-	{
-		int i = 0;
-
-		// currently a maximum of eight simultaneous properties
-		const XML_Char * props_out[] = {
-			NULL, NULL,
-			NULL, NULL,
-			NULL, NULL,
-			NULL, NULL,
-			NULL, NULL,
-			NULL, NULL,
-			NULL, NULL,	// XLFD space, set to null when saving any properties
-			0 };
-
-		if (lf.lfFaceName)
-		{
-			props_out[i] = "font-family";
-			props_out[i+1] = lf.lfFaceName;
-			i += 2;
-		}
-
-		char buf_size[5];
-
-		if (cf.iPointSize)
-		{
-			sprintf(buf_size, "%dpt", cf.iPointSize/10);
-			props_out[i] = "font-size";
-			props_out[i+1] = buf_size;
-			i += 2;
-		}
-
-		if (cf.nFontType & BOLD_FONTTYPE)
-		{
-			props_out[i] = "font-weight";
-			props_out[i+1] ="bold";
-			i += 2;
-		}
-		else if (cf.nFontType & REGULAR_FONTTYPE)
-		{
-			props_out[i] = "font-weight";
-			props_out[i+1] ="normal";
-			i += 2;
-		}
-
-		if (cf.nFontType & ITALIC_FONTTYPE)
-		{
-			props_out[i] = "font-style";
-			props_out[i+1] ="italic";
-			i += 2;
-		}
-		else
-		{
-			props_out[i] = "font-style";
-			props_out[i+1] ="normal";
-			i += 2;
-		}
-
-		if ((lf.lfUnderline == TRUE) &&
-			(lf.lfStrikeOut == TRUE))
-		{
-			props_out[i] = "text-decoration";
-			props_out[i+1] ="underline line-through";
-			i += 2;
-		}
-		else if (lf.lfUnderline == TRUE)
-		{
-			props_out[i] = "text-decoration";
-			props_out[i+1] ="underline";
-			i += 2;
-		}
-		else if (lf.lfStrikeOut == TRUE)
-		{
-			props_out[i] = "text-decoration";
-			props_out[i+1] ="line-through";
-			i += 2;
-		}
-		else
-		{
-			props_out[i] = "text-decoration";
-			props_out[i+1] ="none";
-			i += 2;
-		}
-
-		char buf_color[6];
-
-		sprintf(buf_color, "%02x%02x%02x", GetRValue(cf.rgbColors), GetGValue(cf.rgbColors), GetBValue(cf.rgbColors));
-
-		props_out[i] = "color";
-		props_out[i+1] = buf_color;
-		i += 2;
-
-		pView->setCharFormat(props_out);
-
-		return UT_TRUE;
-	}
-
-	DWORD err = CommDlgExtendedError();
-	UT_DEBUGMSG(("Didn't get a font: reason=0x%x\n", err));
-	UT_ASSERT(!err);
-
-	return UT_FALSE;
-}
-
-#endif /* WIN32 */
-
-
-/*****************************************************************/
-/*****************************************************************/
-
-#ifdef UNIXHACK
-
-#include "ap_UnixApp.h"
-#include "ap_UnixFrame.h"
-#include "ps_Graphics.h"
-
-static void set_ok (GtkWidget * /*widget*/, UT_Bool *dialog_result)
-{
-	*dialog_result = TRUE;
-	gtk_main_quit();
-}
-
-UT_Bool _chooseFont(AP_Frame * pFrame, FV_View * pView)
-{
-	// These define the color element offsets in a vector
-	guint RED = 0;
-	guint GREEN = 1;
-	guint BLUE = 2;
-	gdouble currentColor[3] = { 0, 0, 0 };
-
-	GtkFontSelectionDialog * cf;
-	UT_Bool accepted = FALSE;
-	gchar * selectedFont = NULL;
-
-	// TODO move this title to resources?
-	cf = (GtkFontSelectionDialog *) gtk_font_selection_dialog_new("Font Selection");
-
-	// To match the Windows dialog, we add a "color" tab to the font dialog
-	// This is built up top to satisfy the requirement that these widgets
-	// exist to set their properties.  :)
-	GtkWidget * colorSelector = gtk_color_selection_new();
-	UT_ASSERT(colorSelector);
-	gtk_widget_show(colorSelector);
-
-	// Padded with spaces to fake min size without gtk_widget_set_usize()
-	GtkWidget * tabLabel = gtk_label_new("        Color        ");
-	UT_ASSERT(tabLabel);
-	gtk_widget_show(tabLabel);
-	
-	GtkFontSelection * fontsel = GTK_FONT_SELECTION(cf->fontsel);
-	UT_ASSERT(fontsel);
-
-	gtk_notebook_insert_page(&fontsel->notebook,
-							 colorSelector,
-							 tabLabel,
-							 3); // 0 based index
-
-    // Connect the signals to the buttons
-	gtk_signal_connect(GTK_OBJECT(cf->ok_button),
-					   "clicked",
-					   GTK_SIGNAL_FUNC(set_ok),
-					   &accepted);
-	gtk_signal_connect(GTK_OBJECT(cf->cancel_button),
-					   "clicked",
-					   GTK_SIGNAL_FUNC(gtk_main_quit),
-					   NULL);
-	// TIP: bind something (null at least) to "destroy" or you'll
-	// never get out of gtk_main();
-	gtk_signal_connect(GTK_OBJECT(cf),
-					   "destroy",
-					   GTK_SIGNAL_FUNC(NULL),
-					   NULL);
-
-	// Do we really want to position a new window at the cursor?
-	//gtk_window_position(GTK_WINDOW(cf), GTK_WIN_POS_MOUSE);
-
-	// We're now ready to query the view for its properties, to set
-	// the font dialog's pop-up appearance to match.
-	const XML_Char ** props_in = NULL;
-	const XML_Char * s;
-	DG_Graphics * pG = pView->getLayout()->getGraphics();
-
-	if (!pView->getCharFormat(&props_in))
-		return UT_FALSE;
-
-	// TODO set the proper length.
-	// This length is completely arbitrary.  If you know the max X font
-	// descriptor length, please set this array to that size and check
-	// accordingly.
-	gchar * fontString = new gchar[1024];
-	fontString[0] = NULL;
-
-	// we don't have a "foundry" attribute to match X's, fake it
-	strcat(fontString, "-*");
-
-	// family is *,[name]
-	s = UT_getAttribute("font-family", props_in);
-	if (s)
-	{
-		// If blank or standard Windows font
-		if (!UT_stricmp(s, "Times New Roman") || !UT_stricmp(s, ""))
-		{
-			// this satisfies the condition the view doesn't have
-			// a family set
-			strcat(fontString, "-");
-			strcat(fontString, "times");
-		}
-		else
-		{
-			strcat(fontString, "-");
-			strcat(fontString, s);
-		}
-	}
-	else
-		// this is kind of redundant, fix it
-		strcat(fontString, "-*");
-
-	// weight is *,black,bold,demibold,medium,regular
-	s = UT_getAttribute("font-weight", props_in);
-	if (s)
-	{
-		if (!UT_stricmp(s, "bold"))
-			strcat(fontString, "-bold");
-		else
-			strcat(fontString, "-medium");
-	}
-	else
-		strcat(fontString, "-*");
-
-	// slant is *,i,o,r
-	s = UT_getAttribute("font-style", props_in);
-	if (s)
-	{
-		if (!UT_stricmp(s, "italic"))
-			strcat(fontString, "-i");
-		else if (!UT_stricmp(s, "oblique"))
-			strcat(fontString, "-o");
-		else
-			strcat(fontString, "-r");
-	}
-	else
-		strcat(fontString, "-*");
-
-	// sWidth
-	strcat(fontString, "-*");
-	// adStyle
-	strcat(fontString, "-*");
-
-	// pxlsz (we use points)
-	strcat(fontString, "-*");
-
-	// point size
-	s = UT_getAttribute("font-size", props_in);
-	if (s)
-	{
-		strcat(fontString, "-");
-		char fontSize[5];
-		snprintf(fontSize, 5, "%d", (pG->convertDimension(s)) * 10);
-		strcat(fontString, fontSize);
-	}
-	else
-		// is this the default size?
-		strcat(fontString, "-14");
-
-	// Fill in the last 6 attributes we don't touch
-	strcat(fontString, "-*");
-	strcat(fontString, "-*");
-	strcat(fontString, "-*");
-	strcat(fontString, "-*");
-	strcat(fontString, "-*");
-	strcat(fontString, "-*");
-
-	UT_DEBUGMSG(("Priming dialog with XLFD: [%s]\n", fontString));
-
-	// Underline or Strikeout aren't standard X font properties.
-	s = UT_getAttribute("text-decoration", props_in);
-	if (s)
-	{
-		XML_Char*	p = strdup(s);
-		UT_ASSERT(p);
-		XML_Char*	q = strtok(p, " ");
-
-		while (q)
-		{
-			if (0 == UT_stricmp(q, "underline"))
-			{
-				// TODO: do something for the GTK font selector to
-				// consider this attribute?
-			}
-			else if (0 == UT_stricmp(q, "line-through"))
-			{
-				// TODO: do something for the GTK font selector to
-				// consider this attribute?
-			}
-			q = strtok(NULL, " ");
-		}
-
-		free(p);
-	}
-
-	// Set color in the color selector
-	s = UT_getAttribute("color", props_in);
-	if (s)
-	{
-		UT_RGBColor c;
-		UT_parseColor(s, c);
-
-		currentColor[RED] = ((gdouble) c.m_red / (gdouble) 255.0);
-		currentColor[GREEN] = ((gdouble) c.m_grn / (gdouble) 255.0);
-		currentColor[BLUE] = ((gdouble) c.m_blu / (gdouble) 255.0);
-
-		gtk_color_selection_set_color(GTK_COLOR_SELECTION(colorSelector), currentColor);
-
-	}
-
-	if (!gtk_font_selection_dialog_set_font_name(cf, fontString))
-	{
-		// We couldn't set the name, which means we don't have it
-		// TODO maybe do substitution, does it matter?
-		UT_DEBUGMSG(("Couldn't hint to font selection dialog to use XLFD.  "
-					 "This font was not found on this X server.\n"));
-	}
-
-	// Set up a nice sample string
-	gchar * sampleString = "ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijlkmnopqrstuvwxyz";
-	gtk_font_selection_dialog_set_preview_text(cf, (const gchar *) sampleString);
-
-	// Run the dialog
-	gtk_widget_show(GTK_WIDGET(cf));
-	gtk_grab_add(GTK_WIDGET(cf));
-	gtk_main();
-
-	if (accepted)
-	{
-
-		selectedFont = gtk_font_selection_dialog_get_font_name(cf);
-
-		if (selectedFont)
-		{
-			int i = 0;
-
-			UT_DEBUGMSG(("Font selection returned [%s].\n\n", selectedFont));
-			
-			// currently a maximum of six simultaneous properties
-			const XML_Char * props_out[] = {
-				NULL, NULL,
-				NULL, NULL,
-				NULL, NULL,	
-				NULL, NULL,
-				NULL, NULL,
-				NULL, NULL,
-				0 };
-
-			// duplicate and tokenize the XLFD
-			gchar * cloneString = strdup(selectedFont);
-			UT_ASSERT(cloneString);
-
-			// first call gets foundry, which we ignore
-			gchar * token = strtok(cloneString, "-");
-
-			// font family name
-			if ((token = strtok(NULL, "-")))
-			{
-				props_out[i] = "font-family";
-				props_out[i+1] = token;
-				i+=2;
-			}
-
-			/* weight (X has lots of defined weights, we just
-			   cast them to bold or normal for now)
-			*/
-			if ((token = strtok(NULL, "-")))
-			{
-				if (!UT_stricmp(token, "black"))
-				{
-					props_out[i] = "font-weight";
-					props_out[i+1] = "bold";
-				}
-				else if (!UT_stricmp(token, "bold"))
-				{
-					props_out[i] = "font-weight";
-					props_out[i+1] = "bold";
-				}
-				else if (!UT_stricmp(token, "demibold"))
-				{
-					props_out[i] = "font-weight";
-					props_out[i+1] = "bold";
-				}
-				else if (!UT_stricmp(token, "medium"))
-				{
-					props_out[i] = "font-weight";
-					props_out[i+1] = "normal";
-				}
-				else if (!UT_stricmp(token, "regular"))
-				{
-					props_out[i] = "font-weight";
-					props_out[i+1] = "normal";
-				}
-				else
-				{
-					props_out[i] = "font-weight";
-					props_out[i+1] = "normal";
-				}
-				i += 2;
-			}
-
-			// slant (X has i,o,r, which we cast to italic or normal)
-			if ((token = strtok(NULL, "-")))
-			{
-				if (!UT_stricmp(token, "i"))
-				{
-					props_out[i] = "font-style";
-					props_out[i+1] ="italic";
-				}
-				else if (!UT_stricmp(token, "o"))
-				{
-					props_out[i] = "font-style";
-					props_out[i+1] ="oblique";
-				}
-				else // o and r
-				{
-					props_out[i] = "font-style";
-					props_out[i+1] ="normal";
-				}
-				i += 2;
-			}
-
-			// GTK doesn't ever return an Underline or
-			// Strike attribute, so we'll use whatever was
-			// set when the user started the selection
-
-			s = UT_getAttribute("text-decoration", props_in);
-			if (s)
-			{
-				props_out[i] = "text-decoration";
-				props_out[i+1] = strdup(s);
-				i += 2;
-			}
-			else
-			{
-				props_out[i] = "text-decoration";
-				props_out[i+1] = "none";
-				i += 2;
-			}
-		   
-			// the windows code looks like this, for reference
-			/*
-			if ((lf.lfUnderline == TRUE) &&
-				(lf.lfStrikeOut == TRUE))
-			{
-				props_out[i] = "text-decoration";
-				props_out[i+1] ="underline line-through";
-				i += 2;
-			}
-			else if (lf.lfUnderline == TRUE)
-			{
-				props_out[i] = "text-decoration";
-				props_out[i+1] ="underline";
-				i += 2;
-			}
-			else if (lf.lfStrikeOut == TRUE)
-			{
-				props_out[i] = "text-decoration";
-				props_out[i+1] ="line-through";
-				i += 2;
-			}
-			else
-			{
-				props_out[i] = "text-decoration";
-				props_out[i+1] ="none";
-				i += 2;
-			}
-			*/
-			
-			// sWidth
-			strtok(NULL, "-");
-			// adStyle
-			strtok(NULL, "-");
-			// pxlStyle
-			strtok(NULL, "-");
-
-			// point size
-			char buf_size[5];
-			if ((token = strtok(NULL, "-")))
-			{
-				sprintf(buf_size, "%dpt", (atoi(token)/10));
-				props_out[i] = "font-size";
-				props_out[i+1] = buf_size;
-				i += 2;
-			}
-
-			// Color
-			gtk_color_selection_get_color(GTK_COLOR_SELECTION(colorSelector), currentColor);
-			
-			char buf_color[6];
-			sprintf(buf_color, "%02x%02x%02x",
-					(unsigned int) (currentColor[RED] 	* (gdouble) 255.0),
-					(unsigned int) (currentColor[GREEN]	* (gdouble) 255.0),
-					(unsigned int) (currentColor[BLUE] 	* (gdouble) 255.0));
-
-			props_out[i] = "color";
-			props_out[i+1] = buf_color;
-			i += 2;
-
-			// apply changes
-			pView->setCharFormat(props_out);
-
-			if (cloneString)
-				free(cloneString);
-		}
-	}
-
-	gtk_widget_destroy (GTK_WIDGET(cf));
-
-	delete fontString;
-	return UT_TRUE;
-
-}
-
-#endif /* UNIXHACK */
-/*****************************************************************/
-/*****************************************************************/
-
-#endif /* DLGHACK */

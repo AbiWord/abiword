@@ -33,6 +33,7 @@
 #	include "ap_Win32Dialog_MessageBox.h"
 #	include "ap_Win32Dialog_FileOpenSaveAs.h"
 #	include "ap_Win32Dialog_Print.h"
+#	include "ap_Win32Dialog_FontChooser.h"
 
 	// ... add new dialogs here ...
 
@@ -43,6 +44,7 @@
 	DeclareDialog(XAP_DIALOG_ID_FILE_SAVEAS,	AP_Win32Dialog_FileOpenSaveAs)
 	DeclareDialog(XAP_DIALOG_ID_PRINT,			AP_Win32Dialog_Print)
 	DeclareDialog(XAP_DIALOG_ID_PRINTTOFILE,	AP_Win32Dialog_FileOpenSaveAs)
+	DeclareDialog(XAP_DIALOG_ID_FONT,			AP_Win32Dialog_FontChooser)
 
 	// ... also add new dialogs here ...
 
