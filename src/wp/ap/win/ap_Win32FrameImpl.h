@@ -34,6 +34,8 @@ class ABI_EXPORT AP_Win32FrameImpl : public XAP_Win32FrameImpl
 	~AP_Win32FrameImpl(void);
 	virtual XAP_FrameImpl * createInstance(XAP_Frame *pFrame, XAP_App *pApp);
 
+	virtual UT_RGBColor getColorSelBackground () const;
+	
  protected:
 	friend class AP_Win32Frame;
 

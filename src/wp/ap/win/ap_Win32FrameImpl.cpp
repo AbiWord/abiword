@@ -1201,3 +1201,19 @@ LRESULT CALLBACK AP_Win32FrameImpl::_DocumentWndProc(HWND hwnd, UINT iMsg, WPARA
 
 	return DefWindowProc(hwnd, iMsg, wParam, lParam);
 }
+
+UT_RGBColor AP_Win32FrameImpl::getColorSelBackground () const
+{
+	DWORD bgcolor = GetSysColor(COLOR_HIGHLIGHT);
+
+	unsigned char red   = (((bgcolor)      ) & 0xff);
+	unsigned char green = (((bgcolor) >> 8 ) & 0xff); 
+ 	unsigned char blue  = (((bgcolor) >> 16) & 0xff);
+	
+	if( !bgcolor )
+	{
+		red = green = blue = 192;
+	}
+
+	return UT_RGBColor( red, green, blue );
+}
