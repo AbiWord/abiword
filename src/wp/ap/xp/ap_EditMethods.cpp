@@ -3921,6 +3921,7 @@ Defun1(warpInsPtNextPage)
 
 Defun1(warpInsPtPrevScreen)
 {
+	CHECK_FRAME;
 	ABIWORD_VIEW;
 	pView->warpInsPtNextPrevScreen(false);
 	return true;
@@ -3928,6 +3929,7 @@ Defun1(warpInsPtPrevScreen)
 
 Defun1(warpInsPtNextScreen)
 {
+	CHECK_FRAME;
 	ABIWORD_VIEW;
 	pView->warpInsPtNextPrevScreen(true);
 	return true;
@@ -4247,7 +4249,7 @@ Defun(contextMisspellText)
 
 Defun(contextImage)
 {
-CHECK_FRAME;
+	CHECK_FRAME;
 	ABIWORD_VIEW;
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> (pView->getParentData());
 	UT_return_val_if_fail(pFrame, false);
@@ -4604,6 +4606,7 @@ Defun1(extSelPageUp)
 
 Defun1(extSelScreenDown)
 {
+	CHECK_FRAME;
 	ABIWORD_VIEW;
 	pView->extSelNextPrevScreen(true);
 	return true;
@@ -4611,6 +4614,7 @@ Defun1(extSelScreenDown)
 
 Defun1(extSelScreenUp)
 {
+	CHECK_FRAME;
 	ABIWORD_VIEW;
 	pView->extSelNextPrevScreen(false);
 	return true;
@@ -8593,21 +8597,25 @@ _viewTBx(AV_View* pAV_View, int num)
 
 Defun1(viewTB1)
 {
+	CHECK_FRAME;
 	return _viewTBx(pAV_View, 0);
 }
 
 Defun1(viewTB2)
 {
+	CHECK_FRAME;
 	return _viewTBx(pAV_View, 1);
 }
 
 Defun1(viewTB3)
 {
+	CHECK_FRAME;
 	return _viewTBx(pAV_View, 2);
 }
 
 Defun1(viewTB4)
 {
+	CHECK_FRAME;
 	return _viewTBx(pAV_View, 3);
 }
 
@@ -10862,7 +10870,7 @@ Defun1(doubleSpace)
 #if defined(PT_TEST) || defined(FMT_TEST) || defined(UT_TEST)
 Defun1(Test_Dump)
 {
-CHECK_FRAME;
+	CHECK_FRAME;
 //	ABIWORD_VIEW;
 //	pView->Test_Dump();
 	return true;
