@@ -24,12 +24,7 @@
 #include "ut_vector.h"
 #include "ut_alphahash.h"
 #include "ut_string.h"
-#ifdef HAVE_LIBXML2
-#include <glib.h>
-#include <libxml/parser.h>
-#else
-#include "xmlparse.h"
-#endif
+#include "ut_xml.h"
 #include "xap_App.h"
 #include "xap_Prefs_SchemeIds.h"
 
@@ -149,7 +144,7 @@ protected:
 
 public:						/* these are needed by the XML parser interface */
 #ifdef HAVE_LIBXML2
-	void _scannode(xmlDocPtr dok, xmlNodePtr cur, int c, gboolean sys);
+	void _scannode(xmlDocPtr dok, xmlNodePtr cur, int c, char sys /* boolean */);
 #endif
 	void					_startElement(const XML_Char *name, const XML_Char **atts);
 	void					_endElement(const XML_Char *name);

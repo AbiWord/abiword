@@ -40,11 +40,6 @@
 #include "xap_UnixToolbar_Icons.h"
 #include "ev_UnixToolbar_ViewListener.h"
 #include "xav_View.h"
-#ifdef HAVE_LIBXML2
-#include <libxml/parser.h>
-#else
-#include "xmlparse.h"
-#endif
 #include "xap_Prefs.h"
 #include "ev_UnixGnomeToolbar.h"
 

@@ -23,11 +23,7 @@
 
 #include "ut_types.h"
 #include "pt_Types.h"
-#ifdef HAVE_LIBXML2
-#include <libxml/parser.h>
-#else
-#include "xmlparse.h"
-#endif
+#include "ut_xml.h"
 
 class pt_PieceTable;
 

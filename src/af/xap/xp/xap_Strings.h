@@ -24,11 +24,6 @@
 #include "ut_vector.h"
 #include "ut_alphahash.h"
 #include "ut_string.h"
-#ifdef HAVE_LIBXML2
-#include <libxml/parser.h>
-#else
-#include "xmlparse.h"
-#endif
 #include "xap_App.h"
 
 //////////////////////////////////////////////////////////////////

@@ -21,11 +21,7 @@
 #ifndef UT_STRING_H
 #define UT_STRING_H
 
-#ifdef HAVE_LIBXML2
-#include <libxml/parser.h>
-#else
-#include "xmlparse.h"
-#endif
+#include "ut_xml.h"
 
 #include "ut_types.h"
 

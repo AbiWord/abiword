@@ -27,11 +27,6 @@
 #include "ut_alphahash.h"
 #include "ut_string.h"
 #include "ut_vector.h"
-#ifdef HAVE_LIBXML2
-#include <libxml/parser.h>
-#else
-#include "xmlparse.h"
-#endif
 #include "pt_Types.h"
 #include "pp_AttrProp.h"
 

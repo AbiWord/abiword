@@ -1231,7 +1231,7 @@ void XAP_Prefs::_sendPrefsSignal( UT_AlphaHashTable *hash  )
 }
 
 #ifdef HAVE_LIBXML2
-void XAP_Prefs::_scannode(xmlDocPtr dok, xmlNodePtr cur, int c, gboolean sys)
+void XAP_Prefs::_scannode(xmlDocPtr dok, xmlNodePtr cur, int c, char sys /*boolean*/)
 {
   while (cur != NULL)
     {
@@ -1251,7 +1251,7 @@ void XAP_Prefs::_scannode(xmlDocPtr dok, xmlNodePtr cur, int c, gboolean sys)
 	    }
 	  if (sys) _startElement_SystemDefaultFile(cur->name, props);
 	  else     _startElement(cur->name, props);
-	  if (prop) g_free(prop);
+	  if (prop) free(prop);
 	}
       _scannode(dok, cur->children, c + 1, sys);
       if (strcmp("text", (char*) cur->name) != 0)

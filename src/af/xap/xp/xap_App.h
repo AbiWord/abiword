@@ -24,11 +24,7 @@
 #include "ut_types.h"
 #include "ut_vector.h"
 #include "ut_hash.h"
-#ifdef HAVE_LIBXML2
-#include <libxml/parser.h>
-#else
-#include "xmlparse.h"
-#endif
+#include "ut_xml.h"
 #include "xap_Dialog.h"
 
 #define NUM_MODELESSID 39

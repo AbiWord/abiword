@@ -24,11 +24,7 @@
 
 #include "ut_types.h"
 
-#ifdef HAVE_LIBXML2
-#include <libxml/parser.h>
-#else
-#include "xmlparse.h"
-#endif
+#include "ut_xml.h"
 
 class UT_RGBColor;
 class UT_Rect;

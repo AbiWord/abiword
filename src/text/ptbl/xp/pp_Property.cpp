@@ -24,11 +24,6 @@
 #include "ut_assert.h"
 #include "ut_string.h"
 #include "ut_debugmsg.h"
-#ifdef HAVE_LIBXML2
-#include <libxml/parser.h>
-#else
-#include "xmlparse.h"
-#endif
 #include "pp_Property.h"
 #include "pp_AttrProp.h"
 #include "pd_Document.h"
