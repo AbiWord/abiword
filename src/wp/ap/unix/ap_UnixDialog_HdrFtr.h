@@ -44,6 +44,13 @@ public:
 	void         CheckChanged(HdrFtr_Control which);
 
  protected:
+
+	typedef enum
+		{
+			BUTTON_OK,
+			BUTTON_CANCEL
+		} ResponseId ;
+	
 	virtual GtkWidget * _constructWindow (void);
 	virtual void _constructWindowContents (GtkWidget * parent);
 	virtual void _connectSignals(void);
@@ -53,8 +60,6 @@ public:
 	GtkWidget * m_wRestartLabel;
 	GtkObject * m_oSpinAdj;
 	GtkWidget * m_wSpin;
-	GtkWidget * m_wButtonOK;
-	GtkWidget * m_wButtonCancel;
 	GtkWidget * m_wHdrFtrDialog;
 };
 
