@@ -25,7 +25,7 @@ class XAP_Win32Frame;
 
 /*****************************************************************/
 
-class AP_Win32Dialog_Tab: public AP_Dialog_Stub
+class AP_Win32Dialog_Tab: public AP_Dialog_Tab
 {
 public:
 	AP_Win32Dialog_Tab(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
@@ -36,6 +36,29 @@ public:
 	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
 	
 protected:
+
+	void _controlEnable( tControl id, UT_Bool value );
+
+#define SET_GATHER(a,t) virtual t _gather##a(void);  \
+ 					    virtual void    _set##a( t )
+	SET_GATHER			(Alignment,			eTabType);
+	SET_GATHER			(Leader,			eTabLeader);
+	SET_GATHER			(DefaultTabStop,	UT_sint32);
+
+
+	// to populate the whole list
+	SET_GATHER			(TabList,			const UT_Vector &);
+
+	// get/set the selected tab
+	// the list of n tabs are index 0..(n-1)
+	// -1 deselects everything
+	SET_GATHER			(SelectTab,			UT_sint32);
+
+	// a pointer to the text in the edit box, MUST BE FREEd on get
+	SET_GATHER			(TabEdit,			const char *);
+#undef SET_GATHER
+
+	virtual void _clearList();
 
 };
 
