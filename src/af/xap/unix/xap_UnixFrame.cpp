@@ -649,7 +649,7 @@ UT_Bool XAP_UnixFrame::openURL(const char * szURL)
 		execstring = g_strdup_printf("netscape -remote openURL\\(%s\\) || netscape %s &", szURL, szURL);
 	}
 	system(execstring);
-	gfree(execstring);
+	g_free(execstring);
 	FREEP(statbuf);
 	return UT_FALSE;
 }
