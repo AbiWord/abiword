@@ -24,10 +24,11 @@ InstallDirRegKey HKLM SOFTWARE\Abisuite "Install_Dir"
 ; The text to prompt the user to enter a directory
 ComponentText "This will install Abiword on your computer. Select which optional components you want installed."
 
-;
-InstType "Typical (default)"
-InstType "Full (with File Associations)"
-InstType "Minimal"
+; Install types 
+InstType "Typical (default)"			; Section 1
+InstType "Full (with File Associations)" 	; Section 2
+InstType "Minimal"				; Section 3
+; any other combination is "Custom"
 
 ; The text to prompt the user to enter a directory
 DirText "Choose a directory to install in to:"
@@ -38,8 +39,8 @@ DisabledBitmap ..\..\pkg\win\setup\emptybox.bmp
 ; The stuff that must be installed
 ; binary, license, and American dictionary
 Section "Abiword.exe (required)"
-	SectionIn 123
-	;;;;
+	SectionIn 1 2 3	; included in Typical, Full, Minimal 
+	;;
 	; Testing clause to Overwrite Existing Version - if exists
 	IfFileExists "$INSTDIR\AbiWord\bin\AbiWord.exe" 0 DoInstall
 	
@@ -56,7 +57,6 @@ Section "Abiword.exe (required)"
 	SetOutPath $INSTDIR\AbiWord
 	File "..\AbiSuite\AbiWord\system.*"
 	File /r "..\AbiSuite\AbiWord\strings"
-
 
 	SetOutPath $INSTDIR
 	File /oname=copying.txt "..\AbiSuite\Copying"
@@ -86,7 +86,7 @@ SectionEnd
 
 ; OPTIONAL Registry Settings
 Section "Update Registry Settings"
-	SectionIn 123
+	SectionIn 1 2 3
 	; Write the AbiSuite.AbiWord Keys
 	WriteRegStr HKCR "AbiSuite.AbiWord" "" "AbiWord Document"
 	WriteRegStr HKCR "AbiSuite.AbiWord\DefaultIcon" "" "$INSTDIR\AbiWord\bin\AbiWord.exe,2"
@@ -105,19 +105,42 @@ Section "Update Registry Settings"
 
 SectionEnd
 
-; OPTIONAL Start Menu Shortcut
-Section "Start Menu Shortcuts"
-	SectionIn 123
+; OPTIONAL Start Menu Shortcut for the current user profile
+Section "Start Menu Shortcuts (Current User)"
+	SectionIn 1 3
+	SetShellVarContext current  	; This is probably overkill, but playing it safe
 	CreateDirectory "$SMPROGRAMS\Abiword"
 	CreateShortCut "$SMPROGRAMS\Abiword\Uninstall Abiword.lnk" "$INSTDIR\UninstallAbiWord.exe" "" "$INSTDIR\UninstallAbiWord.exe" 0
 	CreateShortCut "$SMPROGRAMS\Abiword\Abiword.lnk" "$INSTDIR\Abiword\bin\Abiword.exe" "" "$INSTDIR\Abiword\bin\Abiword.exe" 0
 SectionEnd
 
-; OPTIONAL Desktop Shortcut 
-Section "Desktop Shortcut"
-	SectionIn 123
+; OPTIONAL Desktop Shortcut for the current user profile
+Section "Desktop Shortcut (Current User)"
+	SectionIn 1 3
+	SetShellVarContext current  	; This is probably overkill, but playing it safe
 	CreateShortCut "$DESKTOP\Abiword.lnk" "$INSTDIR\Abiword\bin\Abiword.exe" "" "$INSTDIR\Abiword\bin\Abiword.exe" 0
 SectionEnd
+
+
+; OPTIONAL Start Menu Shortcut for the special All User profile (not used in win9x) 
+Section "Start Menu Shortcuts (All Users)"
+	SectionIn 2		; off by default, included in 2 Full Install
+        SetShellVarContext all  	; set to all, reset at end of section
+	CreateDirectory "$SMPROGRAMS\Abiword"
+	CreateShortCut "$SMPROGRAMS\Abiword\Uninstall Abiword.lnk" "$INSTDIR\UninstallAbiWord.exe" "" "$INSTDIR\UninstallAbiWord.exe" 0
+	CreateShortCut "$SMPROGRAMS\Abiword\Abiword.lnk" "$INSTDIR\Abiword\bin\Abiword.exe" "" "$INSTDIR\Abiword\bin\Abiword.exe" 0
+	SetShellVarContext current  	; This is pro'ly overkill
+SectionEnd
+
+
+; OPTIONAL Desktop Shortcut for All Users
+Section "Desktop Shortcut (All Users)"
+	SectionIn 2	; not in default, included in 2 Full Install
+        SetShellVarContext all  	;  All users 
+	CreateShortCut "$DESKTOP\Abiword.lnk" "$INSTDIR\Abiword\bin\Abiword.exe" "" "$INSTDIR\Abiword\bin\Abiword.exe" 0
+        SetShellVarContext current  	; reset to current user
+SectionEnd
+
 
 ; MORE OPTIONS
 ; language packs, clipart, help docs, templates etc.   
@@ -128,35 +151,35 @@ SectionDivider " helper files "
 
 ; OPTIONAL Installation of Default Dictionary
 Section "Dictionary - US-English"
-	SectionIn 12
+	SectionIn 1 2
 	SetOutPath $INSTDIR
 	File /r "..\AbiSuite\dictionary"
 SectionEnd
 
 ; OPTIONAL Installation of Help Files
 Section "Help Files"
-	SectionIn 12
+	SectionIn 1 2
 	SetOutPath $INSTDIR\AbiWord
 	file /r "..\abisuite\abiword\help"
 SectionEnd
 
 ; OPTIONAL Installation of Templates
 Section "Templates"
-	SectionIn 12
+	SectionIn 1 2
 	SetOutPath $INSTDIR
 	File /r "..\AbiSuite\templates"
 SectionEnd
 
 ; OPTIONAL Installation of Samples - REMOVED
 ;Section "Samples"
-;	SectionIn 12
+;	SectionIn 1 2
 ;	SetOutPath $INSTDIR\AbiWord
 ;	File /r "..\AbiSuite\AbiWord\sample"
 ;SectionEnd
 
 ; OPTIONAL Installation of Clipart
 Section "Clipart"
-	SectionIn 12
+	SectionIn 1 2
 	SetOutPath $INSTDIR
 	File /r "..\AbiSuite\clipart"
 SectionEnd
@@ -223,7 +246,7 @@ Section "Uninstall"
 	; remove directories used
 	RMDir "$SMPROGRAMS\Abiword"
 	RMDir /r "$INSTDIR"
-
+	 
 SectionEnd
 
 ; eof
