@@ -335,16 +335,16 @@ void FL_BlockLayout::_purgeLayout(UT_Bool bVisible)
 
 UT_Bool FL_BlockLayout::truncateLayout(FP_Run* pTruncRun)
 {
+	// special case, nothing to do
+	if (!pTruncRun)
+		return UT_TRUE;
+
 	if (pTruncRun->getBlock() != this)
 	{
 		// be safe
 		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 		return UT_FALSE;
 	}
-
-	// special case, nothing to do
-	if (!pTruncRun)
-		return UT_TRUE;
 
 	if (m_pFirstRun == pTruncRun)
 		m_pFirstRun = NULL;
