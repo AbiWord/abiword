@@ -3,6 +3,8 @@
         {
             ACTIONS = {
                 applyAction = id; 
+                autoSaveFieldAction = id; 
+                autoSaveStepperAction = id; 
                 cancelAction = id; 
                 chooseDictAction = id; 
                 chooseScreenAction = id; 
@@ -36,6 +38,7 @@
                 "m_prefsAutoSaveBox" = NSBox; 
                 "m_prefsAutoSaveCurrentBtn" = NSButton; 
                 "m_prefsAutoSaveMinField" = NSTextField; 
+                "m_prefsAutoSaveMinStepper" = NSStepper; 
                 "m_prefsAutoSavePrefsBtn" = NSButton; 
                 "m_prefsBidiBox" = NSBox; 
                 "m_prefsCurrentSetCombo" = NSComboBox; 

@@ -1,6 +1,6 @@
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
- * Copyright (C) 2001-2002 Hubert Figuiere
+ * Copyright (C) 2001-2003 Hubert Figuiere
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -56,6 +56,7 @@ class AP_CocoaDialog_Options;
     IBOutlet NSBox *m_prefsAutoSaveBox;
     IBOutlet NSButton *m_prefsAutoSaveCurrentBtn;
     IBOutlet NSTextField *m_prefsAutoSaveMinField;
+	IBOutlet NSStepper *m_prefsAutoSaveMinStepper;
     IBOutlet NSButton *m_prefsAutoSavePrefsBtn;
     IBOutlet NSBox *m_prefsBidiBox;
     IBOutlet NSComboBox *m_prefsCurrentSetCombo;
@@ -111,6 +112,8 @@ class AP_CocoaDialog_Options;
 - (IBAction)increaseMinutesAction:(id)sender;
 - (IBAction)okAction:(id)sender;
 - (IBAction)resetDictAction:(id)sender;
+- (IBAction)autoSaveStepperAction:(id)sender;
+- (IBAction)autoSaveFieldAction:(id)sender;
 @end
 
 /*****************************************************************/

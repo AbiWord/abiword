@@ -422,6 +422,8 @@ void AP_CocoaDialog_Options::_setAutoSaveFilePeriod(const UT_String &stPeriod)
 	NSString* str = [[NSString alloc] initWithUTF8String:stPeriod.c_str()];
 	[txt setStringValue:str];
 	[str release];
+	NSStepper * step = [m_dlg _lookupWidget:AP_Dialog_Options::id_TEXT_AUTO_SAVE_FILE_PERIOD_SPIN];
+	[step setIntValue:[txt intValue]];
 }
 
 
@@ -744,6 +746,8 @@ void AP_CocoaDialog_Options::_storeWindowData(void)
 
 	case AP_Dialog_Options::id_TEXT_AUTO_SAVE_FILE_PERIOD:
 		return m_prefsAutoSaveMinField;
+	case AP_Dialog_Options::id_TEXT_AUTO_SAVE_FILE_PERIOD_SPIN:
+		return m_prefsAutoSaveMinStepper;
 
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	// prefs
@@ -868,6 +872,16 @@ void AP_CocoaDialog_Options::_storeWindowData(void)
 - (IBAction)resetDictAction:(id)sender
 {
 	AP_CocoaDialog_OptionsController_proxy::_event_IgnoreReset(m_xap);
+}
+
+- (IBAction)autoSaveStepperAction:(id)sender
+{
+	[m_prefsAutoSaveMinField setIntValue:[sender intValue]];
+}
+
+- (IBAction)autoSaveFieldAction:(id)sender
+{
+	[m_prefsAutoSaveMinStepper setIntValue:[sender intValue]];
 }
 
 @end

@@ -63,6 +63,7 @@ class AP_Dialog_Options : public XAP_Dialog_NonPersistent
 				   id_CHECK_AUTO_SAVE_FILE,
 				   id_TEXT_AUTO_SAVE_FILE_EXT,
 				   id_TEXT_AUTO_SAVE_FILE_PERIOD,
+				   id_TEXT_AUTO_SAVE_FILE_PERIOD_SPIN,  // needed by Cocoa FE
 				   id_CHECK_PREFS_AUTO_SAVE, id_COMBO_PREFS_SCHEME,
 
 				   id_CHECK_VIEW_SHOW_RULER, id_LIST_VIEW_RULER_UNITS,
