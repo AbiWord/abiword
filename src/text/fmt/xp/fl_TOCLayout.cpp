@@ -1176,12 +1176,12 @@ bool fl_TOCLayout::doclistener_changeStrux(const PX_ChangeRecord_StruxChange * p
 
 
 	setAttrPropIndex(pcrxc->getIndexAP());
+	fp_Page * pPage = getFirstContainer()->getPage();
 	collapse();
 	_lookupProperties();
 	_createTOCContainer();
 	_insertTOCContainer(static_cast<fp_TOCContainer *>(getLastContainer()));
 	fl_DocSectionLayout * pDSL = getDocSectionLayout();
-	fp_Page * pPage = getFirstContainer()->getPage();
 	pDSL->setNeedsSectionBreak(true,pPage);
 	return true;
 }
@@ -2222,6 +2222,7 @@ void fl_TOCLayout::collapse(void)
 	setFirstContainer(NULL);
 	setLastContainer(NULL);
 	_purgeLayout();
+	setNeedsReformat(0);
 }
 
 

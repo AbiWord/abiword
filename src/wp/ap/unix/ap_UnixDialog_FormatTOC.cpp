@@ -340,7 +340,7 @@ GtkWidget * AP_UnixDialog_FormatTOC::_constructWindow(void)
 
 void AP_UnixDialog_FormatTOC::setMainLevel(UT_sint32 iLevel)
 {
-	setMainLevel(iLevel);
+	AP_Dialog_FormatTOC::setMainLevel(iLevel);
 	UT_UTF8String sVal;
 	sVal = getTOCPropVal("toc-dest-style",getMainLevel());
 	GtkWidget * pW= _getWidget("wDispStyle");

@@ -486,6 +486,7 @@ bool fl_DocListener::populateStrux(PL_StruxDocHandle sdh,
 		UT_ASSERT(pCL->getContainerType() == FL_CONTAINER_TOC);
 #endif
 		*psfh = (PL_StruxFmtHandle) pCL;
+		static_cast<fl_TOCLayout *>(pCL)->setTOCEndIn();
 		m_pCurrentSL = (fl_SectionLayout *) static_cast<fl_TOCLayout *>(m_pCurrentSL)->getDocSectionLayout();
 		break;
 	}
