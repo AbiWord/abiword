@@ -18,9 +18,6 @@
  * 02111-1307, USA.
  */
 
-// for gtkcolorsel
-#undef GTK_DISABLE_DEPRECATED
-
 #include "ut_types.h"
 #include "ut_string.h"
 #include "ut_string_class.h"

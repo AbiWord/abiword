@@ -17,9 +17,6 @@
  * 02111-1307, USA.
  */
 
-// for color selections
-#undef GTK_DISABLE_DEPRECATED
-
 #include <stdlib.h>
 #include <stdio.h>
 
@@ -151,6 +148,7 @@ void AP_UnixDialog_Background::_constructWindowContents (GtkWidget * parent)
 	gtk_container_add (GTK_CONTAINER(parent), vbox);
 
 	colorsel = gtk_color_selection_new();
+	gtk_color_selection_set_has_palette (GTK_COLOR_SELECTION (colorsel), TRUE);
 	gtk_color_selection_set_has_opacity_control(GTK_COLOR_SELECTION(colorsel), false);
 	gtk_widget_show (colorsel);
 	gtk_container_add (GTK_CONTAINER(vbox), colorsel);
