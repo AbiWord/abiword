@@ -488,7 +488,7 @@ void fp_Run::setLength(UT_uint32 iLen)
 	{
 		return;
 	}
-
+    m_bRecalcWidth = true;
 	clearScreen();
 	
 	m_iLen = iLen;

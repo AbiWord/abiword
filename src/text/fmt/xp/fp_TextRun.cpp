@@ -779,6 +779,9 @@ void fp_TextRun::mergeWithNext(void)
 	pNext->getLine()->removeRun(pNext, false);
 
 	delete pNext;
+#ifdef BIDI_ENABLED
+	m_bRefreshDrawBuffer = true;
+#endif
 }
 
 bool fp_TextRun::split(UT_uint32 iSplitOffset)
@@ -1618,8 +1621,6 @@ void fp_TextRun::_refreshDrawBuffer()
 			offset += iTrueLen;
 			len -= iTrueLen;
 
-			UT_ASSERT(offset >= m_iOffsetFirst);
-			UT_ASSERT(offset + len <= m_iOffsetFirst + m_iLen);
 		} // for(;;)
 
 		if(iVisDir == FRIBIDI_TYPE_RTL)
