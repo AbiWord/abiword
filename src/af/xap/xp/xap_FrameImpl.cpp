@@ -38,11 +38,6 @@
 
 /*** Also look at xap_Frame.cpp, half the XAP_FrameImpl seems to be there!!! ***/
 
-#if defined(_WIN32) && !defined(UNICODE)	// ANSI to UTF-8 conversion for win32 build
-#include "ap_Win32App.h"
-#endif	
-
-
 XAP_FrameImpl::XAP_FrameImpl(XAP_Frame *pFrame) :
 	m_pMouse(0),
 	m_pKeyboard(0),
@@ -187,12 +182,6 @@ bool XAP_FrameImpl::_updateTitle()
 
 	if (szName && *szName) 
 	{
-		#if defined(_WIN32) && !defined(UNICODE)	// ANSI to UTF-8 conversion for win32 build
-		char szBuff[1024];
-		strcpy (szBuff, (AP_Win32App::s_fromAnsiToUTF8(szName)).utf8_str());
-		szName = reinterpret_cast<const char *>(szBuff);
-		#endif
-
 		UT_UTF8String sUntruncatedString = szName;
 		// WL_FIXME: we probably need a string truncation function, in the ut_utf8string class..
 		UT_UTF8Stringbuf::UTF8Iterator iter = sUntruncatedString.getIterator ();
