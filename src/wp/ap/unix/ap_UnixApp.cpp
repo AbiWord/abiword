@@ -1146,6 +1146,7 @@ int AP_UnixApp::main(const char * szAppName, int argc, char ** argv)
     bool bShow = false;
     bool bNoSplash = false;
     bool bHelp = false;
+    bool bVersion = false;
     
     for (int k = 1; k < Args.m_argc; k++)
 		if (*Args.m_argv[k] == '-')
@@ -1175,9 +1176,15 @@ int AP_UnixApp::main(const char * szAppName, int argc, char ** argv)
 			else if (strncmp(Args.m_argv[k],"-h",2) == 0 ||
 					 strncmp(Args.m_argv[k],"--h",3) == 0)
 				bHelp = true;
+
+			else if ((strcmp(Args.m_argv[k],"-version") == 0)
+				 || (strcmp(Args.m_argv[k],"--version") == 0))
+			  {
+			    bVersion = true;
+			  }
 		}
     
-    if((bTo && !bShow) || bHelp)
+    if((bTo && !bShow) || bHelp || bVersion)
     {
 		bShowSplash = false;
 		bShowApp = false;
@@ -1221,6 +1228,12 @@ int AP_UnixApp::main(const char * szAppName, int argc, char ** argv)
 		delete pMyUnixApp;
 		return 0;
     }
+
+    if(bVersion)
+      {
+	printf( "%s\n", XAP_App::s_szBuild_Version );
+	return 0;
+      }
     
     // Setup signal handlers, primarily for segfault
     // If we segfaulted before here, we *really* blew it

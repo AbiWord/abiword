@@ -483,8 +483,11 @@ UT_uint32 XAP_UnixGnomePrintGraphics::measureUnRemappedChar(const UT_UCSChar c)
 	UT_uint32 width = 0;
 	
         UT_ASSERT(m_pCurrentFont);
+#if 0
 	if (c >= 256)
 		return 0;
+#endif
+
 	UT_UCSChar cc = c; 
 	//
 	// If the font is in cache we're doing layout calculations so use exactly
@@ -536,28 +539,27 @@ void XAP_UnixGnomePrintGraphics::drawChars(const UT_UCSChar* pChars,
 	pEnd = pChars + iCharOffset + iLength;
 	
 	for (pS = pChars + iCharOffset; pS < pEnd; pS += OUR_LINE_LIMIT) {
-			const UT_UCSChar * pB;
-			UT_UCSChar currentChar;
+			const UT_UCSChar * pB = 0;
    
 			pD = buf;
 			for (pB = pS; (pB < pS + OUR_LINE_LIMIT) && (pB < pEnd); pB++) {
-					currentChar = remapGlyph(*pB, *pB >= 256 ? true : false);
-					if(!m_bisSymbol && !m_bisDingbats)
+					UT_UCSChar currentChar = *pB; // normal, default case
+
+					if(m_bisSymbol)
 					{
-							currentChar = currentChar <= 0xff ? currentChar : XAP_EncodingManager::get_instance()->UToNative(currentChar);
-					}
-					else if(m_bisSymbol)
-					{
-//
-// Convert to Unicode..
-//
+							//
+							// Convert to Unicode..
+							//
+							//currentChar = remapGlyph(*pB, *pB >= 256 ? true : false);
 							currentChar = (UT_UCSChar) getUnicodeForSymbol((UT_uint32) currentChar);
 					}
 					else if(m_bisDingbats)
 					{
-//
-// Convert to Unicode..
-//
+							//
+							// Convert to Unicode..
+							//
+
+							//currentChar = remapGlyph(*pB, *pB >= 256 ? true : false);
 							currentChar = (UT_UCSChar) getUnicodeForDingbats((UT_uint32) currentChar);
 					}
 					pD += unichar_to_utf8 (currentChar, pD);

@@ -125,8 +125,8 @@ dcl(DLG_Zoom_Percent,					"P&ercent:")
 dcl(DLG_Zoom_PreviewFrame,				"Preview")
 
 /* Zoom tool bar */
-dcl(TB_Zoom_PageWidth,					"Width")
-dcl(TB_Zoom_WholePage,					"Page")
+dcl(TB_Zoom_PageWidth,					"Page Width")
+dcl(TB_Zoom_WholePage,					"Whole Page")
 
 /* Unix Print dialog */
 dcl(DLG_UP_PrintTitle,					"Print")
@@ -231,6 +231,7 @@ dcl(LANG_HI_IN,								"Hindi")
 dcl(LANG_IT_IT,								"Italian (Italy)")
 dcl(LANG_JA_JP,								"Japanese")
 dcl(LANG_KO_KR,								"Korean")
+dcl(LANG_LA_IT,								"Latin (Renaissance)")
 dcl(LANG_LV_LV,								"Latvian")
 dcl(LANG_LT_LT,								"Lithuanian")
 dcl(LANG_NB_NO,								"Norwegian Bokmal")
