@@ -28,11 +28,10 @@ cat <<EOF
 
   AbiSuite Program Installer, Copyright (C) 1999 AbiSource, Inc.
 
-  This program comes with ABSOLUTELY NO WARRANTY; this software is
-  free software, and you are welcome to redistribute it under
-  certain conditions.  Read the file called COPYING in the archive 
-  in which this program arrived for more details.
-
+   This program comes with ABSOLUTELY NO WARRANTY; this software is
+   free software, and you are welcome to redistribute it under
+   certain conditions.  Read the file called COPYING in the archive 
+   in which this program arrived for more details.
 EOF
 
 # Make sure the fonts are really here
@@ -48,7 +47,7 @@ fi
 # Read prefix from user
 cat <<EOF
 
-  Please specify the directory in which you would like to install AbiSuite.
+  Please specify the directory into which you would like to install AbiSuite.
   The default directory is [${DEFAULT_PREFIX}/${DEFAULT_HOME}], 
   but you may provide an alternate path if you wish.  Hit "Enter" to use
   the default value.
