@@ -97,6 +97,7 @@ public:
 	inline GR_Graphics*	getGraphics(void) const { return m_pG; }
 	void setGraphics(GR_Graphics * pG);
 	UT_uint32           getGraphicTick(void) const { return m_iGraphicTick;} 
+	void                incrementGraphicTick(void) { m_iGraphicTick++;}
 	inline PD_Document*	getDocument(void) const { return m_pDoc; }
 	inline fl_BlockLayout* getPendingBlockForSpell(void) const { return m_pPendingBlockForSpell; };
 	inline fl_PartOfBlock* getPendingWordForSpell(void) const { return m_pPendingWordForSpell; };

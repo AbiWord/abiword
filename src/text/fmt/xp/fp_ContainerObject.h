@@ -55,7 +55,7 @@
 #include "gr_Graphics.h"
 #include "ut_vector.h"
 #include "pt_Types.h"
-
+#include "gr_Image.h"
 #include <fribidi.h>
 
 class fp_ContainerObject;
@@ -139,6 +139,7 @@ public:
 	FG_Fill_Type   getFillType(void) const;
 	FL_DocLayout * getDocLayout(void);
 	UT_RGBColor *  getColor(void);
+	void           setDocImage(GR_Image ** pDocPage);
 private:
     void        	     _regenerateImage(GR_Graphics * pG);
 	fg_FillType *        m_pParent;
@@ -155,6 +156,7 @@ private:
 	bool                 m_bColorSet;
 	UT_sint32            m_iWidth;
 	UT_sint32            m_iHeight;
+	GR_Image **          m_pDocImage;
 };
 
 

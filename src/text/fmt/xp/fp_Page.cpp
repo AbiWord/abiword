@@ -425,6 +425,15 @@ void fp_Page::draw(dg_DrawArgs* pDA, bool bAlwaysUseWhiteBackground)
 // color.
 //
 	int i=0;
+	if(!pDA->pG->queryProperties(GR_Graphics::DGP_SCREEN))
+	{
+		getOwningSection()->getDocLayout()->incrementGraphicTick();
+	}
+	getOwningSection()->checkGraphicTick(pDA->pG);
+	if(!pDA->pG->queryProperties(GR_Graphics::DGP_SCREEN))
+	{
+		getOwningSection()->getDocLayout()->incrementGraphicTick();
+	}
 	if(!pDA->bDirtyRunsOnly)
 	{
 		xxx_UT_DEBUGMSG(("Doing a rectangular color fill \n"));

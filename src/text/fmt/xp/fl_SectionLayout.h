@@ -269,6 +269,7 @@ public:
 	fp_Container *      getFirstEndnoteContainer(void);
 	fp_Container *      getLastEndnoteContainer(void);
 	void                deleteBrokenTablesFromHere(fl_TableLayout * pTL);
+	void                checkGraphicTick(GR_Graphics * pG);
 private:
 	virtual void		_lookupProperties(void);
 	fb_ColumnBreaker    m_ColumnBreaker;
@@ -325,6 +326,10 @@ private:
 	UT_String           m_sPaperColor;
 	UT_String           m_sScreenColor;
 	FG_Graphic *        m_pPageImage;
+	GR_Image *          m_pDocImage;
+	UT_uint32           m_iGraphicTick;
+	UT_sint32           m_iDocImageWidth;
+	UT_sint32           m_iDocImageHeight;
 };
 
 class ABI_EXPORT fl_HdrFtrSectionLayout : public fl_SectionLayout

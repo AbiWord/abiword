@@ -359,6 +359,10 @@ fl_DocSectionLayout::fl_DocSectionLayout(FL_DocLayout* pLayout, PL_StruxDocHandl
 	m_sPaperColor.clear();
 	m_sScreenColor.clear();
 	m_pPageImage = NULL;
+	m_pDocImage = NULL;
+	m_iGraphicTick = 0;
+	m_iDocImageWidth = 0;
+	m_iDocImageHeight = 0;
 	_lookupProperties();
 }
 
@@ -1697,6 +1701,18 @@ bool fl_DocSectionLayout::doclistener_deleteStrux(const PX_ChangeRecord_Strux * 
 	return true;
 }
 
+void fl_DocSectionLayout::checkGraphicTick(GR_Graphics * pG)
+{
+	if(m_pDocImage && (getDocLayout()->getGraphicTick() != m_iGraphicTick))
+	{
+		DELETEP(m_pDocImage);
+		m_pDocImage = m_pPageImage->regenerateImage(pG);
+		const UT_Rect rec(0,0,m_iDocImageWidth,m_iDocImageHeight);	
+		m_pDocImage->scaleImageTo(pG,rec);
+		m_iGraphicTick = getDocLayout()->getGraphicTick();
+	}
+}
+
 void fl_DocSectionLayout::addOwnedPage(fp_Page* pPage)
 {
 	// TODO do we really need the vecOwnedPages member? YES!!!
@@ -1707,12 +1723,19 @@ void fl_DocSectionLayout::addOwnedPage(fp_Page* pPage)
 	pPage->getFillType()->setDocLayout(getDocLayout());
 	if(m_pPageImage)
 	{
-		FG_Graphic * pGraphic = m_pPageImage->clone();
-		const PP_AttrProp * pAP = NULL;
-		getAttrProp(&pAP);
-		GR_Image * pImage = m_pPageImage->generateImage(getDocLayout()->getGraphics(),pAP,pPage->getWidth(),pPage->getHeight());
-		pPage->getFillType()->setImage(pGraphic,pImage,getDocLayout()->getGraphics(),pPage->getWidth(),pPage->getHeight());
-														
+		if(m_pDocImage == NULL)
+		{
+			const PP_AttrProp * pAP = NULL;
+			getAttrProp(&pAP);
+			GR_Image * pImage = m_pPageImage->generateImage(getDocLayout()->getGraphics(),pAP,pPage->getWidth(),pPage->getHeight());
+			m_iDocImageWidth = pPage->getWidth();
+			m_iDocImageHeight = pPage->getHeight();
+			m_iGraphicTick = getDocLayout()->getGraphicTick();
+			UT_Rect rec(0,0,pPage->getWidth(),pPage->getHeight());
+			pImage->scaleImageTo(getDocLayout()->getGraphics(),rec);
+			m_pDocImage = pImage;
+		}
+		pPage->getFillType()->setDocImage(&m_pDocImage);
 	}
 	else if(m_sScreenColor.size() > 0)
 	{
@@ -3251,13 +3274,27 @@ bool fl_HdrFtrSectionLayout::bl_doclistener_insertFmtMark(fl_ContainerLayout* pB
 		_PageHdrFtrShadowPair* pPair = static_cast<_PageHdrFtrShadowPair*>(m_vecPages.getNthItem(i));
 		// Find matching block in this shadow.
 		pShadowBL = pPair->getShadow()->findMatchingContainer(pBL);
-		bResult = static_cast<fl_BlockLayout *>(pShadowBL)->doclistener_insertFmtMark(pcrfm)
-			&& bResult;
+		if(pShadowBL)
+		{
+			bResult = static_cast<fl_BlockLayout *>(pShadowBL)->doclistener_insertFmtMark(pcrfm)
+				&& bResult;
+		}
+		else
+		{
+			bResult = false;
+		}
 	}
 	// Update the overall block too.
 	m_pDoc->allowChangeInsPoint();
 	pBL = findMatchingContainer(pBL);
-	bResult = static_cast<fl_BlockLayout *>(pBL)->doclistener_insertFmtMark(pcrfm) && bResult;
+	if(pBL)
+	{
+		bResult = static_cast<fl_BlockLayout *>(pBL)->doclistener_insertFmtMark(pcrfm) && bResult;
+	}
+	else
+	{
+		bResult = false;
+	}
 	return bResult;
 }
 

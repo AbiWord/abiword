@@ -297,7 +297,10 @@ fg_FillType::fg_FillType(fg_FillType *pParent, fp_ContainerObject * pContainer, 
 	m_color(255,255,255),
 	m_TransColor(255,255,255),
 	m_bTransColorSet(false),
-	m_bColorSet(false)
+	m_bColorSet(false),
+	m_iWidth(0),
+	m_iHeight(0),
+	m_pDocImage(NULL)
 {
 }
 
@@ -365,6 +368,21 @@ void fg_FillType::setColor(const char * pszColor)
 	}
 }
 
+/*!
+ * Set a pointer to the Image pointer in fl_DocSectionLayout. This
+ * enables many pages to share the same image without having to generate
+ * a new image for every page.
+ */
+void fg_FillType::setDocImage(GR_Image ** pDocImage)
+{
+	if(pDocImage != NULL)
+	{
+		DELETEP(m_pImage);
+		DELETEP(m_pGraphic);
+	}
+	m_pDocImage = pDocImage;
+	m_FillType = FG_FILL_IMAGE;
+}
 
 /*!
  * set this class to have a solid color fill but not print this color.
@@ -440,6 +458,7 @@ void fg_FillType::setImage(FG_Graphic * pGraphic, GR_Image * pImage, GR_Graphics
 	m_pGraphic = pGraphic;
 	m_bTransparentForPrint = false;
 	setWidthHeight(pG,iWidth,iHeight);
+	m_pDocImage = NULL;
 }
 
 /*!
@@ -546,7 +565,10 @@ void fg_FillType::Fill(GR_Graphics * pG, UT_sint32 & srcX, UT_sint32 & srcY, UT_
 		 }
 		 if(m_FillType == FG_FILL_IMAGE)
 		 {
-			 _regenerateImage(pG);
+			 if(m_pDocImage == NULL)
+			 {
+				 _regenerateImage(pG);
+			 }
 			 m_iGraphicTick = 99999999;
 			 src.left = srcX;
 			 src.top = srcY;
@@ -556,7 +578,14 @@ void fg_FillType::Fill(GR_Graphics * pG, UT_sint32 & srcX, UT_sint32 & srcY, UT_
 			 dest.top = y;
 			 dest.width = width;
 			 dest.height = height;
-			 pG->fillRect(m_pImage,src,dest);
+			 if(m_pDocImage == NULL)
+			 {
+				 pG->fillRect(m_pImage,src,dest);
+			 }
+			 else
+			 {
+				 pG->fillRect(*m_pDocImage,src,dest);
+			 }
 			 return;
 		 }
 		 if(m_FillType == FG_FILL_COLOR && m_bColorSet)
@@ -591,7 +620,7 @@ void fg_FillType::Fill(GR_Graphics * pG, UT_sint32 & srcX, UT_sint32 & srcY, UT_
 	 if(m_FillType == FG_FILL_IMAGE)
 	 {
 		 xxx_UT_DEBUGMSG(("Fill type Image ! srcX %d srcY %d x  %d y %d width %d height %d \n",srcX,srcY,x,y,width,height));
-		 if(m_pDocLayout->getGraphicTick() != m_iGraphicTick)
+		 if((m_pDocImage == NULL) && (m_pDocLayout->getGraphicTick() != m_iGraphicTick))
 		 {
 			 _regenerateImage(pG);
 		 }
@@ -603,7 +632,14 @@ void fg_FillType::Fill(GR_Graphics * pG, UT_sint32 & srcX, UT_sint32 & srcY, UT_
 		dest.top = y;
 		dest.width = width;
 		dest.height = height;
-		pG->fillRect(m_pImage,src,dest);
+		if(m_pDocImage == NULL)
+		{
+			pG->fillRect(m_pImage,src,dest);
+		}
+		else
+		{
+			pG->fillRect(*m_pDocImage,src,dest);
+		}
 	}		
 	 if(m_FillType == FG_FILL_COLOR && m_bTransColorSet)
 	 {
