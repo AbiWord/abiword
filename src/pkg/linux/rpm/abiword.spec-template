@@ -186,6 +186,7 @@ This is the clipart portfolio used by AbiWord.
 %setup -q -n %{name}-%{version}/abi
 
 %build
+./autogen.sh
 ./configure %{gnome} %{xft} %{debug} --prefix=$RPM_BUILD_ROOT/%{prefix} --exec-prefix=$RPM_BUILD_ROOT/%{prefix}
 %__make
 
@@ -246,7 +247,7 @@ cd ../abi
 %{ABIPREFIX}/AbiSuite/AbiWord/readme.txt
 %{ABIPREFIX}/AbiSuite/AbiWord/help/en-US
 %{ABIPREFIX}/AbiSuite/AbiWord/strings
-%{ABIPREFIX}/AbiSuite/AbiWord/system.profile-*
+%{ABIPREFIX}/AbiSuite/AbiWord/system.profile*
 %{ABIPREFIX}/AbiSuite/dictionary/*american*.hash*
 %{ABIPREFIX}/AbiSuite/icons
 %{ABIPREFIX}/AbiSuite/templates
