@@ -43,6 +43,7 @@
 #include "ap_Dialog_Goto.h"
 #include "ap_Dialog_Break.h"
 #include "ap_Dialog_Paragraph.h"
+#include "ap_Dialog_Options.h"
 #include "ap_Dialog_Spell.h"
 
 #include "xap_DialogFactory.h"
@@ -3251,6 +3252,44 @@ static UT_Bool s_doParagraphDlg(FV_View * pView)
 }
 
 
+static UT_Bool s_doOptionsDlg(FV_View * pView)
+{
+	XAP_Frame * pFrame = (XAP_Frame *) pView->getParentData();
+	UT_ASSERT(pFrame);
+
+	pFrame->raise();
+
+	XAP_DialogFactory * pDialogFactory
+		= (XAP_DialogFactory *)(pFrame->getDialogFactory());
+
+	AP_Dialog_Options * pDialog
+		= (AP_Dialog_Options *)(pDialogFactory->requestDialog(AP_DIALOG_ID_OPTIONS));
+	UT_ASSERT(pDialog);
+
+	// run the dialog
+	pDialog->runModal(pFrame);
+
+	// get the dialog answer
+	AP_Dialog_Options::tAnswer answer = pDialog->getAnswer();
+
+	switch (answer)
+	{
+	case AP_Dialog_Options::a_OK:
+		
+		break;
+		
+	case AP_Dialog_Options::a_CANCEL:
+		// do nothing
+		break;
+	default:
+		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+	}
+			
+	pDialogFactory->releaseDialog(pDialog);
+
+	return UT_TRUE;	
+}
+
 /*****************************************************************/
 
 Defun1(dlgFont)
@@ -3611,11 +3650,9 @@ Defun1(pageSetup)
 
 Defun1(dlgOptions)
 {
-	XAP_Frame * pFrame = (XAP_Frame *) pAV_View->getParentData();
-	UT_ASSERT(pFrame);
-
-	s_TellNotImplemented(pFrame, "Options dialog", __LINE__);
-	return UT_TRUE;
+	ABIWORD_VIEW;
+	
+	return s_doOptionsDlg(pView);
 }
 
 

@@ -42,6 +42,7 @@
 #include "ap_BeOSDialog_Break.h"
 #include "ap_BeOSDialog_Paragraph.h"
 #include "ap_BeOSDialog_Spell.h"
+#include "ap_BeOSDialog_Options.h"
 
 	// ... add new dialogs here ...
 
@@ -62,6 +63,7 @@
 	DeclareDialog(AP_DIALOG_ID_BREAK,		AP_BeOSDialog_Break)
 	DeclareDialog(AP_DIALOG_ID_SPELL,		AP_BeOSDialog_Spell)
 	DeclareDialog(AP_DIALOG_ID_PARAGRAPH,	AP_BeOSDialog_Paragraph)
+	DeclareDialog(AP_DIALOG_ID_OPTIONS,		AP_BeOSDialog_Options)
 	
 	// ... also add new dialogs here ...
 

@@ -27,9 +27,11 @@
 
 /*****************************************************************/
 
-XAP_PrefsScheme::XAP_PrefsScheme(const XML_Char * szSchemeName)
+XAP_PrefsScheme::XAP_PrefsScheme( XAP_Prefs *pPrefs, const XML_Char * szSchemeName)
 	: m_hash(13)
 {
+	m_pPrefs = pPrefs;
+
 	if (szSchemeName && *szSchemeName)
 		UT_XML_cloneString((XML_Char *&)m_szName,szSchemeName);
 	else
@@ -61,12 +63,15 @@ UT_Bool XAP_PrefsScheme::setValue(const XML_Char * szKey, const XML_Char * szVal
 			return UT_TRUE;				// equal values, no changes required
 		
 		m_hash.setEntry(pEntry, szValue, NULL); // update with new value
-		return UT_TRUE;
+	}
+	else
+	{
+		// otherwise, need to add a new entry
+		m_hash.addEntry(szKey,szValue,NULL);
 	}
 
-	// otherwise, need to add a new entry
+	m_pPrefs->_markPrefChange( szKey );
 
-	m_hash.addEntry(szKey,szValue,NULL);
 	return UT_TRUE;
 }
 
@@ -265,7 +270,8 @@ void XAP_Prefs::_pruneRecent(void)
 
 /*****************************************************************/
 
-XAP_Prefs::XAP_Prefs(XAP_App * pApp)
+XAP_Prefs::XAP_Prefs(XAP_App * pApp) 
+	: m_ahashChanges( 20 )
 {
 	m_pApp = pApp;
 	m_bAutoSavePrefs = atoi(XAP_PREF_DEFAULT_AutoSavePrefs);
@@ -273,6 +279,7 @@ XAP_Prefs::XAP_Prefs(XAP_App * pApp)
 	m_currentScheme = NULL;
 	m_builtinScheme = NULL;
 	m_iMaxRecent = atoi(XAP_PREF_DEFAULT_MaxRecent);
+	m_bInChangeBlock = UT_FALSE;
 
 	// NOTE: since constructors cannot report malloc
 	// NOTE: failures (and since it is virtual back
@@ -288,6 +295,7 @@ XAP_Prefs::~XAP_Prefs(void)
 {
 	UT_VECTOR_PURGEALL(XAP_PrefsScheme *, m_vecSchemes);
 	UT_VECTOR_PURGEALL(char *, m_vecRecent);
+	UT_VECTOR_PURGEALL(tPrefsListenersPair *, m_vecPrefsListeners);
 }
 
 /*****************************************************************/
@@ -522,7 +530,7 @@ void XAP_Prefs::_startElement(const XML_Char *name, const XML_Char **atts)
 
 		UT_Bool bIsNamed = UT_FALSE;
 		
-		pNewScheme = new XAP_PrefsScheme(NULL);
+		pNewScheme = new XAP_PrefsScheme(this, NULL);
 		if (!pNewScheme)
 			goto MemoryError;
 		
@@ -1003,4 +1011,86 @@ Cleanup:
 	if (fp)
 		fclose(fp);
 	return bResult;
+}
+
+/*****************************************************************/
+
+void XAP_Prefs::addListener	  ( PrefsListener pFunc, void *data )
+{
+	tPrefsListenersPair *pPair = new tPrefsListenersPair;	
+
+	UT_ASSERT(pPair);
+	UT_ASSERT(pFunc);
+
+	pPair->m_pFunc = pFunc;
+	pPair->m_pData = data;
+
+	m_vecPrefsListeners.addItem( (void *)pPair );
+}
+
+void XAP_Prefs::removeListener ( PrefsListener pFunc )
+{
+	UT_uint32 index;
+	tPrefsListenersPair *pPair;
+
+	for ( index = 0; index < m_vecPrefsListeners.getItemCount(); index++ )
+	{
+		pPair = (tPrefsListenersPair *)m_vecPrefsListeners.getNthItem(index);
+		UT_ASSERT(pPair);
+		if ( pPair ) {
+			if ( pPair->m_pFunc == pFunc ) {
+				m_vecPrefsListeners.deleteNthItem(index);
+				delete pPair;
+			}
+		}
+	}
+}
+
+void XAP_Prefs::_markPrefChange( const XML_Char *szKey )
+{
+	if ( m_bInChangeBlock )
+	{
+		UT_HashEntry *uth_e = m_ahashChanges.findEntry( szKey );
+		if ( uth_e ) 
+			m_ahashChanges.setEntry( uth_e, (char *)NULL, (void *)1 );	
+		else
+			m_ahashChanges.addEntry( szKey, (char *)NULL, (void *)1 );	
+
+		// notify later
+	}
+	else
+	{
+		UT_AlphaHashTable	changes(3);
+		changes.addEntry( szKey, (char *)NULL, (void *)1 );	
+
+		_sendPrefsSignal( (UT_AlphaHashTable *)&changes );
+	}
+}
+
+void XAP_Prefs::startBlockChange()
+{
+	m_bInChangeBlock = UT_TRUE;
+}
+
+void XAP_Prefs::endBlockChange()
+{
+	if ( m_bInChangeBlock ) 
+	{
+		m_bInChangeBlock = UT_FALSE;
+		_sendPrefsSignal( &m_ahashChanges );
+	}
+}
+
+void XAP_Prefs::_sendPrefsSignal( UT_AlphaHashTable *hash  )
+{
+	UT_uint32	index;
+	for ( index = 0; index < m_vecPrefsListeners.getItemCount(); index++ )
+	{
+		tPrefsListenersPair *p = (tPrefsListenersPair *)
+			m_vecPrefsListeners.getNthItem( index );
+
+		UT_ASSERT(p && p->m_pFunc);
+	
+		(p->m_pFunc)(m_pApp, this, hash, p->m_pData);
+	}
 }

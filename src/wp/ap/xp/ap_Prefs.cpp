@@ -56,9 +56,15 @@ void AP_Prefs::fullInit(void)
 	//
 	// TODO overlay command line arguments onto preferences...
 
+	// group all the prefListener signals into one block change
+	startBlockChange();	
+
 	loadBuiltinPrefs();
 	loadPrefsFile();
 	overlayEnvironmentPrefs();
+
+	// stop blocking the signal and send the combined one
+	endBlockChange();
 }
 		   
 /*****************************************************************/
@@ -83,7 +89,7 @@ UT_Bool AP_Prefs::loadBuiltinPrefs(void)
 	
 	const XML_Char * szBuiltinSchemeName = getBuiltinSchemeName();
 	
-	XAP_PrefsScheme * pScheme = new XAP_PrefsScheme(szBuiltinSchemeName);
+	XAP_PrefsScheme * pScheme = new XAP_PrefsScheme(this, szBuiltinSchemeName);
 	if (!pScheme)
 		return UT_FALSE;
 
@@ -128,3 +134,4 @@ void AP_Prefs::overlaySystemPrefs(void)
 
 	loadSystemDefaultPrefsFile(buf);
 }
+

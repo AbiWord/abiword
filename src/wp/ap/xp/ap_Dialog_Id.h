@@ -36,6 +36,7 @@ typedef enum _AP_Dialog_Id
 	AP_DIALOG_ID_BREAK,					/* insert page, column, section, etc. breaks */
    	AP_DIALOG_ID_SPELL,					/* spell check */
 	AP_DIALOG_ID_PARAGRAPH,				/* paragraph settings dialog */
+	AP_DIALOG_ID_OPTIONS,				/* edit|options settings dialog */
      	/* ... add others here ... */
 
 	AP_DIALOG_ID__LAST__				/* must be last */

@@ -208,3 +208,274 @@ gint searchCList(GtkCList * clist, char * compareText)
 
 	return -1;
 }
+
+/****************************************************************************
+ Written    by:     Stephen Hack                <shack@uiuc.edu>
+                  date:     Thu Oct 14 1999
+    
+ Purpose
+    To recursivily change the labels in a window (any container) from the
+    windows & to GTK+'s underline format
+
+    Can support multiple &'s, to get an & into the document, enter \&
+
+ Usage
+    fix_label( GtkWidget *window )
+
+ Compile time Options
+    FIXLBL_DBG      if defined, will print out a nested listing of all labels
+
+ ***************************************************************************/
+
+#include <gdk/gdkkeysyms.h>
+#include <gtk/gtk.h>
+
+static const gchar KEY_ACCEL_GROUP[] = "ACCEL_GROUP";
+
+#define DBG(a) {a}
+
+/* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    Data types
+ * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
+struct fix_label_data {
+    int depth;
+    GtkWidget     *topwindow;
+    GtkWidget     *accel_ctrl;
+    gchar         *accel_sig;
+    GtkAccelGroup *accel_group;
+}; 
+
+/* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    Prototypes
+ * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
+static void on_notebook_switch_page( GtkNotebook     *notebook,
+                                     GtkNotebookPage *page,
+                                     gint             page_num,
+                                     gpointer         user_data );
+
+void process_notebook_page( GtkWidget *notebook, 
+                            GtkWidget *page,
+                            struct fix_label_data *data );
+
+void fix_label_callback( GtkWidget *widget, 
+                         gpointer _data );
+
+void fix_label( GtkWidget *widget );
+
+
+/* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+	Call back routine for switching accelerator groups
+ * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
+static void
+on_notebook_switch_page				   (GtkNotebook		*notebook,
+										GtkNotebookPage *page,
+										gint			 page_num,
+										gpointer		 user_data)
+{
+	GtkAccelGroup *oldaccel, *newaccel;
+	GtkWindow	  *topwindow = (GtkWindow *)user_data;
+
+	UT_ASSERT(topwindow && GTK_IS_WINDOW(topwindow));
+	UT_ASSERT(notebook && GTK_IS_NOTEBOOK(notebook));
+	UT_ASSERT(page && page->child && GTK_IS_OBJECT(page->child));
+
+	if ( GTK_OBJECT_DESTROYED(notebook) )
+		return ;
+
+	oldaccel = (GtkAccelGroup *)gtk_object_get_data( GTK_OBJECT(notebook),
+													 KEY_ACCEL_GROUP );
+	newaccel = (GtkAccelGroup *)gtk_object_get_data( GTK_OBJECT(page->child),  
+													 KEY_ACCEL_GROUP );
+	
+	if ( oldaccel )
+		gtk_window_remove_accel_group( topwindow, oldaccel );
+
+	gtk_window_add_accel_group( topwindow, newaccel );
+	gtk_object_set_data(GTK_OBJECT(notebook), KEY_ACCEL_GROUP, newaccel );
+}
+
+/* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+ * To process a notebook page
+ * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
+
+void process_notebook_page( GtkWidget *notebook, 
+							GtkWidget *page,
+							struct fix_label_data *data )
+{
+	GtkAccelGroup *newgroup;
+	struct fix_label_data newdata;
+
+	UT_ASSERT(notebook && page && data && data->topwindow);
+	UT_ASSERT( GTK_IS_NOTEBOOK(notebook) );
+	UT_ASSERT( GTK_IS_WIDGET(page) );
+
+	memcpy( &newdata, data, sizeof(struct fix_label_data));
+
+	newgroup = gtk_accel_group_new();
+	UT_ASSERT(newgroup);
+
+	gtk_object_set_data( GTK_OBJECT(page), KEY_ACCEL_GROUP, (gpointer)newgroup );
+
+	newdata.accel_group = newgroup;
+	fix_label_callback( page, &newdata );
+}
+
+/* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+ * The recursive call back function for gtk_container_for_all
+ * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
+#ifdef TRACE
+#  undef TRACE
+#endif
+#ifdef DBG_FIX_LABEL
+# define TRACE(a) { for ( i = 0; i < data->depth; i++ ) printf("  "); \
+					printf a; printf("\n"); }
+#else
+# define TRACE(a)
+#endif
+void fix_label_callback( GtkWidget *widget, gpointer _data )
+{
+	struct fix_label_data *data = (struct fix_label_data *)_data;
+	struct fix_label_data newdata;
+	int i, pageindex;
+	gchar *str;
+	gchar *newlbl;
+	gchar accelch;
+	gpointer accel_group;
+	GtkWidget *w, *accel_tie;
+ 
+	char *dbg_str;
+ 
+	UT_ASSERT(widget && _data);
+
+	memcpy( &newdata, _data, sizeof(struct fix_label_data) );
+	newdata.depth = data->depth + 1; 
+
+	newdata.accel_ctrl = widget;
+	dbg_str = "garbage";
+	if ( GTK_IS_BUTTON(widget) ) {
+		newdata.accel_sig = "clicked";
+		DBG(dbg_str = "button";)
+	}
+	else {
+		// we can't find what type to set accels to, then use parent
+		newdata.accel_ctrl = data->accel_ctrl;
+		newdata.accel_sig = data->accel_sig;
+		DBG(dbg_str = "container";)
+	}
+
+	// if it's a containter, go deeper
+	
+	if ( GTK_IS_NOTEBOOK(widget) ) {
+		TRACE(("NOTEBOOK"));
+
+		for ( pageindex = 0; 
+			  (w = gtk_notebook_get_nth_page( GTK_NOTEBOOK(widget), pageindex)) != 0; 
+			  pageindex++ ) 
+		{
+			TRACE(("Page %i", pageindex));
+		  
+			UT_ASSERT( data->topwindow );
+ 
+			process_notebook_page( widget, w, &newdata );
+
+			if ( pageindex == 0 )		
+			{
+						accel_group = gtk_object_get_data( GTK_OBJECT(w), KEY_ACCEL_GROUP);
+						gtk_object_set_data( GTK_OBJECT(widget), KEY_ACCEL_GROUP, accel_group );
+						gtk_window_add_accel_group( GTK_WINDOW(data->topwindow), 
+																				(GtkAccelGroup *)accel_group);
+			}
+		}
+			
+		/* set the signal handler to change to accel groups */
+		gtk_signal_connect (GTK_OBJECT(widget), "switch_page",
+						  GTK_SIGNAL_FUNC (on_notebook_switch_page),
+						  data->topwindow );
+
+
+	}	
+
+	/* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -	
+	 * handler for an option menu 
+	 */
+	else if ( GTK_IS_OPTION_MENU( widget ) ) {
+		TRACE(("found option menu " ));
+
+		accel_tie = (GtkWidget *)gtk_object_get_data( GTK_OBJECT(widget),
+													  "accel-tie");
+
+		if ( accel_tie ) {
+			UT_ASSERT( GTK_IS_LABEL(accel_tie) );		
+
+		}
+	}
+
+	/* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -	
+	 * default handler for a 'container' 
+	 */
+	else if ( GTK_IS_CONTAINER( widget ) ) {
+
+		/* go deeper */
+		TRACE(("found %s - ", dbg_str ));
+		gtk_container_forall( GTK_CONTAINER(widget), 
+							  fix_label_callback, (gpointer *)&newdata );
+
+	}
+
+	/* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -	
+	 * handle a label
+	 */
+	else if ( GTK_IS_LABEL( widget ) ) {
+
+		gtk_label_get( GTK_LABEL(widget), &str );
+		UT_ASSERT(str);
+
+		TRACE(("found label [%s] ", str ));
+
+		/* convert the &'s into _'s .  Also handle \& as &'s */
+		accelch = 0;
+		newlbl = strdup(str);					UT_ASSERT(newlbl);
+		for ( i = 0; newlbl[i] != 0; i++ ) 
+		{
+			if ( newlbl[i] == '&' ) {
+				if ( i > 0 && newlbl[i-1] == '\\' )
+				{
+					newlbl[i-1] = '&';
+					strcpy( &newlbl[i], &newlbl[i+1]);
+					i--;
+				}
+				else
+					newlbl[i] = '_';
+			}
+		}
+
+		/* underline the words */
+		accelch = 0;
+		accelch = gtk_label_parse_uline(GTK_LABEL(widget), newlbl);
+
+		/* added an accelerator if need be */
+		if ( accelch != -1 && data->accel_ctrl && data->accel_group ) {
+			  gtk_widget_add_accelerator (data->accel_ctrl, data->accel_sig, data->accel_group,
+										  accelch, GDK_CONTROL_MASK,
+										  GTK_ACCEL_VISIBLE);
+		}
+
+		if ( newlbl ) free(newlbl);		
+	}
+}
+
+/* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+ * the actual exported call
+ * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
+void createLabelAccelerators( GtkWidget *widget ) 
+{
+	struct fix_label_data data = { 0, 0, 0, 0, 0 };
+
+	data.depth = 0;
+	data.accel_group = gtk_accel_group_new();
+	data.topwindow = widget;
+
+	fix_label_callback( widget, &data );
+
+	gtk_window_add_accel_group (GTK_WINDOW (widget), data.accel_group);
+}

@@ -39,6 +39,41 @@
 #include "ut_assert.h"
 #include "ut_timer.h"
 
+void spell_prefsListener (
+	XAP_App				*pApp,
+	XAP_Prefs			*pPrefs,
+	UT_AlphaHashTable	* /*phChanges*/,  // not used
+	void				*data
+) 
+{
+	UT_Bool b;
+	FL_DocLayout *pDocLayout = (FL_DocLayout *)data;
+
+	UT_DEBUGMSG(("spell_prefsListener\n"));		
+	UT_ASSERT( pApp && pPrefs && data );
+
+	// caps/number/internet
+	//UT_Bool changed = UT_FALSE;	don't htink it's needed
+	pPrefs->getPrefsValueBool( (XML_Char *)AP_PREF_KEY_SpellCheckCaps, &b );
+	//changed = changed || (b != pDocLayout->getSpellCheckCaps());
+	pDocLayout->m_bSpellCheckCaps = b;
+
+	pPrefs->getPrefsValueBool( (XML_Char *)AP_PREF_KEY_SpellCheckNumbers, &b );
+	//changed = changed || (b != pDocLayout->getSpellCheckNumbers());
+	pDocLayout->m_bSpellCheckNumbers = b;
+
+	pPrefs->getPrefsValueBool( (XML_Char *)AP_PREF_KEY_SpellCheckInternet, &b );
+	//changed = changed || (b != pDocLayout->getSpellCheckInternet());
+	pDocLayout->m_bSpellCheckInternet = b;
+	
+	// auto spell
+	pPrefs->getPrefsValueBool( (XML_Char *)AP_PREF_KEY_AutoSpellCheck, &b );
+	pDocLayout->_toggleAutoSpell( b );
+	// do this because it's recheck to document - TODO
+
+
+}
+
 FL_DocLayout::FL_DocLayout(PD_Document* doc, GR_Graphics* pG) : m_hashFontCache(19)
 {
 	m_pDoc = doc;
@@ -50,13 +85,19 @@ FL_DocLayout::FL_DocLayout(PD_Document* doc, GR_Graphics* pG) : m_hashFontCache(
 	m_pFirstSection = NULL;
 	m_pLastSection = NULL;
 	m_bAutoSpellCheck = UT_FALSE;
-	
+	m_bSpellCheckCaps = UT_TRUE;
+	m_bSpellCheckNumbers = UT_TRUE;
+	m_bSpellCheckInternet = UT_TRUE;
+	m_bPrefsListenerInstalled = UT_FALSE;
+
 	// TODO the following (both the new() and the addListener() cause
 	// TODO malloc's to occur.  we are currently inside a constructor
 	// TODO and cannot report failure.
 	
 	m_pDocListener = new fl_DocListener(doc, this);
 	doc->addListener(static_cast<PL_Listener *>(m_pDocListener),&m_lid);
+
+		
 }
 
 FL_DocLayout::~FL_DocLayout()
@@ -101,15 +142,20 @@ void FL_DocLayout::setView(FV_View* pView)
 		pPage = pPage->getNext();
 	}
 
-	if (m_pView)
+	if (m_pView && ! m_bPrefsListenerInstalled )
 	{
+		m_bPrefsListenerInstalled = UT_TRUE;
+
 		XAP_App * pApp = m_pView->getApp();
 		UT_ASSERT(pApp);
+		XAP_Prefs *pPrefs= pApp->getPrefs();
+		UT_ASSERT(pPrefs);
 
-		// TODO: move this logic when we get a PrefsListener API
-		const XML_Char * szAutoSpell;
-		if (pApp->getPrefsValue(AP_PREF_KEY_AutoSpellCheck,&szAutoSpell))
-			_toggleAutoSpell((szAutoSpell[0] == '1'));
+		// initialize the vars here
+		spell_prefsListener( pApp, pPrefs, NULL, this );
+
+		// keep updating itself	
+		pPrefs->addListener ( spell_prefsListener, this ); 
 	}
 }
 
@@ -411,6 +457,8 @@ void FL_DocLayout::_toggleAutoSpell(UT_Bool bSpell)
 {
 	m_bAutoSpellCheck = bSpell;
 
+	UT_DEBUGMSG(("FL_DocLayout::_toggleAutoSpell (%s)", bSpell ? "UT_TRUE" : "UT_FALSE" ));
+
 	if (bSpell)
 	{
 		// make sure the timer is started
@@ -424,12 +472,40 @@ void FL_DocLayout::_toggleAutoSpell(UT_Bool bSpell)
 		{
 			m_pSpellCheckTimer->start();
 		}
+
+		// recheck the whole doc
+		fl_DocSectionLayout * pSL = getFirstSection();
+		while (pSL)
+		{
+			fl_BlockLayout* b = pSL->getFirstBlock();
+			while (b)
+			{
+				// TODO: just check and remove matching squiggles
+				// for now, destructively recheck the whole thing
+				queueBlockForSpell(b, UT_FALSE);
+				b = b->getNext();
+			}
+			pSL = (fl_DocSectionLayout *) pSL->getNext();
+		}
 	}
 	else
 	{
 		// make sure the timer is stopped
 		if (m_pSpellCheckTimer)
 			m_pSpellCheckTimer->stop();	
+	
+		// remove the squiggles, too
+		fl_DocSectionLayout * pSL = getFirstSection();
+		while (pSL)
+		{
+			fl_BlockLayout* b = pSL->getFirstBlock();
+			while (b)
+			{
+				b->_purgeSquiggles();
+				b = b->getNext();
+			}
+			pSL = (fl_DocSectionLayout *) pSL->getNext();
+		}
 	}
 }
 

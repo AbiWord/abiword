@@ -31,6 +31,7 @@
 #include "xmlparse.h"
 #include "pt_Types.h"
 #include "fl_Layout.h"
+#include "fl_DocLayout.h"		// FIXME: this is needed for the friend'ed function
 #include "fg_Graphic.h"
 
 // number of DocPositions occupied by the block strux
@@ -63,6 +64,10 @@ class fl_PartOfBlock;
 class fl_BlockLayout : public fl_Layout
 {
 	friend class fl_DocListener;
+
+	// TODO: shack - code should be moved from toggleAuto to a function in
+	// here - to handle the squiggles
+	friend void FL_DocLayout::_toggleAutoSpell(UT_Bool bSpell);
 
 public:
 	fl_BlockLayout(PL_StruxDocHandle sdh, fb_LineBreaker*, fl_BlockLayout*, fl_SectionLayout*, PT_AttrPropIndex indexAP);

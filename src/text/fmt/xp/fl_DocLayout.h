@@ -73,6 +73,9 @@ class fl_PartOfBlock;
 class FL_DocLayout
 {
 	friend class fl_DocListener;
+	friend void spell_prefsListener(class XAP_App *, class XAP_Prefs *, 
+								    class UT_AlphaHashTable *, void *);
+
 
 public:
 	FL_DocLayout(PD_Document* doc, GR_Graphics* pG);
@@ -125,7 +128,12 @@ public:
 	fl_DocSectionLayout* 	findSectionForHdrFtr(const char* pszHdrFtrID) const;
 	void 				deleteEmptyColumnsAndPages(void);
 	void 				deleteEmptyPages(void);
-	
+
+
+	UT_Bool		getAutoSpellCheck(void) const { return m_bAutoSpellCheck; }
+	UT_Bool		getSpellCheckCaps(void) const { return m_bSpellCheckCaps; }
+	UT_Bool		getSpellCheckNumbers(void) const { return m_bSpellCheckNumbers; }
+	UT_Bool		getSpellCheckInternet(void) const { return m_bSpellCheckInternet; }
 #ifdef FMT_TEST
 	void		__dump(FILE * fp) const;
 #endif
@@ -152,6 +160,10 @@ protected:
 	fl_BlockLayout*		m_pPendingBlock;	// if NULL, then ignore m_pPendingWord
 	fl_PartOfBlock*		m_pPendingWord;
 	UT_Bool				m_bAutoSpellCheck;
+	UT_Bool				m_bSpellCheckCaps;
+	UT_Bool				m_bSpellCheckNumbers;
+	UT_Bool				m_bSpellCheckInternet;
+	UT_Bool				m_bPrefsListenerInstalled;
 };
 
 #endif /* DOCLAYOUT_H */

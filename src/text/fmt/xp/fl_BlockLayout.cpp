@@ -1157,6 +1157,11 @@ void fl_BlockLayout::_insertSquiggles(UT_uint32 iOffset, UT_uint32 iLength, fl_B
 #ifdef FASTSQUIGGLE
 	UT_sint32 chg = iLength;
 
+
+	UT_ASSERT(m_pLayout);
+	if ( m_pLayout->getAutoSpellCheck() == UT_FALSE ) 
+		return;
+
 	// remove squiggle broken by this insert
 	UT_sint32 iBroken = _findSquiggle(iOffset);
 	if (iBroken >= 0)
@@ -1452,6 +1457,8 @@ UT_Bool fl_BlockLayout::_checkMultiWord(const UT_UCSChar* pBlockText,
 	UT_uint32 wordLength = 0;
 	UT_Bool bFound;
 	UT_Bool bAllUpperCase;
+	
+	UT_DEBUGMSG(("fl_BlockLayout::_checkMultiWord\n"));
 
 	while (wordBeginning < eor)
 	{
@@ -1492,7 +1499,7 @@ UT_Bool fl_BlockLayout::_checkMultiWord(const UT_UCSChar* pBlockText,
 
 			// for some reason, the spell checker fails on all 1-char words & really big ones
 			if ((wordLength > 1) && 
-				(!bAllUpperCase) &&		// TODO: iff relevant Option is set
+				(!m_pLayout->getSpellCheckCaps() || !bAllUpperCase) &&		// TODO: iff relevant Option is set
 				(!UT_UCS_isdigit(pBlockText[wordBeginning]) && 
 				(wordLength < 100)))
 			{
@@ -1537,6 +1544,8 @@ void fl_BlockLayout::checkWord(fl_PartOfBlock* pPOB)
 	UT_Bool bRes = getBlockBuf(&pgb);
 	UT_ASSERT(bRes);
 
+	UT_DEBUGMSG(("fl_BlockLayout::checkWord\n"));
+
 	const UT_UCSChar* pBlockText = pgb.getPointer(0);
 	UT_uint32 eor = pPOB->iOffset + pPOB->iLength; /* end of region */
 
@@ -1560,8 +1569,9 @@ void fl_BlockLayout::checkWord(fl_PartOfBlock* pPOB)
 
 	// for some reason, the spell checker fails on all 1-char words & really big ones
 	if ((wordLength > 1) && 
-		(!bAllUpperCase) &&		// TODO: iff relevant Option is set
-		(!UT_UCS_isdigit(pBlockText[wordBeginning]) && 
+		(!m_pLayout->getSpellCheckCaps() || !bAllUpperCase) &&		
+		(!UT_UCS_isdigit(pBlockText[wordBeginning]) &&				
+				// TODO: iff relevant Option is set - need to check the whole word, not just the first letter
 		(wordLength < 100)))
 	{
 		PD_Document * pDoc = m_pLayout->getDocument();

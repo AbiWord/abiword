@@ -40,6 +40,7 @@
 
 #	include "ap_Win32Dialog_Replace.h"
 #	include "ap_Win32Dialog_Break.h"
+#	include "ap_Win32Dialog_Options.h"
 #	include "ap_Win32Dialog_Paragraph.h"
 #	include "ap_Win32Dialog_Spell.h"
 
@@ -61,6 +62,7 @@
 	DeclareDialog(AP_DIALOG_ID_FIND,			AP_Win32Dialog_Replace)
 	DeclareDialog(AP_DIALOG_ID_BREAK,			AP_Win32Dialog_Break)
 	DeclareDialog(AP_DIALOG_ID_SPELL,			AP_Win32Dialog_Spell)
+	DeclareDialog(AP_DIALOG_ID_OPTIONS,			AP_Win32Dialog_Options)
 	DeclareDialog(AP_DIALOG_ID_PARAGRAPH,	   	AP_Win32Dialog_Paragraph)
 	
 	// ... also add new dialogs here ...

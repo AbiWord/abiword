@@ -28,6 +28,13 @@
 #include "xap_App.h"
 #include "xap_Prefs_SchemeIds.h"
 
+typedef void (*PrefsListener) (
+	XAP_App				*pApp,
+	XAP_Prefs			*pPrefs,
+	UT_AlphaHashTable	*phChanges,
+	void				*data
+	);
+
 /*****************************************************************
 ** XAP_PrefsScheme is a complete set of preferences.  it contains
 ** all the info for a UI styling set.  use XAP_Prefs to switch
@@ -37,7 +44,7 @@
 class XAP_PrefsScheme
 {
 public:
-	XAP_PrefsScheme(const XML_Char * szSchemeName);
+	XAP_PrefsScheme(XAP_Prefs *pPrefs, const XML_Char * szSchemeName);
 	~XAP_PrefsScheme(void);
 
 	const XML_Char *	getSchemeName(void) const;
@@ -56,6 +63,7 @@ public:
 protected:
 	XML_Char *			m_szName;
 	UT_AlphaHashTable	m_hash;
+	XAP_Prefs *			m_pPrefs;
 };
 
 /*****************************************************************/
@@ -97,6 +105,13 @@ public:
 	virtual const XML_Char *	getBuiltinSchemeName(void) const = 0;
 	virtual const char *		getPrefsPathname(void) const = 0;
 
+	void					addListener	  ( PrefsListener pFunc, void *data );
+	void					removeListener ( PrefsListener pFunc );
+	void					startBlockChange();
+	void					endBlockChange();
+
+	// a only-to-be-used-by XAP_PrefsScheme::setValue
+	void					_markPrefChange	( const XML_Char *szKey );
 protected:
 	void					_pruneRecent(void);
 
@@ -110,6 +125,11 @@ protected:
 
 	UT_uint32				m_iMaxRecent;
 	UT_Vector				m_vecRecent;		/* vector of (char *) */
+
+	UT_Vector				m_vecPrefsListeners;	/* vectory of struct PrefListnersPair */
+	UT_AlphaHashTable		m_ahashChanges;
+	UT_Bool					m_bInChangeBlock;
+	void					_sendPrefsSignal( UT_AlphaHashTable *hash );
 
 public:						/* these are needed by the XML parser interface */
 	void					_startElement(const XML_Char *name, const XML_Char **atts);
@@ -126,6 +146,12 @@ private:
 		XML_Char *			m_szSelectedSchemeName;
 		UT_Bool				m_bFoundRecent;
 	} m_parserState;
+
+	typedef struct					/* used to store the listener/data pairs in the vector  */
+	{
+		PrefsListener	m_pFunc;
+		void			*m_pData;
+	} tPrefsListenersPair;
 };
 
 //////////////////////////////////////////////////////////////////////////////////////

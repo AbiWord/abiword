@@ -116,6 +116,9 @@ UT_Bool AP_Dialog_Spell::nextMisspelledWord(void)
    UT_UCSChar* pBlockText = m_pBlockBuf->getPointer(0);
    UT_uint32 iBlockLength = m_pBlockBuf->getLength();
 
+   UT_ASSERT(m_pView && m_pView->getLayout() );	
+   UT_Bool checkCaps = m_pView->getLayout()->getSpellCheckCaps();
+
    // loop until a misspelled word or end of document is hit
    for (;;) {
 
@@ -197,7 +200,7 @@ UT_Bool AP_Dialog_Spell::nextMisspelledWord(void)
 	    // for some reason, the spell checker fails on all 1-char words & really big ones
 	    // -this is a limitation in the underlying default checker ispell --JB
 	    if ((m_iWordLength > 1) &&
-		(!bAllUpperCase) &&             // TODO: iff relevant Option is set
+		(!checkCaps || !bAllUpperCase) &&             // TODO: iff relevant Option is set
 		(!UT_UCS_isdigit(pBlockText[m_iWordOffset]) &&
 		 (m_iWordLength < 100))) {
 	    
