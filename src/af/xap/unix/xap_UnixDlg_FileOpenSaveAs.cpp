@@ -107,6 +107,8 @@ UT_Bool XAP_UnixDialog_FileOpenSaveAs::_run_gtk_main(XAP_Frame * pFrame,
 		while (1)
 		{
 			gtk_main();
+			if (m_answer == a_CANCEL)			// The easy way out
+				return UT_FALSE;
 
 			// TODO  check for symlinks, because even symlinks to dirs won't
 			// TODO  show up with S_ISDIR().
