@@ -170,8 +170,8 @@ IEFileType IE_Imp::fileTypeForSuffix(const char * szSuffix)
 		{
 			for (UT_sint32 a = 0; a < (int) nrElements; a++)
 			{
-				if (s->supportsFileType(reinterpret_cast<IEFileType>(a+1)))
-					return reinterpret_cast<IEFileType>(a+1);
+				if (s->supportsFileType(static_cast<IEFileType>(a+1)))
+					return static_cast<IEFileType>(a+1);
 			}
 
 			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);

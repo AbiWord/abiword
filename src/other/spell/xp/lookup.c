@@ -47,6 +47,9 @@ static char Rcs_Id[] =
 
 /*
  * $Log$
+ * Revision 1.7  2001/08/27 19:06:30  dom
+ * Lots of compilation fixes
+ *
  * Revision 1.6  2001/08/10 18:32:40  dom
  * Spelling and iconv updates. god, i hate iconv
  *
@@ -492,7 +495,9 @@ char *hashname; /* name of the hash file (dictionary) */
     return (0);
     }
 
+#ifndef FREEP
 #define FREEP(p)	do { if (p) free(p); } while (0)
+#endif
 
 static void initckch (FIRST_ARG(istate) char *wchars)
 #if 0

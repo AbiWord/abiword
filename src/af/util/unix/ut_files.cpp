@@ -45,7 +45,7 @@ bool progExists(const char* progName)
 	if(*progName == '/')
 	{
 		laststat = stat(progName, &statbuf);
-		if(S_ISREG(statbuf.st_mode) || S_ISLNK(statbuf.st_mode))
+		if(laststat == 0 && S_ISREG(statbuf.st_mode) || S_ISLNK(statbuf.st_mode))
 		{
 			return true;
 		}
@@ -67,7 +67,7 @@ bool progExists(const char* progName)
 		path = (UT_String*) utvPath->getNthItem(i);;
 		laststat = stat(UT_catPathname(path->c_str(), progName), &statbuf);
 
-		if(S_ISREG(statbuf.st_mode) || S_ISLNK(statbuf.st_mode))
+		if(laststat == 0 && S_ISREG(statbuf.st_mode) || S_ISLNK(statbuf.st_mode))
 		{
 			return true;
 		}

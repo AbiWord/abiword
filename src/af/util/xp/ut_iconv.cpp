@@ -221,6 +221,7 @@ char * UT_convert(const char*	str,
 	    bytes_written = 0;
 	    return NULL;
 	  }
+	UT_END_CATCH
 
 	if (len < 0)
 	  {

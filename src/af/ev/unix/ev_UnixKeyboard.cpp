@@ -129,12 +129,6 @@ bool ev_UnixKeyboard::keyPressEvent(AV_View* pView,
 	{
 		UT_uint16 charData = e->keyval;
 		//UT_DEBUGMSG(("UnixKeyboard::pressKeyEvent: key value %x\n", charData));
-		UT_Mbtowc m;
-		wchar_t wc;
-	  	UT_UCSChar *ucs = NULL;
-	  	char *mbs=e->string;
-	  	int mLength=strlen(mbs);
-	  	int uLength;
 
 		if(charData>0xff)
 		  result = m_pEEM->Keystroke(EV_EKP_PRESS|state|'a',&pEM);
@@ -158,9 +152,14 @@ bool ev_UnixKeyboard::keyPressEvent(AV_View* pView,
 			return true;
 			
 		case EV_EEMR_COMPLETE:
+		  {
 			UT_ASSERT(pEM);
 
-			uLength=0;
+			UT_UCSChar *ucs = NULL;
+			char *mbs = e->string;
+			int mLength = strlen(mbs);
+			int uLength = 0;
+
 			/*
 				if gdk fails to translate, then we will try to do this
 				ourselves by calling kesym2ucs
@@ -189,15 +188,17 @@ bool ev_UnixKeyboard::keyPressEvent(AV_View* pView,
 				ucs=new UT_UCSChar[mLength];
 				for(int i=0;i<mLength;++i)
 			  	{
+				        UT_Mbtowc m;
+					wchar_t wc;
 					if(m.mbtowc(wc,mbs[i]))
-				  	ucs[uLength++]=wc;
+					  ucs[uLength++]=wc;
 			  	}					
 			 }
 			invokeKeyboardMethod(pView,pEM,ucs,uLength); // no char data to offer
 			delete[] ucs;
  			return true;
 	
-			
+		  }
 		case EV_EEMR_INCOMPLETE:
 			return true;
 			
