@@ -27,6 +27,7 @@
 #include "ut_debugmsg.h"
 #include "ut_string.h"
 #include "ut_xml.h"
+#include "xap_EncodingManager.h"
 
 #ifdef __MRC__
 extern "C" {
