@@ -1,6 +1,6 @@
 /* AbiWord
  * Copyright (C) 2000 AbiSource, Inc.
- * Copyright (C) 2001 Hubert Figuiere
+ * Copyright (C) 2001, 2003 Hubert Figuiere
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -18,20 +18,54 @@
  * 02111-1307, USA.
  */
 
-#ifndef AP_UNIXDIALOG_WORDCOUNT_H
-#define AP_UNIXDIALOG_WORDCOUNT_H
+#ifndef AP_COCOADIALOG_WORDCOUNT_H
+#define AP_COCOADIALOG_WORDCOUNT_H
+
+#import <Cocoa/Cocoa.h>
+#import "xap_CocoaDialog_Utilities.h"
 
 #include "ap_Dialog_WordCount.h"
 #include "ut_timer.h"
 
-class XAP_CocoaFrame;
+class AP_CocoaDialog_WordCount;
+
+@interface AP_CocoaDialog_WordCountController : NSWindowController <XAP_CocoaDialogProtocol>
+{
+    IBOutlet NSButton *_autoUpdateBtn;
+    IBOutlet NSTextField *_charNoSpaceCount;
+    IBOutlet NSTextField *_charNoSpaceLabel;
+    IBOutlet NSTextField *_charSpaceCount;
+    IBOutlet NSTextField *_charSpaceLabel;
+    IBOutlet NSTextField *_linesCount;
+    IBOutlet NSTextField *_linesLabel;
+    IBOutlet NSTextField *_pageCount;
+    IBOutlet NSTextField *_pageLabel;
+    IBOutlet NSTextField *_paraCount;
+    IBOutlet NSTextField *_paraLabel;
+    IBOutlet NSButton *_refreshBtn;
+    IBOutlet NSTextField *_secondsData;
+    IBOutlet NSTextField *_secondsLabel;
+    IBOutlet NSStepper *_stepper;
+    IBOutlet NSTextField *_wordCount;
+    IBOutlet NSTextField *_wordLabel;
+	AP_CocoaDialog_WordCount*	_xap;
+}
+- (IBAction)autoUpdateAction:(id)sender;
+- (IBAction)refreshAction:(id)sender;
+- (IBAction)secondsUpdated:(id)sender;
+- (IBAction)stepperAction:(id)sender;
+- (void)setSeconds:(float)sec;
+- (float)seconds;
+- (void)setCounts:(FV_DocCount*)count;
+- (void)_syncControls;
+@end
 
 /*****************************************************************/
 
 class AP_CocoaDialog_WordCount: public AP_Dialog_WordCount
 {
 public:
-	AP_CocoaDialog_WordCount(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
+	AP_CocoaDialog_WordCount(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id dlgid);
 	virtual ~AP_CocoaDialog_WordCount(void);
 
 	virtual void			runModeless(XAP_Frame * pFrame);
@@ -39,56 +73,31 @@ public:
 	virtual void			activate(void);
 	virtual void			notifyActiveFrame(XAP_Frame *pFrame);
 
-	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
+	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id dlgid);
 	static void			autoupdateWC(UT_Worker * pTimer);
-	virtual void			set_sensitivity(void);
 	virtual void			setUpdateCounter(void);
 	// callbacks can fire these events
 
-	virtual void			event_OK(void);
 	virtual void			event_Update(void);
-	virtual void			event_Checkbox(void);
+	virtual void			event_Checkbox(bool enabled);
 	virtual void			event_Spin(void);
-	virtual void			event_WindowDelete(void);
+	void 					event_CloseWindow(void);
 
-protected:
-#if 0
-	// private construction functions
-	virtual GtkWidget * _constructWindow(void);
+private:
 	void				_populateWindowData(void);
-	virtual GtkWidget * _constructWindowContents(void);
 	void 				_updateWindowData(void);       
-	void 				_connectSignals(void);
 
-	// pointers to widgets we need to query/set
-	GtkWidget * m_windowMain;
-	GtkWidget * m_wContent;
-	GtkWidget * m_buttonClose;
-	GtkWidget * m_buttonUpdate;
-	GtkWidget * m_pTableframe;
 	UT_Timer * m_pAutoUpdateWC;
-	GtkWidget * m_pAutospin;
-	GtkWidget * m_pAutocheck;
-	GtkWidget * m_pAutospinlabel;
-	GtkAdjustment * m_Spinrange;
 	bool m_bAutoWC;
-	guint m_Update_rate;
+	unsigned int m_Update_rate;
 
-	// Labels for the Word Count data
-	GtkWidget * m_labelWCount;
-	GtkWidget * m_labelPCount;
-	GtkWidget * m_labelCCount;
-	GtkWidget * m_labelCNCount;
-	GtkWidget * m_labelLCount;	
-	GtkWidget * m_labelPgCount;	
-	
 	// Handshake variables
 	bool m_bDestroy_says_stopupdating;
 	bool m_bAutoUpdate_happening_now;
-#endif
+	AP_CocoaDialog_WordCountController*	m_dlg;
 };
 
-#endif /* AP_UNIXDIALOG_WORDCOUNT_H */
+#endif /* AP_COCOADIALOG_WORDCOUNT_H */
 
 
 

@@ -1,6 +1,6 @@
 /* AbiSource Application Framework
  * Copyright (C) 1998 AbiSource, Inc.
- * Copyright (C) 2001 Hubert Figuiere
+ * Copyright (C) 2001,2003 Hubert Figuiere
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -21,18 +21,44 @@
 #ifndef XAP_COCOADIALOG_INSERT_SYMBOL_H
 #define XAP_COCOADIALOG_INSERT_SYMBOL_H
 
+#import <Cocoa/Cocoa.h>
+
 #include "xap_Dlg_Insert_Symbol.h"
+
+#import "xap_CocoaDialog_Utilities.h"
 
 #define DEFAULT_COCOA_SYMBOL_FONT "Symbol"
 
 class XAP_CocoaFrame;
+class XAP_CocoaDialog_Insert_Symbol;
 
 /*****************************************************************/
+@interface XAP_CocoaDlg_Insert_SymbolController : NSWindowController <XAP_CocoaDialogProtocol>
+{
+    IBOutlet NSButton *_addBtn;
+    IBOutlet NSButton *_closeBtn;
+    IBOutlet NSComboBox *_fontCombo;
+    IBOutlet XAP_CocoaNSView *_grid;
+    IBOutlet XAP_CocoaNSView *_preview;
+	XAP_CocoaDialog_Insert_Symbol* _xap;
+}
+- (IBAction)addAction:(id)sender;
+- (IBAction)closeAction:(id)sender;
+- (IBAction)fontSelectAction:(id)sender;
+
+- (XAP_CocoaNSView*)grid;
+- (XAP_CocoaNSView*)preview;
+
+- (void)_selectFontByName:(const char*)name;
+- (NSString*)_selectedFont;
+@end
+
+
 
 class XAP_CocoaDialog_Insert_Symbol : public XAP_Dialog_Insert_Symbol
 {
 public:
-	XAP_CocoaDialog_Insert_Symbol(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
+	XAP_CocoaDialog_Insert_Symbol(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id dlgid);
 	virtual ~XAP_CocoaDialog_Insert_Symbol(void);
 
 	virtual void			runModal(XAP_Frame * pFrame);
@@ -42,51 +68,27 @@ public:
 	virtual void			notifyCloseFrame(XAP_Frame *pFrame){};
 	virtual void			destroy(void);
 	virtual void			activate(void);
-	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
+	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id dlgid);
 
 	// callbacks can fire these events
 
 	virtual void			event_OK(void);
 	virtual void			event_Cancel(void);
-	virtual void			SymbolMap_exposed( void);
-	virtual void			Symbolarea_exposed( void);
-#if 0
-	virtual void			SymbolMap_clicked(GdkEvent * event);
-	virtual void                    CurrentSymbol_clicked(GdkEvent *event);
-	virtual void			Key_Pressed(GdkEventKey * e);
-#endif
+	void 					event_CloseWindow(void);
+	void					SymbolMap_exposed( void);
+	void					Symbolarea_exposed( void);
+	void					SymbolMap_clicked(NSEvent* event);
+	void					CurrentSymbol_clicked(void);
+	virtual void			Key_Pressed(NSEvent * e);
 	virtual void			New_Font( void);
-	virtual void			event_WindowDelete(void);
-#if 0
-	virtual void                    Motion_event(GdkEventMotion *e);
-#endif
-protected:
 
-	GR_CocoaGraphics	* 		m_unixGraphics;
-	GR_CocoaGraphics *       m_unixarea;
+private:
 
-#if 0
-	// private construction functions
-	virtual GtkWidget * _constructWindow(void);
-	GtkWidget * _previewNew(int w, int h);
-	GList *     _getGlistFonts(void);
-	GtkWidget * _createComboboxWithFonts (void);
-	void        _connectSignals (void);
+	void		_fillComboboxWithFonts (NSComboBox* combo);
 
-	// pointers to widgets we need to query/set
-	GtkWidget * m_windowMain;
-
-	GtkWidget * m_SymbolMap;
-
-	GtkWidget * m_areaCurrentSym;
-	GtkWidget * m_fontcombo;
-	
-	GtkWidget * m_buttonOK;
-	GtkWidget * m_buttonCancel;
-	GList * m_InsertS_Font_list;
-	gchar * m_fontlist[100];
-	UT_uint32 m_Insert_Symbol_no_fonts;
-#endif
+	GR_CocoaGraphics	* 		m_pGRPreview;
+	GR_CocoaGraphics *       	m_pGRGrid;
+	XAP_CocoaDlg_Insert_SymbolController*	m_dlg;
 };
 
 #endif /* XAP_COCOADIALOG_INSERT_SYMBOL_H */

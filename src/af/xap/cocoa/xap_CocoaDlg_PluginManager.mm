@@ -1,5 +1,6 @@
 /* AbiSource Application Framework
  * Copyright (C) 2001 AbiSource, Inc.
+ * Copyright (C) 2003 Hubert Figuiere
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -20,11 +21,10 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-#include <gtk/gtk.h>
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
 #include "ut_string.h"
-#include "xap_CocoaDialogHelper.h"
+#include "xap_CocoaDialog_Utilities.h"
 #include "xap_CocoaApp.h"
 #include "xap_CocoaFrame.h"
 
@@ -36,6 +36,8 @@
 #include "xap_ModuleManager.h"
 
 #include "ie_types.h"
+
+#import "xap_Cocoa_NSTableUtils.h"
 
 /*****************************************************************/
 /*****************************************************************/
@@ -53,68 +55,69 @@ static void _errorMessage (XAP_Frame * pFrame, const char * msg)
 /*****************************************************************/
 
 XAP_Dialog * XAP_CocoaDialog_PluginManager::static_constructor(XAP_DialogFactory * pFactory,
-														 XAP_Dialog_Id id)
+														 XAP_Dialog_Id dlgid)
 {
-	XAP_CocoaDialog_PluginManager * p = new XAP_CocoaDialog_PluginManager(pFactory,id);
+	XAP_CocoaDialog_PluginManager * p = new XAP_CocoaDialog_PluginManager(pFactory, dlgid);
 	return p;
 }
 
 XAP_CocoaDialog_PluginManager::XAP_CocoaDialog_PluginManager(XAP_DialogFactory * pDlgFactory,
-												   XAP_Dialog_Id id)
-	: XAP_Dialog_PluginManager(pDlgFactory,id)
+												   XAP_Dialog_Id dlgid)
+	: XAP_Dialog_PluginManager(pDlgFactory, dlgid),
+		m_pFrame(NULL),
+		m_dlg(nil),
+		m_dataSource(nil)
 {
 }
 
 XAP_CocoaDialog_PluginManager::~XAP_CocoaDialog_PluginManager(void)
 {
+	[m_dataSource release];
 }
 
 /*****************************************************************/
 /*****************************************************************/
+void XAP_CocoaDialog_PluginManager::event_Close()
+{
+	[NSApp stopModal];
+}
 
-void XAP_CocoaDialog_PluginManager::event_DeactivateAll ()
+
+void XAP_CocoaDialog_PluginManager::event_DeactivateAll()
 {
 	deactivateAllPlugins ();
 	_refreshAll ();
 }
 
-void XAP_CocoaDialog_PluginManager::event_Deactivate ()
+void XAP_CocoaDialog_PluginManager::event_Deactivate()
 {
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
 
-	XAP_Module * pModule = 0;
+	XAP_Module * pModule = NULL;
 
-	GList * selectedRow = 0;
-	selectedRow = GTK_CLIST(m_clist)->selection;
-	if (selectedRow)
-	{
-			gint which = GPOINTER_TO_INT(selectedRow->data);
-			pModule = (XAP_Module *) XAP_ModuleManager::instance().enumModules()->getNthItem(which);
+	int selectedRow = [m_dlg selectedPlugin];
+	if (selectedRow != -1) {
+		pModule = (XAP_Module *) XAP_ModuleManager::instance().enumModules()->getNthItem(selectedRow);
 	} 
-	else 
-	{
+	else {
 		// error message box - didn't select a plugin
 		_errorMessage (m_pFrame, 
 					   pSS->getValue(XAP_STRING_ID_DLG_PLUGIN_MANAGER_NONE_SELECTED));
 		return;
 	}
 
-	if (pModule)
-	{
-		if (deactivatePlugin (pModule))
-		{
+	if (pModule) {
+		if (deactivatePlugin (pModule)) {
 			// worked
 			_refreshAll ();
 		}
-		else
-		{
+		else {
 			// error message box
 			_errorMessage (m_pFrame, 
 						   pSS->getValue(XAP_STRING_ID_DLG_PLUGIN_MANAGER_COULDNT_UNLOAD));
 		}
 	}
-	else
-	{
+	else {
 		// error message box
 		_errorMessage (m_pFrame, 
 					   pSS->getValue(XAP_STRING_ID_DLG_PLUGIN_MANAGER_COULDNT_UNLOAD));
@@ -199,409 +202,171 @@ void XAP_CocoaDialog_PluginManager::_refreshAll ()
 {
 	_refreshTab1();
 
-	gtk_clist_select_row (GTK_CLIST(m_clist), 0, 0);
+	[m_dlg setSelectedPlugin:0];
 
 	_refreshTab2();
 }
 
 void XAP_CocoaDialog_PluginManager::_refreshTab1 ()
 {
-	gchar * text[2] = {NULL, NULL};
-	XAP_Module * pModule = 0;
+	XAP_Module * pModule = NULL;
 
-	// first, refresh the CList
-	gtk_clist_freeze (GTK_CLIST (m_clist));
-	gtk_clist_clear (GTK_CLIST (m_clist));
-	
 	const UT_Vector * pVec = XAP_ModuleManager::instance().enumModules ();
 
-	for (UT_uint32 i = 0; i < pVec->size(); i++)
-	{
+	[(NSMutableArray*)[m_dataSource array] removeAllObjects];
+	for (UT_uint32 i = 0; i < pVec->size(); i++) {
 		pModule = (XAP_Module *)pVec->getNthItem (i);
-		text [0] = pModule->getModuleInfo()->name;
-		gtk_clist_append(GTK_CLIST(m_clist), text);
+		NSString* str = [[NSString alloc ] initWithUTF8String:pModule->getModuleInfo()->name];
+		[m_dataSource addString:str];
+		[str release];
 	}
-
-	gtk_clist_thaw (GTK_CLIST (m_clist));
 }
 
 void XAP_CocoaDialog_PluginManager::_refreshTab2 ()
 {
-	gint txt_len = gtk_text_get_length (GTK_TEXT(m_desc));
-	gint txt_pos = 0;
-	if (txt_len > 0) {
-		gtk_editable_delete_text (GTK_EDITABLE (m_desc), 0, 
-								  txt_len);
-	}
-
 	XAP_Module * pModule = 0;
-	GList * selectedRow = 0;
-	selectedRow = GTK_CLIST(m_clist)->selection;
-	if (selectedRow)
-	{
-			gint rowNumber = GPOINTER_TO_INT(selectedRow->data);
-			pModule = (XAP_Module *) XAP_ModuleManager::instance().enumModules()->getNthItem(rowNumber);
+	int selectedRow = [m_dlg selectedPlugin];
+	if (selectedRow != -1) {
+		pModule = (XAP_Module *) XAP_ModuleManager::instance().enumModules()->getNthItem(selectedRow);
 	}
-
-	// just a blank space, to represent an empty entry
-	const char * name = " ";
-	const char * author = " ";
-	const char * version = " ";
-	const char * desc = " ";
 
 	if (pModule)
 	{
 		const XAP_ModuleInfo * mi = pModule->getModuleInfo ();
-		if (mi)
-		{
-			name = mi->name;
-			author = mi->author;
-			desc = mi->desc;
-			version = mi->version;
-		}
+		[m_dlg setModuleInfo:mi];
 	}
-
-	gtk_entry_set_text (GTK_ENTRY (m_name), name);
-	gtk_entry_set_text (GTK_ENTRY (m_author), author);
-	gtk_entry_set_text (GTK_ENTRY (m_version), version);
-
-	gtk_editable_insert_text (GTK_EDITABLE (m_desc),
-							  desc,
-							  strlen (desc),
-							  &txt_pos);
+	else {
+		[m_dlg setModuleInfo:NULL];
+	}
 }
 
 /*****************************************************************/
 /*****************************************************************/
 
-static void s_delete_clicked(GtkWidget * /* widget */,
-							 gpointer /* data */,
-							 gpointer /* dialog */)
-{
-	gtk_main_quit ();
-}
-
-static void s_close_clicked (GtkWidget * /* widget */, gpointer /* dlg */)
-{
-	gtk_main_quit ();
-}
-
-static void s_deactivate_clicked (GtkWidget * w, 
-								  XAP_CocoaDialog_PluginManager * dlg)
-{
-	UT_ASSERT (dlg);
-
-	// TODO: get selected row
-
-	dlg->event_Deactivate ();
-}
-
-static void s_deactivate_all_clicked (GtkWidget * w, 
-									  XAP_CocoaDialog_PluginManager * dlg)
-{
-	UT_ASSERT (dlg);
-
-	dlg->event_DeactivateAll ();
-}
-
-static void s_load_clicked (GtkWidget * w,
-							XAP_CocoaDialog_PluginManager * dlg)
-{
-	UT_ASSERT (dlg);
-	dlg->event_Load ();
-}
-
-static void s_clist_selected (GtkWidget * w,
-							  gint /* row */,
-							  gint /* column */,
-							  GdkEventButton * /* event */,
-							  XAP_CocoaDialog_PluginManager * dlg)
-{
-	dlg->event_Select1 ();
-}
-
-/*****************************************************************/
-/*****************************************************************/
 
 void XAP_CocoaDialog_PluginManager::runModal(XAP_Frame * pFrame)
 {
-	UT_ASSERT(m_pApp);
 	UT_ASSERT(pFrame);
-
+	NSWindow* window;
 	m_pFrame = pFrame;	
 
-	// build the dialog
-	GtkWidget * cf = _constructWindow();
-	UT_ASSERT(cf);
-	connectFocus(GTK_WIDGET(cf),pFrame);
+	m_dlg = [[XAP_CocoaDlg_PluginManagerController alloc] initFromNib];
+	[m_dlg setXAPOwner:this];
+	m_dataSource = [[XAP_StringListDataSource alloc] init];
 
-	gtk_widget_set_usize(cf, 350, 210);
-
-	// get top level window and its GtkWidget *
-	XAP_CocoaFrame * frame = static_cast<XAP_CocoaFrame *>(pFrame);
-	UT_ASSERT(frame);
-	GtkWidget * parent = frame->getTopLevelWindow();
-	UT_ASSERT(parent);
-
-	// center it
-	centerDialog(parent, cf);
+	window = [m_dlg window];
+	[m_dlg setDataSource:m_dataSource];	// not retained
+	[m_dlg setSelectedPlugin:0];
 	
-	// Run the dialog
-	gtk_widget_show (cf);
-	gtk_grab_add (cf);
-
-	// select the 1st row && force a refresh
-	gtk_clist_select_row(GTK_CLIST(m_clist), 0, 0);
 	_refreshAll();
 
-	gtk_main();
+	[NSApp runModalForWindow:window];
 
-	if (cf && GTK_IS_WIDGET(cf))
-	  gtk_widget_destroy (cf);
+	[m_dlg close];
+	[m_dlg release];
+	m_dlg = nil;
+	[m_dataSource release];
+	m_dataSource = nil;
 }
 
 /*****************************************************************/
 /*****************************************************************/
 
-void 
-XAP_CocoaDialog_PluginManager::_constructWindowContents (GtkWidget * container)
+@implementation XAP_CocoaDlg_PluginManagerController
+
+- (id)initFromNib
 {
-	GtkWidget *notebook1;
-	GtkWidget *vbox1;
-	GtkWidget *hbox1;
-	GtkWidget *scrolledwindow1;
-	GtkWidget *clistPlugins;
-	GtkWidget *lblActivePlugins;
-	GtkWidget *vbox3;
-	GtkWidget *btnDeactivate;
-	GtkWidget *btnDeactivateAll;
-	GtkWidget *btnInstall;
-	GtkWidget *lblPluginList;
-	GtkWidget *vbox2;
-	GtkWidget *table1;
-	GtkWidget *lblName;
-	GtkWidget *lblDesc;
-	GtkWidget *lblAuthor;
-	GtkWidget *lblVersion;
-	GtkWidget *entryName;
-	GtkWidget *entryAuthor;
-	GtkWidget *entryVersion;
-	GtkWidget *scrolledwindow2;
-	GtkWidget *textDescription;
-	GtkWidget *lblPluginDetails;
-
-	const XAP_StringSet * pSS = m_pApp->getStringSet();
-
-	notebook1 = gtk_notebook_new ();
-	gtk_widget_show (notebook1);
-	gtk_box_pack_start (GTK_BOX (container), notebook1, TRUE, TRUE, 0);
-	gtk_container_set_border_width (GTK_CONTAINER (notebook1), 2);
-	
-	vbox1 = gtk_vbox_new (FALSE, 0);
-	gtk_widget_show (vbox1);
-	gtk_container_add (GTK_CONTAINER (notebook1), vbox1);
-	
-	hbox1 = gtk_hbox_new (FALSE, 4);
-	gtk_widget_show (hbox1);
-	gtk_box_pack_start (GTK_BOX (vbox1), hbox1, TRUE, TRUE, 0);
-	gtk_container_set_border_width (GTK_CONTAINER (hbox1), 2);
-	
-	scrolledwindow1 = gtk_scrolled_window_new (NULL, NULL);
-	gtk_widget_show (scrolledwindow1);
-	gtk_box_pack_start (GTK_BOX (hbox1), scrolledwindow1, TRUE, TRUE, 0);
-	gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (scrolledwindow1), 
-									GTK_POLICY_AUTOMATIC, 
-									GTK_POLICY_AUTOMATIC);
-	
-	clistPlugins = gtk_clist_new (1);
-	gtk_widget_show (clistPlugins);
-	gtk_container_add (GTK_CONTAINER (scrolledwindow1), clistPlugins);
-	gtk_clist_set_column_width (GTK_CLIST (clistPlugins), 0, 80);
-	gtk_clist_column_titles_show (GTK_CLIST (clistPlugins));
-	
-	lblActivePlugins = gtk_label_new (pSS->getValue (XAP_STRING_ID_DLG_PLUGIN_MANAGER_ACTIVE));
-	gtk_widget_show (lblActivePlugins);
-	gtk_clist_set_column_widget (GTK_CLIST (clistPlugins), 0, lblActivePlugins);
-	
-	vbox3 = gtk_vbox_new (FALSE, 7);
-	gtk_widget_show (vbox3);
-	gtk_box_pack_start (GTK_BOX (hbox1), vbox3, TRUE, TRUE, 0);
-	
-	btnDeactivate = gtk_button_new_with_label (pSS->getValue (XAP_STRING_ID_DLG_PLUGIN_MANAGER_DEACTIVATE));
-	gtk_widget_show (btnDeactivate);
-	gtk_box_pack_start (GTK_BOX (vbox3), btnDeactivate, FALSE, FALSE, 0);
-	
-	btnDeactivateAll = gtk_button_new_with_label (pSS->getValue (XAP_STRING_ID_DLG_PLUGIN_MANAGER_DEACTIVATE_ALL));
-	gtk_widget_show (btnDeactivateAll);
-	gtk_box_pack_start (GTK_BOX (vbox3), btnDeactivateAll, FALSE, FALSE, 0);
-	
-	btnInstall = gtk_button_new_with_label (pSS->getValue (XAP_STRING_ID_DLG_PLUGIN_MANAGER_INSTALL));
-	gtk_widget_show (btnInstall);
-	gtk_box_pack_start (GTK_BOX (vbox3), btnInstall, FALSE, FALSE, 0);
-	
-	lblPluginList = gtk_label_new (pSS->getValue (XAP_STRING_ID_DLG_PLUGIN_MANAGER_LIST));
-	gtk_widget_show (lblPluginList);
-	gtk_notebook_set_tab_label (GTK_NOTEBOOK (notebook1), 
-								gtk_notebook_get_nth_page (GTK_NOTEBOOK (notebook1), 0), lblPluginList);
-	
-	vbox2 = gtk_vbox_new (FALSE, 0);
-	gtk_widget_show (vbox2);
-	gtk_container_add (GTK_CONTAINER (notebook1), vbox2);
-	
-	table1 = gtk_table_new (4, 2, FALSE);
-	gtk_widget_show (table1);
-	gtk_box_pack_start (GTK_BOX (vbox2), table1, TRUE, TRUE, 0);
-	gtk_table_set_row_spacings (GTK_TABLE (table1), 3);
-	gtk_table_set_col_spacings (GTK_TABLE (table1), 3);
-	
-	lblName = gtk_label_new (pSS->getValue (XAP_STRING_ID_DLG_PLUGIN_MANAGER_NAME));
-	gtk_widget_show (lblName);
-	gtk_table_attach (GTK_TABLE (table1), lblName, 0, 1, 0, 1,
-					  (GtkAttachOptions) (GTK_FILL),
-					  (GtkAttachOptions) (0), 0, 0);
-	gtk_misc_set_alignment (GTK_MISC (lblName), 0, 0.5);
-	
-	lblDesc = gtk_label_new (pSS->getValue (XAP_STRING_ID_DLG_PLUGIN_MANAGER_DESC));
-	gtk_widget_show (lblDesc);
-	gtk_table_attach (GTK_TABLE (table1), lblDesc, 0, 1, 1, 2,
-					  (GtkAttachOptions) (GTK_FILL),
-					  (GtkAttachOptions) (0), 0, 0);
-	gtk_misc_set_alignment (GTK_MISC (lblDesc), 0, 0.5);
-	
-	lblAuthor = gtk_label_new (pSS->getValue (XAP_STRING_ID_DLG_PLUGIN_MANAGER_AUTHOR));
-	gtk_widget_show (lblAuthor);
-	gtk_table_attach (GTK_TABLE (table1), lblAuthor, 0, 1, 2, 3,
-					  (GtkAttachOptions) (GTK_FILL),
-					  (GtkAttachOptions) (0), 0, 0);
-	gtk_misc_set_alignment (GTK_MISC (lblAuthor), 0, 0.5);
-	
-	lblVersion = gtk_label_new (pSS->getValue (XAP_STRING_ID_DLG_PLUGIN_MANAGER_VERSION));
-	gtk_widget_show (lblVersion);
-	gtk_table_attach (GTK_TABLE (table1), lblVersion, 0, 1, 3, 4,
-					  (GtkAttachOptions) (GTK_FILL),
-					  (GtkAttachOptions) (0), 0, 0);
-	gtk_label_set_justify (GTK_LABEL (lblVersion), GTK_JUSTIFY_LEFT);
-	gtk_misc_set_alignment (GTK_MISC (lblVersion), 0, 0.5);
-	
-	entryName = gtk_entry_new ();
-	gtk_entry_set_editable (GTK_ENTRY (entryName), FALSE);
-	gtk_widget_show (entryName);
-	gtk_table_attach (GTK_TABLE (table1), entryName, 1, 2, 0, 1,
-					  (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
-					  (GtkAttachOptions) (0), 0, 0);
-	
-	entryAuthor = gtk_entry_new ();
-	gtk_entry_set_editable (GTK_ENTRY (entryAuthor), FALSE);
-	gtk_widget_show (entryAuthor);
-	gtk_table_attach (GTK_TABLE (table1), entryAuthor, 1, 2, 2, 3,
-					  (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
-					  (GtkAttachOptions) (0), 0, 0);
-	
-	entryVersion = gtk_entry_new ();
-	gtk_entry_set_editable (GTK_ENTRY (entryVersion), FALSE);
-	gtk_widget_show (entryVersion);
-	gtk_table_attach (GTK_TABLE (table1), entryVersion, 1, 2, 3, 4,
-					  (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
-					  (GtkAttachOptions) (0), 0, 0);
-	
-	scrolledwindow2 = gtk_scrolled_window_new (NULL, NULL);
-	gtk_widget_show (scrolledwindow2);
-	gtk_table_attach (GTK_TABLE (table1), scrolledwindow2, 1, 2, 1, 2,
-					  (GtkAttachOptions) (GTK_FILL),
-					  (GtkAttachOptions) (GTK_FILL), 0, 0);
-	gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (scrolledwindow2), 
-									GTK_POLICY_NEVER, GTK_POLICY_AUTOMATIC);
-	
-	textDescription = gtk_text_new (NULL, NULL);
-	gtk_widget_show (textDescription);
-	gtk_text_set_word_wrap (GTK_TEXT (textDescription), TRUE);
-	gtk_text_set_editable (GTK_TEXT (textDescription), FALSE);
-	gtk_container_add (GTK_CONTAINER (scrolledwindow2), textDescription);
-	
-	lblPluginDetails = gtk_label_new (pSS->getValue (XAP_STRING_ID_DLG_PLUGIN_MANAGER_DETAILS));
-	gtk_widget_show (lblPluginDetails);
-	gtk_notebook_set_tab_label (GTK_NOTEBOOK (notebook1), 
-								gtk_notebook_get_nth_page (GTK_NOTEBOOK (notebook1), 1), lblPluginDetails);
-
-	// connect some relvant signals
-
-	g_signal_connect (G_OBJECT(btnDeactivate), "clicked",
-						G_CALLBACK(s_deactivate_clicked), 
-						(gpointer)this);
-
-	g_signal_connect (G_OBJECT(btnDeactivateAll), "clicked",
-						G_CALLBACK(s_deactivate_all_clicked), 
-						(gpointer)this);
-
-	g_signal_connect (G_OBJECT(btnInstall), "clicked",
-						G_CALLBACK(s_load_clicked), 
-						(gpointer)this);
-
-	g_signal_connect (G_OBJECT(clistPlugins), "select_row",
-						G_CALLBACK(s_clist_selected),
-						(gpointer)this);
-
-	// assign pointers to important widgets
-	m_clist = clistPlugins;
-	m_name = entryName;
-	m_author = entryAuthor;
-	m_version = entryVersion;
-	m_desc = textDescription;
+	self = [super initWithWindowNibName:@"xap_CocoaDlg_PluginManager"];
+	return self;
 }
 
-GtkWidget * XAP_CocoaDialog_PluginManager::_constructWindow ()
+
+- (void)setXAPOwner:(XAP_Dialog*)owner
 {
-	GtkWidget *windowPlugins;
-	GtkWidget *dialog_vbox1;
-	GtkWidget *dialog_action_area1;
-	GtkWidget *hbuttonbox1;
-	GtkWidget *btnClose;
-	
-	const XAP_StringSet * pSS = m_pApp->getStringSet();
-
-	windowPlugins = gtk_dialog_new ();
-	gtk_window_set_title (GTK_WINDOW (windowPlugins), 
-						  pSS->getValue (XAP_STRING_ID_DLG_PLUGIN_MANAGER_TITLE));
-	gtk_window_set_policy (GTK_WINDOW (windowPlugins), TRUE, TRUE, FALSE);
-	
-	dialog_vbox1 = GTK_DIALOG (windowPlugins)->vbox;
-	gtk_widget_show (dialog_vbox1);
-	gtk_container_set_border_width (GTK_CONTAINER (dialog_vbox1), 3);
-	
-	dialog_action_area1 = GTK_DIALOG (windowPlugins)->action_area;
-	gtk_container_set_border_width (GTK_CONTAINER (dialog_action_area1), 10);
-	
-	hbuttonbox1 = gtk_hbutton_box_new ();
-	gtk_widget_show (hbuttonbox1);
-	gtk_box_pack_start (GTK_BOX (dialog_action_area1), hbuttonbox1, 
-						TRUE, TRUE, 0);
-	gtk_button_box_set_layout (GTK_BUTTON_BOX (hbuttonbox1), 
-							   GTK_BUTTONBOX_END);
-	
-	btnClose = gtk_button_new_with_label (pSS->getValue (XAP_STRING_ID_DLG_Close));
-	gtk_widget_show (btnClose);
-	gtk_container_add (GTK_CONTAINER (hbuttonbox1), btnClose);
-	GTK_WIDGET_SET_FLAGS (btnClose, GTK_CAN_DEFAULT);  
-	
-	// connect signals
-	
-	g_signal_connect_after(G_OBJECT(windowPlugins),
-							 "destroy",
-							 NULL,
-							 NULL);
-	
-	g_signal_connect(G_OBJECT(windowPlugins),
-					   "delete_event",
-					   G_CALLBACK(s_delete_clicked),
-					   (gpointer) this);
-	
-	g_signal_connect(G_OBJECT(btnClose),
-					   "clicked",
-					   G_CALLBACK(s_close_clicked),
-					   (gpointer) this);
-	
-	m_windowMain = windowPlugins;
-	_constructWindowContents (dialog_vbox1);
-
-	return windowPlugins;
+	_xap = dynamic_cast<XAP_CocoaDialog_PluginManager*>(owner);
+	UT_ASSERT(_xap);
 }
+
+- (void)discardXAP
+{
+	_xap = nil;
+}
+
+
+- (void)windowDidLoad
+{
+	const XAP_StringSet * pSS = XAP_App::getApp()->getStringSet();
+	
+	LocalizeControl(_deactivateBtn, pSS, XAP_STRING_ID_DLG_PLUGIN_MANAGER_DEACTIVATE);
+	LocalizeControl(_deactivateAllBtn, pSS, XAP_STRING_ID_DLG_PLUGIN_MANAGER_DEACTIVATE_ALL);
+	LocalizeControl(_installBtn, pSS, XAP_STRING_ID_DLG_PLUGIN_MANAGER_INSTALL);
+	LocalizeControl(_nameData, pSS, XAP_STRING_ID_DLG_PLUGIN_MANAGER_NAME);
+	LocalizeControl(_descriptionData, pSS, XAP_STRING_ID_DLG_PLUGIN_MANAGER_DESC);
+	LocalizeControl(_authorData, pSS, XAP_STRING_ID_DLG_PLUGIN_MANAGER_AUTHOR);
+	LocalizeControl(_versionData, pSS, XAP_STRING_ID_DLG_PLUGIN_MANAGER_VERSION);
+	LocalizeControl(_detailsBox, pSS, XAP_STRING_ID_DLG_PLUGIN_MANAGER_DETAILS);
+	LocalizeControl([self window], pSS, XAP_STRING_ID_DLG_PLUGIN_MANAGER_TITLE);
+	LocalizeControl(_closeBtn, pSS, XAP_STRING_ID_DLG_Close);
+}
+
+
+- (IBAction)closeAction:(id)sender
+{
+	_xap->event_Close();
+}
+
+- (IBAction)deactivateAction:(id)sender
+{
+	_xap->event_Deactivate();
+}
+
+- (IBAction)deactivateAllAction:(id)sender
+{
+	_xap->event_DeactivateAll();
+}
+
+- (IBAction)installAction:(id)sender
+{
+	_xap->event_Load();
+}
+
+- (IBAction)selectAction:(id)sender
+{
+	_xap->event_Select1();
+}
+
+- (int)selectedPlugin
+{
+	return [_pluginList selectedRow];
+}
+
+
+- (void)setSelectedPlugin:(int)idx
+{
+	[_pluginList selectRow:idx byExtendingSelection:NO];
+}
+
+
+- (void)setModuleInfo:(const XAP_ModuleInfo*)info
+{
+	if (info) {
+		[_nameData setStringValue:[NSString stringWithUTF8String:info->name]];
+		[_authorData setStringValue:[NSString stringWithUTF8String:info->author]];
+		[_descriptionData setStringValue:[NSString stringWithUTF8String:info->desc]];
+		[_versionData setStringValue:[NSString stringWithUTF8String:info->version]];	
+	}
+	else {
+		[_nameData setStringValue:@""];
+		[_authorData setStringValue:@""];
+		[_descriptionData setStringValue:@""];
+		[_versionData setStringValue:@""];
+	}
+}
+
+- (void)setDataSource:(XAP_StringListDataSource*)source
+{
+	UT_ASSERT(_pluginList);
+	[_pluginList setDataSource:source];
+}
+
+@end

@@ -1,5 +1,6 @@
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
+ * Copyright (C) 2003 Hubert Figuiere
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -24,9 +25,7 @@
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
 
-// This header defines some functions for Cocoa dialogs,
-// like centering them, measuring them, etc.
-#include "xap_CocoaDialogHelper.h"
+#include "xap_CocoaDialog_Utilities.h"
 
 #include "xap_App.h"
 #include "xap_CocoaApp.h"
@@ -39,244 +38,98 @@
 
 /*****************************************************************/
 
-#define	LIST_ITEM_INDEX_KEY "index"
-
+class XAP_Date_Proxy: public XAP_GenericListChooser_Proxy
+{
+public:
+	XAP_Date_Proxy (AP_CocoaDialog_Insert_DateTime* dlg)
+		: XAP_GenericListChooser_Proxy(),
+			m_dlg(dlg)
+	{
+	};
+	virtual void okAction ()
+	{
+		m_dlg->event_OK();
+	};
+	virtual void cancelAction ()
+	{
+		m_dlg->event_Cancel();
+	};
+	virtual void selectAction ()
+	{
+		m_dlg->event_OK();
+	};
+private:
+	AP_CocoaDialog_Insert_DateTime*	m_dlg;
+};
 /*****************************************************************/
 
 XAP_Dialog * AP_CocoaDialog_Insert_DateTime::static_constructor(XAP_DialogFactory * pFactory,
-															   XAP_Dialog_Id id)
+															   XAP_Dialog_Id dlgid)
 {
-	AP_CocoaDialog_Insert_DateTime * p = new AP_CocoaDialog_Insert_DateTime(pFactory,id);
+	AP_CocoaDialog_Insert_DateTime * p = new AP_CocoaDialog_Insert_DateTime(pFactory, dlgid);
 	return p;
 }
 
 AP_CocoaDialog_Insert_DateTime::AP_CocoaDialog_Insert_DateTime(XAP_DialogFactory * pDlgFactory,
-															 XAP_Dialog_Id id)
-	: AP_Dialog_Insert_DateTime(pDlgFactory,id)
+															 XAP_Dialog_Id dlgid)
+	: AP_Dialog_Insert_DateTime(pDlgFactory,dlgid),
+		m_dlg(nil)
 {
-	m_windowMain = NULL;
-
-	m_buttonOK = NULL;
-	m_buttonCancel = NULL;
-
-	m_listFormats = NULL;
 }
 
 AP_CocoaDialog_Insert_DateTime::~AP_CocoaDialog_Insert_DateTime(void)
 {
 }
 
-/*****************************************************************/
-
-static void s_ok_clicked(GtkWidget * widget, AP_CocoaDialog_Insert_DateTime * dlg)
-{
-	UT_ASSERT(widget && dlg);
-	dlg->event_OK();
-}
-
-static void s_cancel_clicked(GtkWidget * widget, AP_CocoaDialog_Insert_DateTime * dlg)
-{
-	UT_ASSERT(widget && dlg);
-	dlg->event_Cancel();
-}
-
-static void s_delete_clicked(GtkWidget * /* widget */,
-							 gpointer /* data */,
-							 AP_CocoaDialog_Insert_DateTime * dlg)
-{
-	UT_ASSERT(dlg);
-	dlg->event_WindowDelete();
-}
 
 /*****************************************************************/
 
 void AP_CocoaDialog_Insert_DateTime::runModal(XAP_Frame * pFrame)
 {
-	// Build the window's widgets and arrange them
-	GtkWidget * mainWindow = _constructWindow();
-	UT_ASSERT(mainWindow);
+	NSWindow* window;
+	m_dlg = [XAP_GenericListChooser_Controller loadFromNib];
+	XAP_Date_Proxy proxy(this);
+	[m_dlg setXAPProxy:&proxy];
+	m_dataSource = [[XAP_StringListDataSource alloc] init];
 
-	connectFocus(GTK_WIDGET(mainWindow),pFrame);
+	window = [m_dlg window];
+	const XAP_StringSet * pSS = m_pApp->getStringSet();
+	[m_dlg setTitle:LocalizedString(pSS, AP_STRING_ID_DLG_DateTime_DateTimeTitle)];
+	[m_dlg setLabel:LocalizedString(pSS, AP_STRING_ID_DLG_DateTime_AvailableFormats)];
+
 	// Populate the window's data items
 	_populateWindowData();
+	[m_dlg setDataSource:m_dataSource];
 	
-	// To center the dialog, we need the frame of its parent.
-	XAP_CocoaFrame * pCocoaFrame = static_cast<XAP_CocoaFrame *>(pFrame);
-	UT_ASSERT(pCocoaFrame);
-	
-	// Get the GtkWindow of the parent frame
-	GtkWidget * parentWindow = pCocoaFrame->getTopLevelWindow();
-	UT_ASSERT(parentWindow);
-	
-	// Center our new dialog in its parent and make it a transient
-	// so it won't get lost underneath
-	centerDialog(parentWindow, mainWindow);
 
-	// Show the top level dialog,
-	gtk_widget_show_all(mainWindow);
+	[NSApp runModalForWindow:window];
+	[m_dlg close];
 
-	// Make it modal, and stick it up top
-	gtk_grab_add(mainWindow);
+	[m_dataSource release];
 
-	// Run into the GTK event loop for this window.
-	gtk_main();
-
-	if(mainWindow && GTK_IS_WIDGET(mainWindow))
-	  gtk_widget_destroy(mainWindow);
+	m_dlg = nil;	
 }
 
 void AP_CocoaDialog_Insert_DateTime::event_OK(void)
 {
-	UT_ASSERT(m_windowMain && m_listFormats);
-	
-	// find item selected in list box, save it to m_iFormatIndex
+	// Query the list for its selection.
+	int row = [m_dlg selected];
 
-	GList * listitem = GTK_LIST(m_listFormats)->selection;
-
-	// if there is no selection, or the selection's data (GtkListItem widget)
-	// is empty, return cancel.  GTK can make this happen.
-	if (!(listitem) || !(listitem)->data)
-	{
-		m_answer = AP_Dialog_Insert_DateTime::a_CANCEL;
-		gtk_main_quit();
-		return;
-	}
-
-	// since we only do single mode selection, there is only one
-	// item in the GList we just got back
-
-	gint indexdata = GPOINTER_TO_INT(g_object_get_data(G_OBJECT(listitem->data), LIST_ITEM_INDEX_KEY));
-
-	m_iFormatIndex = indexdata;
+	m_iFormatIndex = row;
 	
 	m_answer = AP_Dialog_Insert_DateTime::a_OK;
-	gtk_main_quit();
+	[NSApp stopModal];
 }
 
 void AP_CocoaDialog_Insert_DateTime::event_Cancel(void)
 {
 	m_answer = AP_Dialog_Insert_DateTime::a_CANCEL;
-	gtk_main_quit();
+	[NSApp stopModal];
 }
 
-void AP_CocoaDialog_Insert_DateTime::event_WindowDelete(void)
-{
-	m_answer = AP_Dialog_Insert_DateTime::a_CANCEL;	
-	gtk_main_quit();
-}
-
-/*****************************************************************/
-GtkWidget * AP_CocoaDialog_Insert_DateTime::_constructWindow(void)
-{
-  GtkWidget *vbox;
-  GtkWidget *contents;
-  GtkWidget *actionarea;
-
-  const XAP_StringSet * pSS = m_pApp->getStringSet();
-
-  m_windowMain = gtk_dialog_new();
-  gtk_window_set_title (GTK_WINDOW (m_windowMain), 
-			pSS->getValue(AP_STRING_ID_DLG_DateTime_DateTimeTitle));
-  gtk_window_set_policy (GTK_WINDOW (m_windowMain), FALSE, FALSE, FALSE);
-  gtk_container_set_border_width(GTK_CONTAINER(m_windowMain), 4);
-
-  actionarea = GTK_DIALOG(m_windowMain)->action_area;
-  vbox = GTK_DIALOG(m_windowMain)->vbox;
-
-  contents = _constructWindowContents();
-  gtk_box_pack_start (GTK_BOX (vbox), contents, TRUE, TRUE, 0);
-
-  m_buttonOK = gtk_button_new_with_label (pSS->getValue(XAP_STRING_ID_DLG_OK));
-  gtk_container_add(GTK_CONTAINER(actionarea), m_buttonOK);
-  GTK_WIDGET_SET_FLAGS(m_buttonOK, GTK_CAN_DEFAULT);
-
-  m_buttonCancel = gtk_button_new_with_label (pSS->getValue(XAP_STRING_ID_DLG_Cancel));
-  gtk_container_add(GTK_CONTAINER(actionarea), m_buttonCancel);
-  GTK_WIDGET_SET_FLAGS(m_buttonCancel, GTK_CAN_DEFAULT);
-
-  _connectSignals();
-
-  return m_windowMain;
-}
-
-void AP_CocoaDialog_Insert_DateTime::_connectSignals(void)
-{
-	// the control buttons
-	g_signal_connect(G_OBJECT(m_buttonOK),
-			   "clicked",
-			   G_CALLBACK(s_ok_clicked),
-			   (gpointer) this);
-	
-	g_signal_connect(G_OBJECT(m_buttonCancel),
-			   "clicked",
-			   G_CALLBACK(s_cancel_clicked),
-			   (gpointer) this);
-
-	// the catch-alls
-	
-	g_signal_connect(G_OBJECT(m_windowMain),
-			   "delete_event",
-			   G_CALLBACK(s_delete_clicked),
-			   (gpointer) this);
-
-	g_signal_connect_after(G_OBJECT(m_windowMain),
-				 "destroy",
-				 NULL,
-				 NULL);
-}
-
-GtkWidget * AP_CocoaDialog_Insert_DateTime::_constructWindowContents(void)
-{
-        GtkWidget *vboxFormats;
-	GtkWidget *labelFormats;
-	GtkWidget *scrolledwindowFormats;
-	GtkWidget *viewportFormats;
-	GtkWidget *listFormats;
-
-	const XAP_StringSet * pSS = m_pApp->getStringSet();
-	XML_Char * unixstr = NULL;	// used for conversions
-
-	vboxFormats = gtk_vbox_new (FALSE, 0);
-	//gtk_widget_ref (vboxFormats);
-	//gtk_widget_show (vboxFormats);
-
-	UT_XML_cloneNoAmpersands(unixstr, pSS->getValue(AP_STRING_ID_DLG_DateTime_AvailableFormats));
-	labelFormats = gtk_label_new (unixstr);
-	FREEP(unixstr);
-	//gtk_widget_ref (labelFormats);
-	//gtk_widget_show (labelFormats);
-	gtk_box_pack_start (GTK_BOX (vboxFormats), labelFormats, FALSE, FALSE, 0);
-	gtk_label_set_justify (GTK_LABEL (labelFormats), GTK_JUSTIFY_LEFT);
-	gtk_misc_set_alignment (GTK_MISC (labelFormats), 0, 0.5);
-
-	scrolledwindowFormats = gtk_scrolled_window_new (NULL, NULL);
-	//gtk_widget_ref (scrolledwindowFormats);
-	//gtk_widget_show (scrolledwindowFormats);
-	gtk_box_pack_start (GTK_BOX (vboxFormats), scrolledwindowFormats, TRUE, TRUE, 0);
-	gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (scrolledwindowFormats), GTK_POLICY_NEVER, GTK_POLICY_AUTOMATIC);
-	gtk_widget_set_usize(scrolledwindowFormats,-1,240);
-
-	viewportFormats = gtk_viewport_new (NULL, NULL);
-	//gtk_widget_ref (viewportFormats);
-	//gtk_widget_show (viewportFormats);
-	gtk_container_add (GTK_CONTAINER (scrolledwindowFormats), viewportFormats);
-
-	listFormats = gtk_list_new ();
-	//gtk_widget_ref (listFormats);
-	gtk_list_set_selection_mode (GTK_LIST(listFormats), GTK_SELECTION_SINGLE);
-	//gtk_widget_show (listFormats);
-	gtk_container_add (GTK_CONTAINER (viewportFormats), listFormats);
-
-	// *must set this here*
-	m_listFormats = listFormats;
-
-	return vboxFormats;
-}
 
 void AP_CocoaDialog_Insert_DateTime::_populateWindowData(void)
 {
-	UT_ASSERT(m_windowMain && m_listFormats);
-
 	// NOTE : this code is similar to the Windows dialog code to do
 	// NOTE : the same thing.  if you are implementing this dialog
 	// NOTE : for a new front end, this is the formatting logic 
@@ -291,35 +144,13 @@ void AP_CocoaDialog_Insert_DateTime::_populateWindowData(void)
 	
     struct tm *pTime = localtime(&tim);
 
-	GList * list = NULL;
-	GtkWidget * listitem;
-	
-	// build GList of gtk_list_items
     for (i = 0; InsertDateTimeFmts[i] != NULL; i++)
 	{
         strftime(szCurrentDateTime, CURRENT_DATE_TIME_SIZE, InsertDateTimeFmts[i], pTime);
 
-		// allocate a list item with that string
-		listitem = gtk_list_item_new_with_label(szCurrentDateTime);
-		UT_ASSERT(listitem);
-
-		gtk_widget_show(listitem);
-		
-		// store index in data pointer
-		g_object_set_data(G_OBJECT(listitem), LIST_ITEM_INDEX_KEY, GINT_TO_POINTER(i));
-
-		// add to list
-	    list = g_list_append(list, (void *) listitem);
+		[m_dataSource addString:[NSString stringWithUTF8String:szCurrentDateTime]];
 	}
 
-	// TODO : Does the gtk_list free this list for me?  I think it does.
-	
-	// add GList items to list box
-	gtk_list_append_items(GTK_LIST(m_listFormats), list);
-
-	// now select first item in box
-	if (i > 0)
-		gtk_list_select_item(GTK_LIST(m_listFormats), 0);
-
+	[m_dlg setSelected:0];
 }
 

@@ -1,6 +1,6 @@
 /* AbiSource Application Framework
  * Copyright (C) 1998 AbiSource, Inc.
- * Copyright (C) 2001 Hubert Figuiere
+ * Copyright (C) 2001, 2003 Hubert Figuiere
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -21,27 +21,63 @@
 #ifndef XAP_COCOADIALOG_ZOOM_H
 #define XAP_COCOADIALOG_ZOOM_H
 
+#import <Cocoa/Cocoa.h>
+
 #include "xap_Dlg_Zoom.h"
 
 class XAP_CocoaFrame;
+class XAP_CocoaDialog_Zoom;
+
+@interface XAP_CocoaDlg_ZoomController : NSWindowController <XAP_CocoaDialogProtocol>
+{
+    IBOutlet NSButtonCell *_pageWidthBtn;
+    IBOutlet NSButtonCell *_percentBtn;
+    IBOutlet NSTextField *_percentField;
+	IBOutlet NSStepper *_percentStepper;
+    IBOutlet XAP_CocoaNSView *_preview;
+    IBOutlet NSBox *_previewBox;
+    IBOutlet NSButtonCell *_wholePageBtn;
+    IBOutlet NSButtonCell *_zoom100Btn;
+    IBOutlet NSButtonCell *_zoom200Btn;
+    IBOutlet NSButtonCell *_zoom75Btn;
+    IBOutlet NSBox *_zoomBox;
+	IBOutlet NSMatrix	*_zoomMatrix;
+	IBOutlet NSButton	*_okBtn;
+	IBOutlet NSButton *_cancelBtn;
+	XAP_CocoaDialog_Zoom*	_xap;
+}
+- (IBAction)cancelAction:(id)sender;
+- (IBAction)okAction:(id)sender;
+- (IBAction)stepperAction:(id)sender;
+- (IBAction)zoom100Action:(id)sender;
+- (IBAction)zoom200Action:(id)sender;
+- (IBAction)zoom75Action:(id)sender;
+- (IBAction)zoomPageWidthAction:(id)sender;
+- (IBAction)zoomWholePageAction:(id)sender;
+- (IBAction)zoomPercentAction:(id)sender;
+- (IBAction)zoomChangedAction:(id)sender;
+
+- (XAP_CocoaNSView*)preview;
+- (NSMatrix*)zoomMatrix;
+- (int)percentValue;
+- (void)setPercentValue:(int)value;
+- (void)_enablePercentSpin:(BOOL)enable;
+@end
 
 /*****************************************************************/
 
 class XAP_CocoaDialog_Zoom: public XAP_Dialog_Zoom
 {
 public:
-	XAP_CocoaDialog_Zoom(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
+	XAP_CocoaDialog_Zoom(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id dlgid);
 	virtual ~XAP_CocoaDialog_Zoom(void);
 
 	virtual void			runModal(XAP_Frame * pFrame);
 
-	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
-
-	// callbacks can fire these events
+	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id dlgid);
 
 	virtual void			event_OK(void);
 	virtual void			event_Cancel(void);
-	virtual void			event_WindowDelete(void);
 
 	virtual void			event_Radio200Clicked(void);
 	virtual void			event_Radio100Clicked(void);
@@ -51,40 +87,11 @@ public:
 
 	virtual void			event_RadioPercentClicked(void);
 	virtual void			event_SpinPercentChanged(void);
-
-	virtual void			event_PreviewAreaExposed(void);
-	
-protected:
-
-	GR_CocoaGraphics	* 		m_unixGraphics;
-
-#if 0	
-	// private construction functions
-	GtkWidget * _constructWindow(void);
+private:
 	void		_populateWindowData(void);
-	void		_enablePercentSpin(bool enable);
 	void 		_storeWindowData(void);
-
-	// pointers to widgets we need to query/set
-	GtkWidget * m_windowMain;
-
-	GtkWidget * m_previewFrame;
-	GtkWidget * m_previewArea;
-	
-	GtkWidget * m_radio200;
-	GtkWidget * m_radio100;
-	GtkWidget * m_radio75;
-	GtkWidget * m_radioPageWidth;
-	GtkWidget * m_radioWholePage;
-	GtkWidget * m_radioPercent;
-	GtkWidget * m_spinPercent;
-
-	GtkWidget * m_buttonOK;
-	GtkWidget * m_buttonCancel;
-
-	// our "group" of radio buttons
-	GSList *	m_radioGroup;
-#endif
+	GR_CocoaGraphics	* 		m_pGR;
+	XAP_CocoaDlg_ZoomController*	m_dlg;
 };
 
 #endif /* XAP_COCOADIALOG_ZOOM_H */

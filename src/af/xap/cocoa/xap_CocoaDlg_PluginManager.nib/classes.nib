@@ -1,0 +1,34 @@
+{
+    IBClasses = (
+        {CLASS = FirstResponder; LANGUAGE = ObjC; SUPERCLASS = NSObject; }, 
+        {
+            ACTIONS = {
+                closeAction = id; 
+                deactivateAction = id; 
+                deactivateAllAction = id; 
+                installAction = id; 
+                selectAction = id; 
+            }; 
+            CLASS = "XAP_CocoaDlg_PluginManagerController"; 
+            LANGUAGE = ObjC; 
+            OUTLETS = {
+                "_authorData" = NSTextField; 
+                "_authorLabel" = NSTextField; 
+                "_closeBtn" = NSButton; 
+                "_deactivateAllBtn" = NSButton; 
+                "_deactivateBtn" = NSButton; 
+                "_descriptionData" = NSTextField; 
+                "_descriptionLabel" = NSTextField; 
+                "_detailsBox" = NSBox; 
+                "_installBtn" = NSButton; 
+                "_nameData" = NSTextField; 
+                "_nameLabel" = NSTextField; 
+                "_pluginList" = NSTableView; 
+                "_versionData" = NSTextField; 
+                "_versionLabel" = NSTextField; 
+            }; 
+            SUPERCLASS = NSWindowController; 
+        }
+    ); 
+    IBVersion = 1; 
+}
