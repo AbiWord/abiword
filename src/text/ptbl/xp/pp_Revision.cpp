@@ -19,6 +19,7 @@
 
 #include "pp_Revision.h"
 #include "pp_AttrProp.h"
+#include "ut_debugmsg.h"
 //#include <limits.h>
 
 PP_Revision::PP_Revision(UT_uint32 Id, PP_RevisionType eType, const XML_Char * props):

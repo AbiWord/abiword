@@ -3921,7 +3921,7 @@ bool fl_ShadowListener::populateStrux(PL_StruxDocHandle sdh,
 									  PL_StruxFmtHandle * psfh)
 {
 	UT_ASSERT(m_pShadow);
-	xxx_UT_DEBUGMSG(("fl_ShadowListener::populateStrux\n"));
+	UT_DEBUGMSG(("fl_ShadowListener::populateStrux\n"));
 
 	UT_ASSERT(pcr->getType() == PX_ChangeRecord::PXT_InsertStrux);
 	const PX_ChangeRecord_Strux * pcrx = static_cast<const PX_ChangeRecord_Strux *> (pcr);

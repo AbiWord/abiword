@@ -171,6 +171,11 @@ public:
 	virtual void  clearScreen(void);
 	void		clearScreenFromRunToEnd(UT_uint32 runIndex);
 	void		clearScreenFromRunToEnd(fp_Run * pRun);
+
+	void         setScreenCleared(bool bisCleared)
+		{   m_bIsCleared = bisCleared;}
+	bool         isScreenCleared(void) const { return m_bIsCleared;}
+
 	virtual void		draw(dg_DrawArgs*);
 	virtual void        draw(GR_Graphics*);
 	void		align(void);
@@ -224,6 +229,7 @@ protected:
 								 FL_WHICH_TABSTOP eUseTabStop,
 								 FriBidiCharType iDomDirection
 								 );
+
 private:
 void		_splitRunsAtSpaces(void);
 
@@ -283,6 +289,7 @@ void		_splitRunsAtSpaces(void);
 	UT_uint32		m_iRunsRTLcount;
 	UT_uint32		m_iRunsLTRcount;
 	UT_sint32		m_iMaxDirLevel;
+	bool            m_bIsCleared;
 };
 
 #endif /* FP_LINE_H */

@@ -1299,21 +1299,21 @@ fp_ShadowContainer* fp_Page::buildFooterContainer(fl_HdrFtrSectionLayout* pHFSL)
 	// footerMargin is the distance from the bottom of the text to the
 	// top of the footer
 	//
-#ifndef WITH_PANGO
+#ifdef WITH_PANGO
 	m_pFooter = new fp_ShadowContainer(m_pOwner->getLeftMargin(),
 									   getHeight() - m_pOwner->getBottomMargin() + m_pOwner->getFooterMargin(),
 									   getWidth() - (m_pOwner->getLeftMargin() + m_pOwner->getRightMargin()),
 									   m_pOwner->getBottomMargin(),
-									   getWidthInLayoutUnits() - (m_pOwner->getLeftMarginInLayoutUnits() + m_pOwner->getRightMarginInLayoutUnits()),
-									   m_pOwner->getBottomMarginInLayoutUnits() - m_pOwner->getFooterMarginInLayoutUnits(),
+									   0,
+									   0,
 									   pHFSL);
 #else
 	m_pFooter = new fp_ShadowContainer(m_pOwner->getLeftMargin(),
 									   getHeight() - m_pOwner->getBottomMargin() + m_pOwner->getFooterMargin(),
 									   getWidth() - (m_pOwner->getLeftMargin() + m_pOwner->getRightMargin()),
 									   m_pOwner->getBottomMargin(),
-									   0,
-									   0,
+									   getWidthInLayoutUnits() - (m_pOwner->getLeftMarginInLayoutUnits() + m_pOwner->getRightMarginInLayoutUnits()),
+									   m_pOwner->getBottomMarginInLayoutUnits() - m_pOwner->getFooterMarginInLayoutUnits(),
 									   pHFSL);
 #endif
 

@@ -173,7 +173,17 @@ UT_Error IE_Imp_AbiWord_1::importFile(const char * szFilename)
 #define TT_HYPERLINK	20		// <a href=>
 #define TT_METADATA     21 // <metadata>
 #define TT_META         22 // <m>
-
+#define TT_TABLE        23 // <table>
+#define TT_CELL         24 // <cell>
+#define TT_FOOTNOTE     25 // <foot>
+#define TT_MARGINNOTE   26 // <margin>
+#define TT_FRAME        27 // <frame>
+#define TT_ENDTABLE        28 // <endtable>
+#define TT_ENDCELL         29 // <endcell>
+#define TT_ENDFOOTNOTE     30 // <endfoot>
+#define TT_ENDMARGINNOTE   31 // <endmargin>
+#define TT_ENDFRAME        32 // <endframe>
+#define TT_ENDENDNOTE        33 // <endendnote>
 /*
   TODO remove tag synonyms.  We're currently accepted
   synonyms for tags, as follows:
@@ -199,24 +209,35 @@ static struct xmlToIdMapping s_Tokens[] =
 	{	"br",			TT_BREAK		},
 	{	"c",			TT_INLINE		},
 	{	"cbr",			TT_COLBREAK		},
+	{	"cell",		    TT_CELL		    },
 	{	"d",			TT_DATAITEM		},
 	{	"data",			TT_DATASECTION	},
+	{	"endcell",		TT_ENDCELL		    },
+	{	"endfoot",		TT_ENDFOOTNOTE	    },
+	{	"endframe",		TT_ENDFRAME	    },
+	{	"endmargin",	TT_ENDMARGINNOTE	},
+	{	"endendnote",	TT_ENDENDNOTE	},
+	{	"endtable",		TT_ENDTABLE		},
 	{	"f",			TT_FIELD		},
 	{	"field",		TT_FIELD		},
+	{	"foot",		    TT_FOOTNOTE	    },
+	{	"frame",		TT_FRAME	    },
 	{	"i",			TT_IMAGE		},
 	{	"ignoredwords",	TT_IGNOREDWORDS	},
 	{	"image",		TT_IMAGE		},
 	{	"iw",			TT_IGNOREDWORD	},
 	{	"l",			TT_LIST			},
 	{	"lists",		TT_LISTSECTION	},
-	{       "m", TT_META },
-	{       "metadata", TT_METADATA },
+	{       "m",        TT_META         },
+	{	"margin",		TT_MARGINNOTE	},
+	{       "metadata", TT_METADATA     },
 	{	"p",			TT_BLOCK		},
 	{   "pagesize",     TT_PAGESIZE     },
 	{	"pbr",			TT_PAGEBREAK	},
 	{	"s",			TT_STYLE		},
 	{	"section",		TT_SECTION		},
 	{	"styles",		TT_STYLESECTION	},
+	{	"table",		TT_TABLE		}
 };
 
 #define TokenTableSize	((sizeof(s_Tokens)/sizeof(s_Tokens[0])))

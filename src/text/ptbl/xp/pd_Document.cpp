@@ -621,6 +621,10 @@ bool PD_Document::getPropertyFromSDH(PL_StruxDocHandle sdh, const char * szPrope
 	return true;
 }
 
+/*!
+ * This medthod modifies the attributes of a section strux without
+ * generating a change record. Use with extreme care!!
+ */
 bool  PD_Document::changeSectionAttsNoUpdate(PL_StruxDocHandle sdh, const char * attr, const char * attvalue)
 {
 	pf_Frag_Strux * pfStrux = (pf_Frag_Strux *)sdh;

@@ -73,6 +73,7 @@ fp_Line::fp_Line(fl_SectionLayout * pSectionLayout) : fp_Container(FP_CONTAINER_
 	m_iDescent = 0;
 	m_iX = 0;
 	m_iY = -2000000; // So setY(0) triggers a clearscreen and redraw!
+	m_iYLayoutUnits = -20000000;
 
 #ifndef WITH_PANGO
 	m_iHeightLayoutUnits = 0;
@@ -158,6 +159,7 @@ fp_Line::~fp_Line()
 	delete[] s_pEmbeddingLevels;
 	m_pEmbeddingLevels = 0;
 #endif
+	setScreenCleared(true);
 }
 
 
@@ -663,6 +665,10 @@ fp_Run * fp_Line::getRunFromIndex(UT_uint32 runIndex)
 
 void fp_Line::clearScreen(void)
 {
+	if(getBlock()->isHdrFtr() || isScreenCleared())
+	{
+		return;
+	}
 	UT_sint32 count = m_vecRuns.getItemCount();
 	if(count)
 	{
@@ -699,12 +705,12 @@ void fp_Line::clearScreen(void)
 			// in case the line is asked to render before it's been
 			// assigned a height. Call it robustness, if you want.
 
-			 UT_ASSERT(yoffLine <0 || yoffLine >1);
 			UT_sint32 height = getHeight();
 			pRun->getGraphics()->fillRect(*pClr,xoffLine - m_iClearLeftOffset, yoffLine, m_iClearToPos + m_iClearLeftOffset, height);
 //
 // Sevior: I added this for robustness.
 //
+			setScreenCleared(true);
 			m_pBlock->setNeedsRedraw();
 			setNeedsRedraw();
 			UT_uint32 i;
@@ -724,6 +730,10 @@ void fp_Line::clearScreen(void)
 */
 void fp_Line::clearScreenFromRunToEnd(fp_Run * ppRun)
 {
+	if(getBlock()->isHdrFtr())
+	{
+		return;
+	}
 	fp_Run * pRun = NULL;
 	UT_sint32 count =  m_vecRuns.getItemCount();
 	if(count > 0)
@@ -796,6 +806,10 @@ void fp_Line::clearScreenFromRunToEnd(fp_Run * ppRun)
 
 void fp_Line::clearScreenFromRunToEnd(UT_uint32 runIndex)
 {
+	if(getBlock()->isHdrFtr())
+	{
+		return;
+	}
 	//fp_Run* pRun = (fp_Run*) m_vecRuns.getNthItem(runIndex);
 	fp_Run* pRun; //#TF initialization not needed
 	UT_sint32 count = m_vecRuns.getItemCount();

@@ -1057,7 +1057,8 @@ void fl_BlockLayout::purgeLayout(void)
 
 void fl_BlockLayout::_removeLine(fp_Line* pLine)
 {
-	if (getFirstContainer() == pLine)
+	
+	if (getFirstContainer() == (fp_Container *)  pLine)
 	{
 		setFirstContainer((fp_Container *) getFirstContainer()->getNext());
 
@@ -1070,6 +1071,10 @@ void fl_BlockLayout::_removeLine(fp_Line* pLine)
 	if (getLastContainer() == (fp_Container *) pLine)
 	{
 		setLastContainer((fp_Container *) getLastContainer()->getPrev());
+		// we have to call recalcMaxWidth so that the new line has the correct
+		// x offset and width
+		if(getLastContainer())
+			getLastContainer()->recalcMaxWidth();
 	}
 
 	pLine->setBlock(NULL);

@@ -680,6 +680,127 @@ bool s_AbiWord_1_Listener::populateStrux(PL_StruxDocHandle /*sdh*/,
 			m_bInSection = true;
 			return true;
 		}
+	case PTX_SectionTable:
+		{
+			_closeSpan();
+            _closeField();
+            _closeHyperlink();
+			_closeBlock();
+			_closeSection();
+			_openTag("table","",true,pcr->getIndexAP());
+			m_bInSection = true;
+			return true;
+		}
+	case PTX_SectionCell:
+		{
+			_closeSpan();
+            _closeField();
+            _closeHyperlink();
+			_closeBlock();
+			_closeSection();
+			_openTag("cell","",true,pcr->getIndexAP());
+			m_bInSection = true;
+			return true;
+		}
+	case PTX_SectionFootnote:
+		{
+			_closeSpan();
+            _closeField();
+            _closeHyperlink();
+			_closeBlock();
+			_closeSection();
+			_openTag("foot","",true,pcr->getIndexAP());
+			m_bInSection = true;
+			return true;
+		}
+	case PTX_SectionMarginnote:
+		{
+			_closeSpan();
+            _closeField();
+            _closeHyperlink();
+			_closeBlock();
+			_closeSection();
+			_openTag("margin","",true,pcr->getIndexAP());
+			m_bInSection = true;
+			return true;
+		}
+	case PTX_SectionFrame:
+		{
+			_closeSpan();
+            _closeField();
+            _closeHyperlink();
+			_closeBlock();
+			_closeSection();
+			_openTag("frame","",true,pcr->getIndexAP());
+			m_bInSection = true;
+			return true;
+		}
+	case PTX_EndTable:
+		{
+			_closeSpan();
+            _closeField();
+            _closeHyperlink();
+			_closeBlock();
+			_closeSection();
+			_openTag("endtable","",true,pcr->getIndexAP());
+			m_bInSection = true;
+			return true;
+		}
+	case PTX_EndCell:
+		{
+			_closeSpan();
+            _closeField();
+            _closeHyperlink();
+			_closeBlock();
+			_closeSection();
+			_openTag("endcell","",true,pcr->getIndexAP());
+			m_bInSection = true;
+			return true;
+		}
+	case PTX_EndFootnote:
+		{
+			_closeSpan();
+            _closeField();
+            _closeHyperlink();
+			_closeBlock();
+			_closeSection();
+			_openTag("endfoot","",true,pcr->getIndexAP());
+			m_bInSection = true;
+			return true;
+		}
+	case PTX_EndMarginnote:
+		{
+			_closeSpan();
+            _closeField();
+            _closeHyperlink();
+			_closeBlock();
+			_closeSection();
+			_openTag("endmargin","",true,pcr->getIndexAP());
+			m_bInSection = true;
+			return true;
+		}
+	case PTX_EndFrame:
+		{
+			_closeSpan();
+            _closeField();
+            _closeHyperlink();
+			_closeBlock();
+			_closeSection();
+			_openTag("endframe","",true,pcr->getIndexAP());
+			m_bInSection = true;
+			return true;
+		}
+	case PTX_EndEndnote:
+		{
+			_closeSpan();
+            _closeField();
+            _closeHyperlink();
+			_closeBlock();
+			_closeSection();
+			_openTag("endendnote","",true,pcr->getIndexAP());
+			m_bInSection = true;
+			return true;
+		}
 
 	case PTX_Block:
 		{

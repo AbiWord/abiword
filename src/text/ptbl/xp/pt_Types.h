@@ -75,8 +75,27 @@ public:
 };
 
 //! PTStruxType tells the sub-type of a FragStrux.
-typedef enum _PTStruxType { PTX_Section, PTX_Block, PTX_SectionHdrFtr, PTX_SectionEndnote } PTStruxType;
+typedef enum _PTStruxType 
+{ 
+	PTX_Section, 
+	PTX_Block, 
+	PTX_SectionHdrFtr, 
+	PTX_SectionEndnote,
+	PTX_SectionTable, 
+	PTX_SectionCell, 
+	PTX_SectionFootnote, 
+	PTX_SectionMarginnote,
+	PTX_SectionFrame,
+	PTX_EndCell, 
+	PTX_EndTable,
+    PTX_EndFootnote,
+    PTX_EndMarginnote,
+    PTX_EndEndnote,
+    PTX_EndFrame
+} PTStruxType;
+
 //! PTObjectType tells the sub-type of an FragObject.
+
 typedef enum _PTObjectType { PTO_Image, PTO_Field, PTO_Bookmark, PTO_Hyperlink } PTObjectType;
 
 //! PieceTable states

@@ -600,13 +600,16 @@ void fp_Run::clearScreen(bool bFullLineHeightRect)
 
 void fp_Run::draw(dg_DrawArgs* pDA)
 {
-
 	if (pDA->bDirtyRunsOnly)
 	{
 		if (!m_bDirty)
 		{
 			return;
 		}
+	}
+	if(getLine())
+	{
+		getLine()->setScreenCleared(false);
 	}
 //	UT_usleep(100000); // 0.1 seconds useful for debugging
 	xxx_UT_DEBUGMSG(("SEVIOR: draw this %x \n"));
@@ -881,7 +884,6 @@ text so we can keep the original code.
 	if ( b_Topline)
 	{
 		UT_sint32 ybase = yoff + getAscent() - getLine()->getAscent() + 1;
-		UT_ASSERT(ybase != 0);
 		m_pG->fillRect(clrFG, xoff, ybase, getWidth(), ithick);
 	}
 	/*
@@ -889,7 +891,6 @@ text so we can keep the original code.
 	*/
 	if ( b_Bottomline)
 	{
-		UT_ASSERT(yoff+getLine()->getHeight()-ithick+1 != 0);
 		m_pG->fillRect(clrFG, xoff, yoff+getLine()->getHeight()-ithick+1, getWidth(), ithick);
 	}
 }
@@ -1007,7 +1008,6 @@ void fp_Run::_drawTextLine(UT_sint32 xoff,UT_sint32 yoff,UT_uint32 iWidth,UT_uin
     m_pG->drawLine(xoff,yoff,xoff + iWidth,yoff);
 
     if((iTextWidth < iWidth) && (iTextHeight < iHeight)){
-		UT_ASSERT(yoffText != 0);
         m_pG->fillRect(m_colorHL,xoffText,yoffText,iTextWidth,iTextHeight);
         m_pG->drawChars(pText,0,iTextLen,xoffText,yoffText);
     }
@@ -1253,7 +1253,6 @@ void fp_TabRun::_clearScreen(bool /* bFullLineHeightRect */)
 
 	// need to clear full height of line, in case we had a selection
 	m_pLine->getScreenOffsets(this, xoff, yoff);
-	UT_ASSERT(yoff != 0);
 	m_pG->fillRect(m_colorPG,xoff, yoff, m_iWidth, m_pLine->getHeight());
 }
 
@@ -1413,7 +1412,6 @@ void fp_TabRun::_draw(dg_DrawArgs* pDA)
 		&& (iSel2 > iRunBase)
 		)
 	{
-		UT_ASSERT(iFillTop != 0);
 		m_pG->fillRect(clrSelBackground, /*pDA->xoff*/DA_xoff, iFillTop, m_iWidth, iFillHeight);
         if(pView->getShowPara()){
             _drawArrow(/*pDA->xoff*/DA_xoff, iFillTop, m_iWidth, iFillHeight);
@@ -1421,7 +1419,6 @@ void fp_TabRun::_draw(dg_DrawArgs* pDA)
 	}
 	else
 	{
-		UT_ASSERT(iFillTop != 0);
 		m_pG->fillRect(clrNormalBackground, /*pDA->xoff*/DA_xoff, iFillTop, m_iWidth, iFillHeight);
         if(pView->getShowPara()){
             _drawArrow(/*pDA->xoff*/DA_xoff, iFillTop, m_iWidth, iFillHeight);
@@ -1444,7 +1441,6 @@ void fp_TabRun::_draw(dg_DrawArgs* pDA)
 // Scale the vertical line thickness for printers
 //
 		UT_sint32 ithick =  getToplineThickness();
-		UT_ASSERT(iFillTop != 0);
 		m_pG->fillRect(clrFG, /*pDA->xoff*/DA_xoff+getWidth()-ithick, iFillTop, ithick, iFillHeight);
 	}
 }
@@ -1677,13 +1673,11 @@ void fp_ForcedLineBreakRun::_draw(dg_DrawArgs* pDA)
 	if (bIsSelected)
     {
 
-		UT_ASSERT(iYoffText != 0);
 		m_pG->fillRect(clrSelBackground, iXoffText, iYoffText, m_iWidth, m_pLine->getHeight());
 		UT_setColor(clrShowPara, 80, 80, 80);
     }
 	else
     {
-		UT_ASSERT(iYoffText != 0);
 		m_pG->fillRect(m_colorPG, iXoffText, iYoffText, m_iWidth, m_pLine->getHeight());
     }
 	if (pView->getShowPara())
@@ -2217,7 +2211,6 @@ void fp_EndOfParagraphRun::_clearScreen(bool /* bFullLineHeightRect */)
 	{
 		xoff -= m_iDrawWidth;
 	}
-	UT_ASSERT(yoff != 0);
 	m_pG->fillRect(m_colorPG, xoff, yoff, m_iDrawWidth, m_pLine->getHeight());
 }
 
@@ -2327,13 +2320,11 @@ void fp_EndOfParagraphRun::_draw(dg_DrawArgs* pDA)
 
 	if (bIsSelected)
 	{
-		UT_ASSERT(m_iYoffText != 0);
 		m_pG->fillRect(clrSelBackground, m_iXoffText, m_iYoffText, m_iDrawWidth, m_pLine->getHeight());
 		UT_setColor(clrShowPara, 80, 80, 80);
 	}
 	else
 	{
-		UT_ASSERT(m_iYoffText != 0);
 		m_pG->fillRect(m_colorPG, m_iXoffText, m_iYoffText, m_iDrawWidth, m_pLine->getHeight());
 	}
 	if (pView->getShowPara())
@@ -3090,7 +3081,6 @@ void fp_FieldRun::_clearScreen(bool /* bFullLineHeightRect */)
 	// need to clear full height of line, in case we had a selection
 	m_pLine->getScreenOffsets(this, xoff, yoff);
 	UT_sint32 iLineHeight = m_pLine->getHeight();
-	UT_ASSERT(yoff != 0);
 	m_pG->fillRect(m_colorPG, xoff, yoff, m_iWidth, iLineHeight);
 }
 
@@ -3153,7 +3143,6 @@ void fp_FieldRun::_defaultDraw(dg_DrawArgs* pDA)
 		else
 		{
 			getHighlightColor();
-			UT_ASSERT(iFillTop != 0);
 			m_pG->fillRect(m_colorHL, pDA->xoff, iFillTop, m_iWidth, iFillHeight);
 		}
 	}

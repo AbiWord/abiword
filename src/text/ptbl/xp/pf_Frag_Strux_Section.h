@@ -63,7 +63,7 @@ public:
 
 /*!
  pf_Frag_Strux_SectionEndnote represents structure information for
- a header/footer section in the document.
+ a Endnote section in the document.
 */
 
 class pf_Frag_Strux_SectionEndnote : public pf_Frag_Strux
@@ -72,6 +72,204 @@ public:
 	pf_Frag_Strux_SectionEndnote(pt_PieceTable * pPT,
 						  PT_AttrPropIndex indexAP);
 	virtual ~pf_Frag_Strux_SectionEndnote();
+
+#ifdef PT_TEST
+	virtual void			__dump(FILE * fp) const;
+#endif
+};
+
+
+/*!
+ pf_Frag_Strux_SectionTable represents structure information for
+ a table section in the document.
+*/
+
+class pf_Frag_Strux_SectionTable : public pf_Frag_Strux
+{
+public:
+	pf_Frag_Strux_SectionTable(pt_PieceTable * pPT,
+						  PT_AttrPropIndex indexAP);
+	virtual ~pf_Frag_Strux_SectionTable();
+
+#ifdef PT_TEST
+	virtual void			__dump(FILE * fp) const;
+#endif
+};
+
+
+/*!
+ pf_Frag_Strux_SectionCell represents structure information for
+ a cell section in the document.
+*/
+
+class pf_Frag_Strux_SectionCell : public pf_Frag_Strux
+{
+public:
+	pf_Frag_Strux_SectionCell(pt_PieceTable * pPT,
+						  PT_AttrPropIndex indexAP);
+	virtual ~pf_Frag_Strux_SectionCell();
+
+#ifdef PT_TEST
+	virtual void			__dump(FILE * fp) const;
+#endif
+};
+
+
+/*!
+ pf_Frag_Strux_SectionFootnote represents structure information for
+ a footnote section in the document.
+*/
+
+class pf_Frag_Strux_SectionFootnote : public pf_Frag_Strux
+{
+public:
+	pf_Frag_Strux_SectionFootnote(pt_PieceTable * pPT,
+						  PT_AttrPropIndex indexAP);
+	virtual ~pf_Frag_Strux_SectionFootnote();
+
+#ifdef PT_TEST
+	virtual void			__dump(FILE * fp) const;
+#endif
+};
+
+
+/*!
+ pf_Frag_Strux_SectionMarginnote represents structure information for
+ a header/footer section in the document.
+*/
+
+class pf_Frag_Strux_SectionMarginnote : public pf_Frag_Strux
+{
+public:
+	pf_Frag_Strux_SectionMarginnote(pt_PieceTable * pPT,
+						  PT_AttrPropIndex indexAP);
+	virtual ~pf_Frag_Strux_SectionMarginnote();
+
+#ifdef PT_TEST
+	virtual void			__dump(FILE * fp) const;
+#endif
+};
+
+
+/*!
+ pf_Frag_Strux_SectionEndnote represents structure information for
+ a Frame section in the document.
+*/
+
+class pf_Frag_Strux_SectionFrame : public pf_Frag_Strux
+{
+public:
+	pf_Frag_Strux_SectionFrame(pt_PieceTable * pPT,
+						  PT_AttrPropIndex indexAP);
+	virtual ~pf_Frag_Strux_SectionFrame();
+
+#ifdef PT_TEST
+	virtual void			__dump(FILE * fp) const;
+#endif
+};
+
+
+/*!
+ pf_Frag_Strux_SectionEndTable represents structure information for
+ the end of a Table section in the document.
+*/
+
+class pf_Frag_Strux_SectionEndTable : public pf_Frag_Strux
+{
+public:
+	pf_Frag_Strux_SectionEndTable(pt_PieceTable * pPT,
+						  PT_AttrPropIndex indexAP);
+	virtual ~pf_Frag_Strux_SectionEndTable();
+
+#ifdef PT_TEST
+	virtual void			__dump(FILE * fp) const;
+#endif
+};
+
+
+/*!
+ pf_Frag_Strux_SectionEndCell represents structure information for
+ the end of a Cell section in the document.
+*/
+
+class pf_Frag_Strux_SectionEndCell : public pf_Frag_Strux
+{
+public:
+	pf_Frag_Strux_SectionEndCell(pt_PieceTable * pPT,
+						  PT_AttrPropIndex indexAP);
+	virtual ~pf_Frag_Strux_SectionEndCell();
+
+#ifdef PT_TEST
+	virtual void			__dump(FILE * fp) const;
+#endif
+};
+
+
+/*!
+ pf_Frag_Strux_SectionEndFootnote represents structure information for
+ the end of a Footnote section in the document.
+*/
+
+class pf_Frag_Strux_SectionEndFootnote : public pf_Frag_Strux
+{
+public:
+	pf_Frag_Strux_SectionEndFootnote(pt_PieceTable * pPT,
+						  PT_AttrPropIndex indexAP);
+	virtual ~pf_Frag_Strux_SectionEndFootnote();
+
+#ifdef PT_TEST
+	virtual void			__dump(FILE * fp) const;
+#endif
+};
+
+
+/*!
+ pf_Frag_Strux_SectionEndMarginnote represents structure information for
+ the end of a Table section in the document.
+*/
+
+class pf_Frag_Strux_SectionEndMarginnote : public pf_Frag_Strux
+{
+public:
+	pf_Frag_Strux_SectionEndMarginnote(pt_PieceTable * pPT,
+						  PT_AttrPropIndex indexAP);
+	virtual ~pf_Frag_Strux_SectionEndMarginnote();
+
+#ifdef PT_TEST
+	virtual void			__dump(FILE * fp) const;
+#endif
+};
+
+
+/*!
+ pf_Frag_Strux_SectionEndFrame represents structure information for
+ the end of a Frame section in the document.
+*/
+
+class pf_Frag_Strux_SectionEndFrame : public pf_Frag_Strux
+{
+public:
+	pf_Frag_Strux_SectionEndFrame(pt_PieceTable * pPT,
+						  PT_AttrPropIndex indexAP);
+	virtual ~pf_Frag_Strux_SectionEndFrame();
+
+#ifdef PT_TEST
+	virtual void			__dump(FILE * fp) const;
+#endif
+};
+
+
+/*!
+ pf_Frag_Strux_SectionEndEndnote represents structure information for
+ the end of a Endnote section in the document.
+*/
+
+class pf_Frag_Strux_SectionEndEndnote : public pf_Frag_Strux
+{
+public:
+	pf_Frag_Strux_SectionEndEndnote(pt_PieceTable * pPT,
+						  PT_AttrPropIndex indexAP);
+	virtual ~pf_Frag_Strux_SectionEndEndnote();
 
 #ifdef PT_TEST
 	virtual void			__dump(FILE * fp) const;

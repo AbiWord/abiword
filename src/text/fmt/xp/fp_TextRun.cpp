@@ -1352,7 +1352,6 @@ void fp_TextRun::_clearScreen(bool /* bFullLineHeightRect */)
 			if(bthis && pPrev->getType() == FPRUN_IMAGE)
 				leftClear = 0;
 		}
-		UT_ASSERT(yoff =! 0);
 		m_pG->fillRect(clrNormalBackground,xoff-leftClear , yoff, m_iWidth+leftClear, m_pLine->getHeight());
 	}
 
@@ -1444,7 +1443,6 @@ void fp_TextRun::_draw(dg_DrawArgs* pDA)
 
 	if(bDrawBckg)
 	{
-		UT_ASSERT(yTopOfSel + m_iAscent - m_pLine->getAscent() != 0);
 		m_pG->fillRect( clrNormalBackground,
 					pDA->xoff,
 					yTopOfSel + m_iAscent - m_pLine->getAscent(),
@@ -1597,7 +1595,6 @@ void fp_TextRun::_fillRect(UT_RGBColor& clr,
 		_getPartRect(&r, xoff, yoff, iPos1, iLen, pgbCharWidths);
 		r.height = m_pLine->getHeight();
 		r.top = r.top + m_iAscent - m_pLine->getAscent();
-		UT_ASSERT(r.top != 0);
 		m_pG->fillRect(clr, r.left, r.top, r.width, r.height);
 	}
 }
@@ -2154,8 +2151,8 @@ void fp_TextRun::_drawInvisibleSpaces(UT_sint32 xoff, UT_sint32 yoff)
 			UT_uint32 iy = yoff + getAscent() * 2 / 3;
 
 			for (UT_uint32 i = 0;i < lenSpan;i++){
-			   if(pSpan[i] == UCS_SPACE){
-				   UT_ASSERT(iy != 0);
+			   if(pSpan[i] == UCS_SPACE)
+			   {
 				   m_pG->fillRect(clrShowPara,xoff + iWidth + (pCharWidths[i + offset] - iRectSize) / 2,iy,iRectSize,iRectSize);
 			   }
 			   iWidth += pCharWidths[i + offset];
@@ -2242,7 +2239,10 @@ void fp_TextRun::drawSquiggle(UT_uint32 iOffset, UT_uint32 iLen)
 		// I think this is safe, although it begs the question, why did we get called if iLen is zero?	TODO
 		return;
 	}
-
+	if(getLine())
+	{
+		getLine()->setScreenCleared(false);
+	}
 	UT_sint32 xoff = 0, yoff = 0;
 	UT_sint32 iAscent = m_pLine->getAscent();
 	UT_sint32 iDescent = m_pLine->getDescent();

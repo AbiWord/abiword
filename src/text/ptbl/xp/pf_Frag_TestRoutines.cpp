@@ -71,6 +71,64 @@ void pf_Frag_Strux_SectionEndnote::__dump(FILE * fp) const
 			(void*)this,(long)m_indexAP);
 }
 
+void pf_Frag_Strux_SectionTable::__dump(FILE * fp) const
+{
+	fprintf(fp,"    SectionTable %p api[%08lx]\n",
+			(void*)this,(long)m_indexAP);
+}
+void pf_Frag_Strux_SectionCell::__dump(FILE * fp) const
+{
+	fprintf(fp,"    SectionCell %p api[%08lx]\n",
+			(void*)this,(long)m_indexAP);
+}
+void pf_Frag_Strux_SectionFootnote::__dump(FILE * fp) const
+{
+	fprintf(fp,"    SectionFootnote %p api[%08lx]\n",
+			(void*)this,(long)m_indexAP);
+}
+void pf_Frag_Strux_SectionMarginnote::__dump(FILE * fp) const
+{
+	fprintf(fp,"    SectionMarginnote %p api[%08lx]\n",
+			(void*)this,(long)m_indexAP);
+}
+void pf_Frag_Strux_SectionFrame::__dump(FILE * fp) const
+{
+	fprintf(fp,"    SectionFrame %p api[%08lx]\n",
+			(void*)this,(long)m_indexAP);
+}
+
+
+void pf_Frag_Strux_SectionEndTable::__dump(FILE * fp) const
+{
+	fprintf(fp,"    SectionEndTable %p api[%08lx]\n",
+			(void*)this,(long)m_indexAP);
+}
+void pf_Frag_Strux_SectionEndCell::__dump(FILE * fp) const
+{
+	fprintf(fp,"    SectionEndCell %p api[%08lx]\n",
+			(void*)this,(long)m_indexAP);
+}
+void pf_Frag_Strux_SectionEndFootnote::__dump(FILE * fp) const
+{
+	fprintf(fp,"    SectionEndFootnote %p api[%08lx]\n",
+			(void*)this,(long)m_indexAP);
+}
+void pf_Frag_Strux_SectionEndMarginnote::__dump(FILE * fp) const
+{
+	fprintf(fp,"    SectionEndMarginnote %p api[%08lx]\n",
+			(void*)this,(long)m_indexAP);
+}
+void pf_Frag_Strux_SectionEndFrame::__dump(FILE * fp) const
+{
+	fprintf(fp,"    SectionEndFrame %p api[%08lx]\n",
+			(void*)this,(long)m_indexAP);
+}
+void pf_Frag_Strux_SectionEndEndnote::__dump(FILE * fp) const
+{
+	fprintf(fp,"    SectionEndEndnote %p api[%08lx]\n",
+			(void*)this,(long)m_indexAP);
+}
+
 void pf_Frag_Text::__dump(FILE * fp) const
 {
 	fprintf(fp,"        TextFragment %p b[%08lx,%ld] api[%08lx]\n",
