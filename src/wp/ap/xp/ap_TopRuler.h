@@ -133,12 +133,11 @@ protected:
 									 AP_TopRulerInfo * pInfo,
 									 UT_Bool bDrawAll = UT_TRUE);
 
-	UT_sint32	_getColumnMarkerXCenter(AP_TopRulerInfo * pInfo, UT_uint32 kCol);
+	UT_sint32	_getColumnMarkerXRightEnd(AP_TopRulerInfo * pInfo, UT_uint32 kCol);
 	void		_getColumnMarkerRect(AP_TopRulerInfo * pInfo, UT_uint32 kCol, UT_sint32 xCenter,
 									 UT_Rect * prCol);
 	void		_drawColumnProperties(const UT_Rect * pClipRect,
 									  AP_TopRulerInfo * pInfo,
-									  UT_RGBColor &clrDark, UT_RGBColor &clrLight,
 									  UT_uint32 kCol);
 
 	void		_getMarginMarkerRects(AP_TopRulerInfo * pInfo, UT_Rect &rLeft, UT_Rect &rRight);
@@ -154,6 +153,7 @@ protected:
 	void		_drawLeftIndentMarker(UT_Rect & r, UT_Bool bFilled);
 	void		_drawRightIndentMarker(UT_Rect & r, UT_Bool bFilled);
 	void		_drawFirstLineIndentMarker(UT_Rect & r, UT_Bool bFilled);
+	void		_drawColumnGapMarker(UT_Rect & r);
 	UT_Bool		_isInBottomBoxOfLeftIndent(UT_uint32 y);
 		
 	XAP_Frame *			m_pFrame;

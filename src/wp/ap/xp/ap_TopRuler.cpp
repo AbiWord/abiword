@@ -515,7 +515,7 @@ void AP_TopRuler::_drawParagraphProperties(const UT_Rect * pClipRect,
 
 /*****************************************************************/
 
-UT_sint32 AP_TopRuler::_getColumnMarkerXCenter(AP_TopRulerInfo * pInfo, UT_uint32 kCol)
+UT_sint32 AP_TopRuler::_getColumnMarkerXRightEnd(AP_TopRulerInfo * pInfo, UT_uint32 kCol)
 {
 	// return the right edge of the gap following this column
 	// (this is equal to the left edge of the start of the
@@ -525,33 +525,35 @@ UT_sint32 AP_TopRuler::_getColumnMarkerXCenter(AP_TopRulerInfo * pInfo, UT_uint3
 }
 
 void AP_TopRuler::_getColumnMarkerRect(AP_TopRulerInfo * pInfo, UT_uint32 kCol,
-									   UT_sint32 xCenter, UT_Rect * prCol)
+									   UT_sint32 xRight, UT_Rect * prCol)
 {
 	UT_uint32 yTop = s_iFixedHeight/4;
-	UT_sint32 hs = 3;					// halfSize
-	UT_sint32 fs = hs * 2 + 1;			// fullSize
 
-	prCol->set(xCenter -hs, yTop-hs, fs, fs);
+	UT_sint32 xAbsLeft = _getFirstPixelInColumn(pInfo,0);
+	UT_sint32 xAbsRight = xAbsLeft + pInfo->u.c.m_xColumnWidth;
+	UT_sint32 xAbsRightGap = xAbsRight + pInfo->u.c.m_xColumnGap;
+	UT_sint32 xdelta = xRight - xAbsRightGap;
+	prCol->set(xAbsRight-xdelta, yTop-5, pInfo->u.c.m_xColumnGap + 2*xdelta + 1, 11);
 }
 
 void AP_TopRuler::_drawColumnProperties(const UT_Rect * pClipRect,
 										AP_TopRulerInfo * pInfo,
-										UT_RGBColor &clrDark, UT_RGBColor &clrLight,
 										UT_uint32 kCol)
 {
 	UT_Rect rCol;
 	
-	_getColumnMarkerRect(pInfo,kCol,_getColumnMarkerXCenter(pInfo,kCol),&rCol);
+	_getColumnMarkerRect(pInfo,kCol,_getColumnMarkerXRightEnd(pInfo,kCol),&rCol);
+
 	if (m_draggingWhat == DW_COLUMNGAP)
 	{
-		_drawHollowRect(clrDark,clrLight, rCol);
-		_drawSculptedRect(m_draggingRect);
+		_drawColumnGapMarker(m_draggingRect);
 	}
 	else
 	{
 		if (!pClipRect || rCol.intersectsRect(pClipRect))
-			_drawSculptedRect(rCol);
+			_drawColumnGapMarker(rCol);
 	}
+
 }
 
 /*****************************************************************/
@@ -702,7 +704,7 @@ void AP_TopRuler::_draw(const UT_Rect * pClipRect, AP_TopRulerInfo * pUseInfo)
 
 	_drawMarginProperties(pClipRect,pInfo,clrBlack);
 	if (pInfo->m_iNumColumns > 1)
-		_drawColumnProperties(pClipRect,pInfo,clrBlack,clrWhite,0);
+		_drawColumnProperties(pClipRect,pInfo,0);
 	_drawParagraphProperties(pClipRect,pInfo,UT_TRUE);
 	
 	return;
@@ -723,42 +725,8 @@ void AP_TopRuler::mousePress(EV_EditModifierState ems, EV_EditMouseButton emb, U
 	
 	m_pView->getTopRulerInfo(&m_infoCache);
 
-#if 0
-	UT_sint32 leftMarginCenter, rightMarginCenter;
-	UT_Rect rLeftMargin, rRightMargin;
-	_getMarginMarkerRects(&m_infoCache,rLeftMargin,rRightMargin);
-	if (rLeftMargin.containsPoint(x,y))
-	{
-		//UT_DEBUGMSG(("hit left margin block\n"));
-		m_bValidMouseClick = UT_TRUE;
-		m_draggingWhat = DW_LEFTMARGIN;
-		m_bBeforeFirstMotion = UT_TRUE;
-		return;
-	}
-	if (rRightMargin.containsPoint(x,y))
-	{
-		//UT_DEBUGMSG(("hit right margin block\n"));
-		m_bValidMouseClick = UT_TRUE;
-		m_draggingWhat = DW_RIGHTMARGIN;
-		m_bBeforeFirstMotion = UT_TRUE;
-		return;
-	}
-#endif
-
-	if (m_infoCache.m_iNumColumns > 1)
-	{
-		UT_Rect rCol;
-		_getColumnMarkerRect(&m_infoCache,0,_getColumnMarkerXCenter(&m_infoCache,0),&rCol);
-		if (rCol.containsPoint(x,y))
-		{
-			//UT_DEBUGMSG(("hit in column gap block\n"));
-			m_bValidMouseClick = UT_TRUE;
-			m_draggingWhat = DW_COLUMNGAP;
-			m_bBeforeFirstMotion = UT_TRUE;
-			return;
-		}
-	}
-
+	// first hit-test against the paragraph widgets
+	
 	UT_sint32 leftIndentCenter, rightIndentCenter, firstLineIndentCenter;
 	UT_Rect rLeftIndent, rRightIndent, rFirstLineIndent;
 	_getParagraphMarkerXCenters(&m_infoCache,&leftIndentCenter,&rightIndentCenter,&firstLineIndentCenter);
@@ -789,6 +757,46 @@ void AP_TopRuler::mousePress(EV_EditModifierState ems, EV_EditMouseButton emb, U
 		m_bBeforeFirstMotion = UT_TRUE;
 		return;
 	}
+
+	// next check the column gap
+	
+	if (m_infoCache.m_iNumColumns > 1)
+	{
+		UT_Rect rCol;
+		_getColumnMarkerRect(&m_infoCache,0,_getColumnMarkerXRightEnd(&m_infoCache,0),&rCol);
+		if (rCol.containsPoint(x,y))
+		{
+			//UT_DEBUGMSG(("hit in column gap block\n"));
+			m_bValidMouseClick = UT_TRUE;
+			m_draggingWhat = DW_COLUMNGAP;
+			m_bBeforeFirstMotion = UT_TRUE;
+			return;
+		}
+	}
+
+	// finally check page margins
+	
+#if 0
+	UT_sint32 leftMarginCenter, rightMarginCenter;
+	UT_Rect rLeftMargin, rRightMargin;
+	_getMarginMarkerRects(&m_infoCache,rLeftMargin,rRightMargin);
+	if (rLeftMargin.containsPoint(x,y))
+	{
+		//UT_DEBUGMSG(("hit left margin block\n"));
+		m_bValidMouseClick = UT_TRUE;
+		m_draggingWhat = DW_LEFTMARGIN;
+		m_bBeforeFirstMotion = UT_TRUE;
+		return;
+	}
+	if (rRightMargin.containsPoint(x,y))
+	{
+		//UT_DEBUGMSG(("hit right margin block\n"));
+		m_bValidMouseClick = UT_TRUE;
+		m_draggingWhat = DW_RIGHTMARGIN;
+		m_bBeforeFirstMotion = UT_TRUE;
+		return;
+	}
+#endif
 
 	return;
 }
@@ -852,9 +860,7 @@ void AP_TopRuler::mouseRelease(EV_EditModifierState ems, EV_EditMouseButton emb,
 
 	case DW_COLUMNGAP:
 		{
-			UT_sint32 xAbsLeft = _getFirstPixelInColumn(&m_infoCache,m_infoCache.m_iCurrentColumn);
-			UT_sint32 xAbsRight = xAbsLeft + m_infoCache.u.c.m_xColumnWidth;
-			double dxrel = _scalePixelDistanceToUnits(m_draggingCenter - xAbsRight,tick);
+			double dxrel = _scalePixelDistanceToUnits(m_draggingRect.width,tick);
 
 			const XML_Char * properties[3];
 			properties[0] = "column-gap";
@@ -1010,19 +1016,27 @@ void AP_TopRuler::mouseMotion(EV_EditModifierState ems, UT_uint32 x, UT_uint32 y
 		{
 			// TODO what upper/lower bound should we place on this ?
 			
-			UT_sint32 xAbsLeft = _getFirstPixelInColumn(&m_infoCache,m_infoCache.m_iCurrentColumn);
+			UT_sint32 xAbsLeft = _getFirstPixelInColumn(&m_infoCache,0);
 			UT_sint32 xAbsRight = xAbsLeft + m_infoCache.u.c.m_xColumnWidth;
+			UT_sint32 xAbsRightGap = xAbsRight + m_infoCache.u.c.m_xColumnGap;
+			UT_sint32 xAbsMidPoint = (xAbsRight + xAbsRightGap)/2;
+			UT_sint32 xAbsLowerLimit = xAbsMidPoint + _snapPixelToGrid((UT_sint32)(tick.dragDelta/tick.tickUnitScale),tick);
+			if (((UT_sint32)x) < xAbsLowerLimit)
+				x = (UT_uint32)xAbsLowerLimit;
 			UT_sint32 xrel = ((UT_sint32)x) - xAbsRight;
 			UT_sint32 xgrid = _snapPixelToGrid(xrel,tick);
-			double dgrid = _scalePixelDistanceToUnits(xrel,tick);
-			UT_DEBUGMSG(("SettingColumnGap: %s\n",m_pG->invertDimension(tick.dimType,dgrid)));
 			UT_sint32 oldDraggingCenter = m_draggingCenter;
 			UT_Rect oldDraggingRect = m_draggingRect;
 			m_draggingCenter = xAbsRight + xgrid;
 			_getColumnMarkerRect(&m_infoCache,0,m_draggingCenter,&m_draggingRect);
+			UT_DEBUGMSG(("Gap: [x %ld][xAbsRight %ld][xrel %ld][xgrid %ld][width %ld]\n",x,xAbsRight,xrel,xgrid,m_draggingRect.width));
+
+			double dgrid = _scalePixelDistanceToUnits(m_draggingRect.width,tick);
+			UT_DEBUGMSG(("SettingColumnGap: %s\n",m_pG->invertDimension(tick.dimType,dgrid)));
 			if (!m_bBeforeFirstMotion && (m_draggingCenter != oldDraggingCenter))
-				draw(&oldDraggingRect,&m_infoCache);
-			_drawColumnProperties(NULL,&m_infoCache,clrBlack,clrWhite,0);
+				draw(((oldDraggingRect.width > m_draggingRect.width ) ? &oldDraggingRect : &m_draggingRect),
+					 &m_infoCache);
+			_drawColumnProperties(NULL,&m_infoCache,0);
 		}
 		m_bBeforeFirstMotion = UT_FALSE;
 		return;
@@ -1203,7 +1217,7 @@ void AP_TopRuler::_ignoreEvent(UT_RGBColor &clrBlack, UT_RGBColor &clrWhite)
 		break;
 		
 	case DW_COLUMNGAP:
-		_drawColumnProperties(NULL,&m_infoCache,clrBlack,clrWhite,0);
+		_drawColumnProperties(NULL,&m_infoCache,0);
 		break;
 		
 	case DW_LEFTINDENT:
@@ -1414,3 +1428,53 @@ void AP_TopRuler::_drawFirstLineIndentMarker(UT_Rect & rect, UT_Bool bFilled)
 	m_pG->drawLine(	l,     t,    l+11, t   );
 
 }
+
+void AP_TopRuler::_drawColumnGapMarker(UT_Rect & rect)
+{
+	UT_RGBColor clrLiteGray(192,192,192);
+	UT_RGBColor clrBlack(0,0,0);
+	UT_RGBColor clrWhite(255,255,255);
+
+	UT_RGBColor & clrBorder = clrBlack;
+	UT_RGBColor & clr3d = clrWhite;
+	
+	UT_sint32 l = rect.left;
+	UT_sint32 t = rect.top;
+	UT_sint32 w = rect.width;
+	UT_sint32 w2 = w/2 - 1;
+
+	// fill in the body
+	
+	m_pG->setColor(clrLiteGray);
+	m_pG->drawLine(l+2,   t+1,  l+w-1,   t+1 );
+	m_pG->drawLine(l+2,   t+2,  l+w-1,   t+2 );
+	m_pG->drawLine(l+2,   t+3,  l+w-1,   t+3 );
+	m_pG->drawLine(l+2,   t+4,  l+w-1,   t+4 );
+	m_pG->drawLine(l+2,   t+3,  l+2,     t+8 );
+	m_pG->drawLine(l+3,   t+3,  l+3,     t+7 );
+	m_pG->drawLine(l+4,   t+3,  l+4,     t+6 );
+	m_pG->drawLine(l+w-2, t+3,  l+w-2,   t+9 );
+	m_pG->drawLine(l+w-3, t+3,  l+w-3,   t+8 );
+	m_pG->drawLine(l+w-4, t+3,  l+w-4,   t+7 );
+	m_pG->drawLine(l+w-5, t+3,  l+w-5,   t+6 );
+
+	// draw 3d highlights
+	
+	m_pG->setColor(clr3d);
+	m_pG->drawLine(l+1,   t+1,  l+w2,    t+1 );
+	m_pG->drawLine(l+w2+1,t+1,  l+w-1,   t+1 );
+	m_pG->drawLine(l+1,   t+1,  l+1,     t+10);
+	m_pG->drawLine(l+w2+1,t+1,  l+w2+1,  t+5 );
+	
+	// draw border
+	
+	m_pG->setColor(clrBorder);
+	m_pG->drawLine(l,     t,    l+w,     t   );
+	m_pG->drawLine(l,     t,    l,       t+11);
+	m_pG->drawLine(l+w-1, t,    l+w-1,   t+11);
+	m_pG->drawLine(l,     t+10, l+5,     t+5);
+	m_pG->drawLine(l+w-1, t+10, l+w-6,   t+5);
+	m_pG->drawLine(l+5,   t+5,  l+w-5,   t+5);
+	
+}
+

@@ -22,13 +22,6 @@ ABI_DEPTH = ../../..
 
 include $(ABI_DEPTH)/config/abi_defs.mk
 
-EXPORT_HEADERS=
-HEADERS=		$(EXPORT_HEADERS)
-
-
-RELEASE_HEADERS=	$(EXPORT_HEADERS)
-RELEASE_HEADERS_DEST=	$(RELEASE_INCLUDE_DIR)
-
 CPPSRCS=		UnixMain.cpp
 
 INCLUDES=		`gtk-config --cflags`
