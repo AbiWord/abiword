@@ -894,6 +894,14 @@ void fl_BlockLayout::_breakLineAfterRun(fp_Run* pRun)
 {
 	// When loading a document, there may not have been created
 	// lines yet. Get a first one created and hope for the best...
+        // Sevior: Ah here is one source of the multi-level list bug we
+        // need a last line from the previous block before we call this.
+        if(getPrev()!= NULL && getPrev()->getLastLine()==NULL)
+        {
+	        UT_DEBUGMSG(("SEVIOR: in _breakLineAfterRun no LastLine \n"));
+	        UT_DEBUGMSG(("SEVIOR getPrev = %d this = %d \n",getPrev(),this));
+	        //UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+	}
 	if (!m_pFirstLine)
 		_stuffAllRunsOnALine();
 
@@ -1115,7 +1123,8 @@ fp_Line* fl_BlockLayout::getNewLine(void)
 		        {
 			         // Previous block exists but doesn't have a last line.
 			         // This is a BUG. Try a work around for now. TODO Fix this elsewhere
-			         UT_DEBUGMSG(("SEVIOR: BUG!! Previous block exists with no last line, try to reformat the block \n"));
+			         UT_DEBUGMSG(("SEVIOR: BUG!!! Previous block exists with no last line, try to reformat the block \n"));
+				 //abort();
 			         m_pPrev->format();
 			}
 		}
@@ -2203,6 +2212,13 @@ UT_Bool fl_BlockLayout::doclistener_populateSpan(const PX_ChangeRecord_Span * pc
         if(pView)
 	        pView->eraseInsertionPoint();
 	PT_BufIndex bi = pcrs->getBufIndex();
+        if(getPrev()!= NULL && getPrev()->getLastLine()==NULL)
+        {
+	        UT_DEBUGMSG(("SEVIOR: in _breakLineAfterRun no LastLine \n"));
+	        UT_DEBUGMSG(("SEVIOR getPrev = %d this = %d \n",getPrev(),this));
+		//	        UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+	}
+
 	const UT_UCSChar* pChars = m_pDoc->getPointer(bi);
 
 	/*
@@ -2341,6 +2357,12 @@ UT_Bool	fl_BlockLayout::_doInsertForcedPageBreakRun(PT_BlockOffset blockOffset)
 {
 	fp_Run* pNewRun = new fp_ForcedPageBreakRun(this, m_pLayout->getGraphics(), blockOffset, 1);
 	UT_ASSERT(pNewRun);	// TODO check for outofmem
+        if(getPrev()!= NULL && getPrev()->getLastLine()==NULL)
+        {
+	        UT_DEBUGMSG(("SEVIOR: in _breakLineAfterRun no LastLine \n"));
+	        UT_DEBUGMSG(("SEVIOR getPrev = %d this = %d \n",getPrev(),this));
+	        //UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+	}
 
 	UT_Bool bResult = _doInsertRun(pNewRun);
 	if (bResult)

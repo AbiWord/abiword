@@ -127,6 +127,11 @@ void    fl_AutoNum::_getLabelstr( XML_Char labelStr[], UT_uint32 * insPoint,
 	       *insPoint = 0;
 	       return;
 	}
+        if(depth > 0 && m_List_Type >= BULLETED_LIST)
+	{
+	       *insPoint = 0;
+	       return;
+	}
 
 	// TODO This is a bit of a hack to split the delim string. It would be 
 	// TODO nice to clear it up.
@@ -150,13 +155,13 @@ void    fl_AutoNum::_getLabelstr( XML_Char labelStr[], UT_uint32 * insPoint,
 		i++;
 	}
 	rightDelim[i - rTmp] = '\0';
-	UT_DEBUGMSG(("Left Delim: %s, Right Delim: %s\n", leftDelim, rightDelim));
+	//UT_DEBUGMSG(("Left Delim: %s, Right Delim: %s\n", leftDelim, rightDelim));
 	
 
         if(m_pParent != NULL  && m_List_Type < BULLETED_LIST)
 	{
 	       m_pParent->_getLabelstr( labelStr, insPoint, depth+1,getFirstItem());
-	       UT_DEBUGMSG(("JORDAN: Parent Label: %s\n", labelStr));
+	       //     UT_DEBUGMSG(("JORDAN: Parent Label: %s\n", labelStr));
 	       if(*insPoint != 0)
 	       {
 		        psz = UT_XML_strlen(m_pszDecimal);
@@ -527,7 +532,7 @@ void fl_AutoNum::setParent(fl_AutoNum * pParent)
 
 void fl_AutoNum::update(UT_uint32 start)
 {
-	UT_DEBUGMSG(("Entering update\n"));
+  //	UT_DEBUGMSG(("Entering update\n"));
 	if(isUpdating())
 	        return;
 	//_calculateLabelStr(0);
@@ -541,11 +546,11 @@ void fl_AutoNum::update(UT_uint32 start)
 
 inline void fl_AutoNum::_updateItems(UT_uint32 start)
 {
-	UT_DEBUGMSG(("Entering _updateItems\n"));
+  //	UT_DEBUGMSG(("Entering _updateItems\n"));
 	m_bUpdatingItems = UT_TRUE;
 	for (UT_uint32 i = start; i < m_pItems.getItemCount(); i++)
 	{
-		UT_DEBUGMSG(("Entering _updateItems for loop\n"));
+	  //	UT_DEBUGMSG(("Entering _updateItems for loop\n"));
 		fl_Layout * pTmp = (fl_Layout *)m_pItems.getNthItem(i);
 		pTmp->listUpdate();
 	}

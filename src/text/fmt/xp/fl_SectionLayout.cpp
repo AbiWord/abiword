@@ -260,6 +260,13 @@ void fl_SectionLayout::_purgeLayout()
 
 UT_Bool fl_SectionLayout::bl_doclistener_populateSpan(fl_BlockLayout* pBL, const PX_ChangeRecord_Span * pcrs, PT_BlockOffset blockOffset, UT_uint32 len)
 {
+        if(pBL->getPrev()!= NULL && pBL->getPrev()->getLastLine()==NULL)
+        {
+	        UT_DEBUGMSG(("SEVIOR: in bl_doclistner_pop no LastLine \n"));
+	        UT_DEBUGMSG(("SEVIOR getPrev = %d this = %d \n",pBL->getPrev(),pBL));
+		//  UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+	}
+
 	return pBL->doclistener_populateSpan(pcrs, blockOffset, len);
 }
 
@@ -573,6 +580,18 @@ void fl_DocSectionLayout::format(void)
 	while (pBL)
 	{
 		pBL->format();
+		UT_sint32 count = 0;
+		while(pBL->getLastLine() == NULL || pBL->getFirstLine()==NULL)
+		{
+		       UT_DEBUGMSG(("Error formatting a block try again \n"));
+		       count = count + 1;
+		       pBL->format();
+		       if(count > 3)
+		       {
+		              UT_DEBUGMSG(("Give up trying to format. Hope for the best :-( \n"));
+		              break;
+		       }
+		}
 		pBL = pBL->getNext();
 	}
 
