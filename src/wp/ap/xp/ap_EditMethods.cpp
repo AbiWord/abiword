@@ -3122,8 +3122,6 @@ Defun(zoom)
 	XAP_Frame * pFrame = (XAP_Frame *) pAV_View->getParentData();
 	UT_ASSERT(pFrame);
 
-	s_TellNotImplemented(pFrame, "Zoom dialog", __LINE__);
-
 	// TODO the cast below is ugly
 	UT_uint32 iZoom = atoi((char*) (pCallData->m_pData));
 	UT_ASSERT(iZoom > 0);
