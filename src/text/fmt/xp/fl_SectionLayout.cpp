@@ -54,7 +54,6 @@ FL_SectionLayout::FL_SectionLayout(FL_DocLayout* pLayout, PL_StruxDocHandle sdh)
 
 fp_ColumnInfo::fp_ColumnInfo(FP_Column* _pCol, UT_sint32 _iXoff, UT_sint32 _iYoff)
 {
-	// TODO does anyone use this ??
 	pColumn = _pCol;
 	xoff = _iXoff;
 	yoff = _iYoff;
@@ -186,7 +185,6 @@ UT_Bool FL_SectionLayout::reformat()
 	return bResult;
 }
 
-// TODO -- write an iterator so functions like this aren't so gross
 void FL_SectionLayout::_purgeLayout()
 {
 	FL_BlockLayout*	pBL = m_pFirstBlock;

@@ -168,12 +168,20 @@ void FP_Run::lookupProperties(void)
 	{
 		m_fDecorations |= TEXT_DECOR_LINETHROUGH;
 	}
+#else
+	// HACK something for now
+	m_pFont = m_pG->findFont("Times New Roman",
+							 "normal",
+							 "normal",
+							 "normal",
+							 "normal",
+							 "14pt");
+#endif /* BUFFER */
 
 	m_pG->setFont(m_pFont);
 	m_iAscent = m_pG->getFontAscent();	
 	m_iDescent = m_pG->getFontDescent();
 	m_iHeight = m_pG->getFontHeight();
-#endif /* BUFFER */
 }
 
 void FP_Run::setNext(FP_Run* p)
@@ -203,26 +211,31 @@ UT_Bool FP_Run::canSplit() const
 
 UT_Bool FP_Run::canBreakAfter() const
 {
-#ifdef BUFFER	// fetchPointers
-	const UT_UCSChar* p1;
-	UT_uint32   iLen1;
-	const UT_UCSChar* p2;
-	UT_uint32	iLen2;
-	
-	m_pBL->fetchPointers(m_iOffsetFirst, m_iLen, &p1, &iLen1, &p2, &iLen2);
-	if (p2)
+	const UT_UCSChar* pSpan;
+	UT_uint32 lenSpan;
+	UT_uint32 offset = m_iOffsetFirst;
+	UT_uint32 len = m_iLen;
+	UT_Bool bContinue = UT_TRUE;
+
+	while (bContinue)
 	{
-		if (p2[iLen2-1] == 32)
+		bContinue = m_pBL->getSpanPtr(offset, &pSpan, &lenSpan);
+
+		if (len <= lenSpan)
 		{
-			return UT_TRUE;
+			UT_ASSERT(len>0);
+
+			if (pSpan[len-1] == 32)
+			{
+				return UT_TRUE;
+			}
+
+			bContinue = UT_FALSE;
 		}
-	}
-	else
-	{
-		UT_ASSERT(iLen1 == m_iLen);
-		if (p1[iLen1-1] == 32)
+		else
 		{
-			return UT_TRUE;
+			offset += lenSpan;
+			len -= lenSpan;
 		}
 	}
 
@@ -230,29 +243,24 @@ UT_Bool FP_Run::canBreakAfter() const
 	{
 		return m_pNext->canBreakBefore();
 	}
-#endif /* BUFFER */
 	
 	return UT_FALSE;
 }
 
 UT_Bool FP_Run::canBreakBefore() const
 {
-#ifdef BUFFER	// fetchPointers
-	const UT_UCSChar* p1;
-	UT_uint32   iLen1;
-	const UT_UCSChar* p2;
-	UT_uint32	iLen2;
-	
-	m_pBL->fetchPointers(m_iOffsetFirst, m_iLen, &p1, &iLen1, &p2, &iLen2);
-	if (p1[0] == 32)
+	const UT_UCSChar* pSpan;
+	UT_uint32 lenSpan;
+
+	if (m_pBL->getSpanPtr(m_iOffsetFirst, &pSpan, &lenSpan))
 	{
-		return UT_TRUE;
+		if (pSpan[0] == 32)
+		{
+			return UT_TRUE;
+		}
 	}
-	else
-#endif /* BUFFER */
-	{
-		return UT_FALSE;
-	}
+
+	return UT_FALSE;
 }
 
 UT_Bool FP_Run::getLineBreakBefore() const
@@ -343,44 +351,43 @@ UT_Bool	FP_Run::findMaxLeftFitSplitPoint(UT_sint32 iMaxLeftWidth, fp_RunSplitInf
 
 	si.iOffset = -1;
 
-#ifdef BUFFER	// fetchPointers
-	const UT_UCSChar* p1;
-	UT_uint32   iLen1;
-	const UT_UCSChar* p2;
-	UT_uint32	iLen2;
+	const UT_UCSChar* pSpan;
+	UT_uint32 lenSpan;
+	UT_uint32 offset = m_iOffsetFirst;
+	UT_uint32 len = m_iLen;
+	UT_Bool bContinue = UT_TRUE;
 
-	m_pBL->fetchPointers(m_iOffsetFirst, m_iLen, &p1, &iLen1, &p2, &iLen2);
-	UT_UCSChar ch;
-	
-	for (UT_uint32 i=0; i<(iLen1 + iLen2); i++)
+	while (bContinue)
 	{
-		iLeftWidth += pCharWidths[i + m_iOffsetFirst];
-		iRightWidth -= pCharWidths[i + m_iOffsetFirst];
+		bContinue = m_pBL->getSpanPtr(offset, &pSpan, &lenSpan);
 
-		if (i < iLen1)
+		for (UT_uint32 i=0; i<lenSpan; i++)
 		{
-			ch = p1[i];
-		}
-		else
-		{
-			ch = p2[i - iLen1];
-		}
-		
-		if (32 == ch)
-		{
-			if (iLeftWidth <= iMaxLeftWidth)
+			iLeftWidth += pCharWidths[i + offset];
+			iRightWidth -= pCharWidths[i + offset];
+
+			if (32 == pSpan[i])
 			{
 				si.iLeftWidth = iLeftWidth;
 				si.iRightWidth = iRightWidth;
-				si.iOffset = i + m_iOffsetFirst;
+				si.iOffset = i + offset;
 			}
 			else
 			{
-			    break;
+				break;
 			}
 		}
+
+		if (len <= lenSpan)
+		{
+			bContinue = UT_FALSE;
+		}
+		else
+		{
+			offset += lenSpan;
+			len -= lenSpan;
+		}
 	}
-#endif /* BUFFER */
 
 	if ((si.iOffset == -1) || (si.iLeftWidth == m_iWidth))
 	{
@@ -403,38 +410,40 @@ UT_Bool	FP_Run::findMinLeftFitSplitPoint(fp_RunSplitInfo& si)
 
 	si.iOffset = -1;
 
-#ifdef BUFFER	// fetchPointers
-	const UT_UCSChar* p1;
-	UT_uint32   iLen1;
-	const UT_UCSChar* p2;
-	UT_uint32	iLen2;
+	const UT_UCSChar* pSpan;
+	UT_uint32 lenSpan;
+	UT_uint32 offset = m_iOffsetFirst;
+	UT_uint32 len = m_iLen;
+	UT_Bool bContinue = UT_TRUE;
 
-	m_pBL->fetchPointers(m_iOffsetFirst, m_iLen, &p1, &iLen1, &p2, &iLen2);
-	UT_UCSChar ch;
-	
-	for (UT_uint32 i=0; i<(iLen1 + iLen2); i++)
+	while (bContinue)
 	{
-		iLeftWidth += pCharWidths[i + m_iOffsetFirst];
-		iRightWidth -= pCharWidths[i + m_iOffsetFirst];
+		bContinue = m_pBL->getSpanPtr(offset, &pSpan, &lenSpan);
 
-		if (i < iLen1)
+		for (UT_uint32 i=0; i<lenSpan; i++)
 		{
-			ch = p1[i];
+			iLeftWidth += pCharWidths[i + offset];
+			iRightWidth -= pCharWidths[i + offset];
+
+			if (32 == pSpan[i])
+			{
+				si.iLeftWidth = iLeftWidth;
+				si.iRightWidth = iRightWidth;
+				si.iOffset = i + offset;
+				break;
+			}
+		}
+
+		if (len <= lenSpan)
+		{
+			bContinue = UT_FALSE;
 		}
 		else
 		{
-			ch = p2[i - iLen1];
-		}
-		
-		if (32 == ch)
-		{
-			si.iLeftWidth = iLeftWidth;
-			si.iRightWidth = iRightWidth;
-			si.iOffset = i + m_iOffsetFirst;
-			break;
+			offset += lenSpan;
+			len -= lenSpan;
 		}
 	}
-#endif /* BUFFER */
 
 	if ((si.iOffset == -1) || (si.iLeftWidth == m_iWidth))
 	{
@@ -449,21 +458,34 @@ UT_Bool	FP_Run::findMinLeftFitSplitPoint(fp_RunSplitInfo& si)
 
 void FP_Run::_calcWidths(UT_uint16* pCharWidths)
 {
-#ifdef BUFFER	// fetchPointers
-	const UT_UCSChar* p1;
-	UT_uint32   iLen1;
-	const UT_UCSChar* p2;
-	UT_uint32	iLen2;
-	
-	m_pBL->fetchPointers(m_iOffsetFirst, m_iLen, &p1, &iLen1, &p2, &iLen2);
+	const UT_UCSChar* pSpan;
+	UT_uint32 lenSpan;
+	UT_uint32 offset = m_iOffsetFirst;
+	UT_uint32 len = m_iLen;
+	UT_Bool bContinue = UT_TRUE;
 
-	m_pG->setFont(m_pFont);
-    m_iWidth = m_pG->measureString(p1, 0, iLen1, pCharWidths + m_iOffsetFirst);
-	if (p2)
+	m_iWidth = 0;
+
+	while (bContinue)
 	{
-		m_iWidth += m_pG->measureString(p2, 0, iLen2, pCharWidths + m_iOffsetFirst + iLen1);
+		bContinue = m_pBL->getSpanPtr(offset, &pSpan, &lenSpan);
+
+		m_pG->setFont(m_pFont);
+
+		if (len <= lenSpan)
+		{
+			m_iWidth += m_pG->measureString(pSpan, 0, len, pCharWidths + offset);
+
+			bContinue = UT_FALSE;
+		}
+		else
+		{
+			m_iWidth += m_pG->measureString(pSpan, 0, lenSpan, pCharWidths + offset);
+
+			offset += lenSpan;
+			len -= lenSpan;
+		}
 	}
-#endif /* BUFFER */
 }
 
 void FP_Run::calcWidths(UT_uint16* pCharWidths)
@@ -606,24 +628,13 @@ void FP_Run::draw(dg_DrawArgs* pDA)
 {
 	UT_ASSERT(pDA->pG == m_pG);
 	
-#ifdef BUFFER	// fetchPointers
-	UT_uint32 iBlockBase = m_pBL->getPosition();
-	
-	const UT_UCSChar* p1;
-	UT_uint32   iLen1;
-	const UT_UCSChar* p2;
-	UT_uint32	iLen2;
-	
-	m_pBL->fetchPointers(m_iOffsetFirst, m_iLen, &p1, &iLen1, &p2, &iLen2);
-
 	UT_uint16* pCharWidths = m_pBL->getCharWidthArray();
 
 	m_pG->setFont(m_pFont);
 	m_pG->setColor(m_colorFG);
-	_drawPart(pDA->xoff, pDA->yoff, m_iOffsetFirst, m_iLen, p1, iLen1, p2, iLen2, pCharWidths);
+	_drawPart(pDA->xoff, pDA->yoff, m_iOffsetFirst, m_iLen, pCharWidths);
 
 	_drawDecors(pDA->xoff, pDA->yoff);
-#endif /* BUFFER */
 }
 
 void FP_Run::_getPartRect(UT_Rect* pRect, UT_sint32 xoff, UT_sint32 yoff, UT_uint32 iStart, UT_uint32 iLen,
@@ -649,68 +660,43 @@ void FP_Run::_getPartRect(UT_Rect* pRect, UT_sint32 xoff, UT_sint32 yoff, UT_uin
 }
 
 void FP_Run::_drawPart(UT_sint32 xoff, UT_sint32 yoff, UT_uint32 iStart, UT_uint32 iLen,
-					   const UT_UCSChar* p1,
-					   UT_uint32 iLen1,
-					   const UT_UCSChar* p2,
-					   UT_uint32 iLen2,
 					   const UT_uint16* pCharWidths)
 {
-	if (iStart < (m_iOffsetFirst + iLen1))
+	const UT_UCSChar* pSpan;
+	UT_uint32 lenSpan;
+	UT_uint32 offset = iStart;
+	UT_uint32 len = iLen;
+	UT_Bool bContinue = UT_TRUE;
+
+	UT_uint32 iLeftWidth = 0;
+	
+	for (UT_uint32 i=m_iOffsetFirst; i<iStart; i++)
 	{
-		UT_uint32 iLenDraw;
-		if ((iStart + iLen) > (m_iOffsetFirst + iLen1))
+		iLeftWidth += pCharWidths[i];
+	}
+
+	while (bContinue)
+	{
+		bContinue = m_pBL->getSpanPtr(offset, &pSpan, &lenSpan);
+
+		if (len <= lenSpan)
 		{
-			iLenDraw = m_iOffsetFirst + iLen1 - iStart;
+			m_pG->drawChars(pSpan, offset, len, xoff + iLeftWidth, yoff);
+
+			bContinue = UT_FALSE;
 		}
 		else
 		{
-			iLenDraw = iLen;
-		}
-		
-		UT_uint32 iLeftWidth = 0;
-		
-		for (UT_uint32 i=m_iOffsetFirst; i<iStart; i++)
-		{
-			iLeftWidth += pCharWidths[i];
-		}
-		
-		m_pG->drawChars(p1, 
-						iStart - m_iOffsetFirst, 
-						iLenDraw,
-						xoff + iLeftWidth,
-						yoff);
+			m_pG->drawChars(pSpan, offset, lenSpan, xoff + iLeftWidth, yoff);
 
-	}
-
-	if ((iStart + iLen) > (m_iOffsetFirst + iLen1))
-	{
-		UT_ASSERT(p2);
-		UT_uint32 iLeftWidth = 0;
-		
-		for (UT_uint32 i=0; i<iLen1; i++)
-		{
-			iLeftWidth += pCharWidths[i + m_iOffsetFirst];
-		}
-
-		UT_uint32 iStartDraw;
-		UT_uint32 iLenDraw;
-		if (iStart > (m_iOffsetFirst + iLen1))
-		{
-			for (UT_uint32 i=m_iOffsetFirst + iLen1; i<iStart; i++)
+			for (UT_uint32 i=offset; i<lenSpan; i++)
 			{
 				iLeftWidth += pCharWidths[i];
 			}
 
-			iStartDraw = iStart - iLen1 - m_iOffsetFirst;
-			iLenDraw = iLen;
+			offset += lenSpan;
+			len -= lenSpan;
 		}
-		else
-		{
-			iStartDraw = 0;
-			iLenDraw = iStart + iLen - (m_iOffsetFirst + iLen1);
-		}
-
-		m_pG->drawChars(p2, iStartDraw, iLenDraw, xoff + iLeftWidth, yoff);
 	}
 }
 

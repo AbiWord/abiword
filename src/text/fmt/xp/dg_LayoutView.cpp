@@ -1385,7 +1385,9 @@ void DG_LayoutView::draw(UT_sint32 x, UT_sint32 y, UT_sint32 width,
 		pPage = pPage->getNext();
 	}
 
+#ifdef POSITION
 	_drawSelectionOrInsertionPoint();
+#endif
 }
 
 // TODO remove this later

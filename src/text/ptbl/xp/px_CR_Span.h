@@ -38,6 +38,8 @@ public:
 						 pt_BufPosition offset,
 						 UT_uint32 length);
 	~PX_ChangeRecord_Span();
+
+	UT_uint32				getLength(void) const;
 	
 protected:
 	pt_BufPosition			m_offset;	/* location of our text in the VS[].m_buffer */

@@ -35,6 +35,7 @@
 #include "fl_ColumnSetLayout.h"
 #include "fl_ColumnLayout.h"
 #include "fl_BlockLayout.h"
+#include "fp_Run.h"
 #include "pd_Document.h"
 
 #include "ut_debugmsg.h"
@@ -60,11 +61,48 @@ UT_Bool fl_DocListener::populate(PL_StruxFmtHandle sfh,
 	UT_ASSERT(pcr->getType() == PX_ChangeRecord::PXT_InsertSpan);
 	PX_ChangeRecord_Span * pcrs = static_cast<PX_ChangeRecord_Span *> (pcr);
 
-	// paul-- a span is a sequence of text with the same formatting.
-	// TODO -- span is block-relative, right?
-	// HYP: append as a new run to last block of last section
-	// ALT: if format same, append to last run of that block
-	// ==>: pass enough info to delegate the decision  :-)
+	// TODO: analyze sfh to figure out where this change belongs
+
+	// HACK: for now, locate the last BlockLayout of the last SectionLayout
+	int countSections = m_pLayout->m_vecSectionLayouts.getItemCount();
+	UT_ASSERT(countSections > 0);
+	FL_SectionLayout* pSL = (FL_SectionLayout*) m_pLayout->m_vecSectionLayouts.getNthItem(countSections - 1);
+	UT_ASSERT(pSL);
+	FL_BlockLayout*	pBL = pSL->m_pLastBlock;
+	UT_ASSERT(pBL);
+
+	FP_Run * pRun = pBL->m_pFirstRun;
+	FP_Run * pLastRun = NULL;
+	UT_uint32 offset = 0;
+	UT_uint32 len = pcrs->getLength();
+
+	while (pRun)
+	{
+		pLastRun = pRun;
+		offset += pRun->m_iLen;
+		pRun = pRun->getNext();
+	}
+
+	FP_Run * pNewRun = new FP_Run(pBL, m_pLayout->getGraphics(), offset, len);
+
+	// TODO: this mucking around with CharWidths is another gruesome HACK
+	if (!pBL->m_pCharWidths)
+	{
+		pBL->m_iCharWidthSize += len;
+		pBL->_allocateCharWidthArray();
+	}
+	pBL->_insertInCharWidthsArray(offset, len);
+	pNewRun->calcWidths(pBL->m_pCharWidths);
+
+	if (pLastRun)
+	{
+		pLastRun->setNext(pNewRun);
+		pNewRun->setPrev(pLastRun);
+	}
+	else
+	{
+		pBL->m_pFirstRun = pNewRun;
+	}
 
 	return UT_TRUE;
 }

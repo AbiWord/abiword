@@ -609,7 +609,9 @@ int SimpleLineBreaker::breakParagraph(FL_BlockLayout* pBlock)
 		}
 
 		UT_ASSERT(pLine->getHeight() > 0);
+#ifdef HACK
 		UT_ASSERT(pLine->getWidth() > 0);
+#endif
 
 		// The line is done.  Let's see if the size is going to be okay.
 		if (pLine->getHeight() > iGuessLineHeight)

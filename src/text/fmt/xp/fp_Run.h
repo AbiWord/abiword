@@ -64,6 +64,8 @@ struct fp_RunSplitInfo
 
 class FP_Run
 {
+	friend class fl_DocListener;
+
  public:
 	FP_Run(FL_BlockLayout* pBL, DG_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen, UT_Bool bLookupProperties=UT_TRUE);
 
@@ -120,10 +122,6 @@ class FP_Run
 	void 					_getPartRect(UT_Rect* pRect, UT_sint32 xoff, UT_sint32 yoff, UT_uint32 iStart, UT_uint32 iLen,
 										 const UT_uint16* pCharWidths);
 	void					_drawPart(UT_sint32 xoff, UT_sint32 yoff, UT_uint32 iStart, UT_uint32 iLen,
-									  const UT_UCSChar* p1,
-									  UT_uint32 iLen1,
-									  const UT_UCSChar* p2,
-									  UT_uint32 iLen2,
 									  const UT_uint16* pCharWidths);
 	void 					_calcWidths(UT_uint16*);
 

@@ -22,3 +22,8 @@ PX_ChangeRecord_Span::PX_ChangeRecord_Span(PXType type,
 PX_ChangeRecord_Span::~PX_ChangeRecord_Span()
 {
 }
+
+UT_uint32 PX_ChangeRecord_Span::getLength(void) const
+{
+	return m_length;
+}

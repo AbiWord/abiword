@@ -291,11 +291,14 @@ UT_uint32 FL_BlockLayout::getAlignment()
 		return DG_ALIGN_BLOCK_JUSTIFY;
 	}
 	else
-#endif
 	{
 		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 		return 0;
 	}
+#else
+	// HACK something for now
+	return DG_ALIGN_BLOCK_LEFT;
+#endif
 }
 
 void FL_BlockLayout::_align()
@@ -649,15 +652,17 @@ UT_uint16* FL_BlockLayout::getCharWidthArray() const
 	return m_pCharWidths;
 }
 
-void FL_BlockLayout::_growCharWidthArray() // TODO return an error code
+void FL_BlockLayout::_growCharWidthArray(UT_uint32 count) // TODO return an error code
 {
 	UT_ASSERT(m_pCharWidths);
+
+	UT_uint32 growby = ((count > EXTRA_CHARWIDTH_SPACE) ? count : EXTRA_CHARWIDTH_SPACE);
 	
-	UT_uint16* pCharWidths = new UT_uint16[m_iCharWidthSpace + EXTRA_CHARWIDTH_SPACE];
+	UT_uint16* pCharWidths = new UT_uint16[m_iCharWidthSpace + growby];
 	// TODO check for failure and return outofmem if needed.
 	
 	memcpy(pCharWidths, m_pCharWidths, m_iCharWidthSpace * sizeof(UT_UCSChar));
-	m_iCharWidthSpace += EXTRA_CHARWIDTH_SPACE;
+	m_iCharWidthSpace += growby;
 	delete m_pCharWidths;
 	m_pCharWidths = pCharWidths;
 }
@@ -680,16 +685,10 @@ void FL_BlockLayout::_allocateCharWidthArray()   // TODO return an error code
 	// TODO check for failure and return outofmem if needed.
 }
 
-#ifdef BUFFER	// fetchPointers
-UT_Bool FL_BlockLayout::fetchPointers(UT_uint32 position, UT_uint32 count,
-									const UT_uint16** pp1, UT_uint32* pLen1,
-									const UT_uint16** pp2, UT_uint32* pLen2) const
+UT_Bool FL_BlockLayout::getSpanPtr(UT_uint32 offset, const UT_UCSChar ** ppSpan, UT_uint32 * pLength) const
 {
-  UT_uint32 iBaseAddress = getPosition();
-
-  return m_pBuffer->fetchPointers(position + iBaseAddress, count, pp1, pLen1, pp2, pLen2);
+	return m_pDoc->getSpanPtr(m_sdh, offset, ppSpan, pLength);
 }
-#endif
 
 UT_Bool FL_BlockLayout::_insertInCharWidthsArray(UT_uint32 iOffset, UT_uint32 count)
 {
@@ -710,7 +709,7 @@ UT_Bool FL_BlockLayout::_insertInCharWidthsArray(UT_uint32 iOffset, UT_uint32 co
 
 	if ((m_iCharWidthSize + count) >= m_iCharWidthSpace)
 	{
-		_growCharWidthArray();
+		_growCharWidthArray(count);
 		// TODO check result and do outofmem code
 	}
 	
@@ -947,16 +946,6 @@ void FL_BlockLayout::mergeWithNextBlock()
 	m_pNext->m_pPrev = this;
 
 	delete pNext;
-}
-
-DG_DocBuffer* FL_BlockLayout::getBuffer() const
-{
-  return m_pBuffer;
-}
-
-UT_uint32 FL_BlockLayout::getEndAddress() const
-{
-	return m_pBuffer->getMarkerPosition(m_pEndBlockMarker);
 }
 
 UT_uint32 FL_BlockLayout::_getLastChar()

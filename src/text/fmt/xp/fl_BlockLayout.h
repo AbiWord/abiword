@@ -131,13 +131,9 @@ public:
 	PT_DocPosition getPosition() const;
 	FP_Run* findPointCoords(PT_DocPosition position, UT_Bool bRight, UT_uint32& x, UT_uint32& y, UT_uint32& height);
 
-#ifdef BUFFER
-	DG_DocBuffer* getBuffer() const;
-	UT_uint32 getEndAddress() const;
-	UT_Bool fetchPointers(UT_uint32 position, UT_uint32 count,
-						  const UT_uint16** pp1, UT_uint32* pLen1,
-						  const UT_uint16** pp2, UT_uint32* pLen2) const;
+	UT_Bool getSpanPtr(UT_uint32 offset, const UT_UCSChar ** ppSpan, UT_uint32 * pLength) const;
 
+#ifdef BUFFER
 	UT_Bool		insertData(UT_UCSChar * text, UT_uint32 count);
 	UT_Bool		cmdCharDelete(UT_Bool bForward, UT_uint32 iCount);
 
@@ -171,7 +167,7 @@ protected:
 	int						m_bNeedsReformat;
 	void					_verifyCurrentSlice();
 	void					_allocateCharWidthArray();   // TODO return an error code
-	void					_growCharWidthArray();		// TODO return an error code	
+	void					_growCharWidthArray(UT_uint32 count);		// TODO return an error code	
 	UT_Bool					_insertInCharWidthsArray(UT_uint32 iOffset, UT_uint32 count);
 	UT_uint32				_getLastChar();
 	void					_purgeLayout(UT_Bool bVisible);
