@@ -321,7 +321,8 @@ PtWidget_t * AP_QNXDialog_Replace::_constructWindow(void)
 	PtSetArg(&args[n++], Pt_ARG_HEIGHT, height, 0);
 	PtSetArg(&args[n++], Pt_ARG_WIDTH, width, 0);
 	PtSetArg(&args[n++], Pt_ARG_TITLE, unixstr, 0);
-	PtSetArg(&args[n++], Pt_ARG_WINDOW_RENDER_FLAGS, 0, Ph_WM_RENDER_RESIZE);
+    PtSetArg(&args[n++], Pt_ARG_WINDOW_RENDER_FLAGS, 0, ABI_MODAL_WINDOW_RENDER_FLAGS);
+    PtSetArg(&args[n++], Pt_ARG_WINDOW_MANAGED_FLAGS, 0, ABI_MODAL_WINDOW_MANAGE_FLAGS);
 	if (m_id == AP_DIALOG_ID_FIND)
 		PtSetArg(&args[n++], Pt_ARG_WINDOW_TITLE, pSS->getValue(AP_STRING_ID_DLG_FR_FindTitle), 0);
 	else

@@ -697,6 +697,9 @@ static GR_Image * _showSplash(PtWidget_t *spwin, UT_uint32 delay)
 		PtSetArg(&args[n++], Pt_ARG_WINDOW_RENDER_FLAGS, 
 				 0, 
 				Ph_WM_RENDER_RESIZE | Ph_WM_RENDER_TITLE | Ph_WM_RENDER_MENU);
+		PtSetArg(&args[n++], Pt_ARG_WINDOW_MANAGED_FLAGS, 
+				0,
+				Ph_WM_CLOSE | Ph_WM_RESIZE | Ph_WM_HIDE | Ph_WM_MAX);
 		PtSetResources(spwin, n, args);
 		UT_QNXCenterWindow(NULL, spwin);
 
@@ -742,8 +745,31 @@ int AP_QNXApp::main(const char * szAppName, int argc, char ** argv)
 
 	XAP_Args Args = XAP_Args(argc,argv);
 
-	// Do a quick and dirty find for "-nosplash"
+	//Initial state
 	UT_Bool bShowSplash = UT_TRUE;
+	UT_Bool bShowApp = UT_TRUE;
+
+	// Do a quick and dirty find for "-to"
+	for (int k = 1; k < Args.m_argc; k++)
+ 		if (*Args.m_argv[k] == '-')
+ 			if (UT_stricmp(Args.m_argv[k],"-to") == 0)
+ 			{
+				bShowApp = UT_FALSE;
+ 				bShowSplash = UT_FALSE;
+ 				break;
+ 			}
+
+	// Do a quick and dirty find for "-show"
+ 	for (int k = 1; k < Args.m_argc; k++)
+ 		if (*Args.m_argv[k] == '-')
+ 			if (UT_stricmp(Args.m_argv[k],"-show") == 0)
+ 			{
+				bShowApp = UT_TRUE;
+ 				bShowSplash = UT_TRUE;
+ 				break;
+ 			}
+
+	// Do a quick and dirty find for "-nosplash"
 	for (int k = 1; k < Args.m_argc; k++)
 		if (*Args.m_argv[k] == '-')
 			if (UT_stricmp(Args.m_argv[k],"-nosplash") == 0)
@@ -752,9 +778,10 @@ int AP_QNXApp::main(const char * szAppName, int argc, char ** argv)
 				break;
 			}
 
+
 	//TODO: Do a PtAppInit() here with the main window being the splash screen
 	PtWidget_t *spwin;
-	spwin = PtAppInit(NULL, NULL /* argc */, NULL /* argv */, 0, NULL);
+	spwin = PtAppInit(NULL, NULL /* Args.m_argc */, NULL /* Args.m_argv */, 0, NULL);
 	if (bShowSplash) {
 		_showSplash(spwin, 2000);
 	}
@@ -762,10 +789,10 @@ int AP_QNXApp::main(const char * szAppName, int argc, char ** argv)
 		PtDestroyWidget(spwin);
 	}
 	
-	AP_QNXApp * pMyQNXApp = new AP_QNXApp(&Args, szAppName);
-	gQNXApp = pMyQNXApp;
+	AP_QNXApp * pMyQNXApp;
+	gQNXApp = pMyQNXApp = new AP_QNXApp(&Args, szAppName);
 
-	//This is used by all the timer classes
+	//This is used by all the timer classes, and should probably be in the XAP contructor
 	PtArg_t args[2];
 	PtSetArg(&args[0], Pt_ARG_REGION_FIELDS, Ph_REGION_EV_SENSE, Ph_REGION_EV_SENSE);
 	PtSetArg(&args[1], Pt_ARG_REGION_SENSE, Ph_EV_TIMER, Ph_EV_TIMER);
@@ -774,7 +801,6 @@ int AP_QNXApp::main(const char * szAppName, int argc, char ** argv)
 	PtRealizeWidget(gTimerWidget);
 
 	// if the initialize fails, we don't have icons, fonts, etc.
-	printf("App: Calling initialize \n");
 	if (!pMyQNXApp->initialize())
 	{
 		delete pMyQNXApp;
@@ -784,13 +810,10 @@ int AP_QNXApp::main(const char * szAppName, int argc, char ** argv)
 	// this function takes care of all the command line args.
 	// if some args are botched, it returns false and we should
 	// continue out the door.
-	printf("App: Calling parseCommandLine \n");
-	if (pMyQNXApp->parseCommandLine())
+	if (pMyQNXApp->parseCommandLine() && bShowApp)
 	{
-		printf("App: Turning over to photon \n");
 		PtMainLoop();
 	}
-	printf("App: Exiting \n");
 	
 	// destroy the App.  It should take care of deleting all frames.
 	pMyQNXApp->shutdown();

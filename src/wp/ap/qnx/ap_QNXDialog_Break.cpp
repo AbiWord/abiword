@@ -117,7 +117,7 @@ void AP_QNXDialog_Break::runModal(XAP_Frame * pFrame)
 
 	_storeWindowData();
 
-	UT_QNXBlockWidget(parentWindow, 1);
+	UT_QNXBlockWidget(parentWindow, 0);
 	PtDestroyWidget(mainWindow);
 }
 
@@ -178,7 +178,8 @@ PtWidget_t * AP_QNXDialog_Break::_constructWindow(void)
 	PtSetArg(&args[n++], Pt_ARG_WINDOW_TITLE, unixstr, 0);
 	PtSetArg(&args[n++], Pt_ARG_HEIGHT, height, 0);
 	PtSetArg(&args[n++], Pt_ARG_WIDTH, width, 0);
-    PtSetArg(&args[n++], Pt_ARG_WINDOW_RENDER_FLAGS, 0, Ph_WM_RENDER_RESIZE);
+    PtSetArg(&args[n++], Pt_ARG_WINDOW_RENDER_FLAGS, 0, ABI_MODAL_WINDOW_RENDER_FLAGS);
+    PtSetArg(&args[n++], Pt_ARG_WINDOW_MANAGED_FLAGS, 0, ABI_MODAL_WINDOW_MANAGE_FLAGS);
 	windowBreak = PtCreateWidget(PtWindow, NULL, n, args);
 	PtAddCallback(windowBreak, Pt_CB_WINDOW_CLOSING, s_delete_clicked, this);
 

@@ -224,7 +224,8 @@ PtWidget_t * AP_QNXDialog_Spell::_constructWindow(void)
 
 	n = 0;
     PtSetArg(&args[n++], Pt_ARG_WINDOW_TITLE, pSS->getValue(AP_STRING_ID_DLG_Spell_SpellTitle), 0);
-    PtSetArg(&args[n++], Pt_ARG_WINDOW_RENDER_FLAGS, 0, Ph_WM_RENDER_RESIZE);
+    PtSetArg(&args[n++], Pt_ARG_WINDOW_RENDER_FLAGS, 0, ABI_MODAL_WINDOW_RENDER_FLAGS);
+    PtSetArg(&args[n++], Pt_ARG_WINDOW_MANAGED_FLAGS, 0, ABI_MODAL_WINDOW_MANAGE_FLAGS);
 	windowSpell = PtCreateWidget(PtWindow, NULL, n, args);
 	PtAddCallback(windowSpell, Pt_CB_WINDOW_CLOSING, s_delete_clicked, this);
    

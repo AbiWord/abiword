@@ -37,6 +37,7 @@
 #include "ap_QNXLeftRuler.h"
 #include "ap_QNXStatusBar.h"
 #include "ap_QNXViewListener.h"
+#include "ut_Xpm2Bitmap.h"
 
 #ifdef ABISOURCE_LICENSED_TRADEMARKS
 #include "abiword_48_tm.xpm"
@@ -311,7 +312,7 @@ void AP_QNXFrame::setXScrollRange(void)
 	//PtSetArg(&args[n], Pt_ARG_SLIDER_SIZE, (int)slidersize, 0); n++;
 	PtSetResources(m_hScroll, n, args);
 
-	UT_DEBUGMSG(("X SLIDER SIZE CHANGE TO %f (max %d) \n", slidersize, newmax));
+	UT_DEBUGMSG(("X SLIDER SIZE CHANGE TO %f (max %d) ", slidersize, newmax));
 
 	/*
 	UT_Bool bDifferentPosition = (newvalue != (int)m_pHadj->value);
@@ -354,7 +355,7 @@ void AP_QNXFrame::setYScrollRange(void)
 	//PtSetArg(&args[n], Pt_ARG_SLIDER_SIZE, slidersize, 0); n++;
 	PtSetResources(m_vScroll, n, args);
 
-	UT_DEBUGMSG(("Y SLIDER SIZE CHANGE TO %f (max %d) \n", slidersize, newmax));
+	UT_DEBUGMSG(("Y SLIDER SIZE CHANGE TO %f (max %d) ", slidersize, newmax));
 
 	/*
 	UT_Bool bDifferentPosition = (newvalue != (int)m_pVadj->value);
@@ -588,9 +589,9 @@ static int _resize_mda(PtWidget_t * w, void *data, PtCallbackInfo_t *info)
 	PtWidget_t *raw = (PtWidget_t *)data;
 	PtContainerCallback_t *cbinfo = (PtContainerCallback_t *)(info->cbdata);
 
-	printf("SUCKY RESIZING to %d,%d %d,%d \n",
+	UT_DEBUGMSG(("SUCKY RESIZING to %d,%d %d,%d \n",
 		cbinfo->new_size.ul.x, cbinfo->new_size.ul.y,
-		cbinfo->new_size.lr.x, cbinfo->new_size.lr.y);
+		cbinfo->new_size.lr.x, cbinfo->new_size.lr.y));
 	PtArg_t args[2];
 	PtSetArg(&args[0], Pt_ARG_WIDTH, cbinfo->new_size.lr.x - cbinfo->new_size.ul.x, 0);
 	PtSetArg(&args[1], Pt_ARG_HEIGHT, cbinfo->new_size.lr.y - cbinfo->new_size.ul.y, 0);
@@ -770,22 +771,33 @@ void AP_QNXFrame::setStatusMessage(const char * szMsg)
 
 void AP_QNXFrame::_setWindowIcon(void)
 {
-#if 0
+	UT_DEBUGMSG(("TODO: Fix the setting of the ICON "));
+
 	// attach program icon to window
-	GtkWidget * window = getTopLevelWindow();
+	PtWidget_t * window = getTopLevelWindow();
 	UT_ASSERT(window);
 
 	// create a pixmap from our included data
-	GdkBitmap * mask;
-	GdkPixmap * pixmap = gdk_pixmap_create_from_xpm_d(window->window,
-													  &mask,
-													  NULL,
-													  abiword_48_xpm);
-	UT_ASSERT(pixmap && mask);
-		
-	gdk_window_set_icon(window->window, NULL, pixmap, mask);
-	gdk_window_set_icon_name(window->window, "AbiWord Application Icon");
-#endif
+	PhImage_t *pImage;
+	if (!(UT_Xpm2Bitmap((const char **)abiword_48_xpm, 0xdeadbeef, &pImage))) {
+		return;
+	}
+
+	PtArg_t args[5];
+	int		n;
+
+	n = 0;
+	PtWidget_t *icon = PtCreateWidget(PtIcon, window, n, args);
+	n = 0;
+	PtSetArg(&args[n++], Pt_ARG_LABEL_TYPE, Pt_IMAGE, Pt_IMAGE);
+	PtSetArg(&args[n++], Pt_ARG_LABEL_DATA, pImage, sizeof(*pImage));
+	PtSetArg(&args[n++], Pt_ARG_DIM, &pImage->size, 0);
+	PtCreateWidget(PtLabel, icon, n, args);
+
+	n = 0;
+	PtSetArg(&args[n++], Pt_ARG_ICON_WINDOW, icon, sizeof(*icon));
+	PtSetArg(&args[n++], Pt_ARG_WINDOW_RENDER_FLAGS, Ph_WM_RENDER_ASICON, Ph_WM_RENDER_ASICON);
+	PtSetResources(window, n, args);
 }
 
 UT_Error AP_QNXFrame::_replaceDocument(AD_Document * pDoc)

@@ -151,15 +151,17 @@ PtWidget_t * AP_QNXDialog_WordCount::_constructWindow(void)
 
 	n = 0;
 	PtSetArg(&args[n++], Pt_ARG_WINDOW_TITLE, pSS->getValue(AP_STRING_ID_DLG_WordCount_WordCountTitle), 0);
-	PtSetArg(&args[n++], Pt_ARG_WINDOW_RENDER_FLAGS, 0, Ph_WM_RENDER_RESIZE);
+    PtSetArg(&args[n++], Pt_ARG_WINDOW_RENDER_FLAGS, 0, ABI_MODAL_WINDOW_RENDER_FLAGS);
+    PtSetArg(&args[n++], Pt_ARG_WINDOW_MANAGED_FLAGS, 0, ABI_MODAL_WINDOW_MANAGE_FLAGS);
 	windowWordCount = PtCreateWidget(PtWindow, NULL, n, args);
 	PtAddCallback(windowWordCount, Pt_CB_WINDOW_CLOSING, s_delete_clicked, this);
 
 	n = 0;
 	PtSetArg(&args[n++], Pt_ARG_GROUP_ORIENTATION, Pt_GROUP_HORIZONTAL, 0);
 	PtSetArg(&args[n++], Pt_ARG_GROUP_ROWS_COLS, 2, 0);
-	PtSetArg(&args[n++], Pt_ARG_MARGIN_HEIGHT, 10, 0);
-	PtSetArg(&args[n++], Pt_ARG_MARGIN_WIDTH, 10, 0);
+#define MARGIN_SIZE 10 
+	PtSetArg(&args[n++], Pt_ARG_MARGIN_HEIGHT, MARGIN_SIZE, 0);
+	PtSetArg(&args[n++], Pt_ARG_MARGIN_WIDTH, MARGIN_SIZE, 0);
 	PtWidget_t *hbox = PtCreateWidget(PtGroup, windowWordCount, n, args);
 
 	n = 0;
