@@ -749,7 +749,7 @@ Defun1(fileNew)
 // TODO we want to abstract things further and make us think about
 // TODO localization of the question strings....
 
-static void s_TellSaveFailed(XAP_Frame * pFrame, const char * fileName)
+static void s_TellSaveFailed(XAP_Frame * pFrame, const char * fileName, UT_ErrorCode errorCode)
 {
 	pFrame->raise();
 
@@ -764,7 +764,12 @@ static void s_TellSaveFailed(XAP_Frame * pFrame, const char * fileName)
 
 	const XAP_StringSet * pSS = pFrame->getApp()->getStringSet();
 	
-	pDialog->setMessage(pSS->getValue(AP_STRING_ID_MSG_SaveFailed), fileName);
+	if (errorCode == -201) // We have a write error
+	  pDialog->setMessage(pSS->getValue(AP_STRING_ID_MSG_SaveFailedWrite), fileName);
+	
+	else // The generic case - should be eliminated eventually
+	  pDialog->setMessage(pSS->getValue(AP_STRING_ID_MSG_SaveFailed), fileName);
+
 	pDialog->setButtons(XAP_Dialog_MessageBox::b_O);
 	pDialog->setDefaultAnswer(XAP_Dialog_MessageBox::a_OK);
 
@@ -1296,10 +1301,12 @@ Defun(fileSave)
 	if (!pFrame->getFilename())
 		return EX(fileSaveAs);
 
-	if (!pAV_View->cmdSave())
+	UT_ErrorCode bSaved;
+	bSaved = pAV_View->cmdSave();
+	if (bSaved)
 	{
 		// throw up a dialog
-		s_TellSaveFailed(pFrame, pFrame->getFilename());
+		s_TellSaveFailed(pFrame, pFrame->getFilename(), bSaved);
 		return UT_FALSE;
 	}
 
@@ -1327,13 +1334,13 @@ Defun1(fileSaveAs)
 		return UT_FALSE;
 
 	UT_DEBUGMSG(("fileSaveAs: saving as [%s]\n",pNewFile));
-
-	UT_Bool bSaved = pAV_View->cmdSaveAs(pNewFile,(int) ieft);
-
-	if (!bSaved)
+	
+	UT_ErrorCode bSaved;
+	bSaved = pAV_View->cmdSaveAs(pNewFile, (int) ieft);
+	if (bSaved)
 	{
 		// throw up a dialog
-		s_TellSaveFailed(pFrame, pNewFile);
+		s_TellSaveFailed(pFrame, pNewFile, bSaved);
 		free(pNewFile);
 		return UT_FALSE;
 	}

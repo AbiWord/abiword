@@ -73,6 +73,7 @@ DLG_UP_PrintButton="Drucken"
 
 <Strings	class="AP"
 MSG_SaveFailed="Konnte Datei %s nicht schreiben."
+MSG_SaveFailedWrite="Konnte Datei %s nicht schreiben."
 	MSG_RevertBuffer="Revert to saved copy of %s?"
 MSG_QueryExit="Alle Fenster schließen und beenden?"
 MSG_ConfirmSave="Änderungen in %s speichern?"

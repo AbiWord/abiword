@@ -71,6 +71,7 @@ DLG_UP_InvalidPrintString="La stringa di comando per la stampa non e' valida."
 
 <Strings	class="AP"
 MSG_SaveFailed="Impossibile scrivere il file %s."
+MSG_SaveFailedWrite="Impossibile scrivere il file %s."
 MSG_RevertBuffer="Ripristina la copia salvato di %s?"
 MSG_QueryExit="Chiudere tutte le finestre ed uscire?"
 MSG_ConfirmSave="Salvare le modifice a %s?"

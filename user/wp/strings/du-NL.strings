@@ -71,6 +71,7 @@ DLG_UP_InvalidPrintString="De print opdracht is ongeldig."
 
 <Strings	class="AP"
 MSG_SaveFailed="Kon niet schrijven naar het bestand %s."
+MSG_SaveFailedWrite="Kon niet schrijven naar het bestand %s."
 MSG_RevertBuffer="Bewaarde copie van %s openen?"
 MSG_QueryExit="Sluit alle vensters en verlaat programma?"
 MSG_ConfirmSave="Bewaar veranderingen naar %s?"

@@ -77,6 +77,7 @@ DLG_UP_Color="V&#xe4;rillisen&#xe4;"
 
 <Strings	class="AP"
 MSG_SaveFailed="Ei voinut kirjoittaa tiedostoon %s."
+MSG_SaveFailedWrite="Ei voinut kirjoittaa tiedostoon %s."
 MSG_RevertBuffer="Palataanko tallennettuun kopioon %s tiedostosta?"
 MSG_QueryExit="Suljetaanko kaikki ikkunat ja poistutaan"
 MSG_ConfirmSave="Tallennetaanko muutokset %s tiedostoon?"

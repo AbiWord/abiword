@@ -74,6 +74,7 @@ DLG_UP_Color="Färger"
 
 <Strings	class="AP"
 MSG_SaveFailed="Kunde inte skriva till filen %s."
+MSG_SaveFailedWrite="Kunde inte skriva till filen %s."
 MSG_RevertBuffer="Återgå till sparad kopia av %s?"
 MSG_QueryExit="Stäng alla fönster och avsluta?"
 MSG_ConfirmSave="Spara ändringar till %s?"

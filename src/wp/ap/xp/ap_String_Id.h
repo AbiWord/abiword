@@ -26,6 +26,7 @@
 
 // Message Boxes used in AP_EditMethods
 dcl(MSG_SaveFailed,		"Could not write to the file %s.")
+dcl(MSG_SaveFailedWrite,        "Writing error when attempting to save %s")
 dcl(MSG_RevertBuffer,	"Revert to saved copy of %s?")
 dcl(MSG_QueryExit,		"Close all windows and exit?")
 dcl(MSG_ConfirmSave,	"Save changes to %s?")

@@ -146,10 +146,10 @@ UT_Bool PD_Document::newDocument(void)
 	return UT_TRUE;
 }
 
-UT_Bool PD_Document::saveAs(const char * szFilename, int ieft)
+UT_ErrorCode PD_Document::saveAs(const char * szFilename, int ieft)
 {
 	if (!szFilename)
-		return UT_FALSE;
+		return UT_SaveOtherError;
 	
 	IE_Exp * pie = NULL;
 	IEStatus ies;
@@ -158,7 +158,7 @@ UT_Bool PD_Document::saveAs(const char * szFilename, int ieft)
 	if (ies != IES_OK)
 	{
 		UT_DEBUGMSG(("PD_Document::Save -- could not construct exporter\n"));
-		return UT_FALSE;
+		return UT_SaveOtherError;
 	}
 
 	ies = pie->writeFile(szFilename);
@@ -167,7 +167,7 @@ UT_Bool PD_Document::saveAs(const char * szFilename, int ieft)
 	if (ies != IES_OK)
 	{
 		UT_DEBUGMSG(("PD_Document::Save -- could not write file\n"));
-		return UT_FALSE;
+		return UT_SaveWriteError;
 	}
 
 	// no file name currently set - make this filename the filename
@@ -180,20 +180,20 @@ UT_Bool PD_Document::saveAs(const char * szFilename, int ieft)
 	
 	char * szFilenameCopy = NULL;
     if (!UT_cloneString(szFilenameCopy,szFilename))
-		return UT_FALSE;
+		return UT_SaveOtherError;
 	m_szFilename = szFilenameCopy;
 
 	// save the type we just saved as
 	m_lastSavedAsType = (IEFileType) ieft;
 	
 	_setClean();
-	return UT_TRUE;
+	return UT_OK;
 }
 
-UT_Bool PD_Document::save(void)
+UT_ErrorCode PD_Document::save(void)
 {
 	if (!m_szFilename || !*m_szFilename)
-		return UT_FALSE;
+		return UT_SaveOtherError;
 
 	IE_Exp * pie = NULL;
 	IEStatus ies;
@@ -202,7 +202,7 @@ UT_Bool PD_Document::save(void)
 	if (ies != IES_OK)
 	{
 		UT_DEBUGMSG(("PD_Document::Save -- could not construct exporter\n"));
-		return UT_FALSE;
+		return UT_SaveOtherError;
 	}
 
 	ies = pie->writeFile(m_szFilename);
@@ -211,11 +211,11 @@ UT_Bool PD_Document::save(void)
 	if (ies != IES_OK)
 	{
 		UT_DEBUGMSG(("PD_Document::Save -- could not write file\n"));
-		return UT_FALSE;
+		return UT_SaveWriteError;
 	}
 
 	_setClean();
-	return UT_TRUE;
+	return UT_OK;
 }
 
 //////////////////////////////////////////////////////////////////

@@ -4046,23 +4046,25 @@ void FV_View::cmdRedo(UT_uint32 count)
 	}
 }
 
-UT_Bool FV_View::cmdSave(void)
+UT_ErrorCode FV_View::cmdSave(void)
 {
-	if (!m_pDoc->save())
-		return UT_FALSE;
-
-	notifyListeners(AV_CHG_SAVE);
-	return UT_TRUE;
+  UT_ErrorCode tmpVar;
+  tmpVar = m_pDoc->save();
+  if (!tmpVar)
+      notifyListeners(AV_CHG_SAVE);
+  return tmpVar;
 }
 
-UT_Bool FV_View::cmdSaveAs(const char * szFilename, int ieft)
+
+UT_ErrorCode FV_View::cmdSaveAs(const char * szFilename, int ieft)
 {
-	if (!m_pDoc->saveAs(szFilename, ieft))
-		return UT_FALSE;
-	
-	notifyListeners(AV_CHG_SAVE);
-	return UT_TRUE;
+  UT_ErrorCode tmpVar;
+  tmpVar = m_pDoc->saveAs(szFilename, ieft);
+  if (!tmpVar)
+      notifyListeners(AV_CHG_SAVE);
+  return tmpVar;
 }
+
 
 void FV_View::cmdCut(void)
 {

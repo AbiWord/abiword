@@ -77,6 +77,7 @@ DLG_UP_Color="Color"
 
 <Strings	class="AP"
 MSG_SaveFailed="És impossible escriure al fitxer %s."
+MSG_SaveFailedWrite="És impossible escriure al fitxer %s."
 MSG_RevertBuffer="Voleu obrir '%s' tal com estava la darrera vegada que es va desar?"
 MSG_QueryExit="Voleu tancar totes les finestres i sortir?"
 MSG_ConfirmSave="Voleu desar els canvis fets a %s?"

@@ -106,8 +106,8 @@ public:
 	virtual UT_Bool	canDo(UT_Bool bUndo) const;
 	virtual void	cmdUndo(UT_uint32 count);
 	virtual void	cmdRedo(UT_uint32 count);
-	virtual UT_Bool	cmdSave(void);
-	virtual UT_Bool	cmdSaveAs(const char * szFilename, int ieft);
+	virtual UT_ErrorCode	cmdSave(void);
+	virtual UT_ErrorCode	cmdSaveAs(const char * szFilename, int ieft);
 
 	UT_Bool			cmdInsertGraphic(FG_Graphic*, const char*);
 	

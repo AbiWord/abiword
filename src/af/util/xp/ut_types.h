@@ -63,6 +63,8 @@ typedef		unsigned char		UT_Bool;
 typedef		UT_sint32			UT_ErrorCode;
 #define		UT_OK				((UT_ErrorCode) 0)
 #define		UT_OUTOFMEM			((UT_ErrorCode) -100)
+#define         UT_SaveWriteError               ((UT_ErrorCode) -201)
+#define         UT_SaveOtherError               ((UT_ErrorCode) -200) // This should eventually dissapear.
 
 
 /* 

@@ -77,6 +77,7 @@ DLG_UP_Color="Couleurs"
 
 <Strings	class="AP"
 MSG_SaveFailed="Impossible d'écrire dans le fichier %s."
+MSG_SaveFailedWrite="Impossible d'écrire dans le fichier %s."
 MSG_RevertBuffer="Ouvrir '%s' tel qu'il était au dernier enregistrement?"
 MSG_QueryExit="Fermer toutes les fenêtres et quitter?"
 MSG_ConfirmSave="Voulez vous enregistrer les modifications apportées à %s?"
