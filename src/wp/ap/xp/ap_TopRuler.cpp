@@ -526,7 +526,7 @@ void AP_TopRuler::_getParagraphMarkerXCenters(AP_TopRulerInfo * pInfo,
 		}
 		else
 		{
-			*pLeft = xAbsLeft + pTInfo->m_iLeftCellPos + pTInfo->m_iLeftSpacing;
+			*pLeft = xAbsLeft + pTInfo->m_iLeftCellPos + pTInfo->m_iLeftSpacing + pInfo->m_xrLeftIndent;
 		}
 	}
 
@@ -538,7 +538,7 @@ void AP_TopRuler::_getParagraphMarkerXCenters(AP_TopRulerInfo * pInfo,
 		}
 		else
 		{
-			*pRight = xAbsLeft + pTInfo->m_iRightCellPos - pTInfo->m_iRightSpacing;
+			*pRight = xAbsLeft + pTInfo->m_iRightCellPos - pTInfo->m_iRightSpacing - pInfo->m_xrRightIndent;  
 		}
 	}
 	if (pFirstLine)
@@ -553,9 +553,9 @@ void AP_TopRuler::_getParagraphMarkerXCenters(AP_TopRulerInfo * pInfo,
 		else
 		{
 			if(bRTL)
-				*pFirstLine = xAbsLeft + pTInfo->m_iRightCellPos - pTInfo->m_iRightSpacing - pInfo->m_xrFirstLineIndent;
+				*pFirstLine = xAbsLeft + pTInfo->m_iRightCellPos - pTInfo->m_iRightSpacing - pInfo->m_xrFirstLineIndent - pInfo->m_xrRightIndent;
 			else
-				*pFirstLine = xAbsLeft + pTInfo->m_iLeftCellPos + pTInfo->m_iLeftSpacing + pInfo->m_xrFirstLineIndent;
+				*pFirstLine = xAbsLeft + pTInfo->m_iLeftCellPos + pTInfo->m_iLeftSpacing + pInfo->m_xrFirstLineIndent  + pInfo->m_xrLeftIndent;
 		}
 	}
 
@@ -1906,6 +1906,32 @@ void AP_TopRuler::mousePress(EV_EditModifierState /* ems */,
 		return;
 	}
 
+// Now hit test against the cell containers if we're in a Table context.
+
+	if(m_infoCache.m_mode == AP_TopRulerInfo::TRI_MODE_TABLE)
+	{
+		UT_sint32 i = 0;
+		bool bFound = false;
+		UT_Rect rCell;
+		for(i=0; i<= m_infoCache.m_iCells && !bFound; i++)
+		{
+			_getCellMarkerRect(&m_infoCache, i, &rCell);
+			if(rCell.containsPoint(x,y))
+			{
+				bFound = true;
+			}
+		}
+		if(bFound)
+		{
+			UT_DEBUGMSG(("hit Cell marker %d \n",i));
+			m_bValidMouseClick = true;
+			m_draggingWhat = DW_CELLMARK;
+			m_bBeforeFirstMotion = true;
+			m_pG->setCursor(GR_Graphics::GR_CURSOR_GRAB);
+			m_draggingCell = i;
+			return;
+		}
+	}
 	// finally, if nothing else, try to create a new tab
 
 	UT_Rect rZone;
@@ -2024,6 +2050,16 @@ void AP_TopRuler::mouseRelease(EV_EditModifierState /* ems */, EV_EditMouseButto
 		return;
 	}
 
+	AP_TopRulerTableInfo *pTInfo = NULL;
+	if(m_infoCache.m_mode == AP_TopRulerInfo::TRI_MODE_TABLE)
+	{
+		pTInfo = (AP_TopRulerTableInfo *) m_infoCache.m_vecTableColInfo->getNthItem(m_infoCache.m_iCurCell);
+		xAbsLeft = _getFirstPixelInColumn(&m_infoCache,m_infoCache.m_iCurrentColumn) 
+			+ pTInfo->m_iLeftCellPos + pTInfo->m_iLeftSpacing;
+		xAbsRight =  _getFirstPixelInColumn(&m_infoCache,m_infoCache.m_iCurrentColumn) 
+			+ pTInfo->m_iRightCellPos - pTInfo->m_iRightSpacing;
+	}
+
 	switch (m_draggingWhat)
 	{
 	case DW_NOTHING:
@@ -2118,6 +2154,12 @@ void AP_TopRuler::mouseRelease(EV_EditModifierState /* ems */, EV_EditMouseButto
 			// so, when we drop the left-indent, we need to reset the first-line
 			// so that the absolute position of the first-line has not changed.
 			// first-line is stored in relative terms, so we need to update it.
+
+			if(pTInfo)
+			{
+				xAbsRight = _getFirstPixelInColumn(&m_infoCache, 0)
+						+ pTInfo->m_iRightCellPos;
+			}
 
 
 			FV_View * pView = static_cast<FV_View *>(m_pView);
@@ -2295,6 +2337,14 @@ void AP_TopRuler::mouseRelease(EV_EditModifierState /* ems */, EV_EditMouseButto
 			return;
 		}
 
+	case DW_CELLMARK:
+		{
+			m_draggingWhat = DW_NOTHING;
+			FV_View * pView = static_cast<FV_View *>(m_pView);
+			notify(pView, AV_CHG_HDRFTR);
+			m_pG->setCursor(GR_Graphics::GR_CURSOR_LEFTRIGHT);
+			return;
+		}
 	default:
 		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 		m_pG->setCursor(GR_Graphics::GR_CURSOR_DEFAULT);
