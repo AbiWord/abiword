@@ -73,7 +73,9 @@ static struct _iMouse s_MouseTable[] =
 // TODO add bindings for mouse-2, mouse-3, ...
 // TODO remove the test dump binding.
 
+#if defined(PT_TEST) || defined(FMT_TEST)
 	{	EV_EMB_BUTTON3,			{ "Test_Dump",		"",				"",				""			}},
+#endif
 };
 
 static void s_loadMouse(EV_EditBindingMap * pebm)

@@ -197,7 +197,9 @@ public:
 
 	// Test routines
 
+#if defined(PT_TEST) || defined(FMT_TEST)
 	static EV_EditMethod_Fn Test_Dump;
+#endif
 };
 
 /*****************************************************************/
@@ -340,7 +342,9 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(closeWindow),			_M_,	""),
 	EV_EditMethod(NF(querySaveAndExit),		_M_,	""),
 
+#if defined(PT_TEST) || defined(FMT_TEST)
 	EV_EditMethod(NF(Test_Dump),			_M_,	"")
+#endif
 };
 
 #define NrElements(a)	((sizeof(a)/sizeof(a[0])))
@@ -1847,10 +1851,11 @@ Defun1(doubleSpace)
 	return UT_TRUE;
 }
 
+#if defined(PT_TEST) || defined(FMT_TEST)
 Defun1(Test_Dump)
 {
 	ABIWORD_VIEW;
 	pView->Test_Dump();
 	return UT_TRUE;
 }
-
+#endif
