@@ -61,14 +61,18 @@ XAP_HashDownloader::getLangNum(const char *szName)
 {
 	UT_uint32 i;
 	
-	for (i = 0; i < (sizeof (m_mapping) / sizeof (m_mapping[0])); i++) {
-		if (!strcmp(m_mapping[i].lang, szName))
-			break;
-	}
-	
-	if (i == (sizeof (m_mapping) / sizeof (m_mapping[0])))
-		return(-1);
+	UT_Vector & m_mapping = ISpellChecker::getMapping();
 
+	for (i = 0; i < m_mapping.size(); i++) 
+	  {
+	    DictionaryMapping * mapping = (DictionaryMapping*)m_mapping.getNthItem(i);
+	    if (!strcmp(mapping->lang.c_str(), szName))
+	      break;
+	  }
+	
+	if (i == m_mapping.size())
+	  return(-1);
+	
 	return(i);
 }
 

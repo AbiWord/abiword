@@ -180,9 +180,9 @@ AP_QNXHashDownloader::platformInstallPackage(XAP_Frame *pFrame, const char *szFN
 		 * Handles packages that either have just the files, or that also
 		 * contain the whole path usr/shate/AbiSuite/dictionary/
 		 */
-		sprintf(buff, "cd %susr/share/AbiSuite/dictionary/; mv %s %s-encoding %s", tmpDir, hname, hname, name);
+		sprintf(buff, "cd %susr/share/AbiSuite/dictionary/; mv %s %s", tmpDir, hname, name);
 		if ((ret = execCommand(buff))) {
-			sprintf(buff, "cd %s; mv %s %s-encoding %s", tmpDir, hname, hname, name);
+			sprintf(buff, "cd %s; mv %s %s", tmpDir, hname, name);
 			if ((ret = execCommand(buff))) {
 				fprintf(stderr, "AP_QNXHashDownloader::installPackage(): Error while moving dictionary into place\n");
 				return(ret);

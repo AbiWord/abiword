@@ -4,12 +4,14 @@
 #include "sp_spell.h"
 #include "ispell_checker.h"
 #include "ut_vector.h"
+#include "ut_xml.h"
 
 #include "xap_App.h"
 #include "ut_string_class.h"
 
 #include "ut_string.h"
 #include "ut_debugmsg.h"
+#include "ut_assert.h"
 
 // for a silly messagebox
 #include <stdio.h>
@@ -20,55 +22,116 @@
 #include "ap_HashDownloader.h"
 #endif
 
+#define DICTIONARY_LIST_FILENAME "/dictionary/ispell_dictionary_list.xml"
+
+/***************************************************************************/
+
+class ABI_EXPORT DictionaryListener : public UT_XML::Listener
+{
+public:
+  
+  explicit DictionaryListener ( UT_Vector & wordList )
+    : mList ( wordList )
+  {
+  }
+
+  virtual void startElement (const XML_Char * name, const XML_Char ** atts)
+  {
+    if ( !strcmp (name, "dictionary"))
+      {
+	DictionaryMapping * mapping = new DictionaryMapping ();
+
+	for (UT_uint32 i = 0; atts[i] != 0; i+=2)
+	  {
+	    if (!strcmp(atts[i], "tag"))
+	      mapping->lang = atts[i+1];
+	    else if (!strcmp(atts[i], "name"))
+	      mapping->dict = atts[i+1];
+	    else if (!strcmp(atts[i], "encoding"))
+	      mapping->enc = atts[i+1];
+	  }
+
+	UT_ASSERT(mapping->lang.size() != 0);
+	UT_ASSERT(mapping->dict.size() != 0);
+	if(mapping->enc.size() == 0)
+	  mapping->enc = "iso-8859-1";
+
+	UT_DEBUGMSG(("Ispell: Lang: %s Dictionary: %s Encoding: %s\n", 
+		     mapping->lang.c_str(), mapping->dict.c_str(), mapping->enc.c_str()));
+
+	mList.push_back ( mapping ) ;
+      }
+  }
+
+  virtual void endElement (const XML_Char * name)
+  {
+  }
+
+  virtual void charData (const XML_Char * buffer, int length)
+  {
+  }
+
+private:
+
+  UT_Vector & mList ;
+} ;
+
+/***************************************************************************/
+
 /*!
- * Read encoding file which must accompany dictionary hash file
- * The filename must be identical to the hash name with "-encoding"
- * appended.  The file must contain only an encoding name in ASCII
- * suitable for use with iconv.
- * 
- * \param hashname Name of spelling hash file
  */
 static void
-s_try_autodetect_charset(ispell_state_t *istate, char* hashname)
+s_try_autodetect_charset(ispell_state_t *istate, const UT_String & inEncoding)
 {
-	int len = 0 ;
-	char buf[3000];
-	FILE* f;
-	if (strlen(hashname)>(3000-15))
-		return;
-	f = fopen(UT_String_sprintf("%s-%s",hashname,"encoding").c_str(), "r");
-	if (!f)
-		return;
-	len = fread(buf,1,sizeof(buf),f);
-	if (len<=0)
-		return;
-	buf[len]=0;
-	fclose(f);
-	{
-		char* start, *p = buf;
-		while (*p==' ' || *p=='\t' || *p=='\n')
-		    ++p;
-		start = p;
-		while (!(*p==' ' || *p=='\t' || *p=='\n' || *p=='\0'))
-		    ++p;
-		*p = '\0';
-		if (!*start) /* empty enc */
-		    return;
-		istate->translate_in = UT_iconv_open(start, UCS_INTERNAL);
-		istate->translate_out = UT_iconv_open(UCS_INTERNAL, start);
-	}
+  if (inEncoding.size() > 0)
+    {
+      istate->translate_in = UT_iconv_open(inEncoding.c_str(), UCS_INTERNAL);
+      istate->translate_out = UT_iconv_open(UCS_INTERNAL, inEncoding.c_str());
+    }
+}
+
+/***************************************************************************/
+
+// declare static data
+UT_uint32 ISpellChecker::mRefCnt = 0;
+UT_Vector ISpellChecker::m_mapping;
+
+UT_Vector & ISpellChecker::getMapping()
+{
+  return m_mapping;
 }
 
 /***************************************************************************/
 
 ISpellChecker::ISpellChecker()
-  : deftflag(-1), prefstringchar(-1), m_bSuccessfulInit(false)
+  : deftflag(-1), prefstringchar(-1), m_bSuccessfulInit(false), m_pISpellState(NULL)
 {
-	m_pISpellState = NULL;
+  if ( mRefCnt == 0)
+    {
+      // load the dictionary list
+      UT_String dictionary_list ( XAP_App::getApp()->getAbiSuiteLibDir() ) ;
+      dictionary_list += DICTIONARY_LIST_FILENAME ;
+      
+      UT_DEBUGMSG(("DOM: dictionary list: %s\n", dictionary_list.c_str()));
+      
+      DictionaryListener listener(m_mapping);
+      UT_XML parser;
+      parser.setListener (&listener);      
+      parser.parse (dictionary_list.c_str()) ;
+    }
+
+  mRefCnt++;
 }
 
 ISpellChecker::~ISpellChecker()
 {
+  mRefCnt--;
+  if (mRefCnt == 0)
+    {
+      // free the elements
+      UT_VECTOR_PURGEALL(DictionaryMapping*, m_mapping);
+    }
+
 	if (!m_pISpellState)
 		return;
 
@@ -240,15 +303,9 @@ ISpellChecker::suggestWord(const UT_UCSChar *word32, size_t length)
 static void
 s_couldNotLoadDictionary ( const char * szLang )
 {
-	XAP_Frame           * pFrame = XAP_App::getApp()->getLastFocussedFrame ();
-
-#if 0
-	// this invariably happens at start up, when there is no frame yet,
-	// and generates irritating assert ...
-	UT_return_if_fail(pFrame && szLang);
-#else
 	UT_return_if_fail(szLang);
-#endif
+
+	XAP_Frame           * pFrame = XAP_App::getApp()->getLastFocussedFrame ();
 
 	if(pFrame)
 	{
@@ -311,11 +368,13 @@ ISpellChecker::loadLocalDictionary ( const char *szHash )
  * \param szLang -  The language tag ("en-US") we want to use
  * \return The name of the dictionary file
  */
-char *
+bool
 ISpellChecker::loadDictionaryForLanguage ( const char * szLang )
 {
 	char *hashname = NULL;
-	const char * szFile = NULL ;
+
+	UT_String encoding;
+	UT_String szFile;
 #ifdef HAVE_CURL
 	UT_sint32 ret;
 #endif
@@ -328,23 +387,25 @@ ISpellChecker::loadDictionaryForLanguage ( const char * szLang )
 	 * without modifying the code and recompiling.
 	 * Which should have priority when both exist?
 	 */
-	for (UT_uint32 i = 0; i < (sizeof (m_mapping) / sizeof (m_mapping[0])); i++)
+	for (UT_uint32 i = 0; i < m_mapping.size(); i++)
 	{
-		if (!strcmp (szLang, m_mapping[i].lang))
-		{
-			szFile = m_mapping[i].dict;
-			break;
-		}
+	  DictionaryMapping * mapping = (DictionaryMapping * )m_mapping.getNthItem ( i ) ;
+	  if (!strcmp (szLang, mapping->lang.c_str()))
+	    {
+	      szFile   = mapping->dict;
+	      encoding = mapping->enc;
+	      break;
+	    }
 	}
 
-	if ( szFile == NULL )
-		return NULL ;
+	if ( szFile.size () == 0 )
+		return false ;
 
 	m_pISpellState = alloc_ispell_struct();
 
-	if (!(hashname = loadGlobalDictionary(szFile)))
+	if (!(hashname = loadGlobalDictionary(szFile.c_str())))
 	{
-		if (!(hashname = loadLocalDictionary(szFile)))
+		if (!(hashname = loadLocalDictionary(szFile.c_str())))
 		{
 #ifdef HAVE_CURL
 			AP_HashDownloader *hd = (AP_HashDownloader *)XAP_App::getApp()->getHashDownloader();
@@ -353,30 +414,81 @@ ISpellChecker::loadDictionaryForLanguage ( const char * szLang )
 			setUserSaidNo(0);
 			  
 			if (!hd || ((ret = hd->suggestDownload(pFrame, szLang)) != 1)
-			  || (!(hashname = loadGlobalDictionary(szFile))
-			  && !(hashname = loadLocalDictionary(szFile))) )
+			  || (!(hashname = loadGlobalDictionary(szFile.c_str()))
+			      && !(hashname = loadLocalDictionary(szFile.c_str()))) )
 			{
 				if (hd && ret == 0)
 					setUserSaidNo(1);
-				return NULL;
+				return false;
 			}
 #else
-			return NULL;
+			return false;
 #endif
 		}
 	}
 
 	// one of the two above calls succeeded
-	return hashname ;
+	setDictionaryEncoding ( hashname, encoding.c_str() ) ;
+	return true ;
+}
+
+void
+ISpellChecker::setDictionaryEncoding  ( const char * hashname, const char * encoding )
+{
+  /* Get Hash encoding from XML file. This should always work!
+   */
+  s_try_autodetect_charset(m_pISpellState, encoding);
+
+  /* Test for utf8 first */
+  prefstringchar = findfiletype(m_pISpellState, "utf8", 1, deftflag < 0 ? &deftflag : (int *) NULL);
+  if (prefstringchar >= 0)
+    {
+      m_pISpellState->translate_in = UT_iconv_open("utf-8", UCS_INTERNAL);
+      m_pISpellState->translate_out = UT_iconv_open(UCS_INTERNAL, "utf-8");      
+    }
+  
+  /* Test for "latinN" */
+  if(!UT_iconv_isValid(m_pISpellState->translate_in))
+    {
+      UT_String teststring;
+      
+      /* Look for "altstringtype" names from latin1 to latin15 */
+      for(int n1 = 1; n1 <= 15; n1++)
+	{
+	  UT_String_sprintf(teststring, "latin%u", n1);
+	  prefstringchar = findfiletype(m_pISpellState, teststring.c_str(), 1, deftflag < 0 ? &deftflag : (int *) NULL);
+	  if (prefstringchar >= 0)
+	    {
+	      m_pISpellState->translate_in = UT_iconv_open(teststring.c_str(), UCS_INTERNAL);
+	      m_pISpellState->translate_out = UT_iconv_open(UCS_INTERNAL, teststring.c_str());
+	      break;
+	    }
+	}
+    }
+  
+  /* Test for known "hashname"s */
+  if(!UT_iconv_isValid(m_pISpellState->translate_in))
+    {
+      if( strstr( hashname, "russian.hash" ))
+	{
+	  /* ISO-8859-5, CP1251 or KOI8-R */
+	  m_pISpellState->translate_in = UT_iconv_open("KOI8-R", UCS_INTERNAL);
+	  m_pISpellState->translate_out = UT_iconv_open(UCS_INTERNAL, "KOI8-R");
+	}
+    }
+  
+  /* If nothing found, use latin1 */
+  if(!UT_iconv_isValid(m_pISpellState->translate_in))
+    {
+      m_pISpellState->translate_in = UT_iconv_open("latin1", UCS_INTERNAL);
+      m_pISpellState->translate_out = UT_iconv_open(UCS_INTERNAL, "latin1");
+    }
 }
 
 bool
 ISpellChecker::requestDictionary(const char *szLang)
 {
-	char * hashname = NULL ;
-
-	hashname = loadDictionaryForLanguage ( szLang ) ;
-	if ( !hashname )
+	if (!loadDictionaryForLanguage ( szLang ))
 	{
 #ifdef HAVE_CURL
 		/* 
@@ -392,71 +504,10 @@ ISpellChecker::requestDictionary(const char *szLang)
 
 	m_bSuccessfulInit = true;
 
-	/* Test for utf8 first */
-	/* TODO get rid of heuristic - use only *-encoding file - more deterministic, less
-	 * entropy and confusion */
-	prefstringchar = findfiletype(m_pISpellState, "utf8", 1, deftflag < 0 ? &deftflag : (int *) NULL);
-	if (prefstringchar >= 0)
-	{
-		m_pISpellState->translate_in = UT_iconv_open("utf-8", UCS_INTERNAL);
-		m_pISpellState->translate_out = UT_iconv_open(UCS_INTERNAL, "utf-8");
-
-	}
-
-	/* Test for "latinN" */
-	/* TODO get rid of heuristic - use only *-encoding file - more deterministic, less
-	 * entropy and confusion */
-	if(!UT_iconv_isValid(m_pISpellState->translate_in))
-	{
-		UT_String teststring;
-		int n1;
-
-		/* Look for "altstringtype" names from latin1 to latin15 */
-		for(n1 = 1; n1 <= 15; n1++)
-		{
-			UT_String_sprintf(teststring, "latin%u", n1);
-			prefstringchar = findfiletype(m_pISpellState, teststring.c_str(), 1, deftflag < 0 ? &deftflag : (int *) NULL);
-			if (prefstringchar >= 0)
-			{
-				m_pISpellState->translate_in = UT_iconv_open(teststring.c_str(), UCS_INTERNAL);
-				m_pISpellState->translate_out = UT_iconv_open(UCS_INTERNAL, teststring.c_str());
-				break;
-			}
-		}
-	}
-
-	/* Get Hash encoding from hash's accompanying *-encoding file */
-	/* TODO this should be the only method of finding the hash's encoding- more deterministic, less
-	 * entropy and confusion */
-	s_try_autodetect_charset(m_pISpellState, const_cast<char*>(hashname));
-
-	/* Test for known "hashname"s */
-	/* TODO get rid of heuristic - use only *-encoding file - more deterministic, less
-	 * entropy and confusion */
-	if(!UT_iconv_isValid(m_pISpellState->translate_in))
-	{
-		if( strstr( hashname, "russian.hash" ))
-		{
-			/* ISO-8859-5, CP1251 or KOI8-R */
-			m_pISpellState->translate_in = UT_iconv_open("KOI8-R", UCS_INTERNAL);
-			m_pISpellState->translate_out = UT_iconv_open(UCS_INTERNAL, "KOI8-R");
-		}
-	}
-
-	/* If nothing found, use latin1 */
-	/* TODO get rid of fallback - use only *-encoding file - more deterministic, less
-	 * entropy and confusion */
-	if(!UT_iconv_isValid(m_pISpellState->translate_in))
-	{
-		m_pISpellState->translate_in = UT_iconv_open("latin1", UCS_INTERNAL);
-		m_pISpellState->translate_out = UT_iconv_open(UCS_INTERNAL, "latin1");
-	}
-
 	if (prefstringchar < 0)
 		m_pISpellState->defdupchar = 0;
 	else
 		m_pISpellState->defdupchar = prefstringchar;
 
-	FREEP(hashname);
 	return true;
 }

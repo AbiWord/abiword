@@ -241,8 +241,8 @@ AP_HashDownloader::installPackage(XAP_Frame *pFrame, UT_String szFName, const ch
 UT_sint32
 AP_HashDownloader::platformInstallPackage(XAP_Frame *pFrame, const char *szFName, const char *szLName, XAP_HashDownloader::tPkgType pkgType)
 {
-  const char *name = NULL, *hname;
-  UT_String pName;
+  const char *name = NULL;
+  UT_String pName, hname;
   int ret;
   
   if (pkgType == pkgType_Tarball) 
@@ -272,9 +272,11 @@ AP_HashDownloader::platformInstallPackage(XAP_Frame *pFrame, const char *szFName
 	  showErrorMsg(pFrame, "AP_XXXHashDownloader::installPackage(): No matching hashname to that language\n");
 	  return (-1);
 	}
-      hname = m_mapping[langNdx].dict;
+
+      DictionaryMapping * mapping = (DictionaryMapping *)ISpellChecker::getMapping().getNthItem(langNdx);
+      hname = mapping->dict;
       
-      UT_DEBUGMSG(("AP_XXXHashDownloader::installPackage(): extracting %s to %s\n",hname, name));
+      UT_DEBUGMSG(("AP_XXXHashDownloader::installPackage(): extracting %s to %s\n",hname.c_str(), name));
       
       // ensure the dictionary directory exists
       XAP_App::getApp()->makeDirectory(name, 0750);
@@ -285,16 +287,8 @@ AP_HashDownloader::platformInstallPackage(XAP_Frame *pFrame, const char *szFName
 	}
       
       // actually extracts the hash file
-      if ((ret = UT_untgz(szFName, hname, name, NULL, NULL))) {
+      if ((ret = UT_untgz(szFName, hname.c_str(), name, NULL, NULL))) {
 	showErrorMsg(pFrame, "AP_XXXHashDownloader::installPackage(): Error while extracting hash\n");
-	return(ret);
-      }
-      
-      // ...and the -encoding file
-      UT_String enc(hname);
-      enc += "-encoding";
-      if ((ret = UT_untgz(szFName, enc.c_str(), name, NULL, NULL))) {
-	showErrorMsg(pFrame, "AP_XXXHashDownloader::installPackage(): Error while extracting hash-encoding\n");
 	return(ret);
       }
     }
@@ -302,5 +296,7 @@ AP_HashDownloader::platformInstallPackage(XAP_Frame *pFrame, const char *szFName
     {	
       return installPackageUnsupported(pFrame, szFName, szLName, pkgType);
     }
+
+  return 0;
 }
 

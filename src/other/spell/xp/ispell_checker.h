@@ -3,86 +3,15 @@
 
 #include "ispell.h"
 #include "spell_manager.h"
+#include "ut_string_class.h"
+#include "ut_vector.h"
 
-
-typedef struct {
-  char * dict;
-  char * lang;
-} Ispell2Lang_t;
-
-// please keep this ordered alphabetically by country-code
-static const Ispell2Lang_t m_mapping[] = {
-  { "catala.hash",     "ca-ES" },
-  { "czech.hash",      "cs-CZ" },
-  { "dansk.hash",      "da-DK" },
-  { "swiss.hash",      "de-CH" },
-  { "deutsch.hash",    "de-DE" },
-  { "deutsch.hash",    "de-AT" },
-  { "ellhnika.hash",   "el-GR" },
-  { "british.hash",    "en" },
-  { "british.hash",    "en-AU" },
-  { "british.hash",    "en-BZ" },
-  { "british.hash",    "en-CA" },
-  { "british.hash",    "en-GB" },
-  { "british.hash",    "en-IE" },
-  { "british.hash",    "en-JM" },
-  { "british.hash",    "en-NZ" },
-  { "american.hash",   "en-PH" },
-  { "american.hash",   "en-US" },
-  { "british.hash",    "en-TT" },
-  { "british.hash",    "en-ZA" },
-  { "british.hash",    "en-ZW" },
-  { "esperanto.hash",  "eo"    },
-  { "espanol.hash", "es-AR" },
-  { "espanol.hash", "es-BO" },
-  { "espanol.hash", "es-CL" },
-  { "espanol.hash", "es-CO" },
-  { "espanol.hash", "es-CR" },
-  { "espanol.hash", "es-DO" },
-  { "espanol.hash", "es-EC" },
-  { "espanol.hash", "es-ES" },
-  { "espanol.hash", "es-GT" },
-  { "espanol.hash", "es-HN" },
-  { "espanol.hash", "es-MX" },
-  { "espanol.hash", "es-NI" },
-  { "espanol.hash", "es-PA" },
-  { "espanol.hash", "es-PE" },
-  { "espanol.hash", "es-PR" },
-  { "espanol.hash", "es-PY" },
-  { "espanol.hash", "es-SV" },
-  { "espanol.hash", "es-UY" },
-  { "espanol.hash", "es-VE" },
-  { "finnish.hash",    "fi-FI" },
-  { "francais.hash",   "fr-BE" },
-  { "francais.hash",   "fr-CA" },
-  { "francais.hash",   "fr-CH" },
-  { "francais.hash",   "fr-FR" },
-  { "francias.hash",   "fr-LU" },
-  { "francias.hash",   "fr-MC" },
-  { "hungarian.hash",  "hu-HU" },
-  { "irish.hash",      "ga-IE" },
-  { "galician.hash",   "gl-ES" },
-  { "italian.hash",    "it-IT" },
-  { "italian.hash",    "it-CH" },
-  { "mlatin.hash",     "la-IT" },
-  { "lietuviu.hash",   "lt-LT" },
-  { "marshallese.hash","mh-MH" },
-  { "marshallese.hash","mh-NR" },
-  { "nederlands.hash", "nl-NL" },
-  { "nederlands.hash", "nl-BE" },
-  { "norsk.hash",      "nb-NO" },
-  { "nynorsk.hash",    "nn-NO" },
-  { "polish.hash",     "pl-PL" },
-  { "brazilian.hash",  "pt-BR" },
-  { "portugues.hash",  "pt-PT" },
-  { "russian.hash",    "ru-MD" },
-  { "russian.hash",    "ru-RU" },
-  { "slovensko.hash",  "sl-SI" },
-  { "svenska.hash",    "sv-SE" },
-  { "ukrainian.hash",  "uk-UA" },
-  { "yiddish-yivo.hash",	"yi" }
-};
-
+struct DictionaryMapping
+{
+  UT_String lang ; // the language tag
+  UT_String dict ; // the dictionary for the tag
+  UT_String enc  ; // the encoding of the dictionary
+} ;
 
 class ISpellChecker : public SpellChecker
 {
@@ -93,6 +22,9 @@ public:
 
 	virtual SpellCheckResult	checkWord(const UT_UCSChar* word, size_t len);
 	virtual UT_Vector*			suggestWord(const UT_UCSChar* word, size_t len);
+
+	// vector of DictionaryMapping*
+	static UT_Vector & getMapping() ;
 
 protected:
 	virtual bool requestDictionary (const char * szLang);
@@ -108,8 +40,10 @@ private:
 	void operator=(const ISpellChecker&);	// no impl
 
 	char * loadGlobalDictionary ( const char *szHash );
-	char * loadLocalDictionary ( const char *szHash );
-	char * loadDictionaryForLanguage ( const char * szLang );
+	char * loadLocalDictionary ( const char *szHash ) ;
+
+	bool   loadDictionaryForLanguage ( const char * szLang );
+	void   setDictionaryEncoding ( const char * hashname, const char * enc ) ;
 
 	/*this is used for converting form unsigned short to UCS-4*/
 
@@ -118,6 +52,9 @@ private:
 	bool m_bSuccessfulInit;
 
 	ispell_state_t	*m_pISpellState;
+
+	static UT_Vector m_mapping; // vector of DictionaryMapping*
+	static UT_uint32 mRefCnt ;
 
 #ifdef HAVE_CURL
 	UT_uint32		m_userSaidNo;
