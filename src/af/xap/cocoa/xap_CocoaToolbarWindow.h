@@ -32,6 +32,7 @@ class EV_CocoaToolbar;
 	UT_Vector * m_toolbarVector;
 	BOOL		m_lock;
 }
++ (NSRect)defaultFrame:(float)height;
 + (XAP_CocoaToolbarWindow_Controller *)sharedToolbar;
 + (XAP_CocoaToolbarWindow_Controller *)create;
 - (id)initWithWindow:(NSWindow *)window;

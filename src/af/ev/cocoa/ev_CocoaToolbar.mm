@@ -1,3 +1,5 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+
 /* AbiSource Program Utilities
  * Copyright (C) 1998 AbiSource, Inc.
  * Copyright (C) 2001-2003 Hubert Figuiere
@@ -57,7 +59,16 @@
 {
 	UT_DEBUGMSG (("@EV_CocoaToolbarTarget (id)toolbarSelected:(id)sender\n"));
 	
-	if ([sender isKindOfClass:[NSButton class]]) {
+	if ([sender isKindOfClass:[NSPopUpButton class]]) {
+		XAP_Toolbar_Id tlbrID = [sender tag];
+
+		UT_UCS4String ucsText([[sender titleOfSelectedItem] UTF8String]);
+		_xap->toolbarEvent (tlbrID, ucsText.ucs4_str(), ucsText.length());
+
+		if (XAP_Frame * pFrame = _xap->getFrame())
+			pFrame->raise();
+	}
+	else if ([sender isKindOfClass:[NSButton class]]) {
 		const UT_UCSChar * pData = NULL;
 		UT_uint32 dataLength = 0;
 		
@@ -72,8 +83,9 @@
 		}
 		_xap->toolbarEvent (tlbrID, pData, dataLength);
 	}
-	else  if ([sender isKindOfClass:[NSComboBox class]]){
+	else if ([sender isKindOfClass:[NSComboBox class]]) {
 		XAP_Toolbar_Id tlbrID = [sender tag];
+
 		NSString * str = [sender stringValue];
 		const char * text = NULL;
 	    if (tlbrID == AP_TOOLBAR_ID_FMT_SIZE)
@@ -87,6 +99,9 @@
 		UT_UCS4String ucsText(text);
 		_xap->toolbarEvent (tlbrID, ucsText.ucs4_str(), ucsText.length());
 		FREEP(text);
+
+		if (XAP_Frame * pFrame = _xap->getFrame())
+			pFrame->raise();
 	}
 	else {
 		UT_DEBUGMSG (("Unexpected object class\n"));
@@ -131,16 +146,15 @@ NSButton * EV_CocoaToolbar::_makeToolbarButton (int type, EV_Toolbar_Label * pLa
 {
 	const float BTN_WIDTH = getButtonWidth ();
 	const float BTN_HEIGHT = getButtonHeight ();
-	const float BTN_SPACE = getButtonSpace ();
 
 	NSButton * btn = nil;
 	
 	NSRect btnFrame;
-	btnFrame.origin.x = btnX;
-	btnFrame.origin.y = BTN_SPACE;
+	btnFrame.origin.x = btnX - 1.0f;
+	btnFrame.origin.y = 0;
 	btnFrame.size.width = BTN_WIDTH;
 	btnFrame.size.height = BTN_HEIGHT;
-	btnX += BTN_WIDTH + BTN_SPACE;
+	btnX += BTN_WIDTH - 3.0f;
 	
 	btn = [[NSButton alloc] initWithFrame:btnFrame];
 	switch (type) {
@@ -257,10 +271,9 @@ bool EV_CocoaToolbar::synthesize(void)
 	// TODO: rationalize those as static members of the class.
 //	const float BTN_WIDTH = getButtonWidth ();
 	const float BTN_HEIGHT = getButtonHeight ();
-	const float BTN_SPACE = getButtonSpace ();
 
 	// create a Cocoa toolbar from the info provided.
-	float btnX = BTN_SPACE;
+	float btnX = 0;
 	const EV_Toolbar_ActionSet * pToolbarActionSet = m_pCocoaApp->getToolbarActionSet();
 	UT_ASSERT(pToolbarActionSet);
 
@@ -354,30 +367,76 @@ bool EV_CocoaToolbar::synthesize(void)
 				EV_Toolbar_Control * pControl = pFactory->getControl(this, tlbrID);
 				UT_ASSERT(pControl);
 
-				// default, shouldn't be used for well-defined controls
+				bool bIsCombo = true;
+
 				float fWidth = 100;
 
 				if (pControl)
 				{
 					fWidth = pControl->getPixelWidth();
 				}
-				
-				NSRect btnFrame;
-				btnFrame.origin.x = btnX;
-				btnFrame.size.width = fWidth;
-				btnFrame.size.height = 24.0f; 
-				btnFrame.origin.y = BTN_SPACE + ((BTN_HEIGHT - btnFrame.size.height) / 2);
+				switch (tlbrID)
+				{
+				case AP_TOOLBAR_ID_ZOOM:
+					fWidth = 130;
+					break;
+				case AP_TOOLBAR_ID_FMT_STYLE:
+					fWidth = 180;
+					bIsCombo = false;
+					break;
+				case AP_TOOLBAR_ID_FMT_FONT:
+					fWidth = 180;
+					bIsCombo = false;
+					break;
+				case AP_TOOLBAR_ID_FMT_SIZE:
+					fWidth = 55;
+					break;
+				default:
+					UT_DEBUGMSG(("WARNING: adding combo control with default width.\n"));
+					break;
+				}
 
-				NSComboBox * comboBox = [[NSComboBox alloc] initWithFrame:btnFrame];
-				UT_ASSERT(comboBox);
-				[m_wToolbar addSubview:comboBox];
-				[comboBox setTag:(int)tlbrID];
-				[comboBox setFont:[NSFont systemFontOfSize:[NSFont smallSystemFontSize]]];
-				[comboBox setEditable:NO];
-				[comboBox setTarget:m_target];
-				[comboBox setAction:@selector(toolbarSelected:)];
-				btnX += [comboBox frame].size.width + BTN_SPACE;
-				// populate it
+				NSRect btnFrame;
+				btnFrame.origin.x = btnX + 1.0f;
+				btnFrame.size.width = fWidth;
+				btnFrame.size.height = (bIsCombo ? 26.0f : 25.0f);
+				btnFrame.origin.y = rintf((BTN_HEIGHT - btnFrame.size.height) / 2.0f);
+
+				NSComboBox * comboBox = 0;
+				NSPopUpButton * popupButton = 0;
+
+				if (bIsCombo)
+				{
+					comboBox = [[NSComboBox alloc] initWithFrame:btnFrame];
+					UT_ASSERT(comboBox);
+
+					[m_wToolbar addSubview:comboBox];
+
+					// [comboBox setFont:[NSFont systemFontOfSize:[NSFont smallSystemFontSize]]];
+
+					[comboBox setTag:(int)tlbrID];
+					[comboBox setEditable:NO];
+					[comboBox setTarget:m_target];
+					[comboBox setAction:@selector(toolbarSelected:)];
+
+					btnX += [comboBox frame].size.width;
+				}
+				else
+				{
+					popupButton = [[NSPopUpButton alloc] initWithFrame:btnFrame pullsDown:NO];
+					UT_ASSERT(popupButton);
+
+					[m_wToolbar addSubview:popupButton];
+
+					[popupButton setTag:(int)tlbrID];
+					[popupButton setTarget:m_target];
+					[popupButton setAction:@selector(toolbarSelected:)];
+
+					btnX += [popupButton frame].size.width;
+				}
+
+				/* populate it
+				 */
 				if (pControl)
 				{
 					pControl->populate();
@@ -393,13 +452,24 @@ bool EV_CocoaToolbar::synthesize(void)
 							const char * sz = v->getNthItem(m);
 							
 							NSString * str = [NSString stringWithUTF8String:sz];	// autoreleased
-							[comboBox addItemWithObjectValue:str];
+							if (comboBox)
+								[comboBox addItemWithObjectValue:str];
+							else
+								[popupButton addItemWithTitle:str];
 						}
-						if (items > 0) {
-							[comboBox selectItemAtIndex:0];
-							[comboBox setObjectValue:[comboBox objectValueOfSelectedItem]];
+						if (items > 0)
+						{
+							if (comboBox)
+							{
+								[comboBox selectItemAtIndex:0];
+								[comboBox setObjectValue:[comboBox objectValueOfSelectedItem]];
+							}
+							else
+							{
+								[popupButton selectItemAtIndex:0];
+							}
 						}
-						//[comboBox setNumberOfVisibleItems:items];
+						// [comboBox setNumberOfVisibleItems:items];
 					}
 				}
 				// for now, we never repopulate, so can just toss it
@@ -441,8 +511,8 @@ bool EV_CocoaToolbar::synthesize(void)
 			btnFrame.origin.x = btnX + 2.0f;
 			btnFrame.size.width = 1.0f;
 			btnFrame.size.height = BTN_HEIGHT; 
-			btnFrame.origin.y = BTN_SPACE + ((BTN_HEIGHT - btnFrame.size.height) / 2);
-			btnX += BTN_SPACE + btnFrame.size.width + 4.0f;
+			btnFrame.origin.y = (BTN_HEIGHT - btnFrame.size.height) / 2;
+			btnX += btnFrame.size.width + 3.0f;
 			
 			NSBox * box = [[NSBox alloc] initWithFrame:btnFrame];
 			UT_ASSERT(box);
@@ -565,6 +635,75 @@ bool EV_CocoaToolbar::refreshToolbar(AV_View * pView, AV_ChangeMask mask)
 				{
 					bool bGrayed = EV_TIS_ShouldBeGray(tis);
 					
+					bool bIsCombo = true;
+
+					switch (tlbrid)
+					{
+					case AP_TOOLBAR_ID_FMT_STYLE:
+					case AP_TOOLBAR_ID_FMT_FONT:
+						bIsCombo = false;
+						break;
+					case AP_TOOLBAR_ID_ZOOM:
+					case AP_TOOLBAR_ID_FMT_SIZE:
+					default:
+						break;
+					}
+					if (!bIsCombo)
+					{
+						UT_ASSERT(szState);
+						NSString * state = szState ? [NSString stringWithUTF8String:szState] : 0;
+
+						NSPopUpButton * popupButton = [m_wToolbar viewWithTag:tlbrid];
+						UT_ASSERT(popupButton);
+						UT_ASSERT([popupButton isKindOfClass:[NSPopUpButton class]]);
+
+						[popupButton setEnabled:(bGrayed ? NO : YES)];
+
+						if ((tlbrid == AP_TOOLBAR_ID_FMT_STYLE) && m_pCocoaFrame)
+						{
+							int count = [popupButton numberOfItems];
+
+							NSMutableArray * styles = [NSMutableArray arrayWithCapacity:(count ? count : 32)];
+
+							if (PD_Document * pDoc = static_cast<PD_Document *>(m_pCocoaFrame->getCurrentDoc()))
+								{
+									const char * szName = 0;
+									const PD_Style * pStyle = 0;
+
+									for (UT_uint32 k = 0; (pDoc->enumStyles(k, &szName, &pStyle)); k++)
+										if (szName)
+											{
+												[styles addObject:[NSString stringWithUTF8String:szName]];
+											}
+									// TODO: Make style names reflect properties such as: font, size, alignment ??
+								}
+							[styles sortUsingSelector:@selector(compare:)];
+
+							[popupButton removeAllItems];
+							[popupButton addItemsWithTitles:styles];
+						}
+						if ((tlbrid == AP_TOOLBAR_ID_FMT_FONT) && state)
+							if ([popupButton indexOfItemWithTitle:state] < 0)
+							{
+								int count = [popupButton numberOfItems];
+
+								NSMutableArray * fonts = [NSMutableArray arrayWithCapacity:(count + 1)];
+
+								for (int i = 0; i < count; i++)
+									[fonts addObject:[popupButton itemAtIndex:i]];
+
+								[fonts addObject:state]; // use attributed strings? mark absent fonts in red? [TODO]
+								[fonts sortUsingSelector:@selector(compare:)];
+
+								[popupButton removeAllItems];
+								[popupButton addItemsWithTitles:fonts];
+							}
+						if (state)
+							[popupButton selectItemWithTitle:state];
+
+						break;
+					}
+
 					NSComboBox * item = [m_wToolbar viewWithTag:tlbrid];
 					UT_ASSERT(item);
 					UT_ASSERT([item isKindOfClass:[NSComboBox class]]);
@@ -664,6 +803,7 @@ void EV_CocoaToolbar::hide(void)
  */
 bool EV_CocoaToolbar::repopulateStyles(void)
 {
+#if 0
 	XAP_Toolbar_ControlFactory * pFactory = m_pCocoaApp->getControlFactory();
 	UT_ASSERT(pFactory);
 	EV_Toolbar_Control * pControl = pFactory->getControl(this, AP_TOOLBAR_ID_FMT_STYLE);
@@ -708,9 +848,6 @@ bool EV_CocoaToolbar::repopulateStyles(void)
 //
 // I think we've finished!
 //
+#endif
 	return true;
 }
-
-
-
-

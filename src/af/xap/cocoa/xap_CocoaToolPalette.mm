@@ -1150,12 +1150,25 @@ static XAP_CocoaToolPalette * s_instance = 0;
 				const char * szName = 0;
 				const PD_Style * pStyle = 0;
 
+				NSMutableArray * styles = [NSMutableArray arrayWithCapacity:32];
+
 				for (UT_uint32 k = 0; (pDoc->enumStyles(k, &szName, &pStyle)); k++)
 					if (szName)
 						{
-							[oDocumentStyle addItemWithTitle:[NSString stringWithUTF8String:szName]];
+#if 1
+							[styles addObject:[NSString stringWithUTF8String:szName]];
+#else
+							// TODO: Make style names reflect properties such as: font, size, alignment ??
+							NSString * name = [NSString stringWithUTF8String:szName];
+
+							NSDictionary * attr = TODO
+
+							[oDocumentStyle addItemWithTitle:[NSAttributedString initWithString:name attributes:attr]];
+#endif
 						}
-				// TODO: Make style names reflect properties such as: font, size, alignment ??
+				[styles sortUsingSelector:@selector(compare:)];
+
+				[oDocumentStyle addItemsWithTitles:styles];
 
 				const EV_Toolbar_Action * pAction = m_pToolbarActionSet->getAction(AP_TOOLBAR_ID_FMT_STYLE);
 				UT_ASSERT(pAction);
@@ -1196,7 +1209,7 @@ static XAP_CocoaToolPalette * s_instance = 0;
 
 							if (![m_pFontFamilies containsObject:selection])
 								{
-									[m_pFontFamilies addObject:selection];
+									[m_pFontFamilies addObject:selection]; // use attributed strings? mark absent fonts in red? [TODO]
 									[m_pFontFamilies sortUsingSelector:@selector(compare:)];
 
 									[oFontName removeAllItems];

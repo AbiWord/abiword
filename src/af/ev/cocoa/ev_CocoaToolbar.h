@@ -1,3 +1,5 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+
 /* AbiSource Program Utilities
  * Copyright (C) 1998 AbiSource, Inc.
  * Copyright (C) 2001-2003 Hubert Figuiere
@@ -72,10 +74,9 @@ public:
 					{ return 34.0f; };
 	static	float	getButtonHeight (void)
 					{ return 34.0f; };
-	static	float	getButtonSpace (void) 
-					{ return 1.0f; };
+
 	static float  getToolbarHeight(void)
-					{ return getButtonHeight() + (getButtonSpace() * 2); };
+					{ return getButtonHeight(); };
 	
 	NSView*	_getToolbarView(void) const 
 				{ return m_wToolbar; };

@@ -1,3 +1,5 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+
 /* AbiSource Program Utilities
  * Copyright (C) 2002-2004 Hubert Figuiere
  * 
@@ -46,17 +48,22 @@ static XAP_CocoaToolbarWindow_Controller * pSharedToolbar = nil;
 
 @implementation XAP_CocoaToolbarWindow_Controller
 
++ (NSRect)defaultFrame:(float)height
+{
+	NSRect windowFrame = [[NSScreen mainScreen] visibleFrame];
+
+	windowFrame.origin.y   += windowFrame.size.height - height;
+	windowFrame.size.height = height;
+
+	return windowFrame;
+}
+
 + (XAP_CocoaToolbarWindow_Controller *)create
 {
 	UT_DEBUGMSG (("Cocoa: @XAP_CocoaToolbarWindow create\n"));
 
-	NSScreen * mainScreen = [NSScreen mainScreen];
-	NSRect screenFrame = [mainScreen visibleFrame];
-	NSRect windowFrame;
-	windowFrame.size.height = 100.0f;	// TODO calc the bottom
-	windowFrame.size.width = screenFrame.size.width;
-	windowFrame.origin.x = screenFrame.origin.x;
-	windowFrame.origin.y = screenFrame.origin.y + (screenFrame.size.height - windowFrame.size.height);		
+	NSRect windowFrame = [XAP_CocoaToolbarWindow_Controller defaultFrame:100.0f]; // TODO calc the bottom
+
 	NSWindow * myWindow = [[XAP_CocoaToolbarWindow alloc] initWithContentRect:windowFrame styleMask:NSBorderlessWindowMask 
 											backing:NSBackingStoreBuffered defer:YES];
 	UT_ASSERT (myWindow);
@@ -137,7 +144,13 @@ static XAP_CocoaToolbarWindow_Controller * pSharedToolbar = nil;
 {
 	UT_ASSERT(frame);
 	NSArray* toolbars = [frame getToolbars];
+
 	int count = [toolbars count];
+	if (!count) {
+		[[self window] orderOut:self];
+		return;
+	}
+
 	float height = count * EV_CocoaToolbar::getToolbarHeight();
 	
 	NSRect bounds = [[self window] frame];
@@ -158,6 +171,8 @@ static XAP_CocoaToolbarWindow_Controller * pSharedToolbar = nil;
 		[obj setFrame:bounds];
 		currentY -= EV_CocoaToolbar::getToolbarHeight();
 	}
+
+	[[self window] orderFront:self];
 }
 
 
@@ -188,7 +203,6 @@ static XAP_CocoaToolbarWindow_Controller * pSharedToolbar = nil;
 
 	[self removeAllToolbars];
 	[self _showAllToolbars:frame];
-	[[self window] orderFront:self];
 }
 
 
@@ -204,6 +218,4 @@ static XAP_CocoaToolbarWindow_Controller * pSharedToolbar = nil;
 	[[self window] orderOut:self];
 }
 
-
 @end
-
