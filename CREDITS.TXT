@@ -15,7 +15,7 @@ Dom Lachowicz <dominicl@seas.upenn.edu>
 
 contributors
 ------------
-Pierre Abbat <phma@oltronics.net>               LaTeX Testing, Help translation, font work
+Pierre Abbat <phma@webjockey.net>               LaTeX Testing, Help translation, font work
 Ithamar R. Adema <ithamar@dds.nl>               BeOS fixes
 Matthew Allen <fret@ozemail.com.au>             MouseWheel fix
 John Anderson <panic-abi@semiosix.com>			Win32 Slurp functionality
@@ -51,7 +51,7 @@ Harald Fernengel <harry@bnro.de>                RTF compatibility fixes
 Hubert Figuiere <hfiguiere@teaser.fr>           RTF import/export work, MacOS (X) maintainer, MacOS X makefiles and autoconf, JPEG import, Applix import
 Albert Fluegel <albert.fluegel@hl.siemens.de>   Solaris
 Ben Fowler <bpfowler@hotmail.com>               MacOS 8/9 work
-Anthony Fok <anthony@thizlinux.com>             Translation Fixes for zn-CH
+Anthony Fok <anthony@thizlinux.com>             Translation Fixes for zh-CN
 F J Franklin <F.J.Franklin@sheffield.ac.uk>     SVG work.
 Stephane Fritsch <sfritsch@noos.fr>             BeOS
 Tomas Frydrych <tomas@frydrych.uklinux.net>     ttf, utf8 locale, bidi
@@ -200,6 +200,8 @@ Martin Lacko <lacko@host.sk>                    Slovak
 Christian Terboven <cterboven@gmx.net>          German
 Owen Thomas <owen@llanilar.freeserve.co.uk>     Welsh
 Andraz Tori                                     Slovenian (sl-SI)
+J. Marc Maurer <j.m.maurer@student.utwente.nl>  Dutch
+Alper <shullgum@yahoo.com>			Turkish
 
 unsung heroes
 -------------
