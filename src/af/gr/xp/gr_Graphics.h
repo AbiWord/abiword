@@ -601,6 +601,18 @@ class ABI_EXPORT GR_Graphics
 	
 	virtual bool canBreak(GR_RenderInfo & ri, UT_sint32 &iNext, bool bAfter) VIRTUAL_SFX;
 
+	// indicates if special caret positioning has to be done for the run of text; this allows us
+	// to speed things up when this is not needed
+	virtual bool needsSpecialCaretPositioning(GR_RenderInfo & ri) VIRTUAL_SFX {return false;}
+	
+	// adjusts caret position if given script restricts where caret can be placed
+	// the caller has to set initial position within the run in ri.m_iOffset, overall length of
+	// the run in ri.m_iLength and provide a text iterator over the text of the run in ri.m_pText
+	// 
+	// return value is the adjusted offset
+	// the default implementation simply returns the passed value
+	virtual UT_uint32 adjustCaretPosition(GR_RenderInfo & ri, bool bForward) VIRTUAL_SFX;
+
 	// the AbiWord line breaking was designed looking for breaks at the right edge of a character,
 	// i.e., the character that can break is included with the left part of the split run.
 	// the Uniscribe library, however, holds breaking info for left edge, and sometimes it is useful

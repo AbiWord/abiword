@@ -93,6 +93,10 @@ public:
 	
 	virtual UT_sint32 getTextWidth(const GR_RenderInfo & ri) const;
 
+	virtual bool      needsSpecialCaretPositioning(GR_RenderInfo & ri);
+	virtual UT_uint32 adjustCaretPosition(GR_RenderInfo & ri, bool bForward);
+	
+
   protected:
 	inline bool       _needsSpecialBreaking(GR_Win32USPRenderInfo &ri);
 	inline bool       _needsSpecialCaretPositioning(GR_Win32USPRenderInfo &ri);

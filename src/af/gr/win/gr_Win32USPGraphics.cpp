@@ -1185,6 +1185,54 @@ bool GR_Win32USPGraphics::_needsSpecialBreaking(GR_Win32USPRenderInfo &ri)
 	return (s_ppScriptProperties[ri.m_pItem->getType()]->fNeedsWordBreaking != 0);
 }
 
+UT_uint32 GR_Win32USPGraphics::adjustCaretPosition(GR_RenderInfo & ri, bool bForward)
+{
+	// for now we will call ScriptBreak from here; since most of the time caret changes happen on
+	// the same line, this should not be a performance problem
+	UT_return_val_if_fail(ri.getType() == GRRI_WIN32_UNISCRIBE, ri.m_iOffset);
+	GR_Win32USPRenderInfo & RI = (GR_Win32USPRenderInfo &)ri;
+
+	if(!_needsSpecialCaretPositioning(RI))
+		return ri.m_iOffset;
+
+	if(!_scriptBreak(RI))
+		return ri.m_iOffset;
+
+	UT_sint32 iPos = (UT_sint32)ri.m_iOffset;
+	
+	if(bForward)
+	{
+		while(iPos < ri.m_iLength && !RI.s_pLogAttr[iPos].fCharStop)
+			iPos++;
+
+		// iPos == m_iLength, we reached the end of the run -- we will assumed the position
+		// immediately after the run implicitely valid, so we do no adjustments.
+	}
+	else
+	{
+		while(iPos >= 0 && !RI.s_pLogAttr[iPos].fCharStop)
+			iPos--;
+
+		if(iPos < 0)
+		{
+			// it would seem that the runs starts in illegal character; we return 0
+			iPos = 0;
+		}
+		
+	}
+
+	return (UT_uint32)iPos;
+}
+
+bool GR_Win32USPGraphics::needsSpecialCaretPositioning(GR_RenderInfo & ri)
+{
+	UT_return_val_if_fail(ri.getType() == GRRI_WIN32_UNISCRIBE, false);
+	GR_Win32USPRenderInfo & RI = (GR_Win32USPRenderInfo &)ri;
+	
+	return _needsSpecialCaretPositioning(RI);
+}
+	
+
 bool GR_Win32USPGraphics::_needsSpecialCaretPositioning(GR_Win32USPRenderInfo &ri)
 {
 	UT_return_val_if_fail(s_ppScriptProperties && ri.m_pItem, false);

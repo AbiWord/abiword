@@ -1269,6 +1269,10 @@ void GR_Graphics::positionToXY(const GR_RenderInfo & ri,
 	UT_return_if_fail(UT_NOT_IMPLEMENTED);
 }
 
+UT_uint32 GR_Graphics::adjustCaretPosition(GR_RenderInfo & ri, bool bForward)
+{
+	return ri.m_iOffset;
+}
 
 #endif // #ifndef ABI_GRAPHICS_PLUGIN
 

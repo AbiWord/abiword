@@ -280,6 +280,9 @@ public:
 	fp_Run *			getNextVisual();
 	fp_Run *			getPrevVisual();
 
+	virtual UT_uint32   adjustCaretPosition(UT_uint32 iDocumentPosition, bool bForward)
+	                           { return iDocumentPosition;}
+
 	bool                containsRevisions(){return (m_pRevisions != NULL);}
 	// would prefer to make the return value const, but the
 	// getLastRevision() and related functions use internal cache so

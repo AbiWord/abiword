@@ -4427,6 +4427,31 @@ bool FV_View::_charMotion(bool bForward,UT_uint32 countChars, bool bSkipCannotCo
 	{
 		_setPoint(iRunEnd - 1);
 	}
+
+	// now have the get the run that actualy holds this position, and let it do any internal
+	// adjustments (as needed for complex scripts, e.g., Thai) not sure whether this should not come
+	// after the footnote sweep
+	if(bSkipCannotContainPoint)
+	{
+		
+		pBlock = _findBlockAtPosition(getPoint());
+		UT_return_val_if_fail( pBlock, false );
+
+		pRun = pBlock->findRunAtOffset(getPoint() - pBlock->getPosition());
+
+		// at the end of document we do not have a run ...
+		if(pRun)
+		{
+			UT_uint32 iAdjustedPos = pRun->adjustCaretPosition(getPoint(), bForward);
+
+			if(iAdjustedPos != getPoint())
+			{
+				UT_DEBUGMSG(("FV_View::_charMotion: orig pos %d, adjusted to %d\n", getPoint(), iAdjustedPos));
+				_setPoint(iAdjustedPos);
+			}
+		}
+	}
+	
 //
 // OK sweep through footnote sections without stopping
 	xxx_UT_DEBUGMSG(("Point is %d inFootnote %d bOldFootnote %d \n",m_iInsPoint,isInFootnote(),iOldDepth));
