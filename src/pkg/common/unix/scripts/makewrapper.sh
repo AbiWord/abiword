@@ -43,6 +43,8 @@ cat >$LIBEXECDIR/$PROGRAM_NAME<<EOF
 # AbiSuite program wrapper script, dynamically generated
 # from abi/src/pkg/common/unix/scripts/makewrapper.sh.
 
+currentFonts=\`xset q | grep Abi\`
+
 # Change this if you move the AbiSuite tree.
 ABISUITE_HOME=$INSTALL_BASE
 export ABISUITE_HOME
@@ -75,11 +77,14 @@ else
     echo ""
     exit
 fi
-
-# Set post run-time font path
-if [ -d \$ABISUITE_FONT_HOME ]
+#Check to make sure we don't stomp on anything
+if [ -z \$currentFonts ]
 then
-    xset fp- \$ABISUITE_FONT_HOME 1>/dev/null 2>/dev/null
+    # Set post run-time font path
+    if [ -d \$ABISUITE_FONT_HOME ]
+    then
+	xset fp- $ABISUITE_FONT_HOME 1>/dev/null 2>/dev/null
+    fi
 fi
 EOF
 
