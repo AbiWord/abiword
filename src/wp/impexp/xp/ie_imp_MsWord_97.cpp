@@ -353,6 +353,8 @@ s_fieldFontForListStyle (MSWordListIdType id)
 	  return "Symbol";
 
 	case WLNF_ORDINAL: // ordinal
+		return "Times New Roman";
+		
 	default:
 		UT_DEBUGMSG(("unknown list type %d field-font set to Times New Roman \n",id));
 	  return "Times New Roman";
@@ -4585,7 +4587,15 @@ bool IE_Imp_MsWord_97::_appendFmt(const XML_Char ** attributes)
 	return getDoc()->appendFmt(attributes);
 }
 
-
+/*!
+    The append*HdrFtr() methods below are needed because in AW headers
+    cannot be shared among sections; in contrast in Word one header
+    can be used by a chain of sections. We get around it by
+    duplicating that one header for each section that uses it. Since
+    we cannot wind back throught the data stream we have to duplicate
+    each shared header as we go using the info stored in the current
+    header's d struct.
+*/
 bool IE_Imp_MsWord_97::_appendStruxHdrFtr(PTStruxType pts, const XML_Char ** attributes)
 {
 	UT_return_val_if_fail(m_bInHeaders,false);
