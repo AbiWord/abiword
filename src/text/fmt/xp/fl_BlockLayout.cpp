@@ -1128,11 +1128,11 @@ static UT_Bool doesTouch(fl_PartOfBlock *pPOB, UT_uint32 offset, UT_uint32 lengt
 	start2 = offset;
 	end2 =   offset + length;
 
-	if (end1+1 == start2)
+	if (end1 == start2)
 	{
 		return UT_TRUE;
 	}
-	if (end2+1 == start1)
+	if (end2 == start1)
 	{
 		return UT_TRUE;
 	}
@@ -1150,9 +1150,6 @@ static UT_Bool doesTouch(fl_PartOfBlock *pPOB, UT_uint32 offset, UT_uint32 lengt
 	return UT_FALSE;
 }
 
-
-
-
 void fl_BlockLayout::_addPartNotSpellChecked(UT_uint32 iOffset, UT_uint32 iLen)
 {
 	/*
@@ -1167,13 +1164,18 @@ void fl_BlockLayout::_addPartNotSpellChecked(UT_uint32 iOffset, UT_uint32 iLen)
 
 	const UT_UCSChar* pBlockText = pgb.getPointer(0);
 
+	while ((iOffset > 0) && UT_isWordDelimiter(pBlockText[iOffset]))
+	{
+		iOffset--;
+	}
+
 	while ((iOffset > 0) && !UT_isWordDelimiter(pBlockText[iOffset]))
 	{
 		iOffset--;
 	}
-	while ((iOffset > 0) && !UT_isWordDelimiter(pBlockText[iOffset]))
+	if (UT_isWordDelimiter(pBlockText[iOffset]))
 	{
-		iOffset--;
+		iOffset++;
 	}
 
 	UT_uint32 iBlockSize = pgb.getLength();
@@ -2278,7 +2280,7 @@ void fl_BlockLayout::findSquigglesForRun(fp_Run* pRun)
 #endif
 	
 	pPOB = (fl_PartOfBlock *) m_lstSpelledWrong.head();
-	while (NULL != pPOB)
+	while (pPOB)
 	{
 		if ((pPOB->iOffset == runBlockOffset) && (pPOB->iLength == runLength))
 		{
