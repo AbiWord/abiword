@@ -38,6 +38,7 @@ libXap_cocoa_a_SOURCES =		\
 	xap_CocoaDlg_Insert_Symbol.mm \
 	xap_CocoaDlg_Language.mm \
 	xap_CocoaDlg_MessageBox.mm	\
+	xap_CocoaDlg_Password.mm	\
 	xap_CocoaDlg_PluginManager.mm	\
 	xap_CocoaDlg_WindowMore.mm	\
 	xap_CocoaDlg_Zoom.mm	\

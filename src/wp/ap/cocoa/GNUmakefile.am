@@ -32,9 +32,16 @@ libWpAp_cocoa_a_SOURCES=\
 	ap_CocoaDialogFactory.mm	\
 	ap_CocoaDialog_Break.mm	\
 	ap_CocoaDialog_Columns.mm	\
+	ap_CocoaDialog_Field.mm	\
 	ap_CocoaDialog_FormatFootnotes.mm	\
+	ap_CocoaDialog_FormatTable.mm	\
+	ap_CocoaDialog_Goto.mm	\
 	ap_CocoaDialog_Insert_DateTime.mm	\
+	ap_CocoaDialog_InsertBookmark.mm	\
+	ap_CocoaDialog_InsertHyperlink.mm	\
+	ap_CocoaDialog_InsertTable.mm	\
 	ap_CocoaDialog_Lists.mm	\
+	ap_CocoaDialog_MergeCells.mm	\
 	ap_CocoaDialog_MetaData.mm	\
 	ap_CocoaDialog_New.mm	\
 	ap_CocoaDialog_Options.mm	\
