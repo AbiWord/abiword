@@ -302,7 +302,7 @@ ifeq ($(OS_NAME), MACOSX)
 ABI_XAP_INCS+= /af/util/unix
 endif 
 
-ABI_OTH_INCS=	/other/spell \
+ABI_OTH_INCS=	/other/spell/xp \
                 /other/fribidi
 
 ifdef ABI_OPT_LIBXML2
