@@ -172,6 +172,13 @@ ABI_OPT_PEER_EXPAT?=1
 # add wv's mini glib to include list
 ABI_OTH_INCS+=	/../../wv/glib-wv
 
+# zlib
+ABI_ZLIB_ROOT = $(ABI_ROOT)/../libs/zlib
+ABI_ZLIB_INC = $(ABI_ZLIB_ROOT)/include
+ABI_ZLIB_LIB = $(ABI_ZLIB_ROOT)/lib/zdll
+ABI_LIBS += $(ABI_ZLIB_LIB)
+
+
 # so <fribidi.h> works
 CFLAGS += -I$(ABI_ROOT)/../fribidi	
 
