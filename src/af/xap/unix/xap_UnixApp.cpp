@@ -49,6 +49,7 @@
 #include "xap_UnixNullGraphics.h"
 #include "xap_UnixPSGraphics.h"
 #include "gr_UnixGraphics.h"
+#include "gr_UnixPangoGraphics.h"
 
 UnixNull_Graphics * abi_unixnullgraphics_instance = 0;
 
@@ -95,7 +96,15 @@ XAP_UnixApp::XAP_UnixApp(XAP_Args * pArgs, const char * szAppName)
 									  UnixNull_Graphics::graphicsDescriptor,
 									  UnixNull_Graphics::s_getClassId());
 
+		
 		UT_ASSERT( bSuccess );
+#if 0
+		bSuccess = pGF->registerClass(GR_UnixPangoGraphics::graphicsAllocator,
+									  GR_UnixPangoGraphics::graphicsDescriptor,
+									  GR_UnixPangoGraphics::s_getClassId());
+
+		UT_ASSERT( bSuccess );
+#endif
 	}
 
 	/* We need to link UnixNull_Graphics because the AbiCommand
@@ -163,7 +172,7 @@ XAP_Toolbar_ControlFactory * XAP_UnixApp::getControlFactory()
 	return &m_controlFactory;
 }
 
-XAP_UnixFontManager * XAP_UnixApp::getFontManager()
+XAP_UnixFontManager * XAP_UnixApp::getFontManager() const
 {
 	return m_fontManager;
 }

@@ -40,6 +40,8 @@ class AP_UnixFrameImpl : public XAP_UnixFrameImpl
 	virtual UT_RGBColor getColorSelBackground () const;
 	virtual UT_RGBColor getColorSelForeground () const;
 
+	GtkWidget * getDrawingArea() const {return m_dArea;}
+	
  protected:
 	friend class AP_UnixFrame;
 	void _showOrHideStatusbar(void);

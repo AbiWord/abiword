@@ -67,6 +67,8 @@ public:
 	virtual bool					initialize(bool has_display);
 	virtual XAP_Frame *				newFrame(void);
 	virtual bool					forgetFrame(XAP_Frame * pFrame);
+	virtual GR_Graphics *           newDefaultScreenGraphics() const;
+
 	virtual bool					shutdown(void);
 	virtual bool					getPrefsValueDirectory(bool bAppSpecific,
 									       const XML_Char * szKey, const XML_Char ** pszValue) const;

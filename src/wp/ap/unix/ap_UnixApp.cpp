@@ -1316,6 +1316,22 @@ GR_Image * AP_UnixApp::_showSplash(UT_uint32 delay)
     return pSplashImage;
 }
 
+GR_Graphics * AP_UnixApp::newDefaultScreenGraphics() const
+{
+	XAP_Frame * pFrame = findValidFrame();
+	UT_return_val_if_fail( pFrame, NULL );
+	
+	AP_UnixFrameImpl * pFI = static_cast<AP_UnixFrameImpl *>(pFrame->getFrameImpl());
+	UT_return_val_if_fail( pFI, NULL );
+
+	GtkWidget * da = pFI->getDrawingArea();
+	UT_return_val_if_fail( da, NULL );
+	
+	GR_UnixAllocInfo ai(da->window, getFontManager(), m_pApp);
+	return XAP_App::getApp()->newGraphics(ai);
+}
+
+
 /*****************************************************************/
 
 int AP_UnixApp::main(const char * szAppName, int argc, const char ** argv)

@@ -70,7 +70,7 @@ public:
 																const char **pszFormatFound) = 0;
 	virtual void							cacheCurrentSelection(AV_View *) = 0;
 
-	XAP_UnixFontManager *					getFontManager();
+	XAP_UnixFontManager *					getFontManager() const;
 	
 	enum
 	{
