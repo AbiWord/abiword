@@ -62,31 +62,31 @@ class AP_CocoaDialog_MetaData;
 - (IBAction)okBtnAction:(id)sender;
 
 - (NSString*)GUITitle;
-- (void)setGUITitle:(const UT_String&)str;
+- (void)setGUITitle:(const UT_UTF8String&)str;
 - (NSString*)GUISubject;
-- (void)setGUISubject:(const UT_String&)str;
+- (void)setGUISubject:(const UT_UTF8String&)str;
 - (NSString*)GUIAuthor;
-- (void)setGUIAuthor:(const UT_String&)str;
+- (void)setGUIAuthor:(const UT_UTF8String&)str;
 - (NSString*)GUIPublisher;
-- (void)setGUIPublisher:(const UT_String&)str;
+- (void)setGUIPublisher:(const UT_UTF8String&)str;
 - (NSString*)GUICoAuthor;
-- (void)setGUICoAuthor:(const UT_String&)str;
+- (void)setGUICoAuthor:(const UT_UTF8String&)str;
 - (NSString*)GUICategory;
-- (void)setGUICategory:(const UT_String&)str;
+- (void)setGUICategory:(const UT_UTF8String&)str;
 - (NSString*)GUIKeywords;
-- (void)setGUIKeywords:(const UT_String&)str;
+- (void)setGUIKeywords:(const UT_UTF8String&)str;
 - (NSString*)GUILanguages;
-- (void)setGUILanguages:(const UT_String&)str;
+- (void)setGUILanguages:(const UT_UTF8String&)str;
 - (NSString*)GUISource;
-- (void)setGUISource:(const UT_String&)str;
+- (void)setGUISource:(const UT_UTF8String&)str;
 - (NSString*)GUIRelation;
-- (void)setGUIRelation:(const UT_String&)str;
+- (void)setGUIRelation:(const UT_UTF8String&)str;
 - (NSString*)GUICoverage;
-- (void)setGUICoverage:(const UT_String&)str;
+- (void)setGUICoverage:(const UT_UTF8String&)str;
 - (NSString*)GUIRights;
-- (void)setGUIRights:(const UT_String&)str;
+- (void)setGUIRights:(const UT_UTF8String&)str;
 - (NSString*)GUIDescription;
-- (void)setGUIDescription:(const UT_String&)str;
+- (void)setGUIDescription:(const UT_UTF8String&)str;
 @end
 
 /*****************************************************************/
