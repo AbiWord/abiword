@@ -174,7 +174,7 @@ protected:
 
 private:
 	void 					_constructorCommonCode(HDC);
-	UT_UCSChar*				_remapGlyphs(const UT_UCSChar* pChars, int iCharOffset, int &iLength);
+	UT_UCSChar*				_remapGlyphs(const UT_UCSChar* pChars, int iCharOffset, int iLength);
 
 	DWORD					m_clrXorPen;
 	HPEN					m_hXorPen;

@@ -67,13 +67,8 @@ void GR_Win32CharWidths::setCharWidthsOfRange(HDC hdc, UT_UCSChar c0, UT_UCSChar
 	{
 		for (k=c0; k<=c1; k++)
 		{
-			if(k == 0x200B || k == 0xFEFF)
-				setWidth(k,0);
-			else
-			{
-				GetCharWidth32W(hdc,k,k,&w);
-				setWidth(k,w);
-			}
+			GetCharWidth32W(hdc,k,k,&w);
+			setWidth(k,w);
 		}
 	}
 	else
@@ -101,16 +96,11 @@ void GR_Win32CharWidths::setCharWidthsOfRange(HDC hdc, UT_UCSChar c0, UT_UCSChar
 			// Unicode font and default character sets
 			for (k=c0; k<=c1; k++)
 			{
-				if( k == 0x200B || 0xFEFF)
-					setWidth(k,0);
-				else
-				{
-					SIZE Size;
-					wchar_t sz1[2];
-					sz1[0] = k;
-					GetTextExtentPoint32W(hdc, sz1, 1, &Size);
-					setWidth(k,Size.cx);
-				}
+				SIZE Size;
+				wchar_t sz1[2];
+				sz1[0] = k;
+				GetTextExtentPoint32W(hdc, sz1, 1, &Size);
+				setWidth(k,Size.cx);
 			}
 		}
 	}
