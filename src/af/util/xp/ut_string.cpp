@@ -728,8 +728,8 @@ char * UT_UCS_strcpy_to_char(char * dest, const UT_UCSChar * src)
 	    *d++ = *s++;
 #else
 		int length;
-		if(w.wctomb(d,length,*s++))
-		  d+=length;
+		w.wctomb_or_fallback(d,length,*s++);
+		d+=length;
 #endif
 	  }
 	*d = 0;
