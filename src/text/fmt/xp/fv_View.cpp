@@ -1842,6 +1842,7 @@ UT_Bool FV_View::getSectionFormat(const XML_Char ***pProps)
 	pSection->getAttrProp(&pSectionAP);
 
 	v.addItem(new _fmtPair((XML_Char*)"columns",   NULL,pBlockAP,pSectionAP,m_pDoc,UT_FALSE));
+	v.addItem(new _fmtPair((XML_Char*)"column-line",   NULL,pBlockAP,pSectionAP,m_pDoc,UT_FALSE));
 	v.addItem(new _fmtPair((XML_Char*)"column-gap",NULL,pBlockAP,pSectionAP,m_pDoc,UT_FALSE));
 	v.addItem(new _fmtPair((XML_Char*)"page-margin-left",NULL,pBlockAP,pSectionAP,m_pDoc,UT_FALSE));
 	v.addItem(new _fmtPair((XML_Char*)"page-margin-top",NULL,pBlockAP,pSectionAP,m_pDoc,UT_FALSE));

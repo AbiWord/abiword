@@ -207,7 +207,20 @@ void fp_Page::draw(dg_DrawArgs* pDA)
 			da.yoff += pTmpCol->getY();
 			pTmpCol->draw(&da);
 
-			pTmpCol = pTmpCol->getFollower();
+			fp_Column *pNextCol = pTmpCol->getFollower();
+
+			if(pNextCol && pTmpCol->getDocSectionLayout()->getColumnLineBetween())
+			{
+				// draw line between columns if required.
+
+				UT_sint32 x = pDA->xoff + (pTmpCol->getX() + pTmpCol->getWidth() + pNextCol->getX()) / 2;
+				UT_sint32 y = pDA->yoff + pTmpCol->getY();
+				UT_RGBColor Line_color(0, 0, 0);
+				pDA->pG->setColor(Line_color);
+				pDA->pG->drawLine(x, y, x, y + pTmpCol->getHeight());
+			}
+
+			pTmpCol = pNextCol;
 		}
 	}
 

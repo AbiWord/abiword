@@ -179,6 +179,7 @@ public:
 	UT_uint32			getNumColumns(void) const;
 	UT_uint32			getColumnGap(void) const;
 	UT_uint32			getColumnGapInLayoutUnits(void) const;
+	UT_Bool				getColumnLineBetween(void) const {return m_bColumnLineBetween;}
 
 	void				deleteEmptyColumns(void);
 	virtual UT_Bool 	doclistener_changeStrux(const PX_ChangeRecord_StruxChange * pcrxc);
@@ -203,6 +204,7 @@ protected:
 	UT_uint32			m_iNumColumns;
 	UT_uint32			m_iColumnGap;
 	UT_uint32			m_iColumnGapLayoutUnits;
+	UT_Bool				m_bColumnLineBetween;
 
 	UT_sint32			m_iSpaceAfter;
 	UT_sint32			m_iSpaceAfterLayoutUnits;

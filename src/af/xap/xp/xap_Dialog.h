@@ -54,6 +54,7 @@ public:
 	virtual void				runModal(XAP_Frame * pFrame) = 0;
 
 	XAP_Dialog_Id				getDialogId(void) const;
+	XAP_App *					getApp(void) const { return m_pApp;}
 	
 protected:
 	XAP_App *					m_pApp;

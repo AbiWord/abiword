@@ -149,6 +149,16 @@ dcl(DLG_Para_PushKeepWithNext,			"Keep with ne&xt")
 
 dcl(DLG_Para_ButtonTabs,		"&Tabs...")
 
+/* Columns dialog */
+dcl(DLG_Column_ColumnTitle,		"Columns")
+dcl(DLG_Column_Number,			"Number of columns")
+dcl(DLG_Column_Preview,			"Preview")
+dcl(DLG_Column_One,				"One")
+dcl(DLG_Column_Two,				"Two")
+dcl(DLG_Column_Three,			"Three")
+dcl(DLG_Column_Line_Between,	"Line between")
+
+
 /* when translating these, the important thing to remember is to get a
    similar amount of text in the translation.  Microsoft Word uses
    strings just like this to simulate text, and if your translation

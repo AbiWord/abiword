@@ -143,6 +143,7 @@ protected:
 
 	fp_Column*				m_pLeader;
 	fp_Column*				m_pNextFollower;
+
 };
 
 class fp_HdrFtrContainer : public fp_Container

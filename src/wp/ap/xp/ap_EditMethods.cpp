@@ -52,6 +52,7 @@
 #include "ap_Dialog_Insert_DateTime.h"
 #include "ap_Dialog_Field.h"
 #include "ap_Dialog_WordCount.h"
+#include "ap_Dialog_Columns.h"
 
 #include "xap_App.h"
 #include "xap_DialogFactory.h"
@@ -3972,7 +3973,6 @@ Defun1(viewRuler)
 	UT_ASSERT(pPrefs);
 	XAP_PrefsScheme * pScheme = pPrefs->getCurrentScheme(UT_TRUE);
 	UT_ASSERT(pScheme);
-
 	pScheme->setValueBool((XML_Char*)AP_PREF_KEY_RulerVisible, pFrameData->m_bShowRuler); 
 #endif
 
@@ -4211,13 +4211,92 @@ Defun1(dlgBorders)
 	return UT_TRUE;
 }
 
-Defun1(dlgColumns)
+static UT_Bool s_doColumnsDlg(FV_View * pView)
 {
-	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
+	XAP_Frame * pFrame = (XAP_Frame *) pView->getParentData();
 	UT_ASSERT(pFrame);
 
-	s_TellNotImplemented(pFrame, "Column settings dialog", __LINE__);
-	return UT_TRUE;
+	pFrame->raise();
+
+	XAP_DialogFactory * pDialogFactory
+		= (XAP_DialogFactory *)(pFrame->getDialogFactory());
+
+	AP_Dialog_Columns * pDialog
+		= (AP_Dialog_Columns *)(pDialogFactory->requestDialog(AP_DIALOG_ID_COLUMNS));
+	UT_ASSERT(pDialog);
+
+	UT_uint32 iColumns = 1;
+	UT_Bool bLineBetween = UT_FALSE;
+
+	const XML_Char ** props_in = NULL;
+	const XML_Char * sz = NULL;
+
+    UT_Bool bResult = pView->getSectionFormat(&props_in);
+
+    if (!bResult)
+	{
+		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+	}
+
+	// NB: maybe *no* properties are consistent across the selection
+	if (props_in && props_in[0])
+		sz = UT_getAttribute("columns", props_in);
+
+	if (sz)
+	{
+		iColumns = atoi(sz);
+	}
+
+	if (props_in && props_in[0])
+		sz = UT_getAttribute("column-line", props_in);
+
+	if (sz)
+	{
+		if(strcmp(sz, "on") == 0)
+		{
+			bLineBetween = UT_TRUE;
+		}
+	}
+	
+	pDialog->setColumns(iColumns);
+	pDialog->setLineBetween(bLineBetween);
+	pDialog->runModal(pFrame);
+
+	AP_Dialog_Columns::tAnswer ans = pDialog->getAnswer();
+	UT_Bool bOK = (ans == AP_Dialog_Columns::a_OK);
+
+	if (bOK)
+	{
+		// Set the columns property.
+
+		char buf[4];
+		sprintf(buf, "%i", pDialog->getColumns());
+		char buf2[4];
+		if(pDialog->getLineBetween())
+		{
+			strcpy(buf2, "on");
+		}
+		else
+		{
+			strcpy(buf2, "off");
+		}
+
+		const XML_Char * properties[] =	{ "columns", buf, "column-line", buf2, 0};
+		pView->setSectionFormat(properties);
+	}
+
+	free(props_in);
+
+	pDialogFactory->releaseDialog(pDialog);
+
+	return bOK;
+}
+
+
+Defun1(dlgColumns)
+{
+	ABIWORD_VIEW;
+	return s_doColumnsDlg(pView);
 }
 
 Defun(style)

@@ -53,6 +53,7 @@
 #	include "ap_UnixDialog_WordCount.h"
 #	include "ap_UnixDialog_Field.h"
 #	include "ap_UnixDialog_Lists.h"
+#	include "ap_UnixDialog_Columns.h"
 
 #ifdef HAVE_GNOME
 #	include "xap_UnixGnomeDlg_About.h"
@@ -99,6 +100,7 @@
 	DeclareDialog(AP_DIALOG_ID_WORDCOUNT,       AP_UnixGnomeDialog_WordCount)
 	DeclareDialog(AP_DIALOG_ID_FIELD,			AP_UnixGnomeDialog_Field)
 	DeclareDialog(AP_DIALOG_ID_LISTS,		     AP_UnixDialog_Lists)
+	DeclareDialog(AP_DIALOG_ID_COLUMNS,			AP_UnixDialog_Columns)
 
 	// ... also add new dialogs here ...
 #   else
@@ -126,6 +128,7 @@
 	DeclareDialog(AP_DIALOG_ID_WORDCOUNT,		AP_UnixDialog_WordCount)
 	DeclareDialog(AP_DIALOG_ID_FIELD,			AP_UnixDialog_Field)
 	DeclareDialog(AP_DIALOG_ID_LISTS,			AP_UnixDialog_Lists)
+	DeclareDialog(AP_DIALOG_ID_COLUMNS,			AP_UnixDialog_Columns)
 
 	// ... also add new dialogs here ...
 #   endif

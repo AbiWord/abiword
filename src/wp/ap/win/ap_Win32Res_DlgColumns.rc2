@@ -1,0 +1,83 @@
+// AbiWord
+// Copyright (C) 1998 AbiSource, Inc.
+// 
+// This program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public License
+// as published by the Free Software Foundation; either version 2
+// of the License, or (at your option) any later version.
+// 
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software
+// Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+// 02111-1307, USA.
+//////////////////////////////////////////////////////////////////
+
+//////////////////////////////////////////////////////////////////
+// THIS FILE IS INCLUDED BY .cpp AND .rc FILES.
+//
+// *** RC.exe IS BRAIN-DAMAGED.  GIVING THIS FILE AN .rc2
+// *** EXTENSION MAKES #INCLUDING THIS FILE FROM Win32Main.rc
+// *** WORK -- IF THE SUFFIX IS .h ONLY THE #DEFINES WORK, THE
+// *** DIALOGS DO NOT GET COMPILED.
+//
+//////////////////////////////////////////////////////////////////
+
+#define AP_RID_DIALOG_COLUMN_GROUP1				1001
+#define AP_RID_DIALOG_COLUMN_GROUP2				1002
+#define AP_RID_DIALOG_COLUMN_RADIO_ONE			1003
+#define AP_RID_DIALOG_COLUMN_RADIO_TWO			1004
+#define AP_RID_DIALOG_COLUMN_RADIO_THREE		1005
+#define AP_RID_DIALOG_COLUMN_PREVIEW			1006
+#define AP_RID_DIALOG_COLUMN_TEXT_ONE			1007
+#define AP_RID_DIALOG_COLUMN_TEXT_TWO			1008
+#define AP_RID_DIALOG_COLUMN_TEXT_THREE			1009
+#define AP_RID_DIALOG_COLUMN_CHECK_LINE_BETWEEN	1010
+#define AP_RID_DIALOG_COLUMN_BTN_OK				IDOK
+#define AP_RID_DIALOG_COLUMN_BTN_CANCEL			IDCANCEL
+
+#ifdef RC_INVOKED
+// NOTE -- these placeholder strings get overridden at runtime 
+// NOTE -- they're just here to make sizing easier
+
+AP_RID_DIALOG_COLUMNS DIALOG DISCARDABLE  0, 0, 245, 130
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Columns"
+FONT 8, "MS Sans Serif"
+BEGIN
+    DEFPUSHBUTTON   "OK",					AP_RID_DIALOG_COLUMN_BTN_OK,			188,10,50,14
+    PUSHBUTTON      "Cancel",				AP_RID_DIALOG_COLUMN_BTN_CANCEL,		188,25,50,14
+    GROUPBOX        "Number of columns",	AP_RID_DIALOG_COLUMN_GROUP1,			7,7,89,98
+
+    CONTROL         "One",					AP_RID_DIALOG_COLUMN_RADIO_ONE,	
+											"Button", 
+											BS_AUTORADIOBUTTON | BS_BITMAP | BS_PUSHLIKE,
+																					20,22,20,20
+    LTEXT           "One",					AP_RID_DIALOG_COLUMN_TEXT_ONE,			42,30,29,10
+    
+	CONTROL         "Two",					AP_RID_DIALOG_COLUMN_RADIO_TWO,
+											"Button",
+											BS_AUTORADIOBUTTON | BS_BITMAP | BS_PUSHLIKE,
+																					20,44,20,20
+    LTEXT           "Two",					AP_RID_DIALOG_COLUMN_TEXT_TWO,			42,52,29,10
+    
+	CONTROL         "Three",				AP_RID_DIALOG_COLUMN_RADIO_THREE,
+											"Button",
+											BS_AUTORADIOBUTTON | BS_BITMAP | BS_PUSHLIKE,
+																					20,66,20,20
+    LTEXT           "Three",				AP_RID_DIALOG_COLUMN_TEXT_THREE,		42,74,29,10
+    
+	GROUPBOX        "Preview",				AP_RID_DIALOG_COLUMN_GROUP2,			108,7,70,98
+    CONTROL         "",						AP_RID_DIALOG_COLUMN_PREVIEW,
+											"Static", SS_BLACKFRAME,				110,18,66,85
+
+	CONTROL         "Line between",			AP_RID_DIALOG_COLUMN_CHECK_LINE_BETWEEN,
+											"Button",
+											BS_AUTOCHECKBOX,						7,110,70,12
+
+END
+#endif /* RC_INVOKED */

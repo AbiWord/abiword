@@ -757,6 +757,17 @@ void fl_DocSectionLayout::_lookupProperties(void)
 		m_iColumnGapLayoutUnits = UT_convertToLayoutUnits("0.25in");
 	}
 
+	const char* pszColumnLineBetween = NULL;
+	pSectionAP->getProperty("column-line", (const XML_Char *&)pszColumnLineBetween);
+	if (pszColumnLineBetween && pszColumnLineBetween[0])
+	{
+		m_bColumnLineBetween = (strcmp(pszColumnLineBetween, "on") == 0) ? UT_TRUE : UT_FALSE;
+	}
+	else
+	{
+		m_bColumnLineBetween = UT_FALSE;
+	}
+
 	const char* pszSpaceAfter = NULL;
 	pSectionAP->getProperty((XML_Char*)"section-space-after", (const XML_Char *&)pszSpaceAfter);
 	if (pszSpaceAfter && pszSpaceAfter[0])
