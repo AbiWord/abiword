@@ -1348,7 +1348,7 @@ void AP_UnixDialog_Options::_setAutoSaveFilePeriod(const UT_String &stPeriod)
 UT_Dimension AP_UnixDialog_Options::_gatherViewRulerUnits(void)
 {
 	UT_ASSERT(m_listViewRulerUnits && GTK_IS_OPTION_MENU(m_listViewRulerUnits));
-	return (UT_Dimension)((gint)g_object_get_data( G_OBJECT(m_listViewRulerUnits), WIDGET_MENU_VALUE_TAG ));
+	return (UT_Dimension)(GPOINTER_TO_INT(g_object_get_data( G_OBJECT(m_listViewRulerUnits), WIDGET_MENU_VALUE_TAG )));
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -1371,8 +1371,8 @@ static void search_for_value ( GtkWidget *widget, gpointer _value )
 
 	value->index++;
 
-	gint v = (gint) g_object_get_data( G_OBJECT(widget), value->key );
-	if ( v == (gint)value->data )
+	gint v = GPOINTER_TO_INT(g_object_get_data( G_OBJECT(widget), value->key ));
+	if ( v == GPOINTER_TO_INT(value->data) )
 	{
 		// UT_DEBUGMSG(("search_for_value [%d]", (gint) value->data ));
 		value->found = value->index;
@@ -1525,7 +1525,7 @@ void    AP_UnixDialog_Options::_setNotebookPageNum(int pn)
 	UT_ASSERT(dlg);
 	UT_ASSERT(w && GTK_IS_WIDGET(w));
 
-	int i = (int) g_object_get_data( G_OBJECT(w), "tControl" );
+	int i = GPOINTER_TO_INT(g_object_get_data( G_OBJECT(w), "tControl" ));
 	UT_DEBUGMSG(("s_checkbutton_toggle: control id = %d\n", i));
 	dlg->_enableDisableLogic( (AP_Dialog_Options::tControl) i );
 }

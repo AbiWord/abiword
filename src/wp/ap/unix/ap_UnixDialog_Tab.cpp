@@ -636,7 +636,7 @@ void AP_UnixDialog_Tab::_spinChanged(void)
 	if ( dlg->m_bInSetCall || gtk_toggle_button_get_active( GTK_TOGGLE_BUTTON(widget)) == FALSE ) 
 		return;
 
-	dlg->m_current_alignment = (eTabType)((UT_uint32)gtk_object_get_user_data(GTK_OBJECT(widget)));
+	dlg->m_current_alignment = (eTabType)GPOINTER_TO_INT(gtk_object_get_user_data(GTK_OBJECT(widget)));
 
 	UT_DEBUGMSG(("AP_UnixDialog_Tab::s_alignment_change [%c]\n", AlignmentToChar(dlg->m_current_alignment)));
 	dlg->_event_AlignmentChange();
@@ -651,7 +651,7 @@ void AP_UnixDialog_Tab::_spinChanged(void)
 	if ( dlg->m_bInSetCall || gtk_toggle_button_get_active( GTK_TOGGLE_BUTTON(widget)) == FALSE ) 
 		return;
 	
-	dlg->m_current_leader = (eTabLeader)((UT_uint32)gtk_object_get_user_data(GTK_OBJECT(widget)));
+	dlg->m_current_leader = (eTabLeader)GPOINTER_TO_INT(gtk_object_get_user_data(GTK_OBJECT(widget)));
 	
 	UT_DEBUGMSG(("AP_UnixDialog_Tab::s_leader_change\n"));
 	dlg->_event_somethingChanged();
