@@ -107,8 +107,17 @@ UT_String XAP_AppImpl::localizeHelpUrl (const char * pathBeforeLang,
 	{
 		// not found, so build localized path for remote URL (but we can't verify remote URL)
 		url = remoteURLbase;
-		//_catPath(url, pathBeforeLang);
-		_catPath(url, abiSuiteLocString);
+		
+		// HACK: Not all help files are localized. 
+		// HACK: Hard code the available translations here instead of 404-ing.
+		if (!(
+			!strcmp(abiSuiteLocString, "en-US") ||
+			!strcmp(abiSuiteLocString, "fr-FR") ||
+			!strcmp(abiSuiteLocString, "pl-PL")
+			))
+			_catPath(url, "en-US");
+		else
+			_catPath(url, abiSuiteLocString);
 		_catPath(url, pathAfterLang);
 		url += ".html";
 	}
