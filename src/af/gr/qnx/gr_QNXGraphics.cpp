@@ -1082,16 +1082,11 @@ GR_Image * GR_QNXGraphics::genImageFromRectangle(const UT_Rect & r) {
 	short int x,y;
 	PhImage_t *pImgshmem,*pImg;
 
-	r.left =  tdu(r.left);
-	r.top =   tdu(r.top);
-	r.width = tdu(r.width);
-	r.height =tdu(r.height); 
-
 	PtGetAbsPosition(m_pDraw,&x,&y);
-	rect.ul.x=x + r.left;
-	rect.ul.y=y + r.top;
-	rect.lr.x= rect.ul.x + r.width;
-	rect.lr.y= rect.ul.y + r.height;
+	rect.ul.x=x + tdu(r.left);
+	rect.ul.y=y + tdu(r.top);
+	rect.lr.x= rect.ul.x + tdu(r.width);
+	rect.lr.y= rect.ul.y + tdu(r.height);
 	pImgshmem =PgReadScreen(&rect,NULL);
 
 	//PgReadScreen is kind of stupid and you need to free that image using PgShmemDestroy, therefor duplicate it so GR_QNXImage won't go nuts.
@@ -1109,10 +1104,6 @@ void GR_QNXGraphics::saveRectangle(UT_Rect &r, UT_uint32 iIndx)
   PhRect_t rect;
   short int x,y;
 
-	r.left =  tdu(r.left);
-	r.top =   tdu(r.top);
-	r.width = tdu(r.width);
-	r.height =tdu(r.height); 
 #if 0
 	// had to turn this off -- the fact the the rectangle coordinances
 	// are the same does not guarantee that the bitmap is (e.g., in a
@@ -1136,10 +1127,10 @@ void GR_QNXGraphics::saveRectangle(UT_Rect &r, UT_uint32 iIndx)
   PhImage_t	*pImg;
 
   PtGetAbsPosition(m_pDraw,&x,&y);
-  rect.ul.x=x + r.left;
-  rect.ul.y=y + r.top;
-  rect.lr.x= rect.ul.x + r.width;
-  rect.lr.y= rect.ul.y + r.height;
+  rect.ul.x=x + tdu(r.left);
+  rect.ul.y=y + tdu(r.top);
+  rect.lr.x= rect.ul.x + tdu(r.width);
+  rect.lr.y= rect.ul.y + tdu(r.height);
   pImg =PgReadScreen(&rect,NULL);
 
   void * oldC = NULL;
