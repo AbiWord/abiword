@@ -65,8 +65,9 @@ void ps_Generate::closeFile(void)
 		else
 			pclose(m_fp);
 		undoProtectFromPipe();
+
+		m_fp = 0;
 	}
-	m_fp = 0;
 }
 
 void ps_Generate::abortFile(void)
@@ -77,8 +78,10 @@ void ps_Generate::abortFile(void)
 	closeFile();
 }
 
-bool	ps_Generate::writeByte(UT_Byte byte)
+bool ps_Generate::writeByte(UT_Byte byte)
 {
+	UT_return_val_if_fail(m_fp, false);
+
 	doProtectFromPipe();
 	bool bSuccess = fputc(static_cast<char>(byte), m_fp) != EOF;
 	undoProtectFromPipe();
@@ -88,8 +91,8 @@ bool	ps_Generate::writeByte(UT_Byte byte)
 
 bool ps_Generate::writeBytes(const UT_Byte * pBytes, size_t length)
 {
-	UT_ASSERT(m_fp);
-	UT_ASSERT(pBytes && (length>0));
+	UT_return_val_if_fail(m_fp, false);
+	UT_return_val_if_fail(pBytes && (length>0), false);
 
 	doProtectFromPipe();
 	bool bSuccess = (fwrite(pBytes,sizeof(UT_Byte),length,m_fp)==length);
