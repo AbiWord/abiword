@@ -59,7 +59,7 @@
 	
 */
 
-//#define _WIN32KEY_DEBUG 1
+#define _WIN32KEY_DEBUG 1
 
 static EV_EditBits s_mapVirtualKeyCodeToNVK(WPARAM nVirtKey);
 
@@ -144,11 +144,24 @@ bool ev_Win32Keyboard::onKeyDown(AV_View * pView,
 	int						charLen;
 	UT_UCSChar				charData[2];
 
+	UT_DEBUGMSG(("WIN32KEY_DEBUG->onKeyDown %x, %x\n", nVirtKey, keyData));
+
 	// ALT key for windows {menus, ... }, ALT+XXX for special chars, etc
 	if (((ems & EV_EMS_ALT) != 0) && ((ems & EV_EMS_CONTROL) == 0))
 	{
 		#ifdef  _WIN32KEY_DEBUG
 		UT_DEBUGMSG(("WIN32KEY_DEBUG->onKeyDown return true (EV_EMS_CONTROL)\n"));
+		#endif
+		return true;
+	}
+
+	/*
+		This is a Alt+gr combination in an international keyboard
+	*/
+	if (GetKeyState(VK_RMENU) & 0x8000)
+	{
+		#ifdef  _WIN32KEY_DEBUG
+		UT_DEBUGMSG(("WIN32KEY_DEBUG->Alt+gr (EV_EMS_CONTROL)\n"));
 		#endif
 		return true;
 	}
@@ -330,7 +343,7 @@ EV_EditBits ev_Win32Keyboard::_getModifierState(void)
 	if (GetKeyState(VK_CONTROL) & 0x8000)
 		eb |= EV_EMS_CONTROL;
 	if (GetKeyState(VK_MENU) & 0x8000)
-		eb |= EV_EMS_ALT;
+		eb |= EV_EMS_ALT;	
 
 	return eb;
 }
