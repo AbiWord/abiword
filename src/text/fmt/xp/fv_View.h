@@ -13,7 +13,7 @@
  * 
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
  * 02111-1307, USA.
  */
 
@@ -66,10 +66,10 @@ typedef enum _FVDocPos
 
 typedef enum
 {
-        BreakSectionContinuous,
+	BreakSectionContinuous,
 	BreakSectionNextPage,
 	BreakSectionEvenPage,
-        BreakSectionOddPage
+	BreakSectionOddPage
 } BreakSectionType;
 
 struct fv_ChangeState
@@ -86,8 +86,8 @@ struct fv_ChangeState
 
 struct FV_DocCount
 {
-	UT_uint32 word;  
-	UT_uint32 para; 
+	UT_uint32 word;
+	UT_uint32 para;
 	UT_uint32 ch_no;
 	UT_uint32 ch_sp;
 	UT_uint32 line;
@@ -146,38 +146,38 @@ public:
 	FL_DocLayout* 	getLayout() const;
 	UT_uint32		getCurrentPageNumForStatusBar(void) const;
 	fp_Page*		getCurrentPage(void) const;
-	fl_BlockLayout *        getCurrentBlock(void);
+	fl_BlockLayout*	getCurrentBlock(void);
 
 	void draw(int page, dg_DrawArgs* da);
 
 	// TODO some of these functions should move into protected
 	
-	void getPageScreenOffsets(fp_Page* pPage, UT_sint32& xoff, UT_sint32& yoff);
-	void getPageYOffset(fp_Page* pPage, UT_sint32& yoff);
-	virtual UT_uint32 getPageViewLeftMargin(void) const;
-	virtual UT_uint32 getPageViewTopMargin(void) const;
+	void	getPageScreenOffsets(fp_Page* pPage, UT_sint32& xoff, UT_sint32& yoff);
+	void	getPageYOffset(fp_Page* pPage, UT_sint32& yoff);
+	virtual	UT_uint32 getPageViewLeftMargin(void) const;
+	virtual	UT_uint32 getPageViewTopMargin(void) const;
 	
-	UT_Bool setSectionFormat(const XML_Char * properties[]);
-	UT_Bool getSectionFormat(const XML_Char *** properties);
+	UT_Bool	setSectionFormat(const XML_Char * properties[]);
+	UT_Bool	getSectionFormat(const XML_Char *** properties);
 
-	UT_Bool isCursorOn(void);
-	void    eraseInsertionPoint(void);
-	void    drawInsertionPoint(void);
+	UT_Bool	isCursorOn(void);
+	void	eraseInsertionPoint(void);
+	void	drawInsertionPoint(void);
 
-	UT_Bool setListIndents(double indentChange, double page_size);
-	UT_Bool setBlockFormat(const XML_Char * properties[]);
-	UT_Bool getBlockFormat(const XML_Char *** properties,UT_Bool bExpandStyles=UT_TRUE);
+	UT_Bool	setListIndents(double indentChange, double page_size);
+	UT_Bool	setBlockFormat(const XML_Char * properties[]);
+	UT_Bool	getBlockFormat(const XML_Char *** properties,UT_Bool bExpandStyles=UT_TRUE);
 
 
-	UT_Bool isTabListBehindPoint(void);
-	UT_Bool isTabListAheadPoint(void);
-	void    processSelectedBlocks(List_Type listType);
-	void    getListBlocksInSelection( UT_Vector * vBlock);
-	UT_Bool isPointBeforeListLabel(void);
-	UT_Bool isCurrentListBlockEmpty(void);
-	UT_Bool cmdStartList(const XML_Char * style);
-	UT_Bool cmdStopList(void);
-	void    changeListStyle(fl_AutoNum* pAuto,
+	UT_Bool	isTabListBehindPoint(void);
+	UT_Bool	isTabListAheadPoint(void);
+	void	processSelectedBlocks(List_Type listType);
+	void	getListBlocksInSelection( UT_Vector * vBlock);
+	UT_Bool	isPointBeforeListLabel(void);
+	UT_Bool	isCurrentListBlockEmpty(void);
+	UT_Bool	cmdStartList(const XML_Char * style);
+	UT_Bool	cmdStopList(void);
+	void	changeListStyle(fl_AutoNum* pAuto,
 							List_Type lType,
 							UT_uint32 startv,
 							const XML_Char* pszDelim,
@@ -186,30 +186,30 @@ public:
 							float Aligm,
 							float Indent);
 
-	void    setDontChangeInsPoint(void);
-	void    allowChangeInsPoint(void);
-	UT_Bool isDontChangeInsPoint(void);
+	void	setDontChangeInsPoint(void);
+	void	allowChangeInsPoint(void);
+	UT_Bool	isDontChangeInsPoint(void);
 
 
-	UT_Bool setCharFormat(const XML_Char * properties[]);
-	UT_Bool getCharFormat(const XML_Char *** properties,UT_Bool bExpandStyles=UT_TRUE);
+	UT_Bool	setCharFormat(const XML_Char * properties[]);
+	UT_Bool	getCharFormat(const XML_Char *** properties,UT_Bool bExpandStyles=UT_TRUE);
 
-	UT_Bool setStyle(const XML_Char * style);
-	UT_Bool getStyle(const XML_Char ** style);
+	UT_Bool	setStyle(const XML_Char * style);
+	UT_Bool	getStyle(const XML_Char ** style);
 
 	UT_uint32		getCurrentPageNumber(void);
 
-	void insertParagraphBreak(void);
-	void insertParagraphBreaknoListUpdate(void);
-	void insertSectionBreak( BreakSectionType type);
-	void insertSectionBreak(void);
-	void insertSymbol(UT_UCSChar c, XML_Char * symfont);
+	void	insertParagraphBreak(void);
+	void	insertParagraphBreaknoListUpdate(void);
+	void	insertSectionBreak( BreakSectionType type);
+	void	insertSectionBreak(void);
+	void	insertSymbol(UT_UCSChar c, XML_Char * symfont);
 	UT_Bool	insertHeaderFooter(const XML_Char ** props, UT_Bool ftr);
 	// ----------------------
 	UT_Bool			isLeftMargin(UT_sint32 xPos, UT_sint32 yPos);
 	void			cmdSelect(UT_sint32 xPos, UT_sint32 yPos, FV_DocPos dpBeg, FV_DocPos dpEnd);
 	void			cmdCharMotion(UT_Bool bForward, UT_uint32 count);
-    UT_Bool			cmdCharInsert(UT_UCSChar * text, UT_uint32 count, UT_Bool bForce = UT_FALSE);
+	UT_Bool			cmdCharInsert(UT_UCSChar * text, UT_uint32 count, UT_Bool bForce = UT_FALSE);
 	void			cmdCharDelete(UT_Bool bForward, UT_uint32 count);
 	void			delTo(FV_DocPos dp);
 	UT_UCSChar * 	getSelectionText(void);
@@ -279,21 +279,21 @@ public:
 
 // ----------------------
 
-	FV_DocCount                     countWords(void);
+	FV_DocCount			countWords(void);
 
 // -----------------------
 
-	UT_Bool                         insertPageNum(const XML_Char ** props, UT_Bool ftr);
-	void				setPoint(UT_uint32 pt);
+	UT_Bool				insertPageNum(const XML_Char ** props, UT_Bool ftr);
+	void				setPoint(PT_DocPosition pt);
 
 // -----------------------
 
-    void				setShowPara(UT_Bool);    
-    inline UT_Bool		getShowPara(void) const { return m_bShowPara; };
+	void				setShowPara(UT_Bool);
+	inline UT_Bool		getShowPara(void) const { return m_bShowPara; };
 	
 	const fp_PageSize&	getPageSize(void) const;
 	UT_uint32			calculateZoomPercentForPageWidth();
-   UT_uint32           calculateZoomPercentForPageHeight();
+	UT_uint32			calculateZoomPercentForPageHeight();
 	UT_uint32			calculateZoomPercentForWholePage();
 
 protected:
@@ -305,16 +305,16 @@ protected:
 	void				_clearBetweenPositions(PT_DocPosition left, PT_DocPosition right, UT_Bool bFullLineHeightRect);
 	
 	UT_Bool				_ensureThatInsertionPointIsOnScreen(void);
-	void			    _moveInsPtNextPrevPage(UT_Bool bNext);
-	void			    _moveInsPtNextPrevLine(UT_Bool bNext);
-	fp_Page *           _getCurrentPage(void);
-	void                _moveInsPtNthPage(UT_uint32 n);
-	void                _moveInsPtToPage(fp_Page *page);
-	void                _insertSectionBreak(void);
+	void				_moveInsPtNextPrevPage(UT_Bool bNext);
+	void				_moveInsPtNextPrevLine(UT_Bool bNext);
+	fp_Page *			_getCurrentPage(void);
+	void				_moveInsPtNthPage(UT_uint32 n);
+	void				_moveInsPtToPage(fp_Page *page);
+	void				_insertSectionBreak(void);
 
 	PT_DocPosition		_getDocPosFromPoint(PT_DocPosition iPoint, FV_DocPos dp, UT_Bool bKeepLooking=UT_TRUE);
 	PT_DocPosition		_getDocPos(FV_DocPos dp, UT_Bool bKeepLooking=UT_TRUE);
-	void 				_findPositionCoords(UT_uint32 pos,
+	void 				_findPositionCoords(PT_DocPosition pos,
 											UT_Bool b,
 											UT_sint32& x,
 											UT_sint32& y,
@@ -340,14 +340,14 @@ protected:
 	void 				_updateInsertionPoint();
 	void				_fixInsertionPointCoords();
 	void 				_xorInsertionPoint();
-        UT_Bool                         _hasPointMoved(void); 
-	void                            _saveCurrentPoint(void); 
-        void                            _clearOldPoint(void); 
+	UT_Bool				_hasPointMoved(void); 
+	void				_saveCurrentPoint(void); 
+	void				_clearOldPoint(void); 
 	void				_drawSelection();
 	void				_swapSelectionOrientation(void);
 	void				_extSel(UT_uint32 iOldPoint);
 	void				_extSelToPos(PT_DocPosition pos);
-	UT_Error   			_insertGraphic(FG_Graphic*, const char*);
+	UT_Error			_insertGraphic(FG_Graphic*, const char*);
 
 	UT_UCSChar *		_lookupSuggestion(fl_BlockLayout* pBL, fl_PartOfBlock* pPOB, UT_uint32 ndx);
 
@@ -355,7 +355,7 @@ protected:
 	static void			_autoDrawPoint(UT_Timer * pTimer);
 
 	// localize handling of insertion point logic
-	void				_setPoint(UT_uint32 pt, UT_Bool bEOL = UT_FALSE);
+	void				_setPoint(PT_DocPosition pt, UT_Bool bEOL = UT_FALSE);
 	UT_uint32			_getDataCount(UT_uint32 pt1, UT_uint32 pt2);
 	UT_Bool				_charMotion(UT_Bool bForward,UT_uint32 countChars);
 	void				_doPaste(UT_Bool bUseClipboard);
@@ -374,15 +374,15 @@ protected:
 
 	UT_Bool				m_bPointVisible;
 	UT_Bool				m_bPointEOL;
-	UT_Bool                         m_bDontChangeInsPoint;
+	UT_Bool				m_bDontChangeInsPoint;
 	FL_DocLayout*		m_pLayout;
 	PD_Document*		m_pDoc;
 	GR_Graphics*		m_pG;
-        void *                  m_pParentData;
+	void*				m_pParentData;
 
-    PT_DocPosition		m_iSelectionAnchor;
-    PT_DocPosition		m_iSelectionLeftAnchor;
-    PT_DocPosition		m_iSelectionRightAnchor;
+	PT_DocPosition		m_iSelectionAnchor;
+	PT_DocPosition		m_iSelectionLeftAnchor;
+	PT_DocPosition		m_iSelectionRightAnchor;
 	UT_Bool				m_bSelection;
 
 	// autoscroll stuff
@@ -395,7 +395,7 @@ protected:
 	UT_Bool				m_bEraseSaysStopBlinking;
 	UT_Bool				m_bCursorBlink;
 
-	UT_Bool                         m_bdontSpellCheckRightNow;
+	UT_Bool				m_bdontSpellCheckRightNow;
 	fv_ChangeState		m_chg;
 
 	// find and replace stuff
@@ -422,7 +422,7 @@ protected:
 	// prefs listener - to change cursor blink on/off (and possibly others)
 	static void _prefsListener( XAP_App *, XAP_Prefs *, UT_AlphaHashTable *, void *);
 
-    UT_Bool             m_bShowPara;
+	UT_Bool		m_bShowPara;
 };
 
 #endif /* FV_VIEW_H */
