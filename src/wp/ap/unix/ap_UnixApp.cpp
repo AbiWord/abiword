@@ -1648,7 +1648,7 @@ static void get_prop (BonoboPropertyBag 	*bag,
 //
 	if (G_VALUE_TYPE(&gVal) == G_TYPE_STRING && g_value_get_string(&gVal))
 	{
-		g_free (g_value_get_string(&gVal));
+		g_free (const_cast<void*>(static_cast<const void*>(g_value_get_string(&gVal))));
 	}
 }
 
@@ -1688,7 +1688,7 @@ static void set_prop (BonoboPropertyBag 	*bag,
 //
 	if (G_VALUE_TYPE(&gVal) == G_TYPE_STRING && g_value_get_string(&gVal))
 	{
-		g_free (g_value_get_string(&gVal));
+		g_free (const_cast<void*>(static_cast<const void*>(g_value_get_string(&gVal))));
 	}
 }
 
