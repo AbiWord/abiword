@@ -143,6 +143,7 @@ void AP_CocoaDialog_FormatFrame::destroy(void)
 	[m_dlg close];
 	[m_dlg release];
 	m_dlg = nil;
+	DELETEP(m_pPreviewWidget);
 }
 
 void AP_CocoaDialog_FormatFrame::activate(void)
