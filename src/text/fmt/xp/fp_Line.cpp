@@ -813,7 +813,8 @@ void fp_Line::recalcHeight(fp_Run * pLastRun)
 	}
 	bool bSetByImage = false;
 	fp_Run* pRun = m_vecRuns.getNthItem(0);
-	for (i=0; (i<count && (pRun != pLastRun)); i++)
+	xxx_UT_DEBUGMSG(("Orig Height = %d \n",getHeight()));
+	for (i=0; (i<count && ((pRun != pLastRun) || ((i== 0) && (getHeight() ==0)))); i++)
 	{
 		UT_sint32 iAscent;
 		UT_sint32 iDescent;
@@ -931,6 +932,13 @@ void fp_Line::recalcHeight(fp_Run * pLastRun)
 		m_iAscent = iNewAscent;
 		m_iDescent = iNewDescent;
 	}
+	if((getHeight() == 0) && (pLastRun != NULL))
+	{
+		setHeight(pLastRun->getHeight());
+		m_iAscent = pLastRun->getAscent();
+		m_iDescent = pLastRun->getDescent();
+	}
+	UT_ASSERT(getHeight() > 0);
 }
 
 /*!

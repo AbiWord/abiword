@@ -793,7 +793,7 @@ bool pt_PieceTable::_tweakDeleteSpan(PT_DocPosition & dpos1,
 				{
 					bFoundHype = true;
 				}
-				if(pf_End && (pf_End->getType() == pf_Frag::PFT_Object))
+				if(pf_End && (pf_End->getType() == pf_Frag::PFT_Object) && (pf_End != pf_First))
 				{
 					pFO = static_cast<pf_Frag_Object *>(pf_End);
 					if(pFO->getObjectType() == PTO_Bookmark && bFoundBook)

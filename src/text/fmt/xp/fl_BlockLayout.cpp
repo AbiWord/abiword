@@ -2166,6 +2166,10 @@ void fl_BlockLayout::formatWrappedFromHere(fp_Line * pLine, fp_Page * pPage)
 		return;
 	}
 	fp_Run * pRun = pLine->getLastRun();
+	if(pLine->getHeight() == 0)
+	{
+		pLine->recalcHeight(pRun);
+	}
 	pRun = pRun->getNextRun();
 	m_pVertContainer = static_cast<fp_VerticalContainer *>(pLine->getContainer());
 	m_iLinePosInContainer = m_pVertContainer->findCon(pLine)+1;
