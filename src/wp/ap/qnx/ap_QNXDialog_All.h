@@ -59,6 +59,7 @@
 #	include "ap_QNXDialog_Field.h"
 #	include "ap_QNXDialog_Lists.h"
 #	include "ap_QNXDialog_Columns.h"
+#   include "ap_QNXDialog_ToggleCase.h"
 
 	// ... add new dialogs here ...
 
@@ -94,6 +95,7 @@
 	DeclareDialog(AP_DIALOG_ID_LISTS,			AP_QNXDialog_Lists)
 	DeclareDialog(AP_DIALOG_ID_COLUMNS,			AP_QNXDialog_Columns)
 	DeclareDialog(AP_DIALOG_ID_FILE_PAGESETUP,	AP_QNXDialog_PageSetup)
+	DeclareDialog(AP_DIALOG_ID_TOGGLECASE,		AP_QNXDialog_ToggleCase)
 
 	// ... also add new dialogs here ...
 

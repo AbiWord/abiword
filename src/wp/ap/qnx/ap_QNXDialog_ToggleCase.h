@@ -36,9 +36,12 @@ public:
 	virtual void			runModal(XAP_Frame * pFrame);
 
 	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
-	
-protected:
 
+	virtual void			setFinalAnswer(AP_Dialog_ToggleCase::tAnswer ans);
+
+protected:
+	PtWidget_t *			_constructWindow(void);
+	int						done;
 };
 
 #endif /* AP_QNXDIALOG_STUB_H */
