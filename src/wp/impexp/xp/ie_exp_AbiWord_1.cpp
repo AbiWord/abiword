@@ -627,6 +627,7 @@ bool s_AbiWord_1_Listener::populate(PL_StruxFmtHandle /*sfh*/,
 		}
 
 	case PX_ChangeRecord::PXT_InsertFmtMark:
+		_closeTag();
 		_openTag("c","",false,pcr->getIndexAP());
 		_closeTag();
 		return true;
