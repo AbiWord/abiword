@@ -2463,9 +2463,11 @@ bool IE_Imp_RTF::ReadFontTable()
 	}
 	else
 	{
-		if (ch != '{')
+		if ((ch != '{') && (ch != '}'))     // don't choke if there is no data (malformed RTF)
+		{                                   // see bug 1383 and 1384
 			return false;
-
+		}
+		
 		// multiple entries in font table
 		while (ch != '}')
 		{
