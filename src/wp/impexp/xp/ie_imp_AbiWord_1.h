@@ -56,6 +56,7 @@ protected:
     bool		_getDataItemEncoded(const XML_Char ** atts);
     bool			m_bDocHasLists;
     bool			m_bDocHasPageSize;
+	UT_uint32		m_iInlineStart;
 };
 
 #endif /* IE_IMP_ABIWORD_1_H */

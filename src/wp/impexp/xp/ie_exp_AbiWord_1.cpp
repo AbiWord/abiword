@@ -125,6 +125,7 @@ protected:
 	void				_closeBlock(void);
 	void				_closeSpan(void);
 	void				_closeField(void);
+	void				_closeTag(void);
 	void				_openSpan(PT_AttrPropIndex apiSpan);
 	void				_openTag(const char * szPrefix, const char * szSuffix,
 								 bool bNewLineAfter, PT_AttrPropIndex api);
@@ -140,6 +141,7 @@ protected:
 	bool				m_bInSection;
 	bool				m_bInBlock;
 	bool				m_bInSpan;
+	bool				m_bInTag;
 	PT_AttrPropIndex	m_apiLastSpan;
     fd_Field *             m_pCurrentField;
 };
@@ -169,10 +171,21 @@ void s_AbiWord_1_Listener::_closeSpan(void)
 	if (!m_bInSpan)
 		return;
 
-	m_pie->write("</c>");
+	_closeTag();
 	m_bInSpan = false;
 	return;
 }
+
+void s_AbiWord_1_Listener::_closeTag(void)
+{
+	if (!m_bInTag)
+		return;
+
+	m_pie->write("</c>");
+	m_bInTag = false;
+	return;
+}
+
 void s_AbiWord_1_Listener::_closeField(void)
 {
 	if (!m_pCurrentField)
@@ -259,6 +272,8 @@ void s_AbiWord_1_Listener::_openTag(const char * szPrefix, const char * szSuffix
 	m_pie->write(">");
 	if (bNewLineAfter)
 		m_pie->write("\n");
+
+	m_bInTag = true;
 }
 
 void s_AbiWord_1_Listener::_outputData(const UT_UCSChar * data, UT_uint32 length)
@@ -362,6 +377,7 @@ s_AbiWord_1_Listener::s_AbiWord_1_Listener(PD_Document * pDocument,
 	m_bInSection = false;
 	m_bInBlock = false;
 	m_bInSpan = false;
+	m_bInTag = false;
 	m_apiLastSpan = 0;
 	m_pCurrentField = 0;
 
@@ -540,6 +556,8 @@ bool s_AbiWord_1_Listener::populate(PL_StruxFmtHandle /*sfh*/,
 		}
 
 	case PX_ChangeRecord::PXT_InsertFmtMark:
+		_openTag("c","",false,pcr->getIndexAP());
+		_closeTag();
 		return true;
 		
 	default:

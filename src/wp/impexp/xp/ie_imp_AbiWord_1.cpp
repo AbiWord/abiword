@@ -248,6 +248,7 @@ void IE_Imp_AbiWord_1::_startElement(const XML_Char *name, const XML_Char **atts
 		X_VerifyParseState(_PS_Block);
 		X_CheckError(_pushInlineFmt(atts));
 		X_CheckError(m_pDocument->appendFmt(&m_vecInlineFmt));
+		m_iInlineStart = getOperationCount();
 		return;
 
 		// Images and Fields are not containers.  Therefore we don't
@@ -452,6 +453,11 @@ void IE_Imp_AbiWord_1::_endElement(const XML_Char *name)
 			  return;
 		X_VerifyParseState(_PS_Block);
 		X_CheckDocument(_getInlineDepth()>0);
+		// Insert a FmtMark if nothing was inserted in the block.
+		if (m_iInlineStart+1 == getOperationCount())
+		{
+			X_CheckError(m_pDocument->appendFmtMark());
+		}
 		_popInlineFmt();
 		X_CheckError(m_pDocument->appendFmt(&m_vecInlineFmt));
 		return;

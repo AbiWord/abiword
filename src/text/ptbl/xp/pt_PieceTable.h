@@ -120,6 +120,7 @@ public:
 	bool					appendFmt(const UT_Vector * pVecAttributes);
 	bool					appendSpan(UT_UCSChar * p, UT_uint32 length);
 	bool					appendObject(PTObjectType pto, const XML_Char ** attributes);
+	bool					appendFmtMark(void);
 	bool					appendStyle(const XML_Char ** attributes);
 	bool					removeStyle(const XML_Char * name);
 	size_t					getStyleCount(void);

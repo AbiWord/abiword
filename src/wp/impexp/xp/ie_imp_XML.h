@@ -64,6 +64,9 @@ public:
     // you get this one for free
     virtual void	_charData(const XML_Char*, int len);
 
+	void			incOperationCount(void) { m_iOperationCount++; }
+	UT_uint32		getOperationCount(void) const { return m_iOperationCount; }
+
 protected:
     virtual bool			_openFile(const char * szFilename);
     virtual UT_uint32			_readBytes(char * buf, UT_uint32 length);
@@ -97,6 +100,7 @@ protected:
     XML_Char			m_charDataSeen[4];
     UT_uint32			m_lenCharDataSeen;
     UT_uint32			m_lenCharDataExpected;
+    UT_uint32			m_iOperationCount;
     bool			m_bSeenCR;
     bool                     m_bWhiteSignificant;
     bool                     m_bWasSpace;

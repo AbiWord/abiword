@@ -428,6 +428,15 @@ bool PD_Document::appendObject(PTObjectType pto, const XML_Char ** attributes)
 	return m_pPieceTable->appendObject(pto,attributes);
 }
 
+bool PD_Document::appendFmtMark(void)
+{
+	UT_ASSERT(m_pPieceTable);
+	
+	// can only be used while loading the document
+
+	return m_pPieceTable->appendFmtMark();
+}
+
 bool PD_Document::removeStyle(const XML_Char * pszName)
 {
   UT_ASSERT(m_pPieceTable);

@@ -27,6 +27,7 @@
 #include "pt_PieceTable.h"
 #include "pf_Frag.h"
 #include "pf_Frag_Object.h"
+#include "pf_Frag_FmtMark.h"
 #include "pf_Frag_Strux.h"
 #include "pf_Frag_Strux_Block.h"
 #include "pf_Frag_Strux_Section.h"
@@ -150,5 +151,18 @@ bool pt_PieceTable::appendObject(PTObjectType pto, const XML_Char ** attributes)
 		return false;
 	
 	m_fragments.appendFrag(pfo);
+	return true;
+}
+
+bool pt_PieceTable::appendFmtMark(void)
+{
+	// this function can only be called while loading the document.
+	UT_ASSERT(m_pts==PTS_Loading);
+	
+	pf_Frag_FmtMark * pff = new pf_Frag_FmtMark(this,loading.m_indexCurrentInlineAP);
+	if (!pff)
+		return false;
+
+	m_fragments.appendFrag(pff);
 	return true;
 }
