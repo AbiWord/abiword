@@ -12,6 +12,9 @@ Building the tree is a pretty simple process.  We use a "diving make" system,
 where virtually every directory in the tree hierarchy has its own Makefile,
 which contains the instructions for how to build the contents of that directory.
 
+If you are building on Slackware with libc5 (or any platform without iconv
+installed on it) using the diving make system, run 'make ABI_REQUIRE_PEER_ICONV=1' as your make line.
+
 There are several ways to build and run AbiWord:
 
 [1] Developer Style:  just cd into the abi directory and type 'make'
