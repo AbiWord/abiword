@@ -1,0 +1,8 @@
+
+-WARN-WARN-WARN-WARN-WARN-WARN-WARN-WARN-WARN-WARN-WARN-WARN-WARN-WARN-WARN-WARN
+I can't find your gtk package version. Maybe you haven't installed gtk package
+for FreeBSD, or you have installed two or more different version of gtk package.
+So I will disable the gtk depend check when install AbiSuite package.
+Maybe it will cause this package not to work correctly in others machine.
+-WARN-WARN-WARN-WARN-WARN-WARN-WARN-WARN-WARN-WARN-WARN-WARN-WARN-WARN-WARN-WARN
+
