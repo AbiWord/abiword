@@ -519,11 +519,9 @@ UT_Bool EV_UnixMenu::_refreshMenu(FV_View * pView)
 				}
 
 				// get the current menu info for this item.
-
 //				bEnable = GTK_WIDGET_SENSITIVE(item);
 //				bCheck = item->check;
 
-				
 				// this item has a dynamic label...
 				// compute the value for the label.
 				// if it is blank, we remove the item from the menu.
