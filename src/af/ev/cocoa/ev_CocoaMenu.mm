@@ -155,7 +155,8 @@ EV_CocoaMenu::EV_CocoaMenu(XAP_CocoaApp * pCocoaApp, const char * szMenuLayoutNa
 	m_menuStack(0),
 	m_buffer(0),
 	m_maxlen(0),
-	m_bContextMenu(bContextMenu)
+	m_bContextMenu(bContextMenu),
+	m_bAddSeparator(false)
 {
 	m_menuTarget = [[EV_CocoaMenuTarget alloc] initWithMenu:this];
 	UT_ASSERT(m_menuTarget);
@@ -423,12 +424,9 @@ void EV_CocoaMenu::addToAppMenu(XAP_Menu_Id menuid, const EV_Menu_Action * pActi
 			break;
 
 		case EV_MLF_Separator:
-			{	
-				NSMenuItem * item = [NSMenuItem separatorItem];
-
-				[item setTag:menuid];
-
-				addToAppMenu(item);
+			{
+				m_bAddSeparator = true;
+				m_SeparatorID = menuid;
 			}
 			break;
 
@@ -447,6 +445,16 @@ void EV_CocoaMenu::addToAppMenu(NSMenuItem * item)
 	if (NSMenu * menu = MenuStack_top())
 		{
 			// UT_DEBUGMSG(("EV_CocoaMenu::addToAppMenu(\"%s\") [submenu]\n", [[item title] UTF8String]));
+
+			if (m_bAddSeparator)
+				{
+					m_bAddSeparator = false;
+
+					NSMenuItem * separator = [NSMenuItem separatorItem];
+					[separator setTag:m_SeparatorID];
+
+					[menu addItem:separator];
+				}
 			[menu addItem:item];
 		}
 	else
@@ -454,6 +462,18 @@ void EV_CocoaMenu::addToAppMenu(NSMenuItem * item)
 			// UT_DEBUGMSG(("EV_CocoaMenu::addToAppMenu(\"%s\") [appmenu]\n", [[item title] UTF8String]));
 			XAP_CocoaAppController * pController = (XAP_CocoaAppController *) [NSApp delegate];
 
+			if (m_bAddSeparator)
+				{
+					m_bAddSeparator = false;
+
+					NSMenuItem * separator = [NSMenuItem separatorItem];
+					[separator setTag:m_SeparatorID];
+
+					if (m_bContextMenu)
+						[pController appendContextItem:separator];
+					else
+						[pController appendItem:separator toMenu:m_AppMenuCurrent];
+				}
 			if (m_bContextMenu)
 				[pController appendContextItem:item];
 			else
@@ -660,6 +680,8 @@ bool EV_CocoaMenu::MenuStack_push(NSMenu * menu)
 
 NSMenu * EV_CocoaMenu::MenuStack_pop()
 {
+	m_bAddSeparator = false;
+
 	void * ptr = 0;
 
 	if (m_menuStack->getDepth())

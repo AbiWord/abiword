@@ -100,6 +100,8 @@ private:
 	UT_uint32				m_maxlen;
 
 	bool					m_bContextMenu;
+	bool					m_bAddSeparator;
+	XAP_Menu_Id				m_SeparatorID;
 };
 
 #endif /* EV_COCOAMENU_H */
