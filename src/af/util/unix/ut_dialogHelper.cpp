@@ -37,6 +37,7 @@
 
 #ifdef HAVE_GNOME
 #include <gnome.h>
+#include <libgnomeui/gnome-window-icon.h>
 #endif
 
 
@@ -316,26 +317,44 @@ GdkWindowPrivate * getRootWindow(GtkWidget * widget)
 	return (GdkWindowPrivate *) priv;
 }
 
+#ifndef HAVE_GNOME
+
+// plain, vanilla GTK+ version of this function
+
 void centerDialog(GtkWidget * parent, GtkWidget * child)
 {
 	UT_ASSERT(parent);
 	UT_ASSERT(child);
 
-#ifdef HAVE_GNOME
+	gtk_window_set_transient_for(GTK_WINDOW(child),
+								 GTK_WINDOW(parent));
+}
+
+#else // HAVE_GNOME
+
+// souped-up gnome version of this function
+
+void centerDialog(GtkWidget * parent, GtkWidget * child)
+{
+	UT_ASSERT(parent);
+	UT_ASSERT(child);
+
 	// if it's a gnome dialog, we want this behavior
 	if (GNOME_IS_DIALOG (child))
-	  gnome_dialog_set_parent (GNOME_DIALOG (child),
-				   GTK_WINDOW (parent));
+	{
+		gnome_dialog_set_parent (GNOME_DIALOG (child),
+								 GTK_WINDOW (parent));
+	}
 	else
-	  {
-#endif
-	    // gtk dialog 
-	    gtk_window_set_transient_for(GTK_WINDOW(child),
-					 GTK_WINDOW(parent));
-#ifdef HAVE_GNOME
-	  }
-#endif
+	{
+		
+		gtk_window_set_transient_for(GTK_WINDOW(child),
+									 GTK_WINDOW(parent));
+	}
+
+	gnome_window_icon_set_from_default (GTK_WINDOW(child));
 }
+#endif
 
 gint searchCList(GtkCList * clist, char * compareText)
 {

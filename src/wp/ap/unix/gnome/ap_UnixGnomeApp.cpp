@@ -71,6 +71,8 @@
 #include "gnome-vfs.h"
 #endif
 
+#include <libgnomeui/gnome-window-icon.h>
+
 /*****************************************************************/
 
 AP_UnixGnomeApp::AP_UnixGnomeApp(XAP_Args * pArgs, const char * szAppName)
@@ -161,8 +163,8 @@ int AP_UnixGnomeApp::main(const char * szAppName, int argc, char ** argv)
 	// HACK : soon as possible.
 	// TODO : I've to change that to gnome_init call.
 	gtk_set_locale();
-	//	gnome_init(m_szAppName, "0.0", Args.m_argc, Args.m_argv);
-	gtk_init(&Args.m_argc,&Args.m_argv);
+	gnome_init(pMyUnixApp->m_szAppName, "0.9.0", Args.m_argc, Args.m_argv);
+	//gtk_init(&Args.m_argc,&Args.m_argv);
 
 #ifdef HAVE_GNOMEVFS
 	if (! gnome_vfs_init ())
@@ -171,7 +173,14 @@ int AP_UnixGnomeApp::main(const char * szAppName, int argc, char ** argv)
 	    return -1;	    
 	  }
 #endif
-	
+
+	// set the default icon
+	UT_String s = pMyUnixApp->getAbiSuiteLibDir();
+	s += "/icons/abiword_48.png";
+	UT_DEBUGMSG(("DOM: icon name is %s\n", s.c_str()));
+	gnome_window_icon_init ();
+	gnome_window_icon_set_default_from_file (s.c_str());
+
 	if (bShowSplash)
 		_showSplash(2000);
 			
