@@ -46,8 +46,8 @@ AP_UnixToolbar_FontCombo::AP_UnixToolbar_FontCombo(EV_Toolbar * pToolbar,
 {
 	UT_ASSERT(id==AP_TOOLBAR_ID_FMT_FONT);
 
-	m_nPixels = 150;		// TODO: do a better calculation
-	m_nLimit = 32;
+	m_nPixels = 175;		// TODO: do a better calculation
+	m_nLimit = 32;			// TODO: honor this?  :)
 }
 
 AP_UnixToolbar_FontCombo::~AP_UnixToolbar_FontCombo(void)

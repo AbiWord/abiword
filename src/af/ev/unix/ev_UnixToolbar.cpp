@@ -68,7 +68,7 @@ public:									// we create...
 
 	// TODO: should this move out of wd?  It's convenient here; maybe I'll make
 	// a microclass for combo boxes.
-	static void s_combo_changed(GtkEntry * widget, gpointer user_data) //blah, gpointer user_data)
+	static void s_combo_changed(GtkEntry * widget, gpointer user_data)
 	{
 		_wd * wd = (_wd *) user_data;
 		UT_ASSERT(wd);
@@ -82,6 +82,25 @@ public:									// we create...
 				wd->m_pUnixToolbar->toolbarEvent(wd->m_id, text, length);
 
 	};
+
+	// block the changed signals on popdown (so we don't get real-time formatting
+	// updating as a user scrolls through the choices)
+	static void s_combo_show(GtkEntry * widget, gpointer user_data)
+	{
+		_wd * wd = (_wd *) user_data;
+		UT_ASSERT(wd);
+
+		wd->m_blockSignal = true;
+	}
+
+	// unblock when the menu goes away
+	static void s_combo_hide(GtkEntry * widget, gpointer user_data)
+	{
+		_wd * wd = (_wd *) user_data;
+		UT_ASSERT(wd);
+
+		wd->m_blockSignal = false;
+	}
 	
 	EV_UnixToolbar *	m_pUnixToolbar;
 	AP_Toolbar_Id		m_id;
@@ -243,6 +262,7 @@ UT_Bool EV_UnixToolbar::synthesize(void)
 				EV_Toolbar_Control * pControl = pFactory->getControl(this, id);
 				UT_ASSERT(pControl);
 
+				// default, shouldn't be used for well-defined controls
 				int iWidth = 100;
 
 				if (pControl)
@@ -259,12 +279,20 @@ UT_Bool EV_UnixToolbar::synthesize(void)
 				// the entry is read-only for now
 				gtk_entry_set_editable(GTK_ENTRY(GTK_COMBO(comboBox)->entry), FALSE);
 										 
-				// we override lots of signals to effect document layout changes
-/*				gtk_signal_connect(GTK_OBJECT(GTK_COMBO(comboBox)->entry),
-										 "activate",
-										 GTK_SIGNAL_FUNC(_wd::s_combo_changed),
-										 wd);
-*/
+				// handle popup events, so we can block our signals until the popdown
+				GtkWidget * popup = GTK_WIDGET(GTK_COMBO(comboBox)->popwin);
+				UT_ASSERT(popup);
+#if 0				
+				gtk_signal_connect(GTK_OBJECT(popup),
+								   "show",
+								   GTK_SIGNAL_FUNC(_wd::s_combo_show),
+								   wd);
+				gtk_signal_connect(GTK_OBJECT(popup),
+								   "hide",
+								   GTK_SIGNAL_FUNC(_wd::s_combo_hide),
+								   wd);
+#endif
+				// handle changes in content
 				GtkEntry * blah = GTK_ENTRY(GTK_COMBO(comboBox)->entry);
 				GtkEditable * yuck = GTK_EDITABLE(blah);
 				gtk_signal_connect(GTK_OBJECT(&yuck->widget),
@@ -424,7 +452,7 @@ UT_Bool EV_UnixToolbar::refreshToolbar(AV_View * pView, AV_ChangeMask mask)
 					GtkButton * item = GTK_BUTTON(wd->m_widget);
 					UT_ASSERT(item);
 						
-						// Disable/enable toolbar item
+					// Disable/enable toolbar item
 					gtk_widget_set_sensitive(GTK_WIDGET(item), !bGrayed);
 
 					UT_DEBUGMSG(("refreshToolbar: PushButton [%s] is %s\n",
@@ -443,9 +471,6 @@ UT_Bool EV_UnixToolbar::refreshToolbar(AV_View * pView, AV_ChangeMask mask)
 					GtkToggleButton * item = GTK_TOGGLE_BUTTON(wd->m_widget);
 					UT_ASSERT(item);
 						
-					// Press/unpress the item
-					//item->active = bToggled;
-
 					// Block the signal, throw the toggle event
 					bool wasBlocked = wd->m_blockSignal;
 					wd->m_blockSignal = true;
@@ -480,7 +505,7 @@ UT_Bool EV_UnixToolbar::refreshToolbar(AV_View * pView, AV_ChangeMask mask)
 					// Disable/enable toolbar item
 					gtk_widget_set_sensitive(GTK_WIDGET(item), !bGrayed);
 
-					// Block the signal, throw the toggle event
+					// Block the signal, set the contents
 					bool wasBlocked = wd->m_blockSignal;
 					wd->m_blockSignal = true;
 					if (szState)
