@@ -49,6 +49,14 @@ PLATFORM_OBJS=	$(ABI_NATIVE)/$(OBJDIR)/ut_debugmsg.$(OBJ_SUFFIX)	\
 		$(ABI_NATIVE)/$(OBJDIR)/ut_Xpm2Bmp.$(OBJ_SUFFIX)
 endif
 
+ifeq ($(ABI_NATIVE), beos)
+## TODO fix capitalization and change to $(ABI_FE)
+PLATFORM_OBJS=	$(ABI_NATIVE)/$(OBJDIR)/ut_$(ABI_FE)Assert.$(OBJ_SUFFIX)	\
+		$(ABI_NATIVE)/$(OBJDIR)/ut_$(ABI_FE)String.$(OBJ_SUFFIX)	\
+		$(ABI_NATIVE)/$(OBJDIR)/ut_$(ABI_FE)Timer.$(OBJ_SUFFIX)		\
+		$(ABI_NATIVE)/$(OBJDIR)/ut_debugmsg.$(OBJ_SUFFIX)
+endif
+
 ### add this to the OBJS when we need it for calc.
 ###		xp/$(OBJDIR)/ut_regex.$(OBJ_SUFFIX)			\
 
