@@ -2379,7 +2379,9 @@ static UT_Bool s_doPrint(FV_View * pView, UT_Bool bTryToSuppressDialog)
 
 		const char *pDocName = ((doc->getFilename()) ? doc->getFilename() : pFrame->getTempNameFromTitle());
 
-		pGraphics->startPrint();
+		UT_Bool bStarted = pGraphics->startPrint();
+		UT_ASSERT(bStarted);
+
 		if (bCollate)
 		{
 			for (j=1; (j <= nCopies); j++)

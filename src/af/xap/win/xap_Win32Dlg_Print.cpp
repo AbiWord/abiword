@@ -63,6 +63,7 @@ DG_Graphics * AP_Win32Dialog_Print::getPrinterGraphicsContext(void)
 {
 	UT_ASSERT(m_answer == a_OK);
 
+	memset(&m_DocInfo,0,sizeof(m_DocInfo));
 	m_DocInfo.cbSize = sizeof(DOCINFO);
 	m_DocInfo.lpszDocName = m_szDocumentPathname;
 	m_DocInfo.lpszOutput = ((m_bDoPrintToFile) ? m_szPrintToFilePathname : NULL);
