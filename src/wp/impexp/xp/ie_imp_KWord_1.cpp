@@ -31,7 +31,7 @@
 
 /*
  * This file is meant to import KWord documents.
- * Kword is a component of KOffice for KDE.
+ * Kword is a compoent of KOffice for KDE.
  */
 
 /*****************************************************************/
@@ -43,12 +43,10 @@
 
 #include "xap_Module.h"
 
-ABI_PLUGIN_DECLARE("KWord")
-
 // we use a reference-counted sniffer
 static IE_Imp_KWord_1_Sniffer * m_sniffer = 0;
 
-ABI_FAR_CALL
+ABI_FAR extern "C"
 int abi_plugin_register (XAP_ModuleInfo *mi)
 {
   if (!m_sniffer)
@@ -70,7 +68,7 @@ int abi_plugin_register (XAP_ModuleInfo *mi)
   return 1;
 }
 
-ABI_FAR_CALL
+ABI_FAR extern "C"
 int abi_plugin_unregister (XAP_ModuleInfo *mi)
 {
   mi->name = 0;
@@ -90,7 +88,7 @@ int abi_plugin_unregister (XAP_ModuleInfo *mi)
   return 1;
 }
 
-ABI_FAR_CALL
+ABI_FAR extern "C"
 int abi_plugin_supports_version (UT_uint32 major, UT_uint32 minor, UT_uint32 release)
 {
   return isCurrentAbiVersion (major, minor, release) ? 1 : 0;
@@ -145,6 +143,13 @@ IE_Imp_KWord_1::~IE_Imp_KWord_1()
 
 IE_Imp_KWord_1::IE_Imp_KWord_1(PD_Document *pDocument) : IE_Imp_XML(pDocument, true)
 {
+  m_bInText=false;
+}
+
+void IE_Imp_KWord_1::_charData(const XML_Char * buf, int len)
+{
+  for (int i = 0; i < len; i++)
+  m_szTextBuffer += buf[i];
 }
 
 /*****************************************************************/
@@ -244,6 +249,7 @@ static struct xmlToIdMapping s_Tokens[] =
 /*****************************************************************/
 /*****************************************************************/
 
+
 void IE_Imp_KWord_1::_startElement(const XML_Char *name, const XML_Char **atts)
 {
   UT_DEBUGMSG(("KWord import: startElement: %s\n", name));
@@ -253,118 +259,229 @@ void IE_Imp_KWord_1::_startElement(const XML_Char *name, const XML_Char **atts)
 
   UT_uint32 tokenIndex = _mapNameToToken (name, s_Tokens, TokenTableSize);
 
+  XML_Char* pVal = 0;
+
   switch (tokenIndex)
-  {
-  case TT_ATTRIBUTE:
-    UT_DEBUGMSG(("holio: begin ATTRIBUTE\n"));
-    break;
+    {
+    case TT_ATTRIBUTE:
+      {
+	UT_DEBUGMSG(("holio: begin ATTRIBUTE\n"));
+	break;
+      }
+      
+    case TT_BOTTOMBORDER:
+      {
+	UT_DEBUGMSG(("holio: begin BOTTOMBORDER\n"));
+	break;
+      }
+      
+    case TT_CHARSET:
+      {
+	UT_DEBUGMSG(("holio: begin CHARSET\n"));
+	break;
+      }
 
-  case TT_BOTTOMBORDER:
-    UT_DEBUGMSG(("holio: begin BOTTOMBORDER\n"));
-    break;
-
-  case TT_CHARSET:
-    UT_DEBUGMSG(("holio: begin CHARSET\n"));
-    break;
-
-  case TT_CLIPARTS:
-    UT_DEBUGMSG(("holio: begin CLIPARTS\n"));
-    break;
-
-  case TT_COUNTER:
-    UT_DEBUGMSG(("holio: begin COUNTER\n"));
-    break;
-
-  case TT_DOC:
-  //  X_VerifyParseState(_PS_Init);
-    m_parseState = _PS_Doc;
-    X_CheckError(getDoc()->appendStrux(PTX_Section,(const XML_Char **)NULL));
-    X_CheckError(getDoc()->appendStrux(PTX_Block, NULL));
-    return;
-
-  case TT_FOLLOWING:
-    UT_DEBUGMSG(("holio: begin FOLLOWING\n"));
-    break;
-
-  case TT_FRAME:
-    UT_DEBUGMSG(("holio: begin FRAME\n"));
-    break;
-
-  case TT_FRAMESET:
-    UT_DEBUGMSG(("holio: begin FRAMESET\n"));
-    break;
-
-  case TT_INDENTS:
-    UT_DEBUGMSG(("holio: begin INDENTS\n"));
-    break;
-
-  case TT_LAYOUT:
-    UT_DEBUGMSG(("holio: begin LAYOUT\n"));
-    break;
-
-  case TT_LEFTBORDER:
-    UT_DEBUGMSG(("holio: begin LEFTBORDER\n"));
-    break;
-
+    case TT_CLIPARTS:
+      {
+	UT_DEBUGMSG(("holio: begin CLIPARTS\n"));
+	break;
+      }
+      
+    case TT_COUNTER:
+      {
+	UT_DEBUGMSG(("holio: begin COUNTER\n"));
+	break;
+      }
+      
+    case TT_DOC:
+      {
+	//  X_VerifyParseState(_PS_Init);
+	m_parseState = _PS_Doc;
+	X_CheckError(getDoc()->appendStrux(PTX_Section,(const XML_Char **)NULL));
+	X_CheckError(getDoc()->appendStrux(PTX_Block, NULL));
+	return;
+      }
+      
+    case TT_FOLLOWING:
+      {
+	UT_DEBUGMSG(("holio: begin FOLLOWING\n"));
+	break;
+      }
+      
+    case TT_FRAME:
+      {
+	UT_DEBUGMSG(("holio: begin FRAME\n"));
+	break;
+      }
+      
+    case TT_FRAMESET:
+      {
+	UT_DEBUGMSG(("holio: begin FRAMESET\n"));
+	break;
+      }
+      
+    case TT_INDENTS:
+      {
+	UT_DEBUGMSG(("holio: begin INDENTS\n"));
+	break;
+      }
+      
+    case TT_LAYOUT:
+      {
+	UT_DEBUGMSG(("holio: begin LAYOUT\n"));
+	break;
+      }
+      
+    case TT_LEFTBORDER:
+      {
+	UT_DEBUGMSG(("holio: begin LEFTBORDER\n"));
+	break;
+      }
+      
   case TT_LINESPACING:
-    UT_DEBUGMSG(("holio: begin LINESPACING\n"));
-    break;
+    {
+      UT_DEBUGMSG(("holio: begin LINESPACING\n"));
+      break;
+    }
+    
+    case TT_OFFSETS:
+      {
+	UT_DEBUGMSG(("holio: begin OFFSETS\n"));
+	break;
+      }
+      
+    case TT_PAPER:
+      {
+	UT_DEBUGMSG(("holio: begin PAPER\n"));
+	break;
+      }
+      
+    case TT_PAPERBORDERS:
+      {
+	UT_DEBUGMSG(("holio: begin PAPERBORDERS\n"));
+	break;
+      }
+      
+    case TT_PAGEBREAKING:
+      {
+	UT_DEBUGMSG(("holio: begin PAGEBREAKING\n"));
+	break;
+      }
+      
+    case TT_PARAGRAPH:
+      {
+	UT_DEBUGMSG(("holio: begin PARAGRPAHS\n"));
+	break;
+      }
+      
+    case TT_RIGHTBORDER:
+      {
+	UT_DEBUGMSG(("holio: begin RIGHTBORDER\n"));
+	break;
+      }
+      
+    case TT_STYLE:
+      {
+	UT_DEBUGMSG(("holio: begin STYLE\n"));
+	break;
+      }
+      
+    case TT_STYLES:
+      {
+	UT_DEBUGMSG(("holio: begin STYLES\n"));
+	break;
+      }
+      
+    case TT_TEXT:
+      {
+	m_bInText=true;
+	return;
+      }
+      
+    case TT_TOPBORDER:
+      {
+	UT_DEBUGMSG(("holio: begin TOPBORDER\n"));
+	break;
+      }
+      
+    case TT_ITALIC:
+      {
+	pVal = (XML_Char*)_getXMLPropValue("value", atts);
+	if ( pVal && UT_strcmp ( pVal, "1" ) == 0 )
+	  m_szProps += "font-style:italic; ";
+	break;
+      }
+      
+    case TT_UNDERLINE:
+      {
+	pVal = (XML_Char*)_getXMLPropValue("value", atts);
+	if ( pVal && UT_strcmp ( pVal, "1" ) == 0 )
+	  m_szProps += "text-decoration:underline; ";
+	break;
+      }
+      
+    case TT_WEIGHT:
+      {
+	pVal = (XML_Char*)_getXMLPropValue("value", atts);
+	if ( pVal && UT_strcmp ( pVal, "75" ) == 0 )
+	  m_szProps += "font-weight:bold; ";
+	break;
+      }
+      
+    case TT_STRIKEOUT:
+      {
+	pVal = (XML_Char*)_getXMLPropValue("value", atts);
+	if ( pVal && UT_strcmp ( pVal, "1" ) == 0 )
+	  m_szProps += "text-decoration:strike-through; ";
+	break;
+      }
+      
+    case TT_FONT:
+      {
+	pVal = (XML_Char*)_getXMLPropValue("name", atts);
+	if ( pVal )
+	  {
+	    m_szProps += "font-face:";
+	    m_szProps += pVal;
+	    m_szProps += "; ";
+	  }
+	break;
+      }
+      
+    case TT_SIZE:
+      {
+	pVal = (XML_Char*)_getXMLPropValue("value", atts);
+	if ( pVal )
+	  {
+	    m_szProps += "font-size:";
+	    m_szProps += pVal;
+	    m_szProps += "; ";
+	  }
+	break;
+      }
+      
+    case TT_FLOW:
+    case TT_FORMAT:
+    case TT_NAME:
+    case TT_VERTALIGN:
+    default:
+      UT_DEBUGMSG(("stuff...\n"));
+      break;
+    }
+  
+}
 
-  case TT_OFFSETS:
-    UT_DEBUGMSG(("holio: begin OFFSETS\n"));
-    break;
-
-  case TT_PAPER:
-    UT_DEBUGMSG(("holio: begin PAPER\n"));
-    break;
-
-  case TT_PAPERBORDERS:
-    UT_DEBUGMSG(("holio: begin PAPERBORDERS\n"));
-    break;
-
-  case TT_PAGEBREAKING:
-    UT_DEBUGMSG(("holio: begin PAGEBREAKING\n"));
-    break;
-
-  case TT_PARAGRAPH:
-    UT_DEBUGMSG(("holio: begin PARAGRPAHS\n"));
-    break;
-
-  case TT_RIGHTBORDER:
-    UT_DEBUGMSG(("holio: begin RIGHTBORDER\n"));
-    break;
-
-  case TT_STYLE:
-    UT_DEBUGMSG(("holio: begin STYLE\n"));
-    break;
-
-  case TT_STYLES:
-    UT_DEBUGMSG(("holio: begin STYLES\n"));
-    break;
-
-  case TT_TEXT:
-    m_parseState = _PS_Block;
-    return;
-
-  case TT_TOPBORDER:
-    UT_DEBUGMSG(("holio: begin TOPBORDER\n"));
-    break;
-
-  case TT_FLOW:
-  case TT_FONT:
-  case TT_FORMAT:
-  case TT_ITALIC:
-  case TT_NAME:
-  case TT_SIZE:
-  case TT_STRIKEOUT:
-  case TT_UNDERLINE:
-  case TT_VERTALIGN:
-  case TT_WEIGHT:
-    UT_DEBUGMSG(("stuff...\n"));
-    break;
-
-  }
-
+void IE_Imp_KWord_1::_appendText ()
+{
+  if (m_szTextBuffer.size())
+    {
+      if (!getDoc()->appendSpan(m_szTextBuffer.ucs_str(), m_szTextBuffer.size()))
+	{
+	  UT_DEBUGMSG(("Error appending text run\n"));
+	  return;
+	}
+      m_szTextBuffer.clear ();
+    }
 }
 
 void IE_Imp_KWord_1::_endElement(const XML_Char *name)
@@ -399,11 +516,13 @@ void IE_Imp_KWord_1::_endElement(const XML_Char *name)
     break;
 
   case TT_DOC:
+  {
   //  X_VerifyParseState(_PS_Init);
     m_parseState = _PS_Doc;
     X_CheckError(getDoc()->appendStrux(PTX_Section,(const XML_Char **)NULL));
     X_CheckError(getDoc()->appendStrux(PTX_Block, NULL));
     return;
+  }
 
   case TT_FLOW:
     UT_DEBUGMSG(("holio: end FLOW\n"));
@@ -418,8 +537,34 @@ void IE_Imp_KWord_1::_endElement(const XML_Char *name)
     break;
 
   case TT_FORMAT:
-    UT_DEBUGMSG(("holio: end FORMAT\n"));
+  {
+    XML_Char* propsArray[3];
+
+    if (m_szProps.size() == 0)
+      {
+	UT_DEBUGMSG(("holio: no properties\n"));
+	_appendText ();
+	break;
+      }
+
+    m_szProps[m_szProps.size()-2] = 0; // nock off the final ';'
+
+    propsArray[0] = (XML_Char*)"props";
+    propsArray[1] = (XML_Char *)m_szProps.c_str();
+    propsArray[2] = 0;
+
+    UT_DEBUGMSG(("holio: formatting properties are: %s\n", propsArray[1]));
+
+    if (!getDoc()->appendFmt((const XML_Char **)propsArray))
+      {
+	UT_DEBUGMSG(("Error appending character formatting\n"));
+      }
+
+    m_szProps.clear ();
+    _appendText ();
+
     break;
+  }
 
   case TT_FORMATS:
     UT_DEBUGMSG(("holio: end FORMATS\n"));
@@ -453,7 +598,7 @@ void IE_Imp_KWord_1::_endElement(const XML_Char *name)
     UT_DEBUGMSG(("holio: end LINESPACING\n"));
     break;
 
-  case TT_NAME:
+ case TT_NAME:
     UT_DEBUGMSG(("holio: end NAME\n"));
     break;
 
@@ -498,7 +643,7 @@ void IE_Imp_KWord_1::_endElement(const XML_Char *name)
     break;
 
   case TT_TEXT:
-    m_parseState = _PS_Block;
+    m_bInText=false;
     return;
 
   case TT_TOPBORDER:
