@@ -202,21 +202,10 @@ int IE_Imp_MsWord_97::_eleProc(wvParseStruct *ps,wvTag tag, void *props)
 			      (((float)asep->dxaColumns) / 1440));
 		   }
 		   
-		   // the following are mostly guesses...
-		   
 		   // space after section (this is the gutter, right?)
 		   sprintf(propBuffer + strlen(propBuffer),
 			   "section-space-after:%1.4fin;",
 			   (((float)asep->dzaGutter) / 1440));
-
-		   // page width (assuming that's what width is...)
-		   sprintf(propBuffer + strlen(propBuffer),
-			   "width:%1.4fin;",
-			   (((float)asep->xaPage) / 1440));
-		   // page height (assuming that's what height is...)
-		   sprintf(propBuffer + strlen(propBuffer),
-			   "height:%1.4fin;",
-			   (((float)asep->yaPage) / 1440));
 
 		   // remove trailing semi-colon
 		   propBuffer[strlen(propBuffer)-1] = 0;
