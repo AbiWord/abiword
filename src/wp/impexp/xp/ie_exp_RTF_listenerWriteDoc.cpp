@@ -2789,13 +2789,17 @@ bool s_RTF_ListenerWriteDoc::populateStrux(PL_StruxDocHandle sdh,
 	case PTX_Block:
 		{
 			_closeSpan();
+			if(!m_bBlankLine)
+ 			{
+ 				m_bInBlock = true;
+ 			}
 			_closeBlock(pcr->getIndexAP());
 			_setListBlock(false);
 			_setTabEaten(false);
 			m_sdh = sdh;
 			_rtf_open_block(pcr->getIndexAP());
-			m_bBlankLine = true;	
-			UT_DEBUGMSG(("_rtf_listenerWriteDoc: openned block \n"));
+			m_bBlankLine = true;
+			m_bInBlock = true;
 		return true;
 		}
 
