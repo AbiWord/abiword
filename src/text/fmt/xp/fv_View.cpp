@@ -10047,7 +10047,7 @@ bool FV_View::isInTable( PT_DocPosition pos)
 	if(pCL->getContainerType() == FL_CONTAINER_TABLE)
 	{
 		PT_DocPosition posTable = m_pDoc->getStruxPosition(pCL->getStruxDocHandle());
-		if(posTable == pos)
+		if(posTable <= pos)
 		{
 			return true;
 		}
