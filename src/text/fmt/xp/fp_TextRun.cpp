@@ -310,15 +310,10 @@ void fp_TextRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 */
 void fp_TextRun::appendTextToBuf(UT_GrowBuf & buf)
 {
-	if(!m_pRenderInfo || _getRefreshDrawBuffer() == GRSR_Unknown)
-	{
-		_refreshDrawBuffer();
-	}
-	
-	UT_return_if_fail(m_pRenderInfo);
+	UT_GrowBuf myBuf;
+	getBlock()->getBlockBuf(&myBuf);
 	UT_uint32 len = getLength();
-	GR_XPRenderInfo * pRI =  (GR_XPRenderInfo*) m_pRenderInfo;
-	buf.append(reinterpret_cast<UT_GrowBufElement *>(pRI->m_pChars),len);
+	buf.append(myBuf.getPointer(getBlockOffset()),len);
 }
 
 
@@ -1851,7 +1846,6 @@ void fp_TextRun::_fillRect(UT_RGBColor& clr,
 		r.height = getLine()->getHeight();
 		r.top = r.top + getAscent() - getLine()->getAscent();
 		GR_Painter painter(getGraphics());
-		UT_Rect * pLRec = getLine()->getScreenRect();
 		painter.fillRect(clr, r.left, r.top, r.width, r.height);
 	}
 }
