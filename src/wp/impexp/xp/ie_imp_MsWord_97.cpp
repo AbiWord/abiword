@@ -2167,6 +2167,13 @@ int IE_Imp_MsWord_97::_endSect (wvParseStruct * /* ps */ , UT_uint32  /* tag */ 
 int IE_Imp_MsWord_97::_beginPara (wvParseStruct *ps, UT_uint32 tag,
 				  void *prop, int dirty)
 {
+
+	// if in a header of unsupported type, just return
+	if(m_bInHeaders &&
+	   ((m_iCurrentHeader < m_iHeadersCount && m_pHeaders &&
+		 m_pHeaders[m_iCurrentHeader].type == HF_Unsupported)))
+		return 0;
+	
 	PAP *apap = static_cast <PAP *>(prop);
 
 	// the header/footnote/endnote sections are special; because the
@@ -2682,6 +2689,12 @@ int IE_Imp_MsWord_97::_endPara (wvParseStruct *ps, UT_uint32 tag,
 int IE_Imp_MsWord_97::_beginChar (wvParseStruct *ps, UT_uint32 tag,
 								  void *prop, int dirty)
 {
+	// if in a header of unsupported type, just return
+	if(m_bInHeaders &&
+	   ((m_iCurrentHeader < m_iHeadersCount && m_pHeaders &&
+		 m_pHeaders[m_iCurrentHeader].type == HF_Unsupported)))
+		return 0;
+	
 	// the header/footnote/endnote sections are special; because the
 	// parser treats them as a continuation of the document, we end up
 	// here before we get chance to handle the change from main doc to
