@@ -1459,8 +1459,23 @@ void fp_TextRun::_draw(dg_DrawArgs* pDA)
 	xxx_UT_DEBUGMSG(("fp_TextRun::_draw (0x%x): m_iVisDirection %d, _getDirection() %d\n",
 					 this, m_iVisDirection, _getDirection()));
 
+#if 0
+	// BAD, BAD HACK, please do not re-enable this.
+	//
+	// This causes bad pixed dirt with characters that fill the entire glyph box. We
+	// really cannot, under any circumstances, adjust the y coords -- the y coordinance is
+	// the base coordinace of the text, from which everything else derives (if we adust
+	// it, it means that the text gets drawn at wrong position !).
+	//
+	// Also, the comment that accompanies this hack makes no sense: how does adjusting y
+	// coordinance remove final character dirt?
+	// Tomas, Christmas Eve, 2004 (I know, I should get life)
 	UT_sint32 yTopOfRun = pDA->yoff - getAscent() - pG->tlu(1); // Hack to remove
 	UT_sint32 yTopOfSel = yTopOfRun + pG->tlu(1); // final character dirt
+#else
+	UT_sint32 yTopOfRun = pDA->yoff - getAscent();
+	UT_sint32 yTopOfSel = yTopOfRun;
+#endif
 	xxx_UT_DEBUGMSG(("_draw Text: yoff %d \n",pDA->yoff));
 	xxx_UT_DEBUGMSG(("_draw Text: getAscent %d fontAscent-1 %d fontAscent-2 %d \n",getAscent(),pG->getFontAscent(_getFont()),pG->getFontAscent()));
 	/*
@@ -2213,6 +2228,11 @@ void fp_TextRun::_drawSquiggle(UT_sint32 top, UT_sint32 left, UT_sint32 right)
 		points[nPoints-1].y = top + getGraphics()->tlu(1);
 	}
 
+	getGraphics()->setLineProperties(getGraphics()->tluD(1.0),
+									 GR_Graphics::JOIN_MITER,
+									 GR_Graphics::CAP_PROJECTING,
+									 GR_Graphics::LINE_SOLID);
+	
 	painter.polyLine(points, nPoints);
 
 	if (points != scratchpoints) delete[] points;
@@ -2246,7 +2266,7 @@ void fp_TextRun::drawSquiggle(UT_uint32 iOffset, UT_uint32 iLen)
 	UT_Rect r;
 	_getPartRect( &r, xoff, yoff, iOffset, iLen);
 
-	_drawSquiggle(r.top + iAscent + iGap, r.left, r.left + r.width);
+	_drawSquiggle(r.top + iAscent + iGap + getGraphics()->tlu(1), r.left, r.left + r.width);
 	xxx_UT_DEBUGMSG(("Done draw sqiggle for run in block %x \n",getBlock()));
 }
 
