@@ -28,7 +28,7 @@ dnl  *  Bundled popt if a directory name argument is passed
 
 abi_found_popt="no"
 
-ABI_POPT_DIR=""
+ABI_LIBPOPT_DIR=""
 AC_ARG_WITH(popt,[  --with-popt=DIR     use popt in DIR],[
 	if [ test "$withval" = "no" ]; then
 		AC_MSG_ERROR([* * * popt is required by AbiWord * * *])
@@ -82,7 +82,7 @@ if test $abi_popt = peer; then
 else
 	if test $abi_libpopt = sys; then
 		abi_libpopt_message="libpopt in -L$ABI_LIBPOPT_DIR/lib -lpopt"
-		LIBPOPT_CFLAGS="-I$ABI_LIBPOPT_DIR"
+		LIBPOPT_CFLAGS="-I$ABI_LIBPOPT_DIR/include"
 		LIBPOPT_LIBS="-L$ABI_LIBPOPT_DIR/lib -lpopt"
 	else
 		abi_libpopt_message="libpopt in -lpopt"
