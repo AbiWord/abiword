@@ -111,6 +111,8 @@ public:
 		// these can't be const since we're passing a non-const this ptr
 		inline const UT_String  &key()
 			{return m_d->_key(*this); }
+		inline void make_deleted()
+			{m_d->_make_deleted(*this); }
 		inline const T	first()
 			{ return m_d->_first(*this); }
 		inline const T	next()
@@ -139,6 +141,7 @@ public:
 			UT_Cursor hc1(this);
 			for ( T hval1 = hc1.first(); hc1.is_valid(); hval1 = hc1.next() ) {
 				if (hval1) {
+					hc1.make_deleted();
 					delete hval1;
 				}
 			}
@@ -150,6 +153,7 @@ public:
 			UT_Cursor hc1(this);
 			for ( T hval1 = hc1.first(); hc1.is_valid(); hval1 = hc1.next() ) {
 				if (hval1) {
+					hc1.make_deleted();
 					free(const_cast<T>(hval1));
 				}
 			}
@@ -208,6 +212,7 @@ private:
 	const T _next(UT_Cursor& c) const;
 	const T _prev(UT_Cursor& c) const;
 	const UT_String& _key(UT_Cursor& c) const;
+	void _make_deleted(UT_Cursor& c) const;
 	
 	// data
 	hash_slot<T>* m_pMapping;
@@ -898,6 +903,17 @@ const UT_String& UT_GenericStringMap<T>::_key(UT_Cursor& c) const
 	UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 	static UT_String bad;
 	return bad;
+}
+
+template <class T>
+void UT_GenericStringMap<T>::_make_deleted(UT_Cursor& c) const
+{
+	hash_slot<T> & slot = m_pMapping[c._get_index()];
+
+	if (!slot.empty() && !slot.deleted())
+	{
+		slot.make_deleted();
+	}
 }
 
 template <class T> const T
