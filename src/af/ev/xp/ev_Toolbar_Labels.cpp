@@ -28,7 +28,8 @@
 #include "ev_Toolbar_Labels.h"
 #ifdef BIDI_ENABLED
 #include "fribidi.h"
-#include "xap_EncodingManager.h"
+#include "ut_wctomb.h"
+#include "ut_mbtowc.h"
 #include "xap_App.h"
 #endif
 
@@ -65,8 +66,17 @@ EV_Toolbar_Label::EV_Toolbar_Label(XAP_Toolbar_Id id,
 	{
         UT_uint32 iOldLen = 0;
         FriBidiChar *fbdStr = 0, *fbdStr2 = 0;
+
+		UT_Mbtowc mbtowc_conv;
+		UT_Wctomb wctomb_conv;
+		wchar_t wc;
+
+		char letter_buf[20];
+		int length;
+
         char * szStr = m_szToolTip;
-        for(UT_uint32 j = 0; j < 2; j++)
+
+        for(UT_uint32 l = 0; l < 2; l++)
         {
 			if (szStr && *szStr)
 			{	
@@ -88,9 +98,16 @@ EV_Toolbar_Label::EV_Toolbar_Label(XAP_Toolbar_Id id,
 				}
 				
 				UT_uint32 i;
+				UT_uint32 j = 0;
+				UT_uint32 k = 0;
 				for(i = 0; i < iStrLen; i++)
-					fbdStr[i] = (FriBidiChar) XAP_EncodingManager::get_instance()->nativeToU((UT_UCSChar)szStr[i]);
-	
+				{
+					if(mbtowc_conv.mbtowc(wc,szStr[i]))
+					{
+						fbdStr[j++] = (FriBidiChar) wc;
+					}
+				}
+
 				FriBidiCharType fbdDomDir = fribidi_get_type(fbdStr[0]);
 #if 1
 // this has been crashing with en-US (but not en-GB), due to some
@@ -98,7 +115,7 @@ EV_Toolbar_Label::EV_Toolbar_Label(XAP_Toolbar_Id id,
 // USE_SIMPLE_MALLOC for it, which solved the problem
 				fribidi_log2vis (		/* input */
 				       fbdStr,
-				       iStrLen,
+				       j,
 				       &fbdDomDir,
 			    	   /* output */
 				       fbdStr2,
@@ -106,8 +123,17 @@ EV_Toolbar_Label::EV_Toolbar_Label(XAP_Toolbar_Id id,
 				       NULL,
 				       NULL);	
 #endif	
-				for(i = 0; i < iStrLen; i++)
-					szStr[i] = (char) XAP_EncodingManager::get_instance()->UToNative((UT_UCSChar)fbdStr2[i]);
+
+				for(i = 0; i < j; i++)
+				{
+					if (wctomb_conv.wctomb(letter_buf,length,(wchar_t)fbdStr2[i]))
+					{
+						for(k = 0; k < length; k++)
+							szStr[i++] = letter_buf[k];
+						i--;
+					}
+				}
+
 				UT_ASSERT(szStr[i] == 0);
 			}
 			

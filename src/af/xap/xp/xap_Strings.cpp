@@ -153,7 +153,50 @@ bool XAP_DiskStringSet::setValue(XAP_String_Id id, const XML_Char * szString)
 
 		int kLimit=gb.getLength();
 		UT_uint16 * p=gb.getPointer(0);
-		UT_ByteBuf str;		
+		UT_ByteBuf str;
+
+#ifdef BIDI_ENABLED
+		// now we run this string through fribidi
+		if(!XAP_App::getApp()->theOSHasBidiSupport())
+		{
+			if (p && *p)
+			{	
+				FriBidiChar *fbdStr = 0, *fbdStr2 = 0;
+				fbdStr   = new FriBidiChar [kLimit];
+				UT_ASSERT(fbdStr);
+				fbdStr2  = new FriBidiChar [kLimit];
+				UT_ASSERT(fbdStr2);
+				
+				UT_uint32 i;
+				for(i = 0; i < kLimit; i++)
+				{
+					fbdStr[i] = (FriBidiChar) p[i];
+				}
+	
+				FriBidiCharType fbdDomDir = fribidi_get_type(fbdStr[0]);
+	
+				fribidi_log2vis (		/* input */
+				       fbdStr,
+				       kLimit,
+				       &fbdDomDir,
+				       /* output */
+				       fbdStr2,
+				       NULL,
+				       NULL,
+				       NULL);	
+	
+				for(i = 0; i < kLimit; i++)
+				{
+					p[i] = (UT_uint16) fbdStr2[i];
+				}
+
+				UT_ASSERT(p[i] == 0);
+				delete[] fbdStr;
+				delete[] fbdStr2;
+			}
+		}
+#endif
+		
 		UT_Wctomb wctomb_conv;
 		char letter_buf[20];
 		int length;
@@ -359,17 +402,25 @@ bool XAP_DiskStringSet::loadStringsFromDisk(const char * szFilename)
 	// and until a solution to the problem is devised (see comments in that file)
 	// I am turning this off.
 
-#ifdef BIDI_ENABLED
+#if 0
 	// now we run this stringset through fribidi
 	if(!XAP_App::getApp()->theOSHasBidiSupport())
 	{
-		UT_uint32 kLimit = NrElements(s_map);
+		UT_uint32 kLimit = _getStringCount();
 		UT_uint32 k;
         UT_uint32 iOldLen = 0;
         FriBidiChar *fbdStr = 0, *fbdStr2 = 0;
+
+		UT_Mbtowc mbtowc_conv;
+		UT_Wctomb wctomb_conv;
+		wchar_t wc;
+
+		char letter_buf[20];
+		int length;
+
 		for (k=0; k<kLimit; k++)
 		{
-			XML_Char * szValue = const_cast<XML_Char *>(XAP_DiskStringSet::getValue(s_map[k].id));
+			XML_Char * szValue = const_cast<XML_Char *>(_getNthString(k));
 			if (szValue && *szValue)
 			{	
 				UT_uint32 iStrLen  = strlen(szValue);
@@ -390,14 +441,21 @@ bool XAP_DiskStringSet::loadStringsFromDisk(const char * szFilename)
 				}
 				
 				UT_uint32 i;
+				UT_uint32 j = 0;
+				UT_uint32 k = 0;
 				for(i = 0; i < iStrLen; i++)
-					fbdStr[i] = (FriBidiChar) XAP_EncodingManager::get_instance()->nativeToU((UT_UCSChar)szValue[i]);
+				{
+					if(mbtowc_conv.mbtowc(wc,szValue[i]))
+					{
+						fbdStr[j++] = (FriBidiChar) wc;
+					}
+				}
 	
 				FriBidiCharType fbdDomDir = fribidi_get_type(fbdStr[0]);
 	
 				fribidi_log2vis (		/* input */
 				       fbdStr,
-				       iStrLen,
+				       j,
 				       &fbdDomDir,
 				       /* output */
 				       fbdStr2,
@@ -405,8 +463,16 @@ bool XAP_DiskStringSet::loadStringsFromDisk(const char * szFilename)
 				       NULL,
 				       NULL);	
 	
-				for(i = 0; i < iStrLen; i++)
-					szValue[i] = (XML_Char) XAP_EncodingManager::get_instance()->UToNative((UT_UCSChar)fbdStr2[i]);
+				for(i = 0; i < j; i++)
+				{
+					if (wctomb_conv.wctomb(letter_buf,length,(wchar_t)p[i]))
+					{
+						for(k = 0; k < length; k++)
+							szValue[i++] = letter_buf[k];
+						i--;
+					}
+				}
+
 				UT_ASSERT(szValue[i] == 0);
 			}
 		}
