@@ -71,7 +71,7 @@ void XAP_UnixGnomeDialog_About::runModal(XAP_Frame * pFrame)
   // Build the window's widgets and arrange them
   GtkWidget * mainWindow = gnome_about_new("AbiWord", 
 										   XAP_App::s_szBuild_Version,
-										   "(c) 1998-2001 AbiSource, Inc.",
+										   "(c) 1998-2002 AbiSource, Inc.",
 										   authors,
 										   "Released under the GNU GPL v2.0\n"
 										   "Gnome Port maintained by Dom Lachowicz <cinamod@hotmail.com>",
