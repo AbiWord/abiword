@@ -332,7 +332,9 @@ void fl_SectionLayout::updateBackgroundColor(void)
 
 //////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////
-
+#ifdef _MSC_VER	// MSVC++ warns about using 'this' in initializer list.
+#pragma warning(disable: 4355)
+#endif
 fl_DocSectionLayout::fl_DocSectionLayout(FL_DocLayout* pLayout, PL_StruxDocHandle sdh, PT_AttrPropIndex indexAP, SectionType iType)
 	: fl_SectionLayout(pLayout, sdh, indexAP, iType, FL_CONTAINER_DOCSECTION,PTX_Section, this)
 {
@@ -2508,7 +2510,7 @@ void fl_HdrFtrSectionLayout::deletePage(fp_Page* pPage)
 //
 	if(iShadow <  0)
 		return;
-	struct _PageHdrFtrShadowPair* pPair = (struct _PageHdrFtrShadowPair*) m_vecPages.getNthItem(iShadow);
+	_PageHdrFtrShadowPair* pPair = (_PageHdrFtrShadowPair*) m_vecPages.getNthItem(iShadow);
 	UT_ASSERT(pPair);
 
 	UT_ASSERT(pPair->getShadow());

@@ -342,7 +342,6 @@ ISpellChecker::loadDictionaryForLanguage ( const char * szLang )
 {
   char *hashname = NULL;
   char * hFile = NULL ;
-  UT_sint32 ret;
 
   for (UT_uint32 i = 0; i < (sizeof (m_mapping) / sizeof (m_mapping[0])); i++)
     {

@@ -1048,6 +1048,11 @@ void IE_Exp_RTF::_clearStyles()
     UT_HASH_PURGEDATA(NumberedStyle *, &m_hashStyles, delete);
 }
 
+#ifdef _MSC_VER	// MSVC++ warns about 'e' : unreferenced local variable
+#pragma warning(disable: 4101)
+#endif
+
+
 /*!
  * Select styles for export. This inserts all styles to be exported
  * into the style hash. Also, it makes sure that all fonts used in
@@ -1764,10 +1769,10 @@ void IE_Exp_RTF::_output_ListRTF(fl_AutoNum * pAuto, UT_uint32 iLevel)
 	if(pAuto == NULL)
 	{
 		float marg = LIST_DEFAULT_INDENT;
-		float indent =  LIST_DEFAULT_INDENT_LABEL;
+		float indent =  (float)LIST_DEFAULT_INDENT_LABEL;
 		UT_String smarg;
 		UT_String sindent;
-		marg = (((float) iLevel) +1.0) * marg;
+		marg = (((float) iLevel) +1.0f) * marg;
 		UT_String_sprintf(smarg,"%fin",marg);
 		UT_String_sprintf(sindent,"%fin",indent);
 		_rtf_keyword_ifnotdefault_twips("li",(char*)smarg.c_str(),0);

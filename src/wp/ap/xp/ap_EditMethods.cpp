@@ -1378,15 +1378,18 @@ static void s_StartStopLoadingCursor( bool bStartStop, XAP_Frame * pFrame)
 
 static void s_TellOpenFailed(XAP_Frame * pFrame, const char * fileName, UT_Error errorCode)
 {
-  XAP_String_Id String_id;
+  XAP_String_Id String_id = AP_STRING_ID_MSG_OpenFailed;
 
+// TODO use switch statement for more error codes
+#if 0  
   switch(errorCode)
 	{
 	default:
 	  String_id = AP_STRING_ID_MSG_OpenFailed;
 	  break;
 	}
-
+#endif
+  
   pFrame->showMessageBox(String_id,
 			 XAP_Dialog_MessageBox::b_O,
 			 XAP_Dialog_MessageBox::a_OK,

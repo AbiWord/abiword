@@ -938,7 +938,7 @@ void s_RTF_ListenerWriteDoc::_newRow(void)
 		cellLeftPos = UT_convertToInches(szColumnLeftPos);
 	}
 	UT_sint32 iLeftTwips = 0;
-	iLeftTwips =  (UT_sint32) cellLeftPos*720.0;
+	iLeftTwips =  (UT_sint32) (cellLeftPos*720.0);
 	m_pie->_rtf_keyword("trleft",iLeftTwips);
 	UT_Vector vecColProps;
 	vecColProps.clear();
@@ -957,7 +957,7 @@ void s_RTF_ListenerWriteDoc::_newRow(void)
 				i = j + 1;
 				double colWidth = UT_convertToInches(pszSub);
 				fl_ColProps * pColP = new fl_ColProps;
-				pColP->m_iColWidth = colWidth;
+				pColP->m_iColWidth = (UT_sint32) colWidth;
 				vecColProps.addItem((void *) pColP);
 				delete [] pszSub;
 			}
@@ -1014,7 +1014,7 @@ void s_RTF_ListenerWriteDoc::_newRow(void)
 		}
 		cellpos += colwidth;
 		UT_sint32 iCellTwips = 0;
-		iCellTwips = (UT_sint32) cellpos*1440.0;
+		iCellTwips = (UT_sint32) (cellpos*1440.0);
 		m_pie->_rtf_keyword("cellx",iCellTwips);
 	}
 	if(vecColProps.getItemCount() > 0)

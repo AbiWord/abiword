@@ -656,7 +656,7 @@ void CreateBMPFile(HWND hwnd, LPTSTR pszFile, PBITMAPINFO pbi,
 	BITMAPFILEHEADER hdr;       // bitmap file-header 
 	PBITMAPINFOHEADER pbih;     // bitmap info-header 
 	LPBYTE lpBits;              // memory pointer 	
-	DWORD cb;                   // incremental count of bytes 	
+//	DWORD cb;                   // incremental count of bytes - not used
 	DWORD dwTmp; 
 
     pbih = (PBITMAPINFOHEADER) pbi; 
@@ -769,7 +769,6 @@ bool AP_Win32App::_pasteFormatFromClipboard(PD_DocumentRange * pDocRange, const 
  		FV_View* 				pView;						
  		char szFile[_MAX_PATH];
  		char szPath[MAX_PATH];
- 		char sz[MAX_PATH]; 		
  		
  		hBitmap = (HBITMAP)hData;					
  		hWnd =  GetDesktopWindow();

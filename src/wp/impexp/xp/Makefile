@@ -51,9 +51,9 @@ CPPSRCS= 	ie_exp_AbiWord_1.cpp 			\
 TARGETS=		$(OBJS)
 
 ifeq ($(ABI_NATIVE), win) 
-INCLUDES= -I$(ABI_XX_ROOT)/../wv -I$(ABI_XX_ROOT)/../wv/exporter -I$(ABI_XX_ROOT)/../zlib -I$(ABI_XX_ROOT)/../wv/libole2 -I$(ABI_XX_ROOT)/../libpng -I$(ABI_XX_ROOT)/../libiconv/include -I$(ABI_XX_ROOT)/../psiconv
+INCLUDES= -I$(ABI_XX_ROOT)/../wv -I$(ABI_XX_ROOT)/../wv/exporter -I$(ABI_XX_ROOT)/../zlib -I$(ABI_XX_ROOT)/../wv/libole2 -I$(ABI_XX_ROOT)/../libpng -I$(ABI_XX_ROOT)/../libiconv/include -I$(ABI_XX_ROOT)/../psiconv -GX
 else 
-INCLUDES= -I$(ABI_ROOT)/../wv -I$(ABI_ROOT)/../wv/exporter -I$(ABI_ROOT)/../wv/libole2 -I$(ABI_ROOT)/../libpng -I$(ABI_ROOT)/../psiconv
+INCLUDES= -I$(ABI_ROOT)/../wv -I$(ABI_ROOT)/../wv/exporter -I$(ABI_ROOT)/../wv/libole2 -I$(ABI_ROOT)/../libpng -I$(ABI_ROOT)/../psiconv -GX
 endif 
 
 ifdef GLIB_CONFIG 

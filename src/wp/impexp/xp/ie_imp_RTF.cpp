@@ -2264,7 +2264,7 @@ bool IE_Imp_RTF::HandlePicture()
 					if ((parameterUsed) && (parameter != 100))
 					{
 						imageProps.sizeType = RTFProps_ImageProps::ipstScale;
-						imageProps.scaleX = parameter;
+						imageProps.scaleX = (unsigned short) parameter;
 					}
 				}
 			}
@@ -2276,7 +2276,7 @@ bool IE_Imp_RTF::HandlePicture()
 					if ((parameterUsed) && (parameter != 100))
 					{
 						imageProps.sizeType = RTFProps_ImageProps::ipstScale;
-						imageProps.scaleY = parameter;
+						imageProps.scaleY = (unsigned short) parameter;
 					}
 				}
 			}
@@ -5497,7 +5497,7 @@ bool IE_Imp_RTF::ReadListOverrideTable(void)
 RTF_msword97_listOverride*
 IE_Imp_RTF::_getTableListOverride(UT_uint32 id)
 {
-	UT_sint32 i;
+	UT_uint32 i;
 	RTF_msword97_listOverride* pLOver;
 
 	for (i = 0; i < m_vecWord97ListOverride.size(); i++)

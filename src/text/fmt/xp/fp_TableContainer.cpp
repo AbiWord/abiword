@@ -1025,7 +1025,7 @@ void fp_CellContainer::sizeRequest(fp_Requisition * pRequest)
 		pCL = pCL->getNext();
 	}
 #if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-	iwidth =  (UT_sint32) ((double) iwidth)/SCALE_TO_SCREEN;
+	iwidth =  (UT_sint32) (((double) iwidth)/SCALE_TO_SCREEN);
 #endif
 	
 	if(iwidth > width)
@@ -2092,7 +2092,7 @@ void fp_TableContainer::layout(void)
 	static fp_Requisition requisition;
 	static fp_Allocation alloc;
 	sizeRequest(&requisition);
-	setX( m_iBorderWidth * SCALE_TO_SCREEN);
+	setX( (UT_sint32) (m_iBorderWidth * SCALE_TO_SCREEN));
 	alloc.x = getX();
 	alloc.y = getY();
 #if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
@@ -2196,7 +2196,7 @@ void  fp_TableContainer::_drawBoundaries(dg_DrawArgs* pDA)
     if(getPage()->getDocLayout()->getView()->getShowPara() && getGraphics()->queryProperties(GR_Graphics::DGP_SCREEN)){
         UT_sint32 xoffBegin = pDA->xoff - 1;
         UT_sint32 yoffBegin = pDA->yoff - 1;
-        UT_sint32 xoffEnd = pDA->xoff +  iWidth + 2 - iBorderWidth * 2.0 * SCALE_TO_SCREEN;
+        UT_sint32 xoffEnd = pDA->xoff +  iWidth + 2 - (UT_sint32) (iBorderWidth * 2.0 * SCALE_TO_SCREEN);
         UT_sint32 yoffEnd = pDA->yoff + getHeight() + 2;
 
 		UT_RGBColor clrShowPara(127,127,127);
@@ -2367,7 +2367,7 @@ bool fp_TableContainer::isInBrokenTable(fp_CellContainer * pCell, fp_Container *
 	xxx_UT_DEBUGMSG(("Column %x iTop = %d ybreak %d iBot= %d ybottom= %d \n",getColumn(),iTop,iBreak,iBot,iBottom));
 	if(iTop >= iBreak)
 	{
-		if(iBot <= iBottom);
+		if(iBot <= iBottom)
 		{
 			UT_sint32 diff = iBottom - iBot;
 			if(diff >= 0)
@@ -2375,7 +2375,6 @@ bool fp_TableContainer::isInBrokenTable(fp_CellContainer * pCell, fp_Container *
 				return true;
 			}
 		}
-
 	}
 	return false;
 }	
@@ -3172,7 +3171,7 @@ void fp_TableContainer::sizeRequest(fp_Requisition * pRequisition)
 	  xxx_UT_DEBUGMSG(("SEVIOR: requisition spacing 2 is %d \n", getNthRow(row)->spacing));
 	  xxx_UT_DEBUGMSG(("SEVIOR: requisition height 2 is %d \n", pRequisition->height));
   }
-  pRequisition->height += 2.0 * SCALE_TO_SCREEN*((double) m_iBorderWidth);
+  pRequisition->height += (UT_sint32) (2.0 * SCALE_TO_SCREEN*((double) m_iBorderWidth));
 
 }
 

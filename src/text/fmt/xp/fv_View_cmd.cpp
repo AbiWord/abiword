@@ -1670,7 +1670,7 @@ UT_Error FV_View::cmdInsertTable(UT_sint32 numRows, UT_sint32 numCols, const XML
 // middle of the broken text.
 //
 	setPoint(pointBreak);
-	e |= m_pDoc->insertStrux(getPoint(),PTX_SectionTable,NULL,pPropsArray);
+	e |= (UT_sint32)(m_pDoc->insertStrux(getPoint(),PTX_SectionTable,NULL,pPropsArray));
 //
 // stuff for cell insertion.
 //
@@ -1697,9 +1697,9 @@ UT_Error FV_View::cmdInsertTable(UT_sint32 numRows, UT_sint32 numCols, const XML
 			props[5] = sLeft.c_str();
 			props[6] = sColRight.c_str();
 			props[7] = sRight.c_str();
-			e |= m_pDoc->insertStrux(getPoint(),PTX_SectionCell,NULL,props);
+			e |= (UT_sint32)(m_pDoc->insertStrux(getPoint(),PTX_SectionCell,NULL,props));
 			pointBreak = getPoint();
-			e |= m_pDoc->insertStrux(getPoint(),PTX_Block);
+			e |= (UT_sint32)(m_pDoc->insertStrux(getPoint(),PTX_Block));
 			UT_DEBUGMSG(("SEVIOR: 4  cur point %d \n",getPoint()));
 			if(getPoint() == pointBreak)
 			{
@@ -1709,10 +1709,10 @@ UT_Error FV_View::cmdInsertTable(UT_sint32 numRows, UT_sint32 numCols, const XML
 			{
 				pointTable = getPoint();
 			}
-			e |= m_pDoc->insertStrux(getPoint(),PTX_EndCell);
+			e |= (UT_sint32)(m_pDoc->insertStrux(getPoint(),PTX_EndCell));
 		}
 	}
-	e |= m_pDoc->insertStrux(getPoint(),PTX_EndTable);
+	e |= (UT_sint32)(m_pDoc->insertStrux(getPoint(),PTX_EndTable));
 	setPoint(pointTable);
 	m_pDoc->endUserAtomicGlob();
 	m_pDoc->setDontImmediatelyLayout(false);

@@ -1398,7 +1398,7 @@ bool fl_DocListener::insertStrux(PL_StruxFmtHandle sfh,
 			   fl_ContainerLayout * pCL = static_cast<fl_ContainerLayout *>(pL);
 			   xxx_UT_DEBUGMSG(("Doing Insert Table Correctly \n"));
 			   fl_SectionLayout* pCLSL = pCL->getSectionLayout();
-			   bool bResult = pCLSL->bl_doclistener_insertTable(pCL,FL_SECTION_TABLE, pcrx,sdh,lid,pfnBindHandles);
+			   bool bResult = (pCLSL->bl_doclistener_insertTable(pCL,FL_SECTION_TABLE, pcrx,sdh,lid,pfnBindHandles) != 0);
 			   return bResult;
 		   }
 		case PTX_EndFootnote:

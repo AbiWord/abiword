@@ -1016,7 +1016,7 @@ bool UT_UCS2_isspace(UT_UCS2Char c)
 bool UT_UCS2_isalpha(UT_UCS2Char c)
 {
     FriBidiCharType type = fribidi_get_type(c);
-    return FRIBIDI_IS_LETTER(type);
+    return (FRIBIDI_IS_LETTER(type) != 0);
 };
 
 bool UT_UCS2_isSentenceSeparator(UT_UCS2Char c)
@@ -1072,7 +1072,7 @@ bool UT_UCS4_isspace(UT_UCS4Char c)
 bool UT_UCS4_isalpha(UT_UCS4Char c)
 {
     FriBidiCharType type = fribidi_get_type(c);
-    return FRIBIDI_IS_LETTER(type);
+    return (FRIBIDI_IS_LETTER(type) != 0);
 };
 
 bool UT_UCS4_isSentenceSeparator(UT_UCS4Char c)

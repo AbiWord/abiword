@@ -275,7 +275,7 @@ bool UT_UCS2Stringbuf::UCS2_to_UTF8 (char *& buffer, size_t & length, UT_UCS2Cha
 		length--;
 		return true;
 	}
-	if (length < seql) return false;
+	if (length < (unsigned)seql) return false;
 	length -= seql;
 
 	switch (seql) {
@@ -848,7 +848,7 @@ UT_UTF8Stringbuf::UTF8Iterator::~UTF8Iterator ()
 void UT_UTF8Stringbuf::UTF8Iterator::operator=(const char * position)
 {
 	if (!sync ()) return;
-	if ((position - m_utfbuf) > m_strbuf->byteLength ())
+	if ((unsigned)(position - m_utfbuf) > m_strbuf->byteLength ())
 	{
 		m_utfptr = m_utfbuf + m_strbuf->byteLength ();
 	}
@@ -913,7 +913,7 @@ bool UT_UTF8Stringbuf::UTF8Iterator::sync ()
 	/* note that this doesn't guarantee that m_utfptr points to the
 	 * start of utf8 char sequence
 	 */
-	if ((m_utfptr - m_utfbuf) > utf8_length)
+	if ((unsigned)(m_utfptr - m_utfbuf) > utf8_length)
 	{
 		m_utfptr = utf8_buffer + utf8_length;
 	}
@@ -1033,7 +1033,7 @@ bool UT_UCS4Stringbuf::UCS4_to_UTF8 (char *& buffer, size_t & length, UT_UCS4Cha
 		length--;
 		return true;
 	}
-	if (length < seql) return false;
+	if (length < (unsigned)seql) return false;
 	length -= seql;
 
 	switch (seql) {

@@ -44,7 +44,6 @@ OBJS=	$(PLATFORM_OBJS)	\
         $(OBJDIR)/ie_exp_MsWord_97.$(OBJ_SUFFIX)                    \
         $(OBJDIR)/ie_exp_Text.$(OBJ_SUFFIX)                         \
         $(OBJDIR)/ie_exp_RTF.$(OBJ_SUFFIX)                          \
-        $(OBJDIR)/ie_Table.$(OBJ_SUFFIX)                          \
         $(OBJDIR)/ie_exp_RTF_AttrProp.$(OBJ_SUFFIX)                 \
         $(OBJDIR)/ie_exp_RTF_listenerGetProps.$(OBJ_SUFFIX)         \
         $(OBJDIR)/ie_exp_RTF_listenerWriteDoc.$(OBJ_SUFFIX)         \

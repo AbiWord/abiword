@@ -1000,7 +1000,6 @@ bool EV_Win32Toolbar::_refreshItem(AV_View * pView, const EV_Toolbar_Action * pA
 				// Is this a valid text?
 				//
 				UT_uint32 items = v->getItemCount();
-				int	nItem;
 				bool bFound = false;
 				UT_uint32 k=0;
 				

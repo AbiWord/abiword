@@ -130,7 +130,7 @@ EV_Toolbar_Label::EV_Toolbar_Label(XAP_Toolbar_Id id,
 				{
 					if (wctomb_conv.wctomb(letter_buf,length,fbdStr2[i]))
 					{
-						for(k = 0; k < length; k++)
+						for(k = 0; k < (unsigned)length; k++)
 							szStr[i++] = letter_buf[k];
 						i--;
 					}
