@@ -162,6 +162,7 @@ bool ps_Generate::formatComment(const char * szCommentName, const char **argv, i
 	int bufLen;
 	
         buf += szCommentName;
+        buf += ":";
 	for (int k=0; k<argc; k++)
 	{
 		bufLen = buf.size();
@@ -197,7 +198,7 @@ bool ps_Generate::formatComment(const char * szCommentName, const UT_Vector * pV
 	
 	UT_String buf = "%%";
 	buf += szCommentName;
-
+    buf += ":";
 	int bufLen;
 	UT_uint32 argc = pVec->getItemCount();
 	

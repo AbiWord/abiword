@@ -1182,113 +1182,179 @@ bool PS_Graphics::_endDocument(void)
 void PS_Graphics::_emit_DocumentNeededResources(void)
 {
 	UT_Vector vec;
-	UT_uint32 k;
+	UT_uint32 k,n;
 	UT_uint32 kLimit = m_vecFontList.getItemCount();
 
+    bool bFontKeyword = true;
 	for (k=0; k<kLimit; k++)
 	{
-		vec.addItem((void *) "font");
 		PSFont * psf = (PSFont *)m_vecFontList.getNthItem(k);
 		if(!psf->getUnixFont()->is_CJK_font())
-		    vec.addItem(psf->getMetricsData()->gfi->fontName);
+        {
+            if(bFontKeyword)
+            {
+        		vec.addItem((void *) "font");
+                bFontKeyword = false;
+            }
+            
+            // only include each font name once
+            const char * pName = psf->getMetricsData()->gfi->fontName;
+            bool bFound = false;
+            for(n = 0; n < vec.getItemCount(); n++)
+            {
+                if(!UT_strcmp(pName, (const char *)vec.getNthItem(n)))
+                {
+                    bFound = true;
+                    break;
+                }
+            }
+            
+            if(!bFound)
+    		    vec.addItem((void*)pName);
+        }
 	}
 
 	// TODO add any other resources here
-	
-	m_ps->formatComment("DocumentNeededResources",&vec);
+	bool bEmbedFonts;
+	XAP_App::getApp()->getPrefsValueBool((const XML_Char *)XAP_PREF_KEY_EmbedFontsInPS, &bEmbedFonts);
+	if(bEmbedFonts)
+        m_ps->formatComment("DocumentSuppliedResources",&vec);
+    else
+    	m_ps->formatComment("DocumentNeededResources",&vec);
 }
 
 void PS_Graphics::_emit_IncludeResource(void)
 {
-	UT_uint32 k;
-	UT_uint32 kLimit = m_vecFontList.getItemCount();
-	typedef char* pchar_t;
-	char **fontKey= new pchar_t[kLimit];
-	int fontKeyCount=0;
+   	UT_Vector vec;
+   	UT_uint32 k,n;
+   	UT_uint32 kLimit = m_vecFontList.getItemCount();
 
-	for (k=0; k<kLimit; k++)
-	{
-		char buf[128];
+	// we want to have a checkbox in the Preferences that would allow
+	// to disable splating of the fonts into the output, since people who
+	// use Ghostscript my simply register their fonts with GS and do not
+	// need them in the document
+	bool bEmbedFonts;
+	XAP_App::getApp()->getPrefsValueBool((const XML_Char *)XAP_PREF_KEY_EmbedFontsInPS, &bEmbedFonts);
+	//UT_DEBUGMSG(("bEmbedFonts: %d\n",bEmbedFonts));
 
-		PSFont * psf = (PSFont *) m_vecFontList.getNthItem(k);
+    if(bEmbedFonts)
+    {
+    	for (k=0; k<kLimit; k++)
+    	{
+    		char buf[128];
+
+    		PSFont * psf = (PSFont *) m_vecFontList.getNthItem(k);
 		
-		// m_ps->formatComment("IncludeResource",psf->getMetricsData()->gfi->fontName);
+    		// m_ps->formatComment("IncludeResource",psf->getMetricsData()->gfi->fontName);
 
-		// Instead of including the resources, we actually splat the fonts
-		// into the document.  This looks really slow... perhaps buffer line
-		// by line or in larger chunks the font data.
-		XAP_UnixFont * unixfont = psf->getUnixFont();
+    		// Instead of including the resources, we actually splat the fonts
+    		// into the document.  This looks really slow... perhaps buffer line
+    		// by line or in larger chunks the font data.
+    		XAP_UnixFont * unixfont = psf->getUnixFont();
 		
-		// TODO we want to have a checkbox in the Preferences that would allow
-		// to disable splating of the fonts into the output, since people who
-		// use Ghostscript my simply register their fonts with GS and do not
-		// need them in the document
-		bool bEmbedFonts;
-		XAP_App::getApp()->getPrefsValueBool((const XML_Char *)XAP_PREF_KEY_EmbedFontsInPS, &bEmbedFonts);
-		//UT_DEBUGMSG(("bEmbedFonts: %d\n",bEmbedFonts));
-		if(unixfont->is_CJK_font() || !bEmbedFonts)
-		  continue;
-		int match=0;
-		for(int i=0;i<fontKeyCount;++i)
-		  if(!strcmp(unixfont->getFontKey(),fontKey[i]))
-			{
-			  match=1;
-			  break;
-			}
-		if(match)
-		  continue;
-		fontKey[fontKeyCount++]=UT_strdup(unixfont->getFontKey());
+    		if(unixfont->is_CJK_font())
+		      continue;
+    		bool match = false;
+            const char * pName = unixfont->getFontKey();
+    		for(int i=0;i<vec.getItemCount();++i)
+    		{
+				if(!strcmp(pName,(const char*)vec.getNthItem(i)))
+    			{
+			    	match=true;
+    				break;
+    			}
+    		}
+    		if(match)
+		    	continue;
+            
+            vec.addItem((void*)pName);
 
-		// Make sure the font file will open, maybe it disappeared...
-		if(!unixfont->openPFA())
-		{
-			char message[1024];
-			g_snprintf(message, sizeof (message),
+    		// Make sure the font file will open, maybe it disappeared...
+    		if(!unixfont->openPFA())
+    		{
+    			char message[1024];
+    			g_snprintf(message, sizeof (message),
 					   "Font data file [%s] cannot be opened for reading!\n"
 					   "Did it disappear on us?  AbiWord can't print without\n"
 					   "this file; your PostScript might be missing this resource.",
 					   unixfont->getFontfile());
 
-			// we don't have any frame info, so we use the non-parented dialog box
-			messageBoxOK(message);
-			return;
-		}
+    			// we don't have any frame info, so we use the non-parented dialog box
+    			messageBoxOK(message);
+    			return;
+    		}
 		
-		signed char ch = 0;
-		while ((ch = unixfont->getPFAChar()) != EOF)
-			m_ps->writeBytes((UT_Byte *) &ch, 1);
+    		signed char ch = 0;
+    		while ((ch = unixfont->getPFAChar()) != EOF)
+    			m_ps->writeBytes((UT_Byte *) &ch, 1);
 
-		unixfont->closePFA();
+    		unixfont->closePFA();
 
-		// NOTE : here's an internationalization process step.  If the font
-		// NOTE : encoding is NOT "iso8859", we do not emit this macro.
-		// NOTE : this keeps fonts like Standard Symbols, and really
-		// NOTE : any other encoding, from being mangled.  however, it's
-		// NOTE : not intended to guarantee that these other encodings
-		// NOTE : actually work.  that requires more design work.
+    		// NOTE : here's an internationalization process step.  If the font
+    		// NOTE : encoding is NOT "iso8859", we do not emit this macro.
+    		// NOTE : this keeps fonts like Standard Symbols, and really
+    		// NOTE : any other encoding, from being mangled.  however, it's
+    		// NOTE : not intended to guarantee that these other encodings
+    		// NOTE : actually work.  that requires more design work.
 
-		// Fetch an XLFD object from the font
-		XAP_UnixFontXLFD myXLFD(unixfont->getXLFD());
+    		// Fetch an XLFD object from the font
+    		XAP_UnixFontXLFD myXLFD(unixfont->getXLFD());
 
-		// write findfont
-		g_snprintf(buf, sizeof (buf), "/%s findfont\n", psf->getMetricsData()->gfi->fontName);
-		m_ps->writeBytes(buf);
+    		// write findfont
+    		g_snprintf(buf, sizeof (buf), "/%s findfont\n", psf->getMetricsData()->gfi->fontName);
+    		m_ps->writeBytes(buf);
 
-		// Compare with iso8859, and emit LAT for that font
-		if (!UT_stricmp(myXLFD.getRegistry(), "iso8859") && !UT_strcmp(myXLFD.getEncoding(), "1"))
+    		// Compare with iso8859, and emit LAT for that font
+    		if (!UT_stricmp(myXLFD.getRegistry(), "iso8859") && !UT_strcmp(myXLFD.getEncoding(), "1"))
+    		{
+    			g_snprintf(buf, sizeof (buf), "LAT\n");
+    			m_ps->writeBytes(buf);
+    		}
+
+    		// exec the swapper macro
+    		g_snprintf(buf, sizeof (buf), "/%s EXC\n", psf->getMetricsData()->gfi->fontName);
+    		m_ps->writeBytes(buf);
+
+    	}
+    }
+	else
+	{
+		// when not embeding fonts, we have to issue %%IncludeResource statement
+		bool bFontKeyword = true;
+		const char* pFResource[2] = {"font", NULL};
+		for (k=0; k<kLimit; k++)
 		{
-			g_snprintf(buf, sizeof (buf), "LAT\n");
-			m_ps->writeBytes(buf);
+			PSFont * psf = (PSFont *)m_vecFontList.getNthItem(k);
+			if(!psf->getUnixFont()->is_CJK_font())
+			{
+				if(bFontKeyword)
+				{
+					vec.addItem((void *) "font");
+					bFontKeyword = false;
+				}
+            
+				// only include each font name once
+				const char * pName = psf->getMetricsData()->gfi->fontName;
+				bool bFound = false;
+				for(n = 0; n < vec.getItemCount(); n++)
+				{
+					if(!UT_strcmp(pName, (const char *)vec.getNthItem(n)))
+					{
+						bFound = true;
+						break;
+					}
+				}
+            
+				if(!bFound)
+				{
+					vec.addItem((void*)pName);
+					pFResource[1] = pName;
+					m_ps->formatComment("IncludeResource", pFResource,2);
+				}
+			}
 		}
-
-		// exec the swapper macro
-		g_snprintf(buf, sizeof (buf), "/%s EXC\n", psf->getMetricsData()->gfi->fontName);
-		m_ps->writeBytes(buf);
-
 	}
-	for(int i=0;i<fontKeyCount;++i)
-	  free(fontKey[i]);
-	delete []fontKey;
+        
 	// TODO add any other IncludeResource's here
 }
 
