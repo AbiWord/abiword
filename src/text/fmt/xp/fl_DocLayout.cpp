@@ -599,6 +599,7 @@ void FL_DocLayout::_toggleAutoSpell(UT_Bool bSpell)
 			fl_BlockLayout* b = pSL->getFirstBlock();
 			while (b)
 			{
+			        b->removeBackgroundCheckReason(bgcrSpelling);
 				b->_purgeSquiggles();
 				b = b->getNext();
 			}
