@@ -30,8 +30,7 @@ PLATFORM_OBJS= $(OBJDIR)/ie_impexp_Register$(ABI_FE).$(OBJ_SUFFIX)
 
 ifeq ($(ABI_NATIVE), unix)
 	ifeq ($(ABI_OPT_GNOME),1)
-		PLATFORM_OBJS+=
-			$(OBJDIR)/ie_impexp_Register$(ABI_GNOME_PREFIX).$(OBJ_SUFFIX)
+		PLATFORM_OBJS+=			$(OBJDIR)/ie_impexp_Register$(ABI_GNOME_PREFIX).$(OBJ_SUFFIX)
 	endif
 endif
 
