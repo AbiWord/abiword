@@ -235,7 +235,7 @@ bool UT_ByteBuf::insertFromFile(UT_uint32 iPosition, const char* pszFileName)
 	return b;
 }
 
-bool UT_ByteBuf::writeToFile(const char* pszFileName)
+bool UT_ByteBuf::writeToFile(const char* pszFileName) const
 {
 	UT_ASSERT(pszFileName && pszFileName[0]);
 	

@@ -1219,6 +1219,18 @@ void FV_View::_deleteSelection(PP_AttrProp *p_AttrProp_Before)
 	}
 }
 
+bool FV_View::saveSelectedImage ( const char * dataId, const char * toFile )
+{
+  const UT_ByteBuf * pBytes = NULL ;
+
+  if ( m_pDoc->getDataItemDataByName ( dataId, &pBytes, NULL, NULL ) )
+    {
+      if ( pBytes )
+	return pBytes->writeToFile ( toFile ) ;
+    }
+  return false ;
+}
+
 bool FV_View::isSelectionEmpty(void) const
 {
 	if (!m_bSelection)

@@ -43,7 +43,7 @@ public:
 	void				truncate(UT_uint32 position);
 	UT_uint32			getLength(void) const;
 	const UT_Byte *		getPointer(UT_uint32 position) const;				/* temporary use only */
-	bool				writeToFile(const char* pszFileName);
+	bool				writeToFile(const char* pszFileName) const;
 	bool				insertFromFile(UT_uint32 iPosition, const char* pszFilename);
 	bool                insertFromFile(UT_uint32 iPosition, FILE * fp);
 	

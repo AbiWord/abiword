@@ -202,6 +202,8 @@ public:
 	virtual void		cmdUnselectSelection(void);
 	void				getDocumentRangeOfCurrentSelection(PD_DocumentRange * pdr);
 	
+	bool saveSelectedImage ( const char * dataId, const char * toFile );
+
 // ----------------------
 	FL_DocLayout*	getLayout() const;
 	UT_uint32		getCurrentPageNumForStatusBar(void) const;
