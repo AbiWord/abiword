@@ -103,7 +103,7 @@ private:
 	XAP_ModuleInfo        m_info;
 };
 
-#define ABI_VERSION_STRING "0.9.5"
+#define ABI_VERSION_STRING "0.9.6"
 #define isCurrentAbiVersion(a,b,c) (((a)==0) && ((b)==9) && ((c)==5))
 
 #endif /* XAP_MODULE_H */

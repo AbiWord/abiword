@@ -25,7 +25,7 @@ AC_CONFIG_SRCDIR([src/af/ev/xp/ev_Menu.h])
 AC_CONFIG_AUX_DIR(ac-helpers)
 dnl AC_CONFIG_HEADERS(config.h)
 
-AM_INIT_AUTOMAKE(AbiSuite,0.9.5)
+AM_INIT_AUTOMAKE(AbiSuite,0.9.6)
 
 dnl APR [ Apache Portable Runtime ] does it this way, but I don't know
 dnl why.  I figure they probably have a good reason. 
