@@ -62,7 +62,7 @@ BeginSet(it,IT,true)
 	ToolbarLabel(AP_TOOLBAR_ID_EDIT_COPY,		"Copia",		tb_copy_xpm,	NULL, "Copia")
 	ToolbarLabel(AP_TOOLBAR_ID_EDIT_PASTE,		"Incolla",		tb_paste_xpm,	NULL, "Incolla")
         ToolbarLabel(AP_TOOLBAR_ID_SPELLCHECK, "Controllo ortografico", tb_spellcheck_xpm, NULL, "Controlla l'ortografia del documento")
-
+	ToolbarLabel(AP_TOOLBAR_ID_IMG, "Inserisci immagine", tb_insert_graphic_xpm, NULL, "Inserisci una immagine nel documento")
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_STYLE,		"Stile",		NoIcon,			NULL, "Stile")
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_FONT,		"Carattere",	NoIcon,			NULL, "Carattere")
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_SIZE,		"Grandezza carattere", NoIcon,		NULL, "Grandezza carattere")
@@ -71,6 +71,7 @@ BeginSet(it,IT,true)
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_UNDERLINE,	"Sottolineato",	tb_text_underline_S_xpm,	NULL, "Sottolineato")
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_OVERLINE,	"Overline",tb_text_overline_xpm,	NULL, "Mette una linea sopra i caratteri")
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_STRIKE,		"Barrato",		tb_text_strikeout_B_xpm,	NULL, "Barrato")
+        ToolbarLabel(AP_TOOLBAR_ID_HELP, "Aiuto", tb_help_xpm, NULL, "Aiuto")
 
         ToolbarLabel(AP_TOOLBAR_ID_FMT_SUPERSCRIPT,     "Apice",  	tb_text_superscript_xpm,        NULL, "Apice")
         ToolbarLabel(AP_TOOLBAR_ID_FMT_SUBSCRIPT,       "Pedice",    	tb_text_subscript_xpm,          NULL, "Pedice")
@@ -101,6 +102,11 @@ BeginSet(it,IT,true)
         ToolbarLabel(AP_TOOLBAR_ID_UNINDENT, "Diminuisci il rientro", tb_text_unindent_xpm, NULL, "Diminuisci la distanza del rientro dal margine")
 
 	// ... add others here ...
+#ifdef BIDI_ENABLED
+	ToolbarLabel(AP_TOOLBAR_ID_FMT_DIRECTION,		"Direzione del testo",	tb_text_direction_rtl_xpm,	NULL, "Cambia la direzione del testo")
+	ToolbarLabel(AP_TOOLBAR_ID_FMT_DOM_DIRECTION,		"Direzione del paragrafo",	tb_text_dom_direction_rtl_xpm,	NULL, "Cambia la direzione dominante del paragrafo")
+#endif
+
 
 	ToolbarLabel(AP_TOOLBAR_ID__BOGUS2__,		NULL,		NoIcon,			NULL,NULL)
 

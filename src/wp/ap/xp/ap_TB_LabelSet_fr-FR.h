@@ -20,7 +20,7 @@
 /* traduction fcella@mahj.org du 24/05/1999
  * complétée par Philippe Duperron <duperron@mail.dotcom.fr> 08/06/1999  */
 /* modifications par Gilles Saint-Denis <stdenisg@cedep.net> et
-   Christopher Caron <ChrisDigo@aol.com> 23/10/2000 */
+   Christophe Caron <ChrisDigo@aol.com> Last update 20/02/2001 */
 
 /*****************************************************************
 ******************************************************************
@@ -54,25 +54,27 @@ BeginSet(fr,FR,true)
 
 	ToolbarLabel(AP_TOOLBAR_ID_FILE_NEW,		"Nouveau", 			tb_new_xpm,	NULL, "Créer un nouveau document")
 	ToolbarLabel(AP_TOOLBAR_ID_FILE_OPEN,		"Ouvrir",			tb_open_xpm,	NULL, "Ouvrir un document existant")
-	ToolbarLabel(AP_TOOLBAR_ID_FILE_SAVE,		"Enregistrer",		tb_save_xpm,	NULL, "Enregistrer le document")
-	ToolbarLabel(AP_TOOLBAR_ID_FILE_SAVEAS,		"Enregistrer sous",	tb_save_as_xpm,	NULL, "Enregistrer le document sous un nouveau nom")
+	ToolbarLabel(AP_TOOLBAR_ID_FILE_SAVE,		"Enregistrer",			tb_save_xpm,	NULL, "Enregistrer le document")
+	ToolbarLabel(AP_TOOLBAR_ID_FILE_SAVEAS,		"Enregistrer sous",		tb_save_as_xpm,	NULL, "Enregistrer le document sous un nouveau nom")
 	ToolbarLabel(AP_TOOLBAR_ID_FILE_PRINT,		"Imprimer",			tb_print_xpm,	NULL, "Imprimer le document")
-
+	ToolbarLabel(AP_TOOLBAR_ID_FILE_PRINT_PREVIEW, 	"Aperçu avant impression", 	tb_print_preview_xpm, NULL, "Donne un aperçu du document avant impression")
 	ToolbarLabel(AP_TOOLBAR_ID_EDIT_UNDO,		"Annuler",			tb_undo_xpm,	NULL, "Annuler la frappe")
 	ToolbarLabel(AP_TOOLBAR_ID_EDIT_REDO,		"Répéter",			tb_redo_xpm,	NULL, "Répéter la frappe")
 	ToolbarLabel(AP_TOOLBAR_ID_EDIT_CUT,		"Couper",			tb_cut_xpm,		NULL, "Couper")
 	ToolbarLabel(AP_TOOLBAR_ID_EDIT_COPY,		"Copier",			tb_copy_xpm,	NULL, "Copier")
 	ToolbarLabel(AP_TOOLBAR_ID_EDIT_PASTE,		"Coller",			tb_paste_xpm,	NULL, "Coller")
-
+	ToolbarLabel(AP_TOOLBAR_ID_SPELLCHECK, 		"Orthographe", 			tb_spellcheck_xpm, NULL, "Vérification orthographique du document")
+	ToolbarLabel(AP_TOOLBAR_ID_IMG, 		"Inseérer une image", 		tb_insert_graphic_xpm, NULL, "Insert une image dans un document")
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_STYLE,		"Style",			NoIcon,			NULL, "Style")
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_FONT,		"Police",			NoIcon,			NULL, "Police")
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_SIZE,		"Taille",			NoIcon,			NULL, "Taille")
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_BOLD,		"Gras",				tb_text_bold_G_xpm,	NULL, "Gras")
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_ITALIC,		"Italique",			tb_text_italic_xpm,	NULL, "Italique")
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_UNDERLINE,	"Souligné",			tb_text_underline_S_xpm,	NULL, "Souligné")
-	ToolbarLabel(AP_TOOLBAR_ID_FMT_OVERLINE,	"Barré haut",		tb_text_overline_xpm,		NULL, "Barré haut")
+	ToolbarLabel(AP_TOOLBAR_ID_FMT_OVERLINE,	"Barré haut",			tb_text_overline_xpm,		NULL, "Barré haut")
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_STRIKE,		"Barré",			tb_text_strikeout_B_xpm,	NULL, "Barré")
-
+	ToolbarLabel(AP_TOOLBAR_ID_HELP, 		"Aide", 			tb_help_xpm, NULL, "Aide")
+	
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_SUPERSCRIPT,	"Exposant",			tb_text_superscript_xpm,	NULL, "Exposant")
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_SUBSCRIPT,	"Indice",			tb_text_subscript_xpm,		NULL, "Indice")
 	ToolbarLabel(AP_TOOLBAR_ID_INSERT_SYMBOL,	"Symbole",			tb_symbol_xpm,				NULL, "Insérer symbole")
@@ -82,23 +84,31 @@ BeginSet(fr,FR,true)
 	ToolbarLabel(AP_TOOLBAR_ID_ALIGN_RIGHT,		"Droite",			tb_text_align_right_xpm,	NULL, "Alignement à droite")
 	ToolbarLabel(AP_TOOLBAR_ID_ALIGN_JUSTIFY,	"Justifié",			tb_text_justify_xpm,		NULL, "Paragraphe justifié")
 
-	ToolbarLabel(AP_TOOLBAR_ID_PARA_0BEFORE,	"Pas d'espacement avant",		tb_para_0before_xpm,	NULL, "Espacement avant: aucun")
+	ToolbarLabel(AP_TOOLBAR_ID_PARA_0BEFORE,	"Pas d'espacement avant",	tb_para_0before_xpm,	NULL, "Espacement avant: aucun")
 	ToolbarLabel(AP_TOOLBAR_ID_PARA_12BEFORE,	"Espacement de 12 pt avant",	tb_para_12before_xpm,	NULL, "Espacement avant: 12 pt")
 
-	ToolbarLabel(AP_TOOLBAR_ID_SINGLE_SPACE,	"Interligne simple",	tb_line_single_space_xpm,		NULL, "Interligne simple")
+	ToolbarLabel(AP_TOOLBAR_ID_SINGLE_SPACE,	"Interligne simple",		tb_line_single_space_xpm,		NULL, "Interligne simple")
 	ToolbarLabel(AP_TOOLBAR_ID_MIDDLE_SPACE,	"Interligne : 1,5 lignes",	tb_line_middle_space_xpm,	NULL, "Interligne : 1,5 lignes")
-	ToolbarLabel(AP_TOOLBAR_ID_DOUBLE_SPACE,	"Interligne double",	tb_line_double_space_xpm,		NULL, "Interligne double")
+	ToolbarLabel(AP_TOOLBAR_ID_DOUBLE_SPACE,	"Interligne double",		tb_line_double_space_xpm,		NULL, "Interligne double")
 
-	ToolbarLabel(AP_TOOLBAR_ID_1COLUMN,			"Une colonne",		tb_1column_xpm,			NULL, "Une colonne")
-	ToolbarLabel(AP_TOOLBAR_ID_2COLUMN,			"Deux colonnes",	tb_2column_xpm,			NULL, "Deux colonnes")
-	ToolbarLabel(AP_TOOLBAR_ID_3COLUMN,			"Trois colonnes",	tb_3column_xpm,			NULL, "Trois colonnes")
+	ToolbarLabel(AP_TOOLBAR_ID_1COLUMN,		"Une colonne",			tb_1column_xpm,			NULL, "Une colonne")
+	ToolbarLabel(AP_TOOLBAR_ID_2COLUMN,		"Deux colonnes",		tb_2column_xpm,			NULL, "Deux colonnes")
+	ToolbarLabel(AP_TOOLBAR_ID_3COLUMN,		"Trois colonnes",		tb_3column_xpm,			NULL, "Trois colonnes")
 
-	ToolbarLabel(AP_TOOLBAR_ID_ZOOM,			"Zoom",				NoIcon,			NULL, "Zoom")
-	ToolbarLabel(AP_TOOLBAR_ID_LISTS_BULLETS,	"Liste à puce",		tb_lists_bullets_xpm,	NULL,	"Démarre/arrête une liste à puce")
-	ToolbarLabel(AP_TOOLBAR_ID_LISTS_NUMBERS,	"Liste numérotée",	tb_lists_numbers_xpm,	NULL,	"Démarre/arrête une liste numérotée")
-	
+	ToolbarLabel(AP_TOOLBAR_ID_ZOOM,		"Zoom",				NoIcon,			NULL, "Zoom")
+	ToolbarLabel(AP_TOOLBAR_ID_LISTS_BULLETS,	"Liste à puce",			tb_lists_bullets_xpm,	NULL,	"Démarre/arrête une liste à puce")
+	ToolbarLabel(AP_TOOLBAR_ID_LISTS_NUMBERS,	"Liste numérotée",		tb_lists_numbers_xpm,	NULL,	"Démarre/arrête une liste numérotée")
+	ToolbarLabel(AP_TOOLBAR_ID_COLOR_FORE,		"Trame de fond",		NoIcon,						NULL, "Change Foreground Color")
+	ToolbarLabel(AP_TOOLBAR_ID_COLOR_BACK,		"Arrière plan",			NoIcon,						NULL, "Change Background Color")
+	ToolbarLabel(AP_TOOLBAR_ID_INDENT,		"Augmenter le retrait", 	tb_text_indent_xpm, 		NULL, "Augmenter le retrait")
+	ToolbarLabel(AP_TOOLBAR_ID_UNINDENT,		"Diminuer le retrait", 		tb_text_unindent_xpm,	NULL, "Diminuer le retrait")
+
 	// ... add others here ...
 
+#ifdef BIDI_ENABLED
+	ToolbarLabel(AP_TOOLBAR_ID_FMT_DIRECTION,	"Orientation du texte",		tb_text_direction_rtl_xpm,	NULL, "Change l'orientation du texte")
+	ToolbarLabel(AP_TOOLBAR_ID_FMT_DOM_DIRECTION,	"Orientation des paragraphes",		tb_text_dom_direction_rtl_xpm,	NULL, "Change l'orientation dominante des paragraphes")
+#endif
 	ToolbarLabel(AP_TOOLBAR_ID__BOGUS2__,		NULL,		NoIcon,			NULL,NULL)
 
 EndSet()
