@@ -183,6 +183,9 @@ bool XAP_App::rememberFrame(XAP_Frame * pFrame, XAP_Frame * pCloneOf)
 	// add this frame to our window list
 	m_vecFrames.addItem(pFrame);
 
+	if(! m_lastFocussedFrame)
+	    rememberFocussedFrame(pFrame);
+
 	// TODO: error-check the following for mem failures
 	if (pCloneOf)
 	{
@@ -532,7 +535,7 @@ void    XAP_App::clearLastFocussedFrame(void)
 XAP_Frame * XAP_App::getLastFocussedFrame( void ) 
 {
 	if(m_lastFocussedFrame == (XAP_Frame *) NULL)
-		return getFrame(0);
+		return (XAP_Frame *) NULL;
         UT_sint32 i = safefindFrame(m_lastFocussedFrame);
         if( i>= 0)
 		return m_lastFocussedFrame;
