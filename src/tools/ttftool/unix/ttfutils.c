@@ -312,7 +312,7 @@ surely_lseek(int fildes, long long_offset, int whence)
   long long_result;
   off_t result;
   off_t offset;
-#if defined(SunOS)
+#if defined(SunOS) && _FILE_OFFSET_BITS == 64
 #if __STDC__ - 0 == 0 && !defined(_NO_LONGLONG)
   offset = long_offset;
 #else
@@ -327,7 +327,7 @@ surely_lseek(int fildes, long long_offset, int whence)
 
   result = lseek (fildes, offset, whence);
 
-#if defined(SunOS)
+#if defined(SunOS) && _FILE_OFFSET_BITS == 64
 #if __STDC__ - 0 == 0 && !defined(_NO_LONGLONG)
   long_result = result;
 #else
