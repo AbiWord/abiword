@@ -125,7 +125,7 @@ void XAP_Win32Dialog_Print::runModal(XAP_Frame * pFrame)
 	m_pPersistPrintDlg->nToPage		= (WORD)m_nLastPage;
 	m_pPersistPrintDlg->nMinPage		= (WORD)m_nFirstPage;
 	m_pPersistPrintDlg->nMaxPage		= (WORD)m_nLastPage;
-	m_pPersistPrintDlg->Flags		= PD_ALLPAGES | PD_RETURNDC | PD_CURRENTPAGE;
+	m_pPersistPrintDlg->Flags		= PD_ALLPAGES | PD_RETURNDC;
 	//m_pPersistPrintDlg->lpfnPrintHook   = s_PrintHookProc;
 	// we do not need this at the moment, but one day it will come handy in the hook procedure
 	m_pPersistPrintDlg->lCustData       = (DWORD)this;
