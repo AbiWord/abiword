@@ -35,6 +35,10 @@ class UT_GrowBuf;
 UT_BEGIN_EXTERN_C
 
 ///////////////////////////////////////////////////////////////////////////////
+// UTFXX->UTF8 character conversion
+int unichar_to_utf8 (int c, unsigned char *outbuf);
+
+///////////////////////////////////////////////////////////////////////////////
 // Replacements for common non-ANSI functions
 
 char * UT_strdup(const char * szSource); 
