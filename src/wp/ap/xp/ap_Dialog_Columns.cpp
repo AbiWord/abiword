@@ -262,7 +262,7 @@ void AP_Dialog_Columns::incrementMaxHeight(bool bIncrement)
 	UT_Dimension dim = UT_determineDimension(getHeightString(), DIM_none);
 	m_HeightString = UT_incrementDimString(m_HeightString.c_str(),inc);
 	double dum = UT_convertToInches(getHeightString());
-	if(dum < 0.2)
+	if(dum < 0.0)
 	{
 		m_HeightString = UT_convertInchesToDimensionString(dim,0.0);
 	}
