@@ -43,6 +43,7 @@
 #include "ie_exp_LaTeX.h"
 #include "ie_exp_PalmDoc.h"
 #include "ie_exp_WML.h"
+#include "ie_exp_DocBook.h"
 
 /*****************************************************************/
 /*****************************************************************/
@@ -78,6 +79,7 @@ static struct _xp s_expTable[] =
 	DeclareExporter(IE_Exp_LaTeX),
 	DeclareExporter(IE_Exp_PalmDoc),
 	DeclareExporter(IE_Exp_WML),
+	DeclareExporter(IE_Exp_DocBook)
 };
 
 /*****************************************************************/

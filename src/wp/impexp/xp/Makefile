@@ -35,6 +35,7 @@ CPPSRCS=		ie_exp.cpp				\
 			ie_exp_LaTeX.cpp			\
 			ie_exp_PalmDoc.cpp			\
 			ie_exp_WML.cpp				\
+			ie_exp_DocBook.cpp			\
 			ie_imp.cpp				\
 			ie_imp_XML.cpp				\
 			ie_imp_AbiWord_1.cpp			\
