@@ -29,9 +29,11 @@ PKGBASENAME=AbiSuite-$(ABI_BUILD_VERSION)
 ifeq ($(OS_ARCH), x86)
 SUFFIX=i386
 endif
-ifeq ($(OS_ARCH), ppc)
+ifeq ($(OS_ARCH), BeMac)
 SUFFiX=ppc
 endif
+
+ABI_DIST_TARGET=zip
 
 distribution:	$(ABI_DIST_TARGET)
 
