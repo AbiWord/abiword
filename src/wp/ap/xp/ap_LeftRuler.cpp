@@ -199,6 +199,18 @@ void AP_LeftRuler::mousePress(EV_EditModifierState /* ems */, EV_EditMouseButton
 
  	if (rBottomMargin.containsPoint(x,y))
  	{
+		FV_View *pView = static_cast<FV_View *>(m_pView);
+
+		// it makes no sense to click on the bottom margin for the footer.
+		if (pView->isHdrFtrEdit())
+		{
+			fl_HdrFtrShadow * pShadow = pView->getEditShadow();
+
+			if (pShadow->getHdrFtrSectionLayout()->getHFType() 
+				                == FL_HDRFTR_FOOTER)
+				return;
+		}
+
  		m_bValidMouseClick = true;
  		m_draggingWhat = DW_BOTTOMMARGIN;
  		m_bBeforeFirstMotion = true;
@@ -286,9 +298,13 @@ void AP_LeftRuler::mouseRelease(EV_EditModifierState ems, EV_EditMouseButton emb
 					properties[0] = "page-margin-header";
 				else
 				{
-					properties[0] = "page-margin-bottom";
-					dxrel = tick.scalePixelDistanceToUnits(yEnd - 
-												  m_draggingCenter);
+					properties[0] = "page-margin-footer";
+
+					dxrel = tick.scalePixelDistanceToUnits
+						(pShadow->getHdrFtrSectionLayout()->
+						          getDocSectionLayout()->getBottomMargin() + 
+						 (m_draggingCenter + m_yScrollOffset -
+						(m_infoCache.m_yPageStart + m_infoCache.m_yPageSize)));
 				}
 			}
 		}
@@ -308,7 +324,7 @@ void AP_LeftRuler::mouseRelease(EV_EditModifierState ems, EV_EditMouseButton emb
 						(m_draggingCenter - yAbsTop);
 				}
 				else
-					properties[0] = "page-margin-footer";
+					UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 			}
 		}
 		break;
