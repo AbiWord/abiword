@@ -38,9 +38,15 @@ public:
 	virtual void            activate(void);
 	virtual void            destroy(void);
 	virtual void            notifyActiveFrame(XAP_Frame * pFrame);
+	static BOOL CALLBACK	s_dlgProc(HWND,UINT,WPARAM,LPARAM);
 	virtual void            setStyleInGUI(void);
 protected:
+	HWND                    m_hWnd;
 
+	BOOL					_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam);
+	BOOL					_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam);
+	void					_populateWindowData(void);
+	void					_fillTree(void);
 };
 
 #endif /* AP_WIN32DIALOG_STYLIST_H */

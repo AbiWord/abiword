@@ -84,6 +84,7 @@
 #	include "ap_Win32Dialog_Download_File.h"
 #endif
 	// ... add new dialogs here ...
+#	include "ap_Win32Dialog_Stylist.h"
 
 #else
 
@@ -151,4 +152,5 @@
 	DeclareDialog(AP_DIALOG_ID_DOWNLOAD_FILE,	AP_Win32Dialog_Download_File)
 #endif
  	// ... also add new dialogs here ...
+	DeclareDialog(AP_DIALOG_ID_STYLIST,		AP_Win32Dialog_Stylist)
 #endif
