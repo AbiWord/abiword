@@ -123,7 +123,7 @@ int abi_plugin_supports_version (UT_uint32 major, UT_uint32 minor,
 
 bool IE_Exp_HRText_Sniffer::recognizeSuffix(const char * szSuffix)
 {
-	return (!UT_stricmp(szSuffix,".txt") || !UT_stricmp(szSuffix, ".text"));
+	return (!UT_stricmp(szSuffix,".nws"));
 }
 
 UT_Error IE_Exp_HRText_Sniffer::constructExporter(PD_Document * pDocument,
@@ -138,8 +138,8 @@ bool IE_Exp_HRText_Sniffer::getDlgLabels(const char ** pszDesc,
 										 const char ** pszSuffixList,
 										 IEFileType * ft)
 {
-	*pszDesc = "Newsgroup Formatted Text (.txt, .text)";
-	*pszSuffixList = "*.txt; *.text";
+	*pszDesc = "Newsgroup Formatted Text (.nws)";
+	*pszSuffixList = "*.nws";
 	*ft = getFileType();
 	return true;
 }
@@ -245,7 +245,11 @@ void s_HRText_Listener::_closeTag(void)
 		return;
 	}
 
+#ifndef WIN32
 	m_pie->write("\n\n");
+#else
+	m_pie->write("\r\n\r\n");
+#endif
 
 	m_bInBlock = false;
 	return;
@@ -322,7 +326,11 @@ void s_HRText_Listener::_openTag(PT_AttrPropIndex api)
 
 void s_HRText_Listener::_openSection(PT_AttrPropIndex /* api*/)
 {
+#ifndef WIN32
 	m_pie->write("\n");
+#else
+	m_pie->write("\r\n");
+#endif
 }
 
 void s_HRText_Listener::_openSpan(PT_AttrPropIndex api)
