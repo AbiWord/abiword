@@ -77,59 +77,68 @@ public:
 
 /****************************************************************/
 
-
 FV_View::FV_View(XAP_App * pApp, void* pParentData, FL_DocLayout* pLayout)
-:	AV_View(pApp, pParentData),
-	m_bCursorIsOn(UT_FALSE)
+:       AV_View(pApp, pParentData),
+        m_iInsPoint(0),
+        m_xPoint(0),
+        m_yPoint(0),
+        m_iPointHeight(0),
+        m_oldxPoint(0),
+        m_oldyPoint(0),
+        m_oldiPointHeight(0),
+        m_xPointSticky(0),
+        m_bPointVisible(UT_FALSE),
+        m_bPointEOL(UT_FALSE),
+        m_bDontChangeInsPoint(UT_FALSE),
+        m_pLayout(pLayout),
+        m_pDoc(pLayout->getDocument()),
+        m_pG(m_pLayout->getGraphics()),
+        m_pParentData(pParentData),
+        m_iSelectionAnchor(0),
+        m_iSelectionLeftAnchor(0),
+        m_iSelectionRightAnchor(0),
+        m_bSelection(UT_FALSE),
+        m_pAutoScrollTimer(0),
+        m_xLastMouse(0),
+        m_yLastMouse(0),
+        m_pAutoCursorTimer(0),
+        m_bCursorIsOn(UT_FALSE),
+        m_bEraseSaysStopBlinking(UT_FALSE),
+        m_bdontSpellCheckRightNow(UT_FALSE),
+        m_wrappedEnd(UT_FALSE),
+        m_startPosition(0),
+        m_doneFind(UT_FALSE),
+        _m_matchCase(UT_FALSE),
+        _m_findNextString(0),
+        m_bShowPara(UT_FALSE)
 {
-	m_pLayout = pLayout;
-	m_pDoc = pLayout->getDocument();
-	m_pG = m_pLayout->getGraphics();
-//	UT_ASSERT(m_pG->queryProperties(GR_Graphics::DGP_SCREEN));
+//      UT_ASSERT(m_pG->queryProperties(GR_Graphics::DGP_SCREEN));
 
-	m_iInsPoint = 0;
-	m_iPointHeight = 0;
-	m_bPointEOL = UT_FALSE;
-	m_bSelection = UT_FALSE;
-//	m_bPointAP = UT_FALSE;
-	m_pAutoScrollTimer 	= NULL;
-	m_pAutoCursorTimer  = NULL;
-        m_pParentData = pParentData;
-	
-	// initialize prefs cache
-	pApp->getPrefsValueBool(AP_PREF_KEY_CursorBlink, &m_bCursorBlink);
+        // initialize prefs cache
+        pApp->getPrefsValueBool(AP_PREF_KEY_CursorBlink, &m_bCursorBlink);
 
-	// initialize prefs listener
-	pApp->getPrefs()->addListener( _prefsListener, this );
-	
-	// initialize change cache
-	m_chg.bUndo = UT_FALSE;
-	m_chg.bRedo = UT_FALSE;
-	m_chg.bDirty = UT_FALSE;
-	m_chg.bSelection = UT_FALSE;
-	m_chg.iColumn = 0;			 // current column number
-	m_chg.propsChar = NULL;
-	m_chg.propsBlock = NULL;
-	m_chg.propsSection = NULL;
+        // initialize prefs listener
+        pApp->getPrefs()->addListener( _prefsListener, this );
 
-	pLayout->setView(this);
-		
-	pLayout->formatAll();
-	//Test_Dump();
-	moveInsPtTo(FV_DOCPOS_BOD);
-	m_iSelectionAnchor = getPoint();
-	_resetSelection();
-	_clearOldPoint();
-	_fixInsertionPointCoords();
+        // initialize change cache
+        m_chg.bUndo = UT_FALSE;
+        m_chg.bRedo = UT_FALSE;
+        m_chg.bDirty = UT_FALSE;
+        m_chg.bSelection = UT_FALSE;
+        m_chg.iColumn = 0;                       // current column number
+        m_chg.propsChar = NULL;
+        m_chg.propsBlock = NULL;
+        m_chg.propsSection = NULL;
 
-	_m_findNextString = NULL;
+        pLayout->setView(this);
 
-	m_wrappedEnd = UT_FALSE;
-	m_startPosition = 0;
-	m_bShowPara = UT_FALSE;
-	m_bCursorIsOn = UT_FALSE;
-	m_bdontSpellCheckRightNow = UT_FALSE;
-	m_bDontChangeInsPoint = UT_FALSE;
+        pLayout->formatAll();
+        //Test_Dump();
+        moveInsPtTo(FV_DOCPOS_BOD);
+        m_iSelectionAnchor = getPoint();
+        _resetSelection();
+        _clearOldPoint();
+        _fixInsertionPointCoords();
 }
 
 FV_View::~FV_View()

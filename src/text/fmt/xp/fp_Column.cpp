@@ -32,24 +32,20 @@
 #include "ut_assert.h"
 
 fp_Container::fp_Container(UT_uint32 iType, fl_SectionLayout* pSectionLayout)
-:	m_iHeight(0),
-	m_iMaxHeight(0),
-	m_iHeightLayoutUnits(0),
-	m_iMaxHeightLayoutUnits(0)
-
+:       m_iType(iType),
+        m_pPage(0),
+        m_iWidth(0),
+        m_iWidthLayoutUnits(0),
+        m_iHeight(0),
+        m_iMaxHeight(0),
+        m_iHeightLayoutUnits(0),
+        m_iMaxHeightLayoutUnits(0),
+        m_iX(0),
+        m_iY(0),
+        m_pSectionLayout(pSectionLayout)
 {
-	m_iType = iType;
-	m_pSectionLayout = pSectionLayout;
-	
-	m_pG = m_pSectionLayout->getDocLayout()->getGraphics();
-
-	m_iWidth = 0;
-	m_iWidthLayoutUnits = 0;
-
-	m_pPage = NULL;
-	m_iMaxHeight = 0;
-	m_iX = 0;
-	m_iY = 0;
+        UT_ASSERT(pSectionLayout);
+        m_pG = m_pSectionLayout->getDocLayout()->getGraphics();
 }
 
 fp_Container::~fp_Container()

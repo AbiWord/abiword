@@ -78,21 +78,21 @@ UT_Bool XAP_Win32Frame::RegisterClass(XAP_Win32App * app)
 /*****************************************************************/
 
 XAP_Win32Frame::XAP_Win32Frame(XAP_Win32App * app)
-:	XAP_Frame(app),
-	m_dialogFactory(this, app),
-	m_iBarHeight(0),
-	m_iStatusBarHeight(0)
+:       XAP_Frame(app),
+        m_pWin32App(app),
+        m_pWin32Menu(0),
+        m_pWin32Popup(0),
+        m_iBarHeight(0),
+        m_iStatusBarHeight(0),
+        m_hwndFrame(0),
+        m_hwndRebar(0),
+        m_hwndContainer(0),
+        m_hwndStatusBar(0),
+        m_dialogFactory(this, app),
+        m_mouseWheelMessage(0),
+        m_iSizeWidth(0),
+        m_iSizeHeight(0)
 {
-	m_pWin32App = app;
-	m_pWin32Menu = NULL;
-	m_pWin32Popup = NULL;
-	m_pView = NULL;
-	m_hwndFrame = NULL;
-	m_hwndRebar = NULL;
-	m_hwndContainer = NULL;
-	m_iSizeWidth = 0;
-	m_iSizeHeight = 0;
-	m_mouseWheelMessage = 0;
 }
 
 // TODO when cloning a new frame from an existing one
@@ -100,19 +100,21 @@ XAP_Win32Frame::XAP_Win32Frame(XAP_Win32App * app)
 // TODO dialog data ??
 
 XAP_Win32Frame::XAP_Win32Frame(XAP_Win32Frame * f)
-	: XAP_Frame(static_cast<XAP_Frame *>(f)),
-	m_dialogFactory(this, static_cast<XAP_App *>(f->m_pWin32App))
+:       XAP_Frame(f),
+        m_pWin32App(f->m_pWin32App),
+        m_pWin32Menu(0),
+        m_pWin32Popup(0),
+        m_iBarHeight(0),
+        m_iStatusBarHeight(0),
+        m_hwndFrame(0),
+        m_hwndRebar(0),
+        m_hwndContainer(0),
+        m_hwndStatusBar(0),
+        m_dialogFactory(this, f->m_pWin32App),
+        m_mouseWheelMessage(0),
+        m_iSizeWidth(0),
+        m_iSizeHeight(0)
 {
-	m_pWin32App = f->m_pWin32App;
-	m_pWin32Menu = NULL;
-	m_pWin32Popup = NULL;
-	m_pView = NULL;
-	m_hwndFrame = NULL;
-	m_hwndRebar = NULL;
-	m_hwndContainer = NULL;
-	m_iSizeWidth = 0;
-	m_iSizeHeight = 0;
-	m_mouseWheelMessage = 0;
 }
 
 XAP_Win32Frame::~XAP_Win32Frame(void)

@@ -600,27 +600,28 @@ void ap_sb_Field_InsertMode::notify(AV_View * /*pavView*/, const AV_ChangeMask m
 //////////////////////////////////////////////////////////////////
 
 AP_StatusBar::AP_StatusBar(XAP_Frame * pFrame)
+:       m_pFrame(pFrame),
+        m_pView(0),
+        m_pG(0),
+        m_iHeight(0),
+        m_iWidth(0),
+        s_iFixedHeight(20),
+        m_bInitFields(UT_FALSE),
+        m_pStatusMessageField(0)
 {
-	m_pFrame = pFrame;
-	m_pView = NULL;
-	m_pG = NULL;
+        const XML_Char * szRulerUnits;
+        if (pFrame->getApp()->getPrefsValue(AP_PREF_KEY_RulerUnits,&szRulerUnits))
+                m_dim = UT_determineDimension(szRulerUnits);
+        else
+                m_dim = DIM_IN;
 
-	const XML_Char * szRulerUnits;
-	if (pFrame->getApp()->getPrefsValue(AP_PREF_KEY_RulerUnits,&szRulerUnits))
-		m_dim = UT_determineDimension(szRulerUnits);
-	else
-		m_dim = DIM_IN;
+        // really this should be "static const x = 20;" in the
+        // class declaration, but MSVC5 can't handle it....
+        // (GCC can :-)
 
-	m_iWidth = 0;
-	m_iHeight = 0;
+        s_iFixedHeight = 20;
 
-	m_bInitFields = UT_FALSE;
-	
-	// really this should be "static const x = 20;" in the
-	// class declaration, but MSVC5 can't handle it....
-	// (GCC can :-)
-	
-	s_iFixedHeight = 20;
+        m_bufUCS[0] = 0;
 }
 
 AP_StatusBar::~AP_StatusBar(void)

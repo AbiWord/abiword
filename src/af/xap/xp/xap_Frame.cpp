@@ -52,58 +52,55 @@
 /*****************************************************************/
 
 XAP_Frame::XAP_Frame(XAP_App * app)
+:       m_app(app),
+        m_pDoc(0),
+        m_pView(0),
+        m_pViewListener(0),
+        m_lid((AV_ListenerId)-1),
+        m_pScrollObj(0),
+        m_szMenuLayoutName(0),
+        m_szMenuLabelSetName(0),
+        m_szToolbarLabelSetName(0),
+        m_szToolbarAppearance(0),
+        m_nView(0),
+        m_iUntitled(0),
+        m_pMouse(0),
+        m_pKeyboard(0),
+        m_pScrollbarViewListener(0),
+        m_lidScrollbarViewListener((AV_ListenerId)-1),
+        m_zoomType(z_100),
+        m_pData(0),
+        m_pInputModes(0)
 {
-	m_app = app;
-
-	m_pData = NULL;
-	m_pDoc = NULL;
-	m_pView = NULL;
-	m_pViewListener = NULL;
-	m_pScrollObj = NULL;
-	m_szMenuLayoutName = NULL;
-	m_szMenuLabelSetName = NULL;
-	m_szToolbarLabelSetName = NULL;
-	m_szToolbarAppearance = NULL;
-	m_iUntitled = 0;
-	m_nView = 0;
-	m_pScrollbarViewListener = NULL;
-	m_pInputModes = NULL;
-	m_pKeyboard = NULL;
-	m_pMouse = NULL;
-	m_app->rememberFrame(this);
-	memset(m_szTitle,0,sizeof(m_szTitle));
-	memset(m_szNonDecoratedTitle,0,sizeof(m_szNonDecoratedTitle));
-
-	m_lid = (AV_ListenerId) -1;
+        m_app->rememberFrame(this);
+        memset(m_szTitle,0,sizeof(m_szTitle));
+        memset(m_szNonDecoratedTitle,0,sizeof(m_szNonDecoratedTitle));
 }
 
 XAP_Frame::XAP_Frame(XAP_Frame * f)
+:       m_app(f->m_app),                        // only clone a few things
+        m_pDoc(REFP(f->m_pDoc)),
+        m_pView(0),
+        m_pViewListener(0),
+        m_lid((AV_ListenerId)-1),
+        m_pScrollObj(0),
+        m_szMenuLayoutName(0),
+        m_szMenuLabelSetName(0),
+        m_szToolbarLabelSetName(0),
+        m_szToolbarAppearance(0),
+        m_nView(0),
+        m_iUntitled(f->m_iUntitled),
+        m_pMouse(0),
+        m_pKeyboard(0),
+        m_pScrollbarViewListener(0),
+        m_lidScrollbarViewListener((AV_ListenerId)-1),
+        m_zoomType(z_100),
+        m_pData(0),
+        m_pInputModes(0)
 {
-	// only clone a few things
-	m_app = f->m_app;
-	m_pDoc = REFP(f->m_pDoc);
-	m_iUntitled = f->m_iUntitled;
-
-	// everything else gets recreated
-	m_pData = NULL;
-	m_pView = NULL;
-	m_pViewListener = NULL;
-	m_pScrollObj = NULL;
-	m_szMenuLayoutName = NULL;
-	m_szMenuLabelSetName = NULL;
-	m_szToolbarLabelSetName = NULL;
-	m_szToolbarAppearance = NULL;
-	m_nView = 0;
-	m_pScrollbarViewListener = NULL;
-	m_pInputModes = NULL;
-	m_pKeyboard = NULL;
-	m_pMouse = NULL;
-	
-	m_app->rememberFrame(this, f);
-	memset(m_szTitle,0,sizeof(m_szTitle));
-	memset(m_szNonDecoratedTitle,0,sizeof(m_szNonDecoratedTitle));
-
-	m_lid = (AV_ListenerId) -1;
+        m_app->rememberFrame(this, f);
+        memset(m_szTitle,0,sizeof(m_szTitle));
+        memset(m_szNonDecoratedTitle,0,sizeof(m_szNonDecoratedTitle));
 }
 
 XAP_Frame::~XAP_Frame(void)

@@ -229,9 +229,9 @@ UT_Bool AP_Dialog_Spell::nextMisspelledWord(void)
 				 theWord[ldex] = currentChar;
 			 }
 			 UT_DEBUGMSG(("word: %s\n", theWord));
-			 if (!SpellCheckNWord16( theWord, m_iWordLength) &&
-				 !m_pDoc->isIgnore(  theWord, m_iWordLength) &&
-				 !pApp->isWordInDict(theWord, m_iWordLength)) {
+			 if (!m_pDoc->isIgnore(theWord, m_iWordLength) &&
+			     !pApp->isWordInDict(theWord, m_iWordLength) &&
+			     !SpellCheckNWord16(theWord, m_iWordLength)) {
 		  
 			// unknown word...
 			// prepare list of possibilities
