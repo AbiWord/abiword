@@ -27,7 +27,7 @@ fi
 echo "Creating aclocal.m4..."
 aclocal -I ac-helpers
 
-autoheader
+#autoheader
 
 # Produce all the `Makefile.in's, verbosely, and create neat missing things
 # like `libtool', `install-sh', etc.
