@@ -51,7 +51,7 @@
 #		include "ut_unixAssert.h"
 #		define UT_ASSERT(expr)								\
 			((void) ((expr) ||								\
-				(UT_UnixAssertMsg(__STRING(expr),			\
+				(UT_UnixAssertMsg(#expr,					\
 								  __FILE__, __LINE__),		\
 				 0)))
 #	endif

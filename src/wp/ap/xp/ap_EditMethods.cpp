@@ -19,12 +19,12 @@
 
 #define DLGHACK
 #ifdef DLGHACK			// see bottom of file for an apology
-#ifdef WIN32
-#include <windows.h>	// needs to be first
-#endif
-#ifdef LINUX
-#include <gtk/gtk.h>
-#endif
+#  ifdef WIN32
+#    include <windows.h>	// needs to be first
+#  else
+#    define UNIXHACK
+#    include <gtk/gtk.h>
+#  endif
 #endif /* DLGHACK */
 
 #include <stdio.h>
@@ -728,7 +728,7 @@ static void _reallyExit(void)
 #ifdef WIN32
 	PostQuitMessage (0);
 #endif
-#ifdef LINUX
+#ifdef UNIXHACK
 	gtk_main_quit();	// what miguel uses
 //	exit(0);			// what Andy had
 #endif
@@ -1933,7 +1933,7 @@ UT_Bool _printDoc(AP_Frame * pFrame, FV_View * pView)
 /*****************************************************************/
 /*****************************************************************/
 
-#ifdef LINUX
+#ifdef UNIXHACK
 
 #include "ap_UnixApp.h"
 #include "ap_UnixFrame.h"
@@ -2109,8 +2109,8 @@ UT_Bool _chooseFont(AP_Frame * pFrame, FV_View * pView)
 		if (s)
 		{
 			strcat(fontString, "-");
-			char fontSize[5];
-			snprintf(fontSize, 5, "%d", (pG->convertDimension(s)) * 10);
+			char fontSize[50];
+			sprintf(fontSize, "%ld", (pG->convertDimension(s)) * 10);
 			UT_DEBUGMSG(("font is size %s\n", fontSize));
 			strcat(fontString, fontSize);
 		}
@@ -2586,7 +2586,7 @@ UT_Bool _printDoc(AP_Frame * pFrame, FV_View * pView)
 	return UT_TRUE;
 }
 
-#endif /* LINUX */
+#endif /* UNIXHACK */
 
 /*****************************************************************/
 /*****************************************************************/
