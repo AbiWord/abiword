@@ -69,7 +69,7 @@ void s_checkbutton_toggle( GtkWidget *w, AP_BeOSDialog_Options *dlg )
 	int i = (int) gtk_object_get_data( GTK_OBJECT(w), "tControl" );
 	dlg->_enableDisableLogic( (AP_Dialog_Options::tControl) i );
 }
-
+#endif
 /*****************************************************************/
 
 void AP_BeOSDialog_Options::runModal(XAP_Frame * pFrame)
@@ -196,7 +196,7 @@ void        AP_BeOSDialog_Options::_set##button(UT_Bool b) {	\
 */
 
 #define DEFINE_GET_SET_BOOL(button) \
-UT_Bool     AP_BeOSDialog_Options::_gather##button(void) {	return UT_FALSE: } \
+UT_Bool     AP_BeOSDialog_Options::_gather##button(void) {	return UT_FALSE; } \
 void        AP_BeOSDialog_Options::_set##button(UT_Bool b) { }
 
 DEFINE_GET_SET_BOOL(SpellCheckAsType);
@@ -218,4 +218,3 @@ DEFINE_GET_SET_BOOL	(ViewHiddenText);
 DEFINE_GET_SET_BOOL	(ViewUnprintable);
 
 #undef DEFINE_GET_SET_BOOL
-

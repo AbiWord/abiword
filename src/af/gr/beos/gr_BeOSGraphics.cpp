@@ -376,7 +376,7 @@ void GR_BeOSGraphics::setFont(GR_Font* pFont)
 	UT_ASSERT(tmpFont);
 	
 	m_pBeOSFont = tmpFont;
-
+	m_pBeOSFont->get_font()->SetSpacing(B_BITMAP_SPACING);
 	if (m_pShadowView->Window()->Lock())
 	{
 	if (m_pBeOSFont)
@@ -444,10 +444,6 @@ UT_uint32 GR_BeOSGraphics::measureString(const UT_UCSChar* s, int iOffset,
 	BFont viewFont;
 	BPoint *escapementArray=new BPoint[num];
 	m_pShadowView->GetFont(&viewFont);
-	viewFont.SetSpacing(B_BITMAP_SPACING);
-	m_pShadowView->Window()->Lock();
-	m_pShadowView->SetFont(&viewFont);
-	m_pShadowView->Window()->Unlock();
 	for (i=0; i<num; i++) {
 		buffer[i] = (char)(s[i+iOffset]);						
 	//	pWidths[i] = (short unsigned int) m_pShadowView->StringWidth(&buffer[i]);				

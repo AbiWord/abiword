@@ -306,7 +306,6 @@ UT_Bool EV_BeOSMenu::synthesize(void) {
                         //const char ** data = _ev_GetLabelName(m_pBeOSApp, m_pBeOSFrame, pAction, pLabel);
                         szLabelName = data[0];
                         szMnemonicName = data[1];
-			printf("Mnemonic name 1 is %s\n",szMnemonicName);
 			BString betterString(szMnemonicName);
 			int index,modifiers;
 			char key;
@@ -405,7 +404,6 @@ UT_Bool EV_BeOSMenu::synthesize(void) {
                         szLabelName = data[0];
 
                         szMnemonicName = data[1];           
-			printf("Mnemonic name 2 is %s\n",data[1]);
 			UT_DEBUGMSG(("START SUB MENU: L:[%s] MN:[%s] \n", 
 				(szLabelName) ? szLabelName : "NULL", 
 				(szMnemonicName) ? szMnemonicName : "NULL")); 
