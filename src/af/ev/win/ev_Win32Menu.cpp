@@ -20,6 +20,8 @@
 #include <windows.h>
 #include <stdio.h>
 #include <string.h>
+#include <ctype.h>
+#include <stdlib.h>
 #include "ut_types.h"
 #include "ut_stack.h"
 #include "ut_string.h"
