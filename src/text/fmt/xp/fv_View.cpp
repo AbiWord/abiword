@@ -204,16 +204,16 @@ FV_View::FV_View(XAP_App * pApp, void* pParentData, FL_DocLayout* pLayout)
 	// that we're editing in
 	const XML_Char * doc_locale = NULL;
 	if (m_pApp->getPrefs()->getPrefsValue(XAP_PREF_KEY_DocumentLocale,&doc_locale))
-	  {
+	{
 	    if (doc_locale)
-	      {
+		{
 		const XML_Char * props[3];
 		props[0] = "lang";
 		props[1] = doc_locale;
 		props[2] = 0;
 		this->setCharFormat(props);
-	      }
-	  }
+		}
+	}
 }
 
 FV_View::~FV_View()
@@ -2155,7 +2155,6 @@ bool FV_View::setStyle(const XML_Char * style, bool bDontGeneralUpdate)
 			else
 				pBL->resumeList(pBL->getPrev());
 		}
-		m_pDoc->endUserAtomicGlob();
 	}
 //
 // Code to handle Numbered Heading styles...
@@ -2167,19 +2166,52 @@ bool FV_View::setStyle(const XML_Char * style, bool bDontGeneralUpdate)
 		if(pos < 2 )
 			pos = 2;
 		PL_StruxDocHandle curSdh = currBlock->getStruxDocHandle();
+//
+// Look backwards to see if there is a heading before here.
+//
+		bool bFoundPrevHeadingBackwards = false;
 		PL_StruxDocHandle sdh = m_pDoc->findPreviousStyleStrux(style, pos);
+		bFoundPrevHeadingBackwards = (sdh != NULL);
+//
+// If not, Look forward to see if there one ahead of this block
+//
+		if(!bFoundPrevHeadingBackwards)
+		{
+//
+// Start looking from the block following and skip throgh to end of Doc.
+//
+			fl_BlockLayout * pNext = currBlock->getNext();
+			if(pNext)
+			{
+				PT_DocPosition nextPos = pNext->getPosition(false);
+				sdh = m_pDoc->findForwardStyleStrux(style, nextPos);
+			}
+		}
+//
+// OK put this heading style into any pre-exsiting Numbering Headings
+//
 		if(sdh == NULL || (sdh == curSdh))
 		{
 			currBlock->StartList(style);
 		}
-		else
+//
+// Insert into pre-existing List.
+//
+		else if(bFoundPrevHeadingBackwards)
 		{
 			PL_StruxFmtHandle sfh = NULL;
 			UT_uint32 i;
 			bool bFound = false;
 			fl_BlockLayout * pBlock = NULL;
+//
+// Loop through all the format handles that match our sdh until we find the one
+// in our View. (Not that it really matter I suppose.)
+//
 			for(i=0; !bFound ; i++)
 			{
+//
+// Cast it into a fl_BlockLayout and we're done!
+//
 				sfh = m_pDoc->getNthFmtHandle(sdh, i);
 				if(sfh != NULL)
 				{
@@ -2197,6 +2229,42 @@ bool FV_View::setStyle(const XML_Char * style, bool bDontGeneralUpdate)
 			UT_ASSERT(sfh);
 			currBlock->resumeList(pBlock);
 		}
+//
+// Prepend onto a pre-existing List.
+//
+		else
+		{
+			PL_StruxFmtHandle sfh = NULL;
+			UT_uint32 i;
+			bool bFound = false;
+			fl_BlockLayout * pBlock = NULL;
+			for(i=0; !bFound ; i++)
+			{
+//
+// Loop through all the format handles that match our sdh until we find the one
+// in our View. (Not that it really matter I suppose.)
+//
+				sfh = m_pDoc->getNthFmtHandle(sdh, i);
+				if(sfh != NULL)
+				{
+//
+// Cast it into a fl_BlockLayout and we're done!
+//
+					pBlock = (fl_BlockLayout *) sfh;
+					if(pBlock->getDocLayout() == m_pLayout)
+					{
+						bFound = true;
+					}
+				}
+				else
+				{
+					bFound = true;
+				}
+			}
+			UT_ASSERT(sfh);
+			currBlock->prependList(pBlock);
+		}
+
 	}
 	if(!bDontGeneralUpdate)
 	{
@@ -2206,7 +2274,6 @@ bool FV_View::setStyle(const XML_Char * style, bool bDontGeneralUpdate)
 		m_pDoc->updateDirtyLists();
 
 		// Signal piceTable is stable again
-		m_pDoc->notifyPieceTableChangeEnd();
 
 		if (isSelectionEmpty())
 		{
@@ -2214,6 +2281,8 @@ bool FV_View::setStyle(const XML_Char * style, bool bDontGeneralUpdate)
 			_drawInsertionPoint();
 		}
 	}
+	m_pDoc->endUserAtomicGlob();
+	m_pDoc->notifyPieceTableChangeEnd();
 	return bRet;
 }
 
@@ -8636,7 +8705,7 @@ bool FV_View::insertHeaderFooter(const XML_Char ** props, HdrFtrType hfType)
 // Next set the style to Normal so weird properties at the end of the doc aren't
 // inherited into the header.
 //
-	setStyle("Normal",true);
+	setStyle("Normal Clean",true);
 
 	// Now Insert the footer section.
 	// Doing things this way will grab the previously inserted block
@@ -8851,7 +8920,7 @@ bool FV_View::insertEndnoteSection(const XML_Char ** blkprops, const XML_Char **
 	// Next set the style to Normal so weird properties at the 
 	// end of the doc aren't inherited into the header.
 
-	setStyle("Normal",true);
+	setStyle("Normal Clean",true);
 
 	// Now Insert the endnotes section.
 	// Doing things this way will grab the newly inserted block

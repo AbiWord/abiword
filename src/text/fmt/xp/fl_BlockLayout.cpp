@@ -5339,6 +5339,7 @@ void    fl_BlockLayout::StartList( List_Type lType, UT_uint32 start,const XML_Ch
 	vp.addItem( (void *) "text-indent");	vp.addItem( (void *) pszIndent);
 	vp.addItem( (void *) "field-font");     vp.addItem( (void *) fFont);
 	vp.addItem( (void *) "list-style");	    vp.addItem( (void *) style);
+	xxx_UT_DEBUGMSG(("SEVIOR: Starting List with font %s \n",fFont));
 //
 // Sevior lists hack
 //	va.addItem( (void *) "style");	        va.addItem( (void *) style);

@@ -5644,7 +5644,12 @@ Defun(zoom)
 	UT_ASSERT(iZoom > 0);
 
 	pFrame->setZoomPercentage(iZoom);
-	
+//
+// Make damm sure the cursor is ON!!
+//
+	FV_View * pAbiView = (FV_View *) pFrame->getCurrentView();
+	pAbiView->focusChange(AV_FOCUS_HERE);
+
 	return true;
 }
 
@@ -6007,35 +6012,34 @@ static bool s_doStylesDlg(FV_View * pView)
 
 	pDialog->runModal(pFrame);
 
-	AP_Dialog_Styles::tAnswer ans = pDialog->getAnswer();
-	bool bOK = (ans == AP_Dialog_Styles::a_OK);
+//	AP_Dialog_Styles::tAnswer ans = pDialog->getAnswer();
+	bool bOK = true;
 //
 // update the combo box with the new styles.
 //	
-	if(bOK)
+	XAP_App * pApp = pFrame->getApp();
+	UT_ASSERT(pApp);
+	//
+	// Get all clones of this frame and set styles combo box
+	//
+	UT_Vector vClones;
+	if(pFrame->getViewNumber() > 0)
 	{
-		XAP_App * pApp = pFrame->getApp();
-		UT_ASSERT(pApp);
-		//
-		// Get all clones of this frame and set styles combo box
-		//
-		UT_Vector vClones;
-		if(pFrame->getViewNumber() > 0)
+		pApp->getClones(&vClones,pFrame);
+		for (UT_uint32 i = 0; i < vClones.getItemCount(); i++)
 		{
-			pApp->getClones(&vClones,pFrame);
-			for (UT_uint32 i = 0; i < vClones.getItemCount(); i++)
-			{
-			     XAP_Frame * f = (XAP_Frame *) vClones.getNthItem(i);
-			     f->repopulateCombos();
-			}
+			XAP_Frame * f = (XAP_Frame *) vClones.getNthItem(i);
+			f->repopulateCombos();
 		}
-		else
-		{
-			pFrame->repopulateCombos();
-		}
+	}
+	else
+	{
+		pFrame->repopulateCombos();
+	}
 //
-// Now update all views on the document.
+// Now update all views on the document. Do this always to be safe.
 //
+	{
 		PD_Document * pDoc = pView->getLayout()->getDocument();
 		pDoc->signalListeners(PD_SIGNAL_UPDATE_LAYOUT);
 	}

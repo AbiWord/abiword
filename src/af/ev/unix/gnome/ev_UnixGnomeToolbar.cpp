@@ -734,6 +734,7 @@ bool EV_UnixGnomeToolbar::repopulateStyles(void)
 //
 // First off find the Styles combobox in a toolbar somewhere
 //
+	xxx_UT_DEBUGMSG(("SEVIOR: Repopulating the Styles Combo box \n"));
 	UT_uint32 count = m_pToolbarLayout->getLayoutItemCount();
 	UT_uint32 i =0;
 	EV_Toolbar_LayoutItem * pLayoutItem = NULL;
@@ -762,6 +763,7 @@ bool EV_UnixGnomeToolbar::repopulateStyles(void)
 //
 // Now the combo box has to be refilled from this
 //						
+	xxx_UT_DEBUGMSG(("SEVIOR: Got vector of styles \n"));
 	const UT_Vector * v = pControl->getContents();
 	UT_ASSERT(v);
 //

@@ -201,7 +201,6 @@ GnomeFont * XAP_UnixGnomePrintGraphics::_allocGnomeFont(PSFont* pFont)
 #endif
 		double size         = (double)pFont->getSize() * _scale_factor_get ();
 
-		UT_DEBUGMSG(("SEVIOR: PS Font size = %d gnome font size = %d \n",pFont->getSize(),size));
 		// first try to directly allocate abi's name
 		// this is good for fonts not in my table, and
 		// fonts installed by the user in both Abi and
@@ -356,7 +355,7 @@ bool XAP_UnixGnomePrintGraphics::loadUnicodeData(void)
 					if((*buff != '#')&&(*buff != '\n'))
 					{
 							buff[strlen(buff)-1]= 0; //remove '\n'
-							UT_DEBUGMSG(("Reading line %s \n",buff));
+							xxx_UT_DEBUGMSG(("Reading line %s \n",buff));
 							char * comma = strchr(buff, ',');
 							if(!comma)
 							{
@@ -413,7 +412,7 @@ bool XAP_UnixGnomePrintGraphics::loadUnicodeData(void)
 					if((*buff != '#')&&(*buff != '\n'))
 					{
 							buff[strlen(buff)-1]= 0; //remove '\n'
-							UT_DEBUGMSG(("Reading line %s \n",buff));
+							xxx_UT_DEBUGMSG(("Reading line %s \n",buff));
 							char * comma = strchr(buff, ',');
 							if(!comma)
 							{
@@ -618,7 +617,7 @@ void XAP_UnixGnomePrintGraphics::setFont(GR_Font* pFont)
 
 	m_pCurrentFont = _allocGnomeFont(psFont);
 
-#if 1
+#if 0
 	XAP_UnixFont *uf          = static_cast<PSFont*>(pFont)->getUnixFont();
 	UT_DEBUGMSG(("Dom: setting font:\n"
 				 "\tsize returned: %f (requested %f)\n"

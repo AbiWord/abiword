@@ -1955,6 +1955,7 @@ void fp_FieldRun::lookupProperties(void)
 	{
 		m_pFont = pLayout->findFont(pSpanAP,pBlockAP,pSectionAP, FL_DocLayout::FIND_FONT_AT_SCREEN_RESOLUTION,true);
 		m_pFontLayout = pLayout->findFont(pSpanAP,pBlockAP,pSectionAP, FL_DocLayout::FIND_FONT_AT_LAYOUT_RESOLUTION,true);
+		xxx_UT_DEBUGMSG(("SEVIOR: Got fonts %x and %x for screen and layout for list label \n",m_pFont,m_pFontLayout));
 	}
 	else
 	{
@@ -2283,6 +2284,7 @@ void fp_FieldRun::_defaultDraw(dg_DrawArgs* pDA)
 			m_pG->fillRect(m_colorHL, pDA->xoff, iFillTop, m_iWidth, iFillHeight);
 		}
 	}
+	xxx_UT_DEBUGMSG(("SEVIOR: Set font %x before drawing %x \n",m_pFont));
 	m_pG->setFont(m_pFont);
 	m_pG->setColor(m_colorFG);
 	
