@@ -46,13 +46,11 @@ BeginLayout(FormatOps)
 	ToolbarItem(AP_TOOLBAR_ID_LISTS_NUMBERS)
 	ToolbarItem(AP_TOOLBAR_ID_LISTS_BULLETS)
 
-	Spacer()
-	ToolbarItem(AP_TOOLBAR_ID_PARA_0BEFORE)
-	ToolbarItem(AP_TOOLBAR_ID_PARA_12BEFORE)
-
-	Spacer()
-	ToolbarItem(AP_TOOLBAR_ID_SINGLE_SPACE)
-	ToolbarItem(AP_TOOLBAR_ID_MIDDLE_SPACE)
-	ToolbarItem(AP_TOOLBAR_ID_DOUBLE_SPACE)
+#ifdef HAVE_GNOME
+     /* TODO: these should be moved out into the general public */
+     Spacer()
+     ToolbarItem(AP_TOOLBAR_ID_COLOR_FORE)
+     ToolbarItem(AP_TOOLBAR_ID_COLOR_BACK)
+#endif
 	
 EndLayout()
