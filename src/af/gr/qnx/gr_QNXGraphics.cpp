@@ -262,36 +262,33 @@ UT_uint32 GR_QNXGraphics::measureUnRemappedChar(const UT_UCSChar c)
 {
 	PhRect_t rect;
 	const char *font;
-	char 	 buffer[MB_CUR_MAX + 1];
 	int 	 len, indices, penpos;
+	UT_UCSChar buffer[1];
 
-	if (!m_pFont || !(font = m_pFont->getFont())) {
+	buffer[0]=c;
+if (!m_pFont || !(font = m_pFont->getFont())) {
 		return 0;
 	}
 
-	len = wctomb(buffer, c);
-	UT_ASSERT(len > 0);
-	buffer[len] = '\0';
 	indices = 1;			
 	penpos = 0;			
-
 /*
 	printf("wide character %d (0x%x) [%c] in %s ==\n", c, c, (char)c, font);
 	printf("multi byte char 0x%x 0x%x 0x%x 0x%x (%d) \n", buffer[0], buffer[1], buffer[2], buffer[3], len);
 */
 	PfExtentTextCharPositions(&rect, 		/* Rect extent */
 				  NULL,			/* Position offset */
-				  buffer,	   	/* Buffer to hit */
+				  (char*)buffer,	   	/* Buffer to hit */
 				  font, 		/* Font buffer uses */
 				  &indices,		/* Where to get pen pos from */
 				  &penpos, 		/* Where to store pen pos */
 				  1,			/* Number of indices */
-				  0,		/* Flags TODO: PF_WIDE_CHARS and save convert? */
-				  len,			/* Length of buffer (0 = use strlen) */
+				  PF_WIDE_CHARS,		/* Flags */
+				  0,			/* Length of buffer (0 = use strlen) */
 				  0, 			/* Number of characters to skip */
 				  NULL);		/* Clipping rectangle? */
 /*
-	printf("gives width %d \n", penpos);
+	printf("gives width %d and char = 0x%x\n", penpos,c);
 */
 	
 	return penpos;
@@ -409,18 +406,18 @@ void GR_QNXGraphics::setFont(GR_Font * pFont)
 
 UT_uint32 GR_QNXGraphics::getFontAscent()
 {
-	if(m_iAscentCache == -1) {
+//	if(m_iAscentCache == -1) {
 		m_iAscentCache = getFontAscent(m_pFont);
-	}
+//	}
 
 	return m_iAscentCache;
 }
 
 UT_uint32 GR_QNXGraphics::getFontDescent()
 {
-	if (m_iDescentCache == -1) {
+//	if (m_iDescentCache == -1) {
 		m_iDescentCache = getFontDescent(m_pFont);
-	}
+//	}
 
 	return m_iDescentCache;
 }
@@ -438,7 +435,7 @@ UT_uint32 GR_QNXGraphics::getFontAscent(GR_Font * fnt)
 		
 	FontQueryInfo info;
 
-	if (PfQueryFont(pQNXFont->getFont(), &info) == -1) {
+	if (PfQueryFontInfo(pQNXFont->getFont(), &info) == -1) {
 		UT_ASSERT(0);
 		return(0);
 	}
@@ -453,7 +450,7 @@ UT_uint32 GR_QNXGraphics::getFontDescent(GR_Font * fnt)
 		
 	FontQueryInfo info;
 
-	if (PfQueryFont(pQNXFont->getFont(), &info) == -1) {
+	if (PfQueryFontInfo(pQNXFont->getFont(), &info) == -1) {
 		UT_ASSERT(0);
 		return(0);
 	}
@@ -471,11 +468,11 @@ UT_uint32 GR_QNXGraphics::getFontHeight(GR_Font * fnt)
 		
 	FontQueryInfo info;
 
-	if (PfQueryFont(pQNXFont->getFont(), &info) == -1) {
+	if (PfQueryFontInfo(pQNXFont->getFont(), &info) == -1) {
 		UT_ASSERT(0);
 		return(0);
 	}
-
+	if(strcmp(pQNXFont->getFont(),info.font) != 0)
 	return MY_ABS(info.descender) + MY_ABS(info.ascender);
 }
 

@@ -85,7 +85,7 @@ void XAP_QNXDialog_FontChooser::runModal(XAP_Frame * pFrame)
  							  		  pSS->getValue(XAP_STRING_ID_DLG_UFS_FontTitle),
 							  		  "helv10",		/* Initial font */
 							  		  -1,			/* Symbol to select fonts by */							
-							  		  PHFONT_ALL_FONTS, /* Which type of fonts */
+							  		  PHFONT_SCALABLE, /* Which type of fonts */
 							  		  NULL); 	/* Sample string */
 
 	if (newfont) {
@@ -93,7 +93,7 @@ void XAP_QNXDialog_FontChooser::runModal(XAP_Frame * pFrame)
 		char *s, *p, c;
 
 		//NOTE: I could use PfQueryFont for all this information
-		PfQueryFont(newfont, &finfo);
+		PfQueryFontInfo(newfont, &finfo);
 
 		//Split name[size][style] into pieces
 		s = p = newfont;

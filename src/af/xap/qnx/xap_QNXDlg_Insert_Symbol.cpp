@@ -213,6 +213,7 @@ void XAP_QNXDialog_Insert_Symbol::notifyCloseFrame(XAP_Frame *pFrame) {
 
 void XAP_QNXDialog_Insert_Symbol::runModeless(XAP_Frame * pFrame)
 {
+	#if 0
 	unsigned short w, h;
 
 	// First see if the dialog is already running
@@ -290,6 +291,8 @@ void XAP_QNXDialog_Insert_Symbol::runModeless(XAP_Frame * pFrame)
 	UT_QNXCenterWindow(parentWindow, mainWindow);
 	PtRealizeWidget(mainWindow);
 	PgFlush();
+#endif 
+UT_ASSERT(0);
 }
 
 void XAP_QNXDialog_Insert_Symbol::event_OK(void)

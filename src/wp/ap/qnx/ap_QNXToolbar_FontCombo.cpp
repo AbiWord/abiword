@@ -58,8 +58,8 @@ AP_QNXToolbar_FontCombo::~AP_QNXToolbar_FontCombo(void)
 	// nothing to purge.  contents are static strings
 }
 
-#define FONT_QUERY_CHAR 'A'
-#define FONT_TYPES (PHFONT_SCALABLE | PHFONT_BITMAP | PHFONT_PROP  /* | PHFONT_FIXED*/)
+#define FONT_QUERY_CHAR PHFONT_ALL_SYMBOLS 
+#define FONT_TYPES (PHFONT_SCALABLE /*| PHFONT_BITMAP*/ | PHFONT_PROP  /* | PHFONT_FIXED*/)
 bool AP_QNXToolbar_FontCombo::populate(void)
 {
 	FontDetails *font_list;

@@ -607,6 +607,24 @@ bool EV_QNXToolbar::refreshToolbar(AV_View * pView, AV_ChangeMask mask)
 				}
 				break;
 
+
+				case EV_TBIT_ColorFore:
+				case EV_TBIT_ColorBack:
+				{
+					bool bGrayed = EV_TIS_ShouldBeGray(tis);
+
+					tcb = (struct _cb_data *) m_vecToolbarWidgets.getNthItem(k);
+					UT_ASSERT(tcb);
+					PtWidget_t *item;
+					item = tcb->m_widget;
+					UT_ASSERT(item);
+						
+					// Disable/enable toolbar item
+					PtSetArg(&args[n++], Pt_ARG_FLAGS, 
+							 (bGrayed) ? (Pt_BLOCKED | Pt_GHOST) : Pt_SELECTABLE, 
+							 Pt_BLOCKED | Pt_GHOST | Pt_SELECTABLE);
+					PtSetResources(tcb->m_widget, n, args);
+				}break;
 				case EV_TBIT_StaticLabel:
 					break;
 				case EV_TBIT_Spacer:

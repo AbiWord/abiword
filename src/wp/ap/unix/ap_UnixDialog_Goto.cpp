@@ -182,6 +182,8 @@ void AP_UnixDialog_Goto::runModeless (XAP_Frame * pFrame)
 {
 	_constructWindow ();
 
+	setSelectedRow ( 0 ) ;
+
 	UT_ASSERT (m_wMainWindow);
 
 	// Save dialog the ID number and pointer to the widget
@@ -264,8 +266,8 @@ GtkWidget * AP_UnixDialog_Goto::_constructWindow (void)
 	//initially hide the bookmark list; also we want the bookmark list to be
 	// of same size as the descriptive text, so that when we swap them
 	// the whole window does not get resized
-	gtk_widget_hide(m_swindow);
 	gtk_widget_set_usize(m_swindow,(gint)m_dlabel->allocation.width,(gint)m_dlabel->allocation.height);
+	gtk_widget_hide(m_swindow);
 	
 	_connectSignals ();
 
@@ -338,8 +340,8 @@ GtkWidget *AP_UnixDialog_Goto::_constructWindowContents (void)
 	// the bookmark list
 	m_swindow  = gtk_scrolled_window_new(NULL, NULL);
 	gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (m_swindow),GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
-    gtk_widget_hide(m_swindow);
-    gtk_box_pack_start (GTK_BOX (vbox2), m_swindow, FALSE, FALSE, 0);
+	gtk_box_pack_start (GTK_BOX (vbox2), m_swindow, FALSE, FALSE, 0);
+	gtk_widget_hide(m_swindow);
 	
 	blist = gtk_clist_new (1);
 	gtk_clist_set_selection_mode(GTK_CLIST(blist), GTK_SELECTION_BROWSE);
