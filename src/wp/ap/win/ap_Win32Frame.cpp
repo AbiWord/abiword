@@ -502,6 +502,7 @@ AP_Win32Frame::AP_Win32Frame(XAP_Win32App * app)
 	m_bMouseActivateReceived(false),
 	m_hWndHScroll(0),
 	m_hWndVScroll(0),
+	m_bFirstAfterFocus(false),
 	m_hWndGripperHack(0)
 {
 	m_hwndContainer = NULL;
@@ -517,6 +518,7 @@ AP_Win32Frame::AP_Win32Frame(AP_Win32Frame * f)
 	m_bMouseActivateReceived(false),
 	m_hWndHScroll(0),
 	m_hWndVScroll(0),
+	m_bFirstAfterFocus(false),
 	m_hWndGripperHack(0)
 {
 	m_hwndContainer = NULL;
@@ -1113,6 +1115,8 @@ void AP_Win32Frame::_onSize(int nWidth, int nHeight)
 			   nHeight - yTopRulerHeight - cyHScroll, TRUE);
 }
 
+
+
 LRESULT CALLBACK AP_Win32Frame::_DocumentWndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 {
 	AP_Win32Frame * f = GWL(hwnd);
@@ -1131,13 +1135,18 @@ LRESULT CALLBACK AP_Win32Frame::_DocumentWndProc(HWND hwnd, UINT iMsg, WPARAM wP
 		f->m_bMouseActivateReceived = true;
 		return MA_ACTIVATE;
 
-	case WM_SETFOCUS:
+	case WM_SETFOCUS:			
 		if (pView)
 		{
 			pView->focusChange(AV_FOCUS_HERE);
+			
+			if (GetKeyState(VK_LBUTTON)>0)
+				f->m_bFirstAfterFocus = true;
 
 			if(!f->m_bMouseActivateReceived)
 			{
+				
+				
 				// HACK:	Capture leaving a tool bar combo.
 				// We need to get a mouse down signal.
 				// windows is not activated so send a mouse down if the mouse is pressed.
@@ -1152,7 +1161,7 @@ LRESULT CALLBACK AP_Win32Frame::_DocumentWndProc(HWND hwnd, UINT iMsg, WPARAM wP
 	case WM_KILLFOCUS:
 		if (pView)
 		{
-			pView->focusChange(AV_FOCUS_NONE);
+			pView->focusChange(AV_FOCUS_NONE);			
 		}
 		return 0;
 
@@ -1169,14 +1178,22 @@ LRESULT CALLBACK AP_Win32Frame::_DocumentWndProc(HWND hwnd, UINT iMsg, WPARAM wP
 		return 1;
 
 	case WM_LBUTTONDOWN:
-		if(GetFocus() != hwnd)
+		
+		/* When we get the focus back 					*/
+		if (f->m_bFirstAfterFocus)
+			f->m_bFirstAfterFocus = false;	
+		else
 		{
-			SetFocus(hwnd);
-			pView = f->m_pView;
-			pMouse = (EV_Win32Mouse *) f->m_pMouse;
+			
+			if(GetFocus() != hwnd)
+			{
+				SetFocus(hwnd);
+				pView = f->m_pView;
+				pMouse = (EV_Win32Mouse *) f->m_pMouse;
+			}
+			pMouse->onButtonDown(pView,hwnd,EV_EMB_BUTTON1,wParam,LOWORD(lParam),HIWORD(lParam));
+			f->m_bMouseActivateReceived = false;
 		}
-		pMouse->onButtonDown(pView,hwnd,EV_EMB_BUTTON1,wParam,LOWORD(lParam),HIWORD(lParam));
-		f->m_bMouseActivateReceived = false;
 		return 0;
 	case WM_MBUTTONDOWN:
 		f->_startTracking(LOWORD(lParam), HIWORD(lParam));
