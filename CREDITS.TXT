@@ -2,7 +2,7 @@ CREDITS
 
 principal authors of AbiWord
 ----------------------------
-Thomas Fletcher <thomasf@qnx.com>               BeOS port
+Thomas Fletcher <thomasf@qnx.com>               QNX front-end maintainer
 Jeff Hostetler <jeff@abisource.com>
 Paul Rohr <paul@abisource.com> 
 Bob Sievers <bob@abisource.com>                 QA
@@ -56,6 +56,7 @@ Alan Young <ayoung@teleport.com>                Alpha/NT
 translators
 -----------
 Albi <albi@linuxfan.com> <onderste@casema.net>  Dutch
+Tim & Rita Allen <tim@proximity.com.au>		Indonesian
 Henrik Berg <henrik@lansen.se>			Swedish
 Frédéric CELLA <fcella@mahj.org>                French
 Mauro Colorio <macolori@tin.it>                 Italian
