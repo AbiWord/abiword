@@ -225,6 +225,7 @@ gint AP_CocoaLeftRuler::_fe::abi_expose_repaint( gpointer p)
 
 	NSPoint pt = [theEvent locationInWindow];
 	pt = [sender convertPoint:pt fromView:nil];
+	pt.y = [sender bounds].size.height - pt.y;
 	pCocoaLeftRuler->mousePress(ems, emb, (UT_uint32) pt.x, (UT_uint32) pt.y);
 }
 
@@ -242,6 +243,7 @@ gint AP_CocoaLeftRuler::_fe::abi_expose_repaint( gpointer p)
 	// Map the mouse into coordinates relative to our window.
 	NSPoint pt = [theEvent locationInWindow];
 	pt = [sender convertPoint:pt fromView:nil];
+	pt.y = [sender bounds].size.height - pt.y;
 	pCocoaLeftRuler->mouseMotion(ems,(UT_sint32)pt.x, (UT_sint32)pt.y);
 }
 
@@ -261,6 +263,7 @@ gint AP_CocoaLeftRuler::_fe::abi_expose_repaint( gpointer p)
 	// Map the mouse into coordinates relative to our window.
 	NSPoint pt = [theEvent locationInWindow];
 	pt = [sender convertPoint:pt fromView:nil];
+	pt.y = [sender bounds].size.height - pt.y;
 	pCocoaLeftRuler->mouseRelease(ems, emb, (UT_sint32)pt.x, (UT_sint32)pt.y);
 }
 @end

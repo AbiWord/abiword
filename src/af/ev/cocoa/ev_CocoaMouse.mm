@@ -117,6 +117,7 @@ void EV_CocoaMouse::mouseClick(AV_View* pView, NSEvent* e, NSView *hitView)
 
 	pt = [e locationInWindow];
 	pt = [hitView convertPoint:pt fromView:nil];
+	pt.y = [hitView bounds].size.width - pt.y;
 	emc = pView->getMouseContext((UT_sint32)pt.x, (UT_sint32)pt.y);
 	
 	m_clickState = mop;					// remember which type of click
@@ -229,7 +230,7 @@ EV_EditMouseButton EV_CocoaMouse::_convertMouseButton(int btn)
 	default:
 		// TODO decide something better to do here....
 		UT_DEBUGMSG(("EV_CocoaMouse::_convertMouseButton: unknown button %d\n", btn));
-		return -1;
+		return 0xffffffff;
 	}
 	return emb;
 }

@@ -241,6 +241,7 @@ void AP_CocoaTopRuler::_fe::destroy(GtkWidget * /*widget*/, gpointer /*data*/)
 
 	NSPoint pt = [theEvent locationInWindow];
 	pt = [sender convertPoint:pt fromView:nil];
+	pt.y = [sender bounds].size.height - pt.y;
 	pCocoaTopRuler->mousePress(ems, emb, (UT_uint32) pt.x, (UT_uint32) pt.y);
 }
 
@@ -258,6 +259,7 @@ void AP_CocoaTopRuler::_fe::destroy(GtkWidget * /*widget*/, gpointer /*data*/)
 	// Map the mouse into coordinates relative to our window.
 	NSPoint pt = [theEvent locationInWindow];
 	pt = [sender convertPoint:pt fromView:nil];
+	pt.y = [sender bounds].size.height - pt.y;
 	pCocoaTopRuler->mouseMotion(ems, (UT_sint32)pt.x, (UT_sint32)pt.y);
 	pCocoaTopRuler->isMouseOverTab((UT_uint32) pt.x,(UT_uint32)pt.y);
 }
@@ -278,6 +280,7 @@ void AP_CocoaTopRuler::_fe::destroy(GtkWidget * /*widget*/, gpointer /*data*/)
 	// Map the mouse into coordinates relative to our window.
 	NSPoint pt = [theEvent locationInWindow];
 	pt = [sender convertPoint:pt fromView:nil];
+	pt.y = [sender bounds].size.height - pt.y;
 	pCocoaTopRuler->mouseRelease(ems, emb, (UT_sint32)pt.x, (UT_sint32)pt.y);
 }
 @end
