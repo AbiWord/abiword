@@ -257,38 +257,13 @@ LRESULT CALLBACK EV_Win32Toolbar::_ComboWndProc( HWND hWnd, UINT uMessage, WPARA
 				{
 					// are we currently dropped down?
 					if (!SendMessage(hWnd, CB_GETDROPPEDSTATE, 0, 0))
-						break;					
-					
+						break;
+
+					// yep, we're done 
 					SendMessage(hWnd, CB_SHOWDROPDOWN, (WPARAM) FALSE, 0);
 
-					// Find the proper non-localised text
-					UT_sint32 iSelected = SendMessage(hWnd, CB_GETCURSEL, 0, 0);																
-				
-					EV_Win32Toolbar * t = (EV_Win32Toolbar *) GetWindowLong(hWnd, GWL_USERDATA);
-					XAP_Toolbar_ControlFactory * pFactory = t->m_pWin32App->getControlFactory();			
-
-					EV_Toolbar_Control * pControl = pFactory->getControl(t, AP_TOOLBAR_ID_FMT_STYLE);			
-					const UT_Vector * v = pControl->getContents();				
-						
-					AP_Win32Toolbar_StyleCombo * pStyleC = static_cast<AP_Win32Toolbar_StyleCombo *>(pControl);
-					pStyleC->repopulate();	
+					UT_sint32 iSelected = SendMessage(hWnd, CB_GETCURSEL, 0, 0);		
 									
-					int k  = SendMessage(hWnd, CB_GETITEMDATA, iSelected, 0);										
-					
-					char*	sz = (char *)v->getNthItem(k);
-					
-					UINT u = GetDlgCtrlID(hWnd);
-					XAP_Toolbar_Id id = t->ItemIdFromWmCommand(u);					
-					
-					if(strlen(sz))
-						{
-						t->toolbarEvent(id, (unsigned int *)sz, strlen(sz));
-						}
-					else
-						{
-						SendMessage(hWnd, WM_KEYDOWN, VK_ESCAPE, 0);
-						}
-						
 					if(iSelected != -1)
 						{
 						// now that we know dropdown is gone, this should be ok
@@ -297,32 +272,17 @@ LRESULT CALLBACK EV_Win32Toolbar::_ComboWndProc( HWND hWnd, UINT uMessage, WPARA
 					else
 						{
 						PostMessage(hWnd, WM_KEYDOWN, VK_ESCAPE, 0);
-						}						
-				} // case
+						}
+						
+					break;
+				}					
+				
 							
 				break;
 				
 			} // swich
 		} // case command
 			
-			/*						
-					// for now, we fire an event any time we lose focus
-					// TODO: confirm that this gives the desired behavior
-			EV_Win32Toolbar * t = (EV_Win32Toolbar *) GetWindowLong(hWnd, GWL_USERDATA);
-			UT_ASSERT(t);
-
-			HWND hwndParent = GetParent(hWnd);
-			UINT u = GetDlgCtrlID(hwndParent);
-			XAP_Toolbar_Id id = t->ItemIdFromWmCommand(u);
-
-			static char buf[COMBO_BUF_LEN];
-
-			UT_UCSChar * pData = (UT_UCSChar *) buf;	// HACK: should be void *
-			
-			XAP_Toolbar_ControlFactory * pFactory = t->m_pWin32App->getControlFactory();			
-			EV_Toolbar_Control * pControl = pFactory->getControl(t, AP_TOOLBAR_ID_FMT_STYLE);			
-			const UT_Vector * v = pControl->getContents();
-			*/	
 			
 
 		case WM_KEYDOWN:
@@ -376,7 +336,6 @@ LRESULT CALLBACK EV_Win32Toolbar::_ComboEditWndProc( HWND hWnd, UINT uMessage, W
 
 		case WM_KILLFOCUS:
 		{
-			/*
 			// for now, we fire an event any time we lose focus
 			// TODO: confirm that this gives the desired behavior
 			EV_Win32Toolbar * t = (EV_Win32Toolbar *) GetWindowLong(hWnd, GWL_USERDATA);
@@ -390,16 +349,36 @@ LRESULT CALLBACK EV_Win32Toolbar::_ComboEditWndProc( HWND hWnd, UINT uMessage, W
 
 			UT_UCSChar * pData = (UT_UCSChar *) buf;	// HACK: should be void *
 			UT_uint32 dataLength = GetWindowText(hWnd, buf, COMBO_BUF_LEN);
+			
 			if(dataLength)
-				{
+			{	
+				// If is a STYLE_NAME we should pass the internal one, not the localised				
+				if (id==AP_TOOLBAR_ID_FMT_STYLE)
+				{	
+					HWND hWndCombo = GetParent(hWnd);
+					UT_sint32 iSelected;					
+					int nData;
+					
+					iSelected = SendMessage(hWndCombo, CB_GETCURSEL, 0, 0);										
+
+					// Find the proper non-localised text                                                                             					
+					XAP_Toolbar_ControlFactory * pFactory = t->m_pWin32App->getControlFactory();
+					EV_Toolbar_Control * pControl = pFactory->getControl(t, AP_TOOLBAR_ID_FMT_STYLE);                                                                         
+					const UT_Vector * v = pControl->getContents();                                                                          
+					AP_Win32Toolbar_StyleCombo * pStyleC = static_cast<AP_Win32Toolbar_StyleCombo *>(pControl);
+					pStyleC->repopulate();                                                                                                
+
+					nData  = SendMessage(hWndCombo, CB_GETITEMDATA, iSelected, 0);                                                         					
+					strcpy (buf, (char *)v->getNthItem(nData));				
+				}
+				
 				t->toolbarEvent(id, pData, dataLength);
-				}
+			}				
 			else
-				{
+			{
 				SendMessage(hWnd, WM_KEYDOWN, VK_ESCAPE, 0);
-				}
-			break;
-			*/
+			}
+				
 			break;
 		}
 
