@@ -593,6 +593,11 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_Changes)
 			s = EV_MIS_Gray;
 		break;
 
+	case AP_MENU_ID_TABLE_INSERTTABLE:
+		if (pView->isHdrFtrEdit())
+			s = EV_MIS_Gray;
+		break;
+
 	default:
 		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 		break;

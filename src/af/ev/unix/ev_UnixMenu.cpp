@@ -53,6 +53,7 @@
 #include "stock/menu_add_row.xpm"
 #include "stock/menu_book.xpm"
 #include "stock/menu_credits.xpm"
+#include "stock/menu_delete_table.xpm"
 #include "stock/menu_delete_column.xpm"
 #include "stock/menu_delete_row.xpm"
 #include "stock/menu_export.xpm"
@@ -313,6 +314,7 @@ EV_UnixMenu::EV_UnixMenu(XAP_UnixApp * pUnixApp,
 			{ "Menu_AbiWord_Add_Row", "_GTK!", static_cast<GdkModifierType>(0), 0, NULL },
 			{ "Menu_AbiWord_Book", "_GTK!", static_cast<GdkModifierType>(0), 0, NULL },
 			{ "Menu_AbiWord_Credits", "_GTK!", static_cast<GdkModifierType>(0), 0, NULL },
+			{ "Menu_AbiWord_Delete_Table", "_GTK!", static_cast<GdkModifierType>(0), 0, NULL },
 			{ "Menu_AbiWord_Delete_Column", "_GTK!", static_cast<GdkModifierType>(0), 0, NULL },
 			{ "Menu_AbiWord_Delete_Row", "_GTK!", static_cast<GdkModifierType>(0), 0, NULL },
 			{ "Menu_AbiWord_Export", "_GTK!", static_cast<GdkModifierType>(0), 0, NULL },
@@ -334,6 +336,7 @@ EV_UnixMenu::EV_UnixMenu(XAP_UnixApp * pUnixApp,
 			{ "Menu_AbiWord_Add_Row", menu_add_row_xpm },
 			{ "Menu_AbiWord_Book", menu_book_xpm },
 			{ "Menu_AbiWord_Credits", menu_credits_xpm },
+			{ "Menu_AbiWord_Delete_Table", menu_delete_table_xpm },
 			{ "Menu_AbiWord_Delete_Column", menu_delete_column_xpm },
 			{ "Menu_AbiWord_Delete_Row", menu_delete_row_xpm },
 			{ "Menu_AbiWord_Export", menu_export_xpm },
@@ -561,6 +564,7 @@ const char * EV_UnixMenu::s_getStockPixmapFromId (int id)
 		{AP_MENU_ID_FMT_LANGUAGE, "Menu_AbiWord_Book"},
 		
 		{AP_MENU_ID_TABLE_INSERT_TABLE, "Menu_AbiWord_Insert_Table"},
+	       {AP_MENU_ID_TABLE_DELETE_TABLE, "Menu_AbiWord_Delete_Table"},
 
 		{AP_MENU_ID_TABLE_INSERT_COLUMNS_BEFORE, "Menu_AbiWord_Add_Column"},
 		{AP_MENU_ID_TABLE_INSERT_COLUMNS_AFTER, "Menu_AbiWord_Add_Column"},
@@ -571,6 +575,15 @@ const char * EV_UnixMenu::s_getStockPixmapFromId (int id)
 		{AP_MENU_ID_TABLE_DELETE_ROWS, "Menu_AbiWord_Delete_Row"},
 		{AP_MENU_ID_TABLE_MERGE_CELLS, "Menu_AbiWord_Merge_Cells"},
 		{AP_MENU_ID_TABLE_SPLIT_CELLS, "Menu_AbiWord_Split_Cells"},
+		
+		{AP_MENU_ID_TABLE_INSERTTABLE, "Menu_AbiWord_Insert_Table"},
+	       {AP_MENU_ID_TABLE_DELETETABLE, "Menu_AbiWord_Delete_Table"},
+
+		{AP_MENU_ID_TABLE_INSERTCOLUMN, "Menu_AbiWord_Add_Column"},
+		{AP_MENU_ID_TABLE_INSERTROW, "Menu_AbiWord_Add_Row"},
+
+		{AP_MENU_ID_TABLE_DELETECOLUMN, "Menu_AbiWord_Delete_Column"},
+		{AP_MENU_ID_TABLE_DELETEROW, "Menu_AbiWord_Delete_Row"},
 
 		{AP_MENU_ID_HELP_CONTENTS, GTK_STOCK_HELP},
 		{AP_MENU_ID_HELP_INDEX, GTK_STOCK_INDEX},

@@ -191,11 +191,10 @@ BeginLayout(Main,0)
 		MenuItem(AP_MENU_ID_INSERT_ENDNOTE)
 
 #ifdef HAVE_GNOME
-                // only enabled for GNOME builds in the 0.9.x releases
                 Separator()
                 BeginSubMenu(AP_MENU_ID_INSERT_PICTURE)
 	                MenuItem(AP_MENU_ID_INSERT_CLIPART)
-                        MenuItem(AP_MENU_ID_INSERT_GRAPHIC)
+                    MenuItem(AP_MENU_ID_INSERT_GRAPHIC)
                 EndSubMenu()
 #else
                 MenuItem(AP_MENU_ID_INSERT_PICTURE)

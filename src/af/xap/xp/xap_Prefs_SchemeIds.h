@@ -70,14 +70,6 @@
 /* append suffixes to saved files */
 #define XAP_PREF_DEFAULT_UseSuffix					"1"
 
-#define XAP_PREF_KEY_DefaultDirectionRtl	"DefaultDirectionRtl"
-
-#ifndef BIDI_RTL_DOMINANT
-#define XAP_PREF_DEFAULT_DefaultDirectionRtl		 "0"
-#else
-#define XAP_PREF_DEFAULT_DefaultDirectionRtl		 "1"
-#endif
-
 #define XAP_PREF_KEY_UseContextGlyphs				 "UseContextGlyphs"
 #define XAP_PREF_DEFAULT_UseContextGlyphs			 "1"
 #define XAP_PREF_KEY_SaveContextGlyphs				 "SaveContextGlyphs"
@@ -184,7 +176,6 @@ dcl(RemapGlyphsDefault)
 dcl(RemapGlyphsTable)
 dcl(SmartQuotesEnable)
 dcl(UseSuffix)
-dcl(DefaultDirectionRtl)
 dcl(UseContextGlyphs)
 dcl(SaveContextGlyphs)
 dcl(UseHebrewContextGlyphs)

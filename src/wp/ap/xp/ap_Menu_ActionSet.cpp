@@ -206,15 +206,21 @@ EV_Menu_ActionSet * AP_CreateMenuActionSet(void)
 	_s(AP_MENU_ID_TABLE,1,0,0,0,NULL,NULL,NULL);
 	_s(AP_MENU_ID_TABLE_INSERT,1,0,0,0, NULL, ap_GetState_Changes, NULL);
 	_s(AP_MENU_ID_TABLE_INSERT_TABLE,0,1,0,0, "insertTable",ap_GetState_Changes , NULL);
+	_s(AP_MENU_ID_TABLE_INSERTTABLE,0,1,0,0, "insertTable",ap_GetState_Changes , NULL);
 	_s(AP_MENU_ID_TABLE_INSERT_COLUMNS_BEFORE,0,0,0,0, "insertColsBefore", ap_GetState_InTable, NULL);
 	_s(AP_MENU_ID_TABLE_INSERT_COLUMNS_AFTER,0,0,0,0, "insertColsAfter", ap_GetState_InTable, NULL);
+	_s(AP_MENU_ID_TABLE_INSERTCOLUMN,0,0,0,0, "insertColsAfter", ap_GetState_InTable, NULL);
 	_s(AP_MENU_ID_TABLE_INSERT_ROWS_BEFORE,0,0,0,0,"insertRowsBefore", ap_GetState_InTable, NULL);
 	_s(AP_MENU_ID_TABLE_INSERT_ROWS_AFTER,0,0,0,0,"insertRowsAfter", ap_GetState_InTable, NULL);
+	_s(AP_MENU_ID_TABLE_INSERTROW,0,0,0,0,"insertRowsAfter", ap_GetState_InTable, NULL);
 	_s(AP_MENU_ID_TABLE_INSERT_CELLS,0,0,0,0, NULL, ap_GetState_InTable, NULL);
 	_s(AP_MENU_ID_TABLE_DELETE,1,0,0,0, NULL, ap_GetState_InTable, NULL);
 	_s(AP_MENU_ID_TABLE_DELETE_TABLE,0,0,0,0, "deleteTable", ap_GetState_InTable, NULL);
+	_s(AP_MENU_ID_TABLE_DELETETABLE,0,0,0,0, "deleteTable", ap_GetState_InTable, NULL);
 	_s(AP_MENU_ID_TABLE_DELETE_COLUMNS,0,0,0,0, "deleteColumns", ap_GetState_InTable, NULL);
+	_s(AP_MENU_ID_TABLE_DELETECOLUMN,0,0,0,0, "deleteColumns", ap_GetState_InTable, NULL);
 	_s(AP_MENU_ID_TABLE_DELETE_ROWS,0,0,0,0, "deleteRows", ap_GetState_InTable, NULL);
+	_s(AP_MENU_ID_TABLE_DELETEROW,0,0,0,0, "deleteRows", ap_GetState_InTable, NULL);
 	_s(AP_MENU_ID_TABLE_DELETE_CELLS,0,0,0,0, "deleteCell", ap_GetState_InTable, NULL);
 	_s(AP_MENU_ID_TABLE_SELECT,1,0,0,0, NULL, ap_GetState_InTable, NULL);
 	_s(AP_MENU_ID_TABLE_SELECT_TABLE,0,0,0,0, "selectTable", ap_GetState_InTable, NULL);
@@ -228,6 +234,7 @@ EV_Menu_ActionSet * AP_CreateMenuActionSet(void)
 	_s(AP_MENU_ID_TABLE_AUTOFIT,0,0,0,0, NULL, ap_GetState_AlwaysDisabled, NULL);
 	_s(AP_MENU_ID_TABLE_HEADING_ROWS_REPEAT,0,0,0,0, NULL, ap_GetState_AlwaysDisabled, NULL);
 	_s(AP_MENU_ID_TABLE_SORT,0,0,0,0, NULL, ap_GetState_AlwaysDisabled, NULL);
+
 
 	_s(AP_MENU_ID_CONTEXT_REVISIONS_ACCEPT_REVISION, 0,0,0,0, "revisionAccept", ap_GetState_RevisionPresent,NULL);
 	_s(AP_MENU_ID_CONTEXT_REVISIONS_REJECT_REVISION, 0,0,0,0, "revisionReject", ap_GetState_RevisionPresent, NULL);

@@ -43,21 +43,14 @@ public:
 	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
 
 	// callbacks can fire these events
-	virtual void			event_Find(void);
-	virtual void			event_FindEntryChange(void);
-	virtual void			event_Replace(void);
-	virtual void			event_ReplaceAll(void);
-	virtual void			event_MatchCaseToggled(void);	
-	virtual void			event_Cancel(void);
-
-protected:
-
-	// private construction functions
-	virtual GtkWidget * _constructWindow(void);
-	void		_populateWindowData(void);
-	void 		_storeWindowData(void);
-
-	static void s_response_triggered(GtkWidget * widget, gint resp, AP_UnixDialog_Replace * dlg);
+	void			event_Find(void);
+	void			event_FindEntryChange(void);
+	void			event_Replace(void);
+	void			event_ReplaceAll(void);
+	void			event_MatchCaseToggled(void);	
+	void			event_WholeWordToggled(void);	
+	void			event_ReverseFindToggled(void);	
+	void			event_Cancel(void);
 
 	enum
 	  {
@@ -66,6 +59,21 @@ protected:
 	    BUTTON_REPLACE,
 	    BUTTON_REPLACE_ALL
 	  } ResponseId;
+
+protected:
+
+	virtual void			_updateLists();
+
+private:
+
+	// private construction functions
+	GtkWidget * _constructWindow(void);
+	void		_populateWindowData(void);
+	void 		_storeWindowData(void);
+
+	static void s_response_triggered(GtkWidget * widget, gint resp, AP_UnixDialog_Replace * dlg);
+	
+	void			_updateList(GtkWidget* combo, UT_Vector* list);
 
 	// pointers to widgets we need to query/set
 	GtkWidget * m_windowMain;
@@ -76,12 +84,10 @@ protected:
 	  
 	GtkWidget * m_comboFind;
 	GtkWidget * m_comboReplace;
+
 	GtkWidget * m_checkbuttonMatchCase;
-	
-	virtual void			_updateLists();
-	  
-private:
-	virtual void			_updateList(GtkWidget* combo, UT_Vector* list);
+	GtkWidget * m_checkbuttonWholeWord;
+	GtkWidget * m_checkbuttonReverseFind;
 };
 
 #endif /* AP_UNIXDIALOG_REPLACE_H */

@@ -806,19 +806,7 @@ void AP_TopRuler::_getTabToggleRect(UT_Rect * prToggle)
 		xFixed = m_pG->tlu(s_iFixedWidth);
 	}
 
-#if 0
-	bool bRTL;
-	XAP_App::getApp()->getPrefsValueBool(static_cast<XML_Char*>(AP_PREF_KEY_DefaultDirectionRtl), &bRTL);
-
-	if(bRTL)
-	{
-		xFixed += m_pG->tlu(17);
-		xFixed /= m_pG->tlu(2);
-		l = xFixed + (getWidth () - m_pG->tlu(m_iLeftRulerWidth));
-	}
-	else
-#endif
-	    l = (xFixed - m_pG->tlu(17))/2;
+	l = (xFixed - m_pG->tlu(17))/2;
 
 	UT_sint32 t = (m_pG->tlu(s_iFixedHeight) - m_pG->tlu(17))/2;
 
@@ -1194,7 +1182,6 @@ void AP_TopRuler::_draw(const UT_Rect * pClipRect, AP_TopRulerInfo * pUseInfo)
 	_drawTabToggle(pClipRect, false);
 
 	// TODO for now assume we are in column display mode.
-	//UT_ASSERT(pInfo->m_mode==AP_TopRulerInfo::TRI_MODE_COLUMNS);
 
 	// draw the dark-gray and white bar across the
 	// width of the paper.  we adjust the x coords
