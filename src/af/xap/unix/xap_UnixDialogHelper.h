@@ -72,7 +72,7 @@ GtkStyle * get_ensured_style (GtkWidget * w);
 GtkWidget *createDrawingArea ();
 
 gint abiRunModalDialog(GtkDialog * me, XAP_Frame * pFrame, XAP_Dialog * pDlg, gint dfl_id, bool destroyDialog);
-void abiRunModelessDialog(GtkDialog * me, XAP_Frame * pFrame, XAP_Dialog * pDlg, gint dfl_id );
+void abiSetupModelessDialog(GtkDialog * me, XAP_Frame * pFrame, XAP_Dialog * pDlg, gint dfl_id );
 void abiDestroyWidget(GtkWidget * me);
 void abiAddStockButton (GtkDialog * me, const gchar * btn_id,
 						gint response_id) ;

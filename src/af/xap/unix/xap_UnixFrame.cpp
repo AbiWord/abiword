@@ -650,6 +650,17 @@ void XAP_UnixFrame::_createTopLevelWindow(void)
 {
 	// create a top-level window for us.
 
+	static GdkPixbuf * wmIcon = NULL ;
+
+	// load the icon only once
+	if (!wmIcon)
+	{
+		GError *err = NULL ;
+		UT_String icon_location = XAP_App::getApp()->getAbiSuiteLibDir();
+		icon_location += "/icons/abiword_16.xpm" ;
+		wmIcon = gdk_pixbuf_new_from_file(icon_location.c_str(),&err);
+	}
+	
 	bool bResult;
 	if(m_iFrameMode == XAP_NormalFrame)
 	{
@@ -662,6 +673,9 @@ void XAP_UnixFrame::_createTopLevelWindow(void)
 		gtk_window_set_wmclass(GTK_WINDOW(m_wTopLevelWindow),
 							   m_pUnixApp->getApplicationName(),
 							   m_pUnixApp->getApplicationName());
+
+		if ( wmIcon )
+			gtk_window_set_icon(GTK_WINDOW(m_wTopLevelWindow), wmIcon);
 	}
 	g_object_set_data(G_OBJECT(m_wTopLevelWindow), "toplevelWindow",
 						m_wTopLevelWindow);

@@ -1,5 +1,5 @@
 /* AbiSource Program Utilities
- * Copyright (C) 1998 AbiSource, Inc.
+ * Copyright (C) 1998-2002 AbiSource, Inc.
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -660,8 +660,8 @@ static void sDoHelp ( XAP_Dialog * pDlg )
 	UT_return_if_fail(pFrame);
 	UT_return_if_fail(pDlg);
 
-	UT_DEBUGMSG(("DOM: doing help: %d %s\n", pDlg->getHelpUrl().size (),
-				 pDlg->getHelpUrl().c_str ()));
+	xxx_UT_DEBUGMSG(("DOM: doing help: %d %s\n", pDlg->getHelpUrl().size (),
+					 pDlg->getHelpUrl().c_str ()));
 	
 	// open the url
 	if ( pDlg->getHelpUrl().size () > 0 )
@@ -727,7 +727,12 @@ void centerDialog(GtkWidget * parent, GtkWidget * child)
 #ifdef HAVE_GNOME
 	gnome_window_icon_set_from_default (GTK_WINDOW(child));
 #else
-	// TODO: do something with gtk_window_set_icon()
+	GdkPixbuf * icon = gtk_window_get_icon(GTK_WINDOW(parent));	
+	if ( NULL != icon )
+	{
+		gtk_window_set_icon(GTK_WINDOW(child), icon);
+		UT_DEBUGMSG(("DOM: got&set icon: %p\n", icon));
+	}
 #endif
 }
 
@@ -783,7 +788,7 @@ gint abiRunModalDialog(GtkDialog * me, XAP_Frame * pFrame, XAP_Dialog * pDlg,
 }
 
 /*!
- * Runs the dialog \me as a modeless dialog
+ * Sets up the dialog \me as a modeless dialog
  * 1) Connect focus to toplevel frame
  * 2) Centers dialog over toplevel window
  * 3) Makes the App remember this modeless dialog
@@ -791,12 +796,13 @@ gint abiRunModalDialog(GtkDialog * me, XAP_Frame * pFrame, XAP_Dialog * pDlg,
  * 5) Makes dialog non-modal (modeless)
  * 6) Sets the default button to dfl_response, sets ESC to close
  */
-void abiRunModelessDialog(GtkDialog * me, XAP_Frame * pFrame, XAP_Dialog * pDlg,
-						  gint dfl_response )
+void abiSetupModelessDialog(GtkDialog * me, XAP_Frame * pFrame, XAP_Dialog * pDlg,
+							gint dfl_response )
 {
 	// To center the dialog, we need the frame of its parent.
 	XAP_UnixFrame * pUnixFrame = static_cast<XAP_UnixFrame *>(pFrame);
-	
+
+	// remember the modeless id
 	XAP_App::getApp()->rememberModelessId( pDlg->getDialogId(), (XAP_Dialog_Modeless *) pDlg);
 	
 	// Get the GtkWindow of the parent frame
