@@ -59,7 +59,17 @@ $(PROGRAM): $(OBJS)
 	@echo Linking $(PROGRAM)....
 	@$(CC) $(subst /,\\,$(OBJS)) -Fe$(subst /,\\,$@) -link $(LDFLAGS) $(OS_LIBS) $(ABI_LDFLAGS) $(subst /,\\,$(EXTRA_LIBS))
 
+ifdef ABI_OPT_DEBUG
+
+distribution::
+	@echo ABI_OPT_DEBUG is set.  Building a setup program in
+	@echo debug mode is not allowed.
+
+else
+
 distribution:: $(TARGETS)
 	@echo Copying $(PROGRAM) to $(DIST)
 	@$(subst xxxx,$(DIST),$(VERIFY_DIRECTORY))
 	@$(ABICOPY) $(PROGRAM) $(DIST)
+
+endif
