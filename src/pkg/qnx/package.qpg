@@ -73,7 +73,7 @@
 
 					 <QPM:Launch name="AbiWord" xmlmultiple="true">
             <QPM:String name="Topic" value="Applications/Editors" xmlmultiple="true"/>
-            <QPM:String name="Command" value="ABISUITE_HOME=/usr/local/AbiSuite/ /usr/photon/bin/AbiWord_d" xmlmultiple="true"/>
+            <QPM:String name="Command" value="ABISUITE_HOME=/opt/AbiSuite/ /usr/photon/bin/AbiWord_d" xmlmultiple="true"/>
          </QPM:Launch>
 
       </QPM:PackageManifest>
