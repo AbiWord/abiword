@@ -103,8 +103,16 @@ dcl(DLG_Spell_AddToDict,		"&Add")
 dcl(DLG_Spell_Suggestions,		"Sugg&estions:")
 dcl(DLG_Spell_NoSuggestions,	"(no spelling suggestions)")
 
-     /* Style Dialog */
+/* Style Dialog */
 dcl(DLG_Styles_StylesTitle,		"Styles")
+dcl(DLG_Styles_Available,		"Available Styles")
+dcl(DLG_Styles_List,			"List")
+dcl(DLG_Styles_ParaPrev,		"Paragraph Preview")
+dcl(DLG_Styles_CharPrev,		"Character Preview")
+dcl(DLG_Styles_Description,		"Description")
+dcl(DLG_Styles_New,				"New...")
+dcl(DLG_Styles_Modify,			"Modify...")
+dcl(DLG_Styles_Delete,			"Delete")
 
 /* Paragraph dialog */
 dcl(DLG_Para_ParaTitle,			"Paragraph")

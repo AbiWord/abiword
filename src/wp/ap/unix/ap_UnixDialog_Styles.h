@@ -68,8 +68,11 @@ protected:
 
 	GtkWidget * m_wbuttonOk;
 	GtkWidget * m_wbuttonCancel;
-        GtkWidget * m_wParaPreviewArea;
-        GtkWidget * m_wCharPreviewArea;
+	GtkWidget * m_wbuttonNew;
+	GtkWidget * m_wbuttonModify;
+	GtkWidget * m_wbuttonDelete;
+	GtkWidget * m_wParaPreviewArea;
+	GtkWidget * m_wCharPreviewArea;
 	GtkWidget * m_wGnomeButtons;
 
 };

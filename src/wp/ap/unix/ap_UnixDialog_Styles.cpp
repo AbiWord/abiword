@@ -151,6 +151,7 @@ void AP_UnixDialog_Styles::runModal(XAP_Frame * pFrame)
 
 	// *** this is how we add the gc for the para and char Preview's ***
 	// attach a new graphics context to the drawing area
+	/*
 	XAP_UnixApp * unixapp = static_cast<XAP_UnixApp *> (m_pApp);
 	UT_ASSERT(unixapp);
 
@@ -179,6 +180,7 @@ void AP_UnixDialog_Styles::runModal(XAP_Frame * pFrame)
 			     (UT_uint32) m_wCharPreviewArea->allocation.height);
 
         // Run into the GTK event loop for this window.
+	*/
 
 	gtk_main();
 
@@ -211,50 +213,211 @@ void AP_UnixDialog_Styles::event_WindowDelete(void)
 
 void AP_UnixDialog_Styles::event_paraPreviewExposed(void)
 {
-        if(m_pParaPreview)
-	       m_pParaPreview->draw();
+	if(m_pParaPreview)
+		m_pParaPreview->draw();
 }
 
 
 void AP_UnixDialog_Styles::event_charPreviewExposed(void)
 {
-        if(m_pCharPreview)
-	       m_pCharPreview->draw();
+	if(m_pCharPreview)
+		m_pCharPreview->draw();
 }
 
 /*****************************************************************/
 
 GtkWidget * AP_UnixDialog_Styles::_constructWindow(void)
 {
-
 	GtkWidget * windowStyles;
 
+	GtkWidget * vboxContents;
+	GtkWidget * hboxContents;
+	GtkWidget * vboxTopLeft;
+	GtkWidget * vboxTopRight;
+
+
+	GtkWidget * frameStyles;
+	GtkWidget *	listStyles;
+
+	GtkWidget * frameList;
+	GtkWidget * comboList;
+
+	GtkWidget * frameParaPrev;
+	GtkWidget * ParaPreviewArea;
+
+	GtkWidget * frameCharPrev;
+	GtkWidget * CharPreviewArea;
+
+	GtkWidget * frameDescription;
+	GtkWidget * DescriptionArea;
+
+
+	GtkWidget * hsepMid;
+	GtkWidget * hsepBot;
+
+	GtkWidget * buttonBoxStyleManip;
+	GtkWidget * buttonBoxGlobal;
+
+	GtkWidget * buttonNew;
+	GtkWidget * buttonModify;
+	GtkWidget * buttonDelete;
 	GtkWidget * buttonOK;
 	GtkWidget * buttonCancel;
 
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
 
 	windowStyles = gtk_window_new (GTK_WINDOW_DIALOG);
-
-	gtk_window_set_title (GTK_WINDOW (windowStyles), pSS->getValue(AP_STRING_ID_DLG_Styles_StylesTitle));
-	gtk_window_set_policy (GTK_WINDOW (windowStyles), FALSE, FALSE, FALSE);
+	gtk_window_set_title (GTK_WINDOW (windowStyles), 
+		pSS->getValue(AP_STRING_ID_DLG_Styles_StylesTitle));
+	gtk_window_set_policy (GTK_WINDOW (windowStyles), FALSE, FALSE, TRUE);
+	gtk_container_set_border_width (GTK_CONTAINER (windowStyles), 5);
+	gtk_window_set_default_size(GTK_WINDOW(windowStyles), 600, 400);
 
 	_constructWindowContents(windowStyles);
 
+	vboxContents = gtk_vbox_new(FALSE, 0);
+
+	hboxContents = gtk_hbox_new(FALSE, 0);
+
+	vboxTopLeft = gtk_vbox_new(FALSE, 0);
+
+	// list of styles goes in the top left
+
+	frameStyles = gtk_frame_new(
+		pSS->getValue(AP_STRING_ID_DLG_Styles_Available));
+	listStyles = gtk_clist_new(1);
+	gtk_container_add(GTK_CONTAINER(frameStyles), listStyles);
+
+	gtk_box_pack_start(GTK_BOX(vboxTopLeft), frameStyles, TRUE, TRUE, 2);
+	gtk_widget_show(frameStyles);
+	gtk_widget_show(listStyles);
+
+	frameList = gtk_frame_new(
+		pSS->getValue(AP_STRING_ID_DLG_Styles_List));
+	comboList = gtk_combo_new();
+	gtk_container_add(GTK_CONTAINER(frameList), comboList);
+
+	gtk_box_pack_start(GTK_BOX(vboxTopLeft), frameList, FALSE, FALSE, 2);
+	gtk_widget_show(frameList);
+	gtk_widget_show(comboList);
+
+	gtk_widget_show(vboxTopLeft);
+	gtk_box_pack_start(GTK_BOX(hboxContents), vboxTopLeft, TRUE, TRUE, 2);
+
+
+	vboxTopRight = gtk_vbox_new(FALSE, 0);
+
+	// previewing and description goes in the top right
+
+	frameParaPrev = gtk_frame_new(
+		pSS->getValue(AP_STRING_ID_DLG_Styles_ParaPrev));
+	ParaPreviewArea = gtk_drawing_area_new();
+	gtk_drawing_area_size(GTK_DRAWING_AREA(ParaPreviewArea), 300, 60);
+	gtk_container_add(GTK_CONTAINER(frameParaPrev), ParaPreviewArea);
+
+	gtk_box_pack_start(GTK_BOX(vboxTopRight), frameParaPrev, TRUE, TRUE, 2);
+	gtk_widget_show(ParaPreviewArea);
+	gtk_widget_show(frameParaPrev);
+
+	frameCharPrev = gtk_frame_new(
+		pSS->getValue(AP_STRING_ID_DLG_Styles_CharPrev));
+	CharPreviewArea = gtk_drawing_area_new();
+	gtk_drawing_area_size(GTK_DRAWING_AREA(CharPreviewArea), 300, 60);
+	gtk_container_add(GTK_CONTAINER(frameCharPrev), CharPreviewArea);
+
+	gtk_box_pack_start(GTK_BOX(vboxTopRight), frameCharPrev, TRUE, TRUE, 2);
+	gtk_widget_show(CharPreviewArea);
+	gtk_widget_show(frameCharPrev);
+
+	frameDescription = gtk_frame_new(
+		pSS->getValue(AP_STRING_ID_DLG_Styles_Description));
+	DescriptionArea = gtk_drawing_area_new();
+	gtk_drawing_area_size(GTK_DRAWING_AREA(DescriptionArea), 300, 60);
+	gtk_container_add(GTK_CONTAINER(frameDescription), DescriptionArea);
+
+	gtk_box_pack_start(GTK_BOX(vboxTopRight), frameDescription, TRUE, TRUE, 2);
+	gtk_widget_show(DescriptionArea);
+	gtk_widget_show(frameDescription);
+
+	gtk_widget_show(vboxTopRight);
+	gtk_box_pack_start(GTK_BOX(hboxContents), vboxTopRight, TRUE, TRUE, 2);
+
+
+	gtk_widget_show(hboxContents);
+	gtk_box_pack_start(GTK_BOX(vboxContents), hboxContents, TRUE, TRUE, 2);
+
+	hsepBot = gtk_hseparator_new();
+	gtk_box_pack_start(GTK_BOX(vboxContents), hsepBot, FALSE, FALSE, 0);
+	gtk_widget_show(hsepBot);
+
+	// Pack buttons at the bottom of the dialog
+
 	// These buttons need to be gnomified
 
-	buttonOK = gtk_button_new_with_label ( pSS->getValue(XAP_STRING_ID_DLG_OK));
-	gtk_widget_show(buttonOK );
-	gtk_container_add (GTK_CONTAINER (m_wGnomeButtons), buttonOK);
+	buttonBoxStyleManip = gtk_hbutton_box_new();
+	gtk_hbutton_box_set_spacing_default(0);
+	gtk_hbutton_box_set_layout_default(GTK_BUTTONBOX_END);
+	gtk_widget_show(buttonBoxStyleManip);
+
+	buttonNew = gtk_button_new_with_label(
+		pSS->getValue(AP_STRING_ID_DLG_Styles_New));
+	gtk_widget_show(buttonNew);
+	gtk_container_add(GTK_CONTAINER(buttonBoxStyleManip), buttonNew);
+	GTK_WIDGET_SET_FLAGS (buttonNew, GTK_CAN_DEFAULT);
+
+	buttonModify = gtk_button_new_with_label(
+		pSS->getValue(AP_STRING_ID_DLG_Styles_Modify));
+	gtk_widget_show(buttonModify);
+	gtk_container_add(GTK_CONTAINER(buttonBoxStyleManip), buttonModify);
+	GTK_WIDGET_SET_FLAGS (buttonModify, GTK_CAN_DEFAULT);
+
+	buttonDelete = gtk_button_new_with_label(
+		pSS->getValue(AP_STRING_ID_DLG_Styles_Delete));
+	gtk_widget_show(buttonDelete);
+	gtk_container_add(GTK_CONTAINER(buttonBoxStyleManip), buttonDelete);
+	GTK_WIDGET_SET_FLAGS (buttonDelete, GTK_CAN_DEFAULT);
+
+	gtk_box_pack_start(GTK_BOX(vboxContents), buttonBoxStyleManip, FALSE, FALSE, 0);
+
+
+	hsepMid = gtk_hseparator_new();
+	gtk_box_pack_start(GTK_BOX(vboxContents), hsepMid, FALSE, FALSE, 0);
+	gtk_widget_show(hsepMid);
+
+
+	buttonBoxGlobal = gtk_hbutton_box_new();
+	gtk_hbutton_box_set_spacing_default(0);
+	gtk_hbutton_box_set_layout_default(GTK_BUTTONBOX_END);
+	gtk_widget_show(buttonBoxGlobal);
+
+	buttonOK = gtk_button_new_with_label ( 
+		pSS->getValue(XAP_STRING_ID_DLG_OK) );
+	gtk_widget_show(buttonOK);
+	//gtk_container_add (GTK_CONTAINER (m_wGnomeButtons), buttonOK);
+	gtk_container_add(GTK_CONTAINER(buttonBoxGlobal), buttonOK);
 	GTK_WIDGET_SET_FLAGS (buttonOK, GTK_CAN_DEFAULT);
 
-	buttonCancel = gtk_button_new_with_label ( pSS->getValue(XAP_STRING_ID_DLG_Cancel));
-	gtk_widget_show(buttonCancel );
-	gtk_container_add (GTK_CONTAINER (m_wGnomeButtons), buttonCancel);
+	buttonCancel = gtk_button_new_with_label ( 
+		pSS->getValue(XAP_STRING_ID_DLG_Cancel) );
+	gtk_widget_show(buttonCancel);
+	//gtk_container_add (GTK_CONTAINER (m_wGnomeButtons), buttonCancel);
+	gtk_container_add(GTK_CONTAINER(buttonBoxGlobal), buttonCancel);
 	GTK_WIDGET_SET_FLAGS (buttonCancel, GTK_CAN_DEFAULT);
 
+	gtk_box_pack_start(GTK_BOX(vboxContents), buttonBoxGlobal, FALSE, FALSE, 0);
+
+	// done packing buttons
+
+	gtk_widget_show(vboxContents);
+	gtk_container_add(GTK_CONTAINER(windowStyles), vboxContents);
+
 	m_wbuttonOk = buttonOK;
-        m_wbuttonCancel = buttonCancel;
+	m_wbuttonCancel = buttonCancel;
+	m_wbuttonNew = buttonNew;
+	m_wbuttonModify = buttonModify;
+	m_wbuttonDelete = buttonDelete;
+	m_wParaPreviewArea = ParaPreviewArea;
+	m_wCharPreviewArea = CharPreviewArea;
 
 	_connectsignals();
 	return windowStyles;
@@ -263,10 +426,10 @@ GtkWidget * AP_UnixDialog_Styles::_constructWindow(void)
 void AP_UnixDialog_Styles::_constructWindowContents(GtkWidget * windowStyles)
 {
 	m_windowMain = windowStyles;
-	GtkWidget * wParaPreviewArea = NULL;
+	/*GtkWidget * wParaPreviewArea = NULL;
         GtkWidget * wCharPreviewArea = NULL;
         m_wParaPreviewArea = wParaPreviewArea;
-        m_wCharPreviewArea = wCharPreviewArea;
+        m_wCharPreviewArea = wCharPreviewArea;*/
 }
 
 void AP_UnixDialog_Styles::_connectsignals(void)
@@ -275,31 +438,31 @@ void AP_UnixDialog_Styles::_connectsignals(void)
 	// the control buttons
 
 	gtk_signal_connect(GTK_OBJECT(m_wbuttonOk),
-					   "clicked",
-					   GTK_SIGNAL_FUNC(s_ok_clicked),
-					   (gpointer) this);
+				"clicked",
+				GTK_SIGNAL_FUNC(s_ok_clicked),
+				(gpointer) this);
 	
 	gtk_signal_connect(GTK_OBJECT(m_wbuttonCancel),
-					   "clicked",
-					   GTK_SIGNAL_FUNC(s_cancel_clicked),
-					   (gpointer) this);
+				"clicked",
+				GTK_SIGNAL_FUNC(s_cancel_clicked),
+				(gpointer) this);
 
 	// the expose event of the preview
-	             gtk_signal_connect(GTK_OBJECT(m_wParaPreviewArea),
-					   "expose_event",
-					   GTK_SIGNAL_FUNC(s_paraPreview_exposed),
-					   (gpointer) this);
+	gtk_signal_connect(GTK_OBJECT(m_wParaPreviewArea),
+				"expose_event",
+				GTK_SIGNAL_FUNC(s_paraPreview_exposed),
+				(gpointer) this);
 
-	             gtk_signal_connect(GTK_OBJECT(m_wCharPreviewArea),
-					   "expose_event",
-					   GTK_SIGNAL_FUNC(s_charPreview_exposed),
-					   (gpointer) this);
+	gtk_signal_connect(GTK_OBJECT(m_wCharPreviewArea),
+				"expose_event",
+				GTK_SIGNAL_FUNC(s_charPreview_exposed),
+				(gpointer) this);
 
 	
-		     gtk_signal_connect_after(GTK_OBJECT(m_windowMain),
-		     					 "expose_event",
-		     				 GTK_SIGNAL_FUNC(s_window_exposed),
-		    					 (gpointer) this);
+	gtk_signal_connect_after(GTK_OBJECT(m_windowMain),
+				"expose_event",
+				GTK_SIGNAL_FUNC(s_window_exposed),
+				(gpointer) this);
 
 	// the catch-alls
 	
@@ -309,9 +472,9 @@ void AP_UnixDialog_Styles::_connectsignals(void)
 			   (gpointer) this);
 
 	gtk_signal_connect_after(GTK_OBJECT(m_windowMain),
-							 "destroy",
-							 NULL,
-							 NULL);
+				"destroy",
+				NULL,
+				NULL);
 }
 
 void AP_UnixDialog_Styles::_populateWindowData(void)
