@@ -104,11 +104,11 @@ double fp_PageSize::Height(Unit u) const
 
 fp_PageSize::Predefined fp_PageSize::NameToPredefined(const char *name)
 {
-	Predefined preDef;
+	int preDef;
 	// determine the predefined layout the name represents
-	for(preDef=static_cast<Predefined>(0);
-	    preDef < _last_predefined_pagesize_dont_use_;
-		static_cast<int>(preDef)++)
+	for(preDef=0;
+	    preDef < static_cast<int>(_last_predefined_pagesize_dont_use_);
+		preDef++)
 	{
 		if (0 == strcmp(pagesizes[preDef].name, name)) {
 			break;
@@ -116,7 +116,7 @@ fp_PageSize::Predefined fp_PageSize::NameToPredefined(const char *name)
 	}
 
 	if ((preDef >= 0) && (preDef < _last_predefined_pagesize_dont_use_)) {
-		return preDef;
+		return static_cast<Predefined>(preDef);
 	}
 
 	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
