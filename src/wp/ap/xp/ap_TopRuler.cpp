@@ -1547,10 +1547,7 @@ void AP_TopRuler::mouseMotion(EV_EditModifierState ems, UT_sint32 x, UT_sint32 y
             m_draggingCenter = iRightIndentPos - m_minColumnWidth;
 		}
         iIndentShift = UT_MIN(0,UT_MIN(m_infoCache.m_xrLeftIndent,m_infoCache.m_xrLeftIndent + m_infoCache.m_xrFirstLineIndent));
-        if (m_draggingCenter - xAbsLeft + iIndentShift < 0)
-        {
-            m_draggingCenter = xAbsLeft - iIndentShift;
-        }
+        m_draggingCenter = UT_MAX(m_draggingCenter, xAbsLeft - iIndentShift);
 
 		if(m_draggingCenter == oldDragCenter)
 		{
@@ -1602,24 +1599,29 @@ void AP_TopRuler::mouseMotion(EV_EditModifierState ems, UT_sint32 x, UT_sint32 y
 	case DW_RIGHTMARGIN:
 		{
 		UT_sint32 oldDragCenter = m_draggingCenter;
-
 		UT_sint32 xAbsRight = _getFirstPixelInColumn(&m_infoCache, m_infoCache.m_iNumColumns - 1) + 
 								m_infoCache.u.c.m_xColumnWidth + m_infoCache.u.c.m_xaRightMargin;
+        UT_sint32 iAbsLeft = _getFirstPixelInColumn(&m_infoCache,m_infoCache.m_iCurrentColumn);
+        UT_sint32 iRightShift = UT_MAX(0,m_infoCache.m_xrRightIndent);
+        UT_sint32 iLeftShift = UT_MAX(0,UT_MAX(m_infoCache.m_xrLeftIndent,m_infoCache.m_xrLeftIndent + m_infoCache.m_xrFirstLineIndent));
+        UT_sint32 newMargin;
+        UT_sint32 deltaRightMargin;
+        UT_sint32 newColumnWidth;
 
-		m_draggingCenter = _snapPixelToGrid(x, tick);
+        x = UT_MIN(x,xAbsRight + UT_MIN(0,m_infoCache.m_xrRightIndent));
+        while(1){
+            newMargin = xAbsRight - x;
+            deltaRightMargin = newMargin - m_infoCache.u.c.m_xaRightMargin;
+            newColumnWidth = m_infoCache.u.c.m_xColumnWidth - deltaRightMargin / (UT_sint32)m_infoCache.m_iNumColumns;
 
-		UT_sint32 iAbsLeft = _getFirstPixelInColumn(&m_infoCache,0);
-		UT_sint32 iLeftIndentPos = iAbsLeft + UT_MAX(0,UT_MAX(m_infoCache.m_xrLeftIndent,m_infoCache.m_xrLeftIndent + m_infoCache.m_xrFirstLineIndent)) + UT_MAX(0,m_infoCache.m_xrRightIndent);
-		if(m_draggingCenter - iLeftIndentPos < m_minColumnWidth)
-		{
-			m_draggingCenter = iLeftIndentPos + m_minColumnWidth;
+            if(newColumnWidth - iRightShift - iLeftShift < m_minColumnWidth){
+                x += (m_minColumnWidth - (newColumnWidth - iRightShift - iLeftShift)) * (UT_sint32)m_infoCache.m_iNumColumns;
+            } else {
+                break;
 		}
-
-        UT_sint32 iIndentShift = UT_MIN(0,m_infoCache.m_xrRightIndent);
-        if (xAbsRight - m_draggingCenter + iIndentShift < 0 )
-        {
-            m_draggingCenter = xAbsRight + iIndentShift;
         }
+
+        m_draggingCenter = _snapPixelToGrid(x,tick);
 
 		if(m_draggingCenter == oldDragCenter)
 		{
@@ -1628,18 +1630,6 @@ void AP_TopRuler::mouseMotion(EV_EditModifierState ems, UT_sint32 x, UT_sint32 y
 			return;
 		}
 
-		UT_sint32 newMargin = xAbsRight - m_draggingCenter;
-		UT_sint32 deltaRightMargin = newMargin - m_infoCache.u.c.m_xaRightMargin;
-		UT_sint32 newColumnWidth = m_infoCache.u.c.m_xColumnWidth - deltaRightMargin / (UT_sint32)m_infoCache.m_iNumColumns;
-		if(newColumnWidth < m_minColumnWidth)
-		{
-			x += (m_minColumnWidth - newColumnWidth) * (UT_sint32)m_infoCache.m_iNumColumns;
-
-			m_draggingCenter = _snapPixelToGrid(x, tick);
-			newMargin = xAbsRight - m_draggingCenter;
-			deltaRightMargin = newMargin - m_infoCache.u.c.m_xaRightMargin;
-			
-		}
 		m_infoCache.u.c.m_xaRightMargin += deltaRightMargin;
 		m_infoCache.u.c.m_xColumnWidth -= deltaRightMargin / (UT_sint32)m_infoCache.m_iNumColumns;
 
