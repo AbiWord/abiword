@@ -345,7 +345,7 @@ UT_Bool AP_UnixFrame::loadDocument(const char * szFilename)
 	
 	pG = new UNIXGraphics(m_dArea->window);
 	ENSUREP(pG);
-	FL_DocLayout * m_pDocLayout = new FL_DocLayout(m_pDoc, pG);
+	pDocLayout = new FL_DocLayout(m_pDoc, pG);
 	ENSUREP(pDocLayout);
   
 	pDocLayout->formatAll();
