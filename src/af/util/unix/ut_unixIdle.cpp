@@ -65,9 +65,15 @@ UT_UnixIdle::~UT_UnixIdle ()
  */
 void UT_UnixIdle::start ()
 {
-  UT_ASSERT(m_id == -1);
-  m_id = g_idle_add(_Timer_Proc, this);
-  UT_ASSERT(m_id > 0);
+//
+// Sevior: Need to ignore this if the idle is already running.
+//
+// UT_ASSERT(m_id == -1);
+	if(m_id == -1)
+	{  
+		m_id = g_idle_add(_Timer_Proc, this);
+	}
+	UT_ASSERT(m_id > 0);
 }
 
 /*!
@@ -75,9 +81,13 @@ void UT_UnixIdle::start ()
  */
 void UT_UnixIdle::stop ()
 {
-  UT_ASSERT(m_id > 0);
-
-  gboolean b = g_idle_remove_by_data(this);
-  UT_ASSERT(TRUE == b);
-  m_id = -1;
+//
+// Sevior: Once again we have to ignore this if the idle is already stopped.
+//    UT_ASSERT(m_id > 0);
+	if(m_id > 0)
+	{
+		gboolean b = g_idle_remove_by_data(this);
+		UT_ASSERT(TRUE == b);
+	}
+	m_id = -1;
 }

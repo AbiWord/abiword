@@ -896,7 +896,14 @@ void FL_DocLayout::_backgroundCheck(UT_Worker * pWorker)
 			}
 		}
 	}
-
+	else
+	{ 
+//
+// No blocks to spellcheck so stop the idle/timer. Otherwise we consume 100% CPU.
+//
+		pDocLayout->m_pBackgroundCheckTimer->stop();
+	}
+		
 	if (i != 0 && pDocLayout->m_bStopSpellChecking == false)
 	{
 		// restart timer unless it's not needed any more
@@ -913,7 +920,7 @@ void FL_DocLayout::queueBlockForBackgroundCheck(UT_uint32 reason, fl_BlockLayout
 	  reprioritized by setting bHead == true.  
 	*/
 	if (!m_pBackgroundCheckTimer)
-	  {
+	{
 	    int inMode = UT_WorkerFactory::IDLE | UT_WorkerFactory::TIMER;
 	    UT_WorkerFactory::ConstructMode outMode = UT_WorkerFactory::NONE;
 
@@ -923,17 +930,17 @@ void FL_DocLayout::queueBlockForBackgroundCheck(UT_uint32 reason, fl_BlockLayout
 	    UT_ASSERT(outMode != UT_WorkerFactory::NONE);
 
 	    if ( UT_WorkerFactory::TIMER == outMode )
-	      {
+		{
 		// this is really a timer, so it's safe to static_cast it
-		static_cast<UT_Timer*>(m_pBackgroundCheckTimer)->set(BACKGROUND_CHECK_MSECS);
-	      }
+			static_cast<UT_Timer*>(m_pBackgroundCheckTimer)->set(BACKGROUND_CHECK_MSECS);
+		}
 #if 1
 	    m_bStopSpellChecking = false;
 	    m_pBackgroundCheckTimer->start();
 #endif
 
 	}
-#if 0
+#if 1 // We need this to restart the idle handler.
 	else
 	{
 		//		m_pBackgroundCheckTimer->stop();
