@@ -9870,11 +9870,24 @@ bool fl_BlockLayout::getNextTableElement(UT_GrowBuf * buf,
 		return false;
 	}
 	UT_uint32 iMax = buf->getLength() - offset;
+	bool bFoundFootnote = false;
 	//
 	// skip initial punctuation marks
 	for(i= 0; i < iMax; i++)
 	{
 		curChar = static_cast<UT_UCS4Char>(*buf->getPointer(offset+i));
+		xxx_UT_DEBUGMSG(("Pre CurChar %c pos %d \n",curChar,offset+i+begPos));
+		if(curChar == 7)
+		{
+			break; // don't split on fields
+		}
+		//
+		// Don't split on numbers
+		//
+		if(curChar >= static_cast<UT_uint32>('0') && curChar <= static_cast<UT_uint32>('9'))
+	    {
+			break;
+		}
 		if(!UT_isWordDelimiter(curChar,UCS_UNKPUNK,UCS_UNKPUNK))
 		{
 			break;
@@ -9887,11 +9900,10 @@ bool fl_BlockLayout::getNextTableElement(UT_GrowBuf * buf,
 		return false;
 	}
 	begPos = getPosition(false) + offset + i;
-	bool bFoundFootnote = false;
 	for(; i< iMax; i++)
 	{
 		curChar = static_cast<UT_UCS4Char>(*buf->getPointer(offset+i));
-		xxx_UT_DEBUGMSG(("CurChar %d pos %d \n",curChar,offset+i+begPos));
+		xxx_UT_DEBUGMSG(("CurChar %c pos %d \n",curChar,offset+i+begPos));
 		if(curChar == 0)
 		{
 			PT_DocPosition pos = offset+i+begPos;
@@ -9915,6 +9927,13 @@ bool fl_BlockLayout::getNextTableElement(UT_GrowBuf * buf,
 		{
 			continue; // don't split on fields
 		}
+		//
+		// Don't split on numbers
+		//
+		if(curChar >= static_cast<UT_uint32>('0') && curChar <= static_cast<UT_uint32>('9'))
+	    {
+			continue;
+		}
 		if(UT_isWordDelimiter(curChar,UCS_UNKPUNK,UCS_UNKPUNK))
 		{
 			if( bIgnoreSpace && (curChar == UCS_SPACE))
@@ -9932,6 +9951,7 @@ bool fl_BlockLayout::getNextTableElement(UT_GrowBuf * buf,
 	{
 		endPos = getPosition(false) + offset + i;
 	}
+	xxx_UT_DEBUGMSG(("Split at %d \n",endPos));
 	return true;
 }
 
