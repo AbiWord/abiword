@@ -1793,7 +1793,7 @@ void fp_Line::layout(void)
 
 	UT_ASSERT(s_pOldXs);
 
-	UT_sint32 iStartX				  = 0;
+	UT_sint32 iStartX = 0;
 
 	// find out the direction of the paragraph
 	FriBidiCharType iDomDirection = m_pBlock->getDominantDirection();
@@ -1923,13 +1923,11 @@ void fp_Line::layout(void)
 			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 	}
 
-	xxx_UT_DEBUGMSG(("fp_Line::layout(), this = 0x%x\n"
+	UT_DEBUGMSG(("fp_Line::layout(), this = 0x%x\n"
 				 "		 alignment [%s], working direction [%s], using tabstops [%s]\n"
-				 "		 fixed width multiplier %d/%d\n"
 				 "		 iStartX	= %d, \n"
 				 "		 iCountRuns = %d\n",
-				 this, al, d, t, iFixedWidthMlt, iFixedWidthDiv,
-				 iStartX, iCountRuns
+				 this, al, d, t, iStartX, iCountRuns
 	));
 
 #endif //end of the debug stuff
@@ -2054,7 +2052,31 @@ void fp_Line::layout(void)
 			{
 				// now we need to shift the x-coordinances to reflect the new widths
 				// of the spaces
-				for (UT_sint32 k = 0; k < iCountRuns; k++)
+				UT_sint32 k;
+#if 0
+				// if we are working backwards, we have to
+				// ignore trailing spaces on the line ...
+				if(eWorkingDirection == WORK_BACKWARD)
+				{
+					// work from first visual run to the right ...
+					for (k = 0; k < iCountRuns; k++)
+					{
+						fp_Run* pRun = static_cast<fp_Run*>(m_vecRuns.getNthItem(_getRunLogIndx(k)));
+						UT_ASSERT(pRun);
+					
+						if(!pRun->doesContainNonBlankData())
+						{
+							iStartX += pRun->getWidth();
+						}
+						else
+						{
+							iStartX += pRun->findTrailingSpaceDistance();
+							break;
+						}
+					}
+				}
+#endif
+				for (k = 0; k < iCountRuns; k++)
 				{
 					UT_uint32 iK = (eWorkingDirection == WORK_FORWARD) ? k : iCountRuns - k - 1;
 					fp_Run* pRun = static_cast<fp_Run*>(m_vecRuns.getNthItem(_getRunLogIndx(iK)));
