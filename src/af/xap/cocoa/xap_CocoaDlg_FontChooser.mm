@@ -368,7 +368,7 @@ void XAP_CocoaDialog_FontChooser::_deleteGC(void)
 		_xap->event_previewClear();
 		/* localize */
 		const XAP_StringSet * pSS = _xap->getApp()->getStringSet();
-		[[self window] setTitle:[NSString stringWithUTF8String:pSS->getValueUTF8(XAP_STRING_ID_DLG_UFS_FontTitle).utf8_str()]];
+		LocalizeControl([self window], pSS, XAP_STRING_ID_DLG_UFS_FontTitle);
 		LocalizeControl(_okBtn, pSS, XAP_STRING_ID_DLG_OK);
 		LocalizeControl(_cancelBtn, pSS, XAP_STRING_ID_DLG_Cancel);
 		LocalizeControl(_fontLabel, pSS, XAP_STRING_ID_DLG_UFS_FontLabel);
