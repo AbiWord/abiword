@@ -325,7 +325,20 @@ fl_ContainerLayout * fl_ContainerLayout::insert(PL_StruxDocHandle sdh, fl_Contai
 					  pDSL, 
 					  sdh, indexAP, this));
 		if (pPrev)
+		{
 			pPrev->_insertIntoList(pL);
+			while(pPrev && pPrev->getContainerType() != FL_CONTAINER_BLOCK)
+			{
+				pPrev = pPrev->getPrev();
+			}
+//
+// Add the frame to the list in te previous block.
+//
+			if(pPrev)
+			{
+				pPrev->addFrame(static_cast<fl_FrameLayout *>(pL));
+			}
+		}
 		break;
 	}
 	case FL_CONTAINER_FOOTNOTE:

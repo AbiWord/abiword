@@ -1663,12 +1663,15 @@ bool fl_BlockLayout::setFramesOnPage(fp_Line * pLastLine)
 			UT_sint32 yoff = 0;
 			fp_Line * pFirstLine = static_cast<fp_Line *>(getFirstContainer());
 			fp_Line * pCon = pFirstLine;
-			while(pCon && (pCon != pLastLine) && yoff < yFpos )
+			if(pCon->getNext() != NULL)
 			{
-				yoff += pCon->getHeight();
-				yoff += pCon->getMarginBefore();
-				yoff += pCon->getMarginAfter();
-				pCon = static_cast<fp_Line *>(pCon->getNext());
+				while(pCon && (pCon != pLastLine) && yoff < yFpos )
+				{
+					yoff += pCon->getHeight();
+					yoff += pCon->getMarginBefore();
+					yoff += pCon->getMarginAfter();
+					pCon = static_cast<fp_Line *>(pCon->getNext());
+				}
 			}
 			if(pCon && (pCon == pLastLine) && (pCon != static_cast<fp_Line *>(getLastContainer())) && (yoff < yFpos))
 			{
