@@ -117,7 +117,7 @@ const char* XAP_EncodingManager::strToNative(const char* in,const char* charset,
 	const char* inptr = in;
 	char* outptr = buf;
 	size_t inbytes = strlen(in), outbytes = bufsz;	
-	size_t donecnt = iconv(iconv_handle,(char**)&inptr,&inbytes,&outptr,&outbytes);
+	size_t donecnt = iconv(iconv_handle,(const char**)&inptr,&inbytes,&outptr,&outbytes);
 	const char* retstr = in;
 	if (donecnt!=(size_t)-1 && inbytes==0) {
 		retstr = buf;
@@ -146,7 +146,7 @@ int XAP_EncodingManager::XAP_XML_UnknownEncodingHandler(void* /*encodingHandlerD
 			const char* iptr = ibuf;
 			char* optr = obuf;
 			ibuf[0] = (unsigned char)i;
-			size_t donecnt = iconv(iconv_handle,(char**)&iptr,&ibuflen,&optr,&obuflen);			
+			size_t donecnt = iconv(iconv_handle,(const char**)&iptr,&ibuflen,&optr,&obuflen);			
 			if (donecnt!=(size_t)-1 && ibuflen==0) 
 			{
 				unsigned short uval;
@@ -196,7 +196,7 @@ static UT_UCSChar try_CToU(UT_UCSChar c,iconv_t iconv_handle)
 	const char* iptr = ibuf;
 	char* optr = obuf;
 	ibuf[0]	= (unsigned char)c;	
-	size_t donecnt = iconv(iconv_handle,(char**)&iptr,&ibuflen,&optr,&obuflen);			
+	size_t donecnt = iconv(iconv_handle,(const char**)&iptr,&ibuflen,&optr,&obuflen);			
 	if (donecnt!=(size_t)-1 && ibuflen==0) 
 	{
 		unsigned short uval;
@@ -220,7 +220,7 @@ static UT_UCSChar try_UToC(UT_UCSChar c,iconv_t iconv_handle)
 		ibuf[0] = (unsigned char)(c>>8);
 		ibuf[1] = (unsigned char)(c & 0xff);
 	}
-	size_t donecnt = iconv(iconv_handle,(char**)&iptr,&ibuflen,&optr,&obuflen);			
+	size_t donecnt = iconv(iconv_handle,(const char**)&iptr,&ibuflen,&optr,&obuflen);			
 	if (donecnt!=(size_t)-1 && ibuflen==0) 
 	{
 		int len = sizeof(obuf) - obuflen;
