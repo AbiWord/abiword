@@ -1134,6 +1134,10 @@ void AP_TopRuler::_draw(const UT_Rect * pClipRect, AP_TopRulerInfo * pUseInfo)
 	else
 	{
 		// otherwise we calculate our own.
+		if(pView->getPoint() == 0)
+		{
+			return;
+		}
 		pInfo = &infoLocal;
 		pView->getTopRulerInfo(pInfo);
 	}

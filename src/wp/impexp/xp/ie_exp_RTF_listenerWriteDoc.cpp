@@ -1016,13 +1016,12 @@ void s_RTF_ListenerWriteDoc::_newRow(void)
 			for (j=i; (j<sizes) && (sProps[j] != '/') ; j++) {}
 			if((j+1)>i && sProps[j] == '/')
 			{
-				char * pszSub = UT_strdup(sProps.substr(i,(j-i)).c_str());
+				UT_String sSub = sProps.substr(i,(j-i));
+				double colWidth = UT_convertToInches(sSub.c_str())* 10000.0;
 				i = j + 1;
-				double colWidth = UT_convertToInches(pszSub)* 10000.0;
 				fl_ColProps * pColP = new fl_ColProps;
 				pColP->m_iColWidth = static_cast<UT_sint32>(colWidth);
 				vecColProps.addItem(static_cast<void *>(pColP));
-				delete [] pszSub;
 			}
 		}
 	}
