@@ -1685,13 +1685,13 @@ static UT_Bool s_doPrint(FV_View * pView, UT_Bool bTryToSuppressDialog)
 		// TODO is it really okay to clamp the value like this?
 		// TODO we're assuming that the user typed something out of range, and we're silently fixing it.
 
-		if (nToPage > pDocLayout->countPages())
+		if ((UT_sint32) nToPage > pDocLayout->countPages())
 		{
 			nToPage = pDocLayout->countPages();
 		}
-
-		UT_ASSERT(nToPage <= pDocLayout->countPages());
-
+		
+		UT_ASSERT((UT_sint32) nToPage <= pDocLayout->countPages());
+		
 		// TODO add code to handle getDoPrintSelection()
 
 		UT_uint32 nCopies = pDialog->getNrCopies();
@@ -1704,6 +1704,7 @@ static UT_Bool s_doPrint(FV_View * pView, UT_Bool bTryToSuppressDialog)
 		da.height = pDocLayout->getHeight();
 
 		// TODO these are here temporarily to make printing work.  We'll fix the hack later.
+		// BUGBUG assumes all pages are same size and orientation
 		da.width /= pLayout->countPages();
 		da.height /= pLayout->countPages();
 
