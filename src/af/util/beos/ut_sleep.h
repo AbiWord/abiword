@@ -20,7 +20,7 @@
 #ifndef UT_SLEEP_H
 #define UT_SLEEP_H
 
-#include <unistd.h>
+#include <OS.h>
 
 #define UT_usleep snooze
 
