@@ -144,13 +144,7 @@ UT_Bool AP_UnixFrame::_showDocument(void)
 	setYScrollRange();
 	updateTitle();
 
-	/*
-	  I removed the following call because it didn't seem necessary.
-	  Expose handles the inital draw just fine.
-	*/
-#if 0
 	m_pView->draw();
-#endif
 
 	return UT_TRUE;
 
