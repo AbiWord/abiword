@@ -225,6 +225,7 @@ void IE_Imp_AbiWord_1::_startElement(const XML_Char *name, const XML_Char **atts
 		X_VerifyParseState(_PS_Sec);
 		m_parseState = _PS_Block;
 		X_CheckError(m_pDocument->appendStrux(PTX_Block,atts));
+#ifdef DEBUG
 		UT_DEBUGMSG(("SEVIOR: Appending strux \n"));
 
 		{	// M$ compilers don't regard for-loop variable scoping! :-<
@@ -233,12 +234,7 @@ void IE_Imp_AbiWord_1::_startElement(const XML_Char *name, const XML_Char **atts
 				UT_DEBUGMSG(("Element %d is %s \n",i,atts[i]));
 			}
 		}
-
-		for(UT_sint32 i=0; atts[i] != NULL; i++)
-		{ 
-			UT_DEBUGMSG(("Element %d is %s \n",i,atts[i]));
-		}
-
+#endif
 		return;
 	}
 
@@ -265,6 +261,8 @@ void IE_Imp_AbiWord_1::_startElement(const XML_Char *name, const XML_Char **atts
 		X_VerifyParseState(_PS_Block);
 		m_parseState = _PS_Field;
 		X_CheckError(m_pDocument->appendObject(PTO_Field,atts));
+
+#ifdef DEBUG
 		UT_DEBUGMSG(("SEVIOR: Appending field \n"));
 		{	// M$ compilers don't regard for-loop variable scoping! :-<
 			for(UT_sint32 i=0; atts[i] != NULL; i++)
@@ -272,6 +270,7 @@ void IE_Imp_AbiWord_1::_startElement(const XML_Char *name, const XML_Char **atts
 				UT_DEBUGMSG(("Element %d is %s \n",i,atts[i]));
 			}
 		}
+#endif
 		return;
 	}
 	
@@ -527,34 +526,24 @@ void IE_Imp_AbiWord_1::_endElement(const XML_Char *name)
 
 const XML_Char * IE_Imp_AbiWord_1::_getDataItemName(const XML_Char ** atts)
 {
-	// find the 'name="value"' pair and return the "value".
-	// ignore everything else (which there shouldn't be)
-
-	for (const XML_Char ** a = atts; (*a); a++)
-		if (UT_XML_strcmp(a[0],"name") == 0)
-			return a[1];
-	return NULL;
+	return _getXMLPropValue ((XML_Char *)"name", atts);
 }
 
 const XML_Char * IE_Imp_AbiWord_1::_getDataItemMimeType(const XML_Char ** atts)
 {
-	// find the 'name="value"' pair and return the "value".
-	// ignore everything else (which there shouldn't be)
+	const XML_Char *val = _getXMLPropValue ((XML_Char *)"mime-type", atts);
 
-	for (const XML_Char ** a = atts; (*a); a++)
-		if (UT_XML_strcmp(a[0],"mime-type") == 0)
-			return a[1];
 	// if the mime-type was not specified, for backwards 
  	// compatibility we assume that it is a png image
- 	return "image/png";
+	return (val ? val : "image/png");
 }
 
 UT_Bool IE_Imp_AbiWord_1::_getDataItemEncoded(const XML_Char ** atts)
-{
-	for (const XML_Char ** a = atts; (*a); a++)
-		if (UT_XML_strcmp(a[0],"base64") == 0) {
-		   	if (UT_XML_strcmp(a[1], "no") == 0) return UT_FALSE;
-		}
-   	return UT_TRUE;
-   	
+{ 
+  	const XML_Char *val = _getXMLPropValue ((XML_Char *)"base64", atts);
+
+	if ((!val) || (!UT_XML_strcmp (val, "no")))
+	  return UT_FALSE;
+
+	return UT_TRUE;
 }
