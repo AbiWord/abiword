@@ -1265,7 +1265,8 @@ IE_Imp_RTF::IE_Imp_RTF(PD_Document * pDocument)
 	m_TableControl(pDocument),
 	m_lastBlockSDH(NULL),
 	m_lastCellSDH(NULL),
-	m_bNestTableProps(false)
+	m_bNestTableProps(false),
+	m_bParaWrittenForSection(false)
 {
 	m_pPasteBuffer = NULL;
 	m_lenPasteBuffer = 0;
@@ -1412,6 +1413,14 @@ ie_imp_table * IE_Imp_RTF::getTable(void)
 
 void IE_Imp_RTF::OpenTable(void)
 {
+	if(!m_bParaWrittenForSection)
+	{
+		FlushStoredChars(true);
+	}
+	else
+	{
+		FlushStoredChars();
+	}
 	m_TableControl.OpenTable();
 	getDoc()->appendStrux(PTX_SectionTable,NULL);
 	UT_DEBUGMSG(("SEVIOR: Appending Table strux to doc nestdepth %d \n", m_TableControl.getNestDepth()));
@@ -1652,7 +1661,6 @@ bool IE_Imp_RTF::StartNewPara()
 
 	bool ok = FlushStoredChars(true);
 	m_newParaFlagged = true;
-
 	return ok;
 }
 
@@ -4352,6 +4360,7 @@ bool IE_Imp_RTF::ApplyParagraphAttributes()
 {
 	const XML_Char* attribs[PT_MAX_ATTRIBUTES*2 + 1];
 	UT_uint32 attribsCount=0;
+	m_bParaWrittenForSection = true;
 
 //
 // Look to see if the nesting level of our tables has changed.
@@ -4965,7 +4974,7 @@ bool IE_Imp_RTF::ResetSectionAttributes()
 	// margr, margl, margt, margb, paperh, gutter
 
 	m_currentRTFState.m_sectionProps = m_sectdProps ;
-
+	m_bParaWrittenForSection = false;
 	return ok;
 }
 
