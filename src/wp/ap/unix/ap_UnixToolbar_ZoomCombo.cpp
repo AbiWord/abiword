@@ -40,8 +40,8 @@ AP_UnixToolbar_ZoomCombo::AP_UnixToolbar_ZoomCombo(EV_Toolbar * pToolbar,
 {
 	UT_ASSERT(id==AP_TOOLBAR_ID_ZOOM);
 
-	m_nPixels = 50;		// TODO: do a better calculation
-	m_nLimit = 6;
+	m_nPixels = 80;		// TODO: do a better calculation
+	m_nLimit = 9;
 }
 
 AP_UnixToolbar_ZoomCombo::~AP_UnixToolbar_ZoomCombo(void)
