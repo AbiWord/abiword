@@ -161,13 +161,13 @@ void UT_Wctomb::initialize()
 void UT_Wctomb::setOutCharset(const char* charset)
 {
     UT_iconv_close(cd);
-    cd = UT_iconv_open(charset,"UCS-4");
+    cd = UT_iconv_open(charset,ucs4Internal());
     //UT_ASSERT(cd!=(iconv_t)-1); //it's better to return "?" instead of crashing
 };
 
 UT_Wctomb::UT_Wctomb(const char* to_charset)
 {
-    cd = UT_iconv_open(to_charset,"UCS-4");
+    cd = UT_iconv_open(to_charset,ucs4Internal());
     //UT_ASSERT(cd!=(iconv_t)-1); //it's better to return "?" instead of crashing
 };
 
