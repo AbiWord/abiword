@@ -73,13 +73,13 @@ BEGIN
     LTEXT           "Number of rows:",AP_RID_DIALOG_INSERTTABLE_TEXT_ROW,13,
                     42,92,12
     LTEXT           "Table size",AP_RID_DIALOG_INSERTTABLE_TEXT_SIZE,5,5,
-                    37,8
+                    80,8
     CONTROL         "",AP_RID_DIALOG_STYLES_TOP_TEXT_DEFAULT,"Static",
                     SS_BLACKFRAME | SS_SUNKEN,5,61,195,1
     LTEXT           "Autofit behavior",AP_RID_DIALOG_INSERTTABLE_TEXT_AUTOFIT,
-                    7,69,77,8
+                    7,69,140,8
     CONTROL         "Automatic column size",AP_RID_DIALOG_INSERTTABLE_RADIO_AUTO,"Button",
-                    BS_AUTORADIOBUTTON,13,83,108,10
+                    BS_AUTORADIOBUTTON,13,83,148,10
     CONTROL         "Fixed column size:",AP_RID_DIALOG_INSERTTABLE_RADIO_FIXED,"Button",
                     BS_AUTORADIOBUTTON,13,100,99,10
     EDITTEXT        AP_RID_DIALOG_INSERTTABLE_VAL_SIZE,124,96,30,14,
