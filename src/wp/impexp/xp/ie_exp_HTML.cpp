@@ -580,6 +580,8 @@ private:
 	UT_NumberStack	m_utsListType;
 	UT_uint32		m_iImgCnt;
 	UT_Wctomb		m_wmctomb;
+	UT_uint32		m_footnoteNum;
+	UT_uint32		m_endnoteNum;
 
 	enum WhiteSpace
 		{
@@ -3815,6 +3817,8 @@ s_HTML_Listener::s_HTML_Listener (PD_Document * pDocument, IE_Exp_HTML * pie, bo
 							  // to true
 {
 	m_StyleTreeBody = m_style_tree->find ("Normal");
+	m_footnoteNum = 1;
+	m_endnoteNum = 1;
 }
 
 s_HTML_Listener::~s_HTML_Listener()
@@ -4140,7 +4144,17 @@ void s_HTML_Listener::_handleField (const PX_ChangeRecord_Object * pcro,
 
 		tagOpen (TT_SPAN, m_utf8_1, ws_None);
 
-		textUntrusted (field->getValue ());
+		if (UT_strcmp (szType, "footnote_anchor") == 0)
+		{
+			UT_UTF8String footnoteAnchorString;
+			UT_UTF8String_sprintf(footnoteAnchorString, "[%d]", (m_footnoteNum));
+			m_pie->write (footnoteAnchorString.utf8_str (), footnoteAnchorString.byteLength ());
+			textUntrusted (field->getValue ());
+		}
+		else
+		{
+			textUntrusted (field->getValue ());
+		}
 
 		m_utf8_1 = "span";
 		tagClose (TT_SPAN, m_utf8_1, ws_None);
@@ -4510,18 +4524,16 @@ bool s_HTML_Listener::endOfDocument () {
 	// Output footnotes
 	//
 	UT_uint32 i = 0;
-	UT_UTF8String footnoteNum;
 	for(i = 0; i < getNumFootnotes(); i = i + 1)
 	{
 		PD_DocumentRange * pDocRange = m_vecFootnotes.getNthItem(i);
 		startEmbeddedStrux();
-		UT_UTF8String_sprintf(footnoteNum, "[ %d ]", (i + 1));
-		m_pie->write (footnoteNum.utf8_str (), footnoteNum.byteLength ());
 		m_bInAFENote = true;
 		m_pDocument->tellListenerSubset(this,pDocRange);
 		m_bInAFENote = false;
 		tagPop(); //P OR S // Normal or broken?
 		tagPop(); //D OR P
+		m_footnoteNum++;
 	}
 	//
 	// Output Endnotes
@@ -4533,6 +4545,7 @@ bool s_HTML_Listener::endOfDocument () {
 		m_bInAFENote = true;
 		m_pDocument->tellListenerSubset(this,pDocRange);
 		m_bInAFENote = false;
+		m_endnoteNum++;
 	}
 	return true;
 }
