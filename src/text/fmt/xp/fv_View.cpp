@@ -6963,7 +6963,15 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 			// fill to right of page
 			if (m_iWindowWidth - (adjustedRight + 1) > 0)
 			{
+			  if (getViewMode() == VIEW_NORMAL)
+			    {
+			      // set it equal to the paper color
+			      m_pG->fillRect(*(pPage->getOwningSection()->getPaperColor()), adjustedRight + 1, adjustedTop, m_iWindowWidth - (adjustedRight + 1), iPageHeight + 1);
+			    }
+			  else
+			    {
 				m_pG->fillRect(clrMargin, adjustedRight + 1, adjustedTop, m_iWindowWidth - (adjustedRight + 1), iPageHeight + 1);
+			    }
 			}
 
 			// fill separator below page

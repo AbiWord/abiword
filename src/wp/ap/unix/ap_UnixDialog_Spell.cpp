@@ -599,7 +599,12 @@ char * AP_UnixDialog_Spell::_convertToMB(UT_UCSChar *wword)
 // make a wide string from a multibyte string
 UT_UCSChar * AP_UnixDialog_Spell::_convertFromMB(char *word)
 {
+#if 1
+        UT_UCSChar *wword = NULL;
+	UT_UCS_cloneString_char ( &wword, word );
+#else
 	UT_UCSChar *wword = (UT_UCSChar *) malloc (strlen(word)*2);
 	UT_UCS_strcpy_char(wword,word);
+#endif
 	return wword;
 }
