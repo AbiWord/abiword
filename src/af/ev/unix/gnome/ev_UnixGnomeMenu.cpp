@@ -1074,6 +1074,11 @@ void EV_UnixGnomeMenu::menuEvent(GtkWidget *, gpointer pAux)
 	aux->me->invokeMenuMethod(aux->me->m_pUnixFrame->getCurrentView(), pEM, 0, 0);
 }
 
+bool EV_UnixGnomeMenu::_doAddMenuItem(UT_uint32 layout_pos)
+{
+	return true;
+}
+
 /***********************************************************************/
 
 EV_UnixGnomeMenuBar::EV_UnixGnomeMenuBar(XAP_UnixApp * pUnixApp,

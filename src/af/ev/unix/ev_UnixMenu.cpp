@@ -1051,29 +1051,24 @@ bool EV_UnixMenu::_refreshMenu(AV_View * pView, GtkWidget * wMenuRoot)
 }
 
 /*!
- * That will add the menu item with the specified id
- * to the menu.  In the LayoutSet there is (should be) a
- * LayoutItem with the same id as the menu id.
+ * That will add a new menu entry for the menu item at layout_pos.
  *
- * This LayoutItem contains useful information about the
- * menu item (as if it's a Normal menu item, or a Separator,
- * or a BeginSubMenu, etc.)
- *
- * By now we don't care about where to insert the menu
- * item.  I've just picked the position 30 randomly.
- *
- * @todo Calcule the real position of the menu item in function
- * of (for instance) the menu label ("Format/Blah" will indicate
- * that you will find it in the menu "Format", and that the item
- * label is "Blah").
+ * @param layout_pos UT_uint32 with the relative position of the item in the
+ * menu.
+ * @return true if there were no problems.  False elsewere.
  */
 bool EV_UnixMenu::_doAddMenuItem(UT_uint32 layout_pos)
 {
 	UT_DEBUGMSG(("JCA: layout_pos = [%d]\n", layout_pos));
 	if (layout_pos > 0)
 	{
+		UT_DEBUGMSG(("Trying to insert at [%d] in a vector of size [%d].\n", layout_pos, m_vecMenuWidgets.size()));
 		UT_sint32 err = m_vecMenuWidgets.insertItemAt(NULL, layout_pos);
-		return !err;
+
+		if (err != 0)
+			UT_DEBUGMSG(("Error [%d] inserting NULL item in a ut_vector.\n", err));
+
+		return (err == 0);
 	}
 
 	return false;
