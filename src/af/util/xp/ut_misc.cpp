@@ -146,6 +146,10 @@ UT_Bool UT_isWordDelimiter(UT_UCSChar ch)
 	case ':':
 	case '!':
 	case '?':
+	case 0x0009:	// tab
+	case 0x000a:	// line break
+	case 0x000b:	// column break
+	case 0x000c:	// page break
 		return UT_TRUE;
 	default:
 		return UT_FALSE;
