@@ -317,8 +317,9 @@ BOOL AP_Win32Dialog_Options::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lPar
 	// This has to follow the call to _populateWindowData()
 	_initializeTransperentToggle();
 
-	// make sure first tab is selected.
-	ShowWindow((HWND)m_vecSubDlgHWnd.getNthItem(0), SW_SHOW);
+	// Use the InitialPageNum to determine which tab is selected.
+	TabCtrl_SetCurSel( m_hwndTab, getInitialPageNum() );
+	ShowWindow((HWND)m_vecSubDlgHWnd.getNthItem( getInitialPageNum() ), SW_SHOW);
 
 	return 1;							// 1 == we did not call SetFocus()
 }
