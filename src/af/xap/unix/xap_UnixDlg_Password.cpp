@@ -105,7 +105,7 @@ GtkWidget * XAP_UnixDialog_Password::_constructWindow ()
 
 	// Update our member variables with the important widgets that 
 	// might need to be queried or altered later
-	mMainWindow = glade_xml_get_widget(xml, "windowMain");
+	mMainWindow = glade_xml_get_widget(xml, "xap_UnixDlg_Password");
 	mTextEntry = glade_xml_get_widget(xml, "passwdEntry");
 	
 	gtk_window_set_title (GTK_WINDOW(mMainWindow), pSS->getValueUTF8(XAP_STRING_ID_DLG_Password_Title).c_str());

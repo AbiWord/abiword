@@ -3,7 +3,7 @@
 
 <glade-interface>
 
-<widget class="GtkDialog" id="windowMain">
+<widget class="GtkDialog" id="xap_UnixDlg_Encoding">
   <property name="visible">True</property>
   <property name="title" translatable="yes">Encoding</property>
   <property name="type">GTK_WINDOW_TOPLEVEL</property>
@@ -69,7 +69,7 @@
 	  <property name="column_spacing">0</property>
 
 	  <child>
-	    <widget class="GtkLabel" id="label1">
+	    <widget class="GtkLabel" id="lblEncoding">
 	      <property name="visible">True</property>
 	      <property name="label" translatable="yes">&lt;b&gt;%s&lt;/b&gt;</property>
 	      <property name="use_underline">False</property>
@@ -102,7 +102,7 @@
 	      <property name="window_placement">GTK_CORNER_TOP_LEFT</property>
 
 	      <child>
-		<widget class="GtkTreeView" id="treeview1">
+		<widget class="GtkTreeView" id="encodingList">
 		  <property name="visible">True</property>
 		  <property name="can_focus">True</property>
 		  <property name="headers_visible">False</property>

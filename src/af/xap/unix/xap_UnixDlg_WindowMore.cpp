@@ -137,11 +137,11 @@ GtkWidget * XAP_UnixDialog_WindowMore::_constructWindow(void)
 
 	// Update our member variables with the important widgets that 
 	// might need to be queried or altered later
-	m_windowMain = glade_xml_get_widget(xml, "mainWindow");
-    m_listWindows = glade_xml_get_widget(xml, "treeview1");
+	m_windowMain = glade_xml_get_widget(xml, "xap_UnixDlg_WindowMore");
+    m_listWindows = glade_xml_get_widget(xml, "moreList");
 
 	gtk_window_set_title (GTK_WINDOW(m_windowMain), pSS->getValueUTF8(XAP_STRING_ID_DLG_MW_MoreWindows).c_str());
-	localizeLabelMarkup(glade_xml_get_widget(xml, "label1"), pSS, XAP_STRING_ID_DLG_MW_Activate);
+	localizeLabelMarkup(glade_xml_get_widget(xml, "lblMore"), pSS, XAP_STRING_ID_DLG_MW_Activate);
 
 	// add a column to our TreeViews
 

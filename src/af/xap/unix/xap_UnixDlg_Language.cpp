@@ -117,11 +117,11 @@ GtkWidget * XAP_UnixDialog_Language::constructWindow(void)
 
 	// Update our member variables with the important widgets that 
 	// might need to be queried or altered later
-	m_windowMain = glade_xml_get_widget(xml, "windowMain");
-	m_pLanguageList = glade_xml_get_widget(xml, "treeview1");
+	m_windowMain = glade_xml_get_widget(xml, "xap_UnixDlg_Language");
+	m_pLanguageList = glade_xml_get_widget(xml, "langList");
 
 	gtk_window_set_title (GTK_WINDOW(m_windowMain), pSS->getValueUTF8(XAP_STRING_ID_DLG_ULANG_LangTitle).c_str());
-	localizeLabelMarkup(glade_xml_get_widget(xml, "label1"), pSS, XAP_STRING_ID_DLG_ULANG_LangLabel);
+	localizeLabelMarkup(glade_xml_get_widget(xml, "lblLang"), pSS, XAP_STRING_ID_DLG_ULANG_LangLabel);
 
 	// add a column to our TreeViews
 
