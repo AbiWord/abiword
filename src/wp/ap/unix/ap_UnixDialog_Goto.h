@@ -65,6 +65,7 @@ public:
 	int						m_iRow;
 	GtkWidget *				m_swindow;
 	GtkWidget *				m_dlabel;
+	GtkWidget * m_numberLabel;
 	const XML_Char **		m_pBookmarks;
 	
 	

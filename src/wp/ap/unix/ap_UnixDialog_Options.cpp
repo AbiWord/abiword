@@ -78,7 +78,7 @@ XAP_Dialog * AP_UnixDialog_Options::static_constructor(XAP_DialogFactory * pFact
 
 AP_UnixDialog_Options::AP_UnixDialog_Options(XAP_DialogFactory * pDlgFactory,
 					     XAP_Dialog_Id id)
-  : AP_Dialog_Options(pDlgFactory,id)
+  : AP_Dialog_Options(pDlgFactory,id), m_pageSize(fp_PageSize::Letter)
 {
 }
 
@@ -185,6 +185,15 @@ void AP_UnixDialog_Options::event_clistClicked (int row, int col)
 }
 
 #undef CTI
+
+static void s_page_size_changed (GtkWidget * w, GtkWidget * child, 
+				 AP_UnixDialog_Options *dlg)
+{
+  UT_ASSERT(w && dlg);
+
+  fp_PageSize::Predefined pos = (fp_PageSize::Predefined)gtk_list_child_position (GTK_LIST(w), child);
+  dlg->event_PageSizeChanged (pos);
+}
 
 void AP_UnixDialog_Options::event_ChooseTransparentColor(void)
 {
@@ -382,7 +391,6 @@ GtkWidget* AP_UnixDialog_Options::_constructWindowContents (GtkWidget * vbox)
 	GtkWidget *ruler_units;
 	GtkWidget *ruler_units_menu;
 	GtkWidget *page_size;
-	GtkWidget *page_size_menu;
 	GtkWidget *label22;
 	GtkWidget *label21;
 	GtkWidget *vbox58;
@@ -779,24 +787,24 @@ GtkWidget* AP_UnixDialog_Options::_constructWindowContents (GtkWidget * vbox)
 	gtk_option_menu_set_menu (GTK_OPTION_MENU (ruler_units), ruler_units_menu);
 
 	// the page size menu
-	page_size = gtk_option_menu_new ();
+	page_size = gtk_combo_new(); 
 	gtk_widget_show (page_size);
 	gtk_table_attach (GTK_TABLE (table4), page_size, 1, 2, 1, 2,
 			  (GtkAttachOptions) (GTK_FILL),
 			  (GtkAttachOptions) (GTK_EXPAND), 0, 0);
-	page_size_menu = gtk_menu_new ();
+	GList *popdown_items = NULL;
 	for (int i = (int)fp_PageSize::_first_predefined_pagesize_;
 		 i < (int)fp_PageSize::_last_predefined_pagesize_dont_use_; i++)
 	{
-	    glade_menuitem = gtk_menu_item_new_with_label (fp_PageSize::PredefinedToName ((fp_PageSize::Predefined)i));
-	    gtk_object_set_data(GTK_OBJECT(glade_menuitem), WIDGET_MENU_OPTION_PTR, (gpointer) page_size);
-	    gtk_object_set_data(GTK_OBJECT(glade_menuitem), WIDGET_MENU_VALUE_TAG, GINT_TO_POINTER(i));
-	    CONNECT_MENU_ITEM_SIGNAL_ACTIVATE(glade_menuitem);
-	    gtk_widget_show (glade_menuitem);
-	    gtk_menu_append (GTK_MENU (page_size_menu), glade_menuitem);
+	  popdown_items = g_list_append (popdown_items, (void*)fp_PageSize::PredefinedToName ((fp_PageSize::Predefined)i) );
 	}
-	gtk_option_menu_set_menu (GTK_OPTION_MENU (page_size), page_size_menu);
-	
+	gtk_combo_set_popdown_strings (GTK_COMBO (page_size), popdown_items);
+
+	GtkList * optionPageSizeList = GTK_LIST(GTK_COMBO(page_size)->list);
+	gtk_list_select_item (optionPageSizeList, (gint)m_pageSize);
+	gtk_signal_connect(GTK_OBJECT(optionPageSizeList), "select-child",
+			   GTK_SIGNAL_FUNC(s_page_size_changed), (gpointer)this);
+
 	label22 = gtk_label_new (pSS->getValue(AP_STRING_ID_DLG_Options_Label_DefaultPageSize));
 	gtk_widget_show (label22);
 	gtk_table_attach (GTK_TABLE (table4), label22, 0, 1, 1, 2,
@@ -1455,12 +1463,6 @@ UT_Dimension AP_UnixDialog_Options::_gatherViewRulerUnits(void)
 	return (UT_Dimension)((gint)gtk_object_get_data( GTK_OBJECT(m_listViewRulerUnits), WIDGET_MENU_VALUE_TAG )); 
 }			
 
-fp_PageSize::Predefined AP_UnixDialog_Options::_gatherDefaultPageSize(void)
-{
-	UT_ASSERT(m_listDefaultPageSize && GTK_IS_OPTION_MENU(m_listDefaultPageSize));
-	return (fp_PageSize::Predefined) ((gint)gtk_object_get_data( GTK_OBJECT(m_listDefaultPageSize), WIDGET_MENU_VALUE_TAG ));
-}
-
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 // This function will lookup a option box by the value stored in the 
 //	user data under the key WIDGET_MENU_VALUE_TAG
@@ -1490,7 +1492,7 @@ static void search_for_value ( GtkWidget *widget, gpointer _value )
 }
 
 // returns -1 if not found
-int option_menu_set_by_key ( GtkWidget *option_menu, gpointer value, gchar *key )
+static int option_menu_set_by_key ( GtkWidget *option_menu, gpointer value, gchar *key )
 {
 	UT_ASSERT( option_menu && key && GTK_IS_OPTION_MENU(option_menu));
 
@@ -1520,19 +1522,26 @@ int option_menu_set_by_key ( GtkWidget *option_menu, gpointer value, gchar *key 
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+
+fp_PageSize::Predefined AP_UnixDialog_Options::_gatherDefaultPageSize(void)
+{
+	return (fp_PageSize::Predefined)m_pageSize;
+}
+
+void AP_UnixDialog_Options::_setDefaultPageSize(fp_PageSize::Predefined pre)
+{
+	UT_ASSERT(m_listDefaultPageSize);
+	m_pageSize = pre;
+	GtkList * optionPageSizeList = GTK_LIST(GTK_COMBO(m_listDefaultPageSize)->list);
+	gtk_list_select_item (optionPageSizeList, (gint)pre);
+}
+
 void    AP_UnixDialog_Options::_setViewRulerUnits(UT_Dimension dim) 
 {	
 	UT_ASSERT(m_listViewRulerUnits && GTK_IS_OPTION_MENU(m_listViewRulerUnits)); 
 
 	int r = option_menu_set_by_key ( m_listViewRulerUnits, (gpointer)dim, WIDGET_MENU_VALUE_TAG ); 
-	UT_ASSERT( r != -1 );
-}
-
-void AP_UnixDialog_Options::_setDefaultPageSize(fp_PageSize::Predefined pre)
-{
-	UT_ASSERT(m_listDefaultPageSize && GTK_IS_OPTION_MENU(m_listDefaultPageSize));
-
-	int r = option_menu_set_by_key ( m_listDefaultPageSize, (gpointer)pre, WIDGET_MENU_VALUE_TAG );
 	UT_ASSERT( r != -1 );
 }
 

@@ -480,7 +480,6 @@ void AP_UnixDialog_PageSetup::_constructWindowContents (GtkWidget *container)
   GtkWidget *labelHeight;
   GtkWidget *labelPaperSize;
   GtkWidget *optionPageSize;
-  GtkWidget *optionPageSize_menu;
   GtkWidget *glade_menuitem;
   GtkWidget *labelPageUnits;
   GtkWidget *optionPageUnits;
@@ -587,8 +586,6 @@ void AP_UnixDialog_PageSetup::_constructWindowContents (GtkWidget *container)
   gtk_table_attach (GTK_TABLE (tablePaper), optionPageSize, 1, 2, 0, 3,
                     (GtkAttachOptions) (0),
                     (GtkAttachOptions) (0), 0, 0);
-
-  optionPageSize_menu = gtk_menu_new ();
 
   // create the drop-down menu with all of our supported page sizes
   GList *popdown_items = NULL;

@@ -147,16 +147,30 @@ void AP_UnixDialog_Goto::s_dataChanged (GtkWidget *widget, AP_UnixDialog_Goto * 
 void AP_UnixDialog_Goto::setSelectedRow (int row)
 {
 	m_iRow = row;
+
+	XAP_String_Id id = AP_STRING_ID_DLG_Goto_Label_Number;
+	const XAP_StringSet * pSS = m_pApp->getStringSet();
+
 	if(row == (int) AP_JUMPTARGET_BOOKMARK)
 	{
 		gtk_widget_hide(m_dlabel);
 		gtk_widget_show(m_swindow);
+		gtk_widget_set_sensitive (m_wPrev, FALSE);
+		gtk_widget_set_sensitive (m_wNext, FALSE);
+		id = AP_STRING_ID_DLG_Goto_Label_Name;
 	}
 	else
 	{
 		gtk_widget_hide(m_swindow);
 		gtk_widget_show(m_dlabel);
+		gtk_widget_set_sensitive (m_wPrev, TRUE);
+		gtk_widget_set_sensitive (m_wNext, TRUE);
 	}
+
+	// change string ids
+	char * tmp = s_convert ((char*)pSS->getValue (id));
+	gtk_label_parse_uline (GTK_LABEL (m_numberLabel), tmp);
+	g_free (tmp);
 }
 
 int AP_UnixDialog_Goto::getSelectedRow (void)
@@ -305,11 +319,12 @@ GtkWidget *AP_UnixDialog_Goto::_constructWindowContents (void)
 	gtk_box_pack_start (GTK_BOX (hbox), vbox2, TRUE, TRUE, 0);
 
 	number_lb = gtk_label_new ("");
+	m_numberLabel = number_lb;
 	tmp = s_convert ((char*)pSS->getValue (AP_STRING_ID_DLG_Goto_Label_Number));
 	number_lb_key = gtk_label_parse_uline (GTK_LABEL (number_lb), tmp);
 	g_free (tmp);
 	gtk_box_pack_start (GTK_BOX (vbox2), number_lb, FALSE, FALSE, 0);
-	gtk_misc_set_alignment (GTK_MISC (number_lb), 7.45058e-09, 0.5);
+	gtk_misc_set_alignment (GTK_MISC (number_lb), 0, 0.5);
 
 	m_wEntry = gtk_entry_new ();
 	gtk_box_pack_start (GTK_BOX (vbox2), m_wEntry, FALSE, FALSE, 0);

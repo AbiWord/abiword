@@ -39,6 +39,10 @@ public:
 	//void initializeTransperentToggle(void);
 	void event_ChooseTransparentColor(void);
 	void event_AllowTransparentColor(void);
+	void event_PageSizeChanged (fp_PageSize::Predefined pre)
+	  {
+	    m_pageSize = pre;
+	  }
 
  protected:
 
@@ -193,6 +197,8 @@ protected:
     void _saveUnixOnlyPrefs();
     void _initUnixOnlyPrefs();
     virtual void _storeWindowData(void);
+
+    fp_PageSize::Predefined m_pageSize;
 };
 
 #endif /* AP_UNIXDIALOG_OPTIONS_H */
