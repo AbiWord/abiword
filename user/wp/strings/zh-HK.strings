@@ -19,11 +19,11 @@
 <!--          Updated for AbiWord-0.99.2, March 2002                 -->
 
 
-<AbiStrings app="AbiWord" ver="1.0" language="zh-TW">
+<AbiStrings app="AbiWord" ver="1.0" language="zh-HK">
 
 <Strings	class="XAP"
 MSG_ShowUnixFontWarning="AbiWord 未能把自帶的字型加進 X 字型路徑。&#xa;不是說您的系統有什麼問題，只是您大概要自行修改您的字型路徑了。&#xa;如果您想關掉這個警告，請參閱 AbiWord 說明檔案 &#xa;FAQ 常見問題 &quot;Unix Font Path Problem&quot; 一節的詳細說明。"
-MSG_UnixFontSizeWarning="作業系統未能配給所需大小的字型，所以暫時採用一個較小的字型在螢幕上顯示。&#xa;儘管看起來有點彆扭，但整體排版是正確的，亦可以正常列印。&#xa;選擇一個較小的縮放比例，應該可以解決螢幕字型顯示的問題。"
+MSG_UnixFontSizeWarning="操作系統未能配給所需大小的字型，所以暫時採用一個較小的字型在螢幕上顯示。&#xa;儘管看起來有點彆扭，但整體排版是正確的，亦可以正常列印。&#xa;選擇一個較小的縮放比例，應該可以解決螢幕字型顯示的問題。"
 MSG_ImportingDoc="匯入文件中……"
 MSG_BuildingDoc="建立文件中……"
 UntitledDocument="Untitled%d"
@@ -618,7 +618,7 @@ DLG_Lists_Triangle_List="三角清單"
 DLG_Lists_Diamond_List="菱形清單"
 DLG_Lists_Star_List="星號清單"
 DLG_Lists_Implies_List="引伸號清單"
-DLG_Lists_Tick_List="勾選號清單"
+DLG_Lists_Tick_List="剔號清單"
 DLG_Lists_Box_List="小方框清單"
 DLG_Lists_Hand_List="手號清單"
 DLG_Lists_Heart_List="心號清單"
