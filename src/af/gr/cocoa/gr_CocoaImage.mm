@@ -22,6 +22,7 @@
 
 #include <stdlib.h>
 #include <string.h>
+#include <math.h>
 
 #include "ut_assert.h"
 #include "ut_bytebuf.h"
@@ -134,8 +135,8 @@ NSImage * GR_CocoaImage::imageFromPNG (NSData * data, UT_uint32 & image_width, U
 	NSImage* image = [[NSImage alloc] initWithData:data];
 	UT_ASSERT(image);
 	NSSize size = [image size];
-	image_width = size.width;
-	image_height = size.height;
+	image_width = lrintf(size.width);
+	image_height = lrintf(size.height);
 	
 	return [image autorelease];
 }

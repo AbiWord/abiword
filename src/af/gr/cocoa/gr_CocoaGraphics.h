@@ -155,10 +155,8 @@ private:
 	NSMutableDictionary*		m_fontProps;
 	CGContextRef				m_CGContext;
 	NSImage*					m_offscreen;
-	NSMutableArray*				m_cacheArray;
+	UT_Vector					m_cacheArray;
 	UT_Vector					m_cacheRectArray;
-//	NSImage*					m_cache;
-//	NSRect						m_cacheRect;
 	NSImage*					m_xorCache;
 	NSColor *					m_currentColor;
 
@@ -168,7 +166,7 @@ private:
 	static XAP_CocoaFont*	s_pFontGUI;
 	static UT_uint32		s_iInstanceCount;
   
-	UT_sint32				m_iLineWidth;
+	UT_sint32				m_iLineWidth;			// device unit
 	GR_Graphics::Cursor		m_cursor;
 
 	GR_Graphics::ColorSpace	m_cs;
@@ -178,8 +176,14 @@ public:		//HACK
 	NSColor	*			m_3dColors[COUNT_3D_COLORS];
 private:
 	/* private implementations. Allow esasy selection accross various ways */
+	void _initMetricsLayouts(void);
 	UT_uint32 _measureUnRemappedCharNSString(const UT_UCSChar c);
 	UT_uint32 _measureUnRemappedCharATSUI(const UT_UCSChar c);
+	//private font metrics objects
+	NSTextStorage *m_fontMetricsTextStorage;
+    NSLayoutManager *m_fontMetricsLayoutManager;
+    NSTextContainer *m_fontMetricsTextContainer;
+	UT_uint32 _measureUnRemappedCharLayout(const UT_UCSChar c);
 };
 
 #endif /* GR_COCOAGRAPHICS_H */

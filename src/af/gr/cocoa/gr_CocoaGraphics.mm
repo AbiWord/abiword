@@ -66,6 +66,7 @@
 
 @interface NSFont(PrivateAPI)
 - (NSGlyph)_defaultGlyphForChar:(unichar)theChar;
+- (ATSUFontID)_atsFontID;
 @end
 
 // create a stack object like that to lock a NSView, then it will be unlocked on scope exit.
@@ -122,9 +123,14 @@ GR_CocoaGraphics::GR_CocoaGraphics(NSView * win, XAP_App * app)
 	: m_updateCallback(NULL),
 	m_updateCBparam (NULL),
 	m_offscreen (nil),
+	m_cacheArray (10),
+	m_cacheRectArray (10),
 	m_currentColor (nil),
 	m_pFont (NULL),
-	m_screenResolution(0)
+	m_screenResolution(0),
+	m_fontMetricsTextStorage(nil),
+	m_fontMetricsLayoutManager(nil),
+	m_fontMetricsTextContainer(nil)
 {
 	m_pApp = app;
 	UT_ASSERT (win);
@@ -134,9 +140,10 @@ GR_CocoaGraphics::GR_CocoaGraphics(NSView * win, XAP_App * app)
 	if (![win isKindOfClass:[XAP_CocoaNSView class]]) {
 		m_pWin = [[XAP_CocoaNSView alloc] initWithFrame:viewBounds];
 		[win addSubview:m_pWin];
+		[m_pWin release];
 	}
 	else {
-		[win retain];
+//		[win retain];
 		m_pWin = win;
 	}
 	[m_pWin setXAPFrame:app->getLastFocussedFrame()];
@@ -146,7 +153,6 @@ GR_CocoaGraphics::GR_CocoaGraphics(NSView * win, XAP_App * app)
 	s_iInstanceCount++;
 	init3dColors ();
 
-	m_cacheArray = [[NSMutableArray alloc] init]; 	
 	m_xorCache = [[NSImage alloc] initWithSize:NSMakeSize(0,0)] ;
 	[m_xorCache setFlipped:YES];
 
@@ -174,7 +180,7 @@ GR_CocoaGraphics::GR_CocoaGraphics(NSView * win, XAP_App * app)
 
 GR_CocoaGraphics::~GR_CocoaGraphics()
 {
-	[m_cacheArray release];
+	UT_VECTOR_RELEASE(m_cacheArray);
 	UT_VECTOR_PURGEALL(NSRect*, m_cacheRectArray);
 	[m_xorCache release];
 	[m_fontProps release];
@@ -189,6 +195,10 @@ GR_CocoaGraphics::~GR_CocoaGraphics()
 	for (int i = 0; i < COUNT_3D_COLORS; i++) {
 		[m_3dColors[i] release];
 	}
+	
+	[m_fontMetricsTextStorage release];
+	[m_fontMetricsLayoutManager release];
+	[m_fontMetricsTextContainer release];
 }
 
 bool GR_CocoaGraphics::queryProperties(GR_Graphics::Properties gp) const
@@ -214,7 +224,7 @@ void GR_CocoaGraphics::setLineProperties ( double    inWidthPixels,
 {
 	LOCK_CONTEXT__;
 	
-	[NSBezierPath setDefaultLineWidth:inWidthPixels];
+	[NSBezierPath setDefaultLineWidth:tduD(inWidthPixels)];
 	
 	switch (inJoinStyle) {
 	case JOIN_MITER:
@@ -256,12 +266,14 @@ void GR_CocoaGraphics::setLineProperties ( double    inWidthPixels,
 
 
 void GR_CocoaGraphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
-								 int iLength, UT_sint32 xoff, UT_sint32
-								 yoff,
+								 int iLength, UT_sint32 xoffLU, UT_sint32 yoffLU,
 								 int * pCharWidths)
 {
 	UT_DEBUGMSG (("GR_CocoaGraphics::drawChars()\n"));
 	float x;
+	UT_sint32 xoff = tdu(xoffLU);
+	UT_sint32 yoff = tdu(yoffLU);
+    NSRange glyphRange;
 
 	// to be able to handle overstriking characters, we have to remember the width
 	// of the previous character printed
@@ -274,33 +286,44 @@ void GR_CocoaGraphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
 
 	const UT_UCSChar *pC;
 
-	// Lock the NSView
 	NSString * string = nil;
 
-  	for(pC=pChars+iCharOffset, x=xoff; pC<pChars+iCharOffset+iLength; ++pC)
+    if (!m_fontMetricsTextStorage) {
+		_initMetricsLayouts();
+    }
+
+  	for(pC = pChars + iCharOffset, x = xoff; pC < pChars + iCharOffset + iLength; ++pC)
 	{
 		UT_UCSChar actual = remapGlyph(*pC,false);
-		if(actual == 0x200B || actual == 0xFEFF) //zero width spaces
+		if(actual == 0x200B || actual == 0xFEFF) {//zero width spaces
 			continue;
+		}
 		// TODO try to bufferize the string allocation
-		string = [[NSString alloc] initWithData:[NSData dataWithBytes:&actual length:sizeof(UT_UCSChar)]
-							encoding:NSUnicodeStringEncoding];
+		unichar c2 = actual;		// FIXME: I suspect a problem beetween UT_UCSChar and unichar
+		string =  [[NSString alloc] initWithCharacters:&c2 length:1];
+		NSAttributedString* attributedString = [[NSAttributedString alloc] initWithString:string attributes:m_fontProps];
+		[m_fontMetricsTextStorage setAttributedString:attributedString];
+		[string release];
+		[attributedString release];
 
-		/*	if the locale is unicode (i.e., utf-8) then we do not want
-			to convert the UCS string to anything,
-			gdk_draw_text can draw 16-bit string, if the font is
-			a matrix; however the string is interpreted as big-endian
-		*/
-		//unicode font
-		//UT_DEBUGMSG(("CocoaGraphics::drawChars: utf-8\n"));
+		glyphRange = [m_fontMetricsLayoutManager glyphRangeForTextContainer:m_fontMetricsTextContainer];
 
-		LOCK_CONTEXT__;
 		switch(UT_OVERSTRIKING_DIR & UT_isOverstrikingChar(*pC))
 		{
 		case UT_NOT_OVERSTRIKING:
 			{
-				NSSize aSize = [string sizeWithAttributes:m_fontProps];
-				curWidth = aSize.width;
+				NSRect *rects;
+				unsigned int count;
+				rects = [m_fontMetricsLayoutManager rectArrayForGlyphRange:glyphRange 
+								withinSelectedGlyphRange:NSMakeRange(NSNotFound, 0) 
+								inTextContainer:m_fontMetricsTextContainer 
+								rectCount:&count];
+				if (count == 0) {
+					curWidth = 0;
+				}
+				else {
+					curWidth = rects[0].size.width;
+				}
 				curX = x;
 			}
 			break;
@@ -318,25 +341,11 @@ void GR_CocoaGraphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
 		point.x = curX;
 		point.y = yoff;
 
-		[string drawAtPoint:point withAttributes:m_fontProps];
+		LOCK_CONTEXT__;
+		[m_fontMetricsLayoutManager drawGlyphsForGlyphRange:glyphRange atPoint:point];
 		
 		x+=curWidth;
 		prevWidth = curWidth;
-/*
-		This was in the non-bidi branch, and as I am not sure the bidi brach is complete, I left it here
-		for the time being
-
-		NSPoint point;
-		point.x = x;
-		point.y = yoff;
-
-		// TODO: set attributes
-		[string drawAtPoint:point withAttributes:nil];
-		//gdk_draw_text(m_pWin,font,m_pGC,x,yoff+font->ascent,(gchar*)&beucs,2);
-		x += [font widthOfString:string];
-		//x+=gdk_text_width(font, (gchar*)&beucs, 2);
-*/
-		[string release];
 	}
 
 	flush();
@@ -353,12 +362,12 @@ void GR_CocoaGraphics::setFont(GR_Font * pFont)
 UT_uint32 GR_CocoaGraphics::getFontHeight(GR_Font * fnt)
 {
 	UT_ASSERT(fnt);
-	return (UT_uint32)static_cast<XAP_CocoaFont*>(fnt)->getHeight();
+	return tlu((UT_uint32)static_cast<XAP_CocoaFont*>(fnt)->getHeight());
 }
 
 UT_uint32 GR_CocoaGraphics::getFontHeight()
 {
-	return (UT_uint32)m_pFont->getHeight();
+	return tlu((UT_uint32)m_pFont->getHeight());
 }
 
 UT_uint32 GR_CocoaGraphics::_measureUnRemappedCharATSUI(const UT_UCSChar c)
@@ -422,11 +431,58 @@ UT_uint32 GR_CocoaGraphics::_measureUnRemappedCharATSUI(const UT_UCSChar c)
 
 UT_uint32 GR_CocoaGraphics::_measureUnRemappedCharNSString(const UT_UCSChar c)
 {
-	NSString * string = [[NSString alloc] initWithData:[NSData dataWithBytes:&c length:sizeof(UT_UCSChar)]
-							encoding:NSUnicodeStringEncoding];
+	unichar c2 = c;
+	NSString * string = [[NSString alloc] initWithCharacters:&c2 length:1];
 	NSSize aSize = [string sizeWithAttributes:m_fontProps];
 	[string release];
 	return (UT_uint32)aSize.width;
+}
+
+
+void GR_CocoaGraphics::_initMetricsLayouts(void)
+{
+	m_fontMetricsTextStorage = [[NSTextStorage alloc] init];
+
+	m_fontMetricsLayoutManager = [[NSLayoutManager alloc] init];
+	[m_fontMetricsTextStorage addLayoutManager:m_fontMetricsLayoutManager];
+
+	m_fontMetricsTextContainer = [[NSTextContainer alloc] initWithContainerSize:NSMakeSize(10000, 1000)];
+	[m_fontMetricsTextContainer setLineFragmentPadding:0];
+	[m_fontMetricsLayoutManager addTextContainer:m_fontMetricsTextContainer];
+}
+
+
+UT_uint32 GR_CocoaGraphics::_measureUnRemappedCharLayout(const UT_UCSChar c)
+{
+    NSAttributedString *attributedString;
+    NSRange glyphRange;
+    NSRect *rects;
+    unsigned int count;
+
+    if (!m_fontMetricsTextStorage) {
+		_initMetricsLayouts();
+    }
+
+	unichar c2 = c;		// FIXME: I suspect a problem beetween UT_UCSChar and unichar
+	NSString * aString =  [[NSString alloc] initWithCharacters:&c2 length:1];
+    attributedString = [[NSAttributedString alloc] initWithString:aString attributes:m_fontProps];
+    [m_fontMetricsTextStorage setAttributedString:attributedString];
+    [attributedString release];
+	[aString release];
+
+    glyphRange = [m_fontMetricsLayoutManager glyphRangeForTextContainer:m_fontMetricsTextContainer];
+    if (glyphRange.length == 0) {
+        return tlu(0);
+	}
+	
+    rects = [m_fontMetricsLayoutManager rectArrayForGlyphRange:glyphRange 
+					withinSelectedGlyphRange:NSMakeRange(NSNotFound, 0) 
+					inTextContainer:m_fontMetricsTextContainer 
+					rectCount:&count];
+    if (count < 1) {
+        return tlu(0);
+	}
+    return static_cast<UT_uint32>(tluD(rects[0].size.width));
 }
 
 UT_uint32 GR_CocoaGraphics::measureUnRemappedChar(const UT_UCSChar c)
@@ -436,10 +492,11 @@ UT_uint32 GR_CocoaGraphics::measureUnRemappedChar(const UT_UCSChar c)
 	// is that measureString() uses remapping to get past zero-width
 	// character cells.
 
-	if(c == 0x200B || c == 0xFEFF) // 0-with spaces
+	if(c == 0x200B || c == 0xFEFF) { // 0-with spaces
 		return 0;
+	}
 
-	return _measureUnRemappedCharNSString (c);
+	return _measureUnRemappedCharLayout (c);
 }
 
 
@@ -486,9 +543,9 @@ void GR_CocoaGraphics::_utNSColorToRGBColor (NSColor *c, UT_RGBColor &clr)
 {
 	float r, g, b, a;
 	[c getRed:&r green:&g blue:&b alpha:&a];
-	clr.m_red = r * 255.0f;
-	clr.m_grn = g * 255.0f;
-	clr.m_blu = b * 255.0f;
+	clr.m_red = static_cast<unsigned char>(r * 255.0f);
+	clr.m_grn = static_cast<unsigned char>(g * 255.0f);
+	clr.m_blu = static_cast<unsigned char>(b * 255.0f);
 	clr.m_bIsTransparent = (a == 0.0f ? true : false);
 }
 
@@ -558,9 +615,9 @@ GR_Font * GR_CocoaGraphics::findFont(const char* pszFontFamily,
 	}
 
 	NSFont*		nsfont;
-	UT_uint32 iSize = UT_convertToPoints(pszFontSize);
-	nsfont = [[NSFontManager sharedFontManager] fontWithFamily:[NSString stringWithCString:pszFontFamily] 
-		traits:s weight:5 size:(float)iSize];
+	double size = UT_convertToPoints(pszFontSize);
+	nsfont = [[NSFontManager sharedFontManager] fontWithFamily:[NSString stringWithUTF8String:pszFontFamily] 
+		traits:s weight:5 size:size];
 	if (!nsfont)
 	{
 		// Oops!  We don't have that font here.
@@ -568,7 +625,7 @@ GR_Font * GR_CocoaGraphics::findFont(const char* pszFontFamily,
 		// be there unless the user fidled with the installation
 		NSLog (@"Unable to fint font \"%s\".", pszFontFamily);
 		nsfont = [[NSFontManager sharedFontManager] fontWithFamily:@"Times New Roman" 
-		                traits:s weight:5 size:(float)iSize];
+		                traits:s weight:5 size:size];
 	}
 
 	// bury the pointer to our Cocoa font in a XAP_CocoaFontHandle 
@@ -578,26 +635,29 @@ GR_Font * GR_CocoaGraphics::findFont(const char* pszFontFamily,
 	return pFont;
 }
 
+// returns in LU
 UT_uint32 GR_CocoaGraphics::getFontAscent(GR_Font * fnt)
 {
 	UT_ASSERT(fnt);
-	return (UT_uint32)static_cast<XAP_CocoaFont*>(fnt)->getAscent();
+	return tlu((UT_uint32)static_cast<XAP_CocoaFont*>(fnt)->getAscent());
 }
 
+// returns in LU
 UT_uint32 GR_CocoaGraphics::getFontAscent()
 {
-	return (UT_uint32)m_pFont->getAscent();
+	return tlu((UT_uint32)m_pFont->getAscent());
 }
 
+// returns in LU
 UT_uint32 GR_CocoaGraphics::getFontDescent(GR_Font * fnt)
 {
 	UT_ASSERT(fnt);
-	return (UT_uint32)static_cast<XAP_CocoaFont*>(fnt)->getDescent();
+	return tlu((UT_uint32)static_cast<XAP_CocoaFont*>(fnt)->getDescent());
 }
 
 UT_uint32 GR_CocoaGraphics::getFontDescent()
 {
-	return (UT_uint32)m_pFont->getDescent();
+	return tlu((UT_uint32)m_pFont->getDescent());
 }
 
 void GR_CocoaGraphics::drawLine(UT_sint32 x1, UT_sint32 y1,
@@ -610,8 +670,8 @@ void GR_CocoaGraphics::drawLine(UT_sint32 x1, UT_sint32 y1,
 
 	::CGContextBeginPath(m_CGContext);
 	// TODO set the line width according to m_iLineWidth
-	::CGContextMoveToPoint (m_CGContext, x1, y1);
-	::CGContextAddLineToPoint (m_CGContext, x2, y2);
+	::CGContextMoveToPoint (m_CGContext, tdu(x1), tdu(y1));
+	::CGContextAddLineToPoint (m_CGContext, tdu(x2), tdu(y2));
 	::CGContextStrokePath (m_CGContext);
 }
 
@@ -619,7 +679,7 @@ void GR_CocoaGraphics::setLineWidth(UT_sint32 iLineWidth)
 {
 	LOCK_CONTEXT__;
 	UT_DEBUGMSG (("GR_CocoaGraphics::setLineWidth(%ld) was %f\n", iLineWidth, [NSBezierPath defaultLineWidth]));
-	m_iLineWidth = iLineWidth;
+	m_iLineWidth = tdu(iLineWidth);
 	::CGContextSetLineWidth (m_CGContext, m_iLineWidth);
 }
 
@@ -628,9 +688,9 @@ void GR_CocoaGraphics::xorLine(UT_sint32 x1, UT_sint32 y1, UT_sint32 x2,
 {
 	// TODO use XOR mode NSCompositeXOR
 //	LOCK_CONTEXT__;
-	float x = UT_MIN(x1,x2);
-	float y = UT_MIN(y1,y2);
-	NSRect newBounds = NSMakeRect (x, y, UT_MAX(x1,x2) - x, UT_MAX(y1,y2) - y);
+	float x = UT_MIN(x1,x2);		// still layout unit
+	float y = UT_MIN(y1,y2);		// still layout unit
+	NSRect newBounds = NSMakeRect (tduD(x), tduD(y), tduD(UT_MAX(x1,x2) - x), tduD(UT_MAX(y1,y2) - y));
 	[m_xorCache setSize:newBounds.size];
 	{
 		StNSImageLocker locker(m_pWin, m_xorCache);
@@ -639,8 +699,8 @@ void GR_CocoaGraphics::xorLine(UT_sint32 x1, UT_sint32 y1, UT_sint32 x2,
 		::CGContextTranslateCTM (context, 0.5, 0.5);
 		::CGContextBeginPath(context);
 		::CGContextSetLineWidth (context, m_iLineWidth);
-		::CGContextMoveToPoint (context, x1, y1);
-		::CGContextAddLineToPoint (context, x2, y2);
+		::CGContextMoveToPoint (context, tdu(x1), tdu(y1));
+		::CGContextAddLineToPoint (context, tdu(x2), tdu(y2));
 		::CGContextStrokePath (context);
 	}
 	// Should make an NSImage and XOR it onto the real image.
@@ -659,10 +719,10 @@ void GR_CocoaGraphics::polyLine(UT_Point * pts, UT_uint32 nPoints)
 	for (UT_uint32 i = 0; i < nPoints; i++)
 	{
 		if (i == 0) {
-			::CGContextMoveToPoint(m_CGContext, pts[i].x, pts[i].y);
+			::CGContextMoveToPoint(m_CGContext, tdu(pts[i].x), tdu(pts[i].y));
 		}
 		else {
-			::CGContextAddLineToPoint(m_CGContext, pts[i].x, pts[i].y);
+			::CGContextAddLineToPoint(m_CGContext, tdu(pts[i].x), tdu(pts[i].y));
 		}
 	}
 	::CGContextStrokePath(m_CGContext);
@@ -676,7 +736,7 @@ void GR_CocoaGraphics::invertRect(const UT_Rect* pRect)
 	LOCK_CONTEXT__;
 	// TODO handle invert. this is highlight.
 
-	NSHighlightRect (NSMakeRect (pRect->left, pRect->top, pRect->width, pRect->height));
+	NSHighlightRect (NSMakeRect (tdu(pRect->left), tdu(pRect->top), tdu(pRect->width), tdu(pRect->height)));
 }
 
 void GR_CocoaGraphics::setClipRect(const UT_Rect* pRect)
@@ -695,7 +755,8 @@ void GR_CocoaGraphics::setClipRect(const UT_Rect* pRect)
 
 	if (pRect) {
 		UT_DEBUGMSG (("ClipRect set\n"));
-		::CGContextClipToRect (m_CGContext, ::CGRectMake (pRect->left, pRect->top, pRect->width, pRect->height));
+		::CGContextClipToRect (m_CGContext, 
+				::CGRectMake (tdu(pRect->left), tdu(pRect->top), tdu(pRect->width), tdu(pRect->height)));
 	}
 	else {
 		UT_DEBUGMSG (("ClipRect reset!!\n"));
@@ -712,7 +773,7 @@ void GR_CocoaGraphics::fillRect(const UT_RGBColor& clr, UT_sint32 x, UT_sint32 y
 	LOCK_CONTEXT__;
 	[NSGraphicsContext saveGraphicsState];
 	[c set];
-	NSRectFill (NSMakeRect (x, y, w, h));
+	NSRectFill (NSMakeRect (tdu(x), tdu(y), tdu(w), tdu(h)));
 	[NSGraphicsContext restoreGraphicsState];
 }
 
@@ -724,7 +785,7 @@ void GR_CocoaGraphics::fillRect(GR_Color3D c, UT_sint32 x, UT_sint32 y, UT_sint3
 	LOCK_CONTEXT__;
 	[NSGraphicsContext saveGraphicsState];
 	[m_3dColors[c] set];
-	NSRectFill (NSMakeRect (x, y, w, h));
+	NSRectFill (NSMakeRect (tdu(x), tdu(y), tdu(w), tdu(h)));
 	[NSGraphicsContext restoreGraphicsState];
 }
 
@@ -738,14 +799,16 @@ void GR_CocoaGraphics::fillRect(GR_Color3D c, UT_Rect &r)
 
 void GR_CocoaGraphics::scroll(UT_sint32 dx, UT_sint32 dy)
 {
-	UT_ASSERT(UT_NOT_IMPLEMENTED);
+	//UT_ASSERT(UT_NOT_IMPLEMENTED);
+	UT_DEBUGMSG(("Scrolling not implemented\n"));
 }
 
 void GR_CocoaGraphics::scroll(UT_sint32 x_dest, UT_sint32 y_dest,
 						  UT_sint32 x_src, UT_sint32 y_src,
 						  UT_sint32 width, UT_sint32 height)
 {
-	UT_ASSERT(UT_NOT_IMPLEMENTED);
+	//UT_ASSERT(UT_NOT_IMPLEMENTED);
+	UT_DEBUGMSG(("Scrolling not implemented\n"));
 }
 
 void GR_CocoaGraphics::clearArea(UT_sint32 x, UT_sint32 y,
@@ -754,7 +817,8 @@ void GR_CocoaGraphics::clearArea(UT_sint32 x, UT_sint32 y,
   	UT_DEBUGMSG(("ClearArea: %d %d %d %d\n", x, y, width, height));
 	if (width > 0)
 	{
-		NSEraseRect (NSMakeRect(x, y, width, height));
+		LOCK_CONTEXT__;
+		NSEraseRect (NSMakeRect(tdu(x), tdu(y), tdu(width), tdu(height)));
 	}
 }
 
@@ -786,7 +850,7 @@ GR_Image* GR_CocoaGraphics::createNewImage(const char* pszName, const UT_ByteBuf
    	else
 	   	pImg = new GR_VectorImage(pszName);
 
-	pImg->convertFromBuffer(pBB, iDisplayWidth, iDisplayHeight);
+	pImg->convertFromBuffer(pBB, tdu(iDisplayWidth), tdu(iDisplayHeight));
    	return pImg;
 }
 
@@ -795,7 +859,7 @@ void GR_CocoaGraphics::drawImage(GR_Image* pImg, UT_sint32 xDest, UT_sint32 yDes
 	UT_ASSERT(pImg);
 
    	if (pImg->getType() != GR_Image::GRT_Raster) {
-	   	pImg->render(this, xDest, yDest);
+	   	pImg->render(this, tdu(xDest), tdu(yDest));
 	   	return;
 	}
 
@@ -814,7 +878,7 @@ void GR_CocoaGraphics::drawImage(GR_Image* pImg, UT_sint32 xDest, UT_sint32 yDes
 	NSSize size = [image size];
 
 	LOCK_CONTEXT__;
-	[image drawInRect:NSMakeRect(xDest, yDest, pCocoaImage->getDisplayWidth(), iImageHeight)
+	[image drawInRect:NSMakeRect(tdu(xDest), tdu(yDest), pCocoaImage->getDisplayWidth(), iImageHeight)
 	           fromRect:NSMakeRect(0, 0, size.width, size.height) operation:NSCompositeCopy fraction:1.0f];
 //	[image compositeToPoint:NSMakePoint(xDest, yDest + iImageHeight) operation:NSCompositeCopy fraction:1.0f];
 }
@@ -968,10 +1032,10 @@ void GR_CocoaGraphics::polygon(UT_RGBColor& clr,UT_Point *pts,UT_uint32 nPoints)
 	for (UT_uint32 i = 0; i < nPoints; i++)
 	{
 		if (i == 0) {
-			::CGContextMoveToPoint(m_CGContext, pts[i].x, pts[i].y);
+			::CGContextMoveToPoint(m_CGContext, tdu(pts[i].x), tdu(pts[i].y));
 		}
 		else {
-			::CGContextAddLineToPoint(m_CGContext, pts[i].x, pts[i].y);
+			::CGContextAddLineToPoint(m_CGContext, tdu(pts[i].x), tdu(pts[i].y));
 		}
 	}
 	::CGContextSaveGState(m_CGContext);
@@ -1082,7 +1146,7 @@ void GR_Font::s_getGenericFontProperties(const char * szFontName,
 	
 	*pff = FF_Unknown;
 
-	NSFont * nsfont = [[NSFontManager sharedFontManager] fontWithFamily:[NSString stringWithCString:szFontName] 
+	NSFont * nsfont = [[NSFontManager sharedFontManager] fontWithFamily:[NSString stringWithUTF8String:szFontName] 
 		traits:0 weight:5 size:(float)12.0];
 
 	if ([[NSFontManager sharedFontManager] traitsOfFont:nsfont] == NSFixedPitchFontMask){
@@ -1098,30 +1162,32 @@ void GR_Font::s_getGenericFontProperties(const char * szFontName,
 void GR_CocoaGraphics::saveRectangle(UT_Rect & rect,  UT_uint32 iIndx)
 {
 	NSRect* cacheRect = new NSRect;
-	*cacheRect = NSMakeRect(rect.left, rect.top, 
-						  rect.width, rect.height);
+	*cacheRect = NSMakeRect(tdu(rect.left), tdu(rect.top), 
+						  tdu(rect.width), tdu(rect.height));
 	NSImage* cache = _makeNewCacheImage();
 	[cache setSize:cacheRect->size];
 	{
 		StNSImageLocker locker(m_pWin, cache);
-		NSRect r = NSMakeRect (0.0, 0.0, rect.width, rect.height);
+		NSRect r = NSMakeRect (0.0, 0.0, tdu(rect.width), tdu(rect.height));
 		NSEraseRect(r);
 		[m_offscreen compositeToPoint:NSMakePoint(0.0, 0.0) fromRect:*cacheRect operation:NSCompositeCopy];
 	}
 	// update cache arrays
-	[m_cacheArray insertObject:cache atIndex:iIndx];
-	[cache release];
-	NSRect * oldC = NULL;
-	m_cacheRectArray.setNthItem(iIndx, (void*) cacheRect, &(void *)oldC);
-	if(oldC)
-		DELETEP(oldC);
+	id oldObj;
+	m_cacheArray.setNthItem(iIndx, cache, (void **)&oldObj);
+	[oldObj release];
+	NSRect *old;
+	m_cacheRectArray.setNthItem(iIndx, cacheRect, (void **)&old);
+	if (old) {
+		delete old;
+	}
 }
 
 
 void GR_CocoaGraphics::restoreRectangle(UT_uint32 iIndx)
 {
-	NSRect* cacheRect = (NSRect*)m_cacheRectArray.getNthItem(iIndx);
-	NSImage* cache = [m_cacheArray objectAtIndex:iIndx];
+	NSRect* cacheRect = static_cast<NSRect*>(m_cacheRectArray.getNthItem(iIndx));
+	NSImage* cache = static_cast<NSImage*>(m_cacheArray.getNthItem(iIndx));
 	NSPoint pt = cacheRect->origin;
 	pt.y += cacheRect->size.height;
 	LOCK_CONTEXT__;
