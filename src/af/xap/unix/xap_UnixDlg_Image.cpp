@@ -108,6 +108,10 @@ void XAP_UnixDialog_Image::event_Ok ()
 	{
 		setWrapping(WRAP_INLINE);
 	}
+	else if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(m_wrbNone)))
+	{
+		setWrapping(WRAP_NONE);
+	}
 	else if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(m_wrbWrappedRight)))
 	{
 		setWrapping(WRAP_TEXTRIGHT);
@@ -281,6 +285,12 @@ void XAP_UnixDialog_Image::setWrappingGUI()
 		gtk_widget_set_sensitive(m_wrbSquareWrap,TRUE);
 		gtk_widget_set_sensitive(m_wrbTightWrap,TRUE);
 	}
+	else if(getWrapping() == WRAP_NONE)
+	{
+		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(m_wrbNone),TRUE);
+		gtk_widget_set_sensitive(m_wrbSquareWrap,FALSE);
+		gtk_widget_set_sensitive(m_wrbTightWrap,FALSE);
+	}
 	else if(getWrapping() == WRAP_TEXTLEFT)
 	{
 		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(m_wrbWrappedLeft),TRUE);
@@ -398,6 +408,11 @@ void XAP_UnixDialog_Image::_connectSignals (void)
 				   G_CALLBACK(s_wrapping_changed),
 				   static_cast<gpointer>(this));
 
+  g_signal_connect(G_OBJECT(m_wrbNone),
+				   "clicked",
+				   G_CALLBACK(s_wrapping_changed),
+				   static_cast<gpointer>(this));
+
 
   g_signal_connect(G_OBJECT(m_wrbWrappedRight),
 				   "clicked",
@@ -489,6 +504,7 @@ GtkWidget * XAP_UnixDialog_Image::_constructWindow ()
 	localizeLabel(glade_xml_get_widget(xml,"lbDescription"), pSS, XAP_STRING_ID_DLG_Image_LblDescription);
 
 	localizeButton(glade_xml_get_widget(xml,"rbInLine"), pSS, XAP_STRING_ID_DLG_Image_InLine);
+	localizeButton(glade_xml_get_widget(xml,"rbNone"), pSS, XAP_STRING_ID_DLG_Image_WrappedNone);
 	localizeButton(glade_xml_get_widget(xml,"rbWrappedRight"), pSS, XAP_STRING_ID_DLG_Image_WrappedRight);
 	localizeButton(glade_xml_get_widget(xml,"rbWrappedLeft"), pSS, XAP_STRING_ID_DLG_Image_WrappedLeft);
 	localizeButton(glade_xml_get_widget(xml,"rbWrappedBoth"), pSS, XAP_STRING_ID_DLG_Image_WrappedBoth);
@@ -502,6 +518,7 @@ GtkWidget * XAP_UnixDialog_Image::_constructWindow ()
 
 	m_wPlaceTable = glade_xml_get_widget(xml,"tbPlacement");
 	m_wrbInLine = glade_xml_get_widget(xml,"rbInLine");
+	m_wrbNone = glade_xml_get_widget(xml,"rbNone");
 	m_wrbWrappedRight = glade_xml_get_widget(xml,"rbWrappedRight");
 	m_wrbWrappedLeft = glade_xml_get_widget(xml,"rbWrappedLeft");
 	m_wrbWrappedBoth = glade_xml_get_widget(xml,"rbWrappedBoth");

@@ -9776,18 +9776,26 @@ Defun (dlgFmtPosImage)
 	}
 	pDialog->setHeight(pszHeight);
 	UT_DEBUGMSG(("Width %s Height %s \n",pszWidth,pszHeight));
-	WRAPPING_TYPE iWrap = WRAP_TEXTRIGHT;
+	WRAPPING_TYPE iWrap = WRAP_NONE;
 	if(pPosObj->getFrameWrapMode() == FL_FRAME_WRAPPED_TO_LEFT  )
 	{
 	  iWrap = WRAP_TEXTLEFT;
+	}
+	if(pPosObj->getFrameWrapMode() == FL_FRAME_WRAPPED_TO_RIGHT  )
+	{
+	  iWrap = WRAP_TEXTRIGHT;
 	}
 	else if(pPosObj->getFrameWrapMode() == FL_FRAME_WRAPPED_BOTH_SIDES)
 	{
 	  iWrap = WRAP_TEXTBOTH;
 	} 
-	else if(pPosObj->getFramePositionTo() == FL_FRAME_POSITIONED_INLINE)
+	else if(pPosObj->getFrameWrapMode() == FL_FRAME_ABOVE_TEXT)
 	{
-	  iWrap = WRAP_INLINE;
+	  iWrap = WRAP_NONE;
+	}
+	else if(pPosObj->getFrameWrapMode() == FL_FRAME_BELOW_TEXT)
+	{
+	  iWrap = WRAP_NONE;
 	}
 	POSITION_TO iPos = POSITION_TO_PARAGRAPH;
 	if(pPosObj->getFramePositionTo() == FL_FRAME_POSITIONED_TO_COLUMN)
@@ -9849,6 +9857,11 @@ Defun (dlgFmtPosImage)
 	  {
 	    properties[5] = "wrapped-both";
 	  }
+	  else if(newWrapMode == WRAP_NONE)
+	  {
+	    properties[5] = "above-text";
+	  }
+
 	  if(newFormatMode == POSITION_TO_PARAGRAPH)
 	  {
 	    properties[7] = "block-above-text";
@@ -10243,6 +10256,35 @@ UT_return_val_if_fail(pDialog, false);
 					  sVal = UT_formatDimensionedValue(xpos,"in", NULL);
 					  UT_String_setProperty(sFrameProps,sProp,sVal);
 				  }
+			  }
+			  else if(pDialog->getWrapping() == WRAP_NONE)
+			  {
+				  sProp = "wrap-mode";
+				  sVal = "above-text";
+				  UT_String_setProperty(sFrameProps,sProp,sVal);
+				  UT_sint32 ix = 0;
+				  if(pDialog->getPositionTo() == POSITION_TO_PARAGRAPH)
+				  {
+					  xpos =  static_cast<double>(ix)/static_cast<double>(UT_LAYOUT_RESOLUTION);
+					  sProp = "xpos";
+					  sVal = UT_formatDimensionedValue(xpos,"in", NULL);
+					  UT_String_setProperty(sFrameProps,sProp,sVal);
+				  }
+				  else if(pDialog->getPositionTo() == POSITION_TO_COLUMN)
+				  {
+					  xpos =  static_cast<double>(ix)/static_cast<double>(UT_LAYOUT_RESOLUTION);
+					  sProp = "frame-col-xpos";
+					  sVal = UT_formatDimensionedValue(xpos,"in", NULL);
+					  UT_String_setProperty(sFrameProps,sProp,sVal);
+				  }
+				  else if(pDialog->getPositionTo() == POSITION_TO_PAGE)
+				  {
+					  xpos =  static_cast<double>(ix)/static_cast<double>(UT_LAYOUT_RESOLUTION);
+					  sProp = "frame-page-xpos";
+					  sVal = UT_formatDimensionedValue(xpos,"in", NULL);
+					  UT_String_setProperty(sFrameProps,sProp,sVal);
+				  }
+
 			  }
 			  else if(pDialog->getWrapping() == WRAP_TEXTRIGHT)
 			  {
