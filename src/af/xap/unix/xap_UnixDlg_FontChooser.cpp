@@ -289,6 +289,13 @@ void AP_UnixDialog_FontChooser::runModal(AP_Frame * pFrame)
 
 	// Run the dialog
 	gtk_widget_show(GTK_WIDGET(cf));
+
+	// To make 8-bit visuals happy, we have to push a new visual on to the GTK
+	// visual stack, and push the new dialog's colormap onto the GTK colormap
+	// stack.
+	gtk_widget_push_visual(gdk_rgb_get_visual());
+	gtk_widget_push_colormap(gdk_window_get_colormap(GTK_WIDGET(cf)->window));
+
 	gtk_grab_add(GTK_WIDGET(cf));
 	gtk_main();
 
@@ -322,6 +329,9 @@ void AP_UnixDialog_FontChooser::runModal(AP_Frame * pFrame)
 	}
 
 	gtk_widget_destroy (GTK_WIDGET(cf));
+
+	gtk_widget_pop_colormap();
+	gtk_widget_pop_visual();
 
 	delete [] buf;
 	
