@@ -37,10 +37,12 @@
 #define min(x, y) (((x) > (y)) ? (y) : (x))
 
 #define  MY_ABS(x) 	(((x) < 0) ? -(x) : (x))
+#define DOUBLE_TO_FIXED(x)	((long)(x * 65536.0 + 0.5)) 
 /* NOTE: Having to do all of this set up here is a real
          pain, but since we can be drawing outside of an
          expose context, it is just what we have to do.
 */
+
 #define DRAW_START DrawSetup();
 #define DRAW_END   DrawTeardown();
 
@@ -160,6 +162,7 @@ GR_QNXGraphics::GR_QNXGraphics(PtWidget_t * win, PtWidget_t * draw, XAP_App *app
 	m_iAscentCache = m_iDescentCache = m_iHeightCache -1;
 
 	m_pOSC = PdCreateOffscreenContext(0,draw->area.size.w,draw->area.size.h,NULL);
+	m_pFontCx = PfAttachCx("/dev/phfont",240000);
 	
 	m_cs = GR_Graphics::GR_COLORSPACE_COLOR;
 	m_cursor = GR_CURSOR_INVALID;
@@ -178,6 +181,7 @@ GR_QNXGraphics::~GR_QNXGraphics()
 	}
 	PgDestroyGC(m_pGC);
 	PhDCRelease(m_pOSC);
+	PfDetach(m_pFontCx);
 }
 
 /***
@@ -278,17 +282,119 @@ draw stream, we can't always assume that other things are properly
 set (ie font, colour etc) so we end up doing it again ourselves. It
 also licks that we have to do the translation at this layer.
 */
+void renderText(void *ctx, const PhPoint_t *pos,const FontRender *render)
+{
+GR_QNXGraphics *qGR = static_cast<GR_QNXGraphics *>(ctx);
+PhPoint_t pnt;
+pnt.x = pos->x + render->offset.x;
+pnt.y = pos->y + render->offset.y;
+//fprintf(stderr,"renderText: bpl= %d, height=%d ; pos=%d,%d\n",render->bpl,render->size.y,pos->x,pos->y);
+   if(render->bpp == 1) {  
+      PhImage_t tsImage;
+      PgColor_t palette[2] = { Pg_WHITE, qGR->getCurrentGC()->text.com.primary };
+
+      memset(&tsImage, 0x00, sizeof(PhImage_t));
+      tsImage.size.w = render->size.x;
+      tsImage.size.h = render->size.y;
+      tsImage.bpl = render->bpl;
+      tsImage.image = (char*)render->bmptr;
+      tsImage.palette = palette;
+      tsImage.colors = 2;
+      tsImage.type = Pg_BITMAP_TRANSPARENT;
+
+
+      PgDrawPhImagemx(&pnt, &tsImage, 0x00);
+			PgFlush();
+   }
+   else if(render->bpp == 4)
+   {  
+      PhImage_t tsImage;
+
+      memset(&tsImage, 0x00, sizeof(PhImage_t));
+      tsImage.size.w = render->size.x;
+      tsImage.size.h = render->size.y;
+      tsImage.bpl = render->bpl;
+      tsImage.image = (char *)render->bmptr;
+      tsImage.palette = NULL;
+      tsImage.colors = 0;
+      tsImage.type = Pg_IMAGE_GBLEND_NIBBLE;
+
+      PgDrawPhImagemx(&pnt, &tsImage, 0x00);
+			PgFlush();
+
+   }
+   else if(render->bpp == 8)
+   {
+	  if(render->flags & FONTRENDER_RGB_PIXMAP)
+      {  
+				PhImage_t tsImage;
+
+         memset(&tsImage, 0x00, sizeof(PhImage_t));
+         tsImage.size.w = render->size.x;
+         tsImage.size.h = render->size.y;
+         tsImage.bpl = render->bpl;
+         tsImage.image = (char *)render->bmptr;
+         tsImage.colors = 0;
+         tsImage.palette = NULL;
+         tsImage.type = Pg_IMAGE_DIRECT_888;
+
+         PgDrawPhImagemx(&pnt, &tsImage, 0x00);
+				 PgFlush();
+      }
+      else
+/*			{
+ 			 PhImage_t tsImage;
+		   PgColor_t palette[2] = {Pg_TRANSPARENT,qGR->getCurrentGC()->text.com.primary };
+
+		   memset(&tsImage, 0x00, sizeof(PhImage_t));
+		   tsImage.size.w = render->size.x;
+		   tsImage.size.h = render->size.y;
+		   tsImage.bpl = render->bpl;
+		   tsImage.image = (char*)render->bmptr;
+		   tsImage.palette = palette;
+		   tsImage.colors = 2;
+			 tsImage.type = Pg_IMAGE_GRADIENT_BYTE;
+ 
+       PgDrawPhImagemx(&pnt, &tsImage, 0x00);
+			 PgFlush();
+			}*/
+      {  PgMap_t alpha;
+         PgColor_t old;
+         PhRect_t rect;
+
+         rect.ul.x = pnt.x;
+         rect.ul.y = pnt.y;
+         rect.lr.x = (rect.ul.x + render->size.x) - 1;
+         rect.lr.y = (rect.ul.y + render->size.y) - 1;
+
+         PgAlphaOn();
+         alpha.map = (char *)render->bmptr;
+         alpha.dim.w = render->size.x;
+         alpha.dim.h = render->size.y;
+         PgSetAlphaBlend(&alpha, 0x00);
+         old = PgSetFillColor(qGR->getCurrentGC()->text.com.primary);
+         PgDrawRect(&rect, Pg_DRAW_FILL);
+         PgSetFillColor(old);
+         PgSetAlphaBlend(NULL, 0x00);
+         PgAlphaOff();
+				 PgFlush();
+      }
+   }
+   return;
+}
+
 void GR_QNXGraphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
 							   int iLength, UT_sint32 xoff, UT_sint32 yoff,
 							   int * pCharWidths)
 {
 	PhPoint_t pos;
-	UT_UCS2Char ucs2[iLength];
+	UT_UCS2Char ucs2[iLength +1];
 //	char *utf8;
 //	UT_uint32 len;
 
 	for(int i=0;i<iLength;i++)
 		ucs2[i] = pChars[i];	
+	ucs2[iLength]='\0';
 
 	xoff = tdu(xoff);
 	yoff = tdu(yoff);
@@ -300,19 +406,13 @@ void GR_QNXGraphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
 	GR_CaretDisabler caretDisabler(getCaret());
 	DRAW_START
 
-	PgSetFont(m_pFont->getFont());
-	PgSetTextColor(m_currentColor);
-//	utf8=(char*)UT_convert((char*)(pChars+iCharOffset),(iLength)*sizeof(pChars[0]),UCS_INTERNAL,"UTF-8",NULL,&len);
-	//Faster to copy and not flush or to not copy and flush?
-/*
-	Each flush causes two messages to be sent.  Since AbiWord is stupid about sending
-    entire runs of text, we don't do this but do the copy instead if it is required.
-	PgDrawTextmx(pNChars, ipos, &pos, 0);
+	PgSetTextColor(m_currentColor);	
+	PgSetFillColor(Pg_TRANSPARENT);
+	long scale=0; //16.16
+	scale = DOUBLE_TO_FIXED((double)m_pFont->getSize() * (double)(getZoomPercentage()/100.0));
 	PgFlush();
-*/
-	PgDrawTextChars((const char *)&ucs2,iLength , &pos, Pg_TEXT_WIDECHAR);
-
-//	FREEP(utf8);
+	PfRenderCx(m_pFontCx,this,m_pFont->getFont(),scale,scale,(const char *)&ucs2,0,PF_WIDE_CHARS|PF_FRACTIONAL,&pos,NULL,&renderText);
+	
 	DRAW_END
 }
 
@@ -325,27 +425,68 @@ void GR_QNXGraphics::drawChar(UT_UCSChar Char, UT_sint32 xoff, UT_sint32 yoff)
  This function is also called a ton of times.  We need to make it
  as fast a possible.
 */
+#if 0
+UT_uint32 GR_QNXGraphics::measureString(const UT_UCSChar *s,int iOffset,int num,UT_GrowBufElement *pWidths)
+{
+const char *font;
+uint16_t mychr[num + 1]; //QNX does not support UCS-4
+int indices[num]; //Get pen x pos after the last char
+int indicesnum=0;
+int penpos[num]; //will hold the pen x pos after the letter inclined by indices. 
+PhRect_t rect;
+long scale=0; //16.16
+
+if(!m_pFont || !(font = m_pFont->getFont())) {
+	return 0;
+	}
+/* IF pWidths is set, we need to fill each entry with the penx value after the char */
+	for(int i=0;i<num;i++) {
+		if(pWidths) {
+			indices[i] = (iOffset +i)+1;
+			indicesnum++;
+		}
+		mychr[i]	= s[iOffset+i];	
+	} 
+mychr[num] = '\0';
+
+scale = DOUBLE_TO_FIXED((double)m_pFont->getSize() * (double)(getZoomPercentage()/100.0));
+
+PfExtentFractTextCharPositions(&rect,NULL,(char *)&mychr,font,(int *)&indices,(int *)&penpos,indicesnum,PF_WIDE_CHARS,0,0,NULL,scale,scale);
+if(pWidths)
+	for(int i=0;i<indicesnum;i++)
+		pWidths[i] = tlu(penpos[i]);
+
+return tlu((rect.lr.x - min(rect.ul.x,0) +1 ) );
+}
+#endif 
 UT_uint32 GR_QNXGraphics::measureUnRemappedChar(const UT_UCSChar c)
 {
-/* This does NOT work correctly with italic fonts :/ */
 
 const char *font;
-uint16_t mychr = c;
+UT_UCSChar mychr[2] = { c,0x00}; //QNX does not support UCS-4
+int indices[1] = { 1 }; //Get pen x pos after first char
+int penpos[1]; //will hold the pen x pos after the letter inclined by indices. 
 //int size;
 PhRect_t rect;
-FontRender metrics;
+//FontRender metrics;
 if(!m_pFont || !(font = m_pFont->getFont())) {
 	return 0;
 	}
 //somthing is really phucked if you try to use 128 here..
-if(mychr == 128) return GR_CW_UNKNOWN;
+if(mychr[0] == 128) return GR_CW_UNKNOWN;
 //size = PfWideTextWidthBytes(font,&mychr,2);
+long scale=0; //16.16
+scale = DOUBLE_TO_FIXED((double)m_pFont->getSize() * (double)(getZoomPercentage()/100.0));
 
-PfExtent(&rect,NULL,font,NULL,NULL,(const char*)&c,1,PF_WIDE_CHAR32,NULL);
+//PfExtentCx(m_pFontCx,&rect,NULL,font,scale,scale,(const char*)&c,0,PF_WIDE_CHARS|PF_FRACTIONAL,NULL);
+PfExtentFractTextCharPositions(&rect,NULL,(char *)&mychr,font,(int *)&indices,(int *)&penpos,1,PF_WIDE_CHAR32,0,0,NULL,scale,scale);
+//fprintf(stderr,"penpos=%d,rectstuff:%d\n",penpos[0],(rect.lr.x - min(rect.ul.x,0)+1));
+
 //PfGlyph(font,c,&metrics,NULL,NULL,NULL);
 
 //return _UL(size);
-return tlu((rect.lr.x - min(rect.ul.x,0))+1 );
+//return tlu((rect.lr.x - min(rect.ul.x,0) +1 ) );
+return tlu(penpos[0]);
 }
 
 /***
@@ -378,7 +519,7 @@ GR_Font * GR_QNXGraphics::findFont(const char* pszFontFamily,
 	char fname[MAX_FONT_TAG];
 
 	int size = (int)UT_convertToPoints(pszFontSize);
-	size = size * getZoomPercentage()/100;
+//	size = size * getZoomPercentage()/100;
 	UT_DEBUGMSG(("GR: findFont [%s] [%s] [%s] [%s] Zoomed [%d]",
 			pszFontFamily, pszFontStyle, pszFontWeight, pszFontSize,size));
 	
@@ -390,7 +531,7 @@ GR_Font * GR_QNXGraphics::findFont(const char* pszFontFamily,
 	if (UT_strcmp(pszFontStyle, "italic") == 0) {
 		style |= PF_STYLE_ITALIC;
 	}
-	style|=PF_STYLE_ANTIALIAS;
+//	style|=PF_STYLE_ANTIALIAS;
 
 //	printf("Looking for font [%s]@%d w/0x%x\n", pszFontFamily, size, style);
 	if (PfGenerateFontName((const char *)pszFontFamily,
@@ -409,9 +550,9 @@ GR_Font * GR_QNXGraphics::findFont(const char* pszFontFamily,
 		}
 	}
 	UT_DEBUGMSG(("Setting to font name [%s] ", fname));
-	if(PfLoadMetrics(fname)!=0)
+	if(PfLoadMetricsCx(m_pFontCx,fname)!=0)
 	{
-		PfUnloadMetrics(fname);
+		PfUnloadMetricsCx(m_pFontCx,fname);
 	}
 	return(new QNXFont(fname));
 }
@@ -463,41 +604,40 @@ UT_uint32 GR_QNXGraphics::getFontAscent(GR_Font * fnt)
 {
 	QNXFont *pQNXFont = (QNXFont *)fnt;
 	UT_ASSERT(pQNXFont);
+	PhRect_t rect;
 
-	FontQueryInfo info;
-	if (PfQueryFontInfo(pQNXFont->getFont(), &info) == -1) {
-		UT_ASSERT(0);
-		return(0);
-	}
+	long scale=0; //16.16
+	scale = DOUBLE_TO_FIXED((double)pQNXFont->getSize() * (double)(getZoomPercentage()/100.0));
 
-	return tlu(MY_ABS(info.ascender - 1));
+	PfExtentCx(m_pFontCx,&rect,NULL,pQNXFont->getFont(),scale,scale,"a",1,PF_FRACTIONAL,NULL);
+
+	return tlu(MY_ABS(rect.ul.y - 1));
 }
 
 UT_uint32 GR_QNXGraphics::getFontDescent(GR_Font * fnt)
 {
 	QNXFont *pQNXFont = (QNXFont *)fnt;
 	UT_ASSERT(pQNXFont);
+	PhRect_t rect;
 
-	FontQueryInfo info;
-	if (PfQueryFontInfo(pQNXFont->getFont(), &info) == -1) {
-		UT_ASSERT(0);
-		return(0);
-	}
+	long scale=0; //16.16
+	scale = DOUBLE_TO_FIXED((double)pQNXFont->getSize() * (double)(getZoomPercentage()/100.0));
 
-	return tlu(MY_ABS(info.descender + 1 ));
+	PfExtentCx(m_pFontCx,&rect,NULL,pQNXFont->getFont(),scale,scale,"a",1,PF_FRACTIONAL,NULL);
+	return tlu(MY_ABS(rect.lr.y + 1 ));
 }
 
 UT_uint32 GR_QNXGraphics::getFontHeight(GR_Font * fnt)
 {
 	QNXFont *pQNXFont = (QNXFont *)fnt;
 	UT_ASSERT(pQNXFont);
+	PhRect_t rect;
 
-	FontQueryInfo info;
-	if (PfQueryFontInfo(pQNXFont->getFont(), &info) == -1) {
-		UT_ASSERT(0);
-		return(0);
-	}
-	return tlu(MY_ABS(info.descender)) + tlu(MY_ABS(info.ascender));
+	long scale=0; //16.16
+	scale = DOUBLE_TO_FIXED((double)pQNXFont->getSize() * (double)(getZoomPercentage()/100.0));
+	
+	PfExtentCx(m_pFontCx,&rect,NULL,pQNXFont->getFont(),scale,scale,"a",1,PF_FRACTIONAL,NULL);
+	return tlu(MY_ABS(rect.lr.y)) + tlu(MY_ABS(rect.ul.y));
 }
 
 
@@ -582,7 +722,7 @@ return;
 }
 coverage.clear();
 memset(&info,0,sizeof(info));
-PfQueryFontInfo(font,&info);
+PfQueryFontInfoCx(m_pFontCx,font,&info);
 coverage.push_back((void*)info.lochar);
 coverage.push_back((void*)(info.hichar - info.lochar));
 }

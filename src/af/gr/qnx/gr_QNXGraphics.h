@@ -36,17 +36,25 @@ class QNXFont : public GR_Font {
         public:
                 QNXFont(const char *aFont) { 
 					m_fontstr = (aFont) ? UT_strdup(aFont) : NULL; 
+					m_fontID = PfDecomposeStemToID(m_fontstr);
+					m_size = PfFontSize(m_fontID);
 				};
                 ~QNXFont() { 
 					if (m_fontstr) { 
 						free(m_fontstr); 
+					PfFreeFont(m_fontID);
 					} 
 				};
                 const char *getFont(void) { 
 					return(m_fontstr); 
 				};
+				const int getSize(void) {
+					return m_size;
+				};
         private:
                 char   *m_fontstr;
+								int			m_size;
+								FontID	*m_fontID;
 };
 
 class GR_QNXGraphics : public GR_Graphics
@@ -61,6 +69,7 @@ class GR_QNXGraphics : public GR_Graphics
 						   		  int iLength, UT_sint32 xoff, UT_sint32 yoff,
 								  int * pCharWidths = NULL);
 	virtual void 		setFont(GR_Font* pFont);
+//	virtual UT_uint32		measureString(const UT_UCSChar *s,int iOffset,int num,UT_GrowBufElement *pWidths);
 	virtual UT_uint32 	measureUnRemappedChar(const UT_UCSChar c);
 	virtual void 		getColor(UT_RGBColor& clr);
 	virtual void 		setColor(const UT_RGBColor& clr);
@@ -129,7 +138,10 @@ class GR_QNXGraphics : public GR_Graphics
 	virtual UT_uint32 	getFontAscent(GR_Font *);
 	virtual UT_uint32 	getFontDescent(GR_Font *);
 	virtual UT_uint32 	getFontHeight(GR_Font *);
-
+	//Need this in the textdrawing cb.
+	PgColor_t getCurrentPgColor() { return m_currentColor; };
+	QNXFont *getCurrentQNXFont() { return m_pFont; };
+	PhGC_t	*getCurrentGC() { return m_pGC; };
  protected:
 	virtual UT_uint32 	getDeviceResolution(void) const;
 	int 				DrawSetup();
@@ -141,6 +153,7 @@ class GR_QNXGraphics : public GR_Graphics
 	PhDrawContext_t				*m_pOldDC;
 	PhPoint_t		m_OffsetPoint;		
 	PhTile_t *		m_pClipList;		
+	struct _Pf_ctrl * m_pFontCx;	
 
 	// our currently requested font by handle
 	QNXFont *			m_pFont;
