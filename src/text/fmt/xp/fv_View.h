@@ -184,7 +184,11 @@ protected:
 
 	PT_DocPosition		m_iSelectionAnchor;
 	UT_Bool				m_bSelection;
+
+	// autoscroll stuff
 	UT_Timer *			m_pAutoScrollTimer;
+	UT_sint32			m_xLastMouse;
+	UT_sint32			m_yLastMouse;
 
 	fv_ChangeState		m_chg;
 };

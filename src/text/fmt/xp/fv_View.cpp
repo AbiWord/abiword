@@ -1434,6 +1434,12 @@ void FV_View::_autoScroll(UT_Timer * pTimer)
 	FV_View * pView = (FV_View *) pTimer->getInstanceData();
 	UT_ASSERT(pView);
 
+	/*
+		NOTE: We update the selection here, so that the timer can keep 
+		triggering autoscrolls even if the mouse doesn't move.  
+	*/
+	pView->extSelToXY(pView->m_xLastMouse, pView->m_yLastMouse, UT_FALSE);
+
 	// do the autoscroll
 	if (!pView->_ensureThatInsertionPointIsOnScreen())
 	{
@@ -1479,7 +1485,7 @@ void FV_View::extSelToXY(UT_sint32 xPos, UT_sint32 yPos, UT_Bool bDrag)
 	UT_Bool bBOL, bEOL;
 	pPage->mapXYToPosition(xPos + m_xScrollOffset, yClick, iNewPoint, bBOL, bEOL);
 
-	_extSelToPos(iNewPoint);
+	UT_Bool bPostpone = UT_FALSE;
 
 	if (bDrag)
 	{
@@ -1502,6 +1508,10 @@ void FV_View::extSelToXY(UT_sint32 xPos, UT_sint32 yPos, UT_Bool bDrag)
 		}
 		else
 		{
+			// remember where mouse is
+			m_xLastMouse = xPos;
+			m_yLastMouse = yPos;
+
 			// offscreen ==> make sure it's set
 			if (!m_pAutoScrollTimer)
 			{
@@ -1510,10 +1520,17 @@ void FV_View::extSelToXY(UT_sint32 xPos, UT_sint32 yPos, UT_Bool bDrag)
 				if (m_pAutoScrollTimer)
 					m_pAutoScrollTimer->set(AUTO_SCROLL_MSECS);
 			}
+
+			// postpone selection until timer fires
+			bPostpone = UT_TRUE;
 		}
 	}
 	
-	notifyListeners(AV_CHG_MOTION);
+	if (!bPostpone)
+	{
+		_extSelToPos(iNewPoint);
+		notifyListeners(AV_CHG_MOTION);
+	}
 }
 
 void FV_View::endDrag(UT_sint32 xPos, UT_sint32 yPos)
@@ -1530,6 +1547,10 @@ void FV_View::endDrag(UT_sint32 xPos, UT_sint32 yPos)
 	
 	if (!bOnScreen) 
 	{
+		// remember where mouse is
+		m_xLastMouse = xPos;
+		m_yLastMouse = yPos;
+
 		// finish pending autoscroll
 		m_pAutoScrollTimer->fire();
 	}
