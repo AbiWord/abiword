@@ -299,16 +299,20 @@ void XAP_UnixFrame::_createTopLevelWindow(void)
 
 	// TODO get the following values from a preferences or something.
 	gtk_container_set_border_width(GTK_CONTAINER(m_wTopLevelWindow), 4);
-	
-	gtk_widget_set_usize(GTK_WIDGET(m_wTopLevelWindow), 700,650);
+
+	// TODO These values should probably be set and read from program
+	// TODO preferences.
+	// NOTE GTK does not automatically parse -geometry for us, but
+	// NOTE we should honor it eventually.
+	gtk_widget_set_usize(GTK_WIDGET(m_wTopLevelWindow), 700, 650);
 
 	gtk_signal_connect(GTK_OBJECT(m_wTopLevelWindow), "delete_event",
-						GTK_SIGNAL_FUNC(_fe::delete_event), NULL);
+					   GTK_SIGNAL_FUNC(_fe::delete_event), NULL);
 	// here we connect the "destroy" event to a signal handler.  
 	// This event occurs when we call gtk_widget_destroy() on the window,
 	// or if we return 'FALSE' in the "delete_event" callback.
 	gtk_signal_connect(GTK_OBJECT(m_wTopLevelWindow), "destroy",
-						GTK_SIGNAL_FUNC(_fe::destroy), NULL);
+					   GTK_SIGNAL_FUNC(_fe::destroy), NULL);
 
 	// create a VBox inside it.
 	
