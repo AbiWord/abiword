@@ -1818,14 +1818,16 @@ void
 FL_DocLayout::_toggleAutoSpell(bool bSpell)
 {
 	bool bOldAutoSpell = getAutoSpellCheck();
-
+	UT_DEBUGMSG(("_toggleAutoSpell %d \n",bSpell));
 	// Add reason to background checker
 	if (bSpell)
 	{
+		UT_DEBUGMSG(("Adding Auto SpellCheck  \n"));
 		addBackgroundCheckReason(bgcrSpelling);
 	}
 	else
 	{
+		UT_DEBUGMSG(("Removing Auto SpellCheck  \n"));
 		removeBackgroundCheckReason(bgcrSpelling);
 	}
 
@@ -1834,9 +1836,10 @@ FL_DocLayout::_toggleAutoSpell(bool bSpell)
 
 	if (bSpell)
 	{
+		UT_DEBUGMSG(("Rechecking spelling in blocks \n"));
 		// When enabling, recheck the whole document
 		fl_DocSectionLayout * pSL = getFirstSection();
-		while (pSL)
+		if(pSL)
 		{
 			fl_ContainerLayout* b = pSL->getFirstLayout();
 			while (b)
@@ -1844,17 +1847,23 @@ FL_DocLayout::_toggleAutoSpell(bool bSpell)
 				// TODO: just check and remove matching squiggles
 				// for now, destructively recheck the whole thing
 				if(b->getContainerType() == FL_CONTAINER_BLOCK)
+				{
+					UT_DEBUGMSG(("Add block  %x for spellcheck \n",b));
 					queueBlockForBackgroundCheck(bgcrSpelling, static_cast<fl_BlockLayout *>(b));
-				b = b->getNext();
+					b = static_cast<fl_BlockLayout *>(b)->getNextBlockInDocument();
+				}
+				else
+				{
+					b = b->getNext();
+				}
 			}
-			pSL = static_cast<fl_DocSectionLayout *>(pSL->getNext());
 		}
 	}
 	else
 	{
 		// Disabling, so remove the squiggles too
 		fl_DocSectionLayout * pSL = getFirstSection();
-		while (pSL)
+		if(pSL)
 		{
 			fl_ContainerLayout* b = pSL->getFirstLayout();
 			while (b)
@@ -1863,10 +1872,13 @@ FL_DocLayout::_toggleAutoSpell(bool bSpell)
 				{
 					static_cast<fl_BlockLayout *>(b)->removeBackgroundCheckReason(bgcrSpelling);
 					static_cast<fl_BlockLayout *>(b)->getSquiggles()->deleteAll();
+					b = static_cast<fl_BlockLayout *>(b)->getNextBlockInDocument();
 				}
-				b = b->getNext();
+				else
+				{
+					b = b->getNext();
+				}
 			}
-			pSL = static_cast<fl_DocSectionLayout *>(pSL->getNext());
 		}
 		if (bOldAutoSpell)
 		{
@@ -1964,6 +1976,7 @@ FL_DocLayout::_backgroundCheck(UT_Worker * pWorker)
 	{
 		// Check each block in the queue
 		fl_BlockLayout *pB = vecToCheck->getFirstItem();
+		xxx_UT_DEBUGMSG(("Spellchecking block %x \n",pB));
 		if (pB != NULL)
 		{
 			// This looping seems like a lot of wasted effort when we
@@ -1983,19 +1996,28 @@ FL_DocLayout::_backgroundCheck(UT_Worker * pWorker)
 					// Note that we remove this reason from queue
 					// before checking it (otherwise asserts could
 					// trigger redundant recursive calls)
-						pB->removeBackgroundCheckReason(mask);
 						switch (mask)
 						{
 						case bgcrNone:
+							pB->removeBackgroundCheckReason(mask);
 							break;
 						case bgcrDebugFlash:
 							pB->debugFlashing();
+							pB->removeBackgroundCheckReason(mask);
 							break;
 						case bgcrSpelling:
-							pB->checkSpelling();
+						{
+							xxx_UT_DEBUGMSG(("Spelling checking block %x directly \n",pB));
+							bool b = pB->checkSpelling();
+							if(b)
+							{
+								pB->removeBackgroundCheckReason(mask);
+							}
 							break;
+						}
 						case bgcrSmartQuotes:
 						default:
+							pB->removeBackgroundCheckReason(mask);
 							break;
 						}
 					}
@@ -2585,7 +2607,7 @@ void FL_DocLayout::recheckIgnoredWords()
 {
 	// recheck the whole doc
 	fl_DocSectionLayout * pSL = getFirstSection();
-	while (pSL)
+	if(pSL)
 	{
 		fl_ContainerLayout* b = pSL->getFirstLayout();
 		while (b)
@@ -2593,10 +2615,13 @@ void FL_DocLayout::recheckIgnoredWords()
 			if(b->getContainerType() == FL_CONTAINER_BLOCK)
 			{
 				static_cast<fl_BlockLayout *>(b)->recheckIgnoredWords();
+				b = static_cast<fl_BlockLayout *>(b)->getNextBlockInDocument();
 			}
-			b = b->getNext();
+			else
+			{
+				b = b->getNext();
+			}
 		}
-		pSL = static_cast<fl_DocSectionLayout *>(pSL->getNext());
 	}
 }
 
@@ -3083,7 +3108,7 @@ void FL_DocLayout::considerSmartQuoteCandidateAt(fl_BlockLayout *block, UT_uint3
 				do
 				{
 					last = r;
-				} while ((r = r->getNext()));  // assignment
+				} while ((r = r->getNextRun()));  // assignment
 				if (last  &&  (FPRUN_TEXT == last->getType())  &&  last->getLength() > 0)
 				{
 					fp_Line *blocks_line, *lasts_line;
@@ -3115,7 +3140,7 @@ void FL_DocLayout::considerSmartQuoteCandidateAt(fl_BlockLayout *block, UT_uint3
 		{
 			// candidate was the last character in a block, so see
 			// what's at the beginning of the next block, if any
-			fl_BlockLayout *ob = static_cast<fl_BlockLayout *>(block->getNext());
+			fl_BlockLayout *ob = static_cast<fl_BlockLayout *>(block->getNextInDocument());
 			if (ob)
 			{
 				fp_Run *r = ob->getFirstRun();

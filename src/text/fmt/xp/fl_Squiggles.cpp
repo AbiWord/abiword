@@ -386,7 +386,10 @@ void
 fl_Squiggles::clear(fl_PartOfBlock* pPOB)
 {
 	xxx_UT_DEBUGMSG(("fl_Squiggles::clear(%p)\n", pPOB));
-
+	if(!m_pOwner->isOnScreen())
+	{
+		return;
+	}
 	FV_View* pView = m_pOwner->getDocLayout()->getView();
 	if(pView->getDocument()->isPieceTableChanging())
 	{

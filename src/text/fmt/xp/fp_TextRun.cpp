@@ -2159,6 +2159,7 @@ void fp_TextRun::drawSquiggle(UT_uint32 iOffset, UT_uint32 iLen)
 	_getPartRect( &r, xoff, yoff, iOffset, iLen);
 
 	_drawSquiggle(r.top + iAscent + iGap, r.left, r.left + r.width);
+	xxx_UT_DEBUGMSG(("Done draw sqiggle for run in block %x \n",getBlock()));
 }
 
 UT_sint32 fp_TextRun::findCharacter(UT_uint32 startPosition, UT_UCSChar Character) const

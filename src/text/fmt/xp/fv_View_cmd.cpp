@@ -3939,7 +3939,7 @@ void FV_View::cmdContextIgnoreAll(void)
 	{
 		// remove the squiggles, too
 		fl_DocSectionLayout * pSL = m_pLayout->getFirstSection();
-		while (pSL)
+		if(pSL)
 		{
 			fl_BlockLayout* b = static_cast<fl_BlockLayout *>(pSL->getFirstLayout());
 			while (b)
@@ -3947,9 +3947,8 @@ void FV_View::cmdContextIgnoreAll(void)
 				// TODO: just check and remove matching squiggles
 				// for now, destructively recheck the whole thing
 				m_pLayout->queueBlockForBackgroundCheck(FL_DocLayout::bgcrSpelling, b);
-				b = static_cast<fl_BlockLayout *>(b->getNext());
+				b = static_cast<fl_BlockLayout *>(b->getNextBlockInDocument());
 			}
-			pSL = static_cast<fl_DocSectionLayout *>(pSL->getNext());
 		}
 	}
 }
@@ -3975,7 +3974,7 @@ void FV_View::cmdContextAdd(void)
 	{
 		// remove the squiggles, too
 		fl_DocSectionLayout * pSL = m_pLayout->getFirstSection();
-		while (pSL)
+		if(pSL)
 		{
 			fl_BlockLayout* b = static_cast<fl_BlockLayout *>(pSL->getFirstLayout());
 			while (b)
@@ -3985,10 +3984,13 @@ void FV_View::cmdContextAdd(void)
 				if(b->getContainerType() == FL_CONTAINER_BLOCK)
 				{
 					m_pLayout->queueBlockForBackgroundCheck(FL_DocLayout::bgcrSpelling, b);
+					b = static_cast<fl_BlockLayout *>(b->getNextBlockInDocument());
 				}
-				b = static_cast<fl_BlockLayout *>(b->getNext());
+				else
+				{
+					b = static_cast<fl_BlockLayout *>(b->getNext());
+				}
 			}
-			pSL = static_cast<fl_DocSectionLayout *>(pSL->getNext());
 		}
 	}
 }
