@@ -1667,9 +1667,32 @@ PT_DocPosition FV_View::getSelectionAnchor(void) const
 	return m_iInsPoint;
 }
 
+/*!
+ * Returns true if a TOC is selected.
+ */
 bool FV_View::isTOCSelected(void)
 {
 	return (m_Selection.getSelectionMode() == 	FV_SelectionMode_TOC);
+}
+
+/*!
+ * This method assumes that pos points to exactly the location of 
+ * PTX_SectionTOC. It should only really be called if the TOC is selected.
+ */
+bool FV_View::setTOCProps(PT_DocPosition pos, const char * szProps)
+{
+	bool bRet;
+
+	// Signal PieceTable Change
+	_saveAndNotifyPieceTableChange();
+	const XML_Char * atts[3] ={"props",NULL,NULL};
+	atts[1] = szProps;
+	bRet = m_pDoc->changeStruxFmt(PTC_AddFmt,pos,pos,atts,NULL,PTX_SectionTOC);
+	_generalUpdate();
+	
+	// Signal piceTable is stable again
+	_restorePieceTableState();
+	return bRet;
 }
 
 bool FV_View::isSelectionEmpty(void) const

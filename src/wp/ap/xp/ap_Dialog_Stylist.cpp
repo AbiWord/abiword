@@ -51,7 +51,8 @@ AP_Dialog_Stylist::AP_Dialog_Stylist(XAP_DialogFactory * pDlgFactory, XAP_Dialog
 	  m_sCurStyle(""),
 	  m_pStyleTree(NULL),
 	  m_bStyleTreeChanged(true),
-	  m_bStyleChanged(true)
+	  m_bStyleChanged(true),
+	  m_bIsModal(false)
 {
 }
 
@@ -146,16 +147,30 @@ void AP_Dialog_Stylist::updateDialog(void)
 		{
 			m_pDoc = pDoc;
 			m_pStyleTree->buildStyles(pDoc);
-			const char * pszStyle;
-			pView->getStyle(&pszStyle);
-			m_sCurStyle =  pszStyle;
+			if(!m_bIsModal) // fill the current style if Modal
+			{
+				const char * pszStyle;
+				pView->getStyle(&pszStyle);
+				m_sCurStyle =  pszStyle;
+			}
 			m_bStyleTreeChanged =true;
 			setStyleInGUI();
 			return;
 		}
 		const char * pszStyle;
 		pView->getStyle(&pszStyle);
-		UT_UTF8String sCurViewStyle = pszStyle;
+		UT_UTF8String sCurViewStyle;
+		if(!m_bIsModal)
+		{
+			sCurViewStyle = pszStyle;
+		}
+		else
+		{
+			m_bStyleChanged =true;
+			setStyleInGUI();
+			return;
+		}
+
 		if((sCurViewStyle.size ()) > 0 && m_sCurStyle.size() == 0)
 		{
 			m_sCurStyle = sCurViewStyle;

@@ -33,6 +33,7 @@ public:
 	virtual ~AP_UnixDialog_Stylist(void);
 
 	virtual void			runModeless(XAP_Frame * pFrame);
+	virtual void			runModal(XAP_Frame * pFrame);
 
 	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
 
@@ -54,6 +55,7 @@ private:
 	GtkWidget * m_wStyleList;
 	GtkWidget * m_wApply;
 	GtkWidget * m_wClose;
+	GtkWidget * m_wOK;
 	GtkCellRenderer * m_wRenderer;
 	GtkTreeStore * m_wModel;
 	GtkWidget * m_wStyleListContainer;

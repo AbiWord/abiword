@@ -31,6 +31,7 @@ class UT_Timer;
 class XAP_Frame;
 class PD_Document;
 class PD_Style;
+class PP_AttrProp;
 
 class AP_Dialog_FormatTOC : public XAP_Dialog_Modeless
 {
@@ -50,22 +51,30 @@ public:
     virtual void      setSensitivity(bool bSensitive) = 0;       
 	static void       autoUpdate(UT_Worker * pTimer);
 	void              updateDialog(void);
+	UT_UTF8String     getNewStyle(UT_UTF8String & sProp);
+	void              setPropFromDoc(const char * szProp);
 	void              setTOCProperty(UT_UTF8String & sProp, UT_UTF8String & sVal);
+	void              setTOCProperty(const char * szProp, const char * szVal);
 	void              fillTOCPropsFromDoc(void);
 	void              applyTOCPropsToDoc(void);
     UT_UTF8String     getTOCPropVal(UT_UTF8String & sProp);
+    UT_UTF8String     getTOCPropVal(const char * szProp);
+    UT_UTF8String     getTOCPropVal(const char * szProp,UT_sint32 i);
 	UT_Vector *       getVecTABLeadersLabel(void)
 		{ return & m_vecTABLeadersLabel;}
 	UT_Vector *       getVecTABLeadersProp(void)
 		{ return & m_vecTABLeadersProp;}
-
+	UT_Vector *       getVecLabelPropValue(void)
+		{ return & m_vecLabelPropValue;}
 private:
 	PD_Document *         m_pDoc;
 	UT_Timer *            m_pAutoUpdater;
 	UT_uint32             m_iTick;
+	const PP_AttrProp *   m_pAP;
 	UT_UTF8String         m_sTOCProps;
 	UT_Vector             m_vecTABLeadersLabel;
 	UT_Vector             m_vecTABLeadersProp;
+	UT_Vector             m_vecLabelPropValue;
 };
 
 #endif /* AP_DIALOG_FORMATTOC_H */

@@ -52,6 +52,7 @@ glade_DATA = \
 	ap_UnixDialog_Replace.glade		\
 	ap_UnixDialog_New.glade		\
 	ap_UnixDialog_Stylist.glade	\
+	ap_UnixDialog_Stylist_modal.glade	\
 	ap_UnixDialog_WordCount.glade
 
 libWpAp_unix_a_SOURCES=\

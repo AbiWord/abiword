@@ -813,6 +813,9 @@ bool fl_TOCLayout::doclistener_changeStrux(const PX_ChangeRecord_StruxChange * p
 	_lookupProperties();
 	_createTOCContainer();
 	_insertTOCContainer(static_cast<fp_TOCContainer *>(getLastContainer()));
+	fl_DocSectionLayout * pDSL = getDocSectionLayout();
+	fp_Page * pPage = getFirstContainer()->getPage();
+	pDSL->setNeedsSectionBreak(true,pPage);
 	return true;
 }
 
@@ -1593,7 +1596,7 @@ void fl_TOCLayout::_lookupProperties(void)
 	}
 	else
 	{
-		m_iNumType1 = m_pLayout->FootnoteTypeFromString(pszTOCLABELTYPE);
+		m_iNumType1 = m_pLayout->FootnoteTypeFromString(pszTOCPAGETYPE);
 	}
 	pszTOCPAGETYPE = NULL;
 	if(!pSectionAP || !pSectionAP->getProperty("toc-page-type2",pszTOCPAGETYPE))
@@ -1602,7 +1605,7 @@ void fl_TOCLayout::_lookupProperties(void)
 	}
 	else
 	{
-		m_iNumType2 = m_pLayout->FootnoteTypeFromString(pszTOCLABELTYPE);
+		m_iNumType2 = m_pLayout->FootnoteTypeFromString(pszTOCPAGETYPE);
 	}
 	pszTOCPAGETYPE = NULL;
 	if(!pSectionAP || !pSectionAP->getProperty("toc-page-type3",pszTOCPAGETYPE))
@@ -1611,7 +1614,7 @@ void fl_TOCLayout::_lookupProperties(void)
 	}
 	else
 	{
-		m_iNumType3 = m_pLayout->FootnoteTypeFromString(pszTOCLABELTYPE);
+		m_iNumType3 = m_pLayout->FootnoteTypeFromString(pszTOCPAGETYPE);
 	}
 	pszTOCPAGETYPE = NULL;
 	if(!pSectionAP || !pSectionAP->getProperty("toc-page-type4",pszTOCPAGETYPE))
@@ -1620,7 +1623,7 @@ void fl_TOCLayout::_lookupProperties(void)
 	}
 	else
 	{
-		m_iNumType4 = m_pLayout->FootnoteTypeFromString(pszTOCLABELTYPE);
+		m_iNumType4 = m_pLayout->FootnoteTypeFromString(pszTOCPAGETYPE);
 	}
 //
 // TOC TAB leader

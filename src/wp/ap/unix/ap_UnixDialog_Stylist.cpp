@@ -111,6 +111,7 @@ AP_UnixDialog_Stylist::AP_UnixDialog_Stylist(XAP_DialogFactory * pDlgFactory,
 	  m_wStyleList(NULL),
 	  m_wApply(NULL),
 	  m_wClose(NULL),
+	  m_wOK(NULL),
 	  m_wRenderer(NULL),
 	  m_wModel(NULL),
 	  m_wStyleListContainer(NULL)
@@ -123,6 +124,7 @@ AP_UnixDialog_Stylist::~AP_UnixDialog_Stylist(void)
 
 void AP_UnixDialog_Stylist::event_Close(void)
 {
+	
 	destroy();
 }
 
@@ -207,13 +209,47 @@ void AP_UnixDialog_Stylist::runModeless(XAP_Frame * pFrame)
 	startUpdater();
 }
 
+
+void AP_UnixDialog_Stylist::runModal(XAP_Frame * pFrame)
+{
+	// Build the window's widgets and arrange them
+	m_bIsModal = true;
+	GtkWidget * mainWindow = _constructWindow();
+	UT_return_if_fail(mainWindow);
+
+	// Populate the window's data items
+	_populateWindowData();
+	_connectSignals();
+
+	switch (abiRunModalDialog ( GTK_DIALOG(mainWindow), pFrame, this, GTK_RESPONSE_CLOSE,false ))
+	{
+	case GTK_RESPONSE_CLOSE:
+		setStyleValid(false);
+		break;
+	case GTK_RESPONSE_OK:
+		setStyleValid(true);
+		break;
+	default:
+		setStyleValid(false);
+		break;
+	}
+	abiDestroyWidget(mainWindow);
+}
+
+
 GtkWidget * AP_UnixDialog_Stylist::_constructWindow(void)
 {
 	// get the path where our glade file is located
 	XAP_UnixApp * pApp = static_cast<XAP_UnixApp*>(m_pApp);
 	UT_String glade_path( pApp->getAbiSuiteAppGladeDir() );
-	glade_path += "/ap_UnixDialog_Stylist.glade";
-
+	if(m_bIsModal)
+	{
+		glade_path += "/ap_UnixDialog_Stylist_modal.glade";
+	}
+	else
+	{
+		glade_path += "/ap_UnixDialog_Stylist.glade";
+	}
 	// load the dialog from the glade file
 	GladeXML *xml = abiDialogNewFromXML( glade_path.c_str() );
 	if (!xml)
@@ -223,7 +259,14 @@ GtkWidget * AP_UnixDialog_Stylist::_constructWindow(void)
 
 	m_windowMain   = glade_xml_get_widget(xml, "ap_UnixDialog_Stylist");
 	m_wStyleListContainer  = glade_xml_get_widget(xml,"TreeViewContainer");
-	m_wApply = glade_xml_get_widget(xml,"btApply");
+	if(m_bIsModal)
+	{
+		m_wApply = glade_xml_get_widget(xml,"btApply");
+	}
+	else
+	{
+		m_wOK = glade_xml_get_widget(xml,"btOK");
+	}
 	m_wClose = glade_xml_get_widget(xml,"btClose");
 
 	// set the dialog title

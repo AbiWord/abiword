@@ -808,11 +808,11 @@ bool pt_PieceTable::_getStruxOfTypeFromPosition(PT_DocPosition dpos,
 	*ppfs = NULL;
 
 	pf_Frag_Strux * pfs = NULL;
-	if (!_getStruxFromPosition(dpos,&pfs, !(pts == PTX_EndFootnote || pts == PTX_SectionFootnote)))
+	if (!_getStruxFromPosition(dpos,&pfs, !(pts == PTX_EndFootnote || pts == PTX_SectionFootnote || pts == PTX_SectionTOC)))
 		return false;
 
 	PTStruxType pfsType = pfs->getStruxType();
-	if (pfsType == pts || (pts == PTX_Section && pfsType == PTX_SectionHdrFtr) || (pts == PTX_SectionFootnote && pfsType == PTX_SectionFootnote) || (pts == PTX_SectionEndnote && pfsType == PTX_SectionEndnote) || (pts == PTX_SectionTable && pfsType == PTX_SectionTable) || (pts == PTX_SectionCell && pfsType == PTX_SectionCell) || (pts == PTX_EndTable && pfsType == PTX_EndTable) || (pts == PTX_EndCell && pfsType == PTX_EndCell)  )		// is it of the type we want
+	if (pfsType == pts || (pts == PTX_Section && pfsType == PTX_SectionHdrFtr) || (pts == PTX_SectionFootnote && pfsType == PTX_SectionFootnote) || (pts == PTX_SectionEndnote && pfsType == PTX_SectionEndnote) || (pts == PTX_SectionTable && pfsType == PTX_SectionTable) || (pts == PTX_SectionCell && pfsType == PTX_SectionCell) || (pts == PTX_EndTable && pfsType == PTX_EndTable) || (pts == PTX_EndCell && pfsType == PTX_EndCell) || (pts == PTX_SectionTOC && pfsType == PTX_SectionTOC)  )		// is it of the type we want
 	{
 		*ppfs = pfs;
 		return true;

@@ -30,7 +30,6 @@
 #include "xap_UnixApp.h"
 #include "xap_Frame.h"
 #include "ap_Dialog_FormatFootnotes.h"
-
 #include "ap_Strings.h"
 #include "ap_Dialog_Id.h"
 #include "ap_UnixDialog_FormatTOC.h"
@@ -54,6 +53,22 @@ static void s_NumType_changed(GtkWidget * wid, AP_UnixDialog_FormatTOC * me )
 	me->setTOCProperty(sProp,sVal);
 }
 
+
+static void s_set_style(GtkWidget * wid, AP_UnixDialog_FormatTOC * me )
+{
+	me->setStyle(wid);
+}
+
+static void s_check_changed(GtkWidget * wid, AP_UnixDialog_FormatTOC * me)
+{
+	UT_UTF8String sProp = static_cast<char *> (g_object_get_data(G_OBJECT(wid),"toc-prop"));
+	UT_UTF8String sVal = "1";
+	if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(wid)) == FALSE)
+	{
+		sVal = "0";
+	}
+	me->setTOCProperty(sProp,sVal);
+}
 
 static void s_response_triggered(GtkWidget * widget, gint resp, AP_UnixDialog_FormatTOC * dlg)
 {
@@ -93,6 +108,17 @@ void AP_UnixDialog_FormatTOC::event_Close(void)
 
 void AP_UnixDialog_FormatTOC::setTOCPropsInGUI(void)
 {
+	_fillGUI();
+}
+
+void AP_UnixDialog_FormatTOC::setStyle(GtkWidget * wid)
+{
+	UT_UTF8String sVal;
+	GtkWidget * pEntry = static_cast<GtkWidget *> (g_object_get_data(G_OBJECT(wid),"entry-widget"));
+	UT_UTF8String sProp = static_cast<char *> (g_object_get_data(G_OBJECT(pEntry),"toc-prop"));
+	sVal = getNewStyle(sProp);
+	gtk_entry_set_text(GTK_ENTRY(pEntry),sVal.utf8_str());
+	setTOCProperty(sProp,sVal);
 }
 
 void AP_UnixDialog_FormatTOC::setSensitivity(bool bSensitive)
@@ -220,6 +246,7 @@ void AP_UnixDialog_FormatTOC::_createLabelTypeItems(void)
 {
 	UT_sint32 i =1;
 	UT_Vector * vecTypeList = AP_Dialog_FormatFootnotes::getFootnoteTypeLabelList();
+	UT_Vector * vecPropList = getVecLabelPropValue();
 	UT_sint32 nTypes = vecTypeList->getItemCount();
 	UT_String * sProp = NULL;
 	UT_String * sVal = NULL;
@@ -239,7 +266,8 @@ void AP_UnixDialog_FormatTOC::_createLabelTypeItems(void)
 			UT_DEBUGMSG(("Got label %s for item %d \n",szLab,j));
 			GtkWidget * pW = gtk_menu_item_new_with_label(szLab);
 			g_object_set_data(G_OBJECT(pW),"toc-prop",(gpointer)(sProp->c_str()));
-			g_object_set_data(G_OBJECT(pW),"toc-val",(gpointer)(sVal->c_str()));
+			const gchar * szVal = static_cast<const gchar *>(vecPropList->getNthItem(j));
+			g_object_set_data(G_OBJECT(pW),"toc-val",(gpointer)(szVal));
 
 			g_signal_connect(G_OBJECT(pW),
 			   "activate",
@@ -263,7 +291,9 @@ void AP_UnixDialog_FormatTOC::_createLabelTypeItems(void)
 			m_vecAllPropVals.addItem(static_cast<void *>(sVal));
 			GtkWidget * pW = gtk_menu_item_new_with_label(static_cast<char *>(vecTypeList->getNthItem(j)));
 			g_object_set_data(G_OBJECT(pW),"toc-prop",(gpointer)sProp->c_str());
-			g_object_set_data(G_OBJECT(pW),"toc-val",(gpointer)sVal->c_str());
+			const gchar * szVal = static_cast<const gchar *>(vecPropList->getNthItem(j));
+			g_object_set_data(G_OBJECT(pW),"toc-val",(gpointer)(szVal));
+
 
 			g_signal_connect(G_OBJECT(pW),
 			   "activate",
@@ -318,7 +348,39 @@ void AP_UnixDialog_FormatTOC::_createTABTypeItems(void)
 
 void  AP_UnixDialog_FormatTOC::event_Apply(void)
 {
+	UT_DEBUGMSG(("Doing apply \n"));
+
+// Heading Text
+
+	GtkWidget * pW = _getWidget("wHeadingText");
+	UT_UTF8String sVal = gtk_entry_get_text(GTK_ENTRY(pW));
+	setTOCProperty("toc-heading",sVal.utf8_str());
+
+
+	UT_sint32 i =1;
+	for(i=1; i< 4;i++)
+	{
+		pW = _getWidget("wTextAfter",i);
+		sVal = gtk_entry_get_text(GTK_ENTRY(pW));
+		UT_UTF8String sProp = static_cast<char *> (g_object_get_data(G_OBJECT(pW),"toc-prop"));
+		setTOCProperty(sProp,sVal);
+
+		pW = _getWidget("wTextBefore",i);
+		sVal = gtk_entry_get_text(GTK_ENTRY(pW));
+		sProp = static_cast<char *> (g_object_get_data(G_OBJECT(pW),"toc-prop"));
+		setTOCProperty(sProp,sVal);
+	}
 	Apply();
+}
+
+gpointer AP_UnixDialog_FormatTOC::_makeProp(const char * szProp, UT_sint32 i)
+{
+	UT_String sLocal = szProp;
+	UT_String sVal = UT_String_sprintf("%d",i);
+	sLocal += sVal;
+	UT_String * pS = new UT_String(sLocal);
+	m_vecAllPropVals.addItem(static_cast<void *>(pS));
+	return (gpointer) pS->c_str();
 }
 
 /*!
@@ -326,11 +388,143 @@ void  AP_UnixDialog_FormatTOC::event_Apply(void)
  */
 void  AP_UnixDialog_FormatTOC::_fillGUI(void)
 {
+	UT_UTF8String sVal;
+	sVal = getTOCPropVal("toc-has-heading");
+	GtkWidget * pW = _getWidget("wHaveHeading");
+	if(UT_stricmp(sVal.utf8_str(),"1") == 0)
+	{
+		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(pW),TRUE);
+	}
+	else
+	{
+		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(pW),FALSE);
+	}
+	g_object_set_data(G_OBJECT(pW),"toc-prop",(gpointer) "toc-has-heading");
+	g_signal_connect(G_OBJECT(pW),
+					 "toggled",
+					 G_CALLBACK(s_check_changed),
+					 (gpointer) this);
+
+	sVal = getTOCPropVal("toc-heading");
+	pW = _getWidget("wHeadingText");
+	gtk_entry_set_text(GTK_ENTRY(pW),sVal.utf8_str());
+	g_object_set_data(G_OBJECT(pW),"toc-prop",(gpointer) "toc-heading");
+
+
+	sVal = getTOCPropVal("toc-heading-style");
+	pW = _getWidget("wHeadingStyle");
+	gtk_entry_set_text(GTK_ENTRY(pW),sVal.utf8_str());
+	g_object_set_data(G_OBJECT(_getWidget("wChangeHeadingStyle")),"entry-widget",(gpointer)pW);
+	g_object_set_data(G_OBJECT(pW),"toc-prop",(gpointer) "toc-heading-style");
+
+	UT_sint32 i =1;
+	FV_View * pView = static_cast<FV_View *>(getActiveFrame()->getCurrentView());
+	for(i=1; i<= 4;i++)
+	{
+		sVal = getTOCPropVal("toc-dest-style",i);
+		pW= _getWidget("wDispStyle",i);
+		gtk_entry_set_text(GTK_ENTRY(pW),sVal.utf8_str());
+		g_object_set_data(G_OBJECT(_getWidget("wChangeDisp",i)),"entry-widget",(gpointer)pW);
+		g_object_set_data(G_OBJECT(pW),"toc-prop",_makeProp("toc-dest-style",i));
+
+
+		sVal = getTOCPropVal("toc-has-label",i);
+		pW = _getWidget("wHaveLabel",i);
+		if(UT_stricmp(sVal.utf8_str(),"1") == 0)
+		{
+			gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(pW),TRUE);
+		}
+		else
+		{
+			gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(pW),FALSE);
+		}
+		g_object_set_data(G_OBJECT(pW),"toc-prop",_makeProp("toc-has-label",i));
+		g_signal_connect(G_OBJECT(pW),
+					 "toggled",
+					 G_CALLBACK(s_check_changed),
+					 (gpointer) this);
+
+		sVal = getTOCPropVal("toc-label-after",i);
+		pW = _getWidget("wTextAfter",i);
+		gtk_entry_set_text(GTK_ENTRY(pW),sVal.utf8_str());
+		g_object_set_data(G_OBJECT(pW),"toc-prop",_makeProp("toc-label-after",i));
+
+		sVal = getTOCPropVal("toc-label-before",i);
+		pW = _getWidget("wTextBefore",i);
+		gtk_entry_set_text(GTK_ENTRY(pW),sVal.utf8_str());
+		g_object_set_data(G_OBJECT(pW),"toc-prop",_makeProp("toc-label-before",i));
+
+		if(i>1)
+		{
+			sVal = getTOCPropVal("toc-label-inherits",i);
+			pW = _getWidget("wInherit",i);
+			if(UT_stricmp(sVal.utf8_str(),"1") == 0)
+			{
+				gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(pW),TRUE);
+			}
+			else
+			{
+				gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(pW),FALSE);
+			}
+			g_object_set_data(G_OBJECT(pW),"toc-prop",_makeProp("toc-label-inherits",i));
+			g_signal_connect(G_OBJECT(pW),
+							 "toggled",
+							 G_CALLBACK(s_check_changed),
+							 (gpointer) this);
+		}
+/*
+Have to deal with these later
+	"toc-label-start1",
+	"toc-label-start2",
+	"toc-label-start3",
+	"toc-label-start4",
+*/
+		sVal = getTOCPropVal("toc-label-type",i);
+		pW = _getWidget("wLabelChoose",i); 
+		UT_sint32 iHist = static_cast<UT_sint32>(pView->getLayout()->FootnoteTypeFromString(sVal.utf8_str()));
+		gtk_option_menu_set_history(GTK_OPTION_MENU(pW),iHist);
+
+		sVal = getTOCPropVal("toc-page-type",i);
+		pW = _getWidget("wPageStyleChoose",i); 
+		iHist = static_cast<UT_sint32>(pView->getLayout()->FootnoteTypeFromString(sVal.utf8_str()));
+		gtk_option_menu_set_history(GTK_OPTION_MENU(pW),iHist);
+
+		sVal = getTOCPropVal("toc-source-style",i);
+		pW = _getWidget("wFillStyle",i);
+		gtk_entry_set_text(GTK_ENTRY(pW),sVal.utf8_str());
+		g_object_set_data(G_OBJECT(_getWidget("wChangeFill",i)),"entry-widget",(gpointer)pW);
+		g_object_set_data(G_OBJECT(pW),"toc-prop",_makeProp("toc-source-style",i));
+
+		sVal = getTOCPropVal("toc-tab-leader",i);
+		pW = _getWidget("wTabLeaderChoose",i);
+		if(UT_stricmp(sVal.utf8_str(),"none") == 0)
+		{
+			iHist = 0;
+		}
+		else if(UT_stricmp(sVal.utf8_str(),"dot") == 0)
+		{
+			iHist = 1;
+		}
+		else if(UT_stricmp(sVal.utf8_str(),"hyphen") == 0)
+		{
+			iHist = 2;
+		}
+		else if(UT_stricmp(sVal.utf8_str(),"underline") == 0)
+		{
+			iHist = 3;
+		}
+		else
+		{
+			iHist = 1;
+		}
+		gtk_option_menu_set_history(GTK_OPTION_MENU(pW),iHist);
+	}
+	
 }
 
 void  AP_UnixDialog_FormatTOC::_populateWindowData(void)
 {
-	_fillGUI();
+	fillTOCPropsFromDoc();
 	setTOCPropsInGUI();
 }
 
@@ -348,4 +542,20 @@ void  AP_UnixDialog_FormatTOC::_connectSignals(void)
 			   "delete_event",
 			   G_CALLBACK(s_delete_clicked),
 			   (gpointer) this);
+	g_signal_connect(G_OBJECT(_getWidget("wChangeHeadingStyle")),
+					  "clicked",
+					  G_CALLBACK(s_set_style),
+					  (gpointer) this);
+	UT_sint32 i =1;
+	for(i=1 ;i<4; i++)
+	{
+		g_signal_connect(G_OBJECT(_getWidget("wChangeFill",i)),
+					  "clicked",
+					  G_CALLBACK(s_set_style),
+					  (gpointer) this);
+		g_signal_connect(G_OBJECT(_getWidget("wChangeDisp",i)),
+					  "clicked",
+					  G_CALLBACK(s_set_style),
+					  (gpointer) this);
+	}
 }

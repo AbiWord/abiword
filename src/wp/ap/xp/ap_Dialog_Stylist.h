@@ -77,7 +77,10 @@ public:
 	virtual ~AP_Dialog_Stylist(void);
 
 	virtual void runModeless(XAP_Frame * pFrame) = 0;
+	virtual void runModal(XAP_Frame * pFrame) = 0;
 
+	bool              isStyleValid(void)
+		{ return  m_bStyleValid;}
 	void              startUpdater(void);
 	void              stopUpdater(void);
     void              setActiveFrame(XAP_Frame *pFrame);
@@ -87,6 +90,8 @@ public:
 		{ return m_pStyleTree;}
 	const UT_UTF8String *   getCurStyle(void) const
 		{ return &m_sCurStyle;}
+	UT_UTF8String     getSelectedStyle(void) const
+		{ return m_sCurStyle;}
 	void              setCurStyle(UT_UTF8String & sStyle)
 		{ m_sCurStyle = sStyle;}
 	void              Apply(void);
@@ -102,7 +107,10 @@ public:
 		{ m_bStyleTreeChanged = b;}
 	void              setStyleChanged(bool b)
 		{ m_bStyleChanged = b;}
- 
+	void              setStyleValid(bool bValid)
+		{ m_bStyleValid = bValid;}
+protected:
+	bool                  m_bIsModal;
 private:
 	PD_Document *         m_pDoc;
 	UT_Timer *            m_pAutoUpdater;
@@ -111,6 +119,7 @@ private:
 	Stylist_tree *        m_pStyleTree;
 	bool                  m_bStyleTreeChanged;
 	bool                  m_bStyleChanged;
+	bool                  m_bStyleValid;
 };
 
 #endif /* AP_DIALOG_STYLIST_H */

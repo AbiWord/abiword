@@ -24,6 +24,8 @@
 #include "ut_string.h"
 #include "ut_debugmsg.h"
 
+#include "ap_Dialog_Id.h"
+
 #include "ap_Dialog_FormatTOC.h"
 
 #include "xap_App.h"
@@ -43,16 +45,16 @@
 #include "fl_DocLayout.h"
 #include "ut_timer.h"
 #include "pd_Document.h"
-
+#include "ap_Dialog_Stylist.h"
+#include "pp_Property.h"
 
 AP_Dialog_FormatTOC::AP_Dialog_FormatTOC(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id)
 	: XAP_Dialog_Modeless(pDlgFactory,id),
 	  m_pAutoUpdater(0),
 	  m_iTick(0),
+	  m_pAP(NULL),
 	  m_sTOCProps("")
 {
-	UT_sint32 i = 0;
-	
 	const XAP_StringSet * pSS = XAP_App::getApp()->getStringSet ();
 	static UT_UTF8String sNone = pSS->getValueUTF8(AP_STRING_ID_DLG_FormatTOC_None);
 	m_vecTABLeadersLabel.addItem(const_cast<void *>(static_cast<const void *>(sNone.utf8_str())));
@@ -63,6 +65,20 @@ AP_Dialog_FormatTOC::AP_Dialog_FormatTOC(XAP_DialogFactory * pDlgFactory, XAP_Di
 	m_vecTABLeadersProp.addItem("dot");
 	m_vecTABLeadersProp.addItem("hyphen");
 	m_vecTABLeadersProp.addItem("underline");
+	m_vecLabelPropValue.addItem("numeric");
+	m_vecLabelPropValue.addItem("numeric-square-brackets");
+	m_vecLabelPropValue.addItem("numeric-paren");
+	m_vecLabelPropValue.addItem("numeric-open-paren");
+	m_vecLabelPropValue.addItem("upper");
+	m_vecLabelPropValue.addItem("upper-paren");
+	m_vecLabelPropValue.addItem("upper-paren-open");
+	m_vecLabelPropValue.addItem("lower");
+	m_vecLabelPropValue.addItem("lower-paren");
+	m_vecLabelPropValue.addItem("lower-paren-open");
+	m_vecLabelPropValue.addItem("lower-roman");
+	m_vecLabelPropValue.addItem("lower-roman-paren");
+	m_vecLabelPropValue.addItem("upper-roman");
+	m_vecLabelPropValue.addItem("upper-roman-paren");
 }
 
 AP_Dialog_FormatTOC::~AP_Dialog_FormatTOC(void)
@@ -93,8 +109,12 @@ void AP_Dialog_FormatTOC::Apply(void)
 	{
 		return;
 	}
-//
-// Fixme do something useful here.
+	if(!pView->isTOCSelected())
+	{
+		setSensitivity(false);
+		return;
+	}
+	applyTOCPropsToDoc();
 }
 
 void AP_Dialog_FormatTOC::stopUpdater(void)
@@ -120,6 +140,36 @@ void AP_Dialog_FormatTOC::autoUpdate(UT_Worker * pTimer)
 
 	AP_Dialog_FormatTOC * pDialog = static_cast<AP_Dialog_FormatTOC *>(pTimer->getInstanceData());
 	pDialog->updateDialog();
+}
+
+UT_UTF8String AP_Dialog_FormatTOC::getNewStyle(UT_UTF8String & sProp)
+{
+	// Handshaking code
+	static UT_UTF8String sNewStyle("");
+	FV_View * pView = static_cast<FV_View *>(getActiveFrame()->getCurrentView());
+	if(pView->getPoint() == 0)
+	{
+		return sNewStyle;
+	}
+	XAP_Frame * pFrame = static_cast<XAP_Frame *> (pView->getParentData());
+	UT_ASSERT(pFrame);
+	XAP_DialogFactory * pDialogFactory
+		= static_cast<XAP_DialogFactory *>(pFrame->getDialogFactory());
+
+	AP_Dialog_Stylist * pDialog
+		= static_cast<AP_Dialog_Stylist *>(pDialogFactory->requestDialog(AP_DIALOG_ID_STYLIST));
+	UT_ASSERT(pDialog);
+	UT_UTF8String sVal = getTOCPropVal(sProp);
+	if (!pDialog)
+		return sNewStyle;
+	pDialog->setCurStyle(sVal);
+	pDialog->runModal(pFrame);
+	if(pDialog->isStyleValid())
+	{
+		sNewStyle = pDialog->getSelectedStyle();
+	}
+	pDialogFactory->releaseDialog(pDialog);
+	return sNewStyle;
 }
 
 /*!
@@ -168,17 +218,132 @@ UT_UTF8String AP_Dialog_FormatTOC::getTOCPropVal(UT_UTF8String & sProp)
 	return UT_UTF8String_getPropVal(m_sTOCProps,sProp);
 }
 
+
+UT_UTF8String AP_Dialog_FormatTOC::getTOCPropVal(const char * szProp)
+{
+	UT_UTF8String sProp = szProp;
+	return UT_UTF8String_getPropVal(m_sTOCProps,sProp);
+}
+
+
+UT_UTF8String AP_Dialog_FormatTOC::getTOCPropVal(const char * szProp,UT_sint32 i)
+{
+	UT_UTF8String sProp = szProp;
+	UT_UTF8String sVal = UT_UTF8String_sprintf("%d",i);
+	sProp += sVal;
+	return UT_UTF8String_getPropVal(m_sTOCProps,sProp);
+}
+
+void AP_Dialog_FormatTOC::setTOCProperty(const char * szProp, const char * szVal)
+{
+	UT_UTF8String sProp = szProp;
+	UT_UTF8String sVal = szVal;
+	UT_DEBUGMSG((" Prop: %s Val: %s \n",sProp.utf8_str(),sVal.utf8_str()));
+	UT_UTF8String_setProperty(m_sTOCProps,sProp,sVal);
+}
+
 void AP_Dialog_FormatTOC::setTOCProperty(UT_UTF8String & sProp, UT_UTF8String & sVal)
 {
 	UT_DEBUGMSG((" Prop: %s Val: %s \n",sProp.utf8_str(),sVal.utf8_str()));
 	UT_UTF8String_setProperty(m_sTOCProps,sProp,sVal);
 }
 
+void AP_Dialog_FormatTOC::setPropFromDoc(const char * szProp)
+{
+	UT_ASSERT(m_pAP);
+	const char * szVal = NULL;
+	m_pAP->getProperty(szProp,szVal);
+	if(szVal == NULL)
+	{
+		const PP_Property * pProp = PP_lookupProperty(szProp);
+		if(pProp == NULL)
+		{
+			UT_ASSERT(0);
+			return;
+		}
+		szVal = pProp->m_pszInitial;
+	}
+	setTOCProperty(szProp,szVal);
+}
 
 void AP_Dialog_FormatTOC::fillTOCPropsFromDoc(void)
 {
+	FV_View * pView = static_cast<FV_View *>(getActiveFrame()->getCurrentView());
+	PD_Document * pDoc = pView->getDocument();
+	if(pDoc != m_pDoc)
+	{
+		m_pDoc = pDoc;
+	}
+	PT_DocPosition pos = pView->getSelectionAnchor();
+	PL_StruxDocHandle sdhTOC = NULL;
+	m_pDoc->getStruxOfTypeFromPosition(pos,PTX_SectionTOC, &sdhTOC);
+	UT_ASSERT(sdhTOC);
+//
+// OK Now lets gets all props from here and place them in our local cache
+//
+	const char * szPropVal = NULL;
+	PT_AttrPropIndex iAPI = m_pDoc->getAPIFromSDH(sdhTOC);
+	m_pDoc->getAttrProp(iAPI,&m_pAP);
+	setPropFromDoc("toc-dest-style1");
+	setPropFromDoc("toc-dest-style2");
+	setPropFromDoc("toc-dest-style3");
+	setPropFromDoc("toc-dest-style4");
+
+	setPropFromDoc("toc-has-heading");
+
+	setPropFromDoc("toc-has-label1");
+	setPropFromDoc("toc-has-label2");
+	setPropFromDoc("toc-has-label3");
+	setPropFromDoc("toc-has-label4");
+
+	setPropFromDoc("toc-heading");
+	setPropFromDoc("toc-heading-style");
+	setPropFromDoc("toc-id");
+
+	setPropFromDoc("toc-label-after1");
+	setPropFromDoc("toc-label-after2");
+	setPropFromDoc("toc-label-after3");
+	setPropFromDoc("toc-label-after4");
+
+	setPropFromDoc("toc-label-before1");
+	setPropFromDoc("toc-label-before2");
+	setPropFromDoc("toc-label-before3");
+	setPropFromDoc("toc-label-before4");
+
+	setPropFromDoc("toc-label-inherits1");
+	setPropFromDoc("toc-label-inherits2");
+	setPropFromDoc("toc-label-inherits3");
+	setPropFromDoc("toc-label-inherits4");
+
+	setPropFromDoc("toc-label-start1");
+	setPropFromDoc("toc-label-start2");
+	setPropFromDoc("toc-label-start3");
+	setPropFromDoc("toc-label-start4");
+
+	setPropFromDoc("toc-label-type1");
+	setPropFromDoc("toc-label-type2");
+	setPropFromDoc("toc-label-type3");
+	setPropFromDoc("toc-label-type4");
+
+	setPropFromDoc("toc-page-type1");
+	setPropFromDoc("toc-page-type2");
+	setPropFromDoc("toc-page-type3");
+	setPropFromDoc("toc-page-type4");
+
+	setPropFromDoc("toc-source-style1");
+	setPropFromDoc("toc-source-style2");
+	setPropFromDoc("toc-source-style3");
+	setPropFromDoc("toc-source-style4");
+
+	setPropFromDoc("toc-tab-leader1");
+	setPropFromDoc("toc-tab-leader2");
+	setPropFromDoc("toc-tab-leader3");
+	setPropFromDoc("toc-tab-leader4");
 }
 
 void AP_Dialog_FormatTOC::applyTOCPropsToDoc(void)
 {
+	FV_View * pView = static_cast<FV_View *>(getActiveFrame()->getCurrentView());
+	PT_DocPosition pos = pView->getSelectionAnchor();
+	pView->setTOCProps(pos,m_sTOCProps.utf8_str());
 }

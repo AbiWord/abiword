@@ -40,6 +40,7 @@ public:
 	// callbacks can fire these events
 	void			event_Close(void);
 	void            event_Apply(void);
+	void            setStyle(GtkWidget * wid);
 	virtual void            destroy(void);
 	virtual void            activate(void);
     virtual void            setSensitivity(bool bSensitive);
@@ -53,7 +54,7 @@ private:
 	void            _createLabelTypeItems(void);
 	void            _createTABTypeItems(void);
 	GtkWidget *     _getWidget(const char * szNameBase, UT_sint32 level=0);
-
+	gpointer        _makeProp(const char * szProp, UT_sint32 i);
 
 	GtkWidget * m_windowMain;
 	GtkWidget * m_wApply;
