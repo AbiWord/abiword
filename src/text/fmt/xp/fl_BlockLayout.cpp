@@ -2411,7 +2411,8 @@ UT_Bool fl_BlockLayout::doclistener_insertBlock(const PX_ChangeRecord_Strux * pc
 
 	fp_Run * pFirstNewRun = NULL;
 	fp_Run * pLastRun = NULL;
-	for (fp_Run* pRun=m_pFirstRun; (pRun && !pFirstNewRun); pLastRun=pRun, pRun=pRun->getNext())
+        fp_Run * pRun;
+	for (pRun=m_pFirstRun; (pRun && !pFirstNewRun); pLastRun=pRun, pRun=pRun->getNext())
 	{			
 		switch (pRun->containsOffset(blockOffset))
 		{
