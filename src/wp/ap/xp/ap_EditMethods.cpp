@@ -2840,66 +2840,10 @@ static bool _helpOpenURL(AV_View* pAV_View, const char* helpURL)
 	return _helpOpenURL ( pFrame, helpURL ) ;
 }
 
-inline static void _catPath(UT_String& st, const char* st2)
-{
-	if (st.size() > 0)
-	{
-		if (st[st.size() - 1] != '/')
-			st += '/';
-	}
-	else
-		st += '/';
-
-	st += st2;
-}
-
 bool helpLocalizeAndOpenURL(XAP_Frame * pFrame, bool bLocal, const char* pathBeforeLang, const char* pathAfterLang)
 {	
 	UT_return_val_if_fail(pFrame, false);
-	XAP_App* pApp = pFrame->getApp();
-	UT_return_val_if_fail(pApp, false);
-	XAP_Prefs* pPrefs = pApp->getPrefs();
-	UT_return_val_if_fail(pPrefs,false);
-
-	const char* abiSuiteLibDir = pApp->getAbiSuiteLibDir();
-	const XML_Char* abiSuiteLocString = NULL;
-	UT_String url;
-
-	pPrefs->getPrefsValue((XML_Char*)AP_PREF_KEY_StringSet, &abiSuiteLocString);
-
-	if (bLocal)
-	{
-		UT_String path(abiSuiteLibDir);
-		_catPath(path, pathBeforeLang);
-
-		UT_String localized_path(path);
-		_catPath(localized_path, abiSuiteLocString);
-
-		if (UT_directoryExists(localized_path.c_str()))
-		{
-			// the localised help exists, so use it
-			path = localized_path;
-		}
-		else
-		{
-			// the localised help directory does not exist, so fall back to the
-			// en-US help localtion, which should always be available
-			localized_path = path;
-			_catPath(localized_path, "en-US");
-			UT_DEBUGMSG(("help does not exist, using en-US instead\n"));
-		}
-
-		_catPath(localized_path, pathAfterLang);
-		url = "file://";
-		url += localized_path;
-	}
-	else {
-		//TODO: No one uses this, so what kind of prefix should it have?
-		url = pathBeforeLang;
-		_catPath(url, abiSuiteLocString);
-		_catPath(url, pathAfterLang);
-	}
-
+	UT_String url (pFrame->localizeHelpUrl (bLocal, pathBeforeLang, pathAfterLang));
 	return _helpOpenURL(pFrame, url.c_str());
 }
 	

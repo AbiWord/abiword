@@ -1265,11 +1265,26 @@ EV_Menu* XAP_UnixFrameImpl::_getMainMenu()
 	return m_pUnixMenu;
 }
 
+UT_String XAP_UnixFrameImpl::_localizeHelpUrl (bool bLocal, const char * pathBefore, 
+											   const char * pathAfter)
+{
+#if 0 //def HAVE_GNOME
+	return UT_String (pathAfter);
+#else
+	return XAP_FrameImpl::_localizeHelpUrl (bLocal, pathBefore, pathAfter);
+#endif
+}
+
 bool XAP_UnixFrameImpl::_openHelpURL(const char * szURL)
 {
 #ifdef HAVE_GNOME
-	// TODO: make this work
-	gnome_help_display (szURL, NULL, NULL);
+	GError * err = NULL;	
+	gnome_help_display_uri (szURL, &err);
+	//gnome_help_display (szURL, NULL, &err);
+	if (err != NULL) {
+		UT_DEBUGMSG(("DOM: help error: %s\n", err->message));
+		g_error_free (err);
+	}
 	return false;
 #else
 	return _openURL (szURL);

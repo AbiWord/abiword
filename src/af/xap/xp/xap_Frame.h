@@ -132,6 +132,9 @@ public:
 	bool openURL(const char * szURL) { return m_pFrameImpl->_openURL(szURL); }
 	bool openHelpURL (const char * szURL) { return m_pFrameImpl->_openHelpURL(szURL); }
 
+	UT_String localizeHelpUrl (bool bLocal, const char * pathBefore, 
+							   const char * pathAfter) { return m_pFrameImpl->_localizeHelpUrl (bLocal, pathBefore, pathAfter); }
+
 	virtual XAP_DialogFactory * getDialogFactory() { return m_pFrameImpl->_getDialogFactory(); }
 	virtual EV_Toolbar * _newToolbar(XAP_App *app, XAP_Frame *frame, const char *szLayout, const char *szLanguage) { return m_pFrameImpl->_newToolbar(app, frame, szLayout, szLanguage); }
 	virtual EV_Menu* getMainMenu() { return m_pFrameImpl->_getMainMenu(); }

@@ -1170,13 +1170,13 @@ int AP_UnixApp::main(const char * szAppName, int argc, const char ** argv)
     gtk_set_locale();
     gboolean have_display = gtk_init_check(&XArgs.m_argc,(char ***)&XArgs.m_argv);
 
-    if (!have_display && Args.getShowApp()) {
+    if (have_display || Args.getShowApp()) {
       // this is just like an abort() but with a useful error messsage
 #ifndef HAVE_GNOME
       gtk_init (&XArgs.m_argc,(char ***)&XArgs.m_argv);
 #else
-      // deprecated...      
-      gnome_init ("AbiWord", ABI_BUILD_VERSION, XArgs.m_argc, const_cast<char **>(XArgs.m_argv));
+	  //gnome_program_init ("AbiWord", ABI_BUILD_VERSION, NULL, XArgs.m_argc, const_cast<char **>(XArgs.m_argv), GNOME_PARAM_APP_DATADIR, "/usr/share", GNOME_PARAM_NONE);
+	  gnome_init ("AbiWord", ABI_BUILD_VERSION, XArgs.m_argc, const_cast<char **>(XArgs.m_argv));
       gnome_vfs_init ();
 #endif
     }

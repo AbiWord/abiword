@@ -30,6 +30,9 @@
 #include "ev_Keyboard.h"
 #include "ev_Mouse.h"
 #include "ev_Toolbar.h"
+#include "xap_Prefs.h"
+#include "ut_assert.h"
+#include "ut_path.h"
 
 #if defined(XP_UNIX_TARGET_GTK) || (defined(__APPLE__) && defined(__MACH__)) || defined(WIN32) || defined(__QNXNTO__)
 
@@ -78,6 +81,70 @@ UT_RGBColor XAP_FrameImpl::getColorSelBackground () const
 UT_RGBColor XAP_FrameImpl::getColorSelForeground () const
 {
 	return UT_RGBColor(255, 255, 255);
+}
+
+inline static void _catPath(UT_String& st, const char* st2)
+{
+	if (st.size() > 0)
+	{
+		if (st[st.size() - 1] != '/')
+			st += '/';
+	}
+	else
+		st += '/';
+
+	st += st2;
+}
+
+UT_String XAP_FrameImpl::_localizeHelpUrl (bool bLocal, const char * pathBeforeLang, 
+										   const char * pathAfterLang)
+{
+	XAP_App* pApp = m_pFrame->getApp();
+
+	UT_return_val_if_fail(pApp, "");
+	XAP_Prefs* pPrefs = pApp->getPrefs();
+	UT_return_val_if_fail(pPrefs, "");
+
+	const char* abiSuiteLibDir = pApp->getAbiSuiteLibDir();
+	const XML_Char* abiSuiteLocString = NULL;
+	UT_String url;
+
+	// evil...
+	pPrefs->getPrefsValue((XML_Char*)"StringSet", &abiSuiteLocString);
+
+	if (bLocal)
+	{
+		UT_String path(abiSuiteLibDir);
+		_catPath(path, pathBeforeLang);
+
+		UT_String localized_path(path);
+		_catPath(localized_path, abiSuiteLocString);
+
+		if (UT_directoryExists(localized_path.c_str()))
+		{
+			// the localised help exists, so use it
+			path = localized_path;
+		}
+		else
+		{
+			// the localised help directory does not exist, so fall back to the
+			// en-US help localtion, which should always be available
+			localized_path = path;
+			_catPath(localized_path, "en-US");
+		}
+
+		_catPath(localized_path, pathAfterLang);
+		url = "file://";
+		url += localized_path;
+	}
+	else {
+		//TODO: No one uses this, so what kind of prefix should it have?
+		url = pathBeforeLang;
+		_catPath(url, abiSuiteLocString);
+		_catPath(url, pathAfterLang);
+	}
+
+	return url;
 }
 
 #define MAX_TITLE_LENGTH 256
