@@ -114,6 +114,9 @@ UT_sint32 XAP_UnixFontHandle::measureUnremappedCharForCache(UT_UCSChar cChar) co
 	}
 
 	width = pFace->glyph->linearHoriAdvance;
+	UT_DEBUGMSG((" Char %c index %d advance %d \n",cChar,glyph_index,width));
+	UT_Rect rec;
+	glyphBox(glyph_index,rec);
 	return width;
 }
 
@@ -145,7 +148,7 @@ bool XAP_UnixFontHandle::doesGlyphExist(UT_UCS4Char g)
 // rec.top = distance from the origin to the top of the glyph
 // rec.height = total height of the glyph
 //
-bool  XAP_UnixFontHandle::glyphBox(UT_UCS4Char glyph_index,UT_Rect & rec)
+bool  XAP_UnixFontHandle::glyphBox(UT_UCS4Char glyph_index,UT_Rect & rec) const
 {
 	XftFaceLocker locker(m_font->getLayoutXftFont(GR_CharWidthsCache::CACHE_FONT_SIZE));
 	FT_Face pFace = locker.getFace();
@@ -162,7 +165,7 @@ bool  XAP_UnixFontHandle::glyphBox(UT_UCS4Char glyph_index,UT_Rect & rec)
 	rec.width = pFace->glyph->metrics.width;
 	rec.top = pFace->glyph->metrics.horiBearingY;
 	rec.height = pFace->glyph->metrics.height;
-
+	UT_DEBUGMSG((" left %d width %d top %d height %d \n",rec.left,rec.width,rec.top,rec.height));
 	return true;
 }
 /*******************************************************************/

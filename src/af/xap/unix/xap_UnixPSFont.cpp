@@ -95,7 +95,7 @@ UT_sint32 PSFont::measureUnremappedCharForCache(UT_UCSChar cChar) const
 // rec.top = distance from the origin to the top of the glyph
 // rec.height = total height of the glyph
 //
-bool  PSFont::glyphBox(UT_UCS4Char glyph_index,UT_Rect & rec)
+bool  PSFont::glyphBox(UT_UCS4Char glyph_index,UT_Rect & rec) const
 {
 	XftFaceLocker locker(m_hFont->getLayoutXftFont(GR_CharWidthsCache::CACHE_FONT_SIZE));
 	FT_Face pFace = locker.getFace();
