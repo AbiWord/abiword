@@ -4824,14 +4824,19 @@ void FV_View::warpInsPtToXY(UT_sint32 xPos, UT_sint32 yPos, bool bClick = false)
 	if(bClick)
 	{
 		getEditableBounds(true,posEnd,true);
-		if(pos > posEnd)
+		if((pos > posEnd) && (pShadow != NULL))
 		{
 			if (pos != getPoint())
 				_clearIfAtFmtMark(getPoint());
 			setHdrFtrEdit(pShadow);
 			bClick = true;
 		}
-		else
+		else if((pos > posEnd) && (pShadow == NULL))
+		{
+			bClick = false;
+			pos = posEnd;
+		}
+		else if(pos <= posEnd) 
 		{
 			bClick = false;
 			clearHdrFtrEdit();
@@ -7540,15 +7545,18 @@ bool FV_View::insertFootnote()
 	bool bCreatedFootnoteSL = false;
 
 	PT_DocPosition dpFT = 0;
-
+	const XML_Char * dumProps[3] = {"list-tag","123",NULL};
 	PT_DocPosition dpBody = getPoint();
-
+//
+// This does a rebuild of the affected paragraph
+//
+	m_pDoc->changeStruxFmt(PTC_AddFmt,dpBody,dpBody,NULL,dumProps,PTX_Block);
 	if (!insertFootnoteSection(footpid))
 	{
 		m_pDoc->endUserAtomicGlob();
 		return false;
 	}
-	dpFT = getPoint()+1; // +1 compensates for field insertion
+	dpFT = getPoint(); // Points right at the EndFootnote strux
 	bCreatedFootnoteSL = true;
 	_setPoint(dpBody);
 	FrefStart = dpBody;
@@ -7583,12 +7591,12 @@ bool FV_View::insertFootnote()
 		m_pDoc->endUserAtomicGlob();
 		return false;
 	}
-	FanchEnd = getPoint();
+	FanchEnd = FanchStart+1;
 
 	//insert a space after the anchor
 	UT_UCSChar space = UCS_SPACE;
 	m_pDoc->insertSpan(FanchEnd, &space, 1);
-
+	_setPoint(FanchEnd+1);
 	FbodyEnd = getPoint();
 
 	/*	some magic to make the endnote reference and anchor recalculate
@@ -7605,7 +7613,7 @@ bool FV_View::insertFootnote()
 
 	bool bWidthChange = pRun->recalcWidth();
 	xxx_UT_DEBUGMSG(("run type %d, width change %d\n", pRun->getType(),bWidthChange));
-	if(bWidthChange) pBL->setNeedsReformat();
+	pBL->setNeedsReformat();
 
 
 	pBL = _findBlockAtPosition(FanchStart);
@@ -7615,9 +7623,12 @@ bool FV_View::insertFootnote()
 	{
 		bWidthChange = pBL->getFirstRun()->getNext()->recalcWidth();
 		xxx_UT_DEBUGMSG(("run type %d, width change %d\n", pBL->getFirstRun()->getNext()->getType(),bWidthChange));
-		if(bWidthChange) pBL->setNeedsReformat();
+		pBL->setNeedsReformat();
 	}
-
+//
+// This does a rebuild of the affected paragraph
+//
+	m_pDoc->changeStruxFmt(PTC_RemoveFmt,dpBody,dpBody,NULL,dumProps,PTX_Block);
 	m_pDoc->endUserAtomicGlob();
 	_generalUpdate();
 //
@@ -7654,25 +7665,7 @@ bool FV_View::insertFootnoteSection(const XML_Char * enpid)
 	  and leaves the insertion point there.
 	*/
     PT_DocPosition pointBreak = 0;
-#if 0
-//
-// Insert the footnote at the end of the current Block.
-//
-	fl_BlockLayout * pBL = _findGetCurrentBlock();
-	if(pBL)
-	{
-		fp_Run * pRun = pBL->getFirstRun();
-		while(pRun && pRun->getNext())
-		{
-			pRun = pRun->getNext();
-		}
-		pointBreak = pBL->getPosition() + pRun->getBlockOffset() + pRun->getLength() -1;
-	}
-	else
-	{
-		return false;
-	}
-#endif
+
 	pointBreak = getPoint();
  	PT_DocPosition pointFootnote = 0;
 //
@@ -7686,29 +7679,13 @@ bool FV_View::insertFootnoteSection(const XML_Char * enpid)
 	UT_DEBUGMSG(("plam: about to insert block for footnote section at %d \n",pointFootnote));
  	e |= m_pDoc->insertStrux(pointFootnote,PTX_Block,block_attrs2,NULL);
 	pointFootnote++;
-	UT_DEBUGMSG(("plam: about to insert block for text in footnote section a5 d%d \n",pointFootnote));
- 	e |= m_pDoc->insertStrux(getPoint(),PTX_Block,block_attrs2,NULL);
-	pointFootnote++;
 	UT_DEBUGMSG(("plam: about to insert end footnote at %d \n",pointFootnote));
   	e |= m_pDoc->insertStrux(pointFootnote,PTX_EndFootnote,block_attrs,NULL);
-	pointFootnote--;
+    pointFootnote++;
 	_setPoint(pointFootnote);
 	UT_DEBUGMSG(("plam: inserted everything final point is %d \n",getPoint()));
 
-	// Now create the Footnotes section
-	// If there is a list item here remove it!
-
- 	fl_BlockLayout* pBlock = _findBlockAtPosition(getPoint());
- 	PL_StruxDocHandle sdh = pBlock->getStruxDocHandle();
- 	if(pBlock && pBlock->isListItem())
- 	{
- 		while(pBlock->isListItem())
- 		{
- 			m_pDoc->StopList(sdh);
- 		}
- 	}
-
-	m_pDoc->signalListeners(PD_SIGNAL_REFORMAT_LAYOUT);
+//	m_pDoc->signalListeners(PD_SIGNAL_REFORMAT_LAYOUT);
 
 	// restore updates and clean up dirty lists
 	m_pDoc->enableListUpdates();

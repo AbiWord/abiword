@@ -48,6 +48,7 @@ public:
 
 	virtual bool 	doclistener_changeStrux(const PX_ChangeRecord_StruxChange * pcrxc);
 	virtual bool    doclistener_deleteStrux(const PX_ChangeRecord_Strux * pcrx);
+	virtual bool    doclistener_deleteEndFootnote(const PX_ChangeRecord_Strux * pcrx);
 	virtual bool    bl_doclistener_insertEndFootnote(fl_ContainerLayout*,
 											  const PX_ChangeRecord_Strux * pcrx,
 											  PL_StruxDocHandle sdh,
@@ -67,6 +68,9 @@ public:
 	fl_DocSectionLayout*	 getDocSectionLayout(void) const { return m_pDocSL; }
 	UT_uint32                getFootnotePID(void) const
 		{return m_iFootnotePID;}
+	bool                     isEndFootnoteIn(void) const
+		{return m_bHasEndFootnote;}
+	PT_DocPosition           getDocPosition(void);
 protected:
 	virtual void		     _lookupProperties(void);
 	virtual void             _purgeLayout(void);
@@ -79,6 +83,7 @@ private:
 	bool                   m_bNeedsFormat;
 	bool                   m_bNeedsRebuild;
 	UT_uint32              m_iFootnotePID;
+	bool                   m_bHasEndFootnote;
 };
 
 #endif /* FOOTNOTELAYOUT_H */

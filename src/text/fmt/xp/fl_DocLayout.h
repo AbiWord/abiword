@@ -44,6 +44,7 @@ class UT_Worker;
 class fl_PartOfBlock;
 class fl_AutoNum;
 class PX_ChangeRecord_StruxChange;
+class fl_FootnoteLayout;
 
 // the following get used by view and layout code, 
 // since they're private to the formatter, we stick 'em here
@@ -149,13 +150,15 @@ public:
 	fl_DocSectionLayout* 	findSectionForHdrFtr(const char* pszHdrFtrID) const;
 	void 				deleteEmptyColumnsAndPages(void);
 	void 				deleteEmptyPages( bool bDontNotify = false);
-
+	void                addFootnote(fl_FootnoteLayout *);
+	void                removeFootnote(fl_FootnoteLayout *);
+	fl_FootnoteLayout * getNthFootnote(UT_sint32 i);
+	UT_sint32           getFootnoteVal(UT_uint32 footpid);
 
 	bool		getAutoSpellCheck(void) const { return (hasBackgroundCheckReason(bgcrSpelling)); }
 	bool		getSpellCheckCaps(void) const { return m_bSpellCheckCaps; }
 	bool		getSpellCheckNumbers(void) const { return m_bSpellCheckNumbers; }
 	bool		getSpellCheckInternet(void) const { return m_bSpellCheckInternet; }
-
 	void		recheckIgnoredWords();
 
 	inline void			addBackgroundCheckReason(UT_uint32 reason) {m_uDocBackgroundCheckReasons |= reason;}
@@ -229,14 +232,13 @@ private:
 	UT_Worker*			m_pBackgroundCheckTimer; 
 
 	XAP_Prefs *			m_pPrefs;
-
-//	UT_Vector			m_vecLists;
 	
 	UT_Timer*			m_pRedrawUpdateTimer;
 	UT_uint32           m_iSkipUpdates;
 	bool                m_bDeletingLayout;
 	bool                m_bisLayoutFilling;
 	UT_uint32           m_iRedrawCount;
+	UT_Vector           m_vecFootnotes;
 };
 
 #endif /* DOCLAYOUT_H */

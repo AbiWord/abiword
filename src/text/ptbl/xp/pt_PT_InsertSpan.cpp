@@ -324,9 +324,13 @@ bool pt_PieceTable::_realInsertSpan(PT_DocPosition dpos,
 
 	bool bSuccess = false;
 	pf_Frag_Strux * pfs = NULL;
-	bool bFoundStrux = _getStruxFromFragSkip(pf,&pfs);
+	bool bFoundStrux = _getStruxFromFrag(pf,&pfs);
 	UT_ASSERT(bFoundStrux);
-
+	if(isEndFootnote((pf_Frag *)pfs))
+	{
+		bFoundStrux = _getStruxFromFragSkip((pf_Frag *) pfs,&pfs);
+	}
+	UT_ASSERT(pfs);
 	// we just did a getFragFromPosition() which gives us the
 	// the thing *starting* at that position.  if we have a
 	// fragment boundary at that position, it's sort of arbitrary

@@ -61,6 +61,7 @@ fp_Page::fp_Page(FL_DocLayout* pLayout,
 	UT_ASSERT(pG);
 	m_vecColumnLeaders.clear();
 	m_iResolution = pG->getResolution();
+	UT_DEBUGMSG(("Created Page %x \n",this));
 }
 
 fp_Page::~fp_Page()
@@ -274,6 +275,8 @@ fp_Page* fp_Page::getPrev(void) const
 void fp_Page::setNext(fp_Page* p)
 {
 	m_pNext = p;
+	xxx_UT_DEBUGMSG(("Next PAge set to %x \n",p));
+//	UT_ASSERT(0);
 }
 
 void fp_Page::setPrev(fp_Page* p)

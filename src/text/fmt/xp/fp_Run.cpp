@@ -3340,7 +3340,7 @@ void fp_FieldRun::findPointCoords(UT_uint32 iOffset, UT_sint32& x,
                                   UT_sint32& y, UT_sint32& x2,
                                   UT_sint32& y2, UT_sint32& height, bool& bDirection)
 {
-	//UT_DEBUGMSG(("fintPointCoords: FieldRun\n"));
+	xxx_UT_DEBUGMSG(("findPointCoords: FieldRun offset %d \n",iOffset));
 	UT_sint32 xoff;
 	UT_sint32 yoff;
 
@@ -3352,22 +3352,58 @@ void fp_FieldRun::findPointCoords(UT_uint32 iOffset, UT_sint32& x,
 	// lookupProperties();
 
 	getLine()->getOffsets(this, xoff, yoff);
-
+	xxx_UT_DEBUGMSG(("findPointCoords: FieldRun orig yoff %d \n",yoff)); 
+//
+// The footnote code is to handle discontinuities in offset from embedded
+// footnotes in blocks.
+//
+	bool bFootnote = false;
 	if (iOffset == (getBlockOffset() + getLength()))
 	{
 		xoff += getWidth();
 	}
-	if (m_fPosition == TEXT_POSITION_SUPERSCRIPT)
+	else if(iOffset > (getBlockOffset() + getLength()))
+	{
+		bFootnote = true;
+		xoff += getWidth();
+	}
+
+	if (!bFootnote && (m_fPosition == TEXT_POSITION_SUPERSCRIPT))
 	{
 		yoff -= getAscent() * 1/2;
 	}
-	else if (m_fPosition == TEXT_POSITION_SUBSCRIPT)
+	else if (!bFootnote && (m_fPosition == TEXT_POSITION_SUBSCRIPT))
 	{
 		yoff += getDescent() /* * 3/2 */;
 	}
+	xxx_UT_DEBUGMSG(("findPointCoords: FieldRun yoff %d \n",yoff)); 
  	x = xoff;
 	y = yoff;
-	height = getHeight();
+	if(!bFootnote)
+	{
+		height = getHeight();
+	}
+	else
+	{
+//
+// We're actually just before the next run and in the insertion point will be
+// in the next run so make the insertion point reflect this.
+//
+		if(getNext())
+		{
+			height = getNext()->getHeight();
+			UT_sint32 xx,xx2,yy2,hheight;
+			bool bbDirection;
+			getNext()->findPointCoords(iOffset+1,xx,y,xx2,yy2, hheight,
+									   bbDirection);
+			height = hheight;
+
+		}
+		else
+		{
+			height = getHeight();
+		}
+	}
 	x2 = x;
 	y2 = y;
 	bDirection = (getVisDirection() != FRIBIDI_TYPE_LTR);
@@ -4107,18 +4143,9 @@ bool fp_FieldFootnoteRefRun::calculateValue(void)
 	bool bRes = pp->getAttribute("footnote-id", footid);
 
 	UT_ASSERT(bRes);
-	fp_Line * pLine = getLine();
-	fp_Page * pPage = NULL;
-	UT_sint32 iBefore = 0;
-	if(pLine)
-	{
-		pPage = pLine->getPage();
-	}
-	if(pPage)
-	{
-		iBefore = countFootnotesBefore(pPage,footid);
-	}
-	UT_sint32 footnoteNo = iBefore+1;
+	FV_View * pView = _getView();
+	UT_uint32 iPID = atoi(footid);
+	UT_sint32 footnoteNo = pView->getLayout()->getFootnoteVal(iPID);
 
 	UT_UCSChar sz_ucs_FieldValue[FPFIELD_MAX_LENGTH + 1];
 	sz_ucs_FieldValue[0] = 0;
@@ -4151,18 +4178,9 @@ bool fp_FieldFootnoteAnchorRun::calculateValue(void)
 	bool bRes = pp->getAttribute("footnote-id", footid);
 
 	UT_ASSERT(bRes);
-	fp_Line * pLine = getLine();
-	fp_Page * pPage = NULL;
-	UT_sint32 iBefore = 0;
-	if(pLine)
-	{
-		pPage = pLine->getPage();
-	}
-	if(pPage)
-	{
-		iBefore = countFootnotesBefore(pPage,footid);
-	}
-	UT_sint32 footnoteNo = iBefore+1;
+	UT_uint32 iPID = atoi(footid);
+	FV_View * pView = _getView();
+	UT_sint32 footnoteNo = pView->getLayout()->getFootnoteVal(iPID);
 
 	UT_UCSChar sz_ucs_FieldValue[FPFIELD_MAX_LENGTH + 1];
 	sz_ucs_FieldValue[0] = 0;

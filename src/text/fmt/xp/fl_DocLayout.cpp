@@ -27,6 +27,7 @@
 #include "fl_Layout.h"
 #include "fl_DocLayout.h"
 #include "fl_SectionLayout.h"
+#include "fl_FootnoteLayout.h"
 #include "fl_BlockLayout.h"
 #include "fl_ContainerLayout.h"
 #include "fl_Squiggles.h"
@@ -94,6 +95,7 @@ FL_DocLayout::FL_DocLayout(PD_Document* doc, GR_Graphics* pG)
 	m_pDocLayout = this;
 #endif
 	m_iRedrawCount = 0;
+	m_vecFootnotes.clear();
 }
 
 FL_DocLayout::~FL_DocLayout()
@@ -266,6 +268,78 @@ void FL_DocLayout::setView(FV_View* pView)
 			}
 		}
 	}
+}
+
+/*!
+ * Add a footnote layout to the vector remembering them.
+ */
+void FL_DocLayout::addFootnote(fl_FootnoteLayout * pFL)
+{
+	m_vecFootnotes.addItem((void *) pFL);
+}
+
+/*!
+ * get a pointer to the Nth footnote layout in the vector remembering them.
+ */
+fl_FootnoteLayout * FL_DocLayout::getNthFootnote(UT_sint32 i)
+{
+	if(i >= m_vecFootnotes.getItemCount())
+	{
+		return NULL;
+	}
+	else
+	{
+		return (fl_FootnoteLayout *) m_vecFootnotes.getNthItem(i);
+	}
+}
+
+/*!
+ * Remove a foonote layout from the Vector.
+ */
+void FL_DocLayout::removeFootnote(fl_FootnoteLayout * pFL)
+{
+	UT_sint32 i = m_vecFootnotes.findItem((void *) pFL);
+	if(i< 0)
+	{
+		return;
+	}
+	m_vecFootnotes.deleteNthItem(i);
+}
+
+/*!
+ * This returns the position of the footnote in the document. This is useful
+ * for calculating the footnote's value and positioning it in a footnote 
+ * section
+ */
+UT_sint32 FL_DocLayout::getFootnoteVal(UT_uint32 footpid)
+{
+	UT_sint32 i =0;
+	UT_sint32 pos = 1;
+	fl_FootnoteLayout * pTarget = NULL;
+	fl_FootnoteLayout * pFL = NULL;
+	for(i=0; i<(UT_sint32) m_vecFootnotes.getItemCount(); i++)
+	{
+		pFL = getNthFootnote(i);
+		if(pFL->getFootnotePID() == footpid)
+		{
+			pTarget = pFL;
+			break;
+		}
+	}
+	if(pTarget== NULL)
+	{
+		return 0;
+	}
+	PT_DocPosition posTarget = pTarget->getDocPosition();
+	for(i=0; i<(UT_sint32) m_vecFootnotes.getItemCount(); i++)
+	{
+		pFL = getNthFootnote(i);
+		if(pFL->getDocPosition() < posTarget)
+		{
+			pos++;
+		}
+	}
+	return pos;
 }
 
 UT_sint32 FL_DocLayout::getHeight()

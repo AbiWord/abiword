@@ -874,6 +874,11 @@ bool fl_DocListener::change(PL_StruxFmtHandle sfh,
 		}
 		case PTX_EndFootnote:
 		{
+			fl_Layout * pL = (fl_Layout *)sfh;
+			UT_ASSERT(pL->getType() == PTX_SectionFootnote);
+			fl_FootnoteLayout * pFL = (fl_FootnoteLayout *) pL;
+			pFL->doclistener_deleteEndFootnote(pcrx);
+
 			goto finish_up;
 		}
 		default:

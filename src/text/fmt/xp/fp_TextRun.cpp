@@ -744,7 +744,7 @@ void fp_TextRun::findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y, 
 	UT_sint32 xoff2;
 	UT_sint32 yoff2;
 	UT_sint32 xdiff = 0;
-
+	xxx_UT_DEBUGMSG(("findPointCoords: Text Run offset %d \n",iOffset));
 	UT_ASSERT(getLine());
 	getLine()->getOffsets(this, xoff, yoff);
 	const UT_GrowBuf * pgbCharWidths = getBlock()->getCharWidths()->getCharWidths();
@@ -813,6 +813,7 @@ void fp_TextRun::findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y, 
 	bDirection = (iDirection != FRIBIDI_TYPE_LTR);
 	y = yoff;
 	height = getHeight();
+	xxx_UT_DEBUGMSG(("findPointCoords: TextRun yoff %d \n",yoff)); 
 }
 
 bool fp_TextRun::canMergeWithNext(void)

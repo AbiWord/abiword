@@ -814,7 +814,7 @@ void fl_BlockLayout::updateOffsets(PT_DocPosition posEmbedded, UT_uint32 iEmbedd
 	}
 	fp_Run * pPrev = pRun->getPrev();
 	UT_sint32 iDiff = 0;
-	PT_DocPosition posRun = 0;posInBlock + pRun->getBlockOffset();
+	PT_DocPosition posRun = 0;
 	if(pPrev == NULL)
 	{
 		iDiff = (UT_sint32) (pRun->getBlockOffset() - getPosition());
@@ -836,11 +836,10 @@ void fl_BlockLayout::updateOffsets(PT_DocPosition posEmbedded, UT_uint32 iEmbedd
 //
 		else
 		{
-			UT_ASSERT(pRun->getType() == FPRUN_TEXT);
 			pRun = pRun->getPrev();
-			posRun = posInBlock + pRun->getBlockOffset();
+			UT_ASSERT(pRun->getType() == FPRUN_TEXT);
 			fp_TextRun * pTRun = (fp_TextRun *) pRun;
-			UT_uint32 splitOffset = getPosition()+posEmbedded - posRun;
+			UT_uint32 splitOffset = posEmbedded - posInBlock;
 			UT_DEBUGMSG(("updateOffsets: Split at offset %d \n",splitOffset));
 			bool bres = pTRun->split(splitOffset);
 			UT_ASSERT(bres);
@@ -850,7 +849,7 @@ void fl_BlockLayout::updateOffsets(PT_DocPosition posEmbedded, UT_uint32 iEmbedd
 		}
 	}
 	UT_ASSERT(iDiff >= 0);
-	UT_DEBUGMSG(("Updating block %x with orig shift %d new shift %d \n",this,iDiff,iEmbeddedSize));
+	xxx_UT_DEBUGMSG(("Updating block %x with orig shift %d new shift %d \n",this,iDiff,iEmbeddedSize));
 	if(iDiff != (UT_sint32) iEmbeddedSize)
 	{
 //
@@ -881,7 +880,7 @@ void fl_BlockLayout::updateOffsets(PT_DocPosition posEmbedded, UT_uint32 iEmbedd
 		{
 			UT_uint32 iNew = pRun->getBlockOffset() + iDiff;
 			UT_ASSERT(iNew >= 0);
-			UT_DEBUGMSG(("Run %x Old offset %d New Offset %d \n",pRun,pRun->getBlockOffset(),iNew));
+			xxx_UT_DEBUGMSG(("Run %x Old offset %d New Offset %d \n",pRun,pRun->getBlockOffset(),iNew));
 			pRun->setBlockOffset((UT_uint32) iNew);
 			pRun = pRun->getNext();
 		}
@@ -915,10 +914,16 @@ void fl_BlockLayout::updateEnclosingBlockIfNeeded(void)
 {
 	if(!isEmbeddedType())
 	{
-		UT_DEBUGMSG(("Block %x is Not enclosed - returning \n"));
+		xxx_UT_DEBUGMSG(("Block %x is Not enclosed - returning \n"));
 		return;
 	}
 	fl_ContainerLayout * pCL = myContainingLayout();
+	UT_ASSERT(pCL->getContainerType() == FL_CONTAINER_FOOTNOTE);
+	fl_FootnoteLayout * pFL = (fl_FootnoteLayout *) pCL;
+	if(!pFL->isEndFootnoteIn())
+	{
+		return;
+	}
 	PL_StruxDocHandle sdhStart = pCL->getStruxDocHandle();
 	PL_StruxDocHandle sdhEnd = NULL;
 	if(pCL->getContainerType() == FL_CONTAINER_FOOTNOTE)
@@ -927,16 +932,9 @@ void fl_BlockLayout::updateEnclosingBlockIfNeeded(void)
 	}
 	else
 	{
-		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 		return;
 	}
-//
-// This can happen during footnote construction.
-//
-	if(sdhEnd == NULL)
-	{
-		return;
-	}
+	UT_return_if_fail(sdhEnd != NULL);
 	PT_DocPosition posStart = getDocument()->getStruxPosition(sdhStart);
 	PT_DocPosition posEnd = getDocument()->getStruxPosition(sdhEnd);
 	UT_uint32 iSize = posEnd - posStart + 1;
@@ -2786,8 +2784,8 @@ bool fl_BlockLayout::doclistener_populateSpan(const PX_ChangeRecord_Span * pcrs,
 	PT_BufIndex bi = pcrs->getBufIndex();
 	if(getPrev()!= NULL && getPrev()->getLastContainer()==NULL)
 	{
-		UT_DEBUGMSG(("In fl_BlockLayout::doclistener_populateSpan  no LastLine \n"));
-		UT_DEBUGMSG(("getPrev = %d this = %d \n",getPrev(),this));
+		xxx_UT_DEBUGMSG(("In fl_BlockLayout::doclistener_populateSpan  no LastLine \n"));
+		xxx_UT_DEBUGMSG(("getPrev = %d this = %d \n",getPrev(),this));
 		//			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 	}
 	const UT_UCSChar* pChars = m_pDoc->getPointer(bi);
@@ -2803,7 +2801,7 @@ bool fl_BlockLayout::doclistener_populateSpan(const PX_ChangeRecord_Span * pcrs,
 	UT_uint32 i;
 	for (i=0; i<len; i++)
 	{
-		UT_DEBUGMSG(("fl_BlockLayout: char %d %c \n",i,(char) pChars[i]));
+		xxx_UT_DEBUGMSG(("fl_BlockLayout: char %d %c \n",i,(char) pChars[i]));
 		switch (pChars[i])
 		{
 			// see similar control characters in fl_DocLayout.cpp
@@ -2927,7 +2925,7 @@ bool	fl_BlockLayout::_doInsertTextSpan(PT_BlockOffset blockOffset, UT_uint32 len
 		{
 			sTmp += pSpan[j];
 		}
-		UT_DEBUGMSG(("fl_BlockLayout::_doInsertTextSpan lenSpan %d truelen %d text |%s| \n",lenSpan,trueLen,sTmp.c_str()));
+		xxx_UT_DEBUGMSG(("fl_BlockLayout::_doInsertTextSpan lenSpan %d truelen %d text |%s| \n",lenSpan,trueLen,sTmp.c_str()));
 #endif		
 		for(i = 1; i < trueLen; i++)
 		{
@@ -2998,9 +2996,10 @@ bool	fl_BlockLayout::_doInsertTextSpan(PT_BlockOffset blockOffset, UT_uint32 len
 			}
 			
 		}
-		xxx_UT_DEBUGMSG(("_doInsertTextSpan: text run: offset %d, len %d\n", curOffset, i));
+		xxx_UT_DEBUGMSG(("_dopopulateTextSpan: text run: offset %d, len %d\n", curOffset, i));
 		fp_TextRun* pNewRun = new fp_TextRun(this, m_pLayout->getGraphics(), curOffset, i);
 		UT_ASSERT(pNewRun);
+		UT_ASSERT(pNewRun->getType() == FPRUN_TEXT);
 		pNewRun->setDirOverride(m_iDirOverride);
 		curOffset += i;
 
@@ -3799,6 +3798,7 @@ fl_BlockLayout::_assertRunListIntegrityImpl(void)
 {
 	fp_Run* pRun = m_pFirstRun;
 	UT_uint32 iOffset = 0;
+	bool bPastFirst = false;
 	while (pRun)
 	{
 		// Verify that offset of this block is correct.
@@ -3836,6 +3836,7 @@ fl_BlockLayout::_assertRunListIntegrityImpl(void)
 		UT_ASSERT( pRun->getNext()
 				   || (FPRUN_ENDOFPARAGRAPH == pRun->getType()) );
 		pRun = pRun->getNext();
+		bPastFirst = true;
 	}
 }
 #endif /* !NDEBUG */

@@ -59,11 +59,13 @@ fl_FootnoteLayout::fl_FootnoteLayout(FL_DocLayout* pLayout, fl_DocSectionLayout*
 	  m_pDocSL(pDocSL),
 	  m_bNeedsFormat(true),
 	  m_bNeedsRebuild(false),
-	  m_iFootnotePID(0)
+	  m_iFootnotePID(0),
+	  m_bHasEndFootnote(false)
 {
 	_createFootnoteContainer();
 	_insertFootnoteContainer(getFirstContainer());
 	UT_ASSERT(myContainingLayout());
+	m_pLayout->addFootnote(this);
 }
 
 fl_FootnoteLayout::~fl_FootnoteLayout()
@@ -84,6 +86,7 @@ fl_FootnoteLayout::~fl_FootnoteLayout()
 
 	setFirstContainer(NULL);
 	setLastContainer(NULL);
+	m_pLayout->removeFootnote(this);
 }
 
 /*!
@@ -125,6 +128,17 @@ void fl_FootnoteLayout::_createFootnoteContainer(void)
 #endif
 }
 	
+/*!
+ * Returns the position in the document of the PTX_SectionFootnote strux
+ * This is very useful for determining the value of the footnote reference
+ * and anchor. 
+*/
+PT_DocPosition fl_FootnoteLayout::getDocPosition(void) 
+{
+	PL_StruxDocHandle sdh = getStruxDocHandle();
+    return 	m_pLayout->getDocument()->getStruxPosition(sdh);
+}
+
 bool fl_FootnoteLayout::bl_doclistener_insertEndFootnote(fl_ContainerLayout*,
 											  const PX_ChangeRecord_Strux * pcrx,
 											  PL_StruxDocHandle sdh,
@@ -152,6 +166,18 @@ bool fl_FootnoteLayout::bl_doclistener_insertEndFootnote(fl_ContainerLayout*,
 	{
 		pView->setPoint(pView->getPoint() +  fl_BLOCK_STRUX_OFFSET);
 	}
+	m_bHasEndFootnote = true;
+	fl_BlockLayout * pBL = (fl_BlockLayout *) getFirstLayout();
+	pBL->updateEnclosingBlockIfNeeded();
+	return true;
+}
+
+/*!
+ * This signals an incomplete footnote section.
+ */
+bool fl_FootnoteLayout::doclistener_deleteEndFootnote( const PX_ChangeRecord_Strux * pcrx)
+{
+	m_bHasEndFootnote = false;
 	return true;
 }
 

@@ -75,11 +75,16 @@ bool pt_PieceTable::_realInsertObject(PT_DocPosition dpos,
 	PT_BlockOffset fragOffset = 0;
 	bool bFound = getFragFromPosition(dpos,&pf,&fragOffset);
 	UT_ASSERT(bFound);
-
 	pf_Frag_Strux * pfs = NULL;
 	bool bFoundStrux = _getStruxFromFrag(pf,&pfs);
-	UT_ASSERT(bFoundStrux);
 
+	UT_ASSERT(bFoundStrux);
+	if(isEndFootnote((pf_Frag *) pfs))
+	{
+		bFoundStrux = _getStruxFromFragSkip((pf_Frag *)pfs,&pfs);
+	}
+	UT_ASSERT(bFoundStrux);
+	
 	apiOld = _chooseIndexAP(pf,fragOffset);
 
 	if (!m_varset.mergeAP(PTC_AddFmt, apiOld, attributes, properties, &indexAP, m_pDocument))
