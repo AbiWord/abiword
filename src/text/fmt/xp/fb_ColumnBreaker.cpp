@@ -160,33 +160,6 @@ UT_sint32 fb_ColumnBreaker::breakSection(fl_DocSectionLayout * pSL)
 			if(pCurContainer->getContainerType() == FP_CONTAINER_TABLE)
 			{
 				iContainerHeight = static_cast<fp_TableContainer *>(pCurContainer)->getHeight();
-#if 0
-				if(!pTab->isThisBroken() && pTab->getFirstBrokenTable())
-				{
-					pTab = pTab->getFirstBrokenTable();
-				}
-				if(pTab->containsFootnoteReference() )
-				{
-					// Ok.  Now, deduct the proper amount from iMaxColHeight.
-
-					// OK get a vector of the footnote containers in this line.
-					UT_Vector vecFootnotes;
-					pTab->getFootnoteContainers(&vecFootnotes);
-					fp_Page *pCurPage = pCurColumn->getPage();
-					// Now loop through all these and add them to the height.
-					UT_sint32 i =0;
-					for(i=0; i< static_cast<UT_sint32>(vecFootnotes.getItemCount());i++)
-					{
-						fp_FootnoteContainer * pFC = static_cast<fp_FootnoteContainer *>(vecFootnotes.getNthItem(i));
-						if(pFC->getPage() == NULL || pFC->getPage() != pCurPage)
-						{
-							iFootnoteHeight += pFC->getHeight();
-						}				
-					}	
-					UT_DEBUGMSG(("got Table footnote section height %d\n", iFootnoteHeight));
-					iWorkingColHeight += iFootnoteHeight;
-				}
-#endif
 			}
 			else
 			{
@@ -481,10 +454,22 @@ UT_sint32 fb_ColumnBreaker::breakSection(fl_DocSectionLayout * pSL)
 //
 		bEquivColumnBreak = bEquivColumnBreak && ( iMaxColHeight < (iWorkingColHeight + iTotalContainerSpace));
 		if (pLastContainerToKeep)
-			pOuterContainer = _getNext(pLastContainerToKeep);
+		{
+			while(pLastContainerToKeep && ((pLastContainerToKeep->getContainerType() == FP_CONTAINER_FOOTNOTE )||(pLastContainerToKeep->getContainerType() == FP_CONTAINER_ENDNOTE )))
+			{
+				pLastContainerToKeep = pLastContainerToKeep->getPrevContainerInSection();
+			}
+			if(pLastContainerToKeep)
+			{
+				pOuterContainer = _getNext(pLastContainerToKeep);
+			}
+			else
+			{
+				pOuterContainer = NULL;
+			}
+		}
 		else
 			pOuterContainer = NULL;
-
 //
 // OK fill our column with content between pFirstContainerToKeep and pLastContainerToKeep
 //
@@ -896,79 +881,6 @@ bool fb_ColumnBreaker::_breakTable(fp_Container*& pOffendingContainer,
 		return true;
 	}
 	return false;
-#if 0 // BLAH!
-	fp_TableContainer * pTab = static_cast<fp_TableContainer *>(pOffendingContainer);
-	if(!pTab->isThisBroken())
-	{
-        // This is the first of this table set. Clear the old broken
-        // tables and rebreak.
-		pTab->deleteBrokenTables();
-		xxx_UT_DEBUGMSG(("SEVIOR: Need Table Break 1 \n"));
-		xxx_UT_DEBUGMSG(("firstbroke %x lastbroke %x \n",pTab->getFirstBrokenTable(),pTab->getLastBrokenTable()));
-	}
-
-    // If we don't break the table, the heights of the broken table's
-    // will be adjusted at the setY() in the layout stage.
-    // PLAM: broken for pango?
-	fp_TableContainer * pBroke = NULL;
-	UT_sint32 iAvail = iMaxColHeight - iWorkingColHeight - 
-		iContainerMarginAfter;
-
-	UT_sint32 iBreakAt = pTab->wantVBreakAt(iAvail-1);
-
-	UT_ASSERT(iBreakAt <= (iAvail-1));
-
-	if(iBreakAt + iWorkingColHeight <= iMaxColHeight)
-	{
-        // We can break this table and keep some of it in this
-        // column. The rest goes into the next column.
-
-		if(!pTab->isThisBroken())
-		{
-			// Break it at 0 first.
-			UT_DEBUGMSG(("SEVIOR: Breaking MAster iBreakAt %d yloc = %d \n",
-						 iBreakAt,pTab->getY()));
-			UT_DEBUGMSG(("SEVIOR: iBreakLO %d iWorkingColHeight %d "
-						 "iMaxColHeight %d Container Height %d "
-						 "MArginAfter %d \n",iBreakLO,iWorkingColHeight,
-						 iMaxColHeight,pTab->getHeight(), 
-						 iContainerMarginAfter ));
-			fp_Container * pNext = static_cast<fp_Container *>(pTab->getNext());
-			UT_DEBUGMSG(("SEVIOR: getNext %x \n",pNext));
-			if(pNext)
-				UT_DEBUGMSG(("SEVIOR: Container of next %d \n",pNext->getContainerType()));
-			pTab->deleteBrokenTables();
-			pTab->VBreakAt(0);
-		}
-
-        // Now get a broken table and break it again.
-		if(!pTab->isThisBroken())
-			pBroke = pTab->getFirstBrokenTable();
-		else
-			pBroke = pTab;
-
-        // Look to see if we have to move the table out of this container.
-		if(iBreakAt < 30)
-		{
-			pOffendingContainer = pTab;
-		}
-		else
-		{
-            // When we break the table, the bit broken will be placed
-            // after the current table in the column. This then
-            // becomes the offending container and will be bumped into
-            // the next column. Pretty cool eh ? :-)
-			pOffendingContainer = static_cast<fp_Container *>(pBroke->VBreakAt(iBreakAt));
-			UT_DEBUGMSG(("SEVIOR: Created broken table %x \n",
-							 pOffendingContainer));
-			pLastContainerToKeep = static_cast<fp_Container *>(pTab);
-			UT_DEBUGMSG(("SEVIOR: Set lasttokeep 1 %x \n",
-							 pLastContainerToKeep));
-		}
-		return true;
-	}
-	return false;
-#endif
 }
 
 fp_Container * fb_ColumnBreaker::_getNext(fp_Container * pCon)
