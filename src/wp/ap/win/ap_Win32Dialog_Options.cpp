@@ -450,6 +450,7 @@ BOOL AP_Win32Dialog_Options::_onInitTab(HWND hWnd, WPARAM wParam, LPARAM lParam)
 			_DS(OPTIONS_CHK_AutoSaveFile,			DLG_Options_Label_AutoSaveCurrent);
 			_DS(OPTIONS_LBL_AutoSaveMinutes,		DLG_Options_Label_Minutes);
 			_DS(OPTIONS_LBL_AutoSaveExtension,		DLG_Options_Label_WithExtension);
+			_DS(OPTIONS_CHK_ShowSplash,				DLG_Options_Label_ShowSplash);
 
 			// Set the starting period to 1 minute
 			SetDlgItemInt(hWnd, AP_RID_DIALOG_OPTIONS_TXT_AutoSavePeriod, 1, FALSE );
@@ -581,6 +582,7 @@ BOOL AP_Win32Dialog_Options::_onCommandTab(HWND hWnd, WPARAM wParam, LPARAM lPar
 		EnableWindow( GetDlgItem( hWnd, AP_RID_DIALOG_OPTIONS_SPN_AutoSavePeriodSpin), bChecked );
 		EnableWindow( GetDlgItem( hWnd, AP_RID_DIALOG_OPTIONS_TXT_AutoSaveExtension), bChecked );
 		return 0;
+	case AP_RID_DIALOG_OPTIONS_CHK_ShowSplash:			_enableDisableLogic(id_SHOWSPLASH);		return 0;
 
 	default:
 		UT_DEBUGMSG(("WM_Command for id %ld for sub-dialog\n",wId));
@@ -708,6 +710,10 @@ void AP_Win32Dialog_Options::_controlEnable( tControl id, bool value )
 		EnableWindow(GetDlgItem((HWND)m_vecSubDlgHWnd.getNthItem(LAYOUT_INDEX),id_CHECK_SMART_QUOTES_ENABLE),value);
 		return;
 
+	case id_SHOWSPLASH:
+		EnableWindow(GetDlgItem((HWND)m_vecSubDlgHWnd.getNthItem(PREF_INDEX),AP_RID_DIALOG_OPTIONS_CHK_ShowSplash),value);
+		return;
+
 #ifdef BIDI_ENABLED
 	case id_CHECK_OTHER_DEFAULT_DIRECTION_RTL:
 		EnableWindow(GetDlgItem((HWND)m_vecSubDlgHWnd.getNthItem(PREF_INDEX),id_CHECK_OTHER_DEFAULT_DIRECTION_RTL),value);
@@ -749,7 +755,6 @@ DEFINE_GET_SET_BOOL(SPELL_INDEX,SpellUppercase);
 DEFINE_GET_SET_BOOL(SPELL_INDEX,SpellNumbers);
 DEFINE_GET_SET_BOOL(SPELL_INDEX,SpellInternet);
 
-
 DEFINE_GET_SET_BOOL(LAYOUT_INDEX,ViewShowRuler);
 DEFINE_GET_SET_BOOL(LAYOUT_INDEX,ViewShowStatusBar);
 DEFINE_GET_SET_BOOL(LAYOUT_INDEX,ViewCursorBlink);
@@ -759,6 +764,7 @@ DEFINE_GET_SET_BOOL(LAYOUT_INDEX,ViewUnprintable);
 DEFINE_GET_SET_BOOL(LAYOUT_INDEX,SmartQuotesEnable);
 
 DEFINE_GET_SET_BOOL(PREF_INDEX,PrefsAutoSave);
+DEFINE_GET_SET_BOOL(PREF_INDEX,ShowSplash);
 #ifdef BIDI_ENABLED
 DEFINE_GET_SET_BOOL(PREF_INDEX,OtherDirectionRtl);
 #endif
