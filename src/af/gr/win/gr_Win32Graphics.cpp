@@ -142,7 +142,6 @@ GR_Win32Graphics::~GR_Win32Graphics()
 	}
 
 	delete [] m_remapBuffer;
-
 	delete [] m_remapIndices;
 }
 
@@ -313,7 +312,8 @@ void GR_Win32Graphics::drawChar(UT_UCSChar Char, UT_sint32 xoff, UT_sint32 yoff)
 
 void GR_Win32Graphics::drawChars(const UT_UCSChar* pChars,
 								 int iCharOffset, int iLengthOrig,
-								 UT_sint32 xoff, UT_sint32 yoff)
+								 UT_sint32 xoff, UT_sint32 yoff,
+								 int * pCharWidths)
 {
 	UT_ASSERT(pChars);
 	// iLength can be modified by _remapGlyphs
@@ -356,7 +356,7 @@ void GR_Win32Graphics::drawChars(const UT_UCSChar* pChars,
 			gcpResult.lStructSize = sizeof(GCP_RESULTS);
 			gcpResult.lpOutString = NULL;			// Output string
 			gcpResult.lpOrder = NULL;				// Ordering indices
-			gcpResult.lpDx = NULL;					// Distances between character cells
+			gcpResult.lpDx = pCharWidths;		    // Distances between character cells
 			gcpResult.lpCaretPos = NULL;			// Caret positions
 			gcpResult.lpClass = NULL;				// Character classifications
 			gcpResult.lpGlyphs = m_remapIndices;	// Character glyphs
@@ -364,7 +364,7 @@ void GR_Win32Graphics::drawChars(const UT_UCSChar* pChars,
 
 			if(GetCharacterPlacementW(m_hdc, currentChars, iLength, 0, &gcpResult, GCP_REORDER))
 			{
-				ExtTextOutW(m_hdc, xoff, yoff, ETO_GLYPH_INDEX, NULL, m_remapIndices, gcpResult.nGlyphs, NULL);
+				ExtTextOutW(m_hdc, xoff, yoff, ETO_GLYPH_INDEX, NULL, m_remapIndices, gcpResult.nGlyphs, pCharWidths);
 			}
 			else
 			{
@@ -375,7 +375,7 @@ void GR_Win32Graphics::drawChars(const UT_UCSChar* pChars,
 		else
 		{
 simple_exttextout:
-			ExtTextOutW(m_hdc, xoff, yoff, 0, NULL, currentChars, iLength, NULL);
+			ExtTextOutW(m_hdc, xoff, yoff, 0, NULL, currentChars, iLength, pCharWidths);
 		}
 	}
 

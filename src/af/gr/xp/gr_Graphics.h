@@ -109,7 +109,8 @@ class ABI_EXPORT GR_Graphics
 								int iCharOffset,
 								int iLength,
 								UT_sint32 xoff,
-								UT_sint32 yoff) = 0;
+								UT_sint32 yoff,
+								int* pCharWidths = NULL) = 0;
 #else
 	// this XP method works with the FT2 backend; for any platform specific backends
 	// just provide implementation in the derived class

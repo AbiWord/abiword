@@ -1731,7 +1731,25 @@ void fp_TextRun::_draw(dg_DrawArgs* pDA)
 
 	UT_ASSERT(pDA->pG == getGR());
 	const UT_GrowBuf * pgbCharWidths = getBlock()->getCharWidths()->getCharWidths();
+	const UT_GrowBuf * pgbCharWidthsLayout = getBlock()->getCharWidths()->getCharWidthsLayoutUnits();
+	UT_sint32 * pCharWidths = getGR()->queryProperties(GR_Graphics::DGP_SCREEN) ?
+		pgbCharWidths->getPointer(0) :
+		pgbCharWidthsLayout->getPointer(0);
 
+	// should this prove to be too much of a performance bottleneck,
+	// we will cache this in a member array
+	UT_sint32 * pCW2 = NULL;
+	if(!s_bBidiOS && getVisDirection()== FRIBIDI_TYPE_RTL )
+	{
+		UT_uint32 iLen = getLength();
+		pCW2 = new UT_sint32[iLen];
+		for(UT_uint32 n = 0; n < iLen; n++)
+		{
+			pCW2[n] = pCharWidths[iLen - n - 1];
+		}
+		pCharWidths = pCW2;
+	}
+	
 	UT_uint32 iBase = getBlock()->getPosition();
 
 	UT_RGBColor clrNormalBackground(_getColorHL());
@@ -1897,7 +1915,7 @@ void fp_TextRun::_draw(dg_DrawArgs* pDA)
 	{
 		// this is the case of non-justified run or fakly-justified run
 		// since we have the visual string in the draw buffer, we just call getGR()r->drawChars()
-		getGR()->drawChars(m_pSpanBuff, 0, getLength(), pDA->xoff, yTopOfRun);
+		getGR()->drawChars(m_pSpanBuff, 0, getLength(), pDA->xoff, yTopOfRun,pCharWidths);
 	}
 	else
 	{
@@ -1928,7 +1946,7 @@ void fp_TextRun::_draw(dg_DrawArgs* pDA)
 			iSpaceWidth  = (UT_uint32) m_pJustifiedSpaces->getNthItem(i+2);
 			iTextWidth   = (UT_uint32) m_pJustifiedSpaces->getNthItem(i+3);
 
-			getGR()->drawChars(m_pSpanBuff, iOffset, iSpaceOffset - iOffset, iX, yTopOfRun);
+			getGR()->drawChars(m_pSpanBuff, iOffset, iSpaceOffset - iOffset, iX, yTopOfRun, pCharWidths + iOffset);
 			xxx_UT_DEBUGMSG(( "fp_TextRun::_draw: iOffset %d, iSpaceOffset %d, iSpaceLength %d, iDelta %d, iCurrOffset %d, iSpaceWidth %d, iTextWidth %d\n", iOffset, iSpaceOffset, iSpaceLength, iDelta, iCurrOffset, iSpaceWidth, iTextWidth ));
 
 			iOffset = iSpaceOffset + iSpaceLength;
@@ -1941,7 +1959,7 @@ void fp_TextRun::_draw(dg_DrawArgs* pDA)
 		if(iOffset < iLength)
 		{
 			// draw the section of the run past the last space segment
-			getGR()->drawChars(m_pSpanBuff, iOffset, iLength - iOffset, iX, yTopOfRun);
+			getGR()->drawChars(m_pSpanBuff, iOffset, iLength - iOffset, iX, yTopOfRun, pCharWidths + iOffset);
 		}
 	}
 
@@ -1956,6 +1974,9 @@ void fp_TextRun::_draw(dg_DrawArgs* pDA)
 	// TODO: draw this underneath (ie, before) the text and decorations
 	m_bSquiggled = false;
 	getBlock()->findSquigglesForRun(this);
+
+	if(pCW2)
+		delete[]pCW2;
 }
 
 void fp_TextRun::_fillRect(UT_RGBColor& clr,

@@ -35,10 +35,10 @@
 #include "ut_string.h"
 
 /*
- OPTIMIZATIONS:
- -Make BView callbacks for the scroll code that would
-replay a previously recorded BPicture.
- -Get rid of all the sync calls 
+  OPTIMIZATIONS:
+  -Make BView callbacks for the scroll code that would
+  replay a previously recorded BPicture.
+  -Get rid of all the sync calls 
 */
 
 #define DPRINTF(x) 	
@@ -59,7 +59,7 @@ replay a previously recorded BPicture.
 inline uint32 
 utf8_char_len(uchar byte) 
 { 
-  return (((0xE5000000 >> ((byte >> 3) & 0x1E)) & 3) + 1); 
+	return (((0xE5000000 >> ((byte >> 3) & 0x1E)) & 3) + 1); 
 }
 
 const char* GR_Graphics::findNearestFont(const char* pszFontFamily,
@@ -88,8 +88,8 @@ GR_BeOSGraphics::GR_BeOSGraphics(BView *docview, XAP_App * app) {
 	m_cs = GR_Graphics::GR_COLORSPACE_COLOR;
 	
 #if defined(USE_BACKING_BITMAP)
-BRect r;
-if (m_pFrontView->Window()->Lock())
+	BRect r;
+	if (m_pFrontView->Window()->Lock())
 	{
 		r = m_pFrontView->Bounds();
 		m_pFrontView->Window()->Unlock();
@@ -115,36 +115,36 @@ if (m_pFrontView->Window()->Lock())
 	m_pFrontView->SetFlags(m_pFrontView->Flags() /*| B_SUBPIXEL_PRECISE*/);
 	m_pFrontView->Window()->Unlock();
 #endif
-/*
- white for _highlight & _bevelup
-        black for foreground
-        lite gray(192*) for background
-        dark gray(128*) for beveldown          
-*/
+	/*
+	  white for _highlight & _bevelup
+	  black for foreground
+	  lite gray(192*) for background
+	  dark gray(128*) for beveldown          
+	*/
 
 	rgb_color c;
 	c.alpha = 255;
 	c.red = c.blue = c.green = 0;		//Black
-        m_3dColors[CLR3D_Foreground] = c;
+	m_3dColors[CLR3D_Foreground] = c;
 	c.red = c.blue = c.green = 219;		//Light Grey
-        m_3dColors[CLR3D_Background] = c;
+	m_3dColors[CLR3D_Background] = c;
 	c.red = c.blue = c.green = 150;		//Dark Grey
-        m_3dColors[CLR3D_BevelDown] = c;
+	m_3dColors[CLR3D_BevelDown] = c;
 	c.red = c.blue = c.green = 255;		//White
-        m_3dColors[CLR3D_Highlight] = c;
+	m_3dColors[CLR3D_Highlight] = c;
 	c.red = c.blue = c.green = 255;		//White
-        m_3dColors[CLR3D_BevelUp] = c;
+	m_3dColors[CLR3D_BevelUp] = c;
 }		
 
 GR_BeOSGraphics::~GR_BeOSGraphics() {
 #if defined(USE_BACKING_BITMAP)
 	if (!m_pShadowBitmap)
 		return;
-if (m_pShadowBitmap->Lock())
-{
-	m_pShadowBitmap->RemoveChild(m_pShadowView);
-	m_pShadowBitmap->Unlock();
-}
+	if (m_pShadowBitmap->Lock())
+	{
+		m_pShadowBitmap->RemoveChild(m_pShadowView);
+		m_pShadowBitmap->Unlock();
+	}
 	delete m_pShadowBitmap;
 	delete m_pShadowView;
 #endif
@@ -185,21 +185,22 @@ bool GR_BeOSGraphics::queryProperties(GR_Graphics::Properties gp) const
 {
 	switch (gp)
 	{
-	case DGP_OPAQUEOVERLAY:
-	case DGP_SCREEN:
-		return true;
-	case DGP_PAPER:			//Not sure what this does
-		return false;
-	default:
-		UT_ASSERT(0);
-		return false;
+		case DGP_OPAQUEOVERLAY:
+		case DGP_SCREEN:
+			return true;
+		case DGP_PAPER:			//Not sure what this does
+			return false;
+		default:
+			UT_ASSERT(0);
+			return false;
 	}
 }
 
 
 // Draw this string of characters on the screen in current font
 void GR_BeOSGraphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
-							    int iLength, UT_sint32 xoff, UT_sint32 yoff)
+							    int iLength, UT_sint32 xoff, UT_sint32 yoff,
+								int * pCharWidths)
 {
 	int i;
 	char buffer[2*(iLength+1)];

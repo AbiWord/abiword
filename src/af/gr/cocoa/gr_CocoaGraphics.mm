@@ -297,7 +297,9 @@ void GR_CocoaGraphics::drawChar(UT_UCSChar Char, UT_sint32 xoff, UT_sint32 yoff)
 }
 
 void GR_CocoaGraphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
-							 int iLength, UT_sint32 xoff, UT_sint32 yoff)
+								 int iLength, UT_sint32 xoff, UT_sint32
+								 yoff,
+								 int * pCharWidths)
 {
 	UT_DEBUGMSG (("GR_CocoaGraphics::drawChars()\n"));
 	if (!m_pFontManager)

@@ -91,7 +91,8 @@ public:
 	virtual void			drawChar(UT_UCSChar Char, UT_sint32 xoff, UT_sint32 yoff);
 	virtual void			drawChars(const UT_UCSChar* pChars,
 									  int iCharOffset, int iLength,
-									  UT_sint32 xoff, UT_sint32 yoff);
+									  UT_sint32 xoff, UT_sint32 yoff,
+									  int * pCharWidth);
 	virtual void			setFont(GR_Font* pFont);
 	virtual UT_uint32		getFontHeight();
 	//virtual UT_uint32		measureString(const UT_UCSChar*s, int iOffset, int num, unsigned short* pWidths);
@@ -194,7 +195,7 @@ private:
 	DWORD					m_clrXorPen;
 	HPEN					m_hXorPen;
 
-	UT_UCS2Char*				m_remapBuffer;
+	UT_UCS2Char*			m_remapBuffer;
 	UT_uint32				m_remapBufferSize;
 	// we will make this static, so that it gets initialized by the first instance of the class
 	// since we have to construct a screen graphics before we can print, this should guarantee

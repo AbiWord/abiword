@@ -416,7 +416,8 @@ void UnixNull_Graphics::_drawFT2Bitmap(UT_sint32 x, UT_sint32 y, FT_Bitmap * pBi
 #endif
 
 void UnixNull_Graphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
-							int iLength, UT_sint32 xoff, UT_sint32 yoff)
+								  int iLength, UT_sint32 xoff, UT_sint32 yoff,
+								  int * pCharWidths)
 {
 }
 

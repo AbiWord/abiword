@@ -56,7 +56,8 @@ class GR_QNXGraphics : public GR_Graphics
 	virtual void		drawGlyph(UT_uint32 glyph_idx,UT_sint32 xoff,UT_sint32 yoff);
 	virtual void 		drawChar(UT_UCSChar Char, UT_sint32 xoff, UT_sint32 yoff);
 	virtual void 		drawChars(const UT_UCSChar* pChars, int iCharOffset,
-						   		  int iLength, UT_sint32 xoff, UT_sint32 yoff);
+						   		  int iLength, UT_sint32 xoff, UT_sint32 yoff,
+								  int * pCharWidths = NULL);
 	virtual void 		setFont(GR_Font* pFont);
 	virtual UT_uint32 	measureUnRemappedChar(const UT_UCSChar c);
 	virtual void 		setColor(const UT_RGBColor& clr);

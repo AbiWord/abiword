@@ -86,10 +86,10 @@ UT_uint32 				GR_UnixGraphics::s_iInstanceCount = 0;
 #ifndef WITH_PANGO
 GR_UnixGraphics::GR_UnixGraphics(GdkWindow * win, XAP_UnixFontManager * fontManager, XAP_App * app)
 #else
-GR_UnixGraphics::GR_UnixGraphics(GdkWindow * win, XAP_App * app)
+	GR_UnixGraphics::GR_UnixGraphics(GdkWindow * win, XAP_App * app)
 #endif
 #ifdef USE_XFT
-	: m_bLayoutUnits(false)
+		: m_bLayoutUnits(false)
 #endif
 {
 	m_pApp = app;
@@ -180,68 +180,68 @@ bool GR_UnixGraphics::queryProperties(GR_Graphics::Properties gp) const
 {
 	switch (gp)
 	{
-	case DGP_SCREEN:
-	case DGP_OPAQUEOVERLAY:
-		return true;
-	case DGP_PAPER:
-		return false;
-	default:
-		UT_ASSERT(0);
-		return false;
+		case DGP_SCREEN:
+		case DGP_OPAQUEOVERLAY:
+			return true;
+		case DGP_PAPER:
+			return false;
+		default:
+			UT_ASSERT(0);
+			return false;
 	}
 }
 
 static GdkCapStyle mapCapStyle ( GR_Graphics::CapStyle in )
 {
-  switch ( in )
+	switch ( in )
     {
-    case GR_Graphics::CAP_ROUND :
-      return GDK_CAP_ROUND ;
-    case GR_Graphics::CAP_PROJECTING :
-      return GDK_CAP_PROJECTING ;
-    case GR_Graphics::CAP_BUTT :
-    default:
-      return GDK_CAP_BUTT ;
+		case GR_Graphics::CAP_ROUND :
+			return GDK_CAP_ROUND ;
+		case GR_Graphics::CAP_PROJECTING :
+			return GDK_CAP_PROJECTING ;
+		case GR_Graphics::CAP_BUTT :
+		default:
+			return GDK_CAP_BUTT ;
     }
 }
 
 static GdkLineStyle mapLineStyle ( GR_Graphics::LineStyle in )
 {
-  switch ( in )
+	switch ( in )
     {
-    case GR_Graphics::LINE_ON_OFF_DASH :
-      return GDK_LINE_ON_OFF_DASH ;
-    case GR_Graphics::LINE_DOUBLE_DASH :
-      return GDK_LINE_DOUBLE_DASH ;
-    case GR_Graphics::LINE_SOLID :
-    default:
-      return GDK_LINE_SOLID ;
+		case GR_Graphics::LINE_ON_OFF_DASH :
+			return GDK_LINE_ON_OFF_DASH ;
+		case GR_Graphics::LINE_DOUBLE_DASH :
+			return GDK_LINE_DOUBLE_DASH ;
+		case GR_Graphics::LINE_SOLID :
+		default:
+			return GDK_LINE_SOLID ;
     }
 }
 
 static GdkJoinStyle mapJoinStyle ( GR_Graphics::JoinStyle in )
 {
-  switch ( in )
+	switch ( in )
     {
-    case GR_Graphics::JOIN_ROUND :
-      return GDK_JOIN_ROUND ;
-    case GR_Graphics::JOIN_BEVEL :
-      return GDK_JOIN_BEVEL ;
-    case GR_Graphics::JOIN_MITER :
-    default:
-      return GDK_JOIN_MITER ;
+		case GR_Graphics::JOIN_ROUND :
+			return GDK_JOIN_ROUND ;
+		case GR_Graphics::JOIN_BEVEL :
+			return GDK_JOIN_BEVEL ;
+		case GR_Graphics::JOIN_MITER :
+		default:
+			return GDK_JOIN_MITER ;
     }
 }
 
 void GR_UnixGraphics::setLineProperties ( double inWidthPixels, 
-					  GR_Graphics::JoinStyle inJoinStyle,
-					  GR_Graphics::CapStyle inCapStyle,
-					  GR_Graphics::LineStyle inLineStyle )
+										  GR_Graphics::JoinStyle inJoinStyle,
+										  GR_Graphics::CapStyle inCapStyle,
+										  GR_Graphics::LineStyle inLineStyle )
 {
-  gdk_gc_set_line_attributes ( m_pGC, (gint)inWidthPixels,
-			       mapLineStyle ( inLineStyle ),
-			       mapCapStyle ( inCapStyle ),
-			       mapJoinStyle ( inJoinStyle ) ) ;
+	gdk_gc_set_line_attributes ( m_pGC, (gint)inWidthPixels,
+								 mapLineStyle ( inLineStyle ),
+								 mapCapStyle ( inCapStyle ),
+								 mapJoinStyle ( inJoinStyle ) ) ;
 }
 
 #if (!defined(WITH_PANGO) || !defined(USE_XFT))
@@ -294,7 +294,7 @@ void GR_UnixGraphics::drawGlyph(UT_uint32 Char, UT_sint32 xoff, UT_sint32 yoff)
 		if(isFontUnicode(font))
 		{
 			LE2BE16((&Wide_char),(&Wide_char)) //declared in ut_endian.h
-			gdk_draw_text(m_pWin,font,m_pGC,xoff,yoff+font->ascent,(gchar*)&Wide_char,2);
+				gdk_draw_text(m_pWin,font,m_pGC,xoff,yoff+font->ascent,(gchar*)&Wide_char,2);
 		}
 		else
 		{
@@ -313,7 +313,8 @@ void GR_UnixGraphics::drawGlyph(UT_uint32 Char, UT_sint32 xoff, UT_sint32 yoff)
 }
 
 void GR_UnixGraphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
-							 int iLength, UT_sint32 xoff, UT_sint32 yoff)
+								int iLength, UT_sint32 xoff, UT_sint32 yoff,
+								int * pCharWidths)
 {
 #ifdef USE_XFT
 	XftDrawString32(m_pXftDraw, &m_XftColor, m_pXftFont, xoff, yoff + m_pXftFont->ascent,

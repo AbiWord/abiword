@@ -536,7 +536,8 @@ void PS_Graphics::drawGlyph(UT_uint32 Char, UT_sint32 xoff, UT_sint32 yoff)
 }
 
 void PS_Graphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
-							int iLength, UT_sint32 xoff, UT_sint32 yoff)
+							int iLength, UT_sint32 xoff, UT_sint32 yoff,
+							int * pCharWidths)
 {
 	PSFont *pEnglishFont;
 	PSFont *pChineseFont;

@@ -216,7 +216,8 @@ set (ie font, colour etc) so we end up doing it again ourselves. It
 also licks that we have to do the translation at this layer.
 */
 void GR_QNXGraphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
-				 int iLength, UT_sint32 xoff, UT_sint32 yoff)
+							   int iLength, UT_sint32 xoff, UT_sint32 yoff,
+							   int * pCharWidths)
 {
 	PhPoint_t pos;
 	char *utf8;
