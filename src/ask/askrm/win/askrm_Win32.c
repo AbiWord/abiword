@@ -43,6 +43,11 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	struct _fileref* pHead = NULL;
 	struct _fileref* pTail = NULL;
 
+	if (IDYES != MessageBox(NULL, "This will completely remove the selected software from your computer.  Are you sure you want to do this?", "Confirm", MB_YESNO))
+	{
+		return 0;
+	}
+	
 	fp = fopen(szCmdLine, "r");
 	if (!fp)
 	{
