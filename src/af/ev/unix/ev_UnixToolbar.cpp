@@ -207,10 +207,20 @@ public:									// we create...
 				if (!wd->m_blockSignal)
 				{
 					const gchar * buffer = gtk_entry_get_text(GTK_ENTRY(widget));
+
 					UT_uint32 length = strlen(buffer);
-					UT_ASSERT(length > 0);
-					UT_ASSERT(length < 1024);
-					strcpy(wd->m_comboEntryBuffer, buffer);
+					xxx_UT_DEBUGMSG(("LACHANCE: comboChanged, length: %d \n", length));
+				        // LACHANCE: in gtk2, it seems as if the gtk_entry's text buffer length is set to 0
+				        // when we move through combo elements/new combo elements are added. in this case, we 
+				        // have to ignore the signal-- things will be set correctly momentarily. this seems
+					// to work correctly, but it would be nice to find a more elegant solution
+					// (P.S.: GtkCombo SUCKS, and will hopefully soon be deprecated. We should really be 
+					// using GtkOptionMenu for non-changeable drop-down toolbar menus)
+					if (length > 0) 
+					{					
+						UT_ASSERT(length < 1024);				       
+						strcpy(wd->m_comboEntryBuffer, buffer);
+					}				   
 				}
 			}
 			else // widget has no ->parent, so use the buffer's results
@@ -681,12 +691,17 @@ bool EV_UnixToolbar::synthesize(void)
 //								   wd);
 				
 				// handle changes in content
-				GtkEntry * blah = GTK_ENTRY(GTK_COMBO(comboBox)->entry);
-				g_signal_connect(G_OBJECT(&blah->widget),
+			        //GtkEntry * blah = GTK_ENTRY(GTK_COMBO(comboBox)->entry);
+				//g_signal_connect(G_OBJECT(&blah->widget),
+				//		 "changed",
+				//		 G_CALLBACK(_wd::s_combo_changed),
+				//		 wd);
+			        // LACHANCE: I don't know what's going on with the above. Why not just
+				// connect to the ->entry directly? Cleaned up version below.
+			        g_signal_connect(G_OBJECT(GTK_COMBO(comboBox)->entry),
 						 "changed",
 						 G_CALLBACK(_wd::s_combo_changed),
 						 wd);
-				
 				// populate it
 				if (pControl)
 				{
@@ -708,7 +723,7 @@ bool EV_UnixToolbar::synthesize(void)
 					}
 				}
  
-				// give a final show
+			        // give a final show
 				gtk_widget_show(comboBox);
 
 				// stick it in the toolbar
@@ -1086,7 +1101,10 @@ bool EV_UnixToolbar::repopulateStyles(void)
 //
 // Try this....
 //
-    GtkList * oldlist = GTK_LIST(item->list);
+	bool wasBlocked = wd->m_blockSignal;
+	wd->m_blockSignal = true; // block the signal, so we don't try to read the text entry while this is happening..
+    
+	GtkList * oldlist = GTK_LIST(item->list);
 	gtk_list_clear_items(oldlist,0,-1);
 //
 // Now make a new one.
@@ -1099,6 +1117,9 @@ bool EV_UnixToolbar::repopulateStyles(void)
 		gtk_widget_show(li);
 		gtk_container_add (GTK_CONTAINER(GTK_COMBO(item)->list), li);
 	}
+
+        wd->m_blockSignal = wasBlocked;
+
 //
 // Don't need this anymore and we don't like memory leaks in abi
 //
