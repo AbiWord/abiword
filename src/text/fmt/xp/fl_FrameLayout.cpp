@@ -519,7 +519,10 @@ void fl_FrameLayout::format(void)
 // Place it on the correct page.
 //
 		fl_ContainerLayout * pCL = getPrev();
-		while(pCL && pCL->getContainerType() != FL_CONTAINER_BLOCK)
+		while(pCL && ((pCL->getContainerType() == FL_CONTAINER_ENDNOTE) &&
+					  (pCL->getContainerType() == FL_CONTAINER_FOOTNOTE) &&
+					  (pCL->getContainerType() == FL_CONTAINER_TOC) &&
+					  (pCL->getContainerType() == FL_CONTAINER_FRAME)  ))
 		{
 			pCL = pCL->getPrev();
 		}
@@ -529,7 +532,15 @@ void fl_FrameLayout::format(void)
 			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 			return;
 		}
-		fl_BlockLayout * pBL = static_cast<fl_BlockLayout *>(pCL);
+		fl_BlockLayout * pBL = NULL;
+		if(pCL->getContainerType() != FL_CONTAINER_BLOCK)
+		{
+			pBL = pCL->getPrevBlockInDocument();
+		}
+		else
+		{
+			pBL = static_cast<fl_BlockLayout *>(pCL);
+		}
 		UT_sint32 count = pBL->getNumFrames();
 		if(count == 0)
 		{

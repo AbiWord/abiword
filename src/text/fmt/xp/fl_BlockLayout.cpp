@@ -694,7 +694,10 @@ void fl_BlockLayout::_lookupProperties(void)
 	if (!pBlockAP || !pBlockAP->getAttribute(PT_LISTID_ATTRIBUTE_NAME, szLid))
 		szLid = NULL;
 	if (szLid)
+	{
 		id = atoi(szLid);
+		
+	}
 	else
 		id = 0;
 

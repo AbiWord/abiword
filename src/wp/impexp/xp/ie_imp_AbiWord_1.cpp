@@ -330,8 +330,9 @@ void IE_Imp_AbiWord_1::startElement(const XML_Char *name, const XML_Char **atts)
 		bool bOK = true;
 		if(pszId)
 		{
-			//UT_uint32 id = atoi(pszId);
-		    bOK = getDoc()->verifySectionID(pszId);
+			UT_uint32 id = atoi(pszId);
+			getDoc()->setMinUID(UT_UniqueId::HeaderFtr, id+1);
+			bOK = getDoc()->verifySectionID(pszId);
 		}
 		if(bOK)
 		{
@@ -371,6 +372,16 @@ void IE_Imp_AbiWord_1::startElement(const XML_Char *name, const XML_Char **atts)
 		// Don't check for id on the footnote. It should match an id on
         // a footnote reference field.
 
+		// Need to set the min Unique id now.
+
+		const XML_Char * pszId = static_cast<const XML_Char*>(_getXMLPropValue("footnote-id", atts));
+		bool bOK = true;
+		if(pszId)
+		{
+			UT_uint32 id = atoi(pszId);
+			bOK = getDoc()->setMinUID(UT_UniqueId::Footnote, id+1);
+		}
+
 		X_CheckError(appendStrux(PTX_SectionFootnote,atts));
 		xxx_UT_DEBUGMSG(("FInished Append footnote strux \n"));
 		return;
@@ -381,6 +392,16 @@ void IE_Imp_AbiWord_1::startElement(const XML_Char *name, const XML_Char **atts)
 		X_VerifyParseState(_PS_Block);
 		m_parseState = _PS_Sec;
 		m_bWroteSection = true;
+
+		// Need to set the min Unique id now.
+
+		const XML_Char * pszId = static_cast<const XML_Char*>(_getXMLPropValue("endnote-id", atts));
+		bool bOK = true;
+		if(pszId)
+		{
+			UT_uint32 id = atoi(pszId);
+			bOK = getDoc()->setMinUID(UT_UniqueId::Endnote, id+1);
+		}
 
 		// Don't check for id of the endnote strux. It should match the
 		// id of the endnote reference.
