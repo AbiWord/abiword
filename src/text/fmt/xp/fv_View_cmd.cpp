@@ -4408,7 +4408,10 @@ UT_Error FV_View::cmdInsertGraphic(FG_Graphic* pFG)
 	uuid->toString(s);
 		
 	UT_Error errorCode = _insertGraphic(pFG, s.utf8_str());
-
+	if(m_FrameEdit.isActive())
+	{
+		m_FrameEdit.setMode(FV_FrameEdit_NOT_ACTIVE);
+	}
 	if (bDidGlob)
 		m_pDoc->endUserAtomicGlob();
 

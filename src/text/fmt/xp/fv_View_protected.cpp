@@ -4653,6 +4653,10 @@ bool FV_View::_charMotion(bool bForward,UT_uint32 countChars, bool bSkipCannotCo
 			notifyListeners(AV_CHG_MOTION);
 		}
 	}
+	if(m_FrameEdit.isActive())
+	{
+		m_FrameEdit.setMode(FV_FrameEdit_NOT_ACTIVE);
+	}
 	UT_DEBUGMSG(("SEVIOR: Point = %d \n",getPoint()));
 	_fixInsertionPointCoords();
 	return bRes;
@@ -5431,6 +5435,10 @@ bool FV_View::_charInsert(const UT_UCSChar * text, UT_uint32 count, bool bForce)
 		{
 			m_pDoc->endUserAtomicGlob();
 		}
+	}
+	if(m_FrameEdit.isActive())
+	{
+		m_FrameEdit.setMode(FV_FrameEdit_NOT_ACTIVE);
 	}
 
 	// Signal PieceTable Changes have finished
