@@ -64,7 +64,8 @@ protected:
 	void				_compute_span_properties(const PP_AttrProp * pSpanAP,
 												 const PP_AttrProp * pBlockAP,
 												 const PP_AttrProp * pSectionAP);
-	
+
+ private:	
 	PD_Document *		m_pDocument;
 	IE_Exp_RTF *		m_pie;
 	bool				m_bInSection;

@@ -56,7 +56,7 @@ IE_Exp_Text::IE_Exp_Text(PD_Document * pDocument, bool bEncoded)
 
 	// Get encoding dialog prefs setting
 	bool bAlwaysPrompt = false;
-	m_pDocument->getApp()->getPrefsValueBool(AP_PREF_KEY_AlwaysPromptEncoding, &bAlwaysPrompt);
+	getDoc()->getApp()->getPrefsValueBool(AP_PREF_KEY_AlwaysPromptEncoding, &bAlwaysPrompt);
 
 	m_bIsEncoded = bAlwaysPrompt | bEncoded;
 
@@ -132,7 +132,7 @@ bool IE_Exp_EncodedText_Sniffer::getDlgLabels(const char ** pszDesc,
 
 PL_Listener * IE_Exp_Text::_constructListener(void)
 {
-	return new Text_Listener(m_pDocument,this,(m_pDocRange!=NULL),m_szEncoding,m_bIs16Bit,m_bUseBOM,m_bBigEndian);
+	return new Text_Listener(getDoc(),this,(getDocRange()!=NULL),m_szEncoding,m_bIs16Bit,m_bUseBOM,m_bBigEndian);
 }
 
 // TODO This function is also used for Copy and Paste.
@@ -149,7 +149,7 @@ UT_Error IE_Exp_Text::_writeDocument(void)
 	// TODO If we're going to the clipboard and the OS supports unicode, set encoding.
 	// TODO Only supports Windows so far.
 	// TODO Should use a finer-grain technique than IsWinNT() since Win98 supports unicode clipboard.
-	if (m_pDocRange)
+	if (getDocRange())
 	{
 #ifdef WIN32
 		if (UT_IsWinNT())
@@ -161,10 +161,10 @@ UT_Error IE_Exp_Text::_writeDocument(void)
 	if (!m_pListener)
 		return UT_IE_NOMEMORY;
 
-	if (m_pDocRange)
-		m_pDocument->tellListenerSubset(static_cast<PL_Listener *>(m_pListener),m_pDocRange);
+	if (getDocRange())
+		getDoc()->tellListenerSubset(static_cast<PL_Listener *>(m_pListener),getDocRange());
 	else
-		m_pDocument->tellListener(static_cast<PL_Listener *>(m_pListener));
+		getDoc()->tellListener(static_cast<PL_Listener *>(m_pListener));
 	DELETEP(m_pListener);
 
 	return ((m_error) ? UT_IE_COULDNOTWRITE : UT_OK);
@@ -194,7 +194,7 @@ bool IE_Exp_Text::_doEncodingDialog(const char *szEncoding)
 	XAP_Dialog_Id id = XAP_DIALOG_ID_ENCODING;
 
 	XAP_DialogFactory * pDialogFactory
-		= static_cast<XAP_DialogFactory *>(m_pDocument->getApp()->getDialogFactory());
+		= static_cast<XAP_DialogFactory *>(getDoc()->getApp()->getDialogFactory());
 
 	XAP_Dialog_Encoding * pDialog
 		= static_cast<XAP_Dialog_Encoding *>(pDialogFactory->requestDialog(id));
@@ -203,7 +203,7 @@ bool IE_Exp_Text::_doEncodingDialog(const char *szEncoding)
 	pDialog->setEncoding(szEncoding);
 
 	// run the dialog
-	XAP_Frame * pFrame = m_pDocument->getApp()->getLastFocussedFrame();
+	XAP_Frame * pFrame = getDoc()->getApp()->getLastFocussedFrame();
 	UT_ASSERT(pFrame);
 
 	pDialog->runModal(pFrame);
@@ -222,7 +222,7 @@ bool IE_Exp_Text::_doEncodingDialog(const char *szEncoding)
 
 		strcpy(szEnc,s);
 		_setEncoding(static_cast<const char *>(szEnc));
-		m_pDocument->setEncodingName(szEnc);
+		getDoc()->setEncodingName(szEnc);
 	}
 
 	pDialogFactory->releaseDialog(pDialog);

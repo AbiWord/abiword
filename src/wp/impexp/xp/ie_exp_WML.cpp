@@ -200,10 +200,10 @@ bool IE_Exp_WML_Sniffer::getDlgLabels(const char ** pszDesc,
 
 UT_Error IE_Exp_WML::_writeDocument(void)
 {
-	m_pListener = new s_WML_Listener(m_pDocument,this);
+	m_pListener = new s_WML_Listener(getDoc(),this);
 	if (!m_pListener)
 		return UT_IE_NOMEMORY;
-	if (!m_pDocument->tellListener(static_cast<PL_Listener *>(m_pListener)))
+	if (!getDoc()->tellListener(static_cast<PL_Listener *>(m_pListener)))
 		return UT_ERROR;
 	delete m_pListener;
 

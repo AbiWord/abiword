@@ -116,7 +116,7 @@ bool IE_Exp_ISCII_Sniffer::getDlgLabels(const char ** pszDesc,
 
 PL_Listener * IE_Exp_ISCII::_constructListener(void)
 {
-	return new ISCII_Listener(m_pDocument,this);
+	return new ISCII_Listener(getDoc(),this);
 }
 
 /*****************************************************************/

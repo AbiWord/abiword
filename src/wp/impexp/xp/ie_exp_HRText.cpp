@@ -599,10 +599,10 @@ bool s_HRText_Listener::signal(UT_uint32 /* iSignal */)
 
 UT_Error IE_Exp_HRText::_writeDocument(void)
 {
-	m_pListener = new s_HRText_Listener(m_pDocument,this);
+	m_pListener = new s_HRText_Listener(getDoc(),this);
 	if (!m_pListener)
 		return UT_IE_NOMEMORY;
-	if (!m_pDocument->tellListener(static_cast<PL_Listener *>(m_pListener)))
+	if (!getDoc()->tellListener(static_cast<PL_Listener *>(m_pListener)))
 		return UT_ERROR;
 
 	delete m_pListener;
@@ -618,4 +618,3 @@ void s_HRText_Listener::_handleDataItems(void)
 {
 	/* Not much we can do with these in text. */
 }
-

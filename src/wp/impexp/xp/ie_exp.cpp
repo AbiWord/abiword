@@ -200,6 +200,16 @@ void IE_Exp::_abortFile(void)
 //////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////
 
+PD_Document * IE_Exp::getDoc () const
+{
+  return m_pDocument;
+}
+
+PD_DocumentRange * IE_Exp::getDocRange() const
+{
+  return m_pDocRange;
+}
+
 UT_Error IE_Exp::writeFile(const char * szFilename)
 {
 	UT_ASSERT(m_pDocument);

@@ -234,9 +234,9 @@ UT_Error IE_Exp_Psion::_writeDocument(void)
 	// Create a s_Psion_Listener, and signal it to traverse the document.
 	// It will translate the internal AbiWord representation to 
 	// psiconv_file fragments in the current exporter object.
-	if (!(m_pListener = new s_Psion_Listener(m_pDocument,this)))
+	if (!(m_pListener = new s_Psion_Listener(getDoc(),this)))
 		return UT_IE_NOMEMORY;
-	bRes = m_pDocument->tellListener(m_pListener);
+	bRes = getDoc()->tellListener(m_pListener);
 	if (bRes && !m_error)
 		// We must call this by hand, to close any open paragraphs.
 		m_pListener->finishDocument();

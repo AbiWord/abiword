@@ -54,6 +54,7 @@ public:
 protected:
 	virtual UT_Error	_writeDocument(void);
 	
+ private:
 	s_HRText_Listener *	m_pListener;
 };
 

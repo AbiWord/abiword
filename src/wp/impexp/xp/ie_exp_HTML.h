@@ -60,7 +60,8 @@ public:
 	
 protected:
 	virtual UT_Error	_writeDocument(void);
-	
+
+ private:	
 	s_HTML_Listener *	m_pListener;
 };
 

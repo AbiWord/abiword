@@ -52,7 +52,8 @@ public:
 	
 protected:
 	virtual UT_Error	_writeDocument(void);
-	
+
+ private:	
 	bool m_bIsTemplate;
 	s_AbiWord_1_Listener *	m_pListener;
 };

@@ -62,11 +62,12 @@ class IE_Exp_MsWord_97 : public IE_Exp
 		void            		write(const char * sz);
 		void            		write(const char * sz, UT_uint32 length);
 
- protected:
+ private:
 		char * fileName;
 
 	wvExporter *m_pExporter;
 
+ protected:
 		// these are all overridden methods of the base class
 		// see comments in ie_exp_MsWord_97.cpp for explanation
 

@@ -52,7 +52,8 @@ public:
 	
 protected:
 	virtual UT_Error	_writeDocument(void);
-	
+
+ private:	
 	s_LaTeX_Listener *	m_pListener;
 };
 

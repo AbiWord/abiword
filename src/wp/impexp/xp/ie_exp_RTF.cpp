@@ -150,13 +150,13 @@ UT_Error IE_Exp_RTF::_writeDocument(void)
 	_addColor("000000");				// load black as color 0.
 	_addColor("ffffff");                // load white as color 1.
 		
-	m_pListenerGetProps = new s_RTF_ListenerGetProps(m_pDocument,this);
+	m_pListenerGetProps = new s_RTF_ListenerGetProps(getDoc(),this);
 	if (!m_pListenerGetProps)
 		return UT_IE_NOMEMORY;
-	if (m_pDocRange)
-		m_pDocument->tellListenerSubset(static_cast<PL_Listener *>(m_pListenerGetProps),m_pDocRange);
+	if (getDocRange())
+		getDoc()->tellListenerSubset(static_cast<PL_Listener *>(m_pListenerGetProps),getDocRange());
 	else
-		m_pDocument->tellListener(static_cast<PL_Listener *>(m_pListenerGetProps));
+		getDoc()->tellListener(static_cast<PL_Listener *>(m_pListenerGetProps));
 	DELETEP(m_pListenerGetProps);
 
 	// write rtf header
@@ -167,13 +167,13 @@ UT_Error IE_Exp_RTF::_writeDocument(void)
 	// create and install a listener to receive the document
 	// and write its content in rtf.
 	
-	m_pListenerWriteDoc = new s_RTF_ListenerWriteDoc(m_pDocument,this, (m_pDocRange!=NULL));
+	m_pListenerWriteDoc = new s_RTF_ListenerWriteDoc(getDoc(),this, (getDocRange()!=NULL));
 	if (!m_pListenerWriteDoc)
 		return UT_IE_NOMEMORY;
-	if (m_pDocRange)
-		m_pDocument->tellListenerSubset(static_cast<PL_Listener *>(m_pListenerWriteDoc),m_pDocRange);
+	if (getDocRange())
+		getDoc()->tellListenerSubset(static_cast<PL_Listener *>(m_pListenerWriteDoc),getDocRange());
 	else
-		m_pDocument->tellListener(static_cast<PL_Listener *>(m_pListenerWriteDoc));
+		getDoc()->tellListener(static_cast<PL_Listener *>(m_pListenerWriteDoc));
 	DELETEP(m_pListenerWriteDoc);
 
 	// write any rtf trailer matter
@@ -626,7 +626,7 @@ void IE_Exp_RTF::_rtf_compute_font_properties(const _rtf_font_info * pfi,
 
 	const XML_Char * szFontFamily = PP_evalProperty("font-family",
 													pfi->m_pSpanAP,pfi->m_pBlockAP,pfi->m_pSectionAP,
-													m_pDocument,true);
+													getDoc(),true);
 
 	GR_Font::FontFamilyEnum ff;
 	GR_Font::FontPitchEnum fp;

@@ -54,6 +54,7 @@ class IE_Exp_Applix : public IE_Exp
 protected:
 	virtual UT_Error	_writeDocument(void);
 	
+ private:
 	s_Applix_Listener *	m_pListener;
 };
 

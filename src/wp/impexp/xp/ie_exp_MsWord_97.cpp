@@ -463,15 +463,15 @@ UT_Error IE_Exp_MsWord_97::_writeDocument(void)
 	// document
 	//
 
-	m_pListener = new s_MsWord_97_Listener (m_pDocument, this);
+	m_pListener = new s_MsWord_97_Listener (getDoc(), this);
 
 	if(!m_pListener)
 		return UT_IE_NOMEMORY;
 
-	if (m_pDocRange)
-	    m_pDocument->tellListenerSubset(static_cast<PL_Listener *>(m_pListener),m_pDocRange);
+	if (getDocRange())
+	    getDoc()->tellListenerSubset(static_cast<PL_Listener *>(m_pListener),getDocRange());
 	else
-	    m_pDocument->tellListener(static_cast<PL_Listener *>(m_pListener));
+	    getDoc()->tellListener(static_cast<PL_Listener *>(m_pListener));
 
 	DELETEP(m_pListener);
 	return ((m_error) ? UT_IE_COULDNOTWRITE : UT_OK);

@@ -106,7 +106,8 @@ protected:
 													 const char ** p_sz_rtf_family,
 													 int * p_rtf_pitch,
 													 bool * pbTrueType) const;
-	
+
+ private:	
 	s_RTF_ListenerWriteDoc *	m_pListenerWriteDoc;
 	s_RTF_ListenerGetProps *	m_pListenerGetProps;
 	UT_Vector					m_vecColors;			/* vector of "const char * szColor" */
@@ -120,16 +121,13 @@ protected:
 /*****************************************************************/
 /*****************************************************************/
 
-class _rtf_font_info
+struct _rtf_font_info
 {
-public:
 	_rtf_font_info(const PP_AttrProp * pSpanAP,
 				   const PP_AttrProp * pBlockAP,
 				   const PP_AttrProp * pSectionAP)
+       : m_pSpanAP(pSpanAP), m_pBlockAP(pBlockAP), m_pSectionAP(pSectionAP)
 		{
-			m_pSpanAP = pSpanAP;
-			m_pBlockAP = pBlockAP;
-			m_pSectionAP = pSectionAP;
 		}
 
 	~_rtf_font_info(void)

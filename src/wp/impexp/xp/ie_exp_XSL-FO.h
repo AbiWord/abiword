@@ -52,6 +52,7 @@ public:
 protected:
 	virtual UT_Error	_writeDocument(void);
 	
+ private:
 	s_XSL_FO_Listener *	m_pListener;
 };
 

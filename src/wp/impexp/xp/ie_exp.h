@@ -117,12 +117,16 @@ protected:
 	virtual bool		_closeFile(void);
 	virtual void		_abortFile(void);
 
+	PD_Document * getDoc() const;
+	PD_DocumentRange * getDocRange() const;
+
+ private:
 	PD_Document *		m_pDocument;
 	PD_DocumentRange *	m_pDocRange;
 	UT_ByteBuf *		m_pByteBuf;
 	char *                  m_szFileName;
 		
-public:
+protected:
 	bool				m_error;
 
 private:

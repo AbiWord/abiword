@@ -45,12 +45,13 @@ protected:
 	// Overriding methods from the base class
 	virtual UT_Error _writeDocument(void);
 
-	// New data
-	s_Psion_Listener * m_pListener;
-	psiconv_text_and_layout m_paragraphs;
-
 	// New methods
 	virtual psiconv_file _createPsionFile(void) = 0;
+
+ protected:
+	// TODO: New data - make me private
+	s_Psion_Listener * m_pListener;
+	psiconv_text_and_layout m_paragraphs;
 };
 
 class IE_Exp_Psion_TextEd_Sniffer : public IE_ExpSniffer

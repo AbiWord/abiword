@@ -52,7 +52,8 @@ class IE_Exp_MIF : public IE_Exp
 	
 protected:
 	virtual UT_Error	_writeDocument(void);
-	
+
+ private:	
 	s_MIF_Listener *	m_pListener;
 };
 

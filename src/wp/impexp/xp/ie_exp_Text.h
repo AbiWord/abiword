@@ -79,6 +79,7 @@ protected:
 	bool				_doEncodingDialog(const char *szEncoding);
 	void				_setEncoding(const char *szEncoding);
 
+ private:
 	PL_Listener *		m_pListener;
 	bool				m_bIsEncoded;
 	const char *		m_szEncoding;
@@ -131,6 +132,7 @@ protected:
 	virtual void		_outputData(const UT_UCSChar * p, UT_uint32 length);
 	void				_closeBlock(void);
 
+ private:
 	PD_Document *		m_pDocument;
 	IE_Exp_Text *		m_pie;
 	UT_Wctomb 			m_wctomb;
