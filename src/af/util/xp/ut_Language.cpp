@@ -183,6 +183,10 @@ const XML_Char * UT_Language::getPropertyFromLanguage(const XML_Char * lang)
 		if(!UT_strcmp(lang, s_Table[i].lang))
 			return s_Table[i].prop;
 	}
+
+	UT_DEBUGMSG(("UT_Language: unknown language [%s]; if this message appears, add the "
+				 "language to the tables\n", lang));
+	UT_ASSERT( UT_SHOULD_NOT_HAPPEN );
 	return NULL;
 }
 
@@ -193,6 +197,10 @@ UT_uint32 UT_Language::getIndxFromProperty(const XML_Char * prop)
 		if(!UT_strcmp(prop, s_Table[i].prop))
 			return i;
 	}
+
+	UT_DEBUGMSG(("UT_Language: unknown language [%s]; if this message appears, add the "
+				 "language to the tables\n", prop));
+	UT_ASSERT( UT_SHOULD_NOT_HAPPEN );
 	return 0;
 }
 
@@ -202,14 +210,21 @@ UT_uint32 UT_Language::getIdFromProperty(const XML_Char * prop)
 	if(e)
 		return e->id;
 	else
+	{
+		UT_DEBUGMSG(("UT_Language: unknown language [%s]; if this message appears, add the "
+					 "language to the tables\n", prop));
+		UT_ASSERT( UT_SHOULD_NOT_HAPPEN );
 		return 0;
+	}
+	
 }
 
-// this function is not as useless as might seem; it takes a pointer to a property string, finds the same
-// property in the static table and returns the pointer to it
-// this is used by fp_TextRun to set its m_pLanguage member; by always refering into the static table
-// it is possible to compare the language property by simply comparing the pointers, rather than
-// having to use strcmp
+// This function is not as useless as might seem; it takes a pointer
+// to a property string, finds the same property in the static table
+// and returns the pointer to it. This is used by fp_TextRun to set its
+// m_pLanguage member; by always refering into the static table it is
+// possible to compare the language property by simply comparing the
+// pointers, rather than having to use strcmp()
 
 const XML_Char *  UT_Language::getPropertyFromProperty(const XML_Char * prop)
 {
@@ -217,6 +232,11 @@ const XML_Char *  UT_Language::getPropertyFromProperty(const XML_Char * prop)
 	if(e)
 		return e->prop;
 	else
+	{
+		UT_DEBUGMSG(("UT_Language: unknown language [%s]; if this message appears, add the "
+					 "language to the tables\n", prop));
+		UT_ASSERT( UT_SHOULD_NOT_HAPPEN );
 		return 0;
+	}
 }
 
