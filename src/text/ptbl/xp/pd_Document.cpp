@@ -3965,7 +3965,7 @@ bool PD_Document::insertFmtMarkBeforeFrag(pf_Frag * pF)
 
 pf_Frag * PD_Document::findFragOfType(pf_Frag::PFType type, UT_sint32 iSubtype, const pf_Frag * pfStart)
 {
-	UT_ASSERT(m_pPieceTable);
+	UT_return_val_if_fail(m_pPieceTable,NULL);
 
 	pf_Frag * pf = const_cast<pf_Frag *>(pfStart);
 	
@@ -4019,5 +4019,11 @@ pf_Frag * PD_Document::findFragOfType(pf_Frag::PFType type, UT_sint32 iSubtype, 
 	}
 
 	return pf;
+}
+
+pf_Frag * PD_Document::getLastFrag() const
+{
+	UT_return_val_if_fail(m_pPieceTable,NULL);
+	return m_pPieceTable->getFragments().getLast();
 }
 

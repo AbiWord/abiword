@@ -252,6 +252,7 @@ public:
 
 	pf_Frag *               findFragOfType(pf_Frag::PFType iType, UT_sint32 iSubtype = -1,
 										   const pf_Frag * pfStart = NULL);
+	pf_Frag *               getLastFrag() const;
 	
 	bool                    removeStyle(const XML_Char * name);
 	bool					tellListener(PL_Listener * pListener);
