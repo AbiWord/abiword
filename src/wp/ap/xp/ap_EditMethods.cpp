@@ -1236,7 +1236,7 @@ Defun1(scrollLineUp)
 Defun1(scrollWheelMouseDown)
 {
 	CHECK_FRAME;
-	pAV_View->cmdScroll(AV_SCROLLCMD_LINEDOWN, 60);
+	pAV_View->cmdScroll(AV_SCROLLCMD_LINEDOWN, pAV_View->getGraphics()->tlu(60));
 
 	return true;
 }
@@ -1244,7 +1244,7 @@ Defun1(scrollWheelMouseDown)
 Defun1(scrollWheelMouseUp)
 {
 	CHECK_FRAME;
-	pAV_View->cmdScroll(AV_SCROLLCMD_LINEUP, 60);
+	pAV_View->cmdScroll(AV_SCROLLCMD_LINEUP, pAV_View->getGraphics()->tlu (60));
 
 	return true;
 }
@@ -10521,15 +10521,12 @@ Defun(endResizeImage)
 		// TODO: set format
 		const XML_Char * properties[] = {"width", NULL, "height", NULL, 0};
 		char * old_locale = setlocale(LC_NUMERIC, "C");
-		double fzoom = (double) pView->getGraphics()->getZoomPercentage();
-		double fwidth = (double) newImgBounds.width;
-		double fheight = (double) newImgBounds.height;
-		fwidth = fwidth*100./fzoom;
-		fheight = fheight*100./fzoom;
+		double fwidth=pView->getGraphics()->tlu((double)newImgBounds.width);
+		double fheight=pView->getGraphics()->tlu((double)newImgBounds.height);
 		UT_sint32 iwidth = (UT_sint32) fwidth;
 		UT_sint32 iheight = (UT_sint32) fheight;
-		sprintf(widthBuf, "%fin", UT_convertDimToInches(iwidth, DIM_PX));
-		sprintf(heightBuf, "%fin", UT_convertDimToInches(iheight, DIM_PX));
+		sprintf(widthBuf, "%fin", UT_convertToDimension(iwidth, DIM_IN));
+		sprintf(heightBuf, "%fin", UT_convertToDimension(iheight, DIM_IN));
 		setlocale(LC_NUMERIC, old_locale);
 		
 		UT_DEBUGMSG(("MARCM: nw:%s nh:%s\n", widthBuf, heightBuf));

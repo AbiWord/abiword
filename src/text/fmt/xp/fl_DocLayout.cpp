@@ -913,9 +913,6 @@ UT_sint32 FL_DocLayout::getWidth()
 GR_Font* FL_DocLayout::findFont(const PP_AttrProp * pSpanAP,
 								const PP_AttrProp * pBlockAP,
 								const PP_AttrProp * pSectionAP,
-#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-								UT_sint32 iUseLayoutResolution,
-#endif
 								bool isField)
 {
 	GR_Font* pFont = NULL;
@@ -942,28 +939,16 @@ GR_Font* FL_DocLayout::findFont(const PP_AttrProp * pSpanAP,
 	if (pszField != NULL && isField && UT_strcmp(pszField, "NULL"))
 		pszFamily = pszField;
 
-#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-	UT_String_sprintf(key,"%s;%s;%s;%s;%s;%s,%i",pszFamily, pszStyle, pszVariant, pszWeight, pszStretch, pszSize, iUseLayoutResolution);
-#else
 	UT_String_sprintf(key,"%s;%s;%s;%s;%s;%s",pszFamily, pszStyle, pszVariant, pszWeight, pszStretch, pszSize);
-#endif
 	const void *pEntry = m_hashFontCache.pick(key.c_str());
 	if (!pEntry)
 	{
 		// TODO -- note that we currently assume font-family to be a single name,
 		// TODO -- not a list.  This is broken.
 
-#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-		if(iUseLayoutResolution)
-			m_pG->setLayoutResolutionMode(true);
-#endif
 		pFont = m_pG->findFont(pszFamily, pszStyle, pszVariant, pszWeight, pszStretch, pszSize);
 		UT_ASSERT(pFont);
 
-#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-		m_pG->setLayoutResolutionMode(false);
-#endif
-		
 		// add it to the cache
 		m_hashFontCache.insert(key.c_str(),
 				       (void *)pFont);
@@ -2675,7 +2660,6 @@ void FL_DocLayout::considerSmartQuoteCandidateAt(fl_BlockLayout *block, UT_uint3
 		UT_DEBUGMSG(("before %d, after %d, replace %x\n", before, after, replacement));
 		if (replacement != UCS_UNKPUNK)
 		{
-#ifdef BIDI_ENABLED
             UT_sint32 s1,s2,s3,s4,s5;
             bool b1;
             fp_Run * pThisRun = block->findPointCoords(block->getPosition() + offset,false,s1,s2,s3,s4,s5,b1);
@@ -2684,7 +2668,6 @@ void FL_DocLayout::considerSmartQuoteCandidateAt(fl_BlockLayout *block, UT_uint3
 
             if(pThisRun && pThisRun->getVisDirection() == FRIBIDI_TYPE_RTL)
                 s_swapQuote(replacement);
-#endif
 			// your basic emacs (save-excursion...)  :-)
 			PT_DocPosition saved_pos, quotable_at;
 			saved_pos = m_pView->getPoint();

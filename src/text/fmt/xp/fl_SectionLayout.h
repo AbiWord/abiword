@@ -214,19 +214,6 @@ public:
 	UT_uint32			        getFootnoteLineThickness(void) const
 		{ return m_iFootnoteLineThickness;}
 
-#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-	inline UT_sint32			getLeftMarginInLayoutUnits(void) const { return m_iLeftMarginLayoutUnits; }
-	inline UT_sint32			getRightMarginInLayoutUnits(void) const { return m_iRightMarginLayoutUnits; }
-	UT_sint32                   getTopMarginInLayoutUnits(void) const;
-    UT_sint32                   getBottomMarginInLayoutUnits(void) const;
-	inline UT_sint32			getFooterMarginInLayoutUnits(void) const { return m_iFooterMarginLayoutUnits; }
-	inline UT_sint32			getHeaderMarginInLayoutUnits(void) const { return m_iHeaderMarginLayoutUnits; }
-	inline UT_sint32			getSpaceAfterInLayoutUnits(void) const { return m_iSpaceAfterLayoutUnits; }
-	inline UT_sint32            getMaxSectionColumnHeightInLayoutUnits(void) const { return m_iMaxSectionColumnHeightInLayoutUnits;}
-	UT_uint32			        getColumnGapInLayoutUnits(void) const;
-	UT_uint32			        getFootnoteLineThicknessLayoutUnits(void) const
-		{ return m_iFootnoteLineThicknessLayoutUnits;}
-#endif
 	void                completeBreakSection(void);
 	bool                arePageNumbersRestarted (void) const { return m_bRestart;}
 	UT_sint32           getRestartedPageNumber(void) const { return m_iRestartValue;}
@@ -313,18 +300,6 @@ private:
 	UT_sint32           m_iMaxSectionColumnHeight;
 	double              m_dMaxSectionColumnHeight;
 	UT_sint32           m_iFootnoteLineThickness;
-#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-	UT_uint32			m_iColumnGapLayoutUnits;
-	UT_sint32			m_iSpaceAfterLayoutUnits;
-	UT_sint32			m_iLeftMarginLayoutUnits;
-	UT_sint32			m_iRightMarginLayoutUnits;
-	UT_sint32			m_iTopMarginLayoutUnits;
-	UT_sint32			m_iBottomMarginLayoutUnits;
-	UT_sint32			m_iFooterMarginLayoutUnits;
-	UT_sint32			m_iHeaderMarginLayoutUnits;
-	UT_sint32           m_iMaxSectionColumnHeightInLayoutUnits;
-	UT_sint32           m_iFootnoteLineThicknessLayoutUnits;
-#endif
 	
 	bool				m_bForceNewPage;
 

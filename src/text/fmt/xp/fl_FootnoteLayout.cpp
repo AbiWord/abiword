@@ -68,7 +68,6 @@ fl_EmbedLayout::fl_EmbedLayout(FL_DocLayout* pLayout, fl_DocSectionLayout* pDocS
 fl_EmbedLayout::~fl_EmbedLayout()
 {
 }
-
 	
 /*!
  * Returns the position in the document of the PTX_SectionFootnote strux

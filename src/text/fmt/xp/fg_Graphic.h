@@ -63,7 +63,7 @@ public:
 	virtual GR_Image*	generateImage(GR_Graphics* pG,const PP_AttrProp * pSpanAP = NULL) = 0;
 
 	//  Insert the object at the specified point in a document
-	virtual UT_Error   	insertIntoDocument(PD_Document* pDoc, double fDPI,
+	virtual UT_Error   	insertIntoDocument(PD_Document* pDoc, UT_uint32 res,
 										   UT_uint32 iPos, const char* szName) = 0;
 };
 

@@ -348,10 +348,10 @@ void AP_Dialog_Columns::_drawColumnButton(GR_Graphics *gc, UT_Rect rect, UT_uint
 {
 	gc->clearArea(rect.left, rect.top, rect.width, rect.height);
 
-	rect.left += _UL(2);
-	rect.width -= _UL(4);
-	rect.top += _UL(2);
-	rect.height -= _UL(4);
+	rect.left += gc->tdu(2);
+	rect.width -= gc->tdu(4);
+	rect.top += gc->tdu(2);
+	rect.height -= gc->tdu(4);
 	m_previewDrawer.draw(gc, rect, iColumns, false, 0.0, 0.0);
 }
 
@@ -387,38 +387,38 @@ AP_Columns_preview::~AP_Columns_preview()
 {
 }
 
-const UT_sint32 iLinesToDraw = 16;
+static const UT_sint32 iLinesToDraw = 16;
 
 void AP_Columns_preview::draw(void)
 {
-	UT_sint32 iWidth = _UL(getWindowWidth());
-	UT_sint32 iHeight = _UL(getWindowHeight());
+	UT_sint32 iWidth = m_gc->tlu(getWindowWidth());
+	UT_sint32 iHeight = m_gc->tlu(getWindowHeight());
 
-  double maxHeightPercent = m_pColumns->getMaxHeightPercent();
+	double maxHeightPercent = m_pColumns->getMaxHeightPercent();
 	double SpacePercent = m_pColumns->getSpaceAfterPercent();
-	UT_Rect pageRect(_UL(5), _UL(5), iWidth - _UL(10), iHeight - _UL(10));
+	UT_Rect pageRect(m_gc->tlu(5), m_gc->tlu(5), iWidth - m_gc->tlu(10), iHeight - m_gc->tlu(10));
 
 	m_gc->fillRect(GR_Graphics::CLR3D_Background, 0, 0, iWidth, iHeight);
 	m_gc->clearArea(pageRect.left, pageRect.top, pageRect.width,
 					pageRect.height);
 
-	m_gc->setLineWidth(_UL(1));
+	m_gc->setLineWidth(m_gc->tlu(1));
 	m_gc->drawLine(pageRect.left, pageRect.top,
-				   pageRect.left + pageRect.width, pageRect.top);
+		       pageRect.left + pageRect.width, pageRect.top);
 	m_gc->drawLine(pageRect.left, pageRect.top,
-				   pageRect.left, pageRect.top + pageRect.height);
+		       pageRect.left, pageRect.top + pageRect.height);
 
-	m_gc->setLineWidth(_UL(3));
-	m_gc->drawLine(pageRect.left + pageRect.width, pageRect.top + _UL(1),
+	m_gc->setLineWidth(m_gc->tlu(3));
+	m_gc->drawLine(pageRect.left + pageRect.width, pageRect.top + m_gc->tlu(1),
 				   pageRect.left + pageRect.width,
 				   pageRect.top + pageRect.height);
-	m_gc->drawLine(pageRect.left + _UL(1), pageRect.top + pageRect.height,
+	m_gc->drawLine(pageRect.left + m_gc->tlu(1), pageRect.top + pageRect.height,
 				   pageRect.left + pageRect.width,
 				   pageRect.top + pageRect.height);
 
 
-	pageRect.top += _UL(5);
-	pageRect.height -= _UL(5);
+	pageRect.top += m_gc->tlu(5);
+	pageRect.height -= m_gc->tlu(5);
 	m_previewDrawer.draw(m_gc, pageRect, m_iColumns, m_bLineBetween,maxHeightPercent, SpacePercent);
 }
 
@@ -428,21 +428,19 @@ void AP_Columns_preview::draw(void)
 void AP_Columns_preview_drawer::draw(GR_Graphics *gc, UT_Rect &rect, UT_sint32 iColumns, bool bLineBetween, double maxHeightPercent, double SpacePercent)
 {
 
-	UT_sint32 iHalfColumnGap = rect.width / 20;
+	UT_sint32 iHalfColumnGap = gc->tlu (rect.width / gc->tlu(20));
 
 	UT_sint32 y_start = rect.top + iHalfColumnGap;
 	UT_sint32 y_end = rect.top + rect.height - iHalfColumnGap;
 
-	UT_sint32 y_step = (y_end - y_start) / iLinesToDraw;
-	y_step = _UL(2);
-	UT_DEBUGMSG(("SEVIOR: maxheightpercent = %f \n",maxHeightPercent));
-	maxHeightPercent = maxHeightPercent/100.0;
-	SpacePercent = SpacePercent/100.0;
+	//UT_sint32 y_step = (y_end - y_start) / iLinesToDraw;
+	UT_sint32 y_step = gc->tlu(2);
+	maxHeightPercent /= 100.0;
+	SpacePercent /= 100.0;
 	if(maxHeightPercent < 0.01)
-	{
 		maxHeightPercent = 1.1;
-	}
-	gc->setLineWidth(_UL(1));
+
+	gc->setLineWidth(gc->tlu(1));
 	UT_RGBColor Line_color(0, 0, 0);
 	gc->setColor(Line_color);
 
@@ -451,9 +449,7 @@ void AP_Columns_preview_drawer::draw(GR_Graphics *gc, UT_Rect &rect, UT_sint32 i
 	double d_ysize = (double) (y_end - y_start);
 	UT_sint32 iSpace = static_cast<UT_sint32>(SpacePercent* d_ysize);
 	if(iSpace < y_step)
-	{
-		iSpace = y_step;
-	}
+	  iSpace = y_step;
 	UT_sint32 maxHeight = static_cast<UT_sint32>(maxHeightPercent * d_ysize);
 	for (UT_sint32 i = 1; i <= iColumns; i++)
 	{
@@ -480,9 +476,7 @@ void AP_Columns_preview_drawer::draw(GR_Graphics *gc, UT_Rect &rect, UT_sint32 i
 		// a bit of math to avoid/replace a (nasty) switch statement
 		for (UT_sint32 j = 2; j <= iColumns; j++)
 		{
-			UT_sint32 x;
-
-			x = rect.left + (j-1) * rect.width / iColumns;
+			UT_sint32 x = rect.left + (j-1) * rect.width / iColumns;
 			gc->drawLine(x, y_start, x, y_end);
 		}
 	}

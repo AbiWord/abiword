@@ -36,12 +36,9 @@
 
 #include "ut_AdobeEncoding.h"
 
-#ifdef USE_XFT
 #include <X11/Xft/Xft.h>
-
 #include <ft2build.h>
 #include FT_FREETYPE_H
-#endif
 
 class ps_Generate;
 class XAP_UnixFontManager;
@@ -74,18 +71,11 @@ class ABI_EXPORT XAP_UnixFont
 	
 	~XAP_UnixFont(void);
 
-#ifndef USE_XFT
-	bool 					openFileAs(const char * fontfile,
-									   const char * metricfile,
-									   const char * xlfd,
-									   XAP_UnixFont::style s);
-#else
 	bool 					openFileAs(const char * fontfile,
 									   const char * metricfile,
 									   const char * family,
 									   const char * xlfd,
 									   XAP_UnixFont::style s);
-#endif
 
 	void					setName(const char * name);
 	const char * 			getName(void) const;
@@ -103,28 +93,15 @@ class ABI_EXPORT XAP_UnixFont
 	void					setXLFD(const char * xlfd);
 	const char * 			getXLFD(void) const;
 
-	ABIFontInfo *			getMetricsData(void);
-#ifdef USE_XFT
 	UT_uint16				getCharWidth(UT_UCSChar c) const;
-#else
-	UT_uint16				getCharWidth(UT_UCSChar c);
-#endif
-
 	
 	bool					embedInto(ps_Generate& ps);
 	bool					openPFA(void);
 	char					getPFAChar(void);
 	bool					closePFA(void);	
-	bool                    isSizeInCache(UT_uint32 pixelsize);
 	const char * 			getFontKey(void);
-#ifdef USE_XFT
-	XftFont*				getXftFont(UT_uint32 pixelsize) const;
-#else
-	GdkFont *				getGdkFont(UT_uint32 pixelsize);
-
-	GdkFont *				getMatchGdkFont(UT_uint32 size);
-	XAP_UnixFont *          getMatchUnixFont(void);
-#endif
+	XftFont*				getDeviceXftFont(UT_uint32 pixelsize, UT_uint32 zoomPercentage) const; // don't measure me!
+	XftFont*				getLayoutXftFont(UT_uint32 pixelsize) const; // don't draw me!
 
 	bool					is_TTF_font() const {return (m_fontType == FONT_TYPE_TTF);}
 	bool					is_PS_font()  const {return ((m_fontType == FONT_TYPE_PFA) || (m_fontType == FONT_TYPE_PFB));}
@@ -132,41 +109,33 @@ class ABI_EXPORT XAP_UnixFont
 
 	void					getCoverage(UT_Vector& coverage);
 
-#ifdef USE_XFT
 	float					getAscender(UT_uint32 iSize) const;
 	float					getDescender(UT_uint32 iSize) const;
 	float					measureUnRemappedChar(const UT_UCSChar c, UT_uint32 iSize) const;
 	UT_String				getPostscriptName() const;
-#endif
 	
 	void					setFontManager(XAP_UnixFontManager * pFm);
 	
-protected:
+private:
 	bool					_createTtfSupportFiles();
 	bool					_createPsSupportFiles();
 	struct allocFont
 	{
 		UT_uint32			pixelSize;
-#ifdef USE_XFT
 		XftFont*			xftFont;
-#else
-		GdkFont *			gdkFont;
-#endif
 	};
 
 	void					_makeFontKey();
 	char * 					m_fontKey;
 
-	// a cache of GdkFont * at a given size
+	// a cache of XftFont * at a given size
 	mutable UT_Vector		m_allocFonts;
-//    UT_Vector		m_allocFonts;
 	
 	char * 					m_name;
 	XAP_UnixFont::style		m_style;
 	char * 					m_xlfd;
 	
 	// The next line is the info that is given back to us by parseAFM. The line after that is our own mangled one to follow Unicode.
-	ABIFontInfo *			m_metricsData;
 	uniWidth *				m_uniWidths;
 
 	char * 					m_fontfile;
@@ -181,46 +150,20 @@ protected:
 	encoding_pair * 		m_pEncodingTable;
 	UT_uint32				m_iEncodingTableSize;
 	char					_getPFBChar(void);
-	bool					_getMetricsDataFromX(void);
 	void					_deleteEncodingTable();
 
-	struct CJK_PSFontMetric
-	{
-          int ascent;
-          int descent;
-          int width;
-	};
-	bool					m_is_cjk;
-	CJK_PSFontMetric			m_cjk_font_metric;
-
-//	bool					m_bIsTTF;
 	font_type				m_fontType;
 	bool                    m_bisCopy;
 
 	XAP_UnixFontManager	*	m_pFontManager;
 	
-public:
-	static XAP_UnixFont *			s_defaultNonCJKFont[4];
-	static XAP_UnixFont *			s_defaultCJKFont[4];
-
-	inline bool is_CJK_font() const { return m_is_cjk; }
-	void set_CJK_font(bool v) { m_is_cjk=v; }
-	inline int get_CJK_Ascent() const { return m_cjk_font_metric.ascent; }
-	inline int get_CJK_Descent() const { return m_cjk_font_metric.descent; }
-	inline int get_CJK_Width() const { return m_cjk_font_metric.width; }
-	void set_CJK_Ascent(int i) { m_cjk_font_metric.ascent=i; }
-	void set_CJK_Descent(int i) { m_cjk_font_metric.descent=i; }
-	void set_CJK_Width(int i) { m_cjk_font_metric.width=i; }
-
-private:
-#ifdef USE_XFT
-	XftFont*				getFontFromCache(UT_uint32 pixelsize) const;
+	XftFont*				getFontFromCache(UT_uint32 pixelsize, bool bIsLayout, UT_uint32 zoomPercentage) const;
 	void					insertFontInCache(UT_uint32 pixelsize, XftFont* pXftFont) const;
+	void					fetchXftFont(UT_uint32 pixelsize) const;
 
 	/* last used font.  Only usable for when we don't care about the pixel size */
 	mutable XftFont*		m_pXftFont;
 	mutable GR_CharWidths	m_cw;
-#endif
 };
 
 /* Values found in PFB files */
@@ -245,23 +188,14 @@ class XAP_UnixFontHandle : public GR_Font
 	XAP_UnixFontHandle();
 	XAP_UnixFontHandle(XAP_UnixFont * font, UT_uint32 size);	
 
-#ifdef USE_XFT
-	XftFont * 					getXftFont(void);
-#else
-	GdkFont * 					getGdkFont(void);
-#endif
+	XftFont * 					getLayoutXftFont(void);
+	XftFont * 					getDeviceXftFont(UT_uint32 zoomPercentage);
+
 	UT_uint32					getSize(void) { return m_size; }
 	void						setSize(UT_uint32 size) { m_size = size; }
 	
 	XAP_UnixFont*				getUnixFont() const { return m_font; }
 	virtual const char*			getFamily() const { return getUnixFont()->getName(); }
-
-#ifndef USE_XFT
-	GdkFont*					getMatchGdkFont()	{ return m_font? m_font->getMatchGdkFont(m_size): NULL; }
-	
-	void						explodeGdkFonts(GdkFont* & non_cjk_one,GdkFont*& cjk_one);	
-	void						explodeUnixFonts(XAP_UnixFont**  pSingleByte, XAP_UnixFont** pMultiByte);
-#endif
 
 // private:
 	XAP_UnixFont*				m_font;
@@ -270,7 +204,6 @@ class XAP_UnixFontHandle : public GR_Font
 
 /*****************************************************************/
 /* little locker for a face.  At least by now I will leave it out of a pimpl */
-#ifdef USE_XFT
 class XftFaceLocker
 {
 public:
@@ -286,6 +219,5 @@ private:
 	XftFont*		m_pFont;
 	FT_Face			m_pFace;
 };
-#endif
 
 #endif /* XAP_UNIXFONT_H */

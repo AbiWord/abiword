@@ -36,8 +36,6 @@
 #include "ut_assert.h"
 #include "fl_FootnoteLayout.h"
 
-#define SCALE_TO_SCREEN (double)getGraphics()->getResolution() / UT_LAYOUT_UNITS
-
 /*!
   Create Footnote container
   \param iType Container type
@@ -216,11 +214,6 @@ void fp_FootnoteContainer::layout(void)
 	_setMaxContainerHeight(0);
 	UT_sint32 iY = 0, iPrevY = 0;
 	iY= 0;
-#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-	double ScaleLayoutUnitsToScreen;
-	ScaleLayoutUnitsToScreen = (double)getGraphics()->getResolution() / UT_LAYOUT_UNITS;
-	UT_sint32 iYLayoutUnits = 0;
-#endif
 	UT_uint32 iCountContainers = countCons();
 	fp_Container *pContainer, *pPrevContainer = NULL;
 	long imax = (1<<30) -1;
@@ -233,46 +226,20 @@ void fp_FootnoteContainer::layout(void)
 		if(pContainer->getHeight() > _getMaxContainerHeight())
 			_setMaxContainerHeight(pContainer->getHeight());
 
-#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-		iY = (int)(ScaleLayoutUnitsToScreen * iYLayoutUnits + 0.5);
-#endif
-
 		if(pContainer->getY() != iY)
 		{
 			pContainer->clearScreen();
 		}
 			
 		pContainer->setY(iY);
-#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-		pContainer->setYInLayoutUnits(iYLayoutUnits);
-#endif
 
-#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-		UT_sint32 iContainerHeightLayoutUnits = pContainer->getHeightInLayoutUnits();
-		UT_sint32 iContainerMarginAfterLayoutUnits = pContainer->getMarginAfterInLayoutUnits();
-#else
 		UT_sint32 iContainerHeight = pContainer->getHeight();
 		UT_sint32 iContainerMarginAfter = pContainer->getMarginAfter();
-#endif
 
-#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-		iYLayoutUnits += iContainerHeightLayoutUnits;
-		iYLayoutUnits += iContainerMarginAfterLayoutUnits;
-#else
 		iY += iContainerHeight;
 		iY += iContainerMarginAfter;
 		//iY +=  0.5;
 
-#endif
-
-#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-		if((long) iYLayoutUnits > imax)
-		{
-		       UT_ASSERT(0);
-		}
-		// Update height of previous line now we know the gap between
-		// it and the current line.
-#endif
 		if (pPrevContainer)
 		{
 			pPrevContainer->setAssignedScreenHeight(iY - iPrevY);
@@ -284,27 +251,15 @@ void fp_FootnoteContainer::layout(void)
 	// Correct height position of the last line
 	if (pPrevContainer)
 	{
-#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-		iY = (int)(ScaleLayoutUnitsToScreen * iYLayoutUnits +0.5);
-#endif
 		pPrevContainer->setAssignedScreenHeight(iY - iPrevY + 1);
 	}
 
-#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-	UT_sint32 iNewHeight = (int)(ScaleLayoutUnitsToScreen * iYLayoutUnits);
-#else
-	UT_sint32 iNewHeight = iY;
-#endif
-
-	if (getHeight() == iNewHeight)
+	if (getHeight() == iY)
 	{
 		return;
 	}
 
-	setHeight(iNewHeight);
-#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-	setHeightLayoutUnits(iYLayoutUnits);
-#endif
+	setHeight(iY);
 	getPage()->footnoteHeightChanged();
 }
 

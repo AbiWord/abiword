@@ -172,21 +172,9 @@ public:
 
 	UT_sint32                getLeftOffset(void) const;
 
-#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
- UT_sint32                   getLeftOffsetInLayoutUnits(void) const;
-#endif
 UT_sint32                    getRightOffset(void) const;
-#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-UT_sint32                    getRightOffsetInLayoutUnits(void) const;
-#endif
 	UT_sint32                getTopOffset(void) const;
-#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
- UT_sint32                   getTopOffsetInLayoutUnits(void) const;
-#endif
 UT_sint32                    getBottomOffset(void) const;
-#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-UT_sint32                    getBottomOffsetInLayoutUnits(void) const;
-#endif
 	bool                     isDirty(void) const
 		{ return m_bIsDirty;}
 	void                     setDirty(void)
@@ -215,13 +203,6 @@ private:
 	double                 m_dTopOffsetUserUnits;
 	UT_sint32              m_iBottomOffset;
 	double                 m_dBottomOffsetUserUnits;
-
-#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-	UT_sint32              m_iLeftOffsetLayoutUnits;
-	UT_sint32              m_iRightOffsetLayoutUnits;
-	UT_sint32              m_iTopOffsetLayoutUnits;
-	UT_sint32              m_iBottomOffsetLayoutUnits;
-#endif
 	
 	bool                   m_bIsHomogeneous;
 	bool                   m_bSameRowOnTopOfPage;
@@ -286,21 +267,9 @@ public:
 #endif
 
 	UT_sint32                getLeftOffset(void) const;
-#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
- UT_sint32                   getLeftOffsetInLayoutUnits(void) const;
-#endif
 UT_sint32                    getRightOffset(void) const;
-#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-UT_sint32                    getRightOffsetInLayoutUnits(void) const;
-#endif
 	UT_sint32                getTopOffset(void) const;
-#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
- UT_sint32                   getTopOffsetInLayoutUnits(void) const;
-#endif
 UT_sint32                    getBottomOffset(void) const;
-#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-UT_sint32                    getBottomOffsetInLayoutUnits(void) const;
-#endif
 protected:
 	virtual void		     _lookupProperties(void);
 	virtual void             _purgeLayout(void);
@@ -314,13 +283,6 @@ private:
 	double                 m_dTopOffsetUserUnits;
 	UT_sint32              m_iBottomOffset;
 	double                 m_dBottomOffsetUserUnits;
-
-#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-	UT_sint32              m_iLeftOffsetLayoutUnits;
-	UT_sint32              m_iRightOffsetLayoutUnits;
-	UT_sint32              m_iTopOffsetLayoutUnits;
-	UT_sint32              m_iBottomOffsetLayoutUnits;
-#endif
 	
 	UT_sint32              m_iLeftAttach;
 	UT_sint32              m_iRightAttach;

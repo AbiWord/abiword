@@ -50,10 +50,7 @@ XAP_PangoFontManager * GR_Graphics::s_pPangoFontManager = NULL;
 
 XAP_PrefsScheme *GR_Graphics::m_pPrefsScheme = 0;
 UT_uint32 GR_Graphics::m_uTick = 0;
-
 UT_uint32 GR_Graphics::m_instanceCount = 0;
-UT_uint32 GR_Graphics::s_iScreenResolution = 100;
-
 UT_uint32 GR_Font::s_iAllocCount = 0;
 
 #ifndef WITH_PANGO
@@ -74,9 +71,6 @@ GR_Graphics::GR_Graphics()
 {
 	m_pApp = 0;
 	m_iZoomPercentage = 100;
-#ifdef USE_LAYOUT_UNITS
-	m_bLayoutResolutionModeEnabled = false;
-#endif
 	m_bIsPortrait = true;
 
 	m_pRect = NULL;
@@ -166,14 +160,27 @@ GR_Graphics::~GR_Graphics()
 	}
 }
 
-UT_uint32 GR_Graphics::s_getScreenResolution()
+UT_sint32 GR_Graphics::tdu(UT_sint32 layoutUnits) const
 {
-  return s_iScreenResolution ;
+	double d = ((double)layoutUnits * getDeviceResolution()) * getZoomPercentage() / (100. * getResolution());
+	// don't know if we need this line or not -PL
+	if (d > 0) d += .5; else d -= .5;
+	return (UT_sint32)d;
 }
 
-void GR_Graphics::setStaticScreenResolution(UT_uint32 iRes)
+UT_sint32 GR_Graphics::tlu(UT_sint32 deviceUnits) const
 {
-  s_iScreenResolution = iRes;
+	return (deviceUnits * getResolution() / getDeviceResolution()) * 100 / getZoomPercentage();
+}
+
+double GR_Graphics::tduD(double layoutUnits) const
+{
+	return (layoutUnits * getDeviceResolution() / getResolution()) * getZoomPercentage() / 100.0;
+}
+
+double GR_Graphics::tluD(double deviceUnits) const
+{
+	return (deviceUnits * getResolution() / getDeviceResolution()) * 100.0 / getZoomPercentage();
 }
 
 void GR_Graphics::setLineProperties ( double    inWidthPixels, 
@@ -211,7 +218,7 @@ UT_uint32 GR_Graphics::measureString(const UT_UCSChar* s, int iOffset,
 	// Platform versions can roll their own if it makes a performance difference.
 	UT_ASSERT(s);
 
-	int stringWidth = 0, charWidth;
+	UT_uint32 stringWidth = 0, charWidth;
 	for (int i = 0; i < num; i++)
     {
 		UT_UCSChar currentChar = remapGlyph(s[i + iOffset], false);
@@ -410,9 +417,6 @@ void GR_Graphics::setZoomPercentage(UT_uint32 iZoom)
 	UT_ASSERT(iZoom > 0);
 
 	m_iZoomPercentage = iZoom;
-#ifndef USE_LAYOUT_UNITS
-	_setTransform(m_Transform);
-#endif
 }
 
 UT_uint32 GR_Graphics::getZoomPercentage(void) const
@@ -420,126 +424,11 @@ UT_uint32 GR_Graphics::getZoomPercentage(void) const
 	return m_iZoomPercentage;
 }
 
-/*!
- * This method converts a const * string to the appropriate Type 1 Font size.
- * This method should guarentee we get the same sized font for Layout in both
- * Print and Screen contexts.
- * It takes into account if we are in layout resolution mode and in either print
- * or screen contexts.
-\params const char *pszFontSize
-\returns UT_uint32 the correct font number
-*/
-UT_uint32 GR_Graphics::getAppropriateFontSizeFromString(const char * pszFontSize)
-{
-	UT_uint32  iSize;
-	UT_uint32  iSizeLayout;
-	//double dSize;
-	if(queryProperties(DGP_SCREEN))
-	{
-#ifdef USE_LAYOUT_UNITS
-		bool curRes = m_bLayoutResolutionModeEnabled;
-		m_bLayoutResolutionModeEnabled = false;
-#endif
-		iSize = convertDimension(pszFontSize);
-#ifdef USE_LAYOUT_UNITS		
-		m_bLayoutResolutionModeEnabled = curRes;
-		if( m_bLayoutResolutionModeEnabled)
-		{
-			iSizeLayout = static_cast<UT_uint32>(static_cast<double>(UT_LAYOUT_UNITS) * UT_convertToInches(pszFontSize) +0.05);
-			xxx_UT_DEBUGMSG(("SEVIOR: iSizeLayout in gr_graphics = %d \n",iSizeLayout));
-			return iSizeLayout;
-		}
-#endif
-		return iSize;
-	}
-//
-// For printing we ignore all zoom stuff and calculate the screen font based on
-// inch size.
-//
-	else
-	{
-		double dPaperSize = UT_convertToInches(pszFontSize) * static_cast<double>(getResolution());
-		iSize = static_cast<UT_sint32>(dPaperSize + 0.05);
-#ifdef USE_LAYOUT_UNITS		
-		if( m_bLayoutResolutionModeEnabled)
-		{
-			iSizeLayout = static_cast<UT_uint32>(static_cast<double>(UT_LAYOUT_UNITS) * UT_convertToInches(pszFontSize) +0.05);
-			return iSizeLayout;
-		}
-#endif
-		return iSize;
-	}
-}
-
-UT_uint32 GR_Graphics::getResolution(void) const
-{
-	return _getResolution() * m_iZoomPercentage / 100;
-}
-
-UT_sint32 GR_Graphics::convertDimension(const char * s) const
-{
-	double dInches = UT_convertToInches(s);
-	double dResolution;
-#ifdef USE_LAYOUT_UNITS
-	if(m_bLayoutResolutionModeEnabled)
-	{
-		dResolution = UT_LAYOUT_UNITS;
-	}
-	else
-#endif
-	{
-		dResolution = getResolution();		// NOTE: assumes square pixels/dpi/etc.
-	}
-
-	/*
-	 We do this because the convert Dimension code is actually
-	 lossy in that when we put a conversion of 12pt in at 72DPI
-	 then we end up getting 11pt back which really kind of licks.
-	 We have to round down to fix bug 1521.
-	*/
-	return static_cast<UT_sint32>((dInches * dResolution) + 0.05);
-}
-
-UT_sint32 GR_Graphics::convertDimension(double Value, UT_Dimension dim) const
-{
-	double dInches = UT_convertDimToInches(Value, dim);
-	double dResolution;
-#ifdef USE_LAYOUT_UNITS
-	if(m_bLayoutResolutionModeEnabled)
-		{
-		dResolution = UT_LAYOUT_UNITS;
-		}
-	else
-#endif
-		{
-		dResolution = getResolution();		// NOTE: assumes square pixels/dpi/etc.
-		}
-
-	/*
-	 We do this because the convert Dimension code is actually
-	 lossy in that when we put a conversion of 12pt in at 72DPI
-	 then we end up getting 11pt back which really kind of licks.
-	*/
-	return static_cast<UT_sint32>((dInches * dResolution) + 0.5);
-}
-
 const char * GR_Graphics::invertDimension(UT_Dimension dim, double dValue) const
 {
 	// return pointer to static buffer -- use it quickly.
 
-	double dResolution;
-#ifdef USE_LAYOUT_UNITS	
-	if(m_bLayoutResolutionModeEnabled)
-		{
-		dResolution = UT_LAYOUT_UNITS;
-		}
-	else
-#endif
-		{
-		dResolution = getResolution();		// NOTE: assumes square pixels/dpi/etc.
-		}
-
-	double dInches = dValue / dResolution;
+	double dInches = dValue / UT_LAYOUT_RESOLUTION;
 
 	return UT_convertInchesToDimensionString( dim, dInches);
 }
@@ -560,13 +449,13 @@ bool GR_Graphics::scaleDimensions(const char * szLeftIn, const char * szWidthIn,
 	UT_ASSERT(szLeftIn);
 	UT_ASSERT(szWidthIn);
 
-	UT_sint32 iLeft = convertDimension(szLeftIn);
+	UT_sint32 iLeft = UT_convertToLayoutUnits(szLeftIn);
 	UT_uint32 iWidth;
 
 	if (szWidthIn[0] == '*')
 		iWidth = iWidthAvail - iLeft;
 	else
-		iWidth = convertDimension(szWidthIn);
+		iWidth = UT_convertToLayoutUnits(szWidthIn);
 
 	if (piLeft)
 		*piLeft = iLeft;
@@ -640,9 +529,6 @@ void GR_Graphics::polygon(UT_RGBColor& c,UT_Point *pts,UT_uint32 nPoints)
     }
  }
 
-
-
-
 /*!
  * Hand shaking variables to let the App know when expose events are being
  * handled.
@@ -678,10 +564,7 @@ void GR_Graphics::setExposePending(bool exposeState)
 	m_bExposePending = exposeState;
 	if(!exposeState)
 	{
-		m_PendingExposeArea.left = m_RecentExposeArea.left;
-		m_PendingExposeArea.top = m_RecentExposeArea.top;
-		m_PendingExposeArea.width = m_RecentExposeArea.width;
-		m_PendingExposeArea.height = m_RecentExposeArea.height;
+		m_PendingExposeArea = m_RecentExposeArea;
 	}
 }
 
@@ -691,10 +574,7 @@ void GR_Graphics::setExposePending(bool exposeState)
  */
 void GR_Graphics::setRecentRect(UT_Rect * pRect)
 {
-		m_RecentExposeArea.left = pRect->left;
-		m_RecentExposeArea.top = pRect->top;
-	    m_RecentExposeArea.width = pRect->width;
-		m_RecentExposeArea.height = pRect->height;
+	m_RecentExposeArea = *pRect;
 }
 
 
@@ -876,18 +756,6 @@ void xorRect(GR_Graphics* pG, const UT_Rect& r)
 #ifdef DEBUG // XXX
 void flash(GR_Graphics* pG, const UT_Rect& r, const UT_RGBColor& c)
 {
-/*
-	UT_RGBColor black(0, 0, 0);
-
-	pG->setColor(c);
-	xorRect(pG, r);
-	flush();
-	UT_usleep(10000);
-	xorRect(pG, r);
-	flush();
-	UT_usleep(1000);
-	pG->setColor(black);
-*/
 }
 #endif
 
@@ -953,7 +821,7 @@ void GR_Graphics::drawPangoGlyphString(GList * pGlyphString,
 
 
 	// now draw it
-	_drawFT2Bitmap(xoff, yoff, &FTBitmap);
+	_drawFT2Bitmap(tdu(xoff), tdu(yoff), &FTBitmap);
 
 	FREEP(FTBitmap.buffer);
 	g_list_free(pWidthList);
@@ -982,7 +850,7 @@ void GR_Graphics::drawPangoGlyphString(PangoGlyphString * pGlyphString,
 	pango_ft2_render(&FTBitmap, m_pPangoFont, pGlyphString, 0 , 0 /*??*/);
 
 	// now draw it
-	_drawFT2Bitmap(xoff, yoff, &FTBitmap);
+	_drawFT2Bitmap(tdu(xoff), tdu(yoff), &FTBitmap);
 
 	FREEP(FTBitmap.buffer);
 }
@@ -1073,8 +941,8 @@ void  GR_Graphics::_initFontManager()
 
 PangoContext * GR_Graphics::_createPangoContext()
 {
-	double x_dpi = static_cast<double>(_getResolution());
-	double y_dpi = static_cast<double>(_getResolution());
+	double x_dpi = static_cast<double>(getDeviceResolution());
+	double y_dpi = static_cast<double>(getDeviceResolution());
 
 	return pango_ft2_get_context(x_dpi, y_dpi);
 }

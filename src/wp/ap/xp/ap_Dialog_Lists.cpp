@@ -1045,8 +1045,8 @@ void AP_Lists_preview::draw(void)
 {
 	UT_RGBColor clrGrey = UT_RGBColor(128,128,128);
 	UT_RGBColor clrBlack = UT_RGBColor(0,0,0);
-	UT_sint32 iWidth = _UL(getWindowWidth());
-	UT_sint32 iHeight = _UL(getWindowHeight());
+	UT_sint32 iWidth = m_gc->tlu(getWindowWidth());
+	UT_sint32 iHeight = m_gc->tlu(getWindowHeight());
 	UT_UCSChar ucs_label[50];
 
 	//
@@ -1075,19 +1075,19 @@ void AP_Lists_preview::draw(void)
 		m_gc->clearArea(0, 0, iWidth, iHeight);
 	}
 	m_gc->setColor(clrBlack);
-	UT_sint32 yoff = _UL(5) ;
-	UT_sint32 xoff = _UL(5) ;
+	UT_sint32 yoff = m_gc->tlu(5) ;
+	UT_sint32 xoff = m_gc->tlu(5) ;
 	UT_sint32 i,ii,yloc,awidth,aheight,maxw;
 	UT_sint32 twidth =0;
 	UT_sint32 j,xy;
 	float z,fwidth;
 	// todo 6.5 should be the page width in inches
 	float pagew = 2.0;
-	aheight = _UL(16);
-	fwidth = static_cast<float>(_UD(iWidth));
+	aheight = m_gc->tlu(16);
+	fwidth = static_cast<float>(m_gc->tdu(iWidth));
 
-	z = (float)((fwidth - 2.0*static_cast<float>(_UD(xoff))) /pagew);
-  UT_sint32 indent = _UL(static_cast<UT_sint32>( z*(m_fAlign+m_fIndent)));
+	z = (float)((fwidth - 2.0*static_cast<float>(m_gc->tdu(xoff))) /pagew);
+  UT_sint32 indent = m_gc->tlu(static_cast<UT_sint32>( z*(m_fAlign+m_fIndent)));
 
 	if(indent < 0)
 		indent = 0;
@@ -1126,14 +1126,14 @@ void AP_Lists_preview::draw(void)
 		maxw++;
 
         // UT_sint32 vspace = (iHeight - 2*yoff -iFont)*i/16;
-	z = (float)((fwidth - 2.0*static_cast<float>(_UD(xoff))) /(float)pagew);
-	UT_sint32 ialign = _UL(static_cast<UT_sint32>( z*m_fAlign));
+	z = (float)((fwidth - 2.0*static_cast<float>(m_gc->tdu(xoff))) /(float)pagew);
+	UT_sint32 ialign = m_gc->tlu(static_cast<UT_sint32>( z*m_fAlign));
 
 	xx = xoff + ialign;
 	xy = xoff + ialign;
 
 	if(xx < (xoff + maxw + indent))
-		xy = xoff + maxw + indent + _UL(1);
+		xy = xoff + maxw + indent + m_gc->tlu(1);
 	ii = 0;
 
 	for(i=0; i<4; i++)
@@ -1141,7 +1141,7 @@ void AP_Lists_preview::draw(void)
 		yloc = yoff + iAscent + (iHeight - 2*yoff -iFont)*i/4;
 		for(j=0; j< 2; j++)
 		{
-			yy = yloc + _UL(5) + j*_UL(21);
+			yy = yloc + m_gc->tlu(5) + j*m_gc->tlu(21);
 			m_iLine_pos[ii++] = yy;
 		}
 	}

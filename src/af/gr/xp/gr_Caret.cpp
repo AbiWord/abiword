@@ -239,7 +239,7 @@ void GR_Caret::_blink(bool bExplicit)
 				return;
 			}
 			
-			UT_Rect r0(m_xPoint-3, m_yPoint+1, 7, m_iPointHeight);
+			UT_Rect r0(m_xPoint-m_pG->tlu(3), m_yPoint+m_pG->tlu(1), m_pG->tlu(7), m_iPointHeight+m_pG->tlu(2));
 			m_pG->saveRectangle(r0,0);
 
 			if((m_xPoint != m_xPoint2) || (m_yPoint != m_yPoint2))
@@ -252,13 +252,12 @@ void GR_Caret::_blink(bool bExplicit)
 				UT_uint32 ymin = UT_MIN(m_yPoint, m_yPoint2);
 				UT_uint32 ymax = UT_MAX(m_yPoint, m_yPoint2);
 			
-				UT_Rect r2(xmin-1, ymin + m_iPointHeight, xmax - xmin + 2, ymax - ymin + 1);
+				UT_Rect r2(xmin-m_pG->tlu(1), ymin + m_iPointHeight, xmax - xmin + m_pG->tlu(2), ymax - ymin + m_pG->tlu(1));
 				m_pG->saveRectangle(r2,2);
 			}
 			else
 				m_bSplitCaret = false;
 
-			//static const UT_RGBColor black (0,0,0);
 			if(m_insertMode)
 				m_pG->setColor(m_clrInsert);
 			else
@@ -266,10 +265,10 @@ void GR_Caret::_blink(bool bExplicit)
 
 			if(m_bCaret1OnScreen)
 			{
-				m_pG->drawLine(m_xPoint-1, m_yPoint+1, m_xPoint-1, 
-							   m_yPoint + m_iPointHeight+1);
-				m_pG->drawLine(m_xPoint, m_yPoint+1, m_xPoint, 
-							   m_yPoint + m_iPointHeight+1);
+				m_pG->drawLine(m_xPoint-m_pG->tlu(1), m_yPoint+m_pG->tlu(1), m_xPoint-m_pG->tlu(1), 
+							   m_yPoint + m_iPointHeight+m_pG->tlu(1));
+				m_pG->drawLine(m_xPoint, m_yPoint+m_pG->tlu(1), m_xPoint, 
+							   m_yPoint + m_iPointHeight+m_pG->tlu(1));
 			}
 			
 			if(m_bSplitCaret)
@@ -280,13 +279,13 @@ void GR_Caret::_blink(bool bExplicit)
 				{
 					if(m_bPointDirection)
 					{
-						m_pG->drawLine(m_xPoint-3, m_yPoint+1, m_xPoint-1, m_yPoint+1);
-						m_pG->drawLine(m_xPoint-2, m_yPoint+2, m_xPoint-1, m_yPoint+2);
+						m_pG->drawLine(m_xPoint-m_pG->tlu(3), m_yPoint+m_pG->tlu(1), m_xPoint-m_pG->tlu(1), m_yPoint+m_pG->tlu(1));
+						m_pG->drawLine(m_xPoint-m_pG->tlu(2), m_yPoint+m_pG->tlu(2), m_xPoint-m_pG->tlu(1), m_yPoint+m_pG->tlu(2));
 					}
 					else
 					{
-						m_pG->drawLine(m_xPoint+1, m_yPoint+1, m_xPoint+3, m_yPoint+1);
-						m_pG->drawLine(m_xPoint+1, m_yPoint+2, m_xPoint+2, m_yPoint+2);
+						m_pG->drawLine(m_xPoint+m_pG->tlu(1), m_yPoint+m_pG->tlu(1), m_xPoint+m_pG->tlu(3), m_yPoint+m_pG->tlu(1));
+						m_pG->drawLine(m_xPoint+m_pG->tlu(1), m_yPoint+m_pG->tlu(2), m_xPoint+m_pG->tlu(2), m_yPoint+m_pG->tlu(2));
 					}
 				}
 				
@@ -294,14 +293,14 @@ void GR_Caret::_blink(bool bExplicit)
 
 				if(m_bCaret2OnScreen)
 				{
-					UT_Rect r1(m_xPoint2-3, m_yPoint2+1, 7, m_iPointHeight);
+					UT_Rect r1(m_xPoint2-m_pG->tlu(3), m_yPoint2+m_pG->tlu(1), m_pG->tlu(7), m_iPointHeight);
 					m_pG->saveRectangle(r1,1);
 				
 			
-					m_pG->drawLine(m_xPoint2-1, m_yPoint2+1, 
-								   m_xPoint2-1, m_yPoint2 + m_iPointHeight + 1);
-					m_pG->drawLine(m_xPoint2, m_yPoint2+1, 
-								   m_xPoint2, m_yPoint2 + m_iPointHeight + 1);
+					m_pG->drawLine(m_xPoint2-m_pG->tlu(1), m_yPoint2+m_pG->tlu(1), 
+								   m_xPoint2-m_pG->tlu(1), m_yPoint2 + m_iPointHeight + m_pG->tlu(1));
+					m_pG->drawLine(m_xPoint2, m_yPoint2+m_pG->tlu(1), 
+								   m_xPoint2, m_yPoint2 + m_iPointHeight + m_pG->tlu(1));
 
 					// This is the line that links the two carets
 					m_pG->drawLine(m_xPoint, m_yPoint + m_iPointHeight, 
@@ -309,17 +308,17 @@ void GR_Caret::_blink(bool bExplicit)
 
 					if(m_bPointDirection)
 					{
-						m_pG->drawLine(m_xPoint2+1, m_yPoint2+1, 
-									   m_xPoint2+3, m_yPoint2+1);
-						m_pG->drawLine(m_xPoint2+1, m_yPoint2+2, 
-									   m_xPoint2+2, m_yPoint2+2);
+						m_pG->drawLine(m_xPoint2+m_pG->tlu(1), m_yPoint2+m_pG->tlu(1), 
+									   m_xPoint2+m_pG->tlu(3), m_yPoint2+m_pG->tlu(1));
+						m_pG->drawLine(m_xPoint2+m_pG->tlu(1), m_yPoint2+m_pG->tlu(2), 
+									   m_xPoint2+m_pG->tlu(2), m_yPoint2+m_pG->tlu(2));
 					}
 					else
 					{
-						m_pG->drawLine(m_xPoint2-3, m_yPoint2+1, 
-									   m_xPoint2-1, m_yPoint2+1);
-						m_pG->drawLine(m_xPoint2-2, m_yPoint2+2, 
-									   m_xPoint2-1, m_yPoint2+2);
+						m_pG->drawLine(m_xPoint2-m_pG->tlu(3), m_yPoint2+m_pG->tlu(1), 
+									   m_xPoint2-m_pG->tlu(1), m_yPoint2+m_pG->tlu(1));
+						m_pG->drawLine(m_xPoint2-m_pG->tlu(2), m_yPoint2+m_pG->tlu(2), 
+									   m_xPoint2-m_pG->tlu(1), m_yPoint2+m_pG->tlu(2));
 					}
 				}
 				

@@ -126,12 +126,12 @@ GtkWidget * AP_UnixFrameImpl::_createDocumentWindow()
 		    m_leftRuler = pUnixLeftRuler->createWidget();
 
 		    // get the width from the left ruler and stuff it into the top ruler.
-		    pUnixTopRuler->setOffsetLeftRuler(pUnixLeftRuler->getWidth());
+		    //pUnixTopRuler->setOffsetLeftRuler(pUnixLeftRuler->getWidth());
 		  }
 		else
 		  {
 		    m_leftRuler = NULL;
-		    pUnixTopRuler->setOffsetLeftRuler(0);
+		    //pUnixTopRuler->setOffsetLeftRuler(0);
 		  }
 	}
 	else
@@ -320,11 +320,13 @@ void AP_UnixFrameImpl::_setScrollRange(apufi_ScrollType scrollType, int iValue, 
 	GtkAdjustment *pScrollAdjustment = (scrollType == apufi_scrollX) ? m_pHadj : m_pVadj;
 	GtkWidget *wScrollWidget = (scrollType == apufi_scrollX) ? m_hScroll : m_vScroll;
 
+	GR_Graphics * pGr = getFrame()->getCurrentView()->getGraphics ();
+
 	pScrollAdjustment->value = iValue;
 	pScrollAdjustment->lower = 0.0;
 	pScrollAdjustment->upper = fUpperLimit;
-	pScrollAdjustment->step_increment = 20.0;
-	pScrollAdjustment->page_increment = fSize;
+	pScrollAdjustment->step_increment = pGr->tlu(20.0);
+	pScrollAdjustment->page_increment = /*fSize quack*/pGr->tlu(100.0);
 	pScrollAdjustment->page_size = fSize;
 	g_signal_emit_by_name(G_OBJECT(pScrollAdjustment), "changed");
 

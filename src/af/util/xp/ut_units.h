@@ -17,8 +17,6 @@
  * 02111-1307, USA.
  */
 
-
-
 #ifndef UT_UNITS_H
 #define UT_UNITS_H
 
@@ -35,51 +33,8 @@ class GR_Graphics;
 UT_BEGIN_EXTERN_C
 
 #define UT_PAPER_UNITS_PER_INCH				100
-#define UT_LAYOUT_UNITS						1440
-
-#define UT_DEV_UNITS(x) ((x) >> 10)
-#define UT_LOG_UNITS(x) ((x) << 10)
-
-
-/* helper macros for variable conversions from our logical to device
-   units */
-#ifndef USE_LAYOUT_UNITS
-
-/* these two macros are for conversion of function parameters:
-       int foo(int a, int b)
-       {
-         _UUD(a);
-         _UUD(b);
-
-         // some processing
-         ...
-       }
-*/
-#if 1
-#define _UUL(x) x = UT_LOG_UNITS(x)
-#define _UUD(x) x = UT_DEV_UNITS(x)
-
-/* these two macros are for converison in assignments:
-       int a = _UL(b);
-*/
-#define _UL(x) UT_LOG_UNITS(x)
-#define _UD(x) UT_DEV_UNITS(x)
-#else
-#define _UUL(x)
-#define _UUD(x)
-#define _UL(x) x
-#define _UD(x) x
-#endif
-
-#else
-
-#define _UUL(x)
-#define _UUD(x)
-#define _UL(x) x
-#define _UD(x) x
-
-#endif
-
+/* Units of UT_LAYOUT_RESOLUTION = dots per inch */
+#define UT_LAYOUT_RESOLUTION				1440
 
 typedef enum _ut_dimension { DIM_IN, DIM_CM, DIM_MM, DIM_PI, DIM_PT, DIM_PX, DIM_PERCENT, DIM_none } UT_Dimension;
 
@@ -97,10 +52,8 @@ double UT_convertDimToInches (double f, UT_Dimension dim);
 ABI_EXPORT double UT_convertDimensions(double f, UT_Dimension from, UT_Dimension to);
 ABI_EXPORT double UT_convertToPoints(const char* s);
 ABI_EXPORT double UT_convertToDimension(const char* s, UT_Dimension dim);
-#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
 UT_sint32 UT_convertToLayoutUnits(const char* s);
 UT_sint32 UT_convertSizeToLayoutUnits(double Value, UT_Dimension dim);
-#endif
 double UT_convertDimensionless(const char * sz);
 double UT_convertInchesToDimension(double inches, UT_Dimension dim);
 
@@ -108,10 +61,6 @@ UT_sint32 UT_paperUnits(const char * sz);
 double    UT_inchesFromPaperUnits(UT_sint32 iPaperUnits);
 UT_sint32 UT_paperUnitsFromInches(double dInches);
 UT_sint32 UT_docUnitsFromPaperUnits(GR_Graphics * pG, UT_sint32 iPaperUnits);
-#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-UT_sint32 UT_layoutUnitsFromPaperUnits(UT_sint32 iPaperUnits);
-UT_sint32 UT_paperUnitsFromLayoutUnits(UT_sint32 iLayoutUnits);
-#endif
 
 const char * UT_incrementDimString(const char * dimString, double inc);
 const char * UT_multiplyDimString(const char * dimString, double mult);

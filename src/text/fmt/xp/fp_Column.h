@@ -55,12 +55,6 @@ public:
 	virtual void		setMaxHeight(UT_sint32);
 	virtual void		setX(UT_sint32, bool bDontClearIfNeeded=false);
 	virtual void		setY(UT_sint32);
-#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-	virtual void		setWidthInLayoutUnits(UT_sint32);
-	virtual void		setMaxHeightInLayoutUnits(UT_sint32);
-	virtual void        setHeightLayoutUnits(UT_sint32 ihLayout) {m_iHeightLayoutUnits = ihLayout;}
-	virtual void        setYInLayoutUnits(UT_sint32) {}
-#endif
 	/*!
 	  Get container's max height
 	  \return Max height
@@ -68,31 +62,13 @@ public:
 	inline UT_sint32	getMaxHeight(void) const
  		{ return m_iMaxHeight; }
 	
-#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-	/*!
-	  Get container's max height in layout units
-	  \return Max height in layout units
-	*/
-	inline UT_sint32	getMaxHeightInLayoutUnits(void) const
-		{ return m_iMaxHeightLayoutUnits; }
 	/*!
 	  Get container's width
 	  \return Width
 	*/
-#endif
-
 	virtual UT_sint32	getWidth(void) const
 		{ return m_iWidth; }
 	
-#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-	/*!
-	  Get container's width in layout units
-	  \return Width in layout units
-	*/
-	virtual UT_sint32	getWidthInLayoutUnits(void) const
-		{ UT_ASSERT(m_iWidthLayoutUnits); return m_iWidthLayoutUnits; }
-#endif
-
 	virtual UT_sint32	getX(void) const;
 
 	void        _setX( UT_sint32 iX) { m_iX = iX;}
@@ -107,15 +83,6 @@ public:
 	virtual UT_sint32	getHeight(void) const
 		{ return m_iHeight; }
 	
-#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-	/*!
-	  Get container's height in layout units
-	  \return Height in layout units
-	*/
-	virtual UT_sint32	getHeightInLayoutUnits(void) const
-		{ return m_iHeightLayoutUnits; }
-#endif
-
 	UT_sint32	getColumnGap(void) const;
 
 	/*!
@@ -169,10 +136,6 @@ public:
 	void                recalcMaxWidth(bool bDontClearIfNeeded = false) {}
 	virtual UT_sint32   getMarginBefore(void) const { return 0;}
 	virtual UT_sint32   getMarginAfter(void) const { return 0;}
-#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-	virtual UT_sint32   getMarginBeforeInLayoutUnits(void) const { return 0;}
-	virtual UT_sint32   getMarginAfterInLayoutUnits(void) const { return 0;}
-#endif
 	virtual void        setAssignedScreenHeight(UT_sint32) {}
 	virtual fp_Container * getNextContainerInSection(void) const
 		{return NULL;}
@@ -223,21 +186,6 @@ private:
 	 */
 	bool					m_bIntentionallyEmpty;
 	UT_sint32               m_imaxContainerHeight;
-
-#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-	/*!
-	  Width in layout units of the container
-	*/
-	UT_sint32 				m_iWidthLayoutUnits;
-	/*!
-	  Height in layout units of the container
-	*/
-	UT_sint32 				m_iHeightLayoutUnits;
-	/*!
-	  Maximum height in layout units of the container
-	*/
-	UT_sint32				m_iMaxHeightLayoutUnits;
-#endif
 };
 
 class ABI_EXPORT fp_Column : public fp_VerticalContainer
@@ -266,14 +214,6 @@ public:
 	*/
 	UT_sint32	        getMaxHeight(void) const;
  	
-#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-	/*!
-	  Get container's max height in layout units
-	  \return Max height in layout units
-	*/
-	UT_sint32	        getMaxHeightInLayoutUnits(void) const;
-#endif
-
 	void				layout(void);
 
 
@@ -298,9 +238,6 @@ class ABI_EXPORT fp_ShadowContainer : public fp_VerticalContainer
 public:
 	fp_ShadowContainer(UT_sint32 iX, UT_sint32 iY,
 					   UT_sint32 iWidth, UT_sint32 iHeight,
-#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-					   UT_sint32 iWidthLayout, UT_sint32 iHeightLayout,
-#endif
 					   fl_SectionLayout* pSL);
 	~fp_ShadowContainer();
 
@@ -331,7 +268,6 @@ class ABI_EXPORT fp_HdrFtrContainer : public fp_VerticalContainer
 {
 public:
 	fp_HdrFtrContainer( UT_sint32 iWidth,
-					   UT_sint32 iWidthLayout,
 					   fl_SectionLayout* pSL);
 	~fp_HdrFtrContainer();
 

@@ -62,8 +62,6 @@
 #include "fl_FootnoteLayout.h"
 #include "fp_FootnoteContainer.h"
 
-#define SCALE_TO_SCREEN (static_cast<double>(getGraphics()->getResolution()) / UT_LAYOUT_UNITS)
-
 fp_TableRowColumn::fp_TableRowColumn(void) :
 		requisition(0),
         allocation(0),
@@ -428,11 +426,6 @@ void fp_CellContainer::setWidth(UT_sint32 iWidth)
 	}
 	clearScreen();
 	fp_VerticalContainer::setWidth(iWidth);
-#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-	double scale = SCALE_TO_SCREEN;
-	UT_sint32 iWidthLO = static_cast<UT_sint32>(((static_cast<double>(iWidth)))/scale);
-	fp_VerticalContainer::setWidthInLayoutUnits(iWidthLO);
-#endif
 	fl_SectionLayout * pSL = getSectionLayout();
 	pSL = static_cast<fl_SectionLayout *>(pSL->myContainingLayout());
 	UT_ASSERT(pSL->getContainerType() == FL_CONTAINER_TABLE);
@@ -477,10 +470,6 @@ void fp_CellContainer::setContainer(fp_Container * pContainer)
 	UT_sint32 iWidth = pTable->getWidth();
 
 	fp_CellContainer::setWidth(iWidth);
-#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-	UT_sint32 iWidthLayout = pTable->getWidthInLayoutUnits();
-	setWidthInLayoutUnits(iWidthLayout);
-#endif
 }
 
 // just a little helper function
@@ -1185,18 +1174,11 @@ void fp_CellContainer::sizeRequest(fp_Requisition * pRequest)
 		if(pCon->getContainerType() == FP_CONTAINER_LINE)
 		{
 			static_cast<fp_Line *>(pCon)->recalcHeight();
-#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-			if(width < pCon->getWidthInLayoutUnits())
-			{
-				width = pCon->getWidthInLayoutUnits();
-			}
-#else
 			if(width < pCon->getWidth())
 			{
 				width = pCon->getWidth();
 
 			}
-#endif
 			xxx_UT_DEBUGMSG(("sizeRequest: Height of Line %d %d \n",i,pCon->getHeight()));
 			height = height + pCon->getHeight();
 			height = height + pCon->getMarginAfter();
@@ -1223,7 +1205,7 @@ void fp_CellContainer::sizeRequest(fp_Requisition * pRequest)
 			height = height + pReq.height;
 		}
 	}
-	UT_sint32 iwidth = 0;
+	UT_sint32 maxwidth = 0;
 	fl_CellLayout * pCellL = static_cast<fl_CellLayout *>(getSectionLayout());
 	fl_ContainerLayout * pCL = pCellL->getFirstLayout();
 	while(pCL)
@@ -1232,20 +1214,17 @@ void fp_CellContainer::sizeRequest(fp_Requisition * pRequest)
 		{
 			fl_BlockLayout * pBL = static_cast<fl_BlockLayout *>(pCL);
 			UT_sint32 iw = pBL->getMaxNonBreakableRun();
-			if(iwidth < iw)
+			if(maxwidth < iw)
 			{
-				iwidth = iw;
+				maxwidth = iw;
 			}
 		}
 		pCL = pCL->getNext();
 	}
-#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-	iwidth =  static_cast<UT_sint32>((static_cast<double>(iwidth))/SCALE_TO_SCREEN);
-#endif
-	
-	if(iwidth > width)
+
+	if(maxwidth > width)
 	{
-		width = iwidth;
+		width = maxwidth;
 	}
 	if(pRequest)
 	{
@@ -1256,11 +1235,7 @@ void fp_CellContainer::sizeRequest(fp_Requisition * pRequest)
 	fp_Column * pCol = static_cast<fp_Column *>(getColumn());
 	if(pCol && (width == 0))
 	{
-#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-		width =  pCol->getWidthInLayoutUnits();
-#else
 		width = pCol->getWidth();
-#endif
 	}
 
 	m_MyRequest.width = width;
@@ -1280,12 +1255,6 @@ void fp_CellContainer::layout(void)
 {
 	_setMaxContainerHeight(0);
 	UT_sint32 iY = 0, iPrevY = 0;
-	iY= 0;
-#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-	double ScaleLayoutUnitsToScreen;
-	ScaleLayoutUnitsToScreen = static_cast<double>(getGraphics()->getResolution()) / UT_LAYOUT_UNITS;
-	UT_sint32 iYLayoutUnits = 0;
-#endif
 	UT_uint32 iCountContainers = countCons();
 	fp_Container *pContainer, *pPrevContainer = NULL;
 	long imax = (1<<30) -1;
@@ -1298,46 +1267,22 @@ void fp_CellContainer::layout(void)
 		if(pContainer->getHeight() > _getMaxContainerHeight())
 			_setMaxContainerHeight(pContainer->getHeight());
 
-#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-		iY = static_cast<int>(ScaleLayoutUnitsToScreen * iYLayoutUnits + 0.5);
-#endif
-
 		if(pContainer->getY() != iY)
 		{
 			pContainer->clearScreen();
 		}
 			
 		pContainer->setY(iY);
-#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-		pContainer->setYInLayoutUnits(iYLayoutUnits);
-#endif
 
-#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-		UT_sint32 iContainerHeightLayoutUnits = pContainer->getHeightInLayoutUnits();
-		UT_sint32 iContainerMarginAfterLayoutUnits = pContainer->getMarginAfterInLayoutUnits();
-#else
 		UT_sint32 iContainerHeight = pContainer->getHeight();
 		UT_sint32 iContainerMarginAfter = pContainer->getMarginAfter();
-#endif
 
-#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-		iYLayoutUnits += iContainerHeightLayoutUnits;
-		iYLayoutUnits += iContainerMarginAfterLayoutUnits;
-#else
 		iY += iContainerHeight;
 		iY += iContainerMarginAfter;
 		//iY +=  0.5;
 
-#endif
-
-#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-		if(static_cast<long>(iYLayoutUnits) > imax)
-		{
-		       UT_ASSERT(0);
-		}
 		// Update height of previous line now we know the gap between
 		// it and the current line.
-#endif
 		if (pPrevContainer && pPrevContainer->getContainerType() != FP_CONTAINER_TABLE)
 		{
 			pPrevContainer->setAssignedScreenHeight(iY - iPrevY);
@@ -1349,44 +1294,22 @@ void fp_CellContainer::layout(void)
 	// Correct height position of the last line
 	if (pPrevContainer)
 	{
-#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-		iY = static_cast<int>(ScaleLayoutUnitsToScreen * iYLayoutUnits +0.5);
-#endif
 		pPrevContainer->setAssignedScreenHeight(iY - iPrevY + 1);
 	}
 
-#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-	UT_sint32 iNewHeight = static_cast<int>(ScaleLayoutUnitsToScreen * iYLayoutUnits);
-#else
-	UT_sint32 iNewHeight = iY;
-#endif
-
-	if (getHeight() == iNewHeight)
+	if (getHeight() == iY)
 	{
 		return;
 	}
-
-#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-	setHeightLayoutUnits(iYLayoutUnits);
-#endif
-
+	setHeight(iY);
 }
 
 void fp_CellContainer::setToAllocation(void)
 {
 	m_bBgDirty = true;
-#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-	setWidthInLayoutUnits(m_MyAllocation.width);
-	setWidth(static_cast<UT_sint32>(m_MyAllocation.width * SCALE_TO_SCREEN));
-	setHeightLayoutUnits(m_MyAllocation.height);
-	setHeight(m_MyAllocation.height);
-	setYInLayoutUnits(m_MyAllocation.y);
-	setX(static_cast<UT_sint32>(m_MyAllocation.x * SCALE_TO_SCREEN));
-#else
 	setWidth(static_cast<UT_sint32>(m_MyAllocation.width));
 	setHeight(m_MyAllocation.height);
 	setX(static_cast<UT_sint32>(m_MyAllocation.x));
-#endif
 	xxx_UT_DEBUGMSG(("SEVIOR: set to width %d, height %d,y %d,x %d \n", m_MyAllocation.width,m_MyAllocation.height,m_MyAllocation.y,m_MyAllocation.x));
 	setMaxHeight(m_MyAllocation.height);
 	setY(m_MyAllocation.y);
@@ -1404,23 +1327,23 @@ void fp_CellContainer::setLineMarkers(void)
 //
 	fp_TableContainer * pTab = static_cast<fp_TableContainer *>(getContainer());
 
-	m_iLeft = getX();
-	m_iLeft -= static_cast<UT_sint32>(SCALE_TO_SCREEN * (static_cast<double>(pTab->getNthCol(getLeftAttach())->spacing)));
+	m_iLeft = getX() - 
+		static_cast<UT_sint32>(pTab->getNthCol(getLeftAttach())->spacing);
 	fp_CellContainer * pCell = pTab->getCellAtRowColumn(getTopAttach(),getRightAttach());
 	if(pCell)
 	{
 		m_iRight = pCell->getX();
-		m_iRight -= static_cast<UT_sint32>(SCALE_TO_SCREEN * (static_cast<double>(pTab->getNthCol(getRightAttach())->spacing)));
+		m_iRight -= static_cast<UT_sint32>(pTab->getNthCol(getRightAttach())->spacing);
 	}
 	else
 	{
 		m_iRight = getX() + getWidth();
-		m_iRight += static_cast<UT_sint32>(0.5 * SCALE_TO_SCREEN * (static_cast<double>(pTab->getBorderWidth())));
+		m_iRight += static_cast<UT_sint32> (0.5 * static_cast<double>(pTab->getBorderWidth()));
 	}
 	m_iTopY = pTab->getYOfRow(getTopAttach());
 	if(getTopAttach() == 0)
 	{
-		m_iTopY -= static_cast<UT_sint32>(0.5 * SCALE_TO_SCREEN * (static_cast<double>(pTab->getBorderWidth())));
+		m_iTopY -= static_cast<UT_sint32>(0.5 * static_cast<double>(pTab->getBorderWidth()));
 	}
 	else
 	{
@@ -1459,7 +1382,7 @@ void fp_CellContainer::setLineMarkers(void)
 //
 		fp_VerticalContainer * pVert = static_cast<fp_VerticalContainer *>(pTab);
 		m_iBotY = pTab->getYOfRow(0) + pVert->getHeight();
-		m_iBotY -= static_cast<UT_sint32>(2.0 * SCALE_TO_SCREEN * (static_cast<double>(pTab->getBorderWidth())));
+		m_iBotY -= static_cast<UT_sint32>(2.0 * static_cast<double>(pTab->getBorderWidth()));
 		m_iBotY +=  pTab->getNthRow(pTab->getNumRows()-1)->spacing/2;
 	}
 	
@@ -2490,9 +2413,6 @@ void fp_TableContainer::setContainer(fp_Container * pContainer)
 	}
 	fp_Container::setContainer(pContainer);
 	setWidth(pContainer->getWidth());
-#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-	setWidthInLayoutUnits(pContainer->getWidthInLayoutUnits());
-#endif
 }
 
 
@@ -2577,14 +2497,10 @@ void fp_TableContainer::layout(void)
 	static fp_Requisition requisition;
 	static fp_Allocation alloc;
 	sizeRequest(&requisition);
-	setX( static_cast<UT_sint32>(m_iBorderWidth * SCALE_TO_SCREEN));
+	setX(m_iBorderWidth);
 	alloc.x = getX();
 	alloc.y = getY();
-#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-	alloc.width = getWidthInLayoutUnits();
-#else
 	alloc.width = getWidth();
-#endif
 	alloc.height = requisition.height;
 	sizeAllocate(&alloc);
 	setToAllocation();
@@ -2593,18 +2509,7 @@ void fp_TableContainer::layout(void)
 void fp_TableContainer::setToAllocation(void)
 {
 	bool bDeleteBrokenTables = false;
-#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-	setWidthInLayoutUnits(m_MyAllocation.width);
-	double dHeightLO = static_cast<double>(m_MyAllocation.height);
-	double scale = SCALE_TO_SCREEN;
-	dHeightLO = dHeightLO / scale;
-	UT_sint32 iHeightLO = static_cast<UT_sint32>(dHeightLO);
-	setHeightLayoutUnits(iHeightLO);
-	setMaxHeightInLayoutUnits(iHeightLO);
-	setWidth(static_cast<UT_sint32>(m_MyAllocation.width * SCALE_TO_SCREEN));
-#else
 	setWidth(m_MyAllocation.width);
-#endif
 	if(getHeight() != m_MyAllocation.height)
 	{
 		bDeleteBrokenTables = true;
@@ -2682,7 +2587,7 @@ void  fp_TableContainer::_drawBoundaries(dg_DrawArgs* pDA)
     if(getPage()->getDocLayout()->getView()->getShowPara() && getGraphics()->queryProperties(GR_Graphics::DGP_SCREEN)){
         UT_sint32 xoffBegin = pDA->xoff - 1;
         UT_sint32 yoffBegin = pDA->yoff - 1;
-        UT_sint32 xoffEnd = pDA->xoff +  iWidth + 2 - static_cast<UT_sint32>(iBorderWidth * 2.0 * SCALE_TO_SCREEN);
+        UT_sint32 xoffEnd = pDA->xoff +  iWidth + 2 - static_cast<UT_sint32> (iBorderWidth * 2.0);
         UT_sint32 yoffEnd = pDA->yoff + getHeight() + 2;
 
 		UT_RGBColor clrShowPara(127,127,127);
@@ -3041,24 +2946,6 @@ bool fp_TableContainer::isInBrokenTable(fp_CellContainer * pCell, fp_Container *
 }	
 
 
-/*! 
- * Return the height of this Table taking into account the possibility
- * of it being broken.
- */
-#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-UT_sint32 fp_TableContainer::getHeightInLayoutUnits(void)
-{
-	if(!isThisBroken() && (getFirstBrokenTable() == NULL))
-	{
-		return fp_VerticalContainer::getHeightInLayoutUnits();
-	}
-	UT_sint32 iMyHeight = 0;
-	double scale = SCALE_TO_SCREEN;
-	double dHeight = (static_cast<double>(getHeight()))/scale;
-	iMyHeight = static_cast<UT_sint32>(dHeight);
-	return iMyHeight;
-}
-#endif
 /*!
  * Draw that segment of the table that fits within the Y offsets of this
  * Broken table.
@@ -3079,7 +2966,7 @@ void fp_TableContainer::_brokenDraw(dg_DrawArgs* pDA)
 		{
 			fp_VerticalContainer * pVert = static_cast<fp_VerticalContainer *>(pMaster);
 			botY = pMaster->getYOfRow(0) + pVert->getHeight();
-			botY -= static_cast<UT_sint32>(2.0 * SCALE_TO_SCREEN * (static_cast<double>(pMaster->getBorderWidth())));
+			botY -= 2 * pMaster->getBorderWidth();
 			botY +=  pMaster->getNthRow(pMaster->getNumRows()-1)->spacing/2;
 		}
 
@@ -3491,8 +3378,7 @@ void  fp_TableContainer::_size_allocate_pass1(void)
   real_width = m_MyAllocation.width - m_iBorderWidth * 2;
   double dHeight = static_cast<double>(m_MyAllocation.height);
   double dBorder = static_cast<double>(m_iBorderWidth);
-  double scale = SCALE_TO_SCREEN;
-  real_height = static_cast<UT_sint32>(dHeight - scale*dBorder * 2.0);
+  real_height = static_cast<UT_sint32> (dHeight - dBorder * 2.0);
   // real_height =  m_MyAllocation.height;
   
   if (m_bIsHomogeneous)
@@ -3729,9 +3615,9 @@ void  fp_TableContainer::_size_allocate_pass2(void)
 	  child->sizeRequest(&child_requisition);
 
 	  x = m_MyAllocation.x + m_iBorderWidth;
-	  double dy = static_cast<double>(m_MyAllocation.y);
-	  xxx_UT_DEBUGMSG(("SEVIOR: Vertical border %f \n", dBorder * SCALE_TO_SCREEN));
-	  y = static_cast<UT_sint32>(dy + dBorder * SCALE_TO_SCREEN);
+	  double dy = static_cast<double>(m_MyAllocation.y); 
+	  xxx_UT_DEBUGMSG(("SEVIOR: Vertical border %f \n", dBorder));
+	  y = static_cast<UT_sint32> (dy + dBorder);
 
 	  xxx_UT_DEBUGMSG(("SEVIOR: 1 initial y %d for top-attach %d \n",y,child->getTopAttach()));
 	  max_width = 0;
@@ -3870,8 +3756,7 @@ void fp_TableContainer::sizeRequest(fp_Requisition * pRequisition)
 	  pRequisition->height += getNthRow(row)->requisition;
 	  xxx_UT_DEBUGMSG(("SEVIOR: requisition height %d \n", pRequisition->height));
   }
-  pRequisition->height += static_cast<UT_sint32>(2.0 * SCALE_TO_SCREEN*(static_cast<double>(m_iBorderWidth)));
-
+  pRequisition->height += 2 * m_iBorderWidth;
 }
 
 void fp_TableContainer::sizeAllocate(fp_Allocation * pAllocation)

@@ -275,28 +275,28 @@ protected:
 	
 	XAP_Frame *			m_pFrame;
 	GR_Graphics *		m_pG;
-	UT_uint32			m_iLeftRulerWidth;
+	UT_uint32			m_iLeftRulerWidth; // device
 	UT_sint32			m_xScrollOffset;
 	UT_sint32			m_xScrollLimit;
 
-	/* static const*/ UT_uint32	s_iFixedHeight /* =32 */;	/* size we draw stuff w/o regard to window size */
-	/* static const*/ UT_uint32	s_iFixedWidth  /* =32 */;	/* minimum width of non-scrolling area on left */
+	static UT_uint32	s_iFixedHeight /* =32 */;	/* size we draw stuff w/o regard to window size: device */
+	static UT_uint32	s_iFixedWidth  /* =32 */;	/* minimum width of non-scrolling area on left: device */
 
 private:
 	AV_ScrollObj *		m_pScrollObj;
 	AV_View *			m_pView;
 	UT_Dimension		m_dim;
 
-	UT_uint32			m_iHeight;		/* size of window */
-	UT_uint32			m_iWidth;		/* size of window */
+	UT_uint32			m_iHeight;		/* size of window: device */
+	UT_uint32			m_iWidth;		/* size of window: device */
 
 	UT_Timer *			m_pAutoScrollTimer;
 	char				m_aScrollDirection; // 'L' == left   'R' == right
 
-	UT_sint32			m_minColumnWidth;
+	UT_sint32			m_minColumnWidth; // logical
 
-	UT_sint32			m_iMinCellPos;	/* cell marker left border while dragging */
-	UT_sint32			m_iMaxCellPos;  /* cell marker right border while dragging */
+	UT_sint32			m_iMinCellPos;	/* cell marker left border while dragging: logical */
+	UT_sint32			m_iMaxCellPos;  /* cell marker right border while dragging: logical */
 
 	AP_TopRulerInfo		m_infoCache;
 	bool				m_bValidMouseClick;

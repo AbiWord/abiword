@@ -67,8 +67,8 @@ AP_LeftRuler::AP_LeftRuler(XAP_Frame * pFrame)
 	// class declaration, but MSVC5 can't handle it....
 	// (GCC can :-)
 		
-	s_iFixedHeight = _UL(32);
-	s_iFixedWidth = _UL(32);
+	s_iFixedHeight = 32;
+	s_iFixedWidth = 32;
 	m_lfi = NULL;
 	m_draggingDocPos = 0;
 	// install top_ruler_prefs_listener as this lister for this func
@@ -102,7 +102,8 @@ void AP_LeftRuler::setView(AV_View* pView, UT_uint32 iZoom)
 	m_pG->setZoomPercentage(iZoom);
 
     // TODO this dimension shouldn't be hard coded.
-	m_minPageLength = m_pG->convertDimension("0.5in");
+	// in fact, it shouldn't need to be recomputed at all anymore.
+	m_minPageLength = UT_convertToLayoutUnits("0.5in");
 	static_cast<FV_View *>(pView)->setLeftRuler(this);
 }
 
@@ -146,52 +147,46 @@ void AP_LeftRuler::_refreshView(void)
 /*! parameter in device units */
 void AP_LeftRuler::setHeight(UT_uint32 iHeight)
 {
-	m_iHeight = _UL(iHeight);
+	m_iHeight = iHeight;
 }
 
 /*! return value in logical units */
 UT_uint32 AP_LeftRuler::getHeight(void) const
 {
-	return m_iHeight;
+	return m_pG->tlu(m_iHeight);
 }
 
 /*! parameter in device units */
 void AP_LeftRuler::setWidth(UT_uint32 iWidth)
 {
-	m_iWidth = _UL(iWidth);
-	AP_FrameData * pFrameData = (AP_FrameData *)m_pFrame->getFrameData();
-	if (pFrameData && pFrameData->m_pTopRuler)
-		pFrameData->m_pTopRuler->setOffsetLeftRuler(iWidth); // must be in device units
+	if (m_iWidth != iWidth)
+	{
+		m_iWidth = iWidth;
+		AP_FrameData * pFrameData = (AP_FrameData *)m_pFrame->getFrameData();
+		if (pFrameData && pFrameData->m_pTopRuler)
+			pFrameData->m_pTopRuler->setOffsetLeftRuler(iWidth);
+	}
 }
 
 /*! return value in logical units */
 UT_uint32 AP_LeftRuler::getWidth(void) const
 {
-	// Well, someone did this to ap_TopRuler.cpp, so I assume that this must be
-	// correct here too.  Otherwise setWidth never gets called, and that just sucks,
-	// because m_iWidth does get used. -PL
-	//     return s_iFixedWidth;
-	return m_iWidth;
+	return m_pG->tlu(m_iWidth);
 }
 
 /*****************************************************************/
 
 void AP_LeftRuler::mousePress(EV_EditModifierState /* ems */, EV_EditMouseButton /* emb */, UT_uint32 x, UT_uint32 y)
 {
+	// by the way, we expect x, y in layout units
+
 	// get the complete state of what should be on the ruler at the
 	// time of the grab.  we assume that nothing in the document can
 	// change during our grab unless we change it.
 
-	_UUL(x);
-	_UUL(y);
-	if(m_pView == NULL)
-	{
+	if(m_pView == NULL || m_pView->getPoint() == 0)
 		return;
-	}
-	if(m_pView->getPoint() == 0)
-	{
-		return;
-	}
+
 	m_bValidMouseClick = false;
 	m_draggingWhat = DW_NOTHING;
 	m_bEventIgnored = false;
@@ -280,14 +275,11 @@ void AP_LeftRuler::mouseRelease(EV_EditModifierState ems, EV_EditMouseButton emb
 		return;
 	}
 
-	_UUL(x);
-	_UUL(y);
-	
 	m_bValidMouseClick = false;
 
 	// if they drag horizontally off the ruler, we ignore the whole thing.
 
-	if ((x < 0) || (x > (UT_sint32)m_iWidth))
+	if ((x < 0) || (x > (UT_sint32)getWidth()))
 	{
 		_ignoreEvent(true);
 		m_draggingWhat = DW_NOTHING;
@@ -547,7 +539,7 @@ void AP_LeftRuler::mouseRelease(EV_EditModifierState ems, EV_EditMouseButton emb
 
 UT_sint32 AP_LeftRuler::setTableLineDrag(PT_DocPosition pos, UT_sint32 & iFixed, UT_sint32 y)
 {
-	_UUL(y);
+	y = m_pG->tlu(y);
 	m_bValidMouseClick = false;
 	m_draggingWhat = DW_NOTHING;
 	m_bEventIgnored = false;
@@ -617,12 +609,9 @@ void AP_LeftRuler::mouseMotion(EV_EditModifierState ems, UT_sint32 x, UT_sint32 
 	}
 	pView->getLeftRulerInfo(&m_infoCache);
 
-	_UUL(x);
-	_UUL(y);
-
 	// if they drag vertically off the ruler, we ignore the whole thing.
 
-	if ((x < 0) || (x > (UT_sint32)m_iWidth))
+	if ((x < 0) || (x > static_cast<UT_sint32>(getWidth())))
 	{
 		if(!m_bEventIgnored)
 		{
@@ -675,6 +664,19 @@ void AP_LeftRuler::mouseMotion(EV_EditModifierState ems, UT_sint32 x, UT_sint32 
 
 //  	UT_DEBUGMSG(("mouseMotion: [ems 0x%08lx][x %ld][y %ld]\n",ems,x,y));
 	ap_RulerTicks tick(m_pG,m_dim);
+
+	// if they drag vertically off the ruler, we ignore the whole thing.
+
+	if ((x < 0) || (x > static_cast<UT_sint32>(getWidth())))
+	{
+		if(!m_bEventIgnored)
+		{
+			_ignoreEvent(false);
+			m_bEventIgnored = true;
+		}
+		m_pG->setCursor( GR_Graphics::GR_CURSOR_DEFAULT);
+		return;
+	}
 
 	// lots of stuff omitted here; we should see about including it.
 	// it has to do with autoscroll.
@@ -808,7 +810,7 @@ void AP_LeftRuler::mouseMotion(EV_EditModifierState ems, UT_sint32 x, UT_sint32 
 			m_bBeforeFirstMotion = false;
 			UT_uint32 xLeft = s_iFixedHeight / 4;
 			UT_Rect rCell;
-			rCell.set(xLeft, m_draggingCenter-2, xLeft * 2, _UL(4));
+			rCell.set(xLeft, m_draggingCenter-2, xLeft * 2, m_pG->tlu(4));
 
 			UT_Rect clip;
 			if( m_draggingCenter > oldDragCenter)
@@ -967,17 +969,18 @@ void AP_LeftRuler::scrollRuler(UT_sint32 yoff, UT_sint32 ylimit)
 		// all we need to draw is the area exposed by the scroll.
 		
 		rClip.left = 0;
-		rClip.width = _UD(s_iFixedWidth);
+		rClip.width = m_pG->tlu(s_iFixedWidth);
 
 		if (dy > 0)
 		{
-			rClip.top = _UD(m_iHeight - dy);
-			rClip.height = _UD(dy);
+			// fudge factor for redrawing
+			rClip.top = getHeight() - dy - m_pG->tlu(10);
+			rClip.height = dy + m_pG->tlu(10);
 		}
 		else
 		{
 			rClip.top = 0;
-			rClip.height = - _UD(dy);
+			rClip.height = -dy + m_pG->tlu(10);
 		}
 
 		prClip = &rClip;
@@ -997,11 +1000,11 @@ void AP_LeftRuler::_getMarginMarkerRects(AP_LeftRulerInfo * pInfo, UT_Rect &rTop
 	UT_sint32 yOrigin = pInfo->m_yPageStart + pInfo->m_yTopMargin - m_yScrollOffset;
 	UT_sint32 yEnd = yOrigin - pInfo->m_yBottomMargin - pInfo->m_yTopMargin + pInfo->m_yPageSize;
 
-	UT_uint32 xLeft = s_iFixedHeight / 4;
-	UT_sint32 hs = _UL(3);					// halfSize
+	UT_uint32 xLeft = m_pG->tlu(s_iFixedHeight) / 4;
+	UT_sint32 hs = m_pG->tlu(3);	// halfSize
 	UT_sint32 fs = hs * 2;			// fullSize
 
-	rTop.set(xLeft - fs, yOrigin  - hs, fs, fs- _UL(1));
+	rTop.set(xLeft - fs, yOrigin  - hs, fs, fs- m_pG->tlu(1));
 	rBottom.set(xLeft - fs, yEnd - hs, fs, fs);
 }
 
@@ -1017,6 +1020,7 @@ void AP_LeftRuler::_drawMarginProperties(const UT_Rect * /* pClipRect */,
 				pShadow->getHdrFtrSectionLayout()->getHFType() == FL_HDRFTR_HEADER);
 
 	UT_Rect rTop, rBottom;
+	UT_uint32 onePX = m_pG->tlu(1);
 
 	_getMarginMarkerRects(pInfo,rTop,rBottom);
 	
@@ -1028,8 +1032,8 @@ void AP_LeftRuler::_drawMarginProperties(const UT_Rect * /* pClipRect */,
 	m_pG->drawLine( rTop.left + rTop.width,  rTop.top + rTop.height, rTop.left, rTop.top + rTop.height);
 	m_pG->drawLine( rTop.left,  rTop.top + rTop.height, rTop.left, rTop.top);
 	m_pG->setColor3D(GR_Graphics::CLR3D_BevelUp);
-	m_pG->drawLine( rTop.left + _UL(1),  rTop.top + _UL(1), rTop.left + rTop.width - _UL(1), rTop.top + _UL(1));
-	m_pG->drawLine( rTop.left + _UL(1),  rTop.top + rTop.height - _UL(2), rTop.left + _UL(1), rTop.top + _UL(1));
+	m_pG->drawLine( rTop.left + onePX,  rTop.top + onePX, rTop.left + rTop.width - onePX, rTop.top + onePX);
+	m_pG->drawLine( rTop.left + onePX,  rTop.top + rTop.height - m_pG->tlu(2), rTop.left + onePX, rTop.top + onePX);
 	
 	// TODO: this isn't the right place for this logic. But it works.
 	if (hdrftr && !hdr)
@@ -1043,12 +1047,12 @@ void AP_LeftRuler::_drawMarginProperties(const UT_Rect * /* pClipRect */,
 	m_pG->drawLine( rBottom.left + rBottom.width,  rBottom.top + rBottom.height, rBottom.left, rBottom.top + rBottom.height);
 	m_pG->drawLine( rBottom.left,  rBottom.top + rBottom.height, rBottom.left, rBottom.top);
 	m_pG->setColor3D(GR_Graphics::CLR3D_BevelUp);
-	m_pG->drawLine( rBottom.left + _UL(1),  rBottom.top + _UL(1), rBottom.left + rBottom.width - _UL(1), rBottom.top + _UL(1));
-	m_pG->drawLine( rBottom.left + _UL(1),  rBottom.top + rBottom.height - _UL(2), rBottom.left + _UL(1), rBottom.top + _UL(1));
+	m_pG->drawLine( rBottom.left + onePX,  rBottom.top + onePX, rBottom.left + rBottom.width - onePX, rBottom.top + onePX);
+	m_pG->drawLine( rBottom.left + onePX,  rBottom.top + rBottom.height - m_pG->tlu(2), rBottom.left + onePX, rBottom.top + onePX);
 #if 0
     m_pG->setColor3D(GR_Graphics::CLR3D_BevelDown);
-	m_pG->drawLine( rBottom.left + rBottom.width - _UL(1),  rBottom.top + (1), rBottom.left + rBottom.width - _UL(1), rBottom.top + rBottom.height - _UL(1));
-	m_pG->drawLine( rBottom.left + rBottom.width - _UL(1),  rBottom.top + rBottom.height - _UL(1), rBottom.left + _UL(1), rBottom.top + rBottom.height - _UL(1));
+	m_pG->drawLine( rBottom.left + rBottom.width - onePX,  rBottom.top + onePX, rBottom.left + rBottom.width - onePX, rBottom.top + rBottom.height - onePX);
+	m_pG->drawLine( rBottom.left + rBottom.width - onePX,  rBottom.top + rBottom.height - onePX, rBottom.left + onePX, rBottom.top + rBottom.height - onePX);
 #endif
 }
 
@@ -1145,9 +1149,9 @@ void AP_LeftRuler::_getCellMarkerRects(AP_LeftRulerInfo * pInfo, UT_sint32 iCell
 		topSpacing = 0;
 	}
 	
-	UT_uint32 xLeft = s_iFixedHeight / 4;
+	UT_uint32 xLeft = m_pG->tlu(s_iFixedHeight) / 4;
 //	rCell.set(xLeft, pos - bottomSpacing, xLeft * 2, bottomSpacing + topSpacing); //left/top/width/height
-	rCell.set(xLeft, pos-2, xLeft * 2, _UL(4));
+	rCell.set(xLeft, pos-2, xLeft * 2, m_pG->tlu(4));
 }
 
 /*!
@@ -1197,7 +1201,7 @@ void AP_LeftRuler::_drawCellMark(UT_Rect *prDrag, bool bUp)
 	UT_sint32 left = prDrag->left;
 	UT_sint32 right = left + prDrag->width;
 	UT_sint32 top = prDrag->top;
-	UT_sint32 bot = top + 4;
+	UT_sint32 bot = top + m_pG->tlu(4);
 	m_pG->setColor3D(GR_Graphics::CLR3D_Foreground);
 	m_pG->drawLine(left,top,left,bot);
 	m_pG->drawLine(left,bot,right,bot);
@@ -1209,10 +1213,10 @@ void AP_LeftRuler::_drawCellMark(UT_Rect *prDrag, bool bUp)
 // Draw a bevel up
 //
 		m_pG->setColor3D(GR_Graphics::CLR3D_BevelUp);
-		left += 1;
-		top += 1;
-		right -= 1;
-		bot -= 1;
+		left += m_pG->tlu(1);
+		top += m_pG->tlu(1);
+		right -= m_pG->tlu(1);
+		bot -= m_pG->tlu(1);
 		m_pG->drawLine(left,top,left,bot);
 		m_pG->drawLine(left,bot,right,bot);
 		m_pG->drawLine(right,bot,right,top);
@@ -1220,10 +1224,10 @@ void AP_LeftRuler::_drawCellMark(UT_Rect *prDrag, bool bUp)
 //
 // Fill with Background?? color
 //
-		left += 1;
-		top += 1;
-		right -= 1;
-		bot -= 1;
+		left += m_pG->tlu(1);
+		top += m_pG->tlu(1);
+		right -= m_pG->tlu(1);
+		bot -= m_pG->tlu(1);
 		m_pG->fillRect(GR_Graphics::CLR3D_Background,left,top,right -left,bot - top);
 	}
 }
@@ -1256,10 +1260,10 @@ void AP_LeftRuler::draw(const UT_Rect * pCR, AP_LeftRulerInfo * lfi)
  
 	if (pCR)
 	{
-		r.left   = _UL(pCR->left);
-		r.top    = _UL(pCR->top);
-		r.width  = _UL(pCR->width);
-		r.height = _UL(pCR->height);
+		r.left   = pCR->left;
+		r.top    = pCR->top;
+		r.width  = pCR->width;
+		r.height = pCR->height;
 		pClipRect = &r;
 		//UT_DEBUGMSG(("LeftRuler:: draw [clip %ld %ld %ld %ld]\n",pClipRect->left,pClipRect->top,pClipRect->width,pClipRect->height));
 		m_pG->setClipRect(pClipRect);
@@ -1272,12 +1276,13 @@ void AP_LeftRuler::draw(const UT_Rect * pCR, AP_LeftRulerInfo * lfi)
 	
 	// draw the background
 	
-	m_pG->fillRect(GR_Graphics::CLR3D_Background,0,0,m_iWidth,m_iHeight);
+	m_pG->fillRect(GR_Graphics::CLR3D_Background,0,0,
+		       getWidth(),getHeight());
 
 	// draw a dark-gray and white bar lined up with the paper
 
-	UT_uint32 xLeft = s_iFixedWidth/4;
-	UT_uint32 xBar  = s_iFixedWidth/2;
+	UT_uint32 xLeft = m_pG->tlu(s_iFixedWidth)/4;
+	UT_uint32 xBar  = m_pG->tlu(s_iFixedWidth)/2;
 
 	UT_uint32 docWithinMarginHeight = lfi->m_yPageSize - lfi->m_yTopMargin - lfi->m_yBottomMargin;
 
@@ -1292,22 +1297,22 @@ void AP_LeftRuler::draw(const UT_Rect * pCR, AP_LeftRulerInfo * lfi)
 		// clip rects don't know anything about this distinction.
 
 		y = yScrolledOrigin;
-		h = lfi->m_yTopMargin - _UL(1);
+		h = lfi->m_yTopMargin - m_pG->tlu(1);
 		m_pG->fillRect(GR_Graphics::CLR3D_BevelDown,xLeft,y,xBar,h);
 	}
 
-	yScrolledOrigin += lfi->m_yTopMargin + _UL(1);
+	yScrolledOrigin += lfi->m_yTopMargin + m_pG->tlu(1);
 	if ((yScrolledOrigin + docWithinMarginHeight) > 0)
 	{
 		// area within the page margins is on-screen.
 		// draw a main white bar over the area.
 
 		y = yScrolledOrigin;
-		h = docWithinMarginHeight - _UL(1);
+		h = docWithinMarginHeight - m_pG->tlu(1);
 		m_pG->fillRect(GR_Graphics::CLR3D_Highlight,xLeft,y,xBar,h);
 	}
 
-	yScrolledOrigin += docWithinMarginHeight + _UL(1);
+	yScrolledOrigin += docWithinMarginHeight + m_pG->tlu(1);
 	if ((yScrolledOrigin + lfi->m_yBottomMargin) > 0)
 	{
 		// bottom margin of paper is on-screen.
@@ -1315,7 +1320,7 @@ void AP_LeftRuler::draw(const UT_Rect * pCR, AP_LeftRulerInfo * lfi)
 		// did at the top.
 
 		y = yScrolledOrigin;
-		h = lfi->m_yBottomMargin - _UL(1);
+		h = lfi->m_yBottomMargin - m_pG->tlu(1);
 		m_pG->fillRect(GR_Graphics::CLR3D_BevelDown,xLeft,y,xBar,h);
 	}
 
@@ -1346,7 +1351,8 @@ void AP_LeftRuler::draw(const UT_Rect * pCR, AP_LeftRulerInfo * lfi)
 			if (k % tick.tickLabel)
 			{
 				// draw the ticks
-				UT_uint32 w = ((k % tick.tickLong) ? _UL(2) : _UL(6));
+				UT_uint32 w = ((k % tick.tickLong) 
+							   ? m_pG->tlu(2) : m_pG->tlu(6));
 				UT_uint32 x = xLeft + (xBar-w)/2;
 				m_pG->drawLine(x,y,x+w,y);
 			}
@@ -1386,7 +1392,8 @@ void AP_LeftRuler::draw(const UT_Rect * pCR, AP_LeftRulerInfo * lfi)
 			if (k % tick.tickLabel)
 			{
 				// draw the ticks
-				UT_uint32 w = ((k % tick.tickLong) ? _UL(2) : _UL(6));
+				UT_uint32 w = ((k % tick.tickLong) ? 
+							   m_pG->tlu(2) : m_pG->tlu(6));
 				UT_uint32 x = xLeft + (xBar-w)/2;
 				m_pG->drawLine(x,y,x+w,y);
 			}

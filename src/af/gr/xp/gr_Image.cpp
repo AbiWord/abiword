@@ -25,8 +25,7 @@
 #include "ut_assert.h"
 
 GR_Image::GR_Image()
-  : m_szName(""), m_iLayoutWidth(0), m_iLayoutHeight(0),
-    m_iDisplayWidth(0), m_iDisplayHeight(0)
+  : m_szName(""), m_iDisplayWidth(0), m_iDisplayHeight(0)
 {
 }
 
@@ -97,26 +96,11 @@ bool GR_Image::convertToBuffer(UT_ByteBuf** ppBB) const
   return false; 
 }
 
-bool GR_Image::convertFromBuffer(const UT_ByteBuf* pBB, UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight) 
+bool GR_Image::convertFromBuffer(const UT_ByteBuf* pBB, UT_sint32 iWidth, UT_sint32 iHeight) 
 { 
   // default no impl
+  UT_ASSERT_NOT_REACHED ();
   return false; 
-}
-
-void GR_Image::setLayoutSize(UT_sint32 iLayoutWidth, UT_sint32 iLayoutHeight) 
-{ 
-  m_iLayoutWidth = iLayoutWidth; 
-  m_iLayoutHeight = iLayoutHeight;
-}
-
-UT_sint32 GR_Image::getLayoutWidth(void) const 
-{ 
-  return m_iLayoutWidth;
-}
-
-UT_sint32 GR_Image::getLayoutHeight(void) const 
-{ 
-  return m_iLayoutHeight;
 }
 
 GR_Image::GRType GR_Image::getType() const
@@ -132,5 +116,6 @@ GR_Image::GRType GR_Image::getType() const
 
 bool GR_Image::render(GR_Graphics *pGR, UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight)
 { 
+  UT_ASSERT_NOT_REACHED ();
   return false; 
 }

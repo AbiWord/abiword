@@ -146,6 +146,35 @@ static bool _recognizeContent(const char* buffer,UT_uint32 buflen,UT_svg* data)
 	return data->m_bSVG;
 }
 
+static void _css_length (const char *str,GR_Graphics* pG,
+			 UT_sint32 *iDisplayLength,UT_sint32 *iLayoutLength)
+{
+   	UT_sint32 dim = UT_determineDimension(static_cast<const char*>(str), DIM_PX);
+
+   	if (dim != DIM_PX && dim != DIM_none)
+	{
+		if (pG == 0)
+		{
+			*iDisplayLength = static_cast<UT_sint32>((UT_convertToInches(str) * 72.0) + 0.05);
+		}
+		else
+		{
+			*iDisplayLength = UT_convertToLayoutUnits(const_cast<char*>(str));
+		}
+		*iLayoutLength = UT_convertToLayoutUnits(str);
+	}
+	else
+	{
+		double iImageLength = UT_convertDimensionless(str);
+
+		double fScale = pG ? (pG->getResolution() / 72.0) : 1;
+		*iDisplayLength = static_cast<UT_sint32>(iImageLength * fScale);
+
+		fScale = 1440.0 / 72.0;
+		*iLayoutLength = static_cast<UT_sint32>(iImageLength * fScale);
+	}
+}
+
 void UT_svg::startElement (const XML_Char * name, const XML_Char ** atts)
 {
 	if (m_bContinue == false) return;
@@ -297,38 +326,6 @@ void UT_svg::charData (const XML_Char * str, int len) // non-terminated string
 			m_bSVG = false;
 			m_bContinue = false;
 		}
-	}
-}
-
-static void _css_length (const char *str,GR_Graphics* pG,
-			 UT_sint32 *iDisplayLength,UT_sint32 *iLayoutLength)
-{
-   	UT_sint32 dim = UT_determineDimension(static_cast<const char*>(str), DIM_PX);
-
-   	if (dim != DIM_PX && dim != DIM_none)
-	{
-		if (pG == 0)
-		{
-			*iDisplayLength = static_cast<UT_sint32>((UT_convertToInches(str) * 72.0) + 0.05);
-		}
-		else
-		{
-			*iDisplayLength = pG->convertDimension(const_cast<char*>(str));
-		}
-#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-		//TF#TODO
-		*iLayoutLength = UT_convertToLayoutUnits(str);
-#endif
-	}
-	else
-	{
-		double iImageLength = UT_convertDimensionless(str);
-
-		double fScale = pG ? (pG->getResolution() / 72.0) : 1;
-		*iDisplayLength = static_cast<UT_sint32>(iImageLength * fScale);
-
-		fScale = 1440.0 / 72.0;
-		*iLayoutLength = static_cast<UT_sint32>(iImageLength * fScale);
 	}
 }
 

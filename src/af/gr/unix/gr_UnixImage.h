@@ -27,8 +27,8 @@
 class GR_UnixImage : public GR_RasterImage
 {
 public:
-	GR_UnixImage(const char* pszName, bool isPrintResolution=false);
-	GR_UnixImage(const char* pszName,  GRType imageType, bool isPrintResolution = false);
+	GR_UnixImage(const char* pszName);
+	GR_UnixImage(const char* pszName, GRType imageType);
 	virtual ~GR_UnixImage();
 
 	virtual UT_sint32	getDisplayWidth(void) const;
@@ -36,7 +36,6 @@ public:
 	virtual bool		convertToBuffer(UT_ByteBuf** ppBB) const;
 	virtual bool		convertFromBuffer(const UT_ByteBuf* pBB, UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight);
 
-	virtual void scale (UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight);
 	virtual bool hasAlpha (void) const;
 	virtual UT_sint32  rowStride (void) const;
     virtual GR_Image::GRType getType(void) const;
@@ -44,8 +43,9 @@ public:
 
 private:
 	GdkPixbuf * m_image;
-    bool m_bPrintResolution;
     GR_Image::GRType m_ImageType;
+
+	void scale (UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight);
 };
 
 #endif /* GR_UNIXGNOMEIMAGE_H */

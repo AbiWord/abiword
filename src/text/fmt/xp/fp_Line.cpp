@@ -58,7 +58,6 @@ fp_Line         * fp_Line::s_pMapOwner = 0;
 #endif
 
 #define STATIC_BUFFER_INITIAL 150
-#define SCALE_TO_SCREEN static_cast<double>(getGraphics()->getResolution()) / UT_LAYOUT_UNITS
 
 UT_sint32 * fp_Line::s_pOldXs = NULL;
 UT_uint32   fp_Line::s_iOldXsSize = 0;
@@ -79,14 +78,6 @@ fp_Line::fp_Line(fl_SectionLayout * pSectionLayout) :
 	m_iY(-2000000), // So setY(0) triggers a clearscreen and redraw!
 		            // I do not like this at all; we have no business
 		            // of clearing at fictional coordinances
-
-#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-	m_iWidthLayoutUnits(0),
-	m_iMaxWidthLayoutUnits(0),
-	m_iHeightLayoutUnits(0),
-	m_iXLayoutUnits(0),
-		m_iYLayoutUnits(-20000000),
-#endif
 	//m_bRedoLayout(true),
 	m_bNeedsRedraw(false),
 	m_bMapDirty(true), //map that has not been initialized is dirty by deafault
@@ -279,13 +270,6 @@ void fp_Line::setMaxWidth(UT_sint32 iMaxWidth)
 	m_iMaxWidth = iMaxWidth;
 }
 
-#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-void fp_Line::setMaxWidthInLayoutUnits(UT_sint32 iMaxWidth)
-{
-	m_iMaxWidthLayoutUnits = iMaxWidth;
-}
-#endif
-
 void fp_Line::setContainer(fp_Container* pContainer)
 {
 	if (pContainer == getContainer())
@@ -300,9 +284,6 @@ void fp_Line::setContainer(fp_Container* pContainer)
 
 	fp_Container::setContainer(pContainer);
 	setMaxWidth(pContainer->getWidth());
-#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-	setMaxWidthInLayoutUnits(pContainer->getWidthInLayoutUnits());
-#endif
 	updateBackgroundColor();
 }
 
@@ -666,11 +647,6 @@ void fp_Line::recalcHeight()
 	UT_sint32 iMaxAscent = 0;
 	UT_sint32 iMaxDescent = 0;
 
-#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-	UT_sint32 iMaxAscentLayoutUnits = 0;
-	UT_sint32 iMaxDescentLayoutUnits = 0;
-#endif
-
 	UT_sint32 iMaxImage =0;
 	UT_sint32 iMaxText = 0;
 	bool bSetByImage = false;
@@ -679,30 +655,15 @@ void fp_Line::recalcHeight()
 		UT_sint32 iAscent;
 		UT_sint32 iDescent;
 
-#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-		UT_sint32 iAscentLayoutUnits;
-		UT_sint32 iDescentLayoutUnits;
-#endif
-
 		fp_Run* pRun = static_cast<fp_Run*>(m_vecRuns.getNthItem(i));
 
 		iAscent = pRun->getAscent();
 		iDescent = pRun->getDescent();
 		
-#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-		iAscentLayoutUnits = pRun->getAscentInLayoutUnits();
-		UT_ASSERT(!iAscent || iAscentLayoutUnits);
-		iDescentLayoutUnits = pRun->getDescentInLayoutUnits();
-#endif
-
 		if (pRun->isSuperscript() || pRun->isSubscript())
 		{
 			iAscent += iAscent * 1/2;
 			iDescent += iDescent;
-#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-			iAscentLayoutUnits += iAscentLayoutUnits * 1/2;
-			iDescentLayoutUnits += iDescentLayoutUnits;
-#endif
 		}
 		if(pRun->getType() == FPRUN_IMAGE)
 		{
@@ -714,20 +675,12 @@ void fp_Line::recalcHeight()
 		}
 		iMaxAscent = UT_MAX(iMaxAscent, iAscent);
 		iMaxDescent = UT_MAX(iMaxDescent, iDescent);
-
-#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-		iMaxAscentLayoutUnits = UT_MAX(iMaxAscentLayoutUnits, iAscentLayoutUnits);
-		iMaxDescentLayoutUnits = UT_MAX(iMaxDescentLayoutUnits, iDescentLayoutUnits);
-#endif
 	}
 	UT_sint32 iOldHeight = m_iHeight;
 	UT_sint32 iOldAscent = m_iAscent;
 	UT_sint32 iOldDescent = m_iDescent;
 
 	UT_sint32 iNewHeight = iMaxAscent + iMaxDescent;
-#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-	UT_sint32 iNewHeightLayoutUnits = iMaxAscentLayoutUnits + iMaxDescentLayoutUnits;
-#endif
 	UT_sint32 iNewAscent = iMaxAscent;
 	UT_sint32 iNewDescent = iMaxDescent;
 
@@ -736,12 +689,7 @@ void fp_Line::recalcHeight()
 
 	fl_BlockLayout::eSpacingPolicy eSpacing;
 
-#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-	double dLineSpaceLayout;
-	m_pBlock->getLineSpacing(dLineSpace, dLineSpaceLayout, eSpacing);
-#else
 	m_pBlock->getLineSpacing(dLineSpace, eSpacing);
-#endif
 	
 	if(fabs(dLineSpace) < 0.0001)
 	{
@@ -756,17 +704,11 @@ void fp_Line::recalcHeight()
 	{
 		xxx_UT_DEBUGMSG(("recalcHeight exact \n"));
 		iNewHeight = static_cast<UT_sint32>(dLineSpace);
-#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-		iNewHeightLayoutUnits = static_cast<UT_sint32>(dLineSpaceLayout);
-#endif
 	}
 	else if (eSpacing == fl_BlockLayout::spacing_ATLEAST)
 	{
 		xxx_UT_DEBUGMSG(("SEVIOR: recalcHeight at least \n"));
 		iNewHeight = UT_MAX(iNewHeight, static_cast<UT_sint32>(dLineSpace));
-#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-		iNewHeightLayoutUnits = UT_MAX(iNewHeightLayoutUnits, static_cast<UT_sint32>(dLineSpaceLayout));
-#endif
 	}
 	else
 	{
@@ -774,17 +716,10 @@ void fp_Line::recalcHeight()
 		if(!bSetByImage)
 		{
 			iNewHeight = static_cast<UT_sint32>(iNewHeight * dLineSpace +0.5);
-#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-			iNewHeightLayoutUnits = static_cast<UT_sint32>(iNewHeightLayoutUnits * dLineSpaceLayout +0.5);
-#endif
-			xxx_UT_DEBUGMSG(("recalcHeight neither dLineSpace = %f newheight =%d m_iScreenHeight =%d m_iHeight= %d\n",dLineSpace,iNewHeight,m_iScreenHeight,m_iHeight));
 		}
 		else
 		{
 			iNewHeight = UT_MAX(iMaxAscent+static_cast<UT_sint32>(iMaxDescent*dLineSpace + 0.5), static_cast<UT_sint32>(dLineSpace));
-#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-			iNewHeightLayoutUnits = UT_MAX(iMaxAscentLayoutUnits+static_cast<UT_sint32>(iMaxDescentLayoutUnits*dLineSpace +0.5), static_cast<UT_sint32>(dLineSpaceLayout));
-#endif
 		}
 	}
 
@@ -797,16 +732,8 @@ void fp_Line::recalcHeight()
 	{
 		clearScreen();
 
-#if 0 && !defined(WITH_PANGO)
-		// FIXME:jskov We now get lines with height 0. Why is that a
-		// problem (i.e., why the assert?)
-		UT_ASSERT(iNewHeightLayoutUnits);
-#endif
 		m_iHeight = iNewHeight;
 		m_iScreenHeight = -1;	// undefine screen height
-#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-		m_iHeightLayoutUnits = iNewHeightLayoutUnits;
-#endif
 		m_iAscent = iNewAscent;
 		m_iDescent = iNewDescent;
 	}
@@ -1358,27 +1285,10 @@ void fp_Line::getWorkingDirectionAndTabstops(FL_WORKING_DIRECTION &eWorkingDirec
 // tab runs, from a visual processing index, it return point to the run
 // at the index for the callers convenience.
 
-//NB. in bidi mode iXLayoutUnits is a logical coordinance
-//however, in _calculateWidthOfRun iX and iXLayoutUnits are visual,
-//so we need to do a conversion here ...
-
-fp_Run* fp_Line::calculateWidthOfRun(UT_sint32 &iWidthLayoutUnits, UT_uint32 iIndxVisual, FL_WORKING_DIRECTION eWorkingDirection, FL_WHICH_TABSTOP eUseTabStop)
+fp_Run* fp_Line::calculateWidthOfRun(UT_sint32 &iWidth, UT_uint32 iIndxVisual, FL_WORKING_DIRECTION eWorkingDirection, FL_WHICH_TABSTOP eUseTabStop)
 {
 	const UT_sint32 iCountRuns		  = m_vecRuns.getItemCount();
 	UT_ASSERT(iCountRuns > static_cast<UT_sint32>(iIndxVisual));
-
-#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-	UT_sint32 iXLreal;
-	const UT_sint32 Screen_resolution =
-		m_pBlock->getDocLayout()->getGraphics()->getResolution();
-#endif
-	UT_sint32 iXreal;
-
-#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-	iXreal = iWidthLayoutUnits * Screen_resolution / UT_LAYOUT_UNITS;
-#else
-	iXreal = iWidthLayoutUnits; // no layout units realy
-#endif
 
 	//work out the real index based on working direction
 	UT_uint32 iIndx;
@@ -1391,20 +1301,12 @@ fp_Run* fp_Line::calculateWidthOfRun(UT_sint32 &iWidthLayoutUnits, UT_uint32 iIn
 	// find out the direction of the paragraph
 	FriBidiCharType iDomDirection = m_pBlock->getDominantDirection();
 
+	UT_sint32 iXreal;
 	if(iDomDirection == FRIBIDI_TYPE_RTL)
-	{
-#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-		iXLreal = m_iMaxWidthLayoutUnits - iWidthLayoutUnits;
-#endif
-		iXreal	= m_iMaxWidth - iXreal;
-	}
-#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
+		iXreal = m_iMaxWidth - iXreal;
 	else
-	{
-		iXLreal = iWidthLayoutUnits;
-		//iXreal = iXreal;
-	}
-#endif
+		iXreal = iWidth;
+
 	xxx_UT_DEBUGMSG(("fp_Line::calculateWidthOfRun (0x%x L 0x%x): \n"
 				 "		 iXreal %d, iXLreal %d, iIndxVisual %d, iCountRuns %d,\n"
 				 "		 eWorkingDirection %d, eUseTabStop %d,\n"
@@ -1413,9 +1315,6 @@ fp_Run* fp_Line::calculateWidthOfRun(UT_sint32 &iWidthLayoutUnits, UT_uint32 iIn
 				));
 
 	_calculateWidthOfRun(iXreal,
-#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-						 iXLreal,
-#endif
 						 pRun,
 						 iIndxVisual,
 						 iCountRuns,
@@ -1428,19 +1327,11 @@ fp_Run* fp_Line::calculateWidthOfRun(UT_sint32 &iWidthLayoutUnits, UT_uint32 iIn
 
 	if(iDomDirection == FRIBIDI_TYPE_RTL)
 	{
-#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-		iWidthLayoutUnits = m_iMaxWidthLayoutUnits - iXLreal;
-#else
-		iWidthLayoutUnits = m_iMaxWidth - iXreal;
-#endif
+		iWidth = m_iMaxWidth - iXreal;
 	}
 	else
 	{
-#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-		iWidthLayoutUnits = iXLreal;
-#else
-		iWidthLayoutUnits = iXreal;
-#endif
+		iWidth = iXreal;
 	}
 
 	return pRun;
@@ -1449,9 +1340,6 @@ fp_Run* fp_Line::calculateWidthOfRun(UT_sint32 &iWidthLayoutUnits, UT_uint32 iIn
 // private version of the above, which expect both the index and run prointer
 // to be passed to it.
 inline void fp_Line::_calculateWidthOfRun(	UT_sint32 &iX,
-#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-									UT_sint32 &iXLayoutUnits,
-#endif
 									fp_Run * pRun,
 									UT_uint32 iIndx,
 									UT_uint32 iCountRuns,
@@ -1480,11 +1368,6 @@ inline void fp_Line::_calculateWidthOfRun(	UT_sint32 &iX,
 		return;
 	}
 
-
-#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-	const UT_sint32 Screen_resolution = m_pBlock->getDocLayout()->getGraphics()->getResolution();
-#endif
-
 	switch(pRun->getType())
 	{
 		case FPRUN_TAB:
@@ -1500,98 +1383,62 @@ inline void fp_Line::_calculateWidthOfRun(	UT_sint32 &iX,
 			if (eUseTabStop != USE_FIXED_TABWIDTH)
 			{
 				//if we are using the tabstops, we go through the hoops,
-				UT_sint32	iPosLayoutUnits;
+				UT_sint32	iPos;
 				eTabType	iTabType;
 				eTabLeader	iTabLeader;
 				bool bRes;
 
-			// now find the tabstop for this tab, depending on whether we
-			// are to use next or previous tabstop
-			if(eUseTabStop == USE_NEXT_TABSTOP)
-			{
-				if(iDomDirection == FRIBIDI_TYPE_RTL)
+				// now find the tabstop for this tab, depending on whether we
+				// are to use next or previous tabstop
+				if(eUseTabStop == USE_NEXT_TABSTOP)
 				{
-#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-					
-					UT_sint32 iStartPos = getContainer()->getWidthInLayoutUnits() - iXLayoutUnits;
-					bRes = findNextTabStopInLayoutUnits(iStartPos, iPosLayoutUnits, iTabType, iTabLeader);
-					iPosLayoutUnits = getContainer()->getWidthInLayoutUnits() - iPosLayoutUnits;
-#else
-					UT_sint32 iStartPos = getContainer()->getWidth() - iX;
-					bRes = findNextTabStop(iStartPos, iPosLayoutUnits, iTabType, iTabLeader);
-					iPosLayoutUnits = getContainer()->getWidth() - iPosLayoutUnits;
-#endif
+					if(iDomDirection == FRIBIDI_TYPE_RTL)
+					{
+						UT_sint32 iStartPos = getContainer()->getWidth() - iX;
+						bRes = findNextTabStop(iStartPos, iPos, iTabType, iTabLeader);
+						iPos = getContainer()->getWidth() - iPos;
+					}
+					else
+						bRes = findNextTabStop(iX, iPos, iTabType, iTabLeader);
 				}
 				else
-#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-					bRes = findNextTabStopInLayoutUnits(iXLayoutUnits, iPosLayoutUnits, iTabType, iTabLeader);
-#else
-					bRes = findNextTabStop(iX, iPosLayoutUnits, iTabType, iTabLeader);
-#endif
-			}
-			else
-
-			if(iDomDirection == FRIBIDI_TYPE_RTL)
-			{
-#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-				UT_sint32 iStartPos = getContainer()->getWidthInLayoutUnits() - iXLayoutUnits;
-
-				bRes = findPrevTabStopInLayoutUnits(iStartPos, iPosLayoutUnits, iTabType, iTabLeader);
-				iPosLayoutUnits = getContainer()->getWidthInLayoutUnits() - iPosLayoutUnits;
-#else
-				UT_sint32 iStartPos = getContainer()->getWidth() - iX;
-
-				bRes = findPrevTabStop(iStartPos, iPosLayoutUnits, iTabType, iTabLeader);
-				iPosLayoutUnits = getContainer()->getWidth() - iPosLayoutUnits;
-#endif
-			}
-			else
-#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-				bRes = findPrevTabStopInLayoutUnits(iXLayoutUnits, iPosLayoutUnits, iTabType, iTabLeader);
-#else
-				bRes = findPrevTabStop(iX, iPosLayoutUnits, iTabType, iTabLeader);
-#endif
-
-
-			UT_ASSERT(bRes);
-
-			fp_Run *pScanRun = NULL;
-			UT_sint32 iScanWidth = 0;
-#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-			UT_sint32 iScanWidthLayoutUnits = 0;
-#endif
-			pTabRun->setLeader(iTabLeader);
-			pTabRun->setTabType(iTabType);
-
-			// we need to remember what the iX was
-			UT_sint32 iXprev;
-			iXprev = iX;
-
-//xxx_UT_DEBUGMSG(("pf_Line::_calculateWidthOfRun(): tab: iX %d, iXLayout %d, iPosLayout %d, resolution %d\n",iX,iXLayoutUnits,iPosLayoutUnits,Screen_resolution));
-
-			FriBidiCharType iVisDirection = pTabRun->getVisDirection();
-
-			switch ( iTabType )
-			{
+					if(iDomDirection == FRIBIDI_TYPE_RTL)
+					{
+						UT_sint32 iStartPos = getContainer()->getWidth() - iX;
+						
+						bRes = findPrevTabStop(iStartPos, iPos, iTabType, iTabLeader);
+						iPos = getContainer()->getWidth() - iPos;
+					}
+					else
+						bRes = findPrevTabStop(iX, iPos, iTabType, iTabLeader);
+				
+				UT_ASSERT(bRes);
+				
+				fp_Run *pScanRun = NULL;
+				UT_sint32 iScanWidth = 0;
+				
+				pTabRun->setLeader(iTabLeader);
+				pTabRun->setTabType(iTabType);
+				
+				// we need to remember what the iX was
+				UT_sint32 iXprev;
+				iXprev = iX;
+				
+				FriBidiCharType iVisDirection = pTabRun->getVisDirection();
+				
+				switch ( iTabType )
+				{
 				case FL_TAB_LEFT:
 					if(iVisDirection == FRIBIDI_TYPE_LTR && iDomDirection == FRIBIDI_TYPE_LTR)
 					{
-#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-						iXLayoutUnits = iPosLayoutUnits;
-						iX = iXLayoutUnits * Screen_resolution / UT_LAYOUT_UNITS;
-#else
-						iX = iPosLayoutUnits;
-#endif
-
+						iX = iPos;
+						
 						iWidth = abs(iX - iXprev);
 						xxx_UT_DEBUGMSG(("left tab (ltr para), iX %d, iWidth %d\n", iX,iWidth));
 					}
 					else
 					{
 						iScanWidth = 0;
-#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-						iScanWidthLayoutUnits = 0;
-#endif
 						for ( UT_uint32 j = iIndx+1; j < iCountRuns; j++ )
 						{
 							UT_uint32 iJ;
@@ -1602,27 +1449,15 @@ inline void fp_Line::_calculateWidthOfRun(	UT_sint32 &iX,
 								break;
 
 							iScanWidth += pScanRun->getWidth();
-#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-							iScanWidthLayoutUnits += pScanRun->getWidthInLayoutUnits();
-#endif
 						}
 
-#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-						if ( iScanWidthLayoutUnits > abs(iPosLayoutUnits - iXLayoutUnits))
-#else
-						if ( iScanWidth > abs(iPosLayoutUnits - iX))
-#endif
+						if ( iScanWidth > abs(iPos - iX))
 						{
 							iWidth = 0;
 						}
 						else
 						{
-#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-							iXLayoutUnits += iPosLayoutUnits - iXLayoutUnits - static_cast<UT_sint32>(eWorkingDirection)* iScanWidthLayoutUnits;
-							iX += iPosLayoutUnits * Screen_resolution / UT_LAYOUT_UNITS - iX - static_cast<UT_sint32>(eWorkingDirection) * iScanWidth;
-#else
-							iX += iPosLayoutUnits - iX - static_cast<UT_sint32>(eWorkingDirection) * iScanWidth;
-#endif
+							iX += iPos - iX - eWorkingDirection * iScanWidth;
 							iWidth = abs(iX - iXprev);
 						}
 					}
@@ -1632,9 +1467,6 @@ inline void fp_Line::_calculateWidthOfRun(	UT_sint32 &iX,
 					case FL_TAB_CENTER:
 					{
 						iScanWidth = 0;
-#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-						iScanWidthLayoutUnits = 0;
-#endif
 						for ( UT_uint32 j = iIndx+1; j < iCountRuns; j++ )
 						{
 							UT_uint32 iJ;
@@ -1645,25 +1477,13 @@ inline void fp_Line::_calculateWidthOfRun(	UT_sint32 &iX,
 							if(!pScanRun || pScanRun->getType() == FPRUN_TAB)
 								break;
 							iScanWidth += pScanRun->getWidth();
-#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-							iScanWidthLayoutUnits += pScanRun->getWidthInLayoutUnits();
-#endif
 						}
 
-#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-						if ( iScanWidthLayoutUnits / 2 > abs(iPosLayoutUnits - iXLayoutUnits))
-#else
-						if ( iScanWidth / 2 > abs(iPosLayoutUnits - iX))
-#endif
+						if ( iScanWidth / 2 > abs(iPos - iX))
 							iWidth = 0;
 						else
 						{
-#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-							iXLayoutUnits += iPosLayoutUnits - iXLayoutUnits - static_cast<UT_sint32>(eWorkingDirection) * iScanWidthLayoutUnits / 2;
-							iX += iPosLayoutUnits * Screen_resolution / UT_LAYOUT_UNITS - iX - static_cast<UT_sint32>(eWorkingDirection) * iScanWidth / 2;
-#else
-							iX += iPosLayoutUnits - iX - static_cast<UT_sint32>(eWorkingDirection) * iScanWidth / 2;
-#endif
+							iX += iPos - iX - static_cast<UT_sint32>(eWorkingDirection * iScanWidth / 2);
 							iWidth = abs(iX - iXprev);
 						}
 						break;
@@ -1672,12 +1492,7 @@ inline void fp_Line::_calculateWidthOfRun(	UT_sint32 &iX,
 					case FL_TAB_RIGHT:
 						if(iVisDirection == FRIBIDI_TYPE_RTL && iDomDirection == FRIBIDI_TYPE_RTL)
 						{
-#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-							iXLayoutUnits = iPosLayoutUnits;
-							iX = iXLayoutUnits * Screen_resolution / UT_LAYOUT_UNITS;
-#else
-							iX = iPosLayoutUnits;
-#endif
+							iX = iPos;
 							iWidth = abs(iX - iXprev);
 							xxx_UT_DEBUGMSG(("right tab (rtl para), iX %d, width %d\n", iX,pTabRun->getWidth()));
 						}
@@ -1685,9 +1500,6 @@ inline void fp_Line::_calculateWidthOfRun(	UT_sint32 &iX,
 						{
 							xxx_UT_DEBUGMSG(("right tab (ltr para), ii %d\n",ii));
 							iScanWidth = 0;
-#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-							iScanWidthLayoutUnits = 0;
-#endif
 							for ( UT_uint32 j = iIndx+1; j < iCountRuns; j++ )
 							{
 								UT_uint32 iJ;
@@ -1699,29 +1511,15 @@ inline void fp_Line::_calculateWidthOfRun(	UT_sint32 &iX,
 								if(!pScanRun || pScanRun->getType() == FPRUN_TAB)
 									break;
 								iScanWidth += pScanRun->getWidth();
-#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-								iScanWidthLayoutUnits += pScanRun->getWidthInLayoutUnits();
-#endif
 							}
 
-							xxx_UT_DEBUGMSG(("iScanWidthLayoutUnits %d, iPosLayoutUnits %d, iXLayoutUnits %d\n",iScanWidthLayoutUnits,iPosLayoutUnits,iXLayoutUnits));
-
-#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-							if ( iScanWidthLayoutUnits > abs(iPosLayoutUnits - iXLayoutUnits))
-#else
-							if ( iScanWidth > abs(iPosLayoutUnits - iX))
-#endif
+							if ( iScanWidth > abs(iPos - iX))
 							{
 								iWidth = 0;
 							}
 							else
 							{
-#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-								iXLayoutUnits += iPosLayoutUnits - iXLayoutUnits - static_cast<UT_sint32>(eWorkingDirection) * iScanWidthLayoutUnits;
-								iX += iPosLayoutUnits * Screen_resolution / UT_LAYOUT_UNITS - iX - static_cast<UT_sint32>(eWorkingDirection) * iScanWidth;
-#else
-								iX += iPosLayoutUnits - iX - static_cast<UT_sint32>(eWorkingDirection) * iScanWidth;
-#endif
+								iX += iPos - iX - static_cast<UT_sint32>(eWorkingDirection * iScanWidth);
 								iWidth = abs(iX - iXprev);
 							}
 
@@ -1749,9 +1547,6 @@ inline void fp_Line::_calculateWidthOfRun(	UT_sint32 &iX,
 						}
 #endif
 						iScanWidth = 0;
-#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-						iScanWidthLayoutUnits = 0;
-#endif
 						for ( UT_uint32 j = iIndx+1; j < iCountRuns; j++ )
 						{
 							UT_uint32 iJ;
@@ -1780,27 +1575,15 @@ inline void fp_Line::_calculateWidthOfRun(	UT_sint32 &iX,
 							if ( foundDecimal )
 							{
 								UT_ASSERT(pScanRun->getType() == FPRUN_TEXT);
-#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-								iScanWidth += (static_cast<fp_TextRun *>(pScanRun))->simpleRecalcWidth(fp_TextRun::Width_type_display, runLen);
-								iScanWidthLayoutUnits += (static_cast<fp_TextRun *>(pScanRun))->simpleRecalcWidth(fp_TextRun::Width_type_layout_units, runLen);
-#else
-								iScanWidth += (static_cast<fp_TextRun *>(pScanRun))->simpleRecalcWidth(runLen);
-#endif
+								iScanWidth += static_cast<fp_TextRun *>(pScanRun)->simpleRecalcWidth(runLen);
 								break; // we found our decimal, don't search any further
 							}
 							else
 							{
 								iScanWidth += pScanRun->getWidth();
-#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-								iScanWidthLayoutUnits += pScanRun->getWidthInLayoutUnits();
-#endif
 							}
 						}
-#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-						if ( iScanWidthLayoutUnits > abs(iPosLayoutUnits - iXLayoutUnits))
-#else
-						if ( iScanWidth > abs(iPosLayoutUnits - iX))
-#endif
+						if ( iScanWidth > abs(iPos - iX))
 						{
 
 							// out of space before the decimal point;
@@ -1808,12 +1591,7 @@ inline void fp_Line::_calculateWidthOfRun(	UT_sint32 &iX,
 							iWidth = 0;
 						}
 						else {
-#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-							iXLayoutUnits = iPosLayoutUnits - static_cast<UT_sint32>(eWorkingDirection) * iScanWidthLayoutUnits;
-							iX = iPosLayoutUnits * Screen_resolution / UT_LAYOUT_UNITS - static_cast<UT_sint32>(eWorkingDirection) * iScanWidth;
-#else
-							iX = iPosLayoutUnits - static_cast<UT_sint32>(eWorkingDirection) * iScanWidth;
-#endif
+							iX = iPos - eWorkingDirection * iScanWidth;
 							iWidth = abs(iX - iXprev);
 						}
 						FREEP(pDecimalStr);
@@ -1822,12 +1600,7 @@ inline void fp_Line::_calculateWidthOfRun(	UT_sint32 &iX,
 
 					case FL_TAB_BAR:
 					{
-#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-						iXLayoutUnits = iPosLayoutUnits;
-						iX = iXLayoutUnits * Screen_resolution / UT_LAYOUT_UNITS;
-#else
-						iX = iPosLayoutUnits;
-#endif
+						iX = iPos;
 						iWidth = abs(iX - iXprev);
 					}
 					break;
@@ -1862,16 +1635,10 @@ inline void fp_Line::_calculateWidthOfRun(	UT_sint32 &iX,
 		{
 			if(eWorkingDirection == WORK_FORWARD)
 			{
-#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-				iXLayoutUnits += pRun->getWidthInLayoutUnits();
-#endif
 				iX += pRun->getWidth();
 			}
 			else
 			{
-#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-				iXLayoutUnits -= pRun->getWidthInLayoutUnits();
-#endif
 				iX -= pRun->getWidth();
 			}
 					xxx_UT_DEBUGMSG(("fp_Line::calculateWidthOfRun (non-tab [0x%x, type %d, dir %d]): width %d\n",
@@ -1968,9 +1735,6 @@ void fp_Line::layout(void)
 	UT_ASSERT(s_pOldXs);
 
 	UT_sint32 iStartX				  = 0;
-#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-	UT_sint32 iStartXLayoutUnits	  = 0;
-#endif
 
 	// find out the direction of the paragraph
 	FriBidiCharType iDomDirection = m_pBlock->getDominantDirection();
@@ -2006,9 +1770,6 @@ void fp_Line::layout(void)
 
 			eWorkingDirection = WORK_BACKWARD;
 			iStartX = m_iMaxWidth;
-#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-			iStartXLayoutUnits = m_iMaxWidthLayoutUnits;
-#endif
 			break;
 
 		case FB_ALIGNMENT_CENTER:
@@ -2017,9 +1778,6 @@ void fp_Line::layout(void)
 			// we will pretend the line starts at pos 0, work out the width
 			// and then shift it by the necessary amount to the right
 			iStartX = 0;
-#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-			iStartXLayoutUnits = 0;
-#endif
 			break;
 
 		case FB_ALIGNMENT_JUSTIFY:
@@ -2027,9 +1785,6 @@ void fp_Line::layout(void)
 			{
 				eWorkingDirection = WORK_BACKWARD;
 				iStartX = m_iMaxWidth;
-#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-				iStartXLayoutUnits = m_iMaxWidthLayoutUnits;
-#endif
 			}
 			else
 			{
@@ -2044,9 +1799,6 @@ void fp_Line::layout(void)
 
 	//now variables to keep track of our progress along the line
 	UT_sint32 iX			= iStartX;
-#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-	UT_sint32 iXLayoutUnits = iStartXLayoutUnits;
-#endif
 	//variables to keep information about how to erase the line once we are
 	//in position to do so
 	bool bLineErased		= false;
@@ -2115,10 +1867,10 @@ void fp_Line::layout(void)
 	xxx_UT_DEBUGMSG(("fp_Line::layout(), this = 0x%x\n"
 				 "		 alignment [%s], working direction [%s], using tabstops [%s]\n"
 				 "		 fixed width multiplier %d/%d\n"
-				 "		 iStartX	= %d, iStartXLayout = %d \n"
+				 "		 iStartX	= %d, \n"
 				 "		 iCountRuns = %d\n",
 				 this, al, d, t, iFixedWidthMlt, iFixedWidthDiv,
-				 iStartX, iStartXLayoutUnits, iCountRuns
+				 iStartX, iCountRuns
 	));
 
 #endif //end of the debug stuff
@@ -2161,21 +1913,9 @@ void fp_Line::layout(void)
 			s_pOldXs[iIndx] = pRun->getX();
 				pRun->setX(iX,FP_CLEARSCREEN_NEVER);
 		}
-		xxx_UT_DEBUGMSG(("fp_Line::layout: iX %d, iXL %d, ii %d, iCountRuns %d\n"
+		xxx_UT_DEBUGMSG(("fp_Line::layout: iX %d, ii %d, iCountRuns %d\n"
 					 "		 run type %d\n",
-					iX, iXLayoutUnits, ii, iCountRuns, pRun->getType()));
-#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-
-		_calculateWidthOfRun(iX,
-							 iXLayoutUnits,
-							 pRun,
-							 ii,
-							 iCountRuns,
-							 eWorkingDirection,
-							 eUseTabStop,
-							 iDomDirection
-							);
-#else
+					iX, ii, iCountRuns, pRun->getType()));
 		_calculateWidthOfRun(iX,
 							 pRun,
 							 ii,
@@ -2184,7 +1924,6 @@ void fp_Line::layout(void)
 							 eUseTabStop,
 							 iDomDirection
 							);
-#endif
 
 		// if working backwards, set the new X coordinance
 		// and decide if line needs erasing
@@ -2414,13 +2153,6 @@ void fp_Line::setX(UT_sint32 iX, bool bDontClearIfNeeded)
 	m_iX = iX;
 }
 
-#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-void fp_Line::setXInLayoutUnits(UT_sint32 iX)
-{
-	m_iXLayoutUnits = iX;
-}
-#endif
-
 void fp_Line::setY(UT_sint32 iY)
 {
 	if (m_iY == iY)
@@ -2431,13 +2163,6 @@ void fp_Line::setY(UT_sint32 iY)
 	clearScreen();
 	m_iY = iY;
 }
-
-#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-void fp_Line::setYInLayoutUnits(UT_sint32 iY)
-{
-	m_iYLayoutUnits = iY;
-}
-#endif
 
 UT_sint32 fp_Line::getMarginBefore(void) const
 {
@@ -2495,34 +2220,6 @@ UT_sint32 fp_Line::getMarginAfter(void) const
 
 	return 0;
 }
-
-#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-UT_sint32 fp_Line::getMarginAfterInLayoutUnits(void) const
-{
-	if (isLastLineInBlock() && getBlock()->getNext())
-	{
-		fp_Container * pNext = static_cast<fp_Container *>(getBlock()->getNext()->getFirstContainer());
-		if (!pNext)
-			return 0;
-		if(pNext->getContainerType() != FP_CONTAINER_LINE)
-		{
-			return getBlock()->getBottomMarginInLayoutUnits();
-		}
-		fp_Line * pNextLine = static_cast<fp_Line *>(pNext);
-		UT_ASSERT(pNextLine->isFirstLineInBlock());
-
-		UT_sint32 iBottomMargin = getBlock()->getBottomMarginInLayoutUnits();
-
-		UT_sint32 iNextTopMargin = pNextLine->getBlock()->getTopMarginInLayoutUnits();
-
-		UT_sint32 iMargin = UT_MAX(iBottomMargin, iNextTopMargin);
-
-		return iMargin;
-	}
-
-	return 0;
-}
-#endif
 
 bool fp_Line::recalculateFields(UT_uint32 iUpdateCount)
 {
@@ -2617,41 +2314,6 @@ bool	fp_Line::findNextTabStop(UT_sint32 iStartX, UT_sint32& iPosition, eTabType 
 	}
 }
 
-#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-bool	fp_Line::findNextTabStopInLayoutUnits(UT_sint32 iStartX, UT_sint32& iPosition, eTabType& iType, eTabLeader& iLeader )
-{
-	UT_sint32	iTabStopPosition = 0;
-	eTabType	iTabStopType = FL_TAB_NONE;
-	eTabLeader	iTabStopLeader = FL_LEADER_NONE;
-
-#if !defined(NDEBUG)
-	bool bRes =
-#endif
-		m_pBlock->findNextTabStopInLayoutUnits(iStartX + getXInLayoutUnits(),
-											   getXInLayoutUnits() + getMaxWidthInLayoutUnits(),
-											   iTabStopPosition, iTabStopType, iTabStopLeader);
-	UT_ASSERT(bRes);
-
-	iTabStopPosition -= getXInLayoutUnits();
-
-	if (iTabStopPosition <= m_iMaxWidthLayoutUnits)
-	{
-		iPosition = iTabStopPosition;
-		iType = iTabStopType;
-		iLeader = iTabStopLeader;
-
-		return true;
-	}
-	else
-	{
-		UT_DEBUGMSG(("fp_Line::findNextTabStopLayout: iStartX %d, m_iMaxWidthLayoutUnits %d\n"
-					 "			 iPosition %d, iTabStopPosition %d,iType %d, iLeader %d\n",
-					 iStartX, m_iMaxWidthLayoutUnits,iPosition, iTabStopPosition,static_cast<UT_sint32>(iType), static_cast<UT_sint32>(iLeader)));
-		return false;
-	}
-}
-#endif
-
 bool	fp_Line::findPrevTabStop(UT_sint32 iStartX, UT_sint32& iPosition, eTabType & iType, eTabLeader & iLeader )
 {
 	UT_sint32	iTabStopPosition = 0;
@@ -2683,41 +2345,6 @@ bool	fp_Line::findPrevTabStop(UT_sint32 iStartX, UT_sint32& iPosition, eTabType 
 	}
 }
 
-#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-bool	fp_Line::findPrevTabStopInLayoutUnits(UT_sint32 iStartX, UT_sint32& iPosition, eTabType& iType, eTabLeader& iLeader )
-{
-	UT_sint32	iTabStopPosition = 0;
-	eTabType	iTabStopType = FL_TAB_NONE;
-	eTabLeader	iTabStopLeader = FL_LEADER_NONE;
-
-#if !defined(NDEBUG)
-	bool bRes =
-#endif
-		m_pBlock->findPrevTabStopInLayoutUnits(iStartX + getXInLayoutUnits(),
-											   getXInLayoutUnits() + getMaxWidthInLayoutUnits(),
-											   iTabStopPosition, iTabStopType, iTabStopLeader);
-	UT_ASSERT(bRes);
-
-	iTabStopPosition -= getXInLayoutUnits();
-
-	if (iTabStopPosition <= m_iMaxWidthLayoutUnits)
-	{
-		iPosition = iTabStopPosition;
-		iType = iTabStopType;
-		iLeader = iTabStopLeader;
-
-		return true;
-	}
-	else
-	{
-		UT_DEBUGMSG(("fp_Line::findPrevTabStopLayout: iStartX %d, m_iMaxWidthLayoutUnits %d\n"
-					 "		   iPosition %d, iTabStopPosition %d, iType %d, iLeader %d\n",
-					 iStartX, m_iMaxWidthLayoutUnits,iPosition, iTabStopPosition,static_cast<UT_sint32>(iType), static_cast<UT_sint32>(iLeader)));
-		return false;
-	}
-}
-#endif
-
 void fp_Line::recalcMaxWidth(bool bDontClearIfNeeded)
 {
 	UT_sint32 iX = m_pBlock->getLeftMargin();
@@ -2745,20 +2372,20 @@ void fp_Line::recalcMaxWidth(bool bDontClearIfNeeded)
 			getContainer()->getContainerType() == FP_CONTAINER_FOOTNOTE)
 		{
 			m_iClearToPos = iMaxWidth + pSL->getColumnGap();
-			m_iClearLeftOffset = pSL->getColumnGap() - _UL(1);
+			m_iClearLeftOffset = pSL->getColumnGap() - getGraphics()->tlu(1);
 		}
 		else if(getContainer()->getContainerType() == FP_CONTAINER_CELL)
 		{
 			fp_CellContainer * pCell = static_cast<fp_CellContainer *>(getContainer());
-			m_iClearToPos = static_cast<UT_sint32>(iMaxWidth + pCell->getRightPad() * SCALE_TO_SCREEN);
-//			m_iClearLeftOffset =  pCell->getCellX(this) - pCell->getLeftPos() - _UL(1);
+			m_iClearToPos = static_cast<UT_sint32>(iMaxWidth + pCell->getRightPad());
+//			m_iClearLeftOffset = pCell->getCellX(this) - pCell->getLeftPos() - getGraphics()->tlu(1);
 			m_iClearLeftOffset =  0;
 		}
 		else
 		{
 			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 			m_iClearToPos = iMaxWidth;
-			m_iClearLeftOffset = pSL->getLeftMargin() - _UL(1);
+			m_iClearLeftOffset = pSL->getLeftMargin() - getGraphics()->tlu(1);
 		}
 	}
 	else
@@ -2768,21 +2395,21 @@ void fp_Line::recalcMaxWidth(bool bDontClearIfNeeded)
 			getContainer()->getContainerType() == FP_CONTAINER_HDRFTR ||
 			getContainer()->getContainerType() == FP_CONTAINER_FOOTNOTE)
 		{
-			m_iClearToPos = iMaxWidth + pSL->getRightMargin() - _UL(2);
-			m_iClearLeftOffset = pSL->getLeftMargin() - _UL(1);
+			m_iClearToPos = iMaxWidth + pSL->getRightMargin() - getGraphics()->tlu(2);
+			m_iClearLeftOffset = pSL->getLeftMargin() - getGraphics()->tlu(1);
 		}
 		else if(getContainer()->getContainerType() == FP_CONTAINER_CELL)
 		{
 			fp_CellContainer * pCell = static_cast<fp_CellContainer *>(getContainer());
-			m_iClearToPos = static_cast<UT_sint32>(iMaxWidth + pCell->getRightPad() * SCALE_TO_SCREEN);
-//			m_iClearLeftOffset =  pCell->getCellX(this) - pCell->getLeftPos() - _UL(1);
+			m_iClearToPos = static_cast<UT_sint32>(iMaxWidth + pCell->getRightPad());
+//			m_iClearLeftOffset =  pCell->getCellX(this) - pCell->getLeftPos() - getGraphics()->tlu(1);
 			m_iClearLeftOffset =  0;
 		}
 		else
 		{
 			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 			m_iClearToPos = iMaxWidth;
-			m_iClearLeftOffset = pSL->getLeftMargin() - _UL(1);
+			m_iClearLeftOffset = pSL->getLeftMargin() - getGraphics()->tlu(1);
 		}
 	}
 
@@ -2799,34 +2426,6 @@ void fp_Line::recalcMaxWidth(bool bDontClearIfNeeded)
 	UT_ASSERT(iMaxWidth > 0);
 
 	setMaxWidth(iMaxWidth);
-
-#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-	
-	// Do same calculation but in layout units.
-
-	iX = m_pBlock->getLeftMarginInLayoutUnits();
-
-	if (isFirstLineInBlock())
-	{
-		if(iBlockDir == FRIBIDI_TYPE_LTR)
-			iX += m_pBlock->getTextIndentInLayoutUnits();
-	}
-
-	setXInLayoutUnits(iX);
-
-	iMaxWidth = getContainer()->getWidthInLayoutUnits();
-	iMaxWidth -= m_pBlock->getRightMarginInLayoutUnits();
-	iMaxWidth -= m_pBlock->getLeftMarginInLayoutUnits();
-	if (isFirstLineInBlock())
-	{
-		iMaxWidth -= m_pBlock->getTextIndentInLayoutUnits();
-	}
-
-	// Check that there's actually room for content
-	UT_ASSERT(iMaxWidth > 0);
-
-	setMaxWidthInLayoutUnits(iMaxWidth);
-#endif
 }
 
 fp_Container*	fp_Line::getNextContainerInSection(void) const
@@ -2955,36 +2554,6 @@ UT_sint32 fp_Line::calculateWidthOfLine(void)
 	return iX;
 }
 
-#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-UT_sint32 fp_Line::calculateWidthOfLineInLayoutUnits(void)
-{
-	UT_uint32 iCountRuns = m_vecRuns.getItemCount();
-	UT_sint32 iX = 0;
-	UT_uint32 i;
-
-	FV_View* pView = getBlock()->getDocLayout()->getView();
-	bool bShowHidden = pView->getShowPara();
-
-	// first calc the width of the line
-	for (i=0; i<iCountRuns; i++)
-	{
-		fp_Run* pRun = static_cast<fp_Run*>(m_vecRuns.getNthItem(i));
-
-		FPVisibility eHidden  = pRun->isHidden();
-		if((eHidden == FP_HIDDEN_TEXT && !bShowHidden)
-		   || eHidden == FP_HIDDEN_REVISION
-		   || eHidden == FP_HIDDEN_REVISION_AND_TEXT)
-			continue;
-
-		iX += pRun->getWidthInLayoutUnits();
-	}
-
-	m_iWidthLayoutUnits = iX;
-
-	return iX;
-}
-#endif
-
 UT_sint32 fp_Line::calculateWidthOfTrailingSpaces(void)
 {
 	// need to move back until we find the first non blank character and
@@ -3027,50 +2596,6 @@ UT_sint32 fp_Line::calculateWidthOfTrailingSpaces(void)
 
 	return iTrailingBlank;
 }
-
-#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-UT_sint32 fp_Line::calculateWidthOfTrailingSpacesInLayoutUnits(void)
-{
-	// need to move back until we find the first non blank character and
-	// return the distance back to this character.
-
-	UT_ASSERT(!isEmpty());
-
-	UT_sint32 iTrailingBlank = 0;
-
-	FriBidiCharType iBlockDir = m_pBlock->getDominantDirection();
-	UT_sint32 iCountRuns = m_vecRuns.getItemCount();
-	UT_sint32 i;
-
-	FV_View* pView = getBlock()->getDocLayout()->getView();
-	bool bShowHidden = pView->getShowPara();
-
-	for (i=iCountRuns -1 ; i >= 0; i--)
-	{
-		// work from the run on the visual end of the line
-		UT_sint32 k = iBlockDir == FRIBIDI_TYPE_LTR ? i : iCountRuns - i - 1;
-		fp_Run* pRun = static_cast<fp_Run*>(m_vecRuns.getNthItem(_getRunLogIndx(k)));
-
-		FPVisibility eHidden  = pRun->isHidden();
-		if((eHidden == FP_HIDDEN_TEXT && !bShowHidden)
-		   || eHidden == FP_HIDDEN_REVISION
-		   || eHidden == FP_HIDDEN_REVISION_AND_TEXT)
-			continue;
-
-		if(!pRun->doesContainNonBlankData())
-		{
-			iTrailingBlank += pRun->getWidthInLayoutUnits();
-		}
-		else
-		{
-			iTrailingBlank += pRun->findTrailingSpaceDistanceInLayoutUnits();
-			break;
-		}
-	}
-
-	return iTrailingBlank;
-}
-#endif
 
 UT_uint32 fp_Line::countJustificationPoints(void)
 {

@@ -30,9 +30,7 @@
 #include "gr_Graphics.h"
 #include "ut_vector.h"
 
-#ifdef USE_XFT
 #include <X11/Xft/Xft.h>
-#endif
 
 class UT_ByteBuf;
 class UT_String;
@@ -101,6 +99,8 @@ class GR_UnixGraphics : public GR_Graphics
 	virtual bool		startPrint(void);
 	virtual bool		startPage(const char * szPageLabel, UT_uint32 pageNumber,
 								  bool bPortrait, UT_uint32 iWidth, UT_uint32 iHeight);
+
+	virtual void      setZoomPercentage(UT_uint32 iZoom);
 	virtual bool		endPrint(void);
 
 	virtual void		flush(void);
@@ -123,7 +123,7 @@ class GR_UnixGraphics : public GR_Graphics
 	void                createPixmapFromXPM( char ** pXPM,GdkPixmap *source,
 											 GdkBitmap * mask);
 
-	virtual void setLineProperties ( double inWidthPixels, 
+	virtual void setLineProperties ( double inWidth, 
 					 GR_Graphics::JoinStyle inJoinStyle = JOIN_MITER,
 					 GR_Graphics::CapStyle inCapStyle   = CAP_BUTT,
 					 GR_Graphics::LineStyle inLineStyle = LINE_SOLID ) ;
@@ -140,20 +140,13 @@ class GR_UnixGraphics : public GR_Graphics
 	virtual void	  saveRectangle(UT_Rect & r, UT_uint32 iIndx);
 	virtual void	  restoreRectangle(UT_uint32 iIndx);
 	
+	static UT_uint32  s_getDeviceResolution(void);
+	virtual UT_uint32 	getDeviceResolution(void) const;
+
  protected:
-	virtual UT_uint32 	_getResolution(void) const;
 	void				_setColor(GdkColor & c);
 #ifndef WITH_PANGO
 	XAP_UnixFontManager * 	m_pFontManager;
-#endif	
-
-#if (!defined(WITH_PANGO) || !defined(USE_XFT))
-	/* variables used by WCTOMB_DECLS and CONVERT_TO_MBS(c)
-	 */
-	UT_Wctomb *				m_wctomb;
-	char					m_text[1];
-	int						m_text_length;
-	int						m_fallback_used;
 #endif	
 
 	GdkGC*       			m_pGC;
@@ -170,7 +163,7 @@ class GR_UnixGraphics : public GR_Graphics
 	GdkFont * m_pSingleByteFont, * m_pMultiByteFont;
 
 	// our "OEM" system font, like a 10 point Helvetica for GUI items
-	static XAP_UnixFontHandle *	s_pFontGUI;
+	XAP_UnixFontHandle *	m_pFontGUI;
 	static UT_uint32		s_iInstanceCount;
   
 	GdkColormap* 	 		m_pColormap;
@@ -186,22 +179,18 @@ private:
 	XAP_UnixFontHandle *	m_pFallBackFontHandle;
 #endif
 
-#ifdef USE_XFT
 	XftDraw*				m_pXftDraw;
 	XftColor				m_XftColor;
-	XftFont*				m_pXftFont;
-	XftFaceLocker			m_XftFaceLocker;
+	XftFont*				m_pXftFontL;
+	XftFont*				m_pXftFontD;
 	
 	Drawable				m_Drawable;
 	Visual*					m_pVisual;
 	Colormap				m_Colormap;
 
 	FcChar32				m_aMap[FC_CHARSET_MAP_SIZE];
-	// hack
-	bool					m_bLayoutUnits;
 	UT_sint32               m_iXoff;
 	UT_sint32               m_iYoff;
-#endif
 	UT_RGBColor				m_curColor;
 
 	UT_Vector				m_vSaveRect;

@@ -87,7 +87,7 @@ public:
 		
 	Mode					m_mode;
 
-	/* all values are in pixels */
+	/* all values are in layout units */
 
 	UT_uint32				m_yPageStart;		/* absolute coord of start of page */
 	UT_uint32				m_yPageSize;		/* absolute page size for the current page */
@@ -150,6 +150,7 @@ protected:
 	XAP_Frame *			m_pFrame;
 	GR_Graphics *		m_pG;
 
+	// These are in device units.
 	/* static const*/ UT_uint32	s_iFixedHeight /* =32 */;	/* size we draw stuff w/o regard to window size */
 	/* static const*/ UT_uint32	s_iFixedWidth  /* =32 */;	/* minimum width of non-scrolling area on left */
 
@@ -184,8 +185,8 @@ private:
 
 	AV_View *			m_pView;
 	UT_Dimension		m_dim;
-	UT_uint32			m_iHeight;		/* size of window */
-	UT_uint32			m_iWidth;		/* size of window */
+	UT_uint32			m_iHeight;		/* size of window, in device units */
+	UT_uint32			m_iWidth;		/* size of window, in device units */
 
 	AP_LeftRulerInfo 	m_infoCache;
 	AP_LeftRulerInfo    m_tempInfo;

@@ -38,13 +38,18 @@
 #include "ut_string_class.h"
 #include "fp_TableContainer.h"
 
-#define	tr_TABINDEX_NEW			-1
-#define	tr_TABINDEX_NONE		-2
+enum TABINDEX
+  {
+    tr_TABINDEX_NEW  = -1,
+    tr_TABINDEX_NONE = -2
+  };
 
-#define tr_AUTOSCROLL_PIXELS	_UL(25)
-#define tr_AUTOSCROLL_INTERVAL	300 // miliseconds
+const static UT_uint32 s_tr_AUTOSCROLL_PIXELS   = 25;
+const static UT_uint32 s_tr_AUTOSCROLL_INTERVAL = 300; // miliseconds
 
 /*****************************************************************/
+UT_uint32 AP_TopRuler::s_iFixedHeight = 32;
+UT_uint32 AP_TopRuler::s_iFixedWidth = 32;
 
 AP_TopRuler::AP_TopRuler(XAP_Frame * pFrame)
 {
@@ -70,13 +75,6 @@ AP_TopRuler::AP_TopRuler(XAP_Frame * pFrame)
 		m_dim = UT_determineDimension(szRulerUnits);
 	else
 		m_dim = DIM_IN;
-
-	// i wanted these to be "static const x = 32;" in the
-	// class declaration, but MSVC5 can't handle it....
-	// (GCC can :-)
-
-	s_iFixedHeight = _UL(32);
-	s_iFixedWidth = _UL(32);
 
 	// set the default to be the fixed size
 	m_iHeight = s_iFixedHeight;
@@ -114,7 +112,7 @@ void AP_TopRuler::setView(AV_View* pView, UT_uint32 iZoom)
 	m_pG->setZoomPercentage(iZoom);
 
     // TODO this dimension shouldn't be hard coded.
-	m_minColumnWidth = m_pG->convertDimension("0.5in");
+	m_minColumnWidth = UT_convertToLayoutUnits("0.5in");
 	static_cast<FV_View *>(pView)->setTopRuler(this);
 }
 
@@ -166,28 +164,27 @@ void AP_TopRuler::setOffsetLeftRuler(UT_uint32 iLeftRulerWidth)
 	// We allow for the LeftRuler to be zero (if/when we
 	// support a UI to turn it on and off.
 
-	m_iLeftRulerWidth = _UL(iLeftRulerWidth);
+	m_iLeftRulerWidth = iLeftRulerWidth;
 }
 
 void AP_TopRuler::setHeight(UT_uint32 iHeight)
 {
-	m_iHeight = _UL(iHeight);
+	m_iHeight = iHeight;
 }
 
 UT_uint32 AP_TopRuler::getHeight(void) const
 {
-	//return s_iFixedHeight;
-	return m_iHeight;
+	return m_pG->tlu(m_iHeight);
 }
 
 void AP_TopRuler::setWidth(UT_uint32 iWidth)
 {
-	m_iWidth = _UL(iWidth);
+	m_iWidth = iWidth;
 }
 
 UT_uint32 AP_TopRuler::getWidth(void) const
 {
-	return m_iWidth;
+	return m_pG->tlu(m_iWidth);
 }
 
 /*****************************************************************/
@@ -208,15 +205,15 @@ bool AP_TopRuler::notify(AV_View * pView, const AV_ChangeMask mask)
 	{
 		UT_Rect pClipRect;
 		pClipRect.top = 0;
-		pClipRect.left = UT_MAX(m_iLeftRulerWidth, s_iFixedWidth);
+		pClipRect.left = m_pG->tlu(UT_MAX(m_iLeftRulerWidth,s_iFixedWidth));
 		FV_View * pView = static_cast<FV_View *>(m_pView);
 		if(pView->getViewMode() != VIEW_PRINT)
 		{
 			pClipRect.left = 0;
 		}
 
-		pClipRect.height = m_iHeight;
-		pClipRect.width = m_iWidth;
+		pClipRect.height = getHeight();
+		pClipRect.width = getWidth();
 		draw(&pClipRect);
 	}
 
@@ -262,37 +259,38 @@ void AP_TopRuler::scrollRuler(UT_sint32 xoff, UT_sint32 xlimit)
 	if (!dx)
 		return;
 
-	UT_sint32 xFixed = UT_MAX(m_iLeftRulerWidth,s_iFixedWidth);
+	UT_sint32 xFixed = m_pG->tlu(UT_MAX(m_iLeftRulerWidth,s_iFixedWidth));
 	FV_View * pView = static_cast<FV_View *>(m_pView);
 	if(pView->getViewMode() != VIEW_PRINT)
 	{
-		xFixed = s_iFixedWidth;
+		xFixed = m_pG->tlu(s_iFixedWidth);
 	}
 
-	UT_sint32 width = m_iWidth - xFixed;
-	UT_sint32 height = s_iFixedHeight;
+	UT_sint32 width = getWidth() - xFixed;
+	UT_sint32 height = m_pG->tlu(s_iFixedHeight);
 	UT_sint32 y_dest = 0;
 	UT_sint32 y_src = 0;
 	UT_sint32 x_dest = xFixed;
 	UT_sint32 x_src = xFixed;
 
 	UT_Rect rClip;
-	rClip.top = _UD(y_src);
-	rClip.height = _UD(height);
+	rClip.top = y_src;
+	rClip.height = height;
 
 	if (dx > 0)
 	{
 		x_src += dx;
 		width += -dx;
-		rClip.left = _UD(x_dest + width);
-		rClip.width = _UD(dx);
+		// fudge factor of 10
+		rClip.left = x_dest + width - m_pG->tlu(10);
+		rClip.width = dx + m_pG->tlu(10);
 	}
 	else if (dx < 0)
 	{
 		x_dest += -dx;
 		width += dx;
-		rClip.left = _UD(x_src);
-		rClip.width = - _UD(dx);
+		rClip.left = x_src;
+		rClip.width = -dx + m_pG->tlu(10);
 	}
 
 	m_pG->scroll(x_dest,y_dest,x_src,y_src,width,height);
@@ -322,7 +320,7 @@ void AP_TopRuler::draw(const UT_Rect * pCR, AP_TopRulerInfo * pUseInfo)
 
 	// draw the background
 
-	m_pG->fillRect(GR_Graphics::CLR3D_Background,0,0,m_iWidth,m_iHeight);
+	m_pG->fillRect(GR_Graphics::CLR3D_Background,0,0,getWidth (),getHeight ());
 
 	// draw the foreground
 
@@ -342,9 +340,9 @@ void AP_TopRuler::_drawBar(const UT_Rect * pClipRect, AP_TopRulerInfo * pInfo,
 	// to compensate for fixed portion, the page-view margin,
 	// and the scroll.
 
-	UT_uint32 yTop = s_iFixedHeight/4;
-	UT_uint32 yBar = s_iFixedHeight/2;
-	UT_sint32 xFixed = (UT_sint32)UT_MAX(m_iLeftRulerWidth,s_iFixedWidth);
+	UT_uint32 yTop = m_pG->tlu(s_iFixedHeight)/4;
+	UT_uint32 yBar = m_pG->tlu(s_iFixedHeight)/2;
+	UT_sint32 xFixed = (UT_sint32)m_pG->tlu(UT_MAX(m_iLeftRulerWidth,s_iFixedWidth));
 
 	// convert page-relative coordinates into absolute coordinates.
 	UT_sint32 ixMargin = pInfo->m_xPageViewMargin;
@@ -360,7 +358,7 @@ void AP_TopRuler::_drawBar(const UT_Rect * pClipRect, AP_TopRulerInfo * pInfo,
 	if(pView->getViewMode() != VIEW_PRINT)
 	{
 		ixMargin = 0;
-		xFixed = s_iFixedWidth;
+		xFixed = m_pG->tlu(s_iFixedWidth);
 	}
 	UT_sint32 xAbsLeft = xFixed + ixMargin + x - m_xScrollOffset;
 	UT_sint32 xAbsRight = xAbsLeft + w;
@@ -388,8 +386,8 @@ void AP_TopRuler::_drawTickMark(const UT_Rect * pClipRect,
 								GR_Graphics::GR_Color3D clr3d, GR_Font * pFont,
 								UT_sint32 k, UT_sint32 xTick)
 {
-	UT_uint32 yTop = s_iFixedHeight/4;
-	UT_uint32 yBar = s_iFixedHeight/2;
+	UT_sint32 yTop = m_pG->tlu(s_iFixedHeight)/4;
+	UT_sint32 yBar = m_pG->tlu(s_iFixedHeight)/2;
 
 	if (pClipRect)
 	{
@@ -404,8 +402,8 @@ void AP_TopRuler::_drawTickMark(const UT_Rect * pClipRect,
 	if (k % tick.tickLabel)
 	{
 		// draw the ticks
-		UT_uint32 h = ((k % tick.tickLong) ? _UL(2) : _UL(6));
-		UT_uint32 y = yTop + (yBar-h)/2;
+		UT_uint32 h = ((k % tick.tickLong) ? m_pG->tlu(2) : m_pG->tlu(6));
+		UT_sint32 y = yTop + (yBar-h)/2;
 		m_pG->setColor3D(clr3d);
 		m_pG->drawLine(xTick,y,xTick,y+h);
 	}
@@ -429,8 +427,8 @@ void AP_TopRuler::_drawTickMark(const UT_Rect * pClipRect,
 		UT_UCS4_strcpy_char(span, buf);
 		UT_uint32 len = strlen(buf);
 
-		UT_uint32 w = m_pG->measureString(span, 0, len, charWidths);
-		UT_uint32 y = yTop + (yBar-iFontHeight)/2;
+		UT_sint32 w = m_pG->measureString(span, 0, len, charWidths);
+		UT_sint32 y = yTop + (yBar-(UT_sint32)iFontHeight)/2;
 
 		m_pG->drawChars(span, 0, len, xTick - w/2, y);
 	}
@@ -451,11 +449,11 @@ void AP_TopRuler::_drawTicks(const UT_Rect * pClipRect,
 	UT_ASSERT(xFrom >= 0);
 	UT_ASSERT(xTo >= 0);
 
-	UT_sint32 xFixed = (UT_sint32)UT_MAX(m_iLeftRulerWidth,s_iFixedWidth);
+	UT_sint32 xFixed = (UT_sint32)m_pG->tlu(UT_MAX(m_iLeftRulerWidth,s_iFixedWidth));
 	FV_View * pView = static_cast<FV_View *>(m_pView);
 	if(pView->getViewMode() != VIEW_PRINT)
 	{
-		xFixed = s_iFixedWidth;
+		xFixed = m_pG->tlu(s_iFixedWidth);
 	}
 
 
@@ -480,7 +478,7 @@ void AP_TopRuler::_drawTicks(const UT_Rect * pClipRect,
 		// draw increasing numbers to the right
 		//if(pView->getViewMode() == VIEW_NORMAL)
 		//{
-		//	xAbsOrigin -= s_iFixedWidth;
+		//	xAbsOrigin -= m_pG->tlu(s_iFixedWidth);
 		//}
 		UT_sint32 k=0;
 		while (1)
@@ -606,8 +604,8 @@ bool AP_TopRuler::_isInBottomBoxOfLeftIndent(UT_uint32 y)
 {
 	// return true if in the lower box of the left-indent pair
 
-	UT_uint32 yTop = s_iFixedHeight/4;
-	UT_uint32 yBar = s_iFixedHeight/2;
+	UT_uint32 yTop = m_pG->tlu(s_iFixedHeight)/4;
+	UT_uint32 yBar = m_pG->tlu(s_iFixedHeight)/2;
 	UT_uint32 yBottom = yTop + yBar;
 
 	return (y > yBottom);
@@ -621,11 +619,11 @@ void AP_TopRuler::_getParagraphMarkerRects(AP_TopRulerInfo * /* pInfo */,
 										   UT_Rect * prRightIndent,
 										   UT_Rect * prFirstLineIndent)
 {
-	UT_uint32 yTop = s_iFixedHeight/4;
-	UT_uint32 yBar = s_iFixedHeight/2;
+	UT_uint32 yTop = m_pG->tlu(s_iFixedHeight)/4;
+	UT_uint32 yBar = m_pG->tlu(s_iFixedHeight)/2;
 	UT_uint32 yBottom = yTop + yBar;
-	UT_sint32 hs = _UL(5);					// halfSize
-	UT_sint32 fs = hs * 2 + _UL(1);	        // fullSize
+	UT_sint32 hs = m_pG->tlu(5);					// halfSize
+	UT_sint32 fs = hs * 2 + m_pG->tlu(1);	        // fullSize
 	UT_sint32 ls, rs;                   // the sizes of left and right markers
 
 	FV_View * pView = (static_cast<FV_View *>(m_pView));
@@ -633,22 +631,22 @@ void AP_TopRuler::_getParagraphMarkerRects(AP_TopRulerInfo * /* pInfo */,
 
 	if(bRTL)
 	{
-		ls = _UL(9);
-		rs = _UL(15);
+		ls = m_pG->tlu(9);
+		rs = m_pG->tlu(15);
 	}
 	else
 	{
-		ls = _UL(15);
-		rs = _UL(9);
+		ls = m_pG->tlu(15);
+		rs = m_pG->tlu(9);
 	}
 	if (prLeftIndent)
-		prLeftIndent->set(leftCenter - hs, yBottom - _UL(8), fs, ls);
+		prLeftIndent->set(leftCenter - hs, yBottom - m_pG->tlu(8), fs, ls);
 
 	if (prFirstLineIndent)
-		prFirstLineIndent->set(firstLineCenter - hs, yTop - _UL(1), fs, _UL(9));
+		prFirstLineIndent->set(firstLineCenter - hs, yTop - m_pG->tlu(1), fs, m_pG->tlu(9));
 
 	if (prRightIndent)
-		prRightIndent->set(rightCenter - hs, yBottom - _UL(8), fs, rs);
+		prRightIndent->set(rightCenter - hs, yBottom - m_pG->tlu(8), fs, rs);
 }
 
 void AP_TopRuler::_drawParagraphProperties(const UT_Rect * pClipRect,
@@ -665,7 +663,7 @@ void AP_TopRuler::_drawParagraphProperties(const UT_Rect * pClipRect,
 
 	FV_View * pView = (static_cast<FV_View *>(m_pView));
 	bool bRTL = pView->getCurrentBlock()->getDominantDirection() == FRIBIDI_TYPE_RTL;
-	UT_DEBUGMSG(("ap_TopRulerDrawPara: bRTL = %d \n",bRTL));
+	xxx_UT_DEBUGMSG(("ap_TopRulerDrawPara: bRTL = %d \n",bRTL));
 	if (m_draggingWhat == DW_LEFTINDENTWITHFIRST)
 	{
 		if(bRTL)
@@ -746,11 +744,11 @@ void AP_TopRuler::_drawParagraphProperties(const UT_Rect * pClipRect,
 
 void AP_TopRuler::_getTabToggleRect(UT_Rect * prToggle)
 {
-	UT_sint32 l,xFixed = (UT_sint32)UT_MAX(m_iLeftRulerWidth,s_iFixedWidth);
+	UT_sint32 l,xFixed = (UT_sint32)m_pG->tlu(UT_MAX(m_iLeftRulerWidth,s_iFixedWidth));
 	FV_View * pView = static_cast<FV_View *>(m_pView);
 	if(pView->getViewMode() != VIEW_PRINT)
 	{
-		xFixed = s_iFixedWidth;
+		xFixed = m_pG->tlu(s_iFixedWidth);
 	}
 
 #if 0
@@ -759,18 +757,18 @@ void AP_TopRuler::_getTabToggleRect(UT_Rect * prToggle)
 
 	if(bRTL)
 	{
-		xFixed += _UL(17);
-		xFixed /= _UL(2);
-		l = xFixed + (m_iWidth - m_iLeftRulerWidth);
+		xFixed += m_pG->tlu(17);
+		xFixed /= m_pG->tlu(2);
+		l = xFixed + (getWidth () - m_pG->tlu(m_iLeftRulerWidth));
 	}
 	else
 #endif
-	    l = (xFixed - _UL(17))/2;
+	    l = (xFixed - m_pG->tlu(17))/2;
 
-	UT_sint32 t = (s_iFixedHeight - _UL(17))/2;
+	UT_sint32 t = (m_pG->tlu(s_iFixedHeight) - m_pG->tlu(17))/2;
 
 	if (prToggle)
-		prToggle->set(t, l, _UL(17), _UL(17));
+		prToggle->set(t, l, m_pG->tlu(17), m_pG->tlu(17));
 }
 
 /*****************************************************************/
@@ -823,14 +821,14 @@ void AP_TopRuler::_getTabStopRect(AP_TopRulerInfo * /* pInfo */,
 									 UT_sint32 anchor,
 									 UT_Rect * pRect)
 {
-	UT_uint32 yTop = s_iFixedHeight/4;
-	UT_uint32 yBar = s_iFixedHeight/2;
+	UT_uint32 yTop = m_pG->tlu(s_iFixedHeight)/4;
+	UT_uint32 yBar = m_pG->tlu(s_iFixedHeight)/2;
 	UT_uint32 yBottom = yTop + yBar;
-	UT_sint32 hs = _UL(4);					// halfSize
-	UT_sint32 fs = hs * 2 + _UL(2);			// fullSize
+	UT_sint32 hs = m_pG->tlu(4);					// halfSize
+	UT_sint32 fs = hs * 2 + m_pG->tlu(2);			// fullSize
 
 	if (pRect)
-		pRect->set(anchor - hs, yBottom - _UL(6), fs, _UL(6));
+		pRect->set(anchor - hs, yBottom - m_pG->tlu(6), fs, m_pG->tlu(6));
 }
 
 void AP_TopRuler::_drawTabProperties(const UT_Rect * pClipRect,
@@ -850,11 +848,11 @@ void AP_TopRuler::_drawTabProperties(const UT_Rect * pClipRect,
 		_getTabStopRect(pInfo, anchor, &rect);
 
 		_drawTabStop(rect, m_draggingTabType, false);
-		UT_uint32 xFixed = (UT_sint32)UT_MAX(m_iLeftRulerWidth,s_iFixedWidth);
+		UT_uint32 xFixed = (UT_sint32)m_pG->tlu(UT_MAX(m_iLeftRulerWidth,s_iFixedWidth));
 		FV_View * pView = static_cast<FV_View *>(m_pView);
 		if(pView->getViewMode() != VIEW_PRINT)
 		{
-			xFixed = s_iFixedWidth;
+			xFixed = m_pG->tlu(s_iFixedWidth);
 		}
 		if (m_draggingRect.left + m_draggingRect.width > (UT_sint32)xFixed)
 			_drawTabStop(m_draggingRect, m_draggingTabType, true);
@@ -893,8 +891,8 @@ void AP_TopRuler::_drawTabProperties(const UT_Rect * pClipRect,
 			// draw trailing default tabs
 
 			UT_sint32 xAbsRight = xAbsLeft + pInfo->u.c.m_xColumnWidth;
-			UT_uint32 yTop = s_iFixedHeight/4;
-			UT_uint32 yBar = s_iFixedHeight/2;
+			UT_uint32 yTop = m_pG->tlu(s_iFixedHeight)/4;
+			UT_uint32 yBar = m_pG->tlu(s_iFixedHeight)/2;
 			UT_uint32 yBottom = yTop + yBar;
 
 			m_pG->setColor3D(GR_Graphics::CLR3D_BevelDown);
@@ -908,7 +906,7 @@ void AP_TopRuler::_drawTabProperties(const UT_Rect * pClipRect,
 					if (iPos <= left)
 						continue;
 
-					m_pG->drawLine(iPos, yBottom + _UL(1), iPos, yBottom + _UL(4));
+					m_pG->drawLine(iPos, yBottom + m_pG->tlu(1), iPos, yBottom + m_pG->tlu(4));
 				}
 			}
 		}
@@ -941,11 +939,11 @@ void AP_TopRuler::_getTabZoneRect(AP_TopRulerInfo * pInfo, UT_Rect &rZone)
 	// this is the zone where clicking will get you a new tab
 	// basically the bottom half of the ruler, inside the current column
 
-	UT_uint32 yBar = s_iFixedHeight/2;
+	UT_uint32 yBar = m_pG->tlu(s_iFixedHeight)/2;
 	UT_sint32 xAbsLeft = _getFirstPixelInColumn(pInfo,0);
 	UT_sint32 xAbsRight = xAbsLeft + pInfo->u.c.m_xColumnWidth;
 
-	rZone.set(xAbsLeft,  s_iFixedHeight - yBar, xAbsRight-xAbsLeft, yBar);
+	rZone.set(xAbsLeft,  m_pG->tlu(s_iFixedHeight) - yBar, xAbsRight-xAbsLeft, yBar);
 }
 
 const char * AP_TopRuler::_getTabStopString(AP_TopRulerInfo * pInfo, UT_sint32 k)
@@ -990,13 +988,13 @@ UT_sint32 AP_TopRuler::_getColumnMarkerXRightEnd(AP_TopRulerInfo * pInfo, UT_uin
 void AP_TopRuler::_getColumnMarkerRect(AP_TopRulerInfo * pInfo, UT_uint32 /* kCol */,
 									   UT_sint32 xRight, UT_Rect * prCol)
 {
-	UT_uint32 yTop = s_iFixedHeight/4;
+	UT_uint32 yTop = m_pG->tlu(s_iFixedHeight)/4;
 
 	UT_sint32 xAbsLeft = _getFirstPixelInColumn(pInfo,0);
 	UT_sint32 xAbsRight = xAbsLeft + pInfo->u.c.m_xColumnWidth;
 	UT_sint32 xAbsRightGap = xAbsRight + pInfo->u.c.m_xColumnGap;
 	UT_sint32 xdelta = xRight - xAbsRightGap;
-	prCol->set(xAbsRight-xdelta, yTop- _UL(5), pInfo->u.c.m_xColumnGap + 2*xdelta + _UL(1), _UL(11));
+	prCol->set(xAbsRight-xdelta, yTop- m_pG->tlu(5), pInfo->u.c.m_xColumnGap + 2*xdelta + m_pG->tlu(1), m_pG->tlu(11));
 }
 
 void AP_TopRuler::_drawColumnProperties(const UT_Rect * pClipRect,
@@ -1046,11 +1044,11 @@ void AP_TopRuler::_getMarginMarkerRects(AP_TopRulerInfo * pInfo, UT_Rect &rLeft,
 		xAbsRight = _getFirstPixelInColumn(pInfo, pInfo->m_iNumColumns - 1) + pInfo->u.c.m_xColumnWidth;
 	}
 
-	UT_uint32 yTop = s_iFixedHeight / 4;
-	UT_sint32 hs = _UL(3);					// halfSize
+	UT_uint32 yTop = m_pG->tlu(s_iFixedHeight) / 4;
+	UT_sint32 hs = m_pG->tlu(3);					// halfSize
 	UT_sint32 fs = hs * 2;			// fullSize
 
-	rLeft.set(xAbsLeft  - hs, yTop - fs, fs, fs- _UL(1));
+	rLeft.set(xAbsLeft  - hs, yTop - fs, fs, fs- m_pG->tlu(1));
 	rRight.set(xAbsRight - hs, yTop - fs, fs, fs);
 }
 
@@ -1069,8 +1067,8 @@ void AP_TopRuler::_drawMarginProperties(const UT_Rect * /* pClipRect */,
 	m_pG->drawLine( rLeft.left + rLeft.width,  rLeft.top + rLeft.height, rLeft.left, rLeft.top + rLeft.height);
 	m_pG->drawLine( rLeft.left,  rLeft.top + rLeft.height, rLeft.left, rLeft.top);
 	m_pG->setColor3D(GR_Graphics::CLR3D_BevelUp);
-	m_pG->drawLine( rLeft.left + _UL(1),  rLeft.top + _UL(1), rLeft.left + rLeft.width - _UL(1), rLeft.top + _UL(1));
-	m_pG->drawLine( rLeft.left + _UL(1),  rLeft.top + rLeft.height - _UL(2), rLeft.left + _UL(1), rLeft.top + _UL(1));
+	m_pG->drawLine( rLeft.left + m_pG->tlu(1),  rLeft.top + m_pG->tlu(1), rLeft.left + rLeft.width - m_pG->tlu(1), rLeft.top + m_pG->tlu(1));
+	m_pG->drawLine( rLeft.left + m_pG->tlu(1),  rLeft.top + rLeft.height - m_pG->tlu(2), rLeft.left + m_pG->tlu(1), rLeft.top + m_pG->tlu(1));
 
 	/* I've #ifed out the dark bevels because we don't make them on the margin dragging gargets,
 	 * (even the square box on the left) so I don't think we should make them here either, to be consistent.
@@ -1078,8 +1076,8 @@ void AP_TopRuler::_drawMarginProperties(const UT_Rect * /* pClipRect */,
 	 */
 #if 0
 	m_pG->setColor3D(GR_Graphics::CLR3D_BevelDown);
-	m_pG->drawLine( rLeft.left + rLeft.width - _UL(1),  rLeft.top + _UL(1), rLeft.left + rLeft.width - _UL(1), rLeft.top + rLeft.height - _UL(1));
-	m_pG->drawLine( rLeft.left + rLeft.width - _UL(1),  rLeft.top + rLeft.height - _UL(1), rLeft.left + _UL(1), rLeft.top + rLeft.height - _UL(1));
+	m_pG->drawLine( rLeft.left + rLeft.width - m_pG->tlu(1),  rLeft.top + m_pG->tlu(1), rLeft.left + rLeft.width - m_pG->tlu(1), rLeft.top + rLeft.height - m_pG->tlu(1));
+	m_pG->drawLine( rLeft.left + rLeft.width - m_pG->tlu(1),  rLeft.top + rLeft.height - m_pG->tlu(1), rLeft.left + m_pG->tlu(1), rLeft.top + rLeft.height - m_pG->tlu(1));
 #endif
 
 	m_pG->fillRect(GR_Graphics::CLR3D_Background, rRight);
@@ -1090,12 +1088,12 @@ void AP_TopRuler::_drawMarginProperties(const UT_Rect * /* pClipRect */,
 	m_pG->drawLine( rRight.left + rRight.width,  rRight.top + rRight.height, rRight.left, rRight.top + rRight.height);
 	m_pG->drawLine( rRight.left,  rRight.top + rRight.height, rRight.left, rRight.top);
 	m_pG->setColor3D(GR_Graphics::CLR3D_BevelUp);
-	m_pG->drawLine( rRight.left + _UL(1),  rRight.top + _UL(1), rRight.left + rRight.width - _UL(1), rRight.top + _UL(1));
-	m_pG->drawLine( rRight.left + _UL(1),  rRight.top + rRight.height - _UL(2), rRight.left + _UL(1), rRight.top + _UL(1));
+	m_pG->drawLine( rRight.left + m_pG->tlu(1),  rRight.top + m_pG->tlu(1), rRight.left + rRight.width - m_pG->tlu(1), rRight.top + m_pG->tlu(1));
+	m_pG->drawLine( rRight.left + m_pG->tlu(1),  rRight.top + rRight.height - m_pG->tlu(2), rRight.left + m_pG->tlu(1), rRight.top + m_pG->tlu(1));
 #if 0
     m_pG->setColor3D(GR_Graphics::CLR3D_BevelDown);
-	m_pG->drawLine( rRight.left + rRight.width - _UL(1),  rRight.top + _UL(1), rRight.left + rRight.width - _UL(1), rRight.top + rRight.height - _UL(1));
-	m_pG->drawLine( rRight.left + rRight.width - _UL(1),  rRight.top + rRight.height - _UL(1), rRight.left + _UL(1), rRight.top + rRight.height - _UL(1));
+	m_pG->drawLine( rRight.left + rRight.width - m_pG->tlu(1),  rRight.top + m_pG->tlu(1), rRight.left + rRight.width - m_pG->tlu(1), rRight.top + rRight.height - m_pG->tlu(1));
+	m_pG->drawLine( rRight.left + rRight.width - m_pG->tlu(1),  rRight.top + rRight.height - m_pG->tlu(1), rRight.left + m_pG->tlu(1), rRight.top + rRight.height - m_pG->tlu(1));
 #endif
 }
 
@@ -1147,7 +1145,7 @@ void AP_TopRuler::_draw(const UT_Rect * pClipRect, AP_TopRulerInfo * pUseInfo)
     if(bRTL)
     {
 		sum = xAbsRight;
-		_drawBar(pClipRect,pInfo,GR_Graphics::CLR3D_BevelDown,sum+ _UL(1),pInfo->u.c.m_xaRightMargin- _UL(1));
+		_drawBar(pClipRect,pInfo,GR_Graphics::CLR3D_BevelDown,sum+ m_pG->tlu(1),pInfo->u.c.m_xaRightMargin- m_pG->tlu(1));
 		//sum -= pInfo->u.c.m_xColumnWidth;
     }
     else
@@ -1155,10 +1153,10 @@ void AP_TopRuler::_draw(const UT_Rect * pClipRect, AP_TopRulerInfo * pUseInfo)
 		UT_sint32 width = pInfo->u.c.m_xaLeftMargin;
 		if(pView->getViewMode() != VIEW_PRINT)
 		{
-			width -= s_iFixedWidth;
+			width -= m_pG->tlu(s_iFixedWidth);
 		}
 
-		_drawBar(pClipRect,pInfo,GR_Graphics::CLR3D_BevelDown, _UL(0+1), width- _UL(1));
+		_drawBar(pClipRect,pInfo,GR_Graphics::CLR3D_BevelDown, m_pG->tlu(0+1), width- m_pG->tlu(1));
 		sum = width;
 	}
 
@@ -1169,7 +1167,7 @@ void AP_TopRuler::_draw(const UT_Rect * pClipRect, AP_TopRulerInfo * pUseInfo)
 		if(bRTL)
 			sum -= pInfo->u.c.m_xColumnWidth;
 
-		_drawBar(pClipRect,pInfo, GR_Graphics::CLR3D_Highlight, sum+ _UL(1), pInfo->u.c.m_xColumnWidth- _UL(1));
+		_drawBar(pClipRect,pInfo, GR_Graphics::CLR3D_Highlight, sum+ m_pG->tlu(1), pInfo->u.c.m_xColumnWidth- m_pG->tlu(1));
 
 		if(!bRTL)
 			sum += pInfo->u.c.m_xColumnWidth;
@@ -1181,7 +1179,7 @@ void AP_TopRuler::_draw(const UT_Rect * pClipRect, AP_TopRulerInfo * pUseInfo)
 			if(bRTL)
 				sum -= pInfo->u.c.m_xColumnGap;
 
-			_drawBar(pClipRect,pInfo, GR_Graphics::CLR3D_BevelDown, sum+ _UL(1), pInfo->u.c.m_xColumnGap- _UL(1));
+			_drawBar(pClipRect,pInfo, GR_Graphics::CLR3D_BevelDown, sum+ m_pG->tlu(1), pInfo->u.c.m_xColumnGap- m_pG->tlu(1));
 
 			if(!bRTL)
 				sum += pInfo->u.c.m_xColumnGap;
@@ -1192,10 +1190,10 @@ void AP_TopRuler::_draw(const UT_Rect * pClipRect, AP_TopRulerInfo * pUseInfo)
 	if(bRTL)
 	{
 		sum -= pInfo->u.c.m_xaLeftMargin;
-		_drawBar(pClipRect,pInfo, GR_Graphics::CLR3D_BevelDown, sum+ _UL(1),pInfo->u.c.m_xaLeftMargin- _UL(1));
+		_drawBar(pClipRect,pInfo, GR_Graphics::CLR3D_BevelDown, sum+ m_pG->tlu(1),pInfo->u.c.m_xaLeftMargin- m_pG->tlu(1));
 	}
 	else
-		_drawBar(pClipRect,pInfo, GR_Graphics::CLR3D_BevelDown, sum+ _UL(1),pInfo->u.c.m_xaRightMargin- _UL(1));
+		_drawBar(pClipRect,pInfo, GR_Graphics::CLR3D_BevelDown, sum+ m_pG->tlu(1),pInfo->u.c.m_xaRightMargin- m_pG->tlu(1));
 
 	// now draw tick marks on the bar, using the selected system of units.
 
@@ -1220,7 +1218,7 @@ void AP_TopRuler::_draw(const UT_Rect * pClipRect, AP_TopRulerInfo * pUseInfo)
 		xTickOrigin = pInfo->u.c.m_xaLeftMargin;
 		if(pView->getViewMode() != VIEW_PRINT)
 		{
-			xTickOrigin -= s_iFixedWidth;
+			xTickOrigin -= m_pG->tlu(s_iFixedWidth);
 		}
 
 		if (pInfo->m_iCurrentColumn > 0)
@@ -1246,7 +1244,7 @@ void AP_TopRuler::_draw(const UT_Rect * pClipRect, AP_TopRulerInfo * pUseInfo)
 
 	if(pView->getViewMode() != VIEW_PRINT)
 	{
-		sum -= s_iFixedWidth;
+		sum -= m_pG->tlu(s_iFixedWidth);
 	}
 
 
@@ -1319,7 +1317,7 @@ void AP_TopRuler::_draw(const UT_Rect * pClipRect, AP_TopRulerInfo * pUseInfo)
 
 void AP_TopRuler::_xorGuide(bool bClear)
 {
-	UT_uint32 xFixed = (UT_sint32)UT_MAX(m_iLeftRulerWidth,s_iFixedWidth);
+	UT_uint32 xFixed = (UT_sint32)m_pG->tlu(UT_MAX(m_iLeftRulerWidth,s_iFixedWidth));
 	FV_View * pView = static_cast<FV_View *>(m_pView);
 	if(pView->getViewMode() != VIEW_PRINT)
 	{
@@ -1399,11 +1397,8 @@ bool AP_TopRuler::isMouseOverTab(UT_uint32 x, UT_uint32 y)
 // Sevior: Look to cache this.
 	// first hit-test against the tab toggle control
 	(static_cast<FV_View *>(m_pView))->getTopRulerInfo(&m_infoCache);
-	//UT_sint32 xFixed = (UT_sint32)UT_MAX(m_iLeftRulerWidth,s_iFixedWidth);
+	//UT_sint32 xFixed = (UT_sint32)m_pG->tlu(UT_MAX(m_iLeftRulerWidth,s_iFixedWidth));
 	//UT_sint32 xStartPixel = xFixed + (UT_sint32) m_infoCache.m_xPageViewMargin;
-
-	_UUL(x);
-	_UUL(y);
 
 	UT_Rect rToggle;
 
@@ -1426,7 +1421,7 @@ bool AP_TopRuler::isMouseOverTab(UT_uint32 x, UT_uint32 y)
 	eTabType iType;
 	eTabLeader iLeader;
 	ap_RulerTicks tick(m_pG,m_dim);
-	UT_sint32 iTab = _findTabStop(&m_infoCache, x, s_iFixedHeight/2 + s_iFixedHeight/4 - 3, anchor, iType, iLeader);
+	UT_sint32 iTab = _findTabStop(&m_infoCache, x, m_pG->tlu(s_iFixedHeight)/2 + m_pG->tlu(s_iFixedHeight)/4 - 3, anchor, iType, iLeader);
 
 	UT_sint32 xAbsLeft = _getFirstPixelInColumn(&m_infoCache,m_infoCache.m_iCurrentColumn);
     UT_sint32 xrel;
@@ -1573,8 +1568,8 @@ void AP_TopRuler::_getCellMarkerRect(AP_TopRulerInfo * pInfo, UT_sint32 kCell,
 
 			UT_sint32 xAbsLeft = _getFirstPixelInColumn(pInfo,pInfo->m_iCurrentColumn);
 			UT_sint32 pos = xAbsLeft + pCellInfo->m_iLeftCellPos;
-			UT_sint32 ileft = s_iFixedHeight/4;
-			prCell->set(pos-ileft,ileft,s_iFixedHeight/2,s_iFixedHeight/2); // left/top/width/height
+			UT_sint32 ileft = m_pG->tlu(s_iFixedHeight)/4;
+			prCell->set(pos-ileft,ileft,m_pG->tlu(s_iFixedHeight)/2,m_pG->tlu(s_iFixedHeight)/2); // left/top/width/height
 		}
 		else if(nCells > 0)
 		{
@@ -1582,8 +1577,8 @@ void AP_TopRuler::_getCellMarkerRect(AP_TopRulerInfo * pInfo, UT_sint32 kCell,
 
 			UT_sint32 xAbsLeft = _getFirstPixelInColumn(pInfo,pInfo->m_iCurrentColumn);
 			UT_sint32 pos = xAbsLeft + pCellInfo->m_iRightCellPos;
-			UT_sint32 ileft = s_iFixedHeight/4;
-			prCell->set(pos-ileft,ileft,s_iFixedHeight/2,s_iFixedHeight/2); // left/top/width/height
+			UT_sint32 ileft = m_pG->tlu(s_iFixedHeight)/4;
+			prCell->set(pos-ileft,ileft,m_pG->tlu(s_iFixedHeight)/2,m_pG->tlu(s_iFixedHeight)/2); // left/top/width/height
 		}
 	}
 
@@ -1642,11 +1637,11 @@ void AP_TopRuler::_drawCellProperties(const UT_Rect * pClipRect,
 //
 // Just deal with the cell being dragged.
 //
-		UT_uint32 xFixed = (UT_sint32)UT_MAX(m_iLeftRulerWidth,s_iFixedWidth);
+		UT_uint32 xFixed = (UT_sint32)m_pG->tlu(UT_MAX(m_iLeftRulerWidth,s_iFixedWidth));
 		FV_View * pView = static_cast<FV_View *>(m_pView);
 		if(pView->getViewMode() != VIEW_PRINT)
 		{
-			xFixed = s_iFixedWidth;
+			xFixed = m_pG->tlu(s_iFixedWidth);
 		}
 		if (m_draggingRect.left + m_draggingRect.width > (UT_sint32)xFixed)
 			_drawCellMark(&m_draggingRect,true);
@@ -1703,11 +1698,11 @@ void AP_TopRuler::_drawCellProperties(const UT_Rect * pClipRect,
 //
 // Now draw a nice bevelled cell at the dragging position.
 //
-		UT_uint32 xFixed = (UT_sint32)UT_MAX(m_iLeftRulerWidth,s_iFixedWidth);
+		UT_uint32 xFixed = (UT_sint32)m_pG->tlu(UT_MAX(m_iLeftRulerWidth,s_iFixedWidth));
 		FV_View * pView = static_cast<FV_View *>(m_pView);
 		if(pView->getViewMode() != VIEW_PRINT)
 		{
-			xFixed = s_iFixedWidth;
+			xFixed = m_pG->tlu(s_iFixedWidth);
 		}
 		if (m_draggingRect.left + m_draggingRect.width > (UT_sint32)xFixed)
 			_drawCellMark(&m_draggingRect,true);
@@ -1769,14 +1764,14 @@ void AP_TopRuler::_drawCellGap(AP_TopRulerInfo * pInfo, UT_sint32 iCell)
 			left = right - pCellInfo->m_iRightSpacing;
 			right +=  pCellInfo->m_iRightSpacing;
 		}
-		top = s_iFixedHeight / 4;
-		height =  s_iFixedHeight / 2;
+		top = m_pG->tlu(s_iFixedHeight) / 4;
+		height =  m_pG->tlu(s_iFixedHeight) / 2;
 		
 		if(cCell.width >= 0)
 		{	
-			lCell.set(left, top, _UL(1), height);
-			cCell.set(left + _UL(1), top, right - left - _UL(2), height);
-			rCell.set(right - _UL(1), top, _UL(1), height);
+			lCell.set(left, top, m_pG->tlu(1), height);
+			cCell.set(left + m_pG->tlu(1), top, right - left - m_pG->tlu(2), height);
+			rCell.set(right - m_pG->tlu(1), top, m_pG->tlu(1), height);
 			
 			m_pG->fillRect(GR_Graphics::CLR3D_Background, lCell);
 			if (cCell.width > 0)
@@ -1788,20 +1783,19 @@ void AP_TopRuler::_drawCellGap(AP_TopRulerInfo * pInfo, UT_sint32 iCell)
 
 UT_sint32 AP_TopRuler::setTableLineDrag(PT_DocPosition pos, UT_sint32 x, UT_sint32 & iFixed)
 {
-	_UUL(x);
 	m_bValidMouseClick = false;
 	m_draggingWhat = DW_NOTHING;
 	m_bEventIgnored = false;
-	UT_sint32 y = s_iFixedHeight/2;
+	UT_sint32 y = m_pG->tlu(s_iFixedHeight)/2;
 	FV_View * pView = (static_cast<FV_View *>(m_pView));
 	pView->getTopRulerInfo(pos,&m_infoCache);
 	draw(NULL, &m_infoCache);
 
-	iFixed = (UT_sint32)UT_MAX(m_iLeftRulerWidth,s_iFixedWidth);
+	iFixed = (UT_sint32)m_pG->tlu(UT_MAX(m_iLeftRulerWidth,s_iFixedWidth));
 
 	if(pView->getViewMode() != VIEW_PRINT)
 	{
-		iFixed = s_iFixedWidth;
+		iFixed = m_pG->tlu(s_iFixedWidth);
 	}
 	x += iFixed;
 	// Set this in case we never get a mouse motion event
@@ -1889,8 +1883,6 @@ UT_sint32 AP_TopRuler::setTableLineDrag(PT_DocPosition pos, UT_sint32 x, UT_sint
 void AP_TopRuler::mousePress(EV_EditModifierState /* ems */,
 							 EV_EditMouseButton emb , UT_uint32 x, UT_uint32 y)
 {
-	_UUL(x);
-	_UUL(y);
 	//UT_DEBUGMSG(("mousePress: [ems 0x%08lx][emb 0x%08lx][x %ld][y %ld]\n",ems,emb,x,y));
 
 	// get the complete state of what should be on the ruler at the time of the grab.
@@ -1960,7 +1952,7 @@ void AP_TopRuler::mousePress(EV_EditModifierState /* ems */,
  	UT_sint32 anchor;
  	eTabType iType;
 	eTabLeader iLeader;
-	UT_sint32 iTab = _findTabStop(&m_infoCache, x, s_iFixedHeight/2 + s_iFixedHeight/4 - 3, anchor, iType, iLeader);
+	UT_sint32 iTab = _findTabStop(&m_infoCache, x, m_pG->tlu(s_iFixedHeight/2 + s_iFixedHeight/4 - 3), anchor, iType, iLeader);
 	if (iTab >= 0)
 	{
 		if(emb == EV_EMB_BUTTON1)
@@ -2225,14 +2217,11 @@ void AP_TopRuler::mouseRelease(EV_EditModifierState /* ems */, EV_EditMouseButto
 		return;
 	}
 
-	_UUL(x);
-	_UUL(y);
-	
 	m_bValidMouseClick = false;
 
 	// if they drag vertically off the ruler, we ignore the whole thing.
 
-	if ((y < 0) || (y > (UT_sint32)m_iHeight))
+	if ((y < 0) || (y > (UT_sint32)getHeight ()))
 	{
 		_ignoreEvent(true);
 		m_draggingWhat = DW_NOTHING;
@@ -2304,7 +2293,7 @@ void AP_TopRuler::mouseRelease(EV_EditModifierState /* ems */, EV_EditMouseButto
 			// margins do not require any special bidi treatement; right
 			// edge of the page is always a right edge of the page ...
 
-			UT_sint32 xFixed = (UT_sint32)UT_MAX(m_iLeftRulerWidth,s_iFixedWidth);
+			UT_sint32 xFixed = (UT_sint32)m_pG->tlu(UT_MAX(m_iLeftRulerWidth,s_iFixedWidth));
 			FV_View * pView = static_cast<FV_View *>(m_pView);
 			if(pView->getViewMode() != VIEW_PRINT)
 			{
@@ -2548,7 +2537,7 @@ void AP_TopRuler::mouseRelease(EV_EditModifierState /* ems */, EV_EditMouseButto
 			else
 				xrel = xgrid + xAbsLeft;
 
-			UT_sint32 iTab = _findTabStop(&m_infoCache, xrel, s_iFixedHeight/2 + s_iFixedHeight/4 - 3, anchor, iType, iLeader);
+			UT_sint32 iTab = _findTabStop(&m_infoCache, xrel, m_pG->tlu(s_iFixedHeight)/2 + m_pG->tlu(s_iFixedHeight)/4 - 3, anchor, iType, iLeader);
 
 			UT_DEBUGMSG (("iTab: %i, m_draggingTab: %i\n", iTab, m_draggingTab));
 
@@ -2785,16 +2774,13 @@ void AP_TopRuler::mouseMotion(EV_EditModifierState ems, UT_sint32 x, UT_sint32 y
 		return;
 	}
 
-	_UUL(x);
-	_UUL(y);
-	
 	m_bEventIgnored = false;
 
 //  	UT_DEBUGMSG(("mouseMotion: [ems 0x%08lx][x %ld][y %ld]\n",ems,x,y));
 
 	// if they drag vertically off the ruler, we ignore the whole thing.
 
-	if ((y < 0) || (y > (UT_sint32)m_iHeight))
+	if ((y < 0) || (y > (UT_sint32)getHeight ()))
 	{
 		if(!m_bEventIgnored)
 		{
@@ -2810,11 +2796,11 @@ void AP_TopRuler::mouseMotion(EV_EditModifierState ems, UT_sint32 x, UT_sint32 y
 	// now it makes sure the values are sane, disregarding mouse area
 	// for example, it will not let a left indent be moved to a place before the end of the left page view margin
 
-	UT_sint32 xFixed = (UT_sint32)UT_MAX(m_iLeftRulerWidth,s_iFixedWidth);
+	UT_sint32 xFixed = (UT_sint32)m_pG->tlu(UT_MAX(m_iLeftRulerWidth,s_iFixedWidth));
 
 	if(pView->getViewMode() != VIEW_PRINT)
 	{
-		xFixed = s_iFixedWidth;
+		xFixed = m_pG->tlu(s_iFixedWidth);
 	}
 
 	UT_sint32 xStartPixel = xFixed + (UT_sint32) m_infoCache.m_xPageViewMargin;
@@ -2840,7 +2826,7 @@ void AP_TopRuler::mouseMotion(EV_EditModifierState ems, UT_sint32 x, UT_sint32 y
 
 	// by the way, my OGR client just hit 50% of the block!! i'm so excited!!! http://www.distributed.net
 
-	if ((x < xFixed || x > (UT_sint32) m_iWidth) && m_draggingWhat != DW_TABTOGGLE)
+	if ((x < xFixed || x > (UT_sint32) getWidth ()) && m_draggingWhat != DW_TABTOGGLE)
 	{
 		// set m_aScrollDirection here instead of in the timer creation block because there is a change,
 		// though small, that the direction will change immediately with no on-ruler in-between state.
@@ -2862,7 +2848,7 @@ void AP_TopRuler::mouseMotion(EV_EditModifierState ems, UT_sint32 x, UT_sint32 y
 			m_pAutoScrollTimer = UT_Timer::static_constructor(_autoScroll, this, m_pG);
 			if (m_pAutoScrollTimer)
 			{
-				m_pAutoScrollTimer->set(tr_AUTOSCROLL_INTERVAL);
+				m_pAutoScrollTimer->set(s_tr_AUTOSCROLL_INTERVAL);
 			}
 		}
 
@@ -2872,7 +2858,7 @@ void AP_TopRuler::mouseMotion(EV_EditModifierState ems, UT_sint32 x, UT_sint32 y
 		}
 		else
 		{
-			x = m_iWidth - 10;
+			x = getWidth () - 10;
 		}
 		draw(NULL, &m_infoCache);
 	}
@@ -3541,8 +3527,8 @@ void AP_TopRuler::mouseMotion(EV_EditModifierState ems, UT_sint32 x, UT_sint32 y
 //
 // set the dragging cell marker rectangle here
 //
-			UT_sint32 ileft = s_iFixedHeight/4;
-			m_draggingRect.set(m_draggingCenter-ileft,ileft,s_iFixedHeight/2,s_iFixedHeight/2); // left/top/width/height
+			UT_sint32 ileft = m_pG->tlu(s_iFixedHeight)/4;
+			m_draggingRect.set(m_draggingCenter-ileft,ileft,m_pG->tlu(s_iFixedHeight)/2,m_pG->tlu(s_iFixedHeight)/2); // left/top/width/height
 
 			if (!m_bBeforeFirstMotion && (m_draggingCenter != oldDraggingCenter))
 				draw(&oldDraggingRect,&m_infoCache);
@@ -3562,7 +3548,7 @@ void AP_TopRuler::mouseMotion(EV_EditModifierState ems, UT_sint32 x, UT_sint32 y
 
 double AP_TopRuler::_getUnitsFromRulerLeft(UT_sint32 xColRel, ap_RulerTicks & tick)
 {
-	UT_sint32 xFixed = (UT_sint32)UT_MAX(m_iLeftRulerWidth,s_iFixedWidth);
+	UT_sint32 xFixed = (UT_sint32)m_pG->tlu(UT_MAX(m_iLeftRulerWidth,s_iFixedWidth));
 	FV_View * pView = static_cast<FV_View *>(m_pView);
 	if(pView->getViewMode() != VIEW_PRINT)
 	{
@@ -3577,7 +3563,7 @@ UT_sint32 AP_TopRuler::_getFirstPixelInColumn(AP_TopRulerInfo * pInfo, UT_uint32
 {
 	// return absolute pixel value for the first pixel in this column.
 
-	UT_sint32 xFixed = (UT_sint32)UT_MAX(m_iLeftRulerWidth,s_iFixedWidth);
+	UT_sint32 xFixed = (UT_sint32)m_pG->tlu(UT_MAX(m_iLeftRulerWidth,s_iFixedWidth));
 	UT_sint32 xOrigin = pInfo->u.c.m_xaLeftMargin
 		+ kCol * (pInfo->u.c.m_xColumnWidth + pInfo->u.c.m_xColumnGap);
 	UT_sint32 ixMargin = pInfo->m_xPageViewMargin;
@@ -3722,27 +3708,27 @@ void AP_TopRuler::_drawLeftIndentMarker(UT_Rect & rect, bool bFilled)
 		// fill in the body
 
 		m_pG->setColor3D(GR_Graphics::CLR3D_Background);
-		m_pG->drawLine( l+_UL(1),   t+_UL(7),  l+_UL(10), t+_UL(7) );
-		m_pG->drawLine( l+_UL(2),   t+_UL(6),  l+_UL(10), t+_UL(6) );
-		m_pG->drawLine( l+_UL(2),   t+_UL(5),  l+_UL(10), t+_UL(5) );
-		m_pG->drawLine( l+_UL(3),   t+_UL(4),  l+_UL(9),  t+_UL(4) );
-		m_pG->drawLine( l+_UL(4),   t+_UL(3),  l+_UL(8), t+_UL(3) );
-		m_pG->drawLine( l+_UL(5),   t+_UL(2),  l+_UL(7), t+_UL(2) );
+		m_pG->drawLine( l+m_pG->tlu(1),   t+m_pG->tlu(7),  l+m_pG->tlu(10), t+m_pG->tlu(7) );
+		m_pG->drawLine( l+m_pG->tlu(2),   t+m_pG->tlu(6),  l+m_pG->tlu(10), t+m_pG->tlu(6) );
+		m_pG->drawLine( l+m_pG->tlu(2),   t+m_pG->tlu(5),  l+m_pG->tlu(10), t+m_pG->tlu(5) );
+		m_pG->drawLine( l+m_pG->tlu(3),   t+m_pG->tlu(4),  l+m_pG->tlu(9),  t+m_pG->tlu(4) );
+		m_pG->drawLine( l+m_pG->tlu(4),   t+m_pG->tlu(3),  l+m_pG->tlu(8), t+m_pG->tlu(3) );
+		m_pG->drawLine( l+m_pG->tlu(5),   t+m_pG->tlu(2),  l+m_pG->tlu(7), t+m_pG->tlu(2) );
 
 		// draw 3d highlights
 
 		m_pG->setColor3D(clr3dBevel);
-		m_pG->drawLine( l+_UL(5),   t+_UL(1),  l,    t+_UL(6) );
-		m_pG->drawLine( l+_UL(1),   t+_UL(5),  l+_UL(1),  t+_UL(7) );
+		m_pG->drawLine( l+m_pG->tlu(5),   t+m_pG->tlu(1),  l,    t+m_pG->tlu(6) );
+		m_pG->drawLine( l+m_pG->tlu(1),   t+m_pG->tlu(5),  l+m_pG->tlu(1),  t+m_pG->tlu(7) );
 
 		// draw border
 
 		m_pG->setColor3D(clr3dBorder);
-		m_pG->drawLine(	l+_UL(5),   t,    l+_UL(11), t+_UL(6) );
-		m_pG->drawLine(	l+_UL(5),   t,    l- _UL(1), t+_UL(6) );
-		m_pG->drawLine(	l,     t+_UL(5),  l,    t+_UL(9) );
-		m_pG->drawLine(	l+_UL(10),  t+_UL(5),  l+_UL(10), t+_UL(9) );
-		m_pG->drawLine(	l,     t+_UL(8),  l+_UL(11), t+_UL(8) );
+		m_pG->drawLine(	l+m_pG->tlu(5),   t,    l+m_pG->tlu(11), t+m_pG->tlu(6) );
+		m_pG->drawLine(	l+m_pG->tlu(5),   t,    l- m_pG->tlu(1), t+m_pG->tlu(6) );
+		m_pG->drawLine(	l,     t+m_pG->tlu(5),  l,    t+m_pG->tlu(9) );
+		m_pG->drawLine(	l+m_pG->tlu(10),  t+m_pG->tlu(5),  l+m_pG->tlu(10), t+m_pG->tlu(9) );
+		m_pG->drawLine(	l,     t+m_pG->tlu(8),  l+m_pG->tlu(11), t+m_pG->tlu(8) );
 
 	}
 	else
@@ -3750,35 +3736,35 @@ void AP_TopRuler::_drawLeftIndentMarker(UT_Rect & rect, bool bFilled)
 		// fill in the body
 
 		m_pG->setColor3D(GR_Graphics::CLR3D_Background);
-		m_pG->drawLine( l+_UL(1),   t+_UL(13), l+_UL(10), t+_UL(13));
-		m_pG->drawLine( l+_UL(2),   t+_UL(12), l+_UL(10), t+_UL(12));
-		m_pG->drawLine( l+_UL(2),   t+_UL(11), l+_UL(10), t+_UL(11));
-		m_pG->drawLine( l+_UL(2),   t+_UL(10), l+_UL(10), t+_UL(10));
-		m_pG->drawLine( l+_UL(9),   t+_UL(9),  l+_UL(10), t+_UL(9) );
-		m_pG->drawLine( l+_UL(1),   t+_UL(7),  l+_UL(10), t+_UL(7) );
-		m_pG->drawLine( l+_UL(2),   t+_UL(6),  l+_UL(10), t+_UL(6) );
-		m_pG->drawLine( l+_UL(2),   t+_UL(5),  l+_UL(10), t+_UL(5) );
-		m_pG->drawLine( l+_UL(3),   t+_UL(4),  l+_UL(9),  t+_UL(4) );
-		m_pG->drawLine( l+_UL(4),   t+_UL(3),  l+_UL(8), t+_UL(3) );
-		m_pG->drawLine( l+_UL(5),   t+_UL(2),  l+_UL(7), t+_UL(2) );
+		m_pG->drawLine( l+m_pG->tlu(1),   t+m_pG->tlu(13), l+m_pG->tlu(10), t+m_pG->tlu(13));
+		m_pG->drawLine( l+m_pG->tlu(2),   t+m_pG->tlu(12), l+m_pG->tlu(10), t+m_pG->tlu(12));
+		m_pG->drawLine( l+m_pG->tlu(2),   t+m_pG->tlu(11), l+m_pG->tlu(10), t+m_pG->tlu(11));
+		m_pG->drawLine( l+m_pG->tlu(2),   t+m_pG->tlu(10), l+m_pG->tlu(10), t+m_pG->tlu(10));
+		m_pG->drawLine( l+m_pG->tlu(9),   t+m_pG->tlu(9),  l+m_pG->tlu(10), t+m_pG->tlu(9) );
+		m_pG->drawLine( l+m_pG->tlu(1),   t+m_pG->tlu(7),  l+m_pG->tlu(10), t+m_pG->tlu(7) );
+		m_pG->drawLine( l+m_pG->tlu(2),   t+m_pG->tlu(6),  l+m_pG->tlu(10), t+m_pG->tlu(6) );
+		m_pG->drawLine( l+m_pG->tlu(2),   t+m_pG->tlu(5),  l+m_pG->tlu(10), t+m_pG->tlu(5) );
+		m_pG->drawLine( l+m_pG->tlu(3),   t+m_pG->tlu(4),  l+m_pG->tlu(9),  t+m_pG->tlu(4) );
+		m_pG->drawLine( l+m_pG->tlu(4),   t+m_pG->tlu(3),  l+m_pG->tlu(8), t+m_pG->tlu(3) );
+		m_pG->drawLine( l+m_pG->tlu(5),   t+m_pG->tlu(2),  l+m_pG->tlu(7), t+m_pG->tlu(2) );
 
 		// draw 3d highlights
 
 		m_pG->setColor3D(clr3dBevel);
-		m_pG->drawLine( l+_UL(5),   t+_UL(1),  l,    t+_UL(6) );
-		m_pG->drawLine( l+_UL(1),   t+_UL(5),  l+_UL(1),  t+_UL(7) );
-		m_pG->drawLine( l+_UL(1),   t+_UL(9),  l+_UL(9),  t+_UL(9) );
-		m_pG->drawLine( l+_UL(1),   t+_UL(9),  l+_UL(1),  t+_UL(13));
+		m_pG->drawLine( l+m_pG->tlu(5),   t+m_pG->tlu(1),  l,    t+m_pG->tlu(6) );
+		m_pG->drawLine( l+m_pG->tlu(1),   t+m_pG->tlu(5),  l+m_pG->tlu(1),  t+m_pG->tlu(7) );
+		m_pG->drawLine( l+m_pG->tlu(1),   t+m_pG->tlu(9),  l+m_pG->tlu(9),  t+m_pG->tlu(9) );
+		m_pG->drawLine( l+m_pG->tlu(1),   t+m_pG->tlu(9),  l+m_pG->tlu(1),  t+m_pG->tlu(13));
 
 		// draw border
 
 		m_pG->setColor3D(clr3dBorder);
-		m_pG->drawLine(	l+_UL(5),   t,    l+_UL(11), t+_UL(6) );
-		m_pG->drawLine(	l+_UL(5),   t,    l- _UL(1), t+_UL(6) );
-		m_pG->drawLine(	l,     t+_UL(5),  l,    t+_UL(15));
-		m_pG->drawLine(	l+_UL(10),  t+_UL(5),  l+_UL(10), t+_UL(15));
-		m_pG->drawLine(	l,     t+_UL(14), l+_UL(11), t+_UL(14));
-		m_pG->drawLine(	l,     t+_UL(8),  l+_UL(11), t+_UL(8) );
+		m_pG->drawLine(	l+m_pG->tlu(5),   t,    l+m_pG->tlu(11), t+m_pG->tlu(6) );
+		m_pG->drawLine(	l+m_pG->tlu(5),   t,    l- m_pG->tlu(1), t+m_pG->tlu(6) );
+		m_pG->drawLine(	l,     t+m_pG->tlu(5),  l,    t+m_pG->tlu(15));
+		m_pG->drawLine(	l+m_pG->tlu(10),  t+m_pG->tlu(5),  l+m_pG->tlu(10), t+m_pG->tlu(15));
+		m_pG->drawLine(	l,     t+m_pG->tlu(14), l+m_pG->tlu(11), t+m_pG->tlu(14));
+		m_pG->drawLine(	l,     t+m_pG->tlu(8),  l+m_pG->tlu(11), t+m_pG->tlu(8) );
     }
 }
 
@@ -3797,62 +3783,62 @@ void AP_TopRuler::_drawRightIndentMarker(UT_Rect & rect, bool bFilled)
 		// fill in the body
 
 		m_pG->setColor3D(GR_Graphics::CLR3D_Background);
-		m_pG->drawLine( l+_UL(1),   t+_UL(13), l+_UL(10), t+_UL(13));
-		m_pG->drawLine( l+_UL(2),   t+_UL(12), l+_UL(10), t+_UL(12));
-		m_pG->drawLine( l+_UL(2),   t+_UL(11), l+_UL(10), t+_UL(11));
-		m_pG->drawLine( l+_UL(2),   t+_UL(10), l+_UL(10), t+_UL(10));
-		m_pG->drawLine( l+_UL(9),   t+_UL(9),  l+_UL(10), t+_UL(9) );
-		m_pG->drawLine( l+_UL(1),   t+_UL(7),  l+_UL(10), t+_UL(7) );
-		m_pG->drawLine( l+_UL(2),   t+_UL(6),  l+_UL(10), t+_UL(6) );
-		m_pG->drawLine( l+_UL(2),   t+_UL(5),  l+_UL(10), t+_UL(5) );
-		m_pG->drawLine( l+_UL(3),   t+_UL(4),  l+_UL(9),  t+_UL(4) );
-		m_pG->drawLine( l+_UL(4),   t+_UL(3),  l+_UL(8), t+_UL(3) );
-		m_pG->drawLine( l+_UL(5),   t+_UL(2),  l+_UL(7), t+_UL(2) );
+		m_pG->drawLine( l+m_pG->tlu(1),   t+m_pG->tlu(13), l+m_pG->tlu(10), t+m_pG->tlu(13));
+		m_pG->drawLine( l+m_pG->tlu(2),   t+m_pG->tlu(12), l+m_pG->tlu(10), t+m_pG->tlu(12));
+		m_pG->drawLine( l+m_pG->tlu(2),   t+m_pG->tlu(11), l+m_pG->tlu(10), t+m_pG->tlu(11));
+		m_pG->drawLine( l+m_pG->tlu(2),   t+m_pG->tlu(10), l+m_pG->tlu(10), t+m_pG->tlu(10));
+		m_pG->drawLine( l+m_pG->tlu(9),   t+m_pG->tlu(9),  l+m_pG->tlu(10), t+m_pG->tlu(9) );
+		m_pG->drawLine( l+m_pG->tlu(1),   t+m_pG->tlu(7),  l+m_pG->tlu(10), t+m_pG->tlu(7) );
+		m_pG->drawLine( l+m_pG->tlu(2),   t+m_pG->tlu(6),  l+m_pG->tlu(10), t+m_pG->tlu(6) );
+		m_pG->drawLine( l+m_pG->tlu(2),   t+m_pG->tlu(5),  l+m_pG->tlu(10), t+m_pG->tlu(5) );
+		m_pG->drawLine( l+m_pG->tlu(3),   t+m_pG->tlu(4),  l+m_pG->tlu(9),  t+m_pG->tlu(4) );
+		m_pG->drawLine( l+m_pG->tlu(4),   t+m_pG->tlu(3),  l+m_pG->tlu(8), t+m_pG->tlu(3) );
+		m_pG->drawLine( l+m_pG->tlu(5),   t+m_pG->tlu(2),  l+m_pG->tlu(7), t+m_pG->tlu(2) );
 
 		// draw 3d highlights
 
 		m_pG->setColor3D(clr3dBevel);
-		m_pG->drawLine( l+_UL(5),   t+_UL(1),  l,    t+_UL(6) );
-		m_pG->drawLine( l+_UL(1),   t+_UL(5),  l+_UL(1),  t+_UL(7) );
-		m_pG->drawLine( l+_UL(1),   t+_UL(9),  l+_UL(9),  t+_UL(9) );
-		m_pG->drawLine( l+_UL(1),   t+_UL(9),  l+_UL(1),  t+_UL(13));
+		m_pG->drawLine( l+m_pG->tlu(5),   t+m_pG->tlu(1),  l,    t+m_pG->tlu(6) );
+		m_pG->drawLine( l+m_pG->tlu(1),   t+m_pG->tlu(5),  l+m_pG->tlu(1),  t+m_pG->tlu(7) );
+		m_pG->drawLine( l+m_pG->tlu(1),   t+m_pG->tlu(9),  l+m_pG->tlu(9),  t+m_pG->tlu(9) );
+		m_pG->drawLine( l+m_pG->tlu(1),   t+m_pG->tlu(9),  l+m_pG->tlu(1),  t+m_pG->tlu(13));
 
 		// draw border
 
 		m_pG->setColor3D(clr3dBorder);
-		m_pG->drawLine(	l+_UL(5),   t,    l+_UL(11), t+_UL(6));
-		m_pG->drawLine(	l+_UL(5),   t,    l- _UL(1), t+_UL(6));
-		m_pG->drawLine(	l,     t+_UL(5),  l,    t+_UL(15));
-		m_pG->drawLine(	l+_UL(10),  t+_UL(5),  l+_UL(10), t+_UL(15));
-		m_pG->drawLine(	l,     t+_UL(14), l+_UL(11), t+_UL(14));
-		m_pG->drawLine(	l,     t+_UL(8),  l+_UL(11), t+_UL(8) );
+		m_pG->drawLine(	l+m_pG->tlu(5),   t,    l+m_pG->tlu(11), t+m_pG->tlu(6));
+		m_pG->drawLine(	l+m_pG->tlu(5),   t,    l- m_pG->tlu(1), t+m_pG->tlu(6));
+		m_pG->drawLine(	l,     t+m_pG->tlu(5),  l,    t+m_pG->tlu(15));
+		m_pG->drawLine(	l+m_pG->tlu(10),  t+m_pG->tlu(5),  l+m_pG->tlu(10), t+m_pG->tlu(15));
+		m_pG->drawLine(	l,     t+m_pG->tlu(14), l+m_pG->tlu(11), t+m_pG->tlu(14));
+		m_pG->drawLine(	l,     t+m_pG->tlu(8),  l+m_pG->tlu(11), t+m_pG->tlu(8) );
 	}
 	else
 	{
 		// fill in the body
 
 		m_pG->setColor3D(GR_Graphics::CLR3D_Background);
-		m_pG->drawLine( l+_UL(1),   t+_UL(7),  l+_UL(10), t+_UL(7) );
-		m_pG->drawLine( l+_UL(2),   t+_UL(6),  l+_UL(10), t+_UL(6) );
-		m_pG->drawLine( l+_UL(2),   t+_UL(5),  l+_UL(10), t+_UL(5) );
-		m_pG->drawLine( l+_UL(3),   t+_UL(4),  l+_UL(9),  t+_UL(4) );
-		m_pG->drawLine( l+_UL(4),   t+_UL(3),  l+_UL(8), t+_UL(3) );
-		m_pG->drawLine( l+_UL(5),   t+_UL(2),  l+_UL(7), t+_UL(2) );
+		m_pG->drawLine( l+m_pG->tlu(1),   t+m_pG->tlu(7),  l+m_pG->tlu(10), t+m_pG->tlu(7) );
+		m_pG->drawLine( l+m_pG->tlu(2),   t+m_pG->tlu(6),  l+m_pG->tlu(10), t+m_pG->tlu(6) );
+		m_pG->drawLine( l+m_pG->tlu(2),   t+m_pG->tlu(5),  l+m_pG->tlu(10), t+m_pG->tlu(5) );
+		m_pG->drawLine( l+m_pG->tlu(3),   t+m_pG->tlu(4),  l+m_pG->tlu(9),  t+m_pG->tlu(4) );
+		m_pG->drawLine( l+m_pG->tlu(4),   t+m_pG->tlu(3),  l+m_pG->tlu(8), t+m_pG->tlu(3) );
+		m_pG->drawLine( l+m_pG->tlu(5),   t+m_pG->tlu(2),  l+m_pG->tlu(7), t+m_pG->tlu(2) );
 
 		// draw 3d highlights
 
 		m_pG->setColor3D(clr3dBevel);
-		m_pG->drawLine( l+_UL(5),   t+_UL(1),  l,    t+_UL(6) );
-		m_pG->drawLine( l+_UL(1),   t+_UL(5),  l+_UL(1),  t+_UL(7) );
+		m_pG->drawLine( l+m_pG->tlu(5),   t+m_pG->tlu(1),  l,    t+m_pG->tlu(6) );
+		m_pG->drawLine( l+m_pG->tlu(1),   t+m_pG->tlu(5),  l+m_pG->tlu(1),  t+m_pG->tlu(7) );
 
 		// draw border
 
 		m_pG->setColor3D(clr3dBorder);
-		m_pG->drawLine(	l+_UL(5),   t,    l+_UL(11), t+_UL(6) );
-		m_pG->drawLine(	l+_UL(5),   t,    l- _UL(1), t+_UL(6) );
-		m_pG->drawLine(	l,     t+_UL(5),  l,    t+_UL(9) );
-		m_pG->drawLine(	l+_UL(10),  t+_UL(5),  l+_UL(10), t+_UL(9) );
-		m_pG->drawLine(	l,     t+_UL(8),  l+_UL(11), t+_UL(8) );
+		m_pG->drawLine(	l+m_pG->tlu(5),   t,    l+m_pG->tlu(11), t+m_pG->tlu(6) );
+		m_pG->drawLine(	l+m_pG->tlu(5),   t,    l- m_pG->tlu(1), t+m_pG->tlu(6) );
+		m_pG->drawLine(	l,     t+m_pG->tlu(5),  l,    t+m_pG->tlu(9) );
+		m_pG->drawLine(	l+m_pG->tlu(10),  t+m_pG->tlu(5),  l+m_pG->tlu(10), t+m_pG->tlu(9) );
+		m_pG->drawLine(	l,     t+m_pG->tlu(8),  l+m_pG->tlu(11), t+m_pG->tlu(8) );
     }
 }
 
@@ -3867,28 +3853,28 @@ void AP_TopRuler::_drawFirstLineIndentMarker(UT_Rect & rect, bool bFilled)
 	// fill in the body
 
 	m_pG->setColor3D(GR_Graphics::CLR3D_Background);
-	m_pG->drawLine( l+_UL(9),   t+_UL(1),  l+_UL(10), t+_UL(1) );
-	m_pG->drawLine( l+_UL(2),   t+_UL(2),  l+_UL(10), t+_UL(2) );
-	m_pG->drawLine( l+_UL(2),   t+_UL(3),  l+_UL(10), t+_UL(3) );
-	m_pG->drawLine( l+_UL(3),   t+_UL(4),  l+_UL(9),  t+_UL(4) );
-	m_pG->drawLine( l+_UL(4),   t+_UL(5),  l+_UL(8),  t+_UL(5) );
-	m_pG->drawLine( l+_UL(5),   t+_UL(6),  l+_UL(7),  t+_UL(6) );
+	m_pG->drawLine( l+m_pG->tlu(9),   t+m_pG->tlu(1),  l+m_pG->tlu(10), t+m_pG->tlu(1) );
+	m_pG->drawLine( l+m_pG->tlu(2),   t+m_pG->tlu(2),  l+m_pG->tlu(10), t+m_pG->tlu(2) );
+	m_pG->drawLine( l+m_pG->tlu(2),   t+m_pG->tlu(3),  l+m_pG->tlu(10), t+m_pG->tlu(3) );
+	m_pG->drawLine( l+m_pG->tlu(3),   t+m_pG->tlu(4),  l+m_pG->tlu(9),  t+m_pG->tlu(4) );
+	m_pG->drawLine( l+m_pG->tlu(4),   t+m_pG->tlu(5),  l+m_pG->tlu(8),  t+m_pG->tlu(5) );
+	m_pG->drawLine( l+m_pG->tlu(5),   t+m_pG->tlu(6),  l+m_pG->tlu(7),  t+m_pG->tlu(6) );
 
 	// draw 3d highlights
 
 	m_pG->setColor3D(clr3dBevel);
-	m_pG->drawLine( l+_UL(1),   t+_UL(1),  l+_UL(9),  t+_UL(1) );
-	m_pG->drawLine( l+_UL(1),   t+_UL(2),  l+_UL(1),  t+_UL(4) );
-	m_pG->drawLine( l+_UL(1),   t+_UL(3),  l+_UL(6),  t+_UL(8) );
+	m_pG->drawLine( l+m_pG->tlu(1),   t+m_pG->tlu(1),  l+m_pG->tlu(9),  t+m_pG->tlu(1) );
+	m_pG->drawLine( l+m_pG->tlu(1),   t+m_pG->tlu(2),  l+m_pG->tlu(1),  t+m_pG->tlu(4) );
+	m_pG->drawLine( l+m_pG->tlu(1),   t+m_pG->tlu(3),  l+m_pG->tlu(6),  t+m_pG->tlu(8) );
 
 	// draw border
 
 	m_pG->setColor3D(clr3dBorder);
-	m_pG->drawLine(	l+_UL(10),  t+_UL(3),  l+_UL(4),  t+_UL(9));
-	m_pG->drawLine(	l,     t+_UL(3),  l+_UL(6),  t+_UL(9));
-	m_pG->drawLine(	l,     t,    l,    t+_UL(4));
-	m_pG->drawLine(	l+_UL(10),  t,    l+_UL(10), t+_UL(4));
-	m_pG->drawLine(	l,     t,    l+_UL(11), t);
+	m_pG->drawLine(	l+m_pG->tlu(10),  t+m_pG->tlu(3),  l+m_pG->tlu(4),  t+m_pG->tlu(9));
+	m_pG->drawLine(	l,     t+m_pG->tlu(3),  l+m_pG->tlu(6),  t+m_pG->tlu(9));
+	m_pG->drawLine(	l,     t,    l,    t+m_pG->tlu(4));
+	m_pG->drawLine(	l+m_pG->tlu(10),  t,    l+m_pG->tlu(10), t+m_pG->tlu(4));
+	m_pG->drawLine(	l,     t,    l+m_pG->tlu(11), t);
 
 }
 
@@ -3909,27 +3895,27 @@ void AP_TopRuler::_drawTabToggle(const UT_Rect * pClipRect, bool bErase)
 		// first draw the frame
 
 		m_pG->setColor3D(GR_Graphics::CLR3D_BevelDown);
-		m_pG->drawLine( l,    t,    l,    t+ _UL(16));
-		m_pG->drawLine( l,    t+ _UL(16), l+ _UL(16), t+ _UL(16));
-		m_pG->drawLine( l+ _UL(16), t+ _UL(16), l+ _UL(16), t);
-		m_pG->drawLine( l+ _UL(16), t,    l,    t);
+		m_pG->drawLine( l,    t,    l,    t+ m_pG->tlu(16));
+		m_pG->drawLine( l,    t+ m_pG->tlu(16), l+ m_pG->tlu(16), t+ m_pG->tlu(16));
+		m_pG->drawLine( l+ m_pG->tlu(16), t+ m_pG->tlu(16), l+ m_pG->tlu(16), t);
+		m_pG->drawLine( l+ m_pG->tlu(16), t,    l,    t);
 
 		m_pG->setColor3D(GR_Graphics::CLR3D_BevelUp);
-		m_pG->drawLine( l+ _UL(1),  t+ _UL(1),  l+ _UL(1),  t+ _UL(16));
-		m_pG->drawLine( l+ _UL(1),  t+ _UL(1),  l+ _UL(16), t+ _UL(1));
-		m_pG->drawLine( l,    t+ _UL(17), l+ _UL(17), t+ _UL(17));
+		m_pG->drawLine( l+ m_pG->tlu(1),  t+ m_pG->tlu(1),  l+ m_pG->tlu(1),  t+ m_pG->tlu(16));
+		m_pG->drawLine( l+ m_pG->tlu(1),  t+ m_pG->tlu(1),  l+ m_pG->tlu(16), t+ m_pG->tlu(1));
+		m_pG->drawLine( l,    t+ m_pG->tlu(17), l+ m_pG->tlu(17), t+ m_pG->tlu(17));
 
 		// now draw the default tab style
 
-		rect.set(l+ _UL(4), t+ _UL(6), _UL(10), _UL(9));
+		rect.set(l+ m_pG->tlu(4), t+ m_pG->tlu(6), m_pG->tlu(10), m_pG->tlu(9));
 
 		// fill first if needed
 
 		if (bErase)
 			m_pG->fillRect(GR_Graphics::CLR3D_Background, rect);
 
-		if		(m_iDefaultTabType == FL_TAB_LEFT)	rect.left -= _UL(2);
-		else if (m_iDefaultTabType == FL_TAB_RIGHT)	rect.left += _UL(2);
+		if		(m_iDefaultTabType == FL_TAB_LEFT)	rect.left -= m_pG->tlu(2);
+		else if (m_iDefaultTabType == FL_TAB_RIGHT)	rect.left += m_pG->tlu(2);
 
 		_drawTabStop(rect, m_iDefaultTabType, true);
 	}
@@ -3948,35 +3934,35 @@ void AP_TopRuler::_drawTabStop(UT_Rect & rect, eTabType iType, bool bFilled)
 	UT_sint32 r = rect.left + rect.width;
 
 	// stroke the vertical first
-	m_pG->fillRect(clr3d, l+_UL(4),   t,    _UL(2),    _UL(4));
+	m_pG->fillRect(clr3d, l+m_pG->tlu(4),   t,    m_pG->tlu(2),    m_pG->tlu(4));
 
 	if (iType == FL_TAB_DECIMAL)
 	{
 		// add the dot
-		m_pG->fillRect(clr3d, l+ _UL(7),   t+ _UL(1),    _UL(2),   _UL(2));
+		m_pG->fillRect(clr3d, l+ m_pG->tlu(7),   t+ m_pG->tlu(1),    m_pG->tlu(2),   m_pG->tlu(2));
 	}
 
 	// figure out the bottom
 	switch (iType)
 	{
 		case FL_TAB_LEFT:
-			l += _UL(4);
+			l += m_pG->tlu(4);
 			break;
 
 		case FL_TAB_BAR:
-			l += _UL(4);
-			r = l+ _UL(2);
+			l += m_pG->tlu(4);
+			r = l+ m_pG->tlu(2);
 			break;
 			// fall through
 
 		case FL_TAB_RIGHT:
-			r -= _UL(4);
+			r -= m_pG->tlu(4);
 			break;
 
 		case FL_TAB_CENTER:
 		case FL_TAB_DECIMAL:
-			l += _UL(1);
-			r -= _UL(1);
+			l += m_pG->tlu(1);
+			r -= m_pG->tlu(1);
 			break;
 
 		default:
@@ -3984,7 +3970,7 @@ void AP_TopRuler::_drawTabStop(UT_Rect & rect, eTabType iType, bool bFilled)
 			break;
 	}
 
-	m_pG->fillRect(clr3d, l,     t+ _UL(4),  r-l,  _UL(2));
+	m_pG->fillRect(clr3d, l,     t+ m_pG->tlu(4),  r-l,  m_pG->tlu(2));
 }
 
 void AP_TopRuler::_drawColumnGapMarker(UT_Rect & rect)
@@ -3995,40 +3981,40 @@ void AP_TopRuler::_drawColumnGapMarker(UT_Rect & rect)
 	UT_sint32 l = rect.left;
 	UT_sint32 t = rect.top;
 	UT_sint32 w = rect.width;
-	UT_sint32 w2 = w/2 - _UL(1);
+	UT_sint32 w2 = w/2 - m_pG->tlu(1);
 
 	// fill in the body
 
 	m_pG->setColor3D(GR_Graphics::CLR3D_Background);
-	m_pG->drawLine(l+ _UL(2),   t+ _UL(1),  l+w- _UL(1),   t+ _UL(1) );
-	m_pG->drawLine(l+ _UL(2),   t+ _UL(2),  l+w- _UL(1),   t+ _UL(2) );
-	m_pG->drawLine(l+ _UL(2),   t+ _UL(3),  l+w- _UL(1),   t+ _UL(3) );
-	m_pG->drawLine(l+ _UL(2),   t+ _UL(4),  l+w- _UL(1),   t+ _UL(4) );
-	m_pG->drawLine(l+ _UL(2),   t+ _UL(3),  l+ _UL(2),     t+ _UL(8) );
-	m_pG->drawLine(l+ _UL(3),   t+ _UL(3),  l+ _UL(3),     t+ _UL(7) );
-	m_pG->drawLine(l+ _UL(4),   t+ _UL(3),  l+ _UL(4),     t+ _UL(6) );
-	m_pG->drawLine(l+w- _UL(2), t+ _UL(3),  l+w- _UL(2),   t+ _UL(9) );
-	m_pG->drawLine(l+w- _UL(3), t+ _UL(3),  l+w- _UL(3),   t+ _UL(8) );
-	m_pG->drawLine(l+w- _UL(4), t+ _UL(3),  l+w- _UL(4),   t+ _UL(7) );
-	m_pG->drawLine(l+w- _UL(5), t+ _UL(3),  l+w- _UL(5),   t+ _UL(6) );
+	m_pG->drawLine(l+ m_pG->tlu(2),   t+ m_pG->tlu(1),  l+w- m_pG->tlu(1),   t+ m_pG->tlu(1) );
+	m_pG->drawLine(l+ m_pG->tlu(2),   t+ m_pG->tlu(2),  l+w- m_pG->tlu(1),   t+ m_pG->tlu(2) );
+	m_pG->drawLine(l+ m_pG->tlu(2),   t+ m_pG->tlu(3),  l+w- m_pG->tlu(1),   t+ m_pG->tlu(3) );
+	m_pG->drawLine(l+ m_pG->tlu(2),   t+ m_pG->tlu(4),  l+w- m_pG->tlu(1),   t+ m_pG->tlu(4) );
+	m_pG->drawLine(l+ m_pG->tlu(2),   t+ m_pG->tlu(3),  l+ m_pG->tlu(2),     t+ m_pG->tlu(8) );
+	m_pG->drawLine(l+ m_pG->tlu(3),   t+ m_pG->tlu(3),  l+ m_pG->tlu(3),     t+ m_pG->tlu(7) );
+	m_pG->drawLine(l+ m_pG->tlu(4),   t+ m_pG->tlu(3),  l+ m_pG->tlu(4),     t+ m_pG->tlu(6) );
+	m_pG->drawLine(l+w- m_pG->tlu(2), t+ m_pG->tlu(3),  l+w- m_pG->tlu(2),   t+ m_pG->tlu(9) );
+	m_pG->drawLine(l+w- m_pG->tlu(3), t+ m_pG->tlu(3),  l+w- m_pG->tlu(3),   t+ m_pG->tlu(8) );
+	m_pG->drawLine(l+w- m_pG->tlu(4), t+ m_pG->tlu(3),  l+w- m_pG->tlu(4),   t+ m_pG->tlu(7) );
+	m_pG->drawLine(l+w- m_pG->tlu(5), t+ m_pG->tlu(3),  l+w- m_pG->tlu(5),   t+ m_pG->tlu(6) );
 
 	// draw 3d highlights
 
 	m_pG->setColor3D(clr3dBevel);
-	m_pG->drawLine(l+_UL(1),   t+_UL(1),  l+w2,    t+_UL(1) );
-	m_pG->drawLine(l+w2+_UL(1),t+_UL(1),  l+w-_UL(1),   t+_UL(1) );
-	m_pG->drawLine(l+_UL(1),   t+_UL(1),  l+_UL(1),     t+_UL(10));
-	m_pG->drawLine(l+w2+_UL(1),t+_UL(1),  l+w2+_UL(1),  t+_UL(5) );
+	m_pG->drawLine(l+m_pG->tlu(1),   t+m_pG->tlu(1),  l+w2,    t+m_pG->tlu(1) );
+	m_pG->drawLine(l+w2+m_pG->tlu(1),t+m_pG->tlu(1),  l+w-m_pG->tlu(1),   t+m_pG->tlu(1) );
+	m_pG->drawLine(l+m_pG->tlu(1),   t+m_pG->tlu(1),  l+m_pG->tlu(1),     t+m_pG->tlu(10));
+	m_pG->drawLine(l+w2+m_pG->tlu(1),t+m_pG->tlu(1),  l+w2+m_pG->tlu(1),  t+m_pG->tlu(5) );
 
 	// draw border
 
 	m_pG->setColor3D(clr3dBorder);
 	m_pG->drawLine(l,     t,    l+w,     t   );
-	m_pG->drawLine(l,     t,    l,       t+ _UL(11));
-	m_pG->drawLine(l+w- _UL(1), t,    l+w- _UL(1),   t+ _UL(11));
-	m_pG->drawLine(l,     t+ _UL(10), l+ _UL(5),     t+ _UL(5));
-	m_pG->drawLine(l+w- _UL(1), t+ _UL(10), l+w- _UL(6),   t+ _UL(5));
-	m_pG->drawLine(l+ _UL(5),   t+ _UL(5),  l+w- _UL(5),   t+ _UL(5));
+	m_pG->drawLine(l,     t,    l,       t+ m_pG->tlu(11));
+	m_pG->drawLine(l+w- m_pG->tlu(1), t,    l+w- m_pG->tlu(1),   t+ m_pG->tlu(11));
+	m_pG->drawLine(l,     t+ m_pG->tlu(10), l+ m_pG->tlu(5),     t+ m_pG->tlu(5));
+	m_pG->drawLine(l+w- m_pG->tlu(1), t+ m_pG->tlu(10), l+w- m_pG->tlu(6),   t+ m_pG->tlu(5));
+	m_pG->drawLine(l+ m_pG->tlu(5),   t+ m_pG->tlu(5),  l+w- m_pG->tlu(5),   t+ m_pG->tlu(5));
 }
 
 /*static*/ void AP_TopRuler::_prefsListener( XAP_App * /*pApp*/, XAP_Prefs *pPrefs, UT_StringPtrMap * /*phChanges*/, void *data )
@@ -4108,9 +4094,9 @@ void AP_TopRuler::_displayStatusMessage(XAP_String_Id FormatMessageID)
 
 	UT_sint32 newXScrollOffset = pRuler->m_xScrollOffset;
 	if (pRuler->m_aScrollDirection == 'L')
-		newXScrollOffset = pRuler->m_xScrollOffset - tr_AUTOSCROLL_PIXELS;
+	  newXScrollOffset = pRuler->m_xScrollOffset - pRuler->m_pG->tlu(s_tr_AUTOSCROLL_PIXELS);
 	else if (pRuler->m_aScrollDirection == 'R')
-		newXScrollOffset = pRuler->m_xScrollOffset + tr_AUTOSCROLL_PIXELS;
+	  newXScrollOffset = pRuler->m_xScrollOffset + pRuler->m_pG->tlu(s_tr_AUTOSCROLL_PIXELS);
 	else
 		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 
@@ -4118,13 +4104,13 @@ void AP_TopRuler::_displayStatusMessage(XAP_String_Id FormatMessageID)
 			pRuler->m_pView->sendHorizontalScrollEvent(newXScrollOffset); // YAY it works!!
 
 	// IT'S A TRICK!!!
-	UT_sint32 fakeY = pRuler->s_iFixedHeight/2 + pRuler->s_iFixedHeight/4 - _UL(3);
+	UT_sint32 fakeY = pRuler->m_pG->tlu(s_iFixedHeight)/2 + pRuler->m_pG->tlu(s_iFixedHeight)/4 - pRuler->m_pG->tlu(3);
 	if (pRuler->m_aScrollDirection == 'L')
 	{
 		pRuler->mouseMotion(0, 0, fakeY); // it wants to see something < xFixed and 0 is gonna be
 	}
 	else
 	{
-		pRuler->mouseMotion(0, (UT_sint32) pRuler->m_iWidth + 1, fakeY); // m_iWidth+1 will be greater than m_iWidth
+		pRuler->mouseMotion(0, (UT_sint32) pRuler->getWidth () + 1, fakeY); // getWidth ()+1 will be greater than getWidth ()
 	}
 }

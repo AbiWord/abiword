@@ -185,7 +185,9 @@ gint AP_UnixTopRuler::_fe::button_press_event(GtkWidget * w, GdkEventButton * e)
 		emb = EV_EMB_BUTTON3;
 
 	UT_DEBUGMSG(("SEVIOR: e->button = %x \n",e->button));
-	pUnixTopRuler->mousePress(ems, emb, (UT_uint32) e->x, (UT_uint32) e->y);
+	pUnixTopRuler->mousePress(ems, emb, 
+				  pUnixTopRuler->m_pG->tlu((UT_uint32) e->x), 
+				  pUnixTopRuler->m_pG->tlu((UT_uint32) e->y));
 	return 1;
 }
 
@@ -213,7 +215,9 @@ gint AP_UnixTopRuler::_fe::button_release_event(GtkWidget * w, GdkEventButton * 
 	else if (3 == e->button)
 		emb = EV_EMB_BUTTON3;
 
-	pUnixTopRuler->mouseRelease(ems, emb, (UT_uint32)e->x, (UT_uint32)e->y);
+	pUnixTopRuler->mouseRelease(ems, emb, 
+				  pUnixTopRuler->m_pG->tlu((UT_uint32) e->x), 
+				  pUnixTopRuler->m_pG->tlu((UT_uint32) e->y));
 
 	// release the mouse after we are done.
 	gtk_grab_remove(w);
@@ -226,16 +230,8 @@ gint AP_UnixTopRuler::_fe::configure_event(GtkWidget* w, GdkEventConfigure *e)
 	// a static function
 	AP_UnixTopRuler * pUnixTopRuler = (AP_UnixTopRuler *)gtk_object_get_user_data(GTK_OBJECT(w));
 
-	//UT_DEBUGMSG(("UnixTopRuler: [p %p] [size w %d h %d] received configure_event\n",
-	//			 pUnixTopRuler, e->width, e->height));
-
-	UT_uint32 iHeight = (UT_uint32)e->height;
-	if (iHeight != pUnixTopRuler->getHeight())
-		pUnixTopRuler->setHeight(iHeight);
-
-	UT_uint32 iWidth = (UT_uint32)e->width;
-	if (iWidth != pUnixTopRuler->getWidth())
-		pUnixTopRuler->setWidth(iWidth);
+	pUnixTopRuler->setHeight((UT_uint32)e->height);
+	pUnixTopRuler->setWidth((UT_uint32)e->width);
 	
 	return 1;
 }
@@ -261,8 +257,11 @@ gint AP_UnixTopRuler::_fe::motion_notify_event(GtkWidget* w, GdkEventMotion* e)
 	//gint xrel, yrel;
 	//s_getWidgetRelativeMouseCoordinates(pUnixTopRuler,&xrel,&yrel);
 
-	pUnixTopRuler->mouseMotion(ems, (UT_uint32)e->x, (UT_uint32)e->y);
-	pUnixTopRuler->isMouseOverTab((UT_uint32) e->x,(UT_uint32)e->y);
+	pUnixTopRuler->mouseMotion(ems, 
+				  pUnixTopRuler->m_pG->tlu((UT_uint32) e->x), 
+				  pUnixTopRuler->m_pG->tlu((UT_uint32) e->y));
+	pUnixTopRuler->isMouseOverTab(pUnixTopRuler->m_pG->tlu((UT_uint32) e->x), 
+				  pUnixTopRuler->m_pG->tlu((UT_uint32) e->y));
 
 	return 1;
 
@@ -296,10 +295,10 @@ gint AP_UnixTopRuler::_fe::expose(GtkWidget * w, GdkEventExpose* pExposeEvent)
 		return 0;
 	}
 	UT_Rect rClip;
-	rClip.left = pExposeEvent->area.x;
-	rClip.top = pExposeEvent->area.y;
-	rClip.width = pExposeEvent->area.width;
-	rClip.height = pExposeEvent->area.height;
+	rClip.left = pUnixTopRuler->m_pG->tlu(pExposeEvent->area.x);
+	rClip.top = pUnixTopRuler->m_pG->tlu(pExposeEvent->area.y);
+	rClip.width = pUnixTopRuler->m_pG->tlu(pExposeEvent->area.width);
+	rClip.height = pUnixTopRuler->m_pG->tlu(pExposeEvent->area.height);
 
 	pUnixTopRuler->draw(&rClip);
 	return 0;

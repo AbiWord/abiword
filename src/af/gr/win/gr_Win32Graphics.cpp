@@ -48,7 +48,6 @@
 #define GR_WIN32_REDEF_UNITS
 #endif
 /*****************************************************************/
-UT_sint32 GR_Win32Graphics::s_iScreenResolution = 0;
 
 #ifndef USE_LAYOUT_UNITS
 UT_sint32* GR_Win32Graphics::s_pCharAdvances = NULL;
@@ -123,14 +122,6 @@ void GR_Win32Graphics::_constructorCommonCode(HDC hdc)
 	m_remapBuffer = NULL;
 	m_remapBufferSize = 0;
 	m_remapIndices = NULL;
-
-	if(!s_iScreenResolution)
-	{
-		s_iScreenResolution = _getResolution();
-		setStaticScreenResolution(s_iScreenResolution);
-	}
-
-	UT_DEBUGMSG(("GR_Win32Graphics: screen resolution %d\n", s_iScreenResolution));
 
 	m_eJoinStyle = JOIN_MITER;
 	m_eCapStyle  = CAP_BUTT;

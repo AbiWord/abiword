@@ -55,8 +55,6 @@
 #include "ut_assert.h"
 #include "ut_units.h"
 
-#define SCALE_TO_SCREEN (double)getGraphics()->getResolution() / UT_LAYOUT_UNITS
-
 /*
   TODO this file is now really too long.  divide it up
   into smaller ones.
@@ -602,37 +600,21 @@ fp_Container* fl_DocSectionLayout::getNewContainer(fp_Container * pFirstContaine
 //
 // Calculate from the page height up to prevContainer
 //
-#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-		pageHeight = pTmpPage->getFilledHeightInLayoutUnits(prevContainer);
-#else
 		pageHeight = pTmpPage->getFilledHeight(prevContainer);
-#endif
 
 		if(pFirstContainer != NULL)
 		{
-#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-			iNextCtrHeight = pFirstContainer->getHeightInLayoutUnits();
-#else
 			iNextCtrHeight = pFirstContainer->getHeight();
-#endif
 		}
 		else if( pLastColumn->getLastContainer())
 		{
-#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-			iNextCtrHeight = pLastColumn->getLastContainer()->getHeightInLayoutUnits();
-#else
 			iNextCtrHeight = pLastColumn->getLastContainer()->getHeight();
-#endif
 		}
 		else
 		{
 			iNextCtrHeight =12*14; // approximately one average line
 		}
-#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-		UT_sint32 avail =  pTmpPage->getAvailableHeightInLayoutUnits();
-#else
 		UT_sint32 avail =  pTmpPage->getAvailableHeight();
-#endif
 
 		UT_sint32 newHeight = pageHeight+ 3*iNextCtrHeight;
 		xxx_UT_DEBUGMSG(("SEVIOR: Pageheight =%d nextlineheight =%d newheight = %d availableheight =%d linepos %d \n",pageHeight,iNextCtrHeight,newHeight,avail));
@@ -701,36 +683,20 @@ fp_Container* fl_DocSectionLayout::getNewContainer(fp_Container * pFirstContaine
 				prevContainer = (fp_Container *) pFirstContainer->getPrevContainerInSection();
 			}
 
-#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-			UT_sint32 pageHeight = pTmpPage->getFilledHeightInLayoutUnits(prevContainer);
-#else
 			UT_sint32 pageHeight = pTmpPage->getFilledHeight(prevContainer);
-#endif
 			if(pFirstContainer != NULL)
 			{
-#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-				iNextCtrHeight = pFirstContainer->getHeightInLayoutUnits();
-#else
 				iNextCtrHeight = pFirstContainer->getHeight();
-#endif
 			}
 			else if(pPrevCol->getLastContainer())
 			{
-#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-				iNextCtrHeight = pPrevCol->getLastContainer()->getHeightInLayoutUnits();
-#else
 				iNextCtrHeight = pPrevCol->getLastContainer()->getHeight();
-#endif
 			}
 			else
 			{
 				iNextCtrHeight = 12*14; //average height!
 			}
-#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-			bool bForce = (pageHeight + 2*iNextCtrHeight) >= pTmpPage->getAvailableHeightInLayoutUnits();
-#else
 			bool bForce = (pageHeight + 2*iNextCtrHeight) >= pTmpPage->getAvailableHeight();
-#endif
 			if (m_bForceNewPage || bForce)
 			{
 				if (pTmpPage->getNext())
@@ -1124,17 +1090,11 @@ void fl_DocSectionLayout::_lookupProperties(void)
 	pSectionAP->getProperty("column-gap", (const XML_Char *&)pszColumnGap);
 	if (pszColumnGap && pszColumnGap[0])
 	{
-		m_iColumnGap = m_pLayout->getGraphics()->convertDimension(pszColumnGap);
-#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-		m_iColumnGapLayoutUnits = UT_convertToLayoutUnits(pszColumnGap);
-#endif
+		m_iColumnGap = UT_convertToLayoutUnits(pszColumnGap);
 	}
 	else
 	{
-		m_iColumnGap = m_pLayout->getGraphics()->convertDimension("0.25in");
-#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-		m_iColumnGapLayoutUnits = UT_convertToLayoutUnits("0.25in");
-#endif
+		m_iColumnGap = UT_convertToLayoutUnits("0.25in");
 	}
 
 	const char* pszColumnLineBetween = NULL;
@@ -1169,17 +1129,11 @@ void fl_DocSectionLayout::_lookupProperties(void)
 	pSectionAP->getProperty("section-space-after", (const XML_Char *&)pszSpaceAfter);
 	if (pszSpaceAfter && pszSpaceAfter[0])
 	{
-		m_iSpaceAfter = m_pLayout->getGraphics()->convertDimension(pszSpaceAfter);
-#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-		m_iSpaceAfterLayoutUnits = UT_convertToLayoutUnits(pszSpaceAfter);
-#endif
+		m_iSpaceAfter = UT_convertToLayoutUnits(pszSpaceAfter);
 	}
 	else
 	{
-		m_iSpaceAfter = m_pLayout->getGraphics()->convertDimension("0in");
-#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-		m_iSpaceAfterLayoutUnits = UT_convertToLayoutUnits("0in");
-#endif
+		m_iSpaceAfter = UT_convertToLayoutUnits("0in");
 	}
 
 	const char* pszRestart = NULL;
@@ -1265,137 +1219,89 @@ void fl_DocSectionLayout::_lookupProperties(void)
 
 	if(pszLeftMargin && pszLeftMargin[0])
 	{
-		m_iLeftMargin = m_pLayout->getGraphics()->convertDimension(pszLeftMargin);
-#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-		m_iLeftMarginLayoutUnits = UT_convertToLayoutUnits(pszLeftMargin);
-#endif
+		m_iLeftMargin = UT_convertToLayoutUnits(pszLeftMargin);
 		m_dLeftMarginUserUnits = UT_convertDimensionless(pszLeftMargin);
 	}
 	else
 	{
-		m_iLeftMargin = m_pLayout->getGraphics()->convertDimension(defaultMargin.c_str());
-#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-		m_iLeftMarginLayoutUnits = UT_convertToLayoutUnits(defaultMargin.c_str());
-#endif
+		m_iLeftMargin = UT_convertToLayoutUnits(defaultMargin.c_str());
 		m_dLeftMarginUserUnits = UT_convertDimensionless(defaultMargin.c_str());
 	}
 
 	if(pszTopMargin && pszTopMargin[0])
 	{
-		m_iTopMargin = m_pLayout->getGraphics()->convertDimension(pszTopMargin);
-#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-		m_iTopMarginLayoutUnits = UT_convertToLayoutUnits(pszTopMargin);
-#endif
+		m_iTopMargin = UT_convertToLayoutUnits(pszTopMargin);
 		m_dTopMarginUserUnits = UT_convertDimensionless(pszTopMargin);
 	}
 	else
 	{
-		m_iTopMargin = m_pLayout->getGraphics()->convertDimension(defaultMargin.c_str());
-#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-		m_iTopMarginLayoutUnits = UT_convertToLayoutUnits(defaultMargin.c_str());
-#endif
+		m_iTopMargin = UT_convertToLayoutUnits(defaultMargin.c_str());
 		m_dTopMarginUserUnits = UT_convertDimensionless(defaultMargin.c_str());
 	}
 
 	if(pszRightMargin && pszRightMargin[0])
 	{
-		m_iRightMargin = m_pLayout->getGraphics()->convertDimension(pszRightMargin);
-#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-		m_iRightMarginLayoutUnits = UT_convertToLayoutUnits(pszRightMargin);
-#endif
+		m_iRightMargin = UT_convertToLayoutUnits(pszRightMargin);
 		m_dRightMarginUserUnits = UT_convertDimensionless(pszRightMargin);
 	}
 	else
 	{
-		m_iRightMargin = m_pLayout->getGraphics()->convertDimension(defaultMargin.c_str());
-#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-		m_iRightMarginLayoutUnits = UT_convertToLayoutUnits(defaultMargin.c_str());
-#endif
+		m_iRightMargin = UT_convertToLayoutUnits(defaultMargin.c_str());
 		m_dRightMarginUserUnits = UT_convertDimensionless(defaultMargin.c_str());
 	}
 
 	if(pszBottomMargin && pszBottomMargin[0])
 	{
-		m_iBottomMargin = m_pLayout->getGraphics()->convertDimension(pszBottomMargin);
-#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-		m_iBottomMarginLayoutUnits = UT_convertToLayoutUnits(pszBottomMargin);
-#endif
+		m_iBottomMargin = UT_convertToLayoutUnits(pszBottomMargin);
 		m_dBottomMarginUserUnits = UT_convertDimensionless(pszBottomMargin);
 	}
 	else
 	{
-		m_iBottomMargin = m_pLayout->getGraphics()->convertDimension(defaultMargin.c_str());
-#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-		m_iBottomMarginLayoutUnits = UT_convertToLayoutUnits(defaultMargin.c_str());
-#endif
+		m_iBottomMargin = UT_convertToLayoutUnits(defaultMargin.c_str());
 		m_dBottomMarginUserUnits = UT_convertDimensionless(defaultMargin.c_str());
 	}
 
 	if(pszFooterMargin && pszFooterMargin[0])
 	{
-		m_iFooterMargin = m_pLayout->getGraphics()->convertDimension(pszFooterMargin);
-#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-		m_iFooterMarginLayoutUnits = UT_convertToLayoutUnits(pszFooterMargin);
-#endif
+		m_iFooterMargin = UT_convertToLayoutUnits(pszFooterMargin);
 		m_dFooterMarginUserUnits = UT_convertDimensionless(pszFooterMargin);
 	}
 	else
 	{
-		m_iFooterMargin = m_pLayout->getGraphics()->convertDimension("0.0in");
-#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-		m_iFooterMarginLayoutUnits = UT_convertToLayoutUnits("0.0in");
-#endif
+		m_iFooterMargin = UT_convertToLayoutUnits("0.0in");
 		m_dFooterMarginUserUnits = UT_convertDimensionless("0.0in");
 	}
 
 	if(pszHeaderMargin && pszHeaderMargin[0])
 	{
-		m_iHeaderMargin = m_pLayout->getGraphics()->convertDimension(pszHeaderMargin);
-#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-		m_iHeaderMarginLayoutUnits = UT_convertToLayoutUnits(pszHeaderMargin);
-#endif
+		m_iHeaderMargin = UT_convertToLayoutUnits(pszHeaderMargin);
 		m_dHeaderMarginUserUnits = UT_convertDimensionless(pszHeaderMargin);
 	}
 	else
 	{
-		m_iHeaderMargin = m_pLayout->getGraphics()->convertDimension("0.0in");
-#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-		m_iHeaderMarginLayoutUnits = UT_convertToLayoutUnits("0.0in");
-#endif
+		m_iHeaderMargin = UT_convertToLayoutUnits("0.0in");
 		m_dHeaderMarginUserUnits = UT_convertDimensionless("0.0in");
 	}
 
 	pSectionAP->getProperty("section-max-column-height", (const XML_Char *&)pszMaxColumnHeight);
 	if (pszMaxColumnHeight && pszMaxColumnHeight[0])
 	{
-		m_iMaxSectionColumnHeight = m_pLayout->getGraphics()->convertDimension(pszMaxColumnHeight);
-#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-		m_iMaxSectionColumnHeightInLayoutUnits = UT_convertToLayoutUnits(pszMaxColumnHeight);
-#endif
+		m_iMaxSectionColumnHeight = UT_convertToLayoutUnits(pszMaxColumnHeight);
 	}
 	else
 	{
-		m_iMaxSectionColumnHeight = m_pLayout->getGraphics()->convertDimension("0in");
-#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-		m_iMaxSectionColumnHeightInLayoutUnits = UT_convertToLayoutUnits("0in");
-#endif
+		m_iMaxSectionColumnHeight = UT_convertToLayoutUnits("0in");
 	}
 
 	const XML_Char * pszFootnoteLine = NULL;
 	pSectionAP->getProperty("section-footnote-line-thickness", (const XML_Char *&)pszFootnoteLine);
 	if (pszFootnoteLine && pszFootnoteLine[0])
 	{
-		m_iFootnoteLineThickness = m_pLayout->getGraphics()->convertDimension(pszFootnoteLine);
-#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-		m_iFootnoteLineThicknessLayoutUnits = UT_convertToLayoutUnits(pszFootnoteLine);
-#endif
+		m_iFootnoteLineThickness = UT_convertToLayoutUnits(pszFootnoteLine);
 	}
 	else
 	{
-		m_iFootnoteLineThickness = m_pLayout->getGraphics()->convertDimension("0.005in");
-#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-		m_iFootnoteLineThicknessLayoutUnits = UT_convertToLayoutUnits("0.005in");
-#endif
+		m_iFootnoteLineThickness = UT_convertToLayoutUnits("0.005in");
 	}
 
 	setPaperColor();
@@ -1407,24 +1313,10 @@ UT_sint32 fl_DocSectionLayout::getTopMargin(void) const
 	return m_iTopMargin;
 }
 
-#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-UT_sint32 fl_DocSectionLayout::getTopMarginInLayoutUnits(void) const
-{
-	return m_iTopMarginLayoutUnits;
-}
-#endif
-
 UT_sint32 fl_DocSectionLayout::getBottomMargin(void) const
 {
 	return m_iBottomMargin;
 }
-
-#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-UT_sint32 fl_DocSectionLayout::getBottomMarginInLayoutUnits(void) const
-{
-	return m_iBottomMarginLayoutUnits;
-}
-#endif
 
 /*!
  * Set the color of the background paper in the following order of precedence
@@ -1555,13 +1447,6 @@ UT_uint32 fl_DocSectionLayout::getColumnGap(void) const
 {
 	return m_iColumnGap;
 }
-
-#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-UT_uint32 fl_DocSectionLayout::getColumnGapInLayoutUnits(void) const
-{
-	return m_iColumnGapLayoutUnits;
-}
-#endif
 
 UT_uint32 fl_DocSectionLayout::getColumnOrder(void) const
 {
@@ -2065,7 +1950,7 @@ void fl_DocSectionLayout::checkAndAdjustColumnGap(UT_sint32 iLayoutWidth)
 
 	if(m_iNumColumns > 1)
 	{
-		UT_sint32 minColumnWidth = m_pLayout->getGraphics()->convertDimension("0.5in");	//TODO should this dimension be hard coded.
+		UT_sint32 minColumnWidth = UT_convertToLayoutUnits("0.5in");	//TODO should this dimension be hard coded.
 		UT_sint32 iColWidth = (iLayoutWidth - (UT_sint32)(((m_iNumColumns - 1) * m_iColumnGap))) / (UT_sint32)m_iNumColumns;
 
 		if(iColWidth < minColumnWidth)
@@ -2256,12 +2141,7 @@ fp_Container* fl_HdrFtrSectionLayout::getNewContainer(fp_Container * pFirstConta
 {
 	DELETEP(m_pHdrFtrContainer);
 	UT_sint32 iWidth = m_pDocSL->getFirstContainer()->getPage()->getWidth(); // why is this different than the next one ?
-#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-	UT_sint32 iWidthLayout = m_pDocSL->getFirstContainer()->getPage()->getWidthInLayoutUnits() - m_pDocSL->getLeftMarginInLayoutUnits() - m_pDocSL->getRightMarginInLayoutUnits();
-	m_pHdrFtrContainer = (fp_Container *) new fp_HdrFtrContainer(iWidth,iWidthLayout, (fl_SectionLayout *) this);
-#else
-	m_pHdrFtrContainer = (fp_Container *) new fp_HdrFtrContainer(iWidth,0, (fl_SectionLayout *) this);
-#endif
+	m_pHdrFtrContainer = (fp_Container *) new fp_HdrFtrContainer(iWidth, (fl_SectionLayout *) this);
 	return m_pHdrFtrContainer;
 }
 

@@ -41,35 +41,12 @@ public:
 	void				setIndex(UT_uint32 ndx) { m_index = ndx; }
 	UT_uint32			getIndex(void) { return m_index; };	
 	
-	ABIFontInfo *		getMetricsData(void);
 	UT_uint16			getCharWidth(UT_UCSChar c);
-	// perhaps request raw data from PSFont?
  
 protected:
 	XAP_UnixFont * 		m_hFont;
 	UT_uint32			m_pointSize;
 	UT_uint32			m_index;
 };
-
-/*
-class ps_Font : public GR_Font
-{
-public:
-	ps_Font(UT_uint32 ndx);
-	~ps_Font();
-	
-	bool		loadFont(const char * szFamily, const char * szFace, const char * szStyle, const char * szWeight, UT_uint32 iSize);
-	bool		loadFont(const char * filename);
-	bool		setFont(const char * szFamily, const char * szFace, const char * szStyle, const char * szWeight, UT_uint32 iSize);
-	bool		matchesFont(const char * szFamily, const char * szFace, const char * szStyle, const char * szWeight, UT_uint32 iSize);
-	
-	UT_uint32			m_ndx;
-	char *				m_szFamily;
-	char *				m_szFace;
-	char *				m_szStyle;
-	char *				m_szWeight;
-	UT_uint32			m_iSize;
-};
-*/
 
 #endif /* XAP_UNIXPSFONT_H */

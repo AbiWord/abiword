@@ -92,77 +92,46 @@ class ABI_EXPORT fl_CharWidths
 {
 public:
 	fl_CharWidths() : m_gbCharWidths(256)
-#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-		, m_gbCharWidthsLayoutUnits(256)
-#endif
 		{
 		}
 
 private:
 
 	UT_GrowBuf m_gbCharWidths;
-#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-	UT_GrowBuf m_gbCharWidthsLayoutUnits;
-#endif
 
 public:
 
 	bool ins(UT_uint32 position, UT_uint32 length)
 		{
-#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-			m_gbCharWidthsLayoutUnits.ins(position, length);
-#endif
 			return m_gbCharWidths.ins(position, length);
-
 		}
 
 	bool del(UT_uint32 position, UT_uint32 amount)
 		{
-#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-			m_gbCharWidthsLayoutUnits.del(position, amount);
-#endif
 			return m_gbCharWidths.del(position, amount);
 		}
 	UT_uint32 getLength(void) const
 		{
-#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-			UT_ASSERT(m_gbCharWidths.getLength() == m_gbCharWidthsLayoutUnits.getLength());
-#endif
 			return m_gbCharWidths.getLength();
 		}
 	bool ins(UT_uint32 position, const UT_GrowBufElement *pValue,UT_uint32 length)
 		{
-#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-			m_gbCharWidthsLayoutUnits.ins(position, pValue, length);
-#endif
 			return m_gbCharWidths.ins(position, pValue, length);
 		}
 	bool ins(UT_uint32 position, const fl_CharWidths &Other, UT_uint32 offset, UT_uint32 length)
 		{
-#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-			m_gbCharWidthsLayoutUnits.ins(position, Other.m_gbCharWidthsLayoutUnits.getPointer(offset), length);
-#endif
 			return m_gbCharWidths.ins(position, Other.m_gbCharWidths.getPointer(offset), length);
 		}
 
 	void truncate(UT_uint32 position)
 		{
 			m_gbCharWidths.truncate(position);
-#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-			m_gbCharWidthsLayoutUnits.truncate(position);
-#endif
 		}
 
 	UT_GrowBuf *getCharWidths()
 		{
 			return &m_gbCharWidths;
 		}
-#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-	UT_GrowBuf *getCharWidthsLayoutUnits()
-		{
-			return &m_gbCharWidthsLayoutUnits;
-		}
-#endif
 };
 
 
@@ -275,13 +244,6 @@ public:
 	inline UT_sint32	getRightMargin(void) const { return m_iRightMargin; }
 	inline UT_sint32	getTopMargin(void) const { return m_iTopMargin; }
 	inline UT_sint32	getBottomMargin(void) const { return m_iBottomMargin; }
-#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-	inline UT_sint32	getTextIndentInLayoutUnits(void) const { return m_iTextIndentLayoutUnits; }
-	inline UT_sint32	getLeftMarginInLayoutUnits(void) const { return m_iLeftMarginLayoutUnits; }
-	inline UT_sint32	getRightMarginInLayoutUnits(void) const { return m_iRightMarginLayoutUnits; }
-	inline UT_sint32	getTopMarginInLayoutUnits(void) const { return m_iTopMarginLayoutUnits; }
-	inline UT_sint32	getBottomMarginInLayoutUnits(void) const { return m_iBottomMarginLayoutUnits; }
-#endif
 	inline fb_Alignment *		getAlignment(void) const { return m_pAlignment; }
 	virtual FL_DocLayout*		getDocLayout(void) const { return m_pLayout; }
 	virtual fl_SectionLayout*	getSectionLayout(void) const { return m_pSectionLayout;}
@@ -290,10 +252,6 @@ public:
 	void setSectionLayout(fl_SectionLayout* pSectionLayout);
 
 	void getLineSpacing(double& dSpacing,
-#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-						
-						double &dSpacingLayout,
-#endif
 						eSpacingPolicy& eSpacing) const;
 
 	virtual void updateBackgroundColor(void);
@@ -320,16 +278,6 @@ public:
 	bool	findPrevTabStop(UT_sint32 iStartX, UT_sint32 iMaxX,
 							UT_sint32& iPosition, eTabType& iType,
 							eTabLeader &iLeader );
-#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-	bool	findNextTabStopInLayoutUnits(UT_sint32 iStartX, UT_sint32 iMaxX,
-										 UT_sint32& iPosition,
-										 eTabType& iType,
-										 eTabLeader &iLeader);
-	bool	findPrevTabStopInLayoutUnits(UT_sint32 iStartX, UT_sint32 iMaxX,
-										 UT_sint32& iPosition,
-										 eTabType& iType,
-										 eTabLeader &iLeader);
-#endif
 	bool    hasUpdatableField(void) { return m_bHasUpdatableField;}
 	void    setUpdatableField(bool bValue) { m_bHasUpdatableField = bValue;}
 	inline UT_sint32 getDefaultTabInterval(void) const { return m_iDefaultTabInterval; }
@@ -481,9 +429,6 @@ protected:
 
 	UT_Vector				m_vecTabs;
 	UT_sint32				m_iDefaultTabInterval;
-#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-	UT_sint32				m_iDefaultTabIntervalLayoutUnits;
-#endif
 	// read-only caches of the underlying properties
 	UT_uint32				m_iOrphansProperty;
 	UT_uint32				m_iWidowsProperty;
@@ -492,18 +437,8 @@ protected:
 	UT_sint32				m_iLeftMargin;
 	UT_sint32				m_iRightMargin;
 	UT_sint32				m_iTextIndent;
-#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-	UT_sint32				m_iTopMarginLayoutUnits;
-	UT_sint32				m_iBottomMarginLayoutUnits;
-	UT_sint32				m_iLeftMarginLayoutUnits;
-	UT_sint32				m_iRightMarginLayoutUnits;
-	UT_sint32				m_iTextIndentLayoutUnits;
-#endif
 	fb_Alignment *			m_pAlignment;
 	double					m_dLineSpacing;
-#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-	double					m_dLineSpacingLayoutUnits;
-#endif
 	//bool					m_bExactSpacing;
 	eSpacingPolicy			m_eSpacingPolicy;
 	bool					m_bKeepTogether;
@@ -559,10 +494,6 @@ public:
 
 	UT_sint32		getPosition() { return iPosition;}
 	void			setPosition(UT_sint32 value) { iPosition = value;}
-#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-	UT_sint32		getPositionLayoutUnits() { return iPositionLayoutUnits;}
-	void			setPositionLayoutUnits(UT_sint32 value) { iPositionLayoutUnits = value;}
-#endif
 	eTabType		getType() { return iType;}
 	void			setType(eTabType type) { iType = type;}
 	eTabLeader		getLeader() { return iLeader;};
@@ -573,9 +504,6 @@ public:
 	void operator = (const fl_TabStop &Other)
 		{
 			iPosition = Other.iPosition;
-#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-			iPositionLayoutUnits = Other.iPositionLayoutUnits;
-#endif
 			iType = Other.iType;
 			iLeader = Other.iLeader;
 			iOffset = Other.iOffset;
@@ -584,9 +512,6 @@ public:
 protected:
 
 	UT_sint32		iPosition;
-#ifndef WITH_PANGO
-	UT_sint32		iPositionLayoutUnits;
-#endif
 	eTabType		iType;
 	eTabLeader		iLeader;
 	UT_uint32		iOffset;

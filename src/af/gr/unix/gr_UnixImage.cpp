@@ -26,9 +26,7 @@
 
 #include <gdk-pixbuf/gdk-pixbuf-loader.h>
 
-static const UT_uint32 Print_Scale_Factor = 36;
-
-GR_UnixImage::GR_UnixImage(const char* szName, bool isPrintResolution) 
+GR_UnixImage::GR_UnixImage(const char* szName)
   : m_image(NULL)
 {
   if (szName)
@@ -39,13 +37,11 @@ GR_UnixImage::GR_UnixImage(const char* szName, bool isPrintResolution)
   {
     setName ( "GdkPixbufImage" );
   }
-  m_bPrintResolution = isPrintResolution;
   m_ImageType = GR_Image::GRT_Raster;
 }
 
 
-GR_UnixImage::GR_UnixImage(const char* szName, GR_Image::GRType imageType, 
-						   bool isPrintResolution) 
+GR_UnixImage::GR_UnixImage(const char* szName, GR_Image::GRType imageType)
   : m_image(NULL)
 {
   if (szName)
@@ -56,7 +52,6 @@ GR_UnixImage::GR_UnixImage(const char* szName, GR_Image::GRType imageType,
   {
     setName ( "GdkPixbufImage" );
   }
-  m_bPrintResolution = isPrintResolution;
   m_ImageType = imageType;
 }
 
@@ -71,34 +66,17 @@ GR_Image::GRType GR_UnixImage::getType(void) const
 	return  m_ImageType;
 }
 
-UT_sint32	GR_UnixImage::getDisplayWidth(void) const
+UT_sint32  GR_UnixImage::getDisplayWidth(void) const
 {
 	UT_return_val_if_fail(m_image, 0);
-
-	UT_sint32 width = gdk_pixbuf_get_width (m_image);
-//
-// Sevior Hack for Printer resolution
-//
-	if(m_bPrintResolution)
-	{
-		width = width * Print_Scale_Factor;
-	}
-    return width;
+	return gdk_pixbuf_get_width (m_image);
 }
 
-UT_sint32	GR_UnixImage::getDisplayHeight(void) const
+UT_sint32  GR_UnixImage::getDisplayHeight(void) const
 {
 	UT_return_val_if_fail(m_image, 0);
 
-//
-// Sevior Hack for Printer resolution, scale back because scaled down on creation
-//
-    UT_sint32 height =  gdk_pixbuf_get_height (m_image);
-	if(m_bPrintResolution)
-	{
-		height = height * Print_Scale_Factor;
-	}
-    return height;
+	return gdk_pixbuf_get_height (m_image);
 }
 
 bool  GR_UnixImage::convertToBuffer(UT_ByteBuf** ppBB) const
@@ -138,43 +116,28 @@ UT_sint32 GR_UnixImage::rowStride (void) const
 	return static_cast<UT_sint32>(gdk_pixbuf_get_rowstride (m_image));
 }
 
+// note that this does take device units, unlike everything else.
 void GR_UnixImage::scale (UT_sint32 iDisplayWidth, 
 						  UT_sint32 iDisplayHeight)
 {
 	UT_return_if_fail(m_image);
 	
 	// don't scale if passed -1 for either
-    if (iDisplayWidth < 0 || iDisplayHeight < 0)
+	if (iDisplayWidth < 0 || iDisplayHeight < 0)
 		return;
 
 	GdkPixbuf * image = 0;
 
-	//
-	// Sevior puts in hack to prevent scaling to riduclusly large sizes.
-    // If we're printing divide iDisplaywidth and iDisplayHeight by 36, 
-	// which is 72/2 half the ratio of the printing to screen resolution. 
-    // Why half? Well we might gain a bit
-    // more resolution this way. I'll put this scale factor back into the 
-    // drawAnyImage() method of xap_UnixGnomePrintGraphics.
-    //
-	if(m_bPrintResolution)
-	{
-		iDisplayWidth = iDisplayWidth/  Print_Scale_Factor;
-		iDisplayHeight = iDisplayHeight/  Print_Scale_Factor;
-	}
 	image = gdk_pixbuf_scale_simple (m_image, iDisplayWidth, 
-									 iDisplayHeight, GDK_INTERP_NEAREST);
+					 iDisplayHeight, GDK_INTERP_NEAREST);
 
 	g_object_unref (G_OBJECT(m_image));
 	m_image = image;
-//
-// Better save our layout resolution numbers too?
-//
 }
 
 bool GR_UnixImage::convertFromBuffer(const UT_ByteBuf* pBB, 
-									 UT_sint32 iDisplayWidth, 
-									 UT_sint32 iDisplayHeight)
+				     UT_sint32 iDisplayWidth, 
+				     UT_sint32 iDisplayHeight)
 {
 	// assert no image loaded yet
 	UT_ASSERT(!m_image);

@@ -110,18 +110,7 @@ GtkWidget * AP_UnixLeftRuler::createWidget(void)
   
 	g_signal_connect(G_OBJECT(m_wLeftRuler), "configure_event",
 					   G_CALLBACK(_fe::configure_event), NULL);
-// 	if( m_iBackgroundRedrawID == 0)
-// 	{
-// //
-// // Start background repaint
-// //
-// //		m_iBackgroundRedrawID = gtk_timeout_add(200,(GtkFunction) _fe::abi_expose_repaint, (gpointer) this);
-// 	}
-// 	else
-//     {
-// 		gtk_timeout_remove(m_iBackgroundRedrawID);
-// 		m_iBackgroundRedrawID = gtk_timeout_add(200,(GtkFunction) _fe::abi_expose_repaint, (gpointer) this);
-// 	}
+
 	return m_wLeftRuler;
 }
 
@@ -138,7 +127,7 @@ void AP_UnixLeftRuler::setView(AV_View * pView)
 
 	XAP_UnixApp * app = static_cast<XAP_UnixApp *>(m_pFrame->getApp());
 	XAP_UnixFontManager * fontManager = app->getFontManager();
-	GR_UnixGraphics * pG = new GR_UnixGraphics(m_wLeftRuler->window, fontManager, m_pFrame->getApp());
+        GR_UnixGraphics * pG = new GR_UnixGraphics(m_wLeftRuler->window, fontManager, m_pFrame->getApp());
 	m_pG = pG;
 	UT_ASSERT(m_pG);
 
@@ -205,7 +194,9 @@ gint AP_UnixLeftRuler::_fe::button_press_event(GtkWidget * w, GdkEventButton * e
 	else if (e->state & GDK_BUTTON3_MASK)
 		emb = EV_EMB_BUTTON3;
 
-	pUnixLeftRuler->mousePress(ems, emb, (UT_uint32)e->x, (UT_uint32)e->y);
+	pUnixLeftRuler->mousePress(ems, emb, 
+				   pUnixLeftRuler->m_pG->tlu((UT_uint32)e->x), 
+				   pUnixLeftRuler->m_pG->tlu((UT_uint32)e->y));
 
 	return 1;
 }
@@ -243,7 +234,9 @@ gint AP_UnixLeftRuler::_fe::button_release_event(GtkWidget * w, GdkEventButton *
 	else if (e->state & GDK_BUTTON3_MASK)
 		emb = EV_EMB_BUTTON3;
 
-	pUnixLeftRuler->mouseRelease(ems, emb, (UT_uint32)e->x, (UT_uint32)e->y);
+	pUnixLeftRuler->mouseRelease(ems, emb, 
+				   pUnixLeftRuler->m_pG->tlu((UT_uint32)e->x), 
+				   pUnixLeftRuler->m_pG->tlu((UT_uint32)e->y));
 
 	// release the mouse after we are done.
 	gtk_grab_remove(w);
@@ -259,13 +252,9 @@ gint AP_UnixLeftRuler::_fe::configure_event(GtkWidget* w, GdkEventConfigure * e)
 	// UT_DEBUGMSG(("UnixLeftRuler: [p %p] [size w %d h %d] received configure_event\n",
 	//			 pUnixLeftRuler, e->width, e->height));
 
-	UT_uint32 iHeight = (UT_uint32)e->height;
-	if (iHeight != pUnixLeftRuler->getHeight())
-		pUnixLeftRuler->setHeight(iHeight);
-
-	UT_uint32 iWidth = (UT_uint32)e->width;
-	if (iWidth != pUnixLeftRuler->getWidth())
-		pUnixLeftRuler->setWidth(iWidth);
+	// nb: we'd convert here, but we can't: have no graphics class!
+	pUnixLeftRuler->setHeight(e->height);
+	pUnixLeftRuler->setWidth(e->width);
 	
 	return 1;
 }
@@ -296,7 +285,9 @@ gint AP_UnixLeftRuler::_fe::motion_notify_event(GtkWidget* w , GdkEventMotion* e
 	if (e->state & GDK_MOD1_MASK)
 		ems |= EV_EMS_ALT;
 
-	pUnixLeftRuler->mouseMotion(ems, (UT_uint32)e->x, (UT_uint32)e->y);
+	pUnixLeftRuler->mouseMotion(ems, 
+				    pUnixLeftRuler->m_pG->tlu((UT_uint32)e->x),
+				    pUnixLeftRuler->m_pG->tlu((UT_uint32)e->y));
 	return 1;
 }
 	
@@ -323,31 +314,29 @@ gint AP_UnixLeftRuler::_fe::expose(GtkWidget * w, GdkEventExpose* pExposeEvent)
 	if (!pUnixLeftRuler)
 		return 0;
 
-	UT_Rect rClip;
-	rClip.left = pExposeEvent->area.x;
-	rClip.top = pExposeEvent->area.y;
-	rClip.width = pExposeEvent->area.width;
-	rClip.height = pExposeEvent->area.height;
 	xxx_UT_DEBUGMSG(("gtk in leftruler expose painting area:  left=%d, top=%d, width=%d, height=%d\n", rClip.left, rClip.top, rClip.width, rClip.height));
+
 	GR_Graphics * pG = pUnixLeftRuler->getGraphics();
 	if(pG != NULL)
 	{
-//		pUnixLeftRuler->getGraphics()->doRepaint(&rClip);
+		UT_Rect rClip;
+		rClip.left = pG->tlu(pExposeEvent->area.x);
+		rClip.top = pG->tlu(pExposeEvent->area.y);
+		rClip.width = pG->tlu(pExposeEvent->area.width);
+		rClip.height = pG->tlu(pExposeEvent->area.height);
+
 		pUnixLeftRuler->draw(&rClip);
 	}
 	else
 	{
 		UT_DEBUGMSG(("No graphics Context. Doing fallback. \n"));
-//		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 		FV_View * pView = (FV_View *) pUnixLeftRuler->m_pFrame->getCurrentView();
 		if(pView && pView->getPoint()==0)
 		{
-//
-// Abort
-//
 			return 0;
 		}
-		pUnixLeftRuler->draw(&rClip);
+// 		pUnixLeftRuler->draw(&rClip);
 	}
 	return 0;
 }
@@ -391,7 +380,7 @@ gint AP_UnixLeftRuler::_fe::abi_expose_repaint( gpointer p)
 		}
 		pG->setExposedAreaAccessed(true);
 		localCopy.set(pG->getPendingRect()->left,pG->getPendingRect()->top,
-					  pG->getPendingRect()->width,pG->getPendingRect()->height);
+			      pG->getPendingRect()->width,pG->getPendingRect()->height);
 //
 // Clear out this set of expose info
 //

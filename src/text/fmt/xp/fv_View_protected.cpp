@@ -1101,7 +1101,7 @@ fl_BlockLayout* FV_View::_findBlockAtPosition(PT_DocPosition pos) const
 	{
 //		  fl_HdrFtrSectionLayout * pSSL = static_cast<fl_HdrFtrSectionLayout *>(pBL->getSectionLayout());
 //		  pBL = pSSL->getFirstShadow()->findMatchingBlock(pBL);
-		  UT_DEBUGMSG(("<<<<SEVIOR>>>: getfirstshadow in view \n"));
+		  UT_DEBUGMSG(("SEVIOR: in view \n"));
 		  UT_ASSERT(0);
 	}
 #endif
@@ -3048,7 +3048,7 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 			if (!bDirtyRunsOnly || pPage->needsRedraw() && (getViewMode() == VIEW_PRINT))
 			{
 			  UT_RGBColor * pClr = pPage->getOwningSection()->getPaperColor();
-			  m_pG->fillRect(*pClr,adjustedLeft+_UL(1),adjustedTop+_UL(1),iPageWidth-_UL(1),iPageHeight-_UL(1));
+			  m_pG->fillRect(*pClr,adjustedLeft+m_pG->tlu(1),adjustedTop+m_pG->tlu(1),iPageWidth-m_pG->tlu(1),iPageHeight-m_pG->tlu(1));
 //
 // Since we're clearing everything we have to draw every run no matter
 // what.
@@ -3758,8 +3758,7 @@ UT_Error FV_View::_insertGraphic(FG_Graphic* pFG, const char* szName)
 	if (!pFG)
 	  return UT_ERROR;
 
-	double fDPI = m_pG->getResolution() * 100. / m_pG->getZoomPercentage();
-	return pFG->insertIntoDocument(m_pDoc, fDPI, getPoint(), szName);
+	return pFG->insertIntoDocument(m_pDoc, m_pG->getDeviceResolution(), getPoint(), szName);
 }
 
 

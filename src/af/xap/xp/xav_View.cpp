@@ -182,10 +182,8 @@ void AV_View::setInsertMode(bool bInsert)
  */
 void AV_View::setWindowSize(UT_sint32 width, UT_sint32 height)
 {
-	_UUL(width);
-	_UUL(height);
-	m_iWindowWidth = width;
-	m_iWindowHeight = height;
+	m_iWindowWidth  = getGraphics()->tlu(width);
+	m_iWindowHeight = getGraphics()->tlu(width);
 
 	notifyListeners(AV_CHG_WINDOWSIZE);
 }
@@ -211,11 +209,11 @@ void AV_View::removeScrollListener(AV_ScrollObj* pObj)
 	}
 }
 
-/*! the input is in device units
+/*! the input is in layout units
  */
 void AV_View::sendVerticalScrollEvent(UT_sint32 yoff, UT_sint32 ylimit)
 {
-	if(getWindowHeight() < _UL(20))
+	if(getWindowHeight() < getGraphics()->tlu(20))
 		return;
 	UT_sint32 count = m_scrollListeners.getItemCount();
 
@@ -226,11 +224,11 @@ void AV_View::sendVerticalScrollEvent(UT_sint32 yoff, UT_sint32 ylimit)
 	}
 }
 
-/*! the input is in device units
+/*! the input is in layout units
  */
 void AV_View::sendHorizontalScrollEvent(UT_sint32 xoff, UT_sint32 xlimit)
 {
-	if(getWindowHeight() < _UL(20))
+	if(getWindowHeight() < getGraphics()->tlu(20))
 		return;
 
 	UT_sint32 count = m_scrollListeners.getItemCount();

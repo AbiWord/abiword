@@ -52,9 +52,6 @@ public:
 	virtual bool			alwaysFits(void) const;
 	virtual bool			findMaxLeftFitSplitPoint(UT_sint32 iMaxLeftWidth, fp_RunSplitInfo& si, bool bForce=false);
 	virtual UT_sint32		findTrailingSpaceDistance(void) const;
-#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-	virtual UT_sint32		findTrailingSpaceDistanceInLayoutUnits(void) const;
-#endif
 	UT_uint32				countTrailingSpaces(void) const;
 	void					drawSquiggle(UT_uint32, UT_uint32);
 
@@ -75,18 +72,9 @@ public:
 
 	enum
 	{
-		Width_type_display,
-		Width_type_layout_units
-	};
-	enum
-	{
 		Calculate_full_width = -1
 	};
-#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-	UT_sint32				simpleRecalcWidth(UT_sint32 iWidthType, UT_sint32 iLength = Calculate_full_width);
-#else
 	UT_sint32				simpleRecalcWidth(UT_sint32 iLength = Calculate_full_width);
-#endif
 
 	void					resetJustification();
 	void					distributeJustificationAmongstSpaces(UT_sint32 iAmount, UT_uint32 iSpacesInRun);
@@ -100,11 +88,7 @@ public:
 	inline virtual bool isSuperscript(void) const;
 	inline virtual bool isSubscript(void) const;
 	GR_Font*				getFont(void) const
-#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-		{ return _getScreenFont(); }
-#else
 		{ return _getFont(); }
-#endif
 	const XML_Char *			getLanguage() const
 		{ return m_pLanguage; }
 

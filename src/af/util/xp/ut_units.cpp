@@ -131,7 +131,7 @@ double UT_convertInchesToDimension(double inches, UT_Dimension dim)
 	case DIM_MM:    valueScaled = (inches * 25.4);  break;
 	case DIM_PI:	valueScaled = (inches * 6.0);		break;
 	case DIM_PT:	valueScaled = (inches * 72.0);	break;
-	case DIM_PX:    valueScaled = (inches * GR_Graphics::s_getScreenResolution()); break;
+	case DIM_PX:    valueScaled = (inches * UT_LAYOUT_RESOLUTION); break;
 	default:
 		UT_ASSERT(UT_NOT_IMPLEMENTED);
 		break;
@@ -192,7 +192,7 @@ const char * UT_convertInchesToDimensionString(UT_Dimension dim, double valueInI
 		break;
 
 	case DIM_PX:
-		valueScaled = (valueInInches * GR_Graphics::s_getScreenResolution());
+		valueScaled = (valueInInches * UT_LAYOUT_RESOLUTION);
 	  sprintf(bufFormat,"%%%sfpx",((szPrecision && *szPrecision) ? szPrecision : ".0"));
 	  break;
 
@@ -368,7 +368,7 @@ double UT_convertDimToInches (double f, UT_Dimension dim)
     case DIM_PT: result = f / 72;   break;
     case DIM_CM: result = f / 2.54; break;
     case DIM_MM: result = f / 25.4; break;
-    case DIM_PX: result = f / GR_Graphics::s_getScreenResolution(); break;
+    case DIM_PX: result = f / UT_LAYOUT_RESOLUTION; break;
     default:
       UT_DEBUGMSG(("Unknown dimension type: %d", dim));
       UT_ASSERT_NOT_REACHED();
@@ -393,7 +393,7 @@ double UT_convertToPoints(const char* s)
 	  case DIM_IN: result = f * 72;        break;
 	  case DIM_CM: result = f * 72 / 2.54; break;
 	  case DIM_MM: result = f * 72 / 25.4; break;
-	  case DIM_PX: result = f * 72 / GR_Graphics::s_getScreenResolution(); break;
+	  case DIM_PX: result = f * 72 / UT_LAYOUT_RESOLUTION; break;
 	  default:
 	    UT_DEBUGMSG(("Unknown dimension type for: %s", s));
 	    UT_ASSERT_NOT_REACHED();
@@ -403,17 +403,15 @@ double UT_convertToPoints(const char* s)
 	return result;
 }
 
-#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
 UT_sint32 UT_convertToLayoutUnits(const char* s)
 {
-	return static_cast<UT_sint32>(UT_convertToInches(s) * UT_LAYOUT_UNITS);
+	return static_cast<UT_sint32>(UT_convertToInches(s) * UT_LAYOUT_RESOLUTION);
 }
 
 UT_sint32 UT_convertSizeToLayoutUnits(double Value, UT_Dimension dim)
 {
-	return static_cast<UT_sint32>(UT_convertDimToInches(Value, dim) * UT_LAYOUT_UNITS);
+	return static_cast<UT_sint32>(UT_convertDimToInches(Value, dim) * UT_LAYOUT_RESOLUTION);
 }
-#endif
 
 double UT_convertDimensionless(const char * sz)
 {
@@ -551,17 +549,8 @@ UT_sint32 UT_layoutUnitsFromPaperUnits(UT_sint32 iPaperUnits)
 	// convert number in paper units (see above) into
 	// "layout" units.
 
-	return (UT_LAYOUT_UNITS * iPaperUnits / UT_PAPER_UNITS_PER_INCH);
+	return (UT_LAYOUT_RESOLUTION * iPaperUnits / UT_PAPER_UNITS_PER_INCH);
 }
-
-#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-UT_sint32 UT_paperUnitsFromLayoutUnits(UT_sint32 iLayoutUnits)
-{
-	// convert number in layout units into paper units (loss of precision)
-
-   	return (UT_PAPER_UNITS_PER_INCH * iLayoutUnits / UT_LAYOUT_UNITS);
-}
-#endif
 
 const char * UT_formatDimensionedValue(double value,
 									   const char * szUnits,

@@ -42,7 +42,7 @@ public:
 	virtual const char * getDataId(void) const { return m_pszDataID;}
 	virtual GR_Image*	generateImage(GR_Graphics* pG,const PP_AttrProp * pSpanAP = NULL);
 
-	virtual UT_Error   	insertIntoDocument(PD_Document* pDoc, double fDPI,
+	virtual UT_Error   	insertIntoDocument(PD_Document* pDoc, UT_uint32 res,
 										   UT_uint32 iPos, const char* szName);
 
 	bool				setVector_SVG(UT_ByteBuf* pBB);

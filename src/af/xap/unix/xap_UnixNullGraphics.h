@@ -110,7 +110,7 @@ public:
 	virtual void fillRect(GR_Color3D c, UT_sint32 x, UT_sint32 y, UT_sint32 w, UT_sint32 h);
 	virtual void fillRect(GR_Color3D c, UT_Rect &r);
 	virtual void setPageSize(char* pageSizeName, UT_uint32 iwidth = 0, UT_uint32 iheight=0);
-	virtual void setPageCount(UT_uint32 iCount) { m_iPageCount = iCount;}
+	virtual void setPageCount(UT_uint32 iCount) {}
 	virtual void	  saveRectangle(UT_Rect & r, UT_uint32 iIndx) {}
 	virtual void	  restoreRectangle(UT_uint32 iIndx) {}
 
@@ -120,32 +120,14 @@ private:
 #endif	
 
 protected:
-	UT_uint32		_scale(UT_uint32 units) const;
-	void 			_explodePSFonts(PSFont *current, PSFont*& non_cjk_font,PSFont*& cjk_font);	
-	PSFont *        _findMatchPSFontCJK(PSFont * pFont);
-	UT_uint32       _getResolution(void) const;	
-	UT_Vector		m_vecFontList;
+	virtual UT_uint32 getDeviceResolution(void) const;	
 	PSFont *		m_pCurrentFont;
 	UT_RGBColor		m_currentColor;
-	ps_Generate *	m_ps;
-	const char *	m_szFilename;
-	const char *	m_szTitle;
-	const char *	m_szSoftwareNameAndVersion;
-	bool			m_bStartPrint;
-	bool			m_bStartPage;
-	bool			m_bNeedStroked;
-	bool			m_bIsFile;
-	UT_sint32		m_iLineWidth;
-	UT_uint32		m_iWidth;
-	UT_uint32		m_iHeight;
-	char*			m_szPageSizeName;
-	UT_uint32       m_iPageCount;
 	
 	GR_Graphics::Cursor m_cursor;
 	GR_Graphics::ColorSpace	m_cs;
 	
 	XAP_UnixFontManager *	m_fm;
-
 };
 
 #endif /* XAP_UNIXPSGRAPHICS_H */

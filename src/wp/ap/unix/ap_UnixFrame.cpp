@@ -70,33 +70,38 @@ UT_uint32 AP_UnixFrame::getZoomPercentage(void)
 void AP_UnixFrame::setXScrollRange(void)
 {
 	AP_UnixFrameImpl * pFrameImpl = static_cast<AP_UnixFrameImpl *>(getFrameImpl());
-	int width = ((AP_FrameData*)m_pData)->m_pDocLayout->getWidth();
-	int windowWidth = GTK_WIDGET(pFrameImpl->m_dArea)->allocation.width;
+	GR_Graphics * pGr = pFrameImpl->getFrame ()->getCurrentView ()->getGraphics ();
 
+	int width = ((AP_FrameData*)m_pData)->m_pDocLayout->getWidth();
+	int windowWidth = static_cast<int>(pGr->tluD (GTK_WIDGET(pFrameImpl->m_dArea)->allocation.width));
+	
 	int newvalue = ((m_pView) ? m_pView->getXScrollOffset() : 0);
 	int newmax = width - windowWidth; /* upper - page_size */
 	if (newmax <= 0)
 		newvalue = 0;
 	else if (newvalue > newmax)
 		newvalue = newmax;
-
-	bool bDifferentPosition = (newvalue != (int)pFrameImpl->m_pHadj->value);
-	bool bDifferentLimits = ((width-windowWidth) != (int)(pFrameImpl->m_pHadj->upper-
-							      pFrameImpl->m_pHadj->page_size));
 	
-
+	bool bDifferentPosition = (newvalue != pFrameImpl->m_pHadj->value);
+	bool bDifferentLimits = ((width-windowWidth) != pFrameImpl->m_pHadj->upper-
+							                        pFrameImpl->m_pHadj->page_size);
+		
 	pFrameImpl->_setScrollRange(apufi_scrollX, newvalue, (gfloat)width, (gfloat)windowWidth);
-
+	
 	if (m_pView && (bDifferentPosition || bDifferentLimits))
-		m_pView->sendHorizontalScrollEvent(newvalue, (int)(pFrameImpl->m_pHadj->upper-
-								   pFrameImpl->m_pHadj->page_size));
+		m_pView->sendHorizontalScrollEvent(newvalue, 
+										   static_cast<UT_sint32>
+												(pFrameImpl->m_pHadj->upper-
+												 pFrameImpl->m_pHadj->page_size));
 }
 
 void AP_UnixFrame::setYScrollRange(void)
 {
 	AP_UnixFrameImpl * pFrameImpl = static_cast<AP_UnixFrameImpl *>(getFrameImpl());
+	GR_Graphics * pGr = pFrameImpl->getFrame ()->getCurrentView ()->getGraphics ();
+
 	int height = ((AP_FrameData*)m_pData)->m_pDocLayout->getHeight();
-	int windowHeight = GTK_WIDGET(pFrameImpl->m_dArea)->allocation.height;
+	int windowHeight = static_cast<int>(pGr->tluD (GTK_WIDGET(pFrameImpl->m_dArea)->allocation.height));
 
 	int newvalue = ((m_pView) ? m_pView->getYScrollOffset() : 0);
 	int newmax = height - windowHeight;	/* upper - page_size */
@@ -105,15 +110,17 @@ void AP_UnixFrame::setYScrollRange(void)
 	else if (newvalue > newmax)
 		newvalue = newmax;
 
-	bool bDifferentPosition = (newvalue != (int)pFrameImpl->m_pVadj->value);
-	bool bDifferentLimits ((height-windowHeight) != (int)(pFrameImpl->m_pVadj->upper-
-							      pFrameImpl->m_pVadj->page_size));
+	bool bDifferentPosition = (newvalue != pGr->tluD (pFrameImpl->m_pVadj->value));
+	bool bDifferentLimits ((height-windowHeight) != pFrameImpl->m_pVadj->upper-
+													pFrameImpl->m_pVadj->page_size);
 	
 	pFrameImpl->_setScrollRange(apufi_scrollY, newvalue, (gfloat)height, (gfloat)windowHeight);
-
+	
 	if (m_pView && (bDifferentPosition || bDifferentLimits))
-		m_pView->sendVerticalScrollEvent(newvalue, (int)(pFrameImpl->m_pVadj->upper -
-								 pFrameImpl->m_pVadj->page_size));
+		m_pView->sendVerticalScrollEvent(newvalue, 
+										 static_cast<UT_sint32>
+											   (pFrameImpl->m_pVadj->upper -
+												pFrameImpl->m_pVadj->page_size));
 }
 
 
@@ -189,20 +196,37 @@ void AP_UnixFrame::_scrollFuncY(void * pData, UT_sint32 yoff, UT_sint32 /*yrange
 	AP_UnixFrame * pUnixFrame = static_cast<AP_UnixFrame *>(pData);
 	AV_View * pView = pUnixFrame->getCurrentView();
 	AP_UnixFrameImpl * pFrameImpl = static_cast<AP_UnixFrameImpl *>(pUnixFrame->getFrameImpl());
-	
+
 	// we've been notified (via sendVerticalScrollEvent()) of a scroll (probably
 	// a keyboard motion).  push the new values into the scrollbar widgets
 	// (with clamping).  then cause the view to scroll.
 	
-	gfloat yoffNew = (gfloat)yoff;
+	gfloat yoffNew = yoff;
 	gfloat yoffMax = pFrameImpl->m_pVadj->upper - 
 		pFrameImpl->m_pVadj->page_size;
 	if (yoffMax <= 0)
 		yoffNew = 0;
 	else if (yoffNew > yoffMax)
 		yoffNew = yoffMax;
+
+	// we want to twiddle xoffNew such that actual scroll = anticipated scroll.
+	// actual scroll is given by the formula xoffNew-pView->getXScrollOffset()
+
+	// this is exactly the same computation that we do in the scrolling code.
+	// I don't think we need as much precision anymore, now that we have
+	// precise rounding, but it can't really be a bad thing.
+	GR_Graphics * pG = ((FV_View*)pView)->getGraphics();
+
+	UT_sint32 dy = static_cast<UT_sint32>
+		(pG->tluD(static_cast<UT_sint32>(pG->tduD
+			   (static_cast<UT_sint32>(pView->getYScrollOffset()-yoffNew)))));
+	gfloat yoffDisc = static_cast<UT_sint32>(pView->getYScrollOffset()) - dy;
+
 	gtk_adjustment_set_value(GTK_ADJUSTMENT(pFrameImpl->m_pVadj),yoffNew);
-	pView->setYScrollOffset((UT_sint32)yoffNew);
+
+	if (pG->tdu(static_cast<UT_sint32>(yoffDisc) - 
+				pView->getYScrollOffset()) != 0)
+	pView->setYScrollOffset(yoffNew);
 }
 
 // WL_REFACTOR: Put this in the helper
@@ -213,19 +237,40 @@ void AP_UnixFrame::_scrollFuncX(void * pData, UT_sint32 xoff, UT_sint32 /*xrange
 	AP_UnixFrame * pUnixFrame = static_cast<AP_UnixFrame *>(pData);
 	AV_View * pView = pUnixFrame->getCurrentView();
 	AP_UnixFrameImpl * pFrameImpl = static_cast<AP_UnixFrameImpl *>(pUnixFrame->getFrameImpl());
-	
+
 	// we've been notified (via sendScrollEvent()) of a scroll (probably
 	// a keyboard motion).  push the new values into the scrollbar widgets
 	// (with clamping).  then cause the view to scroll.
 
-	gfloat xoffNew = (gfloat)xoff;
-	gfloat xoffMax = pFrameImpl->m_pHadj->upper - pFrameImpl->m_pHadj->page_size;
+	gfloat xoffNew = xoff;
+	gfloat xoffMax = pFrameImpl->m_pHadj->upper - 
+		pFrameImpl->m_pHadj->page_size;
 	if (xoffMax <= 0)
 		xoffNew = 0;
 	else if (xoffNew > xoffMax)
 		xoffNew = xoffMax;
-	gtk_adjustment_set_value(GTK_ADJUSTMENT(pFrameImpl->m_pHadj),xoffNew);
-	pView->setXScrollOffset((UT_sint32)xoffNew);
+
+	// we want to twiddle xoffNew such that actual scroll = anticipated scroll.
+	// actual scroll is given by the formula xoffNew-pView->getXScrollOffset()
+
+	// this is exactly the same computation that we do in the scrolling code.
+	// I don't think we need as much precision anymore, now that we have
+	// precise rounding, but it can't really be a bad thing.
+	GR_Graphics * pG = ((FV_View*)pView)->getGraphics();
+
+	UT_sint32 dx = static_cast<UT_sint32>
+		(pG->tluD(static_cast<UT_sint32>(pG->tduD
+			   (static_cast<UT_sint32>(pView->getXScrollOffset()-xoffNew)))));
+	gfloat xoffDisc = static_cast<UT_sint32>(pView->getXScrollOffset()) - dx;
+
+	gtk_adjustment_set_value(GTK_ADJUSTMENT(pFrameImpl->m_pHadj),xoffDisc);
+
+	// (this is the calculation for dx again, post rounding)
+	// This may not actually be helpful, because we could still lose if the
+	// second round of rounding gives us the wrong number.  Leave it for now.
+	if (pG->tdu(static_cast<UT_sint32>(xoffDisc) - 
+				pView->getXScrollOffset()) != 0)
+		pView->setXScrollOffset(static_cast<UT_sint32>(xoffDisc));
 }
 
 void AP_UnixFrame::translateDocumentToScreen(UT_sint32 &x, UT_sint32 &y)
@@ -257,14 +302,6 @@ void AP_UnixFrame::toggleTopRuler(bool bRulerOn)
 		UT_ASSERT(pUnixTopRuler);
 		pFrameImpl->m_topRuler = pUnixTopRuler->createWidget();
 
-		// get the width from the left ruler and stuff it into the 
-		// top ruler.
-
-		if (((AP_FrameData*)m_pData)->m_pLeftRuler)
-		  pUnixTopRuler->setOffsetLeftRuler(((AP_FrameData*)m_pData)->m_pLeftRuler->getWidth());
-		else
-		  pUnixTopRuler->setOffsetLeftRuler(0);
-
 		// attach everything	
 		gtk_table_attach(GTK_TABLE(pFrameImpl->m_innertable), 
 				 pFrameImpl->m_topRuler, 0, 2, 0, 1, 
@@ -273,6 +310,13 @@ void AP_UnixFrame::toggleTopRuler(bool bRulerOn)
 				 0, 0);
 
 		pUnixTopRuler->setView(m_pView);
+
+		// get the width from the left ruler and stuff it into the 
+		// top ruler.
+		if (((AP_FrameData*)m_pData)->m_pLeftRuler)
+		  pUnixTopRuler->setOffsetLeftRuler(((AP_FrameData*)m_pData)->m_pLeftRuler->getWidth());
+		else
+		  pUnixTopRuler->setOffsetLeftRuler(0);
 	}
 	else
 	  {
@@ -314,6 +358,7 @@ void AP_UnixFrame::toggleLeftRuler(bool bRulerOn)
 				 (GtkAttachOptions)(GTK_FILL),
 				 (GtkAttachOptions)(GTK_EXPAND | GTK_FILL),
 				 0,0);
+
 		pUnixLeftRuler->setView(m_pView);
 		setYScrollRange();
 	}

@@ -67,12 +67,6 @@ fl_TableLayout::fl_TableLayout(FL_DocLayout* pLayout, PL_StruxDocHandle sdh,
 	  m_dTopOffsetUserUnits(0.0),
 	  m_iBottomOffset(0),
 	  m_dBottomOffsetUserUnits(0.0),
-#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-	  m_iLeftOffsetLayoutUnits(0),
-	  m_iRightOffsetLayoutUnits(0),
-	  m_iTopOffsetLayoutUnits(0),
-	  m_iBottomOffsetLayoutUnits(0),
-#endif
 	  m_bIsHomogeneous(true),
 	  m_bSameRowOnTopOfPage(false),
 	  m_iRowNumberForTop(0),
@@ -125,22 +119,12 @@ void fl_TableLayout::createTableContainer(void)
 	fp_Container * pCon = pCL->getLastContainer();
 	UT_ASSERT(pCon);
 	UT_sint32 iWidth = pCon->getWidth();
-#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-	UT_sint32 iWidthLayout = pCon->getWidthInLayoutUnits();
-#endif
 	if(iWidth == 0)
 	{
 		iWidth = pCon->getPage()->getWidth();
 		pCon->setWidth(iWidth);
-#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-		iWidthLayout = pCon->getPage()->getWidthInLayoutUnits();
-		pCon->setWidthInLayoutUnits(iWidthLayout);
-#endif
 	}
 	pTableContainer->setWidth(iWidth);
-#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-	pTableContainer->setWidthInLayoutUnits(iWidthLayout);
-#endif
 //
 // The container of the tbale is set in getNewContainer()
 //
@@ -153,21 +137,12 @@ void fl_TableLayout::createTableContainer(void)
 void fl_TableLayout::setTableContainerProperties(fp_TableContainer * pTab)
 {
 	pTab->setHomogeneous(m_bIsHomogeneous);
-#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-	UT_sint32 borderWidth = m_iLeftOffsetLayoutUnits + m_iRightOffsetLayoutUnits;
-#else
 	UT_sint32 borderWidth = m_iLeftOffset + m_iRightOffset;
-#endif
 	pTab->setBorderWidth(borderWidth);
 	pTab->setColSpacings(m_iColSpacing);
 	pTab->setRowSpacings(m_iRowSpacing);
-#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-	pTab->setLeftOffset(m_iLeftOffsetLayoutUnits);
-	pTab->setRightOffset(m_iRightOffsetLayoutUnits);
-#else
 	pTab->setLeftOffset(m_iLeftOffset);
 	pTab->setRightOffset(m_iRightOffset);
-#endif
 	pTab->setTopOffset(m_iTopOffset);
 	pTab->setBottomOffset(m_iBottomOffset);
 	pTab->setLineThickness(m_iLineThickness);
@@ -753,80 +728,56 @@ void fl_TableLayout::_lookupProperties(void)
 	defaultOffset = "0.005in";	// TODO: what to do with this. was 0.01in
 	if(pszLeftOffset && pszLeftOffset[0])
 	{
-		m_iLeftOffset = m_pLayout->getGraphics()->convertDimension(pszLeftOffset);
-#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-		m_iLeftOffsetLayoutUnits = UT_convertToLayoutUnits(pszLeftOffset);
-#endif
+		m_iLeftOffset = UT_convertToLayoutUnits(pszLeftOffset);
 		m_dLeftOffsetUserUnits = UT_convertDimensionless(pszLeftOffset);
 	}
 	else
 	{
-		m_iLeftOffset = m_pLayout->getGraphics()->convertDimension(defaultOffset.c_str());
-#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-		m_iLeftOffsetLayoutUnits = UT_convertToLayoutUnits(defaultOffset.c_str());
-#endif
+		m_iLeftOffset = UT_convertToLayoutUnits(defaultOffset.c_str());
 		m_dLeftOffsetUserUnits = UT_convertDimensionless(defaultOffset.c_str());
 	}
 
 	if(pszTopOffset && pszTopOffset[0])
 	{
-		m_iTopOffset = m_pLayout->getGraphics()->convertDimension(pszTopOffset);
-#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-		m_iTopOffsetLayoutUnits = UT_convertToLayoutUnits(pszTopOffset);
-#endif
+		m_iTopOffset = UT_convertToLayoutUnits(pszTopOffset);
 		m_dTopOffsetUserUnits = UT_convertDimensionless(pszTopOffset);
 	}
 	else
 	{
-		m_iTopOffset = m_pLayout->getGraphics()->convertDimension(defaultOffset.c_str());
-#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-		m_iTopOffsetLayoutUnits = UT_convertToLayoutUnits(defaultOffset.c_str());
-#endif
+		m_iTopOffset = UT_convertToLayoutUnits(defaultOffset.c_str());
 		m_dTopOffsetUserUnits = UT_convertDimensionless(defaultOffset.c_str());
 	}
 
 	if(pszRightOffset && pszRightOffset[0])
 	{
-		m_iRightOffset = m_pLayout->getGraphics()->convertDimension(pszRightOffset);
-#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-		m_iRightOffsetLayoutUnits = UT_convertToLayoutUnits(pszRightOffset);
-#endif
+		m_iRightOffset = UT_convertToLayoutUnits(pszRightOffset);
 		m_dRightOffsetUserUnits = UT_convertDimensionless(pszRightOffset);
 	}
 	else
 	{
-		m_iRightOffset = m_pLayout->getGraphics()->convertDimension(defaultOffset.c_str());
-#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-		m_iRightOffsetLayoutUnits = UT_convertToLayoutUnits(defaultOffset.c_str());
-#endif
+		m_iRightOffset = UT_convertToLayoutUnits(defaultOffset.c_str());
 		m_dRightOffsetUserUnits = UT_convertDimensionless(defaultOffset.c_str());
 	}
 
 	if(pszBottomOffset && pszBottomOffset[0])
 	{
-		m_iBottomOffset = m_pLayout->getGraphics()->convertDimension(pszBottomOffset);
-#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-		m_iBottomOffsetLayoutUnits = UT_convertToLayoutUnits(pszBottomOffset);
-#endif
+		m_iBottomOffset = UT_convertToLayoutUnits(pszBottomOffset);
 		m_dBottomOffsetUserUnits = UT_convertDimensionless(pszBottomOffset);
 	}
 	else
 	{
-		m_iBottomOffset = m_pLayout->getGraphics()->convertDimension(defaultOffset.c_str());
-#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-		m_iBottomOffsetLayoutUnits = UT_convertToLayoutUnits(defaultOffset.c_str());
-#endif
+		m_iBottomOffset = UT_convertToLayoutUnits(defaultOffset.c_str());
 		m_dBottomOffsetUserUnits = UT_convertDimensionless(defaultOffset.c_str());
 	}
 	const char * pszLineThick = NULL;
 	pSectionAP->getProperty("table-line-thickness", (const XML_Char *&)pszLineThick);
 	if(pszLineThick && *pszLineThick)
 	{
-		m_iLineThickness = m_pLayout->getGraphics()->convertDimension(pszLineThick);
+		m_iLineThickness = UT_convertToLayoutUnits(pszLineThick);
 	}
 	else
 	{
-		m_iLineThickness = m_pLayout->getGraphics()->convertDimension("0.8pt");
+		m_iLineThickness = UT_convertToLayoutUnits("0.8pt");
 		if(m_iLineThickness < 1)
 		{
 			m_iLineThickness = 1;
@@ -847,32 +798,26 @@ void fl_TableLayout::_lookupProperties(void)
 // That is what all those SCALE_TO_SCREEN macros are about. We should think through
 // how to transition to pango layout.
 //
+// 02/11/03: You can't get screen units anymore! HAHAHHAHAA - PL
+//
 // Anyway column spacing being horizontal is layout units.
 //
-#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
 		m_iColSpacing = UT_convertToLayoutUnits(pszTableColSpacing);
-#else
-		m_iColSpacing = m_pLayout->getGraphics()->convertDimension(pszTableColSpacing);
-#endif
 	}
 	else
 	{
-#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-		m_iColSpacing =  UT_convertToLayoutUnits("0.02in"); // was 0.05in
-#else
-		m_iColSpacing = m_pLayout->getGraphics()->convertDimension("0.02in");
-#endif
+		m_iColSpacing = UT_convertToLayoutUnits("0.02in");
 	}
 	if(pszTableRowSpacing && *pszTableRowSpacing)
 	{
 //
 // Row spacing being vertical is screen units
 //
-		m_iRowSpacing = m_pLayout->getGraphics()->convertDimension(pszTableRowSpacing);
+		m_iRowSpacing = UT_convertToLayoutUnits(pszTableRowSpacing);
 	}
 	else
 	{
-		m_iRowSpacing = m_pLayout->getGraphics()->convertDimension("0.01in");
+		m_iRowSpacing = UT_convertToLayoutUnits("0.01in");
 	}
 //
 // Positioned columns controls
@@ -886,11 +831,7 @@ void fl_TableLayout::_lookupProperties(void)
 //
 // Anyway column positioning being horizontal is layout units.
 //
-#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
 		m_iLeftColPos = UT_convertToLayoutUnits(pszLeftColPos);
-#else
-		m_iLeftColPos = m_pLayout->getGraphics()->convertDimension(pszLeftColPos);
-#endif
 	}
 	else
 	{
@@ -928,11 +869,7 @@ void fl_TableLayout::_lookupProperties(void)
 				UT_String sSub = sProps.substr(i,(j-i));
 				i = j + 1;
 				fl_ColProps * pColP = new fl_ColProps;
-#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
 				pColP->m_iColWidth = UT_convertToLayoutUnits(sSub.c_str());
-#else
-				pColP->m_iColWidth = m_pLayout->getGraphics()->convertDimension(sSub.c_str());
-#endif
 				m_vecColProps.addItem((void *) pColP);
 				UT_DEBUGMSG(("SEVIOR: width char %s width layout %d \n",sSub.c_str(),pColP->m_iColWidth));
 			}
@@ -1031,7 +968,7 @@ void fl_TableLayout::_lookupProperties(void)
 				{
 					pRowP = (fl_RowProps *) m_vecRowProps.getNthItem(iProp);
 				}
-				pRowP->m_iRowHeight = m_pLayout->getGraphics()->convertDimension(sSub.c_str());
+				pRowP->m_iRowHeight = UT_convertToLayoutUnits(sSub.c_str());
 				if(bNew)
 				{
 					m_vecRowProps.addItem((void *) pRowP);
@@ -1073,48 +1010,20 @@ UT_sint32 fl_TableLayout::getTopOffset(void) const
 	return m_iTopOffset;
 }
 
-#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-UT_sint32 fl_TableLayout::getTopOffsetInLayoutUnits(void) const
-{
-	return m_iTopOffsetLayoutUnits;
-}
-#endif
-
 UT_sint32 fl_TableLayout::getBottomOffset(void) const
 {
 	return m_iBottomOffset;
 }
-
-#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-UT_sint32 fl_TableLayout::getBottomOffsetInLayoutUnits(void) const
-{
-	return m_iBottomOffsetLayoutUnits;
-}
-#endif
 
 UT_sint32   fl_TableLayout::getLeftOffset(void) const
 {
 	return m_iLeftOffset;
 }
 
-#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-UT_sint32  fl_TableLayout::getLeftOffsetInLayoutUnits(void) const
-{
-	return m_iLeftOffsetLayoutUnits;
-}
-#endif
 UT_sint32   fl_TableLayout::getRightOffset(void) const
 {
 	return m_iRightOffset;
 }
-
-#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-UT_sint32   fl_TableLayout::getRightOffsetInLayoutUnits(void) const
-{
-	return m_iRightOffsetLayoutUnits;
-}
-#endif
-
 
 void fl_TableLayout::collapse(void)
 {
@@ -1240,12 +1149,6 @@ fl_CellLayout::fl_CellLayout(FL_DocLayout* pLayout, PL_StruxDocHandle sdh, PT_At
 	  m_dTopOffsetUserUnits(0.0),
 	  m_iBottomOffset(0),
 	  m_dBottomOffsetUserUnits(0.0),
-#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-	  m_iLeftOffsetLayoutUnits(0),
-	  m_iRightOffsetLayoutUnits(0),
-	  m_iTopOffsetLayoutUnits(0),
-	  m_iBottomOffsetLayoutUnits(0),
-#endif
 	  m_iLeftAttach(0),
 	  m_iRightAttach(1),
 	  m_iTopAttach(0),
@@ -1309,11 +1212,6 @@ void fl_CellLayout::createCellContainer(void)
 	UT_ASSERT(pDSL != NULL);
 	UT_sint32 iWidth = pDSL->getFirstContainer()->getPage()->getWidth();
 	pCellContainer->setWidth(iWidth);
-#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-	UT_sint32 iWidthLayout = pDSL->getFirstContainer()->getPage()->getWidthInLayoutUnits() - pDSL->getLeftMarginInLayoutUnits() - pDSL->getRightMarginInLayoutUnits();
-	xxx_UT_DEBUGMSG(("SEVIOR: Setting initial width of cell %x to %d \n",pCellContainer,iWidthLayout));
-	pCellContainer->setWidthInLayoutUnits(iWidthLayout);
-#endif
 }
 
 
@@ -1327,13 +1225,8 @@ void fl_CellLayout::setCellContainerProperties(fp_CellContainer * pCell)
 	pCell->setRightAttach(m_iRightAttach);
 	pCell->setTopAttach(m_iTopAttach);
 	pCell->setBottomAttach(m_iBottomAttach);
-#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-	pCell->setLeftPad(m_iLeftOffsetLayoutUnits);
-	pCell->setRightPad(m_iRightOffsetLayoutUnits);
-#else
 	pCell->setLeftPad(m_iLeftOffset);
 	pCell->setRightPad(m_iRightOffset);
-#endif
 	pCell->setTopPad(m_iTopOffset);
 	pCell->setBotPad(m_iBottomOffset);
 	pCell->setLeftColor(m_cLeftColor);
@@ -1701,69 +1594,45 @@ void fl_CellLayout::_lookupProperties(void)
 	defaultOffset = "0.002in";
 	if(pszLeftOffset && pszLeftOffset[0])
 	{
-		m_iLeftOffset = m_pLayout->getGraphics()->convertDimension(pszLeftOffset);
-#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-		m_iLeftOffsetLayoutUnits = UT_convertToLayoutUnits(pszLeftOffset);
-#endif
+		m_iLeftOffset = UT_convertToLayoutUnits(pszLeftOffset);
 		m_dLeftOffsetUserUnits = UT_convertDimensionless(pszLeftOffset);
 	}
 	else
 	{
-		m_iLeftOffset = m_pLayout->getGraphics()->convertDimension(defaultOffset.c_str());
-#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-		m_iLeftOffsetLayoutUnits = UT_convertToLayoutUnits(defaultOffset.c_str());
-#endif
+		m_iLeftOffset = UT_convertToLayoutUnits(defaultOffset.c_str());
 		m_dLeftOffsetUserUnits = UT_convertDimensionless(defaultOffset.c_str());
 	}
 
 	if(pszTopOffset && pszTopOffset[0])
 	{
-		m_iTopOffset = m_pLayout->getGraphics()->convertDimension(pszTopOffset);
-#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-		m_iTopOffsetLayoutUnits = UT_convertToLayoutUnits(pszTopOffset);
-#endif
+		m_iTopOffset = UT_convertToLayoutUnits(pszTopOffset);
 		m_dTopOffsetUserUnits = UT_convertDimensionless(pszTopOffset);
 	}
 	else
 	{
-		m_iTopOffset = m_pLayout->getGraphics()->convertDimension(defaultOffset.c_str());
-#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-		m_iTopOffsetLayoutUnits = UT_convertToLayoutUnits(defaultOffset.c_str());
-#endif
+		m_iTopOffset = UT_convertToLayoutUnits(defaultOffset.c_str());
 		m_dTopOffsetUserUnits = UT_convertDimensionless(defaultOffset.c_str());
 	}
 
 	if(pszRightOffset && pszRightOffset[0])
 	{
-		m_iRightOffset = m_pLayout->getGraphics()->convertDimension(pszRightOffset);
-#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-		m_iRightOffsetLayoutUnits = UT_convertToLayoutUnits(pszRightOffset);
-#endif
+		m_iRightOffset = UT_convertToLayoutUnits(pszRightOffset);
 		m_dRightOffsetUserUnits = UT_convertDimensionless(pszRightOffset);
 	}
 	else
 	{
-		m_iRightOffset = m_pLayout->getGraphics()->convertDimension(defaultOffset.c_str());
-#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-		m_iRightOffsetLayoutUnits = UT_convertToLayoutUnits(defaultOffset.c_str());
-#endif
+		m_iRightOffset = UT_convertToLayoutUnits(defaultOffset.c_str());
 		m_dRightOffsetUserUnits = UT_convertDimensionless(defaultOffset.c_str());
 	}
 
 	if(pszBottomOffset && pszBottomOffset[0])
 	{
-		m_iBottomOffset = m_pLayout->getGraphics()->convertDimension(pszBottomOffset);
-#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-		m_iBottomOffsetLayoutUnits = UT_convertToLayoutUnits(pszBottomOffset);
-#endif
+		m_iBottomOffset = UT_convertToLayoutUnits(pszBottomOffset);
 		m_dBottomOffsetUserUnits = UT_convertDimensionless(pszBottomOffset);
 	}
 	else
 	{
-		m_iBottomOffset = m_pLayout->getGraphics()->convertDimension(defaultOffset.c_str());
-#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-		m_iBottomOffsetLayoutUnits = UT_convertToLayoutUnits(defaultOffset.c_str());
-#endif
+		m_iBottomOffset = UT_convertToLayoutUnits(defaultOffset.c_str());
 		m_dBottomOffsetUserUnits = UT_convertDimensionless(defaultOffset.c_str());
 	}
 	const char* pszLeftAttach = NULL;
@@ -1899,7 +1768,7 @@ void fl_CellLayout::_lookupProperties(void)
 	GR_Graphics * pG = m_pLayout->getGraphics();
 	if (pszLeftLineThickness && pszLeftLineThickness[0]) 
 	{
-		m_iLeftLineThickness = pG->convertDimension(pszLeftLineThickness);
+		m_iLeftLineThickness = UT_convertToLayoutUnits(pszLeftLineThickness);
 		double res = UT_convertToInches(pszLeftLineThickness);
 		if(m_iLeftLineThickness == 0 && (res > 0.0001))
 		{
@@ -1912,7 +1781,7 @@ void fl_CellLayout::_lookupProperties(void)
 	}
 	if (pszTopLineThickness && pszTopLineThickness[0]) 
 	{
-		m_iTopLineThickness = pG->convertDimension(pszTopLineThickness);
+		m_iTopLineThickness = UT_convertToLayoutUnits(pszTopLineThickness);
 		double res = UT_convertToInches(pszTopLineThickness);
 		if(m_iTopLineThickness == 0 && (res > 0.0001))
 		{
@@ -1925,7 +1794,7 @@ void fl_CellLayout::_lookupProperties(void)
 	}
 	if (pszRightLineThickness && pszRightLineThickness[0]) 
 	{
-		m_iRightLineThickness = pG->convertDimension(pszRightLineThickness);
+		m_iRightLineThickness = UT_convertToLayoutUnits(pszRightLineThickness);
 		double res = UT_convertToInches(pszRightLineThickness);
 		if(m_iRightLineThickness == 0 && (res > 0.0001))
 		{
@@ -1938,7 +1807,7 @@ void fl_CellLayout::_lookupProperties(void)
 	}
 	if (pszBottomLineThickness && pszBottomLineThickness[0]) 
 	{
-		m_iBottomLineThickness = pG->convertDimension(pszBottomLineThickness);
+		m_iBottomLineThickness = UT_convertToLayoutUnits(pszBottomLineThickness);
 		double res = UT_convertToInches(pszBottomLineThickness);
 		if(m_iBottomLineThickness == 0 && (res > 0.0001))
 		{
@@ -1956,22 +1825,10 @@ UT_sint32   fl_CellLayout::getLeftOffset(void) const
 	return m_iLeftOffset;
 }
 
-#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-UT_sint32  fl_CellLayout::getLeftOffsetInLayoutUnits(void) const
-{
-	return m_iLeftOffsetLayoutUnits;
-}
-#endif
 UT_sint32   fl_CellLayout::getRightOffset(void) const
 {
 	return m_iRightOffset;
 }
-#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-UT_sint32   fl_CellLayout::getRightOffsetInLayoutUnits(void) const
-{
-	return m_iRightOffsetLayoutUnits;
-}
-#endif
 
 UT_sint32 fl_CellLayout::getTopOffset(void) const
 {
@@ -1979,25 +1836,10 @@ UT_sint32 fl_CellLayout::getTopOffset(void) const
 }
 
 
-#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-UT_sint32 fl_CellLayout::getTopOffsetInLayoutUnits(void) const
-{
-	return m_iTopOffsetLayoutUnits;
-}
-#endif
-
 UT_sint32 fl_CellLayout::getBottomOffset(void) const
 {
 	return m_iBottomOffset;
 }
-
-#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-UT_sint32 fl_CellLayout::getBottomOffsetInLayoutUnits(void) const
-{
-	return m_iBottomOffsetLayoutUnits;
-}
-#endif
-
 
 void fl_CellLayout::_localCollapse(void)
 {

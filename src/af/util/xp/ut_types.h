@@ -21,7 +21,7 @@
 #define UT_TYPES_H
 
 #include <stdlib.h>
-#define USE_LAYOUT_UNITS
+
 #ifdef NULL
 #undef NULL
 #endif

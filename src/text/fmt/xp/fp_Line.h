@@ -82,22 +82,12 @@ public:
 
 	inline fl_BlockLayout*		getBlock(void) const 		{ return m_pBlock; }
 	//! Return height of line as it will appear on screen
-#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-	virtual inline UT_sint32	getHeight(void) const 		{ return (m_iScreenHeight != -1) ? m_iScreenHeight : m_iHeight; }
-#else
 	virtual inline UT_sint32	getHeight(void) const 		{ return m_iHeight; }
-#endif
 	virtual inline UT_sint32	getX(void) const 			{ return m_iX; }
 	virtual inline UT_sint32	getY(void) const 			{ return m_iY; }
 
 	inline UT_sint32			getMaxWidth(void) const 	{ return m_iMaxWidth; }
 	
-#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-	virtual inline UT_sint32 	getHeightInLayoutUnits(void) const 		{ return m_iHeightLayoutUnits; }
-	virtual inline UT_sint32	getXInLayoutUnits(void) const 	{ return m_iXLayoutUnits; }
-	inline UT_sint32			getMaxWidthInLayoutUnits(void) const 	{ UT_ASSERT(m_iMaxWidthLayoutUnits); return m_iMaxWidthLayoutUnits; }
-#endif
-
 	inline UT_sint32			getAscent(void) const 		{ return m_iAscent; }
 	inline UT_sint32			getDescent(void) const 		{ return m_iDescent; }
 	UT_sint32                   getNumRunsInLine(void) const {return m_vecRuns.getItemCount();}
@@ -108,11 +98,6 @@ public:
 	virtual void				setX(UT_sint32 i, bool bDontClearIfNeeded = false);
 	virtual void				setY(UT_sint32);
 	
-#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-	void				        setMaxWidthInLayoutUnits(UT_sint32);
-	virtual void				setXInLayoutUnits(UT_sint32);
-	virtual void				setYInLayoutUnits(UT_sint32);
-#endif
 	virtual void				setContainer(fp_Container*);
 	inline	void		        setBlock(fl_BlockLayout * pBlock)	{ m_pBlock = pBlock; }
 	fp_Container *              getColumn(void);
@@ -123,20 +108,12 @@ public:
 	virtual UT_sint32   getWidth(void) const { return m_iWidth;}
 	virtual UT_sint32   getDrawingWidth(void) const;
 	
-#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-	virtual void        setWidthInLayoutUnits(UT_sint32) {}
-    virtual void        setHeightLayoutUnits(UT_sint32) {}
-    virtual UT_sint32   getWidthInLayoutUnits() const {return m_iWidthLayoutUnits;}
-#endif
     virtual bool        isVBreakable(void) { return false;}
     virtual bool        isHBreakable(void) {return true;}
 	virtual UT_sint32   wantVBreakAt(UT_sint32) { return 0;}
 	virtual UT_sint32   wantHBreakAt(UT_sint32) { return 0;}
     virtual fp_ContainerObject * VBreakAt(UT_sint32) { return NULL;}
     virtual fp_ContainerObject * HBreakAt(UT_sint32) {return NULL;}
-#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-    virtual UT_sint32   getMarginBeforeInLayoutUnits(void) const { return 0;}
-#endif
     virtual UT_uint32 distanceFromPoint(UT_sint32, UT_sint32) {return 0;}
 	virtual fp_Container*	getNextContainerInSection(void) const;
 	virtual fp_Container*	getPrevContainerInSection(void) const;
@@ -158,7 +135,7 @@ public:
 	fp_Run*     getLastRun(void) const ;
 	fp_Run*     getLastTextRun(void) const ;
 
-	fp_Run*	calculateWidthOfRun(UT_sint32 &iXLayoutUnits,
+	fp_Run*	calculateWidthOfRun(UT_sint32 &iX,
 								UT_uint32 iIndxVisual,
 								FL_WORKING_DIRECTION eWorkingDirection,
 								FL_WHICH_TABSTOP eUseTabStop);
@@ -171,9 +148,6 @@ public:
 	void		remove(void);
 	UT_sint32	getMarginBefore(void) const;
 	UT_sint32	getMarginAfter(void) const;
-#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-	UT_sint32	getMarginAfterInLayoutUnits(void) const;
-#endif
 	virtual void		mapXYToPosition(UT_sint32 xPos, UT_sint32 yPos, PT_DocPosition& pos, bool& bBOL, bool& bEOL);
 	void		getOffsets(fp_Run* pRun, UT_sint32& xoff, UT_sint32& yoff);
 	void		getScreenOffsets(fp_Run* pRun, UT_sint32& xoff, UT_sint32& yoff);
@@ -196,10 +170,6 @@ public:
 
 	UT_sint32	calculateWidthOfLine(void);
 	UT_sint32	calculateWidthOfTrailingSpaces(void);
-#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-	UT_sint32	calculateWidthOfLineInLayoutUnits(void);
-	UT_sint32	calculateWidthOfTrailingSpacesInLayoutUnits(void);
-#endif
 	void		resetJustification();
 	void		distributeJustificationAmongstSpaces(UT_sint32 iAmount);
 	UT_uint32	countJustificationPoints(void);
@@ -207,13 +177,7 @@ public:
 	bool		isLastCharacter(UT_UCSChar Character) const;
 
 	bool		findNextTabStop(UT_sint32 iStartX, UT_sint32& iPosition, eTabType& iType, eTabLeader& iLeader );
-#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-	bool		findNextTabStopInLayoutUnits(UT_sint32 iStartX, UT_sint32& iPosition, eTabType& iType, eTabLeader& iLeader);
-#endif
 	bool		findPrevTabStop(UT_sint32 iStartX, UT_sint32& iPosition, eTabType& iType, eTabLeader& iLeader );
-#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-	bool		findPrevTabStopInLayoutUnits(UT_sint32 iStartX, UT_sint32& iPosition, eTabType& iType, eTabLeader& iLeader);
-#endif
 	void		setNeedsRedraw(void);
 	//void		setRedoLayout(void){ m_bRedoLayout = true; }
 	bool		needsRedraw(void) { return m_bNeedsRedraw; }
@@ -234,9 +198,6 @@ public:
 
 protected:
 	void 	_calculateWidthOfRun(UT_sint32 &iX,
-#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-								 UT_sint32 &iXLayoutUnits,
-#endif
 								 fp_Run * pRun,
 								 UT_uint32 iIndx,
 								 UT_uint32 iCountRuns,
@@ -265,13 +226,6 @@ void		_splitRunsAtSpaces(void);
 
 	UT_sint32		m_iX;
 	UT_sint32		m_iY;
-#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-	UT_sint32	 	m_iWidthLayoutUnits;
-	UT_sint32		m_iMaxWidthLayoutUnits;
-	UT_sint32 		m_iHeightLayoutUnits;
-	UT_sint32		m_iXLayoutUnits;
-	UT_sint32		m_iYLayoutUnits;
-#endif
 	UT_Vector		m_vecRuns;
 
 	bool			m_bNeedsRedraw;

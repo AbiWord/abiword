@@ -55,13 +55,6 @@ public:
 	UT_sint32			getWidth(void) const;
 	const fp_PageSize&	getPageSize() const;
 	UT_sint32			getHeight(void) const;
-#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-	UT_sint32			getWidthInLayoutUnits(void) const;
-	UT_sint32			getHeightInLayoutUnits(void) const;
-#else
-	UT_sint32			getWidthInLayoutUnits(void) const;
-	UT_sint32			getHeightInLayoutUnits(void) const;
-#endif
 	UT_sint32			getBottom(void) const;
 	fp_Page*			getNext(void) const;
 	fp_Page*			getPrev(void) const;
@@ -80,12 +73,7 @@ public:
 
 	void				draw(dg_DrawArgs*, bool bAlaysUseWhiteBackground=false);
 	bool				needsRedraw(void) const;
-#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-    UT_sint32           getFilledHeightInLayoutUnits(fp_Container * prevContainer) const;
-	UT_sint32           getAvailableHeightInLayoutUnits(void) const;
-#else
     UT_sint32           getFilledHeight(fp_Container * prevContainer) const;
-#endif
 	UT_sint32           getAvailableHeight(void) const;
 
 	// Leader (e.g. column) functions.
@@ -113,9 +101,6 @@ public:
 	UT_sint32           findFootnoteContainer(fp_FootnoteContainer * pFC);
 	void                clearScreenFootnotes(void);
 	UT_sint32           getFootnoteHeight(void);
-#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-	UT_sint32           getFootnoteHeightInLayoutUnits(void);
-#endif
 #ifdef FMT_TEST
 	void				__dump(FILE * fp) const;
 #endif

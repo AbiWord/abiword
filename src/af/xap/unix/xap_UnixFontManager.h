@@ -23,10 +23,7 @@
 #include <gtk/gtk.h>
 #include <gdk/gdk.h>
 #include <gdk/gdkx.h>
-
-#ifdef USE_XFT
 #include <fontconfig/fontconfig.h>
-#endif
 
 #include "ut_types.h"
 #include "ut_vector.h"
@@ -44,10 +41,6 @@ public:
 	XAP_UnixFontManager(void);
 	~XAP_UnixFontManager(void);
 
-#ifndef USE_XFT
-	bool					setFontPath(const char * searchpath);
-	XAP_UnixFont *			getDefaultFont16Bit(void);
-#endif
 	bool					scavengeFonts(void);
 
 	UT_Vector *			    getAllFonts(void);
@@ -56,7 +49,6 @@ public:
 	XAP_UnixFont *			getFont(const char * fontname,
 									XAP_UnixFont::style s);
 
-#ifdef USE_XFT	
 	XAP_UnixFont*			searchFont(const char* pszXftName);
 
 	XAP_UnixFont*			findNearestFont(const char* pszFontFamily,
@@ -65,7 +57,6 @@ public:
 											const char* pszFontWeight,
 											const char* pszFontStretch,
 											const char* pszFontSize);
-#endif
 	
 	void					unregisterFont(XAP_UnixFont * pFont);
 	
@@ -76,14 +67,7 @@ public:
 
 private:
 
-#ifndef USE_XFT
-	void					_allocateThisFont(const char * line,
-											  const char * workingdir, int iLine);
-	void 					_allocateCJKFont(const char * line, int iLine);
-#endif
-	
 	void					_addFont(XAP_UnixFont* font);
-
 	UT_Vector				m_vecFontCache;
 
 	// perhaps this should be a hash to avoid duplicates?
@@ -91,15 +75,9 @@ private:
 
 	UT_StringPtrMap 		m_fontHash;
 
-#ifndef USE_XFT
-	char ** 				m_pExtraXFontPath;
-	UT_sint32				m_iExtraXFontPathCount;
-#endif
-
-#ifdef USE_XFT
 	static FcFontSet*		m_pFontSet;
 	static FcConfig*		m_pConfig;
-#endif
+
 	XAP_UnixFont*           m_pDefaultFont;
 };
 

@@ -117,8 +117,8 @@ void AP_Preview_PageNumbers::draw (void)
 
   UT_ASSERT (m_gc);
 
-  UT_sint32 iWidth = _UL(getWindowWidth());
-  UT_sint32 iHeight = _UL(getWindowHeight());
+  UT_sint32 iWidth = m_gc->tlu (getWindowWidth());
+  UT_sint32 iHeight = m_gc->tlu (getWindowHeight());
 
   // clear the screen on updates
   m_gc->clearArea (0, 0, iWidth, iHeight);
@@ -128,13 +128,13 @@ void AP_Preview_PageNumbers::draw (void)
 
   // actually draw some "text" on the preview for a more realistic appearance
 
-  m_gc->setLineWidth(_UL(1));
+  m_gc->setLineWidth(m_gc->tlu(1));
   UT_RGBColor color(0, 0, 0);
   m_gc->setColor(color);
 
   for (int txty = (2 * iFontHeight); txty < iHeight - (2 * iFontHeight); txty += step)
     {
-      m_gc->drawLine (_UL(7), txty, iWidth - _UL(7), txty);
+      m_gc->drawLine (m_gc->tlu(7), txty, iWidth - m_gc->tlu(7), txty);
     }
 
   // draw in the page number as a header or footer, properly aligned

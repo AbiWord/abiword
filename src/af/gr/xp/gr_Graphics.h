@@ -157,6 +157,11 @@ class ABI_EXPORT GR_Graphics
 	GR_Graphics();
 	virtual ~GR_Graphics();
 
+	UT_sint32	tdu(UT_sint32 layoutUnits) const;
+	UT_sint32	tlu(UT_sint32 deviceUnits) const;
+	double	    tduD(double layoutUnits) const;
+	double  	tluD(double deviceUnits) const;
+
 #ifndef WITH_PANGO
 	virtual void      drawGlyph(UT_uint32 glyph_idx, UT_sint32 xoff, UT_sint32 yoff) = 0;
 	virtual void      drawChars(const UT_UCSChar* pChars,
@@ -224,7 +229,6 @@ class ABI_EXPORT GR_Graphics
 #else
 	UT_sint32         getApproxCharWidth();
 #endif
-	UT_uint32         getAppropriateFontSizeFromString(const char * pszFontSize);
 
 	virtual void      setColor(const UT_RGBColor& clr) = 0;
 	virtual void      getColor(UT_RGBColor& clr) = 0;
@@ -243,8 +247,6 @@ class ABI_EXPORT GR_Graphics
 									   const char* pszFontStretch,
 									   const char* pszFontSize);
 
-	UT_sint32         convertDimension(const char*) const;
-	UT_sint32         convertDimension(double Value, UT_Dimension Dim) const;
 	const char *      invertDimension(UT_Dimension, double) const;
 
 	bool              scaleDimensions(const char * szLeftIn,
@@ -257,8 +259,8 @@ class ABI_EXPORT GR_Graphics
 
    	virtual GR_Image* createNewImage(const char* pszName,
 									 const UT_ByteBuf* pBB,
-									 UT_sint32 iDisplayWidth,
-									 UT_sint32   iDisplayHeight,
+									 UT_sint32 iWidth,
+									 UT_sint32 iHeight,
 									 GR_Image::GRType iType = GR_Image::GRT_Raster);
 
 	/* For drawLine() and xorLine():
@@ -321,9 +323,6 @@ class ABI_EXPORT GR_Graphics
 					 LineStyle inLineStyle = LINE_SOLID ) ;
 
 	virtual bool      queryProperties(GR_Graphics::Properties gp) const = 0;
-	virtual UT_sint32 getScreenResolution(void) {return 100;} //subclasses to overide
-	static  UT_uint32 s_getScreenResolution();
-	virtual UT_sint32 getPaperResolution(void) {return 7200;} // subclasses to override
 	/* the following 3 are only used for printing */
 
 	virtual bool      startPrint(void) = 0;
@@ -377,13 +376,9 @@ class ABI_EXPORT GR_Graphics
 	virtual void      setCursor(GR_Graphics::Cursor c) = 0;
 	virtual GR_Graphics::Cursor getCursor(void) const = 0;
 
-	void              setZoomPercentage(UT_uint32 iZoom);
+	virtual void      setZoomPercentage(UT_uint32 iZoom);
 	UT_uint32         getZoomPercentage(void) const;
-	UT_uint32         getResolution(void) const;
-#ifdef USE_LAYOUT_UNITS
-	void              setLayoutResolutionMode(bool bEnable) {m_bLayoutResolutionModeEnabled = bEnable;}
-	bool              getLayoutResolutionMode(void) const {return m_bLayoutResolutionModeEnabled;}
-#endif
+	static UT_uint32  getResolution(void) { return UT_LAYOUT_RESOLUTION; }
 	inline void       setPortrait (bool b) {m_bIsPortrait = b;}
 	inline bool       isPortrait (void) const {return m_bIsPortrait;}
 
@@ -450,10 +445,9 @@ class ABI_EXPORT GR_Graphics
 	GR_Caret *        getCaret() { return m_pCaret; }
 	virtual void	  saveRectangle(UT_Rect & r, UT_uint32 iIndx) = 0;
 	virtual void	  restoreRectangle(UT_uint32 iIndx) = 0;
+	virtual UT_uint32 getDeviceResolution(void) const = 0;
 
  protected:
-	virtual UT_uint32 _getResolution(void) const = 0;
-	void              setStaticScreenResolution(UT_uint32 iRes);
 
  private:
 	virtual bool       _setTransform(const GR_Transform & tr)
@@ -502,9 +496,6 @@ class ABI_EXPORT GR_Graphics
  protected:
 	XAP_App	*	      m_pApp;
 	UT_uint32	      m_iZoomPercentage;
-#ifdef USE_LAYOUT_UNITS	
-	bool		      m_bLayoutResolutionModeEnabled;
-#endif
 	UT_uint32         m_iFontAllocNo;
 #ifndef WITH_PANGO
 	static bool       m_bRemapGlyphsMasterSwitch;
@@ -531,7 +522,6 @@ class ABI_EXPORT GR_Graphics
 	bool             m_bIsExposedAreaAccessed;
 	bool             m_bDontRedraw;
 	bool             m_bDoMerge;
-	static UT_uint32 s_iScreenResolution;
 
 #ifdef WITH_PANGO
 	PangoFont *      m_pPangoFont;

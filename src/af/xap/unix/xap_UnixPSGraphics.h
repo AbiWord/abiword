@@ -139,37 +139,20 @@ protected:
 	void                    _emit_SetFont(PSFont *pFont);
 	void			_emit_SetLineWidth(void);
 	void 			_emit_SetColor(void);
-	virtual UT_uint32 _getResolution(void) const;
-
-	PSFont 			*_findMatchPSFontCJK(PSFont * pFont);
-	void 			_drawCharsCJK(	const UT_UCSChar*	pChars,
-									UT_uint32			iCharOffset,
-								 	UT_uint32			iLength,
-								 	UT_sint32 			xoff,
-								 	UT_sint32 			yoff);
-	
-	void 			_drawCharsNonCJK(const UT_UCSChar*	pChars,
-									UT_uint32			iCharOffset,
-								 	UT_uint32			iLength,
-								 	UT_sint32 			xoff,
-								 	UT_sint32 			yoff);
+	virtual UT_uint32 getDeviceResolution(void) const;
 	
 	void 			_drawCharsUTF8(const UT_UCSChar*	pChars,
 									UT_uint32			iCharOffset,
 								 	UT_uint32			iLength,
 								 	UT_sint32 			xoff,
-								 	UT_sint32 			yoff);
+								 	UT_sint32 			yoff, 
+								    int *				pCharWidths);
 								 	
-#ifdef BIDI_ENABLED
 	void 			_drawCharsOverstriking(const UT_UCSChar*	pChars,
 									UT_uint32			iCharOffset,
 								 	UT_uint32			iLength,
 								 	UT_sint32 			xoff,
 								 	UT_sint32 			yoff);
-
-#endif
-
-	void 			_explodePSFonts(PSFont *current, PSFont*& non_cjk_font,PSFont*& cjk_font);	
 	
 	UT_Vector		m_vecFontList;
 	PSFont *		m_pCurrentFont;

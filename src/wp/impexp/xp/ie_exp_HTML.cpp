@@ -2319,9 +2319,8 @@ void s_HTML_Listener::_openTag (PT_AttrPropIndex api, PL_StruxDocHandle sdh)
 					szP_TextIndent = 0;
 		}
 
-#ifdef BIDI_ENABLED
 	pAP->getProperty ("dom-dir", szP_DomDir);
-#endif
+
 	if (szP_DomDir) // any reason why this can't be used with <blockquote> or <pre> ??
 		{
 			m_utf8_1 += " dir=\"";
@@ -2672,7 +2671,6 @@ void s_HTML_Listener::_openSpan (PT_AttrPropIndex api)
 			bInSpan = true;
 		}
 
-#ifdef BIDI_ENABLED
 	/* if the dir-override is set, or dir is 'rtl' or 'ltr', we will output
 	 * the dir property; however, this property cannot be within a style 
 	 * sheet, so anything that needs to be added to this code and belongs 
@@ -2694,7 +2692,6 @@ void s_HTML_Listener::_openSpan (PT_AttrPropIndex api)
 				m_utf8_1 += "\"";
 				bInSpan = true;
 			}
-#endif
 
 	if (bInSpan)
 		{
@@ -3170,16 +3167,14 @@ void s_HTML_Listener::_handleImage (PT_AttrPropIndex api)
 
 	if (szWidth)
 		{
-			sprintf (buf, "%d", (int) UT_convertToDimension (szWidth, DIM_PX));
 			m_utf8_1 += " width=\"";
-			m_utf8_1 += buf;
+			m_utf8_1 += szWidth;
 			m_utf8_1 += "\"";
 		}
 	if(szHeight)
 		{
-			sprintf (buf, "%d", (int) UT_convertToDimension (szHeight, DIM_PX));
 			m_utf8_1 += " height=\"";
-			m_utf8_1 += buf;
+			m_utf8_1 += szHeight;
 			m_utf8_1 += "\"";
 		}
 

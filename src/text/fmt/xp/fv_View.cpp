@@ -81,7 +81,7 @@
 // NB -- irrespective of this size, the piecetable will store
 // at max BOOKMARK_NAME_LIMIT of chars as defined in pf_Frag_Bookmark.h
 #define BOOKMARK_NAME_SIZE 30
-#define CHECK_WINDOW_SIZE if(getWindowHeight() < _UL(20)) return;
+#define CHECK_WINDOW_SIZE if(getWindowHeight() < m_pG->tlu(20)) return;
 
 /****************************************************************/
 
@@ -399,16 +399,17 @@ FV_View::FV_View(XAP_App * pApp, void* pParentData, FL_DocLayout* pLayout)
 	{
 	    pFrame->repopulateCombos();
 	    m_pG->createCaret();
-	    if(m_pG->queryProperties(GR_Graphics::DGP_SCREEN))
-	      {
-		AV_ListenerId listID;
-		m_caretListener = new FV_Caret_Listener (pFrame, m_pG);
-		addListener(m_caretListener, &listID);
-	      }
-	    else
-	      {
-		m_caretListener = NULL;
-	      }	    
+		m_pG->getCaret()->enable();
+		if(m_pG->queryProperties(GR_Graphics::DGP_SCREEN))
+		{
+			AV_ListenerId listID;
+			m_caretListener = new FV_Caret_Listener (pFrame, m_pG);
+			addListener(m_caretListener, &listID);
+		}
+		else
+		{
+			m_caretListener = NULL;
+		}
 	}
 }
 
@@ -927,7 +928,6 @@ void FV_View::focusChange(AV_Focus focus)
 		if (isSelectionEmpty() && (getPoint() > 0))
 		{
 			m_pG->getCaret()->setBlink(m_bCursorBlink);
-			m_pG->getCaret()->enable();
 		}
 		m_pApp->rememberFocussedFrame(m_pParentData);
 		break;
@@ -935,20 +935,18 @@ void FV_View::focusChange(AV_Focus focus)
 		if (isSelectionEmpty() && (getPoint() > 0))
 		{
  			m_pG->getCaret()->setBlink(false);
-			m_pG->getCaret()->enable();
 		}
 		break;
 	case AV_FOCUS_MODELESS:
 		if (isSelectionEmpty() && (getPoint() > 0))
 		{
  			m_pG->getCaret()->setBlink(false);
-			m_pG->getCaret()->enable();
 		}
 		break;
 	case AV_FOCUS_NONE:
 		if (isSelectionEmpty() && (getPoint() > 0))
 		{
-			m_pG->getCaret()->disable(true);
+			m_pG->getCaret()->setBlink(false);
 		}
 		break;
 	}
@@ -4994,7 +4992,7 @@ UT_sint32 FV_View::getPageViewSep(void) const
 		return 0;
 	else if (getViewMode() != VIEW_PRINT)
 	{
-		return _UL(1);
+		return m_pG->tlu(1);
 	}
 	else
 		return fl_PAGEVIEW_PAGE_SEP;
@@ -5030,7 +5028,7 @@ void FV_View::setXScrollOffset(UT_sint32 v)
 
 	if (dx == 0)
 		return;
-	_fixInsertionPointCoords();
+
 	m_pG->scroll(dx, 0);
 	m_xScrollOffset = v;
 
@@ -5053,10 +5051,9 @@ void FV_View::setXScrollOffset(UT_sint32 v)
 		}
 	}
 
-	_draw(x1, 0, dx2, m_iWindowHeight, false, true);
+	_draw(x1-m_pG->tlu(1), 0, dx2+m_pG->tlu(2), m_iWindowHeight, false, true);
 
 	_fixInsertionPointCoords();
-
 }
 
 void FV_View::setYScrollOffset(UT_sint32 v)
@@ -5067,7 +5064,6 @@ void FV_View::setYScrollOffset(UT_sint32 v)
 	if (dy == 0)
 		return;
 
-	_fixInsertionPointCoords();
 	m_pG->scroll(0, dy);
 	m_yScrollOffset = v;
 
@@ -5122,10 +5118,10 @@ void FV_View::draw(const UT_Rect* pClipRect)
 
 	if (pClipRect)
 	{
-		_draw(_UL(pClipRect->left),
-			  _UL(pClipRect->top),
-			  _UL(pClipRect->width),
-			  _UL(pClipRect->height),
+		_draw(pClipRect->left,
+			  pClipRect->top,
+			  pClipRect->width,
+			  pClipRect->height,
 			  false,true);
 	}
 	else
@@ -5660,9 +5656,9 @@ void FV_View::getTopRulerInfo(PT_DocPosition pos,AP_TopRulerInfo * pInfo)
 		pInfo->m_mode = AP_TopRulerInfo::TRI_MODE_COLUMNS;
 
 		pInfo->m_xrPoint = xCaret - pContainer->getX();
-		pInfo->m_xrLeftIndent = m_pG->convertDimension(pBlock->getProperty("margin-left"));
-		pInfo->m_xrRightIndent = m_pG->convertDimension(pBlock->getProperty("margin-right"));
-		pInfo->m_xrFirstLineIndent = m_pG->convertDimension(pBlock->getProperty("text-indent"));
+		pInfo->m_xrLeftIndent = UT_convertToLayoutUnits(pBlock->getProperty("margin-left"));
+		pInfo->m_xrRightIndent = UT_convertToLayoutUnits(pBlock->getProperty("margin-right"));
+		pInfo->m_xrFirstLineIndent = UT_convertToLayoutUnits(pBlock->getProperty("text-indent"));
 		xxx_UT_DEBUGMSG(("ap_TopRuler: xrPoint %d LeftIndent %d RightIndent %d Firs %d \n",pInfo->m_xrPoint,pInfo->m_xrLeftIndent,pInfo->m_xrRightIndent,	pInfo->m_xrFirstLineIndent));
 	}
 	else if(isHdrFtrEdit())
@@ -5681,9 +5677,9 @@ void FV_View::getTopRulerInfo(PT_DocPosition pos,AP_TopRulerInfo * pInfo)
 		pInfo->m_mode = AP_TopRulerInfo::TRI_MODE_COLUMNS;
 
 		pInfo->m_xrPoint = xCaret - pContainer->getX();
-		pInfo->m_xrLeftIndent = m_pG->convertDimension(pBlock->getProperty("margin-left"));
-		pInfo->m_xrRightIndent = m_pG->convertDimension(pBlock->getProperty("margin-right"));
-		pInfo->m_xrFirstLineIndent = m_pG->convertDimension(pBlock->getProperty("text-indent"));
+		pInfo->m_xrLeftIndent = UT_convertToLayoutUnits(pBlock->getProperty("margin-left"));
+		pInfo->m_xrRightIndent = UT_convertToLayoutUnits(pBlock->getProperty("margin-right"));
+		pInfo->m_xrFirstLineIndent = UT_convertToLayoutUnits(pBlock->getProperty("text-indent"));
 
 	}
 	else if(pSection->getContainerType() == FL_CONTAINER_CELL)
@@ -5719,9 +5715,9 @@ void FV_View::getTopRulerInfo(PT_DocPosition pos,AP_TopRulerInfo * pInfo)
 		pInfo->u.c.m_xColumnWidth = pColumn->getWidth();
 
 		pInfo->m_xrPoint = xCaret - pContainer->getX();
-		pInfo->m_xrLeftIndent = m_pG->convertDimension(pBlock->getProperty("margin-left"));
-		pInfo->m_xrRightIndent = m_pG->convertDimension(pBlock->getProperty("margin-right"));
-		pInfo->m_xrFirstLineIndent = m_pG->convertDimension(pBlock->getProperty("text-indent"));
+		pInfo->m_xrLeftIndent = UT_convertToLayoutUnits(pBlock->getProperty("margin-left"));
+		pInfo->m_xrRightIndent = UT_convertToLayoutUnits(pBlock->getProperty("margin-right"));
+		pInfo->m_xrFirstLineIndent = UT_convertToLayoutUnits(pBlock->getProperty("text-indent"));
 		fp_TableContainer * pTab = static_cast<fp_TableContainer *>(pCell->getContainer());
 		UT_sint32 row = pCell->getTopAttach();
 		UT_sint32 numcols = pTab->getNumCols();
@@ -5811,7 +5807,7 @@ void FV_View::getTopRulerInfo(PT_DocPosition pos,AP_TopRulerInfo * pInfo)
 	buf = UT_String_sprintf ("%.4fin", m_pDoc->m_docPageSize.Width(DIM_IN));
 	setlocale(LC_NUMERIC,old_locale); // restore original locale
 
-	pInfo->m_xPaperSize = m_pG->convertDimension(buf.c_str());
+	pInfo->m_xPaperSize = UT_convertToLayoutUnits(buf.c_str());
 	pInfo->m_xPageViewMargin = getPageViewLeftMargin();
 
 	pInfo->m_pfnEnumTabStops = fl_BlockLayout::s_EnumTabStops;

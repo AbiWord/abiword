@@ -101,13 +101,8 @@ UT_sint32 fb_ColumnBreaker::breakSection(fl_DocSectionLayout * pSL)
 		xxx_UT_DEBUGMSG(("SEVIOR: first to keep 1 %x \n",pFirstContainerToKeep));
 		fp_Container* pLastContainerToKeep = NULL;
 		fp_Container* pOffendingContainer = NULL;
-#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-		UT_sint32 iMaxSecCol = pSL->getMaxSectionColumnHeightInLayoutUnits();
- 		UT_sint32 iMaxColHeight = pCurColumn->getMaxHeightInLayoutUnits();
-#else
 		UT_sint32 iMaxSecCol = pSL->getMaxSectionColumnHeight();
  		UT_sint32 iMaxColHeight = pCurColumn->getMaxHeight();
-#endif
 		UT_sint32 iFootnoteHeight = 0;
 		bool bEquivColumnBreak = false;
 		xxx_UT_DEBUGMSG(("SEVIOR: iMaxSecCol = %d iMaxColHeight = %d \n",iMaxSecCol,iMaxColHeight));
@@ -160,11 +155,9 @@ UT_sint32 fb_ColumnBreaker::breakSection(fl_DocSectionLayout * pSL)
 				continue;
 			}
 			UT_sint32 iContainerHeight = 0;
-#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
 			if(pCurContainer->getContainerType() == FP_CONTAINER_TABLE)
 			{
-				fp_TableContainer * pTab = static_cast<fp_TableContainer *>(pCurContainer);
-				iContainerHeight = pTab->getHeightInLayoutUnits();
+				iContainerHeight = static_cast<fp_TableContainer *>(pCurContainer)->getHeight();
 #if 0
 				if(!pTab->isThisBroken() && pTab->getFirstBrokenTable())
 				{
@@ -185,11 +178,7 @@ UT_sint32 fb_ColumnBreaker::breakSection(fl_DocSectionLayout * pSL)
 						fp_FootnoteContainer * pFC = static_cast<fp_FootnoteContainer *>(vecFootnotes.getNthItem(i));
 						if(pFC->getPage() == NULL || pFC->getPage() != pCurPage)
 						{
-#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-							iFootnoteHeight += pFC->getHeightInLayoutUnits();
-#else
 							iFootnoteHeight += pFC->getHeight();
-#endif
 						}				
 					}	
 					UT_DEBUGMSG(("got Table footnote section height %d\n", iFootnoteHeight));
@@ -198,17 +187,9 @@ UT_sint32 fb_ColumnBreaker::breakSection(fl_DocSectionLayout * pSL)
 #endif
 			}
 			else
-				iContainerHeight = pCurContainer->getHeightInLayoutUnits();
-
-			UT_sint32 iContainerMarginAfter = pCurContainer->getMarginAfterInLayoutUnits();
-#else
-			if(pCurContainer->getContainerType() == FP_CONTAINER_TABLE)
-				iContainerHeight = static_cast<fp_TableContainer *>(pCurContainer)->getHeight();
-			else
 				iContainerHeight = pCurContainer->getHeight();
 
 			UT_sint32 iContainerMarginAfter = pCurContainer->getMarginAfter();
-#endif
 			iTotalContainerSpace = iContainerHeight + iContainerMarginAfter;
 			if (pCurContainer && 
 				pCurContainer->getContainerType() == FP_CONTAINER_LINE)
@@ -232,11 +213,7 @@ UT_sint32 fb_ColumnBreaker::breakSection(fl_DocSectionLayout * pSL)
 						fp_FootnoteContainer * pFC = static_cast<fp_FootnoteContainer *>(vecFootnotes.getNthItem(i));
 						if(pFC->getPage() == NULL || pFC->getPage() != pCurPage)
 						{
-#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-							iFootnoteHeight += pFC->getHeightInLayoutUnits();
-#else
 							iFootnoteHeight += pFC->getHeight();
-#endif
 						}				
 					}	
 					UT_DEBUGMSG(("got footnote section height %d\n", iFootnoteHeight));
@@ -829,8 +806,6 @@ bool fb_ColumnBreaker::_breakTable(fp_Container*& pOffendingContainer,
 //
 	fp_TableContainer * pBroke = NULL;
 	UT_sint32 iAvail = iMaxColHeight - iWorkingColHeight - iContainerMarginAfter;
-	double scale = (static_cast<double>(pTab->getGraphics()->getResolution()))/UT_LAYOUT_UNITS;
-	iAvail = static_cast<UT_sint32>((static_cast<double>(iAvail))*scale);
 	UT_sint32 iBreakAt = pTab->wantVBreakAt(iAvail-1);
 	UT_DEBUGMSG(("breakTable column: iAvail %d actual break at %d \n",iAvail,iBreakAt));
 //
@@ -845,8 +820,7 @@ bool fb_ColumnBreaker::_breakTable(fp_Container*& pOffendingContainer,
 
 	UT_ASSERT(iBreakAt <= (iAvail-1));
 
-	UT_sint32 iBreakLO = static_cast<UT_sint32>((static_cast<double>(iBreakAt))/scale);
-	if(bDoTableBreak && (iBreakLO + iWorkingColHeight <= iMaxColHeight))
+	if(bDoTableBreak && (iBreakAt + iWorkingColHeight <= iMaxColHeight))
 	{
 //
 // OK we can break this table and keep some of it in this column. The
@@ -860,11 +834,7 @@ bool fb_ColumnBreaker::_breakTable(fp_Container*& pOffendingContainer,
 // Break it at 0 first.
 //
 			xxx_UT_DEBUGMSG(("SEVIOR: Breaking MAster iBreakAt %d yloc = %d \n",iBreakAt,pTab->getY()));
-#ifdef USE_LAYOUT_UNITS
-			xxx_UT_DEBUGMSG(("SEVIOR: iBreakLO %d iWorkingColHeight %d iMaxColHeight %d Container Height %d MArginAfter %d \n",iBreakLO,iWorkingColHeight,iMaxColHeight,pTab->getHeightInLayoutUnits() , iContainerMarginAfter ));
-#else
 			xxx_UT_DEBUGMSG(("SEVIOR: iBreakLO %d iWorkingColHeight %d iMaxColHeight %d Container Height %d MArginAfter %d \n",iBreakLO,iWorkingColHeight,iMaxColHeight,pTab->getHeight() , iContainerMarginAfter ));
-#endif
 			fp_Container * pNext = static_cast<fp_Container *>(pTab->getNext());
 			xxx_UT_DEBUGMSG(("SEVIOR: getNext %x \n",pNext));
 			if(pNext)
@@ -922,17 +892,14 @@ bool fb_ColumnBreaker::_breakTable(fp_Container*& pOffendingContainer,
     // will be adjusted at the setY() in the layout stage.
     // PLAM: broken for pango?
 	fp_TableContainer * pBroke = NULL;
-	double scale = (static_cast<double>(pTab->getGraphics()->getResolution()))/UT_LAYOUT_UNITS;
 	UT_sint32 iAvail = iMaxColHeight - iWorkingColHeight - 
 		iContainerMarginAfter;
-	iAvail = static_cast<UT_sint32>((static_cast<double>(iAvail))*scale);
 
 	UT_sint32 iBreakAt = pTab->wantVBreakAt(iAvail-1);
 
 	UT_ASSERT(iBreakAt <= (iAvail-1));
 
-	UT_sint32 iBreakLO = static_cast<UT_sint32>((static_cast<double>(iBreakAt))/scale);
-	if(iBreakLO + iWorkingColHeight <= iMaxColHeight)
+	if(iBreakAt + iWorkingColHeight <= iMaxColHeight)
 	{
         // We can break this table and keep some of it in this
         // column. The rest goes into the next column.
@@ -945,7 +912,7 @@ bool fb_ColumnBreaker::_breakTable(fp_Container*& pOffendingContainer,
 			UT_DEBUGMSG(("SEVIOR: iBreakLO %d iWorkingColHeight %d "
 						 "iMaxColHeight %d Container Height %d "
 						 "MArginAfter %d \n",iBreakLO,iWorkingColHeight,
-						 iMaxColHeight,pTab->getHeightInLayoutUnits(), 
+						 iMaxColHeight,pTab->getHeight(), 
 						 iContainerMarginAfter ));
 			fp_Container * pNext = static_cast<fp_Container *>(pTab->getNext());
 			UT_DEBUGMSG(("SEVIOR: getNext %x \n",pNext));

@@ -476,18 +476,18 @@ gint XAP_UnixFrameImpl::_fe::delete_event(GtkWidget * w, GdkEvent * /*event*/, g
 
 gint XAP_UnixFrameImpl::_fe::expose(GtkWidget * w, GdkEventExpose* pExposeEvent)
 {
-	UT_Rect rClip;
-	rClip.left = _UL(pExposeEvent->area.x);
-	rClip.top = _UL(pExposeEvent->area.y);
-	rClip.width = _UL(pExposeEvent->area.width);
-	rClip.height = _UL(pExposeEvent->area.height);
 	XAP_UnixFrameImpl * pUnixFrameImpl = (XAP_UnixFrameImpl *)gtk_object_get_user_data(GTK_OBJECT(w));
 	FV_View * pView = (FV_View *) pUnixFrameImpl->getFrame()->getCurrentView();
 	if(pView)
 	{
+		GR_Graphics * pGr = pView->getGraphics ();
+		UT_Rect rClip;
+		rClip.left = pGr->tlu(pExposeEvent->area.x);
+		rClip.top = pGr->tlu(pExposeEvent->area.y);
+		rClip.width = pGr->tlu(pExposeEvent->area.width);
+		rClip.height = pGr->tlu(pExposeEvent->area.height);
+
 		pView->draw(&rClip);
-//		GR_Graphics * pG = pView->getGraphics();
-//		pG->doRepaint(&rClip);
 	}
 	return FALSE;
 }
@@ -550,7 +550,7 @@ void XAP_UnixFrameImpl::_fe::vScrollChanged(GtkAdjustment * w, gpointer /*data*/
 	AV_View * pView = pFrame->getCurrentView();
 
 	if (pView)
-		pView->sendVerticalScrollEvent((UT_sint32) _UL(w->value));
+		pView->sendVerticalScrollEvent(w->value);
 }
 
 void XAP_UnixFrameImpl::_fe::hScrollChanged(GtkAdjustment * w, gpointer /*data*/)
@@ -560,7 +560,7 @@ void XAP_UnixFrameImpl::_fe::hScrollChanged(GtkAdjustment * w, gpointer /*data*/
 	AV_View * pView = pFrame->getCurrentView();
 
 	if (pView)
-		pView->sendHorizontalScrollEvent((UT_sint32) _UL(w->value));
+		pView->sendHorizontalScrollEvent(w->value);
 }
 
 void XAP_UnixFrameImpl::_fe::destroy(GtkWidget * /*widget*/, gpointer /*data*/)
@@ -1174,8 +1174,8 @@ bool XAP_UnixFrameImpl::_runModalContextMenu(AV_View * /* pView */, const char *
 
 	UT_ASSERT(!m_pUnixPopup);
 
-	_UUD(x);
-	_UUD(y);
+	//_UUD(x);
+	//_UUD(y);
 
 	// WL_REFACTOR: we DON'T want to do this
 	m_pUnixPopup = new EV_UnixMenuPopup(m_pUnixApp, pFrame, szMenuName, m_szMenuLabelSetName);

@@ -143,13 +143,6 @@ public:
 	UT_uint32		        getDescent() const 				{ return m_iDescent; }
 	virtual UT_uint32       getDrawingWidth() const         { return m_iWidth; }
 	
-#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-	UT_sint32		        getHeightInLayoutUnits() const	{ return m_iHeightLayoutUnits; }
-	UT_sint32		        getWidthInLayoutUnits() const	{ return m_iWidthLayoutUnits; }
-	UT_uint32		        getAscentInLayoutUnits() const	{ return m_iAscentLayoutUnits; }
-	UT_uint32		        getDescentInLayoutUnits() const	{ return m_iDescentLayoutUnits; }
-#endif
-
 	fp_Run* 		        getNext() const					{ return m_pNext; }
 	fp_Run*			        getPrev() const					{ return m_pPrev; }
 	UT_uint32		        getBlockOffset() const			{ return m_iOffsetFirst; }
@@ -212,9 +205,6 @@ public:
 	virtual bool			alwaysFits(void) const { return false; }
 	virtual bool			findMaxLeftFitSplitPoint(UT_sint32 iMaxLeftWidth, fp_RunSplitInfo& si, bool bForce=false);
 	virtual UT_sint32		findTrailingSpaceDistance(void) const { return 0; }
-#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-	virtual UT_sint32		findTrailingSpaceDistanceInLayoutUnits(void) const { return 0; }
-#endif
 	virtual bool			findFirstNonBlankSplitPoint(fp_RunSplitInfo& /*si*/) { return false; }
 	virtual void			mapXYToPosition(UT_sint32 xPos, UT_sint32 yPos, PT_DocPosition& pos, bool& bBOL, bool& bEOL) = 0;
 	virtual void 			findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y, UT_sint32& x2, UT_sint32& y2, UT_sint32& height, bool& bDirection) = 0;
@@ -288,30 +278,13 @@ protected:
 	void					_setBlock(fl_BlockLayout * pBL) { m_pBL = pBL; }
 	void					_setAscent(int iAscent) { m_iAscent = iAscent; }
 	void					_setDescent(int iDescent) {m_iDescent = iDescent;}
-#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-	void					_setAscentLayoutUnits(int iAscent)
-                                { m_iAscentLayoutUnits = iAscent; }
-	void					_setDescentLayoutUnits(int iDescent)
-			   					{ m_iDescentLayoutUnits = iDescent; }
-	void					_setWidthLayoutUnits(int iWidth)
-			   					{ m_iWidthLayoutUnits = iWidth; }
-	void					_setHeightLayoutUnits(int iHeight)
-			   					{ m_iHeightLayoutUnits = iHeight; }
-#endif
 	void					_setX(int iX) { m_iX = iX; }
 	void					_setY(int iY) { m_iY = iY; }
 	void					_setDirection(FriBidiCharType c) { m_iDirection = c; }
 	FriBidiCharType			_getDirection(void) const { return m_iDirection; }
 	FriBidiCharType			_getVisDirection(void) const { return m_iVisDirection; }
-#if defined(USE_LAYOUT_UNITS)
-	GR_Font *				_getScreenFont(void) const { return m_pScreenFont; }
-	void  					_setScreenFont(GR_Font * f) { m_pScreenFont = f; }
-	GR_Font *				_getLayoutFont(void) const { return m_pLayoutFont; }
-	void  					_setLayoutFont(GR_Font * f) { m_pLayoutFont = f; }
-#else
 	GR_Font *				_getFont(void) const { return m_pFont; }
 	void  					_setFont(GR_Font * f) { m_pFont = f; }
-#endif
 	
 #ifdef WITH_PANGO
 	PangoFont *				_getPangoFont(void) const { return m_pPangoFont; }
@@ -372,12 +345,6 @@ private:
 	UT_sint32				m_iHeight;
 	UT_uint32				m_iAscent;
 	UT_uint32				m_iDescent;
-#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-	UT_sint32				m_iHeightLayoutUnits;
-	UT_sint32				m_iWidthLayoutUnits;
-	UT_uint32				m_iAscentLayoutUnits;
-	UT_uint32				m_iDescentLayoutUnits;
-#endif
 
 	UT_uint32				m_iOffsetFirst;
 	UT_uint32				m_iLen;
@@ -391,14 +358,9 @@ private:
 	// the run highlight color. If the property is transparent use the page color
 	UT_RGBColor             m_pColorHL;
 
-
-#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-	GR_Font * 				m_pScreenFont;
-	GR_Font * 				m_pLayoutFont;
-#elif defined(WITH_PANGO)
+	GR_Font * 				m_pFont;
+#if defined(WITH_PANGO)
 	PangoFont * 			m_pPangoFont;
-#else
-	GR_Font *               m_pFont;
 #endif
 
 	bool					m_bRecalcWidth;
@@ -687,10 +649,6 @@ private:
 	GR_Image*				m_pImage;
 	UT_sint32               m_iImageWidth;
 	UT_sint32               m_iImageHeight;
-#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-	UT_sint32               m_iImageWidthLayoutUnits;
-	UT_sint32               m_iImageHeightLayoutUnits;
-#endif
 	UT_String               m_WidthProp;
 	UT_String               m_HeightProp;
 };
@@ -791,13 +749,7 @@ protected:
 	const XML_Char *		_getParameter() const { return m_pParameter; }
 
 private:
-#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
 	GR_Font*				m_pFont;
-	GR_Font*				m_pFontLayout;
-#else
-	GR_Font *               m_pFont;
-	//PangoFont *           m_pPangoFont; // I do not think we need this, just refer to fp_Run
-#endif
 
 	//UT_RGBColor				m_colorFG;
 	UT_RGBColor				m_colorBG;

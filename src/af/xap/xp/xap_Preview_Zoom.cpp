@@ -165,15 +165,15 @@ void XAP_Preview_Zoom::draw(void)
 	UT_ASSERT(m_string);
 	
 	// TODO : replace 5,5 with real coordinates
-	m_gc->clearArea(0, 0, _UL(getWindowWidth()), _UL(getWindowHeight()));
+	m_gc->clearArea(0, 0, m_gc->tlu(getWindowWidth()), m_gc->tlu(getWindowHeight()));
 
 #ifndef WITH_PANGO	
-	m_gc->drawChars(m_string, 0, UT_UCS4_strlen(m_string), 5, 5);
+	m_gc->drawChars(m_string, 0, UT_UCS4_strlen(m_string), m_gc->tlu(5), m_gc->tlu(5));
 #else
 	if(!m_pGlyphString)
 		m_pGlyphString = m_gc->getPangoGlyphString(m_string,UT_UCS4_strlen(m_string));
 
-	m_gc->drawPangoGlyphString(m_pGlyphString, 5, 5);
+	m_gc->drawPangoGlyphString(m_pGlyphString, m_gc->tlu(5), m_gc->tlu(5));
 #endif
 	
 }

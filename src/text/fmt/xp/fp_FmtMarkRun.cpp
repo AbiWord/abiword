@@ -60,23 +60,11 @@ void fp_FmtMarkRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 
 	GR_Font* pFont = pLayout->findFont(pSpanAP,
 									   pBlockAP,
-									   pSectionAP,
-									   FL_DocLayout::FIND_FONT_AT_SCREEN_RESOLUTION);
+									   pSectionAP);
 
 	_setAscent(getGR()->getFontAscent(pFont));
 	_setDescent(getGR()->getFontDescent(pFont));
 	_setHeight(getGR()->getFontHeight(pFont));
-
-#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-	pFont = pLayout->findFont(pSpanAP,
-							  pBlockAP,
-							  pSectionAP,
-							  FL_DocLayout::FIND_FONT_AT_LAYOUT_RESOLUTION);
-
-	_setAscentLayoutUnits(getGR()->getFontAscent(pFont));
-	_setDescentLayoutUnits(getGR()->getFontDescent(pFont));
-	_setHeightLayoutUnits(getGR()->getFontHeight(pFont));
-#endif
 
 	PD_Document * pDoc = getBlock()->getDocument();
 

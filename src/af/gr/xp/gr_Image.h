@@ -31,9 +31,7 @@ class ABI_EXPORT GR_Image
 public:
 	GR_Image();
 	virtual ~GR_Image();
-	
-   	virtual void		setDisplaySize(UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight);
-	
+   	
 	virtual UT_sint32	getDisplayWidth(void) const;
 	virtual UT_sint32	getDisplayHeight(void) const;
 
@@ -42,11 +40,6 @@ public:
 
 	void				getName(char* szName) const;
 	void getName ( UT_String & copy ) const;
-
-	virtual void		setLayoutSize(UT_sint32 iLayoutWidth, UT_sint32 iLayoutHeight);
-
-	UT_sint32			getLayoutWidth(void) const;
-	UT_sint32			getLayoutHeight(void) const;
 								
    	enum GRType {
 	   GRT_Unknown,
@@ -62,10 +55,10 @@ public:
 	void setName ( const char * szName );
 	void setName ( const UT_String & szName );
 
+   	void setDisplaySize(UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight);
+
 private:
    	UT_String		m_szName;
-	UT_sint32		m_iLayoutWidth;
-	UT_sint32		m_iLayoutHeight;
 	UT_sint32			m_iDisplayWidth;
 	UT_sint32			m_iDisplayHeight;
 };

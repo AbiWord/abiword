@@ -408,7 +408,7 @@ void AP_FormatTable_preview::draw(void)
 	
 	UT_RGBColor black(0, 0, 0);
 //	UT_RGBColor write(0, 0, 0);
-	m_gc->setLineWidth(1);
+	m_gc->setLineWidth(m_gc->tlu(1));
 	
 	int whiteBorder = 20;
 	int cornerLength = 5;

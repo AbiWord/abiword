@@ -162,7 +162,6 @@ public:
 	virtual UT_uint32		getFontAscent(GR_Font *);
 	virtual UT_uint32		getFontDescent(GR_Font *);
 	virtual UT_uint32		getFontHeight(GR_Font *);
-	virtual UT_sint32       getScreenResolution(void){return s_iScreenResolution;};
 	virtual void		  saveRectangle(UT_Rect & r, UT_uint32 iIndx);
 	virtual void		  restoreRectangle(UT_uint32 iIndx);
 	
@@ -203,10 +202,6 @@ private:
 
 	UT_UCS2Char*			m_remapBuffer;
 	UT_uint32				m_remapBufferSize;
-	// we will make this static, so that it gets initialized by the first instance of the class
-	// since we have to construct a screen graphics before we can print, this should guarantee
-	// us the correct hdc
-	static UT_sint32        s_iScreenResolution;
 	UT_UCS2Char*				m_remapIndices;
 
 #ifndef USE_LAYOUT_UNITS

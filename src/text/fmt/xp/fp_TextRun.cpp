@@ -183,7 +183,7 @@ void fp_TextRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 	/*
 	  TODO map line width to a property, not a hard-coded value
 	*/
-	bChanged |= _setLineWidth(getGR()->convertDimension("0.8pt"));
+	bChanged |= _setLineWidth(UT_convertToLayoutUnits("0.8pt"));
 
 	UT_uint32 oldDecors = _getDecorations();
 	_setDecorations(0);
@@ -241,32 +241,21 @@ void fp_TextRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 
 	bChanged |= (oldPos != m_fPosition);
 
-#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
+#if !defined(WITH_PANGO)
 	GR_Font * pFont;
 
-	pFont = pLayout->findFont(pSpanAP,pBlockAP,pSectionAP, FL_DocLayout::FIND_FONT_AT_SCREEN_RESOLUTION);
-	if (_getScreenFont() != pFont)
-	  {
+	pFont = pLayout->findFont(pSpanAP,pBlockAP,pSectionAP);
+	if (_getFont() != pFont)
+	{
 		_setRecalcWidth(true);
-		_setScreenFont(pFont);
-		_setAscent(getGR()->getFontAscent(_getScreenFont()));
-		_setDescent(getGR()->getFontDescent(_getScreenFont()));
-		_setHeight(getGR()->getFontHeight(_getScreenFont()));
+		_setFont(pFont);
+		_setAscent(getGR()->getFontAscent(pFont));
+		_setDescent(getGR()->getFontDescent(pFont));
+		_setHeight(getGR()->getFontHeight(pFont));
 		bChanged = true;
-	  }
+	}
 
-	pFont = pLayout->findFont(pSpanAP,pBlockAP,pSectionAP, FL_DocLayout::FIND_FONT_AT_LAYOUT_RESOLUTION);
-	if (_getLayoutFont() != pFont)
-	  {
-		_setRecalcWidth(true);
-		_setLayoutFont(pFont);
-		_setAscentLayoutUnits(getGR()->getFontAscent(_getLayoutFont()));
-		UT_ASSERT(getAscentInLayoutUnits());
-		_setDescentLayoutUnits(getGR()->getFontDescent(_getLayoutFont()));
-		_setHeightLayoutUnits(getGR()->getFontHeight(_getLayoutFont()));
-		bChanged = true;
-	  }
-#elif defined (WITH_PANGO)
+#else
 	PangoFont * pFont;
 	pFont = pLayout->findFont(pSpanAP,pBlockAP,pSectionAP);
 	if (_getPangoFont() != pFont)
@@ -278,27 +267,9 @@ void fp_TextRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 		_setHeight(getGR()->getFontHeight(_getPangoFont()));
 		bChanged = true;
 	  }
-
-#else
-	GR_Font * pFont;
-
-	pFont = pLayout->findFont(pSpanAP,pBlockAP,pSectionAP, FL_DocLayout::FIND_FONT_AT_SCREEN_RESOLUTION);
-	if (_getFont() != pFont)
-	  {
-		_setRecalcWidth(true);
-		_setFont(pFont);
-		_setAscent(getGR()->getFontAscent(_getFont()));
-		_setDescent(getGR()->getFontDescent(_getFont()));
-		_setHeight(getGR()->getFontHeight(_getFont()));
-		bChanged = true;
-	  }
 #endif
 
-#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-	getGR()->setFont(_getScreenFont());
-#else
 	getGR()->setFont(_getFont());
-#endif
 
 	//set the language member
 	UT_Language lls;
@@ -816,12 +787,7 @@ bool fp_TextRun::canMergeWithNext(void)
 	if (
 		(pNext->getBlockOffset() != (getBlockOffset() + getLength()))
 		|| (pNext->_getDecorations() != _getDecorations())
-#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-		|| (pNext->_getScreenFont() != _getScreenFont())
-		|| (pNext->_getLayoutFont() != _getLayoutFont())
-#else
 		|| (pNext->_getFont() != _getFont())
-#endif
 		|| (getHeight() != pNext->getHeight())
 		|| (pNext->getField() != getField())
 		|| (pNext->m_pLanguage != m_pLanguage)	//this is not a bug
@@ -865,12 +831,7 @@ void fp_TextRun::mergeWithNext(void)
 	fp_TextRun* pNext = static_cast<fp_TextRun*>(getNext());
 
 	UT_ASSERT(pNext->getBlockOffset() == (getBlockOffset() + getLength()));
-#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-	UT_ASSERT(pNext->_getScreenFont() == _getScreenFont());	// is this legal?
-	UT_ASSERT(pNext->_getLayoutFont() == _getLayoutFont());	// is this legal?
-#else
 	UT_ASSERT(pNext->_getFont() == _getFont());
-#endif
 	UT_ASSERT(pNext->_getDecorations() == _getDecorations());
 	UT_ASSERT(getAscent() == pNext->getAscent());
 	UT_ASSERT(getDescent() == pNext->getDescent());
@@ -903,10 +864,6 @@ void fp_TextRun::mergeWithNext(void)
 
 	// can only adjust width after the justification has been handled
  	_setWidth(getWidth() + pNext->getWidth());
-#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-	_setWidthLayoutUnits(getWidthInLayoutUnits() +
-						 pNext->getWidthInLayoutUnits());
-#endif
 
 	// join the two span buffers; this will save us refreshing the draw buffer
 	// which is very expensive
@@ -1013,12 +970,7 @@ bool fp_TextRun::split(UT_uint32 iSplitOffset)
 	pNew->_setRefreshDrawBuffer(_getRefreshDrawBuffer());
 	pNew->_setRecalcWidth(_getRecalcWidth());
 
-#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-	pNew->_setScreenFont(this->_getScreenFont());
-	pNew->_setLayoutFont(this->_getLayoutFont());
-#else
 	pNew->_setFont(this->_getFont());
-#endif
 
 	pNew->_setDecorations(this->_getDecorations());
 	pNew->_setColorFG(_getColorFG());
@@ -1028,11 +980,6 @@ bool fp_TextRun::split(UT_uint32 iSplitOffset)
 	pNew->_setAscent(this->getAscent());
 	pNew->_setDescent(this->getDescent());
 	pNew->_setHeight(this->getHeight());
-#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-	pNew->_setAscentLayoutUnits(this->getAscentInLayoutUnits());
-	pNew->_setDescentLayoutUnits(this->getDescentInLayoutUnits());
-	pNew->_setHeightLayoutUnits(this->getHeightInLayoutUnits());
-#endif
 	pNew->_setLineWidth(this->_getLineWidth());
 	pNew->_setDirty(isDirty());
 	pNew->m_pLanguage = this->m_pLanguage;
@@ -1181,22 +1128,12 @@ void fp_TextRun::fetchCharWidths(fl_CharWidths * pgbCharWidths)
 		// will be done by recalcWidth()
 		UT_GrowBufElement* pCharWidths = pgbCharWidths->getCharWidths()->getPointer(0);
 
-#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-		_fetchCharWidths(_getScreenFont(), pCharWidths);
-		pCharWidths = pgbCharWidths->getCharWidthsLayoutUnits()->getPointer(0);
-		_fetchCharWidths(_getLayoutFont(), pCharWidths);
-#else
 		_fetchCharWidths(_getFont(), pCharWidths);
-#endif
 
 	};
 }
 
-#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-UT_sint32 fp_TextRun::simpleRecalcWidth(UT_sint32 iWidthType, UT_sint32 iLength)
-#else
 UT_sint32 fp_TextRun::simpleRecalcWidth(UT_sint32 iLength)
-#endif
 {
 
 	if(iLength == Calculate_full_width)
@@ -1214,25 +1151,7 @@ UT_sint32 fp_TextRun::simpleRecalcWidth(UT_sint32 iLength)
 
 
 	UT_GrowBuf * pgbCharWidths;
-#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-	switch(iWidthType)
-	{
-		case Width_type_display:
-			pgbCharWidths = getBlock()->getCharWidths()->getCharWidths();
-			break;
-
-		case Width_type_layout_units:
-			pgbCharWidths = getBlock()->getCharWidths()->getCharWidthsLayoutUnits();
-			break;
-
-		default:
-			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-			return 0;
-			break;
-	}
-#else
 	pgbCharWidths = getBlock()->getCharWidths()->getCharWidths();
-#endif
 
 	UT_GrowBufElement* pCharWidths = pgbCharWidths->getPointer(0);
 
@@ -1241,14 +1160,7 @@ UT_sint32 fp_TextRun::simpleRecalcWidth(UT_sint32 iLength)
 	{
 		_refreshDrawBuffer();
 
-#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-		if(iWidthType == Width_type_display)
-			getGR()->setFont(_getScreenFont());
-		else
-			getGR()->setFont(_getLayoutFont());
-#else
 		getGR()->setFont(_getFont());
-#endif
 
 		for (UT_sint32 i=0; i<iLength; i++)
 		{
@@ -1263,9 +1175,6 @@ UT_sint32 fp_TextRun::simpleRecalcWidth(UT_sint32 iLength)
 
 			iWidth += iCW;
 		}
-#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-		getGR()->setFont(_getScreenFont());
-#endif
 	}
 	//UT_DEBUGMSG(("fp_TextRun (0x%x)::simpleRecalcWidth: width %d\n", this, iWidth));
 	return iWidth;
@@ -1304,21 +1213,14 @@ bool fp_TextRun::recalcWidth(void)
 
 #ifndef WITH_PANGO
 		// with Pango the width gets recalcuated in _refreshDrawBuffer()
-		UT_GrowBuf * pgbCharWidthsDisplay = getBlock()->getCharWidths()->getCharWidths();
-		UT_GrowBufElement* pCharWidthsDisplay = pgbCharWidthsDisplay->getPointer(0);
-		if(pCharWidthsDisplay == NULL)
+		UT_GrowBuf * pgbCharWidths = getBlock()->getCharWidths()->getCharWidths();
+		UT_GrowBufElement* pCharWidths = pgbCharWidths->getPointer(0);
+		_setWidth(0);
+		if(pCharWidths == NULL)
 		{
-			_setWidth(0);
 			return false;
 		}
-		_setWidth(0);
-
-#if defined(USE_LAYOUT_UNITS)
-		UT_GrowBuf *pgbCharWidthsLayout  = getBlock()->getCharWidths()->getCharWidthsLayoutUnits();
-		UT_GrowBufElement* pCharWidthsLayout = pgbCharWidthsLayout->getPointer(0);
-		_setWidthLayoutUnits(0);
-#endif
-
+		
 		FriBidiCharType iVisDirection = getVisDirection();
 
 		bool bReverse = (!s_bBidiOS && iVisDirection == FRIBIDI_TYPE_RTL)
@@ -1330,29 +1232,8 @@ bool fp_TextRun::recalcWidth(void)
 		// of runing two separate loops for screen and layout fonts
 		UT_uint32 i;
 
-#if defined(USE_LAYOUT_UNITS)
-		getGR()->setFont(_getLayoutFont());
-
-		for (i = 0; i < getLength(); i++)
-		{
-			// this is a bit tricky, since we want the resulting width array in
-			// logical order, so if we reverse the draw buffer ourselves, we
-			// have to address the draw buffer in reverse
-			j = bReverse ? getLength() - i - 1 : i;
-			//k = (!bReverse && iVisDirection == FRIBIDI_TYPE_RTL) ? getLength() - i - 1: i;
-			k = i + getBlockOffset();
-
-			if(s_bUseContextGlyphs)
-			{
-				getGR()->measureString(m_pSpanBuff + j, 0, 1, static_cast<UT_GrowBufElement*>(pCharWidthsLayout) + k);
-			}
-			UT_uint32 iCW = pCharWidthsLayout[k] > 0 ? pCharWidthsLayout[k] : 0;
-			_setWidthLayoutUnits(getWidthInLayoutUnits() + iCW);
-		}
-		getGR()->setFont(_getScreenFont());
-#else
 		getGR()->setFont(_getFont());
-#endif
+
 		for (i = 0; i < getLength(); i++)
 		{
 			// this is a bit tricky, since we want the resulting width array in
@@ -1364,12 +1245,11 @@ bool fp_TextRun::recalcWidth(void)
 
 			if(s_bUseContextGlyphs)
 			{
-				getGR()->measureString(m_pSpanBuff + j, 0, 1, static_cast<UT_GrowBufElement*>(pCharWidthsDisplay) + k);
+				getGR()->measureString(m_pSpanBuff + j, 0, 1, static_cast<UT_GrowBufElement*>(pCharWidths) + k);
 			}
-			UT_uint32 iCW = pCharWidthsDisplay[k] > 0 ? pCharWidthsDisplay[k] : 0;
+			UT_uint32 iCW = pCharWidths[k] > 0 ? pCharWidths[k] : 0;
 			_setWidth(getWidth() + iCW);
 		}
-
 #endif // #ifndef WITH_PANGO
 
 		return true;
@@ -1389,36 +1269,23 @@ bool fp_TextRun::recalcWidth(void)
 bool fp_TextRun::_addupCharWidths(void)
 {
 	UT_sint32 iWidth = 0;
-	UT_GrowBuf *pgbCharWidthsDisplay = getBlock()->getCharWidths()->getCharWidths();
-	UT_GrowBufElement* pCharWidthsDisplay = pgbCharWidthsDisplay->getPointer(0);    if(pCharWidthsDisplay == NULL)
+	UT_GrowBuf *pgbCharWidths = getBlock()->getCharWidths()->getCharWidths();
+	UT_GrowBufElement* pCharWidths = pgbCharWidths->getPointer(0);    
+
+	if(pCharWidths == NULL)
 	{
 		return false;
 	}
-#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-	UT_sint32 iWidthLayoutUnits = 0;
-	UT_GrowBuf *pgbCharWidthsLayout  = getBlock()->getCharWidths()->getCharWidthsLayoutUnits();
-	UT_GrowBufElement* pCharWidthsLayout  = pgbCharWidthsLayout->getPointer(0);
-#endif
-	xxx_UT_DEBUGMSG(("fp_TextRun::_addupCharWidths: pCharWidthsDisplay 0x%x, pCharWidthsLayout 0x%x\n",pCharWidthsDisplay, pCharWidthsLayout));
-
 
 	for (UT_uint32 i = getBlockOffset(); i < getLength() + getBlockOffset(); i++)
 	{
-		UT_uint32 iCW = pCharWidthsDisplay[i] > 0 ? pCharWidthsDisplay[i] : 0;
+		UT_uint32 iCW = pCharWidths[i] > 0 ? pCharWidths[i] : 0;
 		iWidth += iCW;
-
-#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-		iCW = pCharWidthsLayout[i] > 0 ? pCharWidthsLayout[i] : 0;
-		iWidthLayoutUnits += iCW;
-#endif
 	}
 
 	if(iWidth != getWidth())
 	{
 		_setWidth(iWidth);
-#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-		_setWidthLayoutUnits(iWidthLayoutUnits);
-#endif
 		return true;
 	}
 
@@ -1438,11 +1305,7 @@ void fp_TextRun::_clearScreen(bool /* bFullLineHeightRect */)
 	}
 	else
 	{
-#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-		getGR()->setFont(_getScreenFont());
-#else
 		getGR()->setFont(_getFont());
-#endif
 		/*
 		  TODO this should not be hard-coded.  We need to figure out
 		  what the appropriate background color for this run is, and
@@ -1493,8 +1356,8 @@ void fp_TextRun::_draw(dg_DrawArgs* pDA)
 
 	_refreshDrawBuffer();
 	xxx_UT_DEBUGMSG(("fp_TextRun::_draw (0x%x): m_iVisDirection %d, _getDirection() %d\n", this, m_iVisDirection, _getDirection()));
-	UT_sint32 yTopOfRun = pDA->yoff - getAscent() - 1; // Hack to remove
-	UT_sint32 yTopOfSel = yTopOfRun + 1; // final character dirt
+	UT_sint32 yTopOfRun = pDA->yoff - getAscent() - getGR()->tlu(1); // Hack to remove
+	UT_sint32 yTopOfSel = yTopOfRun + getGR()->tlu(1); // final character dirt
 
 	/*
 	  TODO We should add more possibilities for text placement here.
@@ -1521,14 +1384,7 @@ void fp_TextRun::_draw(dg_DrawArgs* pDA)
 	//
 
 	const UT_GrowBuf * pgbCharWidths = getBlock()->getCharWidths()->getCharWidths();
-#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-	const UT_GrowBuf * pgbCharWidthsLayout = getBlock()->getCharWidths()->getCharWidthsLayoutUnits();
-	UT_sint32 * pCWThis = getGR()->queryProperties(GR_Graphics::DGP_SCREEN) ?
-		pgbCharWidths->getPointer(getBlockOffset()) :
-		pgbCharWidthsLayout->getPointer(getBlockOffset());
-#else
 	UT_sint32 * pCWThis = pgbCharWidths->getPointer(getBlockOffset());
-#endif
 	if(pCWThis == NULL)
 	{
 		return;
@@ -1839,7 +1695,7 @@ void fp_TextRun::_draw(dg_DrawArgs* pDA)
 		if(pNext && pNext->getType() == FPRUN_TEXT)
 		{
 			fp_TextRun * pT = static_cast<fp_TextRun*>(pNext);
-			UT_sint32 ytemp = pDA->yoff+(pT->getY()-getY())-pT->getAscent()-1;
+			UT_sint32 ytemp = pDA->yoff+(pT->getY()-getY())-pT->getAscent()-getGR()->tlu(1);
  			if (pT->m_fPosition == TEXT_POSITION_SUPERSCRIPT)
  			{
  				ytemp -= pT->getAscent() * 1/2;
@@ -1860,7 +1716,7 @@ void fp_TextRun::_draw(dg_DrawArgs* pDA)
 		if(pPrev && pPrev->getType() == FPRUN_TEXT)
 		{
 			fp_TextRun * pT = static_cast<fp_TextRun*>(pPrev);
-			UT_sint32 ytemp = pDA->yoff+(pT->getY()-getY())-pT->getAscent()-1;
+			UT_sint32 ytemp = pDA->yoff+(pT->getY()-getY())-pT->getAscent()-getGR()->tlu(1);
  			if (pT->m_fPosition == TEXT_POSITION_SUPERSCRIPT)
  			{
  				ytemp -= pT->getAscent() * 1/2;
@@ -1879,12 +1735,7 @@ void fp_TextRun::_draw(dg_DrawArgs* pDA)
 	}
 
 	// now draw the string
-#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-	getGR()->setFont(_getScreenFont());
-#else
 	getGR()->setFont(_getFont());
-#endif
-
 
 	// if there is a selection, we will need to draw the text in
 	// segments due to different colour of the foreground
@@ -2276,11 +2127,8 @@ void fp_TextRun::shape()
 		// next we need to refresh our character widths
 		m_bRecalcWidth = false;
 
-		UT_GrowBuf * pgbCharWidthsDisplay = getBlock()->getCharWidths()->getCharWidths();
-		//UT_GrowBuf * pgbCharWidthsLayout  = getBlock()->getCharWidths()->getCharWidthsLayoutUnits();
-
-		UT_GrowBufElement * pCharWidthsDisplay = pgbCharWidthsDisplay->getPointer(0) + getBlockOffset();
-		//UT_GrowBufElement * pCharWidthsLayout = pgbCharWidthsLayout->getPointer(0) + getBlockOffset();
+		UT_GrowBuf * pgbCharWidths = getBlock()->getCharWidths()->getCharWidths();
+		UT_GrowBufElement * pCharWidths = pgbCharWidths->getPointer(0) + getBlockOffset();
 
 		_setWidth(0);
 
@@ -2339,11 +2187,7 @@ void fp_TextRun::_drawLastChar(UT_sint32 xoff, UT_sint32 yoff,const UT_GrowBuf *
 		return;
 
 	// have to set font (and colour!), since we were called from a run using different font
-#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-	getGR()->setFont(_getScreenFont());
-#else
 	getGR()->setFont(_getFont());
-#endif
 
 	if(bSelection)
 	{
@@ -2373,11 +2217,7 @@ void fp_TextRun::_drawFirstChar(UT_sint32 xoff, UT_sint32 yoff, bool bSelection)
 		return;
 
 	// have to sent font (and colour!), since we were called from a run using different font
-#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-	getGR()->setFont(_getScreenFont());
-#else
 	getGR()->setFont(_getFont());
-#endif
 
 	if(bSelection)
 	{
@@ -2530,7 +2370,7 @@ void fp_TextRun::_drawSquiggle(UT_sint32 top, UT_sint32 left, UT_sint32 right)
 
 	m_bSquiggled = true;
 
-	UT_sint32 nPoints = (_UD(right) - _UD(left) + 3)/2;
+	UT_sint32 nPoints = getGR()->tdu((right - left + getGR()->tlu(3))/2);
 	UT_ASSERT(nPoints >= 1); //can be 1 for overstriking chars
 
 	/*
@@ -2556,14 +2396,14 @@ void fp_TextRun::_drawSquiggle(UT_sint32 top, UT_sint32 left, UT_sint32 right)
 
 	for (UT_sint32 i = 1; i < nPoints; i++, bTop = !bTop)
 	{
-		points[i].x = points[i-1].x + _UL(2);
-		points[i].y = (bTop ? top : top + _UL(2));
+		points[i].x = points[i-1].x + getGR()->tlu(2);
+		points[i].y = (bTop ? top : top + getGR()->tlu(2));
 	}
 
 	if (points[nPoints-1].x > right)
 	{
 		points[nPoints-1].x = right;
-		points[nPoints-1].y = top + _UL(1);
+		points[nPoints-1].y = top + getGR()->tlu(1);
 	}
 
 	getGR()->polyLine(points, nPoints);
@@ -2804,40 +2644,6 @@ UT_sint32 fp_TextRun::findTrailingSpaceDistance(void) const
 
 	return iTrailingDistance;
 }
-
-#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-UT_sint32 fp_TextRun::findTrailingSpaceDistanceInLayoutUnits(void) const
-{
-	UT_GrowBuf * pgbCharWidths = getBlock()->getCharWidths()->getCharWidthsLayoutUnits();
-	UT_GrowBufElement* pCharWidths = pgbCharWidths->getPointer(0);
-	if(pCharWidths == NULL)
-	{
-		return 0;
-	}
-	UT_sint32 iTrailingDistance = 0;
-
-	if(getLength() > 0)
-	{
-		UT_UCSChar c;
-
-		UT_sint32 i;
-		for (i = getLength() - 1; i >= 0; i--)
-		{
-			if(getCharacter(i, c) && (UCS_SPACE == c))
-			{
-				iTrailingDistance += pCharWidths[i + getBlockOffset()];
-			}
-			else
-			{
-				break;
-			}
-		}
-
-	}
-
-	return iTrailingDistance;
-}
-#endif
 
 void fp_TextRun::resetJustification()
 {

@@ -94,14 +94,14 @@ double FG_GraphicRaster::getWidth(void)
 {
 	UT_ASSERT(m_pbbPNG);
 
-	return m_iWidth / 72.0;
+	return m_iWidth;
 }
 
 double FG_GraphicRaster::getHeight(void)
 {
 	UT_ASSERT(m_pbbPNG);
 
-	return m_iHeight / 72.0;
+	return m_iHeight;
 }
 
 /*!
@@ -160,18 +160,10 @@ GR_Image* FG_GraphicRaster::generateImage(GR_Graphics* pG,const PP_AttrProp * pS
 	}
 	UT_sint32 iDisplayWidth = 0;
 	UT_sint32 iDisplayHeight = 0;
-#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-	UT_sint32 iLayoutWidth = 0;
-	UT_sint32 iLayoutHeight = 0;
-#endif
 	if (bFoundWidthProperty && bFoundHeightProperty && pszWidth && pszHeight && pszWidth[0] && pszHeight[0])
 	{
-		iDisplayWidth = pG->convertDimension(static_cast<const char*>(pszWidth));
-		iDisplayHeight = pG->convertDimension(static_cast<const char*>(pszHeight));
-#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-		iLayoutWidth = UT_convertToLayoutUnits(pszWidth);
-		iLayoutHeight = UT_convertToLayoutUnits(pszHeight);
-#endif
+		iDisplayWidth = UT_convertToLayoutUnits(static_cast<const char*>(pszWidth));
+		iDisplayHeight = UT_convertToLayoutUnits(static_cast<const char*>(pszHeight));
 	}
 	else
 	{
@@ -180,16 +172,8 @@ GR_Image* FG_GraphicRaster::generateImage(GR_Graphics* pG,const PP_AttrProp * pS
 
 		UT_PNG_getDimensions(m_pbbPNG, iImageWidth, iImageHeight);
 
-		double fScale = pG->getResolution() / 100.0;
-
-		iDisplayWidth = static_cast<UT_sint32>(iImageWidth * fScale);
-		iDisplayHeight = static_cast<UT_sint32>(iImageHeight * fScale);
-#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-		//			fScale = 1440.0 / 72.0;
-		fScale = 14.399999999999999;
-		iLayoutWidth = static_cast<UT_sint32>(iImageWidth * fScale);
-		iLayoutHeight = static_cast<UT_sint32>(iImageHeight * fScale);
-#endif
+		iDisplayWidth = static_cast<UT_sint32>(iImageWidth);
+		iDisplayHeight = static_cast<UT_sint32>(iImageHeight);
 	}
 
 	UT_ASSERT(iDisplayWidth > 0);
@@ -197,10 +181,6 @@ GR_Image* FG_GraphicRaster::generateImage(GR_Graphics* pG,const PP_AttrProp * pS
 
    	GR_Image *pImage = pG->createNewImage(static_cast<const char*>(m_pszDataID), m_pbbPNG, iDisplayWidth, iDisplayHeight, GR_Image::GRT_Raster);
 
-#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-	//TF#TODO
-	pImage->setLayoutSize(iLayoutWidth, iLayoutHeight);
-#endif
 	return pImage;
 }
 
@@ -210,7 +190,7 @@ GR_Image* FG_GraphicRaster::generateImage(GR_Graphics* pG,const PP_AttrProp * pS
 //  reconstruct an equivalent FG_GraphicRaster object after this one
 //  is discarded.
 //
-UT_Error FG_GraphicRaster::insertIntoDocument(PD_Document* pDoc, double fDPI,
+UT_Error FG_GraphicRaster::insertIntoDocument(PD_Document* pDoc, UT_uint32 res,
 											  UT_uint32 iPos, const char* szName)
 {
 	UT_ASSERT(pDoc);
@@ -229,9 +209,9 @@ UT_Error FG_GraphicRaster::insertIntoDocument(PD_Document* pDoc, double fDPI,
 	UT_String szProps;
 
 	szProps += "width:";
-	szProps += UT_convertInchesToDimensionString(DIM_IN, static_cast<double>(m_iWidth)/fDPI, "3.2");
+	szProps += UT_convertInchesToDimensionString(DIM_IN, static_cast<double>(m_iWidth)/res, "3.2");
 	szProps += "; height:";
-	szProps += UT_convertInchesToDimensionString(DIM_IN, static_cast<double>(m_iHeight)/fDPI, "3.2");
+	szProps += UT_convertInchesToDimensionString(DIM_IN, static_cast<double>(m_iHeight)/res, "3.2");
 
 #ifndef __MRC__
 	const XML_Char*	attributes[] = {

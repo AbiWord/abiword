@@ -57,16 +57,7 @@ UnixNull_Graphics * abi_unixnullgraphics_instance = 0;
 XAP_UnixApp::XAP_UnixApp(XAP_Args * pArgs, const char * szAppName)
 	: XAP_App(pArgs, szAppName), m_dialogFactory(this), m_controlFactory()
 {
-#ifdef USE_XFT
-	/* UT_DEBUGMSG(("Before XftInit.\n"));
-	   timeval tv1, tv2;
-	   gettimeofday(&tv1, NULL); */
-	
 	XftInit(NULL);
-	
-	/* gettimeofday(&tv2, NULL);
-	   UT_DEBUGMSG(("Before XftInit [%d us].\n", (tv2.tv_sec - tv1.tv_sec) * 1000000 + tv2.tv_usec - tv1.tv_usec)); */
-#endif
 
 	m_pUnixToolbarIcons = 0;
 
@@ -268,9 +259,6 @@ bool XAP_UnixApp::_loadFonts()
  	// HUH? These don't match somehow. Abort!!
  	UT_ASSERT(relativePathsSoFar == relativePathCount);
 	//UT_DEBUGMSG(("Using FontPath from preferences [%s].\n",szPrefFontPathPtr));
-#ifndef USE_XFT
-	m_fontManager->setFontPath(szPrefFontPathPtr);
-#endif
 	FREEP(szTemp);
 	
 	// let it loose

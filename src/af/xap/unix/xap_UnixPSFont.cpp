@@ -47,12 +47,10 @@ PSFont::PSFont(XAP_UnixFont * pFont, UT_uint32 size)
 	m_hFont = pFont;
 	m_pointSize = size;
 	m_index = 0;
-	xxx_UT_DEBUGMSG(("Creating PS font %x \n",this));
 }
 
 PSFont::~PSFont(void)
 {
-	xxx_UT_DEBUGMSG(("Deleting PS font %x \n",this));
 }
 
 XAP_UnixFont * PSFont::getUnixFont(void)
@@ -61,16 +59,8 @@ XAP_UnixFont * PSFont::getUnixFont(void)
 	return m_hFont;
 }
 
-ABIFontInfo * PSFont::getMetricsData(void)
-{
-	UT_ASSERT(m_hFont);
-	return m_hFont->getMetricsData();
-}
-
 UT_uint16 PSFont::getCharWidth(UT_UCSChar c)
 {
 	UT_ASSERT(m_hFont);
-	UT_UCSChar cc = c;
-	UT_uint16 width = m_hFont->getCharWidth(cc);
-	return width;
+	return m_hFont->getCharWidth(c);
 }

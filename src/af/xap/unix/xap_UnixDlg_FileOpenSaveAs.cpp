@@ -767,7 +767,7 @@ gint XAP_UnixDialog_FileOpenSaveAs::previewPicture (void)
 	GR_UnixGraphics* pGr = new GR_UnixGraphics(m_preview->window, m_pApp);
 #endif
 	
-	pGr->clearArea(0, 0, m_preview->allocation.width, m_preview->allocation.height);
+	pGr->clearArea(0, 0, pGr->tlu(m_preview->allocation.width), pGr->tlu(m_preview->allocation.height));
 
 	const gchar * buf = gtk_file_selection_get_filename (m_FS);
 
@@ -794,9 +794,9 @@ gint XAP_UnixDialog_FileOpenSaveAs::previewPicture (void)
 	if (!buf)
 	  {
 #ifndef WITH_PANGO 		  
-	    pGr->drawChars (ucstext, 0, len, 12, 35);
+	    pGr->drawChars (ucstext, 0, len, pGr->tlu(12), pGr->tlu(35));
 #else
-		pGr->drawCharsDirectly(ucstext,0,len,12,35);
+		pGr->drawCharsDirectly(ucstext,0,len,pGr->tlu(12),pGr->tlu(35));
 #endif		
 	    goto Cleanup;
 	  }
@@ -806,18 +806,18 @@ gint XAP_UnixDialog_FileOpenSaveAs::previewPicture (void)
 	if (!stat (buf, &st)) {
 		if (!S_ISREG(st.st_mode)) {
 #ifndef WITH_PANGO			
-			pGr->drawChars (ucstext, 0, len, 12, 35);
+			pGr->drawChars (ucstext, 0, len, pGr->tlu(12), pGr->tlu(35));
 #else
-			pGr->drawCharsDirectly(ucstext,0,len,12,35);
+			pGr->drawCharsDirectly(ucstext,0,len,pGr->tlu(12),pGr->tlu(35));
 #endif		
 			goto Cleanup;
 		}
 	}
 	else {
 #ifndef WITH_PANGO		
-		pGr->drawChars (ucstext, 0, len, 12, 35);
+		pGr->drawChars (ucstext, 0, len, pGr->tlu(12), pGr->tlu(35));
 #else
-		pGr->drawCharsDirectly(ucstext,0,len,12,35);
+		pGr->drawCharsDirectly(ucstext,0,len,pGr->tlu(12),pGr->tlu(35));
 #endif		
 		goto Cleanup;
 	}
@@ -832,9 +832,9 @@ gint XAP_UnixDialog_FileOpenSaveAs::previewPicture (void)
 	{
 		DELETEP(pBB);
 #ifndef WITH_PANGO		
-		pGr->drawChars (ucstext, 0, len, 12, 35);
+		pGr->drawChars (ucstext, 0, len, pGr->tlu(12), pGr->tlu(35));
 #else
-		pGr->drawCharsDirectly(ucstext,0,len,12,35);
+		pGr->drawCharsDirectly(ucstext,0,len,pGr->tlu(12),pGr->tlu(35));
 #endif		
 		goto Cleanup;
 	}
@@ -844,16 +844,16 @@ gint XAP_UnixDialog_FileOpenSaveAs::previewPicture (void)
 	if ((errorCode != UT_OK) || !pGraphic)
 	  {
 #ifndef WITH_PANGO		  
-	    pGr->drawChars (ucstext, 0, len, 12, 35);
+	    pGr->drawChars (ucstext, 0, len, pGr->tlu(12), pGr->tlu(35));
 #else
-		pGr->drawCharsDirectly(ucstext,0,len,12,35);
+	    pGr->drawCharsDirectly(ucstext,0,len,pGr->tlu(12),pGr->tlu(35));
 #endif		
 	    goto Cleanup;
 	  }
 
 	if ( FGT_Raster == pGraphic->getType () )
 	{
-		pImage = new GR_UnixImage(NULL,false);
+		pImage = new GR_UnixImage(NULL);
 
 		UT_ByteBuf * png = static_cast<FG_GraphicRaster*>(pGraphic)->getRaster_PNG();
 		UT_PNG_getDimensions (png, iImageWidth, iImageHeight);
@@ -870,14 +870,14 @@ gint XAP_UnixDialog_FileOpenSaveAs::previewPicture (void)
 		pImage->convertFromBuffer(png, scaled_width, scaled_height);
 		
 		pGr->drawImage(pImage,
-			       static_cast<int>((m_preview->allocation.width  - scaled_width ) / 2),
-			       static_cast<int>((m_preview->allocation.height - scaled_height) / 2));
+			       pGr->tlu(static_cast<int>((m_preview->allocation.width  - scaled_width ) / 2)),
+			       pGr->tlu(static_cast<int>((m_preview->allocation.height - scaled_height) / 2)));
 		
 		answer = 1;
 	}
-	else // if ( FGT_Vector == pGraphic->getType () )
+	else
 	{
-	  //pImage = new GR_VectorImage(NULL);
+	  UT_ASSERT_NOT_REACHED ();
 	}
 
  Cleanup:
