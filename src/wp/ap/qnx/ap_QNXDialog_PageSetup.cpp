@@ -429,6 +429,7 @@ PtWidget_t * AP_QNXDialog_PageSetup::_constructWindow (void)
 	n = 0;
 
 	PtSetArg(&args[n++], Pt_ARG_WIDTH, ABI_DEFAULT_BUTTON_WIDTH, 0);
+	PtSetArg(&args[n++], Pt_ARG_TEXT_FLAGS,Pt_FALSE,Pt_EDITABLE);
 	m_optionPageUnits = PtCreateWidget(PtComboBox, Pt_DEFAULT_PARENT, n, args);
 	{
 		const char *itemname;
@@ -518,6 +519,7 @@ PtWidget_t * AP_QNXDialog_PageSetup::_constructWindow (void)
 	/** Second Row: Units combo, Top/Header spinners */
 	n = 0;
 	PtSetArg(&args[n++], Pt_ARG_WIDTH, ABI_DEFAULT_BUTTON_WIDTH, 0);
+	PtSetArg(&args[n++], Pt_ARG_TEXT_FLAGS,Pt_FALSE,Pt_EDITABLE);
 	m_optionMarginUnits = PtCreateWidget(PtComboBox, hgroup, n, args);
 	{
 		const char *itemname;

@@ -572,6 +572,7 @@ PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, TR(pSS->getValueUTF8(AP_STRING_ID_DLG_O
 
 	n = 0;
 	PtSetArg(&args[n++], Pt_ARG_WIDTH,  ABI_DEFAULT_BUTTON_WIDTH, 0);
+	PtSetArg(&args[n++], Pt_ARG_TEXT_FLAGS,Pt_FALSE,Pt_EDITABLE);
 	listViewRulerUnit = PtCreateWidget(PtComboBox, hrulergroup, n, args);
 	//Populate the list with the units and set the vector
     m_vecUnits.clear();
