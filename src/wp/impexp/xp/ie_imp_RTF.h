@@ -1,3 +1,4 @@
+/* -*- c-basic-offset: 4; tab-width: 4; indent-tabs-mode: t -*- */
 /* AbiWord
  * Copyright (C) 1999 AbiSource, Inc.
  * 
@@ -69,7 +70,9 @@ public:
 	bool m_overline;
 	bool	m_strikeout;
 	bool m_superscript;
+	double m_superscript_pos;       // unit is pt. if 0.0, ignore
 	bool m_subscript;
+	double m_subscript_pos;         // unit is pt. if 0.0, ignore	
 	double	m_fontSize;			// font size in points
 	UT_uint32 m_fontNumber;		// index into font table
 	UT_uint32 m_colourNumber;	// index into colour table
@@ -142,7 +145,7 @@ public:
 	
 //	RTFStateStore& operator=(const RTFStateStore&);
 
-	enum DestinationStateTypes { rdsNorm, rdsSkip };
+	enum DestinationStateTypes { rdsNorm, rdsSkip, rdsFootnote, rdsHeader, rdsFooter, rdsField };
 	enum InternalStateTypes { risNorm, risBin, risHex };
 
 	DestinationStateTypes	m_destinationState;		// Reading or skipping text
@@ -221,6 +224,8 @@ private:
 	bool HandlePicture();
 	bool HandleObject();
 	bool HandleField();
+	bool HandleHeader();
+	bool HandleFooter();
 	bool SkipCurrentGroup();
 	
 	RTFFontTableItem* GetNthTableFont(UT_uint32 fontNum);
@@ -237,8 +242,13 @@ private:
 	bool HandleOverline(bool state);
 	bool HandleStrikeout(bool state);
 	bool HandleSuperscript(bool state);
+	bool HandleSuperscriptPosition(UT_uint32 pos);
 	bool HandleSubscript(bool state);
+	bool HandleSubscriptPosition(UT_uint32 pos);
 	bool HandleFontSize(long sizeInHalfPoints);
+
+	// Generic handlers
+	bool HandleFloatCharacterProp(double val, double* pProp);
 	bool HandleU32CharacterProp(UT_uint32 val, UT_uint32* pProp);
 	bool HandleFace(UT_uint32 fontNumber);
 	bool HandleColour(UT_uint32 colourNumber);
@@ -257,6 +267,17 @@ private:
 	// Section property handlers
 	bool ApplySectionAttributes();
 	bool ResetSectionAttributes();
+
+	typedef enum {
+	    RTF_TOKEN_NONE = 0,
+	    RTF_TOKEN_OPEN_BRACE,
+	    RTF_TOKEN_CLOSE_BRACE,
+	    RTF_TOKEN_KEYWORD,
+	    RTF_TOKEN_DATA,
+	    RTF_TOKEN_ERROR = -1
+	} RTFTokenType;
+	RTFTokenType NextToken (unsigned char *pKeyword, long* pParam, 
+							bool* pParamUsed, UT_uint32 len);
 
 // import member vars
 private:

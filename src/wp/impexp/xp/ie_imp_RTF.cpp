@@ -35,7 +35,6 @@
 #include "ie_types.h"
 #include "ie_imp_RTF.h"
 #include "pd_Document.h"
-#include "wv.h"
 #include "xap_EncodingManager.h"
 
 class fl_AutoNum;
@@ -128,7 +127,9 @@ RTFProps_CharProps::RTFProps_CharProps()
 	m_overline = false;
 	m_strikeout = false;
 	m_superscript = false;
+	m_superscript_pos = 0.0;
 	m_subscript = false;
+	m_subscript_pos = 0.0;
 	m_fontSize = 12.0;
 	m_fontNumber = 0;
 	m_colourNumber = 0;
@@ -141,9 +142,9 @@ RTFProps_ParaProps::RTFProps_ParaProps()
 	m_justification = pjLeft;
 	m_spaceBefore = 0;
 	m_spaceAfter = 0;
-        m_indentLeft = 0;
-        m_indentRight = 0;
-        m_indentFirst = 0;
+	m_indentLeft = 0;
+	m_indentRight = 0;
+	m_indentFirst = 0;
 	m_lineSpaceExact = false;
 	m_lineSpaceVal = 240;
 	m_isList = false;
@@ -190,12 +191,12 @@ RTFProps_ParaProps& RTFProps_ParaProps::operator=(const RTFProps_ParaProps& othe
 		}
 		m_isList = other.m_isList;
 		m_level = other.m_level;
- 	        strcpy((char *) m_pszStyle, (char *) other.m_pszStyle); 
-	        m_rawID = other.m_rawID;
+		strcpy((char *) m_pszStyle, (char *) other.m_pszStyle); 
+		m_rawID = other.m_rawID;
 		m_rawParentID = other.m_rawParentID;
- 	        strcpy((char *) m_pszListDecimal, (char *) other.m_pszListDecimal); 
- 	        strcpy((char *) m_pszListDelim, (char *) other.m_pszListDelim); 
- 	        strcpy((char *) m_pszFieldFont, (char *) other.m_pszFieldFont); 
+		strcpy((char *) m_pszListDecimal, (char *) other.m_pszListDecimal); 
+		strcpy((char *) m_pszListDelim, (char *) other.m_pszListDelim); 
+		strcpy((char *) m_pszFieldFont, (char *) other.m_pszFieldFont); 
 		m_startValue = other.m_startValue;
 	}
 
@@ -479,7 +480,7 @@ bool IE_Imp_RTF::FlushStoredChars(bool forceInsertPara)
 {
 	// start a new para if we have to
 	bool ok = true;
-        if (m_newSectionFlagged && (forceInsertPara || (m_gbBlock.getLength() > 0)) )
+	if (m_newSectionFlagged && (forceInsertPara || (m_gbBlock.getLength() > 0)) )
 	{
 		ok = ApplySectionAttributes();
 		m_newSectionFlagged = false;
@@ -818,12 +819,13 @@ bool IE_Imp_RTF::HandleObject()
  */
 bool IE_Imp_RTF::HandleField()
 {
+	RTFTokenType tokenType;
 	unsigned char keyword[MAX_KEYWORD_LEN];
-	unsigned char ch;
 	bool ok = false;
 	long parameter = 0;
 	bool paramUsed = false;
 	bool bUseResult = false;  // true if field instruction can not be used
+	int nested = 0;           // nesting level
 
 	int rtfFieldAttr = 0;
 	
@@ -835,17 +837,15 @@ bool IE_Imp_RTF::HandleField()
 	} RTFFieldAttr;
 	
 
-	if (!ReadCharFromFile(&ch))
+	tokenType = NextToken (keyword, &parameter, &paramUsed, MAX_KEYWORD_LEN);
+	if (tokenType == RTF_TOKEN_ERROR)
+	{
 		return false;
+	}
 
 	// read the optional attribute for the field.
-	while (ch == '\\')
+	while (tokenType == RTF_TOKEN_KEYWORD)
 	{
-		if (!ReadKeyword(keyword, &parameter, &paramUsed, MAX_KEYWORD_LEN))
-		{
-			UT_DEBUGMSG (("RTF: could not read expected keyword\n"));
-			return false;
-		}
 		if (strcmp ((char *)keyword, "flddirty") == 0)
 		{
 			rtfFieldAttr &= fldAttrDirty;
@@ -869,12 +869,11 @@ bool IE_Imp_RTF::HandleField()
 		}
 		
 		
-		if (!ReadCharFromFile(&ch))
-			return false;
+		tokenType = NextToken (keyword, &parameter, &paramUsed, MAX_KEYWORD_LEN);
 	}
 
 	// field instruction
-	if (ch == '{') 
+	if (tokenType == RTF_TOKEN_OPEN_BRACE) 
 	{
 		// TODO: handle field instructions
 		// this is quite complex as field instructions are not really document in the RTF specs.
@@ -899,69 +898,80 @@ bool IE_Imp_RTF::HandleField()
 		  {{\field\fldpriv{\*\fldinst{\\import sv8968971.jpg}}{\fldrslt }}}
 		*/
 		bUseResult = true;
-		ok = SkipCurrentGroup ();
-		if (!ReadCharFromFile(&ch))
-			return false;
-		// here ch should be the closing brace.
-		if (!ok)
+		nested = 0;
+		do
 		{
-			UT_ASSERT (ok);
-			return ok;
+			tokenType = NextToken (keyword, &parameter, &paramUsed, MAX_KEYWORD_LEN);
+			switch (tokenType)
+			{
+			case RTF_TOKEN_ERROR:
+				UT_ASSERT (UT_SHOULD_NOT_HAPPEN);
+				return false;
+				break;
+			case RTF_TOKEN_OPEN_BRACE:
+				nested++;
+				break;
+			case RTF_TOKEN_CLOSE_BRACE:
+				nested--;
+				break;
+			default:
+				break;
+			}
 		}
+		while ((tokenType != RTF_TOKEN_CLOSE_BRACE) || (nested >= 0));
 	}
 	else 
 	{
-		UT_DEBUGMSG (("RTF: Field instruction not present. Found '%c' in stream\n", ch));
+		UT_DEBUGMSG (("RTF: Field instruction not present. Found '%s' in stream\n", keyword));
 		UT_ASSERT (UT_SHOULD_NOT_HAPPEN);
 		// continue
 	}
 
-	if (!ReadCharFromFile(&ch))
+	tokenType = NextToken (keyword, &parameter, &paramUsed, MAX_KEYWORD_LEN);
+	if (tokenType == RTF_TOKEN_ERROR)
+	{
 		return false;
+	}
 
 	if (bUseResult == false) 
 	{ 
-		// we don't need the result as we are able to use instructions
-		// skip it
-		return SkipCurrentGroup ();
+		while ((tokenType != RTF_TOKEN_CLOSE_BRACE) && (tokenType != RTF_TOKEN_ERROR))
+		{
+			tokenType = NextToken (keyword, &parameter, &paramUsed, MAX_KEYWORD_LEN);
+		}
+		return (tokenType != RTF_TOKEN_ERROR);
 	}
 	
 	// field result
-	if (ch == '{') 
+	if (tokenType == RTF_TOKEN_OPEN_BRACE) 
 	{
-		if (!ReadCharFromFile(&ch))
-			return false;
-		if (ch == '\\')
+		tokenType = NextToken (keyword, &parameter, &paramUsed, MAX_KEYWORD_LEN);
+		if (tokenType == RTF_TOKEN_ERROR)
 		{
-			if (!ReadKeyword(keyword, &parameter, &paramUsed, MAX_KEYWORD_LEN))
-			{
-				UT_DEBUGMSG (("RTF: could not read expected keyword\n"));
-				return false;
-			}
-			if (strcmp ((char *)keyword, "fldrslt") == 0)
-			{
-				// it OK we do have a field result
-			}
-			else 
+			return false;
+		}
+		if (tokenType == RTF_TOKEN_KEYWORD)
+		{
+			// here we expect fldrslt keyword, nothing else
+			if (strcmp ((char *)keyword, "fldrslt") != 0)
 			{
 				UT_DEBUGMSG (("RTF: Invalid keyword '%s' in field\n"));
 				// don't return as we simply skip it
 			}
 		}
 
+		nested = 0;
 		do
 		{
-			if (!ReadCharFromFile(&ch))
+			tokenType = NextToken (keyword, &parameter, &paramUsed, MAX_KEYWORD_LEN);
+			switch (tokenType)
+			{
+			case  RTF_TOKEN_ERROR:
 				return false;
+				break;
 			// TODO: handle the \cpg keyword that can possible lies here. Hence we will need
 			// to push and pop the state
-			if (ch == '\\') 
-			{
-				if (!ReadKeyword(keyword, &parameter, &paramUsed, MAX_KEYWORD_LEN))
-				{
-					UT_DEBUGMSG (("RTF: could not read expected keyword\n"));
-					return false;
-				}
+			case  RTF_TOKEN_KEYWORD:
 				if (strcmp ((char *)keyword, "\\"))
 				{
 					ok = ParseChar (keyword [0]);
@@ -972,27 +982,43 @@ bool IE_Imp_RTF::HandleField()
 				{
 					UT_DEBUGMSG (("RTF: unexpected keyword\n"));
 				}
-			}
-			else if (ch == '{')
-			{
+				break;
+			case RTF_TOKEN_OPEN_BRACE:
+				nested++;
 				UT_DEBUGMSG (("RTF Debug: met a new block\n"));
+				break;
+			case RTF_TOKEN_CLOSE_BRACE:
+				nested--;
+				break;
+			default:
+				ok = ParseChar (*keyword);
+				if (!ok)
+					return false;
 			}
-			else if (ch != '}') 
-			{
-				// STOP
-				ok = ParseChar (ch);
-			}
-		} while (ch != '}');
+		} while ((tokenType != RTF_TOKEN_CLOSE_BRACE) || (nested >= 0));
 		// no need to skip back ch because we handled it ourselves
 	}
 	else 
 	{
-		UT_DEBUGMSG (("RTF: Field result not present. Found '%c' in stream\n", ch));
+		UT_DEBUGMSG (("RTF: Field result not present. Found '%s' in stream\n", keyword));
 		UT_ASSERT (UT_SHOULD_NOT_HAPPEN);
 		// continue
 	}
 	
-	return ok;
+	return true;
+}
+
+bool IE_Imp_RTF::HandleHeader()
+{
+	UT_DEBUGMSG(("TODO: Handle \\header keyword properly\n"));
+	return SkipCurrentGroup();
+}
+
+
+bool IE_Imp_RTF::HandleFooter()
+{
+	UT_DEBUGMSG(("TODO: Handle \\footer keyword properly\n"));
+	return SkipCurrentGroup();
 }
 
 
@@ -1051,6 +1077,12 @@ bool IE_Imp_RTF::TranslateKeyword(unsigned char* pKeyword, long param, bool fPar
 			// bold - either on or off depending on the parameter
 			return HandleDeleted(fParam ? false : true);
 		}
+		else if (strcmp((char *)pKeyword,"dn") == 0)
+		{
+			// subscript with position. Default is 6.
+			// superscript: see up keyword
+			return HandleSubscriptPosition (fParam ? param : 6);
+		}
 		break;
 	case 'e':
 		if (strcmp((char*)pKeyword, "emdash") == 0)
@@ -1094,8 +1126,17 @@ bool IE_Imp_RTF::TranslateKeyword(unsigned char* pKeyword, long param, bool fPar
 		{
 			return HandleField ();
 		}
+		else if (strcmp((char*)pKeyword, "footer") == 0) 
+		{
+			return HandleFooter ();
+		}
 		break;
-
+	case 'h':
+		if (strcmp((char*)pKeyword, "header") == 0) 
+		{
+			return HandleHeader ();
+		}
+		break;
 	case 'i':
 		if (strcmp((char*)pKeyword, "i") == 0)
 		{
@@ -1332,6 +1373,12 @@ bool IE_Imp_RTF::TranslateKeyword(unsigned char* pKeyword, long param, bool fPar
 			m_currentRTFState.m_unicodeInAlternate = m_currentRTFState.m_unicodeAlternateSkipCount;
 			return bResult;
 		}
+		else if (strcmp((char *)pKeyword,"up") == 0)
+		{
+			// superscript with position. Default is 6.
+			// subscript: see dn keyword
+			return HandleSuperscriptPosition (fParam ? param : 6);
+		}
 		break;
 
 	case '*':
@@ -1464,10 +1511,18 @@ bool IE_Imp_RTF::ApplyCharacterAttributes()
 	strcat(propBuffer, "; text-position:");
 	if (m_currentRTFState.m_charProps.m_superscript)
 	{
+		if (m_currentRTFState.m_charProps.m_superscript != 0.0) 
+		{
+			UT_DEBUGMSG (("RTF: TODO: Handle text position in pt.\n"));
+		}
 		strcat(propBuffer, "superscript");
 	}
 	else if (m_currentRTFState.m_charProps.m_subscript)
 	{
+		if (m_currentRTFState.m_charProps.m_subscript != 0.0) 
+		{
+			UT_DEBUGMSG (("RTF: TODO: Handle text position in pt.\n"));
+		}
 		strcat(propBuffer, "subscript");
 	}
 	else
@@ -2821,20 +2876,47 @@ bool IE_Imp_RTF::HandleSuperscript(bool state)
 	return HandleBoolCharacterProp(state, &m_currentRTFState.m_charProps.m_superscript);
 }
 
+// pos is in 1/2pt like in RTF
+bool IE_Imp_RTF::HandleSuperscriptPosition(UT_uint32 pos)
+{
+	bool ok;
+	ok = HandleBoolCharacterProp(true, &m_currentRTFState.m_charProps.m_superscript);
+	if (ok) 
+	{
+		ok = HandleFloatCharacterProp (pos*0.5, &m_currentRTFState.m_charProps.m_superscript_pos);
+	}
+	return ok;
+}
+
 bool IE_Imp_RTF::HandleSubscript(bool state)
 {
 	return HandleBoolCharacterProp(state, &m_currentRTFState.m_charProps.m_subscript);
 }
 
-bool IE_Imp_RTF::HandleFontSize(long sizeInHalfPoints)
+// pos is in 1/2pt like in RTF
+bool IE_Imp_RTF::HandleSubscriptPosition(UT_uint32 pos)
 {
-	bool ok = FlushStoredChars();
-
-	m_currentRTFState.m_charProps.m_fontSize = sizeInHalfPoints*0.5;
-
+	bool ok;
+	ok = HandleBoolCharacterProp(true, &m_currentRTFState.m_charProps.m_subscript);
+	if (ok) 
+	{
+		ok = HandleFloatCharacterProp (pos*0.5, &m_currentRTFState.m_charProps.m_subscript_pos);
+	}
 	return ok;
 }
 
+bool IE_Imp_RTF::HandleFontSize(long sizeInHalfPoints)
+{
+	return HandleFloatCharacterProp (sizeInHalfPoints*0.5, &m_currentRTFState.m_charProps.m_fontSize);
+}
+
+
+bool IE_Imp_RTF::HandleFloatCharacterProp(double val, double* pProp)
+{
+	bool ok = FlushStoredChars();
+	*pProp = val;
+	return ok;
+}
 
 bool IE_Imp_RTF::HandleU32CharacterProp(UT_uint32 val, UT_uint32* pProp)
 {
@@ -2870,6 +2952,64 @@ bool IE_Imp_RTF::AddTabstop(UT_sint32 stopDist)
 
 	return true;
 }
+
+//////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////
+/*
+  get the next token, put it into buf, if there is an error return RTF_TOKEN_ERROR
+  otherwise returns the RTFTokenType
+  If it is RTF_TOKEN_DATA, data is returned byte by byte.
+  RTF_TOKEN_KEYWORD includes control words and control symbols (like hex char). 
+  It is up to the caller to distinguish beetween them and parse them.
+  pKeyword is the data
+  pParam is the keyword parameter if any
+  pParamUsed is a flag to tell whether there is a parameter.
+  Both are only used if tokenType is RTF_TOKEN_KEYWORD
+  NOTE: this changes the state of the file
+*/
+IE_Imp_RTF::RTFTokenType IE_Imp_RTF::NextToken (unsigned char *pKeyword, long* pParam, 
+									bool* pParamUsed, UT_uint32 len)
+{
+	RTFTokenType tokenType = RTF_TOKEN_NONE;
+	bool ok;
+	
+	UT_ASSERT (pKeyword);
+	UT_ASSERT (len);
+	UT_ASSERT (pParamUsed);
+	UT_ASSERT (pParam);
+	*pParam = 0;
+	*pParamUsed = false;
+	*pKeyword = 0;
+	pKeyword [1] = 0;
+
+	if (!ReadCharFromFile(pKeyword))
+	{
+		tokenType = RTF_TOKEN_ERROR;
+	}
+	else switch (*pKeyword)
+	{
+	case '\\':
+		tokenType = RTF_TOKEN_KEYWORD;
+		ok = ReadKeyword (pKeyword, pParam, pParamUsed, len);
+		if (!ok)
+		{
+			tokenType = RTF_TOKEN_ERROR;
+		}
+		break;
+	case '{':
+		tokenType = RTF_TOKEN_OPEN_BRACE;
+		break;
+	case '}':
+		tokenType = RTF_TOKEN_CLOSE_BRACE;
+		break;
+	default:
+		tokenType = RTF_TOKEN_DATA;
+		break;
+	}
+		
+	return tokenType;
+}
+
 
 //////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////
