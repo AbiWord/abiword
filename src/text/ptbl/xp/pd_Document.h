@@ -71,9 +71,9 @@ public:
 	virtual bool			undoCmd(UT_uint32 repeatCount);
 	virtual bool			redoCmd(UT_uint32 repeatCount);
 
-	UT_Error                                saveAs(const char * szFilename, int ieft);
+	UT_Error				saveAs(const char * szFilename, int ieft);
 	UT_Error   				saveAs(const char * szFilename, int ieft, bool cpy);
-	UT_Error	       			save(void);
+	UT_Error				save(void);
 
 	void					beginUserAtomicGlob(void);
 	void					endUserAtomicGlob(void);
@@ -152,11 +152,10 @@ public:
 													   PL_StruxFmtHandle * psfh) const;
 	bool					getStruxOfTypeFromPosition(PT_DocPosition, PTStruxType pts, PL_StruxDocHandle * sdh) const;
 
-	bool getNextStruxOfType(PL_StruxDocHandle sdh,PTStruxType pts,
-							PL_StruxDocHandle * nextsdh);
-
-	bool getPrevStruxOfType(PL_StruxDocHandle sdh,PTStruxType pts,
-							PL_StruxDocHandle * prevsdh);
+	bool					getNextStruxOfType(PL_StruxDocHandle sdh,PTStruxType pts,
+											   PL_StruxDocHandle * nextsdh);
+	bool					getPrevStruxOfType(PL_StruxDocHandle sdh,PTStruxType pts,
+											   PL_StruxDocHandle * prevsdh);
 
 	// data items
 
@@ -174,7 +173,7 @@ public:
 
 	bool					getStyle(const char * szName, PD_Style ** ppStyle) const;
 	bool					enumStyles(UT_uint32 k,
-										  const char ** pszName, const PD_Style ** ppStyle) const;
+									   const char ** pszName, const PD_Style ** ppStyle) const;
 	bool					setStyleProperty(const XML_Char * szStyleName, const XML_Char * szPropertyName, const XML_Char * szPropertyValue);
 	bool					setStyleProperties(const XML_Char * szStyleName, const XML_Char ** pProperties);
 
@@ -186,9 +185,9 @@ public:
 	bool					getField(PL_StruxDocHandle sdh, 
 									 UT_uint32 offset,
                                      fd_Field * &pField);
-	void                    setDontChangeInsPoint(void);
-	void                    allowChangeInsPoint(void);
-	bool                    getAllowChangeInsPoint(void) const;
+	void					setDontChangeInsPoint(void);
+	void					allowChangeInsPoint(void);
+	bool					getAllowChangeInsPoint(void) const;
 	bool					isPieceTableChanging(void);
 	void					notifyPieceTableChangeStart(void);
 	void					notifyPieceTableChangeEnd(void);
@@ -241,7 +240,7 @@ protected:
 	bool					m_bDoingPaste;
 
 private:
-	bool					m_bAllowInsertPointChange;
+	bool					m_bAllowInsretPointChange;
 };
 
 #endif /* PD_DOCUMENT_H */

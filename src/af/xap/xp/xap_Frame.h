@@ -128,7 +128,7 @@ public:
 	virtual UT_uint32			getZoomPercentage(void);
 	void						setZoomType(XAP_Frame::tZoomType z_Type){ m_zoomType = z_Type; } 
 	XAP_Frame::tZoomType		getZoomType(void) { return m_zoomType; }
-   void                        updateZoom(void);
+	void						updateZoom(void);
 
 	virtual void				setStatusMessage(const char * szMsg) = 0;
 
@@ -143,12 +143,12 @@ public:
 	EV_Keyboard *				getKeyboard(void);
 
 	XAP_Dialog_MessageBox::tAnswer		showMessageBox(XAP_String_Id id,
-											  XAP_Dialog_MessageBox::tButtons buttons,
-											  XAP_Dialog_MessageBox::tAnswer default_answer,
-											  const char *p_str1 = NULL);
+													   XAP_Dialog_MessageBox::tButtons buttons,
+													   XAP_Dialog_MessageBox::tAnswer default_answer,
+													   const char *p_str1 = NULL);
 	XAP_Dialog_MessageBox::tAnswer		showMessageBox(const char *szMessage,
-											  XAP_Dialog_MessageBox::tButtons buttons,
-											  XAP_Dialog_MessageBox::tAnswer default_answer);
+													   XAP_Dialog_MessageBox::tButtons buttons,
+													   XAP_Dialog_MessageBox::tAnswer default_answer);
 
 	UT_Error					backup();
 

@@ -204,8 +204,14 @@ bool AP_UnixApp::initialize(void)
 	  szPathname += "/";
 	szPathname += szSpellCheckWordList;
 	    
-	UT_DEBUGMSG(("Loading SpellCheckWordList [%s]\n",szPathname));
-	SpellCheckInit(szPathname);
+	UT_DEBUGMSG(("Loading SpellCheckWordList [%s]\n", szPathname.c_str()));
+	// JCA: I don't know if SpellCheckInit really modify the char *
+	// JCA: or if its signature should really be const char *.
+	// JCA: If the latter, please fix the signature of this function,
+	// JCA: and replace these 3 lines by: SpellCheckInit(szPathname.c_str());
+	char *tmp = UT_strdup(szPathname.c_str());
+	SpellCheckInit(tmp);
+	free(tmp);
 #else 
 	// we're using pspell, it's safe to cast to a char * here
 	SpellCheckInit((char *)xap_encoding_manager_get_language_iso_name());

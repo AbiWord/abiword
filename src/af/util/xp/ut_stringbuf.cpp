@@ -125,7 +125,7 @@ void UT_Stringbuf::swap(UT_Stringbuf& rhs)
 
 void UT_Stringbuf::clear()
 {
-	if (m_psz != 0)
+	if (m_psz)
 	{
 		delete[] m_psz;
 		m_psz = 0;
