@@ -48,6 +48,7 @@ public:
 	
 protected:
 	HWND					m_hwndStatusBar;
+	HWND					m_hwndSizeGrip;
 };
 
 #endif /* AP_WIN32STATUSBAR_H */

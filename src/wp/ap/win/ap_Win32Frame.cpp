@@ -496,8 +496,14 @@ HWND AP_Win32Frame::_createDocumentWindow(HWND hwndParent,
 	UT_ASSERT(m_hwndHScroll);
 	SWL(m_hwndHScroll, this);
 
+#if 1 // if the StatusBar is enabled, our lower-right corner is a dead spot
+#  define XX_StyleBits		(WS_DISABLED | SBS_SIZEBOX)
+#else // otherwise it is an active grip
+#  define XX_StyleBits		(SBS_SIZEGRIP)
+#endif
+
 	m_hwndDeadLowerRight = CreateWindowEx(0,"ScrollBar",NULL,
-										  WS_CHILD | WS_VISIBLE | SBS_SIZEGRIP,
+										  WS_CHILD | WS_VISIBLE | XX_StyleBits,
 										  r.right-cxVScroll, r.bottom-cyHScroll, cxVScroll, cyHScroll,
 										  hwndContainer, NULL, m_pWin32App->getInstance(), NULL);
 	UT_ASSERT(m_hwndDeadLowerRight);

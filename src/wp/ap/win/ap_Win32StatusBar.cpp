@@ -110,6 +110,15 @@ HWND AP_Win32StatusBar::createWindow(HWND hwndFrame,
 	setHeight(rSize.bottom);
 	setWidth(rSize.right);
 
+	int cxVScroll = GetSystemMetrics(SM_CXVSCROLL);
+	int cyHScroll = GetSystemMetrics(SM_CYHSCROLL);
+	m_hwndSizeGrip = CreateWindowEx(0,"ScrollBar",NULL,
+									WS_CHILD | WS_VISIBLE | SBS_SIZEGRIP,
+									rSize.right-cxVScroll, rSize.bottom-cyHScroll, cxVScroll, cyHScroll,
+									m_hwndStatusBar, NULL, app->getInstance(), NULL);
+	UT_ASSERT(m_hwndSizeGrip);
+	SWL(m_hwndSizeGrip, this);
+
 	return m_hwndStatusBar;
 }
 	
@@ -130,6 +139,10 @@ LRESULT CALLBACK AP_Win32StatusBar::_StatusBarWndProc(HWND hwnd, UINT iMsg, WPAR
 			int nHeight = HIWORD(lParam);
 			pStatusBar->setHeight(nHeight);
 			pStatusBar->setWidth(nWidth);
+			int cxVScroll = GetSystemMetrics(SM_CXVSCROLL);
+			int cyHScroll = GetSystemMetrics(SM_CYHSCROLL);
+			MoveWindow(pStatusBar->m_hwndSizeGrip, nWidth-cxVScroll, nHeight-cyHScroll, cxVScroll, cyHScroll, TRUE);
+
 			return 0;
 		}
 	
