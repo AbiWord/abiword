@@ -175,7 +175,7 @@ ABI_OTH_INCS+=	/../../wv/glib-wv
 # zlib
 ABI_ZLIB_ROOT = $(ABI_ROOT)/../libs/zlib
 ABI_ZLIB_INC = $(ABI_ZLIB_ROOT)/include
-ABI_ZLIB_LIB = $(ABI_ZLIB_ROOT)/lib/zdll
+ABI_ZLIB_LIB = $(OUTDIR)/obj/libAbi_zlibdll.a
 ABI_LIBS += $(ABI_ZLIB_LIB)
 
 # so <fribidi.h> works
