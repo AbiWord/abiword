@@ -290,6 +290,7 @@ public:
 	
 	const fp_PageSize&	getPageSize(void) const;
 	UT_uint32			calculateZoomPercentForPageWidth();
+   UT_uint32           calculateZoomPercentForPageHeight();
 	UT_uint32			calculateZoomPercentForWholePage();
 
 protected:

@@ -6726,42 +6726,48 @@ UT_uint32 FV_View::calculateZoomPercentForPageWidth()
 	
 	// Set graphics zoom to 100 so we can get the display resolution.
 	GR_Graphics *pG = getGraphics();
-	UT_sint32 temp_zoom = pG->getZoomPercentage();
+   UT_uint32 temp_zoom = pG->getZoomPercentage();
 	pG->setZoomPercentage(100);
-	UT_sint32 resolution = pG->getResolution();
+   UT_uint32 resolution = pG->getResolution();
 	pG->setZoomPercentage(temp_zoom);
+
+   // Verify scale as a positive non-zero number else return old zoom
+   if ( ( getWindowWidth() - 2 * fl_PAGEVIEW_MARGIN_X ) <= 0 )
+       return temp_zoom;
 
 	double scale = (double)(getWindowWidth() - 2 * fl_PAGEVIEW_MARGIN_X) / 
 											(pageWidth * (double)resolution);
 	return (UT_uint32)(scale * 100.0);
 }
 
-UT_uint32 FV_View::calculateZoomPercentForWholePage()
+UT_uint32 FV_View::calculateZoomPercentForPageHeight()
 {
+
 	const fp_PageSize pageSize = getPageSize();
-	double pageWidth = pageSize.Width(fp_PageSize::inch);
 	double pageHeight = pageSize.Height(fp_PageSize::inch);
 	
 	// Set graphics zoom to 100 so we can get the display resolution.
 	GR_Graphics *pG = getGraphics();
-	UT_sint32 temp_zoom = pG->getZoomPercentage();
+   UT_uint32 temp_zoom = pG->getZoomPercentage();
 	pG->setZoomPercentage(100);
-	UT_sint32 resolution = pG->getResolution();
+   UT_uint32 resolution = pG->getResolution();
 	pG->setZoomPercentage(temp_zoom);
 
-	double scaleWidth = (double)(getWindowWidth() - 2 * fl_PAGEVIEW_MARGIN_X) / 
-											(pageWidth * (double)resolution);
-	double scaleHeight = (double)(getWindowHeight() - 2 * fl_PAGEVIEW_MARGIN_Y) / 
+   // Verify scale as a positive non-zero number else return old zoom
+   if ( ( getWindowHeight() - 2 * fl_PAGEVIEW_MARGIN_Y ) <= 0 )
+       return temp_zoom;
+
+   double scale = (double)(getWindowHeight() - 2 * fl_PAGEVIEW_MARGIN_Y) /
 											(pageHeight * (double)resolution);
-	if(scaleWidth < scaleHeight)
-	{
-		return (UT_uint32)(scaleWidth * 100.0);
-	}
-	else
-	{
-		return(UT_uint32)(scaleHeight * 100.0);
-	}
+   return (UT_uint32)(scale * 100.0);
 }
+
+UT_uint32 FV_View::calculateZoomPercentForWholePage()
+{
+   return MyMin( calculateZoomPercentForPageWidth(),
+                 calculateZoomPercentForPageHeight() );
+}
+
 
 	
 
