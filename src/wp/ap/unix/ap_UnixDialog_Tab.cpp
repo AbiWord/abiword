@@ -299,7 +299,7 @@ void    AP_UnixDialog_Tab::_constructWindowContents( GtkWidget * windowTabs )
 	gtk_button_box_set_spacing (GTK_BUTTON_BOX (hbuttonbox4), 5);
 	gtk_button_box_set_child_ipadding (GTK_BUTTON_BOX (hbuttonbox4), 0, 0);
 
-	buttonSet = gtk_button_new_with_label (pSS->getValue( AP_STRING_ID_DLG_Tab_Button_Set));
+	buttonSet = gtk_button_new_from_stock(GTK_STOCK_ADD); //pSS->getValue( AP_STRING_ID_DLG_Tab_Button_Set));
 	gtk_widget_ref (buttonSet);
 	g_object_set_data_full (G_OBJECT (windowTabs), "buttonSet", buttonSet,
 							  (GtkDestroyNotify) gtk_widget_unref);
@@ -307,7 +307,7 @@ void    AP_UnixDialog_Tab::_constructWindowContents( GtkWidget * windowTabs )
 	gtk_container_add (GTK_CONTAINER (hbuttonbox4), buttonSet);
 	GTK_WIDGET_SET_FLAGS (buttonSet, GTK_CAN_DEFAULT);
 
-	buttonClear = gtk_button_new_with_label (pSS->getValue( AP_STRING_ID_DLG_Tab_Button_Clear));
+	buttonClear = gtk_button_new_from_stock(GTK_STOCK_CLEAR);//gtk_button_new_with_label (pSS->getValue( AP_STRING_ID_DLG_Tab_Button_Clear));
 	gtk_widget_ref (buttonClear);
 	g_object_set_data_full (G_OBJECT (windowTabs), "buttonClear", buttonClear,
 							  (GtkDestroyNotify) gtk_widget_unref);
@@ -315,7 +315,7 @@ void    AP_UnixDialog_Tab::_constructWindowContents( GtkWidget * windowTabs )
 	gtk_container_add (GTK_CONTAINER (hbuttonbox4), buttonClear);
 	GTK_WIDGET_SET_FLAGS (buttonClear, GTK_CAN_DEFAULT);
 
-	buttonClearAll = gtk_button_new_with_label (pSS->getValue( AP_STRING_ID_DLG_Tab_Button_ClearAll));
+	buttonClearAll = gtk_button_new_with_label(pSS->getValue( AP_STRING_ID_DLG_Tab_Button_ClearAll));
 	gtk_widget_ref (buttonClearAll);
 	g_object_set_data_full (G_OBJECT (windowTabs), "buttonClearAll", buttonClearAll,
 							  (GtkDestroyNotify) gtk_widget_unref);
