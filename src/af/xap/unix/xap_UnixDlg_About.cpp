@@ -238,7 +238,7 @@ GtkWidget * XAP_UnixDialog_About::_constructWindow(void)
 	
 	g_snprintf(buf, 4096, XAP_ABOUT_VERSION, XAP_App::s_szBuild_Version);
 	
-	labelVersion = gtk_label_new ("Version: unnumbered");
+	labelVersion = gtk_label_new (buf);
 	gtk_object_set_data (GTK_OBJECT (windowAbout), "labelVersion", labelVersion);
 	gtk_widget_show (labelVersion);
 	gtk_box_pack_start (GTK_BOX (vboxInfo), labelVersion, FALSE, FALSE, 0);
