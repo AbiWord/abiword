@@ -55,7 +55,7 @@ CPPSRCS=		xap_UnixApp.cpp				\
 			xap_UnixPSGraphics.cpp
 
 # only build these for non-gnome
-ifndef ABI_OPT_GNOME
+ifneq ($(ABI_OPT_GNOME),1)
 CPPSRCS +=		xap_UnixDlg_About.cpp			\
 			xap_UnixDlg_PrintPreview.cpp            
 endif
