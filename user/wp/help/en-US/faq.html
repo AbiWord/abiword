@@ -4,8 +4,16 @@
 <html>
 
 <head>
-<title>AbiWord -- Columns</title>
+<title>AbiWord -- Frequently Asked Questions</title>
+<style type="text/css">
+<!--
+tt {  color: #000099}
+-->
+</style>
 </head>
+
+<!--- 20010721 	Added X Font problems to FAQ; link to compiling instuctions for windows, and suggestion to file bug report 
+		if AbiWord crashes. -Tim LaDuca tjl@141.com -->
 
 <body bgcolor="FFFFFF">
 
@@ -76,6 +84,8 @@
                   get an error about missing MSVCRT.DLL.</a>
                 <li><a href="#2.7">How do I use True Type fonts for AbiWord on
                   Linux?</a>
+		<LI><a href="#2.7.1">I get an error message &quot;AbiWord could not 
+              	  load [-*-Times New Roman-regular-r-*-*-*-0-*-*-*-*-*-*]&quot; </a> 
                 <li><a href="#2.8">How do I enable VI and Emacs key bindings in
                   AbiWord?</a></li>
                 <li><a href="#2.9">What features are planned for future versions of Abiword?</a></li>
@@ -83,6 +93,7 @@
                 <li><a href="#2.11">My imported Microsoft Word(TM) document has some formating errors. Whats wrong?</a></li>
                 <li><a href="#2.12">Now that StarOffice is going to be GPLed, how does that affect you?</a></li>
                 <li><a href="#2.13">Is it possible to import KWord documents?</a></li>
+            	<LI><a href="#2.14">Is it possible to compile AbiWord on Windows?</a></LI>
               </ul>
             </li>
             <li><b><a href="#3">Remarks</a></b>
@@ -244,6 +255,17 @@
           printers on Linux.
           <p>The AbiSource solution is to keep a copy of scalable Type 1 fonts
           locally, Therefore, AbiWord can use only Type 1 fonts.
+          <P><a name="2.7.1"></a><b>I get an error message &quot;AbiWord could not 
+          load [-*-Times New Roman-regular-r-*-*-*-0-*-*-*-*-*-*]&quot;</b>
+          <P>If you recieve the message &quot;AbiWord could not load the following 
+          font or fontset from the X Window System display server, [-*-Times New 
+          Roman-regular-r-*-*-*-0-*-*-*-*-*-*]&quot; or something similar try the 
+          following, add the line <tt>load &quot;type1&quot;</tt> to your /etc/X11/XF86Config 
+          or XF86Config-4 file.You will need to do this as root. 
+          <p>You may also want to try the following command if you still have problems 
+          <br>
+          <tt>/usr/sbin/chkfontpath -q -a /usr/share/abisuite/fonts</tt>. Again, 
+          you will need to do this as root.</p>
           <p><b><a name="2.8">How do I enable vi and Emacs key bindings in
           AbiWord?</a></b><a name="2.8"><br>
           For the hardcore computer geeks out there, AbiWord is built with the
@@ -266,8 +288,13 @@
           For a more complete view, see our <a href="http://www.abisource.com/~sam/docs/roadmap.html">roadmap</a>.
           </a></p>
           <p><b><a name="2.10">Abiword has crashed! What can I do?</a></b><a name="2.10"><br>
-          If you are using the Linux version, then it will have automatically made a backup of your file prior to crashing. To use the backup,
-          open another Abiword, and open the back file. Please also submit details of your crash on the <a href="http://www.abisource.com">AbiSource site</a>.
+          If you are using the Linux version, then it will have automatically made a backup of your 
+	file prior to crashing. To use the backup, open another Abiword, and open the back file. Please 
+	also submit details of your crash to <a href="http://bugzilla.abisource.com/enter_bug.cgi">
+	Bugzilla</a>. Be sure to follow the <a href="http://bugzilla.abisource.com/bugwritinghelp.html">
+	Bug Writing Guidelines</a>, at the very least, tell us what you were last doing when AbiWord crashed,
+	and, after you file the bug, attach an AbiWord document we can use to reproduce the crash if applicable.
+
           </a></p>
           <p><b><a name="2.11">My imported Microsoft Word(TM) document has some formating errors. Whats wrong?</a></b><a name="2.11"><br>
           We try very hard to make our import filters perfect, but they can sometimes make errors, as this type of document is remarkably difficult to import flawlessly.
@@ -281,6 +308,11 @@
           <p><b><a name="2.13">Is it possible to import KWord documents?</a></b><a name="2.13"><br>
 	  Not yet. This is planned for a future release. We hope to use a file format compatable with Abiword, KWord and StarWord.	
           </a></p>
+	<p><b><a name="2.14">Is it possible to compile AbiWord on Windows?</a></b><br>
+	Yes. If you want to try out the latest and greatest features or bug fixes the devolopers are working on, or would like to
+	help with AbiWord for Windows development, compiling on Windows is possible. You must have Microsoft Visual C++ 5.0 or
+	greater and the Cygwin Tools. For detailed instructions see the <a href="http://www.abisource.com/~tom/winbuildhowto.html">
+	Building AbiWord on Windows HOWTO</a>. Be sure to follow the instructions carefully.</p>
           <hr>
           <h3><a name="3">Remarks</a></h3>
           <p><b><a name="3.1">Questions not in the FAQ</a></b><br>
