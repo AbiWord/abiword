@@ -736,7 +736,7 @@ void fp_Run::clearScreen(bool bFullLineHeightRect)
 		// nothing to clear if this run is not currently on a line
 		return;
 	}
-	xxx_UT_DEBUGMSG(("SEVIOR: Doing clear screen in run \n"));
+	xxx_UT_DEBUGMSG(("SEVIOR: Doing clear screen in run %x \n",this));
 	if(getLine()->getContainer() != NULL)
 	{
 		if(getLine()->getContainer()->getPage() != 0)
@@ -754,6 +754,7 @@ void fp_Run::clearScreen(bool bFullLineHeightRect)
 #endif
 			// make sure we only get erased once
 			_setDirty(true);
+			markAsDirty();
 		}
 		else
 		{
@@ -810,7 +811,7 @@ void fp_Run::draw(dg_DrawArgs* pDA)
 		getLine()->setScreenCleared(false);
 
 //	UT_usleep(100000); // 0.1 seconds useful for debugging
-	xxx_UT_DEBUGMSG(("SEVIOR: draw this %x \n"));
+	xxx_UT_DEBUGMSG(("SEVIOR: draw Run this %x \n",this));
 
 	// shortcircuit drawing if we're way off base.
 	long imax = (1 << 15) - 1;

@@ -1341,12 +1341,20 @@ void fp_TextRun::_clearScreen(bool /* bFullLineHeightRect */)
 			while(pPrev != NULL && pPrev->getLine() == thisLine && pPrev->getLength() == 0)
 				pPrev = pPrev->getPrev();
 
-			leftClear = getDescent();
 			if (pPrev != NULL && pPrev->getLine() == thisLine &&
 				(pPrev->getType() == FPRUN_TEXT || pPrev->getType() == FPRUN_FIELD || pPrev->getType() == FPRUN_IMAGE))
  				leftClear = 0;
 		}
 		getGR()->fillRect(clrNormalBackground, xoff - leftClear, yoff, getWidth() + leftClear, getLine()->getHeight());
+		xxx_UT_DEBUGMSG(("leftClear = %d width = %d xoff %d height %d \n",leftClear,getWidth(),xoff,getLine()->getHeight()));
+		if(pPrev)
+		{
+			pPrev->markAsDirty();
+		}
+		if(getNext())
+		{
+			getNext()->markAsDirty();
+		}
 	}
 
 }

@@ -4920,6 +4920,23 @@ void FV_View::insertSymbol(UT_UCSChar c, XML_Char * symfont)
 		// Change the font back to its original value
 		properties[1] = currentfont;
 		setCharFormat(properties);
+
+		UT_sint32 xPoint, yPoint, xPoint2, yPoint2, iPointHeight;
+		bool bDirection;
+
+		fl_BlockLayout * pBL =	m_pLayout->findBlockAtPosition(getPoint());
+		fp_Run * pRun;
+		if(pBL == NULL)
+		{
+			return;
+		}
+		pRun = pBL->findPointCoords(getPoint(), false, xPoint,
+							    yPoint, xPoint2, yPoint2,
+							    iPointHeight, bDirection);
+		if(pRun && pRun->getPrev())
+		{
+			pRun->getPrev()->markAsDirty();
+		}
 		_generalUpdate();
 	}
 	else
@@ -4927,6 +4944,23 @@ void FV_View::insertSymbol(UT_UCSChar c, XML_Char * symfont)
 		// Just insert the character
 
 		cmdCharInsert(&c,1);
+
+		UT_sint32 xPoint, yPoint, xPoint2, yPoint2, iPointHeight;
+		bool bDirection;
+
+		fl_BlockLayout * pBL =	m_pLayout->findBlockAtPosition(getPoint());
+		fp_Run * pRun;
+		if(pBL == NULL)
+		{
+			return;
+		}
+		pRun = pBL->findPointCoords(getPoint(), false, xPoint,
+							    yPoint, xPoint2, yPoint2,
+							    iPointHeight, bDirection);
+		if(pRun && pRun->getPrev())
+		{
+			pRun->getPrev()->markAsDirty();
+		}
 	}
 	m_pDoc->endUserAtomicGlob();
 }

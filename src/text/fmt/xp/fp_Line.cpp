@@ -831,6 +831,7 @@ void fp_Line::clearScreen(void)
 */
 void fp_Line::clearScreenFromRunToEnd(fp_Run * ppRun)
 {
+	xxx_UT_DEBUGMSG(("Clear 1 from run %x to end \n",ppRun));
 	if(getBlock()->isHdrFtr())
 	{
 		return;
@@ -861,12 +862,14 @@ void fp_Line::clearScreenFromRunToEnd(fp_Run * ppRun)
 			if(j>=0)
 			{
 				pPrev = static_cast<fp_Run *>(m_vecRuns.getNthItem(j));
+				pPrev->markAsDirty();
 			}
 			UT_sint32 leftClear = 0;
 			while(j >= 0 && pPrev != NULL && pPrev->getLength() == 0)
 			{
 				pPrev = static_cast<fp_Run *>(m_vecRuns.getNthItem(j));
 				j--;
+				pPrev->markAsDirty();
 			}
 			leftClear = pRun->getDescent();
 			if(j>=0 && pPrev != NULL && pPrev->getType() == FPRUN_TEXT)
@@ -892,6 +895,7 @@ void fp_Line::clearScreenFromRunToEnd(fp_Run * ppRun)
 //
 // Sevior: I added this for robustness.
 //
+			pRun->markAsDirty();
 			getBlock()->setNeedsRedraw();
 			setNeedsRedraw();
 			UT_sint32 i;
@@ -914,6 +918,7 @@ void fp_Line::clearScreenFromRunToEnd(fp_Run * ppRun)
 
 void fp_Line::clearScreenFromRunToEnd(UT_uint32 runIndex)
 {
+	xxx_UT_DEBUGMSG(("Clear 2 from run %d to end \n",runIndex));
 	if(getBlock()->isHdrFtr())
 	{
 		return;
