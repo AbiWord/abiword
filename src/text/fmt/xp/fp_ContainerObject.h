@@ -206,7 +206,8 @@ public:
 	void                   clearCons(void)
 		{ m_vecContainers.clear();}
 	fp_ContainerObject *   getNthCon(UT_uint32 i) const
-		{ return (fp_ContainerObject *) m_vecContainers.getNthItem(i);}
+		{ if(countCons() == 0) return NULL;
+		   return (fp_ContainerObject *) m_vecContainers.getNthItem(i);}
 	void                   addCon(fp_ContainerObject * pCon)
 		{m_vecContainers.addItem((void *) pCon);}
 	UT_uint32              countCons(void) const

@@ -43,6 +43,7 @@ libFmt_a_SOURCES= \
 	fp_Line.cpp			\
 	fp_Page.cpp			\
 	fp_PageSize.cpp			\
+	fp_TableContainer.cpp           \
 	fp_Run.cpp			\
 	fp_FmtMarkRun.cpp		\
 	fp_TextRun.cpp			\

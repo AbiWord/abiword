@@ -60,13 +60,12 @@
 #include "fp_ContainerObject.h"
 #include "fp_Column.h"
 
-struct fp_Requisition;
-struct fp_Allocation;
+
 class fp_TableRowColumn
 {
 public:
 	fp_TableRowColumn(void);
-	virtual ~fpTableRowColumn(void);
+	virtual ~fp_TableRowColumn(void);
 	UT_sint32 requisition;
 	UT_sint32 allocation;
 	UT_sint32 spacing;
@@ -93,16 +92,16 @@ struct fp_Sliver;
 class ABI_EXPORT fp_CellContainer : public fp_VerticalContainer
 {
 public:
-	fp_CellContainer(FP_ContainerType iType, fl_SectionLayout* pSectionLayout);
+	fp_CellContainer(fl_SectionLayout* pSectionLayout);
 	virtual ~fp_CellContainer();
 
-	void                sizeRequest(fp_Request * pRequest);
-	void                sizeAllocate(fp_Allocate * pAllocate);
+	void                sizeRequest(fp_Requisition * pRequest);
+	void                sizeAllocate(fp_Allocation * pAllocate);
 
 	virtual void		draw(dg_DrawArgs*);
 	virtual void		draw(GR_Graphics*) {}
 	virtual void        setWidth(UT_sint32 iWidth);
-
+	        void        _drawBoundaries(dg_DrawArgs* pDA);
 	virtual bool        isVBreakable(void);
 	virtual bool        isHBreakable(void) {return false;}
 	virtual UT_sint32   wantVBreakAt(UT_sint32);
@@ -113,21 +112,21 @@ public:
 	virtual void        setAssignedScreenHeight(UT_sint32) {}
 	virtual fp_Container * getNextContainerInSection(void) const;
 	virtual fp_Container * getPrevContainerInSection(void) const;
-    UT_uint32           getLeftAttach(void) const
+    UT_sint32           getLeftAttach(void) const
 		{ return m_iLeftAttach;}
-    UT_uint32           getRightAttach(void) const
+    UT_sint32           getRightAttach(void) const
 		{ return m_iRightAttach;}
-    UT_uint32           getTopAttach(void) const
+    UT_sint32           getTopAttach(void) const
 		{ return m_iTopAttach;}
-    UT_uint32           getBottomAttach(void) const
+    UT_sint32           getBottomAttach(void) const
 		{ return m_iBottomAttach;}
-    void                setLeftAttach(UT_uint32 i)
+    void                setLeftAttach(UT_sint32 i)
 		{ m_iLeftAttach = i;}
-    void                setRightAttach(UT_uint32 i)
+    void                setRightAttach(UT_sint32 i)
 		{ m_iRightAttach = i;}
-    void                setTopAttach(UT_uint32 i)
+    void                setTopAttach(UT_sint32 i)
 		{ m_iTopAttach = i;}
-    void                setBottomAttach(UT_uint32 i)
+    void                setBottomAttach(UT_sint32 i)
 		{ m_iBottomAttach = i;}
 	void                setToAllocation(void);
 	UT_sint32           getLeftPad(void) const
@@ -146,6 +145,31 @@ public:
 		{ m_iTopPad = i;}
 	void                setBotPad(UT_sint32 i)
 		{ m_iBotPad = i;}
+	bool                getXexpand(void) const
+		{ return m_bXexpand;}
+	bool                getYexpand(void) const
+		{ return m_bYexpand;}
+	bool                getXshrink(void) const
+		{ return m_bXshrink;}
+	bool                getYshrink(void) const
+		{ return m_bYshrink;}
+	void                setXexpand(bool b)
+		{ m_bXexpand = b;}
+	void                setYexpand(bool b)
+		{ m_bYexpand = b;}
+	void                setXshrink(bool b)
+		{ m_bXshrink = b;}
+	void                setYshrink(bool b)
+		{ m_bYshrink = b;}
+	bool                getXfill(void) const
+		{return m_bXfill;}
+	bool                getYfill(void)const
+		{return m_bYfill;}
+	void                setXfill(bool b)
+		{ m_bXfill = b;}
+	void                setYfill(bool b)
+		{ m_bYfill = b;}
+
 private:
 //
 // These variables describe where the cell is attached to the table.
@@ -153,24 +177,24 @@ private:
 //
 // m_iLeftAttach is the leftmost column containing the cell.
 //  
-	UT_uint32           m_iLeftAttach;
+	UT_sint32           m_iLeftAttach;
 
 // m_iRightAttach is the first column to the right of the cell.
 
-	UT_uint32           m_iRightAttach;
+	UT_sint32           m_iRightAttach;
 
 // m_iTopAttach is the topmost row containing the cell.
 
-	UT_uint32           m_iTopAttach;
+	UT_sint32           m_iTopAttach;
 
 // m_iBottomAttach is the row immediately below the cell.
 
-	UT_uint32           m_iBottomAttach;
+	UT_sint32           m_iBottomAttach;
 
 // Local size request and allocation.
 
 	fp_Allocation       m_MyAllocation;
-	fp_Request          m_MyRequest;
+	fp_Requisition      m_MyRequest;
 //
 // Padding left,right, top and bottom
 //
@@ -178,8 +202,23 @@ private:
 	UT_sint32           m_iRightPad;
 	UT_sint32           m_iTopPad;
 	UT_sint32           m_iBotPad;
+//
+// Needed since a cell can span multiple pages.
+//
 	fp_CellContainer *  m_pNextInTable;
 	fp_CellContainer *  m_pPrevInTable;
+//
+// Should the cell expand or shrink in the x and y directitions.
+//
+	bool                m_bXexpand;
+	bool                m_bYexpand;
+	bool                m_bXshrink;
+	bool                m_bYshrink;
+//
+// Should we fill the container in x and y?
+//
+	bool                m_bXfill;
+	bool                m_bYfill;
 };
 
 class ABI_EXPORT fp_TableContainer : public fp_Container
@@ -188,8 +227,8 @@ public:
 	fp_TableContainer(fl_SectionLayout* pSectionLayout);
 	~fp_TableContainer();
 
-	void                sizeRequest(fp_Request * pRequest);
-	void                sizeAllocate(fp_Allocate * pAllocate);
+	void                sizeRequest(fp_Requisition * pRequest);
+	void                sizeAllocate(fp_Allocation * pAllocate);
 
 	void				layout(void);
 	virtual void		draw(dg_DrawArgs*);
@@ -218,8 +257,8 @@ public:
 #endif
 
 private:
-	fp_TableRowColum *      getNthCol(UT_sint32 i);
-	fp_TableRowColum *      getNthRow(UT_sint32 i);
+	fp_TableRowColumn *     getNthCol(UT_sint32 i);
+	fp_TableRowColumn *     getNthRow(UT_sint32 i);
 	void                    _size_request_init(void);
 	void                    _size_request_pass1(void);
 	void                    _size_request_pass2(void);
@@ -239,9 +278,9 @@ private:
 // Local size request and allocation.
 
 	fp_Allocation           m_MyAllocation;
-	fp_Request              m_MyRequest;
-	fp_TableContainer *     m_pFirstInGroup;
-	fp_TableContainer *     m_pLastInGroup;
+	fp_Requisition          m_MyRequest;
+	UT_sint32               m_iBorderwidth;
+	bool                    m_bIsHomogeneous;
 };
 
 #endif /* TABLECONTAINER_H */
