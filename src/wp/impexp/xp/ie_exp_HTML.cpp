@@ -138,7 +138,7 @@ class s_HTML_Listener : public PL_Listener
 {
 public:
 	s_HTML_Listener(PD_Document * pDocument,
-			IE_Exp_HTML * pie, bool is4);
+			IE_Exp_HTML * pie, bool is4, bool toClipboard);
 	virtual ~s_HTML_Listener();
 
 	virtual bool		populate(PL_StruxFmtHandle sfh,
@@ -198,6 +198,7 @@ protected:
 	UT_Vector		m_utvDataIDs;	// list of data ids for image enumeration
         UT_uint16               m_iImgCnt;
 	UT_Wctomb		m_wmctomb;
+        bool                    m_bToClipboard;
 };
 
 /*!	This function copies a string to a new string, removing all the white
@@ -1730,12 +1731,12 @@ void s_HTML_Listener::_outputBegin(PT_AttrPropIndex api)
 }
 
 s_HTML_Listener::s_HTML_Listener(PD_Document * pDocument,
-				 IE_Exp_HTML * pie, bool is4):
+				 IE_Exp_HTML * pie, bool is4, bool toClipboard):
   m_pDocument (pDocument), m_pie(pie), m_bInSection(false),
   m_bInBlock(false), m_bInSpan(false), m_bNextIsSpace(false),
   m_bWroteText(false), m_bFirstWrite(true), m_bIs4(is4),
   m_pAP_Span(0), m_iBlockType(0), m_iListDepth(0),
-  m_iPrevListDepth(0), m_iImgCnt(0)
+  m_iPrevListDepth(0), m_iImgCnt(0), m_bToClipboard ( toClipboard )
 {
 }
 
@@ -1808,8 +1809,9 @@ bool s_HTML_Listener::populate(PL_StruxFmtHandle /*sfh*/,
 			case PTO_Image:
 				// TODO: differentiate between SVG and PNG
 				// TODO: we do this in the img saving code
+                                // TODO: some way of representing images on the clipboard
 
-				if(bHaveProp && pAP && pAP->getAttribute("dataid", szValue))
+				if(bHaveProp && pAP && pAP->getAttribute("dataid", szValue) && !m_bToClipboard)
 				{
 					char* dataid = strdup((char*) szValue);
 
@@ -2017,7 +2019,7 @@ bool s_HTML_Listener::signal(UT_uint32 /* iSignal */)
 UT_Error IE_Exp_HTML::_writeDocument(void)
 {
 	bool err = true;
-	m_pListener = new s_HTML_Listener(getDoc(),this, m_bIs4);
+	m_pListener = new s_HTML_Listener(getDoc(),this, m_bIs4, getDocRange()==NULL);
 	if (!m_pListener)
 		return UT_IE_NOMEMORY;
 	if (getDocRange())
@@ -2064,6 +2066,11 @@ void s_HTML_Listener::_handleDataItems(void)
 	const char * szMimeType;
 	const UT_ByteBuf * pByteBuf;
 
+        // TODO: find some way to handle image data items and still export to clipboard
+        // TODO: MHT?
+        if ( m_bToClipboard )
+            return ;
+
 	for (UT_uint32 k=0; (m_pDocument->enumDataItems(k,NULL,&szName,&pByteBuf,(void**)&szMimeType)); k++)
 	{
 		UT_sint32 loc = -1;
@@ -2079,7 +2086,7 @@ void s_HTML_Listener::_handleDataItems(void)
 		if(loc > -1)
 		{
 			FILE *fp;
-			UT_String fname; // EVIL EVIL bad hardcoded buffer size
+			UT_String fname;
 #ifndef LEGIONS
 			UT_String_sprintf(fname, "%s_data", m_pie->getFileName());
 #else
@@ -2125,6 +2132,4 @@ void s_HTML_Listener::_handleDataItems(void)
 			}
 		}
 	}
-
-	return;
 }
