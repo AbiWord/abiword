@@ -5640,7 +5640,13 @@ void FV_View::_adjustDeletePosition(UT_uint32 &iDocPos, UT_uint32 &iCount)
 		}
 		
 		fp_Run * pEndRun = pEndBlock->findRunAtOffset(iOrigEndOffset - pEndBlock->getPosition());
-		UT_return_if_fail( pEndRun );
+
+		if(!pEndRun)
+		{
+			// this happens when there is no real run in the block (e.g., just a fmt mark
+			// and eop
+			return;
+		}
 
 		UT_uint32 iEndRunOffset = pEndBlock->getPosition() + pEndRun->getBlockOffset();
 
