@@ -6675,7 +6675,7 @@ bool FV_View::setCellFormat(const XML_Char * properties[], FormatTable applyTo, 
 	if (applyTo == FORMAT_TABLE_SELECTION)
 	{
 		PL_StruxDocHandle cellSDH;
-        bRet = m_pDoc->getStruxOfTypeFromPosition(posTable+1,PTX_SectionCell,&cellSDH);
+        bRet = m_pDoc->getStruxOfTypeFromPosition(posStart,PTX_SectionCell,&cellSDH);
         if(!bRet)
         {
 //
