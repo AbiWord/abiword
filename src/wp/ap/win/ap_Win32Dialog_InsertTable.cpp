@@ -206,7 +206,7 @@ void AP_Win32Dialog_InsertTable::getCtrlValues(void)
 
 BOOL AP_Win32Dialog_InsertTable::_onDeltaPos(NM_UPDOWN * pnmud)
 {
-	if(!IsDlgButtonChecked(m_hwndDlg, AP_RID_DIALOG_INSERTTABLE_RADIO_FIXED))
+	if(pnmud->hdr.idFrom!=AP_RID_DIALOG_INSERTTABLE_SPIN_SIZE)
 		return false;
 
 	UT_DEBUGMSG(("onDeltaPos: [idFrom %d][iPos %d][iDelta %d]\n",
