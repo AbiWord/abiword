@@ -68,13 +68,16 @@ bool AP_Win32Prefs::loadBuiltinPrefs(void)
 		if (!pApp->doesStringSetExists(szLocaleInfo))
 		{
 			const char* pFallBackLocale = UT_getWin32FallBackStringSetLocale(szLocaleInfo);
-			
-			/* If there is no stringset, try the fallback locale*/
-			if (pApp->doesStringSetExists(pFallBackLocale))
-			{
-				m_builtinScheme->setValue( AP_PREF_KEY_StringSet, pFallBackLocale);	
-				bFallBackLocale = true;
-			}			
+
+			if (pFallBackLocale)
+			{				
+				/* If there is no stringset, try the fallback locale*/
+				if (pApp->doesStringSetExists(pFallBackLocale))
+				{
+					m_builtinScheme->setValue( AP_PREF_KEY_StringSet, pFallBackLocale);	
+					bFallBackLocale = true;
+				}			
+			}
 		}
 		
 		if (!bFallBackLocale)
