@@ -27,6 +27,7 @@
 #endif
 #endif /* DLGHACK */
 
+#include <stdlib.h>
 #include <string.h>
 #include "ut_debugmsg.h"
 #include "ut_string.h"
@@ -1189,7 +1190,7 @@ UT_Bool _chooseFont(AP_Frame * pFrame, FV_View * pView)
 
 	return UT_FALSE;
 #endif
-
+	
 	return UT_TRUE;
 }
 
@@ -1281,7 +1282,9 @@ char * _promptFile(AP_Frame * /*pFrame*/, UT_Bool bSaveAs)
 	gtk_signal_connect(GTK_OBJECT(pFS->cancel_button), "clicked",
 			    GTK_SIGNAL_FUNC(gtk_main_quit), NULL);
 
-	gtk_window_position(GTK_WINDOW(pFS), GTK_WIN_POS_MOUSE);
+	// Do we really want to position at the cursor?
+	//gtk_window_position(GTK_WINDOW(pFS), GTK_WIN_POS_MOUSE);
+	
 	gtk_file_selection_hide_fileop_buttons(pFS);
 
 	/* Run the dialog */
@@ -1301,7 +1304,53 @@ char * _promptFile(AP_Frame * /*pFrame*/, UT_Bool bSaveAs)
 
 UT_Bool _chooseFont(AP_Frame * pFrame, FV_View * pView)
 {
-	/* TODO */
+	GtkFontSelectionDialog * cf;
+
+	UT_Bool accepted = FALSE;
+	gchar * selectedFont = NULL;
+
+	// move that title to resources
+	cf = (GtkFontSelectionDialog *) gtk_font_selection_dialog_new("Font Selection");
+
+	// TODO: get the view's current font to pass in to selection dialog
+	
+	/* Connect the signals for Ok and Cancel */
+	gtk_signal_connect(GTK_OBJECT(cf->ok_button),
+					   "clicked",
+					   GTK_SIGNAL_FUNC(set_ok),
+					   &accepted);
+	gtk_signal_connect(GTK_OBJECT(cf->cancel_button),
+					   "clicked",
+					   GTK_SIGNAL_FUNC(gtk_main_quit),
+					   NULL);
+	// TIP: bind something (null at least) to "destroy" or you'll
+	// never get out of gtk_main();
+	gtk_signal_connect(GTK_OBJECT(cf),
+					   "destroy",
+					   GTK_SIGNAL_FUNC(NULL),
+					   NULL);
+
+	// Do we really want to position at the cursor?  
+	//gtk_window_position(GTK_WINDOW(cf), GTK_WIN_POS_MOUSE);
+
+	/* Run the dialog */
+	gtk_widget_show(GTK_WIDGET(cf));
+	gtk_grab_add(GTK_WIDGET(cf));
+	gtk_main();
+
+	if (accepted)
+	{
+		// should we grab a GdkFont* via gtk_font_selection_dialog_get_font()?
+		// this depends on the view's set/query architecture
+		selectedFont = gtk_font_selection_dialog_get_font_name(cf);
+		
+		printf("User wants to use font [%s].\n\n", selectedFont);
+		
+		// TODO: set the view's font through it's super-duper yet-to-be methods
+	}
+
+	gtk_widget_destroy (GTK_WIDGET(cf));
+
 	return UT_TRUE;
 }
 
