@@ -230,6 +230,7 @@ public:
 	// the document.
 
 	bool					appendStrux(PTStruxType pts, const XML_Char ** attributes);
+	bool					appendStruxFmt(pf_Frag_Strux * pfs, const XML_Char ** attributes);
 	bool					appendFmt(const XML_Char ** attributes);
 	bool					appendFmt(const UT_Vector * pVecAttributes);
 	bool					appendSpan(const UT_UCSChar * p, UT_uint32 length);

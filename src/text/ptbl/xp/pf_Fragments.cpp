@@ -146,7 +146,8 @@ void pf_Fragments::cleanFrags(void) const
 		pfLast = pf;
 		m_vecFrags.addItem((void *) pf);
 	}
-	UT_ASSERT(pfLast && (pfLast->getType() == pf_Frag::PFT_EndOfDoc));
+	
+	UT_ASSERT(pfLast /*&& (pfLast->getType() == pf_Frag::PFT_EndOfDoc)*/);
 	xxx_UT_DEBUGMSG(("Found %d Frags dopos at end = %d \n",m_vecFrags.getItemCount(),getLast()->getPos()));
 	m_bAreFragsClean = true;
 	setCache(NULL);

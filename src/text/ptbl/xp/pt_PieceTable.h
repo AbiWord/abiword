@@ -213,6 +213,7 @@ public:
 
 	PD_Document *			getDocument(void);
 	bool					appendStrux(PTStruxType pts, const XML_Char ** attributes);
+	bool					appendStruxFmt(pf_Frag_Strux * pfs, const XML_Char ** attributes);
 	bool					appendFmt(const XML_Char ** attributes);
 	bool					appendFmt(const UT_Vector * pVecAttributes);
 	bool					appendSpan(const UT_UCSChar * p, UT_uint32 length);
@@ -284,12 +285,12 @@ public:
 	UT_uint32               getFragNumber(pf_Frag * pFrag) const {return m_fragments.getFragNumber(pFrag);}
     pt_VarSet &             getVarSet(void) {return m_varset;};
     pf_Fragments &          getFragments(void) {return m_fragments;};
+
 #ifdef PT_TEST
 	UT_TestStatus			__test_VerifyCoalescedFrags(FILE * fp) const;
 	void					__dump(FILE * fp) const;
 	px_ChangeHistory*		getChangeHistory(void)
 		{ return &m_history; }
-
 #endif /* PT_TEST */
 
 protected:

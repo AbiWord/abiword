@@ -82,6 +82,39 @@ bool pt_PieceTable::appendStrux(PTStruxType pts, const XML_Char ** attributes)
 	return true;
 }
 
+/*! changes formatting of a strux while loading document */
+bool pt_PieceTable::appendStruxFmt(pf_Frag_Strux * pfs, const XML_Char ** attributes)
+{
+	// can only be used while loading the document
+	UT_ASSERT(m_pts==PTS_Loading);
+
+	// Only a strux can be appended to an empty document
+	UT_ASSERT(NULL != m_fragments.getFirst());
+	if (!m_fragments.getFirst())
+		return false;
+
+	UT_ASSERT( pfs );
+	if(!pfs)
+		return false;
+	
+	PT_AttrPropIndex currentAP = pfs->getIndexAP();
+
+	const PP_AttrProp * pOldAP;
+    if(!getAttrProp(currentAP,&pOldAP))
+		return false;
+	
+	PP_AttrProp * pNewAP = pOldAP->cloneWithReplacements(attributes,NULL,true);
+	pNewAP->markReadOnly();
+	
+	PT_AttrPropIndex indexAP;
+	if (!m_varset.addIfUniqueAP(pNewAP,&indexAP))
+		return false;
+
+	pfs->setIndexAP(indexAP);
+
+	return true;
+}
+
 bool pt_PieceTable::appendFmt(const XML_Char ** attributes)
 {
 	// can only be used while loading the document

@@ -730,6 +730,13 @@ bool PD_Document::appendStrux(PTStruxType pts, const XML_Char ** attributes)
 	return m_pPieceTable->appendStrux(pts,attributes);
 }
 
+bool  PD_Document::appendStruxFmt(pf_Frag_Strux * pfs, const XML_Char ** attributes)
+{
+	UT_ASSERT(m_pPieceTable);
+
+	return m_pPieceTable->appendStruxFmt(pfs,attributes);
+}
+
 bool PD_Document::appendFmt(const XML_Char ** attributes)
 {
 	UT_ASSERT(m_pPieceTable);
