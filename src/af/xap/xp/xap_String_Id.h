@@ -74,6 +74,10 @@ dcl(DLG_Insert, 				"&Insert")
 dcl(DLG_Update, 				"Update")
 dcl(DLG_Apply,					"Apply")
 dcl(DLG_Delete, 				"Delete")
+dcl(DLG_Compare, 				"Compare")
+dcl(DLG_Select, 				"Select")
+dcl(DLG_Merge, 				    "Merge")
+	
 /* Units */
 dcl(DLG_Unit_inch,				"inch")
 dcl(DLG_Unit_cm,				"cm")
@@ -243,6 +247,9 @@ dcl(DLG_ABOUT_Title,					"About %s")
 	dcl(DLG_Image_LblTitle, "Title:")
 	dcl(DLG_Image_LblAlt, "Alt:")
 
+/* ListDocuments Dialog */
+dcl(DLG_LISTDOCS_Title,					"Open Documents")
+	
 /*
 For insert Table widget
 */

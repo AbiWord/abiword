@@ -51,6 +51,7 @@ class XAP_StringSet;
 class XAP_Dictionary;
 class PD_DocumentRange;
 class AV_View;
+class AD_Document;
 class XAP_EncodingManager;
 class UT_String;
 class XAP_Menu_Factory;
@@ -105,6 +106,7 @@ public:
 	UT_sint32						findFrame(XAP_Frame * pFrame);
 	UT_sint32						findFrame(const char * szFilename);
 
+	void                            enumerateDocuments(UT_Vector & v, const AD_Document * pExclude);
 	const char *					getApplicationTitleForTitleBar() const;
 	const char *					getApplicationName() const;
 	

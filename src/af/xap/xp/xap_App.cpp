@@ -914,6 +914,43 @@ void XAP_App::setKbdLanguage(const char * pszLang)
 	}
 }
 
+/*!
+    Enumerates currently open document associated with the
+    application, excluding document pointed to by pExclude
+
+    \param v: UT_Vector into which to store the document pointers
+    
+    \para pExclude: pointer to a document to exclude from enumeration,
+                    can be NULL (e.g., if this function is called from
+                    inside a document, it might be desirable to
+                    exclude that document)
+*/
+void XAP_App::enumerateDocuments(UT_Vector & v, const AD_Document * pExclude)
+{
+	UT_sint32 iIndx;
+
+	for(UT_uint32 i = 0; i < getFrameCount(); ++i)
+	{
+		XAP_Frame * pF = getFrame(i);
+
+		if(pF)
+		{
+			AD_Document * pD = pF->getCurrentDoc();
+
+			if(pD && pD != pExclude)
+			{
+				iIndx = v.findItem((void*)pD);
+
+				if(iIndx < 0)
+				{
+					v.addItem((void*)pD);
+				}
+			}
+		}
+	}
+}
+
+
 
 #ifdef DEBUG
 /*!
