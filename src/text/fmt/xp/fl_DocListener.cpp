@@ -219,7 +219,7 @@ bool fl_DocListener::populateStrux(PL_StruxDocHandle sdh,
 				{
 					const XML_Char* pszID = NULL;
 					pAP->getAttribute("id", pszID);
-					UT_DEBUGMSG(("Sevior: populating header strux \n"));
+					xxx_UT_DEBUGMSG(("Populating header strux \n"));
 					fl_DocSectionLayout* pDocSL = m_pLayout->findSectionForHdrFtr((char*)pszID);
 					UT_ASSERT(pDocSL);
 			
@@ -518,7 +518,7 @@ bool fl_DocListener::change(PL_StruxFmtHandle sfh,
 		const PX_ChangeRecord_FmtMark * pcrfm = static_cast<const PX_ChangeRecord_FmtMark *>(pcr);
 
 		fl_Layout * pL = (fl_Layout *)sfh;
-		UT_DEBUGMSG(("SEVIOR: strux type = %d \n",pL->getType()));
+		xxx_UT_DEBUGMSG(("DocListener: InsertFmtMark strux type = %d \n",pL->getType()));
 		UT_ASSERT(pL->getType() == PTX_Block);
 		fl_BlockLayout * pBL = static_cast<fl_BlockLayout *>(pL);
 		fl_SectionLayout* pBLSL = pBL->getSectionLayout();

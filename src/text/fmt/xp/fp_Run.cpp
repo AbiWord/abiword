@@ -1546,8 +1546,6 @@ void fp_EndOfParagraphRun::_clearScreen(bool /* bFullLineHeightRect */)
 	UT_sint32 xoff = 0, yoff = 0;
 	m_pLine->getScreenOffsets(this, xoff, yoff);
 	m_pG->fillRect(m_colorPG, xoff, yoff, m_iWidth, m_pLine->getHeight());
-	UT_DEBUGMSG(("SEVIOR: Doing clear screen in End of Pargraph run \n"));
-//	m_pG->fillRect(m_colorPG, m_iXoffText, m_iYoffText, m_iWidth, m_pLine->getHeight());
 }
 
 /*!
@@ -1941,12 +1939,7 @@ void fp_FieldRun::lookupProperties(void)
 	const PP_AttrProp * pBlockAP = NULL;
 	const PP_AttrProp * pSectionAP = NULL; // TODO do we care about section-level inheritance?
 	
-//
-// Sevior sez This is an interesting bug. We get repeat page number fields after
-// multiple changes of page sizes.
-//
 	m_pBL->getSpanAttrProp(m_iOffsetFirst,false,&pSpanAP);
-//	m_pBL->getSpanAttrProp(m_iOffsetFirst,false,&pSpanAP);
 	//	UT_DEBUGMSG(("SEVIOR: Doing Lookupprops for block %x run %x  offset =%d \n ",m_pBL,this,m_iOffsetFirst));
 	UT_ASSERT(pSpanAP);
 	PD_Document * pDoc = m_pBL->getDocument();
