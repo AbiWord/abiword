@@ -1271,6 +1271,30 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_InFootnote)
 	}
 }
 
+
+Defun_EV_GetMenuItemState_Fn(ap_GetState_BreakOK)
+{
+	ABIWORD_VIEW;
+	UT_return_val_if_fail (pView, EV_MIS_Gray);
+
+	if(pView->isInFootnote())
+	{
+		return EV_MIS_Gray;
+	}
+	else if(pView->isInFrame(pView->getPoint()))
+	{
+		return EV_MIS_Gray;
+	}
+	else if(pView->isInTable())
+	{
+		return EV_MIS_Gray;
+	}
+	else
+	{
+		return EV_MIS_ZERO;
+	}
+}
+
 // HACK TO ALWAYS DISABLE A MENU ITEM... DELETE ME
 Defun_EV_GetMenuItemState_Fn(ap_GetState_AlwaysDisabled)
 {

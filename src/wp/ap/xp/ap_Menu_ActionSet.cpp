@@ -143,7 +143,7 @@ EV_Menu_ActionSet * AP_CreateMenuActionSet(void)
 	_s(AP_MENU_ID_VIEW_ZOOM_WIDTH, 0,0,0,1, "zoomWidth", ap_GetState_Zoom, NULL);
 
 	_s(AP_MENU_ID_INSERT,			1,0,0,0,	NULL,				NULL,					NULL);
-	_s(AP_MENU_ID_INSERT_BREAK,		0,1,0,0,	"insBreak",			NULL,					NULL);
+	_s(AP_MENU_ID_INSERT_BREAK,		0,1,0,0,	"insBreak",			ap_GetState_BreakOK,					NULL);
 	_s(AP_MENU_ID_INSERT_BOOKMARK,  0,1,0,0,	"insertBookmark",	NULL,					NULL);
 	_s(AP_MENU_ID_INSERT_HYPERLINK, 0,1,0,0,	"insertHyperlink",	ap_GetState_SomethingSelected,					NULL);
 	_s(AP_MENU_ID_INSERT_DELETE_HYPERLINK, 0,0,0,0,	"deleteHyperlink",	NULL,			NULL);
