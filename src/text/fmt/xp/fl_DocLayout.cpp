@@ -48,6 +48,7 @@ FL_DocLayout::FL_DocLayout(PD_Document* doc, GR_Graphics* pG) : m_hashFontCache(
 	m_pG = pG;
 	m_pView = NULL;
 	m_pSpellCheckTimer = NULL;
+	m_pPendingBlock = NULL;
 	m_pPendingWord = NULL;
 	m_pFirstSection = NULL;
 	m_pLastSection = NULL;
@@ -470,6 +471,60 @@ void FL_DocLayout::dequeueBlock(fl_BlockLayout *pBlock)
 	{
 		m_pSpellCheckTimer->stop();
 	}
+}
+
+void FL_DocLayout::setPendingWord(fl_BlockLayout *pBlock, fl_PartOfBlock* pWord)
+{
+	UT_ASSERT(!m_pPendingBlock || !pBlock);
+
+	if (pBlock && m_pPendingBlock && m_pPendingWord)
+	{
+		UT_ASSERT(pWord);
+
+		// when clobbering prior POB, make sure we don't leak it
+		FREEP(m_pPendingWord);
+	}
+
+	m_pPendingBlock = pBlock;
+	m_pPendingWord = pWord;
+}
+
+void FL_DocLayout::checkPendingWord(void)
+{
+	if (!m_pPendingBlock)
+		return;
+
+	// check pending word
+	UT_ASSERT(m_pPendingWord);
+	m_pPendingBlock->checkWord(m_pPendingWord);
+
+	// not pending any more
+	setPendingWord(NULL, NULL);
+}
+
+UT_Bool FL_DocLayout::isPendingWord(void) const
+{
+	return (m_pPendingBlock ? UT_TRUE : UT_FALSE);
+}
+
+UT_Bool	FL_DocLayout::touchesPendingWord(fl_BlockLayout *pBlock, 
+										 UT_uint32 iOffset, 
+										 UT_sint32 chg) const
+{
+	UT_uint32 len = (chg < 0) ? -chg : 0;
+
+	if (!m_pPendingBlock)
+		return UT_FALSE;
+
+	UT_ASSERT(pBlock);
+
+	// are we in the same block?
+	if (m_pPendingBlock != pBlock)
+		return UT_FALSE;
+
+	UT_ASSERT(m_pPendingWord);
+
+	return m_pPendingWord->doesTouch(iOffset, len);
 }
 
 void FL_DocLayout::addSection(fl_SectionLayout* pSL)

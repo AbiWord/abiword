@@ -891,27 +891,21 @@ void fl_BlockLayout::dump()
 {
 }
 
+/*****************************************************************/
+/*****************************************************************/
+
 fl_PartOfBlock::fl_PartOfBlock(void)
 {
 	iOffset = 0;
 	iLength = 0;
 }
 
-void fl_BlockLayout::_purgeSquiggles(void)
-{
-	UT_VECTOR_PURGEALL(fl_PartOfBlock *, m_vecSquiggles);
-
-	m_vecSquiggles.clear();
-}
-
-#if 0
-/* if two regions touch or overlap, return true, else false */
-static UT_Bool doesTouch(fl_PartOfBlock *pPOB, UT_uint32 offset, UT_uint32 length)
+UT_Bool fl_PartOfBlock::doesTouch(UT_uint32 offset, UT_uint32 length) const
 {
 	UT_uint32 start1, end1, start2, end2;
 
-	start1 = pPOB->iOffset;
-	end1 =   pPOB->iOffset + pPOB->iLength;
+	start1 = iOffset;
+	end1 =   iOffset + iLength;
 	start2 = offset;
 	end2 =   offset + length;
 
@@ -936,260 +930,21 @@ static UT_Bool doesTouch(fl_PartOfBlock *pPOB, UT_uint32 offset, UT_uint32 lengt
 
 	return UT_FALSE;
 }
-#endif
 
-void fl_BlockLayout::_addPartNotSpellChecked(UT_uint32 iOffset, UT_uint32 iLen)
+/*****************************************************************/
+/*****************************************************************/
+
+void fl_BlockLayout::_purgeSquiggles(void)
 {
-	// -------------------------
-	// -------------------------
-	// -------------------------
-	/*
-	  TODO HACK
-	  for now, checkSpelling has been modified to check the entire block
-	  every time.  So, for now, we don't actually build the list of
-	  regions which need spell checking.  We just add the block to the queue.
-	*/
-	m_pLayout->queueBlockForSpell(this);
-	// -------------------------
-	// -------------------------
-	// -------------------------
+	UT_VECTOR_PURGEALL(fl_PartOfBlock *, m_vecSquiggles);
 
-#if 0
-	/*
-	  EWS note:  this version of this method was intended to simplify
-	  things by keeping only ONE unchecked region instead of a list.
-	*/
-	/*
-	  first, we expand this region outward until we get a word delimiter
-	  on each side
-	*/
-	
-	UT_GrowBuf pgb(1024);
-
-	UT_Bool bRes = getBlockBuf(&pgb);
-	UT_ASSERT(bRes);
-
-	const UT_UCSChar* pBlockText = pgb.getPointer(0);
-
-	while ((iOffset > 0) && UT_isWordDelimiter(pBlockText[iOffset]))
-	{
-		iOffset--;
-	}
-
-	while ((iOffset > 0) && !UT_isWordDelimiter(pBlockText[iOffset]))
-	{
-		iOffset--;
-	}
-	if (UT_isWordDelimiter(pBlockText[iOffset]))
-	{
-		iOffset++;
-	}
-
-	UT_uint32 iBlockSize = pgb.getLength();
-	while ((iOffset + iLen < iBlockSize) && !UT_isWordDelimiter(pBlockText[iOffset + iLen]))
-	{
-		iLen++;
-	}
-
-	fl_PartOfBlock*	pPOB = (fl_PartOfBlock *) m_lstNotSpellChecked.head();
-
-	if (pPOB)
-	{
-		if (pPOB->iOffset > iOffset)
-		{
-			pPOB->iOffset = iOffset;
-		}
-
-		if ((pPOB->iOffset + pPOB->iLength) < (iOffset + iLen))
-		{
-			pPOB->iLength = iOffset + iLen - pPOB->iOffset;
-		}
-	}
-	else
-	{
-		pPOB = new fl_PartOfBlock();
-		if (!pPOB)
-		{
-			// TODO handle outofmem
-		}
-		
-		pPOB->iOffset = iOffset;
-		pPOB->iLength = iLen;
-	
-		(void) m_lstNotSpellChecked.tail();
-		m_lstNotSpellChecked.append(pPOB);
-	}
-
-    pPOB = (fl_PartOfBlock *) m_vecSquiggles.head();
-	while ((pPOB != (fl_PartOfBlock *) 0))
-	{
-		if (doesTouch(pPOB, iOffset, iLen))
-		{
-			m_vecSquiggles.remove();
-			pPOB = (fl_PartOfBlock *) m_vecSquiggles.current();
-		}
-		else
-		{
-			pPOB = (fl_PartOfBlock *) m_vecSquiggles.next();
-		}
-	}
-
-	m_pLayout->queueBlockForSpell(this);
-#endif
-	
-// -----------------------------------------------------------------------
-// -----------------------------------------------------------------------
-// -----------------------------------------------------------------------
-// -----------------------------------------------------------------------
-
-	/*
-	  EWS note -- the following version of this method is the one DaveT
-	  wrote.
-	*/
-#if 0
-
-	UT_Bool foundAdjoiningRegion = UT_FALSE;
-    UT_uint32 invalidStart, invalidLength;
-
-/*
-
-***** if region touches a bad word, absorb it into invalid region
-
-TODO:
-This code needs to be in here to be in here... however at the 
-moment, its presence is causing an assert later on of an offset
-extending beyond the block size... no time fix now.
-*/
-
-#if 1
-    pPOB = (fl_PartOfBlock *) m_vecSquiggles.head();
-	while ((pPOB != (fl_PartOfBlock *) 0))
-	{
-		if (doesTouch(pPOB, iOffset, iLen))
-		{
-			invalidStart = ( pPOB->iOffset < iOffset) ? pPOB->iOffset : iOffset;
-			invalidLength  = ((pPOB->iOffset + pPOB->iLength) > (iOffset + iLen)) ? 
-				(pPOB->iOffset + pPOB->iLength) : (iOffset + iLen);
-			invalidLength  = invalidLength - invalidStart;
-			iOffset = invalidStart;
-			iLen = invalidLength;
-			m_vecSquiggles.remove();
-			pPOB = (fl_PartOfBlock *) m_vecSquiggles.current();
-		}
-		else
-		{
-			pPOB = (fl_PartOfBlock *) m_vecSquiggles.next();
-		}
-	}
-#endif
-	
-	// TODO: This will work fine when adding text.... but what about deletion?
-	
-	/* merge neighboring regions... */
-#if 0
-	pPOB = (fl_PartOfBlock *) m_lstNotSpellChecked.head();
-	while ( (!foundAdjoiningRegion) && (pPOB != (fl_PartOfBlock *) 0))
-	{
-		if ((pPOB->iOffset + pPOB->iLength) == iOffset)
-		{
-			/* new region comes right after this region... so extend this region */
-			pPOB->iLength += iLen;
-			foundAdjoiningRegion = UT_TRUE;
-		}
-		else if ((iOffset + iLen) == pPOB->iOffset)
-		{
-			/* new region comes right before this region... so extend this region */
-			pPOB->iOffset = iOffset;
-			pPOB->iLength += iLen;
-			foundAdjoiningRegion = UT_TRUE;
-		} 
-		else if ((pPOB->iOffset < iOffset) && (iOffset < (pPOB->iOffset + pPOB->iLength)))
-		{
-			/* overlapping regions... this region is in front of new region*/
-			if ((pPOB->iOffset + pPOB->iLength) < (iOffset + iLen))
-			{
-				pPOB->iLength = iLen + (iOffset - pPOB->iOffset);
-			}
-			/* else, 
-			   new region is a subset of this region... do nothing 
-			*/
-
-			foundAdjoiningRegion = UT_TRUE;
-		}
-		else if ((iOffset < pPOB->iOffset) && (pPOB->iOffset < (iOffset + iLen)))
-		{
-			/* overlapping regions... new region is in front of this region */
-			if ((iOffset + iLen) < (pPOB->iOffset + pPOB->iLength))
-			{
-				pPOB->iOffset = iOffset;
-				pPOB->iLength = pPOB->iLength + (pPOB->iOffset - iOffset);
-			}
-			else
-			{
-				/* new region is a superset of this region */
-				pPOB->iOffset = iOffset;
-				pPOB->iLength = iLen;
-			}
-			foundAdjoiningRegion = UT_TRUE;
-		}
-		else if ((iOffset == pPOB->iOffset) && (iLen == pPOB->iLength))
-		{
-			/* same region... do nothing */
-			foundAdjoiningRegion = UT_TRUE;
-		}
-		
-		pPOB = (fl_PartOfBlock *) m_lstNotSpellChecked.next();
-	}
-#endif
-
-/********************/
-	/* grow invalid region if they touch */
-    pPOB = (fl_PartOfBlock *) m_lstNotSpellChecked.head();
-	while ((pPOB != (fl_PartOfBlock *) 0) && (!foundAdjoiningRegion))
-	{
-		if (doesTouch(pPOB, iOffset,iLen))
-		{
-			invalidStart = ( pPOB->iOffset < iOffset) ? pPOB->iOffset : iOffset;
-			invalidLength  = ((pPOB->iOffset + pPOB->iLength) > (iOffset + iLen)) ? 
-				(pPOB->iOffset + pPOB->iLength) : (iOffset + iLen);
-			invalidLength  = invalidLength - invalidStart;
-
-			pPOB->iOffset = invalidStart;
-			pPOB->iLength = invalidLength;
-
-			pPOB = (fl_PartOfBlock *) m_lstNotSpellChecked.current();
-			foundAdjoiningRegion = UT_TRUE;
-		}
-		else
-			pPOB = (fl_PartOfBlock *) m_lstNotSpellChecked.next();
-	}
-
-/********************/
-	
-	if (!foundAdjoiningRegion)
-	{
-		pPOB = new fl_PartOfBlock();
-		if (!pPOB)
-		{
-			// TODO handle outofmem
-		}
-		
-		pPOB->iOffset = iOffset;
-		pPOB->iLength = iLen;
-	
-		(void) m_lstNotSpellChecked.tail();
-		m_lstNotSpellChecked.append(pPOB);
-	}
-
-	m_pLayout->queueBlockForSpell(this);
-#endif
-
+	m_vecSquiggles.clear();
 }
 
-fl_PartOfBlock* fl_BlockLayout::_getSquiggle(UT_uint32 iOffset)
+UT_sint32 fl_BlockLayout::_findSquiggle(UT_uint32 iOffset) const
 {
 	// get the squiggle which spans iOffset, if any
-	fl_PartOfBlock* res = NULL;
+	UT_sint32 res = -1;
 
 	UT_uint32 iSquiggles = m_vecSquiggles.getItemCount();
 	UT_uint32 j;
@@ -1200,7 +955,7 @@ fl_PartOfBlock* fl_BlockLayout::_getSquiggle(UT_uint32 iOffset)
 		if ((pPOB->iOffset <= iOffset) && 
 			((pPOB->iOffset + pPOB->iLength) >= iOffset))
 		{
-			res = pPOB;
+			res = j;
 			break;
 		}
 	}
@@ -1234,7 +989,171 @@ void fl_BlockLayout::_updateSquiggle(fl_PartOfBlock* pPOB)
 	pView->_clearBetweenPositions(pos1, pos2, UT_TRUE);
 }
 
-void fl_BlockLayout::_moveSquiggles(UT_uint32 iOffset, UT_sint32 chg, fl_BlockLayout* pBlock)
+void fl_BlockLayout::_insertSquiggles(UT_uint32 iOffset, UT_uint32 iLength, fl_BlockLayout* pBlock)
+{
+#if 0
+	UT_sint32 chg = iLength;
+
+	// first deal with pending word, if any
+	if (m_pLayout->isPendingWord())
+	{
+		if (!m_pLayout->touchesPendingWord(this, iOffset, 0))
+		{
+			// not affected by insert, so check it
+			m_pLayout->checkPendingWord();
+		}
+	}
+
+	// remove squiggle broken by this insert
+	UT_sint32 iBroken = _findSquiggle(iOffset);
+	if (iBroken >= 0)
+	{
+		fl_PartOfBlock* pPOB = (fl_PartOfBlock *) m_vecSquiggles.getNthItem(iBroken);
+		_updateSquiggle(pPOB);
+		m_vecSquiggles.deleteNthItem(iBroken);
+		delete pPOB;
+	}
+
+	// move all trailing squiggles
+	_moveSquiggles(iOffset, chg, pBlock);
+
+	// recheck at boundary
+	_recalcPendingWord(iOffset, chg);
+#else
+	m_pLayout->queueBlockForSpell(this);
+#endif
+}
+
+void fl_BlockLayout::_deleteSquiggles(UT_uint32 iOffset, UT_uint32 iLength, fl_BlockLayout* pBlock)
+{
+#if 0
+	UT_sint32 chg = -(UT_sint32)iLength;
+
+	// first deal with pending word, if any
+	if (m_pLayout->isPendingWord())
+	{
+		if (!m_pLayout->touchesPendingWord(this, iOffset, chg))
+		{
+			// not affected by delete, so check it
+			m_pLayout->checkPendingWord();
+		}
+	}
+
+	// remove all deleted squiggles
+	UT_uint32 iSquiggles = m_vecSquiggles.getItemCount();
+	UT_uint32 j;
+	for (j=iSquiggles; j>0; j--)
+	{
+		fl_PartOfBlock* pPOB = (fl_PartOfBlock *) m_vecSquiggles.getNthItem(j-1);
+
+		if (pPOB->doesTouch(iOffset, iLength))
+		{
+			_updateSquiggle(pPOB);
+			m_vecSquiggles.deleteNthItem(j-1);
+			delete pPOB;
+		}
+	}
+
+	// move all trailing squiggles
+	_moveSquiggles(iOffset, chg, pBlock);
+
+	// recheck at boundary
+	_recalcPendingWord(iOffset, chg);
+
+	// check the newly pending word
+	m_pLayout->checkPendingWord();
+#else
+	m_pLayout->queueBlockForSpell(this);
+#endif
+}
+
+void fl_BlockLayout::_recalcPendingWord(UT_uint32 iOffset, UT_sint32 chg)
+{
+	UT_ASSERT(chg);
+
+	// on exit, there's either a single unchecked pending word, or nothing
+
+	UT_GrowBuf pgb(1024);
+	UT_Bool bRes = getBlockBuf(&pgb);
+	UT_ASSERT(bRes);
+
+	const UT_UCSChar* pBlockText = pgb.getPointer(0);
+
+	UT_uint32 iFirst = iOffset;
+	UT_uint32 iAbs = (UT_uint32) ((chg > 0) ? chg : -chg);
+	UT_uint32 iLen = iAbs;
+
+	/*
+	  first, we expand this region outward until we get a word delimiter
+	  on each side
+	*/
+	while ((iFirst > 0) && UT_isWordDelimiter(pBlockText[iFirst]))
+	{
+		iFirst--;
+	}
+
+	while ((iFirst > 0) && !UT_isWordDelimiter(pBlockText[iFirst]))
+	{
+		iFirst--;
+	}
+	if (UT_isWordDelimiter(pBlockText[iFirst]))
+	{
+		iFirst++;
+	}
+
+	UT_ASSERT(iOffset>=iFirst);
+	iLen += (iOffset-iFirst);
+
+	UT_uint32 iBlockSize = pgb.getLength();
+	while ((iFirst + iLen < iBlockSize) && !UT_isWordDelimiter(pBlockText[iFirst + iLen]))
+	{
+		iLen++;
+	}
+
+	/*
+		then we figure out what to do with this expanded span 
+	*/
+	if (chg > 0)
+	{
+		// insert
+		
+		// TODO: consume/check all words except perhaps the last one
+	}
+	else
+	{
+		// delete
+
+		fl_PartOfBlock* pPending = NULL;
+
+		if (m_pLayout->isPendingWord())
+		{
+			pPending = m_pLayout->getPendingWord();
+			UT_ASSERT(pPending);
+		}
+			
+		UT_ASSERT(chg < 0);
+
+		// TODO: no need to create if this assert fires?  
+		UT_ASSERT((iFirst+iLen) > (iOffset+iAbs));
+
+		if (!pPending)
+		{
+			pPending = new fl_PartOfBlock();
+			UT_ASSERT(pPending);
+		}
+
+		if (pPending)
+		{
+			// WARNING: old content not gone from blockbuf yet, thus funky math
+			pPending->iOffset = iFirst;
+			pPending->iLength = iLen - iAbs;
+			
+			m_pLayout->setPendingWord(this, pPending);
+		}
+	}
+}
+
+void fl_BlockLayout::_moveSquiggles(UT_uint32 iOffset, UT_sint32 chg, fl_BlockLayout* pNewBlock)
 {
 	UT_ASSERT(chg);
 
@@ -1250,30 +1169,34 @@ void fl_BlockLayout::_moveSquiggles(UT_uint32 iOffset, UT_sint32 chg, fl_BlockLa
 		fl_PartOfBlock* pPOB = (fl_PartOfBlock *) m_vecSquiggles.getNthItem(j-1);
 
 		// only interested in squiggles after change
-		// overlapping squiggles already got handled elsewhere
+		// overlapping squiggles get handled elsewhere
 		if (pPOB->iOffset >= target)
 		{
 			// yep, this one moves
-			pPOB->iOffset = (UT_uint32)((UT_sint32)iOffset + chg);
+			pPOB->iOffset = (UT_uint32)((UT_sint32)pPOB->iOffset + chg);
 
-			if (pBlock)
+			if (pNewBlock)
 			{
-				UT_ASSERT(pBlock != this);
+				UT_ASSERT(pNewBlock != this);
 				UT_ASSERT(chg < 0);
 					
 				// move squiggle to another block
-				pBlock->m_vecSquiggles.addItem(pPOB);
+				pNewBlock->m_vecSquiggles.addItem(pPOB);
 				m_vecSquiggles.deleteNthItem(j-1);
 			}	
 		}
 	}
 }
 
+/*****************************************************************/
+/*****************************************************************/
+
 void fl_BlockLayout::checkSpelling(void)
 {
-	// we're going to check the entire block
-	UT_GrowBuf pgb(1024);
+	// destructively recheck the entire block
+	// called from timer context, so we need to toggle IP
 
+	UT_GrowBuf pgb(1024);
 	UT_Bool bRes = getBlockBuf(&pgb);
 	UT_ASSERT(bRes);
 
@@ -1384,6 +1307,60 @@ void fl_BlockLayout::checkSpelling(void)
 	{
 		pView->_updateScreen();
 		pView->_drawInsertionPoint();
+	}
+}
+
+void fl_BlockLayout::checkWord(fl_PartOfBlock* pPOB)
+{
+	UT_ASSERT(pPOB);
+	if (!pPOB)
+		return;
+
+	// consume word in pPOB -- either squiggle or delete it
+
+	UT_GrowBuf pgb(1024);
+	UT_Bool bRes = getBlockBuf(&pgb);
+	UT_ASSERT(bRes);
+
+	const UT_UCSChar* pBlockText = pgb.getPointer(0);
+	UT_uint32 eor = pPOB->iOffset + pPOB->iLength; /* end of region */
+
+	UT_uint32 wordBeginning = pPOB->iOffset, wordLength = 0;
+	UT_Bool bAllUpperCase = UT_FALSE;
+
+	UT_ASSERT(wordBeginning <= pgb.getLength());
+	UT_ASSERT(eor <= pgb.getLength());
+
+	while (!bAllUpperCase && ((wordBeginning + wordLength) < eor))
+	{
+		UT_ASSERT(!UT_isWordDelimiter( pBlockText[wordBeginning + wordLength] ));
+
+		if (bAllUpperCase)
+			bAllUpperCase = UT_UCS_isupper(pBlockText[wordBeginning + wordLength]);
+
+		wordLength++;
+	}
+
+	wordLength = pPOB->iLength;
+
+	// for some reason, the spell checker fails on all 1-char words & really big ones
+	if ((wordLength > 1) && 
+		(!bAllUpperCase) &&		// TODO: iff relevant Option is set
+		(!UT_UCS_isdigit(pBlockText[wordBeginning]) && 
+		(wordLength < 100)))
+	{
+		if (! SpellCheckNWord16( &(pBlockText[wordBeginning]), wordLength))
+		{
+			// squiggle it
+			m_vecSquiggles.addItem(pPOB);
+
+			_updateSquiggle(pPOB);
+		}
+		else
+		{
+			// forget about it
+			delete pPOB;
+		}
 	}
 }
 
@@ -1894,51 +1871,8 @@ UT_Bool fl_BlockLayout::doclistener_insertSpan(const PX_ChangeRecord_Span * pcrs
 		pView->_setPoint(pcrs->getPosition()+len);
 	}
 
-/***************************************************************************************/
+	_insertSquiggles(blockOffset, len);
 
-	UT_DEBUGMSG(("insertSpan\n"));
-
-	/* Update spell check lists */
-
-    fl_PartOfBlock *pPOB;
-
-#if SPELL_WORD
-	// TODO: see how this affects m_pPendingWord
-    pPOB = m_pDoc->m_pPendingWord;
-	if (pPOB->iOffset > blockOffset)
-	{
-		/* 
-		   text insertion comes before this non-spell checked region, 
-		   so update the non-spell check region.
-		*/
-		pPOB->iOffset += len;
-	}
-#endif
-
-	UT_uint32 iSquiggles = m_vecSquiggles.getItemCount();
-	UT_uint32 j;
-	for (j=0; j<iSquiggles; j++)
-	{
-		pPOB = (fl_PartOfBlock *) m_vecSquiggles.getNthItem(j);
-
-		if (pPOB->iOffset > blockOffset)
-		{
-			/* 
-			   text insertion comes before this spell checked/unknown word region, 
-			   so update this region.
-			*/
-			pPOB->iOffset += len;
-		}
-	}
-
-	/* Invalidate the region */
-	// TODO no need to invalidate if the only char inserted was not
-	// a space?
-	
-	_addPartNotSpellChecked(blockOffset, len);
-
-	UT_DEBUGMSG(("insertSpan spell finished, bad words=%d\n",
-				 m_vecSquiggles.getItemCount()));
 	return UT_TRUE;
 }
 
@@ -2087,133 +2021,7 @@ UT_Bool fl_BlockLayout::doclistener_deleteSpan(const PX_ChangeRecord_Span * pcrs
  		pView->_setPoint(pcrs->getPosition());
 	}
 
-	// TODO: instead, remove deleted squiggles,
-	// TODO: also, recheck boundary word
-	m_pLayout->queueBlockForSpell(this);
-
-#if 0	
-/*****  SPELL CHECK UPDATE follows *************************************************************/
-
-	UT_Bool takeCurrent = UT_FALSE;
-
-	/* update index's for non-spell checked regions */
-    fl_PartOfBlock *pPOB = (fl_PartOfBlock *) m_lstNotSpellChecked.head();
-	while ((pPOB) != (fl_PartOfBlock *) 0)
-	{
-		if ((pPOB->iOffset + pPOB->iLength) > blockOffset)
-		{
-			if (pPOB->iOffset < blockOffset)
-			{
-				if ((pPOB->iOffset + pPOB->iLength) > (blockOffset + len))
-				{
-					/* deletion is a subset of this region */
-					pPOB->iLength -= len;
-				}
-				else
-				{
-					/* deletion overlaps the end of this region */
-					pPOB->iLength = blockOffset - pPOB->iOffset;
-				}
-			}
-			else if ((blockOffset + len) < (pPOB->iOffset + pPOB->iLength) )
-			{
-				if ((blockOffset +len ) < pPOB->iOffset)
-				{
-					/* deletion is wholly infront of this region */
-					pPOB->iOffset -= len;
-				}
-				else
-				{
-					/* deletion overlaps over the front of this region */
-					pPOB->iLength = (pPOB->iOffset + pPOB->iLength) - (blockOffset + len);
-					pPOB->iOffset = blockOffset;
-				}
-			}
-			else 
-			{
-				/* this region is a subset of the deletion... remove from list */
-				m_vecSquiggles.remove();
-				delete pPOB;
-				
-				takeCurrent = UT_TRUE;
-			}
-		}
-		else if ((pPOB->iOffset == blockOffset) && (pPOB->iLength == len))
-		{
-			/* deletion _is_ this same region */
-			m_vecSquiggles.remove();
-			delete pPOB;
-			
-			takeCurrent = UT_TRUE;
-		}
-
-
-		if (!takeCurrent)
-		{
-			pPOB = (fl_PartOfBlock *) m_lstNotSpellChecked.next();
-		}
-		else
-		{
-			pPOB = (fl_PartOfBlock *) m_lstNotSpellChecked.current();
-			takeCurrent = UT_FALSE;
-		}
-	}
-
-	// update the misspelled word list (m_vecSquiggles)...
-
-	takeCurrent = UT_FALSE;
-	pPOB = (fl_PartOfBlock *) m_vecSquiggles.head();
-	while ((pPOB) != (fl_PartOfBlock *) 0)
-	{
-		if ((pPOB->iOffset + pPOB->iLength) > blockOffset)
-		{
-			if ((blockOffset + len) < pPOB->iOffset)
-			{
-				/* Doesn't intersect, but it's after deletion */
-				pPOB->iOffset -= len;
-			}
-			else
-			{
-				/* does intersect... invalidate the whole region  */
-				beginning = (blockOffset < pPOB->iOffset)? blockOffset: pPOB->iOffset;
-				end = ((pPOB->iOffset + pPOB->iLength) > (blockOffset + len)) ? 
-					(pPOB->iOffset + pPOB->iLength) : (blockOffset + len);
-
-				_addPartNotSpellChecked(beginning, (end - ((UT_uint32) beginning)) );
-
-				/* Remove the word from list */
-				m_vecSquiggles.remove();
-				delete pPOB;
-				takeCurrent = UT_TRUE;
-			}
-
-		} else if ((pPOB->iOffset == blockOffset) && (pPOB->iLength == len))
-		{
-			/* deletion region _is_ this misspelled word */
-			m_vecSquiggles.remove();
-			delete pPOB;
-			takeCurrent = UT_TRUE;
-		}
-		
-
-		if (!takeCurrent)
-		{
-			pPOB = (fl_PartOfBlock *) m_vecSquiggles.next();
-		}
-		else
-		{
-			pPOB = (fl_PartOfBlock *) m_vecSquiggles.current();
-			takeCurrent = UT_FALSE;
-		}
-	
-	}
-
-	UT_DEBUGMSG(("deleteSpan spell finished, invalid regions = %d, bad words=%d\n",
-				 m_lstNotSpellChecked.size(),
-				 m_vecSquiggles.size()));
-
-/****  End of Spell check code ***********************************************************/
-#endif
+	_deleteSquiggles(blockOffset, len);
 
 	return UT_TRUE;
 }
@@ -2269,9 +2077,6 @@ UT_Bool fl_BlockLayout::doclistener_changeSpan(const PX_ChangeRecord_SpanChange 
 
 	setNeedsReformat();
 
-	UT_DEBUGMSG(("ChangeSpan spell finished, bad words=%d\n",
-				 m_vecSquiggles.getItemCount()));
-
 	return UT_TRUE;
 }
 
@@ -2311,12 +2116,12 @@ UT_Bool fl_BlockLayout::doclistener_deleteStrux(const PX_ChangeRecord_Strux * pc
 	  The idea here is to append the runs of the deleted block,
 	  if any, at the end of the previous block.
 	*/
+	UT_uint32 offset = 0;
 	if (m_pFirstRun)
 	{
 		// figure out where the merge point is
 		fp_Run * pRun = pPrevBL->m_pFirstRun;
 		fp_Run * pLastRun = NULL;
-		UT_uint32 offset = 0;
 
 		while (pRun)
 		{
@@ -2404,9 +2209,15 @@ UT_Bool fl_BlockLayout::doclistener_deleteStrux(const PX_ChangeRecord_Strux * pc
 	UT_ASSERT(pSL);
 	pSL->removeBlock(this);
 
+#if 0
+	// move all squiggles to previous block
+	_deleteSquiggles(0, offset, pPrevBL);
 	// TODO: instead, merge squiggles from the two blocks
 	// TODO: just check boundary word
+#else
 	m_pLayout->queueBlockForSpell(pPrevBL);
+#endif 
+	// in case we've never checked this one
 	m_pLayout->dequeueBlock(this);
 
 	// update the display
@@ -2574,15 +2385,28 @@ UT_Bool fl_BlockLayout::doclistener_insertBlock(const PX_ChangeRecord_Strux * pc
 	
 	setNeedsReformat();
 	
-	// TODO: instead, split squiggles between blocks
-	// TODO: just check boundary word
-	m_pLayout->queueBlockForSpell(this);
-	m_pLayout->queueBlockForSpell(pNewBL);
-	
 	FV_View* pView = m_pLayout->getView();
 	if (pView)
 	{
 		pView->_setPoint(pcrx->getPosition() + fl_BLOCK_STRUX_OFFSET);
+	}
+
+#if 0
+	if (m_vecSquiggles.getItemCount() > 0)
+	{
+		// we have squiggles, so move them 
+		_insertSquiggles(blockOffset, blockOffset, pNewBL);
+		// TODO: instead, split squiggles between blocks
+		// TODO: just check boundary word
+		// TODO: what if this never was checked?  
+	}
+	else
+#endif
+	{
+		// this block may never have been checked
+		// just to be safe, let's make sure both will
+		m_pLayout->queueBlockForSpell(this);
+		m_pLayout->queueBlockForSpell(pNewBL);
 	}
 	
 	return UT_TRUE;
@@ -2682,12 +2506,14 @@ UT_Bool fl_BlockLayout::doclistener_populateObject(PT_BlockOffset blockOffset,
 
 UT_Bool fl_BlockLayout::doclistener_insertObject(const PX_ChangeRecord_Object * pcro)
 {
+	PT_BlockOffset blockOffset = 0;
+
 	switch (pcro->getObjectType())
 	{
 	case PTO_Image:
 	{
 		UT_DEBUGMSG(("Edit:InsertObject:Image:\n"));
-		PT_BlockOffset blockOffset = (pcro->getPosition() - getPosition());
+		blockOffset = (pcro->getPosition() - getPosition());
 		_doInsertImageRun(blockOffset, pcro);
 		break;
 	}
@@ -2695,7 +2521,7 @@ UT_Bool fl_BlockLayout::doclistener_insertObject(const PX_ChangeRecord_Object * 
 	case PTO_Field:
 	{
 		UT_DEBUGMSG(("Edit:InsertObject:Field:\n"));
-		PT_BlockOffset blockOffset = (pcro->getPosition() - getPosition());
+		blockOffset = (pcro->getPosition() - getPosition());
 		_doInsertFieldRun(blockOffset, pcro);
 		break;
 	}
@@ -2714,18 +2540,21 @@ UT_Bool fl_BlockLayout::doclistener_insertObject(const PX_ChangeRecord_Object * 
 		pView->_setPoint(pcro->getPosition() + 1);
 	}
 
+	_insertSquiggles(blockOffset, 1);	// TODO: are objects always one wide?
+
 	return UT_TRUE;
 }
 
 UT_Bool fl_BlockLayout::doclistener_deleteObject(const PX_ChangeRecord_Object * pcro)
 {
+	PT_BlockOffset blockOffset = 0;
+
 	switch (pcro->getObjectType())
 	{
 	case PTO_Image:
 	{
 		UT_DEBUGMSG(("Edit:DeleteObject:Image:\n"));
-
-		PT_BlockOffset blockOffset = (pcro->getPosition() - getPosition());
+		blockOffset = (pcro->getPosition() - getPosition());
 		_delete(blockOffset, 1);
 		break;
 	}
@@ -2733,8 +2562,7 @@ UT_Bool fl_BlockLayout::doclistener_deleteObject(const PX_ChangeRecord_Object * 
 	case PTO_Field:
 	{
 		UT_DEBUGMSG(("Edit:DeleteObject:Field:\n"));
-
-		PT_BlockOffset blockOffset = (pcro->getPosition() - getPosition());
+		blockOffset = (pcro->getPosition() - getPosition());
 		_delete(blockOffset, 1);
 		break;
 	}		
@@ -2752,6 +2580,8 @@ UT_Bool fl_BlockLayout::doclistener_deleteObject(const PX_ChangeRecord_Object * 
 		pView->_resetSelection();
 		pView->_setPoint(pcro->getPosition());
 	}
+
+	_deleteSquiggles(blockOffset, 1);	// TODO: are objects always one wide?
 
 	return UT_TRUE;
 }

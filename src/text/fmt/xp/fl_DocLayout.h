@@ -39,7 +39,7 @@ class PP_AttrProp;
 class GR_Graphics;
 class GR_Font;
 class UT_Timer;
-struct fl_PartOfBlock;
+class fl_PartOfBlock;
 
 
 // the following get used by view and layout code, 
@@ -85,6 +85,8 @@ public:
 	inline FV_View * getView(void) const { return m_pView; }
 	inline GR_Graphics*	getGraphics(void) const { return m_pG; }
 	inline PD_Document*	getDocument(void) const { return m_pDoc; }
+	inline fl_BlockLayout* getPendingBlock(void) const { return m_pPendingBlock; };
+	inline fl_PartOfBlock* getPendingWord(void) const { return m_pPendingWord; };
 	
 	UT_sint32		getHeight();
 	UT_sint32       getWidth();
@@ -106,6 +108,13 @@ public:
 	void		formatAll();
 	void  		updateLayout();
 
+	UT_Bool		isPendingWord(void) const;
+	UT_Bool		touchesPendingWord(fl_BlockLayout *pBlock, 
+								   UT_uint32 iOffset, 
+								   UT_sint32 chg) const;
+	void		setPendingWord(fl_BlockLayout *pBlock, fl_PartOfBlock* pWord);
+	void		checkPendingWord(void);
+	
 	void 		queueBlockForSpell(fl_BlockLayout *pBlock, UT_Bool bHead=UT_FALSE);
 	void 		dequeueBlock(fl_BlockLayout *pBlock);
 

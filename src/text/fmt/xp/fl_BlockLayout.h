@@ -52,19 +52,7 @@ class PX_ChangeRecord_Span;
 class PX_ChangeRecord_SpanChange;
 class PX_ChangeRecord_Strux;
 class PX_ChangeRecord_StruxChange;
-
-/*
-	This struct is used to represent a part of the block.  Pointers
-	to this struct are the things contained in m_vecSquiggles and in 
-	FL_DocLayout::m_pPendingWord.
-*/
-struct fl_PartOfBlock
-{
-	fl_PartOfBlock();
-
-	UT_uint32	iOffset;
-	UT_uint32	iLength;
-};
+class fl_PartOfBlock;
 
 class fl_BlockLayout : public fl_Layout
 {
@@ -169,6 +157,8 @@ public:
 
 	void					setNeedsReformat(void) { m_bNeedsReformat = UT_TRUE; }
 	inline UT_Bool			needsReformat(void) const { return m_bNeedsReformat; }
+
+	void					checkWord(fl_PartOfBlock* pPOB);
 	
 #ifndef NDEBUG
 	void					debug_dumpRunList(void);
@@ -198,13 +188,19 @@ protected:
 	void					_removeAllEmptyLines(void);
 
 	void					_purgeSquiggles(void);
-	void					_addPartNotSpellChecked(UT_uint32 iOffset, UT_uint32 iLen);
-	fl_PartOfBlock*			_getSquiggle(UT_uint32 iOffset);
+	UT_sint32				_findSquiggle(UT_uint32 iOffset) const;
 	void					_addSquiggle(UT_uint32 iOffset, UT_uint32 iLen);
 	void					_updateSquiggle(fl_PartOfBlock* pPOB);
+	void					_insertSquiggles(UT_uint32 iOffset, 
+											 UT_uint32 iLength, 
+											 fl_BlockLayout* pBlock=NULL);
+	void					_deleteSquiggles(UT_uint32 iOffset, 
+											 UT_uint32 iLength, 
+											 fl_BlockLayout* pBlock=NULL);
 	void					_moveSquiggles(UT_uint32 iOffset, 
 										   UT_sint32 chg, 
 										   fl_BlockLayout* pBlock=NULL);
+	void					_recalcPendingWord(UT_uint32 iOffset, UT_sint32 chg);
 
 	UT_uint32				_getLastChar();
 
@@ -244,6 +240,24 @@ protected:
 
 	// spell check stuff
 	UT_Vector				m_vecSquiggles;
+};
+
+/*
+	This class is used to represent a part of the block.  Pointers
+	to this class are the things contained in m_vecSquiggles and in 
+	FL_DocLayout::m_pPendingWord.
+*/
+class fl_PartOfBlock
+{
+public:
+	fl_PartOfBlock();
+
+	UT_Bool doesTouch(UT_uint32 offset, UT_uint32 length) const;
+
+	UT_uint32	iOffset;
+	UT_uint32	iLength;
+
+protected:
 };
 
 #define FL_TAB_LEFT				1
