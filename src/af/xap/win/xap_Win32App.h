@@ -59,6 +59,8 @@ public:
 	virtual HICON							getIcon(void) = 0;
 	virtual HICON							getSmallIcon(void) = 0;
 
+	void									enableAllTopLevelWindows(UT_Bool);
+
 protected:
 	UT_uint32								_getExeDir(char* pDirBuf, UT_uint32 iBufLen);
 	void									_setAbiSuiteLibDir(void);

@@ -81,7 +81,7 @@ void XAP_Win32Dialog_About::runModal(XAP_Frame * pFrame)
 {
 	// raise the dialog
 	XAP_Win32App * pWin32App = static_cast<XAP_Win32App *>(m_pApp);
-	XAP_Win32Frame * pWin32Frame = static_cast<XAP_Win32Frame *>(pFrame);
+	m_pFrame = static_cast<XAP_Win32Frame *>(pFrame);
 
 	UT_ByteBuf * pBB = new UT_ByteBuf(g_pngSidebar_sizeof);
 	pBB->ins(0,g_pngSidebar,g_pngSidebar_sizeof);
@@ -105,7 +105,7 @@ void XAP_Win32Dialog_About::runModal(XAP_Frame * pFrame)
 	wndclassAbout.hInstance = pWin32App->getInstance();
 	wndclassAbout.hIcon = LoadIcon(NULL, IDI_APPLICATION);
 	wndclassAbout.hCursor = LoadCursor(NULL, IDC_ARROW);
-	wndclassAbout.hbrBackground = (HBRUSH) GetStockObject(LTGRAY_BRUSH);
+	wndclassAbout.hbrBackground = GetSysColorBrush(COLOR_BTNFACE);
 	wndclassAbout.lpszMenuName = NULL;
 	wndclassAbout.lpszClassName = "AbiSource_About";
 
@@ -130,15 +130,18 @@ void XAP_Win32Dialog_About::runModal(XAP_Frame * pFrame)
 
 	char buf[1024];
 
+	BringWindowToTop(m_pFrame->getTopLevelWindow());
+	pWin32App->enableAllTopLevelWindows(FALSE);
+
 	sprintf(buf, XAP_ABOUT_TITLE, m_pApp->getApplicationName());
 	HWND hwndAbout = CreateWindow(wndclassAbout.lpszClassName,
 								  buf,
-								  WS_OVERLAPPED | WS_VISIBLE,
+								  WS_OVERLAPPED | WS_VISIBLE | WS_SYSMENU,
 								  (iScreenWidth - ABOUT_WIDTH) / 2,
 								  (iScreenHeight - ABOUT_HEIGHT) /2,
 								  ABOUT_WIDTH,
 								  ABOUT_HEIGHT,
-								  NULL, //pWin32Frame->getTopLevelWindow(),
+								  m_pFrame->getTopLevelWindow(),
 								  NULL,
 								  pWin32App->getInstance(),
 								  NULL);
@@ -284,6 +287,12 @@ void XAP_Win32Dialog_About::runModal(XAP_Frame * pFrame)
 	DestroyWindow(hwndAbout);
 
 	UnregisterClass(wndclassAbout.lpszClassName, pWin32App->getInstance());
+
+	pWin32App->enableAllTopLevelWindows(UT_TRUE);
+
+	BringWindowToTop(m_pFrame->getTopLevelWindow());
+
+	SetFocus(m_pFrame->getTopLevelWindow());
 }
 
 BOOL CALLBACK XAP_Win32Dialog_About::s_dlgProc(HWND hWnd,UINT msg,WPARAM wParam,LPARAM lParam)
@@ -347,7 +356,7 @@ BOOL XAP_Win32Dialog_About::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
 		return 0;
 
 	case ID_BUTTON_URL:
-		ShellExecute(hWnd, "open", "http://www.abisource.com/", NULL, NULL, SW_SHOW);
+		m_pFrame->openURL("http://www.abisource.com/");
 		return 0;
 		
 	default:							// we did not handle this notification

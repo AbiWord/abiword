@@ -42,6 +42,7 @@ protected:
 	BOOL					_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam);
 
 	GR_Win32Image *			m_pGrImageSidebar;
+	XAP_Win32Frame *		m_pFrame;
 };
 
 #endif /* XAP_WIN32DIALOG_ABOUT_H */

@@ -50,8 +50,3 @@ protected:
 	DWORD					m_idDdeServerInst;
 };
 
-	
-
-
-	
-	

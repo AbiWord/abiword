@@ -291,3 +291,33 @@ void XAP_Win32App::_setAbiSuiteLibDir(void)
 	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 	return;
 }
+
+void XAP_Win32App::enableAllTopLevelWindows(UT_Bool b)
+{
+	UT_uint32 iCount = m_vecFrames.getItemCount();
+	
+	for (UT_uint32 ndx=0; ndx<iCount; ndx++)
+	{
+		XAP_Win32Frame * pFrame = (XAP_Win32Frame *) m_vecFrames.getNthItem(ndx);
+
+		EnableWindow(pFrame->getTopLevelWindow(), b);
+	}
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
