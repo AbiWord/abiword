@@ -29,6 +29,8 @@
 #include "xap_ViewListener.h"
 #include "xav_Listener.h"
 #include "xav_View.h"
+#include "ev_Mouse.h"
+#include "ev_Keyboard.h"
 
 
 ap_ViewListener::ap_ViewListener(XAP_Frame* pFrame)
@@ -50,7 +52,11 @@ bool ap_ViewListener::notify(AV_View * pView, const AV_ChangeMask mask)
 		// NOTE: could pass mask here to make updateTitle more efficient
 		m_pFrame->updateTitle();
 	}
-
+	if(mask & AV_CHG_INPUTMODE)
+	{
+		m_pFrame->getMouse()->setEditEventMap(m_pFrame->getEditEventMapper());
+		m_pFrame->getKeyboard()->setEditEventMap(m_pFrame->getEditEventMapper());
+	}
 	return true;
 }
 
