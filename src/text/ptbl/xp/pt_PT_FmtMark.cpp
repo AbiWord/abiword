@@ -48,7 +48,11 @@ UT_Bool pt_PieceTable::_insertFmtMarkFragWithNotify(PTChangeFmt ptc,
 
 	pf_Frag * pf;
 	PT_BlockOffset fo;
-	UT_Bool bFound = getFragFromPosition(dpos,&pf,&fo);
+
+	// The return value of getFragFromPosition was never checked (sterwill)
+	// UT_Bool bFound =
+	getFragFromPosition(dpos,&pf,&fo);
+
 	UT_ASSERT(pf);
 	
 	if ((fo==0) && (pf->getPrev()))

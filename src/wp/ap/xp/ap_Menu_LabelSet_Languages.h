@@ -41,3 +41,4 @@
 #include "ap_Menu_LabelSet_no-BOK.h"
 #include "ap_Menu_LabelSet_cs-CZ.h"
 #include "ap_Menu_LabelSet_sv-SE.h"
+#include "ap_Menu_LabelSet_pl-PL.h"

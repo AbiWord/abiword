@@ -103,9 +103,9 @@ BeginSet(en,US,UT_TRUE)
 	MenuLabel(AP_MENU_ID_FMT_SUPERSCRIPT,	"Supe&rscript",		"Make the selection superscript (toggle)")
 	MenuLabel(AP_MENU_ID_FMT_SUBSCRIPT,		"&Subscript",		"Make the selection subscript (toggle)")
 
-        MenuLabel(AP_MENU_ID_TOOLS,                     "&Tools",                        NULL)   
+	MenuLabel(AP_MENU_ID_TOOLS,				"&Tools",			NULL)   
 	MenuLabel(AP_MENU_ID_TOOLS_SPELL,		"&Spelling",		"Check the document for incorrect spelling")
-        MenuLabel(AP_MENU_ID_TOOLS_WORDCOUNT,           "&Word Count",                  "Count the number of words in the document")
+	MenuLabel(AP_MENU_ID_TOOLS_WORDCOUNT,	"&Word Count",		"Count the number of words in the document")
 	MenuLabel(AP_MENU_ID_TOOLS_OPTIONS,		"&Options",			"Set options")
 
 	MenuLabel(AP_MENU_ID_ALIGN,				"&Align",			NULL)
