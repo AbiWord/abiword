@@ -55,7 +55,7 @@
 
 %if %{enable_impexp}
 #%define plugin_impexp --enable-gdkpixbuf --enable-bmp --enable-jpeg --enable-wmf --enable-applix --enable-bz2abw --enable-clarisworks --enable-docbook --enable-eml --enable-hancom --enable-hrtext --enable-html --enable-iscii-text --enable-kword --enable-latex --enable-mif --enable-mswrite --enable-nroff --enable-OpenWriter --enable-pdb --enable-psion --enable-pw --enable-sdw --enable-t602 --enable-wml --enable-wordperfect --enable-xhtml --enable-xsl-fo
-%define plugin_impexp --enable-gdkpixbuf --enable-bmp --enable-jpeg --enable-wmf --enable-applix --enable-bz2abw --enable-clarisworks --enable-docbook --enable-eml --enable-hancom --enable-hrtext --enable-html --enable-iscii-text --enable-kword --enable-latex --enable-mif --enable-mswrite --enable-nroff --enable-OpenWriter --enable-pdb --enable-psion --enable-pw --disable-sdw --enable-t602 --enable-wml --enable-wordperfect --enable-xhtml --enable-xsl-fo --enable-librsvg
+%define plugin_impexp --enable-gdkpixbuf --enable-bmp --enable-jpeg --enable-wmf --enable-applix --enable-bz2abw --enable-clarisworks --enable-eml --enable-hancom --enable-hrtext --enable-html --enable-iscii-text --enable-kword --enable-latex --enable-mif --enable-mswrite --enable-nroff --enable-OpenWriter --enable-pdb --enable-psion --enable-pw --disable-sdw --enable-t602 --enable-wml --enable-wordperfect --enable-xhtml --disable-xsl-fo --enable-librsvg --disable-docbook
 %else
 %define plugin_impexp --disable-gdkpixbuf --disable-bmp --disable-jpeg --disable-wmf --disable-applix --disable-bz2abw --disable-clarisworks --disable-docbook --disable-eml --disable-hancom --disable-hrtext --disable-html --disable-iscii-text --disable-kword --disable-latex --disable-mif --disable-mswrite --disable-nroff --disable-OpenWriter --disable-pdb --disable-psion --disable-pw --disable-sdw --disable-t602 --disable-wml --disable-wordperfect --disable-xhtml --disable-xsl-fo
 %endif
@@ -252,12 +252,12 @@ cd ../abi
 %__perl -p -i -e "s|Exec=abiword|Exec=abiword-2.0|" $RPM_BUILD_ROOT/%{_datadir}/applications/abiword.desktop
 
 # Copies oaf files
-%__mkdir_p $RPM_BUILD_ROOT/%{_datadir}/oaf
-%__cp $RPM_BUILD_DIR/%{name}-%{version}/abidistfiles/*.oaf $RPM_BUILD_ROOT/%{_datadir}/oaf
-%__mkdir_p $RPM_BUILD_ROOT/%{_datadir}/gnome-2.0/ui
-%__cp $RPM_BUILD_DIR/%{name}-%{version}/abidistfiles/nautilus-abiword-content-view-ui.xml $RPM_BUILD_ROOT/%{_datadir}/gnome-2.0/ui/
+#%__mkdir_p $RPM_BUILD_ROOT/%{_libdir}/oaf
+#%__cp $RPM_BUILD_DIR/%{name}-%{version}/abidistfiles/*.oaf $RPM_BUILD_ROOT/%{_datadir}/oaf
+#%__mkdir_p $RPM_BUILD_ROOT/%{_datadir}/gnome-2.0/ui
+#%__cp $RPM_BUILD_DIR/%{name}-%{version}/abidistfiles/nautilus-abiword-content-view-ui.xml $RPM_BUILD_ROOT/%{_datadir}/gnome-2.0/ui/
 %__mkdir_p $RPM_BUILD_ROOT/%{_libdir}/bonobo/servers
-%__mv $RPM_BUILD_ROOT/%{_datadir}/%{AbiSuite}/GNOME_AbiWord_Control_1_0.server $RPM_BUILD_ROOT/%{_libdir}/bonobo/servers/
+%__mv $RPM_BUILD_ROOT/%{_datadir}/%{AbiSuite}/GNOME_AbiWord_Control_2_0.server $RPM_BUILD_ROOT/%{_libdir}/bonobo/servers/
 
 # Fix for wrong file rights on fonts,icons,clipart
 %if !%{enable_xft}
@@ -268,8 +268,8 @@ cd ../abi
 %__chmod 644 $RPM_BUILD_ROOT/%{_datadir}/%{AbiSuite}/templates/*
 
 # this files are installed but they've already been copied to a better place
-%__rm -f $RPM_BUILD_ROOT/%{_datadir}/%{AbiSuite}/GNOME_AbiWord_Control_1_0.oaf
-%__rm -f $RPM_BUILD_ROOT/%{_datadir}/%{AbiSuite}/Nautilus_View_AbiWord.oaf
+#%__rm -f $RPM_BUILD_ROOT/%{_datadir}/%{AbiSuite}/GNOME_AbiWord_Control_1_0.oaf
+#%__rm -f $RPM_BUILD_ROOT/%{_datadir}/%{AbiSuite}/Nautilus_View_AbiWord.oaf
 %__rm -f $RPM_BUILD_ROOT/%{_datadir}/%{AbiSuite}/nautilus-abiword-content-view-ui.xml
 %__rm -f $RPM_BUILD_ROOT/%{_bindir}/abiword
 
@@ -301,9 +301,9 @@ cd ../abi
 
 %files embeddable
 %defattr(644,root,root,755)
-%{_datadir}/oaf/*
+#%{_datadir}/oaf/*
 %{_libdir}/bonobo/servers/*
-%{_datadir}/gnome-2.0/ui/*
+#%{_datadir}/gnome-2.0/ui/*
 
 %if %{enable_tools}
 %files plugins-tools
@@ -329,7 +329,7 @@ cd ../abi
 %{_libdir}/%{AbiWord}/plugins/libAbiBZ2.*
 %{_libdir}/%{AbiWord}/plugins/libAbiClarisWorks.*
 %{_libdir}/%{AbiWord}/plugins/libAbiCoquille.*
-%{_libdir}/%{AbiWord}/plugins/libAbiDocBook.*
+#%{_libdir}/%{AbiWord}/plugins/libAbiDocBook.*
 %{_libdir}/%{AbiWord}/plugins/libAbiEML.*
 %{_libdir}/%{AbiWord}/plugins/libAbiGdkPixbuf.*
 %{_libdir}/%{AbiWord}/plugins/libAbiHancom.*
@@ -351,7 +351,7 @@ cd ../abi
 %{_libdir}/%{AbiWord}/plugins/libAbiWML.*
 #%{_libdir}/%{AbiWord}/plugins/libAbiWordPerfect.*
 %{_libdir}/%{AbiWord}/plugins/libAbiXHTML.*
-%{_libdir}/%{AbiWord}/plugins/libAbiXSLFO.*
+#%{_libdir}/%{AbiWord}/plugins/libAbiXSLFO.*
 %endif
 
 %files clipart
