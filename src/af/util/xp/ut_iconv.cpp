@@ -186,7 +186,7 @@ size_t  UT_iconv( UT_iconv_t cd, const char **inbuf,
   if ( !UT_iconv_isValid ( cd ) )
     return (size_t)-1;
 
-  ICONV_CONST char ** buf = (ICONV_CONST char**)(inbuf);
+  const char ** buf = (ICONV_CONST char**)(inbuf);
   return iconv( cd, buf, inbytesleft, outbuf, outbytesleft );
 }
 
