@@ -307,6 +307,10 @@ bool fp_Line::isLastLineInBlock(void) const
 
 void fp_Line::setMaxWidth(UT_sint32 iMaxWidth)
 {
+	if(iMaxWidth < 60) // This is hardwired to disallow -ve or too small values
+	{
+		iMaxWidth = 60;
+	}
 	m_iMaxWidth = iMaxWidth;
 }
 
