@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="iso-8859-1"?>
+
 <!-- ==============================================================  -->
 <!-- This file contains AbiWord Strings.  AbiWord is an Open Source  -->
 <!-- word processor developed by AbiSource, Inc.  Information about  -->
@@ -8,6 +9,7 @@
 <!-- ==============================================================  -->
 
 <!-- Swedish translations provided by Henrik Berg <henrik@lansen.se> -->
+
 
 <AbiStrings app="AbiWord Personal" ver="1.0" language="sv-SE">
 
@@ -82,6 +84,12 @@ DLG_UP_BlackWhite="Svart &amp; Vit"
 DLG_UP_Grayscale="Gråtoner"
 DLG_UP_Color="Färger"
 DLG_Insert_SymbolTitle="Infoga symbol"
+DLG_IP_Title="Infoga bild"
+DLG_IP_Activate_Label="Förehandsvisning av bild"
+DLG_IP_No_Picture_Label="Ingen bild"
+DLG_IP_Height_Label="Höjd: "
+DLG_IP_Width_Label="Bredd:  "
+DLG_IP_Button_Label="Infoga"
 />
 
 <Strings	class="AP"
@@ -187,14 +195,21 @@ DLG_Para_PushSuppressLineNumbers="&amp;Utelämna radnummer"
 DLG_Para_PushNoHyphenate="A&amp;vstava inte"
 DLG_Para_PushKeepWithNext="H&amp;åll ihop med nästa"
 DLG_Para_ButtonTabs="&amp;Tabbar..."
+DLG_Column_ColumnTitle="Spalter"
+DLG_Column_Number="Antal spalter"
+DLG_Column_Preview="Exempel"
+DLG_Column_One="&amp;En"
+DLG_Column_Two="&amp;Två"
+DLG_Column_Three="T&amp;re"
+DLG_Column_Line_Between="&amp;Linje mellan"
 DLG_Para_PreviewSampleFallback="This paragraph represents words as they might appear in your document. To see text from your document used in this preview, position your cursor in a document paragraph with some text in it and open this dialog."
 DLG_Para_PreviewPrevParagraph="Föregående Stycke Föregående Stycke Föregående Stycke Föregående Stycke Föregående Stycke Föregående Stycke Föregående Stycke"
 DLG_Para_PreviewFollowParagraph="Efterföljande Stycke Efterföljande Stycke Efterföljande Stycke Efterföljande Stycke Efterföljande Stycke Efterföljande Stycke Efterföljande Stycke"
 DLG_Options_OptionsTitle="Alternativ"
 DLG_Options_TabLabel_Spelling="Stavning"
+DLG_Options_TabLabel_Other="Övrigt"
 DLG_Options_TabLabel_Preferences="Inställningar"
 DLG_Options_TabLabel_View="Visning"
-DLG_Options_TabLabel_SmartQuotes="Citattecken"
 DLG_Options_Btn_Save="&amp;Spara"
 DLG_Options_Btn_Apply="Verkställ"
 DLG_Options_Btn_Default="&amp;Återställ"
@@ -217,7 +232,10 @@ DLG_Options_Label_ViewShowHide="Visa/dölj..."
 DLG_Options_Label_ViewRuler="&amp;Linjal"
 DLG_Options_Label_ViewUnits="&amp;enheter:"
 DLG_Options_Label_ViewCursorBlink="&amp;Blinkande markör"
-DLG_Options_Label_ViewToolbars="&amp;Verktygsfält"
+DLG_Options_Label_ViewStandardTB="&amp;Standard verktygsfält"
+DLG_Options_Label_ViewFormatTB="&amp;Formateringsverktygsfält"
+DLG_Options_Label_ViewExtraTB="&amp;Extra verktygsfält"
+DLG_Options_Label_ViewStatusBar="Status &amp;rad"
 DLG_Options_Label_ViewViewFrame="Visa..."
 DLG_Options_Label_ViewAll="&amp;Alla tecken"
 DLG_Options_Label_ViewHiddenText="&amp;Dold text"
@@ -244,6 +262,14 @@ DLG_Goto_Btn_Goto="Gå till"
 DLG_Goto_Target_Page="Sida"
 DLG_Goto_Target_Line="Rad"
 DLG_Goto_Target_Picture="Bild"
+DLG_Lists_Title="Listor för "
+DLG_Lists_Start_New_List="Starta ny lista"
+DLG_Lists_Stop_Current_List="Avbryt denna lista"
+DLG_Lists_Resume_Previous_List="Återuppta föregående lista"
+DLG_Lists_Numbered_List="Numrerad lista"
+DLG_Lists_Lower_Case_List="a, b, c... lista"
+DLG_Lists_Upper_Case_List="A, B, C... lista"
+DLG_Lists_Bullet_List="Punktlista"
 />
 
 </AbiStrings>
