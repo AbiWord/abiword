@@ -26,8 +26,6 @@
 
 #include "xap_Dlg_About.h"
 #include "xap_CocoaFrame.h"
-#include "gr_CocoaGraphics.h"
-#include "gr_CocoaImage.h"
 
 class XAP_CocoaDialog_About;
 

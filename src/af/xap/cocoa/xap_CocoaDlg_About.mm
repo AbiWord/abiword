@@ -34,8 +34,6 @@
 #include "xap_Dlg_About.h"
 #include "xap_CocoaDlg_About.h"
 
-#include "gr_CocoaGraphics.h"
-
 #import "xap_Cocoa_ResourceIDs.h"
 
 
@@ -101,8 +99,8 @@ void XAP_CocoaDialog_About::event_URL(void)
 	// we get all our strings from the application string set
 	const XAP_StringSet * pSS = pFrame->getApp()->getStringSet();
 	[[self window] setTitle:[NSString stringWithFormat:@XAP_ABOUT_TITLE, pFrame->getApp()->getApplicationName()]];	
-	[m_okBtn setTitle:[NSString stringWithCString:pSS->getValue(XAP_STRING_ID_DLG_OK)]];
-	[m_appName setStringValue:[NSString stringWithCString:pFrame->getApp()->getApplicationName()]];
+	[m_okBtn setTitle:[NSString stringWithUTF8String:pSS->getValue(XAP_STRING_ID_DLG_OK)]];
+	[m_appName setStringValue:[NSString stringWithUTF8String:pFrame->getApp()->getApplicationName()]];
 	[m_versionLabel setStringValue:[NSString stringWithFormat:@XAP_ABOUT_VERSION, XAP_App::s_szBuild_Version]];
 	[m_licenseText setStringValue:[NSString stringWithFormat:@"%s\n\n%@", XAP_ABOUT_COPYRIGHT, 
 	                               [NSString stringWithFormat:@XAP_ABOUT_GPL_LONG_LF,
