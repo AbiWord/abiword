@@ -1,5 +1,5 @@
 /* AbiSource Application Framework
- * Copyright (C) 2000-2002 Dom Lachowicz <cinamod@hotmail.com>
+ * Copyright (C) 2003 Dom Lachowicz <cinamod@hotmail.com>
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -17,32 +17,29 @@
  * 02111-1307, USA.
  */
 
-#include <stdlib.h>
-#include <stdio.h>
-#include <string.h>
-#include "ut_assert.h"
-#include "ut_string.h"
-#include "ut_debugmsg.h"
-#include "xap_Dialog_Id.h"
-#include "xap_UnixGnomeDlg_PrintPreview.h"
-#include "xap_Frame.h"
-#include "xap_DialogFactory.h"
+#include <libgnomeprint/gnome-print.h>
+#include <libgnomeprint/gnome-print-config.h>
+#include <libgnomeprintui/gnome-print-job-preview.h>
+#include <libgnomeprintui/gnome-print-dialog.h>
 
+#include "ut_assert.h"
+#include "xap_Dialog_Id.h"
+#include "xap_DialogFactory.h"
 #include "xap_UnixApp.h"
+
+#include "xap_UnixGnomeDlg_PrintPreview.h"
+#include "xap_UnixGnomePrintGraphics.h"
 
 class XAP_UnixFontManager;
 
 XAP_Dialog * XAP_UnixGnomeDialog_PrintPreview::static_constructor(XAP_DialogFactory * pFactory, XAP_Dialog_Id id)
 {
-	XAP_UnixGnomeDialog_PrintPreview * p = new XAP_UnixGnomeDialog_PrintPreview (pFactory,id);
-	return p;
+	return new XAP_UnixGnomeDialog_PrintPreview (pFactory,id);
 }
 
 XAP_UnixGnomeDialog_PrintPreview::XAP_UnixGnomeDialog_PrintPreview(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id)
-	: XAP_Dialog_PrintPreview(pDlgFactory,id)
+	: XAP_Dialog_PrintPreview(pDlgFactory,id), m_pGnomePrintGraphics(NULL)  
 {
-        m_pUnixFrame = NULL;
-	m_pGnomePrintGraphics = NULL;  
 }
 
 XAP_UnixGnomeDialog_PrintPreview::~XAP_UnixGnomeDialog_PrintPreview(void)
@@ -62,25 +59,16 @@ GR_Graphics * XAP_UnixGnomeDialog_PrintPreview::getPrinterGraphicsContext(void)
 
 void XAP_UnixGnomeDialog_PrintPreview::runModal(XAP_Frame * pFrame) 
 {
-       m_pUnixFrame = static_cast<XAP_UnixFrame *>(pFrame);
-       UT_return_if_fail(m_pUnixFrame);
-
-       XAP_App * app = m_pUnixFrame->getApp();
-       UT_return_if_fail(app);
-       
-       XAP_UnixApp * unixapp = static_cast<XAP_UnixApp *> (app);
+       XAP_UnixApp * unixapp = static_cast<XAP_UnixApp *> (XAP_App::getApp());
        
        XAP_UnixFontManager * fontmgr = unixapp->getFontManager();
-       UT_return_if_fail(fontmgr);
+       UT_return_if_fail(fontmgr != NULL);
        
-       m_pGnomePrintGraphics = new XAP_UnixGnomePrintGraphics(gnome_print_master_new(),
-							      m_szPaperSize,
-							      fontmgr,
-							      unixapp,
-							      1);
-
-       UT_return_if_fail(m_pGnomePrintGraphics);
-       
-       // set the color mode
+       m_pGnomePrintGraphics = new XAP_UnixGnomePrintGraphics(gnome_print_job_new(gnome_print_config_default()),
+															  m_szPaperSize,
+															  fontmgr,
+															  unixapp,
+															  1);
+       UT_return_if_fail(m_pGnomePrintGraphics != NULL);       
        m_pGnomePrintGraphics->setColorSpace(GR_Graphics::GR_COLORSPACE_COLOR);
 }

@@ -20,28 +20,19 @@
 #ifndef XAP_UNIXGNOMEDIALOG_PRINT_H
 #define XAP_UNIXGNOMEDIALOG_PRINT_H
 
-// hack
-extern "C" {
-#include <libgnomeui-2.0/gnome.h>
+#include "xap_Dlg_Print.h"
 #include <libgnomeprint/gnome-print.h>
-#include <libgnomeprint/gnome-printer.h>
-#include <libgnomeprint/gnome-print-master.h>
-}
+#include <libgnomeprint/gnome-print-job.h>
 
-#include "xap_UnixFrame.h"
-#include "xap_UnixDlg_Print.h"
-class XAP_UnixFrame;
 class XAP_UnixGnomePrintGraphics;
 
 /*****************************************************************/
-
-// NOTE That we don't derive from our Unix counterpart
 
 class XAP_UnixGnomeDialog_Print : public XAP_Dialog_Print
 {
 public:
 	XAP_UnixGnomeDialog_Print(XAP_DialogFactory * pDlgFactory, 
-				  XAP_Dialog_Id id);
+							  XAP_Dialog_Id id);
 	virtual ~XAP_UnixGnomeDialog_Print(void);
 
 	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
@@ -55,13 +46,12 @@ public:
 
 protected:
 	virtual void			_raisePrintDialog(XAP_Frame * pFrame);
-	virtual void                    _getGraphics(void);
+	virtual void            _getGraphics(void);
 
-	XAP_UnixFrame                   * m_pUnixFrame;
-	XAP_UnixGnomePrintGraphics      * m_pGnomePrintGraphics;
-	GR_Graphics::ColorSpace		colorSpace;
-	GnomePrintMaster                *m_gpm;
-	bool                         m_bIsPreview;
+	XAP_UnixGnomePrintGraphics  * m_pGnomePrintGraphics;
+	GR_Graphics::ColorSpace		  colorSpace;
+	GnomePrintJob                *m_gpm;
+	bool                          m_bIsPreview;
 };
 
 #endif /* XAP_UNIXGNOMEDIALOG_PRINT_H */

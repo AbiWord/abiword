@@ -20,18 +20,9 @@
 #ifndef XAP_UnixGnomeDIALOG_PRINTPREVIEW_H
 #define XAP_UnixGnomeDIALOG_PRINTPREVIEW_H
 
-// hack
-extern "C" {
-#include <libgnomeui-2.0/gnome.h>
-#include <libgnomeprint/gnome-print.h>
-#include <libgnomeprint/gnome-printer.h>
-#include <libgnomeprint/gnome-print-master.h>
-}
-
-#include "xap_UnixFrame.h"
-
 #include "xap_Dlg_PrintPreview.h"
-#include "xap_UnixGnomePrintGraphics.h"
+
+class XAP_UnixGnomePrintGraphics;
 
 /*****************************************************************/
 
@@ -50,7 +41,6 @@ class XAP_UnixGnomeDialog_PrintPreview : public XAP_Dialog_PrintPreview
 
  protected:
 
-	XAP_UnixFrame                   * m_pUnixFrame;
 	XAP_UnixGnomePrintGraphics      * m_pGnomePrintGraphics;
 };
 

@@ -34,7 +34,7 @@ dcl(MSG_DlgNotImp,				"%s not implemented yet.\n\nIf you are a programmer, feel 
 dcl(MSG_RevertBuffer,			"Revert to saved copy of %s?")
 dcl(MSG_QueryExit,				"Close all windows and exit?")
 dcl(MSG_ConfirmSave,			"Save changes to document %s before closing?")
-dcl(MSG_ConfirmSaveSecondary,           "If you close without saving, changes from the last %d minutes will be discarded.")
+dcl(MSG_ConfirmSaveSecondary,           "Your changes will be lost if you don't save them.")
 dcl(MSG_ImportError,			"Error importing file %s.")
 dcl(MSG_IE_FileNotFound,		"File %s not found")
 dcl(MSG_IE_NoMemory,			"Out of memory attempting to open %s")

@@ -1518,7 +1518,7 @@ static XAP_Dialog_MessageBox::tAnswer s_AskSaveFile(XAP_Frame * pFrame)
 					 XAP_Dialog_MessageBox::b_YNC,
 					 XAP_Dialog_MessageBox::a_YES,
 					 pFrame->getNonDecoratedTitle());
-	message->setSecondaryMessage(AP_STRING_ID_MSG_ConfirmSaveSecondary, pFrame->getTimeSinceSave()/60);
+	message->setSecondaryMessage(AP_STRING_ID_MSG_ConfirmSaveSecondary);
 	return pFrame->showMessageBox(message);
 }
 
