@@ -802,13 +802,14 @@ UT_sint32 GR_Win32USPGraphics::getTextWidth(const GR_RenderInfo & ri) const
 		{
 			UT_sint32 iMin = -1;
 			
-			// clusters are in logical order
-			UT_uint32 k = RI.m_iCharCount - i - 1;
-			
-			if(i < RI.m_iCharCount - 1)
-				iMin = (UT_sint32)RI.m_pClust[k-1];
+			// The offset is a logical offset, and clusters are in logical order.  Indices, however,
+			// are in visual order, and the clusters reference glyph indices, so that clust[i] >
+			// clust[i+1]
 
-			for(UT_sint32 j = (UT_sint32)RI.m_pClust[k]; j > iMin; --j)
+			if(i < RI.m_iCharCount - 1)
+				iMin = RI.m_pClust[i+1];
+
+			for(UT_sint32 j = (UT_sint32)RI.m_pClust[i]; j > iMin; --j)
 			{
 				iWidth += RI.m_pAdvances[j];
 
@@ -868,6 +869,9 @@ void GR_Win32USPGraphics::prepareToRenderChars(GR_RenderInfo & ri)
 	RI.s_pOwnerDraw = &ri;
 }
 
+/*!
+    The offset passed to us as part of ri is a visual offset
+*/
 void GR_Win32USPGraphics::renderChars(GR_RenderInfo & ri)
 {
 	UT_return_if_fail(ri.getType() == GRRI_WIN32_UNISCRIBE);
@@ -887,10 +891,16 @@ void GR_Win32USPGraphics::renderChars(GR_RenderInfo & ri)
 	UT_uint32 iGlyphCount = RI.m_iIndicesCount;
 	UT_uint32 iGlyphOffset = 0;
 
+	GR_Win32USPItem & I = (GR_Win32USPItem &)*ri.m_pItem;
+	bool bReverse = I.m_si.a.fRTL != 0;
+
+	// need logical offset to access cluster information
+	UT_uint32 iOffset = bReverse ? RI.m_iCharCount - RI.m_iOffset - 1 : RI.m_iOffset;
+
 	if(RI.m_iOffset != 0)
 	{
 		// we need to work out glyph offset
-		iGlyphOffset = RI.m_pClust[RI.m_iOffset];
+		iGlyphOffset = RI.m_pClust[iOffset];
 	}
 
 	if(RI.m_iOffset + RI.m_iLength == RI.m_iCharCount)
@@ -901,7 +911,8 @@ void GR_Win32USPGraphics::renderChars(GR_RenderInfo & ri)
 	else
 	{
 		// work out glyph length
-		UT_uint32 iOffsetEnd = RI.m_pClust[RI.m_iOffset + RI.m_iLength];
+		iOffset = bReverse ? RI.m_iCharCount - (RI.m_iOffset + RI.m_iLength) - 1 : RI.m_iOffset + RI.m_iLength;
+		UT_uint32 iOffsetEnd = RI.m_pClust[iOffset];
 		iGlyphCount = iOffsetEnd - iGlyphOffset;
 	}
 
