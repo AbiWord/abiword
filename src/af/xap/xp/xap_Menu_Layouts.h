@@ -24,6 +24,7 @@
 #include "ev_Menu_Layouts.h"
 /* #include "ev_Menu_Labels.h" */
 #include "ev_EditBits.h"
+#include "xap_Features.h"
 
 class EV_Menu_LabelSet;
 

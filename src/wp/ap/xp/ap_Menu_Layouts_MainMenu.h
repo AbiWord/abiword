@@ -78,8 +78,10 @@ BeginLayout(Main,0)
 		MenuItem(AP_MENU_ID_EDIT_FIND)
 		MenuItem(AP_MENU_ID_EDIT_REPLACE)
 		MenuItem(AP_MENU_ID_EDIT_GOTO)
+#if !(XAP_PREFSMENU_UNDER_TOOLS)
 		Separator()
 		MenuItem(AP_MENU_ID_TOOLS_OPTIONS)
+#endif
 	EndSubMenu()
 
 	BeginSubMenu(AP_MENU_ID_VIEW)
@@ -327,6 +329,10 @@ BeginLayout(Main,0)
 		MenuItem(AP_MENU_ID_TOOLS_MAILMERGE)
 #ifndef XP_MAC_TARGET_MACOSX
 		// On MacOS X don't put a separator as the "Option" menu item is moved away at run time
+#endif
+#if XAP_PREFSMENU_UNDER_TOOLS
+		Separator()
+		MenuItem(AP_MENU_ID_TOOLS_OPTIONS)
 #endif
 	EndSubMenu()
 

@@ -24,6 +24,8 @@
 
 #ifdef XP_TARGET_COCOA
 # include "xap_CocoaFeatures.h"
+#elif defined(WIN32)
+# include "xap_Win32Features.h"
 #endif
 
 
@@ -64,6 +66,14 @@
  */
 #ifndef XAP_DONT_INLINE_XPM
 # define XAP_DONT_INLINE_XPM 0
+#endif
+
+/*
+    Define to 1 if Preferences should be under Tool
+    XAP_PREFSMENU_UNDER_TOOLS
+*/
+#ifndef XAP_PREFSMENU_UNDER_TOOLS
+# define XAP_PREFSMENU_UNDER_TOOLS 0
 #endif
 
 #endif
