@@ -279,9 +279,9 @@ bool ev_EditMethod_invoke (const EV_EditMethod * pEM, const UT_String & data)
   return ev_EditMethod_invoke ( pEM, &callData ) ;
 }
 
-bool ev_EditMethod_invoke (const EV_EditMethod * pEM, const UT_UCS2String & data)
+bool ev_EditMethod_invoke (const EV_EditMethod * pEM, const UT_UCS4String & data)
 {
-  EV_EditMethodCallData callData ( data.ucs_str(), (UT_uint32)data.size() ) ;
+  EV_EditMethodCallData callData ( data.ucs4_str(), (UT_uint32)data.size() ) ;
   return ev_EditMethod_invoke ( pEM, &callData ) ;
 }
 
@@ -290,7 +290,7 @@ bool ev_EditMethod_invoke (const char * methodName, const UT_String & data)
   return ev_EditMethod_invoke ( ev_EditMethod_lookup ( methodName ), data ) ;
 }
 
-bool ev_EditMethod_invoke (const char * methodName, const UT_UCS2String & data)
+bool ev_EditMethod_invoke (const char * methodName, const UT_UCS4String & data)
 {
   return ev_EditMethod_invoke ( ev_EditMethod_lookup ( methodName ), data ) ;
 }
@@ -308,7 +308,7 @@ bool ev_EditMethod_invoke (const char * methodName, const UT_UCSChar * data)
   UT_ASSERT(data);
   if(!data) 
     return false;
-  return ev_EditMethod_invoke ( methodName, UT_UCS2String(data) ) ;
+  return ev_EditMethod_invoke ( methodName, UT_UCS4String(data) ) ;
 }
 
 bool ev_EditMethod_invoke (const UT_String& methodName, const UT_String & data)
@@ -316,7 +316,7 @@ bool ev_EditMethod_invoke (const UT_String& methodName, const UT_String & data)
   return ev_EditMethod_invoke ( methodName.c_str(), data ) ;
 }
 
-bool ev_EditMethod_invoke (const UT_String& methodName, const UT_UCS2String & data)
+bool ev_EditMethod_invoke (const UT_String& methodName, const UT_UCS4String & data)
 {
   return ev_EditMethod_invoke ( methodName.c_str(), data ) ;
 }

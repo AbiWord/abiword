@@ -61,7 +61,7 @@ XAP_Dialog_FontChooser::XAP_Dialog_FontChooser(XAP_DialogFactory * pDlgFactory, 
 	if(m_vecProps.getItemCount() > 0)
 		m_vecProps.clear();
 
-	UT_UCS_cloneString_char (&m_drawString, PREVIEW_ENTRY_DEFAULT_STRING);
+	UT_UCS4_cloneString_char (&m_drawString, PREVIEW_ENTRY_DEFAULT_STRING);
 }
 
 XAP_Dialog_FontChooser::~XAP_Dialog_FontChooser(void)
@@ -524,7 +524,7 @@ void XAP_Preview_FontPreview::draw(void)
 	UT_sint32 iWinWidth = getWindowWidth();
 	UT_sint32 iWinHeight = getWindowHeight();
 	UT_sint32 iTop = (iWinHeight - iHeight)/2;
-	UT_sint32 len = UT_UCS_strlen(m_pszChars);
+	UT_sint32 len = UT_UCS4_strlen(m_pszChars);
 	UT_sint32 twidth = m_gc->measureString(m_pszChars,0,len,NULL);
 	UT_sint32 iLeft = (iWinWidth - twidth)/2;
 //

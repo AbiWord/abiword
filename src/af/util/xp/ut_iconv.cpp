@@ -129,6 +129,27 @@ const char * ucs2Internal ()
 #endif
 }
 
+const char * ucs4Internal ()
+{
+#if defined(WIN32)
+  // we special-case the win32 build, otherwise spelling and other stuff
+  // just doesn't work
+  return "UCS-4LE";
+#elif defined(_LIBICONV_H)
+  // libiconv seems to prefer UCS-2-INTERNAL to UCS-2BE and UCS-2LE
+  return "UCS-4-INTERNAL";
+#elif defined(__FreeBSD__) || defined(__OpenBSD__) || defined(__QNXNTO__) || defined(__NetBSD__)
+  // we special case the BSDs since spelling just doesn't work
+  return "UCS4";
+#else
+  // general case, found by hub and dom
+  if (XAP_EncodingManager__swap_stou)
+    return "UCS-4BE";
+  else
+    return "UCS-4LE";
+#endif
+}
+
 /************************************************************************/
 /************************************************************************/
 

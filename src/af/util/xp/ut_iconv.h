@@ -63,6 +63,8 @@ UT_BEGIN_EXTERN_C
 
 const char * ucs2Internal ();
 #define UCS_2_INTERNAL ucs2Internal()
+const char * ucs4Internal ();
+#define UCS_INTERNAL ucs4Internal()
 
 UT_iconv_t  UT_iconv_open( const char* to, const char* from );
 size_t      UT_iconv( UT_iconv_t cd, const char **inbuf, 

@@ -72,12 +72,18 @@ static bool isFontUnicode(GdkFont *font)
 XAP_UnixFontHandle *	GR_UnixGraphics::s_pFontGUI = NULL;
 UT_uint32 				GR_UnixGraphics::s_iInstanceCount = 0;
 
+#ifndef WITH_PANGO 
 GR_UnixGraphics::GR_UnixGraphics(GdkWindow * win, XAP_UnixFontManager * fontManager, XAP_App * app)
+#else
+GR_UnixGraphics::GR_UnixGraphics(GdkWindow * win, XAP_App * app)
+#endif	
 {
 	m_pApp = app;
 	m_pWin = win;
+#ifndef WITH_PANGO 
 	m_pFontManager = fontManager;
 	m_pFont = NULL;
+#endif
 	m_pSingleByteFont = NULL;
 	m_pMultiByteFont = NULL;
 	//m_pFontGUI = NULL;
@@ -116,8 +122,10 @@ GR_UnixGraphics::GR_UnixGraphics(GdkWindow * win, XAP_UnixFontManager * fontMana
 	m_cs = GR_Graphics::GR_COLORSPACE_COLOR;
 	m_cursor = GR_CURSOR_INVALID;
 	setCursor(GR_CURSOR_DEFAULT);
-	
+
+#ifndef WITH_PANGO 	
 	m_pFallBackFontHandle = new XAP_UnixFontHandle(m_pFontManager->getDefaultFont(), FALLBACK_FONT_SIZE);
+#endif	
 }
 
 GR_UnixGraphics::~GR_UnixGraphics()
@@ -125,8 +133,9 @@ GR_UnixGraphics::~GR_UnixGraphics()
 	s_iInstanceCount--;
 	if(!s_iInstanceCount)
 		DELETEP(s_pFontGUI);
-	
+#ifndef WITH_PANGO
 	delete m_pFallBackFontHandle;
+#endif	
 }
 
 bool GR_UnixGraphics::queryProperties(GR_Graphics::Properties gp) const
@@ -170,7 +179,7 @@ static bool fallback_used;
 		}	\
 	}	
 
-
+#ifndef WITH_PANGO 
 // HACK: I need more speed
 void GR_UnixGraphics::drawChar(UT_UCSChar Char, UT_sint32 xoff, UT_sint32 yoff)
 {
@@ -516,6 +525,8 @@ UT_uint32 GR_UnixGraphics::measureString(const UT_UCSChar* s, int iOffset,
 	return charWidth;
 }
 #endif
+
+#endif // #ifndef WITH_PANGO 
 UT_uint32 GR_UnixGraphics::_getResolution(void) const
 {
 	// this is hard-coded at 100 for X now, since 75 (which
@@ -552,9 +563,9 @@ void GR_UnixGraphics::_setColor(GdkColor & c)
 
 GR_Font * GR_UnixGraphics::getGUIFont(void)
 {
+#ifndef WITH_PANGO 	
 	if (!m_pFontManager)
 		return NULL;
-	
 	if (!s_pFontGUI)
 	{
 		// get the font resource
@@ -566,10 +577,12 @@ GR_Font * GR_UnixGraphics::getGUIFont(void)
 		s_pFontGUI = new XAP_UnixFontHandle(font, 12); // Hardcoded GUI font size
 		UT_ASSERT(s_pFontGUI);
 	}
-
+#endif
+	// TODO provide PANGO implementation	
 	return s_pFontGUI;
 }
 
+#ifndef WITH_PANGO
 GR_Font * GR_UnixGraphics::findFont(const char* pszFontFamily, 
 									const char* pszFontStyle, 
 									const char* /*pszFontVariant*/, 
@@ -759,6 +772,8 @@ UT_uint32 GR_UnixGraphics::getFontDescent()
 {
 	return getFontDescent(m_pFont);
 }
+#endif //#ifndef WITH_PANGO 
+
 
 void GR_UnixGraphics::drawLine(UT_sint32 x1, UT_sint32 y1,
 							   UT_sint32 x2, UT_sint32 y2)
@@ -1330,6 +1345,7 @@ void GR_UnixGraphics::polygon(UT_RGBColor& c,UT_Point *pts,UT_uint32 nPoints)
 	gdk_gc_set_foreground(m_pGC, &oColor);
 }
 
+#ifndef WITH_PANGO 
 //////////////////////////////////////////////////////////////////
 // This is a static method in the GR_Font base class implemented
 // in platform code.
@@ -1353,4 +1369,4 @@ void GR_Font::s_getGenericFontProperties(const char * /*szFontName*/,
 	*pfp = FP_Unknown;
 	*pbTrueType = true;
 }
-
+#endif 

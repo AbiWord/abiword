@@ -176,12 +176,12 @@ protected:
 
 private:
 	void 					_constructorCommonCode(HDC);
-	UT_UCSChar*				_remapGlyphs(const UT_UCSChar* pChars, int iCharOffset, int &iLength);
+	UT_uint16*				_remapGlyphs(const UT_UCSChar* pChars, int iCharOffset, int &iLength);
 
 	DWORD					m_clrXorPen;
 	HPEN					m_hXorPen;
 	
-	UT_UCSChar*				m_remapBuffer;
+	UT_UCS2Char*				m_remapBuffer;
 	UT_uint32				m_remapBufferSize;
 	// we will make this static, so that it gets initialized by the first instance of the class
 	// since we have to construct a screen graphics before we can print, this should guarantee
@@ -189,7 +189,7 @@ private:
 	static UT_sint32        s_iScreenResolution;
 	
 #ifdef BIDI_ENABLED
-	UT_UCSChar*				m_remapIndices;
+	UT_UCS2Char*				m_remapIndices;
 #endif
 };
 

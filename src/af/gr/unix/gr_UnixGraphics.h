@@ -32,10 +32,15 @@ class UT_ByteBuf;
 class GR_UnixGraphics : public GR_Graphics
 {
  public:
-	GR_UnixGraphics(GdkWindow * win, XAP_UnixFontManager * fontManager, XAP_App *app);
+#ifndef WITH_PANGO
+ 	GR_UnixGraphics(GdkWindow * win, XAP_UnixFontManager * fontManager, XAP_App *app);
+#else
+ 	GR_UnixGraphics(GdkWindow * win, XAP_App *app);
+#endif
 	~GR_UnixGraphics();
 
-    // HACK: I need more speed
+#ifndef WITH_PANGO 
+	// HACK: I need more speed
 	virtual void        drawChar(UT_UCSChar Char, UT_sint32 xoff, UT_sint32 yoff);
 	virtual void		drawChars(const UT_UCSChar* pChars, int iCharOffset,
 								  int iLength, UT_sint32 xoff, UT_sint32 yoff);
@@ -43,9 +48,12 @@ class GR_UnixGraphics : public GR_Graphics
 	virtual UT_uint32	getFontHeight();
 	// virtual UT_uint32	measureString(const UT_UCSChar*s, int iOffset, int num, unsigned short* pWidths);
 	virtual UT_uint32 measureUnRemappedChar(const UT_UCSChar c);
+#endif	
 	virtual void		setColor(const UT_RGBColor& clr);
 
 	virtual GR_Font*	getGUIFont();
+
+#ifndef WITH_PANGO 	
 	virtual GR_Font*	findFont(const char* pszFontFamily, 
 								 const char* pszFontStyle, 
 								 const char* pszFontVariant, 
@@ -54,6 +62,7 @@ class GR_UnixGraphics : public GR_Graphics
 								 const char* pszFontSize);
 	virtual UT_uint32	getFontAscent();
 	virtual UT_uint32	getFontDescent();
+#endif	
 	virtual void		drawLine(UT_sint32, UT_sint32, UT_sint32, UT_sint32);
 	virtual void		setLineWidth(UT_sint32);
 	virtual void		xorLine(UT_sint32, UT_sint32, UT_sint32, UT_sint32);
@@ -97,24 +106,28 @@ class GR_UnixGraphics : public GR_Graphics
 	virtual void		fillRect(GR_Color3D c, UT_Rect &r);
 	
 	virtual void		polygon(UT_RGBColor& c,UT_Point *pts,UT_uint32 nPoints);
-	
+
+#ifndef WITH_PANGO 	
 	/* GR_Font versions of the above -- TODO: should I add drawChar* methods too? */
 	virtual UT_uint32 getFontAscent(GR_Font *);
 	virtual UT_uint32 getFontDescent(GR_Font *);
 	virtual UT_uint32 getFontHeight(GR_Font *);
-
+#endif
+	
  protected:
 	virtual UT_uint32 	_getResolution(void) const;
 	void				_setColor(GdkColor & c);
-
+#ifndef WITH_PANGO 
 	XAP_UnixFontManager * 	m_pFontManager;
+#endif	
 	GdkGC*       			m_pGC;
 	GdkGC*  	      		m_pXORGC;
 	GdkWindow*  	  		m_pWin;
 
+#ifndef WITH_PANGO	
 	// our currently requested font by handle
 	XAP_UnixFontHandle *	m_pFont;
-
+#endif
 	// Current GDK fonts corresponding to this. Calling m_pFont->explodeGdkFont
 	// causes gdk_font_load to be called and memory to be allocated. This should
 	// not happen on every draw
@@ -133,7 +146,9 @@ class GR_UnixGraphics : public GR_Graphics
 	
 	GdkColor				m_3dColors[COUNT_3D_COLORS];
 private:
+#ifndef WITH_PANGO 	
 	XAP_UnixFontHandle *	m_pFallBackFontHandle;
+#endif	
 };
 
 #endif /* GR_UNIXGRAPHICS_H */

@@ -50,7 +50,7 @@ bool UT_GrowBuf::_growBuf(UT_uint32 spaceNeeded)
 	// round up to the next multiple of the chunk size.
 	
 	UT_uint32 newSize = ((m_iSize+spaceNeeded+m_iChunk-1)/m_iChunk)*m_iChunk;
-	UT_uint16 * pNew = (UT_uint16 *)UT_calloc(newSize,sizeof(*m_pBuf)); // Why not use realloc ? - fjf
+	UT_GrowBufElement * pNew = (UT_GrowBufElement *)UT_calloc(newSize,sizeof(*m_pBuf)); // Why not use realloc ? - fjf
 	if (!pNew)
 		return false;
 	
@@ -66,12 +66,12 @@ bool UT_GrowBuf::_growBuf(UT_uint32 spaceNeeded)
 	return true;
 }
 		
-bool UT_GrowBuf::append(const UT_uint16 * pValue, UT_uint32 length)
+bool UT_GrowBuf::append(const UT_GrowBufElement * pValue, UT_uint32 length)
 {
 	return ins(m_iSize,pValue,length);
 }
 
-bool UT_GrowBuf::ins(UT_uint32 position, const UT_uint16 * pValue, UT_uint32 length)
+bool UT_GrowBuf::ins(UT_uint32 position, const UT_GrowBufElement * pValue, UT_uint32 length)
 {
 	// insert the given buffer into the growbuf
 
@@ -130,7 +130,7 @@ bool UT_GrowBuf::del(UT_uint32 position, UT_uint32 amount)
 	UT_uint32 newSpace = ((m_iSize+m_iChunk-1)/m_iChunk)*m_iChunk; //Calculate the new space needed
 	if (newSpace != m_iSpace)
 	{
-		m_pBuf = (UT_uint16 *)realloc(m_pBuf, newSpace*sizeof(*m_pBuf));  //Re-allocate to the smaller size
+		m_pBuf = (UT_GrowBufElement *)realloc(m_pBuf, newSpace*sizeof(*m_pBuf));  //Re-allocate to the smaller size
 		m_iSpace = newSpace; //update m_iSpace to the new figure
 	}
 	
@@ -144,7 +144,7 @@ UT_uint32 UT_GrowBuf::getLength(void) const
 	return m_iSize;
 }
 
-UT_uint16 * UT_GrowBuf::getPointer(UT_uint32 position) const
+UT_GrowBufElement * UT_GrowBuf::getPointer(UT_uint32 position) const
 {
 	// return a read-only pointer to the buffer
 	
@@ -154,7 +154,7 @@ UT_uint16 * UT_GrowBuf::getPointer(UT_uint32 position) const
 	return m_pBuf+position;
 }
 
-bool UT_GrowBuf::overwrite(UT_uint32 position, UT_uint16 * pValue, UT_uint32 length)
+bool UT_GrowBuf::overwrite(UT_uint32 position, UT_GrowBufElement * pValue, UT_uint32 length)
 {
 	// overwrite the current cells at the given position for the given length.
 
@@ -186,7 +186,7 @@ void UT_GrowBuf::truncate(UT_uint32 position)
 	if (newSpace == 0) newSpace = m_iChunk; // In case of UT_GrowBuf::truncate (0)
 	if (newSpace != m_iSpace)
 	{
-		m_pBuf = (UT_uint16 *)realloc(m_pBuf, newSpace*sizeof(*m_pBuf));  //Re-allocate to the smaller size
+		m_pBuf = (UT_GrowBufElement *)realloc(m_pBuf, newSpace*sizeof(*m_pBuf));  //Re-allocate to the smaller size
 		m_iSpace = newSpace; //update m_iSpace to the new figure
 	}
 }

@@ -61,7 +61,7 @@ public:
 	void setDrawString (const UT_UCSChar * str)
 	  {
 	    FREEP(m_drawString);
-	    UT_UCS_cloneString(&m_drawString, str);
+	    UT_UCS4_cloneString(&m_drawString, str);
 	  }
 
 	const UT_UCSChar * getDrawString ()

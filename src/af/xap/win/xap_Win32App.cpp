@@ -387,12 +387,12 @@ void XAP_Win32App::_setBidiOS(void)
 	not seem to be a simple way of doing this
 */
 #ifdef BIDI_ENABLED
-	const UT_UCSChar araAin  = 0x0639;
-	const UT_UCSChar one     = 0x0031;
+	const UT_UCS2Char araAin  = 0x0639;
+	const UT_UCS2Char one     = 0x0031;
 
 	int distanceArray[2];
-	UT_UCSChar glyphArray[2];
-	UT_UCSChar outStr[] = {0, 0};
+	UT_UCS2Char glyphArray[2];
+	UT_UCS2Char outStr[] = {0, 0};
 	
 	GCP_RESULTSW gcpResult;
 	gcpResult.lStructSize = sizeof(GCP_RESULTS);
@@ -404,7 +404,7 @@ void XAP_Win32App::_setBidiOS(void)
 	gcpResult.lpGlyphs = glyphArray;    // Character glyphs
 	gcpResult.nGlyphs = 2;              // Array size
  
-	UT_UCSChar inStr[] = {araAin, one};
+	UT_UCS2Char inStr[] = {araAin, one};
 
 	HDC displayDC = GetDC(NULL);
 

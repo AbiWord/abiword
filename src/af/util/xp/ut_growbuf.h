@@ -28,25 +28,27 @@
 
 #include "ut_types.h"
 
+
 class ABI_EXPORT UT_GrowBuf
 {
 public:
 	UT_GrowBuf(UT_uint32 iChunk = 0);
 	~UT_GrowBuf();
 
-	bool				append(const UT_uint16 * pValue, UT_uint32 length);
-	bool				ins(UT_uint32 position, const UT_uint16 * pValue, UT_uint32 length);
+	bool				append(const UT_GrowBufElement * pValue, UT_uint32 length);
+	bool				ins(UT_uint32 position, const UT_GrowBufElement * pValue, UT_uint32 length);
 	bool				ins(UT_uint32 position, UT_uint32 length);
 	bool				del(UT_uint32 position, UT_uint32 amount);
-	bool				overwrite(UT_uint32 position, UT_uint16 * pValue, UT_uint32 length);
+	bool				overwrite(UT_uint32 position, UT_GrowBufElement * pValue, UT_uint32 length);
 	void				truncate(UT_uint32 position);
 	UT_uint32			getLength(void) const;
-	UT_uint16 *			getPointer(UT_uint32 position) const;				/* temporary use only */
+
+	UT_GrowBufElement *      getPointer(UT_uint32 position) const; /* temporary use only */
 	
 private:
 	bool				_growBuf(UT_uint32 spaceNeeded);
 
-	UT_uint16 *			m_pBuf;
+	UT_GrowBufElement *		m_pBuf;
 	UT_uint32			m_iSize;			/* amount currently used */
 	UT_uint32			m_iSpace;			/* space currently allocated */
 	UT_uint32			m_iChunk;			/* unit for realloc */

@@ -50,14 +50,14 @@ XS(XS_AbiWord__FV_View_moveCursorAbs)
 		switch (target[0])
 		{
 		case 'p': /* page */
-			if (UT_UCS_cloneString_char(&tmp, szWhere))
+			if (UT_UCS4_cloneString_char(&tmp, szWhere))
 			{
 				pView->gotoTarget(AP_JUMPTARGET_PAGE, tmp);
 				free(tmp);
 			}
 			break;
 		case 'l': /* line */
-			if (UT_UCS_cloneString_char(&tmp, szWhere))
+			if (UT_UCS4_cloneString_char(&tmp, szWhere))
 			{
 				pView->gotoTarget(AP_JUMPTARGET_LINE, tmp);
 				free(tmp);
@@ -310,7 +310,7 @@ XS(XS_AbiWord__FV_View_write)
 #line 154 "AbiWord.xs"
 		UT_UCSChar *text = NULL;
 		// printf("write\n");
-		UT_UCS_cloneString_char(&text, pszText);
+		UT_UCS4_cloneString_char(&text, pszText);
 		pView->cmdCharInsert(text, strlen(pszText));
 		free(text);
 		RETVAL = true;
@@ -452,7 +452,7 @@ XS(XS_AbiWord__FV_View_find)
 	};
 #line 210 "AbiWord.xs"
 		UT_UCSChar *text = NULL;
-		UT_UCS_cloneString_char(&text, pszText);
+		UT_UCS4_cloneString_char(&text, pszText);
 		bool bTmp;
 		RETVAL = pView->findNext(text, matchCase, bTmp);
 		free(text);
@@ -482,9 +482,9 @@ XS(XS_AbiWord__FV_View_replace)
 	};
 #line 225 "AbiWord.xs"
 		UT_UCSChar *textToFind = NULL;
-		UT_UCS_cloneString_char(&textToFind, pszTextToFind);
+		UT_UCS4_cloneString_char(&textToFind, pszTextToFind);
 		UT_UCSChar *replacement = NULL;
-		UT_UCS_cloneString_char(&replacement, pszReplacement);
+		UT_UCS4_cloneString_char(&replacement, pszReplacement);
 		bool bTmp;
 		RETVAL = pView->findReplace(textToFind, replacement, matchCase, bTmp);
 		free(textToFind);
@@ -515,9 +515,9 @@ XS(XS_AbiWord__FV_View_getSelectionText)
 		if (!pView->isSelectionEmpty())
 		{
 			UT_UCSChar* text = pView->getSelectionText();
-			UT_uint32 size = UT_UCS_strlen(text);
+			UT_uint32 size = UT_UCS4_strlen(text);
 			RETVAL = (char*) malloc(size);
-			UT_UCS_strcpy_to_char(RETVAL, text);
+			UT_UCS4_strcpy_to_char(RETVAL, text);
 		}
 		else
 		{

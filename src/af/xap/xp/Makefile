@@ -61,6 +61,10 @@ CPPSRCS=	xad_Document.cpp		\
 		xap_Dlg_Language.cpp		\
 		xap_Dlg_Encoding.cpp
 
+ifeq ($(ABI_OPT_PANGO),1)
+CPPSRCS += xap_PangoFontManager.cpp
+endif
+
 ifeq ($(ABI_OPT_CURLHASH),1)
 CPPSRCS +=	xap_HashDownloader.cpp
 endif

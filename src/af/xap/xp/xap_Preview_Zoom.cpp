@@ -112,7 +112,7 @@ bool XAP_Preview_Zoom::setString(const char * string)
 	UT_ASSERT(string);
 	
 	FREEP(m_string);
-	bool foo = UT_UCS_cloneString_char(&m_string, string);
+	bool foo = UT_UCS4_cloneString_char(&m_string, string);
 	return foo;
 }
 
@@ -122,7 +122,7 @@ bool XAP_Preview_Zoom::setString(UT_UCSChar * string)
 	UT_ASSERT(string);
 	
 	FREEP(m_string);
-	bool foo = UT_UCS_cloneString(&m_string, string);
+	bool foo = UT_UCS4_cloneString(&m_string, string);
 	return foo;
 }
 
@@ -133,5 +133,5 @@ void XAP_Preview_Zoom::draw(void)
 	
 	// TODO : replace 5,5 with real coordinates
 	m_gc->clearArea(0, 0, getWindowWidth(), getWindowHeight());
-	m_gc->drawChars(m_string, 0, UT_UCS_strlen(m_string), 5, 5);
+	m_gc->drawChars(m_string, 0, UT_UCS4_strlen(m_string), 5, 5);
 }

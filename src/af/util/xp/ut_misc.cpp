@@ -654,7 +654,7 @@ bool UT_isWordDelimiter(UT_UCSChar currentChar, UT_UCSChar followChar, UT_UCSCha
 		case UCS_RDBLQUOTE:    // smart quote, close double /* wjc */
 		case UCS_LQUOTE:    // smart quote, open single  /* wjc */
 		case UCS_RQUOTE:	// we want quotes inside words for contractions
-			if (UT_UCS_isalpha(followChar) && UT_UCS_isalpha(prevChar))
+			if (UT_UCS4_isalpha(followChar) && UT_UCS4_isalpha(prevChar))
 			  {
 				  return false;
 			  }

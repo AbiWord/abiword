@@ -676,3 +676,143 @@ bool UT_UTF8Stringbuf::UTF8Iterator::sync ()
 
 	return true;
 }
+
+
+/***************************************************************************/
+/***************************************************************************/
+
+UT_UCS4Stringbuf::UT_UCS4Stringbuf()
+:	m_psz(0),
+	m_pEnd(0),
+	m_size(0)
+{
+}
+
+UT_UCS4Stringbuf::UT_UCS4Stringbuf(const UT_UCS4Stringbuf& rhs)
+:	m_psz(new char_type[rhs.capacity()]),
+	m_pEnd(m_psz + rhs.size()),
+	m_size(rhs.capacity())
+{
+	copy(m_psz, rhs.m_psz, rhs.capacity());
+}
+
+UT_UCS4Stringbuf::UT_UCS4Stringbuf(const char_type* sz, size_t n)
+:	m_psz(new char_type[n+1]),
+	m_pEnd(m_psz + n),
+	m_size(n+1)
+{
+	copy(m_psz, sz, n);
+	m_psz[n] = 0;
+}
+
+UT_UCS4Stringbuf::~UT_UCS4Stringbuf()
+{
+	clear();
+}
+
+
+void UT_UCS4Stringbuf::operator=(const UT_UCS4Stringbuf& rhs)
+{
+	if (this != &rhs)
+	{
+		clear();
+		assign(rhs.m_psz, rhs.size());
+	}
+}
+
+void UT_UCS4Stringbuf::assign(const char_type* sz, size_t n)
+{
+	if (n)
+	{
+		if (n >= capacity())
+		{
+			grow_nocopy(n);
+		}
+		copy(m_psz, sz, n);
+		m_psz[n] = 0;
+		m_pEnd = m_psz + n;
+	} else {
+		clear();
+	}
+}
+
+void UT_UCS4Stringbuf::append(const char_type* sz, size_t n)
+{
+	if (!n)
+	{
+		return;
+	}
+	if (!capacity())
+	{
+		assign(sz, n);
+		return;
+	}
+	const size_t nLen = size();
+	grow_copy(nLen + n);
+	copy(m_psz + nLen, sz, n);
+	m_psz[nLen + n] = 0;
+	m_pEnd += n;
+}
+
+void UT_UCS4Stringbuf::append(const UT_UCS4Stringbuf& rhs)
+{
+	append(rhs.m_psz, rhs.size());
+}
+
+
+static inline
+void my_ut_swap(UT_UCS4Char *&  a, UT_UCS4Char *&  b)
+	{ UT_UCS4Char *  t = a; a = b; b = t; }
+
+void UT_UCS4Stringbuf::swap(UT_UCS4Stringbuf& rhs)
+{
+	my_ut_swap(m_psz , rhs.m_psz );
+	my_ut_swap(m_pEnd, rhs.m_pEnd);
+	my_ut_swap(m_size, rhs.m_size);
+}
+
+void UT_UCS4Stringbuf::clear()
+{
+	if (m_psz)
+	{
+		delete[] m_psz;
+		m_psz = 0;
+		m_pEnd = 0;
+		m_size = 0;
+	}
+}
+
+void UT_UCS4Stringbuf::grow_nocopy(size_t n)
+{
+	grow_common(n, false);
+}
+
+void UT_UCS4Stringbuf::grow_copy(size_t n)
+{
+	grow_common(n, true);
+}
+
+void UT_UCS4Stringbuf::grow_common(size_t n, bool bCopy)
+{
+	++n;	// allow for zero termination
+	if (n > capacity())
+	{
+		const size_t nCurSize = size();
+		n = priv_max(n, (size_t)(nCurSize * g_rGrowBy));
+		char_type* pNew = new char_type[n];
+		if (bCopy && m_psz)
+		{
+			copy(pNew, m_psz, size() + 1);
+		}
+		delete[] m_psz;
+		m_psz  = pNew;
+		m_pEnd = m_psz + nCurSize;
+		m_size = n;
+	}
+}
+
+void UT_UCS4Stringbuf::copy(char_type* pDest, const char_type* pSrc, size_t n)
+{
+	if(pSrc && pDest)
+		memcpy(pDest, pSrc, n * sizeof(char_type));
+}

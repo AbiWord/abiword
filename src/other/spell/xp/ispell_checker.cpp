@@ -92,8 +92,10 @@ static void try_autodetect_charset(FIRST_ARG(istate) char* hashname)
     *p = '\0';
     if (!*start) /* empty enc */
       return;
-    DEREF(istate, translate_in) = UT_iconv_open(start, UCS_2_INTERNAL);
-    DEREF(istate, translate_out) = UT_iconv_open(UCS_2_INTERNAL, start);
+    //DEREF(istate, translate_in) = UT_iconv_open(start, UCS_2_INTERNAL);
+    //DEREF(istate, translate_out) = UT_iconv_open(UCS_2_INTERNAL, start);
+    DEREF(istate, translate_in) = UT_iconv_open(start, UCS_INTERNAL);
+    DEREF(istate, translate_out) = UT_iconv_open(UCS_INTERNAL, start);
   }  
 }
 
@@ -164,7 +166,7 @@ ISpellChecker::checkWord(const UT_UCSChar *word16, size_t length)
       const char *In = (const char *)word16;
       char *Out = word8;
       
-      len_in = length * 2;
+      len_in = length * sizeof(UT_UCSChar);
       len_out = sizeof( word8 ) - 1;
       UT_iconv(DEREF(m_pISpellState, translate_in), &In, &len_in, &Out, &len_out);
       *Out = '\0';
@@ -218,7 +220,7 @@ ISpellChecker::suggestWord(const UT_UCSChar *word16, size_t length)
       size_t len_in, len_out; 
       const char *In = (const char *)word16;
       char *Out = word8;
-      len_in = length * 2;
+      len_in = length * sizeof(UT_UCSChar);
       len_out = sizeof( word8 ) - 1;
       UT_iconv(DEREF(m_pISpellState, translate_in), &In, &len_in, &Out, &len_out);
       *Out = '\0';
@@ -233,7 +235,7 @@ ISpellChecker::suggestWord(const UT_UCSChar *word16, size_t length)
       
       l = strlen(DEREF(m_pISpellState, possibilities[c]));
       
-      UT_UCSChar *theWord = (unsigned short*)malloc(sizeof(unsigned short) * l + 2);
+      UT_UCS4Char *theWord = (UT_UCS4Char*)malloc(sizeof(UT_UCS4Char) * (l + 1));
       if (theWord == NULL) 
         {
 	  // OOM, but return what we have so far
@@ -260,9 +262,9 @@ ISpellChecker::suggestWord(const UT_UCSChar *word16, size_t length)
 	  char *Out = (char *)theWord;
 	  
 	  len_in = l;
-	  len_out = sizeof(unsigned short) * l;
+	  len_out = sizeof(UT_UCS4Char) * (l+1);
 	  UT_iconv(DEREF(m_pISpellState, translate_out), &In, &len_in, &Out, &len_out);	    
-	  *((unsigned short *)Out) = 0;
+	  *((UT_UCS4Char *)Out) = 0;
         }
       
       sgvec->addItem((void *)theWord);
@@ -381,8 +383,11 @@ ISpellChecker::requestDictionary(const char *szLang)
   prefstringchar = findfiletype(DEREF_FIRST_ARG(m_pISpellState) "utf8", 1, deftflag < 0 ? &deftflag : (int *) NULL);
   if (prefstringchar >= 0)
     {
-      DEREF(m_pISpellState, translate_in) = UT_iconv_open("utf-8", UCS_2_INTERNAL);
-      DEREF(m_pISpellState, translate_out) = UT_iconv_open(UCS_2_INTERNAL, "utf-8");
+		//DEREF(m_pISpellState, translate_in) = UT_iconv_open("utf-8", UCS_2_INTERNAL);
+		//DEREF(m_pISpellState, translate_out) = UT_iconv_open(UCS_2_INTERNAL, "utf-8");
+		DEREF(m_pISpellState, translate_in) = UT_iconv_open("utf-8", UCS_INTERNAL);
+		DEREF(m_pISpellState, translate_out) = UT_iconv_open(UCS_INTERNAL, "utf-8");
+		
     }
   
     /* Test for "latinN" */
@@ -398,8 +403,8 @@ ISpellChecker::requestDictionary(const char *szLang)
             prefstringchar = findfiletype(DEREF_FIRST_ARG(m_pISpellState) teststring.c_str(), 1, deftflag < 0 ? &deftflag : (int *) NULL);
             if (prefstringchar >= 0)
             {
-                DEREF(m_pISpellState, translate_in) = UT_iconv_open(teststring.c_str(), UCS_2_INTERNAL);
-                DEREF(m_pISpellState, translate_out) = UT_iconv_open(UCS_2_INTERNAL, teststring.c_str());
+                DEREF(m_pISpellState, translate_in) = UT_iconv_open(teststring.c_str(), /*UCS_2_INTERNAL*/ UCS_INTERNAL);
+																						  DEREF(m_pISpellState, translate_out) = UT_iconv_open(/*UCS_2_INTERNAL*/UCS_INTERNAL, teststring.c_str());
                 break;
             }
         }
@@ -412,16 +417,16 @@ ISpellChecker::requestDictionary(const char *szLang)
         if( strstr( hashname, "russian.hash" ))
         {
             /* ISO-8859-5, CP1251 or KOI8-R */
-            DEREF(m_pISpellState, translate_in) = UT_iconv_open("KOI8-R", UCS_2_INTERNAL);
-            DEREF(m_pISpellState, translate_out) = UT_iconv_open(UCS_2_INTERNAL, "KOI8-R");
+            DEREF(m_pISpellState, translate_in) = UT_iconv_open("KOI8-R", /*UCS_2_INTERNAL*/UCS_INTERNAL);
+            DEREF(m_pISpellState, translate_out) = UT_iconv_open(/*UCS_2_INTERNAL*/UCS_INTERNAL, "KOI8-R");
         }
     }
 
     /* If nothing found, use latin1 */
     if(!UT_iconv_isValid(DEREF(m_pISpellState, translate_in)))
     {
-        DEREF(m_pISpellState, translate_in) = UT_iconv_open("latin1", UCS_2_INTERNAL);
-        DEREF(m_pISpellState, translate_out) = UT_iconv_open(UCS_2_INTERNAL, "latin1");
+        DEREF(m_pISpellState, translate_in) = UT_iconv_open("latin1", /*UCS_2_INTERNAL*/UCS_INTERNAL);
+        DEREF(m_pISpellState, translate_out) = UT_iconv_open(/*UCS_2_INTERNAL*/UCS_INTERNAL, "latin1");
     }
 
     if (prefstringchar < 0)

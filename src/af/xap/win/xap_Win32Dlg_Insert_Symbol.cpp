@@ -303,7 +303,7 @@ void XAP_Win32Dialog_Insert_Symbol::_setFontFromCombo(UT_sint32 Index)
 
 			UT_UCSChar *p_UC_buffer = new UT_UCSChar[Length + 1];
 
-			UT_UCS_strcpy_char(p_UC_buffer, p_buffer);
+			UT_UCS4_strcpy_char(p_UC_buffer, p_buffer);
 			
 			m_DrawSymbol->setSelectedFont(p_buffer);
 			m_DrawSymbol->draw();

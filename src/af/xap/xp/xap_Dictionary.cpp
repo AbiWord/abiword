@@ -162,8 +162,8 @@ static void _smashUTF8(UT_GrowBuf * pgb)
 
 	for (UT_uint32 k=0; (k < pgb->getLength()); k++)
 	{
-		UT_uint16 * p = pgb->getPointer(k);
-		UT_uint16 ck = *p;
+		UT_UCS4Char * p = (UT_UCS4Char*)pgb->getPointer(k);
+		UT_UCS4Char  ck = *p;
 		
 		if (ck < 0x0080)						// latin-1
 			continue;
@@ -181,7 +181,7 @@ static void _smashUTF8(UT_GrowBuf * pgb)
 			buf[2] = (XML_Char)p[2];
 			buf[3] = 0;
 			UT_UCSChar ucs = UT_decodeUTF8char(buf,3);
-			pgb->overwrite(k,&ucs,1);
+			pgb->overwrite(k,(UT_GrowBufElement*)&ucs,1);
 			pgb->del(k+1,2);
 			continue;
 		}
@@ -193,7 +193,7 @@ static void _smashUTF8(UT_GrowBuf * pgb)
 			buf[1] = (XML_Char)p[1];
 			buf[2] = 0;
 			UT_UCSChar ucs = UT_decodeUTF8char(buf,2);
-			pgb->overwrite(k,&ucs,1);
+			pgb->overwrite(k,(UT_GrowBufElement*)&ucs,1);
 			pgb->del(k+1,1);
 			continue;
 		}
@@ -239,7 +239,7 @@ bool XAP_Dictionary::_parseUTF8(void)
 				if (bSmashUTF8)
 					_smashUTF8(&gbBlock);
 
-				X_ReturnIfFail(addWord(gbBlock.getPointer(0), gbBlock.getLength()));
+				X_ReturnIfFail(addWord((UT_UCS4Char*)gbBlock.getPointer(0), gbBlock.getLength()));
 				gbBlock.truncate(0);
 				bSmashUTF8 = false;
 			}
@@ -256,7 +256,7 @@ bool XAP_Dictionary::_parseUTF8(void)
 			if (c > 0x7f)
 				bSmashUTF8 = true;
 			UT_UCSChar uc = (UT_UCSChar) c;
-			X_ReturnIfFail(gbBlock.ins(gbBlock.getLength(),&uc,1));
+			X_ReturnIfFail((UT_UCS4Char*)gbBlock.ins(gbBlock.getLength(),(UT_GrowBufElement*)&uc,1));
 			break;
 		}
 	} 
@@ -267,7 +267,7 @@ bool XAP_Dictionary::_parseUTF8(void)
 		if (bSmashUTF8)
 			_smashUTF8(&gbBlock);
 
-		X_ReturnIfFail(addWord(gbBlock.getPointer(0), gbBlock.getLength()));
+		X_ReturnIfFail(addWord((UT_UCS4Char*)gbBlock.getPointer(0), gbBlock.getLength()));
 	}
 
 	return true;
@@ -292,7 +292,7 @@ bool XAP_Dictionary::save(void)
 	for (UT_uint32 i = 0; i < size; i++)
 	{
 		UT_UCSChar * pWord = (UT_UCSChar *) pVec->getNthItem(i);
-		_outputUTF8(pWord, UT_UCS_strlen(pWord));
+		_outputUTF8(pWord, UT_UCS4_strlen(pWord));
 		_writeBytes((UT_Byte *)"\n");
 	}
 
@@ -366,7 +366,7 @@ bool XAP_Dictionary::addWord(const UT_UCSChar * pWord, UT_uint32 len)
 // Useful debugging code
 //
 	char * ucs_dup = (char *) UT_calloc(2*len+1, sizeof(char));
-	UT_UCS_strcpy_to_char( ucs_dup, copy);
+	UT_UCS4_strcpy_to_char( ucs_dup, copy);
 	UT_DEBUGMSG(("Inserting word %s with key %s into hash \n",ucs_dup,key));
 	FREEP(ucs_dup);
 
@@ -390,7 +390,7 @@ bool XAP_Dictionary::addWord(const char * word)
 		return false;
 	}
 	UT_UCSChar * ucs_dup = (UT_UCSChar *) UT_calloc(len+1, sizeof(UT_UCSChar));
-	UT_UCS_strcpy_char(ucs_dup, word);
+	UT_UCS4_strcpy_char(ucs_dup, word);
 	addWord(ucs_dup,len);
 	FREEP(ucs_dup);
 	return true;
@@ -430,7 +430,7 @@ void XAP_Dictionary::suggestWord(UT_Vector * pVecSuggestions, const UT_UCSChar *
   {
     UT_UCSChar * pszDict = (UT_UCSChar *) pVec->getNthItem(i);
     UT_UCSChar * pszReturn = NULL;
-    float lenDict = (float) UT_UCS_strlen(pszDict);
+    float lenDict = (float) UT_UCS4_strlen(pszDict);
     UT_uint32 wordInDict = countCommonChars(pszDict,pszWord);
     UT_uint32 dictInWord = countCommonChars(pszWord,pszDict);
     float flen = (float) len;
@@ -439,7 +439,7 @@ void XAP_Dictionary::suggestWord(UT_Vector * pVecSuggestions, const UT_UCSChar *
 
     if((frac1 > 0.8) && (frac2 > 0.8))
     {
-	  UT_UCS_cloneString(&pszReturn, pszDict);
+	  UT_UCS4_cloneString(&pszReturn, pszDict);
 	  pVecSuggestions->addItem((void *) pszReturn);
     }
   }
@@ -453,7 +453,7 @@ void XAP_Dictionary::suggestWord(UT_Vector * pVecSuggestions, const UT_UCSChar *
  */
 UT_uint32 XAP_Dictionary::countCommonChars( UT_UCSChar *pszHaystack,UT_UCSChar * pszNeedle)
 {
-    UT_uint32 lenNeedle =  UT_UCS_strlen(pszNeedle);
+    UT_uint32 lenNeedle =  UT_UCS4_strlen(pszNeedle);
     UT_UCSChar oneChar[2];
     oneChar[1] = 0;
     UT_uint32 i=0;
@@ -461,7 +461,7 @@ UT_uint32 XAP_Dictionary::countCommonChars( UT_UCSChar *pszHaystack,UT_UCSChar *
     for(i=0; i< lenNeedle; i++)
     {
       oneChar[0] = pszNeedle[i];
-      if(UT_UCS_strstr(pszHaystack,oneChar) != 0)
+      if(UT_UCS4_strstr(pszHaystack,oneChar) != 0)
       {
 	  score++;
       }

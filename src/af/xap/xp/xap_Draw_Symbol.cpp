@@ -233,7 +233,7 @@ void XAP_Draw_Symbol::drawarea( UT_UCSChar c, UT_UCSChar p)
 	wheight = m_drawareaHeight;
 	
 	// Centre the character.
-	unsigned short CharacterWidth;
+	UT_GrowBufElement CharacterWidth;
 	m_areagc->measureString(&c, 0, 1, &CharacterWidth);
 	x = (m_drawareaWidth - CharacterWidth) / 2;
 	y = (m_drawareaHeight - m_areagc->getFontHeight()) / 2;

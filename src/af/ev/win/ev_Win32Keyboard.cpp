@@ -214,7 +214,8 @@ void ev_Win32Keyboard::remapKeyboard(HKL hKeyboardLayout)
 
 			UT_DEBUGMSG(("New keyboard codepage: %s\n",szCodePage));
 
-			m_iconv = UT_iconv_open( "UCS-2-INTERNAL", szCodePage );
+			//m_iconv = UT_iconv_open( "UCS-2-INTERNAL", szCodePage );
+			m_iconv = UT_iconv_open( "UCS-4-INTERNAL", szCodePage );
 		}
 
 		m_hKeyboardLayout = hKeyboardLayout;
@@ -547,7 +548,7 @@ void ev_Win32Keyboard::_emitChar(AV_View * pView,
 	//			 (ems&EV_EMS_CONTROL)?"control":"",
 	//			 (ems&EV_EMS_ALT)?"alt":""));
 
-	UT_uint16 charData[2];
+	UT_UCSChar charData[2];
 	size_t ret;
 	if( m_iconv != (UT_iconv_t)-1 )
 	{
@@ -558,7 +559,7 @@ void ev_Win32Keyboard::_emitChar(AV_View * pView,
 
 		// 2 bytes for Unicode and MBCS
 		len_in = (m_bIsUnicodeInput || (nVirtKey & 0xff00)) ? 2 : 1;
-		len_out = 4;
+		len_out = sizeof(charData);
 
 		if ((ret = UT_iconv( m_iconv, &In, &len_in, &Out, &len_out )) == -1)
 			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);

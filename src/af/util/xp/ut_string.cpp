@@ -421,15 +421,13 @@ UT_uint32 UT_pointerArrayLength(void ** array)
  *
  * Stephen R. van den Berg, berg@pool.informatik.rwth-aachen.de */
 
-typedef UT_UCSChar chartype;
-
-UT_UCSChar * UT_UCS_strstr(const UT_UCSChar * phaystack, const UT_UCSChar * pneedle)
+UT_UCS2Char * UT_UCS2_strstr(const UT_UCS2Char * phaystack, const UT_UCS2Char * pneedle)
 {
-	register const UT_UCSChar *haystack, *needle;
-	register chartype b, c;
+	register const UT_UCS2Char *haystack, *needle;
+	register UT_UCS2Char b, c;
 
-	haystack = (const UT_UCSChar *) phaystack;
-	needle = (const UT_UCSChar *) pneedle;
+	haystack = (const UT_UCS2Char *) phaystack;
+	needle = (const UT_UCS2Char *) pneedle;
 
 	b = *needle;
 	if (b != '\0')
@@ -451,8 +449,8 @@ UT_UCSChar * UT_UCS_strstr(const UT_UCSChar * phaystack, const UT_UCSChar * pnee
 
 		for (;;)
         {
-			register chartype a;
-			register const UT_UCSChar *rhaystack, *rneedle;
+			register UT_UCS2Char a;
+			register const UT_UCS2Char *rhaystack, *rneedle;
 
 			do
             {
@@ -502,12 +500,12 @@ UT_UCSChar * UT_UCS_strstr(const UT_UCSChar * phaystack, const UT_UCSChar * pnee
         }
     }
  foundneedle:
-	return (UT_UCSChar *) haystack;
+	return (UT_UCS2Char *) haystack;
  ret0:
 	return 0;
 }
 
-UT_sint32 UT_UCS_strcmp(const UT_UCSChar* left, const UT_UCSChar* right)
+UT_sint32 UT_UCS2_strcmp(const UT_UCS2Char* left, const UT_UCS2Char* right)
 {
 	UT_ASSERT(left);
 	UT_ASSERT(right);
@@ -550,31 +548,18 @@ UT_sint32 UT_UCS_strcmp(const UT_UCSChar* left, const UT_UCSChar* right)
 /**
  * Convert a given character to uppercase
  */
-UT_UCSChar UT_UCS_toupper(UT_UCSChar c)
+UT_UCS2Char UT_UCS2_toupper(UT_UCS2Char c)
 {
         if (c < 128) // in ASCII range
 	  return toupper(c);
 
-#if 0
-        if (c >= 256)
-	  return c;
-#else
 	if (XAP_EncodingManager::get_instance()->single_case())
 		return c;
 	/*let's trust libc! -- does not seem to work :(*/
-#if 0
-	UT_UCSChar local = XAP_EncodingManager::get_instance()->try_UToNative(c);
-	if (!local || local>0xff)
-		return c;
-	local = XAP_EncodingManager::get_instance()->try_nativeToU(toupper(local));
-	return local ? local : c;
-#else
     case_entry * letter = (case_entry *)bsearch(&c, &case_table, NrElements(case_table),sizeof(case_entry),s_cmp_case);
     if(!letter || letter->type == 1)
         return c;
     return letter->other;
-#endif
-#endif
 }
 
 
@@ -583,33 +568,17 @@ UT_UCSChar UT_UCS_toupper(UT_UCSChar c)
 	This function created by Pierre Sarrazin 1999-02-06
 */
 
-UT_UCSChar UT_UCS_tolower(UT_UCSChar c)
+UT_UCS2Char UT_UCS2_tolower(UT_UCS2Char c)
 {
 	if (c < 128)
 		return tolower(c);
-#if 0		
-	if (c >= 256)
-		return c;  /* Unicode but not Latin-1 - don't know what to do */
-	if (c >= 0xC0 && c <= 0xDE && c != 0xD7)  /* uppercase Latin-1 chars */
-		return c + 0x20;
-	return c;
-#else
 	if (XAP_EncodingManager::get_instance()->single_case())
 		return c;
 	/*let's trust libc!*/
-#if 0
-	UT_UCSChar local = XAP_EncodingManager::get_instance()->try_UToNative(c);
-	if (!local || local>0xff)
-		return c;
-	local = XAP_EncodingManager::get_instance()->try_nativeToU(tolower(local));
-	return local ? local : c;
-#else
     case_entry * letter = (case_entry *)bsearch(&c, &case_table, NrElements(case_table),sizeof(case_entry),s_cmp_case);
     if(!letter || letter->type == 0)
         return c;
     return letter->other;
-#endif
-#endif
 }
 
 
@@ -618,27 +587,27 @@ UT_UCSChar UT_UCS_tolower(UT_UCSChar c)
 	This function created by Pierre Sarrazin 1999-02-06
 */
 
-UT_UCSChar * UT_UCS_stristr(const UT_UCSChar * phaystack, const UT_UCSChar * pneedle)
+UT_UCS2Char * UT_UCS2_stristr(const UT_UCS2Char * phaystack, const UT_UCS2Char * pneedle)
 {
-	register const UT_UCSChar *haystack, *needle;
-	register chartype b, c;
+	register const UT_UCS2Char *haystack, *needle;
+	register UT_UCS2Char b, c;
 
-	haystack = (const UT_UCSChar *) phaystack;
-	needle = (const UT_UCSChar *) pneedle;
+	haystack = (const UT_UCS2Char *) phaystack;
+	needle = (const UT_UCS2Char *) pneedle;
 
-	b = UT_UCS_tolower(*needle);
+	b = UT_UCS2_tolower(*needle);
 	if (b != '\0')
     {
 		haystack--;                               /* possible ANSI violation */
 		do
         {
-			c = UT_UCS_tolower(*++haystack);
+			c = UT_UCS2_tolower(*++haystack);
 			if (c == '\0')
 				goto ret0;
         }
 		while (c != b);
 
-		c = UT_UCS_tolower(*++needle);
+		c = UT_UCS2_tolower(*++needle);
 		if (c == '\0')
 			goto foundneedle;
 		++needle;
@@ -646,24 +615,24 @@ UT_UCSChar * UT_UCS_stristr(const UT_UCSChar * phaystack, const UT_UCSChar * pne
 
 		for (;;)
         {
-			register chartype a;
-			register const UT_UCSChar *rhaystack, *rneedle;
+			register UT_UCS2Char a;
+			register const UT_UCS2Char *rhaystack, *rneedle;
 
 			do
             {
-				a = UT_UCS_tolower(*++haystack);
+				a = UT_UCS2_tolower(*++haystack);
 				if (a == '\0')
 					goto ret0;
 				if (a == b)
 					break;
-				a = UT_UCS_tolower(*++haystack);
+				a = UT_UCS2_tolower(*++haystack);
 				if (a == '\0')
 					goto ret0;
 			shloop: ; // need a statement here for EGCS 1.1.1 to accept it
 			}
 			while (a != b);
 
-		jin:	a = UT_UCS_tolower(*++haystack);
+		jin:	a = UT_UCS2_tolower(*++haystack);
 			if (a == '\0')
 				goto ret0;
 
@@ -672,23 +641,23 @@ UT_UCSChar * UT_UCS_stristr(const UT_UCSChar * phaystack, const UT_UCSChar * pne
 
 			rhaystack = haystack-- + 1;
 			rneedle = needle;
-			a = UT_UCS_tolower(*rneedle);
+			a = UT_UCS2_tolower(*rneedle);
 
-			if (UT_UCS_tolower(*rhaystack) == a)
+			if (UT_UCS2_tolower(*rhaystack) == a)
 				do
 				{
 					if (a == '\0')
 						goto foundneedle;
 					++rhaystack;
-					a = UT_UCS_tolower(*++needle);
-					if (UT_UCS_tolower(*rhaystack) != a)
+					a = UT_UCS2_tolower(*++needle);
+					if (UT_UCS2_tolower(*rhaystack) != a)
 						break;
 					if (a == '\0')
 						goto foundneedle;
 					++rhaystack;
-					a = UT_UCS_tolower(*++needle);
+					a = UT_UCS2_tolower(*++needle);
 				}
-				while (UT_UCS_tolower(*rhaystack) == a);
+				while (UT_UCS2_tolower(*rhaystack) == a);
 
 			needle = rneedle;             /* took the register-poor approach */
 
@@ -697,13 +666,13 @@ UT_UCSChar * UT_UCS_stristr(const UT_UCSChar * phaystack, const UT_UCSChar * pne
         }
     }
  foundneedle:
-	return (UT_UCSChar *) haystack;
+	return (UT_UCS2Char *) haystack;
  ret0:
 	return 0;
 }
 /****************************************************************************/
 
-UT_uint32 UT_UCS_strlen(const UT_UCSChar * string)
+UT_uint32 UT_UCS2_strlen(const UT_UCS2Char * string)
 {
 	UT_uint32 i;
 
@@ -713,13 +682,13 @@ UT_uint32 UT_UCS_strlen(const UT_UCSChar * string)
 	return i;
 }
 
-UT_UCSChar * UT_UCS_strcpy(UT_UCSChar * dest, const UT_UCSChar * src)
+UT_UCS2Char * UT_UCS2_strcpy(UT_UCS2Char * dest, const UT_UCS2Char * src)
 {
 	UT_ASSERT(dest);
 	UT_ASSERT(src);
 	
-	UT_UCSChar * d = dest;
-	UT_UCSChar * s = (UT_UCSChar *) src;
+	UT_UCS2Char * d = dest;
+	UT_UCS2Char * s = (UT_UCS2Char *) src;
 
 	while (*s != 0)
 		*d++ = *s++;
@@ -730,12 +699,12 @@ UT_UCSChar * UT_UCS_strcpy(UT_UCSChar * dest, const UT_UCSChar * src)
 
 // TODO shouldn't all of the 'char *' strings be 'unsigned char *' strings ??
 
-UT_UCSChar * UT_UCS_strcpy_char(UT_UCSChar * dest, const char * src)
+UT_UCS2Char * UT_UCS2_strcpy_char(UT_UCS2Char * dest, const char * src)
 {
 	UT_ASSERT(dest);
 	UT_ASSERT(src);
 	
-	UT_UCSChar * d 		= dest;
+	UT_UCS2Char * d 		= dest;
 	unsigned char * s	= (unsigned char *) src;
 
 #ifndef WITHOUT_MB
@@ -757,13 +726,13 @@ UT_UCSChar * UT_UCS_strcpy_char(UT_UCSChar * dest, const char * src)
 	return dest;
 }
 
-char * UT_UCS_strcpy_to_char(char * dest, const UT_UCSChar * src)
+char * UT_UCS2_strcpy_to_char(char * dest, const UT_UCS2Char * src)
 {
 	UT_ASSERT(dest);
 	UT_ASSERT(src);
 
 	char * 			d = dest;
-	UT_UCSChar * 	s = (UT_UCSChar *) src;
+	UT_UCS2Char * 	s = (UT_UCS2Char *) src;
 
 #ifndef WITHOUT_MB
 	UT_Wctomb w;
@@ -784,36 +753,36 @@ char * UT_UCS_strcpy_to_char(char * dest, const UT_UCSChar * src)
 	return dest;
 }
 
-bool UT_UCS_cloneString(UT_UCSChar ** dest, const UT_UCSChar * src)
+bool UT_UCS2_cloneString(UT_UCS2Char ** dest, const UT_UCS2Char * src)
 {
-	UT_uint32 length = UT_UCS_strlen(src) + 1;
-	*dest = (UT_UCSChar *)UT_calloc(length,sizeof(UT_UCSChar));
+	UT_uint32 length = UT_UCS2_strlen(src) + 1;
+	*dest = (UT_UCS2Char *)UT_calloc(length,sizeof(UT_UCS2Char));
 	if (!*dest)
 		return false;
-	memmove(*dest,src,length*sizeof(UT_UCSChar));
+	memmove(*dest,src,length*sizeof(UT_UCS2Char));
 
 	return true;
 }
 
-bool UT_UCS_cloneString_char(UT_UCSChar ** dest, const char * src)
+bool UT_UCS2_cloneString_char(UT_UCS2Char ** dest, const char * src)
 {
 
 #ifdef WITHOUT_MB
 
 		UT_uint32 length = strlen(src) + 1;
-		*dest = (UT_UCSChar *)UT_calloc(length,sizeof(UT_UCSChar));
+		*dest = (UT_UCS2Char *)UT_calloc(length,sizeof(UT_UCS2Char));
 		if (!*dest)
 				return false;
-		UT_UCS_strcpy_char(*dest, src);
+		UT_UCS2_strcpy_char(*dest, src);
 
 		return true;
 #else
 
 		UT_uint32 length = MB_LEN_MAX*strlen(src) + 1;
-		*dest = (UT_UCSChar *)UT_calloc(length,sizeof(UT_UCSChar));
+		*dest = (UT_UCS2Char *)UT_calloc(length,sizeof(UT_UCS2Char));
 		if (!*dest)
 				return false;
-		UT_UCSChar * d= *dest;
+		UT_UCS2Char * d= *dest;
 		unsigned char * s	= (unsigned char *) src;
 		
 		UT_Mbtowc m;
@@ -901,7 +870,7 @@ void UT_decodeUTF8string(const XML_Char * pString, UT_uint32 len, UT_GrowBuf * p
 		{
 			UT_ASSERT(bytesInSequence == 0);
 			UT_UCSChar c = p[k];
-			pResult->append(&c,1);
+			pResult->append((UT_GrowBufElement *)&c,1);
 		}
 		else if ((p[k] & 0xf0) == 0xf0)			// lead byte in 4-byte surrogate pair
 		{
@@ -931,7 +900,7 @@ void UT_decodeUTF8string(const XML_Char * pString, UT_uint32 len, UT_GrowBuf * p
 			if (bytesInSequence == bytesExpectedInSequence)		// final byte in multi-byte sequence
 			{
 				UT_UCSChar c = UT_decodeUTF8char(buf,bytesInSequence);
-				pResult->append(&c,1);
+				pResult->append((UT_GrowBufElement *)&c,1);
 				bytesInSequence = 0;
 				bytesExpectedInSequence = 0;
 			}
@@ -1009,14 +978,8 @@ bool UT_isSmartQuotedCharacter(UT_UCSChar c)
 	return (result);
 }
 
-bool UT_UCS_isupper(UT_UCSChar c)
+bool UT_UCS2_isupper(UT_UCS2Char c)
 {
-#if 0	
-	if (XAP_EncodingManager::get_instance()->single_case())
-	    return 1;/* FIXME: anyone has better idea? */
-	UT_UCSChar local = XAP_EncodingManager::get_instance()->try_UToNative(c);
-	return local && local <0xff ? isupper(local)!=0 : 0;
-#else
 	if(c < 127)
 		return isupper(c)!=0;
 
@@ -1024,17 +987,10 @@ bool UT_UCS_isupper(UT_UCSChar c)
     if(letter && letter->type == 1)
         return true;
     return false;
-#endif
 };
 
-bool UT_UCS_islower(UT_UCSChar c)
+bool UT_UCS2_islower(UT_UCS2Char c)
 {
-#if 0
-	if (XAP_EncodingManager::get_instance()->single_case())
-	    return 1;/* FIXME: anyone has better idea? */
-	UT_UCSChar local = XAP_EncodingManager::get_instance()->try_UToNative(c);
-	return local && local <0xff ? islower(local)!=0 : 0;
-#else
 	if(c < 127)
 		return islower(c)!=0;
 		
@@ -1042,10 +998,9 @@ bool UT_UCS_islower(UT_UCSChar c)
     if(!letter || letter->type == 0)
         return true;
     return false;
-#endif
 };
 
-bool UT_UCS_isspace(UT_UCSChar c)
+bool UT_UCS2_isspace(UT_UCS2Char c)
 {
 	// the whitespace table is small, so use linear search
 	for (UT_uint32 i = 0; i < NrElements(whitespace_table); i++)
@@ -1068,13 +1023,13 @@ bool UT_UCS_isspace(UT_UCSChar c)
 	not this will be true, but we need a proper Unicode implementation here
 */
 
-bool UT_UCS_isalpha(UT_UCSChar c)
+bool UT_UCS2_isalpha(UT_UCS2Char c)
 {
 #ifdef BIDI_ENABLED
     FriBidiCharType type = fribidi_get_type(c);
     return FRIBIDI_IS_LETTER(type);
 #else
-	UT_UCSChar local = XAP_EncodingManager::get_instance()->try_UToNative(c);
+	UT_UCS2Char local = XAP_EncodingManager::get_instance()->try_UToNative(c);
     if(!local)
         return true;
         
@@ -1085,7 +1040,7 @@ bool UT_UCS_isalpha(UT_UCSChar c)
 #endif
 };
 
-bool UT_UCS_isSentenceSeparator(UT_UCSChar c)
+bool UT_UCS2_isSentenceSeparator(UT_UCS2Char c)
 {
 	switch(c)
 	{
@@ -1096,6 +1051,82 @@ bool UT_UCS_isSentenceSeparator(UT_UCSChar c)
 			return false;
 	}
 }
+
+
+bool UT_UCS4_isupper(UT_UCS4Char c)
+{
+	if(c < 127)
+		return isupper(c)!=0;
+
+    case_entry * letter = (case_entry *)bsearch(&c, &case_table, NrElements(case_table),sizeof(case_entry),s_cmp_case);
+    if(letter && letter->type == 1)
+        return true;
+    return false;
+};
+
+bool UT_UCS4_islower(UT_UCS4Char c)
+{
+	if(c < 127)
+		return islower(c)!=0;
+		
+    case_entry * letter = (case_entry *)bsearch(&c, &case_table, NrElements(case_table),sizeof(case_entry),s_cmp_case);
+    if(!letter || letter->type == 0)
+        return true;
+    return false;
+};
+
+bool UT_UCS4_isspace(UT_UCS4Char c)
+{
+	// the whitespace table is small, so use linear search
+	for (UT_uint32 i = 0; i < NrElements(whitespace_table); i++)
+	{
+		if(whitespace_table[i].high < c)
+			continue;
+		if(whitespace_table[i].low <= c)
+			return true;
+		// if we got here, then low > c
+		return false;
+	}
+	return false;
+};
+
+/*
+	TODO: proper Unicode implementation required
+	This function is not working -- it assumes that c can be translated to the
+	native encoding, which does not have to be always true. We will treat all
+	non-translatable characters as alpha characters, because more often than
+	not this will be true, but we need a proper Unicode implementation here
+*/
+
+bool UT_UCS4_isalpha(UT_UCS4Char c)
+{
+#ifdef BIDI_ENABLED
+    FriBidiCharType type = fribidi_get_type(c);
+    return FRIBIDI_IS_LETTER(type);
+#else
+	UT_UCS4Char local = XAP_EncodingManager::get_instance()->try_UToNative(c);
+    if(!local)
+        return true;
+        
+    xxx_UT_DEBUGMSG(("UT_UCS_isalpha: c 0x%x, local 0x%x\n",c, loacal));
+	return local && local < 0xff ? 
+		isalpha(local)!=0 : 
+		local > 0xff /* we consider it alpha if it's > 0xff */;
+#endif
+};
+
+bool UT_UCS4_isSentenceSeparator(UT_UCS4Char c)
+{
+	switch(c)
+	{
+		case '.':
+			return true;
+			
+		default:
+			return false;
+	}
+}
+
 
 /*
  this one prints floating point value but using dot as fractional serparator
@@ -1117,15 +1148,15 @@ const char* std_size_string(float f)
 #ifdef BIDI_ENABLED
 /* copies exactly n-chars from src to dest; NB! does not check for 00 i src
 */
-UT_UCSChar * UT_UCS_strncpy(UT_UCSChar * dest, const UT_UCSChar * src, UT_uint32 n)
+UT_UCS2Char * UT_UCS2_strncpy(UT_UCS2Char * dest, const UT_UCS2Char * src, UT_uint32 n)
 {
 	UT_ASSERT(dest);
 	UT_ASSERT(src);
 	
-	UT_UCSChar * d = dest;
-	UT_UCSChar * s = (UT_UCSChar *) src;
+	UT_UCS2Char * d = dest;
+	UT_UCS2Char * s = (UT_UCS2Char *) src;
 
-	for (; d < (UT_UCSChar *)dest + n;)
+	for (; d < (UT_UCS2Char *)dest + n;)
 		*d++ = *s++;
 	*d = NULL;
 
@@ -1135,9 +1166,9 @@ UT_UCSChar * UT_UCS_strncpy(UT_UCSChar * dest, const UT_UCSChar * src, UT_uint32
 
 /* reverses str of len n; used by BiDi which always knows the len of string to process
    thus we can save ourselves searching for the 00 */
-UT_UCSChar * UT_UCS_strnrev(UT_UCSChar * src, UT_uint32 n)
+UT_UCS2Char * UT_UCS2_strnrev(UT_UCS2Char * src, UT_uint32 n)
 {
-    UT_UCSChar t;
+    UT_UCS2Char t;
     UT_uint32 i;
 
     for(i = 0; i < n/2; i++)
@@ -1149,4 +1180,419 @@ UT_UCSChar * UT_UCS_strnrev(UT_UCSChar * src, UT_uint32 n)
     return src;
 }
 
+/* copies exactly n-chars from src to dest; NB! does not check for 00 i src
+*/
+UT_UCS4Char * UT_UCS4_strncpy(UT_UCS4Char * dest, const UT_UCS4Char * src, UT_uint32 n)
+{
+	UT_ASSERT(dest);
+	UT_ASSERT(src);
+	
+	UT_UCSChar * d = dest;
+	UT_UCSChar * s = (UT_UCS4Char *) src;
+
+	for (; d < (UT_UCS4Char *)dest + n;)
+		*d++ = *s++;
+	*d = NULL;
+
+	return dest;
+}
+
+
+/* reverses str of len n; used by BiDi which always knows the len of string to process
+   thus we can save ourselves searching for the 00 */
+UT_UCS4Char * UT_UCS4_strnrev(UT_UCS4Char * src, UT_uint32 n)
+{
+    UT_UCS4Char t;
+    UT_uint32 i;
+
+    for(i = 0; i < n/2; i++)
+    {
+        t = *(src + i);
+        *(src + i) = *(src + n - i - 1); //-1 so that we do not move the 00
+        *(src + n - i - 1) = t;
+    }
+    return src;
+}
 #endif
+
+
+UT_UCS4Char * UT_UCS4_strstr(const UT_UCS4Char * phaystack, const UT_UCS4Char * pneedle)
+{
+	register const UT_UCS4Char *haystack, *needle;
+	register UT_UCS4Char b, c;
+
+	haystack = (const UT_UCS4Char *) phaystack;
+	needle = (const UT_UCS4Char *) pneedle;
+
+	b = *needle;
+	if (b != '\0')
+    {
+		haystack--;                               /* possible ANSI violation */
+		do
+        {
+			c = *++haystack;
+			if (c == '\0')
+				goto ret0;
+        }
+		while (c != b);
+
+		c = *++needle;
+		if (c == '\0')
+			goto foundneedle;
+		++needle;
+		goto jin;
+
+		for (;;)
+        {
+			register UT_UCS4Char a;
+			register const UT_UCS4Char *rhaystack, *rneedle;
+
+			do
+            {
+				a = *++haystack;
+				if (a == '\0')
+					goto ret0;
+				if (a == b)
+					break;
+				a = *++haystack;
+				if (a == '\0')
+					goto ret0;
+			shloop: ; // need a statement here for EGCS 1.1.1 to accept it
+			}
+			while (a != b);
+
+		jin:	a = *++haystack;
+			if (a == '\0')
+				goto ret0;
+
+			if (a != c)
+				goto shloop;
+
+			rhaystack = haystack-- + 1;
+			rneedle = needle;
+			a = *rneedle;
+
+			if (*rhaystack == a)
+				do
+				{
+					if (a == '\0')
+						goto foundneedle;
+					++rhaystack;
+					a = *++needle;
+					if (*rhaystack != a)
+						break;
+					if (a == '\0')
+						goto foundneedle;
+					++rhaystack;
+					a = *++needle;
+				}
+				while (*rhaystack == a);
+
+			needle = rneedle;             /* took the register-poor approach */
+
+			if (a == '\0')
+				break;
+        }
+    }
+ foundneedle:
+	return (UT_UCS4Char *) haystack;
+ ret0:
+	return 0;
+}
+
+UT_sint32 UT_UCS4_strcmp(const UT_UCS4Char* left, const UT_UCS4Char* right)
+{
+	UT_ASSERT(left);
+	UT_ASSERT(right);
+	
+	while (*left && *right)
+	{
+		if (*left < *right)
+		{
+			return -1;
+		}
+
+		if (*left > *right)
+		{
+			return 1;
+		}
+
+		left++;
+		right++;
+	}
+
+	if (*left)
+	{
+		return -1;
+	}
+	else if (*right)
+	{
+		return 1;
+	}
+	else
+	{
+		return 0;
+	}
+}
+
+/*
+  Latin-1 Unicode case-insensitive string comparison and casing done by
+  Pierre Sarrazin <ps@cam.org>.
+*/
+
+/**
+ * Convert a given character to uppercase
+ */
+UT_UCS4Char UT_UCS4_toupper(UT_UCS4Char c)
+{
+        if (c < 128) // in ASCII range
+	  return toupper(c);
+
+	if (XAP_EncodingManager::get_instance()->single_case())
+		return c;
+	/*let's trust libc! -- does not seem to work :(*/
+    case_entry * letter = (case_entry *)bsearch(&c, &case_table, NrElements(case_table),sizeof(case_entry),s_cmp_case);
+    if(!letter || letter->type == 1)
+        return c;
+    return letter->other;
+}
+
+
+/*	Converts the given character to lowercase if it is an uppercase letter.
+	Returns it unchanged if it is not.
+	This function created by Pierre Sarrazin 1999-02-06
+*/
+
+UT_UCS4Char UT_UCS4_tolower(UT_UCS4Char c)
+{
+	if (c < 128)
+		return tolower(c);
+
+	if (XAP_EncodingManager::get_instance()->single_case())
+		return c;
+	/*let's trust libc!*/
+    case_entry * letter = (case_entry *)bsearch(&c, &case_table, NrElements(case_table),sizeof(case_entry),s_cmp_case);
+    if(!letter || letter->type == 0)
+        return c;
+    return letter->other;
+}
+
+
+/*	Characters are converted to lowercase (if applicable) when they
+	are read from the needle or the haystack. See UT_UCS_tolower().
+	This function created by Pierre Sarrazin 1999-02-06
+*/
+
+UT_UCS4Char * UT_UCS4_stristr(const UT_UCS4Char * phaystack, const UT_UCS4Char * pneedle)
+{
+	register const UT_UCS4Char *haystack, *needle;
+	register UT_UCS4Char b, c;
+
+	haystack = (const UT_UCS4Char *) phaystack;
+	needle = (const UT_UCS4Char *) pneedle;
+
+	b = UT_UCS4_tolower(*needle);
+	if (b != '\0')
+    {
+		haystack--;                               /* possible ANSI violation */
+		do
+        {
+			c = UT_UCS4_tolower(*++haystack);
+			if (c == '\0')
+				goto ret0;
+        }
+		while (c != b);
+
+		c = UT_UCS4_tolower(*++needle);
+		if (c == '\0')
+			goto foundneedle;
+		++needle;
+		goto jin;
+
+		for (;;)
+        {
+			register UT_UCS4Char a;
+			register const UT_UCS4Char *rhaystack, *rneedle;
+
+			do
+            {
+				a = UT_UCS4_tolower(*++haystack);
+				if (a == '\0')
+					goto ret0;
+				if (a == b)
+					break;
+				a = UT_UCS4_tolower(*++haystack);
+				if (a == '\0')
+					goto ret0;
+			shloop: ; // need a statement here for EGCS 1.1.1 to accept it
+			}
+			while (a != b);
+
+		jin:	a = UT_UCS4_tolower(*++haystack);
+			if (a == '\0')
+				goto ret0;
+
+			if (a != c)
+				goto shloop;
+
+			rhaystack = haystack-- + 1;
+			rneedle = needle;
+			a = UT_UCS4_tolower(*rneedle);
+
+			if (UT_UCS4_tolower(*rhaystack) == a)
+				do
+				{
+					if (a == '\0')
+						goto foundneedle;
+					++rhaystack;
+					a = UT_UCS4_tolower(*++needle);
+					if (UT_UCS4_tolower(*rhaystack) != a)
+						break;
+					if (a == '\0')
+						goto foundneedle;
+					++rhaystack;
+					a = UT_UCS4_tolower(*++needle);
+				}
+				while (UT_UCS4_tolower(*rhaystack) == a);
+
+			needle = rneedle;             /* took the register-poor approach */
+
+			if (a == '\0')
+				break;
+        }
+    }
+ foundneedle:
+	return (UT_UCS4Char *) haystack;
+ ret0:
+	return 0;
+}
+/****************************************************************************/
+
+UT_uint32 UT_UCS4_strlen(const UT_UCS4Char * string)
+{
+	UT_uint32 i;
+
+	for(i = 0; *string != 0; string++, i++)
+		;
+
+	return i;
+}
+
+UT_UCS4Char * UT_UCS4_strcpy(UT_UCS4Char * dest, const UT_UCS4Char * src)
+{
+	UT_ASSERT(dest);
+	UT_ASSERT(src);
+	
+	UT_UCS4Char * d = dest;
+	UT_UCS4Char * s = (UT_UCS4Char *) src;
+
+	while (*s != 0)
+		*d++ = *s++;
+	*d = 0;
+
+	return dest;
+}
+
+// TODO shouldn't all of the 'char *' strings be 'unsigned char *' strings ??
+
+UT_UCS4Char * UT_UCS4_strcpy_char(UT_UCS4Char * dest, const char * src)
+{
+	UT_ASSERT(dest);
+	UT_ASSERT(src);
+	
+	UT_UCS4Char * d 		= dest;
+	unsigned char * s	= (unsigned char *) src;
+
+#ifndef WITHOUT_MB
+	static UT_Mbtowc m;
+	wchar_t wc;
+#endif
+
+	while (*s != 0)
+	  {
+#ifdef WITHOUT_MB
+	    *d++ = *s++;
+#else
+		if(m.mbtowc(wc,*s))*d++=wc;
+		s++;
+#endif
+	  }
+	*d = 0;
+
+	return dest;
+}
+
+char * UT_UCS4_strcpy_to_char(char * dest, const UT_UCS4Char * src)
+{
+	UT_ASSERT(dest);
+	UT_ASSERT(src);
+
+	char * 			d = dest;
+	UT_UCS4Char * 	s = (UT_UCS4Char *) src;
+
+#ifndef WITHOUT_MB
+	UT_Wctomb w;
+#endif
+
+	while (*s != 0)
+	  {
+#ifdef WITHOUT_MB
+	    *d++ = *s++;
+#else
+		int length;
+		w.wctomb_or_fallback(d,length,*s++);
+		d+=length;
+#endif
+	  }
+	*d = 0;
+	
+	return dest;
+}
+
+bool UT_UCS4_cloneString(UT_UCS4Char ** dest, const UT_UCS4Char * src)
+{
+	UT_uint32 length = UT_UCS4_strlen(src) + 1;
+	*dest = (UT_UCS4Char *)UT_calloc(length,sizeof(UT_UCS4Char));
+	if (!*dest)
+		return false;
+	memmove(*dest,src,length*sizeof(UT_UCS4Char));
+
+	return true;
+}
+
+bool UT_UCS4_cloneString_char(UT_UCS4Char ** dest, const char * src)
+{
+
+#ifdef WITHOUT_MB
+
+		UT_uint32 length = strlen(src) + 1;
+		*dest = (UT_UCS4Char *)UT_calloc(length,sizeof(UT_UCS4Char));
+		if (!*dest)
+				return false;
+		UT_UCS4_strcpy_char(*dest, src);
+
+		return true;
+#else
+
+		UT_uint32 length = MB_LEN_MAX*strlen(src) + 1;
+		*dest = (UT_UCS4Char *)UT_calloc(length,sizeof(UT_UCS4Char));
+		if (!*dest)
+				return false;
+		UT_UCS4Char * d= *dest;
+		unsigned char * s	= (unsigned char *) src;
+		
+		UT_Mbtowc m;
+		wchar_t wc;
+		
+		while (*s != 0)
+		{
+				if(m.mbtowc(wc,*s))*d++=wc;
+				s++;
+		}
+		*d = 0;
+		
+		return true;
+
+#endif
+
+}

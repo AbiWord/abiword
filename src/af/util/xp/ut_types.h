@@ -24,6 +24,10 @@
 
 #include <stdlib.h>
 
+#ifdef DEBUG
+#define _CRTDBG_MAP_ALLOC
+#endif
+
 #ifdef NULL
 #undef NULL
 #endif
@@ -43,7 +47,15 @@ typedef char XML_Char;
 #endif
 
 typedef unsigned char		UT_Byte;
+#if 0
 typedef unsigned short		UT_UCSChar;	/* Unicode */
+typedef signed short        UT_GrowBufElement;
+#else
+typedef unsigned int		UT_UCSChar;	/* Unicode */
+typedef unsigned int        UT_UCS4Char;
+typedef unsigned short      UT_UCS2Char;
+typedef signed int          UT_GrowBufElement;
+#endif
 
 typedef unsigned char           UT_uint8;
 typedef signed char             UT_sint8;

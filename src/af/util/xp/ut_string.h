@@ -75,23 +75,41 @@ ABI_EXPORT UT_uint32  UT_pointerArrayLength(void ** array);
 
 // the naming convention has deviated from the above.  it's kind
 // of a mutant libc/C++ naming convention.
-ABI_EXPORT UT_sint32 		 UT_UCS_strcmp(const UT_UCSChar* left, const UT_UCSChar* right);
-ABI_EXPORT UT_UCSChar * 	 UT_UCS_strstr(const UT_UCSChar * phaystack, const UT_UCSChar * pneedle);
-ABI_EXPORT UT_UCSChar * 	 UT_UCS_stristr(const UT_UCSChar * phaystack, const UT_UCSChar * pneedle);
-ABI_EXPORT UT_uint32 		 UT_UCS_strlen(const UT_UCSChar * string);
-ABI_EXPORT UT_UCSChar * 	 UT_UCS_strcpy(UT_UCSChar * dest, const UT_UCSChar * src);
-ABI_EXPORT UT_UCSChar * 	 UT_UCS_strcpy_char(UT_UCSChar * dest, const char * src);
-ABI_EXPORT char *			 UT_UCS_strcpy_to_char(char * dest, const UT_UCSChar * src);
-ABI_EXPORT bool			 UT_UCS_cloneString(UT_UCSChar ** dest, const UT_UCSChar * src);
-ABI_EXPORT bool			 UT_UCS_cloneString_char(UT_UCSChar ** dest, const char * src);
+ABI_EXPORT UT_sint32 		 UT_UCS2_strcmp(const UT_UCS2Char* left, const UT_UCS2Char* right);
+ABI_EXPORT UT_UCS2Char * 	 UT_UCS2_strstr(const UT_UCS2Char * phaystack, const UT_UCS2Char * pneedle);
+ABI_EXPORT UT_UCS2Char * 	 UT_UCS2_stristr(const UT_UCS2Char * phaystack, const UT_UCS2Char * pneedle);
+ABI_EXPORT UT_uint32 		 UT_UCS2_strlen(const UT_UCS2Char * string);
+ABI_EXPORT UT_UCS2Char * 	 UT_UCS2_strcpy(UT_UCS2Char * dest, const UT_UCS2Char * src);
+ABI_EXPORT UT_UCS2Char * 	 UT_UCS2_strcpy_char(UT_UCS2Char * dest, const char * src);
+ABI_EXPORT char *			 UT_UCS2_strcpy_to_char(char * dest, const UT_UCS2Char * src);
+ABI_EXPORT bool			 UT_UCS2_cloneString(UT_UCS2Char ** dest, const UT_UCS2Char * src);
+ABI_EXPORT bool			 UT_UCS2_cloneString_char(UT_UCS2Char ** dest, const char * src);
 
 #ifdef BIDI_ENABLED
-ABI_EXPORT UT_UCSChar *     UT_UCS_strncpy(UT_UCSChar * dest, const UT_UCSChar * src, UT_uint32 n);
-ABI_EXPORT UT_UCSChar *     UT_UCS_strnrev(UT_UCSChar * dest, UT_uint32 n);
+ABI_EXPORT UT_UCS2Char *     UT_UCS2_strncpy(UT_UCS2Char * dest, const UT_UCS2Char * src, UT_uint32 n);
+ABI_EXPORT UT_UCS2Char *     UT_UCS2_strnrev(UT_UCS2Char * dest, UT_uint32 n);
 #endif
 
-ABI_EXPORT UT_UCSChar		 UT_UCS_tolower(UT_UCSChar c);
-ABI_EXPORT UT_UCSChar               UT_UCS_toupper(UT_UCSChar c);
+ABI_EXPORT UT_UCS2Char		 UT_UCS2_tolower(UT_UCS2Char c);
+ABI_EXPORT UT_UCS2Char       UT_UCS2_toupper(UT_UCS2Char c);
+
+ABI_EXPORT UT_sint32 		 UT_UCS4_strcmp(const UT_UCS4Char* left, const UT_UCS4Char* right);
+ABI_EXPORT UT_UCS4Char * 	 UT_UCS4_strstr(const UT_UCS4Char * phaystack, const UT_UCS4Char * pneedle);
+ABI_EXPORT UT_UCS4Char * 	 UT_UCS4_stristr(const UT_UCS4Char * phaystack, const UT_UCS4Char * pneedle);
+ABI_EXPORT UT_uint32 		 UT_UCS4_strlen(const UT_UCS4Char * string);
+ABI_EXPORT UT_UCS4Char * 	 UT_UCS4_strcpy(UT_UCS4Char * dest, const UT_UCS4Char * src);
+ABI_EXPORT UT_UCS4Char * 	 UT_UCS4_strcpy_char(UT_UCS4Char * dest, const char * src);
+ABI_EXPORT char *			 UT_UCS4_strcpy_to_char(char * dest, const UT_UCS4Char * src);
+ABI_EXPORT bool			     UT_UCS4_cloneString(UT_UCS4Char ** dest, const UT_UCS4Char * src);
+ABI_EXPORT bool			     UT_UCS4_cloneString_char(UT_UCS4Char ** dest, const char * src);
+
+#ifdef BIDI_ENABLED
+ABI_EXPORT UT_UCS4Char *     UT_UCS4_strncpy(UT_UCS4Char * dest, const UT_UCS4Char * src, UT_uint32 n);
+ABI_EXPORT UT_UCS4Char *     UT_UCS4_strnrev(UT_UCS4Char * dest, UT_uint32 n);
+#endif
+
+ABI_EXPORT UT_UCS4Char		 UT_UCS4_tolower(UT_UCS4Char c);
+ABI_EXPORT UT_UCS4Char       UT_UCS4_toupper(UT_UCS4Char c);
 
 ABI_EXPORT char *  UT_upperString(char * string);
 ABI_EXPORT char *  UT_lowerString(char * string);
@@ -113,27 +131,27 @@ ABI_EXPORT bool UT_isUrl ( const char * sz );
 ABI_EXPORT bool  UT_isSmartQuotableCharacter(UT_UCSChar c);
 ABI_EXPORT bool  UT_isSmartQuotedCharacter(UT_UCSChar c);
 
-#define UT_UCS_isdigit(x)	(((x) >= '0') && ((x) <= '9'))  // TODO: make UNICODE-wise
-#if 0
-#define UT_UCS_isupper(x)	(((x) >= 'A') && ((x) <= 'Z'))		// HACK: not UNICODE-safe
-#define UT_UCS_islower(x)	(((x) >= 'a') && ((x) <= 'z'))		// HACK: not UNICODE-safe
-#define UT_UCS_isalpha(x)	(UT_UCS_isupper(x) || UT_UCS_islower(x))		// HACK: not UNICODE-safe
-#else
-	/*these are unicode-safe*/
-ABI_EXPORT bool  UT_UCS_isupper(UT_UCSChar c);
-ABI_EXPORT bool  UT_UCS_islower(UT_UCSChar c);
-ABI_EXPORT bool  UT_UCS_isalpha(UT_UCSChar c);
-ABI_EXPORT bool	 UT_UCS_isSentenceSeparator(UT_UCSChar c);
-#endif
-#define UT_UCS_isalnum(x)	(UT_UCS_isalpha(x) || UT_UCS_isdigit(x))		// HACK: not UNICODE-safe
+#define UT_UCS4_isdigit(x)	(((x) >= '0') && ((x) <= '9'))  // TODO: make UNICODE-wise
+#define UT_UCS2_isdigit(x)	(((x) >= '0') && ((x) <= '9'))  // TODO: make UNICODE-wise
 
-#if 0
-#define UT_UCS_isspace(x)   (((x)==' '||((x)=='\r')||((x)=='\n')||((x)=='\t')||((x)=='\f')))  // HACK: not UNICODE safe
-#else
-ABI_EXPORT bool UT_UCS_isspace(UT_UCSChar c);
-#endif
+/*these are unicode-safe*/
+ABI_EXPORT bool  UT_UCS2_isupper(UT_UCS2Char c);
+ABI_EXPORT bool  UT_UCS2_islower(UT_UCS2Char c);
+ABI_EXPORT bool  UT_UCS2_isalpha(UT_UCS2Char c);
+ABI_EXPORT bool	 UT_UCS2_isSentenceSeparator(UT_UCS2Char c);
+#define UT_UCS2_isalnum(x)	(UT_UCS2_isalpha(x) || UT_UCS2_isdigit(x)) // HACK: not UNICODE-safe
+ABI_EXPORT bool UT_UCS2_isspace(UT_UCS2Char c);
+#define UT_UCS2_ispunct(x)   ((!UT_UCS2_isspace(x)  &&  !UT_UCS2_isalnum(x)  &&  (x)>' '))  // HACK: not UNICODE safe
 
-#define UT_UCS_ispunct(x)   ((!UT_UCS_isspace(x)  &&  !UT_UCS_isalnum(x)  &&  (x)>' '))  // HACK: not UNICODE safe
+/*these are unicode-safe*/
+ABI_EXPORT bool  UT_UCS4_isupper(UT_UCS4Char c);
+ABI_EXPORT bool  UT_UCS4_islower(UT_UCS4Char c);
+ABI_EXPORT bool  UT_UCS4_isalpha(UT_UCS4Char c);
+ABI_EXPORT bool	 UT_UCS4_isSentenceSeparator(UT_UCS4Char c);
+#define UT_UCS4_isalnum(x)	(UT_UCS4_isalpha(x) || UT_UCS4_isdigit(x)) // HACK: not UNICODE-safe
+ABI_EXPORT bool UT_UCS4_isspace(UT_UCS4Char c);
+#define UT_UCS4_ispunct(x)   ((!UT_UCS4_isspace(x)  &&  !UT_UCS4_isalnum(x)  &&  (x)>' '))  // HACK: not UNICODE safe
+
 
 #ifdef WIN32
 #define snprintf _snprintf

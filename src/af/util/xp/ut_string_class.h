@@ -9,6 +9,7 @@
 //
 // Copyright (C) 2001 Mike Nordell <tamlin@algonet.se>
 // Copyright (C) 2001 Dom Lachowicz <dominicl@seas.upenn.edu>
+// Copyright (C) 2002 Tomas Frydrych <tomas@frydrych.uklinux.net> 
 // 
 // This class is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -118,7 +119,7 @@ class ABI_EXPORT UT_UCS2String
 {
 public:
 	UT_UCS2String();
-	UT_UCS2String(const UT_UCSChar * sz, size_t n = 0 /* 0 == zero-terminate */);
+	UT_UCS2String(const UT_UCS2Char * sz, size_t n = 0 /* 0 == zero-terminate */);
 	UT_UCS2String(const UT_UCS2String& rhs);
 	~UT_UCS2String();
 
@@ -129,39 +130,101 @@ public:
 	UT_UCS2String	substr(size_t iStart, size_t nChars) const;
 
 	UT_UCS2String&	operator=(const UT_UCS2String&  rhs);
-	UT_UCS2String&	operator=(const UT_UCSChar *    rhs);
+	UT_UCS2String&	operator=(const UT_UCS2Char *    rhs);
 	UT_UCS2String&	operator+=(const UT_UCS2String& rhs);
-	UT_UCS2String&	operator+=(const UT_UCSChar *   rhs);
-	UT_UCS2String&  operator+=(UT_UCSChar rhs);
+	UT_UCS2String&	operator+=(const UT_UCS2Char *   rhs);
+	UT_UCS2String&  operator+=(UT_UCS2Char rhs);
 	UT_UCS2String&  operator+=(char rhs);
 	UT_UCS2String&  operator+=(unsigned char rhs);
 
-	UT_UCSChar		operator[](size_t iPos) const;
-	UT_UCSChar&		operator[](size_t iPos);
+	UT_UCS2Char		operator[](size_t iPos) const;
+	UT_UCS2Char&	operator[](size_t iPos);
 
 	void		swap(UT_UCS2String& rhs);
 
 	// The returned pointer is valid until the next non-const
 	// operation. You will _always_ get a legal pointer back,
 	// even if to an empty (0) string.
-	const UT_UCSChar* ucs_str() const;
+	const UT_UCS2Char* ucs2_str() const;
+	const UT_UCS4Char* ucs4_str();
 
 private:
 	class UT_UCS2Stringbuf* pimpl;
+	UT_UCS4Char* m_pUCS4;
+	UT_uint32    m_iUCS4Size;
 };
 
 // helpers
 bool operator==(const UT_UCS2String& s1, const UT_UCS2String& s2);
-bool operator==(const UT_UCS2String& s1, const UT_UCSChar *   s2);
-bool operator==(const UT_UCSChar *   s1, const UT_UCS2String& s2);
+bool operator==(const UT_UCS2String& s1, const UT_UCS2Char *  s2);
+bool operator==(const UT_UCS2Char *  s1, const UT_UCS2String& s2);
 bool operator!=(const UT_UCS2String& s1, const UT_UCS2String& s2);
-bool operator!=(const UT_UCS2String& s1, const UT_UCSChar *   s2);
-bool operator!=(const UT_UCSChar *   s1, const UT_UCS2String& s2);
+bool operator!=(const UT_UCS2String& s1, const UT_UCS2Char *  s2);
+bool operator!=(const UT_UCS2Char *  s1, const UT_UCS2String& s2);
 
 // strcmp ordering
 bool operator<(const UT_UCS2String& s1, const UT_UCS2String& s2);
 
 UT_UCS2String operator+(const UT_UCS2String& s1, const UT_UCS2String& s2);
+
+/***************************************************************************/
+
+//!
+//	UT_UCS4String, a simple wrapper for zero terminated 'UCS4' strings.
+//
+
+// TODO: add c_str(), utf8_str(), encoded_str(const char * to)
+
+class ABI_EXPORT UT_UCS4String
+{
+public:
+	UT_UCS4String();
+	UT_UCS4String(const UT_UCS4Char * sz, size_t n = 0 /* 0 == zero-terminate */);
+	UT_UCS4String(const UT_UCS4String& rhs);
+	UT_UCS4String(const UT_UCS2String& rhs);
+	~UT_UCS4String();
+
+	size_t		size() const;
+	bool		empty() const;
+	void        clear() const;
+
+	UT_UCS4String	substr(size_t iStart, size_t nChars) const;
+
+	UT_UCS4String&	operator=(const UT_UCS4String&  rhs);
+	UT_UCS4String&	operator=(const UT_UCS4Char *   rhs);
+	UT_UCS4String&	operator+=(const UT_UCS4String& rhs);
+	UT_UCS4String&	operator+=(const UT_UCS4Char *  rhs);
+	UT_UCS4String&  operator+=(UT_UCS4Char rhs);
+	UT_UCS4String&  operator+=(char rhs);
+	UT_UCS4String&  operator+=(unsigned char rhs);
+
+	UT_UCS4Char		operator[](size_t iPos) const;
+	UT_UCS4Char&	operator[](size_t iPos);
+
+	void		swap(UT_UCS4String& rhs);
+
+	// The returned pointer is valid until the next non-const
+	// operation. You will _always_ get a legal pointer back,
+	// even if to an empty (0) string.
+	const UT_UCS4Char* ucs4_str() const;
+
+private:
+	class UT_UCS4Stringbuf* pimpl;
+};
+
+// helpers
+bool operator==(const UT_UCS4String& s1, const UT_UCS4String& s2);
+bool operator==(const UT_UCS4String& s1, const UT_UCS4Char *  s2);
+bool operator==(const UT_UCS4Char *  s1, const UT_UCS4String& s2);
+bool operator!=(const UT_UCS4String& s1, const UT_UCS4String& s2);
+bool operator!=(const UT_UCS4String& s1, const UT_UCS4Char *  s2);
+bool operator!=(const UT_UCS4Char *  s1, const UT_UCS4String& s2);
+
+// strcmp ordering
+bool operator<(const UT_UCS4String& s1, const UT_UCS4String& s2);
+
+UT_UCS4String operator+(const UT_UCS4String& s1, const UT_UCS4String& s2);
+
 
 /***************************************************************************/
 
@@ -176,6 +239,7 @@ public:
 	UT_UTF8String (const char * sz);
 	UT_UTF8String (const UT_UTF8String & rhs);
 	UT_UTF8String (const UT_UCS2String & rhs);
+	UT_UTF8String (const UT_UCS4String & rhs);
 	UT_UTF8String (const UT_UCSChar * sz, size_t n = 0 /* 0 == zero-terminate */);
 
 	~UT_UTF8String ();
@@ -188,10 +252,12 @@ public:
 	UT_UTF8String &	operator=(const char *          rhs);
 	UT_UTF8String &	operator=(const UT_UTF8String & rhs);
 	UT_UTF8String &	operator=(const UT_UCS2String & rhs);
+	UT_UTF8String &	operator=(const UT_UCS4String & rhs);
 
 	UT_UTF8String &	operator+=(const char *          rhs);
 	UT_UTF8String &	operator+=(const UT_UTF8String & rhs);
 	UT_UTF8String &	operator+=(const UT_UCS2String & rhs);
+	UT_UTF8String &	operator+=(const UT_UCS4String & rhs);
 
 	// The returned pointer is valid until the next non-const
 	// operation. You will _always_ get a legal pointer back,
@@ -200,7 +266,8 @@ public:
 
 	UT_UCS2String ucs2_str ();
 
-	void append (const UT_UCSChar * sz, size_t n = 0 /* 0 == zero-terminate */);
+	void appendUCS4 (const UT_UCS4Char * sz, size_t n = 0 /* 0 == zero-terminate */);
+	void appendUCS2 (const UT_UCS2Char * sz, size_t n = 0 /* 0 == zero-terminate */);
 
 	/* UTF8String - NOTES
 	 * 
@@ -246,4 +313,6 @@ private:
 
 UT_UTF8String operator+(const UT_UTF8String & s1, const UT_UTF8String & s2);
 
+
 #endif	// UT_STRING_CLASS_H
+

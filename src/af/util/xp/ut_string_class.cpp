@@ -4,6 +4,7 @@
 // allowed.
 //
 // Copyright (C) 2001 Mike Nordell <tamlin@algonet.se>
+// Copyright (C) 2002 Tomas Frydrych <tomas@frydrych.uklinux.net> 
 // 
 // This class is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -450,26 +451,30 @@ UT_uint32 hashcode(const UT_String& string)
 /*************************************************************************/
 
 //static const UT_UCSChar ucsEmpty[] = "";
-static const UT_UCSChar *ucsEmpty = 0;
+static const UT_UCS2Char *ucs2Empty = 0;
+static const UT_UCS4Char *ucs4Empty = 0;
 
 UT_UCS2String::UT_UCS2String()
-:	pimpl(new UT_UCS2Stringbuf)
+:	pimpl(new UT_UCS2Stringbuf), m_pUCS4(NULL), m_iUCS4Size(0)
 {
 }
 
-UT_UCS2String::UT_UCS2String(const UT_UCSChar* sz, size_t n)
-:	pimpl(new UT_UCS2Stringbuf(sz, n ? n : (sz) ? UT_UCS_strlen(sz) : 0))
+UT_UCS2String::UT_UCS2String(const UT_UCS2Char* sz, size_t n)
+:	pimpl(new UT_UCS2Stringbuf(sz, n ? n : (sz) ? UT_UCS2_strlen(sz) : 0)),
+	m_pUCS4(NULL), m_iUCS4Size(0)
 {
 }
 
 UT_UCS2String::UT_UCS2String(const UT_UCS2String& rhs)
-:	pimpl(new UT_UCS2Stringbuf(*rhs.pimpl))
+	:	pimpl(new UT_UCS2Stringbuf(*rhs.pimpl)), m_pUCS4(NULL), m_iUCS4Size(0)
 {
 }
 
 UT_UCS2String::~UT_UCS2String()
 {
 	delete pimpl;
+	if(m_pUCS4)
+		delete m_pUCS4;
 }
 
 
@@ -499,7 +504,7 @@ UT_UCS2String UT_UCS2String::substr(size_t iStart, size_t nChars) const
 		return UT_UCS2String();
 	}
 
-	const UT_UCSChar* p = pimpl->data() + iStart;
+	const UT_UCS2Char* p = pimpl->data() + iStart;
 	if (iStart + nChars > nSize) {
 		nChars = nSize - iStart;
 	}
@@ -507,10 +512,34 @@ UT_UCS2String UT_UCS2String::substr(size_t iStart, size_t nChars) const
 	return UT_UCS2String(p, nChars);
 }
 
-const UT_UCSChar* UT_UCS2String::ucs_str() const
+const UT_UCS2Char* UT_UCS2String::ucs2_str() const
 {
-	return pimpl->size() ? pimpl->data() : ucsEmpty;
+	return pimpl->size() ? pimpl->data() : ucs2Empty;
 }
+
+const UT_UCS4Char* UT_UCS2String::ucs4_str()
+{
+	if(!pimpl->size())
+		return ucs4Empty;
+
+	if(pimpl->size() >= m_iUCS4Size)
+	{
+		if(m_pUCS4)
+			delete m_pUCS4;
+		
+		m_iUCS4Size = pimpl->size()+1;
+		m_pUCS4 = new UT_UCS4Char[m_iUCS4Size];
+		UT_ASSERT(m_pUCS4);
+	}
+	
+	UT_uint32 i;
+	for(i = 0; i < pimpl->size(); i++)
+		m_pUCS4[i] = (UT_UCS4Char)(*(pimpl->data()+i));
+	m_pUCS4[i] = 0;
+
+	return m_pUCS4;
+}
+
 
 
 //////////////////////////////////////////////////////////////////
@@ -524,9 +553,9 @@ UT_UCS2String& UT_UCS2String::operator=(const UT_UCS2String& rhs)
 	return *this;
 }
 
-UT_UCS2String& UT_UCS2String::operator=(const UT_UCSChar* rhs)
+UT_UCS2String& UT_UCS2String::operator=(const UT_UCS2Char* rhs)
 {
-	pimpl->assign(rhs, UT_UCS_strlen(rhs));
+	pimpl->assign(rhs, UT_UCS2_strlen(rhs));
 	return *this;
 }
 
@@ -541,27 +570,27 @@ UT_UCS2String& UT_UCS2String::operator+=(const UT_UCS2String& rhs)
 	return *this;
 }
 
-UT_UCS2String& UT_UCS2String::operator+=(const UT_UCSChar* rhs)
+UT_UCS2String& UT_UCS2String::operator+=(const UT_UCS2Char* rhs)
 {
-	pimpl->append(rhs, UT_UCS_strlen(rhs));
+	pimpl->append(rhs, UT_UCS2_strlen(rhs));
 	return *this;
 }
 
-UT_UCS2String& UT_UCS2String::operator+=(UT_UCSChar rhs)
+UT_UCS2String& UT_UCS2String::operator+=(UT_UCS2Char rhs)
 {
-	UT_UCSChar cs = rhs;
+	UT_UCS2Char cs = rhs;
 	pimpl->append(&cs, 1);
 	return *this;
 }
 
 UT_UCS2String& UT_UCS2String::operator+=(char rhs)
 {
-	UT_UCSChar cs[2];
+	UT_UCS2Char cs[2];
 	char rs[2];
 
 	// TODO: is this nonsense needed?
 	rs[0] = rhs; rs[1] = 0;
-	UT_UCS_strcpy_char (cs, rs);
+	UT_UCS2_strcpy_char (cs, rs);
 
 	pimpl->append(cs, 1);
 	return *this;
@@ -569,12 +598,12 @@ UT_UCS2String& UT_UCS2String::operator+=(char rhs)
 
 UT_UCS2String& UT_UCS2String::operator+=(unsigned char rhs)
 {
-	UT_UCSChar cs[2];
+	UT_UCS2Char cs[2];
 	char rs[2];
 
 	// TODO: is this nonsense needed?
 	rs[0] = (char)rhs; rs[1] = 0; // TODO: is this loss of 'unsigned' safe?
-	UT_UCS_strcpy_char (cs, rs);
+	UT_UCS2_strcpy_char (cs, rs);
 
 	pimpl->append(cs, 1);
 	return *this;
@@ -597,15 +626,15 @@ void UT_UCS2String::swap(UT_UCS2String& rhs)
 
 bool operator==(const UT_UCS2String& s1, const UT_UCS2String& s2)
 {
-	return UT_UCS_strcmp(s1.ucs_str(), s2.ucs_str()) == 0;
+	return UT_UCS2_strcmp(s1.ucs2_str(), s2.ucs2_str()) == 0;
 }
 
-bool operator==(const UT_UCS2String& s1, const UT_UCSChar* s2)
+bool operator==(const UT_UCS2String& s1, const UT_UCS2Char* s2)
 {
-	return UT_UCS_strcmp(s1.ucs_str(), s2) == 0;
+	return UT_UCS2_strcmp(s1.ucs2_str(), s2) == 0;
 }
 
-bool operator==(const UT_UCSChar* s1, const UT_UCS2String& s2)
+bool operator==(const UT_UCS2Char* s1, const UT_UCS2String& s2)
 {
 	return s2 == s1;
 }
@@ -615,19 +644,19 @@ bool operator!=(const UT_UCS2String& s1, const UT_UCS2String& s2)
 	return !(s1 == s2);
 }
 
-bool operator!=(const UT_UCS2String& s1, const UT_UCSChar*  s2)
+bool operator!=(const UT_UCS2String& s1, const UT_UCS2Char*  s2)
 {
 	return !(s1 == s2);
 }
 
-bool operator!=(const UT_UCSChar* s1, const UT_UCS2String& s2)
+bool operator!=(const UT_UCS2Char* s1, const UT_UCS2String& s2)
 {
 	return !(s2 == s1);
 }
 
 bool operator<(const UT_UCS2String& s1, const UT_UCS2String& s2)
 {
-	return UT_UCS_strcmp(s1.ucs_str(), s2.ucs_str()) < 0;
+	return UT_UCS2_strcmp(s1.ucs2_str(), s2.ucs2_str()) < 0;
 }
 
 UT_UCS2String operator+(const UT_UCS2String& s1, const UT_UCS2String& s2)
@@ -637,7 +666,7 @@ UT_UCS2String operator+(const UT_UCS2String& s1, const UT_UCS2String& s2)
 	return s;
 }
 
-UT_UCSChar UT_UCS2String::operator[](size_t iPos) const
+UT_UCS2Char UT_UCS2String::operator[](size_t iPos) const
 {
 	UT_ASSERT(iPos <= size());
 	if (iPos == size())
@@ -645,7 +674,7 @@ UT_UCSChar UT_UCS2String::operator[](size_t iPos) const
 	return pimpl->data()[iPos];
 }
 
-UT_UCSChar& UT_UCS2String::operator[](size_t iPos)
+UT_UCS2Char& UT_UCS2String::operator[](size_t iPos)
 {
 	UT_ASSERT(iPos <= size());
 	return pimpl->data()[iPos];
@@ -674,13 +703,19 @@ UT_UTF8String::UT_UTF8String (const UT_UTF8String & rhs) :
 UT_UTF8String::UT_UTF8String (const UT_UCS2String & rhs) :
 	pimpl(new UT_UTF8Stringbuf)
 {
-	if (rhs.size ()) append (rhs.ucs_str (), rhs.size ());
+	if (rhs.size ()) appendUCS2 (rhs.ucs2_str (), rhs.size ());
 }
 
-UT_UTF8String::UT_UTF8String (const UT_UCSChar * sz, size_t n) :
+UT_UTF8String::UT_UTF8String (const UT_UCS4String & rhs) :
 	pimpl(new UT_UTF8Stringbuf)
 {
-	append (sz, n);
+	if (rhs.size ()) appendUCS4 (rhs.ucs4_str (), rhs.size ());
+}
+
+UT_UTF8String::UT_UTF8String (const UT_UCS4Char * sz, size_t n) :
+	pimpl(new UT_UTF8Stringbuf)
+{
+	appendUCS4 (sz, n);
 }
 
 UT_UTF8String::~UT_UTF8String ()
@@ -725,7 +760,7 @@ UT_UTF8String &	UT_UTF8String::operator=(const UT_UTF8String & rhs)
 UT_UTF8String &	UT_UTF8String::operator=(const UT_UCS2String & rhs)
 {
 	pimpl->clear ();
-	if (rhs.size ()) append (rhs.ucs_str (), rhs.size ());
+	if (rhs.size ()) appendUCS2 (rhs.ucs2_str (), rhs.size ());
 	return *this;
 }
 
@@ -743,7 +778,7 @@ UT_UTF8String &	UT_UTF8String::operator+=(const UT_UTF8String & rhs)
 
 UT_UTF8String &	UT_UTF8String::operator+=(const UT_UCS2String & rhs)
 {
-	if (rhs.size ()) append (rhs.ucs_str (), rhs.size ());
+	if (rhs.size ()) appendUCS2 (rhs.ucs2_str (), rhs.size ());
 	return *this;
 }
 
@@ -753,7 +788,7 @@ const char * UT_UTF8String::utf8_str () const
 	return pimpl->utf8Length () ? pimpl->data() : utf8Empty;
 }
 
-void UT_UTF8String::append (const UT_UCSChar * sz, size_t n /* 0 = null-terminated */)
+void UT_UTF8String::appendUCS4 (const UT_UCS4Char * sz, size_t n /* 0 = null-terminated */)
 {
 	if (sz == 0) return;
 
@@ -838,6 +873,92 @@ void UT_UTF8String::append (const UT_UCSChar * sz, size_t n /* 0 = null-terminat
 	free (utf8_buffer);
 }
 
+void UT_UTF8String::appendUCS2 (const UT_UCS2Char * sz, size_t n /* 0 = null-terminated */)
+{
+	if (sz == 0) return;
+
+	size_t ucs2_length = 0;
+	size_t utf8_length = 0;
+
+	// check UCS-2 string length and calculate UTF-8 string length
+	if (n == 0)
+	{
+		const UT_UCS2Char * p = sz;
+		while (*p)
+		{
+			if ((*p & 0xff80) == 0x0000)
+			{
+				utf8_length++;
+			}
+			else if ((*p & 0xf800) == 0x0000)
+			{
+				utf8_length += 2;
+			}
+			else
+			{
+				utf8_length += 3;
+			}
+			p++;
+			ucs2_length++;
+		}
+	}
+	else
+	{
+		const UT_UCS2Char * p = sz;
+		for (size_t i = 0; i < n; i++)
+		{
+			if (*p == 0) break;
+			if ((*p & 0xff80) == 0x0000)
+			{
+				utf8_length++;
+			}
+			else if ((*p & 0xf800) == 0x0000)
+			{
+				utf8_length += 2;
+			}
+			else
+			{
+				utf8_length += 3;
+			}
+			p++;
+			ucs2_length++;
+		}
+	}
+
+	if (utf8_length == 0) return;
+
+	char * utf8_buffer = (char *) malloc (utf8_length + 1);
+	if (utf8_buffer == 0) return;
+
+	const UT_UCS2Char * p = sz;
+	char * b = utf8_buffer;
+	for (size_t i = 0; i < utf8_length; i++)
+	{
+		if ((*p & 0xff80) == 0x0000)
+		{
+			*b++ = (char) (*p & 0x7f);
+		}
+		else if ((*p & 0xf800) == 0x0000)
+		{
+			*b++ = 0xc0 | (char) ((*p >> 6) & 0x1f);
+			*b++ = 0x80 | (char) ( *p       & 0x3f);
+		}
+		else
+		{
+			*b++ = 0xe0 | (char) ((*p >> 12) & 0x0f);
+			*b++ = 0x80 | (char) ((*p >>  6) & 0x3f);
+			*b++ = 0x80 | (char) ( *p        & 0x3f);
+		}
+		p++;
+	}
+	*b = 0;
+
+	pimpl->append (utf8_buffer);
+
+	free (utf8_buffer);
+}
+
+
 UT_UCS2String UT_UTF8String::ucs2_str ()
 {
 	UT_UCS2String ucs2_string;
@@ -852,12 +973,12 @@ UT_UCS2String UT_UTF8String::ucs2_str ()
 		const char * pUTF8 = utf.current ();
 		utf.advance ();
 
-		UT_UTF8Stringbuf::UCS4Char ucs4 = UT_UTF8Stringbuf::charCode (pUTF8);
+		UT_UCS4Char ucs4 = UT_UTF8Stringbuf::charCode (pUTF8);
 
 		if (ucs4 == 0) break; // end of string
 		if (ucs4 & 0xffff0000) continue; // oops - UCS-2 can't handle this...
 
-		ucs2_string += (UT_UCSChar) (ucs4 & 0x0000ffff);
+		ucs2_string += (UT_UCS2Char) (ucs4 & 0x0000ffff);
 	}
 
 	return ucs2_string;
@@ -868,4 +989,216 @@ UT_UTF8String operator+(const UT_UTF8String & s1, const UT_UTF8String & s2)
 	UT_UTF8String s(s1);
 	s += s2;
 	return s;
+}
+
+
+/**************************************************************************/
+/*************************************************************************/
+
+UT_UCS4String::UT_UCS4String()
+:	pimpl(new UT_UCS4Stringbuf)
+{
+}
+
+UT_UCS4String::UT_UCS4String(const UT_UCS4Char* sz, size_t n)
+:	pimpl(new UT_UCS4Stringbuf(sz, n ? n : (sz) ? UT_UCS4_strlen(sz) : 0))
+{
+}
+
+UT_UCS4String::UT_UCS4String(const UT_UCS2String& rhs)
+	:	pimpl(new UT_UCS4Stringbuf(NULL, rhs.size()))
+{
+	const UT_UCS2Char * pUcs2 = rhs.ucs2_str();
+	
+	for(UT_uint32 i = 0; i < pimpl->size(); i++)
+		*(pimpl->data()+i) = (UT_UCS4Char)(*(pUcs2 + i));
+}
+
+UT_UCS4String::UT_UCS4String(const UT_UCS4String& rhs)
+:	pimpl(new UT_UCS4Stringbuf(*rhs.pimpl))
+{
+}
+
+UT_UCS4String::~UT_UCS4String()
+{
+	delete pimpl;
+}
+
+
+//////////////////////////////////////////////////////////////////
+// accessors
+
+size_t UT_UCS4String::size() const
+{
+	return pimpl->size();
+}
+
+bool UT_UCS4String::empty() const
+{
+	return pimpl->empty();
+}
+
+void UT_UCS4String::clear() const
+{
+	pimpl->clear();
+}
+
+UT_UCS4String UT_UCS4String::substr(size_t iStart, size_t nChars) const
+{
+	const size_t nSize = pimpl->size();
+
+	if (iStart >= nSize || !nChars) {
+		return UT_UCS2String();
+	}
+
+	const UT_UCS4Char* p = pimpl->data() + iStart;
+	if (iStart + nChars > nSize) {
+		nChars = nSize - iStart;
+	}
+
+	return UT_UCS4String(p, nChars);
+}
+
+const UT_UCS4Char* UT_UCS4String::ucs4_str() const
+{
+	return pimpl->size() ? pimpl->data() : ucs4Empty;
+}
+
+
+//////////////////////////////////////////////////////////////////
+// mutators
+
+UT_UCS4String& UT_UCS4String::operator=(const UT_UCS4String& rhs)
+{
+	if (this != &rhs) {
+		*pimpl = *rhs.pimpl;
+	}
+	return *this;
+}
+
+UT_UCS4String& UT_UCS4String::operator=(const UT_UCS4Char* rhs)
+{
+	pimpl->assign(rhs, UT_UCS4_strlen(rhs));
+	return *this;
+}
+
+UT_UCS4String& UT_UCS4String::operator+=(const UT_UCS4String& rhs)
+{
+	if (this != &rhs) {
+		pimpl->append(*rhs.pimpl);
+	} else {
+		UT_UCS4Stringbuf t(*rhs.pimpl);
+		pimpl->append(t);
+	}
+	return *this;
+}
+
+UT_UCS4String& UT_UCS4String::operator+=(const UT_UCS4Char* rhs)
+{
+	pimpl->append(rhs, UT_UCS4_strlen(rhs));
+	return *this;
+}
+
+UT_UCS4String& UT_UCS4String::operator+=(UT_UCS4Char rhs)
+{
+	UT_UCS4Char cs = rhs;
+	pimpl->append(&cs, 1);
+	return *this;
+}
+
+UT_UCS4String& UT_UCS4String::operator+=(char rhs)
+{
+	UT_UCS4Char cs[2];
+	char rs[2];
+
+	// TODO: is this nonsense needed?
+	rs[0] = rhs; rs[1] = 0;
+	UT_UCS4_strcpy_char (cs, rs);
+
+	pimpl->append(cs, 1);
+	return *this;
+}
+
+UT_UCS4String& UT_UCS4String::operator+=(unsigned char rhs)
+{
+	UT_UCS4Char cs[2];
+	char rs[2];
+
+	// TODO: is this nonsense needed?
+	rs[0] = (char)rhs; rs[1] = 0; // TODO: is this loss of 'unsigned' safe?
+	UT_UCS4_strcpy_char (cs, rs);
+
+	pimpl->append(cs, 1);
+	return *this;
+}
+
+void UT_UCS4String::swap(UT_UCS4String& rhs)
+{
+	UT_UCS4Stringbuf* p = pimpl;
+	pimpl = rhs.pimpl;
+	rhs.pimpl = p;
+}
+
+
+//////////////////////////////////////////////////////////////////
+// End of class members, start of free functions
+//////////////////////////////////////////////////////////////////
+
+//////////////////////////////////////////////////////////////////
+// Helpers
+
+bool operator==(const UT_UCS4String& s1, const UT_UCS4String& s2)
+{
+	return UT_UCS4_strcmp(s1.ucs4_str(), s2.ucs4_str()) == 0;
+}
+
+bool operator==(const UT_UCS4String& s1, const UT_UCS4Char* s2)
+{
+	return UT_UCS4_strcmp(s1.ucs4_str(), s2) == 0;
+}
+
+bool operator==(const UT_UCS4Char* s1, const UT_UCS4String& s2)
+{
+	return s2 == s1;
+}
+
+bool operator!=(const UT_UCS4String& s1, const UT_UCS4String& s2)
+{
+	return !(s1 == s2);
+}
+
+bool operator!=(const UT_UCS4String& s1, const UT_UCS4Char*  s2)
+{
+	return !(s1 == s2);
+}
+
+bool operator!=(const UT_UCS4Char* s1, const UT_UCS4String& s2)
+{
+	return !(s2 == s1);
+}
+
+bool operator<(const UT_UCS4String& s1, const UT_UCS4String& s2)
+{
+	return UT_UCS4_strcmp(s1.ucs4_str(), s2.ucs4_str()) < 0;
+}
+
+UT_UCS4String operator+(const UT_UCS4String& s1, const UT_UCS4String& s2)
+{
+	UT_UCS4String s(s1);
+	s += s2;
+	return s;
+}
+
+UT_UCS4Char UT_UCS4String::operator[](size_t iPos) const
+{
+	UT_ASSERT(iPos <= size());
+	if (iPos == size())
+		return '\0';
+	return pimpl->data()[iPos];
+}
+
+UT_UCS4Char& UT_UCS4String::operator[](size_t iPos)
+{
+	UT_ASSERT(iPos <= size());
+	return pimpl->data()[iPos];
 }

@@ -262,6 +262,8 @@ void GR_Win32Graphics::drawChar(UT_UCSChar Char, UT_sint32 xoff, UT_sint32 yoff)
 	SetBkMode(m_hdc, TRANSPARENT);		// TODO: remember and reset?
 
 	UT_UCSChar currentChar = remapGlyph(Char, false);
+	//TODO this is a temporary hack -- need a way to handle true 32-bit chars
+	UT_UCS2Char aChar = (UT_UCS2Char) currentChar;
 
 	if(currentChar == 0x200B || currentChar == 0xFEFF)
 		return;
@@ -278,16 +280,17 @@ void GR_Win32Graphics::drawChar(UT_UCSChar Char, UT_sint32 xoff, UT_sint32 yoff)
 	if (UT_IsWinNT() == false && lf.lfCharSet == SYMBOL_CHARSET)
 	{
 		// Symbol character handling for Win9x
-		char str[sizeof(UT_UCSChar)];
+		char str[sizeof(UT_UCS2Char)];
+		
 		int iConverted = WideCharToMultiByte(CP_ACP, NULL, 
-			&currentChar, 1,
+			&aChar, 1,
 			str, sizeof(str), NULL, NULL);
 		ExtTextOutA(m_hdc, xoff, yoff, 0, NULL, str, iConverted, NULL);
 	}
 	else
 	{
 		// Unicode font and default character set handling for WinNT and Win9x
-		ExtTextOutW(m_hdc, xoff, yoff, 0/*ETO_GLYPH_INDEX*/, NULL, &currentChar, 1, NULL);
+		ExtTextOutW(m_hdc, xoff, yoff, 0/*ETO_GLYPH_INDEX*/, NULL, &aChar, 1, NULL);
 	}
 }
 
@@ -303,7 +306,7 @@ void GR_Win32Graphics::drawChars(const UT_UCSChar* pChars,
 	SetTextAlign(m_hdc, TA_LEFT | TA_TOP);
 	SetBkMode(m_hdc, TRANSPARENT);		// TODO: remember and reset?
 
-	UT_UCSChar* currentChars = _remapGlyphs(pChars, iCharOffset, iLength);
+	UT_uint16* currentChars = _remapGlyphs(pChars, iCharOffset, iLength);
 
 	// Windows NT and Windows 95 support the Unicode Font file. 
 	// All of the Unicode glyphs can be rendered if the glyph is found in
@@ -319,7 +322,7 @@ void GR_Win32Graphics::drawChars(const UT_UCSChar* pChars,
 	if (UT_IsWinNT() == false && lf.lfCharSet == SYMBOL_CHARSET)
 	{
 		// Symbol character handling for Win9x
-		char* str = new char[iLength * sizeof(UT_UCSChar)];
+		char* str = new char[iLength * sizeof(UT_UCS2Char)];
 		int iConverted = WideCharToMultiByte(CP_ACP, NULL, 
 			currentChars, iLength, 
 			str, iLength * sizeof(UT_UCSChar), NULL, NULL);
@@ -365,9 +368,9 @@ simple_exttextout:
 
 }
 
-UT_UCSChar*	GR_Win32Graphics::_remapGlyphs(const UT_UCSChar* pChars, int iCharOffset, int &iLength)
+UT_uint16*	GR_Win32Graphics::_remapGlyphs(const UT_UCSChar* pChars, int iCharOffset, int &iLength)
 {
-
+	// TODO -- make this handle 32-bit chars properly
 	if (iLength > (int)m_remapBufferSize)
 	{
 		delete [] m_remapBuffer;
@@ -375,10 +378,10 @@ UT_UCSChar*	GR_Win32Graphics::_remapGlyphs(const UT_UCSChar* pChars, int iCharOf
 		if(XAP_App::getApp()->theOSHasBidiSupport())
 		{
 			delete [] m_remapIndices;
-			m_remapIndices = new UT_UCSChar[iLength];
+			m_remapIndices = new UT_UCS2Char[iLength];
 		}
 #endif
-		m_remapBuffer = new UT_UCSChar[iLength];
+		m_remapBuffer = new UT_UCS2Char[iLength];
 		m_remapBufferSize = iLength;
 	}
 
@@ -386,7 +389,7 @@ UT_UCSChar*	GR_Win32Graphics::_remapGlyphs(const UT_UCSChar* pChars, int iCharOf
 	int i, j;
 	for (i = 0, j = 0; i < iLength; ++i, ++j)
 	{
-		m_remapBuffer[j] = remapGlyph(pChars[iCharOffset + i], false);
+		m_remapBuffer[j] = (UT_UCS2Char)remapGlyph(pChars[iCharOffset + i], false);
 		if(m_remapBuffer[j] == 0x200B || m_remapBuffer[j] == 0xFEFF)
 			j--;
 	}
