@@ -244,7 +244,14 @@ LRESULT CALLBACK EV_Win32Toolbar::_ComboEditWndProc( HWND hWnd, UINT uMessage, W
 
 			UT_UCSChar * pData = (UT_UCSChar *) buf;	// HACK: should be void *
 			UT_uint32 dataLength = GetWindowText(hWnd, buf, COMBO_BUF_LEN);
-			t->toolbarEvent(id, pData, dataLength);
+			if(dataLength)
+				{
+				t->toolbarEvent(id, pData, dataLength);
+				}
+			else
+				{
+				SendMessage(hWnd, WM_KEYDOWN, VK_ESCAPE, 0);
+				}
 			break;
 		}
 
