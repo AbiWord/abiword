@@ -43,7 +43,7 @@
          expose context, it is just what we have to do.
 */
 
-#define DRAW_START DrawSetup();
+#define DRAW_START if(DrawSetup() == -1) return; 
 #define DRAW_END   DrawTeardown();
 
 const char* GR_Graphics::findNearestFont(const char* pszFontFamily,
@@ -65,6 +65,8 @@ int GR_QNXGraphics::DrawSetup() {
 	if (m_pPrintContext) {
 		return 0;
 	}
+	//sometimes abi is stupid and calls a raw draw function without making sure we want to draw it (ie, Left ruler in normal view mode), therefor we do a simple check if our widget is realized or not...
+	if(PtWidgetIsRealized(m_pDraw) == 0) return -1;
 
 //	m_pOldDC = PhDCSetCurrent(m_pOSC);
 	m_pGC_old=PgSetGC(m_pGC);
