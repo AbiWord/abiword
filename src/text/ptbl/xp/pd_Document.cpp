@@ -718,6 +718,19 @@ bool  PD_Document::changeStruxAttsNoUpdate(PL_StruxDocHandle sdh, const char * a
 }
 
 /*!
+ * This method inserts a strux of type pts immediately before the sdh given.
+ * Attributes of the strux can be optionally passed. This method does not throw
+ * a change record and should only be used under exceptional circumstances to 
+ * repair the piecetable during loading. It was necessary to import RTF tables.
+ */
+bool PD_Document::insertStruxNoUpdateBefore(PL_StruxDocHandle sdh, PTStruxType pts,const XML_Char ** attributes )
+{
+
+	bool bres =  m_pPieceTable->insertStruxNoUpdateBefore(sdh, pts, attributes );
+	return bres;
+}
+
+/*!
  * This method deletes a strux without throwing a change record.
  * sdh is the StruxDocHandle that gets deleted..
  * Use with extreme care. Should only be used for document import.

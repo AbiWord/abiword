@@ -96,6 +96,43 @@ bool pt_PieceTable::deleteStruxNoUpdate(PL_StruxDocHandle sdh)
 	return true;
 }
 
+/*!
+ * This method inserts a strux of type pts immediately before the sdh given.
+ * Attributes of the strux can be optionally passed. This method does not throw
+ * a change record and should only be used under exceptional circumstances to 
+ * repair the piecetable during loading. It was necessary to import RTF tables.
+ */
+bool pt_PieceTable::insertStruxNoUpdateBefore(PL_StruxDocHandle sdh, PTStruxType pts,const XML_Char ** attributes )
+{
+	pf_Frag_Strux * pfs = (pf_Frag_Strux *) sdh;
+	UT_DEBUGMSG(("SEVIOR: Inserting strux no update %x \n",sdh));
+//
+// Create an indexAP
+//
+	PT_AttrPropIndex indexAP = pfs->getIndexAP();
+	if(attributes)
+	{		
+		PT_AttrPropIndex pAPIold = indexAP;
+		bool bMerged = m_varset.mergeAP(PTC_AddFmt,pAPIold,attributes,NULL,&indexAP,getDocument());
+		UT_ASSERT(bMerged);
+	}
+//
+// create a strux
+//
+	pf_Frag_Strux * pNewStrux = NULL;
+	_createStrux(pts,indexAP,&pNewStrux);
+//
+// Insert it.
+//
+	pf_Frag * pfPrev = pfs->getPrev();
+	UT_ASSERT(pfPrev);
+	if(!pfPrev)
+	{
+		return false;
+	}
+	m_fragments.insertFrag(pfPrev,(pf_Frag *) pNewStrux);
+	return true;
+}
 
 void pt_PieceTable::_unlinkFrag(pf_Frag * pf,
 								pf_Frag ** ppfEnd, UT_uint32 * pfragOffsetEnd)

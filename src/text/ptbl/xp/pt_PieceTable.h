@@ -198,6 +198,7 @@ public:
 												const char * pszParentID);
     bool                    changeSectionAttsNoUpdate(pf_Frag_Strux * pfStrux, const char * attr, const char * attvalue);
 	bool                    deleteStruxNoUpdate(PL_StruxDocHandle sdh);
+	bool                    insertStruxNoUpdateBefore(PL_StruxDocHandle sdh, PTStruxType pts,const XML_Char ** attributes );
 
 
 	/**********************	END OF REVISIONS AWARE METHODS ******/

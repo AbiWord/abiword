@@ -683,7 +683,21 @@ static XAP_UnixFont* buildFont(FcPattern* fp)
 		UT_DEBUGMSG(("Impossible to open font file [%s] [%d]\n.", (char*) fontFile, s));
 		DELETEP(font);
 	}
-
+//
+// If this was an attempt to get bold/italic/bold-italic that failed, fallback
+// to normal.
+//
+	if((font == NULL) && (s != XAP_UnixFont::STYLE_NORMAL))
+	{
+		s = XAP_UnixFont::STYLE_NORMAL;
+		font = new XAP_UnixFont;
+		if (!font->openFileAs((char*) fontFile, metricFile.c_str(), xlfd, s))
+		{
+			UT_DEBUGMSG(("Impossible to open font file [%s] [%d]\n.", (char*) fontFile, s));
+			DELETEP(font);
+		}
+	}
+		
 	free(xlfd);
 	return font;
 }
