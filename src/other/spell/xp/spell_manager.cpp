@@ -22,6 +22,7 @@
 #include "xap_Strings.h"
 #include "spell_manager.h"
 #include "ut_debugmsg.h"
+#include "ut_Language.h"
 
 // we either use an ispell or pspell based backend
 
@@ -103,9 +104,15 @@ void SpellChecker::correctWord (const UT_UCSChar *toCorrect, size_t toCorrectLen
 {
 	XAP_App             * pApp   = XAP_App::getApp ();
 	XAP_Frame           * pFrame = pApp->getLastFocussedFrame ();
+	char				szLangName[255];
+	UT_Language			lang;
+	
+	UT_uint32 id = lang.getIndxFromCode(szLang);
+	const XML_Char* pLang  = lang.getNthLangName(id);	
+	sprintf(szLangName, "%s [%s]", pLang, szLang); // language name [language_code]
 
 	UT_String buf (UT_String_sprintf(pApp->getStringSet ()->getValue (XAP_STRING_ID_SPELL_CANTLOAD_DICT),
-									 szLang));
+									 szLangName));
 	if (pFrame)
 		pFrame->showMessageBox (buf.c_str(),
 								XAP_Dialog_MessageBox::b_O,

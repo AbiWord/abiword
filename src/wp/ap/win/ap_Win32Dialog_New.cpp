@@ -40,7 +40,7 @@
 #include "ie_imp.h"
 #include "ie_types.h"
 #include "ut_string_class.h"
-
+#include "xap_Win32DialogHelper.h"
 #include "ap_Win32Resources.rc2"
 
 /*****************************************************************/
@@ -145,6 +145,7 @@ BOOL AP_Win32Dialog_New::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam)
 	}
 	_findclose( findtag );
 
+	XAP_Win32DialogHelper::s_centerDialog(hWnd);	
 	_updateControls();
 	return 1;	// 1 == we did not call SetFocus()
 }

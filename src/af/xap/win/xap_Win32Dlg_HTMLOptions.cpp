@@ -26,7 +26,7 @@
 #include "xap_App.h"
 #include "xap_Win32App.h"
 #include "xap_Win32FrameImpl.h"
-
+#include "xap_Win32DialogHelper.h"
 #include "xap_Strings.h"
 #include "xap_Dialog_Id.h"
 #include "xap_Win32Dlg_HTMLOptions.h"
@@ -121,7 +121,8 @@ BOOL XAP_Win32Dialog_HTMLOptions::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM
 
 	// Set Initial conditions
 	refreshStates(hWnd);
-
+	XAP_Win32DialogHelper::s_centerDialog(hWnd);	
+	
 	return 1;							// 1 == we did not call SetFocus()
 }
 

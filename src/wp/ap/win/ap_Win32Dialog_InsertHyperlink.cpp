@@ -31,7 +31,7 @@
 #include "ap_Dialog_Id.h"
 #include "ap_Dialog_InsertHyperlink.h"
 #include "ap_Win32Dialog_InsertHyperlink.h"
-
+#include "xap_Win32DialogHelper.h"
 #include "ap_Win32Resources.rc2"
 
 /*****************************************************************/
@@ -103,6 +103,7 @@ BOOL AP_Win32Dialog_InsertHyperlink::_onInitDialog(HWND hWnd, WPARAM wParam, LPA
 		_win32Dialog.selectControlText(AP_RID_DIALOG_INSERTHYPERLINK_EBX_LINK, 0, -1);
 	}
 
+	XAP_Win32DialogHelper::s_centerDialog(hWnd);	
 	return 0; // 0 because we called set focus
 }
 
