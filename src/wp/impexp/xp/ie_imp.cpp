@@ -2,6 +2,7 @@
 #include "string.h"
 
 #include "ut_types.h"
+#include "ut_string.h"
 #include "ut_assert.h"
 #include "ie_imp.h"
 #include "ie_imp_AbiWord_1.h"
@@ -48,7 +49,7 @@ IEStatus IE_Imp::constructImporter(PD_Document * pDocument,
 		i++;
 	}
 
-	if (pExt && (stricmp(pExt, ".doc") == 0))
+	if (pExt && (UT_stricmp(pExt, ".doc") == 0))
 	{
 		IE_Imp_MsWord_97 * p = new IE_Imp_MsWord_97(pDocument);
 		if (!p)
