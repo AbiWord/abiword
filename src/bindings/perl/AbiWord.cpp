@@ -36,7 +36,9 @@ XS(XS_AbiWord__FV_View_moveCursorAbs)
        Perl_croak(aTHX_ "Usage: %s(pView, target, where)", GvNAME(CvGV(cv)));
     {
 	FV_View *	pView;
-	const char *	int
+	const char *	target = (const char *)SvPV_nolen(ST(1));
+	int	where = (int)SvIV(ST(2));
+
 	if (sv_isobject(ST(0)) && (SvTYPE(SvRV(ST(0))) == SVt_PVMG))
         	pView = (FV_View *)SvIV((SV*)SvRV( ST(0) ));
 	else {
@@ -67,7 +69,7 @@ XS(XS_AbiWord__FV_View_moveCursorAbs)
 			}
 			break;
 		}
-#line 71 "AbiWord.c"
+#line 73 "AbiWord.c"
     }
     XSRETURN_EMPTY;
 }
@@ -88,7 +90,7 @@ XS(XS_AbiWord__FV_View_cut)
 	};
 #line 60 "AbiWord.xs"
 		pView->cmdCut();
-#line 92 "AbiWord.c"
+#line 94 "AbiWord.c"
     }
     XSRETURN_EMPTY;
 }
@@ -109,7 +111,7 @@ XS(XS_AbiWord__FV_View_copy)
 	};
 #line 66 "AbiWord.xs"
 		pView->cmdCopy();
-#line 113 "AbiWord.c"
+#line 115 "AbiWord.c"
     }
     XSRETURN_EMPTY;
 }
@@ -130,7 +132,7 @@ XS(XS_AbiWord__FV_View_paste)
 	};
 #line 72 "AbiWord.xs"
 		pView->cmdPaste();
-#line 134 "AbiWord.c"
+#line 136 "AbiWord.c"
     }
     XSRETURN_EMPTY;
 }
@@ -143,7 +145,8 @@ XS(XS_AbiWord__FV_View_setPaperColor)
 	Perl_croak(aTHX_ "Usage: AbiWord::FV_View::setPaperColor(pView, color)");
     {
 	FV_View*	pView;
-	const char*
+	const char*	color = (const char *)SvPV_nolen(ST(1));
+
 	if (sv_isobject(ST(0)) && (SvTYPE(SvRV(ST(0))) == SVt_PVMG))
         	pView = (FV_View *)SvIV((SV*)SvRV( ST(0) ));
 	else {
@@ -151,7 +154,7 @@ XS(XS_AbiWord__FV_View_setPaperColor)
 	};
 #line 79 "AbiWord.xs"
 		pView->setPaperColor((XML_Char*) color);
-#line 155 "AbiWord.c"
+#line 158 "AbiWord.c"
     }
     XSRETURN_EMPTY;
 }
@@ -197,7 +200,9 @@ XS(XS_AbiWord__FV_View_setCharFormat)
 		delete[] properties;
 		RETVAL = true;
 	}
-#line 201 "AbiWord.c"
+#line 204 "AbiWord.c"
+	ST(0) = boolSV(RETVAL);
+	sv_2mortal(ST(0));
     }
     XSRETURN(1);
 }
@@ -210,7 +215,8 @@ XS(XS_AbiWord__FV_View_changeNumColumns)
 	Perl_croak(aTHX_ "Usage: AbiWord::FV_View::changeNumColumns(pView, ncolumns)");
     {
 	FV_View *	pView;
-	unsigned int
+	unsigned int	ncolumns = (unsigned int)SvUV(ST(1));
+
 	if (sv_isobject(ST(0)) && (SvTYPE(SvRV(ST(0))) == SVt_PVMG))
         	pView = (FV_View *)SvIV((SV*)SvRV( ST(0) ));
 	else {
@@ -219,7 +225,7 @@ XS(XS_AbiWord__FV_View_changeNumColumns)
 #line 121 "AbiWord.xs"
 		/* this is not actually implemented, though it's in the header
 		pView->changeNumColumns (ncolumns);*/
-#line 223 "AbiWord.c"
+#line 229 "AbiWord.c"
     }
     XSRETURN_EMPTY;
 }
@@ -232,7 +238,9 @@ XS(XS_AbiWord__FV_View_cmdCharDelete)
 	Perl_croak(aTHX_ "Usage: AbiWord::FV_View::cmdCharDelete(pView, forward, count)");
     {
 	FV_View *	pView;
-	bool	unsigned int
+	bool	forward = (bool)SvTRUE(ST(1));
+	unsigned int	count = (unsigned int)SvUV(ST(2));
+
 	if (sv_isobject(ST(0)) && (SvTYPE(SvRV(ST(0))) == SVt_PVMG))
         	pView = (FV_View *)SvIV((SV*)SvRV( ST(0) ));
 	else {
@@ -240,7 +248,7 @@ XS(XS_AbiWord__FV_View_cmdCharDelete)
 	};
 #line 130 "AbiWord.xs"
 		pView->cmdCharDelete (forward, count);
-#line 244 "AbiWord.c"
+#line 252 "AbiWord.c"
     }
     XSRETURN_EMPTY;
 }
@@ -254,6 +262,7 @@ XS(XS_AbiWord__FV_View_getCurrentPageNumber)
     {
 	FV_View *	pView;
 	unsigned int	RETVAL;
+	dXSTARG;
 
 	if (sv_isobject(ST(0)) && (SvTYPE(SvRV(ST(0))) == SVt_PVMG))
         	pView = (FV_View *)SvIV((SV*)SvRV( ST(0) ));
@@ -262,7 +271,8 @@ XS(XS_AbiWord__FV_View_getCurrentPageNumber)
 	};
 #line 136 "AbiWord.xs"
 		RETVAL = pView->getCurrentPageNumber();
-#line 266 "AbiWord.c"
+#line 275 "AbiWord.c"
+	XSprePUSH; PUSHu((UV)RETVAL);
     }
     XSRETURN(1);
 }
@@ -275,7 +285,10 @@ XS(XS_AbiWord__FV_View_saveAs)
 	Perl_croak(aTHX_ "Usage: AbiWord::FV_View::saveAs(pView, filename, left, cpy)");
     {
 	FV_View *	pView;
-	const char *	int	bool	bool	RETVAL;
+	const char *	filename = (const char *)SvPV_nolen(ST(1));
+	int	left = (int)SvIV(ST(2));
+	bool	cpy = (bool)SvTRUE(ST(3));
+	bool	RETVAL;
 
 	if (sv_isobject(ST(0)) && (SvTYPE(SvRV(ST(0))) == SVt_PVMG))
         	pView = (FV_View *)SvIV((SV*)SvRV( ST(0) ));
@@ -286,7 +299,9 @@ XS(XS_AbiWord__FV_View_saveAs)
 		// printf("saveAs\n");
 		pView->cmdSaveAs(filename, left, cpy);
 		RETVAL = true;
-#line 290 "AbiWord.c"
+#line 303 "AbiWord.c"
+	ST(0) = boolSV(RETVAL);
+	sv_2mortal(ST(0));
     }
     XSRETURN(1);
 }
@@ -299,7 +314,8 @@ XS(XS_AbiWord__FV_View_write)
 	Perl_croak(aTHX_ "Usage: AbiWord::FV_View::write(pView, pszText)");
     {
 	FV_View *	pView;
-	const char *	bool	RETVAL;
+	const char *	pszText = (const char *)SvPV_nolen(ST(1));
+	bool	RETVAL;
 
 	if (sv_isobject(ST(0)) && (SvTYPE(SvRV(ST(0))) == SVt_PVMG))
         	pView = (FV_View *)SvIV((SV*)SvRV( ST(0) ));
@@ -313,7 +329,9 @@ XS(XS_AbiWord__FV_View_write)
 		pView->cmdCharInsert(text, strlen(pszText));
 		free(text);
 		RETVAL = true;
-#line 317 "AbiWord.c"
+#line 333 "AbiWord.c"
+	ST(0) = boolSV(RETVAL);
+	sv_2mortal(ST(0));
     }
     XSRETURN(1);
 }
@@ -326,7 +344,8 @@ XS(XS_AbiWord__FV_View_write_OneAtTime)
 	Perl_croak(aTHX_ "Usage: AbiWord::FV_View::write_OneAtTime(pView, pszText)");
     {
 	FV_View *	pView;
-	const char *	bool	RETVAL;
+	const char *	pszText = (const char *)SvPV_nolen(ST(1));
+	bool	RETVAL;
 
 	if (sv_isobject(ST(0)) && (SvTYPE(SvRV(ST(0))) == SVt_PVMG))
         	pView = (FV_View *)SvIV((SV*)SvRV( ST(0) ));
@@ -339,7 +358,9 @@ XS(XS_AbiWord__FV_View_write_OneAtTime)
 		while ((text[0] = *pszText++) != '\0')
 			pView->cmdCharInsert(text, 1);
 		RETVAL = true;
-#line 343 "AbiWord.c"
+#line 362 "AbiWord.c"
+	ST(0) = boolSV(RETVAL);
+	sv_2mortal(ST(0));
     }
     XSRETURN(1);
 }
@@ -360,7 +381,7 @@ XS(XS_AbiWord__FV_View_editHeader)
 	};
 #line 184 "AbiWord.xs"
 		pView->cmdEditHeader();
-#line 364 "AbiWord.c"
+#line 385 "AbiWord.c"
     }
     XSRETURN_EMPTY;
 }
@@ -381,7 +402,7 @@ XS(XS_AbiWord__FV_View_editFooter)
 	};
 #line 190 "AbiWord.xs"
 		pView->cmdEditFooter();
-#line 385 "AbiWord.c"
+#line 406 "AbiWord.c"
     }
     XSRETURN_EMPTY;
 }
@@ -403,7 +424,7 @@ XS(XS_AbiWord__FV_View_editBody)
 #line 196 "AbiWord.xs"
 		pView->clearHdrFtrEdit();
 		pView->warpInsPtToXY(0, 0, false);
-#line 407 "AbiWord.c"
+#line 428 "AbiWord.c"
     }
     XSRETURN_EMPTY;
 }
@@ -417,6 +438,7 @@ XS(XS_AbiWord__FV_View_getPoint)
     {
 	FV_View *	pView;
 	unsigned int	RETVAL;
+	dXSTARG;
 
 	if (sv_isobject(ST(0)) && (SvTYPE(SvRV(ST(0))) == SVt_PVMG))
         	pView = (FV_View *)SvIV((SV*)SvRV( ST(0) ));
@@ -425,7 +447,8 @@ XS(XS_AbiWord__FV_View_getPoint)
 	};
 #line 203 "AbiWord.xs"
 		RETVAL = pView->getPoint();
-#line 429 "AbiWord.c"
+#line 451 "AbiWord.c"
+	XSprePUSH; PUSHu((UV)RETVAL);
     }
     XSRETURN(1);
 }
@@ -438,7 +461,9 @@ XS(XS_AbiWord__FV_View_find)
 	Perl_croak(aTHX_ "Usage: AbiWord::FV_View::find(pView, pszText, matchCase)");
     {
 	FV_View*	pView;
-	const char*	bool	bool	RETVAL;
+	const char*	pszText = (const char *)SvPV_nolen(ST(1));
+	bool	matchCase = (bool)SvTRUE(ST(2));
+	bool	RETVAL;
 
 	if (sv_isobject(ST(0)) && (SvTYPE(SvRV(ST(0))) == SVt_PVMG))
         	pView = (FV_View *)SvIV((SV*)SvRV( ST(0) ));
@@ -451,7 +476,9 @@ XS(XS_AbiWord__FV_View_find)
 		bool bTmp;
 		RETVAL = pView->findNext(text, matchCase, bTmp);
 		free(text);
-#line 455 "AbiWord.c"
+#line 480 "AbiWord.c"
+	ST(0) = boolSV(RETVAL);
+	sv_2mortal(ST(0));
     }
     XSRETURN(1);
 }
@@ -464,7 +491,10 @@ XS(XS_AbiWord__FV_View_replace)
 	Perl_croak(aTHX_ "Usage: AbiWord::FV_View::replace(pView, pszTextToFind, pszReplacement, matchCase)");
     {
 	FV_View*	pView;
-	const char*	const char*	bool	bool	RETVAL;
+	const char*	pszTextToFind = (const char *)SvPV_nolen(ST(1));
+	const char*	pszReplacement = (const char *)SvPV_nolen(ST(2));
+	bool	matchCase = (bool)SvTRUE(ST(3));
+	bool	RETVAL;
 
 	if (sv_isobject(ST(0)) && (SvTYPE(SvRV(ST(0))) == SVt_PVMG))
         	pView = (FV_View *)SvIV((SV*)SvRV( ST(0) ));
@@ -480,7 +510,9 @@ XS(XS_AbiWord__FV_View_replace)
 		RETVAL = pView->findReplace(textToFind, replacement, matchCase, bTmp);
 		free(textToFind);
 		free(replacement);
-#line 484 "AbiWord.c"
+#line 514 "AbiWord.c"
+	ST(0) = boolSV(RETVAL);
+	sv_2mortal(ST(0));
     }
     XSRETURN(1);
 }
@@ -494,6 +526,7 @@ XS(XS_AbiWord__FV_View_getSelectionText)
     {
 	FV_View*	pView;
 	char *	RETVAL;
+	dXSTARG;
 
 	if (sv_isobject(ST(0)) && (SvTYPE(SvRV(ST(0))) == SVt_PVMG))
         	pView = (FV_View *)SvIV((SV*)SvRV( ST(0) ));
@@ -514,7 +547,8 @@ XS(XS_AbiWord__FV_View_getSelectionText)
 			*RETVAL = '\0';
 		}
 
-#line 518 "AbiWord.c"
+#line 551 "AbiWord.c"
+	sv_setpv(TARG, RETVAL); XSprePUSH; PUSHTARG;
     }
     XSRETURN(1);
 }
@@ -544,7 +578,7 @@ XS(XS_AbiWord__FV_View_print)
 			pEM = pEMC->findEditMethodByName("printTB");
 
 		(*pEM->getFn())(pView, 0);
-#line 548 "AbiWord.c"
+#line 582 "AbiWord.c"
     }
     XSRETURN_EMPTY;
 }
@@ -560,7 +594,7 @@ XS(XS_AbiWord__XAP_Frame_getLastFocussed)
 #line 281 "AbiWord.xs"
 		// printf("getLastFocussed\n");
 		RETVAL = XAP_App::getApp()->getLastFocussedFrame();
-#line 564 "AbiWord.c"
+#line 598 "AbiWord.c"
 	ST(0) = sv_newmortal();
 	sv_setref_pv( ST(0), "AbiWord::XAP_Frame", (void*)RETVAL );
 
@@ -575,13 +609,14 @@ XS(XS_AbiWord__XAP_Frame_openFile)
     if (items != 1)
 	Perl_croak(aTHX_ "Usage: AbiWord::XAP_Frame::openFile(pszFilename)");
     {
-	const char*	XAP_Frame *	RETVAL;
+	const char*	pszFilename = (const char *)SvPV_nolen(ST(0));
+	XAP_Frame *	RETVAL;
 #line 290 "AbiWord.xs"
 		XAP_App* app = XAP_App::getApp();
 		// printf("openFile\n");
 		RETVAL = app->newFrame();
 		RETVAL->loadDocument(pszFilename, 0, true);
-#line 585 "AbiWord.c"
+#line 620 "AbiWord.c"
 	ST(0) = sv_newmortal();
 	sv_setref_pv( ST(0), "AbiWord::XAP_Frame", (void*)RETVAL );
 
@@ -607,7 +642,7 @@ XS(XS_AbiWord__XAP_Frame_getCurrentView)
 #line 301 "AbiWord.xs"
 		// printf("getCurrentView\n");
 		RETVAL = (FV_View *) pFrame->getCurrentView();
-#line 611 "AbiWord.c"
+#line 646 "AbiWord.c"
 	ST(0) = sv_newmortal();
 	sv_setref_pv( ST(0), "AbiWord::FV_View", (void*)RETVAL );
 
@@ -623,7 +658,9 @@ XS(XS_AbiWord__XAP_Frame_setPageSize)
 	Perl_croak(aTHX_ "Usage: AbiWord::XAP_Frame::setPageSize(pFrame, iWidth, iHeight)");
     {
 	XAP_Frame*	pFrame;
-	double	double
+	double	iWidth = (double)SvNV(ST(1));
+	double	iHeight = (double)SvNV(ST(2));
+
 	if (sv_isobject(ST(0)) && (SvTYPE(SvRV(ST(0))) == SVt_PVMG))
 		pFrame = (XAP_Frame *)SvIV((SV*)SvRV( ST(0) ));
 	else {
@@ -638,7 +675,7 @@ XS(XS_AbiWord__XAP_Frame_setPageSize)
 			fp_PageSize ps(iWidth, iHeight, DIM_MM);
 //			doc->setPageSize(ps);
 		}
-#line 642 "AbiWord.c"
+#line 679 "AbiWord.c"
     }
     XSRETURN_EMPTY;
 }
@@ -651,7 +688,8 @@ XS(XS_AbiWord__XAP_Frame_setPageSizeByName)
 	Perl_croak(aTHX_ "Usage: AbiWord::XAP_Frame::setPageSizeByName(pFrame, pszName)");
     {
 	XAP_Frame*	pFrame;
-	const char*
+	const char*	pszName = (const char *)SvPV_nolen(ST(1));
+
 	if (sv_isobject(ST(0)) && (SvTYPE(SvRV(ST(0))) == SVt_PVMG))
 		pFrame = (XAP_Frame *)SvIV((SV*)SvRV( ST(0) ));
 	else {
@@ -664,7 +702,7 @@ XS(XS_AbiWord__XAP_Frame_setPageSizeByName)
 		if (doc)
 //			doc->setPageSize(fp_PageSize(pszName));
 			;
-#line 668 "AbiWord.c"
+#line 706 "AbiWord.c"
     }
     XSRETURN_EMPTY;
 }
@@ -699,7 +737,7 @@ XS(XS_AbiWord__XAP_Frame_close)
 		pApp->forgetFrame(pFrame);
 		pFrame->close();
 		delete pFrame;
-#line 703 "AbiWord.c"
+#line 741 "AbiWord.c"
     }
     XSRETURN_EMPTY;
 }
@@ -711,10 +749,14 @@ XS(XS_AbiWord__XAP_Frame_register)
     if (items != 4)
 	Perl_croak(aTHX_ "Usage: AbiWord::XAP_Frame::register(pszFunctionName, pszMenuPath, pszDescription, bRaisesDialog)");
     {
-	const char *	const char *	const char *	bool#line 360 "AbiWord.xs"
+	const char *	pszFunctionName = (const char *)SvPV_nolen(ST(0));
+	const char *	pszMenuPath = (const char *)SvPV_nolen(ST(1));
+	const char *	pszDescription = (const char *)SvPV_nolen(ST(2));
+	bool	bRaisesDialog = (bool)SvTRUE(ST(3));
+#line 360 "AbiWord.xs"
 		UT_PerlBindings::getInstance().registerCallback(
 			pszFunctionName, pszMenuPath, pszDescription, bRaisesDialog);
-#line 718 "AbiWord.c"
+#line 760 "AbiWord.c"
     }
     XSRETURN_EMPTY;
 }
@@ -728,7 +770,7 @@ XS(XS_AbiWord__XAP_Frame_exit)
     {
 #line 366 "AbiWord.xs"
 		XAP_App::getApp()->reallyExit();
-#line 732 "AbiWord.c"
+#line 774 "AbiWord.c"
     }
     XSRETURN_EMPTY;
 }
@@ -749,43 +791,50 @@ XS(boot_AbiWord)
 
         cv = newXS("AbiWord::FV_View::moveCursorAbs", XS_AbiWord__FV_View_moveCursorAbs, file);
         XSANY.any_i32 = 0 ;
+        sv_setpv((SV*)cv, "$$$") ;
         cv = newXS("AbiWord::FV_View::moveCursorRel", XS_AbiWord__FV_View_moveCursorAbs, file);
         XSANY.any_i32 = 1 ;
-        newXS("AbiWord::FV_View::cut", XS_AbiWord__FV_View_cut, file);
-        newXS("AbiWord::FV_View::copy", XS_AbiWord__FV_View_copy, file);
-        newXS("AbiWord::FV_View::paste", XS_AbiWord__FV_View_paste, file);
-        newXS("AbiWord::FV_View::setPaperColor", XS_AbiWord__FV_View_setPaperColor, file);
+        sv_setpv((SV*)cv, "$$$") ;
+        newXSproto("AbiWord::FV_View::cut", XS_AbiWord__FV_View_cut, file, "$");
+        newXSproto("AbiWord::FV_View::copy", XS_AbiWord__FV_View_copy, file, "$");
+        newXSproto("AbiWord::FV_View::paste", XS_AbiWord__FV_View_paste, file, "$");
+        newXSproto("AbiWord::FV_View::setPaperColor", XS_AbiWord__FV_View_setPaperColor, file, "$$");
         cv = newXS("AbiWord::FV_View::setSectionFormat", XS_AbiWord__FV_View_setCharFormat, file);
         XSANY.any_i32 = 1 ;
+        sv_setpv((SV*)cv, "$;@") ;
         cv = newXS("AbiWord::FV_View::setCharFormat", XS_AbiWord__FV_View_setCharFormat, file);
         XSANY.any_i32 = 0 ;
+        sv_setpv((SV*)cv, "$;@") ;
         cv = newXS("AbiWord::FV_View::setBlockFormat", XS_AbiWord__FV_View_setCharFormat, file);
         XSANY.any_i32 = 2 ;
-        newXS("AbiWord::FV_View::changeNumColumns", XS_AbiWord__FV_View_changeNumColumns, file);
-        newXS("AbiWord::FV_View::cmdCharDelete", XS_AbiWord__FV_View_cmdCharDelete, file);
-        newXS("AbiWord::FV_View::getCurrentPageNumber", XS_AbiWord__FV_View_getCurrentPageNumber, file);
-        newXS("AbiWord::FV_View::saveAs", XS_AbiWord__FV_View_saveAs, file);
-        newXS("AbiWord::FV_View::write", XS_AbiWord__FV_View_write, file);
-        newXS("AbiWord::FV_View::write_OneAtTime", XS_AbiWord__FV_View_write_OneAtTime, file);
-        newXS("AbiWord::FV_View::editHeader", XS_AbiWord__FV_View_editHeader, file);
-        newXS("AbiWord::FV_View::editFooter", XS_AbiWord__FV_View_editFooter, file);
-        newXS("AbiWord::FV_View::editBody", XS_AbiWord__FV_View_editBody, file);
-        newXS("AbiWord::FV_View::getPoint", XS_AbiWord__FV_View_getPoint, file);
-        newXS("AbiWord::FV_View::find", XS_AbiWord__FV_View_find, file);
-        newXS("AbiWord::FV_View::replace", XS_AbiWord__FV_View_replace, file);
-        newXS("AbiWord::FV_View::getSelectionText", XS_AbiWord__FV_View_getSelectionText, file);
+        sv_setpv((SV*)cv, "$;@") ;
+        newXSproto("AbiWord::FV_View::changeNumColumns", XS_AbiWord__FV_View_changeNumColumns, file, "$$");
+        newXSproto("AbiWord::FV_View::cmdCharDelete", XS_AbiWord__FV_View_cmdCharDelete, file, "$$$");
+        newXSproto("AbiWord::FV_View::getCurrentPageNumber", XS_AbiWord__FV_View_getCurrentPageNumber, file, "$");
+        newXSproto("AbiWord::FV_View::saveAs", XS_AbiWord__FV_View_saveAs, file, "$$$$");
+        newXSproto("AbiWord::FV_View::write", XS_AbiWord__FV_View_write, file, "$$");
+        newXSproto("AbiWord::FV_View::write_OneAtTime", XS_AbiWord__FV_View_write_OneAtTime, file, "$$");
+        newXSproto("AbiWord::FV_View::editHeader", XS_AbiWord__FV_View_editHeader, file, "$");
+        newXSproto("AbiWord::FV_View::editFooter", XS_AbiWord__FV_View_editFooter, file, "$");
+        newXSproto("AbiWord::FV_View::editBody", XS_AbiWord__FV_View_editBody, file, "$");
+        newXSproto("AbiWord::FV_View::getPoint", XS_AbiWord__FV_View_getPoint, file, "$");
+        newXSproto("AbiWord::FV_View::find", XS_AbiWord__FV_View_find, file, "$$$");
+        newXSproto("AbiWord::FV_View::replace", XS_AbiWord__FV_View_replace, file, "$$$$");
+        newXSproto("AbiWord::FV_View::getSelectionText", XS_AbiWord__FV_View_getSelectionText, file, "$");
         cv = newXS("AbiWord::FV_View::print", XS_AbiWord__FV_View_print, file);
         XSANY.any_i32 = 1 ;
+        sv_setpv((SV*)cv, "$") ;
         cv = newXS("AbiWord::FV_View::showPrintDialog", XS_AbiWord__FV_View_print, file);
         XSANY.any_i32 = 0 ;
-        newXS("AbiWord::XAP_Frame::getLastFocussed", XS_AbiWord__XAP_Frame_getLastFocussed, file);
-        newXS("AbiWord::XAP_Frame::openFile", XS_AbiWord__XAP_Frame_openFile, file);
-        newXS("AbiWord::XAP_Frame::getCurrentView", XS_AbiWord__XAP_Frame_getCurrentView, file);
-        newXS("AbiWord::XAP_Frame::setPageSize", XS_AbiWord__XAP_Frame_setPageSize, file);
-        newXS("AbiWord::XAP_Frame::setPageSizeByName", XS_AbiWord__XAP_Frame_setPageSizeByName, file);
-        newXS("AbiWord::XAP_Frame::close", XS_AbiWord__XAP_Frame_close, file);
-        newXS("AbiWord::XAP_Frame::register", XS_AbiWord__XAP_Frame_register, file);
-        newXS("AbiWord::XAP_Frame::exit", XS_AbiWord__XAP_Frame_exit, file);
+        sv_setpv((SV*)cv, "$") ;
+        newXSproto("AbiWord::XAP_Frame::getLastFocussed", XS_AbiWord__XAP_Frame_getLastFocussed, file, "");
+        newXSproto("AbiWord::XAP_Frame::openFile", XS_AbiWord__XAP_Frame_openFile, file, "$");
+        newXSproto("AbiWord::XAP_Frame::getCurrentView", XS_AbiWord__XAP_Frame_getCurrentView, file, "$");
+        newXSproto("AbiWord::XAP_Frame::setPageSize", XS_AbiWord__XAP_Frame_setPageSize, file, "$$$");
+        newXSproto("AbiWord::XAP_Frame::setPageSizeByName", XS_AbiWord__XAP_Frame_setPageSizeByName, file, "$$");
+        newXSproto("AbiWord::XAP_Frame::close", XS_AbiWord__XAP_Frame_close, file, "$");
+        newXSproto("AbiWord::XAP_Frame::register", XS_AbiWord__XAP_Frame_register, file, "$$$$");
+        newXSproto("AbiWord::XAP_Frame::exit", XS_AbiWord__XAP_Frame_exit, file, "");
     }
     XSRETURN_YES;
 }
