@@ -30,6 +30,7 @@
 
 #include "xap_Dialog_Id.h"
 #include "ap_QNXDialog_Download_File.h"
+#include "ap_Strings.h"
 
 #include "ut_bytebuf.h"
 #include "ut_png.h"
@@ -125,7 +126,7 @@ PtWidget_t * AP_QNXDialog_Download_File::_constructWindow(void)
 	
 	PtSetArg(&args[n++],Pt_ARG_WINDOW_RENDER_FLAGS,0,ABI_MODAL_WINDOW_RENDER_FLAGS);
 	PtSetArg(&args[n++],Pt_ARG_WINDOW_MANAGED_FLAGS,0,ABI_MODAL_WINDOW_MANAGE_FLAGS);
-	PtSetArg(&args[n++],Pt_ARG_WINDOW_TITLE,pSS->getValue(XAP_STRING_ID_DLG_DlFile_Title),0);
+	PtSetArg(&args[n++],Pt_ARG_WINDOW_TITLE,getTitle()),0);
 	PtSetArg(&args[n++],Pt_ARG_RESIZE_FLAGS,Pt_RESIZE_XY_AS_REQUIRED,Pt_RESIZE_XY_AS_REQUIRED);
 	mainwindow=PtCreateWidget(PtWindow,0,n,args);
 
@@ -136,7 +137,7 @@ PtWidget_t * AP_QNXDialog_Download_File::_constructWindow(void)
 
 	n=0;
 
-	sprintf(buf,pSS->getValue(XAP_STRING_ID_DLG_DlFile_Status),getDescription(),getURL());
+	sprintf(buf,pSS->getValue(AP_STRING_ID_DLG_DlFile_Status),getDescription(),getURL());
 	PtSetArg(&args[n++],Pt_ARG_TEXT_STRING,&buf,0);
 	PtSetArg(&args[n++],Pt_ARG_RESIZE_FLAGS,Pt_RESIZE_XY_AS_REQUIRED,Pt_RESIZE_XY_AS_REQUIRED);
 	PtCreateWidget(PtLabel,group,n,args);
