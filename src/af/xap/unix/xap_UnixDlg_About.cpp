@@ -22,7 +22,6 @@
 #include <string.h>
 #include "ut_string.h"
 #include "ut_assert.h"
-#include "ut_debugmsg.h"
 #include "xap_UnixDialogHelper.h"
 
 #include "xap_App.h"
@@ -165,7 +164,6 @@ GtkWidget * XAP_UnixDialog_About::_constructWindow(void)
   // make the font really big
   GtkStyle * bigstyle = gtk_style_copy(gtk_widget_get_style(labelTitle));
   UT_ASSERT(bigstyle);
-  gdk_font_unref(bigstyle->private_font);
   bigstyle->private_font = gdk_font_load("-*-helvetica-bold-r-*-*-*-240-*-*-*-*-*-*");
   gtk_widget_set_style(labelTitle, bigstyle);
   
@@ -190,7 +188,6 @@ GtkWidget * XAP_UnixDialog_About::_constructWindow(void)
   // make the font slightly smaller
   GtkStyle * smallstyle = gtk_style_copy(gtk_widget_get_style(textCopyright));
   UT_ASSERT(smallstyle);
-  gdk_font_unref(smallstyle->private_font);
   smallstyle->private_font = gdk_font_load("-*-helvetica-medium-r-*-*-*-100-*-*-*-*-*-*");
   gtk_widget_set_style(textCopyright, smallstyle);
 
