@@ -28,14 +28,19 @@
 
 // TODO aaaaagh!  This is Win32-specific
 
-void _UT_OutputMessage(char *s, ...)
+void _UT_OutputMessage(const char *s, ...)
 {
 	char sBuf[1024];
 	va_list marker;
 
 	va_start(marker, s);
 
+#if 0
 	vsprintf(sBuf, s, marker);
+#else
+	// MPritchett or others: REVERT THIS IF NECESSARY
+	_vsnprintf(sBuf, 1024, s, marker);
+#endif
 
 	OutputDebugString(sBuf);
 }

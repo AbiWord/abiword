@@ -24,7 +24,7 @@
 
 #include "ut_debugmsg.h"
 
-void _UT_OutputMessage(char *s, ...)
+void _UT_OutputMessage(const char *s, ...)
 {
 	char sBuf[1024];
 	va_list marker;
