@@ -360,7 +360,6 @@ fl_BlockLayout * fl_TOCLayout::findMatchingBlock(fl_BlockLayout * pBlock)
 
 void fl_TOCLayout::_removeBlockInVec(fl_BlockLayout * pBlock, UT_Vector * pVecBlocks)
 {
-	PT_DocPosition posNew = pBlock->getPosition();
 	fl_BlockLayout * pThisBL = NULL;
 	UT_sint32 i = 0;
 	bool bFound = false;
@@ -487,7 +486,7 @@ bool fl_TOCLayout::isBlockInTOC(fl_BlockLayout * pBlock)
 
 fl_BlockLayout * fl_TOCLayout::getMatchingBlock(fl_BlockLayout * pBlock)
 {
-	return pBlock;
+	return findMatchingBlock(pBlock);;
 }
 
 bool fl_TOCLayout::doclistener_changeStrux(const PX_ChangeRecord_StruxChange * pcrxc)
@@ -497,9 +496,9 @@ bool fl_TOCLayout::doclistener_changeStrux(const PX_ChangeRecord_StruxChange * p
 
 	setAttrPropIndex(pcrxc->getIndexAP());
 	collapse();
-	_purgeLayout();
 	_lookupProperties();
 	_createTOCContainer();
+	_insertTOCContainer(static_cast<fp_TOCContainer *>(getLastContainer()));
 	return true;
 }
 
@@ -602,7 +601,7 @@ bool fl_TOCLayout::doclistener_deleteStrux(const PX_ChangeRecord_Strux * pcrx)
  */
 void fl_TOCLayout::_purgeLayout(void)
 {
-	UT_DEBUGMSG(("embedLayout: purge \n"));
+	UT_DEBUGMSG(("TOCLayout: purge \n"));
 	fl_ContainerLayout * pCL = getFirstLayout();
 	while(pCL)
 	{
@@ -615,6 +614,8 @@ void fl_TOCLayout::_purgeLayout(void)
 	m_vecBlock2.clear();
 	m_vecBlock3.clear();
 	m_vecBlock4.clear();
+	setFirstLayout(NULL);
+	setLastLayout(NULL);
 }
 
 
@@ -624,6 +625,7 @@ void fl_TOCLayout::_purgeLayout(void)
 void fl_TOCLayout::_createTOCContainer(void)
 {
 	_lookupProperties();
+	UT_ASSERT(getFirstLayout() == NULL);
 	fp_TOCContainer * pTOCContainer = new fp_TOCContainer(static_cast<fl_SectionLayout *>(this));
 	setFirstContainer(pTOCContainer);
 	setLastContainer(pTOCContainer);
@@ -891,7 +893,7 @@ void fl_TOCLayout::collapse(void)
 //
 // remove it from the linked list.
 //
-		fp_TOCContainer * pPrev = static_cast<fp_TOCContainer *>(pTC->getPrev());
+		fp_Container * pPrev = static_cast<fp_Container *>(pTC->getPrev());
 		if(pPrev)
 		{
 			pPrev->setNext(pTC->getNext());
@@ -900,10 +902,16 @@ void fl_TOCLayout::collapse(void)
 		{
 			pTC->getNext()->setPrev(pPrev);
 		}
+//
+// Remove it from the vertical container that contains it.
+//
+		static_cast<fp_VerticalContainer *>(pTC->getContainer())->removeContainer(pTC);
+		pTC->setContainer(NULL);
 		delete pTC;
 	}
 	setFirstContainer(NULL);
 	setLastContainer(NULL);
+	_purgeLayout();
 }
 
 

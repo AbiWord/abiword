@@ -1265,6 +1265,13 @@ bool fl_DocListener::change(PL_StruxFmtHandle sfh,
 			bResult = pFL->doclistener_changeStrux(pcrxc);
 			goto finish_up;
 		}
+		case PTX_SectionTOC:
+		{
+			fl_TOCLayout * pTOCL = (fl_TOCLayout *) pL;
+			UT_ASSERT(pTOCL->getContainerType() == FL_CONTAINER_TOC);
+			bResult = pTOCL->doclistener_changeStrux(pcrxc);
+			goto finish_up;
+		}
 		default:
 		{
 			UT_ASSERT(0);

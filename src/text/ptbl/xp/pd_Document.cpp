@@ -3121,6 +3121,10 @@ bool   PD_Document::updateDocForStyleChange(const XML_Char * szStyle,
 				{
 					bUpdate = true;
 				}
+				else if(pfs->getStruxType() == 	PTX_SectionTOC)
+				{
+					bUpdate = true; // FIXME should be more fine grained.
+				}
 //
 // Look if the style in the basedon ancestory is our style
 //
