@@ -78,6 +78,9 @@ else
 			cp $$k american.hash;		\
 			rm $$k ;			\
 		done)
+# We currently only ship american.hash, so the above and below aren't logical.
+# For same reason, this will only copy american.hash-encoding once in place.  The rest is in abispell.
+	@$(ABICOPY) $(ABI_ROOT)/../abidistfiles/dictionary/*.hash-encoding $(CANONDIR)/dictionary	
 endif
 
 	@$(subst xxxx,$(CANONDIR)/clipart,$(VERIFY_DIRECTORY))
