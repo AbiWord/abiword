@@ -66,15 +66,18 @@
 #	include "tb_save_as.xpm"
 #	include "tb_undo.xpm"
 
-	// these are specific to the one or more translations
+	// these are specific to one or more translations
 #	include "tb_text_bold_G.xpm"
 #	include "tb_text_strikeout_B.xpm"
 #	include "tb_text_underline_S.xpm"
+#	include "tb_text_italic_K.xpm"
 	// Finnish translations
 #	include "tb_text_bold_L.xpm"
 #	include "tb_text_strikeout_Y.xpm"
 #	include "tb_text_underline_A.xpm"
-#	include "tb_text_italic_K.xpm"
+	// Danish translations
+#   include "tb_text_bold_F.xpm"
+#   include "tb_text_strikeout_G.xpm"
 	
 	// ... add new icons here (don't forget to add below the #else) ...
 
@@ -111,15 +114,18 @@
 	DefineToolbarIcon(tb_save_as_xpm)
 	DefineToolbarIcon(tb_undo_xpm)
 
-	// these are specific to the one or more translations
+	// these are specific to one or more translations
 	DefineToolbarIcon(tb_text_bold_G_xpm)
 	DefineToolbarIcon(tb_text_strikeout_B_xpm)
 	DefineToolbarIcon(tb_text_underline_S_xpm)
+	DefineToolbarIcon(tb_text_italic_K_xpm)
 	// Finnish translations
 	DefineToolbarIcon(tb_text_bold_L_xpm)
 	DefineToolbarIcon(tb_text_strikeout_Y_xpm)
 	DefineToolbarIcon(tb_text_underline_A_xpm)
-	DefineToolbarIcon(tb_text_italic_K_xpm)
+	// Danish translations
+    DefineToolbarIcon(tb_text_bold_F_xpm)	
+    DefineToolbarIcon(tb_text_strikeout_G_xpm)
 
 	// ... also add new icons here ...
 
