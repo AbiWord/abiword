@@ -89,10 +89,10 @@ bool IE_Imp_RTF::LoadPictData(PictFormat format, const char * image_name,
 
 	unsigned char ch;
 
-	if (!ReadCharFromFile(&ch))
-		return false;
-
 	if (!isBinary) {
+		if (!ReadCharFromFile(&ch))
+			return false;
+
 		while (ch != '}')
 		{
 			int digit;
@@ -114,17 +114,13 @@ bool IE_Imp_RTF::LoadPictData(PictFormat format, const char * image_name,
 				return false;
 		}
 	} else {
-#if 1
-		UT_ASSERT_HARMLESS(UT_TODO);
-		UT_DEBUGMSG(("BIN SHPPICT control not currently handled correctly\n"));
-#else
 		UT_ASSERT_HARMLESS(binaryLen);
+		UT_DEBUGMSG(("Loading binary data image of %d bytes\n", binaryLen));
 		for (long i = 0; i < binaryLen; i++) {
-			pictData->append(&ch, 1);
-			if (!ReadCharFromFile(&ch))
+			if (!ReadCharFromFileWithCRLF(&ch))
 				return false;
+			pictData->append(&ch, 1);
 		}
-#endif
 	}
 
 	// We let the caller handle this
@@ -458,10 +454,32 @@ bool IE_Imp_RTF::HandlePicture()
 				}
 				break;
 			case RTF_KW_bin:
+				/* this code is completely broken. 
+				   if we encounter the \bin keyboard, then we must
+				   immediately read the binary stream....
+				   skip the first space after the keyword.
+				 */
 				UT_ASSERT_HARMLESS(parameterUsed);
 				if (parameterUsed) {
 					isBinary = true;
 					binaryLen = parameter;
+					UT_UTF8String image_name;
+					UT_UTF8String_sprintf(image_name,"%d",getDoc()->getUID(UT_UniqueId::Image));
+
+					unsigned char ch;
+					if(ReadCharFromFileWithCRLF(&ch)) {
+						if(ch != ' ') {
+							SkipBackChar(ch);
+						}
+						else {
+							UT_DEBUGMSG(("Skipped space after \\bin keyword \n"));
+						}
+					}
+					
+					if (!LoadPictData(format, image_name.utf8_str(), imageProps, isBinary, binaryLen)) {
+						return false;
+					}
+					bPictProcessed = true;
 				}
 				break;
 			default:
@@ -485,21 +503,24 @@ bool IE_Imp_RTF::HandlePicture()
 			}
 			break;
 		default:
-			UT_return_val_if_fail(!bPictProcessed, false);
-			// It this a conforming rtf, this should be the pict data
-			// if we know how to handle this format, we insert the picture
+			if (!bPictProcessed) {
+				// It this a conforming rtf, this should be the pict data
+				// if we know how to handle this format, we insert the picture
+				// But we'll skip this if this is a binary data because we found
+				// a \binN keyword a processed the picture.
 
-			UT_String image_name;
-			UT_String_sprintf(image_name,"%d",getDoc()->getUID(UT_UniqueId::Image));
+				UT_UTF8String image_name;
+				UT_UTF8String_sprintf(image_name,"%d",getDoc()->getUID(UT_UniqueId::Image));
 
-			// the first char belongs to the picture too
-			SkipBackChar(ch);
+				// the first char belongs to the picture too
+				SkipBackChar(ch);
 
-			if (!LoadPictData(format, image_name.c_str(), imageProps, isBinary, binaryLen))
-				if (!SkipCurrentGroup())
-					return false;
+				if (!LoadPictData(format, image_name.utf8_str(), imageProps, isBinary, binaryLen))
+					if (!SkipCurrentGroup())
+						return false;
 
-			bPictProcessed = true;
+				bPictProcessed = true;
+			}
 		}
 	} while (ch != '}');
 
