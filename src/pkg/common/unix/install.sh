@@ -136,7 +136,7 @@ then
 	echo ""
 	echo "Building PostScript font resource database for installed fonts..."
 	cd ${INSTALL_BASE}/fonts
-	makepsres
+	/usr/openwin/bin/makepsres
     fi
 fi
 cd ${INSTALL_BASE}
