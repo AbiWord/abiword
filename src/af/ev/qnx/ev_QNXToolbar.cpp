@@ -27,6 +27,7 @@
 #include "xap_Types.h"
 #include "xap_QNXApp.h"
 #include "xap_QNXFrame.h"
+#include "ut_iconv.h"
 #include "ev_Toolbar_Actions.h"
 #include "ev_Toolbar_Layouts.h"
 #include "ev_Toolbar_Labels.h"
@@ -108,7 +109,9 @@ bool EV_QNXToolbar::toolbarEvent(XAP_Toolbar_Id id,
 	EV_EditMethod * pEM = pEMC->findEditMethodByName(szMethodName);
 	UT_ASSERT(pEM);						// make sure it's bound to something
 
-	invokeToolbarMethod(pView,pEM,pData,dataLength);
+	UT_UCS4Char *pData4 = (UT_UCS4Char*) UT_convert((char*)pData,dataLength,"UTF-8","UCS-4",NULL,NULL);
+	invokeToolbarMethod(pView,pEM,pData4,dataLength);
+	free(pData4);
 	return true;
 }
 
