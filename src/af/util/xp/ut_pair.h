@@ -32,8 +32,6 @@
 
 typedef const void* pair_type;
 
-#ifndef ABI_OPT_STL
-
 class ABI_EXPORT UT_Pair
 {
 public:
@@ -47,24 +45,5 @@ private:
 	pair_type m_first;
 	pair_type m_second;
 };
-
-#else /* ABI_OPT_STL */
-
-#include <utility>
-
-class ABI_EXPORT UT_Pair
-{
-public:
-	UT_Pair(const pair_type first, const pair_type second);
-	~UT_Pair();
-
-	pair_type first()  const { return m_pair.first; }
-	pair_type second() const { return m_pair.second; }
-
-private:
-	std::pair<pair_type, pair_type>	m_pair;
-};
-
-#endif /* ABI_OPT_STL */
 
 #endif

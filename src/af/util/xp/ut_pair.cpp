@@ -22,8 +22,6 @@
 #include <string.h>
 #include "ut_pair.h"
 
-#ifndef ABI_OPT_STL
-
 UT_Pair::UT_Pair(pair_type first, pair_type second)
 :	m_first(first),
 	m_second(second)
@@ -34,15 +32,3 @@ UT_Pair::~UT_Pair()
 {
 }
 
-#else /* ABI_OPT_STL */
-
-UT_Pair::UT_Pair(pair_type first, pair_type second)
-:	m_pair(first, second)
-{
-}
-
-UT_Pair::~UT_Pair()
-{
-}
-
-#endif /* ABI_OPT_STL */

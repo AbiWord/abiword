@@ -78,7 +78,6 @@
 	}
 
 
-#ifndef ABI_OPT_STL
 class ABI_EXPORT UT_Vector
 {
 public:
@@ -128,47 +127,6 @@ private:
 	UT_uint32		m_iPostCutoffIncrement;
 };
 
-#else /* ABI_OPT_STL */
-
-#include <vector>
-#include <algorithm>
-
-class ABI_EXPORT UT_Vector
-{
- public:
-	UT_Vector(UT_uint32 sizehint = 2048);
-	~UT_Vector();
-
-	UT_sint32	addItem(const void*);
-	UT_sint32	addItem(const void* p, UT_uint32 * pIndex);
-	void*		getNthItem(UT_uint32 n) const;
-	const void*	operator[](UT_uint32 i) const;
-	UT_sint32	setNthItem(UT_uint32 ndx, void * pNew, void ** ppOld);
-	void*	getFirstItem() const;
-	void*	getLastItem() const;
-	UT_uint32	getItemCount() const;
-	UT_sint32	findItem(void*) const;
-
-	UT_sint32	insertItemAt(void*, UT_uint32 ndx);
-	void		deleteNthItem(UT_uint32 n);
-	void		clear();
-	void		qsort(int (*compar)(const void *, const void *));
-
-	bool		copy(UT_Vector *pVec);
-	UT_uint32 inline size() const { return getItemCount(); }
-	inline UT_sint32	push_back(void *item)	{ m_STLVec.push_back(item); return 0; }
-	inline bool			pop_back()
-    {
-		m_STLVec.pop_back();
-		return true;
-	}
-	inline void*		back() const			{ return m_STLVec.back(); }
-
-private:
-	vector<void *>  m_STLVec;
-};
-
-#endif /* ABI_OPT_STL */
 
 class ABI_EXPORT UT_NumberVector
 {

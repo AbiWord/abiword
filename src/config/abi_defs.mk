@@ -782,14 +782,6 @@ else
 	ABI_OPTIONS+=Scripting:Off
 endif
 
-# conditionally enable stl-based implementations of our
-# UT_XXX classes. We may need to link against certain
-# libraries, but we don't on linux. Add these as necessary.
-ifeq ($(ABI_OPT_STL),1)
-CFLAGS += -DABI_OPT_STL
-ABI_OPTIONS+=STL:On
-endif
-
 ifeq ($(ABI_OPT_WIDGET),1)
 CFLAGS += -DABI_OPT_WIDGET
 endif
