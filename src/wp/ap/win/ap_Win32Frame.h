@@ -55,12 +55,17 @@ protected:
 	static LRESULT CALLBACK		_LeftRulerWndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam);
 	static LRESULT CALLBACK		_DocumentWndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam);
 
+	void						_setVerticalScrollInfo(const SCROLLINFO * psi);
+	void						_getVerticalScrollInfo(SCROLLINFO * psi);
+
 	HWND						m_hwndTopRuler;
 	HWND						m_hwndLeftRuler;
 	HWND						m_hwndDeadLowerRight;
 	HWND						m_hwndVScroll;
 	HWND						m_hwndHScroll;
 	HWND						m_hwndDocument;	/* the actual document window */
+
+	UT_uint32					m_vScale; /* vertical scroll scaling to get around 16-bit scrollbar problems */
 };
 
 #endif /* AP_WIN32FRAME_H */

@@ -56,6 +56,50 @@ static char s_DocumentWndClassName[256];
 static char s_LeftRulerWndClassName[256];
 
 /*****************************************************************/
+
+void AP_Win32Frame::_setVerticalScrollInfo(const SCROLLINFO * psi)
+{
+	// internal interface to GetScrollInfo() and SetScrollInfo()
+	// to deal with 16-bit limitations of SB_THUMBTRACK.
+
+	UT_uint32 scale, x;
+	for (x=psi->nMax, scale=0; (x > 0x0000ffff); x>>=1, scale++)
+		;
+
+	m_vScale = scale;
+	
+	if (scale == 0)
+	{
+		SetScrollInfo(m_hwndVScroll,SB_CTL,psi,TRUE);
+		return;
+	}
+	
+	SCROLLINFO si = *psi;				// structure copy
+	si.nMin >>= scale;
+	si.nMax >>= scale;
+	si.nPos >>= scale;
+	si.nPage >>= scale;
+
+	SetScrollInfo(m_hwndVScroll,SB_CTL,&si,TRUE);
+	return;
+}
+
+void AP_Win32Frame::_getVerticalScrollInfo(SCROLLINFO * psi)
+{
+	GetScrollInfo(m_hwndVScroll,SB_CTL,psi);
+
+	if (m_vScale)
+	{
+		psi->nMin <<= m_vScale;
+		psi->nMax <<= m_vScale;
+		psi->nPos <<= m_vScale;
+		psi->nPage <<= m_vScale;
+	}
+
+	return;
+}
+
+/*****************************************************************/
 	
 UT_Bool AP_Win32Frame::_showDocument(void)
 {
@@ -254,7 +298,7 @@ void AP_Win32Frame::setYScrollRange(void)
 	si.nMax = iHeight;
 	si.nPos = ((m_pView) ? m_pView->getYScrollOffset() : 0);
 	si.nPage = iWindowHeight;
-	SetScrollInfo(m_hwndVScroll, SB_CTL, &si, TRUE);
+	_setVerticalScrollInfo(&si);
 
 	m_pView->sendVerticalScrollEvent(si.nPos,si.nMax-si.nPage);
 }
@@ -498,13 +542,10 @@ void AP_Win32Frame::_scrollFuncY(void* pData, UT_sint32 yoff, UT_sint32 /*ylimit
 	si.cbSize = sizeof(si);
 	si.fMask = SIF_ALL;
 
-	HWND hwndV = pWin32Frame->m_hwndVScroll;
-	GetScrollInfo(hwndV, SB_CTL, &si);
-
+	pWin32Frame->_getVerticalScrollInfo(&si);
 	si.nPos = yoff;
-	SetScrollInfo(hwndV, SB_CTL, &si, TRUE);
-
-	GetScrollInfo(hwndV, SB_CTL, &si);	// may have been clamped
+	pWin32Frame->_setVerticalScrollInfo(&si);
+	pWin32Frame->_getVerticalScrollInfo(&si); // values may have been clamped
 	pWin32Frame->m_pView->setYScrollOffset(si.nPos);
 }
 
@@ -571,56 +612,45 @@ LRESULT CALLBACK AP_Win32Frame::_ContainerWndProc(HWND hwnd, UINT iMsg, WPARAM w
 	case WM_VSCROLL:
 	{
 		int nScrollCode = (int) LOWORD(wParam); // scroll bar value 
-		int nPos = (int) HIWORD(wParam);  // scroll box position 
 
 		SCROLLINFO si;
 		memset(&si, 0, sizeof(si));
 
 		si.cbSize = sizeof(si);
 		si.fMask = SIF_ALL;
-		GetScrollInfo(f->m_hwndVScroll, SB_CTL, &si);
+		f->_getVerticalScrollInfo(&si);
 
 		switch (nScrollCode)
 		{
+		default:
+			return 0;
+			
 		case SB_PAGEUP:
 			si.nPos -= si.nPage;
 			if (si.nPos < 0)
-			{
 				si.nPos = 0;
-			}
-			SetScrollInfo(f->m_hwndVScroll, SB_CTL, &si, TRUE);
 			break;
 		case SB_PAGEDOWN:
 			si.nPos += si.nPage;
-			SetScrollInfo(f->m_hwndVScroll, SB_CTL, &si, TRUE);
 			break;
 		case SB_LINEDOWN:
 			si.nPos += SCROLL_LINE_SIZE;
-			SetScrollInfo(f->m_hwndVScroll, SB_CTL, &si, TRUE);
 			break;
 		case SB_LINEUP:
 			si.nPos -= SCROLL_LINE_SIZE;
 			if (si.nPos < 0)
-			{
 				si.nPos = 0;
-			}
-			SetScrollInfo(f->m_hwndVScroll, SB_CTL, &si, TRUE);
 			break;
 		case SB_THUMBPOSITION:
 		case SB_THUMBTRACK:
-			si.nPos = nPos;
-			SetScrollInfo(f->m_hwndVScroll, SB_CTL, &si, TRUE);
+			si.nPos = (int)HIWORD(wParam); // dynamic scroll box position -- a 16-bit value
+			si.nPos <<= f->m_vScale;
 			break;
 		}
 
-		if (nScrollCode != SB_ENDSCROLL)
-		{
-			// in case we got clamped
-			GetScrollInfo(f->m_hwndVScroll, SB_CTL, &si);
-
-			// now tell the view
-			pView->sendVerticalScrollEvent(si.nPos);
-		}
+		f->_setVerticalScrollInfo(&si);				// notify window of new value.
+		f->_getVerticalScrollInfo(&si);				// update from window, in case we got clamped
+		pView->sendVerticalScrollEvent(si.nPos);	// now tell the view
 	}
 	return 0;
 
@@ -762,18 +792,16 @@ LRESULT CALLBACK AP_Win32Frame::_DocumentWndProc(HWND hwnd, UINT iMsg, WPARAM wP
 
 			pView->setWindowSize(nWidth, nHeight);
 
-			// may need to scroll to keep everything in sync
-
-			// TODO decide if all of the following is necessary
-			// TODO the above call to setWindowSize() causes alot
-			// TODO of this to happen already.
+			// may need to scroll to keep everything in sync.
+			// the following is necessary to make sure that the
+			// window de-scrolls as it gets larger.
 			
 			SCROLLINFO si;
 			memset(&si, 0, sizeof(si));
 			si.cbSize = sizeof(si);
 			si.fMask = SIF_ALL;
 
-			GetScrollInfo(f->m_hwndVScroll, SB_CTL, &si);
+			f->_getVerticalScrollInfo(&si);
 			pView->sendVerticalScrollEvent(si.nPos,si.nMax-si.nPage);
 
 			GetScrollInfo(f->m_hwndHScroll, SB_CTL, &si);
