@@ -77,6 +77,10 @@ AP_TopRuler::AP_TopRuler(XAP_Frame * pFrame)
 	
 	s_iFixedHeight = 32;
 	s_iFixedWidth = 32;
+
+	// install top_ruler_prefs_listener as this lister for this func
+	pFrame->getApp()->getPrefs()->addListener( AP_TopRuler::_prefsListener, (void *)this );
+
 }
 
 AP_TopRuler::~AP_TopRuler(void)
@@ -1999,4 +2003,26 @@ void AP_TopRuler::_drawColumnGapMarker(UT_Rect & rect)
 	m_pG->drawLine(l,     t+10, l+5,     t+5);
 	m_pG->drawLine(l+w-1, t+10, l+w-6,   t+5);
 	m_pG->drawLine(l+5,   t+5,  l+w-5,   t+5);
+}
+
+/*static*/ void AP_TopRuler::_prefsListener( XAP_App * /*pApp*/, XAP_Prefs *pPrefs, UT_AlphaHashTable * /*phChanges*/, void *data )
+{
+	AP_TopRuler *pTopRuler = (AP_TopRuler *)data;
+	UT_ASSERT( data && pPrefs );
+
+	const XML_Char *pszBuffer;
+	pPrefs->getPrefsValue( AP_PREF_KEY_RulerUnits, &pszBuffer );
+
+	// or should I just default to inches or something?
+	UT_Dimension dim = UT_determineDimension( pszBuffer, DIM_none );
+	UT_ASSERT( dim != DIM_none );
+
+	if ( dim != pTopRuler->getDimension() )
+		pTopRuler->setDimension( dim );
+}
+
+void AP_TopRuler::setDimension( UT_Dimension newdim )
+{
+	m_dim = newdim;
+	draw( (const UT_Rect *)0 );
 }

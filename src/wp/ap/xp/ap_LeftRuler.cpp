@@ -34,6 +34,7 @@
 #include "ap_Prefs.h"
 #include "fv_View.h"
 
+
 /*****************************************************************/
 
 AP_LeftRuler::AP_LeftRuler(XAP_Frame * pFrame)
@@ -60,6 +61,9 @@ AP_LeftRuler::AP_LeftRuler(XAP_Frame * pFrame)
 	s_iFixedWidth = 32;
 
 	memset(&m_lfi,0,sizeof(m_lfi));
+	
+	// install top_ruler_prefs_listener as this lister for this func
+	pFrame->getApp()->getPrefs()->addListener( AP_LeftRuler::_prefsListener, (void *)this );
 }
 
 AP_LeftRuler::~AP_LeftRuler(void)
@@ -414,3 +418,24 @@ void AP_LeftRuler::draw(const UT_Rect * pClipRect, AP_LeftRulerInfo & lfi)
 	m_lfi = lfi;
 }
 
+/*static*/ void AP_LeftRuler::_prefsListener( XAP_App * /*pApp*/, XAP_Prefs *pPrefs, UT_AlphaHashTable * /*phChanges*/, void *data )
+{
+	AP_LeftRuler *pLeftRuler = (AP_LeftRuler *)data;
+	UT_ASSERT( data && pPrefs );
+
+	const XML_Char *pszBuffer;
+	pPrefs->getPrefsValue( AP_PREF_KEY_RulerUnits, &pszBuffer );
+
+	// or should I just default to inches or something?
+	UT_Dimension dim = UT_determineDimension( pszBuffer, DIM_none );
+	UT_ASSERT( dim != DIM_none );
+
+	if ( dim != pLeftRuler->getDimension() )
+		pLeftRuler->setDimension( dim );
+}
+
+void AP_LeftRuler::setDimension( UT_Dimension newdim )
+{
+	m_dim = newdim;
+	draw( (const UT_Rect *)0 );
+}

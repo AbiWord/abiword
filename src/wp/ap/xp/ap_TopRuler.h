@@ -31,7 +31,10 @@
 #include "ev_EditBits.h"
 #include "gr_Graphics.h"
 
+class XAP_App;
 class XAP_Frame;
+class XAP_Prefs;
+class UT_AlphaHashTable;
 class AV_ScrollObj;
 
 /*****************************************************************/
@@ -121,6 +124,10 @@ public:
 	/* used with AV_ScrollObj */
 	static void		_scrollFuncX(void * pData, UT_sint32 xoff, UT_sint32 xlimit);
 	static void		_scrollFuncY(void * pData, UT_sint32 yoff, UT_sint32 ylimit);
+
+	/* for use with the prefs listener top_ruler_prefs_listener */
+	UT_Dimension	getDimension() const { return m_dim; }
+	void			setDimension( UT_Dimension newdim );
 	
 protected:
 	void	_draw(const UT_Rect * pClipRect, AP_TopRulerInfo * pUseInfo);
@@ -182,7 +189,10 @@ protected:
 	void		_drawTabStop(UT_Rect & r, unsigned char iType, UT_Bool bFilled);
 	void		_drawColumnGapMarker(UT_Rect & r);
 	UT_Bool		_isInBottomBoxOfLeftIndent(UT_uint32 y);
-		
+
+	// must be static so that I can pass as a functional arg - shack
+	static void _prefsListener( XAP_App *pApp, XAP_Prefs *pPrefs, UT_AlphaHashTable *phChanges, void *data );
+	
 	XAP_Frame *			m_pFrame;
 	AV_View *			m_pView;
 	AV_ScrollObj *		m_pScrollObj;

@@ -28,7 +28,10 @@
 #include "ut_units.h"
 #include "xav_Listener.h"
 
+class XAP_App;
 class XAP_Frame;
+class XAP_Prefs;
+class UT_AlphaHashTable;
 class AV_ScrollObj;
 class GR_Graphics;
 
@@ -76,10 +79,17 @@ public:
 	static void			_scrollFuncX(void * pData, UT_sint32 xoff, UT_sint32 xlimit);
 	static void			_scrollFuncY(void * pData, UT_sint32 yoff, UT_sint32 ylimit);
 	
+	/* for use with the prefs listener top_ruler_prefs_listener */
+	UT_Dimension	getDimension() const { return m_dim; }
+	void			setDimension( UT_Dimension newdim );
+	
 protected:
 
 //	void				_draw3DFrame(const UT_Rect * pClipRect, AP_TopRulerInfo * pInfo,
 //									 UT_sint32 x, UT_sint32 h);
+
+	// must be static so that I can pass as a functional arg - shack
+	static void _prefsListener( XAP_App *pApp, XAP_Prefs *pPrefs, UT_AlphaHashTable *phChanges, void *data );
 	
 	XAP_Frame *			m_pFrame;
 	AV_View *			m_pView;		/* TODO make this a FV_View */
