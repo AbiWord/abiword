@@ -8782,9 +8782,49 @@ bool IE_Imp_RTF::insertStrux(PTStruxType pts , const XML_Char ** attrs, const XM
 	//
 	// Can't  paste sections in Footnotes/Endnotes
 	//
-	if(pts == PTX_Section && (pView->getEmbedDepth(pView->getPoint()) > 0))
-	{
-		return true;
+	if(pts == PTX_Section)
+	{ 
+		if(pView->getEmbedDepth(m_dposPaste) > 0)
+		{
+			return false;
+		}
+		fl_BlockLayout * pBL = pView->getBlockAtPosition(m_dposPaste);
+		if(pBL == NULL)
+		{
+			return false;
+		}
+		if(pBL->myContainingLayout() == NULL)
+		{
+			return false;
+		}
+		if(pBL->myContainingLayout()->getContainerType() !=  FL_CONTAINER_DOCSECTION)
+		{
+			return false;
+		}
+		if(pBL->getPosition() > m_dposPaste)
+		{
+			return false;
+		}
+		if((pBL->getPosition(true) + pBL->getLength()) < m_dposPaste)
+		{
+			return false;
+		}
+		if((pBL->getPrev() == NULL))
+		{
+			return false;
+		}
+		if((pBL->getNext() == NULL))
+		{
+			return false;
+		}
+		if(pBL->getNext()->getContainerType() != FL_CONTAINER_BLOCK)
+		{
+			return false;
+		}
+		if(pBL->getPrev()->getContainerType() != FL_CONTAINER_BLOCK)
+		{
+			return false;
+		}
 	}
 	res = getDoc()->insertStrux(m_dposPaste,pts,attrs,props);
 	m_dposPaste++;
