@@ -182,7 +182,7 @@ ifeq ($(ABI_REQUIRE_PEER_ICONV),1)
 			echo Found libiconv in peer directory;                  \
 			if [ ! -r $(ABI_ROOT)/../libiconv/lib/config.h ]; then  \
 				cd $(ABI_ROOT)/../libiconv;                     \
-				./configure;                                    \
+				./configure --enable-extra-encodings;                                    \
 			fi;                                                     \
 			$(MAKE) -f Makefile.abi -C $(ABI_ROOT)/../libiconv;     \
 		else                                                            \

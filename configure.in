@@ -424,6 +424,9 @@ if test $peerconfig = "true"; then
 		    config_flags="$config_flags --with-exporter --with-glib=glib2"
 		    config_flags="$config_flags $abi_wv_xml $abi_wv_iconv $abi_wv_png $abi_wv_zlib"
 		    (cd $i; CPPFLAGS="$CPPFLAGS $abi_wv_cppflags" ./configure $config_flags)
+                elif test `basename "$i"` = libiconv; then
+                    config_flags="$config_flags --enable-extra-encodings"
+                    (cd $i; ./configure $config_cflags)
 		else
 		    (cd $i; ./configure $config_flags)
 		fi

@@ -805,7 +805,7 @@ endif
 # with it set (to prevent linker mismatches with wv's version)
 #
 # fjf: I'm commenting it. wv should be using the same iconv as
-#      AbiWord, and both should be using libiconv-1.7 or equiv.
+#      AbiWord, and both should be using libiconv-1.8 or equiv.
 #      LIBICONV_PLUG should be set *only* if building against
 #      peer libiconv
 #
