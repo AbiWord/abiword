@@ -9255,7 +9255,7 @@ fp_HyperlinkRun * FV_View::_getHyperlinkInRange(PT_DocPosition &posStart,
 	while(pRun && pRun->getBlockOffset() <= curPosEnd)
 	{
 		pRun = pRun->getNext();
-		if (pRun->getPrev() && pRun->getPrev()->getHyperlink() != NULL)
+		if (pRun && pRun->getPrev() && pRun->getPrev()->getHyperlink() != NULL)
 			return pRun->getPrev()->getHyperlink();
 	}
 
