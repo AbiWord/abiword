@@ -860,7 +860,8 @@ void AP_LeftRuler::_getCellMarkerRects(AP_LeftRulerInfo * pInfo, UT_sint32 iCell
 		pLInfo = (AP_LeftRulerTableInfo *) pInfo->m_vecTableRowInfo->getNthItem(pInfo->m_iNumRows -1);
 	}
 
-	UT_sint32 yOrigin = pInfo->m_yPageStart + pInfo->m_yTopMargin - m_yScrollOffset;
+//	UT_sint32 yOrigin = pInfo->m_yPageStart + pInfo->m_yTopMargin - m_yScrollOffset;
+	UT_sint32 yOrigin = pInfo->m_yPageStart - m_yScrollOffset;
 	UT_sint32 pos =0;
 	fp_TableContainer * pTab = (fp_TableContainer *) pLInfo->m_pCell->getContainer();
 	fp_TableContainer * pBroke = pTab->getFirstBrokenTable();
@@ -885,6 +886,9 @@ void AP_LeftRuler::_getCellMarkerRects(AP_LeftRulerInfo * pInfo, UT_sint32 iCell
 		rCell.set(0,0,0,0);
 		return;
 	}
+	fp_Column * pCol = pBroke->getColumn();
+	UT_sint32 iColOffset = pCol->getY();
+	yOrigin += iColOffset;
 	UT_sint32 yoff = pBroke->getYBreak();
 	UT_sint32 yTab = 0;
 	if(pBroke->getYBreak() == 0)

@@ -4555,30 +4555,38 @@ bool fl_BlockLayout::doclistener_insertSection(const PX_ChangeRecord_Strux * pcr
 //
 // Now move all the blocks following into the new section
 //
-	fl_BlockLayout* pBL = NULL;
+	fl_ContainerLayout* pCL = NULL;
 	if(posSL < posThis)
 	{
-		pBL = this;
+		pCL = this;
 	}
 	else
 	{
-		pBL = (fl_BlockLayout *) getNext();
+		pCL = getNext();
 	}
-	while (pBL)
+	fl_BlockLayout * pBL = NULL;
+	while (pCL)
 	{
-		fl_BlockLayout* pNext = (fl_BlockLayout *) pBL->getNext();
-
-		pBL->collapse();
-		if(pBL->isHdrFtr())
+		fl_ContainerLayout* pNext = pCL->getNext();
+		pBL = NULL;
+		pCL->collapse();
+		if(pCL->getContainerType()==FL_CONTAINER_BLOCK)
+		{
+			pBL = (fl_BlockLayout *) pCL;
+		} 
+		if(pBL && pBL->isHdrFtr())
 		{
 			fl_HdrFtrSectionLayout * pHF = (fl_HdrFtrSectionLayout *) pBL->getSectionLayout();
 			pHF->collapseBlock(pBL);
 		}
-		pOldSL->remove(pBL);
-		pSL->add(pBL);
-		pBL->setSectionLayout( pSL);
-		pBL->m_iNeedsReformat = 0;
-		pBL = pNext;
+		pOldSL->remove(pCL);
+		pSL->add(pCL);
+		if(pBL)
+		{
+			pBL->setSectionLayout( pSL);
+			pBL->m_iNeedsReformat = 0;
+		}
+		pCL = pNext;
 	}
 
 //

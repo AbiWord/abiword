@@ -187,10 +187,9 @@ public:
 	virtual void        collapse(void);
 	virtual fp_Container * getFirstContainer(void) const;
 	virtual fp_Container * getLastContainer(void) const;
-	virtual void        setFirstContainer(fp_Container * pCon)
-		{ m_pFirstColumn = (fp_Column *) pCon;}
-	virtual void  setLastContainer(fp_Container * pCon)
-		{ m_pLastColumn = (fp_Column *)pCon;}
+	virtual void        setFirstContainer(fp_Container * pCon);
+	virtual void        setLastContainer(fp_Container * pCon);
+
 
 	virtual void        markAllRunsDirty(void);
 	virtual fl_SectionLayout *  getSectionLayout(void) const
@@ -258,7 +257,7 @@ public:
 	void				addOwnedPage(fp_Page*);
 	void                            prependOwnedHeaderPage(fp_Page * p_Page);
 	void                            prependOwnedFooterPage(fp_Page * p_Page);
-	void				deleteOwnedPage(fp_Page*);
+	void				deleteOwnedPage(fp_Page*, bool bReallyDeleteIT=true);
 	void                markForRebuild(void) { m_bNeedsRebuild = true;}
 	void                clearRebuild(void) { m_bNeedsRebuild = false;}
 	bool                needsRebuild(void) const { return m_bNeedsRebuild;}

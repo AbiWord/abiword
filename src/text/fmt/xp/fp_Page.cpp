@@ -58,12 +58,13 @@ fp_Page::fp_Page(FL_DocLayout* pLayout,
 
 	GR_Graphics * pG = pLayout->getGraphics();
 	UT_ASSERT(pG);
-
+	m_vecColumnLeaders.clear();
 	m_iResolution = pG->getResolution();
 }
 
 fp_Page::~fp_Page()
 {
+	UT_DEBUGMSG(("fpPage: Deleting page %x \n",this));
 	if (m_pOwner)
 	{
 		fl_DocSectionLayout *pDSL = m_pOwner;
@@ -864,7 +865,8 @@ void fp_Page::_reformatColumns(void)
 			}
 #if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
 			UT_sint32 iYLayoutNext = pFirstNextContainer->getHeightInLayoutUnits();
-			if( (iYLayoutUnits + 3*iYLayoutNext) < (getHeightInLayoutUnits() - iBottomMarginLayoutUnits))
+			bool bIsTable = (pFirstNextContainer->getContainerType() == FP_CONTAINER_TABLE);
+			if(!bIsTable && (iYLayoutUnits + 3*iYLayoutNext) < (getHeightInLayoutUnits() - iBottomMarginLayoutUnits))
 #else
 			UT_sint32 iYNext = pFirstNextContainer->getHeight();
 			bool bIsTable = (pFirstNextContainer->getContainerType() == FP_CONTAINER_TABLE);
@@ -872,9 +874,9 @@ void fp_Page::_reformatColumns(void)
 #endif
 			{
 #if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-				UT_DEBUGMSG(("SEVIOR: Mark for rebuild to fill blank gap. iYLayoutUnits =%d iYnext = %d \n",iYLayoutUnits,iYLayoutNext));
+				UT_DEBUGMSG(("SEVIOR: Mark for rebuild to fill blank gap. iYLayoutUnits =%d iYnext = %d isTable %d \n",iYLayoutUnits,iYLayoutNext,bIsTable));
 #endif
-				m_pOwner->markForRebuild();
+		   		m_pOwner->markForRebuild();
 				//UT_ASSERT(0);
 			}
 		}
@@ -980,7 +982,8 @@ void fp_Page::removeColumnLeader(fp_Column* pLeader)
 // Change ownership of the page. First remove this page from the set owned by
 // the old docSectionLayout.
 //
-		m_pOwner->deleteOwnedPage(this);
+		UT_DEBUGMSG(("fp_Page: Remove page %x from DSL %x \n",this,m_pOwner)); 
+		m_pOwner->deleteOwnedPage(this,false);
 		fl_DocSectionLayout * pDSLNew = pFirstColumnLeader->getDocSectionLayout();
 //
 // Now add it to the new DSL.
@@ -1001,6 +1004,7 @@ void fp_Page::removeColumnLeader(fp_Column* pLeader)
 */
 bool fp_Page::insertColumnLeader(fp_Column* pLeader, fp_Column* pAfter)
 {
+	UT_ASSERT(pLeader);
 	if (pAfter)
 	{
 		UT_sint32 ndx = m_vecColumnLeaders.findItem(pAfter);
@@ -1028,7 +1032,7 @@ bool fp_Page::insertColumnLeader(fp_Column* pLeader, fp_Column* pAfter)
 //
 			xxx_UT_DEBUGMSG(("SEVIOR: Deleting owned Page from Page \n"));
 			if(m_pOwner)
-				m_pOwner->deleteOwnedPage(this);
+				m_pOwner->deleteOwnedPage(this,false);
 			fl_DocSectionLayout * pDSLNew = pLeader->getDocSectionLayout();
 //
 // Now add it to the new DSL.

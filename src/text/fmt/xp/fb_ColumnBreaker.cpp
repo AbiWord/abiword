@@ -77,6 +77,7 @@ UT_sint32 fb_ColumnBreaker::breakSection(fl_DocSectionLayout * pSL)
 	}
 	pOuterContainer = pFirstLayout->getFirstContainer();
 	pCurColumn = (fp_Column*) pSL->getFirstContainer();
+	xxx_UT_DEBUGMSG(("fb_ColumnBreaker: For DocSec %x first column %x \n",pSL,pCurColumn));
 	if(m_pStartPage)
 	{
 		xxx_UT_DEBUGMSG(("Layout from page %x \n",m_pStartPage));
@@ -671,7 +672,7 @@ UT_sint32 fb_ColumnBreaker::breakSection(fl_DocSectionLayout * pSL)
 //
 // Loop back for next pCurContainer. Finish if pCurColumn == NULL.
 //
-		UT_DEBUGMSG(("fb_ColumnBreaker:: Finished this column, doing next now."));
+		xxx_UT_DEBUGMSG(("fb_ColumnBreaker:: Finished this column, doing next now. \n"));
 	}
 //
 // End of massive while loop here
@@ -701,7 +702,7 @@ bool fb_ColumnBreaker::_breakTable(fp_Container*& pOffendingContainer,
 {
 	bool bDoTableBreak;
 
-    UT_DEBUGMSG(("SEVIOR: Offending container is table %x \n",pOffendingContainer));
+    xxx_UT_DEBUGMSG(("SEVIOR: Offending container is table %x \n",pOffendingContainer));
 	fp_TableContainer * pTab = (fp_TableContainer *) pOffendingContainer;
 	if(!pTab->isThisBroken())
 	{
@@ -711,8 +712,8 @@ bool fb_ColumnBreaker::_breakTable(fp_Container*& pOffendingContainer,
 //
 		pTab->deleteBrokenTables();
 		bDoTableBreak = true;
-		UT_DEBUGMSG(("SEVIOR: Need Table Break 1 \n"));
-		UT_DEBUGMSG(("firstbroke %x lastbroke %x \n",pTab->getFirstBrokenTable(),pTab->getLastBrokenTable()));
+		xxx_UT_DEBUGMSG(("SEVIOR: Need Table Break 1 \n"));
+		xxx_UT_DEBUGMSG(("firstbroke %x lastbroke %x \n",pTab->getFirstBrokenTable(),pTab->getLastBrokenTable()));
 	}
 	else
 	{
@@ -726,7 +727,7 @@ bool fb_ColumnBreaker::_breakTable(fp_Container*& pOffendingContainer,
 			if(pTab->getNext() == NULL)
 			{
 				bDoTableBreak = true;
-				UT_DEBUGMSG(("SEVIOR: Need Table Break 2 \n"));
+				xxx_UT_DEBUGMSG(("SEVIOR: Need Table Break 2 \n"));
 			}
 			else
 			{
@@ -790,17 +791,17 @@ bool fb_ColumnBreaker::_breakTable(fp_Container*& pOffendingContainer,
 //
 // Break it at 0 first.
 //
-			UT_DEBUGMSG(("SEVIOR: Breaking MAster iBreakAt %d yloc = %d \n",iBreakAt,pTab->getY()));
+			xxx_UT_DEBUGMSG(("SEVIOR: Breaking MAster iBreakAt %d yloc = %d \n",iBreakAt,pTab->getY()));
 #ifdef USE_LAYOUT_UNITS
-			UT_DEBUGMSG(("SEVIOR: iBreakLO %d iWorkingColHeight %d iMaxColHeight %d Container Height %d MArginAfter %d \n",iBreakLO,iWorkingColHeight,iMaxColHeight,pTab->getHeightInLayoutUnits() , iContainerMarginAfter ));
+			xxx_UT_DEBUGMSG(("SEVIOR: iBreakLO %d iWorkingColHeight %d iMaxColHeight %d Container Height %d MArginAfter %d \n",iBreakLO,iWorkingColHeight,iMaxColHeight,pTab->getHeightInLayoutUnits() , iContainerMarginAfter ));
 #else
-			UT_DEBUGMSG(("SEVIOR: iBreakLO %d iWorkingColHeight %d iMaxColHeight %d Container Height %d MArginAfter %d \n",iBreakLO,iWorkingColHeight,iMaxColHeight,pTab->getHeight() , iContainerMarginAfter ));
+			xxx_UT_DEBUGMSG(("SEVIOR: iBreakLO %d iWorkingColHeight %d iMaxColHeight %d Container Height %d MArginAfter %d \n",iBreakLO,iWorkingColHeight,iMaxColHeight,pTab->getHeight() , iContainerMarginAfter ));
 #endif
 			fp_Container * pNext = (fp_Container *) pTab->getNext();
-			UT_DEBUGMSG(("SEVIOR: getNext %x \n",pNext));
+			xxx_UT_DEBUGMSG(("SEVIOR: getNext %x \n",pNext));
 			if(pNext)
 			{
-				UT_DEBUGMSG(("SEVIOR: Container of next %d \n",pNext->getContainerType()));
+				xxx_UT_DEBUGMSG(("SEVIOR: Container of next %d \n",pNext->getContainerType()));
 			}
 			pTab->deleteBrokenTables();
 			pTab->VBreakAt(0);
@@ -831,9 +832,9 @@ bool fb_ColumnBreaker::_breakTable(fp_Container*& pOffendingContainer,
 // be bumped into the next column. Pretty cool eh ? :-)
 //
 			pOffendingContainer = (fp_Container *) pBroke->VBreakAt(iBreakAt);
-		    UT_DEBUGMSG(("SEVIOR: Created broken table %x \n",pOffendingContainer));
+		    xxx_UT_DEBUGMSG(("SEVIOR: Created broken table %x \n",pOffendingContainer));
 			pLastContainerToKeep = (fp_Container *) pTab;
-			UT_DEBUGMSG(("SEVIOR: Set lasttokeep 1 %x \n",pLastContainerToKeep));
+			xxx_UT_DEBUGMSG(("SEVIOR: Set lasttokeep 1 %x \n",pLastContainerToKeep));
 		}
 		return true;
 	}
@@ -845,8 +846,8 @@ bool fb_ColumnBreaker::_breakTable(fp_Container*& pOffendingContainer,
         // This is the first of this table set. Clear the old broken
         // tables and rebreak.
 		pTab->deleteBrokenTables();
-		UT_DEBUGMSG(("SEVIOR: Need Table Break 1 \n"));
-		UT_DEBUGMSG(("firstbroke %x lastbroke %x \n",pTab->getFirstBrokenTable(),pTab->getLastBrokenTable()));
+		xxx_UT_DEBUGMSG(("SEVIOR: Need Table Break 1 \n"));
+		xxx_UT_DEBUGMSG(("firstbroke %x lastbroke %x \n",pTab->getFirstBrokenTable(),pTab->getLastBrokenTable()));
 	}
 
     // If we don't break the table, the heights of the broken table's

@@ -339,7 +339,6 @@ fl_DocSectionLayout::fl_DocSectionLayout(FL_DocLayout* pLayout, PL_StruxDocHandl
 	: fl_SectionLayout(pLayout, sdh, indexAP, iType, FL_CONTAINER_DOCSECTION,PTX_Section, this)
 {
 	UT_ASSERT((iType == FL_SECTION_DOC || iType == FL_SECTION_ENDNOTE));
-
 	m_pFirstColumn = NULL;
 	m_pLastColumn = NULL;
 
@@ -561,6 +560,18 @@ fp_Container* fl_DocSectionLayout::getFirstContainer() const
 fp_Container* fl_DocSectionLayout::getLastContainer() const
 {
 	return m_pLastColumn;
+}
+
+void fl_DocSectionLayout::setFirstContainer(fp_Container * pCon)
+{
+	UT_DEBUGMSG(("docSectionLayout: DocSec %x First container set to %x \n",this,pCon));
+	m_pFirstColumn = (fp_Column *) pCon;
+}
+
+
+void fl_DocSectionLayout::setLastContainer(fp_Container * pCon)
+{
+	m_pLastColumn = (fp_Column *) pCon;
 }
 
 /*!
@@ -797,7 +808,7 @@ fp_Container* fl_DocSectionLayout::getNewContainer(fp_Container * pFirstContaine
 	else
 	{
 		UT_ASSERT(!m_pFirstColumn);
-
+		UT_ASSERT(pLeaderColumn);
 		m_pFirstColumn = pLeaderColumn;
 	}
 
@@ -1481,6 +1492,7 @@ void fl_DocSectionLayout::deleteEmptyColumns(void)
 				if (pCol == m_pFirstColumn)
 				{
 					m_pFirstColumn = (fp_Column *) pLastInGroup->getNext();
+					UT_ASSERT(m_pFirstColumn);
 				}
 
 				if (pLastInGroup == m_pLastColumn)
@@ -1564,6 +1576,7 @@ fl_DocSectionLayout* fl_DocSectionLayout::getPrevDocSection(void) const
 
 void fl_DocSectionLayout::collapse(void)
 {
+	UT_DEBUGMSG(("DocSectionLayout: Collapsing all content in %x \n",this));
 	fp_Column* pCol = m_pFirstColumn;
 	while (pCol)
 	{
@@ -1919,7 +1932,7 @@ void fl_DocSectionLayout::addValidPages(void)
  * This method deletes the owned page from the DocSectionLayout and all
  * the header files.
  */
-void fl_DocSectionLayout::deleteOwnedPage(fp_Page* pPage)
+void fl_DocSectionLayout::deleteOwnedPage(fp_Page* pPage, bool bReallyDeleteIt)
 {
 	UT_Vector vecHdrFtr;
 	getVecOfHdrFtrs( &vecHdrFtr);
@@ -1948,11 +1961,12 @@ void fl_DocSectionLayout::deleteOwnedPage(fp_Page* pPage)
 		}
 	}
 	fl_DocSectionLayout * pDSL = this;
-	if(!getDocLayout()->isLayoutDeleting())
+	if(!getDocLayout()->isLayoutDeleting() && bReallyDeleteIt)
 	{
 		UT_sint32 i = m_pLayout->findPage(pPage);
 		if(i>0)
 		{
+			UT_DEBUGMSG(("fl_DocSec: deleting page %x ReallyDeleteIt %d \n",pPage,bReallyDeleteIt));
 			m_pLayout->deletePage(pPage,true);
 		}
 		while(pDSL != NULL)
@@ -2411,6 +2425,16 @@ void fl_HdrFtrSectionLayout::addPage(fp_Page* pPage)
 //  strux. Reinstate if needed to find other bugs.
 //	UT_ASSERT(0 > _findShadow(pPage));
 //
+//
+// This might actually be called before we have any content to put in it. If so
+// return and hope we get called later.
+//
+	if(getFirstLayout() == NULL)
+	{
+		UT_DEBUGMSG(("HdrFtr BUG. No content but we're asking to create a shadow !! \n"));
+		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		return;
+	}
 
 	if(_findShadow(pPage) > -1)
 		return;
