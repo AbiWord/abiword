@@ -26,5 +26,6 @@
 void messageBoxOK(const char * message);
 GdkWindowPrivate * getRootWindow(GtkWidget * widget);
 void centerDialog(GtkWidget * parent, GtkWidget * child);
-
+gint searchCList(GtkCList * clist, char * compareText);
+	
 #endif /* UT_DIALOGHELPER_H */
