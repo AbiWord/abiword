@@ -26,7 +26,7 @@ clean:
 
 install: build-stamp
 	install -m 755 -d debian/tmp/usr/bin
-	mv debian/tmp/bin/AbiWord_d debian/tmp/usr/bin/
+	mv debian/tmp/bin/AbiWord-2.0 debian/tmp/usr/bin/
 	ln -s AbiWord debian/tmp/usr/bin/abiword
 	install -m 755 -d debian/tmp/usr/bin
 	install -m 755 -d debian/tmp/usr/share/man/man1
@@ -38,15 +38,15 @@ install: build-stamp
 	install -m 755 -d debian/tmp/usr/share/abisuite/dictionary
 
 	#documentation
-	install -m 644 debian/AbiWord_d.1 debian/tmp/usr/share/man/man1/.
-	ln -s AbiWord_d.1.gz debian/tmp/usr/share/man/man1/AbiWord.1.gz
-	ln -s Abiword_d.1.gz debian/tmp/usr/share/man/man1/abiword.1.gz
+	install -m 644 debian/AbiWord-2.0.1 debian/tmp/usr/share/man/man1/.
+	ln -s AbiWord-2.0.1.gz debian/tmp/usr/share/man/man1/AbiWord.1.gz
+	ln -s AbiWord-2.0.1.gz debian/tmp/usr/share/man/man1/abiword.1.gz
 	cp debian/copyright debian/tmp/usr/share/doc/abiword/.
 	cp debian/changelog debian/tmp/usr/share/doc/abiword/changelog.Debian
 	cp abi-$(ABI_VER)/user/wp/readme.txt debian/tmp/usr/share/doc/abiword/README
 	gzip -9 debian/tmp/usr/share/doc/abiword/README
 	gzip -9 debian/tmp/usr/share/doc/abiword/changelog.Debian
-	gzip -9 debian/tmp/usr/share/man/man1/AbiWord_d.1
+	gzip -9 debian/tmp/usr/share/man/man1/AbiWord-2.0.1
 
 	#shared data
 	cp -r abidistfiles/icons/* debian/tmp/usr/share/abisuite/icons/.
