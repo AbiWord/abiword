@@ -99,7 +99,7 @@ static PP_Property _props[] =
 	{ "header-first",          "",                false, NULL, PP_LEVEL_SECT},
 	{ "header-last",           "",                false, NULL, PP_LEVEL_SECT},
 	{ "height",                "0in",             false, NULL, PP_LEVEL_CHAR},
-	{ "homogeneuos",           "1",               false, NULL, PP_LEVEL_CHAR},
+	{ "homogeneous",           "1",               false, NULL, PP_LEVEL_CHAR},
 
 	{ "keep-together",         "",                false, NULL, PP_LEVEL_BLOCK},
 	{ "keep-with-next",        "",                false, NULL, PP_LEVEL_BLOCK},
