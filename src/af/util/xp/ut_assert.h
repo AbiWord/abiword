@@ -73,10 +73,28 @@
 
 #elif defined(TARGET_OS_MAC) && TARGET_OS_MAC // ?SBK
 
-	// MAC assert() is not cool, but I will fix it later.
+#     ifdef NDEBUG
+              // When NDEBUG is defined, assert() does nothing.
+              // So we let the system header files take care of it.
+#             include <assert.h>
+#             define UT_ASSERT assert
+#   else
+              // Otherwise, we want a slighly modified behavior.
+              // We'd like assert() to ask us before crashing.
+              // We treat asserts as logic flaws, which are sometimes
+              // recoverable, but that should be noted.
 
-#	include <assert.h>
-#	define UT_ASSERT assert
+              // On MacOS this requires toolbox to be initialized. Otherwise, 
+              // expect MacBug or a crash if MacBug is not here.
+
+#             include <assert.h>
+#             include "ut_MacAssert.h"
+#             define UT_ASSERT(expr)                  \
+                      ((void) ((expr) ||      \
+                      (UT_MacAssertMsg(#expr,\
+                       __FILE__, __LINE__),   \
+                       0)))
+#   endif
 
 #elif defined(HAVE_GNOME)
 #ifdef NDEBUG
