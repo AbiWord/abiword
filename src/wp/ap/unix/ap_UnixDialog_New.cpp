@@ -240,7 +240,7 @@ GtkWidget * AP_UnixDialog_New::_constructWindow ()
 	GtkWidget *dialog_vbox1;
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
 
-	mainWindow = abiDialogNew ( true, pSS->getValue(AP_STRING_ID_DLG_NEW_Title));
+	mainWindow = abiDialogNew ( true, pSS->getValueUTF8(AP_STRING_ID_DLG_NEW_Title).c_str());
 	dialog_vbox1 = GTK_DIALOG (mainWindow)->vbox;
 	gtk_widget_show (dialog_vbox1);
 
@@ -289,7 +289,7 @@ void AP_UnixDialog_New::_constructWindowContents (GtkWidget * container)
 	gtk_widget_show (hseparator1);
 	gtk_box_pack_start (GTK_BOX (vbox1), hseparator1, TRUE, TRUE, 0);
 
-	radio_new = gtk_radio_button_new_with_label (vbox1_group, pSS->getValue(AP_STRING_ID_DLG_NEW_Create));
+	radio_new = gtk_radio_button_new_with_label (vbox1_group, pSS->getValueUTF8(AP_STRING_ID_DLG_NEW_Create).c_str());
 	vbox1_group = gtk_radio_button_group (GTK_RADIO_BUTTON (radio_new));
 	gtk_widget_show (radio_new);
 	gtk_box_pack_start (GTK_BOX (vbox1), radio_new, FALSE, FALSE, 0);
@@ -373,7 +373,7 @@ void AP_UnixDialog_New::_constructWindowContents (GtkWidget * container)
 	gtk_widget_show (hseparator2);
 	gtk_box_pack_start (GTK_BOX (vbox1), hseparator2, TRUE, TRUE, 0);
 
-	radio_existing = gtk_radio_button_new_with_label (vbox1_group, pSS->getValue(AP_STRING_ID_DLG_NEW_Open));
+	radio_existing = gtk_radio_button_new_with_label (vbox1_group, pSS->getValueUTF8(AP_STRING_ID_DLG_NEW_Open).c_str());
 	vbox1_group = gtk_radio_button_group (GTK_RADIO_BUTTON (radio_existing));
 	gtk_widget_show (radio_existing);
 	gtk_box_pack_start (GTK_BOX (vbox1), radio_existing, FALSE, FALSE, 0);
@@ -386,9 +386,9 @@ void AP_UnixDialog_New::_constructWindowContents (GtkWidget * container)
 	gtk_widget_show (entry_filename);
 	gtk_box_pack_start (GTK_BOX (hbox1), entry_filename, TRUE, TRUE, 0);
 	gtk_entry_set_editable (GTK_ENTRY (entry_filename), FALSE);
-	gtk_entry_set_text (GTK_ENTRY (entry_filename), pSS->getValue(AP_STRING_ID_DLG_NEW_NoFile));
+	gtk_entry_set_text (GTK_ENTRY (entry_filename), pSS->getValueUTF8(AP_STRING_ID_DLG_NEW_NoFile).c_str());
 
-	choose_btn = gtk_button_new_with_label (pSS->getValue(AP_STRING_ID_DLG_NEW_Choose));
+	choose_btn = gtk_button_new_with_label (pSS->getValueUTF8(AP_STRING_ID_DLG_NEW_Choose).c_str());
 	gtk_widget_show (choose_btn);
 	gtk_box_pack_start (GTK_BOX (hbox1), choose_btn, FALSE, FALSE, 0);
 
@@ -397,7 +397,7 @@ void AP_UnixDialog_New::_constructWindowContents (GtkWidget * container)
 	gtk_box_pack_start (GTK_BOX (vbox1), hseparator3, TRUE, TRUE, 0);
 
 	radio_empty = gtk_radio_button_new_with_label (vbox1_group, 
-												   pSS->getValue(AP_STRING_ID_DLG_NEW_StartEmpty));
+						       pSS->getValueUTF8(AP_STRING_ID_DLG_NEW_StartEmpty).c_str());
 	vbox1_group = gtk_radio_button_group (GTK_RADIO_BUTTON (radio_empty));
 	gtk_widget_show (radio_empty);
 	gtk_box_pack_start (GTK_BOX (vbox1), radio_empty, FALSE, FALSE, 0);

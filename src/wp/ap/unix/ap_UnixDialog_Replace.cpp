@@ -285,7 +285,7 @@ GtkWidget * AP_UnixDialog_Replace::_constructWindow(void)
 	gtk_box_pack_start (GTK_BOX (vboxReplace), tableReplace, FALSE, TRUE, 0);
 
 	// find label is always here
-	UT_XML_cloneNoAmpersands(unixstr, pSS->getValue(AP_STRING_ID_DLG_FR_FindLabel));
+	UT_XML_cloneNoAmpersands(unixstr, pSS->getValueUTF8(AP_STRING_ID_DLG_FR_FindLabel).c_str());
 	labelFind = gtk_label_new (unixstr);
 	FREEP(unixstr);
 	gtk_widget_show (labelFind);
@@ -302,7 +302,7 @@ GtkWidget * AP_UnixDialog_Replace::_constructWindow(void)
 			  GtkAttachOptions(GTK_EXPAND | GTK_FILL), 0, 0);
 
 	// match case is always here
-	UT_XML_cloneNoAmpersands(unixstr, pSS->getValue(AP_STRING_ID_DLG_FR_MatchCase));	
+	UT_XML_cloneNoAmpersands(unixstr, pSS->getValueUTF8(AP_STRING_ID_DLG_FR_MatchCase).c_str());	
 	checkbuttonMatchCase = gtk_check_button_new_with_label (unixstr);
 	FREEP(unixstr);
 	gtk_widget_show (checkbuttonMatchCase);
@@ -314,7 +314,7 @@ GtkWidget * AP_UnixDialog_Replace::_constructWindow(void)
 	if (m_id == AP_DIALOG_ID_REPLACE)
 	{	
 		// create replace label
-		UT_XML_cloneNoAmpersands(unixstr, pSS->getValue(AP_STRING_ID_DLG_FR_ReplaceWithLabel));	
+		UT_XML_cloneNoAmpersands(unixstr, pSS->getValueUTF8(AP_STRING_ID_DLG_FR_ReplaceWithLabel).c_str());	
 		labelReplace = gtk_label_new (unixstr);
 		FREEP(unixstr);
 		gtk_widget_show (labelReplace);
@@ -336,7 +336,7 @@ GtkWidget * AP_UnixDialog_Replace::_constructWindow(void)
 		m_buttonFindReplace = abiAddStockButton ( GTK_DIALOG(windowReplace), GTK_STOCK_FIND_AND_REPLACE, BUTTON_REPLACE ) ;
 		gtk_widget_set_sensitive( m_buttonFindReplace, false );
 		
-		UT_XML_cloneNoAmpersands(unixstr, pSS->getValue(AP_STRING_ID_DLG_FR_ReplaceAllButton));	
+		UT_XML_cloneNoAmpersands(unixstr, pSS->getValueUTF8(AP_STRING_ID_DLG_FR_ReplaceAllButton).c_str());	
 		m_buttonReplaceAll = abiAddButton ( GTK_DIALOG(windowReplace), unixstr, BUTTON_REPLACE_ALL );
 		gtk_widget_set_sensitive( m_buttonReplaceAll, false );
 		FREEP(unixstr);

@@ -139,7 +139,7 @@ GtkWidget * AP_UnixDialog_Spell::_constructWindow(void)
 
    const XAP_StringSet * pSS = m_pApp->getStringSet();
    
-   windowSpell = abiDialogNew(true, pSS->getValue(AP_STRING_ID_DLG_Spell_SpellTitle));
+   windowSpell = abiDialogNew(true, pSS->getValueUTF8(AP_STRING_ID_DLG_Spell_SpellTitle).c_str());
 
    // *very* important to add the vbox
    // to the window so that it gets a
@@ -151,22 +151,22 @@ GtkWidget * AP_UnixDialog_Spell::_constructWindow(void)
   XML_Char * unixstr = NULL;      // used for conversions
 
   UT_XML_cloneNoAmpersands(unixstr,
-			   pSS->getValue(AP_STRING_ID_DLG_Spell_Change));
+			   pSS->getValueUTF8(AP_STRING_ID_DLG_Spell_Change).c_str());
   m_buttonChange = abiAddButton (GTK_DIALOG(windowSpell), unixstr, BUTTON_CHANGE);
   FREEP(unixstr);
   
   UT_XML_cloneNoAmpersands(unixstr, 
-			   pSS->getValue(AP_STRING_ID_DLG_Spell_ChangeAll));
+			   pSS->getValueUTF8(AP_STRING_ID_DLG_Spell_ChangeAll).c_str());
   m_buttonChangeAll = abiAddButton (GTK_DIALOG(windowSpell), unixstr, BUTTON_CHANGE_ALL);
   FREEP(unixstr);
 
   UT_XML_cloneNoAmpersands(unixstr, 
-			   pSS->getValue(AP_STRING_ID_DLG_Spell_Ignore));
+			   pSS->getValueUTF8(AP_STRING_ID_DLG_Spell_Ignore).c_str());
   m_buttonIgnore = abiAddButton (GTK_DIALOG(windowSpell), unixstr, BUTTON_IGNORE);
   FREEP(unixstr);
 
   UT_XML_cloneNoAmpersands(unixstr, 
-			   pSS->getValue(AP_STRING_ID_DLG_Spell_IgnoreAll));
+			   pSS->getValueUTF8(AP_STRING_ID_DLG_Spell_IgnoreAll).c_str());
   m_buttonIgnoreAll = abiAddButton (GTK_DIALOG(windowSpell), unixstr, BUTTON_IGNORE_ALL);
   FREEP(unixstr);
 
@@ -208,7 +208,7 @@ void AP_UnixDialog_Spell::_constructWindowContents(GtkWidget *box)
    GtkWidget * alignmentLabel = gtk_alignment_new (0, 1, 0, 0);
    gtk_table_attach (GTK_TABLE(tableMain), alignmentLabel, 0, 2, 0, 1, GTK_FILL, GTK_FILL, 0, 0);
 
-   UT_XML_cloneNoAmpersands(unixstr, pSS->getValue(AP_STRING_ID_DLG_Spell_UnknownWord));
+   UT_XML_cloneNoAmpersands(unixstr, pSS->getValueUTF8(AP_STRING_ID_DLG_Spell_UnknownWord).c_str());
    label1 = gtk_label_new (unixstr);
    FREEP(unixstr);
    gtk_label_set_justify (GTK_LABEL(label1), GTK_JUSTIFY_LEFT);
@@ -230,7 +230,7 @@ void AP_UnixDialog_Spell::_constructWindowContents(GtkWidget *box)
    GtkWidget * hboxChangeTo = gtk_hbox_new(FALSE, 5);
    gtk_table_attach_defaults (GTK_TABLE(tableMain), hboxChangeTo, 0, 2, 5, 6);
 
-   UT_XML_cloneNoAmpersands(unixstr, pSS->getValue(AP_STRING_ID_DLG_Spell_ChangeTo));
+   UT_XML_cloneNoAmpersands(unixstr, pSS->getValueUTF8(AP_STRING_ID_DLG_Spell_ChangeTo).c_str());
    label2 = gtk_label_new (unixstr);
    FREEP(unixstr);
    gtk_box_pack_start (GTK_BOX(hboxChangeTo), label2, FALSE, FALSE, 5);
@@ -333,7 +333,7 @@ void AP_UnixDialog_Spell::_showMisspelledWord(void)
    if (!m_Suggestions->getItemCount()) {
 
       const XAP_StringSet * pSS = m_pApp->getStringSet();
-      UT_XML_cloneNoAmpersands(suggest[0], pSS->getValue(AP_STRING_ID_DLG_Spell_NoSuggestions));
+      UT_XML_cloneNoAmpersands(suggest[0], pSS->getValueUTF8(AP_STRING_ID_DLG_Spell_NoSuggestions).c_str());
       gtk_clist_append( GTK_CLIST(m_clistSuggestions), suggest);
       FREEP(suggest[0]);
       gtk_clist_set_selectable(GTK_CLIST(m_clistSuggestions), 0, FALSE);

@@ -146,13 +146,9 @@ void AP_UnixDialog_PageNumbers::runModal(XAP_Frame * pFrame)
       // hack in a quick draw here
       _updatePreview(m_recentAlign, m_recentControl);
       event_PreviewExposed ();
-    }
-
-    
+    }    
     
     // properly set the controls
-//    gtk_list_select_item (GTK_LIST (GTK_COMBO (m_combo1)->list), (int)m_control);
-//    gtk_list_select_item (GTK_LIST (GTK_COMBO (m_combo2)->list), (int)m_align);
     m_recentControl = m_control = AP_Dialog_PageNumbers::id_HDR;
     m_recentAlign = m_align = AP_Dialog_PageNumbers::id_RALIGN;
 
@@ -192,7 +188,7 @@ void AP_UnixDialog_PageNumbers::_constructWindowContents (GtkWidget *box)
  
   
   // Create a hbox with "Position -----------"
-  GtkWidget* labelPosition = gtk_label_new(pSS->getValue(AP_STRING_ID_DLG_PageNumbers_Position));
+  GtkWidget* labelPosition = gtk_label_new(pSS->getValueUTF8(AP_STRING_ID_DLG_PageNumbers_Position).c_str());
   GtkWidget* linePosition = gtk_hseparator_new();
   GtkWidget* boxPosition = gtk_hbox_new(false, 4);
   gtk_box_pack_start(GTK_BOX(boxPosition), labelPosition, 0, 0, 0);
@@ -202,8 +198,8 @@ void AP_UnixDialog_PageNumbers::_constructWindowContents (GtkWidget *box)
   gtk_widget_show(boxPosition);
   
   // Create a vbox with position options.
-  GtkWidget* radioHeader = gtk_radio_button_new_with_label(0, pSS->getValue(AP_STRING_ID_DLG_PageNumbers_Header));
-  GtkWidget* radioFooter = gtk_radio_button_new_with_label_from_widget(GTK_RADIO_BUTTON(radioHeader), pSS->getValue(AP_STRING_ID_DLG_PageNumbers_Footer));
+  GtkWidget* radioHeader = gtk_radio_button_new_with_label(0, pSS->getValueUTF8(AP_STRING_ID_DLG_PageNumbers_Header).c_str());
+  GtkWidget* radioFooter = gtk_radio_button_new_with_label_from_widget(GTK_RADIO_BUTTON(radioHeader), pSS->getValueUTF8(AP_STRING_ID_DLG_PageNumbers_Footer).c_str());
   GtkWidget* boxPositionOptions = gtk_vbox_new(false, 1);
   gtk_container_border_width(GTK_CONTAINER(boxPositionOptions), 5);
   gtk_box_pack_start(GTK_BOX(boxPositionOptions), radioHeader, 0, 0, 0);
@@ -213,7 +209,7 @@ void AP_UnixDialog_PageNumbers::_constructWindowContents (GtkWidget *box)
   gtk_widget_show(boxPositionOptions);
 
   // Create a hbox with "Alignment ----------"
-  GtkWidget* labelAlignment = gtk_label_new(pSS->getValue(AP_STRING_ID_DLG_PageNumbers_Alignment));
+  GtkWidget* labelAlignment = gtk_label_new(pSS->getValueUTF8(AP_STRING_ID_DLG_PageNumbers_Alignment).c_str());
   GtkWidget* lineAlignment = gtk_hseparator_new();
   GtkWidget* boxAlignment = gtk_hbox_new(false, 4);
   gtk_box_pack_start(GTK_BOX(boxAlignment), labelAlignment, 0, 0, 0);
@@ -223,9 +219,9 @@ void AP_UnixDialog_PageNumbers::_constructWindowContents (GtkWidget *box)
   gtk_widget_show(boxAlignment);
 
   // Create a vbox with alignment options.
-  GtkWidget* radioLeft =   gtk_radio_button_new_with_label(0, pSS->getValue(AP_STRING_ID_DLG_PageNumbers_Left));
-  GtkWidget* radioCenter = gtk_radio_button_new_with_label_from_widget(GTK_RADIO_BUTTON(radioLeft), pSS->getValue(AP_STRING_ID_DLG_PageNumbers_Center));
-  GtkWidget* radioRight =  gtk_radio_button_new_with_label_from_widget(GTK_RADIO_BUTTON(radioLeft), pSS->getValue(AP_STRING_ID_DLG_PageNumbers_Right));
+  GtkWidget* radioLeft =   gtk_radio_button_new_with_label(0, pSS->getValueUTF8(AP_STRING_ID_DLG_PageNumbers_Left).c_str());
+  GtkWidget* radioCenter = gtk_radio_button_new_with_label_from_widget(GTK_RADIO_BUTTON(radioLeft), pSS->getValueUTF8(AP_STRING_ID_DLG_PageNumbers_Center).c_str());
+  GtkWidget* radioRight =  gtk_radio_button_new_with_label_from_widget(GTK_RADIO_BUTTON(radioLeft), pSS->getValueUTF8(AP_STRING_ID_DLG_PageNumbers_Right).c_str());
   GtkWidget* boxAlignmentOptions = gtk_vbox_new(false, 1);
   gtk_container_border_width(GTK_CONTAINER(boxAlignmentOptions), 5);
   gtk_box_pack_start(GTK_BOX(boxAlignmentOptions), radioLeft,   0, 0, 0);
@@ -247,7 +243,7 @@ void AP_UnixDialog_PageNumbers::_constructWindowContents (GtkWidget *box)
  
 
   // Create the preview area.
-  GtkWidget* framePreview = gtk_frame_new(pSS->getValue(AP_STRING_ID_DLG_PageNumbers_Preview));
+  GtkWidget* framePreview = gtk_frame_new(pSS->getValueUTF8(AP_STRING_ID_DLG_PageNumbers_Preview).c_str());
   gtk_widget_set_usize(framePreview, 146, 190);
   gtk_widget_ref(framePreview);
   gtk_widget_show(framePreview);
@@ -287,97 +283,13 @@ void AP_UnixDialog_PageNumbers::_constructWindowContents (GtkWidget *box)
 
   // the expose event off the preview
   g_signal_connect(G_OBJECT(m_previewArea), "expose_event", G_CALLBACK(s_preview_exposed), (gpointer)this);
-  
-  // The position combo entry
-
-//  label1 = gtk_label_new (pSS->getValue(AP_STRING_ID_DLG_PageNumbers_Position));
-//  gtk_widget_ref (label1);
-//  gtk_widget_show (label1);
-//  gtk_box_pack_start (GTK_BOX (vbox1), label1, FALSE, FALSE, 0);
-//  gtk_label_set_justify (GTK_LABEL (label1), GTK_JUSTIFY_LEFT);
-//  gtk_misc_set_alignment (GTK_MISC (label1), 0.04, 0.5);
-
-//  combo1 = gtk_combo_new ();
-//  gtk_widget_ref (combo1);
-//  gtk_widget_show (combo1);
-//  gtk_box_pack_start (GTK_BOX (vbox1), combo1, FALSE, FALSE, 0);
-
-//  combo_entry1 = GTK_COMBO (combo1)->entry;
-//  gtk_entry_set_editable (GTK_ENTRY (combo_entry1), FALSE);
-//  gtk_widget_ref (combo_entry1);
-//  gtk_widget_show (combo_entry1);
-  
-//  li = gtk_list_item_new_with_label(pSS->getValue(AP_STRING_ID_DLG_PageNumbers_Header));
-//  gtk_widget_show(li);
-//  gtk_container_add (GTK_CONTAINER(GTK_COMBO(combo1)->list), li);
-//  gtk_object_set_user_data (G_OBJECT (li), GINT_TO_POINTER (AP_Dialog_PageNumbers::id_HDR));
-//  g_signal_connect (G_OBJECT (li), "select",
-//		      G_CALLBACK (s_position_changed),
-//		      (gpointer) this);
-
- 
-  
-//  li = gtk_list_item_new_with_label(pSS->getValue(AP_STRING_ID_DLG_PageNumbers_Footer));
-//  gtk_widget_show(li);
-//  gtk_container_add (GTK_CONTAINER(GTK_COMBO(combo1)->list), li);
-//  gtk_object_set_user_data (G_OBJECT (li), GINT_TO_POINTER (AP_Dialog_PageNumbers::id_FTR));
-//  g_signal_connect (G_OBJECT (li), "select",
-//		      G_CALLBACK (s_position_changed),
-//		      (gpointer) this);
-
-  // The Alignment combo entry
-
-//  label2 = gtk_label_new (pSS->getValue(AP_STRING_ID_DLG_PageNumbers_Alignment));
-//  gtk_widget_ref (label2);
-//  gtk_widget_show (label2);
-//  gtk_box_pack_start (GTK_BOX (vbox1), label2, FALSE, FALSE, 0);
-//  gtk_label_set_justify (GTK_LABEL (label2), GTK_JUSTIFY_LEFT); 
-//  gtk_misc_set_alignment (GTK_MISC (label2), 0.04, 0.5);
-
-//  combo2 = gtk_combo_new ();
-//  gtk_widget_ref (combo2);
-//  gtk_widget_show (combo2);
-//  gtk_box_pack_start (GTK_BOX (vbox1), combo2, FALSE, FALSE, 0);
-
-//  combo_entry2 = GTK_COMBO (combo2)->entry;
-//  gtk_entry_set_editable (GTK_ENTRY (combo_entry2), FALSE);
-//  gtk_widget_ref (combo_entry2);
-//  gtk_widget_show (combo_entry2);
-
-//  li = gtk_list_item_new_with_label(pSS->getValue(AP_STRING_ID_DLG_PageNumbers_Right));
-//  gtk_widget_show(li);
-//  gtk_container_add (GTK_CONTAINER(GTK_COMBO(combo2)->list), li);
-//  gtk_object_set_user_data (G_OBJECT (li), GINT_TO_POINTER (AP_Dialog_PageNumbers::id_RALIGN));
-//  g_signal_connect (G_OBJECT (li), "select",
-//		      G_CALLBACK (s_alignment_changed),
-//		      (gpointer) this);
-
-//  li = gtk_list_item_new_with_label(pSS->getValue(AP_STRING_ID_DLG_PageNumbers_Left));
-//  gtk_widget_show(li);
-//  gtk_container_add (GTK_CONTAINER(GTK_COMBO(combo2)->list), li);
-//  gtk_object_set_user_data (G_OBJECT (li), GINT_TO_POINTER (AP_Dialog_PageNumbers::id_LALIGN));
-//  g_signal_connect (G_OBJECT (li), "select",
-//		      G_CALLBACK (s_alignment_changed),
-//		      (gpointer) this);
-
-//  li = gtk_list_item_new_with_label(pSS->getValue(AP_STRING_ID_DLG_PageNumbers_Center));
-//  gtk_widget_show(li);
-//  gtk_container_add (GTK_CONTAINER(GTK_COMBO(combo2)->list), li);
-//  gtk_object_set_user_data (G_OBJECT (li), GINT_TO_POINTER (AP_Dialog_PageNumbers::id_CALIGN));
-//  g_signal_connect (G_OBJECT (li), "select",
-//		      G_CALLBACK (s_alignment_changed),
-//		      (gpointer) this);
-
-
-//  m_combo1 = combo1;
-//  m_combo2 = combo2;
 }
 
 GtkWidget * AP_UnixDialog_PageNumbers::_constructWindow (void)
 {
   const XAP_StringSet * pSS = m_pApp->getStringSet();
 
-  m_window = abiDialogNew ( true, pSS->getValue(AP_STRING_ID_DLG_PageNumbers_Title)) ;
+  m_window = abiDialogNew ( true, pSS->getValueUTF8(AP_STRING_ID_DLG_PageNumbers_Title).c_str()) ;
 
   _constructWindowContents (GTK_DIALOG(m_window)->vbox);
 
