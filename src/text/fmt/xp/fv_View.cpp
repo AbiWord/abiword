@@ -3972,10 +3972,15 @@ UT_UCSChar * FV_View::getSelectionText(void)
 
 	return NULL;
 }
-#if 0
+
 // this function has not been debugged
-UT_UCSChar *	FV_View::getTextBetweenPos(PT_DocPosition pos1, PT_DocPosition pos2)
+UT_UCSChar * FV_View::getTextBetweenPos(PT_DocPosition pos1, PT_DocPosition pos2)
 {
+#if 1
+	UT_DEBUGMSG(("DOM: getTextBetweenPos not fully debugged\n"));
+	UT_return_val_if_fail(UT_TODO, NULL);
+
+#else
 
 	UT_ASSERT(pos2 > pos1);
 
@@ -4002,7 +4007,7 @@ UT_UCSChar *	FV_View::getTextBetweenPos(PT_DocPosition pos1, PT_DocPosition pos2
 		pBlock->getBlockBuf(&buffer);
 
 		PT_DocPosition offset = curPos - pBlock->getPosition(false);
-		UT_uint32 iLenToCopy = MIN(pos2 - curPos, buffer.getLength() - offset);
+		UT_uint32 iLenToCopy = UT_MIN(pos2 - curPos, buffer.getLength() - offset);
 		while(curPos < pos2 && (curPos < pBlock->getPosition(false) + pBlock->getLength()))
 		{
 			memmove(buff_ptr, buffer.getPointer(offset), iLenToCopy * sizeof(UT_UCSChar));
@@ -4016,8 +4021,8 @@ UT_UCSChar *	FV_View::getTextBetweenPos(PT_DocPosition pos1, PT_DocPosition pos2
 
 	UT_ASSERT(curPos == pos2);
 	return bufferRet;
-}
 #endif
+}
 
 bool FV_View::isTabListBehindPoint(void)
 {
