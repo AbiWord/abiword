@@ -357,27 +357,27 @@ UT_UCS2String& UT_UCS2String::operator+=(UT_UCSChar rhs)
 
 UT_UCS2String& UT_UCS2String::operator+=(char rhs)
 {
-	UT_UCSChar cs;
+	UT_UCSChar cs[2];
 	char rs[2];
 
 	// TODO: is this nonsense needed?
 	rs[0] = rhs; rs[1] = 0;
-	UT_UCS_strcpy_char (&cs, rs);
+	UT_UCS_strcpy_char (cs, rs);
 
-	pimpl->append(&cs, 1);
+	pimpl->append(cs, 1);
 	return *this;
 }
 
 UT_UCS2String& UT_UCS2String::operator+=(unsigned char rhs)
 {
-	UT_UCSChar cs;
+	UT_UCSChar cs[2];
 	char rs[2];
 
 	// TODO: is this nonsense needed?
 	rs[0] = (char)rhs; rs[1] = 0; // TODO: is this loss of 'unsigned' safe?
-	UT_UCS_strcpy_char (&cs, rs);
+	UT_UCS_strcpy_char (cs, rs);
 
-	pimpl->append(&cs, 1);
+	pimpl->append(cs, 1);
 	return *this;
 }
 
