@@ -91,7 +91,7 @@ EV_EditMethodType EV_EditMethod::getType(void) const
 	return m_emt;
 }
 
-const char * EV_EditMethod::getName(void) const
+inline const char * EV_EditMethod::getName(void) const
 {
 	return m_szName;
 }

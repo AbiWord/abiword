@@ -102,7 +102,7 @@ public:
 
 	EV_EditMethod_pFn	getFn(void) const;
 	EV_EditMethodType	getType(void) const;
-	const char *		getName(void) const;
+	inline const char *	getName(void) const;
 	const char *		getDescription(void) const;
 
 protected:
