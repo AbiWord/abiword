@@ -325,12 +325,12 @@ void XAP_Win32Slurp::stuffRegistry(const char * szSuffix,
 	// HKEY_CLASSES_ROOT\<foo>\shell\open\ddeexec = [Open("%1")]
 	// HKEY_CLASSES_ROOT\<foo>\shell\open\ddeexec\application = <application_name>
 	// HKEY_CLASSES_ROOT\<foo>\shell\open\ddeexec\topic = System
-	// HKEY_CLASSES_ROOT\<foo>\DefaultIcon = <exe_pathname,1>
+	// HKEY_CLASSES_ROOT\<foo>\DefaultIcon = <exe_pathname,2>
 
 #define VALUE_DDEEXEC_OPEN			"[Open(\"%1\")]"
 #define FORMAT_OUR_INDIRECTION		"AbiSuite.%s"
 #define CONTENT_TYPE_KEY			"Content Type"
-#define DOCUMENT_ICON_POSITION	3
+#define DOCUMENT_ICON_POSITION	2
 #define xx(s)					((LPBYTE)(s)),(strlen(s)+1)
 	
 	char buf[1024];
