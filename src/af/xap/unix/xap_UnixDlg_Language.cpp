@@ -214,6 +214,9 @@ void XAP_UnixDialog_Language::runModal(XAP_Frame * pFrame)
 	UT_ASSERT(parent);
 	// center it
 	centerDialog(parent, GTK_WIDGET(cf));
+
+	// make the window big
+	gtk_widget_set_usize(cf, 235, 350);
 	
 	// Run the dialog
 	gtk_widget_show(GTK_WIDGET(cf));
