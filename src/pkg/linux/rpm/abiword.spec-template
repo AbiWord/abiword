@@ -197,7 +197,7 @@ This is the clipart portfolio used by AbiWord.
 ./configure %{gnome} %{xft} %{debug} --prefix=$RPM_BUILD_ROOT/%{prefix} --exec-prefix=$RPM_BUILD_ROOT/%{prefix}
 %__make
 
-%if %{enable_tools} && %{enable_impexp}
+%if %{enable_tools} || %{enable_impexp}
 cd ../abiword-plugins
 ./nextgen.sh
 %configure --prefix=$RPM_BUILD_ROOT/%{ABIPREFIX}/%{AbiSuite} --disable-all --disable-nroff --disable-eg %{plugin_tools} %{plugin_impexp}
@@ -209,7 +209,7 @@ cd ../abi
 %install
 umask 022
 
-%if %{enable_tools} && %{enable_impexp}
+%if %{enable_tools} || %{enable_impexp}
 cd ../abiword-plugins
 %__make install
 cd ../abi
@@ -349,6 +349,10 @@ cd ../abi
 #fi
 
 %changelog
+* Tue Oct 16 2002 Rui M. Seabra <rms@1407.org>
+- oops! Change && to || or you will not get the other type of plugins
+  if you disable one type
+
 * Sun Oct 13 2002 Rui M. Seabra <rms@1407.org>
 - If both import and export plugins are disabled, don't run configure
   or make any plugins
