@@ -1185,7 +1185,7 @@ void  PD_Document::miniDump(PL_StruxDocHandle sdh, UT_sint32 nstruxes)
 	if(pfs == NULL)
 	{
 		pf =  m_pPieceTable->getFragments().getFirst();
-		while(pf && pf->getType() != pf->getType() != pf_Frag::PFT_Strux)
+		while(pf && (pf->getType() != pf_Frag::PFT_Strux))
 		{
 			pf = pf->getNext();
 		}
