@@ -1032,7 +1032,7 @@ bool AP_QNXApp::parseCommandLine(void)
                         
 				AP_QNXFrame * pFirstQNXFrame = new AP_QNXFrame(this);
 				pFirstQNXFrame->initialize();
-				UT_Error error = pFirstQNXFrame->loadDocument(m_pArgs->m_argv[k], IEFT_Unknown);
+				UT_Error error = pFirstQNXFrame->loadDocument(m_pArgs->m_argv[k], IEFT_Unknown, true);
 				if (!error)
 				{
 					kWindowsOpened++;
