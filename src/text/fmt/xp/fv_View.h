@@ -305,6 +305,8 @@ public:
 
 	bool	getEditableBounds(bool bEnd, PT_DocPosition & docPos, bool bOverride=false)const;
 
+	bool    isParaBreakNeededAtPos(PT_DocPosition pos);
+	bool    insertParaBreakIfNeededAtPos(PT_DocPosition pos);
 	void	insertParagraphBreak(void);
 	void	insertParagraphBreaknoListUpdate(void);
 	void	insertSectionBreak( BreakSectionType type);

@@ -699,13 +699,12 @@ void FV_View::convertInLineToPositioned(PT_DocPosition pos,const XML_Char ** att
 	PT_DocPosition posFrame = pfFrame->getPos();
 //	m_pDoc->insertStrux(posFrame+1,PTX_Block); // might need this later!
 	m_pDoc->insertStrux(posFrame+1,PTX_EndFrame);
-
-
+	insertParaBreakIfNeededAtPos(posFrame+2);
 
 	// Signal PieceTable Changes have finished
 	_restorePieceTableState();
-	_generalUpdate();
 	m_pDoc->endUserAtomicGlob();
+	_generalUpdate();
 	setPoint(posFrame+2);
 	if(!isPointLegal())
 	{
@@ -7807,7 +7806,6 @@ bool FV_View::setSectionFormat(const XML_Char * properties[])
 
 	// Signal PieceTable Changes have finished
 	_restorePieceTableState();
-
 	_ensureInsertionPointOnScreen();
 	clearCursorWait();
 	notifyListeners(AV_CHG_MOTION);
@@ -9728,6 +9726,57 @@ void FV_View::removeThisHdrFtr(HdrFtrType hfType, bool bSkipPTSaves)
 	clearCursorWait();
 }
 
+/*!
+ * Returns true if the point at at the end of a section or document and the
+ * previous strux is not a block
+ */
+bool FV_View::isParaBreakNeededAtPos(PT_DocPosition pos)
+{
+
+  PT_DocPosition posEOD = 0;
+  getEditableBounds(true, posEOD);
+  if(!m_pDoc->isSectionAtPos(pos) && !m_pDoc->isHdrFtrAtPos(pos) &&
+     (pos < posEOD))
+  {
+    return false;
+  }
+  pf_Frag * pf = m_pDoc->getFragFromPosition(pos);
+  while(pf && pf->getType() != pf_Frag::PFT_Strux)
+  {
+     pf = pf->getPrev();
+  }
+  if(pf == NULL)
+  {  
+     return false;
+  }
+  pf_Frag_Strux * pfs = static_cast<pf_Frag_Strux *>(pf);
+  if(pfs->getStruxType() == PTX_EndTOC)
+  {
+     return true;
+  }
+  if((pfs->getStruxType() == PTX_EndFootnote) || 
+     (pfs->getStruxType() == PTX_EndEndnote) || 
+     (pfs->getStruxType() == PTX_Block) )
+  {
+    return false;
+  }
+  return true;
+}
+
+/*!
+ * Insrts a block and returns true if the point is at the end of a 
+ * section or document and the
+ * previous strux is not a block
+ */
+bool FV_View::insertParaBreakIfNeededAtPos(PT_DocPosition pos)
+{
+  if(!isParaBreakNeededAtPos(pos))
+  {
+    return false;
+  }
+  m_pDoc->insertStrux(pos,PTX_Block);
+  return true;
+}
 
 /*!
  *	 Insert the header/footer. Save the cursor position before we do this and

@@ -1737,24 +1737,6 @@ bool PD_Document::isSectionAtPos(PT_DocPosition pos)
 }
 
 
-/*!
- * This method returns true if there is a EndOfDoc frag at exactly this 
- * position.
- */
-bool PD_Document::isEndOfDocAtPos(PT_DocPosition pos)
-{
-	PT_BlockOffset pOffset;
-	pf_Frag * pf = NULL;
-	/*bool bRes = */m_pPieceTable->getFragFromPosition(pos,&pf,&pOffset);
-	while(pf->getLength() == 0)
-		pf = pf->getPrev();
-	if(pf->getType() == pf_Frag:: PFT_EndOfDoc)
-	{
-		return true;
-	}
-	return false;
-}
-
 //============================================================================
 // Table Medthods
 //===========================================================================

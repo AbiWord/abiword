@@ -430,7 +430,7 @@ public:
 	bool                    isEndFrameAtPos(PT_DocPosition pos);
 	bool                    isHdrFtrAtPos(PT_DocPosition pos);
 	bool                    isSectionAtPos(PT_DocPosition pos);
-	bool                    isEndOfDocAtPos(PT_DocPosition pos);
+
 // Table functions
 
 	bool                    isTableAtPos(PT_DocPosition pos);

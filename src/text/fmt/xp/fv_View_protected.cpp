@@ -2941,6 +2941,8 @@ bool FV_View::_insertField(const char* szName,
 	{
 		m_pDoc->beginUserAtomicGlob();
 		_deleteSelection();
+
+		insertParaBreakIfNeededAtPos(getPoint());
 		bResult = m_pDoc->insertObject(getPoint(), PTO_Field, attributes, extra_props,&pField);
 		if(pField != NULL)
 		{
@@ -2954,6 +2956,7 @@ bool FV_View::_insertField(const char* szName,
 	}
 	else
 	{
+		insertParaBreakIfNeededAtPos(getPoint());
 		bResult = m_pDoc->insertObject(getPoint(), PTO_Field, attributes, extra_props, &pField);
 		if(pField != NULL)
 		{
@@ -5504,7 +5507,7 @@ bool FV_View::_charInsert(const UT_UCSChar * text, UT_uint32 count, bool bForce)
 
 		if(pLR)
 			AttrProp_Before.setProperty("lang", pLR->m_szLangCode);
-		
+		insertParaBreakIfNeededAtPos(getPoint());
 		bResult = m_pDoc->insertSpan(getPoint(), text, count, &AttrProp_Before);
 		m_pDoc->endUserAtomicGlob();
 	}
@@ -5597,7 +5600,7 @@ bool FV_View::_charInsert(const UT_UCSChar * text, UT_uint32 count, bool bForce)
 				AP.setProperty("lang", pLR->m_szLangCode);
 				m_pDoc->insertFmtMark(PTC_AddFmt,getPoint(), &AP);
 			}
-
+			insertParaBreakIfNeededAtPos(getPoint());
 			bResult = m_pDoc->insertSpan(getPoint(), text, count, NULL);
 
 			if(!bResult)
