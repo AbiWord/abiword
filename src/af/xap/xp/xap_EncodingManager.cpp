@@ -145,18 +145,12 @@ const char* XAP_EncodingManager::strToNative(const char* in,const char* charset,
 	const char* inptr = in;
 	char* outptr = buf;
 	size_t inbytes = strlen(in), outbytes = bufsz;	
-// BH - Gotta get it to compile...
-#if defined(__BeOS__) || defined(__AIX__)
 	size_t donecnt = iconv(iconv_handle,const_cast<ICONV_CONST char**>(&inptr),&inbytes,&outptr,&outbytes);
-#endif	
 	const char* retstr = in;
-// BH - Gotta get it to compile...
-#if defined(__BeOS__) || defined(__AIX__)
 	if (donecnt!=(size_t)-1 && inbytes==0) {
 		retstr = buf;
 		buf[bufsz - outbytes] = '\0';/*for sure*/
 	};
-#endif	
 	iconv_close(iconv_handle);
 	return retstr;
 };
@@ -182,7 +176,6 @@ int XAP_EncodingManager::XAP_XML_UnknownEncodingHandler(void* /*encodingHandlerD
 			const char* iptr = ibuf;
 			char* optr = obuf;
 			ibuf[0] = (unsigned char)i;
-#if defined(__BeOS__) || defined(__AIX__)
 			size_t donecnt = iconv(iconv_handle,const_cast<ICONV_CONST char**>(&iptr),&ibuflen,&optr,&obuflen);			
 			if (donecnt!=(size_t)-1 && ibuflen==0) 
 			{
@@ -193,10 +186,8 @@ int XAP_EncodingManager::XAP_XML_UnknownEncodingHandler(void* /*encodingHandlerD
 				info->map[i] = (unsigned int) uval;
 			}
 			else
-#endif
-
-			info->map[i] = -1;/* malformed character. Such cases exist - e.g. 0x98 in cp1251*/
-		
+				info->map[i] = -1;/* malformed character. Such cases exist - e.g. 0x98 in cp1251*/
+			
 		}
 	}
 	iconv_close(iconv_handle);
@@ -230,7 +221,6 @@ static UT_UCSChar try_CToU(UT_UCSChar c,iconv_t iconv_handle)
 	const char* iptr = ibuf;
 	char* optr = obuf;
 	ibuf[0]	= (unsigned char)c;	
-#if defined(__BeOS__) || defined(__AIX__)
 	size_t donecnt = iconv(iconv_handle,const_cast<ICONV_CONST char**>(&iptr),&ibuflen,&optr,&obuflen);			
 	if (donecnt!=(size_t)-1 && ibuflen==0) 
 	{
@@ -240,7 +230,6 @@ static UT_UCSChar try_CToU(UT_UCSChar c,iconv_t iconv_handle)
 		uval = (b1<<8) | b0;
 		return uval;
 	} else
-#endif
 		return  0;
 };
 
@@ -257,12 +246,9 @@ static UT_UCSChar try_UToC(UT_UCSChar c,iconv_t iconv_handle)
 		ibuf[XAP_EncodingManager::swap_utos] = b0;
 		ibuf[!XAP_EncodingManager::swap_utos] = b1;
 	}
-#if defined(__BeOS__) || defined(__AIX__)
 	size_t donecnt = iconv(iconv_handle,const_cast<ICONV_CONST char**>(&iptr),&ibuflen,&optr,&obuflen);
 	/* reset state */
-#endif
 	UT_iconv_reset(iconv_handle);
-#if defined(__BeOS__) || defined(__AIX__)
 	if (donecnt!=(size_t)-1 && ibuflen==0) 
 	{
 		int len = sizeof(obuf) - obuflen;
@@ -271,7 +257,6 @@ static UT_UCSChar try_UToC(UT_UCSChar c,iconv_t iconv_handle)
 		else
 			return (unsigned char)*obuf;
 	} else
-#endif
 		return  0;
 };
 
@@ -971,8 +956,6 @@ const char * xap_encoding_manager_get_language_iso_name(void)
 
 void UT_iconv_reset(iconv_t cd)
 {
-#if defined(__BeOS__) || defined(__AIX__)
     if (XAP_EncodingManager::instance->cjk_locale())
 	iconv(cd,const_cast<ICONV_CONST char**>((char**)NULL),NULL,NULL,NULL);
-#endif
 };
