@@ -35,13 +35,14 @@ PROGRAM_S=		$(BINDIR)/AbiWord_s
 
 LoadOrder=		AbiGr AbiFmt AbiPTbl AbiImpExp AbiXAp AbiWPAp \
 			AbiEv AbiUtil AbiWordVer AbiSpell Abi_expat Abi_libwv \
-			Abi_libpng Abi_zlib
+			Abi_libpng Abi_zlib Abi_libiconv
 
 ABI_APPLIBS=		$(LoadOrder) $(LoadOrder) $(LoadOrder)
 ABI_APPLIBDEP=		$(LoadOrder)
 
 # libdl flags go into the process later
-ABI_LIBS=		stdc++ ph phrender m
+# We needed libstdc++ at one point, not any more apparently
+ABI_LIBS=		ph phrender m 
 STUPID_STATIC_LIBS= -Bstatic -lph
 
 # include both dynamic and static binaries
