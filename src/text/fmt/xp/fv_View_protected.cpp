@@ -3171,6 +3171,7 @@ bool FV_View::_charMotion(bool bForward,UT_uint32 countChars)
 		while( m_iInsPoint >= posBOD && (pRun == NULL || ((x == xold) && (y == yold) &&
 														 (x2 == x2old) && (y2 == y2old))))
 		{
+			UT_DEBUGMSG(("SEVIOR: Looking at point m_iInsPoint %d \n",m_iInsPoint));
 			_setPoint(m_iInsPoint-1);
 			_findPositionCoords(m_iInsPoint-1, false, x, y, x2,y2,uheight, bDirection, &pBlock, &pRun);
 			bExtra = true;

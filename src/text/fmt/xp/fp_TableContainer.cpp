@@ -1321,6 +1321,7 @@ void fp_TableContainer::drawLines(void)
 {
 	if(isThisBroken())
 	{
+		m_bRedrawLines = false;
 		getMasterTable()->drawLines();
 		return;
 	}
@@ -2308,7 +2309,13 @@ void fp_TableContainer::draw(dg_DrawArgs* pDA)
 	{
 		return;
 	}
-
+	if(pDA->bDirtyRunsOnly)
+	{
+		if(getSectionLayout() && !getSectionLayout()->needsRedraw())
+		{
+			return;
+		}
+	}
 	if(isThisBroken())
 	{
 		_brokenDraw(pDA);

@@ -312,6 +312,7 @@ void fl_TableLayout::redrawUpdate(void)
 	{
 		if (pBL->needsRedraw())
 		{
+			UT_DEBUGMSG(("SEVIOR: Doing redraw in table \n"));
 			pBL->redrawUpdate();
 		}
 		pBL = pBL->getNext();
@@ -321,6 +322,7 @@ void fl_TableLayout::redrawUpdate(void)
 	{
 		pTab->drawLines();
 	}
+	m_bNeedsRedraw = false;
 }
 
 bool fl_TableLayout::doclistener_changeStrux(const PX_ChangeRecord_StruxChange * pcrxc)
@@ -1289,6 +1291,7 @@ void fl_CellLayout::redrawUpdate(void)
 
 		pBL = pBL->getNext();
 	}
+	m_bNeedsRedraw = false;
 }
 
 bool fl_CellLayout::doclistener_changeStrux(const PX_ChangeRecord_StruxChange * pcrxc)
