@@ -269,7 +269,7 @@ if(!m_pFont || !(font = m_pFont->getFont())) {
 if(PfGlyph(font,c,&metrics,NULL,NULL,NULL)==-1)
 	return GR_CW_UNKNOWN;
 
-return metrics.width;
+return _UL(metrics.width);
 }
 
 /***
