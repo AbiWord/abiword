@@ -5761,7 +5761,11 @@ UT_Error FV_View::cmdInsertField(const char* szName)
 		NULL, NULL
 	};
 	UT_DEBUGMSG(("SEVIOR: field type= %s \n",szName));
+
+/*
+        currently unused
 	fl_BlockLayout* pBL = _findBlockAtPosition(getPoint());
+*/
 	fd_Field * pField = NULL;
 	if (!isSelectionEmpty())
 	{
