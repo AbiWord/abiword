@@ -123,8 +123,10 @@ typedef	UT_sint32		UT_Error;
 #define UCS_CR			((UT_UCSChar)0x000d)
 #define UCS_SPACE		((UT_UCSChar)0x0020)
 #define UCS_NBSP		((UT_UCSChar)0x00a0)
+#define UCS_PILCROW		((UT_UCSChar)0x00b6)
 #define UCS_FIELDSTART		((UT_UCSChar)0xFFFE)
 #define UCS_FIELDEND		((UT_UCSChar)0xFFFD)
+
 
 #if 1 /* try to use the unicode values for special chars */
 #define UCS_EN_SPACE		((UT_UCSChar)0x2002)
