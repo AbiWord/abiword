@@ -3220,7 +3220,7 @@ void fp_ImageRun::_draw(dg_DrawArgs* pDA)
 	const UT_Rect * pSavedRect = NULL;
 	if(pG->getClipRect())
 	{
-		pSavedRect = new UT_Rect(pG->getClipRect());
+		pSavedRect = pG->getClipRect();
 	}
 	if(pG->queryProperties(GR_Graphics::DGP_SCREEN))
 	{
@@ -3284,7 +3284,6 @@ void fp_ImageRun::_draw(dg_DrawArgs* pDA)
 
 	// unf*ck clipping rect
 	pG->setClipRect(pSavedRect);
-
 }
 
 GR_Image * fp_ImageRun::getImage()
