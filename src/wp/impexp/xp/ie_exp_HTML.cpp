@@ -412,7 +412,13 @@ private:
 	void 	_outputEnd ();
 	void	_openSection (PT_AttrPropIndex api);
 	void	_closeSection (void);
-	void	_appendInheritanceLine (const char * ClassName, UT_UTF8String & utf8str);
+
+	/* these next two use m_utf8_0
+	 */
+	void	_recordCSStyle (const char * ClassName);
+	void	_appendInheritanceLine (const char * ClassName, UT_UTF8String & utf8str,
+									bool record_css = false);
+
 	void	_openTag (PT_AttrPropIndex api);
 	void	_closeTag (void);
 	void	_closeSpan (void);
@@ -482,6 +488,16 @@ private:
 	void			listPop ();
 	void			listPopToDepth (UT_uint16 depth);
 
+	const char *	bodyStyle (const char * key);
+	const char *	bodyStyle (const char * key, const char * value);
+	void			bodyStyleClear ();
+
+	const char *	blockStyle (const char * key);
+	const char *	blockStyle (const char * key, const char * value);
+	void			blockStyleClear ();
+
+	bool			compareStyle (const char * key, const char * value);
+
 	/* temporary strings; use with extreme caution
 	 */
 	UT_UTF8String	m_utf8_0; // low-level
@@ -492,7 +508,111 @@ private:
 	UT_Stack		m_tagStack;
 
 	UT_uint32		m_styleIndent;
+
+	UT_StringPtrMap	m_BodyStyle;
+	UT_StringPtrMap	m_BlockStyle;
 };
+
+const char * s_HTML_Listener::bodyStyle (const char * key)
+{
+	if ( key == 0) return 0;
+	if (*key == 0) return 0;
+
+	const void * vptr = m_BodyStyle.pick (key);
+	return reinterpret_cast<const char *>(vptr);
+}
+
+const char * s_HTML_Listener::bodyStyle (const char * key, const char * value)
+{
+	if ( key == 0) return 0;
+	if (*key == 0) return 0;
+
+	const void * vptr = m_BodyStyle.pick (key);
+	if (vptr)
+		{
+			m_BodyStyle.remove (key, 0);
+			free (const_cast<void *>(vptr));
+		}
+	if (value == 0) return 0;
+
+	char * new_value = UT_strdup (value);
+	if (new_value == 0) return 0; // ??
+
+	if (!m_BodyStyle.insert (key, new_value))
+		{
+			free (new_value);
+			new_value = 0;
+		}
+	return new_value;
+}
+
+void s_HTML_Listener::bodyStyleClear ()
+{
+	UT_HASH_PURGEDATA (char *, &m_BodyStyle,  free);
+	m_BodyStyle.clear ();
+}
+
+const char * s_HTML_Listener::blockStyle (const char * key)
+{
+	if ( key == 0) return 0;
+	if (*key == 0) return 0;
+
+	const void * vptr = m_BlockStyle.pick (key);
+	return reinterpret_cast<const char *>(vptr);
+}
+
+const char * s_HTML_Listener::blockStyle (const char * key, const char * value)
+{
+	if ( key == 0) return 0;
+	if (*key == 0) return 0;
+
+	const void * vptr = m_BlockStyle.pick (key);
+	if (vptr)
+		{
+			m_BlockStyle.remove (key, 0);
+			free (const_cast<void *>(vptr));
+		}
+	if (value == 0) return 0;
+
+	char * new_value = UT_strdup (value);
+	if (new_value == 0) return 0; // ??
+
+	if (!m_BlockStyle.insert (key, new_value))
+		{
+			free (new_value);
+			new_value = 0;
+		}
+	return new_value;
+}
+
+void s_HTML_Listener::blockStyleClear ()
+{
+	UT_HASH_PURGEDATA (char *, &m_BlockStyle, free);
+	m_BlockStyle.clear ();
+}
+
+bool s_HTML_Listener::compareStyle (const char * key, const char * value)
+{
+	/* require both key & value to be non-empty strings
+	 */
+	if (( key == 0) || ( value == 0)) return false;
+	if ((*key == 0) || (*value == 0)) return false;
+
+	bool match = true;
+
+	const char * css_value = blockStyle (key);
+	if (css_value == 0)
+		{
+			css_value = bodyStyle (key);
+			if (css_value == 0)
+				{
+					match = false;
+				}
+		}
+	if (match) match = (UT_strcmp (css_value, value) == 0);
+
+	return match;
+}
 
 void s_HTML_Listener::tagNewIndent (UT_uint32 extra)
 {
@@ -873,6 +993,10 @@ void s_HTML_Listener::_outputBegin (PT_AttrPropIndex api)
 								}
 							else m_utf8_1 = (const char *) szValue;
 
+							/* keep a record of CSS body style
+							 */
+							bodyStyle ((const char *) szName, m_utf8_1.utf8_str ());
+
 							styleNameValue (szName, m_utf8_1);
 						}
 					szValue = PP_evalProperty ("background-color", 0, 0, pAP, m_pDocument, true);
@@ -1082,10 +1206,64 @@ bool s_HTML_Listener::_inherits (const char * style, const char * from)
 	return bret;
 }
 
-void s_HTML_Listener::_appendInheritanceLine (const char * ClassName, UT_UTF8String & utf8str)
+void s_HTML_Listener::_recordCSStyle (const char * ClassName)
 {
-	UT_UTF8String tmp; // this is a recursive function - can't use class tmps
+	if ( ClassName == 0) return;
+	if (*ClassName == 0) return;
 
+	PD_Style * pStyle = 0;
+
+	m_pDocument->getStyle (ClassName, &pStyle);
+	if (pStyle == 0) return;
+
+	const XML_Char * szName  = 0;
+	const XML_Char * szValue = 0;
+
+	for (UT_uint16 i = 0; i < pStyle->getPropertyCount (); i++)
+		{
+			pStyle->getNthProperty (i, szName, szValue);
+
+			if (( szName == 0) || ( szValue == 0)) continue; // paranoid? moi?
+			if ((*szName == 0) || (*szValue == 0)) continue;
+
+			if (strstr (szName, "margin")) continue;
+			if (!is_CSS (reinterpret_cast<const char *>(szName))) continue;
+
+			if (UT_strcmp (szName, "font-family") == 0)
+				{
+					if ((UT_strcmp (szValue, "serif")      == 0) ||
+						(UT_strcmp (szValue, "sans-serif") == 0) ||
+						(UT_strcmp (szValue, "cursive")    == 0) ||
+						(UT_strcmp (szValue, "fantasy")    == 0) ||
+						(UT_strcmp (szValue, "monospace")  == 0))
+						{
+							m_utf8_0 = (const char *) szValue;
+						}
+					else
+						{
+							m_utf8_0  = "'";
+							m_utf8_0 += (const char *) szValue;
+							m_utf8_0 += "'";
+						}
+				}
+			else if (UT_strcmp (szName, "color") == 0)
+				{
+					if (IS_TRANSPARENT_COLOR (szValue)) continue;
+
+					m_utf8_0  = "#";
+					m_utf8_0 += (const char *) szValue;
+				}
+			else m_utf8_0 = (const char *) szValue;
+
+			/* keep a record of CSS body style
+			 */
+			blockStyle ((const char *) szName, m_utf8_0.utf8_str ());
+		}
+}
+
+void s_HTML_Listener::_appendInheritanceLine (const char * ClassName, UT_UTF8String & utf8str,
+											  bool record_css)
+{
 	PD_Style * pStyle = 0;
 
 	if (m_pDocument->getStyle (ClassName, &pStyle))
@@ -1102,16 +1280,15 @@ void s_HTML_Listener::_appendInheritanceLine (const char * ClassName, UT_UTF8Str
 
 						if (szName)
 							{
-								s_removeWhiteSpace ((const char *) szName, tmp);
-								_appendInheritanceLine (tmp.utf8_str (), utf8str);
-
-								utf8str += " "; // TODO: should this be ", " or ??
+								_appendInheritanceLine ((const char *) szName, utf8str, record_css);
+								utf8str += " ";
 							}
 					}
 			}
+	if (record_css) _recordCSStyle (ClassName);
 
-	s_removeWhiteSpace (ClassName, tmp);
-	utf8str += tmp;
+	s_removeWhiteSpace (ClassName, m_utf8_0); // careful!!
+	utf8str += m_utf8_0;
 }
 
 UT_uint16 s_HTML_Listener::listDepth ()
@@ -1151,7 +1328,7 @@ void s_HTML_Listener::listPush (UT_uint16 type, const char * ClassName)
 			m_utf8_1 = "ol";
 		}
 	m_utf8_1 += " class=\"";
-	_appendInheritanceLine (ClassName, m_utf8_1);
+	_appendInheritanceLine (ClassName, m_utf8_1, true);
 	m_utf8_1 += "\"";
 	tagOpen (tagID, m_utf8_1);
 
@@ -1205,6 +1382,8 @@ void s_HTML_Listener::_openTag (PT_AttrPropIndex api)
 	if (m_bFirstWrite) _outputBegin (api);
 
 	if (!m_bInSection) return;
+
+	blockStyleClear ();
 
 	if (m_bInBlock && (tagTop () != TT_LI)) _closeTag ();
 
@@ -1427,7 +1606,7 @@ void s_HTML_Listener::_openTag (PT_AttrPropIndex api)
 			if (bAddInheritance)
 				{
 					m_utf8_1 += " class=\"";
-					_appendInheritanceLine ((const char*) szValue, m_utf8_1);
+					_appendInheritanceLine ((const char*) szValue, m_utf8_1, true);
 					m_utf8_1 += "\"";
 				}
 		}	
@@ -1629,7 +1808,7 @@ void s_HTML_Listener::_closeTag (void)
 	m_bInBlock = false;
 }
 
-void s_HTML_Listener::_openSpan(PT_AttrPropIndex api)
+void s_HTML_Listener::_openSpan (PT_AttrPropIndex api)
 {
 	if (m_bFirstWrite) _outputBegin (api);
 
@@ -1668,52 +1847,61 @@ void s_HTML_Listener::_openSpan(PT_AttrPropIndex api)
 
 	if (szP_FontWeight)
 		if (UT_strcmp (szP_FontWeight, "bold") == 0)
-			{
-				if (!first) m_utf8_1 += "; ";
-				m_utf8_1 += "font-weight: bold";
-				first = false;
-			}
+			if (!compareStyle ("font-weight", "bold"))
+				{
+					if (!first) m_utf8_1 += "; ";
+					m_utf8_1 += "font-weight: bold";
+					first = false;
+				}
 	if (szP_FontStyle)
 		if (UT_strcmp (szP_FontStyle, "italic") == 0)
-			{
-				if (!first) m_utf8_1 += "; ";
-				m_utf8_1 += "font-style: italic";
-				first = false;
-			}
+			if (!compareStyle ("font-style", "italic"))
+				{
+					if (!first) m_utf8_1 += "; ";
+					m_utf8_1 += "font-style: italic";
+					first = false;
+				}
 	if (szP_FontSize)
 		{
-			if (!first) m_utf8_1 += "; ";
-			m_utf8_1 += "font-size: ";
-
 			char * old_locale = setlocale (LC_NUMERIC, "C");
 			char buf[16];
 			sprintf (buf, "%g", UT_convertToPoints (szP_FontSize));
-			m_utf8_1 += buf;
 			setlocale (LC_NUMERIC, old_locale);
 
-			m_utf8_1 += "pt";
-			first = false;
+			m_utf8_0  = buf;
+			m_utf8_0 += "pt";
+
+			if (!compareStyle ("font-size", m_utf8_0.utf8_str ()))
+				{
+					if (!first) m_utf8_1 += "; ";
+					m_utf8_1 += "font-size: ";
+					m_utf8_1 += m_utf8_0;
+					first = false;
+				}
 		}
 	if (szP_FontFamily)
 		{
-			if (!first) m_utf8_1 += "; ";
-			m_utf8_1 += "font-family: ";
-
 			if ((UT_strcmp (szP_FontFamily, "serif")      == 0) ||
 				(UT_strcmp (szP_FontFamily, "sans-serif") == 0) ||
 				(UT_strcmp (szP_FontFamily, "cursive")    == 0) ||
 				(UT_strcmp (szP_FontFamily, "fantasy")    == 0) ||
 				(UT_strcmp (szP_FontFamily, "monospace")  == 0))
 				{
-					m_utf8_1 += (const char *) szP_FontFamily;
+					m_utf8_0  = (const char *) szP_FontFamily;
 				}
 			else
 				{
-					m_utf8_1 += "'";
-					m_utf8_1 += (const char *) szP_FontFamily;
-					m_utf8_1 += "'";
+					m_utf8_0  = "'";
+					m_utf8_0 += (const char *) szP_FontFamily;
+					m_utf8_0 += "'";
 				}
-			first = false;
+			if (!compareStyle ("font-family", m_utf8_0.utf8_str ()))
+				{
+					if (!first) m_utf8_1 += "; ";
+					m_utf8_1 += "font-family: ";
+					m_utf8_1 += m_utf8_0;
+					first = false;
+				}
 		}
 	if (szP_TextDecoration)
 		{
@@ -1723,52 +1911,75 @@ void s_HTML_Listener::_openSpan(PT_AttrPropIndex api)
 
 			if (bUnderline || bLineThrough || bOverline)
 				{
-					if (!first) m_utf8_1 += "; ";
-					m_utf8_1 += "text-decoration: ";
-					if (bUnderline) m_utf8_1 += "underline";
+					m_utf8_0 = "";
+					if (bUnderline) m_utf8_0 += "underline";
 					if (bLineThrough)
 						{
-							if (bUnderline) m_utf8_1 += ", ";
-							m_utf8_1 += "line-through";
+							if (bUnderline) m_utf8_0 += ", ";
+							m_utf8_0 += "line-through";
 						}
 					if (bOverline)
 						{
-							if (bUnderline || bLineThrough) m_utf8_1 += ", ";
-							m_utf8_1 += "overline";
+							if (bUnderline || bLineThrough) m_utf8_0 += ", ";
+							m_utf8_0 += "overline";
 						}
-					first = false;
+					if (!compareStyle ("text-decoration", m_utf8_0.utf8_str ()))
+						{
+							if (!first) m_utf8_1 += "; ";
+							m_utf8_1 += "text-decoration: ";
+							m_utf8_1 += m_utf8_0;
+							first = false;
+						}
 				}
 		}
 	if (szP_TextPosition)
 		{
 			if (UT_strcmp (szP_TextPosition, "superscript") == 0)
 				{
-					if (!first) m_utf8_1 += "; ";
-					m_utf8_1 += "vertical-align: superscript";
-					first = false;
+					if (!compareStyle ("vertical-align", "superscript"))
+						{
+							if (!first) m_utf8_1 += "; ";
+							m_utf8_1 += "vertical-align: superscript";
+							first = false;
+						}
 				}
 			else if (UT_strcmp (szP_TextPosition, "subscript") == 0)
 				{
-					if (!first) m_utf8_1 += "; ";
-					m_utf8_1 += "vertical-align: subscript";
-					first = false;
+					if (!compareStyle ("vertical-align", "subscript"))
+						{
+							if (!first) m_utf8_1 += "; ";
+							m_utf8_1 += "vertical-align: subscript";
+							first = false;
+						}
 				}
 		}
 	if (szP_Color)
 		if (!IS_TRANSPARENT_COLOR (szP_Color))
 			{
-				if (!first) m_utf8_1 += "; ";
-				m_utf8_1 += "color: #";
-				m_utf8_1 += szP_Color;
-				first = false;
+				m_utf8_0  = "#";
+				m_utf8_0 += szP_Color;
+
+				if (!compareStyle ("color", m_utf8_0.utf8_str ()))
+					{
+						if (!first) m_utf8_1 += "; ";
+						m_utf8_1 += "color: ";
+						m_utf8_1 += m_utf8_0;
+						first = false;
+					}
 			}
 	if (szP_BgColor)
 		if (!IS_TRANSPARENT_COLOR (szP_BgColor))
 			{
-				if (!first) m_utf8_1 += "; ";
-				m_utf8_1 += "background: #";
-				m_utf8_1 += szP_BgColor;
-				first = false;
+				m_utf8_0  = "#";
+				m_utf8_0 += szP_BgColor;
+
+				if (!compareStyle ("background", m_utf8_0.utf8_str ()))
+					{
+						if (!first) m_utf8_1 += "; ";
+						m_utf8_1 += "background: ";
+						m_utf8_1 += m_utf8_0;
+						first = false;
+					}
 			}
 
 	bool bInSpan = false;
@@ -1814,11 +2025,13 @@ void s_HTML_Listener::_openSpan(PT_AttrPropIndex api)
 			if (m_bInSpan)
 				{
 					if (m_utf8_span == m_utf8_1) return; // this span same as last...
+					m_utf8_span = m_utf8_1;
 					_closeSpan ();
 				}
-			tagOpen (TT_SPAN, m_utf8_1, ws_None);
+			else m_utf8_span = m_utf8_1;
+
+			tagOpen (TT_SPAN, m_utf8_span, ws_None);
 			m_bInSpan = true;
-			m_utf8_span = m_utf8_1;
 		}
 	else if (m_bInSpan) _closeSpan ();
 }
@@ -1831,7 +2044,6 @@ void s_HTML_Listener::_closeSpan ()
 			tagClose (TT_SPAN, m_utf8_1, ws_None);
 		}
 	m_bInSpan = false;
-	m_utf8_span = "";
 }
 
 void s_HTML_Listener::_outputData (const UT_UCSChar * data, UT_uint32 length)
@@ -1942,6 +2154,9 @@ s_HTML_Listener::~s_HTML_Listener()
 	_closeSection ();
 
 	_outputEnd ();
+
+	bodyStyleClear ();
+	blockStyleClear ();
 }
 
 /* dataid   is the raw string with the data ID
