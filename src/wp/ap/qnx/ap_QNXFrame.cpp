@@ -453,9 +453,10 @@ void AP_QNXFrame::killFrameData(void)
 	m_pData = NULL;
 }
 
-UT_Error AP_QNXFrame::_loadDocument(const char * szFilename, IEFileType ieft)
+UT_Error AP_QNXFrame::_loadDocument(const char * szFilename, IEFileType ieft, bool createNew)
 {
-	UT_DEBUGMSG(("Frame: _loadDocument \n"));
+	UT_DEBUGMSG(("Frame: _loadDocument %s (%d,%d)\n", szFilename, ieft, createNew));
+
 	// are we replacing another document?
 	if (m_pDoc)
 	{
@@ -476,14 +477,22 @@ UT_Error AP_QNXFrame::_loadDocument(const char * szFilename, IEFileType ieft)
 		goto ReplaceDocument;
 	}
 
-	UT_Error err; 
-	err = pNewDoc->readFromFile(szFilename, ieft);
-	if (err == UT_OK)
+	UT_Error errorCode; 
+	errorCode = pNewDoc->readFromFile(szFilename, ieft);
+	if (!errorCode)
 		goto ReplaceDocument;
+
+	// we have a file name but couldn't load it
+	if (createNew) { 
+	    pNewDoc->newDocument();
+	    errorCode = pNewDoc->saveAs(szFilename, ieft);
+	}
+	if (!errorCode)
+	  goto ReplaceDocument;
 	
 	UT_DEBUGMSG(("ap_Frame: could not open the file [%s]\n",szFilename));
 	UNREFP(pNewDoc);
-	return err;
+	return errorCode;
 
 ReplaceDocument:
 	getApp()->forgetClones(this);
@@ -501,6 +510,7 @@ XAP_Frame * AP_QNXFrame::cloneFrame(void)
 
 	if (!pClone->initialize())
 		goto Cleanup;
+
 	error = pClone->_showDocument();
 	if (error)
 		goto Cleanup;
@@ -522,12 +532,6 @@ Cleanup:
 
 UT_Error AP_QNXFrame::loadDocument(const char * szFilename, int ieft, bool createNew)
 {
-  UT_ASSERT(UT_TODO);
-  return UT_OK;
-}
-
-UT_Error AP_QNXFrame::loadDocument(const char * szFilename, int ieft)
-{
 	bool bUpdateClones;
 	UT_Vector vClones;
 	XAP_App * pApp = getApp();
@@ -537,16 +541,15 @@ UT_Error AP_QNXFrame::loadDocument(const char * szFilename, int ieft)
 	{
 		pApp->getClones(&vClones, this);
 	}
-
-	UT_Error err;
-	err = _loadDocument(szFilename, (IEFileType) ieft); 
-	if (err != UT_OK)
+	UT_Error errorCode;
+	errorCode =  _loadDocument(szFilename, (IEFileType) ieft, createNew);
+	if (errorCode)
 	{
 		// we could not load the document.
 		// we cannot complain to the user here, we don't know
 		// if the app is fully up yet.  we force our caller
 		// to deal with the problem.
-		return err;
+		return errorCode;
 	}
 
 	pApp->rememberFrame(this);
@@ -564,6 +567,11 @@ UT_Error AP_QNXFrame::loadDocument(const char * szFilename, int ieft)
 	}
 
 	return _showDocument();
+}
+
+UT_Error AP_QNXFrame::loadDocument(const char * szFilename, int ieft)
+{
+	return loadDocument(szFilename, ieft, false);
 }
 
 /*
@@ -606,23 +614,6 @@ void AP_QNXFrame::_scrollFuncY(void * pData, UT_sint32 yoff, UT_sint32 /*yrange*
 	pView->setYScrollOffset(yoff);
 }
 	
-#if 0
-static int _resize_mda(PtWidget_t * w, void *data, PtCallbackInfo_t *info)
-{
-	PtWidget_t *raw = (PtWidget_t *)data;
-	PtContainerCallback_t *cbinfo = (PtContainerCallback_t *)(info->cbdata);
-
-	UT_DEBUGMSG(("SUCKY RESIZING to %d,%d %d,%d \n",
-		cbinfo->new_size.ul.x, cbinfo->new_size.ul.y,
-		cbinfo->new_size.lr.x, cbinfo->new_size.lr.y));
-	PtArg_t args[2];
-	PtSetArg(&args[0], Pt_ARG_WIDTH, cbinfo->new_size.lr.x - cbinfo->new_size.ul.x, 0);
-	PtSetArg(&args[1], Pt_ARG_HEIGHT, cbinfo->new_size.lr.y - cbinfo->new_size.ul.y, 0);
-	PtSetResources(raw, 2, args);
-	return Pt_CONTINUE;
-}
-#endif
-
 PtWidget_t * AP_QNXFrame::_createDocumentWindow(void)
 {
 	PtWidget_t *group;
@@ -786,35 +777,7 @@ void AP_QNXFrame::setStatusMessage(const char * szMsg)
 
 void AP_QNXFrame::_setWindowIcon(void)
 {
-#if 0
-	UT_DEBUGMSG(("TODO: Fix the setting of the ICON "));
-
-	// attach program icon to window
-	PtWidget_t * window = getTopLevelWindow();
-	UT_ASSERT(window);
-
-	// create a pixmap from our included data
-	PhImage_t *pImage;
-	if (!(UT_Xpm2Bitmap((const char **)abiword_48_xpm, 0xdeadbeef, &pImage))) {
-		return;
-	}
-
-	PtArg_t args[5];
-	int		n;
-
-	n = 0;
-	PtWidget_t *icon = PtCreateWidget(PtIcon, window, n, args);
-	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_LABEL_TYPE, Pt_IMAGE, Pt_IMAGE);
-	PtSetArg(&args[n++], Pt_ARG_LABEL_DATA, pImage, sizeof(*pImage));
-	PtSetArg(&args[n++], Pt_ARG_DIM, &pImage->size, 0);
-	PtCreateWidget(PtLabel, icon, n, args);
-
-	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_ICON_WINDOW, icon, sizeof(*icon));
-	PtSetArg(&args[n++], Pt_ARG_WINDOW_RENDER_FLAGS, Ph_WM_RENDER_ASICON, Ph_WM_RENDER_ASICON);
-	PtSetResources(window, n, args);
-#endif
+	//Photon relies on the icon being bound into the executable resource
 }
 
 UT_Error AP_QNXFrame::_replaceDocument(AD_Document * pDoc)
