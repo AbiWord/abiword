@@ -53,6 +53,7 @@
 #define AP_RID_DIALOG_STYLES_NEWMODIFY			223
 #define AP_RID_DIALOG_PAGE_SETUP_PAGE			224	// tab-sub-dialog
 #define AP_RID_DIALOG_PAGE_SETUP_MARGINS		225	// tab-sub-dialog
+#define AP_RID_DIALOG_HDRFTR					226
 
 #include "ap_Win32Res_DlgPageSetup.rc2"
 #include "ap_Win32Resources_DialogReplace.rc2"
@@ -72,4 +73,5 @@
 #include "ap_Win32Res_DlgToggleCase.rc2"
 #include "ap_Win32Res_DlgStylesTop.rc2"
 #include "ap_Win32Res_DlgStylesNewModify.rc2"
+#include "ap_Win32Res_DlgHdrFtr.rc2"
 

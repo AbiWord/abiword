@@ -17,6 +17,10 @@
  * 02111-1307, USA.
  */
 
+#ifdef _MSC_VER	// MSVC++ warns about using 'this' in initializer list.
+#pragma warning(disable: 4355)
+#endif
+
 #include <windows.h>
 
 #include "ut_string.h"
@@ -45,8 +49,11 @@ XAP_Dialog * AP_Win32Dialog_HdrFtr::static_constructor(XAP_DialogFactory * pFact
 
 AP_Win32Dialog_HdrFtr::AP_Win32Dialog_HdrFtr(XAP_DialogFactory * pDlgFactory,
 										 XAP_Dialog_Id id)
-	: AP_Dialog_HdrFtr(pDlgFactory,id)
+	: AP_Dialog_HdrFtr(pDlgFactory,id), 
+      _win32Dialog(this),
+      m_hThisDlg(NULL)
 {
+
 }
 
 AP_Win32Dialog_HdrFtr::~AP_Win32Dialog_HdrFtr(void)
@@ -56,32 +63,129 @@ AP_Win32Dialog_HdrFtr::~AP_Win32Dialog_HdrFtr(void)
 void AP_Win32Dialog_HdrFtr::runModal(XAP_Frame * pFrame)
 {
 	UT_ASSERT(pFrame);
+	_win32Dialog.runModal( pFrame,
+						   AP_DIALOG_ID_HDRFTR,
+                           AP_RID_DIALOG_HDRFTR,
+	         		       this );
+}
 
-/*
-	NOTE: This template can be used to create a working stub for a 
-	new dialog on this platform.  To do so:
+#define _DS(c,s)	SetDlgItemText(hWnd,AP_RID_DIALOG_##c,pSS->getValue(AP_STRING_ID_##s))
+#define _DSX(c,s)	SetDlgItemText(hWnd,AP_RID_DIALOG_##c,pSS->getValue(XAP_STRING_ID_##s))
+
+BOOL AP_Win32Dialog_HdrFtr::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam)
+{
+	XAP_Win32App * app = static_cast<XAP_Win32App *> (m_pApp);
+	UT_ASSERT(app);
+
+	m_hThisDlg = hWnd;
+	const XAP_StringSet * pSS = m_pApp->getStringSet();
 	
-	1.  Copy this file (and its associated header file) and rename 
-		them accordingly. 
+	// localize dialog title
+	_win32Dialog.setDialogTitle( pSS->getValue(AP_STRING_ID_DLG_HdrFtr_Title) );
 
-	2.  Do a case sensitive global replace on the words Stub and STUB
-		in both files. 
+	// localize controls
+	_DSX(HDRFTR_BTN_OK,				DLG_OK);
+	_DSX(HDRFTR_BTN_CANCEL,			DLG_Cancel);
 
-	3.  Add stubs for any required methods expected by the XP class. 
-		If the build fails because you didn't do this step properly,
-		you've just broken the donut rule.  
+	_DS(HDRFTR_GBX_HDR,				DLG_HdrFtr_HeaderFrame);
+	_DS(HDRFTR_CHK_HDRFACING,		DLG_HdrFtr_HeaderEven);
+	_DS(HDRFTR_CHK_HDRFIRST,		DLG_HdrFtr_HeaderFirst);
+	_DS(HDRFTR_CHK_HDRLAST,			DLG_HdrFtr_HeaderLast);
+	_DS(HDRFTR_GBX_FTR,				DLG_HdrFtr_FooterFrame);
+	_DS(HDRFTR_CHK_FTRFACING,		DLG_HdrFtr_FooterEven);
+	_DS(HDRFTR_CHK_FTRFIRST,		DLG_HdrFtr_FooterFirst);
+	_DS(HDRFTR_CHK_FTRLAST,			DLG_HdrFtr_FooterLast);
+	_DS(HDRFTR_CHK_SECTION,			DLG_HdrFtr_RestartCheck);
+	_DS(HDRFTR_LBL_SECTION,			DLG_HdrFtr_RestartNumbers);
 
-	4.	Replace this useless comment with specific instructions to 
-		whoever's porting your dialog so they know what to do.
-		Skipping this step may not cost you any donuts, but it's 
-		rude.  
+	// set initial state
+	_win32Dialog.checkButton(AP_RID_DIALOG_HDRFTR_CHK_HDRFACING, getValue(HdrEven));
+	_win32Dialog.checkButton(AP_RID_DIALOG_HDRFTR_CHK_HDRFIRST,  getValue(HdrFirst));
+	_win32Dialog.checkButton(AP_RID_DIALOG_HDRFTR_CHK_HDRLAST,   getValue(HdrLast));
+	_win32Dialog.checkButton(AP_RID_DIALOG_HDRFTR_CHK_FTRFACING, getValue(FtrEven));
+	_win32Dialog.checkButton(AP_RID_DIALOG_HDRFTR_CHK_FTRFIRST,  getValue(FtrFirst));
+	_win32Dialog.checkButton(AP_RID_DIALOG_HDRFTR_CHK_FTRLAST,   getValue(FtrLast));
+	_win32Dialog.setControlInt(AP_RID_DIALOG_HDRFTR_EBX_SECTION, getRestartValue());
 
-	This file should *only* be used for stubbing out platforms which 
-	you don't know how to implement.  When implementing a new dialog 
-	for your platform, you're probably better off starting with code
-	from another working dialog.  
-*/	
+	bool bRestart = isRestart();
+	_win32Dialog.checkButton(AP_RID_DIALOG_HDRFTR_CHK_SECTION, bRestart);
+	_win32Dialog.enableControl(AP_RID_DIALOG_HDRFTR_LBL_SECTION, bRestart);
+	_win32Dialog.enableControl(AP_RID_DIALOG_HDRFTR_EBX_SECTION, bRestart);
+	_win32Dialog.enableControl(AP_RID_DIALOG_HDRFTR_SPN_SECTION, bRestart);
 
-	UT_ASSERT(UT_NOT_IMPLEMENTED);
+	return 1;
+}
+
+BOOL AP_Win32Dialog_HdrFtr::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
+{
+	WORD wNotifyCode = HIWORD(wParam);
+	WORD wId = LOWORD(wParam);
+	HWND hWndCtrl = (HWND)lParam;
+
+	switch (wId)
+	{
+	case AP_RID_DIALOG_HDRFTR_BTN_CANCEL:
+		setAnswer( a_CANCEL );
+		EndDialog(hWnd,0);
+		return 1;
+
+	case AP_RID_DIALOG_HDRFTR_BTN_OK:
+		{
+			bool bHdrEven  = _win32Dialog.isChecked(AP_RID_DIALOG_HDRFTR_CHK_HDRFACING) != 0;
+			bool bHdrFirst = _win32Dialog.isChecked(AP_RID_DIALOG_HDRFTR_CHK_HDRFIRST)  != 0;
+			bool bHdrLast  = _win32Dialog.isChecked(AP_RID_DIALOG_HDRFTR_CHK_HDRLAST)   != 0;
+			bool bFtrEven  = _win32Dialog.isChecked(AP_RID_DIALOG_HDRFTR_CHK_FTRFACING) != 0;
+			bool bFtrFirst = _win32Dialog.isChecked(AP_RID_DIALOG_HDRFTR_CHK_FTRFIRST)  != 0;
+			bool bFtrLast  = _win32Dialog.isChecked(AP_RID_DIALOG_HDRFTR_CHK_FTRLAST)   != 0;
+ 			bool bRestart  = _win32Dialog.isChecked(AP_RID_DIALOG_HDRFTR_CHK_SECTION)   != 0;
+			UT_sint32 val  = _win32Dialog.getControlInt(AP_RID_DIALOG_HDRFTR_EBX_SECTION);
+
+			setValue( HdrEven,  bHdrEven,  bHdrEven  != getValue(HdrEven)  );
+			setValue( HdrFirst, bHdrFirst, bHdrFirst != getValue(HdrFirst) );
+			setValue( HdrLast,  bHdrLast,  bHdrLast  != getValue(HdrLast)  );
+			setValue( FtrEven,  bFtrEven,  bFtrEven  != getValue(FtrEven)  );
+			setValue( FtrFirst, bFtrFirst, bFtrFirst != getValue(FtrFirst) );
+			setValue( FtrLast,  bFtrLast,  bFtrLast  != getValue(FtrLast)  );
+			setRestart( bRestart, val, (bRestart != isRestart() || val != getRestartValue()) );
+		}
+		setAnswer( a_OK );
+		EndDialog(hWnd,0);
+		return 1;
+
+	case AP_RID_DIALOG_HDRFTR_CHK_SECTION:
+		_win32Dialog.enableControl(AP_RID_DIALOG_HDRFTR_LBL_SECTION, _win32Dialog.isChecked(wId)!=0);
+		_win32Dialog.enableControl(AP_RID_DIALOG_HDRFTR_EBX_SECTION, _win32Dialog.isChecked(wId)!=0);
+		_win32Dialog.enableControl(AP_RID_DIALOG_HDRFTR_SPN_SECTION, _win32Dialog.isChecked(wId)!=0);	
+		return 1;
+
+	case AP_RID_DIALOG_HDRFTR_EBX_SECTION:
+		if( wNotifyCode == EN_KILLFOCUS )
+		{
+			UT_sint32 value = _win32Dialog.getControlInt(AP_RID_DIALOG_HDRFTR_EBX_SECTION);
+			_win32Dialog.setControlInt(AP_RID_DIALOG_HDRFTR_EBX_SECTION, value );
+		}
+		return 1;
+
+	default:							// we did not handle this notification
+		UT_DEBUGMSG(("WM_Command for id %ld\n",wId));
+		return 0;						// return zero to let windows take care of it.
+	}
+}
+
+BOOL AP_Win32Dialog_HdrFtr::_onDeltaPos(NM_UPDOWN * pnmud)
+{
+	switch( pnmud->hdr.idFrom )
+	{
+	case AP_RID_DIALOG_HDRFTR_SPN_SECTION:
+		{
+			UT_sint32 value = _win32Dialog.getControlInt(AP_RID_DIALOG_HDRFTR_EBX_SECTION);
+			value -= pnmud->iDelta;
+			if( value < 0 ) value = 0;
+			_win32Dialog.setControlInt(AP_RID_DIALOG_HDRFTR_EBX_SECTION, value );
+			return 1;
+		}
+	default:
+		return 0;
+	}
 }
 
