@@ -50,7 +50,7 @@
 
 // TODO: make into $UserPref - if true, stop shrinking windows @ toolbar width. else
 // TODO: let GTK+ decide for itself
-static const bool cap_resize = false;
+static const bool cap_resize = true;
 
 /****************************************************************/
 void XAP_UnixFrame::_fe::realize(GtkWidget * widget, GdkEvent * /*e*/,gpointer /*data*/)
@@ -205,7 +205,17 @@ gint XAP_UnixFrame::_fe::configure_event(GtkWidget* w, GdkEventConfigure *e)
 		UT_uint32 width,height,flags;
 
 		pApp->getGeometry(&x,&y,&width,&height,&flags);
-		pApp->setGeometry(e->x,e->y,(UT_uint32) e->width,(UT_uint32) e->height,flags);
+//
+// Who ever wants to change this code in the future. The height and widths you
+// get from the event struct are the height and widths of the drawable area of
+// the screen. We want the height and width of the entire widget which we get
+// from the m_wTopLevelWindow widget.
+// -- MES
+//
+		GtkWindow * pWin = GTK_WINDOW(pUnixFrame->m_wTopLevelWindow);
+		gint gwidth,gheight;
+		gtk_window_get_size(pWin,&gwidth,&gheight);
+		pApp->setGeometry(e->x,e->y,gwidth,gheight,flags);
 
 		// Dynamic Zoom Implimentation
 		if(!pUnixFrame->m_bDoZoomUpdate && (pUnixFrame->m_iZoomUpdateID == 0))

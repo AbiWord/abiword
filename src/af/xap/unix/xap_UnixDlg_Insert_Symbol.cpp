@@ -104,17 +104,26 @@ static void s_dlg_response ( GtkWidget * widget, gint id,
 	}
 }
 
-static void s_sym_SymbolMap_exposed(GtkWidget * widget, GdkEvent * e, XAP_UnixDialog_Insert_Symbol * dlg)
+static gint do_Map_Update(gpointer p)
+{
+	XAP_UnixDialog_Insert_Symbol * dlg = (XAP_UnixDialog_Insert_Symbol *) p;
+	dlg->SymbolMap_exposed();
+	return FALSE;
+}
+
+static gboolean s_sym_SymbolMap_exposed(GtkWidget * widget, GdkEvent * e, XAP_UnixDialog_Insert_Symbol * dlg)
 {
 	UT_ASSERT( dlg);
-	dlg->SymbolMap_exposed();
+	gtk_idle_add((GtkFunction) do_Map_Update, (gpointer) dlg);
+	return FALSE;
 }
 
 
-static void s_Symbolarea_exposed(GtkWidget * widget, GdkEvent * e, XAP_UnixDialog_Insert_Symbol * dlg)
+static gboolean s_Symbolarea_exposed(GtkWidget * widget, GdkEvent * e, XAP_UnixDialog_Insert_Symbol * dlg)
 {
 	UT_ASSERT( dlg);
 	dlg->Symbolarea_exposed();
+	return FALSE;
 }
 
 static gboolean  s_SymbolMap_clicked(GtkWidget * widget, GdkEvent * e, XAP_UnixDialog_Insert_Symbol * dlg)
