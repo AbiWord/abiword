@@ -209,24 +209,24 @@ void	Barbarisms::startElement(const XML_Char *name, const XML_Char **atts)
 		{	
 			if (m_pCurVector)
 			{						
-				UT_UCS2Char	ch2;
+				UT_UCS4Char	ch4;
 				const char*	pUTF8 = a[1];				
 				size_t	length = strlen(a[1]);
-				int		nUSC2Len = 0;
-				UT_UCS2String	usc2;
+				int		nUSC4Len = 0;
+				UT_UCS4String	usc4;
 				
 				while (true)
 				{
-					ch2 = UT_UCS2Stringbuf::UTF8_to_UCS2 (pUTF8, length);
-					if (ch2 == 0) break;
-					nUSC2Len++;
-					usc2+=ch2;
+					ch4 = UT_UCS4Stringbuf::UTF8_to_UCS4 (pUTF8, length);
+					if (ch4 == 0) break;
+					nUSC4Len++;
+					usc4+=ch4;
 				}			
 				
-				const UT_UCS4Char* pData =  usc2.ucs4_str();
+				const UT_UCS4Char* pData =  usc4.ucs4_str();
 								
-				UT_UCS4Char *word16 = new UT_UCS4Char[nUSC2Len+1];
-				memcpy (word16, pData, (nUSC2Len+1)*sizeof(UT_UCS4Char));
+				UT_UCS4Char *word16 = new UT_UCS4Char[nUSC4Len+1];
+				memcpy (word16, pData, (nUSC4Len+1)*sizeof(UT_UCS4Char));
 				m_pCurVector->addItem(word16);				
 
 				UT_DEBUGMSG(( "Barbarisms::startElement->Suggestion->%s\n", a[1]));
