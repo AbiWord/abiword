@@ -736,9 +736,16 @@ void fp_ImageRun::_draw(dg_DrawArgs* pDA)
 
 	yoff += m_pLine->getAscent() - m_iAscent;
 	
+	// clip drawing to the page
+	UT_Rect pClipRect;
+	pClipRect.top = yoff;
+	pClipRect.left = xoff;
+	pClipRect.height = m_pLine->getContainer()->getHeight();
+	pClipRect.width = m_pLine->getContainer()->getWidth();
+	m_pG->setClipRect(&pClipRect);
+
 	if (m_pImage)
 	{
-
 		// draw the image (always)
 		m_pG->drawImage(m_pImage, xoff, yoff);
 
@@ -790,6 +797,9 @@ void fp_ImageRun::_draw(dg_DrawArgs* pDA)
 		UT_RGBColor clr(0, 0, 255);
 		m_pG->fillRect(clr, xoff, yoff, m_iWidth, m_iHeight);
 	}
+
+	// unf*ck clipping rect
+	m_pG->setClipRect(NULL);
 }
 
 //////////////////////////////////////////////////////////////////
