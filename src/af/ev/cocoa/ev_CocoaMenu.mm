@@ -313,17 +313,17 @@ bool EV_CocoaMenu::synthesizeMenu(NSMenu * wMenuRoot)
 				switch (menuid) {
 				
 				case AP_MENU_ID_HELP_ABOUT:
-					menuItem = static_cast<XAP_CocoaFrameHelper*>(m_pCocoaFrame->getFrameHelper())->_getAboutMenuItem();
+					menuItem = static_cast<XAP_CocoaFrameImpl*>(m_pCocoaFrame->getFrameImpl())->_getAboutMenuItem();
 					[menuItem setTitle:str];
 					[menuItem setKeyEquivalent:shortCut];
 					break;
 				case AP_MENU_ID_TOOLS_OPTIONS:
-					menuItem = static_cast<XAP_CocoaFrameHelper*>(m_pCocoaFrame->getFrameHelper())->_getPreferenceMenuItem();
+					menuItem = static_cast<XAP_CocoaFrameImpl*>(m_pCocoaFrame->getFrameImpl())->_getPreferenceMenuItem();
 					[menuItem setTitle:str];
 					[menuItem setKeyEquivalent:shortCut];
 					break;
 				case AP_MENU_ID_FILE_EXIT:
-					menuItem = static_cast<XAP_CocoaFrameHelper*>(m_pCocoaFrame->getFrameHelper())->_getQuitMenuItem();
+					menuItem = static_cast<XAP_CocoaFrameImpl*>(m_pCocoaFrame->getFrameImpl())->_getQuitMenuItem();
 					[menuItem setTitle:str];
 					[menuItem setKeyEquivalent:shortCut];					
 					break;

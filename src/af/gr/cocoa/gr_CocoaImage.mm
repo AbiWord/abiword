@@ -475,20 +475,16 @@ UT_DEBUGMSG(("Choosing not to render what can't be a raster image!\n"));
  */
 @interface GR_CocoaBitmapWrapper : NSBitmapImageRep
 {
-	int m_count;
 	unsigned char * m_plane[5];
 }
 - (id)initWithRGBPlane:(const unsigned char *)plane pixelsWide:(int)width pixelsHigh:(int)height;
-- (id)retain;
-- (oneway void)release;
+- (void)dealloc;
 @end
 
 @implementation GR_CocoaBitmapWrapper
 
 - (id)initWithRGBPlane:(const unsigned char *)plane pixelsWide:(int)width pixelsHigh:(int)height
 {
-	m_count = 0;
-
 	m_plane[0] = 0;
 	m_plane[1] = 0;
 	m_plane[2] = 0;
@@ -506,7 +502,6 @@ UT_DEBUGMSG(("Choosing not to render what can't be a raster image!\n"));
 		}
 	if (m_plane[0] == 0) return nil;
 
-	m_count++;
 	memcpy (m_plane[0], plane, length);
 
 	[super initWithBitmapDataPlanes:m_plane pixelsWide:width pixelsHigh:height bitsPerSample:8 samplesPerPixel:3
@@ -515,21 +510,14 @@ UT_DEBUGMSG(("Choosing not to render what can't be a raster image!\n"));
 	return self;
 }
 
-- (id)retain
+- (void)dealloc
 {
-	if (m_count > 0) m_count++;
-	return [super retain];
-}
-
-- (oneway void)release
-{
-	if (--m_count == 0)
-		if (m_plane[0])
-			{
-				delete [] m_plane[0];
-				m_plane[0] = 0;
-			}
-	[super release];
+	if (m_plane[0])
+	{
+		delete [] m_plane[0];
+		m_plane[0] = 0;
+	}
+	[super dealloc];
 }
 
 @end
@@ -539,13 +527,12 @@ UT_DEBUGMSG(("Choosing not to render what can't be a raster image!\n"));
  */
 NSImage * GR_CocoaImage::getNSImage ()
 {
-	GR_CocoaBitmapWrapper * bmp_wrapper = [GR_CocoaBitmapWrapper alloc];
-	if (bmp_wrapper == 0) return 0;
-	if ([bmp_wrapper initWithRGBPlane:m_image->data pixelsWide:m_image->width pixelsHigh:m_image->height] == nil)
-		{
-			[bmp_wrapper release];
-			return 0;
-		}
+	GR_CocoaBitmapWrapper * bmp_wrapper = [[GR_CocoaBitmapWrapper alloc] initWithRGBPlane:m_image->data pixelsWide:m_image->width pixelsHigh:m_image->height];
+	if (bmp_wrapper == nil)
+	{
+		[bmp_wrapper release];
+		return nil;
+	}
 
 	NSImage * pixmap = [[NSImage alloc] initWithSize:NSMakeSize(0.0, 0.0)];
 

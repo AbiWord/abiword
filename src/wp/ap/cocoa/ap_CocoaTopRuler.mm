@@ -90,7 +90,7 @@ AP_CocoaTopRuler::AP_CocoaTopRuler(XAP_Frame * pFrame)
 	m_wTopRuler = NULL;
 	m_pG = NULL;
 
-	m_wTopRuler = [(AP_CocoaFrameController *)(static_cast<XAP_CocoaFrameHelper *>(m_pFrame->getFrameHelper())->_getController()) getHRuler];
+	m_wTopRuler = [(AP_CocoaFrameController *)(static_cast<XAP_CocoaFrameImpl *>(m_pFrame->getFrameImpl())->_getController()) getHRuler];
 
 #if 0
 	// change ruler color on theme change

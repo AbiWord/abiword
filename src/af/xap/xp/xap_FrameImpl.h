@@ -49,7 +49,7 @@ typedef enum _FrameModes
 class ABI_EXPORT XAP_FrameImpl
 {
 public:
-
+	XAP_Frame*	getFrame() { return m_pFrame; };	/* needed for Obj-C access */
 protected:
 	XAP_FrameImpl();
 	virtual ~XAP_FrameImpl();

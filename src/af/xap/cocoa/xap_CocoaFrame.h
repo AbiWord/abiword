@@ -45,7 +45,7 @@ class EV_CocoaMenuPopup;
 ******************************************************************
 *****************************************************************/
 
-class XAP_CocoaFrameHelper;
+class XAP_CocoaFrameImpl;
 class GR_CocoaGraphics;
 class FV_View;
 
@@ -70,7 +70,7 @@ class FV_View;
 
 @interface XAP_CocoaFrameController : NSWindowController
 {
-	XAP_Frame *m_frame;
+	XAP_CocoaFrameImpl *m_frame;
     IBOutlet NSView *mainView;
     IBOutlet XAP_CocoaNSStatusBar *statusBar;
 	IBOutlet NSMenu *menuBar;
@@ -78,8 +78,8 @@ class FV_View;
 	IBOutlet NSMenuItem *m_aboutMenu;
         IBOutlet NSMenuItem *m_quitMenu;
 }
-+ (XAP_CocoaFrameController*)createFrom:(XAP_Frame *)frame;
-- (id)initWith:(XAP_Frame *)frame;
++ (XAP_CocoaFrameController*)createFrom:(XAP_CocoaFrameImpl *)frame;
+- (id)initWith:(XAP_CocoaFrameImpl *)frame;
 - (NSView *)getMainView;
 - (NSMenu *)getMenuBar;
 - (XAP_CocoaNSStatusBar *)getStatusBar;
@@ -88,13 +88,13 @@ class FV_View;
 - (NSMenuItem *)_quitMenu;
 @end
 
-class XAP_CocoaFrameHelper : public XAP_FrameHelper
+class XAP_CocoaFrameImpl : public XAP_FrameImpl
 {
 public:
-	XAP_CocoaFrameHelper(XAP_Frame* frame, XAP_CocoaApp * app);
+	XAP_CocoaFrameImpl(XAP_Frame* frame, XAP_CocoaApp * app);
 	friend class XAP_Frame;
-//	XAP_CocoaFrameHelper(XAP_CocoaFrame * f);
-	virtual ~XAP_CocoaFrameHelper();
+//	XAP_CocoaFrameImpl(XAP_CocoaFrame * f);
+	virtual ~XAP_CocoaFrameImpl();
 /*
 	virtual bool				initialize(const char * szKeyBindingsKey, const char * szKeyBindingsDefaultValue,
 										   const char * szMenuLayoutKey, const char * szMenuLayoutDefaultValue,

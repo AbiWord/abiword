@@ -40,18 +40,18 @@ class FL_DocLayout;
     IBOutlet XAP_CocoaNSView *hRuler;
     IBOutlet XAP_CocoaNSView *vRuler;
 }
-+ (XAP_CocoaFrameController*)createFrom:(XAP_Frame *)frame;
-- (id)initWith:(XAP_Frame *)frame;
++ (XAP_CocoaFrameController*)createFrom:(XAP_CocoaFrameImpl *)frame;
+- (id)initWith:(XAP_CocoaFrameImpl *)frame;
 - (IBAction)rulerClick:(id)sender;
 - (XAP_CocoaNSView *)getVRuler;
 - (XAP_CocoaNSView *)getHRuler;
 @end
 
 /*****************************************************************/
-class AP_CocoaFrameHelper : public XAP_CocoaFrameHelper
+class AP_CocoaFrameImpl : public XAP_CocoaFrameImpl
 {
  public:
-	AP_CocoaFrameHelper(AP_CocoaFrame *pCocoaFrame, XAP_CocoaApp *pCocoaApp); 
+	AP_CocoaFrameImpl(AP_CocoaFrame *pCocoaFrame, XAP_CocoaApp *pCocoaApp); 
 	virtual NSString *			_getNibName (); /* must be public to be called from Obj-C */
 
  protected:

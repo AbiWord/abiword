@@ -88,7 +88,7 @@ AP_CocoaLeftRuler::AP_CocoaLeftRuler(XAP_Frame * pFrame)
 	m_wLeftRuler = nil;
 	m_pG = NULL;
     // change ruler color on theme change
-	m_wLeftRuler = [(AP_CocoaFrameController *)(static_cast<AP_CocoaFrameHelper*>(m_pFrame->getFrameHelper())->_getController()) getVRuler];
+	m_wLeftRuler = [(AP_CocoaFrameController *)(static_cast<AP_CocoaFrameImpl*>(m_pFrame->getFrameImpl())->_getController()) getVRuler];
 
 #if 0
 	NSView * toplevel = (static_cast<XAP_CocoaFrame *> (m_pFrame))->getTopLevelWindow();

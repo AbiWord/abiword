@@ -87,7 +87,7 @@ AP_CocoaStatusBar::AP_CocoaStatusBar(XAP_Frame * pFrame)
 	m_wStatusBar = nil;
 
 	/* fetch the widget from the controller */
-	m_wStatusBar = [(AP_CocoaFrameController *)(static_cast<XAP_CocoaFrameHelper*>(m_pFrame->getFrameHelper()))->_getController() getStatusBar];
+	m_wStatusBar = [(AP_CocoaFrameController *)(static_cast<XAP_CocoaFrameImpl*>(m_pFrame->getFrameImpl()))->_getController() getStatusBar];
 }
 
 AP_CocoaStatusBar::~AP_CocoaStatusBar(void)

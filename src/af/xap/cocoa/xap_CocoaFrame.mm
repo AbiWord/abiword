@@ -52,7 +52,7 @@
 
 #if 0
 /****************************************************************/
-void XAP_CocoaFrameHelper::_fe::realize(GtkWidget * widget, GdkEvent * /*e*/,gpointer /*data*/)
+void XAP_CocoaFrameImpl::_fe::realize(GtkWidget * widget, GdkEvent * /*e*/,gpointer /*data*/)
 {
   GdkICAttr *ic_attr=(GdkICAttr *)g_object_get_data(G_OBJECT(widget), "ic_attr");
   GdkIC * ic=(GdkIC *)g_object_get_data(G_OBJECT(widget), "ic");
@@ -128,7 +128,7 @@ void XAP_CocoaFrameHelper::_fe::realize(GtkWidget * widget, GdkEvent * /*e*/,gpo
   g_object_set_data(G_OBJECT(widget), "ic", ic);
 }
 
-void XAP_CocoaFrameHelper::_fe::unrealize(GtkWidget * widget, GdkEvent * /*e*/,gpointer /*data*/)
+void XAP_CocoaFrameImpl::_fe::unrealize(GtkWidget * widget, GdkEvent * /*e*/,gpointer /*data*/)
 {
   GdkICAttr *ic_attr=(GdkICAttr *)g_object_get_data(G_OBJECT(widget), "ic_attr");
   GdkIC * ic=(GdkIC *)g_object_get_data(G_OBJECT(widget), "ic");
@@ -146,7 +146,7 @@ void XAP_CocoaFrameHelper::_fe::unrealize(GtkWidget * widget, GdkEvent * /*e*/,g
   g_object_set_data(G_OBJECT(widget), "ic", ic);
 }
 
-void XAP_CocoaFrameHelper::_fe::sizeAllocate(GtkWidget * widget, GdkEvent * /*e*/,gpointer /*data*/)
+void XAP_CocoaFrameImpl::_fe::sizeAllocate(GtkWidget * widget, GdkEvent * /*e*/,gpointer /*data*/)
 {
   GdkICAttr *ic_attr=(GdkICAttr *)g_object_get_data(G_OBJECT(widget), "ic_attr");
   GdkIC * ic=(GdkIC *)g_object_get_data(G_OBJECT(widget), "ic");
@@ -163,7 +163,7 @@ void XAP_CocoaFrameHelper::_fe::sizeAllocate(GtkWidget * widget, GdkEvent * /*e*
 	}
 }
 
-gint XAP_CocoaFrameHelper::_fe::focusIn(GtkWidget * widget, GdkEvent * /*e*/,gpointer /*data*/)
+gint XAP_CocoaFrameImpl::_fe::focusIn(GtkWidget * widget, GdkEvent * /*e*/,gpointer /*data*/)
 {
   GdkIC * ic=(GdkIC *)g_object_get_data(G_OBJECT(widget), "ic");
   if (ic)
@@ -171,12 +171,12 @@ gint XAP_CocoaFrameHelper::_fe::focusIn(GtkWidget * widget, GdkEvent * /*e*/,gpo
   return FALSE;
 }
 
-gint XAP_CocoaFrameHelper::_fe::focusOut(GtkWidget * /* w*/, GdkEvent * /*e*/,gpointer /*data*/)
+gint XAP_CocoaFrameImpl::_fe::focusOut(GtkWidget * /* w*/, GdkEvent * /*e*/,gpointer /*data*/)
 {
   gdk_im_end ();
   return FALSE;
 }
-gboolean XAP_CocoaFrameHelper::_fe::focus_in_event(GtkWidget *w,GdkEvent */*event*/,gpointer /*user_data*/)
+gboolean XAP_CocoaFrameImpl::_fe::focus_in_event(GtkWidget *w,GdkEvent */*event*/,gpointer /*user_data*/)
 {
 	XAP_CocoaFrame * pFrame = (XAP_CocoaFrame *) g_object_get_user_data(G_OBJECT(w));
 	UT_ASSERT(pFrame);
@@ -187,7 +187,7 @@ gboolean XAP_CocoaFrameHelper::_fe::focus_in_event(GtkWidget *w,GdkEvent */*even
 	return FALSE;
 }
 
-gboolean XAP_CocoaFrameHelper::_fe::focus_out_event(GtkWidget *w,GdkEvent */*event*/,gpointer /*user_data*/)
+gboolean XAP_CocoaFrameImpl::_fe::focus_out_event(GtkWidget *w,GdkEvent */*event*/,gpointer /*user_data*/)
 {
 	XAP_CocoaFrame * pFrame = (XAP_CocoaFrame *)g_object_get_user_data(G_OBJECT(w));
 	UT_ASSERT(pFrame);
@@ -198,7 +198,7 @@ gboolean XAP_CocoaFrameHelper::_fe::focus_out_event(GtkWidget *w,GdkEvent */*eve
 	return FALSE;
 }
 
-gint XAP_CocoaFrameHelper::_fe::button_press_event(GtkWidget * w, GdkEventButton * e)
+gint XAP_CocoaFrameImpl::_fe::button_press_event(GtkWidget * w, GdkEventButton * e)
 {
 	XAP_CocoaFrame * pCocoaFrame = (XAP_CocoaFrame *)g_object_get_user_data(G_OBJECT(w));
 	pCocoaFrame->setTimeOfLastEvent(e->time);
@@ -213,7 +213,7 @@ gint XAP_CocoaFrameHelper::_fe::button_press_event(GtkWidget * w, GdkEventButton
 	return 1;
 }
 
-gint XAP_CocoaFrameHelper::_fe::button_release_event(GtkWidget * w, GdkEventButton * e)
+gint XAP_CocoaFrameImpl::_fe::button_release_event(GtkWidget * w, GdkEventButton * e)
 {
 	XAP_CocoaFrame * pCocoaFrame = (XAP_CocoaFrame *)g_object_get_user_data(G_OBJECT(w));
 	pCocoaFrame->setTimeOfLastEvent(e->time);
@@ -230,7 +230,7 @@ gint XAP_CocoaFrameHelper::_fe::button_release_event(GtkWidget * w, GdkEventButt
 	return 1;
 }
 	
-gint XAP_CocoaFrameHelper::_fe::configure_event(GtkWidget* w, GdkEventConfigure *e)
+gint XAP_CocoaFrameImpl::_fe::configure_event(GtkWidget* w, GdkEventConfigure *e)
 {
 	// This is basically a resize event.
 		
@@ -247,7 +247,7 @@ gint XAP_CocoaFrameHelper::_fe::configure_event(GtkWidget* w, GdkEventConfigure 
 }
 
 	
-gint XAP_CocoaFrameHelper::_fe::expose(GtkWidget * w, GdkEventExpose* pExposeEvent)
+gint XAP_CocoaFrameImpl::_fe::expose(GtkWidget * w, GdkEventExpose* pExposeEvent)
 {
 	UT_Rect rClip;
 	rClip.left = pExposeEvent->area.x;
@@ -265,7 +265,7 @@ gint XAP_CocoaFrameHelper::_fe::expose(GtkWidget * w, GdkEventExpose* pExposeEve
 	return 0;
 }
 
-void XAP_CocoaFrameHelper::_fe::vScrollChanged(GtkAdjustment * w, gpointer /*data*/)
+void XAP_CocoaFrameImpl::_fe::vScrollChanged(GtkAdjustment * w, gpointer /*data*/)
 {
 	XAP_CocoaFrame * pCocoaFrame = (XAP_CocoaFrame *)g_object_get_user_data(G_OBJECT(w));
 	AV_View * pView = pCocoaFrame->getCurrentView();
@@ -276,7 +276,7 @@ void XAP_CocoaFrameHelper::_fe::vScrollChanged(GtkAdjustment * w, gpointer /*dat
 		pView->sendVerticalScrollEvent((UT_sint32) w->value);
 }
 	
-void XAP_CocoaFrameHelper::_fe::hScrollChanged(GtkAdjustment * w, gpointer /*data*/)
+void XAP_CocoaFrameImpl::_fe::hScrollChanged(GtkAdjustment * w, gpointer /*data*/)
 {
 	XAP_CocoaFrame * pCocoaFrame = (XAP_CocoaFrame *)g_object_get_user_data(G_OBJECT(w));
 	AV_View * pView = pCocoaFrame->getCurrentView();
@@ -285,7 +285,7 @@ void XAP_CocoaFrameHelper::_fe::hScrollChanged(GtkAdjustment * w, gpointer /*dat
 		pView->sendHorizontalScrollEvent((UT_sint32) w->value);
 }
 	
-void XAP_CocoaFrameHelper::_fe::destroy(GtkWidget * /*widget*/, gpointer /*data*/)
+void XAP_CocoaFrameImpl::_fe::destroy(GtkWidget * /*widget*/, gpointer /*data*/)
 {
 	// I think this is right:
 	// 	We shouldn't have to call gtk_main_quit() here because
@@ -302,16 +302,16 @@ void XAP_CocoaFrameHelper::_fe::destroy(GtkWidget * /*widget*/, gpointer /*data*
 
 /*!
  * Background abi repaint function.
-\param XAP_CocoaFrameHelper * p pointer to the Frame that initiated this background
+\param XAP_CocoaFrameImpl * p pointer to the Frame that initiated this background
        repainter.
  */
-int XAP_CocoaFrameHelper::_fe::abi_expose_repaint(void * p)
+int XAP_CocoaFrameImpl::_fe::abi_expose_repaint(void * p)
 {
 //
 // Grab our pointer so we can do useful stuff.
 //
 	UT_Rect localCopy;
-	XAP_Frame * pF = p;
+	XAP_Frame * pF = (XAP_Frame *)p;
 	FV_View * pV = (FV_View *) pF->getCurrentView();
 	if(!pV)
 	{ 
@@ -353,8 +353,8 @@ int XAP_CocoaFrameHelper::_fe::abi_expose_repaint(void * p)
 	
 /*****************************************************************/
 
-XAP_CocoaFrameHelper::XAP_CocoaFrameHelper(XAP_Frame* frame, XAP_CocoaApp * app)
-	: XAP_FrameHelper (),
+XAP_CocoaFrameImpl::XAP_CocoaFrameImpl(XAP_Frame* frame, XAP_CocoaApp * app)
+	: XAP_FrameImpl (),
 	  m_dialogFactory(frame, static_cast<XAP_App *>(app)),
 	  m_pCocoaApp(app),
 	  m_pCocoaMenu(NULL),
@@ -369,8 +369,8 @@ XAP_CocoaFrameHelper::XAP_CocoaFrameHelper(XAP_Frame* frame, XAP_CocoaApp * app)
 // TODO should we also clone any frame-persistent
 // TODO dialog data ??
 /*
-XAP_CocoaFrameHelper::XAP_CocoaFrameHelper(XAP_CocoaFrameHelper * f)
-	: XAP_FrameHelper(f),
+XAP_CocoaFrameImpl::XAP_CocoaFrameImpl(XAP_CocoaFrameImpl * f)
+	: XAP_FrameImpl(f),
 	  m_dialogFactory(f->m_pFrame, static_cast<XAP_App *>(f->m_pCocoaApp)),
 	  m_pCocoaApp(f->m_pCocoaApp),
 	  m_pCocoaMenu(NULL),
@@ -382,7 +382,7 @@ XAP_CocoaFrameHelper::XAP_CocoaFrameHelper(XAP_CocoaFrameHelper * f)
 }
 */
 
-XAP_CocoaFrameHelper::~XAP_CocoaFrameHelper(void)
+XAP_CocoaFrameImpl::~XAP_CocoaFrameImpl(void)
 {
 	// only delete the things we created...
 	if 	(m_frameController != nil) {
@@ -394,7 +394,7 @@ XAP_CocoaFrameHelper::~XAP_CocoaFrameHelper(void)
 }
 
 /*
-bool XAP_CocoaFrameHelper::initialize(const char * szKeyBindingsKey, const char * szKeyBindingsDefaultValue,
+bool XAP_CocoaFrameImpl::initialize(const char * szKeyBindingsKey, const char * szKeyBindingsDefaultValue,
 								  const char * szMenuLayoutKey, const char * szMenuLayoutDefaultValue,
 								  const char * szMenuLabelSetKey, const char * szMenuLabelSetDefaultValue,
 								  const char * szToolbarLayoutsKey, const char * szToolbarLayoutsDefaultValue,
@@ -411,7 +411,7 @@ bool XAP_CocoaFrameHelper::initialize(const char * szKeyBindingsKey, const char 
 									szToolbarLabelSetKey, szToolbarLabelSetDefaultValue);
 	UT_ASSERT(bResult);
 */
-void XAP_CocoaFrameHelper::_initialize()
+void XAP_CocoaFrameImpl::_initialize()
 {
    	// get a handle to our keyboard binding mechanism
 	// and to our mouse binding mechanism.
@@ -439,7 +439,7 @@ void XAP_CocoaFrameHelper::_initialize()
 	}
 }
 
-UT_sint32 XAP_CocoaFrameHelper::_setInputMode(const char * szName)
+UT_sint32 XAP_CocoaFrameImpl::_setInputMode(const char * szName)
 {
 	UT_sint32 result = m_pFrame->XAP_Frame::setInputMode(szName);
 	if (result == 1)
@@ -456,31 +456,31 @@ UT_sint32 XAP_CocoaFrameHelper::_setInputMode(const char * szName)
 	return result;
 }
 
-NSWindow * XAP_CocoaFrameHelper::getTopLevelWindow(void) const
+NSWindow * XAP_CocoaFrameImpl::getTopLevelWindow(void) const
 {
 	UT_ASSERT (m_frameController);
 	return [m_frameController window];
 }
 
-NSView * XAP_CocoaFrameHelper::getVBoxWidget(void) const
+NSView * XAP_CocoaFrameImpl::getVBoxWidget(void) const
 {
 	UT_ASSERT (m_frameController);
 	return [m_frameController getMainView];
 }
 
-XAP_DialogFactory * XAP_CocoaFrameHelper::_getDialogFactory(void)
+XAP_DialogFactory * XAP_CocoaFrameImpl::_getDialogFactory(void)
 {
 	return &m_dialogFactory;
 }
 
-void XAP_CocoaFrameHelper::_nullUpdate() const
+void XAP_CocoaFrameImpl::_nullUpdate() const
 {
 #if 0
   gtk_main_iteration ();
 #endif
 }
 
-void XAP_CocoaFrameHelper::_createTopLevelWindow(void)
+void XAP_CocoaFrameImpl::_createTopLevelWindow(void)
 {
 	// create a top-level window for us.
 	m_frameController = _createController();
@@ -580,7 +580,7 @@ void XAP_CocoaFrameHelper::_createTopLevelWindow(void)
  * This code is used by the dynamic menu API to rebuild the menus after a
  * a change in the menu structure.
  */
-void XAP_CocoaFrameHelper::rebuildMenus(void)
+void XAP_CocoaFrameImpl::rebuildMenus(void)
 {
 //
 // Destroy the old menu bar
@@ -607,7 +607,7 @@ void XAP_CocoaFrameHelper::rebuildMenus(void)
  * This code is used by the dynamic toolbar API to rebuild a toolbar after a
  * a change in the toolbar structure.
  */
-void XAP_CocoaFrameHelper::rebuildToolbar(UT_uint32 ibar)
+void XAP_CocoaFrameImpl::rebuildToolbar(UT_uint32 ibar)
 {
 //
 // Destroy the old toolbar
@@ -638,14 +638,14 @@ void XAP_CocoaFrameHelper::rebuildToolbar(UT_uint32 ibar)
 	m_pFrame->repopulateCombos();
 }
 
-bool XAP_CocoaFrameHelper::_close()
+bool XAP_CocoaFrameImpl::_close()
 {
 	UT_DEBUGMSG (("XAP_CocoaFrame::close()\n"));
 	[m_frameController close];
 	return true;
 }
 
-bool XAP_CocoaFrameHelper::_raise()
+bool XAP_CocoaFrameImpl::_raise()
 {
 	UT_DEBUGMSG (("XAP_CocoaFrame::raise()\n"));
 	[[m_frameController window] makeKeyAndOrderFront:m_frameController];
@@ -653,7 +653,7 @@ bool XAP_CocoaFrameHelper::_raise()
 	return true;
 }
 
-bool XAP_CocoaFrameHelper::_show()
+bool XAP_CocoaFrameImpl::_show()
 {
 	UT_DEBUGMSG (("XAP_CocoaFrame::raise()\n"));
 	[[m_frameController window] makeKeyAndOrderFront:m_frameController];
@@ -661,7 +661,7 @@ bool XAP_CocoaFrameHelper::_show()
 	return true;
 }
 
-bool XAP_CocoaFrameHelper::openURL(const char * szURL)
+bool XAP_CocoaFrameImpl::openURL(const char * szURL)
 {  
 	NSURL *URL = [[NSURL alloc] initWithString:[NSString stringWithCString:szURL]];		
 	
@@ -673,9 +673,9 @@ bool XAP_CocoaFrameHelper::openURL(const char * szURL)
 	return true;
 }
 
-bool XAP_CocoaFrameHelper::_updateTitle()
+bool XAP_CocoaFrameImpl::_updateTitle()
 {
-	if (!XAP_FrameHelper::_updateTitle())
+	if (!XAP_FrameImpl::_updateTitle())
 	{
 		// no relevant change, so skip it
 		return false;
@@ -701,7 +701,7 @@ bool XAP_CocoaFrameHelper::_updateTitle()
 }
 
 /*****************************************************************/
-bool XAP_CocoaFrameHelper::_runModalContextMenu(AV_View * /* pView */, const char * szMenuName,
+bool XAP_CocoaFrameImpl::_runModalContextMenu(AV_View * /* pView */, const char * szMenuName,
 										   UT_sint32 x, UT_sint32 y)
 {
 #if 0
@@ -756,12 +756,12 @@ bool XAP_CocoaFrameHelper::_runModalContextMenu(AV_View * /* pView */, const cha
 	return false;
 }
 
-void XAP_CocoaFrameHelper::setTimeOfLastEvent(NSTimeInterval timestamp)
+void XAP_CocoaFrameImpl::setTimeOfLastEvent(NSTimeInterval timestamp)
 {
 	m_pCocoaApp->setTimeOfLastEvent(timestamp);
 }
 
-EV_Toolbar * XAP_CocoaFrameHelper::_newToolbar(XAP_App *app, XAP_Frame *frame,
+EV_Toolbar * XAP_CocoaFrameImpl::_newToolbar(XAP_App *app, XAP_Frame *frame,
 					const char *szLayout,
 					const char *szLanguage)
 {
@@ -770,21 +770,21 @@ EV_Toolbar * XAP_CocoaFrameHelper::_newToolbar(XAP_App *app, XAP_Frame *frame,
 							   szLayout, szLanguage));
 }
 
-void XAP_CocoaFrameHelper::queue_resize()
+void XAP_CocoaFrameImpl::queue_resize()
 {
-	UT_DEBUGMSG(("XAP_CocoaFrameHelper::queue_resize\n"));	
+	UT_DEBUGMSG(("XAP_CocoaFrameImpl::queue_resize\n"));	
 	UT_ASSERT (UT_NOT_IMPLEMENTED);
 //	gtk_widget_queue_resize(m_wTopLevelWindow);
 }
 
 
-EV_Menu* XAP_CocoaFrameHelper::_getMainMenu()
+EV_Menu* XAP_CocoaFrameImpl::_getMainMenu()
 {
 	return m_pCocoaMenu;
 }
 
 
-void XAP_CocoaFrameHelper::_setController (XAP_CocoaFrameController * ctrl)
+void XAP_CocoaFrameImpl::_setController (XAP_CocoaFrameController * ctrl)
 {
 	if ((m_frameController) && (ctrl != m_frameController)){
 		[m_frameController release];
@@ -801,7 +801,7 @@ void XAP_CocoaFrameHelper::_setController (XAP_CocoaFrameController * ctrl)
 {
 	UT_DEBUGMSG (("shouldCloseDocument\n"));
 	UT_ASSERT (m_frame);
-	XAP_App * pApp = m_frame->getApp();
+	XAP_App * pApp = m_frame->getFrame()->getApp();
 	UT_ASSERT(pApp);
 
 	const EV_Menu_ActionSet * pMenuActionSet = pApp->getMenuActionSet();
@@ -815,7 +815,7 @@ void XAP_CocoaFrameHelper::_setController (XAP_CocoaFrameController * ctrl)
 	
 	if (pEM)
 	{
-		if (pEM->Fn(m_frame->getCurrentView(),NULL))
+		if (pEM->Fn(m_frame->getFrame()->getCurrentView(),NULL))
 		{
 			// returning YES means close the window
 			
@@ -830,7 +830,7 @@ void XAP_CocoaFrameHelper::_setController (XAP_CocoaFrameController * ctrl)
 
 - (void)mouseDown:(NSEvent *)theEvent
 {
-	XAP_Frame * pFrame = m_frame;
+	XAP_Frame * pFrame = m_frame->getFrame();
 //  	pFrame->setTimeOfLastEvent([theEvent timestamp]);
 	AV_View * pView = pFrame->getCurrentView();
 	EV_CocoaMouse * pCocoaMouse = static_cast<EV_CocoaMouse *> (pFrame->getMouse());
@@ -841,7 +841,7 @@ void XAP_CocoaFrameHelper::_setController (XAP_CocoaFrameController * ctrl)
 
 - (void)mouseDragged:(NSEvent *)theEvent
 {
-	XAP_Frame * pFrame = m_frame;
+	XAP_Frame * pFrame = m_frame->getFrame();
 //  	pFrame->setTimeOfLastEvent([theEvent timestamp]);
 	AV_View * pView = pFrame->getCurrentView();
 	EV_CocoaMouse * pCocoaMouse = static_cast<EV_CocoaMouse *> (pFrame->getMouse());
@@ -852,7 +852,7 @@ void XAP_CocoaFrameHelper::_setController (XAP_CocoaFrameController * ctrl)
 
 - (void)mouseUp:(NSEvent *)theEvent
 {
-	XAP_Frame * pFrame = m_frame;
+	XAP_Frame * pFrame = m_frame->getFrame();
 //  	pFrame->setTimeOfLastEvent([theEvent timestamp]);
 	AV_View * pView = pFrame->getCurrentView();
 	EV_CocoaMouse * pCocoaMouse = static_cast<EV_CocoaMouse *> (pFrame->getMouse());
@@ -863,7 +863,7 @@ void XAP_CocoaFrameHelper::_setController (XAP_CocoaFrameController * ctrl)
 
 - (void)keyDown:(NSEvent *)theEvent
 {
-	XAP_Frame * pFrame = m_frame;
+	XAP_Frame * pFrame = m_frame->getFrame();
 //  	pFrame->setTimeOfLastEvent([theEvent timestamp]);
 	AV_View * pView = pFrame->getCurrentView();
 	ev_CocoaKeyboard * pCocoaKeyboard = static_cast<ev_CocoaKeyboard *>
@@ -877,18 +877,18 @@ void XAP_CocoaFrameHelper::_setController (XAP_CocoaFrameController * ctrl)
 /*!
 	Returns an instance.
  */
-+ (XAP_CocoaFrameController*)createFrom:(XAP_Frame *)frame
++ (XAP_CocoaFrameController*)createFrom:(XAP_CocoaFrameImpl *)frame
 {
 	UT_DEBUGMSG (("Cocoa: createFrom:frame\n"));
 	XAP_CocoaFrameController *obj = [[XAP_CocoaFrameController alloc] initWith:frame];
-	return obj;
+	return [obj autorelease];
 }
 
-- (id)initWith:(XAP_Frame *)frame
+- (id)initWith:(XAP_CocoaFrameImpl *)frame
 {
 	UT_DEBUGMSG (("Cocoa: @XAP_CocoaFrameController initWith:frame\n"));
 	m_frame = frame;
-	[self initWithWindowNibName:((XAP_CocoaFrameHelper*)(frame->getFrameHelper()))->_getNibName()];	/* this one will make the call to [super init]  */
+	[self initWithWindowNibName:frame->_getNibName()];	/* this one will make the call to [super init]  */
 	return self;
 }
 
