@@ -733,7 +733,7 @@ void fl_BlockLayout::_lookupProperties(void)
 				pBlockAP->getAttribute(PT_STYLE_ATTRIBUTE_NAME,style);
 			}
 			UT_ASSERT(style);
-			List_Type lType = getListTypeFromStyle( style);
+			FL_ListType lType = getListTypeFromStyle( style);
 			pAutoNum = new fl_AutoNum(id, parent_id, lType, start, lDelim, lDecimal, m_pDoc);
 			UT_DEBUGMSG(("SEVIOR: Created new list id = %d\n",id));
 			m_pDoc->addList(pAutoNum);
@@ -6875,7 +6875,7 @@ fl_BlockLayout::recheckIgnoredWords(void)
 //List Item Stuff
 ///////////////////////////////////////////////////////////////////////////
 
-XML_Char* fl_BlockLayout::getListStyleString( List_Type iListType)
+XML_Char* fl_BlockLayout::getListStyleString( FL_ListType iListType)
 {
 
 	XML_Char* style;
@@ -6893,9 +6893,9 @@ XML_Char* fl_BlockLayout::getListStyleString( List_Type iListType)
 	return style;
 }
 
-List_Type fl_BlockLayout::getListTypeFromStyle( const XML_Char* style)
+FL_ListType fl_BlockLayout::getListTypeFromStyle( const XML_Char* style)
 {
-	List_Type lType = NOT_A_LIST;
+	FL_ListType lType = NOT_A_LIST;
 	UT_uint32 j;
 	fl_AutoLists al;
 	UT_uint32 size_xml_lists = al.getXmlListsSize();
@@ -6905,12 +6905,12 @@ List_Type fl_BlockLayout::getListTypeFromStyle( const XML_Char* style)
 			break;
 	}
 	if(j < size_xml_lists)
-		lType = static_cast<List_Type>(j);
+		lType = static_cast<FL_ListType>(j);
 	return lType;
 }
 
 
-char *	fl_BlockLayout::getFormatFromListType( List_Type iListType)
+char *	fl_BlockLayout::getFormatFromListType( FL_ListType iListType)
 {
 	UT_sint32 nlisttype = static_cast<UT_sint32>(iListType);
 	char * format = NULL;
@@ -6921,9 +6921,9 @@ char *	fl_BlockLayout::getFormatFromListType( List_Type iListType)
 	return format;
 }
 
-List_Type fl_BlockLayout::decodeListType(char * listformat)
+FL_ListType fl_BlockLayout::decodeListType(char * listformat)
 {
-	List_Type iType = NOT_A_LIST;
+	FL_ListType iType = NOT_A_LIST;
 	UT_uint32 j;
 	fl_AutoLists al;
 	UT_uint32 size_fmt_lists = al.getFmtListsSize();
@@ -6933,11 +6933,11 @@ List_Type fl_BlockLayout::decodeListType(char * listformat)
 			break;
 	}
 	if(j < size_fmt_lists)
-		iType = static_cast<List_Type>(j);
+		iType = static_cast<FL_ListType>(j);
 	return iType;
 }
 
-List_Type fl_BlockLayout::getListType(void)
+FL_ListType fl_BlockLayout::getListType(void)
 {
 	if(isListItem()==false)
 	{
@@ -7077,7 +7077,7 @@ void	fl_BlockLayout::StartList( const XML_Char * style, PL_StruxDocHandle prevSD
 	// Starts a new list at the current block with list style style all other
 	// attributes and properties are the default values
 	//
-	List_Type lType;
+	FL_ListType lType;
 	PD_Style* pStyle = 0;
 	const XML_Char* szDelim     = 0;
 	const XML_Char* szDec       = 0;
@@ -7290,7 +7290,7 @@ void	fl_BlockLayout::getListPropertyVector( UT_Vector * vp)
 }
 
 
-void	fl_BlockLayout::StartList( List_Type lType, UT_uint32 start,const XML_Char * lDelim, const XML_Char * lDecimal, const XML_Char * fFont, float Align, float indent, UT_uint32 iParentID, UT_uint32 curlevel )
+void	fl_BlockLayout::StartList( FL_ListType lType, UT_uint32 start,const XML_Char * lDelim, const XML_Char * lDecimal, const XML_Char * fFont, float Align, float indent, UT_uint32 iParentID, UT_uint32 curlevel )
 {
 	//
 	// Starts a new list at the current block with all the options
@@ -7466,7 +7466,7 @@ void	fl_BlockLayout::StopListInBlock(void)
 		else
 		{
 			// We have a problem
-			List_Type newType;
+			FL_ListType newType;
 			PD_Style * pStyle;
 			float fAlign, fIndent;
 			XML_Char align[30], indent[30];

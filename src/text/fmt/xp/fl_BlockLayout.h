@@ -204,20 +204,20 @@ public:
 	void	getListAttributesVector( UT_Vector * va);
 	void  getListPropertyVector( UT_Vector * vp);
 
-	char *	getFormatFromListType(List_Type iListType);
+	char *	getFormatFromListType(FL_ListType iListType);
 	void remItemFromList(void);
 	virtual void listUpdate(void);
 	void resumeList( fl_BlockLayout * prevList);
 	void prependList( fl_BlockLayout * nextList);
-	List_Type decodeListType(char * listformat);
-	List_Type getListType(void);
-	XML_Char* getListStyleString( List_Type iListType);
-	List_Type getListTypeFromStyle( const XML_Char * style);
+	FL_ListType decodeListType(char * listformat);
+	FL_ListType getListType(void);
+	XML_Char* getListStyleString( FL_ListType iListType);
+	FL_ListType getListTypeFromStyle( const XML_Char * style);
 	fl_BlockLayout * getNextList(UT_uint32 id);
 	bool isListLabelInBlock(void);
 	void StartList( const XML_Char * style, PL_StruxDocHandle prevSDH = NULL);
 
-	void StartList( List_Type lType, UT_uint32 start,const XML_Char * lDelim, const XML_Char * lDecimal, const XML_Char * fFont, float Align, float indent, UT_uint32 iParentID = 0, UT_uint32 level=0 );
+	void StartList( FL_ListType lType, UT_uint32 start,const XML_Char * lDelim, const XML_Char * lDecimal, const XML_Char * fFont, float Align, float indent, UT_uint32 iParentID = 0, UT_uint32 level=0 );
 
 	void StopListInBlock(void);
 	void deleteListLabel(void);

@@ -36,7 +36,6 @@
 //###TF#include "px_CR_Bookmark.h"
 #include "px_CR_FmtMarkChange.h"
 #include "px_CR_Glob.h"
-#include "fv_View.h"
 #include "fl_DocListener.h"
 #include "fl_DocLayout.h"
 #include "fl_SectionLayout.h"
@@ -50,6 +49,8 @@
 #include "pd_Document.h"
 #include "pp_AttrProp.h"
 #include "xap_Frame.h"
+#include "xap_Prefs.h"
+#include "fv_View.h"
 
 #define UPDATE_LAYOUT_ON_SIGNAL
 

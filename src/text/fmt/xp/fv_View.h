@@ -20,116 +20,69 @@
 #ifndef FV_VIEW_H
 #define FV_VIEW_H
 
-#include "ut_misc.h"
+//#include "ut_misc.h"
 #include "ut_types.h"
+
 #include "xav_View.h"
+
 #include "pt_Types.h"
-#include "gr_DrawArgs.h"
-#include "gr_Graphics.h"
-#include "ev_EditBits.h"
 #include "ie_types.h"
-#include "xap_Prefs.h"
-#include "ap_Dialog_Goto.h"
-#include "fl_AutoLists.h"
-#include "fl_SectionLayout.h"
-#include "pp_Revision.h"
-#include "ap_TopRuler.h"
-#include "ap_LeftRuler.h"
+#include "ap_types.h"
+#include "fp_types.h"
+
+#include "ev_EditBits.h"
+
+
+// have to include these as they are instantiated in the FV_View
+// class definition
 #include "fv_FrameEdit.h"
 #include "fv_VisualDragText.h"
-#include "ap_Dialog_SplitCells.h"
 #include "fv_Selection.h"
 
 #define AUTO_SCROLL_MSECS	100
 
 class FL_DocLayout;
+class FV_Caret_Listener;
+
+class fl_DocSectionLayout;
+class fl_HdrFtrSectionLayout;
 class fl_DocListener;
 class fl_BlockLayout;
 class fl_PartOfBlock;
+class fl_AutoNum;
+class fl_EndnoteLayout;
+
+class fp_PageSize;
 class fp_Page;
 class fp_Run;
 class fp_HyperlinkRun;
+class fp_CellContainer;
+
 class FG_Graphic;
+
 class PD_Document;
+class PP_AttrProp;
+class PP_RevisionAttr;
+
 class GR_Graphics;
+struct dg_DrawArgs;
+
 class UT_Worker;
 class UT_Timer;
+class UT_StringPtrMap;
+
 class AP_TopRulerInfo;
 class AP_LeftRulerInfo;
-class XAP_App;
-class XAP_Prefs;
-class UT_StringPtrMap;
-class PP_AttrProp;
-class fl_AutoNum;
-class fp_PageSize;
 class AP_TopRuler;
 class AP_LeftRuler;
+
+class AP_Dialog_SplitCells;
+
+class XAP_App;
+class XAP_Prefs;
+
 class SpellChecker;
-class FV_Caret_Listener;
 
-typedef enum _FVDocPos
-{
-	FV_DOCPOS_BOB, FV_DOCPOS_EOB,	// block
-	FV_DOCPOS_BOD, FV_DOCPOS_EOD,	// document
-	FV_DOCPOS_BOP, FV_DOCPOS_EOP,	// page
-	FV_DOCPOS_BOL, FV_DOCPOS_EOL,	// line
-	FV_DOCPOS_BOS, FV_DOCPOS_EOS,	// sentence
-	FV_DOCPOS_BOW, FV_DOCPOS_EOW_MOVE, FV_DOCPOS_EOW_SELECT // word
-} FV_DocPos;
-
-typedef enum _ToggleCase
-{
-  CASE_SENTENCE,
-  CASE_LOWER,
-  CASE_UPPER,
-  CASE_TITLE,
-  CASE_TOGGLE,
-  CASE_FIRST_CAPITAL,
-  CASE_ROTATE
-} ToggleCase;
-
-typedef enum _FormatTable
-{
-	FORMAT_TABLE_SELECTION,
-	FORMAT_TABLE_ROW,
-	FORMAT_TABLE_COLUMN,
-	FORMAT_TABLE_TABLE
-} FormatTable;
-
-typedef enum
-{
-	BreakSectionContinuous,
-	BreakSectionNextPage,
-	BreakSectionEvenPage,
-	BreakSectionOddPage
-} BreakSectionType;
-
-typedef enum
-{
-  VIEW_PRINT,
-  VIEW_NORMAL,
-  VIEW_WEB,
-  VIEW_PREVIEW
-} ViewMode;
-
-typedef enum
-{
-  PREVIEW_NONE,
-  PREVIEW_ZOOMED,
-  PREVIEW_ADJUSTED_PAGE,
-  PREVIEW_CLIPPED,
-  PREVIEW_ZOOMED_SCROLL,
-  PREVIEW_ADJUSTED_PAGE_SCROLL,
-  PREVIEW_CLIPPED_SCROLL
-} PreViewMode;
-
-typedef enum _AP_JumpTarget
-{
-	AP_JUMPTARGET_PAGE, 			// beginning of page
-	AP_JUMPTARGET_LINE,
-	AP_JUMPTARGET_BOOKMARK,
-	AP_JUMPTARGET_PICTURE // TODO
-} AP_JumpTarget;
 
 struct fv_ChangeState
 {
@@ -281,7 +234,7 @@ public:
 	bool	isTextMisspelled()const ;
 	bool	isTabListBehindPoint(void);
 	bool	isTabListAheadPoint(void);
-	void	processSelectedBlocks(List_Type listType);
+	void	processSelectedBlocks(FL_ListType listType);
 	void	getBlocksInSelection( UT_Vector * vBlock);
 	UT_sint32 getNumColumnsInSelection(void);
 	UT_sint32 getNumRowsInSelection(void);
@@ -291,7 +244,7 @@ public:
 	bool	cmdStartList(const XML_Char * style);
 	bool	cmdStopList(void);
 	void	changeListStyle(fl_AutoNum* pAuto,
-							List_Type lType,
+							FL_ListType lType,
 							UT_uint32 startv,
 							const XML_Char* pszDelim,
 							const XML_Char* pszDecimal,
@@ -546,6 +499,8 @@ public:
 	void                cmdSetRevisionLevel(UT_uint32 i);
 	UT_uint32           getRevisionLevel()const{return m_iViewRevision;}
 	void                setRevisionLevel(UT_uint32 i);
+
+	bool                cmdFindRevision(bool bNext, UT_sint32 xPos, UT_sint32 yPos);
 	
 	/* Table related functions */
 	bool                isPointLegal(PT_DocPosition pos);
@@ -567,7 +522,7 @@ public:
 	bool                cmdDeleteTable(PT_DocPosition pos);
 	bool                cmdInsertRow(PT_DocPosition posTable, bool bBfore);
 	bool                cmdInsertCol(PT_DocPosition posTable, bool bBefore);
-	bool                cmdSplitCells(AP_Dialog_SplitCells::SplitType iSplitType);
+	bool                cmdSplitCells(AP_CellSplitType iSplitType);
 	bool                cmdSelectColumn(PT_DocPosition posOfColumn);
 	bool                cmdMergeCells(PT_DocPosition posSource, PT_DocPosition posDestination);
 	bool                _MergeCells( PT_DocPosition posDestination,PT_DocPosition posSource, bool bBefore);

@@ -20,8 +20,8 @@
 #include "fv_FrameEdit.h"
 #include "fl_DocLayout.h"
 #include "pd_Document.h"
+#include "gr_DrawArgs.h"
 #include "gr_Graphics.h"
-#include "fv_View.h"
 #include "ut_units.h"
 #include "fl_BlockLayout.h"
 #include "fp_Line.h"
@@ -29,6 +29,7 @@
 #include "pf_Frag.h"
 #include "pf_Frag_Strux.h"
 #include "fp_FrameContainer.h"
+#include "fv_View.h"
 
 FV_FrameEdit::FV_FrameEdit (FV_View * pView)
 	: m_pView (pView), 

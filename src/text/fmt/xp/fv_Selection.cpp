@@ -20,7 +20,6 @@
 #include "fv_Selection.h"
 #include "fl_DocLayout.h"
 #include "pd_Document.h"
-#include "fv_View.h"
 #include "ut_units.h"
 #include "fl_BlockLayout.h"
 #include "fp_Line.h"
@@ -36,6 +35,7 @@
 #include "ie_imp_RTF.h"
 
 #include "ut_bytebuf.h"
+#include "fv_View.h"
 
 FV_Selection::FV_Selection (FV_View * pView)
 	: m_pView (pView), 

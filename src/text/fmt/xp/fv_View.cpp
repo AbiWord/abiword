@@ -33,7 +33,6 @@
 #include "ut_timer.h"
 
 #include "xav_View.h"
-#include "fv_View.h"
 #include "fl_DocLayout.h"
 #include "fl_BlockLayout.h"
 #include "fl_Squiggles.h"
@@ -73,6 +72,8 @@
 #include "xap_EncodingManager.h"
 
 #include "pp_Revision.h"
+
+#include "fv_View.h"
 
 // NB -- irrespective of this size, the piecetable will store
 // at max BOOKMARK_NAME_LIMIT of chars as defined in pf_Frag_Bookmark.h
@@ -1926,7 +1927,7 @@ bool FV_View::isNumberedHeadingHere(fl_BlockLayout * pBlock)
 	return bHasNumberedHeading;
 }
 
-void FV_View::processSelectedBlocks(List_Type listType)
+void FV_View::processSelectedBlocks(FL_ListType listType)
 {
 	//
 	// Update Lists in the selected region
@@ -3817,7 +3818,7 @@ bool FV_View::processPageNumber(HdrFtrType hfType, const XML_Char ** atts)
 
 
 void FV_View::changeListStyle(	fl_AutoNum* pAuto,
-								List_Type lType,
+								FL_ListType lType,
 								UT_uint32 startv,
 								const XML_Char* pszDelim,
 								const XML_Char* pszDecimal,

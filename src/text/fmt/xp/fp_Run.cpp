@@ -37,7 +37,6 @@
 #include "gr_Graphics.h"
 #include "pd_Document.h"
 #include "gr_DrawArgs.h"
-#include "fv_View.h"
 #include "pp_AttrProp.h"
 #include "fd_Field.h"
 #include "po_Bookmark.h"
@@ -50,6 +49,7 @@
 #include "fl_FootnoteLayout.h"
 #include "fp_FootnoteContainer.h"
 #include "fl_AutoNum.h"
+#include "fv_View.h"
 
 #include "ap_Prefs.h"
 #include "xap_Frame.h"
@@ -4548,7 +4548,7 @@ bool fp_FieldFileNameRun::calculateValue(void)
 	UT_ASSERT(pDoc);
 
 	//copy in the name or some wierd char instead
-	const char * name = pDoc->getFileName();
+	const char * name = pDoc->getFilename();
 	if (!name)
 		name = "*";
 

@@ -33,7 +33,6 @@
 #include "ut_timer.h"
 #include "ut_types.h"
 #include "xav_View.h"
-#include "fv_View.h"
 #include "fl_DocLayout.h"
 #include "fl_BlockLayout.h"
 #include "fl_Squiggles.h"
@@ -66,6 +65,9 @@
 #include "ut_rand.h"
 #include "fl_FootnoteLayout.h"
 #include "pp_Revision.h"
+
+#include "fv_View.h"
+
 #if 1
 // todo: work around to remove the INPUTWORDLEN restriction for pspell
 #include "ispell_def.h"

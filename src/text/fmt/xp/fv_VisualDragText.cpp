@@ -21,13 +21,13 @@
 #include "fl_DocLayout.h"
 #include "pd_Document.h"
 #include "gr_Graphics.h"
-#include "fv_View.h"
 #include "ut_units.h"
 #include "fl_BlockLayout.h"
 #include "fp_Line.h"
 #include "fp_Run.h"
 #include "fl_TableLayout.h"
 #include "fp_TableContainer.h"
+#include "fv_View.h"
 
 FV_VisualDragText::FV_VisualDragText (FV_View * pView)
 	: m_pView (pView), 

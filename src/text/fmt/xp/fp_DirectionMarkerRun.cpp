@@ -20,10 +20,11 @@
 #include "fp_DirectionMarkerRun.h"
 #include <fribidi.h>
 #include "fl_BlockLayout.h"
-#include "fv_View.h"
 #include "fp_TextRun.h"
 #include "fp_Line.h"
+#include "fv_View.h"
 
+#include "gr_DrawArgs.h"
 #include "gr_Graphics.h"
 
 #include "ut_debugmsg.h"

@@ -27,7 +27,6 @@
 #include "ut_debugmsg.h"
 #include "ut_assert.h"
 #include "fp_Column.h"
-#include "fv_View.h"
 #include "fp_TableContainer.h"
 #include "fl_TableLayout.h"
 #include "fp_FootnoteContainer.h"
@@ -36,6 +35,7 @@
 #include "fl_DocLayout.h"
 #include "fp_Column.h"
 #include "fp_Run.h"
+#include "fv_View.h"
 
 /*!
   Create container

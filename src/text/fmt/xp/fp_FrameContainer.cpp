@@ -27,7 +27,6 @@
 #include "fp_Column.h"
 #include "fp_Page.h"
 #include "fp_Line.h"
-#include "fv_View.h"
 #include "fl_DocLayout.h"
 #include "fl_SectionLayout.h"
 #include "gr_DrawArgs.h"
@@ -37,6 +36,7 @@
 #include "ut_assert.h"
 #include "fl_FrameLayout.h"
 #include "fp_TableContainer.h"
+#include "fv_View.h"
 
 /*!
   Create Frame container

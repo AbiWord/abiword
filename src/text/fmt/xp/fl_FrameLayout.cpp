@@ -48,7 +48,6 @@
 #include "px_CR_Strux.h"
 #include "px_CR_StruxChange.h"
 #include "px_CR_Glob.h"
-#include "fv_View.h"
 #include "fp_Run.h"
 #include "ut_debugmsg.h"
 #include "ut_assert.h"
@@ -58,6 +57,7 @@
 #include "ut_bytebuf.h"
 #include "fg_GraphicRaster.h"
 #include "fg_GraphicVector.h"
+#include "fv_View.h"
 
 static void s_border_properties (const XML_Char * border_color, const XML_Char * border_style, const XML_Char * border_width,
 								 const XML_Char * color, PP_PropertyMap::Line & line);

@@ -34,7 +34,6 @@
 #include "ut_Language.h"
 
 #include "xav_View.h"
-#include "fv_View.h"
 #include "fl_DocLayout.h"
 #include "fl_BlockLayout.h"
 #include "fl_Squiggles.h"
@@ -67,6 +66,11 @@
 #include "fp_TableContainer.h"
 #include "fl_FootnoteLayout.h"
 #include "pp_Revision.h"
+
+#include "ap_Dialog_SplitCells.h"
+
+#include "fv_View.h"
+
 #if 1
 // todo: work around to remove the INPUTWORDLEN restriction for pspell
 #include "ispell_def.h"
@@ -145,7 +149,7 @@ void FV_View::cmdCharMotion(bool bForward, UT_uint32 count)
  * Split the merged cells located at the current point in the way specified
  * by iSplitType
   */
-bool FV_View::cmdSplitCells(AP_Dialog_SplitCells::SplitType iSplitType)
+bool FV_View::cmdSplitCells(AP_CellSplitType iSplitType)
 {
 	PL_StruxDocHandle cellSDH,tableSDH,curSDH,endTableSDH;
 	PL_StruxDocHandle prevCellSDH1,prevCellSDH2;
@@ -225,17 +229,17 @@ bool FV_View::cmdSplitCells(AP_Dialog_SplitCells::SplitType iSplitType)
 //
 	m_pDoc-> getRowsColsFromTableSDH(tableSDH, &numRows, &numCols);
 
-	if(iSplitType <= AP_Dialog_SplitCells::hori_right)
+	if(iSplitType <= hori_right)
 	{
 //
 // This is similar to "insert column"
 //
-		if(iSplitType ==  AP_Dialog_SplitCells::hori_left)
+		if(iSplitType ==  hori_left)
 		{
 			splitLeft = iLeft;
 			splitRight = iLeft+1;
 		}
-		else if(iSplitType ==  AP_Dialog_SplitCells::hori_mid)
+		else if(iSplitType ==  hori_mid)
 		{
 			splitLeft = iLeft;
 			if(colSpan == 1)
@@ -248,7 +252,7 @@ bool FV_View::cmdSplitCells(AP_Dialog_SplitCells::SplitType iSplitType)
 				splitRight = iLeft + colSpan/2;
 			}
 		}
-		else if(iSplitType ==  AP_Dialog_SplitCells::hori_right)
+		else if(iSplitType ==  hori_right)
 		{
 			splitLeft = iLeft;
 			splitRight = iRight -1;
@@ -271,12 +275,12 @@ bool FV_View::cmdSplitCells(AP_Dialog_SplitCells::SplitType iSplitType)
 	}
 	else
 	{
-		if(iSplitType ==  AP_Dialog_SplitCells::vert_above)
+		if(iSplitType ==  vert_above)
 		{
 			newTop = iTop;
 			newBot = iTop +1;
 		}
-		else if(iSplitType ==  AP_Dialog_SplitCells::vert_mid)
+		else if(iSplitType ==  vert_mid)
 		{
 			newTop = iTop;
 			if(rowSpan == 1)
@@ -289,7 +293,7 @@ bool FV_View::cmdSplitCells(AP_Dialog_SplitCells::SplitType iSplitType)
 				newBot = iTop + rowSpan/2;
 			}
 		}
-		else if(iSplitType ==  AP_Dialog_SplitCells::vert_below)
+		else if(iSplitType ==  vert_below)
 		{
 			newTop = iTop;
 			newBot = iBot -1;
@@ -2646,7 +2650,7 @@ bool FV_View::cmdCharInsert(const UT_UCSChar * text, UT_uint32 count, bool bForc
 				// OK now start a sublist of the same type as the
 				// current list if the list type is of numbered type
 				fl_BlockLayout * pBlock = getCurrentBlock();
-				List_Type curType = pBlock->getListType();
+				FL_ListType curType = pBlock->getListType();
 //
 // Now increase list level for bullet lists too
 //
@@ -4236,3 +4240,149 @@ void FV_View::cmdSetRevisionLevel(UT_uint32 i)
 		m_pLayout->rebuildFromHere(static_cast<fl_DocSectionLayout *>(m_pLayout->getFirstSection()));
 	}
 }
+
+/*!
+    finds the next/previous revision and sets selection to it
+    TODO the selection will not cross block boundaries; it probably should
+
+    \param bNext: if true the search is carried out in forward direction
+    \return returns true on succes
+*/
+bool FV_View::cmdFindRevision(bool bNext, UT_sint32 xPos, UT_sint32 yPos)
+{
+	if(xPos || yPos)
+	{
+		// this is the case we were called from context menu ...
+		warpInsPtToXY(xPos, yPos,true);
+	}
+
+	if(!isSelectionEmpty())
+	{
+		_moveToSelectionEnd(bNext);
+	}
+	
+	fl_BlockLayout * pBL =	getCurrentBlock();
+
+	if(!pBL)
+		return false;
+	
+	fl_DocSectionLayout * pSL = pBL->getDocSectionLayout();
+
+	if(!pSL)
+		return false;
+	
+	fp_Run * pRun;
+	UT_sint32 xPoint,yPoint,xPoint2,yPoint2,iPointHeight;
+	bool bDirection;
+
+	pRun = pBL->findPointCoords(getPoint(), false, xPoint,
+								yPoint, xPoint2, yPoint2,
+								iPointHeight, bDirection);
+
+	if(!pRun)
+		return false;
+
+	if(bNext)
+	{
+		pRun = pRun->getNextRun();
+
+		while(pSL)
+		{
+			while(pBL)
+			{
+				while(pRun)
+				{
+					if(pRun->containsRevisions() && !pRun->isHidden())
+					{
+						goto move_point;
+					}
+
+					pRun = pRun->getNextRun();
+				}
+
+				pBL = pBL->getNextBlockInDocument();
+			}
+
+			pSL = pSL->getNextDocSection();
+		}
+	}
+	else
+	{
+		pRun = pRun->getPrevRun();
+
+		while(pSL)
+		{
+			while(pBL)
+			{
+				while(pRun)
+				{
+					if(pRun->containsRevisions() && !pRun->isHidden())
+					{
+						goto move_point;
+					}
+
+					pRun = pRun->getPrevRun();
+				}
+
+				pBL = pBL->getPrevBlockInDocument();
+			}
+
+			pSL = pSL->getPrevDocSection();
+		}
+	}
+
+	return false;
+	
+ move_point:
+	UT_return_val_if_fail(pRun && pBL, false);
+
+	// we want to span the selection not only over this run, but also
+	// all subesequent runs that contain the same revions
+	// TODO: probably should do this across block/section boundaries
+	fp_Run * pRun2 = bNext ? pRun->getNextRun() : pRun->getPrevRun();
+	fp_Run * pOldRun2 = pRun;
+
+	PP_RevisionAttr * pR1 = pRun->getRevisions();
+	
+	while(pRun2)
+	{
+		if(pRun2->containsRevisions() && !pRun2->isHidden())
+		{
+			// test the two runs, if their revions are the same
+			// include this one as well
+			PP_RevisionAttr * pR2 = pRun2->getRevisions();
+
+			if(!(*pR1 == *pR2))
+				break;
+		}
+		else
+		{
+			break;
+		}
+		
+		pOldRun2 = pRun2;
+		pRun2 = bNext ? pRun2->getNextRun() : pRun2->getPrevRun();
+	}
+
+	// backtrack (we want pRun2 to be the last run in the selection
+	pRun2 = pOldRun2;
+	UT_return_val_if_fail(pRun2, false);
+	
+	PT_DocPosition dpos1, dpos2;
+
+	if(bNext)
+	{
+		dpos1 = pBL->getPosition() + pRun->getBlockOffset();
+		dpos2 = pRun2->getBlock()->getPosition() + pRun2->getBlockOffset() + pRun2->getLength();
+	}
+	else
+	{
+		dpos1 = pRun2->getBlock()->getPosition() + pRun2->getBlockOffset();
+		dpos2 = pBL->getPosition() + pRun->getBlockOffset() + pRun->getLength();
+	}
+	
+	cmdSelect(dpos1, dpos2);
+	
+	return true;
+}
+
