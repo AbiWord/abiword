@@ -245,8 +245,16 @@ void AP_UnixDialog_Paragraph::event_SpinFocusOut(GtkWidget * widget)
 
 	if (m_bEditChanged)
 	{
+		// this function will massage the contents for proper
+		// formatting for spinbuttons that need it.  for example,
+		// line spacing can't be negative.
 		_setSpinItemValue(id, (const XML_Char *)
 						  gtk_entry_get_text(GTK_ENTRY(widget)));
+
+		// to ensure the massaged value is reflected back up
+		// to the screen, we repaint from the member variable
+		_syncControls(id);
+		
 		m_bEditChanged = UT_FALSE;
 	}
 }

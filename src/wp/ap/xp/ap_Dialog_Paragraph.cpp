@@ -714,8 +714,46 @@ void AP_Dialog_Paragraph::_setSpinItemValue(tControl item, const XML_Char * valu
 	
 	// spin items have pointers to static XML_Char buffers as data, so we
 	// don't free them, but extract a pointer and copy the string contents
+
 	UT_ASSERT(pItem->pData && value);
-	UT_XML_strncpy((XML_Char *) pItem->pData, SPIN_BUF_TEXT_SIZE, value);
+	
+	// some spinbuttons have special data requirements
+	UT_uint32 i = 0;
+	const XML_Char * tempstring = value;
+	switch(item)
+	{
+	case id_SPIN_SPECIAL_INDENT:
+		// NOTE : special indent doesn't mean anything as a negative number.
+		// NOTE : we flip the sign and apply the resultant magnitude to
+		// NOTE : the current indent type
+		
+		// fallthrough to number conversion from spacings
+	case id_SPIN_BEFORE_SPACING:
+	case id_SPIN_AFTER_SPACING:
+	case id_SPIN_SPECIAL_SPACING:
+		// NOTE : line spacing can't be negative, so we walk on past any
+		// NOTE : minus chars
+
+		// from the start of the string, if a character is a space, walk on.
+		// when we hit a '-', we leave the pointer at value + i + 1
+		while (value[i] && value[i] == ' ')
+		{
+			tempstring++;
+			i++;
+		}
+
+		// we're at a non-space
+		if (value[i] == '-')
+			tempstring++;
+		
+		UT_XML_strncpy((XML_Char *) pItem->pData, SPIN_BUF_TEXT_SIZE, tempstring);			
+
+		break;
+
+	default:
+		// all others get a simple string copy to the static member
+		UT_XML_strncpy((XML_Char *) pItem->pData, SPIN_BUF_TEXT_SIZE, value);
+	}
 
 	if ((op == op_UICHANGE) || (op == op_SYNC))
 		pItem->bChanged = UT_TRUE;

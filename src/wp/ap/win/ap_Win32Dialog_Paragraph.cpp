@@ -462,6 +462,10 @@ BOOL AP_Win32Dialog_Paragraph::_onInitTab(HWND hWnd, WPARAM wParam, LPARAM lPara
 		}					\
 		break;				\
 
+// to ensure the accurate value is displayed to the user
+// we call "_syncControls(i)" after we set the variable, to
+// catch any changes the _setSpinItemValue() call might
+// have done to validate data
 #define _EDIT(c,i)				\
 	case AP_RID_DIALOG_##c:		\
 		switch (wNotifyCode)	\
@@ -474,6 +478,7 @@ BOOL AP_Win32Dialog_Paragraph::_onInitTab(HWND hWnd, WPARAM wParam, LPARAM lPara
 				char buf[SPIN_BUF_TEXT_SIZE];	\
 				GetWindowText(hWndCtrl,buf,SPIN_BUF_TEXT_SIZE);		\
 				_setSpinItemValue(i,buf);		\
+				_syncControls(i);				\
 				m_bEditChanged = UT_FALSE;		\
 				return 1;	\
 							\
