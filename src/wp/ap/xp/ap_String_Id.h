@@ -504,13 +504,11 @@ dcl(DLG_PageSetup_Margin, "&Margin")
 
 dcl(MSG_DirectionModeChg,	"You have changed the direction mode.")
 dcl(MSG_DefaultDirectionChg,"You have changed the default direction.")
-dcl(MSG_AfterRestartNew, "This change will only take effect when you restart \
-AbiWord or create a new document.")
+dcl(MSG_AfterRestartNew, "This change will only take effect when you restart AbiWord or create a new document.")
 dcl(MSG_BookmarkNotFound, "Bookmark \"%s\" was not found in this document.")
 dcl(MSG_HyperlinkNoSelection, "You must select a portion of the document before inserting a hyperlink.")
 dcl(MSG_HyperlinkNoBookmark, "Warning: the bookmark you provided [%s] does not exist.")
-dcl(MSG_HyperlinkCrossesBoundaries, "The text to which the hyperlink is to be attached \
-must be within a single paragraph.")
+dcl(MSG_HyperlinkCrossesBoundaries, "The text to which the hyperlink is to be attached must be within a single paragraph.")
 
 dcl(DLG_ToggleCase_Title, "Change Case")
 dcl(DLG_ToggleCase_SentenceCase, "Sentence case")
