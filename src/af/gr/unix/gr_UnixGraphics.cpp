@@ -45,6 +45,10 @@
 #include <X11/Xlib.h>
 #include <X11/Xft/Xft.h>
 
+#ifndef FT_ENCODING_ADOBE_CUSTOM
+#define FT_ENCODING_ADOBE_CUSTOM ft_encoding_adobe_custom
+#endif
+
 static const UT_uint32 adobeDUni[/*202*/][2] =
 	{
 		{0x0020,0x0020},

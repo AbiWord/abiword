@@ -37,6 +37,10 @@
 #include "xap_UnixFontManager.h"
 #include "gr_UnixGraphics.h"
 
+#ifndef FT_ENCODING_ADOBE_CUSTOM
+#define FT_ENCODING_ADOBE_CUSTOM ft_encoding_adobe_custom
+#endif
+
 float fontPoints2float(UT_uint32 iSize, FT_Face pFace,
 				     UT_uint32 iFontPoints)
 {
