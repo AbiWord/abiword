@@ -146,41 +146,50 @@ UT_sint32 UT_stricmp(const char * s1, const char * s2)
 	UT_ASSERT(s1);
 	UT_ASSERT(s2);
 
-	while(tolower(*s1) == tolower(*s2) && *s1 != '\0' && *s2 != '\0')
-	{
-		s1++;
-		s2++;
-	}
-	
-	if (*s1 == '\0' && *s2 == '\0')
-	{
+	// Lifted from glibc.  Looks better (in a constant-factor sort of way)
+	// than what we had before.  Ideally this should be per-platform.
+	const unsigned char *p1 = (const unsigned char *) s1;
+	const unsigned char *p2 = (const unsigned char *) s2;
+	unsigned char c1, c2;
+
+	if (s1 == s2)
 		return 0;
-	}
-	else
-	{
-		return ((*s1)-(islower(*s1)?tolower(*s2):(isupper(*s1)?toupper(*s2):*s2)));
-	}
+
+	do
+    {
+		c1 = tolower (*p1++);
+		c2 = tolower (*p2++);
+		if (c1 == '\0')
+			break;
+    }
+	while (c1 == c2);
+
+	return c1 - c2;
 }
 
-UT_sint32 UT_strnicmp(const char *s1, const char *s2, int ilen)
+// should really be a size_t, but that might break compilation on weird
+// platforms.  I don't know.
+UT_sint32 UT_strnicmp(const char *s1, const char *s2, int n)
 {
 	UT_ASSERT(s1);
 	UT_ASSERT(s2);
 
-	while((ilen--)>0 && tolower(*s1) == tolower(*s2) && *s1 != '\0' && *s2 != '\0')
-	{
-		s1++;
-		s2++;
-	}
-	
-	if(ilen==-1 || (*s1 == '\0' && *s2 == '\0'))
-	{
+	const unsigned char *p1 = (const unsigned char *) s1;
+	const unsigned char *p2 = (const unsigned char *) s2;
+	unsigned char c1, c2;
+
+	if (p1 == p2 || n == 0)
 		return 0;
-	}
-	else
-	{
-		return ((*s1)-(islower(*s1)?tolower(*s2):(isupper(*s1)?toupper(*s2):*s2)));
-	}
+
+	do
+    {
+		c1 = tolower (*p1++);
+		c2 = tolower (*p2++);
+		if (c1 == '\0' || c1 != c2)
+			return c1 - c2;
+    } while (--n > 0);
+
+	return c1 - c2;
 }
 
 bool UT_cloneString(char *& rszDest, const char * szSource)
