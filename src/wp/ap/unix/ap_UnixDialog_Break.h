@@ -46,8 +46,15 @@ protected:
 	virtual void			_init(void);
 
 	// private construction functions
-	const char *			_getGladeName(void);
-	bool					_isActive(const char *widget_name);
+	virtual const char *			_getGladeName(void)
+	  {
+	    return "break.glade";
+	  }
+
+	virtual bool _isActive(const char *widget_name)
+	  {
+	    return gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(glade_xml_get_widget(m_pXML, widget_name)));
+	  }
 
 	virtual GtkWidget * 	_constructWindow(void);
 
@@ -63,15 +70,5 @@ protected:
 private:
 	GladeXML *  m_pXML;
 };
-
-inline const char *	AP_UnixDialog_Break::_getGladeName(void)
-{
-	return "break.glade";
-}
-
-inline bool AP_UnixDialog_Break::_isActive(const char *widget_name)
-{
-	return gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(glade_xml_get_widget(m_pXML, widget_name)));
-}
 
 #endif /* AP_UNIXDIALOG_BREAK_H */

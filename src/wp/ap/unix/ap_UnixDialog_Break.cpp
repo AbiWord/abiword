@@ -53,38 +53,40 @@ XAP_Dialog * AP_UnixDialog_Break::static_constructor(XAP_DialogFactory * pFactor
 AP_UnixDialog_Break::AP_UnixDialog_Break(XAP_DialogFactory * pDlgFactory,
 										 XAP_Dialog_Id id)
 	: AP_Dialog_Break(pDlgFactory,id),
-	  m_wMainWindow(NULL)
+	  m_wMainWindow(NULL), m_pXML (NULL)
 {
 }
 
 AP_UnixDialog_Break::~AP_UnixDialog_Break(void)
 {
+  if (m_pXML)
+    gtk_object_unref (GTK_OBJECT (m_pXML));
 }
 
 /*****************************************************************/
 
-static void s_ok_clicked(GtkButton * widget, gpointer /* data */)
+static void s_ok_clicked(GtkButton * widget, gpointer data)
 {
 	UT_ASSERT(widget);
-	AP_UnixDialog_Break *me = static_cast<AP_UnixDialog_Break*>(gtk_object_get_data(GTK_OBJECT(widget), "this"));
+	AP_UnixDialog_Break *me = static_cast<AP_UnixDialog_Break*>(data);
 	UT_ASSERT(me);
 	me->event_OK();
 }
 
-static void s_cancel_clicked(GtkWidget * widget, gpointer /* data */)
+static void s_cancel_clicked(GtkWidget * widget, gpointer data)
 {
 	UT_ASSERT(widget);
-	AP_UnixDialog_Break *me = static_cast<AP_UnixDialog_Break*>(gtk_object_get_data(GTK_OBJECT(widget), "this"));
+	AP_UnixDialog_Break *me = static_cast<AP_UnixDialog_Break*>(data);
 	UT_ASSERT(me);
 	me->event_Cancel();
 }
 
 static void s_delete_clicked(GtkWidget * widget,
-							 GdkEvent /* event */,
-							 gpointer /* user_data */)
+			     GdkEvent /* event */,
+			     gpointer data)
 {
 	UT_ASSERT(widget);
-	AP_UnixDialog_Break *me = static_cast<AP_UnixDialog_Break*>(gtk_object_get_data(GTK_OBJECT(widget), "this"));
+	AP_UnixDialog_Break *me = static_cast<AP_UnixDialog_Break*>(data);
 	UT_ASSERT(me);
 	me->event_Cancel();
 }
@@ -144,15 +146,24 @@ void AP_UnixDialog_Break::event_Cancel(void)
 
 void AP_UnixDialog_Break::_init(void)
 {
-	glade_xml_signal_connect(m_pXML, "on_ok_button_clicked", (GtkSignalFunc) s_ok_clicked);
-	glade_xml_signal_connect(m_pXML, "on_cancel_button_clicked", (GtkSignalFunc) s_cancel_clicked);
-	glade_xml_signal_connect(m_pXML, "on_main_window_delete_event", (GtkSignalFunc) s_delete_clicked);
+	GtkWidget * w = NULL;
 
-	gtk_object_set_data(GTK_OBJECT(glade_xml_get_widget(m_pXML, "ok_button")),
-						"this", static_cast<void *>(this));
-	gtk_object_set_data(GTK_OBJECT(glade_xml_get_widget(m_pXML, "cancel_button")),
-						"this", static_cast<void *>(this));
-	gtk_object_set_data(GTK_OBJECT(m_wMainWindow), "this", static_cast<void *>(this));
+	w = glade_xml_get_widget (m_pXML, "ok_button");
+	gtk_signal_connect (GTK_OBJECT (w), "clicked",
+			    GTK_SIGNAL_FUNC(s_ok_clicked),
+			    static_cast<void *>(this));
+
+	w = glade_xml_get_widget (m_pXML, "cancel_button");
+	gtk_signal_connect (GTK_OBJECT (w), "clicked",
+			    GTK_SIGNAL_FUNC(s_cancel_clicked),
+			    static_cast<void *>(this));
+
+	gtk_signal_connect_after (GTK_OBJECT (m_wMainWindow), "delete_event",
+				  GTK_SIGNAL_FUNC(s_delete_clicked),
+				  static_cast<void *>(this));
+
+	gtk_signal_connect_after (GTK_OBJECT(m_wMainWindow), "destroy",
+				  NULL, NULL);
 
 	gtk_widget_show(m_wMainWindow);
 }

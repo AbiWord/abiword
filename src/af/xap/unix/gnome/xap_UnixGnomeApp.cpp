@@ -38,6 +38,8 @@
 #include "xap_Unix_TB_CFactory.h"
 #include "xap_Prefs.h"
 
+#include <glade/glade.h>
+
 /*****************************************************************/
 
 XAP_UnixGnomeApp::XAP_UnixGnomeApp(XAP_Args * pArgs, const char * szAppName)
