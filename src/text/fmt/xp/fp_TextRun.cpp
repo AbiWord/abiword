@@ -1314,26 +1314,78 @@ void fp_TextRun::_drawPart(UT_sint32 xoff,
 		
 		if(m_iDirection != FRIBIDI_TYPE_ON || iVisDir != FRIBIDI_TYPE_RTL)
 		{
-			//UT_UCS_strncpy(s_pSpanBuff, pSpan, iTrueLen);
+			/*
+				here we need to handle context glyph shapes. For that we will
+				use our class UT_contextGlyph, for which we need to retrieve
+				one character before the one in question and an unspecified
+				number of chars to follow.
+			*/
 			
-			// handle context glyphs
 			UT_contextGlyph cg;
 			
-			// get the char before and after this run
 			const UT_UCSChar *pPrev, *pNext;
+			
 			UT_uint32 lenPrev, lenNext;
 			
+			// first the char preceding this part of the run, which is simple
 			if(!m_pBL->getSpanPtr(offset - 1, &pPrev, &lenPrev))
 				pPrev = NULL;
-			if(!m_pBL->getSpanPtr(offset + iLen, &pNext, &lenNext))
-				pNext = NULL;
 				
-			s_pSpanBuff[0] = cg.getGlyph(&pSpan[0], pPrev, &pSpan[1]);
+			// now we will retrieve 5 characters that follow this part of the run
+			#define BUFF_SIZE 5
+			UT_sint32 i;
 			
-			for (UT_uint32 i = 1; i < iTrueLen - 1; i++)
-				s_pSpanBuff[i] = cg.getGlyph(&pSpan[i], &pSpan[i-1], &pSpan[i+1]);
+			// two small buffers, one to keep the chars past this part
+			// and one that we will use to create the "trailing" chars
+			// for each character in this fragment
+			UT_UCSChar after[BUFF_SIZE + 1];
+			UT_UCSChar next[BUFF_SIZE + 1];
 			
-			s_pSpanBuff[iTrueLen - 1] = cg.getGlyph(&pSpan[iTrueLen-1], &pSpan[iTrueLen-2], pNext);
+			// how many character at most can we retrieve?
+			UT_sint32 iStop = MIN(BUFF_SIZE, lenSpan - len);
+			
+			// first, getting anything that might be in the span buffer
+			for(i=0; i< iStop;i++)
+				after[i] = pSpan[len+i];
+				
+			// for anything that we miss, we need to get it the hard way
+			// as it is located in different spans
+			while(i < BUFF_SIZE && m_pBL->getSpanPtr(offset + len + i, &pNext, &lenNext))
+			{
+				for(UT_uint32 j = 0; j < lenSpan && i < BUFF_SIZE; j++,i++)
+					after[i] = pNext[j];
+			}
+
+			// now we have our trailing chars, so we null-terminate the array			
+			after[i] = 0;
+			
+			// remember how many there are in the after buffer (including the NULL)
+			iStop = i+1;
+			
+			// how many trailing chars at most can we copy from our span?
+			UT_sint32 iStop2 = MIN(BUFF_SIZE, iTrueLen - 1);
+			
+			xxx_UT_DEBUGMSG(("i %d, iStop %d, iStop2 %d, len %d, iTrueLen %d, lenSpan %d\n",
+						i,iStop,iStop2,len,iTrueLen,lenSpan));
+						
+			
+			// now for each character in this fragment we create
+			// an array of the chars that follow it, get the char
+			// that precedes it and then translate it using our
+			// UT_contextGlyph class, and we are done
+			for(UT_uint32 k =0; k < iTrueLen; k++)
+			{
+				for(i=0; i < iStop2; i++)
+					next[i] = pSpan[i+k+1];
+				for(UT_sint32 j = 0; j < iStop && i < BUFF_SIZE; i++,j++)
+					next[i] = after[j];
+					
+				if(k > 0)
+					pPrev = &pSpan[k-1];
+					
+				s_pSpanBuff[k] = cg.getGlyph(&pSpan[k],pPrev,&next[0]);
+			}
+			
 		}
 		else
 		{

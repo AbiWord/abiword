@@ -31,12 +31,21 @@ struct Letter
 	UT_UCSChar alone;
 };
 
+struct UCSRange
+{
+	UT_UCSChar low;
+	UT_UCSChar high;
+};
+
 
 class UT_contextGlyph
 {
 	public:
-		UT_UCSChar getGlyph(const UT_UCSChar * code, const UT_UCSChar * prev, const UT_UCSChar * next) const;
+		UT_UCSChar getGlyph(const UT_UCSChar * code,
+							const UT_UCSChar * prev,
+							const UT_UCSChar * next) const;
 	private:
-		static Letter *s_pGlyphTable;
+		static Letter 		*s_pGlyphTable;
+		static UCSRange 	*s_pIgnore;
 };
 #endif

@@ -21,8 +21,9 @@
 #include <stdlib.h>
 #include "ut_contextGlyph.h"
 #include "ut_assert.h"
+#include "ut_debugmsg.h"
 
-// this table has to be sorted by the first number !!!
+// these tables have to be sorted by the first number !!!
 static Letter s_table[] =
 {
 	// code, intial, medial, final, stand-alone
@@ -31,6 +32,16 @@ static Letter s_table[] =
 	{0x05E0, 0x05DE, 0x05DE, 0x05DF, 0x05DF},
 	{0x05E4, 0x05E4, 0x05E4, 0x05E3, 0x05E3},
 	{0x05E6, 0x05E6, 0x05E6, 0x05E5, 0x05E5}
+};
+
+static UCSRange s_ignore[] =
+{
+	{0x0591,0x05A1},
+	{0x05A3,0x05B9},
+	{0x05BB,0x05BD},
+	{0x05BF,0x05BF},
+	{0x05C1,0x05C2},
+	{0x05C4,0x05C4}
 };
 
 // comparison function for bsearch
@@ -42,13 +53,35 @@ static int s_comp(const void *a, const void *b)
 	return (int)*A - (int)B->code;
 }
 
+static int s_comp_ignore(const void *a, const void *b)
+{
+	const UT_UCSChar* A = (const UT_UCSChar*)a;
+	const UCSRange* B = (const UCSRange*)b;
+	if(*A < B->low)
+		return -1;
+	if(*A > B->high)
+		return 1;
+	
+	return 0;
+}
+
 Letter* UT_contextGlyph::s_pGlyphTable = &s_table[0];
+UCSRange * UT_contextGlyph::s_pIgnore = &s_ignore[0];
 
 
-UT_UCSChar UT_contextGlyph::getGlyph(const UT_UCSChar * code, const UT_UCSChar * prev, const UT_UCSChar * next) const
+/*
+	code - pointer to the character to interpret
+	prev - pointer to the character before code
+	next - NULL-terminated string of characters that follow
+	
+	returns the glyph to be drawn
+*/
+UT_UCSChar UT_contextGlyph::getGlyph(const UT_UCSChar * code,
+									 const UT_UCSChar * prev,
+									 const UT_UCSChar * next) const
 {
 	UT_ASSERT(code);
-	
+
 	Letter *pL = (Letter*) bsearch((void*)code, (void*)s_pGlyphTable, NrElements(s_table),sizeof(Letter),s_comp);
 	
 	// if the letter is not in our table, it means it has only one form
@@ -56,20 +89,31 @@ UT_UCSChar UT_contextGlyph::getGlyph(const UT_UCSChar * code, const UT_UCSChar *
 	if(!pL)
 		return *code;
 
-	// if we got now next and no prev, than this is stand-alone char	
+	// if we got no next and no prev, than this is stand-alone char	
 	if(!next && !prev)
 		return pL->alone;
 		
 	// if we got no next or previous pointers, a final or intial value is
 	// required	
-	if(!next)
-		return pL->final;
 	if(!prev)
 		return pL->initial;
+	
+	if(!next)
+		return pL->final;
+	
+	//check if next is not a character that is to be ignored
+	UT_UCSChar *myNext = next;
+	
+	while(*myNext && bsearch((void*)myNext, (void*)s_pIgnore, NrElements(s_ignore),sizeof(UCSRange),s_comp_ignore))
+		myNext++;
+			
+	if(!*myNext)
+		return pL->final; //we skipped to the end
 		
+	UT_DEBUGMSG(("UT_contexGlyph: myNext 0x%x\n", *myNext));
 	// test whether *prev and *next are word delimiters
 	bool bPrevWD = UT_isWordDelimiter(*prev, *code);
-	bool bNextWD = UT_isWordDelimiter(*next, UCS_SPACE);
+	bool bNextWD = UT_isWordDelimiter(*myNext, UCS_SPACE);
 	
 	// if both are not , then medial form is needed
 	if(!bPrevWD && !bNextWD)
@@ -83,6 +127,6 @@ UT_UCSChar UT_contextGlyph::getGlyph(const UT_UCSChar * code, const UT_UCSChar *
 	if(bPrevWD)
 		return pL->initial;
 		
-	// if we got here, both are initial, which means stand alone form is needed
+	// if we got here, both are delimiters, which means stand alone form is needed
 	return pL->alone;
 }
