@@ -43,13 +43,23 @@ public:
 	GtkWidget * 		m_fontList;
 	GtkWidget * 		m_styleList;
 	GtkWidget * 		m_sizeList;
-	GtkWidget * 		m_checkStrikeout;
+	GtkWidget * 		m_checkStrikeOut;
 	GtkWidget *			m_checkUnderline;
 	GtkWidget *			m_colorSelector;
 	GtkWidget * 		m_previewEntry;
 
 protected:
 
+	// careful, these must be in the order the
+	// list box will show them (Windows order)
+	typedef enum
+	{	
+		LIST_STYLE_NORMAL = 0,
+		LIST_STYLE_ITALIC,
+		LIST_STYLE_BOLD,
+		LIST_STYLE_BOLD_ITALIC
+	} listStyle;
+	
 	// these are Glade helper or Glade generated functions
 	GtkWidget * 		get_widget(GtkWidget * widget, gchar * widget_name);
 	void 				set_notebook_tab(GtkWidget * notebook, gint page_num, GtkWidget * widget);

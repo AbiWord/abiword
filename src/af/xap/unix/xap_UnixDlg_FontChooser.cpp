@@ -25,12 +25,16 @@
 #include "ut_debugmsg.h"
 #include "ut_string.h"
 #include "ut_misc.h"
+#include "ut_units.h"
 #include "ut_dialogHelper.h"
 #include "xap_UnixDialog_FontChooser.h"
 #include "xap_UnixApp.h"
 #include "xap_UnixFrame.h"
 
-#define DELETEP(p)	do { if (p) delete p; } while (0)
+#define DELETEP(p)	do { if (p) delete(p); } while (0)
+#define FREEP(p)	do { if (p) free(p); } while (0)
+
+#define SIZE_STRING_SIZE	10
 
 /*****************************************************************/
 AP_Dialog * AP_UnixDialog_FontChooser::static_constructor(AP_DialogFactory * pFactory,
@@ -102,6 +106,28 @@ static void s_select_row_size(GtkWidget * widget,
 	// redisplay the preview text
 	dlg->updatePreview();
 }
+
+static gint searchCList(GtkCList * clist, char * compareText)
+{
+	UT_ASSERT(clist);
+
+	// if text is null, it's not found
+	if (!compareText)
+		return -1;
+	
+	gchar * text[2] = {NULL, NULL};
+	
+	for (gint i = 0; i < clist->rows; i++)
+	{
+		gtk_clist_get_text(clist, i, 0, text);
+		if (text && text[0])
+			if (!UT_stricmp(text[0], compareText))
+				return i;
+	}
+
+	return -1;
+}
+	
 
 /*****************************************************************/
 
@@ -345,7 +371,7 @@ GtkWidget * AP_UnixDialog_FontChooser::create_windowFontSelection(void)
 	m_sizeList = listSizes;
 	m_colorSelector = colorSelector;
 	m_previewEntry = entryPreview;
-	m_checkStrikeout = checkbuttonStrikeout;
+	m_checkStrikeOut = checkbuttonStrikeout;
 	m_checkUnderline = checkbuttonUnderline;
 
 	// bind signals to things
@@ -386,7 +412,7 @@ GtkWidget * AP_UnixDialog_FontChooser::create_windowFontSelection(void)
 	text[0] = "Italic"; 		gtk_clist_append(GTK_CLIST(m_styleList), text);
 	text[0] = "Bold"; 			gtk_clist_append(GTK_CLIST(m_styleList), text);
 	text[0] = "Bold Italic"; 	gtk_clist_append(GTK_CLIST(m_styleList), text);	
-
+	
     gtk_clist_clear(GTK_CLIST(m_sizeList));
 	// TODO perhaps populate the list based on the selected font/style?
 	text[0] = "8"; gtk_clist_append(GTK_CLIST(m_sizeList), text);
@@ -432,6 +458,12 @@ void AP_UnixDialog_FontChooser::runModal(XAP_Frame * pFrame)
 	guint BLUE = 2;
 	gdouble currentColor[3] = { 0, 0, 0 };
 
+	// this is used many times below to grab pointers to
+	// strings inside list elements
+	gchar * text[2] = {NULL, NULL};
+	// used similarly to convert between text and numeric arguments
+	char sizeString[SIZE_STRING_SIZE];
+	
 	// Set up our own color space so we work well on 8-bit
 	// displays.
     gtk_widget_push_visual(gtk_preview_get_visual());
@@ -461,8 +493,6 @@ void AP_UnixDialog_FontChooser::runModal(XAP_Frame * pFrame)
 	}
 	DELETEP(fonts);
 
-	gchar * text[2] = {NULL, NULL};
-
 	// fetch them out
 	UT_HashTable::UT_HashEntry * entry;
 	for (UT_uint32 k = 0; k < (UT_uint32) fontHash.getEntryCount(); k++)
@@ -473,6 +503,77 @@ void AP_UnixDialog_FontChooser::runModal(XAP_Frame * pFrame)
 		gtk_clist_append(GTK_CLIST(m_fontList), text);
 	}
 
+	// Set the defaults in the list boxes according to dialog data
+	gint foundAt = 0;
+
+	// is this safe with an XML_Char * string?
+	foundAt = searchCList(GTK_CLIST(m_fontList), (char *) m_pFontFamily);
+	if (foundAt == -1)
+		gtk_clist_select_row(GTK_CLIST(m_fontList), 0, 0);
+	else
+		gtk_clist_select_row(GTK_CLIST(m_fontList), foundAt, 0);
+
+	// this is pretty messy
+	if (!m_pFontStyle || !m_pFontWeight)
+	{
+		// select nothing
+	}
+/*	
+	else if (m_pFontStyle && !m_pFontWeight)
+	{
+		if (!UT_stricmp(m_pFontStyle, "normal"))
+		{
+			gtk_clist_select_row(GTK_CLIST(m_styleList), LIST_STYLE_NORMAL, 0);
+		}
+		else if (!UT_stricmp(m_pFontStyle, "italic"))
+		{
+			gtk_clist_select_row(GTK_CLIST(m_styleList), LIST_STYLE_ITALIC, 0);
+		}
+	}
+	else if (!m_pFontStyle && m_pFontWeight)
+	{
+		if (!UT_stricmp(m_pFontWeight, "normal"))
+		{
+			gtk_clist_select_row(GTK_CLIST(m_styleList), LIST_STYLE_NORMAL, 0);
+		}
+		else if (!UT_stricmp(m_pFontStyle, "italic"))
+		{
+			gtk_clist_select_row(GTK_CLIST(m_styleList), LIST_STYLE_ITALIC, 0);
+		}
+*/		
+	else if (!UT_stricmp(m_pFontStyle, "normal") &&
+			 !UT_stricmp(m_pFontWeight, "normal"))
+	{
+		gtk_clist_select_row(GTK_CLIST(m_styleList), LIST_STYLE_NORMAL, 0);
+	}
+	else if (!UT_stricmp(m_pFontStyle, "normal") &&
+			 !UT_stricmp(m_pFontWeight, "bold"))
+	{
+		gtk_clist_select_row(GTK_CLIST(m_styleList), LIST_STYLE_BOLD, 0);
+	}
+	else if (!UT_stricmp(m_pFontStyle, "italic") &&
+			 !UT_stricmp(m_pFontWeight, "normal"))
+	{
+		gtk_clist_select_row(GTK_CLIST(m_styleList), LIST_STYLE_ITALIC, 0);
+	}
+	else if (!UT_stricmp(m_pFontStyle, "italic") &&
+			 !UT_stricmp(m_pFontWeight, "bold"))
+	{
+		gtk_clist_select_row(GTK_CLIST(m_styleList), LIST_STYLE_BOLD_ITALIC, 0);
+	}
+	else
+	{
+		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+	}
+
+	double size = UT_convertToPoints(m_pFontSize);
+	snprintf(sizeString, SIZE_STRING_SIZE, "%ld", (long) size);
+	foundAt = searchCList(GTK_CLIST(m_sizeList), sizeString);
+	if (foundAt == -1)
+		gtk_clist_select_row(GTK_CLIST(m_sizeList), 2, 0);
+	else
+		gtk_clist_select_row(GTK_CLIST(m_sizeList), foundAt, 0);		
+	
 	// Set color in the color selector
 	if (m_pColor)
 	{
@@ -487,7 +588,11 @@ void AP_UnixDialog_FontChooser::runModal(XAP_Frame * pFrame)
 		gtk_color_selection_set_color(GTK_COLOR_SELECTION(m_colorSelector), currentColor);
 	}
 
-	// get top level window and it's GtkWidget *
+	// set the strikeout and underline check buttons
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(m_checkStrikeOut), m_bStrikeOut);
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(m_checkUnderline), m_bUnderline);	
+	
+	// get top level window and its GtkWidget *
 	XAP_UnixFrame * frame = static_cast<XAP_UnixFrame *>(pFrame);
 	UT_ASSERT(frame);
 	GtkWidget * parent = frame->getTopLevelWindow();
@@ -501,57 +606,132 @@ void AP_UnixDialog_FontChooser::runModal(XAP_Frame * pFrame)
 
 	gtk_main();
 
-	/*
 	if (m_answer == AP_Dialog_FontChooser::a_OK)
 	{
+		GList * selectedRow = NULL;
+		gint rowNumber = 0;
+		
+		selectedRow = GTK_CLIST(m_fontList)->selection;
 
-		selectedFont = gtk_font_selection_dialog_get_font_name(cf);
-
-		if (selectedFont)
+		if (selectedRow)
 		{
-			UT_DEBUGMSG(("Font selection returned [%s].\n", selectedFont));
-
-			// blow XLFD buffer back into member variables
-			parseXLFD(selectedFont);
-
-			// Strikeout or underline aren't done via XLFD
-			// TODO: do them ?
-
-			// The XLFD screws up font sizes, returning "8" (or something small)
-			// even when there is nothing selected in the list and nothing
-			// in the entry box.
-			gchar * sizeText = gtk_entry_get_text(GTK_ENTRY(GTK_FONT_SELECTION(cf->fontsel)->size_entry));
-			UT_ASSERT(sizeText);
-
-			// if it's changed, do the apply
-			if (UT_stricmp(sizeText, ""))
+			rowNumber = GPOINTER_TO_INT(selectedRow->data);
+			gtk_clist_get_text(GTK_CLIST(m_fontList), rowNumber, 0, text);
+			UT_ASSERT(text && text[0]);
+			if (!m_pFontFamily || UT_stricmp(m_pFontFamily, text[0]))
 			{
-				char buf_size[5];
-				sprintf(buf_size, "%dpt", atoi(sizeText));
-				if (!m_pFontSize || UT_stricmp(m_pFontSize, buf_size))
-				{
-					setFontSize(buf_size);
-					m_bChangedFontSize = UT_TRUE;
-				}
-			}
-
-			// Color isn't done via XLFD
-			gtk_color_selection_get_color(GTK_COLOR_SELECTION(colorSelector), currentColor);
-			
-			char buf_color[6];
-			sprintf(buf_color, "%02x%02x%02x",
-					(unsigned int) (currentColor[RED] 	* (gdouble) 255.0),
-					(unsigned int) (currentColor[GREEN]	* (gdouble) 255.0),
-					(unsigned int) (currentColor[BLUE] 	* (gdouble) 255.0));
-
-			if (!m_pColor || UT_stricmp(m_pColor, buf_color))
-			{
-				setColor(buf_color);
-				m_bChangedColor = UT_TRUE;
+				setFontFamily(text[0]);
+				m_bChangedFontFamily = UT_TRUE;
 			}
 		}
+		
+		selectedRow = GTK_CLIST(m_styleList)->selection;
+
+		if (selectedRow)
+		{
+			rowNumber = GPOINTER_TO_INT(selectedRow->data);
+			gtk_clist_get_text(GTK_CLIST(m_styleList), rowNumber, 0, text);
+			UT_ASSERT(text && text[0]);
+
+		// perhaps these attributes really should be smashed
+		// into bitfields.  :)
+			if (rowNumber == LIST_STYLE_NORMAL)
+			{
+				if (!m_pFontStyle || UT_stricmp(m_pFontStyle, "normal"))
+				{
+					setFontStyle("normal");
+					m_bChangedFontStyle = UT_TRUE;
+				}
+				if (!m_pFontWeight || UT_stricmp(m_pFontWeight, "normal"))
+				{
+					setFontWeight("normal");
+					m_bChangedFontWeight = UT_TRUE;
+				}
+			}
+			else if (rowNumber == LIST_STYLE_BOLD)
+			{
+				if (!m_pFontStyle || UT_stricmp(m_pFontStyle, "normal"))
+				{
+					setFontStyle("normal");
+					m_bChangedFontStyle = UT_TRUE;
+				}
+				if (!m_pFontWeight || UT_stricmp(m_pFontWeight, "bold"))
+				{
+					setFontWeight("bold");
+					m_bChangedFontWeight = UT_TRUE;
+				}
+			}
+			else if (rowNumber == LIST_STYLE_ITALIC)
+			{
+				if (!m_pFontStyle || UT_stricmp(m_pFontStyle, "italic"))
+				{
+					setFontStyle("italic");
+					m_bChangedFontStyle = UT_TRUE;
+				}
+				if (!m_pFontWeight || UT_stricmp(m_pFontWeight, "normal"))
+				{
+					setFontWeight("normal");
+					m_bChangedFontWeight = UT_TRUE;
+				}
+			}
+			else if (rowNumber == LIST_STYLE_BOLD_ITALIC)
+			{
+				if (!m_pFontStyle || UT_stricmp(m_pFontStyle, "italic"))
+				{
+					setFontStyle("italic");
+					m_bChangedFontStyle = UT_TRUE;
+				}
+				if (!m_pFontWeight || UT_stricmp(m_pFontWeight, "bold"))
+				{
+					setFontWeight("bold");
+					m_bChangedFontWeight = UT_TRUE;
+				}
+			}
+			else
+			{
+				UT_ASSERT(0);
+			}
+		}
+		
+		selectedRow = GTK_CLIST(m_sizeList)->selection;
+
+		if (selectedRow)
+		{
+			rowNumber = GPOINTER_TO_INT(selectedRow->data);
+			gtk_clist_get_text(GTK_CLIST(m_sizeList), rowNumber, 0, text);
+			UT_ASSERT(text && text[0]);
+
+			snprintf(sizeString, SIZE_STRING_SIZE, "%spt", text[0]);
+
+			if (!m_pFontSize || UT_stricmp(m_pFontSize, sizeString))
+			{
+				setFontSize(sizeString);
+				m_bChangedFontSize = UT_TRUE;
+			}
+		}
+		
+		gtk_color_selection_get_color(GTK_COLOR_SELECTION(m_colorSelector), currentColor);
+			
+		char buf_color[6];
+		sprintf(buf_color, "%02x%02x%02x",
+				(unsigned int) (currentColor[RED] 	* (gdouble) 255.0),
+				(unsigned int) (currentColor[GREEN]	* (gdouble) 255.0),
+				(unsigned int) (currentColor[BLUE] 	* (gdouble) 255.0));
+		
+		if (!m_pColor || UT_stricmp(m_pColor, buf_color))
+		{
+			setColor(buf_color);
+			m_bChangedColor = UT_TRUE;
+		}
+
+		m_bChangedStrikeOut = (m_bStrikeOut != gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(m_checkStrikeOut)));
+		m_bChangedUnderline = (m_bUnderline != gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(m_checkUnderline)));
+		if (m_bChangedStrikeOut)
+			m_bStrikeOut = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(m_checkStrikeOut));
+		if (m_bChangedUnderline)
+			m_bUnderline = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(m_checkUnderline));
 	}
-	*/
+
 	gtk_widget_destroy (GTK_WIDGET(cf));
 
     gtk_widget_pop_visual();
