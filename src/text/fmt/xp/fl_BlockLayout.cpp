@@ -122,7 +122,13 @@ static bool
 SpellCheckWord (const UT_UCSChar * word, UT_uint32 len)
 {
 	SpellChecker * checker = SpellManager::instance()->lastDictionary();
-	UT_ASSERT(checker);
+
+	if (!checker)
+	{
+		// no checker found, don't mark as wrong
+		return true;
+	}
+
 	if (checker->checkWord (word, len) == SpellChecker::LOOKUP_SUCCEEDED)
 		return true;
 	return false;

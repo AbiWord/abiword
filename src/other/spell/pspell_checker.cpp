@@ -64,12 +64,13 @@ utf8_to_utf16(const char *word8, unsigned short *word16,
 }
 
 PSpellChecker::PSpellChecker ()
+	: spell_manager(0)
 {
 }
 
 PSpellChecker::~PSpellChecker()
 {
-	/* pspell segfaults for some reason. get this fixed */
+	// some versions of pspell segfault here for some reason
 	if(spell_manager)
 		delete_pspell_manager(spell_manager);
 }

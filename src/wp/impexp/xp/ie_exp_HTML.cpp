@@ -60,7 +60,7 @@ IE_Exp_HTML::~IE_Exp_HTML()
 
 bool IE_Exp_HTML::RecognizeSuffix(const char * szSuffix)
 {
-	return ((UT_stricmp(szSuffix,".html") == 0) || (UT_stricmp(szSuffix,".htm") == 0));
+	return (!(UT_stricmp(szSuffix,".html")) || (!UT_stricmp(szSuffix,".htm")) || (!UT_stricmp(szSuffix, ".xhtml")));
 }
 
 UT_Error IE_Exp_HTML::StaticConstructor(PD_Document * pDocument,

@@ -48,7 +48,13 @@ static bool
 SpellCheckWord (const UT_UCSChar * word, UT_uint32 len)
 {
 	SpellChecker * checker = SpellManager::instance()->lastDictionary();
-	UT_ASSERT(checker);
+
+	if (!checker)
+	{
+		// no checker, don't mark as wrong
+		return true;
+	}
+
 	if (checker->checkWord (word, len) == SpellChecker::LOOKUP_SUCCEEDED)
 		return true;
 	return false;
@@ -268,6 +274,12 @@ bool AP_Dialog_Spell::nextMisspelledWord(void)
 			// unknown word...
 			// prepare list of possibilities
 			SpellChecker * checker = SpellManager::instance()->lastDictionary();
+			if (!checker)
+			{
+				UT_DEBUGMSG(("No checker returned\n"));
+				return false;
+			}
+
 		    m_Suggestions = checker->suggestWord(theWord, m_iWordLength);
 
 			if (!m_Suggestions)

@@ -134,7 +134,7 @@ bool IE_Imp_XHTML::RecognizeContents(const char * szBuf, UT_uint32 iNumbytes)
 
 bool IE_Imp_XHTML::RecognizeSuffix(const char * szSuffix)
 {
-	return ((UT_stricmp(szSuffix,".html") == 0) || (UT_stricmp(szSuffix,".xhtml") == 0));
+	return (!(UT_stricmp(szSuffix,".html")) || !(UT_stricmp(szSuffix,".xhtml")) || !(UT_stricmp(szSuffix,".htm")));
 }
 
 UT_Error IE_Imp_XHTML::StaticConstructor(PD_Document * pDocument,
