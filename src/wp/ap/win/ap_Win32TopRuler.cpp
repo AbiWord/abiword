@@ -141,20 +141,37 @@ LRESULT CALLBACK AP_Win32TopRuler::_TopRulerWndProc(HWND hwnd, UINT iMsg, WPARAM
 	case WM_LBUTTONDOWN:
 		SetCapture(hwnd);
 		pRuler->mousePress(s_GetEMS(wParam),EV_EMB_BUTTON1,LOWORD(lParam),HIWORD(lParam));
+		{
+			GR_Win32Graphics * pG = static_cast<GR_Win32Graphics *>(pRuler->m_pG);
+			pG->handleSetCursorMessage();
+		}
 		return 0;
 		
 	case WM_MBUTTONDOWN:
 		SetCapture(hwnd);
 		pRuler->mousePress(s_GetEMS(wParam),EV_EMB_BUTTON2,LOWORD(lParam),HIWORD(lParam));
+		{
+			GR_Win32Graphics * pG = static_cast<GR_Win32Graphics *>(pRuler->m_pG);
+			pG->handleSetCursorMessage();
+		}
 		return 0;
 		
 	case WM_RBUTTONDOWN:
 		SetCapture(hwnd);
 		pRuler->mousePress(s_GetEMS(wParam),EV_EMB_BUTTON3,LOWORD(lParam),HIWORD(lParam));
+		{
+			GR_Win32Graphics * pG = static_cast<GR_Win32Graphics *>(pRuler->m_pG);
+			pG->handleSetCursorMessage();
+		}
 		return 0;
 		
 	case WM_MOUSEMOVE:
 		pRuler->mouseMotion(s_GetEMS(wParam),signedLoWord(lParam),signedHiWord(lParam));
+		if (pRuler->isMouseOverTab(signedLoWord(lParam),signedHiWord(lParam)))
+		{
+			GR_Win32Graphics * pG = static_cast<GR_Win32Graphics *>(pRuler->m_pG);
+			pG->handleSetCursorMessage();
+		}
 		return 0;
 
 	case WM_LBUTTONUP:
