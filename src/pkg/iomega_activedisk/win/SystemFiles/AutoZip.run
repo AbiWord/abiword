@@ -21,11 +21,18 @@ var g_Exe       = "\\AbiWord.exe";
 var g_Product   = "AbiWord";
 var g_Bin       = "\\bin";
 var g_Lib       = "\\lib";
+var g_ProfName  = "AbiWord.profile";
 
 // these will be initialised later
 var g_LibPath;
 var g_ExePath;
 var g_License;
+var g_ProfParam;
+
+// arrays to hold version information for us
+var g_ADVer;
+var g_WSHVer;
+
 
 // Global ActiveX Objects
 var FileSysObj;
@@ -33,7 +40,7 @@ var WshShellObj;
 var WshShell;
 var customObj;        // global custom application
 
-// Globals
+// Other Globals
 var AppIndex;                   
 var WindowsFolder;    // the windows folder object
 var gbDrvLetter;      // the initial drive letter
@@ -112,6 +119,17 @@ function OnInsert(drvLetter)
 
 	//WshShellObj.PopUp("Success initiating autolib object");
 
+	// retrieve version info
+	var VerStr = customObj.GetAutoDiskVersionStr();
+	g_ADVer = new Array(0,0,0,0);
+	ParseVersionString(VerStr, g_ADVer);
+	//WshShellObj.PopUp("AD version: " + g_ADVer);
+	
+	VerStr = customObj.GetWSHEngineVersionStr();
+	g_WSHVer = new Array(0,0,0,0);
+	ParseVersionString(VerStr, g_WSHVer);
+	//WshShellObj.PopUp("WHS version: " + g_WSHVer);
+	
 	// init various paths
 	var WshSpec = WshShellObj.SpecialFolders;
 	DeskTop = WshSpec("DeskTop");
@@ -123,6 +141,7 @@ function OnInsert(drvLetter)
 	g_ExePath = drvLetter + g_Path + g_Bin + g_Exe;
 	g_LibPath = drvLetter + g_Path + g_Lib;
 	g_License = drvLetter + g_LicPath + "\\" + g_LicName + g_LicExt;
+	g_ProfParam = "-u " + drvLetter + g_Path + "\\" + g_ProfName;
 
 	//WshShellObj.PopUp("g_ExePath: " + g_ExePath);
 	//WshShellObj.PopUp("g_LibPath: " + g_LibPath);
@@ -148,7 +167,7 @@ function OnInsert(drvLetter)
 		if(bAgree)
 		{
 			// move the file to the root of the drive; this will stop
-			// the licence reappearing in the future, and yeat will
+			// the licence reappearing in the future, and yet will
 			// leave it at the users disposal
 			var moveMe = drvLetter + ":\\" + g_LicName + g_LicExt;
 			try
@@ -181,6 +200,29 @@ function OnInsert(drvLetter)
     return true;
 } // end of OnInsert
 
+function ParseVersionString(str, v)
+{
+	var nextStart = 0;
+	var dotIndx;
+
+	for(i=0; i < 4; ++i)
+	{
+		dotIndx = str.indexOf(".", nextStart);
+
+		if(dotIndx < 0)
+		{
+			if(i < 3)
+				break;
+			else
+				dotIndx = str.length;
+		}
+		
+		
+		v[i] = str.substr(nextStart, dotIndx - nextStart);
+		nextStart = dotIndx + 1;
+	}
+}
+
 
 function OnEject()
 {
@@ -192,21 +234,23 @@ function RunAppFromDisk(drvLetter)
 	//WshShellObj.PopUp("Running application ...");
 
     // Display splash screen    
-    var pSplash= "Loading " + g_Product + " from Active Disk, Please wait...";  
+    var pSplash= "Loading " + g_Product + ", Please wait...";  
     SplashIndex = customObj.DisplaySplash(true,pSplash);
 
 	CreateShortcuts();
 	RegisterFileTypes();
-
+	
 	try
     {
-		AppIndex = customObj.StartApp(g_ExePath, "", g_LibPath, 2, false, 0, true, true, 10);
+		AppIndex = customObj.StartApp(g_ExePath, g_ProfParam, g_LibPath,
+									  2, false, 0, true, true, 10);
     }
     catch(err)
     {   
         WshShellObj.PopUp( "Unable to run AbiWord ("+g_ExePath+", "+g_LibPath+")");
         return false;
     }
+	
     return true;
 }
 
@@ -234,7 +278,7 @@ function CreateShortcuts()
 	var LinkName = "AbiWord Active Disk.lnk"
 	Location = gbDrvLetter +":\\" + LinkName;
 	Target = g_ExePath;
-	Param = "";
+	Param = g_ProfParam;
 	Desc = "AbiWord (Active Disk)";
 	HotKey = "CTRL+SHIFT+a";
 	CWD = g_LibPath;
@@ -287,10 +331,26 @@ function AddRegistryEntry(registry, key, value, type, force)
 				//WshShellObj.Popup("Attempting to change registry value");
 				var OldVal = WshShellObj.RegRead(registry + "\\" + key);
 				var OldValStr = OldVal.toString(10);
-				//WshShellObj.Popup("Old value: " + OldValStr);
+				//WshShellObj.Popup("Old value: " + OldVal + ", OldValStr: " + OldValStr);
 				WshShellObj.RegWrite(registry + "\\" + key, value, type);
 				//WshShellObj.Popup("Logging old value.");
-				customObj.LogRegChange(registry,key,OldValStr,type);
+
+				// there is a bug in the logging function -- it will
+				// strip off leading and trainling "
+				// we will add extra " to compensate for this
+				var logVal = new String();
+				
+				if(OldValStr.substr(0,1) == "\"")
+					logVal += "\"";
+				
+				logVal += OldValStr;
+
+				if(OldValStr.substr(OldValStr.length - 1, 1) == "\"")
+					logVal += "\"";
+
+				//WshShellObj.Popup("Old value: " + OldVal + ", OldValStr: " + OldValStr + ", log: " + logVal);
+				
+				customObj.LogRegChange(registry,key,logVal,type);
 			}
 			else
 			{
@@ -314,26 +374,22 @@ function AddRegistryEntry(registry, key, value, type, force)
 
 function RegisterFileTypes()
 {
+	// the command to open an associated file
+	var Command = g_ExePath + " " + g_ProfParam + " \"%1\"";
+	
 	// first register our application
 	AddRegistryEntry("HKCR\\AbiSuite.AbiWord", "", "AbiWord Document",
 					 "REG_SZ", true);
-	AddRegistryEntry("HKCR\\AbiSuite.AbiWord\\DefaultIcon", "", g_ExePath + ",3",
+	AddRegistryEntry("HKCR\\AbiSuite.AbiWord\\DefaultIcon", "", g_ExePath + ",2",
 					 "REG_SZ", true);
-	AddRegistryEntry("HKCR\\AbiSuite.AbiWord\\shell\\open\\command", "", g_ExePath,
+	AddRegistryEntry("HKCR\\AbiSuite.AbiWord\\shell\\open\\command", "", Command,
 					 "REG_SZ", true);
-	AddRegistryEntry("HKCR\\AbiSuite.AbiWord\\shell\\open\\ddeexec", "", "[Open(\"%1\")]",
-					 "REG_SZ", true);
-	AddRegistryEntry("HKCR\\AbiSuite.AbiWord\\shell\\open\\ddeexec\\application", "", "AbiWord",
-					 "REG_SZ", true);
-	AddRegistryEntry("HKCR\\AbiSuite.AbiWord\\shell\\open\\ddeexec\\topic", "", "System",
-					 "REG_SZ", true);
-					 
+
 	// register association for AW native formats, this we will force
 	AddRegistryEntry("HKCR\\.abw","", "AbiSuite.AbiWord",
 					 "REG_SZ", true);
 	AddRegistryEntry("HKCR\\.abw","Content Type", "application/abiword",
 					 "REG_SZ", true);
-
 	AddRegistryEntry("HKCR\\.zabw","", "AbiSuite.AbiWord",
 					 "REG_SZ", true);
 	AddRegistryEntry("HKCR\\.zabw","Content Type", "application/abiword-compressed",
