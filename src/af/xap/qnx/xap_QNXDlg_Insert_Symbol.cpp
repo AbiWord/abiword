@@ -39,7 +39,6 @@
 
 
 /*****************************************************************/
-static UT_uint32 xap_QNXDlg_Insert_Symbol_first = 0;
 static UT_UCSChar m_CurrentSymbol;
 static UT_UCSChar m_PreviousSymbol;
 
@@ -263,15 +262,7 @@ void XAP_QNXDialog_Insert_Symbol::runModeless(XAP_Frame * pFrame)
 	XAP_Draw_Symbol * iDrawSymbol = _getCurrentSymbolMap();
 	UT_ASSERT(iDrawSymbol);
 
-	// We use this code to insert the default font name into to static
-    // variable "m_Insert_Symbol_font" the first time this dialog is
-    // called. Afterwards it is just whatever was left from the last
-    // call.
-	if(xap_QNXDlg_Insert_Symbol_first == 0)
-	{
 		iDrawSymbol->setSelectedFont("Symbol");
-		xap_QNXDlg_Insert_Symbol_first = 1;
-	}
 
 	// Show the Previously selected symbol
 	m_PreviousSymbol = m_CurrentSymbol;
