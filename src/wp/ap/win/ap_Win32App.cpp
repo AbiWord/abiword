@@ -211,7 +211,8 @@ bool AP_Win32App::initialize(void)
 		}
 	}
 
-	if (! XAP_Win32App::initialize())
+	// AP_App::initilize() calls for us XAP_Win32App::initialize()
+	if (! AP_App::initialize())
 		return false;
 
 	
