@@ -108,15 +108,16 @@ public:
 
   virtual bool notify(AV_View * pView, const AV_ChangeMask mask)
   {
-    if (m_pFrame && (mask & (AV_CHG_INSERTMODE)))
+	  if (m_pFrame && (mask & (AV_CHG_INSERTMODE)))
       {
-	AP_FrameData * pData = static_cast<AP_FrameData *>(m_pFrame->getFrameData());
-	if (pData) {
-	  m_pGraphics->getCaret()->setInsertMode(pData->m_bInsertMode);
-	  return true;
-	}
+		  AP_FrameData * pData = static_cast<AP_FrameData *>(m_pFrame->getFrameData());
+		  if (pData) 
+		  {
+			  m_pGraphics->getCaret()->setInsertMode(pData->m_bInsertMode);
+			  return true;
+		  }
       }
-    return false;
+	  return false;
   }
 
   virtual AV_ListenerType    getType(void) {return AV_LISTENER_CARET;}
@@ -397,15 +398,22 @@ FV_View::FV_View(XAP_App * pApp, void* pParentData, FL_DocLayout* pLayout)
 // Update the combo boxes on the frame with this documents info.
 //
 	XAP_Frame * pFrame = static_cast<XAP_Frame*>(getParentData());
+	m_caretListener = NULL;
 	if( pFrame )
-	  {
+	{
 	    pFrame->repopulateCombos();
 	    m_pG->createCaret();
-
-	    AV_ListenerId listID;
-	    m_caretListener = new FV_Caret_Listener (pFrame, m_pG);
-	    addListener(m_caretListener, &listID);
-	  }
+		if(m_pG->queryProperties(GR_Graphics::DGP_SCREEN))
+		{
+			AV_ListenerId listID;
+			m_caretListener = new FV_Caret_Listener (pFrame, m_pG);
+			addListener(m_caretListener, &listID);
+		}
+		else
+		{
+			m_caretListener = NULL;
+		}
+	}
 }
 
 FV_View::~FV_View()
@@ -414,7 +422,10 @@ FV_View::~FV_View()
 	m_pApp->getPrefs()->removeListener( _prefsListener, this );
 
 	DELETEP(m_pAutoScrollTimer);
-	DELETEP(m_caretListener);
+	if(m_caretListener != NULL)
+	{
+		DELETEP(m_caretListener);
+	}
 
 	FREEP(_m_findNextString);
 
