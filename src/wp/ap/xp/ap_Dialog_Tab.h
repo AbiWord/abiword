@@ -82,6 +82,7 @@ class AP_Dialog_Tab : public XAP_Dialog_NonPersistent
 	char *_getTabString(fl_TabStop *pTabInfo);
 	void _deleteTabFromTabString(fl_TabStop *pTabInfo);
 	void _doSpin( tControl id, UT_sint32 amount);
+	void _doSpinValue(tControl id, double value);
 
 	// the actual access functions
 #define SET_GATHER(a,u) virtual u _gather##a(void) = 0; \

@@ -629,3 +629,75 @@ void AP_Dialog_Tab::_doSpin(tControl id, UT_sint32 amt)
 	_setDefaultTabStop(szNew);
 }
 
+//TODO: Roll this function and the above into one function.
+//      Most things will increment for us so we just need to bound
+//      limit and make sure the settings are correct.
+void AP_Dialog_Tab::_doSpinValue(tControl id, double value)
+{
+  //	UT_ASSERT(amt); // zero makes no sense
+	UT_ASSERT(id = id_SPIN_DEFAULT_TAB_STOP);
+
+	double d = value;
+
+	// figure out which dimension and units to spin in
+	UT_Dimension dimSpin = m_dim;
+	double dSpinUnit = SPIN_INCR_PT;
+	double dMin = 0.0;
+	switch (dimSpin)
+	{
+	case DIM_IN:	
+		dSpinUnit = SPIN_INCR_IN;	
+		dMin = 0.1;
+		break;
+
+	case DIM_CM:	
+		dSpinUnit = SPIN_INCR_CM;	
+		dMin = 0.1;
+		break;
+
+	case DIM_MM:	
+		dSpinUnit = SPIN_INCR_MM;	
+		dMin = 1.0;
+		break;
+
+	case DIM_PI:	
+		dSpinUnit = SPIN_INCR_PI;
+		dMin = 6.0;
+		break;
+
+	case DIM_PT:	
+		dSpinUnit = SPIN_INCR_PT;	
+		dMin = 1.0;
+		break;
+	default:
+
+		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		break;
+	}
+
+	// figure out spin precision, too
+	const char * szPrecision = ".1";
+	if ((dimSpin == DIM_PT) || 
+		(dimSpin == DIM_PI))
+		szPrecision = ".0";
+
+#if 0
+	// if needed, switch unit systems and round off
+	UT_Dimension dimOld = dimSpin;
+
+	if (dimOld != dimSpin)
+	{
+		double dInches = UT_convertToInches(szOld);
+		d = UT_convertInchesToDimension(dInches, dimSpin); 
+	}
+#endif
+
+	// value is now in desired units, so change it
+	if (d < dMin)
+		d = dMin;
+
+	const XML_Char* szNew = UT_formatDimensionString(dimSpin, d, szPrecision); 
+
+	_setDefaultTabStop(szNew);
+}
+

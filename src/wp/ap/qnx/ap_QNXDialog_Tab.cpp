@@ -51,6 +51,7 @@ AP_QNXDialog_Tab::AP_QNXDialog_Tab(XAP_DialogFactory * pDlgFactory,
 {
 	m_current_alignment = FL_TAB_LEFT;
 	m_current_leader	= FL_LEADER_NONE;
+	m_prevDefaultTabStop = 0;
 }
 
 AP_QNXDialog_Tab::~AP_QNXDialog_Tab(void)
@@ -163,10 +164,14 @@ PtWidget_t* AP_QNXDialog_Tab::_constructWindow (void )
 
 	n = 0;
 	PtSetArg(&args[n++], Pt_ARG_WINDOW_TITLE, pSS->getValue( AP_STRING_ID_DLG_Tab_TabTitle), 0);
+	PtSetArg(&args[n++], Pt_ARG_WINDOW_RENDER_FLAGS, 0, ABI_MODAL_WINDOW_RENDER_FLAGS);
+	PtSetArg(&args[n++], Pt_ARG_WINDOW_MANAGED_FLAGS, 0, ABI_MODAL_WINDOW_MANAGE_FLAGS);
 	windowTabs = PtCreateWidget(PtWindow, NULL, n, args);
 
 	n = 0;
 	PtSetArg(&args[n++], Pt_ARG_GROUP_ORIENTATION, Pt_GROUP_VERTICAL, 0);
+	PtSetArg(&args[n++], Pt_ARG_MARGIN_WIDTH, ABI_MODAL_MARGIN_SIZE, 0);
+	PtSetArg(&args[n++], Pt_ARG_MARGIN_HEIGHT, ABI_MODAL_MARGIN_SIZE, 0);
 	PtWidget_t *vgroup = PtCreateWidget(PtGroup, windowTabs, n, args);
 
 	PtWidget_t *hcontrolgroup, *htmpgroup, *vtmpgroup;
@@ -186,7 +191,8 @@ PtWidget_t* AP_QNXDialog_Tab::_constructWindow (void )
 	n = 0;
 	PtSetArg(&args[n++], Pt_ARG_WIDTH, 2 * ABI_DEFAULT_BUTTON_WIDTH, 0);
 	PtWidget_t *entryTabEntry = PtCreateWidget(PtText, vtmpgroup, n, args);
-	PtAddCallback(entryTabEntry, Pt_CB_ACTIVATE, s_edit_change, this);
+	PtAddCallback(entryTabEntry, Pt_CB_ACTIVATE, s_set_clicked, this);
+	PtAddCallback(entryTabEntry, Pt_CB_TEXT_CHANGED, s_edit_change, this);
 
 	n = 0;
 	PtSetArg(&args[n++], Pt_ARG_WIDTH, 2 * ABI_DEFAULT_BUTTON_WIDTH, 0);
@@ -211,7 +217,12 @@ PtWidget_t* AP_QNXDialog_Tab::_constructWindow (void )
 	PtCreateWidget(PtLabel, htmpgroup, n, args);
 
 	n = 0;
+	double d = 0.1;
+	PtSetArg(&args[n++], Pt_ARG_NUMERIC_INCREMENT, &d, sizeof(d));
+	PtSetArg(&args[n++], Pt_ARG_NUMERIC_PRECISION, 1, 0);
 	PtWidget_t *spinbuttonTabstop = PtCreateWidget(PtNumericFloat, htmpgroup, n, args);
+	PtAddCallback(spinbuttonTabstop, Pt_CB_ACTIVATE, s_spin_default_changed, this);
+	PtAddCallback(spinbuttonTabstop, Pt_CB_NUMERIC_CHANGED, s_spin_default_changed, this);
 
 	PtWidget_t *radgroup;
 
@@ -284,6 +295,9 @@ PtWidget_t* AP_QNXDialog_Tab::_constructWindow (void )
 
 	/* Setting buttons */
 	n = 0;
+	PtSetArg(&args[n++], Pt_ARG_FLAGS, Pt_HIGHLIGHTED, Pt_HIGHLIGHTED);
+	PtSetArg(&args[n++], Pt_ARG_BASIC_FLAGS, Pt_TOP_BEVEL | Pt_TOP_OUTLINE, Pt_ALL);
+	PtSetArg(&args[n++], Pt_ARG_BEVEL_WIDTH, 1, 0);
 	htmpgroup = PtCreateWidget(PtGroup, vgroup, n, args);
 
 	n = 0;
@@ -320,19 +334,19 @@ PtWidget_t* AP_QNXDialog_Tab::_constructWindow (void )
 	PtCreateWidget(PtLabel, htmpgroup, n, args);
 
 	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, "Apply", 0);
+	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, pSS->getValue( AP_STRING_ID_DLG_Options_Btn_Apply), 0);
 	PtSetArg(&args[n++], Pt_ARG_WIDTH, ABI_DEFAULT_BUTTON_WIDTH, 0);
 	PtWidget_t *buttonApply = PtCreateWidget(PtButton, htmpgroup, n, args);
 	PtAddCallback(buttonApply, Pt_CB_ACTIVATE, s_apply_clicked, this);
 
 	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, "OK", 0);
+	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, pSS->getValue( XAP_STRING_ID_DLG_OK), 0);
 	PtSetArg(&args[n++], Pt_ARG_WIDTH, ABI_DEFAULT_BUTTON_WIDTH, 0);
 	PtWidget_t *buttonOK = PtCreateWidget(PtButton, htmpgroup, n, args);
 	PtAddCallback(buttonOK, Pt_CB_ACTIVATE, s_ok_clicked, this);
 	
 	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, "Cancel", 0);
+	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, pSS->getValue( XAP_STRING_ID_DLG_Cancel), 0);
 	PtSetArg(&args[n++], Pt_ARG_WIDTH, ABI_DEFAULT_BUTTON_WIDTH, 0);
 	PtWidget_t *buttonCancel = PtCreateWidget(PtButton, htmpgroup, n, args);
 	PtAddCallback(buttonCancel, Pt_CB_ACTIVATE, s_cancel_clicked, this);
@@ -420,6 +434,41 @@ void AP_QNXDialog_Tab::_controlEnable( tControl id, UT_Bool value )
 	}
 }
 
+/* TODO
+ direction == -1 is down
+ direction == 1 is up
+ direction == 0 is totally new value
+*/
+void AP_QNXDialog_Tab::_spinChanged(void)
+{
+	double *d;
+	PtWidget_t *w = _lookupWidget(id_SPIN_DEFAULT_TAB_STOP);
+
+	d = NULL;
+	PtGetResource(w, Pt_ARG_NUMERIC_VALUE, &d, 0);
+
+	if (!d) {
+		return;
+	}
+
+#if 0
+	UT_sint32 amt;
+	amt = (UT_sint32)(((*d + 0.04) - m_prevDefaultTabStop) / 0.1);
+
+	if (amt == 0) {	//Prevents the continual looping
+		return;
+	}
+
+	//The increment value is actually internal to this
+	//function, so just tell it how many times to spin
+	//(and up or down).
+	_doSpin(id_SPIN_DEFAULT_TAB_STOP, amt);
+#else
+	_doSpinValue(id_SPIN_DEFAULT_TAB_STOP, *d);
+#endif
+}
+
+
 /*****************************************************************/
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
@@ -453,6 +502,20 @@ void AP_QNXDialog_Tab::_controlEnable( tControl id, UT_Bool value )
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 // WP level events
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+ 
+/*static*/ int AP_QNXDialog_Tab::s_spin_default_changed(PtWidget_t *widget, void *data, PtCallbackInfo_t *info)
+{ 
+	AP_QNXDialog_Tab * dlg = (AP_QNXDialog_Tab *)data;
+
+	//Only handle the spinner changes or when the user hits enter
+	if (info->reason == Pt_CB_NUMERIC_CHANGED &&
+	    info->reason_subtype == Pt_NUMERIC_CHANGED) {
+		return Pt_CONTINUE;
+	}
+
+	dlg->_spinChanged();
+	return Pt_CONTINUE;
+}
  
 /*static*/ int AP_QNXDialog_Tab::s_set_clicked(PtWidget_t *widget, void *data, PtCallbackInfo_t *info)
 { 
@@ -689,13 +752,14 @@ const XML_Char * AP_QNXDialog_Tab::_gatherDefaultTabStop()
 void AP_QNXDialog_Tab::_setDefaultTabStop( const XML_Char * a )
 {
 	const XML_Char *suffix;
-	double f;
+	double d;
 	int len;
 
 	PtWidget_t *w = _lookupWidget(id_SPIN_DEFAULT_TAB_STOP);
 	/* There are two parts here ... the number and the suffix,
        we should extract both components */
-	sscanf(a, "%f", &f);
+	sscanf(a, "%lf", &d);
+	m_prevDefaultTabStop = d;
 	suffix = &a[strlen(a)-1];
 	while ((*suffix < '0' || *suffix > '9') && suffix > a) { suffix--; } 
 
@@ -705,7 +769,7 @@ void AP_QNXDialog_Tab::_setDefaultTabStop( const XML_Char * a )
 		suffix++;
 	}
 		
-	PtSetResource(w, Pt_ARG_NUMERIC_VALUE, &f, 0);
+	PtSetResource(w, Pt_ARG_NUMERIC_VALUE, &d, sizeof(d));
 	if (suffix) {
 		PtSetResource(w, Pt_ARG_NUMERIC_SUFFIX, suffix, 0);
 	}
