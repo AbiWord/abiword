@@ -1194,9 +1194,16 @@ void fp_Run::draw(dg_DrawArgs* pDA)
 	}
 	UT_RGBColor OldCol = *m_FillType.getColor();
 	UT_RGBColor bgCol = _getColorHL();
-	m_FillType.setColor(bgCol); 
+	xxx_UT_DEBUGMSG((" bg red %d rg blue %d bg green %d  trans %d \n",bgCol.m_red,bgCol.m_blu,bgCol.m_grn,bgCol.m_bIsTransparent));
+	if(!bgCol.isTransparent())
+	{
+		m_FillType.setColor(bgCol); 
+	}
 	_draw(pDA);
-	m_FillType.setColor(OldCol); // restore the old clear color
+	if(!bgCol.isTransparent())
+	{
+		m_FillType.setColor(OldCol); // restore the old clear color
+	}
 	if(isSelectionDraw())
 	{
 		pDA->pG->setClipRect(NULL);
