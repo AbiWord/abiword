@@ -5,7 +5,7 @@
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: AbiWord 1.1.2\n"
+"Project-Id-Version: AbiWord 1.99.3\n"
 "POT-Creation-Date: 2003-08-08 11:56+0200\n"
 "PO-Revision-Date: 2001-12-13 18:36+0100\n"
 "Last-Translator: Marc Maurer <j.m.maurer@student.utwente.nl>\n"
@@ -353,14 +353,14 @@ msgstr "&Eindemarkering"
 #: po/tmp/ap_String_Id.h.h:193
 #, fuzzy
 msgid "&Cell"
-msgstr "&Alle"
+msgstr "&Cel"
 
 #. MENU_LABEL_TABLE_INSERT_CELLS
 #. MENU_LABEL_TABLE_DELETE_CELLS
 #: po/tmp/ap_String_Id.h.h:196
 #, fuzzy
 msgid "&Cells"
-msgstr "&Sluiten"
+msgstr "&Cellen"
 
 #. MENU_LABEL_ALIGN_CENTER
 #: po/tmp/ap_String_Id.h.h:198
@@ -370,7 +370,7 @@ msgstr "&Centreren"
 #. DLG_Spell_Change
 #: po/tmp/ap_String_Id.h.h:200
 msgid "&Change"
-msgstr "&Veranderen"
+msgstr "&Verander"
 
 #. MENU_LABEL_INSERT_CLIPART
 #: po/tmp/ap_String_Id.h.h:202
@@ -407,7 +407,7 @@ msgstr "&Kopiëren"
 #: po/tmp/ap_String_Id.h.h:214
 #, fuzzy
 msgid "&Create and Modify"
-msgstr "Maak een fax"
+msgstr "Maak en wijzig"
 
 #. DLG_Options_Label_PrefsCurrentScheme
 #: po/tmp/ap_String_Id.h.h:216
@@ -465,7 +465,7 @@ msgstr "&Eindnoot"
 #. DLG_Break_EvenPage
 #: po/tmp/ap_String_Id.h.h:237
 msgid "&Even page"
-msgstr "Even pagina"
+msgstr "&Even pagina"
 
 #. MENU_LABEL_VIEW_TB_EXTRA
 #: po/tmp/ap_String_Id.h.h:239
@@ -481,7 +481,7 @@ msgstr "&Veld"
 #: po/tmp/ap_String_Id.h.h:243
 #, fuzzy
 msgid "&Fields"
-msgstr "&Velden:"
+msgstr "&Velden"
 
 #. DLG_Field_Fields
 #: po/tmp/ap_String_Id.h.h:245
@@ -511,7 +511,7 @@ msgstr "&Lettertype"
 #. DLG_PageSetup_Footer
 #: po/tmp/ap_String_Id.h.h:255
 msgid "&Footer:"
-msgstr "&Voettekst"
+msgstr "&Voettekst:"
 
 #. MENU_LABEL_TABLE_FORMAT
 #: po/tmp/ap_String_Id.h.h:257
@@ -526,12 +526,12 @@ msgstr "&Opmaak"
 #. MENU_LABEL_INSERT_GRAPHIC
 #: po/tmp/ap_String_Id.h.h:261
 msgid "&From File"
-msgstr "&Uit Bestand"
+msgstr "&Uit bestand"
 
 #. MENU_LABEL_EDIT_GOTO
 #: po/tmp/ap_String_Id.h.h:263
 msgid "&Go To"
-msgstr "&Ga Naar"
+msgstr "&Ga naar"
 
 #. MENU_LABEL_VIEW_HEADFOOT
 #: po/tmp/ap_String_Id.h.h:265
@@ -576,14 +576,13 @@ msgstr "&Negeer alles"
 
 #. MENU_LABEL_FMT_IMPORTSTYLES
 #: po/tmp/ap_String_Id.h.h:281
-#, fuzzy
 msgid "&Import Styles"
-msgstr "Bestand importeren"
+msgstr "Stijlen &importeren"
 
 #. DLG_Para_TabLabelIndentsAndSpacing
 #: po/tmp/ap_String_Id.h.h:283
 msgid "&Indents and Spacing"
-msgstr "&Inspringen en Regelafstand"
+msgstr "&Inspringen en regelafstand"
 
 #. DLG_InsertButton
 #. MENU_LABEL_INSERT
