@@ -1,6 +1,5 @@
 /* AbiSuite
- * UT_DEBUGMESG(
- * Copyright (C) 2001 AbiSource, Inc.
+ * Copyright (C) 2001, 2002 Dom Lachowicz
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -19,9 +18,9 @@
 
 /* Pspell 0.12 added a size param to a lot of its functions. If this is
  * defined before <pspell.h>, we retain source compatibility with
- * Pspell 0.11. If we upgrade to Pspell 0.12, we can ditch the utfXXX_to_utfYYY
- * functions if we pass the size in bytes of the passed string and specify
- * that we're using "machine unsigned 16" instead of utf8 encoding
+ * Pspell 0.11. Theoretically with 0.12, we could use UCS-4, but in practice
+ * this doesn't work at all. We'll stick to converting between  UCS-4 and UTF-8
+ * instead.
  */
 #define USE_ORIGINAL_MANAGER_FUNCS 1
 
@@ -43,95 +42,84 @@ static void couldNotLoadDictionary ( const char * szLang )
 {
   XAP_App             * pApp   = XAP_App::getApp ();
   XAP_Frame           * pFrame = pApp->getLastFocussedFrame ();
-
+  
   UT_return_if_fail ( pFrame ) ;
-
+  
   const XAP_StringSet * pSS    = pApp->getStringSet ();
-
+  
   char buf[1024]; // evil hardcoded buffer size
   const char * text = pSS->getValue (XAP_STRING_ID_DICTIONARY_CANTLOAD);
   snprintf(buf, 1024, text, szLang);
-
+  
   pFrame->showMessageBox (buf,
 			  XAP_Dialog_MessageBox::b_O,
 			  XAP_Dialog_MessageBox::a_OK);
 }
 
-#if 0
-
 /*!
- * Convert an UTF16 string to an UTF8 string
+ * Convert an UTF32 string to an UTF8 string
  *
- * \param word16 The zero-terminated input string in UTF16 format
+ * \param word32 The zero-terminated input string in UTF32 format
  * \param length The lengh of the input string
  * \return A zero-terminated UTF8 string
  */
 static unsigned char*
-utf16_to_utf8(const unsigned short *word16, int length)
+utf32_to_utf8(const UT_UCS4Char * word32, int length)
 {
   UT_uint32 len_out;
-
-  UT_UCSChar * ucs2;
   unsigned char *result;
-
-  UT_UCS_cloneString (&ucs2, word16);
-
+  
   /* Note that length is in shorts, so we have to double it here */
-  result = ( unsigned char* )
-			UT_convert ((const char *)ucs2, length*2, UCS_2_INTERNAL,
-                         "utf-8", NULL, &len_out);
-
+  result = (unsigned char*)
+    UT_convert ((const char *)word32, length*4, UCS_INTERNAL,
+		"utf-8", NULL, &len_out);
+  
   /* We assume that UT_convert creates a buffer big enough for this: */
   result[len_out] = 0;
-
-  FREEP (ucs2);
   
   return result;
 }
 
 /*!
- * Convert an UTF8 string to an UTF16 string
+ * Convert an UTF8 string to an UTF32 string
  *
- * \param word16 The zero-terminated input string in UTF8 format
+ * \param word8 The zero-terminated input string in UTF8 format
  * \param length The lengh of the input string
  * \return A zero-terminated UTF16 string
  */
-static unsigned short *
-utf8_to_utf16(const char *word8, int length)
+static UT_UCS4Char *
+utf8_to_utf32(const char *word8, int length)
 {
   UT_uint32 len_out;
   unsigned char *result;
-  UT_UCSChar * word16;
-
+  UT_UCS4Char * word32;
+  
   result = (unsigned char *)
-	UT_convert (word8, length, "utf-8", UCS_2_INTERNAL, NULL, &len_out);
-
-  if (! result)
-    return NULL;
-
-  word16 = (UT_UCSChar *)result;
-
+    UT_convert (word8, length, "utf-8", UCS_INTERNAL, NULL, &len_out);
+  
+  UT_return_val_if_fail ( result, NULL ) ;
+  
+  word32 = (UT_UCS4Char *)result;
+  
   /* Hack: len_out is in bytes */
-  len_out /= 2;
-
+  len_out /= 4;
+  
   /* We assume that UT_convert creates result big enough for this: */
-  word16[len_out] = 0;
-
-  return word16;
+  word32[len_out] = 0;
+  
+  return word32;
 }
 
-#endif
-
 PSpellChecker::PSpellChecker ()
-	: spell_manager(0)
+  : spell_manager(0)
 {
 }
 
 PSpellChecker::~PSpellChecker()
 {
-	// some versions of pspell segfault here for some reason
-	if(spell_manager)
-		delete_pspell_manager(spell_manager);
+  // some versions of pspell segfault here for some reason
+  if(spell_manager)
+    delete_pspell_manager(spell_manager);
 }
 
 /*!
@@ -149,7 +137,7 @@ PSpellChecker::requestDictionary (const char * szLang)
 
   UT_return_val_if_fail ( szLang, false ) ;
 
-  // Done: convert the language tag from en-US to en_US form
+  // Convert the language tag from en-US to en_US form
   char * lang = UT_strdup (szLang);
   char * hyphen = strchr (lang, '-');
   if (hyphen)
@@ -158,7 +146,7 @@ PSpellChecker::requestDictionary (const char * szLang)
   spell_config = new_pspell_config();
   pspell_config_replace(spell_config, "language-tag",
 			lang);
-  pspell_config_replace(spell_config, "encoding", UCS_INTERNAL);
+  pspell_config_replace(spell_config, "encoding", "utf-8");
   
   spell_error = new_pspell_manager(spell_config);
   delete_pspell_config(spell_config);
@@ -193,16 +181,13 @@ PSpellChecker::checkWord (const UT_UCSChar * szWord,
   SpellChecker::SpellCheckResult ret = SpellChecker::LOOKUP_FAILED;
   
   /* pspell segfaults if we don't pass it a valid spell_manager */
-  if (spell_manager == NULL)
-    return SpellChecker::LOOKUP_ERROR;
-  
-  /* trying to spell-check a 0 length word will (rightly) cause pspell 
-     to segfault */
-  if(szWord == NULL || len == 0)
-    return SpellChecker::LOOKUP_FAILED;
-  
-  unsigned char *word8 = ( unsigned char * ) szWord ;
+  UT_return_val_if_fail ( spell_manager, SpellChecker::LOOKUP_ERROR );
+  UT_return_val_if_fail ( szWord, SpellChecker::LOOKUP_ERROR ) ;
+  UT_return_val_if_fail ( len, SpellChecker::LOOKUP_ERROR ) ;
 
+  unsigned char *word8 = utf32_to_utf8(szWord, len);
+  UT_return_val_if_fail ( word8, SpellChecker::LOOKUP_ERROR ) ;
+  
   switch (pspell_manager_check(spell_manager, (char*)word8))
     {
     case 0:
@@ -213,6 +198,7 @@ PSpellChecker::checkWord (const UT_UCSChar * szWord,
       ret = SpellChecker::LOOKUP_ERROR; break;
     }
   
+  FREEP(word8);
   return ret;
 }
 
@@ -235,15 +221,20 @@ PSpellChecker::suggestWord (const UT_UCSChar * szWord,
   
   /* pspell segfaults if we don't pass it a valid spell_manager */
   UT_return_val_if_fail ( spell_manager, 0 ) ;
-  UT_return_val_if_fail ( szWord, 0 ) ;
-  UT_return_val_if_fail ( len, 0 ) ;
 
-  unsigned char *word8 = ( unsigned char * ) szWord ;
+  /* trying to spell-check a 0 length word will (rightly) cause pspell 
+     to segfault */
+  UT_return_val_if_fail ( szWord && len, 0 ) ;
 
+  unsigned char *word8 = utf32_to_utf8(szWord, len);
+  UT_return_val_if_fail ( word8, 0 ) ;
+  
   word_list   = pspell_manager_suggest(spell_manager, (char*)word8);
   suggestions = pspell_word_list_elements(word_list);
   count       = pspell_word_list_size(word_list);
+  FREEP(word8);
 
+  // no suggestions, not an error
   if(count == 0)
     {
       return 0;
@@ -252,15 +243,14 @@ PSpellChecker::suggestWord (const UT_UCSChar * szWord,
   UT_Vector * sg = new UT_Vector ();
   
   while ((new_word = pspell_string_emulation_next(suggestions)) != NULL) 
-    {      
-      UT_UCSChar *word = NULL ;
-
-      UT_UCS4_cloneString ( &word, (const UT_UCS4Char *)new_word ) ;
-      if (word) 
-	{
-	  sg->addItem ((void *)word);
-	  i++;
-	}
+    {
+      int len = strlen(new_word);
+      
+      UT_UCSChar *word = utf8_to_utf32(new_word, len);
+      if (word) {
+	sg->addItem ((void *)word);
+	i++;
+      }
     }
   
   return sg;
