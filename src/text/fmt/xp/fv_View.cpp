@@ -1803,8 +1803,12 @@ UT_Bool FV_View::findNext(const UT_UCSChar * string, UT_Bool bSelect)
 
 				if (!block)
 				{
-					// screwy, the cursor is hosed, probably
-					// outside the start/end search region
+					// TODO - FIX THIS SOON!
+					// The cursor is hosed.  Since things got modified, we need
+					// to restart the search on this block (or something).
+					UT_DEBUGMSG(("This happened because the search algorithm forgot "
+								 "about blocks that change under them!  It will be "
+								 "fixed soon!"));
 					UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 				}
 

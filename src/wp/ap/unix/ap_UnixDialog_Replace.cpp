@@ -322,8 +322,11 @@ void AP_UnixDialog_Replace::runModal(AP_Frame * pFrame)
 	// center it
     centerDialog(parent, topLevel);
 
-	// find should be default
-	gtk_widget_grab_default(findButton);
+	// Replace should be default button
+	gtk_widget_grab_default(replaceButton);
+
+	// Find entry should have focus, for immediate typing
+	gtk_widget_grab_focus(findEntry);
 	gtk_grab_add(topLevel);
 
 	gtk_widget_show(topLevel);
