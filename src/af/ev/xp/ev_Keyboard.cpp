@@ -40,7 +40,6 @@ EV_Keyboard::~EV_Keyboard(void)
 
 void EV_Keyboard::setEditEventMap(EV_EditEventMapper * pEEM)
 {
-	UT_ASSERT(pEEM);
 	m_pEEM = pEEM;
 }
 
@@ -49,17 +48,8 @@ bool EV_Keyboard::invokeKeyboardMethod(AV_View * pView,
 										  UT_UCSChar * pData,
 										  UT_uint32 dataLength)
 {
-	UT_ASSERT(pView);
-	UT_ASSERT(pEM);
-
-#if 0
-	UT_DEBUGMSG(("invokeKeyboardMethod: %s length %d with [",
-				 pEM->getName(),dataLength));
-	if (pData && dataLength)
-		for (UT_uint32 k=0; k<dataLength; k++)
-			UT_DEBUGMSG(("%04x(%c) ",pData[k],pData[k]));
-	UT_DEBUGMSG(("]\n"));
-#endif	
+	UT_return_val_if_fail(pView, false);
+	UT_return_val_if_fail(pEM, false);
 
 	EV_EditMethodType t = pEM->getType();
 
