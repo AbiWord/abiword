@@ -21,7 +21,8 @@
 #include "ut_vector.h"
 #include "xap_QNXDlg_MessageBox.h"
 #include "xap_QNXApp.h"
-#include "xap_QNXFrame.h"
+#include "xap_QNXFrameImpl.h"
+#include "xap_Frame.h"
 #include <stdio.h>
 
 /*****************************************************************/
@@ -46,13 +47,14 @@ XAP_QNXDialog_MessageBox::~XAP_QNXDialog_MessageBox(void)
 
 void XAP_QNXDialog_MessageBox::runModal(XAP_Frame * pFrame)
 {
-	m_pQNXFrame = (XAP_QNXFrame *)pFrame;
+/*	m_pQNXFrame = (XAP_QNXFrame *)pFrame;
 	UT_ASSERT(m_pQNXFrame);
 	XAP_QNXApp * pApp = (XAP_QNXApp *)m_pQNXFrame->getApp();
 	UT_ASSERT(pApp);
 
 	const char * szCaption = pApp->getApplicationTitleForTitleBar();
-
+*/
+	const char * szCaption = "TEMP FIXME!";
 
 	int ret, def_button;
 	const char *str1, *str2, *str3;
@@ -60,11 +62,11 @@ void XAP_QNXDialog_MessageBox::runModal(XAP_Frame * pFrame)
 	// we get all our strings from the application string set
 	const XAP_StringSet * pSS = pFrame->getApp()->getStringSet();
 
-	XAP_QNXFrame * frame = static_cast<XAP_QNXFrame *>(pFrame);
-	UT_ASSERT(frame);
-	PtWidget_t * parent = frame->getTopLevelWindow();
+	XAP_QNXFrameImpl * pQNXFrameImpl = (XAP_QNXFrameImpl*)pFrame->getFrameImpl();
+	PtWidget_t *parent =	pQNXFrameImpl->getTopLevelWindow();	
 	UT_ASSERT(parent);
 
+	PtSetParentWidget(parent);
 
 	str1 = str2 = str3 = NULL;
 	def_button = 1;

@@ -56,7 +56,6 @@ public:
 	GR_QNXGraphics * m_gc;
 
 	GR_QNXImage * m_pGrImageSidebar;
-	XAP_QNXFrame * m_pFrame;
 
 	int 			done;
 };

@@ -25,7 +25,8 @@
 
 #include "xap_App.h"
 #include "xap_QNXApp.h"
-#include "xap_QNXFrame.h"
+#include "xap_QNXFrameImpl.h"
+#include "xap_Frame.h"
 
 #include "xap_QNXDlg_Encoding.h"
 //#include "ut_dialogHelper.h"

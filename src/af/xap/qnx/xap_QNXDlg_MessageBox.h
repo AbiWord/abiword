@@ -20,7 +20,6 @@
 #ifndef XAP_QNXDIALOG_MESSAGEBOX_H
 #define XAP_QNXDIALOG_MESSAGEBOX_H
 
-#include "xap_QNXFrame.h"
 #include "xap_Dlg_MessageBox.h"
 class XAP_QNXFrame;
 
@@ -37,7 +36,6 @@ public:
 	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
 
 protected:
-	XAP_QNXFrame *			m_pQNXFrame;
 	UT_Vector 				m_keyBindings;
 
 };

@@ -19,7 +19,8 @@
 
 #include <Pt.h>
 #include "xap_Frame.h"
-#include "xap_QNXFrame.h"
+#include "xap_QNXFrameImpl.h"
+#include "xap_Frame.h"
 #include "ut_debugmsg.h"
 #include "xap_QNXFontPreview.h"
 #include "gr_QNXGraphics.h"
@@ -30,7 +31,6 @@ XAP_QNXFontPreview::XAP_QNXFontPreview(XAP_Frame * pFrame, UT_sint32 left, UT_ui
 	int n=0;
 	PtArg_t args[5];
 	PhArea_t area;
-	m_pQNXFrame = (XAP_QNXFrame *)pFrame;
 
 	m_left = left;
 	m_top = top;
@@ -39,11 +39,15 @@ XAP_QNXFontPreview::XAP_QNXFontPreview(XAP_Frame * pFrame, UT_sint32 left, UT_ui
 	area.pos.x=left;
 	area.pos.y=top;
 
+	XAP_QNXFrameImpl * pQNXFrameImpl = (XAP_QNXFrameImpl*)pFrame->getFrameImpl();
+	PtWidget_t *parentWindow =	pQNXFrameImpl->getTopLevelWindow();	
+	UT_ASSERT(parentWindow);
+
 	PtSetArg(&args[n++],Pt_ARG_WINDOW_RENDER_FLAGS,Pt_FALSE,Pt_TRUE);	
 	PtSetArg(&args[n++],Pt_ARG_AREA,&area,0);
 	PtSetArg(&args[n++],Pt_ARG_FLAGS,Pt_FALSE,Pt_GETS_FOCUS);
 	PtSetArg(&args[n++],Pt_ARG_WINDOW_MANAGED_FLAGS,Pt_FALSE,Ph_WM_FOCUS);
-	m_pPreviewWindow = PtCreateWidget(PtWindow,m_pQNXFrame->getTopLevelWindow(),n,args);
+	m_pPreviewWindow = PtCreateWidget(PtWindow,parentWindow,n,args);
 	PtRealizeWidget(m_pPreviewWindow);
 
 		n=0;
@@ -51,10 +55,11 @@ XAP_QNXFontPreview::XAP_QNXFontPreview(XAP_Frame * pFrame, UT_sint32 left, UT_ui
 	PtSetArg(&args[n++],Pt_ARG_FLAGS,Pt_FALSE,Pt_GETS_FOCUS);
 	m_pDrawingArea = PtCreateWidget(PtRaw,m_pPreviewWindow,n,args); 
 
-	XAP_App *pApp = m_pQNXFrame->getApp();
+/*	XAP_App *pApp = pQNXFrameImpl->getApp();
 	m_gc = new GR_QNXGraphics(m_pPreviewWindow,m_pDrawingArea, pApp);
 	
 	_createFontPreviewFromGC(m_gc, area.size.w,area.size.h);
+*/
 }
 
 XAP_QNXFontPreview::~XAP_QNXFontPreview(void)

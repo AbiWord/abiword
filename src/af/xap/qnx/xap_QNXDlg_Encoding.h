@@ -20,7 +20,7 @@
 #ifndef XAP_QNXDIALOG_ENCODING_H
 #define XAP_QNXDIALOG_ENCODING_H
 
-
+#include <Pt.h>
 #include "ut_types.h"
 #include "ut_xml.h"
 #include "ut_assert.h"

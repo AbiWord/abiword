@@ -26,11 +26,12 @@
 #include "xap_App.h"
 #include "xap_Dialog_Id.h"
 #include "xap_QNXApp.h"
-#include "xap_QNXFrame.h"
 
 #include "xap_Dialog_Id.h"
 #include "xap_Dlg_About.h"
 #include "xap_QNXDlg_About.h"
+#include "xap_Frame.h"
+#include "xap_QNXFrameImpl.h"
 
 #include "gr_QNXGraphics.h"
 #include "gr_QNXImage.h"
@@ -135,16 +136,12 @@ static int s_drawingarea_expose(PtWidget_t *widget, void *data, PtCallbackInfo_t
 
 void XAP_QNXDialog_About::runModal(XAP_Frame * pFrame)
 {
-	// stash away the frame
-	m_pFrame = static_cast<XAP_QNXFrame *>(pFrame);
 
-	// To center the dialog, we need the frame of its parent.
-	XAP_QNXFrame * pQNXFrame = static_cast<XAP_QNXFrame *>(pFrame);
-	UT_ASSERT(pQNXFrame);
-	PtWidget_t * parentWindow = pQNXFrame->getTopLevelWindow();
+	XAP_QNXFrameImpl * pQNXFrameImpl = (XAP_QNXFrameImpl*)pFrame->getFrameImpl();
+	PtWidget_t *parentWindow =	pQNXFrameImpl->getTopLevelWindow();	
 	UT_ASSERT(parentWindow);
-	PtSetParentWidget(parentWindow);
 
+	PtSetParentWidget(parentWindow);
 	// Build the window's widgets and arrange them
 	PtWidget_t * mainWindow = _constructWindow();
 	UT_ASSERT(mainWindow);
@@ -179,7 +176,7 @@ void XAP_QNXDialog_About::event_OK(void)
 
 void XAP_QNXDialog_About::event_URL(void)
 {
-	m_pFrame->openURL("http://www.abisource.com/");
+
 }
 
 void XAP_QNXDialog_About::event_WindowDelete(void)

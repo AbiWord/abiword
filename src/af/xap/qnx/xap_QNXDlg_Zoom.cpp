@@ -27,7 +27,8 @@
 
 #include "xap_App.h"
 #include "xap_QNXApp.h"
-#include "xap_QNXFrame.h"
+#include "xap_QNXFrameImpl.h"
+#include "xap_Frame.h"
 
 #include "xap_Dialog_Id.h"
 #include "xap_Dlg_Zoom.h"
@@ -180,11 +181,10 @@ void XAP_QNXDialog_Zoom::runModal(XAP_Frame * pFrame)
 	m_pFrame = pFrame;
 
 	// Set the parent window for this dialog 
-	XAP_QNXFrame * pQNXFrame = static_cast<XAP_QNXFrame *>(pFrame);
-	UT_ASSERT(pQNXFrame);
-	
-	PtWidget_t * parentWindow = pQNXFrame->getTopLevelWindow();
+	XAP_QNXFrameImpl * pQNXFrameImpl = (XAP_QNXFrameImpl*)pFrame->getFrameImpl();
+	PtWidget_t *parentWindow =	pQNXFrameImpl->getTopLevelWindow();	
 	UT_ASSERT(parentWindow);
+
 	PtSetParentWidget(parentWindow);
 
 	// Build the window's widgets and arrange them

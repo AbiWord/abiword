@@ -27,7 +27,8 @@
 #include "ut_units.h"
 #include "xap_QNXDlg_FontChooser.h"
 #include "xap_QNXApp.h"
-#include "xap_QNXFrame.h"
+#include "xap_QNXFrameImpl.h"
+#include "xap_Frame.h"
 
 #include "gr_QNXGraphics.h"
 
@@ -76,7 +77,8 @@ void XAP_QNXDialog_FontChooser::runModal(XAP_Frame * pFrame)
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
 	char *newfont;
 
-	PtWidget_t * parentWindow = m_pQNXFrame->getTopLevelWindow();
+	XAP_QNXFrameImpl * pQNXFrameImpl = (XAP_QNXFrameImpl*)pFrame->getFrameImpl();
+	PtWidget_t *parentWindow =	pQNXFrameImpl->getTopLevelWindow();	
 	UT_ASSERT(parentWindow);
 
 	newfont = (char *)PtFontSelection(parentWindow,	/* Parent */

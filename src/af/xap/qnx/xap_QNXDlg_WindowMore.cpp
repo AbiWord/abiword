@@ -26,7 +26,8 @@
 // like centering them, measuring them, etc.
 #include "xap_App.h"
 #include "xap_QNXApp.h"
-#include "xap_QNXFrame.h"
+#include "xap_QNXFrameImpl.h"
+#include "xap_Frame.h"
 
 #include "xap_Dialog_Id.h"
 #include "xap_Dlg_WindowMore.h"
@@ -101,11 +102,10 @@ void XAP_QNXDialog_WindowMore::runModal(XAP_Frame * pFrame)
 	m_ndxSelFrame = m_pApp->findFrame(pFrame);
 	UT_ASSERT(m_ndxSelFrame >= 0);
 
-	XAP_QNXFrame *pQNXFrame = (XAP_QNXFrame *)pFrame;
-	UT_ASSERT(pQNXFrame);
-
-	PtWidget_t * parentWindow = pQNXFrame->getTopLevelWindow();
+	XAP_QNXFrameImpl * pQNXFrameImpl = (XAP_QNXFrameImpl*)pFrame->getFrameImpl();
+	PtWidget_t *parentWindow =	pQNXFrameImpl->getTopLevelWindow();	
 	UT_ASSERT(parentWindow);
+
 	PtSetParentWidget(parentWindow);
 
 	// Build the window's widgets and arrange them

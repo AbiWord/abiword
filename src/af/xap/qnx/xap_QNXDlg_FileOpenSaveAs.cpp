@@ -23,6 +23,8 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <unistd.h>
+#include <Pt.h>
+
 #include "ut_string.h"
 #include "ut_misc.h"
 #include "ut_assert.h"
@@ -30,7 +32,8 @@
 #include "xap_Dlg_MessageBox.h"
 #include "xap_QNXDlg_FileOpenSaveAs.h"
 #include "xap_QNXApp.h"
-#include "xap_QNXFrame.h"
+#include "xap_QNXFrameImpl.h"
+#include "xap_Frame.h"
 #include "xap_Strings.h"
 
 /*****************************************************************/
@@ -190,11 +193,8 @@ szFileTypeLabel = pSS->getValueUTF8(XAP_STRING_ID_DLG_FOSA_FileSaveTypeLabel).c_
 		}
 	}
 
-	// get top level window and its GtkWidget *
-	XAP_QNXFrame * frame = (XAP_QNXFrame *)(pFrame);
-	UT_ASSERT(frame);
-	PtWidget_t * parent = frame->getTopLevelWindow();
-	UT_ASSERT(parent);
+	XAP_QNXFrameImpl * pQNXFrameImpl = (XAP_QNXFrameImpl*)pFrame->getFrameImpl();
+	PtWidget_t *parent =	pQNXFrameImpl->getTopLevelWindow();	
 
 	PtFileSelectionInfo_t info;
 	int ret;

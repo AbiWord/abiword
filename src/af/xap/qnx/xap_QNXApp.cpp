@@ -22,6 +22,7 @@
 #include <string.h>
 #include <unistd.h>
 #include <sys/stat.h>
+#include <Pt.h>
 
 #include "ut_debugmsg.h"
 
@@ -30,7 +31,6 @@
 #include "xap_QNXApp.h"
 #include "xap_FakeClipboard.h"
 #include "gr_QNXImage.h"
-#include "xap_QNXFrame.h"
 #include "xap_QNXToolbar_Icons.h"
 #include "xap_QNX_TB_CFactory.h"
 #include "xap_Prefs.h"

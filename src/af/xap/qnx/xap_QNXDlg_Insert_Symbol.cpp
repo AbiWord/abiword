@@ -29,7 +29,8 @@
 
 #include "xap_App.h"
 #include "xap_QNXApp.h"
-#include "xap_QNXFrame.h"
+#include "xap_QNXFrameImpl.h"
+#include "xap_Frame.h"
 
 #include "xap_Dialog_Id.h"
 #include "xap_Dlg_Insert_Symbol.h"
@@ -221,10 +222,6 @@ void XAP_QNXDialog_Insert_Symbol::runModeless(XAP_Frame * pFrame)
 
 	// First see if the dialog is already running
 	UT_sint32 sid =(UT_sint32)  getDialogId();
-	
-	// To center the dialog, we need the frame of its parent.
-	XAP_QNXFrame * pQNXFrame = static_cast<XAP_QNXFrame *>(pFrame);
-	UT_ASSERT(pQNXFrame);
 	
 	// Build the window's widgets and arrange them
 	PtWidget_t * mainWindow = _constructWindow();

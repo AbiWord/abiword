@@ -20,7 +20,6 @@
 #ifndef XAP_QNXDIALOG_PRINT_H
 #define XAP_QNXDIALOG_PRINT_H
 
-#include "xap_QNXFrame.h"
 #include "xap_Dlg_Print.h"
 #include <Pt.h>
 
@@ -45,7 +44,6 @@ public:
 
 protected:
 
-	XAP_QNXFrame *			m_pQNXFrame;
 	PpPrintContext_t  		*m_pPrintContext;
 
 	void					_raisePrintDialog(XAP_Frame * pFrame);

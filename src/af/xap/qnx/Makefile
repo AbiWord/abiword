@@ -42,7 +42,6 @@ CPPSRCS=		xap_QNXApp.cpp				\
 			xap_QNXDlg_Zoom.cpp			\
 			xap_QNXDlg_Insert_Symbol.cpp		\
 			xap_QNXEncodingManager.cpp		\
-			xap_QNXFrame.cpp			\
 			xap_QNXModule.cpp			\
 			xap_QNXToolbar_Icons.cpp \
 			xap_QNXFontPreview.cpp	\

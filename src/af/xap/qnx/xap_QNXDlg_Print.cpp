@@ -27,7 +27,9 @@
 #include "xap_QNXDlg_Print.h"
 #include "xap_QNXDlg_MessageBox.h"
 #include "xap_QNXApp.h"
-#include "xap_QNXFrame.h"
+#include "xap_QNXFrameImpl.h"
+#include "xap_Frame.h"
+
 #include "xap_Strings.h"
 
 /*****************************************************************/
@@ -45,7 +47,6 @@ XAP_QNXDialog_Print::XAP_QNXDialog_Print(XAP_DialogFactory * pDlgFactory,
 	: XAP_Dialog_Print(pDlgFactory,id)
 {
 	m_pPrintContext = NULL;
-	m_pQNXFrame = NULL;
 }
 
 XAP_QNXDialog_Print::~XAP_QNXDialog_Print(void)
@@ -84,19 +85,21 @@ void XAP_QNXDialog_Print::useEnd(void)
 
 GR_Graphics * XAP_QNXDialog_Print::getPrinterGraphicsContext(void)
 {
+#if 0
 	UT_ASSERT(m_answer == a_OK);
-	UT_ASSERT(m_pQNXFrame);
 	UT_ASSERT(m_pPrintContext);
-
+//XXX: FIXME FIXME!
 	GR_QNXGraphics *gr = (GR_QNXGraphics *)m_pQNXFrame->getGraphics();
 	gr->setPrintContext(m_pPrintContext);
 
 	/* Return the same graphics as we used for the screen */
 	return m_pQNXFrame->getGraphics();
+#endif 
 }
 
 void XAP_QNXDialog_Print::releasePrinterGraphicsContext(GR_Graphics * pContext)
 {
+#if 0
 	UT_ASSERT(m_pQNXFrame);
 	UT_ASSERT(m_pPrintContext);
 
@@ -106,14 +109,13 @@ void XAP_QNXDialog_Print::releasePrinterGraphicsContext(GR_Graphics * pContext)
 	PpPrintReleasePC(m_pPrintContext);
 	m_pPrintContext = NULL;
 */
+#endif
 }
 
 /*****************************************************************/
 
 void XAP_QNXDialog_Print::runModal(XAP_Frame * pFrame)
 {
-	m_pQNXFrame = static_cast<XAP_QNXFrame *>(pFrame);
-	UT_ASSERT(m_pQNXFrame);
 	
 	// see if they just want the properties of the printer without
 	// bothering the user.
@@ -146,9 +148,13 @@ void XAP_QNXDialog_Print::_raisePrintDialog(XAP_Frame * pFrame)
 
 	int value;
 
+	XAP_QNXFrameImpl * pQNXFrameImpl = (XAP_QNXFrameImpl*)pFrame->getFrameImpl();
+	PtWidget_t *parentWindow =	pQNXFrameImpl->getTopLevelWindow();	
+	UT_ASSERT(parentWindow);
+
 	m_pPrintContext = PpCreatePC();
 	UT_ASSERT(m_pPrintContext);
-	value = PtPrintSelection(m_pQNXFrame->getTopLevelWindow(), 		/* Parent widget */
+	value = PtPrintSelection(parentWindow, 		/* Parent widget */
 					 		 NULL, 									/* Position on the screen */
 					 		 NULL, 									/* Title */
 					 		 m_pPrintContext, 						/* Print context */

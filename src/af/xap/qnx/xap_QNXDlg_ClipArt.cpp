@@ -26,7 +26,6 @@
 
 #include "xap_App.h"
 #include "xap_QNXApp.h"
-#include "xap_QNXFrame.h"
 
 #include "xap_Strings.h"
 #include "xap_Dialog_Id.h"

@@ -27,7 +27,8 @@
 
 #include "xap_App.h"
 #include "xap_QNXApp.h"
-#include "xap_QNXFrame.h"
+#include "xap_QNXFrameImpl.h"
+#include "xap_Frame.h"
 
 #include "xap_Strings.h"
 #include "xap_Dialog_Id.h"
@@ -82,12 +83,10 @@ void XAP_QNXDialog_Language::runModal(XAP_Frame * pFrame)
 {
 	UT_ASSERT(pFrame);
 
-	// get top level window 
-	XAP_QNXFrame * frame = static_cast<XAP_QNXFrame *>(pFrame);
-	UT_ASSERT(frame);
-
-	PtWidget_t *parent = frame->getTopLevelWindow();
+	XAP_QNXFrameImpl * pQNXFrameImpl = (XAP_QNXFrameImpl*)pFrame->getFrameImpl();
+	PtWidget_t *parent =	pQNXFrameImpl->getTopLevelWindow();	
 	UT_ASSERT(parent);
+
 	PtSetParentWidget(parent);
 
 	// build the dialog
