@@ -151,7 +151,7 @@ class XAP_UnixGnomePrintGraphics : public GR_Graphics
 
 	GR_Graphics::ColorSpace	m_cs;
 	UT_RGBColor		m_currentColor;
-
+	PSFont *       m_pCurrentPSFont;
 	// temporary
 	GnomeFont *m_pCurrentFont;
 
@@ -160,3 +160,6 @@ class XAP_UnixGnomePrintGraphics : public GR_Graphics
 
 
 #endif /* XAP_UNIXGNOMEPRINTGRAPHCS_H */
+
+
+

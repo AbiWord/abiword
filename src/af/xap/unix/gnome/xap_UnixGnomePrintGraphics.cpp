@@ -356,6 +356,7 @@ void XAP_UnixGnomePrintGraphics::setFont(GR_Font* pFont)
 	UT_ASSERT(pFont);
 	PSFont * psFont = (static_cast<PSFont*> (pFont));
 
+	m_pCurrentPSFont = psFont;
 	// TODO: We *must* be smarter about this, maybe a hash
 	// TODO: of PSFonts -> GnomeFonts
 
@@ -715,17 +716,33 @@ void XAP_UnixGnomePrintGraphics::fillRect(GR_Color3D c, UT_Rect &r)
 /*                                 Done                                */
 /***********************************************************************/
 
+//
+// This code will return the identical size to that used for the layout
+//
 UT_uint32 XAP_UnixGnomePrintGraphics::getFontAscent(GR_Font *fnt)
 {
+	UT_uint32 asc;
+
+#if 0
 	GnomeFont * gfnt = _allocGnomeFont(static_cast<PSFont*>(fnt));
 	const GnomeFontFace *face;
 	const ArtDRect *bbox;
-	UT_uint32 asc;
 
 	face = gnome_font_get_face (gfnt);
 	bbox = 	gnome_font_face_get_stdbbox (face);
 	asc = (gint) (bbox->y1 * gnome_font_get_size (gfnt) / 10);
 	gnome_font_unref (gfnt);
+#endif
+
+  PSFont * psfnt = static_cast<PSFont *>(fnt);
+
+  XAP_UnixFont * pUFont = psfnt->getUnixFont();
+  UT_sint32 iSize = psfnt->getSize();
+  XAP_UnixFontHandle * pHndl = new XAP_UnixFontHandle(pUFont, iSize);
+  GdkFont* pFont = pHndl->getGdkFont();
+  GdkFont* pMatchFont= pHndl->getMatchGdkFont();
+  asc = MAX(pFont->ascent, pMatchFont->ascent);
+  delete pHndl;
 
 	return asc;
 }
@@ -734,25 +751,30 @@ UT_uint32 XAP_UnixGnomePrintGraphics::getFontAscent(GR_Font *fnt)
    it expects the font bbox.ury. Chema */
 UT_uint32 XAP_UnixGnomePrintGraphics::getFontAscent()
 {
+	UT_uint32 asc;
+#if 0
 	const GnomeFontFace *face;
 	const ArtDRect *bbox;
 	GnomeFont *font;
-	UT_uint32 asc;
 
 	font = m_pCurrentFont;
 	face = gnome_font_get_face (font);
 	bbox = 	gnome_font_face_get_stdbbox (face);
 	asc = (gint) (bbox->y1 * gnome_font_get_size (font) / 10);
+#endif
 
+	asc = getFontAscent(static_cast<GR_Font *>(m_pCurrentPSFont));
 	return asc;
 }
 
 UT_uint32 XAP_UnixGnomePrintGraphics::getFontDescent(GR_Font *fnt)
 {
+	UT_uint32 des;
+
+#if 0
 	GnomeFont * gfnt = _allocGnomeFont(static_cast<PSFont*>(fnt));
 	const GnomeFontFace *face;
-	const ArtDRect *bbox;
-	UT_uint32 des;
+    const ArtDRect *bbox;
 
 	face = gnome_font_get_face (gfnt);
 	bbox = 	gnome_font_face_get_stdbbox (face);
@@ -760,15 +782,28 @@ UT_uint32 XAP_UnixGnomePrintGraphics::getFontDescent(GR_Font *fnt)
 	des = (gint) (bbox->y0 * gnome_font_get_size (gfnt) / 10);
 	des *= -1;
 	gnome_font_unref (gfnt);
+#endif
+
+  PSFont * psfnt = static_cast<PSFont *>(fnt);
+
+  XAP_UnixFont * pUFont = psfnt->getUnixFont();
+  UT_sint32 iSize = psfnt->getSize();
+  XAP_UnixFontHandle * pHndl = new XAP_UnixFontHandle(pUFont, iSize);
+  GdkFont* pFont = pHndl->getGdkFont();
+  GdkFont* pMatchFont= pHndl->getMatchGdkFont();
+  des = MAX(pFont->descent, pMatchFont->descent);
+  delete pHndl;
+
 	return des;
 }
 
 UT_uint32 XAP_UnixGnomePrintGraphics::getFontDescent()
 {
+	UT_uint32 des;
+#if 0
 	const GnomeFontFace *face;
 	const ArtDRect *bbox;
 	GnomeFont *font;
-	UT_uint32 des;
 
 	font = m_pCurrentFont;
 		
@@ -779,7 +814,9 @@ UT_uint32 XAP_UnixGnomePrintGraphics::getFontDescent()
 
 	des = (gint) (bbox->y0 * gnome_font_get_size (font) / 10);
 	des *= -1;
+#endif
 
+	des = getFontDescent(static_cast<GR_Font *>(m_pCurrentPSFont));
 	return des;
 }
 
@@ -787,12 +824,12 @@ UT_uint32 XAP_UnixGnomePrintGraphics::getFontHeight()
 {
 	UT_ASSERT(m_pCurrentFont);
 
-	return getFontAscent() - getFontDescent();
+	return getFontAscent() + getFontDescent();
 }
 
 UT_uint32 XAP_UnixGnomePrintGraphics::getFontHeight(GR_Font *fnt)
 {
-		return getFontAscent(fnt) - getFontDescent(fnt);
+		return getFontAscent(fnt) + getFontDescent(fnt);
 }
 
 GR_Font* XAP_UnixGnomePrintGraphics::findFont(const char* pszFontFamily, 
@@ -854,7 +891,29 @@ GR_Font* XAP_UnixGnomePrintGraphics::findFont(const char* pszFontFamily,
 		item = new XAP_UnixFont(*m_fm->getFont("Times New Roman", s));
 	}
 	
-	PSFont * pFont = new PSFont(item, convertDimension(pszFontSize));
+//
+// This piece of code scales the FONT chosen at low resolution to that at high
+// resolution. This fixes bug 1632 and other non-WYSIWYG behaviour.
+//
+	double dScreenSize = UT_convertToInches(pszFontSize) * (double) getScreenResolution();
+	UT_sint32 iScreenSize = (UT_sint32) (dScreenSize + 0.5);
+	dScreenSize = (double) iScreenSize;
+
+	double ratToLayout = (double) UT_LAYOUT_UNITS / (double) getScreenResolution();
+	UT_sint32 iSizeLayout = (UT_sint32) (dScreenSize * ratToLayout + 0.5);
+
+	double dPaperSize = dScreenSize * (double) getResolution() / (double) getScreenResolution();
+	UT_sint32 iSize = (UT_sint32) (dPaperSize + 0.5);
+    
+	
+	if( m_bLayoutResolutionModeEnabled)
+	{
+		iSize = iSizeLayout;
+	} 
+
+	UT_DEBUGMSG(("SEVIOR: Using Gnome-Print PS Font Size %d \n",iSize));
+	PSFont * pFont = new PSFont(item, iSize);
+
 	UT_ASSERT(pFont);
 
 	return pFont;
