@@ -205,6 +205,11 @@ UT_Bool	XAP_MacFrame::updateTitle(void)
 	return UT_TRUE;
 }
 
+UT_sint32 XAP_MacFrame::setInputMode(const char * szName)
+{
+	UT_ASSERT (UT_NOT_IMPLEMENTED);
+}
+
 
 XAP_DialogFactory *XAP_MacFrame::getDialogFactory(void)
 {
