@@ -40,7 +40,6 @@ class XAP_CocoaDialog_FileOpenSaveAs;
 }
 
 -(id)initWithXAP:(XAP_CocoaDialog_FileOpenSaveAs*)xap;
--(void)awakeFromNib;
 
 -(NSView*)fileTypeAcessoryView;
 -(void)setFileTypeLabel:(NSString*)label;
