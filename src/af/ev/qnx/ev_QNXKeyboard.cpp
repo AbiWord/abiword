@@ -53,11 +53,9 @@ UT_Bool ev_QNXKeyboard::keyPressEvent(AV_View* pView,
 	PhKeyEvent_t *keyevent;
 
 	keyevent = (PhKeyEvent_t *)PhGetData(e->event);
-	//PHOTON SUCKS! For some reason the symbols are stored
-	//in the key_cap field always, and the syms occasionally,
-	//and then only for key down events!
-	//if (!keyevent || !(keyevent->key_flags & Pk_KF_Sym_Valid))
-	if (!keyevent) {
+	//We only want to catch the down and repeat keys, ignore all others
+	if (!keyevent || 
+        !(keyevent->key_flags & (Pk_KF_Key_Down | Pk_KF_Key_Repeat)))  {
 		return(UT_FALSE);
 	}
 
@@ -65,14 +63,6 @@ UT_Bool ev_QNXKeyboard::keyPressEvent(AV_View* pView,
 	EV_EditEventMapperResult result;
 	EV_EditMethod * pEM;
 
-/*
-	if (keyevent->key_mods & KEYMOD_SHIFT) 
-		state |= EV_EMS_SHIFT;
-	if (keyevent->key_mods & KEYMOD_CTRL) 
-		state |= EV_EMS_CONTROL;
-	if (keyevent->key_mods & KEYMOD_ALT) 
-		state |= EV_EMS_ALT;
-*/
 	if (keyevent->key_mods & Pk_KM_Shift) 
 		state |= EV_EMS_SHIFT;
 	if (keyevent->key_mods & Pk_KM_Ctrl) 
@@ -258,16 +248,16 @@ static UT_Bool s_isVirtualKeyCode(PhKeyEvent_t *keyevent)
 	}
 
 	switch (keyevent->key_cap) {
-	case Pk_Left:
 	case ' ':
 	case Pk_BackSpace:
 	case Pk_Tab:
  	case Pk_Return:
 	case Pk_Escape:
 	case Pk_Home:
-	case Pk_Up:
+	case Pk_Left:
 	case Pk_Right:
 	case Pk_Down:
+	case Pk_Up:
 	case Pk_Pg_Up:
 	case Pk_Pg_Down:
 	case Pk_End:
@@ -321,19 +311,12 @@ static EV_EditBits s_mapVirtualKeyCodeToNVK(PhKeyEvent_t *keyevent)
 {
 	
 	//Ignore keys with symbols (key press?)
-/*
+#if 0
 	printf("-- Key Symbol: 0x%x \n", keyevent->key_sym);
 	printf("Key Cap:    0x%x \n", keyevent->key_cap);
 	printf("Key Flags:  0x%x \n", keyevent->key_flags);
 	printf("Key Mods:   0x%x \n", keyevent->key_mods);
-*/
-	//Only mark the up, repeat keys ... this is better,
-	//But still things like holding down the arrow key doesn't
-	//work properly!
-	if ((keyevent->key_flags & Pk_KF_Key_Down) &&
-	   !(keyevent->key_flags & Pk_KF_Key_Repeat)) {
-		return EV_NVK__IGNORE__;
-	}
+#endif
 
 	switch (keyevent->key_cap) {
 	case ' ':
@@ -449,10 +432,7 @@ static EV_EditBits s_mapVirtualKeyCodeToNVK(PhKeyEvent_t *keyevent)
 static int s_getKeyEventValue(PhKeyEvent_t *keyevent) {
 	int key;
 
-/*
-	if (keyevent->key_sym > 0x00ff)
-		return(keyevent->key_sym);
-*/
+	//TODO: Make this more international!
 	if ((key = PhTo8859_1(keyevent)) == -1) {
 		return(EV_NVK__IGNORE__);
 	}

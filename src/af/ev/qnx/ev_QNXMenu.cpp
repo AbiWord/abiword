@@ -218,6 +218,34 @@ int menu_appear(PtWidget_t *w, void *data, PtCallbackInfo_t *info) {
 	return Pt_CONTINUE;
 }
 
+/* Not perfect since we have FXX keys and Del in this list 
+   Really we should have a function to attach a hotkey/label
+   to a widget given the widget.
+*/
+static char get_hotkey_key(const char *str) {
+	//Find the next character after the =
+	char *p;
+	if ((p = strchr(str, '+')) && *++p) {
+		return tolower(*p);
+	}	
+	return '\0';
+}
+
+static int get_hotkey_code(const char *str) {
+	int code = 0;
+	if (strstr(str, "Ctrl")) {
+		code |= Pk_KM_Ctrl; 
+	}
+	if (strstr(str, "Shift")) {
+		code |= Pk_KM_Shift;
+	}
+	if (strstr(str, "Alt")) {
+		code |= Pk_KM_Alt;
+	}
+	return code;
+}
+
+
 
 UT_Bool EV_QNXMenu::synthesizeMenu(PtWidget_t * wMenuRoot)
 {
@@ -262,8 +290,11 @@ UT_Bool EV_QNXMenu::synthesizeMenu(PtWidget_t * wMenuRoot)
 			PtWidget_t * wParent, *wbutton;
 			stack.viewTop((void **)&wParent);
 			
-			//printf("Normal menu: [%s] \n", 
-			//        (szLabelName) ? szLabelName : "NULL");
+			/*
+			printf("Normal menu: [%s] [%s] \n", 
+			        (szLabelName) ? szLabelName : "NULL",
+					(szMnemonicName) ? szMnemonicName : "NULL");
+			*/
 			if (szLabelName && *szLabelName)
 			{
 				char buf[1024], accel[2];
@@ -271,14 +302,13 @@ UT_Bool EV_QNXMenu::synthesizeMenu(PtWidget_t * wMenuRoot)
 				accel[0] = _ev_convert(buf, szLabelName);
 				accel[1] = '\0';
 
-				if (szMnemonicName && *szMnemonicName) {
-					;//Do something here ...	
-				}
 
 				int n = 0;
 				PtSetArg(&args[n], Pt_ARG_TEXT_STRING, buf, 0); n++;
 				PtSetArg(&args[n], Pt_ARG_ACCEL_KEY, accel, 0); n++;
-				//PtSetArg(&args[1], Pt_ARG_ACCEL_TEXT, accel, 0);				
+				if (szMnemonicName && *szMnemonicName) {
+					PtSetArg(&args[n], Pt_ARG_ACCEL_TEXT, szMnemonicName, 0); n++;
+				}
  				wbutton = PtCreateWidget(PtMenuButton, wParent, n, args); 
 				struct _cb_menu *mcb;
 				mcb = (struct _cb_menu *)malloc(sizeof(*mcb));
@@ -286,6 +316,13 @@ UT_Bool EV_QNXMenu::synthesizeMenu(PtWidget_t * wMenuRoot)
 				mcb->id = id;
 				mcb->qnxmenu = this;
 				PtAddCallback(wbutton, Pt_CB_ACTIVATE, menu_activate, mcb);
+
+				if (szMnemonicName && *szMnemonicName) {
+					PtAddHotkeyHandler(PtGetParent(wMenuRoot, PtWindow),
+									   get_hotkey_key(szMnemonicName), 
+									   get_hotkey_code(szMnemonicName),
+										0, mcb, menu_activate); 
+				}
 
 				// item is created, add to class vector
 				m_vecMenuWidgets.addItem(wbutton);
@@ -329,6 +366,9 @@ UT_Bool EV_QNXMenu::synthesizeMenu(PtWidget_t * wMenuRoot)
 				wmenu =  PtCreateWidget(PtMenu, wbutton, n, args); 
 				if (wParent == wMenuRoot) {
 					PtAddCallback(wbutton, Pt_CB_ARM, menu_appear, wmenu);
+					PtAddHotkeyHandler(PtGetParent(wMenuRoot, PtWindow), 
+										tolower(accel[0]), Pk_KM_Alt, 
+										0, wmenu, menu_appear); 
 				}
 
 				stack.push(wmenu);
