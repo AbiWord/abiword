@@ -16,7 +16,6 @@ sub PrintTime {
 
 ## EnUS is in a different file in a different format
 my $lang = 'en-US';
-#open(STRINGS, "< ./src/af/xap/xp/xap_String_Id.h" )
 open(STRINGS, "< ./src/wp/ap/xp/ap_String_Id.h" )
   or die "Cannot open /src/wp/ap/xp/ap_String_Id.h";
 
@@ -27,12 +26,26 @@ open(STRINGS, "< ./src/wp/ap/xp/ap_String_Id.h" )
    $dlgs{$1}{$lang} = $string;
  }
 
+open(STRINGS, "< ./src/af/xap/xp/xap_String_Id.h" )
+  or die "Cannot open ./src/af/xap/xp/xap_String_Id.h";
+
+ while (<STRINGS>) {
+   next unless /(DLG_.*)\s*,\s*\"(.*)\"/;
+   $string = $2;
+   $string =~ s/&amp/&/;
+   $dlgs{$1}{$lang} = $string;
+ }
+
 ## Read in each of the other language files 
 ## and process them apropriatly
-my @lang = (qw/ca-ES da-DK de-DE du-NL es-ES fi-FI fr-FR id-ID no-BOK it-IT pt-PT sv-SE/);
-foreach my $lang (@lang) {
-  open(STRINGS, "< ./user/wp/strings/$lang.strings") 
-    or die "Cannot open $lang.strings";
+$stringsdir = "./user/wp/strings";
+opendir(DIR, $stringsdir) || die "can't opendir $stringsdir: $!";
+my @lang = grep { s/\.strings//  } readdir(DIR);
+closedir DIR;
+
+ foreach my $lang (@lang) {
+  open(STRINGS, "< $stringsdir/$lang.strings") 
+    or die "Cannot open $stringsdir/$lang.strings";
 
   $missing{$lang} = 0;
   $noamp{$lang} = 0;
@@ -128,7 +141,7 @@ print
 foreach my $dlg (sort keys %dlgs) {
   next unless $dlg;
   eval {
-    $percent_longer = length($dlgs{$dlg}{EnUS}) / length($dlgs{$dlg}{$longest{$dlg}}) * 100;
+    $percent_longer = length($dlgs{$dlg}{'en-US'}) / length($dlgs{$dlg}{$longest{$dlg}}) * 100;
   };
   $percent_longer = sprintf("%3d%", 100 - $percent_longer);
   push(@td, td([ a( { href => "#$dlg"}, b($dlg)), $longest{$dlg}, $percent_longer, $dlgs{$dlg}{$longest{$dlg}} ])),"\n";
