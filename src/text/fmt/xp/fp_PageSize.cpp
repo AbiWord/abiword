@@ -156,8 +156,15 @@ bool fp_PageSize::IsPredefinedName(const char* szPageSizeName)
 
 fp_PageSize::Predefined fp_PageSize::NameToPredefined(const char *name)
 {
-	int preDef;
+	int preDef = 0;
 	// determine the predefined layout the name represents
+
+	if(!name)
+	  {
+	    UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+	    return fp_PageSize::Letter;
+	  }
+
 	for(preDef=0;
 	    preDef < static_cast<int>(_last_predefined_pagesize_dont_use_);
 		preDef++)
