@@ -17,6 +17,14 @@
  * 02111-1307, USA.
  */
 
+/* Pspell 0.12 added a size param to a lot of its functions. If this is
+ * defined before <pspell.h>, we retain source compatibility with
+ * Pspell 0.11. If we upgrade to Pspell 0.12, we can ditch the utfXXX_to_utfYYY
+ * functions if we pass the size in bytes of the passed string and specify
+ * that we're using "machine unsigned 16" instead of utf8 encoding
+ */
+#define USE_ORIGINAL_MANAGER_FUNCS 1
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -92,11 +100,9 @@ int SpellCheckInit(char *lang)
 
 void SpellCheckCleanup(void)
 {
-#if 0
   /* pspell segfaults for some reason. get this fixed */
   if(spell_manager)
     delete_pspell_manager(spell_manager);
-#endif
 }
 
 /*
