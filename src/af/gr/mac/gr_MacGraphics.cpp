@@ -42,6 +42,8 @@ GR_MacGraphics::GR_MacGraphics(CGrafPtr port, XAP_MacFontManager * fontManager, 
     err = CreateCGContextForPort (port, &m_CGContext );
     UT_ASSERT (err == noErr);
     ::GetPortBounds(port, &rect);
+	SyncCGContextOriginWithPort (m_CGContext, port );
+
     CGContextTranslateCTM(m_CGContext, 0, (float)(rect.bottom - rect.top));
     // Be aware that by performing a negative scale in the following line of
     // code, your text will also be flipped
@@ -80,15 +82,52 @@ GR_MacGraphics::~GR_MacGraphics ()
 void GR_MacGraphics::drawChars(const UT_UCSChar* pChars, 
 		int iCharOffset, int iLength, UT_sint32 xoff, UT_sint32 yoff)
 {
-    UT_ASSERT (UT_NOT_IMPLEMENTED);
+	UT_DEBUGMSG (("drawChars: %d, %d\n", iCharOffset, iLength));
+	ATSUTextLayout theLayout = NULL;
+    OSStatus err;
+	ByteCount iSize = sizeof(CGContextRef);
+	ATSUAttributeTag iTag = kATSUCGContextTag;
+	ATSUAttributeValuePtr iValuePtr = &m_CGContext;
+    ATSUStyle theStyle = m_pMacFont->getATSUStyle();
+	/* set up our locals, verify parameters... */
+    UT_ASSERT (pChars) ;
+    theLayout = NULL;
+
+	/* create the ATSUI layout */
+    err = ATSUCreateTextLayoutWithTextPtr( pChars, iCharOffset,
+										   iCharOffset + iLength, iCharOffset + iLength, 1, 
+										   (unsigned long *) &iLength, &theStyle,
+										   &theLayout);
+	UT_ASSERT (err == noErr);
+    if (err != noErr) 
+		goto bail;
+
+	/* Set the CG to force drawing using CGContext*/
+	err = ATSUSetLayoutControls( theLayout, 1, &iTag, &iSize, &iValuePtr );
+	UT_ASSERT (err == noErr);
+
+	/* draw the text */
+    err = ATSUDrawText(theLayout, 0, iLength,
+					   FixRatio(xoff, 1), FixRatio(yoff, 1));
+	UT_ASSERT (err == noErr);
+
+	/* done */
+ bail:
+    if (theLayout != NULL) {
+		ATSUDisposeTextLayout(theLayout);
+	}
 }
 
 void GR_MacGraphics::setFont(GR_Font* pFont)
 {
-    m_pMacFont = dynamic_cast<GR_MacFont *>(pFont);
+	// TODO: check the ownership of pFont. I think become GR_MacGraphics', but I'm
+	// not sure
+    // TODO: if remark above is true, delete.
+	m_pMacFont = dynamic_cast<GR_MacFont *>(pFont);
     UT_ASSERT (m_pMacFont != NULL);
 	ATSFontRef	fontRef;
     
+#if 0
     if (m_CGFont) {
         CGFontRelease (m_CGFont);
     }
@@ -96,6 +135,7 @@ void GR_MacGraphics::setFont(GR_Font* pFont)
     m_CGFont = CGFontCreateWithPlatformFont ((void*)&fontRef);
     ::CGContextSetFont(m_CGContext, m_CGFont);
 	::CGContextSetFontSize (m_CGContext, m_pMacFont->getSize());
+#endif
 }
 
 
@@ -119,11 +159,16 @@ UT_uint32 GR_MacGraphics::getFontHeight()
     return m_pMacFont->getHeight();
 }
 
-
+/*
+  This one should be FAST !!
+ */
 UT_uint32 GR_MacGraphics::measureUnRemappedChar(const UT_UCSChar c)
 {
-    UT_ASSERT (UT_NOT_IMPLEMENTED);
-    return 0;
+	UT_UCSChar string[2];
+
+	string [0] = c;
+	string [1] = 0;
+	return m_pMacFont->getTextWidth (string);
 }
 
 
@@ -137,28 +182,17 @@ GR_Font* GR_MacGraphics::getGUIFont()
 {
     // TODO: move this to GR_MacFont as it belongs to it.
     UT_DEBUGMSG (("HUB: GR_MacGraphics::getGUIFont() called\n"));
+	ATSUStyle  theStyle;
     OSStatus err;
-    Style	fontStyle;
-    SInt16 fontSize;
-    
-    static GR_MacFont *guiFont = NULL;
-    if (guiFont == NULL) {
-		ATSUFontID	atsFontId = kATSUInvalidFontID;
-        FMFontFamily fontFamily;
-		Str255 fontName;
-        // FIXME: choose the right script
-        err = ::GetThemeFont (kThemeApplicationFont, smRoman, fontName, &fontSize, &fontStyle);
-		UT_ASSERT (err == noErr);
-        fontFamily = ::FMGetFontFamilyFromName (fontName);
-		// This one is useful as it convert a QD font to an ATSUI FontID.
-		err = ::ATSUFONDtoFontID(fontFamily, fontStyle, &atsFontId);
-		UT_ASSERT (atsFontId != kATSUInvalidFontID);
-		UT_ASSERT (err == noErr);
-		
-		guiFont = new GR_MacFont (atsFontId);
-    }
+	GR_MacFont *theFont;
 
-    return guiFont;
+	err = m_pMacFontManager->_makeThemeATSUIStyle (kThemeApplicationFont, &theStyle);
+	UT_ASSERT (err == noErr);
+	if (err == noErr) 
+	{
+		theFont = new GR_MacFont (theStyle);
+	}
+	return theFont;
 }
 
 GR_Font* GR_MacGraphics::findFont(
@@ -169,14 +203,15 @@ GR_Font* GR_MacGraphics::findFont(
 		const char* pszFontStretch, 
 		const char* pszFontSize)
 {
+	OSStatus err;
 	UT_DEBUGMSG (("HUB: GR_MacGraphics::findFont() called\n"));
-//    CGContextSelectFont (m_CGContext, pszFontFamily, pszFontSize, kCGEncodingFontSpecific);
-    // TODO retrieve the atsuiFont
-	ATSUFontID atsuiFont = m_pMacFontManager->findFont (pszFontFamily, pszFontStyle, 
+	ATSUStyle atsuiFont = m_pMacFontManager->findFont (pszFontFamily, pszFontStyle, 
 														pszFontVariant, pszFontWeight, pszFontStretch, 
 														convertDimension(pszFontSize));
+	UT_ASSERT (atsuiFont);
     m_pMacFont = new GR_MacFont(atsuiFont);
 	UT_ASSERT (m_pMacFont);
+	err = ATSUDisposeStyle (atsuiFont);
     return(m_pMacFont);
 }
 
@@ -251,7 +286,6 @@ void GR_MacGraphics::setClipRect(const UT_Rect* pRect)
 	  Assume that doing an empty path will do an emtpy clipping.
 	  Check again later.
 	 */
-	CGContextBeginPath (m_CGContext);
 	if (pRect) 
 	{
 		CGRect myRect;
@@ -261,10 +295,13 @@ void GR_MacGraphics::setClipRect(const UT_Rect* pRect)
 		myRect.size.width = pRect->width;
 		myRect.size.height = pRect->height;
 		
-		CGContextAddRect (m_CGContext, myRect);
+		CGContextClipToRect(m_CGContext, myRect);
 	}
-	CGContextClosePath (m_CGContext);
-	CGContextClip (m_CGContext);
+	else {
+		CGContextBeginPath(m_CGContext);
+		CGContextBeginPath(m_CGContext);
+		CGContextClip (m_CGContext);
+	}
 }
 
 void GR_MacGraphics::scroll(UT_sint32, UT_sint32)
@@ -402,6 +439,7 @@ UT_uint32 GR_MacGraphics::getFontHeight(GR_Font *font)
 }
 
 
+
 // Code below borrowed to gr_BeOSGraphics.cpp... FIXIT
 //////////////////////////////////////////////////////////////////
 // This is a static method in the GR_Font base class implemented
@@ -425,5 +463,6 @@ void GR_Font::s_getGenericFontProperties(const char * szFontName,
 	*pfp = FP_Unknown;
 	*pbTrueType = true;
 }
+
 
 

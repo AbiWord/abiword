@@ -1,3 +1,4 @@
+/* -*- c-basic-offset: 4; tab-width: 4; indent-tabs-mode: t -*- */
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
  * Copyright (C) 2001 Hubert Figuiere
@@ -34,30 +35,29 @@
 
 class GR_MacFont : public GR_Font
 {
-public:
+ public:
 	GR_MacFont(int font, int face, int pointSize);
     // constructor from ASTUI font
-	GR_MacFont (ATSUFontID atsuId);
-    
+    GR_MacFont (ATSUStyle theStyle);
+
     virtual ~GR_MacFont ();
     UT_uint32 getAscent();
 	UT_uint32 getDescent();
 	UT_uint32 getHeight();
     UT_uint32 getSize ()
 		{ return m_pointSize; };
-    ATSFontRef getFontRef ()
-        { return m_fontRef; };
-	ATSUFontID getFontID ()
-		{ return m_fontID; };
-protected:
+	UT_uint32 getTextWidth (const UT_UCSChar * text) const;
+	ATSUStyle getATSUStyle () const
+		{ return m_fontStyle; };
+ protected:
+	static void _quickAndDirtySetUnicodeTextFromASCII_C_Chars(UniCharArrayPtr *ucap, UniCharCount *ucc);
+ private:
+	ATSUStyle    m_fontStyle;   // the real font.
 	ATSUTextLayout		m_MeasurementText;
-	
-static void _quickAndDirtySetUnicodeTextFromASCII_C_Chars(UniCharArrayPtr *ucap, UniCharCount *ucc);
-private:
-	ATSUFontID	m_fontID;
-    ATSFontRef m_fontRef;
 	UT_uint32	m_pointSize;
-void _initMeasurements ();
+
+	OSStatus _UCSTextToATSUTextLayout (const UT_UCSChar *text, UT_uint32 textlen, ATSUTextLayout * layout) const;
+	void _initMeasurements ();
 };
 
 

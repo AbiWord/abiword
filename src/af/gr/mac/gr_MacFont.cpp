@@ -27,30 +27,34 @@
    If you know ATSUI, please feel free and correct me
  */
 #include <ATSUnicode.h>
+#include <FixMath.h>
 
 #include "ut_debugmsg.h"
 #include "ut_assert.h"
 #include "ut_misc.h"
+#include "ut_string.h"
 #include "gr_Graphics.h"
 #include "gr_MacFont.h"
 
 
-
-GR_MacFont::GR_MacFont (ATSUFontID atsFontId)
+GR_MacFont::GR_MacFont (const ATSUStyle atsFontStyle)
 	: GR_Font ()
 {
-	UT_ASSERT (atsFontId != kATSUInvalidFontID);
+	OSStatus err;
 
-	m_fontRef = 0;
-	m_fontID = atsFontId;
 	m_MeasurementText = NULL;
 	m_pointSize = 0;
+	err = ATSUCreateAndCopyStyle (atsFontStyle, &m_fontStyle);
+	UT_ASSERT (err == noErr);
 }
-
 
 GR_MacFont::~GR_MacFont ()
 {
-	
+	OSStatus err;
+	if (m_fontStyle) {
+		err = ATSUDisposeStyle (m_fontStyle);
+		UT_ASSERT (err == noErr);
+	}
 }
 
 
@@ -66,7 +70,7 @@ UT_uint32 GR_MacFont::getAscent()
 	status = ATSUMeasureText(m_MeasurementText, 0, 1, NULL, NULL, &ascent, NULL);
 	UT_ASSERT (status == noErr);
 	
-	return (UT_uint32)ascent;
+	return (UT_uint32) FixRound (ascent);
 }
 
 
@@ -80,7 +84,7 @@ UT_uint32 GR_MacFont::getDescent()
 	status = ATSUMeasureText(m_MeasurementText, 0, 1, NULL, NULL, NULL, &descent);
 	UT_ASSERT (status == noErr);
 	
-	return (UT_uint32)descent;
+	return (UT_uint32)FixRound (descent);
 }
 
 
@@ -94,26 +98,79 @@ UT_uint32 GR_MacFont::getHeight()
 	status = ATSUMeasureText(m_MeasurementText, 0, 1, NULL, NULL, &ascent, &descent);
 	UT_ASSERT (status == noErr);
 	
-	return (UT_uint32)(descent + ascent);
+	return (UT_uint32)FixRound(descent + ascent);
 }
 
 
+UT_uint32 GR_MacFont::getTextWidth (const UT_UCSChar * text) const
+{
+	OSStatus			status;
+	ATSUTextMeasurement begin, end;
+	ATSUTextLayout      textToMeasure;
+	UT_uint32           textlen;
+	
+	UT_ASSERT (text != NULL);
+	textlen = UT_UCS_strlen (text);
+	status = _UCSTextToATSUTextLayout (text, textlen,&textToMeasure);
+	UT_ASSERT (status == noErr);
+	status = ATSUMeasureText(textToMeasure, 0, textlen, &begin, &end, NULL, NULL);
+	UT_ASSERT (status == noErr);
+#ifdef DEBUG
+	if (status != noErr) 
+	{
+		UT_DEBUGMSG(("ATSUMeasureText returned %d\n", status));
+	}
+#endif
+	status = ATSUDisposeTextLayout (textToMeasure);
+	UT_ASSERT (status == noErr);
+
+	xxx_UT_DEBUGMSG (("HUB: GR_MacFont::getTextWidth() = %d, %d\n", FixRound(end), FixRound(begin)));
+	xxx_UT_DEBUGMSG (("HUB: GR_MacFont::getTextWidth() = %d\n", (UT_uint32)FixRound(end - begin)));
+	return (UT_uint32)FixRound(end - begin);
+}
+
+
+/*
+  From a UNICODE null terminated string (UCS-2) with specified length, create an ATSUTextLayout
+
+  layout is returned on exit. WARNING: you need to dispose it after use.
+ */
+OSStatus				 
+GR_MacFont::_UCSTextToATSUTextLayout (const UT_UCSChar *text, UT_uint32 textlen, ATSUTextLayout * layout) const
+{  
+	ATSUStyle			style;				// Take the Style that belong to the font.
+	UniCharCount		runLengths;
+	OSStatus			status;
+	
+	UT_ASSERT (text != NULL);
+	runLengths = textlen;
+	status = ATSUCreateStyle(&style);
+	UT_ASSERT (status == noErr);
+	status = ATSUCreateTextLayoutWithTextPtr (text, 0, textlen, textlen, 1, &runLengths, &style, layout);
+	UT_ASSERT (status == noErr);
+#ifdef DEBUG
+	if (status != noErr) 
+	{
+		UT_DEBUGMSG(("ATSUCreateTextLayoutWithTextPtr returned %d\n", status));
+	}
+#endif
+	return status;
+}
 
 
 void
 GR_MacFont::_initMeasurements ()
 {
+	// TODO: make sure the style used here is consistent...
 	UniCharArrayPtr		uniText;
 	UniCharCount		uniTextLen;
-	ATSUStyle			style;				// Take the Style that belong to the font.
 	UniCharCount		runLengths;
 	OSStatus			status;
 	
 	_quickAndDirtySetUnicodeTextFromASCII_C_Chars(&uniText, &uniTextLen);
 	runLengths = uniTextLen;
-	status = ATSUCreateStyle(&style);
-	UT_ASSERT (status == noErr);
-	status = ATSUCreateTextLayoutWithTextPtr (uniText, 0, 2, uniTextLen, 1, &runLengths, &style, &m_MeasurementText);
+	status = ATSUCreateTextLayoutWithTextPtr (uniText, 0, 2, uniTextLen, 1, 
+											  &runLengths, &m_fontStyle, &m_MeasurementText);
 	UT_ASSERT (status == noErr);
 	::DisposePtr ((Ptr)uniText);
 }
@@ -148,3 +205,5 @@ GR_MacFont::_quickAndDirtySetUnicodeTextFromASCII_C_Chars(UniCharArrayPtr *ucap,
 	DisposePtr(buffer);
 	*ucc = aol / 2;
 }
+
+
