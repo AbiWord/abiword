@@ -42,6 +42,9 @@
 
 /*
  * $Log$
+ * Revision 1.10  1999/12/21 18:46:29  sterwill
+ * ispell patch for non-English dictionaries by Henrik Berg <henrik@lansen.se>
+ *
  * Revision 1.9  1999/10/20 03:19:35  paul
  * Hacked ispell code to ignore any characters that don't fit in the lookup tables loaded from the dictionary.  It ain't pretty, but at least we don't crash there any more.
  *
@@ -343,6 +346,7 @@ void chk_aff (ichar_t* word, ichar_t* ucword, int len, int ignoreflagbits, int a
 long whatcap (ichar_t* word);
 int hash (ichar_t* s, int hashtblsize);
 void makepossibilities(ichar_t* word);
+int	findfiletype (char * name, int searchnames, int * deformatter);
 
 #endif
 
@@ -653,7 +657,7 @@ ichar_t mytoupper(ichar_t c);
 				    > 0)
 #define l1_isstringch(ptr, len, canon)	\
 				(len = 1, \
-				  isstringstart (*(ptr)) \
+				  isstringstart ((unsigned char)(*(ptr))) \
 				    &&  ((len = \
 					  stringcharlen ((ptr), (canon))) \
 					> 0 \

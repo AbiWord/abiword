@@ -43,6 +43,9 @@ static char Rcs_Id[] =
 
 /*
  * $Log$
+ * Revision 1.6  1999/12/21 18:46:29  sterwill
+ * ispell patch for non-English dictionaries by Henrik Berg <henrik@lansen.se>
+ *
  * Revision 1.5  1999/10/20 03:19:35  paul
  * Hacked ispell code to ignore any characters that don't fit in the lookup tables loaded from the dictionary.  It ain't pretty, but at least we don't crash there any more.
  *
@@ -491,7 +494,7 @@ int strtoichar (out, in, outlen, canonical)
 	if (l1_isstringch (in, len, canonical))
 	    *out++ = SET_SIZE + laststringch;
 	else
-	    *out++ = *in;
+	    *out++ = (unsigned char)( *in );
 	}
     *out = 0;
     return outlen <= 0;
