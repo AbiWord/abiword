@@ -88,7 +88,7 @@
 #if 0
 #include "ap_NautilusView.h"
 #include <libnautilus/nautilus-view-standard-main.h>
-#endif 0
+#endif
 
 
 // quick hack - this is defined in ap_EditMethods.cpp
@@ -548,7 +548,7 @@ bool AP_UnixGnomeApp::parseCommandLine(poptContext poptcon)
 //-------------------------------------------------------------------
 
 /*****************************************************************/
-/* Implements the Bonobo/PropertyBag:1.0 interface
+/* Implements the Bonobo/PropertyBag:1.0 interface               */
 /*****************************************************************/
 
 /* 
