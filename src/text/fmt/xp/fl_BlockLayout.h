@@ -391,6 +391,8 @@ public:
 	void					__dump(FILE * fp) const;
 #endif
 
+	void                insertFirstLineIntoVerticalContainer();
+	
 protected:
 
 	void					_recalcPendingWord(UT_uint32 iOffset, UT_sint32 chg);

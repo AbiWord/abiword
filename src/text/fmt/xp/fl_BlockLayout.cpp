@@ -1144,7 +1144,7 @@ fl_BlockLayout::_insertEndOfParagraphRun(void)
 		getNewContainer();
 	}
 	fp_Line * pFirst = (fp_Line *) getFirstContainer();
-	UT_ASSERT(pFirst->countRuns() == 0);
+	UT_ASSERT(pFirst && pFirst->countRuns() == 0);
 
 	pFirst->addRun(m_pFirstRun);
 
@@ -1472,6 +1472,7 @@ fp_Container* fl_BlockLayout::getNewContainerLocal(void)
 		setFirstContainer(pLine);
 		setLastContainer(getFirstContainer());
 		pLine->setPrev(NULL);
+		
 		fp_Line* pPrevLine = NULL;
 		if(getPrev())
 		{
@@ -1491,6 +1492,14 @@ fp_Container* fl_BlockLayout::getNewContainerLocal(void)
 		else if (getNext() && getNext()->getFirstContainer())
 		{
 			pContainer = (fp_VerticalContainer *) getNext()->getFirstContainer()->getContainer();
+		}
+		else if(!getPrev() && !getNext())
+		{
+			// this block is not linked into the block list, probably
+			// it has just been created and _insertEndOfParagraphRun()
+			// is trying to do its job -- we must not insert the new
+			// line into any vertical container
+			return (fp_Container *) pLine;
 		}
 		else if (m_pSectionLayout->getFirstContainer())
 		{
@@ -2614,9 +2623,12 @@ bool	fl_BlockLayout::_doInsertTextSpan(PT_BlockOffset blockOffset, UT_uint32 len
 	PT_BlockOffset curOffset = blockOffset;
 	const UT_UCSChar* pSpan;
 	UT_uint32 lenSpan = 0;
+	UT_uint32 iWhileCount = 0;
 
 	while(len > curOffset - blockOffset)
 	{
+		UT_DEBUGMSG(("fl_BlockLayout::_doInsertTextSpan: iWhileCount %d\n", ++iWhileCount));
+		
 		FriBidiCharType iPrevType, iNextType, iLastStrongType = FRIBIDI_TYPE_UNSET, iType;
 		getSpanPtr((UT_uint32) curOffset, &pSpan, &lenSpan);
 		UT_ASSERT(pSpan);
@@ -7026,3 +7038,45 @@ fl_BlockLayout::debugFlashing(void)
 	pView->_drawInsertionPoint();
 #endif
 }
+
+void fl_BlockLayout::insertFirstLineIntoVerticalContainer()
+{
+	fp_VerticalContainer* pContainer = NULL;
+	fp_Line* pPrevLine = NULL;
+
+	fp_Line* pFirstLine = (fp_Line *) getFirstContainer();
+	fp_Line* pLastLine = (fp_Line *) getLastContainer();
+
+	UT_ASSERT( pFirstLine && pLastLine );
+	UT_ASSERT( pFirstLine == pLastLine );
+
+	if (getPrev() && getPrev()->getLastContainer())
+	{
+		pPrevLine = (fp_Line *) getPrev()->getLastContainer();
+		pContainer = (fp_VerticalContainer *) pPrevLine->getContainer();
+	}
+	else if (getNext() && getNext()->getFirstContainer())
+	{
+		pContainer = (fp_VerticalContainer *) getNext()->getFirstContainer()->getContainer();
+	}
+	else if (m_pSectionLayout->getFirstContainer())
+	{
+		// TODO assert something here about what's in that container
+		pContainer = (fp_VerticalContainer *) m_pSectionLayout->getFirstContainer();
+	}
+	else
+	{
+		pContainer = (fp_VerticalContainer *) m_pSectionLayout->getNewContainer();
+		UT_ASSERT(pContainer->getWidth() >0);
+	}
+
+	UT_ASSERT( pContainer );
+
+	if (!pPrevLine)
+		pContainer->insertContainer((fp_Container *) pFirstLine);
+	else
+		pContainer->insertContainerAfter((fp_Container *)pFirstLine, (fp_Container *) pPrevLine);
+	
+
+}
+

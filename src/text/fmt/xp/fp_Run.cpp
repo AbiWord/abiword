@@ -348,14 +348,17 @@ void fp_Run::updateHighlightColor(void)
 		if(pLine != NULL)
 		{
 			fp_Container * pCon = pLine->getContainer();
-			// Check if we are in a table cell which has a NON-transparent background
-			// if it is, then use the cell backgound color
-			if(pCon->getContainerType() == FP_CONTAINER_CELL && (((fp_CellContainer *) pCon)->getBgStyle() != FS_OFF))
+			if(pCon)
 			{
-				m_pColorHL = ((fp_CellContainer *) pCon)->getBgColor();
-				return;
-			} 
-			pPage = pCon->getPage();
+				// Check if we are in a table cell which has a NON-transparent background
+				// if it is, then use the cell backgound color
+				if(pCon->getContainerType() == FP_CONTAINER_CELL && (((fp_CellContainer *) pCon)->getBgStyle() != FS_OFF))
+				{
+					m_pColorHL = ((fp_CellContainer *) pCon)->getBgColor();
+					return;
+				} 
+				pPage = pCon->getPage();
+			}
 		}
 		if (pPage != NULL)
 		{
@@ -392,14 +395,18 @@ void fp_Run::updatePageColor(void)
 	if(pLine != NULL)
 	{
 		fp_Container * pCon = pLine->getContainer();
-		// Check if we are in a table cell which has a NON-transparent background
-		// if it is, then use the cell backgound color
-		if(pCon->getContainerType() == FP_CONTAINER_CELL && (((fp_CellContainer *) pCon)->getBgStyle() != FS_OFF))
+		if(pCon)
 		{
-			m_pColorPG = ((fp_CellContainer *) pCon)->getBgColor();
-			return;
-		} 
-		pPage = pCon->getPage();
+			
+			// Check if we are in a table cell which has a NON-transparent background
+			// if it is, then use the cell backgound color
+			if(pCon->getContainerType() == FP_CONTAINER_CELL && (((fp_CellContainer *) pCon)->getBgStyle() != FS_OFF))
+			{
+				m_pColorPG = ((fp_CellContainer *) pCon)->getBgColor();
+				return;
+			} 
+			pPage = pCon->getPage();
+		}
 	}
 	if (pPage != NULL)
 	{
