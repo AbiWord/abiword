@@ -86,6 +86,13 @@ AP_Win32Dialog_Options::~AP_Win32Dialog_Options(void)
 //////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////
 
+void AP_Win32Dialog_Options::_initEnableControlsPlatformSpecific()
+{
+	_controlEnable( id_CHECK_LANG_WITH_KEYBOARD, true); 
+	_controlEnable( id_CHECK_DIR_MARKER_AFTER_CLOSING_PARENTHESIS,_gatherLanguageWithKeyboard());  
+}
+
+
 void AP_Win32Dialog_Options::runModal(XAP_Frame * pFrame)
 {	
 	XAP_Win32App * pWin32App = static_cast<XAP_Win32App *>(m_pApp);	
@@ -279,6 +286,11 @@ void AP_Win32Dialog_Options::_controlEnable( tControl id, bool value )
 	case id_CHECK_LANG_WITH_KEYBOARD:
 		EnableWindow(GetDlgItem((HWND)getPage(PG_LANG),AP_RID_DIALOG_OPTIONS_CHK_LanguageWithKeyboard),value);
 		return;
+
+		case id_CHECK_DIR_MARKER_AFTER_CLOSING_PARENTHESIS:
+		EnableWindow(GetDlgItem((HWND)getPage(PG_LANG),AP_RID_DIALOG_OPTIONS_CHK_DirMarkerAfterClosingParenthesis),value);
+		return;
+		
 		
 	default:
 //		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
@@ -328,6 +340,7 @@ DEFINE2_GET_SET_BOOL(PG_LANG,OtherUseContextGlyphs);
 DEFINE2_GET_SET_BOOL(PG_LANG,OtherSaveContextGlyphs);
 DEFINE2_GET_SET_BOOL(PG_LANG,OtherHebrewContextGlyphs);
 DEFINE2_GET_SET_BOOL(PG_LANG,LanguageWithKeyboard);
+DEFINE2_GET_SET_BOOL(PG_LANG,DirMarkerAfterClosingParenthesis);
 
 #undef DEFINE_GET_SET_BOOL
 
@@ -823,6 +836,10 @@ void AP_Win32Dialog_Options_Lang::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lP
 			pParent->_enableDisableLogic(AP_Dialog_Options::id_CHECK_OTHER_SAVE_CONTEXT_GLYPHS);
 			pParent->_enableDisableLogic(AP_Dialog_Options::id_CHECK_OTHER_HEBREW_CONTEXT_GLYPHS);
 			return;
+
+		case AP_RID_DIALOG_OPTIONS_CHK_LanguageWithKeyboard:
+			pParent->_enableDisableLogic(AP_Dialog_Options::id_CHECK_DIR_MARKER_AFTER_CLOSING_PARENTHESIS);
+			return;
 			
 		default:
 			break;
@@ -843,6 +860,7 @@ void AP_Win32Dialog_Options_Lang::_onInitDialog()
 	_DS2(OPTIONS_CHK_OtherHebrewContextGlyphs, DLG_Options_Label_HebrewContextGlyphs);
 	
 	_DSX2(OPTIONS_CHK_LanguageWithKeyboard,		DLG_Options_Label_LangWithKeyboard);
+	_DSX2(OPTIONS_CHK_DirMarkerAfterClosingParenthesis,	DLG_Options_Label_DirMarkerAfterClosingParenthesis);
 
 	_DS2(OPTIONS_TEXT_DOCLANG, 					DLG_Options_Label_DefLangForDocs);
 	_DS2(OPTIONS_TEXT_UILANG,				 	DLG_Options_Label_UILang);
@@ -1063,6 +1081,8 @@ void AP_Win32Dialog_Options_Pref::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lP
 	
 	case AP_RID_DIALOG_OPTIONS_CHK_LanguageWithKeyboard:  pParent->_enableDisableLogic(AP_Dialog_Options::id_CHECK_LANG_WITH_KEYBOARD);return;
 
+	case AP_RID_DIALOG_OPTIONS_CHK_DirMarkerAfterClosingParenthesis:  pParent->_enableDisableLogic(AP_Dialog_Options::id_CHECK_DIR_MARKER_AFTER_CLOSING_PARENTHESIS);return;
+		
 		default:
 		break;
 	}

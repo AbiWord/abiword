@@ -471,3 +471,4 @@ dcl(XIM_Methods, "Input Methods")
 //since this string goes with XAP preference, I put it here, rather
 //than ap_String_Id.h
 dcl(DLG_Options_Label_LangWithKeyboard,         "Change Language when changing keyboard")
+dcl(DLG_Options_Label_DirMarkerAfterClosingParenthesis, "Auto-insert direction markers")

@@ -120,6 +120,7 @@ void AP_Dialog_Options::_storeWindowData(void)
 	Save_Pref_Bool( pPrefsScheme, XAP_PREF_KEY_SaveContextGlyphs, _gatherOtherSaveContextGlyphs() );
 	Save_Pref_Bool( pPrefsScheme, XAP_PREF_KEY_UseHebrewContextGlyphs, _gatherOtherHebrewContextGlyphs() );
 	Save_Pref_Bool( pPrefsScheme, XAP_PREF_KEY_ChangeLanguageWithKeyboard, _gatherLanguageWithKeyboard() );
+	Save_Pref_Bool( pPrefsScheme, XAP_PREF_DEFAULT_DirMarkerAfterClosingParenthesis, _gatherDirMarkerAfterClosingParenthesis());
 	
 	
 #if 1
@@ -386,6 +387,9 @@ void AP_Dialog_Options::_populateWindowData(void)
 
 	if (pPrefs->getPrefsValueBool(XAP_PREF_KEY_ChangeLanguageWithKeyboard,&b))
 		_setLanguageWithKeyboard (b);
+
+	if (pPrefs->getPrefsValueBool(XAP_PREF_KEY_DirMarkerAfterClosingParenthesis,&b))
+		_setDirMarkerAfterClosingParenthesis (b);
 	
 	// enable/disable controls
 	_initEnableControls();
@@ -415,6 +419,10 @@ void AP_Dialog_Options::_enableDisableLogic( tControl id )
 		_controlEnable( id_CHECK_OTHER_HEBREW_CONTEXT_GLYPHS, _gatherOtherUseContextGlyphs());
 		break;
 
+	case id_CHECK_DIR_MARKER_AFTER_CLOSING_PARENTHESIS:
+		_controlEnable( id_CHECK_DIR_MARKER_AFTER_CLOSING_PARENTHESIS, _gatherLanguageWithKeyboard());
+		break;
+		
 	default:
 		// do nothing
 		break;
@@ -442,9 +450,16 @@ void AP_Dialog_Options::_initEnableControls()
 
 	// general
 	_controlEnable( id_BUTTON_SAVE, 				false );
+
+	// language
+	// only works on win32 for now (must precede
+	// id_CHECK_DIR_MARKER... in the bidi controls !!!)
+	_controlEnable( id_CHECK_LANG_WITH_KEYBOARD,    false ); 
+
+	// bidi controls
 	_controlEnable( id_CHECK_OTHER_SAVE_CONTEXT_GLYPHS, /*_gatherOtherUseContextGlyphs()*/false);
 	_controlEnable( id_CHECK_OTHER_HEBREW_CONTEXT_GLYPHS, _gatherOtherUseContextGlyphs());
-
+	_controlEnable( id_CHECK_DIR_MARKER_AFTER_CLOSING_PARENTHESIS,_gatherLanguageWithKeyboard());  
 	//
 	// If the prefs color for transparent is white initially disable the choose
 	// color button
@@ -458,6 +473,7 @@ void AP_Dialog_Options::_initEnableControls()
 		_controlEnable( id_PUSH_CHOOSE_COLOR_FOR_TRANSPARENT, true);
 	}
 
+	_initEnableControlsPlatformSpecific();
 }
 
 void AP_Dialog_Options::_event_SetDefaults(void)

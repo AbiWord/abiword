@@ -207,6 +207,7 @@ public:
  	
 
 	virtual void _controlEnable( tControl id, bool value );
+	virtual void _initEnableControlsPlatformSpecific();
 
 	// we implement these so the XP dialog can set/grab our data
 #define SET_GATHER(a,t) virtual t _gather##a(void);  \
@@ -260,6 +261,7 @@ public:
 
 	SET_GATHER			(NotebookPageNum,	int );
 	SET_GATHER          (LanguageWithKeyboard, bool);
+	SET_GATHER          (DirMarkerAfterClosingParenthesis, bool);
 #undef SET_GATHER
 
  protected:

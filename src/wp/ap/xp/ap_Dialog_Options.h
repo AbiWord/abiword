@@ -84,6 +84,7 @@ class AP_Dialog_Options : public XAP_Dialog_NonPersistent
 				   id_LIST_VIEW_TOOLBARS,		// this is needed for the Cocoa front-end to fetch the control
 				   id_NOTEBOOK,
 				   id_CHECK_LANG_WITH_KEYBOARD,
+				   id_CHECK_DIR_MARKER_AFTER_CLOSING_PARENTHESIS,
 				   id_last } tControl;
 
 	// typedef enum { check_FALSE = 0, check_TRUE, check_INDETERMINATE } tCheckState;
@@ -107,13 +108,18 @@ class AP_Dialog_Options : public XAP_Dialog_NonPersistent
 
  protected:
 
-		// to enable/disable a control
+	// to enable/disable a control
 	virtual void _controlEnable( tControl id, bool value )=0;
 
 	
 
-		// disable controls appropriately
+	// disable controls appropriately
 	void _initEnableControls();
+
+	// called by _initEnableControls() just before it returns
+	// its purpose is to allow overriding of the enable logic on
+	// platform basis
+	virtual void _initEnableControlsPlatformSpecific(){};
 
 	
 	void _eventSave(void);
@@ -171,6 +177,8 @@ class AP_Dialog_Options : public XAP_Dialog_NonPersistent
 	virtual void _setUILanguage(const UT_String &stExt) {};
 	virtual bool _gatherLanguageWithKeyboard() {return false;}
 	virtual void _setLanguageWithKeyboard(const bool) {}
+	virtual bool _gatherDirMarkerAfterClosingParenthesis(){return false;}
+	virtual void _setDirMarkerAfterClosingParenthesis(const bool){}
 	
 	// so we can save and restore to the same page - must be able to return
 	// the current page and reset it later (i.e., don't use a handle, but a
