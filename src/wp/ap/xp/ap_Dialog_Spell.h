@@ -42,7 +42,11 @@ class AP_Dialog_Spell : public XAP_Dialog_NonPersistent
    
    virtual void runModal(XAP_Frame * pFrame) = 0;
 
+   UT_Bool isComplete(void) const { return !m_bCancelled; };
+
  protected:
+
+   void _purgeSuggestions(void);
 
    UT_UCSChar * _getCurrentWord(void);
    UT_UCSChar * _getPreWord(void);
@@ -91,6 +95,9 @@ class AP_Dialog_Spell : public XAP_Dialog_NonPersistent
    // current suggested corrections to the 
    // most recently misspelled word
    sp_suggestions m_Suggestions;
+
+   UT_Bool	m_bCancelled;
+   short m_iSelectedRow;
    
 };
 

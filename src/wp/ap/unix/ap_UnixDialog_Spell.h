@@ -57,10 +57,7 @@ class AP_UnixDialog_Spell: public AP_Dialog_Spell
 
    char * _convertToMB(UT_UCSChar *wword);
    UT_UCSChar * _convertFromMB(char *word);
-   
-   UT_Bool m_bCancelled;
-   short m_iSelectedRow;
-   
+      
    // pointers to widgets we need to query/set
    GtkWidget * m_windowMain;
    GtkWidget * m_textWord;

@@ -102,11 +102,7 @@ void AP_UnixDialog_Spell::runModal(XAP_Frame * pFrame)
 	 // run into the GTK event loop for this window
 	 gtk_main();
 	 
-	 for (int i = 0; i < m_Suggestions.count; i++)
-	   FREEP(m_Suggestions.word[i]);
-	 FREEP(m_Suggestions.word);
-	 FREEP(m_Suggestions.score);
-	 m_Suggestions.count = 0;
+	 _purgeSuggestions();
 	 
 	 if (m_bCancelled) break;
 	 

@@ -39,7 +39,20 @@ public:
 	
 protected:
 	BOOL					_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam);
-	BOOL					_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam);   
+	BOOL					_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam);
+	
+	void					_toggleChangeButtons(UT_Bool bEnable) const;
+	void					_showMisspelledWord(void);
+	void					_suggestChange(void);
+	void					_change(void);
+	void					_changeAll(void);
+	void					_tryAgain(void);
+
+	HWND					m_hwndDlg;
+	HWND					m_hwndSentence;		// AP_RID_DIALOG_SPELL_RICH_SENTENCE
+	HWND					m_hwndChangeTo;		// AP_RID_DIALOG_SPELL_EDIT_CHANGE
+	HWND					m_hwndSuggest;		// AP_RID_DIALOG_SPELL_LIST_SUGGEST
+
 };
 
 #endif /* AP_WIN32DIALOG_SPELL_H */

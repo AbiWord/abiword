@@ -19,6 +19,7 @@
 
 
 #include <windows.h>
+#include <richedit.h>
 
 #include "ut_string.h"
 #include "ut_assert.h"
@@ -56,8 +57,15 @@ AP_Win32Dialog_Spell::~AP_Win32Dialog_Spell(void)
 
 void AP_Win32Dialog_Spell::runModal(XAP_Frame * pFrame)
 {
-   // call the base class method to initialize some basic xp stuff
-   AP_Dialog_Spell::runModal(pFrame);
+	// call the base class method to initialize some basic xp stuff
+	AP_Dialog_Spell::runModal(pFrame);
+
+	m_bCancelled = UT_FALSE;
+	UT_Bool bRes = nextMisspelledWord();
+
+	// if nothing misspelled, then nothing to do
+	if (!bRes)
+		return;
 
 	// raise the dialog
 	XAP_Win32App * pWin32App = static_cast<XAP_Win32App *>(m_pApp);
@@ -118,15 +126,255 @@ BOOL AP_Win32Dialog_Spell::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam
 	_DS(SPELL_BTN_CHANGE,		DLG_Spell_Change);
 	_DS(SPELL_BTN_CHANGEALL,	DLG_Spell_ChangeAll);
 
+	// remember the windows we're using 
+	m_hwndDlg = hWnd;
+	m_hwndSentence = GetDlgItem(hWnd, AP_RID_DIALOG_SPELL_RICH_SENTENCE);
+	m_hwndChangeTo = GetDlgItem(hWnd, AP_RID_DIALOG_SPELL_EDIT_CHANGE);
+	m_hwndSuggest  = GetDlgItem(hWnd, AP_RID_DIALOG_SPELL_LIST_SUGGEST);
+
 	// set initial state
-//	CheckDlgButton(hWnd, AP_RID_DIALOG_SPELL_RADIO_PAGE + m_break, BST_CHECKED);
-#if 0
-	_DS(SPELL_RICH_SENTENCE,	DLG_Spell_);
-	_DS(SPELL_EDIT_CHANGE,		DLG_Spell_);
-	_DS(SPELL_LIST_SUGGEST,		DLG_Spell_);
-#endif
+	makeWordVisible();
+	_showMisspelledWord();
 
 	return 1;							// 1 == we did not call SetFocus()
+}
+
+void AP_Win32Dialog_Spell::_toggleChangeButtons(UT_Bool bEnable) const
+{
+	EnableWindow(GetDlgItem(m_hwndDlg,AP_RID_DIALOG_SPELL_BTN_CHANGE),bEnable);
+	EnableWindow(GetDlgItem(m_hwndDlg,AP_RID_DIALOG_SPELL_BTN_CHANGEALL),bEnable);
+}
+
+void AP_Win32Dialog_Spell::_showMisspelledWord(void)
+{
+	// clear existing values
+	SendMessage(m_hwndSentence, WM_SETTEXT, 0, 0);
+	SendMessage(m_hwndChangeTo, WM_SETTEXT, 0, 0);
+	SendMessage(m_hwndSuggest, LB_RESETCONTENT, 0, 0);
+
+	CHARFORMAT cf;
+	UT_UCSChar *p;
+	UT_uint32 len;
+	UT_uint32 sum = 0;
+	char * buf;
+
+	// insert start of sentence
+	SendMessage(m_hwndSentence, EM_SETSEL, (WPARAM) sum, (LPARAM) sum);
+
+	cf.cbSize = sizeof(cf);
+	cf.dwMask = CFM_COLOR | CFM_PROTECTED;
+	cf.dwEffects = CFE_AUTOCOLOR | CFE_PROTECTED;
+	SendMessage(m_hwndSentence, EM_SETCHARFORMAT, (WPARAM) SCF_ALL, (LPARAM) &cf);
+
+	p = _getPreWord();
+	len = UT_UCS_strlen(p);
+	if (len)
+	{
+		buf = new char [len + 1];
+		UT_UCS_strcpy_to_char(buf, p);
+		SendMessage(m_hwndSentence, WM_SETTEXT, 0, (LPARAM)buf);
+		DELETEP(buf);
+	}
+	FREEP(p);
+	sum += len;
+
+	// insert misspelled word (in highlight color)
+	SendMessage(m_hwndSentence, EM_SETSEL, (WPARAM) sum, (LPARAM) sum);
+
+	cf.dwMask = CFM_COLOR | CFM_PROTECTED;
+	cf.dwEffects = CFE_PROTECTED;
+	cf.crTextColor = RGB(255,0,0);
+	SendMessage(m_hwndSentence, EM_SETCHARFORMAT, (WPARAM) SCF_SELECTION, (LPARAM) &cf);
+
+	p = _getCurrentWord();
+	len = UT_UCS_strlen(p);
+	if (len)
+	{
+		buf = new char [len + 1];
+		UT_UCS_strcpy_to_char(buf, p);
+		SendMessage(m_hwndSentence, EM_REPLACESEL, FALSE, (LPARAM)buf);
+		DELETEP(buf);
+	}
+	FREEP(p);
+	sum += len;
+
+	// insert end of sentence
+	SendMessage(m_hwndSentence, EM_SETSEL, (WPARAM) sum, (LPARAM) sum);
+	cf.dwMask = CFM_COLOR | CFM_PROTECTED;
+	cf.dwEffects = CFE_AUTOCOLOR | CFE_PROTECTED;
+	SendMessage(m_hwndSentence, EM_SETCHARFORMAT, (WPARAM) SCF_SELECTION, (LPARAM) &cf);
+
+	p = _getPostWord();
+	len = UT_UCS_strlen(p);
+	if (len)
+	{
+		buf = new char [len + 1];
+		UT_UCS_strcpy_to_char(buf, p);
+		SendMessage(m_hwndSentence, EM_REPLACESEL, FALSE, (LPARAM)buf);
+		DELETEP(buf);
+	}
+	FREEP(p);
+
+	// insert suggestions
+	if (!m_Suggestions.count) 
+	{
+		const XAP_StringSet * pSS = m_pApp->getStringSet();
+		SendMessage(m_hwndSuggest, LB_ADDSTRING, 0, (LPARAM) pSS->getValue(AP_STRING_ID_DLG_Spell_NoSuggestions));
+
+		m_iSelectedRow = -1;
+		_toggleChangeButtons(UT_FALSE);
+	} 
+	else 
+	{
+		for (int i = 0; i < m_Suggestions.count; i++)
+		{
+			p = (UT_UCSChar *) m_Suggestions.word[i];
+			len = UT_UCS_strlen(p);
+			if (len)
+			{
+				buf = new char [len + 1];
+				UT_UCS_strcpy_to_char(buf, p);
+				SendMessage(m_hwndSuggest, LB_ADDSTRING, 0, (LPARAM)buf);
+				DELETEP(buf);
+			}
+		}
+
+		m_iSelectedRow = 0;
+		_toggleChangeButtons(UT_TRUE);
+	}
+
+	SendMessage(m_hwndSuggest, LB_SETCURSEL, m_iSelectedRow, 0);
+
+	// populate the change field, if appropriate
+	_suggestChange();
+}
+
+void AP_Win32Dialog_Spell::_suggestChange(void)
+{
+	// cast is to match Unix usage
+	// should be safe here, because there just aren't that many suggestions 
+	m_iSelectedRow = (short) SendMessage(m_hwndSuggest, LB_GETCURSEL, 0, 0);
+
+	if (!m_Suggestions.count) 
+	{
+		// no change to suggest, ignore it
+		if (m_iSelectedRow != -1)
+			SendMessage(m_hwndSuggest, LB_SETCURSEL, -1, 0);
+	}
+	else
+	{
+		// copy suggestion to edit field
+		UT_ASSERT((m_iSelectedRow > -1));
+
+		char buf[256];
+		SendMessage(m_hwndSuggest, LB_GETTEXT, m_iSelectedRow, (LPARAM)buf);
+		SendMessage(m_hwndChangeTo, WM_SETTEXT, 0, (LPARAM)buf);
+
+		// you'd think this'd be overkill...
+		SendMessage(m_hwndSuggest, LB_SETCURSEL, m_iSelectedRow, 0);
+	}
+}
+
+// returns a pointer which needs to be FREEP'd by the caller
+static UT_UCSChar * s_getUCSText(HWND hwnd)
+{
+	char * pBuf = NULL;
+	UT_UCSChar * pUCS = NULL;
+
+	DWORD len = GetWindowTextLength(hwnd);
+	if (!len)
+		return NULL;
+
+	pBuf = new char [len + 1];
+	if (!pBuf)
+		goto FreeMemory;
+	GetWindowText(hwnd,pBuf,len+1);
+
+	UT_UCS_cloneString_char(&pUCS,pBuf);
+	if (!pUCS)
+		goto FreeMemory;
+
+	DELETEP(pBuf);
+	return pUCS;
+
+FreeMemory:
+	DELETEP(pBuf);
+	FREEP(pUCS);
+
+	return NULL;
+}
+
+void AP_Win32Dialog_Spell::_change(void)
+{
+	UT_UCSChar * replace = NULL;
+
+	if (m_iSelectedRow != -1)
+	{
+		replace = (UT_UCSChar*) m_Suggestions.word[m_iSelectedRow];
+		changeWordWith(replace);
+	}
+	else
+	{
+		replace = s_getUCSText(m_hwndChangeTo);
+		if (!UT_UCS_strlen(replace)) 
+		{
+			FREEP(replace);
+			return;
+		}
+		changeWordWith(replace);
+		FREEP(replace);
+	}
+
+	_tryAgain();
+}
+
+void AP_Win32Dialog_Spell::_changeAll(void)
+{
+	UT_UCSChar * replace = NULL;
+	if (m_iSelectedRow != -1)
+	{
+		replace = (UT_UCSChar*) m_Suggestions.word[m_iSelectedRow];
+		addChangeAll(replace);
+		changeWordWith(replace);
+	}
+	else
+	{
+		replace = s_getUCSText(m_hwndChangeTo);
+		if (!UT_UCS_strlen(replace)) 
+		{
+			FREEP(replace);
+			return;
+		}
+		addChangeAll(replace);
+		changeWordWith(replace);
+		FREEP(replace);
+	}
+
+	_tryAgain();
+}
+
+void AP_Win32Dialog_Spell::_tryAgain(void)
+{
+	// clear prior suggestions
+	_purgeSuggestions();
+
+	// what's next
+	UT_Bool bRes = nextMisspelledWord();
+
+	if (bRes)
+	{
+		// show word in main window
+		makeWordVisible();
+
+		// update dialog with new misspelled word info/suggestions
+		_showMisspelledWord();
+	}
+	else
+	{
+		// all done
+		UT_ASSERT((m_bCancelled == UT_FALSE));
+		EndDialog(m_hwndDlg,0);
+	}
 }
 
 BOOL AP_Win32Dialog_Spell::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
@@ -137,7 +385,90 @@ BOOL AP_Win32Dialog_Spell::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
 
 	switch (wId)
 	{
+	case AP_RID_DIALOG_SPELL_RICH_SENTENCE:
+		switch (wNotifyCode)
+		{
+		case EN_SETFOCUS:
+			{
+				UT_sint32 iAfter = m_iWordOffset + m_iWordLength - m_iSentenceStart;
+
+				// set scroll position so misspelled word is centered
+				SendMessage(m_hwndSentence, EM_SETSEL, (WPARAM) iAfter, (LPARAM) iAfter);	
+				SendMessage(m_hwndSentence, EM_SCROLLCARET, 0, 0);
+			}
+			return 1;
+
+		default:
+			return 0;
+		}
+		
+	case AP_RID_DIALOG_SPELL_EDIT_CHANGE:
+		switch (wNotifyCode)
+		{
+		case EN_CHANGE:
+			if (GetWindowTextLength(hWndCtrl))
+			{
+#if 0
+// TODO: this looks plausible, but it causes more problems than it solves
+				m_iSelectedRow = -1;
+				SendMessage(m_hwndSuggest, LB_SETCURSEL, m_iSelectedRow, 0);
+#endif 
+				_toggleChangeButtons(UT_TRUE);
+			}
+			else
+			{
+				_toggleChangeButtons(UT_FALSE);
+			}
+			return 1;
+
+		default:
+			return 0;
+		}
+		
+	case AP_RID_DIALOG_SPELL_LIST_SUGGEST:
+		switch (HIWORD(wParam))
+		{
+			case LBN_SELCHANGE:
+				_suggestChange();
+				return 1;
+
+			case LBN_DBLCLK:
+				UT_ASSERT((m_iSelectedRow == SendMessage(hWndCtrl, LB_GETCURSEL, 0, 0)));
+				_change();
+				return 1;
+
+			default:
+				return 0;
+		}
+		break;
+
+	case AP_RID_DIALOG_SPELL_BTN_IGNORE:
+		ignoreWord();
+		_tryAgain();
+		return 1;
+
+	case AP_RID_DIALOG_SPELL_BTN_IGNOREALL:
+		addIgnoreAll();
+		ignoreWord();
+		_tryAgain();
+		return 1;
+
+	case AP_RID_DIALOG_SPELL_BTN_ADD:
+		addToDict();
+		ignoreWord();
+		_tryAgain();
+		return 1;
+
+	case AP_RID_DIALOG_SPELL_BTN_CHANGE:
+		_change();
+		return 1;
+
+	case AP_RID_DIALOG_SPELL_BTN_CHANGEALL:
+		_changeAll();
+		return 1;
+
 	case IDCANCEL:						// also AP_RID_DIALOG_SPELL_BTN_CANCEL
+		m_bCancelled = UT_TRUE;
 		EndDialog(hWnd,0);
 		return 1;
 

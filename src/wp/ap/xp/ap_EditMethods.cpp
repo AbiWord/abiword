@@ -736,6 +736,28 @@ static void s_TellSaveFailed(XAP_Frame * pFrame, const char * fileName)
 	pDialogFactory->releaseDialog(pDialog);
 }
 
+static void s_TellSpellDone(XAP_Frame * pFrame)
+{
+	pFrame->raise();
+
+	XAP_DialogFactory * pDialogFactory
+		= (XAP_DialogFactory *)(pFrame->getDialogFactory());
+
+	XAP_Dialog_MessageBox * pDialog
+		= (XAP_Dialog_MessageBox *)(pDialogFactory->requestDialog(XAP_DIALOG_ID_MESSAGE_BOX));
+	UT_ASSERT(pDialog);
+
+	const XAP_StringSet * pSS = pFrame->getApp()->getStringSet();
+	
+	pDialog->setMessage(pSS->getValue(AP_STRING_ID_MSG_SpellDone));
+	pDialog->setButtons(XAP_Dialog_MessageBox::b_O);
+	pDialog->setDefaultAnswer(XAP_Dialog_MessageBox::a_OK);
+
+	pDialog->runModal(pFrame);
+
+	pDialogFactory->releaseDialog(pDialog);
+}
+
 static void s_TellNotImplemented(XAP_Frame * pFrame, const char * szWhat, int iLine)
 {
 	pFrame->raise();
@@ -2855,8 +2877,11 @@ static UT_Bool s_doSpellDlg(FV_View * pView, XAP_Dialog_Id id)
    // gets the urge to make it safe that way)
    pDialog->runModal(pFrame);
 	        
-   UT_Bool bOK = UT_TRUE;
-	                
+   UT_Bool bOK = pDialog->isComplete();
+
+   if (bOK)
+	   s_TellSpellDone(pFrame);
+
    pDialogFactory->releaseDialog(pDialog);
 	                
    return bOK;

@@ -54,20 +54,36 @@ AP_Dialog_Spell::AP_Dialog_Spell(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id 
    m_pBlock = NULL;
    m_pChangeAll = NULL;
    m_pIgnoreAll = NULL;
+
+   m_bCancelled = UT_FALSE;
 }
 
 AP_Dialog_Spell::~AP_Dialog_Spell(void)
 {
-   if (m_pView) {
-      if (!m_pView->isSelectionEmpty())
-	m_pView->cmdUnselectSelection();
-      m_pView->moveInsPtTo( m_iOrigInsPoint );
-   }
-   
-   DELETEP(m_pBlockBuf);
-   UT_HASH_PURGEDATA(UT_UCSChar*,(*m_pChangeAll));
-   DELETEP(m_pChangeAll);
-   DELETEP(m_pIgnoreAll);
+	if (m_pView) 
+	{
+		if (!m_pView->isSelectionEmpty())
+			m_pView->cmdUnselectSelection();
+
+		m_pView->moveInsPtTo( m_iOrigInsPoint );
+	}
+
+	DELETEP(m_pBlockBuf);
+	UT_HASH_PURGEDATA(UT_UCSChar*,(*m_pChangeAll));
+	DELETEP(m_pChangeAll);
+	DELETEP(m_pIgnoreAll);
+
+	_purgeSuggestions();
+}
+
+void AP_Dialog_Spell::_purgeSuggestions(void)
+{
+	for (int i = 0; i < m_Suggestions.count; i++)
+		FREEP(m_Suggestions.word[i]);
+
+	FREEP(m_Suggestions.word);
+	FREEP(m_Suggestions.score);
+	m_Suggestions.count = 0;
 }
 
 void AP_Dialog_Spell::runModal(XAP_Frame * pFrame)
