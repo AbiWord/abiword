@@ -252,8 +252,10 @@ public:									// we create...
 						GtkWidget* label = gtk_bin_get_child(GTK_BIN(widget));
 						buffer = gtk_label_get_text(GTK_LABEL(label));
 					}
-					else
+					else {
 						UT_ASSERT( UT_SHOULD_NOT_HAPPEN );
+						return;
+					}
 
 					UT_uint32 length = strlen(buffer);
 					xxx_UT_DEBUGMSG(("LACHANCE: comboChanged, length: %d \n", length));
@@ -268,7 +270,6 @@ public:									// we create...
 						UT_ASSERT(length < 1024);				       
 						strcpy(wd->m_comboEntryBuffer, buffer);
 
-						// HACK BUG - disable font preview for GTK 2.2
 						if (wd->m_id == AP_TOOLBAR_ID_FMT_FONT && wd->m_pUnixToolbar->m_pFontPreview)
 						  {
 						    wd->m_pUnixToolbar->m_pFontPreview->setFontFamily(buffer);
