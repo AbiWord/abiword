@@ -4151,6 +4151,8 @@ void s_HTML_Listener::_handleField (const PX_ChangeRecord_Object * pcro,
 		// TODO: Embedded target for footnote linking (frame adjusts on the footnotes when ref clicked).
 		
 		m_utf8_1 = "span";
+		
+		// TODO: branch out to get the format of the refs/anchors correct.
 		if ((UT_strcmp (szType, "footnote_anchor") == 0) ||
 			(UT_strcmp (szType, "endnote_anchor") == 0) ||
 			(UT_strcmp (szType, "footnote_ref") == 0) ||
@@ -4186,116 +4188,50 @@ void s_HTML_Listener::_handleField (const PX_ChangeRecord_Object * pcro,
 				m_utf8_1 += szA_Props;
 				m_utf8_1 += "\"";
 			}
+			
+			XML_Char * szTypeCpy = new XML_Char[UT_XML_strlen(szType) + 2];
+			UT_XML_strncpy(szTypeCpy, UT_XML_strlen(szType)+1, szType);
+			const XML_Char * noteToken = (XML_Char *)strtok((char *)szTypeCpy, "_");
+			XML_Char * idAttr = new XML_Char[UT_XML_strlen(noteToken) + 2];
+			UT_XML_strncpy(idAttr, UT_XML_strlen(noteToken)+1, noteToken);
+			const XML_Char * partToken = (XML_Char *)strtok(NULL, "_");
+			const XML_Char * szID = 0;
+
+			pAP->getAttribute (strcat(idAttr, "-id"), szID);
+			UT_uint32 ID = atoi(szID);
+			
+			UT_UTF8String notePNString;
+			UT_UTF8String notePLString;
+			UT_UTF8String notePIDString;
+			UT_UTF8String_sprintf(notePIDString, " id=\"%s_%s-%d\"", noteToken, partToken, (ID + 1));
+			m_utf8_1 += notePIDString;
+			tagOpen (TT_SPAN, m_utf8_1, ws_None);
+			m_utf8_1 = "a";
+			
+			const char *hrefPartAtom = (strcmp(partToken, "anchor") ? "anchor" : "ref");
+			
+			UT_UTF8String_sprintf(notePLString, " href=\"#%s_%s-%d\"", noteToken, hrefPartAtom, (ID + 1));
+			m_utf8_1 += notePLString;
+			tagOpen (TT_A, m_utf8_1, ws_None);
+			UT_UTF8String_sprintf(notePNString, "%d", (ID + 1));
+			m_pie->write (notePNString.utf8_str (), notePNString.byteLength ());
+			textUntrusted (field->getValue ());
+			m_utf8_1 = "a";
+			tagClose (TT_A, m_utf8_1, ws_None);
+			DELETEP(idAttr);
+			DELETEP(szTypeCpy);
 		}
 		else
 		{
 			m_utf8_1 = "span";
-
-			// TODO: Fix this to play nice with the styletree and use consistent styles btwn the two
-			//       Checkout _openSpan
 			// TODO: Find out if we can change this back to just getting the style from the document,
-			//       which is what I'll do with the notes.
+			//       which is what is done with notes.
 			m_utf8_1 += " class=\"ABI_FIELD_";
 			m_utf8_1 += szType;
 			m_utf8_1 += "\"";
 			tagOpen (TT_SPAN, m_utf8_1, ws_None);
 			textUntrusted (field->getValue ());
 		}
-		
-		
-		if (UT_strcmp (szType, "footnote_anchor") == 0)
-		{
-			const XML_Char * szID = 0;
-			pAP->getAttribute ("footnote-id", szID);
-			UT_uint32 ID = atoi(szID);
-			
-			UT_UTF8String footnoteAIDString;
-			UT_UTF8String_sprintf(footnoteAIDString, " id=\"fnA%d\"", (ID + 1));
-			m_utf8_1 += footnoteAIDString;
-			tagOpen (TT_SPAN, m_utf8_1, ws_None);
-			// --- //
-			UT_UTF8String footnoteANString;
-			UT_UTF8String footnoteALString;
-			m_utf8_1 = "a";
-			UT_UTF8String_sprintf(footnoteALString, " href=\"#fnR%d\"", (ID + 1));
-			m_utf8_1 += footnoteALString;
-			tagOpen (TT_A, m_utf8_1, ws_None);
-			UT_UTF8String_sprintf(footnoteANString, "[%d]", (ID + 1));
-			m_pie->write (footnoteANString.utf8_str (), footnoteANString.byteLength ());
-			textUntrusted (field->getValue ());
-			m_utf8_1 = "a";
-			tagClose (TT_A, m_utf8_1, ws_None);
-		}
-		else if (UT_strcmp (szType, "endnote_anchor") == 0)
-		{
-			const XML_Char * szID = 0;
-			pAP->getAttribute ("endnote-id", szID);
-			UT_uint32 ID = atoi(szID);
-			
-			UT_UTF8String endnoteAIDString;
-			UT_UTF8String_sprintf(endnoteAIDString, " id=\"enA%d\"", (ID + 1));
-			m_utf8_1 += endnoteAIDString;
-			tagOpen (TT_SPAN, m_utf8_1, ws_None);
-			// --- //
-			UT_UTF8String endnoteANString;
-			UT_UTF8String endnoteALString;
-			m_utf8_1 = "a";
-			UT_UTF8String_sprintf(endnoteALString, " href=\"#enR%d\"", (ID + 1));
-			m_utf8_1 += endnoteALString;
-			tagOpen (TT_A, m_utf8_1, ws_None);
-			UT_UTF8String_sprintf(endnoteANString, "%d", (ID + 1));
-			m_pie->write (endnoteANString.utf8_str (), endnoteANString.byteLength ());
-			textUntrusted (field->getValue ());
-			m_utf8_1 = "a";
-			tagClose (TT_A, m_utf8_1, ws_None);
-		}
-		else if (UT_strcmp (szType, "footnote_ref") == 0)
-		{
-			const XML_Char * szID = 0;
-			pAP->getAttribute ("footnote-id", szID);
-			UT_uint32 ID = atoi(szID);
-			
-			UT_UTF8String footnoteRIDString;
-			UT_UTF8String_sprintf(footnoteRIDString, " id=\"fnR%d\"", (ID + 1));
-			m_utf8_1 += footnoteRIDString;
-			tagOpen (TT_SPAN, m_utf8_1, ws_None);
-			// --- //
-			UT_UTF8String footnoteRLString;
-			UT_UTF8String footnoteRNString;
-			m_utf8_1 = "a";
-			UT_UTF8String_sprintf(footnoteRLString, " href=\"#fnA%d\"", (ID + 1));
-			m_utf8_1 += footnoteRLString;
-			tagOpen (TT_A, m_utf8_1, ws_None);
-			UT_UTF8String_sprintf(footnoteRNString, "%d", (ID + 1));
-			m_pie->write (footnoteRNString.utf8_str (), footnoteRNString.byteLength ());
-			textUntrusted (field->getValue ());
-			m_utf8_1 = "a";
-			tagClose (TT_A, m_utf8_1, ws_None);
-		}
-		else if (UT_strcmp (szType, "endnote_ref") == 0)
-		{
-			const XML_Char * szID = 0;
-			pAP->getAttribute ("endnote-id", szID);
-			UT_uint32 ID = atoi(szID);
-			
-			UT_UTF8String endnoteRIDString;
-			UT_UTF8String_sprintf(endnoteRIDString, " id=\"enR%d\"", (ID + 1));
-			m_utf8_1 += endnoteRIDString;
-			tagOpen (TT_SPAN, m_utf8_1, ws_None);
-			// --- //
-			UT_UTF8String endnoteRLString;
-			UT_UTF8String endnoteRNString;
-			m_utf8_1 = "a";
-			UT_UTF8String_sprintf(endnoteRLString, " href=\"#enA%d\"", (ID + 1));
-			m_utf8_1 += endnoteRLString;
-			tagOpen (TT_A, m_utf8_1, ws_None);
-			UT_UTF8String_sprintf(endnoteRNString, "%d", (ID + 1));
-			m_pie->write (endnoteRNString.utf8_str (), endnoteRNString.byteLength ());
-			textUntrusted (field->getValue ());
-			m_utf8_1 = "a";
-			tagClose (TT_A, m_utf8_1, ws_None);
-		}
-
 		
 		m_utf8_1 = "span";
 		tagClose (TT_SPAN, m_utf8_1, ws_None);
