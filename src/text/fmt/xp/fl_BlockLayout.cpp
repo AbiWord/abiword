@@ -1162,8 +1162,8 @@ fp_Line* fl_BlockLayout::getNewLine(void)
 		        {
 			         // Previous block exists but doesn't have a last line.
 			         // This is a BUG. Try a work around for now. TODO Fix this elsewhere
-			         UT_DEBUGMSG(("BUG!!! Previous block exists with no last line, fix this by reformating the block \n"));
-			         m_pPrev->format();
+			         UT_DEBUGMSG(("BUG!!! Previous block exists with no last line. This should not happen \n"));
+			         //  m_pPrev->format();
 			}
 		}
 		if (m_pPrev && m_pPrev->getLastLine())

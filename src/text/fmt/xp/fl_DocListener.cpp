@@ -94,7 +94,8 @@ UT_Bool fl_DocListener::populate(PL_StruxFmtHandle sfh,
 			{
 			        UT_DEBUGMSG(("In  DocListner no LastLine in this block fixing this now \n"));
 				UT_DEBUGMSG(("getPrev = %d this = %d \n",pBL->getPrev(),pBL));
-				pBL->format();
+				       if(pBL->getPrev()!= NULL)
+					        pBL->format();
 				//UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 			}
 
@@ -269,7 +270,8 @@ UT_Bool fl_DocListener::populateStrux(PL_StruxDocHandle sdh,
 		{
 			        UT_DEBUGMSG(("In DocListner no LastLine in block append. Fixing this now \n"));
 			        UT_DEBUGMSG(("getPrev = %d this = %d \n",pBL->getPrev(),pBL));
-				pBL->format();
+				if(pBL->getPrev() != NULL)
+				           pBL->format();
 				
 		}
 
