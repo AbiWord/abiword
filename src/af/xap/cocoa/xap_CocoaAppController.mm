@@ -20,6 +20,8 @@
 
 #include "ut_debugmsg.h"
 
+#include "ev_EditMethod.h"
+#include "xap_CocoaApp.h"
 #include "xap_App.h"
 #include "xap_Frame.h"
 
@@ -115,26 +117,46 @@ XAP_CocoaAppController* XAP_AppController_Instance = nil;
 
 - (BOOL)applicationOpenUntitledFile:(NSApplication *)theApplication
 {
-	UT_DEBUGMSG(("[XAP_CocoaAppController -applicationOpenUntitledFile:]\n"));
-	XAP_App * pApp = XAP_App::getApp();
-	XAP_Frame * pNewFrame = pApp->newFrame();
+	EV_EditMethodContainer * pEMC = XAP_App::getApp()->getEditMethodContainer();
+	if (!pEMC)
+		return NO;
 
-	bool result = (UT_OK == pNewFrame->loadDocument(NULL, IEFT_Unknown));
-	if (result)
-	{
-		/*
-		 * TODO: check what we should really do now
-		 */
-	}
-	if (result)
-		pNewFrame->show();
+	EV_EditMethod * pEM = pEMC->findEditMethodByName("fileNew");
+	if (!pEM)
+		return NO;
 
-	return (result ? YES : NO);
+	return (pEM->Fn(0,0) ? YES : NO);
+}
+
+- (BOOL)applicationOpenFile:(NSApplication *)theApplication
+{
+	EV_EditMethodContainer * pEMC = XAP_App::getApp()->getEditMethodContainer();
+	if (!pEMC)
+		return NO;
+
+	EV_EditMethod * pEM = pEMC->findEditMethodByName("fileOpen");
+	if (!pEM)
+		return NO;
+
+	return (pEM->Fn(0,0) ? YES : NO);
+}
+
+- (id)dockFileNew:(id)sender
+{
+	[self applicationOpenUntitledFile:NSApp];
+	return self;
+}
+
+- (id)dockFileOpen:(id)sender
+{
+	[self applicationOpenFile:NSApp];
+	return self;
 }
 
 - (NSMenu *)applicationDockMenu:(NSApplication *)sender
 {
-	return nil;
+	XAP_CocoaApp * pCocoaApp = static_cast<XAP_CocoaApp *>(XAP_App::getApp());
+	return (NSMenu *) pCocoaApp->getDockNSMenu ();
 }
 
 

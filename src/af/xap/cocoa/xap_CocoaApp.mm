@@ -1,3 +1,5 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+
 /* AbiSource Application Framework
  * Copyright (C) 1998 AbiSource, Inc.
  * Copyright (C) 2001, 2003-2004 Hubert Figuiere
@@ -46,6 +48,7 @@
 #include "xap_Prefs.h"
 #include "xap_CocoaEncodingManager.h"
 #include "gr_CocoaGraphics.h"
+#include "ev_CocoaMenuBar.h"
 
 /*****************************************************************/
 
@@ -53,6 +56,7 @@ XAP_CocoaApp::XAP_CocoaApp(XAP_Args * pArgs, const char * szAppName)
 	: XAP_App(pArgs, szAppName), 
 	m_dialogFactory(this), 
 	m_controlFactory(),
+	m_pDockMenu(0),
 	m_pCocoaMenu(NULL),
 	m_szMenuLayoutName(NULL),
 	m_szMenuLabelSetName(NULL)
@@ -98,6 +102,11 @@ XAP_CocoaApp::XAP_CocoaApp(XAP_Args * pArgs, const char * szAppName)
 
 XAP_CocoaApp::~XAP_CocoaApp()
 {
+	if (m_pDockMenu)
+		{
+			EV_CocoaMenuBar::releaseDockMenu((EV_CocoaDockMenu *) m_pDockMenu);
+			m_pDockMenu = 0;
+		}
 	DELETEP(m_pCocoaToolbarIcons);
 	FREEP(m_szMenuLayoutName);
 	FREEP(m_szMenuLabelSetName);
@@ -144,6 +153,32 @@ bool XAP_CocoaApp::initialize(const char * szKeyBindingsKey, const char * szKeyB
 void XAP_CocoaApp::reallyExit()
 {
 	[NSApp stop:NSApp];
+}
+
+void XAP_CocoaApp::notifyFrameCountChange()
+{
+	if (m_pDockMenu)
+		{
+			EV_CocoaMenuBar::releaseDockMenu((EV_CocoaDockMenu *) m_pDockMenu);
+			m_pDockMenu = 0;
+		}
+	XAP_App::notifyFrameCountChange();
+}
+
+void * XAP_CocoaApp::getDockNSMenu ()
+{
+	if (m_pDockMenu)
+		{
+			EV_CocoaDockMenu * pMenu = (EV_CocoaDockMenu *) m_pDockMenu;
+			[pMenu menuNeedsUpdate];
+		}
+	else
+		{
+			UT_Vector vecDocs;
+			enumerateFrames(vecDocs);
+			m_pDockMenu = (void *) EV_CocoaMenuBar::synthesizeDockMenu(vecDocs);
+		}
+	return m_pDockMenu;
 }
 
 UT_sint32 XAP_CocoaApp::makeDirectory(const char * szPath, const UT_sint32 mode ) const
@@ -208,7 +243,7 @@ const char * XAP_CocoaApp::getUserPrivateDirectory()
 	return upd_cache;
 }
 
-bool XAP_CocoaApp::findAbiSuiteLibFile(UT_String & path, const char * filename, const char * subdir) const
+bool XAP_CocoaApp::findAbiSuiteLibFile(UT_String & path, const char * filename, const char * subdir)
 {
 	if (!filename)
 		return false;
@@ -235,7 +270,7 @@ xxx_UT_DEBUGMSG(("XAP_CocoaApp::findAbiSuiteLibFile(\"%s\",\"%s\",\"%s\")\n",pat
 	return bFound;
 }
 
-bool XAP_CocoaApp::findAbiSuiteAppFile(UT_String & path, const char * filename, const char * subdir) const
+bool XAP_CocoaApp::findAbiSuiteAppFile(UT_String & path, const char * filename, const char * subdir)
 {
 	if (!filename)
 		return false;

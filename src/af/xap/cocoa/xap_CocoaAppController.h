@@ -42,6 +42,10 @@
 - (BOOL)application:(NSApplication *)theApplication openTempFile:(NSString *)filename;
 - (BOOL)application:(NSApplication *)theApplication printFile:(NSString *)filename;
 - (BOOL)applicationOpenUntitledFile:(NSApplication *)theApplication;
+- (BOOL)applicationOpenFile:(NSApplication *)theApplication;
+
+- (id)dockFileNew:(id)sender;
+- (id)dockFileOpen:(id)sender;
 
 - (NSMenu *)applicationDockMenu:(NSApplication *)sender;
 

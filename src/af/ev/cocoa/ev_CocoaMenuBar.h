@@ -1,3 +1,5 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+
 /* AbiSource Program Utilities
  * Copyright (C) 1998-2000 AbiSource, Inc.
  * Copyright (C) 2001 Hubert Figuiere
@@ -44,6 +46,14 @@ struct EV_CocoaCommandKeyRef
 	UT_uint32	key;
 };
 
+@interface EV_CocoaDockMenu : NSMenu
+{
+	int	m_numberOfFrames;
+}
+-(id)initWithNumberOfFrames:(int)numberOfFrames;
+-(void)menuNeedsUpdate;
+@end
+
 /*****************************************************************/
 
 class EV_CocoaMenuBar : public EV_CocoaMenu
@@ -59,8 +69,14 @@ public:
 	virtual bool		refreshMenu(AV_View * pView);
     virtual void        destroy(void);
 
-	bool			lookupCommandKey (struct EV_CocoaCommandKeyRef * keyRef) const;
-	void			addCommandKey (const struct EV_CocoaCommandKeyRef * keyRef);
+	bool				lookupCommandKey (struct EV_CocoaCommandKeyRef * keyRef) const;
+	void				addCommandKey (const struct EV_CocoaCommandKeyRef * keyRef);
+
+	static EV_CocoaDockMenu *	synthesizeDockMenu(const UT_Vector & vecDocs);
+	static void					releaseDockMenu(EV_CocoaDockMenu * pMenu);
+private:
+	static NSMenuItem *	s_pMenuItem_FileNew;
+	static NSMenuItem *	s_pMenuItem_FileOpen;
 protected:
 	NSMenu *			m_wMenuBar;
 	UT_Vector			m_vecKeyRef;

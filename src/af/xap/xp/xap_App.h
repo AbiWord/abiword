@@ -115,11 +115,14 @@ public:
 
 	bool							updateClones(XAP_Frame * pFrame);
 
+	virtual void					notifyFrameCountChange (); // default is empty method
+
 	UT_uint32						getFrameCount() const;
 	XAP_Frame * 					getFrame(UT_uint32 ndx) const;
 	UT_sint32						findFrame(XAP_Frame * pFrame);
 	UT_sint32						findFrame(const char * szFilename);
 
+	void                            enumerateFrames(UT_Vector & v);
 	void                            enumerateDocuments(UT_Vector & v, const AD_Document * pExclude);
 	const char *					getApplicationTitleForTitleBar() const;
 	const char *					getApplicationName() const;

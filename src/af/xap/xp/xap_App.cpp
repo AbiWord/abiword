@@ -581,6 +581,7 @@ bool XAP_App::rememberFrame(XAP_Frame * pFrame, XAP_Frame * pCloneOf)
 	}
 	
 	// TODO do something here...
+	notifyFrameCountChange();
 	return true;
 }
 
@@ -657,6 +658,7 @@ bool XAP_App::forgetFrame(XAP_Frame * pFrame)
 	if (ndx >= 0)
 	{
 		m_vecFrames.deleteNthItem(ndx);
+		notifyFrameCountChange();
 	}
 
 	notifyModelessDlgsCloseFrame(pFrame);
@@ -729,6 +731,11 @@ bool XAP_App::updateClones(XAP_Frame * pFrame)
 	}
 
 	return true;
+}
+
+void XAP_App::notifyFrameCountChange() // default is empty method
+{
+	UT_DEBUGMSG(("XAP_App::notifyFrameCountChange(): count=%lu\n", static_cast<unsigned long>(getFrameCount())));
 }
 
 UT_uint32 XAP_App::getFrameCount() const
@@ -1151,6 +1158,21 @@ void XAP_App::setKbdLanguage(const char * pszLang)
 						}
 					}
 				}
+			}
+		}
+	}
+}
+
+void XAP_App::enumerateFrames(UT_Vector & v)
+{
+	for(UT_uint32 i = 0; i < getFrameCount(); ++i)
+	{
+		XAP_Frame * pF = getFrame(i);
+		if(pF)
+		{
+			if (v.findItem((void*)pF) < 0)
+			{
+				v.addItem((void*)pF);
 			}
 		}
 	}

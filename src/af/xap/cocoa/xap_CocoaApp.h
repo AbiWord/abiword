@@ -1,3 +1,5 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+
 /* AbiSource Application Framework
  * Copyright (C) 1998 AbiSource, Inc.
  * Copyright (C) 2001, 2003-2004 Hubert Figuiere
@@ -54,6 +56,8 @@ public:
 	virtual bool							initialize(const char * szKeyBindingsKey, const char * szKeyBindingsDefaultValue);
 	virtual XAP_Frame * 					newFrame() = 0;
 	virtual void							reallyExit();
+	virtual void							notifyFrameCountChange ();
+	void *									getDockNSMenu ();
 
 	virtual XAP_DialogFactory *				getDialogFactory();
 	virtual XAP_Toolbar_ControlFactory *	getControlFactory();
@@ -63,8 +67,8 @@ public:
 	virtual void							pasteFromClipboard(PD_DocumentRange * pDocRange, bool bUseClipboard, bool bHonorFormatting = true) = 0;
 	virtual bool							canPasteFromClipboard() = 0;
 	virtual const char *					getUserPrivateDirectory();
-	virtual bool							findAbiSuiteLibFile(UT_String & path, const char * filename, const char * subdir = 0) const;
-	virtual bool							findAbiSuiteAppFile(UT_String & path, const char * filename, const char * subdir = 0) const; // doesn't check user-dir
+	virtual bool							findAbiSuiteLibFile(UT_String & path, const char * filename, const char * subdir = 0);
+	virtual bool							findAbiSuiteAppFile(UT_String & path, const char * filename, const char * subdir = 0); // doesn't check user-dir
 
 	virtual void							setSelectionStatus(AV_View * pView) = 0;
 	virtual void							clearSelection() = 0;
@@ -108,6 +112,7 @@ private:
 	NSTimeInterval			m_eventTime; // e->time field of a recent X event
 										 // (we use this to sync clipboard
 										 // operations with the server).
+	void*				m_pDockMenu;
 protected:				// TODO move that to private
 	EV_CocoaMenuBar*			m_pCocoaMenu;
 	const char*			m_szMenuLayoutName;

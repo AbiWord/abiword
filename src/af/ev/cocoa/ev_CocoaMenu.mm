@@ -1,4 +1,5 @@
 /* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+
 /* AbiSource Program Utilities
  * Copyright (C) 1998-2000 AbiSource, Inc.
  * Copyright (C) 2001-2004 Hubert Figuiere
@@ -643,6 +644,24 @@ EV_CocoaMenuBar::EV_CocoaMenuBar(XAP_CocoaApp * pCocoaApp,
 							   const char * szMenuLabelSetName)
 	: EV_CocoaMenu(pCocoaApp, szMenuLayoutName, szMenuLabelSetName)
 {
+	char buf[1024];
+
+	if (!s_pMenuItem_FileNew)
+		{
+			const EV_Menu_Label * pLabel = m_pMenuLabelSet->getLabel(AP_MENU_ID_FILE_NEW);
+			_convertLabelToMac(buf, sizeof (buf), pLabel->getMenuLabel());
+			NSString * title = [NSString stringWithUTF8String:buf];
+			s_pMenuItem_FileNew = [[NSMenuItem alloc] initWithTitle:title action:nil keyEquivalent:@""];
+			[s_pMenuItem_FileNew setAction:@selector(dockFileNew:)];
+		}
+	if (!s_pMenuItem_FileOpen)
+		{
+			const EV_Menu_Label * pLabel = m_pMenuLabelSet->getLabel(AP_MENU_ID_FILE_OPEN);
+			_convertLabelToMac(buf, sizeof (buf), pLabel->getMenuLabel());
+			NSString * title = [NSString stringWithUTF8String:buf];
+			s_pMenuItem_FileOpen = [[NSMenuItem alloc] initWithTitle:title action:nil keyEquivalent:@""];
+			[s_pMenuItem_FileOpen setAction:@selector(dockFileOpen:)];
+		}
 }
 
 EV_CocoaMenuBar::~EV_CocoaMenuBar()
@@ -713,6 +732,127 @@ void EV_CocoaMenuBar::addCommandKey (const struct EV_CocoaCommandKeyRef * keyRef
 	newKeyRef->action = keyRef->action;
 
 	m_vecKeyRef.addItem (reinterpret_cast<void *>(newKeyRef));
+}
+
+@interface EV_CocoaFramedMenuItem : NSMenuItem
+{
+	XAP_Frame *	m_pFrame;
+}
+-(id)initWithTitle:(NSString *)title forXAPFrame:(XAP_Frame *)frame;
+-(id)selectDocument:(id)sender;
+-(void)update;
+@end
+
+@implementation EV_CocoaFramedMenuItem
+
+-(id)initWithTitle:(NSString *)title forXAPFrame:(XAP_Frame *)frame
+{
+	if (self = [super initWithTitle:title action:nil keyEquivalent:@""])
+		{
+			m_pFrame = frame;
+		}
+	return self;
+}
+
+-(id)selectDocument:(id)sender
+{
+	m_pFrame->raise();
+	return self;
+}
+
+-(void)update
+{
+	NSWindow * window = static_cast<XAP_CocoaFrameImpl *>(m_pFrame->getFrameImpl())->getTopLevelWindow();
+
+	if ([window isKeyWindow])
+		[self setState:NSOnState];
+	else
+		[self setState:NSOffState];
+}
+
+@end
+
+@implementation EV_CocoaDockMenu
+
+-(id)initWithNumberOfFrames:(int)numberOfFrames
+{
+	if (self = [super initWithTitle:@"Dock"])
+		{
+			m_numberOfFrames = numberOfFrames;
+		}
+	return self;
+}
+
+-(void)menuNeedsUpdate
+{
+	for (int i = 0; i < m_numberOfFrames; i++)
+		{
+			EV_CocoaFramedMenuItem * pMenuItem = (EV_CocoaFramedMenuItem *) [self itemAtIndex:i];
+			[pMenuItem update];
+		}
+}
+
+@end
+
+NSMenuItem *	EV_CocoaMenuBar::s_pMenuItem_FileNew  = 0;
+NSMenuItem *	EV_CocoaMenuBar::s_pMenuItem_FileOpen = 0;
+
+EV_CocoaDockMenu * EV_CocoaMenuBar::synthesizeDockMenu(const UT_Vector & vecDocs)
+{
+	XAP_CocoaAppController * pAppDelegate = (XAP_CocoaAppController *) [NSApp delegate];
+	if (!pAppDelegate)
+		return nil;
+
+	EV_CocoaDockMenu * pDockMenu = [[EV_CocoaDockMenu alloc] initWithNumberOfFrames:((int) vecDocs.getItemCount())];
+	if (!pDockMenu)
+		return nil;
+
+	if (vecDocs.getItemCount())
+		{
+			for (UT_uint32 i = 0; i < vecDocs.getItemCount(); i++)
+				{
+					XAP_Frame * pFrame = reinterpret_cast<XAP_Frame *>(vecDocs.getNthItem(i));
+					NSString * title = [NSString stringWithUTF8String:(pFrame->getTitle(80))];
+					EV_CocoaFramedMenuItem * pMenuItem = 0;
+					pMenuItem = [[EV_CocoaFramedMenuItem alloc] initWithTitle:title forXAPFrame:pFrame];
+					if (pMenuItem)
+						{
+							[pMenuItem setAction:@selector(selectDocument:)];
+							[pMenuItem setTarget:pMenuItem];
+							if (pFrame->getCurrentView()->isActive())
+								{
+									[pMenuItem setState:NSOnState];
+								}
+							[pDockMenu addItem:pMenuItem];
+							[pMenuItem release];
+						}
+				}
+			[pDockMenu addItem:[NSMenuItem separatorItem]];
+		}
+	if (s_pMenuItem_FileNew)
+		{
+			[s_pMenuItem_FileNew setTarget:pAppDelegate];
+			[pDockMenu addItem:s_pMenuItem_FileNew];
+		}
+	if (s_pMenuItem_FileOpen)
+		{
+			[s_pMenuItem_FileOpen setTarget:pAppDelegate];
+			[pDockMenu addItem:s_pMenuItem_FileOpen];
+		}
+	return pDockMenu;
+}
+
+void EV_CocoaMenuBar::releaseDockMenu(EV_CocoaDockMenu * pMenu)
+{
+	if (s_pMenuItem_FileNew)
+		{
+			[pMenu removeItem:s_pMenuItem_FileNew];
+		}
+	if (s_pMenuItem_FileOpen)
+		{
+			[pMenu removeItem:s_pMenuItem_FileOpen];
+		}
+	[pMenu release];
 }
 
 /*****************************************************************/
