@@ -1,5 +1,5 @@
 /* AbiSuite
- * Copyright (C) 2000 AbiSource, Inc.
+ * Copyright (C) 2001 AbiSource, Inc.
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -122,9 +122,8 @@ PSpellChecker::requestDictionary (const char * szLang)
  *
  * \return One of SpellChecker::SpellCheckResult
  */
-SpellChecker::SpellCheckResult 
-PSpellChecker::checkWord (const UT_UCSChar * szWord, 
-						  size_t len)
+SpellChecker::SpellCheckResult PSpellChecker::checkWord (const UT_UCSChar * szWord, 
+														 size_t len)
 {
   unsigned char  word8[WORD_SIZE];
   SpellChecker::SpellCheckResult ret = SpellChecker::LOOKUP_FAILED;

@@ -17,28 +17,42 @@
  * 02111-1307, USA.
  */
 
-#ifndef PSPELL_CHECKER_H
-#define PSPELL_CHECKER_H
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
-#include <pspell/pspell.h>
-#include "spell_manager.h"
+#include "ut_debugmsg.h"
+#include "ispell_checker.h"
 
-class PSpellChecker : public SpellChecker
+ISpellChecker::ISpellChecker()
 {
-	friend class SpellManager;
+	abort();
+	/* NOT_REACHED */
+}
+ISpellChecker::~ISpellChecker()
+{
+	abort();
+	/* NOT_REACHED */
+}
+	
+SpellChecker::SpellCheckResult ISpellChecker::checkWord (const UT_UCSChar * word,
+														 size_t len)
+{
+	abort();
+	/* NOT_REACHED */
+}
 
-public:
-	~PSpellChecker();
+UT_Vector * ISpellChecker::suggestWord (const UT_UCSChar * word, size_t len)
+{
+	abort();
+	/* NOT_REACHED */
+}
+	
 
-	virtual SpellCheckResult checkWord (const UT_UCSChar * word, size_t len);
-	virtual UT_Vector * suggestWord (const UT_UCSChar * word, size_t len);
+bool ISpellChecker::requestDictionary (const char * szLang)
+{
+	abort();
+	/* NOT_REACHED */
+}
 
-protected:
-	virtual bool requestDictionary (const char * szLang);
-	PSpellChecker();
 
-private:
-	PspellManager *spell_manager;
-};
-
-#endif /* PSPELL_CHECKER_H */
