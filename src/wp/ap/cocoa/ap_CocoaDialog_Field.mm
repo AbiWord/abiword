@@ -166,8 +166,14 @@ void AP_CocoaDialog_Field::setFieldsList(void)
 	[m_fieldList removeAllStrings];
 
 	for (i = 0; fp_FieldFmts[i].m_Tag != NULL; i++) {
-		if (fp_FieldFmts[i].m_Type == FType) {
-			[m_fieldList addString:[NSString stringWithUTF8String:fp_FieldFmts[i].m_Desc]];
+			if((fp_FieldFmts[i].m_Num != FPFIELD_endnote_anch) &&
+			(fp_FieldFmts[i].m_Num != FPFIELD_endnote_ref) &&
+			(fp_FieldFmts[i].m_Num != FPFIELD_footnote_anch) &&
+			(fp_FieldFmts[i].m_Num != FPFIELD_footnote_ref))
+			{ 
+				if (fp_FieldFmts[i].m_Type == FType) {
+					[m_fieldList addString:[NSString stringWithUTF8String:fp_FieldFmts[i].m_Desc]];	
+			}
 		}
 	}
 }

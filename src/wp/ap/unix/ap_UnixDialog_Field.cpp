@@ -237,14 +237,21 @@ void AP_UnixDialog_Field::setFieldsList(void)
  	// build a list of all items
     for (i = 0; fp_FieldFmts[i].m_Tag != NULL; i++)
 	{
-		if (fp_FieldFmts[i].m_Type == FType)
-		{
-			// Add a new row to the model
-			gtk_list_store_append (model, &iter);
-			gtk_list_store_set (model, &iter,
-								0, fp_FieldFmts[i].m_Desc,
-								1, i,
-								-1);
+		if((fp_FieldFmts[i].m_Num != FPFIELD_endnote_anch) &&
+		   (fp_FieldFmts[i].m_Num != FPFIELD_endnote_ref) &&
+		   (fp_FieldFmts[i].m_Num != FPFIELD_footnote_anch) &&
+		   (fp_FieldFmts[i].m_Num != FPFIELD_footnote_ref))
+		{ 
+
+			if (fp_FieldFmts[i].m_Type == FType)
+			{
+				// Add a new row to the model
+				gtk_list_store_append (model, &iter);
+				gtk_list_store_set (model, &iter,
+									0, fp_FieldFmts[i].m_Desc,
+									1, i,
+									-1);
+			}
 		}
 	}
 	
