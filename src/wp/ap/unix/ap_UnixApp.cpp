@@ -1272,6 +1272,8 @@ int AP_UnixApp::main(const char * szAppName, int argc, char ** argv)
     gtk_init(&Args.m_argc,&Args.m_argv);
     
     AP_UnixApp * pMyUnixApp = new AP_UnixApp(&Args, szAppName);
+
+    pMyUnixApp->setDisplayStatus(bShowApp);
     
     // if the initialize fails, we don't have icons, fonts, etc.
     if (!pMyUnixApp->initialize())
