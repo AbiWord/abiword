@@ -533,14 +533,18 @@ OUT			= $(ABI_ROOT)/src
 ##
 ## 
 
+ifndef ABI_BUILD_VERSION_MAJOR
 ABI_BUILD_VERSION_MAJOR= 1
 ABI_BUILD_VERSION_MINOR= 1
 ABI_BUILD_VERSION_MICRO= 0
+endif
 
+ifndef ABI_BUILD_VERSION
 ABI_BUILD_VERSION	= $(ABI_BUILD_VERSION_MAJOR).$(ABI_BUILD_VERSION_MINOR).$(ABI_BUILD_VERSION_MICRO)
 ABI_BUILD_ID		=
 
 CFLAGS  += -DABI_BUILD_VERSION=\"$(ABI_BUILD_VERSION)\"
+endif
 
 ##################################################################
 ##################################################################

@@ -27,37 +27,74 @@
 #define _VM ABI_BUILD_VERSION_MAJOR
 #define _VN ABI_BUILD_VERSION_MINOR
 #define _VI ABI_BUILD_VERSION_MICRO
+
+#ifndef ABI_BUILD_VERSION_STRING
+#define mk_str2(x) # x
+#define mk_str(x) mk_str2(x)
+#define ABI_BUILD_VERSION_STRING mk_str(ABI_BUILD_VERSION)
+#endif
+
 #define _VS ABI_BUILD_VERSION_STRING "\0"
 
+// for tinderbox builds and other automatic builds
+// ABI_BUILD_VERSION_BUILD is defined and nonzero, else it should be undefined
+#ifdef ABI_BUILD_VERSION_BUILD
+#define _VB ABI_BUILD_VERSION_BUILD
+#else
+#define _VB 0
+#endif
+
+// normally found in <winver.h> included by <windows.h>
+// FILEFLAGS
+#define VS_FF_NORMAL            0x00000000L  // ok I made this one up
+#define VS_FF_DEBUG             0x00000001L
+#define VS_FF_PRERELEASE        0x00000002L
+// FILEOS
+#define VOS_NT                  0x00040000L
+#define VOS__WINDOWS32          0x00000004L
+#define VOS_NT_WINDOWS32        0x00040004L
+// FILETYPE
+#define VFT_APP                 0x00000001L
+#define VFT_DLL                 0x00000002L
+
+
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION _VM,_VN,_VI,0
- PRODUCTVERSION _VM,_VN,_VI,0
+ FILEVERSION _VM,_VN,_VI,_VB
+ PRODUCTVERSION _VM,_VN,_VI,_VB
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
- FILEFLAGS 0x1L
+ FILEFLAGS VS_FF_DEBUG | VS_FF_PRERELEASE    // a debug build is never a release
+#elif defined(_VB) && (_VB != 0)
+ FILEFLAGS VS_FF_NORMAL | VS_FF_PRERELEASE   // CVS/tinderbox/automatic build
 #else
- FILEFLAGS 0x0L
+ FILEFLAGS VS_FF_NORMAL
 #endif
- FILEOS 0x40004L
- FILETYPE 0x1L
+ FILEOS VOS_NT_WINDOWS32
+ FILETYPE VFT_APP
  FILESUBTYPE 0x0L
 BEGIN
     BLOCK "StringFileInfo"
     BEGIN
         BLOCK "080904b0"
         BEGIN
-            VALUE "Comments", "\0"
+            VALUE "Comments", "AbiWord is a free word processing program.\0"
             VALUE "CompanyName", "http://www.abisource.com\0"
             VALUE "FileDescription", "AbiWord\0"
             VALUE "FileVersion", _VS
             VALUE "InternalName", "AbiWord\0"
-            VALUE "LegalCopyright", "AbiWord is a free software distributed under the terms of the GNU Public licence.\0"
-            VALUE "LegalTrademarks", "\0"
+// Only about the 1st 45+ characters are shown in Windows 2000 properties Version dialog
+//            VALUE "LegalCopyright", "AbiWord is a free software distributed under the terms of the GNU Public licence.\0"
+            VALUE "LegalCopyright", "Distributed under the GNU Public licence ... \0"
+            VALUE "LegalTrademarks", "AbiSource, AbiSuite, and AbiWord are trademarks of SourceGear Corporation.\0"
             VALUE "OriginalFilename", "AbiWord.exe\0"
             VALUE "PrivateBuild", "\0"
             VALUE "ProductName", "AbiWord\0"
             VALUE "ProductVersion", _VS
+#if defined(_VB) && (_VB != 0)
+            VALUE "SpecialBuild", "This is an automatically generated build.  Perhaps a CVS and/or Tinderbox build.\0"
+#else
             VALUE "SpecialBuild", "\0"
+#endif
         END
     END
     BLOCK "VarFileInfo"
@@ -69,6 +106,7 @@ END
 #undef _VM
 #undef _VN
 #undef _VI
+#undef _VB
 #undef _VS
 
 #endif
