@@ -69,6 +69,7 @@
 #	include "ap_UnixGnomeDialog_Options.h"
 #	include "ap_UnixGnomeDialog_WordCount.h"
 #	include "ap_UnixGnomeDialog_Field.h"
+#       include "ap_UnixGnomeDialog_Lists.h"
 
 #endif
 
@@ -99,7 +100,7 @@
 	DeclareDialog(AP_DIALOG_ID_INSERT_DATETIME,	AP_UnixDialog_Insert_DateTime)			
 	DeclareDialog(AP_DIALOG_ID_WORDCOUNT,       AP_UnixGnomeDialog_WordCount)
 	DeclareDialog(AP_DIALOG_ID_FIELD,			AP_UnixGnomeDialog_Field)
-	DeclareDialog(AP_DIALOG_ID_LISTS,		     AP_UnixDialog_Lists)
+	DeclareDialog(AP_DIALOG_ID_LISTS,		     AP_UnixGnomeDialog_Lists)
 	DeclareDialog(AP_DIALOG_ID_COLUMNS,			AP_UnixDialog_Columns)
 
 	// ... also add new dialogs here ...
