@@ -662,7 +662,7 @@ bool AP_Win32App::_pasteFormatFromClipboard(PD_DocumentRange * pDocRange, const 
  		HWND		 			hWnd;
  		HDC 					hdc;
  		IE_ImpGraphic*			pIEG = NULL;
- 		FG_Graphic* 			pFG;	
+ 		FG_Graphic* 			pFG = NULL;	
  		UT_Error 				errorCode;		
  		UT_ByteBuf 				byteBuf;				
  		IEGraphicFileType		iegft = IEGFT_BMP;	
@@ -689,29 +689,28 @@ bool AP_Win32App::_pasteFormatFromClipboard(PD_DocumentRange * pDocRange, const 
  		// Since we are providing the file type, there is not need to pass the bytebuff filled up
  		errorCode = IE_ImpGraphic::constructImporter(szFile, iegft, &pIEG);				 				
 		 				
- 		if(errorCode != UT_OK)
- 				return false;				  	
- 				 			
+ 		if(errorCode != UT_OK)		
+			return false;				  	
+		 				 			
  		errorCode = pIEG->importGraphic(szFile, &pFG); 		
  		
  		if(errorCode != UT_OK || !pFG)
- 		{
- 			MessageBox(NULL, "Paste BMP files requieres the ImageMagick plugin", NULL, NULL);						
- 			DELETEP(pIEG);
+		{
+			DELETEP(pIEG);
  			return false;
- 		}
+		}
  		 
  		// Insert graphic in the view
- 		pFrame = getLastFocussedFrame();		
- 		if (!pFrame) return false;
- 						
+ 		pFrame = getLastFocussedFrame(); 						
  		pFrameData = (AP_FrameData*) pFrame->getFrameData();		
  		pDocLy =	pFrameData->m_pDocLayout;	
  		pView =  pDocLy->getView();		
  				
  		errorCode = pView->cmdInsertGraphic(pFG, szFile);	  		  		
  	
- 		DELETEP(pFG);
+		DELETEP(pIEG);
+ 		//DELETEP(pFG);		
+
  		unlink(szFile);		  	
  		bSuccess = true;
  	}
@@ -751,15 +750,16 @@ bool AP_Win32App::canPasteFromClipboard(void)
 	if (!m_pClipboard->openClipboard())
 		return false;
 
-	// TODO decide if we need to support .ABW format on the clipboard.
-	
+	// TODO decide if we need to support .ABW format on the clipboard.	
 	if (m_pClipboard->hasFormat(AP_CLIPBOARD_RTF))
 		goto ReturnTrue;
 	if (m_pClipboard->hasFormat(AP_CLIPBOARD_TEXTPLAIN_UCS2))
 		goto ReturnTrue;
 	if (m_pClipboard->hasFormat(AP_CLIPBOARD_TEXTPLAIN_8BIT))
 		goto ReturnTrue;
-	if (m_pClipboard->hasFormat(AP_CLIPBOARD_BMP))
+
+	// If IEGFT_BMP!=0 we have a plugin that can deal with BMP format
+	if (m_pClipboard->hasFormat(AP_CLIPBOARD_BMP) && IEGFT_BMP)
   		goto ReturnTrue;
   		
 	m_pClipboard->closeClipboard();
@@ -1059,15 +1059,6 @@ int AP_Win32App::WinMain(const char * szAppName, HINSTANCE hInstance,
 	
 __try
 {		
-	/*
-	#define IEGFT_PNG IE_ImpGraphic::fileTypeForSuffix(".png")
-	#define IEGFT_SVG IE_ImpGraphic::fileTypeForSuffix(".svg")
-	#define IEGFT_BMP IE_ImpGraphic::fileTypeForSuffix(".bmp")
-	#define IEGFT_DIB IEGFT_BMP
-	#define IEGFT_JPEG IE_ImpGraphic::fileTypeForSuffix(".jpg")
-	#define IEGFT_WMF IE_ImpGraphic::fileTypeForSuffix(".wmf")
-	*/
-
 	
 
 	if (bShowApp)
