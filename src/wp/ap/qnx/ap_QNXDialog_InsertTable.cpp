@@ -183,7 +183,7 @@ const XAP_StringSet *pSS = m_pApp->getStringSet();
 	
 	n=0;
 	
-	PtSetArg(&args[n++],Pt_ARG_NUMERIC_MIN,0,0);
+	PtSetArg(&args[n++],Pt_ARG_NUMERIC_MIN,1,0);
 	num_col=PtCreateWidget(PtNumericInteger,group_size_col,n,args);
 
 	n=0;
@@ -200,7 +200,7 @@ const XAP_StringSet *pSS = m_pApp->getStringSet();
 	
 	n=0;
 	
-	PtSetArg(&args[n++],Pt_ARG_NUMERIC_MIN,0,0);
+	PtSetArg(&args[n++],Pt_ARG_NUMERIC_MIN,1,0);
 	num_row=PtCreateWidget(PtNumericInteger,group_size_rows,n,args);
 
 	n=0;
