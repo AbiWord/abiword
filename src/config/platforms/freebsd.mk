@@ -52,7 +52,7 @@ OBJ_DIR_SFX	=
 endif
 
 DEFINES		=
-OPTIMIZER	= -O2
+OPTIMIZER	= 
 
 ifeq ($(ABI_OPT_PROF),1)
 OPTIMIZER	= -pg -fprofile-arcs -ftest-coverage
@@ -66,6 +66,8 @@ OPTIMIZER	+= -O3 -fomit-frame-pointer
 OBJ_DIR_SFX	:= $(OBJ_DIR_SFX)OPT_
 ABI_OPTIONS	+= Optimize:On
 ABI_OPT_DEBUG	= 0
+else
+OPTIMIZER	= -O2
 endif
 
 ifeq ($(ABI_OPT_DEBUG),1)
