@@ -33,6 +33,9 @@
 #include "ap_LB_Default.h"
 #include "ap_LB_Emacs.h"
 #include "ap_LB_EmacsCtrlX.h"
+#include "ap_LB_viEdit.h"
+#include "ap_LB_viEdit_d.h"
+#include "ap_LB_viInput.h"
 #include "ap_LB_DeadAbovedot.h"
 #include "ap_LB_DeadAcute.h"
 #include "ap_LB_DeadBreve.h"
@@ -53,6 +56,7 @@ typedef UT_Bool (*ap_LoadBindings_pFn)(AP_BindingSet * pThis, EV_EditBindingMap 
 
 struct _lb
 {
+	UT_Bool						m_bCanCycle;
 	const char *				m_name;
 	ap_LoadBindings_pFn			m_fn;
 	EV_EditBindingMap *			m_pebm;			// must be deleted
@@ -60,22 +64,58 @@ struct _lb
 
 static struct _lb s_lbTable[] =
 {
-	{	"default",			ap_LoadBindings_Default,			NULL	}, // stock AbiWord bindings
-	{   "emacs",            ap_LoadBindings_Emacs,              NULL    }, // emacs key bindings
-	{   "emacsctrlx",       ap_LoadBindings_EmacsCtrlX,         NULL    }, // emacs ctrl-x key bindings
-	{	"deadabovedot",		ap_LoadBindings_DeadAbovedot,		NULL	}, // subordinate maps for 'dead'
-	{	"deadacute",		ap_LoadBindings_DeadAcute,			NULL	}, // key prefixes.
-	{	"deadbreve",		ap_LoadBindings_DeadBreve,			NULL	},
-	{	"deadcaron",		ap_LoadBindings_DeadCaron,			NULL	},
-	{	"deadcedilla",		ap_LoadBindings_DeadCedilla,		NULL	},
-	{	"deadcircumflex",	ap_LoadBindings_DeadCircumflex,		NULL	},
-	{	"deaddiaeresis",	ap_LoadBindings_DeadDiaeresis,		NULL	},
-	{	"deaddoubleacute",	ap_LoadBindings_DeadDoubleacute,	NULL	},
-	{	"deadgrave",		ap_LoadBindings_DeadGrave,			NULL	},
-	{	"deadmacron",		ap_LoadBindings_DeadMacron,			NULL	},
-	{	"deadogonek",		ap_LoadBindings_DeadOgonek,			NULL	},
-	{	"deadtilde",		ap_LoadBindings_DeadTilde,			NULL	},
+	{	UT_TRUE,  "default",			ap_LoadBindings_Default,			NULL	}, // stock AbiWord bindings
+	{   UT_TRUE,  "emacs",				ap_LoadBindings_Emacs,              NULL    }, // emacs key bindings
+	{   UT_FALSE, "emacsctrlx",			ap_LoadBindings_EmacsCtrlX,         NULL    }, // emacs ctrl-x key bindings
+
+	{	UT_TRUE,  "viEdit",				ap_LoadBindings_viEdit,				NULL	}, // vi Edit-Mode bindings
+	{	UT_FALSE, "viEdit_d",			ap_LoadBindings_viEdit_d,			NULL	}, // vi Edit-Mode d-prefix key bindings
+	{	UT_FALSE, "viInput",			ap_LoadBindings_viInput,			NULL	}, // vi Input-Mode bindings
+
+	{	UT_FALSE, "deadabovedot",		ap_LoadBindings_DeadAbovedot,		NULL	}, // subordinate maps for 'dead'
+	{	UT_FALSE, "deadacute",			ap_LoadBindings_DeadAcute,			NULL	}, // key prefixes.
+	{	UT_FALSE, "deadbreve",			ap_LoadBindings_DeadBreve,			NULL	},
+	{	UT_FALSE, "deadcaron",			ap_LoadBindings_DeadCaron,			NULL	},
+	{	UT_FALSE, "deadcedilla",		ap_LoadBindings_DeadCedilla,		NULL	},
+	{	UT_FALSE, "deadcircumflex",		ap_LoadBindings_DeadCircumflex,		NULL	},
+	{	UT_FALSE, "deaddiaeresis",		ap_LoadBindings_DeadDiaeresis,		NULL	},
+	{	UT_FALSE, "deaddoubleacute",	ap_LoadBindings_DeadDoubleacute,	NULL	},
+	{	UT_FALSE, "deadgrave",			ap_LoadBindings_DeadGrave,			NULL	},
+	{	UT_FALSE, "deadmacron",			ap_LoadBindings_DeadMacron,			NULL	},
+	{	UT_FALSE, "deadogonek",			ap_LoadBindings_DeadOgonek,			NULL	},
+	{	UT_FALSE, "deadtilde",			ap_LoadBindings_DeadTilde,			NULL	},
 };
+
+/****************************************************************/
+/****************************************************************/
+
+const char * AP_BindingSet::s_getNextInCycle(const char * szCurrent)
+{
+	// find the next one in the table with CanCycle set from the given
+	// one.  wrap around if necessary.
+
+	int kMatch = -1;
+	int k;
+	
+	for (k=0; k<(int)NrElements(s_lbTable); k++)
+		if (UT_stricmp(s_lbTable[k].m_name,szCurrent) == 0)
+		{
+			kMatch = k;
+			break;
+		}
+
+	if (kMatch == -1)
+		return NULL;
+
+	for (k=kMatch+1; k<(int)NrElements(s_lbTable); k++)
+		if (s_lbTable[k].m_bCanCycle)
+			return s_lbTable[k].m_name;
+	for (k=0; k<kMatch; k++)
+		if (s_lbTable[k].m_bCanCycle)
+			return s_lbTable[k].m_name;
+
+	return NULL;
+}
 
 /****************************************************************/
 /****************************************************************/

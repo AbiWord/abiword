@@ -202,10 +202,13 @@ EV_EditBinding * EV_EditBindingMap::findEditBinding(EV_EditBits eb)
 UT_Bool EV_EditBindingMap::setBinding(EV_EditBits eb, const char * szMethodName)
 {
 	EV_EditMethod * pem = m_pemc->findEditMethodByName(szMethodName);
-	UT_ASSERT(pem);						// TODO remove this and find a better way of doing a spelling-check...
-	
 	if (!pem)
+	{
+		UT_DEBUGMSG(("Unknown method name [%s] in binding table.\n",szMethodName));
+		UT_ASSERT(pem);				// TODO remove this and find a better way of doing a spelling-check...
 		return UT_FALSE;
+	}
+
 	EV_EditBinding * peb = new EV_EditBinding(pem);
 	if (!peb)
 		return UT_FALSE;

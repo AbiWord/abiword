@@ -35,7 +35,7 @@
 #include "xap_Menu_Layouts.h"
 #include "xap_Prefs.h"
 #include "ap_Strings.h"
-
+#include "ap_LoadBindings.h"
 #include "ap_Dialog_Id.h"
 #include "ap_Dialog_Replace.h"
 #include "xap_Dlg_About.h"
@@ -276,6 +276,15 @@ public:
 
 	static EV_EditMethod_Fn setEditVI;
 	static EV_EditMethod_Fn setInputVI;
+	static EV_EditMethod_Fn cycleInputMode;
+
+	static EV_EditMethod_Fn viCmd_A;
+	static EV_EditMethod_Fn viCmd_I;
+	static EV_EditMethod_Fn viCmd_J;
+	static EV_EditMethod_Fn viCmd_O;
+	static EV_EditMethod_Fn viCmd_a;
+	static EV_EditMethod_Fn viCmd_o;
+	static EV_EditMethod_Fn viCmd_dw;
 
 	static EV_EditMethod_Fn noop;
 
@@ -494,6 +503,15 @@ static EV_EditMethod s_arrayEditMethods[] =
 
 	EV_EditMethod(NF(setEditVI),			0,	""),
 	EV_EditMethod(NF(setInputVI),			0,	""),
+	EV_EditMethod(NF(cycleInputMode),		0,	""),
+
+	EV_EditMethod(NF(viCmd_A),		0,	""),
+	EV_EditMethod(NF(viCmd_I),		0,	""),
+	EV_EditMethod(NF(viCmd_J),		0,	""),
+	EV_EditMethod(NF(viCmd_O),		0,	""),
+	EV_EditMethod(NF(viCmd_a),		0,	""),
+	EV_EditMethod(NF(viCmd_o),		0,	""),
+	EV_EditMethod(NF(viCmd_dw),		0,	""),
 
 	EV_EditMethod(NF(noop),					0,	""),
 
@@ -1713,7 +1731,7 @@ Defun1(cursorImageSize)
 
 /*****************************************************************/
 
-Defun(contextMenu)
+Defun1(contextMenu)
 {
 	// raise context menu over whatever we are over.  this is
 	// intended for use by the keyboard accelerator rather than
@@ -3490,8 +3508,7 @@ Defun1(setEditVI)
 	XAP_Frame * pFrame = (XAP_Frame *) pAV_View->getParentData();
 	UT_ASSERT(pFrame);
 
-	//UT_Bool bResult = (pFrame->setInputMode("viEdit") != 0);
-	UT_Bool bResult = (pFrame->setInputMode("default") != 0);
+	UT_Bool bResult = (pFrame->setInputMode("viEdit") != 0);
 	return bResult;
 }
 
@@ -3502,7 +3519,59 @@ Defun1(setInputVI)
 	XAP_Frame * pFrame = (XAP_Frame *) pAV_View->getParentData();
 	UT_ASSERT(pFrame);
 
-	//UT_Bool bResult = (pFrame->setInputMode("viInput") != 0);
-	UT_Bool bResult = (pFrame->setInputMode("emacs") != 0);
+	UT_Bool bResult = (pFrame->setInputMode("viInput") != 0);
 	return bResult;
+}
+
+Defun1(cycleInputMode)
+{
+	// switch to the next input mode { default, emacs, vi, ... }
+
+	XAP_Frame * pFrame = (XAP_Frame *) pAV_View->getParentData();
+	UT_ASSERT(pFrame);
+
+	const char * szCurrentInputMode = pFrame->getInputMode();
+	UT_ASSERT(szCurrentInputMode);
+	const char * szNextInputMode = AP_BindingSet::s_getNextInCycle(szCurrentInputMode);
+	if (!szNextInputMode)				// probably an error....
+		return UT_FALSE;
+	
+	UT_Bool bResult = (pFrame->setInputMode(szNextInputMode) != 0);
+	return bResult;
+}
+
+Defun0(viCmd_A)
+{
+	UT_ASSERT(UT_NOT_IMPLEMENTED);
+	return UT_FALSE;
+}
+Defun0(viCmd_I)
+{
+	UT_ASSERT(UT_NOT_IMPLEMENTED);
+	return UT_FALSE;
+}
+Defun0(viCmd_J)
+{
+	UT_ASSERT(UT_NOT_IMPLEMENTED);
+	return UT_FALSE;
+}
+Defun0(viCmd_O)
+{
+	UT_ASSERT(UT_NOT_IMPLEMENTED);
+	return UT_FALSE;
+}
+Defun0(viCmd_a)
+{
+	UT_ASSERT(UT_NOT_IMPLEMENTED);
+	return UT_FALSE;
+}
+Defun0(viCmd_o)
+{
+	UT_ASSERT(UT_NOT_IMPLEMENTED);
+	return UT_FALSE;
+}
+Defun0(viCmd_dw)
+{
+	UT_ASSERT(UT_NOT_IMPLEMENTED);
+	return UT_FALSE;
 }

@@ -72,6 +72,8 @@ public:
 				  ap_bs_NVK_Prefix * pNVKPrefix, UT_uint32 cNVKPrefix);
 	void _loadMouse(EV_EditBindingMap * pebm,
 					ap_bs_Mouse * pMouseTable, UT_uint32 cMouseTable);
+
+	static const char * s_getNextInCycle(const char * szCurrent);
 };
 
 #endif /* AP_LOADBINDINGS_H */

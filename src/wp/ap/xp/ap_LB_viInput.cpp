@@ -18,13 +18,13 @@
  */
 
 
-// ********************************************************************************
-// ********************************************************************************
-// *** THIS FILE DEFINES THE DEFAULT KEYBOARD AND MOUSE BINDINGS FOR AbiWord 1. ***
-// *** To define bindings for other emulations, clone this file and change the  ***
-// *** various settings.  See ap_LoadBindings.cpp for more information.         ***
-// ********************************************************************************
-// ********************************************************************************
+// **********************************************************************************
+// **********************************************************************************
+// *** THIS FILE DEFINES VI input mode KEYBOARD AND MOUSE BINDINGS FOR AbiWord 1. ***
+// *** To define bindings for other emulations, clone this file and change the    ***
+// *** various settings.  See ap_LoadBindings.cpp for more information.           ***
+// **********************************************************************************
+// **********************************************************************************
 
 #include "ut_assert.h"
 #include "ut_types.h"
@@ -33,9 +33,7 @@
 #include "ev_EditMethod.h"
 #include "ev_NamedVirtualKey.h"
 #include "ap_LoadBindings.h"
-#include "ap_LB_Default.h"
-
-// NOTE: on Win32 we cannot get ALT-TAB (but we can get ALT-F4 :-)
+#include "ap_LB_viInput.h"
 
 #define _S		| EV_EMS_SHIFT
 #define _C		| EV_EMS_CONTROL
@@ -152,8 +150,8 @@ static struct ap_bs_NVK s_NVKTable[] =
 						  "",					"",					"",				""					}},
 	{EV_NVK_RETURN,		{ "insertParagraphBreak", "insertLineBreak", "insertPageBreak", "insertColumnBreak",
 						  "insertSectionBreak",	"",					"",				""					}},
-//	{EV_NVK_ESCAPE,		{ "",					"",					"",				"",
-//						  "",					"",					"",				""					}},
+	{EV_NVK_ESCAPE,		{ "setEditVI",			"setEditVI",		"setEditVI",	"setEditVI",
+						  "setEditVI",			"setEditVI",		"setEditVI",	"setEditVI"			}},
 	{EV_NVK_PAGEUP,		{ "scrollPageUp",		"extSelPageUp",		"",				"",
 						  "",					"",					"",				""					}},
 	{EV_NVK_PAGEDOWN,	{ "scrollPageDown",		"extSelPageDown",	"",				"",
@@ -200,8 +198,8 @@ static struct ap_bs_NVK s_NVKTable[] =
 						  "",					"",					"",				""					}},
 //	{EV_NVK_F11,		{ "",					"",					"",				"",
 //						  "",					"",					"",				""					}},
-	{EV_NVK_F12,		{ "cycleInputMode",		"",					"",				"",
-						  "",					"",					"",				""					}},
+//	{EV_NVK_F12,		{ "",					"",					"",				"",
+//						  "",					"",					"",				""					}},
 // 	{EV_NVK_F13,		{
 // 	{EV_NVK_F14,		{
 // 	{EV_NVK_F15,		{
@@ -282,11 +280,11 @@ static struct ap_bs_Char s_CharTable[] =
 	{0x2e, /* .      */ { "insertData",			"",					"",				""					}},
 	{0x2f, /* /      */ { "insertData",			"",					"",				""					}},
 	{0x30, /* 0      */ { "insertData",			"",					"",				""					}},
-	{0x31, /* 1      */ { "insertData",			"singleSpace",		"",				""					}},
-	{0x32, /* 2      */ { "insertData",			"doubleSpace",		"",				""					}},
+	{0x31, /* 1      */ { "insertData",			"",					"",				""					}},
+	{0x32, /* 2      */ { "insertData",			"",					"",				""					}},
 	{0x33, /* 3      */ { "insertData",			"",					"",				""					}},
 	{0x34, /* 4      */ { "insertData",			"",					"",				""					}},
-	{0x35, /* 5      */ { "insertData",			"middleSpace",		"",				""					}},
+	{0x35, /* 5      */ { "insertData",			"",					"",				""					}},
 	{0x36, /* 6      */ { "insertData",			"",					"",				""					}},
 	{0x37, /* 7      */ { "insertData",			"",					"",				""					}},
 	{0x38, /* 8      */ { "insertData",			"",					"",				""					}},
@@ -298,64 +296,64 @@ static struct ap_bs_Char s_CharTable[] =
 	{0x3e, /* >      */ { "insertData",			"",					"",				""					}},
 	{0x3f, /* ?      */ { "insertData",			"",					"",				""					}},
 	{0x40, /* @      */ { "insertData",			"",					"",				""					}},
-	{0x41, /* A      */ { "insertData",			"selectAll",		"",				""					}},
-	{0x42, /* B      */ { "insertData",			"toggleBold",		"",				""					}},
-	{0x43, /* C      */ { "insertData",			"copy",				"",				""					}},
-	{0x44, /* D      */ { "insertData",			"dlgFont",			"",				""					}},
-	{0x45, /* E      */ { "insertData",			"alignCenter",		"",				""					}},
-	{0x46, /* F      */ { "insertData",			"find",				"",				""					}},
-	{0x47, /* G      */ { "insertData",			"go",				"",				""					}},
-	{0x48, /* H      */ { "insertData",			"replace",			"",				""					}},
-	{0x49, /* I      */ { "insertData",			"toggleItalic",		"",				""					}},
-	{0x4a, /* J      */ { "insertData",			"alignJustify",		"",				""					}},
-	{0x4b, /* K      */ { "insertData",			"",					"",				""					}},
-	{0x4c, /* L      */ { "insertData",			"alignLeft",		"",				""					}},
+	{0x41, /* A      */ { "insertData",			"",					"",				""					}},
+	{0x42, /* B      */ { "insertData",			"",					"",				""					}},
+	{0x43, /* C      */ { "insertData",			"",					"",				""					}},
+	{0x44, /* D      */ { "insertData",			"",					"",				""					}},
+	{0x45, /* E      */ { "insertData",			"",					"",				""					}},
+	{0x46, /* F      */ { "insertData",			"",					"",				""					}},
+	{0x47, /* G      */ { "insertData",			"",					"",				""					}},
+	{0x48, /* H      */ { "insertData",			"",					"",				""					}},
+	{0x49, /* I      */ { "insertData",			"",					"",				""					}},
+	{0x4a, /* J      */ { "insertData",			"",					"",				""					}},
+	{0x4b, /* K      */ { "insertData",			"",		   			"",				""					}},
+	{0x4c, /* L      */ { "insertData",			"",					"",				""					}},
 	{0x4d, /* M      */ { "insertData",			"",					"",				""					}},
-	{0x4e, /* N      */ { "insertData",			"fileNew",			"",				""					}},
-	{0x4f, /* O      */ { "insertData",			"fileOpen",			"",				""					}},
-	{0x50, /* P      */ { "insertData",			"print",			"",				""					}},
+	{0x4e, /* N      */ { "insertData",			"",					"",				""					}},
+	{0x4f, /* O      */ { "insertData",			"",					"",				""					}},
+	{0x50, /* P      */ { "insertData",			"",					"",				""					}},
 	{0x51, /* Q      */ { "insertData",			"",					"",				""					}},
-	{0x52, /* R      */ { "insertData",			"alignRight",		"",				""					}},
-	{0x53, /* S      */ { "insertData",			"fileSave",			"",				""					}},
+	{0x52, /* R      */ { "insertData",			"",					"",				""					}},
+	{0x53, /* S      */ { "insertData",			"",	   				"",				""					}},
 	{0x54, /* T      */ { "insertData",			"",					"",				""					}},
-	{0x55, /* U      */ { "insertData",			"toggleUline",		"",				""					}},
-	{0x56, /* V      */ { "insertData",			"paste",			"",				""					}},
-	{0x57, /* W      */ { "insertData",			"closeWindow",		"",				""					}},
-	{0x58, /* X      */ { "insertData",			"cut",				"",				""					}},
-	{0x59, /* Y      */ { "insertData",			"redo",				"",				""					}},
-	{0x5a, /* Z      */ { "insertData",			"undo",				"",				""					}},
+	{0x55, /* U      */ { "insertData",			"",					"",				""					}},
+	{0x56, /* V      */ { "insertData",			"",					"",				""					}},
+	{0x57, /* W      */ { "insertData",			"",					"",				""					}},
+	{0x58, /* X      */ { "insertData",			"",					"",				""					}},
+	{0x59, /* Y      */ { "insertData",			"",					"",				""					}},
+	{0x5a, /* Z      */ { "insertData",			"",					"",				""					}},
 	{0x5b, /* [      */ { "insertData",			"",					"",				""					}},
 	{0x5c, /* \      */ { "insertData",			"",					"",				""					}},
 	{0x5d, /* ]      */ { "insertData",			"",					"",				""					}},
 	{0x5e, /* ^      */ { "insertData",			"",					"",				""					}},
 	{0x5f, /* -      */ { "insertData",			"",					"",				""					}},
 	{0x60, /* `      */ { "insertData",			"",					"",				""					}},
-	{0x61, /* a      */ { "insertData",			"selectAll",		"",				""					}},
-	{0x62, /* b      */ { "insertData",			"toggleBold",		"",				""					}},
-	{0x63, /* c      */ { "insertData",			"copy",				"",				""					}},
-	{0x64, /* d      */ { "insertData",			"dlgFont",			"",				""					}},
-	{0x65, /* e      */ { "insertData",			"alignCenter",		"",				""					}},
-	{0x66, /* f      */ { "insertData",			"find",				"",				""					}},
-	{0x67, /* g      */ { "insertData",			"go",				"",				""					}},
-	{0x68, /* h      */ { "insertData",			"replace",			"",				""					}},
-	{0x69, /* i      */ { "insertData",			"toggleItalic",		"",				""					}},
-	{0x6a, /* j      */ { "insertData",			"alignJustify",		"",				""					}},
+	{0x61, /* a      */ { "insertData",			"",					"",				""					}},
+	{0x62, /* b      */ { "insertData",			"",					"",				""					}},
+	{0x63, /* c      */ { "insertData",			"",					"",				""					}},
+	{0x64, /* d      */ { "insertData",			"",					"",				""					}},
+	{0x65, /* e      */ { "insertData",			"",					"",				""					}},
+	{0x66, /* f      */ { "insertData",			"",					"",				""					}},
+	{0x67, /* g      */ { "insertData",			"",					"",				""					}},
+	{0x68, /* h      */ { "insertData",			"",					"",				""					}},
+	{0x69, /* i      */ { "insertData",			"",					"",				""					}},
+	{0x6a, /* j      */ { "insertData",			"",					"",				""					}},
 	{0x6b, /* k      */ { "insertData",			"",					"",				""					}},
-	{0x6c, /* l      */ { "insertData",			"alignLeft",		"",				""					}},
+	{0x6c, /* l      */ { "insertData",			"",					"",				""					}},
 	{0x6d, /* m      */ { "insertData",			"",					"",				""					}},
-	{0x6e, /* n      */ { "insertData",			"fileNew",			"",				""					}},
-	{0x6f, /* o      */ { "insertData",			"fileOpen",			"",				""					}},
-	{0x70, /* p      */ { "insertData",			"print",			"",				""					}},
+	{0x6e, /* n      */ { "insertData",			"",					"",				""					}},
+	{0x6f, /* o      */ { "insertData",			"",					"",				""					}},
+	{0x70, /* p      */ { "insertData",			"",					"",				""					}},
 	{0x71, /* q      */ { "insertData",			"",					"",				""					}},
-	{0x72, /* r      */ { "insertData",			"alignRight",		"",				""					}},
-	{0x73, /* s      */ { "insertData",			"fileSave",			"",				""					}},
+	{0x72, /* r      */ { "insertData",			"",					"",				""					}},
+	{0x73, /* s      */ { "insertData",			"",					"",				""					}},
 	{0x74, /* t      */ { "insertData",			"",					"",				""					}},
-	{0x75, /* u      */ { "insertData",			"toggleUline",		"",				""					}},
-	{0x76, /* v      */ { "insertData",			"paste",			"",				""					}},
-	{0x77, /* w      */ { "insertData",			"closeWindow",		"",				""					}},
-	{0x78, /* x      */ { "insertData",			"cut",				"",				""					}},
-	{0x79, /* y      */ { "insertData",			"redo",				"",				""					}},
-	{0x7a, /* z      */ { "insertData",			"undo",				"",				""					}},
+	{0x75, /* u      */ { "insertData",			"",					"",				""					}},
+	{0x76, /* v      */ { "insertData",			"",					"",				""					}},
+	{0x77, /* w      */ { "insertData",			"",					"",				""					}},
+	{0x78, /* x      */ { "insertData",			"",					"",				""					}},
+	{0x79, /* y      */ { "insertData",			"",					"",				""					}},
+	{0x7a, /* z      */ { "insertData",			"",					"",				""					}},
 	{0x7b, /* {      */ { "insertData",			"",					"",				""					}},
 	{0x7c, /* |      */ { "insertData",			"",					"",				""					}},
 	{0x7d, /* }      */ { "insertData",			"",					"",				""					}},
@@ -475,16 +473,32 @@ static struct ap_bs_Char s_CharTable[] =
 	
 };
 
+#if 0
+/*****************************************************************
+ ** non-nvk table of prefix keys
+ ****************************************************************/
+
+static struct ap_bs_Char_Prefix s_CharPrefixTable[] =
+{
+//  Warning: case is significant here Ctrl-x and Ctrl-X are different :-)	
+//	{char, /* desc   */ { none,					_C,					_A,				_A_C				}},
+//	{0x78, /* x      */ { "",					"",					"",				""					}},
+};
+#endif
+
 /*****************************************************************
 ******************************************************************
 ** put it all together and load the default bindings.
 ******************************************************************
 *****************************************************************/
 
-UT_Bool ap_LoadBindings_Default(AP_BindingSet * pThis, EV_EditBindingMap * pebm)
+UT_Bool ap_LoadBindings_viInput(AP_BindingSet * pThis, EV_EditBindingMap * pebm)
 {
 	pThis->_loadMouse(pebm,s_MouseTable,NrElements(s_MouseTable));
+
 	pThis->_loadNVK(pebm,s_NVKTable,NrElements(s_NVKTable),s_NVKTable_P,NrElements(s_NVKTable_P));
+
+	//pThis->_loadChar(pebm,s_CharTable,NrElements(s_CharTable),s_CharPrefixTable,NrElements(s_CharPrefixTable));
 	pThis->_loadChar(pebm,s_CharTable,NrElements(s_CharTable),NULL,0);
 
 	return UT_TRUE;

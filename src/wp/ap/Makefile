@@ -62,6 +62,9 @@ OBJS=		$(PLATFORM_OBJS)						\
 		xp/$(OBJDIR)/ap_LB_Default.$(OBJ_SUFFIX)		\
 		xp/$(OBJDIR)/ap_LB_Emacs.$(OBJ_SUFFIX)			\
 		xp/$(OBJDIR)/ap_LB_EmacsCtrlX.$(OBJ_SUFFIX)			\
+		xp/$(OBJDIR)/ap_LB_viEdit.$(OBJ_SUFFIX)				\
+		xp/$(OBJDIR)/ap_LB_viEdit_d.$(OBJ_SUFFIX)			\
+		xp/$(OBJDIR)/ap_LB_viInput.$(OBJ_SUFFIX)			\
 		xp/$(OBJDIR)/ap_Menu_ActionSet.$(OBJ_SUFFIX)			\
 		xp/$(OBJDIR)/ap_Menu_Functions.$(OBJ_SUFFIX)			\
 		xp/$(OBJDIR)/ap_Menu_LabelSet.$(OBJ_SUFFIX)			\
