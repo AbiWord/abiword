@@ -80,9 +80,8 @@ public:
 	static bool				RegisterClass(XAP_Win32App * app);
 
 	virtual void				toggleRuler(bool bRulerOn) = 0;	
-
-	virtual void				toggleTopRuler(bool) { return; }
-	virtual void				toggleLeftRuler(bool) { return; }
+	virtual void				toggleTopRuler(bool bRulerOn) = 0;
+	virtual void				toggleLeftRuler(bool bRulerOn) = 0;
 	
 protected:
 	virtual HWND				_createDocumentWindow(HWND hwndParent,

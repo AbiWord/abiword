@@ -51,6 +51,8 @@ public:
 	static bool				RegisterClass(XAP_Win32App * app);
 
 	virtual void				toggleRuler(bool bRulerOn);
+	virtual void				toggleTopRuler(bool bRulerOn);
+	virtual void				toggleLeftRuler(bool bRulerOn);
 
 protected:
 	virtual HWND				_createDocumentWindow(HWND hwndParent,
@@ -61,6 +63,8 @@ protected:
 													   UT_uint32 iWidth);
 
 	void						_createRulers(void);
+	void						_createTopRuler(void);
+	void						_createLeftRuler(void);
 	void						_getRulerSizes(int &yTopRulerHeight, int &xLeftRulerWidth);
 	void						_onSize(int nWidth, int nHeight);
 

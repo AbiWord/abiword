@@ -622,6 +622,12 @@ void AP_Win32Frame::_getRulerSizes(int &yTopRulerHeight, int &xLeftRulerWidth)
 
 void AP_Win32Frame::_createRulers(void)
 {
+	_createTopRuler();
+	_createLeftRuler();
+}
+
+void AP_Win32Frame::_createTopRuler(void)
+{
 	RECT r;
 	int cxVScroll, cyHScroll;
 
@@ -630,26 +636,57 @@ void AP_Win32Frame::_createRulers(void)
 	cyHScroll = GetSystemMetrics(SM_CYHSCROLL);
 
 	// create the top ruler
-
 	AP_Win32TopRuler * pWin32TopRuler = new AP_Win32TopRuler(this);
 	UT_ASSERT(pWin32TopRuler);
 	m_hwndTopRuler = pWin32TopRuler->createWindow(m_hwndContainer,
 												  0,0, (r.right - cxVScroll));
 	static_cast<AP_FrameData*>(m_pData)->m_pTopRuler = pWin32TopRuler;
-	UT_uint32 yTopRulerHeight = pWin32TopRuler->getHeight();
+
+
+	// get the width from the left ruler and stuff it into the top ruler.
+	UT_uint32 xLeftRulerWidth = 0;
+    if( m_hwndLeftRuler )
+	{
+		AP_Win32LeftRuler * pWin32LeftRuler = NULL;
+		pWin32LeftRuler =  (AP_Win32LeftRuler *) static_cast<AP_FrameData*>(m_pData)->m_pLeftRuler;
+		xLeftRulerWidth = pWin32LeftRuler->getWidth();
+	}
+	pWin32TopRuler->setOffsetLeftRuler(xLeftRulerWidth);
+}
+
+void AP_Win32Frame::_createLeftRuler(void)
+{
+	RECT r;
+	int cxVScroll, cyHScroll;
+
+	GetClientRect(m_hwndContainer,&r);
+	cxVScroll = GetSystemMetrics(SM_CXVSCROLL);
+	cyHScroll = GetSystemMetrics(SM_CYHSCROLL);
+
+	UT_uint32 yTopRulerHeight = 0;
+
+	if( m_hwndTopRuler )
+	{
+		AP_Win32TopRuler * pWin32TopRuler = NULL;
+		pWin32TopRuler =  (AP_Win32TopRuler * ) static_cast<AP_FrameData*>(m_pData)->m_pTopRuler;
+		yTopRulerHeight = pWin32TopRuler->getHeight();
+	}
 
 	// create the left ruler
-
 	AP_Win32LeftRuler * pWin32LeftRuler = new AP_Win32LeftRuler(this);
 	UT_ASSERT(pWin32LeftRuler);
 	m_hwndLeftRuler = pWin32LeftRuler->createWindow(m_hwndContainer,0,yTopRulerHeight,
 													r.bottom - yTopRulerHeight - cyHScroll);
 	static_cast<AP_FrameData*>(m_pData)->m_pLeftRuler = pWin32LeftRuler;
-	UT_uint32 xLeftRulerWidth = pWin32LeftRuler->getWidth();
 
 	// get the width from the left ruler and stuff it into the top ruler.
-
-	pWin32TopRuler->setOffsetLeftRuler(xLeftRulerWidth);
+    if( m_hwndTopRuler )
+	{
+		UT_uint32 xLeftRulerWidth = pWin32LeftRuler->getWidth();
+		AP_Win32TopRuler * pWin32TopRuler = NULL;
+		pWin32TopRuler =  (AP_Win32TopRuler * ) static_cast<AP_FrameData*>(m_pData)->m_pTopRuler;
+		pWin32TopRuler->setOffsetLeftRuler(xLeftRulerWidth);
+	}
 }
 
 UT_Error AP_Win32Frame::loadDocument(const char * szFilename, int ieft, bool createNew)
@@ -1315,18 +1352,22 @@ UT_Error AP_Win32Frame::_replaceDocument(AD_Document * pDoc)
 
 void AP_Win32Frame::toggleRuler(bool bRulerOn)
 {
+	toggleTopRuler( bRulerOn );
+	toggleLeftRuler( bRulerOn );
+}
+
+void AP_Win32Frame::toggleTopRuler(bool bRulerOn)
+{
 	AP_FrameData *pFrameData = static_cast<AP_FrameData*>(getFrameData());
 	UT_ASSERT(pFrameData);
 
 	if (bRulerOn)
 	{
 		UT_ASSERT(!pFrameData->m_pTopRuler);
-		UT_ASSERT(!pFrameData->m_pLeftRuler);
 
-		_createRulers();
+		_createTopRuler();
 
 		static_cast<AP_FrameData*>(m_pData)->m_pTopRuler->setView(m_pView, getZoomPercentage());
-		static_cast<AP_FrameData*>(m_pData)->m_pLeftRuler->setView(m_pView, getZoomPercentage());
 	}
 	else
 	{
@@ -1334,14 +1375,9 @@ void AP_Win32Frame::toggleRuler(bool bRulerOn)
 		if (m_hwndTopRuler)
 			DestroyWindow(m_hwndTopRuler);
 
-		if (m_hwndLeftRuler)
-			DestroyWindow(m_hwndLeftRuler);
-
 		DELETEP(static_cast<AP_FrameData*>(m_pData)->m_pTopRuler);
-		DELETEP(static_cast<AP_FrameData*>(m_pData)->m_pLeftRuler);
 
 		m_hwndTopRuler = NULL;
-		m_hwndLeftRuler = NULL;
 	}
 
 	// repack the child windows
@@ -1350,6 +1386,35 @@ void AP_Win32Frame::toggleRuler(bool bRulerOn)
 	_onSize(r.right - r.left, r.bottom - r.top);
 }
 
+void AP_Win32Frame::toggleLeftRuler(bool bRulerOn)
+{
+	AP_FrameData *pFrameData = static_cast<AP_FrameData*>(getFrameData());
+	UT_ASSERT(pFrameData);
+
+	if (bRulerOn)
+	{
+		UT_ASSERT(!pFrameData->m_pLeftRuler);
+
+		_createLeftRuler();
+
+		static_cast<AP_FrameData*>(m_pData)->m_pLeftRuler->setView(m_pView, getZoomPercentage());
+	}
+	else
+	{
+		// delete the actual widgets
+		if (m_hwndLeftRuler)
+			DestroyWindow(m_hwndLeftRuler);
+
+		DELETEP(static_cast<AP_FrameData*>(m_pData)->m_pLeftRuler);
+
+		m_hwndLeftRuler = NULL;
+	}
+
+	// repack the child windows
+	RECT r;
+	GetClientRect(m_hwndContainer, &r);
+	_onSize(r.right - r.left, r.bottom - r.top);
+}
 
 /////////////////////////////////////////////////////////////////////////
 
