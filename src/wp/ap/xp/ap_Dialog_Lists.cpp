@@ -1026,7 +1026,6 @@ AP_Lists_preview::AP_Lists_preview(GR_Graphics * gc, AP_Dialog_Lists * pLists)
 
 AP_Lists_preview::~AP_Lists_preview()
 {
-delete font;
 }
 
 AP_Dialog_Lists * AP_Lists_preview::getLists(void)
