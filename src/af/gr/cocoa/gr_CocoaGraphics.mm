@@ -163,7 +163,7 @@ GR_CocoaGraphics::GR_CocoaGraphics(NSView * win, XAP_CocoaFontManager * fontMana
 	NSRect aRect = [m_pWin bounds];
 
 	::CGContextSaveGState(m_CGContext);
-	[[NSColor controlColor] set];
+	[[NSColor whiteColor] set];
 	::CGContextFillRect (m_CGContext, ::CGRectMake(aRect.origin.x, aRect.origin.y, 
 	                                                aRect.size.width, aRect.size.height));
 	::CGContextRestoreGState(m_CGContext);
@@ -341,7 +341,7 @@ void GR_CocoaGraphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
 		//unicode font
 		//UT_DEBUGMSG(("CocoaGraphics::drawChars: utf-8\n"));
 
-		switch(UT_isOverstrikingChar(*pC))
+		switch(UT_OVERSTRIKING_DIR & UT_isOverstrikingChar(*pC))
 		{
 		case UT_NOT_OVERSTRIKING:
 			curWidth = (UT_sint32)[font widthOfString:string];
@@ -436,8 +436,14 @@ UT_uint32 GR_CocoaGraphics::_getResolution(void) const
 	return 75;
 }
 
-/*
-	Allocate the color. Must be released by caller.
+/*!
+	Convert a UT_RGBColor to a NSColor
+	\param clr the UT_RGBColor to convert
+	\return a retained NSColor
+
+	Handle the transparency as well.
+	
+	\note Allocate the color. Must be released by caller.
  */
 NSColor	*GR_CocoaGraphics::_utRGBColorToNSColor (const UT_RGBColor& clr)
 {
@@ -446,8 +452,25 @@ NSColor	*GR_CocoaGraphics::_utRGBColorToNSColor (const UT_RGBColor& clr)
 	g = (float)clr.m_grn / 255.0f;
 	b = (float)clr.m_blu / 255.0f;
 	UT_DEBUGMSG (("converting color r=%f, g=%f, b=%f from %d, %d, %d\n", r, g, b, clr.m_red, clr.m_grn, clr.m_blu));
-	NSColor *c = [[NSColor colorWithDeviceRed:r green:g blue:b alpha:1.0] retain];	// is autoreleased, so retain
+	NSColor *c = [[NSColor colorWithDeviceRed:r green:g blue:b alpha:(clr.m_bIsTransparent ? 0.0 : 1.0)] retain];	// is autoreleased, so retain
 	return c;
+}
+
+/*!
+	Convert a NSColor to an UT_RGBColor
+	\param c NSColor to convert
+	\retval clr destination UT_RGBColor.
+	
+	Handle the transparency as well.
+ */
+void GR_CocoaGraphics::_utNSColorToRGBColor (NSColor *c, UT_RGBColor &clr)
+{
+	float r, g, b, a;
+	[c getRed:&r green:&g blue:&b alpha:&a];
+	clr.m_red = r * 255.0f;
+	clr.m_grn = g * 255.0f;
+	clr.m_blu = b * 255.0f;
+	clr.m_bIsTransparent = (a == 0.0f ? true : false);
 }
 
 
@@ -458,6 +481,12 @@ void GR_CocoaGraphics::setColor(const UT_RGBColor& clr)
 	_setColor(c);
 	[c release];
 }
+
+void	GR_CocoaGraphics::getColor(UT_RGBColor& clr)
+{
+	_utNSColorToRGBColor (m_currentColor, clr);
+}
+
 
 /* c will be copied */
 void GR_CocoaGraphics::_setColor(NSColor * c)
@@ -1036,7 +1065,7 @@ void GR_CocoaGraphics::_updateRect(NSView * v, NSRect aRect)
 				// the NSImage has been resized. So the CGContextRef has changed.
 				m_CGContext = CG_CONTEXT__;
 				::CGContextSaveGState(m_CGContext);
-				[[NSColor controlColor] set];
+				[[NSColor whiteColor] set];
 				::CGContextFillRect (m_CGContext, ::CGRectMake(myBounds.origin.x, myBounds.origin.y, 
 				                                                myBounds.size.width, myBounds.size.height));
 				::CGContextRestoreGState(m_CGContext);

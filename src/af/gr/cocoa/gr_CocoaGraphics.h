@@ -57,6 +57,7 @@ class GR_CocoaGraphics : public GR_Graphics
 #endif
 
 	virtual void		setColor(const UT_RGBColor& clr);
+	virtual void		getColor(UT_RGBColor& clr);
 
 	virtual GR_Font*	getGUIFont();
 	virtual GR_Font*	findFont(const char* pszFontFamily, 
@@ -134,6 +135,8 @@ class GR_CocoaGraphics : public GR_Graphics
 	void				_setColor(NSColor * c);
 private:
 	static NSColor				*_utRGBColorToNSColor (const UT_RGBColor& clr);
+	static void 				_utNSColorToRGBColor (NSColor *c, UT_RGBColor &clr);
+
 	gr_cocoa_graphics_update	m_updateCallback;
 	void 						*m_updateCBparam;
 	XAP_CocoaFontManager * 	m_pFontManager;
