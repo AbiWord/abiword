@@ -37,6 +37,9 @@ UT_Bijection::~UT_Bijection()
 
 const char *UT_Bijection::lookupByTarget(const char *s)	 const
 {
+	if (s == NULL) {
+		return NULL;
+	}
     for(int i=0; i<m_n; ++i) {
 	if (!strcmp(s,m_second[i]))
 		return m_first[i];
@@ -46,6 +49,9 @@ const char *UT_Bijection::lookupByTarget(const char *s)	 const
 
 const char *UT_Bijection::lookupBySource(const char *s) const
 {
+	if (s == NULL) {
+		return NULL;
+	}
     for(int i=0; i<m_n; ++i) {
 	if (!strcmp(s,m_first[i]))
 		return m_second[i];
