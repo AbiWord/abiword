@@ -68,45 +68,6 @@ void fp_Line::setColumn(fp_Column* pColumn)
 	m_pColumn = pColumn;
 }
 
-void fp_Line::setBlock(fl_BlockLayout* pBlock)
-{
-	m_pBlock = pBlock;
-}
-
-void fp_Line::setNext(fp_Line* p)
-{
-	m_pNext = p;
-}
-
-void fp_Line::setPrev(fp_Line* p)
-{
-	m_pPrev = p;
-}
-
-UT_Bool fp_Line::isEmpty(void) const
-{
-	return ((m_vecRuns.getItemCount()) == 0);
-}
-
-int fp_Line::countRuns(void) const
-{
-	return m_vecRuns.getItemCount();
-}
-
-fp_Run* fp_Line::getFirstRun(void) const
-{
-	fp_Run* pRun = (fp_Run*) m_vecRuns.getFirstItem();
-
-	return pRun;
-}
-
-fp_Run* fp_Line::getLastRun(void) const
-{
-	fp_Run* pRun = (fp_Run*) m_vecRuns.getLastItem();
-
-	return pRun;
-}
-
 UT_Bool fp_Line::removeRun(fp_Run* pRun, UT_Bool bTellTheRunAboutIt)
 {
 	UT_sint32 ndx = m_vecRuns.findItem(pRun);
@@ -540,16 +501,6 @@ void fp_Line::setY(UT_sint32 iY)
 	clearScreen();
 	
 	m_iY = iY;
-}
-
-UT_Bool fp_Line::isFirstLineInBlock(void) const
-{
-	return m_pBlock->getFirstLine() == this;
-}
-
-UT_Bool fp_Line::isLastLineInBlock(void) const
-{
-	return m_pBlock->getLastLine() == this;
 }
 
 UT_sint32 fp_Line::getMarginBefore(void) const

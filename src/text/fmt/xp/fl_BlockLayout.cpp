@@ -659,11 +659,6 @@ int fl_BlockLayout::format()
 	return 0;	// TODO return code
 }
 
-fp_Run* fl_BlockLayout::getFirstRun()
-{
-	return m_pFirstRun;
-}
-
 fp_Line* fl_BlockLayout::getNewLine(void)
 {
 	fp_Line* pLine = new fp_Line();
@@ -847,16 +842,6 @@ fp_Run* fl_BlockLayout::findPointCoords(PT_DocPosition iPos, UT_Bool bEOL, UT_si
 	
 	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 	return NULL;
-}
-
-fp_Line* fl_BlockLayout::getLastLine()
-{
-	return m_pLastLine;
-}
-
-fp_Line* fl_BlockLayout::getFirstLine()
-{
-	return m_pFirstLine;
 }
 
 fp_Line* fl_BlockLayout::findPrevLineInDocument(fp_Line* pLine)

@@ -84,11 +84,14 @@ public:
 	fl_BlockLayout* getNextBlockInDocument(void) const;
 	fl_BlockLayout* getPrevBlockInDocument(void) const;
 	
-	fp_Line* getFirstLine();
-	fp_Line* getLastLine();
+	inline fp_Line* getFirstLine(void) const { return m_pFirstLine; }
+	inline fp_Line* getLastLine(void) const { return m_pLastLine; }
+
 	fp_Line* findPrevLineInDocument(fp_Line*);
 	fp_Line* findNextLineInDocument(fp_Line*);
-	fp_Run* getFirstRun();
+
+	inline fp_Run* getFirstRun(void) const { return m_pFirstRun; }
+
 	void findSquigglesForRun(fp_Run* pRun);
 	UT_uint32 canSlurp(fp_Line* pLine) const;
 

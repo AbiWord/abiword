@@ -26,10 +26,10 @@
 #include "ut_types.h"
 #include "ut_vector.h"
 #include "pt_Types.h"
+#include "fl_BlockLayout.h"
 
 class fp_Run;
 class GR_Graphics;
-class fl_BlockLayout;
 class fp_Column;
 
 struct dg_DrawArgs;
@@ -64,10 +64,10 @@ public:
 	void		setMaxWidth(UT_sint32);
 	void		setX(UT_sint32);
 	void		setY(UT_sint32);
-	void		setNext(fp_Line*);
-	void        setPrev(fp_Line*);
+	inline	void		setNext(fp_Line * p)				{ m_pNext = p; }
+	inline	void        setPrev(fp_Line * p)				{ m_pPrev = p; }
 	void		setColumn(fp_Column*);
-	void		setBlock(fl_BlockLayout*);
+	inline	void		setBlock(fl_BlockLayout * pBlock)	{ m_pBlock = pBlock; }
 
 	fp_Line*	getNextLineInSection(void) const;
 	fp_Line*	getPrevLineInSection(void) const;
@@ -81,11 +81,12 @@ public:
 	void        insertRun(fp_Run*);
     UT_Bool     removeRun(fp_Run*, UT_Bool bTellTheRunAboutIt=UT_FALSE);
 	
-	int 		countRuns(void) const;
-	fp_Run*     getFirstRun(void) const;
-	fp_Run*     getLastRun(void) const;
-	UT_Bool 	isFirstLineInBlock(void) const;
-	UT_Bool 	isLastLineInBlock(void) const;
+	inline	int 		countRuns(void) const			{ return m_vecRuns.getItemCount(); }
+	inline	fp_Run*     getFirstRun(void) const			{ return ((fp_Run*) m_vecRuns.getFirstItem()); }
+	inline	fp_Run*     getLastRun(void) const			{ return ((fp_Run*) m_vecRuns.getLastItem()); }
+
+	inline	UT_Bool 	isFirstLineInBlock(void) const	{ return (m_pBlock->getFirstLine() == this); }
+	inline	UT_Bool 	isLastLineInBlock(void) const	{ return (m_pBlock->getLastLine() == this); }
 	
 	void		remove(void);
 	UT_sint32	getMarginBefore(void) const;
@@ -105,7 +106,8 @@ public:
 	void		recalcMaxWidth();
 	void		coalesceRuns(void);
 	
-	UT_Bool		isEmpty(void) const;
+	inline	UT_Bool		isEmpty(void) const			{ return ((m_vecRuns.getItemCount()) == 0); }
+
 	UT_Bool		findNextTabStop(UT_sint32 iStartX, UT_sint32& iPosition, unsigned char& iType);
 	
 protected:
