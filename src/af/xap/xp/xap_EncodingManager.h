@@ -43,7 +43,7 @@ struct ABI_EXPORT XAP_LangInfo
 };
 
 
-class ABI_EXPORT XAP_EncodingManager
+class XAP_EncodingManager
 {
 public:
     /*
