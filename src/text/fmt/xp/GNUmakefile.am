@@ -35,6 +35,7 @@ libFmt_a_SOURCES= \
 	fl_DocListener.cpp		\
 	fl_Layout.cpp			\
 	fl_SectionLayout.cpp		\
+	fl_TableLayout.cpp		\
 	fl_AutoNum.cpp			\
 	fl_AutoLists.cpp		\
 	fl_TestRoutines.cpp		\
