@@ -142,17 +142,6 @@ static int s_page_units_changed (PtWidget_t * w, void *data, PtCallbackInfo_t *i
 	return Pt_CONTINUE;
 }
 
-static int s_margin_units_changed (PtWidget_t * w, void *data, PtCallbackInfo_t *info)
-{
-	AP_QNXDialog_PageSetup *dlg = (AP_QNXDialog_PageSetup *)data;
-	UT_ASSERT(w && dlg);
-	if (info->reason_subtype != Pt_LIST_SELECTION_FINAL) {
-		return Pt_CONTINUE;
-	}
-	dlg->event_MarginUnitsChanged ();
-	return Pt_CONTINUE;
-}
-
 /*********************************************************************************/
 
 void AP_QNXDialog_PageSetup::event_OK (void)
@@ -229,7 +218,7 @@ void AP_QNXDialog_PageSetup::event_PageUnitsChanged (void)
 	fp_PageSize::Predefined pd = (fp_PageSize::Predefined)((int)m_vecsize.getNthItem(index - 1));
 	fp_PageSize ps(pd);
 
-  	double *d, width, height;
+  	double width, height;
   
 	// get values
 	width  = (double)ps.Width(pu);

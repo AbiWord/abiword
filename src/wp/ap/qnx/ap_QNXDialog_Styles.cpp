@@ -155,47 +155,6 @@ static int s_remove_property(PtWidget_t *widget, void *data, PtCallbackInfo_t *i
 	return Pt_CONTINUE;
 }
 
-static int s_style_nadlg(PtWidget_t *widget, void *data, PtCallbackInfo_t *info)
-{
-	AP_QNXDialog_Styles * dlg = (AP_QNXDialog_Styles *)data;
-	UT_ASSERT(widget && dlg);
-	dlg->new_styleName();
-	return Pt_CONTINUE;
-}
-
-
-static int s_basedon(PtWidget_t *widget, void *data, PtCallbackInfo_t *info)
-{
-	AP_QNXDialog_Styles * dlg = (AP_QNXDialog_Styles *)data;
-	UT_ASSERT(widget && dlg);
-	if(dlg->isModifySignalBlocked())
-		return Pt_CONTINUE;
-	dlg->event_basedOn();
-	return Pt_CONTINUE;
-}
-
-
-static int s_followedby(PtWidget_t *widget, void *data, PtCallbackInfo_t *info)
-{
-	AP_QNXDialog_Styles * dlg = (AP_QNXDialog_Styles *)data;
-	UT_ASSERT(widget && dlg);
-	if(dlg->isModifySignalBlocked())
-		return Pt_CONTINUE;
-	dlg->event_followedBy();
-	return Pt_CONTINUE;
-}
-
-
-static int s_styletype(PtWidget_t *widget, void *data, PtCallbackInfo_t *info)
-{
-	AP_QNXDialog_Styles * dlg = (AP_QNXDialog_Styles *)data;
-	UT_ASSERT(widget && dlg);
-	if(dlg->isModifySignalBlocked())
-		return Pt_CONTINUE;
-	dlg->event_styleType();
-	return Pt_CONTINUE;
-}
-
 static int s_apply_clicked(PtWidget_t *widget, void *data, PtCallbackInfo_t *info)
 {
 	AP_QNXDialog_Styles * dlg = (AP_QNXDialog_Styles *)data;
@@ -567,13 +526,9 @@ PtWidget_t * AP_QNXDialog_Styles::_constructWindow(void)
 	PtWidget_t * buttonClose;
 
 	PtWidget_t * vgroup, * hgroup;
-	PtWidget_t * vboxTopLeft;
-	PtWidget_t * vboxTopRight;
 
-	PtWidget_t * frameStyles;
 	PtWidget_t *	listStyles;
 
-	PtWidget_t * frameList;
 	PtWidget_t * comboList;
 
 	PtWidget_t * frameParaPrev;
@@ -584,10 +539,6 @@ PtWidget_t * AP_QNXDialog_Styles::_constructWindow(void)
 
 	PtWidget_t * frameDescription;
 	PtWidget_t * DescriptionArea;
-
-	PtWidget_t * hsepBot;
-
-	PtWidget_t * buttonBoxStyleManip;
 
 	PtWidget_t * buttonNew;
 	PtWidget_t * buttonModify;
@@ -796,7 +747,6 @@ void AP_QNXDialog_Styles::setDescription(const char * desc) const
 const char * AP_QNXDialog_Styles::getCurrentStyle (void) const
 {
 	static UT_String szStyleBuf;
-	int ret;
 	char **items;
 
 	UT_ASSERT(m_wclistStyles);
@@ -860,9 +810,6 @@ PtWidget_t *  AP_QNXDialog_Styles::_constructModifyDialog(void)
 	PtWidget_t *windowModify;
 	PtWidget_t *vgroup, *hgroup;
 
-	PtWidget_t *dialog_vbox1 = NULL;
-	PtWidget_t *OverallVbox = NULL;
-	PtWidget_t *comboTable  = NULL;
 	PtWidget_t *nameLabel  = NULL;
 	PtWidget_t *basedOnLabel  = NULL;
 	PtWidget_t *followingLabel = NULL;
@@ -878,9 +825,6 @@ PtWidget_t *  AP_QNXDialog_Styles::_constructModifyDialog(void)
 	PtWidget_t *modifyDrawingArea = NULL;
 	PtWidget_t *descriptionFrame = NULL;
 	PtWidget_t *descriptionText = NULL;
-	PtWidget_t *checkBoxRow = NULL;
-	PtWidget_t *checkAddTo = NULL;
-	PtWidget_t *checkAutoUpdate = NULL;
 	PtWidget_t *deletePropCombo = NULL;
 	PtWidget_t *deletePropEntry = NULL;
 	PtWidget_t *deletePropButton = NULL;
@@ -993,7 +937,7 @@ PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, pSS->getValueUTF8(AP_STRING_ID_DLG_Styl
 
 	n = 0;
 PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_RemoveLab).c_str(), 0);
-	PtWidget_t * deleteLabel = PtCreateWidget(PtLabel, hgroup, n, args);
+	PtCreateWidget(PtLabel, hgroup, n, args);
 
 	n = 0;
 	PtSetArg(&args[n++], Pt_ARG_WIDTH, ABI_DEFAULT_BUTTON_WIDTH, 0);
@@ -1020,7 +964,6 @@ checkAutoUpdate = gtk_check_button_new_with_label (pSS->getValueUTF8(AP_STRING_I
 #endif
 
 	/* Add the bottom group of buttons */
-	PtWidget_t *bottomButtons;
 	PtWidget_t *buttonOK;
 	PtWidget_t *buttonCancel;
 	PtWidget_t *FormatMenu;

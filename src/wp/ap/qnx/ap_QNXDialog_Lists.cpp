@@ -56,14 +56,6 @@ AP_QNXDialog_Lists::~AP_QNXDialog_Lists(void)
 
 /**********************************************************************/
 
-static int s_customChanged(PtWidget_t *widget, void *data, PtCallbackInfo_t *info)
-{
-	AP_QNXDialog_Lists * dlg = (AP_QNXDialog_Lists *)data;
-	dlg->setDirty();
-	dlg->customChanged();
-	return Pt_CONTINUE;
-}
-
 static int s_somethingChanged(PtWidget_t *widget, void *data, PtCallbackInfo_t *info)
 {
 	AP_QNXDialog_Lists * dlg = (AP_QNXDialog_Lists *)data;
@@ -160,14 +152,6 @@ static int s_preview_exposed(PtWidget_t * w, PhTile_t * damage)
     PtClipRemove();
 	return Pt_CONTINUE;
 }
-
-static int s_update (void)
-{
-	printf("TODO: Static update \n");
-//	Current_Dialog->updateDialog();
-	return true;
-}
-
 
 /**********************************************************************/
 
@@ -773,7 +757,7 @@ gtk_label_set_text( GTK_LABEL(m_wStartSub_label), pSS->getValueUTF8(AP_STRING_ID
 //
 void AP_QNXDialog_Lists::_loadXPDataIntoLocal(void)
 {
-	int i;
+	unsigned int i;
 	double d;
 
 	m_bDontUpdate = true;

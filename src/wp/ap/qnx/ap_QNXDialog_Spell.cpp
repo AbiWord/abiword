@@ -371,7 +371,7 @@ static void set_text_string(PtWidget_t *w, char *str) {
 void AP_QNXDialog_Spell::_showMisspelledWord(void)
 {                                
 	PtArg_t args[10];
-	int 	n;
+	unsigned int 	n;
 
 	n = 0;
 	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, 0, 0);
@@ -434,7 +434,7 @@ void AP_QNXDialog_Spell::_showMisspelledWord(void)
 	char *suggest[2] = {NULL, NULL};
 
 	PtListDeleteAllItems(m_clistSuggestions); 
-	for (int i = 0; i < m_Suggestions->getItemCount(); i++) {
+	for (unsigned int i = 0; i < m_Suggestions->getItemCount(); i++) {
 		suggest[0] = _convertToMB((UT_UCS4Char *)m_Suggestions->getNthItem(i));
 		PtListAddItems(m_clistSuggestions, (const char **)suggest, 1, 0);
 		if (i==0) {

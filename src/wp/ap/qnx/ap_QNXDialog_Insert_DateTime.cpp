@@ -188,7 +188,6 @@ PtWidget_t * AP_QNXDialog_Insert_DateTime::_constructWindow(void)
 	int 	n;
 
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
-	XML_Char * unixstr = NULL;	// used for conversions
 
 	n = 0;
 	PtSetArg(&args[n++], Pt_ARG_WINDOW_TITLE, UT_XML_transNoAmpersands(pSS->getValueUTF8(AP_STRING_ID_DLG_DateTime_DateTimeTitle ).c_str()), 0);
