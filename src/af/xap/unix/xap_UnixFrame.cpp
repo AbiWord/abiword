@@ -595,7 +595,15 @@ void XAP_UnixFrame::setCursor(GR_Graphics::Cursor c)
 //	if (m_cursor == c)
 //		return;
 //	m_cursor = c;
-
+	FV_View * pView = (FV_View *) getCurrentView();
+	if(pView)
+	{
+		GR_Graphics * pG = pView->getGraphics();
+		if(pG && pG->queryProperties( GR_Graphics::DGP_PAPER))
+		{
+			return;
+		}
+	}
 	GdkCursorType cursor_number;
 	
 	switch (c)

@@ -117,15 +117,15 @@ bool pt_PieceTable::_loadBuiltinStyles(void)
 	sprintf(list_fmt_tmp, list_fmt, "Heart List","0", LIST_DEFAULT_INDENT, LIST_DEFAULT_INDENT_LABEL, "transparent", "%L", "Dingbats", "NULL");
 	_s("Heart List", "P", "", "Current Settings", list_fmt_tmp);
 
-    _s("Numbered Heading 1","P","Heading 1","Normal","tabstops:0.3in/L0; list-style:Numbered List; start-value:1; margin-left:0.0in; text-indent:0.0in; field-color:transparent; list-delim:%L; field-font:Arial; list-decimal:. ");
+    _s("Numbered Heading 1","P","Heading 1","Normal","tabstops:0.3in/L0; list-style:Numbered List; start-value:1; margin-left:0.0in; text-indent:0.0in; field-color:transparent; list-delim:%L.; field-font:Arial; list-decimal:");
 
-    _s("Numbered Heading 2","P","Heading 2","Normal","tabstops:0.3in/L0; list-style:Numbered List; start-value:1; margin-left:0.0in; text-indent:0.0in; field-color:transparent; list-delim:%L; field-font:Arial; list-decimal:. ");
+    _s("Numbered Heading 2","P","Heading 2","Normal","tabstops:0.3in/L0; list-style:Numbered List; start-value:1; margin-left:0.0in; text-indent:0.0in; field-color:transparent; list-delim:%L.; field-font:Arial; list-decimal:");
 
-    _s("Numbered Heading 3","P","Heading 3","Normal","tabstops:0.3in/L0; list-style:Numbered List; start-value:1; margin-left:0.0in; text-indent:0.0in; field-color:transparent; list-delim:%L; field-font:Arial; list-decimal:. ");
+    _s("Numbered Heading 3","P","Heading 3","Normal","tabstops:0.3in/L0; list-style:Numbered List; start-value:1; margin-left:0.0in; text-indent:0.0in; field-color:transparent; list-delim:%L.; field-font:Arial; list-decimal:");
 
-    _s("Chapter Heading","P","Numbered Heading 1","Normal","tabstops:1.1in/L0; list-style:Numbered List; start-value:1; margin-left:0.0in; text-indent:0.0in; field-color:transparent; list-delim:Chapter %L; field-font:Arial; list-decimal: ");
+    _s("Chapter Heading","P","Numbered Heading 1","Normal","tabstops:1.1in/L0; list-style:Numbered List; start-value:1; margin-left:0.0in; text-indent:0.0in; field-color:transparent; list-delim:Chapter %L.; field-font:Arial; list-decimal:");
 
-    _s("Section Heading","P","Numbered Heading 1","Normal","tabstops:1.1in/L0; list-style:Numbered List; start-value:1; margin-left:0.0in; text-indent:0.0in; field-color:transparent; list-delim:Section %L; field-font:Arial; list-decimal: ");
+    _s("Section Heading","P","Numbered Heading 1","Normal","tabstops:1.1in/L0; list-style:Numbered List; start-value:1; margin-left:0.0in; text-indent:0.0in; field-color:transparent; list-delim:Section %L.; field-font:Arial; list-decimal:");
 
 #ifndef NDEBUG
 	_s("Endnote Reference","C", "None", "Current Settings", "text-position:superscript; font-size:10pt");

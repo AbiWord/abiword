@@ -99,6 +99,21 @@ UnixNull_Graphics::~UnixNull_Graphics()
 	// TODO free stuff
 }
 
+ GR_Image* UnixNull_Graphics::createNewImage(const char* pszName, const UT_ByteBuf* pBB, UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight, GR_Image::GRType iType)
+{
+	GR_Image* pImg = NULL;
+   
+   	if (iType == GR_Image::GRT_Raster)
+     		pImg = new PS_Image(pszName);
+   	else if (iType == GR_Image::GRT_Vector)
+     		pImg = new GR_VectorImage(pszName);
+   
+	pImg->convertFromBuffer(pBB, iDisplayWidth, iDisplayHeight);
+
+	return pImg;
+}
+
+
 bool UnixNull_Graphics::queryProperties(GR_Graphics::Properties gp) const
 {
 	switch (gp)

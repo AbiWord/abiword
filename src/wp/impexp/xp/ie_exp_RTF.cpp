@@ -1562,6 +1562,7 @@ void IE_Exp_RTF::_generate_level_Text(fl_AutoNum * pAuto,UT_String & LevelText,U
 		UT_String str;
 //
 // FIXME. Implement this when level decimal works
+
 		if(pAuto->getParent()->getDecimal() && *(pAuto->getParent()->getDecimal()))
 		{
 			if(RightSide.size() > 0)
