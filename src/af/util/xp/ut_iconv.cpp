@@ -142,7 +142,8 @@ size_t  UT_iconv( UT_iconv_t cd, const char **inbuf,
   // 1) gcc3.0 doesn't like const_cast<const pointer>()
   // 2) some iconv implementations don't use a const char ** inbuf
   //    while some (newer, conformant ones) do
-  ICONV_CONST char ** buf = const_cast<char **>(inbuf);
+
+  ICONV_CONST char ** buf = (ICONV_CONST char**)(inbuf);
   return iconv( cd, buf, inbytesleft, outbuf, outbytesleft );
 }
 

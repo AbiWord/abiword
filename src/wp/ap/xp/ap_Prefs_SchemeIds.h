@@ -138,9 +138,13 @@
 #define AP_PREF_KEY_ShowSplash     "ShowSplash"
 #define AP_PREF_DEFAULT_ShowSplash "1"
 
+#define AP_PREF_KEY_DefaultSaveFormat "DefaultSaveFormat"
+#define AP_PREF_DEFAULT_DefaultSaveFormat ".abw"
+
 #else /* AP_PREFS_SCHEMEIDS_H */
 #ifdef dcl
 
+dcl(DefaultSaveFormat)
 dcl(CursorBlink)
 dcl(AutoSpellCheck)
 dcl(SpellCheckCaps)

@@ -1237,11 +1237,33 @@ static bool s_AskForPathname(XAP_Frame * pFrame,
 	static IEFileType dflFileType = IEFT_Bogus;
 
 	if (*ieft != IEFT_Bogus)
-		dflFileType = *ieft;
+	  {
+	    // have a pre-existing file format, try to default to that
+	    dflFileType = *ieft;
+	  }
 	else if (bSaveAs)
-		dflFileType = IE_Exp::fileTypeForSuffix (".abw");
+	  {
+	    XAP_App * pApp = pFrame->getApp();
+	    UT_ASSERT(pApp);
+	    XAP_Prefs * pPrefs = pApp->getPrefs();
+	    UT_ASSERT(pPrefs);
+
+	    const XML_Char * ftype = 0;
+
+	    pPrefs->getPrefsValue ((XML_Char*)AP_PREF_KEY_DefaultSaveFormat, &ftype);
+	    if (!ftype)
+	      ftype = ".abw";
+
+	    UT_DEBUGMSG(("DOM: default file type is %s\n", ftype));
+
+	    // load the default file format
+	    dflFileType = IE_Exp::fileTypeForSuffix (ftype);
+	  }
 	else
-		dflFileType = IE_Imp::fileTypeForSuffix (".abw"); 
+	  {
+	    // try to load ABW by default
+	    dflFileType = IE_Imp::fileTypeForSuffix (".abw"); 
+	  }
 
 	pDialog->setDefaultFileType(dflFileType);
 		

@@ -76,7 +76,7 @@ PD_Document::PD_Document(XAP_App *pApp)
 	m_pPieceTable(0),
 	m_hashDataItems(11),
 	m_lastOpenedType(IE_Imp::fileTypeForSuffix(".abw")),
-	m_lastSavedAsType(IE_Exp::fileTypeForSuffix(".abw")),
+  m_lastSavedAsType(IEFT_Bogus), // used to be: IE_Exp::fileTypeForSuffix(".abw")
 	m_bPieceTableChanging(false),
 	m_bDoingPaste(false),
 	m_bAllowInsertPointChange(true),
