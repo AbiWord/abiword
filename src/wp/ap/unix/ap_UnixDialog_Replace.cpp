@@ -363,7 +363,7 @@ GtkWidget * AP_UnixDialog_Replace::_constructWindow(void)
 
 	g_signal_connect (G_OBJECT(m_buttonFind), "clicked", G_CALLBACK(s_find_clicked), m_windowMain);
 	g_signal_connect (G_OBJECT(m_buttonFindReplace), "clicked", G_CALLBACK(s_findreplace_clicked), m_windowMain);
-	g_signal_connect (G_OBJECT(m_buttonFindReplace), "clicked", G_CALLBACK(s_replaceall_clicked), m_windowMain);
+	g_signal_connect (G_OBJECT(m_buttonReplaceAll), "clicked", G_CALLBACK(s_replaceall_clicked), m_windowMain);
 
 	// signals only useful in "replace mode"
 	// If the user hits "enter" in the entry field, we launch a replace
