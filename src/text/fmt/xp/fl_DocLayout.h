@@ -22,6 +22,7 @@
 #ifndef DOCLAYOUT_H
 #define DOCLAYOUT_H
 
+#include <stdio.h>
 #include "ut_types.h"
 #include "ut_vector.h"
 #include "ut_hash.h"
@@ -92,8 +93,9 @@ public:
 	int			formatAll();
 	int			reformat();
 
-	// Debug-related routines
-	void dump();
+#ifdef FMT_TEST
+	void		__dump(FILE * fp) const;
+#endif
 	
 protected:
 	DG_Graphics*		m_pG;

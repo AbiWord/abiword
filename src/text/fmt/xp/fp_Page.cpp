@@ -141,7 +141,8 @@ void fp_Page::draw(dg_DrawArgs* pDA)
 	}
 }
 
-void fp_Page::dump()
+#ifdef FMT_TEST
+void fp_Page::__dump(FILE * fp) const
 {
 	int count = m_vecSliceInfos.getItemCount();
 	fp_SectionSlice* p;
@@ -151,10 +152,11 @@ void fp_Page::dump()
 		fp_SectionSliceInfo* pci = (fp_SectionSliceInfo*) m_vecSliceInfos.getNthItem(i);
 		p = pci->pSlice;
 
-		UT_DEBUGMSG(("fp_Page::dump(0x%x) - fp_SectionSlice 0x%x\n", this, p));
-		p->dump();
+		fprintf(fp,"\tfp_Page::dump(0x%08lx) - fp_SectionSlice 0x%08lx\n", (UT_uint32)this, (UT_uint32)p);
+		p->__dump(fp);
 	}
 }
+#endif
 
 UT_Bool fp_Page::requestSpace(fl_SectionLayout*, fp_SectionSlice** ppsi)
 {

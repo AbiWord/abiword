@@ -110,7 +110,7 @@ endif
 ## conditionally enable some additional debugging and test code
 
 ifdef ABI_OPT_DEBUG
-ABI_DBGDEFS=		-DUT_DEBUG -DPT_TEST
+ABI_DBGDEFS=		-DUT_DEBUG -DPT_TEST -DFMT_TEST
 ABI_OPTIONS+=Debug:On
 else
 ABI_DBGDEFS=

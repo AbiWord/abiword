@@ -32,6 +32,7 @@ CPPSRCS=	ad_Document.cpp				\
 		ap_Dialog_MessageBox.cpp		\
 		ap_Dialog_Print.cpp				\
 		ap_Frame.cpp					\
+		ap_Scrollbar_ViewListener.cpp	\
 		ap_Toolbar_ControlFactory.cpp	\
 		ap_ViewListener.cpp				\
 		av_View.cpp

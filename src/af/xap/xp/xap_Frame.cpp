@@ -38,7 +38,7 @@
 #include "ap_Menu_LabelSet.h"
 #include "av_View.h"
 #include "ad_Document.h"
-
+#include "ap_Scrollbar_ViewListener.h"
 
 #define DELETEP(p)	do { if (p) delete p; } while (0)
 
@@ -59,7 +59,8 @@ AP_Frame::AP_Frame(AP_App * app)
 	m_szMenuLabelSetName = NULL;
 	m_iUntitled = 0;
 	m_nView = 0;
-
+	m_pScrollbarViewListener = NULL;
+	
 	m_app->rememberFrame(this);
 }
 
@@ -80,7 +81,8 @@ AP_Frame::AP_Frame(AP_Frame * f)
 	m_szMenuLayoutName = NULL;
 	m_szMenuLabelSetName = NULL;
 	m_nView = 0;
-
+	m_pScrollbarViewListener = NULL;
+	
 	m_app->rememberFrame(this, f);
 }
 
@@ -102,6 +104,8 @@ AP_Frame::~AP_Frame(void)
 	DELETEP(m_pScrollObj);
 	DELETEP(m_pEBM);
 	DELETEP(m_pEEM);
+
+	DELETEP(m_pScrollbarViewListener);
 }
 
 // sequence number tracker for untitled documents

@@ -22,6 +22,7 @@
 #ifndef PAGE_H
 #define PAGE_H
 
+#include <stdio.h>
 #include "ut_types.h"
 #include "ut_vector.h"
 #include "pt_Types.h"
@@ -73,11 +74,14 @@ class fp_Page
 	void			getScreenOffsets(fp_SectionSlice*, void*, UT_sint32& xoff, UT_sint32& yoff, UT_sint32& width, UT_sint32& height);
 
 	void			draw(dg_DrawArgs*);
-	void			dump();
+
+#ifdef FMT_TEST
+	void			__dump(FILE * fp) const;
+#endif
 	
- protected:
+protected:
 	FL_DocLayout*		m_pLayout;
-	FV_View*      m_pView;
+	FV_View*			m_pView;
 	fp_Page*			m_pNext;
 
 	UT_sint32			m_iWidth;

@@ -35,7 +35,8 @@ typedef UT_Byte AV_ChangeMask;
 #define AV_CHG_FILENAME		((AV_ChangeMask) 0x08)		// getFilename
 #define AV_CHG_FMTBLOCK		((AV_ChangeMask) 0x10)		// getBlockFormat
 #define AV_CHG_FMTCHAR		((AV_ChangeMask) 0x20)		// getCharFormat
-#define AV_CHG_CLIPBOARD	((AV_ChangeMask) 0x40)		
+#define AV_CHG_CLIPBOARD	((AV_ChangeMask) 0x40)
+#define AV_CHG_PAGECOUNT	((AV_ChangeMask) 0x80)		// number of pages
 #define AV_CHG_ALL			((AV_ChangeMask) 0xFF) 
 
 #define AV_CHG_SAVE			((AV_ChangeMask) (AV_CHG_DO | AV_CHG_DIRTY | AV_CHG_FILENAME))

@@ -31,10 +31,11 @@
 #include "fl_ColumnLayout.h"
 #include "fl_BlockLayout.h"
 #include "fp_Page.h"
+#include "fv_View.h"
 #include "pd_Document.h"
 #include "pp_Property.h"
 #include "gr_Graphics.h"
-
+#include "av_Listener.h"
 #include "ut_debugmsg.h"
 #include "ut_assert.h"
 
@@ -49,15 +50,7 @@ FL_DocLayout::FL_DocLayout(PD_Document* doc, DG_Graphics* pG) : m_hashFontCache(
 	// TODO and cannot report failure.
 	
 	m_pDocListener = new fl_DocListener(doc, this);
-
-	if (doc->addListener(static_cast<PL_Listener *>(m_pDocListener),&m_lid))
-	{
-#if 0
-		FILE * fpDump1 = fopen("dump1","w");
-		doc->dump(fpDump1);
-		fclose(fpDump1);
-#endif
-	}
+	doc->addListener(static_cast<PL_Listener *>(m_pDocListener),&m_lid);
 }
 
 FL_DocLayout::~FL_DocLayout()
@@ -207,6 +200,7 @@ fp_Page* FL_DocLayout::addNewPage()
 	}
 	
 	// TODO pass the margins.  which ones?
+	// TODO get these constants from the document.
 	fp_Page*		pPage = new fp_Page(this, m_pView, 850, 1100, 100, 100, 100, 100);
 	if (pLastPage)
 	{
@@ -216,6 +210,13 @@ fp_Page* FL_DocLayout::addNewPage()
 	}
 	m_vecPages.addItem(pPage);
 
+	// let the view know that we created a new page,
+	// so that it can update the scroll bar ranges
+	// and whatever else it needs to do.
+
+	if (m_pView)
+		m_pView->notifyListeners(AV_CHG_PAGECOUNT);
+	
 	return pPage;
 }
 
@@ -294,17 +295,20 @@ int FL_DocLayout::reformat()
 	return 0;
 }
 
-void FL_DocLayout::dump()
+#ifdef FMT_TEST
+void FL_DocLayout::__dump(FILE * fp) const
 {
 	int count = m_vecPages.getItemCount();
-	UT_DEBUGMSG(("FL_DocLayout::dump(0x%x) contains %d pages.\n", this, m_vecPages.getItemCount()));
+
+	fprintf(fp,"FL_DocLayout::dump(0x%08lx) contains %ld pages.\n", (UT_uint32)this, m_vecPages.getItemCount());
 
 	for (int i=0; i<count; i++)
 	{
 		fp_Page* p = (fp_Page*) m_vecPages.getNthItem(i);
 
-		p->dump();
+		p->__dump(fp);
 	}
 
 	// TODO dump the section layouts
 }
+#endif

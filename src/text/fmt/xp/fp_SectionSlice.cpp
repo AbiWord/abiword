@@ -147,6 +147,9 @@ void fp_SectionSlice::draw(dg_DrawArgs* pDA)
 	}
 }
 
-void fp_SectionSlice::dump()
+#ifdef FMT_TEST
+void fp_SectionSlice::__dump(FILE * fp) const
 {
+	fprintf(fp,"\t\tfp_SectionSlice::dump(0x%08lx) - TODO\n",(UT_uint32)this);
 }
+#endif

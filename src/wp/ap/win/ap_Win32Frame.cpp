@@ -32,6 +32,8 @@
 #include "fl_DocLayout.h"
 #include "pd_Document.h"
 #include "gr_Win32Graphics.h"
+#include "fp_Page.h"
+#include "ap_Scrollbar_ViewListener.h"
 
 #define DELETEP(p)		do { if (p) delete p; } while (0)
 #define REPLACEP(p,q)	do { if (p) delete p; p = q; } while (0)
@@ -119,19 +121,22 @@ UT_Bool AP_Win32Frame::_showDocument(void)
 	iWindowHeight = r.bottom - r.top;
 
 	iHeight = m_pData->m_pDocLayout->getHeight();
-	SCROLLINFO si;
-	memset(&si, 0, sizeof(si));
-
-	si.cbSize = sizeof(si);
-	si.fMask = SIF_ALL;
-	si.nMin = 0;
-	si.nMax = iHeight;
-	si.nPos = 0;
-	si.nPage = iWindowHeight * 10 / 9;
-	SetScrollInfo(hwnd, SB_VERT, &si, TRUE);
 
 	m_pView->addScrollListener(m_pScrollObj);
 //	m_pMouse->reset();
+
+	// add a Scrollbar-View-Listener to help up keep the scrollbar up-to-date.
+	//
+	// TODO we ***really*** need to re-do the whole scrollbar thing.
+	// TODO we have an addScrollListener() using an m_pScrollObj
+	// TODO and a View-Listener, and a bunch of other widget stuff.
+	// TODO and its very confusing.
+
+	m_pScrollbarViewListener = new ap_Scrollbar_ViewListener(this,m_pView);
+	UT_ASSERT(m_pScrollbarViewListener);
+	m_pView->addListener(static_cast<AV_Listener *>(m_pScrollbarViewListener),
+						 &m_lidScrollbarViewListener);
+	setYScrollRange();
 	
 	// enough HACKs to get a clean redisplay?
 	m_pView->setWindowSize(r.right - r.left, iWindowHeight);
@@ -156,3 +161,28 @@ Cleanup:
 	return UT_FALSE;
 }
 
+void AP_Win32Frame::setYScrollRange(void)
+{
+	int pageLen = m_pData->m_pDocLayout->getFirstPage()->getHeight();
+	int nrPages = m_pData->m_pDocLayout->countPages();
+	int height = pageLen * (nrPages+1);
+
+	// TODO do we need to increase height by the amount of
+	// TODO white space, drop shadows, and etc. that we
+	// TODO draw between the pages.
+
+	UT_DEBUGMSG(("Setting vertical scroll: [pageLen %ld][nrPages %ld][height %ld]\n",
+				 pageLen,nrPages,height));
+
+	iHeight = m_pData->m_pDocLayout->getHeight();
+	SCROLLINFO si;
+	memset(&si, 0, sizeof(si));
+
+	si.cbSize = sizeof(si);
+	si.fMask = SIF_ALL;
+	si.nMin = 0;
+	si.nMax = height;
+	si.nPos = ((m_pView) ? m_pView->getYScrollOffset() : 0);
+	si.nPage = height * 10 / 9;
+	SetScrollInfo(hwnd, SB_VERT, &si, TRUE);
+}

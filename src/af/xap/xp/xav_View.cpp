@@ -162,3 +162,8 @@ void AV_View::sendScrollEvent(UT_sint32 xoff, UT_sint32 yoff)
 		pObj->m_pfn(pObj->m_pData, xoff, yoff);
 	}
 }
+
+UT_sint32 AV_View::getYScrollOffset(void) const
+{
+	return m_yScrollOffset;
+}

@@ -255,6 +255,11 @@ UT_Bool FV_View::notifyListeners(const AV_ChangeMask hint)
 			mask ^= AV_CHG_FMTCHAR;
 		}
 	}
+
+	if (mask & AV_CHG_PAGECOUNT)
+	{
+		// NOTE: we don't attempt to filter this
+	}
 		
 	// base class does the rest
 	return AV_View::notifyListeners(mask);
@@ -1857,6 +1862,9 @@ void FV_View::setYScrollOffset(UT_sint32 v)
 
 void FV_View::draw(int page, dg_DrawArgs* da)
 {
+#if 0
+	UT_DEBUGMSG(("FV_View::draw_1: [page %ld]\n",page));
+#endif	
 	da->pG = m_pG;
 	fp_Page* pPage = m_pLayout->getNthPage(page);
 	if (pPage)
@@ -1867,6 +1875,9 @@ void FV_View::draw(int page, dg_DrawArgs* da)
 
 void FV_View::draw(const UT_Rect* pClipRect)
 {
+#if 0
+	UT_DEBUGMSG(("FV_View::draw_2: [bClipRect %ld]\n",(pClipRect!=NULL)));
+#endif	
 	if (pClipRect)
 	{
 		m_pG->setClipRect(pClipRect);
@@ -1880,9 +1891,16 @@ void FV_View::draw(const UT_Rect* pClipRect)
 	}
 }
 
-void FV_View::draw(UT_sint32 x, UT_sint32 y, UT_sint32 width,
-						 UT_sint32 height, UT_Bool bClip)
+void FV_View::draw(UT_sint32 x, UT_sint32 y,
+				   UT_sint32 width, UT_sint32 height,
+				   UT_Bool bClip)
 {
+#if 0
+	UT_DEBUGMSG(("FV_View::draw_3 [x %ld][y %ld][w %ld][h %ld][bClip %ld]\n"
+				 "\t\twith [yScrollOffset %ld][windowHeight %ld]\n",
+				 x,y,width,height,bClip,
+				 m_yScrollOffset,m_iWindowHeight));
+#endif	
 	UT_ASSERT(m_iWindowWidth > 0);
 	UT_ASSERT(m_iWindowHeight > 0);
 
@@ -1903,8 +1921,12 @@ void FV_View::draw(UT_sint32 x, UT_sint32 y, UT_sint32 width,
 	while (pPage)
 	{
 		UT_sint32 iPageHeight = pPage->getHeight();
-		if ((curY - m_yScrollOffset) > m_iWindowHeight)
+		UT_sint32 adjustedTop    = curY - m_yScrollOffset;
+		UT_sint32 adjustedBottom = adjustedTop + iPageHeight;
+		if (adjustedTop > m_iWindowHeight)
 		{
+			// the start of this page is past the bottom
+			// of the window, so we don't need to draw it.
 #if 0
 			UT_DEBUGMSG(("not drawing page A: iPageHeight=%d curY=%d nPos=%d m_iWindowHeight=%d\n",
 						 iPageHeight,
@@ -1913,8 +1935,10 @@ void FV_View::draw(UT_sint32 x, UT_sint32 y, UT_sint32 width,
 						 m_iWindowHeight));
 #endif
 		}
-		else if ((curY + iPageHeight - m_yScrollOffset) < 0)
+		else if (adjustedBottom < 0)
 		{
+			// the end of this page is above the top of
+			// the window, so we don't need to draw it.
 #if 0
 			UT_DEBUGMSG(("not drawing page B: iPageHeight=%d curY=%d nPos=%d m_iWindowHeight=%d\n",
 						 iPageHeight,
@@ -1923,19 +1947,51 @@ void FV_View::draw(UT_sint32 x, UT_sint32 y, UT_sint32 width,
 						 m_iWindowHeight));
 #endif
 		}
-		else if ((curY - m_yScrollOffset >= y &&
-				  curY - m_yScrollOffset <= y + height) ||
-				 (curY - m_yScrollOffset < y &&
-				  curY - m_yScrollOffset + iPageHeight > y))
-
+		else if (adjustedTop > y + height)
 		{
-			m_pG->drawLine(0, curY - m_yScrollOffset, m_iWindowWidth, curY - m_yScrollOffset);
+			// the top of this page is beyond the end
+			// of the clipping region, so we don't need
+			// to draw it.
+#if 0
+			UT_DEBUGMSG(("not drawing page C: iPageHeight=%d curY=%d nPos=%d m_iWindowHeight=%d y=%d h=%d\n",
+						 iPageHeight,
+						 curY,
+						 m_yScrollOffset,
+						 m_iWindowHeight,
+						 y,height));
+#endif
+		}
+		else if (adjustedBottom < y)
+		{
+			// the bottom of this page is above the top
+			// of the clipping region, so we don't need
+			// to draw it.
+#if 0
+			UT_DEBUGMSG(("not drawing page D: iPageHeight=%d curY=%d nPos=%d m_iWindowHeight=%d y=%d h=%d\n",
+						 iPageHeight,
+						 curY,
+						 m_yScrollOffset,
+						 m_iWindowHeight,
+						 y,height));
+#endif
+		}
+		else
+		{
+			// this page is on screen and intersects the clipping region,
+			// so we *DO* draw it.
+#if 0
+			UT_DEBUGMSG(("drawing page E: iPageHeight=%d curY=%d nPos=%d m_iWindowHeight=%d y=%d h=%d\n",
+						 iPageHeight,curY,m_yScrollOffset,m_iWindowHeight,y,height));
+#endif
+			UT_RGBColor clr(0,0,0);		// black
+			m_pG->setColor(clr);
+			m_pG->drawLine(0, adjustedTop, m_iWindowWidth, adjustedTop);
 			
 			dg_DrawArgs da;
 			
 			da.pG = m_pG;
 			da.xoff = 0;
-			da.yoff = curY - m_yScrollOffset;
+			da.yoff = adjustedTop;
 			da.x = x;
 			da.y = y;
 			da.width = width;
@@ -1961,6 +2017,7 @@ void FV_View::draw(UT_sint32 x, UT_sint32 y, UT_sint32 width,
 
 			pPage->draw(&da);
 		}
+
 		curY += iPageHeight;
 
 		pPage = pPage->getNext();
@@ -1975,54 +2032,28 @@ void FV_View::draw(UT_sint32 x, UT_sint32 y, UT_sint32 width,
 	}
 }
 
-// TODO remove this later
-#include "ps_Graphics.h"
+#if defined(PT_TEST) || defined(FMT_TEST)
 void FV_View::Test_Dump(void)
 {
 	static int x = 0;
 
-#if 0
+#if defined(PT_TEST)
 	char buf[100];
-	sprintf(buf,"dump.buffer.%d",x);
-	FILE * fpDump = fopen(buf,"w");
-	m_pDoc->__dump(fpDump);
-	fclose(fpDump);
+	sprintf(buf,"dump.ptbl.%d",x);
+	FILE * fpDumpPTbl = fopen(buf,"w");
+	m_pDoc->__dump(fpDumpPTbl);
+	fclose(fpDumpPTbl);
 #endif
-	
-#ifdef POSTSCRIPT	// Test_Dump
-	sprintf(buf,"dump.ps.%d",x);
-	PS_Graphics ps(buf,"my_title","AbiWord 0.0");
-	FL_DocLayout * pPrintLayout = new FL_DocLayout(m_pLayout->getDocument(),&ps);
-	UT_ASSERT(pPrintLayout);
-	pPrintLayout->formatAll();
-	if (ps.startPrint())
-	{
-		int width = ps.convertDimension("8.5in");
-		int height = ps.convertDimension("11in");
+#if defined(FMT_TEST)
+	sprintf(buf,"dump.fmt.%d",x);
+	FILE * fpDumpFmt = fopen(buf,"w");
+	m_pLayout->__dump(fpDumpFmt);
+	fclose(fpDumpFmt);
+#endif
 		
-		int count = pPrintLayout->countPages();
-		for (int k=0; k<count; k++)
-		{
-			if (ps.startPage("foo",k+1,UT_TRUE,width,height))
-			{
-				dg_DrawArgs da;
-				
-				da.pG = &ps;
-				da.width = width;
-				da.height = height;
-				pPrintLayout->getNthPage(k)->draw(&da);
-			}
-		}
-
-		UT_Bool bResult = ps.endPrint();
-		UT_ASSERT(bResult);
-	}
-
-	delete pPrintLayout;
-#endif /* POSTSCRIPT */
-
 	x++;
 }
+#endif
 
 void FV_View::cmdScroll(AV_ScrollCmd cmd, UT_uint32 iPos)
 {
@@ -2069,6 +2100,9 @@ void FV_View::cmdScroll(AV_ScrollCmd cmd, UT_uint32 iPos)
 		break;
 	case AV_SCROLLCMD_TOTOP:
 		yoff = 0;
+		break;
+	case AV_SCROLLCMD_TOPOSITION:
+		UT_ASSERT(UT_NOT_IMPLEMENTED);
 		break;
 	case AV_SCROLLCMD_TOBOTTOM:
 		fp_Page* pPage = m_pLayout->getFirstPage();
@@ -2338,9 +2372,7 @@ UT_Bool FV_View::pasteBlock(UT_UCSChar * text, UT_uint32 count)
 		_eraseInsertionPoint();
 	}	
 
-#ifdef UT_DEBUG
-       UT_DEBUGMSG(("pasteBlock: pasting block of length %d.\n", count));
-#endif
+	UT_DEBUGMSG(("pasteBlock: pasting block of length %d.\n", count));
 
 	UT_Bool bResult = m_pDoc->insertSpan(_getPoint(), text, count);
 

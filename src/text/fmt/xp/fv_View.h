@@ -118,7 +118,9 @@ public:
 	void			extSelTo(FV_DocPos dp);
 	void			extSelNextPrevLine(UT_Bool bNext);
 	
-	void			Test_Dump(void);	/* TODO remove this */
+#if defined(PT_TEST) || defined(FMT_TEST)
+	void			Test_Dump(void);
+#endif
 // ----------------------
 	
 protected:

@@ -22,6 +22,7 @@
 #ifndef SECTIONSLICE_H
 #define SECTIONSLICE_H
 
+#include <stdio.h>
 #include "ut_types.h"
 #include "ut_vector.h"
 #include "pt_Types.h"
@@ -57,7 +58,9 @@ public:
 	void 		getScreenOffsets(fp_Column* pCol, void* p, UT_sint32& xoff, UT_sint32& yoff, UT_sint32& width, UT_sint32& height);	
 
 	void		draw(dg_DrawArgs*);
-	void		dump();
+#ifdef FMT_TEST
+	void		__dump(FILE * fp) const;
+#endif
 
 protected:
 	fp_Page*	m_pPage;

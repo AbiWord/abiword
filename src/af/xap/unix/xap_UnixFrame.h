@@ -60,6 +60,7 @@ public:
 	ev_UnixKeyboard *			getUnixKeyboard(void);
 
 	virtual AP_DialogFactory *	getDialogFactory(void);
+	virtual void				setYScrollRange(void);
 	
 protected:
 	void						_createTopLevelWindow(void);

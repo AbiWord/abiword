@@ -52,6 +52,7 @@ OBJS=		$(PLATFORM_OBJS)									\
 		xp/$(OBJDIR)/ap_Dialog_MessageBox.$(OBJ_SUFFIX)			\
 		xp/$(OBJDIR)/ap_Dialog_Print.$(OBJ_SUFFIX)				\
 		xp/$(OBJDIR)/ap_Frame.$(OBJ_SUFFIX)						\
+		xp/$(OBJDIR)/ap_Scrollbar_ViewListener.$(OBJ_SUFFIX)		\
 		xp/$(OBJDIR)/ap_Toolbar_ControlFactory.$(OBJ_SUFFIX)	\
 		xp/$(OBJDIR)/ap_ViewListener.$(OBJ_SUFFIX)				\
 		xp/$(OBJDIR)/av_View.$(OBJ_SUFFIX)

@@ -61,7 +61,8 @@ public:
 	void			setWindowSize(UT_sint32, UT_sint32);
 	virtual void	setXScrollOffset(UT_sint32) = 0;
 	virtual void	setYScrollOffset(UT_sint32) = 0;
-
+	UT_sint32		getYScrollOffset(void) const;
+	
 	virtual void	draw(const UT_Rect* pRect=(UT_Rect*) NULL) = 0;
 
 	virtual void	cmdScroll(AV_ScrollCmd cmd, UT_uint32 iPos = 0) = 0;

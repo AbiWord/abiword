@@ -32,6 +32,8 @@
 #include "fl_DocLayout.h"
 #include "pd_Document.h"
 #include "gr_UnixGraphics.h"
+#include "fp_Page.h"
+#include "ap_Scrollbar_ViewListener.h"
 
 #define DELETEP(p)		do { if (p) delete p; } while (0)
 #define REPLACEP(p,q)	do { if (p) delete p; p = q; } while (0)
@@ -60,7 +62,6 @@ UT_Bool AP_UnixFrame::_showDocument(void)
 	ap_ViewListener * pViewListener = NULL;
 	AD_Document * pOldDoc = NULL;
 
-	int height, pageLen;
 	UT_uint32 nrToolbars;
 
 	// TODO fix prefix on class UNIXGraphics
@@ -116,20 +117,22 @@ UT_Bool AP_UnixFrame::_showDocument(void)
 	m_pView->addScrollListener(m_pScrollObj);
 	m_pView->setWindowSize(GTK_WIDGET(m_dArea)->allocation.width,
 						   GTK_WIDGET(m_dArea)->allocation.height);
-  
-	height = m_pData->m_pDocLayout->getHeight();
-	pageLen = height/m_pData->m_pDocLayout->countPages();
 
-	m_pVadj->value = 0.0;
-	m_pVadj->lower = 0.0;
-	m_pVadj->upper = (gfloat) height;
-	m_pVadj->step_increment = 20.0;
-	m_pVadj->page_increment = (gfloat) pageLen;
-	m_pVadj->page_size = (gfloat) pageLen;
+	// add a Scrollbar-View-Listener to help up keep the scrollbar up-to-date.
+	//
+	// TODO we ***really*** need to re-do the whole scrollbar thing.
+	// TODO we have an addScrollListener() using an m_pScrollObj
+	// TODO and a View-Listener, and a bunch of other widget stuff.
+	// TODO and its very confusing.
+
+	m_pScrollbarViewListener = new ap_Scrollbar_ViewListener(this,m_pView);
+	UT_ASSERT(m_pScrollbarViewListener);
+	m_pView->addListener(static_cast<AV_Listener *>(m_pScrollbarViewListener),
+						 &m_lidScrollbarViewListener);
+	setYScrollRange();
 
 	updateTitle();
 
-	gtk_signal_emit_by_name(GTK_OBJECT(m_pVadj), "changed");
 	m_pView->draw();
 
 	return UT_TRUE;
@@ -147,4 +150,26 @@ Cleanup:
 	m_pDoc = m_pData->m_pDocLayout->getDocument();
 
 	return UT_FALSE;
+}
+
+void AP_UnixFrame::setYScrollRange(void)
+{
+	int pageLen = m_pData->m_pDocLayout->getFirstPage()->getHeight();
+	int nrPages = m_pData->m_pDocLayout->countPages();
+	int height = pageLen * (nrPages+1);
+
+	// TODO do we need to increase height by the amount of
+	// TODO white space, drop shadows, and etc. that we
+	// TODO draw between the pages.
+
+	UT_DEBUGMSG(("Setting vertical scroll: [pageLen %ld][nrPages %ld][height %ld]\n",
+				 pageLen,nrPages,height));
+
+	m_pVadj->value = (gfloat)((m_pView) ? m_pView->getYScrollOffset() : 0);
+	m_pVadj->lower = 0.0;
+	m_pVadj->upper = (gfloat) height;
+	m_pVadj->step_increment = 20.0;
+	m_pVadj->page_increment = (gfloat) pageLen;
+	m_pVadj->page_size = (gfloat) pageLen;
+	gtk_signal_emit_by_name(GTK_OBJECT(m_pVadj), "changed");
 }

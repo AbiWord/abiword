@@ -36,6 +36,7 @@ class EV_Menu_Layout;
 class EV_Menu_LabelSet;
 class AV_ScrollObj;
 class AP_FrameData;
+class ap_Scrollbar_ViewListener;
 
 /*****************************************************************
 ******************************************************************
@@ -79,6 +80,7 @@ public:
 	const char *				getViewKey(void) const;
 
 	virtual AP_DialogFactory *	getDialogFactory(void) = 0;
+	virtual void				setYScrollRange(void) = 0;
 	
 protected:
 	AP_App *					m_app;			/* handle to application-specific data */
@@ -96,6 +98,9 @@ protected:
 	UT_uint32					m_nView;
 	int							m_iUntitled;
 
+	ap_Scrollbar_ViewListener * m_pScrollbarViewListener;
+	AV_ListenerId				m_lidScrollbarViewListener;
+	
 	AP_FrameData *				m_pData;		/* app-specific frame data */
 
 private:
