@@ -1194,7 +1194,10 @@ void FV_View::_deleteSelection(PP_AttrProp *p_AttrProp_Before)
 	UT_ASSERT(iPoint != m_iSelectionAnchor);
 
 	UT_uint32 iSelAnchor = m_iSelectionAnchor;
-	
+	if(iSelAnchor < 2)
+	{
+		iSelAnchor = 2;
+	}
 	_eraseSelection();
 	_resetSelection();
 
@@ -2489,7 +2492,6 @@ bool FV_View::setStyleAtPos(const XML_Char * style, PT_DocPosition posStart1, PT
 
 	// Turn off list updates
 	m_pDoc->disableListUpdates();
-	UT_DEBUGMSG(("SEVIUOR: Setting style %s \n",style));
 	if (!isSelectionEmpty())
 	{
 		if (m_iSelectionAnchor < posStart)
@@ -2499,6 +2501,10 @@ bool FV_View::setStyleAtPos(const XML_Char * style, PT_DocPosition posStart1, PT
 		else
 		{
 			posEnd = m_iSelectionAnchor;
+		}
+		if(posStart < 2)
+		{
+			posStart = 2;
 		}
 	}
 
@@ -3540,7 +3546,11 @@ bool FV_View::setBlockFormat(const XML_Char * properties[])
 			posEnd = m_iSelectionAnchor;
 		}
 	}
-
+	if(posStart < 2)
+	{
+		posStart = 2;
+	}
+		
 	bRet = m_pDoc->changeStruxFmt(PTC_AddFmt,posStart,posEnd,NULL,properties,PTX_Block);
 
 	_generalUpdate();
@@ -8510,6 +8520,10 @@ bool FV_View::setSectionFormat(const XML_Char * properties[])
 			posStart = m_iSelectionAnchor;
 		else
 			posEnd = m_iSelectionAnchor;
+		if(posStart < 2)
+		{
+			posStart = 2;
+		}
 	}
 
 	bRet = m_pDoc->changeStruxFmt(PTC_AddFmt,posStart,posEnd,NULL,properties,PTX_Section);
