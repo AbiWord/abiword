@@ -34,11 +34,11 @@
 #include <Devices.h>
 #include <Events.h>
 
-//#include "FullPath.h"
 /* end */
 
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
+#include "ut_MacFiles.h"
 #include "xap_Args.h"
 #include "xap_MacApp.h"
 #include "xap_MacClipboard.h"
