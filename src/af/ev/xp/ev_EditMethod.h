@@ -164,4 +164,7 @@ bool ABI_EXPORT ev_EditMethod_invoke (const char * methodName, const UT_UCSChar 
 bool ABI_EXPORT ev_EditMethod_invoke (const UT_String& methodName, const UT_String & data);
 bool ABI_EXPORT ev_EditMethod_invoke (const UT_String& methodName, const UT_UCS2String & data);
 
+EV_EditMethod* ABI_EXPORT ev_EditMethod_lookup (const char * methodName);
+EV_EditMethod* ABI_EXPORT ev_EditMethod_lookup (const UT_String & methodName);
+
 #endif /* EV_EDITMETHOD_H */

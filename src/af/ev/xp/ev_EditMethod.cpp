@@ -277,21 +277,14 @@ bool ev_EditMethod_invoke (const EV_EditMethod * pEM, const UT_UCS2String & data
   return ev_EditMethod_invoke ( pEM, &callData ) ;
 }
 
-static const EV_EditMethod * s_editMethodFromName ( const char * name )
-{
-  UT_ASSERT(name);
-  EV_EditMethodContainer* pEMC = XAP_App::getApp()->getEditMethodContainer() ;
-  return pEMC->findEditMethodByName ( name ) ;
-}
-
 bool ev_EditMethod_invoke (const char * methodName, const UT_String & data)
 {
-  return ev_EditMethod_invoke ( s_editMethodFromName ( methodName ), data ) ;
+  return ev_EditMethod_invoke ( ev_EditMethod_lookup ( methodName ), data ) ;
 }
 
 bool ev_EditMethod_invoke (const char * methodName, const UT_UCS2String & data)
 {
-  return ev_EditMethod_invoke ( s_editMethodFromName ( methodName ), data ) ;
+  return ev_EditMethod_invoke ( ev_EditMethod_lookup ( methodName ), data ) ;
 }
 
 bool ev_EditMethod_invoke (const char * methodName, const char * data)
@@ -321,12 +314,29 @@ bool ev_EditMethod_invoke (const UT_String& methodName, const UT_UCS2String & da
 /*****************************************************************/
 /*****************************************************************/
 
-bool ABI_EXPORT ev_EditMethod_exists (const char * methodName)
+bool ev_EditMethod_exists (const char * methodName)
 {
-  return ( s_editMethodFromName ( methodName ) != NULL ) ;
+  return ( ev_EditMethod_lookup ( methodName ) != NULL ) ;
 }
 
-bool ABI_EXPORT ev_EditMethod_exists (const UT_String & methodName)
+bool ev_EditMethod_exists (const UT_String & methodName)
 {
   return ev_EditMethod_exists ( methodName.c_str() ) ;
 }
+
+/*****************************************************************/
+/*****************************************************************/
+
+EV_EditMethod* ev_EditMethod_lookup (const char * methodName)
+{
+  UT_ASSERT(methodName);
+  EV_EditMethodContainer* pEMC = XAP_App::getApp()->getEditMethodContainer() ;
+  return pEMC->findEditMethodByName ( methodName ) ;
+}
+
+EV_EditMethod* ev_EditMethod_lookup (const UT_String & methodName)
+{
+  return ev_EditMethod_lookup ( methodName.c_str() ) ;
+}
+
+
