@@ -1,5 +1,5 @@
 /* AbiSource Program Utilities
- * Copyright (C) 1998 AbiSource, Inc.
+ * Copyright (C) 1998-2000 AbiSource, Inc.
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -40,6 +40,10 @@ static int s_getKeyEventValue(PhKeyEvent_t *keyevent);
 
 ev_QNXKeyboard::ev_QNXKeyboard(EV_EditEventMapper* pEEM)
 	: EV_Keyboard(pEEM)
+{
+}
+
+ev_QNXKeyboard::~ev_QNXKeyboard(void)
 {
 }
 

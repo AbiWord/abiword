@@ -1,5 +1,5 @@
 /* AbiSource Program Utilities
- * Copyright (C) 1998 AbiSource, Inc.
+ * Copyright (C) 1998-2000 AbiSource, Inc.
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -57,6 +57,10 @@ ev_UnixKeyboard::ev_UnixKeyboard(EV_EditEventMapper* pEEM)
 {
 	if (s_alt_mask == GDK_MODIFIER_MASK)
 		s_alt_mask = s_getAltMask();
+}
+
+ev_UnixKeyboard::~ev_UnixKeyboard(void)
+{
 }
 
 UT_Bool ev_UnixKeyboard::keyPressEvent(AV_View* pView,

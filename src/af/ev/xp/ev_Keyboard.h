@@ -1,5 +1,5 @@
 /* AbiSource Program Utilities
- * Copyright (C) 1998 AbiSource, Inc.
+ * Copyright (C) 1998-2000 AbiSource, Inc.
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -16,8 +16,6 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
  * 02111-1307, USA.
  */
- 
-
 
 
 #ifndef EV_KEYBOARD_H
@@ -33,6 +31,8 @@ class EV_Keyboard
 {
 public:
 	EV_Keyboard(EV_EditEventMapper * pEEM);
+	virtual ~EV_Keyboard(void);
+
 	UT_Bool invokeKeyboardMethod(AV_View * pView,
 								 EV_EditMethod * pEM,
 								 UT_UCSChar * pData,

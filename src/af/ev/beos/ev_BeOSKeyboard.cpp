@@ -1,5 +1,5 @@
 /* AbiSource Program Utilities
- * Copyright (C) 1998 AbiSource, Inc.
+ * Copyright (C) 1998-2000 AbiSource, Inc.
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -74,6 +74,10 @@ filter_result KeybdFilter::Filter(BMessage *message, BHandler **target) {
 /**************************************************************/
 
 ev_BeOSKeyboard::ev_BeOSKeyboard(EV_EditEventMapper* pEEM) : EV_Keyboard(pEEM)
+{
+}
+
+ev_BeOSKeyboard::~ev_BeOSKeyboard(void)
 {
 }
 
