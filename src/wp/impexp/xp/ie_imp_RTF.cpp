@@ -3994,11 +3994,11 @@ bool IE_Imp_RTF::ApplyParagraphAttributes()
 
 
 	// Lists. If the paragraph has a list element handle it.
-	static char szLevel[8];
-	static char szStyle[40];
-	static char szListID[15];
-	static char szParentID[15];
-	static char szStartValue[15];
+	UT_String szLevel;
+	UT_String szStyle;
+	UT_String szListID;
+	UT_String szParentID;
+	UT_String szStartValue;
 	UT_uint32 id = 0,pid = 0,startValue = 0;
 //
 // This is for our own extensions to RTF.
@@ -4017,11 +4017,11 @@ bool IE_Imp_RTF::ApplyParagraphAttributes()
 		UT_String_sprintf(szLevel,"%d",m_currentRTFState.m_paraProps.m_level);
 
 		attribs[attribsCount++] = PT_LISTID_ATTRIBUTE_NAME;
-		attribs[attribsCount++] = szListID;
+		attribs[attribsCount++] = szListID.c_str();
 		attribs[attribsCount++] = PT_PARENTID_ATTRIBUTE_NAME;
-		attribs[attribsCount++] = szParentID;
+		attribs[attribsCount++] = szParentID.c_str();
 		attribs[attribsCount++] = PT_LEVEL_ATTRIBUTE_NAME;
-		attribs[attribsCount++] = szLevel;
+		attribs[attribsCount++] = szLevel.c_str();
 		attribs[attribsCount] = NULL;
 	}
 
@@ -4230,7 +4230,7 @@ bool IE_Imp_RTF::ApplyParagraphAttributes()
 		propBuffer += tempBuffer;
 		startValue = m_currentRTFState.m_paraProps.m_startValue;
 		UT_String_sprintf(szStartValue,"%d",startValue);
-		UT_String_sprintf(tempBuffer, "start-value:%s ",szStartValue);
+		UT_String_sprintf(tempBuffer, "start-value:%s ",szStartValue.c_str());
 		propBuffer + tempBuffer;
 	}
 	// Style name
@@ -4313,7 +4313,7 @@ bool IE_Imp_RTF::ApplyParagraphAttributes()
 				UT_uint32 size_xml_lists = al.getXmlListsSize();
 				for(j=0; j< size_xml_lists; j++)
 				{
-					if( UT_XML_strcmp(szStyle,al.getXmlList(j)) ==0)
+					if( UT_XML_strcmp(szStyle.c_str(),al.getXmlList(j)) ==0)
 					{
 						break;
 					}
