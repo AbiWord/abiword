@@ -37,7 +37,7 @@ public:
 
   virtual void startElement (const XML_Char * name, const XML_Char ** atts)
   {
-    if ( !strcmp (name, "dictionary"))
+    if (!strcmp (name, "dictionary"))
       {
 	DictionaryMapping * mapping = new DictionaryMapping ();
 
@@ -56,10 +56,7 @@ public:
 	if(mapping->enc.size() == 0)
 	  mapping->enc = "iso-8859-1";
 
-	UT_DEBUGMSG(("Ispell: Lang: %s Dictionary: %s Encoding: %s\n", 
-		     mapping->lang.c_str(), mapping->dict.c_str(), mapping->enc.c_str()));
-
-	mList.push_back ( mapping ) ;
+	mList.push_back (mapping);
       }
   }
 
@@ -112,8 +109,6 @@ ISpellChecker::ISpellChecker()
       UT_String dictionary_list ( XAP_App::getApp()->getAbiSuiteLibDir() ) ;
       dictionary_list += DICTIONARY_LIST_FILENAME ;
       
-      UT_DEBUGMSG(("DOM: dictionary list: %s\n", dictionary_list.c_str()));
-      
       DictionaryListener listener(m_mapping);
       UT_XML parser;
       parser.setListener (&listener);      
@@ -156,61 +151,42 @@ ISpellChecker::checkWord(const UT_UCSChar *word32, size_t length)
     char  word8[INPUTWORDLEN + MAXAFFIXLEN];
 
     if (!m_bSuccessfulInit)
-    {
         return SpellChecker::LOOKUP_FAILED;
-    }
 
     if (!word32 || length >= (INPUTWORDLEN + MAXAFFIXLEN) || length == 0)
 		return SpellChecker::LOOKUP_FAILED;
 
-	/* TODO get rid of this heuristic - for if we don't have
-	 * iconv support for latin1 we've got bigger problems -
-	 * if we convert to 8 bit this way for other encodings we're only
-	 * generating garbage which may silently introduce errors
-	 * and it will make it harder to find the cause
-	 */
-	if(!UT_iconv_isValid(m_pISpellState->translate_in))
-    {
-        /* copy to 8bit string and null terminate */
-        register char *p;
-        register size_t x;
-
-        for (x = 0, p = word8; x < length; x++)
-			*p++ = (unsigned char)*word32++;
-		*p = '\0';
-    }
-	else
-    {
+    if(!UT_iconv_isValid(m_pISpellState->translate_in))
+      return SpellChecker::LOOKUP_FAILED;
+    else
+      {
         /* convert to 8bit string and null terminate */
-        /* TF CHANGE: Use the right types
-		 unsigned int len_in, len_out;
-		*/
         size_t len_in, len_out;
         const char *In = (const char *)word32;
         char *Out = word8;
-
+	
         len_in = length * sizeof(UT_UCSChar);
         len_out = sizeof( word8 ) - 1;
         UT_iconv(m_pISpellState->translate_in, &In, &len_in, &Out, &len_out);
         *Out = '\0';
-    }
-
-	if( !strtoichar(m_pISpellState, iWord, word8, sizeof(iWord), 0) )
-		if ( good(m_pISpellState, iWord, 0, 0, 1, 0) == 1 ||
-		 compoundgood(m_pISpellState, iWord, 1 ) == 1 )
-			retVal = SpellChecker::LOOKUP_SUCCEEDED;
-		else
-			retVal = SpellChecker::LOOKUP_FAILED;
-	else
-		retVal = SpellChecker::LOOKUP_ERROR;
-
-	return retVal; /* 0 - not found, 1 on found, -1 on error */
+      }
+    
+    if(!strtoichar(m_pISpellState, iWord, word8, sizeof(iWord), 0))
+      if (good(m_pISpellState, iWord, 0, 0, 1, 0) == 1 ||
+	   compoundgood(m_pISpellState, iWord, 1) == 1)
+	retVal = SpellChecker::LOOKUP_SUCCEEDED;
+      else
+	retVal = SpellChecker::LOOKUP_FAILED;
+    else
+      retVal = SpellChecker::LOOKUP_ERROR;
+    
+    return retVal; /* 0 - not found, 1 on found, -1 on error */
 }
 
 UT_Vector *
 ISpellChecker::suggestWord(const UT_UCSChar *word32, size_t length)
 {
-    UT_Vector *sgvec = new UT_Vector();
+    UT_Vector *sgvec = NULL;
     ichar_t  iWord[INPUTWORDLEN + MAXAFFIXLEN];
     char  word8[INPUTWORDLEN + MAXAFFIXLEN];
     int  c;
@@ -219,88 +195,69 @@ ISpellChecker::suggestWord(const UT_UCSChar *word32, size_t length)
 		return 0;
 	if (!word32 || length >= (INPUTWORDLEN + MAXAFFIXLEN) || length == 0)
 		return 0;
-	if (!sgvec)
-		return 0;
 
-	/* TODO get rid of this heuristic - for if we don't have
-	 * iconv support for latin1 we've got bigger problems -
-	 * if we convert to 8 bit this way for other encodings we're only
-	 * generating garbage which may silently introduce errors
-	 * and it will make it harder to find the cause
-	 */
 	if(!UT_iconv_isValid(m_pISpellState->translate_in))
-    {
-        /* copy to 8bit string and null terminate */
-        register char *p;
-        register size_t x;
-
-		for (x = 0, p = word8; x < length; ++x)
-		{
-			*p++ = (unsigned char)*word32++;
-		}
-		*p = '\0';
-    }
+	  return 0;
 	else
-    {
-		/* convert to 8bit string and null terminate */
-		/* TF CHANGE: Use the right types
-		 unsigned int len_in, len_out;
-		*/
-		size_t len_in, len_out;
-		const char *In = (const char *)word32;
-		char *Out = word8;
-		len_in = length * sizeof(UT_UCSChar);
-		len_out = sizeof( word8 ) - 1;
-		UT_iconv(m_pISpellState->translate_in, &In, &len_in, &Out, &len_out);
-		*Out = '\0';
-    }
+	  {
+	    /* convert to 8bit string and null terminate */
 
-	if( !strtoichar(m_pISpellState, iWord, word8, sizeof(iWord), 0) )
+	    size_t len_in, len_out;
+	    const char *In = (const char *)word32;
+	    char *Out = word8;
+	    len_in = length * sizeof(UT_UCSChar);
+	    len_out = sizeof( word8 ) - 1;
+	    UT_iconv(m_pISpellState->translate_in, &In, &len_in, &Out, &len_out);
+	    *Out = '\0';
+	  }
+
+	if(!strtoichar(m_pISpellState, iWord, word8, sizeof(iWord), 0))
 		makepossibilities(m_pISpellState, iWord);
-		 		
+		 			
+	sgvec = new UT_Vector();
+
  	// Add suggestions if the word is a barbarism
  	m_barbarism.suggestWord(word32, length, sgvec);    	 	
 
 	for (c = 0; c < m_pISpellState->pcount; c++)
-    {
-		int l;
+	  {
+	    int l;
+	    
+	    l = strlen(m_pISpellState->possibilities[c]);
+	    
+	    UT_UCS4Char *theWord = (UT_UCS4Char*)malloc(sizeof(UT_UCS4Char) * (l + 1));
+	    if (theWord == NULL)
+	      {
+		// OOM, but return what we have so far
+		return sgvec;
+	      }
+	    
+	    if (m_pISpellState->translate_out == (iconv_t)-1)
+	      {
+		/* copy to 16bit string and null terminate */
+		register int x;
+		
+		for (x = 0; x < l; x++)
+		  theWord[x] = (unsigned char)m_pISpellState->possibilities[c][x];
+		theWord[l] = 0;
+	      }
+	    else
+	      {
+		/* convert to 16bit string and null terminate */
 
-		l = strlen(m_pISpellState->possibilities[c]);
+		size_t len_in, len_out;
+		const char *In = m_pISpellState->possibilities[c];
+		char *Out = (char *)theWord;
+		
+		len_in = l;
+		len_out = sizeof(UT_UCS4Char) * (l+1);
+		UT_iconv(m_pISpellState->translate_out, &In, &len_in, &Out, &len_out);
+		*((UT_UCS4Char *)Out) = 0;
+	      }
+	    
+	    sgvec->addItem((void *)theWord);
+	  }
 
-		UT_UCS4Char *theWord = (UT_UCS4Char*)malloc(sizeof(UT_UCS4Char) * (l + 1));
-		if (theWord == NULL)
-        {
-		    // OOM, but return what we have so far
-		    return sgvec;
-        }
-
-		if (m_pISpellState->translate_out == (iconv_t)-1)
-        {
-			/* copy to 16bit string and null terminate */
-			register int x;
-
-			for (x = 0; x < l; x++)
-				theWord[x] = (unsigned char)m_pISpellState->possibilities[c][x];
-			theWord[l] = 0;
-        }
-		else
-        {
-			/* convert to 16bit string and null terminate */
-			/* TF CHANGE: Use the right types
-			 unsigned int len_in, len_out;
-			*/
-			size_t len_in, len_out;
-			const char *In = m_pISpellState->possibilities[c];
-			char *Out = (char *)theWord;
-
-			len_in = l;
-			len_out = sizeof(UT_UCS4Char) * (l+1);
-			UT_iconv(m_pISpellState->translate_out, &In, &len_in, &Out, &len_out);
-			*((UT_UCS4Char *)Out) = 0;
-		}
-
-		sgvec->addItem((void *)theWord);
-    }
 	return sgvec;
 }
 
@@ -309,7 +266,7 @@ s_couldNotLoadDictionary ( const char * szLang )
 {
 	UT_return_if_fail(szLang);
 
-	XAP_Frame           * pFrame = XAP_App::getApp()->getLastFocussedFrame ();
+	XAP_Frame * pFrame = XAP_App::getApp()->getLastFocussedFrame ();
 
 	if(pFrame)
 	{
