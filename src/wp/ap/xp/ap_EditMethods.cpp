@@ -382,6 +382,7 @@ public:
 	static EV_EditMethod_Fn helpAboutOS;
   static EV_EditMethod_Fn helpAboutGnu;
   static EV_EditMethod_Fn helpAboutGnomeOffice;
+  static EV_EditMethod_Fn helpCredits;
 
 	static EV_EditMethod_Fn newWindow;
 	static EV_EditMethod_Fn cycleWindows;
@@ -633,6 +634,7 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(helpAboutOS),			0,		""),
 	EV_EditMethod(NF(helpCheckVer),			0,		""),
 	EV_EditMethod(NF(helpContents),			0,		""),
+	EV_EditMethod(NF(helpCredits), 0, ""),
 	EV_EditMethod(NF(helpIndex),			0,		""),
 	EV_EditMethod(NF(helpSearch),			0,		""),
 
@@ -2242,6 +2244,11 @@ Defun1(helpCheckVer)
 Defun1(helpSearch)
 {
         return _helpLocalizeAndOpenURL(pAV_View, true, "AbiWord/help", "search.html");
+}
+
+Defun1(helpCredits)
+{
+  return _helpLocalizeAndOpenURL(pAV_View, true, "AbiWord/help", "credits.html"); 
 }
 
 Defun1(helpAboutGnu)

@@ -161,6 +161,7 @@ BeginSet(en,US,true)
 	MenuLabel(AP_MENU_ID_WINDOW_MORE,		"&More Windows",	"Show full list of windows")
 
 	MenuLabel(AP_MENU_ID_HELP,			"&Help",		NULL)
+     MenuLabel(AP_MENU_ID_HELP_CREDITS, "C&redits", "Display Credits")
 	MenuLabel(AP_MENU_ID_HELP_CONTENTS,		"Help &Contents",	"Display Help Contents")
 	MenuLabel(AP_MENU_ID_HELP_INDEX,		"Help &Index",		"Display Help Index")
 	MenuLabel(AP_MENU_ID_HELP_CHECKVER,		"Check &Version",	"Display program version number")
