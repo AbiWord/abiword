@@ -32,7 +32,16 @@
 #endif
 
 #define UT_strcmp(a, b) strcmp((a), (b))
+
+/* Windows's lstrcmp works with all of Windows native locales whereas
+ * its strcoll is part of the added-on Posix layer and didn't seem to
+ * work for us anyway
+ */
+#ifdef WIN32
+#define UT_strcoll(a, b) lstrcmpA((a), (b))
+#else
 #define UT_strcoll(a, b) strcoll((a), (b))
+#endif
 
 class UT_GrowBuf;
 
