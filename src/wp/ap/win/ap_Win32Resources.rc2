@@ -67,6 +67,7 @@
 #define AP_RID_DIALOG_MERGECELLS				237	
 #define AP_RID_DIALOG_OPT_LANGUAGE				238	// tab-sub-dlg
 #define AP_RID_DIALOG_FORMATTABLE				239	
+#define AP_RID_DIALOG_FORMATFOOTNOTES			240
 
 
 // Menu bitmaps
@@ -116,4 +117,4 @@
 #include "ap_Win32Res_DlgMetaData.rc2"
 #include "ap_Win32Res_MergeCells.rc2"
 #include "ap_Win32Res_FormatTable.rc2"
-
+#include "ap_Win32Res_FormatFootnotes.rc2"
