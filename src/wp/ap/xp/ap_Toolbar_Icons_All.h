@@ -79,6 +79,11 @@
 #	include "tb_text_bold_L.xpm"
 #	include "tb_text_strikeout_Y.xpm"
 #	include "tb_text_underline_A.xpm"
+	// Polish translations
+#	include "tb_text_bold_P.xpm"
+#	include "tb_text_strikeout_P.xpm"
+#	include "tb_text_underline_P.xpm"
+#	include "tb_text_overline_P.xpm"
 	// Danish translations
 #   include "tb_text_bold_F.xpm"
 #   include "tb_text_strikeout_G.xpm"
@@ -136,6 +141,11 @@
 	DefineToolbarIcon(tb_text_bold_L_xpm)
 	DefineToolbarIcon(tb_text_strikeout_Y_xpm)
 	DefineToolbarIcon(tb_text_underline_A_xpm)
+	// Polish translations
+	DefineToolbarIcon(tb_text_bold_P_xpm)
+	DefineToolbarIcon(tb_text_strikeout_P_xpm)
+	DefineToolbarIcon(tb_text_underline_P_xpm)
+	DefineToolbarIcon(tb_text_overline_P_xpm)
 	// Danish translations
     DefineToolbarIcon(tb_text_bold_F_xpm)	
     DefineToolbarIcon(tb_text_strikeout_G_xpm)

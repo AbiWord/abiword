@@ -17,7 +17,6 @@
  * 02111-1307, USA.
  */
 
-
 /*****************************************************************
 ******************************************************************
 ** IT IS IMPORTANT THAT THIS FILE ALLOW ITSELF TO BE INCLUDED
@@ -28,8 +27,8 @@
 // We use the Win32 '&' character to denote a keyboard accelerator on a menu item.
 // If your platform doesn't have a way to do accelerators or uses a different
 // character, remove or change the '&' in your menu constructor code.
-// translated by: Sercxemulo <szperacz@free.net.pl>
-
+// translated by: Sercxemulo <explo@poczta.wp.pl>
+// last update: 07.14.2000A.D.
 // If the third argument is UT_TRUE, then this is the fall-back for
 // this language (named in the first argument).
 
@@ -102,9 +101,9 @@ BeginSet(pl,PL,UT_TRUE)
 	MenuLabel(AP_MENU_ID_FMT_SUPERSCRIPT,	"Indeks &górny",		"Indeks górny (prze³±cznik)")
 	MenuLabel(AP_MENU_ID_FMT_SUBSCRIPT,		"Indeks d&olny",		"Indeks dolny (prze³±cznik)")
 
-//	MenuLabel(AP_MENU_ID_TOOLS,				"&Tools",			NULL)   
+	MenuLabel(AP_MENU_ID_TOOLS,				"&Narzêdzia",			NULL)   
 	MenuLabel(AP_MENU_ID_TOOLS_SPELL,		"&Ortografia",		"Sprawd¼ ortografiê tekstu")
-//	MenuLabel(AP_MENU_ID_TOOLS_WORDCOUNT,	"&Word Count",		"Count the number of words in the document")
+	MenuLabel(AP_MENU_ID_TOOLS_WORDCOUNT,	"&Zliczanie s³ów",		"Policz ile jest s³ów w dokumencie")
 	MenuLabel(AP_MENU_ID_TOOLS_OPTIONS,		"&Opcje",			"Ustaw opcje")
 
 	MenuLabel(AP_MENU_ID_ALIGN,				"&Wyrównywanie",			NULL)
