@@ -107,7 +107,7 @@ SectionEnd
 
 ; OPTIONAL Start Menu Shortcut for the current user profile
 Section "Start Menu Shortcuts (Current User)"
-	SectionIn 1 3
+	SectionIn 1 2 3
 	SetShellVarContext current  	; This is probably overkill, but playing it safe
 	CreateDirectory "$SMPROGRAMS\Abiword"
 	CreateShortCut "$SMPROGRAMS\Abiword\Uninstall Abiword.lnk" "$INSTDIR\UninstallAbiWord.exe" "" "$INSTDIR\UninstallAbiWord.exe" 0
@@ -116,7 +116,7 @@ SectionEnd
 
 ; OPTIONAL Desktop Shortcut for the current user profile
 Section "Desktop Shortcut (Current User)"
-	SectionIn 1 3
+	SectionIn 1 2 3
 	SetShellVarContext current  	; This is probably overkill, but playing it safe
 	CreateShortCut "$DESKTOP\Abiword.lnk" "$INSTDIR\Abiword\bin\Abiword.exe" "" "$INSTDIR\Abiword\bin\Abiword.exe" 0
 SectionEnd
