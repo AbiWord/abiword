@@ -32,12 +32,11 @@
 #include <libxml/parser.h>
 #include <libxml/parserInternals.h>
 
-// Undo the mis-definition in ut_xml.h:
+// override typedef in ut_xml.h:
 #ifdef XML_Char
 #undef XML_Char
 #endif
 #define XML_Char xmlChar
-
 
 #ifdef __MRC__
 extern "C" {

@@ -25,10 +25,9 @@
 #include "ut_types.h"
 #include "ut_bytebuf.h"
 
-#ifdef XML_Char
- #undef XML_Char
+#ifndef XML_Char
+typedef char XML_Char;
 #endif
-#define XML_Char char
 
 ABI_EXPORT char * UT_XML_Decode( const char * inKey );
 

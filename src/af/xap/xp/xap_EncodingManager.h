@@ -24,15 +24,14 @@
 #include "ut_types.h"
 #include "ut_bijection.h"
 
-#include "ut_xml.h"
 #include "ut_iconv.h"
 
+#ifdef HAVE_EXPAT
+#include <expat.h>
+#else
 #define XML_Encoding void
-#if defined(HAVE_EXPAT)
-	#undef XML_Char
-	#undef XML_Encoding
-	#include <expat.h>
 #endif
+#include "ut_xml.h"
 
 struct ABI_EXPORT XAP_LangInfo
 {
