@@ -28,7 +28,6 @@ public:
 	AP_BeOSDialogFactory(XAP_App * pApp);
 	AP_BeOSDialogFactory(XAP_Frame * pFrame, XAP_App * pApp);
 	virtual ~AP_BeOSDialogFactory(void);
-
 protected:
 };
 
