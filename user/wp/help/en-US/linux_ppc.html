@@ -1,0 +1,172 @@
+<html>
+<head>
+<title>AbiSource -- Linux / PowerPC Install</title>
+<style type="text/css">
+</head>
+
+<body bgcolor="#FFFFFF" link="#0000BB" vlink="#AA00AA">
+
+<p>H1 { FONT-FAMILY: Verdanna,Arial,Helvetica } H2 { FONT-FAMILY:
+Verdanna,Arial,Helvetica } H3 { FONT-FAMILY:
+Verdanna,Arial,Helvetica } H4 { FONT-FAMILY:
+Verdanna,Arial,Helvetica } H5 { FONT-FAMILY:
+Verdanna,Arial,Helvetica } H6 { FONT-FAMILY:
+Verdanna,Arial,Helvetica } </style> 
+</head>
+
+<table border="0" cellpadding="0" cellspacing="0" width="100%"
+borderstyle="none">
+<tbody>    <tr>
+        <td bgcolor="#280066" height="70"><img
+        src="images/topbar_logo.gif" alt="AbiSource logo"
+        align="left" hspace="0" width="294" height="70"> <img
+        src="images/topbar_right.gif" alt="AbiSource banner"
+        align="right" hspace="0" width="303" height="70"> </td>
+    </tr>
+<!--        <tr>        <td bgcolor="#280066" align="right">        <div align="right"><B>        <A HREF = "/" STYLE = "color: white;        text-decoration: none">        <font color="white" face="Arial,Helvetica,Geneva" size="2">        Home</FONT></A> |        <A HREF = "/developer.phtml" STYLE = "color: white;        text-decoration: none">        <font color="white" face="Arial,Helvetica,Geneva" size="2">        Developer</FONT></A>&nbsp;&nbsp;</div>        </font></td> </tr>--></tbody></table>
+
+<p><br clear="all">
+</p>
+
+<table border="0" cellpadding="5" borderstyle="none">
+<tbody>   <td valign="top" bgcolor="#F0F8FF" nowrap><font size="2"><a href="index.html">About<br>
+      </a><a href="comindex.html">Command Index<br>
+      </a><a href="contents.html">Contents<br>
+      </a><a href="why.html">Why AbiWord?</a><br>
+      <a href="general.html">General</a></font><br>
+      <font size="2">&nbsp;&nbsp;&nbsp; <a href="workspace.html">Workspace</a><br>
+      &nbsp;&nbsp;&nbsp; <a href="sdi.html">SDI Vs. MDI</a></font><br>
+      <a href="install.html">Installation</a><br>
+      <font size="2">&nbsp;&nbsp;&nbsp; <a href="windows.html">Windows</a><br>
+      &nbsp;&nbsp;&nbsp; <a href="linux_intel.html">Linux Intel</a><br>
+      &nbsp;&nbsp;&nbsp; <a href="linux_ppc.html">Linux PPC</a><br>
+      &nbsp;&nbsp;&nbsp; <a href="beos_intel.html">BeOS Intel</a><br>
+      &nbsp;&nbsp;&nbsp; <a href="beos_ppc.html">BeOS PPC</a><br>
+      &nbsp;&nbsp;&nbsp; <a href="solaris.html">Solaris</a><br>
+      &nbsp;&nbsp;&nbsp; <a href="freebsd_intel.htm">FreeBSD</a></font><br>
+      <font size="2"><a href="basis1.html">Basics #1</a><br>
+      <a href="basis2.html">Basics #2</a><a href="print.html"><br>
+      </a><a href="saisie.html">Writing</a><br>
+      <a href="format.html">Format<br>
+      </a><a href="paragraph.html">Paragraph</a><br>
+      &nbsp;&nbsp;&nbsp; <a href="tabs.html">Tabs<br>
+      </a>&nbsp;&nbsp;&nbsp; <a href="column.html">Columns</a><br>
+      <a href="sections.html">Sections</a><a href="styles.html"><br>
+      Styles<br>
+      </a><a href="picture.html">Inserting Objects<br>
+      </a><a href="print.html">Print</a><br>
+      <a href="find.html">Find / Replace</a><br>
+      <a href="custom.html">Personalisation</a><a href="shortcuts.html"><br>
+      Shortcuts</a><br>
+      <a href="about.html">abisource.com</a><br>
+      <a href="faq.html">FAQ</a><a href="credits.html"><br>
+      Credits</a></font></td>
+        <td width="1">&nbsp; </td>
+        <td valign="top">
+          <h2>Installating AbiWord on Linux / PowerPC</h2>
+          <p>Welcome to the community of AbiWord users!&nbsp;</p>
+          <p>The current version of AbiWord (0.7.9) should install and run properly
+	on any Linux system using a PowerPC processor. AbiWord
+	has been packaged in several different industry standard distribution
+	formats to simplify the installation onto your system:&nbsp;</p>
+          <ul>
+            <li><a href="#rpm">RPM</a> -- LinuxPPC 1999 Q3 or later
+            <li><a href="#tar">TAR</a> -- for all others</li>
+          </ul>
+          <p>A much more detailed version of these instructions is contained in the<a
+
+href="http://www.abisource.com/binaries/0.7.9/linux/README">README</a>.</p>
+  
+        <p>&nbsp;</p>
+           <hr>
+           <h3>
+<a NAME="rpm"></a>RPM</h3>
+The RPM&nbsp; installation process is very simple.&nbsp;
+<ol>
+<li>
+Download the distribution files (<a
+href="http://www.abisuite.com">abisuite-0.7.9-1.i386.rpm</a>,
+2.6MB).&nbsp;</li>
+
+<li>
+Become superuser, and enter the command:&nbsp;</li>
+
+<p><br>rpm - Uvh abisuite-0.7.9-1.i386.rpm
+</p><p>
+ 
+ This release of AbiWord
+was built on a host with all applied updates from
+<a href="ftp://ftp.linuxppc.com/linuxppc-1999/updates/">ftp://ftp.linuxppc.com/linuxppc-1999/updates/</a>.
+Specifically, you will need <a href="ftp://ftp.linuxppc.com/linuxppc-1999/updates/libstdc++-2.10.0-0a.ppc.rpm">libstdc++-2.10.0-0a.ppc.rpm</a> to install this RPM.  You may also try the <a href="#tar">static .tar.gz package</a> if you wish to avoid this upgrade.
+
+</p><p>
+<br>If you have any unsatisfied dependencies,
+then you will have to install&nbsp;</font>
+<br><font face="Times New Roman,Times">those before you can install
+Abiword.</font> <br>&nbsp;
+<li>
+This will install AbiWord and supporting files to <tt>/usr/share/abisuite</tt>.
+Symbolic links called <tt>AbiWord</tt> and <tt>abiword</tt> will be placed
+in <tt>/usr/bin/X11</tt> but not to the actual executable. Using the -
+Uvh option instead of - will take care of replacing the older version
+of AbiWord for people who are updating.&nbsp;</li>
+
+<li>
+For more information one RPM package dependencies, please see the <a href="/cgi-bin/translate?lp=fr_en&urltext=http%3a%2f%2fwww%2eabisource%2ecom%2fbinaries%2f0%2e7%2e6%2flinux%2fREADME">README</a>.&nbsp;</li>
+</ol>
+
+          </p>
+                  <h3><a name="tar">TAR</a></h3>
+There are two versions of the Tar files: one is the statically-linked version
+and the other is the dynamically-linked version. The dynamic version is
+smaller (2.6Mb vs 3.3Mb), our goal is to make use of a number of shared
+libraries on your system. If you don't know what this means, select the
+static version.&nbsp;
+<p>The installation process for the static Tar files looks scary, but it
+is actually quite simple.&nbsp;
+<ol>
+<li>
+Download the distribution files (<a href="/cgi-bin/translate?lp=fr_en&urltext=http%3a%2f%2fwww%2eabisource%2ecom%2fbinaries%2f0%2e7%2e6%2flinux%2fi386%2fabisuite%2d0%2e7%2e6%2dLinux%5fi386%5fstatic%2etar%2egz">abisuite-0.7.9-Linux_i386_static.tar.gz</a>,
+3.3MB).&nbsp;</li>
+
+<li>
+Copy the files to a directory that you have permission for and open the
+files:&nbsp;</li>
+
+<pre>&nbsp; gunzip - C abisuite-0.7.9-Linux_i386_static.tar.gz |
+tar xvf -</pre>
+... or, if your tar command supports the ' z' flag:&nbsp;
+<pre>&nbsp; tar xvzf abisuite-0.7.9-Linux_i386_static.tar.gz</pre>
+Both these commands will create the directory <tt>abisuite-0.7.9-Linux_i386_static</tt>.&nbsp;
+<li>
+Change to that directory and become superuser.&nbsp;</li>
+
+<li>
+Run the install script like:&nbsp;</li>
+
+<pre>&nbsp; /install.sh</pre>
+
+<li>
+By default, this will install AbiWord and supporting files to the <tt>/usr/local/AbiSuite</tt>
+on your hard drive. You will be given the opportunity to changes this if
+you wish.&nbsp;</li>
+
+<li>
+You will also have the option to create links to the executable in a common
+<tt>bin</tt>
+directory. By default, this is <tt>/usr/local/bin</tt>.&nbsp;</li>
+
+<li>
+Please consult the <a href="/cgi-bin/translate?lp=fr_en&urltext=http%3a%2f%2fwww%2eabisource%2ecom%2fbinaries%2f0%2e7%2e6%2flinux%2fREADME">README</a>
+spins for additional details.&nbsp;</li>
+</ol>
+The installation process for the dynamic Tar files (<a href="/cgi-bin/translate?lp=fr_en&urltext=http%3a%2f%2fwww%2eabisource%2ecom%2fbinaries%2f0%2e7%2e6%2flinux%2fi386%2fabisuite%2d0%2e7%2e6%2dLinux%5fi386%5fdynamic%2etar%2egz">abisuite-0.7.9-Linux_i386_dynamic.tar.gz</a>,
+2.6MB) is identical. Simply substitute <tt>_ dynamic</tt> for <tt>_ static</tt>
+in steps 1 and 2 above. If you want to read more about which libraries
+and versions that the dynamic version uses, please consult the <a href="/cgi-bin/translate?lp=fr_en&urltext=http%3a%2f%2fwww%2eabisource%2ecom%2fbinaries%2f0%2e7%2e6%2flinux%2fREADME">README</a>.&nbsp;
+        
+          
+    </tr>
+</tbody></table>
+
+</html>

@@ -1,0 +1,287 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="description" content="AbiSource - Open Source for the Desktop.">
+   <meta name="keywords" content="AbiSource, AbiWord, Open Source, Office Suite,Word Processor, cross-platform, Linux, Windows, free, software, download">
+   <meta name="GENERATOR" content="Mozilla/4.7 [en] (X11; I; Linux 2.2.14-15mdk i686) [Netscape]">
+   <title>AbiSource -- Linux / Intel Install</title>
+<!-- saved from url=(0045)http://www.abisource.com/dl_linux_intel.phtml -->
+<style type="text/css">H1 {
+	FONT-FAMILY: Verdanna,Arial,Helvetica
+}
+H2 {
+	FONT-FAMILY: Verdanna,Arial,Helvetica
+}
+H3 {
+	FONT-FAMILY: Verdanna,Arial,Helvetica
+}
+H4 {
+	FONT-FAMILY: Verdanna,Arial,Helvetica
+}
+H5 {
+	FONT-FAMILY: Verdanna,Arial,Helvetica
+}
+H6 {
+	FONT-FAMILY: Verdanna,Arial,Helvetica
+}
+</style>
+</head>
+<body bgcolor="#FFFFFF" link="#0000BB" vlink="#AA00AA">
+&nbsp;
+<table BORDER=0 CELLSPACING=0 CELLPADDING=0 WIDTH="100%" borderstyle="none" >
+<caption>&nbsp;</caption>
+
+<tr height="70">
+<td ALIGN=LEFT VALIGN=CENTER HEIGHT="70" BGCOLOR="#280066"><img SRC="topbar_logo.gif" ALT="AbiSource logo" height=70 width=294 align=LEFT><img SRC="topbar_right.gif" ALT="AbiSource banner" height=70 width=303 align=RIGHT></td>
+</tr>
+</table>
+
+<br>&nbsp;
+<br>&nbsp;
+<table BORDER=0 CELLPADDING=5 BORDERSTYLE="none" >
+<caption>&nbsp;</caption>
+
+<tr>
+<td VALIGN=TOP NOWRAP BGCOLOR="#F0F8FF"><font size=-1><a href="index.html">About</a></font>
+<br><font size=-1><a href="comindex.html">Command Index<br>
+      </a><a href="contents.html">Contents<br>
+      </a><a href="why.html">Why AbiWord?</a></font>
+<br><font size=-1><a href="general.html">General</a></font>
+<br><font size=-1>&nbsp;&nbsp;&nbsp; <a href="workspace.html">Workspace</a></font>
+<br><font size=-1>&nbsp;&nbsp;&nbsp; <a href="sdi.html">SDI Vs. MDI</a></font>
+<br><a href="install.html">Installation</a>
+<br><font size=-1>&nbsp;&nbsp;&nbsp; <a href="windows.html">Windows</a></font>
+<br><font size=-1>&nbsp;&nbsp;&nbsp; <a href="linux_intel.html">Linux Intel</a></font>
+<br><font size=-1>&nbsp;&nbsp;&nbsp; <a href="linux_ppc.html">Linux PPC</a><br>
+      &nbsp;&nbsp;&nbsp; <a href="beos_intel.html">BeOS Intel</a></font>
+<br><font size=-1>&nbsp;&nbsp;&nbsp; <a href="beos_ppc.html">BeOS PPC</a></font>
+<br><font size=-1>&nbsp;&nbsp;&nbsp; <a href="solaris.html">Solaris</a></font>
+<br><font size=-1>&nbsp;&nbsp;&nbsp; <a href="freebsd_intel.htm">FreeBSD</a></font>
+<br><font size=-1><a href="basis1.html">Basics #1</a></font>
+<br><font size=-1><a href="basis2.html">Basics #2</a></font>
+<br><font size=-1><a href="saisie.html">Writing</a></font>
+<br><font size=-1><a href="format.html">Format</a></font>
+<br><font size=-1><a href="paragraph.html">Paragraph</a></font>
+<br><font size=-1>&nbsp;&nbsp;&nbsp; <a href="tabs.html">Tabs</a></font>
+<br><font size=-1>&nbsp;&nbsp;&nbsp; <a href="column.html">Columns</a></font>
+<br><font size=-1><a href="sections.html">Sections</a></font>
+<br><font size=-1><a href="styles.html">Styles</a></font>
+<br><font size=-1><a href="picture.html">Inserting Objects</a></font>
+<br><font size=-1><a href="print.html">Print</a></font>
+<br><font size=-1><a href="find.html">Find / Replace</a></font>
+<br><font size=-1><a href="custom.html">Personalisation</a></font>
+<br><font size=-1><a href="shortcuts.html">Shortcuts</a></font>
+<br><font size=-1><a href="about.html">abisource.com</a></font>
+<br><font size=-1><a href="video.html">Demonstrations</a></font>
+<br><font size=-1><a href="faq.html">FAQ</a></font>
+<br><font size=-1><a href="credits.html">Credits</a></font></td>
+
+<td WIDTH="1">&nbsp;</td>
+
+<td VALIGN=TOP>
+<h2>
+Installing AbiWord on Linux / INTEL</h2>
+Welcome to the community of AbiWord users!&nbsp;
+<p>AbiWord should install and run properly
+on any Linux system with INTEL (or INTEL-COMPATIBLE) processor. AbiWord
+has been packaged in several different industry standard distribution formats
+to simplify the installation onto your system:&nbsp;
+<ul>
+<li>
+<a href="http://www.abisource.com">DEB</a> -- Debian 2.1 (Slink) or later&nbsp;</li>
+
+<li>
+<a href="">RPM</a> -- RedHat 5.2 or later, SuSE 6.1 or later&nbsp;</li>
+
+<li>
+<a href="">Slp</a> -- Stampede Linux&nbsp;</li>
+
+<li>
+<a href="">TAR</a> -- works anywhere&nbsp;</li>
+</ul>
+A much more detailed version of these instructions is contained in the
+<a href="">README</a>.&nbsp;
+<br>
+<hr>
+<h3>
+<a NAME="rpm"></a>RPM</h3>
+The RPM&nbsp; installation process is very simple.&nbsp;
+<ol>
+<li>
+Download the distribution files (<a
+href="http://www.abisuite.com">abisuite-0.7.9-1.i386.rpm</a>,
+2.6MB).&nbsp;</li>
+
+<li>
+Become superuser, and enter the command:&nbsp;</li>
+
+<p><br>rpm - Uvh abisuite-0.7.9-1.i386.rpm
+<p><font face="Times New Roman,Times">Or, if you are using KDE, right click
+on the rpm file, and select kpackage.</font>
+<p><img SRC="kpack1.gif" height=171 width=135>
+<p><font face="Times New Roman,Times">When kpackage comes up, click on
+install.</font>
+<p><img SRC="kpack2.gif" height=428 width=608>
+<br><font face="Times New Roman,Times">If you have any unsatisfied dependencies,
+then you will have to install&nbsp;</font>
+<br><font face="Times New Roman,Times">those before you can install
+Abiword.</font> <br>&nbsp;
+<li>
+This will install AbiWord and supporting files to <tt>/usr/share/abisuite</tt>.
+Symbolic links called <tt>AbiWord</tt> and <tt>abiword</tt> will be placed
+in <tt>/usr/bin/X11</tt> but not to the actual executable. Using the -
+Uvh option instead of - will take care of replacing the older version
+of AbiWord for people who are updating.&nbsp;</li>
+
+<li>
+For more information on RPM package dependencies, please see the <a
+href="http://www.abisource.com">README</a>.&nbsp;</li> </ol>
+
+<h3>
+<a NAME="deb"></a>DEB</h3>
+The DEB  installation process is very simple.&nbsp;
+<ol>
+<li>
+Download the distribution files (<a
+href="http://www.abisource.com">abisuite_0.7.9-1_i386.deb</a>,
+2.6MB).&nbsp;</li>
+
+<li>
+Become superuser, enter the command:&nbsp;</li>
+
+<pre>&nbsp; dpkg - I abisuite_0.7.7-1_i386.deb</pre>
+
+<li>
+This will install AbiWord and supporting files to <tt>/usr/share/abisuite</tt>.
+Symbolic links called <tt>AbiWord</tt> and <tt>abiword</tt> will be placed
+in <tt>/usr/bin/X11</tt> but not the actual executable.&nbsp;</li>
+
+<li>
+For more information one DEB package dependencies, please see the <a
+href="http://www.abisource.com">README</a>.&nbsp;</li> </ol>
+
+<h3>
+<a NAME="slp"></a>SLP</h3>
+The SLP installation process would probably have to be as simple as the
+DEB or RPM installation, if only we could try it. We currently don't have
+the Stampede Linux distribution installed and haven't tested our Stampede
+Linux package builds. These files are automatically generated via <a
+href="http://www.abisource.com">Alien</a>.&nbsp; <p>If you try the SLP
+distribution, we encourage you to send a message to the <a
+href="mailto:abiword-dev@abisource.com">AbiWord development mailing list</a>
+with an account of your experiments.&nbsp; <ol>
+<li>
+Download the distribution files (<a
+href="http://www.abisource.com">abisuite-0.7.9.slp</a>, 2.3MB).&nbsp;</li>
+
+<li>
+Install via the Stampede package manager.&nbsp;</li>
+
+<li>
+This will install AbiWord and supporting files to <tt>/usr/share/abisuite</tt>.
+Symbolic links called <tt>AbiWord</tt> and <tt>abiword</tt> will be placed
+in <tt>/usr/bin/X11</tt> but not the actual executable.&nbsp;</li>
+
+<li>
+For more information on SLP package dependencies, please see the <a
+href="http://www.abisource.com">README</a>.&nbsp;</li> </ol>
+
+<h3>
+<a NAME="tar"></a>TAR</h3>
+There are two versions of the Tar files: one is the statically-linked version
+and the other is the dynamically-linked version. The dynamic version is
+smaller (2.6Mb vs 3.3Mb), our goal is to make use of a number of shared
+libraries on your system. If you don't know what this means, select the
+static version.&nbsp;
+<p>The installation process for the static Tar files looks scary, but it
+is actually quite simple.&nbsp;
+<ol>
+<li>
+Download the distribution files (<a
+href="http://www.abisource.com">abisuite-0.7.9-Linux_i386_static.tar.gz</a>,
+3.3MB).&nbsp;</li>
+
+<li>
+Copy the files to a directory that you have permission for and open the
+files:&nbsp;</li>
+
+<pre>&nbsp; gunzip - c abisuite-0.7.9-Linux_i386_static.tar.gz |
+tar xvf -</pre>
+... or, if your tar command supports the ' z' flag:&nbsp;
+<pre>&nbsp; tar xvzf abisuite-0.7.9-Linux_i386_static.tar.gz</pre>
+Both these commands will create the directory <tt>abisuite-0.7.9-Linux_i386_static</tt>.&nbsp;
+<li>
+Change to that directory and become superuser.&nbsp;</li>
+
+<li>
+Run the install script:&nbsp;</li>
+
+<pre>&nbsp; /install.sh</pre>
+
+<li>
+By default, this will install AbiWord and supporting files to the <tt>/usr/local/AbiSuite</tt>
+on your hard drive. You will be given the opportunity to change this if
+you wish.&nbsp;</li>
+
+<li>
+You will also have the option to create links to the executable in a common
+<tt>bin</tt>
+directory. By default, this is <tt>/usr/local/bin</tt>.&nbsp;</li>
+
+<li>
+Please consult the <a href="">README</a>
+file for additional details.&nbsp;</li>
+</ol>
+The installation process for the dynamic Tar files (<a href="">abisuite-0.7.9-Linux_i386_dynamic.tar.gz</a>,
+2.6MB) is identical. Simply substitute <tt>_ dynamic</tt> for <tt>_ static</tt>
+in steps 1 and 2 above. If you want to read more about which libraries
+and versions that the dynamic version uses, please consult the <a href="">README</a>.&nbsp;
+<p><b><font size=+1>Saving under Linux</font></b>
+<p>If you are saving under linux, it is recommended that you save in your
+/home directory, unless you dual boot(see below). If you have a lot of
+documents you should put them in a directory such as /home/documents.&nbsp;
+<p>If you want to save a document remember you must have permission to
+write to it. Sometimes you may not be able to save a document because you
+do not have write access. In that case, it is suggested that you try to
+"Save As" somewhere else.<b><font size=+1></font></b>
+<p><b><font size=+1>Dual Booting Windows and Linux</font></b>
+<p>If you dual boot Windows and Linux, and you want to use the files under
+both systems, you will have to save your files on a FAT or FAT32 partion,or
+on a floppy disk, as windows can not access Linux partions, . It is recommended
+that you save the files in a directory such as "My Documents". Remember,
+under Linux you must have permission to write to that directory. If you
+don't, please contact your administator.<b><font size=+1></font></b>
+<p><b><font size=+1>Dual Booting Beos and Linux</font></b>
+<p>If you dual boot Beos and Linux, then it is recommended that you save
+the files on Beos's native filesystem, under the one directory.<b></b>
+<p><b><font size=+1>KDE and Abiword</font></b>
+<p>After installing Abiword on your machine, you can then set up Abiword
+to work with KDE. Right click on yur desktop, and select "New", and then
+"Application", as done below.
+<p><img SRC="kde1.gif" height=165 width=160>
+<p>You should then type in "Abiword" in a box similar to the one below.
+<br><img SRC="kde2.gif" height=128 width=358>
+<p>After this, type in any comments that you want, and in the executable
+box, type in "abiword", all in lower case.&nbsp;
+<br>If you want Abiword icons, then you will have to copy them from /usr/share/Abisuite/icons,
+to /usr/share/icons, in order to be able to select them. Your finsihed
+screen should look like the one below.
+<br><img SRC="kde3.gif" height=428 width=408>
+<p>Now all you have to do is press the "OK" button and the Abiword icon
+will appear on your desktop. If you like, you can put it onto your panel
+by just dragging it from the desktop.
+<br>&nbsp;</td>
+</tr>
+</table>
+
+<table BORDER=0 CELLSPACING=0 CELLPADDING=0 WIDTH="100%" BORDERSYLE="none" >
+<caption>&nbsp;</caption>
+
+<tr>
+<td></td>
+</tr>
+</table>
+
+</body>
+</html>

@@ -1,0 +1,139 @@
+<html>
+
+<head>
+<title>Printing a document with AbiWord</title>
+</head>
+
+<body>
+
+<table border="0" cellpadding="0" cellspacing="0" width="100%" borderstyle="none">
+  <tr>
+    <td bgcolor="#280066" height="70"><img src="images/topbar_logo.gif" alt="AbiWord logo"
+    align="left" hspace="0" width="294" height="70"> <img src="images/topbar_right.gif"
+    alt="AbiSource banner" align="right" hspace="0" WIDTH="303" HEIGHT="70"> </td>
+  </tr>
+</table>
+
+<p><br clear="all">
+</p>
+
+<table border="0" cellpadding="5" borderstyle="none">
+<tbody>
+  <tr>
+    <td valign="top" bgcolor="#F0F8FF" nowrap><font size="2"><a href="index.html">About<br>
+      </a><a href="comindex.html">Command Index<br>
+      </a><a href="contents.html">Contents<br>
+      </a><a href="why.html">Why AbiWord?</a><br>
+      <a href="general.html">Generality</a></font><br>
+      <font size="2">&nbsp;&nbsp;&nbsp; <a href="workspace.html">Environnement</a><br>
+      &nbsp;&nbsp;&nbsp; <a href="sdi.html">SDI Vs. MDI</a></font><br>
+      <a href="install.html">Installation</a><br>
+      <font size="2">&nbsp;&nbsp;&nbsp; <a href="windows.html">Windows</a><br>
+      &nbsp;&nbsp;&nbsp; <a href="linux_intel.html">Linux Intel</a><br>
+      &nbsp;&nbsp;&nbsp; <a href="beos_intel.html">BeOS Intel</a><br>
+      &nbsp;&nbsp;&nbsp; <a href="beos_ppc.html">BeOS PPC</a><br>
+      &nbsp;&nbsp;&nbsp; <a href="solaris.html">Solaris</a><br>
+      &nbsp;&nbsp;&nbsp; <a href="freebsd_intel.htm">FreeBSD</a></font><br>
+      <font size="2"><a href="basis1.html">Basis #1</a><br>
+      <a href="basis2.html">Basis #2</a><a href="print.html"><br>
+      </a><a href="saisie.html">Writing</a><br>
+      <a href="format.html">Format<br>
+      </a><a href="paragraph.html">Paragraph</a><br>
+      &nbsp;&nbsp;&nbsp; <a href="tabs.html">Tabulations<br>
+      </a>&nbsp;&nbsp;&nbsp; <a href="column.html">Colums</a><br>
+      <a href="sections.html">Sections</a><a href="styles.html"><br>
+      Styles<br>
+      </a><a href="picture.html">Object insertion<br>
+      </a><a href="print.html">Print</a><br>
+      <a href="find.html">Find / Replace</a><br>
+      <a href="custom.html">Personnalisation</a><a href="shortcuts.html"><br>
+      Shortcuts</a><br>
+      <a href="about.html">abisource.com<br>
+      </a><a href="video.html">Demonstrations</a><br>
+      <a href="faq.html">FAQ</a><a href="credits.html"><br>
+      Credits</a></font></td>
+    <td width="1">&nbsp; </td>
+    <td valign="top">
+      <h2><A NAME = "print">Printing</A> a document with AbiWord</h2>
+      Once you have entered and formatted your document, it is time to print it.
+      Since AbiWord is WYSIWYG <font size="2">(What You See is What You
+      Get, </font><font size="3">that is, what you see on the screen looks exactly
+      like what will be printed, </font>first make sure that your document looks the
+      way you want it to (you may need to adjust the zoom to see the whole document
+      at once). To print, you have 3 possibilities:
+      <ol type="a">
+        <li>Go to the File menu and click on "Print"; or</li>
+        <li>Click on the icon &quot;Print the document&quot; <img border="0" src="images/print.gif" align="middle" alt="Print the document" width="31" height="30">
+          or</li>
+        <li>Use the keyboard shortcut by simultaneously pressing the
+           &quot;Ctrl&quot; and &quot;P&quot keys;</li>
+      </ol>
+      <p>In cases b. and c. the current document will immediately be
+      sent to the default printer. You can continue to work while
+      it is printing.</p>
+      <p>In case a. the following dialog box appears:</p>
+      <table border="0" width="100%">
+        <tr>
+          <td width="50%" valign="top">
+            <p align="center"><img border="0" src="images/print.jpg" alt="Print dialog Box with Microsoft Windows" width="311" height="229"></p>
+            <p align="center"><font size="1">La boite de dialogue Impression
+            sous Microsoft Windows</font></td>
+          <td width="50%" valign="top">
+            <p align="center"><img border="0" src="images/print-unix.png" alt="Print dialog Box with Linux" width="284" height="227"></p>
+            <p align="center"><font size="1">La boite de dialogue Impression
+            sous Linux</font></td>
+        </tr>
+      </table>
+      <p align="left">&nbsp;
+      </p>
+      <p align="left">This dialog box contains 3 group boxes:<br>
+      </p>
+      <blockquote>
+        <p align="left">* The Printer group box:
+      </p>
+        <p align="left">You can select the printer you want to print your document
+        on, by clicking on the list box next to "Name:";<br>
+        The property button lets you modify the parameters bound to the printer,
+        such as the paper size used (A4, A5...), its orientation (portrait or landscape) and the
+        print quality.<br>
+        In Unix, you select the printer by changing "lpr" to "lpr -P<em>printer</em>". You can
+        select the paper size by configuring your print filter; see /etc/printcap for
+        where that is.
+        If the &quot;Print to file&quot; option is checked,
+        the printing will not happen on the selected printer. This option will
+        generate a file which you can later print on another machine
+        which does not have AbiWord available. You must, however,
+        print it on the same model of printer that you selected
+        when you created it. In Unix, the file so created will be
+        a PostScript 2.0 file with the extension &quot;.ps&quot;, which
+        you can print on any printer that understands PostScript or is
+        set up with Ghostscript as the print filter.
+      </p>
+        <p align="left">* The Page ranges box:
+      </p>
+        <p align="left">&nbsp;To print the whole document, you can simply
+        select the option &quot;All x pages&quot;. Or you can
+        print only some pages by checking the option&nbsp;
+        &quot;Pages&quot; and then completing the field &quot;From.....to....&quot;
+      </p>
+        <p align="left">* The Copies box:
+      </p>
+        <p align="left">This lets you set how many copies of the
+        document to print. As to the "Collate" option, it lets you select,
+        if you print several times a document of several pages, whether
+        the pages or the documents will be grouped together.
+      </p>
+      </blockquote>
+      <p>Once you have selected the options you wish, confirm by clicking on the OK button,
+      or click on the Cancel button to not print.</td>
+  </tr>
+</tbody>
+</table>
+
+<table border="0" cellpadding="0" cellspacing="0" width="100%" bordersyle="none">
+<!--        <tr>        <td bgcolor="#280066" align="right">        <div align="right"><B>        <A HREF = "/" STYLE = "color: white;        text-decoration: none">        <font color="white" face="Arial,Helvetica,Geneva" size="2">        Home</FONT></A> |        <A HREF = "/developer.phtml" STYLE = "color: white;        text-decoration: none">        <font color="white" face="Arial,Helvetica,Geneva" size="2">        Developer</FONT></A>&nbsp;&nbsp;</div>        </font></td> </tr>-->
+<tbody>
+</tbody>
+</table>
+</body>
+</html>
