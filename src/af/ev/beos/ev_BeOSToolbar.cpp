@@ -127,7 +127,7 @@ UT_Bool EV_BeOSToolbar::synthesize(void) {
 			break;
 
 			case EV_TBIT_GroupButton:
-				printf("EVTOOLBAR: Group Button \n");
+				DPRINTF(printf("EVTOOLBAR: Group Button \n"));
 			case EV_TBIT_ToggleButton: {
 				DPRINTF(printf("EVTOOLBAR: Toggle button \n"));
 				UT_ASSERT(UT_stricmp(pLabel->getIconName(),"NoIcon")!=0);

@@ -98,8 +98,8 @@ EV_BeOSMenu::EV_BeOSMenu(XAP_BeOSApp * pBeOSApp,
 			 const char * szMenuLabelSetName)
 	: EV_Menu(pBeOSApp->getEditMethodContainer(),szMenuLayoutName,szMenuLabelSetName)
 {
-	printf("EV:Menu: Name: %s SetName %s \n", 
-				szMenuLayoutName, szMenuLabelSetName);
+	UT_DEBUGMSG(("EV:Menu: Name: %s SetName %s \n", 
+				szMenuLayoutName, szMenuLabelSetName));
 	m_pBeOSApp = pBeOSApp;
 	m_pBeOSFrame = pBeOSFrame;
 }
@@ -114,23 +114,35 @@ EV_BeOSMenu::~EV_BeOSMenu(void)
 */
 typedef struct _my_stack {
 	BMenu 				*pMenu;
-	struct _my_stack 	*prev;
+	struct _my_stack 		*next;
 } my_stack_t;
+
+void print_stack(my_stack_t *head) {
+	my_stack_t *tmp;
+	tmp = head;
+	while (tmp) {
+		printf("->0x%x \n", tmp->pMenu);
+		tmp = tmp->next;
+	}
+}
 
 my_stack_t *push(my_stack_t *head, BMenu *item) {
 	my_stack_t *tmp = (my_stack_t *)malloc(sizeof(my_stack_t));
 	if (!tmp) 
 		return(head);
 	tmp->pMenu = item;
-	tmp->prev = (head) ? head->prev : NULL;
+	tmp->next = head;
 	return(tmp);		
 }
 
 my_stack_t *pop(my_stack_t *head) {
-	my_stack_t *tmp = (head) ? head->prev : NULL;
-	if (head) 
-		free(head);
-	return(tmp);
+	my_stack_t *tmpfree, *next;
+
+	tmpfree = head;
+	next = (head) ? head->next : NULL;
+	if (tmpfree) 
+		free(tmpfree);
+	return(next);
 }
 
 BMenu *top(my_stack_t *head) {
@@ -213,7 +225,6 @@ UT_Bool EV_BeOSMenu::synthesize(void) {
 	BRect all = pBWin->m_winRectAvailable;
 	all.bottom = all.top + 18;
 	pBWin->m_winRectAvailable.top = all.bottom + 1;
-	//printf("MENU: Set winRect to "); pBWin->m_winRectAvailable.PrintToStream();
 	pMenuBar = new BMenuBar(all, "Menubar");
 	UT_ASSERT(pMenuBar);
 	
@@ -231,7 +242,9 @@ UT_Bool EV_BeOSMenu::synthesize(void) {
 		UT_ASSERT(pLabel);
 
 		// get the name for the menu item
-		const char * szLabelName;
+		const char * szLabelName = NULL;
+                const char * szMnemonicName = NULL;
+
 		switch (pLayoutItem->getMenuLayoutFlags())
 		{
 		case EV_MLF_Normal:	{
@@ -248,6 +261,13 @@ UT_Bool EV_BeOSMenu::synthesize(void) {
                         }                 
 #endif
 			szLabelName = _ev_GetLabelName(m_pBeOSApp, pAction, pLabel);
+                        //const char ** data = _ev_GetLabelName(m_pBeOSApp, m_pBeOSFrame, pAction, pLabel);
+                        //szLabelName = data[0];
+                        //szMnemonicName = data[1];            
+			UT_DEBUGMSG(("NORM MENU: L:[%s] MN:[%s] \n", 
+				(szLabelName) ? szLabelName : "NULL", 
+				(szMnemonicName) ? szMnemonicName : "NULL")); 
+
 			if (szLabelName && *szLabelName) {
 				char buf[1024];
 				// convert label into proper version and get accelerators
@@ -258,16 +278,26 @@ UT_Bool EV_BeOSMenu::synthesize(void) {
 					break;
 				//UT_ASSERT(pMenu);
 				
-				//printf("NORM MENU: %s id %d\n", buf, id);
 				BMessage *newmesg = new BMessage(ABI_BEOS_MENU_EV);
 				newmesg->AddInt32(ABI_BEOS_MENU_EV_NAME, id);
 				BMenuItem *pMenuItem = new BMenuItem(buf, newmesg, accel);
 				pMenu->AddItem(pMenuItem);	
 			}
+			else {
+				//We are reserving a spot in the menu for something
+				//printf("Spot being reserved \n");
+			}
 			break;
 		}
 		case EV_MLF_BeginSubMenu: {
 			szLabelName = _ev_GetLabelName(m_pBeOSApp, pAction, pLabel);
+			//char ** data = _ev_GetLabelName(m_pBeOSApp, m_pBeOSFrame, pAction, pLabel);
+                        //szLabelName = data[0];
+                        //szMnemonicName = data[1];           
+			UT_DEBUGMSG(("START SUB MENU: L:[%s] MN:[%s] \n", 
+				(szLabelName) ? szLabelName : "NULL", 
+				(szMnemonicName) ? szMnemonicName : "NULL")); 
+
 			if (szLabelName && *szLabelName) {
 				char buf[1024];
 				// convert label into underscored version
@@ -276,24 +306,32 @@ UT_Bool EV_BeOSMenu::synthesize(void) {
 				pMenu = new BMenu(buf);		//Accellerator ignored
 				if (!pMenu) 
 					break;
-				//printf("SUB MENU: %s \n", buf);
-				stack = push(stack, pMenu);					
+				//printf("----- Before push ---\n");
+				//print_stack(stack);
+				stack = push(stack, pMenu);
+				//printf("----- After push ---\n");
+				//print_stack(stack);
 			}
 			break;
 		}
 		case EV_MLF_EndSubMenu:	{
-			//printf("MENU: End sub menu \n");
 			pMenu = top(stack); 
-			if (!pMenu)				//Skip bogus first entry
+			if (!pMenu)		//Skip bogus first entry
 				break;
 			//UT_ASSERT(pMenu);
 	
+			//printf("----- Before pop ---\n");
+			//print_stack(stack);
 			stack = pop(stack);
+			//printf("----- After pop ---\n");
+			//print_stack(stack);
 			BMenu *parentMenu = top(stack);
-			if (!parentMenu) 
+			if (!parentMenu) {
 				pMenuBar->AddItem(pMenu);
-			else 
+			}
+			else { 
 				parentMenu->AddItem(pMenu);
+			}
 			break;
 		}
 		case EV_MLF_Separator:	{	
@@ -304,7 +342,10 @@ UT_Bool EV_BeOSMenu::synthesize(void) {
 		}
 
 		case EV_MLF_BeginPopupMenu:
+			UT_DEBUGMSG(("MENU: Begin popup menu \n"));
+                        break;
                 case EV_MLF_EndPopupMenu:
+			UT_DEBUGMSG(("MENU: End popup menu \n"));
                         break;
 
 		default:
