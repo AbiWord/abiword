@@ -273,6 +273,7 @@ dcl(LANG_ES_ES, 							"Spanish (Spain)")
 dcl(LANG_SV_SE, 							"Swedish")
 dcl(LANG_TH_TH, 							"Thai")
 dcl(LANG_TR_TR, 							"Turkish")
+dcl(LANG_UK_UA, 							"Ukrainian")
 dcl(LANG_VI_VN, 							"Vietnamese")
 
 /* Encoding Dialog */
