@@ -7914,8 +7914,9 @@ Defun1(toggleIndent)
   s_getPageMargins (pView, margin_left, margin_right,
 					page_margin_left, page_margin_right);
 
+#ifdef BIDI_ENABLED
   FriBidiCharType iBlockDir = pView->getCurrentBlock()->getDominantDirection();
-
+#endif
   allowed = page_size - page_margin_left - page_margin_right;
   if (margin_left >= allowed)
 	  return true;
@@ -7941,8 +7942,12 @@ Defun1(toggleUnIndent)
   s_getPageMargins (pView, margin_left, margin_right,
 					page_margin_left, page_margin_right);
 
+#ifdef BIDI_ENABLED
   FriBidiCharType iBlockDir = pView->getCurrentBlock()->getDominantDirection();
   allowed = iBlockDir == FRIBIDI_TYPE_LTR ? margin_left : margin_right;
+#else
+  allowed = margin_left;
+#endif
   if ( allowed <= 0. )
 	  return true ;
 
