@@ -1175,7 +1175,8 @@ void s_HTML_Listener::_outputBegin (PT_AttrPropIndex api)
 #ifdef HTML_META_SUPPORTED
 	m_pDocument->getMetaDataProp (PD_META_KEY_TITLE, titleProp);
 
-	if (titleProp.byteLength () == 0) titleProp = UT_basename(m_pie->getFileName ());
+	if (titleProp.byteLength () == 0  && m_pie->getFileName () != NULL) 
+		titleProp = UT_basename(m_pie->getFileName ());
 #else
 	titleProp = UT_basename(m_pie->getFileName ());
 #endif
