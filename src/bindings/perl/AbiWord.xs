@@ -213,7 +213,8 @@ find(pView, pszText, matchCase)
 		UT_UCSChar *text = NULL;
 		UT_UCS4_cloneString_char(&text, pszText);
 		bool bTmp;
-		RETVAL = pView->findNext(text, matchCase, bTmp);
+		pView->findSetMatchCase(matchCase);
+		RETVAL = pView->findNext(text, bTmp);
 		free(text);
 	OUTPUT:
 		RETVAL
@@ -230,7 +231,10 @@ replace(pView, pszTextToFind, pszReplacement, matchCase)
 		UT_UCSChar *replacement = NULL;
 		UT_UCS4_cloneString_char(&replacement, pszReplacement);
 		bool bTmp;
-		RETVAL = pView->findReplace(textToFind, replacement, matchCase, bTmp);
+		pView->findSetMatchCase(matchCase);
+		pView->findSetFindString(textToFind);
+		pView->findSetReplaceString(replacement);
+		RETVAL = pView->findReplace(bTmp);
 		free(textToFind);
 		free(replacement);
 	OUTPUT:
