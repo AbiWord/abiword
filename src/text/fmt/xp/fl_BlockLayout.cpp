@@ -3884,6 +3884,10 @@ fl_BlockLayout::doclistener_deleteStrux(const PX_ChangeRecord_Strux* pcrx)
 	}
 
 	FV_View* pView = pSL->getDocLayout()->getView();
+	if (pView->isHdrFtrEdit() && (!pView->getEditShadow() ||
+		                         !pView->getEditShadow()->getLastLayout()))
+		pView->clearHdrFtrEdit();
+
 	if (pView && (pView->isActive() || pView->isPreview()))
 	{
 		pView->_setPoint(pcrx->getPosition());
