@@ -165,6 +165,7 @@ fl_BlockLayout::fl_BlockLayout(PL_StruxDocHandle sdh,
 	  m_bIsCollapsed(true),
 	  m_iDirOverride(FRIBIDI_TYPE_UNSET)
 {
+	setPrev(pPrev);
 	if(m_pSectionLayout && m_pSectionLayout->getType() == FL_SECTION_HDRFTR)
 	{
 		m_bIsHdrFtr = true;
