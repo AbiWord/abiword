@@ -3291,7 +3291,8 @@ bool FV_View::_charMotion(bool bForward,UT_uint32 countChars)
 	// due to that function being overloaded to be used from this
 	// code.
 	UT_sint32 xold,yold,x2old,y2old;
-	_findPositionCoords(m_iInsPoint, false, xold, yold, x2old,y2old,uheight, bDirection, &pBlock, &pRun);
+	bool bDirectionOld;
+	_findPositionCoords(m_iInsPoint, false, xold, yold, x2old,y2old,uheight, bDirectionOld, &pBlock, &pRun);
 	if (bForward)
 	{
 		_setPoint(m_iInsPoint + countChars);
@@ -3300,9 +3301,15 @@ bool FV_View::_charMotion(bool bForward,UT_uint32 countChars)
 // If we come to a table boundary we have doc positions with no blocks.
 // _findPositionCoords signals this by returning pRun == NULL
 //
+		// I have added the bDirection == bDirectionOld condition
+		// because without it the code did not work on direction
+		// boundaries. However, I am not sure whether the whole of the
+		// x,y test is at all desirable here; any idea why it is here?
+		// Tomas, Jan 16, 2003.
 		bool bExtra = false;
 		while(m_iInsPoint <= posEOD && (pRun == NULL || ((x == xold) && (y == yold) &&
-														 (x2 == x2old) && (y2 == y2old))))
+														 (x2 == x2old) && (y2 == y2old) &&
+														 (bDirection == bDirectionOld))))
 		{
 			_setPoint(m_iInsPoint+1);
 			_findPositionCoords(m_iInsPoint-1, false, x, y, x2,y2,uheight, bDirection, &pBlock, &pRun);
@@ -3331,9 +3338,15 @@ bool FV_View::_charMotion(bool bForward,UT_uint32 countChars)
 // If we come to a table boundary we have doc positions with no blocks.
 // _findPositionCoords signals this by returning pRun == NULL
 //
+		// I have added the bDirection == bDirectionOld condition
+		// because without it the code did not work on direction
+		// boundaries. However, I am not sure whether the whole of the
+		// x,y test is at all desirable here; any idea why it is here?
+		// Tomas, Jan 16, 2003.
 		bool bExtra = false;
 		while( m_iInsPoint >= posBOD && (pRun == NULL || ((x == xold) && (y == yold) &&
-														 (x2 == x2old) && (y2 == y2old))))
+														 (x2 == x2old) && (y2 == y2old) &&
+														  (bDirection == bDirectionOld))))
 		{
 			xxx_UT_DEBUGMSG(("_charMotion: Looking at point m_iInsPoint %d \n",m_iInsPoint));
 			_setPoint(m_iInsPoint-1);
