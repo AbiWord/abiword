@@ -1852,10 +1852,6 @@ int IE_Imp_MsWord_97::_beginPara (wvParseStruct *ps, UT_uint32 tag,
 	//props, level, listid, parentid, style (TODO), NULL
 	const XML_Char * propsArray[11];
 
-	// props
-	propsArray[0] = static_cast<const XML_Char *>("props");
-	propsArray[1] = static_cast<const XML_Char *>(props.c_str());
-
 	/* lists */
 	UT_uint32 myListId = 0;
 	LVLF * myLVLF = NULL;
@@ -2245,8 +2241,13 @@ int IE_Imp_MsWord_97::_beginPara (wvParseStruct *ps, UT_uint32 tag,
 	} // end of list-related code
 
  list_error:
+
+ 	// props
+	UT_uint32 i = 0;
+	propsArray[i++] = static_cast<const XML_Char *>("props");
+	propsArray[i++] = static_cast<const XML_Char *>(props.c_str());
+
 	
-	UT_uint32 i = 2;
 	// level, or 0 for default, normal level
 	if (myListId > 0)
 	{
@@ -3373,6 +3374,63 @@ void IE_Imp_MsWord_97::_generateParaProps(UT_String &s, const PAP * apap, wvPars
 
 }
 
+/*!
+    Translates MS numerical id's for standard styles into our names
+	The style names that have been commented out are those that do not
+    have currently a localised equivalent in AW
+*/
+static const XML_Char * s_translateStyleId(UT_uint32 id)
+{
+	if(id == 4094)
+	{
+		UT_DEBUGMSG(("Custom style\n"));
+		UT_ASSERT( UT_SHOULD_NOT_HAPPEN );
+		return NULL;
+	}
+
+	// The style names that have been commented out are those that do
+	// not currently have a localised equivalent in AW
+	switch(id)
+	{
+		case 0:  return "Normal";
+		case 1:  return "Heading 1";
+		case 2:  return "Heading 2";
+		case 3:  return "Heading 3";
+		case 4:  return NULL /*"Heading 4"*/;
+		case 5:  return NULL /*"Heading 5"*/;
+		case 6:  return NULL /*"Heading 6"*/;
+		case 7:  return NULL /*"Heading 7"*/;
+		case 8:  return NULL /*"Heading 8"*/;
+		case 9:  return NULL /*"Heading 9"*/;
+			
+		case 29: return "Footnote Text";
+
+		case 31: return NULL /*"Header"*/;			
+		case 32: return NULL /*"Footer"*/;
+			
+		case 34: return NULL /*"Caption"*/;
+			
+		case 36: return NULL /*"Envelope Address"*/;
+		case 37: return NULL /*"Envelope Return"*/;
+		case 38: return "Footnote Reference";
+
+		case 41: return NULL /*"Page Number"*/;
+		case 42: return "Endnote Reference";
+		case 43: return "Endnote Text";
+
+		case 65: return NULL /*"Default Paragraph Font"*/;
+		case 66: return NULL /*"Body Text"*/;
+
+		case 85: return NULL /*"Hyperlink"*/;
+
+		default:
+			UT_DEBUGMSG(("Unknown style Id [%d]; Please submit this document with a bug report!\n", id));
+			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+			return NULL;
+	}
+	return NULL;
+}
+
 /*! imports a stylesheet from our document */
 
 #define PT_MAX_ATTRIBUTES 8
@@ -3391,15 +3449,32 @@ void IE_Imp_MsWord_97::_handleStyleSheet(const wvParseStruct *ps)
 	for(UT_uint32 i = 0; i < iCount; i++, pSTD++)
 	{
 		iOffset = 0;
-		UT_DEBUGMSG(("Style name: %s\n", pSTD->xstzName));
 
 		if(!pSTD->xstzName)
 		{
 			continue;
 		}
-		
+
+		UT_DEBUGMSG(("Style name: [%s], id: %d\n", pSTD->xstzName, pSTD->sti));
+
 		attribs[iOffset++] = PT_NAME_ATTRIBUTE_NAME;
-		attribs[iOffset++] = pSTD->xstzName;
+
+		// make sure we use standard names for standard styles
+		const XML_Char * pName = NULL;
+		if(pSTD->sti < 4094)
+		{
+			pName = s_translateStyleId(pSTD->sti);
+		}
+
+		if(pName)
+		{
+			attribs[iOffset++] = pName;
+		}
+		else
+		{
+			attribs[iOffset++] = pSTD->xstzName;
+		}
+		
 		
 		attribs[iOffset++] = PT_TYPE_ATTRIBUTE_NAME;
 		if(pSTD->sgc == sgcChp)
