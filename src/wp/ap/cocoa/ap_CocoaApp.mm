@@ -635,7 +635,7 @@ bool AP_CocoaApp::canPasteFromClipboard(void)
     UT_uint32 iLen = 0;
 
     // first, try to see if we can paste from the clipboard
-    bool bFoundOne = m_pClipboard->getData(aszFormatsAccepted,(void**)&pData,&iLen,&szFormatFound);
+    bool bFoundOne = m_pClipboard->getClipboardData(aszFormatsAccepted,(void**)&pData,&iLen,&szFormatFound);
 	return bFoundOne;
 }
 
