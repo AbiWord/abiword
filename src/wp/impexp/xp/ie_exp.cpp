@@ -45,6 +45,9 @@
 #include "ie_exp_DocBook.h"
 #include "ie_exp_Psion.h"
 
+#include "ie_exp_MIF.h"
+#include "ie_exp_Applix.h"
+
 /*****************************************************************/
 /*****************************************************************/
 
@@ -66,6 +69,9 @@ struct _xp
 static struct _xp s_expTable[] =
 {
 	DeclareExporter(IE_Exp_AbiWord_1),
+#ifdef DEBUG
+	DeclareExporter(IE_Exp_Applix),
+#endif
 	DeclareExporter(IE_Exp_DocBook),
 #ifdef DEBUG
 	DeclareExporter(IE_Exp_MsWord_97),

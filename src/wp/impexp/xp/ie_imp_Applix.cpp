@@ -33,7 +33,17 @@
 /*****************************************************************/
 
 /*
-  Import Applix Word documents
+ * Import Applix Word documents
+ * 
+ * One field per line, interesting text fields start after the <WP
+ * Tag. Text fields ("<T") are immediately preceded by <P fields
+ * 
+ * For now, we only care about the stuff in-between the <start_flow>
+ * And <end_flow> tags
+ *
+ * Interested in Plain-text import only right now. More complex import
+ * To come
+ *
 */
 
 /*****************************************************************/
@@ -43,7 +53,7 @@
 
 UT_Error IE_Imp_Applix::importFile(const char * szFilename)
 {
-	FILE *fp = fopen(szFilename, "rb");
+	FILE *fp = fopen(szFilename, "r");
 	if (!fp)
 	{
 		UT_DEBUGMSG(("Could not open file %s\n",szFilename));
@@ -72,7 +82,7 @@ IE_Imp_Applix::~IE_Imp_Applix()
 }
 
 IE_Imp_Applix::IE_Imp_Applix(PD_Document * pDocument)
-	: IE_Imp(pDocument)
+  : IE_Imp(pDocument), m_bLastWasP(false), m_bInT(false)
 {
 }
 
@@ -87,6 +97,38 @@ UT_Error IE_Imp_Applix::_writeHeader(FILE * /* fp */)
 	X_ReturnNoMemIfError(m_pDocument->appendStrux(PTX_Section, NULL));
 
 	return UT_OK;
+}
+
+typedef enum {NOT_A_TAG, tag_Unknown} Applix_tag;
+
+static Applix_tag
+name_2_tag (const char *name)
+{
+  if(!name)
+    return NOT_A_TAG;
+
+  return tag_Unknown;
+}
+
+// must free returned string
+static Applix_tag
+_getTagName(const char *str)
+{  
+  char buf[256];
+
+  if(str && *str == '<')
+    {
+      int n = 0;
+      str++;
+      while(str && (!UT_UCS_isspace(*str) && !(*str == '>')))
+	{
+	  n++; str++;
+	}
+      if (n)
+	strncpy (buf, str+1, n-1);
+      return name_2_tag(buf);
+    }
+  return NOT_A_TAG;
 }
 
 UT_Error IE_Imp_Applix::_parseFile(FILE * fp)
@@ -111,13 +153,15 @@ void IE_Imp_Applix::pasteFromBuffer(PD_DocumentRange * pDocRange,
 
 bool IE_Imp_Applix::RecognizeContents(const char * szBuf, UT_uint32 iNumbytes)
 {
-  // TODO: try to sensibly recognize the contents of the buffer
-	return(false);
+  // this should be suffecient, at least for my liking
+  if (!strncmp(szBuf, "<Applix Words>", strlen("<Applix Words>")))
+    return true;
+  return false;
 }
 
 bool IE_Imp_Applix::RecognizeSuffix(const char * szSuffix)
 {
-	return (UT_stricmp(szSuffix,".apx") == 0);
+	return (UT_stricmp(szSuffix,".aw") == 0);
 }
 
 UT_Error IE_Imp_Applix::StaticConstructor(PD_Document * pDocument,
@@ -133,8 +177,8 @@ bool	IE_Imp_Applix::GetDlgLabels(const char ** pszDesc,
 								  IEFileType * ft)
 {
   // TOOD: get the real filename extension used
-	*pszDesc = "Applix Word (.apx)";
-	*pszSuffixList = "*.apx";
+	*pszDesc = "Applix Word (.aw)";
+	*pszSuffixList = "*.aw";
 	*ft = IEFT_APPLIX;
 	return true;
 }
