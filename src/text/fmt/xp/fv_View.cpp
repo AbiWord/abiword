@@ -5080,17 +5080,17 @@ void FV_View::getSelectionText(UT_UCS4Char * & pText)
 	UT_sint32 selLength = getSelectionLength();
 
 	PT_DocPosition low;
+	fl_BlockLayout * block; // the current block the insertion point is in
 	if (m_iInsPoint > m_Selection.getSelectionAnchor())
 	{
 		low = m_Selection.getSelectionAnchor();
+		block = m_pLayout->findBlockAtPosition(low+1);
 	}
 	else
 	{
 		low = m_iInsPoint;
+		block = m_pLayout->findBlockAtPosition(low);
 	}
-
-	// get the current block the insertion point is in
-	fl_BlockLayout * block = m_pLayout->findBlockAtPosition(low);
 
 	if (block)
 	{
