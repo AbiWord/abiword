@@ -538,10 +538,11 @@ void fp_Line::layout(void)
 
 	UT_uint32 iCountRuns = m_vecRuns.getItemCount();
 	UT_sint32 iX = 0;
+	UT_sint32 iStartX;
 	UT_uint32 i;
 	UT_Bool bLineErased = UT_FALSE;
 
-	iX = pAlignment->getStartPosition();
+	iStartX = iX = pAlignment->getStartPosition();
 	
 	for (i=0; i<iCountRuns; i++)		// TODO do we need to do this if iMoveOver is zero ??
 	{
@@ -563,7 +564,7 @@ void fp_Line::layout(void)
 			UT_sint32 iPos;
 			unsigned char iTabType;
 
-			UT_Bool bRes = findNextTabStop(iX, iPos, iTabType);
+			UT_Bool bRes = findNextTabStop(iX - iStartX, iPos, iTabType);
 			UT_ASSERT(bRes);
 
 			fp_TabRun* pTabRun = static_cast<fp_TabRun*>(pRun);
@@ -574,8 +575,8 @@ void fp_Line::layout(void)
 			switch ( iTabType )
 			{
 			case FL_TAB_LEFT:
-				pTabRun->setWidth(iPos - iX);
-				iX = iPos;
+				pTabRun->setWidth(iPos - (iX - iStartX));
+				iX = iPos + iStartX;
 				break;
 
 			case FL_TAB_CENTER:
@@ -586,11 +587,11 @@ void fp_Line::layout(void)
 					iScanWidth += pScanRun->getWidth();
 				}
 	
-				if ( iScanWidth / 2 > iPos - iX )
+				if ( iScanWidth / 2 > iPos - (iX - iStartX) )
 					pTabRun->setWidth(0);
 				else
 				{
-					int tabWidth = iPos - iX - iScanWidth / 2 ;
+					int tabWidth = iPos - (iX - iStartX) - iScanWidth / 2 ;
 					pTabRun->setWidth( tabWidth );
 					iX += tabWidth;
 				}
@@ -605,11 +606,11 @@ void fp_Line::layout(void)
 					iScanWidth += pScanRun->getWidth();
 				}
 		
-				if ( iScanWidth > iPos - iX )
+				if ( iScanWidth > iPos - (iX - iStartX) )
 					pTabRun->setWidth(0);
 				else
 				{
-					int tabWidth = iPos - iX - iScanWidth ;
+					int tabWidth = iPos - (iX - iStartX) - iScanWidth ;
 					pTabRun->setWidth( tabWidth );
 					iX += tabWidth;
 				}
@@ -667,9 +668,9 @@ void fp_Line::layout(void)
 				}
 			
 				UT_DEBUGMSG((" tabrun iX=%d iPos=%d iScanWidth=%d tabwidth=%d newX=%d\n", 
-									  iX,	iPos,   iScanWidth,   iPos-iX-iScanWidth,iPos-iScanWidth));	
-				pTabRun->setWidth(iPos - iX - iScanWidth);
-				iX = iPos - iScanWidth;
+									  iX,	iPos,   iScanWidth,   iPos-(iX-iStartX)-iScanWidth,iPos-iScanWidth));	
+				pTabRun->setWidth(iPos - (iX - iStartX) - iScanWidth);
+				iX = iPos - iScanWidth + iStartX;
 			
 				FREEP(pDecimalStr);	
 				break;
