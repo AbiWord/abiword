@@ -282,6 +282,7 @@ UT_Bool fl_DocListener::change(PL_StruxFmtHandle sfh,
 					PT_DocPosition docPosBlock = m_pDoc->getStruxPosition(pBL->m_sdh);
 					PT_BlockOffset blockOffset = (pcr->getPosition() - docPosBlock);
 					UT_uint32 len = pcrs->getLength();
+					UT_ASSERT(len>0);
 
 					pBL->m_gbCharWidths.del(blockOffset, len);
 	
@@ -421,9 +422,14 @@ UT_Bool fl_DocListener::change(PL_StruxFmtHandle sfh,
 								UT_uint32 lenNew = pBL->m_gbCharWidths.getLength();
 
 								pPrevBL->m_gbCharWidths.ins(offset, pBL->m_gbCharWidths.getPointer(0), lenNew);
+
+								// runs are no longer attached to this block
+								pBL->m_pFirstRun = NULL;
 							}
 
 							// get rid of everything else about the block
+							pBL->_purgeLayout(UT_TRUE);
+
 							pPrevBL->m_pNext = pBL->m_pNext;
 							
 							if (pBL->m_pNext)
