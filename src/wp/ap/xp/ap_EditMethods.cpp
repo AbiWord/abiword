@@ -3032,7 +3032,7 @@ static bool _openURL(const char* url)
 	return XAP_App::getApp()->openURL(url);
 }
 	
-static bool _helpLocalizeAndOpenURL(const char* pathBeforeLang, const char* pathAfterLang, const char *remoteURLbase)
+bool helpLocalizeAndOpenURL(const char* pathBeforeLang, const char* pathAfterLang, const char *remoteURLbase)
 {
 	UT_String url (XAP_App::getApp()->localizeHelpUrl (pathBeforeLang, pathAfterLang, remoteURLbase));
 	return _helpOpenURL(url.c_str());
@@ -3040,12 +3040,12 @@ static bool _helpLocalizeAndOpenURL(const char* pathBeforeLang, const char* path
 
 Defun0(helpContents)
 {
-	return _helpLocalizeAndOpenURL("AbiWord/help", "index", "http://www.abisource.com/help/");
+	return helpLocalizeAndOpenURL("AbiWord/help", "index", "http://www.abisource.com/help/");
 }
 
 Defun0(helpIndex)
 {
-	return _helpLocalizeAndOpenURL("AbiWord/help", "introduction", "http://www.abisource.com/help/");
+	return helpLocalizeAndOpenURL("AbiWord/help", "introduction", "http://www.abisource.com/help/");
 }
 
 Defun0(helpCheckVer)
@@ -3070,12 +3070,12 @@ Defun0(helpReportBug)
 
 Defun0(helpSearch)
 {
-	return _helpLocalizeAndOpenURL("AbiWord/help", "search", "http://www.abisource.com/help/");
+	return helpLocalizeAndOpenURL("AbiWord/help", "search", "http://www.abisource.com/help/");
 }
 
 Defun0(helpCredits)
 {
-	return _helpLocalizeAndOpenURL("AbiWord/help", "credits", "http://www.abisource.com/help/");
+	return helpLocalizeAndOpenURL("AbiWord/help", "credits", "http://www.abisource.com/help/");
 }
 
 Defun0(helpAboutGnu)
@@ -3090,7 +3090,7 @@ Defun0(helpAboutGnomeOffice)
 
 Defun0(helpAboutOS)
 {
-	return _helpLocalizeAndOpenURL("AbiWord/help", "aboutos", "http://www.abisource.com/help/");
+	return helpLocalizeAndOpenURL("AbiWord/help", "aboutos", "http://www.abisource.com/help/");
 }
 
 Defun1(cycleWindows)

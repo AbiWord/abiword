@@ -113,7 +113,7 @@ void XAP_UnixDialog_About::runModal(XAP_Frame * pFrame)
 
 void XAP_UnixDialog_About::event_URL(void)
 {
-  m_pFrame->openURL("http://www.abisource.com/");
+	XAP_App::getApp()->openURL("http://www.abisource.com/");
 }
 
 void XAP_UnixDialog_About::event_DrawingAreaExpose(void)

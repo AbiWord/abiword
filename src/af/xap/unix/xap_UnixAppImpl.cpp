@@ -18,15 +18,19 @@
  * 02111-1307, USA.
  */
 
+#include <glib.h>
 
+#ifdef HAVE_GNOME
 #include <gnome.h>
+#endif
 
 #include "xap_UnixAppImpl.h"
+#include "ut_files.h"
 #include "ut_string_class.h"
 
 UT_String XAP_UnixAppImpl::localizeHelpUrl (const char * pathBefore, 
-											   const char * pathAfter,
-											   const char * remoteURLbase)
+						   const char * pathAfter,
+						   const char * remoteURLbase)
 {
 #if 0 //def HAVE_GNOME
 	UT_String path (pathAfter);
@@ -53,12 +57,12 @@ bool XAP_UnixAppImpl::openHelpURL(const char * url)
 	}
 	return false;
 #else
-	return _openURL (szURL);
+	return openURL (url);
 #endif
 }
 
 
-bool XAP_UnixAppImpl::openURL(const char * url)
+bool XAP_UnixAppImpl::openURL(const char * szURL)
 {
 #ifdef HAVE_GNOME
 	gnome_url_show(szURL, NULL);

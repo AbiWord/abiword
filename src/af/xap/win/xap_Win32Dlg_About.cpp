@@ -370,7 +370,7 @@ BOOL XAP_Win32Dialog_About::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
 		return 0;
 
 	case ID_BUTTON_URL:
-		m_pFrame->openURL("http://www.abisource.com/");
+		XAP_App::getApp()->openURL("http://www.abisource.com/");
 		return 0;
 		
 	default:							// we did not handle this notification

@@ -484,22 +484,18 @@ void createLabelAccelerators( GtkWidget *widget )
 /****************************************************************/
 
 // in ap_editmethods.cpp
-extern bool helpLocalizeAndOpenURL(XAP_Frame * pFrame, const char* pathBeforeLang, const char* pathAfterLang, const char *remoteURLbase);
+extern bool helpLocalizeAndOpenURL(const char* pathBeforeLang, const char* pathAfterLang, const char *remoteURLbase);
 
 static void sDoHelp ( XAP_Dialog * pDlg )
 {
-	// get any frame to open up a URL, doesn't matter which one
-	XAP_App   * pApp   = XAP_App::getApp () ;
-	XAP_Frame * pFrame = pApp->getLastFocussedFrame () ;
-	
 	// should always be valid, but just in case...
-	if (!pDlg || !pFrame)
+	if (!pDlg)
 		return;
 
 	// open the url
 	if ( pDlg->getHelpUrl().size () > 0 )
     {
-		helpLocalizeAndOpenURL ( pFrame, "AbiWord/help", pDlg->getHelpUrl().c_str(), NULL );
+		helpLocalizeAndOpenURL ("AbiWord/help", pDlg->getHelpUrl().c_str(), NULL );
     }
 	else
     {

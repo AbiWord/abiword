@@ -102,7 +102,7 @@ void AboutWin::DispatchMessage(BMessage *msg, BHandler *handler)
 	switch(msg->what)
 	{
 	case 'gurl':
-		m_pFrame->openURL("http://www.abisource.com");
+		XAP_App::getApp()->openURL("http://www.abisource.com");
 		break;
 	default:
 		BWindow::DispatchMessage(msg, handler);
