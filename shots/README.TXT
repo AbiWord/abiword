@@ -13,7 +13,9 @@ wp
 Having these screen shots in CVS is very useful, but only if we collectively 
 make sure to keep them up to date on each platform.  This means that, once 
 a dialog is considered to be "done", the corresponding PNG should get checked 
-into the appropriate shots subdirectory.  
+into the appropriate shots subdirectory, as a *binary* file:
+
+  cvs add -kb foo.png
 
 From that point on, *any* checkin which changes the look of a dialog needs 
 to be accompanied by a matching checkin here.  
