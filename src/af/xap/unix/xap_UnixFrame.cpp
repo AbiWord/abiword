@@ -328,7 +328,14 @@ void AP_UnixFrame::_createTopLevelWindow(void)
 						   m_pUnixApp->getApplicationName());
 
 	// TODO get the following values from a preferences or something.
-	gtk_container_border_width(GTK_CONTAINER(m_wTopLevelWindow), 0);
+
+	// This should be fixed as soon as everyone's way past the 1.1.5 line
+#ifdef GTK_HAVE_FEATURES_1_1_5
+	gtk_container_set_border_width(GTK_CONTAINER(m_wTopLevelWindow), 4);
+#else
+	gtk_container_border_width(GTK_CONTAINER(m_wTopLevelWindow), 4);
+#endif
+	
 	gtk_widget_set_usize(GTK_WIDGET(m_wTopLevelWindow), 700,650);
 
 	gtk_signal_connect(GTK_OBJECT(m_wTopLevelWindow), "delete_event",
@@ -347,7 +354,12 @@ void AP_UnixFrame::_createTopLevelWindow(void)
 	gtk_container_add(GTK_CONTAINER(m_wTopLevelWindow), m_wVBox);
 
 	// TODO get the following values from a preferences or something.
-	gtk_container_border_width(GTK_CONTAINER(m_wVBox), 4);
+
+// HEY! This is commented out because versions of GTK > than 1.1.5
+//	call this gtk_container_SET_border_width() and commenting it out
+//  makes it build everywhere, and it doesn't look any different.
+
+//	gtk_container_set_border_width(GTK_CONTAINER(m_wVBox), 0);
 
 	// synthesize a menu from the info in our base class.
 
@@ -443,7 +455,7 @@ void AP_UnixFrame::_createTopLevelWindow(void)
 
 	// the 3D box goes in the vbox
 	gtk_container_add(GTK_CONTAINER(m_wVBox), m_wSunkenBox);
-	
+
 	// TODO decide what to do with accelerators
 	// gtk_window_add_accelerator_table(GTK_WINDOW(window), accel);
 
