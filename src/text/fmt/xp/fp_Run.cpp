@@ -1431,7 +1431,40 @@ void fp_ForcedLineBreakRun::lookupProperties(void)
 	m_pBL->getField(m_iOffsetFirst,m_pField);
 
 	_inheritProperties();
-	m_iWidth = 16;
+	FV_View* pView = m_pBL->getDocLayout()->getView();
+	if (pView && pView->getShowPara())
+	{
+		// Find width of Pilcrow
+		UT_UCSChar pEOP[] = { UCS_LINESEP, 0 };
+		UT_uint32 iTextLen = UT_UCS_strlen(pEOP);
+
+		fp_Run* pPropRun = _findPrevPropertyRun();
+		if (pPropRun && (FPRUN_TEXT == pPropRun->getType()))
+		{
+			fp_TextRun* pTextRun = static_cast<fp_TextRun*>(pPropRun);
+			m_pG->setFont(pTextRun->getFont());
+		}
+		else
+		{
+			const PP_AttrProp * pSpanAP = NULL;
+			const PP_AttrProp * pBlockAP = NULL;
+			const PP_AttrProp * pSectionAP = NULL;
+			m_pBL->getSpanAttrProp(m_iOffsetFirst,true,&pSpanAP);
+			m_pBL->getAttrProp(&pBlockAP);
+			// look for fonts in this DocLayout's font cache
+			FL_DocLayout * pLayout = m_pBL->getDocLayout();
+
+			GR_Font* pFont = pLayout->findFont(pSpanAP,pBlockAP,pSectionAP, 
+											   FL_DocLayout::FIND_FONT_AT_SCREEN_RESOLUTION);
+			m_pG->setFont(pFont);
+		}
+		m_iWidth  = m_pG->measureString(pEOP, 0, iTextLen, NULL);
+		xxx_UT_DEBUGMSG(("fp_EndOfParagraphRun::lookupProperties: width %d\n", m_iWidth));
+	}
+	else
+	  {
+	    m_iWidth = 16;
+	  }
 }
 
 bool fp_ForcedLineBreakRun::canBreakAfter(void) const
@@ -1494,7 +1527,7 @@ void fp_ForcedLineBreakRun::findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_
 	if (iOffset == m_iOffsetFirst+1)
 	{
 	    FV_View* pView = m_pBL->getDocLayout()->getView();
-	    if (pView->getShowPara())
+	    if (pView && pView->getShowPara())
 		{
 			x += m_iWidth;
 	    }
@@ -1513,7 +1546,116 @@ void fp_ForcedLineBreakRun::_clearScreen(bool /* bFullLineHeightRect */)
 
 void fp_ForcedLineBreakRun::_draw(dg_DrawArgs* pDA)
 {
-	UT_ASSERT(pDA->pG == m_pG);
+  UT_ASSERT(pDA->pG == m_pG);
+
+  UT_sint32 iXoffText = 0;
+  UT_sint32 iYoffText = 0;
+
+  FV_View* pView = m_pBL->getDocLayout()->getView();
+  if(!pView || !pView->getShowPara())
+    {
+    	if(m_iWidth)
+	  {
+	    m_iWidth = 0;
+	  }
+    	return;
+    }
+  
+  UT_ASSERT(pDA->pG == m_pG);
+  
+  UT_uint32 iRunBase = m_pBL->getPosition() + m_iOffsetFirst;
+  
+  UT_uint32 iSelAnchor = pView->getSelectionAnchor();
+  UT_uint32 iPoint = pView->getPoint();
+  
+  UT_uint32 iSel1 = UT_MIN(iSelAnchor, iPoint);
+  UT_uint32 iSel2 = UT_MAX(iSelAnchor, iPoint);
+  
+  UT_ASSERT(iSel1 <= iSel2);
+  
+  bool bIsSelected = false;
+  if (pView->getFocus()!=AV_FOCUS_NONE &&	(iSel1 <= iRunBase) && (iSel2 > iRunBase))
+    bIsSelected = true;
+  
+  /*
+    TODO this should not be hard-coded.  We should calculate an
+    appropriate selection background color based on the color
+    of the foreground text, probably.
+  */
+  UT_RGBColor clrSelBackground(192, 192, 192);
+  UT_RGBColor clrShowPara(127,127,127);
+  
+  UT_UCSChar pEOP[] = { UCS_LINESEP, 0 };
+  UT_uint32 iTextLen = UT_UCS_strlen(pEOP);
+  UT_sint32 iAscent;
+  
+  fp_Run* pPropRun = _findPrevPropertyRun();
+  if (pPropRun && (FPRUN_TEXT == pPropRun->getType()))
+    {
+      fp_TextRun* pTextRun = static_cast<fp_TextRun*>(pPropRun);
+      m_pG->setFont(pTextRun->getFont());
+      iAscent = pTextRun->getAscent();
+    }
+  else
+    {
+      const PP_AttrProp * pSpanAP = NULL;
+      const PP_AttrProp * pBlockAP = NULL;
+      const PP_AttrProp * pSectionAP = NULL;
+      m_pBL->getSpanAttrProp(m_iOffsetFirst,true,&pSpanAP);
+      m_pBL->getAttrProp(&pBlockAP);
+      // look for fonts in this DocLayout's font cache
+      FL_DocLayout * pLayout = m_pBL->getDocLayout();
+      
+      GR_Font* pFont = pLayout->findFont(pSpanAP,pBlockAP,pSectionAP, 
+					 FL_DocLayout::FIND_FONT_AT_SCREEN_RESOLUTION);
+      m_pG->setFont(pFont);
+      iAscent = m_pG->getFontAscent();
+    }
+  
+  // if we currently have a 0 width, i.e., we draw in response to the
+  // showPara being turned on, then we obtain the new width, and then
+  // tell the line to redo its layout and redraw instead of drawing ourselves
+  //	bool bWidthChange = false;
+  //	if(!m_iWidth)
+  //		bWidthChange = true;
+  
+  m_iWidth  = m_pG->measureString(pEOP, 0, iTextLen, NULL);
+  // 	if(bWidthChange)
+  //	{
+  //		m_pLine->layout();
+  //		m_pLine->redrawUpdate();
+  //		return;
+  //	}
+  
+  m_iHeight = m_pG->getFontHeight();
+  iXoffText = pDA->xoff;
+  
+#ifdef BIDI_ENABLED
+  if(m_pBL->getDominantDirection() == FRIBIDI_TYPE_RTL)
+    {
+      iXoffText -= m_iWidth;
+    }
+#endif
+  
+  iYoffText = pDA->yoff - iAscent;
+  xxx_UT_DEBUGMSG(("fp_EndOfParagraphRun::draw: width %d\n", m_iWidth));
+  
+  if (bIsSelected)
+    {
+      m_pG->fillRect(clrSelBackground, iXoffText, iYoffText, m_iWidth, m_pLine->getHeight());
+      UT_setColor(clrShowPara, 80, 80, 80);
+    }
+  else
+    {
+      m_pG->fillRect(m_colorPG, iXoffText, iYoffText, m_iWidth, m_pLine->getHeight());
+    }
+  if (pView->getShowPara())
+    {
+      // Draw pilcrow
+      m_pG->setColor(clrShowPara);
+      m_pG->drawChars(pEOP, 0, iTextLen, iXoffText, iYoffText);
+    }
+
 }
 
 
