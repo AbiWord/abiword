@@ -220,6 +220,7 @@ Justin Zaun <jzaun@telerama.com>			Some templates
 Belcon Zhao <rainfall@yeah.net> 			Testing/fixing CJK support
 Johan Björk <phearbear@home.se>				QNX Maintainer
 Justin McPherson <ysidro@io.com>			Win32 Keyboard fixes
+Alberto Cabello Sánchez <alberto@unex.es>               LaTeX export fixes
 
 translators
 -----------
@@ -293,6 +294,7 @@ pclouds <pclouds@users.sourceforge.net>			Vietnamese
 Sharuzzaman Ahmat Raslan <sharuzzaman@myrealbox.com>	Malay
 Raphael Finkel <raphael@cs.uky.edu>			Yiddish
 Besnik Bleta <besnikbleta@hotmail.com>			Albanian
+Alberto Cabello Sánchez <alberto@unex.es> 
 
 unsung heroes
 -------------
