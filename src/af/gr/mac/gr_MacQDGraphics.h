@@ -28,11 +28,11 @@
 #include "ut_misc.h"
 #include "gr_Graphics.h"
 
-class MacGraphics : public GR_Graphics
+class GR_MacGraphics : public GR_Graphics
 {
 public:
-	MacGraphics(GrafPtr grafPort, XAP_App * app);					/* for screen */
-	virtual ~MacGraphics();
+	GR_MacGraphics(GrafPtr grafPort, XAP_App * app);					/* for screen */
+	virtual ~GR_MacGraphics();
 
 	virtual void drawChars(const UT_UCSChar* pChars, 
 		int iCharOffset, int iLength, UT_sint32 xoff, UT_sint32 yoff);
@@ -100,6 +100,7 @@ public:
 	virtual void fillRect(GR_Color3D c, UT_sint32 x, UT_sint32 y, UT_sint32 w, UT_sint32 h);
 	virtual void fillRect(GR_Color3D c, UT_Rect &r);
 	
+	virtual void _setOrigin (short x, short y);
 protected:
 	virtual UT_uint32 _getResolution(void) const { return 72; };
 

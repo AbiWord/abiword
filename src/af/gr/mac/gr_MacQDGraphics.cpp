@@ -32,7 +32,7 @@
 
 
 
-MacGraphics::MacGraphics(GrafPtr grafPort, XAP_App * app)
+GR_MacGraphics::GR_MacGraphics(GrafPtr grafPort, XAP_App * app)
       : GR_Graphics ()
 {
       UT_ASSERT (grafPort != NULL);
@@ -40,14 +40,14 @@ MacGraphics::MacGraphics(GrafPtr grafPort, XAP_App * app)
       m_GrafPort = grafPort;
 }
 
-MacGraphics::~MacGraphics ()
+GR_MacGraphics::~GR_MacGraphics ()
 {
 
 }
 
 
 /*
-void MacGraphics::drawChars(const UT_UCSChar* pChars, 
+void GR_MacGraphics::drawChars(const UT_UCSChar* pChars, 
 		int iCharOffset, int iLength, UT_sint32 xoff, UT_sint32 yoff)
 void setFont(GR_Font* pFont);
 
@@ -56,35 +56,35 @@ UT_uint32 getFontDescent();
 UT_uint32 getFontHeight();
 */
 
-UT_uint32 MacGraphics::getFontAscent()
+UT_uint32 GR_MacGraphics::getFontAscent()
 {
     UT_ASSERT (m_pMacFont != NULL);
     return m_pMacFont->getAscent();
 }
 
 
-UT_uint32 MacGraphics::getFontDescent()
+UT_uint32 GR_MacGraphics::getFontDescent()
 {
     UT_ASSERT (m_pMacFont != NULL);
     return m_pMacFont->getDescent();
 }
 
 
-UT_uint32 MacGraphics::getFontHeight()
+UT_uint32 GR_MacGraphics::getFontHeight()
 {
     UT_ASSERT (m_pMacFont != NULL);
     return m_pMacFont->getHeight();
 }
 
 
-UT_uint32 MacGraphics::getFontAscent(GR_Font *pGRF)
+UT_uint32 GR_MacGraphics::getFontAscent(GR_Font *pGRF)
 {
     UT_ASSERT (pGRF != NULL);
     return pGRF->getAscent();
 }
 
 
-UT_uint32 MacGraphics::getFontDescent(GR_Font *pGRF)
+UT_uint32 GR_MacGraphics::getFontDescent(GR_Font *pGRF)
 {
     UT_ASSERT (pGRF != NULL);
     return pGRF->getDescent();
@@ -92,31 +92,31 @@ UT_uint32 MacGraphics::getFontDescent(GR_Font *pGRF)
 
 // ---
 
-UT_uint32 MacGraphics::getFontHeight(GR_Font *pGRF)
+UT_uint32 GR_MacGraphics::getFontHeight(GR_Font *pGRF)
 {
     UT_ASSERT (pGRF != NULL);
     return pGRF->getHeight();
 }
 
 
-void MacGraphics::scroll(UT_sint32, UT_sint32, XAP_Frame * )
+void GR_MacGraphics::scroll(UT_sint32, UT_sint32, XAP_Frame * )
 {
     UT_ASSERT (UT_NOT_IMPLEMENTED);
 }
 
-void MacGraphics::scroll(UT_sint32, UT_sint32 )
+void GR_MacGraphics::scroll(UT_sint32, UT_sint32 )
 {
     UT_ASSERT (UT_NOT_IMPLEMENTED);
 }
 
-void MacGraphics::scroll(UT_sint32 x_dest, UT_sint32 y_dest,
+void GR_MacGraphics::scroll(UT_sint32 x_dest, UT_sint32 y_dest,
 						UT_sint32 x_src, UT_sint32 y_src,
 						UT_sint32 width, UT_sint32 height)
 {
     UT_ASSERT (UT_NOT_IMPLEMENTED);
 }
 
-void MacGraphics::fillRect(GR_Color3D c, UT_sint32 x, UT_sint32 y, UT_sint32 w, UT_sint32 h)
+void GR_MacGraphics::fillRect(GR_Color3D c, UT_sint32 x, UT_sint32 y, UT_sint32 w, UT_sint32 h)
 {
     UT_RGBColor myC = m_3Dcolors [c];
     
@@ -124,50 +124,50 @@ void MacGraphics::fillRect(GR_Color3D c, UT_sint32 x, UT_sint32 y, UT_sint32 w, 
 }
 
 
-void MacGraphics::fillRect(GR_Color3D c, UT_Rect &r)
+void GR_MacGraphics::fillRect(GR_Color3D c, UT_Rect &r)
 {
     UT_RGBColor myC = m_3Dcolors [c];
     
     fillRect (myC, r);    
 }
 
-void MacGraphics::setColor3D(GR_Color3D c)
+void GR_MacGraphics::setColor3D(GR_Color3D c)
 {
     UT_RGBColor myC = m_3Dcolors [c];
     setColor (myC);
 }
 
-void MacGraphics::setColorSpace(GR_Graphics::ColorSpace c)
+void GR_MacGraphics::setColorSpace(GR_Graphics::ColorSpace c)
 {
     UT_ASSERT (UT_NOT_IMPLEMENTED);
 }
 
 
-GR_Graphics::ColorSpace MacGraphics::getColorSpace(void) const
+GR_Graphics::ColorSpace GR_MacGraphics::getColorSpace(void) const
 {
     UT_ASSERT (UT_NOT_IMPLEMENTED);
     return GR_COLORSPACE_COLOR;
 }
 
-void MacGraphics::setCursor(GR_Graphics::Cursor c)
+void GR_MacGraphics::setCursor(GR_Graphics::Cursor c)
 {
     UT_ASSERT (UT_NOT_IMPLEMENTED);
 }
 
-GR_Graphics::Cursor MacGraphics::getCursor(void) const
+GR_Graphics::Cursor GR_MacGraphics::getCursor(void) const
 {
     UT_ASSERT (UT_NOT_IMPLEMENTED);
     return GR_CURSOR_DEFAULT;
 }
 
-bool MacGraphics::startPrint(void)
+bool GR_MacGraphics::startPrint(void)
 {
     // FIXIT
     UT_ASSERT (UT_NOT_IMPLEMENTED);
     return false;
 }
 
-bool MacGraphics::startPage(const char * szPageLabel, UT_uint32 pageNumber,
+bool GR_MacGraphics::startPage(const char * szPageLabel, UT_uint32 pageNumber,
 							  bool bPortrait, UT_uint32 iWidth, UT_uint32 iHeight)
 {
     // FIXIT
@@ -176,14 +176,14 @@ bool MacGraphics::startPage(const char * szPageLabel, UT_uint32 pageNumber,
 }
 
 
-bool MacGraphics::endPrint(void)
+bool GR_MacGraphics::endPrint(void)
 {
     // FIXIT
     UT_ASSERT (UT_NOT_IMPLEMENTED);
     return false;
 }
 
-void MacGraphics::setClipRect(const UT_Rect* pRect)
+void GR_MacGraphics::setClipRect(const UT_Rect* pRect)
 {
 	Rect r;
 	/*
@@ -205,7 +205,7 @@ void MacGraphics::setClipRect(const UT_Rect* pRect)
 }
 
 
-void MacGraphics::clearArea(UT_sint32 x, UT_sint32 y, UT_sint32 w, UT_sint32 h)
+void GR_MacGraphics::clearArea(UT_sint32 x, UT_sint32 y, UT_sint32 w, UT_sint32 h)
 {
 	Rect r;
 	r.top = y;
@@ -216,7 +216,7 @@ void MacGraphics::clearArea(UT_sint32 x, UT_sint32 y, UT_sint32 w, UT_sint32 h)
     ::EmptyRect ( &r );
 }
 
-bool MacGraphics::queryProperties(GR_Graphics::Properties gp) const
+bool GR_MacGraphics::queryProperties(GR_Graphics::Properties gp) const
 {
 	switch (gp)
 	{
@@ -230,7 +230,7 @@ bool MacGraphics::queryProperties(GR_Graphics::Properties gp) const
 	}
 }
 
-void MacGraphics::drawLine(UT_sint32 x1, UT_sint32 y1, UT_sint32 x2, UT_sint32 y2)
+void GR_MacGraphics::drawLine(UT_sint32 x1, UT_sint32 y1, UT_sint32 x2, UT_sint32 y2)
 {
 /*
     CGContextBeginPath (m_CGContext);
@@ -242,12 +242,12 @@ void MacGraphics::drawLine(UT_sint32 x1, UT_sint32 y1, UT_sint32 x2, UT_sint32 y
 }
 
 
-void MacGraphics::xorLine(UT_sint32, UT_sint32, UT_sint32, UT_sint32)
+void GR_MacGraphics::xorLine(UT_sint32, UT_sint32, UT_sint32, UT_sint32)
 {
     UT_ASSERT (UT_NOT_IMPLEMENTED);
 }
 
-void MacGraphics::setLineWidth(UT_sint32 w)
+void GR_MacGraphics::setLineWidth(UT_sint32 w)
 {
 /*
     CGContextSetLineWidth (m_CGContext, w);
@@ -255,7 +255,7 @@ void MacGraphics::setLineWidth(UT_sint32 w)
 }
 
 
-void MacGraphics::polyLine(UT_Point * pts, UT_uint32 nPoints)
+void GR_MacGraphics::polyLine(UT_Point * pts, UT_uint32 nPoints)
 {
     UT_uint32 i;
 /*
@@ -270,13 +270,13 @@ void MacGraphics::polyLine(UT_Point * pts, UT_uint32 nPoints)
 }
 
 
-void MacGraphics::fillRect(UT_RGBColor& c, UT_Rect &r)
+void GR_MacGraphics::fillRect(UT_RGBColor& c, UT_Rect &r)
 {
     fillRect (c, r.left, r.top, r.width, r.height);
 }
 
         
-void MacGraphics::invertRect(const UT_Rect* pRect)
+void GR_MacGraphics::invertRect(const UT_Rect* pRect)
 {
 	Rect r;
 	r.top = pRect->top;
@@ -287,7 +287,7 @@ void MacGraphics::invertRect(const UT_Rect* pRect)
     ::InvertRect ( &r );
 }
 
-void MacGraphics::fillRect(UT_RGBColor& c, UT_sint32 x, UT_sint32 y, UT_sint32 w, UT_sint32 h)
+void GR_MacGraphics::fillRect(UT_RGBColor& c, UT_sint32 x, UT_sint32 y, UT_sint32 w, UT_sint32 h)
 {
 	Rect r;
 	RGBColor rgb;
@@ -305,7 +305,7 @@ void MacGraphics::fillRect(UT_RGBColor& c, UT_sint32 x, UT_sint32 y, UT_sint32 w
     ::PaintRect ( &r );
 }
 
-void MacGraphics::setColor(UT_RGBColor& clr)
+void GR_MacGraphics::setColor(UT_RGBColor& clr)
 {
 	RGBColor rgb;
 	
@@ -317,7 +317,7 @@ void MacGraphics::setColor(UT_RGBColor& clr)
 }
 
 
-GR_Font* MacGraphics::getGUIFont()
+GR_Font* GR_MacGraphics::getGUIFont()
 {
     // TODO: move this to GR_MacFont as it belongs to it.
     UT_DEBUGMSG (("HUB: GR_MacGraphics::getGUIFont() called\n"));
@@ -345,7 +345,7 @@ GR_Font* MacGraphics::getGUIFont()
 	return theFont;
 }
 
-GR_Font* MacGraphics::findFont(
+GR_Font* GR_MacGraphics::findFont(
 		const char* pszFontFamily, 
 		const char* pszFontStyle, 
 		const char* pszFontVariant, 
@@ -354,7 +354,7 @@ GR_Font* MacGraphics::findFont(
 		const char* pszFontSize)
 {
 	OSStatus err;
-	UT_DEBUGMSG (("HUB: MacGraphics::findFont() called\n"));
+	UT_DEBUGMSG (("HUB: GR_MacGraphics::findFont() called\n"));
 #if 1
 	ATSUStyle atsuiFont = m_pMacFontManager->findFont (pszFontFamily, pszFontStyle, 
 														pszFontVariant, pszFontWeight, pszFontStretch, 
@@ -369,7 +369,7 @@ GR_Font* MacGraphics::findFont(
     return(m_pMacFont);
 }
 
-UT_uint32 MacGraphics::measureUnRemappedChar(const UT_UCSChar c)
+UT_uint32 GR_MacGraphics::measureUnRemappedChar(const UT_UCSChar c)
 {
 	UT_UCSChar string[2];
 
@@ -378,7 +378,7 @@ UT_uint32 MacGraphics::measureUnRemappedChar(const UT_UCSChar c)
 	return m_pMacFont->getTextWidth (string);
 }
 
-void MacGraphics::drawChars(const UT_UCSChar* pChars, 
+void GR_MacGraphics::drawChars(const UT_UCSChar* pChars, 
 		int iCharOffset, int iLength, UT_sint32 xoff, UT_sint32 yoff)
 {
 	UT_DEBUGMSG (("drawChars: %d, %d\n", iCharOffset, iLength));
@@ -417,7 +417,7 @@ void MacGraphics::drawChars(const UT_UCSChar* pChars,
 	}
 }
 
-void MacGraphics::setFont(GR_Font* pFont)
+void GR_MacGraphics::setFont(GR_Font* pFont)
 {
 	// TODO: check the ownership of pFont. I think become GR_MacGraphics', but I'm
 	// not sure
@@ -437,10 +437,21 @@ void MacGraphics::setFont(GR_Font* pFont)
 #endif
 }
 
+/* FIXME BPF for MacOS  Sunday, August 5, 2001 */
+void GR_MacGraphics::_setOrigin (short x, short y)
+{
+	OSStatus err;
+	//	err = ::SyncCGContextOriginWithPort(m_CGContext, m_qdPort);
+	//	UT_ASSERT (err == noErr);
+	
+   //	::CGContextTranslateCTM(m_CGContext, x, y);
+	UT_DEBUGMSG (("Syncing QD origin: (%d, %d)\n", x, y));
+}
+
 
 // ---
 
-// Code below borrowed to gr_BeOSGraphics.cpp... FIXIT
+// Code below borrowed from gr_BeOSGraphics.cpp... FIXIT
 //////////////////////////////////////////////////////////////////
 // This is a static method in the GR_Font base class implemented
 // in platform code.
