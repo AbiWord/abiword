@@ -51,10 +51,14 @@ UNIXGraphics::UNIXGraphics(GdkWindow* win)
 	m_pGC = gdk_gc_new(m_pWin);
 	m_pXORGC = gdk_gc_new(m_pWin);
 
-//	XetFunction(pgc->xdisplay, pgc->xgc, GXxor);
+	m_pColormap = gdk_colormap_get_system();
+	
 	gdk_gc_set_function(m_pXORGC, GDK_XOR);
 
-	m_pColormap = gdk_colormap_get_system();
+	GdkColor clrWhite;
+	gdk_color_white(m_pColormap, &clrWhite);
+	gdk_gc_set_foreground(m_pXORGC, &clrWhite);
+
 
 	memset(m_aCharWidths, 0, 256 * sizeof(int));
 }
