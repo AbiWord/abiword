@@ -25,7 +25,7 @@ AC_CONFIG_SRCDIR([src/af/ev/xp/ev_Menu.h])
 AC_CONFIG_AUX_DIR(ac-helpers)
 dnl AC_CONFIG_HEADERS(config.h)
 
-AM_INIT_AUTOMAKE(AbiSuite-2.0,1.1.2)
+AM_INIT_AUTOMAKE(AbiSuite-2.0,1.1.3)
 
 if test "$srcdir" = "."; then
 	abi_rootdir=".."
