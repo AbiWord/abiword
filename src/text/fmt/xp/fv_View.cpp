@@ -183,25 +183,11 @@ void FV_View::_deleteSelection(void)
 	UT_ASSERT(iPoint != m_iSelectionAnchor);
 	
 	UT_Bool bForward = (iPoint < m_iSelectionAnchor);
-	UT_uint32 iCountChars;
 
-	// TODO PAUL, help here...
-	// TODO Set bLeftSide1 to which side of the start position we should start the delete
-	// TODO Set bLeftSide2 to which side of the end position we should finish the delete.
-	
-	UT_Bool bLeftSide1 = UT_TRUE;
-	UT_Bool bLeftSide2 = UT_TRUE;
-	
 	if (bForward)
-	{
-		iCountChars = _getDataCount(iPoint,m_iSelectionAnchor);
-		m_pDoc->deleteSpan(iPoint, bLeftSide1, bLeftSide2, iCountChars);
-	}
+		m_pDoc->deleteSpan(iPoint, m_iSelectionAnchor);
 	else
-	{
-		iCountChars = _getDataCount(m_iSelectionAnchor,iPoint);
-		m_pDoc->deleteSpan(m_iSelectionAnchor, bLeftSide1, bLeftSide2, iCountChars);
-	}
+		m_pDoc->deleteSpan(m_iSelectionAnchor, iPoint);
 
 	_resetSelection();
 
@@ -323,7 +309,7 @@ UT_Bool FV_View::cmdCharInsert(UT_UCSChar * text, UT_uint32 count)
 		_eraseInsertionPoint();
 	}
 
-	UT_Bool bResult = m_pDoc->insertSpan(_getPoint(), !m_bInsPointRight, text, count);
+	UT_Bool bResult = m_pDoc->insertSpan(_getPoint(), text, count);
 
 	_drawSelectionOrInsertionPoint();
 
@@ -340,7 +326,7 @@ void FV_View::insertParagraphBreak()
 	// insert a new paragraph with the same attributes/properties
 	// as the previous (or none if the first paragraph in the section).
 
-	m_pDoc->insertStrux(_getPoint(), !m_bInsPointRight, PTX_Block);
+	m_pDoc->insertStrux(_getPoint(), PTX_Block);
 
 	m_bInsPointRight = UT_TRUE;
 
@@ -364,7 +350,7 @@ void FV_View::insertCharacterFormatting(const XML_Char * properties[])
 			posEnd = m_iSelectionAnchor;
 	}
 
-	m_pDoc->changeSpanFmt(PTC_AddFmt,posStart,UT_TRUE,posEnd,UT_TRUE,NULL,properties);
+	m_pDoc->changeSpanFmt(PTC_AddFmt,posStart,posEnd,NULL,properties);
 
 	_drawSelectionOrInsertionPoint();
 }
@@ -386,14 +372,7 @@ void FV_View::cmdCharDelete(UT_Bool bForward, UT_uint32 count)
 
 		m_bInsPointRight = bForward;
 
-		// TODO PAUL, help here...
-		// TODO Set bLeftSide1 to which side of the start position we should start the delete
-		// TODO Set bLeftSide2 to which side of the end position we should finish the delete.
-	
-		UT_Bool bLeftSide1 = UT_TRUE;
-		UT_Bool bLeftSide2 = UT_TRUE;
-
-		m_pDoc->deleteSpan(_getPoint(), bLeftSide1, bLeftSide2, count);
+		m_pDoc->deleteSpan(_getPoint(), _getPoint()+count);
 	}
 
 	_drawSelectionOrInsertionPoint();

@@ -748,7 +748,7 @@ void fp_Run::dumpRun(void) const
 	return;
 }
 
-UT_Bool fp_Run::ins(UT_uint32 iOffset, UT_uint32 iCount, UT_Bool bLeftSide, PT_AttrPropIndex indexAP)
+UT_Bool fp_Run::ins(UT_uint32 iOffset, UT_uint32 iCount, PT_AttrPropIndex indexAP)
 {
 	UT_ASSERT(m_pG->queryProperties(DG_Graphics::DGP_SCREEN));
 	if ((m_iOffsetFirst + m_iLen) < iOffset)

@@ -256,7 +256,7 @@ UT_Bool fl_DocListener::change(PL_StruxFmtHandle sfh,
 					*/
 					while (pRun)
 					{					
-						if (pRun->ins(blockOffset, len, pcrs->isLeftSide(), pcrs->getIndexAP()))
+						if (pRun->ins(blockOffset, len, pcrs->getIndexAP()))
 						{
 							if (pcrs->getIndexAP() != pcrs->getOldIndexAP())
 							{

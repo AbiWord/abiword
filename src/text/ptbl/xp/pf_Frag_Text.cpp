@@ -69,7 +69,6 @@ UT_Bool pf_Frag_Text::createSpecialChangeRecord(PX_ChangeRecord ** ppcr) const
 	PX_ChangeRecord * pcr
 		= new PX_ChangeRecord_Span(PX_ChangeRecord::PXT_InsertSpan,
 								   0,docPos,
-								   UT_TRUE, /* assume left side */
 								   m_indexAP,m_indexAP,
 								   UT_FALSE,UT_FALSE,
 								   m_bufIndex,m_length);
@@ -95,7 +94,7 @@ void pf_Frag_Text::adjustOffsetLength(PT_BufIndex bi, UT_uint32 newLength)
 void pf_Frag_Text::dump(FILE * fp) const
 {
 #ifdef UT_DEBUG
-	fprintf(fp,"      TextFragment 0x%08lx b[%08lx,%d] api[%08lx]\n",
+	fprintf(fp,"      TextFragment 0x%08lx b[%08lx,%ld] api[%08lx]\n",
 			(UT_uint32)this,m_bufIndex,m_length,m_indexAP);
 
 	const UT_UCSChar * ptr = m_pPieceTable->getPointer(m_bufIndex);

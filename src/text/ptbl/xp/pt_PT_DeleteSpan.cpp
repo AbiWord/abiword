@@ -115,14 +115,14 @@ UT_Bool pt_PieceTable::_deleteSpan(pf_Frag_Text * pft, UT_uint32 fragOffset,
 	return UT_TRUE;
 }
 
-UT_Bool pt_PieceTable::_deleteSpanWithNotify(PT_DocPosition dpos, UT_Bool bLeftSide,
+UT_Bool pt_PieceTable::_deleteSpanWithNotify(PT_DocPosition dpos,
 											 pf_Frag_Text * pft, UT_uint32 fragOffset,
 											 UT_uint32 length,
 											 pf_Frag_Strux * pfs,
 											 pf_Frag ** ppfEnd, UT_uint32 * pfragOffsetEnd)
 {
 
-#if 1
+#if 1//LEFT
 	// TODO when we add length to strux (and remove the bLeftSide
 	// TODO stuff) we probably won't need this.
 	if (length == 0)
@@ -145,7 +145,7 @@ UT_Bool pt_PieceTable::_deleteSpanWithNotify(PT_DocPosition dpos, UT_Bool bLeftS
 	PX_ChangeRecord_Span * pcr
 		= new PX_ChangeRecord_Span(PX_ChangeRecord::PXT_DeleteSpan,
 								   PX_ChangeRecord::PXF_Null,
-								   dpos,bLeftSide,
+								   dpos,
 								   m_indexAPTemporarySpanFmt,pft->getIndexAP(),
 								   m_bHaveTemporarySpanFmt,UT_FALSE,
 								   m_varset.getBufIndex(pft->getBufIndex(),fragOffset),
@@ -159,37 +159,35 @@ UT_Bool pt_PieceTable::_deleteSpanWithNotify(PT_DocPosition dpos, UT_Bool bLeftS
 	return bResult;
 }
 
-UT_Bool pt_PieceTable::deleteSpan(PT_DocPosition dpos,
-								  UT_Bool bLeftSide1,
-								  UT_Bool bLeftSide2,
-								  UT_uint32 length)
+UT_Bool pt_PieceTable::deleteSpan(PT_DocPosition dpos1,
+								  PT_DocPosition dpos2)
 {
 	// TODO consider changing the signature of this function to be
 	// TODO 2 PT_DocPositions rather than a position and a length.
 	// TODO this might save the caller from having to count the delta.
 	
 	// remove length characters from the document at the given position.
-	// we interpret the bLeftSide1 flag at the (dpos) and bLeftSide2 at
-	// (dpos+length).
 	
 	UT_ASSERT(m_pts==PTS_Editing);
+
+	UT_ASSERT(dpos2 > dpos1);
+	UT_uint32 length = dpos2 - dpos1;
 
 	if (m_bHaveTemporarySpanFmt)
 		clearTemporarySpanFmt();
 
 	struct _x
 	{
-		UT_Bool				x_bLeftSide;
 		pf_Frag_Strux *		x_pfs;
 		pf_Frag_Text *		x_pft;
 		PT_BlockOffset		x_fragOffset;
 	};
 
-	struct _x f = { bLeftSide1, NULL, NULL, 0 }; // first
-	struct _x e = { bLeftSide2, NULL, NULL, 0 }; // end
+	struct _x f = { NULL, NULL, 0 }; // first
+	struct _x e = { NULL, NULL, 0 }; // end
 
-	if (   !getTextFragFromPosition(dpos,       f.x_bLeftSide,&f.x_pfs,&f.x_pft,&f.x_fragOffset)
-		|| !getTextFragFromPosition(dpos+length,e.x_bLeftSide,&e.x_pfs,&e.x_pft,&e.x_fragOffset))
+	if (   !getTextFragFromPosition(dpos1,       &f.x_pfs,&f.x_pft,&f.x_fragOffset)
+		|| !getTextFragFromPosition(dpos2,&e.x_pfs,&e.x_pft,&e.x_fragOffset))
 	{
 		// could not find a text fragment containing the given
 		// absolute document position ???
@@ -257,8 +255,7 @@ UT_Bool pt_PieceTable::deleteSpan(PT_DocPosition dpos,
 						bFinished = UT_TRUE;
 				}
 				
-				// TODO decide if we need to send f.x_bLeftSide or if it matters.
-				UT_Bool bResult = _deleteStruxWithNotify(dpos,f.x_bLeftSide,pfs,
+				UT_Bool bResult = _deleteStruxWithNotify(dpos1,pfs,
 														 &pfNewEnd,&fragOffsetNewEnd);
 				UT_ASSERT(bResult);
 				// we do not update f.x_pfs because we just deleted pfs.
@@ -285,16 +282,19 @@ UT_Bool pt_PieceTable::deleteSpan(PT_DocPosition dpos,
 						bFinished = UT_TRUE;
 					else if (length==0)
 					{
+#if 0//LEFT
 						if (bLeftSide2)
 							bFinished = UT_TRUE;
-						else if (lengthInFrag > lengthThisStep)
+						else
+#endif
+							if (lengthInFrag > lengthThisStep)
 							bFinished = UT_TRUE;
 						else if (f.x_pft->getNext()->getType() == pf_Frag::PFT_Text)
 							bFinished = UT_TRUE;
 					}
 				}
 				
-				UT_Bool bResult = _deleteSpanWithNotify(dpos,UT_FALSE,f.x_pft,f.x_fragOffset,
+				UT_Bool bResult = _deleteSpanWithNotify(dpos1,f.x_pft,f.x_fragOffset,
 														lengthThisStep,
 														f.x_pfs,&pfNewEnd,&fragOffsetNewEnd);
 				UT_ASSERT(bResult);

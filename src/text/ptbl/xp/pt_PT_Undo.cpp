@@ -60,9 +60,9 @@ UT_Bool pt_PieceTable::_doTheDo(const PX_ChangeRecord * pcr)
 			pf_Frag_Strux * pfs = NULL;
 			pf_Frag_Text * pft = NULL;
 			PT_BlockOffset fragOffset = 0;
-			if (!getTextFragFromPosition(pcrSpan->getPosition(),pcrSpan->isLeftSide(),&pfs,&pft,&fragOffset))
+			if (!getTextFragFromPosition(pcrSpan->getPosition(),&pfs,&pft,&fragOffset))
 				return UT_FALSE;
-			if (!_insertSpan(pft,pcrSpan->getBufIndex(),pcrSpan->isLeftSide(),fragOffset,
+			if (!_insertSpan(pft,pcrSpan->getBufIndex(),fragOffset,
 							 pcrSpan->getLength(),pcrSpan->getIndexAP()))
 				return UT_FALSE;
 			m_pDocument->notifyListeners(pfs,pcr);
@@ -81,7 +81,7 @@ UT_Bool pt_PieceTable::_doTheDo(const PX_ChangeRecord * pcr)
 			pf_Frag_Strux * pfs = NULL;
 			pf_Frag_Text * pft = NULL;
 			PT_BlockOffset fragOffset = 0;
-			if (!getTextFragFromPosition(pcrSpan->getPosition(),UT_FALSE,&pfs,&pft,&fragOffset))
+			if (!getTextFragFromPosition(pcrSpan->getPosition(),&pfs,&pft,&fragOffset))
 				return UT_FALSE;
 			// TODO the following assert fired on me one time when
 			// TODO inserting/deleting frags that were formatted
@@ -106,7 +106,7 @@ UT_Bool pt_PieceTable::_doTheDo(const PX_ChangeRecord * pcr)
 			pf_Frag_Strux * pfs = NULL;
 			pf_Frag_Text * pft = NULL;
 			PT_BlockOffset fragOffset = 0;
-			if (!getTextFragFromPosition(pcrs->getPosition(),UT_FALSE,&pfs,&pft,&fragOffset))
+			if (!getTextFragFromPosition(pcrs->getPosition(),&pfs,&pft,&fragOffset))
 				return UT_FALSE;
 
 			// we need to loop here, because even though we have a simple (atomic) change,
@@ -145,9 +145,9 @@ UT_Bool pt_PieceTable::_doTheDo(const PX_ChangeRecord * pcr)
 			pf_Frag_Strux * pfsPrev = NULL;
 			pf_Frag_Text * pft = NULL;
 			PT_BlockOffset fragOffset = 0;
-			if (!getTextFragFromPosition(pcrStrux->getPosition(),pcrStrux->isLeftSide(),&pfsPrev,&pft,&fragOffset))
+			if (!getTextFragFromPosition(pcrStrux->getPosition(),&pfsPrev,&pft,&fragOffset))
 				return UT_FALSE;
-			_insertStrux(pfsPrev,pft,fragOffset,pcrStrux->isLeftSide(),pfsNew);
+			_insertStrux(pfsPrev,pft,fragOffset,pfsNew);
 			m_pDocument->notifyListeners(pfsPrev,pfsNew,pcr);
 		}
 		return UT_TRUE;
@@ -162,7 +162,7 @@ UT_Bool pt_PieceTable::_doTheDo(const PX_ChangeRecord * pcr)
 					pf_Frag_Strux * pfs = NULL;
 					pf_Frag_Text * pft = NULL;
 					PT_BlockOffset fragOffset = 0;
-					UT_Bool bFoundIt = getTextFragFromPosition(pcrStrux->getPosition(),pcrStrux->isLeftSide(),
+					UT_Bool bFoundIt = getTextFragFromPosition(pcrStrux->getPosition(),
 															   &pfs,&pft,&fragOffset);
 					UT_ASSERT(bFoundIt);
 					// TODO because strux aren't directly addressible because

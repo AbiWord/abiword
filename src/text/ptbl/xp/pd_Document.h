@@ -59,24 +59,18 @@ public:
 	UT_Bool					redoCmd(UT_uint32 repeatCount);
 	
 	UT_Bool					insertSpan(PT_DocPosition dpos,
-									   UT_Bool bLeftSide,
 									   UT_UCSChar * p,
 									   UT_uint32 length);
-	UT_Bool					deleteSpan(PT_DocPosition dpos,
-									   UT_Bool bLeftSide1,
-									   UT_Bool bLeftSide2,
-									   UT_uint32 length);
+	UT_Bool					deleteSpan(PT_DocPosition dpos1,
+									   PT_DocPosition dpos2);
 
 	UT_Bool					changeSpanFmt(PTChangeFmt ptc,
 										  PT_DocPosition dpos1,
-										  UT_Bool bLeftSide1,
 										  PT_DocPosition dpos2,
-										  UT_Bool bLeftSide2,
 										  const XML_Char ** attributes,
 										  const XML_Char ** properties);
 
 	UT_Bool					insertStrux(PT_DocPosition dpos,
-										UT_Bool bLeftSide,
 										PTStruxType pts);
 
 	UT_Bool					changeStruxFmt(PTChangeFmt ptc,

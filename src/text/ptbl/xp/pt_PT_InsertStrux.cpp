@@ -94,7 +94,6 @@ UT_Bool pt_PieceTable::_createStrux(PTStruxType pts,
 void pt_PieceTable::_insertStrux(pf_Frag_Strux * pfsPrev,
 								 pf_Frag_Text * pft,
 								 PT_BlockOffset fragOffset,
-								 UT_Bool bLeftSide,
 								 pf_Frag_Strux * pfsNew)
 {
 	// insert the new strux frag at the given offset within the
@@ -128,6 +127,7 @@ void pt_PieceTable::_insertStrux(pf_Frag_Strux * pfsPrev,
 		// insert the strux after the text fragment.
 
 		m_fragments.insertFrag(pft,pfsNew);
+#if 0//LEFT
 		if (bLeftSide)
 		{
 			// we are on the left side of the doc position and
@@ -145,6 +145,7 @@ void pt_PieceTable::_insertStrux(pf_Frag_Strux * pfsPrev,
 			// TODO         m_fragments.insertFrag(pfsNew,pftNew);
 		}
 		return;
+#endif
 	}
 
 	if (fragOffset == 0)
@@ -153,6 +154,7 @@ void pt_PieceTable::_insertStrux(pf_Frag_Strux * pfsPrev,
 		// insert the strux before the text fragment.
 
 		m_fragments.insertFrag(pft->getPrev(),pfsNew);
+#if 0//LEFT
 		if (!bLeftSide)
 		{
 			// we are on the right side of the doc position and
@@ -177,6 +179,7 @@ void pt_PieceTable::_insertStrux(pf_Frag_Strux * pfsPrev,
 			// TODO         pf_Frag_Text * pftNew = new...
 			// TODO         m_fragments.insertFrag(pfsNew->getPrev(),pftNew);
 		}
+#endif
 		return;
 	}
 
@@ -196,7 +199,6 @@ void pt_PieceTable::_insertStrux(pf_Frag_Strux * pfsPrev,
 		
 
 UT_Bool pt_PieceTable::insertStrux(PT_DocPosition dpos,
-								   UT_Bool bLeftSide,
 								   PTStruxType pts)
 {
 	// insert a new structure fragment at the given document position.
@@ -215,7 +217,7 @@ UT_Bool pt_PieceTable::insertStrux(PT_DocPosition dpos,
 	pf_Frag_Strux * pfsPrev = NULL;
 	pf_Frag_Text * pft = NULL;
 	PT_BlockOffset fragOffset = 0;
-	UT_Bool bFoundIt = getTextFragFromPosition(dpos,bLeftSide,&pfsPrev,&pft,&fragOffset);
+	UT_Bool bFoundIt = getTextFragFromPosition(dpos,&pfsPrev,&pft,&fragOffset);
 	UT_ASSERT(bFoundIt);
 
 	// if we are inserting something similar to the previous strux,
@@ -237,14 +239,14 @@ UT_Bool pt_PieceTable::insertStrux(PT_DocPosition dpos,
 
 	// insert this frag into the fragment list.
 
-	_insertStrux(pfsPrev,pft,fragOffset,bLeftSide,pfsNew);
+	_insertStrux(pfsPrev,pft,fragOffset,pfsNew);
 	
 	// create a change record to describe the change, add
 	// it to the history, and let our listeners know about it.
 	
 	PX_ChangeRecord_Strux * pcrs
 		= new PX_ChangeRecord_Strux(PX_ChangeRecord::PXT_InsertStrux,PX_ChangeRecord::PXF_Null,
-									dpos,bLeftSide,
+									dpos,
 									m_indexAPTemporarySpanFmt,indexAP,
 									m_bHaveTemporarySpanFmt,UT_FALSE,
 									pts);

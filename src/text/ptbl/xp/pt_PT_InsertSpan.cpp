@@ -46,7 +46,6 @@
 
 UT_Bool pt_PieceTable::_insertSpan(pf_Frag_Text * pft,
 								   PT_BufIndex bi,
-								   UT_Bool bLeftSide,
 								   PT_BlockOffset fragOffset,
 								   UT_uint32 length,
 								   PT_AttrPropIndex indexAP)
@@ -59,7 +58,11 @@ UT_Bool pt_PieceTable::_insertSpan(pf_Frag_Text * pft,
 	// try to coalesce this character data with an existing fragment.
 	// this is very likely to be sucessful during normal data entry.
 
-	if (bLeftSide && (fragOffset == fragLen))
+	if (
+#if 0//LEFT
+		bLeftSide &&
+#endif
+		(fragOffset == fragLen))
 	{
 		// if we are on the left side of the doc position, we
 		// received a fragment for which the doc position is
@@ -82,7 +85,11 @@ UT_Bool pt_PieceTable::_insertSpan(pf_Frag_Text * pft,
 		}
 	}
 
-	if (!bLeftSide && (fragOffset == 0))
+	if (
+#if 0//LEFT
+		!bLeftSide &&
+#endif
+		(fragOffset == 0))
 	{
 		// if we are on the right side of the doc position,
 		// we received a fragment for which the doc position is
@@ -177,7 +184,6 @@ UT_Bool pt_PieceTable::_insertSpan(pf_Frag_Text * pft,
 }
 
 UT_Bool pt_PieceTable::insertSpan(PT_DocPosition dpos,
-								  UT_Bool bLeftSide,
 								  UT_UCSChar * p,
 								  UT_uint32 length)
 {
@@ -199,7 +205,7 @@ UT_Bool pt_PieceTable::insertSpan(PT_DocPosition dpos,
 	pf_Frag_Strux * pfs = NULL;
 	pf_Frag_Text * pft = NULL;
 	PT_BlockOffset fragOffset = 0;
-	if (!getTextFragFromPosition(dpos,bLeftSide,&pfs,&pft,&fragOffset))
+	if (!getTextFragFromPosition(dpos,&pfs,&pft,&fragOffset))
 		return UT_FALSE;
 
 	PT_AttrPropIndex indexAP;
@@ -207,7 +213,7 @@ UT_Bool pt_PieceTable::insertSpan(PT_DocPosition dpos,
 		indexAP = m_indexAPTemporarySpanFmt;
 	else
 		indexAP = pft->getIndexAP();
-	if (!_insertSpan(pft,bi,bLeftSide,fragOffset,length,indexAP))
+	if (!_insertSpan(pft,bi,fragOffset,length,indexAP))
 		return UT_FALSE;
 
 	// create a change record, add it to the history, and notify
@@ -215,7 +221,7 @@ UT_Bool pt_PieceTable::insertSpan(PT_DocPosition dpos,
 	
 	PX_ChangeRecord_Span * pcr
 		= new PX_ChangeRecord_Span(PX_ChangeRecord::PXT_InsertSpan,PX_ChangeRecord::PXF_Null,
-								   dpos,bLeftSide,
+								   dpos,
 								   pft->getIndexAP(),indexAP,
 								   m_bHaveTemporarySpanFmt,UT_FALSE,
 								   bi,length);

@@ -54,7 +54,6 @@
 
 UT_Bool pt_PieceTable::_setTemporarySpanFmtWithNotify(PTChangeFmt ptc,
 													  PT_DocPosition dpos,
-													  UT_Bool bLeftSide,
 													  const XML_Char ** attributes,
 													  const XML_Char ** properties)
 {
@@ -77,7 +76,7 @@ UT_Bool pt_PieceTable::_setTemporarySpanFmtWithNotify(PTChangeFmt ptc,
 	pf_Frag_Strux * pfs;
 	pf_Frag_Text * pft;
 	PT_BlockOffset fragOffset;
-	UT_Bool bFound = getTextFragFromPosition(dpos,bLeftSide,&pfs,&pft,&fragOffset);
+	UT_Bool bFound = getTextFragFromPosition(dpos,&pfs,&pft,&fragOffset);
 	UT_ASSERT(bFound);
 
 	PT_AttrPropIndex indexNewAP;
@@ -95,7 +94,7 @@ UT_Bool pt_PieceTable::_setTemporarySpanFmtWithNotify(PTChangeFmt ptc,
 	PX_ChangeRecord_SpanChange * pcr
 		= new PX_ChangeRecord_SpanChange(PX_ChangeRecord::PXT_ChangeSpan,
 										 PX_ChangeRecord::PXF_Null,
-										 dpos,bLeftSide,
+										 dpos,
 										 indexOldAP,indexNewAP,
 										 m_bHaveTemporarySpanFmt,UT_TRUE,
 										 ptc,

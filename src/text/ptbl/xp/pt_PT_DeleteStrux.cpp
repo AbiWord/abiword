@@ -103,7 +103,7 @@ UT_Bool pt_PieceTable::_unlinkStrux_Block(pf_Frag_Strux * pfs,
 	}
 }
 			
-UT_Bool pt_PieceTable::_deleteStruxWithNotify(PT_DocPosition dpos, UT_Bool bLeftSide,
+UT_Bool pt_PieceTable::_deleteStruxWithNotify(PT_DocPosition dpos,
 											  pf_Frag_Strux * pfs,
 											  pf_Frag ** ppfEnd, UT_uint32 * pfragOffsetEnd)
 {
@@ -131,7 +131,7 @@ UT_Bool pt_PieceTable::_deleteStruxWithNotify(PT_DocPosition dpos, UT_Bool bLeft
 	PX_ChangeRecord_Strux * pcrs
 		= new PX_ChangeRecord_Strux(PX_ChangeRecord::PXT_DeleteStrux,
 									PX_ChangeRecord::PXF_Null,
-									dpos,bLeftSide,
+									dpos,
 									m_indexAPTemporarySpanFmt,pfs->getIndexAP(),
 									m_bHaveTemporarySpanFmt,UT_FALSE,
 									pfs->getStruxType());

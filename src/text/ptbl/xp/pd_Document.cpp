@@ -202,37 +202,31 @@ void PD_Document::dump(FILE * fp) const
 }
 
 UT_Bool PD_Document::insertSpan(PT_DocPosition dpos,
-								  UT_Bool bLeftSide,
 								  UT_UCSChar * p,
 								  UT_uint32 length)
 {
-	return m_pPieceTable->insertSpan(dpos,bLeftSide,p,length);
+	return m_pPieceTable->insertSpan(dpos,p,length);
 }
 
-UT_Bool PD_Document::deleteSpan(PT_DocPosition dpos,
-								UT_Bool bLeftSide1,
-								UT_Bool bLeftSide2,
-								UT_uint32 length)
+UT_Bool PD_Document::deleteSpan(PT_DocPosition dpos1,
+								PT_DocPosition dpos2)
 {
-	return m_pPieceTable->deleteSpan(dpos,bLeftSide1,bLeftSide2,length);
+	return m_pPieceTable->deleteSpan(dpos1,dpos2);
 }
 
 UT_Bool PD_Document::changeSpanFmt(PTChangeFmt ptc,
 								   PT_DocPosition dpos1,
-								   UT_Bool bLeftSide1,
 								   PT_DocPosition dpos2,
-								   UT_Bool bLeftSide2,
 								   const XML_Char ** attributes,
 								   const XML_Char ** properties)
 {
-	return m_pPieceTable->changeSpanFmt(ptc,dpos1,bLeftSide1,dpos2,bLeftSide2,attributes,properties);
+	return m_pPieceTable->changeSpanFmt(ptc,dpos1,dpos2,attributes,properties);
 }
 
 UT_Bool PD_Document::insertStrux(PT_DocPosition dpos,
-								 UT_Bool bLeftSide,
 								 PTStruxType pts)
 {
-	return m_pPieceTable->insertStrux(dpos,bLeftSide,pts);
+	return m_pPieceTable->insertStrux(dpos,pts);
 }
 
 UT_Bool PD_Document::changeStruxFmt(PTChangeFmt ptc,

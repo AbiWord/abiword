@@ -37,6 +37,6 @@ pf_Frag_Strux_Section::~pf_Frag_Strux_Section()
 
 void pf_Frag_Strux_Section::dump(FILE * fp) const
 {
-	fprintf(fp,"      Section 0x%08lx api[%d]\n",
+	fprintf(fp,"      Section 0x%08lx api[%ld]\n",
 			(UT_uint32)this,m_indexAP);
 }

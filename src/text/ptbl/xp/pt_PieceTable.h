@@ -55,25 +55,19 @@ public:
 	UT_Bool					redoCmd(void);
 
 	UT_Bool					insertSpan(PT_DocPosition dpos,
-									   UT_Bool bLeftSide,
 									   UT_UCSChar * p,
 									   UT_uint32 length);
 
-	UT_Bool					deleteSpan(PT_DocPosition dpos,
-									   UT_Bool bLeftSide1,
-									   UT_Bool bLeftSide2,
-									   UT_uint32 length);
+	UT_Bool					deleteSpan(PT_DocPosition dpos1,
+									   PT_DocPosition dpos2);
 
 	UT_Bool					changeSpanFmt(PTChangeFmt ptc,
 										  PT_DocPosition dpos1,
-										  UT_Bool bLeftSide1,
 										  PT_DocPosition dpos2,
-										  UT_Bool bLeftSide2,
 										  const XML_Char ** attributes,
 										  const XML_Char ** properties);
 
 	UT_Bool					insertStrux(PT_DocPosition dpos,
-										UT_Bool bLeftSide,
 										PTStruxType pts);
 
 	UT_Bool					changeStruxFmt(PTChangeFmt ptc,
@@ -110,7 +104,6 @@ public:
 												 PT_DocPosition docPos,
 												 PL_StruxFmtHandle * psfh) const;
 	UT_Bool					getTextFragFromPosition(PT_DocPosition docPos,
-													UT_Bool bLeftSide,
 													pf_Frag_Strux ** ppfs,
 													pf_Frag_Text ** ppft,
 													PT_BlockOffset * pOffset) const;
@@ -130,12 +123,10 @@ protected:
 	void					_insertStrux(pf_Frag_Strux * pfsPrev,
 										 pf_Frag_Text * pft,
 										 PT_BlockOffset fragOffset,
-										 UT_Bool bLeftSide,
 										 pf_Frag_Strux * pfsNew);
 
 	UT_Bool					_insertSpan(pf_Frag_Text * pft,
 										PT_BufIndex bi,
-										UT_Bool bLeftSide,
 										PT_BlockOffset fragOffset,
 										UT_uint32 length,
 										PT_AttrPropIndex indexAP);
@@ -155,12 +146,12 @@ protected:
 	UT_Bool					_unlinkStrux_Block(pf_Frag_Strux * pfs,
 											   pf_Frag ** ppfEnd, UT_uint32 * pfragOffsetEnd);
 
-	UT_Bool					_deleteSpanWithNotify(PT_DocPosition dpos, UT_Bool bLeftSide,
+	UT_Bool					_deleteSpanWithNotify(PT_DocPosition dpos,
 												  pf_Frag_Text * pft, UT_uint32 fragOffset,
 												  UT_uint32 length,
 												  pf_Frag_Strux * pfs,
 												  pf_Frag ** ppfEnd, UT_uint32 * pfragOffsetEnd);
-	UT_Bool					_deleteStruxWithNotify(PT_DocPosition dpos, UT_Bool bLeftSide,
+	UT_Bool					_deleteStruxWithNotify(PT_DocPosition dpos,
 												   pf_Frag_Strux * pfs,
 												   pf_Frag ** ppfEnd, UT_uint32 * pfragOffsetEnd);
 
@@ -191,7 +182,6 @@ protected:
 
 	UT_Bool					_setTemporarySpanFmtWithNotify(PTChangeFmt ptc,
 														   PT_DocPosition dpos,
-														   UT_Bool bLeftSide,
 														   const XML_Char ** attributes,
 														   const XML_Char ** properties);
 	

@@ -28,7 +28,6 @@
 PX_ChangeRecord_SpanChange::PX_ChangeRecord_SpanChange(PXType type,
 													   UT_Byte atomic,
 													   PT_DocPosition position,
-													   UT_Bool bLeftSide,
 													   PT_AttrPropIndex indexOldAP,
 													   PT_AttrPropIndex indexNewAP,
 													   UT_Bool bTempBefore,
@@ -36,7 +35,7 @@ PX_ChangeRecord_SpanChange::PX_ChangeRecord_SpanChange(PXType type,
 													   PTChangeFmt ptc,
 													   PT_BufIndex bufIndex,
 													   UT_uint32 length)
-	: PX_ChangeRecord(type, atomic, position, bLeftSide, indexOldAP, indexNewAP, bTempBefore, bTempAfter)
+	: PX_ChangeRecord(type, atomic, position, indexOldAP, indexNewAP, bTempBefore, bTempAfter)
 {
 	m_ptc = ptc;
 	m_bufIndex = bufIndex;
@@ -53,7 +52,7 @@ PX_ChangeRecord * PX_ChangeRecord_SpanChange::reverse(void) const
 	
 	PX_ChangeRecord_SpanChange * pcr
 		= new PX_ChangeRecord_SpanChange(getRevType(),getRevFlags(),
-										 m_position,m_bLeftSide,
+										 m_position,
 										 m_indexAP,m_indexOldAP,
 										 m_bTempAfter,m_bTempBefore,
 										 ptcRev,m_bufIndex,m_length);

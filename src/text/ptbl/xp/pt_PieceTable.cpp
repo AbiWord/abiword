@@ -380,7 +380,6 @@ UT_Bool pt_PieceTable::_getStruxOfTypeFromPosition(PT_DocPosition dpos,
 }
 	
 UT_Bool pt_PieceTable::getTextFragFromPosition(PT_DocPosition docPos,
-											   UT_Bool bLeftSide,
 											   pf_Frag_Strux ** ppfs,
 											   pf_Frag_Text ** ppft,
 											   PT_BlockOffset * pOffset) const
@@ -425,6 +424,7 @@ UT_Bool pt_PieceTable::getTextFragFromPosition(PT_DocPosition docPos,
 		}
 
 		sum += len;
+#if 0 //LEFT
 		if ((docPos == sum) && bLeftSide)	// if on right-edge of this fragment 
 		{									// (aka the left side of this position).
 			*pOffset = len;
@@ -432,6 +432,7 @@ UT_Bool pt_PieceTable::getTextFragFromPosition(PT_DocPosition docPos,
 			*ppfs = pfLastStrux;
 			return UT_TRUE;
 		}
+#endif
 	}
 
 	// if we fall out of the loop, we didn't have a text node

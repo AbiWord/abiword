@@ -50,7 +50,6 @@ public:
 	PX_ChangeRecord_SpanChange(PXType type,
 							   UT_Byte atomic,
 							   PT_DocPosition position,
-							   UT_Bool bLeftSide,
 							   PT_AttrPropIndex indexOldAP,
 							   PT_AttrPropIndex indexNewAP,
 							   UT_Bool bTempBefore,

@@ -33,7 +33,7 @@ PX_ChangeRecord_StruxChange::PX_ChangeRecord_StruxChange(PXType type,
 														 UT_Bool bTempBefore,
 														 UT_Bool bTempAfter,
 														 PTChangeFmt ptc)
-	: PX_ChangeRecord(type, atomic, position, UT_FALSE, indexOldAP, indexNewAP, bTempBefore, bTempAfter)
+	: PX_ChangeRecord(type, atomic, position, indexOldAP, indexNewAP, bTempBefore, bTempAfter)
 {
 	m_ptc = ptc;
 }

@@ -46,7 +46,6 @@ public:
 	PX_ChangeRecord_Strux(PXType type,
 						  UT_Byte atomic,
 						  PT_DocPosition position,
-						  UT_Bool bLeftSide,
 						  PT_AttrPropIndex indexOldAP,
 						  PT_AttrPropIndex indexAP,
 						  UT_Bool bTempBefore,

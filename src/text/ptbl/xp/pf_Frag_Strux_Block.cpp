@@ -36,6 +36,6 @@ pf_Frag_Strux_Block::~pf_Frag_Strux_Block()
 
 void pf_Frag_Strux_Block::dump(FILE * fp) const
 {
-	fprintf(fp,"      Block 0x%08lx api[%d]\n",
+	fprintf(fp,"      Block 0x%08lx api[%ld]\n",
 			(UT_uint32)this,m_indexAP);
 }

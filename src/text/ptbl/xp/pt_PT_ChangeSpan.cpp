@@ -159,7 +159,7 @@ UT_Bool pt_PieceTable::_fmtChangeSpanWithNotify(PTChangeFmt ptc,
 {
 	// create a change record for this change and put it in the history.
 
-#if 1
+#if 1//LEFT
 	// TODO when we add length to strux (and remove the bLeftSide
 	// TODO stuff) we probably won't need this.
 	if (length == 0)
@@ -206,11 +206,10 @@ UT_Bool pt_PieceTable::_fmtChangeSpanWithNotify(PTChangeFmt ptc,
 	// listeners of the change.
 
 	UT_ASSERT(!m_bHaveTemporarySpanFmt);
-	UT_Bool bLeftSide = UT_TRUE;		// TODO we are going to delete these.
 	PX_ChangeRecord_SpanChange * pcr
 		= new PX_ChangeRecord_SpanChange(PX_ChangeRecord::PXT_ChangeSpan,
 										 PX_ChangeRecord::PXF_Null,
-										 dpos,bLeftSide,
+										 dpos,
 										 indexOldAP,indexNewAP,
 										 m_bHaveTemporarySpanFmt,UT_FALSE,
 										 ptc,
@@ -227,9 +226,7 @@ UT_Bool pt_PieceTable::_fmtChangeSpanWithNotify(PTChangeFmt ptc,
 
 UT_Bool pt_PieceTable::changeSpanFmt(PTChangeFmt ptc,
 									 PT_DocPosition dpos1,
-									 UT_Bool bLeftSide1,
 									 PT_DocPosition dpos2,
-									 UT_Bool bLeftSide2,
 									 const XML_Char ** attributes,
 									 const XML_Char ** properties)
 {
@@ -241,7 +238,7 @@ UT_Bool pt_PieceTable::changeSpanFmt(PTChangeFmt ptc,
 	{
 		if (m_bHaveTemporarySpanFmt && (dpos1 != m_dposTemporarySpanFmt))
 			clearTemporarySpanFmt();
-		return _setTemporarySpanFmtWithNotify(ptc,dpos1,bLeftSide1,attributes,properties);
+		return _setTemporarySpanFmtWithNotify(ptc,dpos1,attributes,properties);
 	}
 	if (m_bHaveTemporarySpanFmt)
 		clearTemporarySpanFmt();
@@ -253,17 +250,16 @@ UT_Bool pt_PieceTable::changeSpanFmt(PTChangeFmt ptc,
 
 	struct _x
 	{
-		UT_Bool				x_bLeftSide;
 		pf_Frag_Strux *		x_pfs;
 		pf_Frag_Text *		x_pft;
 		PT_BlockOffset		x_fragOffset;
 	};
 
-	struct _x f = { bLeftSide1, NULL, NULL, 0 }; // first
-	struct _x e = { bLeftSide2, NULL, NULL, 0 }; // end
+	struct _x f = { NULL, NULL, 0 }; // first
+	struct _x e = { NULL, NULL, 0 }; // end
 
-	if (   !getTextFragFromPosition(dpos1,f.x_bLeftSide,&f.x_pfs,&f.x_pft,&f.x_fragOffset)
-		|| !getTextFragFromPosition(dpos2,e.x_bLeftSide,&e.x_pfs,&e.x_pft,&e.x_fragOffset))
+	if (   !getTextFragFromPosition(dpos1,&f.x_pfs,&f.x_pft,&f.x_fragOffset)
+		|| !getTextFragFromPosition(dpos2,&e.x_pfs,&e.x_pft,&e.x_fragOffset))
 	{
 		// could not find a text fragment containing the given
 		// absolute document position ???
@@ -343,9 +339,12 @@ UT_Bool pt_PieceTable::changeSpanFmt(PTChangeFmt ptc,
 						bFinished = UT_TRUE;
 					else if (length==0)
 					{
+#if 0//LEFT
 						if (bLeftSide2)
 							bFinished = UT_TRUE;
-						else if (lengthInFrag > lengthThisStep)
+						else 
+#endif
+							if (lengthInFrag > lengthThisStep)
 							bFinished = UT_TRUE;
 						else if (f.x_pft->getNext()->getType() == pf_Frag::PFT_Text)
 							bFinished = UT_TRUE;

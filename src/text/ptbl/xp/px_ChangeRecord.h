@@ -58,7 +58,6 @@ public:
 	PX_ChangeRecord(PXType type,
 					UT_Byte atomic,		/* see PXFlags */
 					PT_DocPosition position,
-					UT_Bool bLeftSide,
 					PT_AttrPropIndex indexOldAP,
 					PT_AttrPropIndex indexNewAP,
 					UT_Bool bTempBefore,
@@ -72,7 +71,6 @@ public:
 	PT_AttrPropIndex		getOldIndexAP(void) const;
 	UT_Bool					getTempBefore(void) const;
 	UT_Bool					getTempAfter(void) const;
-	UT_Bool					isLeftSide(void) const;
 
 	virtual PX_ChangeRecord * reverse(void) const;
 	UT_Byte					getRevFlags(void) const;
@@ -84,7 +82,6 @@ protected:
 	PXType					m_type;
 	UT_Byte					m_atomic;			/* see PXFlags above */
 	PT_DocPosition			m_position;			/* absolute document position of the change */
-	UT_Bool					m_bLeftSide;
 	PT_AttrPropIndex		m_indexAP;
 	PT_AttrPropIndex		m_indexOldAP;
 	UT_Bool					m_bTempBefore;
