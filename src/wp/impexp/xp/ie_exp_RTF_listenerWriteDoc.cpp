@@ -382,6 +382,7 @@ UT_Bool s_RTF_ListenerWriteDoc::populate(PL_StruxFmtHandle /*sfh*/,
 			default:
 				UT_ASSERT(0);
 #endif
+			default:
 				return UT_FALSE;
 			}
 		}

@@ -949,6 +949,9 @@ void AP_UnixDialog_Tab::_setAlignment( eTabType a )
 			id = id_ALIGN_BAR;
 			break;
 
+			// FL_TAB_NONE, __FL_TAB_MAX
+		default:
+		  return;
 		}
 	// time to set the alignment radiobutton widget
 	GtkWidget *w = _lookupWidget( id); 

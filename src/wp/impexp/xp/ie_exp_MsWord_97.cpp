@@ -576,7 +576,7 @@ UT_Bool s_MsWord_97_Listener::populate(PL_StruxFmtHandle /*sfh*/,
 	case PX_ChangeRecord::PXT_InsertObject:
 		{
 			const PX_ChangeRecord_Object * pcro = static_cast<const PX_ChangeRecord_Object *> (pcr);
-			PT_AttrPropIndex api = pcr->getIndexAP();
+			//PT_AttrPropIndex api = pcr->getIndexAP();
 			switch (pcro->getObjectType())
 			{
                 
