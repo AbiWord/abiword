@@ -3904,8 +3904,12 @@ bool s_RTF_ListenerWriteDoc::populateStrux(PL_StruxDocHandle sdh,
 			{
 				bFooterLast = true;
 			}
-
-			if(bHeader)
+			if(bHeader && !bHeaderEven)
+			{
+			        m_bInBlock = false;
+				m_pie->exportHdrFtr("header",pszHeaderID,"header");
+			}
+			else if(bHeader)
 			{
 				m_bInBlock = false;
 				m_pie->exportHdrFtr("header",pszHeaderID,"headerl");
@@ -3915,17 +3919,17 @@ bool s_RTF_ListenerWriteDoc::populateStrux(PL_StruxDocHandle sdh,
 				m_bInBlock = false;
 				m_pie->exportHdrFtr("header-even",pszHeaderEvenID,"headerr");
 			}
-			else if(bHeader)
-			{
-				m_bInBlock = false;
-				m_pie->exportHdrFtr("header",pszHeaderID,"headerr");
-			}
 			if(bHeaderFirst)
 			{
 				m_bInBlock = false;
 				m_pie->exportHdrFtr("header-first",pszHeaderFirstID,"headerf");
 			}
-			if(bFooter)
+			if(bFooter && !bFooterEven)
+			{
+			        m_bInBlock = false;
+				m_pie->exportHdrFtr("footer",pszFooterID,"footer");
+			}
+			else if(bFooter)
 			{
 				m_bInBlock = false;
 				m_pie->exportHdrFtr("footer",pszFooterID,"footerl");
@@ -3934,11 +3938,6 @@ bool s_RTF_ListenerWriteDoc::populateStrux(PL_StruxDocHandle sdh,
 			{
 				m_bInBlock = false;
 				m_pie->exportHdrFtr("footer-even",pszFooterEvenID,"footerr");
-			}
-			else if(bFooter)
-			{
-				m_bInBlock = false;
-				m_pie->exportHdrFtr("footer",pszFooterID,"footerr");
 			}
 			if(bFooterFirst)
 			{
@@ -3967,34 +3966,6 @@ bool s_RTF_ListenerWriteDoc::populateStrux(PL_StruxDocHandle sdh,
 			_closeSection();
 			_setTabEaten(false);
 			return false;
-#if 0
-//
-// We should have already outputting this.
-
-			// begin a header/footer.  in RTF this is expressed as
-			//
-			// {' <hdrctl> <para>+ '}' where <hdrctl> is one of
-			// \header or \footer for headers or footers on all pages
-			// \headerl or \headerr or \headerf for headers on left, right, and first pages
-			// \footerl or \footerr or \footerf for footers on left, right, and first pages
-			//
-			// here we deal with everything except for the <para>+
-			m_sdh = sdh;
-			m_pie->_rtf_nl();
-			m_pie->_rtf_open_brace();
-			PT_AttrPropIndex indexAP = pcr->getIndexAP();
-			const PP_AttrProp* pAP = NULL;
-			m_pDocument->getAttrProp(indexAP, &pAP);
-			const XML_Char* pszSectionType = NULL;
-			pAP->getAttribute("type", pszSectionType);
-			if(0 == UT_strcmp(pszSectionType, "header"))
-				m_pie->_rtf_keyword("header");
-			else if(0 == UT_strcmp(pszSectionType, "footer"))
-				m_pie->_rtf_keyword("footer");
-			else
-				UT_ASSERT_NOT_REACHED();
-			return true;
-#endif
 		}
 	case PTX_SectionFootnote:
 	    {
