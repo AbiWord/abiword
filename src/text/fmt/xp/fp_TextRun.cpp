@@ -2141,7 +2141,9 @@ void fp_TextRun::_drawFirstChar(bool bSelection)
 
 void fp_TextRun::_drawInvisibleSpaces(UT_sint32 xoff, UT_sint32 yoff)
 {
-	UT_sint32       iWidth = 0;
+	bool bRTL = getVisDirection() == UT_BIDI_RTL;
+	
+	UT_sint32       iWidth =  bRTL ? getWidth() : 0;
 	UT_uint32       iLen = getLength();
 	UT_sint32       iLineWidth = 1+ (UT_MAX(10,getAscent())-10)/8;
 	UT_sint32       iRectSize = iLineWidth * 3 / 2;
@@ -2164,11 +2166,21 @@ void fp_TextRun::_drawInvisibleSpaces(UT_sint32 xoff, UT_sint32 yoff)
 		
 		if(text.getChar() == UCS_SPACE)
 		{
-			painter.fillRect(pView->getColorShowPara(), xoff + iWidth + (iCharWidth - iRectSize) / 2,iY,iRectSize,iRectSize);
+			UT_uint32 x;
+			if(bRTL)
+				x = xoff + iWidth - (iCharWidth + iRectSize)/2;
+			else
+				x = xoff + iWidth + (iCharWidth - iRectSize)/2;
+			
+			painter.fillRect(pView->getColorShowPara(), x, iY, iRectSize, iRectSize);
 		}
 		UT_uint32 iCW = iCharWidth > 0 && iCharWidth < GR_OC_MAX_WIDTH ? iCharWidth : 0;
+
+		if(bRTL)
+			iWidth -= iCW;
+		else
+			iWidth += iCW;
 		
-		iWidth += iCW;
 		++iWidthOffset;
 	}
 }
