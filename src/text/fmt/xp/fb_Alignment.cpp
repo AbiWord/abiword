@@ -176,13 +176,14 @@ void fb_Alignment_justify::initialize(fp_Line *pLine)
 
 		m_iExtraWidth = pLine->getMaxWidth() - iWidth;
 
+		xxx_UT_DEBUGMSG(("fb_Alignment_justify::initialize (0x%x), iWidth %d, m_iExtraWidth %d\n",this,iWidth,m_iExtraWidth));
 		pLine->distributeJustificationAmongstSpaces(m_iExtraWidth);
 
 #ifdef BIDI_ENABLED
 		if(pLine->getBlock()->getDominantDirection() == FRIBIDI_TYPE_RTL)
 		{
-	    	m_iStartPosition = 0 - pLine->calculateWidthOfTrailingSpaces();
-	    	m_iStartPositionLayoutUnits = 0 - pLine->calculateWidthOfTrailingSpacesInLayoutUnits();
+	    	m_iStartPosition = pLine->getMaxWidth();
+	    	m_iStartPositionLayoutUnits = pLine->getMaxWidthInLayoutUnits();
 	 	}
 	 	else
 	 	{
@@ -199,13 +200,9 @@ void fb_Alignment_justify::initialize(fp_Line *pLine)
 #ifdef BIDI_ENABLED
 	else if(pLine->getBlock()->getDominantDirection() == FRIBIDI_TYPE_RTL) //this is RTL block, the last line behaves as if right-justified
 	{
-		//UT_DEBUGMSG(("Justified block, last line, right justified\n"));
-		UT_sint32 iWidth = pLine->calculateWidthOfLine() - pLine->calculateWidthOfTrailingSpaces();
-		/*UT_sint32*/ m_iExtraWidth = pLine->getMaxWidth() - iWidth;
-		m_iStartPosition = m_iExtraWidth;
-
-		UT_sint32 iWidthLayoutUnits = pLine->calculateWidthOfLineInLayoutUnits() - pLine->calculateWidthOfTrailingSpacesInLayoutUnits();
-		m_iStartPositionLayoutUnits = pLine->getMaxWidthInLayoutUnits() - iWidthLayoutUnits;
+		m_iStartPosition = pLine->getMaxWidth();
+		m_iStartPositionLayoutUnits = pLine->getMaxWidthInLayoutUnits();
+		
 	}
 	else
 	{

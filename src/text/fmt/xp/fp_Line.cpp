@@ -1438,9 +1438,42 @@ void fp_Line::layout(void)
 	} //for
 	
 	//now we are ready to deal with the alignment
-	//we only need to do this in case of centered line, so we will move it below
+	//we only need to do this in case of centered lines and justified lines,
+	// so we will move it below
 	//pAlignment->initialize(this);
+
+	if(eAlignment == FB_ALIGNMENT_JUSTIFY)
+	{
+		pAlignment->initialize(this);
 		
+		// now we need to shift the x-coordinances to reflect the new widths
+		// of the spaces
+		iStartX = pAlignment->getStartPosition();
+		for (UT_uint32 k = 0; k < iCountRuns; k++)
+		{
+#ifdef BIDI_ENABLED
+			UT_uint32 iK = (eWorkingDirection == WORK_FORWARD) ? k : iCountRuns - k - 1;
+	  		fp_Run* pRun = (fp_Run*) m_vecRuns.getNthItem(_getRunLogIndx(iK));
+#else
+			fp_Run* pRun = (fp_Run*) m_vecRuns.getNthItem(k);
+#endif
+			UT_ASSERT(pRun);
+
+#ifdef BIDI_ENABLED
+			if(eWorkingDirection == WORK_BACKWARD)
+			{
+				iStartX -= pRun->getWidth();
+				pRun->setX(iStartX);
+			}
+			else
+#endif
+			{
+				pRun->setX(iStartX);
+				iStartX += pRun->getWidth();
+			}
+		}
+	}
+	else
 	//if the line is centered we will have to shift the iX of each run
 	//since we worked on the assumption that the line starts at 0
 	//only now are we in the position to enquire of the alignment what
