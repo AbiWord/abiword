@@ -1190,13 +1190,12 @@ void s_HTML_Listener::_outputBegin (PT_AttrPropIndex api)
 	m_utf8_1 = "head";
 	tagOpen (TT_HEAD, m_utf8_1);
 
-	/* in the case of HTML4, we add a meta tag describing the document's charset as UTF-8
+	/* we add a meta tag describing the document's charset as UTF-8
+	 * even with XHTML because Safari and Camino fail to recognize
+	 * charset. This still validate W3C.
 	 */
-	if (get_HTML4 ())
-		{
-			m_utf8_1 = "meta http-equiv=\"content-type\" content=\"text/html; charset=UTF-8\"";
-			tagOpenClose (m_utf8_1, get_HTML4 ());
-		}
+	m_utf8_1 = "meta http-equiv=\"content-type\" content=\"text/html; charset=UTF-8\"";
+	tagOpenClose (m_utf8_1, get_HTML4 ());
 	
 	/* set page's title in browser
 	 */
