@@ -407,9 +407,9 @@ void XAP_UnixGnomePrintGraphics::setColor(UT_RGBColor& clr)
 	xxx_UT_DEBUGMSG(("Dom: setColor\n"));
 
 	gnome_print_setrgbcolor(m_gpc,
-				(int)(m_currentColor.m_red / 255),
-				(int)(m_currentColor.m_grn / 255),
-				(int)(m_currentColor.m_blu / 255));
+							(m_currentColor.m_red / 255.0),
+							(m_currentColor.m_grn / 255.0),
+							(m_currentColor.m_blu / 255.0));
 	
 }
 

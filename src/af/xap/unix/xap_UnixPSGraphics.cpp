@@ -1596,9 +1596,12 @@ PSFont *PS_Graphics::_findMatchPSFontCJK(PSFont * pFont)
 
 void PS_Graphics::_emit_SetFont(PSFont *pFont)
 {
-	char buf[1024];
-	g_snprintf(buf, 1024, "F%d\n", pFont->getIndex());
-	m_ps->writeBytes(buf);
+  if ( pFont )
+    {
+      char buf[1024];
+      g_snprintf(buf, 1024, "F%d\n", pFont->getIndex());
+      m_ps->writeBytes(buf);
+    }
 };
 
 
