@@ -39,6 +39,7 @@
 #include "xap_Prefs.h"
 #include "xap_EncodingManager.h"
 #include "ap_CocoaFrame.h"
+#include "xap_CocoaFrameImpl.h"
 
 #import <Cocoa/Cocoa.h>
 #import "xap_CocoaToolbarWindow.h"
@@ -644,11 +645,15 @@ AP_CocoaFrame * EV_CocoaToolbar::getFrame(void)
 void EV_CocoaToolbar::show(void)
 {
 	EV_Toolbar::show();
+	[[XAP_CocoaToolbarWindow sharedToolbar] redisplayToolbars:
+		static_cast<XAP_CocoaFrameImpl*>(m_pCocoaFrame->getFrameImpl())->_getController()];
 }
 
 void EV_CocoaToolbar::hide(void)
 {
 	EV_Toolbar::hide();
+	[[XAP_CocoaToolbarWindow sharedToolbar] redisplayToolbars:
+		static_cast<XAP_CocoaFrameImpl*>(m_pCocoaFrame->getFrameImpl())->_getController()];
 }
 
 /*!

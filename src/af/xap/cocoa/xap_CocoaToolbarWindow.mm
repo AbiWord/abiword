@@ -108,18 +108,18 @@ static XAP_CocoaToolbarWindow * pSharedToolbar = nil;
 
 }
 
-- (void)showToolbarNotification:(NSNotification*)notif
+
+- (void)redisplayToolbars:(XAP_CocoaFrameController*)frame
 {
-	UT_DEBUGMSG(("received showToolbarNotification:\n"));
-	XAP_CocoaFrameController* frame = [notif object];
-	
-	if (frame == m_current) {
-		UT_DEBUGMSG(("already shown\n"));
-		return;
+	if (!m_lock) {
+		[self removeAllToolbars];
+		[self _showAllToolbars:frame];
 	}
-	
-	[self removeAllToolbars];
-	
+}
+
+- (void)_showAllToolbars:(XAP_CocoaFrameController*)frame
+{
+	UT_ASSERT(frame);
 	NSArray* toolbars = [frame getToolbars];
 	int count = [toolbars count];
 	float height = count * EV_CocoaToolbar::getToolbarHeight();
@@ -142,8 +142,37 @@ static XAP_CocoaToolbarWindow * pSharedToolbar = nil;
 		[obj setFrame:bounds];
 		currentY -= EV_CocoaToolbar::getToolbarHeight();
 	}
-	[[self window] orderFront:self];
+}
+
+
+- (void)lock
+{
+	UT_ASSERT(m_lock == NO);
+	m_lock = YES;
+}
+
+
+- (void)unlock
+{
+	UT_ASSERT(m_lock);
+	m_lock = NO;
+}
+
+
+- (void)showToolbarNotification:(NSNotification*)notif
+{
+	UT_DEBUGMSG(("received showToolbarNotification:\n"));
+	XAP_CocoaFrameController* frame = [notif object];
+	
+	if (frame == m_current) {
+		UT_DEBUGMSG(("already shown\n"));
+		return;
+	}
 	m_current = frame;
+
+	[self removeAllToolbars];
+	[self _showAllToolbars:frame];
+	[[self window] orderFront:self];
 }
 
 

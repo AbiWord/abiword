@@ -31,6 +31,7 @@
 #import "xav_View.h"
 #import "xap_CocoaApp.h"
 #import "xap_CocoaTextView.h"
+#import "xap_CocoaToolbarWindow.h"
 
 #import "ap_FrameData.h"
 #import "ap_CocoaFrame.h"
@@ -499,6 +500,8 @@ void AP_CocoaFrameImpl::_showOrHideToolbars()
 	bool *bShowBar = static_cast<AP_FrameData*> (pFrame->getFrameData())->m_bShowBar;
 	UT_uint32 cnt = m_vecToolbarLayoutNames.getItemCount();
 
+	XAP_CocoaToolbarWindow* tlbr = [XAP_CocoaToolbarWindow sharedToolbar];
+	[tlbr lock];
 	for (UT_uint32 i = 0; i < cnt; i++)
 	{
 		// TODO: The two next lines are here to bind the EV_Toolbar to the
@@ -507,6 +510,8 @@ void AP_CocoaFrameImpl::_showOrHideToolbars()
 		static_cast<AP_FrameData*> (pFrame->getFrameData())->m_pToolbar[i] = pCocoaToolbar;
 		static_cast<AP_CocoaFrame *>(pFrame)->toggleBar(i, bShowBar[i]);
 	}
+	[tlbr unlock];
+	[tlbr redisplayToolbars:_getController()];
 }
 
 

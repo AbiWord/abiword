@@ -24,18 +24,27 @@
 #include "ut_vector.h"
 
 class EV_CocoaToolbar;
+@class XAP_CocoaFrameController;
 
 @interface XAP_CocoaToolbarWindow : NSWindowController
 {
 	id			m_current;
 	UT_Vector * m_toolbarVector;
+	BOOL		m_lock;
 }
 + (XAP_CocoaToolbarWindow *)sharedToolbar;
 + (XAP_CocoaToolbarWindow *)create;
 - (id)initWithWindow:(NSWindow *)window;
 - (void)dealloc;
 - (void)removeAllToolbars;
+- (void)redisplayToolbars:(XAP_CocoaFrameController*)frame;
 - (void)autoResize;
+
+/* lock and unlock redraw for batch toolbar changes, at initialization */
+- (void)lock;
+- (void)unlock;
+
+- (void)_showAllToolbars:(XAP_CocoaFrameController*)frame;
 
 - (void)showToolbarNotification:(NSNotification*)notif;
 - (void)hideToolbarNotification:(NSNotification*)notif;
