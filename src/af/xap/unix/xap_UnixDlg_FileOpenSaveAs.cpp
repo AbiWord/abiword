@@ -514,8 +514,6 @@ void XAP_UnixDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 	m_FS = pFS;
 
 	abiSetupModalDialog(GTK_DIALOG(pFS), pFrame, this, GTK_RESPONSE_CANCEL);
-	gtk_window_set_role(GTK_WINDOW(pFS), "file selection dialog");
- 
 	GtkWidget * filetypes_pulldown = NULL;
 	
 	/*
@@ -645,10 +643,6 @@ void XAP_UnixDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 	}
 	
 	// connect the signals for OK and CANCEL and the requisite clean-close signals
-	g_signal_connect_after(G_OBJECT(pFS),
-							 "destroy",
-							 NULL,
-							 NULL);
 	g_signal_connect(G_OBJECT(pFS),
 							 "delete_event",
 							 G_CALLBACK(s_delete_clicked),

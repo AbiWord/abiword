@@ -332,9 +332,10 @@ FV_View::FV_View(XAP_App * pApp, void* pParentData, FL_DocLayout* pLayout)
 //
 	XAP_Frame * pFrame = static_cast<XAP_Frame*>(getParentData());
 	if( pFrame )
-	  pFrame->repopulateCombos();
-
-	m_pG->createCaret();
+	  {
+	    pFrame->repopulateCombos();
+	    m_pG->createCaret();
+	  }
 }
 
 FV_View::~FV_View()

@@ -2108,7 +2108,7 @@ void fp_Line::layout(void)
 	xxx_UT_DEBUGMSG(("fp_Line::layout ------------------- \n"));
 
 	FV_View* pView = getBlock()->getDocLayout()->getView();
-	bool bShowHidden = pView->getShowPara();
+	bool bShowHidden = pView ? pView->getShowPara() : false;
 
 	UT_sint32 ii = 0;
 	for (; ii<iCountRuns; ++ii)

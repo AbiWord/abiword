@@ -185,8 +185,8 @@ void AP_Convert::print(const char * szFile, GR_Graphics * pGraphics)
 
   // create a new layout and view object for the doc
   FL_DocLayout *pDocLayout = new FL_DocLayout(pDoc,pGraphics);
-
   FV_View printView(getApp(),0,pDocLayout);
+  pDocLayout->setView (&printView);
   pDocLayout->fillLayouts();
 
   // get the width, height, orient

@@ -1918,7 +1918,7 @@ UT_Error fileOpen(XAP_Frame * pFrame, const char * pNewFile, IEFileType ieft)
 Defun1(fileOpen)
 {
 	CHECK_FRAME;
-	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
+	XAP_Frame * pFrame = static_cast<XAP_Frame *> (pAV_View->getParentData());
 	UT_ASSERT(pFrame);
 
 	char * pNewFile = NULL;
@@ -7546,52 +7546,49 @@ Defun1(insFile)
 	CHECK_FRAME;
 	ABIWORD_VIEW;
 
-  XAP_Frame * pFrame = static_cast<XAP_Frame *>(pAV_View->getParentData());
-  UT_ASSERT(pFrame);
-  XAP_App * pApp = pFrame->getApp();
+	XAP_Frame * pFrame = static_cast<XAP_Frame *>(pAV_View->getParentData());
+	UT_ASSERT(pFrame);
+	XAP_App * pApp = pFrame->getApp();
+	
+	IEFileType fType = IEFT_Unknown;
+	char *pathName = NULL;
+	
+	// we'll share the same graphics context, which won't matter because
+	// we only use it to get font metrics and stuff and not actually draw
+	GR_Graphics *pGraphics = pView->getGraphics();
+	
+	if (s_AskForPathname (pFrame, false, XAP_DIALOG_ID_INSERT_FILE,
+			      NULL, &pathName, &fType))
+	  {
+	    UT_DEBUGMSG(("DOM: insertFile %s\n", pathName));
+	    
+	    PD_Document * newDoc = new PD_Document(pApp);
+	    UT_Error err = newDoc->readFromFile(pathName, IEFT_Unknown);
+	    
+	    if ( err != UT_OK )
+	      {
+		UNREFP(newDoc);
+		s_TellOpenFailed(pFrame, pathName, err);
+		return false;
+	      }
+	    
+	    // create a new layout and view object for the doc
+	    FL_DocLayout *pDocLayout = new FL_DocLayout(newDoc,pGraphics);
+	    FV_View copyView(pApp,0,pDocLayout);
 
-  IEFileType fType = IEFT_Unknown;
-  char *pathName = NULL;
-
-  // we'll share the same graphics context, which won't matter because
-  // we only use it to get font metrics and stuff and not actually draw
-  GR_Graphics *pGraphics = pView->getGraphics();
-
-  if (s_AskForPathname (pFrame, false, XAP_DIALOG_ID_INSERT_FILE,
-			NULL, &pathName, &fType))
-	{
-	  UT_DEBUGMSG(("DOM: insertFile %s\n", pathName));
-
-	  PD_Document * newDoc = new PD_Document(pApp);
-	  UT_Error err = newDoc->readFromFile(pathName, IEFT_Unknown);
-
-	  if ( err != UT_OK )
-	{
-	  UNREFP(newDoc);
-	  s_TellOpenFailed(pFrame, pathName, err);
-	  return false;
-	}
-
-	  UT_DEBUGMSG(("DOM: read from file\n"));
-
-	  // create a new layout and view object for the doc
-	  FL_DocLayout *pDocLayout = new FL_DocLayout(newDoc,pGraphics);
-	  pDocLayout->fillLayouts();
-
-	  UT_DEBUGMSG(("DOM: new pDocLayout and formatted\n"));
-
-	  FV_View copyView(pApp,0,pDocLayout);
-	  copyView.cmdSelect(0, 0, FV_DOCPOS_BOD, FV_DOCPOS_EOD); // select all the contents of the new doc
-	  copyView.cmdCopy(); // copy the contents of the new document
-	  pView->cmdPaste ( true ); // paste the contents into the existing document honoring the formatting
-	  UT_DEBUGMSG(("DOM: copied and pasted\n"));
-
-	  DELETEP(pDocLayout);
-	  UNREFP(newDoc);
-	  return true;
-	}
-
-  return false;
+	    pDocLayout->setView (&copyView);
+	    pDocLayout->fillLayouts();
+	    
+	    copyView.cmdSelect(0, 0, FV_DOCPOS_BOD, FV_DOCPOS_EOD); // select all the contents of the new doc
+	    copyView.cmdCopy(); // copy the contents of the new document
+	    pView->cmdPaste ( true ); // paste the contents into the existing document honoring the formatting
+	    
+	    DELETEP(pDocLayout);
+	    UNREFP(newDoc);
+	    return true;
+	  }
+	
+	return false;
 }
 
 Defun1(insSymbol)
