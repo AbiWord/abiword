@@ -104,6 +104,36 @@ void AP_Dialog_Styles::addOrReplaceVecProp(const XML_Char * pszProp,
 	return;
 }
 
+
+/*!
+ * This method removes the key,value pair  (pszProp,pszVal) given by pszProp 
+ * from the Vector of all properties of the current style.
+ * If the Property does not exists nothing happens
+\param const XML_Char * pszProp the property name
+*/
+void AP_Dialog_Styles::removeVecProp(const XML_Char * pszProp)
+{
+	UT_sint32 iCount = m_vecAllProps.getItemCount();
+	const char * pszV = NULL;
+	if(iCount <= 0)
+	{
+		return;
+	}
+	UT_sint32 i = 0;
+	for(i=0; i < iCount ; i += 2)
+	{
+		pszV = (const XML_Char *) m_vecAllProps.getNthItem(i);
+		if( (pszV != NULL) && (strcmp( pszV,pszProp) == 0))
+			break;
+	}
+	if(i < iCount)
+	{
+		m_vecAllProps.deleteNthItem(i+1);
+		m_vecAllProps.deleteNthItem(i);
+	}
+	return;
+}
+
 /*!
  * This method adds the key,value pair pszProp,pszVal to the Vector of 
  * all attributes of the current style.
@@ -137,6 +167,43 @@ void AP_Dialog_Styles::addOrReplaceVecAttribs(const XML_Char * pszProp,
 		m_vecAllAttribs.addItem((void *) pszVal);
 	}
 	return;
+}
+
+void AP_Dialog_Styles::fillVecFromCurrentPoint(void)
+{
+	const XML_Char ** paraProps = NULL;
+	getView()->getBlockFormat(&paraProps);
+//
+// This line expands all styles
+//	getView()->getBlockFormat(&paraProps,true);
+	const XML_Char ** charProps = NULL;
+	getView()->getCharFormat(&charProps);
+//
+// This line expans all styles..
+//
+//	getView()->getCharFormat(&charProps,true);
+	UT_sint32 i =0;
+//
+// Loop over all properties and add them to our vector
+//
+	m_vecAllProps.clear();
+	const XML_Char * szName = NULL;
+	const XML_Char * szValue = NULL;
+	while(paraProps[i] != NULL)
+	{
+		szName = paraProps[i];
+		szValue = paraProps[i+1];
+		addOrReplaceVecProp(szName,szValue);
+		i = i + 2;
+	}
+	i = 0;
+	while(charProps[i] != NULL)
+	{
+		szName = charProps[i];
+		szValue = charProps[i+1];
+		addOrReplaceVecProp(szName,szValue);
+		i = i + 2;
+	}
 }
 
 void AP_Dialog_Styles::fillVecWithProps(const XML_Char * szStyle, bool bReplaceAttributes = true)
@@ -197,7 +264,6 @@ void AP_Dialog_Styles::fillVecWithProps(const XML_Char * szStyle, bool bReplaceA
 			const XML_Char * szName = attribs[i];
 			const XML_Char * szValue = NULL;		
 			pStyle->getAttribute(szName,szValue);
-			UT_DEBUGMSG(("SEVIOR: For attribute: %s value = %s \n",szName,szValue));
 			if(szValue)
 				addOrReplaceVecAttribs(szName, szValue);
 		}
@@ -297,7 +363,6 @@ void AP_Dialog_Styles::ModifyLang(void)
 
 void AP_Dialog_Styles::ModifyFont(void)
 {
-	UT_DEBUGMSG(("SEVIOR: Doing stuff in Modify Fonts\n"));
 //
 // Fire up the Font Chooser dialog. Code stolen straight from ap_EditMethods.
 //
@@ -684,12 +749,11 @@ void AP_Dialog_Styles::updateCurrentStyle(void)
 	else
 	{
 		getLDoc()->setStyleProperties("tmp",props);
+		getLDoc()->updateDocForStyleChange("tmp",true);
+
 	}
 	getLView()->setPoint(m_posFocus+1);
-	UT_DEBUGMSG(("SEVIOR: Calling view method setStyle \n"));
-//	getLView()->setStyle("Normal",true);
 	getLView()->setStyle("tmp");
-//	getLView()->getCurrentBlock()->format();
 	drawLocal();
 	DELETEP(props);
 
@@ -746,8 +810,6 @@ bool AP_Dialog_Styles::createNewStyle(const XML_Char * szName)
 //
 	const XML_Char * attrib[] = {PT_NAME_ATTRIBUTE_NAME,szName,PT_TYPE_ATTRIBUTE_NAME,getAttsVal(PT_TYPE_ATTRIBUTE_NAME),"basedon",getAttsVal("basedon"),"followedby",getAttsVal("followedby"),"props",m_curStyleDesc.c_str(),NULL,NULL};
 	bool bres = getDoc()->appendStyle(attrib);
-	for (i=0; attrib[i] != NULL; i++)
-		UT_DEBUGMSG(("SEVIOR: Appending style %s to main doc, attribs = %s \n",szName,attrib[i]));
 	DELETEP(props);
 	return bres;
 }
@@ -771,6 +833,16 @@ bool AP_Dialog_Styles::applyModifiedStyleToDoc(void)
 		props[i] = (const XML_Char *) m_vecAllProps.getNthItem(i);
 	}
 	props[i] = NULL;
+	UT_uint32 counta = m_vecAllAttribs.getItemCount() + 1;
+	const XML_Char ** attribs = NULL;
+	attribs = (const XML_Char **) calloc(counta, sizeof(XML_Char *));
+	counta--;
+	for(i=0; i<counta; i++)
+	{
+		attribs[i] = (const XML_Char *) m_vecAllAttribs.getNthItem(i);
+		UT_DEBUGMSG(("SEVIOR: Applying modified attribute %s \n",attribs[i]));
+	}
+	attribs[i] = NULL;
 //
 // clear out old description
 //
@@ -794,7 +866,9 @@ bool AP_Dialog_Styles::applyModifiedStyleToDoc(void)
 	if(szStyle == NULL)
 		return false;
 	bool bres = getDoc()->setStyleProperties(szStyle,props);
+	bres = getDoc()->setStyleAttributes(szStyle,attribs);
 	DELETEP(props);
+	DELETEP(attribs);
 	return bres;
 }
 
@@ -1002,13 +1076,9 @@ void AP_Dialog_Styles::_populateAbiPreview(bool isNew)
 	
 	getLView()->insertParagraphBreak();
 //
-// Second Paragraph in focus
+// Second Paragraph in focus. Our Vectors containing the current settings have
+// been filled from calls in the platform layer.
 //
-	if(!isNew)
-		fillVecWithProps(szStyle);
-	else
-		fillVecWithProps("Normal");
-
 	UT_uint32 countp = m_vecAllProps.getItemCount()+1;
 	const XML_Char ** lprop = NULL;
 	lprop = (const XML_Char **) calloc(countp, sizeof(XML_Char *));
@@ -1040,7 +1110,7 @@ void AP_Dialog_Styles::_populateAbiPreview(bool isNew)
 
 	if( pStyle == NULL)
 	{
-		const XML_Char * attrib[] = {PT_NAME_ATTRIBUTE_NAME,"tmp",PT_TYPE_ATTRIBUTE_NAME,"P","basedon","Normal","followedby","Normal","props",m_curStyleDesc.c_str(),NULL,NULL};
+		const XML_Char * attrib[] = {PT_NAME_ATTRIBUTE_NAME,"tmp",PT_TYPE_ATTRIBUTE_NAME,"P","basedon","None","followedby","Current Settings","props",m_curStyleDesc.c_str(),NULL,NULL};
 		getLDoc()->appendStyle(attrib);
 	}
 	else
@@ -1048,8 +1118,7 @@ void AP_Dialog_Styles::_populateAbiPreview(bool isNew)
 		getLDoc()->setStyleProperties("tmp",lprop);
 	}
 
-	if(!isNew)
-		getLView()->setStyle("tmp");
+	getLView()->setStyle("tmp");
 	m_posFocus = getLView()->getPoint();
 //
 // Set Color Back
@@ -1302,3 +1371,8 @@ void AP_Dialog_Styles::_populatePreviews(bool isModify)
 		}
 	}
 }
+
+
+
+
+

@@ -149,6 +149,17 @@ dcl(DLG_Styles_ModifyTabs,	    "Tabs")
 dcl(DLG_Styles_ModifyNumbering,	"Numbering")
 dcl(DLG_Styles_ModifyLanguage,  "Language")
 dcl(DLG_Styles_ModifyCharacter,  "Character")
+dcl(DLG_Styles_ModifyType,       "Style Type")
+dcl(DLG_Styles_DefNone,          "None")
+dcl(DLG_Styles_DefCurrent,       "Current Settings")
+dcl(DLG_Styles_NewTitle,         "New Style")
+dcl(DLG_Styles_RemoveLab,        "Remove Property from Style")
+dcl(DLG_Styles_RemoveButton,     "Remove")
+dcl(DLG_Styles_ErrNotTitle1,     "Style Name - ")
+dcl(DLG_Styles_ErrNotTitle2,     " - Reserved. \n You cannot use this name. Choose Another \n")
+dcl(DLG_Styles_ErrNoStyle,       "No Style selected \n so it cannot be modified")
+dcl(DLG_Styles_ErrStyleNot,      "This style does not exist \n so it cannot be modified")
+
 
 /* Paragraph dialog */
 dcl(DLG_Para_ParaTitle,			"Paragraph")

@@ -616,7 +616,11 @@ GTK_CFLAGS	:=	$(shell $(GTK_CONFIG) --cflags)
 GTK_LIBS	:=	$(shell $(GTK_CONFIG) --libs)
 GLIB_CFLAGS     :=      $(shell glib-config --cflags)
 CFLAGS 		+=	$(GTK_CFLAGS) $(GLIB_CFLAGS)
-EXTRA_LIBS	+=	$(GTK_LIBS)
+#EXTRA_LIBS	+=	$(GTK_LIBS)
+#
+# Enable this line for electric fence.
+#
+EXTRA_LIBS	+=	$(GTK_LIBS) -lefence
 ABI_OPTIONS+=Gnome:Off
 endif
 

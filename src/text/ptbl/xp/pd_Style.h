@@ -53,6 +53,7 @@ public:
 	
 	bool					setProperty(const XML_Char * szName, const XML_Char * szValue);
 	bool					setProperties(const XML_Char ** pProperties);
+	bool					setAttributes(const XML_Char ** pAtts);
 
 	size_t getPropertyCount(void) const;
 	bool getNthProperty (int ndx, const XML_Char *&szName,

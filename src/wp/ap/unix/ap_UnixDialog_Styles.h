@@ -75,6 +75,8 @@ public:
 	void         event_ModifyTabs();
 	void         event_ModifyLanguage();
 	void         event_ModifyPreviewExposed();
+	void         event_RemoveProperty(void);
+	void         rebuildDeleteProps(void);
 	void         event_basedOn(void);
 	void         event_followedBy(void);
 	void         event_styleType(void);
@@ -173,6 +175,7 @@ private:
 };
 
 #endif /* AP_UnixDialog_Styles_H */
+
 
 
 

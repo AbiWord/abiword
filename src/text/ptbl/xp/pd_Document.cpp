@@ -37,6 +37,9 @@
 #include "pf_Frag_Strux.h"
 #include "pd_Style.h"
 #include "pf_Frag_Object.h"
+#include "px_CR_Span.h"
+#include "px_CR_SpanChange.h"
+#include "px_CR_Strux.h"
 #include "pf_Frag.h"
 #include "fd_Field.h"
 #include "fl_BlockLayout.h"
@@ -1045,7 +1048,29 @@ bool	PD_Document::setStyleProperties(const XML_Char * szStyleName, const XML_Cha
 		return false;
 	if(!(*ppS)->setProperties(pProperties))
 		return false;
-	return updateDocForStyleChange(szStyleName,true);
+	return updateDocForStyleChange(szStyleName,!(*ppS)->isCharStyle());
+}
+
+/*! 
+ * This methods changes the attributes of a style (basedon,followedby)
+ *
+\param szStyleName the const XML_Char * name of the style
+\param pAttribs The list of attributes of the updated style.
+*/
+bool	PD_Document::setStyleAttributes(const XML_Char * szStyleName, const XML_Char ** pAttribs)
+{
+	PD_Style * pS;
+	PD_Style ** ppS = &pS;
+	if(!m_pPieceTable->getStyle(szStyleName, ppS))
+		return false;
+	if(!(*ppS)->setAttributes(pAttribs))
+		return false;
+//
+// These functions just set the new member variable pointers in the class
+//
+	(*ppS)->getBasedOn();
+	(*ppS)->getFollowedBy();
+	return updateDocForStyleChange(szStyleName,!(*ppS)->isCharStyle());
 }
 
 /*!
@@ -1057,6 +1082,9 @@ bool	PD_Document::setStyleProperties(const XML_Char * szStyleName, const XML_Cha
 bool   PD_Document::updateDocForStyleChange(const XML_Char * szStyle, 
 											bool isParaStyle)
 {
+	PT_DocPosition pos = 0;
+	PT_DocPosition posLastStrux = 0;
+	pf_Frag_Strux * pfs = NULL;
 	pf_Frag * currentFrag = m_pPieceTable->getFragments().getFirst();
 	UT_ASSERT(currentFrag);
 	while (currentFrag!=m_pPieceTable->getFragments().getLast())
@@ -1072,7 +1100,7 @@ bool   PD_Document::updateDocForStyleChange(const XML_Char * szStyle,
 //
 // All this code is used to find if this strux has our style in it
 //
-				pf_Frag_Strux * pfs = static_cast<pf_Frag_Strux *> (currentFrag);
+				pfs = static_cast<pf_Frag_Strux *> (currentFrag);
 				PT_AttrPropIndex indexAP = pfs->getIndexAP();
 				const PP_AttrProp * pAP = NULL;
 				m_pPieceTable->getAttrProp(indexAP,&pAP);
@@ -1085,14 +1113,51 @@ bool   PD_Document::updateDocForStyleChange(const XML_Char * szStyle,
 //
 				if(pszStyleName != NULL && strcmp(pszStyleName,szStyle)==0)
 				{
-					PL_StruxDocHandle sdh = (PL_StruxDocHandle) pfs;
-					PT_DocPosition pos = getStruxPosition(sdh);
 					PX_ChangeRecord * pcr = new PX_ChangeRecord(PX_ChangeRecord::PXT_ChangeStrux,pos,indexAP);
 					notifyListeners(pfs, pcr);
 					delete pcr;
 				}
 			}
 		}
+//
+// Character type
+//
+		else
+		{
+//
+// Need the most recent frag_strux to find the block containing our text span
+//
+			if (currentFrag->getType()==pf_Frag::PFT_Strux)
+			{
+				pfs = static_cast<pf_Frag_Strux *> (currentFrag);
+				posLastStrux = pos;
+			}
+			if (currentFrag->getType()==pf_Frag::PFT_Text)
+			{
+//
+// All this code is used to find if this Text Frag has our style in it
+//
+				pf_Frag_Text * pft = static_cast<pf_Frag_Text *> (currentFrag);
+				PT_AttrPropIndex indexAP = pft->getIndexAP();
+				const PP_AttrProp * pAP = NULL;
+				m_pPieceTable->getAttrProp(indexAP,&pAP);
+				UT_ASSERT(pAP);
+				const XML_Char * pszStyleName = NULL;
+				(pAP)->getAttribute(PT_STYLE_ATTRIBUTE_NAME, pszStyleName);
+//
+// It does so signal all the layouts to update themselves for the new definition
+// of the style.
+//
+				if(pszStyleName != NULL && strcmp(pszStyleName,szStyle)==0)
+				{
+					UT_uint32 blockoffset = (UT_uint32) (pos - posLastStrux -1);
+					PX_ChangeRecord_SpanChange * pcr = new PX_ChangeRecord_SpanChange(PX_ChangeRecord::PXT_ChangeSpan,pos,indexAP,indexAP, m_pPieceTable->getVarSet().getBufIndex(pft->getBufIndex(),0) ,currentFrag->getLength(),blockoffset);
+					notifyListeners(pfs, pcr);
+					delete pcr;
+				}
+			}
+		}
+		pos += currentFrag->getLength();
 		currentFrag = currentFrag->getNext();
 	}
 	return true;

@@ -140,6 +140,12 @@ s_newbtn_clicked (GtkWidget *w, gpointer d)
 	dlg->event_NewClicked ();
 }
 
+static void s_remove_property(GtkWidget * widget, AP_UnixDialog_Styles * me)
+{
+	UT_ASSERT(widget && me);
+	me->event_RemoveProperty();
+}
+
 static void s_style_name(GtkWidget * widget, AP_UnixDialog_Styles * me)
 {
 	UT_ASSERT(widget && me);
@@ -651,7 +657,7 @@ GtkWidget* AP_UnixDialog_Styles::_constructWindowContents(
 
 	frameParaPrev = gtk_frame_new(
 		pSS->getValue(AP_STRING_ID_DLG_Styles_ParaPrev));
-	ParaPreviewArea = createDrawingArea ();
+	ParaPreviewArea = gtk_drawing_area_new();
 	gtk_drawing_area_size(GTK_DRAWING_AREA(ParaPreviewArea), 300, 70);
 	gtk_container_add(GTK_CONTAINER(frameParaPrev), ParaPreviewArea);
 
@@ -661,7 +667,7 @@ GtkWidget* AP_UnixDialog_Styles::_constructWindowContents(
 
 	frameCharPrev = gtk_frame_new(
 		pSS->getValue(AP_STRING_ID_DLG_Styles_CharPrev));
-	CharPreviewArea = createDrawingArea ();
+	CharPreviewArea = gtk_drawing_area_new();
 	gtk_drawing_area_size(GTK_DRAWING_AREA(CharPreviewArea), 300, 50);
 	gtk_container_add(GTK_CONTAINER(frameCharPrev), CharPreviewArea);
 
@@ -863,7 +869,7 @@ GtkWidget *  AP_UnixDialog_Styles::_constructModifyDialog(void)
 	if(!isNew())
 		gtk_window_set_title (GTK_WINDOW (modifyDialog), pSS->getValue(AP_STRING_ID_DLG_Styles_ModifyTitle));
 	else
-		gtk_window_set_title (GTK_WINDOW (modifyDialog), "New Style");
+		gtk_window_set_title (GTK_WINDOW (modifyDialog), pSS->getValue(AP_STRING_ID_DLG_Styles_NewTitle));
 	gtk_window_set_policy (GTK_WINDOW (modifyDialog), TRUE, TRUE, FALSE);
 	_constructModifyDialogContents(modifyDialog);
 
@@ -934,7 +940,7 @@ void  AP_UnixDialog_Styles::_constructModifyDialogContents(GtkWidget * modifyDia
 	gtk_label_set_justify (GTK_LABEL (nameLabel), GTK_JUSTIFY_LEFT);
 	gtk_misc_set_padding (GTK_MISC (nameLabel), 2, 2);
 
-	styleTypeLabel = gtk_label_new ( "Style Type");
+	styleTypeLabel = gtk_label_new ( pSS->getValue(AP_STRING_ID_DLG_Styles_ModifyType));
 	gtk_widget_show (styleTypeLabel);
 	gtk_table_attach (GTK_TABLE (comboTable), styleTypeLabel, 1, 2, 0, 1,
 					  (GtkAttachOptions) (GTK_FILL),
@@ -967,56 +973,25 @@ void  AP_UnixDialog_Styles::_constructModifyDialogContents(GtkWidget * modifyDia
 					  (GtkAttachOptions) (0), 0, 0);
 	gtk_widget_set_usize (styleNameEntry, 158, -2);
 
-//
-// Cannot modify basedon attribute
-//	
-	if(isNew())
-	{
-		basedOnCombo = gtk_combo_new ();
-		gtk_widget_show (basedOnCombo);
-		gtk_table_attach (GTK_TABLE (comboTable), basedOnCombo, 0, 1, 3, 4,
-						  (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
-						  (GtkAttachOptions) (0), 0, 0);
+	basedOnCombo = gtk_combo_new ();
+	gtk_widget_show (basedOnCombo);
+	gtk_table_attach (GTK_TABLE (comboTable), basedOnCombo, 0, 1, 3, 4,
+					  (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
+					  (GtkAttachOptions) (0), 0, 0);
 		
-		basedOnEntry = GTK_COMBO (basedOnCombo)->entry;
-		gtk_widget_show (basedOnEntry);
-		gtk_widget_set_usize (basedOnEntry, 158, -2);
-	}
-	else
-	{
-		basedOnEntry = gtk_entry_new();
-		gtk_widget_show (basedOnEntry);
-		gtk_table_attach (GTK_TABLE (comboTable), basedOnEntry, 0, 1, 3, 4,
-						  (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
-						  (GtkAttachOptions) (0), 0, 0);
-		gtk_widget_set_usize (basedOnEntry, 158, -2);
-	}		
+	basedOnEntry = GTK_COMBO (basedOnCombo)->entry;
+	gtk_widget_show (basedOnEntry);
+	gtk_widget_set_usize (basedOnEntry, 158, -2);
 
-//
-// Cannot modify following attribute
-//	
-	if(isNew())
-	{
-		followingCombo = gtk_combo_new ();
-		gtk_widget_show (followingCombo);
-		gtk_table_attach (GTK_TABLE (comboTable), followingCombo, 1, 2, 3, 4,
-						  (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
-						  (GtkAttachOptions) (0), 0, 0);
+	followingCombo = gtk_combo_new ();
+	gtk_widget_show (followingCombo);
+	gtk_table_attach (GTK_TABLE (comboTable), followingCombo, 1, 2, 3, 4,
+					  (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
+					  (GtkAttachOptions) (0), 0, 0);
 
-		followingEntry = GTK_COMBO (followingCombo)->entry;
-		gtk_widget_show (followingEntry);
-		gtk_widget_set_usize (followingEntry, 158, -2);
-	}
-	else
-	{
-		followingEntry = gtk_entry_new();
-		gtk_widget_show (followingEntry);
-		gtk_table_attach (GTK_TABLE (comboTable), followingEntry, 1, 2, 3, 4,
-						  (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
-						  (GtkAttachOptions) (0), 0, 0);
-		gtk_widget_set_usize (followingEntry, 158, -2);
-	}
-
+	followingEntry = GTK_COMBO (followingCombo)->entry;
+	gtk_widget_show (followingEntry);
+	gtk_widget_set_usize (followingEntry, 158, -2);
 //
 // Cannot modify style type attribute
 //	
@@ -1048,7 +1023,7 @@ void  AP_UnixDialog_Styles::_constructModifyDialogContents(GtkWidget * modifyDia
 	gtk_container_set_border_width (GTK_CONTAINER (previewFrame), 5);
 	gtk_frame_set_shadow_type (GTK_FRAME (previewFrame), GTK_SHADOW_IN);
 
-	modifyDrawingArea = createDrawingArea ();
+	modifyDrawingArea = gtk_drawing_area_new ();
 	gtk_widget_show (modifyDrawingArea);
 	gtk_container_add (GTK_CONTAINER (previewFrame), modifyDrawingArea);
 	gtk_widget_set_usize (modifyDrawingArea, -2, 120);
@@ -1074,7 +1049,7 @@ void  AP_UnixDialog_Styles::_constructModifyDialogContents(GtkWidget * modifyDia
 	gtk_box_pack_start (GTK_BOX (OverallVbox), deleteRow, TRUE, TRUE, 0);
 	gtk_container_set_border_width (GTK_CONTAINER (deleteRow), 2);
 
-	GtkWidget * deleteLabel = gtk_label_new("Remove Property from Style");
+	GtkWidget * deleteLabel = gtk_label_new(pSS->getValue(AP_STRING_ID_DLG_Styles_RemoveLab));
 	gtk_widget_show (deleteLabel);
 	gtk_box_pack_start (GTK_BOX (deleteRow), deleteLabel, TRUE, TRUE, 0);
 
@@ -1086,7 +1061,7 @@ void  AP_UnixDialog_Styles::_constructModifyDialogContents(GtkWidget * modifyDia
 	gtk_widget_show (deletePropEntry);
 	gtk_widget_set_usize (deletePropEntry, 158, -2);
 	
-	deletePropButton = gtk_button_new_with_label("Remove");
+	deletePropButton = gtk_button_new_with_label(pSS->getValue(AP_STRING_ID_DLG_Styles_RemoveButton));
 	gtk_widget_show(deletePropButton);
 	gtk_box_pack_start (GTK_BOX (deleteRow), deletePropButton, TRUE, TRUE, 0);
 		
@@ -1116,7 +1091,9 @@ void  AP_UnixDialog_Styles::_constructModifyDialogContents(GtkWidget * modifyDia
 	m_wModifyDrawingArea = modifyDrawingArea;
 	m_wLabDescription = DescriptionText;
 	m_wModifyDialog = modifyDialog;
-
+	m_wDeletePropCombo = deletePropCombo;
+	m_wDeletePropEntry = deletePropEntry;
+	m_wDeletePropButton = deletePropButton;
 }
 
 void   AP_UnixDialog_Styles::_constructGnomeModifyButtons( GtkWidget * dialog_action_area)
@@ -1243,6 +1220,11 @@ void AP_UnixDialog_Styles::_connectModifySignals(void)
 					   GTK_SIGNAL_FUNC(s_modifyPreview_exposed),
 					   (gpointer) this);
 
+	gtk_signal_connect(GTK_OBJECT(m_wDeletePropButton),
+					   "clicked",
+					   GTK_SIGNAL_FUNC(s_remove_property),
+					   (gpointer) this);
+
 	gtk_signal_connect(GTK_OBJECT(m_wStyleNameEntry),
 					   "changed",
 					   GTK_SIGNAL_FUNC(s_style_name),
@@ -1295,10 +1277,56 @@ void AP_UnixDialog_Styles::event_Modify_OK(void)
  */
 void AP_UnixDialog_Styles::new_styleName(void)
 {
+	static char message[200];
+	const XAP_StringSet * pSS = m_pApp->getStringSet();
 	gchar * psz = gtk_entry_get_text( GTK_ENTRY( m_wStyleNameEntry));
-	UT_DEBUGMSG(("SEVIOR: New style name %s \n",psz));
+	if(psz && strcmp(psz,pSS->getValue(AP_STRING_ID_DLG_Styles_DefNone))== 0)
+	{
+			// TODO: do a real error dialog
+		sprintf(message,"%s%s%s",pSS->getValue(AP_STRING_ID_DLG_Styles_ErrNotTitle1),psz,pSS->getValue(AP_STRING_ID_DLG_Styles_ErrNotTitle2));
+		messageBoxOK((const char *) message);
+		return;
+	}
+	if(psz && strcmp(psz,pSS->getValue(AP_STRING_ID_DLG_Styles_DefCurrent))== 0)
+	{
+			// TODO: do a real error dialog
+		sprintf(message,"%s%s%s",pSS->getValue(AP_STRING_ID_DLG_Styles_ErrNotTitle1),psz,pSS->getValue(AP_STRING_ID_DLG_Styles_ErrNotTitle2));
+		messageBoxOK((const char *) message);
+		return;
+	}
+
 	g_snprintf((gchar *) m_newStyleName,40,"%s",psz);
 	addOrReplaceVecAttribs(PT_NAME_ATTRIBUTE_NAME,getNewStyleName());
+}
+
+/*!
+ * Remove the property from the current style shown in the remove combo box
+ */
+void AP_UnixDialog_Styles::event_RemoveProperty(void)
+{
+	gchar * psz = gtk_entry_get_text( GTK_ENTRY(m_wDeletePropEntry));
+	removeVecProp(psz);
+	rebuildDeleteProps();
+	updateCurrentStyle();
+}
+
+void AP_UnixDialog_Styles::rebuildDeleteProps(void)
+{
+	GtkCombo* delCombo = GTK_COMBO(m_wDeletePropCombo);
+	GtkList * oldList = GTK_LIST(delCombo->list);
+	if(oldList != NULL)
+	{
+		gtk_list_clear_items(oldList,0,-1);
+	}
+	UT_sint32 count = m_vecAllProps.getItemCount();
+	UT_sint32 i= 0;
+	for(i=0; i< count; i+=2)
+	{
+		gchar * sz = (gchar *) m_vecAllProps.getNthItem(i);
+		GtkWidget * li = gtk_list_item_new_with_label(sz);
+		gtk_widget_show(li);
+		gtk_container_add(GTK_CONTAINER(delCombo->list),li);
+	}
 }
 
 /*!
@@ -1307,14 +1335,10 @@ void AP_UnixDialog_Styles::new_styleName(void)
 void AP_UnixDialog_Styles::event_basedOn(void)
 {
 	gchar * psz = gtk_entry_get_text( GTK_ENTRY( m_wBasedOnEntry));
-	UT_DEBUGMSG(("SEVIOR: New basedon name %s \n",psz));
 	g_snprintf((gchar *) m_basedonName,40,"%s",psz);
 	addOrReplaceVecAttribs("basedon",getBasedonName());
-	UT_DEBUGMSG(("SEVIOR: Readback basedon name 1 = %s \n",getAttsVal("basedon")));
 	fillVecWithProps(getBasedonName(),false);
-	UT_DEBUGMSG(("SEVIOR: Readback basedon name 2 = %s \n",getAttsVal("basedon")));
 	updateCurrentStyle();
-	UT_DEBUGMSG(("SEVIOR: Readback basedon name 3 = %s \n",getAttsVal("basedon")));
 }
 
 
@@ -1324,7 +1348,6 @@ void AP_UnixDialog_Styles::event_basedOn(void)
 void AP_UnixDialog_Styles::event_followedBy(void)
 {
 	gchar * psz = gtk_entry_get_text( GTK_ENTRY(m_wFollowingEntry));
-	UT_DEBUGMSG(("SEVIOR: New followedby name %s \n",psz));
 	g_snprintf((gchar *) m_followedbyName,40,"%s",psz);
 	addOrReplaceVecAttribs("followedby",getFollowedbyName());
 }
@@ -1337,14 +1360,11 @@ void AP_UnixDialog_Styles::event_styleType(void)
 {
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
 	gchar * psz = gtk_entry_get_text( GTK_ENTRY(m_wStyleTypeEntry));
-	UT_DEBUGMSG(("SEVIOR: New Style Type %s \n",psz));
 	g_snprintf((gchar *) m_styleType,40,"%s",psz);
 	const XML_Char * pszSt = "P";
 	if(strstr(m_styleType, pSS->getValue(AP_STRING_ID_DLG_Styles_ModifyCharacter)) != 0)
 		pszSt = "C";
 	addOrReplaceVecAttribs("type",pszSt);
-	UT_DEBUGMSG(("SEVIOR: Setting style type = %s \n",pszSt));
-	UT_DEBUGMSG(("SEVIOR: Readback style type = %s \n",getAttsVal("type")));
 }
 
 void AP_UnixDialog_Styles::event_Modify_Cancel(void)
@@ -1424,7 +1444,6 @@ void  AP_UnixDialog_Styles::modifyRunModal(void)
 			m_gfollowedByStyles = NULL;
 		}
 
-
 		if(m_gStyleType != NULL)
 		{
 			g_list_free (m_gStyleType);
@@ -1471,7 +1490,6 @@ void AP_UnixDialog_Styles::event_ModifyClicked(void)
 //
 // Hide the old window
 //
-	UT_DEBUGMSG(("SEVIOR: Hiding main window \n"));
     gtk_widget_hide( m_windowMain);
 #endif
 //
@@ -1480,7 +1498,6 @@ void AP_UnixDialog_Styles::event_ModifyClicked(void)
 	setIsNew(false);
 	
 	modifyRunModal();
-	UT_DEBUGMSG(("SEVIOR: Finished Modify \n"));
 	if(m_answer == AP_Dialog_Styles::a_OK)
 	{
 		applyModifiedStyleToDoc();
@@ -1513,6 +1530,7 @@ void  AP_UnixDialog_Styles::setModifyDescription( const char * desc)
 
 bool  AP_UnixDialog_Styles::_populateModify(void)
 {
+	const XAP_StringSet * pSS = m_pApp->getStringSet();
 //
 // Don't do any callback while setting up stuff here.
 //
@@ -1528,7 +1546,7 @@ bool  AP_UnixDialog_Styles::_populateModify(void)
 		if(!szCurrentStyle)
 		{
 			// TODO: change me to use a real messagebox
-			messageBoxOK("No Style selected \n so it cannot be modified");
+			messageBoxOK( pSS->getValue(AP_STRING_ID_DLG_Styles_ErrNoStyle));
 			m_answer = AP_Dialog_Styles::a_CANCEL;
 			return false;
 		}
@@ -1555,7 +1573,7 @@ bool  AP_UnixDialog_Styles::_populateModify(void)
 		if(!pStyle)
 		{
 			// TODO: do a real error dialog
-			messageBoxOK("This style does not exist \n so it cannot be modified");
+			messageBoxOK( pSS->getValue(AP_STRING_ID_DLG_Styles_ErrStyleNot));
 			m_answer = AP_Dialog_Styles::a_CANCEL;
 			return false;
 		}
@@ -1575,12 +1593,11 @@ bool  AP_UnixDialog_Styles::_populateModify(void)
 	{
 	    getDoc()->enumStyles(i, &name, &pcStyle);
 
-		if(pcStyle == pBasedOnStyle)
+		if(pBasedOnStyle && pcStyle == pBasedOnStyle)
 		{
-			UT_DEBUGMSG(("SEVIOR: Found basedon style = %s \n",name));
 			szBasedOn = name;
 		}
-		if(pcStyle == pFollowedByStyle)
+		if(pFollowedByStyle && pcStyle == pFollowedByStyle)
 			szFollowedBy = name;
 		if(szCurrentStyle && strcmp(name,szCurrentStyle) != 0)
 			m_gbasedOnStyles = g_list_append (m_gbasedOnStyles, (gpointer) name);
@@ -1589,17 +1606,19 @@ bool  AP_UnixDialog_Styles::_populateModify(void)
 
 		m_gfollowedByStyles = g_list_append (m_gfollowedByStyles, (gpointer) name);
 	}
-	const XAP_StringSet * pSS = m_pApp->getStringSet();
+	m_gfollowedByStyles = g_list_append (m_gfollowedByStyles, (gpointer)  pSS->getValue(AP_STRING_ID_DLG_Styles_DefCurrent));
+	m_gbasedOnStyles = g_list_append (m_gbasedOnStyles, (gpointer)  pSS->getValue(AP_STRING_ID_DLG_Styles_DefCurrent));
+
 	m_gStyleType = g_list_append(m_gStyleType, (gpointer) pSS->getValue(AP_STRING_ID_DLG_Styles_ModifyParagraph) );
 	m_gStyleType = g_list_append(m_gStyleType, (gpointer) pSS->getValue(AP_STRING_ID_DLG_Styles_ModifyCharacter));
  
 //
 // Set the popdown list
 //
+	gtk_combo_set_popdown_strings( GTK_COMBO(m_wBasedOnCombo),m_gbasedOnStyles);
+	gtk_combo_set_popdown_strings( GTK_COMBO(m_wFollowingCombo),m_gfollowedByStyles);
 	if(isNew())
 	{
-		gtk_combo_set_popdown_strings( GTK_COMBO(m_wBasedOnCombo),m_gbasedOnStyles);
-		gtk_combo_set_popdown_strings( GTK_COMBO(m_wFollowingCombo),m_gfollowedByStyles);
 		gtk_combo_set_popdown_strings( GTK_COMBO(m_wStyleTypeCombo),m_gStyleType);
 	}
 //
@@ -1607,8 +1626,14 @@ bool  AP_UnixDialog_Styles::_populateModify(void)
 //
 	if(!isNew())
 	{
-		gtk_entry_set_text (GTK_ENTRY(m_wBasedOnEntry),szBasedOn);
-		gtk_entry_set_text (GTK_ENTRY(m_wFollowingEntry),szFollowedBy);
+		if(pBasedOnStyle != NULL)
+			gtk_entry_set_text (GTK_ENTRY(m_wBasedOnEntry),szBasedOn);
+		else
+			gtk_entry_set_text (GTK_ENTRY(m_wBasedOnEntry), pSS->getValue(AP_STRING_ID_DLG_Styles_DefNone));
+		if(pFollowedByStyle != NULL)
+			gtk_entry_set_text (GTK_ENTRY(m_wFollowingEntry),szFollowedBy);
+		else
+			gtk_entry_set_text (GTK_ENTRY(m_wFollowingEntry), pSS->getValue(AP_STRING_ID_DLG_Styles_DefCurrent));
 		if(strstr(getAttsVal("type"),"P") != 0)
 		{
 			gtk_entry_set_text (GTK_ENTRY(m_wStyleTypeEntry),
@@ -1625,21 +1650,37 @@ bool  AP_UnixDialog_Styles::_populateModify(void)
 //
 // Hardwire defaults for "new"
 //
-		gtk_entry_set_text (GTK_ENTRY(m_wBasedOnEntry),"Normal");
-		event_basedOn();
-		gtk_entry_set_text (GTK_ENTRY(m_wFollowingEntry),"Normal");
-		event_followedBy();
+		gtk_entry_set_text (GTK_ENTRY(m_wBasedOnEntry), pSS->getValue(AP_STRING_ID_DLG_Styles_DefNone));
+		gtk_entry_set_text (GTK_ENTRY(m_wFollowingEntry), pSS->getValue(AP_STRING_ID_DLG_Styles_DefCurrent));
 		gtk_entry_set_text (GTK_ENTRY(m_wStyleTypeEntry),
 							pSS->getValue(AP_STRING_ID_DLG_Styles_ModifyParagraph));
-		event_styleType();
 	}
 	gtk_entry_set_editable(GTK_ENTRY(m_wFollowingEntry),FALSE );
 	gtk_entry_set_editable(GTK_ENTRY(m_wBasedOnEntry),FALSE );
 	gtk_entry_set_editable(GTK_ENTRY(m_wStyleTypeEntry),FALSE );
 //
+// Set these in our attributes vector
+//
+	event_basedOn();
+	event_followedBy();
+	event_styleType();
+	if(isNew())
+	{
+		fillVecFromCurrentPoint();
+	}
+	else
+	{
+		fillVecWithProps(szCurrentStyle,true);
+	}
+//
 // Allow callback's now.
 //
 	setModifySignalBlocked(false);
+//
+// Now set the list of properties which can be deleted.
+//
+	rebuildDeleteProps();
+	gtk_entry_set_text(GTK_ENTRY(m_wDeletePropEntry),"");
 	return true;
 }
 
@@ -1656,7 +1697,7 @@ void   AP_UnixDialog_Styles::event_ModifyParagraph()
 // Can do all this in XP land.
 //
 	ModifyParagraph();
-
+	rebuildDeleteProps();
 #ifndef HAVE_GNOME
 //
 // Restore this window
@@ -1683,7 +1724,7 @@ void   AP_UnixDialog_Styles::event_ModifyFont()
 // Can do all this in XP land.
 //
 	ModifyFont();
-
+	rebuildDeleteProps();
 #ifndef HAVE_GNOME
 //
 // Restore this window
@@ -1704,7 +1745,7 @@ void AP_UnixDialog_Styles::event_ModifyLanguage()
 #endif
 
 	ModifyLang();
-
+	rebuildDeleteProps();
 #ifndef HAVE_GNOME
 	gtk_widget_show (m_wModifyDialog);
 #endif
@@ -1725,7 +1766,7 @@ void   AP_UnixDialog_Styles::event_ModifyNumbering()
 // Can do all this in XP land.
 //
 	ModifyLists();
-
+	rebuildDeleteProps();
 #ifndef HAVE_GNOME
 //
 // Restore this window
@@ -1754,7 +1795,7 @@ void   AP_UnixDialog_Styles::event_ModifyTabs()
 // Can do all this in XP land.
 //
 	ModifyTabs();
-
+	rebuildDeleteProps();
 #ifndef HAVE_GNOME
 //
 // Restore this window
@@ -1777,5 +1818,12 @@ void  AP_UnixDialog_Styles::setModifySignalBlocked( bool val)
 {
 	m_bBlockModifySignal = val;
 }
+
+
+
+
+
+
+
 
 

@@ -1840,15 +1840,20 @@ void FV_View::insertParagraphBreak(void)
 	if(getStyle(&style))
 	{
 		m_pDoc->getStyle((char*) style, &pStyle);
-		if(pStyle->getFollowedBy())
-			pStyle = pStyle->getFollowedBy();
+		const XML_Char* szFollow = NULL;
+		pStyle->getAttribute("followedby",szFollow);
+		if(szFollow && strcmp(szFollow,"Current Settings")!=0)
+		{
+			if(pStyle->getFollowedBy())
+				pStyle = pStyle->getFollowedBy();
 
-		const XML_Char* szValue = NULL;
-		pStyle->getAttribute(PT_NAME_ATTRIBUTE_NAME, szValue);
+			const XML_Char* szValue = NULL;
+			pStyle->getAttribute(PT_NAME_ATTRIBUTE_NAME, szValue);
 
-		UT_ASSERT((szValue));
-		if (UT_strcmp((const char *) szValue, (const char *) style) != 0)
-			setStyle(szValue);
+			UT_ASSERT((szValue));
+			if (UT_strcmp((const char *) szValue, (const char *) style) != 0)
+				setStyle(szValue);
+		}
 	}
 
 	m_pDoc->endUserAtomicGlob();
@@ -1948,7 +1953,8 @@ bool FV_View::setStyle(const XML_Char * style, bool bDontGeneralUpdate)
 	}
 
 	bool bCharStyle = pStyle->isCharStyle();
-
+	if(bCharStyle)
+		UT_DEBUGMSG(("SEVIOR: Style is Character Type \n"));
 	const XML_Char * attribs[] = { PT_STYLE_ATTRIBUTE_NAME, 0, 0 };
 	attribs[1] = style;
 	if(bisListStyle)

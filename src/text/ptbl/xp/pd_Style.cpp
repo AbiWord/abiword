@@ -91,7 +91,7 @@ bool PD_Style::isCharStyle(void) const
 	const XML_Char * szValue = NULL;
 	if (getAttribute(PT_TYPE_ATTRIBUTE_NAME, szValue))
 		if (szValue && szValue[0])
-			return !UT_strcmp(szValue, "c");
+			return !UT_strcmp(szValue, "C");
 
 	// default: no
 	return false;
@@ -148,6 +148,17 @@ bool PD_Style::setProperties(const XML_Char ** pProperties)
 		return false;
 	else
 		return pAP->setProperties(pProperties);
+}
+
+
+bool PD_Style::setAttributes(const XML_Char ** pAtts)
+{
+	PP_AttrProp * pAP = NULL;
+	
+	if (!m_pPT->getAttrProp(m_indexAP, (const PP_AttrProp **)&pAP))
+		return false;
+	else
+		return pAP->setAttributes(pAtts);
 }
 
 size_t PD_Style::getPropertyCount(void) const

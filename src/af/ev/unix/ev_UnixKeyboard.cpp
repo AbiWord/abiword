@@ -431,11 +431,14 @@ static bool s_isVirtualKeyCode(gint keyval)
 
 	if (keyval > 0x0000FFFF)
 		return false;//was true before CJK patch
-
-	if (keyval >= GDK_KP_Space && keyval <= GDK_KP_9) // number pad keys
-		return false;
+//
+// Causes immediate on keypress segfault??
+//	if (keyval >= GDK_KP_Space && keyval <= GDK_KP_9) // number pad keys
+//		return false;
 	
 	if (keyval > 0xFF00)				// see the above table
+		return true;
+	if (keyval > 0xFE00)				// see the above table
 		return true;
 
 	UT_ASSERT(keyval <= 0xFD00);		// we don't what to do with 3270 keys
