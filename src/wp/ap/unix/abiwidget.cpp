@@ -406,7 +406,8 @@ static void s_abi_widget_map_cb(GtkObject * w,  GdkEvent *event,gpointer p)
   if(!abi->priv->m_bMappedEventProcessed)
   {
 	  abi->priv->m_bMappedEventProcessed = true;
-	  gtk_idle_add( (GtkFunction) s_abi_widget_load_file,(gpointer) abi);
+//	  gtk_idle_add( (GtkFunction) s_abi_widget_load_file,(gpointer) abi);
+	  s_abi_widget_load_file((gpointer) abi);
   }
   else
   {
@@ -1541,7 +1542,7 @@ abi_widget_map_to_screen(AbiWidget * abi)
 
 	XAP_Args *pArgs = 0;
 	abi->priv->m_bMappedToScreen = true;
-	if(abi->priv->externalApp)
+	if(!abi->priv->externalApp)
 	{
 		if (abi->priv->m_szFilename)
 		{
