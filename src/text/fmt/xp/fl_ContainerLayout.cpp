@@ -31,6 +31,7 @@
 #include "fl_DocLayout.h"
 #include "fl_BlockLayout.h"
 #include "fl_TableLayout.h"
+#include "fp_TableContainer.h"
 #include "fb_LineBreaker.h"
 #include "fp_Page.h"
 #include "fp_Line.h"
@@ -247,6 +248,11 @@ fl_ContainerLayout * fl_ContainerLayout::insert(PL_StruxDocHandle sdh, fl_Contai
 	{
 		pL = (fl_ContainerLayout *) new fl_TableLayout(getDocLayout(),sdh, indexAP, this);
 		insertIntoList(pL,pPrev);
+//
+// Now put the Physical Container into the vertical container that contains it.
+//
+		fp_TableContainer * pTab = (fp_TableContainer *) static_cast<fl_TableLayout *>(pL)->getLastContainer();
+		static_cast<fl_TableLayout *>(pL)->insertTableContainer((fp_TableContainer *) pTab);
 	}
 	if(iType == FL_CONTAINER_CELL)
 	{

@@ -88,11 +88,6 @@ fl_TableLayout::fl_TableLayout(FL_DocLayout* pLayout, PL_StruxDocHandle sdh, PT_
 	m_vecColProps.clear();
 	m_vecRowProps.clear();
 	createTableContainer();
-	fp_TableContainer * pTableContainer = (fp_TableContainer *) getFirstContainer();
-	fl_ContainerLayout * pCL = myContainingLayout();
-	fp_Container * pCon = pCL->getLastContainer();
-	pCon->addCon(pTableContainer);
-	pTableContainer->setContainer(pCon);
 }
 
 fl_TableLayout::~fl_TableLayout()
@@ -174,6 +169,16 @@ fp_Container* fl_TableLayout::getNewContainer(fp_Container * pPrevTab)
 // Now find the right place to put our new Table container within the arrangement
 // of it's own container.
 //
+	insertTableContainer(pNewTab);
+	return (fp_Container *) pNewTab;
+}
+
+/*!
+ * This method inserts the given TableContainer into its correct place in the
+ * Vertical container.
+ */
+void fl_TableLayout::insertTableContainer( fp_TableContainer * pNewTab)
+{
 	fl_ContainerLayout * pUPCL = myContainingLayout();
 	fl_ContainerLayout * pPrevL = (fl_ContainerLayout *) getPrev();
 	fp_Container * pPrevCon = NULL;
@@ -213,7 +218,6 @@ fp_Container* fl_TableLayout::getNewContainer(fp_Container * pPrevTab)
 			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 		}
 	}
-	return (fp_Container *) pNewTab;
 }
 
 void fl_TableLayout::format(void)

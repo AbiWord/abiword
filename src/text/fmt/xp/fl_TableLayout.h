@@ -122,6 +122,7 @@ public:
 	virtual void		        format(void);
 	void                        attachCell(fl_ContainerLayout * pCell);
 	void                        createTableContainer(void);
+	void                        insertTableContainer(fp_TableContainer * pNewTab);
 	virtual void		        updateLayout(void);
 	void		                updateTable(void);
 	virtual void                collapse(void);

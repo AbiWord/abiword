@@ -231,7 +231,7 @@ UT_Error FV_View::cmdInsertTable(UT_sint32 numRows, UT_sint32 numCols)
 	}
 	tmp_var = tmp_var & m_pDoc->insertStrux(getPoint(),PTX_EndTable);
 	UT_DEBUGMSG(("SEVIOR: 6  cur point %d \n",getPoint())); 
-
+	setPoint(pointTable);
 	m_pDoc->endUserAtomicGlob();
 	m_pLayout->setDontImmediatelyLayout(false);
 	_generalUpdate();
