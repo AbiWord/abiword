@@ -180,48 +180,7 @@ void DG_LayoutView::_deleteSelection(void)
 	UT_uint32 iCountChars = _getDataCount(iPoint,m_iSelectionAnchor);
 	UT_Bool bForward = (iPoint < m_iSelectionAnchor);
 
-#ifdef BUFFER	// _deleteSelection
-	FL_BlockLayout* pBlock1;
-	FL_BlockLayout* pBlock2;
-
-	if (bForward)
-	{
-		pBlock1 = _findBlockAtPosition(iPoint);
-		pBlock2 = _findBlockAtPosition(m_iSelectionAnchor);
-	}
-	else
-	{
-		pBlock1 = _findBlockAtPosition(m_iSelectionAnchor);
-		pBlock2 = _findBlockAtPosition(iPoint);
-	}
-
-	m_pBuffer->charDelete(bForward, iCountChars);
-
-	UT_uint32 iMerge = 0;
-	FL_BlockLayout* pCurBlock = pBlock1;
-	for (;;)
-	{
-		if (pCurBlock == pBlock2)
-		{
-			break;
-		}
-		else
-		{
-			iMerge++;
-			pCurBlock = pCurBlock->getNext();
-		}
-	}
-
-	for (UT_uint32 i=0; i<iMerge; i++)
-	{
-		pBlock1->mergeWithNextBlock();
-	}
-	
-	pBlock1->format();
-	pBlock1->draw(m_pG);
-	
-	m_pLayout->reformat();
-#endif
+	m_pDoc->deleteSpan((bForward ? iPoint : m_iSelectionAnchor), iCountChars);
 
 	_resetSelection();
 
@@ -340,15 +299,7 @@ UT_Bool DG_LayoutView::cmdCharInsert(UT_UCSChar * text, UT_uint32 count)
 		_eraseInsertionPoint();
 	}
 
-#ifdef BUFFER	// cmdCharInsert
-	FL_BlockLayout* pBlock = _findBlockAtPosition(_getPoint());
-
-	UT_Bool bResult = pBlock->insertData(text, count);
-
-	m_pLayout->reformat();
-#else
-	UT_Bool bResult = UT_TRUE;
-#endif
+	UT_Bool bResult = m_pDoc->insertSpan(_getPoint(), !m_bInsPointRight, text, count);
 	
 	_drawSelectionOrInsertionPoint();
 
@@ -647,19 +598,17 @@ void DG_LayoutView::cmdCharDelete(UT_Bool bForward, UT_uint32 count)
 
 		UT_uint32 iPoint = _getPoint();
 		
-#ifdef BUFFER	// cmdCharDelete
-		FL_BlockLayout* pBlock = _findBlockAtPosition(iPoint);
-		if (pBlock->cmdCharDelete(bForward, count))
+		if (!bForward)
 		{
-			FL_BlockLayout* pBLK = pBlock->getPrev();
-			if (pBLK)
+			iPoint -= count;
+			if (iPoint < 0)
 			{
-				pBLK->mergeWithNextBlock();
-				pBLK->format();
-				pBLK->draw(m_pLayout->getGraphics());
+				count += iPoint;
+				iPoint = 0;
 			}
 		}
-#endif
+
+		m_pDoc->deleteSpan(iPoint, count);
 	}
 
 	_drawSelectionOrInsertionPoint();
