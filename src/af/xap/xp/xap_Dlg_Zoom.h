@@ -61,13 +61,14 @@ protected:
 	void							_createPreviewFromGC(GR_Graphics * gc,
 														 UT_uint32 width,
 														 UT_uint32 height);
-
+	
 	XAP_Preview_Zoom * 				m_zoomPreview;
 	
 	XAP_Frame::tZoomType			m_zoomType;
 	UT_uint32						m_zoomPercent;
 
 	XAP_Dialog_Zoom::tAnswer		m_answer;
+	XAP_Frame * m_pFrame;
 };
 
 #endif /* XAP_DIALOG_ZOOM_H */

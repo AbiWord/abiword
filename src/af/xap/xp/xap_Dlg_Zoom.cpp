@@ -29,6 +29,7 @@
 #include "xap_Dialog_Id.h"
 #include "xap_DialogFactory.h"
 #include "xap_Dlg_MessageBox.h"
+#include "xav_View.h"
 
 XAP_Dialog_Zoom::XAP_Dialog_Zoom(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id)
 	: XAP_Dialog_NonPersistent(pDlgFactory,id)
@@ -40,6 +41,7 @@ XAP_Dialog_Zoom::XAP_Dialog_Zoom(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id 
 	m_zoomPercent = 100;
 
 	m_zoomPreview = NULL;
+	m_pFrame = 0 ;
 }
 
 XAP_Dialog_Zoom::~XAP_Dialog_Zoom(void)
@@ -89,6 +91,7 @@ XAP_Frame::tZoomType XAP_Dialog_Zoom::getZoomType(void)
 
 UT_uint32 XAP_Dialog_Zoom::getZoomPercent(void)
 {
+  
 	// we deliver based on special cases first, then the custom percentage
 	switch(m_zoomType)
 	{
@@ -98,11 +101,12 @@ UT_uint32 XAP_Dialog_Zoom::getZoomPercent(void)
 		return 100;
 	case XAP_Frame::z_75:
 		return 75;
-    // we can't really do anything with these,
-	// since it's up to the application to query for these two
-	// types and do something special with them
 	case XAP_Frame::z_PAGEWIDTH:
+	  if ( m_pFrame )
+	    return m_pFrame->getCurrentView ()->calculateZoomPercentForPageWidth () ;
 	case XAP_Frame::z_WHOLEPAGE:
+	  if ( m_pFrame )
+	    return m_pFrame->getCurrentView ()->calculateZoomPercentForWholePage () ;
 	case XAP_Frame::z_PERCENT:
 		// fall through
 	default:
@@ -111,6 +115,9 @@ UT_uint32 XAP_Dialog_Zoom::getZoomPercent(void)
 		else
 			return XAP_DLG_ZOOM_MINIMUM_ZOOM;
 	}
+
+	// fallback
+	return 100 ;
 }
 
 /************************************************************************/

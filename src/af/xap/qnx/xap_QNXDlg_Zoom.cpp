@@ -177,6 +177,8 @@ static int s_preview_exposed(PtWidget_t * w, PhTile_t * damage) {
 
 void XAP_QNXDialog_Zoom::runModal(XAP_Frame * pFrame)
 {
+	m_pFrame = pFrame;
+
 	// Set the parent window for this dialog 
 	XAP_QNXFrame * pQNXFrame = static_cast<XAP_QNXFrame *>(pFrame);
 	UT_ASSERT(pQNXFrame);

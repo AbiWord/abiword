@@ -64,6 +64,8 @@ XAP_Win32Dialog_Zoom::~XAP_Win32Dialog_Zoom(void)
 
 void XAP_Win32Dialog_Zoom::runModal(XAP_Frame * pFrame)
 {
+	m_pFrame = pFrame;
+
 	/*
 	  This dialog is non-persistent.
 	  

@@ -55,6 +55,7 @@ XAP_MacDialog_Zoom::~XAP_MacDialog_Zoom(void)
 
 void XAP_MacDialog_Zoom::runModal(XAP_Frame * pFrame)
 {
+	m_pFrame = pFrame;
 
 	/*
 	  This dialog is non-persistent.

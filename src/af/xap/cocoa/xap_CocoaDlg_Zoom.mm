@@ -149,6 +149,8 @@ static gint s_preview_exposed(GtkWidget * /* widget */,
 
 void XAP_CocoaDialog_Zoom::runModal(XAP_Frame * pFrame)
 {
+	m_pFrame = pFrame;
+
 	// Build the window's widgets and arrange them
 	GtkWidget * mainWindow = _constructWindow();
 	UT_ASSERT(mainWindow);

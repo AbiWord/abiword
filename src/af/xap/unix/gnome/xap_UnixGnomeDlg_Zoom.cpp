@@ -129,6 +129,8 @@ static gint s_preview_exposed(GtkWidget * /* widget */,
 
 void XAP_UnixGnomeDialog_Zoom::runModal(XAP_Frame * pFrame)
 {
+	m_pFrame = pFrame;
+
 	// Build the window's widgets and arrange them
 	GtkWidget * mainWindow = _constructWindow();
 	UT_ASSERT(mainWindow);
@@ -146,8 +148,7 @@ void XAP_UnixGnomeDialog_Zoom::runModal(XAP_Frame * pFrame)
 	
 	// Center our new dialog in its parent and make it a transient
 	// so it won't get lost underneath
-    centerDialog(parentWindow, mainWindow);
-	gtk_window_set_transient_for(GTK_WINDOW(mainWindow), GTK_WINDOW(parentWindow));
+	centerDialog(parentWindow, mainWindow);
 
 	// Show the top level dialog,
 	gtk_widget_show(mainWindow);
@@ -206,7 +207,6 @@ GtkWidget * XAP_UnixGnomeDialog_Zoom::_constructWindow(void)
 	GtkWidget * spinbuttonPercent;
 
 	GtkWidget * framePreview;
-	GtkWidget * frameSampleText;
 	GtkWidget * drawingareaPreview;
 
 	GtkWidget * buttonOK;
@@ -312,20 +312,12 @@ GtkWidget * XAP_UnixGnomeDialog_Zoom::_constructWindow(void)
 	gtk_widget_show (framePreview);
 	gtk_box_pack_start (GTK_BOX (hboxFrames), framePreview, TRUE, TRUE, 0);
 
-	// TODO: do something dynamically here?  How do we set this "sample" font?
-	frameSampleText = gtk_frame_new ("10 pt Times New Roman");
-	gtk_object_set_data (GTK_OBJECT (windowZoom), "frameSampleText", frameSampleText);
-	gtk_widget_show (frameSampleText);
-	gtk_container_add (GTK_CONTAINER (framePreview), frameSampleText);
-	gtk_widget_set_usize (frameSampleText, 221, 97);
-	gtk_container_border_width (GTK_CONTAINER (frameSampleText), 10);
-
 	// *** This is how we do a preview widget ***
 	{
 		drawingareaPreview = createDrawingArea ();
 		gtk_object_set_data (GTK_OBJECT (windowZoom), "drawingareaPreview", drawingareaPreview);
 		gtk_widget_show (drawingareaPreview);
-		gtk_container_add (GTK_CONTAINER (frameSampleText), drawingareaPreview);
+		gtk_container_add (GTK_CONTAINER (framePreview), drawingareaPreview);
 		gtk_widget_set_usize (drawingareaPreview, 149, 10);
    	}
 	
@@ -404,7 +396,6 @@ GtkWidget * XAP_UnixGnomeDialog_Zoom::_constructWindow(void)
 	m_buttonOK = buttonOK;
 	m_buttonCancel = buttonCancel;
 
-	m_previewFrame = 	frameSampleText;
 	m_previewArea = 	drawingareaPreview;
 	
 	m_radio200 = 		radiobutton200;

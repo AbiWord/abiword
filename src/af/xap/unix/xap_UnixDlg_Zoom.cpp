@@ -150,6 +150,8 @@ static gint s_preview_exposed(GtkWidget * /* widget */,
 
 void XAP_UnixDialog_Zoom::runModal(XAP_Frame * pFrame)
 {
+        m_pFrame = pFrame ;
+
 	// Build the window's widgets and arrange them
 	GtkWidget * mainWindow = _constructWindow();
 	UT_ASSERT(mainWindow);
@@ -168,7 +170,7 @@ void XAP_UnixDialog_Zoom::runModal(XAP_Frame * pFrame)
 	
 	// Center our new dialog in its parent and make it a transient
 	// so it won't get lost underneath
-    centerDialog(parentWindow, mainWindow);
+	centerDialog(parentWindow, mainWindow);
 
 	// Show the top level dialog,
 	gtk_widget_show(mainWindow);
@@ -245,13 +247,23 @@ void XAP_UnixDialog_Zoom::event_Radio75Clicked(void)
 void XAP_UnixDialog_Zoom::event_RadioPageWidthClicked(void)
 {
 	_enablePercentSpin(false);
-	// TODO : figure out the dimensions
+	if ( m_pFrame )
+	  {
+	    UT_uint32 value = m_pFrame->getCurrentView ()->calculateZoomPercentForPageWidth () ;
+	    UT_DEBUGMSG(("DOM: page width clicked: %d\n", value));
+	    _updatePreviewZoomPercent(value);
+	  }
 }
 
 void XAP_UnixDialog_Zoom::event_RadioWholePageClicked(void)
 {
 	_enablePercentSpin(false);
-	// TODO : figure out the dimensions
+	if ( m_pFrame )
+	  {
+	    UT_uint32 value = m_pFrame->getCurrentView ()->calculateZoomPercentForWholePage () ;
+	    UT_DEBUGMSG(("DOM: whole page clicked: %d\n", value));
+	    _updatePreviewZoomPercent(value);
+	  }
 }
 
 void XAP_UnixDialog_Zoom::event_RadioPercentClicked(void)

@@ -241,6 +241,7 @@ XAP_BeOSDialog_Zoom::~XAP_BeOSDialog_Zoom(void)
 void XAP_BeOSDialog_Zoom::runModal(XAP_Frame * pFrame)
 {
 
+  m_pFrame = pFrame ;
 	/*
 	  This dialog is non-persistent.
 	  
