@@ -634,12 +634,8 @@ void fp_Column::_drawBoundaries(dg_DrawArgs* pDA)
 		}
 		UT_sint32 yoffEnd = pDA->yoff + iHeight + 2;
 
-		// only draw the horizontal boundaries when we are in the Print Layout view
-		if (getPage()->getDocLayout()->getView()->getViewMode() == VIEW_PRINT)
-		{
-        	getGraphics()->drawLine(xoffBegin, yoffBegin, xoffEnd, yoffBegin);
-			getGraphics()->drawLine(xoffBegin, yoffEnd, xoffEnd, yoffEnd);
-		}
+       	getGraphics()->drawLine(xoffBegin, yoffBegin, xoffEnd, yoffBegin);
+		getGraphics()->drawLine(xoffBegin, yoffEnd, xoffEnd, yoffEnd);
         getGraphics()->drawLine(xoffBegin, yoffBegin, xoffBegin, yoffEnd);
         getGraphics()->drawLine(xoffEnd, yoffBegin, xoffEnd, yoffEnd);
     }
