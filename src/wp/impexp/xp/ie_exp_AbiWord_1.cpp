@@ -18,6 +18,7 @@
  */
 
 #include <locale.h>
+#include <time.h>
 
 #include "ut_string.h"
 #include "ut_types.h"
@@ -877,6 +878,14 @@ void s_AbiWord_1_Listener::_handleMetaData(void)
 {
   // TODO: make me UCS4 aware!!
 
+  // set all of the important meta-data props
+
+  m_pDocument->setMetaDataProp ( PD_META_KEY_GENERATOR, "AbiWord" ) ;
+  m_pDocument->setMetaDataProp ( PD_META_KEY_FORMAT, "application/x-abiword" ) ;
+  m_pDocument->setMetaDataProp ( PD_META_KEY_LAST_CHANGED, ctime(time(NULL)) ) ;
+
+  // TODO: set dc.date and abiword.date_created if document is new (i.e. first save)
+
   UT_StringPtrMap & ref = m_pDocument->getMetaData() ;
 
   // don't print out a thing
@@ -892,7 +901,7 @@ void s_AbiWord_1_Listener::_handleMetaData(void)
     {
       if ( val )
 	{
-	  UT_String *stringval = (UT_String* ) val;
+	  UT_String *stringval = (UT_String*) val;
 	  if( stringval->size () > 0 )
 	    {
 	      m_pie->write( "<m key=\"" ) ;
