@@ -205,6 +205,37 @@ bool	XAP_MacFrame::updateTitle(void)
 	return true;
 }
 
+
+/*
+	Handle mac updates. invalRgn is the invalidated region
+*/
+bool	XAP_MacFrame::_macUpdate(void)
+{
+	::BeginUpdate (m_MacWindow);
+	::DrawControls (m_MacWindow);
+	::DrawGrowIcon (m_MacWindow);
+	::EndUpdate (m_MacWindow);
+	return true;
+}
+
+
+bool XAP_MacFrame::_macGrow (void)
+{
+	Rect newRect; 
+	
+	_calcVertScrollBarRect (newRect);
+	::MoveControl (m_VScrollBar, newRect.left, newRect.top);
+	::SizeControl (m_VScrollBar, newRect.right - newRect.left, newRect.bottom - newRect.top);
+	
+	_calcHorizScrollBarRect (newRect);
+	::MoveControl (m_HScrollBar, newRect.left, newRect.top);
+	::SizeControl (m_HScrollBar, newRect.right - newRect.left, newRect.bottom - newRect.top);
+	
+	return true;
+}
+
+
+
 UT_sint32 XAP_MacFrame::setInputMode(const char * szName)
 {
 	UT_ASSERT (UT_NOT_IMPLEMENTED);
@@ -219,7 +250,7 @@ XAP_DialogFactory *XAP_MacFrame::getDialogFactory(void)
 void XAP_MacFrame::_createTopLevelWindow(void)
 {
 	::SetRect(&m_winBounds, 100, 100, 500, 500);
-	m_MacWindow = ::NewWindow(NULL, &m_winBounds, "\pUntitled", 0, 0, (WindowPtr) -1, 0, (long) this);
+	m_MacWindow = ::NewCWindow(NULL, &m_winBounds, "\pUntitled", 0, zoomDocProc, (WindowPtr) -1, true, (long) this);
 	UT_ASSERT (m_MacWindow != NULL);
 #if TARGET_API_MAC_CARBON
 	m_MacWindowPort = ::GetWindowPort (m_MacWindow);
@@ -248,7 +279,7 @@ void XAP_MacFrame::_createToolbars(void)
 {
         Rect rect;
        	ThemeDrawState			drawState;
-
+       	
         // Get theme state
         drawState = ::IsWindowHilited (m_MacWindow) ?
                         (ThemeDrawState)kThemeStateActive :
@@ -273,8 +304,7 @@ void XAP_MacFrame::_createDocumentWindow (void)
 #if UNIVERSAL_INTERFACE_VERSION >= 0x0335
 	::CreateScrollBarControl (m_MacWindow, &rect, 0, 0, 100, 0, false, nil, &m_VScrollBar );
 #else
-	::SetRect (&rect,  m_winBounds.right - 16, 0,  m_winBounds.right, m_winBounds.bottom - 16);
-	::NewControl (m_MacWindow, &rect, "\p", true, 0, 0, 100, kControlScrollBarProc, 0);
+	m_VScrollBar = ::NewControl (m_MacWindow, &rect, "\p", true, 0, 0, 100, kControlScrollBarProc, 0);
 #endif
 
     // create VScrollbar
@@ -282,8 +312,7 @@ void XAP_MacFrame::_createDocumentWindow (void)
 #if UNIVERSAL_INTERFACE_VERSION >= 0x0335
 	::CreateScrollBarControl (m_MacWindow, &rect, 0, 0, 100, 0, false, nil, &m_HScrollBar );
 #else
-	::SetRect (&rect, 0, m_winBounds.bottom - 16, m_winBounds.right, m_winBounds.bottom);
-	::NewControl (m_MacWindow, &rect, "\p", true, 0, 0, 100, kControlScrollBarProc, 0);
+	m_HScrollBar = ::NewControl (m_MacWindow, &rect, "\p", true, 0, 0, 100, kControlScrollBarProc, 0);
 #endif
         
     // TODO: make the placard OR the status bar. Status bar will be better IMHO.

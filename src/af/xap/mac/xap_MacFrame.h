@@ -73,6 +73,7 @@ public:
        	virtual UT_sint32			setInputMode(const char * szName);
 
 
+
 	virtual XAP_DialogFactory *	getDialogFactory(void);
 	virtual void				setXScrollRange(void);
 	virtual void				setYScrollRange(void);
@@ -90,6 +91,8 @@ public:
 
 	EV_MacMenu					*getMenu () { return m_pMacMenu; };
 
+    virtual bool				_macUpdate(void);
+    virtual bool				_macGrow(void);
 	WindowPtr _getMacWindow (void) { UT_ASSERT (m_MacWindow != NULL); return m_MacWindow; } ;
 protected:
 	virtual EV_Toolbar *		_newToolbar(XAP_App *app, XAP_Frame *frame, const char *, const char *) 
