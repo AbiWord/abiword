@@ -35,6 +35,7 @@
 #include "xav_View.h"
 #include "fl_DocLayout.h"
 #include "fl_BlockLayout.h"
+#include "fl_TOCLayout.h"
 #include "fl_Squiggles.h"
 #include "fl_SectionLayout.h"
 #include "fl_AutoNum.h"
@@ -1576,6 +1577,91 @@ void FV_View::_moveInsPtNextPrevLine(bool bNext)
 	else
 	{
 		pPage->mapXYToPosition(xClick, yClick, iNewPoint, bBOL, bEOL,isTOC);
+		if(isTOC)
+		{
+			if(bNext)
+			{
+				fl_TOCLayout * pTOCL = pPage->getLastMappedTOC();
+				fl_ContainerLayout * pCL = pTOCL->getNext();
+				if(pCL==NULL)
+				{
+					fl_DocSectionLayout * pDSL = pTOCL->getDocSectionLayout();
+					pDSL = static_cast<fl_DocSectionLayout *>(pDSL->getNextDocSection());
+					if(pDSL== NULL)
+					{
+						return;
+					}
+					pCL = pDSL->getFirstLayout();
+				}
+				fp_Container * pFC = pCL->getFirstContainer();
+				if(pFC == NULL)
+				{
+					return;
+				}
+				pPage = pFC->getPage();
+				if(pPage == NULL)
+				{
+					return;
+				}
+				UT_sint32 iY = 0;
+				do
+				{
+					iY += pFC->getY();
+					pFC = pFC->getContainer();
+				}
+				while(pFC && !pFC->isColumnType());
+				if(pFC == NULL)
+				{
+					return;
+				}
+				UT_sint32 xoff,yoff;
+				pPage->getScreenOffsets(pFC,xoff,yoff);
+				iY += m_pG->tlu(1);
+				yClick = iY + yoff;
+				iNewPoint = getDocPositionFromXY(xClick, yClick, true);
+			}
+			else
+			{
+				fl_TOCLayout * pTOCL = pPage->getLastMappedTOC();
+				fl_ContainerLayout * pCL = pTOCL->getPrev();
+				if(pCL==NULL)
+				{
+					fl_DocSectionLayout * pDSL = pTOCL->getDocSectionLayout();
+					pDSL = static_cast<fl_DocSectionLayout *>(pDSL->getPrevDocSection());
+					if(pDSL== NULL)
+					{
+						return;
+					}
+					pCL = pDSL->getLastLayout();
+				}
+				fp_Container * pFC = pCL->getLastContainer();
+				if(pFC == NULL)
+				{
+					return;
+				}
+				pPage = pFC->getPage();
+				if(pPage == NULL)
+				{
+					return;
+				}
+				UT_sint32 iY = 0;
+				do
+				{
+					iY += pFC->getY();
+					pFC = pFC->getContainer();
+				}
+				while(pFC && !pFC->isColumnType());
+				if(pFC == NULL)
+				{
+					return;
+				}
+				UT_sint32 xoff,yoff;
+				pPage->getScreenOffsets(pFC,xoff,yoff);
+				iY += m_pG->tlu(1);
+				yClick = iY + yoff;
+				iNewPoint = getDocPositionFromXY(xClick, yClick, true);
+			}
+		}
 		while(pPage && (iNewPoint == iOldPoint) && (yClick < m_pLayout->getHeight()) && (yClick > 0))
 		{
 			if (bNext)
