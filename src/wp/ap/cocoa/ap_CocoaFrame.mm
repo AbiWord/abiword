@@ -183,6 +183,7 @@ bool AP_CocoaFrame::initialize(XAP_FrameMode frameMode)
 		pFrameImpl->_showOrHideStatusbar();
 	}
 	pFrameImpl->_show();
+
 	return true;
 }
 
@@ -215,7 +216,6 @@ void AP_CocoaFrame::_scrollFuncY(void * pData, UT_sint32 yoff, UT_sint32 /*yrang
 	AP_CocoaFrame * pCocoaFrame = static_cast<AP_CocoaFrame *>(pData);
 	AP_CocoaFrameImpl* pFrameImpl = static_cast<AP_CocoaFrameImpl*>(pCocoaFrame->getFrameImpl());
 	AV_View * pView = pCocoaFrame->getCurrentView();
-//	UT_sint32 value = pFrameImpl->_getVScrollValue();
 	
 	if (pFrameImpl->_getVScrollMin() > yoff) {
 		yoff = pFrameImpl->_getVScrollMin();
@@ -224,8 +224,6 @@ void AP_CocoaFrame::_scrollFuncY(void * pData, UT_sint32 yoff, UT_sint32 /*yrang
 		yoff = pFrameImpl->_getVScrollMax();
 	}
 	pFrameImpl->_setVScrollValue(yoff);
-//	value = yoff / (pCocoaFrame->_getVScrollMax() - pCocoaFrame->_getVScrollMin());
-//	[scroller setFloatValue:value];
 
 	pView->setYScrollOffset(pView->getGraphics()->tlu(yoff));
 }
@@ -237,7 +235,6 @@ void AP_CocoaFrame::_scrollFuncX(void * pData, UT_sint32 xoff, UT_sint32 /*xrang
 	AP_CocoaFrame * pCocoaFrame = static_cast<AP_CocoaFrame *>(pData);
 	AP_CocoaFrameImpl* pFrameImpl = static_cast<AP_CocoaFrameImpl*>(pCocoaFrame->getFrameImpl());
 	AV_View * pView = pCocoaFrame->getCurrentView();
-//	UT_sint32 value = pFrameImpl->_getHScrollValue();
 	
 	if (pFrameImpl->_getHScrollMin() > xoff) {
 		xoff = pFrameImpl->_getHScrollMin();
@@ -246,8 +243,6 @@ void AP_CocoaFrame::_scrollFuncX(void * pData, UT_sint32 xoff, UT_sint32 /*xrang
 		xoff = pFrameImpl->_getHScrollMax();
 	}
 	pFrameImpl->_setHScrollValue(xoff);
-//	value = xoff / (pCocoaFrame->m_HMaxScroll - pCocoaFrame->m_HMinScroll);
-//	[scroller setFloatValue:value];
 
 	pView->setXScrollOffset(pView->getGraphics()->tlu(xoff));
 }

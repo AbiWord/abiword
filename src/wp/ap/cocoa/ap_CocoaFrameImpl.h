@@ -95,9 +95,10 @@ class AP_CocoaFrameImpl : public XAP_CocoaFrameImpl
 
 	void giveFocus();
 private:
-	XAP_NSScroller *				m_hScrollbar;
-	XAP_NSScroller *				m_vScrollbar;
-	XAP_CocoaNSView *			m_docAreaGRView;
+	XAP_NSScroller*					m_hScrollbar;
+	XAP_NSScroller*					m_vScrollbar;
+//	NSClipView*						m_scrollAreaView;
+	XAP_CocoaNSView*				m_docAreaGRView;
 	static bool					_graphicsUpdateCB(NSRect * aRect, GR_CocoaGraphics *pG, void* param);
 private:
 	UT_sint32					m_HMinScroll;

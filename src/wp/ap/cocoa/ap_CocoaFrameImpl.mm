@@ -330,14 +330,24 @@ void AP_CocoaFrameImpl::_createDocView(GR_Graphics* &pG)
 	controlFrame.origin.y = [NSScroller scrollerWidth];
 	controlFrame.size.height = frame.size.height - controlFrame.origin.y;
 	controlFrame.size.width = frame.size.width - [NSScroller scrollerWidth];
+#if 0
+	m_scrollAreaView = [[NSClipView alloc] initWithFrame:controlFrame];
+	[docArea addSubview:m_scrollAreaView];
+	[m_scrollAreaView setAutoresizingMask:(NSViewHeightSizable | NSViewWidthSizable)];
+	[m_scrollAreaView release];
+	m_docAreaGRView = [[XAP_CocoaNSView alloc] initWith:pFrame andFrame:[m_scrollAreaView bounds]];
+	[m_scrollAreaView setDocumentView:m_docAreaGRView];
+	[m_docAreaGRView setEventDelegate:[[[AP_DocViewDelegate alloc] init] autorelease]];
+	[m_docAreaGRView release];
+#else
 	m_docAreaGRView = [[XAP_CocoaNSView alloc] initWith:pFrame andFrame:controlFrame];
 	[docArea addSubview:m_docAreaGRView];
-	[m_docAreaGRView setEventDelegate:[[[AP_DocViewDelegate alloc] init] autorelease]];
 	[m_docAreaGRView setAutoresizingMask:(NSViewHeightSizable | NSViewWidthSizable)];
+	[m_docAreaGRView setEventDelegate:[[[AP_DocViewDelegate alloc] init] autorelease]];
 	[m_docAreaGRView release];
-
+#endif
 	
-	pG = new GR_CocoaGraphics(m_docAreaGRView, /*fontManager,*/ pFrame->getApp());
+	pG = new GR_CocoaGraphics(m_docAreaGRView, pFrame->getApp());
 	static_cast<GR_CocoaGraphics *>(pG)->_setUpdateCallback (&_graphicsUpdateCB, (void *)this);
 }
 

@@ -18,6 +18,9 @@
  * 02111-1307, USA.
  */
 
+#define USE_OFFSCREEN 1
+//#undef USE_OFFSCREEN
+
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
@@ -45,8 +48,6 @@
 #define FloatToFixed(a) ((Fixed)((float) (a) * fixed1))
 
 #define DISABLE_VERBOSE 1
-#define USE_OFFSCREEN 1
-//#undef USE_OFFSCREEN
 
 #ifdef DISABLE_VERBOSE
 # if DISABLE_VERBOSE
@@ -56,9 +57,11 @@
 #endif
 
 #ifdef USE_OFFSCREEN
-#define LOCK_CONTEXT__ 	StNSImageLocker locker(m_pWin, m_offscreen)
+#define LOCK_CONTEXT__ 	StNSImageLocker locker(m_pWin, m_offscreen); \
+							GR_CaretDisabler caretDisabler(getCaret());
 #else
-#define LOCK_CONTEXT__	StNSViewLocker locker(m_pWin)
+#define LOCK_CONTEXT__	StNSViewLocker locker(m_pWin); \
+								GR_CaretDisabler caretDisabler(getCaret());
 #endif
 
 #define CG_CONTEXT__ (CGContextRef)[[NSGraphicsContext currentContext] graphicsPort]
@@ -100,7 +103,8 @@ public:
 		[m_pView setNeedsDisplay:YES];
 	}
 private:
-	NSImage *m_image; NSView * m_pView;
+	NSImage *m_image; 
+	NSView * m_pView;
 
 	void * operator new (size_t size);	// private so that we never call new for that class. Never defined.
 };
@@ -122,7 +126,10 @@ const char* GR_Graphics::findNearestFont(const char* pszFontFamily,
 GR_CocoaGraphics::GR_CocoaGraphics(NSView * win, XAP_App * app)
 	: m_updateCallback(NULL),
 	m_updateCBparam (NULL),
+	m_pWin(win),
+#ifdef USE_OFFSCREEN
 	m_offscreen (nil),
+#endif
 	m_cacheArray (10),
 	m_cacheRectArray (10),
 	m_currentColor (nil),
@@ -133,27 +140,20 @@ GR_CocoaGraphics::GR_CocoaGraphics(NSView * win, XAP_App * app)
 	m_fontMetricsTextContainer(nil)
 {
 	m_pApp = app;
-	UT_ASSERT (win);
+	UT_ASSERT (m_pWin);
 	m_fontProps = [[NSMutableDictionary alloc] init];
-	NSRect viewBounds = [win bounds];
-//  	xxx_UT_DEBUGMSG (("frame is %f %f %f %f\n", theRect.origin.x, theRect.origin.y, theRect.size.width, theRect.size.height));
-	if (![win isKindOfClass:[XAP_CocoaNSView class]]) {
-		m_pWin = [[XAP_CocoaNSView alloc] initWithFrame:viewBounds];
-		[win addSubview:m_pWin];
-		[m_pWin release];
+	NSRect viewBounds = [m_pWin bounds];
+	if (![m_pWin isKindOfClass:[XAP_CocoaNSView class]]) {
+		NSLog(@"attaching a non-XAP_CocoaNSView to a GR_CocoaGraphics");
 	}
-	else {
-//		[win retain];
-		m_pWin = win;
-	}
+
 	[m_pWin setXAPFrame:app->getLastFocussedFrame()];
-	[m_pWin setAutoresizingMask:(NSViewWidthSizable | NSViewHeightSizable)];
 	[m_pWin setGraphics:this];
 	m_iLineWidth = 0;
 	s_iInstanceCount++;
 	init3dColors ();
 	
-	/* resolution does not change hthru the life of the object */
+	/* resolution does not change thru the life of the object */
 	NSScreen* mainScreen = [NSScreen mainScreen];
 	NSDictionary* desc = [mainScreen deviceDescription];
 	UT_ASSERT(desc);
@@ -164,8 +164,10 @@ GR_CocoaGraphics::GR_CocoaGraphics(NSView * win, XAP_App * app)
 	m_xorCache = [[NSImage alloc] initWithSize:NSMakeSize(0,0)] ;
 	[m_xorCache setFlipped:YES];
 
+#ifdef USE_OFFSCREEN
 	m_offscreen = [[NSImage alloc] initWithSize:viewBounds.size];
 	[m_offscreen setFlipped:YES];
+#endif
 
 	LOCK_CONTEXT__;
 	m_currentColor = [[NSColor blackColor] copy];
@@ -174,9 +176,6 @@ GR_CocoaGraphics::GR_CocoaGraphics(NSView * win, XAP_App * app)
 	m_cs = GR_Graphics::GR_COLORSPACE_COLOR;
 	m_cursor = GR_CURSOR_INVALID;
 	setCursor(GR_CURSOR_DEFAULT);
-# ifndef USE_OFFSCREEN
-	StNSImageLocker locker (m_offscreen);
-# endif
 	NSRect aRect = [m_pWin bounds];
 
 	::CGContextSaveGState(m_CGContext);
@@ -192,9 +191,9 @@ GR_CocoaGraphics::~GR_CocoaGraphics()
 	UT_VECTOR_PURGEALL(NSRect*, m_cacheRectArray);
 	[m_xorCache release];
 	[m_fontProps release];
-#warning I can be wrong here.
-	[m_pWin removeFromSuperview];	// TODO FIXME: not always valid
+#ifdef USE_OFFSCREEN
 	[m_offscreen release];
+#endif
 
 	s_iInstanceCount--;
 	if(!s_iInstanceCount) {
@@ -694,7 +693,8 @@ void GR_CocoaGraphics::xorLine(UT_sint32 x1, UT_sint32 y1, UT_sint32 x2,
 //	LOCK_CONTEXT__;
 	float x = UT_MIN(x1,x2);		// still layout unit
 	float y = UT_MIN(y1,y2);		// still layout unit
-	NSRect newBounds = NSMakeRect (tduD(x), tduD(y), tduD(UT_MAX(x1,x2) - x), tduD(UT_MAX(y1,y2) - y));
+	NSRect newBounds = NSMakeRect (tduD(x), tduD(y), tduD(UT_MAX(UT_MAX(x1,x2) - x,1.0)), 
+													tduD(UT_MAX(UT_MAX(y1,y2) - y,1.0)));
 	[m_xorCache setSize:newBounds.size];
 	{
 		StNSImageLocker locker(m_pWin, m_xorCache);
@@ -703,8 +703,9 @@ void GR_CocoaGraphics::xorLine(UT_sint32 x1, UT_sint32 y1, UT_sint32 x2,
 		::CGContextTranslateCTM (context, 0.5, 0.5);
 		::CGContextBeginPath(context);
 		::CGContextSetLineWidth (context, m_iLineWidth);
-		::CGContextMoveToPoint (context, tdu(x1), tdu(y1));
-		::CGContextAddLineToPoint (context, tdu(x2), tdu(y2));
+		/* since we are in the image coordinate space, we should offset it with the origin */
+		::CGContextMoveToPoint (context, tduD(x1 - x), tduD(y1 - y));
+		::CGContextAddLineToPoint (context, tduD(x2 - x), tduD(y2 - y));
 		::CGContextStrokePath (context);
 	}
 	// Should make an NSImage and XOR it onto the real image.
@@ -803,23 +804,36 @@ void GR_CocoaGraphics::fillRect(GR_Color3D c, UT_Rect &r)
 
 void GR_CocoaGraphics::scroll(UT_sint32 dx, UT_sint32 dy)
 {
-	GR_CaretDisabler caretDisabler(getCaret());
+#ifdef USE_OFFSCREEN
 	NSImage* img = _getOffscreen();
 	LOCK_CONTEXT__;
 	[img drawAtPoint:NSMakePoint (-tduD(dx),-tduD(dy)) 
 			fromRect:[m_pWin bounds] operation:NSCompositeCopy fraction:1.0f];
+#else
+	[m_pWin scrollRect:[m_pWin bounds] by:NSMakeSize(tduD(dx),tduD(dy))];
+	[m_pWin setNeedsDisplay:YES];
+#endif
 }
 
 void GR_CocoaGraphics::scroll(UT_sint32 x_dest, UT_sint32 y_dest,
 						  UT_sint32 x_src, UT_sint32 y_src,
 						  UT_sint32 width, UT_sint32 height)
 {
-	GR_CaretDisabler caretDisabler(getCaret());
+#ifdef USE_OFFSCREEN
 	NSImage* img = _getOffscreen();
 	LOCK_CONTEXT__;
 	[img drawAtPoint:NSMakePoint (tduD(x_dest),tduD(y_dest)) 
 			fromRect:NSMakeRect(tduD(x_src), tduD(y_src), tduD(width), tduD(height))
 			operation:NSCompositeCopy fraction:1.0f];
+#else
+	float dx, dy;
+	dx = tduD(x_src - x_dest);
+	dy = tduD(y_src - y_dest);
+	
+	[m_pWin scrollRect:NSMakeRect(tduD(x_src), tduD(y_src), tduD(width), tduD(height)) 
+				by:NSMakeSize(dx,dy)];
+	[m_pWin setNeedsDisplay:YES];
+#endif
 }
 
 void GR_CocoaGraphics::clearArea(UT_sint32 x, UT_sint32 y,
@@ -1180,7 +1194,11 @@ void GR_CocoaGraphics::saveRectangle(UT_Rect & rect,  UT_uint32 iIndx)
 		StNSImageLocker locker(m_pWin, cache);
 		NSRect r = NSMakeRect (0.0, 0.0, tdu(rect.width), tdu(rect.height));
 		NSEraseRect(r);
+#ifdef USE_OFFSCREEN
 		[m_offscreen compositeToPoint:NSMakePoint(0.0, 0.0) fromRect:*cacheRect operation:NSCompositeCopy];
+#else
+		UT_DEBUGMSG(("UT_NOT_IMPLEMENTED"));
+#endif
 	}
 	// update cache arrays
 	id oldObj;

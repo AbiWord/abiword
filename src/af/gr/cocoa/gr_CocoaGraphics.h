@@ -130,7 +130,11 @@ class GR_CocoaGraphics : public GR_Graphics
 	void				_setUpdateCallback (gr_cocoa_graphics_update callback, void * param);
 	bool				_callUpdateCallback(NSRect *aRect);
 	XAP_CocoaNSView *	_getView () { return m_pWin; };
+#ifdef USE_OFFSCREEN
 	NSImage*			_getOffscreen () { return m_offscreen; };
+#else
+	void				_unusedMethod1() {};
+#endif
 	void 				_updateRect(NSView * v, NSRect aRect);
 	static bool			_isFlipped();
 	static NSColor				*_utRGBColorToNSColor (const UT_RGBColor& clr);
@@ -154,7 +158,11 @@ private:
 	XAP_CocoaNSView *  			m_pWin;
 	NSMutableDictionary*		m_fontProps;
 	CGContextRef				m_CGContext;
+#ifdef USE_OFFSCREEN
 	NSImage*					m_offscreen;
+#else
+	void*						_unused;
+#endif
 	UT_Vector					m_cacheArray;
 	UT_Vector					m_cacheRectArray;
 	NSImage*					m_xorCache;

@@ -28,7 +28,6 @@
 
 #include "xap_Frame.h"
 #include "ut_vector.h"
-#include "xap_CocoaDialogFactory.h"
 
 class XAP_CocoaApp;
 class EV_CocoaKeyboard;

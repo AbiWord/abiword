@@ -242,9 +242,6 @@ void XAP_CocoaFrameImpl::_createTopLevelWindow(void)
 	NSWindow * theWindow = [m_frameController window];
 	UT_ASSERT (theWindow);
 	[theWindow setTitle:[NSString stringWithUTF8String:m_pCocoaApp->getApplicationTitleForTitleBar()]];
-//	NSView * docArea = [m_frameController getMainView];
-/*  	[scroller setHasHorizontalScroller:YES];
-  	[scroller setHasVerticalScroller:YES];*/
 
 	// synthesize a menu from the info in our base class.
 
@@ -267,10 +264,7 @@ void XAP_CocoaFrameImpl::_createTopLevelWindow(void)
 	// the child area of the window (between the toolbars and
 	// the status bar).
 	_createDocumentWindow();
-#if 0
-	gtk_container_add(GTK_CONTAINER(m_wVBox), m_wSunkenBox);
-	gtk_widget_show(m_wSunkenBox);
-#endif
+
 	// Let the app-specific frame code create the status bar
 	// if it wants to.  we will put it below the document
 	// window (a peer with toolbars and the overall sunkenbox)
