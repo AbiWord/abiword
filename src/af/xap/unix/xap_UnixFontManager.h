@@ -24,7 +24,7 @@
 #include <gdk/gdk.h>
 #include <gdk/gdkx.h>
 
-#ifdef HAVE_FONTCONFIG_FONTCONFIG_H
+#ifdef USE_XFT
 #include <fontconfig/fontconfig.h>
 #endif
 
