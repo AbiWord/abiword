@@ -95,7 +95,6 @@ int XAP_QNXFrame::_fe::resize(PtWidget_t * w, void *data, PtCallbackInfo_t *info
 	XAP_QNXFrame * pQNXFrame = (XAP_QNXFrame *)data;
 	AV_View * pView = pQNXFrame->getCurrentView();
 
-	printf("XAP Resize called! \n");
 	if (pView) {
 		UT_DEBUGMSG(("Resizing to %d,%d %d,%d \n",
 			cbinfo->new_size.ul.x, cbinfo->new_size.ul.y,
@@ -419,12 +418,15 @@ void XAP_QNXFrame::_createTopLevelWindow(void)
 	// Let the app-specific frame code create the contents of
 	// the child area of the window (between the toolbars and
 	// the status bar).
+	
+	/* Peel off some space at the bottom for the status bar */
+	m_AvailableArea.size.h -= 24;
 
 	/*** Add the document view ***/	
 	m_wSunkenBox = _createDocumentWindow();
 
 	//Add status bars
-	UT_DEBUGMSG(("TODO: Add the status bar widget \n"));
+	m_wStatusBar = _createStatusBarWindow();
 	
 	//Set the icon for the window
 	_setWindowIcon();

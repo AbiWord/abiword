@@ -86,7 +86,7 @@ public:
 	
 protected:
 	virtual PtWidget_t *		_createDocumentWindow(void)=0;
-	virtual void *				_createStatusBarWindow(void)=0;
+	virtual PtWidget_t *		_createStatusBarWindow(void)=0;
 	virtual void				_createTopLevelWindow(void);
 	virtual void				_setWindowIcon(void) = 0;
 

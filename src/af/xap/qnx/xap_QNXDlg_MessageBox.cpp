@@ -57,8 +57,6 @@ void XAP_QNXDialog_MessageBox::runModal(XAP_Frame * pFrame)
 	int ret, def_button;
 	const char *str1, *str2, *str3;
 
-	printf("Run modal dialog box \n");
-
 	// we get all our strings from the application string set
 	const XAP_StringSet * pSS = pFrame->getApp()->getStringSet();
 
