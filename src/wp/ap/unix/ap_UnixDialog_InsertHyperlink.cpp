@@ -197,7 +197,7 @@ void AP_UnixDialog_InsertHyperlink::_constructWindowContents ( GtkWidget * vbox2
   if (hyperlink)
   {
 	gtk_entry_set_text(GTK_ENTRY(m_entry), hyperlink);
-// uncomment line below when bug 920 gets fixed.
+// TODO uncomment line below when bug 920 gets fixed.
 //	gtk_editable_select_region (GTK_EDITABLE(m_entry), 0, -1);
   }
 }
