@@ -574,6 +574,13 @@ PT_DocPosition FV_View::_getDocPosFromPoint(PT_DocPosition iPoint, FV_DocPos dp,
 
 	case FV_DOCPOS_BOB:
 		{
+#if 0
+// TODO this piece of code attempts to go back
+// TODO to the previous block if we are on the
+// TODO edge.  this causes bug #92 (double clicking
+// TODO on the first line of a paragraph selects
+// TODO current paragraph and the previous paragraph).
+// TODO i'm not sure why it is here.			
 			// are we already there?
 			if (iPos == pBlock->getPosition())
 			{
@@ -584,7 +591,8 @@ PT_DocPosition FV_View::_getDocPosFromPoint(PT_DocPosition iPoint, FV_DocPos dp,
 				// yep.  look there instead
 				pBlock = pBlock->getPrevBlockInDocument();
 			}
-
+#endif /* 0 */
+			
 			iPos = pBlock->getPosition();
 		}
 		break;
