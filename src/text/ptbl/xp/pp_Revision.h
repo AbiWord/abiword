@@ -28,6 +28,7 @@
 class PD_Document;
 
 typedef enum {
+	PP_REVISION_NONE             = 0,
 	PP_REVISION_ADDITION         = 0x01,
 	PP_REVISION_DELETION         = 0x02,
 	PP_REVISION_FMT_CHANGE       = 0x04,
@@ -116,6 +117,10 @@ class PP_RevisionAttr
 		:m_vRev(),m_sXMLstring(),m_bDirty(true),m_iSuperfluous(0),m_pLastRevision(NULL)
 		{};
 	PP_RevisionAttr(const XML_Char * r);
+
+	
+	PP_RevisionAttr(UT_uint32 iId, PP_RevisionType eType, const XML_Char ** pAttrs, const XML_Char ** pProps);
+	
 	~PP_RevisionAttr();
 
 	void                  setRevision(const XML_Char * r);

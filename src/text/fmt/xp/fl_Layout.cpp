@@ -78,7 +78,7 @@ void fl_Layout::setAttrPropIndex(PT_AttrPropIndex apIndex)
 /*!
     ppAP [out] -- the requested AP
     
-    pRevisions [in] -- revisions attribute; can be set to NULL, in
+    pRevisions [in/out] -- revisions attribute; can be set to NULL, in
                        which case an instance will be created; the
                        caller is responsible for deleting
 
@@ -94,15 +94,18 @@ void fl_Layout::setAttrPropIndex(PT_AttrPropIndex apIndex)
                      with it.
     
 */
-bool fl_Layout::getAttrProp(const PP_AttrProp ** ppAP, PP_RevisionAttr *& pRevisions,
+bool fl_Layout::getAttrProp(const PP_AttrProp ** ppAP, PP_RevisionAttr ** pRevisions,
 							bool bShowRevisions, UT_uint32 iRevisionId, bool &bHiddenRevision) const
 {
 	UT_return_val_if_fail(m_pDoc, false);
 	return m_pDoc->getAttrProp(m_apIndex, ppAP, pRevisions, bShowRevisions, iRevisionId, bHiddenRevision);
 }
 
+/*!
+    if pRevisions is not needed, set the pointer to NULL(this speeds up things)
+*/
 bool fl_Layout::getSpanAttrProp(UT_uint32 offset, bool bLeftSide, const PP_AttrProp ** ppAP,
-								PP_RevisionAttr *& pRevisions,
+								PP_RevisionAttr ** pRevisions,
 								bool bShowRevisions, UT_uint32 iRevisionId,
 								bool &bHiddenRevision) const
 {

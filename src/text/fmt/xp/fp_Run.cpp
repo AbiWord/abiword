@@ -559,11 +559,11 @@ void fp_Run::getSpanAP(const PP_AttrProp * &pSpanAP)
 
 	if(getType() != FPRUN_FMTMARK && getType() != FPRUN_DUMMY && getType() != FPRUN_DIRECTIONMARKER)
 	{
-		getBlock()->getSpanAttrProp(getBlockOffset(),false,&pSpanAP,m_pRevisions,bShow,iId,bHiddenRevision);
+		getBlock()->getSpanAttrProp(getBlockOffset(),false,&pSpanAP,&m_pRevisions,bShow,iId,bHiddenRevision);
 	}
 	else
 	{
-		getBlock()->getSpanAttrProp(getBlockOffset(),true,&pSpanAP,m_pRevisions,bShow,iId,bHiddenRevision);
+		getBlock()->getSpanAttrProp(getBlockOffset(),true,&pSpanAP,&m_pRevisions,bShow,iId,bHiddenRevision);
 	}
 
 	if(bHiddenRevision)
@@ -1002,7 +1002,7 @@ void fp_Run::draw(dg_DrawArgs* pDA)
 
 			UT_uint32 iWidth = getDrawingWidth();
 
-			if(r_type == PP_REVISION_ADDITION)
+			if(r_type == PP_REVISION_ADDITION || r_type == PP_REVISION_ADDITION_AND_FMT)
 			{
 				painter.fillRect(s_fgColor,pDA->xoff, pDA->yoff, iWidth, getGraphics()->tlu(1));
 				painter.fillRect(s_fgColor,pDA->xoff, pDA->yoff + getGraphics()->tlu(2),

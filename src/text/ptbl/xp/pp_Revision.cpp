@@ -241,6 +241,15 @@ PP_RevisionAttr::PP_RevisionAttr(const XML_Char * r):
 	_init(r);
 }
 
+/*! create class instance from a single revision data */
+PP_RevisionAttr::PP_RevisionAttr(UT_uint32 iId, PP_RevisionType eType,
+								 const XML_Char ** pAttrs, const XML_Char ** pProps)
+{
+	PP_Revision * pRevision = new PP_Revision((UT_uint32)iId, eType, pProps, pAttrs);
+	m_vRev.addItem((void*)pRevision);
+}
+
+
 PP_RevisionAttr::~PP_RevisionAttr()
 {
 	_clear();

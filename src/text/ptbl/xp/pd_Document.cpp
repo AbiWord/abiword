@@ -1093,9 +1093,7 @@ bool PD_Document::getAttributeFromSDH(PL_StruxDocHandle sdh, bool bShowRevisions
 	const XML_Char * pszValue = NULL;
 
 	bool bHiddenRevision = false;
-	PP_RevisionAttr * pRevisions = NULL; // must be NULL
-	getAttrProp(indexAP, &pAP,pRevisions,bShowRevisions,iRevisionLevel,bHiddenRevision);
-	delete pRevisions;
+	getAttrProp(indexAP, &pAP,NULL,bShowRevisions,iRevisionLevel,bHiddenRevision);
 	
 	UT_return_val_if_fail (pAP, false);
 	(pAP)->getAttribute(szAttribute, pszValue);
@@ -1144,11 +1142,8 @@ bool PD_Document::getPropertyFromSDH(PL_StruxDocHandle sdh, bool bShowRevisions,
 	const XML_Char * pszValue = NULL;
 
 	bool bHiddenRevision = false;
-	PP_RevisionAttr * pRevisions = NULL; // must be NULL
 
-	getAttrProp(indexAP, &pAP,pRevisions,bShowRevisions,iRevisionLevel,bHiddenRevision);
-
-	delete pRevisions;
+	getAttrProp(indexAP, &pAP,NULL,bShowRevisions,iRevisionLevel,bHiddenRevision);
 	
 	UT_return_val_if_fail (pAP, false);
 	(pAP)->getProperty(szProperty, pszValue);
@@ -6145,9 +6140,11 @@ bool PD_Document::purgeFmtMarks()
 }
 
 
-bool PD_Document::getAttrProp(PT_AttrPropIndex apIndx, const PP_AttrProp ** ppAP, PP_RevisionAttr *& pRevisions,
+bool PD_Document::getAttrProp(PT_AttrPropIndex apIndx, const PP_AttrProp ** ppAP, PP_RevisionAttr ** pRevisions,
 							  bool bShowRevisions, UT_uint32 iRevisionId, bool &bHiddenRevision) const
 {
+	bool bRevisionAttrNeeded = pRevisions ? true : false;
+	PP_RevisionAttr * pRevAttr = NULL;
 	bHiddenRevision = false;
 
 	const PP_AttrProp * pAP = NULL;
@@ -6160,13 +6157,22 @@ bool PD_Document::getAttrProp(PT_AttrPropIndex apIndx, const PP_AttrProp ** ppAP
 	{
 		// the revision has a valid index to an inflated AP, so we use it
 		bHiddenRevision = pAP->getRevisionHidden();
+
+		const XML_Char* pRevision = NULL;
+
+		if(bRevisionAttrNeeded && pAP->getAttribute("revision", pRevision))
+		{
+			*pRevisions = new PP_RevisionAttr(pRevision);
+			UT_return_val_if_fail(pRevisions, false);
+		}
+
 		PT_AttrPropIndex revAPI = pAP->getRevisedIndex();
 
 		getAttrProp(revAPI, ppAP);
 		return true;
 	}
 	
-	const PP_AttrProp * pNewAP = explodeRevisions(pRevisions, pAP, bShowRevisions, iRevisionId, bHiddenRevision);
+	const PP_AttrProp * pNewAP = explodeRevisions(pRevAttr, pAP, bShowRevisions, iRevisionId, bHiddenRevision);
 
 	if(pNewAP)
 	{
@@ -6177,17 +6183,34 @@ bool PD_Document::getAttrProp(PT_AttrPropIndex apIndx, const PP_AttrProp ** ppAP
 		*ppAP = pAP;
 	}
 	
+	if(bRevisionAttrNeeded)
+	{
+		*pRevisions = pRevAttr;
+	}
+	else
+	{
+		delete pRevAttr;
+	}
+	
 	return true;
 }
 
 
+/*!
+    retrieves span AP corresponding to revision settings
+
+    pRevisions : [out] the representation of the rev. attribute associated with the AP; if
+    the caller does not need this, the pointer can be set to null
+*/
 bool PD_Document::getSpanAttrProp(PL_StruxDocHandle sdh, UT_uint32 offset, bool bLeftSide,
 								  const PP_AttrProp ** ppAP,
-								  PP_RevisionAttr *& pRevisions,
+								  PP_RevisionAttr ** pRevisions,
 								  bool bShowRevisions, UT_uint32 iRevisionId,
 								  bool &bHiddenRevision) const
 {
 	const PP_AttrProp *pAP = NULL;
+	bool bRevisionAttrNeeded = pRevisions ? true : false;
+	PP_RevisionAttr * pRevAttr = NULL;
 	
 	if(!getSpanAttrProp(sdh,offset,bLeftSide,&pAP))
 		return false;
@@ -6197,13 +6220,23 @@ bool PD_Document::getSpanAttrProp(PL_StruxDocHandle sdh, UT_uint32 offset, bool 
 	{
 		// the revision has a valid index to an inflated AP, so we use it
 		bHiddenRevision = pAP->getRevisionHidden();
+
+		const XML_Char* pRevision = NULL;
+
+		// only do this if the pRevisions pointer is set to NULL
+		if(bRevisionAttrNeeded && pAP->getAttribute("revision", pRevision))
+		{
+			*pRevisions = new PP_RevisionAttr(pRevision);
+			UT_return_val_if_fail(pRevisions, false);
+		}
+	
 		PT_AttrPropIndex revAPI = pAP->getRevisedIndex();
 
 		getAttrProp(revAPI, ppAP);
 		return true;
 	}
 	
-	const PP_AttrProp * pNewAP = explodeRevisions(pRevisions, pAP, bShowRevisions, iRevisionId, bHiddenRevision);
+	const PP_AttrProp * pNewAP = explodeRevisions(pRevAttr, pAP, bShowRevisions, iRevisionId, bHiddenRevision);
 
 	if(pNewAP)
 	{
@@ -6213,6 +6246,16 @@ bool PD_Document::getSpanAttrProp(PL_StruxDocHandle sdh, UT_uint32 offset, bool 
 	{
 		*ppAP = pAP;
 	}
+
+	if(bRevisionAttrNeeded)
+	{
+		*pRevisions = pRevAttr;
+	}
+	else
+	{
+		delete pRevAttr;
+	}
+	
 	
 	return true;
 }

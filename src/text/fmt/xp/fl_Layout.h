@@ -52,12 +52,12 @@ public:
 	PT_AttrPropIndex 	getAttrPropIndex(void) const;
 	void				setAttrPropIndex(PT_AttrPropIndex apIndex);
 
-	bool				getAttrProp(const PP_AttrProp ** ppAP, PP_RevisionAttr *& pRevisions,
+	bool				getAttrProp(const PP_AttrProp ** ppAP, PP_RevisionAttr ** pRevisions,
 									bool bShowRevisions, UT_uint32 iRevisionId,
 									bool &bHiddenRevision) const;
 	
 	bool				getSpanAttrProp(UT_uint32 offset, bool bLeftSide, const PP_AttrProp ** ppAP,
-										PP_RevisionAttr *& pRevisions,
+										PP_RevisionAttr ** pRevisions,
 										bool bShowRevisions, UT_uint32 iRevisionId,
 										bool &bHiddenRevision) const;
 	

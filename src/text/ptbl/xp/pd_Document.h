@@ -305,12 +305,12 @@ public:
 	bool					getSpanAttrProp(PL_StruxDocHandle sdh, UT_uint32 offset, bool bLeftSide,
 											const PP_AttrProp ** ppAP) const;
 
-	bool                    getAttrProp(PT_AttrPropIndex apIndx, const PP_AttrProp ** ppAP, PP_RevisionAttr *& pRevisions,
+	bool                    getAttrProp(PT_AttrPropIndex apIndx, const PP_AttrProp ** ppAP, PP_RevisionAttr ** pRevisions,
 										bool bShowRevisions, UT_uint32 iRevisionId, bool &bHiddenRevision) const;
 
 	bool                    getSpanAttrProp(PL_StruxDocHandle sdh, UT_uint32 offset, bool bLeftSide,
 											const PP_AttrProp ** ppAP,
-											PP_RevisionAttr *& pRevisions,
+											PP_RevisionAttr ** pRevisions,
 											bool bShowRevisions, UT_uint32 iRevisionId,
 											bool &bHiddenRevision) const;
 	
