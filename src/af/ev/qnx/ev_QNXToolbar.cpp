@@ -172,7 +172,6 @@ UT_Bool EV_QNXToolbar::synthesize(void)
 */
 	
 #define TB_HEIGHT 45
-	//printf("TB: synthesizing() \n");
 	area.pos.x = 0; 
 	area.pos.y = m_pQNXFrame->m_AvailableArea.pos.y;
 	area.size.w = m_pQNXFrame->m_AvailableArea.size.w; 
@@ -181,17 +180,25 @@ UT_Bool EV_QNXToolbar::synthesize(void)
 	m_pQNXFrame->m_AvailableArea.size.h -= area.size.h + 3;
 
 	int n = 0;
+/* Start the transition to using a toolbar */
+#if 0
 	PtSetArg(&args[n++], Pt_ARG_AREA, &area, 0); 
-//	PtSetArg(&args[n++], Pt_ARG_FILL_COLOR, Pg_YELLOW, 0); 
 	PtSetArg(&args[n++], Pt_ARG_BORDER_WIDTH, 2, 0); 
 #define _TB_ANCHOR_	(Pt_LEFT_ANCHORED_LEFT | Pt_RIGHT_ANCHORED_RIGHT | \
-			 Pt_TOP_ANCHORED_TOP | Pt_BOTTOM_ANCHORED_TOP)
+		 			 Pt_TOP_ANCHORED_TOP | Pt_BOTTOM_ANCHORED_TOP)
 	PtSetArg(&args[n++], Pt_ARG_ANCHOR_FLAGS, _TB_ANCHOR_, _TB_ANCHOR_); 
 	PtSetArg(&args[n++], Pt_ARG_FLAGS, Pt_HIGHLIGHTED, Pt_HIGHLIGHTED); 
 
 	UT_DEBUGMSG(("TB: Setting Toolbar %d,%d w/h %d/%d parent 0x%x \n", 
 		area.pos.x, area.pos.y, area.size.w, area.size.h, wTLW));
 	m_wToolbar = PtCreateWidget(PtPane, wTLW, n, args);
+#else
+	PtSetArg(&args[n++], Pt_ARG_AREA, &area, 0); 
+#define _TB_ANCHOR_	(Pt_LEFT_ANCHORED_LEFT | Pt_RIGHT_ANCHORED_RIGHT | \
+		 			 Pt_TOP_ANCHORED_TOP | Pt_BOTTOM_ANCHORED_TOP)
+	PtSetArg(&args[n++], Pt_ARG_ANCHOR_FLAGS, _TB_ANCHOR_, _TB_ANCHOR_); 
+	m_wToolbar = PtCreateWidget(PtToolbar, wTLW, n, args);
+#endif
 	UT_ASSERT(m_wToolbar);
 	
 	memset(&area, 0, sizeof(area));
