@@ -72,6 +72,7 @@ BeginSet(de,DE,UT_TRUE)
 
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_SUPERSCRIPT,	"Höhergestellt",	tb_text_superscript_xpm,	NULL, "Höhergestellt")
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_SUBSCRIPT,	"Tiefergestellt",	tb_text_subscript_xpm,		NULL, "Tiefergestellt")
+	ToolbarLabel(AP_TOOLBAR_ID_INSERT_SYMBOL,	"Symbol",	tb_symbol_xpm,		NULL, "Symbol einfügen")
 
 	ToolbarLabel(AP_TOOLBAR_ID_ALIGN_LEFT,		"Links",	tb_text_align_left_xpm, NULL, "Links ausrichten")
 	ToolbarLabel(AP_TOOLBAR_ID_ALIGN_CENTER,	"Zentriert",tb_text_center_xpm,		NULL, "Zentriert ausrichten")
@@ -90,6 +91,8 @@ BeginSet(de,DE,UT_TRUE)
 	ToolbarLabel(AP_TOOLBAR_ID_3COLUMN,		"3 Spalten",	tb_3column_xpm,	NULL,	"3 Spalten")
 
 	ToolbarLabel(AP_TOOLBAR_ID_ZOOM,		"Zoom",			NoIcon,			NULL,	"Zoom")
+	ToolbarLabel(AP_TOOLBAR_ID_LISTS_BULLETS,		"Aufzählungsliste",		tb_lists_bullets_xpm,		NULL,		"Start/Stop Aufzählungsliste")
+	ToolbarLabel(AP_TOOLBAR_ID_LISTS_NUMBERS,		"Nummerierte Liste",		tb_lists_numbers_xpm,		NULL,		"Start/Stop Nummerierungsliste")
 	
 	// ... add others here ...
 
