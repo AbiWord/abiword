@@ -44,7 +44,10 @@ public:
 	void				setOffsetPageViewLeftMargin(UT_uint32 iPageViewLeftMargin);
 	void				setHeight(UT_uint32 iHeight);
 	UT_uint32			getHeight(void) const;
+	void				setWidth(UT_uint32 iWidth);
+	UT_uint32			getWidth(void) const;
 	void				draw(const UT_Rect * pClipRect);
+	void				scrollRuler(UT_sint32 xoff);
 
 	/* used with AV_Listener */
 	virtual UT_Bool		notify(AV_View * pView, const AV_ChangeMask mask);
@@ -52,16 +55,20 @@ public:
 	/* used with AV_ScrollObj */
 	static void			_scrollFuncX(void * pData, UT_sint32 xoff);
 	static void			_scrollFuncY(void * pData, UT_sint32 yoff);
-	virtual void		scrollRuler(UT_sint32 xoff)=0;
 	
 protected:
 	XAP_Frame *			m_pFrame;
 	AV_View *			m_pView;
 	AV_ScrollObj *		m_pScrollObj;
 	DG_Graphics *		m_pG;
-	UT_uint32			m_iHeight;
+	UT_uint32			m_iHeight;		/* size of window */
+	UT_uint32			m_iWidth;		/* size of window */
 	UT_uint32			m_iLeftRulerWidth;
 	UT_uint32			m_iPageViewLeftMargin;
+	UT_sint32			m_xScrollOffset;
+
+	static const UT_uint32	s_iFixedHeight= 40;	/* size we draw stuff w/o regard to window size */
+	static const UT_uint32	s_iFixedWidth = 40;	/* minimum width of non-scrolling area on left */
 };
 
 #endif /* AP_TOPRULER_H */

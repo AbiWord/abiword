@@ -87,6 +87,9 @@ public:
 	virtual void invertRect(const UT_Rect* pRect) = 0;
 	virtual void setClipRect(const UT_Rect* pRect) = 0;
 	virtual void scroll(UT_sint32, UT_sint32) = 0;
+	virtual void scroll(UT_sint32 x_dest, UT_sint32 y_dest,
+						UT_sint32 x_src, UT_sint32 y_src,
+						UT_sint32 width, UT_sint32 height) = 0;
 	virtual void clearArea(UT_sint32, UT_sint32, UT_sint32, UT_sint32) = 0;
 	
 	typedef enum { DGP_SCREEN, DGP_PAPER } Properties;

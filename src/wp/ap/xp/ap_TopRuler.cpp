@@ -25,6 +25,7 @@
 #include "gr_Graphics.h"
 class XAP_Frame;
 
+#define MyMax(a,b)		(((a)>(b)) ? (a) : (b))
 #define DELETEP(p)		do { if (p) delete p; p = NULL; } while (0)
 
 /*****************************************************************/
@@ -36,8 +37,10 @@ AP_TopRuler::AP_TopRuler(XAP_Frame * pFrame)
 	m_pScrollObj = NULL;
 	m_pG = NULL;
 	m_iHeight = 0;
+	m_iWidth = 0;
 	m_iLeftRulerWidth = 0;
 	m_iPageViewLeftMargin = 0;
+	m_xScrollOffset = 0;
 }
 
 AP_TopRuler::~AP_TopRuler(void)
@@ -109,7 +112,17 @@ void AP_TopRuler::setHeight(UT_uint32 iHeight)
 
 UT_uint32 AP_TopRuler::getHeight(void) const
 {
-	return m_iHeight;
+	return s_iFixedHeight;
+}
+
+void AP_TopRuler::setWidth(UT_uint32 iWidth)
+{
+	m_iWidth = iWidth;
+}
+
+UT_uint32 AP_TopRuler::getWidth(void) const
+{
+	return m_iWidth;
 }
 
 /*****************************************************************/
@@ -130,9 +143,10 @@ void AP_TopRuler::_scrollFuncX(void * pData, UT_sint32 xoff)
 	// static callback referenced by an AV_ScrollObj() for the ruler
 	UT_ASSERT(pData);
 
-	// dispatch to platform-dependent scroller
-	
 	AP_TopRuler * pTopRuler = (AP_TopRuler *)(pData);
+
+	// let non-static member function do all the work.
+	
 	pTopRuler->scrollRuler(xoff);
 	return;
 }
@@ -146,35 +160,157 @@ void AP_TopRuler::_scrollFuncY(void * pData, UT_sint32 yoff)
 
 /*****************************************************************/
 
+void AP_TopRuler::scrollRuler(UT_sint32 xoff)
+{
+	// scroll the window while excluding the portion
+	// lining up with the LeftRuler.
+	
+	UT_sint32 dx = xoff - m_xScrollOffset;
+	if (!dx)
+		return;
+
+	UT_sint32 xFixed = MyMax(m_iLeftRulerWidth,s_iFixedWidth);
+	UT_sint32 width = m_iWidth - xFixed;
+	UT_sint32 height = s_iFixedHeight;
+	UT_sint32 y_dest = 0;
+	UT_sint32 y_src = 0;
+	UT_sint32 x_dest = xFixed;
+	UT_sint32 x_src = xFixed;
+
+	UT_Rect rClip;
+	rClip.top = y_src;
+	rClip.height = height;
+	
+	if (dx > 0)
+	{
+		x_src += dx;
+		width += -dx;
+		rClip.left = x_dest + width;
+		rClip.width = dx;
+	}
+	else if (dx < 0)
+	{
+		x_dest += -dx;
+		width += dx;
+		rClip.left = x_src;
+		rClip.width = -dx;
+	}
+	
+	m_pG->scroll(x_dest,y_dest,x_src,y_src,width,height);
+	m_xScrollOffset = xoff;
+	draw(&rClip);
+}
+
+/*****************************************************************/
+
 void AP_TopRuler::draw(const UT_Rect * pClipRect)
 {
 	if (pClipRect)
 		m_pG->setClipRect(pClipRect);
 
-	// TODO remove test draw code...
-	
-	UT_uint32 pageWidth = 8;			// TODO get this from the document
-	
-	UT_uint32 dotsPerInch = m_pG->getResolution();
-	UT_uint32 xOrigin = m_iLeftRulerWidth + m_iPageViewLeftMargin;
-	UT_uint32 yTop = m_iHeight/3;
-	UT_uint32 yBar = m_iHeight/3;
-	
+	UT_RGBColor clrDarkGray(127,127,127);
+	UT_RGBColor clrLiteGray(192,192,192);
 	UT_RGBColor clrBlack(0,0,0);
 	UT_RGBColor clrWhite(255,255,255);
 
-	m_pG->fillRect(clrWhite,xOrigin,yTop,pageWidth*dotsPerInch,yBar);
-	m_pG->setColor(clrBlack);
-	for (UT_uint32 k=0; k<=pageWidth; k++)
-	{
-		UT_uint32 x = xOrigin + (k*dotsPerInch);
-		m_pG->drawLine(x,yTop,x,yTop+yBar);
-	}
+	// draw the background
 	
+	m_pG->fillRect(clrLiteGray,0,0,m_iWidth,m_iHeight);
+
+	// draw a dark-gray and white bar lined up with the paper
+	
+	UT_uint32 yTop = s_iFixedHeight/4;
+	UT_uint32 yBar = s_iFixedHeight/2;
+
+	// TODO get these from the document at the current cursor position.
+	
+	UT_uint32 pageWidth = m_pG->convertDimension("8.5in");
+	UT_uint32 docLeftMarginWidth = m_pG->convertDimension("1.0in");
+	UT_uint32 docRightMarginWidth = m_pG->convertDimension("1.0in");
+	UT_uint32 docWithinMarginWidth = pageWidth - docLeftMarginWidth - docRightMarginWidth;
+
+	// left edge of the paper depends upon size of the LeftRuler
+	// (if present) and the width of the gray-space we draw for
+	// PageView (when in PageView mode).
+	//
+	// when we scroll, we fix the area above the LeftRuler, so it
+	// is omitted from the calculations.
+	
+	UT_sint32 xFixed = (UT_sint32)MyMax(m_iLeftRulerWidth,s_iFixedWidth);
+	UT_sint32 xOrigin = (UT_sint32)m_iPageViewLeftMargin;
+	UT_sint32 xScrolledOrigin = xOrigin - m_xScrollOffset;
+	UT_sint32 x,w;
+
+	if ((xScrolledOrigin + docLeftMarginWidth) > 0)
+	{
+		// left margin of paper is on-screen (or rather -- not
+		// scrolled over the LeftRuler).  draw dark-gray bar.
+		// we need to clip it ourselves -- since the expose/paint
+		// clip rects don't know anything about this distinction.
+
+		x = xFixed;
+		w = docLeftMarginWidth;
+		if (xScrolledOrigin < 0)
+			w += xScrolledOrigin;
+		else
+			x += xScrolledOrigin;
+		if (w > 0)
+			m_pG->fillRect(clrDarkGray,x,yTop,w,yBar);
+	}
+
+	xScrolledOrigin += docLeftMarginWidth;
+	if ((xScrolledOrigin + docWithinMarginWidth) > 0)
+	{
+		// area within the page margins is on-screen (not over
+		// the LeftRuler).  draw a main white bar over the area.
+
+		x = xFixed;
+		w = docWithinMarginWidth;
+		if (xScrolledOrigin < 0)
+			w += xScrolledOrigin;
+		else
+			x += xScrolledOrigin;
+		if (w > 0)
+			m_pG->fillRect(clrWhite,x,yTop,w,yBar);
+	}
+
+	xScrolledOrigin += docWithinMarginWidth;
+	if ((xScrolledOrigin + docRightMarginWidth) > 0)
+	{
+		// right margin of paper is on-screen (not over the
+		// LeftRuler).  draw another dark-gray bar, like we
+		// did on the left side.
+
+		x = xFixed;
+		w = docRightMarginWidth;
+		if (xScrolledOrigin < 0)
+			w += xScrolledOrigin;
+		else
+			x += xScrolledOrigin;
+		if (w > 0)
+			m_pG->fillRect(clrDarkGray,x,yTop,w,yBar);
+	}
+
+	// now draw tick marks on the bar, using the select
+	// system of units.
+	//
+	// For english, we draw long ticks on the inches and
+	// short ticks on the half inches.  (we use 5.0in rather
+	// then 0.5in to avoid round-off problems.)
+	//
+	// TODO for now we assume English units.
+
 	m_pG->setColor(clrBlack);
-	m_pG->drawLine(0,0,m_iHeight,m_iHeight);
-	m_pG->drawLine(m_iHeight-1,m_iHeight-1,200,m_iHeight-1);
-	m_pG->drawLine(0,m_iHeight-1,m_iHeight,-1);
+	UT_uint32 halfUnit = m_pG->convertDimension("5.0in");
+	for (UT_uint32 k=0; (k*halfUnit/10 <= pageWidth); k++)
+	{
+		x = xFixed + xOrigin + k*halfUnit/10 - m_xScrollOffset;
+		if (x >= xFixed)
+		{
+			UT_uint32 y = ((k % 2) ? yBar/2 : yBar);
+			m_pG->drawLine(x,yTop,x,yTop+y);
+		}
+	}
 	
 	if (pClipRect)
 		m_pG->setClipRect(NULL);

@@ -40,9 +40,8 @@ public:
 	AP_UnixTopRuler(XAP_Frame * pFrame);
 	virtual ~AP_UnixTopRuler(void);
 
-	GtkWidget *		createWidget(UT_uint32 iHeight);
+	GtkWidget *		createWidget(void);
 	virtual void	setView(AV_View * pView);
-	void			scrollRuler(UT_sint32 xoff);
 	
 protected:
 	GtkWidget *		m_wTopRuler;

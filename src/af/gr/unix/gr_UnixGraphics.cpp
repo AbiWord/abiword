@@ -506,59 +506,37 @@ void UNIXGraphics::scroll(UT_sint32 dx, UT_sint32 dy)
 	if (dy > 0)
     {
 		if (dy < winHeight)
-		{
 			gdk_window_copy_area(m_pWin, m_pGC, 0, 0,
 								 m_pWin, 0, dy, winWidth, winHeight - dy);
-//			gdk_window_clear_area(m_pWin, 0, winHeight - dy, winWidth, dy);
-		}
-		else
-		{
-//			gdk_window_clear_area(m_pWin, 0, 0, winWidth, winHeight);
-		}
     }
 	else if (dy < 0)
     {
 		if (dy >= -winHeight)
-		{
-			gdk_window_copy_area(m_pWin, m_pGC, 0, -dy, m_pWin, 0, 0, winWidth,
-								 winHeight + dy);
-
-//			gdk_window_clear_area(m_pWin, 0, 0, winWidth, -dy);
-		}
-		else
-		{
-//			gdk_window_clear_area(m_pWin, 0, 0, winWidth, winHeight);
-		}
+			gdk_window_copy_area(m_pWin, m_pGC, 0, -dy,
+								 m_pWin, 0, 0, winWidth, winHeight + dy);
     }
 
 	if (dx > 0)
     {
 		if (dx < winWidth)
-		{
 			gdk_window_copy_area(m_pWin, m_pGC, 0, 0,
 								 m_pWin, dx, 0, winWidth - dx, winHeight);
-//			gdk_window_clear_area(m_pWin, winWidth - dx, 0, dx, winHeight);
-		}
-		else
-		{
-//			gdk_window_clear_area(m_pWin, 0, 0, winWidth, winHeight);
-		}
     }
 	else if (dx < 0)
     {
 		if (dx >= -winWidth)
-		{
-			gdk_window_copy_area(m_pWin, m_pGC, -dx, 0, m_pWin, 0, 0, winWidth + dx,
-								 winHeight);
-
-//			gdk_window_clear_area(m_pWin, 0, 0, -dx, winHeight);
-		}
-		else
-		{
-//			gdk_window_clear_area(m_pWin, 0, 0, winWidth, winHeight);
-		}
+			gdk_window_copy_area(m_pWin, m_pGC, -dx, 0,
+								 m_pWin, 0, 0, winWidth + dx, winHeight);
     }
 	
+}
+
+void UNIXGraphics::scroll(UT_sint32 x_dest, UT_sint32 y_dest,
+						  UT_sint32 x_src, UT_sint32 y_src,
+						  UT_sint32 width, UT_sint32 height)
+{
+	gdk_window_copy_area(m_pWin, m_pGC, x_dest, y_dest,
+						 m_pWin, x_src, y_src, width, height);
 }
 
 void UNIXGraphics::clearArea(UT_sint32 x, UT_sint32 y,

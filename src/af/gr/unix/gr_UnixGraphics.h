@@ -64,6 +64,9 @@ public:
   virtual void invertRect(const UT_Rect* pRect);
   virtual void setClipRect(const UT_Rect* pRect);
   virtual void scroll(UT_sint32, UT_sint32);
+  virtual void scroll(UT_sint32 x_dest, UT_sint32 y_dest,
+					  UT_sint32 x_src, UT_sint32 y_src,
+					  UT_sint32 width, UT_sint32 height);
   virtual void clearArea(UT_sint32, UT_sint32, UT_sint32, UT_sint32);
   
   virtual UT_Bool queryProperties(DG_Graphics::Properties gp) const;

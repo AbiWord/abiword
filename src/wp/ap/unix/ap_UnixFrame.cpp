@@ -410,8 +410,7 @@ GtkWidget * AP_UnixFrame::_createDocumentWindow(void)
 	// create the top ruler
 	AP_UnixTopRuler * pUnixTopRuler = new AP_UnixTopRuler(this);
 	UT_ASSERT(pUnixTopRuler);
-	m_topRuler = pUnixTopRuler->createWidget(HACK_RULER_SIZE);
-	pUnixTopRuler->setOffsetLeftRuler(HACK_RULER_SIZE);
+	m_topRuler = pUnixTopRuler->createWidget();
 	m_pData->m_pTopRuler = pUnixTopRuler;
 
 	// create the left ruler
@@ -419,6 +418,9 @@ GtkWidget * AP_UnixFrame::_createDocumentWindow(void)
 	gtk_object_set_user_data(GTK_OBJECT(m_leftRuler),this);
 	gtk_widget_show(m_leftRuler);
 	gtk_widget_set_usize(m_leftRuler, HACK_RULER_SIZE, -1);
+
+	// TODO get the width from the left ruler and stuff it into the top ruler.
+	pUnixTopRuler->setOffsetLeftRuler(HACK_RULER_SIZE);
 	
 	// set up for scroll bars.
 	m_pHadj = (GtkAdjustment*) gtk_adjustment_new(0.0, 0.0, 0.0, 0.0, 0.0, 0.0);

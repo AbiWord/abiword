@@ -42,17 +42,15 @@ AP_UnixTopRuler::~AP_UnixTopRuler(void)
 	DELETEP(m_pG);
 }
 
-GtkWidget * AP_UnixTopRuler::createWidget(UT_uint32 iHeight)
+GtkWidget * AP_UnixTopRuler::createWidget(void)
 {
 	UT_ASSERT(!m_pG && !m_wTopRuler);
 	
-	setHeight(iHeight);
-
 	m_wTopRuler = gtk_drawing_area_new();
 
 	gtk_object_set_user_data(GTK_OBJECT(m_wTopRuler),this);
 	gtk_widget_show(m_wTopRuler);
-	gtk_widget_set_usize(m_wTopRuler, -1, iHeight);
+	gtk_widget_set_usize(m_wTopRuler, -1, s_iFixedHeight);
 
 	gtk_widget_set_events(GTK_WIDGET(m_wTopRuler), (GDK_EXPOSURE_MASK |
 													GDK_BUTTON_PRESS_MASK |
@@ -95,14 +93,6 @@ void AP_UnixTopRuler::setView(AV_View * pView)
 
 /*****************************************************************/
 
-void AP_UnixTopRuler::scrollRuler(UT_sint32 xoff)
-{
-	// platform-dependent scrolling for the ruler
-	UT_DEBUGMSG(("UnixTopRuler: received scrollRuler [x %d]\n",xoff));
-}
-
-/*****************************************************************/
-
 gint AP_UnixTopRuler::_fe::button_press_event(GtkWidget * w, GdkEventButton * e)
 {
 	// a static function
@@ -126,10 +116,6 @@ gint AP_UnixTopRuler::_fe::configure_event(GtkWidget* w, GdkEventConfigure *e)
 	UT_DEBUGMSG(("UnixTopRuler: [p %p] [size w %d h %d] received configure_event\n",
 				 pUnixTopRuler, e->width, e->height));
 
-	// TODO for some reason, I cannot get GTK to respect the height request
-	// TODO that we made when we created the widget. for now, we just deal
-	// TODO with what they gave us....
-
 	UT_uint32 iHeight = (UT_uint32)e->height;
 	if (iHeight != pUnixTopRuler->getHeight())
 	{
@@ -137,6 +123,13 @@ gint AP_UnixTopRuler::_fe::configure_event(GtkWidget* w, GdkEventConfigure *e)
 		// TODO do we need to invalidate and redraw
 	}
 
+	UT_uint32 iWidth = (UT_uint32)e->width;
+	if (iWidth != pUnixTopRuler->getWidth())
+	{
+		pUnixTopRuler->setWidth(iWidth);
+		// TODO do we need to invalidate and redraw
+	}
+	
 	// TODO add code in the LeftRuler's configure_event code to send us
 	// TODO a setOffsetLeftRuler() message.
 	
@@ -171,8 +164,16 @@ gint AP_UnixTopRuler::_fe::expose(GtkWidget * w, GdkEventExpose* pExposeEvent)
 {
 	// a static function
 	AP_UnixTopRuler * pUnixTopRuler = (AP_UnixTopRuler *)gtk_object_get_user_data(GTK_OBJECT(w));
-	UT_DEBUGMSG(("UnixTopRuler: [p %p] received expose\n",pUnixTopRuler));
-	pUnixTopRuler->draw(NULL);
+	if (!pUnixTopRuler)
+		return 0;
+
+	UT_Rect rClip;
+	rClip.left = pExposeEvent->area.x;
+	rClip.top = pExposeEvent->area.y;
+	rClip.width = pExposeEvent->area.width;
+	rClip.height = pExposeEvent->area.height;
+
+	pUnixTopRuler->draw(&rClip);
 	return 0;
 }
 
