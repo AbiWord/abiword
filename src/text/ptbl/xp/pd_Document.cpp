@@ -165,6 +165,11 @@ UT_Error PD_Document::newDocument(void)
 
 UT_Error PD_Document::saveAs(const char * szFilename, int ieft)
 {
+  return saveAs(szFilename, ieft, true);
+}
+
+UT_Error PD_Document::saveAs(const char * szFilename, int ieft, bool cpy)
+{
 	if (!szFilename)
 		return UT_SAVE_NAMEERROR;
 	
@@ -187,18 +192,21 @@ UT_Error PD_Document::saveAs(const char * szFilename, int ieft)
 		return UT_SAVE_WRITEERROR;
 	}
 
-	// no file name currently set - make this filename the filename
-	// stored for the doc
-	if (m_szFilename)
-	{
+	if (cpy) // we want to make the current settings persistent
+	  {
+	    // no file name currently set - make this filename the filename
+	    // stored for the doc
+	    if (m_szFilename)
+	      {
 		free((void *) m_szFilename);
 		m_szFilename = NULL;
-	}
+	      }
 	
-	char * szFilenameCopy = NULL;
-	if (!UT_cloneString(szFilenameCopy,szFilename))
-		return UT_SAVE_OTHERERROR;
-	m_szFilename = szFilenameCopy;
+	    char * szFilenameCopy = NULL;
+	    if (!UT_cloneString(szFilenameCopy,szFilename))
+	      return UT_SAVE_OTHERERROR;
+	    m_szFilename = szFilenameCopy;
+	  }
 
 	_setClean();
 	return UT_OK;

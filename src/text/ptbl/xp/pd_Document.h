@@ -71,7 +71,8 @@ public:
 	virtual bool			undoCmd(UT_uint32 repeatCount);
 	virtual bool			redoCmd(UT_uint32 repeatCount);
 
-	UT_Error   				saveAs(const char * szFilename, int ieft);
+	UT_Error                                saveAs(const char * szFilename, int ieft);
+	UT_Error   				saveAs(const char * szFilename, int ieft, bool cpy);
 	UT_Error	       			save(void);
 
 	void					beginUserAtomicGlob(void);

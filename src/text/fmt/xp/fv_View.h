@@ -156,6 +156,8 @@ public:
 	virtual void	getTopRulerInfo(AP_TopRulerInfo * pInfo);
 	virtual void	getLeftRulerInfo(AP_LeftRulerInfo * pInfo);
 
+	inline virtual PD_Document *    getDocument(void) const {return m_pDoc;}
+
 	virtual EV_EditMouseContext getMouseContext(UT_sint32 xPos, UT_sint32 yPos);
 	virtual EV_EditMouseContext getInsertionPointContext(UT_sint32 * pxPos, UT_sint32 * pyPos);
 
