@@ -26,5 +26,25 @@
 
 dcl(DLG_OK,					"OK")
 dcl(DLG_Cancel,				"Cancel")
+
+/* More Windows dialog */
 dcl(DLG_MoreWindows,		"More Windows")
 dcl(DLG_Activate,			"Activate")
+
+/* Unix Font Selector dialog */
+dcl(DLG_FontTitle,			"Font")
+dcl(DLG_FontLabel,			"Font:")
+dcl(DLG_StyleLabel,			"Style:")
+dcl(DLG_SizeLabel,			"Size:")
+dcl(DLG_EncodingLabel,		"Encoding:")
+dcl(DLG_EffectsFrameLabel,	"Effects")
+dcl(DLG_StrikeoutCheck,		"Strikeout")
+dcl(DLG_UnderlineCheck,		"Underline")
+dcl(DLG_FontTab,			"   Font   ")
+dcl(DLG_ColorTab,			"   Color   ")
+dcl(DLG_StyleRegular,		"Regular")
+dcl(DLG_StyleItalic,		"Italic")
+dcl(DLG_StyleBold,			"Bold")
+dcl(DLG_StyleBoldItalic,	"Bold Italic")
+
+	

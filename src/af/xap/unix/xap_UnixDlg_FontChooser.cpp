@@ -69,6 +69,7 @@ XAP_UnixDialog_FontChooser::XAP_UnixDialog_FontChooser(AP_DialogFactory * pDlgFa
 	m_lastFont = NULL;
 	m_gc = NULL;
 	m_pUnixFrame = NULL;
+	m_pApp = NULL;
 }
 
 XAP_UnixDialog_FontChooser::~XAP_UnixDialog_FontChooser(void)
@@ -292,9 +293,11 @@ GtkWidget * XAP_UnixDialog_FontChooser::create_windowFontSelection(void)
 	GtkWidget *listFonts;
 	GtkWidget *labelSize;
 	GtkWidget *frameEffects;
-	GtkWidget *vbox2;
+	GtkWidget *hboxDecorations;
 	GtkWidget *checkbuttonStrikeout;
 	GtkWidget *checkbuttonUnderline;
+	GtkWidget *labelEncoding;
+	GtkWidget *comboEncoding;
 	GtkWidget *frameStyle;
 	GtkWidget *listStyles;
 	GtkWidget *frameSize;
@@ -313,9 +316,11 @@ GtkWidget * XAP_UnixDialog_FontChooser::create_windowFontSelection(void)
 	// of our graphics contexts
 	GtkWidget *entryArea;
 
+	const XAP_StringSet * pSS = m_pApp->getStringSet();
+	
 	windowFontSelection = gtk_window_new (GTK_WINDOW_DIALOG);
 	gtk_object_set_data (GTK_OBJECT (windowFontSelection), "windowFontSelection", windowFontSelection);
-	gtk_window_set_title (GTK_WINDOW (windowFontSelection), "Font");
+	gtk_window_set_title (GTK_WINDOW (windowFontSelection), pSS->getValue(XAP_STRING_ID_DLG_FontTitle));
 	gtk_window_set_policy (GTK_WINDOW (windowFontSelection), FALSE, FALSE, FALSE);
 
 	vboxMain = gtk_vbox_new (FALSE, 0);
@@ -337,13 +342,13 @@ GtkWidget * XAP_UnixDialog_FontChooser::create_windowFontSelection(void)
 	gtk_container_add (GTK_CONTAINER (notebookMain), fixedFont);
 	gtk_widget_set_usize (fixedFont, -1, 191);
 
-	labelFont = gtk_label_new ("Font:");
+	labelFont = gtk_label_new (pSS->getValue(XAP_STRING_ID_DLG_FontLabel));
 	gtk_object_set_data (GTK_OBJECT (windowFontSelection), "labelFont", labelFont);
 	gtk_widget_show (labelFont);
 	gtk_fixed_put (GTK_FIXED (fixedFont), labelFont, 8, 8);
 	gtk_widget_set_usize (labelFont, 34, 16);
 
-	labelStyle = gtk_label_new ("Style:");
+	labelStyle = gtk_label_new (pSS->getValue(XAP_STRING_ID_DLG_StyleLabel));
 	gtk_object_set_data (GTK_OBJECT (windowFontSelection), "labelStyle", labelStyle);
 	gtk_widget_show (labelStyle);
 	gtk_fixed_put (GTK_FIXED (fixedFont), labelStyle, 216, 8);
@@ -364,38 +369,72 @@ GtkWidget * XAP_UnixDialog_FontChooser::create_windowFontSelection(void)
 	gtk_widget_show (listFonts);
 	gtk_container_add (GTK_CONTAINER (frameFonts), listFonts);
 
-	labelSize = gtk_label_new ("Size:");
+	labelSize = gtk_label_new (pSS->getValue(XAP_STRING_ID_DLG_SizeLabel));
 	gtk_object_set_data (GTK_OBJECT (windowFontSelection), "labelSize", labelSize);
 	gtk_widget_show (labelSize);
 	gtk_fixed_put (GTK_FIXED (fixedFont), labelSize, 356, 8);
 	gtk_widget_set_usize (labelSize, 34, 16);
 
-	frameEffects = gtk_frame_new ("Effects");
+	/*************************************/
+	
+	frameEffects = gtk_frame_new (pSS->getValue(XAP_STRING_ID_DLG_EffectsFrameLabel));
 	gtk_object_set_data (GTK_OBJECT (windowFontSelection), "frameEffects", frameEffects);
 	gtk_widget_show (frameEffects);
-	gtk_fixed_put (GTK_FIXED (fixedFont), frameEffects, 216, 127);
-	gtk_widget_set_usize (frameEffects, 206, 65);
+	gtk_fixed_put (GTK_FIXED (fixedFont), frameEffects, 216, 117);
+	gtk_widget_set_usize (frameEffects, 206, 45);
 
-	vbox2 = gtk_vbox_new (FALSE, 0);
-	gtk_object_set_data (GTK_OBJECT (windowFontSelection), "vbox2", vbox2);
-	gtk_widget_show (vbox2);
-	gtk_container_add (GTK_CONTAINER (frameEffects), vbox2);
+	hboxDecorations = gtk_hbox_new (FALSE, 0);
+	gtk_object_set_data (GTK_OBJECT (windowFontSelection), "hboxDecorations", hboxDecorations);
+	gtk_widget_show (hboxDecorations);
+	gtk_container_add (GTK_CONTAINER (frameEffects), hboxDecorations);
 
-	checkbuttonStrikeout = gtk_check_button_new_with_label ("Strikeout");
+	checkbuttonStrikeout = gtk_check_button_new_with_label (pSS->getValue(XAP_STRING_ID_DLG_StrikeoutCheck));
 	gtk_object_set_data (GTK_OBJECT (windowFontSelection), "checkbuttonStrikeout", checkbuttonStrikeout);
+	gtk_container_border_width (GTK_CONTAINER (checkbuttonStrikeout), 5);
 	gtk_widget_show (checkbuttonStrikeout);
-	gtk_box_pack_start (GTK_BOX (vbox2), checkbuttonStrikeout, TRUE, TRUE, 0);
+	gtk_box_pack_start (GTK_BOX (hboxDecorations), checkbuttonStrikeout, TRUE, TRUE, 0);
 
-	checkbuttonUnderline = gtk_check_button_new_with_label ("Underline");
+	checkbuttonUnderline = gtk_check_button_new_with_label (pSS->getValue(XAP_STRING_ID_DLG_UnderlineCheck));
 	gtk_object_set_data (GTK_OBJECT (windowFontSelection), "checkbuttonUnderline", checkbuttonUnderline);
+	gtk_container_border_width (GTK_CONTAINER (checkbuttonUnderline), 5);
 	gtk_widget_show (checkbuttonUnderline);
-	gtk_box_pack_start (GTK_BOX (vbox2), checkbuttonUnderline, TRUE, TRUE, 0);
+	gtk_box_pack_start (GTK_BOX (hboxDecorations), checkbuttonUnderline, TRUE, TRUE, 0);
 
+	/*************************************/
+
+	labelEncoding = gtk_label_new (pSS->getValue(XAP_STRING_ID_DLG_EncodingLabel));
+	gtk_object_set_data (GTK_OBJECT (windowFontSelection), "labelEncoding", labelEncoding);
+	gtk_widget_show (labelEncoding);
+	gtk_fixed_put (GTK_FIXED (fixedFont), labelEncoding, 216, 170);
+	gtk_widget_set_usize (labelEncoding, 62, 22);
+	gtk_label_set_justify (GTK_LABEL (labelEncoding), GTK_JUSTIFY_LEFT);
+	gtk_misc_set_alignment (GTK_MISC (labelEncoding), 0, 0.5);
+
+	comboEncoding = gtk_combo_new ();
+	gtk_object_set_data (GTK_OBJECT (windowFontSelection), "comboEncoding", comboEncoding);
+	gtk_widget_show (comboEncoding);
+	gtk_fixed_put (GTK_FIXED (fixedFont), comboEncoding, 280, 170);
+	gtk_widget_set_usize (GTK_WIDGET (comboEncoding), 142, 22);
+	gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (GTK_COMBO (comboEncoding)->popup),
+									GTK_POLICY_NEVER,
+									GTK_POLICY_AUTOMATIC);
+	GList * comboEncoding_items = NULL;
+	comboEncoding_items = g_list_append (comboEncoding_items, "American");
+	comboEncoding_items = g_list_append (comboEncoding_items, "Canadian");
+	comboEncoding_items = g_list_append (comboEncoding_items, "British");
+	comboEncoding_items = g_list_append (comboEncoding_items, "Irish");
+	comboEncoding_items = g_list_append (comboEncoding_items, "Broken English");
+	comboEncoding_items = g_list_append (comboEncoding_items, "These Are Bogus");	
+	gtk_combo_set_popdown_strings (GTK_COMBO (comboEncoding), comboEncoding_items);
+	g_list_free (comboEncoding_items);
+	
+	/*************************************/
+	
 	frameStyle = gtk_scrolled_window_new(NULL, NULL);
 	gtk_object_set_data(GTK_OBJECT(windowFontSelection), "frameStyle", frameStyle);
 	gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(frameStyle), GTK_POLICY_AUTOMATIC, GTK_POLICY_ALWAYS);
 	gtk_fixed_put(GTK_FIXED(fixedFont), frameStyle, 216, 24);
-	gtk_widget_set_usize(frameStyle, 126, 95);
+	gtk_widget_set_usize(frameStyle, 126, 85);
 	gtk_widget_show(frameStyle);
 
 	listStyles = gtk_clist_new (1);
@@ -410,7 +449,7 @@ GtkWidget * XAP_UnixDialog_FontChooser::create_windowFontSelection(void)
 	gtk_object_set_data(GTK_OBJECT(windowFontSelection), "frameSize", frameSize);
 	gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(frameSize), GTK_POLICY_AUTOMATIC, GTK_POLICY_ALWAYS);
 	gtk_fixed_put(GTK_FIXED(fixedFont), frameSize, 356, 24);
-	gtk_widget_set_usize(frameSize, 66, 95);
+	gtk_widget_set_usize(frameSize, 66, 85);
 	gtk_widget_show(frameSize);
 
 	listSizes = gtk_clist_new (1);
@@ -431,19 +470,19 @@ GtkWidget * XAP_UnixDialog_FontChooser::create_windowFontSelection(void)
 	gtk_object_set_data (GTK_OBJECT (windowFontSelection), "hbox1", hbox1);
 	gtk_widget_show (hbox1);
 	gtk_fixed_put (GTK_FIXED (fixedColor), hbox1, 8, 10);
-	gtk_widget_set_usize (hbox1, 425, 186);
+	gtk_widget_set_usize (hbox1, 429, 186);	
 
 	colorSelector = gtk_color_selection_new ();
 	gtk_object_set_data (GTK_OBJECT (windowFontSelection), "colorSelector", colorSelector);
 	gtk_widget_show (colorSelector);
 	gtk_box_pack_start (GTK_BOX (hbox1), colorSelector, TRUE, TRUE, 0);
 
-	labelTabFont = gtk_label_new ("   Font   ");
+	labelTabFont = gtk_label_new (pSS->getValue(XAP_STRING_ID_DLG_FontTab));
 	gtk_object_set_data (GTK_OBJECT (windowFontSelection), "labelTabFont", labelTabFont);
 	gtk_widget_show (labelTabFont);
 	set_notebook_tab (notebookMain, 0, labelTabFont);
 
-	labelTabColor = gtk_label_new ("   Color   ");
+	labelTabColor = gtk_label_new (pSS->getValue(XAP_STRING_ID_DLG_ColorTab));
 	gtk_object_set_data (GTK_OBJECT (windowFontSelection), "labelTabColor", labelTabColor);
 	gtk_widget_show (labelTabColor);
 	set_notebook_tab (notebookMain, 1, labelTabColor);
@@ -458,22 +497,13 @@ GtkWidget * XAP_UnixDialog_FontChooser::create_windowFontSelection(void)
 	gtk_container_border_width (GTK_CONTAINER (frame4), PREVIEW_BOX_BORDER_WIDTH_PIXELS);
 	gtk_frame_set_shadow_type (GTK_FRAME (frame4), GTK_SHADOW_IN);
 
-///////////////////////////////////////
 	entryArea = gtk_drawing_area_new ();
-	// queue up events
 	gtk_widget_set_events(entryArea, GDK_EXPOSURE_MASK);
 	gtk_signal_connect(GTK_OBJECT(entryArea), "expose_event",
 					   GTK_SIGNAL_FUNC(s_drawing_area_expose), NULL);
 	gtk_widget_set_usize (entryArea, -1, PREVIEW_BOX_HEIGHT_PIXELS);
 	gtk_widget_show (entryArea);
-
 	gtk_container_add (GTK_CONTAINER (frame4), entryArea);
-//	gtk_entry_set_editable (GTK_ENTRY (entryPreview), FALSE);
-//	gtk_widget_set_sensitive(entryPreview, FALSE);
-
-
-	//gtk_entry_set_text (GTK_ENTRY (entryPreview), "Lorem ipsum dolor sit amet, consectetaur adipisicing...");
-///////////////////////////////////////
 
 	fixedButtons = gtk_fixed_new ();
 	gtk_object_set_data (GTK_OBJECT (windowFontSelection), "fixedButtons", fixedButtons);
@@ -481,7 +511,7 @@ GtkWidget * XAP_UnixDialog_FontChooser::create_windowFontSelection(void)
 	gtk_box_pack_start (GTK_BOX (vboxMain), fixedButtons, FALSE, TRUE, 0);
 	gtk_widget_set_usize (fixedButtons, -1, 43);
 
-	buttonOK = gtk_button_new_with_label ("OK");
+	buttonOK = gtk_button_new_with_label (pSS->getValue(XAP_STRING_ID_DLG_OK));
 	gtk_object_set_data (GTK_OBJECT (windowFontSelection), "buttonOK", buttonOK);
 	gtk_widget_show (buttonOK);
 	gtk_fixed_put (GTK_FIXED (fixedButtons), buttonOK, 276, 0);
@@ -489,7 +519,7 @@ GtkWidget * XAP_UnixDialog_FontChooser::create_windowFontSelection(void)
 	GTK_WIDGET_SET_FLAGS (buttonOK, GTK_CAN_DEFAULT);
 	gtk_widget_grab_default (buttonOK);
 
-	buttonCancel = gtk_button_new_with_label ("Cancel");
+	buttonCancel = gtk_button_new_with_label (pSS->getValue(XAP_STRING_ID_DLG_Cancel));
 	gtk_object_set_data (GTK_OBJECT (windowFontSelection), "buttonCancel", buttonCancel);
 	gtk_widget_show (buttonCancel);
 	gtk_fixed_put (GTK_FIXED (fixedButtons), buttonCancel, 369, 6);
@@ -564,10 +594,10 @@ GtkWidget * XAP_UnixDialog_FontChooser::create_windowFontSelection(void)
 
 	// update the styles list
 	gtk_clist_clear(GTK_CLIST(m_styleList));
-	text[0] = "Regular"; 		gtk_clist_append(GTK_CLIST(m_styleList), text);
-	text[0] = "Italic"; 		gtk_clist_append(GTK_CLIST(m_styleList), text);
-	text[0] = "Bold"; 			gtk_clist_append(GTK_CLIST(m_styleList), text);
-	text[0] = "Bold Italic"; 	gtk_clist_append(GTK_CLIST(m_styleList), text);	
+	text[0] = (gchar *) pSS->getValue(XAP_STRING_ID_DLG_StyleRegular); 		gtk_clist_append(GTK_CLIST(m_styleList), text);
+	text[0] = (gchar *) pSS->getValue(XAP_STRING_ID_DLG_StyleItalic); 		gtk_clist_append(GTK_CLIST(m_styleList), text);
+	text[0] = (gchar *) pSS->getValue(XAP_STRING_ID_DLG_StyleBold); 	   	gtk_clist_append(GTK_CLIST(m_styleList), text);
+	text[0] = (gchar *) pSS->getValue(XAP_STRING_ID_DLG_StyleBoldItalic);  	gtk_clist_append(GTK_CLIST(m_styleList), text);	
 	
     gtk_clist_clear(GTK_CLIST(m_sizeList));
 	// TODO perhaps populate the list based on the selected font/style?
@@ -596,6 +626,9 @@ void XAP_UnixDialog_FontChooser::runModal(XAP_Frame * pFrame)
 {
 	m_pUnixFrame = (XAP_UnixFrame *)pFrame;
 	UT_ASSERT(m_pUnixFrame);
+
+	m_pApp = pFrame->getApp();
+	
 	XAP_UnixApp * pApp = (XAP_UnixApp *)m_pUnixFrame->getApp();
 	UT_ASSERT(pApp);
 

@@ -20,6 +20,7 @@
 #ifndef XAP_UNIXDIALOG_FONTCHOOSER_H
 #define XAP_UNIXDIALOG_FONTCHOOSER_H
 
+#include "xap_App.h"
 #include "xap_UnixFontManager.h"
 #include "xap_Dlg_FontChooser.h"
 #include "ut_misc.h"
@@ -85,6 +86,7 @@ protected:
 
 	// parent frame
 	XAP_UnixFrame *			m_pUnixFrame;
+	XAP_App * 				m_pApp;
 };
 
 #endif /* XAP_UNIXDIALOG_FONTCHOOSER_H */
