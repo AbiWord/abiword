@@ -262,6 +262,8 @@ public:
 	
 	double                getXYRatio() const {return m_fXYRatio;}
 	double                getXYRatioPrint() const {return m_fXYRatioPrint;}
+
+	static bool fixDevMode(HGLOBAL hModDev);
 	
 protected:
 	// all instances have to be created via GR_GraphicsFactory; see gr_Graphics.h
