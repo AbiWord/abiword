@@ -1142,6 +1142,10 @@ bool EV_Win32Toolbar::repopulateStyles(void)
 //
 // Try this....
 	SendMessage(hwndCombo, CB_RESETCONTENT, 0 , 0);
+
+	SendMessage(hwndCombo, CB_SETDROPPEDWIDTH,
+				(WPARAM)pStyleC->getDroppedWidth(), 0);
+
 //
 //	GtkList * oldlist = GTK_LIST(item->list);
 //	gtk_list_clear_items(oldlist,0,-1);
