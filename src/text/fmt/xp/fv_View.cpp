@@ -6289,27 +6289,22 @@ bool FV_View::isLeftMargin(UT_sint32 xPos, UT_sint32 yPos)
 	return bBOL;
 }
 
-void FV_View::cmdSelect(UT_sint32 xPos, UT_sint32 yPos, FV_DocPos dpBeg, FV_DocPos dpEnd)
+void FV_View::cmdSelect(PT_DocPosition dpBeg, PT_DocPosition dpEnd)
 {
-	warpInsPtToXY(xPos, yPos,true);
-
-	_eraseInsertionPoint();
-
-	PT_DocPosition iPosLeft = _getDocPos(dpBeg, false);
-	PT_DocPosition iPosRight = _getDocPos(dpEnd, false);
+        _eraseInsertionPoint();
 
 	if (!isSelectionEmpty())
 	{
 		_clearSelection();
 	}
 
-	m_iSelectionAnchor = iPosLeft;
-	m_iSelectionLeftAnchor = iPosLeft;
-	m_iSelectionRightAnchor = iPosRight;
-	
-	_setPoint(iPosRight);
+	m_iSelectionAnchor = dpBeg;
+	m_iSelectionLeftAnchor = dpBeg;
+	m_iSelectionRightAnchor = dpEnd;
 
-	if (iPosLeft == iPosRight)
+	_setPoint (dpEnd);
+
+	if (dpBeg == dpEnd)
 	{
 		_drawInsertionPoint();
 		return;
@@ -6320,6 +6315,18 @@ void FV_View::cmdSelect(UT_sint32 xPos, UT_sint32 yPos, FV_DocPos dpBeg, FV_DocP
 	_drawSelection();
 
 	notifyListeners(AV_CHG_EMPTYSEL);
+}
+
+void FV_View::cmdSelect(UT_sint32 xPos, UT_sint32 yPos, FV_DocPos dpBeg, FV_DocPos dpEnd)
+{
+	warpInsPtToXY(xPos, yPos,true);
+
+	//_eraseInsertionPoint();
+
+	PT_DocPosition iPosLeft = _getDocPos(dpBeg, false);
+	PT_DocPosition iPosRight = _getDocPos(dpEnd, false);
+
+	cmdSelect (iPosLeft, iPosRight);
 }
 
 void FV_View::_setPoint(PT_DocPosition pt, bool bEOL)
