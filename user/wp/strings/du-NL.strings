@@ -7,9 +7,9 @@
 <!-- ==============================================================  -->
 
 <!-- _Language_ translations provided by albi <albi@linuxfan.com> -->
+<!-- with help from several people in nl.comp.os.linux and casema.linux -->
 
-
-<AbiStrings app="AbiWord Personal" ver="1.0" language="NlNL">
+<AbiStrings app="AbiWord Personal" ver="1.0" language="DuNL">
 
 <Strings	class="XAP"
 UntitledDocument="ZonderNaam%d"
@@ -36,9 +36,9 @@ DLG_UFS_StyleBoldItalic="Vet En Schuingedrukt"
 DLG_FOSA_OpenTitle="Open Bestand"
 DLG_FOSA_SaveAsTitle="Bewaar Bestand Als"
 DLG_FOSA_PrintToFileTitle="Print Naar Bestand"
-DLG_FOSA_FileOpenTypeLabel="Open bestand als type:"
-DLG_FOSA_FileSaveTypeLabel="Bewaar bestand als type:"
-DLG_FOSA_FilePrintTypeLabel="Print bestand als type:"
+DLG_FOSA_FileOpenTypeLabel="Open bestand als formaat:"
+DLG_FOSA_FileSaveTypeLabel="Bewaar bestand als formaat:"
+DLG_FOSA_FilePrintTypeLabel="Print bestand als formaat:"
 DLG_FOSA_FileTypeAutoDetect="Automatisch Herkenning"
 DLG_InvalidPathname="Ongeldig pad opgegeven."
 DLG_NoSaveFile_DirNotExist="Een directory in het opgegeven pad bestaat niet."
@@ -49,7 +49,7 @@ DLG_Zoom_RadioFrameCaption="Inzoomen naar"
 DLG_Zoom_200="200%"
 DLG_Zoom_100="100%"
 DLG_Zoom_75="75%"
-DLG_Zoom_PageWidth="Pagina wijdte"
+DLG_Zoom_PageWidth="Pagina wijd"
 DLG_Zoom_WholePage="Hele pagina"
 DLG_Zoom_Percent="Percentage:"
 DLG_Zoom_PreviewFrame="Voorbeschouwing"
@@ -63,24 +63,24 @@ DLG_UP_All="Alles"
 DLG_UP_From="Van: "
 DLG_UP_To=" naar "
 DLG_UP_Selection="Selectie"
-DLG_UP_Collate="Collate"
+DLG_UP_Collate="Samenvoegen"
 DLG_UP_Copies="Copieen: "
 DLG_UP_PrintButton="Print"
-DLG_UP_InvalidPrintString="Het print opdracht is ongeldig."
+DLG_UP_InvalidPrintString="De print opdracht is ongeldig."
 />
 
 <Strings	class="AP"
 MSG_SaveFailed="Kon niet schrijven naar het bestand %s."
-MSG_RevertBuffer="Revert naar bewaarde copie van %s?"
+MSG_RevertBuffer="Bewaarde copie van %s openen?"
 MSG_QueryExit="Sluit alle vensters en verlaat programma?"
 MSG_ConfirmSave="Bewaar veranderingen naar %s?"
 MSG_ImportError="Fout importeren bestand %s."
 PageInfoField="Pagina: %d/%d"
 DLG_FR_FindTitle="Zoek"
 DLG_FR_ReplaceTitle="Vervang"
-DLG_FR_FindLabel="Zoek wat:"
+DLG_FR_FindLabel="Zoek deze:"
 DLG_FR_ReplaceWithLabel="Vervang door:"
-DLG_FR_MatchCase="Match case"
+DLG_FR_MatchCase="Zoek exact dezelfde"
 DLG_FR_FindNextButton="Zoek Volgende"
 DLG_FR_ReplaceButton="Vervang"
 DLG_FR_ReplaceAllButton="Vervang Alles"
