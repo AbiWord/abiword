@@ -329,8 +329,8 @@ void AP_UnixFrame::_createTopLevelWindow(void)
 
 	// TODO get the following values from a preferences or something.
 
-	// This should be fixed as soon as everyone's way past the 1.1.5 line
-#ifdef GTK_HAVE_FEATURES_1_1_5
+	// This should be fixed as soon as everyone's way past the 1.1.6 line
+#ifdef GTK_HAVE_FEATURES_1_1_6
 	gtk_container_set_border_width(GTK_CONTAINER(m_wTopLevelWindow), 4);
 #else
 	gtk_container_border_width(GTK_CONTAINER(m_wTopLevelWindow), 4);
