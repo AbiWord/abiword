@@ -214,6 +214,9 @@ public:
 	virtual void			fetchCharWidths(fl_CharWidths * pgbCharWidths);
 	virtual	bool			recalcWidth(void);
 
+    virtual UT_Rect *       getScreenRect();
+    virtual void            markDirtyOverlappingRuns(UT_Rect & recScreen);
+
 	virtual void			_draw(dg_DrawArgs*) = 0;
     void                    _drawTextLine(UT_sint32, UT_sint32, UT_uint32, UT_uint32, UT_UCSChar *);
 	virtual void       		_clearScreen(bool bFullLineHeightRect) = 0;

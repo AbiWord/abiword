@@ -257,12 +257,15 @@ void pt_PieceTable::_insertStrux(pf_Frag * pf,
 	if(pfsNew->getStruxType() == PTX_SectionFrame)
 	{
 		pf_Frag_Strux * pfsNext = NULL;
-		_getNextStruxAfterFragSkip(pf, &pfsNext);
-		if(pfsNext != NULL)
-	    {
-			pf = static_cast<pf_Frag *>(pfsNext);
+		if(pf->getType() != pf_Frag::PFT_Strux)
+		{
+			_getNextStruxAfterFragSkip(pf, &pfsNext);
+			if(pfsNext != NULL)
+			{
+				pf = static_cast<pf_Frag *>(pfsNext);
+			}
+			fragOffset = 0;
 		}
-		fragOffset = 0;
 	}
 	switch (pf->getType())
 	{

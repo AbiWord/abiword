@@ -101,7 +101,6 @@ class fp_Page;
 class fp_Container;
 struct dg_DrawArgs;
 struct fp_Sliver;
-
 struct dg_DrawArgs;
 
 typedef enum {
@@ -145,6 +144,7 @@ public:
 	FL_DocLayout * getDocLayout(void);
 	UT_RGBColor *  getColor(void);
 	void           setImagePointer(FG_Graphic ** pDocGraphic, GR_Image ** pDocImage);
+	
 private:
     void        	     _regenerateImage(GR_Graphics * pG);
 	fg_FillType *        m_pParent;
@@ -216,7 +216,8 @@ public:
 	virtual void			mapXYToPosition(UT_sint32 xPos, UT_sint32 yPos, PT_DocPosition& pos, bool& bBOL, bool& bEOL) = 0;
 	virtual fp_Container * getNextContainerInSection(void) const = 0;
 	virtual fp_Container * getPrevContainerInSection(void) const = 0;
-
+    virtual UT_Rect *      getScreenRect() = 0;
+    virtual void           markDirtyOverlappingRuns(UT_Rect & recScreen) = 0;
 private:
 	/*!
 	  Container type

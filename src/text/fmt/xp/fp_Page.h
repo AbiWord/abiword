@@ -117,7 +117,7 @@ public:
 	void				removeFrameContainer(fp_FrameContainer * pFC);
 	UT_sint32           findFrameContainer(fp_FrameContainer * pFC);
 	void                clearScreenFrames(void);
-	void                markOverlappingForRedraw(fp_FrameContainer * pFC);
+	void                markDirtyOverlappingRuns(fp_FrameContainer * pFC);
 
 	fg_FillType *       getFillType(void);
 #ifdef FMT_TEST

@@ -125,6 +125,9 @@ public:
 										 UT_sint32& xoff,
 										 UT_sint32& yoff);
 
+    virtual UT_Rect *       getScreenRect();
+    virtual void            markDirtyOverlappingRuns(UT_Rect & recScreen);
+
 	virtual void		draw(dg_DrawArgs*);
 	virtual void		draw(GR_Graphics*) {}
 

@@ -315,6 +315,13 @@ void fl_FrameLayout::redrawUpdate(void)
 bool fl_FrameLayout::doclistener_deleteStrux(const PX_ChangeRecord_Strux * pcrx)
 {
 	UT_ASSERT(pcrx->getType()==PX_ChangeRecord::PXT_DeleteStrux);
+#if 0
+	fp_FrameContainer * pFrameC = getFirstContainer();
+	if(pFrameC && pFrameC->getPage())
+	{
+		pFrameC->getPage()->markDirtyOverlappingRuns(pFrameC);
+	}
+#endif
 //
 // Remove all remaining structures
 //

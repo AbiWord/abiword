@@ -1548,6 +1548,63 @@ void fp_Page::clearScreenFrames(void)
 	}
 }
 
+void fp_Page::markDirtyOverlappingRuns(fp_FrameContainer * pFrameC)
+{
+	UT_Rect * pMyFrameRect = pFrameC->getScreenRect();
+	if(pMyFrameRect == NULL)
+	{
+		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		return;
+	}
+	// check each column for redraw
+
+	UT_sint32 count = m_vecColumnLeaders.getItemCount();
+	UT_sint32 i = 0;
+	for (i=0; i<count; i++)
+	{
+		fp_Column* pCol = static_cast<fp_Column*>(m_vecColumnLeaders.getNthItem(i));
+		while (pCol)
+		{
+			pCol->markDirtyOverlappingRuns(*pMyFrameRect);
+			pCol = pCol->getFollower();
+		}
+	}
+
+	// Now do the headers and footers
+
+	if (m_pHeader)
+	{
+		m_pHeader->markDirtyOverlappingRuns(*pMyFrameRect);
+	}
+
+	if (m_pFooter)
+	{
+		m_pFooter->markDirtyOverlappingRuns(*pMyFrameRect);
+	}
+
+	// Now Footnotes
+
+	count = m_vecFootnotes.getItemCount();
+	for (i=0; i<count; i++)
+	{
+		fp_FootnoteContainer* pFC = static_cast<fp_FootnoteContainer*>(m_vecFootnotes.getNthItem(i));
+		pFC->markDirtyOverlappingRuns(*pMyFrameRect);
+	}
+
+	// Now Frames
+
+	count = m_vecFrames.getItemCount();
+	for (i=0; i<count; i++)
+	{
+		fp_FrameContainer* pFC = static_cast<fp_FrameContainer*>(m_vecFrames.getNthItem(i));
+		if(pFC != pFrameC)
+		{
+			pFC->markDirtyOverlappingRuns(*pMyFrameRect);
+		}
+	}
+
+}
+
 UT_uint32 fp_Page::countFrameContainers(void) const
 {
 	return m_vecFrames.getItemCount();
@@ -1577,6 +1634,8 @@ bool fp_Page::insertFrameContainer(fp_FrameContainer * pFC)
 
 void fp_Page::removeFrameContainer(fp_FrameContainer * pFC)
 {
+
+	markDirtyOverlappingRuns(pFC);
 	UT_sint32 ndx = m_vecFrames.findItem(pFC);
 	if(ndx>=0)
 	{

@@ -90,7 +90,8 @@ private:
 	fp_Page * m_pPage;
 	UT_sint32 m_iXpad;
 	UT_sint32 m_iYpad;
-	
+	bool      m_bNeverDrawn;
+
 // cell-background properties
 	PP_PropertyMap::Background	m_background;
 

@@ -46,7 +46,8 @@ fp_FrameContainer::fp_FrameContainer(fl_SectionLayout* pSectionLayout)
 	: fp_VerticalContainer(FP_CONTAINER_FRAME, pSectionLayout),
 	  m_pPage(NULL),
 	  m_iXpad(0),
-	  m_iYpad(0)
+	  m_iYpad(0),
+	  m_bNeverDrawn(true)
 {
 }
 
@@ -302,8 +303,12 @@ void fp_FrameContainer::draw(dg_DrawArgs* pDA)
 // Only draw the lines in the clipping region.
 //
 	dg_DrawArgs da = *pDA;
-	if(!pDA->bDirtyRunsOnly)
+	if(!pDA->bDirtyRunsOnly || m_bNeverDrawn)
 	{
+		if(m_bNeverDrawn)
+		{
+			pDA->bDirtyRunsOnly= false;
+		} 
 		UT_sint32 srcX,srcY;
 		srcX = -m_iXpad;
 		srcY = -m_iYpad;
@@ -319,6 +324,7 @@ void fp_FrameContainer::draw(dg_DrawArgs* pDA)
 		da.yoff = pDA->yoff + pContainer->getY();
 		pContainer->draw(&da);
 	}
+	m_bNeverDrawn = false;
 	drawBoundaries(pDA);
 }
 

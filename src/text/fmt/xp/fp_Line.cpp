@@ -202,6 +202,57 @@ UT_sint32  fp_Line::getColumnGap(void)
 	return (static_cast<fp_Column *>(getColumn()))->getColumnGap();
 }
 
+
+/*!
+ * return an rectangle that covers this object on the screen
+ * The calling routine is resposible for deleting the returned struct
+ */
+UT_Rect * fp_Line::getScreenRect(void)
+{
+	UT_sint32 xoff = 0;
+	UT_sint32 yoff = 0;
+	UT_Rect * pRec = NULL; 
+	fp_Run * pRun = getFirstRun();
+	if(pRun)
+	{
+		getScreenOffsets(pRun,xoff,yoff);
+		pRec= new UT_Rect(xoff,yoff,getMaxWidth(),getHeight());
+		return pRec;
+	}
+	else
+	{
+		return NULL;
+	}
+}
+	
+/*!
+ * Marks Dirty any runs that overlap the supplied rectangle. This rectangle
+ * is relative to the screen.
+ */
+void fp_Line::markDirtyOverlappingRuns(UT_Rect & recScreen)
+{
+	UT_Rect * pRec = NULL;
+	pRec = getScreenRect();
+	if(pRec && recScreen.intersectsRect(pRec))
+	{
+		DELETEP(pRec);
+		fp_Run * pRun = fp_Line::getFirstRun();
+		fp_Run * pLastRun = fp_Line::getLastRun();
+		while(pRun && pRun != pLastRun)
+		{
+			pRun->markDirtyOverlappingRuns(recScreen);
+			pRun = pRun->getNextRun();
+		}
+		if(pRun)
+		{
+			pRun->markDirtyOverlappingRuns(recScreen);
+		}
+		return;
+	}
+	DELETEP(pRec);
+	return;
+}
+
 /*!
  * Returns the column containing this line. This takes account of broken tables.
  */
