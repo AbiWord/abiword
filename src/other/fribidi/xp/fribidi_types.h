@@ -23,11 +23,15 @@
 #ifndef FRIBIDI_TYPES_H
 #define FRIBIDI_TYPES_H
 
+/*
 #ifndef FRIBIDI_USE_MINI_GLIB
 #include <glib.h>
 #else
 #include "fribidi_mini_glib.h"
 #endif
+*/
+
+#include "gtype_def.h"
 
 typedef guint32 FriBidiChar;
 
@@ -281,5 +285,7 @@ FriBidiRunType;
 #ifndef FRIBIDI_MAX_STRING_LENGTH
 #define FRIBIDI_MAX_STRING_LENGTH 65535
 #endif
+
+#include "gtype_undef.h"
 
 #endif

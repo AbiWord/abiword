@@ -24,13 +24,12 @@
 #ifndef FRIBIDI_H
 #define FRIBIDI_H
 
-/*#define USE_SIMPLE_MALLOC*/
-
 #ifdef __cplusplus
 extern "C" {
 #endif
 
 #include "fribidi_types.h"
+#include "gtype_def.h"
 /*#include "fribidi_char_sets.h"*/
 
 FriBidiCharType fribidi_get_type (FriBidiChar uch);
@@ -204,5 +203,7 @@ void fribidi_xpos_resolve (gint x_pos,
 #ifdef __cplusplus
 }
 #endif
+
+#include "gtype_undef.h"
 
 #endif /* FRIBIDI_H */

@@ -40,6 +40,8 @@
 /* default value.*/
 #define MAX_LEVEL 61
 #endif
+
+#include "gtype_def.h"
 /*======================================================================
 // Typedef for the run-length list.
 //----------------------------------------------------------------------*/
@@ -1054,10 +1056,13 @@ free_rl_list (TypeLink * type_rl_list)
 {
 
   TypeLink *p, *pp;
+/*
+	what is this meant to be about ???
   if (!pp)
     return;
+*/
 #ifdef USE_SIMPLE_MALLOC
-  for (pp = type_rl_list; pp; pp = pp->next)
+  for (pp = type_rl_list; pp; pp = p)
     {
       p = pp->next;
       g_free (pp);
@@ -1291,3 +1296,6 @@ guchar *fribidi_version_info =
 #endif
 #endif
  ;
+
+#include "gtype_undef.h"
+

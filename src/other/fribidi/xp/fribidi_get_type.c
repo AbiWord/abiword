@@ -24,6 +24,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "fribidi.h"
+
+#include "gtype_def.h"
+
 #include "fribidi_tables.i"
 
 #ifdef MEM_OPTIMIZED
@@ -117,3 +120,5 @@ gboolean fribidi_get_mirror_char (	/* Input */
     }
   return found;
 }
+
+#include "gtype_undef.h"

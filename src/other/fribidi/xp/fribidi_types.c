@@ -21,6 +21,8 @@
 
 #include "fribidi.h"
 
+#include "gtype_def.h"
+
 guchar
 fribidi_char_from_type (FriBidiCharType c)
 {
@@ -142,3 +144,5 @@ FriBidiCharType prop_to_type[] = {
   FRIBIDI_TYPE_EOT,		/* End of text */
 };
 #endif
+
+#include "gtype_undef.h"
