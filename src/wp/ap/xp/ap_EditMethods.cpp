@@ -3055,6 +3055,7 @@ Defun(selectObject)
 	ABIWORD_VIEW;
 	pView->warpInsPtToXY(pCallData->m_xPos, pCallData->m_yPos, true);
 	pView->extSelHorizontal(true, 1); // move point forward one
+	return true;
 }
 	
 Defun(warpInsPtToXY)
