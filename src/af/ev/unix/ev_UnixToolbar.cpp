@@ -215,8 +215,14 @@ public:									// we create...
 
 				// TODO : do a real conversion to UT_UCSChar or figure out the casting
 
-				// don't do changes for empty combo texts
-				if (UT_strcmp(wd->m_comboEntryBuffer, ""))
+				// Don't do changes for empty combo texts, or when the
+				// combo box selection has been aborted (by pressing
+				// outside the box - this appears to be recognizable
+				// by the HAS_GRAB flag being set: I don't know if
+				// that's the correct way to detect this case. 
+				// jskov 2001.12.09)
+				if (UT_strcmp(wd->m_comboEntryBuffer, "") 
+					&& !(GTK_OBJECT_FLAGS(widget) & GTK_HAS_GRAB))
 				{
 					UT_UCSChar * text = (UT_UCSChar *) 
 					    (wd->m_id == AP_TOOLBAR_ID_FMT_SIZE ? 
