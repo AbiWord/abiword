@@ -471,74 +471,109 @@ GR_Image * GR_Win32Image::createImageSegment(GR_Graphics * pG,const UT_Rect & re
 	// this code assumes 24 bit RGB bitmaps ...
 	UT_return_val_if_fail(pG && m_pDIB && m_pDIB->bmiHeader.biBitCount == 24, NULL);
 
+	// the ration of x and y coords for the graphics class
 	double fXYRatio = ((GR_Win32Graphics *)pG)->getXYRatio();
+
+	// We have three different coordinate systems here:
+	//   
+	//   rec: the requested segment size, in layout units
+	//   
+	//   m_pDIB->bmiHeader.biHeight/Width(): physical size of the bitmap
+	//
+	//   getDisplayWidth()/Height() : size in device units for which this image was to be
+	//                                rendered
+	//
+	// From these we need to work out the size/offset of the segment in the DIB
+	// coordinaces
+
+	// these are the DIB physical dimensions of the original
+	UT_sint32 dH = m_pDIB->bmiHeader.biHeight;
+	UT_sint32 dW = m_pDIB->bmiHeader.biWidth;
+
+	// this is the internal scaling of the orginal DIB, which we need to workout
+	// relationship between display units and DIB units; we need to use separate factors
+	// for x and y axis, since the proportions of the DIB have no formal relationship to
+	// the dimensions of the displayed rectangle (e.g., the display image could be
+	// cropped).
 	
-	UT_sint32 x = (UT_sint32)((double)pG->tdu(rec.left) * fXYRatio);
-	UT_sint32 y = pG->tdu(rec.top);
-	if(x < 0)
+	double fDibScaleFactorX = (double) dW / (double)getDisplayWidth();
+	double fDibScaleFactorY = (double) dH / (double)getDisplayHeight();
+
+	// these are the requested dimensions in device units
+	UT_sint32 widthDU = (UT_sint32)((double)pG->tdu(rec.width) * fXYRatio);
+	UT_sint32 heightDU = pG->tdu(rec.height);
+	UT_sint32 xDU = (UT_sint32)((double)pG->tdu(rec.left) * fXYRatio);
+	UT_sint32 yDU = pG->tdu(rec.top);
+
+	// now convert the DUs into DIB units -- these are the values we need to work with
+	// when copying the image segment
+	UT_sint32 widthDIB = (UT_sint32)((double)widthDU * fDibScaleFactorX);
+	UT_sint32 heightDIB = (UT_sint32)((double)heightDU * fDibScaleFactorY);
+	UT_sint32 xDIB = (UT_sint32)((double)xDU * fDibScaleFactorX);
+	UT_sint32 yDIB = (UT_sint32)((double)yDU * fDibScaleFactorY);
+	
+	if(xDIB < 0)
 	{
-		x = 0;
+		xDIB = 0;
 	}
-	if(y < 0)
+	if(yDIB < 0)
 	{
-		y = 0;
+		yDIB = 0;
 	}
-	UT_sint32 width = (UT_sint32)((double)pG->tdu(rec.width) * fXYRatio);
-	UT_sint32 height = pG->tdu(rec.height);
-	UT_sint32 dH = getDisplayHeight();
-	UT_sint32 dW = getDisplayWidth();
-	if(height > dH)
+
+	if(heightDIB > dH)
 	{
-		height = dH;
+		heightDIB = dH;
 	}
-	if(width > dW)
+	if(widthDIB > dW)
 	{
-		width = dW;
+		widthDIB = dW;
 	}
-	if(x + width > dW)
+	if(xDIB + widthDIB > dW)
 	{
-		width = dW - x;
+		widthDIB = dW - xDIB;
 	}
-	if(y + height > dH)
+	if(yDIB + heightDIB > dH)
 	{
-		height = dH - y;
+		heightDIB = dH - yDIB;
 	}
-	if(width < 0)
+	if(widthDIB < 0)
 	{
-		x = dW -1;
-		width = 1;
+		xDIB = dW -1;
+		widthDIB = 1;
 	}
-	if(height < 0)
+	if(heightDIB < 0)
 	{
-		y = dH -1;
-		height = 1;
+		yDIB = dH -1;
+		heightDIB = 1;
 	}
+	
 	UT_String sName("");
 	getName(sName);
     UT_String sSub("");
-	UT_String_sprintf(sSub,"_segment_%d_%d_%d_%d",x,y,width,height);
+	UT_String_sprintf(sSub,"_segment_%d_%d_%d_%d",xDIB,yDIB,widthDIB,heightDIB);
 	sName += sSub;
 	GR_Win32Image * pImage = new GR_Win32Image(sName.c_str());
 
 	UT_return_val_if_fail( pImage, NULL );
 	
 	// now allocate memory -- mostly copied from convertFromBuffer()
-	UT_uint32 iBytesInRow = width * 3;
+	UT_uint32 iBytesInRow = widthDIB * 3;
 	if (iBytesInRow % 4)
 	{
 		iBytesInRow += (4 - (iBytesInRow % 4));
 	}
 
-	pImage->m_pDIB = (BITMAPINFO*) malloc(sizeof(BITMAPINFOHEADER) + height * iBytesInRow);
+	pImage->m_pDIB = (BITMAPINFO*) malloc(sizeof(BITMAPINFOHEADER) + heightDIB * iBytesInRow);
 	UT_return_val_if_fail( pImage->m_pDIB, NULL );
 
 	// simply copy the whole header
 	memcpy(pImage->m_pDIB, m_pDIB, sizeof(BITMAPINFOHEADER));
 
 	// now set the image size ...
-	pImage->setDisplaySize(width, height);
-	pImage->m_pDIB->bmiHeader.biWidth = width;
-	pImage->m_pDIB->bmiHeader.biHeight = height;
+	pImage->setDisplaySize(widthDU, heightDU);
+	pImage->m_pDIB->bmiHeader.biWidth = widthDIB;
+	pImage->m_pDIB->bmiHeader.biHeight = heightDIB;
 	pImage->m_pDIB->bmiHeader.biSizeImage = 0;
 
 	// now copy the bitmap bits
@@ -552,11 +587,11 @@ GR_Image * GR_Win32Image::createImageSegment(GR_Graphics * pG,const UT_Rect & re
 		iOrigRowBytes += (4 - iOrigRowBytes%4);
 
 	// what are the coords in the orginal we want?
-	UT_uint32 iByteWidth = width*3;
-	UT_uint32 iLeft = x*3;
+	UT_uint32 iByteWidth = widthDIB*3;
+	UT_uint32 iLeft = xDIB*3;
 	UT_uint32 iRight = iLeft + iByteWidth;
-	UT_uint32 iTop = m_pDIB->bmiHeader.biHeight - y;
-	UT_uint32 iBottom = iTop - height;
+	UT_uint32 iTop = m_pDIB->bmiHeader.biHeight - yDIB;
+	UT_uint32 iBottom = iTop - heightDIB;
 	UT_uint32 iRightPadded = iRight + (iBytesInRow - iByteWidth);
 
 	UT_Byte * pBits1 = ((UT_Byte*)m_pDIB) + sizeof(BITMAPINFOHEADER);
