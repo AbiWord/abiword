@@ -47,19 +47,6 @@ LIB_SUFFIX	= a
 DLL_SUFFIX	= sl
 AR		= ar cr $@
 
-## nessecary changes for systems without snprintf() like hp-ux 10.20 from Martin Gansser mgansser@ngi.de
-## compilation instruction how to build abiword on hp-ux 10.20 can found on http://cloud.prohosting.com/patos
-## get precompiled snprintf for hp-ux 10.20 from http://hpux.connect.org.uk or http://hpux.asknet.de
-## settings for systems with HP-UX Developer`s Toolkit for 10.0: (Product B3392BA) and both DevKit`s
-## PHSS_21957   B.10.00.00.AA  X11R5/Motif1.2 DevKit AUG2000 Periodic Patch 
-## PHSS_23519   B.10.00.00.AA  X11R6/Motif1.2 DevKit JUL2001 Periodic Patch
-## 
-## OS_LIBS += -L/opt/libiconv/lib -liconv -L/opt/snprintf/lib -lsnprintf
-##
-## settings for system without X11R6 developer kit:
-## add X11R5 include path -I/usr/include/X11R5 to OS_INCLUDES and set
-## OS_LIBS += -L/opt/libiconv/lib -liconv -L/opt/snprintf/lib -lsnprintf
-
 HPUX_MAJOR= $(shell uname -r|sed 's/^[^.]*\.\([^.]*\).*/\1/')
 # Compiler flags
 ifeq ($(ABI_OPT_DEBUG),1)
@@ -76,23 +63,21 @@ endif
 G++INCLUDES		= -I/usr/include/g++
 
 ifeq ($(HPUX_MAJOR), 10)
-  USE_EXTERNAL_SNPRINTF = 1
   # Includes
   OS_INCLUDES		= -I/usr/contrib/include -I/usr/local/include \
-                          -I/opt/libpng/include -I/opt/zlib/include
+                          -I/opt/libpng/include -I/opt/zlib/include \
+                          -I/opt/fribidi/include
   # Compiler flags
-  PLATFORM_FLAGS	= -L/usr/contrib/lib -L/usr/local/lib -L/opt/libpng/lib -L/opt/zlib/lib
-  PORT_FLAGS		= -DHAVE_STRERROR -D_HPUX_SOURCE -DSETENV_MISSING -DSNPRINTF_MISSING
+  PLATFORM_FLAGS	= -L/usr/contrib/lib -L/usr/local/lib -L/opt/libpng/lib -L/opt/zlib/lib \
+                          -L/opt/fribidi/lib
+  PORT_FLAGS		= -DHAVE_STRERROR -D_HPUX_SOURCE -DSETENV_MISSING
+  OS_LIBS 		+= -L/opt/libiconv/lib -liconv
 else
   # Includes
   OS_INCLUDES		= -I/usr/contrib/include -I/usr/local/include
   # Compiler flags
   PLATFORM_FLAGS	= -L/usr/contrib/lib -L/usr/local/lib
   PORT_FLAGS		= -DHAVE_STRERROR -D_HPUX_SOURCE -DSETENV_MISSING
-endif
-
-ifeq ($(USE_EXTERNAL_SNPRINTF),1)
-  OS_LIBS += -L/opt/libiconv/lib -liconv -L/opt/snprintf/lib -lsnprintf <== no longer needed -MG actually, psiconv sucks -MG
 endif
 
 OS_CFLAGS		= $(DSO_CFLAGS) $(PLATFORM_FLAGS) $(PORT_FLAGS)
