@@ -3211,6 +3211,13 @@ bool IE_Imp_RTF::TranslateKeyword(unsigned char* pKeyword, long param, bool fPar
 			m_currentRTFState.m_paraProps.m_isList = true;
 			return true;
 		}
+		else if(strcmp((char*)pKeyword, "landscape") == 0)
+		{
+//
+// Just set landsape mode.
+//
+			getDoc()->m_docPageSize.setLandscape();
+		}
 #ifdef BIDI_ENABLED
 		else if (strcmp((char*)pKeyword, "ltrpar") == 0)
 		{
@@ -3312,6 +3319,24 @@ bool IE_Imp_RTF::TranslateKeyword(unsigned char* pKeyword, long param, bool fPar
 		{
 			m_mbtowc.setInCharset(XAP_EncodingManager::get_instance()->charsetFromCodepage(850));
 			return true;
+		}
+		else if (strcmp((char *)pKeyword, "paperw") == 0) 
+		{
+//
+// Just set the page width
+//
+			double height = getDoc()->m_docPageSize.Height(DIM_IN);
+			double width = ((double) param)/1440.0;
+			getDoc()->m_docPageSize.Set(width,height,DIM_IN);
+		}
+		else if (strcmp((char *)pKeyword, "paperh") == 0) 
+		{
+//
+// Just set the page height
+//
+			double width = getDoc()->m_docPageSize.Width(DIM_IN);
+			double height = ((double) param)/1440.0;
+			getDoc()->m_docPageSize.Set(width,height,DIM_IN);
 		}
 	case 'q':
 		if (strcmp((char*)pKeyword, "ql") == 0)
