@@ -37,11 +37,6 @@ public:
 
 	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
 
-	// callbacks can fire these events
-    virtual void event_OK(void);
-    virtual void event_Cancel(void);
-    virtual void event_WindowDelete(void);
-
  protected:
 
 	GtkWidget *_lookupWidget( tControl id );
@@ -63,6 +58,7 @@ public:
  
  	SET_GATHER			(ViewShowRuler,		UT_Bool );
 	SET_GATHER			(ViewRulerUnits,	UT_Dimension);		
+	SET_GATHER			(ViewCursorBlink,	UT_Bool);
  	SET_GATHER			(ViewShowToolbars,	UT_Bool );
  
  	SET_GATHER			(ViewAll,			UT_Bool );
@@ -102,6 +98,7 @@ public:
     GtkWidget * m_checkbuttonViewShowRuler;
     GtkWidget * m_listViewRulerUnits;
     GtkWidget * m_listViewRulerUnits_menu;
+    GtkWidget * m_checkbuttonViewCursorBlink;
     GtkWidget * m_checkbuttonViewShowToolbars;
     GtkWidget * m_checkbuttonViewAll;
     GtkWidget * m_checkbuttonViewHiddenText;
@@ -112,8 +109,23 @@ public:
 	GtkWidget * m_buttonOK;
 	GtkWidget * m_buttonCancel;
 
-	friend void s_checkbutton_toggle(GtkWidget *, AP_UnixDialog_Options *);
-	friend void s_defaults_clicked(GtkWidget *, AP_UnixDialog_Options *);
+protected:
+	// Unix call back handlers
+	static void s_ok_clicked			( GtkWidget *, gpointer );
+	static void s_cancel_clicked		( GtkWidget *, gpointer );
+	static void s_delete_clicked		( GtkWidget *, gpointer );
+	static void s_ignore_reset_clicked	( GtkWidget *, gpointer );
+	static void s_ignore_edit_clicked	( GtkWidget *, gpointer );
+	static void s_dict_edit_clicked		( GtkWidget *, gpointer );
+	static void s_defaults_clicked		( GtkWidget *, gpointer );
+
+	static void s_checkbutton_toggle	( GtkWidget *, gpointer );
+	static gint s_menu_item_activate	( GtkWidget *, gpointer );
+
+	// callbacks can fire these events
+    virtual void event_OK(void);
+    virtual void event_Cancel(void);
+    virtual void event_WindowDelete(void);
 
 };
 

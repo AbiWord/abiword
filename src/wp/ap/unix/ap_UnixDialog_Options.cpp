@@ -90,66 +90,6 @@ AP_UnixDialog_Options::~AP_UnixDialog_Options(void)
 
 /*****************************************************************/
 
-// sample callback function
-static void s_ok_clicked(GtkWidget * widget, AP_UnixDialog_Options * dlg)
-{ UT_ASSERT(widget && dlg); dlg->event_OK(); }
-
-static void s_cancel_clicked(GtkWidget * widget, AP_UnixDialog_Options * dlg)
-{ UT_ASSERT(widget && dlg); dlg->event_Cancel(); }
-
-static void s_delete_clicked(GtkWidget * /* widget */,
-                             gpointer /* data */,
-                             AP_UnixDialog_Options * dlg)
-{ UT_ASSERT(dlg); dlg->event_WindowDelete(); }
-
-static void s_ignore_reset_clicked( GtkWidget * /* widget */,
-								    gpointer  data )
-{ AP_UnixDialog_Options * dlg = (AP_UnixDialog_Options *)data;
-  UT_ASSERT(dlg); dlg->_event_IgnoreReset(); }
-
-static void s_ignore_edit_clicked( GtkWidget * /* widget */,
-								    gpointer  data )
-{ AP_UnixDialog_Options * dlg = (AP_UnixDialog_Options *)data;
-  UT_ASSERT(dlg); dlg->_event_IgnoreEdit(); }
-
-static void s_dict_edit_clicked( GtkWidget * /* widget */,
-								    gpointer  data )
-{ AP_UnixDialog_Options * dlg = (AP_UnixDialog_Options *)data;
-  UT_ASSERT(dlg); dlg->_event_DictionaryEdit(); }
-
-// these function will allow multiple widget to tie into the same logic
-// function (at the AP level) to enable/disable stuff
-void s_checkbutton_toggle( GtkWidget *w, AP_UnixDialog_Options *dlg )
-{ 
-	UT_ASSERT(dlg); 
-	UT_ASSERT( w && GTK_IS_WIDGET(w));
-	int i = (int) gtk_object_get_data( GTK_OBJECT(w), "tControl" );
-	dlg->_enableDisableLogic( (AP_Dialog_Options::tControl) i );
-}
-
-void s_defaults_clicked( GtkWidget *widget, AP_UnixDialog_Options *dlg)
-{ UT_ASSERT(widget && dlg); dlg->_event_SetDefaults(); }
-
-static gint s_menu_item_activate(GtkWidget * widget, AP_UnixDialog_Options * dlg)
-{
-	UT_ASSERT(widget && dlg);
-
-	GtkWidget *option_menu = (GtkWidget *)gtk_object_get_data(GTK_OBJECT(widget),
-												 WIDGET_MENU_OPTION_PTR);
-	UT_ASSERT( option_menu && GTK_IS_OPTION_MENU(option_menu));
-
-	gpointer p = gtk_object_get_data( GTK_OBJECT(widget),
-												WIDGET_MENU_VALUE_TAG);
-
-	gtk_object_set_data( GTK_OBJECT(option_menu), WIDGET_MENU_VALUE_TAG, p );
-
-	UT_DEBUGMSG(("s_menu_item_activate [%d %s]", p, UT_dimensionName( (UT_Dimension)((UT_uint32)p)) ) );
-
-	return TRUE;
-}
-
-/*****************************************************************/
-
 void AP_UnixDialog_Options::runModal(XAP_Frame * pFrame)
 {
     // Build the window's widgets and arrange them
@@ -275,6 +215,7 @@ GtkWidget* AP_UnixDialog_Options::_constructWindow ()
 	GtkWidget *labelUnits;
 	GtkWidget *listViewRulerUnit;
 	GtkWidget *listViewRulerUnit_menu;
+	GtkWidget *checkbuttonViewCursorBlink;
 	GtkWidget *checkbuttonViewToolbars;
 	GtkWidget *frameViewStuff;
 	GtkWidget *vbox6;
@@ -629,12 +570,12 @@ GtkWidget* AP_UnixDialog_Options::_constructWindow ()
 	gtk_widget_show (glade_menuitem);
 	gtk_menu_append (GTK_MENU (listViewRulerUnit_menu), glade_menuitem);
   
-  	// glade_menuitem = gtk_menu_item_new_with_label (_("pixels"));
-  	// /**/ gtk_object_set_data(GTK_OBJECT(glade_menuitem), WIDGET_MENU_OPTION_PTR, (gpointer) listViewRulerUnit );
-  	// /**/ gtk_object_set_data(GTK_OBJECT(glade_menuitem), WIDGET_MENU_VALUE_TAG,  (gpointer)  );	
-  	// CONNECT_MENU_ITEM_SIGNAL_ACTIVATE(glade_menuitem);
-  	// gtk_widget_show (glade_menuitem);
-  	// gtk_menu_append (GTK_MENU (listViewRulerUnit_menu), glade_menuitem);
+  	glade_menuitem = gtk_menu_item_new_with_label (_("pico"));
+  	/**/ gtk_object_set_data(GTK_OBJECT(glade_menuitem), WIDGET_MENU_OPTION_PTR, (gpointer) listViewRulerUnit );
+  	/**/ gtk_object_set_data(GTK_OBJECT(glade_menuitem), WIDGET_MENU_VALUE_TAG,  (gpointer) DIM_PI  );	
+  	CONNECT_MENU_ITEM_SIGNAL_ACTIVATE(glade_menuitem);
+  	gtk_widget_show (glade_menuitem);
+  	gtk_menu_append (GTK_MENU (listViewRulerUnit_menu), glade_menuitem);
   
 	gtk_option_menu_set_menu (GTK_OPTION_MENU (listViewRulerUnit), listViewRulerUnit_menu);
 
@@ -644,6 +585,13 @@ GtkWidget* AP_UnixDialog_Options::_constructWindow ()
 	                          (GtkDestroyNotify) gtk_widget_unref);
 	gtk_widget_show (checkbuttonViewToolbars);
 	gtk_box_pack_start (GTK_BOX (vbox7), checkbuttonViewToolbars, FALSE, FALSE, 0);
+
+	checkbuttonViewCursorBlink = gtk_check_button_new_with_label (pSS->getValue(AP_STRING_ID_DLG_Options_Label_ViewCursorBlink));
+	gtk_widget_ref (checkbuttonViewCursorBlink);
+	gtk_object_set_data_full (GTK_OBJECT (windowOptions), "checkbuttonViewCursorBlink", checkbuttonViewCursorBlink,
+	                          (GtkDestroyNotify) gtk_widget_unref);
+	gtk_widget_show (checkbuttonViewCursorBlink);
+	gtk_box_pack_start (GTK_BOX (vbox7), checkbuttonViewCursorBlink, FALSE, FALSE, 0);
 
 	frameViewStuff = gtk_frame_new (pSS->getValue(AP_STRING_ID_DLG_Options_Label_ViewViewFrame));
 	gtk_widget_ref (frameViewStuff);
@@ -686,28 +634,6 @@ GtkWidget* AP_UnixDialog_Options::_constructWindow ()
 	                          (GtkDestroyNotify) gtk_widget_unref);
 	gtk_widget_show (labelView);
 	gtk_notebook_set_tab_label (GTK_NOTEBOOK (notebook1), gtk_notebook_get_nth_page (GTK_NOTEBOOK (notebook1), 2), labelView);
-/*
-	gtk_signal_connect (GTK_OBJECT (windowOptions), "destroy",
-	                    GTK_SIGNAL_FUNC (on_windowOptions_destroy),
-	                    NULL);
-	gtk_signal_connect (GTK_OBJECT (buttonSave), "clicked",
-	                    GTK_SIGNAL_FUNC (on_buttonSave_clicked),
-	                    (gpointer *) this);
-	gtk_signal_connect (GTK_OBJECT (buttonDefaults), "clicked",
-	                    GTK_SIGNAL_FUNC (on_buttonDefaults_clicked),
-	                    (gpointer *)this);
-	gtk_signal_connect (GTK_OBJECT (buttonOk), "clicked",
-	                    GTK_SIGNAL_FUNC (on_buttonOk_clicked),
-	                    (gpointer *)this);
-	gtk_signal_connect (GTK_OBJECT (buttonCancel), "clicked",
-	                    GTK_SIGNAL_FUNC (on_buttonCancel_clicked),
-	                    (gpointer *) this);
-	gtk_signal_connect (GTK_OBJECT (checkbuttonSpellCheckAsType), "toggled",
-	                    GTK_SIGNAL_FUNC (on_checkbutton_toggled),
-	                    (gpointer *) this);
-
-	return windowOptions;
-*/
 
     //////////////////////////////////////////////////////////////////////
 	// END: glade stuff
@@ -792,6 +718,7 @@ GtkWidget* AP_UnixDialog_Options::_constructWindow ()
 
     m_checkbuttonViewShowRuler		= checkbuttonViewRuler;
     m_listViewRulerUnits			= listViewRulerUnit;
+    m_checkbuttonViewCursorBlink	= checkbuttonViewCursorBlink;
     m_checkbuttonViewShowToolbars	= checkbuttonViewToolbars;
     m_checkbuttonViewAll			= checkbuttonViewAll;
     m_checkbuttonViewHiddenText		= checkbuttonViewHidden;
@@ -889,6 +816,10 @@ GtkWidget *AP_UnixDialog_Options::_lookupWidget ( tControl id )
 
 	case id_LIST_VIEW_RULER_UNITS:
 		return m_listViewRulerUnits;
+		break;
+
+	case id_CHECK_VIEW_CURSOR_BLINK:
+		return m_checkbuttonViewCursorBlink;
 		break;
 
 	case id_CHECK_VIEW_SHOW_TOOLBARS:
@@ -1032,6 +963,7 @@ void    AP_UnixDialog_Options::_setViewRulerUnits(UT_Dimension dim)
 	UT_ASSERT( r != -1 );
 }
 
+DEFINE_GET_SET_BOOL	(ViewCursorBlink);
 DEFINE_GET_SET_BOOL	(ViewShowToolbars);
 
 DEFINE_GET_SET_BOOL	(ViewAll);
@@ -1051,3 +983,89 @@ void    AP_UnixDialog_Options::_setNotebookPageNum(int pn)
 	UT_ASSERT(m_notebook && GTK_IS_NOTEBOOK(m_notebook)); 
 	gtk_notebook_set_page( GTK_NOTEBOOK(m_notebook), pn ); 
 }
+
+/*****************************************************************/
+
+// sample callback function
+/*static*/ void AP_UnixDialog_Options::s_ok_clicked(GtkWidget * /*widget*/, gpointer data)
+{ 
+	AP_UnixDialog_Options * dlg = (AP_UnixDialog_Options *)data;
+	UT_ASSERT(dlg); 
+	dlg->event_OK(); 
+}
+
+/*static*/ void AP_UnixDialog_Options::s_cancel_clicked(GtkWidget * widget, gpointer data )
+{ 
+	AP_UnixDialog_Options * dlg = (AP_UnixDialog_Options *)data;
+	UT_ASSERT(widget && dlg); 
+	dlg->event_Cancel(); 
+}
+
+/*static*/ void AP_UnixDialog_Options::s_delete_clicked(GtkWidget * /* widget */, gpointer data )
+{ 
+	AP_UnixDialog_Options * dlg = (AP_UnixDialog_Options *)data;
+	UT_ASSERT(dlg); 
+	dlg->event_WindowDelete(); 
+}
+
+
+/*static*/ void AP_UnixDialog_Options::s_ignore_reset_clicked( GtkWidget * /* widget */, gpointer  data )
+{ 
+	AP_UnixDialog_Options * dlg = (AP_UnixDialog_Options *)data;
+	UT_ASSERT(dlg); 
+	dlg->_event_IgnoreReset(); 
+}
+
+/*static*/ void AP_UnixDialog_Options::s_ignore_edit_clicked( GtkWidget * /* widget */, gpointer  data )
+{ 
+	AP_UnixDialog_Options * dlg = (AP_UnixDialog_Options *)data;
+	UT_ASSERT(dlg); 
+	dlg->_event_IgnoreEdit(); 
+}
+
+/*static*/ void AP_UnixDialog_Options::s_dict_edit_clicked( GtkWidget * /* widget */, gpointer  data )
+{ 
+	AP_UnixDialog_Options * dlg = (AP_UnixDialog_Options *)data;
+	UT_ASSERT(dlg); 
+	dlg->_event_DictionaryEdit(); 
+}
+
+/*static*/ void AP_UnixDialog_Options::s_defaults_clicked( GtkWidget *widget, gpointer data )
+{ 
+	AP_UnixDialog_Options * dlg = (AP_UnixDialog_Options *)data;
+	UT_ASSERT(widget && dlg); 
+	dlg->_event_SetDefaults(); 
+}
+
+
+// these function will allow multiple widget to tie into the same logic
+// function (at the AP level) to enable/disable stuff
+/*static*/ void AP_UnixDialog_Options::s_checkbutton_toggle( GtkWidget *w, gpointer data )
+{ 
+	AP_UnixDialog_Options * dlg = (AP_UnixDialog_Options *)data;
+	UT_ASSERT(dlg); 
+	UT_ASSERT( w && GTK_IS_WIDGET(w));
+	int i = (int) gtk_object_get_data( GTK_OBJECT(w), "tControl" );
+	dlg->_enableDisableLogic( (AP_Dialog_Options::tControl) i );
+}
+
+/*static*/ gint AP_UnixDialog_Options::s_menu_item_activate(GtkWidget * widget, gpointer data )
+{
+	AP_UnixDialog_Options * dlg = (AP_UnixDialog_Options *)data;
+
+	UT_ASSERT(widget && dlg);
+
+	GtkWidget *option_menu = (GtkWidget *)gtk_object_get_data(GTK_OBJECT(widget),
+												 WIDGET_MENU_OPTION_PTR);
+	UT_ASSERT( option_menu && GTK_IS_OPTION_MENU(option_menu));
+
+	gpointer p = gtk_object_get_data( GTK_OBJECT(widget),
+												WIDGET_MENU_VALUE_TAG);
+
+	gtk_object_set_data( GTK_OBJECT(option_menu), WIDGET_MENU_VALUE_TAG, p );
+
+	UT_DEBUGMSG(("s_menu_item_activate [%d %s]", p, UT_dimensionName( (UT_Dimension)((UT_uint32)p)) ) );
+
+	return TRUE;
+}
+
