@@ -53,6 +53,8 @@
 
 #define GWL(hwnd)		(AP_Win32Dialog_Options*)GetWindowLong((hwnd), DWL_USER)
 #define SWL(hwnd, d)	(AP_Win32Dialog_Options*)SetWindowLong((hwnd), DWL_USER,(LONG)(d))
+#define MINAUTOSAVEPERIOD	1
+#define MAXAUTOSAVEPERIOD	120
 
 /*****************************************************************/
 
@@ -133,14 +135,6 @@ struct {
 	{ DIM_PI, XAP_STRING_ID_DLG_Unit_pico },
 };
 #define SIZE_aAlignUnit  (sizeof(s_aAlignUnit)/sizeof(s_aAlignUnit[0]))
-
-
-//#define _DS(c,s)	SetDlgItemText(hWnd,AP_RID_DIALOG_##c,pSS->getValue(AP_STRING_ID_##s))
-//#define _DSX(c,s)	SetDlgItemText(hWnd,AP_RID_DIALOG_##c,pSS->getValue(XAP_STRING_ID_##s))
-//#define _GV(s)		(pSS->getValue(AP_STRING_ID_##s))
-//#define _GVX(s) 	(pSS->getValue(XAP_STRING_ID_##s))
-//#define _CAS(w,s)	SendMessage(w, CB_ADDSTRING, 0, (LPARAM) _GV(s))
-//#define _CASX(w,s)	SendMessage(w, CB_ADDSTRING, 0, (LPARAM) _GVX(s))
 #define _CDB(c,i)	CheckDlgButton(hWnd,AP_RID_DIALOG_##c,_getCheckItemValue(i))
 #define _DS2(c,s)	SetDlgItemText(getHandle(),AP_RID_DIALOG_##c,pSS->getValue(AP_STRING_ID_##s))
 #define _DSX2(c,s)	SetDlgItemText(getHandle(),AP_RID_DIALOG_##c,pSS->getValue(XAP_STRING_ID_##s))
@@ -566,7 +560,11 @@ int AP_Win32Dialog_Options_Sheet::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lP
 	
 	if (wID==IDOK)
 	{			
-		AP_Win32Dialog_Options_Sheet * t = (AP_Win32Dialog_Options_Sheet *) GetWindowLong(hWnd, GWL_USERDATA);			
+		AP_Win32Dialog_Options_Sheet * t = (AP_Win32Dialog_Options_Sheet *) GetWindowLong(hWnd, GWL_USERDATA);					
+		HWND hWndPref = t->getParent()->getPage(PG_PREF);
+		AP_Win32Dialog_Options_Pref * prefPag = (AP_Win32Dialog_Options_Pref *) GetWindowLong(hWndPref, GWL_USERDATA);							
+		
+		if (!prefPag->isAutoSaveInRange()) return 1;
 		
 		if(IsDlgButtonChecked((HWND)t->getParent()->getPage(PG_LAYOUT), AP_RID_DIALOG_OPTIONS_CHK_BGColorEnable ) != BST_CHECKED )
 			t->getParent()->_setColorForTransparent("ffffff");
@@ -1080,14 +1078,34 @@ void AP_Win32Dialog_Options_Pref::_onInitDialog()
 	// Set the range for the period to 1-360
 	SendMessage(GetDlgItem(getHandle(),AP_RID_DIALOG_OPTIONS_SPN_AutoSavePeriodSpin),UDM_SETBUDDY, (WPARAM) GetDlgItem(getHandle(),AP_RID_DIALOG_OPTIONS_TXT_AutoSavePeriod),0);	
 	
-	SendMessage(GetDlgItem(getHandle(),AP_RID_DIALOG_OPTIONS_SPN_AutoSavePeriodSpin),UDM_SETRANGE,0,(WPARAM)MAKELONG(120,1));
+	SendMessage(GetDlgItem(getHandle(),AP_RID_DIALOG_OPTIONS_SPN_AutoSavePeriodSpin),UDM_SETRANGE,0,(WPARAM)MAKELONG(MAXAUTOSAVEPERIOD,MINAUTOSAVEPERIOD));
 	SendMessage(GetDlgItem(getHandle(),AP_RID_DIALOG_OPTIONS_TXT_AutoSavePeriod),EM_LIMITTEXT,(WPARAM)3,(WPARAM)0);
 	
 	// Limit the extension to 5 characters (plus the period)
 	SendMessage(GetDlgItem(getHandle(),AP_RID_DIALOG_OPTIONS_TXT_AutoSaveExtension),EM_LIMITTEXT,(WPARAM)6,(WPARAM)0);
+	SetWindowLong(getHandle(), GWL_USERDATA, (LONG)this);	
 	
 	// TODO need to populate values in the _COMBO_CURRENTSCHEME
 	//			HWND hwndScheme = GetDlgItem(hWnd, AP_RID_DIALOG_OPTIONS_COMBO_CURRENTSCHEME);
 	//			_CDB(OPTIONS_CHK_PrefsAutoSave, 		id_CHECK_PREFS_AUTO_SAVE);
 
+}
+
+bool AP_Win32Dialog_Options_Pref::isAutoSaveInRange()
+{
+	int iValue = GetDlgItemInt(getHandle(), AP_RID_DIALOG_OPTIONS_TXT_AutoSavePeriod, NULL, FALSE);
+	AP_Win32Dialog_Options*	 pParent=  (AP_Win32Dialog_Options*)getContainer();		
+	char szTemp[10];
+	snprintf( szTemp, 10, "%d", iValue);	
+	
+	if (iValue<MINAUTOSAVEPERIOD || iValue>MAXAUTOSAVEPERIOD)
+	{
+			pParent->getFrame()->showMessageBox (AP_STRING_ID_DLG_Options_Label_InvalidRangeForAutoSave,
+							XAP_Dialog_MessageBox::b_O,
+							XAP_Dialog_MessageBox::a_OK);
+		
+		return false;
+	}
+	
+	return true;	
 }

@@ -164,6 +164,7 @@ public:
 	AP_Win32Dialog_Options*		getContainer(){return m_pParent;};
 	void						transferData();
 	static int CALLBACK			s_pageWndProc(HWND hWnd, UINT msg, WPARAM wParam,   LPARAM lParam);
+	bool						isAutoSaveInRange();
 	
 private:
 
