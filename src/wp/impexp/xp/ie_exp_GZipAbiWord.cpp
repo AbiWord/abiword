@@ -37,72 +37,6 @@ IE_Exp_GZipAbiWord::~IE_Exp_GZipAbiWord()
 /*****************************************************************/
 /*****************************************************************/
 
-#ifdef ENABLE_PLUGINS
-
-// completely generic code to allow this to be a plugin
-
-#include "xap_Module.h"
-
-ABI_PLUGIN_DECLARE("GZAbw")
-
-// we use a reference-counted sniffer
-static IE_Exp_GZipAbiWord_Sniffer * m_sniffer = 0;
-
-ABI_FAR_CALL
-int abi_plugin_register (XAP_ModuleInfo * mi)
-{
-
-	if (!m_sniffer)
-	{
-		m_sniffer = new IE_Exp_GZipAbiWord_Sniffer ();
-	}
-	else
-	{
-		m_sniffer->ref();
-	}
-
-	mi->name = "GZipAbiWord Exporter";
-	mi->desc = "Export GZipAbiWord Documents";
-	mi->version = ABI_VERSION_STRING;
-	mi->author = "Abi the Ant";
-	mi->usage = "No Usage";
-
-	IE_Exp::registerExporter (m_sniffer);
-	return 1;
-}
-
-ABI_FAR_CALL
-int abi_plugin_unregister (XAP_ModuleInfo * mi)
-{
-	mi->name = 0;
-	mi->desc = 0;
-	mi->version = 0;
-	mi->author = 0;
-	mi->usage = 0;
-
-	UT_ASSERT (m_sniffer);
-
-	IE_Exp::unregisterExporter (m_sniffer);
-	if (!m_sniffer->unref())
-	{
-		m_sniffer = 0;
-	}
-
-	return 1;
-}
-
-ABI_FAR_CALL
-int abi_plugin_supports_version (UT_uint32 major, UT_uint32 minor, 
-								 UT_uint32 release)
-{
-  return 1;
-}
-
-#endif
-
-/*****************************************************************/
-/*****************************************************************/
-
 bool IE_Exp_GZipAbiWord_Sniffer::recognizeSuffix(const char * szSuffix)
 {
 	return (!UT_stricmp(szSuffix,".zabw") || !UT_stricmp(szSuffix, ".abw.gz"));
@@ -131,7 +65,7 @@ bool IE_Exp_GZipAbiWord_Sniffer::getDlgLabels(const char ** pszDesc,
 
 bool IE_Exp_GZipAbiWord::_openFile(const char * szFilename)
 {
-    UT_ASSERT(!m_gzfp);
+    UT_return_val_if_fail(!m_gzfp, false);
 
     m_gzfp = (gzFile) gzopen(szFilename, "wb6");
     return (m_gzfp != 0);
@@ -139,9 +73,9 @@ bool IE_Exp_GZipAbiWord::_openFile(const char * szFilename)
 
 UT_uint32 IE_Exp_GZipAbiWord::_writeBytes(const UT_Byte * pBytes, UT_uint32 length)
 {
-    UT_ASSERT(m_gzfp);
-    UT_ASSERT(pBytes);
-    UT_ASSERT(length);
+    UT_return_val_if_fail(m_gzfp, 0);
+    UT_return_val_if_fail(pBytes, 0);
+    UT_return_val_if_fail(length, 0);
 
     return gzwrite(m_gzfp, (void *) pBytes, sizeof(UT_Byte) * length);
 }

@@ -8,7 +8,7 @@
 static void s_dump_chp(CHP *achp)
 {
 	FILE * dumpf = fopen("chp_fmt_dump.txt","a");
-	UT_ASSERT(dumpf);
+	UT_return_if_fail(dumpf);
 	
 	fprintf(dumpf,"IE_Imp_MsWord_97::_beginChar: achp dump:\n"
 	"	fBold %d\n"

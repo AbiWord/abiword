@@ -240,7 +240,7 @@ void IE_Exp_RTF::exportHdrFtr(const char * pszHdrFtr , const char * pszHdrFtrID)
 
 	if(hdrSDH == NULL)
 	{
-		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+	  UT_ASSERT_NOT_REACHED();
 		return;
 	}
 	PT_DocPosition posStart = getDoc()->getStruxPosition(hdrSDH);
@@ -379,7 +379,7 @@ UT_sint32 IE_Exp_RTF::_findColor(const char * szColor) const
 
 void IE_Exp_RTF::_addColor(const char * szColor)
 {
-	UT_ASSERT(szColor && *szColor && (_findColor(szColor)==-1));
+	UT_return_if_fail(szColor && *szColor && (_findColor(szColor)==-1));
 
 	char * sz = NULL;
 	UT_cloneString(sz,szColor);
@@ -415,7 +415,7 @@ void IE_Exp_RTF::_rtf_close_brace(void)
 	write("}");
 	m_bLastWasKeyword = false;
 
-	UT_ASSERT(m_braceLevel >= 0);
+	UT_return_if_fail(m_braceLevel >= 0);
 }
 
 void IE_Exp_RTF::_rtf_keyword(const char * szKey)
@@ -788,7 +788,7 @@ void IE_Exp_RTF::_write_tabdef(const char * szTabStops)
 
 			char pszPosition[32];
 			UT_uint32 iPosLen = p1 - pStart;
-			UT_ASSERT(iPosLen < 32);
+			UT_return_if_fail(iPosLen < 32);
 			UT_uint32 k;
 			for (k=0; k<iPosLen; k++)
 				pszPosition[k] = pStart[k];
@@ -851,7 +851,7 @@ void IE_Exp_RTF::_write_charfmt(const s_RTF_AttrPropAdapter & apa)
 	if (szColor && UT_stricmp (szColor, "transparent") != 0)
 	{
 		ndxColor = _findColor((char*)szColor);
-		UT_ASSERT(ndxColor != -1);
+		UT_ASSERT_HARMLESS(ndxColor != -1);
 		if (ndxColor != 1) // white background, the default
 		{
 			_rtf_keyword("cb",ndxColor);
@@ -993,7 +993,7 @@ void IE_Exp_RTF::_write_style_fmt(const PD_Style * pStyle)
 		}
 		else
 		{
-			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		  UT_ASSERT_NOT_REACHED();
 		}
     }
 
@@ -1128,7 +1128,7 @@ UT_uint32 IE_Exp_RTF::_getStyleNumber(const XML_Char * szStyle)
 		szStyle = "Normal";
 	}
 	NumberedStyle * pns = (NumberedStyle*)m_hashStyles.pick(szStyle);
-	UT_ASSERT(pns);
+	UT_ASSERT_HARMLESS(pns);
 	if(pns != NULL )
 	{
 		return pns->n;
@@ -1451,7 +1451,7 @@ void IE_Exp_RTF::_output_MultiLevelRTF(ie_exp_RTF_MsWord97ListMulti * pMulti)
 			pAuto = pList97->getAuto();
 			if(i==0 && pAuto->getParent() != NULL)
 			{
-				UT_ASSERT(0);
+				UT_ASSERT_NOT_REACHED();
 			}
 			_output_ListRTF(pAuto,i);
 		}
@@ -1809,7 +1809,7 @@ void IE_Exp_RTF::_output_ListRTF(fl_AutoNum * pAuto, UT_uint32 iLevel)
 		UT_sint32 ifont = _findFont(&fi);
 		if(ifont < 0)
 		{
-			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		  UT_ASSERT_NOT_REACHED();
 			ifont = 0;
 		}
 		_rtf_keyword("f",ifont);
@@ -1881,7 +1881,7 @@ bool IE_Exp_RTF::_write_rtf_trailer(void)
  */
 UT_sint32 IE_Exp_RTF::_findFont(const _rtf_font_info * pfi) const
 {
-	UT_ASSERT(pfi);
+	UT_return_val_if_fail(pfi, -1);
 
 	UT_uint32 k;
 	UT_uint32 kLimit = m_vecFonts.getItemCount();
@@ -1918,7 +1918,7 @@ UT_sint32 IE_Exp_RTF::_findFont(const s_RTF_AttrPropAdapter * apa) const
  */
 void IE_Exp_RTF::_addFont(const _rtf_font_info * pfi)
 {
-	UT_ASSERT(pfi && (_findFont(pfi)==-1));
+	UT_return_if_fail(pfi && (_findFont(pfi)==-1));
 	_rtf_font_info * pNew = new _rtf_font_info(*pfi);
 	if (pNew)
 		m_vecFonts.addItem(pNew);

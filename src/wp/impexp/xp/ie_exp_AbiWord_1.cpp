@@ -240,7 +240,9 @@ void s_AbiWord_1_Listener::_openTag(const char * szPrefix, const char * szSuffix
 	bool bHaveProp = m_pDocument->getAttrProp(api,&pAP);
 	xxx_UT_DEBUGMSG(("_openTag: api %d, bHaveProp %d\n",api, bHaveProp));
 	m_pie->write("<");
-	UT_ASSERT(szPrefix && *szPrefix);
+
+	UT_return_if_fail(szPrefix && *szPrefix);
+
 	if(strcmp(szPrefix,"c")== 0)
 		m_bOpenChar = true;
 	m_pie->write(szPrefix);
@@ -639,7 +641,7 @@ bool s_AbiWord_1_Listener::populate(PL_StruxFmtHandle /*sfh*/,
    				
    				
 			default:
-				UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+				UT_ASSERT_NOT_REACHED();
 				return false;
 			}
 		}
@@ -652,7 +654,7 @@ bool s_AbiWord_1_Listener::populate(PL_StruxFmtHandle /*sfh*/,
 		return true;
 		
 	default:
-		UT_ASSERT(0);
+	  UT_ASSERT_NOT_REACHED();
 		return false;
 	}
 }
@@ -661,7 +663,7 @@ bool s_AbiWord_1_Listener::populateStrux(PL_StruxDocHandle /*sdh*/,
 										   const PX_ChangeRecord * pcr,
 										   PL_StruxFmtHandle * psfh)
 {
-	UT_ASSERT(pcr->getType() == PX_ChangeRecord::PXT_InsertStrux);
+	UT_return_val_if_fail(pcr->getType() == PX_ChangeRecord::PXT_InsertStrux, false);
 	const PX_ChangeRecord_Strux * pcrx = static_cast<const PX_ChangeRecord_Strux *> (pcr);
 	*psfh = 0;							// we don't need it.
 
@@ -814,7 +816,7 @@ bool s_AbiWord_1_Listener::populateStrux(PL_StruxDocHandle /*sdh*/,
 		}
 
 	default:
-		UT_ASSERT(0);
+	  UT_ASSERT_NOT_REACHED();
 		return false;
 	}
 }
@@ -822,7 +824,7 @@ bool s_AbiWord_1_Listener::populateStrux(PL_StruxDocHandle /*sdh*/,
 bool s_AbiWord_1_Listener::change(PL_StruxFmtHandle /*sfh*/,
 									const PX_ChangeRecord * /*pcr*/)
 {
-	UT_ASSERT(0);						// this function is not used.
+  UT_ASSERT_NOT_REACHED();
 	return false;
 }
 
@@ -834,13 +836,13 @@ bool s_AbiWord_1_Listener::insertStrux(PL_StruxFmtHandle /*sfh*/,
 																	  PL_ListenerId /* lid */,
 																	  PL_StruxFmtHandle /* sfhNew */))
 {
-	UT_ASSERT(0);						// this function is not used.
+	UT_ASSERT_NOT_REACHED();						// this function is not used.
 	return false;
 }
 
 bool s_AbiWord_1_Listener::signal(UT_uint32 /* iSignal */)
 {
-	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+  UT_ASSERT_NOT_REACHED();
 	return false;
 }
 
@@ -909,13 +911,13 @@ void s_AbiWord_1_Listener::_handleStyles(void)
 
 void s_AbiWord_1_Listener::_handleIgnoredWords(void)
 {
-	UT_ASSERT(m_pDocument);
+	UT_return_if_fail(m_pDocument);
 
 	XAP_App *pApp = m_pDocument->getApp();
-	UT_ASSERT(pApp);
+	UT_return_if_fail(pApp);
 
 	XAP_Prefs *pPrefs = pApp->getPrefs();
-	UT_ASSERT(pPrefs);
+	UT_return_if_fail(pPrefs);
 	
 	bool saveIgnores = false;
 	pPrefs->getPrefsValueBool((XML_Char *)AP_PREF_KEY_SpellCheckIgnoredWordsSave, &saveIgnores);

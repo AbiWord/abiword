@@ -35,8 +35,8 @@ void IE_ImpGraphic::registerImporter (IE_ImpGraphicSniffer * s)
 	UT_uint32 ndx = 0;
 	UT_Error err = s_impGraphicTable.addItem (s, &ndx);
 
-	UT_ASSERT(err == UT_OK);
-	UT_ASSERT(ndx >= 0);
+	UT_return_if_fail(err == UT_OK);
+	UT_return_if_fail(ndx >= 0);
 
 	s->setType(ndx+1);
 }
@@ -45,7 +45,7 @@ void IE_ImpGraphic::unregisterImporter (IE_ImpGraphicSniffer * s)
 {
 	UT_uint32 ndx = s->getType(); // 1:1 mapping
 
-	UT_ASSERT(ndx >= 0);
+	UT_return_if_fail(ndx >= 0);
 
 	s_impGraphicTable.deleteNthItem (ndx-1);
 
@@ -177,8 +177,8 @@ UT_Error IE_ImpGraphic:: constructImporter(const UT_ByteBuf * bytes,
 	// construct an importer of the right type.
 	// caller is responsible for deleting the importer object
 	// when finished with it.
-	UT_ASSERT(ppieg);
-	UT_ASSERT(bytes);
+	UT_return_val_if_fail(ppieg, UT_ERROR);
+	UT_return_val_if_fail(bytes, UT_ERROR);
 
 	// no filter will support IEGFT_Unknown, so we detect from the
 	// suffix of the filename and the contents of the file, the real 
@@ -215,7 +215,7 @@ UT_Error IE_ImpGraphic::constructImporter(const char * szFilename,
   // construct an importer of the right type.
   // caller is responsible for deleting the importer object
   // when finished with it.
-  UT_ASSERT(ppieg);
+  UT_return_val_if_fail(ppieg, UT_ERROR);
   
   UT_uint32 nrElements = s_impGraphicTable.size();
   

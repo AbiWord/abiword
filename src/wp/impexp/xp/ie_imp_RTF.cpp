@@ -417,7 +417,7 @@ bool RTF_msword97_level::ParseLevelText(const UT_String & szLevelText,const UT_S
 #if 0
 // Matti's code
 			m_listDelim += "%L";
-			UT_ASSERT(-iLevelText[icurrent] == (UT_sint32)iLevel);
+			UT_return_val_if_fail(-iLevelText[icurrent] == (UT_sint32)iLevel, false);
 #endif
 			if(-iLevelText[icurrent] == (UT_sint32) iLevel)
 			{
@@ -876,7 +876,7 @@ RTFFontTableItem::RTFFontTableItem(FontFamilyEnum fontFamily, int charSet, int c
 	if (m_codepage && m_charSet)
 	{
 		UT_DEBUGMSG(("RTF Font has codepage *and* charset\n"));
-		UT_ASSERT(UT_NOT_IMPLEMENTED);
+		UT_ASSERT_NOT_REACHED();
 	}
 	else if (m_codepage)
 	{
@@ -959,7 +959,6 @@ RTFFontTableItem::RTFFontTableItem(FontFamilyEnum fontFamily, int charSet, int c
 				break;
 			case 2:		// SYMBOL_CHARSET
 				UT_DEBUGMSG(("RTF Font charset 'Symbol' not implemented\n"));
-				//UT_ASSERT(UT_NOT_IMPLEMENTED);
 				break;
 			case 77:    // Source Vlad Harchev from OpenOffice
 				m_szEncoding = "MACINTOSH";
@@ -1398,7 +1397,7 @@ UT_Error IE_Imp_RTF::_parseFile(FILE* fp)
 				}
 				else
 				{
-					UT_ASSERT(m_currentRTFState.m_internalState == RTFStateStore::risHex);
+					UT_return_val_if_fail(m_currentRTFState.m_internalState == RTFStateStore::risHex, UT_ERROR);
 
 					b = b << 4;
 					int digit;
@@ -1586,7 +1585,7 @@ bool IE_Imp_RTF::PopRTFState(void)
 	}
 	else
 	{
-		UT_ASSERT(pState != NULL);	// state stack should not be empty
+		UT_return_val_if_fail(pState != NULL, false);	// state stack should not be empty
 		return true; // was false
 	}
 }
@@ -1689,7 +1688,7 @@ bool IE_Imp_RTF::ReadKeyword(unsigned char* pKeyword, long* pParam, bool* pParam
 	if (!ReadCharFromFileWithCRLF(&ch))
 		return false;
 
-	UT_ASSERT(keywordBuffLen > 1);
+	UT_return_val_if_fail(keywordBuffLen > 1, false);
 	--keywordBuffLen;
 
 	// If it's a control symbol there is no delimiter, its just one character
@@ -2104,7 +2103,7 @@ bool IE_Imp_RTF::InsertImage (const UT_ByteBuf * buf, const char * image_name,
 		// quite a difference to the piece table
 
 		// Get a unique name for image.
-		UT_ASSERT(image_name);
+		UT_ASSERT_HARMLESS(image_name);
 		UT_String szName;
 
 		if( !image_name)
@@ -2131,7 +2130,7 @@ bool IE_Imp_RTF::InsertImage (const UT_ByteBuf * buf, const char * image_name,
 		mimetype = UT_strdup("image/png");
 		bool bOK = false;
 		bOK = getDoc()->createDataItem(szName.c_str(), false, buf, (void *) mimetype, NULL);
-		UT_ASSERT(bOK);
+		UT_return_val_if_fail(bOK, false);
 		/*
 		  Insert the object into the document.
 		*/
@@ -2215,7 +2214,7 @@ bool IE_Imp_RTF::HandlePicture()
 		switch (ch)
 		{
 		case '\\':
-			UT_ASSERT(!bPictProcessed);
+			UT_return_val_if_fail(!bPictProcessed, false);
 			// Process keyword
 
 			if (!ReadKeyword(keyword, &parameter, &parameterUsed, MAX_KEYWORD_LEN))
@@ -2281,7 +2280,7 @@ bool IE_Imp_RTF::HandlePicture()
 			}
 			break;
 		case '{':
-			UT_ASSERT(!bPictProcessed);
+			UT_return_val_if_fail(!bPictProcessed, false);
 
 			// We won't handle nested groups, at least in this version,
 			// we just skip them
@@ -2297,7 +2296,7 @@ bool IE_Imp_RTF::HandlePicture()
 			}
 			break;
 		default:
-			UT_ASSERT(!bPictProcessed);
+			UT_return_val_if_fail(!bPictProcessed, false);
 			// It this a conforming rtf, this should be the pict data
 			// if we know how to handle this format, we insert the picture
 
@@ -2423,7 +2422,7 @@ bool IE_Imp_RTF::HandleField()
 			switch (tokenType)
 			{
 			case RTF_TOKEN_ERROR:
-				UT_ASSERT (UT_SHOULD_NOT_HAPPEN);
+				UT_ASSERT_NOT_REACHED();
 				return false;
 				break;
 			case RTF_TOKEN_KEYWORD:
@@ -2472,7 +2471,7 @@ bool IE_Imp_RTF::HandleField()
 		{
 			bool ok;
 			ok = _appendField (xmlField);
-			UT_ASSERT (ok);
+			UT_ASSERT_HARMLESS (ok);
 			// we own xmlField, so we delete it after use.
 			FREEP (xmlField);
 		}
@@ -2645,7 +2644,7 @@ XML_Char *IE_Imp_RTF::_parseFldinstBlock (UT_ByteBuf & buf, XML_Char *xmlField, 
 		{
 			// TODO handle parameters
 			xmlField = UT_strdup ("file_name");
-			UT_ASSERT (xmlField);
+			UT_ASSERT_HARMLESS (xmlField);
 			isXML = (xmlField != NULL);
 		}
 		break;
@@ -2665,7 +2664,7 @@ XML_Char *IE_Imp_RTF::_parseFldinstBlock (UT_ByteBuf & buf, XML_Char *xmlField, 
 		if (strcmp (instr, "PAGE") == 0)
 		{
 			xmlField = UT_strdup ("page_number");
-			UT_ASSERT (xmlField);
+			UT_ASSERT_HARMLESS (xmlField);
 			isXML = (xmlField != NULL);
 		}
 		else if (strcmp (instr, "PRIVATE") == 0)
@@ -2677,20 +2676,20 @@ XML_Char *IE_Imp_RTF::_parseFldinstBlock (UT_ByteBuf & buf, XML_Char *xmlField, 
 		if (strcmp (instr, "NUMCHARS") == 0)
 		{
 			xmlField = UT_strdup ("char_count");
-			UT_ASSERT (xmlField);
+			UT_ASSERT_HARMLESS (xmlField);
 			isXML = (xmlField != NULL);
 		}
 		// this one have been found with ApplixWare exported RTF.
 		else if (strcmp (instr, "NUMPAGES") == 0)
 		{
 			xmlField = UT_strdup ("page_count");
-			UT_ASSERT (xmlField);
+			UT_ASSERT_HARMLESS (xmlField);
 			isXML = (xmlField != NULL);
 		}
 		else if (strcmp (instr, "NUMWORDS") == 0)
 		{
 			xmlField = UT_strdup ("word_count");
-			UT_ASSERT (xmlField);
+			UT_ASSERT_HARMLESS (xmlField);
 			isXML = (xmlField != NULL);
 		}
 		break;
@@ -2698,7 +2697,7 @@ XML_Char *IE_Imp_RTF::_parseFldinstBlock (UT_ByteBuf & buf, XML_Char *xmlField, 
 		if (strcmp (instr, "SAVEDATE") == 0)
 		{
 			xmlField = UT_strdup ("date_dfl");
-			UT_ASSERT (xmlField);
+			UT_ASSERT_HARMLESS (xmlField);
 			isXML = (xmlField != NULL);
 		}
 		break;
@@ -2710,13 +2709,13 @@ XML_Char *IE_Imp_RTF::_parseFldinstBlock (UT_ByteBuf & buf, XML_Char *xmlField, 
 			if(strstr(newBuf,"dddd, MMMM dd, yyyy") != NULL)
 			{
 				xmlField = UT_strdup("date");
-				UT_ASSERT (xmlField);
+				UT_ASSERT_HARMLESS (xmlField);
 				isXML = (xmlField != NULL);
 			}
 			else if( strstr(newBuf,"m/d/yy") != NULL)
 			{
 				xmlField = UT_strdup("date_ddmmyy");
-				UT_ASSERT (xmlField);
+				UT_ASSERT_HARMLESS (xmlField);
 				isXML = (xmlField != NULL);
 			}
 			else if( strstr(newBuf,"MMMM d, yyyy") != NULL)
@@ -2728,31 +2727,31 @@ XML_Char *IE_Imp_RTF::_parseFldinstBlock (UT_ByteBuf & buf, XML_Char *xmlField, 
 			else if( strstr(newBuf,"MMM d, yy") != NULL)
 			{
 				xmlField = UT_strdup("date_mthdy");
-				UT_ASSERT (xmlField);
+				UT_ASSERT_HARMLESS (xmlField);
 				isXML = (xmlField != NULL);
 			}
 			else if( strstr(newBuf,"MMM d, yy") != NULL)
 			{
 				xmlField = UT_strdup("date_mthdy");
-				UT_ASSERT (xmlField);
+				UT_ASSERT_HARMLESS (xmlField);
 				isXML = (xmlField != NULL);
 			}
 			else if( strstr(newBuf,"MM-d-yy") != NULL)
 			{
 				xmlField = UT_strdup("date_ntdfl");
-				UT_ASSERT (xmlField);
+				UT_ASSERT_HARMLESS (xmlField);
 				isXML = (xmlField != NULL);
 			}
 			else if( strstr(newBuf,"HH:mm:ss") != NULL)
 			{
 				xmlField = UT_strdup("time_miltime");
-				UT_ASSERT (xmlField);
+				UT_ASSERT_HARMLESS (xmlField);
 				isXML = (xmlField != NULL);
 			}
 			else if( strstr(newBuf,"h:mm:ss am/pm") != NULL)
 			{
 				xmlField = UT_strdup("time_ampm");
-				UT_ASSERT (xmlField);
+				UT_ASSERT_HARMLESS (xmlField);
 				isXML = (xmlField != NULL);
 			}
 //
@@ -2761,13 +2760,13 @@ XML_Char *IE_Imp_RTF::_parseFldinstBlock (UT_ByteBuf & buf, XML_Char *xmlField, 
 			else if( strstr(newBuf,"dddd") != NULL)
 			{
 				xmlField = UT_strdup("date_wkday");
-				UT_ASSERT (xmlField);
+				UT_ASSERT_HARMLESS (xmlField);
 				isXML = (xmlField != NULL);
 			}
 			else
 			{
 				xmlField = UT_strdup ("time");
-				UT_ASSERT (xmlField);
+				UT_ASSERT_HARMLESS (xmlField);
 				isXML = (xmlField != NULL);
 			}
 		}
@@ -2777,7 +2776,7 @@ XML_Char *IE_Imp_RTF::_parseFldinstBlock (UT_ByteBuf & buf, XML_Char *xmlField, 
 		{
 			// TODO handle parameters
 			xmlField = UT_strdup ("date");
-			UT_ASSERT (xmlField);
+			UT_ASSERT_HARMLESS (xmlField);
 			isXML = (xmlField != NULL);
 		}
 		break;
@@ -2786,7 +2785,7 @@ XML_Char *IE_Imp_RTF::_parseFldinstBlock (UT_ByteBuf & buf, XML_Char *xmlField, 
 		if (strcmp (instr, "\\filename") == 0)
 		{
 			xmlField = UT_strdup ("file_name");
-			UT_ASSERT (xmlField);
+			UT_ASSERT_HARMLESS (xmlField);
 			isXML = (xmlField != NULL);
 		}
 		else if (strcmp (instr, "\\import") == 0)
@@ -2835,7 +2834,7 @@ XML_Char *IE_Imp_RTF::_parseFldinstBlock (UT_ByteBuf & buf, XML_Char *xmlField, 
 		else if (strcmp (instr, "\\page") == 0)
 		{
 			xmlField = UT_strdup ("page_number");
-			UT_ASSERT (xmlField);
+			UT_ASSERT_HARMLESS (xmlField);
 			isXML = (xmlField != NULL);
 		}
 		break;
@@ -2913,7 +2912,7 @@ bool IE_Imp_RTF::HandleHeaderFooter(RTFHdrFtr::HdrFtrType hftype, UT_uint32 & he
 		m_currentFtrLastID = headerID;
 		break;
 	default:
-		UT_ASSERT (UT_SHOULD_NOT_HAPPEN);
+		UT_ASSERT_NOT_REACHED();
 	}
 
 	// read the whole group content and put it into a buffer to
@@ -3466,7 +3465,7 @@ bool IE_Imp_RTF::TranslateKeyword(unsigned char* pKeyword, long param, bool fPar
 		}
 		else if (strcmp((char*)pKeyword, "tx") == 0)
 		{
-			UT_ASSERT(fParam);	// tabstops should have parameters
+			UT_return_val_if_fail(fParam, false);	// tabstops should have parameters
 			bool bres = AddTabstop(param,
 								   m_currentRTFState.m_paraProps.m_curTabType,
 								   m_currentRTFState.m_paraProps.m_curTabLeader);
@@ -3476,7 +3475,7 @@ bool IE_Imp_RTF::TranslateKeyword(unsigned char* pKeyword, long param, bool fPar
 		}
 		else if (strcmp((char*)pKeyword, "tb") == 0)
 		{
-			UT_ASSERT(fParam);	// tabstops should have parameters
+			UT_return_val_if_fail(fParam, false);	// tabstops should have parameters
 
 			bool bres = AddTabstop(param,FL_TAB_BAR,
 								   m_currentRTFState.m_paraProps.m_curTabLeader);
@@ -3892,7 +3891,7 @@ UT_uint32 IE_Imp_RTF::mapID(UT_uint32 id)
 	UT_uint32 mappedID = id;
 	if(id == 0)
 	{
-		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		UT_ASSERT_NOT_REACHED();
 		return id;
 	}
 	if (m_pImportFile)  // if we are reading a file - dont remap the ID
@@ -4034,7 +4033,7 @@ bool IE_Imp_RTF::ApplyParagraphAttributes()
 			iOveride = m_icurOveride;
 			iLevel = m_icurOverideLevel;
 		}
-		UT_ASSERT(iOveride); // see bug #2173
+		UT_ASSERT_HARMLESS(iOveride); // see bug #2173
 //
 // Now get the properties we've painstakingly put together.
 //
@@ -4044,7 +4043,7 @@ bool IE_Imp_RTF::ApplyParagraphAttributes()
 		}
 		else
 		{
-			UT_ASSERT(UT_SHOULD_NOT_HAPPEN); //wtf is going on here? see bug 2173
+			UT_ASSERT_NOT_REACHED(); //wtf is going on here? see bug 2173
 		}
 	}
 
@@ -4103,7 +4102,7 @@ bool IE_Imp_RTF::ApplyParagraphAttributes()
 				cType ='B';
 				break;
 			default:
-				UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+				UT_ASSERT_NOT_REACHED();
 			}
 			char cLeader = '0' + (char) tabLeader;
 			UT_String_sprintf(tempBuffer, "%s/%c%c", UT_convertInchesToDimensionString(DIM_IN,tabIn,"04"),cType,cLeader);
@@ -4127,7 +4126,7 @@ bool IE_Imp_RTF::ApplyParagraphAttributes()
 			propBuffer += "justify";
 			break;
 		default:
-			UT_ASSERT(false);	// so what is it?
+			UT_ASSERT_NOT_REACHED();	// so what is it?
 		case RTFProps_ParaProps::pjLeft:
 			propBuffer += "left";
 			break;
@@ -4792,7 +4791,6 @@ bool IE_Imp_RTF::ApplySectionAttributes()
 	if (m_currentHdrLastID != 0)
 	{
 		UT_DEBUGMSG (("Applying header last\n"));
-		UT_ASSERT(0);
 		propsArray [paramIndex] = "header-last";
 		paramIndex++;
 		UT_String_sprintf (szHdrLastID, "hdrlst%u", m_currentHdrLastID);
@@ -5150,7 +5148,7 @@ bool IE_Imp_RTF::HandleListLevel(RTF_msword97_list * pList, UT_uint32 levelCount
 					pLevel->m_cLevelFollow = '\0';
 					break;
 				default:
-					UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+					UT_ASSERT_NOT_REACHED();
 					break;
 				}
 			}
@@ -5354,7 +5352,7 @@ bool IE_Imp_RTF::ParseCharParaProps( unsigned char * pKeyword, long param, bool 
 	}
 	else if (strcmp((char*)pKeyword, "tx") == 0)
 	{
-		UT_ASSERT(fParam);	// tabstops should have parameters
+		UT_return_val_if_fail(fParam, false);	// tabstops should have parameters
 		bool bres = AddTabstop(param,
 							   pParas->m_curTabType,
 							   pParas->m_curTabLeader,pParas);
@@ -5366,7 +5364,7 @@ bool IE_Imp_RTF::ParseCharParaProps( unsigned char * pKeyword, long param, bool 
 	}
 	else if (strcmp((char*)pKeyword, "tb") == 0)
 	{
-		UT_ASSERT(fParam);	// tabstops should have parameters
+		UT_return_val_if_fail(fParam, false);	// tabstops should have parameters
 
 		bool bres = AddTabstop(param,FL_TAB_BAR,
 							   pParas->m_curTabLeader,pParas);
@@ -5571,7 +5569,6 @@ bool IE_Imp_RTF::HandleTableListOveride(void)
 bool IE_Imp_RTF::ReadFontTable()
 {
 	// Ensure the font table is empty before we start
-//	UT_ASSERT(m_fontTable.getItemCount() == 0);
 	if (m_fontTable.getItemCount() != 0) {
 		UT_DEBUGMSG (("Font table already contains %d items !\n", m_fontTable.getItemCount()));
 	}
@@ -5715,7 +5712,7 @@ bool IE_Imp_RTF::ReadOneFontFromTable()
 			pValue = (int*)keywordMap.pick((char*)keyword);
 			if (pValue != NULL)
 			{
-				UT_ASSERT(paramUsed);
+				UT_return_val_if_fail(paramUsed, false);
 				*pValue = parameter;
 			}
 			if (strcmp((char*)keyword,"panose") == 0)
@@ -5841,8 +5838,8 @@ bool IE_Imp_RTF::ReadOneFontFromTable()
 	if (m_fontTable[fontIndex] == NULL)
 	{
 		UT_sint32 res = m_fontTable.setNthItem(fontIndex, pNewFont, &pOld);
-		UT_ASSERT(res == 0);
-		UT_ASSERT(pOld == NULL);
+		UT_return_val_if_fail(res == 0, false);
+		UT_return_val_if_fail(pOld == NULL, false);
 	}
 	else
 	{
@@ -5863,7 +5860,7 @@ bool IE_Imp_RTF::ReadOneFontFromTable()
 bool IE_Imp_RTF::ReadColourTable()
 {
 	// Ensure the table is empty before we start
-	UT_ASSERT(m_colourTable.getItemCount() == 0);
+	UT_return_val_if_fail(m_colourTable.getItemCount() == 0, false);
 
 	unsigned char keyword[MAX_KEYWORD_LEN];
 	unsigned char ch;
@@ -6624,10 +6621,10 @@ IE_Imp_RTF::RTFTokenType IE_Imp_RTF::NextToken (unsigned char *pKeyword, long* p
 	RTFTokenType tokenType = RTF_TOKEN_NONE;
 	bool ok;
 
-	UT_ASSERT (pKeyword);
-	UT_ASSERT (len);
-	UT_ASSERT (pParamUsed);
-	UT_ASSERT (pParam);
+	UT_return_val_if_fail (pKeyword, RTF_TOKEN_NONE);
+	UT_return_val_if_fail (len, RTF_TOKEN_NONE);
+	UT_return_val_if_fail (pParamUsed, RTF_TOKEN_NONE);
+	UT_return_val_if_fail (pParam, RTF_TOKEN_NONE);
 	*pParam = 0;
 	*pParamUsed = false;
 	pKeyword [0] = ' ';
@@ -6718,7 +6715,7 @@ bool IE_Imp_RTF::HandleBookmark (RTFBookmarkType type)
 		props [1] = "end";
 		break;
 	default:
-		UT_ASSERT (UT_SHOULD_NOT_HAPPEN);
+		UT_ASSERT_NOT_REACHED();
 		props [1] = NULL;
 		break;
 	}
@@ -6745,7 +6742,7 @@ void IE_Imp_RTF::_appendHdrFtr ()
 	UT_String tempBuffer;
 	const XML_Char* szType = NULL;
 
-	UT_ASSERT(m_pImportFile);
+	UT_return_if_fail(m_pImportFile);
 
 	numHdrFtr = m_hdrFtrTable.getItemCount();
 
@@ -6794,7 +6791,7 @@ void IE_Imp_RTF::_appendHdrFtr ()
 			szType = "footer-last";
 			break;
 		default:
-			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+			UT_ASSERT_NOT_REACHED();
 		}
 		UT_DEBUGMSG (("id is %s\n", tempBuffer.c_str()));
 		hdrftrID = tempBuffer;
@@ -6841,7 +6838,7 @@ bool IE_Imp_RTF::_appendField (const XML_Char *xmlField)
 
 	// TODO get text props to apply them to the field
 	ok = FlushStoredChars (true);
-	UT_ASSERT (ok);
+	UT_return_val_if_fail (ok, false);
 	if (m_pImportFile != NULL || m_bAppendAnyway)
 	{
 		getDoc()->appendObject(PTO_Field, propsArray);
@@ -6860,8 +6857,8 @@ bool IE_Imp_RTF::_appendField (const XML_Char *xmlField)
 void IE_Imp_RTF::pasteFromBuffer(PD_DocumentRange * pDocRange,
 								 unsigned char * pData, UT_uint32 lenData, const char * /* szEncoding */)
 {
-	UT_ASSERT(getDoc() == pDocRange->m_pDoc);
-	UT_ASSERT(pDocRange->m_pos1 == pDocRange->m_pos2);
+	UT_return_if_fail(getDoc() == pDocRange->m_pDoc);
+	UT_return_if_fail(pDocRange->m_pos1 == pDocRange->m_pos2);
 
 	m_newParaFlagged = false;
 	m_newSectionFlagged = false;
@@ -6876,7 +6873,7 @@ void IE_Imp_RTF::pasteFromBuffer(PD_DocumentRange * pDocRange,
 	// to do a paste, we set the fp to null and let the
 	// read-a-char routines know about our paste buffer.
 
-	UT_ASSERT(m_pImportFile==NULL);
+	UT_return_if_fail(m_pImportFile==NULL);
 
 	// note, we skip the _writeHeader() call since we don't
 	// want to assume that selection starts with a section

@@ -50,8 +50,6 @@ IE_Exp_Text::IE_Exp_Text(PD_Document * pDocument, bool bEncoded)
 	: IE_Exp(pDocument),
 	  m_pListener(NULL)
 {
-	UT_ASSERT(pDocument);
-
 	m_error = 0;
 
 	// Get encoding dialog prefs setting
@@ -198,13 +196,13 @@ bool IE_Exp_Text::_doEncodingDialog(const char *szEncoding)
 
 	XAP_Dialog_Encoding * pDialog
 		= static_cast<XAP_Dialog_Encoding *>(pDialogFactory->requestDialog(id));
-	UT_ASSERT(pDialog);
+	UT_return_val_if_fail(pDialog, false);
 
 	pDialog->setEncoding(szEncoding);
 
 	// run the dialog
 	XAP_Frame * pFrame = getDoc()->getApp()->getLastFocussedFrame();
-	UT_ASSERT(pFrame);
+	UT_return_val_if_fail(pFrame, false);
 
 	pDialog->runModal(pFrame);
 
@@ -218,7 +216,7 @@ bool IE_Exp_Text::_doEncodingDialog(const char *szEncoding)
 		static UT_String szEnc;
 
 		s = pDialog->getEncoding();
-		UT_ASSERT (s);
+		UT_return_val_if_fail (s, false);
 
 		szEnc = s;
 		_setEncoding(szEnc.c_str());
@@ -297,7 +295,7 @@ void Text_Listener::_genBOM(void)
 		if (_wctomb(pMB,mbLen,static_cast<wchar_t>(*pWC)))
 			pMB += mbLen;
 		else
-			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+			UT_ASSERT_NOT_REACHED();
 	}
 	m_iBOMLen = pMB - m_mbBOM;
 #else
@@ -349,7 +347,7 @@ void Text_Listener::_genLineBreak(void)
 		if (_wctomb(pMB,mbLen,static_cast<wchar_t>(*pWC)))
 			pMB += mbLen;
 		else
-			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		  UT_ASSERT_NOT_REACHED();
 	}
 
 	m_iLineBreakLen = pMB - m_mbLineBreak;
@@ -395,12 +393,12 @@ void Text_Listener::_outputData(const UT_UCSChar * data, UT_uint32 length)
 		{
 			if (!_wctomb(pC,mbLen,static_cast<wchar_t>(*pData)))
 			{
-				UT_ASSERT(!m_bIs16Bit);
+				UT_ASSERT_HARMLESS(!m_bIs16Bit);
 				mbLen=1;
 				pC[0]='?';
 				m_wctomb.initialize();
 			}
-			UT_ASSERT(mbLen>=1);
+			UT_ASSERT_HARMLESS(mbLen>=1);
 			bBuf.append(reinterpret_cast<const UT_Byte *>(pC),mbLen);
 		}
 	}
@@ -415,9 +413,6 @@ void Text_Listener::_closeBlock(void)
 
 	if (!m_bFirstWrite)
 	  _genLineBreak ();
-
-	//UT_ASSERT(!m_bFirstWrite);
-	//UT_ASSERT(m_iLineBreakLen);
 
 	m_pie->write(static_cast<const char *>(m_mbLineBreak),m_iLineBreakLen);
 
@@ -480,9 +475,9 @@ bool Text_Listener::populate(PL_StruxFmtHandle /*sfh*/,
 			case PTO_Field:
 				// Lossy, but pretty much unavoidable
 				field = pcro->getField();
-				UT_ASSERT(field);
+				UT_return_if_fail(field);
 //
-// Sevior: This makes me really unconfortable. I this will oly work for piecetable
+// Sevior: This makes me really unconfortable. I this will only work for piecetable
 // fields
 //
 				if(field->getValue() != NULL)
@@ -497,7 +492,7 @@ bool Text_Listener::populate(PL_StruxFmtHandle /*sfh*/,
 				return true;
 
 			default:
-				UT_ASSERT(0);
+				UT_ASSERT_NOT_REACHED();
 				return false;
 			}
 #else
@@ -544,7 +539,7 @@ bool Text_Listener::populateStrux(PL_StruxDocHandle /*sdh*/,
 		}
 
 	default:
-		UT_ASSERT(0);
+		UT_ASSERT_NOT_REACHED();
 		return false;
 	}
 }
@@ -552,7 +547,7 @@ bool Text_Listener::populateStrux(PL_StruxDocHandle /*sdh*/,
 bool Text_Listener::change(PL_StruxFmtHandle /*sfh*/,
 								const PX_ChangeRecord * /*pcr*/)
 {
-	UT_ASSERT(0);						// this function is not used.
+	UT_ASSERT_NOT_REACHED();						// this function is not used.
 	return false;
 }
 
@@ -564,12 +559,12 @@ bool Text_Listener::insertStrux(PL_StruxFmtHandle /*sfh*/,
 																 PL_ListenerId /* lid */,
 																 PL_StruxFmtHandle /* sfhNew */))
 {
-	UT_ASSERT(0);						// this function is not used.
+	UT_ASSERT_NOT_REACHED();						// this function is not used.
 	return false;
 }
 
 bool Text_Listener::signal(UT_uint32 /* iSignal */)
 {
-	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+  UT_ASSERT_NOT_REACHED();
 	return false;
 }

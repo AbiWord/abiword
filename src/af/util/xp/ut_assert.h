@@ -157,6 +157,11 @@
  */
 #define UT_ASSERT_NOT_REACHED() UT_ASSERT(UT_SHOULD_NOT_HAPPEN)
 
+/*!
+ * Trigger a debug assertion, but let the normal flow of code progress
+ */
+#define UT_ASSERT_HARMLESS(cond) UT_ASSERT(cond)
+
 #ifndef UT_DISABLE_CHECKS
 
 /*!

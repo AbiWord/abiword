@@ -441,7 +441,7 @@ bool s_RTF_ListenerWriteDoc::populate(PL_StruxFmtHandle /*sfh*/,
 		return true;
 
 	default:
-		UT_ASSERT(0);
+		UT_ASSERT_NOT_REACHED();
 		return false;
 	}
 }
@@ -511,8 +511,7 @@ const UT_UCSChar * s_RTF_ListenerWriteDoc::_getFieldValue(void)
 	fl_Layout * pL = (fl_Layout *) sfh;
 	if(pL->getType() != PTX_Block)
 	{
-		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-		return NULL;
+	  UT_return_val_if_fail(0, NULL);
 	}
 	fl_BlockLayout* pBL = (fl_BlockLayout *) pL;
 	bool bDirection;
@@ -527,8 +526,7 @@ const UT_UCSChar * s_RTF_ListenerWriteDoc::_getFieldValue(void)
 	}
 	if((pRun== NULL) || pRun->getType() != FPRUN_FIELD )
 	{
-		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-		return NULL;
+	  UT_return_val_if_fail(0, NULL);
 	}
 //
 // Now get the value of this field
@@ -828,7 +826,7 @@ bool s_RTF_ListenerWriteDoc::populateStrux(PL_StruxDocHandle sdh,
 										   const PX_ChangeRecord * pcr,
 										   PL_StruxFmtHandle * psfh)
 {
-	UT_ASSERT(pcr->getType() == PX_ChangeRecord::PXT_InsertStrux);
+	UT_return_val_if_fail(pcr->getType() == PX_ChangeRecord::PXT_InsertStrux, false);
 	const PX_ChangeRecord_Strux * pcrx = static_cast<const PX_ChangeRecord_Strux *> (pcr);
 	*psfh = 0;							// we don't need it.
 
@@ -932,7 +930,7 @@ bool s_RTF_ListenerWriteDoc::populateStrux(PL_StruxDocHandle sdh,
 			else if(0 == UT_strcmp(pszSectionType, "footer"))
 				m_pie->_rtf_keyword("footer");
 			else
-				UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+				UT_ASSERT_NOT_REACHED();
 			return true;
 #endif
 		}
@@ -950,7 +948,7 @@ bool s_RTF_ListenerWriteDoc::populateStrux(PL_StruxDocHandle sdh,
 		}
 
 	default:
-		UT_ASSERT(0);
+		UT_ASSERT_NOT_REACHED();
 		return false;
 	}
 }
@@ -958,7 +956,7 @@ bool s_RTF_ListenerWriteDoc::populateStrux(PL_StruxDocHandle sdh,
 bool s_RTF_ListenerWriteDoc::change(PL_StruxFmtHandle /*sfh*/,
 									const PX_ChangeRecord * /*pcr*/)
 {
-	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);	// this function is not used.
+	UT_ASSERT_NOT_REACHED();	// this function is not used.
 	return false;
 }
 
@@ -970,13 +968,13 @@ bool s_RTF_ListenerWriteDoc::insertStrux(PL_StruxFmtHandle /*sfh*/,
 																	  PL_ListenerId /* lid */,
 																	  PL_StruxFmtHandle /* sfhNew */))
 {
-	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);	// this function is not used.
+	UT_ASSERT_NOT_REACHED();	// this function is not used.
 	return false;
 }
 
 bool s_RTF_ListenerWriteDoc::signal(UT_uint32 /* iSignal */)
 {
-	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);	// this function is not used.
+	UT_ASSERT_NOT_REACHED();	// this function is not used.
 	return false;
 }
 
@@ -1336,7 +1334,7 @@ void s_RTF_ListenerWriteDoc::_rtf_open_block(PT_AttrPropIndex api)
 		m_pie->_rtf_keyword_ifnotdefault_twips("sa",(char*)szBottomMargin,0);
 
 		fl_AutoNum * pAuto = m_pDocument->getListByID(id);
-		UT_ASSERT(pAuto);
+		UT_return_if_fail(pAuto);
 		if(pAuto->getType()==BULLETED_LIST)
 		{
 			m_pie->_rtf_keyword("bullet");
@@ -1485,7 +1483,7 @@ void s_RTF_ListenerWriteDoc::_rtf_open_block(PT_AttrPropIndex api)
 		m_pie->_rtf_keyword("*");
 		m_pie->_rtf_keyword("pn");
 		fl_AutoNum * pAuto = m_pDocument->getListByID(id);
-		UT_ASSERT(pAuto);
+		UT_return_if_fail(pAuto);
 		m_pie->_rtf_keyword("pnql");
 		m_pie->_rtf_keyword("pnstart",pAuto->getStartValue32());
 		List_Type lType = pAuto->getType();
@@ -1575,7 +1573,7 @@ void s_RTF_ListenerWriteDoc::_rtf_open_block(PT_AttrPropIndex api)
 			m_pie->_rtf_open_brace();
 			m_pie->_rtf_keyword("pntxtb");
 			const UT_UCSChar * tmp = pAuto->getLabel(m_sdh);
-			UT_ASSERT(tmp);
+			UT_ASSERT_HARMLESS(tmp);
 
 			if(!tmp) // Should not happen, if it does attempt to recover
 			{
@@ -1610,9 +1608,9 @@ void s_RTF_ListenerWriteDoc::_rtf_open_block(PT_AttrPropIndex api)
 
 //		if(id != m_currID)
 		{
-			UT_ASSERT(iOver);
+			UT_return_if_fail(iOver);
 			fl_AutoNum * pAuto = m_pDocument->getListByID(id);
-			UT_ASSERT(pAuto);
+			UT_return_if_fail(pAuto);
 			while(pAuto->getParent() != NULL)
 			{
 				pAuto = pAuto->getParent();

@@ -881,7 +881,7 @@ void s_HTML_Listener::_openSpan(PT_AttrPropIndex api)
 				// TODO outofmem
 			}
 
-			UT_ASSERT(p || !pszDecor);
+			UT_return_if_fail(p || !pszDecor);
 			XML_Char*	q = strtok(p, " ");
 
 			while (q)
@@ -923,7 +923,7 @@ void s_HTML_Listener::_openSpan(PT_AttrPropIndex api)
 				// TODO outofmem
 			}
 
-			UT_ASSERT(p || !pszDecor);
+			UT_return_if_fail(p || !pszDecor);
 			XML_Char*	q = strtok(p, " ");
 
 			while (q)
@@ -965,7 +965,7 @@ void s_HTML_Listener::_openSpan(PT_AttrPropIndex api)
 				// TODO outofmem
 			}
 
-			UT_ASSERT(p || !pszDecor);
+			UT_return_if_fail(p || !pszDecor);
 			XML_Char*	q = strtok(p, " ");
 
 			while (q)
@@ -1485,7 +1485,7 @@ void s_HTML_Listener::_outputInheritanceLine(const char* ClassName)
 //
 				pBasedOn->getAttribute(PT_NAME_ATTRIBUTE_NAME, szName);
 
-				UT_ASSERT((szName));
+				UT_return_if_fail((szName));
 				char * pName = removeWhiteSpace((const char*) szName);
 				_outputInheritanceLine(pName);
 				FREEP(pName);
@@ -1904,7 +1904,7 @@ bool s_HTML_Listener::populate(PL_StruxFmtHandle /*sfh*/,
 				return true;
 
 			default:
-				UT_ASSERT(0);
+				UT_ASSERT_NOT_REACHED();
 				return false;
 			}
 		}
@@ -1913,7 +1913,7 @@ bool s_HTML_Listener::populate(PL_StruxFmtHandle /*sfh*/,
 		return true;
 
 	default:
-		UT_ASSERT(0);
+		UT_ASSERT_NOT_REACHED();
 		return false;
 	}
 }
@@ -1922,7 +1922,7 @@ bool s_HTML_Listener::populateStrux(PL_StruxDocHandle /*sdh*/,
 										   const PX_ChangeRecord * pcr,
 										   PL_StruxFmtHandle * psfh)
 {
-	UT_ASSERT(pcr->getType() == PX_ChangeRecord::PXT_InsertStrux);
+	UT_return_val_if_fail(pcr->getType() == PX_ChangeRecord::PXT_InsertStrux, false);
 	const PX_ChangeRecord_Strux * pcrx = static_cast<const PX_ChangeRecord_Strux *> (pcr);
 	*psfh = 0;							// we don't need it.
 
@@ -1978,7 +1978,7 @@ bool s_HTML_Listener::populateStrux(PL_StruxDocHandle /*sdh*/,
 	}
 
 	default:
-		UT_ASSERT(0);
+		UT_ASSERT_NOT_REACHED();
 		return false;
 	}
 }
@@ -1986,7 +1986,7 @@ bool s_HTML_Listener::populateStrux(PL_StruxDocHandle /*sdh*/,
 bool s_HTML_Listener::change(PL_StruxFmtHandle /*sfh*/,
 									const PX_ChangeRecord * /*pcr*/)
 {
-	UT_ASSERT(0);						// this function is not used.
+	UT_ASSERT_NOT_REACHED();						// this function is not used.
 	return false;
 }
 
@@ -1998,13 +1998,13 @@ bool s_HTML_Listener::insertStrux(PL_StruxFmtHandle /*sfh*/,
 																 PL_ListenerId /* lid */,
 																 PL_StruxFmtHandle /* sfhNew */))
 {
-	UT_ASSERT(0);						// this function is not used.
+	UT_ASSERT_NOT_REACHED();						// this function is not used.
 	return false;
 }
 
 bool s_HTML_Listener::signal(UT_uint32 /* iSignal */)
 {
-	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+	UT_ASSERT_NOT_REACHED();
 	return false;
 }
 

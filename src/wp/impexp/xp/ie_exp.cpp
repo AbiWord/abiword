@@ -57,8 +57,8 @@ void IE_Exp::registerExporter (IE_ExpSniffer * s)
 	UT_uint32 ndx = 0;
 	UT_Error err = m_sniffers.addItem (s, &ndx);
 
-	UT_ASSERT(err == UT_OK);
-	UT_ASSERT(ndx >= 0);
+	UT_return_if_fail(err == UT_OK);
+	UT_return_if_fail(ndx >= 0);
 
 	s->setFileType(ndx+1);
 }
@@ -69,7 +69,7 @@ void IE_Exp::unregisterExporter (IE_ExpSniffer * s)
 
 	ndx = s->getFileType(); // 1:1 mapping
 
-	UT_ASSERT(ndx >= 0);
+	UT_return_if_fail(ndx >= 0);
 
 	m_sniffers.deleteNthItem (ndx-1);
 
@@ -121,37 +121,17 @@ IE_Exp::~IE_Exp()
 
 bool IE_Exp::_openFile(const char * szFilename)
 {
-	UT_ASSERT(!m_fp);
-	UT_ASSERT(szFilename);
+	UT_return_val_if_fail(!m_fp, false);
+	UT_return_val_if_fail(szFilename, false);
 
 	m_szFileName = new char[strlen(szFilename) + 1];
 	strcpy(m_szFileName, szFilename);
 
 	// TODO add code to make a backup of the original file, if it exists.
 
-#if 1 //ndef HAVE_GNOMEVFS
 	// Open file in binary mode or UCS-2 output will be mangled.
 	m_fp = fopen(szFilename,"wb+");
 	return (m_fp != 0);
-#elif 0 //def HAVE_GNOMEVFS
-	GnomeVFSResult result;
-	GnomeVFSURI * uri = gnome_vfs_uri_new (szFilename);
-
-	if (!uri)
-	  {
-	    UT_DEBUGMSG(("GnomeVFS could not open the uri: %s\n", szFilename));
-	    return false;
-	  }
-
-	result = gnome_vfs_create_uri (&m_fp, uri, GNOME_VFS_OPEN_WRITE, FALSE, 0644);
-	if (result != GNOME_VFS_OK)
-	  {
-	    UT_DEBUGMSG(("DOM: could not open file for writing!\n"));
-	    UT_DEBUGMSG(("DOM - reason: %s\n", gnome_vfs_result_to_string (result)));
-	    return false;
-	  }
-	return true;
-#endif
 }
 
 UT_uint32 IE_Exp::_writeBytes(const UT_Byte * pBytes, UT_uint32 length)
@@ -159,18 +139,7 @@ UT_uint32 IE_Exp::_writeBytes(const UT_Byte * pBytes, UT_uint32 length)
 	if(!pBytes || !length)
 	  return 0;
 
-#if 1 //ndef HAVE_GNOMEVFS	
 	return fwrite(pBytes,sizeof(UT_Byte),length,m_fp);
-#elif 0 //def HAVE_GNOMEVFS
-	GnomeVFSResult result;
-	GnomeVFSFileSize temp;
-	result = gnome_vfs_write (m_fp, pBytes, length,
-				  &temp);
-
-	if (result != GNOME_VFS_OK)
-	  return 0;
-	return (UT_uint32)temp;
-#endif
 }
 
 bool IE_Exp::_writeBytes(const UT_Byte * sz)
@@ -181,13 +150,8 @@ bool IE_Exp::_writeBytes(const UT_Byte * sz)
 
 bool IE_Exp::_closeFile(void)
 {
-#if 1 //ndef HAVE_GNOMEVFS
 	if (m_fp)
 		fclose(m_fp);
-#elif //def HAVE_GNOMEVFS
-	if (m_fp)
-	  gnome_vfs_close (m_fp);
-#endif
 	m_fp = 0;
 	return true;
 }
@@ -196,7 +160,7 @@ void IE_Exp::_abortFile(void)
 {
 	// abort the write.
 	// TODO close the file and do any restore and/or cleanup.
-	UT_ASSERT(0);
+	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 	_closeFile();
 	return;
 }
@@ -216,8 +180,8 @@ PD_DocumentRange * IE_Exp::getDocRange() const
 
 UT_Error IE_Exp::writeFile(const char * szFilename)
 {
-	UT_ASSERT(m_pDocument);
-	UT_ASSERT(szFilename && *szFilename);
+	UT_return_val_if_fail(m_pDocument, UT_IE_COULDNOTWRITE);
+	UT_return_val_if_fail(szFilename && *szFilename, UT_IE_COULDNOTWRITE);
 
 	if (!_openFile(szFilename))
 		return UT_IE_COULDNOTWRITE;
@@ -240,7 +204,7 @@ UT_Error IE_Exp::copyToBuffer(PD_DocumentRange * pDocRange, UT_ByteBuf * pBuf)
 	// copy selected range of the document into the provided
 	// byte buffer.  (this will be given to the clipboard later)
 
-	UT_ASSERT(m_pDocument == pDocRange->m_pDoc);
+	UT_return_val_if_fail(m_pDocument == pDocRange->m_pDoc, UT_ERROR);
 	
 	m_pDocRange = pDocRange;
 	m_pByteBuf = pBuf;
@@ -400,10 +364,10 @@ UT_Error IE_Exp::constructExporter(PD_Document * pDocument,
 								   IE_Exp ** ppie,
 								   IEFileType * pieft)
 {
-	UT_ASSERT(pDocument);
-	UT_ASSERT(ieft != IEFT_Unknown || (szFilename && *szFilename));
-	UT_ASSERT(ieft != IEFT_Bogus || (szFilename && *szFilename));
-	UT_ASSERT(ppie);
+	UT_return_val_if_fail(pDocument, UT_ERROR);
+	UT_return_val_if_fail(ieft != IEFT_Unknown || (szFilename && *szFilename), UT_ERROR);
+	UT_return_val_if_fail(ieft != IEFT_Bogus || (szFilename && *szFilename), UT_ERROR);
+	UT_return_val_if_fail(ppie, UT_ERROR);
 
 	// no filter will support IEFT_Unknown, so we detect from the
 	// suffix of the filename, the real exporter to use and assign

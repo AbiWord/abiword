@@ -514,7 +514,7 @@ static UT_String _getPassword (XAP_Frame * pFrame)
 	= (XAP_DialogFactory *)(pFrame->getDialogFactory());
 
       XAP_Dialog_Password * pDlg = static_cast<XAP_Dialog_Password*>(pDialogFactory->requestDialog(XAP_DIALOG_ID_PASSWORD));
-      UT_ASSERT(pDlg);
+      UT_return_val_if_fail(pDlg, password);
 
       pDlg->runModal (pFrame);
 
@@ -534,6 +534,8 @@ static UT_String _getPassword (XAP_Frame * pFrame)
 
 static void _errorMessage (XAP_Frame * pFrame, int id)
 {
+  UT_return_if_fail(pFrame);
+
   const XAP_StringSet * pSS = XAP_App::getApp ()->getStringSet ();
 
   const char * text = pSS->getValue (id);
@@ -846,11 +848,11 @@ int IE_Imp_MsWord_97::_docProc (wvParseStruct * ps, UT_uint32 tag)
 				m_iBookmarksCount = 0;
 			}
 		}
-		UT_ASSERT(nobkl == nobkf);
+		UT_return_val_if_fail(nobkl == nobkf, 0);
 		if(m_iBookmarksCount > 0)
 		{
 			m_pBookmarks = new bookmark[m_iBookmarksCount];
-			UT_ASSERT(m_pBookmarks);
+			UT_return_val_if_fail(m_pBookmarks, 0);
 			for(i = 0; i < nobkf; i++)
 			{
 				m_pBookmarks[i].name = _getBookmarkName(ps, i);
@@ -1223,7 +1225,7 @@ int IE_Imp_MsWord_97::_eleProc(wvParseStruct *ps, UT_uint32 tag,
 	  return _endComment (ps, tag, props, dirty);
 
 	default:
-		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+	  UT_ASSERT_NOT_REACHED();
 
 	}
 
@@ -2193,7 +2195,7 @@ int IE_Imp_MsWord_97::_beginChar (wvParseStruct *ps, UT_uint32 tag,
 	// and the logic to know when somehow depends on the
 	// character sets or encoding types? it's in the docs.
 
-	UT_ASSERT(fname != NULL);
+	UT_ASSERT_HARMLESS(fname != NULL);
 	xxx_UT_DEBUGMSG(("font-family = %s\n", fname));
 
 	props += "font-family:";
@@ -2272,13 +2274,13 @@ int IE_Imp_MsWord_97::_fieldProc (wvParseStruct *ps, U16 eachchar,
 	if (m_fieldI >= FLD_SIZE)
 	{
 		UT_DEBUGMSG(("DOM: Something completely absurd in the fields implementation!\n"));
-		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		UT_ASSERT_NOT_REACHED();
 		return 1;
 	}
 
 	if (!m_fieldWhich) {
 		UT_DEBUGMSG(("DOM: _fieldProc - 'which' is null\n"));
-		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		UT_ASSERT_NOT_REACHED();
 		return 1;
 	}
 
@@ -2327,7 +2329,7 @@ bool IE_Imp_MsWord_97::_handleFieldEnd (char *command)
 		case F_HYPERLINK:
 		{
 			token = strtok (NULL, "\"\" ");
-			UT_ASSERT(m_argument[0] == 0x14 && m_argument[m_fieldI - 1] == 0x15);
+			UT_return_val_if_fail(m_argument[0] == 0x14 && m_argument[m_fieldI - 1] == 0x15, false);
 			m_argument[m_fieldI - 1] = 0;
 			UT_UCS2Char * a = m_argument + 1;
 			while(*a)

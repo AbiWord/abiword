@@ -111,14 +111,6 @@ UT_Error IE_Imp_XML::importFile(const char * szFilename)
 			goto Cleanup;
 		}
 	}
-#if 0
-        // TODO - remove this then not needed anymore. In ver 0.7.7 and erlier, AbiWord export inserted 
-        // chars below 0x20. Most of these are invalid XML and can't be imported.
-        // See bug #762.
-        for( UT_uint32 n1 = 0; n1 < len; n1++ )
-	        if( buf[n1] >= 0x00 && buf[n1] < 0x20 && buf[n1] != 0x09 && buf[n1] != 0x0a && buf[n1] != 0x0d )
-		        buf[n1] = 0x0d;
-#endif
 	m_error = UT_OK;
 Cleanup:
 	return m_error;
@@ -143,9 +135,9 @@ IE_Imp_XML::IE_Imp_XML(PD_Document * pDocument, bool whiteSignificant)
 	  m_pReader(NULL)
 {
 	XAP_App *pApp = getDoc()->getApp();
-	UT_ASSERT(pApp);
+	UT_return_if_fail(pApp);
 	XAP_Prefs *pPrefs = pApp->getPrefs();
-	UT_ASSERT(pPrefs);
+	UT_return_if_fail(pPrefs);
 	
 	pPrefs->getPrefsValueBool((XML_Char *)AP_PREF_KEY_SpellCheckIgnoredWordsLoad, 
 							  &m_bLoadIgnoredWords);
@@ -314,7 +306,7 @@ void IE_Imp_XML::charData(const XML_Char *s, int len)
 		      break;
 		    }
 		  default:
-		    UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		    UT_ASSERT_NOT_REACHED();
 		    break;
 		  }
 		return;

@@ -140,7 +140,7 @@ ImportStreamFile::ImportStreamFile(FILE *pFile) :
  */
 bool ImportStreamFile::_getByte(unsigned char &b)
 {
-	UT_ASSERT(m_pFile);
+	UT_return_val_if_fail(m_pFile, false);
 
 	return fread(&b, 1, sizeof(b), m_pFile) > 0;
 }
@@ -300,7 +300,7 @@ bool IE_Imp_Text_Sniffer::_recognizeUTF8(const char * szBuf,
 		else
 		{
 			// the above code covers all cases - if we reach here the logic is wrong
-			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		  UT_ASSERT_NOT_REACHED();
 			return false;
 		}
 
@@ -537,8 +537,6 @@ Cleanup:
 IE_Imp_Text::IE_Imp_Text(PD_Document * pDocument, bool bEncoded)
 	: IE_Imp(pDocument)
 {
-	UT_ASSERT(pDocument);
-
 	// Get encoding dialog prefs setting
 	bool bAlwaysPrompt;
 	getDoc()->getApp()->getPrefsValueBool(AP_PREF_KEY_AlwaysPromptEncoding, &bAlwaysPrompt);
@@ -643,7 +641,7 @@ UT_Error IE_Imp_Text::_writeHeader(FILE * /* fp */)
  */
 UT_Error IE_Imp_Text::_parseStream(ImportStream * pStream, Inserter & ins)
 {
-	UT_ASSERT(pStream);
+	UT_return_val_if_fail(pStream, UT_ERROR);
 
 	bool bFirstChar = true;
 	UT_GrowBuf gbBlock(1024);
@@ -703,13 +701,13 @@ bool IE_Imp_Text::_doEncodingDialog(const char *szEncoding)
 
 	XAP_Dialog_Encoding * pDialog
 		= (XAP_Dialog_Encoding *)(pDialogFactory->requestDialog(id));
-	UT_ASSERT(pDialog);
+	UT_return_val_if_fail(pDialog, false);
 
 	pDialog->setEncoding(szEncoding);
 
 	// run the dialog
 	XAP_Frame * pFrame = getDoc()->getApp()->getLastFocussedFrame();
-	UT_ASSERT(pFrame);
+	UT_return_val_if_fail(pFrame, false);
 
 	pDialog->runModal(pFrame);
 
@@ -723,7 +721,7 @@ bool IE_Imp_Text::_doEncodingDialog(const char *szEncoding)
 		static XML_Char szEnc[16];
 
 		s = pDialog->getEncoding();
-		UT_ASSERT (s);
+		UT_return_val_if_fail (s, false);
 
 		strcpy(szEnc,s);
 		_setEncoding((const char *)szEnc);
@@ -793,8 +791,8 @@ void IE_Imp_Text::pasteFromBuffer(PD_DocumentRange * pDocRange,
 								  unsigned char * pData, UT_uint32 lenData,
 								  const char *szEncoding)
 {
-	UT_ASSERT(getDoc() == pDocRange->m_pDoc);
-	UT_ASSERT(pDocRange->m_pos1 == pDocRange->m_pos2);
+	UT_return_if_fail(getDoc() == pDocRange->m_pDoc);
+	UT_return_if_fail(pDocRange->m_pos1 == pDocRange->m_pos2);
 
 	// Attempt to guess whether we're pasting 8 bit or unicode text
 	if (szEncoding)

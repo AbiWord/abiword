@@ -506,9 +506,7 @@ void IE_Imp_AbiWord_1::startElement(const XML_Char *name, const XML_Char **atts)
 	case TT_OTHER:
 	default:
 		UT_DEBUGMSG(("Unknown tag [%s]\n",name));
-#if 0
-		m_error = UT_IE_BOGUSDOCUMENT;
-#endif		
+		   UT_ASSERT_NOT_REACHED();
 		return;
 	}
 }
@@ -538,14 +536,14 @@ void IE_Imp_AbiWord_1::endElement(const XML_Char *name)
 		return;
 
 	case TT_BLOCK:
-		UT_ASSERT(m_lenCharDataSeen==0);
+		UT_ASSERT_HARMLESS(m_lenCharDataSeen==0);
 		X_VerifyParseState(_PS_Block);
 		m_parseState = _PS_Sec;
 		X_CheckDocument(_getInlineDepth()==0);
 		return;
 		
 	case TT_INLINE:
-		UT_ASSERT(m_lenCharDataSeen==0);
+		UT_ASSERT_HARMLESS(m_lenCharDataSeen==0);
                 if (m_parseState == _PS_Field) // just return 
 			  return;
 		X_VerifyParseState(_PS_Block);
@@ -560,17 +558,17 @@ void IE_Imp_AbiWord_1::endElement(const XML_Char *name)
 		return;
 
 	case TT_IMAGE:						// not a container, so we don't pop stack
-		UT_ASSERT(m_lenCharDataSeen==0);
+		UT_ASSERT_HARMLESS(m_lenCharDataSeen==0);
 		X_VerifyParseState(_PS_Block);
 		return;
 
 	case TT_BOOKMARK:						// not a container, so we don't pop stack
-		UT_ASSERT(m_lenCharDataSeen==0);
+		UT_ASSERT_HARMLESS(m_lenCharDataSeen==0);
 		X_VerifyParseState(_PS_Block);
 		return;
 
 	case TT_HYPERLINK:						// not a container, so we don't pop stack
-		UT_ASSERT(m_lenCharDataSeen==0);
+		UT_ASSERT_HARMLESS(m_lenCharDataSeen==0);
 		X_VerifyParseState(_PS_Block);
 		// we append another Hyperlink Object, but with no attributes		
 		X_CheckError(getDoc()->appendObject(PTO_Hyperlink,NULL));
@@ -579,18 +577,18 @@ void IE_Imp_AbiWord_1::endElement(const XML_Char *name)
 		return;
 			
 	case TT_FIELD:						// not a container, so we don't pop stack
-		UT_ASSERT(m_lenCharDataSeen==0);
+		UT_ASSERT_HARMLESS(m_lenCharDataSeen==0);
 		X_VerifyParseState(_PS_Field);
                 m_parseState = _PS_Block;
 		return;
 
 	case TT_BREAK:						// not a container, so we don't pop stack
-		UT_ASSERT(m_lenCharDataSeen==0);
+		UT_ASSERT_HARMLESS(m_lenCharDataSeen==0);
 		X_VerifyInsideBlockOrField();
 		return;
 
 	case TT_COLBREAK:					// not a container, so we don't pop stack
-		UT_ASSERT(m_lenCharDataSeen==0);
+		UT_ASSERT_HARMLESS(m_lenCharDataSeen==0);
 #if 1
 		X_VerifyParseState(_PS_Block);
 #else
@@ -599,7 +597,7 @@ void IE_Imp_AbiWord_1::endElement(const XML_Char *name)
 		return;
 
 	case TT_PAGEBREAK:					// not a container, so we don't pop stack
-		UT_ASSERT(m_lenCharDataSeen==0);
+		UT_ASSERT_HARMLESS(m_lenCharDataSeen==0);
 #if 1
 		X_VerifyParseState(_PS_Block);
 #else
@@ -651,7 +649,7 @@ void IE_Imp_AbiWord_1::endElement(const XML_Char *name)
 		return;
 
 	case TT_LIST:
-		UT_ASSERT(m_lenCharDataSeen==0);
+		UT_ASSERT_HARMLESS(m_lenCharDataSeen==0);
 		X_VerifyParseState(_PS_List);
 		m_parseState = _PS_ListSec;
 		return;

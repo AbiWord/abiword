@@ -57,7 +57,7 @@ void	  IE_Imp::pasteFromBuffer(PD_DocumentRange * pDocRange,
 				  UT_uint32 lenData, 
 				  const char * szEncoding)
 {
-  UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+  UT_ASSERT_NOT_REACHED();
 }
 
 PD_Document * IE_Imp::getDoc () const
@@ -85,8 +85,8 @@ void IE_Imp::registerImporter (IE_ImpSniffer * s)
 	UT_uint32 ndx = 0;
 	UT_Error err = m_sniffers.addItem (s, &ndx);
 
-	UT_ASSERT(err == UT_OK);
-	UT_ASSERT(ndx >= 0);
+	UT_return_if_fail(err == UT_OK);
+	UT_return_if_fail(ndx >= 0);
 
 	s->setFileType(ndx+1);
 }
@@ -95,7 +95,7 @@ void IE_Imp::unregisterImporter (IE_ImpSniffer * s)
 {
 	UT_uint32 ndx = s->getFileType(); // 1:1 mapping
 
-	UT_ASSERT(ndx >= 0);
+	UT_return_if_fail(ndx >= 0);
 
 	m_sniffers.deleteNthItem (ndx-1);
 
@@ -237,7 +237,7 @@ const char * IE_Imp::suffixesForFileType(IEFileType ieft)
 			if (s->getDlgLabels(&szDummy,&szSuffixes,&ieftDummy))
 				return szSuffixes;
 			else
-				UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+			  UT_ASSERT_NOT_REACHED();
 		}
 	}
 
@@ -271,9 +271,9 @@ UT_Error IE_Imp::constructImporter(PD_Document * pDocument,
 {
 	bool bUseGuesswork = (ieft != IEFT_Unknown);
 	
-	UT_ASSERT(pDocument);
-	UT_ASSERT(ieft != IEFT_Unknown || (szFilename && *szFilename));
-	UT_ASSERT(ppie);
+	UT_return_val_if_fail(pDocument, UT_ERROR);
+	UT_return_val_if_fail(ieft != IEFT_Unknown || (szFilename && *szFilename), UT_ERROR);
+	UT_return_val_if_fail(ppie, UT_ERROR);
 
 	UT_uint32 nrElements = getImporterCount();
 
@@ -348,7 +348,7 @@ UT_Error IE_Imp::constructImporter(PD_Document * pDocument,
 		}
 	}
 
-	UT_ASSERT(ieft != IEFT_Unknown);
+	UT_ASSERT_HARMLESS(ieft != IEFT_Unknown);
 
 	// tell the caller the type of importer they got
 	if (pieft != NULL) 
