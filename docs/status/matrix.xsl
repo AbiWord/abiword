@@ -254,7 +254,7 @@ td.yes, td.no, td.partially, td.unknown, td.na, td.buggy, td.later { border-styl
         </xsl:for-each>
 
         <td class="percent-column"><xsl:number format="1" value="100 *
-count(cell[@value='yes']) div (count(cell)-1)"/> %</td>
+count(cell[@value='yes' or @value='na']) div (count(cell)-1)"/> %</td>
 
         </tr>
       </xsl:for-each>
@@ -268,7 +268,7 @@ count(cell[@value='yes']) div (count(cell)-1)"/> %</td>
 
           <td class="percent-row">
             <xsl:number format="1" value="100 *
-count(../../row/cell[position() = $pos and @value='yes']) div
+count(../../row/cell[position() = $pos and (@value='yes' or @value='na')]) div
 count(../../row/cell[position() = $pos])"/> %
           </td>
 
