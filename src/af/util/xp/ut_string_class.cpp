@@ -883,6 +883,22 @@ void UT_UTF8String::append (const UT_UCSChar * sz, size_t n /* 0 = null-terminat
 	free (utf8_buffer);
 }
 
+/* escapes '<', '>' & '&' in the current string
+ */
+const UT_UTF8String & UT_UTF8String::escapeXML ()
+{
+	pimpl->escapeXML ();
+	return *this;
+}
+
+/* translates the current string to MIME "quoted-printable" format
+ */
+const UT_UTF8String & UT_UTF8String::escapeMIME ()
+{
+	pimpl->escapeMIME ();
+	return *this;
+}
+
 UT_UCS2String UT_UTF8String::ucs2_str ()
 {
 	UT_UCS2String ucs2_string;

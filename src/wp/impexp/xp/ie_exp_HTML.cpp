@@ -27,6 +27,7 @@
 #include <string.h>
 #include <ctype.h>
 #include <locale.h>
+#include <time.h>
 
 #include "ut_debugmsg.h"
 #include "ut_assert.h"
@@ -37,6 +38,7 @@
 #include "ut_units.h"
 #include "ut_wctomb.h"
 #include "ut_path.h"
+#include "ut_math.h"
 #include "ut_string_class.h"
 
 #include "xap_App.h"
@@ -60,8 +62,23 @@
 #include "ie_impexp_HTML.h"
 #include "ie_exp_HTML.h"
 
+#ifdef HTML_DIALOG_OPTIONS
+#include "xap_Dialog_Id.h"
+#include "xap_DialogFactory.h"
+#endif
+
 #ifdef HTML_TABLES_SUPPORTED
 #include "ie_Table.h"
+#endif
+
+#ifndef IE_MIME_XHTML
+#define IE_MIME_XHTML		"application/xhtml+xml"
+#endif
+#ifndef IE_MIME_HTML
+#define IE_MIME_HTML		"text/html"
+#endif
+#ifndef IE_MIME_CSS
+#define IE_MIME_CSS			"text/css"
 #endif
 
 /*****************************************************************/
@@ -166,7 +183,7 @@ bool IE_Exp_PHTML_Sniffer::getDlgLabels(const char ** pszDesc,
 									   const char ** pszSuffixList,
 									   IEFileType * ft)
 {
-	*pszDesc = "AbiWord Web Document (.phtml)";
+	*pszDesc = "XHTML+PHP (.phtml)";
 	*pszSuffixList = "*.phtml";
 	*ft = getFileType();
 	return true;
@@ -174,16 +191,64 @@ bool IE_Exp_PHTML_Sniffer::getDlgLabels(const char ** pszDesc,
 
 #endif /* HTML_ENABLE_PHTML */
 
+#ifdef HTML_ENABLE_MHTML
+
+// Multipart HTML: http://www.rfc-editor.org/rfc/rfc2557.txt
+
+IE_Exp_MHTML_Sniffer::IE_Exp_MHTML_Sniffer ()
+#ifdef HTML_NAMED_CONSTRUCTORS
+	: IE_ExpSniffer(IE_IMPEXPNAME_MHTML)
+#endif
+{
+	// 
+}
+
+bool IE_Exp_MHTML_Sniffer::recognizeSuffix (const char * szSuffix)
+{
+	return (!(UT_stricmp (szSuffix, ".mht")));
+}
+
+UT_Error IE_Exp_MHTML_Sniffer::constructExporter (PD_Document * pDocument,
+												  IE_Exp ** ppie)
+{
+	IE_Exp_HTML * p = new IE_Exp_HTML(pDocument);
+	if (p) p->set_MHTML ();
+	*ppie = p;
+	return UT_OK;
+}
+
+bool IE_Exp_MHTML_Sniffer::getDlgLabels(const char ** pszDesc,
+									   const char ** pszSuffixList,
+									   IEFileType * ft)
+{
+	*pszDesc = "Multipart HTML (.mht)";
+	*pszSuffixList = "*.mht";
+	*ft = getFileType();
+	return true;
+}
+
+#endif /* HTML_ENABLE_MHTML */
+
 /*****************************************************************/
 /*****************************************************************/
 
 IE_Exp_HTML::IE_Exp_HTML (PD_Document * pDocument)
-	: IE_Exp(pDocument)
+	: IE_Exp(pDocument),
+	  m_bSuppressDialog(false)
 {
 	m_exp_opt.bIs4         = false;
 	m_exp_opt.bIsAbiWebDoc = false;
+	m_exp_opt.bDeclareXML  = true;
+	m_exp_opt.bAllowAWML   = true;
+	m_exp_opt.bEmbedCSS    = true;
+	m_exp_opt.bEmbedImages = false;
+	m_exp_opt.bMultipart   = false;
 
 	m_error = UT_OK;
+
+#ifdef HTML_DIALOG_OPTIONS
+	XAP_Dialog_HTMLOptions::getHTMLDefaults (&m_exp_opt, pDocument->getApp ());
+#endif
 }
 
 IE_Exp_HTML::~IE_Exp_HTML ()
@@ -193,6 +258,50 @@ IE_Exp_HTML::~IE_Exp_HTML ()
 
 /*****************************************************************/
 /*****************************************************************/
+
+/* TODO: is there a better way to do this?
+ */
+static UT_UTF8String s_string_to_url (UT_String & str)
+{
+	UT_UTF8String url;
+
+	static const char hex[16] = {
+		'0','1','2','3','4','5','6','7','8','9','A','B','C','D','E','F'
+	};
+	char buf[4];
+	buf[0] = '%';
+	buf[3] = 0;
+
+	const char * ptr = str.c_str ();
+	while (*ptr)
+		{
+			bool isValidPunctuation = false;
+			switch (*ptr)
+				{
+				case '-': // TODO: any others?
+				case '_':
+				case '.':
+					isValidPunctuation = true;
+					break;
+				default:
+					break;
+				}
+			unsigned char u = (unsigned char) *ptr;
+			if (!isalnum ((int) u) && !isValidPunctuation)
+				{
+					buf[1] = hex[(u >> 4) & 0x0f];
+					buf[2] = hex[ u       & 0x0f];
+					url += buf;
+				}
+			else
+				{
+					buf[2] = (char) *ptr;
+					url += (buf + 2);
+				}
+			ptr++;
+		}
+	return url;
+}
 
 /*!	This function returns true if the given property is a valid CSS
 	property.  It is based on the list in pp_Property.cpp, and, as such,
@@ -266,7 +375,7 @@ class s_HTML_Listener : public PL_Listener
 {
 public:
 	s_HTML_Listener (PD_Document * pDocument, IE_Exp_HTML * pie, bool bClipBoard,
-					 const IE_Exp_HTML_Options & exp_opt);
+					 const XAP_Exp_HTMLOptions * exp_opt);
 
 	~s_HTML_Listener ();
 
@@ -293,6 +402,8 @@ public:
 private:
 	void 	_outputBegin (PT_AttrPropIndex api);
 	void 	_outputEnd ();
+	bool 	_openStyleSheet (UT_UTF8String & css_path);
+	void 	_closeStyleSheet ();
 	void	_outputStyles (const PP_AttrProp * pAP);
 	void	_openSection (PT_AttrPropIndex api);
 	void	_closeSection (void);
@@ -321,7 +432,9 @@ private:
 	
 	void	_writeImage (const UT_ByteBuf * pByteBuf,
 						 const UT_String & imagedir, const UT_String & filename);
+	void	_writeImageBase64 (const UT_ByteBuf * pByteBuf);
 	void	_handleImage (PT_AttrPropIndex api);
+	void	_handlePendingImages ();
 	void	_handleField (const PX_ChangeRecord_Object * pcro, PT_AttrPropIndex api);
 	void	_handleHyperlink (PT_AttrPropIndex api);
 	void	_handleBookmark (PT_AttrPropIndex api);
@@ -331,17 +444,28 @@ private:
 	void    _handleMeta ();
 #endif
 
-	PD_Document *		m_pDocument;
-	IE_Exp_HTML *		m_pie;
-	bool				m_bClipBoard;
-	bool				m_bInSection;
-	bool				m_bInBlock;
-	bool				m_bInTList;
-	bool				m_bInTListItem;
-	bool				m_bInSpan;
-	bool				m_bNextIsSpace;
-	bool				m_bWroteText;
-	bool				m_bFirstWrite;
+	PD_Document *				m_pDocument;
+	IE_Exp_HTML *				m_pie;
+	bool						m_bClipBoard;
+	const XAP_Exp_HTMLOptions *	m_exp_opt;
+
+	inline bool		get_HTML4 ()        const { return m_exp_opt->bIs4; }
+	inline bool		get_PHTML ()        const { return m_exp_opt->bIsAbiWebDoc; }
+	inline bool		get_Declare_XML ()  const { return m_exp_opt->bDeclareXML; }
+	inline bool		get_Allow_AWML ()   const { return m_exp_opt->bAllowAWML; }
+	inline bool		get_Embed_CSS ()    const { return m_exp_opt->bEmbedCSS; }
+	inline bool		get_Embed_Images () const { return m_exp_opt->bEmbedImages; }
+	inline bool		get_Multipart ()    const { return m_exp_opt->bMultipart; }
+
+	bool			m_bInSection;
+	bool			m_bInBlock;
+	bool			m_bInTList;
+	bool			m_bInTListItem;
+	bool			m_bInSpan;
+	bool			m_bNextIsSpace;
+	bool			m_bWroteText;
+	bool			m_bFirstWrite;
+	bool			m_bQuotedPrintable;
 
 #ifdef HTML_TABLES_SUPPORTED
 	ie_Table		m_TableHelper;
@@ -365,6 +489,7 @@ private:
 
 	/* low-level; these may use m_utf8_0 but not m_utf8_1
 	 */
+	void			tagRaw (UT_UTF8String & content);
 	void			tagNewIndent (UT_uint32 extra = 0);
 	void			tagOpenClose (const UT_UTF8String & content, bool suppress,
 								  WhiteSpace ws = ws_Both);
@@ -373,6 +498,8 @@ private:
 	void			tagClose (UT_uint32 tagID, const UT_UTF8String & content,
 							  WhiteSpace ws = ws_Both);
 	void			tagClose (UT_uint32 tagID);
+	void			tagOpenBroken  (const UT_UTF8String & content);
+	void			tagCloseBroken (const UT_UTF8String & content);
 	UT_uint32		tagTop ();
 	void			tagPI (const char * target, const UT_UTF8String & content);
 	void			tagComment (const UT_UTF8String & content);
@@ -382,8 +509,14 @@ private:
 	void			styleOpen (const UT_UTF8String & rule);
 	void			styleClose ();
 	void			styleNameValue (const char * name, const UT_UTF8String & value);
+	void			styleText (const UT_UTF8String & content);
 	void			textTrusted (const UT_UTF8String & text);
 	void			textUntrusted (const char * text);
+
+	void			multiHeader (const UT_UTF8String & title);
+	void			multiBoundary (bool end = false);
+	void			multiField (const char * name, const UT_UTF8String & value);
+	void			multiBreak ();
 
 	/* for emulation of lists using tables:
 	 */
@@ -416,11 +549,17 @@ private:
 	UT_UTF8String	m_utf8_0; // low-level
 	UT_UTF8String	m_utf8_1; // intermediate
 
-	UT_UTF8String	m_utf8_span; // span tag-string cache
+	UT_UTF8String	m_utf8_span;     // span tag-string cache
+
+	const PP_AttrProp * m_pAPStyles;
+
+	UT_UTF8String	m_utf8_css_path; // Multipart HTML: cache for content location
 
 	UT_Stack		m_tagStack;
 
 	UT_uint32		m_styleIndent;
+
+	FILE *			m_fdCSS;
 
 	UT_uint32		m_tlistIndent;
 	UT_uint32		m_tlistListID;
@@ -428,11 +567,7 @@ private:
 
 	UT_StringPtrMap	m_BodyStyle;
 	UT_StringPtrMap	m_BlockStyle;
-
-	/* Export Options
-	 */
-	bool			m_bIs4;
-	bool			m_bIsAbiWebDoc;
+	UT_StringPtrMap	m_SavedURLs;
 };
 
 const char * s_HTML_Listener::bodyStyle (const char * key)
@@ -536,6 +671,14 @@ bool s_HTML_Listener::compareStyle (const char * key, const char * value)
 	return match;
 }
 
+void s_HTML_Listener::tagRaw (UT_UTF8String & content)
+{
+#ifdef HTML_ENABLE_MHTML
+	if (m_bQuotedPrintable) content.escapeMIME ();
+#endif
+	m_pie->write (content.utf8_str (), content.byteLength ());
+}
+
 void s_HTML_Listener::tagNewIndent (UT_uint32 extra)
 {
 	m_utf8_0 = "";
@@ -569,7 +712,7 @@ void s_HTML_Listener::tagOpenClose (const UT_UTF8String & content, bool suppress
 
 	if (ws & ws_Post) m_utf8_0 += "\r\n";
 
-	m_pie->write (m_utf8_0.utf8_str (), m_utf8_0.byteLength ());
+	tagRaw (m_utf8_0);
 }
 
 void s_HTML_Listener::tagOpen (UT_uint32 tagID, const UT_UTF8String & content,
@@ -586,7 +729,7 @@ void s_HTML_Listener::tagOpen (UT_uint32 tagID, const UT_UTF8String & content,
 
 	if (ws & ws_Post) m_utf8_0 += "\r\n";
 
-	m_pie->write (m_utf8_0.utf8_str (), m_utf8_0.byteLength ());
+	tagRaw (m_utf8_0);
 
 	void * vptr = reinterpret_cast<void *>(tagID);
 	m_tagStack.push (vptr);
@@ -608,7 +751,7 @@ void s_HTML_Listener::tagClose (UT_uint32 tagID, const UT_UTF8String & content,
 
 	if (ws & ws_Post) m_utf8_0 += "\r\n";
 
-	m_pie->write (m_utf8_0.utf8_str (), m_utf8_0.byteLength ());
+	tagRaw (m_utf8_0);
 }
 
 void s_HTML_Listener::tagClose (UT_uint32 tagID)
@@ -619,6 +762,28 @@ void s_HTML_Listener::tagClose (UT_uint32 tagID)
 	if (reinterpret_cast<UT_uint32>(vptr) == tagID) return;
 
 	UT_DEBUGMSG(("WARNING: possible tag mis-match in XHTML output!\n"));
+}
+
+/* use with *extreme* caution! (this is used by images with data-URLs)
+ */
+void s_HTML_Listener::tagOpenBroken (const UT_UTF8String & content)
+{
+	tagNewIndent ();
+
+	m_utf8_0 += "<";
+	m_utf8_0 += content;
+
+	tagRaw (m_utf8_0);
+}
+
+/* use with *extreme* caution! (this is used by images with data-URLs)
+ */
+void s_HTML_Listener::tagCloseBroken (const UT_UTF8String & content)
+{
+	m_utf8_0  = content;
+	m_utf8_0 += " />\r\n";
+
+	tagRaw (m_utf8_0);
 }
 
 UT_uint32 s_HTML_Listener::tagTop ()
@@ -638,7 +803,7 @@ void s_HTML_Listener::tagPI (const char * target, const UT_UTF8String & content)
 	m_utf8_0 += content;
 	m_utf8_0 += "?>\r\n";
 
-	m_pie->write (m_utf8_0.utf8_str (), m_utf8_0.byteLength ());
+	tagRaw (m_utf8_0);
 }
 
 void s_HTML_Listener::tagComment (const UT_UTF8String & content)
@@ -649,7 +814,7 @@ void s_HTML_Listener::tagComment (const UT_UTF8String & content)
 	m_utf8_0 += content;
 	m_utf8_0 += " -->\r\n";
 
-	m_pie->write (m_utf8_0.utf8_str (), m_utf8_0.byteLength ());
+	tagRaw (m_utf8_0);
 }
 
 void s_HTML_Listener::tagCommentOpen ()
@@ -658,7 +823,7 @@ void s_HTML_Listener::tagCommentOpen ()
 
 	m_utf8_0 += "<!--\r\n";
 
-	m_pie->write (m_utf8_0.utf8_str (), m_utf8_0.byteLength ());
+	tagRaw (m_utf8_0);
 }
 
 void s_HTML_Listener::tagCommentClose ()
@@ -667,7 +832,7 @@ void s_HTML_Listener::tagCommentClose ()
 
 	m_utf8_0 += "-->\r\n";
 
-	m_pie->write (m_utf8_0.utf8_str (), m_utf8_0.byteLength ());
+	tagRaw (m_utf8_0);
 }
 
 void s_HTML_Listener::styleIndent ()
@@ -684,7 +849,10 @@ void s_HTML_Listener::styleOpen (const UT_UTF8String & rule)
 	m_utf8_0 += rule;
 	m_utf8_0 += " {\r\n";
 
-	m_pie->write (m_utf8_0.utf8_str (), m_utf8_0.byteLength ());
+	if (m_fdCSS)
+		fwrite (m_utf8_0.utf8_str (), 1, m_utf8_0.byteLength (), m_fdCSS);
+	else
+		tagRaw (m_utf8_0);
 
 	m_styleIndent++;
 }
@@ -702,7 +870,10 @@ void s_HTML_Listener::styleClose ()
 
 	m_utf8_0 += "}\r\n";
 
-	m_pie->write (m_utf8_0.utf8_str (), m_utf8_0.byteLength ());
+	if (m_fdCSS)
+		fwrite (m_utf8_0.utf8_str (), 1, m_utf8_0.byteLength (), m_fdCSS);
+	else
+		tagRaw (m_utf8_0);
 }
 
 void s_HTML_Listener::styleNameValue (const char * name, const UT_UTF8String & value)
@@ -714,16 +885,32 @@ void s_HTML_Listener::styleNameValue (const char * name, const UT_UTF8String & v
 	m_utf8_0 += value;
 	m_utf8_0 += ";\r\n";
 
-	m_pie->write (m_utf8_0.utf8_str (), m_utf8_0.byteLength ());
+	if (m_fdCSS)
+		fwrite (m_utf8_0.utf8_str (), 1, m_utf8_0.byteLength (), m_fdCSS);
+	else
+		tagRaw (m_utf8_0);
+}
+
+void s_HTML_Listener::styleText (const UT_UTF8String & content)
+{
+	if (m_fdCSS)
+		fwrite (content.utf8_str (), 1, content.byteLength (), m_fdCSS);
+	else
+		{
+			m_utf8_0 = content;
+			tagRaw (m_utf8_0);
+		}
 }
 
 void s_HTML_Listener::textTrusted (const UT_UTF8String & text)
 {
 	if (text.byteLength ())
-	{
-		m_bWroteText = true;
-		m_pie->write (text.utf8_str (), text.byteLength ());
-	}
+		{
+			m_utf8_0 = text;
+			tagRaw (m_utf8_0);
+
+			m_bWroteText = true;
+		}
 }
 
 void s_HTML_Listener::textUntrusted (const char * text)
@@ -762,7 +949,88 @@ void s_HTML_Listener::textUntrusted (const char * text)
 			 */
 			ptr++;
 		}
-	if (m_utf8_0.byteLength ()) m_pie->write (m_utf8_0.utf8_str (), m_utf8_0.byteLength ());
+	if (m_utf8_0.byteLength ()) tagRaw (m_utf8_0);
+}
+
+static const char * s_boundary = "AbiWord_multipart_boundary____________";
+
+void s_HTML_Listener::multiHeader (const UT_UTF8String & title)
+{
+	m_utf8_1 = "<Saved by AbiWord>";
+	multiField ("From", m_utf8_1);
+
+	multiField ("Subject", title);
+
+	time_t tim = time (NULL);
+	struct tm * pTime = localtime (&tim);
+	char timestr[64];
+	strftime (timestr, 63, "%a, %d %b %Y %H:%M:%S +0100", pTime); // hmm, hard-code time zone
+	timestr[63] = 0;
+
+	m_utf8_1 = timestr;
+	multiField ("Date", m_utf8_1);
+
+	m_utf8_1 = "1.0";
+	multiField ("MIME-Version", m_utf8_1);
+
+	m_utf8_1  = "multipart/related;\r\n\tboundary=\"";
+	m_utf8_1 += s_boundary;
+	m_utf8_1 += "\";\r\n\ttype=\"";
+
+	if (get_HTML4 ())
+		m_utf8_1 += IE_MIME_HTML;
+	else
+		m_utf8_1 += IE_MIME_XHTML;
+
+	m_utf8_1 += "\"";
+
+	multiField ("Content-Type", m_utf8_1);
+	multiBoundary ();
+
+	if (get_HTML4 ())
+		m_utf8_1 = IE_MIME_HTML;
+	else
+		m_utf8_1 = IE_MIME_XHTML;
+
+	m_utf8_1 += "; charset=\"UTF-8\"";
+
+	multiField ("Content-Type", m_utf8_1);
+
+	m_utf8_1  = "quoted-printable";
+	multiField ("Content-Transfer-Encoding", m_utf8_1);
+	multiBreak ();
+
+	m_bQuotedPrintable = true;
+}
+
+void s_HTML_Listener::multiBoundary (bool end)
+{
+	m_utf8_0  = "\r\n--";
+	m_utf8_0 += s_boundary;
+
+	if (end)
+		m_utf8_0 += "--\r\n";
+	else
+		m_utf8_0 += "\r\n";
+
+	m_pie->write (m_utf8_0.utf8_str (), m_utf8_0.byteLength ());
+}
+
+void s_HTML_Listener::multiField (const char * name, const UT_UTF8String & value)
+{
+	m_utf8_0  = name;
+	m_utf8_0 += ": ";
+	m_utf8_0 += value;
+	m_utf8_0 += "\r\n";
+
+	m_pie->write (m_utf8_0.utf8_str (), m_utf8_0.byteLength ());
+}
+
+void s_HTML_Listener::multiBreak ()
+{
+	m_utf8_0 = "\r\n";
+
+	m_pie->write (m_utf8_0.utf8_str (), m_utf8_0.byteLength ());
 }
 
 /* intermediate methods
@@ -783,12 +1051,24 @@ static const char * s_Header[3] = {
 
 void s_HTML_Listener::_outputBegin (PT_AttrPropIndex api)
 {
+	UT_UTF8String titleProp;
+
+#ifdef HTML_META_SUPPORTED
+	m_pDocument->getMetaDataProp (PD_META_KEY_TITLE, titleProp);
+
+	if (titleProp.byteLength () == 0) titleProp = m_pie->getFileName ();
+#else
+	titleProp = m_pie->getFileName ();
+#endif
+
+	if (get_Multipart ()) multiHeader (titleProp);
+
 	/* print XML header
 	 */
-	if (!m_bIs4)
+	if (!get_HTML4 ())
 		{
-			if (!m_bIsAbiWebDoc) // PHP doesn't like <?xml ?> at the start, for some reason
-				{                // ?? belongs to a different option... [TODO]
+			if (get_Declare_XML ())
+				{
 					m_utf8_1 = "version=\"1.0\"";
 					tagPI ("xml", m_utf8_1);
 				}
@@ -815,12 +1095,10 @@ void s_HTML_Listener::_outputBegin (PT_AttrPropIndex api)
 	/* open root element, i.e. <html>; namespace it if XHTML
 	 */
 	m_utf8_1 = "html";
-	if (!m_bIs4)
+	if (!get_HTML4 ())
 		{
 			m_utf8_1 += " xmlns=\"http://www.w3.org/1999/xhtml\"";
-#ifndef HTML_NO_AWML
-			m_utf8_1 += " xmlns:awml=\"http://www.abisource.com/awml.dtd\"";
-#endif
+			if (get_Allow_AWML ()) m_utf8_1 += " xmlns:awml=\"http://www.abisource.com/awml.dtd\"";
 		}
 	tagOpen (TT_HTML, m_utf8_1);
 	
@@ -831,29 +1109,24 @@ void s_HTML_Listener::_outputBegin (PT_AttrPropIndex api)
 
 	/* in the case of HTML4, we add a meta tag describing the document's charset as UTF-8
 	 */
-	if (m_bIs4)
+	if (get_HTML4 ())
 		{
 			m_utf8_1 = "meta http-equiv=\"content-type\" content=\"text/html; charset=UTF-8\"";
-			tagOpenClose (m_utf8_1, m_bIs4);
+			tagOpenClose (m_utf8_1, get_HTML4 ());
 		}
 	
 	/* set page's title in browser
 	 */
 	m_utf8_1 = "title";
-	tagOpen (TT_TITLE, m_utf8_1);
+	tagOpen (TT_TITLE, m_utf8_1, ws_Pre);
 
 #ifdef HTML_META_SUPPORTED
-	UT_UTF8String titleProp;
-
-	if (m_pDocument->getMetaDataProp (PD_META_KEY_TITLE, titleProp) && titleProp.size ())
-		textTrusted (titleProp.escapeXML ());
-	else
-		textUntrusted (m_pie->getFileName ());
+	textTrusted (titleProp.escapeXML ()); // TODO: back-port this method?
 #else
-	textUntrusted (m_pie->getFileName ());
+	textUntrusted (titleProp.utf8_str ());
 #endif
 
-	tagClose (TT_TITLE, m_utf8_1);
+	tagClose (TT_TITLE, m_utf8_1, ws_Post);
 
 #ifdef HTML_META_SUPPORTED
 	/* write out our metadata properties
@@ -861,17 +1134,21 @@ void s_HTML_Listener::_outputBegin (PT_AttrPropIndex api)
 	_handleMeta ();
 #endif
 
-	if (!m_bIsAbiWebDoc) // belongs to a different option... [TODO]
+	if (!get_PHTML ())
 		{
 			const PP_AttrProp * pAP = 0;
 			bool bHaveProp = m_pDocument->getAttrProp (api, &pAP);
 
-			if (bHaveProp) _outputStyles (pAP);
+			if (bHaveProp && pAP)
+				{
+					_outputStyles (pAP);
+					if (!get_Embed_CSS ()) m_pAPStyles = pAP;
+				}
 		}
 
-	if (m_bIsAbiWebDoc)
+	if (get_PHTML ())
 		{
-			m_utf8_1 = "\r\n  include($DOCUMENT_ROOT.'/x-header.php');\r\n ?>\r\n";
+			m_utf8_1 = "\r\n  include($DOCUMENT_ROOT.'/x-header.php');\r\n ";
 			tagPI ("php", m_utf8_1);
 		}
 
@@ -885,9 +1162,9 @@ void s_HTML_Listener::_outputBegin (PT_AttrPropIndex api)
 	m_utf8_1 = "body";
 	tagOpen (TT_BODY, m_utf8_1);
 
-	if (m_bIsAbiWebDoc)
+	if (get_PHTML ())
 		{
-			m_utf8_1 = "\r\n  include($DOCUMENT_ROOT.'/x-page-begin.php');\r\n ?>\r\n";
+			m_utf8_1 = "\r\n  include($DOCUMENT_ROOT.'/x-page-begin.php');\r\n ";
 			tagPI ("php", m_utf8_1);
 		}
 
@@ -896,9 +1173,9 @@ void s_HTML_Listener::_outputBegin (PT_AttrPropIndex api)
 
 void s_HTML_Listener::_outputEnd ()
 {
-	if (m_bIsAbiWebDoc)
+	if (get_PHTML ())
 		{
-			m_utf8_1 = "\r\n  include($DOCUMENT_ROOT.'/x-page-end.php');\r\n ?>\r\n";
+			m_utf8_1 = "\r\n  include($DOCUMENT_ROOT.'/x-page-end.php');\r\n ";
 			tagPI ("php", m_utf8_1);
 		}
 
@@ -911,6 +1188,66 @@ void s_HTML_Listener::_outputEnd ()
 	 */
 	m_utf8_1 = "html";
 	tagClose (TT_HTML, m_utf8_1);
+
+	if (get_Multipart ())
+		{
+			m_bQuotedPrintable = false;
+
+			if (m_pAPStyles)
+				{
+					_outputStyles (m_pAPStyles);
+					m_bQuotedPrintable = false;
+				}
+			_handlePendingImages ();
+
+			multiBoundary (true);
+		}
+}
+
+bool s_HTML_Listener::_openStyleSheet (UT_UTF8String & css_path)
+{
+	UT_String imagebasedir = UT_basename (m_pie->getFileName ());
+	imagebasedir += "_data";
+	UT_String imagedir = m_pie->getFileName ();
+	imagedir += "_data";
+
+	if (!get_Multipart ())
+		m_pDocument->getApp()->makeDirectory (imagedir.c_str (), 0750);
+
+	imagedir += "/style.css";
+
+	if (m_utf8_css_path.byteLength ()) // Multipart HTML: style-sheet segment
+		{
+			multiBoundary ();
+
+			m_utf8_1  = IE_MIME_CSS;
+			m_utf8_1 += "; charset=\"UTF-8\"";
+
+			multiField ("Content-Type",     m_utf8_1);
+			multiField ("Content-Location", m_utf8_css_path);
+
+			m_utf8_1  = "quoted-printable";
+			multiField ("Content-Transfer-Encoding", m_utf8_1);
+			multiBreak ();
+
+			m_bQuotedPrintable = true;
+		}
+	else if (!get_Multipart ())
+		{
+			m_fdCSS = fopen (imagedir.c_str (), "wb");
+			if (m_fdCSS == NULL) return false;
+		}
+
+	css_path  = s_string_to_url (imagebasedir);
+	css_path += "/style.css";
+
+	return true;
+}
+
+void s_HTML_Listener::_closeStyleSheet ()
+{
+	if (m_fdCSS) fclose (m_fdCSS);
+	m_fdCSS = 0;
 }
 
 void s_HTML_Listener::_outputStyles (const PP_AttrProp * pAP)
@@ -920,9 +1257,38 @@ void s_HTML_Listener::_outputStyles (const PP_AttrProp * pAP)
 	const XML_Char * szName  = 0;
 	const XML_Char * szValue = 0;
 
-	m_utf8_1 = "style type=\"text/css\"";
-	tagOpen (TT_STYLE, m_utf8_1);
-	tagCommentOpen ();
+	if (get_Embed_CSS ())
+		{
+			m_utf8_1 = "style type=\"text/css\"";
+			tagOpen (TT_STYLE, m_utf8_1);
+			tagCommentOpen ();
+		}
+	else
+		{
+			UT_UTF8String css_path;
+
+			if (!_openStyleSheet (css_path)) return;
+
+			if (!get_Multipart () || (m_utf8_css_path.byteLength () == 0))
+				{
+					m_utf8_1  = "link href=\"";
+					m_utf8_1 += css_path;
+					m_utf8_1 += "\" rel=\"stylesheet\" type=\"text/css\"";
+
+					tagOpenClose (m_utf8_1, get_HTML4 ());
+
+					if (get_Multipart ())
+						{
+							m_utf8_css_path = css_path;
+							return;
+						}
+				}
+
+			/* first line of style sheet is an encoding declaration
+			 */
+			m_utf8_1 = "@charset \"UTF-8\";\r\n\r\n";
+			styleText (m_utf8_1);
+		}
 
 	/* global page styles refer to the <body> tag
 	 */
@@ -1143,9 +1509,13 @@ void s_HTML_Listener::_outputStyles (const PP_AttrProp * pAP)
 				}
 		}
 
-	tagCommentClose ();
-	m_utf8_1 = "style";
-	tagClose (TT_STYLE, m_utf8_1);
+	if (get_Embed_CSS ())
+		{
+			tagCommentClose ();
+			m_utf8_1 = "style";
+			tagClose (TT_STYLE, m_utf8_1);
+		}
+	else _closeStyleSheet ();
 }
 
 void s_HTML_Listener::_openSection (PT_AttrPropIndex api)
@@ -1715,7 +2085,7 @@ void s_HTML_Listener::_openTag (PT_AttrPropIndex api, PL_StruxDocHandle sdh)
 			pAP->getAttribute ("level", szLevel);
 			m_iListDepth = atoi ((const char *) szLevel);
 
-			/* TODO: why can m_iListDepth be zero sometimes ??
+			/* TODO: why can m_iListDepth be zero sometimes ?? (numbered headings?)
 			 */
 			if (m_iListDepth == 0) m_iListDepth = 1;
 
@@ -1773,11 +2143,9 @@ void s_HTML_Listener::_openTag (PT_AttrPropIndex api, PL_StruxDocHandle sdh)
 			listPopToDepth (0);
 
 			bool bAddInheritance = false;
-#ifndef HTML_NO_AWML
-			bool bAddAWMLStyle = m_bIs4 ? false : true;
-#else
+
 			bool bAddAWMLStyle = false;
-#endif
+			if (get_Allow_AWML () && !get_HTML4 ()) bAddAWMLStyle = true;
 
 			if ((UT_strcmp ((const char *) szValue, "Heading 1") == 0) ||
 				(UT_strcmp ((const char *) szValue, "Numbered Heading 1") == 0))
@@ -2039,7 +2407,7 @@ void s_HTML_Listener::_closeTag (void)
 			if (!m_bWroteText) // TODO: is this really ideal?
 				{
 					m_utf8_1 = "br";
-					tagOpenClose (m_utf8_1, m_bIs4, ws_None);
+					tagOpenClose (m_utf8_1, get_HTML4 (), ws_None);
 				}
 #endif /* HTML_EMPTY_PARA_LF */
 			if (tagTop () == TT_P)
@@ -2518,7 +2886,7 @@ void s_HTML_Listener::_outputData (const UT_UCSChar * data, UT_uint32 length)
 					 */
 					if (m_utf8_1.byteLength ()) textTrusted (m_utf8_1);
 					m_utf8_1 = "br";
-					tagOpenClose (m_utf8_1, m_bIs4, ws_None);
+					tagOpenClose (m_utf8_1, get_HTML4 (), ws_None);
 					m_utf8_1 = "";
 					break;
 
@@ -2593,10 +2961,11 @@ void s_HTML_Listener::_outputData (const UT_UCSChar * data, UT_uint32 length)
 }
 
 s_HTML_Listener::s_HTML_Listener (PD_Document * pDocument, IE_Exp_HTML * pie, bool bClipBoard,
-								  const IE_Exp_HTML_Options & exp_opt) :
+								  const XAP_Exp_HTMLOptions * exp_opt) :
 	m_pDocument (pDocument),
 	m_pie(pie),
 	m_bClipBoard(bClipBoard),
+	m_exp_opt(exp_opt),
 	m_bInSection(false),
 	m_bInBlock(false),
 	m_bInTList(false),
@@ -2605,18 +2974,20 @@ s_HTML_Listener::s_HTML_Listener (PD_Document * pDocument, IE_Exp_HTML * pie, bo
 	m_bNextIsSpace(false),
 	m_bWroteText(false),
 	m_bFirstWrite(true),
+	m_bQuotedPrintable(false),
 #ifdef HTML_TABLES_SUPPORTED
 	m_TableHelper(pDocument),
 #endif /* HTML_TABLES_SUPPORTED */
 	m_iBlockType(0),
 	m_iListDepth(0),
 	m_iImgCnt(0),
+	m_pAPStyles(0),
 	m_styleIndent(0),
+	m_fdCSS(0),
 	m_tlistIndent(0),
 	m_tlistListID(0)
 {
-	m_bIs4         = exp_opt.bIs4;
-	m_bIsAbiWebDoc = exp_opt.bIsAbiWebDoc;
+	// 
 }
 
 s_HTML_Listener::~s_HTML_Listener()
@@ -2660,48 +3031,29 @@ void s_HTML_Listener::_writeImage (const UT_ByteBuf * pByteBuf,
 		}
 }
 
-/* TODO: is there a better way to do this?
- */
-static UT_UTF8String s_string_to_url (UT_String & str)
+void s_HTML_Listener::_writeImageBase64 (const UT_ByteBuf * pByteBuf)
 {
-	UT_UTF8String url;
+	char buffer[75];
+	char * bufptr = 0;
+	size_t buflen;
+	size_t imglen = pByteBuf->getLength ();
+	const char * imgptr = reinterpret_cast<const char *>(pByteBuf->getPointer (0));
 
-	static const char hex[16] = {
-		'0','1','2','3','4','5','6','7','8','9','A','B','C','D','E','F'
-	};
-	char buf[4];
-	buf[0] = '%';
-	buf[3] = 0;
+	buffer[0] = '\r';
+	buffer[1] = '\n';
 
-	const char * ptr = str.c_str ();
-	while (*ptr)
+	while (imglen)
 		{
-			bool isValidPunctuation = false;
-			switch (*ptr)
-				{
-				case '-': // TODO: any others?
-				case '_':
-				case '.':
-					isValidPunctuation = true;
-					break;
-				default:
-					break;
-				}
-			unsigned char u = (unsigned char) *ptr;
-			if (!isalnum ((int) u) && !isValidPunctuation)
-				{
-					buf[1] = hex[(u >> 4) & 0x0f];
-					buf[2] = hex[ u       & 0x0f];
-					url += buf;
-				}
-			else
-				{
-					buf[2] = (char) *ptr;
-					url += (buf + 2);
-				}
-			ptr++;
+			buflen = 72;
+			bufptr = buffer + 2;
+
+			UT_UTF8_Base64Encode (bufptr, buflen, imgptr, imglen);
+
+			*bufptr = 0;
+
+			m_utf8_1 = buffer;
+			textTrusted (m_utf8_1);
 		}
-	return url;
 }
 
 void s_HTML_Listener::_handleImage (PT_AttrPropIndex api)
@@ -2783,18 +3135,28 @@ void s_HTML_Listener::_handleImage (PT_AttrPropIndex api)
 	url += "/";
 	url += s_string_to_url (filename);
 
+	if (get_Multipart ())
+		{
+			UT_UTF8String * save_url = new UT_UTF8String(url);
+			if (save_url == 0) return;
+
+			if (!m_SavedURLs.insert (szDataID, save_url)) // arg. failed. skip image
+				{
+					DELETEP(save_url);
+					return;
+				}
+		}
+
 	/* szDataID is the raw string with the data ID
 	 * imagedir is the name of the directory in which we'll write the image
 	 * filename is the name of the file to which we'll write the image
 	 * url      is the URL which we'll use
 	 */
-	_writeImage (pByteBuf, imagedir, filename);
-
+	if (!get_Embed_Images () && !get_Multipart ())
+		{
+			_writeImage (pByteBuf, imagedir, filename);
+		}
 	m_utf8_1 = "img";
-
-	m_utf8_1 += " src=\"";
-	m_utf8_1 += url;
-	m_utf8_1 += "\"";
 
 	const XML_Char * szWidth  = 0;
 	const XML_Char * szHeight = 0;
@@ -2819,7 +3181,73 @@ void s_HTML_Listener::_handleImage (PT_AttrPropIndex api)
 			m_utf8_1 += "\"";
 		}
 
-	tagOpenClose (m_utf8_1, m_bIs4, ws_None);
+	if (!get_Embed_Images () || get_Multipart ())
+		{
+			m_utf8_1 += " src=\"";
+			m_utf8_1 += url;
+			m_utf8_1 += "\"";
+
+			tagOpenClose (m_utf8_1, get_HTML4 (), ws_None);
+
+			return;
+		}
+
+	m_utf8_1 += " src=\"data:image/png;base64,";
+	tagOpenBroken (m_utf8_1);
+
+	_writeImageBase64 (pByteBuf);
+
+	m_utf8_1 = "\"";
+	tagCloseBroken (m_utf8_1);
+}
+
+void s_HTML_Listener::_handlePendingImages ()
+{
+	UT_StringPtrMap::UT_Cursor cursor (&m_SavedURLs);
+
+	const void * val = 0;
+	for (val = cursor.first (); cursor.is_valid (); val = cursor.next ())
+		{
+			const char * dataid = cursor.key().c_str ();
+
+			const UT_UTF8String * saved_url = reinterpret_cast<const UT_UTF8String *>(val);
+			UT_UTF8String * url = const_cast<UT_UTF8String *>(saved_url);
+
+			const char * szName = 0;
+			const char * szMimeType = 0;
+
+			const UT_ByteBuf * pByteBuf = 0;
+
+			UT_uint32 k = 0;
+			while (m_pDocument->enumDataItems (k, 0, &szName, &pByteBuf, (void**) &szMimeType))
+				{
+					k++;
+					if (szName == 0) continue;
+					if (UT_strcmp (dataid, szName) == 0) break;
+
+					szName = 0;
+					szMimeType = 0;
+					pByteBuf = 0;
+				}
+			if (pByteBuf) // this should always be found, but just in case...
+				{
+					multiBoundary ();
+
+					m_utf8_1 = "image/png";
+					multiField ("Content-Type", m_utf8_1);
+
+					m_utf8_1 = "base64";
+					multiField ("Content-Transfer-Encoding", m_utf8_1);
+
+					multiField ("Content-Location", *url);
+
+					_writeImageBase64 (pByteBuf);
+
+					multiBreak ();
+				}
+			DELETEP(url);
+		}
+	m_SavedURLs.clear ();
 }
 
 void s_HTML_Listener::_handleField (const PX_ChangeRecord_Object * pcro,
@@ -2911,7 +3339,7 @@ void s_HTML_Listener::_handleBookmark (PT_AttrPropIndex api)
 					m_utf8_1 += szName;
 					m_utf8_1 += "\"";
 
-					if (!m_bIs4)
+					if (!get_HTML4 ())
 						{
 							m_utf8_1 += " id=\"";
 							m_utf8_1 += szName;
@@ -2932,7 +3360,7 @@ void s_HTML_Listener::_handleMetaTag (const char * key, UT_UTF8String & value)
 	m_utf8_1 += value.escapeXML ();
 	m_utf8_1 += "\"";
 
-	tagOpenClose (m_utf8_1, m_bIs4);
+	tagOpenClose (m_utf8_1, get_HTML4 ());
 }
 
 void s_HTML_Listener::_handleMeta ()
@@ -3171,14 +3599,9 @@ bool s_HTML_Listener::signal (UT_uint32 /* iSignal */)
 
 UT_Error IE_Exp_HTML::_writeDocument ()
 {
-#ifdef HTML_DIALOG_OPTIONS
-	// if (!AP_Dialog_HtmlOptions::popup (m_exp_opt)) return UT_OK; // ??
-	/* where is the place to pop-up a dialog? what happens if the user cancels? */
-#endif
-
 	bool bClipBoard = (getDocRange () != NULL);
 
-	s_HTML_Listener * pListener = new s_HTML_Listener(getDoc(),this,bClipBoard,m_exp_opt);
+	s_HTML_Listener * pListener = new s_HTML_Listener(getDoc(),this,bClipBoard,&m_exp_opt);
 	if (pListener == 0) return UT_IE_NOMEMORY;
 
 	PL_Listener * pL = static_cast<PL_Listener *>(pListener);
@@ -3194,4 +3617,40 @@ UT_Error IE_Exp_HTML::_writeDocument ()
 	
 	if ((m_error == UT_OK) && (okay == true)) return UT_OK;
 	return UT_IE_COULDNOTWRITE;
+}
+
+bool IE_Exp_HTML::_openFile (const char * szFilename)
+{
+#ifdef HTML_DIALOG_OPTIONS
+	if (m_bSuppressDialog) return IE_Exp::_openFile (szFilename);
+
+	XAP_Dialog_Id id = XAP_DIALOG_ID_HTMLOPTIONS;
+
+	XAP_DialogFactory * pDialogFactory
+		= static_cast<XAP_DialogFactory *>(getDoc()->getApp()->getDialogFactory ());
+
+	XAP_Dialog_HTMLOptions * pDialog
+		= static_cast<XAP_Dialog_HTMLOptions *>(pDialogFactory->requestDialog (id));
+
+	UT_return_val_if_fail (pDialog, false);
+
+	pDialog->setHTMLOptions (&m_exp_opt, getDoc()->getApp ());
+
+	/* run the dialog
+	 */
+	XAP_Frame * pFrame = getDoc()->getApp()->getLastFocussedFrame ();
+
+	UT_return_val_if_fail (pFrame, false);
+
+	pDialog->runModal (pFrame);
+
+	/* extract what they did
+	 */
+	bool bSave = pDialog->shouldSave ();
+
+	pDialogFactory->releaseDialog (pDialog);
+
+	if (!bSave) return false;
+#endif
+	return IE_Exp::_openFile (szFilename);
 }

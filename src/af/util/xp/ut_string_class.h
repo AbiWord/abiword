@@ -203,6 +203,9 @@ public:
 
 	void append (const UT_UCSChar * sz, size_t n = 0 /* 0 == zero-terminate */);
 
+	const UT_UTF8String & escapeXML ();  // escapes '<', '>' & '&' in the current string
+	const UT_UTF8String & escapeMIME (); // translates the current string to MIME "quoted-printable" format
+
 	/* UTF8String - NOTES
 	 * 
 	 * TODO:

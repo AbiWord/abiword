@@ -1,3 +1,5 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+
 // UT_Stringbuf.cpp
 
 // Copyright (C) 2001 Mike Nordell <tamlin@algonet.se>
@@ -609,6 +611,138 @@ void UT_UTF8Stringbuf::append (const UT_UTF8Stringbuf & rhs)
 	}
 }
 
+/* escapes '<', '>' & '&' in the current string
+ */
+void UT_UTF8Stringbuf::escapeXML ()
+{
+	size_t incr = 0;
+
+	char * ptr = m_psz;
+	while (ptr < m_pEnd)
+		{
+			if ((*ptr == '<') || (*ptr == '>')) incr += 3;
+			else if (*ptr == '&') incr += 4;
+			ptr++;
+		}
+	bool bInsert = grow (incr);
+
+	ptr = m_psz;
+	while (ptr < m_pEnd)
+		{
+			if (*ptr == '<')
+				{
+					if (bInsert)
+						{
+							*ptr++ = '&';
+							insert (ptr, "lt;", 3);
+						}
+					else *ptr++ = '?';
+				}
+			else if (*ptr == '>')
+				{
+					if (bInsert)
+						{
+							*ptr++ = '&';
+							insert (ptr, "gt;", 3);
+						}
+					else *ptr++ = '?';
+				}
+			else if (*ptr == '&')
+				{
+					if (bInsert)
+						{
+							*ptr++ = '&';
+							insert (ptr, "amp;", 4);
+						}
+					else *ptr++ = '?';
+				}
+			else ptr++;
+		}
+}
+
+/* translates the current string to MIME "quoted-printable" format
+ */
+void UT_UTF8Stringbuf::escapeMIME ()
+{
+	static const char hex[16] = { '0','1','2','3','4','5','6','7','8','9','A','B','C','D','E','F' };
+	static const char * s_eol = "=\r\n";
+
+	if (m_strlen == 0) return;
+
+	size_t bytes = 0;
+	char * ptr = m_psz;
+	while (*ptr)
+		{
+			char c = *ptr++;
+			unsigned char u = static_cast<unsigned char>(c);
+
+			if ((c == '\r') || (c == '\n') || (c == '=') || (u & 0x80)) bytes += 2;
+		}
+	if (bytes)
+		{
+			if (!grow (bytes)) return;
+
+			char * pOld = m_pEnd;
+			char * pNew = m_pEnd + bytes;
+
+			while (pOld >= m_psz)
+				{
+					char c = *pOld--;
+					unsigned char u = static_cast<unsigned char>(c);
+
+					if ((u & 0x80) || (c == '\r') || (c == '\n') || (c == '='))
+						{
+							*pNew-- = hex[ u       & 0x0f];
+							*pNew-- = hex[(u >> 4) & 0x0f];
+							*pNew-- = '=';
+						}
+					else *pNew-- = c;
+				}
+			m_pEnd += bytes;
+			m_strlen = m_pEnd - m_psz;
+		}
+
+	size_t length = 0;
+	ptr = m_psz;
+	while (true)
+		{
+			if (*ptr == 0)
+				{
+					if (length)
+						{
+							size_t offset = ptr - m_psz;
+							if (grow (3))
+								{
+									ptr = m_psz + offset;
+									insert (ptr, s_eol, 3);
+								}
+						}
+					break;
+				}
+			if (length >= 70)
+				{
+					size_t offset = ptr - m_psz;
+					if (grow (3))
+						{
+							ptr = m_psz + offset;
+							insert (ptr, s_eol, 3);
+						}
+					length = 0;
+				}
+
+			if (*ptr == '=')
+				{
+					ptr += 3;
+					length += 3;
+				}
+			else
+				{
+					ptr++;
+					length++;
+				}
+		}
+}
+
 void UT_UTF8Stringbuf::clear ()
 {
 	if (m_psz) free (m_psz);
@@ -616,6 +750,30 @@ void UT_UTF8Stringbuf::clear ()
 	m_pEnd = 0;
 	m_strlen = 0;
 	m_buflen = 0;
+}
+
+void UT_UTF8Stringbuf::insert (char *& ptr, const char * str, size_t utf8length)
+{
+	if ( str == 0) return;
+	if (*str == 0) return;
+
+	if ((ptr < m_psz) || (ptr > m_pEnd)) return;
+
+	char * orig_buf = m_psz;
+	char * orig_ptr = ptr;
+
+	size_t length = (size_t) strlen (str);
+
+	if (!grow (length)) return;
+
+	ptr = m_psz + (orig_ptr - orig_buf);
+
+	memmove (ptr + length, ptr, (m_pEnd - ptr) + 1);
+	memcpy (ptr, str, length);
+
+	ptr += length;
+	m_pEnd += length;
+	m_strlen += utf8length;
 }
 
 bool UT_UTF8Stringbuf::grow (size_t length)

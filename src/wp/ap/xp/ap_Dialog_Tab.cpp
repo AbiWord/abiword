@@ -425,7 +425,7 @@ void AP_Dialog_Tab::_event_somethingChanged()
 
 	buildTab( buffer );
 
-	UT_DEBUGMSG(("AP_Dialog_Tab::_event_somethingChanged  [%s]\n", buffer ));
+	UT_DEBUGMSG(("AP_Dialog_Tab::_event_somethingChanged  [%s]\n", buffer.c_str() ));
 
 	// check to see if the current tab is in the list
 	bool bEnableClear = false;

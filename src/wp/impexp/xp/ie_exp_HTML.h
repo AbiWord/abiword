@@ -23,6 +23,8 @@
 #ifndef IE_EXP_HTML_H
 #define IE_EXP_HTML_H
 
+#include "xap_Dlg_HTMLOptions.h"
+
 #include "ie_exp.h"
 
 /* NOTE: I'm trying to keep the code similar across versions,
@@ -56,6 +58,9 @@
 #ifndef HTML_DIALOG_OPTIONS
 #define HTML_ENABLE_HTML4 
 /* #undef HTML_ENABLE_PHTML */
+#endif
+#ifdef DEBUG
+#define HTML_ENABLE_MHTML
 #endif
 
 class PD_Document;
@@ -118,15 +123,25 @@ public:
 
 #endif /* HTML_ENABLE_PHTML */
 
-struct IE_Exp_HTML_Options
-{
-	bool	bIs4;
-	bool	bIsAbiWebDoc;
+#ifdef HTML_ENABLE_MHTML
 
-	// TODO: 1. enable/disable AWML namespace mark-up
-	//       2. save images as base-64 encoded data-URL
-	//       3. save styles to an external stylesheet
+class ABI_EXPORT IE_Exp_MHTML_Sniffer : public IE_ExpSniffer
+{
+	friend class IE_Exp;
+
+public:
+	IE_Exp_MHTML_Sniffer ();
+	virtual ~IE_Exp_MHTML_Sniffer () {}
+
+	virtual bool recognizeSuffix (const char * szSuffix);
+	virtual bool getDlgLabels (const char ** szDesc,
+							   const char ** szSuffixList,
+							   IEFileType * ft);
+	virtual UT_Error constructExporter (PD_Document * pDocument,
+										IE_Exp ** ppie);
 };
+
+#endif /* HTML_ENABLE_MHTML */
 
 class ABI_EXPORT IE_Exp_HTML : public IE_Exp
 {
@@ -142,14 +157,19 @@ public:
 									  IEFileType * ft);
 	static bool 		SupportsFileType (IEFileType ft);
 
+	inline void			suppressDialog (bool disable = true) { m_bSuppressDialog = disable; }
+
 	inline void			set_HTML4 (bool enable = true) { m_exp_opt.bIs4 = enable; }
 	inline void			set_PHTML (bool enable = true) { m_exp_opt.bIsAbiWebDoc = enable; }
+	inline void			set_MHTML (bool enable = true) { m_exp_opt.bMultipart = enable; }
 
 protected:
+	virtual bool		_openFile (const char * szFilename);
 	virtual UT_Error	_writeDocument ();
 
 private:
-	IE_Exp_HTML_Options	m_exp_opt;
+	bool				m_bSuppressDialog;
+	XAP_Exp_HTMLOptions	m_exp_opt;
 };
 
 #endif /* IE_EXP_HTML_H */

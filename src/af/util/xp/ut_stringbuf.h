@@ -1,3 +1,5 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+
 // ut_stringbuf.h
 //
 #ifndef UT_STRINGBUF_H
@@ -128,6 +130,9 @@ public:
 	void		append (const char * sz);
 	void		append (const UT_UTF8Stringbuf & rhs);
 
+	void		escapeXML ();  // escapes '<', '>' & '&' in the current string
+	void		escapeMIME (); // translates the current string to MIME "quoted-printable" format
+
 	void		clear ();
 
 	bool		empty ()	const { return m_psz == m_pEnd; }
@@ -162,6 +167,8 @@ public:
 	};
 
 private:
+	void	insert (char *& ptr, const char * str, size_t utf8length);
+
 	char *	m_psz;
 	char *	m_pEnd;
 	size_t	m_strlen;
