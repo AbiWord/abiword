@@ -1,23 +1,23 @@
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
  * 02111-1307, USA.
  */
 
-#define DLGHACK	
+#define DLGHACK
 #ifdef DLGHACK			// see bottom of file for an apology
 #ifdef WIN32
 #include <windows.h>	// needs to be first
@@ -126,10 +126,10 @@ public:
 	static EV_EditMethod_Fn selectWord;
 	static EV_EditMethod_Fn selectLine;
 	static EV_EditMethod_Fn selectBlock;
-	
+
 	static EV_EditMethod_Fn singleClick;
 	static EV_EditMethod_Fn doubleClick;
-	
+
 	static EV_EditMethod_Fn delLeft;
 	static EV_EditMethod_Fn delRight;
 	static EV_EditMethod_Fn delBOL;
@@ -153,7 +153,7 @@ public:
 
 	static EV_EditMethod_Fn insertSpace;
 	static EV_EditMethod_Fn insertNBSpace;
-	
+
 	static EV_EditMethod_Fn insFmtFaceTimes; // TODO we need a better way of doing this
 	static EV_EditMethod_Fn insFmtFaceCourier; // TODO we need a better way of doing this
 	static EV_EditMethod_Fn insFmtFaceArial; // TODO we need a better way of doing this
@@ -213,7 +213,7 @@ public:
 	static EV_EditMethod_Fn activateWindow_8;
 	static EV_EditMethod_Fn activateWindow_9;
 	static EV_EditMethod_Fn moreWindowsDlg;
-	
+
 	static EV_EditMethod_Fn newWindow;
 	static EV_EditMethod_Fn cycleWindows;
 	static EV_EditMethod_Fn cycleWindowsBck;
@@ -221,7 +221,7 @@ public:
 	static EV_EditMethod_Fn querySaveAndExit;
 
 	// Test routines
-	
+
 	static EV_EditMethod_Fn Test_Dump;
 };
 
@@ -236,7 +236,7 @@ public:
 #define N(fn)			#fn
 #define NF(fn)			N(fn), F(fn)
 
-static EV_EditMethod s_arrayEditMethods[] = 
+static EV_EditMethod s_arrayEditMethods[] =
 {
 	EV_EditMethod(NF(scrollPageDown),		_M_,	""),
 	EV_EditMethod(NF(scrollPageUp),			_M_,	""),
@@ -376,7 +376,7 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(cycleWindowsBck),		_M_,	""),
 	EV_EditMethod(NF(closeWindow),			_M_,	""),
 	EV_EditMethod(NF(querySaveAndExit),		_M_,	""),
-		
+
 	EV_EditMethod(NF(Test_Dump),			_M_,	"")
 };
 
@@ -387,7 +387,7 @@ EV_EditMethodContainer * AP_GetEditMethods(void)
 {
 	// Construct a container for all of the methods this application
 	// knows about.
-	
+
 	return new EV_EditMethodContainer(NrElements(s_arrayEditMethods),s_arrayEditMethods);
 }
 
@@ -411,70 +411,70 @@ EV_EditMethodContainer * AP_GetEditMethods(void)
 Defun1(scrollPageDown)
 {
 	pView->cmdScroll(DG_SCROLLCMD_PAGEDOWN);
-	
+
 	return UT_TRUE;
 }
 
 Defun1(scrollPageUp)
 {
 	pView->cmdScroll(DG_SCROLLCMD_PAGEUP);
-	
+
 	return UT_TRUE;
 }
 
 Defun1(scrollPageLeft)
 {
 	pView->cmdScroll(DG_SCROLLCMD_PAGELEFT);
-	
+
 	return UT_TRUE;
 }
 
 Defun1(scrollPageRight)
 {
 	pView->cmdScroll(DG_SCROLLCMD_PAGERIGHT);
-	
+
 	return UT_TRUE;
 }
 
 Defun1(scrollLineDown)
 {
 	pView->cmdScroll(DG_SCROLLCMD_LINEDOWN);
-	
+
 	return UT_TRUE;
 }
 
 Defun1(scrollLineUp)
 {
 	pView->cmdScroll(DG_SCROLLCMD_LINEUP);
-	
+
 	return UT_TRUE;
 }
 
 Defun1(scrollLineLeft)
 {
 	pView->cmdScroll(DG_SCROLLCMD_LINELEFT);
-	
+
 	return UT_TRUE;
 }
 
 Defun1(scrollLineRight)
 {
 	pView->cmdScroll(DG_SCROLLCMD_LINERIGHT);
-	
+
 	return UT_TRUE;
 }
 
 Defun1(scrollToTop)
 {
 	pView->cmdScroll(DG_SCROLLCMD_TOTOP);
-	
+
 	return UT_TRUE;
 }
 
 Defun1(scrollToBottom)
 {
 	pView->cmdScroll(DG_SCROLLCMD_TOBOTTOM);
-	
+
 	return UT_TRUE;
 }
 
@@ -487,7 +487,7 @@ Defun(singleClick)
 		bRes = EX(selectLine);
 	else
 		bRes = EX(warpInsPtToXY);
-	
+
 	return bRes;
 }
 
@@ -500,14 +500,14 @@ Defun(doubleClick)
 		bRes = EX(selectBlock);
 	else
 		bRes = EX(selectWord);
-	
+
 	return bRes;
 }
 
 Defun(warpInsPtToXY)
 {
 	pView->warpInsPtToXY(pCallData->m_xPos, pCallData->m_yPos);
-	
+
 	return UT_TRUE;
 }
 
@@ -673,14 +673,14 @@ Defun1(extSelEOD)
 Defun1(extSelPrevLine)
 {
 	pView->extSelNextPrevLine(UT_FALSE);
-	
+
 	return UT_TRUE;
 }
 
 Defun1(extSelNextLine)
 {
 	pView->extSelNextPrevLine(UT_TRUE);
-	
+
 	return UT_TRUE;
 }
 
@@ -808,7 +808,7 @@ Defun0(insertSoftBreak)
 Defun1(insertParagraphBreak)
 {
 	pView->insertParagraphBreak();
-	
+
 	return UT_TRUE;
 }
 
@@ -956,7 +956,7 @@ Defun1(fileOpen)
 #ifdef DLGHACK
 	char * pNewFile = _promptFile(pFrame, UT_FALSE);
 #else
-	char * pNewFile = NULL;	
+	char * pNewFile = NULL;
 #endif /* DLGHACK */
 
 	if (pNewFile)
@@ -971,12 +971,12 @@ Defun1(fileOpen)
 
 		if (ndx < 0)
 		{
-			// nope, make a new one  
+			// nope, make a new one
 			pNewFrame = pApp->newFrame();
 		}
 		else
 		{
-			// yep, reuse it 
+			// yep, reuse it
 			pNewFrame = pApp->getFrame(ndx);
 			UT_ASSERT(pNewFrame);
 
@@ -1045,7 +1045,7 @@ Defun1(fileSaveAs)
 #ifdef DLGHACK
 	char * pNewFile = _promptFile(pFrame, UT_TRUE);
 #else
-	char * pNewFile = NULL;	
+	char * pNewFile = NULL;
 #endif /* DLGHACK */
 
 	if (pNewFile)
@@ -1252,7 +1252,7 @@ Defun(closeWindow)
 	UT_ASSERT(pApp);
 
 	// is this the last view on a dirty document?
-	if ((pFrame->getViewNumber() == 0) && 
+	if ((pFrame->getViewNumber() == 0) &&
 		(pFrame->isDirty()))
 	{
 #ifdef DLGHACK
@@ -1260,7 +1260,7 @@ Defun(closeWindow)
 
 		sprintf(buf, "Save changes to %s?", pFrame->getTitle(200));
 		dlg_Answer ans = _askUser(pFrame, buf, dlg_YNC, 0);
-		
+
 		if (ans == dlg_YES)
 		{
 			// save it first
@@ -1304,7 +1304,7 @@ Defun(querySaveAndExit)
 	{
 #ifdef DLGHACK
 		dlg_Answer ans = _askUser(pFrame, "Close all windows and exit?", dlg_YN, 1);
-		
+
 		if (ans == dlg_NO)
 		{
 			// never mind
@@ -1331,7 +1331,7 @@ Defun(querySaveAndExit)
 
 	if (bRet)
 	{
-		// TODO: this shouldn't be necessary, but just in case 
+		// TODO: this shouldn't be necessary, but just in case
 		_reallyExit();
 	}
 
@@ -1425,7 +1425,7 @@ static UT_Bool _toggleSpan(FV_View * pView, const XML_Char * prop, const XML_Cha
 
 	// set it either way
 	pView->setCharFormat(props_out);
-	
+
 	if (buf)
 		free(buf);
 
@@ -1521,8 +1521,8 @@ Defun1(Test_Dump)
 
 /*
 	Having these platform-specific IFDEFs here is a gruesome HACK.
-	The only excuse is that it makes things easier while we figure 
-	out a better scheme for calling platform-specific dialogs from 
+	The only excuse is that it makes things easier while we figure
+	out a better scheme for calling platform-specific dialogs from
 	XP code.
 */
 
@@ -1536,13 +1536,21 @@ Defun1(Test_Dump)
 
 char * _promptFile(AP_Frame * pFrame, UT_Bool bSaveAs)
 {
+	return _promptFile(pFrame, bSaveAs, NULL);
+}
+
+char * _promptFile(AP_Frame * pFrame, UT_Bool bSaveAs, char * pSuggestedName)
+{
 	AP_Win32Frame * pWin32Frame = static_cast<AP_Win32Frame *>(pFrame);
 	HWND hwnd = pWin32Frame->getTopLevelWindow();
 
 	OPENFILENAME ofn;       // common dialog box structure
 	char szFile[260];       // buffer for filename
 
-	szFile[0] = 0;
+	if( pSuggestedName )
+		strcpy(szFile, pSuggestedName);
+	else
+		szFile[0] = 0;
 
 	// Initialize OPENFILENAME
 	ZeroMemory(&ofn, sizeof(OPENFILENAME));
@@ -1557,17 +1565,17 @@ char * _promptFile(AP_Frame * pFrame, UT_Bool bSaveAs)
 	ofn.lpstrInitialDir = NULL;
 	ofn.Flags = OFN_PATHMUSTEXIST;
 
-	// display the appropriate dialog box. 
+	// display the appropriate dialog box.
 	if (bSaveAs)
 	{
-		if (GetSaveFileName(&ofn)==TRUE) 
+		if (GetSaveFileName(&ofn)==TRUE)
 			return strdup(szFile);
 	}
 	else
 	{
 		ofn.Flags |= OFN_FILEMUSTEXIST;
 
-		if (GetOpenFileName(&ofn)==TRUE) 
+		if (GetOpenFileName(&ofn)==TRUE)
 			return strdup(szFile);
 	}
 
@@ -1580,8 +1588,8 @@ char * _promptFile(AP_Frame * pFrame, UT_Bool bSaveAs)
 
 UT_Bool _chooseFont(AP_Frame * pFrame, FV_View * pView)
 {
-	/* 
-	   WARNING: any changes to this function should be closely coordinated 
+	/*
+	   WARNING: any changes to this function should be closely coordinated
 	   with the equivalent logic in Win32Graphics::FindFont()
 	*/
 	AP_Win32Frame * pWin32Frame = static_cast<AP_Win32Frame *>(pFrame);
@@ -1683,17 +1691,17 @@ UT_Bool _chooseFont(AP_Frame * pFrame, FV_View * pView)
 	free(props_in);
 
 	// raise the dialog
-	if (ChooseFont(&cf)==TRUE) 
+	if (ChooseFont(&cf)==TRUE)
 	{
 		int i = 0;
 
 		// currently a maximum of eight simultaneous properties
-		const XML_Char * props_out[] = { 
-			NULL, NULL, 
-			NULL, NULL, 
-			NULL, NULL, 
-			NULL, NULL, 
-			NULL, NULL, 
+		const XML_Char * props_out[] = {
+			NULL, NULL,
+			NULL, NULL,
+			NULL, NULL,
+			NULL, NULL,
+			NULL, NULL,
 			NULL, NULL,
 			NULL, NULL,	// XLFD space, set to null when saving any properties
 			0 };
@@ -1741,7 +1749,7 @@ UT_Bool _chooseFont(AP_Frame * pFrame, FV_View * pView)
 			i += 2;
 		}
 
-		if ((lf.lfUnderline == TRUE) && 
+		if ((lf.lfUnderline == TRUE) &&
 			(lf.lfStrikeOut == TRUE))
 		{
 			props_out[i] = "text-decoration";
@@ -1760,7 +1768,7 @@ UT_Bool _chooseFont(AP_Frame * pFrame, FV_View * pView)
 			props_out[i+1] ="line-through";
 			i += 2;
 		}
-		else 
+		else
 		{
 			props_out[i] = "text-decoration";
 			props_out[i+1] ="none";
@@ -1769,12 +1777,12 @@ UT_Bool _chooseFont(AP_Frame * pFrame, FV_View * pView)
 
 		char buf_color[6];
 
-		sprintf(buf_color, "%02x%02x%02x", GetRValue(cf.rgbColors), GetGValue(cf.rgbColors), GetBValue(cf.rgbColors)); 
+		sprintf(buf_color, "%02x%02x%02x", GetRValue(cf.rgbColors), GetGValue(cf.rgbColors), GetBValue(cf.rgbColors));
 
 		props_out[i] = "color";
 		props_out[i+1] = buf_color;
 		i += 2;
-		
+
 		if (bClobberXLFD)
 		{
 			/*
@@ -1785,7 +1793,7 @@ UT_Bool _chooseFont(AP_Frame * pFrame, FV_View * pView)
 			props_out[i] = "font-xlfd";
 			props_out[i+1] = "hack";
 		}
-		
+
 		pView->setCharFormat(props_out);
 
 		return UT_TRUE;
@@ -1885,7 +1893,7 @@ dlg_Answer _askUser(AP_Frame * pFrame, const char * szQ, dlg_Buttons b, int defB
 	return ans;
 }
 
-// TODO: figure out what can be shared here and move it up 
+// TODO: figure out what can be shared here and move it up
 UT_Bool _printDoc(AP_Frame * pFrame, FV_View * pView)
 {
 	AP_Win32Frame * pWin32Frame = static_cast<AP_Win32Frame *>(pFrame);
@@ -1992,7 +2000,7 @@ char * _promptFile(AP_Frame * /*pFrame*/, UT_Bool bSaveAs, char * pSuggestedName
 	GtkFileSelection *pFS;
 	UT_Bool accepted = FALSE;
 	char * fileName = NULL;
-	
+
 	pFS = (GtkFileSelection *)gtk_file_selection_new(bSaveAs ? "Save file" : "Open File");
 
 	/* Connect the signals for Ok and Cancel */
@@ -2003,7 +2011,7 @@ char * _promptFile(AP_Frame * /*pFrame*/, UT_Bool bSaveAs, char * pSuggestedName
 
 	// Do we really want to position at the cursor?
 	//gtk_window_position(GTK_WINDOW(pFS), GTK_WIN_POS_MOUSE);
-	
+
 	gtk_file_selection_hide_fileop_buttons(pFS);
 	// fill in suggested filename
 	if(pSuggestedName)
@@ -2050,7 +2058,7 @@ UT_Bool _chooseFont(AP_Frame * pFrame, FV_View * pView)
 					   "destroy",
 					   GTK_SIGNAL_FUNC(NULL),
 					   NULL);
-	// Do we really want to position a new window at the cursor?  
+	// Do we really want to position a new window at the cursor?
 	//gtk_window_position(GTK_WINDOW(cf), GTK_WIN_POS_MOUSE);
 
 
@@ -2066,10 +2074,10 @@ UT_Bool _chooseFont(AP_Frame * pFrame, FV_View * pView)
 	// TODO set the proper length.
 	// This length is completely arbitrary.  If you know the max X font
 	// descriptor length, please set this array to that size and check
-	// accordingly.	
+	// accordingly.
 	gchar * fontString = new gchar[1024];
 	fontString[0] = NULL;
-	
+
 	/*
 	  logic note: if we have an XLFD, we use it to hint to the GTK+
 	  dialog.  If we don't have one, we build a substitute from the
@@ -2084,7 +2092,7 @@ UT_Bool _chooseFont(AP_Frame * pFrame, FV_View * pView)
 	else
 	{
 		/* This is where the hairy code is */
-			
+
 		// we don't have a "foundry" attribute to match X's, fake it
 		strcat(fontString, "-*");
 
@@ -2108,7 +2116,7 @@ UT_Bool _chooseFont(AP_Frame * pFrame, FV_View * pView)
 		else
 			// this is kind of redundant, fix it
 			strcat(fontString, "-*");
-	
+
 		// weight is *,black,bold,demibold,medium,regular
 		s = UT_getAttribute("font-weight", props_in);
 		if (s)
@@ -2120,7 +2128,7 @@ UT_Bool _chooseFont(AP_Frame * pFrame, FV_View * pView)
 		}
 		else
 			strcat(fontString, "-*");
-		
+
 		// slant is *,i,o,r
 		s = UT_getAttribute("font-style", props_in);
 		if (s)
@@ -2162,9 +2170,9 @@ UT_Bool _chooseFont(AP_Frame * pFrame, FV_View * pView)
 		strcat(fontString, "-*");
 		strcat(fontString, "-*");
 		strcat(fontString, "-*");
-	
+
 		UT_DEBUGMSG(("Priming with XLFD: [%s]\n", fontString));
-	
+
 		// TODO make this work
 /*
   s = UT_getAttribute("text-decoration", props_in);
@@ -2188,7 +2196,7 @@ UT_Bool _chooseFont(AP_Frame * pFrame, FV_View * pView)
   free(p);
   }
 */
-	
+
 		// TODO color in X, GTK font dialog doesn't support
 		// color, we do that seperately.
 /*
@@ -2229,7 +2237,7 @@ UT_Bool _chooseFont(AP_Frame * pFrame, FV_View * pView)
 
 		if (selectedFont)
 		{
-	   		
+
 			UT_DEBUGMSG(("Font selection returned [%s].\n\n", selectedFont));
 
 			// *************************************************************
@@ -2239,9 +2247,9 @@ UT_Bool _chooseFont(AP_Frame * pFrame, FV_View * pView)
 			// numbers, but as the props may change, we should really
 			// use enumerated constants.
 			// *************************************************************
-			
+
 			// currently a maximum of six simultaneous properties
-			const XML_Char * props_out[] = { 
+			const XML_Char * props_out[] = {
 				NULL, NULL, 	// 0,1   font family
 				NULL, NULL, 	// 2,3   point size
 				NULL, NULL, 	// 4,5   weight
@@ -2254,7 +2262,7 @@ UT_Bool _chooseFont(AP_Frame * pFrame, FV_View * pView)
 			// we always store the XLFD
 			props_out[10] = "font-xlfd";
 			props_out[11] = selectedFont;
-				
+
 			// duplicate and tokenize the XLFD
 			gchar * cloneString = strdup(selectedFont);
 			UT_ASSERT(cloneString);
@@ -2321,9 +2329,9 @@ UT_Bool _chooseFont(AP_Frame * pFrame, FV_View * pView)
 				}
 			}
 
-// TODO: make these work 
-/* 
-   if ((lf.lfUnderline == TRUE) && 
+// TODO: make these work
+/*
+   if ((lf.lfUnderline == TRUE) &&
    (lf.lfStrikeOut == TRUE))
    {
    props_out[i] = "text-decoration";
@@ -2337,7 +2345,7 @@ UT_Bool _chooseFont(AP_Frame * pFrame, FV_View * pView)
 			strtok(NULL, "-");
 			// pxlStyle
 			strtok(NULL, "-");
-		
+
 			// point size
 			char buf_size[5];
 			if ((token = strtok(NULL, "-")))
@@ -2404,7 +2412,7 @@ dlg_Answer _askUser(AP_Frame * pFrame, const char * szQ, dlg_Buttons b, int defB
 	gtk_signal_connect_after (GTK_OBJECT (dialog_window),
 							  "destroy",
 							  GTK_SIGNAL_FUNC(message_box_cancel_clicked),
-							  NULL); 
+							  NULL);
 
 	gtk_window_set_title (GTK_WINDOW (dialog_window), szCaption);
 	gtk_container_border_width (GTK_CONTAINER (dialog_window), 0);
@@ -2413,7 +2421,7 @@ dlg_Answer _askUser(AP_Frame * pFrame, const char * szQ, dlg_Buttons b, int defB
 	// Add our label string to the dialog in the message area
 	GtkWidget * label = gtk_label_new (szQ);
 	gtk_misc_set_padding (GTK_MISC (label), 10, 10);
-	gtk_box_pack_start (GTK_BOX (GTK_DIALOG (dialog_window)->vbox), 
+	gtk_box_pack_start (GTK_BOX (GTK_DIALOG (dialog_window)->vbox),
 						label, TRUE, TRUE, 0);
 	gtk_widget_show (label);
 
@@ -2422,10 +2430,10 @@ dlg_Answer _askUser(AP_Frame * pFrame, const char * szQ, dlg_Buttons b, int defB
 	// need.  Trust me.
 	dlg_Answer answer;
 	GtkWidget * ok_button;
-	GtkWidget * cancel_button;	
+	GtkWidget * cancel_button;
 	GtkWidget * yes_button;
 	GtkWidget * no_button;
-	
+
 	// OK
 	ok_button = gtk_button_new_with_label ("OK");
 	gtk_signal_connect (GTK_OBJECT (ok_button),
@@ -2459,39 +2467,39 @@ dlg_Answer _askUser(AP_Frame * pFrame, const char * szQ, dlg_Buttons b, int defB
 	{
 	case dlg_O:
 		// OK
-		gtk_box_pack_start (GTK_BOX (GTK_DIALOG (dialog_window)->action_area), 
+		gtk_box_pack_start (GTK_BOX (GTK_DIALOG (dialog_window)->action_area),
 							ok_button, TRUE, TRUE, 0);
 		if (defButton == 0)
 			gtk_widget_grab_default (ok_button);
 		gtk_widget_show (ok_button);
 
 		break;
-		
+
 	case dlg_OC:
 		// OK
-		gtk_box_pack_start (GTK_BOX (GTK_DIALOG (dialog_window)->action_area), 
+		gtk_box_pack_start (GTK_BOX (GTK_DIALOG (dialog_window)->action_area),
 							ok_button, TRUE, TRUE, 0);
 		if (defButton == 0)
 			gtk_widget_grab_default (ok_button);
 		gtk_widget_show (ok_button);
 		// Cancel
-		gtk_box_pack_start (GTK_BOX (GTK_DIALOG (dialog_window)->action_area), 
+		gtk_box_pack_start (GTK_BOX (GTK_DIALOG (dialog_window)->action_area),
 							cancel_button, TRUE, TRUE, 0);
 		if (defButton == 1)
 			gtk_widget_grab_default (cancel_button);
 		gtk_widget_show (cancel_button);
 
 		break;
-		
+
 	case dlg_YN:
 		// Yes
-		gtk_box_pack_start (GTK_BOX (GTK_DIALOG (dialog_window)->action_area), 
+		gtk_box_pack_start (GTK_BOX (GTK_DIALOG (dialog_window)->action_area),
 							yes_button, TRUE, TRUE, 0);
 		if (defButton == 0)
 			gtk_widget_grab_default (yes_button);
 		gtk_widget_show (yes_button);
 		// No
-		gtk_box_pack_start (GTK_BOX (GTK_DIALOG (dialog_window)->action_area), 
+		gtk_box_pack_start (GTK_BOX (GTK_DIALOG (dialog_window)->action_area),
 							no_button, TRUE, TRUE, 0);
 		if (defButton == 1)
 			gtk_widget_grab_default (no_button);
@@ -2501,19 +2509,19 @@ dlg_Answer _askUser(AP_Frame * pFrame, const char * szQ, dlg_Buttons b, int defB
 
 	case dlg_YNC:
 		// Yes
-		gtk_box_pack_start (GTK_BOX (GTK_DIALOG (dialog_window)->action_area), 
+		gtk_box_pack_start (GTK_BOX (GTK_DIALOG (dialog_window)->action_area),
 							yes_button, TRUE, TRUE, 0);
 		if (defButton == 0)
 			gtk_widget_grab_default (yes_button);
 		gtk_widget_show (yes_button);
 		// No
-		gtk_box_pack_start (GTK_BOX (GTK_DIALOG (dialog_window)->action_area), 
+		gtk_box_pack_start (GTK_BOX (GTK_DIALOG (dialog_window)->action_area),
 							no_button, TRUE, TRUE, 0);
 		if (defButton == 1)
 			gtk_widget_grab_default (no_button);
 		gtk_widget_show (no_button);
 		// Cancel
-		gtk_box_pack_start (GTK_BOX (GTK_DIALOG (dialog_window)->action_area), 
+		gtk_box_pack_start (GTK_BOX (GTK_DIALOG (dialog_window)->action_area),
 							cancel_button, TRUE, TRUE, 0);
 		if (defButton == 2)
 			gtk_widget_grab_default (cancel_button);
@@ -2537,7 +2545,7 @@ dlg_Answer _askUser(AP_Frame * pFrame, const char * szQ, dlg_Buttons b, int defB
 	gtk_widget_destroy(yes_button);
 	gtk_widget_destroy(no_button);
 	gtk_widget_destroy(GTK_WIDGET(dialog_window));
-	
+
 	// answer should be set by the appropriate callback
 	return answer;
 }
@@ -2558,8 +2566,8 @@ UT_Bool _printDoc(AP_Frame * pFrame, FV_View * pView)
 	strcat(filename, ".ps");
 
 	char * pNewFile = _promptFile(pFrame, UT_TRUE, filename);
-	
-	// create a new graphics 
+
+	// create a new graphics
 	PS_Graphics* ppG = new PS_Graphics(pNewFile, title, "AbiWord");
 	UT_ASSERT(ppG);
 
@@ -2573,7 +2581,7 @@ UT_Bool _printDoc(AP_Frame * pFrame, FV_View * pView)
 
 	dg_DrawArgs da;
 	da.pG = NULL;
-	// TODO -- really need actual page width/height for each page. 
+	// TODO -- really need actual page width/height for each page.
 	da.xoff = da.yoff = 0;
 	da.width = pDL->getWidth()/nPagesInDoc;
 	da.height = pDL->getHeight()/nPagesInDoc;
