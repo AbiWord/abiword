@@ -46,9 +46,9 @@ PLATFORM_OBJS=	$(OBJDIR)/ap_$(ABI_FE)App.$(OBJ_SUFFIX)			\
 		$(OBJDIR)/ap_$(ABI_FE)Dialog_Tab.$(OBJ_SUFFIX)	\
 		$(OBJDIR)/ap_$(ABI_FE)Dialog_InsertBookmark.$(OBJ_SUFFIX)	\
 		$(OBJDIR)/ap_$(ABI_FE)Dialog_InsertHyperlink.$(OBJ_SUFFIX)	\
-		$(OBJDIR)/ap_$(ABI_FE)Dialog_MetaData.$(OBJ_SUFFIX)	\
 		$(OBJDIR)/ap_$(ABI_FE)Dialog_MarkRevisions.$(OBJ_SUFFIX)\
 		$(OBJDIR)/ap_$(ABI_FE)Dialog_ListRevisions.$(OBJ_SUFFIX)\
+		$(OBJDIR)/ap_$(ABI_FE)Dialog_MetaData.$(OBJ_SUFFIX)	\
 		$(OBJDIR)/ap_$(ABI_FE)Frame.$(OBJ_SUFFIX)		\
 		$(OBJDIR)/ap_$(ABI_FE)LeftRuler.$(OBJ_SUFFIX)		\
 		$(OBJDIR)/ap_$(ABI_FE)Prefs.$(OBJ_SUFFIX)		\
@@ -190,9 +190,7 @@ OBJS=		$(PLATFORM_OBJS)				\
 		$(OBJDIR)/ap_Args.$(OBJ_SUFFIX)			\
 		$(OBJDIR)/ap_Frame.$(OBJ_SUFFIX)		\
 		$(OBJDIR)/ap_wp_splash.$(OBJ_SUFFIX)		\
-		$(OBJDIR)/ap_wp_sidebar.$(OBJ_SUFFIX)
-
-#		$(OBJDIR)/ap_Dialog_MetaData.$(OBJ_SUFFIX)	\
+		$(OBJDIR)/ap_wp_sidebar.$(OBJ_SUFFIX)		
 
 ifeq ($(ABI_OPT_CURLHASH),1)
 OBJS +=		$(OBJDIR)/ap_HashDownloader.$(OBJ_SUFFIX)
