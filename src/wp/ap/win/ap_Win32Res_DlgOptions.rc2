@@ -86,7 +86,7 @@
 #define AP_RID_DIALOG_OPTIONS_FRM_BidiOptions			1404
 #define AP_RID_DIALOG_OPTIONS_CHK_OtherDirectionRtl		1405
 #define AP_RID_DIALOG_OPTIONS_CHK_OtherUseContextGlyphs		1406
-#define AP_RID_DIALOG_OPTIONS_CHK_OtherSaveCotnextGlyphs	1407
+#define AP_RID_DIALOG_OPTIONS_CHK_OtherSaveContextGlyphs	1407
 #define AP_RID_DIALOG_OPTIONS_FRM_AutoSaveOptions		1408
 #define AP_RID_DIALOG_OPTIONS_CHK_AutoSaveFile			1409
 #define AP_RID_DIALOG_OPTIONS_TXT_AutoSavePeriod		1410
