@@ -313,7 +313,7 @@ Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_Style)
 	{
 	case AP_TOOLBAR_ID_FMT_STYLE:
 		{
-			const XML_Char * sz;
+			const XML_Char * sz = NULL;
 			if (!pView->getStyle(&sz))
 			{
 				static const char * sz2 ="None";
@@ -323,7 +323,7 @@ Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_Style)
 
 			if (sz)
 			{
-				static const char * sz2;
+				static const char * sz2 = "None";
 				sz2 = sz;
 				*pszState = sz2;
 				s = EV_TIS_UseString;
