@@ -56,7 +56,9 @@ public:
 	virtual void			Key_Pressed(GdkEventKey * e);
 	virtual void			New_Font( void);
 	virtual void			event_WindowDelete(void);
-       
+#if 0
+	virtual void                    Motion_event(GdkEventMotion *e);
+#endif
 protected:
 
 	GR_UnixGraphics	* 		m_unixGraphics;

@@ -149,6 +149,39 @@ static void s_delete_clicked(GtkWidget * /* widget */,
 	dlg->event_WindowDelete();
 }
 
+#if 0
+// TODO: there must be a better way of doing this
+// TODO: it just seems so wasteful to have a callback
+// TODO: registered for every time the mouse moves over a widget
+static void s_motion_event(GtkWidget * /* widget */,
+			   GdkEventMotion *evt,
+			   XAP_UnixDialog_Insert_Symbol *dlg)
+{
+        UT_DEBUGMSG(("DOM: motion event\n"));
+        dlg->Motion_event(evt);
+}
+
+void XAP_UnixDialog_Insert_Symbol::Motion_event(GdkEventMotion *e)
+{
+	UT_uint32 x, y;
+
+	XAP_Draw_Symbol * iDrawSymbol = _getCurrentSymbolMap();
+	UT_ASSERT(iDrawSymbol);
+
+	x = (UT_uint32) e->x;
+	y = (UT_uint32) e->y;
+
+	UT_UCSChar cSymbol = iDrawSymbol->calcSymbol(x, y);
+	
+	// only draw if different
+	if(m_CurrentSymbol != cSymbol)
+	  {
+	    m_PreviousSymbol = m_CurrentSymbol;
+	    m_CurrentSymbol = cSymbol;
+	    iDrawSymbol->drawarea(m_CurrentSymbol, m_PreviousSymbol);
+	  }
+}
+#endif		    
 
 /*****************************************************************/
 
@@ -597,6 +630,14 @@ void XAP_UnixDialog_Insert_Symbol::_connectSignals (void)
 					   "button_press_event",
 				       GTK_SIGNAL_FUNC(s_SymbolMap_clicked),
 					   (gpointer) this);
+
+#if 0
+	// Motion over the dialog
+	gtk_signal_connect(GTK_OBJECT(m_SymbolMap),
+			   "motion_notify_event",
+			   GTK_SIGNAL_FUNC(s_motion_event),
+			   (gpointer) this);
+#endif
 
 	// The event to choose the Symbol!
 	gtk_signal_connect(GTK_OBJECT(m_areaCurrentSym),

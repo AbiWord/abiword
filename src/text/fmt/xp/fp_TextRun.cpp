@@ -286,7 +286,7 @@ UT_Bool	fp_TextRun::findMaxLeftFitSplitPointInLayoutUnits(UT_sint32 iMaxLeftWidt
 		{
 			iLeftWidth += pCharWidths[i + offset];
 			iRightWidth -= pCharWidths[i + offset];
-#if 1
+#if 0
     /*
 	FIXME: this is a direct equivalent to HJ's patch, but other branch
 	could be more correct than this one. - VH
