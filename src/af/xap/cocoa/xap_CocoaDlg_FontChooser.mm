@@ -353,6 +353,7 @@ void XAP_CocoaDialog_FontChooser::_deleteGC(void)
 {
 	[m_sizeDataSource release];
 	[m_stylesDataSource release];
+	[m_fontDataSource release];
 	[super dealloc];
 }
 
