@@ -354,8 +354,8 @@ public:
 	// TODO here are a few that i started.
 
 	static EV_EditMethod_Fn fileNew;
+	static EV_EditMethod_Fn fileNewUsingTemplate;
     static EV_EditMethod_Fn fileRevert;
-	static EV_EditMethod_Fn toolbarNew;
 	static EV_EditMethod_Fn fileOpen;
 	static EV_EditMethod_Fn fileSave;
 	static EV_EditMethod_Fn fileSaveAs;
@@ -855,6 +855,7 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(fileInsertGraphic),	0,	""),
 	EV_EditMethod(NF(fileInsertPageBackgroundGraphic),	0,	""),
 	EV_EditMethod(NF(fileNew),				_A_,	""),
+	EV_EditMethod(NF(fileNewUsingTemplate),				_A_,	""),
 	EV_EditMethod(NF(fileOpen), 			_A_,	""),
 	EV_EditMethod(NF(filePreviewWeb), 0, ""),
 	EV_EditMethod(NF(fileRevert), 0, ""),
@@ -1115,7 +1116,6 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(toggleTopline),		0,	""),
 	EV_EditMethod(NF(toggleUline),			0,	""),
 	EV_EditMethod(NF(toggleUnIndent),       0,  ""),
-	EV_EditMethod(NF(toolbarNew),           0,  ""),
 
 	// u
 	EV_EditMethod(NF(undo), 				0,	""),
@@ -1418,21 +1418,16 @@ Defun1(scrollToBottom)
 	return true;
 }
 
-Defun1(toolbarNew)
+Defun1(fileNew)
 {
 	CHECK_FRAME;
-	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
-	UT_ASSERT(pFrame);
-	XAP_App * pApp = pFrame->getApp();
+	XAP_App * pApp = XAP_App::getApp();
 	UT_ASSERT(pApp);
 
 	XAP_Frame * pNewFrame = pApp->newFrame();
 
-	if (pNewFrame)
-		pFrame = pNewFrame;
-
 	// the IEFileType here doesn't really matter, since the name is NULL
-	UT_Error error = pFrame->loadDocument(NULL, IEFT_Unknown);
+	UT_Error error = pNewFrame->loadDocument(NULL, IEFT_Unknown);
 
 	if (pNewFrame)
 	{
@@ -2964,7 +2959,7 @@ Defun(dlgMetaData)
   return true ;
 }
 
-Defun(fileNew)
+Defun(fileNewUsingTemplate)
 {
 	CHECK_FRAME;
 	XAP_Frame * pFrame = NULL;

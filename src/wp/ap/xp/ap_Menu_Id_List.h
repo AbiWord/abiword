@@ -40,6 +40,7 @@
 
 menuitem(FILE)
 menuitem(FILE_NEW)
+menuitem(FILE_NEW_USING_TEMPLATE)
 menuitem(FILE_OPEN)
 menuitem(FILE_SAVE)
 menuitem(FILE_SAVEAS)

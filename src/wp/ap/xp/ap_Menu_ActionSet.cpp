@@ -68,7 +68,8 @@ EV_Menu_ActionSet * AP_CreateMenuActionSet(void)
 	_s(AP_MENU_ID__BOGUS1__,		0,0,0,0,	NULL,				NULL,					NULL);
 
 	_s(AP_MENU_ID_FILE,				1,0,0,0,	NULL,				NULL,					NULL);
-	_s(AP_MENU_ID_FILE_NEW,			0,1,0,0,	"fileNew",			NULL,					NULL);
+	_s(AP_MENU_ID_FILE_NEW,			0,0,0,0,	"fileNew",			NULL,					NULL);
+	_s(AP_MENU_ID_FILE_NEW_USING_TEMPLATE,			0,1,0,0,	"fileNewUsingTemplate",			NULL,					NULL);
 	_s(AP_MENU_ID_FILE_OPEN,		0,1,0,0,	"fileOpen",			NULL,					NULL);
 	_s(AP_MENU_ID_FILE_SAVE,		0,0,0,0,	"fileSave",			ap_GetState_Changes,					NULL);
 	_s(AP_MENU_ID_FILE_SAVEAS,		0,1,0,0,	"fileSaveAs",		NULL,					NULL);
