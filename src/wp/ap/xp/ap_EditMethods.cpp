@@ -5837,7 +5837,7 @@ Defun1(viewExtra)
 	return true;
 }
 
-Defun1(viewNormalLayout)
+Defun(viewNormalLayout)
 {
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
 	UT_ASSERT(pFrame);
@@ -5863,10 +5863,13 @@ Defun1(viewNormalLayout)
 
 	pView->updateScreen(false);
 	pView->notifyListeners(AV_CHG_ALL);
+
+	EX(zoomWidth);
+
 	return true;
 }
 
-Defun1(viewWebLayout)
+Defun(viewWebLayout)
 {
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
 	UT_ASSERT(pFrame);
@@ -5890,6 +5893,7 @@ Defun1(viewWebLayout)
 
 	pScheme->setValue(AP_PREF_KEY_LayoutMode, "3");
 
+	EX(zoomWidth);
 	return true;
 }
 
