@@ -54,15 +54,15 @@ UT_Bool ps_Generate::openFile(UT_Bool bIsFile)
 		// the /bin/sh problems and is a bit more flexible
 		m_bIsFile = UT_FALSE;
 		
-		m_fp = popen(m_szFilename, "w");
+		// This is not sufficient to catch a failed popen(), at least
+		// on Linux.  This may be a bug in Linux's popen(), but more likely
+		// most Unixes will give you a valid FP, but with all flags and fields
+		// invalid.
+		m_fp = NULL;
+		if ((m_fp = popen(m_szFilename, "w")) == NULL)
+			return UT_FALSE;
 	}
 
-	// This is not sufficient to catch a failed popen(), at least
-	// on Linux.  This may be a bug in Linux's popen(), but more likely
-	// most Unixes will give you a valid FP, but with all flags and fields
-	// invalid.
-	if (!m_fp)
-		return UT_FALSE;
 	
 	return writeBytes("%!PS-Adobe-3.0\n");
 }

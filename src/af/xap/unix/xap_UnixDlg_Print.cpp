@@ -26,6 +26,7 @@
 #include "ut_dialogHelper.h"
 #include "xap_Dialog_Id.h"
 #include "xap_UnixDlg_Print.h"
+#include "xap_UnixDlg_MessageBox.h"
 #include "xap_UnixApp.h"
 #include "xap_UnixFrame.h"
 #include "xap_UnixPSGraphics.h"
@@ -37,6 +38,29 @@
 #define MyMax(a,b)	(((a)>(b)) ? (b) : (a))
 
 /*****************************************************************/
+
+static void _notifyError_OKOnly(XAP_Frame * pFrame, const char * message)
+{
+	AP_DialogFactory * pDialogFactory
+		= (AP_DialogFactory *)(pFrame->getDialogFactory());
+
+	AP_Dialog_MessageBox * pDialog
+		= (AP_Dialog_MessageBox *)(pDialogFactory->requestDialog(XAP_DIALOG_ID_MESSAGE_BOX));
+	UT_ASSERT(pDialog);
+
+	pDialog->setMessage(message);
+	pDialog->setButtons(AP_Dialog_MessageBox::b_O);
+	pDialog->setDefaultAnswer(AP_Dialog_MessageBox::a_OK);
+
+	pDialog->runModal(pFrame);
+
+//	AP_Dialog_MessageBox::tAnswer ans = pDialog->getAnswer();
+
+	pDialogFactory->releaseDialog(pDialog);
+}
+
+/*****************************************************************/
+
 AP_Dialog * AP_UnixDialog_Print::static_constructor(AP_DialogFactory * pFactory,
 													 AP_Dialog_Id id)
 {
@@ -115,7 +139,7 @@ void AP_UnixDialog_Print::runModal(XAP_Frame * pFrame)
 	}
 	else
 	{
-		_raisePrintDialog(pFrame);
+		_raisePrintDialog(pFrame);		
 		if (m_answer == a_OK)
 			_getGraphics();
 	}
@@ -125,9 +149,21 @@ void AP_UnixDialog_Print::runModal(XAP_Frame * pFrame)
 }
 
 static void s_ok_clicked(GtkWidget * widget,
-						 AP_Dialog_Print::tAnswer * answer)
+						 printCBStruct * data)
 {
-	*answer = AP_Dialog_Print::a_OK;
+	UT_ASSERT(data && data->entry && data->frame && data->answer);
+	
+	// this callback doesn't end the dialog loop unless the string is valid
+	// check for command
+	gchar * string = gtk_entry_get_text(GTK_ENTRY(data->entry));
+	if (! (string && *string))
+	{
+		// construct an error message box
+		_notifyError_OKOnly(data->frame, "The print command string is not valid.");
+		return;
+	}
+
+	*data->answer = AP_Dialog_Print::a_OK;
 	gtk_main_quit();
 }
 
@@ -241,6 +277,7 @@ void AP_UnixDialog_Print::_raisePrintDialog(XAP_Frame * pFrame)
 			gtk_widget_show (label);
 
 			entryPrint = gtk_entry_new_with_max_length (50);
+			
 			gtk_signal_connect(GTK_OBJECT(buttonPrint), "toggled",
 							GTK_SIGNAL_FUNC(entry_toggle_enable), entryPrint);
 			gtk_box_pack_start (GTK_BOX (hbox), entryPrint, TRUE, TRUE, 0);
@@ -341,9 +378,17 @@ void AP_UnixDialog_Print::_raisePrintDialog(XAP_Frame * pFrame)
 			//gtk_widget_grab_default (button);
 			gtk_widget_show (button);
 
+			// fill a little callback struct to hide some private data pointers in
+			m_callbackData.entry = entryPrint;
+			// BUGBUG This is wrong.  The parent frame should be this (print dialog), not
+			// BUGBUG the document frame, else we can lose our new dialogs beneath each other.
+			m_callbackData.frame = (XAP_Frame *) m_pUnixFrame;
+			m_callbackData.answer = &m_answer;
+			
 			button = gtk_button_new_with_label ("Print");
 			gtk_signal_connect (GTK_OBJECT (button), "clicked",
-							GTK_SIGNAL_FUNC(s_ok_clicked), &m_answer);
+							GTK_SIGNAL_FUNC(s_ok_clicked), &m_callbackData);
+			
 			gtk_box_pack_end (GTK_BOX (hbox), button, TRUE, TRUE, 5);
 			//gtk_widget_grab_default (button);
 			gtk_widget_show (button);
@@ -472,9 +517,7 @@ void AP_UnixDialog_Print::_getGraphics(void)
 										UT_TRUE);
 	}
 	else
-	{
-		// TODO use a POPEN style constructor to get the graphics....
-		
+	{		
 		m_pPSGraphics = new PS_Graphics(m_szPrintCommand, m_szDocumentTitle,
 										m_pUnixFrame->getApp()->getApplicationName(),
 										fontmgr,

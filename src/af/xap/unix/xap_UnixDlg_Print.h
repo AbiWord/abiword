@@ -26,6 +26,13 @@ class XAP_UnixFrame;
 class PS_Graphics;
 
 /*****************************************************************/
+struct _printCBStruct
+{
+	GtkWidget * entry;
+	XAP_Frame * frame;
+	AP_Dialog_Print::tAnswer * answer;
+};
+typedef struct _printCBStruct printCBStruct;
 
 class AP_UnixDialog_Print : public AP_Dialog_Print
 {
@@ -44,11 +51,16 @@ public:
 
 protected:
 
+	printCBStruct			m_callbackData;
+	
 	void					_raisePrintDialog(XAP_Frame * pFrame);
 	void					_getGraphics(void);
+
+//	void 					_notifyError_OKOnly(XAP_Frame * pFrame, const char * message);
 	
 	XAP_UnixFrame *			m_pUnixFrame;
 	PS_Graphics *			m_pPSGraphics;
+
 	struct
 	{
 		// add various fields here to persist between uses of the dialog....

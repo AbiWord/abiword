@@ -348,7 +348,7 @@ GR_Font* GR_UNIXGraphics::findFont(const char* pszFontFamily,
 	{
 		// Oops!  We don't have that font here.  substitute something
 		// we know we have (get smarter about this later)
-		item = new AP_UnixFont(*m_pFontManager->getFont("Times New Roman", s));
+		item = new AP_UnixFont(*m_pFontManager->getFont("fixed", s));
 	}
 	
 	GR_UnixFont * pFont = new GR_UnixFont(item, convertDimension(pszFontSize));
