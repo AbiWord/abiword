@@ -52,7 +52,8 @@ static const char * s_CRNames[] = {
 	"DChngIP ",
 	"AChngIP ",
 	"UpdField",
-	"RemList "
+	"RemList ",
+	"UpdLayot"
 };
 
 void
