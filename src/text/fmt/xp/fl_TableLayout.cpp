@@ -981,28 +981,6 @@ void fl_TableLayout::_purgeLayout(void)
 }
 
 //------------------------------------------------------------------
-///
-/// NOTE TO ALL HACKERS!! This must be in alphabetical order on Pain of Death
-///
-static struct xmlToIdMapping s_FillStyleTokens[] =
-{
-	{	"fill",			FS_FILL			},
-	{	"off",			FS_OFF			}
-};
-#define s_FillStyleTokenTableSize	((sizeof(s_FillStyleTokens)/sizeof(s_FillStyleTokens[0])))
-
-///
-/// NOTE TO ALL HACKERS!! This must be in alphabetical order on Pain of Death
-///
-static struct xmlToIdMapping s_LineStyleTokens[] =
-{
-	{	"dotted",			LS_DOTTED		},
-	{	"double-dash",		LS_DOUBLE_DASH	},
-	{	"normal",			LS_NORMAL		},
-	{	"off",				LS_OFF			},
-	{	"on-off-dash",		LS_ON_OFF_DASH	}
-};
-#define s_LineStyleTokenTableSize	((sizeof(s_LineStyleTokens)/sizeof(s_LineStyleTokens[0])))
 
 fl_CellLayout::fl_CellLayout(FL_DocLayout* pLayout, PL_StruxDocHandle sdh, PT_AttrPropIndex indexAP, fl_ContainerLayout * pMyContainerLayout)
 	: fl_SectionLayout(pLayout, sdh, indexAP, FL_SECTION_CELL,FL_CONTAINER_CELL,PTX_SectionCell,pMyContainerLayout),
@@ -1377,46 +1355,6 @@ bool fl_CellLayout::recalculateFields(UT_uint32 iUpdateCount)
 	return true;
 }
 
-//
-// copied from ie_imp_XML.cpp
-//
-extern "C" { // for MRC compiler (Mac)
-	static int s_str_compare (const void * a, const void * b)
-	{
-		const char * name = (const char *)a;
-		const xmlToIdMapping * id = (const xmlToIdMapping *)b;
-
-		return UT_strcmp (name, id->m_name);
-	}
-}
-
-//
-// copied from ie_imp_XML.cpp
-//
-int _mapNameToToken (const char * name,
-								 struct xmlToIdMapping * idlist, int len)
-{
-	static UT_StringPtrMap tokens(30);
-
-	xmlToIdMapping * id = NULL;
-
-	const void * pEntry = tokens.pick (name);
-
-	if (pEntry)
-	{
-		return (int)pEntry;
-	}
-
-	id = (xmlToIdMapping *)bsearch (name, idlist, len,
-									sizeof (xmlToIdMapping), s_str_compare);
-	if (id)
-    {
-		tokens.insert (name, (void *)id->m_type);
-		return id->m_type;
-    }
-	return -1;
-}
-
 void fl_CellLayout::_lookupProperties(void)
 {
 	const PP_AttrProp* pSectionAP = NULL;
@@ -1643,35 +1581,20 @@ void fl_CellLayout::_lookupProperties(void)
 	pSectionAP->getProperty("bot-style", (const XML_Char *&)pszBottomStyle);
 	if(pszLeftStyle && pszLeftStyle[0])
 	{
-		m_iLeftStyle = _mapNameToToken (pszLeftStyle, s_LineStyleTokens, s_LineStyleTokenTableSize);
-		if (m_iLeftStyle == -1)
-		{
-			m_iLeftStyle = LS_NORMAL; // fallback to a normal line
-		}
-	}
+		m_iLeftStyle = atoi(pszLeftStyle);
+	}	
 	if(pszRightStyle && pszRightStyle[0])
 	{
-		m_iRightStyle = _mapNameToToken (pszRightStyle, s_LineStyleTokens, s_LineStyleTokenTableSize);
-		if (m_iRightStyle == -1)
-		{
-			m_iRightStyle = LS_NORMAL; // fallback to a normal line
-		}
+		m_iRightStyle = atoi(pszRightStyle);
+
 	}
 	if(pszTopStyle && pszTopStyle[0])
 	{
-		m_iTopStyle = _mapNameToToken (pszTopStyle, s_LineStyleTokens, s_LineStyleTokenTableSize);
-		if (m_iTopStyle == -1)
-		{
-			m_iTopStyle = LS_NORMAL; // fallback to a normal line
-		}
+		m_iTopStyle = atoi(pszTopStyle);
 	}
 	if(pszBottomStyle && pszBottomStyle[0])
 	{
-		m_iBottomStyle = _mapNameToToken (pszBottomStyle, s_LineStyleTokens, s_LineStyleTokenTableSize);
-		if (m_iBottomStyle == -1)
-		{
-			m_iBottomStyle = LS_NORMAL; // fallback to a normal line
-		}
+		m_iBottomStyle = atoi(pszBottomStyle);
 	}
 	const char* pszBgColor = NULL;
 	pSectionAP->getProperty("bgcolor", (const XML_Char *&)pszBgColor);
@@ -1687,11 +1610,7 @@ void fl_CellLayout::_lookupProperties(void)
 	pSectionAP->getProperty("bg-style", (const XML_Char *&)pszBgStyle);
 	if(pszBgStyle && pszBgStyle[0])
 	{
-		m_iBgStyle = _mapNameToToken (pszBgStyle, s_FillStyleTokens, s_FillStyleTokenTableSize);
-		if (m_iBgStyle == -1)
-		{
-			m_iBgStyle = FS_OFF; // fallback to no background
-		}
+		m_iBgStyle = atoi(pszBgStyle);
 	}
 }
 

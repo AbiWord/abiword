@@ -409,15 +409,7 @@ void fp_CellContainer::_drawLine(UT_RGBColor clr, UT_sint32 lineStyle, UT_sint32
 			break;
 		case LS_NORMAL: // normal line style is default, so don't do anything
 			break;
-		case LS_ON_OFF_DASH:
-			pGr->setLineProperties(1, GR_Graphics::JOIN_MITER, GR_Graphics::CAP_BUTT, GR_Graphics::LINE_ON_OFF_DASH);
-			break;
-		case LS_DOUBLE_DASH:
-			pGr->setLineProperties(1, GR_Graphics::JOIN_MITER, GR_Graphics::CAP_BUTT, GR_Graphics::LINE_DOUBLE_DASH);
-			break;
-		case LS_DOTTED:
-			pGr->setLineProperties(1, GR_Graphics::JOIN_MITER, GR_Graphics::CAP_BUTT, GR_Graphics::LINE_DOTTED);
-			break;
+		// ... add more line styles here ...
 		default:
 			break;
 	}

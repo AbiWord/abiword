@@ -323,24 +323,23 @@ private:
 	void                   _localCollapse();
 };
 
-//
-// copied from ie_imp_XML.h
-//
-struct xmlToIdMapping {                                                                                                                      
-  char *m_name;                                                                                                                                         
-  int m_type;                                                                                                                                           
-};
+///
+/// Define he current supported background fill types
+/// DO NOT CHANGE THE EXISTING NUMBERS, EVER!
+/// You can add new styles as you please
+///
+#define FS_OFF	0		// No fill style
+#define FS_FILL	1		// Solid fill style
+// add more fill styles here
 
-// define the fill styles for the cell background
-#define FS_OFF		0	// off
-#define FS_FILL		1	// normal full fill
-
-// define the line styles for the cell borders
-#define LS_OFF			0	// off
-#define LS_NORMAL		1	// normal
-#define LS_ON_OFF_DASH	2	// on-off-dash
-#define LS_DOUBLE_DASH	3	// doube-dash
-#define LS_DOTTED		4	// dotted
+///
+/// Define the current supported line style types
+/// DO NOT CHANGE THE NUMBERS, EVER!
+/// You can add new styles as you please
+///
+#define LS_OFF		0	// No line style, which means no line is drawn
+#define LS_NORMAL	1	// A normal solid line
+// add more line styles here
 
 #endif /* TABLELAYOUT_H */
 
