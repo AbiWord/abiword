@@ -40,8 +40,8 @@ class ABI_EXPORT ImportStream
 	virtual bool _getByte(unsigned char &b) = 0;
 	virtual bool getRawChar(UT_UCSChar &b);
 
-	bool _eof () const { return m_bEOF; }
-	void _eof (bool b) { m_bEOF = b; }
+	bool _get_eof () const { return m_bEOF; }
+	void _set_eof (bool b) { m_bEOF = b; }
 	UT_UCSChar _lookAhead () const { return m_ucsLookAhead; }
 	void _lookAhead ( UT_UCSChar c ) { m_ucsLookAhead = c; }
 

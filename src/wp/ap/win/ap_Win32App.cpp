@@ -742,9 +742,11 @@ int AP_Win32App::WinMain(const char * szAppName, HINSTANCE hInstance,
 	// this is a static function and doesn't have a 'this' pointer.
 	MSG msg;
 
+#ifndef __BORLANDC__
 	_CrtSetReportMode( _CRT_WARN, _CRTDBG_MODE_DEBUG );
 	_CrtSetReportMode( _CRT_ERROR, _CRTDBG_MODE_DEBUG );
 	_CrtSetReportMode( _CRT_ASSERT, _CRTDBG_MODE_DEBUG | _CRTDBG_MODE_WNDW);
+#endif // __BORLANDC__
 
 	// Ensure that common control DLL is loaded
 	HINSTANCE hinstCC = LoadLibrary("comctl32.dll");

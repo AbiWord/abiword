@@ -882,7 +882,7 @@ XAP_Dialog_MessageBox::tAnswer XAP_Frame::showMessageBox(XAP_String_Id id,
 
 UT_String XAP_Frame::makeBackupName(const char* szExt)
 {
-  UT_String ext(szExt ? szExt : m_stAutoSaveExt);
+  UT_String ext(szExt ? szExt : m_stAutoSaveExt.c_str());
   UT_String oldName(m_pDoc->getFilename() ? m_pDoc->getFilename() : "");
   UT_String backupName;
   

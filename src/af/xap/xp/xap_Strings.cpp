@@ -104,7 +104,7 @@ XAP_DiskStringSet::XAP_DiskStringSet(XAP_App * pApp)
 {
 	m_pFallbackStringSet = NULL;
 
-	setValue(XAP_STRING_ID__FIRST__,0);			// bogus zero element
+	XAP_DiskStringSet::setValue(XAP_STRING_ID__FIRST__,0);			// bogus zero element
 }
 
 XAP_DiskStringSet::~XAP_DiskStringSet(void)
