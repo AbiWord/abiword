@@ -276,6 +276,7 @@ Marc Maurer <j.m.maurer@student.utwente.nl>		Dutch
 Zbynek Miksa <xmiksa@informatics.muni.cz>		Czech
 Gediminas Paulauskas <menesis@03bar.ktu.lt> 		Lithuanian
 John Profic <profic@linux.ru.net>			Russian
+nshmyrev <nshmyrev@yandex.ru>				Russian
 Piotr Banski <bansp@bigfoot.com>			Polish
 Andrzej Pruszynski <abi@rth.coi.waw.pl>			Polish
 Eutanazy Sercxemulo <szperacz@free.net.pl>		Polish
