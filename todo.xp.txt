@@ -11,6 +11,7 @@
 ./af/ev/xp/ev_EditBinding.cpp-129-};
 ./af/ev/xp/ev_EditBinding.cpp-130-
 ./af/ev/xp/ev_EditBinding.cpp-131-/*****************************************************************/
+
 ./af/ev/xp/ev_EditBinding.cpp-216-{
 ./af/ev/xp/ev_EditBinding.cpp-217-	EV_EditMethod * pem = m_pemc->findEditMethodByName(szMethodName);
 ./af/ev/xp/ev_EditBinding.cpp-218-	if (!pem)
@@ -22,6 +23,7 @@
 ./af/ev/xp/ev_EditBinding.cpp-224-
 ./af/ev/xp/ev_EditBinding.cpp-225-	EV_EditBinding * peb = new EV_EditBinding(pem);
 ./af/ev/xp/ev_EditBinding.cpp-226-	if (!peb)
+
 ./af/ev/xp/ev_EditBinding.cpp-277-				m_pebChar = new ev_EB_Char_Table();
 ./af/ev/xp/ev_EditBinding.cpp-278-				if (!m_pebChar)
 ./af/ev/xp/ev_EditBinding.cpp-279-					return UT_FALSE;
@@ -33,6 +35,7 @@
 ./af/ev/xp/ev_EditBinding.cpp-285-				return UT_FALSE;
 ./af/ev/xp/ev_EditBinding.cpp-286-			m_pebChar->m_peb[n_evk][n_ems] = peb;
 ./af/ev/xp/ev_EditBinding.cpp-287-			return UT_TRUE;
+
 ./af/ev/xp/ev_EditBinding.cpp-324-		else							// a non-nvk -- regular char
 ./af/ev/xp/ev_EditBinding.cpp-325-		{
 ./af/ev/xp/ev_EditBinding.cpp-326-			if (!m_pebChar)
@@ -44,6 +47,7 @@
 ./af/ev/xp/ev_EditBinding.cpp-332-			return UT_TRUE;
 ./af/ev/xp/ev_EditBinding.cpp-333-		}
 ./af/ev/xp/ev_EditBinding.cpp-334-	}
+
 ./af/ev/xp/ev_EditBinding.cpp-416-	else
 ./af/ev/xp/ev_EditBinding.cpp-417-	{
 ./af/ev/xp/ev_EditBinding.cpp-418-		// translate NVK
@@ -55,6 +59,7 @@
 ./af/ev/xp/ev_EditBinding.cpp-424-		case EV_NVK_DELETE:
 ./af/ev/xp/ev_EditBinding.cpp-425-			szNVK = "Del";
 ./af/ev/xp/ev_EditBinding.cpp-426-			break;
+
 ./af/ev/xp/ev_EditBinding.cpp-444-	return buf;
 ./af/ev/xp/ev_EditBinding.cpp-445-}
 ./af/ev/xp/ev_EditBinding.cpp-446-	
@@ -65,6 +70,7 @@
 ./af/ev/xp/ev_EditBinding.cpp-451-	*/
 ./af/ev/xp/ev_EditBinding.cpp-452-	return UT_FALSE;
 ./af/ev/xp/ev_EditBinding.cpp-453-}
+
 ./af/ev/xp/ev_Menu_Actions.cpp-104-/*****************************************************************/
 ./af/ev/xp/ev_Menu_Actions.cpp-105-/*****************************************************************/
 ./af/ev/xp/ev_Menu_Actions.cpp-106-
@@ -77,6 +83,7 @@
 ./af/ev/xp/ev_Menu_Actions.cpp-113-	m_last = last;
 ./af/ev/xp/ev_Menu_Actions.cpp-114-}
 ./af/ev/xp/ev_Menu_Actions.cpp-115-
+
 ./af/ev/xp/ev_Menu_Labels.cpp-62-/*****************************************************************/
 ./af/ev/xp/ev_Menu_Labels.cpp-63-
 ./af/ev/xp/ev_Menu_Labels.cpp-64-EV_Menu_LabelSet::EV_Menu_LabelSet(const char * szLanguage,
@@ -89,6 +96,7 @@
 ./af/ev/xp/ev_Menu_Labels.cpp-71-	m_first = first;
 ./af/ev/xp/ev_Menu_Labels.cpp-72-	m_last = last;
 ./af/ev/xp/ev_Menu_Labels.cpp-73-}
+
 ./af/ev/xp/ev_Menu_Labels.cpp-107-	
 ./af/ev/xp/ev_Menu_Labels.cpp-108-	EV_Menu_Label * pLabel = m_labelTable[index];
 ./af/ev/xp/ev_Menu_Labels.cpp-109-
@@ -100,12 +108,7 @@
 ./af/ev/xp/ev_Menu_Labels.cpp-115-		UT_DEBUGMSG(("WARNING: %s translation for menu id [%d] not found.\n",m_szLanguage,id));
 ./af/ev/xp/ev_Menu_Labels.cpp-116-		// NOTE: only translators should see the following strings
 ./af/ev/xp/ev_Menu_Labels.cpp-117-		// NOTE: do *not* translate them
-./af/ev/xp/ev_Menu_Labels.cpp:118:		pLabel = new EV_Menu_Label(id,"TODO","untranslated menu item");
-./af/ev/xp/ev_Menu_Labels.cpp-119-		m_labelTable[index] = pLabel;
-./af/ev/xp/ev_Menu_Labels.cpp-120-	}
-./af/ev/xp/ev_Menu_Labels.cpp-121-
-./af/ev/xp/ev_Menu_Labels.cpp-122-	UT_ASSERT(pLabel && (pLabel->getMenuId()==id));
-./af/ev/xp/ev_Menu_Labels.cpp-123-	return pLabel;
+
 ./af/ev/xp/ev_Menu_Layouts.cpp-50-
 ./af/ev/xp/ev_Menu_Layouts.cpp-51-EV_Menu_Layout::EV_Menu_Layout(const char * szName, UT_uint32 nrLayoutItems)
 ./af/ev/xp/ev_Menu_Layouts.cpp-52-{
@@ -118,6 +121,7 @@
 ./af/ev/xp/ev_Menu_Layouts.cpp-59-	UT_cloneString(m_szName,szName);
 ./af/ev/xp/ev_Menu_Layouts.cpp-60-}
 ./af/ev/xp/ev_Menu_Layouts.cpp-61-
+
 ./af/ev/xp/ev_Mouse.cpp-56-	EV_EditMethodType t = pEM->getType();
 ./af/ev/xp/ev_Mouse.cpp-57-
 ./af/ev/xp/ev_Mouse.cpp-58-	if ((t & EV_EMT_REQUIREDATA) != 0)
@@ -129,17 +133,7 @@
 ./af/ev/xp/ev_Mouse.cpp-64-	}
 ./af/ev/xp/ev_Mouse.cpp-65-
 ./af/ev/xp/ev_Mouse.cpp-66-	EV_EditMethodCallData emcd;
-./af/ev/xp/ev_NamedVirtualKey.cpp-94-	"DeadCaron",
-./af/ev/xp/ev_NamedVirtualKey.cpp-95-	"DeadCedilla",
-./af/ev/xp/ev_NamedVirtualKey.cpp-96-	"DeadOgonek",
-./af/ev/xp/ev_NamedVirtualKey.cpp-97-	"DeadIota",
-./af/ev/xp/ev_NamedVirtualKey.cpp-98-	"MenuShortCut"
-./af/ev/xp/ev_NamedVirtualKey.cpp:99:	// TODO as other items are added to ev_NamedVirtualKey, add items here.
-./af/ev/xp/ev_NamedVirtualKey.cpp-100-};
-./af/ev/xp/ev_NamedVirtualKey.cpp-101-
-./af/ev/xp/ev_NamedVirtualKey.cpp-102-
-./af/ev/xp/ev_NamedVirtualKey.cpp-103-const char * EV_NamedVirtualKey::getName(EV_EditBits eb)
-./af/ev/xp/ev_NamedVirtualKey.cpp-104-{
+
 ./af/ev/xp/ev_Toolbar_Actions.cpp-79-/*****************************************************************/
 ./af/ev/xp/ev_Toolbar_Actions.cpp-80-/*****************************************************************/
 ./af/ev/xp/ev_Toolbar_Actions.cpp-81-
@@ -152,6 +146,7 @@
 ./af/ev/xp/ev_Toolbar_Actions.cpp-88-	m_last = last;
 ./af/ev/xp/ev_Toolbar_Actions.cpp-89-}
 ./af/ev/xp/ev_Toolbar_Actions.cpp-90-
+
 ./af/ev/xp/ev_Toolbar_Labels.cpp-78-/*****************************************************************/
 ./af/ev/xp/ev_Toolbar_Labels.cpp-79-
 ./af/ev/xp/ev_Toolbar_Labels.cpp-80-EV_Toolbar_LabelSet::EV_Toolbar_LabelSet(const char * szLanguage,
@@ -163,6 +158,7 @@
 ./af/ev/xp/ev_Toolbar_Labels.cpp-86-	m_labelTable = (EV_Toolbar_Label **)calloc((last-first+1),sizeof(EV_Toolbar_Label *));
 ./af/ev/xp/ev_Toolbar_Labels.cpp-87-	m_first = first;
 ./af/ev/xp/ev_Toolbar_Labels.cpp-88-	m_last = last;
+
 ./af/ev/xp/ev_Toolbar_Labels.cpp-89-}
 ./af/ev/xp/ev_Toolbar_Labels.cpp-125-	
 ./af/ev/xp/ev_Toolbar_Labels.cpp-126-	EV_Toolbar_Label * pLabel = m_labelTable[index];
@@ -175,12 +171,7 @@
 ./af/ev/xp/ev_Toolbar_Labels.cpp-133-		UT_DEBUGMSG(("WARNING: %s translation for Toolbar id [%d] not found.\n",m_szLanguage,id));
 ./af/ev/xp/ev_Toolbar_Labels.cpp-134-		// NOTE: only translators should see the following strings
 ./af/ev/xp/ev_Toolbar_Labels.cpp-135-		// NOTE: do *not* translate them
-./af/ev/xp/ev_Toolbar_Labels.cpp:136:		pLabel = new EV_Toolbar_Label(id,"TODO","tb_todo_xpm","to do","untranslated toolbar item");
-./af/ev/xp/ev_Toolbar_Labels.cpp-137-		m_labelTable[index] = pLabel;
-./af/ev/xp/ev_Toolbar_Labels.cpp-138-	}
-./af/ev/xp/ev_Toolbar_Labels.cpp-139-
-./af/ev/xp/ev_Toolbar_Labels.cpp-140-	UT_ASSERT(pLabel && (pLabel->getToolbarId()==id));
-./af/ev/xp/ev_Toolbar_Labels.cpp-141-	return pLabel;
+
 ./af/ev/xp/ev_Toolbar_Layouts.cpp-50-
 ./af/ev/xp/ev_Toolbar_Layouts.cpp-51-EV_Toolbar_Layout::EV_Toolbar_Layout(const char * szName, UT_uint32 nrLayoutItems)
 ./af/ev/xp/ev_Toolbar_Layouts.cpp-52-{
@@ -193,6 +184,7 @@
 ./af/ev/xp/ev_Toolbar_Layouts.cpp-59-	UT_cloneString(m_szName,szName);
 ./af/ev/xp/ev_Toolbar_Layouts.cpp-60-}
 ./af/ev/xp/ev_Toolbar_Layouts.cpp-61-
+
 ./af/gr/xp/gr_VectorImage.cpp-118-   m_iDisplayHeight = iDisplayHeight;
 ./af/gr/xp/gr_VectorImage.cpp-119-}
 ./af/gr/xp/gr_VectorImage.cpp-120-
@@ -213,6 +205,7 @@
 ./af/gr/xp/gr_VectorImage.cpp-135-   XML_Parser parser = XML_CreateParser(NULL);
 ./af/gr/xp/gr_VectorImage.cpp-136-   XML_SetUserData(parser, this);
 ./af/gr/xp/gr_VectorImage.cpp-137-   XML_SetElementHandler(parser, startElement, endElement);
+
 ./af/util/xp/ut_hash.cpp-80-
 ./af/util/xp/ut_hash.cpp-81-UT_sint32 UT_HashTable::addEntry(const char* pszLeft, const char* pszRight, void* pData)
 ./af/util/xp/ut_hash.cpp-82-{
@@ -231,6 +224,7 @@
 ./af/util/xp/ut_hash.cpp-95-	if (pszRight)
 ./af/util/xp/ut_hash.cpp-96-		m_pEntries[m_iEntryCount].pszRight = m_pool.addString(pszRight);
 ./af/util/xp/ut_hash.cpp-97-
+
 ./af/util/xp/ut_hash.cpp-109-}
 ./af/util/xp/ut_hash.cpp-110-
 ./af/util/xp/ut_hash.cpp-111-UT_sint32 UT_HashTable::setEntry(UT_HashEntry* pEntry, const char* pszRight, void* pData)
@@ -242,6 +236,7 @@
 ./af/util/xp/ut_hash.cpp-117-
 ./af/util/xp/ut_hash.cpp-118-	return 0;
 ./af/util/xp/ut_hash.cpp-119-}
+
 ./af/util/xp/ut_misc.cpp-152-	{
 ./af/util/xp/ut_misc.cpp-153-		p++;
 ./af/util/xp/ut_misc.cpp-154-		goto ParseHex;
@@ -253,6 +248,7 @@
 ./af/util/xp/ut_misc.cpp-160-
 ./af/util/xp/ut_misc.cpp-161-	return;
 ./af/util/xp/ut_misc.cpp-162-
+
 ./af/util/xp/ut_misc.cpp-174-#define ut_PATHSEP '/'
 ./af/util/xp/ut_misc.cpp-175-#endif
 ./af/util/xp/ut_misc.cpp-176-
@@ -264,6 +260,7 @@
 ./af/util/xp/ut_misc.cpp-182-		return NULL;
 ./af/util/xp/ut_misc.cpp-183-
 ./af/util/xp/ut_misc.cpp-184-	// This algorithm is pretty simple.  We search backwards for
+
 ./af/util/xp/ut_misc.cpp-229-	if ((currentChar == '\''  ||  currentChar == UCS_RQUOTE)  &&  UT_UCS_isalnum(followChar)) return UT_FALSE;
 ./af/util/xp/ut_misc.cpp-230-	return UT_TRUE;
 ./af/util/xp/ut_misc.cpp-231-
@@ -277,6 +274,7 @@
 ./af/util/xp/ut_misc.cpp-239-	{
 ./af/util/xp/ut_misc.cpp-240-	case ' ':
 ./af/util/xp/ut_misc.cpp-241-	case ',':
+
 ./af/util/xp/ut_pool.cpp-43-}
 ./af/util/xp/ut_pool.cpp-44-
 ./af/util/xp/ut_pool.cpp-45-
@@ -299,6 +297,7 @@
 ./af/util/xp/ut_pool.cpp-69-char* UT_StringPool::addString(const char* p)
 ./af/util/xp/ut_pool.cpp-70-{
 ./af/util/xp/ut_pool.cpp-71-	int len = strlen(p);
+
 ./af/util/xp/ut_string.cpp-316-
 ./af/util/xp/ut_string.cpp-317-	return rszDestBuffer;
 ./af/util/xp/ut_string.cpp-318-}
@@ -310,6 +309,7 @@
 ./af/util/xp/ut_string.cpp-324-{
 ./af/util/xp/ut_string.cpp-325-	if (!szSource)
 ./af/util/xp/ut_string.cpp-326-		return 0;
+
 ./af/util/xp/ut_string.cpp-658-	*d = 0;
 ./af/util/xp/ut_string.cpp-659-
 ./af/util/xp/ut_string.cpp-660-	return dest;
@@ -321,6 +321,7 @@
 ./af/util/xp/ut_string.cpp-666-{
 ./af/util/xp/ut_string.cpp-667-	UT_ASSERT(dest);
 ./af/util/xp/ut_string.cpp-668-	UT_ASSERT(src);
+
 ./af/util/xp/ut_string.cpp-955-	{
 ./af/util/xp/ut_string.cpp-956-		UT_DEBUGMSG(("XML parsing error %s; %s:%d\n",
 ./af/util/xp/ut_string.cpp-957-			     XML_ErrorString(XML_GetErrorCode(parser)),
@@ -355,6 +356,7 @@
 ./af/util/xp/ut_string.cpp-993-	{
 ./af/util/xp/ut_string.cpp-994-	case UCS_LQUOTE:
 ./af/util/xp/ut_string.cpp-995-	case UCS_RQUOTE:
+
 ./af/util/xp/ut_units.cpp-17- * 02111-1307, USA.
 ./af/util/xp/ut_units.cpp-18- */
 ./af/util/xp/ut_units.cpp-19- 
@@ -366,17 +368,7 @@
 ./af/util/xp/ut_units.cpp-25-#include <string.h>
 ./af/util/xp/ut_units.cpp-26-#include <stdlib.h>
 ./af/util/xp/ut_units.cpp-27-#include <math.h>
-./af/util/xp/ut_units.cpp-102-			return DIM_PX;
-./af/util/xp/ut_units.cpp-103-
-./af/util/xp/ut_units.cpp-104-	   	if (STR_COMPARE(p,"%") == 0)
-./af/util/xp/ut_units.cpp-105-			return DIM_PERCENT;
-./af/util/xp/ut_units.cpp-106-	   
-./af/util/xp/ut_units.cpp:107:		UT_ASSERT(UT_TODO);
-./af/util/xp/ut_units.cpp-108-	}
-./af/util/xp/ut_units.cpp-109-
-./af/util/xp/ut_units.cpp-110-	return fallback;
-./af/util/xp/ut_units.cpp-111-}
-./af/util/xp/ut_units.cpp-112-
+
 ./af/util/xp/ut_units.cpp-134-	// return pointer to static buffer -- use it quickly.
 ./af/util/xp/ut_units.cpp-135-	//
 ./af/util/xp/ut_units.cpp-136-	// We temporarily force the locale back to english so that
@@ -400,6 +392,7 @@
 ./af/util/xp/ut_units.cpp-155-		break;
 ./af/util/xp/ut_units.cpp-156-
 ./af/util/xp/ut_units.cpp-157-	case DIM_CM:
+
 ./af/util/xp/ut_units.cpp-204-	// return pointer to static buffer -- use it quickly.
 ./af/util/xp/ut_units.cpp-205-	//
 ./af/util/xp/ut_units.cpp-206-	// We temporarily force the locale back to english so that
@@ -423,6 +416,7 @@
 ./af/util/xp/ut_units.cpp-224-
 ./af/util/xp/ut_units.cpp-225-	case DIM_CM:
 ./af/util/xp/ut_units.cpp-226-		sprintf(bufFormat,"%%%sfcm",((szPrecision && *szPrecision) ? szPrecision : ".2"));
+
 ./af/util/xp/ut_units.cpp-406-	return buf;
 ./af/util/xp/ut_units.cpp-407-}
 ./af/util/xp/ut_units.cpp-408-
@@ -435,6 +429,7 @@
 ./af/util/xp/ut_units.cpp-415-		return UT_FALSE;
 ./af/util/xp/ut_units.cpp-416-	
 ./af/util/xp/ut_units.cpp-417-	const char *p = sz;
+
 ./af/xap/xp/xad_Document.cpp-27-AD_Document::AD_Document()
 ./af/xap/xp/xad_Document.cpp-28-{
 ./af/xap/xp/xad_Document.cpp-29-	m_iRefCount = 1;
@@ -447,6 +442,7 @@
 ./af/xap/xp/xad_Document.cpp-36-
 ./af/xap/xp/xad_Document.cpp-37-AD_Document::~AD_Document()
 ./af/xap/xp/xad_Document.cpp-38-{
+
 ./af/xap/xp/xap_App.cpp-71-}
 ./af/xap/xp/xap_App.cpp-72-
 ./af/xap/xp/xap_App.cpp-73-XAP_App::~XAP_App(void)
@@ -458,6 +454,7 @@
 ./af/xap/xp/xap_App.cpp-79-
 ./af/xap/xp/xap_App.cpp-80-	// run thru and destroy all frames on our window list.
 ./af/xap/xp/xap_App.cpp-81-	UT_VECTOR_PURGEALL(XAP_Frame *, m_vecFrames);
+
 ./af/xap/xp/xap_App.cpp-113-	m_pToolbarActionSet = AP_CreateToolbarActionSet();
 ./af/xap/xp/xap_App.cpp-114-	UT_ASSERT(m_pToolbarActionSet);
 ./af/xap/xp/xap_App.cpp-115-#endif
@@ -479,6 +476,7 @@
 ./af/xap/xp/xap_App.cpp-131-	//
 ./af/xap/xp/xap_App.cpp-132-	UT_uint32 t = (UT_uint32) time( NULL);
 ./af/xap/xp/xap_App.cpp-133-	srand(t);
+
 ./af/xap/xp/xap_App.cpp-181-	UT_ASSERT(pFrame);
 ./af/xap/xp/xap_App.cpp-182-
 ./af/xap/xp/xap_App.cpp-183-	// add this frame to our window list
@@ -490,6 +488,7 @@
 ./af/xap/xp/xap_App.cpp-189-		// locate vector of this frame's clones
 ./af/xap/xp/xap_App.cpp-190-		UT_HashEntry* pEntry = m_hashClones.findEntry(pCloneOf->getViewKey());
 ./af/xap/xp/xap_App.cpp-191-
+
 ./af/xap/xp/xap_App.cpp-233-			if (f != pFrame)
 ./af/xap/xp/xap_App.cpp-234-				f->updateTitle();
 ./af/xap/xp/xap_App.cpp-235-		}
@@ -501,6 +500,7 @@
 ./af/xap/xp/xap_App.cpp-241-
 ./af/xap/xp/xap_App.cpp-242-UT_Bool XAP_App::forgetFrame(XAP_Frame * pFrame)
 ./af/xap/xp/xap_App.cpp-243-{
+
 ./af/xap/xp/xap_App.cpp-314-		m_vecFrames.deleteNthItem(ndx);
 ./af/xap/xp/xap_App.cpp-315-	}
 ./af/xap/xp/xap_App.cpp-316-
@@ -512,6 +512,7 @@
 ./af/xap/xp/xap_App.cpp-322-}
 ./af/xap/xp/xap_App.cpp-323-
 ./af/xap/xp/xap_App.cpp-324-UT_Bool XAP_App::forgetClones(XAP_Frame * pFrame)
+
 ./af/xap/xp/xap_Dictionary.cpp-61-	UT_HASH_PURGEDATA(UT_UCSChar *, m_hashWords);
 ./af/xap/xp/xap_Dictionary.cpp-62-}
 ./af/xap/xp/xap_Dictionary.cpp-63-
@@ -534,6 +535,7 @@
 ./af/xap/xp/xap_Dictionary.cpp-80-	return (m_fp != 0);
 ./af/xap/xp/xap_Dictionary.cpp-81-}
 ./af/xap/xp/xap_Dictionary.cpp-82-
+
 ./af/xap/xp/xap_Dictionary.cpp-108-}
 ./af/xap/xp/xap_Dictionary.cpp-109-
 ./af/xap/xp/xap_Dictionary.cpp-110-void XAP_Dictionary::_abortFile(void)
@@ -545,6 +547,7 @@
 ./af/xap/xp/xap_Dictionary.cpp-116-	return;
 ./af/xap/xp/xap_Dictionary.cpp-117-}
 ./af/xap/xp/xap_Dictionary.cpp-118-
+
 ./af/xap/xp/xap_Dlg_Print.cpp-229-
 ./af/xap/xp/xap_Dlg_Print.cpp-230-	pDialog->setCurrentPathname(szSuggestedName);
 ./af/xap/xp/xap_Dlg_Print.cpp-231-	pDialog->setSuggestFilename(UT_TRUE);
@@ -561,6 +564,7 @@
 ./af/xap/xp/xap_Dlg_Print.cpp-242-
 ./af/xap/xp/xap_Dlg_Print.cpp-243-		const char ** szDescList = (const char **) calloc(filterCount + 1,
 ./af/xap/xp/xap_Dlg_Print.cpp-244-														  sizeof(char *));
+
 ./af/xap/xp/xap_Draw_Symbol.cpp-142-	return m_Insert_Symbol_font;
 ./af/xap/xp/xap_Draw_Symbol.cpp-143-}
 ./af/xap/xp/xap_Draw_Symbol.cpp-144-
@@ -572,6 +576,7 @@
 ./af/xap/xp/xap_Draw_Symbol.cpp-150-	setFontString ();
 ./af/xap/xp/xap_Draw_Symbol.cpp-151-	setFontStringarea ();
 ./af/xap/xp/xap_Draw_Symbol.cpp-152-
+
 ./af/xap/xp/xap_Frame.cpp-313-	return m_app;
 ./af/xap/xp/xap_Frame.cpp-314-}
 ./af/xap/xp/xap_Frame.cpp-315-
@@ -585,6 +590,7 @@
 ./af/xap/xp/xap_Frame.cpp-323-}
 ./af/xap/xp/xap_Frame.cpp-324-	
 ./af/xap/xp/xap_Frame.cpp-325-AD_Document * XAP_Frame::getCurrentDoc(void) const
+
 ./af/xap/xp/xap_Frame.cpp-417-		// where "244" comes from - the buffer being copied into
 ./af/xap/xp/xap_Frame.cpp-418-		// is currently 512 bytes. However, even 244 characters
 ./af/xap/xp/xap_Frame.cpp-419-		// is way too long for a title bar, so no reason to
@@ -596,6 +602,7 @@
 ./af/xap/xp/xap_Frame.cpp-425-		// later decorations) is big enough.
 ./af/xap/xp/xap_Frame.cpp-426-		UT_ASSERT(sizeof(m_szTitle) > 245 + 30); 
 ./af/xap/xp/xap_Frame.cpp-427-
+
 ./af/xap/xp/xap_Frame.cpp-569-	return ans;
 ./af/xap/xp/xap_Frame.cpp-570-}
 ./af/xap/xp/xap_Frame.cpp-571-
@@ -607,6 +614,7 @@
 ./af/xap/xp/xap_Frame.cpp-577-	if (!oldName || !(*oldName))
 ./af/xap/xp/xap_Frame.cpp-578-	{
 ./af/xap/xp/xap_Frame.cpp-579-		const XAP_StringSet * pSS = m_app->getStringSet();
+
 ./af/xap/xp/xap_Prefs.cpp-15- * along with this program; if not, write to the Free Software
 ./af/xap/xp/xap_Prefs.cpp-16- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
 ./af/xap/xp/xap_Prefs.cpp-17- * 02111-1307, USA.
@@ -618,6 +626,7 @@
 ./af/xap/xp/xap_Prefs.cpp-23-#include <stdio.h>
 ./af/xap/xp/xap_Prefs.cpp-24-#include <string.h>
 ./af/xap/xp/xap_Prefs.cpp-25-
+
 ./af/xap/xp/xap_Prefs.cpp-123-	}
 ./af/xap/xp/xap_Prefs.cpp-124-}
 ./af/xap/xp/xap_Prefs.cpp-125-
@@ -629,6 +638,7 @@
 ./af/xap/xp/xap_Prefs.cpp-131-		return UT_FALSE;
 ./af/xap/xp/xap_Prefs.cpp-132-	
 ./af/xap/xp/xap_Prefs.cpp-133-	UT_HashEntry * pEntry = m_hash.getNthEntryAlpha(k);
+
 ./af/xap/xp/xap_Prefs.cpp-152-
 ./af/xap/xp/xap_Prefs.cpp-153-void XAP_Prefs::setAutoSavePrefs(UT_Bool bAuto)
 ./af/xap/xp/xap_Prefs.cpp-154-{
@@ -641,6 +651,7 @@
 ./af/xap/xp/xap_Prefs.cpp-161-/*****************************************************************/
 ./af/xap/xp/xap_Prefs.cpp-162-
 ./af/xap/xp/xap_Prefs.cpp-163-UT_Bool XAP_Prefs::getUseEnvLocale(void) const
+
 ./af/xap/xp/xap_Prefs.cpp-356-			const XML_Char new_name[] = "_custom_";
 ./af/xap/xp/xap_Prefs.cpp-357-
 ./af/xap/xp/xap_Prefs.cpp-358-			if (setCurrentScheme(new_name))
@@ -652,6 +663,7 @@
 ./af/xap/xp/xap_Prefs.cpp-364-				// ALT: replace the existing scheme with new empty one
 ./af/xap/xp/xap_Prefs.cpp-365-			}
 ./af/xap/xp/xap_Prefs.cpp-366-			else
+
 ./af/xap/xp/xap_Prefs.cpp-379-
 ./af/xap/xp/xap_Prefs.cpp-380-UT_Bool XAP_Prefs::setCurrentScheme(const XML_Char * szSchemeName)
 ./af/xap/xp/xap_Prefs.cpp-381-{
@@ -663,6 +675,7 @@
 ./af/xap/xp/xap_Prefs.cpp-387-	if (!p)
 ./af/xap/xp/xap_Prefs.cpp-388-		return UT_FALSE;
 ./af/xap/xp/xap_Prefs.cpp-389-
+
 ./af/xap/xp/xap_Prefs.cpp-495-		{
 ./af/xap/xp/xap_Prefs.cpp-496-			UT_ASSERT(a[1] && *a[1]);	// require a value for each attribute keyword
 ./af/xap/xp/xap_Prefs.cpp-497-
@@ -678,6 +691,7 @@
 ./af/xap/xp/xap_Prefs.cpp-507-				UT_DEBUGMSG(("Found preferences for application [%s] (this is [%s]).\n",
 ./af/xap/xp/xap_Prefs.cpp-508-							a[1],szThisApp));
 ./af/xap/xp/xap_Prefs.cpp-509-				if (UT_strcmp(a[1],szThisApp) != 0)
+
 ./af/xap/xp/xap_Prefs.cpp-512-					goto InvalidFileError;
 ./af/xap/xp/xap_Prefs.cpp-513-				}
 ./af/xap/xp/xap_Prefs.cpp-514-			}
@@ -689,6 +703,7 @@
 ./af/xap/xp/xap_Prefs.cpp-520-			a += 2;
 ./af/xap/xp/xap_Prefs.cpp-521-		}
 ./af/xap/xp/xap_Prefs.cpp-522-	}
+
 ./af/xap/xp/xap_Preview_Zoom.cpp-129-void XAP_Preview_Zoom::draw(void)
 ./af/xap/xp/xap_Preview_Zoom.cpp-130-{
 ./af/xap/xp/xap_Preview_Zoom.cpp-131-	UT_ASSERT(m_gc);
@@ -698,6 +713,7 @@
 ./af/xap/xp/xap_Preview_Zoom.cpp-135-	m_gc->clearArea(0, 0, getWindowWidth(), getWindowHeight());
 ./af/xap/xp/xap_Preview_Zoom.cpp-136-	m_gc->drawChars(m_string, 0, UT_UCS_strlen(m_string), 5, 5);
 ./af/xap/xp/xap_Preview_Zoom.cpp-137-}
+
 ./af/xap/xp/xap_Strings.cpp-144-	if (szString && *szString)
 ./af/xap/xp/xap_Strings.cpp-145-	{
 ./af/xap/xp/xap_Strings.cpp-146-		UT_GrowBuf gb;
@@ -710,6 +726,7 @@
 ./af/xap/xp/xap_Strings.cpp-153-		UT_uint16 * p=gb.getPointer(0);
 ./af/xap/xp/xap_Strings.cpp-154-		UT_ByteBuf str;		
 ./af/xap/xp/xap_Strings.cpp-155-		UT_Wctomb wctomb_conv;
+
 ./af/xap/xp/xap_Strings.cpp-223-
 ./af/xap/xp/xap_Strings.cpp-224-	for (k=0; k<kLimit; k++)
 ./af/xap/xp/xap_Strings.cpp-225-		if (UT_XML_stricmp(s_map[k].szName,szId) == 0)
@@ -721,6 +738,7 @@
 ./af/xap/xp/xap_Strings.cpp-231-}
 ./af/xap/xp/xap_Strings.cpp-232-
 ./af/xap/xp/xap_Strings.cpp-233-/*****************************************************************
+
 ./af/xap/xp/xap_Strings.cpp-284-					goto InvalidFileError;
 ./af/xap/xp/xap_Strings.cpp-285-				}
 ./af/xap/xp/xap_Strings.cpp-286-			}
@@ -732,6 +750,7 @@
 ./af/xap/xp/xap_Strings.cpp-292-			{
 ./af/xap/xp/xap_Strings.cpp-293-				UT_DEBUGMSG(("Found strings for language [%s].\n",a[1]));
 ./af/xap/xp/xap_Strings.cpp-294-				if (!setLanguage(a[1]))
+
 ./af/xap/xp/xap_Strings.cpp-430-	// we succeeded in parsing the file,
 ./af/xap/xp/xap_Strings.cpp-431-	// now check for higher-level consistency.
 ./af/xap/xp/xap_Strings.cpp-432-
@@ -744,80 +763,7 @@
 ./af/xap/xp/xap_Strings.cpp-439-
 ./af/xap/xp/xap_Strings.cpp-440-		for (k=0; k<kLimit; k++)
 ./af/xap/xp/xap_Strings.cpp-441-		{
-./hello/ap/xp/ap_LB_Default.cpp-63-#define _B3		| EV_EMB_BUTTON3
-./hello/ap/xp/ap_LB_Default.cpp-64-
-./hello/ap/xp/ap_LB_Default.cpp-65-const ap_bs_Mouse s_MouseTable[] =
-./hello/ap/xp/ap_LB_Default.cpp-66-{
-./hello/ap/xp/ap_LB_Default.cpp-67-
-./hello/ap/xp/ap_LB_Default.cpp:68:	// TODO some of these bindings are what i think they
-./hello/ap/xp/ap_LB_Default.cpp:69:	// TODO should be and some are just for testing until
-./hello/ap/xp/ap_LB_Default.cpp:70:	// TODO the full features are implemented.  some i've
-./hello/ap/xp/ap_LB_Default.cpp:71:	// TODO just filled in some guesses, but never used.
-./hello/ap/xp/ap_LB_Default.cpp-72-	
-./hello/ap/xp/ap_LB_Default.cpp-73-//	Button-0 (no buttons pressed)
-./hello/ap/xp/ap_LB_Default.cpp-74-//  { context	{ click	dblclick	drag,				dbldrag,	release,	doublerelease	}},
-./hello/ap/xp/ap_LB_Default.cpp-75-//	{_CU _B0,	{ "",	"",			"cursorDefault",	"",			"",			""				}},
-./hello/ap/xp/ap_LB_Default.cpp-76-//	{_CT _B0,	{ "",	"",			"cursorIBeam",		"",			"",			""				}},
-./hello/ap/xp/ap_LB_Default.cpp-372-//	that the set is reasonably complete.
-./hello/ap/xp/ap_LB_Default.cpp-373-//	
-./hello/ap/xp/ap_LB_Default.cpp-374-//	I don't know how to test these on my EnUS system with my EnUS keyboard,
-./hello/ap/xp/ap_LB_Default.cpp-375-//	but I think they will work.
-./hello/ap/xp/ap_LB_Default.cpp-376-//
-./hello/ap/xp/ap_LB_Default.cpp:377://	TODO For now I just bound them all to "" which will cause
-./hello/ap/xp/ap_LB_Default.cpp:378://	TODO the character to be inserted into the document.  I'm wondering
-./hello/ap/xp/ap_LB_Default.cpp:379://	TODO if some of these (e.g., paragraph and section) should be bound
-./hello/ap/xp/ap_LB_Default.cpp:380://	TODO to some other functions -- but rather than try guessing, let's
-./hello/ap/xp/ap_LB_Default.cpp:381://	TODO wait and let some of our European friends comment.
-./hello/ap/xp/ap_LB_Default.cpp-382-
-./hello/ap/xp/ap_LB_Default.cpp-383-//	{char, /* desc           */ { none,				_C,					_A,				_A_C				}},
-./hello/ap/xp/ap_LB_Default.cpp-384-
-./hello/ap/xp/ap_LB_Default.cpp-385-	{0xa0, /* nbs            */ { "",	"",					"",				""					}},
-./hello/ap/xp/ap_LB_Default.cpp-386-	{0xa1, /* exclamdown     */ { "",		"",					"",				""					}},
-./hello/ap/xp/ap_StatusBar.cpp-117-{
-./hello/ap/xp/ap_StatusBar.cpp-118-}
-./hello/ap/xp/ap_StatusBar.cpp-119-
-./hello/ap/xp/ap_StatusBar.cpp-120-UT_uint32 ap_sb_Field_StatusMessage::getDesiredWidth(void)
-./hello/ap/xp/ap_StatusBar.cpp-121-{
-./hello/ap/xp/ap_StatusBar.cpp:122:	return 300;							// TODO define this somewhere
-./hello/ap/xp/ap_StatusBar.cpp-123-}
-./hello/ap/xp/ap_StatusBar.cpp-124-
-./hello/ap/xp/ap_StatusBar.cpp-125-void ap_sb_Field_StatusMessage::draw(void)
-./hello/ap/xp/ap_StatusBar.cpp-126-{
-./hello/ap/xp/ap_StatusBar.cpp-127-	_draw3D();
-./hello/ap/xp/ap_StatusBar.cpp-214-		DclField(ap_sb_Field_StatusMessage, pf1);
-./hello/ap/xp/ap_StatusBar.cpp-215-
-./hello/ap/xp/ap_StatusBar.cpp-216-		m_pStatusMessageField = pf1;	// its in the vector, but we remember it explicitly
-./hello/ap/xp/ap_StatusBar.cpp-217-										// so that setStatusMessage() can do its thing.
-./hello/ap/xp/ap_StatusBar.cpp-218-
-./hello/ap/xp/ap_StatusBar.cpp:219:		// TODO add other fields
-./hello/ap/xp/ap_StatusBar.cpp-220-
-./hello/ap/xp/ap_StatusBar.cpp-221-#undef DclField
-./hello/ap/xp/ap_StatusBar.cpp-222-		m_bInitFields = UT_TRUE;
-./hello/ap/xp/ap_StatusBar.cpp-223-	}
-./hello/ap/xp/ap_StatusBar.cpp-224-
-./hello/ap/xp/ap_Strings.cpp-243-	if (!XAP_DiskStringSet::loadStringsFromDisk(szFilename))
-./hello/ap/xp/ap_Strings.cpp-244-		return UT_FALSE;
-./hello/ap/xp/ap_Strings.cpp-245-
-./hello/ap/xp/ap_Strings.cpp-246-#ifdef DEBUG	
-./hello/ap/xp/ap_Strings.cpp-247-	{
-./hello/ap/xp/ap_Strings.cpp:248:		// TODO should we promote this test to be production code
-./hello/ap/xp/ap_Strings.cpp:249:		// TODO and maybe raise a message box ??
-./hello/ap/xp/ap_Strings.cpp-250-		UT_uint32 kLimit = NrElements(s_map);
-./hello/ap/xp/ap_Strings.cpp-251-		UT_uint32 k;
-./hello/ap/xp/ap_Strings.cpp-252-
-./hello/ap/xp/ap_Strings.cpp-253-		for (k=0; k<kLimit; k++)
-./hello/ap/xp/ap_Strings.cpp-254-		{
-./hello/ap/xp/ap_View.cpp-46-{
-./hello/ap/xp/ap_View.cpp-47-	if (!m_pG)
-./hello/ap/xp/ap_View.cpp-48-		return;
-./hello/ap/xp/ap_View.cpp-49-
-./hello/ap/xp/ap_View.cpp-50-	UT_RGBColor clrWhite(255,255,255);
-./hello/ap/xp/ap_View.cpp:51:	m_pG->fillRect(clrWhite, (UT_Rect &) *pRect);	// TODO: fix const on API
-./hello/ap/xp/ap_View.cpp-52-
-./hello/ap/xp/ap_View.cpp-53-	UT_UCSChar buf[2048];
-./hello/ap/xp/ap_View.cpp-54-	UT_UCS_strcpy_char(buf, "Hello, Abi");
-./hello/ap/xp/ap_View.cpp-55-	m_pG->drawChars(buf, 0, 10, 50, 50);
-./hello/ap/xp/ap_View.cpp-56-}
+
 ./text/fmt/xp/fb_ColumnBreaker.cpp-75-					/*
 ./text/fmt/xp/fb_ColumnBreaker.cpp-76-					  Wow!  The very first line in this column won't fit.
 ./text/fmt/xp/fb_ColumnBreaker.cpp-77-					  
@@ -829,6 +775,7 @@
 ./text/fmt/xp/fb_ColumnBreaker.cpp-83-				}
 ./text/fmt/xp/fb_ColumnBreaker.cpp-84-				else
 ./text/fmt/xp/fb_ColumnBreaker.cpp-85-				{
+
 ./text/fmt/xp/fb_ColumnBreaker.cpp-273-		pCurColumn->layout();
 ./text/fmt/xp/fb_ColumnBreaker.cpp-274-
 ./text/fmt/xp/fb_ColumnBreaker.cpp-275-		pCurColumn = pCurColumn->getNext();
@@ -836,6 +783,7 @@
 ./text/fmt/xp/fb_ColumnBreaker.cpp-277-
 ./text/fmt/xp/fb_ColumnBreaker.cpp:278:	return 0; // TODO return code
 ./text/fmt/xp/fb_ColumnBreaker.cpp-279-}
+
 ./text/fmt/xp/fb_LineBreaker.cpp-272-					{
 ./text/fmt/xp/fb_LineBreaker.cpp-273-						// tab won't fit.  bump it to the next line
 ./text/fmt/xp/fb_LineBreaker.cpp-274-						UT_ASSERT(pCurrentRun->getPrev());
@@ -847,6 +795,7 @@
 ./text/fmt/xp/fb_LineBreaker.cpp-280-						goto done_with_run_loop;
 ./text/fmt/xp/fb_LineBreaker.cpp-281-					}
 ./text/fmt/xp/fb_LineBreaker.cpp-282-					break;
+
 ./text/fmt/xp/fb_LineBreaker.cpp-340-		} /* if countruns > 0 */
 ./text/fmt/xp/fb_LineBreaker.cpp-341-		
 ./text/fmt/xp/fb_LineBreaker.cpp-342-		pLine = pLine->getNext();
@@ -858,6 +807,7 @@
 ./text/fmt/xp/fb_LineBreaker.cpp-348-UT_sint32 fb_LineBreaker::_moveBackToFirstNonBlankData(fp_Run *pCurrentRun, fp_Run **pOffendingRun)
 ./text/fmt/xp/fb_LineBreaker.cpp-349-{
 ./text/fmt/xp/fb_LineBreaker.cpp-350-	// need to move back untill we find the first non blank character and
+
 ./text/fmt/xp/fb_LineBreaker.cpp-528-void fb_LineBreaker::_splitRunAt(fp_Run *pCurrentRun, fp_RunSplitInfo &splitInfo)
 ./text/fmt/xp/fb_LineBreaker.cpp-529-{
 ./text/fmt/xp/fb_LineBreaker.cpp-530-	UT_ASSERT(pCurrentRun->getType() == FPRUN_TEXT);
@@ -869,6 +819,7 @@
 ./text/fmt/xp/fb_LineBreaker.cpp-536-	
 ./text/fmt/xp/fb_LineBreaker.cpp-537-	fp_TextRun *pOtherHalfOfSplitRun;
 ./text/fmt/xp/fb_LineBreaker.cpp-538-	pOtherHalfOfSplitRun = (fp_TextRun*) pRunToSplit->getNext();
+
 ./text/fmt/xp/fb_LineBreaker.cpp-591-		// make sure there is a next line
 ./text/fmt/xp/fb_LineBreaker.cpp-592-		pNextLine = pLine->getNext();
 ./text/fmt/xp/fb_LineBreaker.cpp-593-		if (!pNextLine)
@@ -880,6 +831,7 @@
 ./text/fmt/xp/fb_LineBreaker.cpp-599-		}
 ./text/fmt/xp/fb_LineBreaker.cpp-600-
 ./text/fmt/xp/fb_LineBreaker.cpp-601-		fp_Run* pRunToBump = pLine->getLastRun();
+
 ./text/fmt/xp/fg_GraphicRaster.cpp-198-	   	NULL, NULL
 ./text/fmt/xp/fg_GraphicRaster.cpp-199-	};
 ./text/fmt/xp/fg_GraphicRaster.cpp-200-
@@ -891,6 +843,7 @@
 ./text/fmt/xp/fg_GraphicRaster.cpp-206-
 ./text/fmt/xp/fg_GraphicRaster.cpp-207-UT_Bool FG_GraphicRaster::setRaster_PNG(UT_ByteBuf* pBB)
 ./text/fmt/xp/fg_GraphicRaster.cpp-208-{
+
 ./text/fmt/xp/fg_GraphicVector.cpp-215-		NULL, NULL
 ./text/fmt/xp/fg_GraphicVector.cpp-216-	};
 ./text/fmt/xp/fg_GraphicVector.cpp-217-
@@ -902,6 +855,7 @@
 ./text/fmt/xp/fg_GraphicVector.cpp-223-
 ./text/fmt/xp/fg_GraphicVector.cpp-224-UT_Bool FG_GraphicVector::setVector_SVG(UT_ByteBuf* pBB)
 ./text/fmt/xp/fg_GraphicVector.cpp-225-{
+
 ./text/fmt/xp/fl_AutoNum.cpp-110-{
 ./text/fmt/xp/fl_AutoNum.cpp-111-	fl_AutoNum * pParent;
 ./text/fmt/xp/fl_AutoNum.cpp-112-	
@@ -913,6 +867,7 @@
 ./text/fmt/xp/fl_AutoNum.cpp-118-
 ./text/fmt/xp/fl_AutoNum.cpp-119-	m_pParent = pParent;
 ./text/fmt/xp/fl_AutoNum.cpp-120-
+
 ./text/fmt/xp/fl_AutoNum.cpp-263-	{
 ./text/fmt/xp/fl_AutoNum.cpp-264-	       *insPoint = 0;
 ./text/fmt/xp/fl_AutoNum.cpp-265-	       return;
@@ -925,6 +880,7 @@
 ./text/fmt/xp/fl_AutoNum.cpp-272-	UT_uint32 rTmp;
 ./text/fmt/xp/fl_AutoNum.cpp-273-	
 ./text/fmt/xp/fl_AutoNum.cpp-274-	i = 0;
+
 ./text/fmt/xp/fl_BlockLayout.cpp-742-{
 ./text/fmt/xp/fl_BlockLayout.cpp-743-	fp_Line* pLine = m_pFirstLine;
 ./text/fmt/xp/fl_BlockLayout.cpp-744- //         if(getSectionLayout() && (getSectionLayout()->getType()== FL_SECTION_HDRFTR))
@@ -936,6 +892,7 @@
 ./text/fmt/xp/fl_BlockLayout.cpp-750-//  	  // hdrftrSection are attached to the same container causes conflicts.
 ./text/fmt/xp/fl_BlockLayout.cpp-751-//  	  // Maybe we should implement a virtual header/footer container for the
 ./text/fmt/xp/fl_BlockLayout.cpp-752-//  	  // overall hdrftrSectionLayout. Anyway right now doing this prsvents
+
 ./text/fmt/xp/fl_BlockLayout.cpp-873-
 ./text/fmt/xp/fl_BlockLayout.cpp-874-	GR_Graphics* pG = m_pLayout->getGraphics();
 ./text/fmt/xp/fl_BlockLayout.cpp-875-	UT_ASSERT(pG);
@@ -947,6 +904,7 @@
 ./text/fmt/xp/fl_BlockLayout.cpp-881-	m_pFirstRun->insertIntoRunListBeforeThis(*pNewRun);
 ./text/fmt/xp/fl_BlockLayout.cpp-882-	pFirstLine->insertRun(pNewRun);
 ./text/fmt/xp/fl_BlockLayout.cpp-883-	m_pFirstRun = pNewRun;
+
 ./text/fmt/xp/fl_BlockLayout.cpp-1117-	{
 ./text/fmt/xp/fl_BlockLayout.cpp-1118-	        pView->drawInsertionPoint();
 ./text/fmt/xp/fl_BlockLayout.cpp-1119-		m_bCursorErased = UT_FALSE;
@@ -958,6 +916,7 @@
 ./text/fmt/xp/fl_BlockLayout.cpp-1125-void fl_BlockLayout::redrawUpdate()
 ./text/fmt/xp/fl_BlockLayout.cpp-1126-{
 ./text/fmt/xp/fl_BlockLayout.cpp-1127-        m_bCursorErased = UT_FALSE;
+
 ./text/fmt/xp/fl_BlockLayout.cpp-1164-	  {
 ./text/fmt/xp/fl_BlockLayout.cpp-1165-	    UT_ASSERT(0);
 ./text/fmt/xp/fl_BlockLayout.cpp-1166-	    return NULL;
@@ -969,6 +928,7 @@
 ./text/fmt/xp/fl_BlockLayout.cpp-1172-	pLine->setBlock(this);
 ./text/fmt/xp/fl_BlockLayout.cpp-1173-	pLine->setNext(NULL);
 ./text/fmt/xp/fl_BlockLayout.cpp-1174-	
+
 ./text/fmt/xp/fl_BlockLayout.cpp-1198-		if(m_pPrev)
 ./text/fmt/xp/fl_BlockLayout.cpp-1199-		{
 ./text/fmt/xp/fl_BlockLayout.cpp-1200-		        if(m_pPrev->getLastLine() == NULL)
@@ -980,6 +940,7 @@
 ./text/fmt/xp/fl_BlockLayout.cpp-1206-			}
 ./text/fmt/xp/fl_BlockLayout.cpp-1207-		}
 ./text/fmt/xp/fl_BlockLayout.cpp-1208-		if (m_pPrev && m_pPrev->getLastLine())
+
 ./text/fmt/xp/fl_BlockLayout.cpp-1214-		{
 ./text/fmt/xp/fl_BlockLayout.cpp-1215-			pContainer = m_pNext->getFirstLine()->getContainer();
 ./text/fmt/xp/fl_BlockLayout.cpp-1216-		}
@@ -991,6 +952,7 @@
 ./text/fmt/xp/fl_BlockLayout.cpp-1222-		else
 ./text/fmt/xp/fl_BlockLayout.cpp-1223-		{
 ./text/fmt/xp/fl_BlockLayout.cpp-1224-			pContainer = m_pSectionLayout->getNewContainer();
+
 ./text/fmt/xp/fl_BlockLayout.cpp-1231-	}
 ./text/fmt/xp/fl_BlockLayout.cpp-1232-
 ./text/fmt/xp/fl_BlockLayout.cpp-1233-	return pLine;
@@ -1002,6 +964,7 @@
 ./text/fmt/xp/fl_BlockLayout.cpp-1239-{
 ./text/fmt/xp/fl_BlockLayout.cpp-1240-	return getProperty((const XML_Char *) (pszName), bExpandStyles);
 ./text/fmt/xp/fl_BlockLayout.cpp-1241-}
+
 ./text/fmt/xp/fl_BlockLayout.cpp-1694-void fl_BlockLayout::_addSquiggle(UT_uint32 iOffset, UT_uint32 iLen, UT_Bool bIsIgnored /* = UT_FALSE */)
 ./text/fmt/xp/fl_BlockLayout.cpp-1695-{
 ./text/fmt/xp/fl_BlockLayout.cpp-1696-	fl_PartOfBlock*	pPOB = new fl_PartOfBlock();
@@ -1013,6 +976,7 @@
 ./text/fmt/xp/fl_BlockLayout.cpp-1702-	pPOB->iOffset = iOffset;
 ./text/fmt/xp/fl_BlockLayout.cpp-1703-	pPOB->iLength = iLen;
 ./text/fmt/xp/fl_BlockLayout.cpp-1704-	pPOB->bIsIgnored = bIsIgnored;
+
 ./text/fmt/xp/fl_BlockLayout.cpp-1804-
 ./text/fmt/xp/fl_BlockLayout.cpp-1805-			m_pLayout->checkPendingWordForSpell();
 ./text/fmt/xp/fl_BlockLayout.cpp-1806-		}
@@ -1025,6 +989,7 @@
 ./text/fmt/xp/fl_BlockLayout.cpp-1813-//	_recalcPendingWord(iOffset, 0);
 ./text/fmt/xp/fl_BlockLayout.cpp-1814-}
 ./text/fmt/xp/fl_BlockLayout.cpp-1815-
+
 ./text/fmt/xp/fl_BlockLayout.cpp-1883-
 ./text/fmt/xp/fl_BlockLayout.cpp-1884-			m_pLayout->checkPendingWordForSpell();
 ./text/fmt/xp/fl_BlockLayout.cpp-1885-		}
@@ -1036,6 +1001,7 @@
 ./text/fmt/xp/fl_BlockLayout.cpp-1891-//	_recalcPendingWord(iOffset, 0);
 ./text/fmt/xp/fl_BlockLayout.cpp-1892-#else
 ./text/fmt/xp/fl_BlockLayout.cpp-1893-	m_pLayout->queueBlockForSpell(pPrevBL);
+
 ./text/fmt/xp/fl_BlockLayout.cpp-2396-{
 ./text/fmt/xp/fl_BlockLayout.cpp-2397-	FV_View* pView = m_pLayout->getView();
 ./text/fmt/xp/fl_BlockLayout.cpp-2398-	if(pView)
@@ -1047,6 +1013,7 @@
 ./text/fmt/xp/fl_BlockLayout.cpp-2404-	{
 ./text/fmt/xp/fl_BlockLayout.cpp-2405-#if 0
 ./text/fmt/xp/fl_BlockLayout.cpp-2406-		/*
+
 ./text/fmt/xp/fl_BlockLayout.cpp-2441-}
 ./text/fmt/xp/fl_BlockLayout.cpp-2442-
 ./text/fmt/xp/fl_BlockLayout.cpp-2443-UT_Bool	fl_BlockLayout::_doInsertForcedLineBreakRun(PT_BlockOffset blockOffset)
@@ -1058,6 +1025,7 @@
 ./text/fmt/xp/fl_BlockLayout.cpp-2449-	if (bResult)
 ./text/fmt/xp/fl_BlockLayout.cpp-2450-	    _breakLineAfterRun(pNewRun);
 ./text/fmt/xp/fl_BlockLayout.cpp-2451-
+
 ./text/fmt/xp/fl_BlockLayout.cpp-2453-}
 ./text/fmt/xp/fl_BlockLayout.cpp-2454-
 ./text/fmt/xp/fl_BlockLayout.cpp-2455-UT_Bool	fl_BlockLayout::_doInsertFieldStartRun(PT_BlockOffset blockOffset)
@@ -1069,6 +1037,7 @@
 ./text/fmt/xp/fl_BlockLayout.cpp-2461-	if (bResult)
 ./text/fmt/xp/fl_BlockLayout.cpp-2462-	    _breakLineAfterRun(pNewRun);
 ./text/fmt/xp/fl_BlockLayout.cpp-2463-
+
 ./text/fmt/xp/fl_BlockLayout.cpp-2465-}
 ./text/fmt/xp/fl_BlockLayout.cpp-2466-
 ./text/fmt/xp/fl_BlockLayout.cpp-2467-UT_Bool	fl_BlockLayout::_doInsertFieldEndRun(PT_BlockOffset blockOffset)
@@ -1080,6 +1049,7 @@
 ./text/fmt/xp/fl_BlockLayout.cpp-2473-	if (bResult)
 ./text/fmt/xp/fl_BlockLayout.cpp-2474-	    _breakLineAfterRun(pNewRun);
 ./text/fmt/xp/fl_BlockLayout.cpp-2475-
+
 ./text/fmt/xp/fl_BlockLayout.cpp-2477-}
 ./text/fmt/xp/fl_BlockLayout.cpp-2478-
 ./text/fmt/xp/fl_BlockLayout.cpp-2479-UT_Bool	fl_BlockLayout::_doInsertForcedPageBreakRun(PT_BlockOffset blockOffset)
@@ -1091,6 +1061,7 @@
 ./text/fmt/xp/fl_BlockLayout.cpp-2485-	        UT_DEBUGMSG(("In fl_BlockLayout::_doInsertForcedPageBreakRun  no LastLine \n"));
 ./text/fmt/xp/fl_BlockLayout.cpp-2486-	        UT_DEBUGMSG(("getPrev = %d this = %d \n",getPrev(),this));
 ./text/fmt/xp/fl_BlockLayout.cpp-2487-	        //UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+
 ./text/fmt/xp/fl_BlockLayout.cpp-2495-}
 ./text/fmt/xp/fl_BlockLayout.cpp-2496-
 ./text/fmt/xp/fl_BlockLayout.cpp-2497-UT_Bool	fl_BlockLayout::_doInsertForcedColumnBreakRun(PT_BlockOffset blockOffset)
@@ -1102,6 +1073,7 @@
 ./text/fmt/xp/fl_BlockLayout.cpp-2503-	if (bResult)
 ./text/fmt/xp/fl_BlockLayout.cpp-2504-	    _breakLineAfterRun(pNewRun);
 ./text/fmt/xp/fl_BlockLayout.cpp-2505-
+
 ./text/fmt/xp/fl_BlockLayout.cpp-2507-}
 ./text/fmt/xp/fl_BlockLayout.cpp-2508-
 ./text/fmt/xp/fl_BlockLayout.cpp-2509-UT_Bool	fl_BlockLayout::_doInsertTabRun(PT_BlockOffset blockOffset)
@@ -1123,6 +1095,7 @@
 ./text/fmt/xp/fl_BlockLayout.cpp-2525-}
 ./text/fmt/xp/fl_BlockLayout.cpp-2526-
 ./text/fmt/xp/fl_BlockLayout.cpp-2527-UT_Bool	fl_BlockLayout::_doInsertFieldRun(PT_BlockOffset blockOffset, const PX_ChangeRecord_Object * pcro /* pcro */)
+
 ./text/fmt/xp/fl_BlockLayout.cpp-2565-	  //
 ./text/fmt/xp/fl_BlockLayout.cpp-2566-	         pNewRun = new fp_FieldRun(this, m_pLayout->getGraphics(), blockOffset, 1);
 ./text/fmt/xp/fl_BlockLayout.cpp-2567-		//		return _doInsertRun(pNewRun);
@@ -1134,6 +1107,7 @@
 ./text/fmt/xp/fl_BlockLayout.cpp-2573-	pNewRun->calculateValue();
 ./text/fmt/xp/fl_BlockLayout.cpp-2574-        
 ./text/fmt/xp/fl_BlockLayout.cpp-2575-	_doInsertRun(pNewRun);
+
 ./text/fmt/xp/fl_BlockLayout.cpp-2855-
 ./text/fmt/xp/fl_BlockLayout.cpp-2856-	FV_View* pView = m_pLayout->getView();
 ./text/fmt/xp/fl_BlockLayout.cpp-2857-	if (pView && pView->isActive())
@@ -1145,6 +1119,7 @@
 ./text/fmt/xp/fl_BlockLayout.cpp-2863-		pView->_setPoint(pView->getPoint() + len);
 ./text/fmt/xp/fl_BlockLayout.cpp-2864-
 ./text/fmt/xp/fl_BlockLayout.cpp-2865-	if (m_pLayout->hasBackgroundCheckReason(FL_DocLayout::bgcrSmartQuotes))
+
 ./text/fmt/xp/fl_BlockLayout.cpp-2920-{
 ./text/fmt/xp/fl_BlockLayout.cpp-2921-#ifndef NDEBUG	
 ./text/fmt/xp/fl_BlockLayout.cpp-2922-	_assertRunListIntegrity();
@@ -1156,6 +1131,7 @@
 ./text/fmt/xp/fl_BlockLayout.cpp-2928-
 ./text/fmt/xp/fl_BlockLayout.cpp-2929-	fp_Run* pRun = m_pFirstRun;
 ./text/fmt/xp/fl_BlockLayout.cpp-2930-	while (pRun)
+
 ./text/fmt/xp/fl_BlockLayout.cpp-3129-		}
 ./text/fmt/xp/fl_BlockLayout.cpp-3130-		else if (pRun->getType() == FPRUN_TAB)
 ./text/fmt/xp/fl_BlockLayout.cpp-3131-		{
@@ -1167,6 +1143,7 @@
 ./text/fmt/xp/fl_BlockLayout.cpp-3137-	}
 ./text/fmt/xp/fl_BlockLayout.cpp-3138-
 ./text/fmt/xp/fl_BlockLayout.cpp-3139-	setNeedsReformat();
+
 ./text/fmt/xp/fl_BlockLayout.cpp-3328-	{	
 ./text/fmt/xp/fl_BlockLayout.cpp-3329-		// move all squiggles to previous block
 ./text/fmt/xp/fl_BlockLayout.cpp-3330-		_mergeSquiggles(offset, pPrevBL);
@@ -1178,6 +1155,7 @@
 ./text/fmt/xp/fl_BlockLayout.cpp-3336-
 ./text/fmt/xp/fl_BlockLayout.cpp-3337-	// in case we've never checked this one
 ./text/fmt/xp/fl_BlockLayout.cpp-3338-	m_pLayout->dequeueBlockForBackgroundCheck(this);
+
 ./text/fmt/xp/fl_BlockLayout.cpp-3341-	if (pView && pView->isActive())
 ./text/fmt/xp/fl_BlockLayout.cpp-3342-		pView->_setPoint(pcrx->getPosition());
 ./text/fmt/xp/fl_BlockLayout.cpp-3343-	else if(pView && pView->getPoint() > pcrx->getPosition())
@@ -1189,6 +1167,7 @@
 ./text/fmt/xp/fl_BlockLayout.cpp-3349-}
 ./text/fmt/xp/fl_BlockLayout.cpp-3350-
 ./text/fmt/xp/fl_BlockLayout.cpp-3351-UT_Bool fl_BlockLayout::doclistener_changeStrux(const PX_ChangeRecord_StruxChange * pcrxc)
+
 ./text/fmt/xp/fl_BlockLayout.cpp-3464-	  fine, although the last run should be redrawn.
 ./text/fmt/xp/fl_BlockLayout.cpp-3465-	  
 ./text/fmt/xp/fl_BlockLayout.cpp-3466-	  All runs in the new block need their offsets fixed, and 
@@ -1200,6 +1179,7 @@
 ./text/fmt/xp/fl_BlockLayout.cpp-3472-	// figure out where the breakpoint is
 ./text/fmt/xp/fl_BlockLayout.cpp-3473-	PT_BlockOffset blockOffset = (pcrx->getPosition() - getPosition());
 ./text/fmt/xp/fl_BlockLayout.cpp-3474-
+
 ./text/fmt/xp/fl_BlockLayout.cpp-3541-	// Split charwidths across the two blocks
 ./text/fmt/xp/fl_BlockLayout.cpp-3542-	UT_uint32 lenNew = m_gbCharWidths.getLength() - blockOffset;
 ./text/fmt/xp/fl_BlockLayout.cpp-3543-	if (lenNew > 0)
@@ -1212,6 +1192,7 @@
 ./text/fmt/xp/fl_BlockLayout.cpp-3550-	}
 ./text/fmt/xp/fl_BlockLayout.cpp-3551-
 ./text/fmt/xp/fl_BlockLayout.cpp-3552-	// Move remaining runs to new block
+
 ./text/fmt/xp/fl_BlockLayout.cpp-3554-
 ./text/fmt/xp/fl_BlockLayout.cpp-3555-	for (pRun=pFirstNewRun; (pRun); pRun=pRun->getNext())
 ./text/fmt/xp/fl_BlockLayout.cpp-3556-	{
@@ -1225,6 +1206,7 @@
 ./text/fmt/xp/fl_BlockLayout.cpp-3564-	}
 ./text/fmt/xp/fl_BlockLayout.cpp-3565-
 ./text/fmt/xp/fl_BlockLayout.cpp-3566-	// Explicitly truncate rest of this block's layout
+
 ./text/fmt/xp/fl_BlockLayout.cpp-3794-		pView->_setPoint(pcro->getPosition() + 1);
 ./text/fmt/xp/fl_BlockLayout.cpp-3795-	else if(pView && pView->getPoint() > pcro->getPosition())
 ./text/fmt/xp/fl_BlockLayout.cpp-3796-		pView->_setPoint(pView->getPoint() + 1);
@@ -1236,6 +1218,7 @@
 ./text/fmt/xp/fl_BlockLayout.cpp-3802-}
 ./text/fmt/xp/fl_BlockLayout.cpp-3803-
 ./text/fmt/xp/fl_BlockLayout.cpp-3804-UT_Bool fl_BlockLayout::doclistener_deleteObject(const PX_ChangeRecord_Object * pcro)
+
 ./text/fmt/xp/fl_BlockLayout.cpp-3850-	}
 ./text/fmt/xp/fl_BlockLayout.cpp-3851-	else if(pView && pView->getPoint() > pcro->getPosition())
 ./text/fmt/xp/fl_BlockLayout.cpp-3852-		pView->_setPoint(pView->getPoint() - 1);
@@ -1247,6 +1230,7 @@
 ./text/fmt/xp/fl_BlockLayout.cpp-3858-}
 ./text/fmt/xp/fl_BlockLayout.cpp-3859-
 ./text/fmt/xp/fl_BlockLayout.cpp-3860-UT_Bool fl_BlockLayout::doclistener_changeObject(const PX_ChangeRecord_ObjectChange * pcroc)
+
 ./text/fmt/xp/fl_BlockLayout.cpp-3863-	FV_View* pView = m_pLayout->getView();
 ./text/fmt/xp/fl_BlockLayout.cpp-3864-	switch (pcroc->getObjectType())
 ./text/fmt/xp/fl_BlockLayout.cpp-3865-	{
@@ -1258,6 +1242,7 @@
 ./text/fmt/xp/fl_BlockLayout.cpp-3871-	case PTO_Field:
 ./text/fmt/xp/fl_BlockLayout.cpp-3872-	{
 ./text/fmt/xp/fl_BlockLayout.cpp-3873-		UT_DEBUGMSG(("Edit:ChangeObject:Field:\n"));
+
 ./text/fmt/xp/fl_BlockLayout.cpp-4015-	UT_ASSERT(iStartX >= 0);
 ./text/fmt/xp/fl_BlockLayout.cpp-4016-
 ./text/fmt/xp/fl_BlockLayout.cpp-4017-	UT_uint32 iCountTabs = m_vecTabs.getItemCount();
@@ -1269,6 +1254,7 @@
 ./text/fmt/xp/fl_BlockLayout.cpp-4023-	{
 ./text/fmt/xp/fl_BlockLayout.cpp-4024-		fl_TabStop* pTab = (fl_TabStop*) m_vecTabs.getNthItem(i);
 ./text/fmt/xp/fl_BlockLayout.cpp-4025-
+
 ./text/fmt/xp/fl_BlockLayout.cpp-4138-
 ./text/fmt/xp/fl_BlockLayout.cpp-4139-	fp_FmtMarkRun * pNewRun = new fp_FmtMarkRun(this,m_pLayout->getGraphics(),blockOffset);
 ./text/fmt/xp/fl_BlockLayout.cpp-4140-	UT_ASSERT(pNewRun);
@@ -1280,6 +1266,7 @@
 ./text/fmt/xp/fl_BlockLayout.cpp-4146-	FV_View* pView = m_pLayout->getView();
 ./text/fmt/xp/fl_BlockLayout.cpp-4147-	if (pView && pView->isActive())
 ./text/fmt/xp/fl_BlockLayout.cpp-4148-		pView->_setPoint(pcrfm->getPosition());
+
 ./text/fmt/xp/fl_BlockLayout.cpp-4168-	UT_DEBUGMSG(("Edit:DeleteFmtMark: [blockOffset %ld]\n",blockOffset));
 ./text/fmt/xp/fl_BlockLayout.cpp-4169-
 ./text/fmt/xp/fl_BlockLayout.cpp-4170-	// we can't use the regular _delete() since we are of length zero
@@ -1291,6 +1278,7 @@
 ./text/fmt/xp/fl_BlockLayout.cpp-4176-	FV_View* pView = m_pLayout->getView();
 ./text/fmt/xp/fl_BlockLayout.cpp-4177-	if (pView && pView->isActive())
 ./text/fmt/xp/fl_BlockLayout.cpp-4178-	{
+
 ./text/fmt/xp/fl_BlockLayout.cpp-4760-
 ./text/fmt/xp/fl_BlockLayout.cpp-4761-
 ./text/fmt/xp/fl_BlockLayout.cpp-4762-	pAutoNum = new fl_AutoNum(id, iParentID, lType, start, lDelim, lDecimal, m_pDoc);
@@ -1302,6 +1290,7 @@
 ./text/fmt/xp/fl_BlockLayout.cpp-4768-	pAutoNum->fixHierarchy(m_pDoc);
 ./text/fmt/xp/fl_BlockLayout.cpp-4769-
 ./text/fmt/xp/fl_BlockLayout.cpp-4770-	UT_uint32 counta = va.getItemCount() + 1;
+
 ./text/fmt/xp/fl_BlockLayout.cpp-5073-        return pPrev;
 ./text/fmt/xp/fl_BlockLayout.cpp-5074-}
 ./text/fmt/xp/fl_BlockLayout.cpp-5075-
@@ -1313,6 +1302,7 @@
 ./text/fmt/xp/fl_BlockLayout.cpp-5081-	fl_AutoNum * pParent = m_pAutoNum->getActiveParent();
 ./text/fmt/xp/fl_BlockLayout.cpp-5082-	if (pParent)
 ./text/fmt/xp/fl_BlockLayout.cpp-5083-		return getPreviousList(pParent->getID());
+
 ./text/fmt/xp/fl_DocLayout.cpp-70-	{
 ./text/fmt/xp/fl_DocLayout.cpp-71-		m_pRedrawUpdateTimer->set(REDRAW_UPDATE_MSECS);
 ./text/fmt/xp/fl_DocLayout.cpp-72-		m_pRedrawUpdateTimer->start();
@@ -1326,6 +1316,7 @@
 ./text/fmt/xp/fl_DocLayout.cpp-80-
 ./text/fmt/xp/fl_DocLayout.cpp-81-	m_pDoc->disableListUpdates();
 ./text/fmt/xp/fl_DocLayout.cpp-82-	m_pDocListener = new fl_DocListener(doc, this);
+
 ./text/fmt/xp/fl_DocLayout.cpp-237-	{
 ./text/fmt/xp/fl_DocLayout.cpp-238-		double newSize = UT_convertToPoints(pszSize) * 2.0 / 3.0;
 ./text/fmt/xp/fl_DocLayout.cpp-239-		pszSize = UT_formatDimensionedValue(newSize,"pt",".0");
@@ -1345,6 +1336,7 @@
 ./text/fmt/xp/fl_DocLayout.cpp-253-			{
 ./text/fmt/xp/fl_DocLayout.cpp-254-			m_pG->setLayoutResolutionMode(UT_TRUE);
 ./text/fmt/xp/fl_DocLayout.cpp-255-			}
+
 ./text/fmt/xp/fl_DocLayout.cpp-293-		double newSize = UT_convertToPoints(pszSize) * 2.0 / 3.0;
 ./text/fmt/xp/fl_DocLayout.cpp-294-		pszSize = UT_formatDimensionedValue(newSize,"pt",".0");
 ./text/fmt/xp/fl_DocLayout.cpp-295-	}
@@ -1367,6 +1359,7 @@
 ./text/fmt/xp/fl_DocLayout.cpp-312-			{
 ./text/fmt/xp/fl_DocLayout.cpp-313-			m_pG->setLayoutResolutionMode(UT_TRUE);
 ./text/fmt/xp/fl_DocLayout.cpp-314-			}
+
 ./text/fmt/xp/fl_DocLayout.cpp-530-}
 ./text/fmt/xp/fl_DocLayout.cpp-531-
 ./text/fmt/xp/fl_DocLayout.cpp-532-void FL_DocLayout::updateLayout()
@@ -1378,6 +1371,7 @@
 ./text/fmt/xp/fl_DocLayout.cpp-538-
 ./text/fmt/xp/fl_DocLayout.cpp-539-
 ./text/fmt/xp/fl_DocLayout.cpp-540-	  Very good point. We need a isOnScreen() method!!!
+
 ./text/fmt/xp/fl_DocLayout.cpp-575-		while (pSL)
 ./text/fmt/xp/fl_DocLayout.cpp-576-		{
 ./text/fmt/xp/fl_DocLayout.cpp-577-			fl_BlockLayout* b = pSL->getFirstBlock();
@@ -1389,6 +1383,7 @@
 ./text/fmt/xp/fl_DocLayout.cpp-583-				b = b->getNext();
 ./text/fmt/xp/fl_DocLayout.cpp-584-			}
 ./text/fmt/xp/fl_DocLayout.cpp-585-			pSL = (fl_DocSectionLayout *) pSL->getNext();
+
 ./text/fmt/xp/fl_DocLayout.cpp-983-	pDocLayout->m_bSpellCheckInternet = b;
 ./text/fmt/xp/fl_DocLayout.cpp-984-	
 ./text/fmt/xp/fl_DocLayout.cpp-985-	// auto spell
@@ -1404,6 +1399,7 @@
 ./text/fmt/xp/fl_DocLayout.cpp-995-
 ./text/fmt/xp/fl_DocLayout.cpp-996-	pPrefs->getPrefsValueBool( (XML_Char *)XAP_PREF_KEY_SmartQuotesEnable, &b );
 ./text/fmt/xp/fl_DocLayout.cpp-997-	pDocLayout->_toggleAutoSmartQuotes( b );
+
 ./text/fmt/xp/fl_DocLayout.cpp-1248-	sqOTHERPUNCT   =10,
 ./text/fmt/xp/fl_DocLayout.cpp-1249-	sqALPHA        =11,
 ./text/fmt/xp/fl_DocLayout.cpp-1250-	sqWHITE        =12
@@ -1415,6 +1411,7 @@
 ./text/fmt/xp/fl_DocLayout.cpp-1256-	xxx_UT_DEBUGMSG(("what sort of character is %d 0x%x |%c|\n", thing, thing, thing));
 ./text/fmt/xp/fl_DocLayout.cpp-1257-	switch (thing)
 ./text/fmt/xp/fl_DocLayout.cpp-1258-	{
+
 ./text/fmt/xp/fl_DocLayout.cpp-1410-	if (UT_isSmartQuotableCharacter(c))
 ./text/fmt/xp/fl_DocLayout.cpp-1411-	{
 ./text/fmt/xp/fl_DocLayout.cpp-1412-		enum sqThingAt before = sqBREAK, after = sqBREAK;
@@ -1428,6 +1425,7 @@
 ./text/fmt/xp/fl_DocLayout.cpp-1420-		else
 ./text/fmt/xp/fl_DocLayout.cpp-1421-		{
 ./text/fmt/xp/fl_DocLayout.cpp-1422-			// candidate was the first character in the block, so
+
 ./text/fmt/xp/fl_DocLayout.cpp-1449-			}
 ./text/fmt/xp/fl_DocLayout.cpp-1450-		}
 ./text/fmt/xp/fl_DocLayout.cpp-1451-
@@ -1441,6 +1439,7 @@
 ./text/fmt/xp/fl_DocLayout.cpp-1459-		else
 ./text/fmt/xp/fl_DocLayout.cpp-1460-		{
 ./text/fmt/xp/fl_DocLayout.cpp-1461-			// candidate was the last character in a block, so see
+
 ./text/fmt/xp/fl_DocLayout.cpp-1479-		}
 ./text/fmt/xp/fl_DocLayout.cpp-1480-
 ./text/fmt/xp/fl_DocLayout.cpp-1481-		// we now know what the before and after things are, so 
@@ -1454,6 +1453,7 @@
 ./text/fmt/xp/fl_DocLayout.cpp-1489-		{
 ./text/fmt/xp/fl_DocLayout.cpp-1490-			if (c != table[tdex].thing) continue;
 ./text/fmt/xp/fl_DocLayout.cpp-1491-			if (table[tdex].before == sqDONTCARE  ||  table[tdex].before == before)
+
 ./text/fmt/xp/fl_DocListener.cpp-247-				}
 ./text/fmt/xp/fl_DocListener.cpp-248-			}
 ./text/fmt/xp/fl_DocListener.cpp-249-		}
@@ -1465,6 +1465,7 @@
 ./text/fmt/xp/fl_DocListener.cpp-255-	}
 ./text/fmt/xp/fl_DocListener.cpp-256-	break;
 ./text/fmt/xp/fl_DocListener.cpp-257-
+
 ./text/fmt/xp/fl_DocListener.cpp-334-		case PX_ChangeRecord_Glob::PXF_MultiStepEnd:
 ./text/fmt/xp/fl_DocListener.cpp-335-			m_iGlobCounter--;
 ./text/fmt/xp/fl_DocListener.cpp-336-			bResult = UT_TRUE;
@@ -1477,6 +1478,7 @@
 ./text/fmt/xp/fl_DocListener.cpp-343-		}
 ./text/fmt/xp/fl_DocListener.cpp-344-	}
 ./text/fmt/xp/fl_DocListener.cpp-345-			
+
 ./text/fmt/xp/fl_DocListener.cpp-450-	{
 ./text/fmt/xp/fl_DocListener.cpp-451-		const PX_ChangeRecord_StruxChange * pcrxc = static_cast<const PX_ChangeRecord_StruxChange *> (pcr);
 ./text/fmt/xp/fl_DocListener.cpp-452-
@@ -1490,6 +1492,7 @@
 ./text/fmt/xp/fl_DocListener.cpp-460-
 ./text/fmt/xp/fl_DocListener.cpp-461-		switch (pL->getType())
 ./text/fmt/xp/fl_DocListener.cpp-462-		{
+
 ./text/fmt/xp/fl_SectionLayout.cpp-49-#include "ut_debugmsg.h"
 ./text/fmt/xp/fl_SectionLayout.cpp-50-#include "ut_assert.h"
 ./text/fmt/xp/fl_SectionLayout.cpp-51-#include "ut_units.h"
@@ -1501,6 +1504,7 @@
 ./text/fmt/xp/fl_SectionLayout.cpp-57-
 ./text/fmt/xp/fl_SectionLayout.cpp-58-fl_SectionLayout::fl_SectionLayout(FL_DocLayout* pLayout, PL_StruxDocHandle sdh, PT_AttrPropIndex indexAP, UT_uint32 iType)
 ./text/fmt/xp/fl_SectionLayout.cpp-59-	: fl_Layout(PTX_Section, sdh)
+
 ./text/fmt/xp/fl_SectionLayout.cpp-399-	}
 ./text/fmt/xp/fl_SectionLayout.cpp-400-}
 ./text/fmt/xp/fl_SectionLayout.cpp-401-
@@ -1512,6 +1516,7 @@
 ./text/fmt/xp/fl_SectionLayout.cpp-407-
 ./text/fmt/xp/fl_SectionLayout.cpp-408-	const char* pszAtt = NULL;
 ./text/fmt/xp/fl_SectionLayout.cpp-409-
+
 ./text/fmt/xp/fl_SectionLayout.cpp-727-
 ./text/fmt/xp/fl_SectionLayout.cpp-728-	m_pFirstColumn = NULL;
 ./text/fmt/xp/fl_SectionLayout.cpp-729-	m_pLastColumn = NULL;
@@ -1523,6 +1528,7 @@
 ./text/fmt/xp/fl_SectionLayout.cpp-735-	*/
 ./text/fmt/xp/fl_SectionLayout.cpp-736-	
 ./text/fmt/xp/fl_SectionLayout.cpp-737-	format();
+
 ./text/fmt/xp/fl_SectionLayout.cpp-750-	const PP_AttrProp* pSectionAP = NULL;
 ./text/fmt/xp/fl_SectionLayout.cpp-751-	
 ./text/fmt/xp/fl_SectionLayout.cpp-752-	m_pLayout->getDocument()->getAttrProp(m_apIndex, &pSectionAP);
@@ -1534,6 +1540,7 @@
 ./text/fmt/xp/fl_SectionLayout.cpp-758-	  Yes, since PP_evalProperty does a fallback to the
 ./text/fmt/xp/fl_SectionLayout.cpp-759-	  last-chance defaults, whereas the code below is
 ./text/fmt/xp/fl_SectionLayout.cpp-760-	  hard-coding its own defaults.  Bad idea.
+
 ./text/fmt/xp/fl_SectionLayout.cpp-842-
 ./text/fmt/xp/fl_SectionLayout.cpp-843-	case DIM_PT:
 ./text/fmt/xp/fl_SectionLayout.cpp-844-		strcpy(defaultMargin, "72.0pt");
@@ -1555,6 +1562,7 @@
 ./text/fmt/xp/fl_SectionLayout.cpp-860-	}
 ./text/fmt/xp/fl_SectionLayout.cpp-861-
 ./text/fmt/xp/fl_SectionLayout.cpp-862-	if(pszLeftMargin && pszLeftMargin[0])
+
 ./text/fmt/xp/fl_SectionLayout.cpp-1024-	UT_ASSERT(pcrx->getStruxType()==PTX_Section);
 ./text/fmt/xp/fl_SectionLayout.cpp-1025-
 ./text/fmt/xp/fl_SectionLayout.cpp-1026-	fl_DocSectionLayout* pPrevSL = getPrevDocSection();
@@ -1566,6 +1574,7 @@
 ./text/fmt/xp/fl_SectionLayout.cpp-1032-	}
 ./text/fmt/xp/fl_SectionLayout.cpp-1033-	
 ./text/fmt/xp/fl_SectionLayout.cpp-1034-	// clear all the columns
+
 ./text/fmt/xp/fl_SectionLayout.cpp-1097-	if (pView)
 ./text/fmt/xp/fl_SectionLayout.cpp-1098-	{
 ./text/fmt/xp/fl_SectionLayout.cpp-1099-		pView->_setPoint(pcrx->getPosition());
@@ -1584,6 +1593,7 @@
 ./text/fmt/xp/fl_SectionLayout.cpp-1112-	        m_pFirstOwnedPage = pPage;
 ./text/fmt/xp/fl_SectionLayout.cpp-1113-	fp_Page * pPrev = m_pFirstOwnedPage;
 ./text/fmt/xp/fl_SectionLayout.cpp-1114-
+
 ./text/fmt/xp/fl_SectionLayout.cpp-1152-}
 ./text/fmt/xp/fl_SectionLayout.cpp-1153-
 ./text/fmt/xp/fl_SectionLayout.cpp-1154-	
@@ -1595,6 +1605,7 @@
 ./text/fmt/xp/fl_SectionLayout.cpp-1160-	{
 ./text/fmt/xp/fl_SectionLayout.cpp-1161-		m_pHeaderSL->deletePage(pPage);
 ./text/fmt/xp/fl_SectionLayout.cpp-1162-	}
+
 ./text/fmt/xp/fl_SectionLayout.cpp-1210-					/*
 ./text/fmt/xp/fl_SectionLayout.cpp-1211-					  Wow!  The very first line in this column won't fit.
 ./text/fmt/xp/fl_SectionLayout.cpp-1212-					  
@@ -1606,6 +1617,7 @@
 ./text/fmt/xp/fl_SectionLayout.cpp-1218-				}
 ./text/fmt/xp/fl_SectionLayout.cpp-1219-				else
 ./text/fmt/xp/fl_SectionLayout.cpp-1220-				{
+
 ./text/fmt/xp/fl_SectionLayout.cpp-1408-		pCurColumn->layout();
 ./text/fmt/xp/fl_SectionLayout.cpp-1409-
 ./text/fmt/xp/fl_SectionLayout.cpp-1410-		pCurColumn = pCurColumn->getNext();
@@ -1627,6 +1639,7 @@
 ./text/fmt/xp/fl_SectionLayout.cpp-1426-		if(iColWidth < minColumnWidth)
 ./text/fmt/xp/fl_SectionLayout.cpp-1427-		{
 ./text/fmt/xp/fl_SectionLayout.cpp-1428-			m_iColumnGap = (iLayoutWidth - minColumnWidth * m_iNumColumns) / (m_iNumColumns - 1);
+
 ./text/fmt/xp/fl_SectionLayout.cpp-1634-{
 ./text/fmt/xp/fl_SectionLayout.cpp-1635-	UT_ASSERT(0 > _findShadow(pPage));
 ./text/fmt/xp/fl_SectionLayout.cpp-1636-	if(_findShadow(pPage) > 0)
@@ -1638,6 +1651,7 @@
 ./text/fmt/xp/fl_SectionLayout.cpp-1642-	pPair->pShadow = new fl_HdrFtrShadow(m_pLayout, pPage, this, m_sdh, m_apIndex);
 ./text/fmt/xp/fl_SectionLayout.cpp-1643-	
 ./text/fmt/xp/fl_SectionLayout.cpp-1644-	fl_ShadowListener* pShadowListener = new fl_ShadowListener(this, pPair->pShadow);
+
 ./text/fmt/xp/fl_SectionLayout.cpp-1719-{
 ./text/fmt/xp/fl_SectionLayout.cpp-1720-	UT_ASSERT(pcrxc->getType()==PX_ChangeRecord::PXT_ChangeStrux);
 ./text/fmt/xp/fl_SectionLayout.cpp-1721-
@@ -1649,6 +1663,7 @@
 ./text/fmt/xp/fl_SectionLayout.cpp-1727-
 ./text/fmt/xp/fl_SectionLayout.cpp-1728-	return UT_FALSE;
 ./text/fmt/xp/fl_SectionLayout.cpp-1729-}
+
 ./text/fmt/xp/fl_SectionLayout.cpp-1894-									  PL_ListenerId lid,
 ./text/fmt/xp/fl_SectionLayout.cpp-1895-									  void (* pfnBindHandles)(PL_StruxDocHandle sdhNew,
 ./text/fmt/xp/fl_SectionLayout.cpp-1896-															  PL_ListenerId lid,
@@ -1660,17 +1675,7 @@
 ./text/fmt/xp/fl_SectionLayout.cpp-1902-	UT_uint32 iCount = m_vecPages.getItemCount();
 ./text/fmt/xp/fl_SectionLayout.cpp-1903-	for (UT_uint32 i=0; i<iCount; i++)
 ./text/fmt/xp/fl_SectionLayout.cpp-1904-	{
-./text/fmt/xp/fl_SectionLayout.cpp-2057-	return NULL;
-./text/fmt/xp/fl_SectionLayout.cpp-2058-}
-./text/fmt/xp/fl_SectionLayout.cpp-2059-
-./text/fmt/xp/fl_SectionLayout.cpp-2060-fp_Container* fl_HdrFtrShadow::getLastContainer()
-./text/fmt/xp/fl_SectionLayout.cpp-2061-{
-./text/fmt/xp/fl_SectionLayout.cpp:2062:	UT_ASSERT(UT_TODO);
-./text/fmt/xp/fl_SectionLayout.cpp-2063-
-./text/fmt/xp/fl_SectionLayout.cpp-2064-	return NULL;
-./text/fmt/xp/fl_SectionLayout.cpp-2065-}
-./text/fmt/xp/fl_SectionLayout.cpp-2066-
-./text/fmt/xp/fl_SectionLayout.cpp-2067-fp_Container* fl_HdrFtrShadow::getNewContainer(void)
+
 ./text/fmt/xp/fl_SectionLayout.cpp-2122-{
 ./text/fmt/xp/fl_SectionLayout.cpp-2123-	UT_ASSERT(pcrxc->getType()==PX_ChangeRecord::PXT_ChangeStrux);
 ./text/fmt/xp/fl_SectionLayout.cpp-2124-
@@ -1682,6 +1687,7 @@
 ./text/fmt/xp/fl_SectionLayout.cpp-2130-
 ./text/fmt/xp/fl_SectionLayout.cpp-2131-	return UT_FALSE;
 ./text/fmt/xp/fl_SectionLayout.cpp-2132-}
+
 ./text/fmt/xp/fl_SectionLayout.cpp-2263-				if (
 ./text/fmt/xp/fl_SectionLayout.cpp-2264-					(0 == UT_strcmp(pszSectionType, "header"))
 ./text/fmt/xp/fl_SectionLayout.cpp-2265-					|| (0 == UT_strcmp(pszSectionType, "footer"))
@@ -1693,6 +1699,7 @@
 ./text/fmt/xp/fl_SectionLayout.cpp-2271-				}
 ./text/fmt/xp/fl_SectionLayout.cpp-2272-				else
 ./text/fmt/xp/fl_SectionLayout.cpp-2273-				{
+
 ./text/fmt/xp/fl_SectionLayout.cpp-2275-				}
 ./text/fmt/xp/fl_SectionLayout.cpp-2276-			}
 ./text/fmt/xp/fl_SectionLayout.cpp-2277-		}
@@ -1704,6 +1711,7 @@
 ./text/fmt/xp/fl_SectionLayout.cpp-2283-	}
 ./text/fmt/xp/fl_SectionLayout.cpp-2284-	break;
 ./text/fmt/xp/fl_SectionLayout.cpp-2285-
+
 ./text/fmt/xp/fl_SectionLayout.cpp-2297-
 ./text/fmt/xp/fl_SectionLayout.cpp-2298-			m_pCurrentBL = pBL;	
 ./text/fmt/xp/fl_SectionLayout.cpp-2299-			*psfh = (PL_StruxFmtHandle)pBL;
@@ -1715,6 +1723,7 @@
 ./text/fmt/xp/fl_SectionLayout.cpp-2305-		if (m_bScreen)
 ./text/fmt/xp/fl_SectionLayout.cpp-2306-			m_pLayout->queueBlockForBackgroundCheck(bgcrSpelling, pBL);
 ./text/fmt/xp/fl_SectionLayout.cpp-2307-#endif
+
 ./text/fmt/xp/fp_Column.cpp-64-		return;
 ./text/fmt/xp/fp_Column.cpp-65-	}
 ./text/fmt/xp/fp_Column.cpp-66-	
@@ -1726,6 +1735,7 @@
 ./text/fmt/xp/fp_Column.cpp-72-}
 ./text/fmt/xp/fp_Column.cpp-73-
 ./text/fmt/xp/fp_Column.cpp-74-void fp_Container::setWidthInLayoutUnits(UT_sint32 iWidth)
+
 ./text/fmt/xp/fp_Column.cpp-171-	UT_sint32 count = m_vecLines.getItemCount();
 ./text/fmt/xp/fp_Column.cpp-172-	UT_sint32 ndx = m_vecLines.findItem(pAfterLine);
 ./text/fmt/xp/fp_Column.cpp-173-	UT_ASSERT( (count > 0) || (ndx == -1) );
@@ -1737,6 +1747,7 @@
 ./text/fmt/xp/fp_Column.cpp-179-	UT_ASSERT(ndx >= 0);
 ./text/fmt/xp/fp_Column.cpp-180-
 ./text/fmt/xp/fp_Column.cpp-181-	if ( (ndx+1) == count )				// append after last line in vector
+
 ./text/fmt/xp/fp_Column.cpp-182-		m_vecLines.addItem(pNewLine);
 ./text/fmt/xp/fp_Column.cpp-183-	else if (ndx >= 0)					// append after this item within the vector
 ./text/fmt/xp/fp_Column.cpp-184-		m_vecLines.insertItemAt(pNewLine, ndx+1);
@@ -1748,6 +1759,7 @@
 ./text/fmt/xp/fp_Column.cpp-190-
 ./text/fmt/xp/fp_Column.cpp-191-	pNewLine->setContainer(this);
 ./text/fmt/xp/fp_Column.cpp-192-	pNewLine->recalcMaxWidth();
+
 ./text/fmt/xp/fp_Column.cpp-307-					return;
 ./text/fmt/xp/fp_Column.cpp-308-				}
 ./text/fmt/xp/fp_Column.cpp-309-			}
@@ -1759,6 +1771,7 @@
 ./text/fmt/xp/fp_Column.cpp-315-			pLine->mapXYToPosition(x - pLine->getX(), y - pLine->getY(), pos, bBOL, bEOL);
 ./text/fmt/xp/fp_Column.cpp-316-
 ./text/fmt/xp/fp_Column.cpp-317-			UT_ASSERT(bEOL == UT_TRUE || bEOL == UT_FALSE);
+
 ./text/fmt/xp/fp_Column.cpp-329-			
 ./text/fmt/xp/fp_Column.cpp-330-			return;
 ./text/fmt/xp/fp_Column.cpp-331-		}
@@ -1770,6 +1783,7 @@
 ./text/fmt/xp/fp_Column.cpp-337-
 ./text/fmt/xp/fp_Column.cpp-338-UT_uint32 fp_Container::distanceFromPoint(UT_sint32 x, UT_sint32 y)
 ./text/fmt/xp/fp_Column.cpp-339-{
+
 ./text/fmt/xp/fp_Column.cpp-583-		iY += iLineHeight;
 ./text/fmt/xp/fp_Column.cpp-584-		iY += iLineMarginAfter;
 ./text/fmt/xp/fp_Column.cpp-585-	}
@@ -1781,6 +1795,7 @@
 ./text/fmt/xp/fp_Column.cpp-591-fl_HdrFtrSectionLayout* fp_HdrFtrContainer::getHdrFtrSectionLayout(void) const
 ./text/fmt/xp/fp_Column.cpp-592-{
 ./text/fmt/xp/fp_Column.cpp-593-	UT_ASSERT(m_pSectionLayout->getType() == FL_SECTION_HDRFTR);
+
 ./text/fmt/xp/fp_FmtMarkRun.cpp-51-
 ./text/fmt/xp/fp_FmtMarkRun.cpp-52-void fp_FmtMarkRun::lookupProperties(void)
 ./text/fmt/xp/fp_FmtMarkRun.cpp-53-{
@@ -1792,6 +1807,7 @@
 ./text/fmt/xp/fp_FmtMarkRun.cpp-59-	m_pBL->getAttrProp(&pBlockAP);
 ./text/fmt/xp/fp_FmtMarkRun.cpp-60-
 ./text/fmt/xp/fp_FmtMarkRun.cpp-61-	// look for fonts in this DocLayout's font cache
+
 ./text/fmt/xp/fp_Line.cpp-556-
 ./text/fmt/xp/fp_Line.cpp-557-	UT_sint32 iX			= iStartX;
 ./text/fmt/xp/fp_Line.cpp-558-	UT_sint32 iXLayoutUnits	= iStartXLayoutUnits;
@@ -1803,6 +1819,7 @@
 ./text/fmt/xp/fp_Line.cpp-564-		fp_Run* pRun = (fp_Run*) m_vecRuns.getNthItem(i);
 ./text/fmt/xp/fp_Line.cpp-565-		if(!bLineErased && iX != pRun->getX())
 ./text/fmt/xp/fp_Line.cpp-566-			{
+
 ./text/fmt/xp/fp_Line.cpp-1039-
 ./text/fmt/xp/fp_Line.cpp-1040-			UT_Bool bRes = findNextTabStop(iX, iPos, iTabType, iTabLeader);
 ./text/fmt/xp/fp_Line.cpp-1041-			UT_ASSERT(bRes);
@@ -1814,6 +1831,7 @@
 ./text/fmt/xp/fp_Line.cpp-1047-			pTabRun->setWidth(iPos - iX);
 ./text/fmt/xp/fp_Line.cpp-1048-			
 ./text/fmt/xp/fp_Line.cpp-1049-			iX = iPos;
+
 ./text/fmt/xp/fp_Line.cpp-1179-		fp_Run* pRun = (fp_Run*) m_vecRuns.getNthItem(i);
 ./text/fmt/xp/fp_Line.cpp-1180-		
 ./text/fmt/xp/fp_Line.cpp-1181-		if (pRun->getType() == FPRUN_TAB)
@@ -1826,6 +1844,7 @@
 ./text/fmt/xp/fp_Line.cpp-1188-		else if (pRun->getType() == FPRUN_TEXT)
 ./text/fmt/xp/fp_Line.cpp-1189-		{
 ./text/fmt/xp/fp_Line.cpp-1190-			fp_TextRun* pTR = static_cast<fp_TextRun *>(pRun);
+
 ./text/fmt/xp/fp_Page.cpp-332-	while (i < count)
 ./text/fmt/xp/fp_Page.cpp-333-	{
 ./text/fmt/xp/fp_Page.cpp-334-		// fp_Column* pLeader = getNthColumnLeader(i);
@@ -1837,6 +1856,7 @@
 ./text/fmt/xp/fp_Page.cpp-340-	}
 ./text/fmt/xp/fp_Page.cpp-341-}
 ./text/fmt/xp/fp_Page.cpp-342-
+
 ./text/fmt/xp/fp_Page.cpp-524-	if (m_pHeader)
 ./text/fmt/xp/fp_Page.cpp-525-	{
 ./text/fmt/xp/fp_Page.cpp-526-		return m_pHeader;
@@ -1856,6 +1876,7 @@
 ./text/fmt/xp/fp_Page.cpp-540-
 ./text/fmt/xp/fp_Page.cpp-541-	return m_pHeader;
 ./text/fmt/xp/fp_Page.cpp-542-}
+
 ./text/fmt/xp/fp_Page.cpp-546-	if (m_pFooter)
 ./text/fmt/xp/fp_Page.cpp-547-	{
 ./text/fmt/xp/fp_Page.cpp-548-		return m_pFooter;
@@ -1875,6 +1896,7 @@
 ./text/fmt/xp/fp_Page.cpp-562-
 ./text/fmt/xp/fp_Page.cpp-563-	return m_pFooter;
 ./text/fmt/xp/fp_Page.cpp-564-}
+
 ./text/fmt/xp/fp_Run.cpp-39-#include "ut_debugmsg.h"
 ./text/fmt/xp/fp_Run.cpp-40-#include "ut_assert.h"
 ./text/fmt/xp/fp_Run.cpp-41-#include "ut_string.h"
@@ -1888,6 +1910,7 @@
 ./text/fmt/xp/fp_Run.cpp-49-// findPointCoords:
 ./text/fmt/xp/fp_Run.cpp-50-//  Can be called to find the position and size of the point (cursor)
 ./text/fmt/xp/fp_Run.cpp-51-//  for an offset both before, inside and after the Run.
+
 ./text/fmt/xp/fp_Run.cpp-59-//  Run, but that would always fail for the 'After' case.
 ./text/fmt/xp/fp_Run.cpp-60-
 ./text/fmt/xp/fp_Run.cpp-61-/*****************************************************************/
@@ -1899,6 +1922,7 @@
 ./text/fmt/xp/fp_Run.cpp-67-
 ./text/fmt/xp/fp_Run.cpp-68-fp_Run::fp_Run(fl_BlockLayout* pBL,
 ./text/fmt/xp/fp_Run.cpp-69-			   GR_Graphics* pG,
+
 ./text/fmt/xp/fp_Run.cpp-335-
 ./text/fmt/xp/fp_Run.cpp-336-void fp_TabRun::lookupProperties(void)
 ./text/fmt/xp/fp_Run.cpp-337-{
@@ -1910,6 +1934,7 @@
 ./text/fmt/xp/fp_Run.cpp-343-	m_pBL->getAttrProp(&pBlockAP);
 ./text/fmt/xp/fp_Run.cpp-344-        m_pBL->getField(m_iOffsetFirst,m_pField);
 ./text/fmt/xp/fp_Run.cpp-345-
+
 ./text/fmt/xp/fp_Run.cpp-881-				pts[1].x = right;	pts[1].y = top;
 ./text/fmt/xp/fp_Run.cpp-882-				pts[2].x = right;	pts[2].y = bottom;
 ./text/fmt/xp/fp_Run.cpp-883-				pts[3].x = left; 	pts[3].y = bottom;
@@ -1921,6 +1946,7 @@
 ./text/fmt/xp/fp_Run.cpp-889-				m_pG->setColor(clr);
 ./text/fmt/xp/fp_Run.cpp-890-				m_pG->polyLine(pts, 5);
 ./text/fmt/xp/fp_Run.cpp-891-				
+
 ./text/fmt/xp/fp_Run.cpp-978-
 ./text/fmt/xp/fp_Run.cpp-979-void fp_FieldRun::lookupProperties(void)
 ./text/fmt/xp/fp_Run.cpp-980-{
@@ -1933,6 +1959,7 @@
 ./text/fmt/xp/fp_Run.cpp-987-	UT_ASSERT(pSpanAP);
 ./text/fmt/xp/fp_Run.cpp-988-	PD_Document * pDoc = m_pBL->getDocument();
 ./text/fmt/xp/fp_Run.cpp-1209-	//if (m_pG->queryProperties(GR_Graphics::DGP_SCREEN))
+
 ./text/fmt/xp/fp_Run.cpp-1210-	{
 ./text/fmt/xp/fp_Run.cpp-1211-		UT_uint32 iRunBase = m_pBL->getPosition() + m_iOffsetFirst;
 ./text/fmt/xp/fp_Run.cpp-1212-
@@ -1943,6 +1970,7 @@
 ./text/fmt/xp/fp_Run.cpp-1217-		  For now, we are hard-coding a couple of shades of grey,
 ./text/fmt/xp/fp_Run.cpp-1218-		  with fields always being drawn a little darker than the
 ./text/fmt/xp/fp_Run.cpp-1219-		  surrounding text.
+
 ./text/fmt/xp/fp_TextRun.cpp-69-{
 ./text/fmt/xp/fp_TextRun.cpp-70-	clearScreen();
 ./text/fmt/xp/fp_TextRun.cpp-71-	
@@ -1954,6 +1982,7 @@
 ./text/fmt/xp/fp_TextRun.cpp-77-        static_cast<fl_Layout *>(m_pBL)->getField(m_iOffsetFirst,m_pField);
 ./text/fmt/xp/fp_TextRun.cpp-78-	// look for fonts in this DocLayout's font cache
 ./text/fmt/xp/fp_TextRun.cpp-79-	FL_DocLayout * pLayout = m_pBL->getDocLayout();
+
 ./text/fmt/xp/fp_TextRun.cpp-87-	UT_parseColor(PP_evalProperty("bgcolor",pSpanAP,pBlockAP,pSectionAP, pDoc, UT_TRUE), m_colorBG);
 ./text/fmt/xp/fp_TextRun.cpp-88-
 ./text/fmt/xp/fp_TextRun.cpp-89-	const XML_Char *pszDecor = PP_evalProperty("text-decoration",pSpanAP,pBlockAP,pSectionAP, pDoc, UT_TRUE);
@@ -1974,6 +2003,7 @@
 ./text/fmt/xp/fp_TextRun.cpp-104-	XML_Char*	q = strtok(p, " ");
 ./text/fmt/xp/fp_TextRun.cpp-105-
 ./text/fmt/xp/fp_TextRun.cpp-106-	while (q)
+
 ./text/fmt/xp/fp_TextRun.cpp-230-UT_Bool fp_TextRun::alwaysFits(void) const
 ./text/fmt/xp/fp_TextRun.cpp-231-{
 ./text/fmt/xp/fp_TextRun.cpp-232-	const UT_UCSChar* pSpan;
@@ -1985,6 +2015,7 @@
 ./text/fmt/xp/fp_TextRun.cpp-238-	{
 ./text/fmt/xp/fp_TextRun.cpp-239-		if (m_pBL->getSpanPtr(m_iOffsetFirst, &pSpan, &lenSpan))
 ./text/fmt/xp/fp_TextRun.cpp-240-		{
+
 ./text/fmt/xp/fp_TextRun.cpp-707-	else
 ./text/fmt/xp/fp_TextRun.cpp-708-	{
 ./text/fmt/xp/fp_TextRun.cpp-709-		m_pG->setFont(m_pFont);
@@ -1996,6 +2027,7 @@
 ./text/fmt/xp/fp_TextRun.cpp-715-		  since document facilities allow the background color to be
 ./text/fmt/xp/fp_TextRun.cpp-716-		  changed, for things such as table cells.
 ./text/fmt/xp/fp_TextRun.cpp-717-		*/
+
 ./text/fmt/xp/fp_TextRun.cpp-759-
 ./text/fmt/xp/fp_TextRun.cpp-760-	m_pG->setFont(m_pFont);
 ./text/fmt/xp/fp_TextRun.cpp-761-	m_pG->setColor(m_colorFG);
@@ -2007,6 +2039,7 @@
 ./text/fmt/xp/fp_TextRun.cpp-767-	*/
 ./text/fmt/xp/fp_TextRun.cpp-768-	//UT_RGBColor clrNormalBackground(255,255,255);
 ./text/fmt/xp/fp_TextRun.cpp-769-	UT_RGBColor clrNormalBackground(m_colorBG.m_red, m_colorBG.m_grn, m_colorBG.m_blu);
+
 ./text/fmt/xp/fp_TextRun.cpp-845-	if(pView->getShowPara())
 ./text/fmt/xp/fp_TextRun.cpp-846-	{
 ./text/fmt/xp/fp_TextRun.cpp-847-                _drawInvisibles(pDA->xoff, yTopOfRun);
@@ -2018,6 +2051,7 @@
 ./text/fmt/xp/fp_TextRun.cpp-853-}
 ./text/fmt/xp/fp_TextRun.cpp-854-
 ./text/fmt/xp/fp_TextRun.cpp-855-void fp_TextRun::_fillRect(UT_RGBColor& clr,
+
 ./text/fmt/xp/fp_TextRun.cpp-905-
 ./text/fmt/xp/fp_TextRun.cpp-906-	//Should this be an error condition? I treat it as a zero length run, but other might not	
 ./text/fmt/xp/fp_TextRun.cpp-907-	const UT_uint16 * pCharWidths = pgbCharWidths->getPointer(0);
@@ -2029,6 +2063,7 @@
 ./text/fmt/xp/fp_TextRun.cpp-913-
 ./text/fmt/xp/fp_TextRun.cpp-914-	UT_uint32 i;
 ./text/fmt/xp/fp_TextRun.cpp-915-	if (iStart > m_iOffsetFirst)
+
 ./text/fmt/xp/fp_TextRun.cpp-954-
 ./text/fmt/xp/fp_TextRun.cpp-955-	UT_uint32 iLeftWidth = 0;
 ./text/fmt/xp/fp_TextRun.cpp-956-	const UT_uint16 * pCharWidths = pgbCharWidths->getPointer(0);
@@ -2040,6 +2075,7 @@
 ./text/fmt/xp/fp_TextRun.cpp-962-	
 ./text/fmt/xp/fp_TextRun.cpp-963-	UT_uint32 i;
 ./text/fmt/xp/fp_TextRun.cpp-964-	for (i=m_iOffsetFirst; i<iStart; i++)
+
 ./text/fmt/xp/fp_TextRun.cpp-1282-void fp_TextRun::drawSquiggle(UT_uint32 iOffset, UT_uint32 iLen)
 ./text/fmt/xp/fp_TextRun.cpp-1283-{
 ./text/fmt/xp/fp_TextRun.cpp-1284-//	UT_ASSERT(iLen > 0);
@@ -2051,6 +2087,7 @@
 ./text/fmt/xp/fp_TextRun.cpp-1290-
 ./text/fmt/xp/fp_TextRun.cpp-1291-	UT_sint32 xoff = 0, yoff = 0;
 ./text/fmt/xp/fp_TextRun.cpp-1292-	UT_sint32 iAscent = m_pLine->getAscent();
+
 ./text/fmt/xp/fv_View.cpp-303-	{
 ./text/fmt/xp/fv_View.cpp-304-		/*
 ./text/fmt/xp/fv_View.cpp-305-			The following brute-force solution works, but is atrociously 
@@ -2062,6 +2099,7 @@
 ./text/fmt/xp/fv_View.cpp-311-		getCharFormat(&propsChar);
 ./text/fmt/xp/fv_View.cpp-312-
 ./text/fmt/xp/fv_View.cpp-313-		UT_Bool bMatch = UT_FALSE;
+
 ./text/fmt/xp/fv_View.cpp-396-	}
 ./text/fmt/xp/fv_View.cpp-397-
 ./text/fmt/xp/fv_View.cpp-398-	if (mask & AV_CHG_FMTSTYLE)
@@ -2073,6 +2111,7 @@
 ./text/fmt/xp/fv_View.cpp-404-	if (mask & AV_CHG_PAGECOUNT)
 ./text/fmt/xp/fv_View.cpp-405-	{
 ./text/fmt/xp/fv_View.cpp-406-		// NOTE: we don't attempt to filter this
+
 ./text/fmt/xp/fv_View.cpp-641-		UT_ASSERT(bRes);
 ./text/fmt/xp/fv_View.cpp-642-
 ./text/fmt/xp/fv_View.cpp-643-		return iPos;
@@ -2084,6 +2123,7 @@
 ./text/fmt/xp/fv_View.cpp-649-										   xPoint, yPoint, iPointHeight);
 ./text/fmt/xp/fv_View.cpp-650-	fp_Line* pLine = pRun->getLine();
 ./text/fmt/xp/fv_View.cpp-651-
+
 ./text/fmt/xp/fv_View.cpp-697-// DOM: because after enabling this code, I can no
 ./text/fmt/xp/fv_View.cpp-698-// DOM: longer reproduce bug 403 (the bug caused by this
 ./text/fmt/xp/fv_View.cpp-699-// DOM: code being if 0'd) or bug 92 (the bug that if 0'ing
@@ -2105,17 +2145,7 @@
 ./text/fmt/xp/fv_View.cpp-715-			{
 ./text/fmt/xp/fv_View.cpp-716-				// yep.  is there a prior block?
 ./text/fmt/xp/fv_View.cpp-717-				if (!pBlock->getPrevBlockInDocument())
-./text/fmt/xp/fv_View.cpp-969-		}
-./text/fmt/xp/fv_View.cpp-970-		break;
-./text/fmt/xp/fv_View.cpp-971-
-./text/fmt/xp/fv_View.cpp-972-	case FV_DOCPOS_BOS: 
-./text/fmt/xp/fv_View.cpp-973-	case FV_DOCPOS_EOS:
-./text/fmt/xp/fv_View.cpp:974:		UT_ASSERT(UT_TODO);
-./text/fmt/xp/fv_View.cpp-975-		break;
-./text/fmt/xp/fv_View.cpp-976-
-./text/fmt/xp/fv_View.cpp-977-	default:
-./text/fmt/xp/fv_View.cpp-978-		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-./text/fmt/xp/fv_View.cpp-979-		break;
+
 ./text/fmt/xp/fv_View.cpp-1621-		if (isSelectionEmpty())
 ./text/fmt/xp/fv_View.cpp-1622-		{
 ./text/fmt/xp/fv_View.cpp-1623-			_eraseInsertionPoint();
@@ -2137,6 +2167,7 @@
 ./text/fmt/xp/fv_View.cpp-1639-		bRet = m_pDoc->changeStruxFmt(PTC_AddStyle,posStart,posEnd,attribs,NULL,PTX_Block);
 ./text/fmt/xp/fv_View.cpp-1640-	}
 ./text/fmt/xp/fv_View.cpp-1641-
+
 ./text/fmt/xp/fv_View.cpp-1664-	UT_ASSERT(pAP);
 ./text/fmt/xp/fv_View.cpp-1665-	const XML_Char* sz = NULL;
 ./text/fmt/xp/fv_View.cpp-1666-
@@ -2148,6 +2179,7 @@
 ./text/fmt/xp/fv_View.cpp-1672-
 ./text/fmt/xp/fv_View.cpp-1673-	return sz;
 ./text/fmt/xp/fv_View.cpp-1674-}
+
 ./text/fmt/xp/fv_View.cpp-1760-		UT_uint32 blockPosition = pBlock->getPosition();
 ./text/fmt/xp/fv_View.cpp-1761-		fp_Run* pRun = pBlock->findPointCoords(posStart, UT_FALSE,
 ./text/fmt/xp/fv_View.cpp-1762-											   xPoint, yPoint, iPointHeight);
@@ -2160,6 +2192,7 @@
 ./text/fmt/xp/fv_View.cpp-1769-		{
 ./text/fmt/xp/fv_View.cpp-1770-			// we want the interior of the selection -- and not the
 ./text/fmt/xp/fv_View.cpp-1771-			// format to the left of the start of the selection.
+
 ./text/fmt/xp/fv_View.cpp-1888-
 ./text/fmt/xp/fv_View.cpp-1889-UT_Bool FV_View::getCharFormat(const XML_Char *** pProps, UT_Bool bExpandStyles)
 ./text/fmt/xp/fv_View.cpp-1890-{
@@ -2171,6 +2204,7 @@
 ./text/fmt/xp/fv_View.cpp-1896-	_fmtPair * f;
 ./text/fmt/xp/fv_View.cpp-1897-
 ./text/fmt/xp/fv_View.cpp-1898-	/*
+
 ./text/fmt/xp/fv_View.cpp-1922-	UT_uint32 blockPosition = pBlock->getPosition();
 ./text/fmt/xp/fv_View.cpp-1923-	fp_Run* pRun = pBlock->findPointCoords(posStart, UT_FALSE,
 ./text/fmt/xp/fv_View.cpp-1924-										   xPoint, yPoint, iPointHeight);
@@ -2183,6 +2217,7 @@
 ./text/fmt/xp/fv_View.cpp-1931-	{
 ./text/fmt/xp/fv_View.cpp-1932-		// we want the interior of the selection -- and not the
 ./text/fmt/xp/fv_View.cpp-1933-		// format to the left of the start of the selection.
+
 ./text/fmt/xp/fv_View.cpp-2456-}
 ./text/fmt/xp/fv_View.cpp-2457-
 ./text/fmt/xp/fv_View.cpp-2458-UT_Bool FV_View::getBlockFormat(const XML_Char *** pProps,UT_Bool bExpandStyles)
@@ -2194,6 +2229,7 @@
 ./text/fmt/xp/fv_View.cpp-2464-	_fmtPair * f;
 ./text/fmt/xp/fv_View.cpp-2465-
 ./text/fmt/xp/fv_View.cpp-2466-	/*
+
 ./text/fmt/xp/fv_View.cpp-2820-				bisList = UT_TRUE;
 ./text/fmt/xp/fv_View.cpp-2821-			}
 ./text/fmt/xp/fv_View.cpp-2822-
@@ -2205,6 +2241,7 @@
 ./text/fmt/xp/fv_View.cpp-2828-
 ./text/fmt/xp/fv_View.cpp-2829-		getCharFormat(&props_in);
 ./text/fmt/xp/fv_View.cpp-2830-		currentfont = UT_getAttribute((XML_Char*)"font-family",props_in);
+
 ./text/fmt/xp/fv_View.cpp-2955-	if (bNext)
 ./text/fmt/xp/fv_View.cpp-2956-	{
 ./text/fmt/xp/fv_View.cpp-2957-		if (pOldLine != pOldContainer->getLastLine())
@@ -2216,6 +2253,7 @@
 ./text/fmt/xp/fv_View.cpp-2963-		else if (bDocSection && (((fp_Column*) (pOldSL->getLastContainer()))->getLeader() == pOldLeader))
 ./text/fmt/xp/fv_View.cpp-2964-		{
 ./text/fmt/xp/fv_View.cpp-2965-			// move to next section
+
 ./text/fmt/xp/fv_View.cpp-2991-	else
 ./text/fmt/xp/fv_View.cpp-2992-	{
 ./text/fmt/xp/fv_View.cpp-2993-		if (pOldLine != pOldContainer->getFirstLine())
@@ -2227,6 +2265,7 @@
 ./text/fmt/xp/fv_View.cpp-2999-		else if (bDocSection && (pOldSL->getFirstContainer() == pOldLeader))
 ./text/fmt/xp/fv_View.cpp-3000-		{
 ./text/fmt/xp/fv_View.cpp-3001-			// move to prev section
+
 ./text/fmt/xp/fv_View.cpp-3097-		cmdScroll(AV_SCROLLCMD_LINEDOWN, (UT_uint32)(m_yPoint + m_iPointHeight - m_iWindowHeight));
 ./text/fmt/xp/fv_View.cpp-3098-		bRet = UT_TRUE;
 ./text/fmt/xp/fv_View.cpp-3099-	}
@@ -2238,6 +2277,7 @@
 ./text/fmt/xp/fv_View.cpp-3105-	{
 ./text/fmt/xp/fv_View.cpp-3106-		cmdScroll(AV_SCROLLCMD_LINELEFT, (UT_uint32) (-(m_xPoint) + fl_PAGEVIEW_MARGIN_X/2));
 ./text/fmt/xp/fv_View.cpp-3107-		bRet = UT_TRUE;
+
 ./text/fmt/xp/fv_View.cpp-3375-	{
 ./text/fmt/xp/fv_View.cpp-3376-		// not far enough to change the selection ... do we still need to scroll?
 ./text/fmt/xp/fv_View.cpp-3377-		UT_sint32 xPos = pView->m_xLastMouse;
@@ -2249,6 +2289,7 @@
 ./text/fmt/xp/fv_View.cpp-3383-
 ./text/fmt/xp/fv_View.cpp-3384-		if ((xPos < 0 || xPos > pView->m_iWindowWidth) || 
 ./text/fmt/xp/fv_View.cpp-3385-			(yPos < 0 || yPos > pView->m_iWindowHeight))
+
 ./text/fmt/xp/fv_View.cpp-3387-		
 ./text/fmt/xp/fv_View.cpp-3388-		if (!bOnScreen) 
 ./text/fmt/xp/fv_View.cpp-3389-		{
@@ -2264,6 +2305,7 @@
 ./text/fmt/xp/fv_View.cpp-3399- 
 ./text/fmt/xp/fv_View.cpp-3400-			if (yPos < 0)
 ./text/fmt/xp/fv_View.cpp-3401-			{
+
 ./text/fmt/xp/fv_View.cpp-3679-		{
 ./text/fmt/xp/fv_View.cpp-3680-			fp_Page* pOldPage = _getCurrentPage();
 ./text/fmt/xp/fv_View.cpp-3681-			fp_Page* pPage = pOldPage;
