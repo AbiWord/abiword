@@ -5,7 +5,7 @@
 %define enable_bidi __ABI_OPT_BIDI_ENABLED__
 %define enable_perl __ABI_OPT_PERL__
 %define enable_jpeg __ABI_OPT_LIBJPEG__
-%define enable_xml2 __ABI_OPT_LIBXML2__
+%define enable_xml2 1
 %define enable_optimize __ABI_OPT_OPTIMIZE__
 %define enable_pspell __ABI_OPT_PSPELL__
 
