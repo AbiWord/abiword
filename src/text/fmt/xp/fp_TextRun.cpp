@@ -539,6 +539,10 @@ UT_sint32 fp_TextRun::simpleRecalcWidth(void) const
 		while (bContinue)
 		{
 			bContinue = m_pBL->getSpanPtr(offset, &pSpan, &lenSpan);
+			if (!bContinue)		// if this fails, we are out of sync with the PTbl.
+			{					// this probably means we are the right half of a split
+				break;			// made to break a paragraph.
+			}
 			UT_ASSERT(lenSpan>0);
 
 			if (lenSpan > len)
