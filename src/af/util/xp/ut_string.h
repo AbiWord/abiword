@@ -38,6 +38,7 @@
  * work for us anyway
  */
 #ifdef WIN32
+#include <windows.h>	// need it to include lstrcmpA
 #define UT_strcoll(a, b) lstrcmpA((a), (b))
 #else
 #define UT_strcoll(a, b) strcoll((a), (b))
