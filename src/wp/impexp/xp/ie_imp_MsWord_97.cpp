@@ -1553,7 +1553,7 @@ UT_Error IE_Imp_MsWord_97::_handleImage (Blip * b, long width, long height)
   switch(b->type) 
     {
       // currently handled image types
-#ifdef HAVE_JPEG
+#ifdef HAVE_LIBJPEG
     case msoblipJPEG: 
 #endif
     case msoblipDIB:
@@ -1583,7 +1583,7 @@ UT_Error IE_Imp_MsWord_97::_handleImage (Blip * b, long width, long height)
     importer = new IE_ImpGraphic_PNG;
   else if (b->type == msoblipDIB)
     importer = new IE_ImpGraphic_BMP;
-#ifdef HAVE_JPEG
+#ifdef HAVE_LIBJPEG
   else // msoblipJPEG
     importer = new IE_ImpGraphic_JPEG();
 #endif

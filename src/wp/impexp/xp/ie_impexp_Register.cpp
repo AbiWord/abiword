@@ -94,7 +94,7 @@ void IE_ImpExp_RegisterXP ()
   /* graphical types first */
 
   IE_ImpGraphic::registerImporter(new IE_ImpGraphicBMP_Sniffer ());
-#ifdef HAVE_JPEG
+#ifdef HAVE_LIBJPEG
   IE_ImpGraphic::registerImporter(new IE_ImpGraphicJPEG_Sniffer ());
 #endif
   IE_ImpGraphic::registerImporter(new IE_ImpGraphicPNG_Sniffer ());
