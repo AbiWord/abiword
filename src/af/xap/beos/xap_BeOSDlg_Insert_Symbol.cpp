@@ -30,11 +30,9 @@
 #include "xap_Dlg_Insert_Symbol.h"
 #include "xap_BeOSDlg_Insert_Symbol.h"
 
-//#include "xap_BeOSResources.rc2"
-
 /*****************************************************************/
 
-XAP_Dialog * AP_BeOSDialog_Insert_Symbol::static_constructor(XAP_DialogFactory * pFactory,
+XAP_Dialog * XAP_BeOSDialog_Insert_Symbol::static_constructor(XAP_DialogFactory * pFactory,
 													 XAP_Dialog_Id id)
 {
 	XAP_BeOSDialog_Insert_Symbol * p = new XAP_BeOSDialog_Insert_Symbol(pFactory,id);
