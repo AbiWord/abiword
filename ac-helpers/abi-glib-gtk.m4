@@ -28,7 +28,7 @@ AC_DEFUN([ABI_GTK2],[
 	],[	abi_gtk2=no
 	])
 	if test $abi_gtk2 = no; then
-		AC_MSG_ERROR([$GTK2_PKG_ERRORS])
+		AC_MSG_ERROR([$GTK_PKG_ERRORS])
 	fi
 ])
 

@@ -339,7 +339,7 @@ if test $peerconfig = "true"; then
 		echo "Running configure in ${i}"
 		config_flags='--disable-shared --enable-static'
 		if test `basename "$i"` = wv; then
-		    config_flags="$config_flags --with-exporter --with-glib=$abi_glib_opt"
+		    config_flags="$config_flags --with-exporter --with-glib=glib2"
 		    config_flags="$config_flags $abi_wv_xml $abi_wv_iconv $abi_wv_png $abi_wv_zlib"
 		    (cd $i; CPPFLAGS="$CPPFLAGS $abi_wv_cppflags" ./configure $config_flags)
 		else
