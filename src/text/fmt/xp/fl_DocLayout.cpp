@@ -1201,12 +1201,19 @@ void FL_DocLayout::_redrawUpdate(UT_Timer * pTimer)
 		// (the dialog's message pump releases the timers)
 		return;
 	}
+//
+// Check if we're in the middle of a PieceTable change. If so don't redraw!
+//
+	PD_Document * pDoc = pDocLayout->getDocument();
+	if(pDoc->isPieceTableChanging())
+		return;
 
 	fl_SectionLayout* pSL = pDocLayout->m_pFirstSection;
 	while (pSL)
 	{
+		if(pDoc->isPieceTableChanging())
+			return;
 		pSL->redrawUpdate();
-		
 		pSL = pSL->getNext();
 	}
 

@@ -194,6 +194,7 @@ protected:
 	UT_sint32	 	m_iWidthLayoutUnits;
 	UT_sint32	 	m_iMaxWidth;
 	UT_sint32		m_iMaxWidthLayoutUnits;
+	UT_sint32       m_iClearToPos;
 	UT_sint32 		m_iHeight;
 	//! Height assigned on screen
 	//! -1 if undefined

@@ -1841,19 +1841,22 @@ void FV_View::insertParagraphBreak(void)
 	if(getStyle(&style))
 	{
 		m_pDoc->getStyle((char*) style, &pStyle);
-		const XML_Char* szFollow = NULL;
-		pStyle->getAttribute("followedby",szFollow);
-		if(szFollow && strcmp(szFollow,"Current Settings")!=0)
+		if(pStyle != NULL)
 		{
-			if(pStyle->getFollowedBy())
-				pStyle = pStyle->getFollowedBy();
+			const XML_Char* szFollow = NULL;
+			pStyle->getAttribute("followedby",szFollow);
+			if(szFollow && strcmp(szFollow,"Current Settings")!=0)
+			{
+				if(pStyle->getFollowedBy())
+					pStyle = pStyle->getFollowedBy();
 
-			const XML_Char* szValue = NULL;
-			pStyle->getAttribute(PT_NAME_ATTRIBUTE_NAME, szValue);
+				const XML_Char* szValue = NULL;
+				pStyle->getAttribute(PT_NAME_ATTRIBUTE_NAME, szValue);
 
-			UT_ASSERT((szValue));
-			if (UT_strcmp((const char *) szValue, (const char *) style) != 0)
-				setStyle(szValue);
+				UT_ASSERT((szValue));
+				if (UT_strcmp((const char *) szValue, (const char *) style) != 0)
+					setStyle(szValue);
+			}
 		}
 	}
 
@@ -5978,8 +5981,8 @@ void FV_View::_xorInsertionPoint()
 			m_pG->setColor(*pClr);
 		}
 
-	  m_pG->xorLine(m_xPoint-1, m_yPoint+1, m_xPoint-1, m_yPoint + m_iPointHeight+1);
-	  m_pG->xorLine(m_xPoint, m_yPoint+1, m_xPoint, m_yPoint + m_iPointHeight+1);
+		m_pG->xorLine(m_xPoint-1, m_yPoint+1, m_xPoint-1, m_yPoint + m_iPointHeight+1);
+		m_pG->xorLine(m_xPoint, m_yPoint+1, m_xPoint, m_yPoint + m_iPointHeight+1);
 	  m_bCursorIsOn = !m_bCursorIsOn;
 #ifdef BIDI_ENABLED
 	  if((m_xPoint != m_xPoint2) || (m_yPoint != m_yPoint2))

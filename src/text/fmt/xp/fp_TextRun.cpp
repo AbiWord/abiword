@@ -1097,7 +1097,6 @@ void fp_TextRun::_fillRect(UT_RGBColor& clr,
 		_getPartRect(&r, xoff, yoff, iPos1, iLen, pgbCharWidths);
 		r.height = m_pLine->getHeight();
 		r.top = r.top + m_iAscent - m_pLine->getAscent();
-		
 		m_pG->fillRect(clr, r.left, r.top, r.width, r.height);
 	}
 }

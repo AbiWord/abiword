@@ -54,6 +54,7 @@ fp_Line::fp_Line()
 	m_iAscent = 0;
 	m_iDescent = 0;
 	m_iMaxWidth = 0;
+	m_iClearToPos = 0;
 	m_iMaxWidthLayoutUnits = 0;
 	m_iWidth = 0;
 	m_iWidthLayoutUnits = 0;
@@ -640,9 +641,11 @@ void fp_Line::clearScreen(void)
 			// Note: we use getHeight here instead of m_iScreenHeight
 			// in case the line is asked to render before it's been
 			// assigned a height. Call it robustness, if you want.
-			pRun->getGraphics()->fillRect(*pClr,xoffLine, yoffLine, m_iMaxWidth, getHeight());
+
+			xxx_UT_DEBUGMSG(("SEVIOR: Clear Line cleartopos = %d xoffline = %d \n",m_iClearToPos,m_iMaxWidth));
+			pRun->getGraphics()->fillRect(*pClr,xoffLine-2, yoffLine, m_iClearToPos + 2, getHeight());
 //
-// Sevior: I added this for robustness.
+// Sevior: I added this for robustness. 
 //
 			m_pBlock->setNeedsRedraw();
 			setNeedsRedraw();
@@ -694,7 +697,8 @@ void fp_Line::clearScreenFromRunToEnd(UT_uint32 runIndex)
 
 		m_pContainer->getScreenOffsets(this, xoffLine, yoffLine);
 		UT_RGBColor * pClr = pRun->getPageColor();
-		pRun->getGraphics()->fillRect(*pClr,xoff, yoff, m_iMaxWidth - (xoff - xoffLine), m_iHeight);
+		xxx_UT_DEBUGMSG(("SEVIOR: ClearToEnd cleartopos = %d xoff = %d xoffline =%d \n",m_iClearToPos,xoff,xoffLine));
+		pRun->getGraphics()->fillRect(*pClr,xoff, yoff, m_iClearToPos - (xoff - xoffLine) , getHeight());
 //
 // Sevior: I added this for robustness.
 //
@@ -736,6 +740,7 @@ void fp_Line::draw(GR_Graphics* pG)
 {
 	UT_ASSERT(m_iWidth <= m_iMaxWidth);
 	
+	xxx_UT_DEBUGMSG(("SEVIOR: Drawing line in line pG \n"));
 	UT_sint32 my_xoff = 0, my_yoff = 0;
 	
 	m_pContainer->getScreenOffsets(this, my_xoff, my_yoff);
@@ -779,6 +784,8 @@ void fp_Line::draw(GR_Graphics* pG)
 void fp_Line::draw(dg_DrawArgs* pDA)
 {
 	int count = m_vecRuns.getItemCount();
+	
+	xxx_UT_DEBUGMSG(("SEVIOR: Drawing line in line pDA \n"));
 
 	pDA->yoff += m_iAscent;
 
@@ -1192,8 +1199,10 @@ void fp_Line::recalcMaxWidth()
 	setX(iX);
 
 	UT_sint32 iMaxWidth = m_pContainer->getWidth();
+	m_iClearToPos = iMaxWidth + getBlock()->getDocSectionLayout()->getColumnGap();
 	iMaxWidth -= m_pBlock->getRightMargin();
 	iMaxWidth -= m_pBlock->getLeftMargin();
+	m_iClearToPos -= m_pBlock->getLeftMargin();
 	if (isFirstLineInBlock())
 	{
 		iMaxWidth -= m_pBlock->getTextIndent();

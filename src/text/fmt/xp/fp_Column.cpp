@@ -632,6 +632,11 @@ void fp_Column::layout(void)
 
 //		iY += iLineMarginBefore;
 		iY = (int)(ScaleLayoutUnitsToScreen * iYLayoutUnits);
+		if(pLine->getY() != iY)
+		{
+			pLine->clearScreen();
+			xxx_UT_DEBUGMSG(("SEVIOR: clearing line %d \n",i));
+		}
 		pLine->setY(iY);
 		pLine->setYInLayoutUnits(iYLayoutUnits);
 
@@ -761,6 +766,8 @@ void fp_HdrFtrContainer::layout(void)
 		UT_sint32 sum = iLineHeightLayoutUnits + iLineMarginAfterLayoutUnits;
 		if((iYLayoutUnits + sum) <= (m_iMaxHeightLayoutUnits))
 		{
+//			if(pLine->getYInLayoutUnits() != iYLayoutUnits)
+//				pLine->clearScreen();
 			pLine->setY((UT_sint32)(ScaleLayoutUnitsToScreen * iYLayoutUnits));
 			pLine->setYInLayoutUnits(iYLayoutUnits);
 		}

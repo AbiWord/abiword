@@ -1542,7 +1542,7 @@ void fp_EndOfParagraphRun::_clearScreen(bool /* bFullLineHeightRect */)
 	UT_ASSERT(m_pG->queryProperties(GR_Graphics::DGP_SCREEN));
 
 	FV_View* pView = m_pBL->getDocLayout()->getView();
-	m_pG->fillRect(m_colorPG, m_iXoffText, m_iYoffText, m_iWidth, m_iHeight);
+	m_pG->fillRect(m_colorPG, m_iXoffText, m_iYoffText, m_iWidth, m_pLine->getHeight());
 }
 
 /*!
@@ -2183,8 +2183,10 @@ void fp_FieldRun::_clearScreen(bool /* bFullLineHeightRect */)
 	// need to clear full height of line, in case we had a selection
 	m_pLine->getScreenOffsets(this, xoff, yoff);
 	UT_sint32 iLineHeight = m_pLine->getHeight();
-
-	m_pG->fillRect(m_colorPG, xoff, yoff-1, m_iWidth, iLineHeight);
+//
+// Sevior was here
+//	m_pG->fillRect(m_colorPG, xoff, yoff-1, m_iWidth, iLineHeight);
+	m_pG->fillRect(m_colorPG, xoff, yoff, m_iWidth, iLineHeight);
 }
 
 void fp_FieldRun::_defaultDraw(dg_DrawArgs* pDA)
@@ -2212,8 +2214,11 @@ void fp_FieldRun::_defaultDraw(dg_DrawArgs* pDA)
 	//if (m_pG->queryProperties(GR_Graphics::DGP_SCREEN))
 	{
 		UT_uint32 iRunBase = m_pBL->getPosition() + m_iOffsetFirst;
-		
-		UT_sint32 iFillTop = iYdraw;
+
+//
+// Sevior was here		
+//		UT_sint32 iFillTop = iYdraw;
+		UT_sint32 iFillTop = iYdraw+1;
 		UT_sint32 iFillHeight = getAscent() + getDescent();
 		
 		FV_View* pView = m_pBL->getDocLayout()->getView();
@@ -2237,11 +2242,12 @@ void fp_FieldRun::_defaultDraw(dg_DrawArgs* pDA)
 		    hard-coded.  See comment above in fp_TextRun::_draw*.
 		  */
 		        UT_RGBColor clrSelBackground(112, 112, 112);
-			m_pG->fillRect(clrSelBackground, pDA->xoff, iFillTop, m_iWidth, iFillHeight);
+				m_pG->fillRect(clrSelBackground, pDA->xoff, iFillTop, m_iWidth, iFillHeight);
+
 		}
 		else
 		{
-		        getHighlightColor();
+			getHighlightColor();
 			m_pG->fillRect(m_colorHL, pDA->xoff, iFillTop, m_iWidth, iFillHeight);
 		}
 	}
@@ -3027,7 +3033,6 @@ void fp_ForcedColumnBreakRun::_clearScreen(bool /* bFullLineHeightRect */)
     UT_sint32 xoff = 0, yoff = 0;
     m_pLine->getScreenOffsets(this, xoff, yoff);
     UT_sint32 iWidth  = m_pLine->getMaxWidth() - m_pLine->calculateWidthOfLine();
-
     m_pG->fillRect(m_colorPG,xoff,yoff,iWidth,m_pLine->getHeight());
 }
 
@@ -3136,7 +3141,6 @@ void fp_ForcedPageBreakRun::_clearScreen(bool /* bFullLineHeightRect */)
     UT_sint32 xoff = 0, yoff = 0;
     m_pLine->getScreenOffsets(this, xoff, yoff);
     UT_sint32 iWidth  = m_pLine->getMaxWidth() - m_pLine->calculateWidthOfLine();
-
     m_pG->fillRect(m_colorPG,xoff,yoff,iWidth,m_pLine->getHeight());
 }
 
