@@ -94,19 +94,20 @@ void fp_FrameContainer::clearScreen(void)
 	{
 		return;
 	}
-	UT_sint32 iTopLWidth = m_lineTop.m_thickness;
-	UT_sint32 iBotLWidth = m_lineBottom.m_thickness;
-	UT_sint32 iRightLWidth = m_lineRight.m_thickness;
-	UT_sint32 iLeftLWidth = m_lineLeft.m_thickness;
 	UT_sint32 srcX,srcY;
-	srcX = -m_iXpad - iLeftLWidth;
-	srcY = -m_iYpad - iTopLWidth;
 	UT_sint32 xoff,yoff;
 	getView()->getPageScreenOffsets(pPage,xoff,yoff);
 	xxx_UT_DEBUGMSG(("pagescreenoffsets xoff %d yoff %d \n",xoff,yoff));
-	xoff += getFullX() -iLeftLWidth;
-	yoff += getFullY() - iTopLWidth;
-	getFillType()->getParent()->Fill(getGraphics(),srcX,srcY,xoff,yoff,getFullWidth()+iLeftLWidth+iRightLWidth,getFullHeight()+iTopLWidth+iBotLWidth);
+	xoff += getFullX();
+	yoff += getFullY();
+#if 1
+	srcX = xoff;
+	srcY = yoff;
+#else
+	srcX = 0;
+	srcY = 0;
+#endif
+	getFillType()->getParent()->Fill(getGraphics(),srcX,srcY,xoff,yoff,getFullWidth(),getFullHeight());
 	fp_Container * pCon = NULL;
 	UT_sint32 i = 0;
 	for(i=0; i< static_cast<UT_sint32>(countCons()); i++)
@@ -322,8 +323,10 @@ void fp_FrameContainer::draw(dg_DrawArgs* pDA)
 			pDA->bDirtyRunsOnly= false;
 		} 
 		UT_sint32 srcX,srcY;
+
 		srcX = -m_iXpad;
 		srcY = -m_iYpad;
+
 		UT_sint32 x = pDA->xoff - m_iXpad;
 		UT_sint32 y = pDA->yoff - m_iYpad;
 		getFillType()->Fill(pG,srcX,srcY,x,y,getFullWidth(),getFullHeight());

@@ -441,7 +441,7 @@ void AP_LeftRuler::mouseRelease(EV_EditModifierState ems, EV_EditMouseButton emb
 					{
 						iYpos = UT_convertToLogicalUnits(pszYpos);
 					}
-					if(!pSectionAP || !pSectionAP->getProperty("height",pszHeight))
+					if(!pSectionAP || !pSectionAP->getProperty("frame-height",pszHeight))
 					{
 						UT_DEBUGMSG(("No Height defined for Frame !\n"));
 						UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
@@ -465,7 +465,7 @@ void AP_LeftRuler::mouseRelease(EV_EditModifierState ems, EV_EditMouseButton emb
 					double dHeight = static_cast<double>(iHeight)/static_cast<double>(UT_LAYOUT_RESOLUTION);
 					sHeight = UT_formatDimensionedValue(dHeight,"in", NULL);
 					const XML_Char * props[6] = {"ypos",sYpos.c_str(),
-						"height",sHeight.c_str(),
+						"frame-height",sHeight.c_str(),
 						NULL,NULL};
 					pView->setFrameFormat(props);
 				}
@@ -515,7 +515,7 @@ void AP_LeftRuler::mouseRelease(EV_EditModifierState ems, EV_EditMouseButton emb
 					pFrame->getAttrProp(&pSectionAP);
 					const char * pszHeight = NULL;
 					UT_sint32 iHeight;
-					if(!pSectionAP || !pSectionAP->getProperty("height",pszHeight))
+					if(!pSectionAP || !pSectionAP->getProperty("frame-height",pszHeight))
 					{
 						UT_DEBUGMSG(("No Height defined for Frame !\n"));
 						UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
@@ -534,7 +534,7 @@ void AP_LeftRuler::mouseRelease(EV_EditModifierState ems, EV_EditMouseButton emb
 					UT_String sHeight("");
 					double dHeight = static_cast<double>(iHeight)/static_cast<double>(UT_LAYOUT_RESOLUTION);
 					sHeight = UT_formatDimensionedValue(dHeight,"in", NULL);
-					const XML_Char * props[4] = {"height",sHeight.c_str(),
+					const XML_Char * props[4] = {"frame-height",sHeight.c_str(),
 								NULL,NULL};
 					pView->setFrameFormat(props);
 				}

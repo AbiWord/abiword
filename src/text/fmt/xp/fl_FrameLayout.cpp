@@ -54,6 +54,10 @@
 #include "ut_assert.h"
 #include "ut_units.h"
 #include "fv_FrameEdit.h"
+#include "ut_png.h"
+#include "ut_bytebuf.h"
+#include "fg_GraphicRaster.h"
+#include "fg_GraphicVector.h"
 
 static void s_border_properties (const XML_Char * border_color, const XML_Char * border_style, const XML_Char * border_width,
 								 const XML_Char * color, PP_PropertyMap::Line & line);
@@ -143,6 +147,38 @@ void 	fl_FrameLayout::setContainerProperties(void)
 	pFrame->setRightStyle(m_lineRight );
 	pFrame->setXpad(m_iXpad);
 	pFrame->setYpad(m_iYpad);
+//
+// Now do the image for this frame.
+//
+	if(m_pGraphicImage)
+	{
+		if(m_pImageImage == NULL)
+		{
+			const PP_AttrProp * pAP = NULL;
+			getAttrProp(&pAP);
+			GR_Graphics * pG = getDocLayout()->getGraphics();
+			UT_sint32 iWidth = pG->tlu(100);
+			UT_sint32 iHeight = pG->tlu(100);
+			if(m_pGraphicImage->getType() == FGT_Raster)
+			{
+				UT_sint32 iImageWidth;
+				UT_sint32 iImageHeight;
+				UT_ByteBuf * pBB = static_cast<FG_GraphicRaster *>(m_pGraphicImage)->getRaster_PNG();
+				UT_PNG_getDimensions(pBB, iImageWidth, iImageHeight);
+				iWidth = pG->tlu(iImageWidth);
+				iHeight = pG->tlu(iImageHeight);
+			}
+			GR_Image * pImage = m_pGraphicImage->generateImage(pG,pAP,iWidth,iHeight);
+			m_iDocImageWidth = pFrame->getFullWidth();
+			m_iDocImageHeight = pFrame->getFullHeight();
+			m_iGraphicTick = getDocLayout()->getGraphicTick();
+			UT_Rect rec(0,0,pFrame->getFullWidth(),pFrame->getFullHeight());
+			pImage->scaleImageTo(pG,rec);
+			m_pImageImage = pImage;
+		}
+		pFrame->getFillType()->setImagePointer(&m_pGraphicImage,&m_pImageImage);
+	}
+
 }
 
 /*!
@@ -394,6 +430,21 @@ void fl_FrameLayout::_createFrameContainer(void)
 	UT_ASSERT(pCon);
 	pFrameContainer->setWidth(m_iWidth);
 	pFrameContainer->setHeight(m_iHeight);
+	// Now do Frame image
+
+	const PP_AttrProp* pSectionAP = NULL;
+	m_pLayout->getDocument()->getAttrProp(m_apIndex, &pSectionAP);
+
+	const XML_Char * pszDataID = NULL;
+	pSectionAP->getAttribute(PT_STRUX_IMAGE_DATAID, (const XML_Char *&)pszDataID);
+	DELETEP(m_pGraphicImage);
+	DELETEP(m_pImageImage);
+	if(pszDataID && *pszDataID)
+	{
+		UT_DEBUGMSG(("!!!Found image of file %s \n",pszDataID));
+		m_pGraphicImage = FG_Graphic::createFromStrux(this);
+	}
+
 	setContainerProperties();
 }
 
@@ -428,7 +479,9 @@ void fl_FrameLayout::miniFormat(void)
 		pBL->format();
 		pBL = pBL->getNext();
 	}
-	static_cast<fp_FrameContainer *>(getFirstContainer())->layout();
+	fp_FrameContainer * pFrame = static_cast<fp_FrameContainer *>(getFirstContainer());
+	pFrame->layout();
+	pFrame->getFillType()->setWidthHeight(getDocLayout()->getGraphics(),pFrame->getFullWidth(),pFrame->getFullHeight());
 	m_bNeedsFormat = false;
 	m_bNeedsReformat = false;
 }
@@ -585,7 +638,7 @@ void fl_FrameLayout::_lookupProperties(void)
 
 // Width
 
-	if(!pSectionAP || !pSectionAP->getProperty("width",pszWidth))
+	if(!pSectionAP || !pSectionAP->getProperty("frame-width",pszWidth))
 	{
 		m_iWidth = UT_convertToLogicalUnits("1.0in");
 	}
@@ -596,7 +649,7 @@ void fl_FrameLayout::_lookupProperties(void)
 
 // Height
 
-	if(!pSectionAP || !pSectionAP->getProperty("height",pszHeight))
+	if(!pSectionAP || !pSectionAP->getProperty("frame-height",pszHeight))
 	{
 		m_iHeight = UT_convertToLogicalUnits("1.0in");
 	}
@@ -682,7 +735,7 @@ void fl_FrameLayout::_lookupProperties(void)
 
 	pSectionAP->getProperty ("bg-style",    pszBgStyle);
 	pSectionAP->getProperty ("bgcolor",     pszBgColor);
-	pSectionAP->getProperty ("background-col", pszBackgroundColor);
+	pSectionAP->getProperty ("background-color", pszBackgroundColor);
 
 	s_background_properties (pszBgStyle, pszBgColor, pszBackgroundColor, m_background);
 

@@ -538,7 +538,7 @@ void AP_Dialog_FormatFrame::applyChanges()
 		propsArray[j] = static_cast<XML_Char *>(m_vecProps.getNthItem(j));
 		propsArray[j+1] = static_cast<XML_Char *>(m_vecProps.getNthItem(j+1));
 	}
-	pView->setFrameFormat(propsArray);
+	pView->setFrameFormat(propsArray,m_pGraphic,m_sImagePath);
 	delete [] propsArray;
 	m_bSettingsChanged = false;
 }

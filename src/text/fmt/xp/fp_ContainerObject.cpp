@@ -679,6 +679,17 @@ void fg_FillType::Fill(GR_Graphics * pG, UT_sint32 & srcX, UT_sint32 & srcY, UT_
 			srcY -= 2*yoff;
 		}
 	}
+	if(m_pContainer && (m_pContainer->getContainerType() == FP_CONTAINER_FRAME))
+	{
+		fp_FrameContainer * pFrame = static_cast<fp_FrameContainer *>(m_pContainer);
+		UT_sint32 xoff = pFrame->getXPad();
+		UT_sint32 yoff = pFrame->getYPad();
+		if(m_FillType == FG_FILL_IMAGE)
+		{
+			srcX += xoff;
+			srcY += yoff;
+		}
+	}
 	if(m_pContainer && (m_pContainer->getContainerType() == FP_CONTAINER_RUN))
 	{
 		if(m_iGraphicTick != m_pDocLayout->getGraphicTick() )

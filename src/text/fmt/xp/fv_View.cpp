@@ -507,8 +507,13 @@ void FV_View::btn1Frame(UT_sint32 x, UT_sint32 y)
 	m_FrameEdit.mouseLeftPress(x,y);
 }
 
-
 void FV_View::setFrameFormat(const XML_Char * properties[])
+{
+	UT_String dataID("");
+	setFrameFormat(properties,NULL,dataID);
+}
+
+void FV_View::setFrameFormat(const XML_Char * properties[], FG_Graphic * pFG,UT_String & sDataID)
 {
 	bool bRet;
 	setCursorWait();
@@ -534,6 +539,18 @@ void FV_View::setFrameFormat(const XML_Char * properties[])
 		{
 			posStart = 2;
 		}
+	}
+	if(pFG != NULL)
+	{
+		pFG->insertAtStrux(m_pDoc,72,posStart,
+						   PTX_SectionFrame,sDataID.c_str());
+	}
+	else
+	{
+		const XML_Char * attributes[3] = {
+			PT_STRUX_IMAGE_DATAID,NULL,NULL};
+		bRet = m_pDoc->changeStruxFmt(PTC_RemoveFmt,posStart,posStart,attributes,NULL,PTX_SectionFrame);	
+						
 	}
 
 	bRet = m_pDoc->changeStruxFmt(PTC_AddFmt,posStart,posEnd,NULL,properties,PTX_SectionFrame);

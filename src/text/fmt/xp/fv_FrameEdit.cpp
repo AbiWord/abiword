@@ -806,8 +806,8 @@ void FV_FrameEdit::mouseRelease(UT_sint32 x, UT_sint32 y)
 									 "position-to","block-above-text",
 									 "xpos",sXpos.c_str(),
 									 "ypos",sYpos.c_str(),
-									 "width",sWidth.c_str(),
-									  "height",sHeight.c_str(),
+									 "frame-width",sWidth.c_str(),
+									  "frame-height",sHeight.c_str(),
 									  NULL,NULL};
 //
 // This should place the the frame strux immediately after the block containing
@@ -940,8 +940,8 @@ void FV_FrameEdit::mouseRelease(UT_sint32 x, UT_sint32 y)
 //
 		fl_FrameLayout * pOldLayout = m_pFrameLayout;
 
-		const XML_Char * props[10] = { "width",sWidth.c_str(),
-									  "height",sHeight.c_str(),
+		const XML_Char * props[10] = { "frame-width",sWidth.c_str(),
+									  "frame-height",sHeight.c_str(),
 									  "xpos",sXpos.c_str(),
 									  "ypos",sYpos.c_str(),
 									  NULL,NULL};

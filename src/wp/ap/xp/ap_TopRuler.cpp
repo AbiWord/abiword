@@ -2428,7 +2428,7 @@ void AP_TopRuler::mouseRelease(EV_EditModifierState /* ems */, EV_EditMouseButto
 					{
 						iX = UT_convertToLogicalUnits(pszXpos);
 					}
-					if(!pSectionAP || !pSectionAP->getProperty("width",pszWidth))
+					if(!pSectionAP || !pSectionAP->getProperty("frame-width",pszWidth))
 					{
 						UT_DEBUGMSG(("No Width defined for Frame !\n"));
 						UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
@@ -2451,7 +2451,7 @@ void AP_TopRuler::mouseRelease(EV_EditModifierState /* ems */, EV_EditMouseButto
 					sXpos = UT_formatDimensionedValue(dX,"in", NULL);
 					double dWidth = static_cast<double>(iWidth)/static_cast<double>(UT_LAYOUT_RESOLUTION);
 					sWidth = UT_formatDimensionedValue(dWidth,"in", NULL);
-					const XML_Char * props[6] = {"width",sWidth.c_str(),
+					const XML_Char * props[6] = {"frame-width",sWidth.c_str(),
 								"xpos",sXpos.c_str(),
 								NULL,NULL};
 					pView->setFrameFormat(props);
@@ -2504,7 +2504,7 @@ void AP_TopRuler::mouseRelease(EV_EditModifierState /* ems */, EV_EditMouseButto
 					pFrame->getAttrProp(&pSectionAP);
 					const char * pszWidth = NULL;
 					UT_sint32 iWidth;
-					if(!pSectionAP || !pSectionAP->getProperty("width",pszWidth))
+					if(!pSectionAP || !pSectionAP->getProperty("frame-width",pszWidth))
 					{
 						UT_DEBUGMSG(("No Width defined for Frame !\n"));
 						UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
@@ -2523,7 +2523,7 @@ void AP_TopRuler::mouseRelease(EV_EditModifierState /* ems */, EV_EditMouseButto
 					UT_String sWidth("");
 					double dWidth = static_cast<double>(iWidth)/static_cast<double>(UT_LAYOUT_RESOLUTION);
 					sWidth = UT_formatDimensionedValue(dWidth,"in", NULL);
-					const XML_Char * props[4] = {"width",sWidth.c_str(),
+					const XML_Char * props[4] = {"frame-width",sWidth.c_str(),
 								NULL,NULL};
 					pView->setFrameFormat(props);
 				}
