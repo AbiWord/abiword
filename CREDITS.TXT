@@ -52,6 +52,7 @@ Lalo Martins <lalo@webcom.com>
 Caolan McNamara <Caolan.McNamara@ul.ie>         Word import
 James Montgomerie <jamie@montgomerie.net>       ANSI C patrol
 Tom Newton <Tom.Newton@gtl.com>
+Mike Nordell <tamlin@algonet.se>                Windows printing fix
 Bruce Pearson <BruceP@wn.com.au>                full justification
 Andy Richardson <andy@promethium.chem.ucl.ac.uk>    PostScript image handling
 Duncan Rose <d.rose@salford.ac.uk>
