@@ -4216,7 +4216,8 @@ bool IE_Imp_RTF::ApplyParagraphAttributes()
 				for(UT_uint32 i=0; (i< nLists && !bisListItem); i++)
 				{
 					pAuto = getDoc()->getNthList(i);
-					bisListItem = pAuto->isItem(sdh);
+					if(pAuto)
+						bisListItem = pAuto->isItem(sdh);
 				}
 				//
 				// We've created a list element where we should not. Stop it now!!
