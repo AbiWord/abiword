@@ -346,7 +346,7 @@ UT_uint16*	GR_Win32Graphics::_remapGlyphs(const UT_UCSChar* pChars, int iCharOff
 	{
 		delete [] m_remapBuffer;
 
-		if(XAP_App::getApp()->theOSHasBidiSupport() != XAP_App::BIDI_SUPPORT_NONE)
+		if(getApp()->theOSHasBidiSupport() != XAP_App::BIDI_SUPPORT_NONE)
 		{
 			delete [] m_remapIndices;
 			m_remapIndices = new UT_UCS2Char[iLength];
@@ -475,7 +475,7 @@ void GR_Win32Graphics::drawChars(const UT_UCSChar* pChars,
 		//        call GetCharacterPlacement function without
 		//        requesting reordering and then feed the indices to
 		//        ExTextOut (direct call to ExTextOut automatically reorders)
-		if(XAP_App::getApp()->theOSHasBidiSupport() != XAP_App::BIDI_SUPPORT_NONE)
+		if(getApp()->theOSHasBidiSupport() != XAP_App::BIDI_SUPPORT_NONE)
 		{
 			UT_ASSERT(m_remapIndices);
 			GCP_RESULTSW gcpResult;
@@ -497,7 +497,7 @@ void GR_Win32Graphics::drawChars(const UT_UCSChar* pChars,
 
 			DWORD placementResult;
 
-			if(XAP_App::getApp()->theOSHasBidiSupport() == XAP_App::BIDI_SUPPORT_GUI)
+			if(getApp()->theOSHasBidiSupport() == XAP_App::BIDI_SUPPORT_GUI)
 				placementResult = GetCharacterPlacementW(m_hdc, (LPCWSTR) currentChars, iLength, 0, &gcpResult, 0);
 			else
 				placementResult = GetCharacterPlacementW(m_hdc, (LPCWSTR) currentChars, iLength, 0, &gcpResult, GCP_REORDER);
