@@ -848,7 +848,6 @@ void s_RTF_ListenerWriteDoc::_open_cell(PT_AttrPropIndex api)
 		{
 			bNewRow = true;
 			m_pie->_rtf_keyword("row");
-			m_pie->_rtf_nl();
 			_newRow();
 		}
 	}
@@ -861,9 +860,20 @@ void s_RTF_ListenerWriteDoc::_open_cell(PT_AttrPropIndex api)
 //
 // Output cell markers for all vertically merged cells at the start of the row
 //
-		for(i = 0; i < m_Table.getLeft(); i++)
+		if(m_Table.getNestDepth() < 2)
 		{
-			m_pie->_rtf_keyword("cell");
+			for(i = 0; i < m_Table.getLeft(); i++)
+			{
+				m_pie->_rtf_keyword("cell");
+			}
+		}
+		else
+		{
+			for(i = 0; i < m_Table.getLeft(); i++)
+			{
+				UT_DEBUGMSG(("Writing nestcell in wrong spot 1 \n"));
+				m_pie->_rtf_keyword("nestcell");
+			}
 		}
 	}
 //
@@ -871,9 +881,23 @@ void s_RTF_ListenerWriteDoc::_open_cell(PT_AttrPropIndex api)
 //
 	else
 	{
-		for(i = m_iRight; i < m_Table.getLeft(); i++)
+		if(!m_bNewTable)
 		{
-			m_pie->_rtf_keyword("cell");
+			if(m_Table.getNestDepth() < 2)
+			{
+				for(i = m_iRight; i < m_Table.getLeft(); i++)
+				{
+					m_pie->_rtf_keyword("cell");
+				}
+			}
+			else
+			{
+				for(i = m_iRight; i < m_Table.getLeft(); i++)
+				{
+					UT_DEBUGMSG(("Writing nestcell in wrong spot 2 \n"));
+					m_pie->_rtf_keyword("nestcell");
+				}
+			}
 		}
 	}
 	m_bNewTable = false;
@@ -887,6 +911,12 @@ void s_RTF_ListenerWriteDoc::_newRow(void)
 {
 	UT_sint32 i;
 	m_pie->_rtf_nl();
+	if((m_Table.getNestDepth() > 1) && m_bNewTable)
+	{
+		m_pie->_rtf_open_brace();
+		m_pie->_rtf_keyword("*");
+		m_pie->_rtf_keyword("nesttableprops");
+	}
 	m_pie->_rtf_keyword("trowd");
 	m_pie->write(" ");
 //
@@ -988,7 +1018,7 @@ void s_RTF_ListenerWriteDoc::_newRow(void)
 	for(i=0; i < m_Table.getNumCols(); i = m_Table.getRight())
 	{
 		m_Table.setCellRowCol(row,i);
-
+		UT_DEBUGMSG(("SEVIOR: set to row %d i %d left %d top %d \n",row,i,m_Table.getLeft(),m_Table.getRight()));
 		m_pie->_rtf_keyword("clvertalt"); // Top aligned vertical alignment. ONly one for now
 		if(iThick > 0)
 		{
@@ -1009,14 +1039,14 @@ void s_RTF_ListenerWriteDoc::_newRow(void)
 			m_pie->_rtf_keyword("clvmrg");
 			vMerge = true;
 		}
-#if 0
 //
 // Look to see if this is the first cell of a set of vertically merged cells
 //		
 		if(m_Table.getBot() > row +1)
 		{
-			m_pie->_rtf_keyword("clvmrgf");
+			m_pie->_rtf_keyword("clvmgf");
 		}
+#if 0
 //
 // Look to see if we have a horizontally merged cell.
 //
@@ -1154,14 +1184,14 @@ void s_RTF_ListenerWriteDoc::_open_table(PT_AttrPropIndex api)
 
 void s_RTF_ListenerWriteDoc::_close_cell(void)
 {
-	m_pie->_rtf_keyword("cell");
-#if 0
-	UT_sint32 i = m_iLeft + 1;
-	for(i = m_iLeft +1; i< m_iRight; i++)
+	if(m_Table.getNestDepth() < 2)
 	{
 		m_pie->_rtf_keyword("cell");
 	}
-#endif
+	else
+	{
+		m_pie->_rtf_keyword("nestcell");
+	}
 	m_Table.CloseCell();
 }
 
@@ -1170,10 +1200,21 @@ void s_RTF_ListenerWriteDoc::_close_table(void)
 //
 // Close off the last row
 //
-	m_pie->_rtf_keyword("row");
-	m_pie->_rtf_close_brace();
-	m_Table.CloseTable();
 	if(m_Table.getNestDepth() < 2)
+	{
+		m_pie->_rtf_keyword("row");
+	}
+	else
+	{
+		m_pie->_rtf_keyword("nestrow");
+	}
+	m_pie->_rtf_close_brace();
+	if(m_Table.getNestDepth() > 1)
+	{
+		m_pie->_rtf_close_brace();
+	}
+	m_Table.CloseTable();
+	if(m_Table.getNestDepth() < 1)
 	{
 		m_iCurRow = -1;
 		m_iLeft = -1;
