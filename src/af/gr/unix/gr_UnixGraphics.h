@@ -28,6 +28,7 @@
 #include "xap_UnixFont.h"
 #include "xap_Frame.h"
 #include "gr_Graphics.h"
+#include "ut_vector.h"
 
 #ifdef USE_XFT
 #include <X11/Xft/Xft.h>
@@ -136,8 +137,8 @@ class GR_UnixGraphics : public GR_Graphics
  private:
 	virtual void _drawFT2Bitmap(UT_sint32 x, UT_sint32 y, FT_Bitmap * pBitmap) const;
 #endif
-	virtual void	  saveRectangle(UT_Rect & r);
-	virtual void	  restoreRectangle();
+	virtual void	  saveRectangle(UT_Rect & r, UT_uint32 iIndx);
+	virtual void	  restoreRectangle(UT_uint32 iIndx);
 	
  protected:
 	virtual UT_uint32 	_getResolution(void) const;
@@ -202,8 +203,10 @@ private:
 	UT_sint32               m_iYoff;
 #endif
 	UT_RGBColor				m_curColor;
-	GdkPixbuf *				m_saveBuf;
-	UT_Rect *				m_saveRect;
+
+	UT_Vector				m_vSaveRect;
+	UT_Vector 				m_vSaveRectBuf;
+
 	bool                    m_bIsSymbol;       
 	bool                    m_bIsDingbat;       
 };

@@ -376,9 +376,8 @@ GR_UnixGraphics::GR_UnixGraphics(GdkWindow * win, XAP_UnixFontManager * fontMana
          m_wctomb(new UT_Wctomb),
 #endif
 #ifdef USE_XFT
-         m_bLayoutUnits(false),
+         m_bLayoutUnits(false)
 #endif
-		 m_saveBuf(NULL), m_saveRect(NULL)
 {
 	m_pApp = app;
 	m_pWin = win;
@@ -483,6 +482,15 @@ GR_UnixGraphics::~GR_UnixGraphics()
 #if (!defined(WITH_PANGO) || !defined(USE_XFT))
 	DELETEP(m_wctomb);
 #endif
+
+	UT_VECTOR_PURGEALL(UT_Rect*, m_vSaveRect);
+
+	// purge saved pixbufs
+	for (UT_uint32 i = 0; i < m_vSaveRectBuf.size (); i++)
+		{
+			GdkPixbuf * pix = (GdkPixbuf *)m_vSaveRectBuf.getNthItem (i);
+			g_object_unref (G_OBJECT (pix));
+		}
 }
 
 bool GR_UnixGraphics::queryProperties(GR_Graphics::Properties gp) const
@@ -1964,33 +1972,42 @@ void GR_Font::s_getGenericFontProperties(const char * /*szFontName*/,
 }
 #endif
 
-void GR_UnixGraphics::saveRectangle(UT_Rect & r)
+void GR_UnixGraphics::saveRectangle(UT_Rect & r, UT_uint32 iIndx)
 {
-  if (m_saveBuf)
-    {
-      g_object_unref(m_saveBuf); 
-      m_saveBuf = NULL;
-    }
-  DELETEP(m_saveRect);
+	if (m_vSaveRect.getItemCount()>iIndx && m_vSaveRect.getNthItem(iIndx) && 
+		((UT_Rect *)(m_vSaveRect.getNthItem(iIndx)))->left == r.left &&
+		((UT_Rect *)(m_vSaveRect.getNthItem(iIndx)))->top == r.top &&
+		((UT_Rect *)(m_vSaveRect.getNthItem(iIndx)))->width == r.width && 
+		((UT_Rect *)(m_vSaveRect.getNthItem(iIndx)))->height == r.height) {
+		return;
+	}
+	
+	void * oldR = NULL;
+	m_vSaveRect.setNthItem(iIndx, (void*)new UT_Rect(r),&oldR);
+	if(oldR)
+		delete (UT_Rect*)oldR;
 
-  if (r.top < 0 || r.height <= 0 || r.width <= 0.)
-    return;
-  
-  m_saveBuf = gdk_pixbuf_get_from_drawable(m_saveBuf,
-					   m_pWin,
-					   NULL,
-					   r.left, r.top, 0, 0,
-					   r.width, r.height);
-  m_saveRect = new UT_Rect(r);
+	void * oldC = NULL;
+	GdkPixbuf * pix = gdk_pixbuf_get_from_drawable(NULL,
+												   m_pWin,
+												   NULL,
+												   r.left, r.top, 0, 0,
+												   r.width, r.height);
+	m_vSaveRectBuf.setNthItem(iIndx, (void*)pix, &oldC);
+	if(oldC)
+		g_object_unref (G_OBJECT (oldC));
 }
 
-void GR_UnixGraphics::restoreRectangle()
+void GR_UnixGraphics::restoreRectangle(UT_uint32 iIndx)
 {
-	if (m_saveBuf && m_saveRect)
-		gdk_pixbuf_render_to_drawable(m_saveBuf,
+	UT_Rect * r = (UT_Rect*)m_vSaveRect.getNthItem(iIndx);
+	GdkPixbuf *p = (GdkPixbuf *)m_vSaveRectBuf.getNthItem(iIndx);
+
+	if (p && r)
+		gdk_pixbuf_render_to_drawable(p,
 									  m_pWin,
 									  NULL, 
 									  0, 0,
-									  m_saveRect->left, m_saveRect->top,
+									  r->left, r->top,
 									  -1, -1, GDK_RGB_DITHER_NONE, 0, 0);
 }
