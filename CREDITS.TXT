@@ -36,6 +36,7 @@ Cuenca Abela Joaquin <cuenca@ie2.u-psud.fr>     GNOME front end, LaTeX exporter
 Luke Jordan <ljordan@mweb.co.za>                subscript, superscript
 Matt Kimball <robozapp@xmission.com>            layout fixes
 Larry Kollar <kollar@stc.net>                   MkLinux
+Matt Kraai <kraai@subdimension.com>
 Tuomas Kuosmanen <tigert@gimp.org>              artist
 Johnny C. Lam <lamj@stat.cmu.edu>               NetBSD
 Birger Langkjer <birger.langkjer@image.dk>      GNOME icon/menu integration
