@@ -284,11 +284,11 @@ GtkWidget * AP_UnixDialog_InsertTable::_constructWindow(void)
 
 
 	// the spin controls
-	g_signal_connect (G_OBJECT (m_pRowspin), "value_changed",
+	g_signal_connect (G_OBJECT (spinNumRows), "value_changed",
 						G_CALLBACK (s_row_spin),
 						(gpointer) this);
 
-	g_signal_connect (G_OBJECT (m_pColspin), "value_changed",
+	g_signal_connect (G_OBJECT (spinNumCols), "value_changed",
 						G_CALLBACK (s_col_spin),
 						(gpointer) this);
 
