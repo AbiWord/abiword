@@ -325,10 +325,7 @@ UT_uint32 GR_Graphics::getAppropriateFontSizeFromString(const char * pszFontSize
 //
 	else
 	{
-		double dScreenSize = UT_convertToInches(pszFontSize) * (double) getScreenResolution();
-		UT_uint32 iScreenSize = (UT_uint32) (dScreenSize + 0.05);
-		dScreenSize = (double) iScreenSize;
-		double dPaperSize = dScreenSize * (double) getResolution() / (double) getScreenResolution();
+		double dPaperSize = UT_convertToInches(pszFontSize) * (double) getResolution();
 		iSize = (UT_sint32) (dPaperSize + 0.05);
 		if( m_bLayoutResolutionModeEnabled)
 		{
