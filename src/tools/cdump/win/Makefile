@@ -28,15 +28,9 @@ PROGRAM=		$(BINDIR)/cdump$(EXE_SUFFIX)
 
 ifeq ($(OS_NAME),Win32)
 ABI_LDFLAGS=		/nologo /subsystem:console /incremental:no /machine:$(LINK_ARCH) /profile
-ABI_APPLIBS=		
-
-EXTRA_LIBS=
-ABI_OTHLIBS=		
-ABI_LIBS=		kernel32 user32 gdi32 winspool comdlg32 advapi32 \
-			shell32 uuid comctl32 ole32
-
 GARBAGE=		cdump.map cdump.pdb
 endif
+
 TARGETS=		$(PROGRAM)
 
 include $(ABI_ROOT)/src/config/abi_rules.mk
