@@ -58,14 +58,27 @@ if test $abi_curl != no; then
 		fi
 		abi_curl=no
 	else
-		abi_curl=yes
+		_abi_cppflags="$CPPFLAGS"
+		_abi_ldflags="$LDFLAGS"
+		LIBCURL_CFLAGS="`$CURL_CONFIG --cflags`"
+		LIBCURL_LIBS="`$CURL_CONFIG --libs`"
+		CPPFLAGS="$CPPFLAGS $LIBCURL_CFLAGS"
+		LDFLAGS="$LDFLAGS $LIBCURL_LIBS"
+		AC_CHECK_HEADER(curl/curl.h,[
+			AC_CHECK_LIB(curl,curl_global_init,[
+				LIBCURL_CFLAGS="$LIBCURL_CFLAGS -DHAVE_CURL=1"
+				LIBCURL_LIBS="-lcurl $LIBCURL_LIBS"
+				abi_curl=yes
+			],[	abi_curl=no
+			])
+		],[	abi_curl=no
+		])
+		CPPFLAGS="$_abi_cppflags"
+		LDFLAGS="$_abi_ldflags"
 	fi
 fi
 
-if test $abi_curl != no; then
-	LIBCURL_CFLAGS="`$CURL_CONFIG --cflags` -DHAVE_CURL=1"
-	LIBCURL_LIBS="-lcurl `$CURL_CONFIG --libs`"
-else
+if test $abi_curl = no; then
 	LIBCURL_CFLAGS=""
 	LIBCURL_LIBS=""
 fi
