@@ -2281,7 +2281,7 @@ void fp_TextRun::_draw(dg_DrawArgs* pDA)
 					else
 					{
 						//iCumSegmentWidth += iSegmentWidth[iSegment];
-						iX = pDA->xoff + getWidth() - iCumSegmentWidth;
+						iX = pDA->xoff + getWidth() - iCumSegmentWidth - iSegmentWidth[iSegment];
 					}
 					
 					
@@ -2335,15 +2335,20 @@ void fp_TextRun::_draw(dg_DrawArgs* pDA)
 				
 				iOffset = UT_MIN(iSpaceOffset + iSpaceLength, iSegmentOffset[iSegment+1]);
 
-				if(iOffset >= iSpaceOffset)
+				if(iOffset >= iSpaceOffset && iOffset <= iSpaceOffset + iSpaceLength)
 				{
-					// this is a special case when the segment end
-					// alings with the end of the text; in that case
-					// we want to move past the spaces
-					// we also have to increase the cumulative width
+					// we reached the end of the current spaces, so we
+					// want to shift the offset past them
 					iOffset = iSpaceOffset + iSpaceLength;
-					iCumSegmentWidth += iSegmentWidth[iSegment];
+
+					if(iOffset >= iSegmentOffset[iSegment+1])
+					{
+						// we have reached the end of the present segment
+						// need to add the segment width
+						iCumSegmentWidth += iSegmentWidth[iSegment];
+					}
 				}
+
 				
 				if(iOffset >= iSpaceOffset + iSpaceLength) 
 					i += 4;
