@@ -1210,11 +1210,9 @@ gint XAP_UnixFrameImpl::_imDeleteSurrounding_cb (GtkIMContext *slave, gint offse
 
 	PT_DocPosition insPt = pView->getInsPoint ();
 	if (offset > (gint)insPt)
-		insPt = 0;
-	else
-		insPt += offset;
+		return;
 
-	pView->moveInsPtTo (insPt);
+	pView->moveInsPtTo (insPt + offset);
 	pView->cmdCharDelete (true, n_chars);
 
 	return TRUE;
