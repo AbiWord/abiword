@@ -73,7 +73,7 @@ UT_Bool AP_UnixFrame::_showDocument(void)
 
 	// TODO fix prefix on class UNIXGraphics
 	
-	pG = new UNIXGraphics(m_dArea->window);
+	pG = new UNIXGraphics(m_dArea->window, (AP_UnixApp *) getApp());
 	ENSUREP(pG);
 	pDocLayout = new FL_DocLayout(static_cast<PD_Document *>(m_pDoc), pG);
 	ENSUREP(pDocLayout);

@@ -21,6 +21,8 @@
 #include "ut_types.h"
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
+#include "xap_Frame.h"
+#include "xap_UnixFrame.h"
 #include "ap_UnixLeftRuler.h"
 #include "gr_UnixGraphics.h"
 
@@ -87,7 +89,7 @@ void AP_UnixLeftRuler::setView(AV_View * pView)
 	// shown.
 	
 	DELETEP(m_pG);
-	m_pG = new UNIXGraphics(m_wLeftRuler->window);
+	m_pG = new UNIXGraphics(m_wLeftRuler->window, static_cast<AP_UnixApp *>(m_pFrame->getApp()));
 	UT_ASSERT(m_pG);
 }
 
