@@ -64,7 +64,7 @@ typedef enum _FVDocPos
 	FV_DOCPOS_BOP, FV_DOCPOS_EOP,	// page
 	FV_DOCPOS_BOL, FV_DOCPOS_EOL,	// line
 	FV_DOCPOS_BOS, FV_DOCPOS_EOS,	// sentence
-	FV_DOCPOS_BOW, FV_DOCPOS_EOW_MOVE, FV_DOCPOS_EOW_SELECT	// word
+	FV_DOCPOS_BOW, FV_DOCPOS_EOW_MOVE, FV_DOCPOS_EOW_SELECT // word
 } FV_DocPos;
 
 typedef enum _ToggleCase
@@ -107,7 +107,7 @@ typedef enum
 
 typedef enum _AP_JumpTarget
 {
-	AP_JUMPTARGET_PAGE,				// beginning of page
+	AP_JUMPTARGET_PAGE, 			// beginning of page
 	AP_JUMPTARGET_LINE,
 	AP_JUMPTARGET_BOOKMARK,
 	AP_JUMPTARGET_PICTURE // TODO
@@ -146,7 +146,7 @@ public:
 	FV_View(XAP_App*, void*, FL_DocLayout*);
 	virtual ~FV_View();
 
-	inline GR_Graphics*		getGraphics(void) const { return m_pG; }
+	inline GR_Graphics* 	getGraphics(void) const { return m_pG; }
 	inline UT_uint32		getPoint(void) const { return m_iInsPoint; }
 	inline UT_uint32		getSelectionAnchor(void) const { return m_bSelection? m_iSelectionAnchor : m_iInsPoint; }
 
@@ -168,20 +168,20 @@ public:
 	virtual void	cmdRedo(UT_uint32 count);
 	virtual UT_Error	cmdSave(void);
 	virtual UT_Error	cmdSaveAs(const char * szFilename, int ieft);
-	virtual UT_Error        cmdSaveAs(const char * szFilename, int ieft, bool cpy);
+	virtual UT_Error		cmdSaveAs(const char * szFilename, int ieft, bool cpy);
 
 	UT_Error		cmdInsertField(const char* szName);
-	UT_Error        cmdInsertField(const char* szName, const XML_Char ** extra_attrs);
+	UT_Error		cmdInsertField(const char* szName, const XML_Char ** extra_attrs);
 	UT_Error		cmdInsertBookmark(const char* szName);
 	UT_Error		cmdDeleteBookmark(const char* szName);
 	UT_Error		cmdInsertHyperlink(const char* szName);
-    UT_Error		cmdDeleteHyperlink();
-    UT_Error		cmdHyperlinkStatusBar(UT_sint32 xPos, UT_sint32 yPos);
+	UT_Error		cmdDeleteHyperlink();
+	UT_Error		cmdHyperlinkStatusBar(UT_sint32 xPos, UT_sint32 yPos);
 
 	UT_Error		cmdInsertGraphic(FG_Graphic*, const char*);
 
-	virtual void    toggleCase(ToggleCase c);
-	virtual void    setPaperColor(const XML_Char * clr);
+	virtual void	toggleCase(ToggleCase c);
+	virtual void	setPaperColor(const XML_Char * clr);
 
 	virtual void	cmdCopy(void);
 	virtual void	cmdCut(void);
@@ -199,10 +199,10 @@ public:
 	void				getDocumentRangeOfCurrentSelection(PD_DocumentRange * pdr);
 	
 // ----------------------
-	FL_DocLayout* 	getLayout() const;
+	FL_DocLayout*	getLayout() const;
 	UT_uint32		getCurrentPageNumForStatusBar(void) const;
 	fp_Page*		getCurrentPage(void) const;
-	fl_BlockLayout*	getCurrentBlock(void);
+	fl_BlockLayout* getCurrentBlock(void);
 
 	void draw(int page, dg_DrawArgs* da);
 
@@ -210,9 +210,9 @@ public:
 	
 	void	getPageScreenOffsets(fp_Page* pPage, UT_sint32& xoff, UT_sint32& yoff);
 	void	getPageYOffset(fp_Page* pPage, UT_sint32& yoff);
-	virtual	UT_sint32 getPageViewLeftMargin(void) const;
-	virtual	UT_sint32 getPageViewTopMargin(void) const;
-	virtual	UT_sint32 getPageViewSep(void) const;
+	virtual UT_sint32 getPageViewLeftMargin(void) const;
+	virtual UT_sint32 getPageViewTopMargin(void) const;
+	virtual UT_sint32 getPageViewSep(void) const;
 	
 	bool	setSectionFormat(const XML_Char * properties[]);
 	bool	getSectionFormat(const XML_Char *** properties);
@@ -225,7 +225,7 @@ public:
 	bool	setBlockFormat(const XML_Char * properties[]);
 	bool	getBlockFormat(const XML_Char *** properties,bool bExpandStyles=true);
 
-	bool    processPageNumber(HdrFtrType hfType, const XML_Char ** atts);
+	bool	processPageNumber(HdrFtrType hfType, const XML_Char ** atts);
 
 	bool	isTextMisspelled()const ;
 	bool	isTabListBehindPoint(void);
@@ -262,7 +262,7 @@ public:
 
 	UT_uint32		getCurrentPageNumber(void);
 
-	bool    getEditableBounds(bool bEnd, PT_DocPosition & docPos, bool bOverride=false);
+	bool	getEditableBounds(bool bEnd, PT_DocPosition & docPos, bool bOverride=false);
 
 	void	insertParagraphBreak(void);
 	void	insertParagraphBreaknoListUpdate(void);
@@ -273,18 +273,18 @@ public:
 	// ----------------------
 	bool			isLeftMargin(UT_sint32 xPos, UT_sint32 yPos);
 	void			cmdSelect(UT_sint32 xPos, UT_sint32 yPos, FV_DocPos dpBeg, FV_DocPos dpEnd);
-	void                    cmdSelect(PT_DocPosition dpBeg, PT_DocPosition dpEnd);
+	void					cmdSelect(PT_DocPosition dpBeg, PT_DocPosition dpEnd);
 	void			cmdCharMotion(bool bForward, UT_uint32 count);
 	bool			cmdCharInsert(UT_UCSChar * text, UT_uint32 count, bool bForce = false);
 	void			cmdCharDelete(bool bForward, UT_uint32 count);
 	void			delTo(FV_DocPos dp);
-	UT_UCSChar * 	getSelectionText(void);
+	UT_UCSChar *	getSelectionText(void);
 #if 0	
 	UT_UCSChar *	getTextBetweenPos(PT_DocPosition pos1, PT_DocPosition pos2);
 #endif
 	void			warpInsPtToXY(UT_sint32 xPos, UT_sint32 yPos, bool bClick);
 	void			moveInsPtTo(FV_DocPos dp);
-	void 			moveInsPtTo(PT_DocPosition dp);
+	void			moveInsPtTo(PT_DocPosition dp);
 	void			warpInsPtNextPrevPage(bool bNext);
 	void			warpInsPtNextPrevLine(bool bNext);
 	void			extSelHorizontal(bool bForward, UT_uint32 count);
@@ -309,40 +309,40 @@ public:
 // ----------------------
 // Stuff for edittable Headers/Footers
 //
-	void                setHdrFtrEdit(fl_HdrFtrShadow * pShadow);
-	void                clearHdrFtrEdit(void);
-	bool                isHdrFtrEdit(void);
-	fl_HdrFtrShadow *   getEditShadow(void);
-    void                rememberCurrentPosition(void);
-	PT_DocPosition      getSavedPosition(void);
-	void                clearSavedPosition(void);
-	void                markSavedPositionAsNeeded(void);
-	bool                needSavedPosition(void);
-	void                insertHeaderFooter(HdrFtrType hfType);
+	void				setHdrFtrEdit(fl_HdrFtrShadow * pShadow);
+	void				clearHdrFtrEdit(void);
+	bool				isHdrFtrEdit(void);
+	fl_HdrFtrShadow *	getEditShadow(void);
+	void				rememberCurrentPosition(void);
+	PT_DocPosition		getSavedPosition(void);
+	void				clearSavedPosition(void);
+	void				markSavedPositionAsNeeded(void);
+	bool				needSavedPosition(void);
+	void				insertHeaderFooter(HdrFtrType hfType);
 	bool				insertHeaderFooter(const XML_Char ** props, HdrFtrType hfType, fl_DocSectionLayout * pDSL=NULL);
 
-	void                cmdEditHeader(void);
-	void                cmdEditFooter(void);
+	void				cmdEditHeader(void);
+	void				cmdEditFooter(void);
 
-	void                cmdRemoveHdrFtr(bool isHeader);
-	bool                isFooterOnPage(void);
-	bool                isHeaderOnPage(void);
+	void				cmdRemoveHdrFtr(bool isHeader);
+	bool				isFooterOnPage(void);
+	bool				isHeaderOnPage(void);
 
-    void                removeThisHdrFtr(HdrFtrType hfType);
-	void                createThisHdrFtr(HdrFtrType hfType);
-	void                populateThisHdrFtr(HdrFtrType hfType);
-	void                _populateThisHdrFtr(fl_HdrFtrSectionLayout * pHdrFtrSrc, fl_HdrFtrSectionLayout * pHdrFtrDest);
+	void				removeThisHdrFtr(HdrFtrType hfType);
+	void				createThisHdrFtr(HdrFtrType hfType);
+	void				populateThisHdrFtr(HdrFtrType hfType);
+	void				_populateThisHdrFtr(fl_HdrFtrSectionLayout * pHdrFtrSrc, fl_HdrFtrSectionLayout * pHdrFtrDest);
 //
 // ----------------------
 // Stuff for edittable endnotes
 //
 	bool	insertEndnote();
 	bool	insertEndnoteSection(const XML_Char * enpid);
-	bool    insertEndnoteSection(const XML_Char ** blkprops, const XML_Char ** blkattrs);
+	bool	insertEndnoteSection(const XML_Char ** blkprops, const XML_Char ** blkattrs);
 
 // ----------------------
 
-	bool 		gotoTarget(AP_JumpTarget type, UT_UCSChar * data);
+	bool		gotoTarget(AP_JumpTarget type, UT_UCSChar * data);
 
 	void			changeNumColumns(UT_uint32 iNumColumns);
 	
@@ -350,10 +350,10 @@ public:
 
 	// find and replace
 	
-	bool	 		findSetNextString(UT_UCSChar* string, bool bMatchCase);
+	bool			findSetNextString(UT_UCSChar* string, bool bMatchCase);
 	bool			findAgain(void);
 
-	void 			findSetStartAtInsPoint(void);
+	void			findSetStartAtInsPoint(void);
 
 	bool			findNext(const UT_UCSChar* pFind, bool bMatchCase,
 							 bool& bDoneEntireDocument);
@@ -386,7 +386,7 @@ public:
 
 // ----------------------
 
-	FV_DocCount			countWords(void);
+	FV_DocCount 		countWords(void);
 
 // -----------------------
 
@@ -396,31 +396,31 @@ public:
 // -----------------------
 
 	void				setShowPara(bool);
-	inline bool		getShowPara(void) const { return m_bShowPara; };
+	inline bool 	getShowPara(void) const { return m_bShowPara; };
 	
 	const fp_PageSize&	getPageSize(void) const;
 	UT_uint32			calculateZoomPercentForPageWidth();
 	UT_uint32			calculateZoomPercentForPageHeight();
 	UT_uint32			calculateZoomPercentForWholePage();
-	inline void             setViewMode (ViewMode vm) {m_viewMode = vm;}
-	inline ViewMode         getViewMode (void) const  {return m_viewMode;}
-	bool                isPreview(void) const {return VIEW_PREVIEW == m_viewMode;}
-	void                setPreviewMode(PreViewMode pre) {m_previewMode = pre;}
-	PreViewMode         getPreviewMode(void) { return m_previewMode;}
+	inline void 			setViewMode (ViewMode vm) {m_viewMode = vm;}
+	inline ViewMode 		getViewMode (void) const  {return m_viewMode;}
+	bool				isPreview(void) const {return VIEW_PREVIEW == m_viewMode;}
+	void				setPreviewMode(PreViewMode pre) {m_previewMode = pre;}
+	PreViewMode 		getPreviewMode(void) { return m_previewMode;}
 
-	void                setScreenUpdateOnGeneralUpdate( bool bDoit) 
+	void				setScreenUpdateOnGeneralUpdate( bool bDoit) 
 		{m_bDontUpdateScreenOnGeneralUpdate = !bDoit;}
-	bool                shouldScreenUpdateOnGeneralUpdate(void) const 
+	bool				shouldScreenUpdateOnGeneralUpdate(void) const 
 		{ return !m_bDontUpdateScreenOnGeneralUpdate;}
 
 	inline PD_Document * getDocument (void) const {return m_pDoc;}
 
 protected:
-	void                _saveAndNotifyPieceTableChange(void);
-	void                _restorePieceTableState(void);
+	void				_saveAndNotifyPieceTableChange(void);
+	void				_restorePieceTableState(void);
 	void				_generalUpdate(void);
 	
-	void 				_draw(UT_sint32, UT_sint32, UT_sint32, UT_sint32, bool bDirtyRunsOnly, bool bClip=false);
+	void				_draw(UT_sint32, UT_sint32, UT_sint32, UT_sint32, bool bDirtyRunsOnly, bool bClip=false);
 	
 	void				_drawBetweenPositions(PT_DocPosition left, PT_DocPosition right);
 	bool				_clearBetweenPositions(PT_DocPosition left, PT_DocPosition right, bool bFullLineHeightRect);
@@ -435,12 +435,12 @@ protected:
 
 	PT_DocPosition		_getDocPosFromPoint(PT_DocPosition iPoint, FV_DocPos dp, bool bKeepLooking=true);
 	PT_DocPosition		_getDocPos(FV_DocPos dp, bool bKeepLooking=true);
-	void 				_findPositionCoords(PT_DocPosition pos,
+	void				_findPositionCoords(PT_DocPosition pos,
 											bool b,
 											UT_sint32& x,
 											UT_sint32& y,
 											UT_sint32& x2, //these are needed for BiDi split carret
-	  										UT_sint32& y2,
+											UT_sint32& y2,
 
 											UT_uint32& height,
 											bool& bDirection,
@@ -461,11 +461,11 @@ protected:
 	void				_setSelectionAnchor(void);
 	void				_deleteSelection(PP_AttrProp *p_AttrProp_Before = NULL);
 	bool				_insertFormatPair(const XML_Char * szName, const XML_Char * properties[]);
-	void 				_eraseInsertionPoint();
+	void				_eraseInsertionPoint();
 	void				_drawInsertionPoint();
-	void 				_updateInsertionPoint();
+	void				_updateInsertionPoint();
 	void				_fixInsertionPointCoords();
-	void 				_xorInsertionPoint();
+	void				_xorInsertionPoint();
 	bool				_hasPointMoved(void);
 	void				_saveCurrentPoint(void); 
 	void				_clearOldPoint(void); 
@@ -477,8 +477,8 @@ protected:
 
 	UT_UCSChar *		_lookupSuggestion(fl_BlockLayout* pBL, fl_PartOfBlock* pPOB, UT_uint32 ndx);
 
-	static void			_autoScroll(UT_Worker * pTimer);
-	static void			_autoDrawPoint(UT_Worker * pTimer);
+	static void 		_autoScroll(UT_Worker * pTimer);
+	static void 		_autoDrawPoint(UT_Worker * pTimer);
 
 	// localize handling of insertion point logic
 	void				_setPoint(PT_DocPosition pt, bool bEOL = false);
@@ -489,11 +489,11 @@ protected:
 
 	void				_checkPendingWordForSpell(void);
 
-    bool                _isSpaceBefore(PT_DocPosition pos);
-	void                _removeThisHdrFtr(fl_HdrFtrSectionLayout * pHdrFtr);
+	bool				_isSpaceBefore(PT_DocPosition pos);
+	void				_removeThisHdrFtr(fl_HdrFtrSectionLayout * pHdrFtr);
 
-	UT_Error 			_deleteBookmark(const char* szName, bool bSignal, PT_DocPosition &i, PT_DocPosition &j);
-	UT_Error 			_deleteHyperlink(PT_DocPosition &i, bool bSignal);	
+	UT_Error			_deleteBookmark(const char* szName, bool bSignal, PT_DocPosition &i, PT_DocPosition &j);
+	UT_Error			_deleteHyperlink(PT_DocPosition &i, bool bSignal);	
 	PT_DocPosition		m_iInsPoint;
 	UT_sint32			m_xPoint;
 	UT_sint32			m_yPoint;
@@ -503,16 +503,17 @@ protected:
 	UT_sint32			m_yPoint2;
 	UT_sint32			m_oldxPoint2;
 	UT_sint32			m_oldyPoint2;
-	bool             m_bPointDirection;
+	bool			 m_bPointDirection;
 
 #ifdef BIDI_ENABLED
 	bool				m_bDefaultDirectionRtl;
+	bool				m_bUseHebrewContextGlyphs;
 #endif
 	UT_uint32			m_iPointHeight;
 	UT_sint32			m_oldxPoint;
 	UT_sint32			m_oldyPoint;
 	UT_uint32			m_oldiPointHeight;
-	UT_sint32			m_xPointSticky;		// used only for _moveInsPtNextPrevLine()
+	UT_sint32			m_xPointSticky; 	// used only for _moveInsPtNextPrevLine()
 
 	bool				m_bPointVisible;
 	bool				m_bPointEOL;
@@ -545,28 +546,28 @@ protected:
 
 	bool				m_doneFind;
 
-	bool                m_bEditHdrFtr;
-	fl_HdrFtrShadow *   m_pEditShadow;
-	PT_DocPosition      m_iSavedPosition;
-	bool                m_bNeedSavedPosition;
-	PT_DocPosition 		_BlockOffsetToPos(fl_BlockLayout * block, PT_DocPosition offset);
+	bool				m_bEditHdrFtr;
+	fl_HdrFtrShadow *	m_pEditShadow;
+	PT_DocPosition		m_iSavedPosition;
+	bool				m_bNeedSavedPosition;
+	PT_DocPosition		_BlockOffsetToPos(fl_BlockLayout * block, PT_DocPosition offset);
 	
-	fl_BlockLayout * 	_findGetCurrentBlock(void);
-	PT_DocPosition	 	_findGetCurrentOffset(void);	
-	UT_UCSChar * 		_findGetNextBlockBuffer(fl_BlockLayout ** block, PT_DocPosition *offset);
+	fl_BlockLayout *	_findGetCurrentBlock(void);
+	PT_DocPosition		_findGetCurrentOffset(void);	
+	UT_UCSChar *		_findGetNextBlockBuffer(fl_BlockLayout ** block, PT_DocPosition *offset);
 
 	bool				_m_matchCase;
-	UT_UCSChar * 		_m_findNextString;
+	UT_UCSChar *		_m_findNextString;
 
 	UT_sint32			_findBlockSearchRegexp(const UT_UCSChar * haystack, const UT_UCSChar * needle);
 
 	// prefs listener - to change cursor blink on/off (and possibly others)
 	static void _prefsListener( XAP_App *, XAP_Prefs *, UT_StringPtrMap *, void *);
 
-	bool		         m_bShowPara;
-	ViewMode             m_viewMode;
-	PreViewMode          m_previewMode;
-	bool                 m_bDontUpdateScreenOnGeneralUpdate; 
+	bool				 m_bShowPara;
+	ViewMode			 m_viewMode;
+	PreViewMode 		 m_previewMode;
+	bool				 m_bDontUpdateScreenOnGeneralUpdate; 
 	//#TF had to change the whole logic of storing PT state, since
 	//the earlier implementation did not work with nested calls to
 	//_saveAndNotifyPieceTableChange();
