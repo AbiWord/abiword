@@ -905,6 +905,7 @@ void fp_TextRun::drawSquiggle(UT_uint32 iOffset, UT_uint32 iLen)
 	UT_ASSERT(iLen > 0);
 	
 	UT_sint32 xoff = 0, yoff = 0;
+	UT_sint32 iAscent = m_pLine->getAscent();
 
 	UT_RGBColor clrSquiggle(255, 0, 0);
 	m_pG->setColor(clrSquiggle);
@@ -915,14 +916,7 @@ void fp_TextRun::drawSquiggle(UT_uint32 iOffset, UT_uint32 iLen)
 	const UT_GrowBuf * pgbCharWidths = m_pBL->getCharWidths();  
 	_getPartRect( &r, xoff, yoff + m_iAscent, iOffset, iLen, pgbCharWidths);
 
-#if 0
-	m_pG->drawLine(r.left,
-				   r.top + m_iAscent + 1, 
-				   r.left + r.width,
-				   r.top + m_iAscent + 1);
-#else
-	_drawSquiggle(r.top + m_iAscent + 1, r.left, r.left + r.width); 
-#endif
+	_drawSquiggle(r.top + iAscent + 1, r.left, r.left + r.width); 
 }
 
 fp_TabRun::fp_TabRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen, UT_Bool bLookupProperties) : fp_Run(pBL, pG, iOffsetFirst, iLen, FPRUN_TAB)
