@@ -793,7 +793,7 @@ private:
 	XAP_UnixFont* m_pFont;
 };
 
-XAP_UnixFont* XAP_UnixFontManager::getDefaultFont(GR_Font::FontFamilyEnum f) const
+XAP_UnixFont* XAP_UnixFontManager::getDefaultFont(GR_Font::FontFamilyEnum f)
 {
 	static bool fontInitted[GR_Font::FF_Last - GR_Font::FF_Unknown];
 	static FontHolder m_f[GR_Font::FF_Last - GR_Font::FF_Unknown];
