@@ -42,6 +42,10 @@
 
 /*
  * $Log$
+ * Revision 1.2  2001/04/18 00:59:36  thomasf
+ * Removed the duplicate declarations of variables that was causing build
+ * to bail.  This new ispell stuff is a total mess.
+ *
  * Revision 1.1  2001/04/15 16:01:24  tomas_f
  * moving to spell/xp
  *
@@ -793,6 +797,19 @@ EXTERN int	easypossibilities; /* Number of "easy" corrections found */
  */
 EXTERN int	Trynum;		/* Size of "Try" array */
 EXTERN ichar_t	Try[SET_SIZE + MAXSTRINGCHARS];
+
+/*
+ * TF NOTE:
+ * The following are here so that we can have a clean compile and 
+ * declare our variables nicely.
+ */
+#include "iconv.h"
+
+EXTERN iconv_t  translate_in; /* Selected translation from/to Unicode */
+EXTERN iconv_t  translate_out;
+
+/** END TF **/
+
 
 /*
  * Initialized variables.  These are generated using macros so that they

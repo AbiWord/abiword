@@ -6,11 +6,14 @@
 #include "iconv.h"
 #include "ut_types.h"
 
+#	define UCS_2_INTERNAL "UCS-2"
 
 /***************************************************************************/
 /* Reduced Gobals needed by ispell code.                                   */
 /***************************************************************************/
-       int              numhits;
+
+#if 0		//These things declared twice
+	int              numhits;
 struct success          hits[MAX_HITS];
 
 struct flagptr          pflagindex[SET_SIZE + MAXSTRINGCHARS];/*prefix index*/ 
@@ -49,10 +52,17 @@ iconv_t  translate_out = (iconv_t)-1;
 int      Trynum;         /* Size of "Try" array */
 ichar_t  Try[SET_SIZE + MAXSTRINGCHARS];
 
+#endif
+
+//These things not declared twice (or at least not referenced)
+
 /*this is used for converting form unsigned short to UCS-2*/
 static unsigned short  ucs2[INPUTWORDLEN + MAXAFFIXLEN];
 
+/*****/
+
 extern int XAP_EncodingManager__swap_utos, XAP_EncodingManager__swap_stou;
+
 /*this one fills ucs2 with values that iconv will treat as UCS-2. */
 static void toucs2(const unsigned short *word16, int length)
 {
@@ -84,7 +94,6 @@ static void fromucs2(unsigned short *word16, int length)
 	out[i]= 0;
 }
 
-#	define UCS_2_INTERNAL "UCS-2"
 
 static void try_autodetect_charset(char* hashname)
 {
@@ -117,6 +126,8 @@ static void try_autodetect_charset(char* hashname)
 	}
 	
 }
+
+
 /***************************************************************************/
 
 
