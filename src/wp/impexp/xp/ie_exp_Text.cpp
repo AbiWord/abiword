@@ -472,6 +472,89 @@ void Text_Listener::_closeBlock(void)
 	return;
 }
 
+void Text_Listener::_handleDirMarker(PT_AttrPropIndex api)
+{
+	const PP_AttrProp * pAP = NULL;
+	bool bHaveProp = m_pDocument->getAttrProp (api, &pAP);
+
+	if (bHaveProp && pAP)
+	{
+		UT_UCS4Char cRLO = UCS_RLO;
+		UT_UCS4Char cLRO = UCS_LRO;
+		UT_UCS4Char cPDF = UCS_PDF;
+		
+		const XML_Char *szValue = NULL;
+		if(pAP->getProperty("dir-override", szValue))
+		{
+			if(m_eDirOverride == DO_UNSET)
+			{
+				if(!UT_stricmp(szValue, "rtl"))
+				{
+					m_eDirOverride = DO_RTL;
+					// write RLO
+					_outputData(&cRLO, 1);
+				}
+				else if(!UT_stricmp(szValue, "ltr"))
+				{
+					m_eDirOverride = DO_LTR;
+					// write LRO
+					_outputData(&cLRO, 1);
+				}
+			}
+			else if(m_eDirOverride == DO_RTL)
+			{
+				if(!UT_stricmp(szValue, "rtl"))
+				{
+					// no change
+				}
+				else if(!UT_stricmp(szValue, "ltr"))
+				{
+					m_eDirOverride = DO_LTR;
+					// write LRO
+					_outputData(&cLRO, 1);
+				}
+			}
+			else if(m_eDirOverride == DO_LTR)
+			{
+				if(!UT_stricmp(szValue, "ltr"))
+				{
+					// no change
+				}
+				else if(!UT_stricmp(szValue, "rtl"))
+				{
+					m_eDirOverride = DO_RTL;
+					// write RLO
+					_outputData(&cRLO, 1);
+				}
+			}
+			else
+			{
+				UT_DEBUGMSG(("Text_Listener::_handleDirMarker: dir-override value '%s'\n",
+							 szValue));
+				UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+			}
+		}
+		else
+		{
+			if(m_eDirOverride != DO_UNSET)
+			{
+				m_eDirOverride = DO_UNSET;
+				// write PDF
+				_outputData(&cPDF, 1);
+			}
+		}
+	}
+	else
+	{
+		UT_DEBUGMSG(("Text_Listener::_handleDirMarker: no props! (bHaveProp %d, pAP 0x%x)\n",
+					 bHaveProp, pAP));
+		UT_ASSERT( UT_SHOULD_NOT_HAPPEN );
+	}
+	
+}
+
+
+
 Text_Listener::Text_Listener(PD_Document * pDocument,
 							 IE_Exp_Text * pie,
 							 bool bToClipboard,
@@ -493,7 +576,8 @@ Text_Listener::Text_Listener(PD_Document * pDocument,
 	  m_szEncoding(szEncoding),
 	  m_bIs16Bit(bIs16Bit),
 	  m_bBigEndian(bBigEndian),
-	  m_bUseBOM(bToClipboard ? false : bUseBOM)
+	  m_bUseBOM(bToClipboard ? false : bUseBOM),
+	  m_eDirOverride(DO_UNSET)
 {
 }
 
@@ -505,6 +589,9 @@ bool Text_Listener::populate(PL_StruxFmtHandle /*sfh*/,
 	case PX_ChangeRecord::PXT_InsertSpan:
 		{
 			const PX_ChangeRecord_Span * pcrs = static_cast<const PX_ChangeRecord_Span *>(pcr);
+
+			PT_AttrPropIndex api = pcr->getIndexAP();
+			_handleDirMarker(api);
 
 			PT_BufIndex bi = pcrs->getBufIndex();
 			_outputData(m_pDocument->getPointer(bi),pcrs->getLength());

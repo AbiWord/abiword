@@ -135,9 +135,19 @@ protected:
 	void				_genLineBreak(void);
 	virtual void		_outputData(const UT_UCSChar * p, UT_uint32 length);
 	void				_closeBlock(void);
+	void                _handleDirMarker(PT_AttrPropIndex apiSpan);
 
  private:
-	PD_Document *		m_pDocument;
+	enum _dirOverride
+	{
+		DO_LTR,
+		DO_RTL,
+		DO_UNSET
+	};
+	
+	
+
+ 	PD_Document *		m_pDocument;
 	IE_Exp_Text *		m_pie;
 	UT_Wctomb 			m_wctomb;
 	char				m_mbBOM[MY_MB_LEN_MAX];
@@ -151,6 +161,7 @@ protected:
 	bool				m_bIs16Bit;
 	bool				m_bBigEndian;
 	bool				m_bUseBOM;
+	_dirOverride        m_eDirOverride;
 };
 
 #endif /* IE_EXP_TEXT_H */

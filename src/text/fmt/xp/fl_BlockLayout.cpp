@@ -2860,6 +2860,8 @@ bool fl_BlockLayout::doclistener_populateSpan(const PX_ChangeRecord_Span * pcrs,
 		case UCS_LRO:	// explicit direction overrides
 		case UCS_RLO:
 		case UCS_PDF:
+		case UCS_LRE:	
+		case UCS_RLE:
 		case UCS_LRM:
 		case UCS_RLM:
 
@@ -2905,13 +2907,13 @@ bool fl_BlockLayout::doclistener_populateSpan(const PX_ChangeRecord_Span * pcrs,
 				break;
 
 			case UCS_LRO:
-				m_iDirOverride = FRIBIDI_TYPE_LTR;
-				break;
 			case UCS_RLO:
-				m_iDirOverride = FRIBIDI_TYPE_RTL;
-				break;
+			case UCS_LRE:	
+			case UCS_RLE:
 			case UCS_PDF:
-				m_iDirOverride = FRIBIDI_TYPE_UNSET;
+				// these should have been removed by
+				// pd_Document::append/insert functions
+				UT_ASSERT( UT_SHOULD_NOT_HAPPEN );
 				break;
 
 			case UCS_LRM:
@@ -3770,6 +3772,8 @@ bool fl_BlockLayout::doclistener_insertSpan(const PX_ChangeRecord_Span * pcrs)
 		case UCS_TAB:	// tab
 		case UCS_LRO:	// explicit direction overrides
 		case UCS_RLO:
+		case UCS_LRE:	
+		case UCS_RLE:
 		case UCS_PDF:
 		case UCS_LRM:
 		case UCS_RLM:
@@ -3816,13 +3820,13 @@ bool fl_BlockLayout::doclistener_insertSpan(const PX_ChangeRecord_Span * pcrs)
 				break;
 
 			case UCS_LRO:
-				m_iDirOverride = FRIBIDI_TYPE_LTR;
-				break;
 			case UCS_RLO:
-				m_iDirOverride = FRIBIDI_TYPE_RTL;
-				break;
+			case UCS_LRE:	
+			case UCS_RLE:
 			case UCS_PDF:
-				m_iDirOverride = FRIBIDI_TYPE_UNSET;
+				// these should have been removed by
+				// pd_Document::append/insert functions
+				UT_ASSERT( UT_SHOULD_NOT_HAPPEN );
 				break;
 
 			case UCS_LRM:
