@@ -68,9 +68,14 @@ ifneq ($(ABI_OPT_PACIFY_COMPILER),1)
 WARNFLAGS	= -Wall -ansi -pedantic
 endif
 
+ABI_REQUIRE_PEER_ICONV = 1
 # Includes
-OS_INCLUDES		+=
-G++INCLUDES		= -I/usr/include/g++
+ifeq ($(ABI_REQUIRE_PEER_ICONV),1)
+OS_INCLUDES	= -I$(ABI_ROOT)/../libiconv/include -I/usr/local/include
+else
+OS_INCLUDES	= -I/usr/local/include
+endif
+G++INCLUDES	= -I/usr/include/g++
 
 # Compiler flags
 PLATFORM_FLAGS		= -pipe -DNETBSD -DNetBSD
