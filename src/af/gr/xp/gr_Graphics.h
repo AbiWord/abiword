@@ -63,6 +63,12 @@ class ABI_EXPORT GR_Font
 										   bool * pbTrueType);
 
 	virtual const char* getFamily() const { return NULL; }
+	UT_uint32           getAllocNumber() const {return m_iAllocNo;}
+
+  private:
+
+	static UT_uint32 s_iAllocCount;
+	UT_uint32        m_iAllocNo;
 };
 #else
 #define GR_Font PangoFont

@@ -56,9 +56,13 @@ UT_uint32 GR_Graphics::m_uTick = 0;
 UT_uint32 GR_Graphics::m_instanceCount = 0;
 UT_uint32 GR_Graphics::s_iScreenResolution = 100;
 
+UT_uint32 GR_Font::s_iAllocCount = 0;
+
 #ifndef WITH_PANGO
 GR_Font::GR_Font()
 {
+	s_iAllocCount++;
+	m_iAllocNo = s_iAllocCount;
 }
 
 GR_Font::~GR_Font()
