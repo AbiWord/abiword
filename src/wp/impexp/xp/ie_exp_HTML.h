@@ -57,9 +57,8 @@
 #define HTML_ENABLE_HTML4 
 #define HTML_ENABLE_PHTML
 #endif
-#ifdef DEBUG
 #define HTML_ENABLE_MHTML
-#endif
+
 
 class PD_Document;
 

@@ -869,13 +869,13 @@ void XAP_UnixFrameImpl::_initialize()
 	// Start background repaint
 	//
 #if 0
-	//	if(m_iAbiRepaintID == 0)
-	//	m_iAbiRepaintID = gtk_timeout_add(100,static_cast<GtkFunction>(XAP_UnixFrameImpl::_fe::abi_expose_repaint), static_cast<gpointer>(this));
-	//else
-	//{
-	//	gtk_timeout_remove(m_iAbiRepaintID);
-	//	m_iAbiRepaintID = gtk_timeout_add(100,static_cast<GtkFunction>(XAP_UnixFrameImpl::_fe::abi_expose_repaint), static_cast<gpointer>(this));
-	//}
+	if(m_iAbiRepaintID == 0)
+		m_iAbiRepaintID = gtk_timeout_add(100,static_cast<GtkFunction>(XAP_UnixFrameImpl::_fe::abi_expose_repaint), static_cast<gpointer>(this));
+	else
+	{
+		gtk_timeout_remove(m_iAbiRepaintID);
+		m_iAbiRepaintID = gtk_timeout_add(100,static_cast<GtkFunction>(XAP_UnixFrameImpl::_fe::abi_expose_repaint), static_cast<gpointer>(this));
+	}
 #endif
 }
 

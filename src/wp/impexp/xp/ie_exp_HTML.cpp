@@ -4245,7 +4245,23 @@ UT_Error IE_Exp_HTML::_writeDocument ()
 			okay = getDoc()->tellListenerSubset (pL, getDocRange ());
 		}
 	else okay = getDoc()->tellListener (pL);
-
+	UT_sint32 i = 0;
+	//
+	// Output footnotes
+	//
+	for(i=0; i< getNumFootnotes(); i++)
+		{
+			PD_DocumentRange * pDocRange = reinterpret_cast<PD_DocumentRange *>(m_vecFootnotes.getNthItem(i));
+			okay = getDoc()->tellListenerSubset(pL,pDocRange);
+		}
+	//
+	// Output Endnotes
+	//
+	for(i=0; i< getNumEndnotes(); i++)
+		{
+			PD_DocumentRange * pDocRange = reinterpret_cast<PD_DocumentRange *>(m_vecEndnotes.getNthItem(i));
+			okay = getDoc()->tellListenerSubset(pL,pDocRange);
+		}
 	DELETEP(pListener);
 	
 	if ((m_error == UT_OK) && (okay == true)) return UT_OK;
