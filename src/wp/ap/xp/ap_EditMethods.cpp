@@ -1428,24 +1428,24 @@ static void s_LoadingCursorCallback(UT_Worker * pTimer )
 
 			if(iPageCount > 1)
 			{
-				UT_String msg = pSS->getValue(XAP_STRING_ID_MSG_BuildingDoc);
+				UT_String msg (pSS->getValue(XAP_STRING_ID_MSG_BuildingDoc));
 				pFrame->setStatusMessage ( static_cast<const XML_Char *>(msg.c_str()) );
 			}
 			else
 			{
-				UT_String msg =  pSS->getValue(XAP_STRING_ID_MSG_ImportingDoc);
+				UT_String msg (pSS->getValue(XAP_STRING_ID_MSG_ImportingDoc));
 				pFrame->setStatusMessage ( static_cast<const XML_Char *>(msg.c_str()) );
 			}
 		}
 		else
 		{
-			UT_String msg =  pSS->getValue(XAP_STRING_ID_MSG_ImportingDoc);
+			UT_String msg (pSS->getValue(XAP_STRING_ID_MSG_ImportingDoc));
 			pFrame->setStatusMessage ( static_cast<const XML_Char *>(msg.c_str()) );
 		}
 	}
 	else
 	{
-		UT_String msg =  pSS->getValue(XAP_STRING_ID_MSG_ImportingDoc);
+		UT_String msg (pSS->getValue(XAP_STRING_ID_MSG_ImportingDoc));
 		pFrame->setStatusMessage ( static_cast<const XML_Char *>(msg.c_str()) );		s_bFirstDrawDone = false;
 	}
 }
@@ -2956,7 +2956,7 @@ Defun1(helpIndex)
 Defun1(helpCheckVer)
 {
 	CHECK_FRAME;
-	UT_String versionURL = "http://www.abisource.com/users/check_version.phtml?version=";
+	UT_String versionURL ("http://www.abisource.com/users/check_version.phtml?version=");
 	versionURL += XAP_App::s_szBuild_Version;
 	return _openURL(pAV_View, versionURL.c_str());
 }
@@ -2964,7 +2964,7 @@ Defun1(helpCheckVer)
 Defun1(helpReportBug)
 {
 	CHECK_FRAME;
-	UT_String bugURL = "http://bugzilla.abisource.com/enter_bug.cgi?product=AbiWord";
+	UT_String bugURL ("http://bugzilla.abisource.com/enter_bug.cgi?product=AbiWord");
 
   bugURL += "&version=";
   bugURL += XAP_App::s_szBuild_Version;
@@ -6367,7 +6367,7 @@ Defun(fontSize)
 
 	if (sz && *sz)
 	{
-		UT_String buf = sz;
+		UT_String buf (sz);
 		buf += "pt";
 
 		properties[1] = static_cast<const XML_Char *>(buf.c_str());
@@ -6755,7 +6755,7 @@ static bool s_doPrint(FV_View * pView, bool bTryToSuppressDialog,bool bPrintDire
 		s_pLoadingDoc = static_cast<AD_Document *>(doc);
 
 		const XAP_StringSet * pSS = pFrame->getApp()->getStringSet();
-		UT_String msg =  pSS->getValue(AP_STRING_ID_MSG_PrintingDoc);
+		UT_String msg (pSS->getValue(AP_STRING_ID_MSG_PrintingDoc));
 
 		pFrame->setStatusMessage ( static_cast<const XML_Char *>(msg.c_str()) );
 
@@ -7133,8 +7133,7 @@ Defun1(zoomIn)
 	
 	pFrame->raise();
 	UT_uint32 newZoom = pFrame->getZoomPercentage() + 10;
-	UT_String tmp;
-	UT_String_sprintf(tmp,"%d",newZoom);
+	UT_String tmp (UT_String_sprintf("%d",newZoom));
 	XAP_App * pApp = pFrame->getApp();
 	UT_ASSERT(pApp);
 	XAP_Prefs * pPrefs = pApp->getPrefs();
@@ -7163,8 +7162,7 @@ Defun1(zoomOut)
 	pFrame->raise();
 	
 	UT_uint32 newZoom = pFrame->getZoomPercentage() - 10;
-	UT_String tmp;
-	UT_String_sprintf(tmp,"%d",newZoom);
+	UT_String tmp (UT_String_sprintf("%d",newZoom));
 	XAP_App * pApp = pFrame->getApp();
 	UT_ASSERT(pApp);
 	XAP_Prefs * pPrefs = pApp->getPrefs();
@@ -8173,9 +8171,9 @@ Defun(zoom)
 
 	const XAP_StringSet * pSS = XAP_App::getApp()->getStringSet();
 
-	UT_String sPageWidth = pSS->getValueUTF8(XAP_STRING_ID_TB_Zoom_PageWidth);
-	UT_String sWholePage = pSS->getValueUTF8(XAP_STRING_ID_TB_Zoom_WholePage);
-	UT_String sPercent = pSS->getValueUTF8(XAP_STRING_ID_TB_Zoom_Percent);
+	UT_String sPageWidth (pSS->getValueUTF8(XAP_STRING_ID_TB_Zoom_PageWidth));
+	UT_String sWholePage (pSS->getValueUTF8(XAP_STRING_ID_TB_Zoom_WholePage));
+	UT_String sPercent (pSS->getValueUTF8(XAP_STRING_ID_TB_Zoom_Percent));
 	
 	if(strcmp(p_zoom, sPageWidth.c_str()) == 0)
 	{
@@ -8199,11 +8197,9 @@ Defun(zoom)
 	else
 	{
 		// we've gotten back a number - turn it into a zoom percentage
-		UT_UTF8String tmp;
-		UT_UTF8String_sprintf(tmp,"%d",p_zoom);
+		//UT_UTF8String tmp (UT_UTF8String_sprintf("%d",p_zoom))
 		pPrefsScheme->setValue(static_cast<const XML_Char*>(XAP_PREF_KEY_ZoomType),
-						 static_cast<const XML_Char*>(utf8.utf8_str()));
-		
+						 static_cast<const XML_Char*>(utf8.utf8_str()));		
 		pFrame->setZoomType(XAP_Frame::z_PERCENT);
 		iZoom = atoi(p_zoom);
 	}
