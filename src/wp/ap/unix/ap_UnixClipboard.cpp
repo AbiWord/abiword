@@ -165,20 +165,18 @@ bool AP_UnixClipboard::addPNGData(T_AllowGet tTo, const void* pData, UT_sint32 i
 }
 
 bool  AP_UnixClipboard::getSupportedData(T_AllowGet tFrom,
-					 const void ** ppData, UT_uint32 * pLen,
-					 const char **pszFormatFound)
+										 const void ** ppData, UT_uint32 * pLen,
+										 const char **pszFormatFound)
 {
-
-  // give priority to rich text, html, then images, then text
-  if (getData(tFrom, rtfszFormatsAccepted, (void**)ppData, pLen, pszFormatFound))
-    return true;
-  else if (getData (tFrom, htmlszFormatsAccepted, (void**)ppData, pLen, pszFormatFound))
-	  return true;
-  else if (getData(tFrom, imgszFormatsAccepted, (void**)ppData, pLen, pszFormatFound))
-    return true;  
-  else if (getTextData (tFrom, ppData, pLen, pszFormatFound))
-    return true;
-  return false;
+	if (getData(tFrom, rtfszFormatsAccepted, (void**)ppData, pLen, pszFormatFound))
+		return true;
+	else if (getData(tFrom, imgszFormatsAccepted, (void**)ppData, pLen, pszFormatFound))
+		return true;  
+	else if (getTextData (tFrom, ppData, pLen, pszFormatFound))
+		return true;
+	else if (getData (tFrom, htmlszFormatsAccepted, (void**)ppData, pLen, pszFormatFound))
+		return true;
+	return false;
 }
 
 bool  AP_UnixClipboard::getTextData(T_AllowGet tFrom,
