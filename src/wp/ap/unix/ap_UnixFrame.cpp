@@ -218,28 +218,52 @@ void AP_UnixFrame::setXScrollRange(void)
 {
 	int width = m_pData->m_pDocLayout->getWidth();
 	int windowWidth = GTK_WIDGET(m_dArea)->allocation.width;
+
+	int newvalue = ((m_pView) ? m_pView->getXScrollOffset() : 0);
+	int newmax = width - windowWidth; /* upper - page_size */
+	if (newmax <= 0)
+		newvalue = 0;
+	else if (newvalue > newmax)
+		newvalue = newmax;
+
+	UT_Bool bDifferent = (newvalue != (int)m_pHadj->value);
 	
-	m_pHadj->value = (gfloat)((m_pView) ? m_pView->getXScrollOffset() : 0);
+	m_pHadj->value = newvalue;
 	m_pHadj->lower = 0.0;
 	m_pHadj->upper = (gfloat) width;
 	m_pHadj->step_increment = 20.0;
 	m_pHadj->page_increment = (gfloat) windowWidth;
 	m_pHadj->page_size = (gfloat) windowWidth;
 	gtk_signal_emit_by_name(GTK_OBJECT(m_pHadj), "changed");
+
+	if (m_pView && bDifferent)
+		m_pView->sendHorizontalScrollEvent(newvalue);
 }
 
 void AP_UnixFrame::setYScrollRange(void)
 {
 	int height = m_pData->m_pDocLayout->getHeight();
 	int windowHeight = GTK_WIDGET(m_dArea)->allocation.height;
+
+	int newvalue = ((m_pView) ? m_pView->getYScrollOffset() : 0);
+	int newmax = height - windowHeight;	/* upper - page_size */
+	if (newmax <= 0)
+		newvalue = 0;
+	else if (newvalue > newmax)
+		newvalue = newmax;
+
+	UT_Bool bDifferent = (newvalue != (int)m_pVadj->value);
 	
-	m_pVadj->value = (gfloat)((m_pView) ? m_pView->getYScrollOffset() : 0);
+	m_pVadj->value = newvalue;
 	m_pVadj->lower = 0.0;
 	m_pVadj->upper = (gfloat) height;
 	m_pVadj->step_increment = 20.0;
 	m_pVadj->page_increment = (gfloat) windowHeight;
 	m_pVadj->page_size = (gfloat) windowHeight;
 	gtk_signal_emit_by_name(GTK_OBJECT(m_pVadj), "changed");
+
+	if (m_pView && bDifferent)
+		m_pView->sendVerticalScrollEvent(newvalue);
 }
 
 
@@ -378,7 +402,9 @@ void AP_UnixFrame::_scrollFuncY(void * pData, UT_sint32 yoff)
 	
 	gfloat yoffNew = (gfloat)yoff;
 	gfloat yoffMax = pUnixFrame->m_pVadj->upper - pUnixFrame->m_pVadj->page_size;
-	if ((yoffMax > 0) && (yoffNew > yoffMax))
+	if (yoffMax <= 0)
+		yoffNew = 0;
+	else if (yoffNew > yoffMax)
 		yoffNew = yoffMax;
 	gtk_adjustment_set_value(GTK_ADJUSTMENT(pUnixFrame->m_pVadj),yoffNew);
 	pView->setYScrollOffset((UT_sint32)yoffNew);
@@ -397,7 +423,9 @@ void AP_UnixFrame::_scrollFuncX(void * pData, UT_sint32 xoff)
 
 	gfloat xoffNew = (gfloat)xoff;
 	gfloat xoffMax = pUnixFrame->m_pHadj->upper - pUnixFrame->m_pHadj->page_size;
-	if ((xoffMax > 0) && (xoffNew > xoffMax))
+	if (xoffMax <= 0)
+		xoffNew = 0;
+	else if (xoffNew > xoffMax)
 		xoffNew = xoffMax;
 	gtk_adjustment_set_value(GTK_ADJUSTMENT(pUnixFrame->m_pHadj),xoffNew);
 	pView->setXScrollOffset((UT_sint32)xoffNew);
@@ -428,16 +456,14 @@ GtkWidget * AP_UnixFrame::_createDocumentWindow(void)
 	m_hScroll = gtk_hscrollbar_new(m_pHadj);
 	gtk_object_set_user_data(GTK_OBJECT(m_hScroll),this);
 
-	gtk_signal_connect(GTK_OBJECT(m_pHadj), "value_changed",
-					   GTK_SIGNAL_FUNC(_fe::hScrollChanged), NULL);
+	gtk_signal_connect(GTK_OBJECT(m_pHadj), "value_changed", GTK_SIGNAL_FUNC(_fe::hScrollChanged), NULL);
 
 	m_pVadj = (GtkAdjustment*) gtk_adjustment_new(0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
 	gtk_object_set_user_data(GTK_OBJECT(m_pVadj),this);
 	m_vScroll = gtk_vscrollbar_new(m_pVadj);
 	gtk_object_set_user_data(GTK_OBJECT(m_vScroll),this);
 
-	gtk_signal_connect(GTK_OBJECT(m_pVadj), "value_changed",
-					   GTK_SIGNAL_FUNC(_fe::vScrollChanged), NULL);
+	gtk_signal_connect(GTK_OBJECT(m_pVadj), "value_changed", GTK_SIGNAL_FUNC(_fe::vScrollChanged), NULL);
 
 	// we don't want either scrollbar grabbing events from us
 	GTK_WIDGET_UNSET_FLAGS(m_hScroll, GTK_CAN_FOCUS);
