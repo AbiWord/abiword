@@ -1614,6 +1614,30 @@ bool fl_DocListener::insertStrux(PL_StruxFmtHandle sfh,
 			   bool bResult = pTL->bl_doclistener_insertTable(pcrx, FL_SECTION_TABLE,sdh,lid,pfnBindHandles);
 			   return bResult;
 		}
+		case PTX_EndCell:				// we are inserting an endcell.
+		{
+			   // The immediately prior strux is a Table. This can happen
+			// if were pasting an endcell after a nested table. We get the
+			// the enclosing cell of the table and close it.
+
+
+			   UT_DEBUGMSG(("Insert endCell into (hopefully) nested table \n"));
+			   fl_ContainerLayout * pCL = static_cast<fl_ContainerLayout *>(pL);
+			   fl_CellLayout* pCLSL = (fl_CellLayout *) pCL->myContainingLayout();
+//
+// This gets us a fl_SectionCell.
+//
+			   if(pCLSL->getContainerType() != FL_CONTAINER_CELL)
+			   {
+				   m_pDoc->miniDump(pL->getStruxDocHandle(),6);
+				   UT_DEBUGMSG(("Pasting endcell into non nested table %d \n",pcrx->getStruxType()));
+				   UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+				   return false;
+			   }
+			   UT_DEBUGMSG(("Doing Insert Strux EndCell Into Cell containing table \n"));
+			   bool bResult = pCLSL->bl_doclistener_insertEndCell(pCLSL, pcrx,sdh,lid,pfnBindHandles);
+			   return bResult;
+		   }
 		default:
 		   {
 			   UT_DEBUGMSG(("Illegal strux type after table %d \n",pcrx->getStruxType()));

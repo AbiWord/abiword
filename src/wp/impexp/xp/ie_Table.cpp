@@ -1888,7 +1888,7 @@ bool ie_imp_table_control::NewRow(void)
 		return bres;
 	}
 	UT_DEBUGMSG(("Number of cells on row %d \n",vecRow.getItemCount()));
-	UT_ASSERT(0);
+	//	UT_ASSERT(0);
 //
 // Got last row, now remove it.
 //

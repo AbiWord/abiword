@@ -421,8 +421,8 @@ s_RTF_ListenerWriteDoc::s_RTF_ListenerWriteDoc(PD_Document * pDocument,
 	_rtf_docfmt();						// deal with <docfmt>
 	m_apiSavedBlock = 0;
 	m_sdhSavedBlock = NULL;
-	m_bOpennedFootnote = false;;
-
+	m_bOpennedFootnote = false;
+	m_iFirstTop = 0;
 	// <section>+ will be handled by the populate code.
 }
 
@@ -920,18 +920,72 @@ void	 s_RTF_ListenerWriteDoc::_openTag(const char * szPrefix, const char * szSuf
  * Code mostly copied for fl_TableLayout::_lookupProperties. This code should
  * should be updated when new properties are defined.
  */
-void s_RTF_ListenerWriteDoc::_export_AbiWord_Cell_props(PT_AttrPropIndex api)
+void s_RTF_ListenerWriteDoc::_export_AbiWord_Cell_props(PT_AttrPropIndex api, bool bFill)
 {
 //
 // Export abiword table properties as an extension
 // Use these for cutting and pasting within abiword.
 //
-	m_pie->_rtf_open_brace();
-	m_pie->_rtf_keyword("*");
 	UT_String sCellProps;
 	sCellProps.clear();
-	_fillCellProps(api, sCellProps);	
+	_fillCellProps(api, sCellProps);
+	UT_String sTopAttach = "top-attach";
+	UT_String sTop = UT_String_getPropVal(sCellProps,sTopAttach);
+	UT_String sBotAttach = "bot-attach";
+	UT_String sBot = UT_String_getPropVal(sCellProps,sBotAttach);
+	if(bFill)
+	{
+		UT_String sLeftAttach = "left-attach";
+		m_iFirstTop = atoi(sTop.c_str());
+		UT_String sLeft = UT_String_getPropVal(sCellProps,sLeftAttach);
+		UT_sint32 iFirstLeft = atoi(sLeft.c_str());
+//
+// Export cells to the left of the current cell.
+//
+		UT_sint32 i = 0;
+		UT_String sRightAttach = "right-attach";
+		UT_String sTempProps;
+		UT_String sTTop = "0";
+		UT_String sTBot = "1";
+		for(i=0;i< iFirstLeft;i++)
+		{
+			sTempProps.clear();
+			UT_String sLeft = UT_String_sprintf("%d",i);
+			UT_String sRight = UT_String_sprintf("%d",i+1);
+			UT_String_setProperty(sTempProps,sLeftAttach,sLeft);
+			UT_String_setProperty(sTempProps,sRightAttach,sRight);
+			UT_String_setProperty(sTempProps,sTopAttach,sTTop);
+			UT_String_setProperty(sTempProps,sBotAttach,sTBot);
+//
+// Export an open and close cell extension. The Abi importer will place 
+// a paragraph in for us
+//
+			m_pie->_rtf_open_brace();
+			m_pie->_rtf_keyword("*");
+			m_pie->_rtf_keyword("abicellprops ",sTempProps.c_str());
+			m_pie->_rtf_close_brace();
+			m_pie->_rtf_open_brace();
+			m_pie->_rtf_keyword("*");
+			m_pie->_rtf_keyword("abiendcell");
+			m_pie->_rtf_close_brace();
+		}
+	}
+//
+// Adjust the top and bottom attaches for the offset within the table if the
+// select starts before the start of the table
+//
+	if(m_iFirstTop > 0)
+	{
+		UT_sint32 iTop = atoi(sTop.c_str()) - m_iFirstTop;
+		sTop = UT_String_sprintf("%d",iTop);
+		UT_String_setProperty(sCellProps,sTopAttach,sTop);
+		UT_sint32 iBot = atoi(sBot.c_str()) - m_iFirstTop;
+		sBot = UT_String_sprintf("%d",iBot);
+		UT_String_setProperty(sCellProps,sBotAttach,sBot);
+	}
 	UT_DEBUGMSG(("Cell props are %s \n",sCellProps.c_str()));
+	m_pie->_rtf_open_brace();
+	m_pie->_rtf_keyword("*");
 	m_pie->_rtf_keyword("abicellprops ",sCellProps.c_str());
 	m_pie->_rtf_close_brace();
 }
@@ -1569,8 +1623,12 @@ void s_RTF_ListenerWriteDoc::_open_cell(PT_AttrPropIndex api)
 	if(m_Table.getNestDepth() < 1)
 	{
 		_open_table(api);
+		_export_AbiWord_Cell_props(api,true);
 	}
-	_export_AbiWord_Cell_props(api);
+	else
+	{
+		_export_AbiWord_Cell_props(api,false);
+	}
 
 	UT_sint32 iOldRow = m_iTop;
 	UT_sint32 i =0;
@@ -2335,6 +2393,7 @@ void s_RTF_ListenerWriteDoc::_open_table(PT_AttrPropIndex api)
 	m_iRight = -1;
 	m_iTop = -1;
 	m_iBot = -1;
+	m_iFirstTop = 0;
 //
 // Export the AbiWord table Properties as RTF extension
 //
@@ -2829,11 +2888,14 @@ void s_RTF_ListenerWriteDoc::_rtf_open_section(PT_AttrPropIndex api)
 	const XML_Char * szHeaderY = PP_evalProperty("page-margin-header",
 												 pSpanAP,pBlockAP,pSectionAP,
 												 m_pDocument,true);
-
-	const XML_Char * szFooterY = PP_evalProperty("page-margin-footer",
+#if 0
+//
+// This is not a gutter. I don't know what is right now
+//
+	const XML_Char * szGutter = PP_evalProperty("page-margin-footer",
 												 pSpanAP,pBlockAP,pSectionAP,
 												 m_pDocument,true);
-
+#endif
 
 // 	const XML_Char * szSpaceAfter = PP_evalProperty("section-space-after",
 // 												 pSpanAP,pBlockAP,pSectionAP,
@@ -2907,20 +2969,15 @@ void s_RTF_ListenerWriteDoc::_rtf_open_section(PT_AttrPropIndex api)
 		UT_String_sprintf(sRtfTop,"%fin",tMarg);
 		m_pie->_rtf_keyword_ifnotdefault_twips("margtsxn", static_cast<const char*>(sRtfTop.c_str()), 1440);
 	}
+#if 0
 	if(szFooterExists  && szMarginBottom)
 	{
-
-		double bMarg = UT_convertToInches(szMarginBottom);
-		double FooterY = UT_convertToInches(szFooterY);
-		FooterY = bMarg - FooterY;
-		if(FooterY < 0.0)
-		{
-			FooterY = bMarg;
-		}
-		UT_String sFooterY;
-		UT_String_sprintf(sFooterY,"%fin",FooterY);
-		m_pie->_rtf_keyword_ifnotdefault_twips("footery", static_cast<const char*>(sFooterY.c_str()), 720);
+		double Gutter = UT_convertToInches(szGutter);
+		UT_String sGutter;
+		UT_String_sprintf(sGutter,"%fin",Gutter);
+		m_pie->_rtf_keyword_ifnotdefault_twips("gutter", static_cast<const char*>(sGutter.c_str()), 0);
 	}
+#endif
 	if(szMarginBottom)
 	{
 		double bMarg = UT_convertToInches(szMarginBottom);

@@ -5982,6 +5982,10 @@ void FV_View::getTopRulerInfo(PT_DocPosition pos,AP_TopRulerInfo * pInfo)
 		fp_CellContainer * pCell = static_cast<fp_CellContainer *>(pContainer);
 		fl_DocSectionLayout* pDSL = pSection->getDocSectionLayout();
 		fp_Column * pColumn = static_cast<fp_Column *>(pCell->getColumn(pLine));
+		if(pColumn == NULL)
+		{
+			return;
+		}
 		UT_uint32 nCol=0;
 		fp_Column * pNthColumn=pColumn->getLeader();
 		while (pNthColumn && (pNthColumn != pColumn))

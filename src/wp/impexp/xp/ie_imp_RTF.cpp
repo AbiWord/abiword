@@ -1,7 +1,8 @@
 /* -*- c-basic-offset: 4; tab-width: 4; indent-tabs-mode: t -*- */
 /* AbiWord
  * Copyright (C) 1999 AbiSource, Inc.
- * Copyright (C) 2003 Tomas Frydrych <tomas@frydrych.uklinux.net> 
+ * Copyright (C) 2003 Tomas Frydrych <tomas@frydrych.uklinux.net>
+ * Copyright (C) 2003 Martin Sevior <msevior@physics.unimelb.edu.au> 
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -463,7 +464,8 @@ bool RTF_msword97_level::ParseLevelText(const UT_String & szLevelText,const UT_S
 ABI_Paste_Table::ABI_Paste_Table(void):
 	m_bHasPastedTableStrux(false),
 	m_bHasPastedCellStrux(false),
-	m_iRowNumberAtPaste(0)
+	m_iRowNumberAtPaste(0),
+	m_bHasPastedBlockStrux(false)
 {
 }
 
@@ -1280,6 +1282,7 @@ RTFProps_SectionProps::RTFProps_SectionProps()
 	m_bottomMargTwips = 1440;
 	m_headerYTwips = 0;
 	m_footerYTwips = 0;
+	m_gutterTwips = 0;
     m_colSpaceTwips = 0;
 	m_dir = FRIBIDI_TYPE_UNSET;
 }
@@ -1374,6 +1377,11 @@ IE_Imp_RTF::~IE_Imp_RTF()
 		m_pasteTableStack.pop((void**)(&pPaste));
 		if(pPaste != NULL)
 		{
+			if(pPaste->m_bHasPastedCellStrux && !pPaste->m_bHasPastedBlockStrux)
+			{
+				getDoc()->insertStrux(m_dposPaste,PTX_Block);
+				m_dposPaste++;	
+			}
 			if(pPaste->m_bHasPastedCellStrux)
 			{
 				getDoc()->insertStrux(m_dposPaste,PTX_EndCell);
@@ -1411,7 +1419,7 @@ IE_Imp_RTF::~IE_Imp_RTF()
 	UT_DEBUGMSG(("SEVIOR:DOing last close \n"));
 	while(getTable() && getTable()->wasTableUsed())
 	{
-		CloseTable();
+		CloseTable(true);
 	}
 	FREEP (m_szFileDirName);
 }
@@ -1502,7 +1510,7 @@ ie_imp_table * IE_Imp_RTF::getTable(void)
  */
 void IE_Imp_RTF::OpenTable(bool bDontFlush)
 {
-	if(!m_pImportFile)
+	if(bUseInsertNotAppend())
 	{
 		return;
 	}
@@ -1567,12 +1575,12 @@ void IE_Imp_RTF::RemoveRowInfo(void)
  * Closes the current table. Does all the book keeping of inserting
  * endstruxs and deleting used ones.
  */ 
-void IE_Imp_RTF::CloseTable(void)
+void IE_Imp_RTF::CloseTable(bool bForce /* = false */)
 {
 //
 // Close table removes extraneous struxes like unmatched PTX_SectionCell's
 //
-	if(!m_pImportFile && (getTable() == NULL))
+	if(!bForce && (bUseInsertNotAppend() || (getTable() == NULL)))
 	{
 		return;
 	}
@@ -1664,7 +1672,7 @@ void IE_Imp_RTF::HandleCell(void)
 	m_bCellHandled = true;
 	m_bDoCloseTable = false;
 	m_iNoCellsSinceLastRow++;
-	if(!m_pImportFile)
+	if(bUseInsertNotAppend())
 	{
 		return;
 	}
@@ -1736,7 +1744,7 @@ void IE_Imp_RTF::HandleCell(void)
 
 void IE_Imp_RTF::FlushCellProps(void)
 {
-	if(!m_pImportFile)
+	if(bUseInsertNotAppend())
 	{
 		return;
 	}
@@ -1770,7 +1778,7 @@ void IE_Imp_RTF::_setStringProperty(UT_String & sPropsString, const char * szPro
 
 void IE_Imp_RTF::FlushTableProps(void)
 {
-	if(!m_pImportFile)
+	if(bUseInsertNotAppend())
 	{
 		return;
 	}
@@ -1779,7 +1787,7 @@ void IE_Imp_RTF::FlushTableProps(void)
 
 void IE_Imp_RTF::HandleCellX(UT_sint32 cellx)
 {
-	if(!m_pImportFile)
+	if(bUseInsertNotAppend())
 	{
 		return;
 	}
@@ -1829,7 +1837,7 @@ void IE_Imp_RTF::HandleCellX(UT_sint32 cellx)
 
 void IE_Imp_RTF::HandleRow(void)
 {
-	if(!m_pImportFile)
+	if(bUseInsertNotAppend())
 	{
 		return;
 	}
@@ -1954,7 +1962,7 @@ void IE_Imp_RTF::HandleNote(void)
 	attribs[1] = footpid.c_str();
 	UT_DEBUGMSG(("ie_imp_RTF: Handle Footnote now \n"));
 
-	if(m_pImportFile)
+	if(!bUseInsertNotAppend())
 	{
 		if(m_bNoteIsFNote)
 			getDoc()->appendStrux(PTX_SectionFootnote,attribs);
@@ -1972,6 +1980,7 @@ void IE_Imp_RTF::HandleNote(void)
 			
 		m_dposPaste++;
 		UT_DEBUGMSG((" Insert Block at 7 \n"));
+		markPasteBlock();
 		getDoc()->insertStrux(m_dposPaste,PTX_Block);
 		m_dposPaste++;
 	}
@@ -2300,7 +2309,7 @@ bool IE_Imp_RTF::FlushStoredChars(bool forceInsertPara)
 // Don't insert anything if we're between a table strux and a cell or between
 // cell's
 //
-	if(isPastedTableOpen())
+	if(isPastedTableOpen() && !forceInsertPara)
 	{
 		return true;
 	}
@@ -2321,7 +2330,7 @@ bool IE_Imp_RTF::FlushStoredChars(bool forceInsertPara)
 // This forces empty lines to have the same height as the previous line
 //
 			m_newParaFlagged = bSave;
-			if(m_pImportFile != NULL)
+			if(!bUseInsertNotAppend())
 			{
 				getDoc()->appendFmtMark();
 			}
@@ -2348,7 +2357,7 @@ bool IE_Imp_RTF::FlushStoredChars(bool forceInsertPara)
 	}
 	if( ok && m_bInFootnote && (m_stateStack.getDepth() < m_iDepthAtFootnote))
 	{
-		if(m_pImportFile)
+		if(!bUseInsertNotAppend())
 		{
 			if(m_bNoteIsFNote)
 				getDoc()->appendStrux(PTX_EndFootnote,NULL);
@@ -2928,7 +2937,7 @@ bool IE_Imp_RTF::InsertImage (const UT_ByteBuf * buf, const char * image_name,
 	double wInch = 0.0f;
 	double hInch = 0.0f;
 	bool resize = false;
-	if ((m_pImportFile != NULL) || (m_parsingHdrFtr))
+	if (!bUseInsertNotAppend())
 	{
 		// non-null file, we're importing a doc
 		// Now, we should insert the picture into the document
@@ -3452,7 +3461,7 @@ bool IE_Imp_RTF::HandleField()
 	{
 		FlushStoredChars(true);
 
-		if ((m_pImportFile != NULL) || (m_parsingHdrFtr)) 
+		if (!bUseInsertNotAppend()) 
 		{
 			getDoc()->appendObject(PTO_Hyperlink, NULL);
 		}
@@ -3628,7 +3637,7 @@ XML_Char *IE_Imp_RTF::_parseFldinstBlock (UT_ByteBuf & buf, XML_Char *xmlField, 
 
 			FlushStoredChars(true);
 
-			if ((m_pImportFile != NULL) || (m_parsingHdrFtr)) 
+			if (!bUseInsertNotAppend()) 
 			{
 				getDoc()->appendObject(PTO_Hyperlink, new_atts);
 			}
@@ -4387,15 +4396,14 @@ bool IE_Imp_RTF::TranslateKeyword(unsigned char* pKeyword, long param, bool fPar
 			UT_uint32 footerID = 0;
 			return HandleHeaderFooter (RTFHdrFtr::hftFooterEven, footerID);
 		}
-		else if( strcmp(reinterpret_cast<char *>(pKeyword), "footery") == 0)
+		else if( strcmp(reinterpret_cast<char *>(pKeyword), "gutter") == 0)
 		{
-			// Height of the footer in twips
-			m_currentRTFState.m_sectionProps.m_footerYTwips = param;
+			// Gap between text and footer in twips
+			m_currentRTFState.m_sectionProps.m_gutterTwips = param;
 		}
 		else if( strcmp(reinterpret_cast<char *>(pKeyword), "footnote") == 0)
 		{
 			// can be both footnote and endnote ...
-			//HandleFootnote();
 			m_bFootnotePending = true;
 			return true;
 		}
@@ -4538,7 +4546,7 @@ bool IE_Imp_RTF::TranslateKeyword(unsigned char* pKeyword, long param, bool fPar
 		}
 		else if (strcmp(reinterpret_cast<char*>(pKeyword), "itap") == 0)
 		{
-			if(!m_pImportFile)
+			if(bUseInsertNotAppend())
 			{
 				return true;
 			}
@@ -5239,7 +5247,7 @@ bool IE_Imp_RTF::TranslateKeyword(unsigned char* pKeyword, long param, bool fPar
 						}
 						else if( strcmp(reinterpret_cast<char*>(keyword_star),"abicellprops") == 0)
 						{
-							if(m_pImportFile != NULL)
+							if(!bUseInsertNotAppend())
 							{
 								UT_DEBUGMSG (("ignoring abicellprops on file import \n"));
 								m_currentRTFState.m_destinationState = RTFStateStore::rdsSkip;
@@ -5249,7 +5257,7 @@ bool IE_Imp_RTF::TranslateKeyword(unsigned char* pKeyword, long param, bool fPar
 						}
 						else if( strcmp(reinterpret_cast<char*>(keyword_star),"abitableprops") == 0)
 						{
-							if(m_pImportFile != NULL)
+							if(!bUseInsertNotAppend())
 							{
 								UT_DEBUGMSG (("ignoring abictableprops on file import \n"));
 								m_currentRTFState.m_destinationState = RTFStateStore::rdsSkip;
@@ -5259,7 +5267,7 @@ bool IE_Imp_RTF::TranslateKeyword(unsigned char* pKeyword, long param, bool fPar
 						}
 						else if( strcmp(reinterpret_cast<char*>(keyword_star),"abiendtable") == 0)
 						{
-							if(m_pImportFile != NULL)
+							if(!bUseInsertNotAppend())
 							{
 								UT_DEBUGMSG (("ignoring abiendtable on file import \n"));
 								m_currentRTFState.m_destinationState = RTFStateStore::rdsSkip;
@@ -5269,7 +5277,7 @@ bool IE_Imp_RTF::TranslateKeyword(unsigned char* pKeyword, long param, bool fPar
 						}
 						else if( strcmp(reinterpret_cast<char*>(keyword_star),"abiendcell") == 0)
 						{
-							if(m_pImportFile != NULL)
+							if(!bUseInsertNotAppend())
 							{
 								UT_DEBUGMSG (("ignoring abiendcell on file import \n"));
 								m_currentRTFState.m_destinationState = RTFStateStore::rdsSkip;
@@ -5526,6 +5534,14 @@ bool IE_Imp_RTF::buildCharacterProps(UT_String & propBuffer)
 	}
 	
 	return true;
+}
+
+/*!
+ * Returns true if we're pasting text rather than parsing a file
+ */
+bool IE_Imp_RTF::bUseInsertNotAppend(void)
+{
+	return ((m_pImportFile == NULL) && !m_parsingHdrFtr );
 }
 
 // in non-bidi doc we just append the current format and text; in bidi
@@ -5831,9 +5847,13 @@ bool IE_Imp_RTF::_insertSpan()
 bool IE_Imp_RTF::ApplyCharacterAttributes()
 {
 	bool ok;
+	if(isBlockNeededForPasteTable())
+	{
+		ApplyParagraphAttributes();
+	}
 	if(m_gbBlock.getLength() > 0)
 	{
-		if ((m_pImportFile) || (m_parsingHdrFtr))	// if we are reading from a file or parsing headers and footers
+		if (!bUseInsertNotAppend())	// if we are reading from a file or parsing headers and footers
 		{
 			ok = _appendSpan();
 		}
@@ -5866,7 +5886,7 @@ bool IE_Imp_RTF::ApplyCharacterAttributes()
 			propsArray[3] = static_cast<const char *>(m_styleTable[m_currentRTFState.m_charProps.m_styleNumber]);
 		}
 		
-		if ((m_pImportFile) || (m_parsingHdrFtr))	// if we are reading from a file or parsing headers and footers
+		if (!bUseInsertNotAppend())	// if we are reading from a file or parsing headers and footers
 		{
 			ok = getDoc()->appendFmt(propsArray);
 			ok = ok && getDoc()->appendFmtMark();
@@ -5908,7 +5928,7 @@ UT_uint32 IE_Imp_RTF::mapID(UT_uint32 id)
 		UT_ASSERT_NOT_REACHED();
 		return id;
 	}
-	if (m_pImportFile)  // if we are reading a file - dont remap the ID
+	if (!bUseInsertNotAppend())  // if we are reading a file - dont remap the ID
 	{
 	        return id;
 	}
@@ -6007,7 +6027,7 @@ UT_uint32 IE_Imp_RTF::mapParentID(UT_uint32 id)
   //
 	UT_uint32 mappedID;
 	mappedID = id;
-	if (m_pImportFile)  // if we are reading a file
+	if (!bUseInsertNotAppend())  // if we are reading a file
 	{
 		return id;
 	}
@@ -6032,7 +6052,7 @@ bool IE_Imp_RTF::ApplyParagraphAttributes()
 //
 // Look to see if the nesting level of our tables has changed.
 //
-	if(m_pImportFile)
+	if(!bUseInsertNotAppend())
 	{
 		if(m_currentRTFState.m_paraProps.m_tableLevel > m_TableControl.getNestDepth())
 		{
@@ -6491,7 +6511,7 @@ bool IE_Imp_RTF::ApplyParagraphAttributes()
 // if we are reading a file or parsing header and footers
 // and we're in a list, append char props to this.
 //
-	if ( ((m_pImportFile) || (m_parsingHdrFtr)) && (bAbiList || bWord97List ))
+	if ( !(bUseInsertNotAppend()) && (bAbiList || bWord97List ))
 	{
 		buildCharacterProps(propBuffer);
 		UT_DEBUGMSG(("SEVIOR: propBuffer = %s \n",propBuffer.c_str()));
@@ -6499,7 +6519,7 @@ bool IE_Imp_RTF::ApplyParagraphAttributes()
 	attribs[attribsCount++] = propBuffer.c_str();
 	attribs[attribsCount++] = NULL;
 
-	if ((m_pImportFile) || (m_parsingHdrFtr)) // if we are reading a file or parsing header and footers
+	if (!bUseInsertNotAppend()) // if we are reading a file or parsing header and footers
 	{
 		if(bAbiList || bWord97List )
 		{
@@ -6534,9 +6554,10 @@ bool IE_Imp_RTF::ApplyParagraphAttributes()
 	else
 	{
 		bool bSuccess = true;
-		if(bAbiList && (m_pImportFile == NULL))
+		if(bAbiList && (bUseInsertNotAppend()))
 		{
 			UT_DEBUGMSG(("Insert block at 1 \n"));
+			markPasteBlock();
 			bSuccess = getDoc()->insertStrux(m_dposPaste,PTX_Block);
 			m_dposPaste++;
 			//
@@ -6585,9 +6606,10 @@ bool IE_Imp_RTF::ApplyParagraphAttributes()
 			}
 			bSuccess = getDoc()->changeStruxFmt(PTC_AddFmt,m_dposPaste,m_dposPaste,attribs, NULL,PTX_Block);
 		}
-		else if(m_pImportFile == NULL)
+		else if(bUseInsertNotAppend())
 		{
 			UT_DEBUGMSG((" Insert block at 2 \n"));
+			markPasteBlock();
 			bSuccess = getDoc()->insertStrux(m_dposPaste,PTX_Block);
 			m_dposPaste++;
 			bSuccess = getDoc()->changeStruxFmt(PTC_AddFmt,m_dposPaste,m_dposPaste, attribs,NULL,PTX_Block);
@@ -6785,25 +6807,11 @@ bool IE_Imp_RTF::ApplySectionAttributes()
 		setlocale(LC_NUMERIC, old_locale);
 		propBuffer += sinch;
 	}
-	if(m_currentRTFState.m_sectionProps.m_footerYTwips != 0)
+#if 0
+	if(m_currentRTFState.m_sectionProps.m_gutterTwips != 0)
 	{
-		UT_sint32 sfooter = 0;
-//
-// The RTF spec is to define a fixed height for the footer. We calculate
-// the footer height as Bottom margin - footer margin.
-//
-// So the footer margin = bottom margin - footer height.
-//
-		if(m_currentRTFState.m_sectionProps.m_bottomMargTwips != 0)
-		{
-			sfooter = m_currentRTFState.m_sectionProps.m_bottomMargTwips - m_currentRTFState.m_sectionProps.m_footerYTwips;
-			if(sfooter < 0)
-			{
-				sfooter = 0;
-			}
-		}
 		propBuffer += "; page-margin-footer:";
-		double inch = static_cast<double>(sfooter)/1440.;
+		double inch = static_cast<double>( m_currentRTFState.m_sectionProps.m_gutterTwips)/1440.;
 		UT_String sinch;
 		char * old_locale = setlocale(LC_NUMERIC, "C");
 		UT_String_sprintf(sinch,"%fin",inch);
@@ -6811,7 +6819,7 @@ bool IE_Imp_RTF::ApplySectionAttributes()
 		propBuffer += sinch;
 	}
 	UT_DEBUGMSG(("SEVIOR: propBuffer = %s \n",propBuffer.c_str()));
-
+#endif
 	if(m_currentRTFState.m_sectionProps.m_dir != FRIBIDI_TYPE_UNSET)
 	{
 		const char r[] = "rtl";
@@ -6916,7 +6924,7 @@ bool IE_Imp_RTF::ApplySectionAttributes()
 	UT_ASSERT (paramIndex < 15);
 	propsArray [paramIndex] = NULL;
 
-	if ((m_pImportFile) || (m_parsingHdrFtr)) // if we are reading a file or parsing a header and footer
+	if (!bUseInsertNotAppend()) // if we are reading a file or parsing a header and footer
 	{
 		return getDoc()->appendStrux(PTX_Section, propsArray);
 	}
@@ -6925,6 +6933,7 @@ bool IE_Imp_RTF::ApplySectionAttributes()
 		// Add a block before the section so there's something content
 		// can be inserted into.
 		UT_DEBUGMSG(("Insert block at 3 \n"));
+		markPasteBlock();
 		bool bSuccess = getDoc()->insertStrux(m_dposPaste,PTX_Block);
 
 		if (bSuccess)
@@ -8408,8 +8417,7 @@ bool IE_Imp_RTF::HandleAbiTable(void)
 //
 // insert a block to terminate the text before this.
 //
-	UT_DEBUGMSG((" Insert strux at 4 \n"));
-	getDoc()->insertStrux(m_dposPaste,PTX_Block);
+	FlushStoredChars(true);	
 //
 // Insert the table strux at the same spot. This will make the table link correctly in the
 // middle of the broken text.
@@ -8433,7 +8441,49 @@ bool IE_Imp_RTF:: HandleAbiEndTable(void)
 	return true;
 }
 
-bool IE_Imp_RTF:: HandleAbiEndCell(void)
+/*!
+ * If there is an open paste cell mark that the a block has been pasted.
+ */
+bool IE_Imp_RTF::markPasteBlock(void)
+{
+	if(!bUseInsertNotAppend())
+	{
+		return false;
+	}
+	ABI_Paste_Table * pPaste = NULL;
+	m_pasteTableStack.viewTop((void**)(&pPaste));
+	if(pPaste == NULL)
+	{
+		return false;
+	}
+	if(!pPaste->m_bHasPastedBlockStrux)
+	{
+		pPaste->m_bHasPastedBlockStrux = true;
+		return true;
+	}
+	return false;
+}
+
+bool IE_Imp_RTF::isBlockNeededForPasteTable(void)
+{
+	ABI_Paste_Table * pPaste = NULL;
+	if(m_pasteTableStack.getDepth() == 0)
+	{
+		return false;
+	}
+	m_pasteTableStack.viewTop((void**)(&pPaste));
+	if(pPaste == NULL)
+	{
+		return false;
+	}
+	if(!pPaste->m_bHasPastedBlockStrux)
+	{
+		return true;
+	}
+	return false;
+}
+
+bool IE_Imp_RTF::HandleAbiEndCell(void)
 {
 	ABI_Paste_Table * pPaste = NULL;
 	m_pasteTableStack.viewTop((void**)(&pPaste));
@@ -8441,9 +8491,16 @@ bool IE_Imp_RTF:: HandleAbiEndCell(void)
 	{
 		return false;
 	}
+	if(!pPaste->m_bHasPastedBlockStrux)
+	{
+		getDoc()->insertStrux(m_dposPaste,PTX_Block);
+		m_dposPaste++;	
+	}
+
 	getDoc()->insertStrux(m_dposPaste,PTX_EndCell);
 	m_dposPaste++;	
 	pPaste->m_bHasPastedCellStrux = false;
+	pPaste->m_bHasPastedBlockStrux = false;
 	return true;
 }
 
@@ -8471,14 +8528,13 @@ bool IE_Imp_RTF::HandleAbiCell(void)
 		return false;
 	}
 	pPaste->m_bHasPastedCellStrux = true;
+	pPaste->m_bHasPastedBlockStrux = false;
 	UT_DEBUGMSG(("RTF_Import: Paste: Cell props are: %s \n",sProps.c_str()));
 	const XML_Char * attrs[3] = {"props",NULL,NULL};
 	attrs[1] = sProps.c_str();
  	getDoc()->insertStrux(m_dposPaste,PTX_SectionCell,attrs,NULL);
 	m_dposPaste++;	
-	UT_DEBUGMSG(("Insert block at 5 \n"));
- 	getDoc()->insertStrux(m_dposPaste,PTX_Block);
-	m_dposPaste++;	
+	m_newParaFlagged = true;
 	return true;
 }
 
@@ -8969,7 +9025,7 @@ bool IE_Imp_RTF::HandleBookmark (RTFBookmarkType type)
 		m_bEndTableOpen = false;
 	}
 
-	if ((m_pImportFile != NULL) || (m_parsingHdrFtr)) 
+	if (!bUseInsertNotAppend()) 
 	{
 		getDoc()->appendObject(PTO_Bookmark, props);
 	}
@@ -9136,7 +9192,7 @@ bool IE_Imp_RTF::_appendField (const XML_Char *xmlField, const XML_Char ** pszAt
 	// TODO get text props to apply them to the field
 	ok = FlushStoredChars (true);
 	UT_return_val_if_fail (ok, false);
-	if (m_pImportFile != NULL || m_bAppendAnyway)
+	if (!bUseInsertNotAppend() || m_bAppendAnyway)
 	{
 		xxx_UT_DEBUGMSG(("SEVIOR: Appending Object m_bCellBlank %d m_bEndTableOpen %d \n",m_bCellBlank,m_bEndTableOpen));
 		if(m_bCellBlank || m_bEndTableOpen)

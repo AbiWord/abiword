@@ -198,6 +198,14 @@ fp_TableContainer * fp_CellContainer::getBrokenTable(fp_Line * pLine)
 fp_Column * fp_CellContainer::getColumn(fp_Line * pLine)
 {
 	fp_TableContainer * pBroke = getBrokenTable(pLine);
+	if(pBroke == NULL)
+	{
+		pBroke = static_cast<fp_TableContainer *>(getContainer());
+	}
+	if(pBroke == NULL)
+	{
+		return NULL;
+	}
 	bool bStop = false;
 	fp_Column * pCol = NULL;
 	//

@@ -94,7 +94,7 @@ protected:
 	void                _open_table(PT_AttrPropIndex api);
 	void                _export_AbiWord_Table_props(PT_AttrPropIndex api);
 	void                _fillTableProps(PT_AttrPropIndex api, UT_String & sTableProps);
-	void                _export_AbiWord_Cell_props(PT_AttrPropIndex api);
+	void                _export_AbiWord_Cell_props(PT_AttrPropIndex api,bool bFill);
 	void                _fillCellProps(PT_AttrPropIndex api, UT_String & sCellProps);
 	void                _exportCellProps(PT_AttrPropIndex  api, UT_String & sTableProps);
 	void                _exportTableProps(PT_AttrPropIndex  api);
@@ -134,6 +134,7 @@ protected:
 	bool                m_bOpennedFootnote;
 	PP_PropertyMap::TypeLineStyle    m_LastLinestyle;
 	UT_String           m_sLastColor;
+	UT_sint32           m_iFirstTop;
 };
 
 #endif /* IE_EXP_RTF_LISTENERWRITEDOC */

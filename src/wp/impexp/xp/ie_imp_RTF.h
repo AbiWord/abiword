@@ -397,6 +397,7 @@ struct ABI_EXPORT RTFProps_SectionProps
 	UT_sint32       m_bottomMargTwips;
 	UT_sint32       m_headerYTwips;
 	UT_sint32       m_footerYTwips;
+	UT_sint32       m_gutterTwips;
 	UT_sint32       m_colSpaceTwips;
 	FriBidiCharType m_dir;
 };
@@ -477,6 +478,7 @@ public:
 	bool                  m_bHasPastedTableStrux;
 	bool                  m_bHasPastedCellStrux;
 	UT_sint32             m_iRowNumberAtPaste;
+	bool                  m_bHasPastedBlockStrux;
 };
 
 // The importer/reader for Rich Text Format files
@@ -627,15 +629,19 @@ private:
 	bool AddTabstop(UT_sint32 stopDist, eTabType tabType, eTabLeader tableader);
 	bool AddTabstop(UT_sint32 stopDist, eTabType tabType, eTabLeader tabLeader,  RTFProps_ParaProps * pParas);
 
+// Paste AbiWord tables
 	bool HandleAbiTable(void);
 	bool HandleAbiCell(void);
 	bool HandleAbiEndTable(void);
 	bool HandleAbiEndCell(void);
 	bool HandleAbiLists(void);
 	bool isPastedTableOpen(void);
-	bool HandleLists(_rtfListTable & rtfListTable );
-        UT_uint32 mapID(UT_uint32 id);
-	UT_uint32 mapParentID(UT_uint32 id);
+	bool markPasteBlock(void);
+	bool isBlockNeededForPasteTable(void);
+
+	bool       HandleLists(_rtfListTable & rtfListTable );
+    UT_uint32  mapID(UT_uint32 id);
+	UT_uint32  mapParentID(UT_uint32 id);
 
 // Table methods
     bool           ResetCellAttributes(void);
@@ -645,7 +651,7 @@ private:
 	void           FlushCellProps(void);
 	void           FlushTableProps(void);
 	void           OpenTable(bool bDontFlush = false);
-	void           CloseTable(void);
+	void           CloseTable(bool bForceClose = false);
 	void           SaveRowInfo(void);
 	void           RemoveRowInfo(void);
     void           HandleCell(void);
@@ -653,7 +659,7 @@ private:
     void           HandleRow(void);
 	void           HandleNote();
 	void           HandleNoteReference();
-	
+	bool           bUseInsertNotAppend(void);
 // Little convience wrapper
 	void           _setStringProperty(UT_String & sPropString, const char * szProp, const char * szVal);
 
