@@ -214,3 +214,14 @@ UT_String operator+(const UT_String& s1, const UT_String& s2)
 	return s;
 }
 
+char operator[](size_t iPos) const
+{
+	if (iPos == size())
+		return '\0';
+	return data()[iPos];
+}
+
+char& operator[](size_t iPos)
+{
+	return data()[iPos];
+}

@@ -50,6 +50,9 @@ public:
 	UT_String&	operator+=(const char*      rhs);
 	UT_String&  operator+=(char rhs);
 
+	char		operator[](size_t iPos) const;
+	char&		operator[](size_t iPos);
+
 	void		swap(UT_String& rhs);
 
 	// The returned pointer is valid until the next non-const
