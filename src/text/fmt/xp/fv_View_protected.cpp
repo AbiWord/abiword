@@ -3073,6 +3073,7 @@ private:
 	fp_CellContainer * m_pCell;
 	fp_TableContainer * m_pBrokenTable;
 	fp_Line * m_pLine;
+	friend class FV_View;
 	friend bool FV_View::_drawOrClearBetweenPositions(PT_DocPosition iPos1,
 													  PT_DocPosition iPos2, 
 													  bool bClear, bool bFullLineHeight);

@@ -11,7 +11,7 @@ UT_Bijection::UT_Bijection()
 {
     m_n = 0;
     m_first = m_second = NULL;
-};
+}
 
 void UT_Bijection::clear()
 {

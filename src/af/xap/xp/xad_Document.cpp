@@ -1082,7 +1082,7 @@ AD_VersionData::AD_VersionData(UT_uint32 v, UT_String &uuid, time_t start, bool 
 	
 	m_pUUID = pGen->createUUID(uuid);
 	UT_ASSERT(m_pUUID);
-};
+}
 
 AD_VersionData::AD_VersionData(UT_uint32 v, const char *uuid, time_t start, bool autorev):
 	m_iId(v),m_pUUID(NULL),m_tStart(start),m_bAutoRevision(autorev)
@@ -1092,7 +1092,7 @@ AD_VersionData::AD_VersionData(UT_uint32 v, const char *uuid, time_t start, bool
 	
 	m_pUUID = pGen->createUUID(uuid);
 	UT_ASSERT(m_pUUID);
-};
+}
 
 // copy constructor
 AD_VersionData::AD_VersionData(const AD_VersionData & v):
@@ -1106,7 +1106,7 @@ AD_VersionData::AD_VersionData(const AD_VersionData & v):
 	UT_ASSERT(m_pUUID);
 
 	m_tStart = v.m_tStart;
-};
+}
 
 AD_VersionData & AD_VersionData::operator = (const AD_VersionData &v)
 {

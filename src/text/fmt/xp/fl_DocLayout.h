@@ -88,6 +88,7 @@ class fp_EndnoteContainer;
 class ABI_EXPORT FL_DocLayout
 {
 	friend class fl_DocListener;
+	friend class fl_BlockLayout;
 public:
 	FL_DocLayout(PD_Document* doc, GR_Graphics* pG);
 	~FL_DocLayout();

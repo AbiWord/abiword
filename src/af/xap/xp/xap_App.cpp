@@ -191,7 +191,7 @@ const char* XAP_App::getAbiSuiteHome ()
 const XAP_EncodingManager* XAP_App::getEncodingManager() const 
 { 
 	return XAP_EncodingManager::get_instance();
-};
+}
 
 EV_Menu_ActionSet *XAP_App::getMenuActionSet()
 {

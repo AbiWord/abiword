@@ -359,7 +359,7 @@ void UT_iconv_reset(UT_iconv_t cd)
     // http://www.abisource.com/mailinglists/abiword-dev/01/April/0135.html
     if (XAP_EncodingManager::get_instance()->cjk_locale())
 		UT_iconv(cd, NULL, NULL, NULL, NULL);
-};
+}
 
 /*!
  * Borrowed from GLib 2.0 and (heavily) modified

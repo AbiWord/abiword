@@ -94,7 +94,7 @@ UT_sint32 GR_Font::getCharWidthFromCache (UT_UCSChar c) const
 #else
 	UT_return_val_if_fail(UT_NOT_IMPLEMENTED,0);
 #endif
-};
+}
 
 bool GR_Font::doesGlyphExist(UT_UCS4Char g)
 {
@@ -1067,7 +1067,7 @@ void GR_Graphics::renderChars(GR_RenderInfo & ri)
 	drawChars(RI.s_pCharBuff,RI.m_iOffset,RI.m_iLength,RI.m_xoff,RI.m_yoff,RI.s_pAdvances);
 
 	
-};
+}
 
 /*!
     return true if linebreak at character c is permissible

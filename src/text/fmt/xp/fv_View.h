@@ -84,6 +84,7 @@ class XAP_Prefs;
 
 class SpellChecker;
 
+class CellLine;
 
 struct fv_ChangeState
 {
@@ -143,6 +144,7 @@ class ABI_EXPORT FV_View : public AV_View
 	friend class FV_FrameEdit;
 	friend class FV_VisualDragText;
 	friend class FV_Selection;
+	friend class CellLine;
 
 public:
 	FV_View(XAP_App*, void*, FL_DocLayout*);
@@ -649,7 +651,7 @@ protected:
 
 	void				_drawBetweenPositions(PT_DocPosition left, PT_DocPosition right);
 	bool				_clearBetweenPositions(PT_DocPosition left, PT_DocPosition right, bool bFullLineHeightRect);
-	bool                _drawOrClearBetweenPositions(PT_DocPosition iPos1, PT_DocPosition iPos2, bool bClear, bool bFullLineHeight);
+	bool                		_drawOrClearBetweenPositions(PT_DocPosition iPos1, PT_DocPosition iPos2, bool bClear, bool bFullLineHeight);
 	bool				_ensureInsertionPointOnScreen();
 	void				_moveInsPtNextPrevPage(bool bNext);
 	void				_moveInsPtNextPrevScreen(bool bNext);

@@ -1102,7 +1102,7 @@ bool UT_UCS4_isupper(UT_UCS4Char c)
     if(letter && letter->type == 1)
         return true;
     return false;
-};
+}
 
 bool UT_UCS4_islower(UT_UCS4Char c)
 {
@@ -1113,7 +1113,7 @@ bool UT_UCS4_islower(UT_UCS4Char c)
     if(!letter || letter->type == 0)
         return true;
     return false;
-};
+}
 
 bool UT_UCS4_isspace(UT_UCS4Char c)
 {
@@ -1128,13 +1128,13 @@ bool UT_UCS4_isspace(UT_UCS4Char c)
 		return false;
 	}
 	return false;
-};
+}
 
 bool UT_UCS4_isalpha(UT_UCS4Char c)
 {
     UT_BidiCharType type = UT_bidiGetCharType(c);
     return (UT_BIDI_IS_LETTER(type) != 0);
-};
+}
 
 bool UT_UCS4_isSentenceSeparator(UT_UCS4Char c)
 {
@@ -1580,7 +1580,7 @@ const char* std_size_string(float f)
 	sprintf(string,"%d.%d", i,fr);
   };
   return string;
-};
+}
 
 #ifndef WIN32
 

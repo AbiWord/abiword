@@ -625,19 +625,19 @@ void		AP_UnixDialog_Options::_set##widget(const char *t) {	\
 	gtk_editable_insert_text(GTK_EDITABLE(m_text##widget), t, strlen(t), &pos);	\
 }
 
-DEFINE_GET_SET_BOOL(SpellCheckAsType);
-DEFINE_GET_SET_BOOL(SpellHideErrors);
-DEFINE_GET_SET_BOOL(SpellSuggest);
-DEFINE_GET_SET_BOOL(SpellMainOnly);
-DEFINE_GET_SET_BOOL(SpellUppercase);
-DEFINE_GET_SET_BOOL(SpellNumbers);
-DEFINE_GET_SET_BOOL(SmartQuotesEnable);
+DEFINE_GET_SET_BOOL(SpellCheckAsType)
+DEFINE_GET_SET_BOOL(SpellHideErrors)
+DEFINE_GET_SET_BOOL(SpellSuggest)
+DEFINE_GET_SET_BOOL(SpellMainOnly)
+DEFINE_GET_SET_BOOL(SpellUppercase)
+DEFINE_GET_SET_BOOL(SpellNumbers)
+DEFINE_GET_SET_BOOL(SmartQuotesEnable)
 
-DEFINE_GET_SET_BOOL(OtherDirectionRtl);
-DEFINE_GET_SET_BOOL(OtherHebrewContextGlyphs);
+DEFINE_GET_SET_BOOL(OtherDirectionRtl)
+DEFINE_GET_SET_BOOL(OtherHebrewContextGlyphs)
 
-DEFINE_GET_SET_BOOL(AutoSaveFile);
-DEFINE_GET_SET_BOOL(ShowSplash);
+DEFINE_GET_SET_BOOL(AutoSaveFile)
+DEFINE_GET_SET_BOOL(ShowSplash)
 
 // dummy implementations. XP pref backend isn't very smart.
 #define DEFINE_GET_SET_BOOL_DUMMY(Bool)					\
@@ -649,13 +649,13 @@ void	AP_UnixDialog_Options::_set##Bool(bool b) {			\
 	}
 
 
-DEFINE_GET_SET_BOOL_DUMMY (EnableSmoothScrolling);
-DEFINE_GET_SET_BOOL_DUMMY (PrefsAutoSave);
-DEFINE_GET_SET_BOOL_DUMMY (ViewAll);
-DEFINE_GET_SET_BOOL_DUMMY (ViewHiddenText);
-DEFINE_GET_SET_BOOL_DUMMY (ViewShowRuler);
-DEFINE_GET_SET_BOOL_DUMMY (ViewShowStatusBar);
-DEFINE_GET_SET_BOOL_DUMMY (ViewUnprintable);
+DEFINE_GET_SET_BOOL_DUMMY (EnableSmoothScrolling)
+DEFINE_GET_SET_BOOL_DUMMY (PrefsAutoSave)
+DEFINE_GET_SET_BOOL_DUMMY (ViewAll)
+DEFINE_GET_SET_BOOL_DUMMY (ViewHiddenText)
+DEFINE_GET_SET_BOOL_DUMMY (ViewShowRuler)
+DEFINE_GET_SET_BOOL_DUMMY (ViewShowStatusBar)
+DEFINE_GET_SET_BOOL_DUMMY (ViewUnprintable)
 
 void AP_UnixDialog_Options::_gatherAutoSaveFileExt(UT_String &stRetVal)
 {
@@ -765,10 +765,10 @@ void    AP_UnixDialog_Options::_setViewRulerUnits(UT_Dimension dim)
 		UT_DEBUGMSG(("option_menu_set_by_key failed\n"));
 }
 
-DEFINE_GET_SET_BOOL	(ViewCursorBlink);
+DEFINE_GET_SET_BOOL	(ViewCursorBlink)
 
-DEFINE_GET_SET_BOOL (AllowCustomToolbars);
-DEFINE_GET_SET_BOOL (AutoLoadPlugins);
+DEFINE_GET_SET_BOOL (AllowCustomToolbars)
+DEFINE_GET_SET_BOOL (AutoLoadPlugins)
 
 #undef DEFINE_GET_SET_BOOL
 
