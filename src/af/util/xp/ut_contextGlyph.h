@@ -38,7 +38,7 @@ struct UCSRange
 	UT_UCSChar high;
 };
 
-enum GlyphContext {GC_ISOLATE,GC_INITIAL,GC_MEDIAL,GC_FINAL};
+enum GlyphContext {GC_ISOLATE,GC_INITIAL,GC_MEDIAL,GC_FINAL,GC_NOT_SET};
 
 class UT_contextGlyph
 {

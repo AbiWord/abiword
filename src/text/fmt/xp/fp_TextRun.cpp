@@ -897,14 +897,22 @@ void fp_TextRun::fetchCharWidths(fl_CharWidths * pgbCharWidths)
 		return;
 	}
 
-	UT_uint16* pCharWidths = pgbCharWidths->getCharWidths()->getPointer(0);
-	_fetchCharWidths(m_pScreenFont, pCharWidths);
+#ifdef BIDI_ENABLED
+	if(!s_bUseContextGlyphs)
+	{
+		// if we are using context glyphs we will do nothing, since this
+		// will be done by recalcWidth()
+#endif	
+		UT_uint16* pCharWidths = pgbCharWidths->getCharWidths()->getPointer(0);
+		_fetchCharWidths(m_pScreenFont, pCharWidths);
 
-	pCharWidths = pgbCharWidths->getCharWidthsLayoutUnits()->getPointer(0);
-	_fetchCharWidths(m_pLayoutFont, pCharWidths);
+		pCharWidths = pgbCharWidths->getCharWidthsLayoutUnits()->getPointer(0);
+		_fetchCharWidths(m_pLayoutFont, pCharWidths);
 
 	m_pG->setFont(m_pScreenFont);
-
+#ifdef BIDI_ENABLED
+	};
+#endif
 }
 
 UT_sint32 fp_TextRun::simpleRecalcWidth(UT_sint32 iWidthType, UT_sint32 iLength) const

@@ -79,7 +79,7 @@ static Letter s_ligature[] =
     {0x05D5, 0x05BC, 0xFB35, 0xFB35, 0xFB35, 0xFB35},
     {0x05D6, 0x05BC, 0xFB36, 0xFB36, 0xFB36, 0xFB36},
     {0x05D8, 0x05BC, 0xFB38, 0xFB38, 0xFB38, 0xFB38},
-    {0x05D9, 0x05B4, 0xFB1D, 0xFB1D, 0xFB1D, 0xFB1D},
+    /*{0x05D9, 0x05B4, 0xFB1D, 0xFB1D, 0xFB1D, 0xFB1D},*/ //not found in MS fonts
     {0x05D9, 0x05BC, 0xFB39, 0xFB39, 0xFB39, 0xFB39},
     {0x05DA, 0x05BC, 0xFB3B, 0xFB3B, 0xFB3A, 0xFB3A},
     {0x05DB, 0x05BC, 0xFB3B, 0xFB3B, 0xFB3A, 0xFB3A},
@@ -495,6 +495,7 @@ UT_UCSChar UT_contextGlyph::getGlyph(const UT_UCSChar * code,
     LigatureData Lig;
     Letter *pL = 0;
     bool bIsSecond = false;
+	GlyphContext context = GC_NOT_SET;
 
     Lig.next = next ? *next : 0;
 	Lig.code = *code;
@@ -520,10 +521,10 @@ UT_UCSChar UT_contextGlyph::getGlyph(const UT_UCSChar * code,
 	// if this is a ligature, handle it
     if(pL)
     {
-	    GlyphContext LigContext = bIsSecond ? _evalGlyphContext(prev, prev+1, next)
+	    context = bIsSecond ? _evalGlyphContext(prev, prev+1, next)
 	    									: _evalGlyphContext(code, prev, next);
 	    UT_UCSChar glyph = 0;
-    	switch (LigContext)
+    	switch (context)
     	{
     		case GC_INITIAL:
     			glyph = pL->initial;
@@ -551,7 +552,8 @@ UT_UCSChar UT_contextGlyph::getGlyph(const UT_UCSChar * code,
     	}
 
     	// if we got here, the glyph was 1, which means this form is to be just
-    	// treated as an ordinary letter.    	
+    	// treated as an ordinary letter, also if this was a first part of the ligature
+    	// we already know its context, but not if it was a second part of lig.
     }
 
 
@@ -563,7 +565,9 @@ UT_UCSChar UT_contextGlyph::getGlyph(const UT_UCSChar * code,
 	if(!pL)
 		return *code;
 
-    GlyphContext context = _evalGlyphContext(code, prev, next);
+    if(context == GC_NOT_SET || bIsSecond)
+       	context = _evalGlyphContext(code, prev, next);
+       	
    	switch (context)
    	{
    		case GC_INITIAL:
