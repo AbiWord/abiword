@@ -1,0 +1,77 @@
+// AbiWord
+// Copyright (C) 2000 AbiSource, Inc.
+// 
+// This program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public License
+// as published by the Free Software Foundation; either version 2
+// of the License, or (at your option) any later version.
+// 
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software
+// Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+// 02111-1307, USA.
+//////////////////////////////////////////////////////////////////
+
+//////////////////////////////////////////////////////////////////
+// THIS FILE IS INCLUDED BY .cpp AND .rc FILES.
+//
+// *** RC.exe IS BRAIN-DAMAGED.  GIVING THIS FILE AN .rc2
+// *** EXTENSION MAKES #INCLUDING THIS FILE FROM Win32Main.rc
+// *** WORK -- IF THE SUFFIX IS .h ONLY THE #DEFINES WORK, THE
+// *** DIALOGS DO NOT GET COMPILED.
+//
+//////////////////////////////////////////////////////////////////
+
+#define AP_RID_DIALOG_PAGE_SETUP_TEXT_HEADER				1001
+#define AP_RID_DIALOG_PAGE_SETUP_EDIT_HEADER				1002
+#define AP_RID_DIALOG_PAGE_SETUP_TEXT_FOOTER				1003
+#define AP_RID_DIALOG_PAGE_SETUP_EDIT_FOOTER				1004
+
+#ifdef RC_INVOKED
+// NOTE -- these placeholder strings get overridden at runtime 
+// NOTE -- they're just here to make sizing easier
+
+AP_RID_DIALOG_PAGE_SETUP DIALOG DISCARDABLE  32, 32, 240, 260
+STYLE DS_MODALFRAME | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU| 0x4 | DS_CONTEXTHELP
+CAPTION "Page Setup"
+FONT 8, "MS Sans Serif"
+BEGIN
+    CONTROL         "",rct1,"Static",SS_WHITERECT | WS_GROUP,80,8,80,80
+    CONTROL         "",rct2,"Static",SS_GRAYRECT | WS_GROUP,160,12,4,80
+    CONTROL         "",rct3,"Static",SS_GRAYRECT | WS_GROUP,84,88,80,4
+    GROUPBOX        "Paper",grp2,8,96,224,56,WS_GROUP
+    LTEXT           "Si&ze:",stc2,16,112,36,8
+    COMBOBOX        cmb2,64,110,160,160,CBS_DROPDOWNLIST | CBS_SORT |
+                    WS_VSCROLL | WS_GROUP | WS_TABSTOP
+    LTEXT           "&Source:",stc3,16,132,36,8
+    COMBOBOX        cmb3,64,130,160,160,CBS_DROPDOWNLIST | CBS_SORT |
+                    WS_VSCROLL | WS_GROUP | WS_TABSTOP
+    GROUPBOX        "Orientation",grp1,8,156,64,56,WS_GROUP
+    CONTROL         "P&ortrait",rad1,"Button",BS_AUTORADIOBUTTON | WS_GROUP |
+                    WS_TABSTOP,16,170,52,12
+    CONTROL         "L&andscape",rad2,"Button",BS_AUTORADIOBUTTON,16,190,52,
+                    12
+    GROUPBOX        "Margins",grp4,80,156,152,76,WS_GROUP
+    LTEXT           "&Left:",stc15,88,172,32,8
+    EDITTEXT        edt4,120,170,28,12,WS_GROUP
+    LTEXT           "&Right:",stc16,164,172,32,8
+    EDITTEXT        edt6,196,170,28,12,WS_GROUP
+    LTEXT           "&Top:",stc17,88,192,32,8
+    EDITTEXT        edt5,120,190,28,12,WS_GROUP
+    LTEXT           "&Bottom:",stc18,164,192,32,8
+    EDITTEXT        edt7,196,190,28,12,WS_GROUP
+	LTEXT			"&Header:",AP_RID_DIALOG_PAGE_SETUP_TEXT_HEADER,88,212,32,8,WS_GROUP
+	EDITTEXT		AP_RID_DIALOG_PAGE_SETUP_EDIT_HEADER,120,210,28,12,WS_GROUP
+	LTEXT			"&Footer:",AP_RID_DIALOG_PAGE_SETUP_TEXT_FOOTER,164,212,32,8,WS_GROUP
+	EDITTEXT		AP_RID_DIALOG_PAGE_SETUP_EDIT_FOOTER,196,210,28,12,WS_GROUP
+    DEFPUSHBUTTON   "OK",IDOK,80,240,48,14,WS_GROUP
+    PUSHBUTTON      "Cancel",IDCANCEL,132,240,48,14
+    PUSHBUTTON      "&Printer...",psh3,184,240,48,14
+END
+
+#endif /* RC_INVOKED */
