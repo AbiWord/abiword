@@ -87,7 +87,7 @@ static int s_xerror_handler(Display *dsp, XErrorEvent *e)
 			{
 				if(pApp->getDisplayStatus())
 				{
-					const XML_Char * msg = pApp->getStringSet()->getValue(XAP_STRING_ID_MSG_ShowUnixFontWarning);
+					const XML_Char * msg = pApp->getStringSet()->getValueUTF8(XAP_STRING_ID_MSG_ShowUnixFontWarning).c_str();
 					UT_ASSERT(msg);
 					messageBoxOK(msg);
 				}
@@ -338,7 +338,7 @@ bool XAP_UnixFontManager::scavengeFonts(void)
 					if(pApp->getDisplayStatus())
 					{
 #if 1
-						const XML_Char * msg = pApp->getStringSet()->getValue(XAP_STRING_ID_MSG_ShowUnixFontWarning);
+						const XML_Char * msg = pApp->getStringSet()->getValueUTF8(XAP_STRING_ID_MSG_ShowUnixFontWarning).c_str();
 						UT_ASSERT(msg);
 						messageBoxOK(msg);
 

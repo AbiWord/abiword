@@ -47,6 +47,11 @@ public:
 	XAP_UnixApp(XAP_Args* pArgs, const char* szAppName);
 	virtual ~XAP_UnixApp();
 
+	virtual const char * getDefaultEncoding () const
+	  {
+	    return "UTF-8" ;
+	  }
+
 	virtual bool							initialize();
 	virtual XAP_Frame * 					newFrame() = 0;
 	virtual void							reallyExit();

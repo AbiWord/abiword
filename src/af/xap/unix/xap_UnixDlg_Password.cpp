@@ -100,7 +100,7 @@ void XAP_UnixDialog_Password::_constructWindowContents (GtkWidget * container)
 
   const XAP_StringSet * pSS = m_pApp->getStringSet();
 
-  label1 = gtk_label_new (pSS->getValue(XAP_STRING_ID_DLG_Password_Password));
+  label1 = gtk_label_new (pSS->getValueUTF8(XAP_STRING_ID_DLG_Password_Password).c_str());
   gtk_widget_show (label1);
   gtk_box_pack_start (GTK_BOX (container), label1, FALSE, FALSE, 0);
 
@@ -126,7 +126,7 @@ GtkWidget * XAP_UnixDialog_Password::_constructWindow ()
 
   const XAP_StringSet * pSS = m_pApp->getStringSet();
 
-  dialog1 = abiDialogNew ( TRUE, pSS->getValue(XAP_STRING_ID_DLG_Password_Title));
+  dialog1 = abiDialogNew ( TRUE, pSS->getValueUTF8(XAP_STRING_ID_DLG_Password_Title).c_str());
 
   dialog_vbox1 = GTK_DIALOG (dialog1)->vbox;
   gtk_widget_show (dialog_vbox1);

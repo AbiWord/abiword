@@ -440,7 +440,7 @@ void /* static*/ XAP_Frame::viewAutoUpdater(UT_Worker *wkr)
 {
 	XAP_Frame *pFrame = static_cast<XAP_Frame *> (wkr->getInstanceData());
 	const XAP_StringSet * pSS = pFrame->getApp()->getStringSet();
-	UT_String msg = pSS->getValue(XAP_STRING_ID_MSG_BuildingDoc);
+	UT_String msg = pSS->getValue(XAP_STRING_ID_MSG_BuildingDoc, XAP_App::getApp()->getDefaultEncoding());
 	pFrame->setCursor(GR_Graphics::GR_CURSOR_WAIT);
 	AV_View * pView = pFrame->getCurrentView();
 	UT_DEBUGMSG(("SEVIOR: frame view updater \n"));
@@ -669,7 +669,7 @@ bool XAP_Frame::updateTitle()
 		UT_ASSERT(m_iUntitled);
 		const XAP_StringSet * pSS = m_app->getStringSet();
 		
-		sprintf(m_szTitle, pSS->getValue(XAP_STRING_ID_UntitledDocument), m_iUntitled);
+		sprintf(m_szTitle, pSS->getValue(XAP_STRING_ID_UntitledDocument, m_app->getDefaultEncoding()).c_str(), m_iUntitled);
 	}
 
 	strcpy(m_szNonDecoratedTitle, m_szTitle);
@@ -860,11 +860,11 @@ XAP_Dialog_MessageBox::tAnswer XAP_Frame::showMessageBox(XAP_String_Id id,
 
 	if(p_str1)
 	{
-		pDialog->setMessage((char*)pSS->getValue(id), p_str1);
+		pDialog->setMessage((char*)pSS->getValue(id, m_app->getDefaultEncoding()).c_str(), p_str1);
 	}
 	else
 	{
-		pDialog->setMessage((char*)pSS->getValue(id));
+		pDialog->setMessage((char*)pSS->getValue(id, m_app->getDefaultEncoding()).c_str());
 	}
 
 
@@ -889,7 +889,7 @@ UT_String XAP_Frame::makeBackupName(const char* szExt)
   if (oldName.empty())
     {
       const XAP_StringSet * pSS = m_app->getStringSet();
-      const char *szTmp = pSS->getValue(XAP_STRING_ID_UntitledDocument);
+      const char *szTmp = pSS->getValue(XAP_STRING_ID_UntitledDocument, m_app->getDefaultEncoding()).c_str();
       int iLen = strlen(szTmp) + 10;
       char *szTmp2 = new char[iLen];
       

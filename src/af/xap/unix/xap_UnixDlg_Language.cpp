@@ -55,7 +55,7 @@ GtkWidget * XAP_UnixDialog_Language::constructWindow(void)
   GtkWidget *vboxMain;
   GtkWidget *vboxOuter;
   
-  windowLangSelection = abiDialogNew ( TRUE, pSS->getValue(XAP_STRING_ID_DLG_ULANG_LangTitle) ) ;
+  windowLangSelection = abiDialogNew ( TRUE, pSS->getValueUTF8(XAP_STRING_ID_DLG_ULANG_LangTitle).c_str() ) ;
   
   vboxOuter = GTK_DIALOG(windowLangSelection)->vbox ;
   
@@ -84,7 +84,7 @@ GtkWidget * XAP_UnixDialog_Language::constructWindowContents(GtkWidget *parent)
   gtk_widget_show (vboxMain);
   gtk_container_add (GTK_CONTAINER (parent), vboxMain);
 
-  frame3 = gtk_frame_new (pSS->getValue(XAP_STRING_ID_DLG_ULANG_LangLabel));
+  frame3 = gtk_frame_new (pSS->getValueUTF8(XAP_STRING_ID_DLG_ULANG_LangLabel).c_str());
   gtk_widget_show (frame3);
   gtk_box_pack_start (GTK_BOX (vboxMain), frame3, TRUE, TRUE, 0);
   gtk_container_set_border_width (GTK_CONTAINER (frame3), 4);

@@ -3723,7 +3723,7 @@ void FV_View::_prefsListener( XAP_App * /*pApp*/, XAP_Prefs *pPrefs, UT_StringPt
 		UT_ASSERT((pFrame));
 
 		const XAP_StringSet * pSS = pFrame->getApp()->getStringSet();
-		const char *pMsg2 = pSS->getValue(AP_STRING_ID_MSG_AfterRestartNew);
+		const char *pMsg2 = pSS->getValue(AP_STRING_ID_MSG_AfterRestartNew, XAP_App::getApp()->getDefaultEncoding()).c_str();
 
 		UT_ASSERT((/*pMsg1 && */pMsg2));
 

@@ -4375,13 +4375,14 @@ bool fp_FieldPageReferenceRun::calculateValue(void)
 	}
 	else
 	{
+	  static XAP_App * pApp = XAP_App::getApp();
 		// did not find the bookmark, set the field to an error value
 		XAP_Frame * pFrame = (XAP_Frame *) pView->getParentData();
 		UT_ASSERT((pFrame));
 
 		const XAP_StringSet * pSS = pFrame->getApp()->getStringSet();
-		const char *pMsg1 = pSS->getValue(AP_STRING_ID_FIELD_Error);
-		const char *pMsg2 = pSS->getValue(AP_STRING_ID_MSG_BookmarkNotFound);
+		const char *pMsg1 = pSS->getValue(AP_STRING_ID_FIELD_Error, pApp->getDefaultEncoding()).c_str();
+		const char *pMsg2 = pSS->getValue(AP_STRING_ID_MSG_BookmarkNotFound, pApp->getDefaultEncoding()).c_str();
 		char * format = new char[strlen(pMsg1) + strlen(pMsg2) + 5];
 
 		sprintf(format, "{%s: %s}", pMsg1, pMsg2);

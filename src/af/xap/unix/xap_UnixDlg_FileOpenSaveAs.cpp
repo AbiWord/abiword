@@ -36,6 +36,7 @@
 #include "xap_Strings.h"
 #include "xap_Prefs.h"
 #include "ut_debugmsg.h"
+#include "ut_string_class.h"
 
 #include "ut_png.h"
 #include "ut_svg.h"
@@ -447,55 +448,55 @@ void XAP_UnixDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 
 	bool bCheckWritePermission = false;
 
-	const XML_Char * szTitle = NULL;
-	const XML_Char * szFileTypeLabel = NULL;
+	UT_String szTitle = NULL;
+        UT_String szFileTypeLabel = NULL;
 	switch (m_id)
 	{
 	case XAP_DIALOG_ID_INSERT_PICTURE:
 	  {
-		  szTitle = pSS->getValue(XAP_STRING_ID_DLG_IP_Title);
-		  szFileTypeLabel = pSS->getValue(XAP_STRING_ID_DLG_FOSA_FileOpenTypeLabel);
+		  szTitle = pSS->getValueUTF8(XAP_STRING_ID_DLG_IP_Title);
+		  szFileTypeLabel = pSS->getValueUTF8(XAP_STRING_ID_DLG_FOSA_FileOpenTypeLabel);
 		  bCheckWritePermission = false;    
 	  }
 		case XAP_DIALOG_ID_FILE_OPEN:
 			{
-				szTitle = pSS->getValue(XAP_STRING_ID_DLG_FOSA_OpenTitle);
-				szFileTypeLabel = pSS->getValue(XAP_STRING_ID_DLG_FOSA_FileOpenTypeLabel);
+				szTitle = pSS->getValueUTF8(XAP_STRING_ID_DLG_FOSA_OpenTitle);
+				szFileTypeLabel = pSS->getValueUTF8(XAP_STRING_ID_DLG_FOSA_FileOpenTypeLabel);
 				bCheckWritePermission = false;
 				break;
 			}
 		case XAP_DIALOG_ID_FILE_IMPORT:
 			{
-				szTitle = pSS->getValue(XAP_STRING_ID_DLG_FOSA_ImportTitle);
-				szFileTypeLabel = pSS->getValue(XAP_STRING_ID_DLG_FOSA_FileOpenTypeLabel);
+				szTitle = pSS->getValueUTF8(XAP_STRING_ID_DLG_FOSA_ImportTitle);
+				szFileTypeLabel = pSS->getValueUTF8(XAP_STRING_ID_DLG_FOSA_FileOpenTypeLabel);
 				bCheckWritePermission = false;
 				break;
 			}
 		case XAP_DIALOG_ID_INSERT_FILE:
 			{
-				szTitle = pSS->getValue(XAP_STRING_ID_DLG_FOSA_InsertTitle);
-				szFileTypeLabel = pSS->getValue(XAP_STRING_ID_DLG_FOSA_FileOpenTypeLabel);
+				szTitle = pSS->getValueUTF8(XAP_STRING_ID_DLG_FOSA_InsertTitle);
+				szFileTypeLabel = pSS->getValueUTF8(XAP_STRING_ID_DLG_FOSA_FileOpenTypeLabel);
 				bCheckWritePermission = false;
 				break;
 			}
 		case XAP_DIALOG_ID_FILE_SAVEAS:
 			{
-				szTitle = pSS->getValue(XAP_STRING_ID_DLG_FOSA_SaveAsTitle);
-				szFileTypeLabel = pSS->getValue(XAP_STRING_ID_DLG_FOSA_FileSaveTypeLabel);
+				szTitle = pSS->getValueUTF8(XAP_STRING_ID_DLG_FOSA_SaveAsTitle);
+				szFileTypeLabel = pSS->getValueUTF8(XAP_STRING_ID_DLG_FOSA_FileSaveTypeLabel);
 				bCheckWritePermission = true;
 				break;
 			}
 		case XAP_DIALOG_ID_FILE_EXPORT:
 			{
-				szTitle = pSS->getValue(XAP_STRING_ID_DLG_FOSA_ExportTitle);
-				szFileTypeLabel = pSS->getValue(XAP_STRING_ID_DLG_FOSA_FileSaveTypeLabel);
+				szTitle = pSS->getValueUTF8(XAP_STRING_ID_DLG_FOSA_ExportTitle);
+				szFileTypeLabel = pSS->getValueUTF8(XAP_STRING_ID_DLG_FOSA_FileSaveTypeLabel);
 				bCheckWritePermission = true;
 				break;
 			}
 		case XAP_DIALOG_ID_PRINTTOFILE:
 			{
-				szTitle = pSS->getValue(XAP_STRING_ID_DLG_FOSA_PrintToFileTitle);
-				szFileTypeLabel = pSS->getValue(XAP_STRING_ID_DLG_FOSA_FilePrintTypeLabel);
+				szTitle = pSS->getValueUTF8(XAP_STRING_ID_DLG_FOSA_PrintToFileTitle);
+				szFileTypeLabel = pSS->getValueUTF8(XAP_STRING_ID_DLG_FOSA_FilePrintTypeLabel);
 				bCheckWritePermission = true;
 				break;
 			}
@@ -509,7 +510,7 @@ void XAP_UnixDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 	// NOTE: let GTK take care of the localization of the actual
 	// NOTE: buttons and labels on the FileSelection dialog.
 	
-	GtkFileSelection *pFS = GTK_FILE_SELECTION(gtk_file_selection_new(szTitle));
+	GtkFileSelection *pFS = GTK_FILE_SELECTION(gtk_file_selection_new(szTitle.c_str()));
 	m_FS = pFS;
 
 	abiSetupModalDialog(GTK_DIALOG(pFS), pFrame, this, GTK_RESPONSE_CANCEL);
@@ -538,7 +539,7 @@ void XAP_UnixDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 		    gtk_widget_show (preview);
 		    m_preview = preview;
 
-		    GtkWidget * frame = gtk_frame_new (pSS->getValue(XAP_STRING_ID_DLG_IP_Activate_Label));
+		    GtkWidget * frame = gtk_frame_new (pSS->getValueUTF8(XAP_STRING_ID_DLG_IP_Activate_Label).c_str());
 		    gtk_widget_show (frame);
 		    gtk_container_add (GTK_CONTAINER(frame), preview);
 
@@ -556,7 +557,7 @@ void XAP_UnixDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 		  }
 
 		// pulldown label
-		GtkWidget * filetypes_label = gtk_label_new(abiLocaleToUTF8(szFileTypeLabel).c_str());
+		GtkWidget * filetypes_label = gtk_label_new(szFileTypeLabel.c_str());
 		gtk_label_set_justify(GTK_LABEL(filetypes_label), GTK_JUSTIFY_RIGHT);
 		gtk_misc_set_alignment(GTK_MISC(filetypes_label), 1.0, 0.5);
 		gtk_widget_show(filetypes_label);
@@ -595,7 +596,7 @@ void XAP_UnixDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 			// Auto-detect is always an option, but a special one, so we use
 			// a pre-defined constant for the type, and don't use the user-supplied
 			// types yet.
-			g_snprintf(buffer, 1024, "%s", pSS->getValue(XAP_STRING_ID_DLG_FOSA_FileTypeAutoDetect));
+			g_snprintf(buffer, 1024, "%s", pSS->getValueUTF8(XAP_STRING_ID_DLG_FOSA_FileTypeAutoDetect).c_str());
 			thismenuitem = gtk_menu_item_new_with_label(buffer);
 			gtk_object_set_user_data(GTK_OBJECT(thismenuitem), GINT_TO_POINTER(XAP_DIALOG_FILEOPENSAVEAS_FILE_TYPE_AUTO));
 			gtk_widget_show(thismenuitem);
@@ -781,7 +782,7 @@ gint XAP_UnixDialog_FileOpenSaveAs::previewPicture (void)
 	GR_Font * fnt = pGr->findFont("Times New Roman", "normal", "", "normal", "", "12pt");
 	pGr->setFont(fnt);
 
-	const XML_Char * str = pSS->getValue(XAP_STRING_ID_DLG_IP_No_Picture_Label);
+	const XML_Char * str = pSS->getValueUTF8(XAP_STRING_ID_DLG_IP_No_Picture_Label).c_str();
 	int len = strlen (str);
 	UT_UCSChar * ucstext = new UT_UCSChar [len + 1]; 
 	UT_UCS4_strcpy_char (ucstext, str);

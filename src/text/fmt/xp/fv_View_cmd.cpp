@@ -2604,7 +2604,7 @@ UT_Error FV_View::cmdInsertHyperlink(const char * szName)
 		UT_ASSERT((pFrame));
 
 		const XAP_StringSet * pSS = pFrame->getApp()->getStringSet();
-		const char *pMsg1 = pSS->getValue(AP_STRING_ID_MSG_HyperlinkNoSelection);
+		const char *pMsg1 = pSS->getValue(AP_STRING_ID_MSG_HyperlinkNoSelection, m_pApp->getDefaultEncoding()).c_str();
 
 		UT_ASSERT(pMsg1);
 
@@ -2626,7 +2626,7 @@ UT_Error FV_View::cmdInsertHyperlink(const char * szName)
 		UT_ASSERT((pFrame));
 
 		const XAP_StringSet * pSS = pFrame->getApp()->getStringSet();
-		const char *pMsg1 = pSS->getValue(AP_STRING_ID_MSG_HyperlinkNoBookmark);
+		const char *pMsg1 = pSS->getValue(AP_STRING_ID_MSG_HyperlinkNoBookmark, m_pApp->getDefaultEncoding()).c_str();
 		UT_ASSERT(pMsg1);
 
 		char * szMsg = new char[strlen(pMsg1)+strlen(szName)+1];
@@ -2653,7 +2653,7 @@ UT_Error FV_View::cmdInsertHyperlink(const char * szName)
 		UT_ASSERT((pFrame));
 
 		const XAP_StringSet * pSS = pFrame->getApp()->getStringSet();
-		const char *pMsg1 = pSS->getValue(AP_STRING_ID_MSG_HyperlinkCrossesBoundaries);
+		const char *pMsg1 = pSS->getValue(AP_STRING_ID_MSG_HyperlinkCrossesBoundaries, m_pApp->getDefaultEncoding()).c_str();
 		UT_ASSERT(pMsg1);
 
 		pFrame->showMessageBox(pMsg1, XAP_Dialog_MessageBox::b_O, XAP_Dialog_MessageBox::a_OK);

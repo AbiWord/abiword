@@ -277,7 +277,7 @@ GtkWidget * XAP_UnixDialog_Zoom::_constructWindow(void)
   const XAP_StringSet * pSS = m_pApp->getStringSet();
   
   XML_Char * tmp = NULL;
-  UT_XML_cloneNoAmpersands(tmp, pSS->getValue(XAP_STRING_ID_DLG_Zoom_ZoomTitle));
+  UT_XML_cloneNoAmpersands(tmp, pSS->getValueUTF8(XAP_STRING_ID_DLG_Zoom_ZoomTitle).c_str());
   windowZoom = abiDialogNew ( FALSE, tmp ) ;
   FREEP(tmp);
 
@@ -288,7 +288,7 @@ GtkWidget * XAP_UnixDialog_Zoom::_constructWindow(void)
   gtk_widget_show (hboxFrames);
   gtk_box_pack_start (GTK_BOX (vboxZoom), hboxFrames, FALSE, TRUE, 0);
 
-  UT_XML_cloneNoAmpersands(tmp, pSS->getValue(XAP_STRING_ID_DLG_Zoom_RadioFrameCaption));
+  UT_XML_cloneNoAmpersands(tmp, pSS->getValueUTF8(XAP_STRING_ID_DLG_Zoom_RadioFrameCaption).c_str());
   frameZoomTo = gtk_frame_new (tmp);
   FREEP(tmp);
   gtk_widget_show (frameZoomTo);
@@ -299,7 +299,7 @@ GtkWidget * XAP_UnixDialog_Zoom::_constructWindow(void)
   gtk_container_add (GTK_CONTAINER (frameZoomTo), vboxZoomTo);
   gtk_container_border_width (GTK_CONTAINER (vboxZoomTo), 10);
   
-  UT_XML_cloneNoAmpersands(tmp, pSS->getValue(XAP_STRING_ID_DLG_Zoom_200));
+  UT_XML_cloneNoAmpersands(tmp, pSS->getValueUTF8(XAP_STRING_ID_DLG_Zoom_200).c_str());
   radiobutton200 = gtk_radio_button_new_with_label (vboxZoomTo_group, tmp);
   FREEP(tmp);
   vboxZoomTo_group = gtk_radio_button_group (GTK_RADIO_BUTTON (radiobutton200));
@@ -307,7 +307,7 @@ GtkWidget * XAP_UnixDialog_Zoom::_constructWindow(void)
   gtk_widget_show (radiobutton200);
   gtk_box_pack_start (GTK_BOX (vboxZoomTo), radiobutton200, FALSE, TRUE, 0);
   
-  UT_XML_cloneNoAmpersands(tmp, pSS->getValue(XAP_STRING_ID_DLG_Zoom_100));
+  UT_XML_cloneNoAmpersands(tmp, pSS->getValueUTF8(XAP_STRING_ID_DLG_Zoom_100).c_str());
   radiobutton100 = gtk_radio_button_new_with_label (vboxZoomTo_group, tmp);
   FREEP(tmp);
   vboxZoomTo_group = gtk_radio_button_group (GTK_RADIO_BUTTON (radiobutton100));
@@ -315,7 +315,7 @@ GtkWidget * XAP_UnixDialog_Zoom::_constructWindow(void)
   gtk_widget_show (radiobutton100);
   gtk_box_pack_start (GTK_BOX (vboxZoomTo), radiobutton100, FALSE, TRUE, 0);
   
-  UT_XML_cloneNoAmpersands(tmp, pSS->getValue(XAP_STRING_ID_DLG_Zoom_75));
+  UT_XML_cloneNoAmpersands(tmp, pSS->getValueUTF8(XAP_STRING_ID_DLG_Zoom_75).c_str());
   radiobutton75 = gtk_radio_button_new_with_label (vboxZoomTo_group, tmp);
   FREEP(tmp);
   vboxZoomTo_group = gtk_radio_button_group (GTK_RADIO_BUTTON (radiobutton75));
@@ -323,7 +323,7 @@ GtkWidget * XAP_UnixDialog_Zoom::_constructWindow(void)
   gtk_widget_show (radiobutton75);
   gtk_box_pack_start (GTK_BOX (vboxZoomTo), radiobutton75, TRUE, TRUE, 0);
   
-  UT_XML_cloneNoAmpersands(tmp, pSS->getValue(XAP_STRING_ID_DLG_Zoom_PageWidth));
+  UT_XML_cloneNoAmpersands(tmp, pSS->getValueUTF8(XAP_STRING_ID_DLG_Zoom_PageWidth).c_str());
   radiobuttonPageWidth = gtk_radio_button_new_with_label (vboxZoomTo_group, tmp);
   FREEP(tmp);
   vboxZoomTo_group = gtk_radio_button_group (GTK_RADIO_BUTTON (radiobuttonPageWidth));
@@ -331,7 +331,7 @@ GtkWidget * XAP_UnixDialog_Zoom::_constructWindow(void)
   gtk_widget_show (radiobuttonPageWidth);
   gtk_box_pack_start (GTK_BOX (vboxZoomTo), radiobuttonPageWidth, TRUE, TRUE, 0);
   
-  UT_XML_cloneNoAmpersands(tmp, pSS->getValue(XAP_STRING_ID_DLG_Zoom_WholePage));
+  UT_XML_cloneNoAmpersands(tmp, pSS->getValueUTF8(XAP_STRING_ID_DLG_Zoom_WholePage).c_str());
   radiobuttonWholePage = gtk_radio_button_new_with_label (vboxZoomTo_group, tmp);
   FREEP(tmp);
   vboxZoomTo_group = gtk_radio_button_group (GTK_RADIO_BUTTON (radiobuttonWholePage));
@@ -339,7 +339,7 @@ GtkWidget * XAP_UnixDialog_Zoom::_constructWindow(void)
   gtk_widget_show (radiobuttonWholePage);
   gtk_box_pack_start (GTK_BOX (vboxZoomTo), radiobuttonWholePage, TRUE, TRUE, 0);
   
-  UT_XML_cloneNoAmpersands(tmp, pSS->getValue(XAP_STRING_ID_DLG_Zoom_Percent));
+  UT_XML_cloneNoAmpersands(tmp, pSS->getValueUTF8(XAP_STRING_ID_DLG_Zoom_Percent).c_str());
   radiobuttonPercent = gtk_radio_button_new_with_label (vboxZoomTo_group, tmp);
   FREEP(tmp);
   vboxZoomTo_group = gtk_radio_button_group (GTK_RADIO_BUTTON (radiobuttonPercent));
@@ -353,7 +353,7 @@ GtkWidget * XAP_UnixDialog_Zoom::_constructWindow(void)
   gtk_box_pack_end (GTK_BOX (vboxZoomTo), spinbuttonPercent, TRUE, TRUE, 0);
   gtk_spin_button_set_numeric (GTK_SPIN_BUTTON (spinbuttonPercent), TRUE);
 
-  UT_XML_cloneNoAmpersands(tmp, pSS->getValue(XAP_STRING_ID_DLG_Zoom_PreviewFrame));
+  UT_XML_cloneNoAmpersands(tmp, pSS->getValueUTF8(XAP_STRING_ID_DLG_Zoom_PreviewFrame).c_str());
   framePreview = gtk_frame_new (tmp);
   FREEP(tmp);
   gtk_widget_show (framePreview);

@@ -42,6 +42,11 @@ public:
 	XAP_QNXApp(XAP_Args * pArgs, const char * szAppName);
 	virtual ~XAP_QNXApp(void);
 
+	virtual const char * getDefaultEncoding () const
+	  {
+	    return "UTF-8" ;
+	  }
+
 	virtual bool							initialize(void);
 	virtual XAP_Frame * 					newFrame(void) = 0;
 	virtual void							reallyExit(void);

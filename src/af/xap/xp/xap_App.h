@@ -86,6 +86,8 @@ public:
 	XAP_App(XAP_Args * pArgs, const char * szAppName);
 	virtual ~XAP_App();
 
+	virtual const char * getDefaultEncoding () const = 0 ;
+
 	virtual bool					initialize();
 	virtual bool					rememberFrame(XAP_Frame* pFrame, XAP_Frame* pCloneOf = 0);
 	virtual bool					forgetFrame(XAP_Frame * pFrame);

@@ -32,6 +32,7 @@
 #include "gr_Graphics.h"
 #include "xap_Strings.h"
 #include "xap_App.h"
+#include "xap_App.h"
 
 
 ///////////////////////////////////////////////////////////////////
@@ -100,6 +101,8 @@ ST_LOCALISED_STYLES stLocalised[] =
 */
 const char* pt_PieceTable::s_getLocalisedStyleName(const char *szStyle)
 {		
+  static XAP_App * pApp = XAP_App::getApp();
+
 	const XAP_StringSet * pSS = XAP_App::getApp()->getStringSet();
 	const char*	pRslt = szStyle;
 	int n;	
@@ -108,7 +111,7 @@ const char* pt_PieceTable::s_getLocalisedStyleName(const char *szStyle)
 	{
 		if (strcmp(szStyle, stLocalised[n].pStyle)==0)
 		{
-			pRslt = pSS->getValue(stLocalised[n].nID);
+			pRslt = pSS->getValue(stLocalised[n].nID, pApp->getDefaultEncoding()).c_str();
 			break;
 		}
 	}		

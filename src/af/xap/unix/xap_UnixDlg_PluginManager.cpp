@@ -96,7 +96,7 @@ void XAP_UnixDialog_PluginManager::event_Deactivate ()
     {
       // error message box - didn't select a plugin
       _errorMessage (m_pFrame, 
-		     pSS->getValue(XAP_STRING_ID_DLG_PLUGIN_MANAGER_NONE_SELECTED));
+		     pSS->getValueUTF8(XAP_STRING_ID_DLG_PLUGIN_MANAGER_NONE_SELECTED).c_str());
       return;
     }
   
@@ -111,14 +111,14 @@ void XAP_UnixDialog_PluginManager::event_Deactivate ()
 	{
 	  // error message box
 	  _errorMessage (m_pFrame, 
-			 pSS->getValue(XAP_STRING_ID_DLG_PLUGIN_MANAGER_COULDNT_UNLOAD));
+			 pSS->getValueUTF8(XAP_STRING_ID_DLG_PLUGIN_MANAGER_COULDNT_UNLOAD).c_str());
 	}
     }
   else
     {
       // error message box
       _errorMessage (m_pFrame, 
-		     pSS->getValue(XAP_STRING_ID_DLG_PLUGIN_MANAGER_COULDNT_UNLOAD));
+		     pSS->getValueUTF8(XAP_STRING_ID_DLG_PLUGIN_MANAGER_COULDNT_UNLOAD).c_str());
     }
 }
 
@@ -178,7 +178,7 @@ void XAP_UnixDialog_PluginManager::event_Load ()
 	    {
 	      // error message
 	      _errorMessage (m_pFrame, 
-			     pSS->getValue(XAP_STRING_ID_DLG_PLUGIN_MANAGER_COULDNT_LOAD));
+			     pSS->getValueUTF8(XAP_STRING_ID_DLG_PLUGIN_MANAGER_COULDNT_LOAD).c_str());
 	    }
 	}
     }
@@ -389,7 +389,7 @@ XAP_UnixDialog_PluginManager::_constructWindowContents (GtkWidget * container)
   gtk_clist_set_column_width (GTK_CLIST (clistPlugins), 0, 80);
   gtk_clist_column_titles_show (GTK_CLIST (clistPlugins));
   
-  lblActivePlugins = gtk_label_new (pSS->getValue (XAP_STRING_ID_DLG_PLUGIN_MANAGER_ACTIVE));
+  lblActivePlugins = gtk_label_new (pSS->getValueUTF8 (XAP_STRING_ID_DLG_PLUGIN_MANAGER_ACTIVE).c_str());
   gtk_widget_show (lblActivePlugins);
   gtk_clist_set_column_widget (GTK_CLIST (clistPlugins), 0, lblActivePlugins);
   
@@ -397,19 +397,19 @@ XAP_UnixDialog_PluginManager::_constructWindowContents (GtkWidget * container)
   gtk_widget_show (vbox3);
   gtk_box_pack_start (GTK_BOX (hbox1), vbox3, TRUE, TRUE, 0);
 	
-  btnDeactivate = gtk_button_new_with_label (pSS->getValue (XAP_STRING_ID_DLG_PLUGIN_MANAGER_DEACTIVATE));
+  btnDeactivate = gtk_button_new_with_label (pSS->getValueUTF8 (XAP_STRING_ID_DLG_PLUGIN_MANAGER_DEACTIVATE).c_str());
   gtk_widget_show (btnDeactivate);
   gtk_box_pack_start (GTK_BOX (vbox3), btnDeactivate, FALSE, FALSE, 0);
   
-  btnDeactivateAll = gtk_button_new_with_label (pSS->getValue (XAP_STRING_ID_DLG_PLUGIN_MANAGER_DEACTIVATE_ALL));
+  btnDeactivateAll = gtk_button_new_with_label (pSS->getValueUTF8 (XAP_STRING_ID_DLG_PLUGIN_MANAGER_DEACTIVATE_ALL).c_str());
   gtk_widget_show (btnDeactivateAll);
   gtk_box_pack_start (GTK_BOX (vbox3), btnDeactivateAll, FALSE, FALSE, 0);
   
-  btnInstall = gtk_button_new_with_label (pSS->getValue (XAP_STRING_ID_DLG_PLUGIN_MANAGER_INSTALL));
+  btnInstall = gtk_button_new_with_label (pSS->getValueUTF8 (XAP_STRING_ID_DLG_PLUGIN_MANAGER_INSTALL).c_str());
   gtk_widget_show (btnInstall);
   gtk_box_pack_start (GTK_BOX (vbox3), btnInstall, FALSE, FALSE, 0);
   
-  lblPluginList = gtk_label_new (pSS->getValue (XAP_STRING_ID_DLG_PLUGIN_MANAGER_LIST));
+  lblPluginList = gtk_label_new (pSS->getValueUTF8 (XAP_STRING_ID_DLG_PLUGIN_MANAGER_LIST).c_str());
   gtk_widget_show (lblPluginList);
   gtk_notebook_set_tab_label (GTK_NOTEBOOK (notebook1), 
 			      gtk_notebook_get_nth_page (GTK_NOTEBOOK (notebook1), 0), lblPluginList);
@@ -424,28 +424,28 @@ XAP_UnixDialog_PluginManager::_constructWindowContents (GtkWidget * container)
   gtk_table_set_row_spacings (GTK_TABLE (table1), 3);
   gtk_table_set_col_spacings (GTK_TABLE (table1), 3);
   
-  lblName = gtk_label_new (pSS->getValue (XAP_STRING_ID_DLG_PLUGIN_MANAGER_NAME));
+  lblName = gtk_label_new (pSS->getValueUTF8 (XAP_STRING_ID_DLG_PLUGIN_MANAGER_NAME).c_str());
   gtk_widget_show (lblName);
   gtk_table_attach (GTK_TABLE (table1), lblName, 0, 1, 0, 1,
 		    (GtkAttachOptions) (GTK_FILL),
 		    (GtkAttachOptions) (0), 0, 0);
   gtk_misc_set_alignment (GTK_MISC (lblName), 0, 0.5);
   
-  lblDesc = gtk_label_new (pSS->getValue (XAP_STRING_ID_DLG_PLUGIN_MANAGER_DESC));
+  lblDesc = gtk_label_new (pSS->getValueUTF8 (XAP_STRING_ID_DLG_PLUGIN_MANAGER_DESC).c_str());
   gtk_widget_show (lblDesc);
   gtk_table_attach (GTK_TABLE (table1), lblDesc, 0, 1, 1, 2,
 		    (GtkAttachOptions) (GTK_FILL),
 		    (GtkAttachOptions) (0), 0, 0);
   gtk_misc_set_alignment (GTK_MISC (lblDesc), 0, 0.5);
   
-  lblAuthor = gtk_label_new (pSS->getValue (XAP_STRING_ID_DLG_PLUGIN_MANAGER_AUTHOR));
+  lblAuthor = gtk_label_new (pSS->getValueUTF8 (XAP_STRING_ID_DLG_PLUGIN_MANAGER_AUTHOR).c_str());
   gtk_widget_show (lblAuthor);
   gtk_table_attach (GTK_TABLE (table1), lblAuthor, 0, 1, 2, 3,
 		    (GtkAttachOptions) (GTK_FILL),
 		    (GtkAttachOptions) (0), 0, 0);
   gtk_misc_set_alignment (GTK_MISC (lblAuthor), 0, 0.5);
   
-  lblVersion = gtk_label_new (pSS->getValue (XAP_STRING_ID_DLG_PLUGIN_MANAGER_VERSION));
+  lblVersion = gtk_label_new (pSS->getValueUTF8 (XAP_STRING_ID_DLG_PLUGIN_MANAGER_VERSION).c_str());
   gtk_widget_show (lblVersion);
   gtk_table_attach (GTK_TABLE (table1), lblVersion, 0, 1, 3, 4,
 		    (GtkAttachOptions) (GTK_FILL),
@@ -491,7 +491,7 @@ XAP_UnixDialog_PluginManager::_constructWindowContents (GtkWidget * container)
   //gtk_text_view_set_cursor_visable(GTK_TEXT_VIEW(textDescription), FALSE);
   gtk_container_add (GTK_CONTAINER (scrolledwindow2), textDescription);
   
-  lblPluginDetails = gtk_label_new (pSS->getValue (XAP_STRING_ID_DLG_PLUGIN_MANAGER_DETAILS));
+  lblPluginDetails = gtk_label_new (pSS->getValueUTF8 (XAP_STRING_ID_DLG_PLUGIN_MANAGER_DETAILS).c_str());
   gtk_widget_show (lblPluginDetails);
   gtk_notebook_set_tab_label (GTK_NOTEBOOK (notebook1), 
 			      gtk_notebook_get_nth_page (GTK_NOTEBOOK (notebook1), 1), lblPluginDetails);
@@ -529,7 +529,7 @@ GtkWidget * XAP_UnixDialog_PluginManager::_constructWindow ()
   
   const XAP_StringSet * pSS = m_pApp->getStringSet();
   
-  windowPlugins = abiDialogNew(TRUE, pSS->getValue (XAP_STRING_ID_DLG_PLUGIN_MANAGER_TITLE));	
+  windowPlugins = abiDialogNew(TRUE, pSS->getValueUTF8 (XAP_STRING_ID_DLG_PLUGIN_MANAGER_TITLE).c_str());	
   dialog_vbox1 = GTK_DIALOG (windowPlugins)->vbox;
   gtk_widget_show (dialog_vbox1);
   gtk_container_set_border_width (GTK_CONTAINER (dialog_vbox1), 3);

@@ -391,7 +391,7 @@ void GR_UnixGraphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
 			{
 				XAP_App * pApp = XAP_App::getApp();
 				UT_ASSERT(pApp);
-				const XML_Char * msg = pApp->getStringSet()->getValue(XAP_STRING_ID_MSG_UnixFontSizeWarning);
+				const XML_Char * msg = pApp->getStringSet()->getValueUTF8(XAP_STRING_ID_MSG_UnixFontSizeWarning).c_str();
 				UT_ASSERT(msg);
 				bFontSizeWarning = false;
 				messageBoxOK(msg);

@@ -177,7 +177,7 @@ GtkWidget * XAP_UnixDialog_WindowMore::_constructWindow(void)
 
   // create dialog, buttons
 
-  windowMain = abiDialogNew (TRUE, pSS->getValue(XAP_STRING_ID_DLG_MW_MoreWindows));  
+  windowMain = abiDialogNew (TRUE, pSS->getValueUTF8(XAP_STRING_ID_DLG_MW_MoreWindows).c_str());  
   vboxMain = GTK_DIALOG(windowMain)->vbox;
   
   abiAddStockButton(GTK_DIALOG(windowMain), GTK_STOCK_OK, BUTTON_OK);
@@ -185,7 +185,7 @@ GtkWidget * XAP_UnixDialog_WindowMore::_constructWindow(void)
 
   // create contents
 
-  labelActivate = gtk_label_new (pSS->getValue(XAP_STRING_ID_DLG_MW_Activate));
+  labelActivate = gtk_label_new (pSS->getValueUTF8(XAP_STRING_ID_DLG_MW_Activate).c_str());
   gtk_widget_show (labelActivate);
   gtk_box_pack_start (GTK_BOX (vboxMain), labelActivate, FALSE, TRUE, 0);
   gtk_label_set_justify (GTK_LABEL (labelActivate), GTK_JUSTIFY_LEFT);

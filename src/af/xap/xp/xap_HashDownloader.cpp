@@ -301,13 +301,13 @@ XAP_HashDownloader::tryToDownloadHash(XAP_Frame *pFrame, const char *szFName, XA
 
 	sprintf(buff, "%s%s", host, szFName);
 
-	if ((ret = downloadFile(pFrame, buff, pSS->getValue(XAP_STRING_ID_DLG_HashDownloader_Dict), fileData, 1))) {
+	if ((ret = downloadFile(pFrame, buff, pSS->getValue(XAP_STRING_ID_DLG_HashDownloader_Dict, pFrame->getApp()->getDefaultEncoding()).c_str(), fileData, 1))) {
 		if (ret < 0) {
 			if (!host2[0])
 				return(-1);
 			
 			sprintf(buff, "%s%s", host2, szFName);
-			if ((ret = downloadFile(pFrame, buff, pSS->getValue(XAP_STRING_ID_DLG_HashDownloader_Dict), fileData, 1))) {
+			if ((ret = downloadFile(pFrame, buff, pSS->getValue(XAP_STRING_ID_DLG_HashDownloader_Dict, pFrame->getApp()->getDefaultEncoding()).c_str(), fileData, 1))) {
 				if (ret < 0)
 					return(-1);
 				else
