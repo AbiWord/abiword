@@ -5215,6 +5215,10 @@ void FV_View::_prefsListener( XAP_App * /*pApp*/, XAP_Prefs *pPrefs, UT_StringPt
 	{
 		UT_parseColor(pszTmpColor, pView->m_colorSpellSquiggle);
 	}
+	if (pPrefs->getPrefsValue(static_cast<const XML_Char *>(XAP_PREF_KEY_ColorForGrammarSquiggle), &pszTmpColor))
+	{
+		UT_parseColor(pszTmpColor, pView->m_colorGrammarSquiggle);
+	}
 	if (pPrefs->getPrefsValue(static_cast<const XML_Char *>(XAP_PREF_KEY_ColorForMargin), &pszTmpColor))
 	{
 		UT_parseColor(pszTmpColor, pView->m_colorMargin);

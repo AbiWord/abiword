@@ -86,6 +86,8 @@
 #define XAP_PREF_DEFAULT_ColorForShowPara			"7f7f7f"
 #define XAP_PREF_KEY_ColorForSquiggle				"ColorSquiggle"
 #define XAP_PREF_DEFAULT_ColorForSquiggle			"ff0000"
+#define XAP_PREF_KEY_ColorForGrammarSquiggle		"ColorGrammarSquiggle"
+#define XAP_PREF_DEFAULT_ColorForGrammarSquiggle	"00bb00"
 #define XAP_PREF_KEY_ColorForMargin					"ColorMargin"
 #define XAP_PREF_DEFAULT_ColorForMargin				"7f7f7f"
 #define XAP_PREF_KEY_ColorForSelBackground			"ColorSelBackground"
@@ -179,6 +181,7 @@ dcl(AutoSaveFileExt)
 dcl(ColorForTransparent)
 dcl(ColorForShowPara)
 dcl(ColorForSquiggle)
+dcl(ColorForGrammarSquiggle)
 dcl(ColorForMargin)
 dcl(ColorForSelBackground)
 dcl(ColorForFieldOffset)

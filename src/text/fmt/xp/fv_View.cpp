@@ -246,6 +246,10 @@ FV_View::FV_View(XAP_App * pApp, void* pParentData, FL_DocLayout* pLayout)
 	{
 		UT_parseColor(pszTmpColor, m_colorSpellSquiggle);
 	}
+	if (pApp->getPrefsValue(static_cast<const XML_Char *>(XAP_PREF_KEY_ColorForGrammarSquiggle), &pszTmpColor))
+	{
+		UT_parseColor(pszTmpColor, m_colorGrammarSquiggle);
+	}
 	if (pApp->getPrefsValue(static_cast<const XML_Char *>(XAP_PREF_KEY_ColorForMargin), &pszTmpColor))
 	{
 		UT_parseColor(pszTmpColor, m_colorMargin);
