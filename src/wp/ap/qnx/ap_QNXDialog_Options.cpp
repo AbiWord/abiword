@@ -452,7 +452,7 @@ PtWidget_t* AP_QNXDialog_Options::_constructWindow ()
 	n = 0;
 	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, TR(pSS->getValue( AP_STRING_ID_DLG_Options_Label_SpellInternet)), 0);
 	checkbuttonSpellInternet = PtCreateWidget(PtToggleButton, vspellgroup, n, args);
-
+ 
 	n = 0;
 	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, TR(pSS->getValue( AP_STRING_ID_DLG_Options_Label_SpellCheckAsType)), 0);
 	checkbuttonSpellCheckAsType = PtCreateWidget(PtToggleButton, vspellgroup, n, args);
@@ -988,7 +988,7 @@ void AP_QNXDialog_Options::_controlEnable( tControl id, bool value )
 	PtArg_t arg;
 	PtSetArg(&arg, Pt_ARG_FLAGS, 
 				(value) ? (Pt_BLOCKED | Pt_GHOST) : 0,
-				Pt_BLOCKED | Pt_GHOST);
+				Pt_BLOCKED | Pt_GHOST|Pt_SET);
 	PtSetResources(w, 1, &arg);
 }
 
