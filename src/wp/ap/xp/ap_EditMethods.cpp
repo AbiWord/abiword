@@ -7037,38 +7037,6 @@ Defun1(viewFormat)
 	return true;
 }
 
-Defun1(viewExtra)
-{
-	CHECK_FRAME;
-	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
-	UT_ASSERT(pFrame);
-
-	AP_FrameData *pFrameData = static_cast<AP_FrameData *> (pFrame->getFrameData());
-	UT_ASSERT(pFrameData);
-
-	// don't do anything if fullscreen
-	if (pFrameData->m_bIsFullScreen)
-	  return false;
-
-	// toggle the ruler bit
-	pFrameData->m_bShowBar[3] = ! pFrameData->m_bShowBar[3];
-
-	// actually do the dirty work
-	pFrame->toggleBar( 3, pFrameData->m_bShowBar[3] );
-
-	// POLICY: make this the default for new frames, too
-	XAP_App * pApp = pFrame->getApp();
-	UT_ASSERT(pApp);
-	XAP_Prefs * pPrefs = pApp->getPrefs();
-	UT_ASSERT(pPrefs);
-	XAP_PrefsScheme * pScheme = pPrefs->getCurrentScheme(true);
-	UT_ASSERT(pScheme);
-
-	pScheme->setValueBool((XML_Char*)AP_PREF_KEY_ExtraBarVisible, pFrameData->m_bShowBar[2]);
-
-	return true;
-}
-
 Defun1(viewTable)
 {
 	CHECK_FRAME;
@@ -7096,7 +7064,39 @@ Defun1(viewTable)
 	XAP_PrefsScheme * pScheme = pPrefs->getCurrentScheme(true);
 	UT_ASSERT(pScheme);
 
-	pScheme->setValueBool((XML_Char*)AP_PREF_KEY_TableBarVisible, pFrameData->m_bShowBar[3]);
+	pScheme->setValueBool((XML_Char*)AP_PREF_KEY_TableBarVisible, pFrameData->m_bShowBar[2]);
+
+	return true;
+}
+
+Defun1(viewExtra)
+{
+	CHECK_FRAME;
+	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
+	UT_ASSERT(pFrame);
+
+	AP_FrameData *pFrameData = static_cast<AP_FrameData *> (pFrame->getFrameData());
+	UT_ASSERT(pFrameData);
+
+	// don't do anything if fullscreen
+	if (pFrameData->m_bIsFullScreen)
+	  return false;
+
+	// toggle the ruler bit
+	pFrameData->m_bShowBar[3] = ! pFrameData->m_bShowBar[3];
+
+	// actually do the dirty work
+	pFrame->toggleBar( 3, pFrameData->m_bShowBar[3] );
+
+	// POLICY: make this the default for new frames, too
+	XAP_App * pApp = pFrame->getApp();
+	UT_ASSERT(pApp);
+	XAP_Prefs * pPrefs = pApp->getPrefs();
+	UT_ASSERT(pPrefs);
+	XAP_PrefsScheme * pScheme = pPrefs->getCurrentScheme(true);
+	UT_ASSERT(pScheme);
+
+	pScheme->setValueBool((XML_Char*)AP_PREF_KEY_ExtraBarVisible, pFrameData->m_bShowBar[3]);
 
 	return true;
 }

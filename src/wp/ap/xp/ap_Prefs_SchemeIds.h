@@ -79,7 +79,7 @@
 #define AP_PREF_DEFAULT_FormatBarVisible			"1"
 #define AP_PREF_KEY_ExtraBarVisible					"ExtraBarVisible"			/* is the extra toolbar visible? {0,1} */
 #define AP_PREF_DEFAULT_ExtraBarVisible				"0"
-#define AP_PREF_KEY_TableBarVisible					"ExtraBarVisible"			/* is the table toolbar visible? {0,1} */
+#define AP_PREF_KEY_TableBarVisible					"TableBarVisible"			/* is the table toolbar visible? {0,1} */
 #define AP_PREF_DEFAULT_TableBarVisible				"0"
 
 #define AP_PREF_KEY_StatusBarVisible				"StatusBarVisible"			/* is the status bar visible? {0,1} */
