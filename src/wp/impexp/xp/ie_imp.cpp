@@ -26,6 +26,7 @@
 #include "ie_imp.h"
 #include "ie_imp_AbiWord_1.h"
 #include "ie_imp_MsWord_97.h"
+#include "ie_imp_Text.h"
 
 IE_Imp::IE_Imp(PD_Document * pDocument)
 {
@@ -71,6 +72,14 @@ IEStatus IE_Imp::constructImporter(PD_Document * pDocument,
 	if (pExt && (UT_stricmp(pExt, ".doc") == 0))
 	{
 		IE_Imp_MsWord_97 * p = new IE_Imp_MsWord_97(pDocument);
+		if (!p)
+			return IES_NoMemory;
+
+		*ppie = p;
+	}
+	else if (pExt && (UT_stricmp(pExt, ".txt") == 0))
+	{
+		IE_Imp_Text * p = new IE_Imp_Text(pDocument);
 		if (!p)
 			return IES_NoMemory;
 
