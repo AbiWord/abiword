@@ -1715,7 +1715,8 @@ bool FV_View::cmdDeleteTable(PT_DocPosition posTable)
 
 	// Signal PieceTable Changes have finished
 	_restorePieceTableState();
-    notifyListeners(AV_CHG_MOTION);
+	setPoint(getPoint());
+    notifyListeners(AV_CHG_ALL);
 	_fixInsertionPointCoords();
 	_ensureInsertionPointOnScreen();
 
