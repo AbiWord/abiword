@@ -343,7 +343,7 @@ int fl_BlockLayout::format()
 		if (!m_pFirstLine)
 		{
 			// start a new line
-			fp_Line* pLine = getNewLine();
+			fp_Line* pLine = getNewLine(m_pFirstRun->getHeight());
 
 			fp_Run* pTempRun = m_pFirstRun;
 			while (pTempRun)
@@ -372,15 +372,14 @@ int fl_BlockLayout::format()
 	else
 	{
 		// we don't ... construct just enough to keep going
-		if (!m_pFirstLine)
-		{
-			getNewLine();
-		}
-
 		DG_Graphics* pG = m_pLayout->getGraphics();
-
 		m_pFirstRun = new fp_Run(this, pG, 0, 0);
 		m_pFirstRun->calcWidths(&m_gbCharWidths);
+
+		if (!m_pFirstLine)
+		{
+			getNewLine(m_pFirstRun->getHeight());
+		}
 
 		// the line just contains the empty run
 		m_pFirstLine->addRun(m_pFirstRun);
@@ -389,6 +388,8 @@ int fl_BlockLayout::format()
 	align();
 
 	_fixColumns();
+
+	checkForWidowsAndOrphans();
 
 	setNeedsReformat(UT_FALSE);
 	
@@ -400,8 +401,10 @@ fp_Run* fl_BlockLayout::getFirstRun()
 	return m_pFirstRun;
 }
 
-fp_Line* fl_BlockLayout::getNewLine(void)
+fp_Line* fl_BlockLayout::getNewLine(UT_sint32 iHeight)
 {
+	UT_ASSERT(iHeight > 0);
+	
 	fp_Line* pLine = new fp_Line();
 	UT_ASSERT(pLine);
 
@@ -442,7 +445,7 @@ fp_Line* fl_BlockLayout::getNewLine(void)
 		}
 	}
 
-	if (!(pCol->insertLineAfter(pLine, pOldLastLine)))
+	if (!(pCol->insertLineAfter(pLine, pOldLastLine, iHeight)))
 	{
 		pCol = pCol->getNext();
 		if (!pCol)
@@ -452,7 +455,7 @@ fp_Line* fl_BlockLayout::getNewLine(void)
 
 		UT_ASSERT(pCol);
 		
-		pCol->insertLineAfter(pLine, NULL);
+		pCol->insertLineAfter(pLine, NULL, iHeight);
 	}
 
 	return pLine;
@@ -2000,6 +2003,205 @@ void fl_BlockLayout::alignOneLine(fp_Line* pLine)
 			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 			break;
 		}
+	}
+}
+
+void fl_BlockLayout::checkForWidowsAndOrphans(void)
+{
+#if 0	
+ start_over:
+	UT_uint32 iCountLines = 0;
+	UT_uint32 iCountColumns = 0;
+	fp_Column* pLastColSeen = NULL;
+
+	fp_Line* pLine = m_pFirstLine;
+	while (pLine)
+	{
+		iCountLines++;
+
+		if (pLine->getColumn() != pLastColSeen)
+		{
+			iCountColumns++;
+			pLastColSeen = pLine->getColumn();
+		}
+		
+		pLine = pLine->getNext();
+	}
+
+	if (iCountLines > 0)
+	{
+		if (
+			(m_pFirstLine->getColumn()->getFirstLine() == m_pFirstLine)
+			&& (m_pFirstLine->getColumn()->getPrev())
+			&& (
+				(iCountLines <= getOrphansProperty())
+				|| (iCountLines >= (getOrphansProperty() + getWidowsProperty()))
+				)
+			)
+		{
+			/*
+			  Our first line is at the top of a column.  We should check
+			  to see if the first few lines can be moved backwards into the previous
+			  column.
+			*/
+
+			UT_uint32 iCounter = 0;
+			pLine = m_pFirstLine;
+			UT_sint32 iHeightNeeded = 0;
+			
+			while (iCounter < getOrphansProperty())
+			{
+				iHeightNeeded += pLine->getHeight();
+				pLine = pLine->getNext();
+				iCounter++;
+			}
+
+			fp_Column* pPrevCol = m_pFirstLine->getColumn()->getPrev();
+			if (pPrevCol->getSpaceAtBottom() >= iHeightNeeded)
+			{
+				UT_DEBUGMSG(("CWAO pushback:  column 0x%p has space=%d, whereas first %d lines of block 0x%p have height %d\n",
+							 pPrevCol,
+							 pPrevCol->getSpaceAtBottom(),
+							 getOrphansProperty(),
+							 this,
+							 iHeightNeeded));
+
+				// TODO
+			}
+		}
+		
+		if (iCountColumns > 1)
+		{
+			pLastColSeen = NULL;
+			pLine = m_pFirstLine;
+			UT_uint32 iCountLinesInColumn = 0;
+			while (pLine)
+			{
+				if (pLine->getColumn() != pLastColSeen)
+				{
+					if (pLastColSeen)
+					{
+						if (iCountLinesInColumn < getOrphansProperty())
+						{
+							UT_DEBUGMSG(("CWAO orphan problem:  block=0x%p  column=0x%p  iCountLines=%d  iCountColumns=%d  iCountLinesInColumn=%d\n",
+										 this,
+										 pLastColSeen,
+										 iCountLines,
+										 iCountColumns,
+										 iCountLinesInColumn));
+
+							fp_Line* pMoveLine = pLine->getPrev();
+							for (UT_uint32 i=0; i<iCountLinesInColumn; i++)
+							{
+								UT_ASSERT(pMoveLine->getColumn() == pLastColSeen);
+								
+								pLastColSeen->moveLineToNextColumn(pMoveLine);
+								pMoveLine = pMoveLine->getPrev();
+							}
+
+							pLastColSeen->getNext()->updateLayout();
+							
+							goto start_over;
+						}
+					}
+
+					pLastColSeen = pLine->getColumn();
+					iCountLinesInColumn = 1;
+				}
+				else
+				{
+					iCountLinesInColumn++;
+				}
+		
+				pLine = pLine->getNext();
+			}
+
+			if (iCountLinesInColumn < getWidowsProperty())
+			{
+				// widow problem
+				
+				UT_DEBUGMSG(("CWAO widow problem:  block=0x%p  column=0x%p  iCountLines=%d  iCountColumns=%d  iCountLinesInColumn=%d\n",
+							 this,
+							 pLastColSeen,
+							 iCountLines,
+							 iCountColumns,
+							 iCountLinesInColumn));
+
+				fp_Column* pPrevCol = pLastColSeen->getPrev();
+				UT_ASSERT(pPrevCol);
+				
+				pLine = pPrevCol->getLastLine();
+				UT_ASSERT(pLine->getBlock() == this);
+				
+				UT_uint32 iCountLinesInPrevColumn = 0;
+				while (pLine && (pLine->getColumn() == pPrevCol))
+				{
+					iCountLinesInPrevColumn++;
+					pLine = pLine->getPrev();
+				}
+
+				UT_uint32 iNumLinesToBeMoved;
+				
+				if (
+					(iCountLinesInPrevColumn > getOrphansProperty())
+					&& ((iCountLinesInPrevColumn - getOrphansProperty() + iCountLinesInColumn) >= getWidowsProperty())
+					)
+				{
+					/*
+					  Move just enough
+					*/
+					iNumLinesToBeMoved = getWidowsProperty() - iCountLinesInColumn;
+				}
+				else
+				{
+					/*
+					  There aren't enough lines in the prev column to
+					  move just a few.  Move 'em all!
+					*/
+
+					iNumLinesToBeMoved = iCountLinesInPrevColumn;
+				}
+
+				fp_Line* pMoveLine = pPrevCol->getLastLine();
+				UT_ASSERT(pMoveLine->getBlock() == this);
+				for (UT_uint32 i=0; i<iNumLinesToBeMoved; i++)
+				{
+					UT_ASSERT(pMoveLine->getColumn() == pPrevCol);
+								
+					pPrevCol->moveLineToNextColumn(pMoveLine);
+					pMoveLine = pMoveLine->getPrev();
+				}
+
+				pPrevCol->getNext()->updateLayout();
+			}
+		}
+	}
+#endif
+}
+
+UT_uint32 fl_BlockLayout::canSlurp(fp_Line* pLine) const
+{
+	UT_ASSERT(pLine);
+	UT_ASSERT(pLine->getColumn());
+	UT_ASSERT(pLine->getColumn()->getFirstLine() == pLine);
+	
+	UT_uint32 iCountLinesInBlock = 0;
+	fp_Column* pCol = pLine->getColumn();
+	while (pLine && pLine->getColumn() == pCol)
+	{
+		iCountLinesInBlock++;
+		pLine = pLine->getNext();
+	}
+
+	return 0; // TODO
+	
+	if (iCountLinesInBlock > getWidowsProperty())
+	{
+		return (iCountLinesInBlock - getWidowsProperty());
+	}
+	else
+	{
+		return 0;
 	}
 }
 

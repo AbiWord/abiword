@@ -63,6 +63,7 @@ public:
 	UT_Bool				isEmpty(void) const;
 	
 	fp_Line*			getFirstLine(void) const;
+	fp_Line*			getLastLine(void) const;
 	
 	UT_uint32			getWidth(void) const;
 	void				setWidth(UT_uint32);
@@ -72,10 +73,15 @@ public:
 	void				setMaxHeight(UT_uint32);
 	void				setHeight(UT_uint32);
 
-	UT_Bool				insertLineAfter(fp_Line* pNewLine, fp_Line*	pAfterLine);
+	void				checkForWidowsAndOrphans(void);
+	UT_Bool				insertLineAfter(fp_Line* pNewLine, fp_Line*	pAfterLine, UT_sint32 iHeight);
 	void				removeLine(fp_Line*);
 	void				lineHeightChanged(fp_Line* pLine, DG_Graphics* pG, UT_sint32 iOldHeight, UT_sint32 iNewHeight);
 	void				updateLayout(void);
+	void 				moveLineToNextColumn(UT_uint32 iBump);
+	void				moveLineToNextColumn(fp_Line* pLine);
+	void				moveLineFromNextColumn(fp_Line* pLine);
+	UT_sint32			getSpaceAtBottom(void) const;
 
 	UT_uint32		 	getTopOffset(UT_uint32 iLineHeight);
 	UT_Bool 			containsPoint(UT_sint32 x, UT_sint32 y);

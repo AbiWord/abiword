@@ -65,7 +65,7 @@ public:
 
 	int 		format();
 	
-	fp_Line*	getNewLine(void);
+	fp_Line*	getNewLine(UT_sint32 iHeight);
 
 	const char*	getProperty(const XML_Char * pszName) const;
 	void setAlignment(UT_uint32 iAlignCmd);
@@ -79,7 +79,7 @@ public:
 	fp_Line* findNextLineInDocument(fp_Line*);
 	fp_Run* getFirstRun();
 	void findSquigglesForRun(fp_Run* pRun);
-
+	UT_uint32 canSlurp(fp_Line* pLine) const;
 
 	FL_DocLayout * getDocLayout();
 	fl_SectionLayout * getSectionLayout();
@@ -100,6 +100,7 @@ public:
 	void alignOneLine(fp_Line* pLine);
 	UT_uint32 getOrphansProperty(void) const;
 	UT_uint32 getWidowsProperty(void) const;
+	void checkForWidowsAndOrphans(void);
 
 	void checkSpelling(void);
 

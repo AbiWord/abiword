@@ -75,7 +75,7 @@ int fb_SimpleLineBreaker::breakParagraph(fl_BlockLayout* pBlock)
 				fp_Line* pNewLine = NULL;
 				if (!pNextLine)
 				{
-					pNewLine = pBlock->getNewLine();
+					pNewLine = pBlock->getNewLine(pFirstRunOnLine->getHeight());
 					UT_ASSERT(pNewLine);	// TODO check for outofmem
 							
 					pNextLine = pNewLine;
