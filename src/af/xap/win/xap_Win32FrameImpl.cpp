@@ -462,9 +462,15 @@ void XAP_Win32FrameImpl::_setFullScreen(bool isFullScreen)
 			// Assume we were at Normal (non-maximized) state
 			m_iWindowStateBeforeFS = SW_SHOWNORMAL;
 		}
-		
-		// Remove the title-bar and maximize
+
+		// Remove the title-bar and border
 		SetWindowLong(hwndFrame, GWL_STYLE, hStyle & ~WS_CAPTION);
+
+		// If we're maximized, restore and remaximize or window
+		// will not attempt to cover taskbar.
+		if(m_iWindowStateBeforeFS == SW_SHOWMAXIMIZED)
+			ShowWindow(hwndFrame, SW_RESTORE);
+
 		ShowWindow(hwndFrame, SW_SHOWMAXIMIZED);
 	}
 	else
