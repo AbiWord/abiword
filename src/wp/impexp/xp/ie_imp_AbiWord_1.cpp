@@ -171,6 +171,9 @@ UT_Error IE_Imp_AbiWord_1::importFile(const char * szFilename)
 #define TT_IGNOREDWORD  18      // a word <iw> within an ignored words section
 #define TT_BOOKMARK     19		// <bookmark>
 #define TT_HYPERLINK	20		// <a href=>
+#define TT_METADATA     21 // <metadata>
+#define TT_META         22 // <m>
+
 /*
   TODO remove tag synonyms.  We're currently accepted
   synonyms for tags, as follows:
@@ -206,6 +209,8 @@ static struct xmlToIdMapping s_Tokens[] =
 	{	"iw",			TT_IGNOREDWORD	},
 	{	"l",			TT_LIST			},
 	{	"lists",		TT_LISTSECTION	},
+	{       "m", TT_META },
+	{       "metadata", TT_METADATA },
 	{	"p",			TT_BLOCK		},
 	{   "pagesize",     TT_PAGESIZE     },
 	{	"pbr",			TT_PAGEBREAK	},

@@ -107,8 +107,37 @@ PD_Document::~PD_Document()
 
 	UT_VECTOR_PURGEALL(fl_AutoNum*, m_vecLists);
 
+	// remove the meta data
+	UT_HASH_PURGEDATA(UT_String*, &m_metaDataMap, delete) ;
+
 	// we do not purge the contents of m_vecListeners
 	// since these are not owned by us.
+
+	// TODO: delete the key/data pairs
+}
+
+//////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////
+
+void PD_Document::setMetaDataProp ( const UT_String & key,
+				    const UT_String & value )
+{
+  UT_String * ptrvalue = new UT_String ( value ) ;
+  m_metaDataMap.set ( key, ptrvalue ) ;
+}
+
+bool PD_Document::getMetaDataProp ( const UT_String & key, UT_String & outProp )
+{
+  bool found = false ;
+  outProp = "" ;
+
+  const void * val = NULL ;
+  found = m_metaDataMap.contains ( key, val ) ;
+
+  if ( val )
+    outProp= ( const char * ) val;
+
+  return found ;
 }
 
 //////////////////////////////////////////////////////////////////
@@ -230,50 +259,51 @@ UT_Error PD_Document::newDocument(void)
   // the globally installed normal.awt file
   UT_String global_normal_awt (XAP_App::getApp()->getAbiSuiteLibDir());
   global_normal_awt += "/templates/normal.awt";
-
+  
   if ( UT_OK != importFile ( users_normal_awt.c_str(), IEFT_Unknown, true ) )
-  {
-    if (UT_OK != importFile ( global_normal_awt.c_str(), IEFT_Unknown, true ) )
-      {
-	m_pPieceTable = new pt_PieceTable(this);
-	if (!m_pPieceTable)
-	  {
-	    return UT_NOPIECETABLE;
-	  }
-	
-	m_pPieceTable->setPieceTableState(PTS_Loading);
-	
-	// add just enough structure to empty document so we can edit
-	
-	appendStrux(PTX_Section,NULL);
-	appendStrux(PTX_Block, NULL);
-
-	// what we want to do here is to set the default language
-	// that we're editing in
-
-	const XML_Char * doc_locale = NULL;
-	if (XAP_App::getApp()->getPrefs()->getPrefsValue(XAP_PREF_KEY_DocumentLocale,&doc_locale) && doc_locale)
+    {
+      if (UT_OK != importFile ( global_normal_awt.c_str(), IEFT_Unknown, true ) )
 	{
-	  const XML_Char * props[3];
-	  props[0] = "lang";
-	  props[1] = doc_locale;
-	  props[2] = 0;
+	  m_pPieceTable = new pt_PieceTable(this);
+	  if (!m_pPieceTable)
+	    {
+	      return UT_NOPIECETABLE;
+	    }
 	  
-	  // insert a format mark since we're not putting anything inside of the block
-	  appendFmt((const XML_Char **)props);
-	  appendFmtMark () ;
-	  UT_DEBUGMSG(("DOM: new document set lang to %s\n", doc_locale));
-	}
-	else
-	  {
-	  }
-	m_pPieceTable->setPieceTableState(PTS_Editing);
-      }
-  }
+	  m_pPieceTable->setPieceTableState(PTS_Loading);
+	  
+	  // add just enough structure to empty document so we can edit
+	  
+	  appendStrux(PTX_Section,NULL);
+	  appendStrux(PTX_Block, NULL);
 
+	  // what we want to do here is to set the default language
+	  // that we're editing in
+
+	  const XML_Char * doc_locale = NULL;
+	  if (XAP_App::getApp()->getPrefs()->getPrefsValue(XAP_PREF_KEY_DocumentLocale,&doc_locale) && doc_locale)
+	    {
+	      const XML_Char * props[3];
+	      props[0] = "lang";
+	      props[1] = doc_locale;
+	      props[2] = 0;
+	      
+	      // insert a format mark since we're not putting anything inside of the block
+	      appendFmt((const XML_Char **)props);
+	      appendFmtMark () ;
+	      UT_DEBUGMSG(("DOM: new document set lang to %s\n", doc_locale));
+	    }   
+
+	  m_pPieceTable->setPieceTableState(PTS_Editing);
+	}
+      else
+	{
+	}
+    }
+  
   // set the default page size from preferences, regardless of template values
   setDefaultPageSize();
-
+  
   // mark the document as not-dirty
   _setClean();
 

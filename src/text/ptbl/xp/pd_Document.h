@@ -34,6 +34,7 @@
 #include "pl_Listener.h"
 #include "ie_types.h"
 #include "fp_PageSize.h"
+#include "ut_string_class.h"
 
 class UT_ByteBuf;
 class UT_GrowBuf;
@@ -276,6 +277,14 @@ public:
 	inline bool areStylesLocked () const { return m_bLockedStyles; }    // See also lockStyles
 	inline void lockStyles(bool b) { m_bLockedStyles = b; }             // See also areStylesLocked
 
+	void setMetaDataProp ( const UT_String & key,
+			       const UT_String & value ) ;
+
+	bool getMetaDataProp ( const UT_String & key,
+			       UT_String & outProp ) ;
+
+	UT_StringPtrMap & getMetaData () { return m_metaDataMap ; }
+
 protected:
 	~PD_Document();
 
@@ -303,6 +312,7 @@ private:
 	bool m_bForcedDirty;
 	UT_Vector				m_vBookmarkNames;
 	bool m_bLockedStyles;
+	UT_StringPtrMap m_metaDataMap;
 };
 
 #endif /* PD_DOCUMENT_H */

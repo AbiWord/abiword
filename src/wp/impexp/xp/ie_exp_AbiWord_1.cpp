@@ -133,6 +133,7 @@ protected:
 	void				_handleLists(void);
 	void				_handlePageSize(void);
 	void				_handleDataItems(void);
+  void _handleMetaData(void);
 	
 	PD_Document *		m_pDocument;
 	IE_Exp_AbiWord_1 *	m_pie;
@@ -508,6 +509,7 @@ s_AbiWord_1_Listener::s_AbiWord_1_Listener(PD_Document * pDocument,
 	// end of preamble.
 	// now we begin the actual document.
 		
+	_handleMetaData();
 	_handleStyles();
 	_handleIgnoredWords();
 	_handleLists();
@@ -869,6 +871,37 @@ void s_AbiWord_1_Listener::_handleLists(void)
 		m_pie->write("</lists>\n");
 	
 	return;
+}
+
+void s_AbiWord_1_Listener::_handleMetaData(void)
+{
+  // TODO: make me UCS4 aware!!
+
+  UT_StringPtrMap & ref = m_pDocument->getMetaData() ;
+
+  // don't print out a thing
+  if ( ref.size () == 0 )
+    return ;
+
+  m_pie->write("<metadata>\n");
+
+  UT_StringPtrMap::UT_Cursor cursor ( &ref ) ;
+
+  const void * val = NULL ;
+  for ( val = cursor.first(); cursor.is_valid(); val = cursor.next () )
+    {
+      if ( val )
+	{
+	  UT_String *stringval = (UT_String* ) val;
+	  m_pie->write( "<m key=\"" ) ;
+	  m_pie->write ( cursor.key().c_str() ) ;
+	  m_pie->write ( "\">" ) ;
+	  m_pie->write ( stringval->c_str() ) ;
+	  m_pie->write ( "</m>\n" ) ;
+	}
+    }
+
+  m_pie->write("</metadata>\n");
 }
 
 void s_AbiWord_1_Listener::_handlePageSize(void)
