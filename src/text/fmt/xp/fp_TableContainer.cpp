@@ -1037,6 +1037,17 @@ void fp_CellContainer::sizeRequest(fp_Requisition * pRequest)
 		pRequest->width = width;
 		pRequest->height = height;
 	}
+
+	fp_Column * pCol = (fp_Column *) getColumn();
+	if(pCol && (width == 0))
+	{
+#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
+		width =  pCol->getWidthInLayoutUnits();
+#else
+		width = pCol->getWidth();
+#endif
+	}
+
 	m_MyRequest.width = width;
 	m_MyRequest.height = height;
 	xxx_UT_DEBUGMSG(("Sevior: Total height  %d width %d \n",height,width));
@@ -3035,10 +3046,11 @@ void  fp_TableContainer::_size_allocate_pass2(void)
 		  {
 			  getNthCol(col)->allocation += 2 * getNthCol(col)->spacing;
 		  }
-		  UT_DEBUGMSG(("Sevior: column %d set to width %d spacing %d \n",col,getNthCol(col)->allocation,getNthCol(col)->spacing));
+		  UT_DEBUGMSG(("Sevior: table %x column %d set to width %d spacing %d pColProp width %d \n",this,col,getNthCol(col)->allocation,getNthCol(col)->spacing,pColProp->m_iColWidth));
 	  }
   }
   m_MyAllocation.x = pTL->getLeftColPos() - m_iBorderWidth;
+  
   child = (fp_CellContainer *) getNthCon(0);
   double dBorder = (double) m_iBorderWidth;
    while (child)
@@ -3109,7 +3121,7 @@ void  fp_TableContainer::_size_allocate_pass2(void)
 		  allocation.y = y;
 		  xxx_UT_DEBUGMSG(("SEVIOR: top attach %d height %d  y %d \n",child->getTopAttach(),allocation.height,allocation.y));
 	  }
-	  xxx_UT_DEBUGMSG(("SEVIOR: max_height = %d height =%d \n",max_height,allocation.height));
+	  UT_DEBUGMSG(("SEVIOR!!!!!!: max_height = %d width =%d \n",max_height,allocation.width));
 	  child->sizeAllocate( &allocation);
 	  child = (fp_CellContainer *) child->getNext();
   }

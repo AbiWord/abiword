@@ -792,6 +792,7 @@ void fl_TableLayout::_lookupProperties(void)
 				pColP->m_iColWidth = m_pLayout->getGraphics()->convertDimension(pszSub);
 #endif
 				m_vecColProps.addItem((void *) pColP);
+				UT_DEBUGMSG(("SEVIOR: width char %s width layout %d \n",pszSub,pColP->m_iColWidth));
 				delete [] pszSub;
 			}
 		}

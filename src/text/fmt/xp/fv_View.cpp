@@ -5167,7 +5167,7 @@ bool FV_View::setCellFormat(const XML_Char * properties[])
 
 	PT_DocPosition posStart = getPoint();
 	PT_DocPosition posEnd = posStart;
-
+	PT_DocPosition posTable = 0;
 	if (!isSelectionEmpty())
 	{
 		if (m_iSelectionAnchor < posStart)
@@ -5179,13 +5179,40 @@ bool FV_View::setCellFormat(const XML_Char * properties[])
 			posStart = 2;
 		}
 	}
+//
+// Have to find the enclosing table and cell. If just look for the first one we can get fooled by nested tables.
+//
+	PL_StruxDocHandle tableSDH,cellSDH;
+	bRet = m_pDoc->getStruxOfTypeFromPosition(posStart,PTX_SectionTable,&tableSDH);
+	if(!bRet)
+	{
 
+// Allow table updates
+		m_pDoc->setDontImmediatelyLayout(false);
+
+	// Signal PieceTable Changes have finished
+		_restorePieceTableState();
+		return false;
+	}
+	posTable = m_pDoc->getStruxPosition(tableSDH)+1;
+	bRet = m_pDoc->getStruxOfTypeFromPosition(posStart,PTX_SectionCell,&cellSDH);
+	if(!bRet)
+	{
+
+// Allow table updates
+
+		m_pDoc->setDontImmediatelyLayout(false);
+
+// Signal PieceTable Changes have finished
+
+		_restorePieceTableState();
+		return false;
+	}
+	posStart = m_pDoc->getStruxPosition(cellSDH)+1;
 //
 // Need this to trigger a table update!
 //
-	PL_StruxDocHandle tableSDH;
-	bRet = m_pDoc->getStruxOfTypeFromPosition(posStart,PTX_SectionTable,&tableSDH);
-	UT_sint32 iLineType = _changeCellParams(posStart, tableSDH);
+	UT_sint32 iLineType = _changeCellParams(posTable, tableSDH);
 //
 // Do the change
 //
@@ -5197,7 +5224,7 @@ bool FV_View::setCellFormat(const XML_Char * properties[])
 // with the restored line-type property it has before.
 //
 	iLineType += 1;
-	_restoreCellParams(posStart,iLineType);
+	_restoreCellParams(posTable,iLineType);
 
 // Allow table updates
 
@@ -5221,12 +5248,22 @@ bool FV_View::setCellFormat(const XML_Char * properties[])
 bool FV_View::setTableFormat(const XML_Char * properties[])
 {
 	bool bRet;
+
+	PT_DocPosition posStart = getPoint();
+	PL_StruxDocHandle tableSDH = NULL;
+	bRet = m_pDoc->getStruxOfTypeFromPosition(posStart, PTX_SectionTable, &tableSDH);
+	if(!bRet)
+	{
+		UT_ASSERT(0);
+		return false;
+	}
 	setCursorWait();
 	//
 	// Signal PieceTable Change
 	_saveAndNotifyPieceTableChange();
-
-	PT_DocPosition posStart = getPoint();
+//
+// Put in call here to get start of the table
+//
 	PT_DocPosition posEnd = posStart;
 
 	if (!isSelectionEmpty())
@@ -5240,7 +5277,7 @@ bool FV_View::setTableFormat(const XML_Char * properties[])
 			posStart = 2;
 		}
 	}
-
+	posStart = m_pDoc->getStruxPosition(tableSDH) +1 ;
 	bRet = m_pDoc->changeStruxFmt(PTC_AddFmt,posStart,posEnd,NULL,properties,PTX_SectionTable);
 
 	_generalUpdate();

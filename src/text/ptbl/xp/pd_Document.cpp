@@ -1109,7 +1109,6 @@ PL_StruxDocHandle PD_Document::getCellSDHFromRowCol(PL_StruxDocHandle tableSDH, 
 	return NULL;
 }
 
-
 //===================================================================================
 /*!
  * This method scans the document for all styles used in the document, including
