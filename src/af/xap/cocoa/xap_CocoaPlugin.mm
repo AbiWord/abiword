@@ -109,4 +109,9 @@
 	return [AP_CocoaPlugin_Document importMailMergeSource:path];
 }
 
+- (id <NSObject, XAP_CocoaPlugin_FramelessDocument>)importDocumentFromFile:(NSString *)path importOptions:(NSDictionary *)options
+{
+	return [AP_CocoaPlugin_FramelessDocument documentFromFile:path importOptions:options];
+}
+
 @end

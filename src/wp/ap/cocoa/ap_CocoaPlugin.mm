@@ -39,6 +39,7 @@
 
 #include "fv_View.h"
 
+#include "ie_exp.h"
 #include "ie_mailmerge.h"
 
 #include "ap_CocoaPlugin.h"
@@ -96,6 +97,101 @@ public:
 		return true;
 	}
 };
+
+@implementation AP_CocoaPlugin_FramelessDocument
+
++ (NSString *)optionsPropertyString:(NSDictionary *)options
+{
+	NSString * props = @"";
+
+	if (options)
+		{
+			NSEnumerator * enumerator = [options keyEnumerator];
+
+			NSString * key   = nil;
+			NSString * value = nil;
+
+			bool first = true;
+
+			while (key = (NSString *) [enumerator nextObject])
+				if (value = (NSString *) [options objectForKey:key])
+					{
+						if (first)
+							props = [NSString stringWithFormat:@"%@: %@", key, value];
+						else
+							props = [NSString stringWithFormat:@"%@; %@: %@", props, key, value];
+
+						first = false;
+					}
+		}
+	return props;
+}
+
++ (AP_CocoaPlugin_FramelessDocument *)documentFromFile:(NSString *)path importOptions:(NSDictionary *)options
+{
+	if (!path)
+		return nil;
+
+	NSString * impProps = [AP_CocoaPlugin_FramelessDocument optionsPropertyString:options];
+
+	PD_Document * pNewDoc = new PD_Document(XAP_App::getApp());
+	if (!pNewDoc)
+		return nil;
+
+	UT_Error error = pNewDoc->readFromFile([path UTF8String], IEFT_Unknown, [impProps UTF8String]);
+	if (error != UT_OK)
+		{
+			UNREFP(pNewDoc);
+			return nil;
+		}
+
+	AP_CocoaPlugin_FramelessDocument * FD = [[AP_CocoaPlugin_FramelessDocument alloc] initWithPDDocument:pNewDoc];
+	[FD autorelease];
+
+	UNREFP(pNewDoc);
+
+	return FD;
+}
+
+- (id)initWithPDDocument:(PD_Document *)pDoc
+{
+	if (self = [super init])
+		{
+			m_pDocument = REFP(pDoc);
+		}
+	return self;
+}
+
+- (void)dealloc
+{
+	UNREFP(m_pDocument);
+	[super dealloc];
+}
+
+/* This identifies target file type by the path extension (e.g., .html)
+ */
+- (BOOL)exportDocumentToFile:(NSString *)path exportOptions:(NSDictionary *)options
+{
+	if (!path)
+		return NO;
+
+	NSString * expProps = [AP_CocoaPlugin_FramelessDocument optionsPropertyString:options];
+
+	NSString * ext = [path pathExtension];
+
+	if (![ext length])
+		return NO;
+
+	ext = [NSString stringWithFormat:@".%@", ext];
+
+	IEFileType ieft = IE_Exp::fileTypeForSuffix([ext UTF8String]);
+
+	UT_Error error = m_pDocument->saveAs([path UTF8String], ieft, [expProps UTF8String]);
+
+	return (error == UT_OK) ? YES : NO;
+}
+
+@end
 
 @implementation AP_CocoaPlugin_Document
 
