@@ -126,6 +126,10 @@ void FV_View::cmdCharMotion(bool bForward, UT_uint32 count)
 		{
 			_setPoint(iPoint);
 		}
+		while(!isPointLegal() && (getPoint() > 2))
+		{
+			_charMotion(false,1);
+		}
 	}
 	else
 	{
@@ -133,6 +137,14 @@ void FV_View::cmdCharMotion(bool bForward, UT_uint32 count)
 		if ( iPoint1 == iPoint )
 		{
 			if(!_charMotion(bForward, count))
+			{
+				_setPoint(iPoint);
+				_fixInsertionPointCoords();
+				_ensureInsertionPointOnScreen();
+				notifyListeners(AV_CHG_MOTION);
+				return;
+			}
+			if(!isPointLegal())
 			{
 				_setPoint(iPoint);
 				_fixInsertionPointCoords();
