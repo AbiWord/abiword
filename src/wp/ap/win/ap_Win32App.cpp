@@ -264,12 +264,28 @@ UT_Bool AP_Win32App::getPrefsValueDirectory(const XML_Char * szKey, const XML_Ch
 
 HICON AP_Win32App::getIcon(void)
 {
-	return LoadIcon(getInstance(), MAKEINTRESOURCE(AP_RID_ICON_MAINFRAME));
+
+	int sy = GetSystemMetrics(SM_CYICON);
+	int sx = GetSystemMetrics(SM_CXICON);
+	UT_DEBUGMSG(("GetIcon(): system metrics [%d %d]\n",sx,sy));
+	
+	if ((sx==32) && (sy==32))
+		return LoadIcon(getInstance(), MAKEINTRESOURCE(AP_RID_ICON_APPLICATION_32));
+	else
+		return LoadImage(getInstance(), MAKEINTRESOURCE(AP_RID_ICON_APPLICATION_32), IMAGE_ICON, 0,0,0);
 }
 
 HICON AP_Win32App::getSmallIcon(void)
 {
-	return LoadIcon(getInstance(), MAKEINTRESOURCE(AP_RID_ICON_MAINFRAME));
+
+	int sy = GetSystemMetrics(SM_CYICON);
+	int sx = GetSystemMetrics(SM_CXICON);
+	UT_DEBUGMSG(("GetIcon(): system metrics [%d %d]\n",sx,sy));
+
+	if ((sx==16) && (sy==16))
+		return LoadIcon(getInstance(), MAKEINTRESOURCE(AP_RID_ICON_APPLICATION_16));
+	else
+		return LoadImage(getInstance(), MAKEINTRESOURCE(AP_RID_ICON_APPLICATION_16), IMAGE_ICON, 0,0,0);
 }
 
 const XAP_StringSet * AP_Win32App::getStringSet(void) const
@@ -428,12 +444,12 @@ static GR_Image * _showSplash(HINSTANCE hInstance, XAP_Args * pArgs, const char 
 		wndclass.cbClsExtra    = 0;
 		wndclass.cbWndExtra    = 0;
 		wndclass.hInstance     = hInstance /* app->getInstance() */;
-		wndclass.hIcon         = LoadIcon(NULL, IDI_APPLICATION);
+		wndclass.hIcon         = LoadIcon(hInstance, MAKEINTRESOURCE(AP_RID_ICON_APPLICATION_32)) /* app->getIcon() */;
 		wndclass.hCursor       = LoadCursor(NULL, IDC_ARROW);
 		wndclass.hbrBackground = GetStockObject(NULL_BRUSH);
 		wndclass.lpszMenuName  = NULL;
 		wndclass.lpszClassName = s_SplashWndClassName;
-		wndclass.hIconSm       = LoadIcon(NULL, IDI_APPLICATION);
+		wndclass.hIconSm       = LoadIcon(hInstance, MAKEINTRESOURCE(AP_RID_ICON_APPLICATION_16)) /* app->getSmallIcon() */;
 
 		a = RegisterClassEx(&wndclass);
 		UT_ASSERT(a);

@@ -27,17 +27,26 @@
 //
 //////////////////////////////////////////////////////////////////
 
-#define AP_RID_ICON_MAINFRAME		10000
+#define AP_RID_ICON_APPLICATION_32		10000
+#define AP_RID_ICON_APPLICATION_16		10001
+#define AP_RID_ICON_DOCUMENT_32			10002
+#define AP_RID_ICON_DOCUMENT_16			10003
 
 #ifdef RC_INVOKED
 
 #ifdef ABISOURCE_LICENSED_TRADEMARKS
 
-IDR_MAINFRAME           ICON    DISCARDABLE     "mainframe_tm.ico"
+AP_RID_ICON_APPLICATION_32           ICON    DISCARDABLE     "abiword_app_32_tm.ico"
+AP_RID_ICON_APPLICATION_16           ICON    DISCARDABLE     "abiword_app_16_tm.ico"
+AP_RID_ICON_DOCUMENT_32              ICON    DISCARDABLE     "abiword_doc_32_tm.ico"
+AP_RID_ICON_DOCUMENT_16              ICON    DISCARDABLE     "abiword_doc_16_tm.ico"
 
 #else
 
-IDR_MAINFRAME           ICON    DISCARDABLE     "mainframe.ico"
+AP_RID_ICON_APPLICATION_32           ICON    DISCARDABLE     "abiword_app_32.ico"
+AP_RID_ICON_APPLICATION_16           ICON    DISCARDABLE     "abiword_app_16.ico"
+AP_RID_ICON_DOCUMENT_32              ICON    DISCARDABLE     "abiword_doc_32.ico"
+AP_RID_ICON_DOCUMENT_16              ICON    DISCARDABLE     "abiword_doc_16.ico"
 
 #endif
 
