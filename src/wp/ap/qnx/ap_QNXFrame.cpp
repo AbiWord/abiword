@@ -39,6 +39,8 @@
 #include "ap_QNXViewListener.h"
 #include "ut_Xpm2Bitmap.h"
 
+#include "ut_qnxHelper.h"
+
 #ifdef ABISOURCE_LICENSED_TRADEMARKS
 #include "abiword_48_tm.xpm"
 #else
@@ -99,10 +101,10 @@ UT_Error AP_QNXFrame::_showDocument(UT_uint32 iZoom)
 	ENSUREP(pG);
 	pG->setZoomPercentage(iZoom);
 	
-	//pDocLayout = new FL_DocLayout(static_cast<PD_Document *>(m_pDoc), pG);
 	pDocLayout = new FL_DocLayout((PD_Document *)(m_pDoc), pG);
 	ENSUREP(pDocLayout);
   
+	/*TF DIFF: The unix version has this commented out???*/
 	pDocLayout->formatAll();
 
 	pView = new FV_View(getApp(), this, pDocLayout);
@@ -201,27 +203,26 @@ UT_Error AP_QNXFrame::_showDocument(UT_uint32 iZoom)
 	// views, like we do for all the other objects.  We also do not
 	// allocate the TopRuler, LeftRuler  here; that is done as the
 	// frame is created.
+	/*TF DIFF: Unix version checks the 
+		  if ( ((AP_FrameData*)m_pData)->m_bShowRuler )
+	  before showing the rulers.
+	*/
 	((AP_FrameData*)m_pData)->m_pTopRuler->setView(pView, iZoom);
 	((AP_FrameData*)m_pData)->m_pLeftRuler->setView(pView, iZoom);
 	((AP_FrameData*)m_pData)->m_pStatusBar->setView(pView);
 
 	pView->setInsertMode(((AP_FrameData*)m_pData)->m_bInsertMode);
 	
-	PtArg_t args[1];
-	PhArea_t *area;
-
-	PtSetArg(&args[0], Pt_ARG_AREA, &area, 0);
-	PtGetResources(m_dArea, 1, args);
-	UT_DEBUGMSG(("FRAME: Setting window (0x%x) to %d,%d %d/%d \n", 
-			m_dArea, area->pos.x, area->pos.y, area->size.w, area->size.h));
-	m_pView->setWindowSize(area->size.w, area->size.h);
-
-	PtContainerGiveFocus(m_dArea, NULL);
+	unsigned short w, h;
+	UT_QNXGetWidgetArea(m_dArea, NULL, NULL, &w, &h);
+	UT_DEBUGMSG(("FRAME: Setting window to %d/%d ", w,h));
+	m_pView->setWindowSize(w, h);
 
 	setXScrollRange();
 	setYScrollRange();
-
 	updateTitle();
+
+	PtContainerGiveFocus(m_dArea, NULL);
 
 	if (point != 0)
 		((FV_View *) m_pView)->moveInsPtTo(point);
@@ -242,9 +243,15 @@ UT_Error AP_QNXFrame::_showDocument(UT_uint32 iZoom)
 	m_pView->draw();
 #endif	
 
+	/*TF DIFF: Unix code to control the ruler looks like:
+	  if ( ((AP_FrameData*)m_pData)->m_bShowRuler  ) {
+	      if ( ((AP_FrameData*)m_pData)->m_pTopRuler )
+		...
+	*/
 	((AP_FrameData*)m_pData)->m_pTopRuler->draw(NULL);
 	((AP_FrameData*)m_pData)->m_pLeftRuler->draw(NULL);
 	((AP_FrameData*)m_pData)->m_pStatusBar->draw();
+
 	return UT_OK;
 
 Cleanup:
@@ -264,19 +271,6 @@ Cleanup:
 	return UT_IE_ADDLISTENERERROR;
 }
 
-static int getwidgetsize(PtWidget_t *widget, int *w, int *h) {
-	PtArg_t args[1];
-	PhArea_t *area;
-
-	PtSetArg(&args[0], Pt_ARG_AREA, &area, 0);
-	PtGetResources(widget, 1, args);
-	if (w)
-		*w = area->size.w;
-	if (h)
-		*h = area->size.h;
-	return(0);
-}
-
 /*
  This function is called whenever we are re-sized to
  re-calculate the size/extent of the scroll bars.
@@ -289,7 +283,9 @@ void AP_QNXFrame::setXScrollRange(void)
 	int n, windowWidth;
 	PtArg_t args[6];
 
-	getwidgetsize(m_dArea, &windowWidth, NULL);
+	unsigned short tmp;
+	UT_QNXGetWidgetArea(m_dArea, NULL, NULL, &tmp, NULL);
+	windowWidth = tmp;
 
 	int newvalue = ((m_pView) ? m_pView->getXScrollOffset() : 0);
 	int newmax = width - windowWidth; /* upper - page_size */
@@ -303,13 +299,12 @@ void AP_QNXFrame::setXScrollRange(void)
 	slidersize *= (float)windowWidth;
 
 	n=0;
-	PtSetArg(&args[n], Pt_ARG_MAXIMUM, newmax, 0); n++;
-	PtSetArg(&args[n], Pt_ARG_INCREMENT, 20, 0); n++;
-	PtSetArg(&args[n], Pt_ARG_PAGE_INCREMENT, windowWidth, 0); n++;
-	PtSetArg(&args[n], Pt_ARG_SCROLLBAR_POSITION, newvalue, 0); n++;
-	//PtSetArg(&args[n], Pt_ARG_SLIDER_SIZE, (int)slidersize, 0); n++;
+	PtSetArg(&args[n++], Pt_ARG_MAXIMUM, newmax, 0); 
+	PtSetArg(&args[n++], Pt_ARG_INCREMENT, 20, 0); 
+	PtSetArg(&args[n++], Pt_ARG_PAGE_INCREMENT, windowWidth, 0); 
+	PtSetArg(&args[n++], Pt_ARG_SCROLLBAR_POSITION, newvalue, 0); 
+	/* PtSetArg(&args[n++], Pt_ARG_SLIDER_SIZE, (int)slidersize, 0); */
 	PtSetResources(m_hScroll, n, args);
-
 	UT_DEBUGMSG(("X SLIDER SIZE CHANGE TO %f (max %d) ", slidersize, newmax));
 
 	/*
@@ -332,7 +327,9 @@ void AP_QNXFrame::setYScrollRange(void)
 	int n, windowHeight;
 	PtArg_t args[6];
 
-	getwidgetsize(m_dArea, NULL, &windowHeight);
+	unsigned short tmp;
+	UT_QNXGetWidgetArea(m_dArea, NULL, NULL, NULL, &tmp);
+	windowHeight = tmp;
 
 	int newvalue = ((m_pView) ? m_pView->getYScrollOffset() : 0);
 	int newmax = height - windowHeight;	/* upper - page_size */
@@ -346,13 +343,12 @@ void AP_QNXFrame::setYScrollRange(void)
 	slidersize *= (float)windowHeight;
 
 	n =0;
-	PtSetArg(&args[n], Pt_ARG_MAXIMUM, newmax, 0); n++;
-	PtSetArg(&args[n], Pt_ARG_INCREMENT, 20, 0); n++;
-	PtSetArg(&args[n], Pt_ARG_PAGE_INCREMENT, windowHeight, 0); n++;
-	PtSetArg(&args[n], Pt_ARG_SCROLLBAR_POSITION, newvalue, 0); n++;
-	//PtSetArg(&args[n], Pt_ARG_SLIDER_SIZE, slidersize, 0); n++;
+	PtSetArg(&args[n++], Pt_ARG_MAXIMUM, newmax, 0); 
+	PtSetArg(&args[n++], Pt_ARG_INCREMENT, 20, 0); 
+	PtSetArg(&args[n++], Pt_ARG_PAGE_INCREMENT, windowHeight, 0);
+	PtSetArg(&args[n++], Pt_ARG_SCROLLBAR_POSITION, newvalue, 0);
+	/* PtSetArg(&args[n++], Pt_ARG_SLIDER_SIZE, slidersize, 0);  */
 	PtSetResources(m_vScroll, n, args);
-
 	UT_DEBUGMSG(("Y SLIDER SIZE CHANGE TO %f (max %d) ", slidersize, newmax));
 
 	/*
@@ -373,12 +369,14 @@ AP_QNXFrame::AP_QNXFrame(XAP_QNXApp * app)
 	: XAP_QNXFrame(app)
 {
 	// TODO
+	m_pData = NULL;
 }
 
 AP_QNXFrame::AP_QNXFrame(AP_QNXFrame * f)
 	: XAP_QNXFrame((XAP_QNXFrame *)(f))
 {
 	// TODO
+	m_pData = NULL;
 }
 
 AP_QNXFrame::~AP_QNXFrame(void)
@@ -388,11 +386,9 @@ AP_QNXFrame::~AP_QNXFrame(void)
 
 UT_Bool AP_QNXFrame::initialize(void)
 {
-	UT_DEBUGMSG(("Frame: InitFrameData \n"));
 	if (!initFrameData())
 		return UT_FALSE;
 
-	UT_DEBUGMSG(("Frame: xap::initialize \n"));
 	if (!XAP_QNXFrame::initialize(AP_PREF_KEY_KeyBindings,AP_PREF_DEFAULT_KeyBindings,
 								   AP_PREF_KEY_MenuLayout, AP_PREF_DEFAULT_MenuLayout,
 								   AP_PREF_KEY_MenuLabelSet, AP_PREF_DEFAULT_MenuLabelSet,
@@ -400,12 +396,10 @@ UT_Bool AP_QNXFrame::initialize(void)
 								   AP_PREF_KEY_ToolbarLabelSet, AP_PREF_DEFAULT_ToolbarLabelSet))
 		return UT_FALSE;
 
-	UT_DEBUGMSG(("Frame: create top level window \n"));
 	_createTopLevelWindow();
 	PtRealizeWidget(m_wTopLevelWindow);
 	PtDamageWidget(m_wTopLevelWindow);
 
-	UT_DEBUGMSG(("Frame: return from initialize \n"));
 	return UT_TRUE;
 }
 
@@ -501,20 +495,16 @@ UT_Error AP_QNXFrame::loadDocument(const char * szFilename, int ieft)
 	UT_Vector vClones;
 	XAP_App * pApp = getApp();
 
-	UT_DEBUGMSG(("Frame: loadDocument \n"));
 	bUpdateClones = (getViewNumber() > 0);
 	if (bUpdateClones)
 	{
-		UT_DEBUGMSG(("Frame: calling getClones \n"));
 		pApp->getClones(&vClones, this);
 	}
 
-	UT_DEBUGMSG(("Frame: calling _loadDocument \n"));
 	UT_Error err;
 	err = _loadDocument(szFilename, (IEFileType) ieft); 
 	if (err != UT_OK)
 	{
-		UT_DEBUGMSG(("Frame: _loadDocument failed \n"));
 		// we could not load the document.
 		// we cannot complain to the user here, we don't know
 		// if the app is fully up yet.  we force our caller
@@ -522,11 +512,9 @@ UT_Error AP_QNXFrame::loadDocument(const char * szFilename, int ieft)
 		return err;
 	}
 
-	UT_DEBUGMSG(("Frame: _loadDocument passed \n"));
 	pApp->rememberFrame(this);
 	if (bUpdateClones)
 	{
-		UT_DEBUGMSG(("Frame: iterating \n"));
 		for (UT_uint32 i = 0; i < vClones.getItemCount(); i++)
 		{
 			AP_QNXFrame * pFrame = (AP_QNXFrame *) vClones.getNthItem(i);
@@ -538,7 +526,6 @@ UT_Error AP_QNXFrame::loadDocument(const char * szFilename, int ieft)
 		}
 	}
 
-	UT_DEBUGMSG(("Frame: load document calling _showDocument \n"));
 	return _showDocument();
 }
 
@@ -601,7 +588,27 @@ static int _resize_mda(PtWidget_t * w, void *data, PtCallbackInfo_t *info)
 
 PtWidget_t * AP_QNXFrame::_createDocumentWindow(void)
 {
+	PtWidget_t *group;
+	PhArea_t area, savedarea;
+	void * data = this;
+
 	PtArg_t args[10];
+	int n;
+
+	/*TF DIFF: There is code here to not show
+               the rulers, checked by
+		UT_Bool bShowRulers = ((AP_FrameData*)m_pData)->m_bShowRuler;
+	*/
+
+
+#define SCROLLBAR_WIDTHHEIGHT 20
+	// Strip the scrollbarwidth off the right and bottom
+	// so that the scrollbars overlap the rulers
+	savedarea = m_AvailableArea;
+#if !defined(SCROLL_SMALLER_THAN_RULER) 
+	m_AvailableArea.size.h -= SCROLLBAR_WIDTHHEIGHT; 
+	m_AvailableArea.size.w -= SCROLLBAR_WIDTHHEIGHT; 
+#endif
 
 	// create the top ruler
 	AP_QNXTopRuler * pQNXTopRuler = new AP_QNXTopRuler(this);
@@ -618,20 +625,21 @@ PtWidget_t * AP_QNXFrame::_createDocumentWindow(void)
 	// get the width from the left ruler and stuff it into the top ruler.
 	pQNXTopRuler->setOffsetLeftRuler(pQNXLeftRuler->getWidth());
 
-	/*
-  	 I'm not sure about using a scroll area vs scroll bars 
-	*/
-	PhArea_t area;
-	PtWidget_t *group;
-	void * data = this;
-	int n;
+	// create the scrollbars horizontal then vertical
 
 	n = 0;
-	area.size.w = 20;
+#if defined(SCROLL_SMALLER_THAN_RULER) 
+	area.size.w = SCROLLBAR_WIDTHHEIGHT;
 	area.size.h = m_AvailableArea.size.h - area.size.w;
 	area.pos.y = m_AvailableArea.pos.y;
 	area.pos.x = m_AvailableArea.pos.x + m_AvailableArea.size.w - area.size.w;
 	m_AvailableArea.size.w -= area.size.w;
+#else
+	area.size.w = SCROLLBAR_WIDTHHEIGHT;
+	area.size.h = savedarea.size.h - area.size.w;
+	area.pos.y = savedarea.pos.y;
+	area.pos.x = savedarea.pos.x + savedarea.size.w - area.size.w;
+#endif
 	PtSetArg(&args[n], Pt_ARG_AREA, &area, 0); n++;
 #define _VS_ANCHOR_ (Pt_LEFT_ANCHORED_RIGHT | Pt_RIGHT_ANCHORED_RIGHT | \
 		     Pt_TOP_ANCHORED_TOP | Pt_BOTTOM_ANCHORED_BOTTOM)
@@ -652,11 +660,18 @@ PtWidget_t * AP_QNXFrame::_createDocumentWindow(void)
 	PtAddCallback(m_vScroll, Pt_CB_SCROLL_MOVE, _fe::vScrollChanged, this);
 
 	n = 0;
-	area.size.h = 20;
+#if defined(SCROLL_SMALLER_THAN_RULER) 
+	area.size.h = SCROLLBAR_WIDTHHEIGHT;
 	area.size.w = m_AvailableArea.size.w;
 	area.pos.y = m_AvailableArea.pos.y + m_AvailableArea.size.h - area.size.h;
 	area.pos.x = m_AvailableArea.pos.x;
 	m_AvailableArea.size.h -= area.size.h;
+#else
+	area.size.h = SCROLLBAR_WIDTHHEIGHT;
+	area.size.w = savedarea.size.w;
+	area.pos.y = savedarea.pos.y + savedarea.size.h - area.size.h;
+	area.pos.x = savedarea.pos.x;
+#endif
 	PtSetArg(&args[n], Pt_ARG_AREA, &area, 0); n++;
 #define _HS_ANCHOR_ (Pt_LEFT_ANCHORED_LEFT | Pt_RIGHT_ANCHORED_RIGHT | \
 		     Pt_TOP_ANCHORED_BOTTOM | Pt_BOTTOM_ANCHORED_BOTTOM)
@@ -778,4 +793,8 @@ UT_Error AP_QNXFrame::_replaceDocument(AD_Document * pDoc)
 	m_pDoc = REFP(pDoc);
 
 	return _showDocument();
+}
+
+void AP_QNXFrame::toggleRuler(UT_Bool bRulerOn) {
+	UT_DEBUGMSG(("TODO: Toggle ruler code "));
 }
