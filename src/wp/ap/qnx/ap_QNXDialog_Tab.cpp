@@ -807,26 +807,34 @@ void AP_QNXDialog_Tab::_setTabList( UT_uint32 count )
 
 UT_sint32 AP_QNXDialog_Tab::_gatherSelectTab()
 {
-#if 0
-	return m_iGtkListIndex;
-#endif
-	return 0;
+	short *items, *count;
+
+	items = count = NULL;
+	PtGetResource(_lookupWidget(id_LIST_TAB), Pt_ARG_SELECTION_INDEXES, &items, &count);
+	if (!items || !count || *count == 0) {
+		return -1;
+	}
+	return (UT_sint32)(items[0] - 1);
 }
 
 void AP_QNXDialog_Tab::_setSelectTab( UT_sint32 v )
 {
-#if 0
-	m_iGtkListIndex = v;
+	// we don't want to select anything
+	if ( v == -1 )	{
+		short *items, *count, i;
 
-	if ( v == -1 )	// we don't want to select anything
-	{
-		gtk_list_unselect_all(GTK_LIST(_lookupWidget(id_LIST_TAB)));
+		items = NULL;
+		count = NULL;
+		PtGetResource(_lookupWidget(id_LIST_TAB), Pt_ARG_SELECTION_INDEXES, &items, &count);
+		if (!items || !count || *count == 0) {
+			return;
+		}
+		for (i= *count -1; i >= 0; i--) {
+			PtListUnselectPos(_lookupWidget(id_LIST_TAB), items[i]);
+		}
+	} else {
+		PtListSelectPos(_lookupWidget(id_LIST_TAB), v + 1);
 	}
-	else
-	{
-		UT_ASSERT(UT_NOT_IMPLEMENTED);
-	}
-#endif
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
