@@ -31,6 +31,7 @@
 #include "gr_UnixImage.h"
 #include "ut_string_class.h"
 #include "xap_UnixDialogHelper.h"
+#include "gr_UnixGraphics.h"
 
 #include <libgnomeprintui/gnome-print-job-preview.h>
 
@@ -137,6 +138,8 @@ XAP_UnixGnomePrintGraphics::XAP_UnixGnomePrintGraphics(GnomePrintJob *gpm, bool 
 	m_pCurrentFont   = NULL;
 	m_pCurrentPSFont = NULL;	
 	m_cs             = GR_Graphics::GR_COLORSPACE_COLOR;
+	m_bIsSymbol      = false;
+	m_bIsDingbat     = false;
 }
 
 // useful for bonobo
@@ -157,6 +160,8 @@ XAP_UnixGnomePrintGraphics::XAP_UnixGnomePrintGraphics(GnomePrintContext *ctx,
 	m_pCurrentFont   = NULL;
 	m_pCurrentPSFont = NULL;	
 	m_cs             = GR_Graphics::GR_COLORSPACE_COLOR;
+	m_bIsSymbol      = false;
+	m_bIsDingbat     = false;
 }
 
 GnomeFont * XAP_UnixGnomePrintGraphics::_allocGnomeFont(PSFont* pFont)
@@ -176,7 +181,18 @@ XAP_UnixGnomePrintGraphics::~XAP_UnixGnomePrintGraphics()
 
 UT_uint32 XAP_UnixGnomePrintGraphics::measureUnRemappedChar(const UT_UCSChar c)
 {
-	return (UT_uint32)(m_pCurrentPSFont->getUnixFont()->measureUnRemappedChar(c, m_pCurrentPSFont->getSize()) * getResolution() / getDeviceResolution());
+	if(!m_bIsSymbol && !m_bIsDingbat)
+	{
+		return (UT_uint32)(m_pCurrentPSFont->getUnixFont()->measureUnRemappedChar(c, m_pCurrentPSFont->getSize()) * getResolution() / getDeviceResolution());
+	}
+	else if (m_bIsSymbol)
+	{
+		return static_cast<UT_uint32>(m_pCurrentPSFont->getUnixFont()->measureUnRemappedChar(static_cast<UT_UCSChar>(adobeToUnicode(c)), m_pCurrentPSFont->getSize()) * getResolution() / getDeviceResolution());
+	}
+	else
+	{
+		return (UT_uint32)(m_pCurrentPSFont->getUnixFont()->measureUnRemappedChar(c, m_pCurrentPSFont->getSize()) * getResolution() / getDeviceResolution());
+	}
 }
 
 void XAP_UnixGnomePrintGraphics::drawGlyph (UT_uint32 Char, UT_sint32 xoff, UT_sint32 yoff)
@@ -206,10 +222,43 @@ void XAP_UnixGnomePrintGraphics::drawChars(const UT_UCSChar* pChars,
 
 	if (!pCharWidths) {
 		// short circuit if no character widths given. at least fields use this
-		UT_UTF8String utf8 (pChars + iCharOffset, iLength);
-		gnome_print_moveto (m_gpc, tdu (xoff), yoff);
-		gnome_print_show_sized (m_gpc, reinterpret_cast<const guchar *>(utf8.utf8_str()), utf8.byteLength());
-		return;
+		if(!m_bIsSymbol)
+		{
+			UT_UTF8String utf8 (pChars + iCharOffset, iLength);
+			gnome_print_moveto (m_gpc, tdu (xoff), yoff);
+			gnome_print_show_sized (m_gpc, reinterpret_cast<const guchar *>(utf8.utf8_str()), utf8.byteLength());
+			return;
+		}
+		else if(m_bIsSymbol)
+		{
+			//
+			// convert to unicode
+			//
+			UT_uint32 * uChars = new UT_uint32[iLength];
+			for(UT_uint32 i = static_cast<UT_uint32>(iCharOffset); i< static_cast<UT_uint32>(iLength); i++)
+			{
+				uChars[i] = static_cast<UT_uint32>(pChars[iCharOffset + i]);
+				if(uChars[i] < 255 && uChars[i] >= 32)
+				{
+					uChars[i] = adobeToUnicode(uChars[i]);
+					xxx_UT_DEBUGMSG(("drawchars: mapped %d to %d \n",pChars[i],uChars[i]));
+				}
+			}
+			UT_UTF8String utf8 (uChars + iCharOffset, iLength);
+			gnome_print_moveto (m_gpc, tdu (xoff), yoff);
+			gnome_print_show_sized (m_gpc, reinterpret_cast<const guchar *>(utf8.utf8_str()), utf8.byteLength());
+			return;
+			delete [] uChars;
+
+		}
+		else
+		{
+			// fixme put in code for dingbats
+			UT_UTF8String utf8 (pChars + iCharOffset, iLength);
+			gnome_print_moveto (m_gpc, tdu (xoff), yoff);
+			gnome_print_show_sized (m_gpc, reinterpret_cast<const guchar *>(utf8.utf8_str()), utf8.byteLength());
+			return;
+		}
 	}
 
 	// this following nastiness is needed for justified text, since it now
@@ -221,6 +270,13 @@ void XAP_UnixGnomePrintGraphics::drawChars(const UT_UCSChar* pChars,
 
 	for (UT_sint32 i = 0; i < iLength; i++) {
 		UT_UCS4Char ch = pChars[iCharOffset + i];
+		if(m_bIsSymbol && (ch < 255) && (ch >= 32))
+		{
+			ch = static_cast<UT_UCS4Char>(adobeToUnicode(ch));
+		}
+		//
+		// fixme put in code for dingbats
+		//
 		advance += pCharWidths [i];
 
 		if (UT_UCS4_isspace (ch)) { // not sure if this needs to be a UCS4 space test or just an ASCII space test...
@@ -262,6 +318,24 @@ void XAP_UnixGnomePrintGraphics::setFont(GR_Font* pFont)
 {
 	PSFont * psFont = (static_cast<PSFont*> (pFont));
 	m_pCurrentPSFont = psFont;
+	m_bIsSymbol = false;
+	m_bIsDingbat = false;
+	char * szUnixFontName = UT_strdup(psFont->getUnixFont()->getName());
+	const char * szFontName = UT_lowerString(szUnixFontName);
+
+	if (szFontName)
+	{
+		if(strstr(szFontName,"symbol") != NULL)
+		{
+			if(strstr(szFontName,"star") != NULL)
+				m_bIsSymbol = false;
+			else
+				m_bIsSymbol = true;
+		}
+		if(strstr(szFontName,"dingbat") != NULL)
+			m_bIsDingbat = true;
+	}
+	FREEP(szFontName);
 
 	if(m_pCurrentFont && GNOME_IS_FONT(m_pCurrentFont))
 		gnome_font_unref (m_pCurrentFont);

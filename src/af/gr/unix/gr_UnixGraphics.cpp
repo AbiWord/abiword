@@ -232,7 +232,7 @@ static UT_uint32 adobeSUni[/*185*/][2] =
 		{255,100000}
 	};
 
-static UT_uint32 adobeToUnicode(UT_uint32 iAdobe)
+extern UT_uint32 adobeToUnicode(UT_uint32 iAdobe)
 {
 	UT_uint32 low = adobeSUni[0][0];
 	UT_uint32 high = adobeSUni[183][0];

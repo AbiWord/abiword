@@ -36,6 +36,8 @@ class UT_ByteBuf;
 class UT_String;
 class UT_Wctomb;
 
+UT_uint32 adobeToUnicode(UT_uint32 iAdobe);
+
 class GR_UnixGraphics : public GR_Graphics
 {
  public:

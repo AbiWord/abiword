@@ -163,6 +163,8 @@ private:
 	XAP_UnixGnomePrintGraphics ();
 	XAP_UnixGnomePrintGraphics (const XAP_UnixGnomePrintGraphics & other);
 	XAP_UnixGnomePrintGraphics& operator=(const XAP_UnixGnomePrintGraphics & other);
+	bool               m_bIsSymbol;
+	bool               m_bIsDingbat;
 };
 
 
