@@ -50,7 +50,7 @@
 #include <TranslationUtils.h>
 #include <DataIO.h>
 
-#define SPLASH_UP_TIME	3				// seconds
+#define SPLASH_UP_TIME	5				// seconds
 
 extern unsigned char g_pngSplash[];             // see ap_wp_Splash.cpp
 extern unsigned long g_pngSplash_sizeof;        // see ap_wp_Splash.cpp
@@ -77,6 +77,7 @@ SplashWin::SplashWin(BMessage *data)
 
 		view->Sync();
         }                                     
+	Show();
 	ignore = SPLASH_UP_TIME;			// keep on screen n seconds
 	SetPulseRate(1000000);				// a 1 second pulse
 }
@@ -112,9 +113,8 @@ void _showSplash(XAP_Args * pArgs, const char * /*szAppName*/) {
 	}
 	BMessage *msg = new BMessage();
         if (RehydrateWindow("SplashWindow", msg)) {
+		//Automatically shows and hides itself
                 SplashWin *nwin = new SplashWin(msg);
-                if (nwin)
-                        nwin->Show();
         }                                        	
 }                                             
 /*****************************************************************/
@@ -272,6 +272,17 @@ UT_Bool AP_BeOSApp::initialize(void)
 	//////////////////////////////////////////////////////////////////
 
 	return UT_TRUE;
+}
+
+XAP_Frame * AP_BeOSApp::newFrame(const char *path)
+{
+	AP_BeOSFrame * pBeOSFrame = new AP_BeOSFrame(this);
+
+	if (pBeOSFrame)
+		pBeOSFrame->initialize();
+
+	pBeOSFrame->loadDocument(path, IEFT_Unknown);
+	return pBeOSFrame;
 }
 
 XAP_Frame * AP_BeOSApp::newFrame(void)
@@ -461,5 +472,4 @@ void AP_BeOSApp::ParseCommandLine(void)
 
 	return;
 }
-
 

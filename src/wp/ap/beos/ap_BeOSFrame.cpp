@@ -592,7 +592,6 @@ be_DocView *be_Window::_createDocumentWindow() {
 	pBeOSTopRuler->setOffsetLeftRuler(pBeOSLeftRuler->getWidth());
 
         //Add the document view in the remaining space
-        m_winRectAvailable.PrintToStream();
         m_pbe_DocView = new be_DocView(m_winRectAvailable, "MainDocView",
                                        B_FOLLOW_ALL, B_WILL_DRAW);
         //m_pbe_DocView->SetViewColor(0,120, 255);
