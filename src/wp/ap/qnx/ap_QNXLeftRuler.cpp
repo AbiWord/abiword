@@ -84,7 +84,13 @@ PtWidget_t * AP_QNXLeftRuler::createWidget(void)
 	PtAddEventHandler(m_wLeftRuler, Ph_EV_BUT_RELEASE, _fe::button_release_event, this);
 
 	DELETEP(m_pG);
-	GR_QNXGraphics * pG = new GR_QNXGraphics(((XAP_QNXFrameImpl *)m_pFrame->getFrameImpl())->getTopLevelWindow(), m_wLeftRuler, ((XAP_QNXFrameImpl *)m_pFrame->getFrameImpl())->getFrame()->getApp());
+	//GR_QNXGraphics * pG = new GR_QNXGraphics(((XAP_QNXFrameImpl *)m_pFrame->getFrameImpl())->getTopLevelWindow(), m_wLeftRuler, ((XAP_QNXFrameImpl *)m_pFrame->getFrameImpl())->getFrame()->getApp());
+
+	GR_QNXAllocInfo ai(((XAP_QNXFrameImpl *)m_pFrame->getFrameImpl())->getTopLevelWindow(),
+					   m_wLeftRuler,
+					   ((XAP_QNXFrameImpl *)m_pFrame->getFrameImpl())->getFrame()->getApp());
+	pG = (GR_QNXGraphics*) XAP_App::getApp()->newGraphics(ai);
+
 	m_pG = pG;
 	pG->init3dColors();
 

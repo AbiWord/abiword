@@ -154,7 +154,9 @@ void AP_UnixDialog_Paragraph::runModal(XAP_Frame * pFrame)
 		UT_ASSERT(m_drawingareaPreview && m_drawingareaPreview->window);
 
 		// make a new Unix GC
-		m_unixGraphics = new GR_UnixGraphics(m_drawingareaPreview->window, unixapp->getFontManager(), m_pApp);
+		//m_unixGraphics = new GR_UnixGraphics(m_drawingareaPreview->window, unixapp->getFontManager(), m_pApp);
+		GR_UnixAllocInfo ai(m_drawingareaPreview->window, unixapp->getFontManager(), m_pApp);
+		m_unixGraphics = (GR_UnixGraphics*) XAP_App::getApp()->newGraphics(ai);
 
 		// let the widget materialize
 		_createPreviewFromGC(m_unixGraphics,

@@ -73,7 +73,7 @@ class ABI_EXPORT AP_Win32FrameImpl : public XAP_Win32FrameImpl
 	HWND						_getHwndVScroll(void)   {  return m_hWndVScroll;   }
 
 	void						_updateContainerWindow(void) { UpdateWindow(_getHwndContainer()); }
-	GR_Win32Graphics *			_createDocWnd_GR_Graphics(void) { return new GR_Win32Graphics(GetDC(getHwndDocument()), getHwndDocument(), XAP_App::getApp()); }
+	GR_Win32Graphics *			_createDocWnd_GR_Graphics(void);
 
 	void						_setVerticalScrollInfo(const SCROLLINFO * psi);
 	void						_getVerticalScrollInfo(SCROLLINFO * psi);

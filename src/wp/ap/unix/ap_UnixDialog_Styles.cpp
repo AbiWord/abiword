@@ -273,7 +273,9 @@ void AP_UnixDialog_Styles::runModal(XAP_Frame * pFrame)
 
 	// make a new Unix GC
 	DELETEP (m_pParaPreviewWidget);
-	m_pParaPreviewWidget = new GR_UnixGraphics(m_wParaPreviewArea->window, unixapp->getFontManager(), m_pApp);
+	//m_pParaPreviewWidget = new GR_UnixGraphics(m_wParaPreviewArea->window, unixapp->getFontManager(), m_pApp);
+	GR_UnixAllocInfo ai(m_wParaPreviewArea->window, unixapp->getFontManager(), m_pApp);
+	m_pParaPreviewWidget = (GR_UnixGraphics*) XAP_App::getApp()->newGraphics(ai);
 	
         // let the widget materialize
 
@@ -286,7 +288,9 @@ void AP_UnixDialog_Styles::runModal(XAP_Frame * pFrame)
 
 	// make a new Unix GC
 	DELETEP (m_pCharPreviewWidget);
-	m_pCharPreviewWidget = new GR_UnixGraphics(m_wCharPreviewArea->window, unixapp->getFontManager(), m_pApp);
+	//m_pCharPreviewWidget = new GR_UnixGraphics(m_wCharPreviewArea->window, unixapp->getFontManager(), m_pApp);
+	GR_UnixAllocInfo ai(m_wCharPreviewArea->window, unixapp->getFontManager(), m_pApp);
+	m_pCharPreviewWidget = (GR_UnixGraphics*) XAP_App::getApp()->newGraphics(ai);
 
 	// let the widget materialize
 
@@ -1262,7 +1266,9 @@ void  AP_UnixDialog_Styles::modifyRunModal(void)
 	UT_ASSERT(unixapp);
 
 	DELETEP (m_pAbiPreviewWidget);
-	m_pAbiPreviewWidget = new GR_UnixGraphics(m_wModifyDrawingArea->window, unixapp->getFontManager(), m_pApp);
+	//m_pAbiPreviewWidget = new GR_UnixGraphics(m_wModifyDrawingArea->window, unixapp->getFontManager(), m_pApp);
+	GR_UnixAllocInfo ai(m_wModifyPreviewArea->window, unixapp->getFontManager(), m_pApp);
+	m_pAbiPreviewWidget = (GR_UnixGraphics*) XAP_App::getApp()->newGraphics(ai);
 	
 	// let the widget materialize
 

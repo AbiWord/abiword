@@ -360,7 +360,12 @@ UT_sint32	AP_QNXFrame::_getDocumentAreaHeight()
 bool AP_QNXFrame::_createViewGraphics(GR_Graphics *& pG, UT_uint32 iZoom)
 {
 
-	pG = new GR_QNXGraphics(static_cast<AP_QNXFrameImpl *>(getFrameImpl())->getTopLevelWindow(),static_cast<AP_QNXFrameImpl *>(getFrameImpl())->m_dArea,getApp());
+	//pG = new GR_QNXGraphics(static_cast<AP_QNXFrameImpl *>(getFrameImpl())->getTopLevelWindow(),static_cast<AP_QNXFrameImpl *>(getFrameImpl())->m_dArea,getApp());
+
+	GR_QNXAllocInfo ai(static_cast<AP_QNXFrameImpl *>(getFrameImpl())->getTopLevelWindow(),
+					   static_cast<AP_QNXFrameImpl *>(getFrameImpl())->m_dArea,getApp());
+	pG = (GR_QNXGraphics*) XAP_App::getApp()->newGraphics(ai);
+
 	UT_ASSERT(pG);
 	pG->setZoomPercentage(iZoom);
 	return true;

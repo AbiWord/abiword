@@ -77,7 +77,9 @@ void AP_QNXDialog_FormatTable::runModeless(XAP_Frame *pFrame)
 	// inserted into.
 	connectFocusModeless(mainWindow, m_pApp);
 
-	m_pPreviewWidget = new GR_QNXGraphics(m_mainWindow,m_wPreviewArea,pFrame->getApp());	
+	//m_pPreviewWidget = new GR_QNXGraphics(m_mainWindow,m_wPreviewArea,pFrame->getApp());	
+	GR_QNXAllocInfo ai(m_mainWindow, m_wPreviewArea, pFrame->getApp());
+	m_pPreviewWidget = (GR_QNXGraphics*) XAP_App::getApp()->newGraphics(ai);
 
 	unsigned short w,h;
 	UT_QNXGetWidgetArea(m_wPreviewArea, NULL, NULL, &w, &h);

@@ -205,7 +205,10 @@ void AP_QNXDialog_PageNumbers::runModal(XAP_Frame * pFrame)
 	  DELETEP (m_qnxGraphics);
 	  
 	  // make a new QNX GC
-	  m_qnxGraphics = new GR_QNXGraphics(mainWindow, m_previewArea, m_pApp);
+	  // m_qnxGraphics = new GR_QNXGraphics(mainWindow, m_previewArea, m_pApp);
+	  GR_QNXAllocInfo ai(mainWindow, m_previewArea, m_pApp);
+	  m_qnxGraphics = (GR_QNXGraphics*) XAP_App::getApp()->newGraphics(ai);
+
 	  
 	  // let the widget materialize
 	  unsigned short *w, *h;

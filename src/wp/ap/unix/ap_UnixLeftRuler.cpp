@@ -127,13 +127,15 @@ void AP_UnixLeftRuler::setView(AV_View * pView)
 
 	XAP_UnixApp * app = static_cast<XAP_UnixApp *>(m_pFrame->getApp());
 	XAP_UnixFontManager * fontManager = app->getFontManager();
-        GR_UnixGraphics * pG = new GR_UnixGraphics(m_wLeftRuler->window, fontManager, m_pFrame->getApp());
-	m_pG = pG;
+	//GR_UnixGraphics * pG = new GR_UnixGraphics(m_wLeftRuler->window, fontManager, m_pFrame->getApp());
+	GR_UnixAllocInfo ai(m_wLeftRuler->window, fontManager, m_pFrame->getApp());
+	m_pG = (GR_UnixGraphics*) XAP_App::getApp()->newGraphics(ai);
+
 	UT_ASSERT(m_pG);
 	m_pG->setZoomPercentage(pView->getGraphics()->getZoomPercentage());
 
 	GtkWidget * ruler = gtk_vruler_new ();
-	pG->init3dColors(get_ensured_style (ruler));
+	m_pG->init3dColors(get_ensured_style (ruler));
 }
 
 void AP_UnixLeftRuler::getWidgetPosition(gint * x, gint * y)

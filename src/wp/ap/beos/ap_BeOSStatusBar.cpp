@@ -121,8 +121,9 @@ void AP_BeOSStatusBar::setView(AV_View * pView)
 	DELETEP(m_pG);	
 	UT_ASSERT(m_wStatusBar);
 
-	GR_BeOSGraphics *pG = new GR_BeOSGraphics(m_wStatusBar , m_pFrame->getApp());
-	m_pG = pG;
+	//GR_BeOSGraphics *pG = new GR_BeOSGraphics(m_wStatusBar , m_pFrame->getApp());
+    GR_BeOSAllocInfo ai(m_wStatusBar, m_pFrame->getApp());
+	m_pG = (GR_BeOSGraphics*)XAP_App::getApp()->newGraphics(ai);
 	UT_ASSERT(m_pG);
 
 // BROKEN: 

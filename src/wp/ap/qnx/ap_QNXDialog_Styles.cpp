@@ -370,14 +370,18 @@ void AP_QNXDialog_Styles::runModal(XAP_Frame * pFrame)
 
 	// make a new QNX GC for Paragraph Preview
 	DELETEP (m_pParaPreviewGR);
-	m_pParaPreviewGR = new GR_QNXGraphics(mainWindow, m_wParaPreviewArea, m_pApp);
+	//m_pParaPreviewGR = new GR_QNXGraphics(mainWindow, m_wParaPreviewArea, m_pApp);
+	GR_QNXAllocInfo ai(mainWindow, m_wParaPreviewArea, m_pApp);
+	m_pParaPreviewGR = (GR_QNXGraphics*) XAP_App::getApp()->newGraphics(ai);
 	
 	UT_QNXGetWidgetArea(m_wParaPreviewArea, NULL, NULL, &w, &h);
 	_createParaPreviewFromGC(m_pParaPreviewGR, w, h);
 
 	// make a new QNX GC for Character Preview
 	DELETEP (m_pCharPreviewGR);
-	m_pCharPreviewGR = new GR_QNXGraphics(mainWindow, m_wCharPreviewArea, m_pApp);
+	//m_pCharPreviewGR = new GR_QNXGraphics(mainWindow, m_wCharPreviewArea, m_pApp);
+	GR_QNXAllocInfo ai(mainWindow, m_wCharPreviewArea, m_pApp);
+	m_pCharPreviewGR = (GR_QNXGraphics*) XAP_App::getApp()->newGraphics(ai);
 
 	UT_QNXGetWidgetArea(m_wCharPreviewArea, NULL, NULL, &w, &h);
 	_createCharPreviewFromGC(m_pCharPreviewGR, w, h);

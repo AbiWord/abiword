@@ -75,8 +75,11 @@ void AP_CocoaTopRuler::setView(AV_View * pView)
 
 	DELETEP(m_pG);
 
-	GR_CocoaGraphics * pG = new GR_CocoaGraphics(m_wTopRuler, m_pFrame->getApp());
-	m_pG = pG;
+	//GR_CocoaGraphics * pG = new GR_CocoaGraphics(m_wTopRuler, m_pFrame->getApp());
+	//m_pG = pG;
+	GR_CocoaAllocInfo ai(m_wTopRuler, m_pFrame->getApp());
+	m_pG = (GR_CocoaGraphics*)XAP_App::getApp()->newGraphics(ai);
+
 	UT_ASSERT(m_pG);
 	m_delegate = [[AP_CocoaTopRulerDelegate alloc] init];
 	[m_wTopRuler setEventDelegate:m_delegate];

@@ -94,7 +94,9 @@ void AP_CocoaDialog_Lists::runModal( XAP_Frame * pFrame)
 
 
 	NSView* preview = [m_dlg preview];
-	m_pPreviewWidget = new GR_CocoaGraphics(preview, m_pApp);
+	//m_pPreviewWidget = new GR_CocoaGraphics(preview, m_pApp);
+	GR_CocoaAllocInfo ai(preview, m_pApp);
+	m_pPreviewWidget = (GR_CocoaGraphics*)XAP_App::getApp()->newGraphics(ai);
 
 	// let the widget materialize
 

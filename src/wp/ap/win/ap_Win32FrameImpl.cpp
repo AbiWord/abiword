@@ -160,8 +160,8 @@ HWND AP_Win32FrameImpl::_createDocumentWindow(XAP_Frame *pFrame, HWND hwndParent
 	int xLeftRulerWidth = 0;
 
 	/* Create Graphics */
-	GR_Win32Graphics * pG = new GR_Win32Graphics(GetDC(m_hwndContainer), m_hwndContainer, 
-		XAP_App::getApp());
+	GR_Win32AllocInfo ai(GetDC(m_hwndContainer), m_hwndContainer, XAP_App::getApp());
+	GR_Win32Graphics * pG = (GR_Win32Graphics *)XAP_App::getApp()->newGraphics(ai);
 
 	UT_ASSERT(pG);	   
 	
@@ -1369,4 +1369,10 @@ UT_RGBColor AP_Win32FrameImpl::getColorSelBackground () const
 	}
 
 	return UT_RGBColor( red, green, blue );
+}
+
+GR_Win32Graphics *AP_Win32FrameImpl::_createDocWnd_GR_Graphics(void)
+{
+	GR_Win32AllocInfo ai(GetDC(getHwndDocument()), getHwndDocument(), XAP_App::getApp());
+	return (GR_Win32Graphics *)XAP_App::getApp()->newGraphics(ai);
 }

@@ -126,7 +126,9 @@ void PageNumberWindow::SetDlg(AP_BeOSDialog_PageNumbers *pDlg)
 	{
 		BView *preview = (BView*)FindView("preview");	
 	
-		m_BeOSGraphics  = new GR_BeOSGraphics(preview, m_DlgPage->m_pApp);
+		//m_BeOSGraphics  = new GR_BeOSGraphics(preview, m_DlgPage->m_pApp);
+		GR_BeOSAllocInfo ai(preview, m_DlgPage->m_pApp);
+		m_BeOSGraphics = (GR_BeOSGraphics*)XAP_App::getApp()->newGraphics(ai);
 		
 		m_DlgPage->_createPreviewFromGC(m_BeOSGraphics,preview->Frame().Width(),preview->Frame().Height());
 	

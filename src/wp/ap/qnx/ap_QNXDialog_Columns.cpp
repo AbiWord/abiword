@@ -131,8 +131,10 @@ void AP_QNXDialog_Columns::runModal(XAP_Frame * pFrame)
 	PtSetParentWidget(parentWindow);
 
 	DELETEP (m_pPreviewWidget);
-	m_pPreviewWidget = new GR_QNXGraphics(mainWindow, m_wpreviewArea, m_pApp);
-
+	//m_pPreviewWidget = new GR_QNXGraphics(mainWindow, m_wpreviewArea, m_pApp);
+	GR_QNXAllocInfo ai(mainWindow, m_wpreviewArea, m_pApp);
+	m_pPreviewWidget = (GR_QNXGraphics*) XAP_App::getApp()->newGraphics(ai);
+	
 	unsigned short *w, *h;
 	w = h = NULL;
 	PtGetResource(m_wpreviewArea, Pt_ARG_WIDTH, &w, 0);

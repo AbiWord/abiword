@@ -186,7 +186,9 @@ void AP_BeOSTopRuler::setView(AV_View * pView) {
 	// shown.
 
 		DELETEP(m_pG);	
-		m_pG = new GR_BeOSGraphics(m_wTopRuler, m_pFrame->getApp());
+		//m_pG = new GR_BeOSGraphics(m_wTopRuler, m_pFrame->getApp());
+		GR_BeOSAllocInfo ai(preview, m_DlgColumn->m_pApp);
+		m_pG = (GR_BeOSGraphics*)XAP_App::getApp()->newGraphics(ai);
 		UT_ASSERT(m_pG);
 	}
 }

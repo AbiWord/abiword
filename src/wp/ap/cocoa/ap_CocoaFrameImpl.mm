@@ -457,7 +457,10 @@ void AP_CocoaFrameImpl::_createDocView(GR_Graphics* &pG)
 	[[_getController() window] makeFirstResponder:m_docAreaGRView];
 	[m_docAreaGRView release];
 	
-	pG = new GR_CocoaGraphics(m_docAreaGRView, pFrame->getApp());
+	//pG = new GR_CocoaGraphics(m_docAreaGRView, pFrame->getApp());
+	GR_CocoaAllocInfo ai(m_docAreaGRView, pFrame->getApp());
+	pG = (GR_CocoaGraphics*)XAP_App::getApp()->newGraphics(ai);
+
 	static_cast<GR_CocoaGraphics *>(pG)->_setUpdateCallback (&_graphicsUpdateCB, (void *)pFrame);
 }
 

@@ -61,7 +61,9 @@ void AP_Win32LeftRuler::setView(AV_View * pView)
 	AP_LeftRuler::setView(pView);
 
 	DELETEP(m_pG);
-	GR_Win32Graphics * pG = new GR_Win32Graphics(GetDC(m_hwndLeftRuler), m_hwndLeftRuler, m_pFrame->getApp());
+	GR_Win32AllocInfo ai(GetDC(m_hwndLeftRuler), m_hwndLeftRuler, m_pFrame->getApp());
+	GR_Win32Graphics * pG = (GR_Win32Graphics *)XAP_App::getApp()->newGraphics(ai);
+	
 	m_pG = pG;
 	UT_ASSERT(m_pG);
 
@@ -113,7 +115,9 @@ HWND AP_Win32LeftRuler::createWindow(HWND hwndContainer,
 	
 	
 	DELETEP(m_pG);
-	GR_Win32Graphics * pG = new GR_Win32Graphics(GetDC(m_hwndLeftRuler), m_hwndLeftRuler, m_pFrame->getApp());
+	GR_Win32AllocInfo ai(GetDC(m_hwndLeftRuler), m_hwndLeftRuler, m_pFrame->getApp());
+	GR_Win32Graphics * pG = (GR_Win32Graphics *)XAP_App::getApp()->newGraphics(ai);
+
 	m_pG = pG;
 	pG->init3dColors();
 	UT_ASSERT(m_pG);

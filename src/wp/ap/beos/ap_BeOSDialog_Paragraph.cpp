@@ -278,7 +278,9 @@ void ParagraphWin::SetDlg(AP_BeOSDialog_Paragraph *brk)
 	Show();
 
 	//Create our preview window graphics
-	m_BeOSGraphics  = new GR_BeOSGraphics(preview, m_DlgParagraph->m_pApp);
+	//m_BeOSGraphics  = new GR_BeOSGraphics(preview, m_DlgParagraph->m_pApp);
+    GR_BeOSAllocInfo ai(preview, m_DlgParagraph->m_pApp);
+	m_BeOSGraphics = (GR_BeOSGraphics*)XAP_App::getApp()->newGraphics(ai);
 
 	if (preview->Window()->Lock())
 	{

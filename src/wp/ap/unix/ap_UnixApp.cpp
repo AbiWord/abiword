@@ -1060,7 +1060,10 @@ bool AP_UnixApp:: makePngPreview(const char * pszInFile, const char * pszPNGFile
                                              attributes_mask);
 	GdkPixmap * pMap =  gdk_pixmap_new(pWindow,iWidth,iHeight,-1); 	
 
-	GR_UnixGraphics * pG =  new GR_UnixGraphics(pMap, getFontManager(), this,true);
+	//GR_UnixGraphics * pG =  new GR_UnixGraphics(pMap, getFontManager(), this,true);
+	GR_UnixAllocInfo ai(pMap, getFontManager(), this,true);
+	GR_UnixGraphics * pG = (GR_UnixGraphics*) XAP_App::getApp()->newGraphics(ai);
+
 	pG->createCaret();
 	UT_Error error = UT_OK;
 	PD_Document * pNewDoc = new PD_Document(this);
@@ -1253,11 +1256,10 @@ GR_Image * AP_UnixApp::_showSplash(UT_uint32 delay)
 		gtk_widget_show(wSplash);
 		
 		// create image context
-#ifndef WITH_PANGO
-		pUnixGraphics = new GR_UnixGraphics(da->window, NULL, m_pApp);
-#else
-		pUnixGraphics = new GR_UnixGraphics(da->window, m_pApp);
-#endif
+		//pUnixGraphics = new GR_UnixGraphics(da->window, NULL, m_pApp);
+		GR_UnixAllocInfo ai(da->window, NULL, m_pApp);
+		pUnixGraphics = (GR_UnixGraphics*) XAP_App::getApp()->newGraphics(ai);
+		
 		pSplashImage = pUnixGraphics->createNewImage("splash", pBB, pUnixGraphics->tlu(iSplashWidth), 
 													 pUnixGraphics->tlu(iSplashHeight));
 
@@ -1560,14 +1562,23 @@ bool AP_UnixApp::doWindowlessArgs(const AP_Args *Args)
 				conv.setImpProps (Args->m_impProps);
 			if (Args->m_expProps)
 				conv.setExpProps (Args->m_expProps);
-
+#if 0
 			PS_Graphics pGraphics ((Args->m_sPrintTo[0] == '|' ? Args->m_sPrintTo+1 : Args->m_sPrintTo),
 								   Args->m_sPrintTo, 
 								   pMyUnixApp->getApplicationName(), pMyUnixApp->getFontManager(),
 								   (Args->m_sPrintTo[0] != '|'), pMyUnixApp);
-
+#endif
+			GR_UnixAllocInfo ai((Args->m_sPrintTo[0] == '|' ? Args->m_sPrintTo+1 : Args->m_sPrintTo),
+								 Args->m_sPrintTo, 
+								 pMyUnixApp->getApplicationName(), pMyUnixApp->getFontManager(),
+								 (Args->m_sPrintTo[0] != '|'), pMyUnixApp);
+			
+			PS_Graphics * pGraphics = (PS_Graphics*) XAP_App::getApp()->newGraphics(ai);
+			
 			conv.setVerbose(Args->m_iVerbose);
-			conv.print (Args->m_sFile, &pGraphics);
+			conv.print (Args->m_sFile, pGraphics);
+
+			delete pGraphics;
 	    }
 		else
 	    {

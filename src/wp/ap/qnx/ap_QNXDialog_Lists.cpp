@@ -211,7 +211,10 @@ void AP_QNXDialog_Lists::runModeless(XAP_Frame * pFrame)
 		UT_ASSERT(m_wPreviewArea);
 
 		// make a new QNX GC
-		m_pPreviewWidget = new GR_QNXGraphics(m_mainWindow, m_wPreviewArea, pFrame->getApp());
+		//m_pPreviewWidget = new GR_QNXGraphics(m_mainWindow, m_wPreviewArea, pFrame->getApp());
+		GR_QNXAllocInfo ai(mainWindow, m_wPreviewArea, pFrame->getApp());
+		m_pPreviewWidget = (GR_QNXGraphics*) XAP_App::getApp()->newGraphics(ai);
+
 		unsigned short w, h;
 
 		// let the widget materialize

@@ -75,7 +75,9 @@ void AP_CocoaDialog_FormatFrame::runModeless(XAP_Frame * pFrame)
 	// make a new Cocoa GC
 	DELETEP (m_pPreviewWidget);
 	XAP_CocoaNSView * view = [m_dlg preview];
-	m_pPreviewWidget = new GR_CocoaGraphics(view, m_pApp);
+	//m_pPreviewWidget = new GR_CocoaGraphics(view, m_pApp);
+	GR_CocoaAllocInfo ai(view, m_pApp);
+	m_pPreviewWidget = (GR_CocoaGraphics*)XAP_App::getApp()->newGraphics(ai);
 
 	// Todo: we need a good widget to query with a probable
 	// Todo: non-white (i.e. gray, or a similar bgcolor as our parent widget)
