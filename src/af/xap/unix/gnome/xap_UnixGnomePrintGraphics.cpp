@@ -185,6 +185,8 @@ GnomeFont * XAP_UnixGnomePrintGraphics::_allocGnomeFont(PSFont* pFont)
 
 XAP_UnixGnomePrintGraphics::~XAP_UnixGnomePrintGraphics()
 {
+	_destroyFonts ();
+
 	if (m_pCurrentFont != NULL && GNOME_IS_FONT(m_pCurrentFont))
 		gnome_font_unref(m_pCurrentFont);
 }

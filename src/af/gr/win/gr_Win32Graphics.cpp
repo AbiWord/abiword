@@ -143,6 +143,8 @@ GR_Win32Graphics::GR_Win32Graphics(HDC hdc, const DOCINFO * pDocInfo, XAP_App * 
 
 GR_Win32Graphics::~GR_Win32Graphics()
 {
+	_destroyFonts ();
+
 	UT_VECTOR_PURGEALL(UT_Rect*, m_vSaveRect);
 		
 	/* Release saved bitmaps */
@@ -153,7 +155,6 @@ GR_Win32Graphics::~GR_Win32Graphics()
 		DeleteObject(hBit);			
 	}
 
-	DELETEP(m_pFontGUI);
 	if (m_hXorPen)
 		DeleteObject(m_hXorPen);
 

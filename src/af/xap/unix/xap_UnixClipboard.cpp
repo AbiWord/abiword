@@ -25,12 +25,12 @@
 //////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////
 
-static GtkClipboard * gtkClipboardForTarget(XAP_UnixClipboard::_T_AllowGet get)
+GtkClipboard * XAP_UnixClipboard::gtkClipboardForTarget(XAP_UnixClipboard::_T_AllowGet get)
 {
 	if (XAP_UnixClipboard::TAG_ClipboardOnly == get)
-		return gtk_clipboard_get(GDK_SELECTION_CLIPBOARD);
+		return m_clip;
 	else if (XAP_UnixClipboard::TAG_PrimaryOnly == get)
-		return gtk_clipboard_get(GDK_SELECTION_PRIMARY);
+		return m_primary;
 	return 0;
 }
 
@@ -48,12 +48,19 @@ static AV_View * viewFromApp(XAP_App * pApp)
 XAP_UnixClipboard::XAP_UnixClipboard(XAP_UnixApp * pUnixApp)
 	: m_pUnixApp(pUnixApp), m_Targets(0), m_nTargets(0)
 {
+	m_clip = gtk_clipboard_get(GDK_SELECTION_CLIPBOARD);
+	m_primary = gtk_clipboard_get(GDK_SELECTION_PRIMARY);
 }
 
 XAP_UnixClipboard::~XAP_UnixClipboard()
 {
 	clearData(true,true);
 	g_free(m_Targets);
+
+#if 0
+	g_object_unref (G_OBJECT (m_clip));
+	g_object_unref (G_OBJECT (m_primary));
+#endif
 }
 
 //////////////////////////////////////////////////////////////////

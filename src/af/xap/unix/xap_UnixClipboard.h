@@ -66,6 +66,8 @@ public:
 
  private:
 
+	GtkClipboard * gtkClipboardForTarget(XAP_UnixClipboard::_T_AllowGet get);
+
 	bool				_getDataFromServer(T_AllowGet tFrom, const char** formatList,
 							   void ** ppData, UT_uint32 * pLen,
 							   const char **pszFormatFound);
@@ -132,6 +134,9 @@ public:
 	XAP_FakeClipboard       m_fakePrimaryClipboard;
 	GtkTargetEntry * m_Targets ;
 	UT_uint32 m_nTargets;
+
+	GtkClipboard * m_clip;
+	GtkClipboard * m_primary;
 };
 
 #endif /* XAP_UNIXCLIPBOARD_H */

@@ -94,6 +94,8 @@ PS_Graphics::PS_Graphics(const char * szFilename,
 
 PS_Graphics::~PS_Graphics()
 {
+	_destroyFonts ();
+
 	FREEP(m_szPageSizeName);
 	FREEP(m_szFilename);
 }

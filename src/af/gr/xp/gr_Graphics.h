@@ -457,6 +457,8 @@ class ABI_EXPORT GR_Graphics
 	void              setPrevXOffset(UT_sint32 x) { m_iPrevXOffset = x;}
  protected:
 
+	void _destroyFonts ();
+
 	virtual GR_Font*  _findFont(const char* pszFontFamily,
 								const char* pszFontStyle,
 								const char* pszFontVariant,

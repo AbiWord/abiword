@@ -188,8 +188,12 @@ GR_Graphics::~GR_Graphics()
 		g_free(s_pPangoContext); // not sure about the g_free here
 	}
 #endif
+}
 
+void GR_Graphics::_destroyFonts ()
+{
 	UT_HASH_PURGEDATA(GR_Font *, &m_hashFontCache, delete);
+	m_hashFontCache.clear ();
 }
 
 UT_sint32 GR_Graphics::tdu(UT_sint32 layoutUnits) const

@@ -610,8 +610,9 @@ GR_UnixGraphics::GR_UnixGraphics(GdkWindow * win, XAP_UnixFontManager * fontMana
 
 GR_UnixGraphics::~GR_UnixGraphics()
 {
+	DELETEP(m_pFontGUI);
+
 	s_iInstanceCount--;
-	DELETEP (m_pFontGUI);
 
 	/* WARNING: Don't use XftDrawDestroy.  XftDrawDestroy will also destroy the drawable */
 	if (m_pXftDraw)

@@ -188,6 +188,8 @@ GR_CocoaGraphics::GR_CocoaGraphics(NSView * win, XAP_App * app)
 
 GR_CocoaGraphics::~GR_CocoaGraphics()
 {
+	_destroyFonts ();
+
 	UT_VECTOR_RELEASE(m_cacheArray);
 	UT_VECTOR_PURGEALL(NSRect*, m_cacheRectArray);
 	[m_xorCache release];
@@ -197,7 +199,6 @@ GR_CocoaGraphics::~GR_CocoaGraphics()
 #ifdef USE_OFFSCREEN
 	[m_offscreen release];
 #endif
-	DELETEP(m_pFontGUI);
 
 	s_iInstanceCount--;
 	for (int i = 0; i < COUNT_3D_COLORS; i++) {

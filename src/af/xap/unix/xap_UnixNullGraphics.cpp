@@ -73,6 +73,7 @@ UnixNull_Graphics::UnixNull_Graphics( XAP_UnixFontManager * fontManager,
 UnixNull_Graphics::~UnixNull_Graphics()
 {
 	// TODO free stuff
+	_destroyFonts ();
 }
 
  GR_Image* UnixNull_Graphics::createNewImage(const char* pszName, const UT_ByteBuf* pBB, UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight, GR_Image::GRType iType)

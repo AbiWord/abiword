@@ -174,7 +174,8 @@ GR_QNXGraphics::GR_QNXGraphics(PtWidget_t * win, PtWidget_t * draw, XAP_App *app
 
 GR_QNXGraphics::~GR_QNXGraphics()
 {
-	DELETEP(m_pFontGUI);
+	_destroyFonts ();
+
 	UT_VECTOR_PURGEALL(UT_Rect*, m_vSaveRect);
 
 	for (UT_uint32 i = 0; i < m_vSaveRectBuf.size (); i++) {
