@@ -36,6 +36,10 @@
 #include "xmlparse.h"
 #include "xap_Prefs.h"
 
+#ifndef TBSTYLE_AUTOSIZE
+#define TBSTYLE_AUTOSIZE  0x10
+#endif
+
 /*****************************************************************/
 
 EV_Win32Toolbar::EV_Win32Toolbar(XAP_Win32App * pWin32App, XAP_Win32Frame * pWin32Frame,
@@ -310,16 +314,19 @@ UT_Bool EV_Win32Toolbar::synthesize(void)
 	UT_ASSERT(pFactory);
 
 	HWND hwndParent = m_pWin32Frame->getToolbarWindow();
+	if(hwndParent == NULL)
+		return UT_FALSE;
 
 	// NOTE: this toolbar will get placed later, by frame or rebar
 
-    m_hwnd = CreateWindowEx(0, 
+	m_hwnd = CreateWindowEx(0, 
 				TOOLBARCLASSNAME,		// window class name
 				(LPSTR) NULL,			// window caption
 				WS_CHILD | WS_VISIBLE 
 				| WS_CLIPCHILDREN | WS_CLIPSIBLINGS 
 				| TBSTYLE_TOOLTIPS | TBSTYLE_FLAT
 				| ( bText && !bIcons ? TBSTYLE_LIST : 0 )
+				/* | TBSTYLE_CUSTOMERASE */
 				| CCS_NOPARENTALIGN | CCS_NODIVIDER
 				| CCS_NORESIZE
 				,						// window style
@@ -696,6 +703,9 @@ void EV_Win32Toolbar::_releaseListener(void)
 	
 UT_Bool EV_Win32Toolbar::bindListenerToView(AV_View * pView)
 {
+	if(m_hwnd == NULL)
+		return UT_FALSE;
+
 	_releaseListener();
 	
 	m_pViewListener = new EV_Win32Toolbar_ViewListener(this,pView);
@@ -711,6 +721,9 @@ UT_Bool EV_Win32Toolbar::bindListenerToView(AV_View * pView)
 
 UT_Bool EV_Win32Toolbar::refreshToolbar(AV_View * pView, AV_ChangeMask mask)
 {
+	if(m_hwnd == NULL)
+		return UT_FALSE;
+
 	// make the toolbar reflect the current state of the document
 	// at the current insertion point or selection.
 	
