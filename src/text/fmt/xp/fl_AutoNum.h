@@ -69,6 +69,7 @@ public:
 	const UT_Bool				isEmpty(void) ;
 	inline PL_StruxDocHandle		getFirstItem(void) { return (PL_StruxDocHandle) m_pItems.getFirstItem(); }	
 	UT_Bool					isLastOnLevel(PL_StruxDocHandle pItem);
+	UT_Bool                         canListUpdate(void) {return m_bUpdate;}
 
 	fl_AutoNum *			getParent(void) { return m_pParent; }
 	fl_AutoNum * 			getActiveParent(void) ;
@@ -114,3 +115,9 @@ protected:
 };
 
 #endif
+
+
+
+
+
+

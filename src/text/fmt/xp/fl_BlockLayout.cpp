@@ -3705,7 +3705,7 @@ UT_Bool fl_BlockLayout::doclistener_deleteObject(const PX_ChangeRecord_Object * 
 		_delete(blockOffset, 1);
 		if(m_pAutoNum)
 		{
-		       if(m_pAutoNum->doesItemHaveLabel(this)==UT_FALSE)
+		       if(m_pAutoNum->doesItemHaveLabel(this)==UT_FALSE && m_pAutoNum->canListUpdate()==UT_TRUE)
 		       {
 			     remItemFromList();
 		       }
