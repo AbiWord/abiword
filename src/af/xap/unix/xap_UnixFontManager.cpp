@@ -167,7 +167,6 @@ bool XAP_UnixFontManager::scavengeFonts(void)
 	UT_ASSERT(newFontPath);
 	char ** newFontPath_ptr = newFontPath;
 	char ** oldFontPath_ptr	= oldFontPath;
-	
 	for(i = 0; i < realFontPathDirCount; i++)
 		*newFontPath_ptr++ = UT_strdup(*oldFontPath_ptr++);
 		
@@ -229,7 +228,7 @@ bool XAP_UnixFontManager::scavengeFonts(void)
 		UT_DEBUGMSG(("-------------------------------------------------\n\n"));
 #endif
 	
-	XSetFontPath(dsp, newFontPath, (int)realFontPathDirCount);
+	XSetFontPath(dsp, newFontPath, (int)realFontPathDirCount-1);
 
 	// now free what we do not need	
 	XFreeFontPath(oldFontPath);
