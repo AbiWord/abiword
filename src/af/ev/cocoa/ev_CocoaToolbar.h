@@ -1,6 +1,6 @@
 /* AbiSource Program Utilities
  * Copyright (C) 1998 AbiSource, Inc.
- * Copyright (C) 2001 Hubert Figuiere
+ * Copyright (C) 2001-2002 Hubert Figuiere
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -29,10 +29,13 @@
 #include "ap_Toolbar_Id.h"
 #include "ap_CocoaToolbar_StyleCombo.h"
 
+#import <Cocoa/Cocoa.h>
+
 class XAP_CocoaApp;
 class XAP_CocoaFrame;
 class AP_CocoaToolbar_Icons;
 class EV_CocoaToolbar_ViewListener;
+class EV_Toolbar_Label;
 
 class _wd;
 
@@ -68,9 +71,13 @@ protected:
 
 //	GdkEvent *                      m_eEvent;
 	NSView *						m_wToolbar;
+	NSView *						m_superView;
 //	GtkWidget * 					m_wHandleBox;
 	AP_CocoaToolbar_Icons *			m_pCocoaToolbarIcons;
 	UT_Vector						m_vecToolbarWidgets;
+private:
+	NSButton * _makeToolbarButton (int type, EV_Toolbar_Label * pLabel, _wd * wd, NSView *parent,
+												float & btnX, NSWindowController * controller);
 };
 
 #endif /* EV_COCOATOOLBAR_H */

@@ -1,6 +1,6 @@
 /* AbiSource Program Utilities
  * Copyright (C) 1998 AbiSource, Inc.
- * Copyright (C) 2001 Hubert Figuiere
+ * Copyright (C) 2001-2002 Hubert Figuiere
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -18,7 +18,6 @@
  * 02111-1307, USA.
  */
 
-#import <Cocoa/Cocoa.h>
 
 #include <string.h>
 #include <stdlib.h>
@@ -40,7 +39,17 @@
 #include "xap_Prefs.h"
 #include "xap_EncodingManager.h"
 
+#import <Cocoa/Cocoa.h>
+#import <AppKit/NSNibControlConnector.h>
+#import "xap_CocoaToolbarWindow.h"
 
+static	float	getButtonWidth ()
+					{ return 30.0f; };
+static	float	getButtonHeight ()
+					{ return 30.0f; };
+static	float	getButtonSpace () 
+					{ return 4.0f; };
+					
 #if 0
 /**
  * toolbar_append_with_eventbox
@@ -75,22 +84,33 @@ toolbar_append_with_eventbox (GtkToolbar *toolbar, GtkWidget  *widget,
 				   tooltip_text, tooltip_private_text);
 	return eventbox;
 }
+#endif
 
 class _wd								// a private little class to help
 {										// us remember all the widgets that
 public:									// we create...
-	_wd(EV_CocoaToolbar * pCocoaToolbar, XAP_Toolbar_Id id, GtkWidget * widget = NULL)
-	{
-		m_pCocoaToolbar = pCocoaToolbar;
-		m_id = id;
-		m_widget = widget;
-		m_blockSignal = false;
-		m_comboEntryBuffer[0] = 0;
-	};
+	_wd(EV_CocoaToolbar * pCocoaToolbar, XAP_Toolbar_Id id, NSControl * widget = nil);
+	virtual ~_wd(void);
+
+	EV_CocoaToolbar *	m_pCocoaToolbar;
+	XAP_Toolbar_Id		m_id;
+	NSControl *			m_widget;
+};
+
+
+_wd::_wd(EV_CocoaToolbar * pCocoaToolbar, XAP_Toolbar_Id tlbrid, NSButton * widget = nil)
+{
+	m_pCocoaToolbar = pCocoaToolbar;
+	m_id = tlbrid;
+	m_widget = widget;
+}
 	
-	~_wd(void)
-	{
-	};
+_wd::~_wd(void)
+{
+}
+
+
+#if 0
 
 	static void s_callback(GtkWidget * /* widget */, gpointer user_data)
 	{
@@ -236,17 +256,9 @@ public:									// we create...
 		// manually force an update
 		s_combo_changed(widget, user_data);
 	}
-
-
-
-	EV_CocoaToolbar *	m_pCocoaToolbar;
-	XAP_Toolbar_Id		m_id;
-	GtkWidget *			m_widget;
-	bool				m_blockSignal;
-	char 				m_comboEntryBuffer[1024];
-};
-/*****************************************************************/
 #endif
+
+/*****************************************************************/
 
 
 EV_CocoaToolbar::EV_CocoaToolbar(XAP_CocoaApp * pCocoaApp, XAP_CocoaFrame * pCocoaFrame,
@@ -259,14 +271,60 @@ EV_CocoaToolbar::EV_CocoaToolbar(XAP_CocoaApp * pCocoaApp, XAP_CocoaFrame * pCoc
 	m_pCocoaApp = pCocoaApp;
 	m_pCocoaFrame = pCocoaFrame;
 	m_pViewListener = 0;
-//	m_wToolbar = 0;
+	m_wToolbar = nil;
 	m_lid = 0;							// view listener id
 }
 
 EV_CocoaToolbar::~EV_CocoaToolbar(void)
 {
-//	UT_VECTOR_PURGEALL(_wd *,m_vecToolbarWidgets);
+	UT_VECTOR_PURGEALL(_wd *,m_vecToolbarWidgets);
 	_releaseListener();
+}
+
+
+NSButton * EV_CocoaToolbar::_makeToolbarButton (int type, EV_Toolbar_Label * pLabel, _wd * wd, NSView *parent,
+												float & btnX, NSWindowController * controller)
+{
+	const float BTN_WIDTH = getButtonWidth ();
+	const float BTN_HEIGHT = getButtonHeight ();
+	const float BTN_SPACE = getButtonSpace ();
+
+	NSButton * btn = nil;;
+	
+	NSRect btnFrame;
+	btnFrame.origin.x = btnX;
+	btnFrame.origin.y = BTN_SPACE;
+	btnFrame.size.width = BTN_WIDTH;
+	btnFrame.size.height = BTN_HEIGHT;
+	btnX += BTN_WIDTH + BTN_SPACE;
+	
+	btn = [[NSButton alloc] initWithFrame:btnFrame];
+	switch (type) {
+	case EV_TBIT_PushButton:
+		[btn setButtonType:NSMomentaryPushButton];
+		break;
+	case EV_TBIT_ToggleButton:
+	case EV_TBIT_GroupButton:
+		[btn setButtonType:NSToggleButton];
+		break;
+	default:
+		UT_ASSERT (UT_SHOULD_NOT_HAPPEN);
+	}
+	UT_ASSERT(UT_stricmp(pLabel->getIconName(),"NoIcon")!=0);
+	NSImage * wPixmap;
+	bool bFoundIcon = m_pCocoaToolbarIcons->getPixmapForIcon(pLabel->getIconName(),
+																&wPixmap);
+	UT_ASSERT(bFoundIcon);
+	[btn setImage:wPixmap];
+	[wPixmap release];
+	[parent addSubview:btn];
+	wd->m_widget = btn;
+	[btn setTag:(int)wd];
+	NSNibControlConnector * conn = [[NSNibControlConnector alloc] init];
+	[conn setLabel:@"toolbarSelected"];
+	[conn setDestination:controller];
+	[conn setSource:btn];
+	return btn;
 }
 
 bool EV_CocoaToolbar::toolbarEvent(/* _wd * wd,*/
@@ -404,8 +462,13 @@ void EV_CocoaToolbar::rebuildToolbar(UT_sint32 oldpos)
 
 bool EV_CocoaToolbar::synthesize(void)
 {
-	// create a Cocoa toolbar from the info provided.
+	// TODO: rationalize those as static members of the class.
+	const float BTN_WIDTH = getButtonWidth ();
+	const float BTN_HEIGHT = getButtonHeight ();
+	const float BTN_SPACE = getButtonSpace ();
 
+	// create a Cocoa toolbar from the info provided.
+	float btnX = 0.0f;
 	const EV_Toolbar_ActionSet * pToolbarActionSet = m_pCocoaApp->getToolbarActionSet();
 	UT_ASSERT(pToolbarActionSet);
 
@@ -415,8 +478,15 @@ bool EV_CocoaToolbar::synthesize(void)
 	UT_uint32 nrLabelItemsInLayout = m_pToolbarLayout->getLayoutItemCount();
 	UT_ASSERT(nrLabelItemsInLayout > 0);
 
-	NSWindow * wTLW = m_pCocoaFrame->getTopLevelWindow();
-	m_wToolbar = [[NSToolbar alloc] initWithIdentifier:@"test"];	// FIXIT use real indentifier
+	XAP_CocoaToolbarWindow * pToolbarWinCtrl = [XAP_CocoaToolbarWindow sharedToolbar];
+	UT_ASSERT (pToolbarWinCtrl);
+	NSView * toolbarParent = [pToolbarWinCtrl getTopView];
+	UT_ASSERT (toolbarParent);
+	NSRect viewBounds = [toolbarParent bounds];
+	viewBounds.size.height = 48.0;
+	m_wToolbar = [[NSView alloc] initWithFrame:viewBounds];
+	[toolbarParent addSubview:m_wToolbar];
+	[m_wToolbar setAutoresizingMask:(NSViewWidthSizable | NSViewHeightSizable)];
 	
 //	GtkWidget * wVBox = m_pCocoaFrame->getVBoxWidget();
 
@@ -426,7 +496,8 @@ bool EV_CocoaToolbar::synthesize(void)
 	////////////////////////////////////////////////////////////////
 	// get toolbar button appearance from the preferences
 	////////////////////////////////////////////////////////////////
-#if 0	
+#if 0
+	// TODO
 	const XML_Char * szValue = NULL;
 	m_pCocoaApp->getPrefsValue(XAP_PREF_KEY_ToolbarAppearance, &szValue);
 	UT_ASSERT((szValue) && (*szValue));
@@ -442,7 +513,6 @@ bool EV_CocoaToolbar::synthesize(void)
 	}
 #endif
 
-#if 0 // TODO	
 //	m_wToolbar = gtk_toolbar_new(GTK_ORIENTATION_HORIZONTAL, style);
 //	UT_ASSERT(m_wToolbar);
 	
@@ -454,27 +524,28 @@ bool EV_CocoaToolbar::synthesize(void)
 //
 // Make the toolbar a destination for drops
 //
+#if 0		// TODO
 	gtk_drag_dest_set(m_wToolbar,(GtkDestDefaults) GTK_DEST_DEFAULT_ALL,
 					  s_AbiTBTargets,1,
 					  GDK_ACTION_COPY);
 	gtk_signal_connect(GTK_OBJECT(m_wToolbar),"drag_drop",GTK_SIGNAL_FUNC(_wd::s_drag_drop_toolbar),this);
-
+#endif
 	for (UT_uint32 k=0; (k < nrLabelItemsInLayout); k++)
 	{
 		EV_Toolbar_LayoutItem * pLayoutItem = m_pToolbarLayout->getLayoutItem(k);
 		UT_ASSERT(pLayoutItem);
 
-		XAP_Toolbar_Id id = pLayoutItem->getToolbarId();
-		EV_Toolbar_Action * pAction = pToolbarActionSet->getAction(id);
+		XAP_Toolbar_Id tlbrID = pLayoutItem->getToolbarId();
+		EV_Toolbar_Action * pAction = pToolbarActionSet->getAction(tlbrID);
 		UT_ASSERT(pAction);
-		EV_Toolbar_Label * pLabel = m_pToolbarLabelSet->getLabel(id);
+		EV_Toolbar_Label * pLabel = m_pToolbarLabelSet->getLabel(tlbrID);
 		UT_ASSERT(pLabel);
 
 		switch (pLayoutItem->getToolbarLayoutFlags())
 		{
 		case EV_TLF_Normal:
 		{
-			_wd * wd = new _wd(this,id);
+			_wd * wd = new _wd(this,tlbrID);
 			UT_ASSERT(wd);
 
 			const char * szToolTip = pLabel->getToolTip();
@@ -485,16 +556,11 @@ bool EV_CocoaToolbar::synthesize(void)
 			{
 			case EV_TBIT_PushButton:
 			{
-				UT_ASSERT(UT_stricmp(pLabel->getIconName(),"NoIcon")!=0);
-				GtkWidget * wPixmap;
-				bool bFoundIcon =
-					m_pCocoaToolbarIcons->getPixmapForIcon(wTLW->window,
-														  &wTLW->style->bg[GTK_STATE_NORMAL],
-														  pLabel->getIconName(),
-														  &wPixmap);
-				UT_ASSERT(bFoundIcon);
+				NSButton * btn;
+				btn = _makeToolbarButton (EV_TBIT_PushButton, pLabel, wd, m_wToolbar, btnX, [XAP_CocoaToolbarWindow sharedToolbar]);
 
-				wd->m_widget = gtk_toolbar_append_item(GTK_TOOLBAR(m_wToolbar),
+#if 0 // TODO
+				gtk_toolbar_append_item(GTK_TOOLBAR(m_wToolbar),
 													   pLabel->getToolbarLabel(),
 													   szToolTip,(const char *)NULL,
 													   wPixmap,
@@ -517,37 +583,16 @@ bool EV_CocoaToolbar::synthesize(void)
 				gtk_signal_connect(GTK_OBJECT(wd->m_widget),"drag_begin",GTK_SIGNAL_FUNC(_wd::s_drag_begin), wd);
 				gtk_signal_connect(GTK_OBJECT(wd->m_widget),"drag_drop",GTK_SIGNAL_FUNC(_wd::s_drag_drop), wd);
 				gtk_signal_connect(GTK_OBJECT(wd->m_widget),"drag_end",GTK_SIGNAL_FUNC(_wd::s_drag_end), wd);
-
+#endif
 			}
 			break;
 
 			case EV_TBIT_ToggleButton:
 			case EV_TBIT_GroupButton:
 				{
-					UT_ASSERT(UT_stricmp(pLabel->getIconName(),"NoIcon")!=0);
-					GtkWidget * wPixmap;
-					bool bFoundIcon =
-						m_pCocoaToolbarIcons->getPixmapForIcon(wTLW->window,
-															  &wTLW->style->bg[GTK_STATE_NORMAL],
-															  pLabel->getIconName(),
-															  &wPixmap);
-					UT_ASSERT(bFoundIcon);
-
-					wd->m_widget = gtk_toolbar_append_element(GTK_TOOLBAR(m_wToolbar),
-															  GTK_TOOLBAR_CHILD_TOGGLEBUTTON,
-															  (GtkWidget *)NULL,
-															  pLabel->getToolbarLabel(),
-															  szToolTip,(const char *)NULL,
-															  wPixmap,
-															  GTK_SIGNAL_FUNC(_wd::s_callback),
-															  wd);
-//
-// Add in a right drag method
-//
-				GtkWidget * wwd = wd->m_widget;
-				gtk_object_set_data(GTK_OBJECT(wwd),
-									"wd_pointer",
-									wd);
+					NSButton *btn;
+					btn = _makeToolbarButton (pAction->getItemType(), pLabel, wd, m_wToolbar, btnX, [XAP_CocoaToolbarWindow sharedToolbar]);
+#if 0
 				gtk_drag_source_set(wwd,GDK_BUTTON3_MASK,
 									s_AbiTBTargets,1,
 									GDK_ACTION_COPY);
@@ -561,6 +606,7 @@ bool EV_CocoaToolbar::synthesize(void)
 				gtk_signal_connect(GTK_OBJECT(wd->m_widget),"drag_begin",GTK_SIGNAL_FUNC(_wd::s_drag_begin), wd);
 				gtk_signal_connect(GTK_OBJECT(wd->m_widget),"drag_drop",GTK_SIGNAL_FUNC(_wd::s_drag_drop), wd);
 				gtk_signal_connect(GTK_OBJECT(wd->m_widget),"drag_end",GTK_SIGNAL_FUNC(_wd::s_drag_end), wd);
+#endif
 				}
 				break;
 
@@ -572,45 +618,42 @@ bool EV_CocoaToolbar::synthesize(void)
 					
 			case EV_TBIT_ComboBox:
 			{
-				EV_Toolbar_Control * pControl = pFactory->getControl(this, id);
+				EV_Toolbar_Control * pControl = pFactory->getControl(this, tlbrID);
 				UT_ASSERT(pControl);
 
 				// default, shouldn't be used for well-defined controls
-				int iWidth = 100;
+				float fWidth = 100;
 
 				if (pControl)
 				{
-					iWidth = pControl->getPixelWidth();
+					fWidth = pControl->getPixelWidth();
 				}
-
-				GtkWidget * comboBox = gtk_combo_new();
-				UT_ASSERT(comboBox);
-
-				// Combo boxes flash on 8-bit displays unless you set its colormap
-				// to agree with what we're using elsewhere (gdk_rgb's version)
-				gtk_widget_set_colormap(comboBox, gdk_rgb_get_cmap());
 				
-				// set the size of the entry to set the total combo size
-				gtk_widget_set_usize(GTK_COMBO(comboBox)->entry, iWidth, 0);
+				NSRect btnFrame;
+				btnFrame.origin.x = btnX;
+				btnFrame.origin.y = BTN_SPACE;
+				btnFrame.size.width = fWidth;
+				btnFrame.size.height = BTN_HEIGHT;
+				btnX += BTN_WIDTH + BTN_SPACE;
 
-				// the entry is read-only for now
-				gtk_entry_set_editable(GTK_ENTRY(GTK_COMBO(comboBox)->entry), FALSE);
-										 
+
+				NSComboBox * comboBox = [[NSComboBox alloc] initWithFrame:btnFrame];
+				UT_ASSERT(comboBox);
+				[m_wToolbar addSubview:comboBox];
+				wd->m_widget = comboBox;
+				[comboBox setTag:(int)wd];
+				[comboBox setEditable:NO];
+
+#if 0 //TODO
+
 				// handle popup events, so we can block our signals until the popdown
 				GtkWidget * popwin = GTK_WIDGET(GTK_COMBO(comboBox)->popwin);
 				UT_ASSERT(popwin);
-// we don't use this
-#if 0
-				gtk_signal_connect(GTK_OBJECT(popwin),
-								   "show",
-								   GTK_SIGNAL_FUNC(_wd::s_combo_show),
-								   wd);
-#endif
+
 				gtk_signal_connect(GTK_OBJECT(popwin),
 								   "hide",
 								   GTK_SIGNAL_FUNC(_wd::s_combo_hide),
 								   wd);
-
 				// take away the ability to gain focus
 //				gtk_signal_connect(GTK_OBJECT(GTK_COMBO(comboBox)->entry),
 //								   "focus_in_event",
@@ -632,7 +675,7 @@ bool EV_CocoaToolbar::synthesize(void)
 								   "changed",
 								   GTK_SIGNAL_FUNC(_wd::s_combo_changed),
 								   wd);
-				
+#endif
 				// populate it
 				if (pControl)
 				{
@@ -647,21 +690,17 @@ bool EV_CocoaToolbar::synthesize(void)
 						for (UT_uint32 m=0; m < items; m++)
 						{
 							char * sz = (char *)v->getNthItem(m);
-							GtkWidget * li = gtk_list_item_new_with_label(sz);
-							gtk_widget_show(li);
-							gtk_container_add (GTK_CONTAINER(GTK_COMBO(comboBox)->list), li);
+							
+							NSString * str = [NSString stringWithCString:sz];
+							[comboBox addItemWithObjectValue:str];
 						}
+//						[comboBox selectItemAtIndex:0];
+//						[comboBox setObjectValue:[comboBox objectValueOfSelectedItem]];
 					}
 				}
- 
-				// give a final show
-				gtk_widget_show(comboBox);
-
-				// stick it in the toolbar
-				//	gtk_toolbar_append_widget(GTK_TOOLBAR(m_wToolbar),
-				//						  comboBox,
-				//						  szToolTip,
-				//						  (const char *) NULL);
+				
+		
+#if 0
 				GtkWidget * evBox = toolbar_append_with_eventbox(GTK_TOOLBAR(m_wToolbar),
 									     comboBox,
 									     szToolTip,
@@ -688,6 +727,7 @@ bool EV_CocoaToolbar::synthesize(void)
 				gtk_signal_connect(GTK_OBJECT(evBox),"drag_drop",GTK_SIGNAL_FUNC(_wd::s_drag_drop), wd);
 				gtk_signal_connect(GTK_OBJECT(evBox),"drag_end",GTK_SIGNAL_FUNC(_wd::s_drag_end), wd);
 
+#endif
 				// for now, we never repopulate, so can just toss it
 				DELETEP(pControl);
 			}
@@ -696,6 +736,8 @@ bool EV_CocoaToolbar::synthesize(void)
 			case EV_TBIT_ColorFore:
 			case EV_TBIT_ColorBack:
 			{
+				UT_ASSERT (UT_NOT_IMPLEMENTED);
+#if 0
 				UT_ASSERT(UT_stricmp(pLabel->getIconName(),"NoIcon")!=0);
 				GtkWidget * wPixmap;
 				bool bFoundIcon =
@@ -731,7 +773,7 @@ bool EV_CocoaToolbar::synthesize(void)
 				gtk_signal_connect(GTK_OBJECT(wd->m_widget),"drag_begin",GTK_SIGNAL_FUNC(_wd::s_drag_begin), wd);
 				gtk_signal_connect(GTK_OBJECT(wd->m_widget),"drag_drop",GTK_SIGNAL_FUNC(_wd::s_drag_drop), wd);
 				gtk_signal_connect(GTK_OBJECT(wd->m_widget),"drag_end",GTK_SIGNAL_FUNC(_wd::s_drag_end), wd);
-
+#endif
 			}
 			break;
 				
@@ -758,19 +800,19 @@ bool EV_CocoaToolbar::synthesize(void)
 			// Append to the vector even if spacer, to sync up with refresh
 			// which expects each item in the layout to have a place in the
 			// vector.
-			_wd * wd = new _wd(this,id);
+			_wd * wd = new _wd(this, tlbrID);
 			UT_ASSERT(wd);
 			m_vecToolbarWidgets.addItem(wd);
 
-			gtk_toolbar_append_space(GTK_TOOLBAR(m_wToolbar));
+			UT_DEBUGMSG (("TODO: Implement spacer.\n"));
 			break;
 		}
-		
+
 		default:
 			UT_ASSERT(0);
 		}
 	}
-
+#if 0
 	// show the complete thing
 	gtk_widget_show(m_wToolbar);
 //	gtk_widget_add_events(m_wToolbar,GDK_ALL_EVENTS_MASK);
@@ -970,22 +1012,20 @@ XAP_CocoaFrame * EV_CocoaToolbar::getFrame(void)
 
 void EV_CocoaToolbar::show(void)
 {
-	UT_ASSERT (UT_NOT_IMPLEMENTED);
-#if 0
-
-	if (m_wToolbar)
-		gtk_widget_show (m_wToolbar->parent);
-#endif
+	if ([m_wToolbar superview] == nil) {
+		[m_superView addSubview:m_wToolbar];
+		[m_wToolbar release];
+	}
 }
 
 void EV_CocoaToolbar::hide(void)
 {
-	UT_ASSERT (UT_NOT_IMPLEMENTED);
-#if 0
-
-	if (m_wToolbar)
-		gtk_widget_hide (m_wToolbar->parent);
-#endif
+	if ([m_wToolbar superview] != nil) {
+		m_superView = [m_wToolbar superview];
+		UT_ASSERT (m_superView);
+		[m_wToolbar retain];
+		[m_wToolbar removeFromSuperview];
+	}
 }
 
 /*!
