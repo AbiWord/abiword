@@ -38,6 +38,7 @@
 #include "ap_Strings.h"
 #include "ap_LoadBindings.h"
 #include "ap_FrameData.h"
+#include "ap_Prefs.h"
 
 #include "ap_Dialog_Id.h"
 #include "ap_Dialog_Replace.h"
@@ -3705,10 +3706,21 @@ Defun1(viewRuler)
 	// toggle the ruler bit
 	pFrameData->m_bShowRuler = ! pFrameData->m_bShowRuler;
 
-	//UT_DEBUGMSG(("viewRuler: showruler=%d\n", pFrameData->m_bShowRuler ));
-
 	// actually do the dirty work
 	pFrame->toggleRuler( pFrameData->m_bShowRuler );
+
+#if 1
+	// POLICY: make this the default for new frames, too
+	// TODO: consider hiding this pointer chase behind a higher-level API
+	XAP_App * pApp = pFrame->getApp();
+	UT_ASSERT(pApp);
+	XAP_Prefs * pPrefs = pApp->getPrefs();
+	UT_ASSERT(pPrefs);
+	XAP_PrefsScheme * pScheme = pPrefs->getCurrentScheme();
+	UT_ASSERT(pScheme);
+
+	pScheme->setValueBool(AP_PREF_KEY_RulerVisible, pFrameData->m_bShowRuler); 
+#endif
 
 	return UT_TRUE;
 }
