@@ -266,12 +266,12 @@ int AP_BeOSApp::local_main(const char * szAppName, int argc, char ** argv) {
 	AP_BeOSFrame * pFirstBeOSFrame = new AP_BeOSFrame(pMyBeOSApp);
 	pFirstBeOSFrame->initialize();
 	
-	if (pMyBeOSApp->ParseCommandLine())
-	{
-        //Turn control over to the runtime (don't return until done)
-        printf("Enter into infinite loop here \n");
-        pMyBeOSApp->m_BApp.Run();
-	}
+	pMyBeOSApp->ParseCommandLine();
+
+	// Turn control over to the runtime (don't return until done)
+	printf("Enter into infinite loop here \n");
+	pMyBeOSApp->m_BApp.Run();
+	printf("Exiting infinite loop here \n");
 	
 	// destroy the App.  It should take care of deleting all frames.
 	pMyBeOSApp->shutdown();
@@ -280,7 +280,7 @@ int AP_BeOSApp::local_main(const char * szAppName, int argc, char ** argv) {
 	return 0;
 }
 
-UT_Bool AP_BeOSApp::ParseCommandLine(void)
+void AP_BeOSApp::ParseCommandLine(void)
 {
 	// parse the command line
 	// <app> [-script <scriptname>]* [-dumpstrings] [<documentname>]*
@@ -346,7 +346,6 @@ UT_Bool AP_BeOSApp::ParseCommandLine(void)
 				pFirstBeOSFrame->loadDocument(NULL, IEFT_Unknown);
 #else
 				delete pFirstBeOSFrame;
-				// TODO do we want to signal and error and exit.... if so, return false here
 #endif
 			}
 		}
@@ -361,5 +360,5 @@ UT_Bool AP_BeOSApp::ParseCommandLine(void)
 		pFirstBeOSFrame->loadDocument(NULL, IEFT_Unknown);
 	}
 
-	return UT_TRUE;
+	return;
 }

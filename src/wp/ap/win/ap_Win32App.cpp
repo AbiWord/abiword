@@ -293,16 +293,15 @@ int AP_Win32App::WinMain(const char * szAppName, HINSTANCE hInstance,
 	AP_Win32App * pMyWin32App = new AP_Win32App(hInstance, &Args, szAppName);
 	pMyWin32App->initialize();
 
-	if (pMyWin32App->ParseCommandLine(iCmdShow))
+	pMyWin32App->ParseCommandLine(iCmdShow);
+	
+	while (GetMessage(&msg, NULL, 0, 0))
 	{
-		while (GetMessage(&msg, NULL, 0, 0))
-		{
-			// Note: we do not call TranslateMessage() because
-			// Note: the keybinding mechanism is responsible
-			// Note: for deciding if/when to do this.
+		// Note: we do not call TranslateMessage() because
+		// Note: the keybinding mechanism is responsible
+		// Note: for deciding if/when to do this.
 			
-			DispatchMessage(&msg);
-		}
+		DispatchMessage(&msg);
 	}
 	
 	// destroy the App.  It should take care of deleting all frames.
@@ -315,7 +314,7 @@ int AP_Win32App::WinMain(const char * szAppName, HINSTANCE hInstance,
 	return msg.wParam;
 }
 
-UT_Bool AP_Win32App::ParseCommandLine(int iCmdShow)
+void AP_Win32App::ParseCommandLine(int iCmdShow)
 {
 	// parse the command line
 	// <app> [-script <scriptname>]* [-dumpstrings] [<documentname>]*
@@ -388,7 +387,6 @@ UT_Bool AP_Win32App::ParseCommandLine(int iCmdShow)
 				UpdateWindow(hwnd);
 #else
 				delete pFirstWin32Frame;
-				// TODO do we want to signal and error and exit.... if so, return false here
 #endif
 			}
 		}
@@ -408,5 +406,5 @@ UT_Bool AP_Win32App::ParseCommandLine(int iCmdShow)
 		UpdateWindow(hwnd);
 	}
 
-	return UT_TRUE;
+	return;
 }

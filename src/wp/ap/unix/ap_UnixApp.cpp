@@ -267,12 +267,11 @@ int AP_UnixApp::main(const char * szAppName, int argc, char ** argv)
 		return -1;	// make this something standard?
 	}
 
-	if (pMyUnixApp->ParseCommandLine())
-	{
-		// turn over control to gtk
+	pMyUnixApp->ParseCommandLine();
 
-		gtk_main();
-	}
+	// turn over control to gtk
+	
+	gtk_main();
 	
 	// destroy the App.  It should take care of deleting all frames.
 
@@ -282,7 +281,7 @@ int AP_UnixApp::main(const char * szAppName, int argc, char ** argv)
 	return 0;
 }
 
-UT_Bool AP_UnixApp::ParseCommandLine(void)
+void AP_UnixApp::ParseCommandLine(void)
 {
 	// parse the command line
 	// <app> [-script <scriptname>]* [-dumpstrings] [<documentname>]*
@@ -348,7 +347,6 @@ UT_Bool AP_UnixApp::ParseCommandLine(void)
 				pFirstUnixFrame->loadDocument(NULL, IEFT_Unknown);
 #else
 				delete pFirstUnixFrame;
-				// TODO do we want to signal and error and exit.... if so, return false here
 #endif
 			}
 		}
@@ -363,5 +361,5 @@ UT_Bool AP_UnixApp::ParseCommandLine(void)
 		pFirstUnixFrame->loadDocument(NULL, IEFT_Unknown);
 	}
 
-	return UT_TRUE;
+	return;
 }
