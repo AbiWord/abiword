@@ -1,0 +1,41 @@
+<awml>
+<section>
+<columnmodel>
+<column type="box" left="0in" top="0in" width="*" height="*"/>
+</columnmodel>
+<p><c PROPS="font-size:11pt; font-family:courier">$Id$</c></p>
+<p PROPS="text-align:center"><c PROPS="font-weight:bold; font-size:24pt">AbiWord Source Overview</c></p>
+<p PROPS="text-align:center"><c PROPS="font-size:11pt">Copyright (C) 1998 AbiSource, Inc. All Rights Reserved.</c></p>
+<p PROPS="text-align:center"><c PROPS="font-style:italic">Jeff Hostetler</c>, <c PROPS="font-family:courier">jeff@abisource.com</c></p>
+<p PROPS="text-align:center">AbiSource, Inc.</p>
+<p PROPS="text-align:center"><c PROPS="font-family:courier">$Date$</c></p>
+<p></p>
+<p><c PROPS="font-weight:bold">Introduction</c></p>
+<p>This document gives an overview of the AbiWord source code. It is intended as a high level overview of the organization and the architecture of the AbiWord application and an overview of the cross-application framework that will be used as a basis for other applications in the AbiSuite family. Specific details on each portion of the source code will be given in other documents.</p>
+<p>AbiWord is an GUI application written in C++. It currently runs on Unix systems using X11 and the GTK toolkit and on Windows ('95, '98, NT) using the Win32 API. A lot of time and effort has been spent to make the source code as cross-platform as possible. As of build 0.3.0, our code is approximately 90% cross-platform (~46.5k cross-platform and ~6.5k platform-specific). We have also spent time to abstract the application framework so that we may share it with other AbiSuite applications. As of build 0.3.0, our code is approximately 48% cross-application (~28.5k cross-application and ~31k AbiWord-specific); this ratio will decrease as we add features to AbiWord, but it is a very good start.</p>
+<p>This approach gives us great feature/bug consistency between platforms. It also allows us to use native GUI libraries so that we get a nativelook-and-feel on each platform. It is our hope that by extensively leveraging cross-platform and cross-application code that we can minimize the effort needed to port the code to another OS or GUI toolkit. It will also allow us to better leverage our QA and documentation efforts.</p>
+<p><c PROPS="font-weight:bold">Naming Conven</c><c PROPS="font-weight:bold">tions</c></p>
+<p>We have divided the source up into functional modules. Each module is given its own subdirectory in the source tree. </p>
+<p>Routines or classes which are considered <c PROPS="font-style:italic">publi</c><c PROPS="font-style:italic">c </c>(accessible outside the boundaries of a module) are given uppercase prefixes; routines or classes considered module-private are given lowercase prefixes. File and class prefixes are chosen to help reflect the module that contains it. </p>
+<p>Each module is responsible for compiling its own source and building the appropriate library. Within a module the the platform-independent code is kept in the <c PROPS="font-family:courier">/</c><c PROPS="font-family:courier">xp</c> directory; the unix-specific code is kept in the <c PROPS="font-family:courier">/unix</c> directory; and the win32-specific code is kept in the <c PROPS="font-family:courier">/</c><c PROPS="font-family:courier">win</c> directory. If a module contains only platform-independent code, it will only have an <c PROPS="font-family:courier">/xp</c> directory.</p>
+<p>Most of the word-processor-core functionality is 100% cross-platform code.</p>
+<p>Most of the user-interface code is part cross-platform and part platform-specific. In most cases, we create base classes in cross-platform code that attempt to do as much as possible in cross-platform code and that also define interfaces for functions that must be platform-specific. Each platform can then derive sub-classes and 'fill in the pieces'.</p>
+<p><c PROPS="font-weight:bold">Cross-Application Framework</c></p>
+<p>abi/src/ap</p>
+<p>abi/src/ev</p>
+<p>abi/src/ver</p>
+<p><c PROPS="font-weight:bold">AbiW</c><c PROPS="font-weight:bold">ord-</c><c PROPS="font-weight:bold">Specific</c></p>
+<p>abi/wp/ap</p>
+<p>abi/wp/fmt</p>
+<p>abi/wp/gr</p>
+<p>abi/wp/impexp</p>
+<p>abi/wp/main</p>
+<p>abi/wp/ptbl</p>
+<p><c PROPS="font-weight:bold">Miscellaneous </c><c PROPS="font-weight:bold">Application-Independent</c></p>
+<p>abi/src/config</p>
+<p>abi/src/other</p>
+<p>abi/src/ps</p>
+<p><c PROPS="font-family:courier">abi/src/</c><c PROPS="font-family:courier">util</c><c PROPS="font-family:courier"> </c><c PROPS="font-family:courier">{</c><c PROPS="font-family:courier">/</c><c PROPS="font-family:courier">xp, </c><c PROPS="font-family:courier">/</c><c PROPS="font-family:courier">unix, </c><c PROPS="font-family:courier">/</c><c PROPS="font-family:courier">win}</c> -- These directories contain various utility routines and simple data structures that we have found useful. Some of these are used to isolate platform-specific behavior (such as string routines, debug messages, and assert macros) and others are use to provide useful data structures (such as hash tables, vectors, and string pools). These directories also contain various data conversion routines.</p>
+<p>It is one of our goals to restrict platform-specific #ifdef's to code in the <c PROPS="font-family:courier">abi/src/util/xp</c> directory.</p>
+</section>
+</awml>

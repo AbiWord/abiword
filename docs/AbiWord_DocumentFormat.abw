@@ -3,13 +3,13 @@
 <columnmodel>
 <column type="box" left="0in" top="0in" width="*" height="*"/>
 </columnmodel>
-<p><c PROPS="font-size:10pt">$Id$</c></p>
+<p><c PROPS="font-size:11pt; font-family:courier">$Id$</c></p>
 <p PROPS="text-align:center"><c PROPS="font-size:24pt; font-weight:bold">AbiWord Document Format</c></p>
 <p PROPS="text-align:center"><c PROPS="font-size:10pt">Version 1.0</c></p>
-<p PROPS="text-align:center"><c PROPS="font-size:10pt">Copyright </c><c PROPS="font-size:10pt">(C) 1998</c><c PROPS="font-size:10pt"> </c><c PROPS="font-size:10pt">AbiSource, Inc., </c><c PROPS="font-size:10pt">All Rights Reserved.</c></p>
+<p PROPS="text-align:center"><c PROPS="font-size:11pt">Copyright </c><c PROPS="font-size:11pt">(C) 1998</c><c PROPS="font-size:11pt"> </c><c PROPS="font-size:11pt">AbiSource, Inc., </c><c PROPS="font-size:11pt">All Rights Reserved.</c></p>
 <p PROPS="text-align:center"><c PROPS="font-style:italic">Jeff Hostetler</c><c PROPS="font-style:italic">, </c><c PROPS="font-family:courier">jeff@abisource.com</c></p>
 <p PROPS="text-align:center">AbiSource, Inc.</p>
-<p PROPS="text-align:center">$Date$</p>
+<p PROPS="text-align:center"><c PROPS="font-family:courier">$Date$</c></p>
 <p PROPS="text-align:left"></p>
 <p PROPS="text-align:left"><c PROPS="font-weight:bold">Introduction</c></p>
 <p PROPS="text-align:left">This document describes the AbiWord file format used to represent AbiWord native documents. This document describes file format version 1.0.</p>
