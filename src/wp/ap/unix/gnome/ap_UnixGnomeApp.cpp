@@ -93,119 +93,56 @@ AP_UnixGnomeApp::~AP_UnixGnomeApp()
 
 int AP_UnixGnomeApp::main(const char * szAppName, int argc, char ** argv)
 {
-	int k = 0;
-
-	static const struct poptOption options[] =
-	{{"geometry", 'g', POPT_ARG_STRING, NULL, 0, "set initial frame geometry", "GEOMETRY"},
-	 {"nosplash", 'n', POPT_ARG_NONE,   NULL, 0, "do not show splash screen", NULL},
-	 {"lib",      'l', POPT_ARG_STRING, NULL, 0, "use DIR for application components", "DIR"},
 #ifdef ABI_OPT_PERL
-	 {"script", 's', POPT_ARG_STRING, NULL, 0, "Execute FILE as script", "FILE"},
+ 	char *script = NULL;
+#endif
+	char *geometry = NULL;
+	char *to = NULL;
+	int topng = 0;
+	char *printto = NULL;
+	int verbose = 1;
+	int show = 0;
+	char * plugin = NULL;
+	int nosplash = 0;
+
+	char *file = NULL;
+
+#ifdef DEBUG
+ 	gboolean dumpstrings = FALSE;
+#endif
+	poptContext poptcon;
+	static const struct poptOption options[] =
+	{{"geometry", 'g', POPT_ARG_STRING, &geometry, 0, "set initial frame geometry", "GEOMETRY"},
+	 {"nosplash", 'n', POPT_ARG_NONE,   &nosplash, 0, "do not show splash screen", NULL},
+
+#ifdef ABI_OPT_PERL
+	 {"script", 's', POPT_ARG_STRING, &script, 0, "Execute FILE as script", "FILE"},
 #endif
 #ifdef DEBUG
-	 {"dumpstrings", 'd', POPT_ARG_NONE, NULL, 0, "Dump strings to file", NULL},
+	 {"dumpstrings", 'd', POPT_ARG_NONE, &dumpstrings, 0, "Dump strings to file", NULL},
 #endif
-	 {"to", 't', POPT_ARG_STRING, NULL, 0, "The target format of the file (abw, zabw, rtf, txt, utf8, html, latex)", "FORMAT"},
-	 {"to-png", '\0', POPT_ARG_NONE, NULL, 0, "Convert the incoming file to a PNG image", ""},
-	 {"verbose", 'v', POPT_ARG_INT, NULL, 0, "The verbosity level (0, 1, 2)", "LEVEL"},
-	 {"print", 'p', POPT_ARG_STRING, NULL, 0, "print this file to a file or printer", "FILE or |lpr"},
-	 {"show", '\0', POPT_ARG_NONE, NULL, 0, "If you really want to start the GUI (even if you use the --to option)", ""},
-	 {"plugin", '\0', POPT_ARG_NONE, NULL, 0, "If you want to execute a plugin instead of the main application ", ""},
+	 {"to", 't', POPT_ARG_STRING, &to, 0, "The target format of the file (abw, zabw, rtf, txt, utf8, html, latex)", "FORMAT"},
+	 {"to-png", '\0', POPT_ARG_NONE, &topng, 0, "Convert the incoming file to a PNG image", ""},
+	 {"verbose", 'v', POPT_ARG_INT, &verbose, 0, "The verbosity level (0, 1, 2)", "LEVEL"},
+	 {"print", 'p', POPT_ARG_STRING, &printto, 0, "print this file to a file or printer", "FILE or |lpr"},
+	 {"show", '\0', POPT_ARG_NONE, &show, 0, "If you really want to start the GUI (even if you use the --to option)", ""},
+	 {"plugin", '\0', POPT_ARG_NONE, &plugin, 0, "If you want to execute a plugin instead of the main application ", ""},
 	 {NULL, '\0', 0, NULL, 0, NULL, NULL} /* end the list */
 	};
-	gnomelib_register_popt_table (options, "Abiword Options");
 
-	// This is a static function.
-		   
-	UT_DEBUGMSG(("Build ID:\t%s\n", XAP_App::s_szBuild_ID));
-	UT_DEBUGMSG(("Version:\t%s\n", XAP_App::s_szBuild_Version));
-	UT_DEBUGMSG(("Build Options: \t%s\n", XAP_App::s_szBuild_Options));
-	UT_DEBUGMSG(("Build Target: \t%s\n", XAP_App::s_szBuild_Target));
-	UT_DEBUGMSG(("Compile Date:\t%s\n", XAP_App::s_szBuild_CompileDate));
-	UT_DEBUGMSG(("Compile Time:\t%s\n", XAP_App::s_szBuild_CompileTime));
+	//
+	// This is a static function.		   
+	//
 
-	// initialize our application.
+#ifndef ABI_OPT_WIDGET
+	gnome_init_with_popt_table("AbiWord", "1.0.0", argc, argv, options, 0, &poptcon);
+#endif
+
+	// hack needed to intialize gtk before ::initialize
+	gtk_set_locale();
 
 	XAP_Args Args = XAP_Args(argc,argv);
-  
  	AP_UnixGnomeApp * pMyUnixApp = new AP_UnixGnomeApp(&Args, szAppName);
- 
- 	// Do a quick and dirty find for "--to"
-  	bool bShowSplash = true;
- 	bool bShowApp = true;
-  	for (k = 1; k < Args.m_argc; k++)
-  		if (*Args.m_argv[k] == '-')
-  			if ((UT_stricmp(Args.m_argv[k],"--to") == 0) ||
- 				(UT_stricmp(Args.m_argv[k],"-t") == 0))
-  			{
- 				bShowApp = false;
-  				bShowSplash = false;
-  				break;
-  			}
-
-  	for (k = 1; k < Args.m_argc; k++)
-  		if (*Args.m_argv[k] == '-')
-		  if ((UT_stricmp(Args.m_argv[k],"--to-png") == 0))
-		    {
-		      bShowApp = false;
-		      bShowSplash = false;
-		      break;
-		    }
-
-	for (k = 1; k < Args.m_argc; k++)
-  		if (*Args.m_argv[k] == '-')
-  			if ((UT_stricmp(Args.m_argv[k],"--print") == 0) ||
- 				(UT_stricmp(Args.m_argv[k],"-p") == 0))
-  			{
- 				bShowApp = false;
-  				bShowSplash = false;
-  				break;
-  			}
- 
- 	// Do a quick and dirty find for "--show"
-  	for (k = 1; k < Args.m_argc; k++)
-  		if (*Args.m_argv[k] == '-')
-  			if (UT_stricmp(Args.m_argv[k],"--show") == 0)
-  			{
- 				bShowApp = true;
-  				bShowSplash = true;
-  				break;
-  			}
- 
- 	// Do a quick and dirty find for "--nosplash"
- 	for (k = 1; k < Args.m_argc; k++)
- 		if (*Args.m_argv[k] == '-')
- 			if ((UT_stricmp(Args.m_argv[k],"--nosplash") == 0) ||
-				(UT_stricmp(Args.m_argv[k], "-n") == 0))
- 			{
- 				bShowSplash = false;
- 				break;
- 			}
-
- 	// Do a quick and dirty find for "--plugin"
- 	for (k = 1; k < Args.m_argc; k++)
- 		if (*Args.m_argv[k] == '-')
- 			if ((UT_stricmp(Args.m_argv[k],"--plugin") == 0) ||
-				(UT_stricmp(Args.m_argv[k], "-n") == 0))
- 			{
- 				bShowSplash = false;
- 				break;
- 			}
-
-	// HACK : these calls to gtk reside properly in XAP_UnixApp::initialize(),
-	// HACK : but need to be here to throw the splash screen as
-	// HACK : soon as possible.
-	gtk_set_locale();
-	gtk_init(&Args.m_argc,&Args.m_argv);
-
-   pMyUnixApp->setDisplayStatus(bShowApp);
-
-	UT_DEBUGMSG((" Initializing gnome-VFS \n"));
-	if (! gnome_vfs_init ())
-	{
-	    UT_DEBUGMSG(("DOM: gnome_vfs_init () failed!\n"));
-	    return -1;	    
-	}
 
 	// if the initialize fails, we don't have icons, fonts, etc.
 	if (!pMyUnixApp->initialize())
@@ -213,6 +150,35 @@ int AP_UnixGnomeApp::main(const char * szAppName, int argc, char ** argv)
 		delete pMyUnixApp;
 		return -1;	// make this something standard?
 	}
+
+	if (! gnome_vfs_init ())
+	{
+	    UT_DEBUGMSG(("DOM: gnome_vfs_init () failed!\n"));
+	    return -1;	    
+	}
+
+	// do we show the app&splash?
+  	bool bShowSplash = true;
+ 	bool bShowApp = true;
+
+	if ( to || topng || printto )
+	  {
+	    bShowApp = false;
+	    bShowSplash = false;
+	  }
+
+	if ( show )
+	  {
+	    bShowApp = true;
+	    bShowSplash = true;	   
+	  }
+ 
+	if ( nosplash || plugin )
+	  {
+	    bShowSplash = false;
+	  }
+
+	pMyUnixApp->setDisplayStatus(bShowApp);
 
 	// set the default icon - must be after the call to ::initialize
 	// because that's where we call gnome_init()
@@ -232,83 +198,16 @@ int AP_UnixGnomeApp::main(const char * szAppName, int argc, char ** argv)
 	if (bShowSplash)
 		_showSplash(2000);
 
-	// this function takes care of all the command line args.
-	// if some args are botched, it returns false and we should
-	// continue out the door.
-	if (pMyUnixApp->parseCommandLine() && bShowApp)
 	{
-		// turn over control to gtk
-		gtk_main();
-	}
-	else
-	  {
-	    UT_DEBUGMSG(("DOM: not parsing command line or showing app\n"));
-	  }
-
-	// destroy the App.  It should take care of deleting all frames.
-	pMyUnixApp->shutdown();
-	delete pMyUnixApp;
-	
-	return 0;
-}
-
-bool AP_UnixGnomeApp::parseCommandLine()
-{
-	// parse the command line
-	// <app> [--script <scriptname>]* [--dumpstrings] [--to <format>] [--geometry <format>] [<documentname>]*
-	
-	// TODO when we refactor the App classes, consider moving
-	// TODO this to app-specific, cross-platform.
-	
-	int kWindowsOpened = 0;
-#ifdef ABI_OPT_PERL
- 	char *script = NULL;
-#endif
-	char *geometry = NULL;
-	char *file = NULL;
-	char *to = NULL;
-	int topng = 0;
-	char *printto = NULL;
-	int verbose = 1;
-	int show = 0;
-	char * plugin = NULL;
 #ifdef DEBUG
- 	gboolean dumpstrings = FALSE;
-#endif
-	poptContext poptcon;
- 	static const struct poptOption options[] =
- 	{{"geometry", 'g', POPT_ARG_STRING, &geometry, 0, "HACK", "HACK"},
-	 {"nosplash", 'n', POPT_ARG_NONE, NULL, 0, "HACK", "HACK"},
-	 {"lib",      'l', POPT_ARG_STRING, NULL, 0, "HACK", "HACK"},
-#ifdef ABI_OPT_PERL
-	 {"script", 's', POPT_ARG_STRING, &script, 0,
-	  "HACK", "HACK"},
-#endif
-#ifdef DEBUG
-	 {"dumpstrings", 'd', POPT_ARG_NONE, &dumpstrings, 0,
-	  "HACK", NULL},
-#endif
-	 {"to", 't', POPT_ARG_STRING, &to, 0, "HACK", "HACK"},
-	 {"to-png", '\0', POPT_ARG_NONE, &topng, 0, "HACK", "HACK"},
-	 {"print", 'p', POPT_ARG_STRING, &printto, 0, "HACK", "HACK"},
-	 {"verbose", 'v', POPT_ARG_INT, &verbose, 0, "HACK", "HACK"},
-	 {"show", '\0', POPT_ARG_NONE, &show, 0, "HACK", NULL},
-	 {"plugin", '\0', POPT_ARG_STRING, &plugin, 0, "HACK", NULL},
-	 {NULL, '\0', 0, NULL, 0, NULL, NULL} /* end the list */
-	};
-	
- 	gnomelib_register_popt_table (options, "Hack");
-	poptcon = gnomelib_parse_args (m_pArgs->m_argc, m_pArgs->m_argv, 0);
-
-#ifdef DEBUG
-	if (dumpstrings)
-	{
-		// dump the string table in english as a template for translators.
-		// see abi/docs/AbiSource_Localization.abw for details.
-		AP_BuiltinStringSet * pBuiltinStringSet = new AP_BuiltinStringSet(this,(XML_Char*)AP_PREF_DEFAULT_StringSet);
-		pBuiltinStringSet->dumpBuiltinSet("en-US.strings");
-		delete pBuiltinStringSet;
-	}
+	  if (dumpstrings)
+	    {
+	      // dump the string table in english as a template for translators.
+	      // see abi/docs/AbiSource_Localization.abw for details.
+	      AP_BuiltinStringSet * pBuiltinStringSet = new AP_BuiltinStringSet(pMyUnixApp,(XML_Char*)AP_PREF_DEFAULT_StringSet);
+	      pBuiltinStringSet->dumpBuiltinSet("en-US.strings");
+	      delete pBuiltinStringSet;
+	    }
 #endif
 
 #ifdef ABI_OPT_PERL
@@ -347,7 +246,7 @@ bool AP_UnixGnomeApp::parseCommandLine()
 			f = XAP_UNIXBASEAPP::GEOMETRY_FLAG_POS;
 		
 		// set the xap-level geometry for future frame use
-		setGeometry(x, y, width, height, f);
+		pMyUnixApp->setGeometry(x, y, width, height, f);
 	}
 	
 	if (to) {
@@ -381,12 +280,12 @@ bool AP_UnixGnomeApp::parseCommandLine()
 	    {
 	      UT_DEBUGMSG(("DOM: Printing file %s\n", file));
 
-	      AP_Convert * conv = new AP_Convert(this);
+	      AP_Convert * conv = new AP_Convert(pMyUnixApp);
 	      conv->setVerbose(verbose);
 	      
 	      PS_Graphics * pG = new PS_Graphics ((printto[0] == '|' ? printto+1 : printto), file, 
-						  getApplicationName(), getFontManager(),
-						  (printto[0] != '|'), this);
+						  pMyUnixApp->getApplicationName(), pMyUnixApp->getFontManager(),
+						  (printto[0] != '|'), pMyUnixApp);
 	      
 	      conv->print (file, pG);
 	      
@@ -432,7 +331,7 @@ bool AP_UnixGnomeApp::parseCommandLine()
 // of the plugin registered information.
 //
 		const char * evExecute = pModule->getModuleInfo()->usage;
-		EV_EditMethodContainer* pEMC = getEditMethodContainer();
+		EV_EditMethodContainer* pEMC = pMyUnixApp->getEditMethodContainer();
 		const EV_EditMethod * pInvoke = pEMC->findEditMethodByName(evExecute);
 		if(!pInvoke)
 		{
@@ -445,6 +344,41 @@ bool AP_UnixGnomeApp::parseCommandLine()
 		ev_EditMethod_invoke(pInvoke, "Called From UnixGnomeApp");
 		return false;
 	}
+	}
+
+	// this function takes care of all the command line args.
+	// if some args are botched, it returns false and we should
+	// continue out the door.
+	if (pMyUnixApp->parseCommandLine(poptcon) && bShowApp)
+	{
+		// turn over control to gtk
+		gtk_main();
+	}
+	else
+	  {
+	    UT_DEBUGMSG(("DOM: not parsing command line or showing app\n"));
+	  }
+
+	// destroy the App.  It should take care of deleting all frames.
+	pMyUnixApp->shutdown();
+	delete pMyUnixApp;
+	
+	poptFreeContext (poptcon);
+
+	return 0;
+}
+
+bool AP_UnixGnomeApp::parseCommandLine(poptContext poptcon)
+{
+	int kWindowsOpened = 0;
+	char *file = NULL;
+
+	// parse the command line
+	// <app> [--script <scriptname>]* [--dumpstrings] [--to <format>] [--geometry <format>] [<documentname>]*
+	
+	// TODO when we refactor the App classes, consider moving
+	// TODO this to app-specific, cross-platform.
+	
 	while ((file = poptGetArg (poptcon)) != NULL) {
 		AP_UnixFrame * pFirstUnixFrame = new AP_UnixFrame(this);
 		pFirstUnixFrame->initialize();
