@@ -314,8 +314,10 @@ BeginLayout(Main,0)
 	        Separator()
 			MenuItem(AP_MENU_ID_TOOLS_REVISIONS_ACCEPT_REVISION)
 			MenuItem(AP_MENU_ID_TOOLS_REVISIONS_REJECT_REVISION)
+#ifdef DEBUG
 	        Separator()
 		    MenuItem(AP_MENU_ID_TOOLS_REVISIONS_MERGE_DOCUMENTS)
+#endif
 		EndSubMenu()
 	
 	    Separator()
