@@ -76,6 +76,7 @@ public:
 	double m_subscript_pos;         // unit is pt. if 0.0, ignore	
 	double	m_fontSize;			// font size in points
 	UT_uint32 m_fontNumber;		// index into font table
+	bool    m_hasColour;        // if false, ignore colour number
 	UT_uint32 m_colourNumber;	// index into colour table
 };                  
 

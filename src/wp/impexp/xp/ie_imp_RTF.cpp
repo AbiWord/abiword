@@ -132,6 +132,7 @@ RTFProps_CharProps::RTFProps_CharProps()
 	m_subscript_pos = 0.0;
 	m_fontSize = 12.0;
 	m_fontNumber = 0;
+	m_hasColour = false;
 	m_colourNumber = 0;
 }                
 
@@ -1676,12 +1677,15 @@ bool IE_Imp_RTF::ApplyCharacterAttributes()
 		strcat(propBuffer, "; font-family:");
 		strcat(propBuffer, pFont->m_pFontName);
 	}
-	// colour
-	UT_uint32 colour = GetNthTableColour(m_currentRTFState.m_charProps.m_colourNumber);
-	sprintf(tempBuffer, "; color:%06x", colour);
-	tempBuffer[14] = 0;
-	strcat(propBuffer, tempBuffer);
-
+	if (m_currentRTFState.m_charProps.m_hasColour) 
+	{
+		// colour, only if one has been set. See bug 1324
+		UT_uint32 colour = GetNthTableColour(m_currentRTFState.m_charProps.m_colourNumber);
+		sprintf(tempBuffer, "; color:%06x", colour);
+		tempBuffer[14] = 0;
+		strcat(propBuffer, tempBuffer);
+	}
+	
 	const XML_Char* propsArray[3];
 	propsArray[0] = pProps;
 	propsArray[1] = propBuffer;
@@ -3076,7 +3080,11 @@ bool IE_Imp_RTF::HandleFace(UT_uint32 fontNumber)
 
 bool IE_Imp_RTF::HandleColour(UT_uint32 colourNumber)
 {
-	return HandleU32CharacterProp(colourNumber, &m_currentRTFState.m_charProps.m_colourNumber);
+	if (HandleBoolCharacterProp(true, &m_currentRTFState.m_charProps.m_hasColour))
+	{
+		return HandleU32CharacterProp(colourNumber, &m_currentRTFState.m_charProps.m_colourNumber);
+	}
+	return false;
 }
 
 
