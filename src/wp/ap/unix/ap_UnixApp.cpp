@@ -870,6 +870,7 @@ int AP_UnixApp::main(const char * szAppName, int argc, char ** argv)
 	sigaction(SIGBUS, &sa, NULL);
 	sigaction(SIGILL, &sa, NULL);
 	sigaction(SIGQUIT, &sa, NULL);
+	sigaction(SIGFPE, &sa, NULL);
 	// TODO: handle SIGABRT
 	
 	// if the initialize fails, we don't have icons, fonts, etc.
