@@ -9720,6 +9720,14 @@ EV_EditMouseContext FV_View::getMouseContext(UT_sint32 xPos, UT_sint32 yPos)
 }
 
 /*!
+ * Return the document position from the most recent mouse positions
+ */
+PT_DocPosition FV_View::getDocPositionFromLastXY(void)
+{
+	return getDocPositionFromXY(m_iMouseX,m_iMouseY);
+}
+
+/*!
  * This sets the mouse pointer to show the little watch or some other icon if
  * if a long operation is in progress.
  */

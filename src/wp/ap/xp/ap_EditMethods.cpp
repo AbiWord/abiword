@@ -7183,7 +7183,8 @@ Defun(dlgFmtImage)
 	pDialog->setMaxWidth (max_width);
 	pDialog->setMaxHeight (max_height);
 	UT_DEBUGMSG(("formatting  image: %d\n", pCallData->m_xPos));
-	PT_DocPosition pos = pView->getDocPositionFromXY(pCallData->m_xPos, pCallData->m_yPos);
+	PT_DocPosition pos = pView->getDocPositionFromLastXY();
+
 	fl_BlockLayout * pBlock = pView->getBlockAtPosition(pos);
 	fp_Run *  pRun = NULL;
 	if(pBlock)
@@ -7203,7 +7204,7 @@ Defun(dlgFmtImage)
 			return false;
 		}
 	}
-
+    pView->cmdSelect(pos,pos+1);
 	const XML_Char ** props_in = NULL;
 	if (pView->getCharFormat(&props_in))
 	{
