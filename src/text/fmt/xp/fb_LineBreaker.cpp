@@ -183,7 +183,7 @@ UT_sint32 fb_LineBreaker::breakParagraph(fl_BlockLayout* pBlock)
 								  pScanRun && pScanRun->getType() != FPRUN_TAB && (iScanWidth / 2 < iPos-m_iWorkingLineWidth); 
 								  pScanRun = pScanRun->getNext() )
 							{
-								iScanWidth += pScanRun->getWidth();
+								iScanWidth += pScanRun->getWidthInLayoutUnits();
 							}
 				
 							m_iWorkingLineWidth = iPos - iScanWidth/2;
@@ -200,7 +200,7 @@ UT_sint32 fb_LineBreaker::breakParagraph(fl_BlockLayout* pBlock)
 								  pScanRun && pScanRun->getType() != FPRUN_TAB && (iScanWidth < iPos-m_iWorkingLineWidth); 
 								  pScanRun = pScanRun->getNext() )
 							{
-								iScanWidth += pScanRun->getWidth();
+								iScanWidth += pScanRun->getWidthInLayoutUnits();
 							}
 				
 							m_iWorkingLineWidth = iPos - iScanWidth;
@@ -212,9 +212,8 @@ UT_sint32 fb_LineBreaker::breakParagraph(fl_BlockLayout* pBlock)
 						{
 							fp_Run *pScanRun;
 							int iScanWidth = 0;
-							UT_uint32   len = 0, runLen = 0;
+							UT_uint32 runLen = 0;
 
-							UT_UCSChar const *pSpanPtr, *pCh;
 							UT_UCSChar *pDecimalStr;
 							// the string to search for decimals
 							UT_UCS_cloneString_char(&pDecimalStr, ".");
@@ -225,33 +224,34 @@ UT_sint32 fb_LineBreaker::breakParagraph(fl_BlockLayout* pBlock)
 								  pScanRun = pScanRun->getNext() )
 							{
 								UT_Bool foundDecimal = UT_FALSE;
-								if ( pBlock->getSpanPtr( pScanRun->getBlockOffset(), &pSpanPtr, &len ) )
-								{
-									runLen = pScanRun->getLength();
-									UT_ASSERT(len >= runLen);
-									pCh = pSpanPtr;
 
-									while ( runLen )
+								if(pScanRun->getType() == FPRUN_TEXT)
+								{
+									UT_sint32 decimalBlockOffset = ((fp_TextRun *)pScanRun)->findCharacter(0, pDecimalStr[0]);
+
+									if(decimalBlockOffset != -1)
 									{
-										if ( *pCh++ == *pDecimalStr )		// TODO - FIXME
-										{
-											foundDecimal = UT_TRUE;	
-											break;
-										}
-										runLen--;
+										foundDecimal = UT_TRUE;
+
+										runLen = pScanRun->getBlockOffset() - decimalBlockOffset;
 									}
 								}
+
 								//UT_DEBUGMSG(("%s:%d  foundDecimal=%d len=%d iScanWidth=%d \n", 
 								//			__FILE__, __LINE__, foundDecimal, pScanRun->getLength()-runLen, iScanWidth));
 				
 								if ( foundDecimal )
 								{
-									iScanWidth += pBlock->getDocLayout()->getGraphics()->
-										measureString( pSpanPtr, 0, pScanRun->getLength() - runLen, NULL );
+									if(pScanRun->getType() == FPRUN_TEXT)
+									{
+										iScanWidth += ((fp_TextRun *)pScanRun)->simpleRecalcWidth(fp_TextRun::Width_type_layout_units, runLen);
+									}
 									break; // we found our decimal, don't search any further
 								}
 								else	
-									iScanWidth += pScanRun->getWidth();
+								{
+									iScanWidth += pScanRun->getWidthInLayoutUnits();
+								}
 							}
 							//UT_DEBUGMSG((" tabrun iX=%d iPos=%d iScanWidth=%d tabwidth=%d newX=%d\n", 
 							//					  iX,	iPos,   iScanWidth,   iPos-iX-iScanWidth,iPos-iScanWidth));	

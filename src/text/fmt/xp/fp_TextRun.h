@@ -63,7 +63,11 @@ class fp_TextRun : public fp_Run
 		Width_type_display,
 		Width_type_layout_units
 	};
-	UT_sint32				simpleRecalcWidth(UT_sint32 iWidthType = Width_type_display) const;
+	enum
+	{
+		Calculate_full_width = -1
+	};
+	UT_sint32				simpleRecalcWidth(UT_sint32 iWidthType, UT_sint32 iLength = Calculate_full_width) const;
 
 	void					resetJustification();
 	void					distributeJustificationAmongstSpaces(UT_sint32 iAmount, UT_uint32 iSpacesInRun);

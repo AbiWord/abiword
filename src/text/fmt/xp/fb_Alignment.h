@@ -44,7 +44,7 @@ public:
 
 	virtual void		initialize(fp_Line *pLine) = 0;
 	virtual UT_sint32	getStartPosition() = 0;
-	virtual UT_sint32	getMove(const fp_Run *pRun) = 0;
+	virtual UT_sint32	getStartPositionInLayoutUnits() = 0;
 	virtual void		eraseLineFromRun(fp_Line *pLine, UT_uint32 runIndex) = 0;
 
 };
@@ -55,7 +55,7 @@ public:
 
 	void		initialize(fp_Line *pLine);
 	UT_sint32	getStartPosition();
-	UT_sint32	getMove(const fp_Run *pRun);
+	UT_sint32	getStartPositionInLayoutUnits();
 	void		eraseLineFromRun(fp_Line *pLine, UT_uint32 runIndex);
 
 };
@@ -66,12 +66,13 @@ public:
 
 	void		initialize(fp_Line *pLine);
 	UT_sint32	getStartPosition();
-	UT_sint32	getMove(const fp_Run *pRun);
+	UT_sint32	getStartPositionInLayoutUnits();
 	void		eraseLineFromRun(fp_Line *pLine, UT_uint32 runIndex);
 
 private:
 
 	UT_sint32	m_startPosition;
+	UT_sint32	m_startPositionLayoutUnits;
 
 };
 
@@ -81,12 +82,13 @@ public:
 
 	void		initialize(fp_Line *pLine);
 	UT_sint32	getStartPosition();
-	UT_sint32	getMove(const fp_Run *pRun);
+	UT_sint32	getStartPositionInLayoutUnits();
 	void		eraseLineFromRun(fp_Line *pLine, UT_uint32 runIndex);
 
 private:
 
 	UT_sint32	m_startPosition;
+	UT_sint32	m_startPositionLayoutUnits;
 
 };
 
@@ -96,7 +98,7 @@ public:
 
 	void		initialize(fp_Line *pLine);
 	UT_sint32	getStartPosition();
-	UT_sint32	getMove(const fp_Run *pRun);
+	UT_sint32	getStartPositionInLayoutUnits();
 	void		eraseLineFromRun(fp_Line *pLine, UT_uint32 runIndex);
 
 private:

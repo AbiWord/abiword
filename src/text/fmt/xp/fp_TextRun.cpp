@@ -523,11 +523,11 @@ UT_Bool fp_TextRun::split(UT_uint32 iSplitOffset)
 
 	m_pLine->insertRunAfter(pNew, this);
 
-	m_iWidth = simpleRecalcWidth();
+	m_iWidth = simpleRecalcWidth(Width_type_display);
 	m_iWidthLayoutUnits = simpleRecalcWidth(Width_type_layout_units);
 	pNew->m_iX = m_iX + m_iWidth;
 	pNew->m_iY = m_iY;
-	pNew->m_iWidth = pNew->simpleRecalcWidth();
+	pNew->m_iWidth = pNew->simpleRecalcWidth(Width_type_display);
 	pNew->m_iWidthLayoutUnits = pNew->simpleRecalcWidth(Width_type_layout_units);
 	
 	return UT_TRUE;
@@ -583,8 +583,22 @@ void fp_TextRun::fetchCharWidths(fl_CharWidths * pgbCharWidths)
 
 }
 
-UT_sint32 fp_TextRun::simpleRecalcWidth(UT_sint32 iWidthType) const
+UT_sint32 fp_TextRun::simpleRecalcWidth(UT_sint32 iWidthType, UT_sint32 iLength) const
 {
+
+	if(iLength == Calculate_full_width)
+	{
+		iLength = m_iLen;
+	}
+	UT_ASSERT(iLength >= 0);
+
+	UT_ASSERT(iLength <= m_iLen);
+	if(iLength > m_iLen)
+		iLength = m_iLen;
+
+	if (iLength == 0)
+		return 0;
+
 	UT_GrowBuf * pgbCharWidths;
 	switch(iWidthType)
 	{
@@ -605,14 +619,12 @@ UT_sint32 fp_TextRun::simpleRecalcWidth(UT_sint32 iWidthType) const
 	UT_uint16* pCharWidths = pgbCharWidths->getPointer(0);
 	
 	UT_sint32 iWidth = 0;
-	if (m_iLen == 0)
-		return 0;
 
 	{
 		const UT_UCSChar* pSpan;
 		UT_uint32 lenSpan;
 		UT_uint32 offset = m_iOffsetFirst;
-		UT_uint32 len = m_iLen;
+		UT_uint32 len = iLength;
 		UT_Bool bContinue = UT_TRUE;
 
 		while (bContinue)

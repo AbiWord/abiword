@@ -540,13 +540,16 @@ void fp_Line::layout(void)
 	pAlignment->initialize(this);
 
 
+	UT_sint32 Screen_resolution = getBlock()->getDocLayout()->getGraphics()->getResolution();
+
 	UT_uint32 iCountRuns = m_vecRuns.getItemCount();
-	UT_sint32 iX = 0;
-	UT_sint32 iStartX;
+	UT_sint32 iX, iXLayoutUnits;
+	UT_sint32 iStartX, iStartXLayoutUnits;
 	UT_uint32 i;
 	UT_Bool bLineErased = UT_FALSE;
 
 	iStartX = iX = pAlignment->getStartPosition();
+	iStartXLayoutUnits = iXLayoutUnits = pAlignment->getStartPositionInLayoutUnits();
 	
 	for (i=0; i<iCountRuns; i++)		// TODO do we need to do this if iMoveOver is zero ??
 	{
@@ -565,23 +568,27 @@ void fp_Line::layout(void)
 		
 		if (pRun->getType() == FPRUN_TAB)
 		{
-			UT_sint32 iPos;
+			UT_sint32 iPosLayoutUnits;
 			eTabType	iTabType;
 			eTabLeader	iTabLeader;
 
-			UT_Bool bRes = findNextTabStop(iX - iStartX, iPos, iTabType, iTabLeader);
+			UT_Bool bRes = findNextTabStopInLayoutUnits(iXLayoutUnits - iStartXLayoutUnits, iPosLayoutUnits, iTabType, iTabLeader);
 			UT_ASSERT(bRes);
 
 			fp_TabRun* pTabRun = static_cast<fp_TabRun*>(pRun);
 			fp_Run *pScanRun;
 			int iScanWidth = 0;
+			int iScanWidthLayoutUnits = 0;
 
 			// for everybody except the left tab, we need to know how much text is to follow
 			switch ( iTabType )
 			{
 			case FL_TAB_LEFT:
-				pTabRun->setWidth(iPos - (iX - iStartX));
-				iX = iPos + iStartX;
+				{
+				iXLayoutUnits = (iPosLayoutUnits + iStartXLayoutUnits);
+				iX = iXLayoutUnits * Screen_resolution / UT_LAYOUT_UNITS;
+				pTabRun->setWidth(iX - pTabRun->getX());
+				}
 				break;
 
 			case FL_TAB_CENTER:
@@ -590,43 +597,45 @@ void fp_Line::layout(void)
 					  pScanRun = pScanRun->getNext() )
 				{
 					iScanWidth += pScanRun->getWidth();
+					iScanWidthLayoutUnits += pScanRun->getWidthInLayoutUnits();
 				}
 	
-				if ( iScanWidth / 2 > iPos - (iX - iStartX) )
+				if ( iScanWidthLayoutUnits / 2 > iPosLayoutUnits - (iXLayoutUnits - iStartXLayoutUnits) )
 					pTabRun->setWidth(0);
 				else
 				{
-					int tabWidth = iPos - (iX - iStartX) - iScanWidth / 2 ;
-					pTabRun->setWidth( tabWidth );
-					iX += tabWidth;
+					iXLayoutUnits += iPosLayoutUnits - (iXLayoutUnits - iStartXLayoutUnits) - iScanWidthLayoutUnits / 2;
+					iX += iPosLayoutUnits * Screen_resolution / UT_LAYOUT_UNITS - (iX - iStartX) - iScanWidth / 2;
+					pTabRun->setWidth(iX - pTabRun->getX());
 				}
 		
 				break;
 
 			case FL_TAB_RIGHT:
+			{
 				for ( pScanRun = pRun->getNext();	
 					  pScanRun && pScanRun->getType() != FPRUN_TAB; 
 					  pScanRun = pScanRun->getNext() )
 				{
 					iScanWidth += pScanRun->getWidth();
+					iScanWidthLayoutUnits += pScanRun->getWidthInLayoutUnits();
 				}
 		
-				if ( iScanWidth > iPos - (iX - iStartX) )
+				if ( iScanWidthLayoutUnits > iPosLayoutUnits - (iXLayoutUnits - iStartXLayoutUnits) )
 					pTabRun->setWidth(0);
 				else
 				{
-					int tabWidth = iPos - (iX - iStartX) - iScanWidth ;
-					pTabRun->setWidth( tabWidth );
-					iX += tabWidth;
+					iXLayoutUnits += iPosLayoutUnits - (iXLayoutUnits - iStartXLayoutUnits) - iScanWidthLayoutUnits;
+					iX += iPosLayoutUnits * Screen_resolution / UT_LAYOUT_UNITS - (iX - iStartX) - iScanWidth;
+					pTabRun->setWidth(iX - pTabRun->getX());
 				}
 				break;
+			}
 
 			case FL_TAB_DECIMAL:
 			{
-				UT_UCSChar const *pSpanPtr, *pCh;
 				UT_UCSChar *pDecimalStr;
-				UT_uint32   len, runLen;
-				iScanWidth=0;
+				UT_uint32	runLen;
 
 				// the string to search for decimals
 				UT_UCS_cloneString_char(&pDecimalStr, ".");
@@ -636,47 +645,41 @@ void fp_Line::layout(void)
 					  pScanRun = pScanRun->getNext() )
 				{
 					UT_Bool foundDecimal = UT_FALSE;
-					if ( getBlock()->getSpanPtr( pScanRun->getBlockOffset(), &pSpanPtr, &len ) )
+
+					if(pScanRun->getType() == FPRUN_TEXT)
 					{
-						runLen = pScanRun->getLength();
-						UT_ASSERT(len >= runLen);
-						pCh = pSpanPtr;
+						UT_sint32 decimalBlockOffset = ((fp_TextRun *)pScanRun)->findCharacter(0, pDecimalStr[0]);
 
-						#if defined(UT_DEBUG) && 1
-							char szbuffer[0x400];
-							UT_UCS_strcpy_to_char(szbuffer, pSpanPtr);
-							szbuffer[runLen] = 0;
-							UT_DEBUGMSG(("%s:%d  searching span [%s] (%d chars) (iScanWidth=%d)\n", 
-										  __FILE__, __LINE__, szbuffer, runLen, iScanWidth));
-						#endif
-
-						while ( runLen )
+						if(decimalBlockOffset != -1)
 						{
-							if ( *pCh++ == *pDecimalStr )		// TODO - FIXME
-							{
-								foundDecimal = UT_TRUE;	
-								break;
-							}
-							runLen--;
+							foundDecimal = UT_TRUE;
+
+							runLen = pScanRun->getBlockOffset() - decimalBlockOffset;
 						}
 					}
+
 					UT_DEBUGMSG(("%s:%d  foundDecimal=%d len=%d iScanWidth=%d \n", 
 								__FILE__, __LINE__, foundDecimal, pScanRun->getLength()-runLen, iScanWidth));
 					if ( foundDecimal )
 					{
-						iScanWidth += getBlock()->getDocLayout()->getGraphics()->
-							measureString( pSpanPtr, 0, pScanRun->getLength() - runLen, NULL );
+						if(pScanRun->getType() == FPRUN_TEXT)
+						{
+							iScanWidth += ((fp_TextRun *)pScanRun)->simpleRecalcWidth(fp_TextRun::Width_type_display, runLen);
+							iScanWidthLayoutUnits += ((fp_TextRun *)pScanRun)->simpleRecalcWidth(fp_TextRun::Width_type_layout_units, runLen);
+						}
 						break; // we found our decimal, don't search any further
 					}
-					else	
+					else
+					{
 						iScanWidth += pScanRun->getWidth();
+						iScanWidthLayoutUnits += pScanRun->getWidthInLayoutUnits();
+					}
 				}
 			
-				UT_DEBUGMSG((" tabrun iX=%d iPos=%d iScanWidth=%d tabwidth=%d newX=%d\n", 
-									  iX,	iPos,   iScanWidth,   iPos-(iX-iStartX)-iScanWidth,iPos-iScanWidth));	
-				pTabRun->setWidth(iPos - (iX - iStartX) - iScanWidth);
-				iX = iPos - iScanWidth + iStartX;
-			
+				iXLayoutUnits = iPosLayoutUnits - iScanWidthLayoutUnits + iStartXLayoutUnits;
+				iX = iPosLayoutUnits * Screen_resolution / UT_LAYOUT_UNITS - iScanWidth + iStartX;
+				pTabRun->setWidth(iX - pTabRun->getX());
+
 				FREEP(pDecimalStr);	
 				break;
 			}
@@ -690,7 +693,8 @@ void fp_Line::layout(void)
 		}
 		else
 		{
-			iX += pAlignment->getMove(pRun);
+			iXLayoutUnits += pRun->getWidthInLayoutUnits();
+			iX += pRun->getWidth();
 		}
 	}
 }

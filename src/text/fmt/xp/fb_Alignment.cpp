@@ -39,9 +39,9 @@ UT_sint32 fb_Alignment_left::getStartPosition()
 	return 0;
 }
 
-UT_sint32 fb_Alignment_left::getMove(const fp_Run *pRun)
+UT_sint32 fb_Alignment_left::getStartPositionInLayoutUnits()
 {
-	return pRun->getWidth(); 
+	return 0;
 }
 
 void fb_Alignment_left::eraseLineFromRun(fp_Line *pLine, UT_uint32 runIndex)
@@ -69,6 +69,12 @@ void fb_Alignment_center::initialize(fp_Line *pLine)
 	UT_sint32 m_iExtraWidth = pLine->getMaxWidth() - iWidth;
 
 	m_startPosition = m_iExtraWidth / 2;
+
+	UT_sint32 iWidthLayoutUnits = pLine->calculateWidthOfLineInLayoutUnits();
+
+	UT_sint32 m_iExtraWidthLayoutUnits = pLine->getMaxWidthInLayoutUnits() - iWidthLayoutUnits;
+
+	m_startPositionLayoutUnits = m_iExtraWidthLayoutUnits / 2;
 }
 
 UT_sint32 fb_Alignment_center::getStartPosition()
@@ -76,9 +82,9 @@ UT_sint32 fb_Alignment_center::getStartPosition()
 	return m_startPosition;
 }
 
-UT_sint32 fb_Alignment_center::getMove(const fp_Run *pRun)
+UT_sint32 fb_Alignment_center::getStartPositionInLayoutUnits()
 {
-	return pRun->getWidth(); 
+	return m_startPositionLayoutUnits;
 }
 
 void fb_Alignment_center::eraseLineFromRun(fp_Line *pLine, UT_uint32 runIndex)
@@ -94,9 +100,11 @@ void fb_Alignment_right::initialize(fp_Line *pLine)
 {
 	UT_sint32 iWidth = pLine->calculateWidthOfLine() - pLine->calculateWidthOfTrailingSpaces();
 
-	UT_sint32 m_iExtraWidth = pLine->getMaxWidth() - iWidth;
+	m_startPosition = pLine->getMaxWidth() - iWidth;
 
-	m_startPosition = m_iExtraWidth;
+	UT_sint32 iWidthLayoutUnits = pLine->calculateWidthOfLineInLayoutUnits() - pLine->calculateWidthOfTrailingSpacesInLayoutUnits();
+
+	m_startPositionLayoutUnits = pLine->getMaxWidthInLayoutUnits() - iWidthLayoutUnits;
 }
 
 UT_sint32 fb_Alignment_right::getStartPosition()
@@ -104,9 +112,9 @@ UT_sint32 fb_Alignment_right::getStartPosition()
 	return m_startPosition;
 }
 
-UT_sint32 fb_Alignment_right::getMove(const fp_Run *pRun)
+UT_sint32 fb_Alignment_right::getStartPositionInLayoutUnits()
 {
-	return pRun->getWidth(); 
+	return m_startPositionLayoutUnits;
 }
 
 void fb_Alignment_right::eraseLineFromRun(fp_Line *pLine, UT_uint32 runIndex)
@@ -150,13 +158,9 @@ UT_sint32 fb_Alignment_justify::getStartPosition()
 	return 0;
 }
 
-UT_sint32 fb_Alignment_justify::getMove(const fp_Run *pRun)
+UT_sint32 fb_Alignment_justify::getStartPositionInLayoutUnits()
 {
-	UT_sint32 iAmount;
-
-	iAmount = pRun->getWidth();
-
-	return iAmount;
+	return 0;
 }
 
 #ifndef NDEBUG
