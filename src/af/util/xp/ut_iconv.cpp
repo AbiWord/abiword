@@ -29,6 +29,7 @@
 #include <string.h>
 #include <ut_debugmsg.h>
 
+#include "xap_EncodingManager.h"
 
 /*!
  * This class is a nice wrapper around an iconv_t type
@@ -72,6 +73,14 @@ bool auto_iconv::is_valid() const
   { 
     return m_h != (iconv_t)-1; 
   }
+
+void UT_iconv_reset(iconv_t cd)
+{
+    // this insane code is needed by iconv brokenness.  see
+    // http://www.abisource.com/mailinglists/abiword-dev/01/April/0135.html
+    if (XAP_EncodingManager::get_instance()->cjk_locale())
+		iconv(cd,const_cast<ICONV_CONST char**>((char**)NULL),NULL,NULL,NULL);
+};
 
 /*!
  * Borrowed from GLib 2.0 and modified

@@ -47,6 +47,9 @@ static char Rcs_Id[] =
 
 /*
  * $Log$
+ * Revision 1.4  2001/07/18 17:46:01  dom
+ * Module changes, and fix compiler warnings
+ *
  * Revision 1.3  2001/06/12 21:32:49  dom
  * More ispell work...
  *
@@ -691,11 +694,18 @@ ispell_state_t *alloc_ispell_struct() {
 	ret = (ispell_state_t *)calloc(1, sizeof(ispell_state_t));
 	ret->translate_in = 
 	ret->translate_out = (iconv_t)-1;
+
+	return ret;
 }
 
 void free_ispell_struct(ispell_state_t *istate) {
 	if(istate) {
-		free(istate);
+	  if (istate->translate_in != (iconv_t)-1)
+	    iconv_close (istate->translate_in);
+	  if (istate->translate_out != (iconv_t)-1)
+	    iconv_close (istate->translate_out);
+	  
+	  free(istate);
 	}
 }
 #endif

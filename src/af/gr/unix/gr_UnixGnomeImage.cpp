@@ -28,7 +28,7 @@
 
 #define Print_Scale_Factor 36
 
-GR_UnixGnomeImage::GR_UnixGnomeImage(const char* szName, bool isPrintResolution = false) 
+GR_UnixGnomeImage::GR_UnixGnomeImage(const char* szName, bool isPrintResolution) 
   : m_image(NULL)
 {
   if (szName)

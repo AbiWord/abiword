@@ -24,6 +24,7 @@
 #include "ut_string_class.h"
 #include "ut_assert.h"
 #include "ut_bijection.h"
+#include "ut_iconv.h"
 
 #include <stdio.h>
 #include <string.h>
@@ -1135,11 +1136,3 @@ const char * xap_encoding_manager_get_language_iso_name(void)
 }
 
 }
-
-void UT_iconv_reset(iconv_t cd)
-{
-    // this insane code is needed by iconv brokenness.  see
-    // http://www.abisource.com/mailinglists/abiword-dev/01/April/0135.html
-    if (XAP_EncodingManager::get_instance()->cjk_locale())
-		iconv(cd,const_cast<ICONV_CONST char**>((char**)NULL),NULL,NULL,NULL);
-};

@@ -29,8 +29,6 @@
 
 #include "xap_Module.h"
 
-#define SUPPORTS_ABI_VERSION(a,b,c) (((a==0)&&(b==7)&&(c==15)) ? 1 : 0)
-
 // we use a reference-counted sniffer
 static IE_Exp_AWT_Sniffer * m_sniffer = 0;
 
@@ -49,7 +47,7 @@ int abi_plugin_register (XAP_ModuleInfo * mi)
 
 	mi->name = "AbiWord Template Exporter";
 	mi->desc = "Export AbiWord Documents as Templates";
-	mi->version = "0.7.15";
+	mi->version = ABI_VERSION_STRING;
 	mi->author = "Abi the Ant";
 	mi->usage = "No Usage";
 
@@ -81,7 +79,7 @@ ABI_FAR extern "C"
 int abi_plugin_supports_version (UT_uint32 major, UT_uint32 minor, 
 								 UT_uint32 release)
 {
-	return SUPPORTS_ABI_VERSION(major, minor, release);
+	return isCurrentAbiVersion (major, minor, release) ? 1 : 0;
 }
 
 #endif

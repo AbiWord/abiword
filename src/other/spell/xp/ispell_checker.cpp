@@ -300,7 +300,7 @@ ISpellChecker::requestDictionary(const char *szLang)
 {
         char *hashname = NULL;
 
-	for (int i = 0; i < (sizeof (m_mapping) / sizeof (m_mapping[0])); i++)
+	for (UT_uint32 i = 0; i < (sizeof (m_mapping) / sizeof (m_mapping[0])); i++)
 	  {
 	    if (!strcmp (szLang, m_mapping[i].lang)) {
 	      UT_String hName = XAP_App::getApp()->getAbiSuiteLibDir();
