@@ -102,7 +102,7 @@ bool	Barbarisms::suggestExactWord(const UT_UCSChar *word32, size_t length,	UT_Ve
 	
 	for (UT_uint32 iItem = nItems; iItem; --iItem)
 	{
-		pWord = static_cast<const UT_UCS4Char *>(vec->getNthItem(iItem - 1));
+		pWord = static_cast<UT_UCS4Char *>(vec->getNthItem(iItem - 1));
 		nSize = sizeof(UT_UCS4Char) * (UT_UCS4_strlen(pWord) + 1);
 		suggest32 = static_cast<UT_UCS4Char*>(malloc(nSize));
 		memcpy (suggest32, pWord, nSize);
