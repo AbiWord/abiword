@@ -996,6 +996,9 @@ RTFFontTableItem::RTFFontTableItem(FontFamilyEnum fontFamily, int charSet, int c
 			case 77:    // Source Vlad Harchev from OpenOffice
 				m_szEncoding = "MACINTOSH";
 				break;
+			case 78:    // fjf: some kind of Japanese, let's guess:
+				m_szEncoding = "SJIS";
+				break;
 			case 128:	// SHIFTJIS_CHARSET
 				m_szEncoding = "CP932";
 				break;
