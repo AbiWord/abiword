@@ -17,6 +17,8 @@
  * 02111-1307, USA.
  */
 
+/* Required to get proper namespace inclusion from PNG code */
+#include <string.h>
 #include "png.h"
 
 #include "ut_assert.h"

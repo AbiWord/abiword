@@ -216,8 +216,8 @@ const char * UT_pathSuffix(const char * path)
 	// a dot, and if the dot happens AFTER the last slash (if there
 	// is a slash), we consider the stuff beyond the dot (in
 	// the forward direction) the extension.
-	char * dotpos = strrchr(path, '.');
-	char * slashpos = strrchr(path, ut_PATHSEP);
+	const char * dotpos = strrchr(path, '.');
+	const char * slashpos = strrchr(path, ut_PATHSEP);
 
 	if (slashpos)
 	{
