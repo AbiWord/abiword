@@ -1,5 +1,5 @@
 /* AbiWord
- * Copyright (C) 1998,1999 AbiSource, Inc.
+ * Copyright (C) 1998-2000 AbiSource, Inc.
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -748,7 +748,10 @@ UT_sint32 fp_Line::getMarginAfter(void) const
 	if (isLastLineInBlock() && getBlock()->getNext())
 	{
 		fp_Line* pNextLine = getBlock()->getNext()->getFirstLine();
-		UT_ASSERT(pNextLine);
+//		UT_ASSERT(pNextLine);
+		if (!pNextLine)
+			return 0;
+
 		UT_ASSERT(pNextLine->isFirstLineInBlock());
 					
 		UT_sint32 iBottomMargin = getBlock()->getBottomMargin();
@@ -768,7 +771,10 @@ UT_sint32 fp_Line::getMarginAfterInLayoutUnits(void) const
 	if (isLastLineInBlock() && getBlock()->getNext())
 	{
 		fp_Line* pNextLine = getBlock()->getNext()->getFirstLine();
-		UT_ASSERT(pNextLine);
+//		UT_ASSERT(pNextLine);
+		if (!pNextLine)
+			return 0;
+
 		UT_ASSERT(pNextLine->isFirstLineInBlock());
 					
 		UT_sint32 iBottomMargin = getBlock()->getBottomMarginInLayoutUnits();
