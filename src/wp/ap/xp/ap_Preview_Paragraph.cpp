@@ -50,7 +50,7 @@
 
 AP_Preview_Paragraph_Block::AP_Preview_Paragraph_Block(UT_RGBColor & clr,
 													   GR_Graphics * gc,
-													   AP_Dialog_Paragraph::tAlignState m_align,
+													   AP_Dialog_Paragraph::tAlignState align,
 													   UT_uint32 fontHeight)
 {
 	UT_ASSERT(gc);
@@ -69,7 +69,7 @@ AP_Preview_Paragraph_Block::AP_Preview_Paragraph_Block(UT_RGBColor & clr,
 	m_afterSpacing = DEFAULT_AFTER_SPACING;
 	m_lineSpacing = DEFAULT_LINE_SPACING;
 
-	m_align = AP_Dialog_Paragraph::align_LEFT;
+	m_align = align;
 	m_indent = AP_Dialog_Paragraph::indent_NONE;
 	m_spacing = AP_Dialog_Paragraph::spacing_SINGLE;
 

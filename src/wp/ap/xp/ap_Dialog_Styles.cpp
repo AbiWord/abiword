@@ -231,7 +231,10 @@ void AP_Dialog_Styles::fillVecFromCurrentPoint(void)
 	{
 		szName = paraProps[i];
 		szValue = paraProps[i+1];
-		addOrReplaceVecProp(szName,szValue);
+		if(strstr(szName,"toc-") == NULL)
+		{
+			addOrReplaceVecProp(szName,szValue);
+		}
 		i = i + 2;
 	}
 	i = 0;
@@ -924,7 +927,7 @@ void AP_Dialog_Styles::updateCurrentStyle(void)
 		if(i+2<countp)
 			m_curStyleDesc += "; ";
 	}
-	UT_DEBUGMSG(("New props of style %s \n",m_curStyleDesc.c_str()));
+	xxx_UT_DEBUGMSG(("New props of style %s \n",m_curStyleDesc.c_str()));
 //
 // Update the description in the Modify Dialog.
 //
@@ -1387,7 +1390,7 @@ void AP_Dialog_Styles::_populateAbiPreview(bool isNew)
 // Update the description in the Modify Dialog.
 //
 	setModifyDescription (m_curStyleDesc.c_str());
-	UT_DEBUGMSG(("Style desc is %s \n",m_curStyleDesc.c_str()));
+	xxx_UT_DEBUGMSG(("Style desc is %s \n",m_curStyleDesc.c_str()));
 	if( pStyle == NULL)
 	{
 		if(strlen(m_curStyleDesc.c_str()) == 0)
