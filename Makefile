@@ -20,7 +20,11 @@
 ## 02111-1307, USA.
 
 ABI_ROOT	:=$(shell pwd)
-prefix		:=/usr/local
+
+# This allows one to specify prefix in compile time
+ifeq ($(strip $(prefix)),)
+prefix          :=/usr/local
+endif
 
 ##################################################################
 ## Useful options:
