@@ -1,6 +1,6 @@
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
- * Copyright (C) 2001 Hubert Figuiere
+ * Copyright (C) 2001-2002 Hubert Figuiere
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -63,10 +63,21 @@ private:
 	void * operator new (size_t size);	// private so that we never call new for that class. Never defined.
 };
 
-//
-// Below this size we use GDK fonts. Above it we use metric info.
-//
-#define MAX_ABI_GDK_FONT_SIZE 200
+class StNSImageLocker {
+public:
+	StNSImageLocker (NSImage * img) { 
+		m_image = img; 
+		[img lockFocus]; 
+	}
+	~StNSImageLocker () {
+		[m_image unlockFocus];
+	}
+private:
+	NSImage *m_image;
+	
+	void * operator new (size_t size);	// private so that we never call new for that class. Never defined.
+};
+
 
 XAP_CocoaFontHandle *	GR_CocoaGraphics::s_pFontGUI = NULL;
 UT_uint32 				GR_CocoaGraphics::s_iInstanceCount = 0;
@@ -75,19 +86,23 @@ GR_CocoaGraphics::GR_CocoaGraphics(NSView * win, XAP_CocoaFontManager * fontMana
 {
 	m_pApp = app;
 	UT_ASSERT (win);
-	//NSRect theRect = [win bounds];
+	NSRect viewBounds = [win bounds];
 	//xxx_UT_DEBUGMSG (("frame is %f %f %f %f\n", theRect.origin.x, theRect.origin.y, theRect.size.width, theRect.size.height));
-	m_pWin = [[Abi_NSView alloc] initWithFrame:[win bounds]];
-	[m_pWin setAutoresizingMask:(NSViewWidthSizable | NSViewHeightSizable)];
+	m_pWin = [[Abi_NSView alloc] initWithFrame:viewBounds];
 	[win addSubview:m_pWin];
+	[m_pWin setAutoresizingMask:(NSViewWidthSizable | NSViewHeightSizable)];
 	[m_pWin setGraphics:this];
 	m_pFontManager = fontManager;
 	m_pFont = NULL;
 	s_iInstanceCount++;
 	init3dColors ();
 	
-	StNSViewLocker locker(m_pWin);
-
+	m_offscreen = [[NSImage alloc] initWithSize:viewBounds.size];
+	//[m_offscreen setFlipped:YES];
+	
+	//StNSViewLocker locker(m_pWin);
+	StNSImageLocker locker (m_offscreen);
+	
 	[NSBezierPath setDefaultLineWidth:0.0f];
  	[[NSColor blackColor] set];
 		
@@ -167,7 +182,8 @@ void GR_CocoaGraphics::drawChar(UT_UCSChar Char, UT_sint32 xoff, UT_sint32 yoff)
 							[NSData dataWithBytes:&Wide_char length:sizeof(Wide_char)] 
 							encoding:NSUnicodeStringEncoding];
 
-	StNSViewLocker locker(m_pWin);
+	//StNSViewLocker locker(m_pWin);
+	StNSImageLocker locker (m_offscreen);
 	NSPoint point;
 	point.x = xoff;
 	point.y = yoff;
@@ -201,7 +217,8 @@ void GR_CocoaGraphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
 	const UT_UCSChar *pC;
 	
 	// Lock the NSView
-	StNSViewLocker locker(m_pWin);
+	//StNSViewLocker locker(m_pWin);
+	StNSImageLocker locker (m_offscreen);
 	NSString * string = nil;
 
   	for(pC=pChars+iCharOffset, x=xoff; pC<pChars+iCharOffset+iLength; ++pC)
@@ -336,7 +353,8 @@ void GR_CocoaGraphics::setColor(const UT_RGBColor& clr)
 
 void GR_CocoaGraphics::_setColor(NSColor * c)
 {
-	StNSViewLocker locker(m_pWin);
+	//StNSViewLocker locker(m_pWin);
+	StNSImageLocker locker (m_offscreen);
 	[c set];
 }
 
@@ -473,7 +491,8 @@ UT_uint32 GR_CocoaGraphics::getFontDescent()
 void GR_CocoaGraphics::drawLine(UT_sint32 x1, UT_sint32 y1,
 							   UT_sint32 x2, UT_sint32 y2)
 {
-	StNSViewLocker locker(m_pWin);
+	//StNSViewLocker locker(m_pWin);
+	StNSImageLocker locker (m_offscreen);
 	UT_DEBUGMSG (("GR_CocoaGraphics::drawLine(%ld, %ld, %ld, %ld) width=%f\n", x1, y1, x2, y2, 
 	              [NSBezierPath defaultLineWidth]));
 	// TODO set the line width according to m_iLineWidth	
@@ -482,7 +501,8 @@ void GR_CocoaGraphics::drawLine(UT_sint32 x1, UT_sint32 y1,
 
 void GR_CocoaGraphics::setLineWidth(UT_sint32 iLineWidth)
 {
-	StNSViewLocker locker(m_pWin);
+	//StNSViewLocker locker(m_pWin);
+	StNSImageLocker locker (m_offscreen);
 	UT_DEBUGMSG (("GR_CocoaGraphics::setLineWidth(%ld) was %f\n", iLineWidth, [NSBezierPath defaultLineWidth]));
 	m_iLineWidth = iLineWidth;
 
@@ -493,7 +513,8 @@ void GR_CocoaGraphics::xorLine(UT_sint32 x1, UT_sint32 y1, UT_sint32 x2,
 			    UT_sint32 y2)
 {
 	// TODO use XOR mode NSCompositeXOR
-	StNSViewLocker locker(m_pWin);
+	//StNSViewLocker locker(m_pWin);
+	StNSImageLocker locker (m_offscreen);
 	[NSBezierPath strokeLineFromPoint:NSMakePoint(x1, y1) toPoint:NSMakePoint(x2, y2)];
 }
 
@@ -511,7 +532,8 @@ void GR_CocoaGraphics::polyLine(UT_Point * pts, UT_uint32 nPoints)
 			[path lineToPoint:NSMakePoint (pts[i].x, pts[i].y)];
 		}
 	}
-	StNSViewLocker locker(m_pWin);
+	//StNSViewLocker locker(m_pWin);
+	StNSImageLocker locker (m_offscreen);
 	[path stroke];
 	[path release];
 }
@@ -520,7 +542,8 @@ void GR_CocoaGraphics::invertRect(const UT_Rect* pRect)
 {
 	UT_ASSERT(pRect);
 
-	StNSViewLocker locker(m_pWin);
+	//StNSViewLocker locker(m_pWin);
+	StNSImageLocker locker (m_offscreen);
 	// TODO handle invert. this is highlight.
 	
 	NSHighlightRect (NSMakeRect (pRect->left, pRect->top, pRect->width, pRect->height));
@@ -536,7 +559,8 @@ void GR_CocoaGraphics::setClipRect(const UT_Rect* pRect)
 		[NSGraphicsContext saveGraphicsState];
 		return;
 	}
-	StNSViewLocker locker(m_pWin);
+	//StNSViewLocker locker(m_pWin);
+	StNSImageLocker locker (m_offscreen);
 	
 	if (pRect)
 	{
@@ -556,7 +580,8 @@ void GR_CocoaGraphics::fillRect(UT_RGBColor& clr, UT_sint32 x, UT_sint32 y,
 	// save away the current color, and restore it after we fill the rect
 	NSColor *c = _utRGBColorToNSColor (clr);
 		
-	StNSViewLocker locker(m_pWin);
+	//StNSViewLocker locker(m_pWin);
+	StNSImageLocker locker (m_offscreen);
 	[NSGraphicsContext saveGraphicsState];
 	[c set];
 	NSRectFill (NSMakeRect (x, y, w, h));
@@ -569,7 +594,8 @@ void GR_CocoaGraphics::fillRect(GR_Color3D c, UT_sint32 x, UT_sint32 y, UT_sint3
 {
 	UT_ASSERT(c < COUNT_3D_COLORS);
 	
-	StNSViewLocker locker(m_pWin);
+	//StNSViewLocker locker(m_pWin);
+	StNSImageLocker locker (m_offscreen);
 	[NSGraphicsContext saveGraphicsState];
 	[m_3dColors[c] set];
 	NSRectFill (NSMakeRect (x, y, w, h));
@@ -826,7 +852,8 @@ void GR_CocoaGraphics::polygon(UT_RGBColor& clr,UT_Point *pts,UT_uint32 nPoints)
 	}
 	[path closePath];
 	NSColor *c = _utRGBColorToNSColor (clr);
-	StNSViewLocker locker(m_pWin);
+	//StNSViewLocker locker(m_pWin);
+	StNSImageLocker locker (m_offscreen);
 	[NSGraphicsContext saveGraphicsState];
 	[c set];
 	[path stroke];
@@ -903,10 +930,13 @@ void GR_Font::s_getGenericFontProperties(const char * /*szFontName*/,
 	[NSGraphicsContext restoreGraphicsState];
 #endif
 	if (m_pGR) {
-		xxx_UT_DEBUGMSG (("- (void)drawRect:(NSRect)aRect: calling callback !\n"));
-		if (!m_pGR->_callUpdateCallback (&aRect)) {
+		NSImage * img = m_pGR->_getOffscreen ();
+		// TODO: only draw what is needed.
+		[img drawAtPoint:aRect.origin fromRect:aRect operation:NSCompositeCopy fraction:1.0f];
+		UT_DEBUGMSG (("- (void)drawRect:(NSRect)aRect: calling callback !\n"));
+//		if (!m_pGR->_callUpdateCallback (&aRect)) {
 		
-		}
+//		}
 	}
 }
 

@@ -1,6 +1,6 @@
 /* Abiword
  * Copyright (C) 1998 AbiSource, Inc.
- * Copyright (C) 2001 Hubert Figuiere
+ * Copyright (C) 2001-2002 Hubert Figuiere
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -117,6 +117,7 @@ class GR_CocoaGraphics : public GR_Graphics
 	typedef bool (*gr_cocoa_graphics_update) (NSRect * rect, GR_CocoaGraphics *pGr, void * param);
 	void				_setUpdateCallback (gr_cocoa_graphics_update callback, void * param);
 	bool				_callUpdateCallback(NSRect *aRect);
+	NSImage*			_getOffscreen () { return m_offscreen; };
  protected:
 	virtual UT_uint32 	_getResolution(void) const;
 	void				_setColor(NSColor * c);
@@ -126,6 +127,7 @@ private:
 	void 						*m_updateCBparam;
 	XAP_CocoaFontManager * 	m_pFontManager;
 	Abi_NSView*  	  			m_pWin;
+	NSImage*					m_offscreen;
 
 	// our currently requested font by handle
 	XAP_CocoaFontHandle *	m_pFont;
