@@ -19,16 +19,8 @@
  */
 
 
-#include "ut_types.h"
-#include "pt_Types.h"
-class PX_ChangeRecord;
+#include "ie_imp_PasteListener.h"
 
-#ifdef __sgi
-// <sys/signal.h> may #define signal, leaving PL_Listener::signal() pure
-// virtual if subclasses don't include the same header files.
-// Please keep the "/**/" to stop MSVC dependency generator complaining.
-#include /**/ <sys/signal.h>
-#endif
 
 /*!
  * This nifty little class allows all importers to also be used for pasting
@@ -53,9 +45,10 @@ bool  IE_Imp_PasteListener::populate(PL_StruxFmtHandle /* sfh */,
 {
 	return true;
 }
+
 bool  IE_Imp_PasteListener::populateStrux(PL_StruxDocHandle sdh,
 									  const PX_ChangeRecord * pcr,
-										  PL_StruxFmtHandle * /* psfh */);
+										  PL_StruxFmtHandle * /* psfh */)
 {
 	return true;
 }

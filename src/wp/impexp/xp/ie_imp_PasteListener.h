@@ -24,7 +24,7 @@
 
 #include "ut_types.h"
 #include "pt_Types.h"
-#include "PD_Document"
+#include "pd_Document.h"
 class PX_ChangeRecord;
 
 #ifdef __sgi
@@ -43,11 +43,11 @@ class PX_ChangeRecord;
 //                it is provided an ID which may be used
 //                later to refer to it.
 
-class ABI_EXPORT IE_Imp_PasteListener: PL_Listener
+class ABI_EXPORT IE_Imp_PasteListener: public PL_Listener
 {
 public:
-	IE_Imp_PasteListener(PD_Document * pDocToPaste, PT_DocPosition insPoint)
-	virtual ~IE_Imp_PasteListener(){};
+	IE_Imp_PasteListener(PD_Document * pDocToPaste, PT_DocPosition insPoint);
+	virtual ~IE_Imp_PasteListener(){}
 	
 	virtual bool		populate(PL_StruxFmtHandle sfh,
 								 const PX_ChangeRecord * pcr);

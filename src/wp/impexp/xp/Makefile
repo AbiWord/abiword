@@ -46,6 +46,7 @@ CPPSRCS= 	ie_exp_AbiWord_1.cpp 			\
 		ie_imp_Text.cpp				\
 		ie_imp_XHTML.cpp			\
 		ie_imp_XML.cpp				\
+		ie_imp_PasteListener.cpp		\
 		ie_FileInfo.cpp				\
 		ie_Table.cpp				\
 		ie_mailmerge.cpp

@@ -37,6 +37,7 @@
 #include "ut_string_class.h"
 
 #include "fg_GraphicRaster.h"
+#include "ie_imp_PasteListener.h"
 
 #include "pd_Document.h"
 
@@ -602,14 +603,26 @@ void IE_Imp_XHTML::pasteFromBuffer(PD_DocumentRange * pDocRange,
 {
 	UT_return_if_fail(getDoc() == pDocRange->m_pDoc);
 	UT_return_if_fail(pDocRange->m_pos1 == pDocRange->m_pos2);
-
-	setClipboard (pDocRange->m_pos1);
-
-	UT_XML xml;
-	xml.setListener (this);
+	
+	PD_Document * newDoc = new PD_Document(getDoc()->getApp());
+	UT_XML * newXML = new UT_XML;
+	IE_Imp_XHTML * p = new IE_Imp_XHTML(newDoc);
+	newXML->setListener(p);
 	UT_ByteBuf buf (lenData);
 	buf.append (pData, lenData);
-	xml.parse (&buf);
+	UT_Error e = newXML->parse (&buf);
+	if(e != UT_OK)
+	{
+		UT_DEBUGMSG(("Error pasting HTML.... \n"));
+	}
+	IE_Imp_PasteListener * pPasteListen = new  IE_Imp_PasteListener(getDoc(),pDocRange->m_pos1);
+	newDoc->tellListener(static_cast<PL_Listener *>(pPasteListen));
+	delete pPasteListen;
+	delete p;
+	delete newXML;
+	UNREFP( newDoc);
+	//	setClipboard (pDocRange->m_pos1);
+
 }
 
 /*****************************************************************/

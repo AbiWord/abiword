@@ -172,9 +172,9 @@ bool  AP_UnixClipboard::getSupportedData(T_AllowGet tFrom,
 		return true;
 	else if (getData(tFrom, imgszFormatsAccepted, (void**)ppData, pLen, pszFormatFound))
 		return true;  
-	else if (getTextData (tFrom, ppData, pLen, pszFormatFound))
-		return true;
 	else if (getData (tFrom, htmlszFormatsAccepted, (void**)ppData, pLen, pszFormatFound))
+		return true;
+	else if (getTextData (tFrom, ppData, pLen, pszFormatFound))
 		return true;
 	return false;
 }
