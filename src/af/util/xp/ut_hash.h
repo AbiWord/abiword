@@ -36,7 +36,7 @@ public:
 		void*	pData;
 	};
 
-	UT_HashTable();
+	UT_HashTable(int iBuckets);
 	UT_sint32 addEntry(const char* psLeft, const char* psRight, void* pData);
 	UT_sint32 setEntry(UT_HashTable::UT_HashEntry* pEntry, const char* pszRight, void* pData);
 	~UT_HashTable();
@@ -45,7 +45,7 @@ public:
 	UT_HashEntry* findEntry(const char* psLeft);
 
 protected:
-	static UT_uint32 hashFunc(const char*);
+	UT_uint32 hashFunc(const char*);
 
 	int	verifySpaceToAddOneEntry();
 	int firstAlloc();
@@ -63,6 +63,7 @@ protected:
 		UT_HashEntryListNode* pHead;
 	};
 
+	int				m_iBuckets;
 	UT_HashBucket*	m_pBuckets;
 	UT_HashEntry*	m_pEntries;
 	int				m_iEntrySpace;

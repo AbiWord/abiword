@@ -159,7 +159,7 @@ UT_Bool	PP_AttrProp::setAttribute(const XML_Char * szName, const XML_Char * szVa
 	{
 		if (!m_pAttributes)
 		{
-			m_pAttributes = new UT_HashTable();
+			m_pAttributes = new UT_HashTable(5);
 			if (!m_pAttributes)
 			{
 				UT_DEBUGMSG(("setAttribute: could not allocate hash table.\n"));
@@ -175,7 +175,7 @@ UT_Bool	PP_AttrProp::setProperty(const XML_Char * szName, const XML_Char * szVal
 {
 	if (!m_pProperties)
 	{
-		m_pProperties = new UT_HashTable();
+		m_pProperties = new UT_HashTable(5);
 		if (!m_pProperties)
 		{
 			UT_DEBUGMSG(("setProperty: could not allocate hash table.\n"));

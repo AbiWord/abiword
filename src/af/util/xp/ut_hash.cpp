@@ -26,10 +26,12 @@
 #include "ut_assert.h"
 
 #define CHUNK_NUM_ENTRIES		8
-#define NUM_BUCKETS				511
 
-UT_HashTable::UT_HashTable() : m_pool()
+UT_HashTable::UT_HashTable(int iBuckets) : m_pool()
 {
+	UT_ASSERT(iBuckets>=3);		// NB: must be prime
+
+	m_iBuckets = iBuckets;
 	m_pBuckets = NULL;
 	m_pEntries = NULL;
 	m_iEntrySpace = 0;
@@ -42,7 +44,7 @@ UT_HashTable::~UT_HashTable()
 	if (!m_pBuckets)
 		return;
 
-	for (int i=0; i < NUM_BUCKETS; i++)
+	for (int i=0; i < m_iBuckets; i++)
 	{
 		UT_HashEntryListNode* pHELN = m_pBuckets[i].pHead;
 
@@ -137,7 +139,7 @@ int UT_HashTable::firstAlloc()
 {
 	UT_ASSERT(!m_pEntries);
 
-	m_pBuckets = (UT_HashTable::UT_HashBucket*) calloc(NUM_BUCKETS, sizeof(UT_HashTable::UT_HashBucket));
+	m_pBuckets = (UT_HashTable::UT_HashBucket*) calloc(m_iBuckets, sizeof(UT_HashTable::UT_HashBucket));
 	if (!m_pBuckets)
 	{
 		return -1;
@@ -215,10 +217,10 @@ UT_uint32 UT_HashTable::hashFunc(const char* p)
 
 	sum = sum * len + len;
 
-	sum = sum % NUM_BUCKETS;
+	sum = sum % m_iBuckets;
 
 	UT_ASSERT(sum>=0);
-	UT_ASSERT(sum < NUM_BUCKETS);
+	UT_ASSERT(sum < m_iBuckets);
 
 	return sum;
 }

@@ -38,7 +38,7 @@
 #include "ut_debugmsg.h"
 #include "ut_assert.h"
 
-FL_DocLayout::FL_DocLayout(PD_Document* doc, DG_Graphics* pG)
+FL_DocLayout::FL_DocLayout(PD_Document* doc, DG_Graphics* pG) : m_hashFontCache(19)
 {
 	m_pDoc = doc;
 	m_pG = pG;
