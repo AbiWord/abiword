@@ -30,7 +30,7 @@
 #include "xap_Frame.h"
 #include "xap_Win32App.h"
 #include "xap_Win32Slurp.h"
-
+#include "xap_Prefs.h"
 
 //////////////////////////////////////////////////////////////////
 // "Slurp" (aka "Leach") refers to the ability of an application
@@ -45,6 +45,12 @@
 // required to find any documentation on the subject (search MSDN
 // for: "SAMPLE: How to Use File Associations", Article ID Q1222787,
 // August 5, 1996.
+//
+// It appears that the above cited document is not quite correct
+// (or rather is not aging well)...  The examples show setting
+// on "HKEY_CLASSES_ROOT\<foo>" to "File_assoc", but this string
+// is the value used by WindowsExplorer and the FileOpen dialog
+// to describe the document type.
 //////////////////////////////////////////////////////////////////
 
 #define MY_DDE_TOPICNAME				"System"
@@ -207,13 +213,22 @@ void XAP_Win32Slurp::processCommand(HDDEDATA hData)
 			}
 
 			// ask the application to load this document into a window....
-			// TODO should we do this ourselves or should we call the "fileOpen" edit method ??
+			// TODO we need to call the "fileOpen" edit method so that
+			// TODO we get behavior consistent with the menu command
+			// TODO (MRU list updated, the standard error message, and
+			// TODO the revert buffer message).
 			
 			XAP_Frame * pNewFrame = m_pApp->newFrame();
-			if (pNewFrame)
+			UT_ASSERT(pNewFrame);
+			if (pNewFrame->loadDocument(pathname))
 			{
-				pNewFrame->loadDocument(pathname);
 				pNewFrame->show();
+				m_pApp->getPrefs()->addRecent(pathname);
+			}
+			else
+			{
+				UT_DEBUGMSG(("Could not load document given in DDE Open command [%s].\n",pathname));
+				delete pNewFrame;
 			}
 
 			goto Finished;
@@ -264,7 +279,8 @@ static XX_Status _fetchKey(HKEY k1, const char * szSubKey, HKEY * pkNew)
 
 void XAP_Win32Slurp::stuffRegistry(const char * szSuffix,
 								   const char * szApplicationName,
-								   const char * szExePathname)
+								   const char * szExePathname,
+								   const char * szContentType)
 {
 	// load the system registry if there's no info
 	// for us already present for the given suffix.
@@ -279,23 +295,25 @@ void XAP_Win32Slurp::stuffRegistry(const char * szSuffix,
 	// we construct the following pattern in the registry:
 	//
 	// HKEY_CLASSES_ROOT\<suffix> = <foo>
-	// HKEY_CLASSES_ROOT\<foo> = File_assoc
+	// HKEY_CLASSES_ROOT\<suffix>\Content Type = <content_type>
+	// HKEY_CLASSES_ROOT\<foo> = <application_name> ## " Document"
 	// HKEY_CLASSES_ROOT\<foo>\shell\open\command = <exe_pathname>
 	// HKEY_CLASSES_ROOT\<foo>\shell\open\ddeexec = [Open(%1)]
 	// HKEY_CLASSES_ROOT\<foo>\shell\open\ddeexec\application = <application_name>
 	// HKEY_CLASSES_ROOT\<foo>\shell\open\ddeexec\topic = System
 
-#define VALUE_FILE_ASSOC		"File_assoc"
 #define VALUE_DDEEXEC_OPEN		"[Open(%1)]"
 #define FORMAT_OUR_INDIRECTION	"AbiSuite.%s"
+#define CONTENT_TYPE_KEY		"Content Type"
 #define xx(s)					((LPBYTE)(s)),(strlen(s)+1)
 	
 	char buf[1024];
 	char bufOurFoo[1024];
+	char bufOurFooValue[1024];
 	DWORD dType;
 	LONG eResult;
 	ULONG len;
-
+	UT_Bool bUpdateContentType;
 	UT_Bool bCreateOrOverwrite = UT_FALSE;
 
 	HKEY hKeyFoo = 0;
@@ -310,6 +328,8 @@ void XAP_Win32Slurp::stuffRegistry(const char * szSuffix,
 	sprintf(bufOurFoo,"AbiSuite.%s",szApplicationName);
 	strtok(bufOurFoo," ");				// trim key at first whitespace
 
+	sprintf(bufOurFooValue,"%s Document",szApplicationName);
+	
 	///////////////////////////////////////////////////////////////////
 	// See if someone has claimed this suffix.
 	// HKEY_CLASSES_ROOT\<suffix> = <foo>
@@ -367,10 +387,44 @@ void XAP_Win32Slurp::stuffRegistry(const char * szSuffix,
 		if (eResult != ERROR_SUCCESS)
 			goto CleanupMess;
 	}
+
+	///////////////////////////////////////////////////////////////////
+	// See if "HKEY_CLASSES_ROOT\<suffix>\Content Type" is present
+	// as a value under the current key.
+	///////////////////////////////////////////////////////////////////
+
+	bUpdateContentType = UT_TRUE;
+	len = NrElements(buf);
+	eResult = RegQueryValueEx(hKeySuffix,CONTENT_TYPE_KEY,NULL,&dType,(LPBYTE)buf,&len);
+	if ((eResult == ERROR_SUCCESS) && (dType == REG_SZ))
+	{
+		UT_DEBUGMSG(("Registry: Existing ContentType [%s]\n",buf));
+		if (UT_stricmp(buf,szContentType) == 0)
+			bUpdateContentType = UT_FALSE;
+		else							// we didn't create this so ask first.
+			bUpdateContentType = (_askForStealMimeFromAnotherApplication());
+	}
+
+	if (bUpdateContentType)				// bogus or stale data, overwrite it.
+	{
+		///////////////////////////////////////////////////////////////////
+		// Set the value <content_type> in 
+		// HKEY_CLASSES_ROOT\<suffix>\Content Type = <content_type>
+		///////////////////////////////////////////////////////////////////
+
+		UT_ASSERT(hKeySuffix);
+		eResult = RegSetValueEx(hKeySuffix,CONTENT_TYPE_KEY,0,REG_SZ,xx(szContentType));
+
+		UT_DEBUGMSG(("Register: HKEY_CLASSES_ROOT\\%s\\Content Type <-- %s [error %d]\n",
+					 szSuffix,szContentType,eResult));
+
+		// content-type is not a critical field, so if it fails we just go on.
+		// if (eResult != ERROR_SUCCESS) goto CleanupMess;
+	}
 	
 	///////////////////////////////////////////////////////////////////
 	// Verify that the suffix indirection is defined.
-	// HKEY_CLASSES_ROOT\<foo> = File_assoc
+	// HKEY_CLASSES_ROOT\<foo> = ...
 	///////////////////////////////////////////////////////////////////
 
 	switch ( _fetchKey(HKEY_CLASSES_ROOT,bufOurFoo,&hKeyFoo) )
@@ -382,7 +436,7 @@ void XAP_Win32Slurp::stuffRegistry(const char * szSuffix,
 		UT_ASSERT(hKeyFoo);
 		len = NrElements(buf);
 		eResult = RegQueryValueEx(hKeyFoo,NULL,0,&dType,(LPBYTE)buf,&len);
-		if ((eResult==ERROR_SUCCESS) && (dType==REG_SZ) && (UT_stricmp(buf,VALUE_FILE_ASSOC)==0))
+		if ((eResult==ERROR_SUCCESS) && (dType==REG_SZ) && (UT_stricmp(buf,bufOurFooValue)==0))
 			break;					// already has correct value, no need to overwrite.
 
 		/* otherwise, replace the value */
@@ -390,7 +444,7 @@ void XAP_Win32Slurp::stuffRegistry(const char * szSuffix,
 
 	case X_CreatedKey:
 		UT_ASSERT(hKeyFoo);
-		eResult = RegSetValueEx(hKeyFoo,NULL,0,REG_SZ,xx(VALUE_FILE_ASSOC));
+		eResult = RegSetValueEx(hKeyFoo,NULL,0,REG_SZ,xx(bufOurFooValue));
 		if (eResult != ERROR_SUCCESS)
 			goto CleanupMess;
 		break;
@@ -545,9 +599,29 @@ UT_Bool XAP_Win32Slurp::_askForStealFromAnotherApplication(void) const
 	// TODO install a real dialog that asks the user and
 	// TODO allows us to set preference value for never
 	// TODO asking again or always steal or whatever...
-	
+
 	UT_DEBUGMSG(("Registry: Suffix not ours.\n"));
 	UT_Bool bResult = UT_FALSE;
+
+#ifdef DEBUG	
+	bResult = UT_TRUE;
+#endif
+	
+	return bResult;
+}
+
+UT_Bool XAP_Win32Slurp::_askForStealMimeFromAnotherApplication(void) const
+{
+	// TODO install a real dialog that asks the user and
+	// TODO allows us to set preference value for never
+	// TODO asking again or always steal or whatever...
+	
+	UT_DEBUGMSG(("Registry: MIME type not ours.\n"));
+	UT_Bool bResult = UT_FALSE;
+
+#ifdef DEBUG	
+	bResult = UT_TRUE;
+#endif
 
 	return bResult;
 }

@@ -35,11 +35,13 @@ public:
 	void					processCommand(HDDEDATA hData);
 	void					stuffRegistry(const char * szSuffix,
 										  const char * szApplicationName,
-										  const char * szExePathname);
+										  const char * szExePathname,
+										  const char * szContentType);
 
 protected:
 	UT_Bool					_askForStealFromAnotherApplication(void) const;
 	UT_Bool					_askForUpdateExePathname(void) const;
+	UT_Bool					_askForStealMimeFromAnotherApplication(void) const;
 	
 	XAP_Win32App *			m_pApp;
 	UT_Bool					m_bInitialized;

@@ -71,7 +71,9 @@ UT_Bool XAP_Win32App::initialize(void)
 	m_pSlurp->connectSlurper();
 	char bufExePathname[4096];
 	GetModuleFileName(NULL,bufExePathname,NrElements(bufExePathname));
-	m_pSlurp->stuffRegistry(".abw",getApplicationName(),bufExePathname);
+
+	// TODO these are Application-Specific values.  Move them out of here.
+	m_pSlurp->stuffRegistry(".abw",getApplicationName(),bufExePathname,"application/abiword");
 	
 	return UT_TRUE;
 }
