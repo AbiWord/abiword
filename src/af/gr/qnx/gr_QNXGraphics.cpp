@@ -332,6 +332,11 @@ GR_Font * GR_QNXGraphics::findFont(const char* pszFontFamily,
 	return(new QNXFont(fname));
 }
 
+void GR_QNXGraphics::drawGlyph(UT_uint32 Char,UT_sint32 xoff,UT_sint32 yoff)
+{
+	UT_ASSERT(UT_TODO);
+}
+
 void GR_QNXGraphics::setFont(GR_Font * pFont)
 {
 	QNXFont *qnxFont = (QNXFont *)pFont;
@@ -597,7 +602,7 @@ void GR_QNXGraphics::setClipRect(const UT_Rect* pRect)
 	}
 }
 
-void GR_QNXGraphics::fillRect(const UT_RGBColor& c, UT_sint32 x, UT_sint32 y,
+void GR_QNXGraphics::fillRect(const UT_RGBColor & c, UT_sint32 x, UT_sint32 y,
 			      UT_sint32 w, UT_sint32 h)
 {
 	PgColor_t newc;
@@ -924,6 +929,10 @@ void GR_QNXGraphics::fillRect(GR_Color3D c, UT_Rect &r)
 	fillRect(c, r.left, r.top, r.width, r.height);
 }
 
+void GR_QNXGraphics::fillRect(const UT_RGBColor & c,UT_Rect &r)
+{
+fillRect(c,r.left,r.top,r.width,r.height);
+}
 /***
  Printing operations
 ***/
