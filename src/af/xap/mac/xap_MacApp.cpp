@@ -243,10 +243,18 @@ void XAP_MacApp::DispatchEvent (const EventRecord & theEvent)
 			);	/* TODO handle multiple screens */
 			break;
 		case inGrow:
-			long newSize = ::GrowWindow (targetWin, theEvent.where, &qd.screenBits.bounds);
-			::SizeWindow (targetWin, LoWord (newSize), HiWord (newSize), true);
-			if (frame != NULL) {
-				frame->_macGrow ();
+			{
+				long newSize = ::GrowWindow (targetWin, theEvent.where,
+#if defined(XP_MAC_TARGET_CARBON) && XP_MAC_TARGET_CARBON
+				NULL			/* valid only for Carbon 1.0 and forward */
+#else
+				&qd.screenBits.bounds
+#endif
+				);
+				::SizeWindow (targetWin, LoWord (newSize), HiWord (newSize), true);
+				if (frame != NULL) {
+					frame->_macGrow ();
+				}
 			}
 			break;
 		case inGoAway:
