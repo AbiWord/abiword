@@ -41,7 +41,6 @@ AD_Document::~AD_Document()
 	{
 		// not careful results checking, etc, in this loop, but it's just for debugging anyhow
 		const UT_UCSChar *word = 0;
-		char copy[1000];
 		enumIgnores(i, &word);
 		UT_DEBUGMSG(("AD_Document::~AD_Document(), ignored spell word \"%s\"\n", UT_UCS_strcpy_to_char(copy, word)));
 	}
@@ -173,7 +172,8 @@ bool AD_Document::clearIgnores(void)
 	for (int i = 0; i < m_pIgnoreList->getEntryCount(); i++)
 	{
 		UT_HashEntry * pHE = m_pIgnoreList->getNthEntry(i);
-		DELETEP((UT_UCSChar *)pHE->pData);
+		UT_UCSChar * pData = (UT_UCSChar *)pHE->pData;
+		DELETEPV(pData);
 	}
    
 	DELETEP(m_pIgnoreList);
