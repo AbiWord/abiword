@@ -36,6 +36,7 @@ public:
 	static AP_Dialog *		static_constructor(AP_DialogFactory *, AP_Dialog_Id id);
 
 protected:
+	void _buildFilterList(char * szFilter);
 	XAP_Win32Frame *		m_pWin32Frame;
 };
 

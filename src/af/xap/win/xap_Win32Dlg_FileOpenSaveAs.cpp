@@ -47,7 +47,7 @@ XAP_Win32Dialog_FileOpenSaveAs::~XAP_Win32Dialog_FileOpenSaveAs(void)
 
 /*****************************************************************/
 
-static void _buildFilterList(char * szFilter)
+void XAP_Win32Dialog_FileOpenSaveAs::_buildFilterList(char * szFilter)
 {
 	char * p = szFilter;
 

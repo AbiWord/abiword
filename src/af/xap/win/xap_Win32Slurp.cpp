@@ -220,7 +220,7 @@ void XAP_Win32Slurp::processCommand(HDDEDATA hData)
 			
 			XAP_Frame * pNewFrame = m_pApp->newFrame();
 			UT_ASSERT(pNewFrame);
-			if (pNewFrame->loadDocument(pathname))
+			if (pNewFrame->loadDocument(pathname, IEFT_Unknown))
 			{
 				pNewFrame->show();
 				m_pApp->getPrefs()->addRecent(pathname);
