@@ -49,6 +49,9 @@ class XAP_Frame;
 
 	AV_View *		m_pViewCurrent;
 	XAP_Frame *		m_pFrameCurrent;
+
+	AV_View *		m_pViewPrevious;
+	XAP_Frame *		m_pFramePrevious;
 }
 + (XAP_CocoaAppController*)sharedAppController;
 
@@ -79,9 +82,13 @@ class XAP_Frame;
 - (NSMenuItem *)_quitMenu;
 
 - (void)setCurrentView:(AV_View *)view inFrame:(XAP_Frame *)frame;
+- (void)unsetCurrentView:(AV_View *)view inFrame:(XAP_Frame *)frame;
 
 - (AV_View *)currentView;
 - (XAP_Frame *)currentFrame;
+
+- (AV_View *)previousView;
+- (XAP_Frame *)previousFrame;
 @end
 
 extern XAP_CocoaAppController* XAP_AppController_Instance;

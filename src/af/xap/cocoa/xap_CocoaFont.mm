@@ -1,3 +1,5 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+
 /* AbiSource Application Framework
  * Copyright (C) 1998 AbiSource, Inc.
  * Copyright (C) 2001-2003 Hubert Figuiere
@@ -179,6 +181,11 @@ UT_sint32 XAP_CocoaFont::measureUnremappedCharForCache(UT_UCSChar cChar) const
 	return _measureChar (cChar, m_fontForCache);
 }
 
+#ifdef LAYOUT_CONTAINER_WIDTH
+#undef LAYOUT_CONTAINER_WIDTH
+#endif
+#define LAYOUT_CONTAINER_WIDTH 10000.0f
+
 void XAP_CocoaFont::_initMetricsLayouts(void)
 {
 	s_fontMetricsTextStorage = [[NSTextStorage alloc] init];
@@ -186,35 +193,41 @@ void XAP_CocoaFont::_initMetricsLayouts(void)
 	s_fontMetricsLayoutManager = [[NSLayoutManager alloc] init];
 	[s_fontMetricsTextStorage addLayoutManager:s_fontMetricsLayoutManager];
 
-	s_fontMetricsTextContainer = [[NSTextContainer alloc] initWithContainerSize:NSMakeSize(10000, 1000)];
+	s_fontMetricsTextContainer = [[NSTextContainer alloc] initWithContainerSize:NSMakeSize(LAYOUT_CONTAINER_WIDTH, 1000)];
 	[s_fontMetricsTextContainer setLineFragmentPadding:0];
 	[s_fontMetricsLayoutManager addTextContainer:s_fontMetricsTextContainer];
 }
 
-UT_sint32 XAP_CocoaFont::_measureChar(UT_UCSChar cChar, NSFont* font) const
+UT_sint32 XAP_CocoaFont::_measureChar(UT_UCSChar cChar, NSFont * font) const
 {
-    NSAttributedString *attributedString;
-    NSRange glyphRange;
-
-    if (!s_fontMetricsTextStorage) {
+	if (!s_fontMetricsTextStorage) {
 		_initMetricsLayouts();
     }
-
-	unichar c2 = cChar;		// FIXME: I suspect a problem beetween UT_UCSChar and unichar
-	NSString * aString =  [[NSString alloc] initWithCharacters:&c2 length:1];
-    attributedString = [[NSAttributedString alloc] initWithString:aString attributes:m_fontProps];
-    [s_fontMetricsTextStorage setAttributedString:attributedString];
-    [attributedString release];
-	[aString release];
-
-    glyphRange = [s_fontMetricsLayoutManager glyphRangeForTextContainer:s_fontMetricsTextContainer];
-    if (glyphRange.length == 0) {
-        return 0;
+	if (!s_fontMetricsTextStorage) {
+		UT_ASSERT(s_fontMetricsTextStorage);
+		return 0;
 	}
-	
-	NSRect rect = [s_fontMetricsLayoutManager boundingRectForGlyphRange:glyphRange 
-				inTextContainer:s_fontMetricsTextContainer];
-	return static_cast<UT_uint32>(rect.size.width);
+
+	UT_uint32 charWidth = 0;
+
+	unichar c2 = cChar;
+
+	if (NSString * aString = [[NSString alloc] initWithCharacters:&c2 length:1]) {
+		if (NSAttributedString * attributedString = [[NSAttributedString alloc] initWithString:aString attributes:m_fontProps]) {
+			[s_fontMetricsTextStorage setAttributedString:attributedString];
+
+			NSRange glyphRange = [s_fontMetricsLayoutManager glyphRangeForTextContainer:s_fontMetricsTextContainer];
+			if (glyphRange.length) {
+				NSRect rect = [s_fontMetricsLayoutManager boundingRectForGlyphRange:glyphRange inTextContainer:s_fontMetricsTextContainer];
+				if (rect.size.width < LAYOUT_CONTAINER_WIDTH) {
+					charWidth = static_cast<UT_uint32>(rect.size.width);
+				}
+			}
+			[attributedString release];
+		}
+		[aString release];
+	}
+	return charWidth;
 }
 
 

@@ -75,7 +75,7 @@ UT_sint32 GR_CharWidths::getWidth(UT_UCSChar cIndex) const
 	// if we haven't been told anything for a char, we
 	// return zero.
 	
-	UT_uint32 hi = ((cIndex >> 8) & 0xff);
+	UT_uint32 hi = ((cIndex >> 8) & 0x00ffffff);
 	UT_uint32 lo = (cIndex & 0xff);
 
 	if (!hi)

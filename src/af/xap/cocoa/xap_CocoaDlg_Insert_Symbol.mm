@@ -1,6 +1,9 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+
 /* AbiSource Application Framework
  * Copyright (C) 1998 AbiSource, Inc.
  * Copyright (C) 2003 Hubert Figuière
+ * Copyright (C) 2004 Francis James Franklin
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -20,6 +23,7 @@
 
 #include <stdlib.h>
 #include <string.h>
+
 #include "ut_string.h"
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
@@ -32,10 +36,9 @@
 
 #include "xap_App.h"
 #include "xap_CocoaApp.h"
+#include "xap_CocoaAppController.h"
 #include "xap_CocoaFrame.h"
-
 #include "xap_CocoaFont.h"
-
 #include "xap_Dialog_Id.h"
 #include "xap_Dlg_Insert_Symbol.h"
 #include "xap_Draw_Symbol.h"
@@ -43,314 +46,69 @@
 
 /*****************************************************************/
 
-#define	WIDGET_ID_TAG_KEY "id"
-
-/*****************************************************************/
-
-static UT_uint32 xap_CocoaDlg_Insert_Symbol_first = 0;
-static UT_UCSChar m_CurrentSymbol;
-static UT_UCSChar m_PreviousSymbol;
-
-XAP_Dialog * XAP_CocoaDialog_Insert_Symbol::static_constructor(XAP_DialogFactory * pFactory,
-															  XAP_Dialog_Id dlgid)
+XAP_Dialog * XAP_CocoaDialog_Insert_Symbol::static_constructor(XAP_DialogFactory * pFactory, XAP_Dialog_Id dlgid)
 {
 	XAP_CocoaDialog_Insert_Symbol * p = new XAP_CocoaDialog_Insert_Symbol(pFactory,dlgid);
 	return p;
 }
 
-XAP_CocoaDialog_Insert_Symbol::XAP_CocoaDialog_Insert_Symbol(XAP_DialogFactory * pDlgFactory,
-														   XAP_Dialog_Id dlgid)
-	: XAP_Dialog_Insert_Symbol(pDlgFactory,dlgid),
-		m_pGRPreview(NULL),
-		m_pGRGrid(NULL)
+XAP_CocoaDialog_Insert_Symbol::XAP_CocoaDialog_Insert_Symbol(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id dlgid) :
+	XAP_Dialog_Insert_Symbol(pDlgFactory,dlgid)
 {
+	// 
 }
 
 XAP_CocoaDialog_Insert_Symbol::~XAP_CocoaDialog_Insert_Symbol(void)
 {
-	DELETEP(m_pGRGrid);
-	DELETEP(m_pGRPreview);
+	// 
 }
-
-
-/*****************************************************************/
-
-
-
-#if 0
-// TODO: there must be a better way of doing this
-// TODO: it just seems so wasteful to have a callback
-// TODO: registered for every time the mouse moves over a widget
-static void s_motion_event(GtkWidget * /* widget */,
-			   GdkEventMotion *evt,
-			   XAP_CocoaDialog_Insert_Symbol *dlg)
-{
-        UT_DEBUGMSG(("DOM: motion event\n"));
-        dlg->Motion_event(evt);
-}
-
-void XAP_CocoaDialog_Insert_Symbol::Motion_event(GdkEventMotion *e)
-{
-	UT_uint32 x, y;
-
-	XAP_Draw_Symbol * iDrawSymbol = _getCurrentSymbolMap();
-	UT_ASSERT(iDrawSymbol);
-
-	x = (UT_uint32) e->x;
-	y = (UT_uint32) e->y;
-
-	UT_UCSChar cSymbol = iDrawSymbol->calcSymbol(x, y);
-	
-	// only draw if different
-	if(m_CurrentSymbol != cSymbol)
-	  {
-	    m_PreviousSymbol = m_CurrentSymbol;
-	    m_CurrentSymbol = cSymbol;
-	    iDrawSymbol->drawarea(m_CurrentSymbol, m_PreviousSymbol);
-	  }
-}
-#endif		    
-
-/*****************************************************************/
 
 void XAP_CocoaDialog_Insert_Symbol::runModal(XAP_Frame * pFrame)
 {
+	// 
+}
+
+void XAP_CocoaDialog_Insert_Symbol::runModeless(XAP_Frame * pFrame)
+{
+	/* First see if the dialog is already running
+	 */
+	UT_sint32 sid = (UT_sint32) getDialogId();
+
+	/* Build the window's widgets and arrange them
+	 */
+	m_dlg = [[XAP_CocoaDlg_Insert_SymbolController alloc] initFromNib];
+
+	[m_dlg setXAPOwner:this];
+	[m_dlg windowToFront];
+
+	/* Save dialog the ID number and pointer to the Dialog
+	 */
+	m_pApp->rememberModelessId(sid, (XAP_Dialog_Modeless *) m_pDialog);
+}
+
+void XAP_CocoaDialog_Insert_Symbol::notifyActiveFrame(XAP_Frame * pFrame)
+{
+	UT_ASSERT(m_dlg);
+	if (!m_dlg)
+		return;
+
+	ConstructWindowName();
+
+	[[m_dlg window] setTitle:[NSString stringWithUTF8String:m_WindowName]];
 }
 
 void XAP_CocoaDialog_Insert_Symbol::activate(void)
 {
 	UT_ASSERT(m_dlg);
-	NSWindow* window = [m_dlg window];
+	if (!m_dlg)
+		return;
+
 	ConstructWindowName();
-	NSString* str = [[NSString alloc] initWithUTF8String:m_WindowName];
-	[window setTitle:str];
-	[str release];
-	[window orderFront:m_dlg];
+
+	[[m_dlg window] setTitle:[NSString stringWithUTF8String:m_WindowName]];
+
+	[m_dlg windowToFront];
 }
-
-void   XAP_CocoaDialog_Insert_Symbol::notifyActiveFrame(XAP_Frame *pFrame)
-{
-	UT_ASSERT(m_dlg);
-	ConstructWindowName();
-	NSString* str = [[NSString alloc] initWithUTF8String:m_WindowName];
-	[[m_dlg window] setTitle:str];
-	[str release];
-}
-
-
-void XAP_CocoaDialog_Insert_Symbol::runModeless(XAP_Frame * pFrame)
-{
-	NSWindow* window;
-	// First see if the dialog is already running
-	UT_sint32 sid =(UT_sint32)  getDialogId();
-	  
-	// Build the window's widgets and arrange them
-	m_dlg = [[XAP_CocoaDlg_Insert_SymbolController alloc] initFromNib];
-	[m_dlg setXAPOwner:this];
-	
-	// Save dialog the ID number and pointer to the Dialog
-	m_pApp->rememberModelessId( sid,  (XAP_Dialog_Modeless *) m_pDialog);
-	window = [m_dlg window];
-
-	// *** this is how we add the gc for symbol table ***
-	// attach a new graphics context to the drawing area
-
-	// make a new Cocoa GC
-	DELETEP (m_pGRGrid);
-	{
-		//m_pGRGrid = new GR_CocoaGraphics([m_dlg grid], m_pApp);
-		GR_CocoaAllocInfo ai([m_dlg grid], m_pApp);
-		m_pGRGrid = (GR_CocoaGraphics*)XAP_App::getApp()->newGraphics(ai);
-	}
-
-	// let the widget materialize
-	NSSize size = [[m_dlg grid] bounds].size;
-	_createSymbolFromGC(m_pGRGrid,
-						lrintf(size.width),
-						lrintf(size.height));
-
-	// make a new Cocoa GC
-	DELETEP (m_pGRPreview);
-	{
-		//m_pGRPreview = new GR_CocoaGraphics([m_dlg preview], m_pApp);
-		GR_CocoaAllocInfo ai([m_dlg preview], m_pApp);
-		m_pGRPreview = (GR_CocoaGraphics*)XAP_App::getApp()->newGraphics(ai);
-	}
-		
-	// let the widget materialize
-	size = [[m_dlg preview] bounds].size;
-	_createSymbolareaFromGC(m_pGRPreview,
-							lrintf(size.width),
-							lrintf(size.height));
-
-	XAP_Draw_Symbol * iDrawSymbol = _getCurrentSymbolMap();
-	UT_ASSERT(iDrawSymbol);
-
-	// We use this code to insert the default font name into to static
-	// variable "m_Insert_Symbol_font" the first time this dialog is
-	// called. Afterwards it is just whatever was left from the last
-	// call.
-
-	if ( xap_CocoaDlg_Insert_Symbol_first == 0)
-	{
-		iDrawSymbol->setSelectedFont( (char *) DEFAULT_COCOA_SYMBOL_FONT);
-		m_CurrentSymbol = ' ';
-		m_PreviousSymbol = ' ';
-		xap_CocoaDlg_Insert_Symbol_first = 1;
-	}
-
-	// Show the top level dialog
-	[window orderFront:m_dlg];
-
-        // Put the current font in the entry box
-	const char* iSelectedFont = iDrawSymbol->getSelectedFont();
-	[m_dlg _selectFontByName:iSelectedFont];
-	New_Font();
-	
-	// Show the Previously selected symbol
-
-	m_PreviousSymbol = m_CurrentSymbol;
-	iDrawSymbol->drawarea(m_CurrentSymbol, m_PreviousSymbol);
-
-	// return to ap_Editmethods and wait for something interesting
-	// to happen.
-}
-
-void XAP_CocoaDialog_Insert_Symbol::event_OK(void)
-{
-	m_Inserted_Symbol = m_CurrentSymbol;
-	_onInsertButton();
-}
-
-void XAP_CocoaDialog_Insert_Symbol::event_Cancel(void)
-{
-	m_answer = XAP_Dialog_Insert_Symbol::a_CANCEL;
-
-	modeless_cleanup();
-	[m_dlg close];
-	[m_dlg release];
-	m_dlg = nil;
-}
-
-void XAP_CocoaDialog_Insert_Symbol::event_CloseWindow(void)
-{
-	m_answer = XAP_Dialog_Insert_Symbol::a_CANCEL;
-
-	modeless_cleanup();
-	[m_dlg release];
-	m_dlg = nil;
-}
-
-void XAP_CocoaDialog_Insert_Symbol::SymbolMap_exposed(void )
-{
-	XAP_Draw_Symbol * iDrawSymbol = _getCurrentSymbolMap();
-	UT_ASSERT(iDrawSymbol);
-	iDrawSymbol->draw();
-	/*
-	    Need this to see the blue square after an expose event
-	*/
-	iDrawSymbol->drawarea(m_CurrentSymbol, m_PreviousSymbol);
-}
-
-void XAP_CocoaDialog_Insert_Symbol::Symbolarea_exposed(void )
-{
-	XAP_Draw_Symbol * iDrawSymbol = _getCurrentSymbolMap();
-	UT_ASSERT(iDrawSymbol);
-	iDrawSymbol->drawarea(m_CurrentSymbol, m_PreviousSymbol);
-}
-
-//
-// This function allows the symbol to be selected via the keyboard
-//
-
-void XAP_CocoaDialog_Insert_Symbol::Key_Pressed(NSEvent * e)
-{
-	NSString *characters = [e characters];
-	int uLength = [characters length];
-	for (int ind = 0; ind < uLength; ind++)
-	{
-		int move = 0;
-		UT_uint32 charData = [characters characterAtIndex:ind]; // can we go faster than that ?
-
-		switch (charData)
-		{
-		case NSUpArrowFunctionKey:
-			move = -32;
-			break;
-		case NSDownArrowFunctionKey:
-			move = 32;
-			break;
-		case NSLeftArrowFunctionKey:
-			move = -1;
-			break;
-		case NSRightArrowFunctionKey:
-			move = 1;
-			break;
-		case 0x0d:
-	//	        g_signal_emit_stop_by_name((G_OBJECT(m_windowMain)),
-	//					     "key_press_event");
-			event_OK();
-			return;
-			break;
-		}
-
-		if (move != 0)
-		{
-			if ((m_CurrentSymbol + move) >= 32 && (m_CurrentSymbol + move) <= 255)
-			{ 
-				XAP_Draw_Symbol * iDrawSymbol = _getCurrentSymbolMap();
-				UT_ASSERT(iDrawSymbol);
-				m_PreviousSymbol = m_CurrentSymbol;
-				m_CurrentSymbol = m_CurrentSymbol + move;
-				iDrawSymbol->drawarea(m_CurrentSymbol, m_PreviousSymbol);
-			}
-	
-	//		g_signal_emit_stop_by_name((G_OBJECT(m_windowMain)),
-	//									"key_press_event");
-		}
-	}
-}
-
-void XAP_CocoaDialog_Insert_Symbol::SymbolMap_clicked(NSEvent * event)
-{
-	NSView*	hitView = [m_dlg grid];
-	NSPoint pt = [event locationInWindow];
-
-	pt = [hitView convertPoint:pt fromView:nil];
-//	pt.y = [hitView bounds].size.height - pt.y;
-	
-	XAP_Draw_Symbol * iDrawSymbol = _getCurrentSymbolMap();
-	UT_ASSERT(iDrawSymbol);
-	m_PreviousSymbol = m_CurrentSymbol;
-	m_CurrentSymbol = iDrawSymbol->calcSymbol(lrintf(pt.x), lrintf(pt.y));
-	iDrawSymbol->drawarea(m_CurrentSymbol, m_PreviousSymbol);
-
-	// double click should also insert the symbol
-	if([event clickCount] >= 2) {
-	    event_OK();
-	}
-}
-
-
-void XAP_CocoaDialog_Insert_Symbol::New_Font(void )
-{
-	XAP_Draw_Symbol * iDrawSymbol = _getCurrentSymbolMap();
-	UT_ASSERT(iDrawSymbol);
-	
-/*
-  Extract the new font string from the combo box, update the current symbol
-  font and display the new set of symbols to choose from.
-
-  The text extraction code was stolen from ev_GnomeCocoaToolbar.
-*/
-
-	const char* buffer = [[m_dlg _selectedFont] UTF8String];
-
-	iDrawSymbol->setSelectedFont(buffer);
-	iDrawSymbol->draw();
-	iDrawSymbol->drawarea(m_CurrentSymbol, m_PreviousSymbol);
-}
-
 
 void XAP_CocoaDialog_Insert_Symbol::destroy(void)
 {
@@ -361,109 +119,168 @@ void XAP_CocoaDialog_Insert_Symbol::destroy(void)
 	m_dlg = nil;
 }
 
-
-/*****************************************************************/
-
-
-void XAP_CocoaDialog_Insert_Symbol::CurrentSymbol_clicked()
+void XAP_CocoaDialog_Insert_Symbol::insertSymbol(const char * fontFamilyName, UT_UCS4Char symbol)
 {
-	event_OK();
+	XAP_CocoaAppController * pController = (XAP_CocoaAppController *) [NSApp delegate];
+
+	AV_View * view = [pController currentView];
+	if (view == 0)
+		view = [pController previousView];
+	if (view)
+		if (m_pListener)
+			{
+				m_pListener->setView(view);
+				m_pListener->insertSymbol(symbol, (char *) fontFamilyName);
+			}
 }
 
-
-void XAP_CocoaDialog_Insert_Symbol::_fillComboboxWithFonts (NSComboBox* combo)
+void XAP_CocoaDialog_Insert_Symbol::windowClosed(void)
 {
-	id obj;
-	NSString* str = nil;
-	NSArray * list = [[[NSFontManager sharedFontManager] availableFontFamilies] 
-						sortedArrayUsingSelector:@selector(caseInsensitiveCompare:)];
-	NSEnumerator* iter = [list objectEnumerator];
+	m_answer = XAP_Dialog_Insert_Symbol::a_CANCEL;
 
-	[combo removeAllItems];
-	while (obj = [iter nextObject]) {
-		[combo addItemWithObjectValue:obj];
-	}
+	modeless_cleanup();
 
-	str = [[NSString alloc] initWithUTF8String:DEFAULT_COCOA_SYMBOL_FONT];
-	[combo selectItemWithObjectValue:str];
-	[str release];
+	[m_dlg release];
+	m_dlg = nil;
 }
 
 //***************************************************************
 
-@interface SymbolEventDelegate : NSObject <XAP_MouseEventDelegate>
-{
-	XAP_CocoaDialog_Insert_Symbol*	_xap;
-}
-- (void)setXAPOwner:(XAP_CocoaDialog_Insert_Symbol *)owner;
-@end
-
-//***************************************************************
-
-@implementation SymbolEventDelegate
-
-- (void)setXAPOwner:(XAP_CocoaDialog_Insert_Symbol *)owner
-{
-	_xap = owner;
-}
-
-- (void)mouseDown:(NSEvent *)theEvent from:(id)sender
-{
-}
-
-- (void)mouseDragged:(NSEvent *)theEvent from:(id)sender
-{
-}
-
-- (void)mouseUp:(NSEvent *)theEvent from:(id)sender
-{
-	_xap->CurrentSymbol_clicked();
-}
-
-@end
-
-//***************************************************************
-
-@interface CharMapEventDelegate : NSObject <XAP_MouseEventDelegate>
-{
-	XAP_CocoaDialog_Insert_Symbol*	_xap;
-}
-- (void)setXAPOwner:(XAP_CocoaDialog_Insert_Symbol *)owner;
-@end
-
-
-//***************************************************************
-
-@implementation CharMapEventDelegate
-
-- (void)setXAPOwner:(XAP_CocoaDialog_Insert_Symbol *)owner
-{
-	_xap = owner;
-}
-
-- (void)mouseDown:(NSEvent *)theEvent from:(id)sender
-{
-	_xap->SymbolMap_clicked(theEvent);
-}
-
-- (void)mouseDragged:(NSEvent *)theEvent from:(id)sender
-{
-}
-
-- (void)mouseUp:(NSEvent *)theEvent from:(id)sender
-{
-}
-
-@end
-
-//***************************************************************
+static unichar s_remap[224] = {
+	/* TODO: Complete this table & verify...
+	 */
+	0x0020, 0x0021, 0x0022, 0x0023, 0x0024, 0x0025, 0x0026, 0x0027, 0x0028, 0x0029, 0x002a, 0x002b, 0x002c, 0x002d, 0x002e, 0x002f,
+	0x0030, 0x0031, 0x0032, 0x0033, 0x0034, 0x0035, 0x0036, 0x0037, 0x0038, 0x0039, 0x003a, 0x003b, 0x003c, 0x003d, 0x003e, 0x003f,
+	0x0040, 0x0391, 0x0392, 0x03a7, 0x0394, 0x0395, 0x03a6, 0x0393, 0x0397, 0x0399, 0x03d1, 0x039a, 0x039b, 0x039c, 0x039d, 0x039f,
+	0x03a0, 0x0398, 0x03a1, 0x03a3, 0x03a4, 0x03a5, 0x03c2, 0x03a9, 0x039e, 0x03a8, 0x0396, 0x005b, 0x005c, 0x005d, 0x005e, 0x005f,
+	0x0060, 0x03b1, 0x03b2, 0x03c7, 0x03b4, 0x03b5, 0x03d5, 0x03b3, 0x03b7, 0x03b9, 0x03c6, 0x03ba, 0x03bb, 0x03bc, 0x03bd, 0x03bf,
+	0x03c0, 0x03b8, 0x03c1, 0x03c3, 0x03c4, 0x03c5, 0x03d6, 0x03c9, 0x03be, 0x03c8, 0x03b6, 0x007b, 0x007c, 0x007d, 0x007e, 0x007f,
+	0x0080, 0x0081, 0x0082, 0x0083, 0x0084, 0x0085, 0x0086, 0x0087, 0x0088, 0x0089, 0x008a, 0x008b, 0x008c, 0x008d, 0x008e, 0x008f,
+	0x0090, 0x0091, 0x0092, 0x0093, 0x0094, 0x0095, 0x0096, 0x0097, 0x0098, 0x0099, 0x009a, 0x009b, 0x009c, 0x009d, 0x009e, 0x009f,
+	0x00a0, 0x00a1, 0x2032, 0x2264, 0x2225, 0x221e, 0x00a6, 0x00a7, 0x00a8, 0x00a9, 0x00aa, 0x2194, 0x2190, 0x2191, 0x2192, 0x2193,
+	0x00b0, 0x00b1, 0x2033, 0x2265, 0x00b4, 0x221d, 0x2202, 0x22c4, 0x00b8, 0x2260, 0x2261, 0x2248, 0x2026, 0x00bd, 0x00be, 0x21b2,
+	0x00c0, 0x00c1, 0x00c2, 0x00c3, 0x2297, 0x2295, 0x2206, 0x2229, 0x222a, 0x2283, 0x2287, 0x2284, 0x2282, 0x2286, 0x2208, 0x2209,
+	0x2220, 0x2207, 0x00d2, 0x00d3, 0x00d4, 0x220f, 0x221a, 0x2219, 0x00d8, 0x2227, 0x2228, 0x21d4, 0x21d0, 0x21d1, 0x21d2, 0x21d3,
+	0x00e0, 0x2329, 0x00e2, 0x00e3, 0x00e4, 0x2211, 0x239b, 0x239c, 0x239d, 0x23a1, 0x23a2, 0x23a3, 0x23a7, 0x23a8, 0x23a9, 0x00ef,
+	0x00f0, 0x232a, 0x222b, 0x00f3, 0x00f4, 0x00f5, 0x239e, 0x239f, 0x23a0, 0x23a4, 0x23a5, 0x23a6, 0x23ab, 0x23ac, 0x23ad, 0x00ff
+};
 
 @implementation XAP_CocoaDlg_Insert_SymbolController
 
 - (id)initFromNib
 {
-	self = [super initWithWindowNibName:@"xap_CocoaDlg_Insert_Symbol"];
+	if (self = [super initWithWindowNibName:@"xap_CocoaDlg_Insert_Symbol"])
+		{
+			m_FontList = 0;
+			m_CurrentFont = 0;
+			m_CurrentFontName = 0;
+
+			m_Symbol_lo = 0;
+			m_Symbol_hi = 0;
+
+			char hex[14] = { '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F' };
+			int i;
+			unichar uc[3];
+
+			uc[1] = (unichar) ((unsigned char) 'x');
+			uc[2] = 0;
+			for (i = 0; i < 14; i++)
+				{
+					uc[0] = (unichar) ((unsigned char) hex[i]);
+					m_OffsetString[i] = [[NSString alloc] initWithCharacters:uc length:2];
+				}
+
+			uc[1] = 0;
+			for (i = 0; i < 224; i++)
+				{
+					uc[0] = (unichar) (i + 32);
+					m_SymbolString[i] = [[NSString alloc] initWithCharacters:uc length:1];
+					uc[0] = s_remap[i];
+					m_Remap_String[i] = [[NSString alloc] initWithCharacters:uc length:1];
+					m_SymbolWidth[i] = 0;
+				}
+
+			NSArray * pAvailableFontFamilies = [[NSFontManager sharedFontManager] availableFontFamilies];
+
+			unsigned count = [pAvailableFontFamilies count];
+			if (count)
+				{
+					m_FontList = [[NSMutableArray alloc] initWithCapacity:count];
+					if (m_FontList)
+						{
+							for (unsigned ff = 0; ff < count; ff++)
+								{
+									NSString * pFontFamily = [pAvailableFontFamilies objectAtIndex:ff];
+
+									/* const char * szFF = [pFontFamily UTF8String]; */
+
+									if (true /* (*szFF != '.') && (*szFF != '#') */) // cf. Bug 6638
+										{
+											[m_FontList addObject:pFontFamily];
+										}
+								}
+							if ([m_FontList count])
+								{
+									[m_FontList sortUsingSelector:@selector(compare:)];
+								}
+							else
+								{
+									UT_DEBUGMSG(("XAP_CocoaDlg_Insert_Symbol -initFromNib: no usable font families?\n"));
+
+									[m_FontList release];
+									m_FontList = 0;
+								}
+						}
+				}
+			else
+				{
+					UT_DEBUGMSG(("XAP_CocoaDlg_Insert_Symbol -initFromNib: no available font families?\n"));
+				}
+			if (!m_FontList)
+				{
+					[self dealloc];
+					self = nil;
+				}
+		}
 	return self;
+}
+
+- (void)dealloc
+{
+	int i;
+
+	for (i = 0; i < 14; i++)
+		{
+			if ( m_OffsetString[i])
+				[m_OffsetString[i] release];
+			m_OffsetString[i] = 0;
+		}
+	for (i = 0; i < 224; i++)
+		{
+			if ( m_SymbolString[i])
+				[m_SymbolString[i] release];
+			m_SymbolString[i] = 0;
+
+			if ( m_Remap_String[i])
+				[m_Remap_String[i] release];
+			m_Remap_String[i] = 0;
+		}
+	if (m_FontList)
+		{
+			[m_FontList release];
+			m_FontList = 0;
+		}
+	if (m_CurrentFont)
+		{
+			[m_CurrentFont release];
+			m_CurrentFont = 0;
+		}
+	if (m_CurrentFontName)
+		{
+			[m_CurrentFontName release];
+			m_CurrentFontName = 0;
+		}
+	[super dealloc];
 }
 
 - (void)setXAPOwner:(XAP_Dialog *)owner
@@ -477,67 +294,293 @@ void XAP_CocoaDialog_Insert_Symbol::_fillComboboxWithFonts (NSComboBox* combo)
 	_xap = nil;
 }
 
-
 - (void)windowDidLoad
 {
 	const XAP_StringSet * pSS = XAP_App::getApp()->getStringSet();
-	LocalizeControl(_addBtn, pSS, XAP_STRING_ID_DLG_Insert);
+
+	LocalizeControl(oAdd,      pSS, XAP_STRING_ID_DLG_Insert);
 //	LocalizeControl(_closeBtn, pSS, XAP_STRING_ID_DLG_Close);
 
-	CharMapEventDelegate* charMapDelegate;
-	charMapDelegate = [[CharMapEventDelegate alloc] init];
-	[charMapDelegate setXAPOwner:_xap];
-	[_grid setEventDelegate:charMapDelegate];
-	[charMapDelegate release];
+	[oRemapGlyphs setState:NSOnState];
+	m_bRemapGlyphs = YES;
 
-	SymbolEventDelegate* symbolDelegate;
-	symbolDelegate = [[SymbolEventDelegate alloc] init];
-	[symbolDelegate setXAPOwner:_xap];
-	[_preview setEventDelegate:symbolDelegate];
-	[symbolDelegate release];
+	[oFontFamily removeAllItems];
+	[oFontFamily addItemsWithTitles:m_FontList];
 
-	[_fontCombo addItemsWithObjectValues:[[[NSFontManager sharedFontManager] availableFontFamilies] 
-			sortedArrayUsingSelector:@selector(caseInsensitiveCompare:)]];
-}
+	int index = [oFontFamily indexOfItemWithTitle:@"Symbol"];
+	if (index >= 0)
+		{
+			[oFontFamily selectItemAtIndex:index];
+		}
+	[self fontFamilyDidChange];
 
+	[oPreview setFont:[NSFont fontWithName:m_CurrentFontName size:36.0f]];
+	if (m_bRemapGlyphs)
+		[oPreview setTitle:m_Remap_String[m_Symbol_hi * 16 + m_Symbol_lo]];
+	else
+		[oPreview setTitle:m_SymbolString[m_Symbol_hi * 16 + m_Symbol_lo]];
 
-- (IBAction)addAction:(id)sender
-{
-	_xap->event_OK();
-}
-
-- (IBAction)fontSelectAction:(id)sender
-{
-	_xap->New_Font();
+	[oSymbolTable setDelegate:self];
+	[oSymbolTable setDataSource:self];
+	[oSymbolTable setDoubleAction:@selector(aDoubleClick:)];
+	[oSymbolTable reloadData];
 }
 
 - (void)windowWillClose:(NSNotification *)aNotification
 {
-	_xap->event_CloseWindow();
+	_xap->windowClosed();
 }
 
-- (XAP_CocoaNSView*)grid
+- (void)windowToFront
 {
-	return _grid;
+	[[self window] makeKeyAndOrderFront:self];
+	[[self window] makeFirstResponder:oSymbolTable];
 }
 
-- (XAP_CocoaNSView*)preview;
+- (IBAction)aSingleClick:(id)sender
 {
-	return _preview;
+	int columnIndex = [oSymbolTable clickedColumn];
+	int    rowIndex = [oSymbolTable clickedRow   ];
+
+	if (columnIndex == 0)
+		return;
+
+	int index = rowIndex * 16 + (columnIndex - 1);
+	if (m_SymbolWidth[index] == 0)
+		return;
+
+	if (m_bRemapGlyphs)
+		[oPreview setTitle:m_Remap_String[index]];
+	else
+		[oPreview setTitle:m_SymbolString[index]];
+
+	[oSymbolTable setNeedsDisplayInRect:[oSymbolTable frameOfCellAtColumn:(m_Symbol_lo + 1) row:m_Symbol_hi]];
+
+	m_Symbol_lo = columnIndex - 1;
+	m_Symbol_hi =    rowIndex;
+
+	[oSymbolTable setNeedsDisplayInRect:[oSymbolTable frameOfCellAtColumn:(m_Symbol_lo + 1) row:m_Symbol_hi]];
+	[oSymbolTable displayIfNeeded];
 }
 
-- (void)_selectFontByName:(const char*)name
+- (IBAction)aDoubleClick:(id)sender
 {
-	NSString* string = [[NSString alloc] initWithUTF8String:name];
-	[_fontCombo selectItemWithObjectValue:string];
-	[string release];
+	int columnIndex = [oSymbolTable clickedColumn];
+	int    rowIndex = [oSymbolTable clickedRow   ];
+
+	if (columnIndex == 0)
+		return;
+
+	int index = rowIndex * 16 + (columnIndex - 1);
+	if (m_SymbolWidth[index] == 0)
+		return;
+
+	if (m_bRemapGlyphs)
+		[oPreview setTitle:m_Remap_String[index]];
+	else
+		[oPreview setTitle:m_SymbolString[index]];
+
+	[oSymbolTable setNeedsDisplayInRect:[oSymbolTable frameOfCellAtColumn:(m_Symbol_lo + 1) row:m_Symbol_hi]];
+
+	m_Symbol_lo = columnIndex - 1;
+	m_Symbol_hi =    rowIndex;
+
+	[oSymbolTable setNeedsDisplayInRect:[oSymbolTable frameOfCellAtColumn:(m_Symbol_lo + 1) row:m_Symbol_hi]];
+	[oSymbolTable displayIfNeeded];
+
+	[self aAdd:sender];
 }
 
-
-- (NSString*)_selectedFont
+- (IBAction)aAdd:(id)sender
 {
-	return [_fontCombo stringValue];
+	int index = m_Symbol_hi * 16 + m_Symbol_lo;
+	if (m_SymbolWidth[index] == 0)
+		return;
+
+	_xap->insertSymbol([[oFontFamily titleOfSelectedItem] UTF8String], static_cast<UT_UCS4Char>(m_bRemapGlyphs ? s_remap[index] : (index + 32)));
 }
 
+- (IBAction)aFontFamily:(id)sender
+{
+	[self fontFamilyDidChange];
+
+	[oPreview setFont:[NSFont fontWithName:m_CurrentFontName size:36.0f]];
+	if (m_bRemapGlyphs)
+		[oPreview setTitle:m_Remap_String[m_Symbol_hi * 16 + m_Symbol_lo]];
+	else
+		[oPreview setTitle:m_SymbolString[m_Symbol_hi * 16 + m_Symbol_lo]];
+
+	[oSymbolTable setNeedsDisplay:YES];
+	[oSymbolTable displayIfNeeded];
+}
+
+- (IBAction)aFont:(id)sender
+{
+	NSArray * fonts = [[NSFontManager sharedFontManager] availableMembersOfFontFamily:[oFontFamily titleOfSelectedItem]];
+
+	NSArray * font = [fonts objectAtIndex:[oFont indexOfSelectedItem]];
+
+	if (m_CurrentFontName)
+		{
+			[m_CurrentFontName release];
+			m_CurrentFontName = 0;
+		}
+	m_CurrentFontName = [font objectAtIndex:0];
+	[m_CurrentFontName retain];
+
+	if (m_CurrentFont)
+		{
+			[m_CurrentFont release];
+			m_CurrentFont = 0;
+		}
+	m_CurrentFont = [NSFont fontWithName:m_CurrentFontName size:12.0f];
+	[m_CurrentFont retain];
+
+	[self recalculateSymbolWidths];
+
+	[oPreview setFont:[NSFont fontWithName:m_CurrentFontName size:36.0f]];
+	if (m_bRemapGlyphs)
+		[oPreview setTitle:m_Remap_String[m_Symbol_hi * 16 + m_Symbol_lo]];
+	else
+		[oPreview setTitle:m_SymbolString[m_Symbol_hi * 16 + m_Symbol_lo]];
+
+	[oSymbolTable setNeedsDisplay:YES];
+	[oSymbolTable displayIfNeeded];
+}
+
+- (void)fontFamilyDidChange
+{
+	[oFont removeAllItems];
+
+	NSArray * fonts = [[NSFontManager sharedFontManager] availableMembersOfFontFamily:[oFontFamily titleOfSelectedItem]];
+
+	unsigned int count = [fonts count];
+
+	for (unsigned int i = 0; i < count; i++)
+		{
+			NSArray * font = [fonts objectAtIndex:i];
+
+			if (i == 0)
+				{
+					if (m_CurrentFontName)
+						{
+							[m_CurrentFontName release];
+							m_CurrentFontName = 0;
+						}
+					m_CurrentFontName = [font objectAtIndex:0];
+					[m_CurrentFontName retain];
+				}
+			[oFont addItemWithTitle:[font objectAtIndex:1]];
+		}
+	[oFont selectItemAtIndex:0];
+
+	if (m_CurrentFont)
+		{
+			[m_CurrentFont release];
+			m_CurrentFont = 0;
+		}
+	m_CurrentFont = [NSFont fontWithName:m_CurrentFontName size:12.0f];
+	[m_CurrentFont retain];
+
+	[self recalculateSymbolWidths];
+}
+
+- (IBAction)aRemapGlyphs:(id)sender
+{
+	m_bRemapGlyphs = ([oRemapGlyphs state] == NSOnState) ? YES : NO;
+
+	[self recalculateSymbolWidths];
+
+	[oPreview setFont:[NSFont fontWithName:m_CurrentFontName size:36.0f]];
+	if (m_bRemapGlyphs)
+		[oPreview setTitle:m_Remap_String[m_Symbol_hi * 16 + m_Symbol_lo]];
+	else
+		[oPreview setTitle:m_SymbolString[m_Symbol_hi * 16 + m_Symbol_lo]];
+
+	[oSymbolTable setNeedsDisplay:YES];
+	[oSymbolTable displayIfNeeded];
+}
+
+- (void)recalculateSymbolWidths
+{
+	/* should have ns-font & ps-font-name at this point; calculate Abi-font-widths, though [TODO: FIXME??]
+	 */
+	// XAP_CocoaFont Font(m_CurrentFont); // this is causing a crash
+
+	for (int i = 0; i < 224; i++)
+		{
+			UT_UCS4Char ucs4 = static_cast<UT_UCS4Char>(m_bRemapGlyphs ? s_remap[i] : (i + 32));
+
+			m_SymbolWidth[i] = 1; // Font.measureUnremappedCharForCache(ucs4);
+		}
+}
+
+/* NSTableViewDataSource methods
+ */
+- (int)numberOfRowsInTableView:(NSTableView *)aTableView
+{
+	return 14;
+}
+
+- (id)tableView:(NSTableView *)aTableView objectValueForTableColumn:(NSTableColumn *)aTableColumn row:(int)rowIndex
+{
+	NSString * identifier = [aTableColumn identifier];
+
+	const char * cid = [identifier UTF8String];
+
+	NSTextFieldCell * cell = (NSTextFieldCell *) [aTableColumn dataCell];
+
+	if (*cid == '-')
+		{
+			[cell setFont:[NSFont labelFontOfSize:12.0f]];
+
+			[cell setDrawsBackground:YES];
+			[cell setBackgroundColor:[NSColor controlHighlightColor]];
+
+			if (m_OffsetString[rowIndex])
+				return m_OffsetString[rowIndex];
+			return @"?x";
+		}
+
+	if (m_CurrentFont)
+		[cell setFont:m_CurrentFont];
+	else
+		[cell setFont:[NSFont labelFontOfSize:12.0f]];
+
+	int columnIndex;
+
+	if (((*cid) >= '0') && ((*cid) <= '9'))
+		columnIndex = (int) ((*cid) - '0');
+	else
+		columnIndex = (int) ((*cid) - 'A') + 10;
+
+	if ((columnIndex == m_Symbol_lo) && (rowIndex == m_Symbol_hi))
+		{
+			[cell setDrawsBackground:YES];
+			[cell setBackgroundColor:[NSColor controlHighlightColor]];
+		}
+	else
+		{
+			[cell setDrawsBackground:NO];
+		}
+
+	int index = rowIndex * 16 + columnIndex;
+
+	if (m_SymbolWidth[index])
+		return m_bRemapGlyphs ? m_Remap_String[index] : m_SymbolString[index];
+	return @"";
+}
+
+/* NSTableView delegate methods
+ */
+- (void)tableView:(NSTableView *)aTableView willDisplayCell:(id)aCell forTableColumn:(NSTableColumn *)aTableColumn row:(int)rowIndex
+{
+	// ...
+}
+
+- (BOOL)tableView:(NSTableView *)aTableView shouldSelectRow:(int)rowIndex
+{
+	return NO;
+}
 
 @end

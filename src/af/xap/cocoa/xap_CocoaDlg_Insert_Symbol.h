@@ -1,6 +1,9 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+
 /* AbiSource Application Framework
  * Copyright (C) 1998 AbiSource, Inc.
  * Copyright (C) 2001,2003 Hubert Figuiere
+ * Copyright (C) 2004 Francis James Franklin
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -27,66 +30,88 @@
 
 #import "xap_CocoaDialog_Utilities.h"
 
-#define DEFAULT_COCOA_SYMBOL_FONT "Symbol"
-
 class XAP_CocoaFrame;
 class XAP_CocoaDialog_Insert_Symbol;
 
 /*****************************************************************/
+
 @interface XAP_CocoaDlg_Insert_SymbolController : NSWindowController <XAP_CocoaDialogProtocol>
 {
-    IBOutlet NSButton *_addBtn;
-    IBOutlet NSComboBox *_fontCombo;
-    IBOutlet XAP_CocoaNSView *_grid;
-    IBOutlet XAP_CocoaNSView *_preview;
-	XAP_CocoaDialog_Insert_Symbol* _xap;
+	IBOutlet NSButton *			oAdd;
+	IBOutlet NSButton *			oPreview;
+	IBOutlet NSButton *			oRemapGlyphs;
+
+	IBOutlet NSPopUpButton *	oFont;
+	IBOutlet NSPopUpButton *	oFontFamily;
+
+	IBOutlet NSTableView *		oSymbolTable;
+
+	NSMutableArray *			m_FontList;
+	NSFont *					m_CurrentFont;
+	NSString *					m_CurrentFontName;
+	NSString *					m_OffsetString[14];
+	NSString *					m_SymbolString[224];
+	NSString *					m_Remap_String[224];
+	UT_sint32					m_SymbolWidth[224];
+
+	int							m_Symbol_lo;
+	int							m_Symbol_hi;
+
+	BOOL						m_bRemapGlyphs;
+
+	XAP_CocoaDialog_Insert_Symbol *		_xap;
 }
-- (IBAction)addAction:(id)sender;
-- (IBAction)fontSelectAction:(id)sender;
+- (IBAction)aSingleClick:(id)sender;
+- (IBAction)aDoubleClick:(id)sender;
+- (IBAction)aAdd:(id)sender;
+- (IBAction)aFont:(id)sender;
+- (IBAction)aFontFamily:(id)sender;
+- (IBAction)aRemapGlyphs:(id)sender;
 
-- (XAP_CocoaNSView*)grid;
-- (XAP_CocoaNSView*)preview;
+- (id)initFromNib;
+- (void)dealloc;
+- (void)setXAPOwner:(XAP_Dialog *)owner;
+- (void)discardXAP;
+- (void)windowDidLoad;
+- (void)windowWillClose:(NSNotification *)aNotification;
+- (void)windowToFront;
 
-- (void)_selectFontByName:(const char*)name;
-- (NSString*)_selectedFont;
+- (void)fontFamilyDidChange;
+- (void)recalculateSymbolWidths;
+
+/* NSTableViewDataSource methods
+ */
+- (int)numberOfRowsInTableView:(NSTableView *)aTableView;
+- (id)tableView:(NSTableView *)aTableView objectValueForTableColumn:(NSTableColumn *)aTableColumn row:(int)rowIndex;
+
+/* NSTableView delegate methods
+ */
+- (void)tableView:(NSTableView *)aTableView willDisplayCell:(id)aCell forTableColumn:(NSTableColumn *)aTableColumn row:(int)rowIndex;
+- (BOOL)tableView:(NSTableView *)aTableView shouldSelectRow:(int)rowIndex;
 @end
-
 
 
 class XAP_CocoaDialog_Insert_Symbol : public XAP_Dialog_Insert_Symbol
 {
 public:
+	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id dlgid);
+
 	XAP_CocoaDialog_Insert_Symbol(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id dlgid);
+
 	virtual ~XAP_CocoaDialog_Insert_Symbol(void);
 
 	virtual void			runModal(XAP_Frame * pFrame);
-
 	virtual void			runModeless(XAP_Frame * pFrame);
-	virtual void			notifyActiveFrame(XAP_Frame *pFrame);
-	virtual void			notifyCloseFrame(XAP_Frame *pFrame){};
-	virtual void			destroy(void);
+	virtual void			notifyActiveFrame(XAP_Frame * pFrame);
+	virtual void			notifyCloseFrame(XAP_Frame * pFrame) { };
 	virtual void			activate(void);
-	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id dlgid);
+	virtual void			destroy(void);
 
-	// callbacks can fire these events
-
-	virtual void			event_OK(void);
-	virtual void			event_Cancel(void);
-	void 					event_CloseWindow(void);
-	void					SymbolMap_exposed( void);
-	void					Symbolarea_exposed( void);
-	void					SymbolMap_clicked(NSEvent* event);
-	void					CurrentSymbol_clicked(void);
-	virtual void			Key_Pressed(NSEvent * e);
-	virtual void			New_Font( void);
+	void					insertSymbol(const char * fontFamilyName, UT_UCS4Char symbol);
+	void					windowClosed(void);
 
 private:
-
-	void		_fillComboboxWithFonts (NSComboBox* combo);
-
-	GR_CocoaGraphics	* 		m_pGRPreview;
-	GR_CocoaGraphics *       	m_pGRGrid;
-	XAP_CocoaDlg_Insert_SymbolController*	m_dlg;
+	XAP_CocoaDlg_Insert_SymbolController *	m_dlg;
 };
 
 #endif /* XAP_COCOADIALOG_INSERT_SYMBOL_H */
