@@ -995,15 +995,15 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(noop), 				0,	""),
 
 	// o
-	EV_EditMethod(NF(openRecent_1), 		0,		""),
-	EV_EditMethod(NF(openRecent_2), 		0,		""),
-	EV_EditMethod(NF(openRecent_3), 		0,		""),
-	EV_EditMethod(NF(openRecent_4), 		0,		""),
-	EV_EditMethod(NF(openRecent_5), 		0,		""),
-	EV_EditMethod(NF(openRecent_6), 		0,		""),
-	EV_EditMethod(NF(openRecent_7), 		0,		""),
-	EV_EditMethod(NF(openRecent_8), 		0,		""),
-	EV_EditMethod(NF(openRecent_9), 		0,		""),
+	EV_EditMethod(NF(openRecent_1), 		_A_,		""),
+	EV_EditMethod(NF(openRecent_2), 		_A_,		""),
+	EV_EditMethod(NF(openRecent_3), 		_A_,		""),
+	EV_EditMethod(NF(openRecent_4), 		_A_,		""),
+	EV_EditMethod(NF(openRecent_5), 		_A_,		""),
+	EV_EditMethod(NF(openRecent_6), 		_A_,		""),
+	EV_EditMethod(NF(openRecent_7), 		_A_,		""),
+	EV_EditMethod(NF(openRecent_8), 		_A_,		""),
+	EV_EditMethod(NF(openRecent_9), 		_A_,		""),
 	EV_EditMethod(NF(openTemplate), 0, ""),
 
 	// p
@@ -2593,11 +2593,13 @@ Defun1(newWindow)
 
 static bool _openRecent(AV_View* pAV_View, UT_uint32 ndx)
 {
-	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
-	UT_ASSERT(pFrame);
-	XAP_App * pApp = pFrame->getApp();
-	UT_ASSERT(pApp);
-	XAP_Prefs * pPrefs = pApp->getPrefs();
+	XAP_Frame * pFrame = NULL;
+	if (pAV_View) {
+		pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
+		UT_ASSERT(pFrame);
+	}
+
+	XAP_Prefs * pPrefs = XAP_App::getApp()->getPrefs();
 	UT_ASSERT(pPrefs);
 
 	UT_ASSERT(ndx > 0);
@@ -3997,7 +3999,7 @@ static bool s_doContextMenu_no_move( EV_EditMouseContext emc,
 											XAP_Frame * pFrame)
 {
 	const char * szContextMenuName =  XAP_App::getApp()->getMenuFactory()->FindContextMenu(emc);
-	UT_DEBUGMSG(("Context Menu Name is........ %s \N",szContextMenuName));
+	UT_DEBUGMSG(("Context Menu Name is........ %s \n",szContextMenuName));
 	if (!szContextMenuName)
 		return false;
 	bool res =	pFrame->runModalContextMenu(pView,szContextMenuName,
