@@ -29,6 +29,7 @@ Larry Kollar <kollar@stc.net>                   MkLinux
 Tuomas Kuosmanen <tigert@gimp.org>              artist
 James Lefavour <James@albany.net>               Win98/VC6
 Lalo Martins <lalo@webcom.com>
+Caolan McNamara <Caolan.McNamara@ul.ie>		Microsoft Word Importer
 Pierre Sarrazin <ps@cam.org>            
 Dan Schreiber <dan@abisource.com>
 <kstailey@kstailey.tzo.com>                     OpenBSD
