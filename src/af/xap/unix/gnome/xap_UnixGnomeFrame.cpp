@@ -421,30 +421,37 @@ void XAP_UnixGnomeFrame::_createTopLevelWindow(void)
 	};
 	static gint n_drag_types = sizeof(drag_types)/sizeof(drag_types[0]);
 
-	m_wTopLevelWindow = gnome_app_new((gchar *)(m_pUnixApp->getApplicationName()),
+	if(m_iFrameMode == XAP_NormalFrame)
+	{
+		m_wTopLevelWindow = gnome_app_new((gchar *)(m_pUnixApp->getApplicationName()),
 									  (gchar *)(m_pUnixApp->getApplicationTitleForTitleBar()));
- 	gtk_object_set_data(GTK_OBJECT(m_wTopLevelWindow), "ic_attr", NULL);
- 	gtk_object_set_data(GTK_OBJECT(m_wTopLevelWindow), "ic", NULL);
+		gtk_object_set_data(GTK_OBJECT(m_wTopLevelWindow), "ic_attr", NULL);
+		gtk_object_set_data(GTK_OBJECT(m_wTopLevelWindow), "ic", NULL);
+		gtk_window_set_policy(GTK_WINDOW(m_wTopLevelWindow), TRUE, TRUE, FALSE);
+		gtk_window_set_wmclass(GTK_WINDOW(m_wTopLevelWindow),
+						   m_pUnixApp->getApplicationName(),
+						   m_pUnixApp->getApplicationName());
+	} 
 	gtk_object_set_data(GTK_OBJECT(m_wTopLevelWindow), "toplevelWindow",
 						m_wTopLevelWindow);
 	gtk_object_set_user_data(GTK_OBJECT(m_wTopLevelWindow),this);
-	gtk_window_set_policy(GTK_WINDOW(m_wTopLevelWindow), TRUE, TRUE, FALSE);
-	gtk_window_set_wmclass(GTK_WINDOW(m_wTopLevelWindow),
-						   m_pUnixApp->getApplicationName(),
-						   m_pUnixApp->getApplicationName());
 
 	gtk_drag_dest_set (m_wTopLevelWindow,
 					   GTK_DEST_DEFAULT_ALL,
 					   drag_types, 
 					   n_drag_types, 
 					   GDK_ACTION_COPY);
+	if(m_iFrameMode == XAP_NormalFrame)
+	{
 
- 	gtk_signal_connect(GTK_OBJECT(m_wTopLevelWindow), "realize",
+		gtk_signal_connect(GTK_OBJECT(m_wTopLevelWindow), "realize",
  					   GTK_SIGNAL_FUNC(_fe::realize), NULL);
- 	gtk_signal_connect(GTK_OBJECT(m_wTopLevelWindow), "unrealize",
+		gtk_signal_connect(GTK_OBJECT(m_wTopLevelWindow), "unrealize",
  					   GTK_SIGNAL_FUNC(_fe::unrealize), NULL);
- 	gtk_signal_connect(GTK_OBJECT(m_wTopLevelWindow), "size_allocate",
+	}
+	gtk_signal_connect(GTK_OBJECT(m_wTopLevelWindow), "size_allocate",
  					   GTK_SIGNAL_FUNC(_fe::sizeAllocate), NULL);
+  
  	gtk_signal_connect(GTK_OBJECT(m_wTopLevelWindow), "focus_in_event",
  					   GTK_SIGNAL_FUNC(_fe::focusIn), NULL);
  	gtk_signal_connect(GTK_OBJECT(m_wTopLevelWindow), "focus_out_event",
@@ -482,13 +489,20 @@ void XAP_UnixGnomeFrame::_createTopLevelWindow(void)
 					   GTK_SIGNAL_FUNC(_fe::focus_out_event), NULL);
 
 	// create a VBox inside it.
-	
+
 	m_wVBox = gtk_vbox_new(FALSE,0);
 	gtk_object_set_data(GTK_OBJECT(m_wTopLevelWindow), "vbox", m_wVBox);
 	gtk_object_set_user_data(GTK_OBJECT(m_wVBox),this);
-	gnome_app_set_contents(GNOME_APP(m_wTopLevelWindow), m_wVBox);
-
+	if(m_iFrameMode == XAP_NormalFrame)
+	{
+		gnome_app_set_contents(GNOME_APP(m_wTopLevelWindow), m_wVBox);
+	}
+	else
+	{
+		gtk_container_add(GTK_CONTAINER(m_wTopLevelWindow), m_wVBox);
+	}
 	// synthesize a menu from the info in our base class.
+
 	m_pUnixMenu = new EV_UnixGnomeMenuBar(m_pUnixApp,this,
 										  m_szMenuLayoutName,
 										  m_szMenuLabelSetName);
@@ -502,10 +516,17 @@ void XAP_UnixGnomeFrame::_createTopLevelWindow(void)
 	// create a toolbar instance for each toolbar listed in our base class.
 	// TODO for some reason, the toolbar functions require the TLW to be
 	// TODO realized (they reference m_wTopLevelWindow->window) before we call them.
-	gtk_widget_realize(m_wTopLevelWindow);
-
+	if(m_iFrameMode == XAP_NormalFrame)
+	{
+		gtk_widget_realize(m_wTopLevelWindow);
+	}
+	else
+	{
+		gtk_widget_realize(m_wVBox);
+	}
 	gtk_signal_connect(GTK_OBJECT(m_wTopLevelWindow), "key_press_event",
 					   GTK_SIGNAL_FUNC(_fe::key_press_event), NULL);
+
 
 	_createToolbars();
 
@@ -521,14 +542,19 @@ void XAP_UnixGnomeFrame::_createTopLevelWindow(void)
 	// if it wants to.  we will put it below the document
 	// window (a peer with toolbars and the overall sunkenbox)
 	// so that it will appear outside of the scrollbars.
-
+	m_wStatusBar = NULL;
 	m_wStatusBar = _createStatusBarWindow();
-	if (m_wStatusBar)
+
+	if (m_iFrameMode == XAP_NormalFrame)
 	{
 		gnome_app_set_statusbar(GNOME_APP(m_wTopLevelWindow), m_wStatusBar);
-		gtk_widget_show(m_wStatusBar);
 	}
-	
+	else
+	{
+		gtk_container_add(GTK_CONTAINER(m_wTopLevelWindow), m_wVBox);
+	}
+	gtk_widget_show(m_wStatusBar);
+
 	gtk_widget_show(m_wVBox);
 	
 	// set the icon
@@ -566,9 +592,7 @@ void XAP_UnixGnomeFrame::_createTopLevelWindow(void)
 
 	// we let our caller decide when to show m_wTopLevelWindow.
 
-
 	UT_ASSERT(m_pUnixMenu);
-
 
 	return;
 }
@@ -648,7 +672,6 @@ bool XAP_UnixGnomeFrame::openURL(const char * szURL)
 									 &bytes_read);
 		if(result==GNOME_VFS_OK)
 		{
-			UT_DEBUGMSG(("SEVIOR:  url %s read OK \n",szURL));
 			UT_ByteBuf * Bytes = new UT_ByteBuf();
 			Bytes->append((UT_Byte *)buffer,(UT_uint32) bytes_read);
 //

@@ -586,9 +586,11 @@ endif
 
 # ABI_OPT_GNOME_DIRECT_PRINT enables "Print directly" command for
 # gnome port
+# require bonobo for the gnome port too
 #ABI_OPT_GNOME_DIRECT_PRINT = 1
 ifeq ($(ABI_OPT_GNOME),1)
 	ABI_OPT_GNOME_DIRECT_PRINT = 1
+	ABI_OPT_BONOBO = 1
 endif
 
 # This next bit is ugly so I'll explain my rationale:
@@ -627,7 +629,7 @@ GNOME_CFLAGS += $(shell $(GLIB_CONFIG) --cflags)
 ifeq ($(ABI_OPT_BONOBO),1)
 GNOME_CFLAGS    += $(shell $(GNOME_CONFIG) --cflags oaf bonobo)
 GNOME_CFLAGS    += -DHAVE_BONOBO
-GNOME_LIBS      += -lbonobo -loaf -lORBitCosNaming -lORBit -lIIOP -lORBitutil
+GNOME_LIBS      += -lbonobo -loaf -lORBitCosNaming -lORBit -lIIOP -lORBitutil $(shell $(GNOME_CONFIG) --libs bonobox)
 ABI_OPTIONS+=Bonobo:On
 else
 ABI_OPTIONS+=Bonobo:Off

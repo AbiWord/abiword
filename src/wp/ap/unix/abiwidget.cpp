@@ -2,7 +2,8 @@
  *
  * Copyright (C) 2001 AbiSource, Inc.
  * Copyright (C) 2001 Dom Lachowicz <cinamod@hotmail.com>
- * 
+ * Copyright (C) 2002 Martin Sevior <msevior@physics.unimelb.edu.au>
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
@@ -23,11 +24,10 @@
 
 #include "abiwidget.h"
 #include "ap_UnixFrame.h"
-#include "ap_UnixApp.h"
 #include "gr_UnixGraphics.h"
-#include "ap_Preview_Abi.h"
 #include "ev_EditMethod.h"
 #include "ut_assert.h"
+#include "fv_View.h"
 
 // Our widget's private storage data
 // UnixApp and UnixFrame already properly inherit from either
@@ -36,13 +36,28 @@
 struct _AbiPrivData {
 	AP_UnixApp           * m_pApp;
 	AP_UnixFrame         * m_pFrame;
-	GR_UnixGraphics      * m_pGr;
-	AP_Preview_Abi       * m_pPreview;
 	char                 * m_szFilename;
+	GdkICAttr            * ic_attr;
+	GdkIC                * ic;
+	bool                 externalApp;
+};
+
+//
+// Our widget's arguments. 
+//
+enum {
+  ARG_0,
+  CURSOR_ON,
+  INVOKE_NOARGS,
+  MAP_TO_SCREEN,
+  DRAW,
+  LOAD_FILE,
+  ARG_LAST
 };
 
 // our parent class
-static GtkWidgetClass * abi_widget_parent_class = 0;
+static GtkBinClass * parent_class = 0;
+
 
 /**************************************************************************/
 /**************************************************************************/
@@ -123,14 +138,152 @@ EM_VOID__BOOL(viewPara);
 #define ABI_DEFAULT_WIDTH 250
 #define ABI_DEFAULT_HEIGHT 250
 
+static void abi_widget_set_arg(GtkObject *object, 
+							   GtkArg *arg, 
+							   guint arg_id);
+
+static void abi_widget_load_file(AbiWidget * abi, const char * pszFile);
+
 static void 
 abi_widget_size_request (GtkWidget      *widget,
 						 GtkRequisition *requisition)
 {
 	// TODO: possibly be smarter about sizes
+  // This code doesn't work but it might be the basis of further work.
+#if 0
+    if(widget->window)
+	{
+	    GdkWindow * pWindow = gdk_window_get_parent(widget->window);
+		gint width,height;
+		gdk_window_get_size (pWindow, &width, &height);
+		requisition->width = width;
+		requisition->height = height;
+	}
+	else
+#endif
+	{
+	  requisition->width = ABI_DEFAULT_WIDTH;
+	  requisition->height = ABI_DEFAULT_HEIGHT;
+	}
+	if (ABI_WIDGET(widget)->child)
+	  {
+		GtkRequisition child_requisition;
+      
+		gtk_widget_size_request (ABI_WIDGET(widget)->child, &child_requisition);
 
-	requisition->width = ABI_DEFAULT_WIDTH;
-	requisition->height = ABI_DEFAULT_HEIGHT;
+		requisition->width = child_requisition.width;
+		requisition->height = child_requisition.height;
+	  }
+}
+
+//
+// Needed for the gtkbin class
+//
+static void
+abiwidget_add(GtkContainer *container,
+		GtkWidget    *widget)
+{
+  g_return_if_fail (container != NULL);
+  g_return_if_fail (widget != NULL);
+
+  if (GTK_CONTAINER_CLASS (parent_class)->add)
+  {
+	  GTK_CONTAINER_CLASS (parent_class)->add (container, widget);
+  }
+
+  ABI_WIDGET(container)->child = GTK_BIN (container)->child;
+
+}
+
+
+//
+// Needed for the gtkbin class
+//
+static void
+abiwidget_remove (GtkContainer *container,
+		   GtkWidget    *widget)
+{
+  g_return_if_fail (container != NULL);
+  g_return_if_fail (widget != NULL);
+
+  if (GTK_CONTAINER_CLASS (parent_class)->remove)
+    GTK_CONTAINER_CLASS (parent_class)->remove (container, widget);
+
+  ABI_WIDGET(container)->child = GTK_BIN (container)->child;
+}
+
+//
+// Needed for the gtkbin class
+//
+static GtkType
+abiwidget_child_type  (GtkContainer     *container)
+{
+  if (!GTK_BIN (container)->child)
+    return GTK_TYPE_WIDGET;
+  else
+    return GTK_TYPE_NONE;
+}
+
+//
+// arguments to abiwidget
+//
+static void abi_widget_set_arg (GtkObject  *object,
+								GtkArg     *arg,
+								guint	arg_id)
+{
+    AbiWidget * abi = ABI_WIDGET(object);
+	switch(arg_id)
+	{
+	    case CURSOR_ON:
+		{
+		     if(GTK_VALUE_BOOL (*arg) == TRUE)
+			 {
+			      abi_widget_turnon_cursor(abi);
+			 }
+			 break;
+		}
+	    case INVOKE_NOARGS:
+		{
+		     const char * psz= GTK_VALUE_STRING (*arg);
+             abi_widget_invoke(abi,psz,0,0,0);
+			 break;
+		}
+	    case MAP_TO_SCREEN:
+		{
+		     if(GTK_VALUE_BOOL (*arg) == TRUE)
+			 {
+			      abi_widget_map_to_screen(abi);
+			 }
+			 break;
+		}
+	    case DRAW:
+		{
+		     if(GTK_VALUE_BOOL (*arg) == TRUE)
+			 {
+			      abi_widget_draw(abi);
+			 }
+			 break;
+		}
+	    case LOAD_FILE:
+		{
+		     const char * pszFile= GTK_VALUE_STRING (*arg);
+			 abi_widget_load_file(abi,pszFile);
+			 break;
+		}
+	    default:
+		     break;
+	}
+}
+
+static void
+abi_widget_init (AbiWidget * abi)
+{
+	// this isn't really needed, since each widget is
+	// guaranteed to be created with g_new0 and we just
+	// want everything to be 0/NULL/FALSE anyway right now
+	// but i'm keeping it around anyway just in case that changes
+  GTK_WIDGET_SET_FLAGS (abi, GTK_CAN_FOCUS | GTK_RECEIVES_DEFAULT |GTK_CAN_DEFAULT );
+  GTK_WIDGET_UNSET_FLAGS (abi, GTK_NO_WINDOW);
 }
 
 static void
@@ -142,53 +295,50 @@ abi_widget_size_allocate (GtkWidget     *widget,
 	g_return_if_fail (widget != NULL);
 	g_return_if_fail (IS_ABI_WIDGET (widget));
 	g_return_if_fail (allocation != NULL);
-	
+	GtkAllocation child_allocation;
 	widget->allocation = *allocation;
-	if (GTK_WIDGET_REALIZED (widget))
+
+	gint border_width = GTK_CONTAINER (widget)->border_width;
+	gint xthickness = GTK_WIDGET (widget)->style->klass->xthickness;
+	gint ythickness = GTK_WIDGET (widget)->style->klass->ythickness;
+ 	if (GTK_WIDGET_REALIZED (widget))
     {
 		// only allocate on realized widgets
 
 		abi = ABI_WIDGET(widget);
-		
 		gdk_window_move_resize (widget->window,
-								allocation->x, allocation->y,
-								allocation->width, allocation->height);
+								allocation->x+border_width, 
+								allocation->y+border_width,
+								allocation->width - border_width*2, 
+								allocation->height - border_width*2);
 
-		AP_UnixFrame * pFrame = abi->priv->m_pFrame;
-
-		if (pFrame)
+		_AbiPrivData * priv = abi->priv;
+		if (priv->ic)
 		{
-			// TODO: set size of the frame and then queue a resize
-			// TODO: we can run into all sorts of problems
-			// TODO: with us not having a toplevel window for resizing
-			// TODO: and for centering dialogs. deal with this later
+			gint width, height;
 
-			// pFrame->queue_resize();
+			width = allocation->width;
+			height = allocation->height;
+			priv->ic_attr->preedit_area.width = width;
+			priv->ic_attr->preedit_area.height = height;
+			gdk_ic_set_attr (priv->ic, priv->ic_attr,
+							 GDK_IC_PREEDIT_AREA);
+		}
+		
+		if (abi->child)
+		{
+		     child_allocation.x = xthickness;
+			 child_allocation.y = ythickness;
+
+			 child_allocation.width = MAX (1, 
+										   (gint)widget->allocation.width - child_allocation.x * 2 - border_width * 2);
+			 child_allocation.height = MAX (1, 
+											(gint)widget->allocation.height - child_allocation.y * 2 - border_width * 2);
+			 gtk_widget_size_allocate (ABI_WIDGET (widget)->child, &child_allocation);
 		}
     }
 }
 
-static gint
-abi_widget_expose (GtkWidget      *widget,
-				   GdkEventExpose *event)
-{
-	AbiWidget * abi;
-
-	g_return_val_if_fail (widget != NULL, FALSE);
-	g_return_val_if_fail (IS_ABI_WIDGET (widget), FALSE);
-	g_return_val_if_fail (event != NULL, FALSE);
-	
-	if (event->count > 0)
-		return FALSE;
-	
-	abi = ABI_WIDGET (widget);
-
-	// call expose on the graphics context/preview widget...
-	if (abi->priv->m_pPreview)
-		abi->priv->m_pPreview->draw();
-
-	return FALSE;
-}
 
 static void
 abi_widget_realize (GtkWidget * widget)
@@ -205,65 +355,154 @@ abi_widget_realize (GtkWidget * widget)
 
 	GTK_WIDGET_SET_FLAGS (widget, GTK_REALIZED);
 	abi = ABI_WIDGET(widget);
-
+	
 	attributes.x = widget->allocation.x;
 	attributes.y = widget->allocation.y;
-	attributes.width = widget->allocation.width;
-	attributes.height = widget->allocation.height;
+	attributes.width = ABI_DEFAULT_WIDTH;
+	attributes.height = ABI_DEFAULT_HEIGHT;
 	attributes.wclass = GDK_INPUT_OUTPUT;
 	attributes.window_type = GDK_WINDOW_CHILD;
 	attributes.event_mask = gtk_widget_get_events (widget) | 
-		GDK_EXPOSURE_MASK | GDK_BUTTON_PRESS_MASK | 
-		GDK_BUTTON_RELEASE_MASK | GDK_POINTER_MOTION_MASK |
-		GDK_POINTER_MOTION_HINT_MASK;
+	  GDK_EXPOSURE_MASK | GDK_BUTTON_PRESS_MASK | GDK_KEY_PRESS_MASK |
+	  GDK_BUTTON_RELEASE_MASK | GDK_POINTER_MOTION_MASK |
+	  GDK_POINTER_MOTION_HINT_MASK | GDK_ENTER_NOTIFY_MASK |
+	  GDK_LEAVE_NOTIFY_MASK |
+	  GDK_FOCUS_CHANGE_MASK |
+	  GDK_STRUCTURE_MASK;
 	attributes.visual = gtk_widget_get_visual (widget);
 	attributes.colormap = gtk_widget_get_colormap (widget);
 	
 	attributes_mask = GDK_WA_X | GDK_WA_Y | GDK_WA_VISUAL | GDK_WA_COLORMAP;
-	widget->window = gdk_window_new (widget->parent->window, &attributes, 
-									 attributes_mask);
-	
-	widget->style = gtk_style_attach (widget->style, widget->window);
-	
-	gdk_window_set_user_data (widget->window, widget);
-	
-	gtk_style_set_background (widget->style, widget->window, GTK_STATE_ACTIVE);
 
+	widget->window = gdk_window_new (gtk_widget_get_parent_window (widget), &attributes, attributes_mask);
+	gdk_window_set_user_data (widget->window, abi);
+
+	widget->style = gtk_style_attach (widget->style, widget->window);
+	gtk_style_set_background (widget->style, widget->window, GTK_STATE_NORMAL);
+//
+// Setup the input context for pre-edit conditions.
+//
+	_AbiPrivData * priv = abi->priv;
+	priv->ic_attr = gdk_ic_attr_new ();
+	if (priv->ic_attr != NULL)
+    {
+		gint width, height;
+		int mask;
+		GdkColormap *colormap;
+		GdkICAttr *attr = priv->ic_attr;
+		int attrmask = GDK_IC_ALL_REQ;
+		GdkIMStyle style;
+
+		int supported_style =(GdkIMStyle)(GDK_IM_PREEDIT_NONE |
+										  GDK_IM_PREEDIT_NOTHING |
+										  GDK_IM_PREEDIT_POSITION |
+										  GDK_IM_STATUS_NONE |
+										  GDK_IM_STATUS_NOTHING);
+
+		if (widget->style && widget->style->font->type != GDK_FONT_FONTSET)
+			supported_style &= ~GDK_IM_PREEDIT_POSITION;
+
+		attr->style = style = gdk_im_decide_style ((GdkIMStyle)supported_style);
+		attr->client_window = widget->window;
+
+		if ((colormap = gtk_widget_get_colormap (widget)) !=
+			gtk_widget_get_default_colormap ())
+		{
+			attrmask |= GDK_IC_PREEDIT_COLORMAP;
+			attr->preedit_colormap = colormap;
+		}
+		attrmask |= GDK_IC_PREEDIT_FOREGROUND;
+		attrmask |= GDK_IC_PREEDIT_BACKGROUND;
+		attr->preedit_foreground = widget->style->fg[GTK_STATE_NORMAL];
+		attr->preedit_background = widget->style->base[GTK_STATE_NORMAL];
+		attr->preedit_area.width = ABI_DEFAULT_WIDTH;
+		attr->preedit_area.height = ABI_DEFAULT_HEIGHT;
+		attr->preedit_fontset = widget->style->font;
+
+		switch (style & GDK_IM_PREEDIT_MASK)
+		{
+		case GDK_IM_PREEDIT_POSITION:
+			if (widget->style && widget->style->font->type != GDK_FONT_FONTSET)
+			{
+				g_warning ("over-the-spot style requires fontset");
+				break;
+			}
+
+			gdk_window_get_size (widget->window, &width, &height);
+		  
+			attrmask |= GDK_IC_PREEDIT_POSITION_REQ;
+			attr->spot_location.x = 0;
+			attr->spot_location.y = height;
+			attr->preedit_area.x = 0;
+			attr->preedit_area.y = 0;
+			attr->preedit_area.width = width;
+			attr->preedit_area.height = height;
+			attr->preedit_fontset = widget->style->font;
+			break;
+		}
+		priv->ic = gdk_ic_new (attr, (GdkICAttributesType)attrmask);
+		
+		if (priv->ic == NULL)
+			g_warning ("Can't create input context.");
+		else
+		{
+			mask = gdk_window_get_events (widget->window);
+			mask |= (GdkEventMask)gdk_ic_get_events (priv->ic);
+			gdk_window_set_events (widget->window,(GdkEventMask) mask);
+			
+			//	if (GTK_WIDGET_HAS_FOCUS(widget))
+				gdk_im_begin (priv->ic, widget->window);
+				gdk_ic_set_attr (priv->ic, priv->ic_attr,
+								 GDK_IC_PREEDIT_AREA);
+		}
+	}
+	gtk_object_set_data(GTK_OBJECT(widget), "ic_attr", priv->ic_attr);
+	gtk_object_set_data(GTK_OBJECT(widget), "ic", priv->ic);
+}
+
+extern "C" void 
+abi_widget_map_to_screen(AbiWidget * abi)
+{
+
+	GtkWidget * widget = GTK_WIDGET(abi);
 	// now we can set up Abi inside of this GdkWindow
 
 	XAP_Args *pArgs = 0;
-	if (abi->priv->m_szFilename)
+	if(abi->priv->externalApp)
 	{
-		pArgs = new XAP_Args (1, &abi->priv->m_szFilename);
-	}
-	else
-	{
-		pArgs = new XAP_Args(0, 0);
+		if (abi->priv->m_szFilename)
+		{
+			pArgs = new XAP_Args (1, &abi->priv->m_szFilename);
+		}
+		else
+		{
+			pArgs = new XAP_Args(0, 0);
+		}
+		AP_UnixApp   * pApp = new AP_UnixApp (pArgs, "AbiWidget");
+		UT_ASSERT(pApp);
+		pApp->initialize();
+		abi->priv->m_pApp     = pApp;
 	}
 
-	AP_UnixApp   * pApp = new AP_UnixApp (pArgs, "AbiWidget");
-	UT_ASSERT(pApp);
-	pApp->initialize();
 
-	AP_UnixFrame * pFrame  = new AP_UnixFrame(pApp);
+	AP_UnixFrame * pFrame  = new AP_UnixFrame(abi->priv->m_pApp);
 	UT_ASSERT(pFrame);
-	pFrame->initialize();
-	
-	GR_UnixGraphics * pGr = new GR_UnixGraphics (widget->window,
-												 pApp->getFontManager(), pApp);
-	UT_ASSERT(pGr);
-
-	AP_Preview_Abi * pPreview = new AP_Preview_Abi (pGr, ABI_DEFAULT_WIDTH,
-													ABI_DEFAULT_HEIGHT, pFrame,
-													PREVIEW_ADJUSTED_PAGE);
-	UT_ASSERT(pPreview);
-
-	abi->priv->m_pApp     = pApp;
+	static_cast<XAP_UnixFrame *>(pFrame)->setTopLevelWindow(widget);
+	pFrame->initialize(XAP_NoMenusWindowLess);
 	abi->priv->m_pFrame   = pFrame;
-	abi->priv->m_pGr      = pGr;
-	abi->priv->m_pPreview = pPreview;
+	if(!abi->priv->externalApp)
+	{
+		delete pArgs;
+	}
+	abi->priv->m_pFrame->loadDocument(abi->priv->m_szFilename,IEFT_Unknown ,true);
+
+}
+extern "C" void 
+abi_widget_turnon_cursor(AbiWidget * abi)
+{
 	
-	delete pArgs;
+    FV_View * pV = (FV_View*) abi->priv->m_pFrame->getCurrentView();
+	pV->focusChange(AV_FOCUS_HERE);
 }
 
 static void
@@ -278,26 +517,28 @@ abi_widget_destroy (GtkObject *object)
 	abi = ABI_WIDGET(object);
 
 	// order of deletion is important here
-	delete abi->priv->m_pPreview;
-	delete abi->priv->m_pApp;
-	delete abi->priv->m_pFrame;
-	delete abi->priv->m_pGr;
 
+	if(abi->priv->m_pApp)
+	{
+		abi->priv->m_pApp->forgetFrame(abi->priv->m_pFrame);
+		delete abi->priv->m_pFrame;
+		if(!abi->priv->externalApp)
+		{
+			abi->priv->m_pApp->shutdown();
+			delete abi->priv->m_pApp;
+		}
+	}
 	g_free (abi->priv->m_szFilename);
+	if(abi->priv->ic)
+	{
+		gdk_ic_attr_destroy(abi->priv->ic_attr);
+		gdk_ic_destroy(abi->priv->ic);
+	}
 	g_free (abi->priv);
 
 	// chain up
-	if (GTK_OBJECT_CLASS (abi_widget_parent_class)->destroy)
-		GTK_OBJECT_CLASS (abi_widget_parent_class)->destroy (object);
-}
-
-static void
-abi_widget_init (AbiWidget * abi)
-{
-	// this isn't really needed, since each widget is
-	// guaranteed to be created with g_new0 and we just
-	// want everything to be 0/NULL/FALSE anyway right now
-	// but i'm keeping it around anyway just in case that changes
+	if (GTK_OBJECT_CLASS (parent_class)->destroy)
+		GTK_OBJECT_CLASS (parent_class)->destroy (object);
 }
 
 static void
@@ -305,6 +546,8 @@ abi_widget_class_init (AbiWidgetClass *abi_class)
 {
 	GtkObjectClass * object_class;
 	GtkWidgetClass * widget_class;
+	GtkContainerClass *container_class;
+	container_class = (GtkContainerClass*) abi_class;
 
 	object_class = (GtkObjectClass *)abi_class;
 	widget_class = (GtkWidgetClass *)abi_class;
@@ -313,17 +556,23 @@ abi_widget_class_init (AbiWidgetClass *abi_class)
 	object_class->destroy  = abi_widget_destroy;
 
 	// set our parent class
-	abi_widget_parent_class = (GtkWidgetClass *)
-		gtk_type_class (gtk_widget_get_type());
+	parent_class = (GtkBinClass *)
+		gtk_type_class (gtk_bin_get_type());
 	
 	// set our custom destroy method
 	object_class->destroy = abi_widget_destroy; 
+	object_class->set_arg = abi_widget_set_arg;
 
 	// set our custom class methods
 	widget_class->realize       = abi_widget_realize;
-	widget_class->expose_event  = abi_widget_expose;
 	widget_class->size_request  = abi_widget_size_request;
-	widget_class->size_allocate = abi_widget_size_allocate; 
+   	widget_class->size_allocate = abi_widget_size_allocate; 
+
+	// For the container methods
+	container_class->add = abiwidget_add;
+	container_class->remove = abiwidget_remove;
+	container_class->child_type = abiwidget_child_type;
+
 
 	// AbiWidget's master "invoke" method
 	abi_class->invoke = abi_widget_invoke;
@@ -347,7 +596,16 @@ abi_widget_class_init (AbiWidgetClass *abi_class)
 	abi_class->toggle_italic    = EM_NAME(toggleItalic);
 	abi_class->toggle_underline = EM_NAME(toggleUline);
 	abi_class->view_para        = EM_NAME(viewPara);
+
+	gtk_object_add_arg_type ("AbiWidget::cursoron", GTK_TYPE_BOOL, GTK_ARG_READWRITE, CURSOR_ON);
+	gtk_object_add_arg_type ("AbiWidget::invoke_noargs", GTK_TYPE_STRING, GTK_ARG_READWRITE, INVOKE_NOARGS);
+	gtk_object_add_arg_type ("AbiWidget::map_to_screen", GTK_TYPE_BOOL, GTK_ARG_READWRITE, MAP_TO_SCREEN);
+	gtk_object_add_arg_type ("AbiWidget::draw", GTK_TYPE_BOOL, GTK_ARG_READWRITE, DRAW);
+	gtk_object_add_arg_type ("AbiWidget::load_file", GTK_TYPE_STRING, GTK_ARG_READWRITE, LOAD_FILE);
+
 }
+
+
 
 extern "C" GtkType
 abi_widget_get_type (void)
@@ -368,17 +626,30 @@ abi_widget_get_type (void)
 			(GtkClassInitFunc) NULL
 		};
 		
-		abi_type = gtk_type_unique (gtk_widget_get_type (), &info);
+		abi_type = gtk_type_unique (gtk_bin_get_type (), &info);
 	}
 	
 	return abi_type;
 }
 
 static void
-abi_widget_construct (AbiWidget * abi, const char * file)
+abi_widget_construct (AbiWidget * abi, const char * file, AP_UnixApp * pApp)
 {
 	AbiPrivData * priv = g_new0 (AbiPrivData, 1);
-
+	priv->m_pFrame = NULL;
+	priv->m_szFilename = NULL;
+	priv->ic_attr = NULL;
+	priv->ic = NULL;
+	if(pApp == NULL)
+	{
+		priv->m_pApp = NULL;
+		priv->externalApp = false;
+	}
+	else
+	{
+		priv->m_pApp = pApp;
+		priv->externalApp = true;
+	}
 	// this is all that we can do here, because we can't draw until we're
 	// realized and have a GdkWindow pointer
 
@@ -391,7 +662,7 @@ abi_widget_construct (AbiWidget * abi, const char * file)
 /**
  * abi_widget_new
  *
- * Creates a new AbiWord widget
+ * Creates a new AbiWord widget using an internal Abiword App
  */
 extern "C" GtkWidget *
 abi_widget_new (void)
@@ -399,7 +670,7 @@ abi_widget_new (void)
 	AbiWidget * abi;
 
 	abi = (AbiWidget *)gtk_type_new (abi_widget_get_type ());
-	abi_widget_construct (abi, 0);
+	abi_widget_construct (abi, 0, NULL);
 
 	return GTK_WIDGET (abi);
 }
@@ -407,7 +678,8 @@ abi_widget_new (void)
 /**
  * abi_widget_new_with_file
  *
- * Creates a new AbiWord widget and tries to load the @file
+ * Creates a new AbiWord widget and tries to load the file
+ * This uses an internal Abiword App
  *
  * \param file - A file on your HD
  */
@@ -419,7 +691,45 @@ abi_widget_new_with_file (const gchar * file)
 	g_return_val_if_fail (file != 0, 0);
 
 	abi = (AbiWidget *)gtk_type_new (abi_widget_get_type ());
-	abi_widget_construct (abi, file);
+	abi_widget_construct (abi, file,NULL);
+
+	return GTK_WIDGET (abi);
+}
+
+/**
+ * abi_widget_new_with_app
+ *
+ * Creates a new AbiWord widget using an external Abiword App
+ */
+extern "C" GtkWidget *
+abi_widget_new_with_app (AP_UnixApp * pApp)
+{
+	AbiWidget * abi;
+
+	abi = (AbiWidget *)gtk_type_new (abi_widget_get_type ());
+	abi_widget_construct (abi, 0, pApp);
+
+	return GTK_WIDGET (abi);
+}
+
+/**
+ * abi_widget_new_with_app_file
+ *
+ * Creates a new AbiWord widget and tries to load the file
+ * This uses an external Abiword App
+ *
+ * \param file - A file on your HD
+ * \param pApp - pointer to a valid AbiWord XAP_UnixApp
+ */
+extern "C" GtkWidget *
+abi_widget_new_with_app_file (AP_UnixApp * pApp, const gchar * file)
+{
+	AbiWidget * abi;
+
+	g_return_val_if_fail (file != 0, 0);
+
+	abi = (AbiWidget *)gtk_type_new (abi_widget_get_type ());
+	abi_widget_construct (abi, file,pApp);
 
 	return GTK_WIDGET (abi);
 }
@@ -485,3 +795,39 @@ abi_widget_invoke (AbiWidget * w, const char * mthdName,
 	// actually invoke
 	return ((*function)(view, &calldata) ? TRUE : FALSE);
 }
+
+extern "C" void
+abi_widget_draw (AbiWidget * w)
+{
+	// obtain a valid view
+	FV_View * view = (FV_View *) w->priv->m_pFrame->getCurrentView();
+	view->draw();
+}
+
+static void
+abi_widget_load_file(AbiWidget * abi, const char * pszFile)
+{
+	AP_UnixFrame * pFrame = (AP_UnixFrame *) abi->priv->m_pFrame;
+	if(pFrame == NULL)
+	{
+		return;
+	}
+	pFrame->loadDocument(pszFile,IEFT_Unknown ,true);
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

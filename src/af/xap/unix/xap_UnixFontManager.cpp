@@ -71,7 +71,8 @@ static int s_xerror_handler(Display *dsp, XErrorEvent *e)
 			UT_ASSERT(pApp);
 			pApp->getPrefsValueBool(XAP_PREF_KEY_ShowUnixFontWarning, &bShowWarning);
 
-#if 1			
+#if 0 // sevior FIXME switch this back.
+			
 			if(bShowWarning)
 			{
 				if(pApp->getDisplayStatus())

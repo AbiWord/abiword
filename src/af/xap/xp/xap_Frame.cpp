@@ -76,6 +76,7 @@ XAP_Frame::XAP_Frame(XAP_App * app)
 	  m_zoomType(z_100),
 	  m_pData(0),
 	  m_pInputModes(0),
+	  m_iFrameMode(XAP_NormalFrame),
 	  m_iIdAutoSaveTimer(0),
 	  m_iAutoSavePeriod(0),
 	  m_stAutoSaveExt(),
@@ -89,7 +90,9 @@ XAP_Frame::XAP_Frame(XAP_App * app)
 	  m_bHasDroppedTB(false),
 	  m_ViewAutoUpdaterID(0),
 	  m_ViewAutoUpdater(NULL),
-	  m_bFirstDraw(false)
+	  m_bFirstDraw(false),
+	  m_bShowStatusbar(true),
+	  m_bShowMenubar(true)
 {
 	m_app->rememberFrame(this);
 	memset(m_szTitle,0,sizeof(m_szTitle));
@@ -116,6 +119,7 @@ XAP_Frame::XAP_Frame(XAP_Frame * f)
 	m_zoomType(z_100),
 	m_pData(0),
 	m_pInputModes(0),
+	m_iFrameMode(XAP_NormalFrame),
 	m_iIdAutoSaveTimer(0),
 	m_bBackupRunning(false),
 	m_isrcId(0),

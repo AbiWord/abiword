@@ -74,9 +74,22 @@
 #include "ap_Prefs_SchemeIds.h"
 
 #include "xap_UnixPSGraphics.h"
+#if 1
+#include <bonobo.h>
+#include <liboaf/liboaf.h>
+#include "abiwidget.h"
+#endif
 
 // quick hack - this is defined in ap_EditMethods.cpp
 extern XAP_Dialog_MessageBox::tAnswer s_CouldNotLoadFileMessage(XAP_Frame * pFrame, const char * pNewFile, UT_Error errorCode);
+
+
+//
+// Static functions needed for the bonobo control...
+//
+static int mainBonobo(int argc, char * argv[]);
+static BonoboObject*
+bonobo_AbiWidget_factory  (BonoboGenericFactory *factory, void *closure);
 
 /*****************************************************************/
 
@@ -104,7 +117,7 @@ int AP_UnixGnomeApp::main(const char * szAppName, int argc, char ** argv)
 	int show = 0;
 	char * plugin = NULL;
 	int nosplash = 0;
-
+	int k=0;
 	char *file = NULL;
 
 #ifdef DEBUG
@@ -130,6 +143,41 @@ int AP_UnixGnomeApp::main(const char * szAppName, int argc, char ** argv)
 	 {NULL, '\0', 0, NULL, 0, NULL, NULL} /* end the list */
 	};
 
+	XAP_Args Args = XAP_Args(argc,argv);
+//
+// Check to see if we've been activated as a control by OAF
+//
+	bool bControlFactory = false;
+  	for (k = 1; k < Args.m_argc; k++)
+  		if (*Args.m_argv[k] == '-')
+  			if (strstr(Args.m_argv[k],"AbiSource_AbiWord_ControlFactory") != 0)
+  			{
+ 				bControlFactory = true;
+  				break;
+  			}
+	if(bControlFactory)
+	{
+
+		AP_UnixGnomeApp * pMyUnixApp = new AP_UnixGnomeApp(&Args, szAppName);
+	
+		/* intialize gnome - need this before initialize method */
+		gtk_set_locale();
+		gnome_init_with_popt_table ("AbiSource_AbiWord_ControlFactory",  "0.0",
+									Args.m_argc, Args.m_argv, oaf_popt_options, 0, NULL);
+		if (!pMyUnixApp->initialize())
+		{
+			delete pMyUnixApp;
+			return -1;	// make this something standard?
+		}
+		mainBonobo(argc,argv);
+
+		// destroy the App.  It should take care of deleting all frames.
+
+		pMyUnixApp->shutdown();
+		delete pMyUnixApp;
+		return 0;
+	}
+
 	//
 	// This is a static function.		   
 	//
@@ -141,7 +189,6 @@ int AP_UnixGnomeApp::main(const char * szAppName, int argc, char ** argv)
 	// hack needed to intialize gtk before ::initialize
 	gtk_set_locale();
 
-	XAP_Args Args = XAP_Args(argc,argv);
  	AP_UnixGnomeApp * pMyUnixApp = new AP_UnixGnomeApp(&Args, szAppName);
 
 	// if the initialize fails, we don't have icons, fonts, etc.
@@ -422,6 +469,164 @@ bool AP_UnixGnomeApp::parseCommandLine(poptContext poptcon)
 
 	return true;
 }
+
+//-------------------------------------------------------------------
+// Bonobo Control factory stuff
+//-------------------------------------------------------------------
+
+/* 
+ * get a value from abiwidget
+ */ 
+static void get_prop (BonoboPropertyBag 	*bag,
+	  BonoboArg 		*arg,
+	  guint 		 arg_id,
+	  CORBA_Environment 	*ev,
+	  gpointer 		 user_data)
+{
+	AbiWidget 	*abi;
+	
+	g_return_if_fail (IS_ABI_WIDGET(user_data));
+		
+	/*
+	 * get data from our AbiWidget
+	 */
+//
+// first create a fresh gtkargument.
+//
+	GtkArg * gtk_arg = (GtkArg *) g_new0 (GtkArg,1);
+//
+// Now copy the bonobo argument to this so we know what to extract from
+// AbiWidget.
+//
+	bonobo_arg_to_gtk(gtk_arg,arg);
+//
+// OK get the data from the widget. Only one argument at a time.
+//
+	abi = ABI_WIDGET(user_data); 
+	gtk_object_getv(GTK_OBJECT(abi),1,gtk_arg);
+//
+// Now copy it back to the bonobo argument.
+//
+	bonobo_arg_from_gtk (arg, gtk_arg);
+//
+// Free up allocated memory
+//
+	if (gtk_arg->type == GTK_TYPE_STRING && GTK_VALUE_STRING (*gtk_arg))
+	{
+		g_free (GTK_VALUE_STRING (*gtk_arg));
+	}
+	g_free(gtk_arg);
+}
+
+/*
+ * Tell abiwidget to do something.
+ */
+static void set_prop (BonoboPropertyBag 	*bag,
+	  const BonoboArg 	*arg,
+	  guint 		 arg_id,
+	  CORBA_Environment 	*ev,
+	  gpointer 		 user_data)
+{
+	AbiWidget 	*abi;
+	
+	g_return_if_fail (IS_ABI_WIDGET(user_data));
+		
+	abi = ABI_WIDGET (user_data); 
+//
+// Have to translate BonoboArg to GtkArg now. This is really easy.
+//
+	GtkArg * gtk_arg = (GtkArg *) g_new0 (GtkArg,1);
+	bonobo_arg_to_gtk(gtk_arg,arg);
+//
+// Can only pass one argument at a time.
+//
+	gtk_object_setv(GTK_OBJECT(abi),1,gtk_arg);
+//
+// Free up allocated memory
+//
+	if (gtk_arg->type == GTK_TYPE_STRING && GTK_VALUE_STRING (*gtk_arg))
+	{
+		g_free (GTK_VALUE_STRING (*gtk_arg));
+	}
+	g_free(gtk_arg);
+}
+
+ /*
+ *  produce a brand new bonobo_AbiWord_control
+ *  (this is a callback function, registered in 
+ *  	'bonobo_generic_factory_new')
+ */
+static BonoboObject*
+bonobo_AbiWidget_factory  (BonoboGenericFactory *factory, void *closure)
+{
+	BonoboControl* 		 control;
+	BonoboPropertyBag 	*prop_bag;
+	GtkWidget*     		 abi;
+
+	/*
+	 * create a new AbiWidget instance
+	 */
+
+	AP_UnixApp * pApp = (AP_UnixApp *) XAP_App::getApp();
+	abi = abi_widget_new_with_app (pApp);
+	gtk_widget_show (abi);
+
+	/* create a BonoboControl from a widget */
+
+	control = bonobo_control_new (abi);
+
+	/* 
+	 * create a property bag:
+	 * we provide our accessor functions for properties, 	and 
+	 * the gtk widget
+	 * */
+	prop_bag = bonobo_property_bag_new (get_prop, set_prop, abi);
+	bonobo_control_set_properties (control, prop_bag);
+
+	/* put all AbiWidget's arguments in the property bag - way cool!! */
+  
+	bonobo_property_bag_add_gtk_args (prop_bag,GTK_OBJECT(abi)); 
+
+	/*
+	 *  we don't need the property bag anymore here, so unref it
+	 */
+	bonobo_object_unref (BONOBO_OBJECT(prop_bag));
+
+	return BONOBO_OBJECT (control);
+}
+
+static int mainBonobo(int argc, char * argv[])
+{
+	BonoboGenericFactory 	*factory;
+	CORBA_ORB 		 orb;
+
+	/*
+	 * initialize oaf and bonobo
+	 */
+	orb = oaf_init (argc, argv);
+	if (!orb)
+		g_error ("initializing orb failed");
+	
+	if (!bonobo_init (orb, NULL, NULL))
+		g_error ("initializing Bonobo failed");
+
+	/* register the factory (using OAF) */
+	factory = bonobo_generic_factory_new
+		("OAFIID:AbiSource_AbiWord_ControlFactory",
+		 bonobo_AbiWidget_factory, NULL);
+	if (!factory)
+		g_error ("Registration of Bonobo button factory failed");
+	
+	/*
+	 *  make sure we're unreffing upon exit;
+	 *  enter the bonobo main loop
+	 */
+	bonobo_running_context_auto_exit_unref (BONOBO_OBJECT(factory));
+	bonobo_main ();
+	
+	return 0;
+}
+
 
 
 

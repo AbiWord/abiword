@@ -728,7 +728,10 @@ bool AP_StatusBar::notify(AV_View * pView, const AV_ChangeMask mask)
 	for (k=0; k<kLimit; k++)
 	{
 		ap_sb_Field * pf = (ap_sb_Field *)m_vecFields.getNthItem(k);
-		pf->notify(pView,mask);
+		if(pf)
+		{
+			pf->notify(pView,mask);
+		}
 	}
 
 	return true;
@@ -756,7 +759,10 @@ void AP_StatusBar::_draw(void)
 	for (k=0; k<kLimit; k++)
 	{
 		ap_sb_Field * pf = (ap_sb_Field *)m_vecFields.getNthItem(k);
-		pf->draw();
+		if(pf)
+		{
+			pf->draw();
+		}
 	}
 }
 
@@ -771,7 +777,7 @@ void AP_StatusBar::setStatusMessage(UT_UCSChar * pBufUCS, int redraw)
 	}
 	
 	ap_sb_Field_StatusMessage * pf = (ap_sb_Field_StatusMessage *)m_pStatusMessageField;
-	if (redraw != 0) {
+	if (pf && redraw != 0) {
 		pf->draw();
 	}
 }
@@ -798,16 +804,20 @@ const UT_UCSChar * AP_StatusBar::getStatusMessage(void) const
 
 void AP_StatusBar::setStatusProgressType(int start, int end, int flags) {
 	ap_sb_Field_StatusMessage * pf = (ap_sb_Field_StatusMessage *)m_pStatusMessageField;
-
-	pf->setStatusProgressType(start, end, flags);
-	pf->draw();
+	if(pf)
+	{
+		pf->setStatusProgressType(start, end, flags);
+		pf->draw();
+	}
 }
 
 void AP_StatusBar::setStatusProgressValue(int value) {
 	ap_sb_Field_StatusMessage * pf = (ap_sb_Field_StatusMessage *)m_pStatusMessageField;
-
-	pf->setStatusProgressValue(value);
-	pf->draw();
+	if(pf)
+	{
+		pf->setStatusProgressValue(value);
+		pf->draw();
+	}
 }
 
 

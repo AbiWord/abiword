@@ -49,6 +49,13 @@ class ap_Scrollbar_ViewListener;
 class UT_Worker;
 class UT_Timer;
 
+typedef enum _FrameModes
+{
+	XAP_NormalFrame,	// Normal Frame
+	XAP_NoMenusWindowLess,	// No toplevel window or menus
+	XAP_WindowLess // No toplevel window but menus are OK.
+} XAP_FrameMode;
+
 /*****************************************************************
 ******************************************************************
 ** This file defines the base class for the cross-platform 
@@ -193,11 +200,15 @@ public:
 	// when the user selects hide statusbar, the Frame has to be
 	// resized in order to fill the gap leaved by the statusbar
 	virtual void				queue_resize() {}
-
+	const bool                  isStatusBarShown(void) const { return m_bShowStatusbar;}
+	const bool                  isMenuBarShown(void) const { return m_bShowMenubar;}
+	virtual void                setStatusBarShown(bool bShowStatusbar) {}
+	virtual void                setMenuBarShown(bool bShowMenubar) {}
 protected:
 	virtual void				_createToolbars();
 	virtual EV_Toolbar *		_newToolbar(XAP_App *app, XAP_Frame *frame, const char *, const char *) = 0; // Abstract
     void                        _startViewAutoUpdater(void);
+
 	XAP_App *					m_app;			/* handle to application-specific data */
 	AD_Document *				m_pDoc;			/* to our in-memory representation of a document */
 	AV_View *					m_pView;		/* to our view on the document */
@@ -221,6 +232,7 @@ protected:
 	void *						m_pData;		/* app-specific frame data */
 
 	XAP_InputModes *			m_pInputModes;
+	XAP_FrameMode               m_iFrameMode;
 	
 	static int					_getNextUntitledNumber();
 	
@@ -247,6 +259,8 @@ private:
 	UT_uint32                   m_ViewAutoUpdaterID;
 	UT_Timer *                  m_ViewAutoUpdater;
 	bool                        m_bFirstDraw;
+	bool                        m_bShowStatusbar;
+	bool                        m_bShowMenubar;
 };
 
 #endif /* XAP_Frame_H */

@@ -88,6 +88,7 @@
 
 #include "xap_ModuleManager.h"
 #include "xap_UnixPSGraphics.h"
+#include "abiwidget.h"
 
 #ifdef GTK_WIN_POS_CENTER_ALWAYS
 #define WIN_POS GTK_WIN_POS_CENTER_ALWAYS
@@ -116,6 +117,13 @@ AP_UnixApp::AP_UnixApp(XAP_Args * pArgs, const char * szAppName)
 	  m_cacheSelectionView(0),
 	  m_pFrameSelection(0)
 {
+//
+// hack to link abi_widget - thanks fjf
+//
+	if(this == 0)
+	{
+		GtkWidget * pUn = abi_widget_new_with_file("fred.abw");
+	}
 }
 
 /*!

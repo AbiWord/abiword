@@ -41,7 +41,7 @@ public:
 	AP_UnixFrame(AP_UnixFrame * f);
 	virtual ~AP_UnixFrame(void);
 
-	virtual bool				initialize(void);
+	virtual bool				initialize(XAP_FrameMode frameMode=XAP_NormalFrame);
 	virtual	XAP_Frame *			cloneFrame(void);
 	virtual	XAP_Frame *			buildFrame(XAP_Frame * pFrame);
 	virtual UT_Error   			loadDocument(const char * szFilename, int ieft);

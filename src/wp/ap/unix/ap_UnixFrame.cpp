@@ -87,7 +87,6 @@ UT_Error AP_UnixFrame::_showDocument(UT_uint32 iZoom)
 		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 		return UT_IE_IMPORTERROR;
 	}
-
 	GR_UnixGraphics * pG = NULL;
 	FL_DocLayout * pDocLayout = NULL;
 	AV_View * pView = NULL;
@@ -103,10 +102,9 @@ UT_Error AP_UnixFrame::_showDocument(UT_uint32 iZoom)
 
 	gboolean bFocus;
 	XAP_UnixFontManager * fontManager = ((XAP_UnixApp *) getApp())->getFontManager();
-	
+	gtk_widget_show(m_dArea);
 	pG = new GR_UnixGraphics(m_dArea->window, fontManager, getApp());
 	ENSUREP(pG);
-	UT_DEBUGMSG(("SEVIOR: New zoom is %d \n",iZoom));
 	pG->setZoomPercentage(iZoom);
 
 	pDocLayout = new FL_DocLayout(static_cast<PD_Document *>(m_pDoc), pG);
@@ -157,7 +155,6 @@ UT_Error AP_UnixFrame::_showDocument(UT_uint32 iZoom)
 	if (!pView->addListener(static_cast<AV_Listener *>(pScrollbarViewListener),
 							&lidScrollbarViewListener))
 		goto Cleanup;
-
 	nrToolbars = m_vecToolbarLayoutNames.getItemCount();
 	for (k = 0; k < nrToolbars; k++)
 	{
@@ -219,7 +216,7 @@ UT_Error AP_UnixFrame::_showDocument(UT_uint32 iZoom)
 		((AP_FrameData*)m_pData)->m_pLeftRuler->setView(pView, iZoom);
 	}
 
-	if ( ((AP_FrameData*)m_pData)->m_pStatusBar )
+	if ( ((AP_FrameData*)m_pData)->m_pStatusBar && (m_iFrameMode != XAP_NoMenusWindowLess))
 	  ((AP_FrameData*)m_pData)->m_pStatusBar->setView(pView);
     ((FV_View *) m_pView)->setShowPara(((AP_FrameData*)m_pData)->m_bShowPara);
 
@@ -227,14 +224,15 @@ UT_Error AP_UnixFrame::_showDocument(UT_uint32 iZoom)
 	
 	m_pView->setWindowSize(GTK_WIDGET(m_dArea)->allocation.width,
 						   GTK_WIDGET(m_dArea)->allocation.height);
+
 	setXScrollRange();
 	setYScrollRange();
 	updateTitle();
 
-       pDocLayout->fillLayouts();   
+	pDocLayout->fillLayouts();   
 
-       if (m_pView != NULL)
-        {
+	if (m_pView != NULL)
+	{
 	  // WL: adding this method into the UnixFrame from the win32 code to fix 2615
 	  // we cannot just set the insertion position to that of the previous
 	  // view, since the new document could be shorter or completely
@@ -249,9 +247,9 @@ UT_Error AP_UnixFrame::_showDocument(UT_uint32 iZoom)
 	  static_cast<FV_View *>(pView)->getEditableBounds(true, posEOD, false);
 	  if(point > posEOD)
 	    point = posEOD;
-       }
+	}
    
-      if (point != 0)
+	if (point != 0)
         ((FV_View *) m_pView)->moveInsPtTo(point);
       m_pView->draw();
 
@@ -263,9 +261,10 @@ UT_Error AP_UnixFrame::_showDocument(UT_uint32 iZoom)
 		if ( ((AP_FrameData*)m_pData)->m_pLeftRuler )
 			((AP_FrameData*)m_pData)->m_pLeftRuler->draw(NULL);
 	}
-
-	((AP_FrameData*)m_pData)->m_pStatusBar->draw();
-	
+	if(isStatusBarShown())
+	{
+		((AP_FrameData*)m_pData)->m_pStatusBar->draw();
+	}
 	return UT_OK;
 
 Cleanup:
@@ -358,11 +357,13 @@ AP_UnixFrame::~AP_UnixFrame()
 	killFrameData();
 }
 
-bool AP_UnixFrame::initialize()
+bool AP_UnixFrame::initialize(XAP_FrameMode frameMode)
 {
-	UT_DEBUGMSG(("AP_UnixFrame::initialize"));
+	UT_DEBUGMSG(("AP_UnixFrame::initialize!!!! \n"));
+	m_iFrameMode = frameMode;
 	if (!initFrameData())
 		return false;
+	UT_DEBUGMSG(("AP_UnixFrame:: Initializing base class!!!! \n"));
 
 	if (!XAP_UNIXBASEFRAME::initialize(AP_PREF_KEY_KeyBindings,AP_PREF_DEFAULT_KeyBindings,
 								   AP_PREF_KEY_MenuLayout, AP_PREF_DEFAULT_MenuLayout,
@@ -371,34 +372,20 @@ bool AP_UnixFrame::initialize()
 								   AP_PREF_KEY_ToolbarLabelSet, AP_PREF_DEFAULT_ToolbarLabelSet))
 		return false;
 
-#ifndef ABI_OPT_WIDGET
+	UT_DEBUGMSG(("AP_UnixFrame:: Creating Toplevel Window!!!! \n"));
+
 	_createTopLevelWindow();
-	// needs to be shown so that the following functions work
-	// TODO: get rid of cursed flicker caused by initially
-	// TODO: showing these and then hiding them (esp.
-	// TODO: noticable in the gnome build with a toolbar disabled)
 	gtk_widget_show(m_wTopLevelWindow);
-	_showOrHideToolbars();
-	_showOrHideStatusbar();
-#endif
-
-#if 0
-	EV_Menu_Layout* pLayout = getMainMenu()->getLayout();
-	EV_Menu_LabelSet* pLabelSet = getMainMenu()->getLabelSet();
-	EV_Menu_ActionSet* pActionSet = getApp()->getMenuActionSet();
-	UT_ASSERT(pLayout && pLabelSet && pActionSet);
-
-	XAP_Menu_Id id = EV_searchMenuLabel(pLabelSet, "&Tools");
-	if (id == 0)
+	if(m_iFrameMode == XAP_NormalFrame)
 	{
-		// TODO: What can I do here?
-		UT_DEBUGMSG(("JCA: Ugh, this menu doesn't have an entry \"&Tools\""));
+		// needs to be shown so that the following functions work
+		// TODO: get rid of cursed flicker caused by initially
+		// TODO: showing these and then hiding them (esp.
+		// TODO: noticable in the gnome build with a toolbar disabled)
+		_showOrHideToolbars();
+		_showOrHideStatusbar();
 	}
 
-	XAP_Menu_Id new_id = pLayout->addLayoutItem(pLayout->getLayoutIndex(id) + 1, EV_MLF_Normal);
-	pActionSet->addAction(new EV_Menu_Action(new_id, false, false, false, "executeScript", NULL, NULL, "toto"));
-	pLabelSet->addLabel(new EV_Menu_Label(new_id, "&Toto", "Execute perl script toto"));
-#endif
 	return true;
 }
 
@@ -737,6 +724,7 @@ void AP_UnixFrame::_scrollFuncX(void * pData, UT_sint32 xoff, UT_sint32 /*xrange
 	pView->setXScrollOffset((UT_sint32)xoffNew);
 }
 
+
 GtkWidget * AP_UnixFrame::_createDocumentWindow()
 {
 	bool bShowRulers = static_cast<AP_FrameData*> (m_pData)->m_bShowRuler;
@@ -822,7 +810,7 @@ GtkWidget * AP_UnixFrame::_createDocumentWindow()
 
 	// create a table for scroll bars, rulers, and drawing area
 
-	m_table = gtk_table_new(1, 1, FALSE);
+	m_table = gtk_table_new(1, 1, FALSE); //was 1,1
 	gtk_object_set_user_data(GTK_OBJECT(m_table),this);
 
 	// NOTE:  in order to display w/ and w/o rulers, gtk needs two tables to
@@ -838,11 +826,11 @@ GtkWidget * AP_UnixFrame::_createDocumentWindow()
 	// scroll bars
 	gtk_table_attach(GTK_TABLE(m_table), m_hScroll, 0, 1, 1, 2,
 					 (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
-					 (GtkAttachOptions) (GTK_FILL),
+					 (GtkAttachOptions) (GTK_FILL), // was just GTK_FILL
 					 0, 0);
 
 	gtk_table_attach(GTK_TABLE(m_table), m_vScroll, 1, 2, 0, 1,
-					 (GtkAttachOptions) (GTK_FILL),
+					 (GtkAttachOptions) (GTK_FILL), // was just GTK_FILL
 					 (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
 					 0, 0);
 

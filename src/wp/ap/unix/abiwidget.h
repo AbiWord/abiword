@@ -22,7 +22,7 @@
 #define ABI_WIDGET_H
 
 #include <gtk/gtk.h>
-
+#include "ap_UnixApp.h"
 #ifdef __cplusplus
 extern "C" {
 #endif /* c++ */
@@ -53,15 +53,16 @@ extern "C" {
 	 */
 	typedef gboolean (*AbiSignal) (AbiWidget *, gpointer closure);
 	
-	struct _AbiWidget {
-		GtkWidget widget;
-		
+	struct _AbiWidget 
+	{
+		GtkBin bin;
+	    GtkWidget * child;
 		/* private instance data */
 		AbiPrivData * priv;
 	};  
 	
 	struct  _AbiWidgetClass {
-		GtkWidgetClass widget_parent_class;
+		GtkBinClass parent_class;
 		
 		/* invoke any edit method based on its name */
 		gboolean (*invoke) (AbiWidget *, const char * mthdName,
@@ -111,14 +112,27 @@ extern "C" {
 	
 	/* the public API */
 	GtkWidget * abi_widget_new (void);
+	GtkWidget * abi_widget_new_with_app (AP_UnixApp * pApp);
+	GtkWidget * abi_widget_new_with_app_file (AP_UnixApp * pApp,const gchar * file);
 	GtkWidget * abi_widget_new_with_file (const gchar * file);
 	GtkType     abi_widget_get_type	(void);
-	
+	void        abi_widget_map_to_screen(AbiWidget * widget);
+	void        abi_widget_turnon_cursor(AbiWidget * widget);
 	gboolean    abi_widget_invoke (AbiWidget *, const char *mthdName, 
 								   const char * data, gint32 x, gint32 y);
+	void        abi_widget_draw(AbiWidget * w);
 	
 #ifdef __cplusplus
 }
 #endif /* c++ */
 
 #endif /* ABI_WIDGET_H */
+
+
+
+
+
+
+
+
+

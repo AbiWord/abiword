@@ -70,6 +70,7 @@ public:
 	virtual void                setCursor(GR_Graphics::Cursor cursor);
 	GtkWidget *					getTopLevelWindow() const;
 	GtkWidget *					getVBoxWidget() const;
+	void                        setTopLevelWindow(GtkWidget * window) {m_wTopLevelWindow = window;}
 	virtual XAP_DialogFactory *	getDialogFactory();
 	virtual void				setXScrollRange() = 0;
 	virtual void				setYScrollRange() = 0;
@@ -86,10 +87,11 @@ public:
 	virtual EV_Menu*			getMainMenu();
 	virtual void                rebuildMenus(void);
     virtual void                rebuildToolbar(UT_uint32 ibar);
+	GtkWidget *                 getSunkenBox(void) {return m_wSunkenBox;}
 protected:
 	virtual GtkWidget *			_createDocumentWindow() = 0;
 	virtual GtkWidget *			_createStatusBarWindow() = 0;
-	virtual void				_createTopLevelWindow();
+	virtual void				_createTopLevelWindow(void);
 	virtual void				_setWindowIcon() = 0;
 
 	virtual EV_Toolbar *		_newToolbar(XAP_App *app, XAP_Frame *frame, const char *, const char *);

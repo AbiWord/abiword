@@ -605,6 +605,10 @@ void XAP_UnixFrame::setCursor(GR_Graphics::Cursor c)
 			return;
 		}
 	}
+	if(getTopLevelWindow() == NULL || (m_iFrameMode != XAP_NormalFrame))
+	{
+		return;
+	}
 	GdkCursorType cursor_number;
 	
 	switch (c)
@@ -753,21 +757,23 @@ void XAP_UnixFrame::_createTopLevelWindow(void)
 	// create a top-level window for us.
 
 	bool bResult;
-
-	m_wTopLevelWindow = gtk_window_new(GTK_WINDOW_TOPLEVEL);
-	gtk_object_set_data(GTK_OBJECT(m_wTopLevelWindow), "ic_attr", NULL);
-	gtk_object_set_data(GTK_OBJECT(m_wTopLevelWindow), "ic", NULL);
+	if(m_iFrameMode == XAP_NormalFrame)
+	{
+		m_wTopLevelWindow = gtk_window_new(GTK_WINDOW_TOPLEVEL);
+		gtk_object_set_data(GTK_OBJECT(m_wTopLevelWindow), "ic_attr", NULL);
+		gtk_object_set_data(GTK_OBJECT(m_wTopLevelWindow), "ic", NULL);
+		gtk_window_set_title(GTK_WINDOW(m_wTopLevelWindow),
+							 m_pUnixApp->getApplicationTitleForTitleBar());
+		gtk_window_set_policy(GTK_WINDOW(m_wTopLevelWindow), TRUE, TRUE, FALSE);
+		gtk_window_set_wmclass(GTK_WINDOW(m_wTopLevelWindow),
+							   m_pUnixApp->getApplicationName(),
+							   m_pUnixApp->getApplicationName());
+	}
 	gtk_object_set_data(GTK_OBJECT(m_wTopLevelWindow), "toplevelWindow",
 						m_wTopLevelWindow);
 	gtk_object_set_data(GTK_OBJECT(m_wTopLevelWindow), "toplevelWindowFocus",
 						GINT_TO_POINTER(FALSE));
 	gtk_object_set_user_data(GTK_OBJECT(m_wTopLevelWindow),this);
-	gtk_window_set_title(GTK_WINDOW(m_wTopLevelWindow),
-						 m_pUnixApp->getApplicationTitleForTitleBar());
-	gtk_window_set_policy(GTK_WINDOW(m_wTopLevelWindow), TRUE, TRUE, FALSE);
-	gtk_window_set_wmclass(GTK_WINDOW(m_wTopLevelWindow),
-						   m_pUnixApp->getApplicationName(),
-						   m_pUnixApp->getApplicationName());
 
 	// This is now done with --geometry parsing.
 	//gtk_widget_set_usize(GTK_WIDGET(m_wTopLevelWindow), 700, 650);
@@ -816,8 +822,11 @@ void XAP_UnixFrame::_createTopLevelWindow(void)
 	// TODO for some reason, the toolbar functions require the TLW to be
 	// TODO realized (they reference m_wTopLevelWindow->window) before we call them.
 
-	gtk_widget_realize(m_wTopLevelWindow);
 
+	if(m_iFrameMode == XAP_NormalFrame)
+	{
+		gtk_widget_realize(m_wTopLevelWindow);
+	}
 
 
 	gtk_signal_connect(GTK_OBJECT(m_wTopLevelWindow), "key_press_event",
@@ -838,8 +847,9 @@ void XAP_UnixFrame::_createTopLevelWindow(void)
 	// if it wants to.  we will put it below the document
 	// window (a peer with toolbars and the overall sunkenbox)
 	// so that it will appear outside of the scrollbars.
-
+	m_wStatusBar = NULL;
 	m_wStatusBar = _createStatusBarWindow();
+
 	if (m_wStatusBar)
 	{
 		gtk_widget_show(m_wStatusBar);
@@ -1077,7 +1087,7 @@ bool XAP_UnixFrame::openURL(const char * szURL)
 
 bool XAP_UnixFrame::updateTitle()
 {
-	if (!XAP_Frame::updateTitle() || (m_wTopLevelWindow== NULL))
+	if (!XAP_Frame::updateTitle() || (m_wTopLevelWindow== NULL) || (m_iFrameMode != XAP_NormalFrame))
 	{
 		// no relevant change, so skip it
 		return false;

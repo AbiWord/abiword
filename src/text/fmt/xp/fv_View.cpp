@@ -3408,7 +3408,10 @@ bool FV_View::getCharFormat(const XML_Char *** pProps, bool bExpandStyles, PT_Do
 				posEnd = m_iSelectionAnchor;
 		}
 	}
-
+	if(posStart < 2)
+	{
+		posStart = 2;
+	}
 	// 1. assemble complete set at insertion point
 	UT_sint32 xPoint;
 	UT_sint32 yPoint;

@@ -55,7 +55,7 @@
 /************************************************************************/
 
 AP_Preview_Abi::AP_Preview_Abi(GR_Graphics * gc, UT_uint32 iWidth, 
-									 UT_uint32 iHeight, XAP_Frame * pFrame,PreViewMode previewMode )
+									 UT_uint32 iHeight, XAP_Frame * pFrame,PreViewMode previewMode, PD_Document * pDoc )
 	: XAP_Preview(gc)
 {
 //
@@ -70,22 +70,33 @@ AP_Preview_Abi::AP_Preview_Abi(GR_Graphics * gc, UT_uint32 iWidth,
 // Get the width of the current doc so we can scale the graphics context
 // zoom
 //
-
-#ifndef ABI_OPT_WIDGET
-	double curWidth = static_cast<PD_Document *>(pFrame->getCurrentDoc())->m_docPageSize.Width(DIM_IN);
-	double curHeight = static_cast<PD_Document *>(pFrame->getCurrentDoc())->m_docPageSize.Height(DIM_IN);
-#else
+	double curWidth = 0.0;
+	double curHeight = 0.0;
+	if(previewMode != PREVIEW_ADJUSTED_PAGE  || (pDoc != NULL))
+	{
+		curWidth = static_cast<PD_Document *>(pFrame->getCurrentDoc())->m_docPageSize.Width(DIM_IN);
+		curHeight = static_cast<PD_Document *>(pFrame->getCurrentDoc())->m_docPageSize.Height(DIM_IN);
+	}
+	else
+	{
 	// DOM: evil hack
-	double curWidth = 8.5;
-	double curHeight = 11.0;
-#endif
+		curWidth = 8.5;
+		curHeight = 11.0;
+	}
 
 	m_pApp = pFrame->getApp();
 //
 // Make a new document
 //
-	m_pDocument = new PD_Document(m_pApp);
-	m_pDocument->newDocument();
+	if(pDoc == NULL)
+	{
+		m_pDocument = new PD_Document(m_pApp);
+		m_pDocument->newDocument();
+	}
+	else
+	{
+		m_pDocument = pDoc;
+	}
 //
 // Next set the different modes
 //
