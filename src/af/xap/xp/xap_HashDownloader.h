@@ -32,6 +32,8 @@
 #include "ut_types.h"
 #endif
 
+#include "xap_Strings.h"
+
 /*
  * If there exists a local copy of the dictionary-list, never downlaod a 
  * updated version.
