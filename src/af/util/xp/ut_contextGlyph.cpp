@@ -461,9 +461,9 @@ static LetterData s_table[] =
 {
 	// code, intial, medial, final, stand-alone
 
-	// Greek
-	{0x03C2, 0x03C3, 0x03C3, 0x03C2, 0x03C2},
-	{0x03C3, 0x03C3, 0x03C3, 0x03C2, 0x03C2},
+	// Greek -- no automatic shaping for final sigma, see bug 6749
+	//{0x03C2, 0x03C3, 0x03C3, 0x03C2, 0x03C2},
+	//{0x03C3, 0x03C3, 0x03C3, 0x03C2, 0x03C2},
 
 	// Hebrew letters
 	// the following macro defines how many entries in this table
