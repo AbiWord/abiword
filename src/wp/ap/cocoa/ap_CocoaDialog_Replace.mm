@@ -137,35 +137,35 @@ void AP_CocoaDialog_Replace::event_Find(void)
 		
 void AP_CocoaDialog_Replace::event_Replace(void)
 {
-	NSString* findWhat;
-	NSString* replaceWith;
+	NSString * findWhat = [m_dlg findWhat];
+
+	if ([findWhat length])
+		{
+			NSString * replaceWith = [m_dlg replaceWith];
+
+			setFindString(UT_UCS4String([findWhat UTF8String]).ucs4_str());
+			setReplaceString(UT_UCS4String([replaceWith UTF8String]).ucs4_str());
 	
-	findWhat = [m_dlg findWhat];
-	replaceWith = [m_dlg replaceWith];
-	
-	setFindString(UT_UCS4String([findWhat UTF8String]).ucs4_str());
-	setReplaceString(UT_UCS4String([replaceWith UTF8String]).ucs4_str());
-	
-	if(!getReverseFind()) {	
-		findReplace();
-	}
-	else {
-		findReplaceReverse();
-	}
+			if(getReverseFind())
+				findReplaceReverse();
+			else
+				findReplace();
+		}
 }
 
 void AP_CocoaDialog_Replace::event_ReplaceAll(void)
 {
-	NSString* findWhat;
-	NSString* replaceWith;
+	NSString * findWhat = [m_dlg findWhat];
+
+	if ([findWhat length])
+		{
+			NSString * replaceWith = [m_dlg replaceWith];
+
+			setFindString(UT_UCS4String([findWhat UTF8String]).ucs4_str());
+			setReplaceString(UT_UCS4String([replaceWith UTF8String]).ucs4_str());
 	
-	findWhat = [m_dlg findWhat];
-	replaceWith = [m_dlg replaceWith];
-
-	setFindString(UT_UCS4String([findWhat UTF8String]).ucs4_str());
-	setReplaceString(UT_UCS4String([replaceWith UTF8String]).ucs4_str());
-
-	findReplaceAll();
+			findReplaceAll();
+		}
 }
 
 void AP_CocoaDialog_Replace::event_MatchCaseToggled(void)
