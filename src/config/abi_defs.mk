@@ -646,6 +646,7 @@ endif
 ifdef ABI_OPT_PSPELL
 EXTRA_LIBS      += -lpspell -lltdl
 ABI_OPTIONS+=Pspell:On
+CFLAGS += -DHAVE_PSPELL
 else
 ABI_OPTIONS+=Pspell:Off
 endif
