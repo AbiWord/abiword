@@ -85,8 +85,6 @@ UT_Error UT_XML::parse (const char * szFilename)
   UT_ASSERT (m_pListener);
   UT_ASSERT (szFilename);
 
-  if (m_ParseMode == pm_HTML) return html (szFilename);
-
   UT_Error ret = UT_OK;
 
   DefaultReader defaultReader;
@@ -144,8 +142,6 @@ UT_Error UT_XML::parse (const char * buffer, UT_uint32 length)
   if (!m_bSniffing) UT_ASSERT (m_pListener);
   UT_ASSERT (buffer);
 
-  if (m_ParseMode == pm_HTML) return html (buffer, length);
-
   UT_Error ret = UT_OK;
 
   XML_Parser parser = XML_ParserCreate (NULL);
@@ -172,49 +168,6 @@ UT_Error UT_XML::parse (const char * buffer, UT_uint32 length)
 
   XML_ParserFree (parser);
 
-  return ret;
-}
-
-UT_Error UT_XML::html (const char * szFilename)
-{
-  UT_ASSERT (m_pListener);
-  UT_ASSERT (szFilename);
-
-  UT_Error ret = UT_OK;
-
-  UT_ASSERT (UT_SHOULD_NOT_HAPPEN);
-  ret = UT_ERROR;
-
-  return ret;
-}
-
-UT_Error UT_XML::html (const char * buffer, UT_uint32 length)
-{
-  if (!m_bSniffing) UT_ASSERT (m_pListener);
-  UT_ASSERT (buffer);
-
-  UT_Error ret = UT_OK;
-
-  UT_ASSERT (UT_SHOULD_NOT_HAPPEN);
-  ret = UT_ERROR;
-
-  return ret;
-}
-
-bool UT_XML::setParseMode (ParseMode pm) // returns false if the mode isn't supported.
-{
-  bool ret = true;
-  switch (pm)
-    {
-    case pm_XML:
-      m_ParseMode = pm_XML;
-      break;
-
-    case pm_HTML:
-      UT_DEBUGMSG(("expat doesn't parse HTML\n"));
-      ret = false;
-      break;
-    }
   return ret;
 }
 
