@@ -73,6 +73,8 @@ BeginSet(fr,FR,true)
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_UNDERLINE,	"Souligné",			tb_text_underline_S_xpm,	NULL, "Souligné")
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_OVERLINE,	"Barré haut",			tb_text_overline_xpm,		NULL, "Barré haut")
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_STRIKE,		"Barré",			tb_text_strikeout_B_xpm,	NULL, "Barré")
+	ToolbarLabel(AP_TOOLBAR_ID_FMT_TOPLINE,		"Haut ligne",		tb_text_topline_xpm,	NULL, "Ligne au dessus")
+	ToolbarLabel(AP_TOOLBAR_ID_FMT_BOTTOMLINE,	"Bas ligne",		tb_text_bottomline_xpm,	NULL, "Ligne au bas")
 	ToolbarLabel(AP_TOOLBAR_ID_HELP, 		"Aide", 			tb_help_xpm, 			NULL, "Aide sur AbiWord")
 	
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_SUPERSCRIPT,	"Exposant",			tb_text_superscript_xpm,	NULL, "Exposant")
@@ -103,6 +105,10 @@ BeginSet(fr,FR,true)
 	ToolbarLabel(AP_TOOLBAR_ID_COLOR_BACK,		"Arrière plan",			tb_text_bgcolor_xpm,		NULL, "Change la couleur de l'arrière plan")
 	ToolbarLabel(AP_TOOLBAR_ID_INDENT,		"Augmenter le retrait", 	tb_text_indent_xpm, 		NULL, "Augmenter le retrait")
 	ToolbarLabel(AP_TOOLBAR_ID_UNINDENT,		"Diminuer le retrait", 		tb_text_unindent_xpm,		NULL, "Diminuer le retrait")
+
+#ifdef ABI_OPT_PERL
+	ToolbarLabel(AP_TOOLBAR_ID_SCRIPT_PLAY,		"Script",				tb_script_play_xpm,			NULL, "Exécute un script")
+#endif
 
 	// ... add others here ...
 
