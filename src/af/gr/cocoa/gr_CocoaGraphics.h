@@ -138,10 +138,14 @@ class GR_CocoaGraphics : public GR_Graphics
 	static void 				_utNSColorToRGBColor (NSColor *c, UT_RGBColor &clr);
 	void				setIsPrinting(bool isPrinting) { m_bIsPrinting = isPrinting; };
 	bool				isPrinting(void) const { return m_bIsPrinting; };
+	/* Cocoa Specific */
+	static	float		_getScreenResolution(void);
  protected:
 	virtual UT_uint32 	_getResolution(void) const;
 	void				_setColor(NSColor * c);
 private:
+	void		_setClipRectImpl(const UT_Rect* pRect);
+
 	
 	NSImage*			_makeNewCacheImage() 
 	{

@@ -62,7 +62,9 @@
 							GR_CaretDisabler caretDisabler(getCaret());
 #else
 #define LOCK_CONTEXT__	StNSViewLocker locker(m_pWin); \
-								GR_CaretDisabler caretDisabler(getCaret());
+								GR_CaretDisabler caretDisabler(getCaret()); \
+								m_CGContext = CG_CONTEXT__; \
+								_setClipRectImpl(NULL);
 #endif
 
 #define CG_CONTEXT__ (CGContextRef)[[NSGraphicsContext currentContext] graphicsPort]
@@ -152,17 +154,13 @@ GR_CocoaGraphics::GR_CocoaGraphics(NSView * win, XAP_App * app)
 
 	[m_pWin setXAPFrame:app->getLastFocussedFrame()];
 	[m_pWin setGraphics:this];
+	[m_pWin allocateGState];
 	m_iLineWidth = 0;
 	s_iInstanceCount++;
 	init3dColors ();
 	
 	/* resolution does not change thru the life of the object */
-	NSScreen* mainScreen = [NSScreen mainScreen];
-	NSDictionary* desc = [mainScreen deviceDescription];
-	UT_ASSERT(desc);
-	NSValue* value = [desc objectForKey:NSDeviceResolution];
-	UT_ASSERT(value);
-	m_screenResolution = lrintf([value sizeValue].height);
+	m_screenResolution = lrintf(_getScreenResolution());
 
 	m_xorCache = [[NSImage alloc] initWithSize:NSMakeSize(0,0)] ;
 	[m_xorCache setFlipped:YES];
@@ -737,24 +735,54 @@ void GR_CocoaGraphics::invertRect(const UT_Rect* pRect)
 void GR_CocoaGraphics::setClipRect(const UT_Rect* pRect)
 {
 	UT_DEBUGMSG (("GR_CocoaGraphics::setClipRect()\n"));
-	m_pRect = pRect;
+	DELETEP(m_pRect);
+	if (pRect) {
+		m_pRect = new UT_Rect(pRect);
+	}
+}
+void GR_CocoaGraphics::_setClipRectImpl(const UT_Rect*)
+{
+#if 0
+	RgnHandle rgn = ::NewRgn();
+	Rect theRect;
+	Rect bounds;
+	NSRect nsBounds = [m_pWin bounds];
+		
+	bounds.left = nsBounds.origin.x;
+	bounds.top = nsBounds.origin.y;
+	bounds.right = bounds.left + nsBounds.size.width;
+	bounds.bottom = bounds.top + nsBounds.size.height;
 
-	LOCK_CONTEXT__;
+	if (m_pRect != NULL) {
+		theRect.left = tdu(m_pRect->left);
+		theRect.top = tdu(m_pRect->top);
+		theRect.right = theRect.left + tdu(m_pRect->width);
+		theRect.bottom = theRect.top + tdu(m_pRect->height);
+	}
+	else {
+		theRect = bounds;
+	}
+	::RectRgn(rgn, &theRect);
+	::ClipCGContextToRegion(m_CGContext, &bounds, rgn);
+	::DisposeRgn(rgn);
+#else
+//	LOCK_CONTEXT__;
+#if 0
 	/* discard the clipping */
 	/* currently the only way is to restore the graphic state */
 	::CGContextRestoreGState(m_CGContext);
-	::CGContextSaveGState(m_CGContext);
-	/* restore the graphics settings */
+	/* restore the graphics settings. will save the context in the mean time. */
 	_resetContext();
-
-	if (pRect) {
+#endif
+	if (m_pRect) {
 		UT_DEBUGMSG (("ClipRect set\n"));
 		::CGContextClipToRect (m_CGContext, 
-				::CGRectMake (tdu(pRect->left), tdu(pRect->top), tdu(pRect->width), tdu(pRect->height)));
+				::CGRectMake (tdu(m_pRect->left), tdu(m_pRect->top), tdu(m_pRect->width), tdu(m_pRect->height)));
 	}
 	else {
 		UT_DEBUGMSG (("ClipRect reset!!\n"));
 	}
+#endif
 }
 
 void GR_CocoaGraphics::fillRect(const UT_RGBColor& clr, UT_sint32 x, UT_sint32 y,
@@ -766,7 +794,7 @@ void GR_CocoaGraphics::fillRect(const UT_RGBColor& clr, UT_sint32 x, UT_sint32 y
 
 	LOCK_CONTEXT__;
 	::CGContextSaveGState(m_CGContext);
-	[c set];
+	[c set];	
 	::CGContextFillRect(m_CGContext, ::CGRectMake (tdu(x), tdu(y), tdu(w), tdu(h)));
 	::CGContextRestoreGState(m_CGContext);
 }
@@ -1115,6 +1143,9 @@ void GR_CocoaGraphics::_updateRect(NSView * v, NSRect aRect)
 			}
 			::CGContextRestoreGState(m_CGContext);
 		}
+/*		else {
+			m_CGContext = CG_CONTEXT__;
+		}*/
 # ifdef USE_OFFSCREEN
 		[img drawAtPoint:aRect.origin fromRect:aRect operation:NSCompositeCopy fraction:1.0f];
 # endif
@@ -1231,3 +1262,16 @@ void GR_CocoaGraphics::_resetContext()
 	::CGContextSaveGState(m_CGContext);
 }
 
+float	GR_CocoaGraphics::_getScreenResolution(void)
+{
+	static float fResolution = 0.0;
+	if (fResolution == 0.0) {
+		NSScreen* mainScreen = [NSScreen mainScreen];
+		NSDictionary* desc = [mainScreen deviceDescription];
+		UT_ASSERT(desc);
+		NSValue* value = [desc objectForKey:NSDeviceResolution];
+		UT_ASSERT(value);
+		fResolution = [value sizeValue].height;
+	}
+	return fResolution;
+}
