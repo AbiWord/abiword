@@ -52,6 +52,13 @@ else
 INCLUDES=		-I$(ABI_ROOT)/../wv
 endif
 
+INCLUDES+= -I$(ABI_ROOT)/../wv/libole2
+
+ifdef GLIB_CONFIG
+else
+INCLUDES+= -I$(ABI_ROOT)/../wv/glib-wv
+endif
+
 include $(ABI_ROOT)/src/config/abi_rules.mk
 
 build:: $(TARGETS)

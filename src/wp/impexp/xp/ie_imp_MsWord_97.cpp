@@ -86,9 +86,10 @@ UT_Error IE_Imp_MsWord_97::importFile(const char * szFilename)
 	   return m_error;
 	}
 	UT_DEBUGMSG(("wv importer\n"));
+	fclose(fp);
 
 	wvParseStruct ps;
-	if (wvInitParser(&ps,fp))
+	if (wvInitParser(&ps,szFilename))
 		{
 		UT_DEBUGMSG(("Could not open file %s\n",szFilename));
 		wvOLEFree();
@@ -198,8 +199,7 @@ int SpecCharProc(wvParseStruct *ps, U16 eachchar, CHP* achp)
    IE_Imp_MsWord_97* pDocReader = (IE_Imp_MsWord_97 *) ps->userData;
 
    Blip blip;
-   wvStream *fil;		// Should we really be seeing the internal structure
-   						// of wv here?
+   wvStream *fil;	
    long pos;
    FSPA * fspa;
    PICF picf;
@@ -253,7 +253,7 @@ int SpecCharProc(wvParseStruct *ps, U16 eachchar, CHP* achp)
 	
 	wvGetPICF(wvQuerySupported(&ps->fib, NULL), &picf, ps->data);
 	
-	fil = (wvStream *) picf.rgb;
+	fil = picf.rgb;
 	
 	if (wv0x01(&blip, fil, picf.lcb - picf.cbHeader))
 	  {
@@ -269,15 +269,22 @@ int SpecCharProc(wvParseStruct *ps, U16 eachchar, CHP* achp)
 	
 	if (wvQuerySupported(&ps->fib, NULL) == WORD8)
 	  {
-	     fspa = wvGetFSPAFromCP(ps->currentcp, ps->fspa,
-				    ps->fspapos, ps->nooffspa);
+	  if(ps->nooffspa>0)
+    	     {
+ 
+	     	fspa = wvGetFSPAFromCP(ps->currentcp, ps->fspa,
+		    			    ps->fspapos, ps->nooffspa);
 	     
-	     if (wv0x08(&blip, fspa->spid, ps))
-	       {
-		  pDocReader->_handleImage(&blip, fspa->xaRight-fspa->xaLeft,
+	     	if (wv0x08(&blip, fspa->spid, ps))
+	        {
+		    pDocReader->_handleImage(&blip, fspa->xaRight-fspa->xaLeft,
 					   fspa->yaBottom-fspa->yaTop);
-	       }
-	     
+	      	}
+	    }
+	  else
+	    {
+	      UT_DEBUGMSG(("nooffspa was <=0 -- ignoring"));
+	    } 
 	  }
 	else
 	  {
