@@ -638,21 +638,21 @@ UT_RBTree::_countBlackNodes(const Iterator& it)
 bool
 UT_RBTree::checkInvariants()
 {
-	int nb_blacks = 0;
+	int nb_blacknodes = 0;
 
-	Iterator end(end());
+	Iterator endpoint(end());
 	Iterator it(begin());
 
-	if (it != end)
-		nb_blacks = _countBlackNodes(it++);
+	if (it != endpoint)
+		nb_blacknodes = _countBlackNodes(it++);
 
-	if (nb_blacks < 0)
+	if (nb_blacknodes < 0)
 		return false;
 
 	Node* pleaf = getLeaf();
-	for (; it != end; ++it)
+	for (; it != endpoint; ++it)
 		if (it.getNode()->left == pleaf && it.getNode()->right == pleaf &&
-			nb_blacks != _countBlackNodes(it))
+			nb_blacknodes != _countBlackNodes(it))
 			return false;
 	
 	return true;
