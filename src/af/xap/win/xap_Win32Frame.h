@@ -64,6 +64,7 @@ protected:
 	UT_Bool						_showDocument(void);
 	static void					_scrollFunc(void * pData, UT_sint32 xoff, UT_sint32 yoff);
 	static LRESULT CALLBACK		_WndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam);
+	static LRESULT CALLBACK		_ChildWndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam);
 
 	// TODO see why ev_Win32Keyboard has lowercase prefix...
 	AP_Win32App *				m_pWin32App;
@@ -72,7 +73,8 @@ protected:
 	EV_Win32Menu *				m_pWin32Menu;
 	UT_Vector					m_vecWin32Toolbars;
 	
-	HWND						m_hwnd;
+	HWND						m_hwndFrame;
+	HWND						m_hwndChild;
 };
 
 #endif /* AP_WIN32FRAME_H */

@@ -18,6 +18,8 @@
  */
 
 #include <windows.h>
+#include <stdio.h>
+
 #include "ut_types.h"
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
@@ -40,13 +42,14 @@
 
 /*****************************************************************/
 
-//LRESULT CALLBACK AP_Win32Frame::_WndProc (HWND, UINT, WPARAM, LPARAM) ;
+static char CHILDWINCLASS[256];
 
 UT_Bool AP_Win32Frame::RegisterClass(AP_Win32App * app)
 {
 	// NB: can't access 'this' members from a static member function
 	WNDCLASSEX  wndclass ;
 
+	// register class for the frame window
 	wndclass.cbSize        = sizeof (wndclass) ;
 	wndclass.style         = CS_HREDRAW | CS_VREDRAW | CS_DBLCLKS ;
 	wndclass.lpfnWndProc   = AP_Win32Frame::_WndProc ;
@@ -59,6 +62,30 @@ UT_Bool AP_Win32Frame::RegisterClass(AP_Win32App * app)
 	wndclass.lpszMenuName  = NULL ;
 	wndclass.lpszClassName = app->getApplicationName() ;
 	wndclass.hIconSm       = LoadIcon (NULL, IDI_APPLICATION) ;
+
+	if (!RegisterClassEx (&wndclass))
+	{
+		DWORD err = GetLastError();
+		UT_ASSERT(err);
+		return UT_FALSE;
+	}
+
+	// register class for the child window
+	sprintf(CHILDWINCLASS, "%sChild", app->getApplicationName());
+
+	memset(&wndclass, 0, sizeof(wndclass));
+	wndclass.cbSize        = sizeof (wndclass) ;
+	wndclass.style         = CS_HREDRAW | CS_VREDRAW | CS_DBLCLKS ;
+	wndclass.lpfnWndProc   = AP_Win32Frame::_ChildWndProc ;
+	wndclass.cbClsExtra    = 0 ;
+	wndclass.cbWndExtra    = sizeof(AP_Win32Frame*) ;
+	wndclass.hInstance     = app->getInstance() ;
+	wndclass.hIcon         = NULL ;
+	wndclass.hCursor       = LoadCursor (NULL, IDC_ARROW) ;
+	wndclass.hbrBackground = (HBRUSH) GetStockObject (WHITE_BRUSH) ;
+	wndclass.lpszMenuName  = NULL ;
+	wndclass.lpszClassName = CHILDWINCLASS ;
+	wndclass.hIconSm       = NULL ;
 
 	if (!RegisterClassEx (&wndclass))
 	{
@@ -83,7 +110,8 @@ AP_Win32Frame::AP_Win32Frame(AP_Win32App * app)
 	m_pWin32Mouse = NULL;
 	m_pWin32Menu = NULL;
 	m_pView = NULL;
-	m_hwnd = NULL;
+	m_hwndFrame = NULL;
+	m_hwndChild = NULL;
 }
 
 AP_Win32Frame::AP_Win32Frame(AP_Win32Frame * f)
@@ -94,7 +122,8 @@ AP_Win32Frame::AP_Win32Frame(AP_Win32Frame * f)
 	m_pWin32Mouse = NULL;
 	m_pWin32Menu = NULL;
 	m_pView = NULL;
-	m_hwnd = NULL;
+	m_hwndFrame = NULL;
+	m_hwndChild = NULL;
 }
 
 AP_Win32Frame::~AP_Win32Frame(void)
@@ -163,7 +192,7 @@ Cleanup:
 
 HWND AP_Win32Frame::getTopLevelWindow(void) const
 {
-	return m_hwnd;
+	return m_hwndFrame;
 }
 
 EV_Win32Mouse * AP_Win32Frame::getWin32Mouse(void)
@@ -180,10 +209,9 @@ void AP_Win32Frame::_createTopLevelWindow(void)
 {
 	// create a top-level window for us.
 	// TODO get the default window size from preferences or something.
-	m_hwnd = CreateWindow (m_pWin32App->getApplicationName(),	// window class name
+	m_hwndFrame = CreateWindow (m_pWin32App->getApplicationName(),	// window class name
 				m_pWin32App->getApplicationTitleForTitleBar(),	// window caption
 				WS_OVERLAPPEDWINDOW
-				| WS_VSCROLL
 				,					     // window style
 				CW_USEDEFAULT,           // initial x position
 				CW_USEDEFAULT,           // initial y position
@@ -194,10 +222,10 @@ void AP_Win32Frame::_createTopLevelWindow(void)
 				m_pWin32App->getInstance(),       // program instance handle
 				NULL) ;		             // creation parameters
 
-	UT_ASSERT(m_hwnd);
+	UT_ASSERT(m_hwndFrame);
 
 	// bind this frame to its window
-	SWL(m_hwnd, this);
+	SWL(m_hwndFrame, this);
 
 	// synthesize a menu from the info in our base class.
 	m_pWin32Menu = new EV_Win32Menu(m_pWin32App,this,
@@ -223,7 +251,35 @@ void AP_Win32Frame::_createTopLevelWindow(void)
 		m_vecWin32Toolbars.addItem(pWin32Toolbar);
 	}
 
-	// we let our caller decide when to show m_hwnd.
+	// TODO: insert the toolbars
+	
+	// figure out how much room is left for the child
+	RECT r;
+	GetClientRect(m_hwndFrame, &r);
+	UT_uint32 iHeight = r.bottom - r.top;
+	UT_uint32 iWidth = r.right - r.left;
+
+	// create a child window for us.
+	m_hwndChild = CreateWindow (CHILDWINCLASS,	// window class name
+				NULL,					// window caption
+				WS_CHILD | WS_VISIBLE
+				| WS_VSCROLL
+				,					     // window style
+				CW_USEDEFAULT,           // initial x position
+				CW_USEDEFAULT,           // initial y position
+				iHeight,                 // initial x size
+				iWidth,                  // initial y size
+				m_hwndFrame,             // parent window handle
+				NULL,                    // window menu handle
+				m_pWin32App->getInstance(),       // program instance handle
+				NULL) ;		             // creation parameters
+
+	UT_ASSERT(m_hwndChild);
+
+	// bind this frame to child window, too
+	SWL(m_hwndChild, this);
+
+	// we let our caller decide when to show m_hwndFrame.
 
 	return;
 }
@@ -256,7 +312,7 @@ UT_Bool AP_Win32Frame::_showDocument(void)
 	ap_ViewListener * pViewListener = NULL;
 
 	UT_uint32 iWindowHeight, iHeight;
-	HWND hwnd = m_hwnd;
+	HWND hwnd = m_hwndChild;
 
 	// TODO fix prefix on class Win32Graphics
 
@@ -334,7 +390,7 @@ void AP_Win32Frame::_scrollFunc(void* pData, UT_sint32 xoff, UT_sint32 yoff)
 	AP_Win32Frame * pWin32Frame = static_cast<AP_Win32Frame *>(pData);
 	UT_ASSERT(pWin32Frame);
 
-	HWND hwnd = pWin32Frame->m_hwnd;
+	HWND hwnd = pWin32Frame->m_hwndChild;
 		
 	SCROLLINFO si;
 	memset(&si, 0, sizeof(si));
@@ -355,22 +411,22 @@ void AP_Win32Frame::_scrollFunc(void* pData, UT_sint32 xoff, UT_sint32 yoff)
 UT_Bool AP_Win32Frame::close()
 {
 	// NOTE: this should only be called from the closeWindow edit method
-	DestroyWindow(m_hwnd);
+	DestroyWindow(m_hwndFrame);
 
 	return UT_TRUE;
 }
 
 UT_Bool AP_Win32Frame::raise()
 {
-	BringWindowToTop(m_hwnd);
+	BringWindowToTop(m_hwndFrame);
 
 	return UT_TRUE;
 }
 
 UT_Bool AP_Win32Frame::show()
 {
-	ShowWindow(m_hwnd, SW_SHOWNORMAL);
-	UpdateWindow(m_hwnd);
+	ShowWindow(m_hwndFrame, SW_SHOWNORMAL);
+	UpdateWindow(m_hwndFrame);
 
 	return UT_TRUE;
 }
@@ -394,14 +450,91 @@ UT_Bool AP_Win32Frame::updateTitle()
 
 	sprintf(buf, "%s - %s", szTitle, szAppName);
 	
-	SetWindowText(m_hwnd, buf);
+	SetWindowText(m_hwndFrame, buf);
 
 	return UT_TRUE;
 }
 
+LRESULT CALLBACK AP_Win32Frame::_WndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
+{
+	AP_Win32Frame * f = GWL(hwnd);
+	FV_View * pView = NULL;
+
+	if (f)
+	{
+		pView = f->m_pView;
+	}
+
+	switch (iMsg)
+	{
+	case WM_CREATE :
+		return 0 ;
+
+	case WM_COMMAND:
+		if (f->m_pWin32Menu->onCommand(pView,hwnd,wParam))
+			return 0;
+		return DefWindowProc(hwnd,iMsg,wParam,lParam);
+
+	case WM_INITMENU:
+		if (f->m_pWin32Menu->onInitMenu(pView,hwnd,(HMENU)wParam))
+			return 0;
+		return DefWindowProc(hwnd,iMsg,wParam,lParam);
+		
+	case WM_SYSKEYDOWN:
+	case WM_KEYDOWN:
+		if (f->m_pWin32Keyboard->onKeyDown(pView,hwnd,iMsg,wParam,lParam))
+			return 0;
+		return DefWindowProc(hwnd,iMsg,wParam,lParam);
+	case WM_SYSCHAR:
+	case WM_CHAR:
+		if (f->m_pWin32Keyboard->onChar(pView,hwnd,iMsg,wParam,lParam))
+			return 0;
+		return DefWindowProc(hwnd,iMsg,wParam,lParam);
+			  
+	case WM_SIZE:
+	{
+		int nWidth = LOWORD(lParam);
+		int nHeight = HIWORD(lParam);
+
+		// TODO: subtract out the toolbars from nHeight
+
+		if (f->m_hwndChild)
+			MoveWindow(f->m_hwndChild, 0, 0, nWidth, nHeight, TRUE);
+
+		return 0;
+	}
+		
+	case WM_CLOSE :
+	{
+		AP_App * pApp = f->getApp();
+		UT_ASSERT(pApp);
+
+		const EV_EditMethodContainer * pEMC = pApp->getEditMethodContainer();
+		UT_ASSERT(pEMC);
+
+		EV_EditMethod * pEM = pEMC->findEditMethodByName("closeWindow");
+		UT_ASSERT(pEM);						// make sure it's bound to something
+
+		if (pEM)
+		{
+			(*pEM->getFn())(pView,NULL);
+			return 0 ;
+		}
+
+		// let the window be destroyed
+		break;
+	}
+
+	case WM_DESTROY :
+		return 0 ;
+	} /* switch (iMsg) */
+
+	return DefWindowProc (hwnd, iMsg, wParam, lParam) ;
+}
+
 #define SCROLL_LINE_SIZE 20
 
-LRESULT CALLBACK AP_Win32Frame::_WndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
+LRESULT CALLBACK AP_Win32Frame::_ChildWndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 {
 	HDC         hdc ;
 	PAINTSTRUCT ps ;
@@ -471,27 +604,6 @@ LRESULT CALLBACK AP_Win32Frame::_WndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LP
 	}
 	return 0;
 
-	case WM_COMMAND:
-		if (f->m_pWin32Menu->onCommand(pView,hwnd,wParam))
-			return 0;
-		return DefWindowProc(hwnd,iMsg,wParam,lParam);
-
-	case WM_INITMENU:
-		if (f->m_pWin32Menu->onInitMenu(pView,hwnd,(HMENU)wParam))
-			return 0;
-		return DefWindowProc(hwnd,iMsg,wParam,lParam);
-		
-	case WM_SYSKEYDOWN:
-	case WM_KEYDOWN:
-		if (f->m_pWin32Keyboard->onKeyDown(pView,hwnd,iMsg,wParam,lParam))
-			return 0;
-		return DefWindowProc(hwnd,iMsg,wParam,lParam);
-	case WM_SYSCHAR:
-	case WM_CHAR:
-		if (f->m_pWin32Keyboard->onChar(pView,hwnd,iMsg,wParam,lParam))
-			return 0;
-		return DefWindowProc(hwnd,iMsg,wParam,lParam);
-			  
 	case WM_LBUTTONDOWN:
 		pMouse->onButtonDown(pView,hwnd,EV_EMB_BUTTON1,wParam,LOWORD(lParam),HIWORD(lParam));
 		return 0;
@@ -549,31 +661,9 @@ LRESULT CALLBACK AP_Win32Frame::_WndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LP
 		return 0 ;
 	}
 
-	case WM_CLOSE :
-	{
-		AP_App * pApp = f->getApp();
-		UT_ASSERT(pApp);
-
-		const EV_EditMethodContainer * pEMC = pApp->getEditMethodContainer();
-		UT_ASSERT(pEMC);
-
-		EV_EditMethod * pEM = pEMC->findEditMethodByName("closeWindow");
-		UT_ASSERT(pEM);						// make sure it's bound to something
-
-		if (pEM)
-		{
-			(*pEM->getFn())(pView,NULL);
-			return 0 ;
-		}
-
-		// let the window be destroyed
-		break;
-	}
-
 	case WM_DESTROY :
-//		PostQuitMessage (0) ;
 		return 0 ;
-	}
+	} /* switch (iMsg) */
 
 	return DefWindowProc (hwnd, iMsg, wParam, lParam) ;
 }
