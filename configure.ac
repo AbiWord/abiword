@@ -77,15 +77,7 @@ dnl These are the flags required and defined above
 AC_SUBST(ABI_FE)
 AC_SUBST(ABI_BE)
 
-dnl iconv peer library is in libiconv as per the CVS module name.
-if test "$PLATFORM" = "mac" -o "$PLATFORM" = "cocoa"; then
-	ICONV_INCLUDES=
-else
-	ICONV_INCLUDES=-I'$(top_srcdir)/../libiconv/include'
-fi
-AC_CHECK_FUNC(iconv,ICONV_LIBS="",ICONV_LIBS="-liconv")
-AC_SUBST(ICONV_INCLUDES)
-AC_SUBST(ICONV_LIBS)
+ABI_DETECT_ICONV
 
 ABIWORD_APP_NAME="AbiWord"
 AC_SUBST(ABIWORD_APP_NAME)
@@ -525,6 +517,7 @@ cat <<EOF
   PNG Library:     ${abi_libpng_message}
   Psiconv Library: ${abi_psiconv_message}
   WV Library:      ${abi_wv_message}
+  iconv:           ${abi_iconv_message}
 
 EOF
 

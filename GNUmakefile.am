@@ -4,6 +4,7 @@ SUBDIRS = src
 expat_peerdir=@EXPAT_PEERDIR@
 wv_peerdir=@WV_PEERDIR@
 psiconv_peerdir=@PSICONV_PEERDIR@
+libiconv_peerdir=@LIBICONV_PEERDIR@
 libpng_peerdir=@LIBPNG_PEERDIR@
 
 # Hack: make sure that the PEERS stuff is build first
@@ -17,6 +18,8 @@ wv:
 	$(MAKE) -C $(wv_peerdir) BUILD_FOR_ABIWORD=1
 psiconv:
 	$(MAKE) -C $(psiconv_peerdir)
+libiconv:
+	$(MAKE) -C $(libiconv_peerdir)
 libpng:
 	$(MAKE) -C $(libpng_peerdir)
 
