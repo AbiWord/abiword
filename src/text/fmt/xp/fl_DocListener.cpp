@@ -638,7 +638,7 @@ void fl_DocListener::pushContainerLayout(fl_ContainerLayout * pCL)
 fl_ContainerLayout * fl_DocListener::getTopContainerLayout(void)
 {
 	static fl_ContainerLayout * pCL;
-	m_sLastContainerLayout.viewTop((void*)&pCL);
+	m_sLastContainerLayout.viewTop((void**)&pCL);
 	return pCL;
 }
 
@@ -648,7 +648,7 @@ fl_ContainerLayout * fl_DocListener::getTopContainerLayout(void)
 fl_ContainerLayout * fl_DocListener::popContainerLayout(void)
 {
 	static fl_ContainerLayout * pCL;
-	m_sLastContainerLayout.pop((void*)&pCL);
+	m_sLastContainerLayout.pop((void**)&pCL);
 	return pCL;
 }
 
