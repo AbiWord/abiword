@@ -31,6 +31,7 @@ class PX_ChangeRecord_Object;
 
 class ABI_EXPORT s_RTF_ListenerWriteDoc : public PL_Listener
 {
+	friend class IE_Exp_RTF;
 public:
 	s_RTF_ListenerWriteDoc(PD_Document * pDocument,
 						   IE_Exp_RTF * pie,
@@ -76,7 +77,7 @@ protected:
 	void				_rtf_open_block(PT_AttrPropIndex api);
 	void				_writeImageInRTF(const PX_ChangeRecord_Object * pcro);
 	void                _writeBookmark(const PX_ChangeRecord_Object * pcro);
-
+    void                _writeFieldPreamble(void);
  private:
 	PD_Document *		m_pDocument;
 	IE_Exp_RTF *		m_pie;

@@ -641,6 +641,53 @@ bool PD_Document::verifySectionID(const XML_Char * pszId)
 	}
 	return false;
 }
+
+
+
+/*!
+ * This method scans the document to look for a HdrFtr strux.
+\params const char * pszHdrFtr The particular attribute that identifies the
+                               strux as "header" "footer" "header-even" etc.
+\params const char * pszHdrFtrID the unique string to match with Docsection.
+\returns a PL_StruxDocHandle of the matching frag or NULL if none found.
+ */
+PL_StruxDocHandle PD_Document::findHdrFtrStrux(const XML_Char * pszHdrFtr, 
+											const XML_Char * pszHdrFtrID)
+{
+	pf_Frag * currentFrag = m_pPieceTable->getFragments().getFirst();
+	while (currentFrag!=m_pPieceTable->getFragments().getLast())
+	{
+		UT_ASSERT(currentFrag);
+		PT_AttrPropIndex indexAP = 0;
+		if(currentFrag->getType()  == pf_Frag::PFT_Strux)
+		{
+		     pf_Frag_Strux * pfSec = static_cast<pf_Frag_Strux *>(currentFrag);
+		     if(pfSec->getStruxType() == PTX_SectionHdrFtr)
+		     {
+				 indexAP = pfSec->getIndexAP();
+				 const PP_AttrProp * pAP = NULL;
+				 m_pPieceTable->getAttrProp(indexAP,&pAP);
+				 UT_ASSERT(pAP);
+				 const XML_Char * pszIDName = NULL;
+				 const XML_Char * pszHeaderName = NULL;
+				 (pAP)->getAttribute(PT_TYPE_ATTRIBUTE_NAME, pszHeaderName);
+				 (pAP)->getAttribute(PT_ID_ATTRIBUTE_NAME, pszIDName);
+				 if(pszIDName && pszHeaderName && (UT_XML_stricmp(pszIDName,pszHdrFtrID) == 0) && (UT_XML_stricmp(pszHeaderName,pszHdrFtr) == 0))
+				 {
+					 return (PL_StruxDocHandle) pfSec ;
+				 }
+			 }
+		}
+//
+// Get Next frag in the table.
+//
+		currentFrag = currentFrag->getNext();
+	}
+	return NULL;
+}
+
+
+
 /*!
  * This method scans the document for all styles used in the document, including
  * styles in the basedon heiracy and the followedby list

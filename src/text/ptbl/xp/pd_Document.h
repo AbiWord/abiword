@@ -176,6 +176,9 @@ public:
 											const char ** pszName, const UT_ByteBuf ** ppByteBuf, void** ppToken) const;
 	bool					enumDataItems(UT_uint32 k,
 										  void ** ppHandle, const char ** pszName, const UT_ByteBuf ** ppByteBuf, void** ppToken) const;
+
+    PL_StruxDocHandle       findHdrFtrStrux(const XML_Char * pszHdtFtr, 
+											const XML_Char * pszHdrFtrID);
 	bool                    verifySectionID(const XML_Char * pszId);
 	PL_StruxDocHandle       getLastSectionSDH(void);
 	bool                    changeSectionAttsNoUpdate(PL_StruxDocHandle sdh, const char * attr, const char * attvalue);

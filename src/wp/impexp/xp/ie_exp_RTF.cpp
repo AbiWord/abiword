@@ -219,6 +219,83 @@ UT_Error IE_Exp_RTF::_writeDocument(void)
 	return ((m_error) ? UT_IE_COULDNOTWRITE : UT_OK);
 }
 
+/*!
+ * This method search for the requested header/footer section within
+ * PD_DOCument and writes into the stream at the current write point.
+ \params pszHdrFtr constchar * string describing the type of header/footer to
+                                export.
+ \params pszHdrFtrID const char * identification string for the header/footer
+ */
+void IE_Exp_RTF::exportHdrFtr(const char * pszHdrFtr , const char * pszHdrFtrID)
+{
+
+// First find the header/footer section and id in the document.
+	m_pListenerWriteDoc->_closeSpan();
+	m_pListenerWriteDoc->_closeBlock();
+	m_pListenerWriteDoc->_closeSection();
+	m_pListenerWriteDoc->_setTabEaten(false);
+
+	PL_StruxDocHandle hdrSDH = getDoc()->findHdrFtrStrux((const XML_Char *) pszHdrFtr,(const XML_Char * ) pszHdrFtrID);
+
+	if(hdrSDH == NULL)
+	{
+		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		return;
+	}
+	PT_DocPosition posStart = getDoc()->getStruxPosition(hdrSDH);
+	PT_DocPosition posEnd = 0;
+	PL_StruxDocHandle nextSDH = NULL;
+	bool found = getDoc()->getNextStruxOfType(hdrSDH,PTX_SectionHdrFtr ,&nextSDH);
+	
+	if(!found || (nextSDH == NULL ))
+	{
+		getDoc()->getBounds(true, posEnd);
+	}
+	else
+	{
+		posEnd =  getDoc()->getStruxPosition(nextSDH);
+	}
+	posStart++;
+	posEnd;
+	PD_DocumentRange * pExportHdrFtr = new PD_DocumentRange(getDoc(),posStart,posEnd);
+//
+// Got everything. Now write out an openning brace and HdrFtr type.
+//
+	_rtf_nl();
+	_rtf_open_brace();
+	if(strcmp(pszHdrFtr,"header") == 0)
+	{
+		_rtf_keyword("header");
+	}
+	else if(strcmp(pszHdrFtr,"footer") == 0)
+	{
+		_rtf_keyword("footer");
+	}
+	else if(strcmp(pszHdrFtr,"header-even") == 0)
+	{
+		_rtf_keyword("headerl");
+	}
+	else if(strcmp(pszHdrFtr,"header-first") == 0)
+	{
+		_rtf_keyword("headerf");
+	}
+	else if(strcmp(pszHdrFtr,"footer-even") == 0)
+	{
+		_rtf_keyword("footerl");
+	}
+	else if(strcmp(pszHdrFtr,"footer-first") == 0)
+	{
+		_rtf_keyword("footerf");
+	}
+//
+// Now pump out the contents of the HdrFtr
+//
+	getDoc()->tellListenerSubset(static_cast<PL_Listener *>(m_pListenerWriteDoc),pExportHdrFtr);
+	delete pExportHdrFtr;
+	_rtf_close_brace();
+}
+
+
 /*****************************************************************/
 /*****************************************************************/
 #if 0

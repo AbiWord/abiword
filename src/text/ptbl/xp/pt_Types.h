@@ -100,5 +100,16 @@ typedef const void * PL_StruxFmtHandle;
 #define PT_TYPE_ATTRIBUTE_NAME			((const XML_Char *)"type")
 #define PT_BASEDON_ATTRIBUTE_NAME		((const XML_Char *)"basedon")
 #define PT_FOLLOWEDBY_ATTRIBUTE_NAME	((const XML_Char *)"followedby")
+#define PT_ID_ATTRIBUTE_NAME            ((const XML_Char *)"id")
+#define PT_HEADER_ATTRIBUTE_NAME	    ((const XML_Char *)"header")
+#define PT_HEADEREVEN_ATTRIBUTE_NAME	((const XML_Char *)"header-even")
+#define PT_HEADERFIRST_ATTRIBUTE_NAME	((const XML_Char *)"header-first")
+#define PT_HEADERLAST_ATTRIBUTE_NAME	((const XML_Char *)"header-last")
+#define PT_FOOTER_ATTRIBUTE_NAME	    ((const XML_Char *)"footer")
+#define PT_FOOTEREVEN_ATTRIBUTE_NAME	((const XML_Char *)"footer-even")
+#define PT_FOOTERFIRST_ATTRIBUTE_NAME	((const XML_Char *)"footer-first")
+#define PT_FOOTERLAST_ATTRIBUTE_NAME	((const XML_Char *)"footer-last")
+
+
 
 #endif /* PT_TYPES_H */

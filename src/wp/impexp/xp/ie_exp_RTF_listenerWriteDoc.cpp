@@ -393,11 +393,228 @@ bool s_RTF_ListenerWriteDoc::populate(PL_StruxFmtHandle /*sfh*/,
 	}
 }
 
+void s_RTF_ListenerWriteDoc::_writeFieldPreamble(void)
+{
+	m_pie->_rtf_open_brace();
+	m_pie->_rtf_keyword("field");
+	m_pie->_rtf_open_brace();
+	m_pie->_rtf_keyword("*");
+	m_pie->_rtf_keyword("fldinst");
+	m_pie->write(" ");
+	m_pie->_rtf_open_brace();
+	m_pie->write(" ");
+}
 
 void	 s_RTF_ListenerWriteDoc::_openTag(const char * szPrefix, const char * szSuffix,
 								 bool bNewLineAfter, PT_AttrPropIndex api)
 {
-  UT_DEBUGMSG(("TODO: Write code to go in here. In _openTag, szPrefix = %s  szSuffix = %s api = %x \n",szPrefix,szSuffix,api));
+	 UT_DEBUGMSG(("TODO: Write code to go in here. In _openTag, szPrefix = %s  szSuffix = %s api = %x \n",szPrefix,szSuffix,api));
+	 if(UT_XML_strcmp(szPrefix,"field") == 0)
+	 {
+		 const PP_AttrProp * pSpanAP = NULL;
+		 const XML_Char * pszType = NULL;
+		 m_pDocument->getAttrProp(api, &pSpanAP);
+		 pSpanAP->getAttribute("type", pszType);
+		 if(UT_XML_strcmp(pszType,"list_label") == 0)
+		 {
+			 return;
+		 }
+		 else if(UT_XML_strcmp(pszType,"page_number") == 0)
+		 {
+			 _writeFieldPreamble();
+			 m_pie->write("PAGE  \\");
+			 m_pie->_rtf_keyword("*");
+			 m_pie->write(" MERGEFORMAT ");
+             m_pie->_rtf_close_brace();
+             m_pie->_rtf_close_brace();
+             m_pie->_rtf_close_brace();
+			 return;
+		 }
+		 else if(UT_XML_strcmp(pszType,"time") == 0)
+		 {
+			 _writeFieldPreamble();
+			 m_pie->write("TIME  \\");
+			 m_pie->_rtf_keyword("*");
+			 m_pie->write(" MERGEFORMAT ");
+             m_pie->_rtf_close_brace();
+             m_pie->_rtf_close_brace();
+             m_pie->_rtf_close_brace();
+			 return;
+		 }
+		 else if(UT_XML_strcmp(pszType,"page_ref") == 0)
+		 {
+			 UT_DEBUGMSG(("SEVIOR: Page ref field here \n"));
+			 return;
+		 }
+		 else if(UT_XML_strcmp(pszType,"page_count") == 0)
+		 {
+			 _writeFieldPreamble();
+			 m_pie->write("NUMPAGES  \\");
+			 m_pie->_rtf_keyword("*");
+			 m_pie->write(" MERGEFORMAT ");
+             m_pie->_rtf_close_brace();
+             m_pie->_rtf_close_brace();
+             m_pie->_rtf_close_brace();
+			 UT_DEBUGMSG(("SEVIOR: Page count field here \n"));
+			 return;
+		 }
+		 else if(UT_XML_strcmp(pszType,"date") == 0)
+		 {
+			 _writeFieldPreamble();
+			 m_pie->write("DATE  \\");
+			 m_pie->_rtf_keyword("*");
+			 m_pie->write(" MERGEFORMAT ");
+             m_pie->_rtf_close_brace();
+             m_pie->_rtf_close_brace();
+             m_pie->_rtf_close_brace();
+			 return;
+		 }
+		 else if(UT_XML_strcmp(pszType,"date_mmddyy") == 0)
+		 {
+			 _writeFieldPreamble();
+			 m_pie->write("TIME  \\");
+			 m_pie->_rtf_keyword("@");
+			 m_pie->write(" dddd, MMMM dd, yyyy");
+             m_pie->_rtf_close_brace();
+             m_pie->_rtf_close_brace();
+             m_pie->_rtf_close_brace();
+			 return;
+		 }
+		 else if(UT_XML_strcmp(pszType,"date_mdy") == 0)
+		 {
+			 _writeFieldPreamble();
+			 m_pie->write("TIME  \\");
+			 m_pie->_rtf_keyword("@");
+			 m_pie->write(" MMM dd, yyy");
+             m_pie->_rtf_close_brace();
+             m_pie->_rtf_close_brace();
+             m_pie->_rtf_close_brace();
+			 return;
+		 }
+		 else if(UT_XML_strcmp(pszType,"date_mthdy") == 0)
+		 {
+			 _writeFieldPreamble();
+			 m_pie->write("TIME  \\");
+			 m_pie->_rtf_keyword("@");
+			 m_pie->write(" MMMM dd, yy");
+             m_pie->_rtf_close_brace();
+             m_pie->_rtf_close_brace();
+             m_pie->_rtf_close_brace();
+			 return;
+		 }
+		 else if(UT_XML_strcmp(pszType,"date_dfl") == 0)
+		 {
+			 return;
+		 }
+		 else if(UT_XML_strcmp(pszType,"date_ntdfl") == 0)
+		 {
+			 return;
+		 }
+		 else if(UT_XML_strcmp(pszType,"date_wkday") == 0)
+		 {
+			 _writeFieldPreamble();
+			 m_pie->write("TIME  \\");
+			 m_pie->_rtf_keyword("@");
+			 m_pie->write(" dddd");
+             m_pie->_rtf_close_brace();
+             m_pie->_rtf_close_brace();
+             m_pie->_rtf_close_brace();
+			 return;
+			 return;
+		 }
+		 else if(UT_XML_strcmp(pszType,"date_doy") == 0)
+		 {
+			 return;
+		 }
+		 else if(UT_XML_strcmp(pszType,"time_miltime") == 0)
+		 {
+			 return;
+		 }
+		 else if(UT_XML_strcmp(pszType,"time_ampm") == 0)
+		 {
+			 return;
+		 }
+		 else if(UT_XML_strcmp(pszType,"time_zone") == 0)
+		 {
+			 return;
+		 }
+		 else if(UT_XML_strcmp(pszType,"time_epoch") == 0)
+		 {
+			 return;
+		 }
+		 else if(UT_XML_strcmp(pszType,"word_count") == 0)
+		 {
+			 _writeFieldPreamble();
+			 m_pie->write("NUMWORDS  \\");
+			 m_pie->_rtf_keyword("*");
+			 m_pie->write(" MERGEFORMAT ");
+             m_pie->_rtf_close_brace();
+             m_pie->_rtf_close_brace();
+
+             m_pie->_rtf_open_brace();
+			 m_pie->_rtf_keyword("fldrslt");
+			 m_pie->write(" ");
+             m_pie->_rtf_close_brace();
+             m_pie->_rtf_close_brace();
+			 return;
+		 }
+		 else if(UT_XML_strcmp(pszType,"char_count") == 0)
+		 {
+			 _writeFieldPreamble();
+  			 m_pie->write("NUMCHARS  \\");
+  			 m_pie->_rtf_keyword("*");
+  			 m_pie->write(" MERGEFORMAT ");
+             m_pie->_rtf_close_brace();
+             m_pie->_rtf_close_brace();
+             m_pie->_rtf_close_brace();
+			 return;
+		 }
+		 else if(UT_XML_strcmp(pszType,"line_count") == 0)
+		 {
+			 return;
+		 }
+		 else if(UT_XML_strcmp(pszType,"para_count") == 0)
+		 {
+			 return;
+		 }
+		 else if(UT_XML_strcmp(pszType,"nbsp_count") == 0)
+		 {
+			 return;
+		 }
+		 else if(UT_XML_strcmp(pszType,"file_name") == 0)
+		 {
+			 return;
+		 }
+		 else if(UT_XML_strcmp(pszType,"app_ver") == 0)
+		 {
+			 return;
+		 }
+		 else if(UT_XML_strcmp(pszType,"app_id") == 0)
+		 {
+			 return;
+		 }
+		 else if(UT_XML_strcmp(pszType,"app_options") == 0)
+		 {
+			 return;
+		 }
+		 else if(UT_XML_strcmp(pszType,"app_target") == 0)
+		 {
+			 return;
+		 }
+		 else if(UT_XML_strcmp(pszType,"app_compiledate") == 0)
+		 {
+			 return;
+		 }
+		 else if(UT_XML_strcmp(pszType,"app_compiletime") == 0)
+		 {
+			 return;
+		 }
+		 else 
+		 {
+			 UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+			 return;
+		 }
+	 }
 }
 
 bool s_RTF_ListenerWriteDoc::populateStrux(PL_StruxDocHandle sdh,
@@ -412,16 +629,65 @@ bool s_RTF_ListenerWriteDoc::populateStrux(PL_StruxDocHandle sdh,
 	{
 	case PTX_Section:
 		{
-			_closeSpan();
-			_closeBlock();
-			_closeSection();
-			_setTabEaten(false);
 
 			// begin a new section.  in RTF this is expressed as
 			//
 			// <section> := <secfmt>* <hdrftr>? <para>+ (\sect <section>)?
 			//
 			// here we deal with everything except for the <para>+
+// 
+// OK first we have so see if there is a header/footer associated with this section
+//
+			PT_AttrPropIndex indexAP = pcr->getIndexAP();
+			const PP_AttrProp* pAP = NULL;
+			m_pDocument->getAttrProp(indexAP, &pAP);
+			const XML_Char* pszHdrFtrID = NULL;
+
+			pAP->getAttribute("header", pszHdrFtrID);
+			if(pszHdrFtrID != NULL)
+			{
+				m_pie->exportHdrFtr("header",pszHdrFtrID);
+			}
+
+			pszHdrFtrID = NULL;
+			pAP->getAttribute("footer", pszHdrFtrID);
+			if(pszHdrFtrID != NULL)
+			{
+				m_pie->exportHdrFtr("footer",pszHdrFtrID);
+			}
+
+			pszHdrFtrID = NULL;
+			pAP->getAttribute("header-even", pszHdrFtrID);
+			if(pszHdrFtrID != NULL)
+			{
+				m_pie->exportHdrFtr("header-even",pszHdrFtrID);
+			}
+
+			pszHdrFtrID = NULL;
+			pAP->getAttribute("footer-even", pszHdrFtrID);
+			if(pszHdrFtrID != NULL)
+			{
+				m_pie->exportHdrFtr("footer-even",pszHdrFtrID);
+			}
+
+			pAP->getAttribute("header-first", pszHdrFtrID);
+			pszHdrFtrID = NULL;
+			if(pszHdrFtrID != NULL)
+			{
+				m_pie->exportHdrFtr("header-first",pszHdrFtrID);
+			}
+
+			pszHdrFtrID = NULL;
+			pAP->getAttribute("footer-first", pszHdrFtrID);
+			if(pszHdrFtrID != NULL)
+			{
+				m_pie->exportHdrFtr("footer-first",pszHdrFtrID);
+			}
+			_closeSpan();
+			_closeBlock();
+			_closeSection();
+			_setTabEaten(false);
+
 			m_sdh = sdh;
 			_rtf_open_section(pcr->getIndexAP());
 			return true;
@@ -433,6 +699,11 @@ bool s_RTF_ListenerWriteDoc::populateStrux(PL_StruxDocHandle sdh,
 			_closeBlock();
 			_closeSection();
 			_setTabEaten(false);
+			return false;
+#if 0
+//
+// We should have already outputting this.
+
 			// begin a header/footer.  in RTF this is expressed as
 			//
 			// {' <hdrctl> <para>+ '}' where <hdrctl> is one of
@@ -456,6 +727,7 @@ bool s_RTF_ListenerWriteDoc::populateStrux(PL_StruxDocHandle sdh,
 			else
 				UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 			return true;
+#endif
 		}
 
 	case PTX_Block:
