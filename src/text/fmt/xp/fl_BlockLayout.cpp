@@ -580,7 +580,7 @@ void fl_BlockLayout::_lookupProperties(void)
 	fl_AutoNum * pAutoNum;
 	if(id != 0)
 	{
-		UT_DEBUGMSG(("SEVIOR: id = %d parent_id= %d \n",id,parent_id));
+//		UT_DEBUGMSG(("SEVIOR: id = %d parent_id= %d \n",id,parent_id));
 		//UT_DEBUGMSG(("SEVIOR: margin-left = %s \n", getProperty("margin-left")));
 	}
 	if ((m_pAutoNum) && (id) && (m_pAutoNum->getID() != id))
@@ -962,7 +962,8 @@ bool fl_BlockLayout::_truncateLayout(fp_Run* pTruncRun)
 /*!
   Move all Runs in the block onto a new line.
   This is only called during block creation when there are no existing
-  lines in the block.  */
+  lines in the block.  
+*/
 void fl_BlockLayout::_stuffAllRunsOnALine(void)
 {
 	UT_ASSERT(m_pFirstLine == NULL);
@@ -1180,16 +1181,15 @@ fl_BlockLayout::format()
 
 	// Paragraph has been reformatted.
 	m_bNeedsReformat = false;
-
 	// Redraw cursor if necessary
 	if (m_bCursorErased == true)
 	{
+		pView->_fixInsertionPointCoords();
 		pView->drawInsertionPoint();
 		m_bCursorErased = false;
 	}
 
 	_assertRunListIntegrity();
-
 	return 0;	// TODO return code
 }
 
@@ -1231,11 +1231,6 @@ void fl_BlockLayout::redrawUpdate()
 
 fp_Line* fl_BlockLayout::getNewLine(void)
 {
-//  	if (getSectionLayout() && (getSectionLayout()->getType()== FL_SECTION_HDRFTR))
-//  	{
-//  	    UT_ASSERT(0);
-//  	    return NULL;
-//  	}
 	fp_Line* pLine = new fp_Line();
 	// TODO: Handle out-of-memory
 	UT_ASSERT(pLine);
@@ -3799,7 +3794,7 @@ bool fl_BlockLayout::doclistener_insertBlock(const PX_ChangeRecord_Strux * pcrx,
 		_insertEndOfParagraphRun();
 	}
 	setNeedsReformat();
-
+	pNewBL->collapse(); // remove all previous lines
 	// Throw all the runs onto one jumbo line in the new block
 	pNewBL->_stuffAllRunsOnALine();
 	if (pNewBL->m_pFirstRun)
@@ -3883,7 +3878,6 @@ bool fl_BlockLayout::doclistener_insertSection(const PX_ChangeRecord_Strux * pcr
 // Now move all the blocks following into the new section
 //
 	fl_BlockLayout* pBL = getNext();
-	UT_DEBUGMSG(("SEVIOR: Last block in prev section = %x \n",this));
 	while (pBL)
 	{
 		fl_BlockLayout* pNext = pBL->getNext();
@@ -3891,7 +3885,6 @@ bool fl_BlockLayout::doclistener_insertSection(const PX_ChangeRecord_Strux * pcr
 		pBL->collapse();
 		pOldSL->removeBlock(pBL);
 		pSL->addBlock(pBL);
-		UT_DEBUGMSG(("SEVIOR: Adding block %x to new section \n",pBL));
 		pBL->m_pSectionLayout = pSL;
 		pBL->m_bNeedsReformat = true;
 		pBL = pNext;
@@ -3899,7 +3892,6 @@ bool fl_BlockLayout::doclistener_insertSection(const PX_ChangeRecord_Strux * pcr
 //
 // Terminate blocklist here. This Block is the last in this section.
 //
-	UT_DEBUGMSG(("SEVIOR: Last block is %x pointer to next is %x \n",pOldSL->getLastBlock(),getNext()));
 	setNext(NULL);
 	pOldSL->setLastBlock( this);
 

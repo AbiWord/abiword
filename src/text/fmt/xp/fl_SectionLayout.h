@@ -269,7 +269,7 @@ public:
 	void                        localCollapse(void);
 	virtual void				format(void);
 	virtual void				updateLayout(void);
-
+	fl_BlockLayout *            findMatchingBlock( fl_BlockLayout * pBL);
 	virtual void				redrawUpdate(void);
 	
 	virtual fp_Container*		getNewContainer();

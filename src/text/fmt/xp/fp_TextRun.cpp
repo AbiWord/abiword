@@ -1695,6 +1695,17 @@ bool	fp_TextRun::doesContainNonBlankData(void) const
 		while (bContinue)
 		{
 			bContinue = m_pBL->getSpanPtr(offset, &pSpan, &lenSpan);
+			if(lenSpan <= 0)
+			{ 
+				fp_Line * pLine = m_pBL->getFirstLine();
+				UT_DEBUGMSG(("SEVIOR: Line for this run = %x \n",getLine()));
+				UT_DEBUGMSG(("SEVIOR: Line list Run %x Block %x pLine %x \n",this,m_pBL,pLine));
+				while(pLine)
+				{
+					UT_DEBUGMSG(("SEVIOR: Line list Run %x Block %x pLine %x \n",this,m_pBL,pLine));
+					pLine = pLine->getNext();
+				}
+			}
 			UT_ASSERT(lenSpan>0);
 
 			if (len <= lenSpan)

@@ -1372,7 +1372,10 @@ bool FV_View::cmdCharInsert(UT_UCSChar * text, UT_uint32 count, bool bForce)
 				// current list if the list type is of numbered type
 				fl_BlockLayout * pBlock = getCurrentBlock();
 				List_Type curType = pBlock->getListType();
-				if(IS_NUMBERED_LIST_TYPE(curType) == true)
+//
+// Now increase list level for bullet lists too
+//
+//				if(IS_NUMBERED_LIST_TYPE(curType) == true)
 				{
 					UT_uint32 curlevel = pBlock->getLevel();
 					UT_uint32 currID = pBlock->getAutoNum()->getID();
@@ -1388,12 +1391,17 @@ bool FV_View::cmdCharInsert(UT_UCSChar * text, UT_uint32 count, bool bForce)
 				}
 			}
 		}
-		PT_DocPosition pos = 0;
-		getEditableBounds(false,pos);
-		UT_DEBUGMSG(("SEVIOR: doinsert = %d point= %d posBOD =%d \n",doInsert,getPoint(),pos));
 		if (doInsert == true)
 		{
 			bResult = m_pDoc->insertSpan(getPoint(), text, count);
+			if(!bResult)
+			{
+				const fl_Layout * pL = (fl_Layout *) getCurrentBlock();
+				const PP_AttrProp *pBlockAP = NULL;
+				pL->getAttrProp(&pBlockAP);
+				bResult = m_pDoc->insertSpan(getPoint(), text, count,const_cast<PP_AttrProp *>(pBlockAP));
+				UT_ASSERT(bResult);
+			}
 		}
 
 		if (bOverwrite)
@@ -1734,10 +1742,8 @@ void FV_View::insertParagraphBreak(void)
 		bBefore = true;
 		pBlock->deleteListLabel();
 	}
-	PT_DocPosition posbefore = getPoint();
 	if(bStopList == false)
 		m_pDoc->insertStrux(getPoint(), PTX_Block);
-	UT_DEBUGMSG(("SEVIOR: Pos before = %d Pos After = %d \n",posbefore,getPoint()));
 	if(bBefore == true)
 	{
 		fl_BlockLayout * pPrev = getCurrentBlock()->getPrev();
@@ -1758,7 +1764,7 @@ void FV_View::insertParagraphBreak(void)
 		_fixInsertionPointCoords();
 		_drawInsertionPoint();
 	}
-
+	_generalUpdate();
 	// Signal piceTable is stable again
 	m_pDoc->notifyPieceTableChangeEnd();
 
@@ -7534,19 +7540,29 @@ bool FV_View::getEditableBounds(bool isEnd, PT_DocPosition &posEOD, bool bOverid
 	if(!m_bEditHdrFtr || bOveride)
 	{	
 		pSL = (fl_SectionLayout *)  m_pLayout->getLastSection();
-		while(pSL != NULL && pSL->getType() == FL_SECTION_DOC)
+		while(pSL->getNext() != NULL && pSL->getType() == FL_SECTION_DOC)
 		{
 			pSL  = pSL->getNext();
 		}
-		if( pSL == NULL)
+		if( pSL->getNext() == NULL)
 		{
 			res = m_pDoc->getBounds(isEnd,posEOD);
 			return res;
 		}
-		fl_HdrFtrSectionLayout * pHdrFtrSL = (fl_HdrFtrSectionLayout * ) pSL;
-		fl_HdrFtrShadow * pSSL =  pHdrFtrSL->getFirstShadow();
-		pBL = pSSL->getFirstBlock();
-		posEOD = pBL->getPosition( true) -1;
+//
+// Now loop through all the HdrFtrSections, find the first in the doc and 
+// use that to get the end of editttable region.
+//
+		PT_DocPosition posFirst = pSL->getFirstBlock()->getPosition(true) - 1;
+		PT_DocPosition posNext;
+		while(pSL->getNext() != NULL)
+		{
+			pSL = pSL->getNext();
+			posNext = pSL->getFirstBlock()->getPosition(true) - 1;
+			if(posNext < posFirst)
+				posFirst = posNext;
+		}
+		posEOD = posFirst;
 		return res;
 	}
 //
@@ -7557,16 +7573,17 @@ bool FV_View::getEditableBounds(bool isEnd, PT_DocPosition &posEOD, bool bOverid
 		posEOD = m_pEditShadow->getFirstBlock()->getPosition();
 		return true;
 	}
-	fl_DocSectionLayout * pSSL =  (fl_DocSectionLayout *) m_pEditShadow->getHdrFtrSectionLayout();
-	fl_SectionLayout * pSecL = pSSL->getNext();
-	if(!pSecL)
-	{
-		res = m_pDoc->getBounds(isEnd,posEOD);
-		return res;
-	}
 	pBL = m_pEditShadow->getLastBlock();
 	posEOD = pBL->getPosition(false);
-	while(_findBlockAtPosition(posEOD) == pBL)
+	PT_DocPosition posDocEnd;
+	m_pDoc->getBounds(isEnd,posDocEnd);
+	fp_Run * pRun = pBL->getFirstRun();
+	while( pRun->getNext() != NULL)
+	{
+		pRun = pRun->getNext();
+	}
+	posEOD += pRun->getBlockOffset();
+	while(_findBlockAtPosition(posEOD) == pBL && posEOD <= posDocEnd)
 		posEOD++;
 	posEOD--;
 	return true;
@@ -7606,19 +7623,29 @@ bool FV_View::getEditableBounds(bool isEnd, PT_DocPosition &posEOD )
 	if(!m_bEditHdrFtr)
 	{	
 		pSL = (fl_SectionLayout *)  m_pLayout->getLastSection();
-		while(pSL != NULL && pSL->getType() == FL_SECTION_DOC)
+		while(pSL->getNext() != NULL && pSL->getType() == FL_SECTION_DOC)
 		{
 			pSL  = pSL->getNext();
 		}
-		if( pSL == NULL)
+		if( pSL->getNext() == NULL)
 		{
 			res = m_pDoc->getBounds(isEnd,posEOD);
 			return res;
 		}
-		fl_HdrFtrSectionLayout * pHdrFtrSL = (fl_HdrFtrSectionLayout * ) pSL;
-		fl_HdrFtrShadow * pSSL =  pHdrFtrSL->getFirstShadow();
-		pBL = pSSL->getFirstBlock();
-		posEOD = pBL->getPosition( true) -1;
+//
+// Now loop through all the HdrFtrSections, find the first in the doc and 
+// use that to get the end of edittable region.
+//
+		PT_DocPosition posFirst = pSL->getFirstBlock()->getPosition(true) - 1;
+		PT_DocPosition posNext;
+		while(pSL->getNext() != NULL)
+		{
+			pSL = pSL->getNext();
+			posNext = pSL->getFirstBlock()->getPosition(true) - 1;
+			if(posNext < posFirst)
+				posFirst = posNext;
+		}
+		posEOD = posFirst;
 		return res;
 	}
 //
@@ -7629,16 +7656,17 @@ bool FV_View::getEditableBounds(bool isEnd, PT_DocPosition &posEOD )
 		posEOD = m_pEditShadow->getFirstBlock()->getPosition();
 		return true;
 	}
-	fl_DocSectionLayout * pSSL =  (fl_DocSectionLayout *) m_pEditShadow->getHdrFtrSectionLayout();
-	fl_SectionLayout * pSecL = pSSL->getNext();
-	if(!pSecL)
-	{
-		res = m_pDoc->getBounds(isEnd,posEOD);
-		return res;
-	}
 	pBL = m_pEditShadow->getLastBlock();
 	posEOD = pBL->getPosition(false);
-	while(_findBlockAtPosition(posEOD) == pBL)
+	PT_DocPosition posDocEnd;
+	m_pDoc->getBounds(isEnd,posDocEnd);
+	fp_Run * pRun = pBL->getFirstRun();
+	while( pRun->getNext() != NULL)
+	{
+		pRun = pRun->getNext();
+	}
+	posEOD += pRun->getBlockOffset();
+	while(_findBlockAtPosition(posEOD) == pBL && posEOD <= posDocEnd)
 		posEOD++;
 	posEOD--;
 	return true;
@@ -7693,8 +7721,21 @@ bool FV_View::insertHeaderFooter(const XML_Char ** props, bool ftr)
 	{
 		_eraseInsertionPoint();
 	}
+
+//
+// Find the section that owns this page.
+//
+	fp_Page* pCurrentPage = getCurrentPage();
+	fl_DocSectionLayout * pDocL = pCurrentPage->getOwningSection();
+//
+// Now find the position of this section
+//
+	fl_BlockLayout * pBL = pDocL->getFirstBlock();
+	PT_DocPosition posSec = pBL->getPosition();
+
 	// change the section to point to the footer which doesn't exist yet.
-	m_pDoc->changeStruxFmt(PTC_AddFmt, getPoint(), getPoint(), sec_attributes2, NULL, PTX_Section);
+
+	m_pDoc->changeStruxFmt(PTC_AddFmt, posSec, posSec, sec_attributes2, NULL, PTX_Section);
 
 	moveInsPtTo(FV_DOCPOS_EOD);	// Move to the end, where we will create the page numbers
 

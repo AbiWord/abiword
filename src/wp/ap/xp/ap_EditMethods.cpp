@@ -2090,18 +2090,14 @@ Defun(warpInsPtToXY)
 Defun1(warpInsPtLeft)
 {
 	ABIWORD_VIEW;
-	UT_DEBUGMSG(("getPoint1: %d\n", pView->getPoint()));
 	pView->cmdCharMotion(false,1);
-	UT_DEBUGMSG(("getPoint2: %d\n", pView->getPoint()));
 	return true;
 }
 
 Defun1(warpInsPtRight)
 {
 	ABIWORD_VIEW;
-	UT_DEBUGMSG(("getPoint1: %d\n", pView->getPoint()));
 	pView->cmdCharMotion(true,1);
-	UT_DEBUGMSG(("getPoint2: %d\n", pView->getPoint()));
 	return true;
 }
 

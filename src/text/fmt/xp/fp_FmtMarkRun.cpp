@@ -155,7 +155,7 @@ void fp_FmtMarkRun::_clearScreen(bool /* bFullLineHeightRect */)
 #endif
 }
 
-void fp_FmtMarkRun::_draw(dg_DrawArgs* /*pDA*/)
+void fp_FmtMarkRun::_draw(dg_DrawArgs* /*pDA */)
 {
 #if 0
 #ifdef DEBUG
