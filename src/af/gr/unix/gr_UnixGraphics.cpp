@@ -34,6 +34,7 @@
 #include "ut_assert.h"
 #include "ut_misc.h"
 #include "ut_string.h"
+#include "ut_dialogHelper.h"
 
 #define DELETEP(p)	do { if (p) delete p; } while (0)
 #define FREEP(p)	do { if (p) free(p); } while (0)
@@ -337,7 +338,7 @@ GR_Font* GR_UNIXGraphics::findFont(const char* pszFontFamily,
 
 	// Request the appropriate AP_UnixFont::, and bury it in an
 	// instance of a GR_UnixFont:: with the correct size.
-	AP_UnixFont * unixfont = m_pFontManager->getFont(pszFontFamily, s);
+	AP_UnixFont * unixfont = m_pFontManager->getFont(pszFontFamily, s);	
 	AP_UnixFont * item = NULL;
 	if (unixfont)
 	{
@@ -348,7 +349,21 @@ GR_Font* GR_UNIXGraphics::findFont(const char* pszFontFamily,
 	{
 		// Oops!  We don't have that font here.  substitute something
 		// we know we have (get smarter about this later)
-		item = new AP_UnixFont(*m_pFontManager->getFont("Times New Roman", s));
+		AP_UnixFont * fallback = m_pFontManager->getFont("Times New Roman", s);
+		if (!fallback)
+		{
+			char message[1024];
+			g_snprintf(message, 1024,
+					   "AbiWord could not find its default fallback font\n"
+					   "[%s], even though it was listed in a\n"
+					   "valid font directory file ('fonts.dir') in a valid\n"
+					   "directory in the font path.\n"
+					   "\n"
+					   "AbiWord cannot continue without this font.", pszFontFamily);
+			messageBoxOK(message);
+			exit(-1);
+		}
+		item = new AP_UnixFont(*fallback);
 	}
 	
 	GR_UnixFont * pFont = new GR_UnixFont(item, convertDimension(pszFontSize));

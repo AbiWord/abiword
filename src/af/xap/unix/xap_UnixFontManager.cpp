@@ -122,8 +122,9 @@ UT_Bool AP_UnixFontManager::scavengeFonts(void)
 					// premature EOF (it's always premature if there are more
 					// fonts specified than found)
 					char message[512];
-					g_snprintf(message, 512, "Premature end of file from directory [%s];\n"
-							   "wanted %ld fonts, only got [%ld] -- will continue, but things might not work correctly.\n",
+					g_snprintf(message, 512, "Premature end of file from font directory file [%s];\n"
+							   "%ld fonts were supposed to be declared, but I only got %ld.\n"
+							   "I will continue, but things may not work correctly.\n",
 							   filename, fontcount, line);
 					messageBoxOK(message);
 					fclose(file);
@@ -145,27 +146,68 @@ UT_Bool AP_UnixFontManager::scavengeFonts(void)
 			fclose(file);
 	}
 
-	
+	if (totaldirs <= 0)
+	{
+		// TODO this is not big enough for a really big list of fonts!
+		char message[10240];
+		g_snprintf(message, 10240, "Found no font directory files ('fonts.dir') in any directories\n"
+				   "in font path:\n\n");
+		{
+			UT_uint32 dircount = m_searchPaths.getItemCount();
+			for (i = 0; i < dircount; i++)
+			{
+				UT_ASSERT(m_searchPaths.getNthItem(i));
+				strcat(message, "    ");
+				strcat(message, (const char *) m_searchPaths.getNthItem(i));
+				strcat(message, "\n");
+			}
+		}
+		char message2[11264];
+		g_snprintf(message2, 11264,
+				   "%s"
+				   "\n"
+				   "Do the directories in this list contain valid font directory\n"
+				   "files ('fonts.dir') and the actual font files ('*.pfa', '*.afm') files\n"
+				   "they declare?\n"
+				   "\n"
+				   "See 'http://www.abisource.com/dev_download.phtml#type1'\n"
+				   "for instructions on how to install these fonts and properly\n"
+				   "set up your environment.", message);
+		messageBoxOK(message2);
+		return UT_FALSE;
+	}
+
 	if (totalfonts <= 0)
 	{
 		// we have no fonts, just quit
-		// this message should be non-DEBUG
-		char message[512];
-		g_snprintf(message, 512, "Found a total of 0 fonts, cannot continue.");
+		char message[1024];
+		g_snprintf(message, 1024, "Found no actual font data files ('*.pfa', '*.afm') in\n"
+				   "the font path ('$ABIWORD_FONTPATH') even though I found %ld font\n"
+				   "directory files ('fonts.dir').\n"
+				   "\n"
+				   "See 'http://www.abisource.com/dev_download.phtml#type1' for\n"
+				   "instructions on how to install these fonts and properly\n"
+				   "set up your environment.", totaldirs);
 		messageBoxOK(message);
 		return UT_FALSE;
 	}
 
-	if (totaldirs <= 0)
+	// since we now have a good list of fonts totalling more than 0,
+	// verify that their metrics data can be loaded by parsing the files
+	// now.
+
+	// NOTE this adds more time to program startup and steals it from the
+	// NOTE first printing
+
+	AP_UnixFont ** allfonts = getAllFonts();
+	for (UT_uint32 k = 0; k < getCount(); k++)
 	{
-		// this message should be non-DEBUG
-		char message[512];
-		g_snprintf(message, 512, "Found a total of 0 directores in font path containing\n"
-				   "valid font directory files (fonts.dir), cannot continue.");
-		messageBoxOK(message);
-		return UT_FALSE;
+		// if any of these fails, the user will know about it
+		if (!allfonts[k]->getMetricsData())
+			return UT_FALSE;
 	}
-	
+	DELETEP(allfonts);
+
 	return UT_TRUE;
 }
 
@@ -207,7 +249,7 @@ AP_UnixFont * AP_UnixFontManager::getDefaultFont(void)
 	// do some manual behind-the-back construction
 	f->setName("Default");
 	f->setStyle(AP_UnixFont::STYLE_NORMAL);
-	f->setXLFD("-adobe-helvetica-medium-r-normal--0-0-75-75-p-56-iso8859-1");
+	f->setXLFD("-*-helvetica-medium-r-normal--0-0-*-*-p-56-iso8859-1");
 
 	return f;
 }

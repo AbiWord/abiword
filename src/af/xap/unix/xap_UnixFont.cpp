@@ -27,6 +27,7 @@
 #include "ut_types.h"
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
+#include "ut_dialogHelper.h"
 #include "xap_UnixFont.h"
 
 #define DELETEP(p)	do { if (p) delete(p); (p)=NULL; } while (0)
@@ -199,34 +200,53 @@ FontInfo * AP_UnixFont::getMetricsData(void)
 	if (m_metricsData)
 		return m_metricsData;
 
+	UT_ASSERT(m_metricfile);
+	
 	// open up the metrics file, which should have been proven to
 	// exist earlier in the construction of this object.
 	FILE * fp = fopen(m_metricfile, "r");
-	UT_ASSERT(fp);
-	
+
+	char message[1024];
+
+	if (!fp)
+	{
+		g_snprintf(message, 1024,
+				   "The font metrics file [%s] could\n"
+				   "not be opened for parsing.  Please ensure that this file\n"
+				   "is present before printing.  Right now, this is a pretty\n"
+				   "darn fatal error.",
+				   m_metricfile);
+		messageBoxOK(message);
+		return NULL;
+	}
+
 	// call down to the Adobe code
 	int result = parseFile(fp, &m_metricsData, P_GW);
 	switch (result)
 	{
 	case parseError:
-		// TODO this should have a non-debug counterpart (perhaps a
-		// TODO message box) to alert the user
-		UT_DEBUGMSG(("AbiWord encountered errors parsing the font metrics file [%s].\n"
-					 "These errors were not fatal; AbiWord will continue printing,\n"
-					 "but the output may look a bit strange.\n"));
+		g_snprintf(message, 1024,
+				   "AbiWord encountered errors parsing the font metrics file\n"
+				   "[%s].\n"
+				   "These errors were not fatal, but print metrics may be incorrect.",
+				   m_metricfile);
+		messageBoxOK(message);
 		break;
 	case earlyEOF:
-		// TODO this should have a non-debug counterpart (perhaps a
-		// TODO message box) to alert the user
-		UT_DEBUGMSG(("AbiWord encountered a premature EOF while parsing the font metrics file [%s].\n"
-					 "Printing cannot continue.\n"));
-		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		g_snprintf(message, 1024,
+				   "AbiWord encountered a premature End of File (EOF) while parsing\n"
+				   "the font metrics file [%s].\n"
+				   "Printing cannot continue.",
+				   m_metricfile);
+		messageBoxOK(message);
+		m_metricsData = NULL;
 		break;
 	case storageProblem:
 		// if we got here, either the metrics file is broken (like it's
 		// saying it has 209384098278942398743982 kerning lines coming, and
 		// we know we can't allocate that), or we really did run out of memory.
 		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		m_metricsData = NULL;
 		break;
 	default:
 		// everything is peachy
@@ -246,9 +266,11 @@ UT_Bool AP_UnixFont::openPFA(void)
 
 	if (!m_PFAFile)
 	{
-		UT_DEBUGMSG(("Font file [%s] can not be opened for reading.\n",
-					 m_fontfile));
-		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		char message[1024];
+		g_snprintf(message, 1024,
+				   "Font data file [%s] can not be opened for reading.\n", m_fontfile);
+		messageBoxOK(message);
+		return UT_FALSE;
 	}
 
 	return UT_TRUE;
@@ -355,9 +377,14 @@ GdkFont * AP_UnixFont::getGdkFont(UT_uint32 pointsize)
 
 	if (!gdkfont)
 	{
-		// this should be non-DEBUG
-		UT_DEBUGMSG(("Could not load font [%s]; has the X server been "
-					 "alerted of font path changes?\n", newxlfd));
+		char message[1024];
+		g_snprintf(message, 1024,
+				   "Could not load X font [%s].\n"
+				   "If this font is an AbiWord Type 1 font, has this font file\n"
+				   "been properly installed according to the instructions at\n"
+				   "'http://www.abisource.com/dev_download.phtml#type1'?\n",
+				   newxlfd);
+		messageBoxOK(message);
 		UT_ASSERT(0);
 	}
 

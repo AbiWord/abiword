@@ -39,6 +39,12 @@
 
 #define DELETEP(p)	do { if (p) delete p; } while (0)
 
+// The first defines the environment variable we honor,
+// the second defines the default path we use (this should
+// change) if that variable is not set.
+#define ABIWORD_FONTPATH_VARIABLE 	"ABIWORD_FONTPATH"
+#define ABIWORD_FONTPATH_DEFAULT	"./src/wp/lib/unix/fonts;./wp/lib/unix/fonts;../../lib/unix/fonts;/usr/local/AbiWord/lib/unix/fonts"
+
 /*****************************************************************/
 
 AP_UnixApp::AP_UnixApp(AP_Args * pArgs, const char * szAppName)
@@ -73,7 +79,7 @@ UT_Bool AP_UnixApp::initialize(void)
 	// find all the fonts in the appropriate places
 
 	// TODO this should be read from the environment/prefs
-	char * fontpath = getenv("ABIWORD_FONTPATH");
+	char * fontpath = getenv(ABIWORD_FONTPATH_VARIABLE);
 	if (fontpath)
 	{
 		UT_DEBUGMSG(("Using font path of %s.\n", fontpath));
@@ -81,9 +87,13 @@ UT_Bool AP_UnixApp::initialize(void)
 	}
 	else
 	{
-		messageBoxOK("$ABIWORD_FONTPATH not set, using default font path.");
-		// change this?
-		m_fontManager->setFontPath("src/wp/lib/unix/fonts;wp/lib/unix/fonts;../../lib/unix/fonts");
+		char message[1024];
+		g_snprintf(message, 1024, "$%s not set, using default font path of\n"
+				   "[%s].",
+				   ABIWORD_FONTPATH_VARIABLE, ABIWORD_FONTPATH_DEFAULT);
+		messageBoxOK(message);
+
+		m_fontManager->setFontPath(ABIWORD_FONTPATH_DEFAULT);
 	}
 
 	// let it loose
