@@ -160,7 +160,7 @@ UT_Bool EV_UnixToolbar::synthesize(void)
 	m_wHandleBox = gtk_handle_box_new();
 	UT_ASSERT(m_wHandleBox);
 	
-	m_wToolbar = gtk_toolbar_new(GTK_ORIENTATION_HORIZONTAL, GTK_TOOLBAR_BOTH);
+	m_wToolbar = gtk_toolbar_new(GTK_ORIENTATION_HORIZONTAL, GTK_TOOLBAR_ICONS);
 	UT_ASSERT(m_wToolbar);
 	
 	gtk_toolbar_set_button_relief(GTK_TOOLBAR(m_wToolbar), GTK_RELIEF_NONE);
