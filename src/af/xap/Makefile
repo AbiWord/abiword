@@ -30,6 +30,7 @@ TARGETS=		$(LIBRARY)
 PLATFORM_OBJS=	$(OBJDIR)/xap_$(ABI_FE)App.$(OBJ_SUFFIX)			\
 		$(OBJDIR)/xap_$(ABI_FE)AppImpl.$(OBJ_SUFFIX)                    \
 		$(OBJDIR)/xap_$(ABI_FE)Clipboard.$(OBJ_SUFFIX)			\
+		$(OBJDIR)/xap_$(ABI_FE)Dlg_DocComparison.$(OBJ_SUFFIX)		\
 		$(OBJDIR)/xap_$(ABI_FE)Dlg_FileOpenSaveAs.$(OBJ_SUFFIX)		\
 		$(OBJDIR)/xap_$(ABI_FE)Dlg_FontChooser.$(OBJ_SUFFIX)		\
 		$(OBJDIR)/xap_$(ABI_FE)Dlg_HTMLOptions.$(OBJ_SUFFIX)		\
@@ -40,14 +41,15 @@ PLATFORM_OBJS=	$(OBJDIR)/xap_$(ABI_FE)App.$(OBJ_SUFFIX)			\
 		$(OBJDIR)/xap_$(ABI_FE)Dlg_Zoom.$(OBJ_SUFFIX)			\
 		$(OBJDIR)/xap_$(ABI_FE)Dlg_Insert_Symbol.$(OBJ_SUFFIX)		\
 		$(OBJDIR)/xap_$(ABI_FE)Module.$(OBJ_SUFFIX)			\
-		$(OBJDIR)/xap_$(ABI_FE)EncodingManager.$(OBJ_SUFFIX)	\
-		$(OBJDIR)/xap_$(ABI_FE)Dlg_Password.$(OBJ_SUFFIX)	\
-		$(OBJDIR)/xap_$(ABI_FE)FrameImpl.$(OBJ_SUFFIX) \
-		$(OBJDIR)/xap_$(ABI_FE)FontPreview.$(OBJ_SUFFIX) \
-		$(OBJDIR)/xap_$(ABI_FE)Dlg_Language.$(OBJ_SUFFIX)	\
-		$(OBJDIR)/xap_$(ABI_FE)Dlg_Image.$(OBJ_SUFFIX)		\
-		$(OBJDIR)/xap_$(ABI_FE)Dlg_Encoding.$(OBJ_SUFFIX) \
-		$(OBJDIR)/xap_$(ABI_FE)Dlg_ListDocuments.$(OBJ_SUFFIX)	
+		$(OBJDIR)/xap_$(ABI_FE)EncodingManager.$(OBJ_SUFFIX)		\
+		$(OBJDIR)/xap_$(ABI_FE)Dlg_Password.$(OBJ_SUFFIX)		\
+		$(OBJDIR)/xap_$(ABI_FE)FrameImpl.$(OBJ_SUFFIX) 			\
+		$(OBJDIR)/xap_$(ABI_FE)FontPreview.$(OBJ_SUFFIX) 		\
+		$(OBJDIR)/xap_$(ABI_FE)Dlg_Language.$(OBJ_SUFFIX)		\
+		$(OBJDIR)/xap_$(ABI_FE)Dlg_Image.$(OBJ_SUFFIX)			\
+		$(OBJDIR)/xap_$(ABI_FE)Dlg_Encoding.$(OBJ_SUFFIX) 		\
+		$(OBJDIR)/xap_$(ABI_FE)Dlg_ListDocuments.$(OBJ_SUFFIX)		\
+		$(OBJDIR)/xap_$(ABI_FE)Dlg_History.$(OBJ_SUFFIX)	
 
 # gnome has its own about dialog
 ifneq ($(ABI_OPT_GNOME),1)
@@ -123,6 +125,7 @@ endif
 OBJS=		$(PLATFORM_OBJS)						\
 		$(OBJDIR)/xad_Document.$(OBJ_SUFFIX)				\
 		$(OBJDIR)/xap_App.$(OBJ_SUFFIX)					\
+		$(OBJDIR)/xap_AppImpl.$(OBJ_SUFFIX)					\
 		$(OBJDIR)/xap_Args.$(OBJ_SUFFIX)				\
 		$(OBJDIR)/xap_Clipboard.$(OBJ_SUFFIX)				\
 		$(OBJDIR)/xap_Dialog.$(OBJ_SUFFIX)				\
@@ -130,8 +133,10 @@ OBJS=		$(PLATFORM_OBJS)						\
 		$(OBJDIR)/xap_Dictionary.$(OBJ_SUFFIX)				\
 		$(OBJDIR)/xap_Dlg_About.$(OBJ_SUFFIX)				\
 		$(OBJDIR)/xap_Dlg_ClipArt.$(OBJ_SUFFIX)				\
+		$(OBJDIR)/xap_Dlg_DocComparison.$(OBJ_SUFFIX)				\
 		$(OBJDIR)/xap_Dlg_FileOpenSaveAs.$(OBJ_SUFFIX)			\
 		$(OBJDIR)/xap_Dlg_FontChooser.$(OBJ_SUFFIX)			\
+		$(OBJDIR)/xap_Dlg_History.$(OBJ_SUFFIX)			\
 		$(OBJDIR)/xap_Dlg_HTMLOptions.$(OBJ_SUFFIX)			\
 		$(OBJDIR)/xap_Dlg_MessageBox.$(OBJ_SUFFIX)			\
 		$(OBJDIR)/xap_Dlg_Image.$(OBJ_SUFFIX)	\

@@ -31,6 +31,7 @@ CPPSRCS=		xap_UnixApp.cpp				\
 			xap_UnixClipboard.cpp			\
 			xap_UnixDialogHelper.cpp		\
 			xap_UnixDlg_ClipArt.cpp			\
+			xap_UnixDlg_History.cpp			\
 			xap_UnixDlg_Password.cpp		\
 			xap_UnixDlg_Image.cpp			\
 			xap_UnixDlg_PluginManager.cpp		\

@@ -42,7 +42,7 @@ CPPSRCS=	ut_base64.cpp		\
 		ut_svg.cpp		\
 		ut_xml.cpp		\
 		ut_spi.cpp		\
-		ut_rbtree.cpp	\
+		ut_rbtree.cpp		\
 		ut_set.cpp		\
 		ut_Script.cpp		\
 		ut_stack.cpp		\
@@ -57,15 +57,15 @@ CPPSRCS=	ut_base64.cpp		\
 		ut_pair.cpp		\
 		ut_bijection.cpp	\
 		ut_string_class.cpp	\
-		ut_stringbuf.cpp  \
-		ut_AdobeEncoding.cpp \
+		ut_stringbuf.cpp  	\
+		ut_AdobeEncoding.cpp 	\
 		ut_OverstrikingChars.cpp \
 		ut_Language.cpp		\
-		ut_Encoding.cpp     \
+		ut_Encoding.cpp     	\
 		ut_thread.cpp		\
 		ut_decompress.cpp	\
-		ut_IntStrMap.cpp       \
-                ut_crc32.cpp \
+		ut_IntStrMap.cpp	\
+                ut_crc32.cpp		\
 		ut_uuid.cpp
 
 ifeq ($(ABI_OPT_PEER_EXPAT),1)

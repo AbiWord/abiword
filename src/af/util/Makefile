@@ -28,12 +28,13 @@ TARGETS=		$(LIBRARY)
 
 ifeq ($(ABI_NATIVE), unix)
 ## TODO fix capitalization and change to $(ABI_FE)
-PLATFORM_OBJS=	$(OBJDIR)/ut_unixAssert.$(OBJ_SUFFIX)	\
+PLATFORM_OBJS=	$(OBJDIR)/ut_unixAssert.$(OBJ_SUFFIX)		\
 		$(OBJDIR)/ut_unixString.$(OBJ_SUFFIX)		\
 		$(OBJDIR)/ut_unixTimer.$(OBJ_SUFFIX)		\
 		$(OBJDIR)/ut_unixIdle.$(OBJ_SUFFIX)		\
-		$(OBJDIR)/ut_unixDirent.$(OBJ_SUFFIX)			\
-		$(OBJDIR)/ut_debugmsg.$(OBJ_SUFFIX)			\
+		$(OBJDIR)/ut_unixMisc.$(OBJ_SUFFIX)		\
+		$(OBJDIR)/ut_unixDirent.$(OBJ_SUFFIX)		\
+		$(OBJDIR)/ut_debugmsg.$(OBJ_SUFFIX)		\
 		$(OBJDIR)/ut_files.$(OBJ_SUFFIX)
 endif
 

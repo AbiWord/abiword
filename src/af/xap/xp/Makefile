@@ -32,6 +32,7 @@ CPPSRCS=	xad_Document.cpp		\
 		xap_Dictionary.cpp		\
 		xap_Dlg_About.cpp		\
 		xap_Dlg_ClipArt.cpp		\
+		xap_Dlg_DocComparison.cpp	\
 		xap_Dlg_FileOpenSaveAs.cpp	\
 		xap_Dlg_FontChooser.cpp		\
 		xap_Dlg_HTMLOptions.cpp		\
