@@ -831,7 +831,7 @@ gint XAP_UnixDialog_FileOpenSaveAs::previewPicture (void)
 	scaled_height = (int) (scale_factor * iImageHeight);
 
 #if defined(HAVE_GNOME)
-	pImage = new GR_UnixGnomeImage(NULL);
+	pImage = new GR_UnixGnomeImage(NULL,false);
 #else
 	pImage = new GR_UnixImage(NULL);
 #endif

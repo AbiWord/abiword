@@ -206,30 +206,30 @@ bool	GR_UnixImage::convertFromBuffer(const UT_ByteBuf* pBB, UT_sint32 iDisplayWi
 				       NULL, NULL);
       
       if (png_ptr == NULL)
-	{
-	   return false;
-	}
+	  {
+		  return false;
+	  }
       
       /* Allocate/initialize the memory for image information.  REQUIRED. */
       info_ptr = png_create_info_struct(png_ptr);
       if (info_ptr == NULL)
-	{
-	   png_destroy_read_struct(&png_ptr, (png_infopp)NULL, (png_infopp)NULL);
-	   return false;
-	}
+	  {
+		  png_destroy_read_struct(&png_ptr, (png_infopp)NULL, (png_infopp)NULL);
+		  return false;
+	  }
       
       /* Set error handling if you are using the setjmp/longjmp method (this is
        * the normal method of doing things with libpng).  REQUIRED unless you
        * set up your own error handlers in the png_create_read_struct() earlier.
        */
       if (setjmp(png_ptr->jmpbuf))
-	{
-	   /* Free all of the memory associated with the png_ptr and info_ptr */
-	   png_destroy_read_struct(&png_ptr, &info_ptr, (png_infopp)NULL);
-	   
-	   /* If we get here, we had a problem reading the file */
-	   return false;
-	}
+	  {
+		  /* Free all of the memory associated with the png_ptr and info_ptr */
+		  png_destroy_read_struct(&png_ptr, &info_ptr, (png_infopp)NULL);
+		  
+		  /* If we get here, we had a problem reading the file */
+	      return false;
+	  }
       
       struct _bb myBB;
       myBB.pBB = pBB;
@@ -276,10 +276,10 @@ bool	GR_UnixImage::convertFromBuffer(const UT_ByteBuf* pBB, UT_sint32 iDisplayWi
       pFM->data = (guchar *) calloc(pFM->width * pFM->height * 3, sizeof(guchar));
       
       if (!pFM->data)
-	{
-	   png_destroy_read_struct(&png_ptr, &info_ptr, (png_infopp)NULL);
-	   return false;
-	}
+	  {
+		  png_destroy_read_struct(&png_ptr, &info_ptr, (png_infopp)NULL);
+		  return false;
+	  }
       
       UT_Byte * pBits = (UT_Byte *) pFM->data;
       
@@ -289,10 +289,10 @@ bool	GR_UnixImage::convertFromBuffer(const UT_ByteBuf* pBB, UT_sint32 iDisplayWi
       // the pointer it gets (&pRowStarts) up each element to get a new
       // place (row) to throw data.
       for (UT_uint32 iRow = 0; iRow < height; iRow++)
-	pRowStarts[iRow] = ((UT_Byte *) pBits + (iRow * iBytesInRow));
+		  pRowStarts[iRow] = ((UT_Byte *) pBits + (iRow * iBytesInRow));
       
       for (; iInterlacePasses; iInterlacePasses--)
-	png_read_rows(png_ptr, pRowStarts, NULL, height);
+		  png_read_rows(png_ptr, pRowStarts, NULL, height);
       
       free(pRowStarts);
       
@@ -306,23 +306,23 @@ bool	GR_UnixImage::convertFromBuffer(const UT_ByteBuf* pBB, UT_sint32 iDisplayWi
 	  (((UT_sint32) width) != iDisplayWidth)
 	  || (((UT_sint32) height) != iDisplayHeight)
 	  )
-	{
-	   Fatmap* pDisplayFM = new Fatmap;
-	   Fatmap* pOtherFM = pFM;
+	  {
+		  Fatmap* pDisplayFM = new Fatmap;
+		  Fatmap* pOtherFM = pFM;
 	   
-	   pDisplayFM->width = iDisplayWidth;
-	   pDisplayFM->height = iDisplayHeight;
+		  pDisplayFM->width = iDisplayWidth;
+		  pDisplayFM->height = iDisplayHeight;
 	   
 	   // allocate for 3 bytes each pixel (one for R, G, and B)
-	   pDisplayFM->data = (guchar *) calloc(pDisplayFM->width * pDisplayFM->height * 3, sizeof(guchar));
+		  pDisplayFM->data = (guchar *) calloc(pDisplayFM->width * pDisplayFM->height * 3, sizeof(guchar));
 	   
-	   if (!pDisplayFM->data)
-	     {
-		delete pDisplayFM;
-		free(pOtherFM->data);
-		delete pOtherFM;
-		return false;
-	     }
+		  if (!pDisplayFM->data)
+		  {
+			  delete pDisplayFM;
+			  free(pOtherFM->data);
+			  delete pOtherFM;
+			  return false;
+		  }
 	   
 	   // stretch the pixels from pOtherFM into pDisplayFM
 	   
@@ -333,82 +333,82 @@ bool	GR_UnixImage::convertFromBuffer(const UT_ByteBuf* pBB, UT_sint32 iDisplayWi
 	    to be working nicely.
 	    */
 	   
-	     {
-		int                 x, y, *xarray;
-		unsigned char     **yarray, *ptr, *ptr2, *ptr22;
-		int                 pos, inc, w3;
-		
-		xarray = (int*) malloc(sizeof(int) * iDisplayWidth);
-		
-		if (!xarray)
 		  {
-		     // TODO outofmem
-		     return false;
-		  }
-		yarray = (unsigned char**) malloc(sizeof(unsigned char *) * iDisplayHeight);
+			  int                 x, y, *xarray;
+			  unsigned char     **yarray, *ptr, *ptr2, *ptr22;
+			  int                 pos, inc, w3;
 		
-		if (!yarray)
-		  {
-		     // TODO outofmem
-		     return false;
-		  }
+			  xarray = (int*) malloc(sizeof(int) * iDisplayWidth);
 		
-		ptr22 = pOtherFM->data;
-		w3 = pOtherFM->width * 3;
+			  if (!xarray)
+			  {
+				  // TODO outofmem
+				  return false;
+			  }
+			  yarray = (unsigned char**) malloc(sizeof(unsigned char *) * iDisplayHeight);
 		
-		// set up xarray
-		inc = ((pOtherFM->width) << 16) / iDisplayWidth;
-		pos = 0;
-		for (x = 0; x < iDisplayWidth; x++)
-		  {
-		     xarray[x] = (pos >> 16) + (pos >> 16) + (pos >> 16);
-		     pos += inc;
-		  }
+			  if (!yarray)
+			  {
+				  // TODO outofmem
+				  return false;
+			  }
 		
-		// set up yarray
-		inc = ((pOtherFM->height) << 16) / iDisplayHeight;
-		pos = 0;
-		for (x = 0; x < iDisplayHeight; x++)
-		  {
-		     yarray[x] = ptr22 + ((pos >> 16) * w3);
-		     pos += inc;
-		  }
+			  ptr22 = pOtherFM->data;
+			  w3 = pOtherFM->width * 3;
 		
-		// crunch the data
-		ptr = pDisplayFM->data;
-		for (y = 0; y < iDisplayHeight; y++)
-		  {
-		     for (x = 0; x < iDisplayWidth; x++)
-		       {
-			  ptr2 = yarray[y] + xarray[x];
-			  *ptr++ = (int)*ptr2++;
-			  *ptr++ = (int)*ptr2++;
-			  *ptr++ = (int)*ptr2;
-		       }
+			  // set up xarray
+			  inc = ((pOtherFM->width) << 16) / iDisplayWidth;
+			  pos = 0;
+			  for (x = 0; x < iDisplayWidth; x++)
+			  {
+				  xarray[x] = (pos >> 16) + (pos >> 16) + (pos >> 16);
+				  pos += inc;
+			  }
+		
+			  // set up yarray
+			  inc = ((pOtherFM->height) << 16) / iDisplayHeight;
+			  pos = 0;
+			  for (x = 0; x < iDisplayHeight; x++)
+			  {
+				  yarray[x] = ptr22 + ((pos >> 16) * w3);
+				  pos += inc;
+			  }
+		
+			  // crunch the data
+			  ptr = pDisplayFM->data;
+			  for (y = 0; y < iDisplayHeight; y++)
+			  {
+				  for (x = 0; x < iDisplayWidth; x++)
+				  {
+					  ptr2 = yarray[y] + xarray[x];
+					  *ptr++ = (int)*ptr2++;
+					  *ptr++ = (int)*ptr2++;
+					  *ptr++ = (int)*ptr2;
+				  }
+			  }
 		  }
-	     }
-	   
-	   pFM = pDisplayFM;
-	   
-	   free(pOtherFM->data);
-	   delete pOtherFM;
-	}
+		  
+		  pFM = pDisplayFM;
+		  
+		  free(pOtherFM->data);
+		  delete pOtherFM;
+	  }
       
       // should NOT already be set
       UT_ASSERT(!m_image);
       
       if (m_image)
-	{
+	  {
 	   // free the data in it too
-	   if (m_image->data)
-	     {
-		free(m_image->data);
-		m_image->data = NULL;
-	     }
+		  if (m_image->data)
+		  {
+			  free(m_image->data);
+			  m_image->data = NULL;
+		  }
 	   
-	   delete m_image;
-	   m_image = NULL;
-	}
+		  delete m_image;
+		  m_image = NULL;
+	  }
       
       m_image = pFM;
       return true;

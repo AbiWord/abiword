@@ -310,7 +310,6 @@ GR_Font* FL_DocLayout::findFont(const PP_AttrProp * pSpanAP,
 		double newSize = UT_convertToPoints(pszSize) * 2.0 / 3.0;
 		pszSize = UT_formatDimensionedValue(newSize,"pt",".0");
 	}
-
 	// NOTE: we currently favor a readable hash key to make debugging easier
 	// TODO: speed things up with a smaller key (the three AP pointers?) 
 	char key[500];
@@ -341,7 +340,6 @@ GR_Font* FL_DocLayout::findFont(const PP_AttrProp * pSpanAP,
 	{
 		pFont = (GR_Font*) pEntry;
 	}
-
 	return pFont;
 }
 

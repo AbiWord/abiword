@@ -903,7 +903,8 @@ GR_Image* GR_UnixGraphics::createNewImage(const char* pszName, const UT_ByteBuf*
 {
    	GR_Image* pImg = NULL;
 	
-	pImg = new GR_UnixGnomeImage(pszName);
+	
+	pImg = new GR_UnixGnomeImage(pszName,false);
 	pImg->convertFromBuffer(pBB, iDisplayWidth, iDisplayHeight);
    	return pImg;
 }
@@ -1138,3 +1139,4 @@ void GR_Font::s_getGenericFontProperties(const char * /*szFontName*/,
 	*pfp = FP_Unknown;
 	*pbTrueType = true;
 }
+

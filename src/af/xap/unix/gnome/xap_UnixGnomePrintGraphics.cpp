@@ -716,6 +716,13 @@ void XAP_UnixGnomePrintGraphics::drawAnyImage (GR_Image* pImg,
 											   UT_sint32 xDest, 
 											   UT_sint32 yDest, bool rgb)
 {
+
+//
+// One might think that I would have to adjust these sizes because of the
+// scaling by a factor of 36 for print images. Actually I don't think I do.
+// gnome-print scales all images to fit in whatever sized piece of screen/paper
+// you've got.
+//    
 	UT_sint32 iDestWidth  = pImg->getDisplayWidth();
 	UT_sint32 iDestHeight = pImg->getDisplayHeight();
 
@@ -769,7 +776,7 @@ GR_Image* XAP_UnixGnomePrintGraphics::createNewImage(const char* pszName,
 	GR_Image* pImg = NULL;
 
    	if (iType == GR_Image::GRT_Raster)
-     		pImg = new GR_UnixGnomeImage(pszName);
+     		pImg = new GR_UnixGnomeImage(pszName,true);
    	else if (iType == GR_Image::GRT_Vector)
      		pImg = new GR_VectorImage(pszName);
    

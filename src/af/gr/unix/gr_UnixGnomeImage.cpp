@@ -26,17 +26,20 @@
 
 #include <gdk-pixbuf/gdk-pixbuf-loader.h>
 
-GR_UnixGnomeImage::GR_UnixGnomeImage(const char* szName) 
-	: m_image(NULL)
+#define Print_Scale_Factor 36
+
+GR_UnixGnomeImage::GR_UnixGnomeImage(const char* szName, bool isPrintResolution = false) 
+  : m_image(NULL)
 {
   if (szName)
-    {
+  {
       m_szName = szName;
-    }
+  }
   else
-    {
+  {
       m_szName = "UnixGnomeImage";
-    }
+  }
+  m_bPrintResolution = isPrintResolution;
 }
 
 GR_UnixGnomeImage::~GR_UnixGnomeImage()
@@ -48,13 +51,29 @@ GR_UnixGnomeImage::~GR_UnixGnomeImage()
 UT_sint32	GR_UnixGnomeImage::getDisplayWidth(void) const
 {
 	UT_ASSERT(m_image);
-    return gdk_pixbuf_get_width (m_image);
+	UT_sint32 width = gdk_pixbuf_get_width (m_image);
+//
+// Sevior Hack for Printer resolution
+//
+	if(m_bPrintResolution)
+	{
+		width = width * Print_Scale_Factor;
+	}
+    return width;
 }
 
 UT_sint32	GR_UnixGnomeImage::getDisplayHeight(void) const
 {
 	UT_ASSERT(m_image);
-    return gdk_pixbuf_get_height (m_image);
+//
+// Sevior Hack for Printer resolution, scale back because scaled down on creation
+//
+    UT_sint32 height =  gdk_pixbuf_get_height (m_image);
+	if(m_bPrintResolution)
+	{
+		height = height * Print_Scale_Factor;
+	}
+    return height;
 }
 
 bool		GR_UnixGnomeImage::convertToBuffer(UT_ByteBuf** ppBB) const
@@ -103,11 +122,27 @@ void GR_UnixGnomeImage::scale (UT_sint32 iDisplayWidth,
 
 	GdkPixbuf * image = 0;
 
+	//
+	// Sevior puts in hack to prevent scaling to riduclusly large sizes.
+    // If we're printing divide iDisplaywidth and iDisplayHeight by 36, 
+	// which is 72/2 half the ratio of the printing to screen resolution. 
+    // Why half? Well we might gain a bit
+    // more resolution this way. I'll put this scale factor back into the 
+    // drawAnyImage() method of xap_UnixGnomePrintGraphics.
+    //
+	if(m_bPrintResolution)
+	{
+		iDisplayWidth = iDisplayWidth/  Print_Scale_Factor;
+		iDisplayHeight = iDisplayHeight/  Print_Scale_Factor;
+	}
 	image = gdk_pixbuf_scale_simple (m_image, iDisplayWidth, 
 									 iDisplayHeight, GDK_INTERP_NEAREST);
 
 	gdk_pixbuf_unref (m_image);
 	m_image = image;
+//
+// Better save our layout resolution numbers too?
+//
 }
 
 bool	GR_UnixGnomeImage::convertFromBuffer(const UT_ByteBuf* pBB, 

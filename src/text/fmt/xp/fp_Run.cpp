@@ -1693,8 +1693,9 @@ void fp_ImageRun::lookupProperties(void)
 		if(getLine()->getMaxWidth() - 1 < m_iWidth)
 		{
 			double dw = (double) getLine()->getMaxWidth();
-			double dwL = getLine()->getMaxWidthInLayoutUnits();
-			double dnwL = dwL - dwL/dw + 0.5; 
+			double rat = (dw - 1.0)/dw;
+			double dwL = (double) getLine()->getMaxWidthInLayoutUnits();
+			double dnwL = dwL - dwL*rat;
 			m_iWidth = getLine()->getMaxWidth() -1;
 			m_iWidthLayoutUnits = (UT_sint32) dnwL;
 		}
@@ -1703,7 +1704,8 @@ void fp_ImageRun::lookupProperties(void)
 		{
 			double dh = (double) getLine()->getContainer()->getMaxHeight();
 			double dhL = (double) getLine()->getContainer()->getMaxHeightInLayoutUnits();
-			double dnhL = dhL - dhL/dh + 0.5; 
+			double rat = (dh - 1.0)/dh;
+			double dnhL = dhL - dhL*rat; 
 			m_iHeight = getLine()->getContainer()->getMaxHeight() -1;
 			m_iHeightLayoutUnits = (UT_sint32) dnhL;
 		}
@@ -1955,7 +1957,6 @@ void fp_FieldRun::lookupProperties(void)
 	{
 		m_pFont = pLayout->findFont(pSpanAP,pBlockAP,pSectionAP, FL_DocLayout::FIND_FONT_AT_SCREEN_RESOLUTION,true);
 		m_pFontLayout = pLayout->findFont(pSpanAP,pBlockAP,pSectionAP, FL_DocLayout::FIND_FONT_AT_LAYOUT_RESOLUTION,true);
-		xxx_UT_DEBUGMSG(("SEVIOR: Got fonts %x and %x for screen and layout for list label \n",m_pFont,m_pFontLayout));
 	}
 	else
 	{
@@ -1988,7 +1989,7 @@ void fp_FieldRun::lookupProperties(void)
 	m_iDescentLayoutUnits = m_pG->getFontDescent(m_pFontLayout);
 	m_iHeightLayoutUnits = m_pG->getFontHeight(m_pFontLayout);
 
-	//m_pG->setFont(m_pFont); DOM!!
+//	m_pG->setFont(m_pFont);  Why??? DOM!!
 
 	const XML_Char* pszType = NULL;
 
@@ -2284,7 +2285,7 @@ void fp_FieldRun::_defaultDraw(dg_DrawArgs* pDA)
 			m_pG->fillRect(m_colorHL, pDA->xoff, iFillTop, m_iWidth, iFillHeight);
 		}
 	}
-	xxx_UT_DEBUGMSG(("SEVIOR: Set font %x before drawing %x \n",m_pFont));
+
 	m_pG->setFont(m_pFont);
 	m_pG->setColor(m_colorFG);
 	

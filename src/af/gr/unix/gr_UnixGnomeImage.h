@@ -28,7 +28,7 @@
 class GR_UnixGnomeImage : public GR_RasterImage
 {
 public:
-	GR_UnixGnomeImage(const char* pszName);
+	GR_UnixGnomeImage(const char* pszName, bool isPrintResolution=false);
 	~GR_UnixGnomeImage();
 
 	virtual UT_sint32	getDisplayWidth(void) const;
@@ -44,6 +44,19 @@ public:
 
 private:
 	GdkPixbuf * m_image;
+    bool m_bPrintResolution;
 };
 
 #endif /* GR_UNIXGNOMEIMAGE_H */
+
+
+
+
+
+
+
+
+
+
+
+
