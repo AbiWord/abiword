@@ -42,6 +42,7 @@
 #include "fl_SectionLayout.h"
 #include "fl_BlockLayout.h"
 #include "fl_ContainerLayout.h"
+#include "fl_TableLayout.h"
 #include "fp_Line.h"
 #include "fp_Run.h"
 #include "gr_Graphics.h"
@@ -70,6 +71,10 @@ fl_DocListener::fl_DocListener(PD_Document* doc, FL_DocLayout *pLayout)
 	}
 	m_iGlobCounter = 0;
 	m_pCurrentSL = NULL;
+//
+// Put a NULL on th stack to signify the top.
+//
+	m_sLastContainerLayout.push(NULL);
 }
 
 /*!
@@ -77,6 +82,7 @@ fl_DocListener::fl_DocListener(PD_Document* doc, FL_DocLayout *pLayout)
 */
 fl_DocListener::~fl_DocListener()
 {
+	UT_ASSERT(m_sLastContainerLayout.getDepth() == 1);
 }
 
 /*!
@@ -470,25 +476,60 @@ bool fl_DocListener::populateStrux(PL_StruxDocHandle sdh,
 	case PTX_Block:
 	{
 		UT_ASSERT(m_pCurrentSL);
-		
-		// Append a new BlockLayout to that SectionLayout
-		fl_ContainerLayout*	pCL = m_pCurrentSL->append(sdh, pcr->getIndexAP(),FL_CONTAINER_BLOCK);
-		if (!pCL)
+//
+// Look if we're inside a table. If so append this block to a cell.
+//
+		fl_ContainerLayout*	pCL = NULL;
+		fl_ContainerLayout * pCon = getTopContainerLayout();
+		if(pCon)
 		{
-			UT_DEBUGMSG(("no memory for BlockLayout"));
-			return false;
+			if(pCon->getContainerType() != FL_CONTAINER_CELL)
+			{
+				UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+				return false;
+			}
+			fl_CellLayout * pCell = (fl_CellLayout *) pCon;
+
+			// Append a new BlockLayout to this cell
+
+			pCL = pCell->append(sdh, pcr->getIndexAP(),FL_CONTAINER_BLOCK);
+			if (!pCL)
+			{
+				UT_DEBUGMSG(("no memory for BlockLayout"));
+				return false;
+			}
+			// BUGBUG: this is *not* thread-safe, but should work for now
+			if (m_bScreen)
+			{
+				UT_uint32 reason =  0;
+				if( m_pLayout->getAutoSpellCheck())
+				{
+					reason = (UT_uint32) FL_DocLayout::bgcrSpelling;
+				}
+				m_pLayout->queueBlockForBackgroundCheck(reason, (fl_BlockLayout *)pCL,true);
+			}
+		}
+		else
+		{
+			pCL = m_pCurrentSL->append(sdh, pcr->getIndexAP(),FL_CONTAINER_BLOCK);
+			if (!pCL)
+			{
+				UT_DEBUGMSG(("no memory for BlockLayout"));
+				return false;
+			}
+
+			// BUGBUG: this is *not* thread-safe, but should work for now
+			if (m_bScreen)
+			{
+				UT_uint32 reason =  0;
+				if( m_pLayout->getAutoSpellCheck())
+				{
+					reason = (UT_uint32) FL_DocLayout::bgcrSpelling;
+				}
+				m_pLayout->queueBlockForBackgroundCheck(reason, (fl_BlockLayout *)pCL,true);
+			}
 		}
 
-		// BUGBUG: this is *not* thread-safe, but should work for now
-		if (m_bScreen)
-		{
-			UT_uint32 reason =  0;
-			if( m_pLayout->getAutoSpellCheck())
-			{
-				reason = (UT_uint32) FL_DocLayout::bgcrSpelling;
-			}
-			m_pLayout->queueBlockForBackgroundCheck(reason, (fl_BlockLayout *)pCL,true);
-		}
 		*psfh = (PL_StruxFmtHandle)pCL;
 		if(pCL->getLastContainer()==NULL)
 		{
@@ -500,6 +541,71 @@ bool fl_DocListener::populateStrux(PL_StruxDocHandle sdh,
 			}
 		}
 
+	}
+	break;
+	case PTX_SectionTable:
+	{
+		UT_ASSERT(m_pCurrentSL);
+		
+		// Append a new TableLayout to that SectionLayout
+		fl_ContainerLayout*	pCL = m_pCurrentSL->
+			append(sdh, pcr->getIndexAP(),FL_CONTAINER_TABLE);
+		if (!pCL)
+		{
+			UT_DEBUGMSG(("no memory for BlockLayout"));
+			return false;
+		}
+		pushContainerLayout(pCL);
+		*psfh = (PL_StruxFmtHandle)pCL;
+
+	}
+	break;
+	case PTX_SectionCell:
+	{
+		UT_ASSERT(m_pCurrentSL);
+		
+		// Append a new CallLayout to the Current TableLayout
+		fl_ContainerLayout * pCon = getTopContainerLayout();
+		if(pCon->getContainerType() != FL_CONTAINER_TABLE)
+		{
+			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+			return false;
+		}
+		fl_TableLayout * pTable = (fl_TableLayout *) pCon;
+		fl_ContainerLayout*	pCL = pTable->append(sdh, pcr->getIndexAP(),FL_CONTAINER_CELL);
+		if (!pCL)
+		{
+			UT_DEBUGMSG(("no memory for BlockLayout"));
+			return false;
+		}
+		pushContainerLayout(pCL);
+		*psfh = (PL_StruxFmtHandle)pCL;
+	}
+	break;
+	case PTX_EndTable:
+	{
+		UT_ASSERT(m_pCurrentSL);
+		fl_ContainerLayout *  pCon = popContainerLayout();
+
+		if(pCon->getContainerType() != FL_CONTAINER_TABLE)
+		{
+			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+			return false;
+		}
+		*psfh = (PL_StruxFmtHandle)pCon;
+	}
+	break;
+	case PTX_EndCell:
+	{
+		UT_ASSERT(m_pCurrentSL);
+		fl_ContainerLayout *  pCon = popContainerLayout();
+
+		if(pCon->getContainerType() != FL_CONTAINER_CELL)
+		{
+			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+			return false;
+		}
+		*psfh = (PL_StruxFmtHandle)pCon;
 	}
 	break;
 			
@@ -519,6 +625,35 @@ bool fl_DocListener::populateStrux(PL_StruxDocHandle sdh,
 }
 
 /*!
+ * Push the given ContainerLayout onto the top of the stack.
+ */
+void fl_DocListener::pushContainerLayout(fl_ContainerLayout * pCL)
+{
+	m_sLastContainerLayout.push((void *) pCL);
+}
+
+/*!
+ * View the topmost containerLayout on the stack.
+ */
+fl_ContainerLayout * fl_DocListener::getTopContainerLayout(void)
+{
+	static fl_ContainerLayout * pCL;
+	m_sLastContainerLayout.viewTop(& (void *) pCL);
+	return pCL;
+}
+
+/*!
+ * Pop the most recent ContainerLayout off the top of the stack.
+ */
+fl_ContainerLayout * fl_DocListener::popContainerLayout(void)
+{
+	static fl_ContainerLayout * pCL;
+	m_sLastContainerLayout.pop(& (void *) pCL);
+	return pCL;
+}
+
+/*!
+ * Change a strux or span.
  */
 bool fl_DocListener::change(PL_StruxFmtHandle sfh,
 							const PX_ChangeRecord * pcr)

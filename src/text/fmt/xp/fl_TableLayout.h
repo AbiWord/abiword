@@ -30,18 +30,18 @@
 #include "pt_Types.h"
 #include "fl_Layout.h"
 #include "fl_ContainerLayout.h"
-#include "fl_SectionLayout.h
+#include "fl_SectionLayout.h"
 #include "pl_Listener.h"
 #include "ut_debugmsg.h"
 #include "ut_misc.h" // for UT_RGBColor
 
-enum _TableJustification
+enum  FL_TableJustification
 {
     FL_TABLE_LEFT,
     FL_TABLE_CENTER,
     FL_TABLE_RIGHT,
     FL_TABLE_FULL
-} FL_TableJustification;
+};
 
 class fp_Page;
 class FL_DocLayout;
@@ -75,18 +75,15 @@ class ABI_EXPORT fl_TableLayout : public fl_SectionLayout
 	friend class fl_DocListener;
 
 public:
-	fl_TableLayout(FL_DocLayout* pLayout, PL_StruxDocHandle sdh, PT_AttrPropIndex ap, SectionType iType, fl_ContainerType iCType, fl_ContainerLayout * pMyContainerLayout);
-	virtual ~fl_SectionLayout();
+	fl_TableLayout(FL_DocLayout* pLayout, PL_StruxDocHandle sdh, PT_AttrPropIndex ap, fl_ContainerLayout * pMyContainerLayout);
+	virtual ~fl_TableLayout();
 
-	SectionType     	getType(void) const { return m_iType; }
+	SectionType     	        getType(void) const { return m_iType; }
 
-	virtual bool		recalculateFields(UT_uint32 iUpdateCount);
-
-	virtual fp_Container*		getNewContainer(fp_Container * pFirstContainer = NULL);
-	virtual FL_DocLayout*		getDocLayout(void) const;
-	virtual bool 	    doclistener_changeStrux(const PX_ChangeRecord_StruxChange * pcrxc);
-	bool				doclistener_deleteStrux(const PX_ChangeRecord_Strux * pcrx);
-	virtual bool bl_doclistener_insertSection(fl_ContainerLayout*,
+	virtual bool		        recalculateFields(UT_uint32 iUpdateCount);
+	virtual bool 	            doclistener_changeStrux(const PX_ChangeRecord_StruxChange * pcrxc);
+	virtual bool				doclistener_deleteStrux(const PX_ChangeRecord_Strux * pcrx);
+	virtual bool                bl_doclistener_insertSection(fl_ContainerLayout*,
 											  SectionType iType,
 											  const PX_ChangeRecord_Strux * pcrx,
 											  PL_StruxDocHandle sdh,
@@ -99,50 +96,60 @@ public:
 #ifdef FMT_TEST
 	virtual void		__dump(FILE * fp) const;
 #endif
-	virtual void		format(void);
-	virtual void		updateLayout(void);
-	virtual void        collapse(void);
-	virtual void        markAllRunsDirty(void);
-	virtual fp_Container * getFirstContainer(void) const;
-	virtual fp_Container * getLastContainer(void) const;
-	virtual void        setFirstContainer(fp_TableContainer * pCon)
-		{ m_pFirstTableCon = (fp_TableContainer *) pCon;}
-	virtual void  setLastContainer(fp_TableContainer * pCon)
-		{ m_pLastTableCon = (fp_TableContainer *)pCon;}
-	virtual PT_DocPosition  getPosition(bool bActualBlockPosition = false) const;
-	UT_sint32			breakTable(fl_ContainerLayout * pLastValidBlock=NULL);
-	virtual fl_SectionLayout *  getSectionLayout(void) const
-		{ return m_pDocSectionLayout; }
-
-	virtual void		redrawUpdate(void);
+	virtual void		        format(void);
+	virtual void		        updateLayout(void);
+	void		                updateTable(void);
+	virtual void                collapse(void);
+	virtual void                markAllRunsDirty(void);
+	virtual fp_Container *      getFirstContainer(void) const;
+	virtual fp_Container *      getLastContainer(void) const;
+	virtual PT_DocPosition      getPosition(bool bActualBlockPosition = false) const;
+	virtual void		        redrawUpdate(void);
 	virtual fp_Container*		getNewContainer(fp_Container * pFirstContainer = NULL);
-	void				deleteEmptyCells(void);
 
-	void                markForRebuild(void) { m_bNeedsRebuild = true;}
-	void                clearRebuild(void) { m_bNeedsRebuild = false;}
-	bool                needsRebuild(void) const { return m_bNeedsRebuild;}
-    void                markForReformat(void) { m_bNeedsFormat = true;}
-    bool                needsReFormat(void) const { return m_bNeedsFormat;}
-    void                drawLines(void);
-    void                clearLines(void);
+	void                        markForRebuild(void) { m_bNeedsRebuild = true;}
+	void                        clearRebuild(void) { m_bNeedsRebuild = false;}
+	bool                        needsRebuild(void) const { return m_bNeedsRebuild;}
+    void                        markForReformat(void) { m_bNeedsFormat = true;}
+    bool                        needsReFormat(void) const { return m_bNeedsFormat;}
+
+	UT_sint32                getLeftOffset(void) const;
+#ifndef WITH_PANGO
+ UT_sint32                   getLeftOffsetInLayoutUnits(void) const;
+#endif
+UT_sint32                    getRightOffset(void) const;
+#ifndef WITH_PANGO
+UT_sint32                    getRightOffsetInLayoutUnits(void) const;
+#endif
+	UT_sint32                getTopOffset(void) const;
+#ifndef WITH_PANGO
+ UT_sint32                   getTopOffsetInLayoutUnits(void) const;
+#endif
+UT_sint32                    getBottomOffset(void) const;
+#ifndef WITH_PANGO
+UT_sint32                    getBottomOffsetInLayoutUnits(void) const;
+#endif
+
+protected:
+	virtual void		        _lookupProperties(void);
+	void				        _purgeLayout();
 private:
-	virtual void		   _lookupProperties(void);
-	void				   _purgeLayout();
-
 	bool                   m_bNeedsFormat;
 	bool                   m_bNeedsRebuild;
-	fp_TableContainer *    m_pFirstTableCon;
-    fp_TableContainer *    m_pLastTableCon;
-    fp_TableContainer *    m_pCompleteTable;
-    FL_TableJustification  m_iJustification;
+	FL_TableJustification  m_iJustification;
 	UT_sint32              m_iLeftOffset;
 	UT_sint32              m_iLeftOffsetLayoutUnits;
+	double                 m_dLeftOffsetUserUnits;
 	UT_sint32              m_iRightOffset;
 	UT_sint32              m_iRightOffsetLayoutUnits;
+	double                 m_dRightOffsetUserUnits;
 	UT_sint32              m_iTopOffset;
 	UT_sint32              m_iTopOffsetLayoutUnits;
+	double                 m_dTopOffsetUserUnits;
 	UT_sint32              m_iBottomOffset;
 	UT_sint32              m_iBottomOffsetLayoutUnits;
+	double                 m_dBottomOffsetUserUnits;
+	bool                   m_bIsHomogeneous;
 	bool                   m_bSameRowOnTopOfPage;
 	UT_sint32              m_iRowNumberForTop;
 	UT_sint32              m_iNumberOfRows;
@@ -151,4 +158,82 @@ private:
 	bool                   m_bRowsPositionedOnPage;
 };
 
+
+class ABI_EXPORT fl_CellLayout : public fl_SectionLayout
+{
+	friend class fl_DocListener;
+public:
+	fl_CellLayout(FL_DocLayout* pLayout, PL_StruxDocHandle sdh, PT_AttrPropIndex ap, fl_ContainerLayout * pMyContainerLayout);
+	virtual ~fl_CellLayout();
+
+
+	virtual bool 	doclistener_changeStrux(const PX_ChangeRecord_StruxChange * pcrxc);
+	virtual bool    doclistener_deleteStrux(const PX_ChangeRecord_Strux * pcrx);
+	virtual bool bl_doclistener_insertSection(fl_ContainerLayout*,
+											  SectionType iType,
+											  const PX_ChangeRecord_Strux * pcrx,
+											  PL_StruxDocHandle sdh,
+											  PL_ListenerId lid,
+											  void (* pfnBindHandles)(PL_StruxDocHandle sdhNew,
+																	  PL_ListenerId lid,
+																	  PL_StruxFmtHandle sfhNew));
+	virtual void		     format(void);
+	virtual void		     updateLayout(void);
+	void                     updateCell(void);
+	virtual void             collapse(void);
+	virtual void             markAllRunsDirty(void);
+	virtual fl_SectionLayout *  getSectionLayout(void)  const;
+	bool                     recalculateFields(UT_uint32 iUpdateCount);
+	virtual void		     redrawUpdate(void);
+	virtual fp_Container*	 getNewContainer(fp_Container * pFirstContainer = NULL);
+
+	UT_sint32                getLeftOffset(void) const;
+#ifndef WITH_PANGO
+ UT_sint32                   getLeftOffsetInLayoutUnits(void) const;
+#endif
+UT_sint32                    getRightOffset(void) const;
+#ifndef WITH_PANGO
+UT_sint32                    getRightOffsetInLayoutUnits(void) const;
+#endif
+	UT_sint32                getTopOffset(void) const;
+#ifndef WITH_PANGO
+ UT_sint32                   getTopOffsetInLayoutUnits(void) const;
+#endif
+UT_sint32                    getBottomOffset(void) const;
+#ifndef WITH_PANGO
+UT_sint32                    getBottomOffsetInLayoutUnits(void) const;
+#endif
+protected:
+	virtual void		     _lookupProperties(void);
+	virtual void             _purgeLayout(void);
+private:
+	bool                   m_bNeedsFormat;
+	bool                   m_bNeedsRebuild;
+	UT_sint32              m_iLeftOffset;
+	UT_sint32              m_iLeftOffsetLayoutUnits;
+	double                 m_dLeftOffsetUserUnits;
+	UT_sint32              m_iRightOffset;
+	UT_sint32              m_iRightOffsetLayoutUnits;
+	double                 m_dRightOffsetUserUnits;
+	UT_sint32              m_iTopOffset;
+	UT_sint32              m_iTopOffsetLayoutUnits;
+	double                 m_dTopOffsetUserUnits;
+	UT_sint32              m_iBottomOffset;
+	UT_sint32              m_iBottomOffsetLayoutUnits;
+	double                 m_dBottomOffsetUserUnits;
+	UT_sint32              m_iLeftAttach;
+	UT_sint32              m_iRightAttach;
+	UT_sint32              m_iTopAttach;
+	UT_sint32              m_iBotAttach;
+	bool                   m_bCellPositionedOnPage;
+};
+
 #endif /* TABLELAYOUT_H */
+
+
+
+
+
+
+
+

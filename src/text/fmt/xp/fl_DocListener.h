@@ -22,13 +22,15 @@
 
 #include "ut_types.h"
 #include "pt_Types.h"
+#include "ut_stack.h"
 
 #include "pl_Listener.h"
 
 class FL_DocLayout;
 class PD_Document;
 class fl_SectionLayout;
-
+class UT_Stack;
+class fl_ContainerLayout;
 /*!
 	The fl_DocListener class handles notifications from a PD_Document 
 	to its associated FL_DocLayout. 
@@ -60,19 +62,26 @@ public:
 
 	virtual bool		signal(UT_uint32 iSignal);
 
-protected:
+private:
+	fl_ContainerLayout *   popContainerLayout(void);
+	void 		           pushContainerLayout(fl_ContainerLayout * pCL);
+	fl_ContainerLayout *   getTopContainerLayout(void);
+
 	//! Document which is client of this DocListener
-	PD_Document*		m_pDoc;
+	PD_Document*		   m_pDoc;
 	//! The Layout notified by this DocListener
-	FL_DocLayout*		m_pLayout;
+	FL_DocLayout*		   m_pLayout;
 	//! Set when the document is drawn on screen
-	bool				m_bScreen;
+	bool				   m_bScreen;
 	//! Counter used to keep track of when to update the Layout. In
 	//! case of multi-step changes, updating is suspended.
-	UT_uint32			m_iGlobCounter;
+	UT_uint32			   m_iGlobCounter;
 	//! SectionLayout currently being constructed (multi-step change
 	//! related?!?)
-	fl_SectionLayout*	m_pCurrentSL;
+	fl_SectionLayout*	   m_pCurrentSL;
+	UT_Stack               m_sLastContainerLayout;
 };
 
 #endif /* FL_DOCLISTENER_H */
+
+

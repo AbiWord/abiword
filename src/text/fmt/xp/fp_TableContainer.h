@@ -221,7 +221,7 @@ private:
 	fp_Requisition      m_MyRequest;
 };
 
-class ABI_EXPORT fp_TableContainer : public fp_Container
+class ABI_EXPORT fp_TableContainer : public fp_VerticalContainer
 {
 public:
 	fp_TableContainer(fl_SectionLayout* pSectionLayout);

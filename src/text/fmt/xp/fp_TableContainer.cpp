@@ -275,7 +275,7 @@ void fp_CellContainer::sizeAllocate(fp_Allocation * pAllocate)
   \param pSectionLayout Section layout type used for this container
  */
 fp_TableContainer::fp_TableContainer(fl_SectionLayout* pSectionLayout) 
-	: fp_Container(FP_CONTAINER_TABLE, pSectionLayout),
+	: fp_VerticalContainer(FP_CONTAINER_TABLE, pSectionLayout),
 	  m_iRows(0),
 	  m_iCols(0),
 	  m_iBorderwidth(0),
