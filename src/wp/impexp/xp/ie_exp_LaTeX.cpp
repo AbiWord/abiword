@@ -38,6 +38,8 @@
 /*****************************************************************/
 /*****************************************************************/
 
+#define DEFAULT_SIZE "12pt"
+
 IE_Exp_LaTeX::IE_Exp_LaTeX(PD_Document * pDocument)
 	: IE_Exp(pDocument)
 {
@@ -286,14 +288,14 @@ void s_LaTeX_Listener::_openSection(PT_AttrPropIndex api)
 		}
 		if (pszPageMarginLeft != NULL)
 		{
-			m_pie->write("%\\setlength{\\oddsidemargin}{");
+			m_pie->write("\\setlength{\\oddsidemargin}{");
 			m_pie->write(pszPageMarginLeft);
 			m_pie->write("-1in");
 			m_pie->write("}\n");
 		}
 		if (pszPageMarginRight != NULL)
 		{
-			m_pie->write("%\\setlength{\\textwidth}{\\paperwidth - ");
+			m_pie->write("\\setlength{\\textwidth}{\\paperwidth - ");
 			m_pie->write(pszPageMarginRight);
 			m_pie->write("-");
 			m_pie->write(pszPageMarginLeft);
@@ -441,11 +443,14 @@ void s_LaTeX_Listener::_openSpan(PT_AttrPropIndex api)
 
 		if (pAP->getProperty("font-size", szValue))
 		{
-			m_pie->write("{\\");
-			char szSize[16];
-			_convertFontSize(szSize, szValue);
-			m_pie->write(szSize);
-			m_pie->write("{}");
+			if (strcmp (szValue, DEFAULT_SIZE) != 0)
+			{
+				m_pie->write("{\\");
+				char szSize[16];
+				_convertFontSize(szSize, szValue);
+				m_pie->write(szSize);
+				m_pie->write("{}");
+			}
 		}
 		
 		if (pAP->getProperty("font-family", szValue))
@@ -467,13 +472,13 @@ void s_LaTeX_Listener::_closeSpan(void)
 	{
 		const XML_Char * szValue;
 		
-		if (
-//			(pAP->getProperty("color", szValue)) ||    // TODO
+		if (// (pAP->getProperty("color", szValue)) ||    // TODO
 		    (pAP->getProperty("font-size", szValue))
 //		    || (pAP->getProperty("font-family", szValue))  // TODO
 			)
 		{
-			m_pie->write("}");
+			if (strcmp (szValue, DEFAULT_SIZE) != 0)
+				m_pie->write("}");
 		}
 
 		if (pAP->getProperty("text-position", szValue))

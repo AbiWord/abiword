@@ -48,6 +48,8 @@
 
 /*****************************************************************/
 
+static UT_UCSChar m_CurrentSymbol;
+static UT_UCSChar m_PreviousSymbol;
 
 XAP_Dialog * XAP_UnixDialog_Insert_Symbol::static_constructor(XAP_DialogFactory * pFactory,
 															  XAP_Dialog_Id id)
