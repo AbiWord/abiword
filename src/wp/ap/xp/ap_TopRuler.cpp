@@ -1024,13 +1024,14 @@ UT_sint32 AP_TopRuler::_findTabStop(AP_TopRulerInfo * pInfo,
 void AP_TopRuler::_getTabZoneRect(AP_TopRulerInfo * pInfo, UT_Rect &rZone)
 {
 	// this is the zone where clicking will get you a new tab
-	// basically the bottom half of the ruler, inside the current column
+	// this is basically anywhere in the ruler bar, inside the current column
 
+	UT_uint32 yTop = m_pG->tlu(s_iFixedHeight)/4;
 	UT_uint32 yBar = m_pG->tlu(s_iFixedHeight)/2;
 	UT_sint32 xAbsLeft = _getFirstPixelInColumn(pInfo,0);
 	UT_sint32 xAbsRight = xAbsLeft + pInfo->u.c.m_xColumnWidth;
 
-	rZone.set(xAbsLeft,  m_pG->tlu(s_iFixedHeight) - yBar, xAbsRight-xAbsLeft, yBar);
+	rZone.set(xAbsLeft, yTop, xAbsRight-xAbsLeft, yBar);
 }
 
 const char * AP_TopRuler::_getTabStopString(AP_TopRulerInfo * pInfo, UT_sint32 k)
