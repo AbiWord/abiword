@@ -49,8 +49,6 @@ protected:
 	UT_sint32                       _gatherSelectTab();
 	void                            _setSelectTab( UT_sint32 v );
 	const char *                    _gatherTabEdit();
-	void                            _setSelectTab( UT_sint32 v );
-	const char *                    _gatherTabEdit();
 	void                            _setTabEdit( const char *pszStr );
 };
 
