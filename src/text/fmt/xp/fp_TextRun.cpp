@@ -2751,7 +2751,7 @@ void fp_TextRun::_drawSquiggle(UT_sint32 top, UT_sint32 left, UT_sint32 right)
 
 	m_bSquiggled = true;
 
-	UT_sint32 nPoints = (right - left + 3)/2;
+	UT_sint32 nPoints = (_UD(right) - _UD(left) + 3)/2;
 	UT_ASSERT(nPoints >= 1); //can be 1 for overstriking chars
 
 	/*
@@ -2777,14 +2777,14 @@ void fp_TextRun::_drawSquiggle(UT_sint32 top, UT_sint32 left, UT_sint32 right)
 
 	for (UT_sint32 i = 1; i < nPoints; i++, bTop = !bTop)
 	{
-		points[i].x = points[i-1].x + 2;
-		points[i].y = (bTop ? top : top + 2);
+		points[i].x = points[i-1].x + _UL(2);
+		points[i].y = (bTop ? top : top + _UL(2));
 	}
 
 	if (points[nPoints-1].x > right)
 	{
 		points[nPoints-1].x = right;
-		points[nPoints-1].y = top + 1;
+		points[nPoints-1].y = top + _UL(1);
 	}
 
 	getGR()->polyLine(points, nPoints);
