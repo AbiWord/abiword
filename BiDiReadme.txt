@@ -97,38 +97,7 @@ us by the well tested FriBidi library.
 
 Developing BiDi
 ---------------
-As of the moment, the BiDi support is experimental and is not 
-enabled for the officially distributed binaries. All code that
-is BiDi specific must be located inside #ifdef BIDI_ENABLED 
-construct. However, we want to share all possible code with the
-non-BiDi version, even if that means more shorter #ifdef's; longer
-#ifdef/#else sections should be avoided as much as possible.
-
-UT_uint32 foo1;
-UT_uint32 foo2;
-#ifdef BIDI_ENABLED
-UT_uint32 foo3;
-#endif
-
-is preferable to
-
-#ifdef BIDI_ENABLED
-UT_uint32 foo1;
-UT_uint32 foo2;
-UT_uint32 foo3;
-#else
-UT_uint32 foo1;
-UT_uint32 foo2;
-#endif
-
-because the latter creates two independent branches, and any
-changes in the non-BiDi one will not be carried over into the
-BiDi branch -- we want to take advantage of any general bug
-fixes that the 'non-BiDi people' will do in 'their' code, i.e.,
-if someone changes foo1 to UT_sint32, this would not make it
-into the BiDi build in the latter version, and what is worse,
-we would not know about it at all, since the CVS would just
-silently merge the change. 
+<This section was mostly obsolete, now that all builds are bidi builds>
 
 Any new code should be 'littered' with asserts, because these
 are great help in tracing bugs. In particular, put an assert in
@@ -136,4 +105,3 @@ before dereferencing any pointers; virtually all SIGSEGVs I have
 experienced with BiDi in AW had to do with dereferencing 0 (we 
 often need to refer to things earlier than the non-BiDi version,
 so sometimes these things do not exist yet).
-
