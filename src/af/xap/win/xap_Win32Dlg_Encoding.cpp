@@ -112,15 +112,15 @@ BOOL XAP_Win32Dialog_Encoding::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lP
 		HWND hwndList = GetDlgItem(hWnd, XAP_RID_DIALOG_ENCODING_LBX_ENCODING);  
 
 		// load each string name into the list
-		for ( UT_uint32 i=0; i < m_iEncCount;  i++ )
+		for ( UT_uint32 i=0; i < _getEncodingsCount();  i++ )
 		{
-			const XML_Char* s = m_ppEncodings[i];
+			const XML_Char* s = _getAllEncodings()[i];
 
             SendMessage(hwndList, LB_ADDSTRING, 0, (LPARAM) s); 
             SendMessage(hwndList, LB_SETITEMDATA, i, (LPARAM) i);  
         }
 		// Set to default or guessed encoding
-		SendMessage(hwndList, LB_SETCURSEL, m_iSelIndex, 0);
+		SendMessage(hwndList, LB_SETCURSEL, _getSelectionIndex(), 0);
 	}		
 
 	return 1;							// 1 == we did not call SetFocus()
@@ -145,8 +145,8 @@ BOOL XAP_Win32Dialog_Encoding::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lPara
 
 			case LBN_DBLCLK:
 				nItem = SendMessage(hWndCtrl, LB_GETCURSEL, 0, 0);
-				_setEncoding( m_ppEncodings[nItem] );
-				m_answer = a_OK;
+				_setEncoding( _getAllEncodings()[nItem] );
+				_setAnswer(a_OK);
 				EndDialog(hWnd,0);
 				return 1;
 
@@ -156,7 +156,7 @@ BOOL XAP_Win32Dialog_Encoding::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lPara
 		break;
 
 	case IDCANCEL:						// also XAP_RID_DIALOG_ENCODING_BTN_CANCEL
-		m_answer = a_CANCEL;
+		_setAnswer(a_CANCEL);
 		EndDialog(hWnd,0);
 		return 1;
 
@@ -165,12 +165,12 @@ BOOL XAP_Win32Dialog_Encoding::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lPara
 		nItem = SendMessage(hWndList, LB_GETCURSEL, 0, 0);
 		if( nItem != LB_ERR)
 		{
-			_setEncoding( m_ppEncodings[nItem] );
-			m_answer = a_OK;
+			_setEncoding( _getAllEncodings()[nItem] );
+			_setAnswer(a_OK);
 		}
 		else
 		{
-			m_answer = a_CANCEL;
+			_setAnswer(a_CANCEL);
 		}	
 		EndDialog(hWnd,0);
 		return 1;
