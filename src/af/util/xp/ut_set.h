@@ -45,7 +45,7 @@ public:
 	inline size_t size() { return m_rbtree.size(); }
 
 #ifdef DEBUG
-	inline void UT_Set::print() const { m_rbtree.print(); }
+	inline void print() const { m_rbtree.print(); }
 #endif
 
 private:

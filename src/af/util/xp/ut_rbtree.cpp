@@ -19,7 +19,7 @@
 
 #include "ut_rbtree.h"
 #include "ut_assert.h"
-#include <stdlib.h>
+#include <string.h>
 #ifdef DEBUG
 #include <stdio.h>
 #endif
@@ -39,14 +39,13 @@ struct UT_RBTree::Node
 	Node() : color(red), item(0), left(0), right(0), parent(0) {}
 
 #ifdef DEBUG
-	void
-	Node::print()
+	void print()
 	{
-		printf("============ @ %p\n", this);
+		printf("============ @ %p\n", static_cast<void*> (this));
 		printf("Color: %s\n", color == red ? "red" : "black");
 		printf("Value: %p\n", item);
-		printf("left: %p\n", left);
-		printf("Rigth: %p\n", right);
+		printf("left: %p\n", static_cast<void*> (left));
+		printf("Rigth: %p\n", static_cast<void*> (right));
 		if (left)
 			left->print();
 		if (right)
@@ -68,8 +67,8 @@ UT_RBTree::key_t UT_RBTree::Iterator::value() const
 // UT_RBTree
 ///////////////////////////////////////////
 UT_RBTree::UT_RBTree(UT_RBTree::comparator comp)
-	: m_comp(comp),
-	  m_pRoot(0),
+	: m_pRoot(0),
+	  m_comp(comp),
 	  m_nSize(0)
 {
 }

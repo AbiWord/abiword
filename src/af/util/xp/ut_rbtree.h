@@ -46,11 +46,11 @@ public:
 		}
 		inline Iterator& operator--()
 			{ m_pNode = m_pOwner->_prev(m_pNode); return *this; }
-		inline Iterator& operator--(int)
+		inline Iterator operator--(int)
 		{
 			Iterator tmp(*this);
 			m_pNode = m_pOwner->_prev(m_pNode);
-			return *this;
+			return tmp;
 		}
 		inline bool operator==(const Iterator& other)
 			{ return (m_pOwner == other.m_pOwner && m_pNode == other.m_pNode); }
