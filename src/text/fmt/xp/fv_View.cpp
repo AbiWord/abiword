@@ -7883,6 +7883,11 @@ UT_Error FV_View::_deleteBookmark(const char* szName, bool bSignal, PT_DocPositi
 {
 	if(!m_pDoc->isBookmarkUnique((const XML_Char *)szName))
 	{
+		// even though we will only send out a single explicit deleteSpan
+		// call, we need to find out where both of the markers are in the
+		// document, so that the caller can adjust any stored doc positions
+		// if necessary
+		
 		fp_BookmarkRun * pB1;
 		UT_uint32 bmBlockOffset[2];
 		fl_BlockLayout * pBlock[2];
@@ -7890,7 +7895,7 @@ UT_Error FV_View::_deleteBookmark(const char* szName, bool bSignal, PT_DocPositi
 		
 		fp_Run * pRun = m_pLayout->getFirstSection()->getFirstBlock()->getFirstRun();
 		
-		//find the two bookmark runs
+		//find the first of the two bookmarks
 		while(pRun)
 		{
 			if(pRun->getType()== FPRUN_BOOKMARK)
@@ -7908,8 +7913,8 @@ UT_Error FV_View::_deleteBookmark(const char* szName, bool bSignal, PT_DocPositi
 			pRun = pRun->getNext();
 		}
 		
-		UT_ASSERT(pRun && pRun->getType()==FPRUN_BOOKMARK && pBlock[0] || pBlock[1]);
-        if(!pRun || pRun->getType()!=FPRUN_BOOKMARK || !pBlock[0] || !pBlock[1])
+		UT_ASSERT(pRun && pRun->getType()==FPRUN_BOOKMARK && pBlock || pBlock);
+        if(!pRun || pRun->getType()!=FPRUN_BOOKMARK || !pBlock || !pBlock)
         	return false;
         	
 		// Signal PieceTable Change
@@ -7923,9 +7928,6 @@ UT_Error FV_View::_deleteBookmark(const char* szName, bool bSignal, PT_DocPositi
 		pos2 = pBlock[1]->getPosition(false) + bmBlockOffset[1];
 
 		m_pDoc->deleteSpan(pos1,pos1 + 1);
-		
-		// because of the previous delete, the position of the second bookmark has to be adjusted by 1
-		m_pDoc->deleteSpan(pos2 - 1,pos2);
 		
 		// Signal PieceTable Changes have finished
 		if(bSignal)
@@ -8091,7 +8093,7 @@ UT_Error FV_View::cmdInsertHyperlink(const char * szName)
 		UT_XML_strncpy(target + 1, target_len + 1, (XML_Char*)szName);
 	}
 
-	XML_Char target_l[]	 = "href";
+	XML_Char target_l[]	 = "xlink:href";
 	pAttr [0] = &target_l[0];
 	pAttr [1] = &target[0];
 	pAttr [2] = 0;
@@ -8129,7 +8131,6 @@ UT_Error FV_View::cmdInsertBookmark(const char * szName)
 {
 	// Signal PieceTable Change
 	_saveAndNotifyPieceTableChange();
-	
 	bool bRet;
 
 	PT_DocPosition posStart = getPoint();
@@ -8149,13 +8150,14 @@ UT_Error FV_View::cmdInsertBookmark(const char * szName)
 	}
 
 	posEnd++;
-
+		
 	if(!m_pDoc->isBookmarkUnique((XML_Char*)szName))
 	{
 		//bookmark already exists -- remove it and then reinsert
 		UT_DEBUGMSG(("fv_View::cmdInsertBookmark: bookmark \"%s\" exists - removing\n", szName));
-		_deleteBookmark((XML_Char*)szName, false, pos1, pos2);
+		_deleteBookmark((XML_Char*)szName, false,pos1,pos2);
 	}
+
 
 	// if the bookmark we just deleted was before the current insertion
 	// position we have to adjust our positions correspondingly

@@ -105,13 +105,6 @@ bool pt_PieceTable::_deleteObject(pf_Frag_Object * pfo,
 {
 	// unlink the object from the fragment list and try to
 	// coalesce the neighboring fragments.
-	if(pfo->getObjectType() == PTO_Bookmark)
-	{
-		po_Bookmark * pB = pfo->getBookmark();
-		UT_ASSERT(pB);
-		if(pB->getBookmarkType() == po_Bookmark::POBOOKMARK_END)
-			m_pDocument->removeBookmark(pB->getName());
-	}
 	
 	_unlinkFrag(pfo,ppfEnd,pfragOffsetEnd);
 	delete pfo;

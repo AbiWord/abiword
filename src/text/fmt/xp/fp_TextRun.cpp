@@ -80,7 +80,7 @@ fp_TextRun::fp_TextRun(fl_BlockLayout* pBL,
 	m_iLineWidth = 0;
 	m_bSquiggled = false;
 	m_iSpaceWidthBeforeJustification = JUSTIFICATION_NOT_USED;
-	m_iOldSpaceWidthBeforeJustification = JUSTIFICATION_NOT_USED;
+	//m_iOldSpaceWidthBeforeJustification = JUSTIFICATION_NOT_USED;
 	m_pField = NULL;
 	m_pLanguage = NULL;
 #ifdef BIDI_ENABLED
@@ -92,11 +92,13 @@ fp_TextRun::fp_TextRun(fl_BlockLayout* pBL,
 	{
 		lookupProperties();
 	}
-	m_iOldLen = 0;
-	m_pOldScreenFont = 0;
+	
+	m_bRecalcWidth = true;
+	//m_iOldLen = 0;
+	//m_pOldScreenFont = 0;
 #ifdef BIDI_ENABLED
-	m_pOldNext = NULL;
-	m_pOldPrev = NULL;
+	//m_pOldNext = NULL;
+	//m_pOldPrev = NULL;
 	m_bRefreshDrawBuffer = true;
 //in order to be able to print rtl runs on GUI that does not support this,
 //we will need to make a copy of the run and strrev it; this is a static
@@ -231,6 +233,7 @@ void fp_TextRun::lookupProperties(void)
 	pFont = pLayout->findFont(pSpanAP,pBlockAP,pSectionAP, FL_DocLayout::FIND_FONT_AT_SCREEN_RESOLUTION);
 	if (m_pScreenFont != pFont)
 	  {
+	  	m_bRecalcWidth = true;
 	    m_pScreenFont = pFont;
 	    m_iAscent = m_pG->getFontAscent(m_pScreenFont);	
 	    m_iDescent = m_pG->getFontDescent(m_pScreenFont);
@@ -240,6 +243,7 @@ void fp_TextRun::lookupProperties(void)
 	pFont = pLayout->findFont(pSpanAP,pBlockAP,pSectionAP, FL_DocLayout::FIND_FONT_AT_LAYOUT_RESOLUTION);
 	if (m_pLayoutFont != pFont)
 	  {
+	  	m_bRecalcWidth = true;
 	    m_pLayoutFont = pFont;
 	    m_iAscentLayoutUnits = m_pG->getFontAscent(m_pLayoutFont);	
 	    UT_ASSERT(m_iAscentLayoutUnits);
@@ -815,7 +819,7 @@ bool fp_TextRun::split(UT_uint32 iSplitOffset)
 	m_pNext = pNew;
 
 	m_iLen = iSplitOffset - m_iOffsetFirst;
-
+	m_bRecalcWidth = true;
 	m_pLine->insertRunAfter(pNew, this);
 
 #ifdef BIDI_ENABLED
@@ -1049,44 +1053,10 @@ bool fp_TextRun::recalcWidth(void)
 
 	return true;
 #else
-	bool bIsDirty = false;
 	
-#ifdef BIDI_ENABLED
-	xxx_UT_DEBUGMSG(("fp_TextRun::recalcWidth (0x%x): m_pOldPrev 0x%x, m_pOldNext 0x%x, m_iOldLen %d\n"
-	             "       m_pPrev 0x%x, m_pNext 0x%x, m_iLen %d\n"
-	             "       m_pOldScreenFont 0x%x, m_pScreenFont 0x%x\n",
-	             this,m_pOldPrev, m_pOldNext, m_iOldLen, m_pPrev, m_pNext, m_iLen, m_pOldScreenFont,m_pScreenFont));
-	if(s_bUseContextGlyphs)
+	if(m_bRecalcWidth)
 	{
-		bIsDirty = (m_iOldLen  != m_iLen
-				 || m_pOldNext != m_pNext
-				 || m_pOldPrev != m_pPrev
-				 || m_pOldScreenFont != m_pScreenFont
-				 ||	m_iOldSpaceWidthBeforeJustification != 	m_iSpaceWidthBeforeJustification);
-
-		// now check for change of context of the next run
-		if(!bIsDirty && m_pNext && m_pNext->getType() == FPRUN_TEXT)
-		{
-			bIsDirty = (static_cast<fp_TextRun*>(m_pNext)->_getOldNext() != m_pNext->getNext());
-		}
-	}
-	else
-#endif
-		bIsDirty = (m_iOldLen != m_iLen
-				 || m_pOldScreenFont != m_pScreenFont
-				 ||	m_iOldSpaceWidthBeforeJustification != 	m_iSpaceWidthBeforeJustification);
-		
-	if(bIsDirty)
-	{
-#ifdef BIDI_ENABLED
-		m_pOldPrev = m_pPrev;
-		m_pOldNext = m_pNext;
-		m_bRefreshDrawBuffer = true;
-#endif
-		m_iOldLen = m_iLen;
-		m_pOldScreenFont = m_pScreenFont;
-		m_iOldSpaceWidthBeforeJustification = 	m_iSpaceWidthBeforeJustification;
-		
+		m_bRecalcWidth = false;
 #ifdef BIDI_ENABLED		
 		UT_GrowBuf * pgbCharWidthsDisplay = m_pBL->getCharWidths()->getCharWidths();
 		UT_GrowBuf *pgbCharWidthsLayout  = m_pBL->getCharWidths()->getCharWidthsLayoutUnits();
@@ -2168,6 +2138,7 @@ void fp_TextRun::resetJustification()
 			// keep looping
 			i = findCharacter(i+1-m_iOffsetFirst, UCS_SPACE);
 		}
+		m_bRecalcWidth = true;
 	}
 	
 	m_iSpaceWidthBeforeJustification = JUSTIFICATION_NOT_USED;
@@ -2203,6 +2174,7 @@ void fp_TextRun::distributeJustificationAmongstSpaces(UT_sint32 iAmount, UT_uint
 			// keep looping
 			i = findCharacter(i+1-m_iOffsetFirst, UCS_SPACE);
 		}
+		m_bRecalcWidth = true;
 	}
 
 	UT_ASSERT(iAmount == 0);

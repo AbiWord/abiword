@@ -312,10 +312,11 @@ void fp_Run::insertIntoRunListBeforeThis(fp_Run& newRun)
 	{
 		m_pPrev->m_pNext = &newRun;
 		if(newRun.getType()!= FPRUN_HYPERLINK)
-		newRun.m_pHyperlink = m_pPrev->getHyperlink();
+		newRun.setHyperlink( m_pPrev->getHyperlink());
 	}
 	newRun.m_pPrev = m_pPrev;
 	m_pPrev = &newRun;
+
 }
 
 void fp_Run::insertIntoRunListAfterThis(fp_Run& newRun)
@@ -323,7 +324,7 @@ void fp_Run::insertIntoRunListAfterThis(fp_Run& newRun)
 	newRun.unlinkFromRunList();
 	newRun.m_pPrev = this;
 	if(newRun.getType()!= FPRUN_HYPERLINK)
-		newRun.m_pHyperlink = m_pHyperlink;
+		newRun.setHyperlink(m_pHyperlink);
 	if (m_pNext)
 	{
 		m_pNext->m_pPrev = &newRun;
@@ -363,6 +364,14 @@ void fp_Run::unlinkFromRunList()
 	m_pPrev = 0;
 }
 
+void	fp_Run::setHyperlink(fp_HyperlinkRun * pH)
+{
+	if(pH != m_pHyperlink)
+	{
+		m_pHyperlink = pH;
+		clearScreen();
+	}
+}
 // the parameter eClearScreen has a default value AUTO
 // we need this extra parameter be able to specify false when calling from
 // inside of the first pass of fp_Line::layout(), which sets
@@ -534,6 +543,11 @@ void fp_Run::draw(dg_DrawArgs* pDA)
 	
 	_draw(pDA);
 
+	if(m_pHyperlink && m_pG->queryProperties(GR_Graphics::DGP_SCREEN))
+	{
+		m_pG->drawLine(pDA->xoff, pDA->yoff + 2, pDA->xoff + m_iWidth, pDA->yoff + 2);
+	}
+	
 	m_bDirty = false;
 }
 
@@ -1764,7 +1778,7 @@ fp_HyperlinkRun::fp_HyperlinkRun( fl_BlockLayout* pBL,
 					
 	while(pAP->getNthAttribute(k++, pName, pTarget))
 	{
-		bFound = (0 == UT_XML_strnicmp(pName,"href",4));
+		bFound = (0 == UT_XML_strnicmp(pName,"xlink:href",10));
 		if(bFound)
 			break;
 	}

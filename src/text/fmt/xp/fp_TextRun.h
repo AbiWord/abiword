@@ -123,7 +123,7 @@ private:
 										 UT_uint32 offset,
 										 UT_UCSChar *prev,
 										 UT_UCSChar *next) const;
-	fp_Run * 			_getOldNext()const{return m_pOldNext;};
+	//fp_Run * 			_getOldNext()const{return m_pOldNext;};
 	void				_refreshDrawBuffer();
 #endif
 
@@ -192,16 +192,20 @@ protected:
 	// !!! the m_pLanguage member cannot be set to an arbitrary string pointer
 	// but only a pointer in the static table of the UT_Language class !!!
 	const XML_Char *			m_pLanguage;
-	
+
+#if 0	
 #ifdef BIDI_ENABLED
 	fp_Run* m_pOldPrev;
 	fp_Run* m_pOldNext;
-	bool	m_bRefreshDrawBuffer;
 #endif
 	UT_uint32 m_iOldLen;
 	GR_Font *m_pOldScreenFont;
 	UT_sint32 m_iOldSpaceWidthBeforeJustification;
-	
+#endif
+
+#ifdef BIDI_ENABLED
+	bool m_bRefreshDrawBuffer;
+#endif	
 };
 
 #endif /* FP_TEXTRUN_H */

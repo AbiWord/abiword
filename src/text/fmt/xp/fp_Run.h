@@ -158,7 +158,7 @@ public:
 	void					setLength(UT_uint32);
 	void					setNext(fp_Run*);
 	void					setPrev(fp_Run*);
-	void					setHyperlink(fp_HyperlinkRun * pH)	{m_pHyperlink = pH;}
+	void					setHyperlink(fp_HyperlinkRun * pH);
 	bool					isFirstRunOnLine(void) const;
 	bool					isLastRunOnLine(void) const;
 	bool					isOnlyRunOnLine(void) const;
@@ -265,6 +265,9 @@ protected:
 
 	GR_Font * m_pScreenFont;
 	GR_Font * m_pLayoutFont;
+	
+	bool	m_bRecalcWidth;
+
 //
 // Variables to draw underlines for all runs
 //
