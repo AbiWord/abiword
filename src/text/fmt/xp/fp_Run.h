@@ -50,24 +50,36 @@ struct fp_RunSplitInfo
 	UT_sint32 iOffset;
 };
 
-#define BREAK_AUTO			0
-#define BREAK_AVOID			1
-#define BREAK_ALWAYS		2
+// TODO The break type is not used. Is it put here looking forward,
+// TODO or is it left from some earlier experiments?
+enum FP_RUN_BREAK_TYPE
+{
+	BREAK_AUTO			= 0,
+	BREAK_AVOID			= 1,
+	BREAK_ALWAYS		= 2
+};
 
-#define FP_RUN_INSIDE      	1
-#define FP_RUN_JUSTAFTER   	2
-#define FP_RUN_NOT         	3
+// TODO 
+enum FP_RUN_RELATIVE_POINT_POSITION
+{
+	FP_RUN_INSIDE      	= 1,
+	FP_RUN_JUSTAFTER   	= 2,
+	FP_RUN_NOT         	= 3
+};
 
-#define FPRUN__FIRST__					1
-#define FPRUN_TEXT						1
-#define FPRUN_IMAGE						2
-#define FPRUN_TAB						3
-#define FPRUN_FORCEDLINEBREAK			4
-#define FPRUN_FORCEDCOLUMNBREAK			5
-#define FPRUN_FORCEDPAGEBREAK			6
-#define FPRUN_FIELD						7
-#define FPRUN_FMTMARK					8
-#define FPRUN__LAST__					8
+enum FP_RUN_TYPE
+{
+	FPRUN__FIRST__					= 1,
+	FPRUN_TEXT						= 1,
+	FPRUN_IMAGE						= 2,
+	FPRUN_TAB						= 3,
+	FPRUN_FORCEDLINEBREAK			= 4,
+	FPRUN_FORCEDCOLUMNBREAK			= 5,
+	FPRUN_FORCEDPAGEBREAK			= 6,
+	FPRUN_FIELD						= 7,
+	FPRUN_FMTMARK					= 8,
+	FPRUN__LAST__					= 8
+};
 
 /*
 	fp_Run represents a contiguous homogenous chunk on a single line.  
@@ -191,6 +203,10 @@ protected:
 	UT_uint32				m_iDescentLayoutUnits;
 	GR_Graphics*            m_pG;
 	UT_Bool					m_bDirty;		// run erased @ old coords, needs to be redrawn
+
+private:
+	fp_Run(const fp_Run&);			// no impl.
+	void operator=(const fp_Run&);	// no impl.
 };
 
 class fp_TabRun : public fp_Run
