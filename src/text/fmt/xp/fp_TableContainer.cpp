@@ -351,7 +351,7 @@ void fp_CellContainer::_getBrokenRect(fp_TableContainer * pBroke, fp_Page * &pPa
 	bRec = UT_Rect(iLeft,iTop,iRight-iLeft,iBot-iTop);
 }
 
-/*!
+/*! 
  * Returns true if the cell in a broken table overlaps the supplied clip Rect
  */
 bool fp_CellContainer::doesIntersectClip(fp_TableContainer * pBroke, UT_Rect * rClip)
@@ -553,6 +553,11 @@ void fp_CellContainer::_clear(fp_TableContainer * pBroke)
 	{
 		return;
 	}
+	if(pBroke && pBroke->getPage() && !pBroke->getPage()->isOnScreen())
+	{
+		return;
+	}
+
 	UT_ASSERT(pLayout->getContainerType () == FL_CONTAINER_TABLE);
 	if (pLayout->getContainerType () != FL_CONTAINER_TABLE) return;
 
@@ -933,6 +938,13 @@ void fp_CellContainer::drawLines(fp_TableContainer * pBroke,GR_Graphics * pG)
 	if(isInNestedTable())
 	{ 
 		bNested = true;
+	}
+	if(!bNested && pBroke && pBroke->getPage())
+	{
+		if(!pBroke->getPage()->isOnScreen())
+		{
+			return;
+		}
 	}
 // Lookup table properties to get the line thickness, etc.
 
@@ -3492,6 +3504,12 @@ void  fp_TableContainer::clearScreen(void)
 		return;
 	}
 	if(getPage()->getDocLayout()->isLayoutFilling())
+	{
+		return;
+	}
+	UT_sint32 yoff,xoff;
+	getPage()->getScreenOffsets(static_cast<fp_Container *>(this),xoff,yoff);
+	if(yoff > getPage()->getHeight())
 	{
 		return;
 	}

@@ -85,6 +85,25 @@ bool fp_Page::isEmpty(void) const
 	return false;
 }
 
+bool fp_Page::isOnScreen(void)
+{
+	if(!m_pView)
+	{
+	    return false;
+	}
+	UT_sint32 xoff,yoff;
+	m_pView->getPageScreenOffsets(this,xoff,yoff);
+	if(yoff+getHeight() < 0)
+	{
+		return false;
+	}
+	if(yoff > getHeight())
+	{
+		return false;
+	}
+	return true;
+}
+
 UT_sint32 fp_Page::getWidth(void) const
 {
 	return static_cast<UT_sint32>(m_iResolution * m_pageSize.Width(DIM_IN));

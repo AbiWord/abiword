@@ -5421,6 +5421,29 @@ void FV_View::getPageScreenOffsets(const fp_Page* pThePage, UT_sint32& xoff,
 	UT_uint32 y = getPageViewTopMargin();
 
 	const fp_Page* pPage = m_pLayout->getFirstPage();
+	fl_DocSectionLayout * pDSL = pPage->getOwningSection();
+//
+// Note this code assumes the page size is the same throughout the document.
+//
+	UT_sint32 iPage = m_pLayout->findPage(const_cast<fp_Page *>(pThePage));
+	UT_sint32 iDiff = pPage->getHeight() + getPageViewSep();
+	if(getViewMode() != VIEW_PRINT)
+	{
+		iDiff = iDiff - pDSL->getTopMargin() - pDSL->getBottomMargin();
+	}
+	if(iPage > 0)
+	{
+		iDiff = iDiff*iPage;
+	}
+	else
+	{
+		iDiff = 0;
+	}
+	y += iDiff;
+//
+// This code will work for different page size but it's slow for big docs
+//
+#if 0
 	while (pPage)
 	{
 		if (pPage == pThePage)
@@ -5435,7 +5458,7 @@ void FV_View::getPageScreenOffsets(const fp_Page* pThePage, UT_sint32& xoff,
 		}
 		pPage = pPage->getNext();
 	}
-
+#endif
 	yoff = y - m_yScrollOffset;
 	xoff = getPageViewLeftMargin() - m_xScrollOffset;
 }
@@ -5443,8 +5466,30 @@ void FV_View::getPageScreenOffsets(const fp_Page* pThePage, UT_sint32& xoff,
 void FV_View::getPageYOffset(fp_Page* pThePage, UT_sint32& yoff) const
 {
 	UT_uint32 y = getPageViewTopMargin();
-
+//
+// Note this code assumes the page size is the same throughout the document.
+//
+	UT_sint32 iPage = m_pLayout->findPage(pThePage);
 	fp_Page* pPage = m_pLayout->getFirstPage();
+	fl_DocSectionLayout * pDSL = pPage->getOwningSection();
+	UT_sint32 iDiff = pPage->getHeight() + getPageViewSep();
+	if(getViewMode() != VIEW_PRINT)
+	{
+		iDiff = iDiff - pDSL->getTopMargin() - pDSL->getBottomMargin();
+	}
+	if(iPage > 0)
+	{
+		iDiff = iDiff*iPage;
+	}
+	else
+	{
+		iDiff = 0;
+	}
+	y += iDiff;
+//
+// This code will work for different page size but it's slow for big docs
+//
+#if 0
 	while (pPage)
 	{
 		if (pPage == pThePage)
@@ -5452,7 +5497,6 @@ void FV_View::getPageYOffset(fp_Page* pThePage, UT_sint32& yoff) const
 			break;
 		}
 		y += pPage->getHeight() + getPageViewSep();
-		fl_DocSectionLayout * pDSL = pPage->getOwningSection();
 		if(getViewMode() != VIEW_PRINT)
 		{
 			y = y - pDSL->getTopMargin() - pDSL->getBottomMargin();
@@ -5460,7 +5504,7 @@ void FV_View::getPageYOffset(fp_Page* pThePage, UT_sint32& yoff) const
 
 		pPage = pPage->getNext();
 	}
-
+#endif
 	yoff = y;
 }
 

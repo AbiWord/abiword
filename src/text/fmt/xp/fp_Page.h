@@ -65,6 +65,7 @@ public:
 	UT_sint32			getColumnGap(void) const;
 	FL_DocLayout*		getDocLayout() const;
 	void				setView(FV_View*);
+    bool                isOnScreen(void);
 
 	inline fl_DocSectionLayout* getOwningSection(void) const { return m_pOwner; }
 

@@ -536,6 +536,14 @@ bool fp_VerticalContainer::insertContainerAfter(fp_Container*	pNewContainer, fp_
 */
 void fp_VerticalContainer::clearScreen(void)
 {
+	if(getPage() == NULL)
+	{
+		return;
+	}
+	if(!getPage()->isOnScreen())
+	{
+		return;
+	}
 	int count = countCons();
 	for (int i = 0; i<count; i++)
 	{
