@@ -27,6 +27,13 @@ RCSRCS=			Win32Main.rc
 
 PROGRAM=		$(BINDIR)/AbiWord.exe
 
+# Mingw provides libiconv, a darn good one (:
+ifneq ($(ABI_REQUIRE_PEER_ICONV),0)
+ABIICONV = Abi_libiconv
+else
+ABIICONV =
+endif
+
 ## TODO should /profile be on the following line ??  does this
 ## TODO enable linking with profile-libraries and thus bloat us.
 
@@ -39,7 +46,7 @@ ABI_LIBS=		kernel32 user32 gdi32 winspool comdlg32 advapi32 \
 
 LoadOrder=		AbiGr AbiFmt AbiPTbl AbiImpExp AbiXAp AbiWPAp \
 			AbiEv AbiUtil AbiImpExp AbiWordVer AbiSpell Abi_libwv fribidi \
-			Abi_libpopt Abi_libiconv Abi_libpng Abi_zlib
+			Abi_libpopt $(ABIICONV) Abi_libpng Abi_zlib
 
 ABI_APPLIBS=		$(LoadOrder) $(LoadOrder) $(LoadOrder)
 ABI_APPLIBDEP=		$(LoadOrder)
@@ -51,7 +58,7 @@ else
 
 ABI_LDFLAGS=		-nologo -subsystem:windows -incremental:no -machine:$(LINK_ARCH) -profile
 ABI_APPLIBS=		AbiWordVer AbiUtil AbiImpExp AbiPTbl AbiFmt AbiEv \
-					AbiXAp AbiGr AbiWPAp AbiSpell Abi_libpng Abi_zlib Abi_libiconv Abi_libwv \
+					AbiXAp AbiGr AbiWPAp AbiSpell Abi_libpng Abi_zlib $(ABIICONV) Abi_libwv \
 					Abi_libpopt
 
 ABI_APPLIBDEP=		$(ABI_APPLIBS)
