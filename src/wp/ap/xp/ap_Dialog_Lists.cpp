@@ -67,7 +67,7 @@ AP_Dialog_Lists::AP_Dialog_Lists(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id 
 	m_bStartSubList(0),
 	m_bResumeList(0),
 	m_bisCustomized(0),
-        m_bguiChanged(UT_FALSE),
+	m_bguiChanged(UT_FALSE),
 	m_paragraphPreview(0),
 	m_pListsPreview(0),
 	m_pFakeAuto(0)
@@ -77,6 +77,15 @@ AP_Dialog_Lists::AP_Dialog_Lists(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id 
 		m_pFakeLayout[i] = NULL;
 		m_pFakeSdh[i] = NULL;
 	}
+
+	m_WindowName[0] = '\0';
+	m_curListType[0] = '\0';
+	m_curListLabel[0] = '\0';
+	m_newListLabel[0] = '\0';
+	m_pszDelim[0] = '\0';
+	m_pszDecimal[0] = '\0';
+	m_pszFont[0] = '\0';
+
 }
 
 AP_Dialog_Lists::~AP_Dialog_Lists(void)
@@ -327,8 +336,8 @@ void  AP_Dialog_Lists::fillUncustomizedValues(void)
 	        m_iLevel = 1;
        }
        UT_XML_strncpy( (XML_Char *) m_pszDelim, 80, (const XML_Char *) "%L");
-       m_fAlign =  LIST_DEFAULT_INDENT *(float) m_iLevel;
-       m_fIndent = - LIST_DEFAULT_INDENT;
+       m_fAlign =  (float)(LIST_DEFAULT_INDENT * m_iLevel);
+       m_fIndent = (float)-LIST_DEFAULT_INDENT;
 
        if( m_newListType == NUMBERED_LIST)
        {   
@@ -715,11 +724,15 @@ AV_View * AP_Dialog_Lists::getAvView(void)
 //////////////////////////////////////////////////////////////////
 
 AP_Lists_preview::AP_Lists_preview(GR_Graphics * gc, AP_Dialog_Lists * pLists)
-	: XAP_Preview(gc)
+:	XAP_Preview(gc),
+	m_pLists(pLists),
+	m_fAlign(0.0f),
+	m_fIndent(0.0f),
+	m_iLine_height(0),
+	m_bFirst(UT_TRUE)
 {
-        m_pLists = pLists;
-	m_iLine_height = 0;
-	m_bFirst = UT_TRUE;
+	m_pszFont[0] = '\0';
+	m_iLine_pos[0] = 0;
 }
 
 AP_Lists_preview::~AP_Lists_preview()

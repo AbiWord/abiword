@@ -51,13 +51,13 @@ public:
 
 protected:
 
-	AP_Dialog_Lists *       m_pLists;
-        XML_Char                m_pszFont[80];
-	float                   m_fAlign;
-	float                   m_fIndent;
-	UT_sint32               m_iLine_pos[8];
-	UT_sint32               m_iLine_height;
-	UT_Bool                 m_bFirst;
+	AP_Dialog_Lists*	m_pLists;
+	XML_Char			m_pszFont[80];
+	float				m_fAlign;
+	float				m_fIndent;
+	UT_sint32			m_iLine_pos[8];
+	UT_sint32			m_iLine_height;
+	UT_Bool				m_bFirst;
 };
 		
 class AP_Dialog_Lists : public XAP_Dialog_Modeless
@@ -75,33 +75,33 @@ public:
 		a_CLOSE
 	} tAnswer;
 
-        AP_Dialog_Lists::tAnswer	 	getAnswer(void) const;
-        void                                    ConstructWindowName(void);
-        void                                    StartList(void);
-        void                                    StopList(void);
-        void                                    Apply(void);
-        void                                    fillDialogFromBlock(void);
-        void                                    PopulateDialogData(void);
-	void                                    fillFakeLabels(void);
-        UT_Bool                                 isLastOnLevel(void);
-	XML_Char *                              getListStyleString( UT_uint32 iListType);
-	UT_uint32                               decodeListType(char * listformat);
-	UT_sint32                               findVecItem(UT_Vector * v, char * key);
-	void                                    fillUncustomizedValues(void);
-	UT_uint32                               getID(void);
-        UT_uint32                               getStoredID(void) { return m_iID;}
-        fl_AutoNum *                            getAutoNum(void);
-	fl_BlockLayout *                        getBlock(void);
-	UT_uint32                               getTick(void);
-	void                                    setTick(UT_uint32 iTick);
-  	UT_Bool					setView(FV_View * view);
-  	FV_View * 				getView(void);
-  	AV_View * 				getAvView(void);
-	void					setActiveFrame(XAP_Frame *pFrame);
-	void                                    generateFakeLabels(void);
-        XML_Char *                              getListLabel(UT_sint32 itemNo);
-	virtual void 			event_PreviewAreaExposed();
-	virtual void 			_createPreviewFromGC(GR_Graphics * gc, UT_uint32 width, UT_uint32 height);
+	AP_Dialog_Lists::tAnswer	getAnswer(void) const;
+	void						ConstructWindowName(void);
+	void						StartList(void);
+	void						StopList(void);
+	void						Apply(void);
+	void						fillDialogFromBlock(void);
+	void						PopulateDialogData(void);
+	void						fillFakeLabels(void);
+	UT_Bool						isLastOnLevel(void);
+	XML_Char *					getListStyleString( UT_uint32 iListType);
+	UT_uint32					decodeListType(char * listformat);
+	UT_sint32					findVecItem(UT_Vector * v, char * key);
+	void						fillUncustomizedValues(void);
+	UT_uint32					getID(void);
+	UT_uint32					getStoredID(void) { return m_iID;}
+	fl_AutoNum *				getAutoNum(void);
+	fl_BlockLayout *			getBlock(void);
+	UT_uint32					getTick(void);
+	void						setTick(UT_uint32 iTick);
+	UT_Bool						setView(FV_View * view);
+	FV_View *					getView(void);
+	AV_View *					getAvView(void);
+	void						setActiveFrame(XAP_Frame *pFrame);
+	void						generateFakeLabels(void);
+	XML_Char *					getListLabel(UT_sint32 itemNo);
+	virtual void 				event_PreviewAreaExposed();
+	virtual void 				_createPreviewFromGC(GR_Graphics * gc, UT_uint32 width, UT_uint32 height);
 
 protected:
 	
