@@ -3831,16 +3831,21 @@ bool fl_BlockLayout::doclistener_insertBlock(const PX_ChangeRecord_Strux * pcrx,
 		pFirstNewRun = pFirstNewRun->getNext();
 	}
 
-	pLastRun = NULL;
-	if (pFirstNewRun && pFirstNewRun->getPrev())
+	if (pFirstNewRun)
 	{
-		// Break doubly-linked list of runs into two distinct lists.
-		// But remember the last Run in this block.
+	        if (pFirstNewRun->getPrev())
+	        {
+		        // Break doubly-linked list of runs into two distinct lists.
+	 	        // But remember the last Run in this block.
 
-		pLastRun = pFirstNewRun->getPrev();
-		pFirstNewRun->getPrev()->setNext(NULL);
-		pFirstNewRun->setPrev(NULL);
+		        pLastRun = pFirstNewRun->getPrev();
+		        pFirstNewRun->getPrev()->setNext(NULL);
+		        pFirstNewRun->setPrev(NULL);
+		}
+		else
+		        pLastRun = NULL;
 	}
+	// else the old value of pLastRun is what we want.
 
 	// pFirstNewRun can be NULL at this point.  It means that the
 	// entire set of runs in this block must remain with this block --
@@ -3852,7 +3857,7 @@ bool fl_BlockLayout::doclistener_insertBlock(const PX_ChangeRecord_Strux * pcrx,
 
 	// Split charwidths across the two blocks
 	UT_uint32 lenNew = m_gbCharWidths.getLength() - blockOffset;
-	if (lenNew > 0)
+	if (m_gbCharWidths.getLength() > blockOffset)
 	{
 		// NOTE: We do the length check on the outside for speed
 		// TODO [1] can we move info from the current to the new
