@@ -24,6 +24,8 @@
 #include <stdarg.h>
 #include <string.h>
 
+#include <MacTypes.h>
+
 #include "ut_debugmsg.h"
 
 void _UT_OutputMessage(char *s, ...)

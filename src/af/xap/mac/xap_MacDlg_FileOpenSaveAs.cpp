@@ -25,8 +25,8 @@
 #include "xap_MacDlg_FileOpenSaveAs.h"
 #include "xap_MacApp.h"
 #include "xap_MacFrame.h"
-#include "ie_imp.h"
-#include "ie_exp.h"
+//#include "ie_imp.h"
+//#include "ie_exp.h"
 
 /*****************************************************************/
 XAP_Dialog * XAP_MacDialog_FileOpenSaveAs::static_constructor(XAP_DialogFactory * pFactory,

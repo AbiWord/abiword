@@ -18,7 +18,7 @@
  * 02111-1307, USA.
  */
 /*
-	Platform: MacOS Classic
+	Platform: MacOS Classic & Carbon
 	
 	$Id$	
 */
@@ -33,6 +33,7 @@
 #include <Menus.h>
 #include <Devices.h>
 #include <Events.h>
+#include <AEInteraction.h>
 
 /* end */
 

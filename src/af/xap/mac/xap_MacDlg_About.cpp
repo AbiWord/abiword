@@ -30,10 +30,10 @@
 
 #include "xap_Dialog_Id.h"
 #include "xap_Dlg_About.h"
-#include "xap_MacDlg_All.h"
+//#include "xap_MacDlg_All.h"
 #include "xap_MacDlg_About.h"
 
-#include "abisource.xpm"
+//#include "abisource.xpm"
 
 
 /*****************************************************************/

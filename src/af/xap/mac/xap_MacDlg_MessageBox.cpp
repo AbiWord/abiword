@@ -25,7 +25,7 @@
 #include "xap_MacApp.h"
 #include "xap_MacFrame.h"
 
-#include "ap_Mac_ResID.h"
+//#include "ap_Mac_ResID.h"
 
 /*****************************************************************/
 XAP_Dialog * XAP_MacDialog_MessageBox::static_constructor(XAP_DialogFactory * pFactory,
