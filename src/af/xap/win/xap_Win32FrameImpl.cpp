@@ -36,6 +36,7 @@
 #include "xap_Prefs.h"
 #include "ie_impGraphic.h"
 #include "fv_View.h"
+#include "ap_Win32App.h"
 
 #ifdef _MSC_VER
 #pragma warning(disable: 4355)	// 'this' used in base member initializer list
@@ -156,7 +157,7 @@ bool XAP_Win32FrameImpl::_updateTitle(void)
 	sTmp += " - ";
 	sTmp += XAP_App::getApp()->getApplicationTitleForTitleBar();
 	
-	SetWindowText(m_hwndFrame, sTmp.c_str());
+	SetWindowText(m_hwndFrame, (AP_Win32App::s_fromUTF8ToAnsi(sTmp.c_str())).c_str());
 
 	return true;
 }
