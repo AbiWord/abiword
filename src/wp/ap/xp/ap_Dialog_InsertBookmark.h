@@ -33,15 +33,15 @@ class AP_Dialog_InsertBookmark : public XAP_Dialog_NonPersistent
 {
 public:
 	AP_Dialog_InsertBookmark(XAP_DialogFactory * pDlgFactory,
-			     XAP_Dialog_Id id);
+				 XAP_Dialog_Id id);
 	virtual ~AP_Dialog_InsertBookmark(void);
 
 	virtual void		 runModal(XAP_Frame * pFrame) = 0;
 
-	typedef enum { a_OK=0, a_CANCEL=1 } tAnswer;
+	typedef enum { a_OK=0, a_CANCEL=1, a_DELETE=2 } tAnswer;
 
-	tAnswer				getAnswer(void) const;
-	void            	setAnswer(tAnswer a);
+	tAnswer 			getAnswer(void) const;
+	void				setAnswer(tAnswer a);
 	UT_uint32			getExistingBookmarksCount() const;
 	const XML_Char *	getNthExistingBookmark(UT_uint32 n) const;
 	const XML_Char *	getBookmark() const;
