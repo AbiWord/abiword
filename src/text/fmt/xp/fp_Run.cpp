@@ -2782,7 +2782,15 @@ void fp_ImageRun::_draw(dg_DrawArgs* pDA)
 	UT_ASSERT(pDA->pG == getGR());
 
 	UT_sint32 xoff = 0, yoff = 0;
-	getLine()->getScreenOffsets(this, xoff, yoff);
+
+	if(getGR()->queryProperties(GR_Graphics::DGP_SCREEN))
+	{	
+		getLine()->getScreenOffsets(this, xoff, yoff);
+	}
+	else
+	{
+		getLine()->getOffsets(this, xoff, yoff);
+	}
 
 //
 // Sevior's infamous + 1....
