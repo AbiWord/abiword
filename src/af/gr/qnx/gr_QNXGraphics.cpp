@@ -207,7 +207,7 @@ if(inLineStyle == LINE_ON_OFF_DASH)
 if(inLineStyle == LINE_DOUBLE_DASH)
 	PgSetStrokeDash((const unsigned char *)"\10\4",2,0x10000);  //Same as gtk?
 
-PgSetStrokeWidth(inWidthPixels);
+PgSetStrokeWidth((int)inWidthPixels);
 PgSetStrokeCap(capstyle);
 PgSetStrokeJoin(joinstyle);
 }
@@ -275,7 +275,7 @@ void GR_QNXGraphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
 	PgDrawTextmx(pNChars, ipos, &pos, 0);
 	PgFlush();
 */
-	PgDrawText(utf8,len , &pos, 0 );
+	PgDrawText(utf8,len , &pos,0 );
 
 	free(utf8);
 	DRAW_END
@@ -294,7 +294,7 @@ UT_uint32 GR_QNXGraphics::measureUnRemappedChar(const UT_UCSChar c)
 {
 const char *font;
 uint16_t mychr = c;
-int size;
+//int size;
 PhRect_t rect;
 if(!m_pFont || !(font = m_pFont->getFont())) {
 	return 0;
@@ -620,8 +620,7 @@ void GR_QNXGraphics::invertRect(const UT_Rect* pRect)
 
 	old = PgSetDrawMode(Pg_DrawModeDSx);
 	PgSetFillColor(m_currentColor);
-	PgSetStrokeColor(m_currentColor);
-	PgDrawIRect(_UD(pRect->left), _UD(pRect->top), _UD(pRect->left)+_UD(pRect->width), _UD(pRect->top)+_UD(pRect->height), Pg_DRAW_FILL_STROKE);
+	PgDrawIRect(_UD(pRect->left), _UD(pRect->top), _UD(pRect->left)+_UD(pRect->width), _UD(pRect->top)+_UD(pRect->height), Pg_DRAW_FILL);
 	PgSetDrawMode(old);
 
 	DRAW_END
@@ -667,9 +666,8 @@ void GR_QNXGraphics::fillRect(const UT_RGBColor & c, UT_sint32 x, UT_sint32 y,
 	DRAW_START
 	
 	PgSetFillColor(newc);
-	PgSetStrokeColor(newc);
 //	printf("fillRect RGB %d,%d %d/%d w/ %08x\n", x, y, w, h, newc);
-	PgDrawIRect(x, y, x+w, y+h, Pg_DRAW_FILL_STROKE);
+	PgDrawIRect(x, y, x+w, y+h, Pg_DRAW_FILL);
 	DRAW_END
 }
 
@@ -1006,9 +1004,8 @@ void GR_QNXGraphics::fillRect(GR_Color3D c, UT_sint32 x, UT_sint32 y, UT_sint32 
 	GR_CaretDisabler caretDisabler(getCaret());
 	DRAW_START
 	PgSetFillColor(m_3dColors[c]);
-	PgSetStrokeColor(m_3dColors[c]);
 //	fprintf(stderr,"FillRect 3D %d,%d %d/%d w %08x\n", x, y, x+w, y+w, m_3dColors[c]);
-	PgDrawIRect(x, y, x+w, y+h, Pg_DRAW_FILL_STROKE);
+	PgDrawIRect(x, y, x+w, y+h, Pg_DRAW_FILL);
 	DRAW_END
 }
 
