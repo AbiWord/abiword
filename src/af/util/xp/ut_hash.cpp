@@ -133,7 +133,8 @@ UT_StringPtrMap::UT_StringPtrMap(size_t expected_cardinality)
 	n_deleted(0),
 	m_nSlots(_Recommended_hash_size(expected_cardinality)),
 	reorg_threshold(compute_reorg_threshold(m_nSlots)),
-	flags(0)
+	flags(0),
+	m_list(0)
 {
 	m_pMapping = new hash_slot[m_nSlots];
 }
@@ -142,8 +143,40 @@ UT_StringPtrMap::UT_StringPtrMap(size_t expected_cardinality)
 UT_StringPtrMap::~UT_StringPtrMap()
 {
 	DELETEPV(m_pMapping);
+	FREEP(m_list);
 }
 
+/* IMPORTANT: for use only with <char*> -> <char*> maps
+ */
+const XML_Char ** UT_StringPtrMap::list()
+{
+	if (!m_list)
+	{
+		m_list = reinterpret_cast<XML_Char **>(malloc (2 * (n_keys + 1) * sizeof (XML_Char *)));
+		if (m_list == 0)
+			return 0;
+
+		UT_uint32 index;
+
+		UT_Cursor c(this);
+
+		for (const char * value = reinterpret_cast<const char *>(c.first ());
+		     c.is_valid ();
+		     value = reinterpret_cast<const char *>(c.next ()))
+		{
+			const char * key = c.key().c_str ();
+
+			if (!key || !value)
+				continue;
+
+			m_list[index++] = static_cast<XML_Char *>(const_cast<char *>(key));
+			m_list[index++] = static_cast<XML_Char *>(const_cast<char *>(value));
+		}
+		m_list[index++] = NULL;
+		m_list[index  ] = NULL;
+	}
+	return const_cast<const XML_Char **>(m_list);
+}
 
 /*!
  * Find the value associated with the key \k
@@ -203,6 +236,8 @@ bool UT_StringPtrMap::insert(const char* key, const void* value)
 
 bool UT_StringPtrMap::insert(const UT_String& key, const void* value)
 {
+	FREEP(m_list);
+
 	size_t		slot = 0;
 	bool		key_found = false;
 	size_t		hashval = 0;
@@ -243,6 +278,8 @@ void UT_StringPtrMap::set(const char* key, const void* value)
 
 void UT_StringPtrMap::set(const UT_String& key, const void* value)
 {
+	FREEP(m_list);
+
 	size_t		slot = 0;
 	bool		key_found = false;
 	size_t		hashval = 0;
@@ -263,7 +300,7 @@ void UT_StringPtrMap::set(const UT_String& key, const void* value)
  * Return a UT_Vector of elements in the HashTable that you must
  * Later free with a call to delete
  */
-UT_Vector * UT_StringPtrMap::enumerate (void) const
+UT_Vector * UT_StringPtrMap::enumerate (bool strip_null_values) const
 {
 	UT_Vector * pVec = new UT_Vector (size());
 
@@ -275,7 +312,7 @@ UT_Vector * UT_StringPtrMap::enumerate (void) const
 	{
 		// we don't allow nulls since so much of our code depends on this
 		// behavior
-		if (val)
+		if (!strip_null_values || val)
 		{
 			pVec->addItem (static_cast<const void*>(val));
 		}
@@ -288,7 +325,7 @@ UT_Vector * UT_StringPtrMap::enumerate (void) const
  * Return a UT_Vector of pointers to our UT_String keys in the Hashtable
  * You must FREEP the UT_Vector* but not the keys
  */
-UT_Vector * UT_StringPtrMap::keys (void) const
+UT_Vector * UT_StringPtrMap::keys (bool strip_null_values) const
 {
 	UT_Vector * pVec = new UT_Vector (size());
 
@@ -298,7 +335,12 @@ UT_Vector * UT_StringPtrMap::keys (void) const
 
 	for (val = cursor.first(); cursor.is_valid(); val = cursor.next ())
 	{
-	  pVec->addItem (static_cast<const void*>(&cursor.key()));
+		// we don't allow nulls since so much of our code depends on this
+		// behavior
+		if (!strip_null_values || val)
+		{
+			pVec->addItem (static_cast<const void*>(&cursor.key()));
+		}
 	}
 
 	return pVec;
@@ -316,6 +358,8 @@ void UT_StringPtrMap::remove(const char* key, const void*)
 
 void UT_StringPtrMap::remove(const UT_String& key, const void*)
 {
+	FREEP(m_list);
+
 	size_t slot = 0, hashval;
 	bool bFound = false;
 	hash_slot* sl = find_slot(key, SM_LOOKUP, slot, bFound,
@@ -338,6 +382,8 @@ void UT_StringPtrMap::remove(const UT_String& key, const void*)
  */
 void UT_StringPtrMap::clear()
 {
+	FREEP(m_list);
+
 	hash_slot* slots = m_pMapping;
 	for (size_t x=0; x < m_nSlots; x++)
 	{

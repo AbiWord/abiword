@@ -265,6 +265,25 @@ public:
 							   pf_Frag * pf,
 							   pf_Frag_Strux *& pfs_ret, bool bImport);
 
+	static bool			StruxFmt (PD_Document * pDocument,
+								  const XML_Char ** attributes,
+								  pf_Frag_Strux * pfs, bool bImport);
+
+	static bool			Span (PD_Document * pDocument,
+							  const UT_UCSChar * ucs4_str, UT_uint32 length,
+							  pf_Frag * pf,
+							  bool bImport);
+
+	static bool			Fmt (PD_Document * pDocument,
+							 const XML_Char ** attributes,
+							 pf_Frag * pf,
+							 bool bImport);
+
+	static bool			Object (PD_Document * pDocument, PTObjectType pto,
+								const XML_Char ** attributes,
+								pf_Frag * pf,
+								bool bImport);
+
 private:
 	enum TableZone
 		{
@@ -388,6 +407,17 @@ private:
 
 	bool	append_col (); // use these via the above
 	bool	append_row ();
+
+public:
+	/* append/insert methods
+	 */
+	bool					Block (PTStruxType pts, const XML_Char ** attributes);
+	bool					BlockFormat (const XML_Char ** attributes);
+
+	bool					Inline (const UT_UCSChar * ucs4_str, UT_uint32 length);
+	bool					InlineFormat (const XML_Char ** attributes);
+
+	bool					Object (PTObjectType pto, const XML_Char ** attributes);
 };
 
 class ABI_EXPORT IE_Imp_TableHelperStack
@@ -401,14 +431,20 @@ private:
 	IE_Imp_TableHelper **	m_stack;
 
 	pf_Frag *				m_pfInsertionPoint;
-
+	pf_Frag_Strux *			m_pfsCurrent;
 public:
-	IE_Imp_TableHelperStack (PD_Document * pDocument, PT_DocPosition docPos);
+	inline bool				import () const { return (m_pfInsertionPoint == 0); }
+
 	IE_Imp_TableHelperStack (PD_Document * pDocument);
 
 	~IE_Imp_TableHelperStack ();
 
 	void					clear ();
+
+	/* by default this class will attempt to import a fresh document; if you are pasting
+	 * then you need to set the document position with setPasteInsertionPoint()
+	 */
+	void					setPasteInsertionPoint (PT_DocPosition docPos);
 
 private:
 	bool					push (const char * style);
@@ -424,6 +460,16 @@ public:
 	bool					tbodyStart (const char * style = 0);
 	bool					trStart (const char * style);
 	bool					tdStart (UT_uint32 rowspan, UT_uint32 colspan, const char * style);
+
+	/* append/insert methods
+	 */
+	bool					Block (PTStruxType pts, const XML_Char ** attributes);
+	bool					BlockFormat (const XML_Char ** attributes);
+
+	bool					Inline (const UT_UCSChar * ucs4_str, UT_uint32 length);
+	bool					InlineFormat (const XML_Char ** attributes);
+
+	bool					Object (PTObjectType pto, const XML_Char ** attributes);
 };
 
 #endif /* USE_IE_IMP_TABLEHELPER */

@@ -63,9 +63,13 @@ public:
 	void remove(const char* key, const void* /* ignored */);
 	void remove(const UT_String & key, const void* /* ignored */);
 	void clear();
+
+	/* IMPORTANT: list() is for use only with <XML_C/char*> maps
+	 */
+	const XML_Char ** list ();
 	
-	UT_Vector* enumerate() const;
-	UT_Vector* keys() const;
+	UT_Vector* enumerate(bool strip_null_values = true) const;
+	UT_Vector* keys(bool strip_null_values = true) const;
 	
 	// these are synonyms - for getting the # keys
 	inline size_t cardinality() const { return n_keys; }
@@ -160,6 +164,8 @@ private:
 	size_t m_nSlots;
 	size_t reorg_threshold;
 	size_t flags;
+
+	XML_Char ** m_list;
 };
 
 

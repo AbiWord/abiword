@@ -838,6 +838,11 @@ bool PD_Document::changeStruxForLists(PL_StruxDocHandle sdh, const char * pszPar
 	return m_pPieceTable->changeStruxForLists(sdh, pszParentID);
 }
 
+bool PD_Document::insertFmtMark(PTChangeFmt ptc, PT_DocPosition dpos, PP_AttrProp *p_AttrProp)
+{
+	return m_pPieceTable->insertFmtMark(ptc, dpos, p_AttrProp);
+}
+
 //////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////
 

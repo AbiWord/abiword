@@ -54,6 +54,9 @@ public:
 	bool	setProperties(const XML_Char ** properties);
 	bool	setProperties(const UT_Vector * pVector);
 
+	const XML_Char ** getAttributes () const { return m_pAttributes ? m_pAttributes->list () : 0; }
+	const XML_Char ** getProperties () const { return m_pProperties ? m_pProperties->list () : 0; }
+
 	bool	setAttribute(const XML_Char * szName, const XML_Char * szValue);
 	bool	setProperty(const XML_Char * szName, const XML_Char * szValue);
 

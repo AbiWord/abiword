@@ -233,6 +233,10 @@ public:
 	bool					changeStruxForLists(PL_StruxDocHandle sdh,
 												const char * pszParentID);
 
+	bool					insertFmtMark(PTChangeFmt ptc,
+										  PT_DocPosition dpos,
+										  PP_AttrProp *p_AttrProp);
+
 	// the append- and insertBeforeFrag methods are only available while importing
 	// the document.
 

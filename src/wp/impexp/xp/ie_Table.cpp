@@ -1734,6 +1734,108 @@ bool IE_Imp_TableHelper::Strux (PD_Document * pDocument, PTStruxType pts,
 	return okay;
 }
 
+bool IE_Imp_TableHelper::StruxFmt (PD_Document * pDocument,
+								   const XML_Char ** attributes,
+								   pf_Frag_Strux * pfs, bool bImport)
+{
+	if (!pfs || !attributes)
+		return false;
+
+	bool okay = true;
+
+	if (bImport)
+		{
+			okay = pDocument->appendStruxFmt (pfs, attributes);
+		}
+	else // paste
+		{
+			// TODO: PTC_AddFmt is just one of three options - is there a sane way to handle all three?
+
+			PP_AttrProp AP;
+			AP.setAttributes (attributes);
+
+			okay = pDocument->changeStruxFmt (PTC_AddFmt, pfs->getPos (), pfs->getPos (),
+											  AP.getAttributes (), AP.getProperties (), pfs->getStruxType ());
+		}
+	return okay;
+}
+
+bool IE_Imp_TableHelper::Span (PD_Document * pDocument,
+							   const UT_UCSChar * ucs4_str, UT_uint32 length,
+							   pf_Frag * pf,
+							   bool bImport)
+{
+	bool okay = true;
+
+	if (bImport)
+		{
+			if (pf) // insert
+				{
+					okay = pDocument->insertSpanBeforeFrag (pf, ucs4_str, length);
+				}
+			else // append
+				{
+					okay = pDocument->appendSpan (ucs4_str, length);
+				}
+		}
+	else // paste
+		{
+			okay = pDocument->insertSpan (pf->getPos (), ucs4_str, length);
+		}
+	return okay;
+}
+
+bool IE_Imp_TableHelper::Fmt (PD_Document * pDocument,
+							  const XML_Char ** attributes,
+							  pf_Frag * pf,
+							  bool bImport)
+{
+	if (!attributes)
+		return false;
+
+	bool okay = true;
+
+	if (bImport)
+		{
+			okay = pDocument->appendFmt (attributes);
+		}
+	else // paste
+		{
+			// TODO: PTC_AddFmt is just one of three options - is there a sane way to handle all three?
+
+			PP_AttrProp AP;
+			AP.setAttributes (attributes);
+
+			okay = pDocument->insertFmtMark (PTC_AddFmt, pf->getPos (), &AP);
+		}
+	return okay;
+}
+
+bool IE_Imp_TableHelper::Object (PD_Document * pDocument, PTObjectType pto,
+								 const XML_Char ** attributes,
+								 pf_Frag * pf,
+								 bool bImport)
+{
+	bool okay = true;
+
+	if (bImport)
+		{
+			if (pf) // insert
+				{
+					okay = pDocument->insertObjectBeforeFrag (pf, pto, attributes);
+				}
+			else // append
+				{
+					okay = pDocument->appendObject (pto, attributes);
+				}
+		}
+	else // paste
+		{
+			okay = pDocument->insertObject (pf->getPos (), pto, attributes, 0); // TODO: properties ??
+		}
+	return okay;
+}
+
 IE_Imp_TableHelper::CellHelper::CellHelper () :
 	m_style(""),
 	m_pfsCell(0),
@@ -2363,14 +2465,34 @@ appendTableCell ()
 }
 #endif
 
-IE_Imp_TableHelperStack::IE_Imp_TableHelperStack (PD_Document * pDocument, PT_DocPosition docPos) :
-	m_pDocument(pDocument),
-	m_count(0),
-	m_max(0),
-	m_stack(0),
-	m_pfInsertionPoint(pDocument->getFragFromPosition (docPos)) // paste-mode
+bool IE_Imp_TableHelper::Block (PTStruxType pts, const XML_Char ** attributes)
 {
-	// 
+	// TODO
+	return true;
+}
+
+bool IE_Imp_TableHelper::BlockFormat (const XML_Char ** attributes)
+{
+	// TODO
+	return true;
+}
+
+bool IE_Imp_TableHelper::Inline (const UT_UCSChar * ucs4_str, UT_uint32 length)
+{
+	// TODO
+	return true;
+}
+
+bool IE_Imp_TableHelper::InlineFormat (const XML_Char ** attributes)
+{
+	// TODO
+	return true;
+}
+
+bool IE_Imp_TableHelper::Object (PTObjectType pto, const XML_Char ** attributes)
+{
+	// TODO
+	return true;
 }
 
 IE_Imp_TableHelperStack::IE_Imp_TableHelperStack (PD_Document * pDocument) :
@@ -2398,6 +2520,11 @@ void IE_Imp_TableHelperStack::clear ()
 		delete m_stack[i];
 
 	m_count = 0;
+}
+
+void IE_Imp_TableHelperStack::setPasteInsertionPoint (PT_DocPosition docPos)
+{
+	m_pfInsertionPoint = m_pDocument->getFragFromPosition (docPos); // paste-mode
 }
 
 bool IE_Imp_TableHelperStack::push (const char * style)
@@ -2515,6 +2642,53 @@ bool IE_Imp_TableHelperStack::tdStart (UT_uint32 rowspan, UT_uint32 colspan, con
 		return false;
 
 	return th->tdStart (rowspan, colspan, style);
+}
+
+bool IE_Imp_TableHelperStack::Block (PTStruxType pts, const XML_Char ** attributes)
+{
+	IE_Imp_TableHelper * th = top ();
+	if (th)
+		return th->Block (pts, attributes);
+
+	m_pfsCurrent = 0;
+
+	return IE_Imp_TableHelper::Strux (m_pDocument, pts, attributes, m_pfInsertionPoint, m_pfsCurrent, import ());
+}
+
+bool IE_Imp_TableHelperStack::BlockFormat (const XML_Char ** attributes)
+{
+	IE_Imp_TableHelper * th = top ();
+	if (th)
+		return th->BlockFormat (attributes);
+
+	return IE_Imp_TableHelper::StruxFmt (m_pDocument, attributes, m_pfsCurrent, import ());
+}
+
+bool IE_Imp_TableHelperStack::Inline (const UT_UCSChar * ucs4_str, UT_uint32 length)
+{
+	IE_Imp_TableHelper * th = top ();
+	if (th)
+		return th->Inline (ucs4_str, length);
+
+	return IE_Imp_TableHelper::Span (m_pDocument, ucs4_str, length, m_pfInsertionPoint, import ());
+}
+
+bool IE_Imp_TableHelperStack::InlineFormat (const XML_Char ** attributes)
+{
+	IE_Imp_TableHelper * th = top ();
+	if (th)
+		return th->InlineFormat (attributes);
+
+	return IE_Imp_TableHelper::Fmt (m_pDocument, attributes, m_pfInsertionPoint, import ());
+}
+
+bool IE_Imp_TableHelperStack::Object (PTObjectType pto, const XML_Char ** attributes)
+{
+	IE_Imp_TableHelper * th = top ();
+	if (th)
+		return th->Object (pto, attributes);
+
+	return IE_Imp_TableHelper::Object (m_pDocument, pto, attributes, m_pfInsertionPoint, import ());
 }
 
 #endif /* USE_IE_IMP_TABLEHELPER */
