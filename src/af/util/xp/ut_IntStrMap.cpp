@@ -724,8 +724,9 @@ bool UT_GenericUTF8Hash::grow ()
 	return true;
 }
 
-UT_UTF8Hash::UT_UTF8Hash () :
-	UT_GenericUTF8Hash(32)
+UT_UTF8Hash::UT_UTF8Hash (bool bStripEmptyValues) :
+	UT_GenericUTF8Hash(32),
+	m_bStripEmptyValues(bStripEmptyValues)
 {
 }
 
@@ -746,6 +747,13 @@ bool UT_UTF8Hash::pair (UT_uint32 index, const UT_UTF8String *& key, const UT_UT
 
 bool UT_UTF8Hash::ins (const UT_UTF8String & key, const UT_UTF8String & value)
 {
+	if (m_bStripEmptyValues)
+		if (value.byteLength () == 0)
+			{
+				del (key);
+				return true;
+			}
+
 	UT_UTF8String * utf8_value = 0;
 	UT_TRY
 		{
@@ -764,6 +772,13 @@ bool UT_UTF8Hash::ins (const char * key, const char * value)
 {
 	if (value == 0)
 		return false;
+
+	if (m_bStripEmptyValues)
+		if (*value == 0)
+			{
+				del (key);
+				return true;
+			}
 
 	UT_UTF8String utf8_key(key);
 
@@ -794,6 +809,13 @@ bool UT_UTF8Hash::ins (const char ** attrs)
 			const char * value = *attrs++;
 
 			if (value == 0) continue;
+
+			if (m_bStripEmptyValues)
+				if (*value == 0)
+					{
+						del (utf8_key);
+						continue;
+					}
 
 			UT_UTF8String * utf8_value = 0;
 			UT_TRY
@@ -1109,4 +1131,32 @@ void UT_UTF8Hash::parse_attributes (const char * attributes)
 
 			ins (name, value);
 		}
+}
+
+bool operator== (const UT_UTF8Hash & lhs, const UT_UTF8Hash & rhs)
+{
+	if (lhs.count () != rhs.count ())
+		return false;
+
+	const UT_UTF8String * lhs_key   = 0;
+	const UT_UTF8String * lhs_value = 0;
+	const UT_UTF8String * rhs_key   = 0;
+	const UT_UTF8String * rhs_value = 0;
+
+	bool equal = true;
+
+	UT_uint32 count = lhs.count ();
+
+	for (UT_uint32 i = 0; i < count; i++)
+		{
+			lhs.pair (i, lhs_key, lhs_value);
+			rhs.pair (i, rhs_key, rhs_value);
+
+			if ((*lhs_key != *rhs_key) || (*lhs_value != *rhs_value))
+				{
+					equal = false;
+					break;
+				}
+		}
+	return equal;
 }

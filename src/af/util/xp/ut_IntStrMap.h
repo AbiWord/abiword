@@ -253,8 +253,10 @@ private:
 
 class ABI_EXPORT UT_UTF8Hash : public UT_GenericUTF8Hash
 {
+private:
+	bool m_bStripEmptyValues;
 public:
-	UT_UTF8Hash ();
+	UT_UTF8Hash (bool bStripEmptyValues = false);
 
 	~UT_UTF8Hash ();
 
@@ -306,5 +308,7 @@ public:
 		return static_cast<const UT_UTF8String *>(UT_GenericUTF8Hash::lookup (key));
 	}
 };
+
+ABI_EXPORT bool operator==(const UT_UTF8Hash & lhs, const UT_UTF8Hash & rhs);
 
 #endif /* ! UT_INTSTRMAP_H */
