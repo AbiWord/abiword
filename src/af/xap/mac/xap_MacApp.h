@@ -53,6 +53,7 @@ public:
 	virtual const char *					getUserPrivateDirectory(void);
 	XAP_MacFontManager * 					getFontManager (void)
 											{return m_pMacFontManager; };
+        virtual UT_sint32					makeDirectory(const char * szPath, const UT_sint32 mode ) const;
 
    	void run ();
    	void terminate ()		{ m_finished = true; };		// simply set the finished flag to true

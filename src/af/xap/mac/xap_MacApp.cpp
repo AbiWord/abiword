@@ -42,6 +42,7 @@
 
 /* end */
 
+#include "ut_string.h"
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
 #include "ut_MacFiles.h"
@@ -100,6 +101,15 @@ bool XAP_MacApp::initialize(void)
 void XAP_MacApp::reallyExit(void)
 {
 	ExitToShell();
+}
+
+UT_sint32 XAP_MacApp::makeDirectory(const char * szPath, const UT_sint32 mode ) const
+{ 
+        /* FIXME: make this return something real.
+	   The Unix version looks like this:
+	      return mkdir(szPath, mode); 
+	*/
+        return 0;
 }
 
 XAP_DialogFactory * XAP_MacApp::getDialogFactory(void)
