@@ -1581,17 +1581,28 @@ UT_Bool _helpLocalizeAndOpenURL(AV_View* pAV_View, UT_Bool bLocal, const char* p
 
 	const char * abiSuiteLibDir = pApp->getAbiSuiteLibDir();
 	const XML_Char * abiSuiteLocString = NULL;
-	char * helpURL = (char *)malloc(512);
-	pPrefs->getPrefsValue(AP_PREF_KEY_StringSet, &abiSuiteLocString);
+	char *helpURL, *tmpURL;
+
+	helpURL = tmpURL = NULL;
+	pPrefs->getPrefsValue((XML_Char*)AP_PREF_KEY_StringSet, &abiSuiteLocString);
+
 	if (bLocal)
 	{
-		UT_ASSERT(strlen(abiSuiteLibDir) + strlen(pathBeforeLang) + strlen(abiSuiteLocString) + strlen(pathAfterLang) < 509);
-		helpURL = UT_catPathname(UT_catPathname(UT_catPathname(abiSuiteLibDir, pathBeforeLang), abiSuiteLocString), pathAfterLang);
+		tmpURL = helpURL = UT_catPathname("file://", abiSuiteLibDir);
+		helpURL = UT_catPathname(helpURL, pathBeforeLang);
+		FREEP(tmpURL);
+		tmpURL = helpURL;
+		helpURL = UT_catPathname(helpURL, abiSuiteLocString);
+		FREEP(tmpURL);
+		tmpURL = helpURL;
+		helpURL = UT_catPathname(helpURL, pathAfterLang);
+		FREEP(tmpURL);
 	}
-	else
-	{
-		UT_ASSERT(strlen(pathBeforeLang) + strlen(abiSuiteLocString) + strlen(pathAfterLang) < 510);
-		helpURL = UT_catPathname(UT_catPathname(pathBeforeLang, abiSuiteLocString), pathAfterLang);
+	else {
+		//TODO: No one uses this, so what kind of prefix should it have?
+		tmpURL = helpURL = UT_catPathname(pathBeforeLang, abiSuiteLocString);
+		helpURL = UT_catPathname(helpURL, pathAfterLang);
+		FREEP(tmpURL);
 	}
 
 	UT_Bool bRetBuf = _helpOpenURL(pAV_View, helpURL);
