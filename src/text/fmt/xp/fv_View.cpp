@@ -639,6 +639,8 @@ void FV_View::moveInsPtTo(FV_DocPos dp)
 		_fixInsertionPointCoords();
 		_drawInsertionPoint();
 	}
+
+	notifyListeners(AV_CHG_MOTION);
 }
 
 void FV_View::cmdCharMotion(UT_Bool bForward, UT_uint32 count)
