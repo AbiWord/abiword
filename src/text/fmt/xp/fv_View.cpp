@@ -3188,14 +3188,15 @@ void FV_View::cmdCopy(void)
 		UT_Bool bRes = pCurBlock->getBlockBuf(&pgb);
 		UT_ASSERT(bRes);
 		UT_sint32 iBlockOffset = pCurBlock->getPosition();
-		
-		const UT_UCSChar* pSpan = pgb.getPointer(0);
+
+		// pSpan is unused and bothers my compiler.
+		//const UT_UCSChar* pSpan = pgb.getPointer(0);
 		UT_uint32 iBlockLength = pgb.getLength();
 
 		UT_uint32 iBlockPos1;
 		UT_uint32 iBlockPos2;
 
-		if (iPos1 < iBlockOffset)
+		if (iPos1 < (UT_uint32) iBlockOffset)
 		{
 			iBlockPos1 = 0;
 		}
@@ -3230,7 +3231,7 @@ void FV_View::cmdCopy(void)
 	
 	char* pData = new char[iTotalDataLength];
 	UT_ASSERT(pData); // TODO check outofmem
-	int iDataLen = 0;
+	UT_uint32 iDataLen = 0;
 	
 	bDone = UT_FALSE;
 	pCurBlock = pBlock1;
@@ -3247,7 +3248,7 @@ void FV_View::cmdCopy(void)
 		UT_uint32 iBlockPos1;
 		UT_uint32 iBlockPos2;
 
-		if (iPos1 < iBlockOffset)
+		if (iPos1 < (UT_uint32) iBlockOffset)
 		{
 			iBlockPos1 = 0;
 		}
@@ -3278,7 +3279,7 @@ void FV_View::cmdCopy(void)
 		// now add the CRLF
 		pData[iDataLen++] = 13;
 		pData[iDataLen++] = 10;
-
+		
 		if (pCurBlock == pBlock2)
 		{
 			break;
