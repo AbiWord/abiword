@@ -76,10 +76,10 @@ const guchar * XAP_UnixGnomePrintGraphics::s_map_page_size (const char * abi)
 	
 	for (gsize i = 0; i < NrElements(paperMap); i++)
 		if (paperMap[i].abi && !g_ascii_strcasecmp (abi, paperMap [i].abi))
-			return static_cast<const guchar *>(paperMap[i].gp_id);
+			return reinterpret_cast<const guchar *>(paperMap[i].gp_id);
 
 	// default to whatever was passed in
-	return static_cast<const guchar *>(abi);
+	return reinterpret_cast<const guchar *>(abi);
 }
 
 GnomePrintConfig * XAP_UnixGnomePrintGraphics::s_setup_config (XAP_Frame * pFrame)
@@ -89,24 +89,24 @@ GnomePrintConfig * XAP_UnixGnomePrintGraphics::s_setup_config (XAP_Frame * pFram
 	
 	// TODO: be smarter, damnit!
 
-	gnome_print_config_set (cfg, static_cast<guchar *>(GNOME_PRINT_KEY_PAPER_SIZE),
-							static_cast<guchar *>(XAP_UnixGnomePrintGraphics::s_map_page_size (pView->getPageSize().getPredefinedName ())));
-	gnome_print_config_set (cfg, static_cast<guchar *>(GNOME_PRINT_KEY_PAGE_ORIENTATION) ,
-							pView->getPageSize().isPortrait () ? static_cast<guchar *>("R0") : static_cast<guchar *>("R90"));
+	gnome_print_config_set (cfg, reinterpret_cast<const guchar *>(GNOME_PRINT_KEY_PAPER_SIZE),
+							XAP_UnixGnomePrintGraphics::s_map_page_size (pView->getPageSize().getPredefinedName ()));
+	gnome_print_config_set (cfg, reinterpret_cast<const guchar *>(GNOME_PRINT_KEY_PAGE_ORIENTATION) ,
+							pView->getPageSize().isPortrait () ? reinterpret_cast<const guchar *>("R0") : reinterpret_cast<const guchar *>("R90"));
 
 	if (!strcmp (pView->getPageSize().getPredefinedName (), "Custom")) {
-		const GnomePrintUnit * to  = gnome_print_unit_get_by_abbreviation (static_cast<const guchar*>("Pt"));
-		const GnomePrintUnit *from = gnome_print_unit_get_by_abbreviation (static_cast<const guchar*>("mm"));
+		const GnomePrintUnit * to  = gnome_print_unit_get_by_abbreviation (reinterpret_cast<const guchar*>("Pt"));
+		const GnomePrintUnit *from = gnome_print_unit_get_by_abbreviation (reinterpret_cast<const guchar*>("mm"));
 		
 		double width, height;
 		width = pView->getPageSize().Width (DIM_MM);
 		height = pView->getPageSize().Height (DIM_MM);
 
 		gnome_print_convert_distance (&width, from, to);
-		gnome_print_config_set_length (cfg, static_cast<const guchar*>(GNOME_PRINT_KEY_PAPER_WIDTH), width, from);
+		gnome_print_config_set_length (cfg, reinterpret_cast<const guchar*>(GNOME_PRINT_KEY_PAPER_WIDTH), width, from);
 		
 		gnome_print_convert_distance (&height, from, to);
-		gnome_print_config_set_length (cfg, static_cast<const guchar*>(GNOME_PRINT_KEY_PAPER_HEIGHT), height, from);
+		gnome_print_config_set_length (cfg, reinterpret_cast<const guchar*>(GNOME_PRINT_KEY_PAPER_HEIGHT), height, from);
 	}
 
 	return cfg;
@@ -122,12 +122,12 @@ XAP_UnixGnomePrintGraphics::XAP_UnixGnomePrintGraphics(GnomePrintJob *gpm, bool 
 	GnomePrintConfig * cfg = gnome_print_job_get_config (gpm);
 
 	const GnomePrintUnit *from;
-	const GnomePrintUnit *to = gnome_print_unit_get_by_abbreviation (static_cast<const guchar*>("Pt"));
+	const GnomePrintUnit *to = gnome_print_unit_get_by_abbreviation (reinterpret_cast<const guchar*>("Pt"));
 
-	gnome_print_config_get_length (cfg, static_cast<const guchar*>(GNOME_PRINT_KEY_PAPER_WIDTH), &m_width, &from);
+	gnome_print_config_get_length (cfg, reinterpret_cast<const guchar*>(GNOME_PRINT_KEY_PAPER_WIDTH), &m_width, &from);
 	gnome_print_convert_distance (&m_width, from, to);
 
-	gnome_print_config_get_length (cfg, static_cast<const guchar*>(GNOME_PRINT_KEY_PAPER_HEIGHT), &m_height, &from);
+	gnome_print_config_get_length (cfg, reinterpret_cast<const guchar*>(GNOME_PRINT_KEY_PAPER_HEIGHT), &m_height, &from);
 	gnome_print_convert_distance (&m_height, from, to);
 
 	m_bIsPreview     = isPreview;
@@ -164,8 +164,8 @@ GnomeFont * XAP_UnixGnomePrintGraphics::_allocGnomeFont(PSFont* pFont)
 	XAP_UnixFont *uf          = pFont->getUnixFont();
 	XAP_UnixFont::style style = uf->getStyle();
 	
-	return gnome_font_find_closest_from_weight_slant(static_cast<const guchar *>(uf->getName()), getGnomeFontWeight(style), 
-													 isItalic(style), static_cast<double>(pFont->getSize()));
+	return gnome_font_find_closest_from_weight_slant(reinterpret_cast<const guchar *>(uf->getName()), getGnomeFontWeight(style), 
+													 isItalic(style), (double)(pFont->getSize()));
 }
 
 XAP_UnixGnomePrintGraphics::~XAP_UnixGnomePrintGraphics()
@@ -176,7 +176,7 @@ XAP_UnixGnomePrintGraphics::~XAP_UnixGnomePrintGraphics()
 
 UT_uint32 XAP_UnixGnomePrintGraphics::measureUnRemappedChar(const UT_UCSChar c)
 {
-	return static_cast<UT_uint32>(m_pCurrentPSFont->getUnixFont()->measureUnRemappedChar(c, m_pCurrentPSFont->getSize()) * getResolution() / getDeviceResolution());
+	return (UT_uint32)(m_pCurrentPSFont->getUnixFont()->measureUnRemappedChar(c, m_pCurrentPSFont->getSize()) * getResolution() / getDeviceResolution());
 }
 
 void XAP_UnixGnomePrintGraphics::drawGlyph (UT_uint32 Char, UT_sint32 xoff, UT_sint32 yoff)
@@ -208,7 +208,7 @@ void XAP_UnixGnomePrintGraphics::drawChars(const UT_UCSChar* pChars,
 		// short circuit if no character widths given. at least fields use this
 		UT_UTF8String utf8 (pChars + iCharOffset, iLength);
 		gnome_print_moveto (m_gpc, tdu (xoff), yoff);
-		gnome_print_show_sized (m_gpc, static_cast<const guchar *>(utf8.utf8_str()), utf8.byteLength());
+		gnome_print_show_sized (m_gpc, reinterpret_cast<const guchar *>(utf8.utf8_str()), utf8.byteLength());
 		return;
 	}
 
@@ -226,7 +226,7 @@ void XAP_UnixGnomePrintGraphics::drawChars(const UT_UCSChar* pChars,
 		if (UT_UCS4_isspace (ch)) { // not sure if this needs to be a UCS4 space test or just an ASCII space test...
 			if (!last_was_space && !utf8.empty()) { // draw non-space chars at every flush
 				gnome_print_moveto (m_gpc, tdu (xoff + prevAdvance), yoff);
-				gnome_print_show_sized (m_gpc, static_cast<const guchar *>(utf8.utf8_str()), utf8.byteLength());
+				gnome_print_show_sized (m_gpc, reinterpret_cast<const guchar *>(utf8.utf8_str()), utf8.byteLength());
 				utf8.clear ();
 			} else
 				last_was_space = true;		   
@@ -240,7 +240,7 @@ void XAP_UnixGnomePrintGraphics::drawChars(const UT_UCSChar* pChars,
 	// chars remain - flush buffer
 	if (!utf8.empty ()) {
 		gnome_print_moveto (m_gpc, tdu (xoff + prevAdvance), yoff);
-		gnome_print_show_sized (m_gpc, static_cast<const guchar *>(utf8.utf8_str()), utf8.byteLength());
+		gnome_print_show_sized (m_gpc, reinterpret_cast<const guchar *>(utf8.utf8_str()), utf8.byteLength());
 	}
 
 	// pop the graphics state
@@ -444,7 +444,7 @@ bool XAP_UnixGnomePrintGraphics::_startPage(const char * szPageLabel)
 	if (!m_gpm)
 		return true ;
 	
-	gnome_print_beginpage(m_gpc, static_cast<const guchar *>(szPageLabel));
+	gnome_print_beginpage(m_gpc, reinterpret_cast<const guchar *>(szPageLabel));
 	return true;
 }
 
@@ -473,7 +473,7 @@ bool XAP_UnixGnomePrintGraphics::_endDocument(void)
 		{
 			const XAP_StringSet * pSS = XAP_App::getApp()->getStringSet();
 			GtkWidget * preview = gnome_print_job_preview_new (m_gpm, 
-															   static_cast<const guchar *>(pSS->getValue(XAP_STRING_ID_DLG_UP_PrintPreviewTitle)));
+															   reinterpret_cast<const guchar *>(pSS->getValue(XAP_STRING_ID_DLG_UP_PrintPreviewTitle)));
 			gtk_widget_show(GTK_WIDGET(preview));
 		}
 	
