@@ -84,10 +84,10 @@ GladeXML * abiDialogNewFromXML(const char * glade_file);
 void abiDialogSetTitle(GtkWidget * dlg, const char * title, ...);
 
 void localizeLabel(GtkWidget * widget, const XAP_StringSet * pSS, XAP_String_Id id);
-void localizeButton(GtkWidget * widget, const XAP_StringSet * pSS, XAP_String_Id id);
-void localizeButtonUnderline(GtkWidget * widget, const XAP_StringSet * pSS, 
-							 XAP_String_Id id);
+void localizeLabelUnderline(GtkWidget * widget, const XAP_StringSet * pSS, XAP_String_Id id);
 void localizeLabelMarkup(GtkWidget * widget, const XAP_StringSet * pSS, XAP_String_Id id);
+void localizeButton(GtkWidget * widget, const XAP_StringSet * pSS, XAP_String_Id id);
+void localizeButtonUnderline(GtkWidget * widget, const XAP_StringSet * pSS, XAP_String_Id id);
 void localizeMenu(GtkWidget * widget, const XAP_StringSet * pSS, XAP_String_Id id);
 void setLabelMarkup(GtkWidget * widget, const gchar * str);
 

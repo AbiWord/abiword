@@ -835,21 +835,11 @@ void localizeLabel(GtkWidget * widget, const XAP_StringSet * pSS, XAP_String_Id 
 	FREEP(unixstr);	
 }
 
-
 /*!
- * Localizes a button given the string id
+ * Localizes the label of a widget given the string id
+ * Ampersands will be converted to underscores/mnemonics
  */
-void localizeButton(GtkWidget * widget, const XAP_StringSet * pSS, XAP_String_Id id)
-{
-	XML_Char * unixstr = NULL;	// used for conversions
-	
-	UT_XML_cloneNoAmpersands(unixstr, pSS->getValueUTF8(id).c_str());
-	gtk_button_set_label (GTK_BUTTON(widget), unixstr);
-	FREEP(unixstr);	
-}
-
-void localizeButtonUnderline(GtkWidget * widget, const XAP_StringSet * pSS, 
-							 XAP_String_Id id)
+void localizeLabelUnderline(GtkWidget * widget, const XAP_StringSet * pSS, XAP_String_Id id)
 {
 	XML_Char * newlbl = UT_strdup(pSS->getValueUTF8(id).c_str());
 	UT_ASSERT(newlbl);
@@ -866,14 +856,15 @@ void localizeButtonUnderline(GtkWidget * widget, const XAP_StringSet * pSS,
 				newlbl[i] = '_';
 		}
 	}
-	gtk_button_set_label (GTK_BUTTON(widget), newlbl);
+	gtk_label_set_text_with_mnemonic (GTK_LABEL(widget), newlbl);
 	FREEP(newlbl);	
 }
 
 /*!
  * Localizes the label of a widget given the string id
- * It formats the label using the current label of the widget as a format string. The
- * current label is assumed to be something like "<span size="larger">%s</span>".
+ * It formats the label using the current label of the widget as a format
+ * string. The current label is assumed to be something like
+ * "<span size="larger">%s</span>".
  */
 void localizeLabelMarkup(GtkWidget * widget, const XAP_StringSet * pSS, XAP_String_Id id)
 {
@@ -883,6 +874,44 @@ void localizeLabelMarkup(GtkWidget * widget, const XAP_StringSet * pSS, XAP_Stri
 	UT_String markupStr(UT_String_sprintf(gtk_label_get_label (GTK_LABEL(widget)), unixstr));
 	gtk_label_set_markup (GTK_LABEL(widget), markupStr.c_str());
 	FREEP(unixstr);	
+}
+
+/*!
+ * Localizes a button given the string id
+ */
+void localizeButton(GtkWidget * widget, const XAP_StringSet * pSS, XAP_String_Id id)
+{
+	XML_Char * unixstr = NULL;	// used for conversions
+	
+	UT_XML_cloneNoAmpersands(unixstr, pSS->getValueUTF8(id).c_str());
+	gtk_button_set_label (GTK_BUTTON(widget), unixstr);
+	FREEP(unixstr);	
+}
+
+/*!
+ * Localizes a button given the string id
+ * Ampersands will be converted to underscores/mnemonics
+ */
+void localizeButtonUnderline(GtkWidget * widget, const XAP_StringSet * pSS, XAP_String_Id id)
+{
+	XML_Char * newlbl = UT_strdup(pSS->getValueUTF8(id).c_str());
+	UT_ASSERT(newlbl);
+	for (UT_uint32 i = 0; newlbl[i] != 0; i++) 
+	{
+		if ( newlbl[i] == '&' ) {
+			if (i > 0 && newlbl[i-1] == '\\')
+			{
+				newlbl[i-1] = '&';
+				strcpy( &newlbl[i], &newlbl[i+1]);
+				i--;
+				}
+			else
+				newlbl[i] = '_';
+		}
+	}
+	gtk_button_set_use_underline (GTK_BUTTON(widget), TRUE);
+	gtk_button_set_label (GTK_BUTTON(widget), newlbl);
+	FREEP(newlbl);	
 }
 
 /*!
