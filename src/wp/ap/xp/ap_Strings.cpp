@@ -64,6 +64,40 @@ const XML_Char * AP_BuiltinStringSet::getValue(XAP_String_Id id) const
 }
 
 #ifdef DEBUG
+static void s_dumpXMLpair(FILE * fp, const XML_Char *szID, const XML_Char *sz)
+{
+	fprintf(fp,"%s=\"",szID);
+
+	for (; *sz; ++sz) 
+	{
+		switch (*sz) 
+		{
+		case '&':
+			fputs("&amp;", fp);
+			break;
+		case '<':
+			fputs("&lt;", fp);
+			break;
+		case '>':
+			fputs("&gt;", fp);
+			break;
+		case '"':
+			fputs("&quot;", fp);
+			break;
+		case 9:
+		case 10:
+		case 13:
+			fprintf(fp, "&#%d;", *sz);
+			break;
+		default:
+			putc(*sz, fp);
+			break;
+		}
+	}
+
+	fprintf(fp,"\"\n");
+}
+
 UT_Bool AP_BuiltinStringSet::dumpBuiltinSet(const char * szFilename) const
 {
 	// Dump a full set of english strings.  The resulting file
@@ -81,6 +115,11 @@ UT_Bool AP_BuiltinStringSet::dumpBuiltinSet(const char * szFilename) const
 
 	UT_DEBUGMSG(("Dumping English strings into String file [%s].\n",szFilename));
 	
+	// most translators need to explicitly set an encoding, so provide a sample
+
+	fprintf(fp,"<?xml version=\"1.0\" encoding=\"iso-8859-1\"?>\n");
+	fprintf(fp,"\n");
+
 	// write a comment block as a prolog.
 	// NOTE: this is human readable information only.
 	
@@ -101,7 +140,7 @@ UT_Bool AP_BuiltinStringSet::dumpBuiltinSet(const char * szFilename) const
 	//////////////////////////////////////////////////////////////////
 	// declare a static table of all the ids and strings
 	//////////////////////////////////////////////////////////////////
-	
+
 #define dcl(id,s)				{ #id,s },
 
 	static struct { const XML_Char * szId; const XML_Char * szString; } s_mapXAP[] =
@@ -123,12 +162,12 @@ UT_Bool AP_BuiltinStringSet::dumpBuiltinSet(const char * szFilename) const
 		
 		fprintf(fp,"\n<Strings\tclass=\"XAP\"\n");
 		for (k=0; k<NrElements(s_mapXAP); k++)
-			fprintf(fp,"%s=\"%s\"\n",s_mapXAP[k].szId,s_mapXAP[k].szString);
+			s_dumpXMLpair(fp,s_mapXAP[k].szId,s_mapXAP[k].szString);
 		fprintf(fp,"/>\n");
 
 		fprintf(fp,"\n<Strings\tclass=\"AP\"\n");
 		for (k=0; k<NrElements(s_mapAP); k++)
-			fprintf(fp,"%s=\"%s\"\n",s_mapAP[k].szId,s_mapAP[k].szString);
+			s_dumpXMLpair(fp,s_mapAP[k].szId,s_mapAP[k].szString);
 		fprintf(fp,"/>\n");
 	}
 
