@@ -20,7 +20,9 @@
 #include "ut_misc.h"
 #include <windows.h>
 #include <winsock.h>
+#ifndef __WINE__
 #include <snmp.h>
+#endif
 #include <nb30.h>
 #include "ut_debugmsg.h"
 
@@ -45,7 +47,9 @@ void UT_gettimeofday(struct timeval *tv)
     tv->tv_usec = (long) ((_100ns.LowPart % (DWORD) (10000 * 1000)) / 10);
 }
 
+#ifndef __WINE__
 #define NO_MAC_ADDRESS
+#endif
 #ifdef NO_MAC_ADDRESS
 typedef struct _ASTAT
 {
