@@ -21,6 +21,11 @@
 #ifndef FG_GRAPHIC_H
 #define FG_GRAPHIC_H
 
+#include "fl_Layout.h"
+#include "px_CR_Object.h"
+#include "gr_Graphics.h"
+#include "gr_Image.h"
+
 enum FGType { 
 	FGT_Unknown,
 	FGT_Raster,
@@ -35,6 +40,9 @@ enum FGType {
 class FG_Graphic
 {
 public:
+	static FG_Graphic*	createFromChangeRecord(const fl_Layout *pFL,
+										const PX_ChangeRecord_Object* pcro);
+
 	virtual ~FG_Graphic();
 
 	virtual FGType		getType(void) = 0;
@@ -43,6 +51,8 @@ public:
 	virtual double		getWidth(void) = 0;
 	virtual double		getHeight(void) = 0;
 
+	//  generate an image for display in the specified graphics object
+	virtual GR_Image*	generateImage(GR_Graphics* pG) = 0;
 };
 
 #endif /* FG_GRAPHIC_H */

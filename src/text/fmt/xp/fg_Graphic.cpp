@@ -19,6 +19,13 @@
 
 
 #include "fg_Graphic.h"
+#include "fg_GraphicRaster.h"
+
+FG_Graphic* FG_Graphic::createFromChangeRecord(const fl_Layout* pFL,
+											const PX_ChangeRecord_Object* pcro)
+{
+	return FG_GraphicRaster::createFromChangeRecord(pFL, pcro);
+}
 
 FG_Graphic::~FG_Graphic() {
 	// do nothing for now.

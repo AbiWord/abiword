@@ -28,6 +28,9 @@
 class FG_GraphicRaster : public FG_Graphic
 {
 public:
+	static FG_Graphic*	createFromChangeRecord(const fl_Layout *pFL, 
+										const PX_ChangeRecord_Object* pcro);
+
 	FG_GraphicRaster();
 	virtual ~FG_GraphicRaster();
 
@@ -36,12 +39,18 @@ public:
 	virtual double		getWidth(void);
 	virtual double		getHeight(void);
 
+	virtual GR_Image*	generateImage(GR_Graphics* pG);
+
 	UT_Bool				setRaster_PNG(UT_ByteBuf* pBB);
 	UT_ByteBuf*			getRaster_PNG(void);
 
 protected:
-	UT_ByteBuf *m_pbbPNG;
+	UT_ByteBuf* m_pbbPNG;
+	UT_Bool m_bOwnPNG;
+
 	UT_sint32 m_iWidth, m_iHeight;
+	const PP_AttrProp* m_pSpanAP;
+	const XML_Char* m_pszDataID;
 };
 
 #endif /* FG_GRAPHICRASTER_H */

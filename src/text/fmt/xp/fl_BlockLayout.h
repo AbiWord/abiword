@@ -31,6 +31,7 @@
 #include "xmlparse.h"
 #include "pt_Types.h"
 #include "fl_Layout.h"
+#include "fg_Graphic.h"
 
 // number of DocPositions occupied by the block strux
 #define fl_BLOCK_STRUX_OFFSET	1
@@ -203,7 +204,7 @@ protected:
 	UT_Bool					_doInsertForcedColumnBreakRun(PT_BlockOffset blockOffset);
 	UT_Bool					_doInsertForcedPageBreakRun(PT_BlockOffset blockOffset);
 	UT_Bool					_doInsertTabRun(PT_BlockOffset blockOffset);
-	UT_Bool					_doInsertImageRun(PT_BlockOffset blockOffset, const PX_ChangeRecord_Object * pcro);
+	UT_Bool					_doInsertImageRun(PT_BlockOffset blockOffset, FG_Graphic* pFG);
 	UT_Bool					_doInsertFieldRun(PT_BlockOffset blockOffset, const PX_ChangeRecord_Object * pcro);
 	UT_Bool					_deleteFmtMark(PT_BlockOffset blockOffset);
 	

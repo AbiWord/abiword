@@ -49,6 +49,7 @@
 #include "xap_App.h"
 #include "xap_Clipboard.h"
 #include "ut_png.h"
+#include "fg_Graphic.h"
 
 #include "ut_debugmsg.h"
 #include "ut_assert.h"
@@ -1614,78 +1615,10 @@ UT_Bool	fl_BlockLayout::_doInsertTabRun(PT_BlockOffset blockOffset)
 	return _doInsertRun(pNewRun);
 }
 
-UT_Bool	fl_BlockLayout::_doInsertImageRun(PT_BlockOffset blockOffset, const PX_ChangeRecord_Object * /* pcro */)
+UT_Bool	fl_BlockLayout::_doInsertImageRun(PT_BlockOffset blockOffset, FG_Graphic* pFG)
 {
-	GR_Image* pImage = NULL;
+	GR_Image* pImage = pFG->generateImage(m_pLayout->getGraphics());
 
-	/*
-	  Get the attribute list for this offset, lookup the dataid
-	  for the image, and get the dataItem.  The bytes in the
-	  dataItem should be a PNG image.
-	*/
-	
-	const PP_AttrProp * pSpanAP = NULL;
-	UT_Bool bFoundSpanAP = getSpanAttrProp(blockOffset,UT_FALSE,&pSpanAP);
-	if (bFoundSpanAP && pSpanAP)
-	{
-		const XML_Char* pszDataID = NULL;
-		UT_Bool bFoundDataID = pSpanAP->getAttribute("dataid", pszDataID);
-		if (bFoundDataID && pszDataID)
-		{
-			const UT_ByteBuf* pBB = NULL;
-
-			UT_Bool bFoundDataItem = m_pDoc->getDataItemDataByName(pszDataID, &pBB, NULL, NULL);
-			if (bFoundDataItem && pBB)
-			{
-				GR_Graphics* pG = m_pLayout->getGraphics();
-
-				/*
-				  Now we need to know the display size of the new image.
-				*/
-
-				const XML_Char *pszWidth;
-				const XML_Char *pszHeight;
-				UT_Bool bFoundWidthProperty = pSpanAP->getProperty("width", pszWidth);
-				UT_Bool bFoundHeightProperty = pSpanAP->getProperty("height", pszHeight);
-
-				UT_sint32 iDisplayWidth = 0;
-				UT_sint32 iDisplayHeight = 0;
-				if (bFoundWidthProperty && bFoundHeightProperty && pszWidth && pszHeight && pszWidth[0] && pszHeight[0])
-				{
-					iDisplayWidth = pG->convertDimension(pszWidth);
-					iDisplayHeight = pG->convertDimension(pszHeight);
-				}
-				else
-				{
-					UT_sint32 iImageWidth;
-					UT_sint32 iImageHeight;
-
-					UT_PNG_getDimensions(pBB, iImageWidth, iImageHeight);
-
-#if 0					
-					if (pG->queryProperties(GR_Graphics::DGP_SCREEN))
-					{
-						iDisplayWidth = iImageWidth;
-						iDisplayHeight = iImageHeight;
-					}
-					else
-#endif						
-					{
-						double fScale = pG->getResolution() / 72.0;
-			
-						iDisplayWidth = (UT_sint32) (iImageWidth * fScale);
-						iDisplayHeight = (UT_sint32) (iImageHeight * fScale);
-					}
-				}
-
-				UT_ASSERT(iDisplayWidth > 0);
-				UT_ASSERT(iDisplayHeight > 0);
-
-				pImage = pG->createNewImage(pszDataID, pBB, iDisplayWidth, iDisplayHeight);
-			}
-		}
-	}
-	
 	fp_ImageRun* pNewRun = new fp_ImageRun(this, m_pLayout->getGraphics(), blockOffset, 1, pImage);
 	UT_ASSERT(pNewRun);	// TODO check for outofmem
 
@@ -2718,9 +2651,17 @@ UT_Bool fl_BlockLayout::doclistener_populateObject(PT_BlockOffset blockOffset,
 	switch (pcro->getObjectType())
 	{
 	case PTO_Image:
+	{
+		FG_Graphic* pFG = FG_Graphic::createFromChangeRecord(this, pcro);
+		if (pFG == NULL)
+			return UT_FALSE;
+		
 		UT_DEBUGMSG(("Populate:InsertObject:Image:\n"));
-		_doInsertImageRun(blockOffset, pcro);
+		_doInsertImageRun(blockOffset, pFG);
+
+		delete pFG;
 		return UT_TRUE;
+	}
 		
 	case PTO_Field:
 		UT_DEBUGMSG(("Populate:InsertObject:Field:\n"));
@@ -2743,7 +2684,13 @@ UT_Bool fl_BlockLayout::doclistener_insertObject(const PX_ChangeRecord_Object * 
 	{
 		UT_DEBUGMSG(("Edit:InsertObject:Image:\n"));
 		blockOffset = pcro->getBlockOffset();
-		_doInsertImageRun(blockOffset, pcro);
+
+		FG_Graphic* pFG = FG_Graphic::createFromChangeRecord(this, pcro);
+		if(pFG == NULL)
+			return UT_FALSE;
+
+		_doInsertImageRun(blockOffset, pFG);
+		delete pFG;
 		break;
 	}
 		
