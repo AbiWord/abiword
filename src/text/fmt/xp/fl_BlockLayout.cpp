@@ -438,7 +438,7 @@ void fl_BlockLayout::_lookupProperties(void)
 				// need to set the direction correctly
 				pRun->setDirection(m_iDomDirection);
 				pRun->setVisDirection(m_iDomDirection);
-				pRun = pRun->getNextRun();
+				pRun = pRun->getNext();
 			}
 			else
 				pRun = pRun->getNext();
