@@ -38,9 +38,24 @@ Martin Willemoes Hansen <mwh@stampede.org>      Danish
 Jarmo Karvonen <jarmo@dawn.joensuu.fi>          Finnish
 Christian Terboven <cterboven@gmx.net>          German
 
+unsung heroes
+-------------
+Scott Boesch
+Heath Carr
+Mary Eppich
+Patti Furey
+Mark Smith
+Clint Stearns
+Corey Steffen
+Dixie Thornhill
+
+----------------------------------------------------------------
+----------------------------------------------------------------
+
 To get your name added to this list, see:
 
   http://www.abisource.com
   abiword-dev@abisource.com
 
 Last updated: $Date$
+
