@@ -1586,46 +1586,56 @@ bool GR_Win32Graphics::_setTransform(const GR_Transform & tr)
 #endif
 }
 
-#if 0
-
 GR_Image * GR_Win32Graphics::genImageFromRectangle(const UT_Rect & r)
 {
+#if 0
+	/*
+	FIXME. THIS IS AN IMPLEMENTATION THAT IS NOT RIGHT IN SOME RESPECTS
+	AND SHOULD BE DEBUGGED. NO CLUE TO WHAT COULD BE WRONG THOUGH - MARCM
+	*/
+
 	UT_uint32 iWidth = _tduR(r.width);
 	UT_uint32 iHeight = _tduR(r.height);
-	UT_sint32 x = _tduR(r.left);
-	UT_sint32 y = _tduR(r.top);	 
+	UT_sint32 x = _tduX(r.left);
+	UT_sint32 y = _tduY(r.top);	 
 
 	#ifdef GR_GRAPHICS_DEBUG	
-	UT_DEBUGMSG(("GR_Win32Graphics::saveRectangle %u, %u %u %u %u\n", iIndx,
+	UT_DEBUGMSG(("GR_Win32Graphics::genImageFromRectangle %u %u %u %u\n", 
 		x,y, iWidth, iHeight));	
 	#endif
 
-	BITMAPINFO * bmi ; 
+	BITMAPINFO * bmi = (BITMAPINFO*)malloc (sizeof (BITMAPINFO));
 	BYTE *imagedata;
 	HDC		hMemDC = CreateCompatibleDC(m_hdc);
 		
-	bmi.bmiHeader.biSize = sizeof(BITMAPINFOHEADER); 	
-	bmi.bmiHeader.biWidth = iWidth;
-	bmi.bmiHeader.biHeight = iHeight;
-	bmi.bmiHeader.biPlanes = 1; 
-	bmi.bmiHeader.biBitCount = 24; // as we want true-color
-	bmi.bmiHeader.biCompression = BI_RGB; // no compression
-	bmi.bmiHeader.biSizeImage = (((iWidth * bmi.bmiHeader.biBitCount + 31) & ~31) >> 3) * iHeight; 
-	bmi.bmiHeader.biXPelsPerMeter = 0;
-	bmi.bmiHeader.biYPelsPerMeter = 0; 
-	bmi.bmiHeader.biClrImportant = 0;
-	bmi.bmiHeader.biClrUsed = 0; // we are not using palette
+	bmi->bmiHeader.biSize = sizeof(BITMAPINFOHEADER); 	
+	bmi->bmiHeader.biWidth = iWidth;
+	bmi->bmiHeader.biHeight = iHeight;
+	bmi->bmiHeader.biPlanes = 1; 
+	bmi->bmiHeader.biBitCount = 24; // as we want true-color
+	bmi->bmiHeader.biCompression = BI_RGB; // no compression
+	bmi->bmiHeader.biSizeImage = (((iWidth * bmi->bmiHeader.biBitCount + 31) & ~31) >> 3) * iHeight; 
+	bmi->bmiHeader.biXPelsPerMeter = 0;
+	bmi->bmiHeader.biYPelsPerMeter = 0; 
+	bmi->bmiHeader.biClrImportant = 0;
+	bmi->bmiHeader.biClrUsed = 0; // we are not using palette
 		
-	HBITMAP hBit = CreateDIBSection(hMemDC,&bmi,DIB_RGB_COLORS,(void**)&imagedata,0,0);
+	HBITMAP hBit = CreateDIBSection(hMemDC,bmi,DIB_RGB_COLORS,(void**)&imagedata,0,0);
 	GdiFlush();
 
 	HBITMAP hOld = (HBITMAP) SelectObject(hMemDC, hBit);
 	BitBlt(hMemDC, 0, 0, iWidth, iHeight, m_hdc, x, y, SRCCOPY);
 	hBit =  (HBITMAP)SelectObject(hMemDC, hOld);
 	DeleteDC(hMemDC);
-}
+	DeleteObject(hBit);
+
+	GR_Win32Image * pImg = new GR_Win32Image ("Screenshot");
+	pImg->setDIB (bmi);
+	return pImg;
 
 #endif
+	return NULL;
+}
 
 void GR_Win32Graphics::saveRectangle(UT_Rect & r, UT_uint32 iIndx) 
 {		
@@ -1633,10 +1643,10 @@ void GR_Win32Graphics::saveRectangle(UT_Rect & r, UT_uint32 iIndx)
 	m_vSaveRect.setNthItem(iIndx, (void*)new UT_Rect(r),(void **)&oldR);
 	DELETEP(oldR);
 
-	UT_uint32 iWidth = tdu(r.width);
-	UT_uint32 iHeight = tdu(r.height);
-	UT_sint32 x = tdu(r.left);
-	UT_sint32 y = tdu(r.top);	 
+	UT_uint32 iWidth = _tduR(r.width);
+	UT_uint32 iHeight = _tduR(r.height);
+	UT_sint32 x = _tduX(r.left);
+	UT_sint32 y = _tduY(r.top);	 
 
 	#ifdef GR_GRAPHICS_DEBUG	
 	UT_DEBUGMSG(("GR_Win32Graphics::saveRectangle %u, %u %u %u %u\n", iIndx,
@@ -1654,7 +1664,7 @@ void GR_Win32Graphics::saveRectangle(UT_Rect & r, UT_uint32 iIndx)
 	bmi->bmiHeader.biPlanes = 1; 
 	bmi->bmiHeader.biBitCount = 24; // as we want true-color
 	bmi->bmiHeader.biCompression = BI_RGB; // no compression
-	bmi->bmiHeader.biSizeImage = (((iWidth * bmi.bmiHeader.biBitCount + 31) & ~31) >> 3) * iHeight; 
+	bmi->bmiHeader.biSizeImage = (((iWidth * bmi->bmiHeader.biBitCount + 31) & ~31) >> 3) * iHeight; 
 	bmi->bmiHeader.biXPelsPerMeter = 0;
 	bmi->bmiHeader.biYPelsPerMeter = 0; 
 	bmi->bmiHeader.biClrImportant = 0;
@@ -1667,12 +1677,6 @@ void GR_Win32Graphics::saveRectangle(UT_Rect & r, UT_uint32 iIndx)
 	BitBlt(hMemDC, 0, 0, iWidth, iHeight, m_hdc, x, y, SRCCOPY);
 	hBit =  (HBITMAP)SelectObject(hMemDC, hOld);
 	DeleteDC(hMemDC);
-	DeleteObject(hBit);
-
-	GR_Win32Image * pImg = new GR_Win32Image ("Screenshot");
-	pImg->setDIB (bmi);
-
-	return pImg;
 }
 
 void GR_Win32Graphics::restoreRectangle(UT_uint32 iIndx) 
