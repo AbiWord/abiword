@@ -3069,7 +3069,7 @@ void s_HTML_Listener::_setCellWidthInches(void)
 	double tot = 0;
 	UT_sint32 i =0;
 
-	UT_ASSERT(m_vecDWidths.size() <= (right - left));
+	UT_ASSERT(m_vecDWidths.size() >= (right-1));
 
 	for(i=left; i<right; i++)
 	{
