@@ -691,9 +691,18 @@ static int so_only (struct dirent *d)
 	return 0;
 }
 
+#ifdef ABI_PLUGIN_BUILTIN
+extern void abipgn_builtin_register();
+#endif
+
 void AP_QNXApp::loadAllPlugins ()
 {
-  struct direct **namelist;
+#ifdef ABI_PLUGIN_BUILTIN
+	UT_DEBUGMSG(("Loading builtin plugins:\n"));
+	abipgn_builtin_register();
+	UT_DEBUGMSG(("Finished loading builtin plugins.\n"));
+#endif
+	struct direct **namelist;
   int n = 0;
 
   UT_String pluginList[2];
