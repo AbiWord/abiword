@@ -75,7 +75,7 @@ then
 	addfontdir=\$ABISUITE_FONT_HOME/\$encoding
 	if [ ! -z "\$addfontdir" ]
 	then
-	    if [ -d \$addfontdir ]
+	    if [ -d "\$addfontdir" ]
 	    then
 	    	#add directory with locale-specific fonts to font path
 	    	ABISUITE_FONT_PATH=\$ABISUITE_FONT_PATH,\$addfontdir
@@ -110,9 +110,10 @@ fi
 if [ -z "\$currentFonts" ]
 then
     # Set post run-time font path
-    if [ -d \$ABISUITE_FONT_HOME ]
+    if [ -d "\$ABISUITE_FONT_HOME" ]
     then
 	xset fp- \$ABISUITE_FONT_PATH 1>/dev/null 2>/dev/null
+	xset fp rehash 1>/dev/null 2>/dev/null
     fi
 fi
 EOF
