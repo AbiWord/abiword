@@ -26,7 +26,7 @@
 class ABI_EXPORT fp_FieldListLabelRun : public fp_FieldRun
 {
 public:
-	fp_FieldListLabelRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen);
+	fp_FieldListLabelRun(fl_BlockLayout* pBL, UT_uint32 iOffsetFirst, UT_uint32 iLen);
 
 
 	virtual bool			calculateValue(void);

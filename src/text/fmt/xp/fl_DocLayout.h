@@ -95,6 +95,8 @@ public:
 
 	inline FV_View * getView(void) const { return m_pView; }
 	inline GR_Graphics*	getGraphics(void) const { return m_pG; }
+	void setGraphics(GR_Graphics * pG);
+	UT_uint32           getGraphicTick(void) const { return m_iGraphicTick;} 
 	inline PD_Document*	getDocument(void) const { return m_pDoc; }
 	inline fl_BlockLayout* getPendingBlockForSpell(void) const { return m_pPendingBlockForSpell; };
 	inline fl_PartOfBlock* getPendingWordForSpell(void) const { return m_pPendingWordForSpell; };
@@ -310,6 +312,7 @@ private:
 	bool                m_bRestartEndSection;
 	bool                m_bPlaceAtDocEnd;
 	bool                m_bPlaceAtSecEnd;
+	UT_uint32           m_iGraphicTick;
 };
 
 #endif /* DOCLAYOUT_H */

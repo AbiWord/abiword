@@ -25,7 +25,7 @@
 
 #include <string.h>
 
-fp_FieldListLabelRun::fp_FieldListLabelRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen) : fp_FieldRun(pBL, pG, iOffsetFirst, iLen)
+fp_FieldListLabelRun::fp_FieldListLabelRun(fl_BlockLayout* pBL,UT_uint32 iOffsetFirst, UT_uint32 iLen) : fp_FieldRun(pBL,iOffsetFirst, iLen)
 {
     UT_ASSERT(pBL);
 	_setDirection(pBL->getDominantDirection());

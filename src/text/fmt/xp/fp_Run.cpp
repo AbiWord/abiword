@@ -81,7 +81,6 @@
 */
 
 fp_Run::fp_Run(fl_BlockLayout* pBL,
-			   GR_Graphics* pG,
 			   UT_uint32 iOffsetFirst,
 			   UT_uint32 iLen,
 			   FP_RUN_TYPE iType)
@@ -99,7 +98,6 @@ fp_Run::fp_Run(fl_BlockLayout* pBL,
 		m_iDescent(0),
 		m_iOffsetFirst(iOffsetFirst),
 		m_iLen(iLen),
-		m_pG(pG),
 		m_bDirty(true),	// a run which has just been created is not onscreen, therefore it is dirty
 		m_pField(0),
 		m_iDirection(FRIBIDI_TYPE_WS), //by default all runs are whitespace
@@ -294,9 +292,9 @@ fp_Run::_inheritProperties(void)
 		if (pFont != _getPangoFont())
 		{
 			_setPangoFont(pFont);
-		    _setAscent(getGR()->getFontAscent(pFont));
-		    _setDescent(getGR()->getFontDescent(pFont));
-		    _setHeight(getGR()->getFontHeight(pFont));
+		    _setAscent(getGraphics()->getFontAscent(pFont));
+		    _setDescent(getGraphics()->getFontDescent(pFont));
+		    _setHeight(getGraphics()->getFontHeight(pFont));
 		}
 #else
 		GR_Font * pFont = const_cast<GR_Font *>(pLayout->findFont(pSpanAP,pBlockAP,pSectionAP));
@@ -304,9 +302,9 @@ fp_Run::_inheritProperties(void)
 		if (pFont != _getFont())
 		{
 			_setFont(pFont);
-		    _setAscent(getGR()->getFontAscent(pFont));
-			_setDescent(getGR()->getFontDescent(pFont));
-		    _setHeight(getGR()->getFontHeight(pFont));
+		    _setAscent(getGraphics()->getFontAscent(pFont));
+			_setDescent(getGraphics()->getFontDescent(pFont));
+		    _setHeight(getGraphics()->getFontHeight(pFont));
 		}
 #endif
 		if(bDeleteSpanAP)
@@ -421,6 +419,11 @@ bool fp_Run::updatePageColor(void)
 	UT_setColor (m_pColorPG, pClr->m_red, pClr->m_grn, pClr->m_blu);
 
 	return m_pColorPG != oldColor;
+}
+
+GR_Graphics * fp_Run::getGraphics(void) const
+{
+	return getBlock()->getDocLayout()->getGraphics();
 }
 
 /*!
@@ -726,7 +729,7 @@ void fp_Run::setBlockOffset(UT_uint32 offset)
 
 void fp_Run::clearScreen(bool bFullLineHeightRect)
 {
-	if(!getGR()->queryProperties(GR_Graphics::DGP_SCREEN))
+	if(!getGraphics()->queryProperties(GR_Graphics::DGP_SCREEN))
 	{
 		return;
 	}
@@ -756,7 +759,7 @@ void fp_Run::clearScreen(bool bFullLineHeightRect)
 			m_pLine->getScreenOffsets(this, xoff, yoff);
 			UT_uint32 iWidth = getDrawingWidth();
 
-			m_pG->fillRect(m_colorPG,xoff, yoff + _UL(4), iWidth, _UL(3));
+			getGraphics()->fillRect(m_colorPG,xoff, yoff + _UL(4), iWidth, _UL(3));
 #endif
 			// make sure we only get erased once
 			_setDirty(true);
@@ -788,7 +791,7 @@ const UT_RGBColor fp_Run::getFGColor(void) const
 		UT_uint32 iId = m_pRevisions->getLastRevision()->getId();
 		s_fgColor = _getView()->getColorRevisions(iId-1);
 	}
-	else if(m_pHyperlink && getGR()->queryProperties(GR_Graphics::DGP_SCREEN))
+	else if(m_pHyperlink && getGraphics()->queryProperties(GR_Graphics::DGP_SCREEN))
 	{
 		s_fgColor = _getView()->getColorHyperLink();
 	}
@@ -825,10 +828,10 @@ void fp_Run::draw(dg_DrawArgs* pDA)
 
 	// shortcircuit drawing if we're way off base.
 	long imax = (1 << 15) - 1;
-	if (((pDA->yoff < -imax) || (pDA->yoff > imax)) && getGR()->queryProperties(GR_Graphics::DGP_SCREEN))
+	if (((pDA->yoff < -imax) || (pDA->yoff > imax)) && getGraphics()->queryProperties(GR_Graphics::DGP_SCREEN))
 	     return;
 
-	getGR()->setColor(getFGColor());
+	getGraphics()->setColor(getFGColor());
 
 	_draw(pDA);
 
@@ -837,50 +840,52 @@ void fp_Run::draw(dg_DrawArgs* pDA)
 		const PP_Revision * r = m_pRevisions->getLastRevision();
 		PP_RevisionType r_type = r->getType();
 
-		getGR()->setColor(getFGColor());
+		getGraphics()->setColor(getFGColor());
 
 		UT_uint32 iWidth = getDrawingWidth();
 
 		if(r_type == PP_REVISION_ADDITION)
 		{
-			getGR()->fillRect(s_fgColor,pDA->xoff, pDA->yoff, iWidth, getGR()->tlu(1));
-			getGR()->fillRect(s_fgColor,pDA->xoff, pDA->yoff + getGR()->tlu(2), iWidth, getGR()->tlu(1));
+			getGraphics()->fillRect(s_fgColor,pDA->xoff, pDA->yoff, iWidth, getGraphics()->tlu(1));
+			getGraphics()->fillRect(s_fgColor,pDA->xoff, pDA->yoff + getGraphics()->tlu(2), iWidth, getGraphics()->tlu(1));
+
 		}
 		else if(r_type == PP_REVISION_FMT_CHANGE)
 		{
 			// draw a thick line underneath
-			getGR()->fillRect(s_fgColor,pDA->xoff, pDA->yoff, iWidth, getGR()->tlu(2));
+			getGraphics()->fillRect(s_fgColor,pDA->xoff, pDA->yoff, iWidth, getGraphics()->tlu(2));
 		}
 		else
 		{
 			// draw a strike-through line
-			getGR()->fillRect(s_fgColor,pDA->xoff, pDA->yoff - m_iHeight/3, iWidth, getGR()->tlu(2));
+
+			getGraphics()->fillRect(s_fgColor,pDA->xoff, pDA->yoff - m_iHeight/3, iWidth, getGraphics()->tlu(2));
 		}
 
 	}
 
-	if(m_pHyperlink && getGR()->queryProperties(GR_Graphics::DGP_SCREEN))
+	if(m_pHyperlink && getGraphics()->queryProperties(GR_Graphics::DGP_SCREEN))
 	{
 		// have to set the colour again, since fp_TextRun::_draw can set it to red
 		// for drawing sguiggles
-		getGR()->setColor(_getView()->getColorHyperLink());
-		getGR()->setLineProperties(1.0,
+		getGraphics()->setColor(_getView()->getColorHyperLink());
+		getGraphics()->setLineProperties(1.0,
 								GR_Graphics::JOIN_MITER,
 								GR_Graphics::CAP_BUTT,
 								GR_Graphics::LINE_SOLID);
 
-		getGR()->drawLine(pDA->xoff, pDA->yoff, pDA->xoff + m_iWidth, pDA->yoff);
+		getGraphics()->drawLine(pDA->xoff, pDA->yoff, pDA->xoff + m_iWidth, pDA->yoff);
 	}
 
 	if(m_eHidden == FP_HIDDEN_TEXT || m_eHidden == FP_HIDDEN_REVISION_AND_TEXT)
 	{
-		getGR()->setColor(getFGColor());
-		getGR()->setLineProperties(1.0,
+		getGraphics()->setColor(getFGColor());
+		getGraphics()->setLineProperties(1.0,
 								GR_Graphics::JOIN_MITER,
 								GR_Graphics::CAP_BUTT,
 								GR_Graphics::LINE_DOTTED);
 
-		getGR()->drawLine(pDA->xoff, pDA->yoff, pDA->xoff + m_iWidth, pDA->yoff);
+		getGraphics()->drawLine(pDA->xoff, pDA->yoff, pDA->xoff + m_iWidth, pDA->yoff);
 
 	}
 	_setDirty(false);
@@ -962,11 +967,11 @@ void fp_Run::drawDecors(UT_sint32 xoff, UT_sint32 yoff)
 	}
 
 	const UT_sint32 old_LineWidth = m_iLineWidth;
-	UT_sint32 cur_linewidth = getGR()->tlu(1) + UT_MAX(getGR()->tlu(10),static_cast<UT_sint32>(getAscent())-getGR()->tlu(10))/8;
+	UT_sint32 cur_linewidth = getGraphics()->tlu(1) + UT_MAX(getGraphics()->tlu(10),static_cast<UT_sint32>(getAscent())-getGraphics()->tlu(10))/8;
 //
 // Line thickness is too thick.
 //
-	cur_linewidth = UT_MAX(getGR()->tlu(1),cur_linewidth/2);
+	cur_linewidth = UT_MAX(getGraphics()->tlu(1),cur_linewidth/2);
 	UT_sint32 iDrop = 0;
 
 	// need to do this in the visual space
@@ -999,7 +1004,7 @@ void fp_Run::drawDecors(UT_sint32 xoff, UT_sint32 yoff)
 		}
 		if(b_Overline)
 		{
-			iDrop = yoff + getGR()->tlu(1) + UT_MAX(getGR()->tlu(10),static_cast<UT_sint32>(getAscent()) - getGR()->tlu(10))/8;
+			iDrop = yoff + getGraphics()->tlu(1) + UT_MAX(getGraphics()->tlu(10),static_cast<UT_sint32>(getAscent()) - getGraphics()->tlu(10))/8;
 			setOverlineXoff( xoff);
 			setMinOverline(iDrop);
 		}
@@ -1038,7 +1043,7 @@ or overline set the underline and overline locations with the current data.
 		}
  	      if (b_Overline)
 	      {
-		     iDrop = yoff + getGR()->tlu(1) + UT_MAX(getGR()->tlu(10),static_cast<UT_sint32>(getAscent()) - getGR()->tlu(10))/8;
+		     iDrop = yoff + getGraphics()->tlu(1) + UT_MAX(getGraphics()->tlu(10),static_cast<UT_sint32>(getAscent()) - getGraphics()->tlu(10))/8;
 		     if(!P_Run->isOverline())
 		     {
 				 setOverlineXoff( xoff);
@@ -1052,7 +1057,7 @@ or overline set the underline and overline locations with the current data.
 		  }
 	}
 	m_iLineWidth = getLinethickness();
-	getGR()->setLineWidth(m_iLineWidth);
+	getGraphics()->setLineWidth(m_iLineWidth);
 	/*
 	  If the next run returns NULL or if we are on the last run
  we've reached the of the line of text so the overlines and underlines must
@@ -1064,13 +1069,13 @@ be drawn.
 		{
 			iDrop = UT_MAX( getMaxUnderline(), iDrop);
 			UT_sint32 totx = getUnderlineXoff();
-			getGR()->drawLine(totx, iDrop, xoff+getWidth(), iDrop);
+			getGraphics()->drawLine(totx, iDrop, xoff+getWidth(), iDrop);
 		}
 		if ( b_Overline)
 		{
 			iDrop = UT_MIN( getMinOverline(), iDrop);
 			UT_sint32 totx = getOverlineXoff();
-			getGR()->drawLine(totx, iDrop, xoff+getWidth(), iDrop);
+			getGraphics()->drawLine(totx, iDrop, xoff+getWidth(), iDrop);
 		}
 	}
 	/*
@@ -1086,7 +1091,7 @@ is drawn later.
 		     {
 				 iDrop = UT_MAX( getMaxUnderline(), iDrop);
 				 UT_sint32 totx = getUnderlineXoff();
-				 getGR()->drawLine(totx, iDrop, xoff+getWidth(), iDrop);
+				 getGraphics()->drawLine(totx, iDrop, xoff+getWidth(), iDrop);
 		     }
 		     else
 		     {
@@ -1099,7 +1104,7 @@ is drawn later.
 			{
 				iDrop = UT_MIN( getMinOverline(), iDrop);
 				UT_sint32 totx = getOverlineXoff();
-				getGR()->drawLine(totx, iDrop, xoff+getWidth(), iDrop);
+				getGraphics()->drawLine(totx, iDrop, xoff+getWidth(), iDrop);
 			}
 			else
 			{
@@ -1114,13 +1119,13 @@ text so we can keep the original code.
 	if ( b_Strikethrough)
 	{
 		iDrop = yoff + getAscent() * 2 / 3;
-		getGR()->drawLine(xoff, iDrop, xoff+getWidth(), iDrop);
+		getGraphics()->drawLine(xoff, iDrop, xoff+getWidth(), iDrop);
 	}
 	/*
 	   Restore the previous line width.
 	*/
 	_setLineWidth(old_LineWidth);
-	getGR()->setLineWidth(_getLineWidth());
+	getGraphics()->setLineWidth(_getLineWidth());
 	if(!b_Topline && !b_Bottomline)
 		return;
 	/*
@@ -1146,15 +1151,15 @@ text so we can keep the original code.
 
 	if ( b_Topline)
 	{
-		UT_sint32 ybase = yoff + getAscent() - getLine()->getAscent() + getGR()->tlu(1);
-		getGR()->fillRect(clrFG, xoff, ybase, getWidth(), ithick);
+		UT_sint32 ybase = yoff + getAscent() - getLine()->getAscent() + getGraphics()->tlu(1);
+		getGraphics()->fillRect(clrFG, xoff, ybase, getWidth(), ithick);
 	}
 	/*
 	  We always draw bottomline right at the bottom so there is no ambiguity
 	*/
 	if ( b_Bottomline)
 	{
-		getGR()->fillRect(clrFG, xoff, yoff+getLine()->getHeight()-ithick+getGR()->tlu(1), getWidth(), ithick);
+		getGraphics()->fillRect(clrFG, xoff, yoff+getLine()->getHeight()-ithick+getGraphics()->tlu(1), getWidth(), ithick);
 	}
 }
 
@@ -1257,28 +1262,28 @@ UT_sint32 fp_Run::getToplineThickness(void)
 void fp_Run::_drawTextLine(UT_sint32 xoff,UT_sint32 yoff,UT_uint32 iWidth,UT_uint32 iHeight,UT_UCSChar *pText)
 {
 
-    GR_Font *pFont = getGR()->getGUIFont();
-    getGR()->setFont(pFont);
+    GR_Font *pFont = getGraphics()->getGUIFont();
+    getGraphics()->setFont(pFont);
 
     UT_uint32 iTextLen = UT_UCS4_strlen(pText);
-    UT_uint32 iTextWidth = getGR()->measureString(pText,0,iTextLen,NULL);
-    UT_uint32 iTextHeight = getGR()->getFontHeight(pFont);
+    UT_uint32 iTextWidth = getGraphics()->measureString(pText,0,iTextLen,NULL);
+    UT_uint32 iTextHeight = getGraphics()->getFontHeight(pFont);
 
     UT_uint32 xoffText = xoff + (iWidth - iTextWidth) / 2;
-    UT_uint32 yoffText = yoff - getGR()->getFontAscent(pFont) * 2 / 3;
+    UT_uint32 yoffText = yoff - getGraphics()->getFontAscent(pFont) * 2 / 3;
 
-    getGR()->drawLine(xoff,yoff,xoff + iWidth,yoff);
+    getGraphics()->drawLine(xoff,yoff,xoff + iWidth,yoff);
 
     if((iTextWidth < iWidth) && (iTextHeight < iHeight)){
-        getGR()->fillRect(_getColorHL(),xoffText,yoffText,iTextWidth,iTextHeight);
-        getGR()->drawChars(pText,0,iTextLen,xoffText,yoffText);
+        getGraphics()->fillRect(_getColorHL(),xoffText,yoffText,iTextWidth,iTextHeight);
+        getGraphics()->drawChars(pText,0,iTextLen,xoffText,yoffText);
     }
 }
 
 //////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////
 
-fp_TabRun::fp_TabRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen) : fp_Run(pBL, pG, iOffsetFirst, iLen, FPRUN_TAB)
+fp_TabRun::fp_TabRun(fl_BlockLayout* pBL, UT_uint32 iOffsetFirst, UT_uint32 iLen) : fp_Run(pBL, iOffsetFirst, iLen, FPRUN_TAB)
 {
 	lookupProperties();
 }
@@ -1306,9 +1311,9 @@ void fp_TabRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 	if (pFont != _getPangoFont())
 	{
 	    _setPangoFont(pFont);
-	    _setAscent(getGR()->getFontAscent(pFont));
-	    _setDescent(getGR()->getFontDescent(pFont));
-	    _setHeight(getGR()->getFontHeight(pFont));
+	    _setAscent(getGraphics()->getFontAscent(pFont));
+	    _setDescent(getGraphics()->getFontDescent(pFont));
+	    _setHeight(getGraphics()->getFontHeight(pFont));
 		bChanged = true;
 	}
 #else
@@ -1317,9 +1322,9 @@ void fp_TabRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 	if (pFont != _getFont())
 	{
 	    _setFont(pFont);
-	    _setAscent(getGR()->getFontAscent(pFont));
-	    _setDescent(getGR()->getFontDescent(pFont));
-	    _setHeight(getGR()->getFontHeight(pFont));
+	    _setAscent(getGraphics()->getFontAscent(pFont));
+	    _setDescent(getGraphics()->getFontDescent(pFont));
+	    _setHeight(getGraphics()->getFontHeight(pFont));
 		bChanged = true;
 	}
 #endif
@@ -1507,18 +1512,18 @@ eTabType fp_TabRun::getTabType(void) const
 void fp_TabRun::_clearScreen(bool /* bFullLineHeightRect */)
 {
 	UT_ASSERT(!isDirty());
-	UT_ASSERT(getGR()->queryProperties(GR_Graphics::DGP_SCREEN));
+	UT_ASSERT(getGraphics()->queryProperties(GR_Graphics::DGP_SCREEN));
 
 	UT_sint32 xoff = 0, yoff = 0;
 
 	// need to clear full height of line, in case we had a selection
 	getLine()->getScreenOffsets(this, xoff, yoff);
-	getGR()->fillRect(_getColorPG(),xoff, yoff, getWidth(), getLine()->getHeight());
+	getGraphics()->fillRect(_getColorPG(),xoff, yoff, getWidth(), getLine()->getHeight());
 }
 
 void fp_TabRun::_drawArrow(UT_uint32 iLeft,UT_uint32 iTop,UT_uint32 iWidth, UT_uint32 iHeight)
 {
-    if (!(getGR()->queryProperties(GR_Graphics::DGP_SCREEN))){
+    if (!(getGraphics()->queryProperties(GR_Graphics::DGP_SCREEN))){
         return;
     }
 
@@ -1526,7 +1531,7 @@ void fp_TabRun::_drawArrow(UT_uint32 iLeft,UT_uint32 iTop,UT_uint32 iWidth, UT_u
 
     UT_Point points[NPOINTS];
 
-    UT_sint32 cur_linewidth = getGR()->tlu(1) + UT_MAX(getGR()->tlu(10),static_cast<UT_sint32>(getAscent()) - getGR()->tlu(10)) / 8;
+    UT_sint32 cur_linewidth = getGraphics()->tlu(1) + UT_MAX(getGraphics()->tlu(10),static_cast<UT_sint32>(getAscent()) - getGraphics()->tlu(10)) / 8;
     UT_uint32 iyAxis = iTop + getLine()->getAscent() * 2 / 3;
     UT_uint32 iMaxWidth = UT_MIN(iWidth / 10 * 6, static_cast<UT_uint32>(cur_linewidth) * 9);
     UT_uint32 ixGap = (iWidth - iMaxWidth) / 2;
@@ -1568,7 +1573,7 @@ void fp_TabRun::_drawArrow(UT_uint32 iLeft,UT_uint32 iTop,UT_uint32 iWidth, UT_u
     points[5].y = points[0].y;
 
     UT_RGBColor clrShowPara = _getView()->getColorShowPara();
-    getGR()->polygon(clrShowPara,points,NPOINTS);
+    getGraphics()->polygon(clrShowPara,points,NPOINTS);
 
     xxx_UT_DEBUGMSG(("fp_TabRun::_drawArrow: iLeft %d, iyAxis %d, cur_linewidth %d, iMaxWidth %d\n",
     			iLeft, iyAxis, cur_linewidth, iMaxWidth));
@@ -1578,11 +1583,11 @@ void fp_TabRun::_drawArrow(UT_uint32 iLeft,UT_uint32 iTop,UT_uint32 iWidth, UT_u
     if(static_cast<UT_sint32>(iMaxWidth - cur_linewidth * 4) > 0)
 	    if(getVisDirection() == FRIBIDI_TYPE_LTR)
 		{
-		    getGR()->fillRect(clrShowPara,iLeft + ixGap,iyAxis - cur_linewidth / 2,iMaxWidth - cur_linewidth * 4,cur_linewidth);
+		    getGraphics()->fillRect(clrShowPara,iLeft + ixGap,iyAxis - cur_linewidth / 2,iMaxWidth - cur_linewidth * 4,cur_linewidth);
 		}
 		else
 		{
-	    	getGR()->fillRect(clrShowPara,iLeft + ixGap + cur_linewidth * 4,iyAxis - cur_linewidth / 2,iMaxWidth - cur_linewidth * 4,cur_linewidth);
+	    	getGraphics()->fillRect(clrShowPara,iLeft + ixGap + cur_linewidth * 4,iyAxis - cur_linewidth / 2,iMaxWidth - cur_linewidth * 4,cur_linewidth);
 		}
 #undef NPOINTS
 }
@@ -1590,7 +1595,7 @@ void fp_TabRun::_drawArrow(UT_uint32 iLeft,UT_uint32 iTop,UT_uint32 iWidth, UT_u
 void fp_TabRun::_draw(dg_DrawArgs* pDA)
 {
 	xxx_UT_DEBUGMSG(("fp_TabRun::_draw (0x%x)\n",this));
-	UT_ASSERT(pDA->pG == getGR());
+	UT_ASSERT(pDA->pG == getGraphics());
 
 	UT_RGBColor clrNormalBackground(_getColorHL());
 	// need to draw to the full height of line to join with line above.
@@ -1648,8 +1653,8 @@ void fp_TabRun::_draw(dg_DrawArgs* pDA)
 			tmp[i] = tmp[1];
 
 		
-		getGR()->setFont(_getFont());
-		getGR()->measureString(tmp, 1, 150, wid);
+		getGraphics()->setFont(_getFont());
+		getGraphics()->measureString(tmp, 1, 150, wid);
 		// one would think that one could measure
 		// one character and divide the needed
 		// width by that; would one be so wrong?
@@ -1662,8 +1667,8 @@ void fp_TabRun::_draw(dg_DrawArgs* pDA)
 			cumWidth += wid[i++];
 
 		i = (i>=3) ? i - 2 : 1;
-		getGR()->setColor(clrFG);
-		getGR()->drawChars(tmp, 1, i, /*pDA->xoff*/DA_xoff, iFillTop);
+		getGraphics()->setColor(clrFG);
+		getGraphics()->drawChars(tmp, 1, i, /*pDA->xoff*/DA_xoff, iFillTop);
 	}
 	else
 	if (
@@ -1672,7 +1677,7 @@ void fp_TabRun::_draw(dg_DrawArgs* pDA)
 		&& (iSel2 > iRunBase)
 		)
 	{
-		getGR()->fillRect(_getView()->getColorSelBackground(), /*pDA->xoff*/DA_xoff, iFillTop, getWidth(), iFillHeight);
+		getGraphics()->fillRect(_getView()->getColorSelBackground(), /*pDA->xoff*/DA_xoff, iFillTop, getWidth(), iFillHeight);
         if(pView->getShowPara()){
             _drawArrow(/*pDA->xoff*/DA_xoff, iFillTop, getWidth(), iFillHeight);
         }
@@ -1680,9 +1685,9 @@ void fp_TabRun::_draw(dg_DrawArgs* pDA)
 	else
 	{
 		if (!_getColorPG().isTransparent ())
-			getGR()->fillRect(_getColorPG(), /*pDA->xoff*/DA_xoff, iFillTop, getWidth(), iFillHeight);
+			getGraphics()->fillRect(_getColorPG(), /*pDA->xoff*/DA_xoff, iFillTop, getWidth(), iFillHeight);
 		if (!_getColorHL().isTransparent ())	
-			getGR()->fillRect(_getColorHL(), /*pDA->xoff*/DA_xoff, iFillTop, getWidth(), iFillHeight);
+			getGraphics()->fillRect(_getColorHL(), /*pDA->xoff*/DA_xoff, iFillTop, getWidth(), iFillHeight);
 		
         if(pView->getShowPara()){
             _drawArrow(/*pDA->xoff*/DA_xoff, iFillTop, getWidth(), iFillHeight);
@@ -1705,7 +1710,7 @@ void fp_TabRun::_draw(dg_DrawArgs* pDA)
 // Scale the vertical line thickness for printers
 //
 		UT_sint32 ithick =  getToplineThickness();
-		getGR()->fillRect(clrFG, /*pDA->xoff*/DA_xoff+getWidth()-ithick, iFillTop, ithick, iFillHeight);
+		getGraphics()->fillRect(clrFG, /*pDA->xoff*/DA_xoff+getWidth()-ithick, iFillTop, ithick, iFillHeight);
 	}
 }
 
@@ -1714,7 +1719,7 @@ void fp_TabRun::_draw(dg_DrawArgs* pDA)
 //////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////
 
-fp_ForcedLineBreakRun::fp_ForcedLineBreakRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen) : fp_Run(pBL, pG, iOffsetFirst, iLen, FPRUN_FORCEDLINEBREAK)
+fp_ForcedLineBreakRun::fp_ForcedLineBreakRun(fl_BlockLayout* pBL,UT_uint32 iOffsetFirst, UT_uint32 iLen) : fp_Run(pBL, iOffsetFirst, iLen, FPRUN_FORCEDLINEBREAK)
 {
 	//UT_DEBUGMSG(("fp_ForcedLineBreakRun constructor\n"));
 	lookupProperties();
@@ -1741,7 +1746,7 @@ void fp_ForcedLineBreakRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 		if (pPropRun && (FPRUN_TEXT == pPropRun->getType()))
 		{
 			fp_TextRun* pTextRun = static_cast<fp_TextRun*>(pPropRun);
-			getGR()->setFont(pTextRun->getFont());
+			getGraphics()->setFont(pTextRun->getFont());
 		}
 		else
 		{
@@ -1749,9 +1754,9 @@ void fp_ForcedLineBreakRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 			FL_DocLayout * pLayout = getBlock()->getDocLayout();
 
 			GR_Font * pFont = const_cast<GR_Font *>(pLayout->findFont(pSpanAP,pBlockAP,pSectionAP));
-			getGR()->setFont(pFont);
+			getGraphics()->setFont(pFont);
 		}
-		_setWidth(getGR()->measureString(pEOP, 0, iTextLen, NULL));
+		_setWidth(getGraphics()->measureString(pEOP, 0, iTextLen, NULL));
 		xxx_UT_DEBUGMSG(("fp_EndOfParagraphRun::lookupProperties: width %d\n", getWidth()));
 	}
 	else
@@ -1834,12 +1839,12 @@ void fp_ForcedLineBreakRun::findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_
 void fp_ForcedLineBreakRun::_clearScreen(bool /* bFullLineHeightRect */)
 {
 	UT_ASSERT(!isDirty());
-	UT_ASSERT(getGR()->queryProperties(GR_Graphics::DGP_SCREEN));
+	UT_ASSERT(getGraphics()->queryProperties(GR_Graphics::DGP_SCREEN));
 }
 
 void fp_ForcedLineBreakRun::_draw(dg_DrawArgs* pDA)
 {
-	UT_ASSERT(pDA->pG == getGR());
+	UT_ASSERT(pDA->pG == getGraphics());
 
 	UT_sint32 iXoffText = 0;
 	UT_sint32 iYoffText = 0;
@@ -1854,7 +1859,7 @@ void fp_ForcedLineBreakRun::_draw(dg_DrawArgs* pDA)
     	return;
     }
 
-	UT_ASSERT(pDA->pG == getGR());
+	UT_ASSERT(pDA->pG == getGraphics());
 
 	UT_uint32 iRunBase = getBlock()->getPosition() + getBlockOffset();
 
@@ -1881,7 +1886,7 @@ void fp_ForcedLineBreakRun::_draw(dg_DrawArgs* pDA)
 	if (pPropRun && (FPRUN_TEXT == pPropRun->getType()))
     {
 		fp_TextRun* pTextRun = static_cast<fp_TextRun*>(pPropRun);
-		getGR()->setFont(pTextRun->getFont());
+		getGraphics()->setFont(pTextRun->getFont());
 		iAscent = pTextRun->getAscent();
     }
 	else
@@ -1895,8 +1900,8 @@ void fp_ForcedLineBreakRun::_draw(dg_DrawArgs* pDA)
 		FL_DocLayout * pLayout = getBlock()->getDocLayout();
 
 		GR_Font * pFont = const_cast<GR_Font *>(pLayout->findFont(pSpanAP,pBlockAP,pSectionAP));
-		getGR()->setFont(pFont);
-		iAscent = getGR()->getFontAscent();
+		getGraphics()->setFont(pFont);
+		iAscent = getGraphics()->getFontAscent();
     }
 
 	// if we currently have a 0 width, i.e., we draw in response to the
@@ -1906,7 +1911,7 @@ void fp_ForcedLineBreakRun::_draw(dg_DrawArgs* pDA)
 	//	if(!getWidth())
 	//		bWidthChange = true;
 
-	_setWidth(getGR()->measureString(pEOP, 0, iTextLen, NULL));
+	_setWidth(getGraphics()->measureString(pEOP, 0, iTextLen, NULL));
 	// 	if(bWidthChange)
 	//	{
 	//		getLine()->layout();
@@ -1914,7 +1919,7 @@ void fp_ForcedLineBreakRun::_draw(dg_DrawArgs* pDA)
 	//		return;
 	//	}
 
-	_setHeight(getGR()->getFontHeight());
+	_setHeight(getGraphics()->getFontHeight());
 	iXoffText = pDA->xoff;
 
 	if(getBlock()->getDominantDirection() == FRIBIDI_TYPE_RTL)
@@ -1928,17 +1933,17 @@ void fp_ForcedLineBreakRun::_draw(dg_DrawArgs* pDA)
 	if (bIsSelected)
     {
 
-		getGR()->fillRect(_getView()->getColorSelBackground(), iXoffText, iYoffText, getWidth(), getLine()->getHeight());
+		getGraphics()->fillRect(_getView()->getColorSelBackground(), iXoffText, iYoffText, getWidth(), getLine()->getHeight());
     }
 	else
     {
-		getGR()->fillRect(_getColorPG(), iXoffText, iYoffText, getWidth(), getLine()->getHeight());
+		getGraphics()->fillRect(_getColorPG(), iXoffText, iYoffText, getWidth(), getLine()->getHeight());
     }
 	if (pView->getShowPara())
     {
 		// Draw pilcrow
-		getGR()->setColor(clrShowPara);
-		getGR()->drawChars(pEOP, 0, iTextLen, iXoffText, iYoffText);
+		getGraphics()->setColor(clrShowPara);
+		getGraphics()->drawChars(pEOP, 0, iTextLen, iXoffText, iYoffText);
     }
 
 }
@@ -1947,7 +1952,7 @@ void fp_ForcedLineBreakRun::_draw(dg_DrawArgs* pDA)
 //////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////
 
-fp_FieldStartRun::fp_FieldStartRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen) : fp_Run(pBL, pG, iOffsetFirst, iLen, FPRUN_FIELDSTARTRUN)
+fp_FieldStartRun::fp_FieldStartRun(fl_BlockLayout* pBL, UT_uint32 iOffsetFirst, UT_uint32 iLen) : fp_Run(pBL, iOffsetFirst, iLen, FPRUN_FIELDSTARTRUN)
 {
 	lookupProperties();
 }
@@ -1995,18 +2000,18 @@ void fp_FieldStartRun::findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint3
 void fp_FieldStartRun::_clearScreen(bool /* bFullLineHeightRect */)
 {
 	UT_ASSERT(!isDirty());
-	UT_ASSERT(getGR()->queryProperties(GR_Graphics::DGP_SCREEN));
+	UT_ASSERT(getGraphics()->queryProperties(GR_Graphics::DGP_SCREEN));
 }
 
 void fp_FieldStartRun::_draw(dg_DrawArgs* pDA)
 {
-	UT_ASSERT(pDA->pG == getGR());
+	UT_ASSERT(pDA->pG == getGraphics());
 }
 
 //////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////
 
-fp_FieldEndRun::fp_FieldEndRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen) : fp_Run(pBL, pG, iOffsetFirst, iLen, FPRUN_FIELDENDRUN)
+fp_FieldEndRun::fp_FieldEndRun(fl_BlockLayout* pBL, UT_uint32 iOffsetFirst, UT_uint32 iLen) : fp_Run(pBL, iOffsetFirst, iLen, FPRUN_FIELDENDRUN)
 {
 	lookupProperties();
 }
@@ -2053,12 +2058,12 @@ void fp_FieldEndRun::findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32&
 void fp_FieldEndRun::_clearScreen(bool /* bFullLineHeightRect */)
 {
 	UT_ASSERT(!isDirty());
-	UT_ASSERT(getGR()->queryProperties(GR_Graphics::DGP_SCREEN));
+	UT_ASSERT(getGraphics()->queryProperties(GR_Graphics::DGP_SCREEN));
 }
 
 void fp_FieldEndRun::_draw(dg_DrawArgs* pDA)
 {
-	UT_ASSERT(pDA->pG == getGR());
+	UT_ASSERT(pDA->pG == getGraphics());
 }
 
 //////////////////////////////////////////////////////////////////
@@ -2067,10 +2072,9 @@ void fp_FieldEndRun::_draw(dg_DrawArgs* pDA)
 
 
 fp_BookmarkRun::fp_BookmarkRun( fl_BlockLayout* pBL,
-								GR_Graphics* pG,
 								UT_uint32 iOffsetFirst,
 								UT_uint32 /*iLen*/)
-	: fp_Run(pBL, pG, iOffsetFirst, 1, FPRUN_BOOKMARK)
+	: fp_Run(pBL, iOffsetFirst, 1, FPRUN_BOOKMARK)
 {
 	m_pBookmark = getBlock()->getBookmark(iOffsetFirst);
 	UT_ASSERT(m_pBookmark);
@@ -2133,7 +2137,7 @@ void fp_BookmarkRun::findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32&
 
 void fp_BookmarkRun::_clearScreen(bool /* bFullLineHeightRect */)
 {
-	UT_ASSERT(getGR()->queryProperties(GR_Graphics::DGP_SCREEN));
+	UT_ASSERT(getGraphics()->queryProperties(GR_Graphics::DGP_SCREEN));
 
    	FV_View* pView = _getView();
     if(!pView || !pView->getShowPara())
@@ -2146,15 +2150,15 @@ void fp_BookmarkRun::_clearScreen(bool /* bFullLineHeightRect */)
 	getLine()->getScreenOffsets(this, xoff, yoff);
 
 	if(m_bIsStart)
-		getGR()->fillRect(_getColorPG(), xoff, yoff, 4, 8);
+		getGraphics()->fillRect(_getColorPG(), xoff, yoff, 4, 8);
 	else
-		getGR()->fillRect(_getColorPG(), xoff - 4, yoff, 4, 8);
+		getGraphics()->fillRect(_getColorPG(), xoff - 4, yoff, 4, 8);
 
 }
 
 void fp_BookmarkRun::_draw(dg_DrawArgs* pDA)
 {
-    if (!(getGR()->queryProperties(GR_Graphics::DGP_SCREEN))){
+    if (!(getGraphics()->queryProperties(GR_Graphics::DGP_SCREEN))){
         return;
     }
 
@@ -2164,7 +2168,7 @@ void fp_BookmarkRun::_draw(dg_DrawArgs* pDA)
     	return;
     }
 
-	UT_ASSERT(pDA->pG == getGR());
+	UT_ASSERT(pDA->pG == getGraphics());
 
 	UT_uint32 iRunBase = getBlock()->getPosition() + getBlockOffset();
 
@@ -2180,7 +2184,7 @@ void fp_BookmarkRun::_draw(dg_DrawArgs* pDA)
 	if (/* pView->getFocus()!=AV_FOCUS_NONE && */	(iSel1 <= iRunBase) && (iSel2 > iRunBase))
 		bIsSelected = true;
 
-	getGR()->setColor(_getView()->getColorShowPara());
+	getGraphics()->setColor(_getView()->getColorShowPara());
 
 
 	#define NPOINTS 4
@@ -2211,7 +2215,7 @@ void fp_BookmarkRun::_draw(dg_DrawArgs* pDA)
 
 
     UT_RGBColor clrShowPara = _getView()->getColorShowPara();
-    getGR()->polygon(clrShowPara,points,NPOINTS);
+    getGraphics()->polygon(clrShowPara,points,NPOINTS);
     #undef NPOINTS
 
 }
@@ -2220,10 +2224,9 @@ void fp_BookmarkRun::_draw(dg_DrawArgs* pDA)
 //////////////////////////////////////////////////////////////////
 
 fp_HyperlinkRun::fp_HyperlinkRun( fl_BlockLayout* pBL,
-								GR_Graphics* pG,
-								UT_uint32 iOffsetFirst,
+								  UT_uint32 iOffsetFirst,
 								UT_uint32 /*iLen*/)
-	: fp_Run(pBL, pG, iOffsetFirst, 1, FPRUN_HYPERLINK)
+	: fp_Run(pBL, iOffsetFirst, 1, FPRUN_HYPERLINK)
 {
 	_setLength(1);
 	_setDirty(false);
@@ -2323,9 +2326,9 @@ void fp_HyperlinkRun::_draw(dg_DrawArgs* /*pDA*/)
 //////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////
 fp_EndOfParagraphRun::fp_EndOfParagraphRun(fl_BlockLayout* pBL,
-										   GR_Graphics* pG, UT_uint32 iOffsetFirst,
+										   UT_uint32 iOffsetFirst,
 										   UT_uint32 iLen)
-	: fp_Run(pBL, pG, iOffsetFirst, iLen, FPRUN_ENDOFPARAGRAPH)
+	: fp_Run(pBL, iOffsetFirst, iLen, FPRUN_ENDOFPARAGRAPH)
 {
 
 	_setLength(1);
@@ -2376,7 +2379,7 @@ void fp_EndOfParagraphRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 		if (pPropRun && (FPRUN_TEXT == pPropRun->getType()))
 		{
 			fp_TextRun* pTextRun = static_cast<fp_TextRun*>(pPropRun);
-			getGR()->setFont(pTextRun->getFont());
+			getGraphics()->setFont(pTextRun->getFont());
 		}
 		else
 		{
@@ -2384,9 +2387,9 @@ void fp_EndOfParagraphRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 			FL_DocLayout * pLayout = getBlock()->getDocLayout();
 
 			GR_Font * pFont = const_cast<GR_Font *>(pLayout->findFont(pSpanAP,pBlockAP,pSectionAP));
-			getGR()->setFont(pFont);
+			getGraphics()->setFont(pFont);
 		}
-		m_iDrawWidth  = getGR()->measureString(pEOP, 0, iTextLen, NULL);
+		m_iDrawWidth  = getGraphics()->measureString(pEOP, 0, iTextLen, NULL);
 		xxx_UT_DEBUGMSG(("fp_EndOfParagraphRun::lookupProperties: width %d\n", getWidth()));
 	}
 	else
@@ -2466,7 +2469,7 @@ void fp_EndOfParagraphRun::findPointCoords(UT_uint32 iOffset,
 void fp_EndOfParagraphRun::_clearScreen(bool /* bFullLineHeightRect */)
 {
 	UT_ASSERT(!isDirty());
-	UT_ASSERT(getGR()->queryProperties(GR_Graphics::DGP_SCREEN));
+	UT_ASSERT(getGraphics()->queryProperties(GR_Graphics::DGP_SCREEN));
 
 	UT_sint32 xoff = 0, yoff = 0;
 	getLine()->getScreenOffsets(this, xoff, yoff);
@@ -2475,7 +2478,7 @@ void fp_EndOfParagraphRun::_clearScreen(bool /* bFullLineHeightRect */)
 	{
 		xoff -= m_iDrawWidth;
 	}
-	getGR()->fillRect(_getColorPG(), xoff, yoff+1, m_iDrawWidth, getLine()->getHeight()+1);
+	getGraphics()->fillRect(_getColorPG(), xoff, yoff+1, m_iDrawWidth, getLine()->getHeight()+1);
 }
 
 /*!
@@ -2505,7 +2508,7 @@ void fp_EndOfParagraphRun::_draw(dg_DrawArgs* pDA)
     	return;
     }
 
-	UT_ASSERT(pDA->pG == getGR());
+	UT_ASSERT(pDA->pG == getGraphics());
 
 	UT_uint32 iRunBase = getBlock()->getPosition() + getBlockOffset();
 
@@ -2529,7 +2532,7 @@ void fp_EndOfParagraphRun::_draw(dg_DrawArgs* pDA)
 	if (pPropRun && (FPRUN_TEXT == pPropRun->getType()))
 	{
 		fp_TextRun* pTextRun = static_cast<fp_TextRun*>(pPropRun);
-		getGR()->setFont(pTextRun->getFont());
+		getGraphics()->setFont(pTextRun->getFont());
 		iAscent = pTextRun->getAscent();
 	}
 	else
@@ -2543,8 +2546,8 @@ void fp_EndOfParagraphRun::_draw(dg_DrawArgs* pDA)
 		FL_DocLayout * pLayout = getBlock()->getDocLayout();
 
 		GR_Font * pFont = const_cast<GR_Font *>(pLayout->findFont(pSpanAP,pBlockAP,pSectionAP));
-		getGR()->setFont(pFont);
-		iAscent = getGR()->getFontAscent();
+		getGraphics()->setFont(pFont);
+		iAscent = getGraphics()->getFontAscent();
 	}
 
 	// if we currently have a 0 width, i.e., we draw in response to the
@@ -2554,7 +2557,7 @@ void fp_EndOfParagraphRun::_draw(dg_DrawArgs* pDA)
 //	if(!m_iDrawWidth)
 //		bWidthChange = true;
 
-	m_iDrawWidth  = getGR()->measureString(pEOP, 0, iTextLen, NULL);
+	m_iDrawWidth  = getGraphics()->measureString(pEOP, 0, iTextLen, NULL);
 // 	if(bWidthChange)
 //	{
 //		getLine()->layout();
@@ -2562,7 +2565,7 @@ void fp_EndOfParagraphRun::_draw(dg_DrawArgs* pDA)
 //		return;
 //	}
 
-	_setHeight(getGR()->getFontHeight());
+	_setHeight(getGraphics()->getFontHeight());
 	m_iXoffText = pDA->xoff;
 
 	if(getBlock()->getDominantDirection() == FRIBIDI_TYPE_RTL)
@@ -2575,19 +2578,19 @@ void fp_EndOfParagraphRun::_draw(dg_DrawArgs* pDA)
 
 	if (bIsSelected)
 	{
-		getGR()->fillRect(_getView()->getColorSelBackground(), m_iXoffText, m_iYoffText, m_iDrawWidth, getLine()->getHeight());
+		getGraphics()->fillRect(_getView()->getColorSelBackground(), m_iXoffText, m_iYoffText, m_iDrawWidth, getLine()->getHeight());
 	}
 	else
 	{
-		getGR()->fillRect(_getColorPG(), m_iXoffText, m_iYoffText, m_iDrawWidth, getLine()->getHeight());
+		getGraphics()->fillRect(_getColorPG(), m_iXoffText, m_iYoffText, m_iDrawWidth, getLine()->getHeight());
 	}
 	if (pView->getShowPara())
 	{
 		// Draw pilcrow
 		// use the hard-coded colour only if not revised
 		if(!getRevisions())
-			getGR()->setColor(pView->getColorShowPara());
-        getGR()->drawChars(pEOP, 0, iTextLen, m_iXoffText, m_iYoffText);
+			getGraphics()->setColor(pView->getColorShowPara());
+        getGraphics()->drawChars(pEOP, 0, iTextLen, m_iXoffText, m_iYoffText);
 	}
 }
 
@@ -2595,17 +2598,19 @@ void fp_EndOfParagraphRun::_draw(dg_DrawArgs* pDA)
 //////////////////////////////////////////////////////////////////
 
 
-fp_ImageRun::fp_ImageRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen, FG_Graphic * pFG) : fp_Run(pBL, pG, iOffsetFirst, iLen, FPRUN_IMAGE)
+fp_ImageRun::fp_ImageRun(fl_BlockLayout* pBL, UT_uint32 iOffsetFirst, UT_uint32 iLen, FG_Graphic * pFG) : fp_Run(pBL, iOffsetFirst, iLen, FPRUN_IMAGE)
 {
 #if 0	// put this back later
 	UT_ASSERT(pImage);
 #endif
 
 	m_pFGraphic = pFG;
-	m_pImage = pFG->generateImage(pG, NULL, 0, 0);
+	m_pImage = pFG->generateImage(getGraphics(), NULL, 0, 0);
 	m_sCachedWidthProp = pFG->getWidthProp();
 	m_sCachedHeightProp = pFG->getHeightProp();
 	m_iPointHeight = 0;
+	m_pSpanAP = NULL;
+	m_iGraphicTick = pBL->getDocLayout()->getGraphicTick();
 	lookupProperties();
 }
 
@@ -2621,11 +2626,36 @@ fp_ImageRun::~fp_ImageRun()
 	}
 }
 
+void fp_ImageRun::regenerateImage(void)
+{
+	// Also get max width, height ready for generateImage.
+
+	fl_DocSectionLayout * pDSL = getBlock()->getDocSectionLayout();
+	fp_Page * p = NULL;
+	if(pDSL->getFirstContainer())
+	{
+		p = pDSL->getFirstContainer()->getPage();
+	}
+	else
+	{
+		p = pDSL->getDocLayout()->getNthPage(0);
+	}
+	UT_sint32 maxW = p->getWidth() - UT_convertToLogicalUnits("0.1in");
+	UT_sint32 maxH = p->getHeight() - UT_convertToLogicalUnits("0.1in");
+	maxW -= pDSL->getLeftMargin() + pDSL->getRightMargin();
+	maxH -= pDSL->getTopMargin() + pDSL->getBottomMargin();
+	DELETEP(m_pImage);
+	m_pImage = m_pFGraphic->generateImage(getGraphics(), m_pSpanAP, maxW, maxH);
+	m_iGraphicTick = getBlock()->getDocLayout()->getGraphicTick();
+
+}
+
 void fp_ImageRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 									const PP_AttrProp * /*pBlockAP*/,
 									const PP_AttrProp * /*pSectionAP*/)
 {
 	fd_Field * fd = NULL;
+	m_pSpanAP = pSpanAP;
 	getBlock()->getField(getBlockOffset(), fd);
 	_setField(fd);
 	const XML_Char * szWidth = NULL;
@@ -2653,8 +2683,8 @@ void fp_ImageRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 	{
 		p = pDSL->getDocLayout()->getNthPage(0);
 	}
-	UT_sint32 maxW = p->getWidth() - UT_convertToLogicalUnits("0.1in"), 
-		maxH = p->getHeight() - UT_convertToLogicalUnits("0.1in");
+	UT_sint32 maxW = p->getWidth() - UT_convertToLogicalUnits("0.1in"); 
+	UT_sint32 maxH = p->getHeight() - UT_convertToLogicalUnits("0.1in");
 	maxW -= pDSL->getLeftMargin() + pDSL->getRightMargin();
 	maxH -= pDSL->getTopMargin() + pDSL->getBottomMargin();
 
@@ -2666,7 +2696,7 @@ void fp_ImageRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 		m_sCachedWidthProp = szWidth;
 		m_sCachedHeightProp = szHeight;
 		DELETEP(m_pImage);
-		m_pImage = m_pFGraphic->generateImage(getGR(), pSpanAP, maxW, maxH);
+		m_pImage = m_pFGraphic->generateImage(getGraphics(), pSpanAP, maxW, maxH);
 		markAsDirty();
 		if(getLine())
 		{
@@ -2675,8 +2705,8 @@ void fp_ImageRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 	}
 	if (m_pImage)
 	{
-		_setWidth(getGR()->tlu(m_pImage->getDisplayWidth()));
-		_setHeight(getGR()->tlu(m_pImage->getDisplayHeight()));
+		_setWidth(getGraphics()->tlu(m_pImage->getDisplayWidth()));
+		_setHeight(getGraphics()->tlu(m_pImage->getDisplayHeight()));
 	}
 	else
 	{
@@ -2704,7 +2734,7 @@ void fp_ImageRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 	{
 		_setFont(pFont);
 	}
-	m_iPointHeight = getGR()->getFontAscent(pFont) + getGR()->getFontDescent(pFont);
+	m_iPointHeight = getGraphics()->getFontAscent(pFont) + getGraphics()->getFontDescent(pFont);
 }
 
 bool fp_ImageRun::canBreakAfter(void) const
@@ -2767,7 +2797,7 @@ void fp_ImageRun::_clearScreen(bool  bFullLineHeightRect )
 {
 	UT_ASSERT(!isDirty());
 
-	UT_ASSERT(getGR()->queryProperties(GR_Graphics::DGP_SCREEN));
+	UT_ASSERT(getGraphics()->queryProperties(GR_Graphics::DGP_SCREEN));
 
 	UT_sint32 xoff = 0, yoff = 0;
 
@@ -2775,7 +2805,7 @@ void fp_ImageRun::_clearScreen(bool  bFullLineHeightRect )
 	getLine()->getScreenOffsets(this, xoff, yoff);
 	UT_sint32 iLineHeight = getLine()->getHeight();
 
-	getGR()->fillRect(_getColorPG(),xoff, yoff, getWidth(), iLineHeight);
+	getGraphics()->fillRect(_getColorPG(),xoff, yoff, getWidth(), iLineHeight);
 }
 
 const char * fp_ImageRun::getDataId(void) const
@@ -2785,39 +2815,44 @@ const char * fp_ImageRun::getDataId(void) const
 
 void fp_ImageRun::_drawResizeBox(UT_Rect box)
 {
+
 	UT_sint32 left = box.left;
 	UT_sint32 top = box.top;
-	UT_sint32 right = box.left + box.width - getGR()->tlu(1);
-	UT_sint32 bottom = box.top + box.height - getGR()->tlu(1);
+	UT_sint32 right = box.left + box.width - getGraphics()->tlu(1);
+	UT_sint32 bottom = box.top + box.height - getGraphics()->tlu(1);
 	
-	getGR()->setLineProperties(1.0,
+	getGraphics()->setLineProperties(1.0,
 								 GR_Graphics::JOIN_MITER,
 								 GR_Graphics::CAP_BUTT,
 								 GR_Graphics::LINE_SOLID);	
 	
 	// draw some really fancy box here
-	getGR()->setColor(UT_RGBColor(98,129,131));
-	getGR()->drawLine(left, top, right, top);
-	getGR()->drawLine(left, top, left, bottom);
-	getGR()->setColor(UT_RGBColor(230,234,238));
-	getGR()->drawLine(box.left+getGR()->tlu(1), box.top + getGR()->tlu(1), right - getGR()->tlu(1), top+getGR()->tlu(1));
-	getGR()->drawLine(box.left+getGR()->tlu(1), box.top + getGR()->tlu(1), left + getGR()->tlu(1), bottom - getGR()->tlu(1));
-	getGR()->setColor(UT_RGBColor(98,129,131));
-	getGR()->drawLine(right - getGR()->tlu(1), top + getGR()->tlu(1), right - getGR()->tlu(1), bottom - getGR()->tlu(1));
-	getGR()->drawLine(left + getGR()->tlu(1), bottom - getGR()->tlu(1), right - getGR()->tlu(1), bottom - getGR()->tlu(1));
-	getGR()->setColor(UT_RGBColor(49,85,82));
-	getGR()->drawLine(right, top, right, bottom);
-	getGR()->drawLine(left, bottom, right, bottom);
-	getGR()->fillRect(UT_RGBColor(156,178,180),box.left + getGR()->tlu(2), box.top + getGR()->tlu(2), box.width - getGR()->tlu(4), box.height - getGR()->tlu(4));
+	getGraphics()->setColor(UT_RGBColor(98,129,131));
+	getGraphics()->drawLine(left, top, right, top);
+	getGraphics()->drawLine(left, top, left, bottom);
+	getGraphics()->setColor(UT_RGBColor(230,234,238));
+	getGraphics()->drawLine(box.left+getGraphics()->tlu(1), box.top + getGraphics()->tlu(1), right - getGraphics()->tlu(1), top+getGraphics()->tlu(1));
+	getGraphics()->drawLine(box.left+getGraphics()->tlu(1), box.top + getGraphics()->tlu(1), left + getGraphics()->tlu(1), bottom - getGraphics()->tlu(1));
+	getGraphics()->setColor(UT_RGBColor(98,129,131));
+	getGraphics()->drawLine(right - getGraphics()->tlu(1), top + getGraphics()->tlu(1), right - getGraphics()->tlu(1), bottom - getGraphics()->tlu(1));
+	getGraphics()->drawLine(left + getGraphics()->tlu(1), bottom - getGraphics()->tlu(1), right - getGraphics()->tlu(1), bottom - getGraphics()->tlu(1));
+	getGraphics()->setColor(UT_RGBColor(49,85,82));
+	getGraphics()->drawLine(right, top, right, bottom);
+	getGraphics()->drawLine(left, bottom, right, bottom);
+	getGraphics()->fillRect(UT_RGBColor(156,178,180),box.left + getGraphics()->tlu(2), box.top + getGraphics()->tlu(2), box.width - getGraphics()->tlu(4), box.height - getGraphics()->tlu(4));
 }
 
 void fp_ImageRun::_draw(dg_DrawArgs* pDA)
 {
-	UT_ASSERT(pDA->pG == getGR());
+	UT_ASSERT(pDA->pG == getGraphics());
+	if(getBlock()->getDocLayout()->getGraphicTick() != m_iGraphicTick)
+	{
+		regenerateImage();
+	}
 
 	UT_sint32 xoff = 0, yoff = 0;
 
-	if(getGR()->queryProperties(GR_Graphics::DGP_SCREEN))
+	if(getGraphics()->queryProperties(GR_Graphics::DGP_SCREEN))
 	{	
 		getLine()->getScreenOffsets(this, xoff, yoff);
 	}
@@ -2825,6 +2860,7 @@ void fp_ImageRun::_draw(dg_DrawArgs* pDA)
 	{
 		getLine()->getOffsets(this, xoff, yoff);
 	}
+	
 
 //
 // Sevior's infamous + 1....
@@ -2840,9 +2876,9 @@ void fp_ImageRun::_draw(dg_DrawArgs* pDA)
 	// SEVIOR Says don't touch this if statement unless you know how to make windows
 	// and gnome-print print images. Otherwise your commit priviliges will be revoked.
 	//
-	if(getGR()->queryProperties(GR_Graphics::DGP_SCREEN))
+	if(getGraphics()->queryProperties(GR_Graphics::DGP_SCREEN))
 	{
-	    getGR()->setClipRect(&pClipRect);
+	    getGraphics()->setClipRect(&pClipRect);
 	}
 
 	FV_View* pView = _getView();
@@ -2850,10 +2886,10 @@ void fp_ImageRun::_draw(dg_DrawArgs* pDA)
 	{
 		// draw the image (always)
 		xxx_UT_DEBUGMSG(("SEVIOR: Drawing image now \n"));
-		getGR()->drawImage(m_pImage, xoff, yoff);
+		getGraphics()->drawImage(m_pImage, xoff, yoff);
 
 		// if we're the selection, draw some pretty selection markers
-		if (getGR()->queryProperties(GR_Graphics::DGP_SCREEN))
+		if (getGraphics()->queryProperties(GR_Graphics::DGP_SCREEN))
 		{
 			UT_uint32 iRunBase = getBlock()->getPosition() + getBlockOffset();
 
@@ -2873,8 +2909,8 @@ void fp_ImageRun::_draw(dg_DrawArgs* pDA)
 			{
 				UT_uint32 top = yoff;
 				UT_uint32 left = xoff;
-				UT_uint32 right = xoff + getWidth() - getGR()->tlu(1);
-				UT_uint32 bottom = yoff + getHeight() - getGR()->tlu(1);
+				UT_uint32 right = xoff + getWidth() - getGraphics()->tlu(1);
+				UT_uint32 bottom = yoff + getHeight() - getGraphics()->tlu(1);
 
 				UT_sint32 boxSize = pView->getImageSelInfo();
 			
@@ -2882,11 +2918,11 @@ void fp_ImageRun::_draw(dg_DrawArgs* pDA)
 	
 				_drawResizeBox(UT_Rect(left, top, boxSize, boxSize));
 				_drawResizeBox(UT_Rect(left + (right - left)/2 - boxSize/2, top, boxSize, boxSize)); 				// North
-				_drawResizeBox(UT_Rect(right-boxSize+getGR()->tlu(1), top, boxSize, boxSize)); 									// North East
-				_drawResizeBox(UT_Rect(right-boxSize+getGR()->tlu(1), top + ((bottom - top) / 2) - boxSize/2, boxSize, boxSize)); // East
-				_drawResizeBox(UT_Rect(right-boxSize+getGR()->tlu(1), bottom - boxSize + getGR()->tlu(1), boxSize, boxSize)); 					// South East
-				_drawResizeBox(UT_Rect(left + (right - left)/2 - boxSize/2, bottom - boxSize + getGR()->tlu(1), boxSize, boxSize));// South
-				_drawResizeBox(UT_Rect(left, bottom - boxSize + getGR()->tlu(1), boxSize, boxSize)); 								// South West
+				_drawResizeBox(UT_Rect(right-boxSize+getGraphics()->tlu(1), top, boxSize, boxSize)); 									// North East
+				_drawResizeBox(UT_Rect(right-boxSize+getGraphics()->tlu(1), top + ((bottom - top) / 2) - boxSize/2, boxSize, boxSize)); // East
+				_drawResizeBox(UT_Rect(right-boxSize+getGraphics()->tlu(1), bottom - boxSize + getGraphics()->tlu(1), boxSize, boxSize)); 					// South East
+				_drawResizeBox(UT_Rect(left + (right - left)/2 - boxSize/2, bottom - boxSize + getGraphics()->tlu(1), boxSize, boxSize));// South
+				_drawResizeBox(UT_Rect(left, bottom - boxSize + getGraphics()->tlu(1), boxSize, boxSize)); 								// South West
 				_drawResizeBox(UT_Rect(left, top + ((bottom - top) / 2) - boxSize/2, boxSize, boxSize)); 			// West
 			}
 		}
@@ -2894,11 +2930,11 @@ void fp_ImageRun::_draw(dg_DrawArgs* pDA)
 	}
 	else
 	{
-		getGR()->fillRect(pView->getColorImage(), xoff, yoff, getWidth(), getHeight());
+		getGraphics()->fillRect(pView->getColorImage(), xoff, yoff, getWidth(), getHeight());
 	}
 
 	// unf*ck clipping rect
-	getGR()->setClipRect(NULL);
+	getGraphics()->setClipRect(NULL);
 }
 
 GR_Image * fp_ImageRun::getImage()
@@ -2938,8 +2974,8 @@ fp_FieldData fp_FieldFmts[] = {
 #undef  _FIELD
 #undef  _FIELDTYPE
 
-fp_FieldRun::fp_FieldRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen)
-	:	fp_Run(pBL, pG, iOffsetFirst, iLen, FPRUN_FIELD),
+fp_FieldRun::fp_FieldRun(fl_BlockLayout* pBL, UT_uint32 iOffsetFirst, UT_uint32 iLen)
+	:	fp_Run(pBL, iOffsetFirst, iLen, FPRUN_FIELD),
 		m_pFont(0),
 		m_iFieldType(FPFIELD_start),
 		m_pParameter(0)
@@ -2961,12 +2997,12 @@ bool fp_FieldRun::recalcWidth()
 	//lookupProperties();
 
 #ifndef WITH_PANGO
-	getGR()->setFont(m_pFont);
+	getGraphics()->setFont(m_pFont);
 #else
-	getGR()->setFont(_getPangoFont());
+	getGraphics()->setFont(_getPangoFont());
 #endif
 
-	UT_sint32 iNewWidth = getGR()->measureString(m_sFieldValue, 0, UT_UCS4_strlen(m_sFieldValue), aCharWidths);
+	UT_sint32 iNewWidth = getGraphics()->measureString(m_sFieldValue, 0, UT_UCS4_strlen(m_sFieldValue), aCharWidths);
 	UT_DEBUGMSG(("fp_FieldRun::recalcWidth: old width %d, new width %d\n", getWidth(), iNewWidth));
 	if (iNewWidth != getWidth())
 	{
@@ -3066,11 +3102,11 @@ bool fp_FieldRun::_setValue(UT_UCSChar *p_new_value)
 
 #ifndef WITH_PANGO
 			xxx_UT_DEBUGMSG(("Field_Run: calcValue Font set to %s \n",m_pFont->getFamily() ));
-			getGR()->setFont(m_pFont);
+			getGraphics()->setFont(m_pFont);
 #else
-			getGR()->setFont(m_pPangoFont);
+			getGraphics()->setFont(m_pPangoFont);
 #endif
-			UT_sint32 iNewWidth = getGR()->measureString(m_sFieldValue, 0, UT_UCS4_strlen(m_sFieldValue), aCharWidths);
+			UT_sint32 iNewWidth = getGraphics()->measureString(m_sFieldValue, 0, UT_UCS4_strlen(m_sFieldValue), aCharWidths);
 			if (iNewWidth != getWidth())
 			{
 				_setWidth(iNewWidth);
@@ -3117,7 +3153,7 @@ void fp_FieldRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 // with lists. I think this is a good solution for now. However it does mean
 // field-color of "ffffff", pure white is actually transparent.
 //
-	if(pszFieldColor && UT_strcmp(pszFieldColor,"transparent") != 0 && UT_strcmp(pszFieldColor,"ffffff" ) != 0 && getGR()->queryProperties(GR_Graphics::DGP_SCREEN))
+	if(pszFieldColor && UT_strcmp(pszFieldColor,"transparent") != 0 && UT_strcmp(pszFieldColor,"ffffff" ) != 0 && getGraphics()->queryProperties(GR_Graphics::DGP_SCREEN))
 	{
 		UT_RGBColor r;
 		UT_parseColor(pszFieldColor, r);
@@ -3182,9 +3218,9 @@ void fp_FieldRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 		xxx_UT_DEBUGMSG(("FieldRun: Lookup Properties Not a list Label \n"));
 	}
 
-	_setAscent(getGR()->getFontAscent(m_pFont));
-	_setDescent(getGR()->getFontDescent(m_pFont));
-	_setHeight(getGR()->getFontHeight(m_pFont));
+	_setAscent(getGraphics()->getFontAscent(m_pFont));
+	_setDescent(getGraphics()->getFontDescent(m_pFont));
+	_setHeight(getGraphics()->getFontHeight(m_pFont));
 
 	const XML_Char * pszPosition = PP_evalProperty("text-position",pSpanAP,pBlockAP,pSectionAP, pDoc, true);
 
@@ -3405,18 +3441,18 @@ void fp_FieldRun::_clearScreen(bool /* bFullLineHeightRect */)
 {
 	UT_ASSERT(!isDirty());
 
-	UT_ASSERT(getGR()->queryProperties(GR_Graphics::DGP_SCREEN));
+	UT_ASSERT(getGraphics()->queryProperties(GR_Graphics::DGP_SCREEN));
 	UT_sint32 xoff = 0, yoff = 0;
 
 	// need to clear full height of line, in case we had a selection
 	getLine()->getScreenOffsets(this, xoff, yoff);
 	UT_sint32 iLineHeight = getLine()->getHeight();
-	getGR()->fillRect(_getColorPG(), xoff, yoff, getWidth(), iLineHeight);
+	getGraphics()->fillRect(_getColorPG(), xoff, yoff, getWidth(), iLineHeight);
 }
 
 void fp_FieldRun::_defaultDraw(dg_DrawArgs* pDA)
 {
-	UT_ASSERT(pDA->pG == getGR());
+	UT_ASSERT(pDA->pG == getGraphics());
 
 	// TODO is this really needed
 	// should not be, since lookupProperties is called on
@@ -3439,7 +3475,7 @@ void fp_FieldRun::_defaultDraw(dg_DrawArgs* pDA)
 		iYdraw +=  getDescent(); // * 3/2
 	}
 
-	//if (getGR()->queryProperties(GR_Graphics::DGP_SCREEN))
+	//if (getGraphics()->queryProperties(GR_Graphics::DGP_SCREEN))
 	{
 		UT_uint32 iRunBase = getBlock()->getPosition() + getBlockOffset();
 
@@ -3466,20 +3502,20 @@ void fp_FieldRun::_defaultDraw(dg_DrawArgs* pDA)
 		{
 			UT_RGBColor color = _getView()->getColorSelBackground();
 			color -= _getView()->getColorFieldOffset();
-			getGR()->fillRect(color, pDA->xoff, iFillTop, getWidth(), iFillHeight);
+			getGraphics()->fillRect(color, pDA->xoff, iFillTop, getWidth(), iFillHeight);
 
 		}
 		else
 		{
 			// updateHighlightColor();
-			getGR()->fillRect(_getColorHL(), pDA->xoff, iFillTop, getWidth(), iFillHeight);
+			getGraphics()->fillRect(_getColorHL(), pDA->xoff, iFillTop, getWidth(), iFillHeight);
 		}
 	}
 
-	getGR()->setFont(m_pFont);
-	getGR()->setColor(_getColorFG());
+	getGraphics()->setFont(m_pFont);
+	getGraphics()->setColor(_getColorFG());
 
-	getGR()->drawChars(m_sFieldValue, 0, UT_UCS4_strlen(m_sFieldValue), pDA->xoff,iYdraw);
+	getGraphics()->drawChars(m_sFieldValue, 0, UT_UCS4_strlen(m_sFieldValue), pDA->xoff,iYdraw);
 //
 // Draw underline/overline/strikethough
 //
@@ -3491,7 +3527,7 @@ void fp_FieldRun::_defaultDraw(dg_DrawArgs* pDA)
 
 // BEGIN DOM work on some new fields
 
-fp_FieldCharCountRun::fp_FieldCharCountRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen) : fp_FieldRun(pBL, pG, iOffsetFirst, iLen)
+fp_FieldCharCountRun::fp_FieldCharCountRun(fl_BlockLayout* pBL, UT_uint32 iOffsetFirst, UT_uint32 iLen) : fp_FieldRun(pBL, iOffsetFirst, iLen)
 {
 }
 
@@ -3520,7 +3556,7 @@ bool fp_FieldCharCountRun::calculateValue(void)
 	return _setValue(sz_ucs_FieldValue);
 }
 
-fp_FieldNonBlankCharCountRun::fp_FieldNonBlankCharCountRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen) : fp_FieldRun(pBL, pG, iOffsetFirst, iLen)
+fp_FieldNonBlankCharCountRun::fp_FieldNonBlankCharCountRun(fl_BlockLayout* pBL, UT_uint32 iOffsetFirst, UT_uint32 iLen) : fp_FieldRun(pBL, iOffsetFirst, iLen)
 {
 }
 
@@ -3551,7 +3587,7 @@ bool fp_FieldNonBlankCharCountRun::calculateValue(void)
 	return _setValue(sz_ucs_FieldValue);
 }
 
-fp_FieldLineCountRun::fp_FieldLineCountRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen) : fp_FieldRun(pBL, pG, iOffsetFirst, iLen)
+fp_FieldLineCountRun::fp_FieldLineCountRun(fl_BlockLayout* pBL, UT_uint32 iOffsetFirst, UT_uint32 iLen) : fp_FieldRun(pBL, iOffsetFirst, iLen)
 {
 }
 
@@ -3582,7 +3618,7 @@ bool fp_FieldLineCountRun::calculateValue(void)
 	return _setValue(sz_ucs_FieldValue);
 }
 
-fp_FieldParaCountRun::fp_FieldParaCountRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen) : fp_FieldRun(pBL, pG, iOffsetFirst, iLen)
+fp_FieldParaCountRun::fp_FieldParaCountRun(fl_BlockLayout* pBL, UT_uint32 iOffsetFirst, UT_uint32 iLen) : fp_FieldRun(pBL, iOffsetFirst, iLen)
 {
 }
 
@@ -3614,7 +3650,7 @@ bool fp_FieldParaCountRun::calculateValue(void)
 	return _setValue(sz_ucs_FieldValue);
 }
 
-fp_FieldWordCountRun::fp_FieldWordCountRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen) : fp_FieldRun(pBL, pG, iOffsetFirst, iLen)
+fp_FieldWordCountRun::fp_FieldWordCountRun(fl_BlockLayout* pBL, UT_uint32 iOffsetFirst, UT_uint32 iLen) : fp_FieldRun(pBL, iOffsetFirst, iLen)
 {
 }
 
@@ -3646,7 +3682,7 @@ bool fp_FieldWordCountRun::calculateValue(void)
 }
 
 // mm/dd/yy notation
-fp_FieldMMDDYYRun::fp_FieldMMDDYYRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen) : fp_FieldRun(pBL, pG, iOffsetFirst, iLen)
+fp_FieldMMDDYYRun::fp_FieldMMDDYYRun(fl_BlockLayout* pBL,UT_uint32 iOffsetFirst, UT_uint32 iLen) : fp_FieldRun(pBL, iOffsetFirst, iLen)
 {
 }
 
@@ -3670,7 +3706,7 @@ bool fp_FieldMMDDYYRun::calculateValue(void)
 }
 
 // dd/mm/yy time
-fp_FieldDDMMYYRun::fp_FieldDDMMYYRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen) : fp_FieldRun(pBL, pG, iOffsetFirst, iLen)
+fp_FieldDDMMYYRun::fp_FieldDDMMYYRun(fl_BlockLayout* pBL,UT_uint32 iOffsetFirst, UT_uint32 iLen) : fp_FieldRun(pBL, iOffsetFirst, iLen)
 {
 }
 
@@ -3694,7 +3730,7 @@ bool fp_FieldDDMMYYRun::calculateValue(void)
 }
 
 // Month Day, Year
-fp_FieldMonthDayYearRun::fp_FieldMonthDayYearRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen) : fp_FieldRun(pBL, pG, iOffsetFirst, iLen)
+fp_FieldMonthDayYearRun::fp_FieldMonthDayYearRun(fl_BlockLayout* pBL,UT_uint32 iOffsetFirst, UT_uint32 iLen) : fp_FieldRun(pBL, iOffsetFirst, iLen)
 {
 }
 
@@ -3717,7 +3753,7 @@ bool fp_FieldMonthDayYearRun::calculateValue(void)
 	return _setValue(sz_ucs_FieldValue);
 }
 
-fp_FieldMthDayYearRun::fp_FieldMthDayYearRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen) : fp_FieldRun(pBL, pG, iOffsetFirst, iLen)
+fp_FieldMthDayYearRun::fp_FieldMthDayYearRun(fl_BlockLayout* pBL,UT_uint32 iOffsetFirst, UT_uint32 iLen) : fp_FieldRun(pBL, iOffsetFirst, iLen)
 {
 }
 
@@ -3740,7 +3776,7 @@ bool fp_FieldMthDayYearRun::calculateValue(void)
 	return _setValue(sz_ucs_FieldValue);
 }
 
-fp_FieldDefaultDateRun::fp_FieldDefaultDateRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen) : fp_FieldRun(pBL, pG, iOffsetFirst, iLen)
+fp_FieldDefaultDateRun::fp_FieldDefaultDateRun(fl_BlockLayout* pBL, UT_uint32 iOffsetFirst, UT_uint32 iLen) : fp_FieldRun(pBL, iOffsetFirst, iLen)
 {
 }
 
@@ -3763,7 +3799,7 @@ bool fp_FieldDefaultDateRun::calculateValue(void)
 	return _setValue(sz_ucs_FieldValue);
 }
 
-fp_FieldDefaultDateNoTimeRun::fp_FieldDefaultDateNoTimeRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen) : fp_FieldRun(pBL, pG, iOffsetFirst, iLen)
+fp_FieldDefaultDateNoTimeRun::fp_FieldDefaultDateNoTimeRun(fl_BlockLayout* pBL, UT_uint32 iOffsetFirst, UT_uint32 iLen) : fp_FieldRun(pBL, iOffsetFirst, iLen)
 {
 }
 
@@ -3786,7 +3822,7 @@ bool fp_FieldDefaultDateNoTimeRun::calculateValue(void)
 	return _setValue(sz_ucs_FieldValue);
 }
 
-fp_FieldWkdayRun::fp_FieldWkdayRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen) : fp_FieldRun(pBL, pG, iOffsetFirst, iLen)
+fp_FieldWkdayRun::fp_FieldWkdayRun(fl_BlockLayout* pBL,UT_uint32 iOffsetFirst, UT_uint32 iLen) : fp_FieldRun(pBL, iOffsetFirst, iLen)
 {
 }
 
@@ -3809,7 +3845,7 @@ bool fp_FieldWkdayRun::calculateValue(void)
 	return _setValue(sz_ucs_FieldValue);
 }
 
-fp_FieldDOYRun::fp_FieldDOYRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen) : fp_FieldRun(pBL, pG, iOffsetFirst, iLen)
+fp_FieldDOYRun::fp_FieldDOYRun(fl_BlockLayout* pBL, UT_uint32 iOffsetFirst, UT_uint32 iLen) : fp_FieldRun(pBL, iOffsetFirst, iLen)
 {
 }
 
@@ -3832,7 +3868,7 @@ bool fp_FieldDOYRun::calculateValue(void)
 	return _setValue(sz_ucs_FieldValue);
 }
 
-fp_FieldMilTimeRun::fp_FieldMilTimeRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen) : fp_FieldRun(pBL, pG, iOffsetFirst, iLen)
+fp_FieldMilTimeRun::fp_FieldMilTimeRun(fl_BlockLayout* pBL, UT_uint32 iOffsetFirst, UT_uint32 iLen) : fp_FieldRun(pBL, iOffsetFirst, iLen)
 {
 }
 
@@ -3855,7 +3891,7 @@ bool fp_FieldMilTimeRun::calculateValue(void)
 	return _setValue(sz_ucs_FieldValue);
 }
 
-fp_FieldAMPMRun::fp_FieldAMPMRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen) : fp_FieldRun(pBL, pG, iOffsetFirst, iLen)
+fp_FieldAMPMRun::fp_FieldAMPMRun(fl_BlockLayout* pBL, UT_uint32 iOffsetFirst, UT_uint32 iLen) : fp_FieldRun(pBL, iOffsetFirst, iLen)
 {
 }
 
@@ -3878,7 +3914,7 @@ bool fp_FieldAMPMRun::calculateValue(void)
 	return _setValue(sz_ucs_FieldValue);
 }
 
-fp_FieldTimeEpochRun::fp_FieldTimeEpochRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen) : fp_FieldRun(pBL, pG, iOffsetFirst, iLen)
+fp_FieldTimeEpochRun::fp_FieldTimeEpochRun(fl_BlockLayout* pBL,  UT_uint32 iOffsetFirst, UT_uint32 iLen) : fp_FieldRun(pBL, iOffsetFirst, iLen)
 {
 }
 
@@ -3899,7 +3935,7 @@ bool fp_FieldTimeEpochRun::calculateValue(void)
 	return _setValue(sz_ucs_FieldValue);
 }
 
-fp_FieldDateTimeCustomRun::fp_FieldDateTimeCustomRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen) : fp_FieldRun(pBL, pG, iOffsetFirst, iLen)
+fp_FieldDateTimeCustomRun::fp_FieldDateTimeCustomRun(fl_BlockLayout* pBL, UT_uint32 iOffsetFirst, UT_uint32 iLen) : fp_FieldRun(pBL, iOffsetFirst, iLen)
 {
 }
 
@@ -3932,7 +3968,7 @@ bool fp_FieldDateTimeCustomRun::calculateValue(void)
 	return false;
 }
 
-fp_FieldTimeZoneRun::fp_FieldTimeZoneRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen) : fp_FieldRun(pBL, pG, iOffsetFirst, iLen)
+fp_FieldTimeZoneRun::fp_FieldTimeZoneRun(fl_BlockLayout* pBL,UT_uint32 iOffsetFirst, UT_uint32 iLen) : fp_FieldRun(pBL, iOffsetFirst, iLen)
 {
 }
 
@@ -3955,7 +3991,7 @@ bool fp_FieldTimeZoneRun::calculateValue(void)
 	return _setValue(sz_ucs_FieldValue);
 }
 
-fp_FieldBuildIdRun::fp_FieldBuildIdRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen) : fp_FieldRun(pBL, pG, iOffsetFirst, iLen)
+fp_FieldBuildIdRun::fp_FieldBuildIdRun(fl_BlockLayout* pBL, UT_uint32 iOffsetFirst, UT_uint32 iLen) : fp_FieldRun(pBL, iOffsetFirst, iLen)
 {
 }
 
@@ -3970,7 +4006,7 @@ bool fp_FieldBuildIdRun::calculateValue(void)
 	return _setValue(sz_ucs_FieldValue);
 }
 
-fp_FieldBuildVersionRun::fp_FieldBuildVersionRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen) : fp_FieldRun(pBL, pG, iOffsetFirst, iLen)
+fp_FieldBuildVersionRun::fp_FieldBuildVersionRun(fl_BlockLayout* pBL,UT_uint32 iOffsetFirst, UT_uint32 iLen) : fp_FieldRun(pBL, iOffsetFirst, iLen)
 {
 }
 
@@ -3985,7 +4021,7 @@ bool fp_FieldBuildVersionRun::calculateValue(void)
 	return _setValue(sz_ucs_FieldValue);
 }
 
-fp_FieldBuildOptionsRun::fp_FieldBuildOptionsRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen) : fp_FieldRun(pBL, pG, iOffsetFirst, iLen)
+fp_FieldBuildOptionsRun::fp_FieldBuildOptionsRun(fl_BlockLayout* pBL, UT_uint32 iOffsetFirst, UT_uint32 iLen) : fp_FieldRun(pBL, iOffsetFirst, iLen)
 {
 }
 
@@ -4000,7 +4036,7 @@ bool fp_FieldBuildOptionsRun::calculateValue(void)
 	return _setValue(sz_ucs_FieldValue);
 }
 
-fp_FieldBuildTargetRun::fp_FieldBuildTargetRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen) : fp_FieldRun(pBL, pG, iOffsetFirst, iLen)
+fp_FieldBuildTargetRun::fp_FieldBuildTargetRun(fl_BlockLayout* pBL, UT_uint32 iOffsetFirst, UT_uint32 iLen) : fp_FieldRun(pBL, iOffsetFirst, iLen)
 {
 }
 
@@ -4015,7 +4051,7 @@ bool fp_FieldBuildTargetRun::calculateValue(void)
 	return _setValue(sz_ucs_FieldValue);
 }
 
-fp_FieldBuildCompileDateRun::fp_FieldBuildCompileDateRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen) : fp_FieldRun(pBL, pG, iOffsetFirst, iLen)
+fp_FieldBuildCompileDateRun::fp_FieldBuildCompileDateRun(fl_BlockLayout* pBL,UT_uint32 iOffsetFirst, UT_uint32 iLen) : fp_FieldRun(pBL, iOffsetFirst, iLen)
 {
 }
 
@@ -4030,7 +4066,7 @@ bool fp_FieldBuildCompileDateRun::calculateValue(void)
 	return _setValue(sz_ucs_FieldValue);
 }
 
-fp_FieldBuildCompileTimeRun::fp_FieldBuildCompileTimeRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen) : fp_FieldRun(pBL, pG, iOffsetFirst, iLen)
+fp_FieldBuildCompileTimeRun::fp_FieldBuildCompileTimeRun(fl_BlockLayout* pBL, UT_uint32 iOffsetFirst, UT_uint32 iLen) : fp_FieldRun(pBL, iOffsetFirst, iLen)
 {
 }
 
@@ -4047,7 +4083,7 @@ bool fp_FieldBuildCompileTimeRun::calculateValue(void)
 
 
 // Refers to an footnote in the main body of the text.
-fp_FieldFootnoteRefRun::fp_FieldFootnoteRefRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen) : fp_FieldRun(pBL, pG, iOffsetFirst, iLen)
+fp_FieldFootnoteRefRun::fp_FieldFootnoteRefRun(fl_BlockLayout* pBL, UT_uint32 iOffsetFirst, UT_uint32 iLen) : fp_FieldRun(pBL, iOffsetFirst, iLen)
 {
 	const PP_AttrProp * pp = getAP();
 	const XML_Char * footid;
@@ -4080,7 +4116,7 @@ bool fp_FieldFootnoteRefRun::calculateValue(void)
 	return _setValue(sz_ucs_FieldValue);
 }
 
-fp_FieldFootnoteAnchorRun::fp_FieldFootnoteAnchorRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen) : fp_FieldRun(pBL, pG, iOffsetFirst, iLen)
+fp_FieldFootnoteAnchorRun::fp_FieldFootnoteAnchorRun(fl_BlockLayout* pBL, UT_uint32 iOffsetFirst, UT_uint32 iLen) : fp_FieldRun(pBL, iOffsetFirst, iLen)
 {
 	const PP_AttrProp * pp = getAP();
 	const XML_Char * footid;
@@ -4115,7 +4151,7 @@ bool fp_FieldFootnoteAnchorRun::calculateValue(void)
 }
 
 
-fp_FieldEndnoteAnchorRun::fp_FieldEndnoteAnchorRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen) : fp_FieldRun(pBL, pG, iOffsetFirst, iLen)
+fp_FieldEndnoteAnchorRun::fp_FieldEndnoteAnchorRun(fl_BlockLayout* pBL, UT_uint32 iOffsetFirst, UT_uint32 iLen) : fp_FieldRun(pBL, iOffsetFirst, iLen)
 {
 	const PP_AttrProp * pp = getAP();
 	const XML_Char * footid;
@@ -4151,7 +4187,7 @@ bool fp_FieldEndnoteAnchorRun::calculateValue(void)
 }
 
 
-fp_FieldEndnoteRefRun::fp_FieldEndnoteRefRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen) : fp_FieldRun(pBL, pG, iOffsetFirst, iLen)
+fp_FieldEndnoteRefRun::fp_FieldEndnoteRefRun(fl_BlockLayout* pBL,UT_uint32 iOffsetFirst, UT_uint32 iLen) : fp_FieldRun(pBL, iOffsetFirst, iLen)
 {
 	const PP_AttrProp * pp = getAP();
 	const XML_Char * footid;
@@ -4186,7 +4222,7 @@ bool fp_FieldEndnoteRefRun::calculateValue(void)
 	return _setValue(sz_ucs_FieldValue);
 }
 
-fp_FieldTimeRun::fp_FieldTimeRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen) : fp_FieldRun(pBL, pG, iOffsetFirst, iLen)
+fp_FieldTimeRun::fp_FieldTimeRun(fl_BlockLayout* pBL, UT_uint32 iOffsetFirst, UT_uint32 iLen) : fp_FieldRun(pBL, iOffsetFirst, iLen)
 {
 }
 
@@ -4209,7 +4245,7 @@ bool fp_FieldTimeRun::calculateValue(void)
 	return _setValue(sz_ucs_FieldValue);
 }
 
-fp_FieldDateRun::fp_FieldDateRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen) : fp_FieldRun(pBL, pG, iOffsetFirst, iLen)
+fp_FieldDateRun::fp_FieldDateRun(fl_BlockLayout* pBL, UT_uint32 iOffsetFirst, UT_uint32 iLen) : fp_FieldRun(pBL, iOffsetFirst, iLen)
 {
 }
 
@@ -4232,7 +4268,7 @@ bool fp_FieldDateRun::calculateValue(void)
 	return _setValue(sz_ucs_FieldValue);
 }
 
-fp_FieldFileNameRun::fp_FieldFileNameRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen) : fp_FieldRun(pBL, pG, iOffsetFirst, iLen)
+fp_FieldFileNameRun::fp_FieldFileNameRun(fl_BlockLayout* pBL, UT_uint32 iOffsetFirst, UT_uint32 iLen) : fp_FieldRun(pBL, iOffsetFirst, iLen)
 {
 }
 
@@ -4261,7 +4297,7 @@ bool fp_FieldFileNameRun::calculateValue(void)
 	return _setValue(sz_ucs_FieldValue);
 }
 
-fp_FieldPageNumberRun::fp_FieldPageNumberRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen) : fp_FieldRun(pBL, pG, iOffsetFirst, iLen)
+fp_FieldPageNumberRun::fp_FieldPageNumberRun(fl_BlockLayout* pBL, UT_uint32 iOffsetFirst, UT_uint32 iLen) : fp_FieldRun(pBL, iOffsetFirst, iLen)
 {
 }
 
@@ -4348,8 +4384,8 @@ bool fp_FieldPageNumberRun::calculateValue(void)
 ////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////
 
-fp_FieldPageReferenceRun::fp_FieldPageReferenceRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen)
-	: fp_FieldRun(pBL, pG, iOffsetFirst, iLen)
+fp_FieldPageReferenceRun::fp_FieldPageReferenceRun(fl_BlockLayout* pBL, UT_uint32 iOffsetFirst, UT_uint32 iLen)
+	: fp_FieldRun(pBL,  iOffsetFirst, iLen)
 {
 }
 
@@ -4455,7 +4491,7 @@ bool fp_FieldPageReferenceRun::calculateValue(void)
 
 ///////////////////////////////////////////////////////////////////////////
 
-fp_FieldPageCountRun::fp_FieldPageCountRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen) : fp_FieldRun(pBL, pG, iOffsetFirst, iLen)
+fp_FieldPageCountRun::fp_FieldPageCountRun(fl_BlockLayout* pBL, UT_uint32 iOffsetFirst, UT_uint32 iLen) : fp_FieldRun(pBL, iOffsetFirst, iLen)
 {
 }
 
@@ -4489,8 +4525,8 @@ bool fp_FieldPageCountRun::calculateValue(void)
 //////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////
 
-fp_FieldMailMergeRun::fp_FieldMailMergeRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen)
-  : fp_FieldRun(pBL, pG, iOffsetFirst, iLen)
+fp_FieldMailMergeRun::fp_FieldMailMergeRun(fl_BlockLayout* pBL, UT_uint32 iOffsetFirst, UT_uint32 iLen)
+  : fp_FieldRun(pBL, iOffsetFirst, iLen)
 {
 }
 
@@ -4536,8 +4572,8 @@ bool fp_FieldMailMergeRun::calculateValue(void)
 //////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////
 
-fp_FieldMetaRun::fp_FieldMetaRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen, const char * which)
-  : fp_FieldRun(pBL, pG, iOffsetFirst, iLen), m_which(which)
+fp_FieldMetaRun::fp_FieldMetaRun(fl_BlockLayout* pBL, UT_uint32 iOffsetFirst, UT_uint32 iLen, const char * which)
+  : fp_FieldRun(pBL, iOffsetFirst, iLen), m_which(which)
 {
 }
 
@@ -4561,58 +4597,58 @@ bool fp_FieldMetaRun::calculateValue(void)
 	return _setValue(sz_ucs_FieldValue);
 }
 
-fp_FieldMetaTitleRun::fp_FieldMetaTitleRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen) : fp_FieldMetaRun(pBL, pG, iOffsetFirst, iLen, PD_META_KEY_TITLE)
+fp_FieldMetaTitleRun::fp_FieldMetaTitleRun(fl_BlockLayout* pBL, UT_uint32 iOffsetFirst, UT_uint32 iLen) : fp_FieldMetaRun(pBL, iOffsetFirst, iLen, PD_META_KEY_TITLE)
 {
 }
 
-fp_FieldMetaCreatorRun::fp_FieldMetaCreatorRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen) : fp_FieldMetaRun(pBL, pG, iOffsetFirst, iLen, PD_META_KEY_CREATOR)
+fp_FieldMetaCreatorRun::fp_FieldMetaCreatorRun(fl_BlockLayout* pBL,UT_uint32 iOffsetFirst, UT_uint32 iLen) : fp_FieldMetaRun(pBL, iOffsetFirst, iLen, PD_META_KEY_CREATOR)
 {
 }
 
-fp_FieldMetaSubjectRun::fp_FieldMetaSubjectRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen) : fp_FieldMetaRun(pBL, pG, iOffsetFirst, iLen, PD_META_KEY_SUBJECT)
+fp_FieldMetaSubjectRun::fp_FieldMetaSubjectRun(fl_BlockLayout* pBL,UT_uint32 iOffsetFirst, UT_uint32 iLen) : fp_FieldMetaRun(pBL, iOffsetFirst, iLen, PD_META_KEY_SUBJECT)
 {
 }
 
-fp_FieldMetaPublisherRun::fp_FieldMetaPublisherRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen) : fp_FieldMetaRun(pBL, pG, iOffsetFirst, iLen, PD_META_KEY_PUBLISHER)
+fp_FieldMetaPublisherRun::fp_FieldMetaPublisherRun(fl_BlockLayout* pBL,UT_uint32 iOffsetFirst, UT_uint32 iLen) : fp_FieldMetaRun(pBL, iOffsetFirst, iLen, PD_META_KEY_PUBLISHER)
 {
 }
 
-fp_FieldMetaDateRun::fp_FieldMetaDateRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen) : fp_FieldMetaRun(pBL, pG, iOffsetFirst, iLen, PD_META_KEY_DATE)
+fp_FieldMetaDateRun::fp_FieldMetaDateRun(fl_BlockLayout* pBL,UT_uint32 iOffsetFirst, UT_uint32 iLen) : fp_FieldMetaRun(pBL, iOffsetFirst, iLen, PD_META_KEY_DATE)
 {
 }
 
-fp_FieldMetaTypeRun::fp_FieldMetaTypeRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen) : fp_FieldMetaRun(pBL, pG, iOffsetFirst, iLen, PD_META_KEY_TYPE)
+fp_FieldMetaTypeRun::fp_FieldMetaTypeRun(fl_BlockLayout* pBL,UT_uint32 iOffsetFirst, UT_uint32 iLen) : fp_FieldMetaRun(pBL, iOffsetFirst, iLen, PD_META_KEY_TYPE)
 {
 }
 
-fp_FieldMetaLanguageRun::fp_FieldMetaLanguageRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen) : fp_FieldMetaRun(pBL, pG, iOffsetFirst, iLen, PD_META_KEY_LANGUAGE)
+fp_FieldMetaLanguageRun::fp_FieldMetaLanguageRun(fl_BlockLayout* pBL,UT_uint32 iOffsetFirst, UT_uint32 iLen) : fp_FieldMetaRun(pBL, iOffsetFirst, iLen, PD_META_KEY_LANGUAGE)
 {
 }
 
-fp_FieldMetaRightsRun::fp_FieldMetaRightsRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen) : fp_FieldMetaRun(pBL, pG, iOffsetFirst, iLen, PD_META_KEY_RIGHTS)
+fp_FieldMetaRightsRun::fp_FieldMetaRightsRun(fl_BlockLayout* pBL,UT_uint32 iOffsetFirst, UT_uint32 iLen) : fp_FieldMetaRun(pBL, iOffsetFirst, iLen, PD_META_KEY_RIGHTS)
 {
 }
 
-fp_FieldMetaKeywordsRun::fp_FieldMetaKeywordsRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen) : fp_FieldMetaRun(pBL, pG, iOffsetFirst, iLen, PD_META_KEY_KEYWORDS)
+fp_FieldMetaKeywordsRun::fp_FieldMetaKeywordsRun(fl_BlockLayout* pBL,UT_uint32 iOffsetFirst, UT_uint32 iLen) : fp_FieldMetaRun(pBL, iOffsetFirst, iLen, PD_META_KEY_KEYWORDS)
 {
 }
 
-fp_FieldMetaContributorRun::fp_FieldMetaContributorRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen) : fp_FieldMetaRun(pBL, pG, iOffsetFirst, iLen, PD_META_KEY_CONTRIBUTOR)
+fp_FieldMetaContributorRun::fp_FieldMetaContributorRun(fl_BlockLayout* pBL,UT_uint32 iOffsetFirst, UT_uint32 iLen) : fp_FieldMetaRun(pBL, iOffsetFirst, iLen, PD_META_KEY_CONTRIBUTOR)
 {
 }
 
-fp_FieldMetaCoverageRun::fp_FieldMetaCoverageRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen) : fp_FieldMetaRun(pBL, pG, iOffsetFirst, iLen, PD_META_KEY_COVERAGE)
+fp_FieldMetaCoverageRun::fp_FieldMetaCoverageRun(fl_BlockLayout* pBL,UT_uint32 iOffsetFirst, UT_uint32 iLen) : fp_FieldMetaRun(pBL, iOffsetFirst, iLen, PD_META_KEY_COVERAGE)
 {
 }
 
-fp_FieldMetaDescriptionRun::fp_FieldMetaDescriptionRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen) : fp_FieldMetaRun(pBL, pG, iOffsetFirst, iLen, PD_META_KEY_DESCRIPTION)
+fp_FieldMetaDescriptionRun::fp_FieldMetaDescriptionRun(fl_BlockLayout* pBL,UT_uint32 iOffsetFirst, UT_uint32 iLen) : fp_FieldMetaRun(pBL, iOffsetFirst, iLen, PD_META_KEY_DESCRIPTION)
 {
 }
 
 //////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////
 
-fp_ForcedColumnBreakRun::fp_ForcedColumnBreakRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen) : fp_Run(pBL, pG, iOffsetFirst, iLen, FPRUN_FORCEDCOLUMNBREAK)
+fp_ForcedColumnBreakRun::fp_ForcedColumnBreakRun(fl_BlockLayout* pBL,UT_uint32 iOffsetFirst, UT_uint32 iLen) : fp_Run(pBL, iOffsetFirst, iLen, FPRUN_FORCEDCOLUMNBREAK)
 {
 	lookupProperties();
 }
@@ -4694,19 +4730,19 @@ void fp_ForcedColumnBreakRun::findPointCoords(UT_uint32 iOffset, UT_sint32& x, U
 void fp_ForcedColumnBreakRun::_clearScreen(bool /* bFullLineHeightRect */)
 {
 	UT_ASSERT(!isDirty());
-	UT_ASSERT(getGR()->queryProperties(GR_Graphics::DGP_SCREEN));
+	UT_ASSERT(getGraphics()->queryProperties(GR_Graphics::DGP_SCREEN));
 
     UT_sint32 xoff = 0, yoff = 0;
     getLine()->getScreenOffsets(this, xoff, yoff);
     UT_sint32 iWidth  = getLine()->getMaxWidth() - getLine()->calculateWidthOfLine();
-    getGR()->fillRect(_getColorPG(),xoff,yoff,iWidth,getLine()->getHeight());
+    getGraphics()->fillRect(_getColorPG(),xoff,yoff,iWidth,getLine()->getHeight());
 }
 
 void fp_ForcedColumnBreakRun::_draw(dg_DrawArgs* pDA)
 {
-	UT_ASSERT(pDA->pG == getGR());
+	UT_ASSERT(pDA->pG == getGraphics());
 
-    if (!(getGR()->queryProperties(GR_Graphics::DGP_SCREEN))){
+    if (!(getGraphics()->queryProperties(GR_Graphics::DGP_SCREEN))){
         return;
     }
 
@@ -4727,7 +4763,7 @@ void fp_ForcedColumnBreakRun::_draw(dg_DrawArgs* pDA)
 //////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////
 
-fp_ForcedPageBreakRun::fp_ForcedPageBreakRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen) : fp_Run(pBL, pG, iOffsetFirst, iLen, FPRUN_FORCEDPAGEBREAK)
+fp_ForcedPageBreakRun::fp_ForcedPageBreakRun(fl_BlockLayout* pBL, UT_uint32 iOffsetFirst, UT_uint32 iLen) : fp_Run(pBL, iOffsetFirst, iLen, FPRUN_FORCEDPAGEBREAK)
 {
 	lookupProperties();
 }
@@ -4815,19 +4851,19 @@ void fp_ForcedPageBreakRun::findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_
 void fp_ForcedPageBreakRun::_clearScreen(bool /* bFullLineHeightRect */)
 {
 	UT_ASSERT(!isDirty());
-	UT_ASSERT(getGR()->queryProperties(GR_Graphics::DGP_SCREEN));
+	UT_ASSERT(getGraphics()->queryProperties(GR_Graphics::DGP_SCREEN));
 
     UT_sint32 xoff = 0, yoff = 0;
     getLine()->getScreenOffsets(this, xoff, yoff);
     UT_sint32 iWidth  = getLine()->getMaxWidth() - getLine()->calculateWidthOfLine();
-    getGR()->fillRect(_getColorPG(),xoff,yoff,iWidth,getLine()->getHeight());
+    getGraphics()->fillRect(_getColorPG(),xoff,yoff,iWidth,getLine()->getHeight());
 }
 
 void fp_ForcedPageBreakRun::_draw(dg_DrawArgs* pDA)
 {
-	UT_ASSERT(pDA->pG == getGR());
+	UT_ASSERT(pDA->pG == getGraphics());
 
-    if (!(getGR()->queryProperties(GR_Graphics::DGP_SCREEN))){
+    if (!(getGraphics()->queryProperties(GR_Graphics::DGP_SCREEN))){
         return;
     }
 

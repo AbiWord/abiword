@@ -29,7 +29,6 @@ class ABI_EXPORT fp_DirectionMarkerRun : public fp_Run
 {
 public:
 	fp_DirectionMarkerRun(fl_BlockLayout* pBL,
-						  GR_Graphics* pG,
 						  UT_uint32 iOffsetFirst,
 						  UT_UCS4Char cMarker);
 

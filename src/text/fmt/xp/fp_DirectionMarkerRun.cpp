@@ -30,10 +30,9 @@
 #include "ut_assert.h"
 
 fp_DirectionMarkerRun::fp_DirectionMarkerRun(fl_BlockLayout* pBL,
-					  GR_Graphics* pG,
 					  UT_uint32 iOffsetFirst,
 					  UT_UCS4Char cMarker):
-		fp_Run(pBL, pG, iOffsetFirst, 1, FPRUN_DIRECTIONMARKER)
+		fp_Run(pBL, iOffsetFirst, 1, FPRUN_DIRECTIONMARKER)
 {
 	m_iMarker = cMarker;
 	
@@ -98,7 +97,7 @@ void fp_DirectionMarkerRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 	if (pPropRun && (FPRUN_TEXT == pPropRun->getType()))
 	{
 		fp_TextRun* pTextRun = static_cast<fp_TextRun*>(pPropRun);
-		getGR()->setFont(pTextRun->getFont());
+		getGraphics()->setFont(pTextRun->getFont());
 	}
 	else
 	{
@@ -106,11 +105,11 @@ void fp_DirectionMarkerRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 		FL_DocLayout * pLayout = getBlock()->getDocLayout();
 
 		GR_Font * pFont = const_cast<GR_Font *>(pLayout->findFont(pSpanAP,pBlockAP,pSectionAP));
-		getGR()->setFont(pFont);
+		getGraphics()->setFont(pFont);
 	}
 
 	UT_UCS4Char cM = m_iMarker == UCS_LRM ? (UT_UCS4Char)'>' : (UT_UCS4Char)'<';
-	m_iDrawWidth  = getGR()->measureString(&cM, 0, 1, NULL);
+	m_iDrawWidth  = getGraphics()->measureString(&cM, 0, 1, NULL);
 	xxx_UT_DEBUGMSG(("fp_DirectionMarkerRun::lookupProperties: width %d\n", getWidth()));
 }
 
@@ -178,7 +177,7 @@ void fp_DirectionMarkerRun::findPointCoords(UT_uint32 iOffset,
 void fp_DirectionMarkerRun::_clearScreen(bool /* bFullLineHeightRect */)
 {
 	UT_ASSERT(!isDirty());
-	UT_ASSERT(getGR()->queryProperties(GR_Graphics::DGP_SCREEN));
+	UT_ASSERT(getGraphics()->queryProperties(GR_Graphics::DGP_SCREEN));
 
 	if(getWidth())
 	{
@@ -189,7 +188,7 @@ void fp_DirectionMarkerRun::_clearScreen(bool /* bFullLineHeightRect */)
 		{
 			xoff -= m_iDrawWidth;
 		}
-		getGR()->fillRect(_getColorPG(), xoff, yoff+1, m_iDrawWidth, getLine()->getHeight()+1);
+		getGraphics()->fillRect(_getColorPG(), xoff, yoff+1, m_iDrawWidth, getLine()->getHeight()+1);
 	}
 }
 
@@ -209,7 +208,7 @@ void fp_DirectionMarkerRun::_draw(dg_DrawArgs* pDA)
     	return;
     }
 
-	UT_ASSERT(pDA->pG == getGR());
+	UT_ASSERT(pDA->pG == getGraphics());
 
 	UT_uint32 iRunBase = getBlock()->getPosition() + getBlockOffset();
 
@@ -231,7 +230,7 @@ void fp_DirectionMarkerRun::_draw(dg_DrawArgs* pDA)
 	if (pPropRun && (FPRUN_TEXT == pPropRun->getType()))
 	{
 		fp_TextRun* pTextRun = static_cast<fp_TextRun*>(pPropRun);
-		getGR()->setFont(pTextRun->getFont());
+		getGraphics()->setFont(pTextRun->getFont());
 		iAscent = pTextRun->getAscent();
 	}
 	else
@@ -245,17 +244,17 @@ void fp_DirectionMarkerRun::_draw(dg_DrawArgs* pDA)
 		FL_DocLayout * pLayout = getBlock()->getDocLayout();
 
 		GR_Font * pFont = const_cast<GR_Font *>(pLayout->findFont(pSpanAP,pBlockAP,pSectionAP));
-		getGR()->setFont(pFont);
-		iAscent = getGR()->getFontAscent();
+		getGraphics()->setFont(pFont);
+		iAscent = getGraphics()->getFontAscent();
 	}
 
 	// if we currently have a 0 width, i.e., we draw in response to the
 	// showPara being turned on, then we obtain the new width, and then
 	// tell the line to redo its layout and redraw instead of drawing ourselves
 	UT_UCS4Char cM = m_iMarker == UCS_LRM ? (UT_UCS4Char)'>' : (UT_UCS4Char)'<';
-	m_iDrawWidth  = getGR()->measureString(&cM, 0, 1, NULL);
+	m_iDrawWidth  = getGraphics()->measureString(&cM, 0, 1, NULL);
 
-	_setHeight(getGR()->getFontHeight());
+	_setHeight(getGraphics()->getFontHeight());
 	m_iXoffText = pDA->xoff;
 
 	m_iYoffText = pDA->yoff - iAscent;
@@ -263,7 +262,7 @@ void fp_DirectionMarkerRun::_draw(dg_DrawArgs* pDA)
 
 	if (bIsSelected)
 	{
-		getGR()->fillRect(_getView()->getColorSelBackground(),
+		getGraphics()->fillRect(_getView()->getColorSelBackground(),
 						  m_iXoffText,
 						  m_iYoffText,
 						  m_iDrawWidth,
@@ -271,7 +270,7 @@ void fp_DirectionMarkerRun::_draw(dg_DrawArgs* pDA)
 	}
 	else
 	{
-		getGR()->fillRect(_getColorPG(),
+		getGraphics()->fillRect(_getColorPG(),
 						  m_iXoffText,
 						  m_iYoffText,
 						  m_iDrawWidth,
@@ -282,7 +281,7 @@ void fp_DirectionMarkerRun::_draw(dg_DrawArgs* pDA)
 		// Draw symbol
 		// use the hard-coded colour only if not revised
 		if(!getRevisions())
-			getGR()->setColor(pView->getColorShowPara());
-        getGR()->drawChars(&cM, 0, 1, m_iXoffText, m_iYoffText);
+			getGraphics()->setColor(pView->getColorShowPara());
+        getGraphics()->drawChars(&cM, 0, 1, m_iXoffText, m_iYoffText);
 	}
 }

@@ -180,6 +180,7 @@ public:
 	virtual ~FV_View();
 
 	virtual inline GR_Graphics*    getGraphics(void) const { return m_pG; }
+	void  setGraphics(GR_Graphics *pG);
 	virtual inline UT_uint32	  getPoint(void) const { return m_iInsPoint; }
 	inline UT_uint32		getSelectionAnchor(void) const { return m_bSelection? m_iSelectionAnchor : m_iInsPoint; }
 
@@ -807,6 +808,7 @@ private:
 	fv_PropCache        m_CharProps;
 	fv_PropCache        m_BlockProps;
 	fv_PropCache        m_SecProps;
+	AV_ListenerId       m_CaretListID;
 };
 
 #endif /* FV_VIEW_H */

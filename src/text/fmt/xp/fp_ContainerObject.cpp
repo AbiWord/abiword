@@ -39,11 +39,9 @@
 fp_ContainerObject::fp_ContainerObject(FP_ContainerType iType, fl_SectionLayout* pSectionLayout)
 	:       m_iType(iType),
 			m_pSectionLayout(pSectionLayout),
-			m_pG(NULL),
 			m_iDirection(FRIBIDI_TYPE_UNSET)
 {
 	UT_ASSERT(pSectionLayout);
-	m_pG = m_pSectionLayout->getDocLayout()->getGraphics();
 }
 
 /*!
@@ -65,6 +63,14 @@ bool fp_ContainerObject::isColumnType(void) const
 	  || (m_iType == FP_CONTAINER_FOOTNOTE)
 	  ;
   return b;
+}
+
+/*!
+ * Return a pointer to the Graphics class for this object
+ */
+GR_Graphics * fp_ContainerObject::getGraphics(void) const
+{
+	return getSectionLayout()->getDocLayout()->getGraphics();
 }
 
 /*

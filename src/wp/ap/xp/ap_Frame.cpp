@@ -48,6 +48,52 @@ void AP_Frame::setZoomPercentage(UT_uint32 iZoom)
 	}
 }
 
+/*!
+ * This zooms an existing document in a frame by just changing the zoom
+ * in the graphics class.
+ */
+void AP_Frame::quickZoom(UT_uint32 iZoom)
+{
+	bool bChanged = (getZoomPercentage() != iZoom);
+	XAP_Frame::setZoomPercentage(iZoom);
+	if (bChanged) 
+	{
+		GR_Graphics * pG = NULL;
+		_createViewGraphics(pG, iZoom);
+		FV_View * pView = static_cast<FV_View *>(getCurrentView());
+		FL_DocLayout * pDocLayout = pView->getLayout();
+		GR_Graphics * pOldGraphics = pView->getGraphics();
+		pView->setGraphics(pG);
+		static_cast<AP_FrameData*>(m_pData)->m_pG = pG;
+		pDocLayout->setGraphics(pG);
+		delete pOldGraphics;
+		AP_TopRuler * pTop = pView->getTopRuler();
+		if(pTop)
+		{
+			pTop->setView(pView,iZoom);
+		}
+		AP_LeftRuler * pLeft = pView->getLeftRuler();
+		if(pLeft)
+		{
+			pLeft->setView(pView,iZoom);
+		}
+		setYScrollRange();
+		setXScrollRange();
+//
+// Redraw the entire screen
+//
+		pView->updateScreen(false);
+		if(pTop && !pTop->isHidden())
+		{
+			pTop->draw(NULL);
+		}
+		if(pLeft && !pLeft->isHidden())
+		{
+			pLeft->draw(NULL);
+		}
+	}
+}
+
 UT_uint32 AP_Frame::getZoomPercentage(void)
 {
 	return static_cast<AP_FrameData*>(m_pData)->m_pG->getZoomPercentage();

@@ -42,7 +42,7 @@
 class ABI_EXPORT fp_TextRun : public fp_Run
 {
 public:
-	fp_TextRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen, bool bLookupProperties=true);
+	fp_TextRun(fl_BlockLayout* pBL, UT_uint32 iOffsetFirst, UT_uint32 iLen, bool bLookupProperties=true);
 	virtual ~fp_TextRun();
 
 	virtual void			mapXYToPosition(UT_sint32 xPos, UT_sint32 yPos, PT_DocPosition& pos, bool& bBOL, bool& bEOL);

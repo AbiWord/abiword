@@ -42,6 +42,7 @@ class ABI_EXPORT AP_Frame : public XAP_Frame
 	UT_uint32                   getNewZoom(XAP_Frame::tZoomType * tZoom);
 	virtual void				setZoomPercentage(UT_uint32 iZoom);
 	virtual UT_uint32			getZoomPercentage(void);
+	virtual void                quickZoom(UT_uint32 iZoom);
  protected:
 
 	UT_Error _loadDocument(const char * szFilename, IEFileType ieft, bool createNew);

@@ -94,6 +94,7 @@ FL_DocLayout::FL_DocLayout(PD_Document* doc, GR_Graphics* pG)
 	m_bDeletingLayout = false;
 	setLayoutIsFilling(false);
 	m_lid = 123;
+	m_iGraphicTick = 0;
 	m_pRedrawUpdateTimer = UT_Timer::static_constructor(_redrawUpdate, this, m_pG);
 	if (m_pRedrawUpdateTimer)
 	{
@@ -458,6 +459,14 @@ void FL_DocLayout::updatePropsNoRebuild(void)
 	_lookupProperties();
 }
 
+/*!
+ * Change the graphics pointer for this layout.Needed for quick zoom.
+ */
+void FL_DocLayout::setGraphics(GR_Graphics * pG)
+{
+	m_pG = pG;
+	m_iGraphicTick++;
+}
 
 void FL_DocLayout::updatePropsRebuild(void)
 {

@@ -573,7 +573,7 @@ gint XAP_UnixFrameImpl::_fe::do_ZoomUpdate(gpointer /* XAP_UnixFrameImpl * */ p)
 
 		pUnixFrameImpl->_startViewAutoUpdater(); 
 		pView->setWindowSize(iNewWidth, iNewHeight);
-		pFrame->updateZoom();
+		pFrame->quickZoom(); // was update zoom
 
 	}
 	while((iNewWidth != pUnixFrameImpl->m_iNewWidth) || (iNewHeight != pUnixFrameImpl->m_iNewHeight));

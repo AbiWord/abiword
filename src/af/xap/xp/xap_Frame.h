@@ -165,7 +165,7 @@ public:
 
 	virtual void				setXScrollRange() = 0;
 	virtual void				setYScrollRange() = 0;
-
+	virtual void                quickZoom(UT_uint32 iZoom) = 0;
 	bool runModalContextMenu(AV_View * pView, const char * szMenuName,
 		UT_sint32 x, UT_sint32 y) { return m_pFrameImpl->_runModalContextMenu(pView, szMenuName, x, y); }
 
@@ -175,6 +175,7 @@ public:
 	void						setZoomType(XAP_Frame::tZoomType z_Type){ m_zoomType = z_Type; } 
 	XAP_Frame::tZoomType		getZoomType() { return m_zoomType; }
 	void						updateZoom();
+	void                        quickZoom(void);
 
 	virtual void				setStatusMessage(const char * szMsg) = 0;
 

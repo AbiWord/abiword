@@ -1484,8 +1484,7 @@ fl_BlockLayout::_insertEndOfParagraphRun(void)
 {
 	UT_ASSERT(!m_pFirstRun);
 
-	GR_Graphics* pG = m_pLayout->getGraphics();
-	fp_EndOfParagraphRun* pEOPRun = new fp_EndOfParagraphRun(this, pG, 0, 0);
+	fp_EndOfParagraphRun* pEOPRun = new fp_EndOfParagraphRun(this, 0, 0);
 	m_pFirstRun = pEOPRun;
 	m_pFirstRun->fetchCharWidths(&m_gbCharWidths);
 
@@ -3270,7 +3269,7 @@ bool	fl_BlockLayout::_doInsertTextSpan(PT_BlockOffset blockOffset, UT_uint32 len
 			
 		}
 		xxx_UT_DEBUGMSG(("_dopopulateTextSpan: text run: offset %d, len %d\n", curOffset, i));
-		fp_TextRun* pNewRun = new fp_TextRun(this, m_pLayout->getGraphics(), curOffset, i);
+		fp_TextRun* pNewRun = new fp_TextRun(this, curOffset, i);
 		UT_ASSERT(pNewRun);
 		UT_ASSERT(pNewRun->getType() == FPRUN_TEXT);
 		pNewRun->setDirOverride(m_iDirOverride);
@@ -3286,7 +3285,7 @@ bool	fl_BlockLayout::_doInsertTextSpan(PT_BlockOffset blockOffset, UT_uint32 len
 
 bool	fl_BlockLayout::_doInsertForcedLineBreakRun(PT_BlockOffset blockOffset)
 {
-	fp_Run* pNewRun = new fp_ForcedLineBreakRun(this, m_pLayout->getGraphics(), blockOffset, 1);
+	fp_Run* pNewRun = new fp_ForcedLineBreakRun(this, blockOffset, 1);
 	UT_ASSERT(pNewRun); // TODO check for outofmem
 
 	bool bResult = _doInsertRun(pNewRun);
@@ -3301,7 +3300,7 @@ bool    fl_BlockLayout::_doInsertDirectionMarkerRun(PT_BlockOffset blockOffset, 
 	UT_DEBUGMSG(("fl_BlockLayout::_doInsertDirectionMarkerRun: offset %d, marker 0x%04x\n",
 				 blockOffset, iM));
 	
-	fp_Run * pNewRun = new fp_DirectionMarkerRun(this, m_pLayout->getGraphics(), blockOffset, iM);
+	fp_Run * pNewRun = new fp_DirectionMarkerRun(this, blockOffset, iM);
 	UT_ASSERT( pNewRun );
 
 	bool bResult = _doInsertRun(pNewRun);
@@ -3373,7 +3372,7 @@ bool	fl_BlockLayout::_deleteBookmarkRun(PT_BlockOffset blockOffset)
 
 bool	fl_BlockLayout::_doInsertBookmarkRun(PT_BlockOffset blockOffset)
 {
-	fp_Run * pNewRun =	new fp_BookmarkRun(this, m_pLayout->getGraphics(), blockOffset, 1);
+	fp_Run * pNewRun =	new fp_BookmarkRun(this, blockOffset, 1);
 	UT_ASSERT(pNewRun);
 	bool bResult = _doInsertRun(pNewRun);
 	if (bResult)
@@ -3387,7 +3386,7 @@ bool	fl_BlockLayout::_doInsertBookmarkRun(PT_BlockOffset blockOffset)
 
 bool	fl_BlockLayout::_doInsertHyperlinkRun(PT_BlockOffset blockOffset)
 {
-	fp_HyperlinkRun * pNewRun =  new fp_HyperlinkRun(this, m_pLayout->getGraphics(), blockOffset, 1);
+	fp_HyperlinkRun * pNewRun =  new fp_HyperlinkRun(this, blockOffset, 1);
 	UT_ASSERT(pNewRun);
 	bool bResult = _doInsertRun(static_cast<fp_Run*>(pNewRun));
 	if (bResult)
@@ -3424,7 +3423,7 @@ bool	fl_BlockLayout::_doInsertHyperlinkRun(PT_BlockOffset blockOffset)
 
 bool	fl_BlockLayout::_doInsertFieldStartRun(PT_BlockOffset blockOffset)
 {
-	fp_Run* pNewRun = new fp_FieldStartRun(this, m_pLayout->getGraphics(), blockOffset, 1);
+	fp_Run* pNewRun = new fp_FieldStartRun(this,blockOffset, 1);
 	UT_ASSERT(pNewRun); // TODO check for outofmem
 
 	bool bResult = _doInsertRun(pNewRun);
@@ -3436,7 +3435,7 @@ bool	fl_BlockLayout::_doInsertFieldStartRun(PT_BlockOffset blockOffset)
 
 bool	fl_BlockLayout::_doInsertFieldEndRun(PT_BlockOffset blockOffset)
 {
-	fp_Run* pNewRun = new fp_FieldEndRun(this, m_pLayout->getGraphics(), blockOffset, 1);
+	fp_Run* pNewRun = new fp_FieldEndRun(this, blockOffset, 1);
 	UT_ASSERT(pNewRun); // TODO check for outofmem
 
 	bool bResult = _doInsertRun(pNewRun);
@@ -3448,7 +3447,7 @@ bool	fl_BlockLayout::_doInsertFieldEndRun(PT_BlockOffset blockOffset)
 
 bool	fl_BlockLayout::_doInsertForcedPageBreakRun(PT_BlockOffset blockOffset)
 {
-	fp_Run* pNewRun = new fp_ForcedPageBreakRun(this, m_pLayout->getGraphics(), blockOffset, 1);
+	fp_Run* pNewRun = new fp_ForcedPageBreakRun(this,blockOffset, 1);
 	UT_ASSERT(pNewRun); // TODO check for outofmem
 	if(getPrev()!= NULL && getPrev()->getLastContainer()==NULL)
 	{
@@ -3466,7 +3465,7 @@ bool	fl_BlockLayout::_doInsertForcedPageBreakRun(PT_BlockOffset blockOffset)
 
 bool	fl_BlockLayout::_doInsertForcedColumnBreakRun(PT_BlockOffset blockOffset)
 {
-	fp_Run* pNewRun = new fp_ForcedColumnBreakRun(this, m_pLayout->getGraphics(), blockOffset, 1);
+	fp_Run* pNewRun = new fp_ForcedColumnBreakRun(this,blockOffset, 1);
 	UT_ASSERT(pNewRun); // TODO check for outofmem
 
 	bool bResult = _doInsertRun(pNewRun);
@@ -3478,7 +3477,7 @@ bool	fl_BlockLayout::_doInsertForcedColumnBreakRun(PT_BlockOffset blockOffset)
 
 bool	fl_BlockLayout::_doInsertTabRun(PT_BlockOffset blockOffset)
 {
-	fp_Run* pNewRun = new fp_TabRun(this, m_pLayout->getGraphics(), blockOffset, 1);
+	fp_Run* pNewRun = new fp_TabRun(this,blockOffset, 1);
 	UT_ASSERT(pNewRun); // TODO check for outofmem
 
 	return _doInsertRun(pNewRun);
@@ -3486,7 +3485,7 @@ bool	fl_BlockLayout::_doInsertTabRun(PT_BlockOffset blockOffset)
 
 bool	fl_BlockLayout::_doInsertImageRun(PT_BlockOffset blockOffset, FG_Graphic* pFG)
 {
-	fp_ImageRun* pNewRun = new fp_ImageRun(this, m_pLayout->getGraphics(), blockOffset, 1, pFG);
+	fp_ImageRun* pNewRun = new fp_ImageRun(this, blockOffset, 1, pFG);
 	UT_ASSERT(pNewRun); // TODO check for outofmem
 
 	return _doInsertRun(pNewRun);
@@ -3517,199 +3516,199 @@ bool	fl_BlockLayout::_doInsertFieldRun(PT_BlockOffset blockOffset, const PX_Chan
 	if (!pszType) 
 		{
 			UT_ASSERT (pszType); 	
-			pNewRun = new fp_FieldRun(this, m_pLayout->getGraphics(), blockOffset, 1);
+			pNewRun = new fp_FieldRun(this, blockOffset, 1);
 		}
 	else if(UT_strcmp(pszType, "list_label") == 0)
 	{
-		pNewRun = new fp_FieldListLabelRun(this, m_pLayout->getGraphics(), blockOffset, 1);
+		pNewRun = new fp_FieldListLabelRun(this,   blockOffset, 1);
 	}
 	else if(UT_strcmp(pszType, "footnote_ref") == 0)
 	{
-		pNewRun = new fp_FieldFootnoteRefRun(this, m_pLayout->getGraphics(), blockOffset, 1);
+		pNewRun = new fp_FieldFootnoteRefRun(this,   blockOffset, 1);
 	}
 	else if(UT_strcmp(pszType, "footnote_anchor") == 0)
 	{
-		pNewRun = new fp_FieldFootnoteAnchorRun(this, m_pLayout->getGraphics(), blockOffset, 1);
+		pNewRun = new fp_FieldFootnoteAnchorRun(this,   blockOffset, 1);
 	}
 	else if(UT_strcmp(pszType, "endnote_ref") == 0)
 	{
-		pNewRun = new fp_FieldEndnoteRefRun(this, m_pLayout->getGraphics(), blockOffset, 1);
+		pNewRun = new fp_FieldEndnoteRefRun(this,   blockOffset, 1);
 	}
 	else if(UT_strcmp(pszType, "endnote_anchor") == 0)
 	{
-		pNewRun = new fp_FieldEndnoteAnchorRun(this, m_pLayout->getGraphics(), blockOffset, 1);
+		pNewRun = new fp_FieldEndnoteAnchorRun(this,   blockOffset, 1);
 	}
 	else if(UT_strcmp(pszType, "time") == 0)
 	{
-		pNewRun = new fp_FieldTimeRun(this, m_pLayout->getGraphics(), blockOffset, 1);
+		pNewRun = new fp_FieldTimeRun(this,   blockOffset, 1);
 	}
 	else if(UT_strcmp(pszType, "page_number") == 0)
 	{
-		pNewRun = new fp_FieldPageNumberRun(this, m_pLayout->getGraphics(), blockOffset, 1);
+		pNewRun = new fp_FieldPageNumberRun(this,   blockOffset, 1);
 	}
 	else if(UT_strcmp(pszType, "page_ref") == 0)
 	{
-		pNewRun = new fp_FieldPageReferenceRun(this, m_pLayout->getGraphics(), blockOffset, 1);
+		pNewRun = new fp_FieldPageReferenceRun(this,   blockOffset, 1);
 	}
 	else if(UT_strcmp(pszType, "page_count") == 0)
 	{
-		pNewRun = new fp_FieldPageCountRun(this, m_pLayout->getGraphics(), blockOffset, 1);
+		pNewRun = new fp_FieldPageCountRun(this,   blockOffset, 1);
 	}
 	else if(UT_strcmp(pszType, "date") == 0)
 	{
-		pNewRun = new fp_FieldDateRun(this, m_pLayout->getGraphics(), blockOffset, 1);
+		pNewRun = new fp_FieldDateRun(this,   blockOffset, 1);
 	}
 	else if(UT_strcmp(pszType, "date_mmddyy") == 0)
 	{
-		pNewRun = new fp_FieldMMDDYYRun(this, m_pLayout->getGraphics(), blockOffset, 1);
+		pNewRun = new fp_FieldMMDDYYRun(this,   blockOffset, 1);
 	}
 	else if(UT_strcmp(pszType, "date_ddmmyy") == 0)
 	{
-		pNewRun = new fp_FieldDDMMYYRun(this, m_pLayout->getGraphics(), blockOffset, 1);
+		pNewRun = new fp_FieldDDMMYYRun(this,   blockOffset, 1);
 	}
 	else if(UT_strcmp(pszType, "date_mdy") == 0)
 	{
-		pNewRun = new fp_FieldMonthDayYearRun(this, m_pLayout->getGraphics(), blockOffset, 1);
+		pNewRun = new fp_FieldMonthDayYearRun(this,   blockOffset, 1);
 	}
 	else if(UT_strcmp(pszType, "date_mthdy") == 0)
 	{
-		pNewRun = new fp_FieldMthDayYearRun(this, m_pLayout->getGraphics(), blockOffset, 1);
+		pNewRun = new fp_FieldMthDayYearRun(this,   blockOffset, 1);
 	}
 	else if(UT_strcmp(pszType, "date_dfl") == 0)
 	{
-		pNewRun = new fp_FieldDefaultDateRun(this, m_pLayout->getGraphics(), blockOffset, 1);
+		pNewRun = new fp_FieldDefaultDateRun(this,   blockOffset, 1);
 	}
 	else if(UT_strcmp(pszType, "date_ntdfl") == 0)
 	{
-		pNewRun = new fp_FieldDefaultDateNoTimeRun(this, m_pLayout->getGraphics(), blockOffset, 1);
+		pNewRun = new fp_FieldDefaultDateNoTimeRun(this,   blockOffset, 1);
 	}
 	else if(UT_strcmp(pszType, "date_wkday") == 0)
 	{
-		pNewRun = new fp_FieldWkdayRun(this, m_pLayout->getGraphics(), blockOffset, 1);
+		pNewRun = new fp_FieldWkdayRun(this,   blockOffset, 1);
 	}
 	else if(UT_strcmp(pszType, "date_doy") == 0)
 	{
-		pNewRun = new fp_FieldDOYRun(this, m_pLayout->getGraphics(), blockOffset, 1);
+		pNewRun = new fp_FieldDOYRun(this,   blockOffset, 1);
 	}
 	else if(UT_strcmp(pszType, "time_miltime") == 0)
 	{
-		pNewRun = new fp_FieldMilTimeRun(this, m_pLayout->getGraphics(), blockOffset, 1);
+		pNewRun = new fp_FieldMilTimeRun(this,   blockOffset, 1);
 	}
 	else if(UT_strcmp(pszType, "time_ampm") == 0)
 	{
-		pNewRun = new fp_FieldAMPMRun(this, m_pLayout->getGraphics(), blockOffset, 1);
+		pNewRun = new fp_FieldAMPMRun(this,   blockOffset, 1);
 	}
 	else if(UT_strcmp(pszType, "time_zone") == 0)
 	{
-		pNewRun = new fp_FieldTimeZoneRun(this, m_pLayout->getGraphics(), blockOffset, 1);
+		pNewRun = new fp_FieldTimeZoneRun(this,   blockOffset, 1);
 	}
 	else if(UT_strcmp(pszType, "time_epoch") == 0)
 	{
-		pNewRun = new fp_FieldTimeEpochRun(this, m_pLayout->getGraphics(), blockOffset, 1);
+		pNewRun = new fp_FieldTimeEpochRun(this,   blockOffset, 1);
 	}
 	else if(UT_strcmp(pszType, "datetime_custom") == 0)
 	{
-		pNewRun = new fp_FieldDateTimeCustomRun(this, m_pLayout->getGraphics(), blockOffset, 1);
+		pNewRun = new fp_FieldDateTimeCustomRun(this,   blockOffset, 1);
 	}
 	else if(UT_strcmp(pszType, "word_count") == 0)
 	{
-		pNewRun = new fp_FieldWordCountRun(this, m_pLayout->getGraphics(), blockOffset, 1);
+		pNewRun = new fp_FieldWordCountRun(this,   blockOffset, 1);
 	}
 	else if(UT_strcmp(pszType, "char_count") == 0)
 	{
-		pNewRun = new fp_FieldCharCountRun(this, m_pLayout->getGraphics(), blockOffset, 1);
+		pNewRun = new fp_FieldCharCountRun(this,   blockOffset, 1);
 	}
 	else if(UT_strcmp(pszType, "line_count") == 0)
 	{
-		pNewRun = new fp_FieldLineCountRun(this, m_pLayout->getGraphics(), blockOffset, 1);
+		pNewRun = new fp_FieldLineCountRun(this,   blockOffset, 1);
 	}
 	else if(UT_strcmp(pszType, "para_count") == 0)
 	{
-		pNewRun = new fp_FieldParaCountRun(this, m_pLayout->getGraphics(), blockOffset, 1);
+		pNewRun = new fp_FieldParaCountRun(this,   blockOffset, 1);
 	}
 	else if(UT_strcmp(pszType, "nbsp_count") == 0)
 	{
-		pNewRun = new fp_FieldNonBlankCharCountRun(this, m_pLayout->getGraphics(), blockOffset, 1);
+		pNewRun = new fp_FieldNonBlankCharCountRun(this,   blockOffset, 1);
 	}
 	else if(UT_strcmp(pszType, "file_name") == 0)
 	{
-		pNewRun = new fp_FieldFileNameRun(this, m_pLayout->getGraphics(), blockOffset, 1);
+		pNewRun = new fp_FieldFileNameRun(this,   blockOffset, 1);
 	}
 	else if(UT_strcmp(pszType, "app_ver") == 0)
 	{
-		pNewRun = new fp_FieldBuildVersionRun(this, m_pLayout->getGraphics(), blockOffset, 1);
+		pNewRun = new fp_FieldBuildVersionRun(this,   blockOffset, 1);
 	}
 	else if(UT_strcmp(pszType, "app_id") == 0)
 	{
-		pNewRun = new fp_FieldBuildIdRun(this, m_pLayout->getGraphics(), blockOffset, 1);
+		pNewRun = new fp_FieldBuildIdRun(this,   blockOffset, 1);
 	}
 	else if(UT_strcmp(pszType, "app_options") == 0)
 	  {
-		pNewRun = new fp_FieldBuildOptionsRun(this, m_pLayout->getGraphics(), blockOffset, 1);
+		pNewRun = new fp_FieldBuildOptionsRun(this,   blockOffset, 1);
 	  }
 	else if(UT_strcmp(pszType, "app_target") == 0)
 	  {
-		pNewRun = new fp_FieldBuildTargetRun(this, m_pLayout->getGraphics(), blockOffset, 1);
+		pNewRun = new fp_FieldBuildTargetRun(this,   blockOffset, 1);
 	  }
 	else if(UT_strcmp(pszType, "app_compiledate") == 0)
 	  {
-		pNewRun = new fp_FieldBuildCompileDateRun(this, m_pLayout->getGraphics(), blockOffset, 1);
+		pNewRun = new fp_FieldBuildCompileDateRun(this,   blockOffset, 1);
 	  }
 	else if(UT_strcmp(pszType, "app_compiletime") == 0)
 	  {
-		pNewRun = new fp_FieldBuildCompileTimeRun(this, m_pLayout->getGraphics(), blockOffset, 1);
+		pNewRun = new fp_FieldBuildCompileTimeRun(this,   blockOffset, 1);
 	  }
 	else if(UT_strcmp(pszType, "mail_merge") == 0)
 	  {
-	    pNewRun = new fp_FieldMailMergeRun(this, m_pLayout->getGraphics(), blockOffset, 1);
+	    pNewRun = new fp_FieldMailMergeRun(this,   blockOffset, 1);
 	  }
 	else if(UT_strcmp(pszType, "meta_title") == 0)
 	  {
-	    pNewRun = new fp_FieldMetaTitleRun(this, m_pLayout->getGraphics(), blockOffset, 1);
+	    pNewRun = new fp_FieldMetaTitleRun(this,   blockOffset, 1);
 	  }
 	else if(UT_strcmp(pszType, "meta_creator") == 0)
 	  {
-	    pNewRun = new fp_FieldMetaCreatorRun(this, m_pLayout->getGraphics(), blockOffset, 1);
+	    pNewRun = new fp_FieldMetaCreatorRun(this,   blockOffset, 1);
 	  }
 	else if(UT_strcmp(pszType, "meta_subject") == 0)
 	  {
-	    pNewRun = new fp_FieldMetaSubjectRun(this, m_pLayout->getGraphics(), blockOffset, 1);
+	    pNewRun = new fp_FieldMetaSubjectRun(this,   blockOffset, 1);
 	  }
 	else if(UT_strcmp(pszType, "meta_publisher") == 0)
 	  {
-	    pNewRun = new fp_FieldMetaPublisherRun(this, m_pLayout->getGraphics(), blockOffset, 1);
+	    pNewRun = new fp_FieldMetaPublisherRun(this,   blockOffset, 1);
 	  }
 	else if(UT_strcmp(pszType, "meta_contributor") == 0)
 	  {
-	    pNewRun = new fp_FieldMetaContributorRun(this, m_pLayout->getGraphics(), blockOffset, 1);
+	    pNewRun = new fp_FieldMetaContributorRun(this,   blockOffset, 1);
 	  }
 	else if(UT_strcmp(pszType, "meta_date") == 0)
 	  {
-	    pNewRun = new fp_FieldMetaDateRun(this, m_pLayout->getGraphics(), blockOffset, 1);
+	    pNewRun = new fp_FieldMetaDateRun(this,   blockOffset, 1);
 	  }
 	else if(UT_strcmp(pszType, "meta_type") == 0)
 	  {
-	    pNewRun = new fp_FieldMetaTypeRun(this, m_pLayout->getGraphics(), blockOffset, 1);
+	    pNewRun = new fp_FieldMetaTypeRun(this,   blockOffset, 1);
 	  }
 	else if(UT_strcmp(pszType, "meta_language") == 0)
 	  {
-	    pNewRun = new fp_FieldMetaLanguageRun(this, m_pLayout->getGraphics(), blockOffset, 1);
+	    pNewRun = new fp_FieldMetaLanguageRun(this,   blockOffset, 1);
 	  }
 	else if(UT_strcmp(pszType, "meta_coverage") == 0)
 	  {
-	    pNewRun = new fp_FieldMetaCoverageRun(this, m_pLayout->getGraphics(), blockOffset, 1);
+	    pNewRun = new fp_FieldMetaCoverageRun(this,   blockOffset, 1);
 	  }
 	else if(UT_strcmp(pszType, "meta_rights") == 0)
 	  {
-	    pNewRun = new fp_FieldMetaRightsRun(this, m_pLayout->getGraphics(), blockOffset, 1);
+	    pNewRun = new fp_FieldMetaRightsRun(this,   blockOffset, 1);
 	  }
 	else if(UT_strcmp(pszType, "meta_keywords") == 0)
 	  {
-	    pNewRun = new fp_FieldMetaKeywordsRun(this, m_pLayout->getGraphics(), blockOffset, 1);
+	    pNewRun = new fp_FieldMetaKeywordsRun(this,   blockOffset, 1);
 	  }
 	else if(UT_strcmp(pszType, "meta_description") == 0)
 	  {
-	    pNewRun = new fp_FieldMetaDescriptionRun(this, m_pLayout->getGraphics(), blockOffset, 1);
+	    pNewRun = new fp_FieldMetaDescriptionRun(this,   blockOffset, 1);
 	  }
 	else
 	{
@@ -3717,7 +3716,7 @@ bool	fl_BlockLayout::_doInsertFieldRun(PT_BlockOffset blockOffset, const PX_Chan
 		//
 		// New Piece Table Field Leave it for that code..
 		//
-		pNewRun = new fp_FieldRun(this, m_pLayout->getGraphics(), blockOffset, 1);
+		pNewRun = new fp_FieldRun(this,   blockOffset, 1);
 	}
 
 	UT_ASSERT(pNewRun); // TODO check for outofmem
@@ -5199,7 +5198,7 @@ bool fl_BlockLayout::doclistener_insertBlock(const PX_ChangeRecord_Strux * pcrx,
 		UT_ASSERT(pLastRun);
 		// Create a new end-of-paragraph run and add it to the block.
 		fp_EndOfParagraphRun* pNewRun =
-			new fp_EndOfParagraphRun(this, m_pLayout->getGraphics(), 0, 0);
+			new fp_EndOfParagraphRun(this,   0, 0);
 		pLastRun->setNext(pNewRun);
 		pNewRun->setPrev(pLastRun);
 		pNewRun->setBlockOffset(pLastRun->getBlockOffset()
@@ -6355,7 +6354,7 @@ fl_BlockLayout::doclistener_insertFmtMark(const PX_ChangeRecord_FmtMark* pcrfm)
 
 	xxx_UT_DEBUGMSG(("Edit:InsertFmtMark [blockOffset %ld]\n",blockOffset));
 
-	fp_FmtMarkRun * pNewRun = new fp_FmtMarkRun(this,m_pLayout->getGraphics(),blockOffset);
+	fp_FmtMarkRun * pNewRun = new fp_FmtMarkRun(this, blockOffset);
 	UT_ASSERT(pNewRun);
 	_doInsertRun(pNewRun);
 

@@ -44,9 +44,9 @@
 //////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////
 
-fp_FmtMarkRun::fp_FmtMarkRun(fl_BlockLayout* pBL, GR_Graphics* pG,
+fp_FmtMarkRun::fp_FmtMarkRun(fl_BlockLayout* pBL,
 							 UT_uint32 iOffsetFirst)
-	: fp_Run(pBL, pG, iOffsetFirst, 0, FPRUN_FMTMARK)
+	: fp_Run(pBL,iOffsetFirst, 0, FPRUN_FMTMARK)
 {
 	lookupProperties();
 }
@@ -61,9 +61,9 @@ void fp_FmtMarkRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 									   pBlockAP,
 									   pSectionAP));
 
-	_setAscent(getGR()->getFontAscent(pFont));
-	_setDescent(getGR()->getFontDescent(pFont));
-	_setHeight(getGR()->getFontHeight(pFont));
+	_setAscent(getGraphics()->getFontAscent(pFont));
+	_setDescent(getGraphics()->getFontDescent(pFont));
+	_setHeight(getGraphics()->getFontHeight(pFont));
 	xxx_UT_DEBUGMSG(("fmtmark lookup properties: Font Ascent %d  Font Descent %d Font %x Span %x \n",getAscent(),getDescent(),pFont,pSpanAP));
 	PD_Document * pDoc = getBlock()->getDocument();
 
@@ -153,7 +153,7 @@ void fp_FmtMarkRun::_clearScreen(bool /* bFullLineHeightRect */)
 	UT_sint32 xoff = 0, yoff = 0;
 	getLine()->getScreenOffsets(this, xoff, yoff);
 
-	getGR()->fillRect(m_ColorBG,xoff,yoff, 1,m_iHeight);
+	getGraphics()->fillRect(m_ColorBG,xoff,yoff, 1,m_iHeight);
 #endif
 #endif
 }
@@ -166,8 +166,8 @@ void fp_FmtMarkRun::_draw(dg_DrawArgs* /*pDA */)
 	UT_sint32 xOrigin = pDA->xoff;
 
 	UT_RGBColor clrBlue(0,0,255); // debug color only
-	getGR()->setColor(clrBlue);
-	getGR()->drawLine(xOrigin,yTopOfRun, xOrigin,yTopOfRun+getHeight());
+	getGraphics()->setColor(clrBlue);
+	getGraphics()->drawLine(xOrigin,yTopOfRun, xOrigin,yTopOfRun+getHeight());
 #endif
 #endif
 }

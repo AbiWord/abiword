@@ -143,8 +143,7 @@ public:
 	virtual void		draw(dg_DrawArgs*) = 0;
 	virtual void		draw(GR_Graphics*) = 0;
 	virtual void		clearScreen(void) = 0;
-    GR_Graphics*        getGraphics(void)
-		{ return m_pG;}
+    GR_Graphics*        getGraphics(void) const;
     virtual fp_ContainerObject * getNext(void) const = 0;
     virtual fp_ContainerObject * getPrev(void) const = 0;
     virtual void        setNext(fp_ContainerObject * pNext) = 0;
@@ -168,10 +167,6 @@ private:
 	  Section layout type used for this container
 	*/
 	fl_SectionLayout*		        m_pSectionLayout;
-	/*!
-      Graphics drawing area
-    */
-	GR_Graphics *           m_pG;
 	FriBidiCharType         m_iDirection;
 };
 

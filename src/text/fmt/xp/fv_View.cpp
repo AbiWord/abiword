@@ -99,17 +99,18 @@ public:
 class FV_Caret_Listener : public AV_Listener
 {
 public:
-  FV_Caret_Listener(XAP_Frame * pFrame, GR_Graphics * pGr) : m_pFrame (pFrame), m_pGraphics(pGr) {}
+  FV_Caret_Listener(XAP_Frame * pFrame) : m_pFrame (pFrame) {}
   virtual ~FV_Caret_Listener (){}
 
   virtual bool notify(AV_View * pView, const AV_ChangeMask mask)
   {
+	  GR_Graphics *pG = static_cast<FV_View *>(pView)->getGraphics();
 	  if (m_pFrame && (mask & (AV_CHG_INSERTMODE)))
       {
 		  AP_FrameData * pData = static_cast<AP_FrameData *>(m_pFrame->getFrameData());
 		  if (pData) 
 		  {
-			  m_pGraphics->getCaret()->setInsertMode(pData->m_bInsertMode);
+			  pG->getCaret()->setInsertMode(pData->m_bInsertMode);
 			  return true;
 		  }
       }
@@ -202,7 +203,8 @@ FV_View::FV_View(XAP_App * pApp, void* pParentData, FL_DocLayout* pLayout)
 		m_bInFootnote(false),
 		m_bgColorInitted(false),
 		m_iLowDrawPoint(0),
-		m_iHighDrawPoint(0)
+		m_iHighDrawPoint(0),
+		m_CaretListID(0)
 {
 	m_colorRevisions[0] = UT_RGBColor(171,4,254);
 	m_colorRevisions[1] = UT_RGBColor(171,20,119);
@@ -407,9 +409,8 @@ FV_View::FV_View(XAP_App * pApp, void* pParentData, FL_DocLayout* pLayout)
 		m_pG->getCaret()->enable();
 		if(m_pG->queryProperties(GR_Graphics::DGP_SCREEN))
 		{
-			AV_ListenerId listID;
-			m_caretListener = new FV_Caret_Listener (pFrame, m_pG);
-			addListener(m_caretListener, &listID);
+			m_caretListener = new FV_Caret_Listener (pFrame);
+			addListener(m_caretListener, &m_CaretListID);
 		}
 		else
 		{
@@ -435,6 +436,28 @@ FV_View::~FV_View()
 	FREEP(m_chg.propsChar);
 	FREEP(m_chg.propsBlock);
 	FREEP(m_chg.propsSection);
+}
+
+void FV_View::setGraphics(GR_Graphics * pG)
+{
+	if(m_caretListener != NULL)
+	{
+		removeListener(m_CaretListID);
+		DELETEP(m_caretListener);
+	}
+	m_pG = pG;
+	if(m_pG->queryProperties(GR_Graphics::DGP_SCREEN))
+	{
+		m_pG->createCaret();
+		m_pG->getCaret()->enable();
+		XAP_Frame * pFrame = static_cast<XAP_Frame*>(getParentData());
+		m_caretListener = new FV_Caret_Listener (pFrame);
+		addListener(m_caretListener, &m_CaretListID);
+	}
+	else
+	{
+		m_caretListener = NULL;
+	}
 }
 
 UT_RGBColor FV_View::getColorSelBackground ()

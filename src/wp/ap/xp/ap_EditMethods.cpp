@@ -6942,9 +6942,7 @@ static bool s_doZoomDlg(FV_View * pView)
 			pPrefsScheme->setValue(static_cast<const XML_Char*>(XAP_PREF_KEY_ZoomType),
 						   static_cast<const XML_Char*>(tmp.c_str()));
 		}
-		s_StartStopLoadingCursor(true, pFrame);
-		pFrame->setZoomPercentage(newZoom);
-		s_StartStopLoadingCursor(false, pFrame);
+		pFrame->quickZoom(newZoom);
 	}
 	else
 	  {
@@ -6976,11 +6974,7 @@ Defun1(zoom100)
 
   UT_uint32 newZoom = 100;
   pFrame->setZoomType( XAP_Frame::z_100 );
-
-  s_StartStopLoadingCursor(true, pFrame);
-  pFrame->setZoomPercentage(newZoom);
-  s_StartStopLoadingCursor(false, pFrame);
-
+  pFrame->quickZoom(newZoom);
   return true;
 }
 
@@ -7003,10 +6997,7 @@ Defun1(zoom200)
 
   UT_uint32 newZoom = 200;
   pFrame->setZoomType( XAP_Frame::z_200 );
-
-  s_StartStopLoadingCursor(true, pFrame);
-  pFrame->setZoomPercentage(newZoom);
-  s_StartStopLoadingCursor(false, pFrame);
+  pFrame->quickZoom(newZoom);
 
   return true;
 }
@@ -7030,10 +7021,7 @@ Defun1(zoom50)
 
   UT_uint32 newZoom = 50;
   pFrame->setZoomType( XAP_Frame::z_PERCENT );
-
-  s_StartStopLoadingCursor(true, pFrame);
-  pFrame->setZoomPercentage(newZoom);
-  s_StartStopLoadingCursor(false, pFrame);
+  pFrame->quickZoom(newZoom);
 
   return true;
 }
@@ -7057,10 +7045,7 @@ Defun1(zoom75)
 
   UT_uint32 newZoom = 75;
   pFrame->setZoomType(	XAP_Frame::z_75 );
-
-  s_StartStopLoadingCursor(true, pFrame);
-  pFrame->setZoomPercentage(newZoom);
-  s_StartStopLoadingCursor(false, pFrame);
+  pFrame->quickZoom(newZoom);
 
   return true;
 }
@@ -7085,10 +7070,7 @@ Defun1(zoomWidth)
   pFrame->setZoomType( XAP_Frame::z_PAGEWIDTH );
 
   UT_uint32 newZoom = pView->calculateZoomPercentForPageWidth();
-
-  s_StartStopLoadingCursor(true, pFrame);
-  pFrame->setZoomPercentage(newZoom);
-  s_StartStopLoadingCursor(false, pFrame);
+  pFrame->quickZoom(newZoom);
 
 
   return true;
@@ -7116,10 +7098,7 @@ Defun1(zoomWhole)
   pFrame->setZoomType( XAP_Frame::z_WHOLEPAGE );
 
   UT_uint32 newZoom = pView->calculateZoomPercentForWholePage();
-
-  s_StartStopLoadingCursor(true, pFrame);
-  pFrame->setZoomPercentage(newZoom);
-  s_StartStopLoadingCursor(false, pFrame);
+  pFrame->quickZoom(newZoom);
 
   return true;
 }
@@ -7144,11 +7123,8 @@ Defun1(zoomIn)
 						 static_cast<const XML_Char*>(tmp.c_str()));
 	
 	pFrame->setZoomType( XAP_Frame::z_PERCENT );
-	
-	s_StartStopLoadingCursor(true, pFrame);
-	pFrame->setZoomPercentage(newZoom);
-	s_StartStopLoadingCursor(false, pFrame);
-	
+	pFrame->quickZoom(newZoom);
+
 	return true;
 }
 
@@ -7172,10 +7148,8 @@ Defun1(zoomOut)
 	pPrefsScheme->setValue(static_cast<const XML_Char*>(XAP_PREF_KEY_ZoomType),
 						 static_cast<const XML_Char*>(tmp.c_str()));
 	pFrame->setZoomType( XAP_Frame::z_PERCENT );
-	
-	s_StartStopLoadingCursor(true, pFrame);
-	pFrame->setZoomPercentage(newZoom);
-	s_StartStopLoadingCursor(false, pFrame);
+	pFrame->quickZoom(newZoom);
+
 	
 	return true;
 }
@@ -8205,10 +8179,8 @@ Defun(zoom)
 	}
 	  
 	UT_ASSERT(iZoom > 0);
+	pFrame->quickZoom(iZoom);
 
-	s_StartStopLoadingCursor(true, pFrame);
-	pFrame->setZoomPercentage(iZoom);
-	s_StartStopLoadingCursor(false, pFrame);
 //
 // Make damn sure the cursor is ON!!
 //

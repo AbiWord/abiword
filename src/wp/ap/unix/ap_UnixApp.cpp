@@ -2244,7 +2244,7 @@ static void zoom_level_func(GObject * z, float lvl, gpointer data)
   UT_return_if_fail ( pFrame != NULL ) ;
 
   pFrame->setZoomType (XAP_Frame::z_PERCENT);
-  pFrame->setZoomPercentage (static_cast<UT_uint32>(lvl));
+  pFrame->quickZoom (static_cast<UT_uint32>(lvl));
 }
 
 static void zoom_in_func(GObject * z, gpointer data)
@@ -2261,7 +2261,7 @@ static void zoom_in_func(GObject * z, gpointer data)
   zoom_lvl += ZOOM_PCTG ;
 
   pFrame->setZoomType (XAP_Frame::z_PERCENT);
-  pFrame->setZoomPercentage (zoom_lvl);  
+  pFrame->quickZoom (zoom_lvl);  
 }
 
 static void zoom_out_func(GObject * z, gpointer data)
@@ -2281,7 +2281,7 @@ static void zoom_out_func(GObject * z, gpointer data)
     return ;
 
   pFrame->setZoomType (XAP_Frame::z_PERCENT);
-  pFrame->setZoomPercentage (zoom_lvl);  
+  pFrame->quickZoom (zoom_lvl);  
 }
 
 static void zoom_to_fit_func(GObject * z, gpointer data)
@@ -2299,7 +2299,7 @@ static void zoom_to_fit_func(GObject * z, gpointer data)
 
   UT_uint32 newZoom = pView->calculateZoomPercentForWholePage();
   pFrame->setZoomType( XAP_Frame::z_WHOLEPAGE );
-  pFrame->setZoomPercentage(newZoom);
+  pFrame->quickZoom(newZoom);
 }
 
 static void zoom_to_default_func(GObject * z, gpointer data)
@@ -2313,7 +2313,7 @@ static void zoom_to_default_func(GObject * z, gpointer data)
   UT_return_if_fail ( pFrame != NULL ) ;
 
   pFrame->setZoomType (XAP_Frame::z_100);
-  pFrame->setZoomPercentage (100);  
+  pFrame->quickZoom (100);  
 }
 
 /*****************************************************************/

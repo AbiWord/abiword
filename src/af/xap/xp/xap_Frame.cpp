@@ -907,6 +907,31 @@ UT_Error XAP_Frame::backup(const char* szExt)
 	return error;
 }
 
+void XAP_Frame::quickZoom(void)
+{
+	if( !m_pView ) return;
+	UT_uint32 newZoom = 100;
+	switch( getZoomType() )
+	{
+	case z_PAGEWIDTH:
+		newZoom = m_pView->calculateZoomPercentForPageWidth();
+		if      (newZoom < XAP_DLG_ZOOM_MINIMUM_ZOOM) newZoom = XAP_DLG_ZOOM_MINIMUM_ZOOM;
+		else if (newZoom > XAP_DLG_ZOOM_MAXIMUM_ZOOM) newZoom = XAP_DLG_ZOOM_MAXIMUM_ZOOM;
+		XAP_Frame::setZoomPercentage( newZoom );
+		quickZoom( newZoom );
+		break;
+	case z_WHOLEPAGE:
+		newZoom = m_pView->calculateZoomPercentForWholePage() ;
+		if      (newZoom < XAP_DLG_ZOOM_MINIMUM_ZOOM) newZoom = XAP_DLG_ZOOM_MINIMUM_ZOOM;
+		else if (newZoom > XAP_DLG_ZOOM_MAXIMUM_ZOOM) newZoom = XAP_DLG_ZOOM_MAXIMUM_ZOOM;
+		XAP_Frame::setZoomPercentage( newZoom );
+		quickZoom( newZoom );
+		break;
+	default:
+       ;
+   }
+}
+
 void XAP_Frame::updateZoom(void)
 {
 	if( !m_pView ) return;

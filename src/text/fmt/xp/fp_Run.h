@@ -129,7 +129,7 @@ enum FPRUN_CLEAR_SCREEN
 class ABI_EXPORT fp_Run
 {
 public:
-	fp_Run(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst,
+	fp_Run(fl_BlockLayout* pBL, UT_uint32 iOffsetFirst,
 		   UT_uint32 iLen, FP_RUN_TYPE iType);
 	virtual ~fp_Run();
 
@@ -150,8 +150,7 @@ public:
 	fp_Run*			        getPrev() const					{ return m_pPrev; }
 	UT_uint32		        getBlockOffset() const			{ return m_iOffsetFirst; }
 	UT_uint32		        getLength() const				{ return m_iLen; }
-	GR_Graphics*	        getGraphics() const				{ return m_pG; }
-	GR_Graphics*	        getGR() const					{ return m_pG; }
+	GR_Graphics*	        getGraphics() const;
 	fp_HyperlinkRun *       getHyperlink() const 			{ return m_pHyperlink;}
 #if DEBUG
 	virtual void            printText(void) {};
@@ -354,7 +353,6 @@ private:
 
 	UT_uint32				m_iOffsetFirst;
 	UT_uint32				m_iLen;
-	GR_Graphics*			m_pG;
 	bool					m_bDirty;		// run erased @ old coords, needs to be redrawn
 	fd_Field*				m_pField;
 	FriBidiCharType			m_iDirection;   //#TF direction of the run 0 for left-to-right, 1 for right-to-left
@@ -390,7 +388,7 @@ private:
 class ABI_EXPORT fp_TabRun : public fp_Run
 {
 public:
-	fp_TabRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen);
+	fp_TabRun(fl_BlockLayout* pBL, UT_uint32 iOffsetFirst, UT_uint32 iLen);
 	virtual void			mapXYToPosition(UT_sint32 xPos, UT_sint32 yPos, PT_DocPosition& pos, bool& bBOL, bool& bEOL);
 	virtual void 			findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y, UT_sint32& x2, UT_sint32& y2, UT_sint32& height, bool& bDirection);
 	virtual bool			canBreakAfter(void) const;
@@ -419,7 +417,7 @@ private:
 class ABI_EXPORT fp_ForcedLineBreakRun : public fp_Run
 {
 public:
-	fp_ForcedLineBreakRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen);
+	fp_ForcedLineBreakRun(fl_BlockLayout* pBL, UT_uint32 iOffsetFirst, UT_uint32 iLen);
 	virtual void			mapXYToPosition(UT_sint32 xPos, UT_sint32 yPos, PT_DocPosition& pos, bool& bBOL, bool& bEOL);
 	virtual void 			findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y, UT_sint32& x2, UT_sint32& y2, UT_sint32& height, bool& bDirection);
 	virtual bool			canBreakAfter(void) const;
@@ -438,7 +436,7 @@ protected:
 class ABI_EXPORT fp_FieldStartRun : public fp_Run
 {
 public:
-	fp_FieldStartRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen);
+	fp_FieldStartRun(fl_BlockLayout* pBL, UT_uint32 iOffsetFirst, UT_uint32 iLen);
 	virtual void			mapXYToPosition(UT_sint32 xPos, UT_sint32 yPos, PT_DocPosition& pos, bool& bBOL, bool& bEOL);
 	virtual void 			findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y, UT_sint32& x2, UT_sint32& y2, UT_sint32& height, bool& bDirection);
 	virtual bool			canBreakAfter(void) const;
@@ -457,7 +455,7 @@ protected:
 class ABI_EXPORT fp_FieldEndRun : public fp_Run
 {
 public:
-	fp_FieldEndRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen);
+	fp_FieldEndRun(fl_BlockLayout* pBL, UT_uint32 iOffsetFirst, UT_uint32 iLen);
 	virtual void			mapXYToPosition(UT_sint32 xPos, UT_sint32 yPos, PT_DocPosition& pos, bool& bBOL, bool& bEOL);
 	virtual void 			findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y, UT_sint32& x2, UT_sint32& y2, UT_sint32& height, bool& bDirection);
 	virtual bool			canBreakAfter(void) const;
@@ -476,7 +474,7 @@ protected:
 class ABI_EXPORT fp_ForcedColumnBreakRun : public fp_Run
 {
 public:
-	fp_ForcedColumnBreakRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen);
+	fp_ForcedColumnBreakRun(fl_BlockLayout* pBL, UT_uint32 iOffsetFirst, UT_uint32 iLen);
 
 	virtual void			mapXYToPosition(UT_sint32 xPos, UT_sint32 yPos, PT_DocPosition& pos, bool& bBOL, bool& bEOL);
 	virtual void 			findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y, UT_sint32& x2, UT_sint32& y2, UT_sint32& height, bool& bDirection);
@@ -496,7 +494,7 @@ protected:
 class ABI_EXPORT fp_ForcedPageBreakRun : public fp_Run
 {
 public:
-	fp_ForcedPageBreakRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen);
+	fp_ForcedPageBreakRun(fl_BlockLayout* pBL, UT_uint32 iOffsetFirst, UT_uint32 iLen);
 	virtual void			mapXYToPosition(UT_sint32 xPos, UT_sint32 yPos, PT_DocPosition& pos, bool& bBOL, bool& bEOL);
 	virtual void 			findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y, UT_sint32& x2, UT_sint32& y2, UT_sint32& height, bool& bDirection);
 	virtual bool			canBreakAfter(void) const;
@@ -516,7 +514,7 @@ protected:
 class ABI_EXPORT fp_EndOfParagraphRun : public fp_Run
 {
 public:
-	fp_EndOfParagraphRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen);
+	fp_EndOfParagraphRun(fl_BlockLayout* pBL,  UT_uint32 iOffsetFirst, UT_uint32 iLen);
 
 	virtual bool			recalcWidth(void);
 	virtual void			mapXYToPosition(UT_sint32 xPos, UT_sint32 yPos, PT_DocPosition& pos, bool& bBOL, bool& bEOL);
@@ -548,7 +546,7 @@ private:
 class ABI_EXPORT fp_BookmarkRun : public fp_Run
 {
 public:
-	fp_BookmarkRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen);
+	fp_BookmarkRun(fl_BlockLayout* pBL, UT_uint32 iOffsetFirst, UT_uint32 iLen);
 
 	bool 				isStartOfBookmark() const {return m_bIsStart;};
 	const XML_Char * 	getName() const {return m_pName;};
@@ -591,7 +589,7 @@ private:
 class ABI_EXPORT fp_HyperlinkRun : public fp_Run
 {
 public:
-	fp_HyperlinkRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen);
+	fp_HyperlinkRun(fl_BlockLayout* pBL, UT_uint32 iOffsetFirst, UT_uint32 iLen);
 	~fp_HyperlinkRun();
 	bool 				isStartOfHyperlink() const {return m_bIsStart;};
 	const XML_Char * 	getTarget() const {return static_cast<const XML_Char *>(m_pTarget);};
@@ -633,7 +631,7 @@ private:
 class ABI_EXPORT fp_ImageRun : public fp_Run
 {
 public:
-	fp_ImageRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen, FG_Graphic * pGraphic);
+	fp_ImageRun(fl_BlockLayout* pBL, UT_uint32 iOffsetFirst, UT_uint32 iLen, FG_Graphic * pGraphic);
 	virtual ~fp_ImageRun();
 
 	virtual void			mapXYToPosition(UT_sint32 xPos, UT_sint32 yPos, PT_DocPosition& pos, bool& bBOL, bool& bEOL);
@@ -644,6 +642,7 @@ public:
 	const char *            getDataId(void) const;
 	virtual bool 			hasLayoutProperties(void) const;
 	virtual GR_Image * 				getImage();
+	void                     regenerateImage(void);
 protected:
 	virtual void			_lookupProperties(const PP_AttrProp * pSpanAP,
 											  const PP_AttrProp * pBlockAP,
@@ -661,6 +660,8 @@ private:
 	UT_String               m_sCachedWidthProp;
 	UT_String               m_sCachedHeightProp;
 	UT_sint32               m_iPointHeight;
+	const PP_AttrProp *     m_pSpanAP;
+	UT_uint32               m_iGraphicTick;
 };
 
 #define FPFIELD_MAX_LENGTH	127
@@ -727,7 +728,7 @@ extern fp_FieldData fp_FieldFmts[];
 class ABI_EXPORT fp_FieldRun : public fp_Run
 {
 public:
-	fp_FieldRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen);
+	fp_FieldRun(fl_BlockLayout* pBL, UT_uint32 iOffsetFirst, UT_uint32 iLen);
 	virtual ~fp_FieldRun() {return;};
 
 	virtual void			mapXYToPosition(UT_sint32 xPos, UT_sint32 yPos, PT_DocPosition& pos, bool& bBOL, bool& bEOL);
@@ -780,7 +781,7 @@ class ABI_EXPORT fp_FieldEndnoteRefRun : public fp_FieldRun
 {
 public:
 
-	fp_FieldEndnoteRefRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen);
+	fp_FieldEndnoteRefRun(fl_BlockLayout* pBL, UT_uint32 iOffsetFirst, UT_uint32 iLen);
 
 	virtual ~fp_FieldEndnoteRefRun(){}
 
@@ -797,7 +798,7 @@ class ABI_EXPORT fp_FieldEndnoteAnchorRun : public fp_FieldRun
 {
 public:
 
-	fp_FieldEndnoteAnchorRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen);
+	fp_FieldEndnoteAnchorRun(fl_BlockLayout* pBL, UT_uint32 iOffsetFirst, UT_uint32 iLen);
 
 	virtual ~fp_FieldEndnoteAnchorRun() {}
 
@@ -813,7 +814,7 @@ class ABI_EXPORT fp_FieldFootnoteRefRun : public fp_FieldRun
 {
 public:
 
-	fp_FieldFootnoteRefRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen);
+	fp_FieldFootnoteRefRun(fl_BlockLayout* pBL,UT_uint32 iOffsetFirst, UT_uint32 iLen);
 
 	virtual ~fp_FieldFootnoteRefRun(){}
 
@@ -829,7 +830,7 @@ class ABI_EXPORT fp_FieldFootnoteAnchorRun : public fp_FieldRun
 {
 public:
 
-	fp_FieldFootnoteAnchorRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen);
+	fp_FieldFootnoteAnchorRun(fl_BlockLayout* pBL, UT_uint32 iOffsetFirst, UT_uint32 iLen);
 
 	virtual ~fp_FieldFootnoteAnchorRun() {}
 
@@ -845,7 +846,7 @@ class ABI_EXPORT fp_FieldTimeRun : public fp_FieldRun
 {
 public:
 
-	fp_FieldTimeRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen);
+	fp_FieldTimeRun(fl_BlockLayout* pBL,  UT_uint32 iOffsetFirst, UT_uint32 iLen);
 
 	virtual ~fp_FieldTimeRun(){}
 
@@ -858,7 +859,7 @@ class ABI_EXPORT fp_FieldPageNumberRun : public fp_FieldRun
 {
 public:
 
-	fp_FieldPageNumberRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen);
+	fp_FieldPageNumberRun(fl_BlockLayout* pBL, UT_uint32 iOffsetFirst, UT_uint32 iLen);
 
 	virtual ~fp_FieldPageNumberRun() {}
 
@@ -871,7 +872,7 @@ class ABI_EXPORT fp_FieldPageReferenceRun : public fp_FieldRun
 {
 public:
 
-	fp_FieldPageReferenceRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen);
+	fp_FieldPageReferenceRun(fl_BlockLayout* pBL, UT_uint32 iOffsetFirst, UT_uint32 iLen);
 
 	virtual ~fp_FieldPageReferenceRun() {}
 
@@ -884,7 +885,7 @@ class ABI_EXPORT fp_FieldPageCountRun : public fp_FieldRun
 {
 public:
 
-	fp_FieldPageCountRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen);
+	fp_FieldPageCountRun(fl_BlockLayout* pBL,  UT_uint32 iOffsetFirst, UT_uint32 iLen);
 
 	virtual ~fp_FieldPageCountRun() {}
 
@@ -896,7 +897,7 @@ public:
 class ABI_EXPORT fp_FieldDateRun : public fp_FieldRun
 {
 public:
-	fp_FieldDateRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen);
+	fp_FieldDateRun(fl_BlockLayout* pBL,  UT_uint32 iOffsetFirst, UT_uint32 iLen);
 
 	virtual ~fp_FieldDateRun() {}
 
@@ -908,7 +909,7 @@ public:
 class ABI_EXPORT fp_FieldFileNameRun : public fp_FieldRun
 {
 public:
-	fp_FieldFileNameRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen);
+	fp_FieldFileNameRun(fl_BlockLayout* pBL, UT_uint32 iOffsetFirst, UT_uint32 iLen);
 
 	virtual ~fp_FieldFileNameRun() {}
 
@@ -925,7 +926,7 @@ public:
 class ABI_EXPORT fp_FieldCharCountRun : public fp_FieldRun
 {
 public:
-	fp_FieldCharCountRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen);
+	fp_FieldCharCountRun(fl_BlockLayout* pBL, UT_uint32 iOffsetFirst, UT_uint32 iLen);
 
 	virtual ~fp_FieldCharCountRun() {}
 
@@ -939,7 +940,7 @@ public:
 class ABI_EXPORT fp_FieldNonBlankCharCountRun : public fp_FieldRun
 {
 public:
-	fp_FieldNonBlankCharCountRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen);
+	fp_FieldNonBlankCharCountRun(fl_BlockLayout* pBL, UT_uint32 iOffsetFirst, UT_uint32 iLen);
 
 	virtual ~fp_FieldNonBlankCharCountRun(){}
 
@@ -952,7 +953,7 @@ public:
 class ABI_EXPORT fp_FieldLineCountRun : public fp_FieldRun
 {
 public:
-	fp_FieldLineCountRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen);
+	fp_FieldLineCountRun(fl_BlockLayout* pBL, UT_uint32 iOffsetFirst, UT_uint32 iLen);
 
 	virtual ~fp_FieldLineCountRun(){}
 
@@ -965,7 +966,7 @@ public:
 class ABI_EXPORT fp_FieldParaCountRun : public fp_FieldRun
 {
 public:
-	fp_FieldParaCountRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen);
+	fp_FieldParaCountRun(fl_BlockLayout* pBL, UT_uint32 iOffsetFirst, UT_uint32 iLen);
 
 	virtual ~fp_FieldParaCountRun(){}
 
@@ -978,7 +979,7 @@ public:
 class ABI_EXPORT fp_FieldWordCountRun : public fp_FieldRun
 {
 public:
-	fp_FieldWordCountRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen);
+	fp_FieldWordCountRun(fl_BlockLayout* pBL, UT_uint32 iOffsetFirst, UT_uint32 iLen);
 
 	virtual ~fp_FieldWordCountRun(){}
 
@@ -994,7 +995,7 @@ public:
 class ABI_EXPORT fp_FieldMMDDYYRun : public fp_FieldRun
 {
 public:
-	fp_FieldMMDDYYRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen);
+	fp_FieldMMDDYYRun(fl_BlockLayout* pBL, UT_uint32 iOffsetFirst, UT_uint32 iLen);
 
 	virtual ~fp_FieldMMDDYYRun(){}
 
@@ -1007,7 +1008,7 @@ public:
 class ABI_EXPORT fp_FieldDDMMYYRun : public fp_FieldRun
 {
 public:
-	fp_FieldDDMMYYRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen);
+	fp_FieldDDMMYYRun(fl_BlockLayout* pBL, UT_uint32 iOffsetFirst, UT_uint32 iLen);
 
 	virtual ~fp_FieldDDMMYYRun(){}
 
@@ -1020,7 +1021,7 @@ public:
 class ABI_EXPORT fp_FieldMonthDayYearRun : public fp_FieldRun
 {
 public:
-	fp_FieldMonthDayYearRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen);
+	fp_FieldMonthDayYearRun(fl_BlockLayout* pBL, UT_uint32 iOffsetFirst, UT_uint32 iLen);
 
 	virtual ~fp_FieldMonthDayYearRun(){}
 
@@ -1033,7 +1034,7 @@ public:
 class ABI_EXPORT fp_FieldMthDayYearRun : public fp_FieldRun
 {
 public:
-	fp_FieldMthDayYearRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen);
+	fp_FieldMthDayYearRun(fl_BlockLayout* pBL, UT_uint32 iOffsetFirst, UT_uint32 iLen);
 
 	virtual ~fp_FieldMthDayYearRun (){}
 
@@ -1046,7 +1047,7 @@ public:
 class ABI_EXPORT fp_FieldDefaultDateRun : public fp_FieldRun
 {
 public:
-	fp_FieldDefaultDateRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen);
+	fp_FieldDefaultDateRun(fl_BlockLayout* pBL, UT_uint32 iOffsetFirst, UT_uint32 iLen);
 
 	virtual ~fp_FieldDefaultDateRun(){}
 
@@ -1059,7 +1060,7 @@ public:
 class ABI_EXPORT fp_FieldDefaultDateNoTimeRun : public fp_FieldRun
 {
 public:
-	fp_FieldDefaultDateNoTimeRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen);
+	fp_FieldDefaultDateNoTimeRun(fl_BlockLayout* pBL, UT_uint32 iOffsetFirst, UT_uint32 iLen);
 
 	virtual ~fp_FieldDefaultDateNoTimeRun(){}
 
@@ -1072,7 +1073,7 @@ public:
 class ABI_EXPORT fp_FieldWkdayRun : public fp_FieldRun
 {
 public:
-	fp_FieldWkdayRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen);
+	fp_FieldWkdayRun(fl_BlockLayout* pBL, UT_uint32 iOffsetFirst, UT_uint32 iLen);
 
 	virtual ~fp_FieldWkdayRun(){}
 
@@ -1085,7 +1086,7 @@ public:
 class ABI_EXPORT fp_FieldDOYRun : public fp_FieldRun
 {
 public:
-	fp_FieldDOYRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen);
+	fp_FieldDOYRun(fl_BlockLayout* pBL, UT_uint32 iOffsetFirst, UT_uint32 iLen);
 
 	virtual ~fp_FieldDOYRun(){}
 
@@ -1098,7 +1099,7 @@ public:
 class ABI_EXPORT fp_FieldMilTimeRun : public fp_FieldRun
 {
 public:
-	fp_FieldMilTimeRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen);
+	fp_FieldMilTimeRun(fl_BlockLayout* pBL, UT_uint32 iOffsetFirst, UT_uint32 iLen);
 
 	virtual ~fp_FieldMilTimeRun(){}
 
@@ -1111,7 +1112,7 @@ public:
 class ABI_EXPORT fp_FieldAMPMRun : public fp_FieldRun
 {
 public:
-	fp_FieldAMPMRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen);
+	fp_FieldAMPMRun(fl_BlockLayout* pBL, UT_uint32 iOffsetFirst, UT_uint32 iLen);
 
 	virtual ~fp_FieldAMPMRun(){}
 
@@ -1124,7 +1125,7 @@ public:
 class ABI_EXPORT fp_FieldTimeEpochRun : public fp_FieldRun
 {
 public:
-	fp_FieldTimeEpochRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen);
+	fp_FieldTimeEpochRun(fl_BlockLayout* pBL, UT_uint32 iOffsetFirst, UT_uint32 iLen);
 
 	virtual ~fp_FieldTimeEpochRun(){}
 
@@ -1136,7 +1137,7 @@ public:
 class ABI_EXPORT fp_FieldDateTimeCustomRun : public fp_FieldRun
 {
 public:
-	fp_FieldDateTimeCustomRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen);
+	fp_FieldDateTimeCustomRun(fl_BlockLayout* pBL, UT_uint32 iOffsetFirst, UT_uint32 iLen);
 
 	virtual ~fp_FieldDateTimeCustomRun(){}
 
@@ -1149,7 +1150,7 @@ public:
 class ABI_EXPORT fp_FieldTimeZoneRun : public fp_FieldRun
 {
 public:
-	fp_FieldTimeZoneRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen);
+	fp_FieldTimeZoneRun(fl_BlockLayout* pBL, UT_uint32 iOffsetFirst, UT_uint32 iLen);
 
 	virtual ~fp_FieldTimeZoneRun(){}
 
@@ -1163,7 +1164,7 @@ public:
 class ABI_EXPORT fp_FieldBuildIdRun : public fp_FieldRun
 {
 public:
-	fp_FieldBuildIdRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen);
+	fp_FieldBuildIdRun(fl_BlockLayout* pBL, UT_uint32 iOffsetFirst, UT_uint32 iLen);
 
 	virtual ~fp_FieldBuildIdRun(){}
 
@@ -1175,7 +1176,7 @@ public:
 class ABI_EXPORT fp_FieldBuildVersionRun : public fp_FieldRun
 {
 public:
-	fp_FieldBuildVersionRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen);
+	fp_FieldBuildVersionRun(fl_BlockLayout* pBL, UT_uint32 iOffsetFirst, UT_uint32 iLen);
 
 	virtual ~fp_FieldBuildVersionRun(){}
 
@@ -1186,7 +1187,7 @@ public:
 class ABI_EXPORT fp_FieldBuildOptionsRun : public fp_FieldRun
 {
 public:
-	fp_FieldBuildOptionsRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen);
+	fp_FieldBuildOptionsRun(fl_BlockLayout* pBL, UT_uint32 iOffsetFirst, UT_uint32 iLen);
 
 	virtual ~fp_FieldBuildOptionsRun(){}
 
@@ -1197,7 +1198,7 @@ public:
 class ABI_EXPORT fp_FieldBuildTargetRun : public fp_FieldRun
 {
 public:
-	fp_FieldBuildTargetRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen);
+	fp_FieldBuildTargetRun(fl_BlockLayout* pBL, UT_uint32 iOffsetFirst, UT_uint32 iLen);
 
 	virtual ~fp_FieldBuildTargetRun(){}
 
@@ -1208,7 +1209,7 @@ public:
 class ABI_EXPORT fp_FieldBuildCompileDateRun : public fp_FieldRun
 {
 public:
-	fp_FieldBuildCompileDateRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen);
+	fp_FieldBuildCompileDateRun(fl_BlockLayout* pBL, UT_uint32 iOffsetFirst, UT_uint32 iLen);
 
 	virtual ~fp_FieldBuildCompileDateRun (){}
 
@@ -1219,7 +1220,7 @@ public:
 class ABI_EXPORT fp_FieldBuildCompileTimeRun : public fp_FieldRun
 {
 public:
-	fp_FieldBuildCompileTimeRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen);
+	fp_FieldBuildCompileTimeRun(fl_BlockLayout* pBL, UT_uint32 iOffsetFirst, UT_uint32 iLen);
 
 	virtual ~fp_FieldBuildCompileTimeRun(){}
 
@@ -1230,7 +1231,7 @@ public:
 class ABI_EXPORT fp_FieldMailMergeRun : public fp_FieldRun
 {
  public:
-  fp_FieldMailMergeRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen);
+  fp_FieldMailMergeRun(fl_BlockLayout* pBL, UT_uint32 iOffsetFirst, UT_uint32 iLen);
 
   virtual ~fp_FieldMailMergeRun(){}
   
@@ -1243,7 +1244,7 @@ class ABI_EXPORT fp_FieldMailMergeRun : public fp_FieldRun
 class ABI_EXPORT fp_FieldMetaRun : public fp_FieldRun
 {
  public:
-  fp_FieldMetaRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen, const char * which);
+  fp_FieldMetaRun(fl_BlockLayout* pBL, UT_uint32 iOffsetFirst, UT_uint32 iLen, const char * which);
 
   virtual ~fp_FieldMetaRun(){}
   
@@ -1259,84 +1260,84 @@ class ABI_EXPORT fp_FieldMetaRun : public fp_FieldRun
 class ABI_EXPORT fp_FieldMetaTitleRun : public fp_FieldMetaRun
 {
  public:
-  fp_FieldMetaTitleRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen);
+  fp_FieldMetaTitleRun(fl_BlockLayout* pBL, UT_uint32 iOffsetFirst, UT_uint32 iLen);
   virtual ~fp_FieldMetaTitleRun(){}
 };
 
 class ABI_EXPORT fp_FieldMetaCreatorRun : public fp_FieldMetaRun
 {
  public:
-  fp_FieldMetaCreatorRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen);
+  fp_FieldMetaCreatorRun(fl_BlockLayout* pBL, UT_uint32 iOffsetFirst, UT_uint32 iLen);
   virtual ~fp_FieldMetaCreatorRun(){}
 };
 
 class ABI_EXPORT fp_FieldMetaSubjectRun : public fp_FieldMetaRun
 {
  public:
-  fp_FieldMetaSubjectRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen);
+  fp_FieldMetaSubjectRun(fl_BlockLayout* pBL,  UT_uint32 iOffsetFirst, UT_uint32 iLen);
   virtual ~fp_FieldMetaSubjectRun(){}
 };
 
 class ABI_EXPORT fp_FieldMetaPublisherRun : public fp_FieldMetaRun
 {
  public:
-  fp_FieldMetaPublisherRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen);
+  fp_FieldMetaPublisherRun(fl_BlockLayout* pBL, UT_uint32 iOffsetFirst, UT_uint32 iLen);
   virtual ~fp_FieldMetaPublisherRun(){}
 };
 
 class ABI_EXPORT fp_FieldMetaDateRun : public fp_FieldMetaRun
 {
  public:
-  fp_FieldMetaDateRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen);
+  fp_FieldMetaDateRun(fl_BlockLayout* pBL, UT_uint32 iOffsetFirst, UT_uint32 iLen);
   virtual ~fp_FieldMetaDateRun(){}
 };
 
 class ABI_EXPORT fp_FieldMetaTypeRun : public fp_FieldMetaRun
 {
  public:
-  fp_FieldMetaTypeRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen);
+  fp_FieldMetaTypeRun(fl_BlockLayout* pBL, UT_uint32 iOffsetFirst, UT_uint32 iLen);
   virtual ~fp_FieldMetaTypeRun(){}
 };
 
 class ABI_EXPORT fp_FieldMetaLanguageRun : public fp_FieldMetaRun
 {
  public:
-  fp_FieldMetaLanguageRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen);
+  fp_FieldMetaLanguageRun(fl_BlockLayout* pBL, UT_uint32 iOffsetFirst, UT_uint32 iLen);
   virtual ~fp_FieldMetaLanguageRun(){}
 };
 
 class ABI_EXPORT fp_FieldMetaRightsRun : public fp_FieldMetaRun
 {
  public:
-  fp_FieldMetaRightsRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen);
+  fp_FieldMetaRightsRun(fl_BlockLayout* pBL, UT_uint32 iOffsetFirst, UT_uint32 iLen);
   virtual ~fp_FieldMetaRightsRun(){}
 };
 
 class ABI_EXPORT fp_FieldMetaKeywordsRun : public fp_FieldMetaRun
 {
  public:
-  fp_FieldMetaKeywordsRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen);
+  fp_FieldMetaKeywordsRun(fl_BlockLayout* pBL, UT_uint32 iOffsetFirst, UT_uint32 iLen);
   virtual ~fp_FieldMetaKeywordsRun(){}
 };
 
 class ABI_EXPORT fp_FieldMetaContributorRun : public fp_FieldMetaRun
 {
  public:
-  fp_FieldMetaContributorRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen);
+  fp_FieldMetaContributorRun(fl_BlockLayout* pBL, UT_uint32 iOffsetFirst, UT_uint32 iLen);
   virtual ~fp_FieldMetaContributorRun(){}
 };
 
 class ABI_EXPORT fp_FieldMetaCoverageRun : public fp_FieldMetaRun
 {
  public:
-  fp_FieldMetaCoverageRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen);
+  fp_FieldMetaCoverageRun(fl_BlockLayout* pBL, UT_uint32 iOffsetFirst, UT_uint32 iLen);
   virtual ~fp_FieldMetaCoverageRun(){}
 };
 
 class ABI_EXPORT fp_FieldMetaDescriptionRun : public fp_FieldMetaRun
 {
  public:
-  fp_FieldMetaDescriptionRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen);
+  fp_FieldMetaDescriptionRun(fl_BlockLayout* pBL, UT_uint32 iOffsetFirst, UT_uint32 iLen);
   virtual ~fp_FieldMetaDescriptionRun(){}
 };
 
@@ -1345,7 +1346,7 @@ class ABI_EXPORT fp_FieldMetaDescriptionRun : public fp_FieldMetaRun
 class ABI_EXPORT fp_FmtMarkRun : public fp_Run
 {
 public:
-	fp_FmtMarkRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst);
+	fp_FmtMarkRun(fl_BlockLayout* pBL, UT_uint32 iOffsetFirst);
 
 	virtual void			mapXYToPosition(UT_sint32 xPos, UT_sint32 yPos, PT_DocPosition& pos, bool& bBOL, bool& bEOL);
 	virtual void 			findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y, UT_sint32& x2, UT_sint32& y2, UT_sint32& height, bool& bDirection);
