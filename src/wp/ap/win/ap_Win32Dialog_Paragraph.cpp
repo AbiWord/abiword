@@ -336,6 +336,8 @@ BOOL AP_Win32Dialog_Paragraph::_onInitTab(HWND hWnd, WPARAM wParam, LPARAM lPara
 			// populate fixed choices
 			{
 				HWND hwndAlign = GetDlgItem(hWnd, AP_RID_DIALOG_PARA_COMBO_ALIGN);
+				// insert the empty value (for multi-para selections with different state)
+				SendMessage(hwndAlign, CB_ADDSTRING, 0, (LPARAM) "");
 				_CAS(hwndAlign, DLG_Para_AlignLeft);
 				_CAS(hwndAlign, DLG_Para_AlignCentered);
 				_CAS(hwndAlign, DLG_Para_AlignRight);
@@ -343,12 +345,14 @@ BOOL AP_Win32Dialog_Paragraph::_onInitTab(HWND hWnd, WPARAM wParam, LPARAM lPara
 				SendMessage(hwndAlign, CB_SETCURSEL, (WPARAM) _getMenuItemValue(id_MENU_ALIGNMENT), 0);
 
 				HWND hwndHang = GetDlgItem(hWnd, AP_RID_DIALOG_PARA_COMBO_HANG);
+				SendMessage(hwndHang, CB_ADDSTRING, 0, (LPARAM) "");
 				_CAS(hwndHang, DLG_Para_SpecialNone);
 				_CAS(hwndHang, DLG_Para_SpecialFirstLine);
 				_CAS(hwndHang, DLG_Para_SpecialHanging);
 				SendMessage(hwndHang, CB_SETCURSEL, (WPARAM) _getMenuItemValue(id_MENU_SPECIAL_INDENT), 0);
 
 				HWND hwndLead = GetDlgItem(hWnd, AP_RID_DIALOG_PARA_COMBO_LEAD);
+				SendMessage(hwndLead, CB_ADDSTRING, 0, (LPARAM) "");
 				_CAS(hwndLead, DLG_Para_SpacingSingle);
 				_CAS(hwndLead, DLG_Para_SpacingHalf);
 				_CAS(hwndLead, DLG_Para_SpacingDouble);

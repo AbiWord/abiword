@@ -69,14 +69,14 @@ AP_Dialog_Paragraph::AP_Dialog_Paragraph(XAP_DialogFactory* pDlgFactory, XAP_Dia
 	m_pageLeftMargin = NULL;
 	m_pageRightMargin = NULL;
 
-	_addPropertyItem (id_MENU_ALIGNMENT,		sControlData(align_LEFT));
+	_addPropertyItem (id_MENU_ALIGNMENT,		sControlData(align_UNDEF));
 	_addPropertyItem (id_SPIN_LEFT_INDENT,		sControlData());
 	_addPropertyItem (id_SPIN_RIGHT_INDENT,		sControlData());
-	_addPropertyItem (id_MENU_SPECIAL_INDENT,	sControlData(indent_NONE));
+	_addPropertyItem (id_MENU_SPECIAL_INDENT,	sControlData(indent_UNDEF));
 	_addPropertyItem (id_SPIN_SPECIAL_INDENT,	sControlData());
 	_addPropertyItem (id_SPIN_BEFORE_SPACING,	sControlData());
 	_addPropertyItem (id_SPIN_AFTER_SPACING,	sControlData());
-	_addPropertyItem (id_MENU_SPECIAL_SPACING,	sControlData(spacing_SINGLE));
+	_addPropertyItem (id_MENU_SPECIAL_SPACING,	sControlData(spacing_UNDEF));
 	_addPropertyItem (id_SPIN_SPECIAL_SPACING,	sControlData());
 	_addPropertyItem (id_CHECK_WIDOW_ORPHAN,	sControlData(check_INDETERMINATE));
 	_addPropertyItem (id_CHECK_KEEP_LINES,		sControlData(check_INDETERMINATE));
@@ -354,27 +354,28 @@ bool AP_Dialog_Paragraph::getDialogData(const XML_Char **& pProps)
 
 	propPair * p;
 
-	if (_wasChanged(id_MENU_ALIGNMENT))
+	// only do this if the control has a proper value
+	if (_wasChanged(id_MENU_ALIGNMENT)  && _getMenuItemValue(id_MENU_ALIGNMENT))
 	{
 		ALLOC_PROP_PAIR(p);
 		UT_XML_cloneString(p->prop, "text-align");
 
 		switch (_getMenuItemValue(id_MENU_ALIGNMENT))
 		{
-		case align_LEFT:
-			UT_XML_cloneString(p->val, "left");
-			break;
-		case align_CENTERED:
-			UT_XML_cloneString(p->val, "center");
-			break;
-		case align_RIGHT:
-			UT_XML_cloneString(p->val, "right");
-			break;
-		case align_JUSTIFIED:
-			UT_XML_cloneString(p->val, "justify");
-			break;
-		default:
-			UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
+			case align_LEFT:
+				UT_XML_cloneString(p->val, "left");
+				break;
+			case align_CENTERED:
+				UT_XML_cloneString(p->val, "center");
+				break;
+			case align_RIGHT:
+				UT_XML_cloneString(p->val, "right");
+				break;
+			case align_JUSTIFIED:
+				UT_XML_cloneString(p->val, "justify");
+				break;
+			default:
+				UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 		}
 		v.addItem(p);
 	}
@@ -419,7 +420,8 @@ bool AP_Dialog_Paragraph::getDialogData(const XML_Char **& pProps)
 	// TODO : One could make it smarter with a stronger contract with
 	// TODO : the platform interfaces.
 
-	if (_wasChanged(id_MENU_SPECIAL_INDENT) || _wasChanged(id_SPIN_SPECIAL_INDENT))
+	if (_getMenuItemValue(id_MENU_SPECIAL_INDENT) &&
+		(_wasChanged(id_MENU_SPECIAL_INDENT) || _wasChanged(id_SPIN_SPECIAL_INDENT)))
 	{
 		ALLOC_PROP_PAIR(p);
 		UT_XML_cloneString(p->prop, "text-indent");
@@ -473,7 +475,8 @@ bool AP_Dialog_Paragraph::getDialogData(const XML_Char **& pProps)
 	// TODO : One could make it smarter with a stronger contract with
 	// TODO : the platform interfaces.
 
-	if(_wasChanged(id_MENU_SPECIAL_SPACING) || _wasChanged(id_SPIN_SPECIAL_SPACING))
+	if(_getMenuItemValue(id_MENU_SPECIAL_SPACING) &&
+		 (_wasChanged(id_MENU_SPECIAL_SPACING) || _wasChanged(id_SPIN_SPECIAL_SPACING)))
 	{
 		ALLOC_PROP_PAIR(p);
 		UT_XML_cloneString(p->prop, "line-height");

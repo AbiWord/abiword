@@ -584,6 +584,7 @@ void AP_Preview_Paragraph::_appendBlock(AP_Preview_Paragraph_Block * block)
 		// we have to land the baseline in the right spot then
 		switch (block->m_spacing)
 		{
+		case AP_Dialog_Paragraph::spacing_UNDEF:
 		case AP_Dialog_Paragraph::spacing_SINGLE:
 		case AP_Dialog_Paragraph::spacing_ONEANDHALF:
 		case AP_Dialog_Paragraph::spacing_DOUBLE:
