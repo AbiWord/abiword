@@ -49,14 +49,8 @@ to be readily available.
 
 Additionally, AbiWord uses the PNG and zlib libraries.  Both of these are 
 available from our website, and are peers of the abi tree.  Once you 
-have all this stuff downloaded, then you should be able to build the 
-tree as follows:
-	cd zlib
-	make
-	cd ../libpng
-	make
-	cd ../abi
-	make 
+have all this stuff downloaded, AbiWord should build just fine.  The
+main AbiWord makefile will take care of building these other libraries.
 
 Where is the executable?
 ------------------------
