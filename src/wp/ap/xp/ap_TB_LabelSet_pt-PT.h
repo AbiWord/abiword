@@ -69,6 +69,8 @@ BeginSet(pt,PT,true)
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_UNDERLINE,	"Sublinhado",	tb_text_underline_S_xpm,NULL,	"Sublinhado")
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_OVERLINE,	"Sobrelinhado",	tb_text_overline_xpm,	NULL,	"Sobrelinhado")
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_STRIKE,		"Cortado",	tb_text_strikeout_xpm,	NULL,	"Cortado")
+	ToolbarLabel(AP_TOOLBAR_ID_FMT_TOPLINE,		"Linha Superior",tb_text_topline_xpm,	NULL,	"Linha Superior")
+	ToolbarLabel(AP_TOOLBAR_ID_FMT_BOTTOMLINE,	"Linha Inferior",tb_text_bottomline_xpm,NULL,	"Linha Inferior")
 	ToolbarLabel(AP_TOOLBAR_ID_HELP,		"Ajuda",	tb_help_xpm,		NULL,	"Ajuda")
 
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_SUPERSCRIPT,	"Expoente",	tb_text_superscript_xpm,NULL,	"Expoente")
@@ -99,6 +101,10 @@ BeginSet(pt,PT,true)
 	ToolbarLabel(AP_TOOLBAR_ID_COLOR_BACK,		"Cor de fundo",	tb_text_bgcolor_xpm,			NULL,	"Mudar a cor de fundo")
 	ToolbarLabel(AP_TOOLBAR_ID_INDENT,		"Indentar",	tb_text_indent_xpm,	NULL,	"Aumentar indentação do parágrafo")
 	ToolbarLabel(AP_TOOLBAR_ID_UNINDENT,		"Desindentar",	tb_text_unindent_xpm,	NULL,	"Diminuir a indentação do parágrafo")
+
+#ifdef ABI_OPT_JS
+	ToolbarLabel(AP_TOOLBAR_ID_SCRIPT_PLAY,		"Executar Script",tb_script_play_xpm,	NULL,	"Executar script")
+#endif
 
 #ifdef BIDI_ENABLED
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_DIR_OVERRIDE_LTR,"Da Esquerda para a Direita", tb_text_direction_ltr_xpm,	NULL, "Forçar orientação do texto da Esquerda para a Direita")
