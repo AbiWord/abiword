@@ -39,10 +39,6 @@
 #include "ap_Prefs.h"
 #include "ut_string_class.h"
 
-#ifdef WIN32
-#include "ut_Win32OS.h"
-#endif
-
 /*****************************************************************/
 /*****************************************************************/
 
@@ -573,10 +569,7 @@ bool Text_Listener::populateStrux(PL_StruxDocHandle /*sdh*/,
 	case PTX_SectionMarginnote:
 	case PTX_SectionFootnote:
 	case PTX_EndEndnote:
-	  {
-	    //UT_DEBUGMSG(("Unhandled Strux type %d. No worries\n",pcrx->getStruxType()));
 	    return true ;
-	  }
 
 	default:
 		UT_ASSERT_NOT_REACHED();

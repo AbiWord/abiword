@@ -537,7 +537,8 @@ void AP_Win32App::copyToClipboard(PD_DocumentRange * pDocRange, bool bUseClipboa
 			// TODO The system allows old apps to access it as 8 bit.
 			// TODO We can't do this yet due to the design of Abi's clipboard and import/export modules.
 
-			IE_Exp_Text * pExpUnicodeText = new IE_Exp_Text(pDocRange->m_pDoc);
+		        const char * szEncoding = XAP_EncodingManager::get_instance()->getNativeUnicodeEncodingName(); 
+			IE_Exp_Text * pExpUnicodeText = new IE_Exp_Text(pDocRange->m_pDoc,szEncoding);
 			if (pExpUnicodeText)
 			{
 				UT_ByteBuf buf;
