@@ -37,6 +37,7 @@ PLATFORM_OBJS=	$(OBJDIR)/xap_$(ABI_FE)App.$(OBJ_SUFFIX)			\
 		$(OBJDIR)/xap_$(ABI_FE)Dlg_Zoom.$(OBJ_SUFFIX)			\
 		$(OBJDIR)/xap_$(ABI_FE)Dlg_Insert_Symbol.$(OBJ_SUFFIX)		\
 		$(OBJDIR)/xap_$(ABI_FE)Module.$(OBJ_SUFFIX)			\
+		$(OBJDIR)/xap_$(ABI_FE)EncodingManager.$(OBJ_SUFFIX)	\
 		$(OBJDIR)/xap_$(ABI_FE)Frame.$(OBJ_SUFFIX) \
 		$(OBJDIR)/xap_$(ABI_FE)Dlg_Language.$(OBJ_SUFFIX)
 
@@ -64,7 +65,6 @@ ifeq ($(ABI_FE), Unix)
 PLATFORM_OBJS += 	$(OBJDIR)/xap_$(ABI_FE)Font.$(OBJ_SUFFIX)		\
 			$(OBJDIR)/xap_$(ABI_FE)FontManager.$(OBJ_SUFFIX)	\
 			$(OBJDIR)/xap_$(ABI_FE)FontXLFD.$(OBJ_SUFFIX)		\
-			$(OBJDIR)/xap_$(ABI_FE)EncodingManager.$(OBJ_SUFFIX)	\
 			$(OBJDIR)/xap_$(ABI_FE)PSImage.$(OBJ_SUFFIX)		\
 			$(OBJDIR)/xap_$(ABI_FE)PSParseAFM.$(OBJ_SUFFIX)		\
 			$(OBJDIR)/xap_$(ABI_FE)PSFont.$(OBJ_SUFFIX)
