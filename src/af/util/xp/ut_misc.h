@@ -38,5 +38,6 @@ protected:
 
 #define UT_MAX(A,B)	(((A) > (B)) ? (A) : (B))
 #define UT_MIN(A,B)	(((A) < (B)) ? (A) : (B))
+#define UT_ABS(A)	( ((A) < 0) ? (-(A)) : (A) )
 
 #endif /* UTMISC_H */
