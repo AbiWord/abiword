@@ -40,7 +40,8 @@ public:
 	bool			pop(void ** ppVoid);
 	bool			viewTop(void ** ppVoid) const;
 	UT_uint32		getDepth(void) const;
-
+	void            clear() {m_vecStack.clear();}
+	
 private:
 	UT_Vector		m_vecStack;
 };
@@ -59,6 +60,7 @@ public:
 	bool			pop (UT_sint32 * number = 0);
 	bool			viewTop (UT_sint32 & number) const;
 	UT_uint32		getDepth (void) const;
+	void            clear() {m_vecStack.clear();}
 
 private:
 	UT_NumberVector	m_vecStack;
