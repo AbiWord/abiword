@@ -63,7 +63,7 @@ void XAP_Win32Dialog_FontChooser::runModal(XAP_Frame * pFrame)
 				 ((m_pFontStyle) ? m_pFontStyle : ""),
 				 ((m_pColor) ? m_pColor : "" ),
 				 (m_bUnderline),
-				 (m_bStrikeOut)));
+				 (m_bStrikeout)));
 	
 	/*
 	   WARNING: any changes to this function should be closely coordinated
@@ -121,7 +121,7 @@ void XAP_Win32Dialog_FontChooser::runModal(XAP_Frame * pFrame)
 	
 	if (m_bUnderline)
 		lf.lfUnderline = TRUE;
-	if (m_bStrikeOut)
+	if (m_bStrikeout)
 		lf.lfStrikeOut = TRUE;
 
 	// run the actual dialog...
@@ -196,7 +196,7 @@ void XAP_Win32Dialog_FontChooser::runModal(XAP_Frame * pFrame)
 		}
 
 		m_bChangedUnderline = ((lf.lfUnderline == TRUE) != m_bUnderline);
-		m_bChangedStrikeOut = ((lf.lfStrikeOut == TRUE) != m_bStrikeOut);
+		m_bChangedStrikeOut = ((lf.lfStrikeOut == TRUE) != m_bStrikeout);
 		if (m_bChangedUnderline || m_bChangedStrikeOut)
 			setFontDecoration( (lf.lfUnderline == TRUE), false, (lf.lfStrikeOut == TRUE) );
 	}
@@ -208,7 +208,7 @@ void XAP_Win32Dialog_FontChooser::runModal(XAP_Frame * pFrame)
 				 ((m_pFontStyle) ? m_pFontStyle : ""),		((m_bChangedFontStyle) ? "(chg)" : ""),
 				 ((m_pColor) ? m_pColor : "" ),				((m_bChangedColor) ? "(chg)" : ""),
 				 (m_bUnderline),							((m_bChangedUnderline) ? "(chg)" : ""),
-				 (m_bStrikeOut),							((m_bChangedStrikeOut) ? "(chg)" : "")));
+				 (m_bStrikeout),							((m_bChangedStrikeOut) ? "(chg)" : "")));
 	
 	// the caller can get the answer from getAnswer().
 

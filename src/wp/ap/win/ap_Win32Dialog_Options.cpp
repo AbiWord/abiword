@@ -561,8 +561,7 @@ BOOL AP_Win32Dialog_Options::_onCommandTab(HWND hWnd, WPARAM wParam, LPARAM lPar
 
 		if( pColorDialog->getAnswer() == AP_Dialog_Background::a_OK )
 		{
-		    rgbColor = pColorDialog->getColor();
-			sprintf( m_CurrentTransparentColor,"#%02x%02x%02x", rgbColor.m_red, rgbColor.m_grn, rgbColor.m_blu );
+			strcpy( m_CurrentTransparentColor, pColorDialog->getColor() );
 		}
 		m_pDialogFactory->releaseDialog( pColorDialog );
 

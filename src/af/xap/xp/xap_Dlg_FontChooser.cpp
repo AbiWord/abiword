@@ -180,9 +180,9 @@ void XAP_Dialog_FontChooser::setAllPropsFromVec(UT_Vector * vProps)
 //
 	const XML_Char * s = NULL;
 	s = getVal("text-decoration");
-	m_bUnderline = strstr(s,"underline");
-	m_bOverline = strstr(s,"overline");
-	m_bStrikeout = strstr(s,"line-through");
+	m_bUnderline = (NULL != strstr(s,"underline"));
+	m_bOverline = (NULL != strstr(s,"overline"));
+	m_bStrikeout = (NULL != strstr(s,"line-through"));
 }
 
 void XAP_Dialog_FontChooser::setFontFamily(const XML_Char * pFontFamily)
@@ -423,9 +423,9 @@ void XAP_Preview_FontPreview::draw(void)
 	const XML_Char * pDecor = getVal("text-decoration");
 	if(pDecor)
 	{
-		isUnder = strstr(pDecor,"underline");
-		isOver = strstr(pDecor,"overline");
-		isStrike = strstr(pDecor,"line-through");
+		isUnder = (NULL != strstr(pDecor,"underline"));
+		isOver = (NULL != strstr(pDecor,"overline"));
+		isStrike = (NULL != strstr(pDecor,"line-through"));
 	}
 	else
 	{
