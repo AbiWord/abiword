@@ -242,6 +242,69 @@ Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_Numbers)
         return s;
 }
 
+Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_Indents)
+{
+	ABIWORD_VIEW;
+	UT_ASSERT(pView);
+
+	// TODO: TOMAS: this probably needs some bidi work in the final
+	// TODO: switch statement in what the 'allowed' value should be
+
+	EV_Toolbar_ItemState s = EV_TIS_ZERO;
+	
+	// get current char properties from pView
+	const XML_Char * prop = NULL;
+	const XML_Char ** props_in = NULL;
+	const XML_Char * sz = NULL;
+	
+	double margin_left = 0., margin_right = 0., allowed = 0., 
+	  page_margin_left = 0., page_margin_right = 0.;
+	
+	{
+	  pView->getBlockFormat(&props_in);
+	  prop = "margin-left";
+	  sz = UT_getAttribute(prop, props_in);	    
+	  margin_left = UT_convertToInches(sz);
+	}
+
+	{
+	  pView->getBlockFormat(&props_in);
+	  prop = "margin-right";
+	  sz = UT_getAttribute(prop, props_in);	    
+	  margin_right = UT_convertToInches(sz);
+	}
+	
+	{
+	  prop = "page-margin-left";
+	  pView->getSectionFormat(&props_in);
+	  sz = UT_getAttribute(prop, props_in);
+	  page_margin_left = UT_convertToInches(sz);
+	}
+	
+	{
+	  prop = "page-margin-right";
+	  pView->getSectionFormat(&props_in);
+	  sz = UT_getAttribute(prop, props_in);
+	  page_margin_right = UT_convertToInches(sz);
+	}	    
+	
+	switch(id)
+	  {
+	  case AP_TOOLBAR_ID_INDENT:
+	    allowed = pView->getPageSize().Width (DIM_IN) - page_margin_left - page_margin_right;
+	    if (margin_left >= allowed)
+	      s = EV_TIS_Gray;
+	    break;
+	  case AP_TOOLBAR_ID_UNINDENT:
+	    allowed = 0.;
+	    if (margin_left <= allowed)
+	      s = EV_TIS_Gray;
+	    break;
+	  }
+	
+	return s;
+}
+
 Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_CharFmt)
 {
 	ABIWORD_VIEW;

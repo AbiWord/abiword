@@ -43,6 +43,7 @@ Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_Zoom);
 Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_View);
 Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_HdrFtr);
 Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_StylesLocked);
+Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_Indents);
 
 #endif /* AP_TOOLBAR_FUNCTIONS_H */
 

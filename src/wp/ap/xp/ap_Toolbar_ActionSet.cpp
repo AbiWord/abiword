@@ -104,8 +104,8 @@ EV_Toolbar_ActionSet * AP_CreateToolbarActionSet(void)
 	_s(AP_TOOLBAR_ID_FMT_TOPLINE,	EV_TBIT_ToggleButton,	"toggleTopline",	AV_CHG_FMTCHAR,		ap_ToolbarGetState_CharFmt);
 	_s(AP_TOOLBAR_ID_FMT_BOTTOMLINE,	EV_TBIT_ToggleButton,	"toggleBottomline",	AV_CHG_FMTCHAR,		ap_ToolbarGetState_CharFmt);
 
-	_s(AP_TOOLBAR_ID_INDENT,		EV_TBIT_PushButton,		"toggleIndent",		AV_CHG_NONE,		NULL);
-	_s(AP_TOOLBAR_ID_UNINDENT,		EV_TBIT_PushButton,		"toggleUnIndent",	AV_CHG_NONE,	NULL);
+	_s(AP_TOOLBAR_ID_INDENT,		EV_TBIT_PushButton,		"toggleIndent",		AV_CHG_FMTBLOCK,		ap_ToolbarGetState_Indents);
+	_s(AP_TOOLBAR_ID_UNINDENT,		EV_TBIT_PushButton,		"toggleUnIndent",	AV_CHG_FMTBLOCK,	ap_ToolbarGetState_Indents);
 
 	_s(AP_TOOLBAR_ID_FMT_SUPERSCRIPT,	EV_TBIT_ToggleButton,	"toggleSuper",	AV_CHG_FMTCHAR,	ap_ToolbarGetState_CharFmt);
 	_s(AP_TOOLBAR_ID_FMT_SUBSCRIPT,		EV_TBIT_ToggleButton,	"toggleSub",	AV_CHG_FMTCHAR,	ap_ToolbarGetState_CharFmt);	
