@@ -349,6 +349,13 @@ s_AbiWord_1_Listener::s_AbiWord_1_Listener(PD_Document * pDocument,
 	m_bInSpan = UT_FALSE;
 	m_apiLastSpan = 0;
 
+	// Be nice to XML apps.  See the notes in _outputData() for more 
+	// details on the charset used in our documents.  By not declaring 
+	// any encoding, XML assumes we're using UTF-8.  Note that US-ASCII 
+	// is a strict subset of UTF-8. 
+
+	m_pie->write("<?xml version=\"1.0\"?>\n");
+
 	// We write this first so that the sniffer can detect AbiWord 
 	// documents more easily.   
 
