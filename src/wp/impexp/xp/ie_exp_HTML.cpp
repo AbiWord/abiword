@@ -2033,16 +2033,17 @@ bool s_HTML_Listener::signal(UT_uint32 /* iSignal */)
 
 UT_Error IE_Exp_HTML::_writeDocument(void)
 {
+  UT_Error err = UT_OK;
 	m_pListener = new s_HTML_Listener(getDoc(),this, m_bIs4);
 	if (!m_pListener)
 		return UT_IE_NOMEMORY;
-	if (!getDoc()->tellListener(static_cast<PL_Listener *>(m_pListener)))
-		return UT_ERROR;
-	delete m_pListener;
-
-	m_pListener = NULL;
+	if (getDocRange())
+	  err = getDoc()->tellListenerSubset(static_cast<PL_Listener *>(m_pListener),getDocRange());
+	else 
+	  err = getDoc()->tellListener(static_cast<PL_Listener *>(m_pListener)) ;
+	DELETEP(m_pListener);
 	
-	return ((m_error) ? UT_IE_COULDNOTWRITE : UT_OK);
+	return ((m_error != UT_OK || err != UT_OK) ? UT_IE_COULDNOTWRITE : UT_OK);
 }
 
 /*****************************************************************/

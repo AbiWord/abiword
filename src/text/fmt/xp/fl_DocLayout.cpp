@@ -202,7 +202,7 @@ UT_sint32 FL_DocLayout::getHeight()
 		fp_Page* p = (fp_Page*) m_vecPages.getNthItem(i);
 
 		iHeight += p->getHeight();
-		if(getView() && (getView()->getViewMode() == VIEW_NORMAL))
+		if(getView() && (getView()->getViewMode() != VIEW_PRINT))
 		{
 			iHeight = iHeight - p->getOwningSection()->getTopMargin() - p->getOwningSection()->getBottomMargin();
 		}

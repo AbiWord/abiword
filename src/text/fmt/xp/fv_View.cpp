@@ -6260,7 +6260,7 @@ void FV_View::_generalUpdate(void)
 	fl_SectionLayout * pSL = m_pLayout->getFirstSection();
 	while(pSL)
 	{
-		bChange |= pSL->recalculateFields(true);
+		bChange |= pSL->recalculateFields(false);
 		pSL  = pSL->getNext();
 	}
 	
