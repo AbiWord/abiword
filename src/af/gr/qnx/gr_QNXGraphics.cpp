@@ -261,7 +261,6 @@ void GR_QNXGraphics::drawChar(UT_UCSChar Char, UT_sint32 xoff, UT_sint32 yoff)
 UT_uint32 GR_QNXGraphics::measureUnRemappedChar(const UT_UCSChar c)
 {
 const char *font;
-FontRender metrics;
 uint16_t mychr = c;
 if(!m_pFont || !(font = m_pFont->getFont())) {
 	return 0;
@@ -518,8 +517,10 @@ void GR_QNXGraphics::setColor(const UT_RGBColor& clr)
 void GR_QNXGraphics::drawLine(UT_sint32 x1, UT_sint32 y1,
 			      UT_sint32 x2, UT_sint32 y2)
 {
-	GR_CaretDisabler caretDisabler(getCaret());
+	if(getCaret() && getCaret()->isEnabled())
+		GR_CaretDisabler caretDisabler(getCaret());
 	DRAW_START
+
 
 	_UUD(x1);
 	_UUD(x2);
@@ -585,12 +586,9 @@ void GR_QNXGraphics::polyLine(UT_Point * pts, UT_uint32 nPoints)
 
 	FREEP(points);
 #else
-	_UUD(pts[0].x);
-	_UUD(pts[0].y);
+	GR_CaretDisabler caretDisabler(getCaret());
 	for (UT_uint32 k=1; k<nPoints; k++)
 	{
-		_UUD(pts[k].x);
-		_UUD(pts[k].y);
 		drawLine(pts[k-1].x,pts[k-1].y, pts[k].x,pts[k].y);
 	}
 #endif
