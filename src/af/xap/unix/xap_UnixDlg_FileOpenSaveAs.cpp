@@ -833,10 +833,6 @@ gint XAP_UnixDialog_FileOpenSaveAs::previewPicture (void)
 
 	// attach and clear the area immediately
 	GR_UnixGraphics* pGr = new GR_UnixGraphics(m_preview->window, unixapp->getFontManager(), m_pApp);
-	{	
-	GR_Painter painter(pGr);
-
-	painter.clearArea(0, 0, pGr->tlu(m_preview->allocation.width), pGr->tlu(m_preview->allocation.height));
 
 	const gchar * buf = gtk_file_selection_get_filename (m_FS);
 
@@ -856,6 +852,10 @@ gint XAP_UnixDialog_FileOpenSaveAs::previewPicture (void)
 	double		scale_factor = 0.0;
 	UT_sint32     scaled_width,scaled_height;
 	UT_sint32     iImageWidth,iImageHeight;
+
+	{
+	GR_Painter painter(pGr);
+	painter.clearArea(0, 0, pGr->tlu(m_preview->allocation.width), pGr->tlu(m_preview->allocation.height));
 
 	if (!buf)
 	  {
