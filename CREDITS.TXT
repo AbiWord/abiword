@@ -65,6 +65,7 @@ Roman Hodek <Roman.Hodek@informatik.uni-erlangen.de>   m68k Endian patch
 Ming-I Hsieh <mihs@wm28.csie.ncu.edu.tw>        FreeBSD
 Perry Ismangil <perry@trabas.com>               AbiHello
 Richard Jefts <babs@cs.jhu.edu>                 layout navigation, font dialog, .zabw impexp
+Nikolaj Brandt Jensen <mailbag@postman.dk>      Win32 Build Fixes and Tinderbox Support
 Luke Jordan <ljordan@mweb.co.za>                subscript, superscript
 David Kaelbling <drk@sgi.com>                   Irix build fixes
 Lauris Kaplinski<lauris@helixcode.com>          Help with GnomePrint

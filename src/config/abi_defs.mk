@@ -739,7 +739,12 @@ CFLAGS += -DLIBICONV_PLUG
 ifeq ($(ABI_NATIVE),unix)
 CFLAGS += -DSUPPORTS_UT_IDLE=1
 endif
+
 ifeq ($(ABI_OPT_BIDI_ENABLED),1)
-EXTRA_LIBS+=-lAbi_fribidi
+	ifeq ($(OS_NAME), WIN32)
+		EXTRA_LIBS += $(LIBDIR)/libAbi_fribidi_s.lib
+	else
+		EXTRA_LIBS += -lAbi_fribidi
+	endif
 endif
 
