@@ -1096,17 +1096,146 @@ bool FV_View::cmdMergeCells(PT_DocPosition posSource, PT_DocPosition posDestinat
 		return false;
 	}
 //
+// Now check if we've merged a whole row of height 2 or a whole col of width two//
+// Start with whole row.
+//
+	posDestination = findCellPosAt(posTable,dTop,dLeft) +2;
+	getCellParams(posDestination,&dLeft,&dRight,&dTop,&dBot);
+	UT_sint32 origTop = dTop;
+	if((dLeft==0) && (dRight== numCols))
+	{
+//
+// Yep one whole row merged.
+//
+// Look for the number of rows spanned now
+//
+		if(dBot > (dTop+1))
+		{
+//
+// Yep we have problem, we'll fix it. Subtract this number from all the cells
+// top and Bottom attach
+//
+			UT_sint32 diff = dBot - dTop -1;
+			PL_StruxDocHandle sdhCell = NULL;
+			PL_StruxDocHandle sdhNextCell = NULL;
+			PL_StruxDocHandle sdhEndTable = NULL;
+			PT_DocPosition posEndTable = 0;
+			PT_DocPosition posCell = 0;
+			bRes = m_pDoc->getStruxOfTypeFromPosition(posDestination,PTX_SectionCell,&sdhCell);
+			UT_return_val_if_fail(bRes,false);
+			sdhEndTable = m_pDoc->getEndTableStruxFromTableSDH(tableSDH);
+			UT_return_val_if_fail(sdhEndTable,false);
+			posEndTable = m_pDoc->getStruxPosition(sdhEndTable);
+			bool bKeepGoing = true;
+			while(bKeepGoing)
+			{
+				posCell = m_pDoc->getStruxPosition(sdhCell)+1;
+				getCellParams(posCell,&dLeft,&dRight,&dTop,&dBot);
+				dBot -= diff;
+				UT_sint32 row = dTop;
+				if(dTop != origTop)
+				{
+					dTop -= diff;
+				}
+				_changeCellTo(posTable,row,dLeft,dLeft,dRight,dTop,dBot); 
+
+				bRes = m_pDoc->getNextStruxOfType(sdhCell,PTX_SectionCell,&sdhNextCell);
+				PT_DocPosition posNextCell = 0;
+				if(bRes)
+				{
+					posNextCell = m_pDoc->getStruxPosition(sdhNextCell);
+					if(posNextCell > posEndTable)
+					{
+						posNextCell = 0;
+						bKeepGoing = false;
+						break;
+					}
+				}
+				else
+				{
+					bKeepGoing = false;
+					break;
+				}
+				sdhCell = sdhNextCell;
+			}
+
+		}
+	}
+//
+// Look for a whole merged column
+//
+	if((dTop==0) && (dBot == numRows))
+	{
+//
+// Yep one whole col merged.
+//
+// Look for the number of cols spanned now
+//
+		if(dRight > (dLeft+1))
+		{
+//
+// Yep we have problem, we'll fix it. Subtract this number from all the cells
+// Right attach from this cell and left and right for all cells to the right
+// of it
+// This is a bit tricky
+// because we don't want to subtract the difference twice so we'll make a 
+// vector of unique cell sdh's and only do our thing one those that aren't in 
+// it
+//
+			UT_sint32 diff = dRight - dLeft -1;
+			UT_sint32 origLeft = dLeft;
+			UT_sint32 origRight = dRight;
+			PL_StruxDocHandle sdhCell = NULL;
+			PT_DocPosition posCell = 0;
+			UT_GenericVector<PL_StruxDocHandle> vecCells;
+			posCell = findCellPosAt(posTable, dTop, dLeft)+1;
+			m_pDoc->getStruxOfTypeFromPosition(posCell,PTX_SectionCell,&sdhCell);
+			vecCells.addItem(sdhCell);
+			getCellParams(posCell,&dLeft,&dRight,&dTop,&dBot);
+			dRight -= diff;
+			_changeCellTo(posTable,dTop,dLeft,dLeft,dRight,dTop,dBot); 
+			UT_sint32 row,col=0;
+			for (col = 0; col < numCols; col++)
+			{
+				for(row =0; row < numRows;row++)
+				{
+					posCell = findCellPosAt(posTable, row, col)+1;
+					m_pDoc->getStruxOfTypeFromPosition(posCell,PTX_SectionCell,&sdhCell);
+					if((sdhCell==NULL) || (vecCells.findItem(sdhCell) >= 0))
+					{
+						continue;
+					}
+					getCellParams(posCell,&dLeft,&dRight,&dTop,&dBot);
+					bool bDoIt = false;
+					if(dLeft > origLeft)
+					{
+						dLeft -= diff;
+						bDoIt = true;
+					}
+					if(dRight >= origRight)
+					{
+						dRight -= diff;
+						bDoIt = true;
+					}
+					if(bDoIt)
+					{
+						vecCells.addItem(sdhCell);
+						_changeCellTo(posTable,row,col,dLeft,dRight,dTop,dBot); 
+					}
+				}
+			}
+		}
+	}
+//
 // Now trigger a rebuild of the whole table by sending a changeStrux to the table strux
 // with the restored line-type property it has before.
 //
 	iLineType += 1;
 	_restoreCellParams(posTable,iLineType);
-	posDestination = findCellPosAt(posTable,dTop,dLeft) +2;
 	setPoint(posDestination);
-//	_charMotion(true,1);
-	notifyListeners(AV_CHG_MOTION);
 	_fixInsertionPointCoords();
 	_ensureInsertionPointOnScreen();
+	notifyListeners(AV_CHG_MOTION);
 	return true;
 }
 
