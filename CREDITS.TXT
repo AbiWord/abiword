@@ -65,6 +65,7 @@ Owen Stenseth <owen@pdaverticals.com>           script to output translation dat
 Nigel Stepp <stepp@mithril.res.cmu.edu>         VI keybindings
 Jim Studt <jim@federated.com>                   ARM configuration
 Sam Tobin-Hochstadt <sytobinh@uchicago.edu>     File I/O error handling, misc fixes
+Petr Tesarik <<tesarik@lupa.cz>                 X11 select and Paste
 Gary Thomas <gdt@linuxppc.org>                  LinuxPPC
 Dave Thompson <thompson@pdnt.com>           
 John Tunison <nosinut@WIND.REM.CMU.EDU>         GNOME dialogs
