@@ -28,6 +28,12 @@
 #include "xap_App.h"
 #include "xap_Prefs_SchemeIds.h"
 
+/* For handling the position of windows on the screen, this sets up preferences */
+enum {
+	PREF_FLAG_GEOMETRY_POS = 	0x1,		// Position is valid
+	PREF_FLAG_GEOMETRY_SIZE = 	0x2,		// Size is valid
+};
+
 typedef void (*PrefsListener) (
 	XAP_App				*pApp,
 	XAP_Prefs			*pPrefs,
@@ -110,6 +116,9 @@ public:
 	const char *			getRecent(UT_uint32 k) const;		// one-based
 	void					addRecent(const char * szRecent);
 	void					removeRecent(UT_uint32 k);			// one-based
+
+	UT_Bool					setGeometry(UT_sint32 posx, UT_sint32 posy, UT_uint32 width, UT_uint32 height, UT_uint32 flags = 0);
+	UT_Bool					getGeometry(UT_sint32 *posx, UT_sint32 *posy, UT_uint32 *width, UT_uint32 *height, UT_uint32 *flags = 0);
 	
 	virtual void				fullInit(void) = 0;
 	virtual UT_Bool				loadBuiltinPrefs(void) = 0;
@@ -142,6 +151,14 @@ protected:
 	UT_Bool					m_bInChangeBlock;
 	void					_sendPrefsSignal( UT_AlphaHashTable *hash );
 
+	typedef struct {
+		UT_uint32				m_width, m_height;	/* Default width and height */
+		UT_sint32				m_posx, m_posy;		/* Default position */
+		UT_uint32				m_flags;			/* What is valid, what is not */
+	} Pref_Geometry;
+	Pref_Geometry				m_geom;
+	
+
 #ifdef HAVE_LIBXML2
 	UT_Bool _sax(const char *path, UT_Bool sys);
 #endif
@@ -160,6 +177,7 @@ private:
 		UT_Bool				m_bFoundSelect;
 		XML_Char *			m_szSelectedSchemeName;
 		UT_Bool				m_bFoundRecent;
+		UT_Bool				m_bFoundGeometry;
 	} m_parserState;
 
 	typedef struct					/* used to store the listener/data pairs in the vector  */

@@ -272,6 +272,46 @@ void XAP_Prefs::_pruneRecent(void)
 			removeRecent(i);
 	}
 }
+/*****************************************************************/
+
+UT_Bool XAP_Prefs::setGeometry(UT_sint32 posx, UT_sint32 posy, UT_uint32 width, UT_uint32 height, UT_uint32 flags) 
+{
+	m_parserState.m_bFoundGeometry = UT_TRUE;
+	m_geom.m_width = width;
+	m_geom.m_height = height;
+	m_geom.m_posx = posx;
+	m_geom.m_posy = posy;
+	m_geom.m_flags = flags;
+
+	//For now we turn on the autosave of prefs so that we can save this setting ... is this bad?
+	setAutoSavePrefs(UT_TRUE);	
+	
+	return UT_TRUE;
+}
+
+UT_Bool XAP_Prefs::getGeometry(UT_sint32 *posx, UT_sint32 *posy, UT_uint32 *width, UT_uint32 *height, UT_uint32 *flags)
+{
+	if (m_parserState.m_bFoundGeometry == UT_FALSE) {
+		return UT_FALSE;
+	}
+	if (width) { 
+		*width = m_geom.m_width; 
+	}
+	if (height) {
+		*height = m_geom.m_height;
+	}
+	if (posx) {
+		*posx = m_geom.m_posx;
+	}
+	if (posy) {
+		*posy = m_geom.m_posy;
+	}
+	if (flags) {
+		*flags = m_geom.m_flags;
+	}
+	return UT_TRUE;
+}
+
 
 /*****************************************************************/
 
@@ -658,6 +698,46 @@ void XAP_Prefs::_startElement(const XML_Char *name, const XML_Char **atts)
 
 		_pruneRecent();
 	}
+	else if (UT_strcmp(name, "Geometry") == 0)
+	{
+		m_parserState.m_bFoundGeometry = UT_TRUE;
+		
+		// we expect something of the form:
+		// <Geometry width="xxx" height="xxx" posx="xxx" posy="xxx" />
+
+		memset(&m_geom, 0, sizeof(m_geom));
+
+		const XML_Char ** a = atts;
+		while (*a)
+		{
+			UT_ASSERT(a[1] && *a[1]);	// require a value for each attribute keyword
+
+
+			if (UT_strcmp(a[0], "width") == 0)
+			{
+				m_geom.m_width = atoi(a[1]);
+			}
+			else if (UT_strcmp(a[0], "height") == 0)
+			{
+				m_geom.m_height = atoi(a[1]);
+			}
+			else if (UT_strcmp(a[0], "posx") == 0)
+			{
+				m_geom.m_posx = atoi(a[1]);
+			}
+			else if (UT_strcmp(a[0], "posy") == 0)
+			{
+				m_geom.m_posy = atoi(a[1]);
+			}
+			else if (UT_strcmp(a[0], "flags") == 0)
+			{
+				m_geom.m_flags = atoi(a[1]);
+			}
+
+
+			a += 2;
+		}
+	}
 
 	// successful parse of tag...
 	
@@ -704,6 +784,7 @@ UT_Bool XAP_Prefs::loadPrefsFile(void)
 	m_parserState.m_bFoundSelect = UT_FALSE;
 	m_parserState.m_szSelectedSchemeName = NULL;
 	m_parserState.m_bFoundRecent = UT_FALSE;
+	m_parserState.m_bFoundGeometry = UT_FALSE;
 
 	szFilename = getPrefsPathname();
 	if (!szFilename)
@@ -772,6 +853,11 @@ UT_Bool XAP_Prefs::loadPrefsFile(void)
 	if (!m_parserState.m_bFoundRecent)
 	{
 		UT_DEBUGMSG(("Did not find <Recent...>\n"));
+		// Note: it's ok if we didn't find it...
+	}
+	if (!m_parserState.m_bFoundGeometry)
+	{
+		UT_DEBUGMSG(("Did not find <Geometry...>\n"));
 		// Note: it's ok if we didn't find it...
 	}
 #endif
@@ -990,6 +1076,14 @@ UT_Bool XAP_Prefs::savePrefsFile(void)
 			fprintf(fp,"\t\tname%d=\"%s\"\n",k+1,szRecent);
 		}
 				
+		fprintf(fp,"\t\t/>\n");
+
+		fprintf(fp,"\n\t<Geometry\n");
+		fprintf(fp,"\t\twidth=\"%u\"\n", m_geom.m_width); 
+		fprintf(fp,"\t\theight=\"%u\"\n", m_geom.m_height); 
+		fprintf(fp,"\t\tposx=\"%d\"\n", m_geom.m_posx); 
+		fprintf(fp,"\t\tposy=\"%d\"\n", m_geom.m_posy); 
+		fprintf(fp,"\t\tflags=\"%d\"\n", m_geom.m_flags); 
 		fprintf(fp,"\t\t/>\n");
 	}
 

@@ -637,6 +637,19 @@ void XAP_App::notifyModelessDlgsCloseFrame(XAP_Frame *p_Frame)
 	}
 }
 
+/* Window Geometry Preferences */
+UT_Bool XAP_App::setGeometry(UT_sint32 x, UT_sint32 y, UT_uint32 width, UT_uint32 height , UT_uint32 flags) 
+{
+	XAP_Prefs *prefs = getPrefs();
+	return prefs->setGeometry(x, y, width, height, flags);
+}
+
+UT_Bool XAP_App::getGeometry(UT_sint32 *x, UT_sint32 *y, UT_uint32 *width, UT_uint32 *height, UT_uint32 *flags) 
+{
+	XAP_Prefs *prefs = getPrefs();
+	return prefs->getGeometry(x, y, width, height, flags);
+}
+
 
 void XAP_App::_printUsage(void)
 {

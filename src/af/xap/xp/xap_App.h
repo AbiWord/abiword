@@ -135,6 +135,12 @@ public:
         virtual void                                            setViewSelection( AV_View * pView) {}; //subclasses override
         virtual AV_View *                                       getViewSelection( void) { return (AV_View *)  NULL;} ; // subclasses override
 
+		virtual	UT_Bool					setGeometry(UT_sint32 x, UT_sint32 y, 
+												    UT_uint32 width, UT_uint32 height, UT_uint32 flags = 0);
+		virtual	UT_Bool					getGeometry(UT_sint32 *x, UT_sint32 *y, 
+													UT_uint32 *width, UT_uint32 *height, UT_uint32 *flags = 0);
+
+
 protected:
 	void				  _setAbiSuiteLibDir(const char * sz);
 	virtual void                      _printUsage(void);   
