@@ -640,7 +640,7 @@ void s_XSL_FO_Listener::_handlePageSize(PT_AttrPropIndex api)
 	}
 	// page-width, page-height
 
-	m_pie->write(" master-name=\"first\"");
+	m_pie->write(" master-reference=\"first\"");
 
 	m_pie->write(">\n");
 	m_pie->write("\t<fo:region-body/>\n");
@@ -773,7 +773,7 @@ void s_XSL_FO_Listener::_openBlock(PT_AttrPropIndex api)
 		m_List.setIdList(id);
 	}
 
-	if (!content_st.empty())
+	if ( true /*!content_st.empty()*/ )
 	{
 		if (start_st.empty())
 			start_st = "<fo:block";
