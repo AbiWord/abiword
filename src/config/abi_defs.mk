@@ -696,13 +696,13 @@ endif
 ifeq ($(ABI_NATIVE),unix)
 EXTRA_LIBS	+=	-L$(ABI_ROOT)/../popt/.libs -lpopt
 endif
+endif #ifeq(platform,unix)
 
 ifeq ($(ABI_OPT_CURLHASH),1)
 LIBCURL_CFLAGS  =       $(shell curl-config --cflags)
 LIBCURL_LIBS    =       $(shell curl-config --libs)
 CFLAGS          +=      $(LIBCURL_CFLAGS) -DHAVE_CURLHASH=1
 EXTRA_LIBS      +=      $(LIBCURL_LIBS)
-endif
 endif
 
 ##################################################################
