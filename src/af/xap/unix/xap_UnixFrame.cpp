@@ -35,7 +35,7 @@
 
 /*****************************************************************/
 
-#define DELETEP(p)		do { if (p) delete p; } while (0)
+#define DELETEP(p)		do { if (p) delete p; p = NULL; } while (0)
 #define REPLACEP(p,q)	do { if (p) delete p; p = q; } while (0)
 #define ENSUREP(p)		do { UT_ASSERT(p); if (!p) goto Cleanup; } while (0)
 
@@ -202,6 +202,7 @@ XAP_UnixFrame::XAP_UnixFrame(AP_UnixApp * app)
 	m_pUnixKeyboard = NULL;
 	m_pUnixMouse = NULL;
 	m_pUnixMenu = NULL;
+	m_pUnixPopup = NULL;
 	m_pView = NULL;
 }
 
@@ -217,6 +218,7 @@ XAP_UnixFrame::XAP_UnixFrame(XAP_UnixFrame * f)
 	m_pUnixKeyboard = NULL;
 	m_pUnixMouse = NULL;
 	m_pUnixMenu = NULL;
+	m_pUnixPopup = NULL;
 	m_pView = NULL;
 }
 
@@ -227,6 +229,7 @@ XAP_UnixFrame::~XAP_UnixFrame(void)
 	DELETEP(m_pUnixKeyboard);
 	DELETEP(m_pUnixMouse);
 	DELETEP(m_pUnixMenu);
+	DELETEP(m_pUnixPopup);
 	UT_VECTOR_PURGEALL(EV_UnixToolbar *, m_vecUnixToolbars);
 }
 
@@ -328,11 +331,11 @@ void XAP_UnixFrame::_createTopLevelWindow(void)
 
 	// synthesize a menu from the info in our base class.
 
-	m_pUnixMenu = new EV_UnixMenu(m_pUnixApp,this,
-								  m_szMenuLayoutName,
-								  m_szMenuLabelSetName);
+	m_pUnixMenu = new EV_UnixMenuBar(m_pUnixApp,this,
+									 m_szMenuLayoutName,
+									 m_szMenuLabelSetName);
 	UT_ASSERT(m_pUnixMenu);
-	bResult = m_pUnixMenu->synthesize();
+	bResult = m_pUnixMenu->synthesizeMenuBar();
 	UT_ASSERT(bResult);
 
 	// create a toolbar instance for each toolbar listed in our base class.
@@ -428,27 +431,17 @@ UT_Bool XAP_UnixFrame::updateTitle()
 UT_Bool XAP_UnixFrame::runModalContextMenu(AV_View * pView, const char * szMenuName,
 										   UT_sint32 x, UT_sint32 y)
 {
-	UT_Bool bResult = UT_FALSE;
-#if 0
+	UT_Bool bResult = UT_TRUE;
 
-	UT_ASSERT(!m_pWin32Popup);
+	UT_ASSERT(!m_pUnixPopup);
 
-	m_pWin32Popup = new EV_Win32MenuPopup(m_pWin32App,szMenuName,m_szMenuLabelSetName);
-	if (m_pWin32Popup && m_pWin32Popup->synthesizeMenuPopup())
+	m_pUnixPopup = new EV_UnixMenuPopup(m_pUnixApp,this,szMenuName,m_szMenuLabelSetName);
+	if (m_pUnixPopup && m_pUnixPopup->synthesizeMenuPopup())
 	{
 		UT_DEBUGMSG(("ContextMenu: %s at [%d,%d]\n",szMenuName,x,y));
-
-		translateDocumentToScreen(x,y);
-
-		TrackPopupMenu(m_pWin32Popup->getMenuHandle(),
-					   TPM_CENTERALIGN | TPM_TOPALIGN | TPM_RIGHTBUTTON,
-					   x,y,0,m_hwndFrame,NULL);
-
-		// the popup steals our capture, so we need to reset our counter.
-		m_pWin32Mouse->reset();
+		gtk_menu_popup(GTK_MENU(m_pUnixPopup->getMenuHandle()), NULL, NULL, NULL, NULL, 3, 0);
 	}
 
-	DELETEP(m_pWin32Popup);
-#endif
+	DELETEP(m_pUnixPopup);
 	return bResult;
 }

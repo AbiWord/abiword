@@ -35,33 +35,69 @@ class XAP_UnixFrame;
 class EV_UnixMenu : public EV_Menu
 {
 public:
-	EV_UnixMenu(AP_UnixApp * pUnixApp, XAP_UnixFrame * pUnixFrame,
+	EV_UnixMenu(AP_UnixApp * pUnixApp,
+				XAP_UnixFrame * pUnixFrame,
 				const char * szMenuLayoutName,
 				const char * szMenuLabelSetName);
-	~EV_UnixMenu(void);
+	virtual ~EV_UnixMenu(void);
 
-	UT_Bool				synthesize(void);
+	UT_Bool				synthesizeMenu(GtkWidget * wMenuRoot);
 	UT_Bool				menuEvent(AP_Menu_Id id);
-	UT_Bool				refreshMenu(AV_View * pView);
+	virtual UT_Bool		refreshMenu(AV_View * pView) = 0;
 
-	XAP_UnixFrame * 		getFrame(void);
+	XAP_UnixFrame * 	getFrame(void);
 
 protected:
 
-	UT_Bool				_refreshMenu(AV_View * pView);
+	UT_Bool				_refreshMenu(AV_View * pView, GtkWidget * wMenuRoot);
 	UT_Bool				_isItemPresent(AP_Menu_Id id) const;
 
 	AP_UnixApp *		m_pUnixApp;
 	XAP_UnixFrame *		m_pUnixFrame;
-
-	GtkWidget *			m_wMenuBar;
-	GtkWidget * 		m_wHandleBox;
 
 	// Menu accelerator group, dynamically filled on synth()
 	GtkAccelGroup * 	m_accelGroup;
 	
 	// actual GTK menu widgets
 	UT_Vector			m_vecMenuWidgets;
+};
+
+/*****************************************************************/
+
+class EV_UnixMenuBar : public EV_UnixMenu
+{
+public:
+	EV_UnixMenuBar(AP_UnixApp * pUnixApp,
+				   XAP_UnixFrame * pUnixFrame,
+				   const char * szMenuLayoutName,
+				   const char * szMenuLabelSetName);
+	virtual ~EV_UnixMenuBar(void);
+
+	UT_Bool				synthesizeMenuBar(void);
+	virtual UT_Bool		refreshMenu(AV_View * pView);
+
+protected:
+	GtkWidget *			m_wMenuBar;
+	GtkWidget * 		m_wHandleBox;
+};
+
+/*****************************************************************/
+
+class EV_UnixMenuPopup : public EV_UnixMenu
+{
+public:
+	EV_UnixMenuPopup(AP_UnixApp * pUnixApp,
+					 XAP_UnixFrame * pUnixFrame,
+					 const char * szMenuLayoutName,
+					 const char * szMenuLabelSetName);
+	virtual ~EV_UnixMenuPopup(void);
+
+	UT_Bool				synthesizeMenuPopup(void);
+	virtual UT_Bool		refreshMenu(AV_View * pView);
+	virtual GtkWidget *	getMenuHandle(void) const;
+
+protected:
+	GtkWidget *			m_wMenuPopup;
 };
 
 #endif /* EV_UNIXMENU_H */

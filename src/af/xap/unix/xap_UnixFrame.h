@@ -28,7 +28,8 @@
 class AP_UnixApp;
 class ev_UnixKeyboard;
 class EV_UnixMouse;
-class EV_UnixMenu;
+class EV_UnixMenuBar;
+class EV_UnixMenuPopup;
 
 /*****************************************************************
 ******************************************************************
@@ -73,7 +74,8 @@ protected:
 	AP_UnixApp *				m_pUnixApp;
 	ev_UnixKeyboard *			m_pUnixKeyboard;
 	EV_UnixMouse *				m_pUnixMouse;
-	EV_UnixMenu *				m_pUnixMenu;
+	EV_UnixMenuBar *			m_pUnixMenu;
+	EV_UnixMenuPopup *			m_pUnixPopup; /* only valid while a context popup is up */
 	UT_Vector					m_vecUnixToolbars;
 	
 	GtkWidget *					m_wTopLevelWindow;

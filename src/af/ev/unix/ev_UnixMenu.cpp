@@ -191,17 +191,6 @@ EV_UnixMenu::~EV_UnixMenu(void)
 	m_vecMenuWidgets.clear();
 }
 
-UT_Bool EV_UnixMenu::refreshMenu(AV_View * pView)
-{
-	// this makes an exception for initialization where a view
-	// might not exist... silly to refresh the menu then; it will
-	// happen in due course to its first display
-	if (pView)
-		return _refreshMenu(pView);
-
-	return UT_TRUE;
-}
-
 XAP_UnixFrame * EV_UnixMenu::getFrame(void)
 {
 	return m_pUnixFrame;
@@ -257,7 +246,7 @@ static void _ev_convert(char * bufResult,
 	}
 }
 
-UT_Bool EV_UnixMenu::synthesize(void)
+UT_Bool EV_UnixMenu::synthesizeMenu(GtkWidget * wMenuRoot)
 {
     // create a GTK menu from the info provided.
 	const EV_Menu_ActionSet * pMenuActionSet = m_pUnixApp->getMenuActionSet();
@@ -266,21 +255,12 @@ UT_Bool EV_UnixMenu::synthesize(void)
 	UT_uint32 nrLabelItemsInLayout = m_pMenuLayout->getLayoutItemCount();
 	UT_ASSERT(nrLabelItemsInLayout > 0);
 
-	GtkWidget * wVBox = m_pUnixFrame->getVBoxWidget();
-
-	m_wHandleBox = gtk_handle_box_new();
-	UT_ASSERT(m_wHandleBox);
-
-	// Just create, don't show the menu bar yet.  It is later added
-	// to a 3D handle box and shown
-	m_wMenuBar = gtk_menu_bar_new();
-
 	// we keep a stack of the widgets so that we can properly
 	// parent the menu items and deal with nested pull-rights.
 	UT_uint32 tmp = 0;
 	UT_Bool bResult;
 	UT_Stack stack;
-	stack.push(m_wMenuBar);
+	stack.push(wMenuRoot);
 
 	for (UT_uint32 k=0; (k < nrLabelItemsInLayout); k++)
 	{
@@ -353,7 +333,7 @@ UT_Bool EV_UnixMenu::synthesize(void)
 				GtkWidget * wParent;
 				bResult = stack.viewTop((void **)&wParent);
 				UT_ASSERT(bResult);
-				gtk_object_set_data(GTK_OBJECT(m_wMenuBar), szLabelName, w);
+				gtk_object_set_data(GTK_OBJECT(wMenuRoot), szLabelName, w);
 				// bury in parent
 				gtk_container_add(GTK_CONTAINER(wParent),w);
 				// connect callbacks
@@ -419,7 +399,7 @@ UT_Bool EV_UnixMenu::synthesize(void)
 				GtkWidget * wParent;
 				bResult = stack.viewTop((void **)&wParent);
 				UT_ASSERT(bResult);
-				gtk_object_set_data(GTK_OBJECT(m_wMenuBar), szLabelName, w);
+				gtk_object_set_data(GTK_OBJECT(wMenuRoot), szLabelName, w);
 				// bury in parent
 				gtk_container_add(GTK_CONTAINER(wParent),w);
 				
@@ -432,7 +412,7 @@ UT_Bool EV_UnixMenu::synthesize(void)
 				if ((keyCode != GDK_VoidSymbol))
 				{
 					// bind to top level if parent is top level
-					if (wParent == m_wMenuBar)
+					if (wParent == wMenuRoot)
 					{
 						gtk_widget_add_accelerator(w,
 												   "activate_item",
@@ -469,7 +449,7 @@ UT_Bool EV_UnixMenu::synthesize(void)
 				gtk_object_set_user_data(GTK_OBJECT(wsub),this);
 
 				// add to menu bar
-				gtk_object_set_data(GTK_OBJECT(m_wMenuBar), _ev_FakeName(szLabelName, tmp++), wsub);
+				gtk_object_set_data(GTK_OBJECT(wMenuRoot), _ev_FakeName(szLabelName, tmp++), wsub);
 				gtk_menu_item_set_submenu(GTK_MENU_ITEM(w), wsub);
 				stack.push(wsub);
 
@@ -508,7 +488,7 @@ UT_Bool EV_UnixMenu::synthesize(void)
 			bResult = stack.viewTop((void **)&wParent);
 			UT_ASSERT(bResult);
 
-			gtk_object_set_data(GTK_OBJECT(m_wMenuBar), _ev_FakeName("separator",tmp++), w);
+			gtk_object_set_data(GTK_OBJECT(wMenuRoot), _ev_FakeName("separator",tmp++), w);
 			gtk_widget_show(w);
 			gtk_container_add(GTK_CONTAINER(wParent),w);
 
@@ -516,6 +496,12 @@ UT_Bool EV_UnixMenu::synthesize(void)
 			m_vecMenuWidgets.addItem(w);
 			break;
 		}
+
+		case EV_MLF_BeginPopupMenu:
+		case EV_MLF_EndPopupMenu:
+			m_vecMenuWidgets.addItem(NULL);	// reserve slot in vector so indexes will be in sync
+			break;
+			
 		default:
 			UT_ASSERT(0);
 			break;
@@ -526,28 +512,18 @@ UT_Bool EV_UnixMenu::synthesize(void)
 	GtkWidget * wDbg = NULL;
 	bResult = stack.pop((void **)&wDbg);
 	UT_ASSERT(bResult);
-	UT_ASSERT(wDbg == m_wMenuBar);
-	
-	// show up the properly connected menu structure
-	gtk_widget_show(m_wMenuBar);
-
-	// pack it in a handle box
-	gtk_container_add(GTK_CONTAINER(m_wHandleBox), m_wMenuBar);
-	gtk_widget_show(m_wHandleBox);
+	UT_ASSERT(wDbg == wMenuRoot);
 
 	// we also have to bind the top level window to our
 	// accelerator group for this menu... it needs to join in
 	// on the action.
 	gtk_accel_group_attach(m_accelGroup, GTK_OBJECT(m_pUnixFrame->getTopLevelWindow()));
 	gtk_accel_group_lock(m_accelGroup);
-	
-	// put it in the vbox
- 	gtk_box_pack_start(GTK_BOX(wVBox), m_wHandleBox, FALSE, TRUE, 0);
 
 	return UT_TRUE;
 }
 
-UT_Bool EV_UnixMenu::_refreshMenu(AV_View * pView)
+UT_Bool EV_UnixMenu::_refreshMenu(AV_View * pView, GtkWidget * wMenuRoot)
 {
 	// update the status of stateful items on menu bar.
 
@@ -559,7 +535,7 @@ UT_Bool EV_UnixMenu::_refreshMenu(AV_View * pView)
 	// parent the menu items and deal with nested pull-rights.
 	UT_Bool bResult;
 	UT_Stack stack;
-	stack.push(m_wMenuBar);
+	stack.push(wMenuRoot);
 
 	for (UT_uint32 k=0; (k < nrLabelItemsInLayout); k++)
 	{
@@ -633,7 +609,7 @@ UT_Bool EV_UnixMenu::_refreshMenu(AV_View * pView)
 						UT_ASSERT(wd);
 
 						// set parent data stuff
-						gtk_object_set_data(GTK_OBJECT(m_wMenuBar), szLabelName, w);
+						gtk_object_set_data(GTK_OBJECT(wMenuRoot), szLabelName, w);
 						// bury in parent
 						gtk_container_add(GTK_CONTAINER(GTK_MENU_ITEM(wParent)->submenu), w);
 						// connect callbacks
@@ -798,6 +774,11 @@ UT_Bool EV_UnixMenu::_refreshMenu(AV_View * pView)
 
 			break;
 		}
+
+		case EV_MLF_BeginPopupMenu:
+		case EV_MLF_EndPopupMenu:
+			break;
+			
 		default:
 			UT_ASSERT(0);
 			break;
@@ -807,8 +788,105 @@ UT_Bool EV_UnixMenu::_refreshMenu(AV_View * pView)
 	GtkWidget * wDbg = NULL;
 	bResult = stack.pop((void **)&wDbg);
 	UT_ASSERT(bResult);
-	UT_ASSERT(wDbg == m_wMenuBar);
+	UT_ASSERT(wDbg == wMenuRoot);
+
+	return UT_TRUE;
+}
+
+/*****************************************************************/
+
+EV_UnixMenuBar::EV_UnixMenuBar(AP_UnixApp * pUnixApp,
+							   XAP_UnixFrame * pUnixFrame,
+							   const char * szMenuLayoutName,
+							   const char * szMenuLabelSetName)
+	: EV_UnixMenu(pUnixApp,pUnixFrame,szMenuLayoutName,szMenuLabelSetName)
+{
+}
+
+EV_UnixMenuBar::~EV_UnixMenuBar(void)
+{
+}
+
+UT_Bool EV_UnixMenuBar::synthesizeMenuBar(void)
+{
+	GtkWidget * wVBox = m_pUnixFrame->getVBoxWidget();
+
+	m_wHandleBox = gtk_handle_box_new();
+	UT_ASSERT(m_wHandleBox);
+
+	// Just create, don't show the menu bar yet.  It is later added
+	// to a 3D handle box and shown
+	m_wMenuBar = gtk_menu_bar_new();
+
+	synthesizeMenu(m_wMenuBar);
 	
+	// show up the properly connected menu structure
+	gtk_widget_show(m_wMenuBar);
+
+	// pack it in a handle box
+	gtk_container_add(GTK_CONTAINER(m_wHandleBox), m_wMenuBar);
+	gtk_widget_show(m_wHandleBox);
+	
+	// put it in the vbox
+ 	gtk_box_pack_start(GTK_BOX(wVBox), m_wHandleBox, FALSE, TRUE, 0);
+
+	return UT_TRUE;
+}
+
+UT_Bool EV_UnixMenuBar::refreshMenu(AV_View * pView)
+{
+	// this makes an exception for initialization where a view
+	// might not exist... silly to refresh the menu then; it will
+	// happen in due course to its first display
+	if (pView)
+		return _refreshMenu(pView,m_wMenuBar);
+
+	return UT_TRUE;
+}
+
+/*****************************************************************/
+
+EV_UnixMenuPopup::EV_UnixMenuPopup(AP_UnixApp * pUnixApp,
+								   XAP_UnixFrame * pUnixFrame,
+								   const char * szMenuLayoutName,
+								   const char * szMenuLabelSetName)
+	: EV_UnixMenu(pUnixApp,pUnixFrame,szMenuLayoutName,szMenuLabelSetName)
+{
+}
+
+EV_UnixMenuPopup::~EV_UnixMenuPopup(void)
+{
+}
+
+GtkWidget * EV_UnixMenuPopup::getMenuHandle(void) const
+{
+	return m_wMenuPopup;
+}
+
+UT_Bool EV_UnixMenuPopup::synthesizeMenuPopup(void)
+{
+	m_wMenuPopup = gtk_menu_new();
+	_wd * wd = new _wd(this, 0);
+	UT_ASSERT(wd);
+	wd->m_accelGroup = gtk_accel_group_new();
+	gtk_menu_set_accel_group(GTK_MENU(m_wMenuPopup), wd->m_accelGroup);
+	gtk_signal_connect(GTK_OBJECT(m_wMenuPopup), "map",
+					   GTK_SIGNAL_FUNC(_wd::s_onInitMenu), wd);
+	gtk_signal_connect(GTK_OBJECT(m_wMenuPopup), "unmap",
+					   GTK_SIGNAL_FUNC(_wd::s_onDestroyMenu), wd);
+	gtk_object_set_user_data(GTK_OBJECT(m_wMenuPopup),this);
+
+	synthesizeMenu(m_wMenuPopup);
+	return UT_TRUE;
+}
+
+UT_Bool EV_UnixMenuPopup::refreshMenu(AV_View * pView)
+{
+	// this makes an exception for initialization where a view
+	// might not exist... silly to refresh the menu then; it will
+	// happen in due course to its first display
+	if (pView)
+		return _refreshMenu(pView,m_wMenuPopup);
 
 	return UT_TRUE;
 }
