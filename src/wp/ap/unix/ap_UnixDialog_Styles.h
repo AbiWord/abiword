@@ -51,8 +51,8 @@ public:
 	void                            event_paraPreviewExposed(void);
 	void                            event_charPreviewExposed(void);
 	
-	virtual void			event_OK(void);
-	virtual void			event_Cancel(void);
+	virtual void			event_Apply(void);
+	virtual void			event_Close(void);
 
 	virtual void event_DeleteClicked(void);
 	virtual void event_NewClicked(void);
@@ -107,8 +107,8 @@ protected:
 	// pointers to widgets we need to query/set
 	GtkWidget * m_windowMain;
 
-	GtkWidget * m_wbuttonOk;
-	GtkWidget * m_wbuttonCancel;
+	GtkWidget * m_wbuttonApply;
+	GtkWidget * m_wbuttonClose;
 	GtkWidget * m_wbuttonNew;
 	GtkWidget * m_wbuttonModify;
 	GtkWidget * m_wbuttonDelete;

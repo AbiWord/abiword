@@ -31,7 +31,7 @@ static void
 cb_close (GtkWidget * w, AP_UnixGnomeDialog_Styles * dlg)
 {
   UT_ASSERT(dlg);
-  dlg->event_Cancel();
+  dlg->event_Close();
 }
 
 AP_UnixGnomeDialog_Styles::AP_UnixGnomeDialog_Styles(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id) : AP_UnixDialog_Styles(pDlgFactory, id)
@@ -62,17 +62,17 @@ GtkWidget * AP_UnixGnomeDialog_Styles::_constructWindow(void)
 	gtk_container_add(GTK_CONTAINER(GNOME_DIALOG(windowStyles)->vbox), 
 					  vboxContents);
 
-	// ok button
+	// apply button
 	//
-	gnome_dialog_append_button(GNOME_DIALOG(windowStyles), GNOME_STOCK_BUTTON_OK);
-	m_wbuttonOk = GTK_WIDGET (g_list_last (GNOME_DIALOG (windowStyles)->buttons)->data);
-	GTK_WIDGET_SET_FLAGS (m_wbuttonOk, GTK_CAN_DEFAULT);
+	gnome_dialog_append_button(GNOME_DIALOG(windowStyles), GNOME_STOCK_BUTTON_APPLY);
+	m_wbuttonApply = GTK_WIDGET (g_list_last (GNOME_DIALOG (windowStyles)->buttons)->data);
+	GTK_WIDGET_SET_FLAGS (m_wbuttonApply, GTK_CAN_DEFAULT);
 
-	// cancel button
+	// close button
 	//
-	gnome_dialog_append_button(GNOME_DIALOG(windowStyles), GNOME_STOCK_BUTTON_CANCEL);
-	m_wbuttonCancel = GTK_WIDGET (g_list_last (GNOME_DIALOG (windowStyles)->buttons)->data);
-	GTK_WIDGET_SET_FLAGS (m_wbuttonCancel, GTK_CAN_DEFAULT);
+	gnome_dialog_append_button(GNOME_DIALOG(windowStyles), GNOME_STOCK_BUTTON_CLOSE);
+	m_wbuttonClose = GTK_WIDGET (g_list_last (GNOME_DIALOG (windowStyles)->buttons)->data);
+	GTK_WIDGET_SET_FLAGS (m_wbuttonClose, GTK_CAN_DEFAULT);
 
 	gtk_signal_connect (GTK_OBJECT (windowStyles),
 						"close",

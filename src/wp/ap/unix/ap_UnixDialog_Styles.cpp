@@ -53,8 +53,8 @@ AP_UnixDialog_Styles::AP_UnixDialog_Styles(XAP_DialogFactory * pDlgFactory,
 {
 	m_windowMain = NULL;
 
-	m_wbuttonOk = NULL;
-	m_wbuttonCancel = NULL;
+	m_wbuttonApply = NULL;
+	m_wbuttonClose = NULL;
 	m_wGnomeButtons = NULL;
 	m_wParaPreviewArea = NULL;
 	m_pParaPreviewWidget = NULL;
@@ -179,16 +179,16 @@ static void s_styletype(GtkWidget * widget, AP_UnixDialog_Styles * me)
 	me->event_styleType();
 }
 
-static void s_ok_clicked(GtkWidget * widget, AP_UnixDialog_Styles * me)
+static void s_apply_clicked(GtkWidget * widget, AP_UnixDialog_Styles * me)
 {
 	UT_ASSERT(widget && me);
-	me->event_OK();
+	me->event_Apply();
 }
 
-static void s_cancel_clicked(GtkWidget * widget, AP_UnixDialog_Styles * me)
+static void s_close_clicked(GtkWidget * widget, AP_UnixDialog_Styles * me)
 {
 	UT_ASSERT(widget && me);
-	me->event_Cancel();
+	me->event_Close();
 }
 
 
@@ -409,26 +409,24 @@ void AP_UnixDialog_Styles::runModal(XAP_Frame * pFrame)
 	DELETEP (m_pParaPreviewWidget);
 	DELETEP (m_pCharPreviewWidget);
 	
-	if(m_answer == AP_Dialog_Styles::a_OK)
-	{
-//		getDoc()->updateDocForStyleChange(getCurrentStyle(),true);
-//		getView()->getCurrentBlock()->setNeedsRedraw();
-//		getDoc()->signalListeners(PD_SIGNAL_UPDATE_LAYOUT);
-	}
 	if(mainWindow && GTK_IS_WIDGET(mainWindow)) 
 	    gtk_widget_destroy(mainWindow);
 }
 
 /*****************************************************************/
 
-void AP_UnixDialog_Styles::event_OK(void)
+void AP_UnixDialog_Styles::event_Apply(void)
 {
 	// TODO save out state of radio items
 	m_answer = AP_Dialog_Styles::a_OK;
-	gtk_main_quit();
+	const XML_Char * szStyle = getCurrentStyle();
+	if(szStyle && *szStyle)
+	{
+		getView()->setStyle(szStyle);
+	}
 }
 
-void AP_UnixDialog_Styles::event_Cancel(void)
+void AP_UnixDialog_Styles::event_Close(void)
 {
 	m_answer = AP_Dialog_Styles::a_CANCEL;
 	gtk_main_quit();
@@ -528,8 +526,8 @@ GtkWidget * AP_UnixDialog_Styles::_constructWindow(void)
 	GtkWidget * vboxContents;
 
 	GtkWidget * buttonBoxGlobal;
-	GtkWidget * buttonOK;
-	GtkWidget * buttonCancel;
+	GtkWidget * buttonApply;
+	GtkWidget * buttonClose;
 
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
 
@@ -553,19 +551,17 @@ GtkWidget * AP_UnixDialog_Styles::_constructWindow(void)
 	gtk_hbutton_box_set_layout_default(GTK_BUTTONBOX_END);
 	gtk_widget_show(buttonBoxGlobal);
 
-	buttonOK = gtk_button_new_with_label ( 
-		pSS->getValue(XAP_STRING_ID_DLG_OK) );
-	gtk_widget_show(buttonOK);
-	//gtk_container_add (GTK_CONTAINER (m_wGnomeButtons), buttonOK);
-	gtk_container_add(GTK_CONTAINER(buttonBoxGlobal), buttonOK);
-	GTK_WIDGET_SET_FLAGS (buttonOK, GTK_CAN_DEFAULT);
+	buttonClose = gtk_button_new_with_label ( 
+		pSS->getValue(XAP_STRING_ID_DLG_Apply) );
+	gtk_widget_show(buttonApply);
+	gtk_container_add(GTK_CONTAINER(buttonBoxGlobal), buttonApply);
+	GTK_WIDGET_SET_FLAGS (buttonApply, GTK_CAN_DEFAULT);
 
-	buttonCancel = gtk_button_new_with_label ( 
-		pSS->getValue(XAP_STRING_ID_DLG_Cancel) );
-	gtk_widget_show(buttonCancel);
-	//gtk_container_add (GTK_CONTAINER (m_wGnomeButtons), buttonCancel);
-	gtk_container_add(GTK_CONTAINER(buttonBoxGlobal), buttonCancel);
-	GTK_WIDGET_SET_FLAGS (buttonCancel, GTK_CAN_DEFAULT);
+	buttonClose = gtk_button_new_with_label ( 
+		pSS->getValue(XAP_STRING_ID_DLG_Close) );
+	gtk_widget_show(buttonClose);
+	gtk_container_add(GTK_CONTAINER(buttonBoxGlobal), buttonClose);
+	GTK_WIDGET_SET_FLAGS (buttonClose, GTK_CAN_DEFAULT);
 
 	gtk_box_pack_start(GTK_BOX(vboxContents), buttonBoxGlobal, FALSE, FALSE, 0);
 
@@ -574,8 +570,8 @@ GtkWidget * AP_UnixDialog_Styles::_constructWindow(void)
 	gtk_widget_show(vboxContents);
 	gtk_container_add(GTK_CONTAINER(windowStyles), vboxContents);
 
-	m_wbuttonOk = buttonOK;
-	m_wbuttonCancel = buttonCancel;
+	m_wbuttonApply = buttonApply;
+	m_wbuttonClose = buttonClose;
 
 	_connectsignals();
 	return windowStyles;
@@ -780,14 +776,14 @@ void AP_UnixDialog_Styles::_connectsignals(void) const
 
 	// the control buttons
 
-	gtk_signal_connect(GTK_OBJECT(m_wbuttonOk),
+	gtk_signal_connect(GTK_OBJECT(m_wbuttonApply),
 					   "clicked",
-					   GTK_SIGNAL_FUNC(s_ok_clicked),
+					   GTK_SIGNAL_FUNC(s_apply_clicked),
 					   (gpointer) this);
 	
-	gtk_signal_connect(GTK_OBJECT(m_wbuttonCancel),
+	gtk_signal_connect(GTK_OBJECT(m_wbuttonClose),
 					   "clicked",
-					   GTK_SIGNAL_FUNC(s_cancel_clicked),
+					   GTK_SIGNAL_FUNC(s_close_clicked),
 					   (gpointer) this);
 	
 	// the catch-alls
