@@ -200,8 +200,8 @@ OBJDIR		= $(OUT)/$(OS_NAME)_$(OS_RELEASE)_$(OS_ARCH)_$(OBJ_DIR_SFX)/obj
 LIBDIR		= $(OUT)/$(OS_NAME)_$(OS_RELEASE)_$(OS_ARCH)_$(OBJ_DIR_SFX)/lib
 BINDIR		= $(OUT)/$(OS_NAME)_$(OS_RELEASE)_$(OS_ARCH)_$(OBJ_DIR_SFX)/bin
 
-DIST		= $(ABI_DEPTH)/dist
-DISTDIR		= $(DIST)/$(OS_NAME)_$(OS_RELEASE)_$(OS_ARCH)_$(OBJ_DIR_SFX)
+DIST		= $(ABI_DEPTH)/../dist
+DISTDIR		= $(DIST)/$(OS_NAME)_$(OS_RELEASE)_$(OS_ARCH)_$(OBJ_DIR_SFX)/bin
 
 ##################################################################
 ##################################################################
