@@ -227,6 +227,7 @@ Takeshi Aihana <aihana@muc.biglobe.ne.jp,
 		aihana@turbolinux.co.jp>		Japanese (jp-JP)
 Albi <albi@linuxfan.com> <onderste@casema.net>		Dutch
 Jesus Bravo Alvarez <jba@pobox.com> 			Galician
+Ramón Flores <fa2ramon@yahoo.com>			Galician
 Henrik Berg <henrik@lansen.se>				Swedish
 Christopher Caron <ChrisDigo@aol.com>			Help (French)
 Frédéric CELLA <fcella@mahj.org>			French
