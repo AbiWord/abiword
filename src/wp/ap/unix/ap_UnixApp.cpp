@@ -600,13 +600,13 @@ void AP_UnixApp::loadAllPlugins ()
   UT_String pluginDir;
 
   // the global plugin directory
-  pluginDir = getAbiSuiteLibDir();
+  pluginDir = getAbiSuiteAppDir();
   pluginDir += "/plugins/";
   pluginList[0] = pluginDir;
 
   // the user-local plugin directory
   pluginDir = getUserPrivateDirectory ();
-  pluginDir += "/plugins/";
+  pluginDir += "/AbiWord/plugins/";
   pluginList[1] = pluginDir;
 
   for(int i = 0; i < 2; i++)

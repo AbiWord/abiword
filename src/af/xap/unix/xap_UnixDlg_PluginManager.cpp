@@ -136,7 +136,7 @@ void XAP_UnixDialog_PluginManager::event_Load ()
 	// set the intial plugin directory to the user-local plugin directory
 	// could also set to: XAP_App::getApp()->getAbiSuiteLibDir()/plugins
 	UT_String pluginDir (XAP_App::getApp()->getUserPrivateDirectory());
-	pluginDir += "/plugins";
+	pluginDir += "/AbiWord/plugins";
 	pDialog->setCurrentPathname (pluginDir.c_str());
 	pDialog->setSuggestFilename(false);
 	
