@@ -276,7 +276,6 @@ public:
 	static EV_EditMethod_Fn dlgTabs;
 	static EV_EditMethod_Fn fontFamily;
 	static EV_EditMethod_Fn fontSize;
-        static EV_EditMethod_Fn toggleAutoSpell;
 	static EV_EditMethod_Fn toggleBold;
 	static EV_EditMethod_Fn toggleItalic;
 	static EV_EditMethod_Fn toggleUline;
@@ -284,7 +283,7 @@ public:
 	static EV_EditMethod_Fn toggleStrike;
 	static EV_EditMethod_Fn toggleSuper;
 	static EV_EditMethod_Fn toggleSub;
-        static EV_EditMethod_Fn togglePlain;
+	static EV_EditMethod_Fn togglePlain;
 #ifdef BIDI_ENABLED
 	static EV_EditMethod_Fn toggleDirection;
 	static EV_EditMethod_Fn toggleDomDirection;
@@ -640,7 +639,6 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(style),				_D_,	""),
 
 	// t
-	EV_EditMethod(NF(toggleAutoSpell), 0, ""),
 	EV_EditMethod(NF(toggleBold),			0,		""),
 #ifdef BIDI_ENABLED
 	EV_EditMethod(NF(toggleDirection),		0,		""),
@@ -3747,14 +3745,6 @@ static bool _toggleSpan(FV_View * pView,
   return _toggleSpanOrBlock (pView, prop, vOn, vOff, bMultiple, true);
 }
 
-static bool _toggleBlock(FV_View * pView,
-			    const XML_Char * prop,
-			    const XML_Char * vOn,
-			    const XML_Char * vOff,
-			    bool bMultiple=false)
-{
-  return _toggleSpanOrBlock (pView, prop, vOn, vOff, bMultiple, false);
-}
 
 /*****************************************************************/
 /*****************************************************************/
@@ -3786,7 +3776,7 @@ static bool s_actuallyPrint(PD_Document *doc,  GR_Graphics *pGraphics,
 		      // pGraphics->m_iRasterPosition when
 		      // iHeight is allowed to vary page to page
 		      pGraphics->m_iRasterPosition = (k-1)*iHeight;
-		      pGraphics->startPage(pDocName, k, pGraphics->isPortrait(), iWidth, iHeight);
+		      pGraphics->startPage(pDocName, k, true, iWidth, iHeight);
 		      pPrintView->draw(k-1, &da);
 		    }
 	      }
@@ -3799,7 +3789,7 @@ static bool s_actuallyPrint(PD_Document *doc,  GR_Graphics *pGraphics,
 		      // pGraphics->m_iRasterPosition when
 		      // iHeight is allowed to vary page to page
 		      pGraphics->m_iRasterPosition = (k-1)*iHeight;
-		      pGraphics->startPage(pDocName, k, pGraphics->isPortrait(), iWidth, iHeight);
+		      pGraphics->startPage(pDocName, k, true, iWidth, iHeight);
 		      pPrintView->draw(k-1, &da);
 		    }
 	      }
@@ -5067,99 +5057,34 @@ Defun1(toggleStrike)
 	return _toggleSpan(pView, "text-decoration", "line-through", "none", true);
 }
 
-Defun1(toggleAutoSpell)
-{
-        ABIWORD_VIEW;
-	UT_ASSERT(pView);
-
-	XAP_App *pApp = pView->getApp();
-	UT_ASSERT(pApp);
-
-	XAP_Prefs * pPrefs = pApp->getPrefs();
-	UT_ASSERT(pPrefs);
-
-	XAP_PrefsScheme *pPrefsScheme = pPrefs->getCurrentScheme();
-	UT_ASSERT(pPrefsScheme);
-
-	bool b = false;
-	pPrefsScheme->getValueBool((XML_Char*)AP_PREF_KEY_AutoSpellCheck, &b);
-	pPrefsScheme->setValueBool((XML_Char*)AP_PREF_KEY_AutoSpellCheck,
-				   !b);
-
-	return true;
-}
-
 // MSWord defines this to 1/2 an inch, so we do too
 #define TOGGLE_INDENT_AMT 0.5
 
 Defun1(toggleIndent)
 {
   ABIWORD_VIEW;
-
-  const XML_Char **props;
-
-  pView->getBlockFormat(&props);
-
-  const XML_Char * att = UT_getAttribute ("margin-left", props);
-
-  UT_Dimension dim = UT_determineDimension ((char *)att);
-  double howmuch = UT_convertToInches ((char *)att) + TOGGLE_INDENT_AMT;
-  double page_size = pView->getPageSize().Width (fp_PageSize::inch);
-
-  // make sure that we stay on the page
-  if (howmuch > page_size)
-    return true;
-
-  char * new_buf = UT_strdup (UT_convertInchesToDimensionString (dim, howmuch));
-  char * old_buf = UT_strdup (UT_convertInchesToDimensionString (dim, howmuch - TOGGLE_INDENT_AMT));
   bool ret;
-  if(pView->getCurrentBlock()->isListItem() == false)
+  bool doLists = true;
+  double page_size = pView->getPageSize().Width (fp_PageSize::inch);
+  if(!pView->getCurrentBlock()->isListItem() || !pView->isSelectionEmpty() )
   {
-         ret =  (_toggleBlock (pView, "margin-left", new_buf, old_buf));
+	 doLists = false;
   }
-  else
-  {
-         ret = pView->setListIndents((double) TOGGLE_INDENT_AMT ,page_size);
-  }
-
-  FREEP (new_buf);
-  FREEP (old_buf);
-
+  ret = pView->setBlockIndents(doLists, (double) TOGGLE_INDENT_AMT ,page_size);
   return ret;
 }
 
 Defun1(toggleUnIndent)
 {
   ABIWORD_VIEW;
-
-  const XML_Char **props;
-
-  pView->getBlockFormat(&props);
-
-  const XML_Char * att = UT_getAttribute ("margin-left", props);
-
-  UT_Dimension dim = UT_determineDimension ((char *)att);
-  double howmuch = UT_convertToInches ((char *)att) - TOGGLE_INDENT_AMT;
-
-  // make sure that we stay on the page
-  if (howmuch < 0)
-    return true;
-
-  char * new_buf = UT_strdup (UT_convertInchesToDimensionString (dim, howmuch));
-  char * old_buf = UT_strdup (UT_convertInchesToDimensionString (dim, howmuch + TOGGLE_INDENT_AMT));
   bool ret;
   double page_size = pView->getPageSize().Width (fp_PageSize::inch);
-  if(pView->getCurrentBlock()->isListItem() == false)
+  bool doLists = true;
+  if(!pView->getCurrentBlock()->isListItem() || !pView->isSelectionEmpty() )
   {
-         ret =  (_toggleBlock (pView, "margin-left", new_buf, old_buf));
+	 doLists = false;
   }
-  else
-  {
-         ret = pView->setListIndents((double) -TOGGLE_INDENT_AMT ,page_size);
-  }
-  FREEP (new_buf);
-  FREEP (old_buf);
-
+  ret = pView->setBlockIndents(doLists, (double) -TOGGLE_INDENT_AMT ,page_size);
   return ret;
 }
 

@@ -1437,6 +1437,7 @@ bool FV_View::isPointBeforeListLabel(void)
 	return bBefore;
 }
 
+
 void FV_View::processSelectedBlocks(List_Type listType)
 {
 	//
@@ -1447,7 +1448,7 @@ void FV_View::processSelectedBlocks(List_Type listType)
 	m_pDoc->notifyPieceTableChangeStart();
 
 	UT_Vector vBlock;
-	getListBlocksInSelection( &vBlock);
+	getBlocksInSelection( &vBlock);
 	UT_uint32 i;
 	m_pDoc->disableListUpdates();
 
@@ -1489,7 +1490,7 @@ void FV_View::processSelectedBlocks(List_Type listType)
 }
 
 
-void FV_View::getListBlocksInSelection( UT_Vector * vBlock)
+void FV_View::getBlocksInSelection( UT_Vector * vBlock)
 {
 	PT_DocPosition startpos = getPoint();
 	PT_DocPosition endpos = startpos;
@@ -2116,18 +2117,19 @@ bool FV_View::getCharFormat(const XML_Char *** pProps, bool bExpandStyles)
 	return true;
 }
 
-bool FV_View::setListIndents(double indentChange, double page_size)
+
+/*!
+   This method fills a vector with all the blocks contained between the 
+   first and last blocks of a list structure.
+   \param   v Pointer to Vector of all the blocks found
+*/
+
+void FV_View::getAllBlocksInList(UT_Vector * v)
 {
-	//
-	// indentChange is the increment to the current alignment.
-	//
-	UT_Vector v;
-	XML_Char pszAlign[20];
-	bool bRet = true;
-	UT_Dimension dim;
-	double fAlign;
+        //
+        // get all the blocks in the list
+        //
 	fl_BlockLayout * pBlock;
-	UT_uint32 i;
 	fl_AutoNum * pAuto = getCurrentBlock()->getAutoNum();
 	UT_ASSERT(pAuto);
 	PL_StruxDocHandle pFirstSdh = pAuto->getFirstItem();
@@ -2136,10 +2138,6 @@ bool FV_View::setListIndents(double indentChange, double page_size)
 	pBlock = pSl->getFirstBlock();
 	bool foundLast = false;
 	bool foundFirst = false;
-
-	// Signal PieceTable Change
-	m_pDoc->notifyPieceTableChangeStart();
-	m_pDoc->beginUserAtomicGlob();
 
 	//
 	// Now collect all all the blocks between the first and last list elements
@@ -2152,14 +2150,52 @@ bool FV_View::setListIndents(double indentChange, double page_size)
 			foundFirst = true;
 		}
 		if(foundFirst == true)
-			v.addItem(pBlock);
+			v->addItem(pBlock);
 		if(pBlock->getStruxDocHandle() == pLastSdh)
 			foundLast = true;
 		pBlock = pBlock->getNext();
 	}
+}
+
+/*!
+
+   This method increases or decreases the indents of a range of blocks. 
+   The blocks can be either all those contained by a list structure or 
+   just those in a selection.
+
+   \param   doList true if you want to indents all the blocks in the list
+            of which the current block is a member. If false just those 
+            blocks within the current selected range. 
+   \param   indentChange +-ve value by which the block will be indented.
+   \param   page_size width of the page in inches.
+*/
+
+bool FV_View::setBlockIndents(bool doLists, double indentChange, double page_size)
+{
+	//
+	// indentChange is the increment to the current alignment.
+	//
+	UT_Vector v;
+	XML_Char pszAlign[20];
+	bool bRet = true;
+	UT_Dimension dim;
+	double fAlign;	
+	fl_BlockLayout * pBlock;
+	UT_uint32 i;
+	//
+	// Signal PieceTable Change
+	//
+	m_pDoc->notifyPieceTableChangeStart();
+
+	_eraseInsertionPoint();
+	m_pDoc->beginUserAtomicGlob();
 	//
 	// OK now change the alignements of the blocks.
 	//
+	if(doLists)
+	        getAllBlocksInList(&v);
+	else
+	        getBlocksInSelection(&v);
 	const XML_Char * props[] = {"margin-left","0.0in",NULL,NULL};
 	for(i = 0; i<v.getItemCount();i++)
 	{
@@ -2185,14 +2221,21 @@ bool FV_View::setListIndents(double indentChange, double page_size)
 		props[1] = (XML_Char *) pszNewAlign;
 		bRet = m_pDoc->changeStruxFmt(PTC_AddFmt, iPos, iPos, NULL, props, PTX_Block);
 		FREEP(pszNewAlign);	
-		//
-		// Might be able to move thisoutside the loop
-		_generalUpdate();
 	}
+	//
+	// Moved outside the loop. Speeds things up and seems OK.
+	//
+	_generalUpdate();
 
 	m_pDoc->endUserAtomicGlob();
 	// Signal PieceTable Changes have finished
 	m_pDoc->notifyPieceTableChangeEnd();
+
+	if (isSelectionEmpty())
+	{
+		_fixInsertionPointCoords();
+		_drawInsertionPoint();
+	}
 
 	return bRet;
 }
@@ -5308,6 +5351,7 @@ void FV_View::_drawInsertionPoint()
 	{
 		return;
 	}
+	UT_ASSERT(m_bCursorIsOn == false);
 	if (m_bCursorIsOn == false)
 	{
 		_xorInsertionPoint();

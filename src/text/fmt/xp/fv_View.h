@@ -164,7 +164,7 @@ public:
 	void	eraseInsertionPoint(void);
 	void	drawInsertionPoint(void);
 
-	bool	setListIndents(double indentChange, double page_size);
+	bool	setBlockIndents(bool doLists, double indentChange, double page_size);
 	bool	setBlockFormat(const XML_Char * properties[]);
 	bool	getBlockFormat(const XML_Char *** properties,bool bExpandStyles=true);
 
@@ -172,7 +172,8 @@ public:
 	bool	isTabListBehindPoint(void);
 	bool	isTabListAheadPoint(void);
 	void	processSelectedBlocks(List_Type listType);
-	void	getListBlocksInSelection( UT_Vector * vBlock);
+	void	getBlocksInSelection( UT_Vector * vBlock);
+	void	getAllBlocksInList( UT_Vector * vBlock);
 	bool	isPointBeforeListLabel(void);
 	bool	isCurrentListBlockEmpty(void);
 	bool	cmdStartList(const XML_Char * style);
