@@ -59,7 +59,8 @@ XAP_Dialog* AP_Win32Dialog_PageSetup::static_constructor(XAP_DialogFactory* pDlg
 AP_Win32Dialog_PageSetup::AP_Win32Dialog_PageSetup(	XAP_DialogFactory* pDlgFactory,
 													XAP_Dialog_Id id)
 :	AP_Dialog_PageSetup (pDlgFactory, id),
-    m_PageSize(fp_PageSize::Letter)
+    m_PageSize(fp_PageSize::Letter),
+	m_pWin32Frame(NULL)
 {
 }
 
@@ -74,7 +75,7 @@ void AP_Win32Dialog_PageSetup::runModal(XAP_Frame *pFrame)
 
 	// raise the dialog
 	XAP_Win32App * pWin32App = static_cast<XAP_Win32App *>(m_pApp);
-	XAP_Win32Frame * pWin32Frame = static_cast<XAP_Win32Frame *>(pFrame);
+	m_pWin32Frame = static_cast<XAP_Win32Frame *>(pFrame);
 
 	LPCTSTR lpTemplate = NULL;
 
@@ -83,7 +84,7 @@ void AP_Win32Dialog_PageSetup::runModal(XAP_Frame *pFrame)
 	lpTemplate = MAKEINTRESOURCE(AP_RID_DIALOG_PAGE_SETUP);
 
 	int result = DialogBoxParam(pWin32App->getInstance(),lpTemplate,
-								pWin32Frame->getTopLevelWindow(),
+								m_pWin32Frame->getTopLevelWindow(),
 								(DLGPROC)s_dlgProc,(LPARAM)this);
 	UT_ASSERT((result != -1));
 
@@ -243,17 +244,19 @@ BOOL AP_Win32Dialog_PageSetup::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lPara
 	switch (wId)
 	{
 	case AP_RID_DIALOG_PAGE_SETUP_BTN_OK:
-		if(m_PageSize.Width(fp_PageSize::inch) < 1.0 || m_PageSize.Height(fp_PageSize::inch) < 1.0)
+		if ( validatePageSettings() ) 
 		{
-			setAnswer(a_CANCEL);
-		}
-		else
-		{
-			setAnswer( a_OK );
+			setAnswer (a_OK);
 			setPageSize( m_PageSize );
+			EndDialog(hWnd,0);
 		}
-		
-		EndDialog(hWnd,0);
+		else 
+		{
+			// "The margins selected are too large to fit on the page."
+			m_pWin32Frame->showMessageBox(AP_STRING_ID_DLG_PageSetup_ErrBigMargins, 
+									 	  XAP_Dialog_MessageBox::b_O,
+									 	  XAP_Dialog_MessageBox::a_OK);
+		}
 		return 0;
 
 	case AP_RID_DIALOG_PAGE_SETUP_BTN_CANCEL:

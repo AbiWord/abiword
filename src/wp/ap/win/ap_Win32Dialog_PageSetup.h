@@ -71,6 +71,8 @@ protected:
 	HBITMAP						m_bmpPreview;
 	
 	fp_PageSize					m_PageSize;
+
+	XAP_Win32Frame *            m_pWin32Frame;			
 };
 
 #endif
