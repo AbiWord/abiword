@@ -207,32 +207,22 @@ void AP_UnixDialog_MailMerge::_constructWindow(void)
 
 void AP_UnixDialog_MailMerge::setFieldList()
 {
+	if(!m_vecFields.size())
+		return;
+
 	UT_uint32 i;
 	
-	GtkListStore *model;
 	GtkTreeIter iter;
 	
 	UT_UTF8String * str;
+	GtkTreeViewColumn * column;
+	GtkListStore * model;
 
-	GtkCellRenderer * renderer = gtk_cell_renderer_text_new ();
-	GtkTreeViewColumn * column = gtk_tree_view_column_new_with_attributes ("Format",
-																		   renderer,
-																		   "text", 
-																		   0,
-																		   NULL);
-
-	model = (GtkListStore*)gtk_tree_view_get_model (GTK_TREE_VIEW(m_treeview));
-	if (model) {
-		column = gtk_tree_view_get_column (GTK_TREE_VIEW(m_treeview), 0);
-		gtk_list_store_clear (model);
-		gtk_tree_view_column_clear (column);
-	}
-	else {
-		model = gtk_list_store_new (2,
-									G_TYPE_STRING,
-									G_TYPE_INT
-			);
-		gtk_tree_view_append_column( GTK_TREE_VIEW(m_treeview), column);
+	model = gtk_list_store_new (2, G_TYPE_STRING, G_TYPE_INT);
+	column = gtk_tree_view_get_column (GTK_TREE_VIEW(m_treeview), 0);
+	if (!column) {
+		column = gtk_tree_view_column_new_with_attributes ("Format", gtk_cell_renderer_text_new (), "text", 0, NULL);
+		gtk_tree_view_append_column(GTK_TREE_VIEW(m_treeview), column);
 	}
 	
  	// build a list of all items
@@ -242,10 +232,7 @@ void AP_UnixDialog_MailMerge::setFieldList()
 
 		// Add a new row to the model
 		gtk_list_store_append (model, &iter);
-		gtk_list_store_set (model, &iter,
-					  		0, str->utf8_str(),
-							1, i,
-					  		-1);
+		gtk_list_store_set (model, &iter, 0, str->utf8_str(), 1, i, -1);
 	}
 	
 	gtk_tree_view_set_model(GTK_TREE_VIEW(m_treeview), 

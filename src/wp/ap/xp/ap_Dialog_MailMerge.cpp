@@ -64,10 +64,9 @@ void AP_Dialog_MailMerge::init ()
 		{
 			pie->getHeaders (link.utf8_str(), m_vecFields);
 			DELETEP(pie);
+			setFieldList();
 		}
 	}
-
-	setFieldList();
 }
 
 void AP_Dialog_MailMerge::eventOpen ()
