@@ -1,4 +1,4 @@
-* AbiWord
+/* AbiWord
  * Copyright (C) 2000 AbiSource, Inc.
  * Copyright (C) 2000 Frodo Looijaard <frodol@dds.nl>
  * 
