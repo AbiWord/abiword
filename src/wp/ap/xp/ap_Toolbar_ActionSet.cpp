@@ -114,7 +114,8 @@ EV_Toolbar_ActionSet * AP_CreateToolbarActionSet(void)
 	// AV_CHG_WINDOWSIZE, below, doesn't seem right.  TODO
 	
 	_s(AP_TOOLBAR_ID_ZOOM,			EV_TBIT_ComboBox,		"zoom",			AV_CHG_WINDOWSIZE,	ap_ToolbarGetState_Zoom);
-	_s(AP_TOOLBAR_ID_LISTS_BULLETS,		EV_TBIT_PushButton,		"dlgBullets",		AV_CHG_NONE,		NULL);
+	_s(AP_TOOLBAR_ID_LISTS_BULLETS,		EV_TBIT_ToggleButton,		"doBullets",		AV_CHG_ALL,	ap_ToolbarGetState_Bullets	);
+	_s(AP_TOOLBAR_ID_LISTS_NUMBERS,		EV_TBIT_ToggleButton,		"doNumbers",		AV_CHG_ALL,	ap_ToolbarGetState_Numbers	);
 	
 	// ... add others here ...
 	
@@ -124,3 +125,5 @@ EV_Toolbar_ActionSet * AP_CreateToolbarActionSet(void)
 	
 	return pActionSet;
 }
+
+

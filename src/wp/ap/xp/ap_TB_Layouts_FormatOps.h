@@ -43,6 +43,7 @@ BeginLayout(FormatOps)
 	ToolbarItem(AP_TOOLBAR_ID_ALIGN_JUSTIFY)
 
 	Spacer()
+	ToolbarItem(AP_TOOLBAR_ID_LISTS_NUMBERS)
 	ToolbarItem(AP_TOOLBAR_ID_LISTS_BULLETS)
 
 	Spacer()

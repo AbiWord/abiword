@@ -1157,7 +1157,6 @@ void FV_View::insertParagraphBreak(void)
 
 	m_pDoc->insertStrux(getPoint(), PTX_Block);
 	_findGetCurrentBlock()->listUpdate();
-
 	if (bDidGlob)
 		m_pDoc->endUserAtomicGlob();
 
@@ -1764,8 +1763,9 @@ UT_Bool FV_View::cmdStopList(void)
 	UT_uint32 id;
 
 	fl_BlockLayout * pBlock = _findBlockAtPosition(getPoint());
-	
+
 	UT_uint32 currLevel = pBlock->getLevel();
+
 	UT_ASSERT(currLevel > 0);
 	currLevel--;
 	sprintf(buf, "%i", currLevel);

@@ -481,6 +481,7 @@ void fl_BlockLayout::_lookupProperties(void)
 			{
 				if (!m_pAutoNum)
 					_addBlockToPrevList(prevBlockInList);
+				UT_DEBUGMSG(("SEVIOR: call to _stoplist \n"));
 				_stopList();
 			}
 			if(id != 0) _startList(id);
@@ -4052,12 +4053,39 @@ void fl_BlockLayout::_stopList()
 
 void fl_BlockLayout::remItemFromList(void)
 {
+	XML_Char lid[15], buf[5];
+	UT_uint32 id;
+	UT_Bool bRet;
         if( m_bListLabelCreated == UT_TRUE)
         {
 	        m_bListLabelCreated = UT_FALSE;
 	        FV_View* pView = m_pLayout->getView();
 	        UT_ASSERT(pView);
-	        pView->cmdStopList();
+		UT_uint32 currLevel = getLevel();
+		UT_ASSERT(currLevel > 0);
+		currLevel--;
+		sprintf(buf, "%i", currLevel);
+		if (currLevel == 0)
+		{
+		       pView->setStyle("Normal");
+		       id = 0;
+		}
+		else
+		{
+		       id = getAutoNum()->getParent()->getID();
+		}
+		sprintf(lid, "%i", id);
+		const XML_Char * attribs[] = { 	"listid", lid,
+						"level", buf, 0 };
+		setStopping(UT_FALSE);
+		pView->_eraseInsertionPoint();
+		bRet = m_pDoc->changeStruxFmt(PTC_AddFmt, getPosition(), getPosition(), attribs, NULL, PTX_Block);
+		format();
+		//		if (currLevel != 0)
+		         listUpdate();
+		pView->_fixInsertionPointCoords();
+		pView->_generalUpdate();
+		pView->_drawInsertionPoint();
 	}
 }
 

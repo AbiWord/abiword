@@ -150,7 +150,7 @@ void  AP_Dialog_Lists::Apply(void)
 	      default:
 		       UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 	      }
-	      getAutoNum()->update(0);
+	      getBlock()->listUpdate();
 	      return;
        }
 }

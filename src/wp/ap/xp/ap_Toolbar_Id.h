@@ -79,6 +79,7 @@ enum _Ap_Toolbar_Id
 	AP_TOOLBAR_ID_3COLUMN,
 
 	AP_TOOLBAR_ID_ZOOM,
+	AP_TOOLBAR_ID_LISTS_NUMBERS,
 	AP_TOOLBAR_ID_LISTS_BULLETS,
 
 	/* ... add others here ... */

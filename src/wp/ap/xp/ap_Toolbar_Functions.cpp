@@ -24,6 +24,8 @@
 #include "ut_assert.h"
 #include "ut_string.h"
 #include "ut_units.h"
+#include "ut_debugmsg.h"
+
 #include "ap_Toolbar_Id.h"
 #include "ap_Toolbar_Functions.h"
 #include "ev_Toolbar_Actions.h"
@@ -33,8 +35,10 @@
 #include "xap_Frame.h"
 #include "fv_View.h"
 #include "gr_Graphics.h"
+#include "fl_AutoNum.h"
 
 #define ABIWORD_VIEW  	FV_View * pView = static_cast<FV_View *>(pAV_View)
+
 
 /****************************************************************/
 
@@ -151,6 +155,42 @@ Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_Style)
 	}
 
 	return s;
+}
+
+
+Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_Bullets)
+{
+	ABIWORD_VIEW;
+	UT_ASSERT(pView);
+
+	EV_Toolbar_ItemState s = EV_TIS_ZERO;
+
+	fl_BlockLayout * pBlock = pView->getCurrentBlock();
+        UT_ASSERT(pBlock);
+	if(pBlock->isListItem() == UT_FALSE)
+	        return s;
+	const char * tmp2 = pBlock->getAutoNum()->getType();
+	if(strstr(tmp2,"%b") != NULL)
+	        s = EV_TIS_Toggled;
+        return s;
+}
+
+
+Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_Numbers)
+{
+	ABIWORD_VIEW;
+	UT_ASSERT(pView);
+
+	EV_Toolbar_ItemState s = EV_TIS_ZERO;
+
+	fl_BlockLayout * pBlock = pView->getCurrentBlock();
+        UT_ASSERT(pBlock);
+	if(pBlock->isListItem() == UT_FALSE)
+	        return s;
+	const char * tmp2 = pBlock->getAutoNum()->getType();
+	if(strstr(tmp2,"%*%d") != NULL)
+	        s = EV_TIS_Toggled;
+        return s;
 }
 
 Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_CharFmt)

@@ -274,6 +274,9 @@ public:
 	static EV_EditMethod_Fn toggleSub;
 	static EV_EditMethod_Fn togglePlain;
 
+	static EV_EditMethod_Fn doBullets;
+	static EV_EditMethod_Fn doNumbers;
+
 	static EV_EditMethod_Fn alignLeft;
 	static EV_EditMethod_Fn alignCenter;
 	static EV_EditMethod_Fn alignRight;
@@ -556,6 +559,9 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(toggleSuper),			0,		""),
 	EV_EditMethod(NF(toggleSub),			0,		""),
 	EV_EditMethod(NF(togglePlain),			0,		""),
+
+	EV_EditMethod(NF(doNumbers),			0,		""),
+	EV_EditMethod(NF(doBullets),			0,		""),
 
 	EV_EditMethod(NF(dlgWordCount),			0,		""),
    	EV_EditMethod(NF(dlgSpell),			0,		""),
@@ -4172,6 +4178,7 @@ Defun1(dlgBullets)
 #ifndef NDEBUG
 
 	return s_doBullets(pView);
+
 #else
 	XAP_Frame * pFrame = (XAP_Frame *) pAV_View->getParentData();
 	s_TellNotImplemented(pFrame, "Numbering and Bullets dialog", __LINE__);
@@ -4307,6 +4314,56 @@ Defun1(toggleSub)
 	ABIWORD_VIEW;
 	return _toggleSpan(pView, "text-position", "subscript", "normal");
 }
+
+
+Defun1(doBullets)
+{
+	ABIWORD_VIEW;
+#ifndef NDEBUG
+        fl_BlockLayout * pBlock = pView->getCurrentBlock();
+	if(pBlock->isListItem() == UT_TRUE)
+	{
+	        pBlock->listUpdate();
+	        pView->cmdStopList();
+	}
+	else
+	{
+	        pBlock->listUpdate();
+		pView->cmdStartList("Bullet List");
+	}
+	return UT_TRUE;
+#else
+	XAP_Frame * pFrame = (XAP_Frame *) pAV_View->getParentData();
+	s_TellNotImplemented(pFrame, "Bullet Lists", __LINE__);
+	return UT_TRUE;
+#endif
+}
+
+
+
+Defun1(doNumbers)
+{
+	ABIWORD_VIEW;
+#ifndef NDEBUG
+        fl_BlockLayout * pBlock = pView->getCurrentBlock();
+	if(pBlock->isListItem() == UT_TRUE)
+	{
+	        pBlock->listUpdate();
+	        pView->cmdStopList();
+	}
+	else
+	{
+	        pBlock->listUpdate();
+		pView->cmdStartList("Numbered List");
+	}
+	return UT_TRUE;
+#else
+	XAP_Frame * pFrame = (XAP_Frame *) pAV_View->getParentData();
+	s_TellNotImplemented(pFrame, "Numbered Lists", __LINE__);
+	return UT_TRUE;
+#endif
+}
+
 
 Defun0(togglePlain)
 {
