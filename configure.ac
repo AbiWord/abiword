@@ -70,7 +70,6 @@ dnl Checks for libraries.
 dnl Define here ABI_FE, ABI_BE, PLATFORM_CFLAGS, PLATFORM_LIBS
 with_unix=false
 with_macosx=false
-with_carbon=false
 with_cocoa=false
 if test "$PLATFORM" = "unix"; then
 	ABI_FE="Unix"
@@ -78,12 +77,6 @@ if test "$PLATFORM" = "unix"; then
 	with_unix=true
 	dnl locate glib and gtk
 	ABI_GTK2
-elif test "$PLATFORM" = "mac" ; then
-	ABI_GLIB2
-	ABI_FE="Mac"
-	ABI_BE="$ABI_FE"
-	with_macosx=true
-	with_carbon=true
 elif test "$PLATFORM" = "cocoa" ; then
 	ABI_GLIB2
 	ABI_FE="Cocoa"
@@ -99,7 +92,6 @@ elif test "$PLATFORM" = "cocoa" ; then
 fi
 AM_CONDITIONAL(WITH_UNIX,$with_unix)
 AM_CONDITIONAL(WITH_MACOSX,$with_macosx)
-AM_CONDITIONAL(WITH_CARBON,$with_carbon)
 AM_CONDITIONAL(WITH_COCOA,$with_cocoa)
 AC_SUBST(OBJCXX)
 AC_SUBST(OBJCXXFLAGS)
@@ -290,10 +282,6 @@ if test "$PLATFORM" = "unix"; then
 	fi
 fi
 dnl AUTOCONF SUCKS
-if test "$PLATFORM" = "mac"; then
-	PLATFORM_LIBS="-liconv -framework Carbon -framework CoreServices -framework ApplicationServices -framework QuickTime"
-	PLATFORM_CFLAGS=-I'$(top_builddir)/src/af/util/unix'\ -fpascal-strings\ -DUSE_CARBON_EVENTS\ -DCARBON_ON_MACH_O=1\ -DNO_SYS_ERRLIST\ -I/Developer/Headers/FlatCarbon
-fi
 if test "$PLATFORM" = "cocoa"; then
 	if "$debug" = "true"; then
 		PLATFORM_LIBS="$GLIB_LIBS -liconv -framework Cocoa"
@@ -406,20 +394,16 @@ AC_CONFIG_FILES([GNUmakefile
  src/af/ev/cocoa/GNUmakefile
  src/af/ev/unix/GNUmakefile
  src/af/ev/unix/gnome/GNUmakefile
- src/af/ev/mac/GNUmakefile
  src/af/gr/GNUmakefile
  src/af/gr/xp/GNUmakefile
- src/af/gr/mac/GNUmakefile
  src/af/gr/cocoa/GNUmakefile
  src/af/gr/unix/GNUmakefile
  src/af/util/GNUmakefile
  src/af/util/xp/GNUmakefile
- src/af/util/mac/GNUmakefile
  src/af/util/unix/GNUmakefile
  src/af/xap/GNUmakefile
  src/af/xap/xp/GNUmakefile
  src/af/xap/cocoa/GNUmakefile
- src/af/xap/mac/GNUmakefile
  src/af/xap/unix/GNUmakefile
  src/af/xap/unix/gnome/GNUmakefile
  src/other/GNUmakefile
@@ -436,7 +420,6 @@ AC_CONFIG_FILES([GNUmakefile
  src/wp/ap/GNUmakefile
  src/wp/ap/xp/GNUmakefile
  src/wp/ap/cocoa/GNUmakefile
- src/wp/ap/mac/GNUmakefile
  src/wp/ap/unix/GNUmakefile
  src/wp/ap/unix/gnome/GNUmakefile
  src/wp/impexp/GNUmakefile
@@ -454,7 +437,6 @@ AC_CONFIG_FILES([GNUmakefile
  src/wp/main/cocoa/AbiWord.app/Contents/Frameworks/GNUmakefile
  src/wp/main/cocoa/AbiWord.app/Contents/Resources/GNUmakefile
  src/wp/main/cocoa/AbiWord.app/Contents/Resources/English.lproj/GNUmakefile
- src/wp/main/mac/GNUmakefile
  src/wp/main/unix/GNUmakefile
  src/tools/GNUmakefile
  src/tools/cdump/GNUmakefile
@@ -483,8 +465,6 @@ case "$PLATFORM" in
        AC_MSG_RESULT([Configured to build on a QNX RTOS platform.]) ;;
      "cocoa" )
        AC_MSG_RESULT([Configured to build on a Mac OS X platform using Cocoa.]) ;;
-     "mac" )
-       AC_MSG_RESULT([Configured to build on a Mac OS X platform using Carbon.]) ;;
 esac
 
 case "$gnome" in

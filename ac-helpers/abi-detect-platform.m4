@@ -108,13 +108,7 @@ AC_ARG_ENABLE(Cocoa,[  --disable-Cocoa    don't use Cocoa API  (MacOSX builds on
 # 
 # 2. Whether to consider using Carbon API:
 # 
-AC_ARG_ENABLE(Carbon,[  --disable-Carbon   don't use Carbon API (MacOSX builds only)],[
-	if [ test "x$enableval" = "xno" ]; then
-		abi_gui_carbon=no
-	else
-		abi_gui_carbon=yes
-	fi
-],abi_gui_carbon=yes)
+# I scraped Carbon stuff (Hub)
 # 
 # 3. Default to Cocoa, then Carbon, then GTK
 #    (Values are equivalent to PLATFORM setting)
@@ -122,11 +116,7 @@ AC_ARG_ENABLE(Carbon,[  --disable-Carbon   don't use Carbon API (MacOSX builds o
 if [ test $abi_gui_cocoa = yes ]; then
 	abi_gui=cocoa
 else
-	if [ test $abi_gui_carbon = yes ]; then
-		abi_gui=mac
-	else
-		abi_gui=unix
-	fi
+	abi_gui=unix
 fi
 # 
 # 4. For Cocoa or Carbon, recognize Darwin as MACOSX; otherwise, recognize as FreeBSD
