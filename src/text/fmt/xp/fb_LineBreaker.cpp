@@ -140,6 +140,11 @@ UT_sint32 fb_LineBreaker::breakParagraph(fl_BlockLayout* pBlock)
 					UT_sint32 iPos;
 					unsigned char iType;
 
+					// Subtract the width already added then work out new
+					// tab position.
+					
+					m_iWorkingLineWidth -= pCurrentRun->getWidth();
+
 					UT_Bool bRes = pLine->findNextTabStop(m_iWorkingLineWidth, iPos, iType);
 					if (bRes)
 					{
