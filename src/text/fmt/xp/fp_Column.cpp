@@ -389,6 +389,10 @@ void fp_VerticalContainer::getOffsets(fp_ContainerObject* pContainer, UT_sint32&
 		{
 			pShadowL = pHFSL->findShadow(pPage);
 		}
+		if(pShadowL == NULL)
+		{
+			return;
+		}
 //		UT_ASSERT(pShadowL);
 		if(pShadowL)
 		{
@@ -428,6 +432,10 @@ void fp_VerticalContainer::getOffsets(fp_ContainerObject* pContainer, UT_sint32&
 			if(pTopCol->getContainerType() == FP_CONTAINER_COLUMN)
 			{
 				fp_Page * pPage = pTopCol->getPage();
+				if(pPage == NULL)
+				{
+					return;
+				}
 				fp_Column * pFirstLeader = pPage->getNthColumnLeader(0);
 				UT_sint32 iColOffset = pTopCol->getY() - pFirstLeader->getY();
 				if(pPage != pTab->getPage())
