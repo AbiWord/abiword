@@ -23,9 +23,9 @@ AC_PREREQ(2.50)
 AC_INIT
 AC_CONFIG_SRCDIR([src/af/ev/xp/ev_Menu.h])
 AC_CONFIG_AUX_DIR(ac-helpers)
-AC_CONFIG_HEADERS(config.h)
+dnl AC_CONFIG_HEADERS(config.h)
 
-AM_INIT_AUTOMAKE(AbiSuite,0.9.2)
+AM_INIT_AUTOMAKE(AbiSuite,0.9.4.1)
 
 dnl APR [ Apache Portable Runtime ] does it this way, but I don't know
 dnl why.  I figure they probably have a good reason. 
@@ -49,8 +49,8 @@ AC_PROG_CPP
 AC_PROG_INSTALL
 AC_PROG_LN_S
 AC_PROG_MAKE_SET
-dnl AC_PROG_RANLIB
-AC_PROG_LIBTOOL
+AC_PROG_RANLIB
+dnl AC_PROG_LIBTOOL
 AM_ACLOCAL_INCLUDE(ac-helpers)
 
 dnl Detect our platform (unix, win32, etc)
@@ -94,7 +94,9 @@ if test "$PLATFORM" = "mac"; then
 else
 	ICONV_INCLUDES=-I'$(top_srcdir)/../libiconv/include'
 fi
+AC_CHECK_FUNC(iconv,ICONV_LIBS="",ICONV_LIBS="-liconv")
 AC_SUBST(ICONV_INCLUDES)
+AC_SUBST(ICONV_LIBS)
 
 ABIWORD_APP_NAME="AbiWord"
 AC_SUBST(ABIWORD_APP_NAME)
@@ -144,6 +146,45 @@ AC_ARG_WITH(pspell,
        *) AC_MSG_ERROR(bad value ${withval} for --with-pspell) ;;
      esac],[PSPELL_LIBS=""])
 AM_CONDITIONAL(WITH_PSPELL, test x$pspell = xtrue)
+
+AC_ARG_WITH(libwmf,
+    [  --with-libwmf    Turn on libwmf ],
+     [case "${withval}" in
+       yes) LIBWMF_DIR="" ;;
+       no)  LIBWMF_DIR="" ;
+            libwmf=false ;;
+       *)   LIBWMF_DIR="${withval}" ;;
+     esac
+     if [ test "x$libwmf" != "xfalse" ]; then
+        if [ test -n "$LIBWMF_DIR" ]; then
+           AC_PATH_PROG(LIBWMF_CONFIG,libwmf-config, ,[$LIBWMF_DIR/bin:$PATH])
+        else
+           AC_PATH_PROG(LIBWMF_CONFIG,libwmf-config)
+        fi
+        if [ test -n "$LIBWMF_CONFIG" ]; then
+           LIBWMF_CFLAGS="`$LIBWMF_CONFIG --cflags` -DHAVE_LIBWMF=1"
+           LIBWMF_LIBS="`$LIBWMF_CONFIG --libs`"
+        else
+           AC_MSG_ERROR(* * * unable to find libwmf-config; unable to continue * * *)
+        fi
+        wmf_save_CPPFLAGS="$CPPFLAGS"
+        wmf_save_LDFLAGS="$LDFLAGS"
+        CPPFLAGS="$CPPFLAGS $LIBWMF_CFLAGS"
+        LDFLAGS="$LDFLAGS $LIBWMF_LIBS"
+        AC_CHECK_HEADER(libwmf/gd.h,[
+           AC_CHECK_LIB(wmf,wmf_size,libwmf=true,[
+              AC_MSG_ERROR(* * * libwmf version 0.2.1 or later is required * * *)
+           ])
+        ])
+        CPPFLAGS="$wmf_save_CPPFLAGS"
+        LDFLAGS="$wmf_save_LDFLAGS"
+     else
+        LIBWMF_CFLAGS=""
+        LIBWMF_LIBS=""
+     fi],[LIBWMF_CFLAGS=""
+         LIBWMF_LIBS=""])
+AC_SUBST(LIBWMF_CFLAGS)
+AC_SUBST(LIBWMF_LIBS)
 
 AC_ARG_ENABLE(profile,
     [  --enable-profile    Turn on profile ],

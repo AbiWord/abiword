@@ -87,8 +87,11 @@ void AP_UnixPrefs::overlayEnvironmentPrefs(void)
 	// (most likely, all of LC_* are the same)
 	
 	const char * szNewLang = "en-US"; // default to US English
+#if defined (LC_MESSAGES)
 	char * lc_ctype = UT_strdup(setlocale(LC_MESSAGES, NULL));
-
+#else
+	char * lc_ctype = UT_strdup(setlocale(LC_CTYPE, NULL));
+#endif
 	// locale categories seem to always look like this:
 	// two letter for language (lowcase) _ two letter country code (upcase)
 	// ie. en_US, es_ES, pt_PT

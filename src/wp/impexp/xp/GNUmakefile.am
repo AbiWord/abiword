@@ -66,6 +66,7 @@ libImpexp_a_SOURCES=\
 	ie_impGraphic_PNG.cpp			\
 	ie_impGraphic_SVG.cpp			\
 	ie_impGraphic_BMP.cpp			\
+	ie_impGraphic_WMF.cpp			\
 	ie_imp_Psion.cpp			\
 	ie_imp_PalmDoc.cpp			\
 	ie_imp_ISCII.cpp			\

@@ -1205,8 +1205,8 @@ int AP_UnixApp::main(const char * szAppName, int argc, char ** argv)
     
     sigfillset(&sa.sa_mask);  // We don't want to hear about other signals
     sigdelset(&sa.sa_mask, SIGABRT); // But we will call abort(), so we can't ignore that
-
-#ifndef AIX
+/* #ifndef AIX - I presume these are always #define not extern... -fjf */
+#if defined (SA_NODEFER) && defined (SA_RESETHAND)
     sa.sa_flags = SA_NODEFER | SA_RESETHAND; // Don't handle nested signals
 #else
     sa.sa_flags = 0;

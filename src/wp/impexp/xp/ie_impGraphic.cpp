@@ -26,6 +26,7 @@
 #include "ie_impGraphic_PNG.h"
 #include "ie_impGraphic_BMP.h"
 #include "ie_impGraphic_SVG.h"
+#include "ie_impGraphic_WMF.h"
 
 /*****************************************************************/
 /*****************************************************************/
@@ -49,6 +50,9 @@ static struct _impGraphic s_impGraphicTable[] =
 	DeclareImporter(IE_ImpGraphic_BMP),
 #ifdef DEBUG
 	DeclareImporter(IE_ImpGraphic_SVG),
+#ifdef HAVE_LIBWMF
+	DeclareImporter(IE_ImpGraphic_WMF),
+#endif
 #endif
 };
 

@@ -63,11 +63,11 @@ fi
 #### build MacOS version using Carbon. Change later when we 
 #### support Darwin running X and other varieties (like MacOS X
 #### using Cocoa). <hfiguiere@teaser.fr>
-
-if test "$OS_NAME" = "Darwin"; then
+if test "x$PLATFORM" = "xNetBSD"; then
+	OS_NAME=NetBSD
+elif test "$OS_NAME" = "Darwin"; then
 	OS_NAME=MACOSX
 fi
-
 # At this point, we now have the following info:
 # OS_NAME = something like 'Linux'
 # OS_RELEASE = something like '2.4.1'
