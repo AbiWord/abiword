@@ -39,6 +39,7 @@ public:
 	EV_Menu(EV_EditMethodContainer * pEMC,
 			const char * szMenuLayoutName,
 			const char * szMenuLanguageName);
+	~EV_Menu(void);
 
 	UT_Bool invokeMenuMethod(FV_View * pView,
 							 EV_EditMethod * pEM,

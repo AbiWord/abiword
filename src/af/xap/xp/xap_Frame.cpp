@@ -108,7 +108,9 @@ AP_Frame::~AP_Frame(void)
 	DELETEP(m_pG);
 	DELETEP(m_pEBM);
 	DELETEP(m_pEEM);
-	UT_VECTOR_PURGEALL(char *, m_vecToolbarLayoutNames);
+
+	// BUGBUG: don't attempt to purge contents -- they're constant strings
+	//	UT_VECTOR_PURGEALL(char *, m_vecToolbarLayoutNames);
 }
 
 // sequence number tracker for untitled documents

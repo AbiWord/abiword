@@ -32,6 +32,9 @@
 #include "ap_Toolbar_Layouts.h"
 #include "ap_Toolbar_LabelSet.h"
 
+
+#define DELETEP(p)	do { if (p) delete p; } while (0)
+
 /*****************************************************************/
 
 EV_Toolbar::EV_Toolbar(EV_EditMethodContainer * pEMC,
@@ -50,6 +53,12 @@ EV_Toolbar::EV_Toolbar(EV_EditMethodContainer * pEMC,
 
 	m_pToolbarLabelSet = AP_CreateToolbarLabelSet(szToolbarLabelSetName);
 	UT_ASSERT(m_pToolbarLabelSet);
+}
+
+EV_Toolbar::~EV_Toolbar(void)
+{
+	DELETEP(m_pToolbarLayout);
+	DELETEP(m_pToolbarLabelSet);
 }
 
 const EV_Toolbar_Layout * EV_Toolbar::getToolbarLayout(void) const

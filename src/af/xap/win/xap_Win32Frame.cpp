@@ -27,6 +27,7 @@
 #include "ev_Win32Keyboard.h"
 #include "ev_Win32Mouse.h"
 #include "ev_Win32Menu.h"
+#include "ev_Win32Toolbar.h"
 #include "ev_EditMethod.h"
 #include "fv_View.h"
 #include "fl_DocLayout.h"
@@ -103,7 +104,7 @@ AP_Win32Frame::~AP_Win32Frame(void)
 	DELETEP(m_pWin32Keyboard);
 	DELETEP(m_pWin32Mouse);
 	DELETEP(m_pWin32Menu);
-	UT_VECTOR_PURGEALL(EV_Win32Toolbar *, m_vecWin32Toolbars);
+	UT_VECTOR_PURGEALL(EV_Win32Toolbar, m_vecWin32Toolbars);
 }
 
 UT_Bool AP_Win32Frame::initialize(void)
@@ -112,7 +113,7 @@ UT_Bool AP_Win32Frame::initialize(void)
 
 	// invoke our base class first.
 	
-	bResult = AP_Frame::initialize(void);
+	bResult = AP_Frame::initialize();
 	UT_ASSERT(bResult);
 
 	_createTopLevelWindow();
@@ -139,7 +140,7 @@ AP_Frame * AP_Win32Frame::cloneFrame(void)
 	AP_Win32Frame * pClone = new AP_Win32Frame(this);
 	ENSUREP(pClone);
 
-	if (!pClone->initialize(0,NULL))
+	if (!pClone->initialize())
 		goto Cleanup;
 
 	if (!pClone->_showDocument())
@@ -199,7 +200,9 @@ void AP_Win32Frame::_createTopLevelWindow(void)
 	SWL(m_hwnd, this);
 
 	// synthesize a menu from the info in our base class.
-	m_pWin32Menu = new EV_Win32Menu(m_pWin32App,this);
+	m_pWin32Menu = new EV_Win32Menu(m_pWin32App,this,
+								  m_szMenuLayoutName,
+								  m_szMenuLabelSetName);
 	UT_ASSERT(m_pWin32Menu);
 	UT_Bool bResult = m_pWin32Menu->synthesize();
 	UT_ASSERT(bResult);

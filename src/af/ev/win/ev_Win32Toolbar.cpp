@@ -17,6 +17,7 @@
  * 02111-1307, USA.
  */
 
+#include <windows.h>
 #include "ut_assert.h"
 #include "ev_Win32Toolbar.h"
 #include "ap_Toolbar_Id.h"
@@ -43,7 +44,7 @@ EV_Win32Toolbar::EV_Win32Toolbar(AP_Win32App * pWin32App, AP_Win32Frame * pWin32
 
 EV_Win32Toolbar::~EV_Win32Toolbar(void)
 {
-	UT_VECTOR_PURGEALL(_wd,m_vecToolbarWidgets);
+//	UT_VECTOR_PURGEALL(_wd,m_vecToolbarWidgets);
 }
 
 UT_Bool EV_Win32Toolbar::toolbarEvent(AP_Toolbar_Id id)
@@ -83,7 +84,7 @@ UT_Bool EV_Win32Toolbar::synthesize(void)
 	UT_uint32 nrLabelItemsInLayout = m_pToolbarLayout->getLayoutItemCount();
 	UT_ASSERT(nrLabelItemsInLayout > 0);
 
-	HWND * wTLW = m_pWin32Frame->getTopLevelWindow();
+	HWND wTLW = m_pWin32Frame->getTopLevelWindow();
 
 	for (UT_uint32 k=0; (k < nrLabelItemsInLayout); k++)
 	{

@@ -32,6 +32,9 @@
 #include "ap_Menu_Layouts.h"
 #include "ap_Menu_LabelSet.h"
 
+
+#define DELETEP(p)	do { if (p) delete p; } while (0)
+
 /*****************************************************************/
 
 EV_Menu::EV_Menu(EV_EditMethodContainer * pEMC,
@@ -51,6 +54,12 @@ EV_Menu::EV_Menu(EV_EditMethodContainer * pEMC,
 	m_pMenuLabelSet = AP_CreateMenuLabelSet(szMenuLabelSetName);
 	UT_ASSERT(m_pMenuLabelSet);
 
+}
+
+EV_Menu::~EV_Menu(void)
+{
+	DELETEP(m_pMenuLayout);
+	DELETEP(m_pMenuLabelSet);
 }
 
 const EV_Menu_Layout * EV_Menu::getMenuLayout(void) const

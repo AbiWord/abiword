@@ -39,6 +39,7 @@ public:
 	EV_Toolbar(EV_EditMethodContainer * pEMC,
 			   const char * szMenuLayoutName,
 			   const char * szMenuLanguageName);
+	~EV_Toolbar(void);
 
 	const EV_Toolbar_Layout * getToolbarLayout(void) const;
 	const EV_Toolbar_LabelSet * getToolbarLabelSet(void) const;

@@ -23,6 +23,7 @@
 #include "ap_Args.h"
 #include "ap_Win32App.h"
 #include "ap_Win32Frame.h"
+#include "ap_Win32Toolbar_Icons.h"
 
 #define DELETEP(p)	do { if (p) delete p; } while (0)
 
