@@ -207,7 +207,7 @@ UT_Bool EV_Win32Menu::synthesizeMenu(XAP_Frame * pFrame, HMENU menuRoot)
 
 				if (pLayoutItem->getMenuLayoutFlags() == EV_MLF_BeginSubMenu)
 				{
-					HMENU sub = CreateMenu();
+					HMENU sub = CreateMenu();	// TODO NOTE: Leaking handle!
 					UT_ASSERT(sub);
 
 					flags |= MF_POPUP;
