@@ -45,7 +45,7 @@ install:
 # then uninstalls.
 pkg: install
 	@echo "Producing Solaris PKG..."
-	sed "s/__ABI_BUILD_VERSION__/$(ABI_BUILD_VERSION)/" pkg/pkginfo \
+	@sed "s/__ABI_BUILD_VERSION__/$(ABI_BUILD_VERSION)/" pkg/pkginfo \
 		| sed "s/__ABI_ARCH__/$(OS_ARCH)/" \
 		| sed "s/__ABI_BUILD_PACKAGER__/$(ABI_BUILD_PACKAGER)/" \
 		| sed "s/__prefix__/$(esc_prefix)/" \
@@ -59,9 +59,10 @@ pkg: install
 	@rm -f $(DIST)/Prototype
 	@rm -f $(DIST)/pkginfo
 	@rm -f $(DIST)/checkinstall
-	@echo "Compressing pkg into .tar.gz format..."
-	@(cd $(DIST); tar cf - ABIword | gzip -c > \
-		$(DIST)/abisuite.$(ABI_BUILD_VERSION).$(OS_ARCH).SunOS.$(OS_RELEASE).pkg.tar.gz)
+	@echo "Translate package to single file..."
+	@pkgtrans -s $(DIST) $(DIST)/ABIword-$(ABI_BUILD_VERSION)-$(OS_ARCH)-local.pkg ABIword
+	@echo "Compressing pkg into .gz format..."
+	@gzip -9 $(DIST)/ABIword-$(ABI_BUILD_VERSION)-$(OS_ARCH)-local.pkg
 	@rm -rf $(DIST)/ABIword
 	@echo "Removing installation..."
 	@rm -rf $(prefix)/AbiSuite
