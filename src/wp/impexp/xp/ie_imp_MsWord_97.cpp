@@ -89,7 +89,7 @@ UT_Error IE_Imp_MsWord_97::importFile(const char * szFilename)
 	fclose(fp);
 
 	wvParseStruct ps;
-	if (wvInitParser(&ps,szFilename))
+	if (wvInitParser(&ps,(char *)szFilename))
 		{
 		UT_DEBUGMSG(("Could not open file %s\n",szFilename));
 		wvOLEFree();
