@@ -2459,8 +2459,7 @@ Defun(fileNew)
 	XAP_App * pApp = pFrame->getApp();
 	UT_ASSERT(pApp);
 
-#ifdef DEBUG
-
+#if 1
 	pFrame->raise();
 
 	XAP_DialogFactory * pDialogFactory
@@ -3366,7 +3365,6 @@ Defun(contextMisspellText)
 Defun(contextImage)
 {
 CHECK_FRAME;
-#ifdef DEBUG
 	ABIWORD_VIEW;
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> (pView->getParentData());
 	UT_ASSERT(pFrame);
@@ -3379,9 +3377,6 @@ CHECK_FRAME;
 		pView->extSelHorizontal (true, 1);
 	  }
 	return s_doContextMenu(EV_EMC_IMAGE,pCallData->m_xPos, pCallData->m_yPos,pView,pFrame);
-#else
-	return true;
-#endif
 }
 
 Defun(contextHyperlink)
