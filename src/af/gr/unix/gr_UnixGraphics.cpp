@@ -788,7 +788,7 @@ UT_uint32 GR_UnixGraphics::s_getDeviceResolution(void)
 	// most X servers return when queried for a resolution)
 	// makes for tiny fonts on modern resolutions.
 
-	return 72;
+	return 75;
 }
 
 UT_uint32 GR_UnixGraphics::getDeviceResolution(void) const

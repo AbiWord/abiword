@@ -46,7 +46,7 @@
 #include "xap_App.h"
 
 // the resolution that we report to the application (pixels per inch).
-#define PS_RESOLUTION		72
+#define PS_RESOLUTION		75
 
 /*
 	How long line in the PS output we will allow;
@@ -801,7 +801,7 @@ bool PS_Graphics::_startDocument(void)
 	m_ps->formatComment("Pages",m_iPageCount);
 	
 	//TODO: emit iWidth and iHeight in BoundingBox somehow (what's a 
-	//factor between them and PS units (that are 1/72 of inch IIRC)
+	//factor between them and PS units (that are 1/75 of inch IIRC)
 	m_ps->formatComment("DocumentPaperSizes",m_szPageSizeName);
 
 	_emit_DocumentNeededResources();

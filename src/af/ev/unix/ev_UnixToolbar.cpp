@@ -655,7 +655,7 @@ bool EV_UnixToolbar::synthesize(void)
 	
 	m_wToolbar = gtk_toolbar_new();
 	UT_ASSERT(m_wToolbar);
-	gtk_container_set_border_width(GTK_CONTAINER(m_wToolbar), 1);
+	gtk_container_set_border_width(GTK_CONTAINER(m_wToolbar), 2);
 	
 	gtk_toolbar_set_tooltips(GTK_TOOLBAR(m_wToolbar), TRUE);
 	gtk_toolbar_set_style(GTK_TOOLBAR( m_wToolbar), style );
