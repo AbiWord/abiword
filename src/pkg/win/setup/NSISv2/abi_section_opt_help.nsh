@@ -20,4 +20,14 @@ Section "$(TITLE_section_help)" section_help
     SkipHelpFileSM:
   !insertmacro MUI_STARTMENU_WRITE_END
 SectionEnd
+!macro Remove_${section_help}
+	;Removes this component
+	DetailPrint "*** Removing help files..."
+
+	; remove help files
+      RMDir /r "$INSTDIR\AbiWord\help"
+
+	; remove help start menu entry
+	Delete "$SMPROGRAMS\$STARTMENU_FOLDER\$(SHORTCUT_NAME_HELP).lnk"
+!macroend
 

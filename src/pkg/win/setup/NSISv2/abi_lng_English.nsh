@@ -70,8 +70,11 @@ ${LSTR} DESC_ssection_plugins         "Installs various optional plugins."
 ; Error messages and other text displayed in Detail Window or in MessageBoxes
 
 ; in the main section
-${LSTR} PROMPT_OVERWRITE              "Overwrite Existing ${PRODUCT}?"
-${LSTR} MSG_ABORT                     "Quitting the install process"
+${LSTR} PROMPT_OVERWRITE                      "Overwrite Existing ${PRODUCT}?"
+${LSTR} PROMPT_NOMAINPROGRAM_CONTINUEANYWAY   "${PRODUCT} does not appear installed correctly!$\r$\n\
+                                               Failed to find ${MAINPROGRAM}, it will be reinstalled.$\r$\n\
+                                               Continue to modify installation?"
+${LSTR} MSG_ABORT                             "Quitting the install process"
 
 ; sections involving additional downloads
 !ifndef NODOWNLOADS

@@ -1,6 +1,22 @@
 ;Title          AbiWord for Windows, NSIS v2 series installer script
 ;FileDesc       Contains optionally included sections for redistributable components
 
+
+!macro doRemoveCRTlib
+	;Removes this component
+	DetailPrint "*** Removing crtlib..."
+
+	; remove C RTL
+	Delete "$INSTDIR\${PRODUCT}\bin\${OPT_CRTL_FILENAME}"
+
+	; remove C++ RTL
+	!ifdef OPT_CPPL_FILENAME
+	Delete "$INSTDIR\${PRODUCT}\bin\${OPT_CPPL_FILENAME}"
+	!endif
+!macroend
+!define doRemoveCRTlib "!insertmacro doRemoveCRTlib"
+
+
 !ifdef OPT_CRTL_LOCAL
 ; OPTIONAL Installation of c runtime library dll
 ; Hidden if for Win95 only (e.g msvcrt.dll)
@@ -23,6 +39,9 @@ Section "$(TITLE_section_crtlib_local)" section_crtlib_local
 	!endif
 
 SectionEnd
+!macro Remove_${section_crtlib_local}
+	${doRemoveCRTlib}
+!macroend
 !endif ; OPT_CRTL_LOCAL
 
 
@@ -47,5 +66,8 @@ Section "$(TITLE_section_crtlib_dl)" section_crtlib_dl
 	!endif
 
 SectionEnd
+!macro Remove_${section_crtlib_dl}
+	${doRemoveCRTlib}
+!macroend
 !endif ; OPT_CRTL_URL
 

@@ -34,7 +34,7 @@ SetCompressor lzma
 
 ; where to look for NSIS plugins during setup creation
 ; default includes ./plugins, but we also want to check current directory
-!addplugindir .
+;!addplugindir .
 
 ; compresses the header
 !ifdef HAVE_UPX
@@ -129,27 +129,56 @@ SubSection /e "$(TITLE_ssection_core)" ssection_core
 ; The stuff that must be installed
 Section "$(TITLE_section_abi)" section_abi
 	SectionIn 1 2 3 4 ${DLSECT} RO	; included in Typical, Full, Minimal, Required
-	;;
-	; Testing clause to Overwrite Existing Version - if exists
-	IfFileExists "$INSTDIR\${MAINPROGRAM}" 0 DoInstall
-	
-	MessageBox MB_YESNO "$(PROMPT_OVERWRITE)" /SD IDYES IDYES DoInstall
-	
-	Abort "$(MSG_ABORT)"
 
-	DoInstall:
-  Call GetParameters
-  pop $0
-DetailPrint "Params are ($0)"
+	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+	; Display installer command line options
+	Call GetParameters
+	pop $0
+	StrCmp $0 "" +2  ; but only if some actually given
+	DetailPrint "Installer command line parameters are ($0)"
+
+
 	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 	; Set output path to the installation directory.
 	SetOutPath $INSTDIR\${PRODUCT}\bin
-	File "${PROGRAMEXE}"
 
-	; only for MinGW builds
-	${IfExists} "libAbiWord.dll"
-		File "libAbiWord.dll"
-	${IfExistsEnd}
+
+	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+	; Determine if primary executable exists,
+	; If we are in modify mode then we expect it to exist
+	; (where Not existing is a possible error condition)
+	; Else in normal install mode, we expect it to NOT exist
+	; (where existing is the a possible error condition)
+	StrCpy $R0 1	; flag we want to install main program
+	${If} ${FileExists} "$INSTDIR\${MAINPROGRAM}"
+		${If} $v_modifyinstall == 1 
+			DetailPrint "Modify mode: successfully found $INSTDIR\${MAINPROGRAM}"
+			StrCpy $R0 0	; skip extraction if already there
+		${Else}
+			DetailPrint "Install mode: Warning found $INSTDIR\${MAINPROGRAM}"
+			MessageBox MB_YESNO "$(PROMPT_OVERWRITE)" /SD IDYES IDYES +2
+				Abort "$(MSG_ABORT)"
+		${EndIf}
+	${Else}	; we need to install the main program
+		${If} $v_modifyinstall == 1 
+			DetailPrint "Modify mode: Warning failed to find $INSTDIR\${MAINPROGRAM}"
+			MessageBox MB_YESNO "$(PROMPT_NOMAINPROGRAM_CONTINUEANYWAY)" /SD IDYES IDYES +2
+				Abort "$(MSG_ABORT)"
+		${Else}
+			DetailPrint "Install mode: "
+		${EndIf}
+	${EndIf}
+
+	; Actually peform the installation
+	${If} $R0 == 1
+		; Install main executable
+		File "${PROGRAMEXE}"
+
+		; only for MinGW builds
+		${IfExists} "libAbiWord.dll"
+			File "libAbiWord.dll"
+		${IfExistsEnd}
+	${EndIf}
 SectionEnd
 !macro Remove_${section_abi}
 	;Removes this component
@@ -261,8 +290,16 @@ SectionEnd
 
 SubSectionEnd ; core
 !macro Remove_${ssection_core}
-	;Removes this component
-	DetailPrint "*** End: Removing file associations..."
+	; Note: subsection removes called unless every section contained is selected
+	;       so do not actually remove anything that may be necessary
+	;       if subsection is only partially selected
+	DetailPrint "*** ssection_core"
+!macroend
+!macro Keeping_${ssection_core}
+	; Note: subsection removes called unless every section contained is selected
+	;       so do not actually remove anything that may be necessary
+	;       if subsection is only partially selected
+	DetailPrint "*** ssection_core"
 !macroend
 
 
@@ -295,6 +332,12 @@ SubSection /e "$(TITLE_ssection_helper_files)" ssection_helper_files
 !include "abi_section_opt_dictionaries.nsh"
 
 SubSectionEnd ; helper files
+!macro Remove_${ssection_helper_files}
+	; Note: subsection removes called unless every section contained is selected
+	;       so do not actually remove anything that may be necessary
+	;       if subsection is only partially selected
+	DetailPrint "*** ssection_helper_files"
+!macroend
 
 
 ; *********************************************************************
@@ -308,14 +351,23 @@ ${IfExistsEnd}
 
 
 ;--- Add/Remove callback functions: ---
+!define MarkSubSectionStart "DetailPrint"
+
 !macro SectionList MacroName
   ;This macro used to perform operation on multiple sections.
   ;List all of your components in following manner here.
+  ;  use ${MarkSubSectionStart} to indicate start of a subsection
+  ;  then list all sections (and nested subsections) 
+  ;  lastly list the subsection (so it can remove any contents
+  ;  shared by multiple sections contained within).
 
+  ${MarkSubSectionStart} "*** ssection_core:"
   !insertmacro "${MacroName}" "section_abi"
   !insertmacro "${MacroName}" "section_core_inv"
   !insertmacro "${MacroName}" "section_abi_req"
   !insertmacro "${MacroName}" "ssection_core"
+
+  ${MarkSubSectionStart} "*** ssection_fa_shellupdate:"
   !insertmacro "${MacroName}" "section_fa_shellupdate_inv"
   !insertmacro "${MacroName}" "section_fa_abw"
   !insertmacro "${MacroName}" "section_fa_awt"
@@ -323,6 +375,25 @@ ${IfExistsEnd}
   !insertmacro "${MacroName}" "section_fa_doc"
   !insertmacro "${MacroName}" "section_fa_rtf"
   !insertmacro "${MacroName}" "ssection_fa_shellupdate"
+
+  ${MarkSubSectionStart} "*** ssection_helper_files:"
+  !insertmacro "${MacroName}" "section_help"
+  !insertmacro "${MacroName}" "section_templates"
+  !insertmacro "${MacroName}" "section_clipart"
+!ifdef OPT_CRTL_LOCAL
+  !insertmacro "${MacroName}" "section_crtlib_local"
+!endif
+!ifdef OPT_CRTL_URL
+  !insertmacro "${MacroName}" "section_crtlib_dl"
+!endif
+  ${MarkSubSectionStart} "*** ssection_dictionary:"
+  !insertmacro "${MacroName}" "section_dictinary_def_English"
+  !ifdef OPT_DICTIONARIES
+  ;TODO handle dl dictionaries
+  !endif ; OPT_DICTIONARIES
+  !insertmacro "${MacroName}" "ssection_dictionary"
+  !insertmacro "${MacroName}" "ssection_helper_files"
+
 !macroend
 
 Section -FinishComponents

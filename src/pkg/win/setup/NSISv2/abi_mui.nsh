@@ -33,6 +33,19 @@
     !define MUI_LANGDLL_REGISTRY_KEY "Software\${APPSET}\${PRODUCT}\v${VERSION_MAJOR}"
     !define MUI_LANGDLL_REGISTRY_VALUENAME "Installer Language"
 
+    ;Custom help
+    Function CustomHelpFuncComponentsPage
+      InitPluginsDir               ; insure directory exists and $PLUGINDIR initialized to its location
+      SetOutPath $PLUGINSDIR       ; set directory to one that ensures file removed after install
+      File /nonfatal insthelp.rtf  ; the custom help file displayed to describe in detail the various components
+      HelpButton::show /NOUNLOAD "33,331" "?" "Components Help" "/file=$PLUGINSDIR\insthelp.rtf" wrap 33
+    FunctionEnd
+    Function .onGuiEnd ;customHelpFuncCleanup
+      # This needs to be called otherwise the dll will not be correctly unloaded and so will stay on the hd :o(
+      HelpButton::end
+      ;MessageBox MB_OK "Cleanup HelpButton"
+    FunctionEnd
+
 
   ; include the Modern UI support
   !include "Mui.nsh"
@@ -43,6 +56,7 @@
     ; including the license of AbiWord  (license could be localized, but we lack translations)
     !insertmacro MUI_PAGE_LICENSE $(LicenseTXT)
     ; allow user to select what parts to install
+    !define MUI_PAGE_CUSTOMFUNCTION_PRE customHelpFuncComponentsPage
     !insertmacro MUI_PAGE_COMPONENTS
     ; and where to install to
     !insertmacro MUI_PAGE_DIRECTORY

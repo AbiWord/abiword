@@ -92,7 +92,9 @@ SectionEnd
 
 SubSectionEnd ; file associations
 !macro Remove_${ssection_fa_shellupdate}
-	;Removes this component
-	DetailPrint "*** End: Removing file associations..."
+	; Note: subsection removes called unless every section contained is selected
+	;       so do not actually remove anything that may be necessary
+	;       if subsection is only partially selected
+	DetailPrint "*** ssection_fa_shellupdate"
 !macroend
 

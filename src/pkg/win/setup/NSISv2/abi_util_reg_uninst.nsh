@@ -55,7 +55,7 @@ ${WRSU} "Publisher" "AbiSource Developers"
 ; InstallSource (string) - Location where the application was installed from
 
 StrCmp $v_opt_modify_reg "0" 0 omitModifyPath
-  ${WRSU} "ModifyPath" "$v_opt_modify_path"
+  ${WRSU} "ModifyPath" $v_opt_modify_path
 omitModifyPath:
 ;${WRSU} "InstallSource" ""
 
@@ -75,9 +75,11 @@ ${WRSU} "HelpLink" "http://www.abisource.com/support/"
 
 ; URLUpdateInfo (string) - Link to the website for application updates
 ; URLInfoAbout (string) - Link to the application home page
+; Readme (string/URL) - Readme file
 
 ${WRSU} "URLUpdateInfo" "http://www.abisource.com/"
 ${WRSU} "URLInfoAbout" "http://www.abisource.com/information/about/"
+${WRSU} "Readme" "file://$INSTDIR/readme.txt"
 
 ; DisplayVersion (string) - Displayed version of the application
 ; VersionMajor (DWORD) - Major version number of the application
@@ -89,10 +91,12 @@ ${WRDU} "VersionMinor" ${VERSION_MINOR}
 
 ; NoModify (DWORD) - 1 if uninstaller has no option to modify the installed application
 ; NoRepair (DWORD) - 1 if the uninstaller has no option to repair the installation
+; NoRemove (DWORD) - 1 only if no uninstaller present
 ; If both NoModify and NoRapair are set to 1, the button displays "Remove" instead of "Modify/Remove".
 
 ${WRDU} "NoModify" $v_opt_modify_reg
 ${WRDU} "NoRepair" 1
+${WRDU} "NoRemove" 0
 
 ; Comments (string) - misc info (1 line, no wrap or newlines)
 
