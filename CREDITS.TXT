@@ -11,7 +11,7 @@ Shaw Terwilliger <sterwill@abisource.com>
 
 contributors
 ------------
-Matthew Allen <fret@ozemail.com.au>             MouseWheel fix.
+Matthew Allen <fret@ozemail.com.au>             MouseWheel fix
 Peter Arnold <petera@intrinsica.co.uk>          RTF import
 Darren Benham <gecko@benham.net>                Debian package, ispell whiz
 Henrik Berg <henrik@lansen.se>                  ispell i18n
@@ -27,15 +27,17 @@ Heath D. Carr <heath@abisource.com>
 Joaquín Cuenca Abela <cuenca@ie2.u-psud.fr>     GNOME front end, LaTeX exporter
 Philippe Defert <Philippe.Defert@cern.ch>       AIX, HPUX, IRIX64, OSF1
 Ryan Dooley <ryan@coe.missouri.edu>             started IRIX port
-Danny Faught <faught@rstcorp.com>               
-Harald Fernengel <harry@bnro.de>                RTF compatability fixes
-Hubert Figuiere	<hfiguiere@teaser.fr>           RTF export fixes
+Paul Egli <pegli@sourcegear.com>
+Danny Faught <faught@rstcorp.com>
+Harald Fernengel <harry@bnro.de>                RTF compatibility fixes
+Hubert Figuiere <hfiguiere@teaser.fr>           RTF export fixes
 Albert Fluegel <albert.fluegel@hl.siemens.de>   Solaris
 Stephen Hack <shack@uiuc.edu>                   options dialog
 Martin Willemoes Hansen <mwh@stampede.org>
+hj <huangj@citiz.net>                           XIM, focus
 Roman Hodek <Roman.Hodek@informatik.uni-erlangen.de>    m68k Endian patch
 Ming-I Hsieh <mihs@wm28.csie.ncu.edu.tw>        FreeBSD
-Perry Ismangil (perry@trabas.com)               AbiHello
+Perry Ismangil <perry@trabas.com>               AbiHello
 Richard Jefts <babs@cs.jhu.edu>                 layout navigation, font dialog, .zabw impexp
 Luke Jordan <ljordan@mweb.co.za>                subscript, superscript
 Matt Kimball <robozapp@xmission.com>            layout fixes
@@ -48,35 +50,38 @@ James Lefavour <James@albany.net>               Win98/VC6
 Aaron Lehmann <aaronl@vitelus.com>              Ruler placement patch
 Jerry LeVan <levan@eagle.eku.edu>               LinuxPPC
 Kenneth MacDonald <kenny@holyrood.ed.ac.uk>     Color Printing patch
-Brian Marick <marick@rstcorp.com>
+Brian Marick <marick@rstcorp.com>       
 Lalo Martins <lalo@webcom.com>
 Caolan McNamara <Caolan.McNamara@ul.ie>         Word import
 Mike Meyer <mwm@mired.org>                      ParseAFM isspace() fix
-James Montgomerie <jamie@montgomerie.net>       ANSI C patrol
+James Montgomerie <jamie@montgomerie.net>       ANSI C patrol, libole2 integration
 Tom Newton <Tom.Newton@gtl.com>
 Mike Nordell <tamlin@algonet.se>                Windows printing fix
 Bruce Pearson <BruceP@wn.com.au>                full justification
-Andy Richardson <andy@promethium.chem.ucl.ac.uk>PostScript image handling
+Michael Pritchett <MPritchett@attglobal.net>    Cygwin 1.1.0 build fixes
+Bryan Prusha <bryanp@wolfram.com>
+Andy Richardson <andy@promethium.chem.ucl.ac.uk>    PostScript image handling
 Duncan Rose <d.rose@salford.ac.uk>
+Bernhard Rosenkraenzer <bero@redhat.de>         gcc 2.96 lint
 Pierre Sarrazin <ps@cam.org>
 Dan Schreiber <dan@abisource.com>
 Martin Sevior <msevior@physics.unimelb.edu.au>  Symbol dialog, Overline, cursor motion fixes
-<kstailey@kstailey.tzo.com>                     OpenBSD
+Jeremy Sheeley <jeremy@sourcegear.com>
 Alexey Sinutin <megabyte@salesexplosion.com>    Insert Date/Time dialog, show Paragraphs
 Jesper Skov <jskov@redhat.com>                  Documentation, Cursor motion fixes
+<kstailey@kstailey.tzo.com>                     OpenBSD
 Owen Stenseth <owen@pdaverticals.com>           script to output translation data
 Nigel Stepp <stepp@mithril.res.cmu.edu>         VI keybindings
 Jim Studt <jim@federated.com>                   ARM configuration
-Sam Tobin-Hochstadt <sytobinh@uchicago.edu>     File I/O error handling, misc fixes
-Petr Tesarik <<tesarik@lupa.cz>                 X11 select and Paste
+Petr Tesarik <tesarik@lupa.cz>                  X11 select and Paste
 Gary Thomas <gdt@linuxppc.org>                  LinuxPPC
 Dave Thompson <thompson@pdnt.com>
+Sam Tobin-Hochstadt <sytobinh@uchicago.edu>     File I/O error handling, misc fixes
 John Tunison <nosinut@WIND.REM.CMU.EDU>         GNOME dialogs
 Kevin Vajk <kvajk@ricochet.net>                 File import/export detection
 Robert G. Werner <rwerner@lx1.microbsys.com>    VI keybindings
 John Wood <jyonw@asu.edu>                       NetBSD
 Alan Young <ayoung@teleport.com>                Alpha/NT
-Michael D. Pritchett <MPritchett@attlobal.net>  Cygwin 1.1.0 build fixes
 
 translators
 -----------
@@ -103,7 +108,7 @@ Rasmus Toftdahl Olesen <rto@post.tele.dk>       Danish
 Eutanazy Sercxemulo <szperacz@free.net.pl>      Polish
 Rui Silva <rms@ssi.aaum.pt>                     Portugese
 Christian Terboven <cterboven@gmx.net>          German
-I Made Wiryana <made@nakula.rvs.uni-bielefeld.de>Indonesian
+I Made Wiryana <made@nakula.rvs.uni-bielefeld.de>   Indonesian
 Javier Yáñez <javier@cibal.es>                  Spanish
 
 
