@@ -8790,11 +8790,12 @@ Defun(colorForeTB)
 	CHECK_FRAME;
 	ABIWORD_VIEW;
 
-  const XML_Char * properties[] = { "color", NULL, 0};
-  properties[1] = reinterpret_cast<const XML_Char *>(UT_UTF8String(pCallData->m_pData).utf8_str());
-  pView->setCharFormat(properties);
+	UT_UTF8String utf8(pCallData->m_pData, pCallData->m_dataLength);
+	const XML_Char * properties[] = { "color", NULL, 0};
+	properties[1] = reinterpret_cast<const XML_Char *>(utf8.utf8_str());
+	pView->setCharFormat(properties);
 
-  return true;
+	return true;
 }
 
 Defun(colorBackTB)
@@ -8802,8 +8803,9 @@ Defun(colorBackTB)
 	CHECK_FRAME;
 	ABIWORD_VIEW;
 
+	UT_UTF8String utf8(pCallData->m_pData, pCallData->m_dataLength);
 	const XML_Char * properties[] = { "bgcolor", NULL, 0};
-	properties[1] = reinterpret_cast<const XML_Char *>(UT_UTF8String(pCallData->m_pData).utf8_str());
+	properties[1] = reinterpret_cast<const XML_Char *>(utf8.utf8_str());
 	pView->setCharFormat(properties);
 
 	return true;
