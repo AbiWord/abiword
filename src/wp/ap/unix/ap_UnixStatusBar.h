@@ -44,23 +44,8 @@ public:
 	virtual void		show(void);
 	virtual void		hide(void);
 
-	void _style_changed (void);
-
 protected:
 	GtkWidget *			m_wStatusBar;
-
-	class _fe
-	{
-	public:
-		static gint button_press_event(GtkWidget * w, GdkEventButton * e);
-		static gint button_release_event(GtkWidget * w, GdkEventButton * e);
-		static gint configure_event(GtkWidget* w, GdkEventConfigure *e);
-		static gint motion_notify_event(GtkWidget* w, GdkEventMotion* e);
-		static gint key_press_event(GtkWidget* w, GdkEventKey* e);
-		static gint delete_event(GtkWidget * w, GdkEvent * /*event*/, gpointer /*data*/);
-		static gint expose(GtkWidget * w, GdkEventExpose* pExposeEvent);
-		static void destroy (GtkWidget * /*widget*/, gpointer /*data*/);
-	};
 };
 
 #endif /* AP_UNIXSTATUSBAR_H */

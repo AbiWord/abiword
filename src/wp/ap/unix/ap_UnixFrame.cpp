@@ -263,7 +263,8 @@ UT_Error AP_UnixFrame::_showDocument(UT_uint32 iZoom)
 	}
 	if(isStatusBarShown())
 	{
-		((AP_FrameData*)m_pData)->m_pStatusBar->draw();
+		// WL: Kill this for new status bar
+		//((AP_FrameData*)m_pData)->m_pStatusBar->draw();
 	}
 	return UT_OK;
 

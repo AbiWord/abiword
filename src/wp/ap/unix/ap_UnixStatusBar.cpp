@@ -30,136 +30,118 @@
 //////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////
 
-// evil ugly hack
-static int style_changed (GtkWidget * w, GdkEventClient * event,
-						  AP_UnixStatusBar * bar)
+class ap_usb_TextListener : public AP_StatusBarFieldListener
 {
-	static GdkAtom atom_rcfiles = GDK_NONE;
-	g_return_val_if_fail (w != NULL, FALSE);
-	g_return_val_if_fail (event != NULL, FALSE);
-	if (!atom_rcfiles)
-		atom_rcfiles = gdk_atom_intern ("_GTK_READ_RCFILES", FALSE);
-	if (event->message_type != atom_rcfiles)
-		return FALSE;
-	bar->_style_changed();
-	return FALSE;
+public:
+	ap_usb_TextListener(AP_StatusBarField *pStatusBarField, GtkWidget *pLabel) : AP_StatusBarFieldListener(pStatusBarField) { m_pLabel = pLabel; }
+	virtual void notify(); 
+
+protected:
+	GtkWidget *m_pLabel;
+};
+
+void ap_usb_TextListener::notify()
+{
+
+	const UT_UCS4Char * buf = ((AP_StatusBarField_TextInfo *)m_pStatusBarField)->getBufUCS();
+	UT_UCS4String * ucs = new UT_UCS4String(buf);
+	
+	UT_ASSERT(m_pLabel);
+	// HACK: there's no decent way of giving some left padding on the gtklabel (that I know of)
+	// which looks aesthetically pleasing, so we add an extra space to the label text
+	char paddedLabel[AP_MAX_MESSAGE_FIELD];
+	paddedLabel[0] = ' ';
+	paddedLabel[1] = '\0';
+	UT_ASSERT(strlen(ucs->utf8_str()) < (AP_MAX_MESSAGE_FIELD - 2));
+	if (strlen(ucs->utf8_str()) < (AP_MAX_MESSAGE_FIELD - 2)) // buffer overflow check
+		strcat(paddedLabel, ucs->utf8_str());
+
+	gtk_label_set_label(GTK_LABEL(m_pLabel), paddedLabel);
+	delete(ucs);
 }
+
+//////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////
 
 AP_UnixStatusBar::AP_UnixStatusBar(XAP_Frame * pFrame)
 	: AP_StatusBar(pFrame)
 {
 	m_wStatusBar = NULL;
-	m_pG = NULL;
 
 	GtkWidget * toplevel = (static_cast<XAP_UnixFrame *> (m_pFrame))->getTopLevelWindow();
-	g_signal_connect_after (G_OBJECT(toplevel),
-							  "client_event",
-							  G_CALLBACK(style_changed),
-							  (gpointer)this);
 }
 
 AP_UnixStatusBar::~AP_UnixStatusBar(void)
 {
-	DELETEP(m_pG);
-}
-
-void AP_UnixStatusBar::_style_changed(void)
-{
-	setView(m_pView);
 }
 
 void AP_UnixStatusBar::setView(AV_View * pView)
 {
-	// We really should allocate m_pG in createWidget(), but
-	// unfortunately, the actual window (m_wStatusBar->window)
-	// is not created until the frame's top-level window is
-	// shown.
-
-	DELETEP(m_pG);	
-	XAP_UnixApp * app = static_cast<XAP_UnixApp *>(m_pFrame->getApp());
-	XAP_UnixFontManager * fontManager = app->getFontManager();
-	GR_UnixGraphics * pG = new GR_UnixGraphics(m_wStatusBar->window, fontManager, m_pFrame->getApp());
-	m_pG = pG;
-	UT_ASSERT(m_pG);
-
-	GtkStyle * style = gtk_widget_get_style((static_cast<XAP_UnixFrame *> (m_pFrame))->getTopLevelWindow());
-	UT_ASSERT(style);
-	pG->init3dColors(style);
-
-	GR_Font * pFont = m_pG->getGUIFont();
-	if (pFont)
-		m_pG->setFont(pFont);
-
-	// Now that we've initialized the graphics context and
-	// installed the GUI font, let the base class do it's
-	// think and layout the fields.
-	
+	// let the base class do it's thing	
 	AP_StatusBar::setView(pView);
 }
 
+// FIXME: we need more sanity checking here to make sure everything allocates correctly
+// FIXME: we need to call a view update when this happens, to make sure the elements get
+// their needed updates. this is why the page numbering doesn't appear on startup
 GtkWidget * AP_UnixStatusBar::createWidget(void)
 {
-	UT_ASSERT(!m_pG && !m_wStatusBar);
+	UT_ASSERT(!m_wStatusBar);
 	
-	m_wStatusBar = createDrawingArea ();
-
+	// probably should make this into an event box (if we want the user to be able to interact with the status bar)
+	m_wStatusBar = gtk_hbox_new(FALSE, 0);
 	gtk_object_set_user_data(GTK_OBJECT(m_wStatusBar),this);
 	gtk_widget_show(m_wStatusBar);
-	gtk_widget_set_usize(m_wStatusBar, -1, s_iFixedHeight);
 
-	gtk_widget_set_events(GTK_WIDGET(m_wStatusBar), (GDK_EXPOSURE_MASK));
+	for (UT_uint32 k=0; k<getFields()->getItemCount(); k++) {
+ 		AP_StatusBarField * pf = (AP_StatusBarField *)m_vecFields.getNthItem(k);
+		UT_ASSERT(pf); // we should NOT have null elements
 
-	g_signal_connect(G_OBJECT(m_wStatusBar), "expose_event",
-					   G_CALLBACK(_fe::expose), NULL);
-  
-	g_signal_connect(G_OBJECT(m_wStatusBar), "configure_event",
-					   G_CALLBACK(_fe::configure_event), NULL);
+		// set up a frame for status bar elements so they look like status bar elements, 
+		// and not just normal widgets
+		GtkWidget *pStatusBarElement = NULL;
+		
+		if (AP_StatusBarField_TextInfo *pf_TextInfo = dynamic_cast<AP_StatusBarField_TextInfo*>(pf)) {
+			pStatusBarElement = gtk_frame_new(NULL);
+			gtk_frame_set_shadow_type(GTK_FRAME(pStatusBarElement), GTK_SHADOW_IN);
+			
+			GtkWidget *pStatusBarElementLabel = gtk_label_new(pf_TextInfo->getRepresentativeString());
+			pf->setListener((AP_StatusBarFieldListener *)(new ap_usb_TextListener(pf_TextInfo, pStatusBarElementLabel)));
+			gtk_container_add(GTK_CONTAINER(pStatusBarElement), pStatusBarElementLabel);
 
+			// align
+			if (pf_TextInfo->getAlignmentMethod() == LEFT) {
+				gtk_misc_set_alignment(GTK_MISC(pStatusBarElementLabel), 0.0, 0.0);
+			}
+			
+			// size and place
+			if (pf_TextInfo->getFillMethod() == REPRESENTATIVE_STRING) {
+				GtkRequisition requisition;
+				gtk_widget_size_request(pStatusBarElementLabel, &requisition);				
+				gtk_widget_set_size_request(pStatusBarElementLabel, requisition.width, -1);
+				
+				gtk_box_pack_start(GTK_BOX(m_wStatusBar), pStatusBarElement, FALSE, FALSE, 0);
+			}
+			else { // fill
+				gtk_box_pack_start(GTK_BOX(m_wStatusBar), pStatusBarElement, TRUE, TRUE, 0);
+			}
+			
+			gtk_label_set_label(GTK_LABEL(pStatusBarElementLabel), ""); 
+			gtk_widget_show(pStatusBarElementLabel);
+		}
+		else {
+			UT_ASSERT(UT_SHOULD_NOT_HAPPEN); // there are no other kinds of elements
+		}
+
+		gtk_widget_show(pStatusBarElement);
+	}
+			
 	return m_wStatusBar;
 }
 
 ///////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////
-
-gint AP_UnixStatusBar::_fe::configure_event(GtkWidget* w, GdkEventConfigure *e)
-{
-	// a static function
-	AP_UnixStatusBar * pUnixStatusBar = (AP_UnixStatusBar *)gtk_object_get_user_data(GTK_OBJECT(w));
-
-	UT_uint32 iHeight = (UT_uint32)e->height;
-	pUnixStatusBar->setHeight(iHeight);
-
-	UT_uint32 iWidth = (UT_uint32)e->width;
-	if (iWidth != pUnixStatusBar->getWidth())
-		pUnixStatusBar->setWidth(iWidth);
 	
-	return 1;
-}
-	
-gint AP_UnixStatusBar::_fe::delete_event(GtkWidget * /* w */, GdkEvent * /*event*/, gpointer /*data*/)
-{
-	// a static function
-	// AP_UnixStatusBar * pUnixStatusBar = (AP_UnixStatusBar *)gtk_object_get_user_data(GTK_OBJECT(w));
-	// UT_DEBUGMSG(("UnixStatusBar: [p %p] received delete_event\n",pUnixStatusBar));
-	return 1;
-}
-	
-gint AP_UnixStatusBar::_fe::expose(GtkWidget * w, GdkEventExpose * /*pExposeEvent*/)
-{
-	// a static function
-	AP_UnixStatusBar * pUnixStatusBar = (AP_UnixStatusBar *)gtk_object_get_user_data(GTK_OBJECT(w));
-	if (!pUnixStatusBar)
-		return 0;
-
-	pUnixStatusBar->draw();
-	return 0;
-}
-
-void AP_UnixStatusBar::_fe::destroy(GtkWidget * /*widget*/, gpointer /*data*/)
-{
-	// a static function
-}
-
 void AP_UnixStatusBar::show(void)
 {
 	gtk_widget_show (m_wStatusBar);
