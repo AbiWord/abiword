@@ -136,6 +136,8 @@ class GR_CocoaGraphics : public GR_Graphics
 	static bool			_isFlipped();
 	static NSColor				*_utRGBColorToNSColor (const UT_RGBColor& clr);
 	static void 				_utNSColorToRGBColor (NSColor *c, UT_RGBColor &clr);
+	void				setIsPrinting(bool isPrinting) { m_bIsPrinting = isPrinting; };
+	bool				isPrinting(void) const { return m_bIsPrinting; };
  protected:
 	virtual UT_uint32 	_getResolution(void) const;
 	void				_setColor(NSColor * c);
@@ -177,6 +179,7 @@ private:
 	GR_Graphics::ColorSpace	m_cs;
 	
 	UT_uint32				m_screenResolution;
+	bool					m_bIsPrinting;
 public:		//HACK	
 	NSColor	*			m_3dColors[COUNT_3D_COLORS];
 private:

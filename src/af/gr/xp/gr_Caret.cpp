@@ -323,6 +323,7 @@ void GR_Caret::_blink(bool bExplicit)
  		m_pG->setColor(oldColor);
 		m_bRecursiveDraw = false;
 	}
+	m_pG->flush();
 }
 
 //////////////////////////////////////////////////////////////////////////////////////
