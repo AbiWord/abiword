@@ -327,6 +327,7 @@ dcl(LANG_TR_TR, 							"Turkish")
 dcl(LANG_UK_UA, 							"Ukrainian")
 dcl(LANG_VI_VN, 							"Vietnamese")
 dcl(LANG_CY_GB, 							"Welsh")
+dcl(LANG_YI,								"Yiddish")
 
 /* Encoding Dialog */
 dcl(DLG_UENC_EncLabel,				"Select Encoding:")
