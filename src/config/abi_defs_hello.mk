@@ -18,8 +18,9 @@
 ## Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
 ## 02111-1307, USA.
 
-ABI_AP_INCS=	/show/ap/xp	/show/ap/$(ABI_NATIVE)	\
-		/show/ap/xp/ToolbarIcons /ev/xp /ev/$(ABI_NATIVE)
+ABI_AP_INCS=	/hello/ap/xp	/hello/ap/$(ABI_NATIVE)	\
+		/hello/ap/xp/ToolbarIcons /ev/xp /ev/$(ABI_NATIVE) \
+		/gr/xp /gr/$(ABI_NATIVE)
 
 include $(ABI_DEPTH)/config/abi_defs.mk
 

@@ -63,6 +63,8 @@ XAP_Frame::XAP_Frame(XAP_App * app)
 	m_app->rememberFrame(this);
 	memset(m_szTitle,0,sizeof(m_szTitle));
 	memset(m_szNonDecoratedTitle,0,sizeof(m_szNonDecoratedTitle));
+
+	m_lid = (AV_ListenerId) -1;
 }
 
 XAP_Frame::XAP_Frame(XAP_Frame * f)
@@ -88,6 +90,8 @@ XAP_Frame::XAP_Frame(XAP_Frame * f)
 	m_app->rememberFrame(this, f);
 	memset(m_szTitle,0,sizeof(m_szTitle));
 	memset(m_szNonDecoratedTitle,0,sizeof(m_szNonDecoratedTitle));
+
+	m_lid = (AV_ListenerId) -1;
 }
 
 XAP_Frame::~XAP_Frame(void)

@@ -1,6 +1,6 @@
 #! gmake
 
-## AbiSource Program Utilities
+## AbiWord
 ## Copyright (C) 1998 AbiSource, Inc.
 ##
 ## This program is free software; you can redistribute it and/or
@@ -18,10 +18,30 @@
 ## Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
 ## 02111-1307, USA.
 
-ABI_AP_INCS=	/show/ap/xp	/show/ap/$(ABI_NATIVE)	\
-		/show/ap/xp/ToolbarIcons /ev/xp /ev/$(ABI_NATIVE)
+ABI_DEPTH = ../../..
 
-include $(ABI_DEPTH)/config/abi_defs.mk
+include $(ABI_DEPTH)/config/abi_defs_he.mk
 
-##################################################################
+CPPSRCS=	ap_EditMethods.cpp		\
+		ap_FrameData.cpp 		\
+		ap_LB_Default.cpp		\
+		ap_LoadBindings.cpp		\
+		ap_Menu_ActionSet.cpp		\
+		ap_Menu_Functions.cpp		\
+		ap_Menu_LabelSet.cpp		\
+		ap_Menu_Layouts.cpp		\
+		ap_Prefs.cpp 			\
+		ap_StatusBar.cpp		\
+		ap_Strings.cpp			\
+		ap_Toolbar_ActionSet.cpp	\
+		ap_Toolbar_Icons.cpp 		\
+		ap_Toolbar_LabelSet.cpp		\
+		ap_Toolbar_Layouts.cpp		\
+		ap_View.cpp
 
+
+TARGETS=		$(OBJS)
+
+include $(ABI_DEPTH)/config/abi_rules.mk
+
+build:: $(TARGETS)

@@ -74,6 +74,9 @@ UT_Bool AV_View::addListener(AV_Listener * pListener,
 
 UT_Bool AV_View::removeListener(AV_ListenerId listenerId)
 {
+	if (listenerId == (AV_ListenerId) -1)
+		return UT_FALSE;
+		
 	return (m_vecListeners.setNthItem(listenerId,NULL,NULL) == 0);
 }
 
