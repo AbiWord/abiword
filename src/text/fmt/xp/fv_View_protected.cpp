@@ -1262,6 +1262,7 @@ void FV_View::_moveInsPtNextPrevLine(bool bNext)
 	iLineHeight = pOldLine->getHeight();
 
 	bool bNOOP = false;
+	bool bEOL = false, bBOL = false;
 
 	xxx_UT_DEBUGMSG(("fv_View::_moveInsPtNextPrevLine: old line 0x%x\n", pOldLine));
 
@@ -1300,6 +1301,8 @@ void FV_View::_moveInsPtNextPrevLine(bool bNext)
 				else
 				{
 					bNOOP = true;
+					if (_getDocPosFromPoint(iOldPoint, FV_DOCPOS_EOL) != iOldPoint)
+					  bEOL = true;
 				}
 			}
 		}
@@ -1354,6 +1357,8 @@ void FV_View::_moveInsPtNextPrevLine(bool bNext)
 				else
 				{
 					bNOOP = true;
+					if (_getDocPosFromPoint(iOldPoint, FV_DOCPOS_BOL) != iOldPoint)
+					  bBOL = true;
 				}
 			}
 		}
@@ -1370,6 +1375,10 @@ void FV_View::_moveInsPtNextPrevLine(bool bNext)
 
 	if (bNOOP)
 	{
+		if (bBOL)
+			moveInsPtTo(FV_DOCPOS_BOL);
+		else if (bEOL)
+			moveInsPtTo(FV_DOCPOS_EOL);
 		// cannot move.  should we beep?
 		return;
 	}
@@ -1383,8 +1392,8 @@ void FV_View::_moveInsPtNextPrevLine(bool bNext)
 	fp_Page* pPage = _getPageForXY(xPoint, yPoint, xClick, yClick);
 
 	PT_DocPosition iNewPoint;
-	bool bBOL = false;
-	bool bEOL = false;
+	bBOL = false;
+	bEOL = false;
 	fl_HdrFtrShadow * pShadow=NULL;
 //
 // If we're not in a Header/Footer we can't get off the page with the click
