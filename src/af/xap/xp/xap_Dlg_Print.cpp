@@ -33,7 +33,7 @@
 /******************************************************************/
 
 XAP_Dialog_Print::XAP_Dialog_Print(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id)
-	: XAP_Dialog_AppPersistent(pDlgFactory,id)
+	: XAP_Dialog_AppPersistent(pDlgFactory,id, "interface/dialogprint.html")
 {
 	m_bPersistValid = false;
 	m_persistNrCopies = 1;
