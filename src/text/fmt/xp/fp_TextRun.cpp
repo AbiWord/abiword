@@ -494,11 +494,6 @@ bool fp_TextRun::findFirstNonBlankSplitPoint(fp_RunSplitInfo& si)
 bool	fp_TextRun::findMaxLeftFitSplitPoint(UT_sint32 iMaxLeftWidth, fp_RunSplitInfo& si, bool bForce)
 {
 	UT_return_val_if_fail(m_pRenderInfo, false);
-	if(m_pRenderInfo->getType() != GRRI_XP)
-		return false; // just for now
-	
-	GR_XPRenderInfo & RI = (GR_XPRenderInfo &)*m_pRenderInfo;
-	UT_return_val_if_fail(RI.m_pWidths, false);
 	
 	UT_sint32 iLeftWidth = 0;
 	UT_sint32 iRightWidth = getWidth();
@@ -515,21 +510,15 @@ bool	fp_TextRun::findMaxLeftFitSplitPoint(UT_sint32 iMaxLeftWidth, fp_RunSplitIn
 	for(UT_uint32 i = 0; i < getLength() && text.getStatus() == UTIter_OK; i++, ++text)
 	{
 		UT_uint32 k = bReverse ? getLength() - i - 1: i;
-		UT_sint32 iCW = RI.m_pWidths[k] > 0 ? RI.m_pWidths[k] : 0;
+		//UT_sint32 iCW = RI.m_pWidths[k] > 0 ? RI.m_pWidths[k] : 0;
+		m_pRenderInfo->m_iOffset = k;
+		m_pRenderInfo->m_iLength = 1;
+		UT_sint32 iCW = getGraphics()->getTextWidth(*m_pRenderInfo);
 		iLeftWidth += iCW;
 		iRightWidth -= iCW;
 
 		UT_UCS4Char c = text.getChar();
-#if 0
-		/*
-		  FIXME: this is a direct equivalent to HJ's patch, but other branch
-		  could be more correct than this one. - VH
-		*/
-		if ((XAP_EncodingManager::get_instance()->can_break_at(c) && c != UCS_SPACE)
-			||(UCS_SPACE == pSpan[i]) || bForce)
-#else
-		if (XAP_EncodingManager::get_instance()->can_break_at(c) || bForce)
-#endif
+		if (getGraphics()->canBreakAt(c) || bForce)
 		   //	&& ((i + offset) != (getBlockOffset() + getLength() - 1))
 		{
 			UT_sint32 ispace = 0;
@@ -559,7 +548,9 @@ bool	fp_TextRun::findMaxLeftFitSplitPoint(UT_sint32 iMaxLeftWidth, fp_RunSplitIn
 						  && text2.getChar() == UCS_SPACE)
 					{
 						UT_uint32 l = bReverse ? getLength() - j - 1: j;
-						iSpaceW += RI.m_pWidths[l];
+						//iSpaceW += RI.m_pWidths[l];
+						m_pRenderInfo->m_iOffset = l;  // m_iLength already set
+						iSpaceW += getGraphics()->getTextWidth(*m_pRenderInfo);
 						j--;
 						--text2;
 					}
@@ -732,14 +723,9 @@ void fp_TextRun::findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y, 
 	UT_sint32 xdiff = 0;
 	xxx_UT_DEBUGMSG(("findPointCoords: Text Run offset %d \n",iOffset));
 
-	if(!m_pRenderInfo)
-		return;
+	UT_return_if_fail(m_pRenderInfo);
+	UT_return_if_fail(getLine());
 
-	UT_ASSERT(getLine());
-	if(getLine() == NULL)
-	{
-		return;
-	}
 	getLine()->getOffsets(this, xoff, yoff);
 
 	if (m_fPosition == TEXT_POSITION_SUPERSCRIPT)
@@ -755,8 +741,7 @@ void fp_TextRun::findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y, 
 	{
 		GR_XPRenderInfo & RI = (GR_XPRenderInfo &) * m_pRenderInfo;
 		
-		if(!RI.m_pWidths)
-			return;
+		UT_return_if_fail(RI.m_pWidths);
 		
 		//UT_uint32 offset = UT_MIN(iOffset, getBlockOffset() + getLength());
 		UT_uint32 offset = UT_MIN(iOffset - getBlockOffset(), getLength());
@@ -1065,8 +1050,11 @@ bool fp_TextRun::split(UT_uint32 iSplitOffset)
 	UT_ASSERT( m_pRenderInfo );
 	if(m_pRenderInfo)
 	{
+		m_pRenderInfo->m_pGraphics = getGraphics();
+		m_pRenderInfo->m_pFont = getFont();
 		m_pRenderInfo->m_iLength = getLength();
-		m_pRenderInfo->split(pNew->m_pRenderInfo, iSplitOffset - getBlockOffset(), bReverse);
+		m_pRenderInfo->m_iOffset = iSplitOffset - getBlockOffset();
+		m_pRenderInfo->split(pNew->m_pRenderInfo, bReverse);
 	}
 
 	if(m_pItem)
@@ -1662,7 +1650,9 @@ void fp_TextRun::_draw(dg_DrawArgs* pDA)
 			pG->setColor(_getView()->getColorSelForeground());
 		}
 		else
+		{
 			pG->setColor(getFGColor());
+		}
 		
 		UT_uint32 iMyOffset = iVisDir == FRIBIDI_TYPE_RTL ?
 			iLen-iSegmentOffset[iSegment+1]  :
@@ -1894,6 +1884,7 @@ void fp_TextRun::_drawLastChar(bool bSelection)
 	m_pRenderInfo->m_iLength = 1;
 	m_pRenderInfo->m_xoff -= getGraphics()->getTextWidth(*m_pRenderInfo);
 
+	pG->prepareToRenderChars(*m_pRenderInfo);
 	painter.renderChars(*m_pRenderInfo);
 	
 }
@@ -1937,6 +1928,7 @@ void fp_TextRun::_drawFirstChar(bool bSelection)
 
 	m_pRenderInfo->m_iLength = 1;
 	
+	pG->prepareToRenderChars(*m_pRenderInfo);
 	painter.renderChars(*m_pRenderInfo);
 }
 
