@@ -41,12 +41,12 @@ static const UT_uint32 CURSOR_DELAY_TIME = 10;
 // your scheduled _blink gets cancelled.
 
 GR_Caret::GR_Caret(GR_Graphics * pG)
-	:   m_pClr(NULL),
-	    m_pG(pG),
-		m_xPoint(0), // init the x and y point to some value, since we don't have a sane value here
+	:  	m_xPoint(0), // init the x and y point to some value, since we don't have a sane value here
 		m_yPoint(0),
 		m_xPoint2(0),
 		m_yPoint2(0),
+		m_pClr(NULL),
+		m_pG(pG),
 	    m_nDisableCount(1),
 	    m_bCursorBlink(true),
 	    m_bCursorIsOn(false),
