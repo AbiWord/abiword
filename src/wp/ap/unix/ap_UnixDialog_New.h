@@ -22,6 +22,7 @@
 
 #include <gtk/gtk.h>
 #include "ap_Dialog_New.h"
+#include "ut_vector.h"
 
 class XAP_UnixFrame;
 
@@ -70,6 +71,8 @@ private:
 	GtkWidget * m_choicesList;
 
 	gint mRow, mCol;
+
+	UT_Vector mTemplates ;
 };
 
 #endif /* AP_UNIXDIALOG_NEW_H */

@@ -23,7 +23,6 @@
 
 #include "ut_string.h"
 #include "ut_assert.h"
-#include "ut_debugmsg.h"
 #include "ut_unixDirent.h"
 #include "ut_path.h"
 
@@ -62,6 +61,7 @@ AP_UnixDialog_New::AP_UnixDialog_New(XAP_DialogFactory * pDlgFactory,
 
 AP_UnixDialog_New::~AP_UnixDialog_New(void)
 {
+  UT_VECTOR_PURGEALL(UT_String*, mTemplates);
 }
 
 void AP_UnixDialog_New::runModal(XAP_Frame * pFrame)
@@ -94,10 +94,9 @@ void AP_UnixDialog_New::runModal(XAP_Frame * pFrame)
 	// Make it modal, and stick it up top
 	gtk_grab_add(mainWindow);
 
-	// Run into the GTK event loop for this window.
-	
+	// Run into the GTK event loop for this window.	
 	gtk_main();
-	
+
 	if(mainWindow && GTK_IS_WIDGET(mainWindow))
 		gtk_widget_destroy(mainWindow);
 }
@@ -115,14 +114,12 @@ void AP_UnixDialog_New::event_Ok ()
 	}
 	else if (gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (m_radioNew)))
 	{
-		gchar * tmpl = NULL;
-		int rtn = gtk_clist_get_text (GTK_CLIST(m_choicesList), 
-					      mRow, mCol, &tmpl);
-		if (rtn && tmpl)
-		  {
-		    setFileName (tmpl);
-		    setOpenType(AP_Dialog_New::open_Template);
-		  }
+	  UT_String * tmpl = (UT_String*)mTemplates[mRow] ;
+	  if (tmpl && tmpl->c_str())
+	    {
+	      setFileName (tmpl->c_str());
+	      setOpenType(AP_Dialog_New::open_Template);
+	    }
 		else
 		  {
 		    // fall back
@@ -251,7 +248,7 @@ static int awt_only (const struct dirent *d)
 
       if (len >= 4)
 	{
-	  if(!strcmp(name+(len-4), ".awt") || !strcmp(name+(len-4), ".dot"))
+	  if(!strcmp(name+(len-4), ".awt") || !strcmp(name+(len-4), ".dot") )
 	    return 1;
 	}
     }
@@ -325,8 +322,6 @@ void AP_UnixDialog_New::_constructWindowContents (GtkWidget * container)
 
 	GtkWidget *choicesList;
 
-	GtkWidget *label1;
-
 	GtkWidget *hseparator1;
 	GtkWidget *hseparator2;
 	GtkWidget *hseparator3;
@@ -387,6 +382,8 @@ void AP_UnixDialog_New::_constructWindowContents (GtkWidget * container)
 	gtk_clist_freeze (GTK_CLIST (choicesList));
 	gtk_clist_clear (GTK_CLIST (choicesList));
 
+	unsigned int howManyAdded = 0 ;
+
 	for ( unsigned int i = 0; i < (sizeof(templateList)/sizeof(templateList[0])); i++ )
 	  {
 	    struct dirent **namelist = NULL;
@@ -394,13 +391,16 @@ void AP_UnixDialog_New::_constructWindowContents (GtkWidget * container)
 	    templateDir = templateList[i];
 
 	    n = scandir(templateDir.c_str(), &namelist, awt_only, alphasort);
-	    xxx_UT_DEBUGMSG(("DOM: found %d templates in %s\n", n, templateDir.c_str()));
 
 	    if (n > 0)
 	      {
 		while(n-- > 0) 
 		  {
-			  UT_String myTemplate (templateDir + namelist[n]->d_name);
+		    UT_String myTemplate (templateDir + namelist[n]->d_name);
+		    
+		    UT_String * myTemplateCopy = new UT_String ( myTemplate ) ;
+		    mTemplates.addItem ( myTemplateCopy ) ;
+
 			  myTemplate = myTemplate.substr ( 0, myTemplate.size() - 4 ) ;
 			  gchar * txt[2];
 			  txt[0] = (gchar*) UT_basename ( myTemplate.c_str() );
@@ -408,6 +408,8 @@ void AP_UnixDialog_New::_constructWindowContents (GtkWidget * container)
 
 			  gtk_clist_append ( GTK_CLIST(choicesList), txt ) ;
 			  free (namelist[n]);
+
+			  howManyAdded++ ;
 		  }
 	      }
 	  }
