@@ -167,6 +167,7 @@ static gboolean s_drawing_area_expose(GtkWidget * w,
 {
 	XAP_UnixDialog_FontChooser * dlg = (XAP_UnixDialog_FontChooser *)
 		                              gtk_object_get_user_data(GTK_OBJECT(w));
+	dlg->updatePreview();
 //	g_idle_add(static_cast<GSourceFunc>(do_update),static_cast<gpointer>(dlg));
 	return TRUE;
 }
@@ -948,6 +949,7 @@ void XAP_UnixDialog_FontChooser::runModal(XAP_Frame * pFrame)
 	m_blockUpdate = false;
 	// manually trigger an update
 	updatePreview();
+
 
 	switch ( abiRunModalDialog ( GTK_DIALOG(cf), pFrame, this, BUTTON_CANCEL, true ) )
 	  {

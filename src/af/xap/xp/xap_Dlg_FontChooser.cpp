@@ -283,7 +283,6 @@ void XAP_Dialog_FontChooser::setSubScript(bool bSubScript)
 	
 }
 
-
 void XAP_Dialog_FontChooser::setHidden(bool bHidden)
 {
 	static char none[] = "none";

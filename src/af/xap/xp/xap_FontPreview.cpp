@@ -48,14 +48,15 @@ void XAP_FontPreview::_createFontPreviewFromGC(GR_Graphics * gc,
 											   UT_uint32 height)
 {
 	UT_ASSERT(gc);
-
+	UT_DEBUGMSG(("SEVIOR!!!!!!!!!!! font priview created!!!!!\n"));
 	m_pFontPreview = new XAP_Preview_FontPreview(gc,m_pColorBackground);
 	UT_ASSERT(m_pFontPreview);
 	
 	m_pFontPreview->setDrawString(m_drawString);
 	m_pFontPreview->setVecProperties(&m_vecProps);
-	m_pFontPreview->setWindowSize(width, height);
-	
+	m_pFontPreview->setWindowSize(gc->tlu(width), gc->tlu(height));
+	m_width = gc->tlu(width);
+	m_height = gc->tlu(height);
 	addOrReplaceVecProp("font-size","36pt");
 }
 
