@@ -1795,7 +1795,7 @@ UT_Error FV_View::cmdInsertTable(UT_sint32 numRows, UT_sint32 numCols, const XML
 // Insert the table strux at the same spot. This will make the table link correctly in the
 // middle of the broken text.
 //
-	setPoint(pointBreak);
+	setPoint(pointBreak-1);
 	e |= (UT_sint32)(m_pDoc->insertStrux(getPoint(),PTX_SectionTable,NULL,pPropsArray));
 //
 // stuff for cell insertion.

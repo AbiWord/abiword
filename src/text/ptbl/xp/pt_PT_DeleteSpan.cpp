@@ -714,6 +714,7 @@ bool pt_PieceTable::_deleteComplexSpan(PT_DocPosition dpos1,
 	// them too.  that is, we implicitly delete Strux and Objects here.
 
 	UT_uint32 length = dpos2 - dpos1;
+	UT_uint32 iTable = 0;
 	while (length > 0)
 	{
 		UT_uint32 lengthInFrag = pf_First->getLength() - fragOffset_First;
@@ -755,7 +756,8 @@ bool pt_PieceTable::_deleteComplexSpan(PT_DocPosition dpos1,
 			}
 			else
 			{
-				if((pfs->getStruxType() == PTX_SectionCell) || (pfs->getStruxType() == PTX_EndTable))
+				if(pfs->getStruxType() == PTX_SectionCell)
+//				if((pfs->getStruxType() == PTX_SectionCell) || (pfs->getStruxType() == PTX_EndTable))
 				{
 					bPrevWasCell = true;
 				}
@@ -763,10 +765,65 @@ bool pt_PieceTable::_deleteComplexSpan(PT_DocPosition dpos1,
 				{
 					bPrevWasCell = false;
 				}
-				pfNewEnd = pfs->getNext();
-				fragOffsetNewEnd = 0;
-				dpos1 = dpos1 +  lengthInFrag;
+				if(pfs->getStruxType() == PTX_SectionTable)
+				{
+					iTable++;
+				}
+				if((pfs->getStruxType() != PTX_EndTable) || (iTable != 1))
+				{
+					pfNewEnd = pfs->getNext();
+					fragOffsetNewEnd = 0;
+					dpos1 = dpos1 +  lengthInFrag;
+				}
 				stDelayStruxDelete->push(pfs);
+			}
+//
+// Look to see if we've reached the end of the table, if so delete it all now
+//
+			if(pfs->getStruxType() == PTX_EndTable)
+			{
+				iTable--;
+				if(iTable==0)
+				{
+					UT_DEBUGMSG(("Doing Table delete immediately \n"));
+					bool bSuccess = true;
+					iTable = 1;
+					pf_Frag *pff;
+					PT_DocPosition dpp;
+//
+// First delete the EndTable Strux
+//
+					stDelayStruxDelete->pop((void **) &pfs);
+					PT_DocPosition myPos = pfs->getPos();
+					_deleteFormatting(myPos - pfs->getLength(), myPos);
+					bSuccess = _deleteStruxWithNotify(myPos, pfs,
+													  &pfNewEnd,
+													  &fragOffsetNewEnd);
+					while(bSuccess && iTable > 0)
+					{
+						stDelayStruxDelete->pop((void **) &pfs);
+						if(pfs->getStruxType() == PTX_SectionTable)
+						{
+							iTable--;
+						}
+						else if(pfs->getStruxType() == PTX_EndTable)
+						{
+							iTable++;
+						}
+						PT_DocPosition myPos = pfs->getPos();
+						_deleteFormatting(myPos - pfs->getLength(), myPos);
+						bSuccess = _deleteStruxWithNotify(myPos, pfs, &pff, &dpp);
+//
+// Each strux is one in length, we've added one while delaying the delete
+// so subtract it now.
+//
+						dpos1 -= 1;
+					}
+//
+// Now we have to update pfsContainer from dpos1
+//
+					bFoundStrux = _getStruxFromPosition(dpos1,&pfsContainer);
+				}
 			}
 			UT_ASSERT(bResult);
 			// we do not update pfsContainer because we just deleted pfs.

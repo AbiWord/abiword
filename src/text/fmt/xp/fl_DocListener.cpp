@@ -1202,7 +1202,7 @@ bool fl_DocListener::insertStrux(PL_StruxFmtHandle sfh,
 														 PL_ListenerId lid,
 														 PL_StruxFmtHandle sfhNew))
 {
-	UT_DEBUGMSG(("fl_DocListener::insertStrux\n"));
+	UT_DEBUGMSG(("fl_DocListener::insertStrux at pos %d \n",pcr->getPosition()));
 
 	UT_ASSERT(pcr->getType() == PX_ChangeRecord::PXT_InsertStrux);
 	const PX_ChangeRecord_Strux * pcrx = static_cast<const PX_ChangeRecord_Strux *> (pcr);
