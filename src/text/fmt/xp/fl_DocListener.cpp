@@ -2054,7 +2054,7 @@ bool fl_DocListener::signal(UT_uint32 iSignal)
 		m_pLayout->formatAll();
 		break;
 	case PD_SIGNAL_REVISION_MODE_CHANGED:
-		pView->_fixInsertionPointAfterRevision();
+		pView->updateRevisionMode();
 		// fall through ...
 		
 	case PD_SIGNAL_DOCPROPS_CHANGED_REBUILD:

@@ -9770,6 +9770,30 @@ bool FV_View::isMarkRevisions() const
 {
 	return m_pDoc->isMarkRevisions();
 }
+/*!
+    This function brings our revision settings into sync with the document-wide settings and is
+    called by fl_DocListener in response to PD_SIGNAL_REVISION_MODE_CHANGED. This funciton does not
+    initiate layout rebuild, that is the responsibility of the caller.
+*/
+void FV_View::updateRevisionMode()
+{
+	if(m_pDoc->isAutoRevisioning())
+	{
+		// when in auto-revisioning mode, we respect all document-wide settings -- basically this
+		// means that the doc in all views looks like a normal document without the revision marking
+		// highlighted.
+		m_iViewRevision = m_pDoc->getShowRevisionId();
+		m_bShowRevisions = m_pDoc->isShowRevisions();
+	}
+
+	// in non-auto mode, we ignore document wide settings -- this allows different views to show
+	// different state of the document
+
+	// make sure we have no left-over revision attribs, etc., at the insertion point
+	_fixInsertionPointAfterRevision();
+}
+
+
 
 /* Table related functions */
 /*!

@@ -1020,6 +1020,20 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_StylesLocked)
         return EV_MIS_ZERO;
 }
 
+Defun_EV_GetMenuItemState_Fn(ap_GetState_History)
+{
+	ABIWORD_VIEW;
+	UT_return_val_if_fail (pView, EV_MIS_Gray);
+	PD_Document * pDoc = pView->getDocument();
+	UT_return_val_if_fail( pDoc, EV_MIS_Gray );
+
+	// disable for documents that have not been saved yet
+	if(!pDoc->getFilename())
+		return EV_MIS_Gray;
+	
+    return EV_MIS_ZERO;
+}
+
 Defun_EV_GetMenuItemState_Fn(ap_GetState_MarkRevisions)
 {
 	ABIWORD_VIEW;

@@ -521,6 +521,8 @@ public:
 
 	bool                cmdFindRevision(bool bNext, UT_sint32 xPos, UT_sint32 yPos);
 	bool                doesSelectionContainRevision() const;
+
+	void                updateRevisionMode();
   protected:
 	void                _fixInsertionPointAfterRevision();
   public:
