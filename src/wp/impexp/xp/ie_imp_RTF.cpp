@@ -181,6 +181,8 @@ RTFProps_CharProps::RTFProps_CharProps()
 	m_fontNumber = 0;
 	m_hasColour = false;
 	m_colourNumber = 0;
+	m_hasBgColour = false;
+	m_bgcolourNumber = 0;
 }                
 
 
@@ -553,6 +555,17 @@ UT_uint32 IE_Imp_RTF::GetNthTableColour(UT_uint32 colNum)
 	}
 }
 
+UT_sint32 IE_Imp_RTF::GetNthTableBgColour(UT_uint32 colNum)
+{
+	if (colNum < m_colourTable.getItemCount())
+	{
+		return (UT_uint32)m_colourTable.getNthItem(colNum);
+	}
+	else
+	{
+		return -1;	// invalid
+	}
+}
 
 // Pushes the current state RTF state onto the state stack
 //
@@ -629,6 +642,8 @@ bool IE_Imp_RTF::ParseChar(UT_UCSChar ch,bool no_convert)
 					wchar_t wc;
 					if (m_mbtowc.mbtowc(wc,(UT_Byte)ch))
 						return AddChar(wc);
+					else
+						m_mbtowc.initialize();
 				} else
 					return AddChar(ch);
 			}
@@ -840,8 +855,6 @@ bool IE_Imp_RTF::LoadPictData(PictFormat format, char * image_name)
 	const UT_uint16 BITS_PER_BYTE = 8;
 	const UT_uint16 bits_per_char = BITS_PER_BYTE / chars_per_byte;
 
-	UT_DEBUGMSG(("DOM: importing image\n"));
-
 	UT_ByteBuf * pictData = new UT_ByteBuf();
 	UT_uint16 chLeft = chars_per_byte;
 	UT_Byte pic_byte = 0;
@@ -925,7 +938,6 @@ bool IE_Imp_RTF::LoadPictData(PictFormat format, char * image_name)
 			{
 				delete pictData;
 				FREEP (mimetype);
-				UT_DEBUGMSG(("DOM: importing image2\n"));
 				return UT_IE_NOMEMORY;
 			}
 			
@@ -934,7 +946,6 @@ bool IE_Imp_RTF::LoadPictData(PictFormat format, char * image_name)
 			{
 				delete pictData;
 				FREEP (mimetype);
-				UT_DEBUGMSG(("DOM: importing image3\n"));
 				return UT_IE_NOMEMORY;
 			}
 
@@ -1476,6 +1487,10 @@ bool IE_Imp_RTF::TranslateKeyword(unsigned char* pKeyword, long param, bool fPar
 		{
 			return HandleColour(fParam ? param : 0);
 		}
+		else if (strcmp((char*)pKeyword, "cb") == 0)
+		{
+			return HandleBackgroundColour (fParam ? param : 0);
+		}
 		else if (strcmp((char*)pKeyword, "cols") == 0)
 		{
 			m_currentRTFState.m_sectionProps.m_numCols = (UT_uint32)param;
@@ -1961,6 +1976,19 @@ bool IE_Imp_RTF::ApplyCharacterAttributes()
 		strcat(propBuffer, tempBuffer);
 	}
 	
+	if (m_currentRTFState.m_charProps.m_hasBgColour)
+	{
+		// colour, only if one has been set. See bug 1324
+		UT_sint32 bgColour = GetNthTableBgColour(m_currentRTFState.m_charProps.m_bgcolourNumber);		
+
+		if (bgColour != -1) // invalid and should be white
+		{		
+			sprintf(tempBuffer, "; bgcolor:%06x", bgColour);	   		
+			tempBuffer[16] = 0;
+			strcat(propBuffer, tempBuffer);
+		}
+	}
+
 	const XML_Char* propsArray[3];
 	propsArray[0] = pProps;
 	propsArray[1] = propBuffer;
@@ -3364,8 +3392,14 @@ bool IE_Imp_RTF::HandleColour(UT_uint32 colourNumber)
 	return false;
 }
 
-
-
+bool IE_Imp_RTF::HandleBackgroundColour(UT_uint32 colourNumber)
+{
+	if (HandleBoolCharacterProp(true, &m_currentRTFState.m_charProps.m_hasBgColour))
+	{
+		return HandleU32CharacterProp(colourNumber, &m_currentRTFState.m_charProps.m_bgcolourNumber);
+	}
+	return false;
+}
 
 bool IE_Imp_RTF::SetParaJustification(RTFProps_ParaProps::ParaJustification just)
 {

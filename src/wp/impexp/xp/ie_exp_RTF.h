@@ -83,6 +83,7 @@ protected:
 	virtual UT_Error	_writeDocument(void);
 
 	UT_sint32			_findColor(const char * szColor) const;
+	UT_sint32           _findOrAddColor (const char * szColor);
 	void				_addColor(const char * szColor);
 	void				_rtf_open_brace(void);
 	void				_rtf_close_brace(void);

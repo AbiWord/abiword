@@ -26,6 +26,8 @@
 #include <string.h>
 #include <stdlib.h>
 #include <time.h>
+#include <locale.h>
+
 #include "ut_debugmsg.h"
 #include "ut_string.h"
 #include "ut_units.h"
@@ -89,10 +91,18 @@ void s_RTF_ListenerWriteDoc::_openSpan(PT_AttrPropIndex apiSpan)
 	m_pDocument->getAttrProp(apiSpan,&pSpanAP);
 
 	const XML_Char * szColor = PP_evalProperty("color",pSpanAP,pBlockAP,pSectionAP,m_pDocument,true);
-	UT_sint32 ndxColor = m_pie->_findColor((char*)szColor);
+	UT_sint32 ndxColor = m_pie->_findOrAddColor((char*)szColor);
 	UT_ASSERT(ndxColor != -1);
 	if (ndxColor != 0)
 		m_pie->_rtf_keyword("cf",ndxColor);
+
+	szColor = PP_evalProperty("bgcolor",pSpanAP,pBlockAP,pSectionAP,m_pDocument,true);
+	ndxColor = m_pie->_findOrAddColor((char*)szColor);
+	UT_ASSERT(ndxColor != -1);
+	if (ndxColor != 0)
+	{
+		m_pie->_rtf_keyword("cb",ndxColor);
+	}
 
    	_rtf_font_info fi(pSpanAP,pBlockAP,pSectionAP);
 	UT_sint32 ndxFont = m_pie->_findFont(&fi);
@@ -523,9 +533,23 @@ void s_RTF_ListenerWriteDoc::_rtf_docfmt(void)
 
 	// <docfmt> -- page information
 
-	const XML_Char * szPaperWidth = "8.5in"; // TODO look this up in the document
+	char * old_locale;
+
+	old_locale = setlocale (LC_NUMERIC, "C");
+
+	double width = m_pDocument->m_docPageSize.Width(fp_PageSize::inch);
+	double height = m_pDocument->m_docPageSize.Height(fp_PageSize::inch);
+	bool landscape = !m_pDocument->m_docPageSize.isPortrait();
+
+	XML_Char szPaperWidth[24];
+	XML_Char szPaperHeight[24];
+
+	sprintf(szPaperWidth, "%fin", width);
+	sprintf(szPaperHeight, "%fin", height);
+
+	setlocale (LC_NUMERIC, old_locale);
+	
 	m_pie->_rtf_keyword_ifnotdefault_twips("paperw",(char*)szPaperWidth,0);
-	const XML_Char * szPaperHeight = "11in"; // TODO look this up in the document
 	m_pie->_rtf_keyword_ifnotdefault_twips("paperh",(char*)szPaperHeight,0);
 	
 	const XML_Char * szLeftMargin = PP_evalProperty("page-margin-left",
@@ -544,6 +568,9 @@ void s_RTF_ListenerWriteDoc::_rtf_docfmt(void)
 													 pSpanAP,pBlockAP,pSectionAP,
 													 m_pDocument,true);
 	m_pie->_rtf_keyword_ifnotdefault_twips("margb",(char*)szBottomMargin,1440);
+
+	if (landscape)
+		m_pie->_rtf_keyword("landscape");
 	m_pie->_rtf_keyword("widowctl");	// enable widow and orphan control
 	
 	// TODO <docfmt> -- linked styles

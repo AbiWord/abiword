@@ -78,6 +78,8 @@ public:
 	UT_uint32 m_fontNumber;		// index into font table
 	bool    m_hasColour;        // if false, ignore colour number
 	UT_uint32 m_colourNumber;	// index into colour table
+	bool m_hasBgColour; // if false, ignore colour number
+	UT_uint32 m_bgcolourNumber; // index into colour table
 };                  
 
 
@@ -245,6 +247,7 @@ private:
 	
 	RTFFontTableItem* GetNthTableFont(UT_uint32 fontNum);
 	UT_uint32 GetNthTableColour(UT_uint32 colNum);
+	UT_sint32 GetNthTableBgColour(UT_uint32 colNum);
 
 	// Character property handlers
 	bool ResetCharacterAttributes();
@@ -267,6 +270,7 @@ private:
 	bool HandleU32CharacterProp(UT_uint32 val, UT_uint32* pProp);
 	bool HandleFace(UT_uint32 fontNumber);
 	bool HandleColour(UT_uint32 colourNumber);
+	bool HandleBackgroundColour (UT_uint32 colourNumber);
 
 	// Paragraph property handlers
 	bool ResetParagraphAttributes();

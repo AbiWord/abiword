@@ -291,6 +291,17 @@ void IE_Exp_RTF::_addColor(const char * szColor)
 	return;
 }
 
+UT_sint32 IE_Exp_RTF::_findOrAddColor(const char * szColor)
+{
+	UT_sint32 ndx = _findColor (szColor);
+
+	if (ndx != -1)
+		return ndx;
+
+	_addColor (szColor);
+	return _findColor (szColor);
+}
+
 /*****************************************************************/
 /*****************************************************************/
 

@@ -222,26 +222,29 @@ void UT_Mbtowc::initialize()
 void UT_Mbtowc::setInCharset(const char* charset)
 {
     m_bufLen = 0;
-    iconv_close(cd);
+
+	if (cd != (iconv_t)-1)
+		iconv_close(cd);
+
     cd = iconv_open("UCS-2", charset );
 };
 
 UT_Mbtowc::UT_Mbtowc(): m_bufLen(0)
 {
     cd = iconv_open("UCS-2", XAP_EncodingManager::get_instance()->getNativeEncodingName() );
-    UT_ASSERT(cd!=(iconv_t)-1);    
+    UT_ASSERT(cd != (iconv_t)-1);    
 };
 
 UT_Mbtowc::UT_Mbtowc(const UT_Mbtowc& v): m_bufLen(0)
 {
     cd = iconv_open("UCS-2", XAP_EncodingManager::get_instance()->getNativeEncodingName() );
-    UT_ASSERT(cd!=(iconv_t)-1);    
+    UT_ASSERT(cd != (iconv_t)-1);    
 };
 
 UT_Mbtowc::~UT_Mbtowc()
 {
-    /*libiconv is stupid - we'll get segfault if we don't check  - VH */
-    if (cd!=(iconv_t)-1)
+    /* libiconv is stupid - we'll get segfault if we don't check  - VH */
+    if (cd != (iconv_t)-1)
 	    iconv_close(cd);
 };
 
@@ -269,8 +272,8 @@ int UT_Mbtowc::mbtowc(wchar_t &wc,char mb)
 	else {
 	    initialize();/*wrong seq*/
 	    return 0;
-	};
-    };
+	}
+    }
 };
 
 #endif /* big if 0 */
