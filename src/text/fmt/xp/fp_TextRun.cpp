@@ -115,7 +115,8 @@ bool fp_TextRun::hasLayoutProperties(void) const
 
 void fp_TextRun::lookupProperties(void)
 {
-	clearScreen();
+
+    clearScreen();
 	
 	const PP_AttrProp * pSpanAP = NULL;
 	const PP_AttrProp * pBlockAP = NULL;
@@ -897,6 +898,7 @@ bool fp_TextRun::recalcWidth(void)
 		return false;
 	}
 
+
 	if (m_iWidth)
 	{
 		clearScreen();
@@ -916,12 +918,12 @@ void fp_TextRun::_clearScreen(bool /* bFullLineHeightRect */)
 #ifdef BIDI_ENABLED
 	if(!m_pLine->isEmpty() && m_pLine->getLastVisRun() == this)   //#TF must be last visual run
 #else
-	if(!m_pLine->isEmpty() && m_pLine->getLastRun() == this)
+	if(!m_pLine->isEmpty() && m_pLine->getLastTextRun() == this)
 #endif
 	{
 		// Last run on the line so clear to end.
 
-		m_pLine->clearScreenFromRunToEnd(m_pLine->countRuns() - 1);
+		m_pLine->clearScreenFromRunToEnd(this);
 	}
 	else
 	{

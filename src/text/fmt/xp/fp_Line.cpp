@@ -655,6 +655,62 @@ void fp_Line::clearScreen(void)
 	
 }
 
+/*!
+ * This method clears a line from the run given to the end of the line.
+\param fp_Run * pRun
+*/
+void fp_Line::clearScreenFromRunToEnd(fp_Run * ppRun)
+{
+	fp_Run * pRun = NULL;
+	UT_uint32 count =  m_vecRuns.getItemCount();
+	if(count > 0)
+	{
+		UT_sint32 k = m_vecRuns.findItem((void *) ppRun);
+		if(k>=0)
+		{
+			UT_uint32 runIndex = (UT_uint32) k;
+			UT_sint32 xoff, yoff;
+
+#ifdef BIDI_ENABLED
+			pRun = (fp_Run*) m_vecRuns.getNthItem(_getRunLogIndx(runIndex));
+#else
+			pRun = (fp_Run*) m_vecRuns.getNthItem(runIndex);
+#endif
+
+			getScreenOffsets(pRun, xoff, yoff);
+			UT_sint32 xoffLine, yoffLine;
+		
+			m_pContainer->getScreenOffsets(this, xoffLine, yoffLine);
+			UT_RGBColor * pClr = pRun->getPageColor();
+			xxx_UT_DEBUGMSG(("SEVIOR: ClearToEnd cleartopos = %d xoff = %d xoffline =%d \n",m_iClearToPos,xoff,xoffLine));
+			pRun->getGraphics()->fillRect(*pClr,xoff, yoff, m_iClearToPos - (xoff - xoffLine) , getHeight());
+//
+// Sevior: I added this for robustness.
+//
+			getBlock()->setNeedsRedraw();
+			setNeedsRedraw();
+			UT_uint32 i;
+			for (i = runIndex; i < count; i++)
+			{
+#ifdef BIDI_ENABLED
+				pRun = (fp_Run*) m_vecRuns.getNthItem(_getRunLogIndx(i));
+#else
+				pRun = (fp_Run*) m_vecRuns.getNthItem(i);
+#endif
+				pRun->markAsDirty();
+			}
+		}
+			
+	}
+}
+
+
+/*!
+ * This method clears a line from the first non-dirty run at the given index
+ * to the end of the line.
+\param UT_uint32 runIndex
+*/
+
 void fp_Line::clearScreenFromRunToEnd(UT_uint32 runIndex)
 {
 	//fp_Run* pRun = (fp_Run*) m_vecRuns.getNthItem(runIndex);
@@ -1135,6 +1191,30 @@ fp_Run* fp_Line::getLastRun(void) const
 	}
 }
 
+fp_Run* fp_Line::getLastTextRun(void) const
+{
+	const UT_sint32 i = m_vecRuns.getItemCount();
+	fp_Run * pRun = NULL;
+	if(i <= 0)
+	{
+		pRun = getBlock()->getFirstRun();
+		return pRun;
+	}
+	else
+	{
+		pRun = (fp_Run*) m_vecRuns.getLastItem();
+		while(pRun != NULL && pRun->getType() != FPRUN_TEXT)
+		{
+			pRun = pRun->getPrev();
+		}
+		if(pRun == NULL)
+		{
+			pRun = getBlock()->getFirstRun();
+		}
+		return pRun;
+	}
+}
+
 bool	fp_Line::findNextTabStop(UT_sint32 iStartX, UT_sint32& iPosition, eTabType & iType, eTabLeader & iLeader )
 {
 	UT_sint32	iTabStopPosition = 0;
@@ -1199,7 +1279,17 @@ void fp_Line::recalcMaxWidth()
 	setX(iX);
 
 	UT_sint32 iMaxWidth = m_pContainer->getWidth();
-	m_iClearToPos = iMaxWidth + getBlock()->getDocSectionLayout()->getColumnGap();
+	fl_DocSectionLayout * pSL =  getBlock()->getDocSectionLayout();
+	UT_ASSERT(pSL);
+	if(pSL->getNumColumns() > 1)
+	{
+		m_iClearToPos = iMaxWidth + pSL->getColumnGap();
+	}
+	else
+	{
+		m_iClearToPos = iMaxWidth + pSL->getRightMargin() - 2;
+	}
+
 	iMaxWidth -= m_pBlock->getRightMargin();
 	iMaxWidth -= m_pBlock->getLeftMargin();
 	m_iClearToPos -= m_pBlock->getLeftMargin();

@@ -125,7 +125,8 @@ public:
 	inline	bool		isEmpty(void) const				{ return ((m_vecRuns.getItemCount()) == 0); }
 	inline	int 		countRuns(void) const			{ return m_vecRuns.getItemCount(); }
 	inline	fp_Run*     getFirstRun(void) const			{ return ((fp_Run*) m_vecRuns.getFirstItem()); }
-        fp_Run*     getLastRun(void) const ;
+	fp_Run*     getLastRun(void) const ;
+	fp_Run*     getLastTextRun(void) const ;
 
 	inline	bool 	isFirstLineInBlock(void) const	{ return (m_pBlock->getFirstLine() == this); }
 	inline	bool 	isLastLineInBlock(void) const	{ return (m_pBlock->getLastLine() == this); }
@@ -141,6 +142,7 @@ public:
 
 	void		clearScreen(void);
 	void		clearScreenFromRunToEnd(UT_uint32 runIndex);
+	void		clearScreenFromRunToEnd(fp_Run * pRun);
 	void		draw(dg_DrawArgs*);
 	void        draw(GR_Graphics*);
 	void		align(void);

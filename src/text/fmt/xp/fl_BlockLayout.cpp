@@ -997,13 +997,27 @@ bool fl_BlockLayout::_truncateLayout(fp_Run* pTruncRun)
 	{
 		m_pFirstRun = NULL;
 	}
-
+	fp_Run * pRun = NULL;
 	// Remove runs from screen
-	fp_Run* pRun = pTruncRun;
-	while (pRun)
+	fp_Line * pLine = pTruncRun->getLine();
+	if(pLine != NULL)
 	{
-		pRun->clearScreen();
-		pRun = pRun->getNext();
+		pLine->clearScreenFromRunToEnd(pTruncRun);
+		pLine = pLine->getNext();
+		while(pLine)
+		{
+			pLine->clearScreen();
+			pLine= pLine->getNext();
+		}
+	}
+	else
+	{
+		pRun = pTruncRun;
+		while (pRun)
+		{
+			pRun->clearScreen();
+			pRun = pRun->getNext();
+		}
 	}
 
 	// Remove runs from lines
