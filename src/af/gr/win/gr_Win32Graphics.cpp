@@ -283,21 +283,36 @@ void GR_Win32Graphics::setFont(GR_Font* pFont)
 	m_pFont->selectFontIntoDC(m_hdc);
 }
 
+UT_uint32 GR_Win32Graphics::getFontHeight(GR_Font * fnt)                         
+{                                                                               
+	GR_Win32Font * pFont = static_cast<GR_Win32Font*> (fnt);
+	return pFont->getFontHeight();
+} 
+
 UT_uint32 GR_Win32Graphics::getFontHeight()
 {
-	UT_ASSERT(m_pFont);
 	return m_pFont->getFontHeight();
+}
+
+UT_uint32 GR_Win32Graphics::getFontAscent(GR_Font* fnt)
+{
+	GR_Win32Font *pFont = static_cast<GR_Win32Font*> (fnt);
+	return pFont->getAscent();
 }
 
 UT_uint32 GR_Win32Graphics::getFontAscent()
 {
-	UT_ASSERT(m_pFont);
 	return m_pFont->getAscent();
+}
+
+UT_uint32 GR_Win32Graphics::getFontDescent(GR_Font* fnt)
+{
+	GR_Win32Font *pFont = static_cast<GR_Win32Font*> (fnt);
+	return pFont->getDescent();
 }
 
 UT_uint32 GR_Win32Graphics::getFontDescent()
 {
-	UT_ASSERT(m_pFont);
 	return m_pFont->getDescent();
 }
 
