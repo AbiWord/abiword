@@ -31,6 +31,8 @@
 #include "ev_EditBinding.h"
 #include "ev_EditMethod.h"
 #include "ev_NamedVirtualKey.h"
+#include "ap_LoadBindings.h"
+#include "ap_LoadBindings_DeadCircumflex.h"
 
 #define NrElements(a)	((sizeof(a)/sizeof(a[0])))
 
@@ -48,17 +50,7 @@
 ******************************************************************
 *****************************************************************/
 
-struct _iChar
-{
-	EV_EditBits			m_eb;			// sans ems & shift
-	const char *		m_szMethod[EV_COUNT_EMS_NoShift];
-};
-
-// TODO finish filling out this table.
-// TODO ?? do we ever need _C, _A, _A_C bindings for these
-// TODO ?? or can we collapse the width of the table ??
-
-static struct _iChar s_CharTable[] =
+static struct ap_bs_Char s_CharTable[] =
 {
 //	{char, /* desc   */ { none,							_C,		_A,		_A_C	}},
 	{0x41, /* A      */ { "insertCircumflexData",		"",		"",		""		}},
@@ -90,19 +82,6 @@ static struct _iChar s_CharTable[] =
 #endif
 };
 
-static void s_loadChar(EV_EditMethodContainer * /*pemc*/, EV_EditBindingMap * pebm)
-{
-	int k, m;
-	int kLimit = NrElements(s_CharTable);
-
-	for (k=0; k<kLimit; k++)
-		for (m=0; m<EV_COUNT_EMS_NoShift; m++)
-			if (s_CharTable[k].m_szMethod[m] && *s_CharTable[k].m_szMethod[m])
-			{
-				EV_EditModifierState ems = EV_EMS_FromNumberNoShift(m);
-				pebm->setBinding(EV_EKP_PRESS|s_CharTable[k].m_eb|ems,s_CharTable[k].m_szMethod[m]);
-			}
-}
 
 /*****************************************************************
 ******************************************************************
@@ -110,19 +89,10 @@ static void s_loadChar(EV_EditMethodContainer * /*pemc*/, EV_EditBindingMap * pe
 ******************************************************************
 *****************************************************************/
 
-UT_Bool ap_LoadBindings_DeadCircumflex(EV_EditMethodContainer * pemc,
-									   EV_EditBindingMap **ppebm)
+UT_Bool ap_LoadBindings_DeadCircumflex(AP_BindingSet * pThis,
+									   EV_EditBindingMap * pebm)
 {
-	UT_ASSERT(pemc);
-	UT_ASSERT(ppebm);
-
-	*ppebm = 0;
-	EV_EditBindingMap * pNewEBM = new EV_EditBindingMap(pemc);
-	if (!pNewEBM)
-		return UT_FALSE;
-
-	s_loadChar(pemc,pNewEBM);
-
-	*ppebm = pNewEBM;
+	pThis->_loadChar(pebm,s_CharTable,NrElements(s_CharTable),NULL,0);
+	
 	return UT_TRUE;
 }

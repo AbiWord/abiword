@@ -32,11 +32,8 @@
 #include "ev_EditBinding.h"
 #include "ev_EditMethod.h"
 #include "ev_NamedVirtualKey.h"
-#include "xap_LoadBindings.h"
-
-// TODO We need something here to map Esc (when used as a prefix)
-// TODO to ALT so that we don't have to load both bindings (ie.
-// TODO ESC-f and ALT-f).
+#include "ap_LoadBindings.h"
+#include "ap_LoadBindings_Default.h"
 
 // NOTE: on Win32 we cannot get ALT-TAB (but we can get ALT-F4 :-)
 
@@ -52,13 +49,7 @@
 ******************************************************************
 *****************************************************************/
 
-struct _iMouse
-{
-	EV_EditBits			m_eb;			// sans emo
-	const char *		m_szMethod[EV_COUNT_EMO];
-};
-
-static struct _iMouse s_MouseTable[] =
+static struct ap_bs_Mouse s_MouseTable[] =
 {
 //  {   button w/modifiers,     { click				doubleclick		drag			release		}},
 	{	EV_EMB_BUTTON1,			{ "singleClick",	"doubleClick",	"dragToXY",		"endDrag"	}},
@@ -79,19 +70,6 @@ static struct _iMouse s_MouseTable[] =
 #endif
 };
 
-static void s_loadMouse(EV_EditMethodContainer * /*pemc*/, EV_EditBindingMap * pebm)
-{
-	int k, m;
-	int kLimit = NrElements(s_MouseTable);
-
-	for (k=0; k<kLimit; k++)
-		for (m=0; m<EV_COUNT_EMO; m++)
-			if (s_MouseTable[k].m_szMethod[m] && *s_MouseTable[k].m_szMethod[m])
-			{
-				EV_EditMouseOp emo = EV_EMO_FromNumber(m+1);
-				pebm->setBinding(s_MouseTable[k].m_eb|emo,s_MouseTable[k].m_szMethod[m]);
-			}
-}
 
 /*****************************************************************
 ******************************************************************
@@ -99,15 +77,7 @@ static void s_loadMouse(EV_EditMethodContainer * /*pemc*/, EV_EditBindingMap * p
 ******************************************************************
 *****************************************************************/
 
-struct _iNVK
-{
-	EV_EditBits			m_eb;			// sans ems
-	const char *		m_szMethod[EV_COUNT_EMS];
-};
-
-// TODO finish filling out this table.
-
-static struct _iNVK s_NVKTable[] =
+static struct ap_bs_NVK s_NVKTable[] =
 {
 //	{nvk,				{ none,					_S,					_C,				_S_C,		
 //  					  _A,					_A_S,				_A_C,			_A_C_S				}},
@@ -200,13 +170,7 @@ static struct _iNVK s_NVKTable[] =
 ******************************************************************
 *****************************************************************/
 
-struct _iNVK_P
-{
-	EV_EditBits			m_eb;			// sans ems
-	const char *		m_szMapName[EV_COUNT_EMS];
-};
-
-static struct _iNVK_P s_NVKTable_P[] =
+static struct ap_bs_NVK_Prefix s_NVKTable_P[] =
 {
 //	{nvk,						{ none,					_S,					_C,				_S_C,		
 //  							  _A,					_A_S,				_A_C,			_A_C_S	}},
@@ -225,37 +189,6 @@ static struct _iNVK_P s_NVKTable_P[] =
 	{EV_NVK_DEAD_OGONEK,		{ "deadogonek",			"deadogonek",		"",	"", "",	"",	"",	""	}},
 };
 
-static void s_loadNVK(EV_EditMethodContainer * pemc, EV_EditBindingMap * pebm)
-{
-	int k, m;
-	int kLimit = NrElements(s_NVKTable);
-
-	for (k=0; k<kLimit; k++)
-		for (m=0; m<EV_COUNT_EMS; m++)
-			if (s_NVKTable[k].m_szMethod[m] && *s_NVKTable[k].m_szMethod[m])
-			{
-				EV_EditModifierState ems = EV_EMS_FromNumber(m);
-				pebm->setBinding(EV_EKP_PRESS|s_NVKTable[k].m_eb|ems,s_NVKTable[k].m_szMethod[m]);
-			}
-
-	kLimit = NrElements(s_NVKTable_P);
-
-	for (k=0; k<kLimit; k++)
-		for (m=0; m<EV_COUNT_EMS; m++)
-			if (s_NVKTable_P[k].m_szMapName[m] && *s_NVKTable_P[k].m_szMapName[m])
-			{
-				EV_EditModifierState ems = EV_EMS_FromNumber(m);
-				EV_EditBindingMap * pebmSub = NULL;
-				UT_Bool bResult = AP_LoadBindings(s_NVKTable_P[k].m_szMapName[m],pemc,&pebmSub);
-				if (bResult)
-				{
-					EV_EditBinding * pebSub = new EV_EditBinding(pebmSub);
-					if (pebSub)
-						pebm->setBinding(EV_EKP_PRESS|s_NVKTable_P[k].m_eb|ems,pebSub);
-				}
-			}
-}
-
 /*****************************************************************
 ******************************************************************
 ** load top-level (non-prefixed) builtin bindings for the non-nvk
@@ -266,15 +199,7 @@ static void s_loadNVK(EV_EditMethodContainer * pemc, EV_EditBindingMap * pebm)
 ******************************************************************
 *****************************************************************/
 
-struct _iChar
-{
-	EV_EditBits			m_eb;			// sans ems & shift
-	const char *		m_szMethod[EV_COUNT_EMS_NoShift];
-};
-
-// TODO finish filling out this table.
-
-static struct _iChar s_CharTable[] =
+static struct ap_bs_Char s_CharTable[] =
 {
 //	{char, /* desc   */ { none,					_C,					_A,				_A_C				}},
 	{0x21, /* !      */ { "insertData",			"",					"",				""					}},
@@ -486,41 +411,17 @@ static struct _iChar s_CharTable[] =
 	
 };
 
-static void s_loadChar(EV_EditMethodContainer * /*pemc*/, EV_EditBindingMap * pebm)
-{
-	int k, m;
-	int kLimit = NrElements(s_CharTable);
-
-	for (k=0; k<kLimit; k++)
-		for (m=0; m<EV_COUNT_EMS_NoShift; m++)
-			if (s_CharTable[k].m_szMethod[m] && *s_CharTable[k].m_szMethod[m])
-			{
-				EV_EditModifierState ems = EV_EMS_FromNumberNoShift(m);
-				pebm->setBinding(EV_EKP_PRESS|s_CharTable[k].m_eb|ems,s_CharTable[k].m_szMethod[m]);
-			}
-}
-
 /*****************************************************************
 ******************************************************************
 ** put it all together and load the default bindings.
 ******************************************************************
 *****************************************************************/
 
-UT_Bool ap_LoadBindings_Default(EV_EditMethodContainer * pemc,
-								EV_EditBindingMap **ppebm)
+UT_Bool ap_LoadBindings_Default(AP_BindingSet * pThis, EV_EditBindingMap * pebm)
 {
-	UT_ASSERT(pemc);
-	UT_ASSERT(ppebm);
+	pThis->_loadMouse(pebm,s_MouseTable,NrElements(s_MouseTable));
+	pThis->_loadNVK(pebm,s_NVKTable,NrElements(s_NVKTable),s_NVKTable_P,NrElements(s_NVKTable_P));
+	pThis->_loadChar(pebm,s_CharTable,NrElements(s_CharTable),NULL,0);
 
-	*ppebm = 0;
-	EV_EditBindingMap * pNewEBM = new EV_EditBindingMap(pemc);
-	if (!pNewEBM)
-		return UT_FALSE;
-
-	s_loadMouse(pemc,pNewEBM);
-	s_loadNVK(pemc,pNewEBM);
-	s_loadChar(pemc,pNewEBM);
-
-	*ppebm = pNewEBM;
 	return UT_TRUE;
 }

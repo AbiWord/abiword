@@ -16,9 +16,6 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
  * 02111-1307, USA.
  */
- 
-
-
 
 #include <windows.h>
 #include <stdlib.h>
@@ -147,8 +144,26 @@
 ** TODO Add code to prevent ALT press and release from
 ** TODO sending focus to the menu or system menu.
 **
+**
+** TODO Currently all of the tables are static (and thus
+** TODO shared by all instances of this class).  When we
+** TODO receive a WM_INPUTLANGCHANGE we remap the keys
+** TODO into the static tables -- therefore all windows
+** TODO will change language -- even though only one frame
+** TODO window gets the message.  If we move these tables
+** TODO into the class, then each window could have it's
+** TODO own language, but I'm not sure that the user will
+** TODO be expecting -- and my be inconsistent with the
+** TODO NT and/or 95/98 GUI.  I think they want to set the
+** TODO language based upon process or thread and not by
+** TODO top-level window.  Decide if we should do pursue
+** TODO this.
+**
 ******************************************************************
 *****************************************************************/
+
+static UT_Bool s_bMapped = UT_FALSE;
+static HKL s_hKeyboardLayout = 0;
 
 void s_load_VK_To_Char_Table(void);
 static EV_EditBits s_mapVirtualKeyCodeToNVK(WPARAM nVirtKey);
@@ -161,6 +176,14 @@ UT_Bool s_map_VK_To_Char(WPARAM nVirtKey, EV_EditModifierState ems,
 ev_Win32Keyboard::ev_Win32Keyboard(EV_EditEventMapper * pEEM)
 	: EV_Keyboard(pEEM)
 {
+	if (!s_bMapped)
+		remapKeyboard(GetKeyboardLayout(0));
+	s_bMapped = UT_TRUE;
+}
+
+void ev_Win32Keyboard::remapKeyboard(HKL hKeyboardLayout)
+{
+	s_hKeyboardLayout = hKeyboardLayout;
 	s_load_VK_To_Char_Table();
 }
 
@@ -206,6 +229,28 @@ UT_Bool ev_Win32Keyboard::onKeyDown(AV_View * pView,
 		return UT_FALSE;
 
 	case 0:								// an unnamed-virtual-key.
+#if 0
+{
+	UT_DEBUGMSG(("MapVirtualKey(nVirtKey=0x%lx) ==> [0 0x%lx][2 0x%lx]\n",
+				 nVirtKey,
+				 MapVirtualKey(nVirtKey,0),
+				 LOWORD(MapVirtualKey(nVirtKey,2))));
+	UT_DEBUGMSG(("MapVirtualKeyEx(nVirtKey=0x%lx) ==> [0 0x%lx][2 0x%lx]\n",
+				 nVirtKey,
+				 MapVirtualKeyEx(nVirtKey,0,s_hKeyboardLayout),
+				 LOWORD(MapVirtualKeyEx(nVirtKey,2,s_hKeyboardLayout))));
+	unsigned int scancode = (keyData & 0x00ff0000)>>16;
+	BYTE keyState[256];
+	WORD buffer[100];
+	memset(keyState,0,sizeof(keyState));
+	memset(buffer,0,sizeof(buffer));
+	GetKeyboardState(keyState);
+	int result = ToAsciiEx(nVirtKey,scancode,keyState,buffer,0,s_hKeyboardLayout);
+	UT_DEBUGMSG(("ToAsciiEx(nVirtKey=0x%lx,scan=0x%lx,...) == %d [%x %x]\n",
+				 nVirtKey,scancode,result,
+				 buffer[0],buffer[1]));
+}
+#endif
 		if (s_map_VK_To_Char(nVirtKey,ems,&charData,&ems2))
 		{
 #ifdef UT_DEBUG
@@ -387,10 +432,12 @@ void s_load_VK_To_Char_Table(void)
 	// when we put it in the table, we OR on the high bit as
 	// a flag to indicate that the cell is not empty (rather
 	// then an ASCII nul).
-	
+
+	memset(s_Table_VK_To_Char,0,sizeof(s_Table_VK_To_Char));
 	for (UT_uint16 ch=0; ch<256; ch++)
 	{
 		UT_uint16 s = VkKeyScan((TCHAR)ch);
+//		UT_DEBUGMSG(("VkKeyScan(0x%x) ==> 0x%x\n",(TCHAR)ch,s));
 		if (s != 0xffff)
 			if ((s & 0x0600) == 0)		// if doesn't require ALT or CONTROL
 			{
@@ -403,7 +450,7 @@ void s_load_VK_To_Char_Table(void)
 
 // TODO find out what (if anything) we should map VK_SEPARATOR(0x6c) to.
 
-static WPARAM s_TableNumpadVK_To_VK[16] =
+const static WPARAM s_TableNumpadVK_To_VK[16] =
 { 0x30, 0x31, 0x32, 0x33,		/* kp-0..kp-3 --> 0..3 */
   0x34, 0x35, 0x36, 0x37,		/* kp-4..kp-7 --> 4..7 */
   0x38, 0x39, 0x2a, 0x2b,		/* kp-8,kp-9,kp-*,kp-+ --> 8,9,*,+ */
@@ -471,9 +518,7 @@ UT_Bool s_map_VK_To_Char(WPARAM nVirtKey, EV_EditModifierState ems,
 /*****************************************************************/
 /*****************************************************************/
 
-/* we took ..../DevStudio/VC/include/WINRESC.H from VC5.0 and built this mapping. */
-   
-static EV_EditBits s_Table_NVK[] =
+const static EV_EditBits s_Table_NVK[] =
 {	0,					/*                   0x00 */
 	EV_NVK__IGNORE__,	/* VK_LBUTTON        0x01 */
 	EV_NVK__IGNORE__,	/* VK_RBUTTON        0x02 */

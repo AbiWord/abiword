@@ -46,23 +46,23 @@ static char CHILDWINCLASS[256];
 UT_Bool AP_Win32Frame::RegisterClass(AP_Win32App * app)
 {
 	// NB: can't access 'this' members from a static member function
-	WNDCLASSEX  wndclass ;
+	WNDCLASSEX  wndclass;
 
 	// register class for the frame window
-	wndclass.cbSize        = sizeof (wndclass) ;
-	wndclass.style         = CS_DBLCLKS ;
-	wndclass.lpfnWndProc   = AP_Win32Frame::_WndProc ;
-	wndclass.cbClsExtra    = 0 ;
-	wndclass.cbWndExtra    = 0 ;
-	wndclass.hInstance     = app->getInstance() ;
-	wndclass.hIcon         = LoadIcon (NULL, IDI_APPLICATION) ;
-	wndclass.hCursor       = LoadCursor (NULL, IDC_ARROW) ;
-	wndclass.hbrBackground = GetSysColorBrush(COLOR_BTNFACE) ;
-	wndclass.lpszMenuName  = NULL ;
-	wndclass.lpszClassName = app->getApplicationName() ;
-	wndclass.hIconSm       = LoadIcon (NULL, IDI_APPLICATION) ;
+	wndclass.cbSize        = sizeof(wndclass);
+	wndclass.style         = CS_DBLCLKS;
+	wndclass.lpfnWndProc   = AP_Win32Frame::_WndProc;
+	wndclass.cbClsExtra    = 0;
+	wndclass.cbWndExtra    = 0;
+	wndclass.hInstance     = app->getInstance();
+	wndclass.hIcon         = LoadIcon(NULL, IDI_APPLICATION);
+	wndclass.hCursor       = LoadCursor(NULL, IDC_ARROW);
+	wndclass.hbrBackground = GetSysColorBrush(COLOR_BTNFACE);
+	wndclass.lpszMenuName  = NULL;
+	wndclass.lpszClassName = app->getApplicationName();
+	wndclass.hIconSm       = LoadIcon(NULL, IDI_APPLICATION);
 
-	if (!RegisterClassEx (&wndclass))
+	if (!RegisterClassEx(&wndclass))
 	{
 		DWORD err = GetLastError();
 		UT_ASSERT(err);
@@ -73,21 +73,21 @@ UT_Bool AP_Win32Frame::RegisterClass(AP_Win32App * app)
 	sprintf(CHILDWINCLASS, "%sChild", app->getApplicationName());
 
 	memset(&wndclass, 0, sizeof(wndclass));
-	wndclass.cbSize        = sizeof (wndclass) ;
-	wndclass.style         = CS_DBLCLKS ;
-	wndclass.lpfnWndProc   = AP_Win32Frame::_ChildWndProc ;
-	wndclass.cbClsExtra    = 0 ;
-	wndclass.cbWndExtra    = 0 ;
-	wndclass.hInstance     = app->getInstance() ;
-	wndclass.hIcon         = NULL ;
-	wndclass.hCursor       = LoadCursor (NULL, IDC_ARROW) ;
-	//wndclass.hbrBackground = (HBRUSH) GetStockObject (WHITE_BRUSH) ;
+	wndclass.cbSize        = sizeof(wndclass);
+	wndclass.style         = CS_DBLCLKS;
+	wndclass.lpfnWndProc   = AP_Win32Frame::_ChildWndProc;
+	wndclass.cbClsExtra    = 0;
+	wndclass.cbWndExtra    = 0;
+	wndclass.hInstance     = app->getInstance();
+	wndclass.hIcon         = NULL;
+	wndclass.hCursor       = LoadCursor(NULL, IDC_ARROW);
+	//wndclass.hbrBackground = (HBRUSH) GetStockObject(WHITE_BRUSH);
 	wndclass.hbrBackground = NULL;
-	wndclass.lpszMenuName  = NULL ;
-	wndclass.lpszClassName = CHILDWINCLASS ;
-	wndclass.hIconSm       = NULL ;
+	wndclass.lpszMenuName  = NULL;
+	wndclass.lpszClassName = CHILDWINCLASS;
+	wndclass.hIconSm       = NULL;
 
-	if (!RegisterClassEx (&wndclass))
+	if (!RegisterClassEx(&wndclass))
 	{
 		DWORD err = GetLastError();
 		UT_ASSERT(err);
@@ -98,7 +98,7 @@ UT_Bool AP_Win32Frame::RegisterClass(AP_Win32App * app)
 }
 
 #define GWL(hwnd)		(AP_Win32Frame*)GetWindowLong((hwnd), GWL_USERDATA)
-#define SWL(hwnd, f)	(AP_Win32Frame*)SetWindowLong((hwnd), GWL_USERDATA, (LONG)(f))
+#define SWL(hwnd, f)	(AP_Win32Frame*)SetWindowLong((hwnd), GWL_USERDATA,(LONG)(f))
 
 /*****************************************************************/
 
@@ -234,7 +234,7 @@ void AP_Win32Frame::_createTopLevelWindow(void)
 
 	// create a top-level window for us.
 	// TODO get the default window size from preferences or something.
-	m_hwndFrame = CreateWindow (m_pWin32App->getApplicationName(),	// window class name
+	m_hwndFrame = CreateWindow(m_pWin32App->getApplicationName(),	// window class name
 				m_pWin32App->getApplicationTitleForTitleBar(),	// window caption
 				WS_OVERLAPPEDWINDOW | WS_CLIPCHILDREN
 				,					     // window style
@@ -245,7 +245,7 @@ void AP_Win32Frame::_createTopLevelWindow(void)
 				NULL,                    // parent window handle
 				NULL,                    // window menu handle
 				m_pWin32App->getInstance(),       // program instance handle
-				NULL) ;		             // creation parameters
+				NULL);		             // creation parameters
 
 	UT_ASSERT(m_hwndFrame);
 
@@ -347,7 +347,7 @@ void AP_Win32Frame::_createTopLevelWindow(void)
 				m_hwndFrame,			// parent window handle
 				NULL,					// window menu handle
 				m_pWin32App->getInstance(),		// program instance handle
-				NULL) ;					// creation parameters
+				NULL);					// creation parameters
 
 	UT_ASSERT(m_hwndChild);
 
@@ -463,8 +463,8 @@ LRESULT CALLBACK AP_Win32Frame::_WndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LP
 
 	switch (iMsg)
 	{
-	case WM_CREATE :
-		return 0 ;
+	case WM_CREATE:
+		return 0;
 
 	case WM_COMMAND:
 		if (f->m_pWin32Menu->onCommand(pView,hwnd,wParam))
@@ -589,7 +589,7 @@ LRESULT CALLBACK AP_Win32Frame::_WndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LP
 		return 0;
 	}
 
-	case WM_CLOSE :
+	case WM_CLOSE:
 	{
 		AP_App * pApp = f->getApp();
 		UT_ASSERT(pApp);
@@ -603,26 +603,41 @@ LRESULT CALLBACK AP_Win32Frame::_WndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LP
 		if (pEM)
 		{
 			(*pEM->getFn())(pView,NULL);
-			return 0 ;
+			return 0;
 		}
 
 		// let the window be destroyed
 		break;
 	}
 
-	case WM_DESTROY :
-		return 0 ;
+	case WM_INPUTLANGCHANGE:
+	{
+		UT_DEBUGMSG(("Frame received input language change\n"));
+
+		// This will remap the static tables used by all frames.
+		// (see the comment in ev_Win32Keyboard.cpp.)
+
+		f->m_pWin32Keyboard->remapKeyboard((HKL)lParam);
+
+		// We must propagate this message.
+		
+		return DefWindowProc(hwnd, iMsg, wParam, lParam);
+	}
+	
+	case WM_DESTROY:
+		return 0;
+
 	} /* switch (iMsg) */
 
-	return DefWindowProc (hwnd, iMsg, wParam, lParam) ;
+	return DefWindowProc(hwnd, iMsg, wParam, lParam);
 }
 
 #define SCROLL_LINE_SIZE 20
 
 LRESULT CALLBACK AP_Win32Frame::_ChildWndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 {
-	HDC         hdc ;
-	PAINTSTRUCT ps ;
+	HDC         hdc;
+	PAINTSTRUCT ps;
 
 	AP_Win32Frame * f = GWL(hwnd);
 	AV_View * pView = NULL;
@@ -636,8 +651,8 @@ LRESULT CALLBACK AP_Win32Frame::_ChildWndProc(HWND hwnd, UINT iMsg, WPARAM wPara
 
 	switch (iMsg)
 	{
-	case WM_CREATE :
-		return 0 ;
+	case WM_CREATE:
+		return 0;
 
 	case WM_VSCROLL:
 	{
@@ -811,9 +826,9 @@ LRESULT CALLBACK AP_Win32Frame::_ChildWndProc(HWND hwnd, UINT iMsg, WPARAM wPara
 		return 0;
 	}
 		
-	case WM_PAINT :
+	case WM_PAINT:
 	{
-		hdc = BeginPaint (hwnd, &ps) ;
+		hdc = BeginPaint(hwnd, &ps);
 
 		UT_DEBUGMSG(("Calling draw()\n"));
 		UT_Rect r(ps.rcPaint.left,ps.rcPaint.top,
@@ -821,14 +836,14 @@ LRESULT CALLBACK AP_Win32Frame::_ChildWndProc(HWND hwnd, UINT iMsg, WPARAM wPara
 				  ps.rcPaint.bottom-ps.rcPaint.top);
 		pView->draw(&r);
 
-		EndPaint (hwnd, &ps) ;
+		EndPaint(hwnd, &ps);
 
-		return 0 ;
+		return 0;
 	}
 
-	case WM_DESTROY :
-		return 0 ;
+	case WM_DESTROY:
+		return 0;
 	} /* switch (iMsg) */
 
-	return DefWindowProc (hwnd, iMsg, wParam, lParam) ;
+	return DefWindowProc(hwnd, iMsg, wParam, lParam);
 }

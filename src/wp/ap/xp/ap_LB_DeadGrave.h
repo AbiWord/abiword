@@ -20,11 +20,11 @@
 
 #ifndef AP_LOADBINDINGS_DEADGRAVE_H
 #define AP_LOADBINDINGS_DEADGRAVE_H
-class EV_EditMethodContainer;
 class EV_EditBindingMap;
+class AP_BindingSet;
 
-UT_Bool ap_LoadBindings_DeadGrave(EV_EditMethodContainer * pemc,
-								  EV_EditBindingMap **ppebm);
+UT_Bool ap_LoadBindings_DeadGrave(AP_BindingSet * pThis,
+								  EV_EditBindingMap * pebm);
 
 #endif /* AP_LOADBINDINGS_DEADGRAVE_H */
 

@@ -34,9 +34,11 @@ class AP_DialogFactory;
 class AP_Toolbar_ControlFactory;
 class AP_Frame;
 class EV_EditMethodContainer;
+class EV_EditBindingMap;
 class EV_Menu_ActionSet;
 class EV_Toolbar_ActionSet;
 class AP_Clipboard;
+class XAP_BindingSet;
 
 /*****************************************************************
 ******************************************************************
@@ -77,6 +79,7 @@ public:
 	const char *					getApplicationName(void) const;
 	
 	EV_EditMethodContainer *		getEditMethodContainer(void) const;
+	EV_EditBindingMap *				getBindingMap(const char * szName);
 	const EV_Menu_ActionSet *		getMenuActionSet(void) const;
 	const EV_Toolbar_ActionSet *	getToolbarActionSet(void) const;
 
@@ -92,6 +95,7 @@ protected:
 	const char *					m_szAppName;
 
 	EV_EditMethodContainer *		m_pEMC;				/* the set of all possible EditMethods in the app */
+	XAP_BindingSet *				m_pBindingSet;		/* the set of binding maps */
 	EV_Menu_ActionSet *				m_pMenuActionSet;	/* the set of all possible menu actions in the app */
 	EV_Toolbar_ActionSet *			m_pToolbarActionSet;
 

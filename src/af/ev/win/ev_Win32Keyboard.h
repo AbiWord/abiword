@@ -36,6 +36,7 @@ class ev_Win32Keyboard : public EV_Keyboard
 {
 public:
 	ev_Win32Keyboard(EV_EditEventMapper * pEEM);
+	void remapKeyboard(HKL hKeyboardLayout);
 
 	UT_Bool onKeyDown(AV_View * pView,
 					  HWND hWnd, UINT iMsg, WPARAM nVirtKey, LPARAM keyData);

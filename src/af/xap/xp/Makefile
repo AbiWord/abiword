@@ -34,6 +34,7 @@ CPPSRCS=	xad_Document.cpp		\
 		xap_Dialog_Print.cpp		\
 		xap_FakeClipboard.cpp		\
 		xap_Frame.cpp			\
+		xap_LoadBindings.cpp		\
 		xap_Scrollbar_ViewListener.cpp	\
 		xap_Toolbar_ControlFactory.cpp	\
 		xap_ViewListener.cpp		\

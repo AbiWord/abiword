@@ -33,7 +33,6 @@
 #include "ev_EditMethod.h"
 #include "ev_Menu_Layouts.h"
 #include "ev_Menu_Labels.h"
-#include "xap_LoadBindings.h"
 #include "xap_Menu_Layouts.h"
 #include "xap_Menu_LabelSet.h"
 #include "xav_View.h"
@@ -53,7 +52,6 @@ AP_Frame::AP_Frame(AP_App * app)
 	m_pView = NULL;
 	m_pViewListener = NULL;
 	m_pScrollObj = NULL;
-	m_pEBM = NULL;
 	m_pEEM = NULL;
 	m_szMenuLayoutName = NULL;
 	m_szMenuLabelSetName = NULL;
@@ -78,7 +76,6 @@ AP_Frame::AP_Frame(AP_Frame * f)
 	m_pView = NULL;
 	m_pViewListener = NULL;
 	m_pScrollObj = NULL;
-	m_pEBM = NULL;
 	m_pEEM = NULL;
 	m_szMenuLayoutName = NULL;
 	m_szMenuLabelSetName = NULL;
@@ -106,7 +103,6 @@ AP_Frame::~AP_Frame(void)
 		DELETEP(m_pDoc);
 
 	DELETEP(m_pScrollObj);
-	DELETEP(m_pEBM);
 	DELETEP(m_pEEM);
 
 	DELETEP(m_pScrollbarViewListener);
@@ -117,21 +113,14 @@ int AP_Frame::s_iUntitled = 0;
 
 UT_Bool AP_Frame::initialize(void)
 {
-	UT_Bool bResult;
-
 	if (!initFrameData())
 		return UT_FALSE;
 
 	// choose which set of key- and mouse-bindings to load
-	
 	char * szBindings = "default";
 	// TODO override szBindings from m_app->m_pArgs->{argc,argv}.
-	bResult = AP_LoadBindings(szBindings,m_app->getEditMethodContainer(),&m_pEBM);
-	UT_ASSERT(bResult && (m_pEBM != NULL));
-
 	// create a EventMapper state-machine to process our events
-
-	m_pEEM = new EV_EditEventMapper(m_pEBM);
+	m_pEEM = new EV_EditEventMapper(m_app->getBindingMap(szBindings));
 	UT_ASSERT(m_pEEM);
 
 	// select which menu bar we should use

@@ -30,7 +30,6 @@ class AP_DialogFactory;
 class ap_ViewListener;
 class AV_View;
 class AD_Document;
-class EV_EditBindingMap;
 class EV_EditEventMapper;
 class EV_Menu_Layout;
 class EV_Menu_LabelSet;
@@ -90,7 +89,6 @@ protected:
 	ap_ViewListener *			m_pViewListener;
 	AV_ListenerId				m_lid;
 	AV_ScrollObj *				m_pScrollObj;	/* to our scroll handler */
-	EV_EditBindingMap *			m_pEBM;			/* the key/mouse bindings for this frame */
 	EV_EditEventMapper *		m_pEEM;			/* the event state-machine for this frame */
 	const char *				m_szMenuLayoutName;
 	const char *				m_szMenuLabelSetName;		/* language for menus */

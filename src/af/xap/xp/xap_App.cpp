@@ -36,7 +36,8 @@
 #include "xap_EditMethods.h"
 #include "xap_Menu_ActionSet.h"
 #include "xap_Toolbar_ActionSet.h"
-
+#include "xap_LoadBindings.h"
+#include "ap_LoadBindings.h"			// TODO move this out into app-specific code
 
 #define DELETEP(p)	do { if (p) delete p; } while (0)
 
@@ -51,6 +52,7 @@ AP_App::AP_App(AP_Args * pArgs, const char * szAppName) : m_hashClones(5)
 	m_pArgs = pArgs;
 	m_szAppName = szAppName;
 	m_pEMC = NULL;
+	m_pBindingSet = NULL;
 	m_pMenuActionSet = NULL;
 	m_pToolbarActionSet = NULL;
 }
@@ -61,6 +63,7 @@ AP_App::~AP_App(void)
 	UT_VECTOR_PURGEALL(AP_Frame *, m_vecFrames);
 
 	DELETEP(m_pEMC);
+	DELETEP(m_pBindingSet);
 	DELETEP(m_pMenuActionSet);
 	DELETEP(m_pToolbarActionSet);
 	
@@ -79,6 +82,9 @@ UT_Bool AP_App::initialize(void)
 
 	m_pEMC = AP_GetEditMethods();
 	UT_ASSERT(m_pEMC);
+
+	m_pBindingSet = new AP_BindingSet(m_pEMC);
+	UT_ASSERT(m_pBindingSet);
 	
 	m_pMenuActionSet = AP_CreateMenuActionSet();
 	UT_ASSERT(m_pMenuActionSet);
@@ -143,6 +149,12 @@ const char * AP_App::getApplicationName(void) const
 EV_EditMethodContainer * AP_App::getEditMethodContainer(void) const
 {
 	return m_pEMC;
+}
+
+EV_EditBindingMap * AP_App::getBindingMap(const char * szName)
+{
+	UT_ASSERT(m_pBindingSet);
+	return m_pBindingSet->getMap(szName);
 }
 
 const EV_Menu_ActionSet * AP_App::getMenuActionSet(void) const

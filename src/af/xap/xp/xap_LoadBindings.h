@@ -19,13 +19,23 @@
 
 
 
-#ifndef AP_LOADBINDINGS_H
-#define AP_LOADBINDINGS_H
+#ifndef XAP_LOADBINDINGS_H
+#define XAP_LOADBINDINGS_H
 class EV_EditMethodContainer;
 class EV_EditBindingMap;
 
-UT_Bool AP_LoadBindings(const char * szName, EV_EditMethodContainer * pemc,
-						EV_EditBindingMap **ppebm);
+/*****************************************************************/
 
-#endif /* AP_LOADBINDINGS_H */
+class XAP_BindingSet
+{
+public:
+	XAP_BindingSet(EV_EditMethodContainer * pemc);
+	virtual ~XAP_BindingSet(void);
 
+	virtual EV_EditBindingMap *	getMap(const char * szName) = 0;
+
+protected:
+	EV_EditMethodContainer	  * m_pemc;
+};
+
+#endif /* XAP_LOADBINDINGS_H */

@@ -63,6 +63,7 @@ OBJS=		$(PLATFORM_OBJS)						\
 		xp/$(OBJDIR)/xap_Dialog_Print.$(OBJ_SUFFIX)			\
 		xp/$(OBJDIR)/xap_FakeClipboard.$(OBJ_SUFFIX)			\
 		xp/$(OBJDIR)/xap_Frame.$(OBJ_SUFFIX)				\
+		xp/$(OBJDIR)/xap_LoadBindings.$(OBJ_SUFFIX)			\
 		xp/$(OBJDIR)/xap_Scrollbar_ViewListener.$(OBJ_SUFFIX)		\
 		xp/$(OBJDIR)/xap_Toolbar_ControlFactory.$(OBJ_SUFFIX)		\
 		xp/$(OBJDIR)/xap_ViewListener.$(OBJ_SUFFIX)			\
