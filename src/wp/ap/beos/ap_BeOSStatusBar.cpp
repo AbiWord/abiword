@@ -137,3 +137,14 @@ void AP_BeOSStatusBar::setView(AV_View * pView)
 	
 	AP_StatusBar::setView(pView);
 }
+
+
+void AP_BeOSStatusBar::show(void)
+{
+	m_wStatusBar->Show();
+}
+
+void AP_BeOSStatusBar::hide(void)
+{
+	m_wStatusBar->Hide();
+}

@@ -61,7 +61,7 @@ bool AP_BeOSToolbar_FontCombo::populate(void)
 
   	int32 numFamilies = count_font_families(); 
    	for ( int32 i = 0; i < numFamilies; i++ ) { 
-       font_family family;
+     font_family family;
        uint32 flags; 
        if (get_font_family(i, &family, &flags) == B_OK ) { 
            /*

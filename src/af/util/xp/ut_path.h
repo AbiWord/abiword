@@ -19,11 +19,14 @@
  
 #ifndef UT_PATH_H
 #define UT_PATH_H
-bool UT_isRegularFile(const char* filename);
-const char* UT_basename(const char* path);
+#ifndef UT_TYPES_H 		// recursivity bad
+#include "ut_types.h"	// for ABI_EXPORT
+#endif
 
-bool UT_directoryExists(const char* dir);
+ABI_EXPORT const char* UT_basename(const char* path);
 
-bool UT_isRegularFile(const char* filename);
+ABI_EXPORT bool UT_directoryExists(const char* dir);
+
+ABI_EXPORT bool UT_isRegularFile(const char* filename);
 
 #endif /* UT_PATH_H */

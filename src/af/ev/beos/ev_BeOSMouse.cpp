@@ -75,6 +75,7 @@ ev_BeOSMouse::ev_BeOSMouse(EV_EditEventMapper * pEEM) : EV_Mouse(pEEM)
 {
 	m_clickState = 0;
 	m_contextState = 0;
+	m_bIsTracking = false;
 }
 
 bool ev_BeOSMouse::synthesize(XAP_BeOSApp * pBeOSApp, 
@@ -93,6 +94,7 @@ bool ev_BeOSMouse::synthesize(XAP_BeOSApp * pBeOSApp,
 
 void ev_BeOSMouse::mouseUp(AV_View* pView, BMessage *msg)
 {
+	m_bIsTracking = false;
 	return;
 
 	EV_EditMethod * pEM;
@@ -172,6 +174,7 @@ void ev_BeOSMouse::mouseClick(AV_View* pView, BMessage *msg)
 	msg->FindInt32("modifiers", &mod);
 	msg->FindPoint("where", &pt);
 
+	m_bIsTracking = true;
 //	UT_DEBUGMSG(("mouseClick: [x=%f y=%f]\n",pt.x, pt.y));
 
 	if (buttons & B_PRIMARY_MOUSE_BUTTON)
@@ -248,6 +251,11 @@ void ev_BeOSMouse::mouseMotion(AV_View* pView, BMessage *msg)
 	msg->FindPoint("be:view_where", &pt);
 
 //	UT_DEBUGMSG(("mouseMotion: [x=%f y=%f]\n",pt.x, pt.y));
+	if(!m_bIsTracking)
+	{
+		// don't care mouse events if no click on the view first
+		return;
+	}
 	
 	if (buttons & B_PRIMARY_MOUSE_BUTTON)
 		emb = EV_EMB_BUTTON1;

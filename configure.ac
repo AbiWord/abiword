@@ -25,15 +25,29 @@ AC_CONFIG_SRCDIR([src/af/ev/xp/ev_Menu.h])
 AC_CONFIG_AUX_DIR(ac-helpers)
 dnl AC_CONFIG_HEADERS(config.h)
 
-AM_INIT_AUTOMAKE(AbiSuite,1.0.0)
+AM_INIT_AUTOMAKE(AbiSuite,1.0.7)
 
 abs_srcdir="`cd $srcdir && pwd`"
 
 dnl Checks for programs.
+
+abi_save_CFLAGS="$CFLAGS"
+abi_save_CXXFLAGS="$CXXFLAGS"
+
 AC_PROG_CXX
 AC_PROG_CC
 AC_ISC_POSIX
 AC_PROG_CPP
+
+CFLAGS="$abi_save_CFLAGS"
+CXXFLAGS="$abi_save_CXXFLAGS"
+
+AC_MSG_CHECKING(CFLAGS)
+AC_MSG_RESULT($CFLAGS)
+
+AC_MSG_CHECKING(CXXFLAGS)
+AC_MSG_RESULT($CXXFLAGS)
+
 AC_PROG_INSTALL
 AC_PROG_LN_S
 AC_PROG_MAKE_SET
@@ -113,16 +127,29 @@ AM_CONDITIONAL(DEBUG, test x$debug = xtrue)
 
 ABI_GNOME_QUICK
 
-AC_ARG_WITH(pspell,
-    [  --with-pspell    Turn on pspell ],
-     [case "${withval}" in
-       yes) PSPELL_LIBS="-lpspell -lpspell-modules -lltdl" ;
-            pspell=true ;;
-       no)  PSPELL_LIBS="" ;
-	    pspell=false ;;
-       *) AC_MSG_ERROR(bad value ${withval} for --with-pspell) ;;
-     esac],[PSPELL_LIBS=""])
-AM_CONDITIONAL(WITH_PSPELL, test x$pspell = xtrue)
+abi_build_shared=yes
+abi_build_static=no
+
+AC_ARG_ENABLE(shared,[  --disable-shared   don't build shared AbiWord (UNIX/GTK builds only)],[
+	if test "x$enableval" = "xno"; then
+		if test "$PLATFORM" = "unix" -a "$gnome" != "true"; then
+			abi_build_shared=no
+			abi_build_static=yes
+		fi
+	fi
+])
+AC_ARG_ENABLE(static,[  --enable-static          build static AbiWord (UNIX/GTK builds only)],[
+	if test "x$enableval" != "xno"; then
+		if test "$PLATFORM" = "unix" -a "$gnome" != "true"; then
+			abi_build_static=yes
+		fi
+	fi
+])
+
+AM_CONDITIONAL(ABI_BUILD_SHARED,[test $abi_build_shared = yes])
+AM_CONDITIONAL(ABI_BUILD_STATIC,[test $abi_build_static = yes])
+
+ABI_SPELL
 
 AC_ARG_WITH(libjpeg,
     [  --with-libjpeg    Turn on jpeglib support ],
@@ -134,7 +161,7 @@ AC_ARG_WITH(libjpeg,
 AM_CONDITIONAL(WITH_LIBJPEG, test x$libjpeg = xtrue)
 
 AC_ARG_WITH(libwmf,
-    [  --with-libwmf    Turn on libwmf ],
+    [  --with-libwmf    Turn on libwmf (warning: experimental)],
      [case "${withval}" in
        yes) LIBWMF_DIR="" ;;
        no)  LIBWMF_DIR="" ;
@@ -151,7 +178,7 @@ AC_ARG_WITH(libwmf,
            LIBWMF_CFLAGS="`$LIBWMF_CONFIG --cflags` -DHAVE_LIBWMF=1"
            LIBWMF_LIBS="`$LIBWMF_CONFIG --libs`"
         else
-           AC_MSG_ERROR(* * * unable to find libwmf-config; unable to continue * * *)
+           AC_MSG_ERROR([* * * unable to find libwmf-config; unable to continue * * *])
         fi
         wmf_save_CPPFLAGS="$CPPFLAGS"
         wmf_save_LDFLAGS="$LDFLAGS"
@@ -159,8 +186,8 @@ AC_ARG_WITH(libwmf,
         LDFLAGS="$LDFLAGS $LIBWMF_LIBS"
         AC_CHECK_HEADER(libwmf/gd.h,[
            AC_CHECK_LIB(wmf,wmf_size,libwmf=true,[
-              AC_MSG_ERROR(* * * libwmf version 0.2.1 or later is required * * *)
-           ])
+              AC_MSG_ERROR([* * * libwmf version 0.2.1 or later is required * * *])
+           ],$LIBWMF_LIBS)
         ])
         CPPFLAGS="$wmf_save_CPPFLAGS"
         LDFLAGS="$wmf_save_LDFLAGS"
@@ -223,12 +250,17 @@ AM_CONDITIONAL(SCRIPT, test x$script = xtrue)
 
 case "$script" in
      "true" ) 
-	    SCRIPT_CFLAGS="-DABI_OPT_PERL `perl -MExtUtils::Embed -e ccopts` -Ubool"
 	    SCRIPT_LIBS="`perl -MExtUtils::Embed -e ldopts`"
+	    ABI_PERL_VERSION=`perl -V:version | tr -d "version=" | tr -d "\'" | tr -d "\;" | awk '{printf "%d", [$]1 * 10}'`
 		AC_MSG_CHECKING(for perl xsubpp precompiler)
 		XSUBPPDIR="`(cd $abs_srcdir/src/bindings/perl && perl -MExtUtils::MakeMaker -e 'print ExtUtils::MakeMaker->new({NAME => qw(abi)})->tool_xsubpp') | grep ^XSUBPPDIR | sed -e 's/XSUBPPDIR = //g;'`"
 		if test -n "${XSUBPPDIR}"; then
 			AC_MSG_RESULT(${XSUBPPDIR})
+			if test "$ABI_PERL_VERSION" -le 56; then
+			    SCRIPT_CFLAGS="-DABI_OPT_PERL `perl -MExtUtils::Embed -e ccopts` -Ubool -DNOT_PERL_5_8"
+			else
+			    SCRIPT_CFLAGS="-DABI_OPT_PERL `perl -MExtUtils::Embed -e ccopts` -Ubool"
+			fi
 		else
 			AC_MSG_ERROR(not found)
 		fi
@@ -266,7 +298,6 @@ fi
 dnl SUBST all the variables we just defined
 AC_SUBST(OPTIMIZE_CFLAGS)
 AC_SUBST(PROFILE_CFLAGS)
-AC_SUBST(PSPELL_LIBS)
 AC_SUBST(LIBJPEG_LIBS)
 AC_SUBST(DEBUG_CFLAGS)
 AC_SUBST(SCRIPT_CFLAGS)
@@ -292,8 +323,7 @@ dnl might not.
 dnl
 dnl check for an xml parser
 
-ABI_NEED_XML_PARSER="yes"
-ABI_XML_PARSER(${abs_srcdir}/../expat)
+ABI_XML_PARSER
 
 dnl check for psiconv
 
@@ -318,9 +348,36 @@ dnl Checks for library functions.
 AC_FUNC_ALLOCA
 AC_TYPE_SIGNAL
 AC_CHECK_FUNCS(re_comp regcomp strdup strstr)
-AC_CHECK_FUNC(setenv,,[
-	AC_DEFINE(SETENV_MISSING,1)
-])
+
+AC_CHECK_FUNC(putenv,abi_putenv=maybe,abi_putenv=no)
+AC_CHECK_FUNC(setenv,abi_setenv=maybe,abi_setenv=no)
+
+if test $abi_putenv = no -a $abi_setenv = no; then
+	AC_MSG_ERROR([* * * neither setenv nor putenv found! * * *])
+fi
+if test $abi_setenv = no; then
+	AC_DEFINE(SETENV_MISSING,1,[use putenv, not setenv])
+elif test $abi_putenv = maybe; then
+	_abi_cppflags=$CPPFLAGS
+	CPPFLAGS="$CPPFLAGS $WARNING_CFLAGS"
+
+	AC_MSG_CHECKING([whether setenv declared in stdlib.h (for us)])
+	AC_TRY_COMPILE([
+#include <stdlib.h>
+float setenv (int);
+	],[
+/* if this program fails then setenv isn't declared in stdlib.h 
+ * or at least not for the flags we're using...
+ */
+	],[	AC_MSG_RESULT(no)
+		dnl well, okay, setenv may not be missing but I'm going to
+		dnl mark it as such:
+		AC_DEFINE(SETENV_MISSING,1,[use putenv, not setenv])
+	],[	AC_MSG_RESULT(yes)
+	])
+
+	CPPFLAGS=$_abi_cppflags
+fi
 
 if test $peerconfig = "true"; then
 	dnl other configure scripts
@@ -330,7 +387,7 @@ if test $peerconfig = "true"; then
 			echo "Running configure in ${i}"
 			config_flags='--disable-shared --enable-static'
 			if test `basename "$i"` = wv; then
-				config_flags="$config_flags --with-exporter --with-glib=$abi_glib_opt"
+				config_flags="$config_flags --with-exporter --with-glib=$abi_glib_opt $abi_wv_xml"
 			fi
 			(cd $i; ./configure $config_flags)
 		fi
@@ -345,14 +402,12 @@ AC_CONFIG_FILES([GNUmakefile
  src/af/GNUmakefile
  src/af/ev/GNUmakefile
  src/af/ev/xp/GNUmakefile
- src/af/ev/cocoa/GNUmakefile
  src/af/ev/unix/GNUmakefile
  src/af/ev/unix/gnome/GNUmakefile
  src/af/ev/mac/GNUmakefile
  src/af/gr/GNUmakefile
  src/af/gr/xp/GNUmakefile
  src/af/gr/mac/GNUmakefile
- src/af/gr/cocoa/GNUmakefile
  src/af/gr/unix/GNUmakefile
  src/af/util/GNUmakefile
  src/af/util/xp/GNUmakefile
@@ -360,7 +415,6 @@ AC_CONFIG_FILES([GNUmakefile
  src/af/util/unix/GNUmakefile
  src/af/xap/GNUmakefile
  src/af/xap/xp/GNUmakefile
- src/af/xap/cocoa/GNUmakefile
  src/af/xap/mac/GNUmakefile
  src/af/xap/unix/GNUmakefile
  src/af/xap/unix/gnome/GNUmakefile
@@ -377,18 +431,15 @@ AC_CONFIG_FILES([GNUmakefile
  src/wp/GNUmakefile
  src/wp/ap/GNUmakefile
  src/wp/ap/xp/GNUmakefile
- src/wp/ap/cocoa/GNUmakefile
  src/wp/ap/mac/GNUmakefile
  src/wp/ap/unix/GNUmakefile
  src/wp/ap/unix/gnome/GNUmakefile
  src/wp/impexp/GNUmakefile
- src/wp/impexp/cocoa/GNUmakefile
  src/wp/impexp/unix/GNUmakefile
  src/wp/impexp/unix/gnome/GNUmakefile
  src/wp/impexp/xp/GNUmakefile
  src/wp/main/GNUmakefile
  src/wp/main/xp/GNUmakefile
- src/wp/main/cocoa/GNUmakefile
  src/wp/main/mac/GNUmakefile
  src/wp/main/unix/GNUmakefile
  src/wp/main/unix/gnome/GNUmakefile
@@ -418,7 +469,7 @@ case "$PLATFORM" in
      "qnx" )
        AC_MSG_RESULT([Configured to build on a QNX RTOS platform.]) ;;
      "cocoa" )
-       AC_MSG_RESULT([Configured to build on a Mac OS X platform using Cocoa.]) ;;
+       AC_MSG_ERROR([Not configured to build on a Mac OS X platform using Cocoa.]) ;;
      "mac" )
        AC_MSG_RESULT([Configured to build on a Mac OS X platform using Carbon.]) ;;
 esac
@@ -426,11 +477,6 @@ esac
 case "$gnome" in
      "true" )
         AC_MSG_RESULT([Configured with GNOME support.]) ;;
-esac
-
-case "$pspell" in
-     "true" )
-        AC_MSG_RESULT([Configured with Pspell support.]) ;;
 esac
 
 case "$libjpeg" in
@@ -462,6 +508,7 @@ cat <<EOF
   Psiconv Library: ${abi_psiconv_message}
   WV Library:      ${abi_wv_message}
   iconv:           ${abi_iconv_message}
+  spelling:        ${abi_spell_message}
 
 EOF
 

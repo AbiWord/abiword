@@ -111,14 +111,16 @@ GR_Win32Graphics::GR_Win32Graphics(HDC hdc, HWND hwnd, XAP_App * app)
 	_constructorCommonCode(hdc);
 	m_pApp = app;
 	m_hwnd = hwnd;
+	m_hDevMode = NULL;
 }
 
-GR_Win32Graphics::GR_Win32Graphics(HDC hdc, const DOCINFO * pDocInfo, XAP_App * app)
+GR_Win32Graphics::GR_Win32Graphics(HDC hdc, const DOCINFO * pDocInfo, XAP_App * app, HGLOBAL hDevMode)
 {
 	_constructorCommonCode(hdc);
 	m_pApp = app;
 	m_bPrint = true;
 	m_pDocInfo = pDocInfo;
+ 	m_hDevMode = hDevMode;
 }
 
 GR_Win32Graphics::~GR_Win32Graphics()
@@ -412,9 +414,13 @@ void GR_Win32Graphics::setFont(GR_Font* pFont)
 // it is possible (and it has happened) that the pointers are the same,
 // but it's two different fonts.
 //
-//	if (m_pFont != pWin32Font)
+
+	// this should work though, the allocation number is unique, even
+	// if the pointers are identical
+	if (pFont->getAllocNumber() != m_iFontAllocNo)
 	{
 		m_pFont = pWin32Font;
+		m_iFontAllocNo = pFont->getAllocNumber();
 		GR_Win32Font::Acq::selectFontIntoDC(*m_pFont, m_hdc);
 	}
 }
@@ -653,12 +659,14 @@ bool GR_Win32Graphics::startPage(const char * szPageLabel, UT_uint32 pageNumber,
 	}
 
 	// Correct for Portrait vs Lanscape mode
-	DEVMODE pDevMode;
-	pDevMode.dmSize = sizeof(DEVMODE);
-	pDevMode.dmDriverExtra = 0;
-	pDevMode.dmFields = DM_ORIENTATION;
-	pDevMode.dmOrientation = (bPortrait) ? DMORIENT_PORTRAIT : DMORIENT_LANDSCAPE;
-	ResetDC( m_hdc, &pDevMode );
+	if (m_hDevMode)
+	{
+		DEVMODE *pDevMode = (DEVMODE*) GlobalLock(m_hDevMode);
+		pDevMode->dmFields = DM_ORIENTATION;
+		pDevMode->dmOrientation = (bPortrait) ? DMORIENT_PORTRAIT : DMORIENT_LANDSCAPE;
+		ResetDC(m_hdc, pDevMode);
+		GlobalUnlock(m_hDevMode);
+	}
 
 	const int iRet = StartPage(m_hdc);
 

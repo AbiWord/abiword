@@ -399,7 +399,7 @@ void IE_Imp_PalmDoc::_uncompress( buffer *m_buf )
 	// set all of these to 0 initially
 	_zero_fill (m_new_buf->buf, BUFFER_SIZE);
 
-	for (i = j = 0; i < m_buf->position, j < BUFFER_SIZE; )
+	for (i = j = 0; i < m_buf->position && j < BUFFER_SIZE; )
 	{
 		c = m_buf->buf[ i++ ];
 

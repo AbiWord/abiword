@@ -215,7 +215,8 @@ FL_DocLayout* fp_Page::getDocLayout()
 
 void fp_Page::_drawCropMarks(dg_DrawArgs* pDA)
 {
-    if(m_pView->getShowPara() 
+    if(m_pView->getShowPara()
+	   && m_pView->getViewMode() == VIEW_PRINT // only draw the cropmarks if we are in the Print Layout view
 	   && pDA->pG->queryProperties(GR_Graphics::DGP_SCREEN)
 	   && countColumnLeaders() > 0)
 	{

@@ -232,8 +232,10 @@ bool pt_VarSet::mergeAP(PTChangeFmt ptc, PT_AttrPropIndex apiOld,
 		const XML_Char * szStyle;
 		const XML_Char * szSName;
 		bool bFound = false;
-		//there is something wrong with getAttribute
-        //papOld->getAttribute(PT_STYLE_ATTRIBUTE_NAME, szStyle);
+
+		//there is something wrong with getAttribute. What? Who wrote this???  - Martin
+
+		//      papOld->getAttribute(PT_STYLE_ATTRIBUTE_NAME, szStyle);
 		for(UT_uint32 k = 0; k < papOld->getAttributeCount();k++)
 		{
 			papOld->getNthAttribute(k, szSName, szStyle);

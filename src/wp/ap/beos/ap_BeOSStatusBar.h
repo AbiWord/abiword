@@ -43,8 +43,10 @@ public:
 	AP_BeOSStatusBar(XAP_Frame * pFrame);
 	virtual ~AP_BeOSStatusBar(void);
 
+	virtual void		show(void);
+	virtual void		hide(void);
 	virtual void		setView(AV_View * pView);
-	be_GRDrawView *				createWidget(BRect r);
+	be_GRDrawView *	createWidget(BRect r);
 
 protected:
 	be_GRDrawView *				m_wStatusBar;

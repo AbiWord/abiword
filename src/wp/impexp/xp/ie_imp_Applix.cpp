@@ -202,7 +202,7 @@ IE_Imp_Applix::~IE_Imp_Applix()
 }
 
 IE_Imp_Applix::IE_Imp_Applix(PD_Document * pDocument)
-	: IE_Imp(pDocument), m_bLastWasP(false), m_bInT(false), m_textBuf(1024), m_axContext(axCtxVar)
+	: IE_Imp(pDocument), m_textBuf(1024), m_axContext(axCtxVar)
 {
 	
 }
@@ -216,6 +216,7 @@ IE_Imp_Applix::IE_Imp_Applix(PD_Document * pDocument)
 UT_Error IE_Imp_Applix::_writeHeader(FILE * /* fp */)
 {
 	X_ReturnNoMemIfError(getDoc()->appendStrux(PTX_Section, NULL));
+	X_ReturnNoMemIfError(getDoc()->appendStrux(PTX_Block, NULL));
 
 	return UT_OK;
 }

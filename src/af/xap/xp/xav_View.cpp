@@ -204,6 +204,8 @@ void AV_View::removeScrollListener(AV_ScrollObj* pObj)
 
 void AV_View::sendVerticalScrollEvent(UT_sint32 yoff, UT_sint32 ylimit)
 {
+	if(getWindowHeight() < 20)
+		return;
 	UT_sint32 count = m_scrollListeners.getItemCount();
 
 	for (UT_sint32 i = 0; i < count; i++)
@@ -215,6 +217,9 @@ void AV_View::sendVerticalScrollEvent(UT_sint32 yoff, UT_sint32 ylimit)
 
 void AV_View::sendHorizontalScrollEvent(UT_sint32 xoff, UT_sint32 xlimit)
 {
+	if(getWindowHeight() < 20)
+		return;
+
 	UT_sint32 count = m_scrollListeners.getItemCount();
 
 	for (UT_sint32 i = 0; i < count; i++)

@@ -41,7 +41,7 @@ public:
 	
 	virtual ~EV_QNXToolbar(void);
 
-	bool toolbarEvent(XAP_Toolbar_Id id, UT_UCSChar * pData, UT_uint32 dataLength);
+	bool toolbarEvent(XAP_Toolbar_Id id, char * pData, UT_uint32 dataLength);
 	virtual bool synthesize(void);
 	bool bindListenerToView(AV_View * pView);
 	bool refreshToolbar(AV_View * pView, AV_ChangeMask mask);

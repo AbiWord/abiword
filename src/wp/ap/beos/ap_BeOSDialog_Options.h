@@ -62,7 +62,7 @@ public:
  
  	SET_GATHER			(ViewShowRuler,		bool );
 	//TF: Deprecated with specific toolbar toggling
-	//SET_GATHER			(ViewShowToolbars,	bool );
+//	SET_GATHER			(ViewShowToolbars,	bool );
 	SET_GATHER			(ViewShowStandardBar,	bool );
  	SET_GATHER			(ViewShowFormatBar,	bool );
  	SET_GATHER			(ViewShowExtraBar,	bool );

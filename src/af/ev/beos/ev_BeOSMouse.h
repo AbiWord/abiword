@@ -44,6 +44,7 @@ public:
 private:
 	UT_uint32		m_clickState;   /* {NoClick,SingleClick,DoubleClick} */
         EV_EditMouseContext	m_contextState; /* mouse context of click */ 
+        bool m_bIsTracking;
 };
 
 #endif // EV_BEOSMOUSE_H

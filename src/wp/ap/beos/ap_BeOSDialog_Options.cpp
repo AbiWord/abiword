@@ -74,7 +74,7 @@ status_t OptionsWin::WaitForDelete(sem_id blocker)
 	if (pWin) {
 		do {
 			pWin->Unlock();
-			snooze(7);
+			snooze(100);
 			pWin->Lock();
 			
 			// update the window periodically
@@ -138,6 +138,7 @@ void OptionsWin::SetDlg(AP_BeOSDialog_Options *dlg)
 	m_DlgOptions->m_answer = AP_Dialog_Options::a_CANCEL;
 
 	WaitForDelete(modalSem);
+	Hide();
 }
 
 #define FIND_CONTROL(handle , chartitle) \
@@ -192,37 +193,40 @@ void OptionsWin::DispatchMessage(BMessage *msg, BHandler *handler)
 		break;
 	
 	case 'appl':
+		// Apply pressed.
 		m_DlgOptions->m_answer = AP_Dialog_Options::a_APPLY;
 		m_DlgOptions->_storeWindowData();
-		break;
+//		break;
 		
-	TOGGLE_BASED_ON_MESSAGE('cbsp' , m_DlgOptions->id_CHECK_SPELL_CHECK_AS_TYPE)
-	TOGGLE_BASED_ON_MESSAGE('chhe' , m_DlgOptions->id_CHECK_SPELL_HIDE_ERRORS)
-	TOGGLE_BASED_ON_MESSAGE('chsc' , m_DlgOptions->id_CHECK_SPELL_SUGGEST)
-	TOGGLE_BASED_ON_MESSAGE('chmd' , m_DlgOptions->id_CHECK_SPELL_MAIN_ONLY)
-	TOGGLE_BASED_ON_MESSAGE('cbup' , m_DlgOptions->id_CHECK_SPELL_UPPERCASE)
-	TOGGLE_BASED_ON_MESSAGE('chnu' , m_DlgOptions->id_CHECK_SPELL_NUMBERS)
-	TOGGLE_BASED_ON_MESSAGE('chia' , m_DlgOptions->id_CHECK_SPELL_INTERNET)
-	TOGGLE_BASED_ON_MESSAGE('chas' , m_DlgOptions->id_CHECK_PREFS_AUTO_SAVE)
-	TOGGLE_BASED_ON_MESSAGE('cbru' , m_DlgOptions->id_CHECK_VIEW_SHOW_RULER)
-	  //TOGGLE_BASED_ON_MESSAGE('chtb' , m_DlgOptions->id_CHECK_VIEW_SHOW_TOOLBARS)
-	TOGGLE_BASED_ON_MESSAGE('cbcb' , m_DlgOptions->id_CHECK_VIEW_CURSOR_BLINK)
-	TOGGLE_BASED_ON_MESSAGE('cbsq' , m_DlgOptions->id_CHECK_SMART_QUOTES_ENABLE)
-	TOGGLE_BASED_ON_MESSAGE('cbal' , m_DlgOptions->id_CHECK_VIEW_ALL)
-	TOGGLE_BASED_ON_MESSAGE('cbht' , m_DlgOptions->id_CHECK_VIEW_HIDDEN_TEXT)
-	TOGGLE_BASED_ON_MESSAGE('cbuc' , m_DlgOptions->id_CHECK_VIEW_UNPRINTABLE)
+		TOGGLE_BASED_ON_MESSAGE('cbsp' , m_DlgOptions->id_CHECK_SPELL_CHECK_AS_TYPE)
+		TOGGLE_BASED_ON_MESSAGE('chhe' , m_DlgOptions->id_CHECK_SPELL_HIDE_ERRORS)
+		TOGGLE_BASED_ON_MESSAGE('chsc' , m_DlgOptions->id_CHECK_SPELL_SUGGEST)
+		TOGGLE_BASED_ON_MESSAGE('chmd' , m_DlgOptions->id_CHECK_SPELL_MAIN_ONLY)
+		TOGGLE_BASED_ON_MESSAGE('cbup' , m_DlgOptions->id_CHECK_SPELL_UPPERCASE)
+		TOGGLE_BASED_ON_MESSAGE('chnu' , m_DlgOptions->id_CHECK_SPELL_NUMBERS)
+		TOGGLE_BASED_ON_MESSAGE('chia' , m_DlgOptions->id_CHECK_SPELL_INTERNET)
+		TOGGLE_BASED_ON_MESSAGE('chas' , m_DlgOptions->id_CHECK_PREFS_AUTO_SAVE)
+		TOGGLE_BASED_ON_MESSAGE('cbru' , m_DlgOptions->id_CHECK_VIEW_SHOW_RULER)
+//		TOGGLE_BASED_ON_MESSAGE('chtb' , m_DlgOptions->id_CHECK_VIEW_SHOW_TOOLBARS)
+		TOGGLE_BASED_ON_MESSAGE('cbcb' , m_DlgOptions->id_CHECK_VIEW_CURSOR_BLINK)
+		TOGGLE_BASED_ON_MESSAGE('cbsq' , m_DlgOptions->id_CHECK_SMART_QUOTES_ENABLE)
+		TOGGLE_BASED_ON_MESSAGE('cbal' , m_DlgOptions->id_CHECK_VIEW_ALL)
+		TOGGLE_BASED_ON_MESSAGE('cbht' , m_DlgOptions->id_CHECK_VIEW_HIDDEN_TEXT)
+		TOGGLE_BASED_ON_MESSAGE('cbuc' , m_DlgOptions->id_CHECK_VIEW_UNPRINTABLE)
 	
-        TOGGLE_BASED_ON_MESSAGE('cbet' , m_DlgOptions->id_CHECK_VIEW_SHOW_EXTRA_TOOLBAR) 
-        TOGGLE_BASED_ON_MESSAGE('cbft' , m_DlgOptions->id_CHECK_VIEW_SHOW_FORMAT_TOOLBAR) 
-        TOGGLE_BASED_ON_MESSAGE('cbst' , m_DlgOptions->id_CHECK_VIEW_SHOW_STANDARD_TOOLBAR) 
-        TOGGLE_BASED_ON_MESSAGE('stat' , m_DlgOptions->id_CHECK_VIEW_SHOW_STATUS_BAR) 
+		TOGGLE_BASED_ON_MESSAGE('cbet' , m_DlgOptions->id_CHECK_VIEW_SHOW_EXTRA_TOOLBAR) 
+		TOGGLE_BASED_ON_MESSAGE('cbft' , m_DlgOptions->id_CHECK_VIEW_SHOW_FORMAT_TOOLBAR) 
+		TOGGLE_BASED_ON_MESSAGE('cbst' , m_DlgOptions->id_CHECK_VIEW_SHOW_STANDARD_TOOLBAR) 
+		TOGGLE_BASED_ON_MESSAGE('stat' , m_DlgOptions->id_CHECK_VIEW_SHOW_STATUS_BAR) 
+		break;
+
 #if 0
 	case 'ctog':
 		// Any checkbox toggled.
 		if(msg->FindPointer("source" , (void **)&pSource) == B_OK)
 		{
 	
-	case AP_RID_DIALOG_OPTIONS_CHK_SpellCheckAsType:	_enableDisableLogic(id_CHECK_SPELL_CHECK_AS_TYPE);
+	case AP_RID_DIALOG_OPTIONS_CHK_SpellCheckAsType:		_enableDisableLogic(id_CHECK_SPELL_CHECK_AS_TYPE);
 	case AP_RID_DIALOG_OPTIONS_CHK_SpellHideErrors:		_enableDisableLogic(id_CHECK_SPELL_HIDE_ERRORS);
 	case AP_RID_DIALOG_OPTIONS_CHK_SpellSuggest:		_enableDisableLogic(id_CHECK_SPELL_SUGGEST);
 	case AP_RID_DIALOG_OPTIONS_CHK_SpellMainOnly:		_enableDisableLogic(id_CHECK_SPELL_MAIN_ONLY);
@@ -234,7 +238,7 @@ void OptionsWin::DispatchMessage(BMessage *msg, BHandler *handler)
 	case AP_RID_DIALOG_OPTIONS_CHK_ViewShowRuler:		_enableDisableLogic(id_CHECK_VIEW_SHOW_RULER);
 	case AP_RID_DIALOG_OPTIONS_CHK_ViewCursorBlink:		_enableDisableLogic(id_CHECK_VIEW_CURSOR_BLINK);
 	case AP_RID_DIALOG_OPTIONS_CHK_ViewShowToolbars:	_enableDisableLogic(id_CHECK_VIEW_SHOW_TOOLBARS);
-	case AP_RID_DIALOG_OPTIONS_CHK_ViewAll:				_enableDisableLogic(id_CHECK_VIEW_ALL);
+	case AP_RID_DIALOG_OPTIONS_CHK_ViewAll:			_enableDisableLogic(id_CHECK_VIEW_ALL);
 	case AP_RID_DIALOG_OPTIONS_CHK_ViewHiddenText:		_enableDisableLogic(id_CHECK_VIEW_HIDDEN_TEXT);
 	case AP_RID_DIALOG_OPTIONS_CHK_ViewUnprintable:		_enableDisableLogic(id_CHECK_VIEW_UNPRINTABLE);
 
@@ -251,7 +255,7 @@ void OptionsWin::DispatchMessage(BMessage *msg, BHandler *handler)
 bool OptionsWin::QuitRequested()
 {
 	delete_sem(modalSem);
-	return(true);
+	return(false);
 }
 
 /*****************************************************************/
@@ -394,13 +398,15 @@ void AP_BeOSDialog_Options::runModal(XAP_Frame * pFrame)
                 newwin = new OptionsWin(&msg);
                 newwin->SetDlg(this);
                 //Take the information here ...
-//                newwin->Lock();
-  //              newwin->Close(); 
+                newwin->Lock();
+                newwin->Close(); 
         }                
 }
 		
 void AP_BeOSDialog_Options::_controlEnable( tControl id, bool value )
 {
+	bool b_find = true;
+
 	newwin->Lock();
 	
 	BTabView* pView = (BTabView *)newwin->FindView("TabView"); \
@@ -411,105 +417,90 @@ void AP_BeOSDialog_Options::_controlEnable( tControl id, bool value )
 	
 	case id_CHECK_SPELL_CHECK_AS_TYPE:
 		FIND_CONTROL(control,"SpellCheckAsType")
-		control->SetValue(value);
 		break;
 
 	case id_CHECK_SPELL_HIDE_ERRORS:
 		FIND_CONTROL(control,"SpellHideErrors")
-		control->SetValue(value);
 		break;
 
 	case id_CHECK_SPELL_SUGGEST:
 		FIND_CONTROL(control,"SpellSuggest")
-		control->SetValue(value);
 		break;
 
 	case id_CHECK_SPELL_MAIN_ONLY:
 		FIND_CONTROL(control,"SpellMainOnly")
-		control->SetValue(value);
 		break;
 
 	case id_CHECK_SPELL_UPPERCASE:
 		FIND_CONTROL(control,"SpellUppercase")
-		control->SetValue(value);
 		break;
 
 	case id_CHECK_SPELL_NUMBERS:
 		FIND_CONTROL(control,"SpellNumbers")
-		control->SetValue(value);	
 		break;
 
 	case id_CHECK_SPELL_INTERNET:
 		FIND_CONTROL(control,"SpellInternet")
-		control->SetValue(value);		
 		break;
 
 	case id_CHECK_PREFS_AUTO_SAVE:
 		FIND_CONTROL(control,"AutoSavePrefs")
-		control->SetValue(value);
 		break;
 
 	case id_CHECK_VIEW_SHOW_RULER:
 		FIND_CONTROL(control,"RulerEnable")
-		control->SetValue(value);
 		break;
 
 	case id_CHECK_VIEW_CURSOR_BLINK:
 		FIND_CONTROL(control, "chkCursorBlinkEnable")
-		control->SetValue(value);
 		break;
 	
-/*TF: Deprecated with specific toolbar toggling
-	case id_CHECK_VIEW_SHOW_TOOLBARS:
+//TF: Deprecated with specific toolbar toggling
+/*	case id_CHECK_VIEW_SHOW_TOOLBARS:
 		FIND_CONTROL(control,"chkToolbarsEnable")
-		control->SetValue(value);
 		break;
 */
-
 	case id_CHECK_VIEW_SHOW_STANDARD_TOOLBAR:
 		FIND_CONTROL(control,"chkStandardBarEnable")
-		control->SetValue(value);
 		break;
 
 	case id_CHECK_VIEW_SHOW_FORMAT_TOOLBAR:
 		FIND_CONTROL(control,"chkFormatBarEnable")
-		control->SetValue(value);
 		break;
 
 	case id_CHECK_VIEW_SHOW_EXTRA_TOOLBAR:
 		FIND_CONTROL(control,"chkExtraBarEnable")
-		control->SetValue(value);
 		break;
 
 	case id_CHECK_VIEW_SHOW_STATUS_BAR:
 		FIND_CONTROL(control,"chkStatusEnable")
-		control->SetValue(value);
 		break;
-
 
 	case id_CHECK_VIEW_ALL:
 		FIND_CONTROL(control,"chkViewAll")
-		control->SetValue(value);
 		break;
 
 	case id_CHECK_VIEW_HIDDEN_TEXT:
 		FIND_CONTROL(control,"chkViewHiddenText")
-		control->SetValue(value);
 		break;
 
 	case id_CHECK_VIEW_UNPRINTABLE:
 		FIND_CONTROL(control,"chkViewUnprintable")
-		control->SetValue(value);
 		break;
 		
 	case id_CHECK_SMART_QUOTES_ENABLE:
 		FIND_CONTROL(control,"SmartQuotes")
-		control->SetValue(value);
+		break;
+
+	default:
+		b_find = false;
 		break;
 	}
 	
+	if (control && b_find)
+		control->SetValue(value);
 	newwin->Unlock();
-	
+
 	// TODO - change for win32
 #if 0
 	GtkWidget *w = _lookupWidget(id);

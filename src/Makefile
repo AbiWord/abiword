@@ -22,7 +22,7 @@ ABI_ROOT:=$(shell pwd)/..
 
 include $(ABI_ROOT)/src/config/abi_defs.mk
 
-DIRS=		config tools other af text wp ask
+DIRS=		config tools other af text wp
 REQUIRECLEAN=		clean_PSICONV_ clean_EXPAT_
 REQUIREREALCLEAN=		clean_ABI_ clean_ZLIB_ clean_LIBPNG_ \
 clean_LIBWV_ clean_LIBICONV_ realclean_PSICONV_ realclean_EXPAT_
@@ -40,6 +40,7 @@ clean:: $(REQUIRECLEAN)
 	rm -rf $(OBJDIR)
 
 realclean:: $(REQUIREREALCLEAN)
+	rm -rf *OBJ
 
 ##################################################################
 ## Build system library files (strings, dictionaries, example
@@ -72,6 +73,9 @@ else
 			cp $$k american.hash;		\
 			rm $$k ;			\
 		done)
+# We currently only ship american.hash, so the above and below aren't logical.
+# For same reason, this will only copy american.hash-encoding once in place.  The rest is in abispell.
+	@$(ABICOPY) $(ABI_ROOT)/../abidistfiles/dictionary/*.hash-encoding $(CANONDIR)/dictionary	
 endif
 
 	@$(subst xxxx,$(CANONDIR)/clipart,$(VERIFY_DIRECTORY))
@@ -207,7 +211,7 @@ clean_ZLIB_:
 
 clean_LIBPNG_:
 	@if [ -d $(ABI_ROOT)/../libpng ]; then		\
-		$(MAKE) -C $(ABI_ROOT)/../libpng clean;	\
+		$(MAKE) -f Makefile.abi -C $(ABI_ROOT)/../libpng clean;	\
 	fi
 
 clean_PSICONV_:
@@ -216,9 +220,15 @@ clean_PSICONV_:
 	fi
 
 clean_EXPAT_:
+ifeq ($(OS_NAME), WIN32)
+	@if [ -d $(ABI_ROOT)/../expat ]; then		\
+		$(MAKE) -f Makefile.abi -C $(ABI_ROOT)/../expat clean;	\
+	fi
+else
 	@if [ -d $(ABI_ROOT)/../expat ]; then		\
 		$(MAKE) -C $(ABI_ROOT)/../expat clean;	\
 	fi
+endif
 
 # we have to make a realclean here so the configure script reruns
 # if no makefile exists, it is already clean
@@ -240,9 +250,17 @@ realclean_PSICONV_:
 	fi	
 
 realclean_EXPAT_:
+ifeq ($(OS_NAME),WIN32)
+	@if [ -d $(ABI_ROOT)/../expat ]; then	\
+		$(MAKE) -f Makefile.abi -C $(ABI_ROOT)/../expat clean;	\
+		$(RM) $(ABI_ROOT)/../expat/config.h;	\
+		$(RM) $(ABI_ROOT)/../expat/lib/config.h;	\
+	fi	
+else
 	@if [ -d $(ABI_ROOT)/../expat -a -f $(ABI_ROOT)/../expat/lib/Makefile ]; then	\
 		$(MAKE) -C $(ABI_ROOT)/../expat distclean;	\
 	fi	
+endif
 
 clean_ABI_:
 	rm -rf $(OUTDIR) $(DIST)

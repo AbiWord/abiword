@@ -70,6 +70,7 @@ g_i18n_get_language_list (const gchar *category_name);
 
 static GHashTable *alias_table = NULL;
 static GHashTable *category_table= NULL;
+bool prepped_table = 0;
 
 /*read an alias file for the locales*/
 static void
@@ -77,8 +78,10 @@ read_aliases (char *file)
 {
   FILE *fp;
   char buf[256];
-  if (!alias_table)
+  if (!prepped_table) {
     alias_table = g_hash_table_new (g_str_hash, g_str_equal);
+    prepped_table = 1;
+    }
   fp = fopen (file,"r");
   if (!fp)
     return;
@@ -100,13 +103,20 @@ read_aliases (char *file)
   fclose (fp);
 }
 
+static void
+free_entry (void *ekey,void *eval, void* user_data)
+{
+  g_free(ekey);
+  g_free(eval);
+}
+
 /*return the un-aliased language as a newly allocated string*/
 static char *
 unalias_lang (char *lang)
 {
   char *p;
   int i;
-  if (!alias_table)
+  if (!prepped_table)
     {
       read_aliases ("/usr/lib/locale/locale.alias");
       read_aliases ("/usr/local/lib/locale/locale.alias");
@@ -115,6 +125,7 @@ unalias_lang (char *lang)
       read_aliases ("/usr/lib/X11/locale/locale.alias");
       read_aliases ("/usr/openwin/lib/locale/locale.alias");
     }
+
   i = 0;
   while ((p=(char*)g_hash_table_lookup(alias_table,lang)) && strcmp(p, lang))
     {
@@ -132,6 +143,7 @@ unalias_lang (char *lang)
   return lang;
 }
 
+	
 /* Mask for components of locale spec. The ordering here is from
  * least significant to most significant
  */
@@ -302,7 +314,8 @@ const GList *
 g_i18n_get_language_list (const gchar *category_name)
 {
   GList *list;
-
+  prepped_table = 0;
+  
   if (!category_name)
     category_name= "LC_ALL";
 
@@ -355,6 +368,7 @@ g_i18n_get_language_list (const gchar *category_name)
 	      category_memory++;
 	      
 	      cp = unalias_lang(cp);
+
 	      
 	      if (strcmp (cp, "C") == 0)
 		c_locale_defined= TRUE;
@@ -370,9 +384,14 @@ g_i18n_get_language_list (const gchar *category_name)
 
       g_hash_table_insert (category_table, (gpointer) category_name, list);
     }
-  
+
+     g_hash_table_foreach(alias_table, free_entry, NULL);
+     g_hash_table_destroy(alias_table);
+     prepped_table = 0;  
+   
   return list;
 }
+
 
 /************************************************************/
 
@@ -395,7 +414,9 @@ XAP_UnixEncodingManager::XAP_UnixEncodingManager()
 {
 }
 
-XAP_UnixEncodingManager::~XAP_UnixEncodingManager() {}
+XAP_UnixEncodingManager::~XAP_UnixEncodingManager()
+{
+}
 
 static const char * NativeEncodingName;
 static const char * NativeUnicodeEncodingName;
@@ -490,14 +511,13 @@ void  XAP_UnixEncodingManager::initialize()
 			  MYLANG += LanguageISOTerritory;
 			  setenv ("LANG", MYLANG.c_str(), 1);
 #endif
+	           	   const GList* my_lst = g_i18n_get_language_list ("LANG");
+			   const char* my_locname = (char*)my_lst->data;
+			   
+			   char *my_lang,*my_terr,*my_cs,*my_mod;
+			   int my_mask = explode_locale (my_locname,&my_lang,&my_terr,&my_cs,&my_mod);
 			
-				const GList* my_lst = g_i18n_get_language_list ("LANG");
-				const char* my_locname = (char*)my_lst->data;
-				
-	    		char* my_lang,*my_terr,*my_cs,*my_mod;
-    			int my_mask = explode_locale (my_locname,&my_lang,&my_terr,&my_cs,&my_mod);
-				
-				if (my_mask & COMPONENT_CODESET)
+				if (mask & COMPONENT_CODESET)
 				{
 					Native8BitEncodingName = my_cs+1;
 					xxx_UT_DEBUGMSG(("Native8BitEncodingName (1) %s\n", Native8BitEncodingName));

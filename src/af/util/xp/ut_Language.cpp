@@ -103,6 +103,7 @@ static lang_entry s_Table[] =
 	{"zh-HK",		NULL, XAP_STRING_ID_LANG_ZH_HK},
 	{"zh-SG",		NULL, XAP_STRING_ID_LANG_ZH_SG},
 	{"zh-TW",		NULL, XAP_STRING_ID_LANG_ZH_TW},
+	{"yi",			NULL, XAP_STRING_ID_LANG_YI},
 };
 
 static int s_compareQ(const void * a, const void *b)

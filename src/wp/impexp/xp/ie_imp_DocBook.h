@@ -21,7 +21,8 @@
 #ifndef IE_IMP_DOCBOOK_H
 #define IE_IMP_DOCBOOK_H
 
-#include "ie_imp_XML.h"
+#include 	"ie_imp_XML.h"
+#include	"fl_AutoNum.h"
 
 class PD_Document;
 
@@ -66,6 +67,18 @@ public:
 	void			startElement(const XML_Char *name, 
 					      const XML_Char **atts);
 	void			endElement(const XML_Char *name);
+	
+	void charData(const XML_Char *s, int len);
+
+protected:
+	int m_iInSection;
+	int m_iCurListID;
+	fl_AutoNum * m_iTitle [7];
+	bool m_bMustAddTitle;
+	bool m_bTitleAdded;
+	bool m_bMustNumber;
+
+	void createList (void);
 };
 
 #endif /* IE_IMP_DocBook_H */

@@ -1,3 +1,5 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+
 // UT_Stringbuf.cpp
 
 // Copyright (C) 2001 Mike Nordell <tamlin@algonet.se>
@@ -176,6 +178,67 @@ void UT_Stringbuf::copy(char_type* pDest, const char_type* pSrc, size_t n)
 
 /***************************************************************************/
 /***************************************************************************/
+
+/* scans a buffer for the next valid UTF-8 sequence and returns the corresponding
+ * UCS-2 value for that sequence; the pointer and length-remaining are incremented
+ * and decremented respectively; returns 0 if no valid UTF-8 sequence found by the
+ * end of the string
+ */
+UT_UCSChar UT_UCS2Stringbuf::UTF8_to_UCS2 (const char *& buffer, size_t & length)
+{
+	UT_UCSChar ucs2;
+
+	while (true) {
+		ucs2 = 0;
+		if (length == 0) break;
+
+		unsigned char c = static_cast<unsigned char>(*buffer);
+		buffer++;
+		length--;
+
+		if ((c & 0x80) == 0) { // ascii, single-byte sequence
+			ucs2 = static_cast<UT_UCSChar>(c);
+			break;
+		}
+		if ((c & 0xc0) == 0x80) { // hmm, continuing byte - let's just ignore it
+			continue;
+		}
+
+		/* we have a multi-byte sequence...
+		 */
+		size_t seql;
+
+		if ((c & 0xe0) == 0xc0) {
+			seql = 2;
+			ucs2 = static_cast<UT_UCSChar>(c & 0x1f);
+		}
+		else if ((c & 0xf0) == 0xe0) {
+			seql = 3;
+			ucs2 = static_cast<UT_UCSChar>(c & 0x0f);
+		}
+		else { // or perhaps we don't :-( - whatever it is, let's just ignore it
+			continue;
+		}
+
+		if (length < seql - 1) { // huh? broken sequence perhaps? anyway, let's just ignore it
+			continue;
+		}
+
+		bool okay = true;
+		for (size_t i = 1; i < seql; i++) {
+			c = static_cast<unsigned char>(*buffer);
+			buffer++;
+			length--;
+			if ((c & 0xc0) != 0x80) { // not a continuing byte? grr!
+				okay = false;
+				break;
+			}
+			ucs2 = ucs2 << 6 | static_cast<UT_UCSChar>(c & 0x3f);
+		}
+		if (okay) break;
+	}
+	return ucs2;
+}
 
 UT_UCS2Stringbuf::UT_UCS2Stringbuf()
 :	m_psz(0),
@@ -548,6 +611,138 @@ void UT_UTF8Stringbuf::append (const UT_UTF8Stringbuf & rhs)
 	}
 }
 
+/* escapes '<', '>' & '&' in the current string
+ */
+void UT_UTF8Stringbuf::escapeXML ()
+{
+	size_t incr = 0;
+
+	char * ptr = m_psz;
+	while (ptr < m_pEnd)
+		{
+			if ((*ptr == '<') || (*ptr == '>')) incr += 3;
+			else if (*ptr == '&') incr += 4;
+			ptr++;
+		}
+	bool bInsert = grow (incr);
+
+	ptr = m_psz;
+	while (ptr < m_pEnd)
+		{
+			if (*ptr == '<')
+				{
+					if (bInsert)
+						{
+							*ptr++ = '&';
+							insert (ptr, "lt;", 3);
+						}
+					else *ptr++ = '?';
+				}
+			else if (*ptr == '>')
+				{
+					if (bInsert)
+						{
+							*ptr++ = '&';
+							insert (ptr, "gt;", 3);
+						}
+					else *ptr++ = '?';
+				}
+			else if (*ptr == '&')
+				{
+					if (bInsert)
+						{
+							*ptr++ = '&';
+							insert (ptr, "amp;", 4);
+						}
+					else *ptr++ = '?';
+				}
+			else ptr++;
+		}
+}
+
+/* translates the current string to MIME "quoted-printable" format
+ */
+void UT_UTF8Stringbuf::escapeMIME ()
+{
+	static const char hex[16] = { '0','1','2','3','4','5','6','7','8','9','A','B','C','D','E','F' };
+	static const char * s_eol = "=\r\n";
+
+	if (m_strlen == 0) return;
+
+	size_t bytes = 0;
+	char * ptr = m_psz;
+	while (*ptr)
+		{
+			char c = *ptr++;
+			unsigned char u = static_cast<unsigned char>(c);
+
+			if ((c == '\r') || (c == '\n') || (c == '=') || (u & 0x80)) bytes += 2;
+		}
+	if (bytes)
+		{
+			if (!grow (bytes)) return;
+
+			char * pOld = m_pEnd;
+			char * pNew = m_pEnd + bytes;
+
+			while (pOld >= m_psz)
+				{
+					char c = *pOld--;
+					unsigned char u = static_cast<unsigned char>(c);
+
+					if ((u & 0x80) || (c == '\r') || (c == '\n') || (c == '='))
+						{
+							*pNew-- = hex[ u       & 0x0f];
+							*pNew-- = hex[(u >> 4) & 0x0f];
+							*pNew-- = '=';
+						}
+					else *pNew-- = c;
+				}
+			m_pEnd += bytes;
+			m_strlen = m_pEnd - m_psz;
+		}
+
+	size_t length = 0;
+	ptr = m_psz;
+	while (true)
+		{
+			if (*ptr == 0)
+				{
+					if (length)
+						{
+							size_t offset = ptr - m_psz;
+							if (grow (3))
+								{
+									ptr = m_psz + offset;
+									insert (ptr, s_eol, 3);
+								}
+						}
+					break;
+				}
+			if (length >= 70)
+				{
+					size_t offset = ptr - m_psz;
+					if (grow (3))
+						{
+							ptr = m_psz + offset;
+							insert (ptr, s_eol, 3);
+						}
+					length = 0;
+				}
+
+			if (*ptr == '=')
+				{
+					ptr += 3;
+					length += 3;
+				}
+			else
+				{
+					ptr++;
+					length++;
+				}
+		}
+}
+
 void UT_UTF8Stringbuf::clear ()
 {
 	if (m_psz) free (m_psz);
@@ -555,6 +750,30 @@ void UT_UTF8Stringbuf::clear ()
 	m_pEnd = 0;
 	m_strlen = 0;
 	m_buflen = 0;
+}
+
+void UT_UTF8Stringbuf::insert (char *& ptr, const char * str, size_t utf8length)
+{
+	if ( str == 0) return;
+	if (*str == 0) return;
+
+	if ((ptr < m_psz) || (ptr > m_pEnd)) return;
+
+	char * orig_buf = m_psz;
+	char * orig_ptr = ptr;
+
+	size_t length = (size_t) strlen (str);
+
+	if (!grow (length)) return;
+
+	ptr = m_psz + (orig_ptr - orig_buf);
+
+	memmove (ptr + length, ptr, (m_pEnd - ptr) + 1);
+	memcpy (ptr, str, length);
+
+	ptr += length;
+	m_pEnd += length;
+	m_strlen += utf8length;
 }
 
 bool UT_UTF8Stringbuf::grow (size_t length)

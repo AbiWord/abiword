@@ -1198,11 +1198,23 @@ UT_Error IE_Imp_WordPerfect::_handleAttributeOn()
 
 	switch (readVal)
 	  { 
-	   case 14: // underline
-	     m_textAttributes.m_underLine = true;
-	     break;
+	   case 5: // superscript
+		  m_textAttributes.m_superScript = true;
+		  break;
+	   case 6: // subscript
+		  m_textAttributes.m_subScript = true;
+		  break;
+	   case 8: // italics
+		  m_textAttributes.m_italics = true;
+	      break;
 	   case 12: // bold
 	     m_textAttributes.m_bold = true;
+	     break;
+	   case 13: // strike-out
+		  m_textAttributes.m_strikeOut = true;
+	      break;
+	   case 14: // underline
+	     m_textAttributes.m_underLine = true;
 	     break;
 	   default: // something we don't support yet
 	     break;
@@ -1234,14 +1246,27 @@ UT_Error IE_Imp_WordPerfect::_handleAttributeOff()
 
 	switch (readVal)
 	  { 
-	   case 14: // underline
-	     m_textAttributes.m_underLine = false;
-	     break;
+	   case 5: // superscript
+		  m_textAttributes.m_superScript = false;
+		  break;
+	   case 6: // subscript
+		  m_textAttributes.m_subScript = false;
+		  break;
+	   case 8: // italics
+		  m_textAttributes.m_italics = false;
+	      break;
 	   case 12: // bold
 	     m_textAttributes.m_bold = false;
 	     break;
+	   case 13: // strike-out
+		  m_textAttributes.m_strikeOut = false;
+	      break;
+	   case 14: // underline
+	     m_textAttributes.m_underLine = false;
+	     break;
 	   default: // something we don't support yet
 	     break;
+
 	  }
         
  	X_CheckWordPerfectError(_appendCurrentTextProperties());
@@ -1585,30 +1610,30 @@ UT_Error IE_Imp_WordPerfect::_appendCurrentTextProperties()
 
    // italic
    propBuffer += "; font-style:";
-
    if ( m_textAttributes.m_italics )
      propBuffer += "italic" ;
    else
      propBuffer += "normal";
 
-   // underline & overline & strike-out
-   propBuffer += "; text-decoration:";
-   static UT_String decors;
-   decors.clear();
-   if (m_textAttributes.m_underLine)
-     {
-	decors += "underline ";
-     }
-   if (m_textAttributes.m_strikeOut)
-     {
-	decors += "line-through ";
-     }
-   if(!m_textAttributes.m_underLine  &&  
-      !m_textAttributes.m_strikeOut)
-     {
-	decors = "none";
-     }
-   propBuffer += decors;
+   // superscript or subscript
+   if ( m_textAttributes.m_superScript || m_textAttributes.m_subScript )
+   {
+	   propBuffer += "; text-position:";
+	   if ( m_textAttributes.m_superScript )
+		 propBuffer += "superscript" ;
+	   else
+		 propBuffer += "subscript" ;
+   }
+   
+   // underline & strike-out
+   if (m_textAttributes.m_underLine || m_textAttributes.m_strikeOut)
+   {
+	   propBuffer += "; text-decoration:";
+	   if (m_textAttributes.m_underLine)
+		 propBuffer += "underline ";
+	   if (m_textAttributes.m_strikeOut)
+		 propBuffer += "line-through ";
+   }
    
    UT_String_sprintf(tempBuffer, "; font-size:%spt", std_size_string((float)m_textAttributes.m_fontSize));
    propBuffer += tempBuffer;
@@ -1675,7 +1700,7 @@ UT_Error IE_Imp_WordPerfect::_appendSection()
    propsArray[0] = "props";
    propsArray[2] = NULL ;
 
-   setlocale(LC_NUMERIC, "C");
+   char * old_locale = setlocale(LC_NUMERIC, "C");
 	
    if (m_bLeftMarginSet)
    {
@@ -1703,7 +1728,7 @@ UT_Error IE_Imp_WordPerfect::_appendSection()
       myProps += UT_String_sprintf("columns:%d", m_numberOfColumns);
    }
   
-   setlocale(LC_NUMERIC, NULL);
+   setlocale(LC_NUMERIC, old_locale);
    propsArray[1] = (XML_Char*)myProps.c_str() ;
 
    if (myProps.size() == 0)

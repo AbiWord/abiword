@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml/DTD/xhtml1-strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<!-- 
+Copyright 2002 David Chart
+ Permission is granted to copy, distribute and/or modify this document under the terms of the GNU Free Documentation License, Version 1.1 or any later version published by the Free Software Foundation; with no Invariant Sections, with no Front-Cover Texts, and with no Back-Cover Texts A copy of the license is included in the section entitled "GNU Free Documentation License"
+//-->
+<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+<title>Formats de fichiers d'AbiWord
+</title>
+<link href="../style.css" rel="stylesheet" type="text/css" />
+
+</head>
+<body>
+
+<div class="banner">
+<a href="../index.html" class="bars">Page d'accueil</a> &gt; <a href="index.html" class="bars">Information</a> &gt; Formats de fichiers
+ 
+</div>
+
+<div class="main">
+
+
+
+<h1>Formats de fichiers</h1>
+<p>AbiWord peut ouvrir et enregistrer les fichiers sous plusieurs formats différents. Les portions de programmes qui ouvrent les fichiers sont nommés importateurs et ceux qui enregistrent sont nommés exportateurs. La plupart des importateurs et exportateurs d'AbiWord sont des modules. L'information au sujet des formats de fichiers supportés par les modules peut être consultée dans la documentation des <a href="../plugins/index.html">modules</a>. Le fait de rendre les importateurs et exportateurs disponibles sous forme de modules implique que vous pouvez installer seulement ceux que vous désirez utiliser. Puisque les modules d'AbiWord peuvent supporter certains formats de fichiers spécialisés, il serait étonnant que vous deviez tous les posséder.</p>
+<p>Ce document explique les importateurs et exportateurs qui font partie de l'application elle-même.</p>
+
+<h2>AbiWord</h2>
+<p>Voici le format de fichier propre à AbiWord, il est aussi désigné comme son format de fichier natif. Vous pouvez enregistrer vos fichiers sous ce format à moins que vous n'ayez de bonnes raisons d'en employer un autre. Quelques bonnes raisons sont discutées dans les paragraphes qui suivent.</p>
+
+<h2>AbiWord Template</h2>
+<p>Voici le format de modèles d'AbiWord. Les modèles vous permettent de définir un ensemble de styles et le contenu initial que vous utilisez fréquemment. Les modèles sont expliqués en détail dans la documentation des <a href="../howto/howtonormaltemplate.html">modèles</a>.</p>
+
+<h2>Microsoft Word</h2>
+<p>Voici le format natif des fichiers de Microsoft Word. Il devrait être utilisé lorsque vous désirez lire des fichiers produits par cette application. Pour le moment, AbiWord ne peut exporter des documents Microsoft Word, vous devriez employer le format <span style="font-style: italic">RTF</span>, décrit plus bas, pour transmettre des fichiers aux personnes qui utilisent Word.</p>
+
+<h2>HTML 4.0/XHTML 1.0</h2>
+<p>Ces formats sont utilisés pour publier des documents sur le World Wide Web. Ils peuvent alors être facilement lu par les navigateurs web. XHTML est un nouveau standard, certains navigateurs plus anciens ne le supportent pas correctement. Enregistrez vos documents dans un des ces formats si vous désirez les intégrer dans un site web.</p>
+
+<h2>Rich Text Format</h2>
+<p>Le <span style="font-style: italic">Rich Text Format</span> ou <span style="font-style: italic">RTF</span>, est un format de fichier qui contient toute la mise en forme de votre fichier et qui peut être lu par la majorité des traitements de texte. C'est le format que vous devriez utiliser pour transmettre un fichier à une personne qui n'emploie pas AbiWord. <span style="font-style: italic">Rich Text Format for old apps</span> est une version plus ancienne du <span style="font-style: italic">RTF</span> ; seulement des applications très anciennes supportent que ce format. Vous devriez utiliser le format <span style="font-style: italic">RTF</span> normal à moins que vous sachiez que cet ancien format vous est nécessaire.</p>
+
+<h2>Text/Encoded Text</h2>
+<p>Il s'agit ici du format pour le texte normal, sans mise en forme d'aucune sorte. Toute personne qui possède un ordinateur peut lire les fichiers sous ce format. Alors, si vous êtes incertain sur le format à utiliser, celui-ci est le plus sûr. <span style="font-style: italic">Text</span> est du texte ASCII qui ne supporte pas les accents ou les caractères en dehors de l'alphabet ou de la ponctuation de l'Anglais normal. <span style="font-style: italic">Encoded Text</span> couvre le texte qui inclut les caractères accentués ou les caractères propres à d'autres systèmes d'écriture. Vous devriez employer le format <span style="font-style: italic">Text</span> ordinaire à moins que votre document contiennent des caractères non reconnus par la langue anglaise. NdT : Utilisez <span style="font-style: italic; text-position: ; color:#000000; font-family: 'Times New Roman'; font-size: 12,000000pt">Encoded Text</span> pour vos textes en Français<span style="text-position: ; color:#000000; font-family: 'Times New Roman'; font-size: 12,000000pt">.</span></p>
+
+<h2>GZipped AbiWord</h2>
+<p>Voici le format natif d'AbiWord comprimé par l'utilisation de l'algorithme gzip. Ceci signifie que le fichier final est plus petit et peut être retransformé en fichier AbiWord ordinaire par l'utilisation d'une des nombreuses applications qui supportent gzip. Vous devriez utiliser ce format si vous devez transmettre de gros fichiers sur l'internet ou si vous manquez d'espace disque. Autrement, il est préférable d'employer le format natif. Si une erreur disque endommage une partie d'un fichier au format gzip, il peut être impossible de récupérer son contenu. Un fichier AbiWord par ailleurs peut être récupéré relativement facilement.</p>
+</div>
+
+<div class="index">
+<a href="../index.html" class="bars">Page d'accueil</a>
+<a href="../tutorial/index.html" class="bars">Tutoriel</a>
+<a href="../howto/index.html" class="bars">Astuces</a>
+<a href="../info/index.html" class="bars">Information</a>
+<a href="../interface/index.html" class="bars">Interface</a>
+<a href="../plugins/index.html" class="bars">Modules</a> 
+<a href="../problems/index.html" class="bars">Problèmes</a>
+<a href="../credits.html" class="bars">Crédits</a>
+<a href="../azindex.html" class="bars">Index</a>
+<a href="../fdl.html" class="bars">GNU FDL</a> 
+</div>
+
+</body>
+</html>
+

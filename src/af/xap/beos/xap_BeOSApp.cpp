@@ -91,7 +91,7 @@ const char * XAP_BeOSApp::getUserPrivateDirectory(void) {
 #define PATH_MAX 4096
 #endif
 
-        char * szAbiDir = ".AbiSuite";
+        char * szAbiDir = "config/settings/AbiSuite";
 
         static char buf[PATH_MAX];
         memset(buf,0,sizeof(buf));
@@ -130,7 +130,9 @@ void XAP_BeOSApp::_setAbiSuiteLibDir(void) {
 			int len = strlen(buf);
 			if (buf[len-1]=='/')            // trim trailing slash
 				buf[len-1] = 0;
+
 			XAP_App::_setAbiSuiteLibDir(buf);
+	printf("abi2\n");
 			return;
 		}
 
@@ -151,6 +153,10 @@ void XAP_BeOSApp::_setAbiSuiteLibDir(void) {
 		}
 		if (p[len-1]=='/')                  // trim trailingslash
 			p[len-1] = 0;
+
+		printf("ABISUITE_HOME= ");
+		printf(p);
+		printf("\n");
 		XAP_App::_setAbiSuiteLibDir(p);
 		return;
 	}
@@ -167,6 +173,9 @@ void XAP_BeOSApp::_setAbiSuiteLibDir(void) {
 		buf[len-1] = 0;
 #endif
 
+	printf("ABISUITE_HOME= ");
+	printf(buf);
+	printf("\n");
 	XAP_App::_setAbiSuiteLibDir(buf);
 	return;
 }

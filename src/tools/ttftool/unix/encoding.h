@@ -1,3 +1,5 @@
+/* Copyright (c) 1997-1998 by Juliusz Chroboczek */
+
 #ifndef TTF_ENCODING_H
 #define TTF_ENCODING_H
 

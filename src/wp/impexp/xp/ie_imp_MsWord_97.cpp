@@ -508,7 +508,7 @@ IE_Imp_MsWord_97::IE_Imp_MsWord_97(PD_Document * pDocument)
 /****************************************************************************/
 /****************************************************************************/
 
-#define ErrCleanupAndExit(code)  do {wvOLEFree (); return(code);} while(0)
+#define ErrCleanupAndExit(code)  do {wvOLEFree (&ps); return(code);} while(0)
 
 #define GetPassword() _getPassword ( getDoc()->getApp()->getLastFocussedFrame() )
 
@@ -627,7 +627,7 @@ UT_Error IE_Imp_MsWord_97::importFile(const char * szFilename)
   
   // HACK - this will do until i sort out some global stream ugliness in wv
   if ( !decrypted )
-    wvOLEFree();
+    wvOLEFree(&ps);
   
   // We can't be in a good state if we didn't add any sections!
   if (m_nSections == 0)
@@ -1342,6 +1342,7 @@ int IE_Imp_MsWord_97::_beginSect (wvParseStruct *ps, UT_uint32 tag,
 
 	// increment our section count
 	m_bInSect = true;
+	m_bInPara = false; // reset paragraph status
 	m_nSections++;
 
 	// TODO: we need to do some work on Headers/Footers
@@ -1406,6 +1407,7 @@ int IE_Imp_MsWord_97::_endSect (wvParseStruct *ps, UT_uint32 tag,
 		m_pTextRun[m_pTextRun.size()-1] = 0;
 	  }
 	m_bInSect = false;
+	m_bInPara = false; // reset paragraph status
 	return 0;
 }
 
@@ -1948,6 +1950,14 @@ list_error:
 	// NULL
 	propsArray[i] = 0;
 	
+ 	if (!m_bInSect)
+ 	{
+ 		// check for should-be-impossible case
+ 		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+ 		getDoc()->appendStrux(PTX_Section, NULL);
+ 		m_bInSect = true ;
+ 	}
+ 
 	if (!getDoc()->appendStrux(PTX_Block, (const XML_Char **)propsArray))
 	{
 		UT_DEBUGMSG(("DOM: error appending paragraph block\n"));
@@ -2177,6 +2187,21 @@ int IE_Imp_MsWord_97::_beginChar (wvParseStruct *ps, UT_uint32 tag,
 	propsArray[1] = (XML_Char *)props.c_str();
 	propsArray[2] = 0;
 
+	// woah - major error here
+	if(!m_bInSect)
+	{
+		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		getDoc()->appendStrux(PTX_Section, NULL);
+		m_bInSect = true ;
+	}
+
+	if(!m_bInPara)
+	{
+		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		getDoc()->appendStrux(PTX_Block, NULL);
+		m_bInPara = true ;
+	}
+	
 	if (!getDoc()->appendFmt((const XML_Char **)propsArray))
 	{
 		UT_DEBUGMSG(("DOM: error appending character formatting\n"));
@@ -2455,12 +2480,13 @@ static MSWord_ImageType s_determineImageType ( Blip * b )
 
 UT_Error IE_Imp_MsWord_97::_handleImage (Blip * b, long width, long height)
 {
-  const char * mimetype 	= UT_strdup ("image/png");
-  IE_ImpGraphic * importer	= 0;
-  FG_Graphic* pFG		= 0;
-  UT_Error error		= UT_OK;
-  UT_ByteBuf * buf		= 0;
-  UT_ByteBuf * pictData 	= new UT_ByteBuf();
+	char * old_locale = "" ;
+	const char * mimetype 	= UT_strdup ("image/png");
+	IE_ImpGraphic * importer	= 0;
+	FG_Graphic* pFG		= 0;
+	UT_Error error		= UT_OK;
+	UT_ByteBuf * buf		= 0;
+	UT_ByteBuf * pictData 	= new UT_ByteBuf();
 
   // suck the data into the ByteBuffer
 
@@ -2534,11 +2560,11 @@ UT_Error IE_Imp_MsWord_97::_handleImage (Blip * b, long width, long height)
   // This next bit of code will set up our properties based on the image attributes
   //
 
-  setlocale(LC_NUMERIC, "C");
+  old_locale = setlocale(LC_NUMERIC, "C");
   UT_String_sprintf(propBuffer, "width:%fin; height:%fin",
-	  (double)width / (double)1440,
-	  (double)height / (double)1440);
-  setlocale(LC_NUMERIC, "");
+					(double)width / (double)1440,
+					(double)height / (double)1440);
+  setlocale(LC_NUMERIC, old_locale);
 
   UT_String_sprintf(propsName, "image%d", m_iImageCount++);
 

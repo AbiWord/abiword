@@ -38,7 +38,6 @@
 /*  to the ap_Strings_Id.h file                                  */
 /*****************************************************************/
 
-menuitem(_BOGUS1__)  /* must be first */
 
 menuitem(FILE)
 menuitem(FILE_NEW)
@@ -262,4 +261,3 @@ menuitem(AUTOTEXT_EMAIL_6)
 /**** Add Menu Items here ****/
 
 
-menuitem(_BOGUS2__)				/* must be last */

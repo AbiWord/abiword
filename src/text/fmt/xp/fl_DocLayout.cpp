@@ -114,6 +114,10 @@ FL_DocLayout::~FL_DocLayout()
 	{
 		m_bStopSpellChecking = true;
 		m_pBackgroundCheckTimer->stop();
+#ifdef __BEOS__
+		m_pBackgroundCheckTimer->start();	// is already stopped
+											// so we don't go out of this while
+#endif
 		while(m_bImSpellCheckingNow == true)
 		{
 #ifdef __BEOS__
@@ -589,6 +593,7 @@ fl_BlockLayout* FL_DocLayout::findBlockAtPosition(PT_DocPosition pos)
 		default:
 			UT_ASSERT(UT_SHOULD_NOT_HAPPEN); 
 			// We asked for a block, and we got a section.  Bad
+			return NULL;
 		}
 	}
 	else
@@ -618,6 +623,12 @@ fl_BlockLayout* FL_DocLayout::findBlockAtPosition(PT_DocPosition pos)
 					pView->setHdrFtrEdit(pShadow);
 					pBL = pShadow->findBlockAtPosition(pos);
 					return pBL;
+				}
+				// Ok, we're really confused now, point is nowhere to be found.
+				// It might be OK if pos-1 is in here, though...
+				if (!pShadow->getHdrFtrSectionLayout()->isPointInHere(pos-1))
+				{
+					UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 				}
 				pBL = NULL;
 			}   

@@ -121,9 +121,11 @@ BOOL XAP_Win32Dialog_Encoding::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lP
         }
 		// Set to default or guessed encoding
 		SendMessage(hwndList, LB_SETCURSEL, _getSelectionIndex(), 0);
+		
+		SetFocus(hwndList);
 	}		
-
-	return 1;							// 1 == we did not call SetFocus()
+	
+	return 0;							// 1 == we did not call SetFocus()
 }
 
 BOOL XAP_Win32Dialog_Encoding::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)

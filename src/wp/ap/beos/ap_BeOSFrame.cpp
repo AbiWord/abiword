@@ -165,6 +165,7 @@ UT_Error AP_BeOSFrame::_showDocument(UT_uint32 iZoom)
 		// We need to put the pointers to our toolbars into the frame data,
 		// for use by the show/hide mechanism.
 		UT_DEBUGMSG(("Inseting Toolbar %d into array\n", k));
+		printf("Inseting Toolbar %d into array\n", k);
 		static_cast<AP_FrameData *>(m_pData)->m_pToolbar[k] = pBeOSToolbar;
 	}
 
@@ -181,8 +182,10 @@ UT_Error AP_BeOSFrame::_showDocument(UT_uint32 iZoom)
                 pOldDoc = ((AP_FrameData*)m_pData)->m_pDocLayout->getDocument();
         }
 
+		delete ((AP_FrameData*)m_pData)->m_pDocLayout;
         REPLACEP(((AP_FrameData*)m_pData)->m_pG, pG);
-        REPLACEP(((AP_FrameData*)m_pData)->m_pDocLayout, pDocLayout);
+        ((AP_FrameData*)m_pData)->m_pDocLayout = pDocLayout;
+
         if (pOldDoc != m_pDoc) {
                 UNREFP(pOldDoc);
         }       
@@ -202,23 +205,14 @@ UT_Error AP_BeOSFrame::_showDocument(UT_uint32 iZoom)
 	// views, like we do for all the other objects.  We also do not
 	// allocate the TopRuler, LeftRuler  here; that is done as the
 	// frame is created.
-	if ( ((AP_FrameData*)m_pData)->m_bShowRuler )
-	{
-		if ( ((AP_FrameData*)m_pData)->m_pTopRuler )
-			((AP_FrameData*)m_pData)->m_pTopRuler->setView(pView, iZoom);
-		if ( ((AP_FrameData*)m_pData)->m_pLeftRuler )
-			((AP_FrameData*)m_pData)->m_pLeftRuler->setView(pView, iZoom);
-	}                      
 
-        if ( ((AP_FrameData*)m_pData)->m_pStatusBar )
-		((AP_FrameData*)m_pData)->m_pStatusBar->setView(pView);  
 
 	pView->setInsertMode(((AP_FrameData*)m_pData)->m_bInsertMode);
-    ((FV_View *) m_pView)->setShowPara(((AP_FrameData*)m_pData)->m_bShowPara);
-	
+	((FV_View *) m_pView)->setShowPara(((AP_FrameData*)m_pData)->m_bShowPara);
+
 	m_pBeDocView->Window()->Lock();
-	m_pView->setWindowSize(m_pBeDocView->Bounds().Width()+1,
-			       m_pBeDocView->Bounds().Height()+1);
+	m_pView->setWindowSize(m_pBeDocView->Bounds().Width() + 1,
+			       m_pBeDocView->Bounds().Height() + 1);
 	m_pBeDocView->Window()->Unlock();
 	
 	m_pBeDocView->Window()->PostMessage('inme');
@@ -247,10 +241,53 @@ UT_Error AP_BeOSFrame::_showDocument(UT_uint32 iZoom)
 	*/
 	m_pView->draw();
 #endif	
-	((AP_FrameData*)m_pData)->m_pTopRuler->draw(NULL);
-        ((AP_FrameData*)m_pData)->m_pLeftRuler->draw(NULL);
-		((AP_FrameData*)m_pData)->m_pStatusBar->draw();
  
+//Toolbars Show/Hide
+
+	for (UT_uint32 k=0; k < nrToolbars; k++)
+	{
+		m_pBeDocView->Window()->Lock();
+		if(! static_cast<AP_FrameData *>(m_pData)->m_bShowBar[k] ) {
+			toggleBar(k, false);
+		}
+		m_pBeDocView->Window()->Unlock();
+	}
+	
+
+//Ruler Show/Hide
+
+	if ( ((AP_FrameData*)m_pData)->m_pTopRuler )
+	{
+		((AP_FrameData*)m_pData)->m_pTopRuler->setView(pView, iZoom);
+		((AP_FrameData*)m_pData)->m_pTopRuler->draw(NULL);
+	}
+
+	if ( ((AP_FrameData*)m_pData)->m_pLeftRuler )
+	{
+		((AP_FrameData*)m_pData)->m_pLeftRuler->setView(pView, iZoom);
+		((AP_FrameData*)m_pData)->m_pLeftRuler->draw(NULL);
+	}
+
+	if (! ((AP_FrameData*)m_pData)->m_bShowRuler )
+	{
+		m_pBeDocView->Window()->Lock();
+		toggleRuler(false);
+		m_pBeDocView->Window()->Unlock();
+	}
+	
+//StatusBar Show/Hide
+
+	if (((AP_FrameData*)m_pData)->m_pStatusBar)
+	{
+		((AP_FrameData*)m_pData)->m_pStatusBar->setView(pView);
+		((AP_FrameData*)m_pData)->m_pStatusBar->draw();
+	}
+	if (! ((AP_FrameData*)m_pData)->m_bShowStatusBar)
+	{
+		m_pBeDocView->Window()->Lock();
+		toggleStatusBar(false);
+		m_pBeDocView->Window()->Unlock();
+	}
 
 	return UT_OK;
 
@@ -395,18 +432,6 @@ bool AP_BeOSFrame::initialize()
 	ev_BeOSMouse * pBeOSMouse = static_cast<ev_BeOSMouse *>(m_pMouse);
 	pBeOSMouse->synthesize(m_pBeOSApp, this);
 
-	UT_uint32 nrToolbars = m_vecToolbarLayoutNames.getItemCount();
-	for (UT_uint32 k=0; k < nrToolbars; k++)
-	{			
-		// Set the initial hidden poperty to match what the FrameDate holds.
-		EV_BeOSToolbar * pBeOSToolbar = (EV_BeOSToolbar *)m_vecToolbars.getNthItem(k);
-		UT_ASSERT(pBeOSToolbar);
-		if(!(static_cast<AP_FrameData*> (m_pData)->m_bShowBar[k])) {
-			UT_DEBUGMSG(("Hiding toolbar %d", k));
-			pBeOSToolbar->hide();
-		}	
-	}
-
 	//Actually show the window to the world
 	m_pBeWin->Show();
  	//getTopLevelWindow()->Show();
@@ -464,6 +489,7 @@ UT_Error AP_BeOSFrame::_loadDocument(const char * szFilename, IEFileType ieft,
 	  {
 	    // we have a file name but couldn't load it
 	    pNewDoc->newDocument();
+	    printf("new document\n");
 
 	    // here, we want to open a new document if it doesn't exist.
 	    // errorCode could also take several other values, indicating
@@ -490,7 +516,10 @@ ReplaceDocument:
 	return UT_OK;
 }
 
-UT_Error AP_BeOSFrame::importDocument(const char * szFilename, int ieft, bool markClean) {
+UT_Error AP_BeOSFrame::_importDocument(const char * szFilename, int ieft, bool markClean)
+{
+	UT_DEBUGMSG(("DOM: trying to import %s (%d, %d)\n", szFilename, ieft, markClean));
+
 	// are we replacing another document?
 	if (m_pDoc)
 	{
@@ -503,11 +532,10 @@ UT_Error AP_BeOSFrame::importDocument(const char * szFilename, int ieft, bool ma
 
 	AD_Document * pNewDoc = new PD_Document(getApp());
 	UT_ASSERT(pNewDoc);
-	
+
 	if (!szFilename || !*szFilename)
 	{
 		pNewDoc->newDocument();
-		m_iUntitled = _getNextUntitledNumber();
 		goto ReplaceDocument;
 	}
 	UT_Error errorCode;
@@ -516,15 +544,60 @@ UT_Error AP_BeOSFrame::importDocument(const char * szFilename, int ieft, bool ma
 		goto ReplaceDocument;
 
 	UT_DEBUGMSG(("ap_Frame: could not open the file [%s]\n",szFilename));
+
 	UNREFP(pNewDoc);
 	return errorCode;
 
 ReplaceDocument:
 	getApp()->forgetClones(this);
 
+	m_iUntitled = _getNextUntitledNumber();
+
 	// NOTE: prior document is discarded in _showDocument()
 	m_pDoc = pNewDoc;
 	return UT_OK;
+
+}
+
+
+
+
+
+UT_Error AP_BeOSFrame::importDocument(const char * szFilename, int ieft, bool markClean)
+{
+	bool bUpdateClones;
+	UT_Vector vClones;
+	XAP_App * pApp = getApp();
+
+    printf("import document\n");
+
+	bUpdateClones = (getViewNumber() > 0);
+	if (bUpdateClones)
+	{
+		pApp->getClones(&vClones, this);
+	}
+	UT_Error errorCode;
+	errorCode =  _importDocument(szFilename, (IEFileType) ieft, markClean);
+	if (errorCode)
+	{
+		return errorCode;
+	}
+
+	pApp->rememberFrame(this);
+	if (bUpdateClones)
+	{
+		for (UT_uint32 i = 0; i < vClones.getItemCount(); i++)
+		{
+			AP_BeOSFrame * pFrame = (AP_BeOSFrame *) vClones.getNthItem(i);
+			if(pFrame != this)
+			{
+				pFrame->_replaceDocument(m_pDoc);
+				pApp->rememberFrame(pFrame, this);
+			}
+		}
+	}
+
+	return _showDocument();
 }
 	
 XAP_Frame * AP_BeOSFrame::buildFrame(XAP_Frame * pF)
@@ -559,7 +632,8 @@ XAP_Frame * AP_BeOSFrame::cloneFrame(void)
 {
 	AP_BeOSFrame * pClone = new AP_BeOSFrame(this);
 	ENSUREP(pClone);
-	return pClone;
+	printf("CloneFraame\n");
+	return  static_cast<XAP_Frame *>(pClone);
 
 Cleanup:
 	// clean up anything we created here
@@ -582,6 +656,8 @@ UT_Error AP_BeOSFrame::loadDocument(const char * szFilename, int ieft, bool crea
 	bool bUpdateClones;
 	UT_Vector vClones;
 	XAP_App * pApp = getApp();
+
+    printf("load document\n");
 
 	bUpdateClones = (getViewNumber() > 0);
 	if (bUpdateClones)
@@ -724,20 +800,20 @@ be_DocView *be_Window::_createDocumentWindow()
 	// get the width from the left ruler and stuff it into the top ruler.
 	pBeOSTopRuler->setOffsetLeftRuler(pBeOSLeftRuler->getWidth());
 
-    //Add the document view in the remaining space
-    m_pbe_DocView = new be_DocView(m_winRectAvailable, "MainDocView",
+	//Add the document view in the remaining space
+	m_pbe_DocView = new be_DocView(m_winRectAvailable, "MainDocView",
                                    B_FOLLOW_ALL, B_WILL_DRAW);
-    //m_pbe_DocView->SetViewColor(0,120, 255);
-    //m_pbe_DocView->SetViewColor(B_TRANSPARENT_32_BIT);
-    //Add the view to both frameworks (Be and Abi)
-    AddChild(m_pbe_DocView);
-    m_pBeOSFrame->setBeDocView(m_pbe_DocView);
+	//m_pbe_DocView->SetViewColor(0,120, 255);
+	//m_pbe_DocView->SetViewColor(B_TRANSPARENT_32_BIT);
+	//Add the view to both frameworks (Be and Abi)
+	AddChild(m_pbe_DocView);
+	m_pBeOSFrame->setBeDocView(m_pbe_DocView);
 
-    //Without this we never get any key inputs
-    m_pbe_DocView->WindowActivated(true); // So the cursor shows up.
-    m_pbe_DocView->MakeFocus(true);
-    
-    return(m_pbe_DocView);                                    
+	//Without this we never get any key inputs
+	m_pbe_DocView->WindowActivated(true); // So the cursor shows up.
+	m_pbe_DocView->MakeFocus(true);
+	
+	return(m_pbe_DocView);                                    
 }
 
 BView * be_Window::_createStatusBarWindow() 
@@ -747,8 +823,8 @@ BView * be_Window::_createStatusBarWindow()
 	UT_ASSERT(pStatusBar);
 	static_cast<AP_FrameData*>(m_pBeOSFrame->m_pData)->m_pStatusBar = pStatusBar;
 	BRect r;
-    r = Bounds();
-    r.top = r.bottom - STATUS_BAR_HEIGHT;
+	r = Bounds();
+	r.top = r.bottom - STATUS_BAR_HEIGHT;
 	pStatusBarView = pStatusBar->createWidget(r);
 	AddChild(pStatusBarView);
 	
@@ -771,51 +847,164 @@ void AP_BeOSFrame::toggleBar(UT_uint32 iBarNb, bool bBarOn)
 	UT_ASSERT(pFrameData);
 	UT_ASSERT(pFrameData->m_pToolbar);
 	
+	m_pBeWin->Lock();
+
 	EV_Toolbar *pToolbar = pFrameData->m_pToolbar[iBarNb];
 	
 	UT_ASSERT(pToolbar);
 
+	int height = 35;//TODO:tempolary
+
 	if (bBarOn)
+	{
 		pToolbar->show();
+		height *= -1;
+		printf("Show Toolbar #%d\n", iBarNb);
+	}
 	else	// turning toolbar off
+	{
 		pToolbar->hide();
+		printf("Hide Toolbar #%d\n", iBarNb);
+	}
+
+	m_pBeWin->FindView("TopRuler")->MoveBy(0, height * -1);
+	m_pBeWin->FindView("LeftRuler")->MoveBy(0, height * -1);
+	m_pBeWin->FindView("LeftRuler")->ResizeBy(0, height);
+
+	be_DocView *pView = getBeDocView();
+
+	if(pView)
+	{
+		pView->MoveBy(0, height * -1);
+		pView->ResizeBy(0, height);
+
+		if (iBarNb = 0)
+		{
+			pFrameData->m_pToolbar[0]->moveby(height * - 1);//NOTE Why? different 1
+			pFrameData->m_pToolbar[2]->moveby(height * - 1);
+		}
+		if (iBarNb = 1)
+			pFrameData->m_pToolbar[2]->moveby(height * - 1);
+
+	}
+	m_vScroll->MoveBy(0, height * -1);
+	m_vScroll->ResizeBy(0, height);
+
+	m_pBeWin->Unlock();
 }
 
 void AP_BeOSFrame::toggleStatusBar(bool bStatusBarOn)
 {
-        UT_DEBUGMSG(("AP_BeOSFrame::toggleStatusBar %d\n", bStatusBarOn));
+	UT_DEBUGMSG(("AP_BeOSFrame::toggleStatusBar %d\n", bStatusBarOn));
 
-        AP_FrameData *pFrameData = static_cast<AP_FrameData *> (getFrameData());
-        UT_ASSERT(pFrameData);
+	AP_FrameData *pFrameData = static_cast<AP_FrameData *> (getFrameData());
+	UT_ASSERT(pFrameData);
 
-        if (bStatusBarOn)
-                pFrameData->m_pStatusBar->show();
-        else    // turning status bar off
-                pFrameData->m_pStatusBar->hide();
+	m_pBeWin->Lock();
+	if ( m_pBeWin->FindView("StatusBar")->IsHidden() == bStatusBarOn)
+	{
+		int height = STATUS_BAR_HEIGHT + 1;
+		
+		if (bStatusBarOn)
+		{
+			pFrameData->m_pStatusBar->show();
+			height *= -1;
+			printf("Show Statusbar\n");
+		}
+		else    // turning status bar off
+		{
+			pFrameData->m_pStatusBar->hide();
+			printf("Hide Statusbar\n");
+		}
+
+		be_DocView *pView = getBeDocView();
+		if(pView)
+		{
+			pView->ResizeBy(0, height);
+		}
+		m_pBeWin->FindView("LeftRuler")->ResizeBy(0, height);
+		m_hScroll->MoveBy(0, height);
+		m_vScroll->ResizeBy(0, height * 2 / 3);
+	}
+	m_pBeWin->Unlock();
 }
 
 void AP_BeOSFrame::toggleRuler(bool bRulerOn)
 {
-	UT_DEBUGMSG(("AP_BeOSFrame::toggleRuler %d", bRulerOn));	
- 
-	AP_FrameData *pFrameData = (AP_FrameData *)getFrameData();
-	UT_ASSERT(pFrameData);
+	toggleTopRuler(bRulerOn);
+	toggleLeftRuler(bRulerOn);
 }
 
 void AP_BeOSFrame::toggleTopRuler(bool bRulerOn)
 {
 	UT_DEBUGMSG(("AP_BeOSFrame::toggleRuler %d", bRulerOn));	
- 
-	AP_FrameData *pFrameData = (AP_FrameData *)getFrameData();
 	UT_ASSERT(pFrameData);
+
+	m_pBeWin->Lock();
+
+	be_DocView *pView = getBeDocView();
+	BRect rect = m_pBeWin->FindView("TopRuler")->Frame();
+	int height = (int)rect.Height() + 1;
+
+	if (m_pBeWin->FindView("TopRuler")->IsHidden() == bRulerOn)
+	if (bRulerOn)
+	{
+		printf("Show Top Ruler\n");
+		m_pBeWin->FindView("TopRuler")->Show();
+		if(pView)
+		{
+			pView->ResizeBy(0, height * -1);
+			pView->MoveBy(0, height);
+		}
+	}
+	else
+	{
+		printf("Hide Top Ruler\n");
+		m_pBeWin->FindView("TopRuler")->Hide();
+		if(pView)
+		{
+			pView->ResizeBy(0, height);
+			pView->MoveBy(0, height * -1);
+		}
+	}
+	m_pBeWin->Unlock();
 }
 
 void AP_BeOSFrame::toggleLeftRuler(bool bRulerOn)
 {
-	UT_DEBUGMSG(("AP_BeOSFrame::toggleRuler %d", bRulerOn));	
- 
-	AP_FrameData *pFrameData = (AP_FrameData *)getFrameData();
+	UT_DEBUGMSG(("AP_BeOSFrame::toggleRuler %d", bRulerOn));
 	UT_ASSERT(pFrameData);
+
+	m_pBeWin->Lock();
+
+	be_DocView *pView = getBeDocView();
+	BRect rect = m_pBeWin->FindView("LeftRuler")->Frame();
+	int width = (int)rect.Width() + 1;
+
+	if (m_pBeWin->FindView("LeftRuler")->IsHidden() == bRulerOn)
+	{
+		if (bRulerOn)
+		{
+			printf("Show Left Ruler\n");
+			m_pBeWin->FindView("LeftRuler")->Show();
+			if(pView)
+			{
+				pView->ResizeBy(width * -1, 0);
+				pView->MoveBy(width, 0);
+			}
+		}
+		else
+		{
+			printf("Hide Left Ruler\n");
+			m_pBeWin->FindView("LeftRuler")->Hide();
+			if(pView)
+			{
+				pView->ResizeBy(width , 0);
+				pView->MoveBy(width * -1, 0);
+			}
+		}
+	}
+	m_pBeWin->Unlock();
 }
 
 void AP_BeOSFrame::translateDocumentToScreen(UT_sint32 &x, UT_sint32 &y)
@@ -835,7 +1024,8 @@ void AP_BeOSFrame::translateDocumentToScreen(UT_sint32 &x, UT_sint32 &y)
 	
 	m_pBeWin->Unlock();
 	
-	x = pt.x;
-	y = pt.y;
+	x = (UT_sint32)pt.x;
+	y = (UT_sint32)pt.y;
 }
+
 

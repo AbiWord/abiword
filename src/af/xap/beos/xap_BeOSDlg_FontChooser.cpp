@@ -42,7 +42,7 @@ class FontWin:public BWindow {
 		void UpdatePreview();
 		void FillInSizeList();
 		void SelectFontPrefs();
-		
+
 	private:
 		XAP_BeOSDialog_FontChooser *m_FontChooser;
 		BFont m_CurrentFont;
@@ -162,15 +162,20 @@ void FontWin::UpdateFontList()
 	fontList->Select(0);
 	Unlock();
 }
+
+
 void FontWin::MessageReceived(BMessage *msg)
 {
 	bool underline, overline, strikeout;
-	uint16 fontFace;
+	font_family family;
+	font_style style;
+	int16 face;
 	
 	switch (msg->what)
 	{
 		case 'fsel':
 		{
+			//Font Family Select
 			UT_sint32 index=0;
 			BListView *theView;
 			msg->FindInt32("index",(int32 *)&index);
@@ -189,6 +194,7 @@ void FontWin::MessageReceived(BMessage *msg)
 		break;
 		case 'tsel':
 		{
+			//Font Style Select
 			UT_sint32 index=0;
 			BListView *theView;
 			msg->FindInt32("index",(int32 *)&index);
@@ -212,16 +218,23 @@ void FontWin::MessageReceived(BMessage *msg)
 		break;
 		case 'undl':
 		{
+			//Font Decoration Underline
 			UT_sint32 value=0;
 			msg->FindInt32("be:value",(int32 *)&value);
-			fontFace = m_CurrentFont.Face();
-			fontFace = B_UNDERSCORE_FACE;
-			m_CurrentFont.SetFace(fontFace);
-			
+			m_CurrentFont.GetFamilyAndStyle(&family, &style);
+			if (value)
+			{
+				underline = true;
+//				m_CurrentFont.SetFamilyAndFace(family, B_UNDERSCORE_FACE);
+			}
+			else
+			{	underline = false;
+//				m_CurrentFont.SetFamilyAndFace(family, B_REGULAR_FACE);
+			}
+
 			m_FontChooser->getChangedUnderline(&underline);
 			m_FontChooser->getChangedOverline(&overline);
 			m_FontChooser->getChangedStrikeOut(&strikeout);
-
 			m_FontChooser->setFontDecoration(!underline,overline,strikeout,false,false);
 
 			UpdatePreview();
@@ -229,17 +242,25 @@ void FontWin::MessageReceived(BMessage *msg)
 		break;
 		case 'strk':
 		{
+			//Font Decoration Strikeout
 			UT_sint32 value=0;
 			msg->FindInt32("be:value",(int32 *) &value);
-			
-			fontFace = m_CurrentFont.Face();
-			fontFace = B_STRIKEOUT_FACE;
-			m_CurrentFont.SetFace(fontFace);
-			
+			m_CurrentFont.GetFamilyAndStyle(&family, &style);
+			if (value)
+			{
+				strikeout = true;
+//				m_CurrentFont.SetFamilyAndFace(family, B_STRIKEOUT_FACE);
+			}
+			else
+			{
+				strikeout = false;
+//				m_CurrentFont.SetFamilyAndFace(family, B_REGULAR_FACE);
+			}
+			printf("strike");
+
 			m_FontChooser->getChangedUnderline(&underline);
 			m_FontChooser->getChangedOverline(&overline);
 			m_FontChooser->getChangedStrikeOut(&strikeout);
-			
 			m_FontChooser->setFontDecoration(underline,overline,!strikeout,false,false);
 			
 			UpdatePreview();
@@ -247,7 +268,8 @@ void FontWin::MessageReceived(BMessage *msg)
 		break;
 		case 'ssel':
 		{
-		UT_sint32 index=0;
+			//Font Size Select
+			UT_sint32 index=0;
 			BListView *theView;
 			msg->FindInt32("index",(int32 *)&index);
 			msg->FindPointer("source",(void **)&theView);
@@ -269,6 +291,7 @@ void FontWin::MessageReceived(BMessage *msg)
 		break;
 		case 'csel':
 		{
+			//Font Color Select
 			char bufColor[10];
 			BColorControl *theColorControl;
 			msg->FindPointer("source",(void **)&theColorControl);
@@ -283,6 +306,7 @@ void FontWin::MessageReceived(BMessage *msg)
 		break;
 	
 		case 'okck':
+			//Dialog OK button
 			m_FontChooser->setAnswer(m_FontChooser->a_OK);
 			PostMessage(B_QUIT_REQUESTED);
 			break;
@@ -297,8 +321,8 @@ void FontWin::UpdatePreview()
 	BView *previewView=(BView *)FindView("previewview");
 	previewView->Window()->Lock();
 	previewView->SetFont(&m_CurrentFont);
-	rgb_color white={255,255,255};
-	rgb_color black={0,0,0};
+	rgb_color white={255,255,255,0};
+	rgb_color black={0,0,0,0};
 	previewView->SetHighColor(white);
 	previewView->FillRect(Bounds());
 	previewView->SetHighColor(m_TextColor);
@@ -357,14 +381,13 @@ void FontWin::SelectFontPrefs()
 		currItem = (BStringItem *)sizeList->ItemAt(i);
 		if(strncmp(currItem->Text() , fontSize , strlen(fontSize) - 2) == 0)
 			break;
+		if(i != numItems)
+			sizeList->Select(i);
 	}
-	
-	if(i != numItems)
-		sizeList->Select(i);
 		
 	// Set the underline / strikeout status, then our color.
-	BCheckBox* strikeOut = (BCheckBox *)FindView("undercheck");
-	BCheckBox* underLine = (BCheckBox *)FindView("strikecheck");
+	BCheckBox* strikeOut = (BCheckBox *)FindView("strikecheck");
+	BCheckBox* underLine = (BCheckBox *)FindView("undercheck");
 	
 	strikeOut->SetValue((fontStrikeOut == true));
 	underLine->SetValue((fontUnderline == true));
@@ -389,6 +412,11 @@ void FontWin::SelectFontPrefs()
 
 void FontWin::SetDlg(XAP_BeOSDialog_FontChooser *font) 
 {
+	status_t        result;
+	thread_id       this_tid = find_thread(NULL);
+	BLooper         *pLoop;
+	BWindow         *pWin = 0;
+
 	m_FontChooser = font;
 	
 //	We need to tie up the caller thread for a while ...
@@ -405,15 +433,14 @@ void FontWin::SetDlg(XAP_BeOSDialog_FontChooser *font)
 	// Default answer, modified if the user hits OK.
 	m_FontChooser->setAnswer(m_FontChooser->a_CANCEL);
 	
-	modalSem = create_sem(0,"ParagraphSem");
-	WaitForDelete(modalSem);
+	modalSem = create_sem(0,"fontchoosesem");
 	
+	WaitForDelete(modalSem);
 	Hide();
 }
 
 bool FontWin::QuitRequested() 
 {
-
 	UT_ASSERT(m_FontChooser);
 
 	// We need to activate the first tab so we can find the view children.
@@ -423,7 +450,7 @@ bool FontWin::QuitRequested()
 	BListView *FontList=(BListView *)FindView("fontlist");
 	
 	BStringItem *TheItem;
-	
+
 	while ((TheItem=dynamic_cast<BStringItem *>(FontList->RemoveItem(0L))))
 	{
 		delete(TheItem);
@@ -440,7 +467,7 @@ bool FontWin::QuitRequested()
 	}
 
 	delete_sem(modalSem);
-	return(false);
+	return(true);
 }
 
 /*****************************************************************/
@@ -472,20 +499,24 @@ void XAP_BeOSDialog_FontChooser::runModal(XAP_Frame * pFrame)
 {
 	BMessage msg;
 	if (RehydrateWindow("FontWindow", &msg)) {
-                FontWin *newwin = new FontWin(&msg);
+		FontWin *newwin = new FontWin(&msg);
 		newwin->SetDlg(this);			
-	
-	m_bChangedFontFamily	= true;
-	m_bChangedFontSize		= true;
-	m_bChangedFontWeight	= true;
-	m_bChangedFontStyle		= true;
-	m_bChangedColor			= true;
-	m_bChangedUnderline		= true;
-	m_bChangedOverline		= true;
-	m_bChangedStrikeOut		= true;
-	
+
+		newwin->Lock();
+		if (m_answer == a_OK)
+		{
+			m_bChangedFontFamily	= true;
+			m_bChangedFontSize		= true;
+			m_bChangedFontWeight	= true;
+			m_bChangedFontStyle		= true;
+			m_bChangedColor		= true;
+			m_bChangedUnderline	= true;
+			m_bChangedOverline		= true;
+			m_bChangedStrikeOut		= true;
+		}
+
 		//Take the information here ...
 		newwin->Lock();
-		newwin->Quit();
-        }                                                
+		newwin->Close();
+	}                                                
 }

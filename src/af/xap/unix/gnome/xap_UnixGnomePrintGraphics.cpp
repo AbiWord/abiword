@@ -1,6 +1,6 @@
 /* -*- Mode: C; tab-width: 4; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 /* AbiSource Application Framework
- * Copyright (C) 1998 AbiSource, Inc.
+ * Copyright (C) 2001,2002 AbiSource, Inc.
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -33,6 +33,8 @@
 #include "xap_EncodingManager.h"
 #include "gr_UnixGnomeImage.h"
 #include "ut_string_class.h"
+#include "xap_UnixDialogHelper.h"
+
 #include <libgnomeprint/gnome-print-master-preview.h>
 
 /***********************************************************************/
@@ -261,6 +263,36 @@ char * mapPageSize (const char * sz)
 }
 
 #undef PaperTableSize
+
+XAP_UnixGnomePrintGraphics::XAP_UnixGnomePrintGraphics(GnomePrintContext *gpc,
+													   XAP_UnixFontManager * fontManager,
+													   XAP_App *pApp)
+{
+		m_gpm = NULL;
+		m_gpc = gpc;
+		m_paper = NULL;
+
+		m_bIsPreview   = false;
+		m_fm           = fontManager;
+		m_bStartPrint  = false;
+		m_bStartPage   = false;
+		m_pCurrentFont = NULL;
+		m_pCurrentPSFont = NULL;
+		if(m_vecEncSymbol.getItemCount()>0)
+				m_vecEncSymbol.clear();
+		if(m_vecEncDingbats.getItemCount()>0)
+				m_vecEncDingbats.clear();
+		
+		m_cs = GR_Graphics::GR_COLORSPACE_COLOR;
+		
+		m_currentColor.m_red = 0;
+		m_currentColor.m_grn = 0;
+		m_currentColor.m_blu = 0;
+		//
+		// Now I need to load in the translations to unicode for Dingbats and Symbols.
+		//
+		loadUnicodeData();
+}
 
 XAP_UnixGnomePrintGraphics::XAP_UnixGnomePrintGraphics(GnomePrintMaster *gpm,
 													   const char * pageSize,
@@ -789,6 +821,9 @@ bool	XAP_UnixGnomePrintGraphics::_startDocument(void)
 
 bool XAP_UnixGnomePrintGraphics::_startPage(const char * szPageLabel)
 {
+		if ( !m_gpm )
+				return true ;
+
         gnome_print_beginpage(m_gpc, szPageLabel);
 		_setup_rotation ();
 		return true;
@@ -799,6 +834,9 @@ bool XAP_UnixGnomePrintGraphics::_endPage(void)
 	if(m_bNeedStroked)
 	  gnome_print_stroke(m_gpc);
 
+	if ( !m_gpm )
+			return true ;
+
 	gnome_print_showpage(m_gpc);
 	return true;
 }
@@ -807,8 +845,8 @@ bool XAP_UnixGnomePrintGraphics::_endDocument(void)
 {
 		// bonobo version, we'd don't own the context
 		// or the master, just return
-	if(!m_gpm)
-	  return true;
+		if(!m_gpm)
+				return true;
 
         gnome_print_master_close(m_gpm);
 
