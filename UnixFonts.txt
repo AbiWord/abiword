@@ -18,7 +18,7 @@ located in this directory. If you wish to make an additional font
 available to AbiWord, you need to do the following:
 
 (1) Place the font into the fonts directory (or symlink it there,
-    if it is locate elsewhere on your machine).
+    if it is located elsewhere on your machine).
 
 (2) Update the fonts.dir file. 
 
@@ -73,8 +73,20 @@ ttf fonts, the utility will generate multiple entries, for a number
 of diferent encodings the font supports, just disregard those you 
 do not need. Once fonts.scale is updated, run mkfontdir.
 
+NOTE: TTF FONTS IN MULTI-USER ENVIRONMENT
+In order to be able to generate a PostScript output, AbiWord converts
+every ttf font it uses to a type 42 PostScript font. This is done only
+once, the very first time the font is used, and the the user who is
+running AbiWord at that point MUST HAVE WRITE PERMISSION for the fonts
+directory. In a multiuser environment this probably means that the person
+has to be the system administrator. Thus when sysadmin is adding a ttf
+font, s/he has to (1) add it to the fonts directory; (2) run AbiWord,
+create a new document and use the new font in that document. Without
+this second step, the ordinary users will be able to see the new font
+listed, but will not be able to use it!
+
 IMPORTANT: if you decide to update a ttf font that you have used
-with AbiWord previously, you will need to remove some support files
+with AbiWord previously, you will need to remove the support files
 that AbiWord generated. If your font is called myfont.ttf, look for
 files myfont.afm, myfont.u2g and myfont.t42 and delete them, then
 install the updated ttf font; AbiWord will generate the support files
