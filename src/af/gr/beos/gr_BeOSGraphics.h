@@ -76,7 +76,7 @@ public:
   virtual void setLineWidth(UT_sint32 iLineWidth);
 
   virtual void drawImage(GR_Image* pImg, UT_sint32 xDest, UT_sint32 yDest);
-  virtual GR_Image* createNewImage(const char* pszName, const UT_ByteBuf* pBB, UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight, GR_Image::GRType iType = GRT_Raster);
+   virtual GR_Image* createNewImage(const char* pszName, const UT_ByteBuf* pBB, UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight, GR_Image::GRType iType = GR_Image::GRT_Raster);
   
   virtual UT_Bool queryProperties(GR_Graphics::Properties gp) const;
   virtual UT_Bool startPrint(void);
