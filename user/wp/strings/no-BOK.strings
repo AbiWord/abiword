@@ -97,15 +97,6 @@ DLG_Break_NextPage="Neste side"
 DLG_Break_Continuous="Fortsettende"
 DLG_Break_EvenPage="Lik side"
 DLG_Break_OddPage="Ulik side"
-DLG_Spell_SpellTitle="Spelling Check"
-DLG_Spell_UnknownWord="Not in Dictionary:"
-DLG_Spell_ChangeTo="Change to:"
-DLG_Spell_Change="Change"
-DLG_Spell_ChangeAll="Change All"
-DLG_Spell_Ignore="Ignore"
-DLG_Spell_IgnoreAll="Ignore All"
-DLG_Spell_AddToDict="Add to Dictionary"
-DLG_Spell_NoSuggestions="(no spelling suggestions)"
 />
 
 </AbiStrings>
