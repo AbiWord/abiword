@@ -2,6 +2,8 @@
 #ifndef UTVECTOR_H
 #define UTVECTOR_H
 
+// TODO change the 'int' types to 'UT_[su]int32' whichever is appropriate.
+
 // ----------------------------------------------------------------
 /*
 	The following class is a simple, portable implementation of a vector.
@@ -16,10 +18,11 @@ public:
 	~UT_Vector();
 
 	int		addItem(void*);
-	void*	getNthItem(int n);
-	void*	getFirstItem();
-	void*	getLastItem();
-	int		getItemCount();
+	int		addItem(void* p, UT_uint32 * pIndex);
+	void*	getNthItem(int n) const;
+	void*	getFirstItem() const;
+	void*	getLastItem() const;
+	int		getItemCount() const;
 
 	void	insertItemAt(void*, int ndx);
 	void	deleteNthItem(int n);

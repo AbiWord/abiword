@@ -1,6 +1,8 @@
 
 #include <stdlib.h>
 
+// TODO change the 'int' types to 'UT_[su]int32' whichever is appropriate.
+
 #include "ut_types.h"
 #include "ut_vector.h"
 #include "ut_assert.h"
@@ -49,7 +51,7 @@ int UT_Vector::calcNewSpace()
 	}
 }
 
-int UT_Vector::getItemCount()
+int UT_Vector::getItemCount() const
 {
 	return m_iCount;
 }
@@ -80,6 +82,14 @@ int UT_Vector::grow()
 	return 0;
 }
 
+int UT_Vector::addItem(void* p, UT_uint32 * pIndex)
+{
+	int err = addItem(p);
+	if (!err)
+		*pIndex = m_iCount-1;
+	return err;
+}
+
 int UT_Vector::addItem(void* p)
 {
 	if ((m_iCount+1) > m_iSpace)
@@ -96,7 +106,7 @@ int UT_Vector::addItem(void* p)
 	return 0;
 }
 
-void* UT_Vector::getNthItem(int n)
+void* UT_Vector::getNthItem(int n) const
 {
 	UT_ASSERT(m_pEntries);
 
@@ -104,14 +114,14 @@ void* UT_Vector::getNthItem(int n)
 	return m_pEntries[n];
 }
 
-void* UT_Vector::getLastItem()
+void* UT_Vector::getLastItem() const
 {
 	UT_ASSERT(m_iCount);
 
 	return m_pEntries[m_iCount-1];
 }
 
-void* UT_Vector::getFirstItem()
+void* UT_Vector::getFirstItem() const
 {
 	UT_ASSERT(m_iCount > 0);
 	UT_ASSERT(m_pEntries);

@@ -7,6 +7,7 @@
 
 typedef		unsigned short		UT_UCSChar;		// Unicode
 
+typedef		unsigned short		UT_uint16;
 typedef		unsigned long		UT_uint32;
 typedef		signed long			UT_sint32;
 
