@@ -91,13 +91,11 @@ void XAP_QNXDialog_PluginManager::event_Deactivate ()
 
 	XAP_Module * pModule = 0;
 
-#if 0
-	GList * selectedRow = 0;
-	selectedRow = GTK_CLIST(m_clist)->selection;
+	unsigned short * selectedRow = NULL;
+	PtGetResource(m_clist, Pt_ARG_SELECTION_INDEXES, &selectedRow, 0);
 	if (selectedRow)
 	{
-			gint which = GPOINTER_TO_INT(selectedRow->data);
-			pModule = (XAP_Module *) XAP_ModuleManager::instance().enumModules()->getNthItem(which);
+			pModule = (XAP_Module *) XAP_ModuleManager::instance().enumModules()->getNthItem(selectedRow[0] + 1);
 	} 
 	else 
 	{
@@ -127,13 +125,11 @@ void XAP_QNXDialog_PluginManager::event_Deactivate ()
 		_errorMessage (m_pFrame, 
 					   pSS->getValue(XAP_STRING_ID_DLG_PLUGIN_MANAGER_COULDNT_UNLOAD));
 	}
-#endif
 }
 
 void XAP_QNXDialog_PluginManager::event_Load ()
 {
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
-#if 0
 
 	XAP_DialogFactory * pDialogFactory
 		= (XAP_DialogFactory *) m_pFrame->getDialogFactory();
@@ -195,7 +191,6 @@ void XAP_QNXDialog_PluginManager::event_Load ()
 	FREEP(nTypeList);
 	
 	pDialogFactory->releaseDialog(pDialog);
-#endif
 }
 
 void XAP_QNXDialog_PluginManager::event_Select1 ()
@@ -208,55 +203,43 @@ void XAP_QNXDialog_PluginManager::event_Select1 ()
 
 void XAP_QNXDialog_PluginManager::_refreshAll ()
 {
-#if 0
 	_refreshTab1();
 
-	gtk_clist_select_row (GTK_CLIST(m_clist), 0, 0);
+	PtListSelectPos(m_clist, 1);
 
 	_refreshTab2();
-#endif
 }
 
 void XAP_QNXDialog_PluginManager::_refreshTab1 ()
 {
-#if 0
-	gchar * text[2] = {NULL, NULL};
+	const char * text[2] = {NULL, NULL};
 	XAP_Module * pModule = 0;
 
 	// first, refresh the CList
-	gtk_clist_freeze (GTK_CLIST (m_clist));
-	gtk_clist_clear (GTK_CLIST (m_clist));
+	PtListDeleteAllItems(m_clist);
 	
 	const UT_Vector * pVec = XAP_ModuleManager::instance().enumModules ();
 
-	for (UT_uint32 i = 0; i < pVec->size(); i++)
-	{
+	for (UT_uint32 i = 0; i < pVec->size(); i++) {
 		pModule = (XAP_Module *)pVec->getNthItem (i);
 		text [0] = pModule->getModuleInfo()->name;
-		gtk_clist_append(GTK_CLIST(m_clist), text);
+		PtListAddItems(m_clist, text, 1, 0);
 	}
-
-	gtk_clist_thaw (GTK_CLIST (m_clist));
-#endif
 }
 
 void XAP_QNXDialog_PluginManager::_refreshTab2 ()
 {
-#if 0
-	gint txt_len = gtk_text_get_length (GTK_TEXT(m_desc));
-	gint txt_pos = 0;
-	if (txt_len > 0) {
-		gtk_editable_delete_text (GTK_EDITABLE (m_desc), 0, 
-								  txt_len);
-	}
+
+	PtSetResource(m_desc, Pt_ARG_TEXT_STRING, "", 0);
 
 	XAP_Module * pModule = 0;
-	GList * selectedRow = 0;
-	selectedRow = GTK_CLIST(m_clist)->selection;
-	if (selectedRow)
+
+	unsigned short *selectedRow = NULL;
+	PtGetResource(m_clist, Pt_ARG_SELECTION_INDEXES, &selectedRow, 0);
+	printf("Selected row is %d \n", (selectedRow) ? selectedRow[0] : -12);
+	if (selectedRow && selectedRow[0])
 	{
-			gint rowNumber = GPOINTER_TO_INT(selectedRow->data);
-			pModule = (XAP_Module *) XAP_ModuleManager::instance().enumModules()->getNthItem(rowNumber);
+			pModule = (XAP_Module *) XAP_ModuleManager::instance().enumModules()->getNthItem(selectedRow[0] + 1);
 	}
 
 	// just a blank space, to represent an empty entry
@@ -277,15 +260,10 @@ void XAP_QNXDialog_PluginManager::_refreshTab2 ()
 		}
 	}
 
-	gtk_entry_set_text (GTK_ENTRY (m_name), name);
-	gtk_entry_set_text (GTK_ENTRY (m_author), author);
-	gtk_entry_set_text (GTK_ENTRY (m_version), version);
-
-	gtk_editable_insert_text (GTK_EDITABLE (m_desc),
-							  desc,
-							  strlen (desc),
-							  &txt_pos);
-#endif
+	PtSetResource(m_name, Pt_ARG_TEXT_STRING, name, 0);
+	PtSetResource(m_author, Pt_ARG_TEXT_STRING, author, 0);
+	PtSetResource(m_version,  Pt_ARG_TEXT_STRING, version, 0);
+	PtSetResource(m_desc, Pt_ARG_TEXT_STRING, desc, 0);
 }
 
 /*****************************************************************/
