@@ -256,6 +256,8 @@ cd ../abi
 %__cp $RPM_BUILD_DIR/%{name}-%{version}/abidistfiles/*.oaf $RPM_BUILD_ROOT/%{_datadir}/oaf
 %__mkdir_p $RPM_BUILD_ROOT/%{_datadir}/gnome-2.0/ui
 %__cp $RPM_BUILD_DIR/%{name}-%{version}/abidistfiles/nautilus-abiword-content-view-ui.xml $RPM_BUILD_ROOT/%{_datadir}/gnome-2.0/ui/
+%__mkdir_p $RPM_BUILD_ROOT/%{_libdir}/bonobo/servers
+%__mv $RPM_BUILD_ROOT/%{_datadir}/%{AbiSuite}/GNOME_AbiWord_Control_1_0.server $RPM_BUILD_ROOT/%{_libdir}/bonobo/servers/
 
 # Fix for wrong file rights on fonts,icons,clipart
 %if !%{enable_xft}
@@ -283,7 +285,8 @@ cd ../abi
 #%{_datadir}/%{AbiSuite}/COPYING
 %{_datadir}/%{AbiSuite}/README
 %{_datadir}/%{AbiSuite}/AbiWord/readme.txt
-%{_datadir}/%{AbiSuite}/AbiWord/help/en-US
+#%{_datadir}/%{AbiSuite}/AbiWord/help/en-US
+%{_datadir}/%{AbiSuite}/AbiWord/glade
 %{_datadir}/%{AbiSuite}/AbiWord/strings
 %{_datadir}/%{AbiSuite}/AbiWord/system.profile*
 %if !%{enable_pspell}
@@ -299,6 +302,7 @@ cd ../abi
 %files embeddable
 %defattr(644,root,root,755)
 %{_datadir}/oaf/*
+%{_libdir}/bonobo/servers/*
 %{_datadir}/gnome-2.0/ui/*
 
 %if %{enable_tools}
@@ -330,7 +334,7 @@ cd ../abi
 %{_libdir}/%{AbiWord}/plugins/libAbiGdkPixbuf.*
 %{_libdir}/%{AbiWord}/plugins/libAbiHancom.*
 %{_libdir}/%{AbiWord}/plugins/libAbiHRText.*
-%{_libdir}/%{AbiWord}/plugins/libAbiHTML.*
+#%{_libdir}/%{AbiWord}/plugins/libAbiHTML.*
 %{_libdir}/%{AbiWord}/plugins/libAbiISCII.*
 %{_libdir}/%{AbiWord}/plugins/libAbiJPEG.*
 %{_libdir}/%{AbiWord}/plugins/libAbiKWord.*
@@ -345,7 +349,7 @@ cd ../abi
 #%{_libdir}/%{AbiWord}/plugins/libAbiSDW.so
 %{_libdir}/%{AbiWord}/plugins/libAbiT602.*
 %{_libdir}/%{AbiWord}/plugins/libAbiWML.*
-%{_libdir}/%{AbiWord}/plugins/libAbiWordPerfect.*
+#%{_libdir}/%{AbiWord}/plugins/libAbiWordPerfect.*
 %{_libdir}/%{AbiWord}/plugins/libAbiXHTML.*
 %{_libdir}/%{AbiWord}/plugins/libAbiXSLFO.*
 %endif
@@ -367,6 +371,9 @@ cd ../abi
 %endif
 
 %changelog
+* Fri Feb 28 2003 Rui M. Seabra <rms@1407.org>
+- adapt to new installation changes
+
 * Fri Feb 21 2003 Rui M. Seabra <rms@1407.org>
 - ... a lot of things I forgot to put in here
 - adapt to new installation changes
