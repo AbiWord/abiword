@@ -1551,7 +1551,7 @@ EV_Menu* XAP_UnixFrameImpl::_getMainMenu()
 UT_String XAP_UnixFrameImpl::_localizeHelpUrl (bool bLocal, const char * pathBefore, 
 											   const char * pathAfter)
 {
-#ifdef HAVE_GNOME
+#if 0 //def HAVE_GNOME
 	UT_String path (pathAfter);
 	path += ".html";
 	return path;
@@ -1562,7 +1562,7 @@ UT_String XAP_UnixFrameImpl::_localizeHelpUrl (bool bLocal, const char * pathBef
 
 bool XAP_UnixFrameImpl::_openHelpURL(const char * szURL)
 {
-#ifdef HAVE_GNOME
+#if 0 //def HAVE_GNOME
 	GError * err = NULL;	
 
 	UT_DEBUGMSG(("DOM: Help URL: %s\n", szURL));
@@ -1688,7 +1688,6 @@ bool XAP_UnixFrameImpl::_openURL(const char * szURL)
 #endif
 }
 
-
 void XAP_UnixFrameImpl::_setFullScreen(bool changeToFullScreen)
 {
 	wmspec_change_layer(changeToFullScreen, GTK_WIDGET(m_wTopLevelWindow)->window);
@@ -1696,7 +1695,6 @@ void XAP_UnixFrameImpl::_setFullScreen(bool changeToFullScreen)
 			    gdk_atom_intern ("_NET_WM_STATE_FULLSCREEN", TRUE),
 			    GDK_NONE);
 }
-
 
 EV_Toolbar * XAP_UnixFrameImpl::_newToolbar(XAP_App *pApp, XAP_Frame *pFrame,
 					      const char *szLayout,
