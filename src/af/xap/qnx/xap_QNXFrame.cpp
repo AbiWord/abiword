@@ -637,7 +637,7 @@ void XAP_QNXFrame::_createTopLevelWindow(void)
     PtSetArg(&args[n++], Pt_ARG_ANCHOR_FLAGS, _A_TBGRP, _A_TBGRP);
     PtSetArg(&args[n++], Pt_ARG_RESIZE_FLAGS, 0, Pt_RESIZE_X_BITS);
     PtSetArg(&args[n++], Pt_ARG_WIDTH, area.size.w, 0); 
-		PtSetArg(&args[n++], Pt_ARG_TG_FLAGS,Pt_TRUE,Pt_TG_COLLAPSIBLE);
+		PtSetArg(&args[n++], Pt_ARG_CONTAINER_FLAGS,Pt_TRUE,Pt_BLOCK_CUA_FOCUS);
 	m_wTBGroup = PtCreateWidget(PtToolbarGroup, m_wTopLevelWindow, n, args);
 
 	/*** Create the menu bars ***/
@@ -747,7 +747,7 @@ PtWidget_t *app = getTopLevelWindow();
 static PhArea_t pharea;
 static unsigned short phflags;
 
-PhArea_t *area;
+PhArea_t *area,area2;
 unsigned short *flags;
 PgDisplaySettings_t disp;
 
@@ -763,12 +763,12 @@ else
 	PtSetResource(app,Pt_ARG_WINDOW_RENDER_FLAGS,Pt_FALSE,Pt_TRUE);
 	PtGetResource(app,Pt_ARG_AREA,&area,0);
 
-	pharea.pos.x = pharea.pos.y=0;
+	area2.pos.x = area2.pos.y=0;
 	PgGetVideoMode(&disp);
-	pharea.size.w=disp.xres;
-	pharea.size.h=disp.yres;
-	PtSetResource(app,Pt_ARG_AREA,&pharea,0);
+	area2.size.w=disp.xres;
+	area2.size.h=disp.yres;
 	pharea = *area;
+	PtSetResource(app,Pt_ARG_AREA,&area2,0);
 }
 }
 
