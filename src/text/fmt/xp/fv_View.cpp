@@ -644,8 +644,17 @@ void FV_View::toggleCase (ToggleCase c)
 				pBL->getSpanAttrProp(offset+iLen,false,&pSpanAPAfter);
 				xxx_UT_DEBUGMSG(("fv_View::toggleCase: delete/insert: low %d, iLen %d, pSpanAPAfter 0x%x, pSpanAPNow 0x%x\n", low, iLen,pSpanAPAfter,pSpanAPNow));
 
-				bool bResult = m_pDoc->deleteSpan(low, low + iLen,NULL);
+				UT_uint32 iRealDeleteCount;
+				bool bResult = m_pDoc->deleteSpan(low, low + iLen,NULL,iRealDeleteCount);
 				UT_ASSERT(bResult);
+
+				//special handling is required for delete in revisions mode
+				//where we have to move the insertion point
+				if(isMarkRevisions())
+				{
+					UT_ASSERT( iRealDeleteCount <= iLen );
+					_charMotion(true,iLen - iRealDeleteCount);
+				}
 				bResult = m_pDoc->insertSpan(low, pTemp, iLen, pSpanAPNow);
 
 				// now remember the props for the next round
@@ -5353,7 +5362,7 @@ void FV_View::getTopRulerInfo(AP_TopRulerInfo * pInfo)
 
 	fp_Container * pContainer = pRun->getLine()->getContainer();
 	fl_SectionLayout * pSection = pContainer->getSectionLayout();
-	
+
 	UT_return_if_fail(pContainer);
 	UT_return_if_fail(pSection);
 	if(pInfo->m_vecTableColInfo)
@@ -5371,7 +5380,7 @@ void FV_View::getTopRulerInfo(AP_TopRulerInfo * pInfo)
 	{
 		fp_Column* pColumn = (fp_Column*) pContainer;
 		fl_DocSectionLayout* pDSL = (fl_DocSectionLayout*) pSection;
-		
+
 		UT_uint32 nCol=0;
 		fp_Column * pNthColumn=pColumn->getLeader();
 		while (pNthColumn && (pNthColumn != pColumn))
@@ -5381,7 +5390,7 @@ void FV_View::getTopRulerInfo(AP_TopRulerInfo * pInfo)
 		}
 		pInfo->m_iCurrentColumn = nCol;
 		pInfo->m_iNumColumns = pDSL->getNumColumns();
-		
+
 		pInfo->u.c.m_xaLeftMargin = pDSL->getLeftMargin();
 		pInfo->u.c.m_xaRightMargin = pDSL->getRightMargin();
 		pInfo->u.c.m_xColumnGap = pDSL->getColumnGap();
@@ -5393,10 +5402,10 @@ void FV_View::getTopRulerInfo(AP_TopRulerInfo * pInfo)
 		fp_Column* pColumn = (fp_Column*) pContainer;
 		fl_DocSectionLayout* pDSL = (fl_DocSectionLayout*) pSection;
 		pDSL = m_pEditShadow->getHdrFtrSectionLayout()->getDocSectionLayout();
-		
+
 		pInfo->m_iCurrentColumn = 0;
 		pInfo->m_iNumColumns = 1;
-		
+
 		pInfo->u.c.m_xaLeftMargin = pDSL->getLeftMargin();
 		pInfo->u.c.m_xaRightMargin = pDSL->getRightMargin();
 		pInfo->u.c.m_xColumnGap = pDSL->getColumnGap();
@@ -5425,7 +5434,7 @@ void FV_View::getTopRulerInfo(AP_TopRulerInfo * pInfo)
 			return;
 		}
 		fp_Column * pColumn = (fp_Column *) pContainer->getColumn();
-			
+
 		UT_uint32 nCol=0;
 		fp_Column * pNthColumn=pColumn->getLeader();
 		while (pNthColumn && (pNthColumn != pColumn))
@@ -5435,7 +5444,7 @@ void FV_View::getTopRulerInfo(AP_TopRulerInfo * pInfo)
 		}
 		pInfo->m_iCurrentColumn = nCol;
 		pInfo->m_iNumColumns = pDSL->getNumColumns();
-		
+
 		pInfo->u.c.m_xaLeftMargin = pDSL->getLeftMargin();
 		pInfo->u.c.m_xaRightMargin = pDSL->getRightMargin();
 		pInfo->u.c.m_xColumnGap = pDSL->getColumnGap();
@@ -5452,7 +5461,7 @@ void FV_View::getTopRulerInfo(AP_TopRulerInfo * pInfo)
 		fp_CellContainer * pCur = NULL;
 		pInfo->m_vecTableColInfo = new UT_Vector();
 		while( i < numcols)
-		{ 
+		{
 			pCur = pTab->getCellAtRowColumn(row,i);
 			if(pCur == pCell)
 			{
@@ -5465,7 +5474,7 @@ void FV_View::getTopRulerInfo(AP_TopRulerInfo * pInfo)
 				pTInfo->m_iLeftCellPos = pCur->getLeftPos();
 				pTInfo->m_iRightCellPos = pCur->getRightPos();
 				pTInfo->m_iLeftSpacing = (pCur->getX() - pCur->getLeftPos());
-				pTInfo->m_iRightSpacing = ( pCur->getRightPos() - pCur->getX() 
+				pTInfo->m_iRightSpacing = ( pCur->getRightPos() - pCur->getX()
 											- pCur->getWidth());
 				pInfo->m_vecTableColInfo->addItem((void *) pTInfo);
 				i = pCur->getRightAttach();
@@ -5488,10 +5497,10 @@ void FV_View::getTopRulerInfo(AP_TopRulerInfo * pInfo)
 	char * old_locale = setlocale(LC_NUMERIC,"C");
 	snprintf(buf, sizeof(buf), "%.4fin", m_pDoc->m_docPageSize.Width(DIM_IN));
 	setlocale(LC_NUMERIC,old_locale); // restore original locale
-	
+
 	pInfo->m_xPaperSize = m_pG->convertDimension(buf);
 	pInfo->m_xPageViewMargin = getPageViewLeftMargin();
-	
+
 	pInfo->m_pfnEnumTabStops = fl_BlockLayout::s_EnumTabStops;
 	pInfo->m_pVoidEnumTabStopsData = (void *)pBlock;
 	pInfo->m_iTabStops = (UT_sint32) pBlock->getTabsCount();
@@ -5636,7 +5645,7 @@ void FV_View::getLeftRulerInfo(AP_LeftRulerInfo * pInfo)
 			pDSL = pPage->getOwningSection();
 			pInfo->m_yTopMargin = pDSL->getTopMargin();
 			pInfo->m_yBottomMargin = pDSL->getBottomMargin();
-			
+
 			fp_TableContainer * pTab = (fp_TableContainer *) pCell->getContainer();
 			UT_sint32 col = pCell->getLeftAttach();
 			UT_sint32 numrows = pTab->getNumRows();
@@ -5644,7 +5653,7 @@ void FV_View::getLeftRulerInfo(AP_LeftRulerInfo * pInfo)
 			fp_CellContainer * pCur = NULL;
 			pInfo->m_vecTableRowInfo = new UT_Vector();
 			while( i < numrows)
-			{ 
+			{
 				pCur = pTab->getCellAtRowColumn(i,col);
 				if(pCur == pCell)
 				{
@@ -7569,6 +7578,36 @@ UT_uint32 FV_View::calculateZoomPercentForWholePage()
 void FV_View::toggleMarkRevisions()
 {
 	m_pDoc->toggleMarkRevisions();
+
+	// if we turned the revisions off, we want to remove any revisions
+	// attribute from the formatting at the insertion point so as not
+	// to have any newly entered text marked as revision
+	// we will only do this if there is no selection ...
+	if(!isMarkRevisions() && isSelectionEmpty())
+	{
+		bool bRet;
+
+		// Signal PieceTable Change
+		_saveAndNotifyPieceTableChange();
+		_eraseInsertionPoint();
+
+		PT_DocPosition posStart = getPoint();
+		PT_DocPosition posEnd = posStart;
+
+		const XML_Char rev[] = "revision";
+		const XML_Char val[] = "";
+		const XML_Char * attr[3] = {rev,val,NULL};
+		
+		bRet = m_pDoc->changeSpanFmt(PTC_RemoveFmt,posStart,posEnd,attr,NULL);
+
+		_generalUpdate();
+
+		// Signal piceTable is stable again
+		_restorePieceTableState();
+
+		_fixInsertionPointCoords();
+		_drawInsertionPoint();
+	}
 }
 
 bool FV_View::isMarkRevisions()
@@ -7592,13 +7631,13 @@ bool FV_View::isInTable()
 	{
 		pos = (m_iInsPoint < m_iSelectionAnchor ? m_iInsPoint : m_iSelectionAnchor);
 	}
-	
+
 	UT_sint32 xPoint, yPoint, xPoint2, yPoint2, iPointHeight;
 	bool bDirection;
 
 	fl_BlockLayout * pBL =	m_pLayout->findBlockAtPosition(pos);
 	fp_Run * pRun;
-	
+
 	pRun = pBL->findPointCoords(pos, false, xPoint,
 							    yPoint, xPoint2, yPoint2,
 							    iPointHeight, bDirection);
@@ -7630,7 +7669,7 @@ bool FV_View::isInTable( PT_DocPosition pos)
 
 	fl_BlockLayout * pBL =	m_pLayout->findBlockAtPosition(pos);
 	fp_Run * pRun;
-	
+
 	pRun = pBL->findPointCoords(pos, false, xPoint,
 							    yPoint, xPoint2, yPoint2,
 							    iPointHeight, bDirection);
@@ -7719,4 +7758,4 @@ PT_DocPosition FV_View::findCellPosAt(PT_DocPosition posTable, UT_sint32 row, UT
 	return 	m_pDoc->getStruxPosition(cellSDH);
 }
 
-	
+

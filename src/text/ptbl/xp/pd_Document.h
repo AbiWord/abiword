@@ -192,6 +192,7 @@ public:
 	bool					deleteSpan(PT_DocPosition dpos1,
 									   PT_DocPosition dpos2,
 									   PP_AttrProp *p_AttrProp_Before,
+									   UT_uint32 &iRealDeleteCount,
 									   bool bDeleteTableStruxes = false);
 
 	bool					changeSpanFmt(PTChangeFmt ptc,

@@ -558,7 +558,7 @@ bool FV_View::cmdDeleteRow(PT_DocPosition posRow)
 	return true;
 }
 
-		
+
 /*!
  * Delete the cell at the specified position
  */
@@ -664,14 +664,14 @@ UT_Error FV_View::cmdInsertTable(UT_sint32 numRows, UT_sint32 numCols, const XML
 	PT_DocPosition pointBreak = getPoint();
 	PT_DocPosition pointTable = 0;
 	tmp_var = m_pDoc->insertStrux(getPoint(),PTX_Block);
-	UT_DEBUGMSG(("SEVIOR: 1  cur point %d \n",getPoint())); 
+	UT_DEBUGMSG(("SEVIOR: 1  cur point %d \n",getPoint()));
 //
 // Insert the table strux at the same spot. This will make the table link correctly in the
 // middle of the broken text.
 //
 	setPoint(pointBreak);
 	tmp_var = m_pDoc->insertStrux(getPoint(),PTX_SectionTable,NULL,pPropsArray);
-	UT_DEBUGMSG(("SEVIOR: 2  cur point %d \n",getPoint())); 
+	UT_DEBUGMSG(("SEVIOR: 2  cur point %d \n",getPoint()));
 //
 // stuff for cell insertion.
 //
@@ -699,7 +699,7 @@ UT_Error FV_View::cmdInsertTable(UT_sint32 numRows, UT_sint32 numCols, const XML
 			props[6] = sColRight.c_str();
 			props[7] = sRight.c_str();
 			tmp_var = tmp_var & m_pDoc->insertStrux(getPoint(),PTX_SectionCell,NULL,props);
-			UT_DEBUGMSG(("SEVIOR: 3  cur point %d \n",getPoint())); 
+			UT_DEBUGMSG(("SEVIOR: 3  cur point %d \n",getPoint()));
 			pointBreak = getPoint();
 			tmp_var = tmp_var & m_pDoc->insertStrux(getPoint(),PTX_Block);
 //			tmp_var = tmp_var & m_pDoc->insertStrux(getPoint(),PTX_Block);
@@ -713,11 +713,11 @@ UT_Error FV_View::cmdInsertTable(UT_sint32 numRows, UT_sint32 numCols, const XML
 				pointTable = getPoint();
 			}
 			tmp_var = tmp_var & m_pDoc->insertStrux(getPoint(),PTX_EndCell);
-			UT_DEBUGMSG(("SEVIOR: 5  cur point %d \n",getPoint())); 
+			UT_DEBUGMSG(("SEVIOR: 5  cur point %d \n",getPoint()));
 		}
 	}
 	tmp_var = tmp_var & m_pDoc->insertStrux(getPoint(),PTX_EndTable);
-	UT_DEBUGMSG(("SEVIOR: 6  cur point %d \n",getPoint())); 
+	UT_DEBUGMSG(("SEVIOR: 6  cur point %d \n",getPoint()));
 	setPoint(pointTable);
 	m_pDoc->endUserAtomicGlob();
 	m_pDoc->setDontImmediatelyLayout(false);
@@ -877,6 +877,8 @@ void FV_View::cmdCharDelete(bool bForward, UT_uint32 count)
 	bool bisList = false;
 	fl_BlockLayout * curBlock = NULL;
 	fl_BlockLayout * nBlock = NULL;
+	UT_uint32 iRealDeleteCount = 0;
+
 
 	// Signal PieceTable Change
 	_saveAndNotifyPieceTableChange();
@@ -1005,17 +1007,17 @@ void FV_View::cmdCharDelete(bool bForward, UT_uint32 count)
 				}
 				else if(bisList == true)
 				{
-					m_pDoc->deleteSpan(posCur, posCur+amt,NULL);
+					m_pDoc->deleteSpan(posCur, posCur+amt,NULL, iRealDeleteCount);
 					nBlock->remItemFromList();
 				}
 				else
 				{
-					m_pDoc->deleteSpan(posCur, posCur+amt,NULL);
+					m_pDoc->deleteSpan(posCur, posCur+amt,NULL, iRealDeleteCount);
 				}
 			}
 			else
 			{
-				m_pDoc->deleteSpan(posCur, posCur+amt,NULL);
+				m_pDoc->deleteSpan(posCur, posCur+amt,NULL, iRealDeleteCount);
 			}
 
 			if(fontFlag)
@@ -1028,7 +1030,10 @@ void FV_View::cmdCharDelete(bool bForward, UT_uint32 count)
 //
 		if(isTabListAheadPoint())
 		{
-			m_pDoc->deleteSpan(getPoint(), getPoint()+2,NULL);
+			UT_uint32 iRealDeleteCount2;
+
+			m_pDoc->deleteSpan(getPoint(), getPoint()+2,NULL,iRealDeleteCount2);
+			iRealDeleteCount += iRealDeleteCount2;
 		}
 
 		// restore updates and clean up dirty lists
@@ -1044,7 +1049,8 @@ void FV_View::cmdCharDelete(bool bForward, UT_uint32 count)
 		//where we have to move the insertion point
 		if(isMarkRevisions())
 		{
-			_charMotion(bForward,count);
+			UT_ASSERT( iRealDeleteCount <= count );
+			_charMotion(bForward,count - iRealDeleteCount);
 		}
 	}
 

@@ -49,25 +49,29 @@
 /****************************************************************/
 bool pt_PieceTable::deleteSpan(PT_DocPosition dpos1,
 							   PT_DocPosition dpos2,
-							   PP_AttrProp *p_AttrProp_Before, 
+							   PP_AttrProp *p_AttrProp_Before,
+							   UT_uint32 &iRealDeleteCount,
 							   bool bDontGlob)
 {
 	return deleteSpan(dpos1,
 					  dpos2,
-					  p_AttrProp_Before, 
+					  p_AttrProp_Before,
+					  iRealDeleteCount,
 					  true,
 					  bDontGlob);
 }
 
 /****************************************************************/
 bool pt_PieceTable::deleteSpanWithTable(PT_DocPosition dpos1,
-							   PT_DocPosition dpos2,
-							   PP_AttrProp *p_AttrProp_Before, 
-							   bool bDeleteTableStruxes)
+										PT_DocPosition dpos2,
+										PP_AttrProp *p_AttrProp_Before,
+										UT_uint32 &iRealDeleteCount,
+										bool bDeleteTableStruxes)
 {
 	return deleteSpan(dpos1,
 					  dpos2,
-					  p_AttrProp_Before, 
+					  p_AttrProp_Before,
+					  iRealDeleteCount,
 					  bDeleteTableStruxes,
 					  false);
 }
@@ -75,12 +79,15 @@ bool pt_PieceTable::deleteSpanWithTable(PT_DocPosition dpos1,
 /****************************************************************/
 bool pt_PieceTable::deleteSpan(PT_DocPosition dpos1,
 							   PT_DocPosition dpos2,
-							   PP_AttrProp *p_AttrProp_Before, 
+							   PP_AttrProp *p_AttrProp_Before,
+							   UT_uint32 &iRealDeleteCount,
 							   bool bDeleteTableStruxes,
 							   bool bDontGlob)
 {
 	if(m_pDocument->isMarkRevisions())
 	{
+		iRealDeleteCount = 0;
+
 		const XML_Char name[] = "revision";
 		const XML_Char * pRevision = NULL;
 
@@ -183,6 +190,8 @@ bool pt_PieceTable::deleteSpan(PT_DocPosition dpos1,
 					if(!_realDeleteSpan(dpos1, dposEnd, p_AttrProp_Before,bDeleteTableStruxes,
 										bDontGlob))
 						return false;
+
+					iRealDeleteCount += dposEnd - dpos1;
 
 					dpos1 = dposEnd;
 					continue;
@@ -720,10 +729,10 @@ bool pt_PieceTable::_deleteComplexSpan(PT_DocPosition dpos1,
 		case pf_Frag::PFT_Strux:
 		{
 //
-// OK this code is leave the cell/table sctructures in place unless we 
+// OK this code is leave the cell/table sctructures in place unless we
 // defiantely want to delete
 // them.
-// 
+//
 			pf_Frag_Strux * pfs = static_cast<pf_Frag_Strux *> (pf_First);
 			bool bResult = true;
 			if(_StruxIsNotTable(pfs))
@@ -756,7 +765,7 @@ bool pt_PieceTable::_deleteComplexSpan(PT_DocPosition dpos1,
 				}
 				pfNewEnd = pfs->getNext();
 				fragOffsetNewEnd = 0;
-				dpos1 = dpos1 +  lengthInFrag; 
+				dpos1 = dpos1 +  lengthInFrag;
 				stDelayStruxDelete->push(pfs);
 			}
 			UT_ASSERT(bResult);
@@ -1018,7 +1027,7 @@ bool pt_PieceTable::_deleteComplexSpan(PT_DocPosition dpos1,
 								{
 								    pfsContainer->getPieceTable()->getAttrProp(pfsContainer->getIndexAP(),&pAP);
 								    UT_ASSERT(pAP);
-									bool bFound = 
+									bool bFound =
 										pAP->getAttribute("endnote", pszEnote);
 									UT_ASSERT(bFound);
 					    			break;
@@ -1043,9 +1052,9 @@ bool pt_PieceTable::_deleteComplexSpan(PT_DocPosition dpos1,
 								    pfsContainer->getPieceTable()->getAttrProp(pfsContainer->getIndexAP(),&pAP);
 								    UT_ASSERT(pAP);
 									const XML_Char * Eid = NULL;
-									bool bFound = 
+									bool bFound =
 										pAP->getAttribute("id", Eid);
-									
+
 									if(bFound && !UT_stricmp(Eid, pszEnote))
 					    				break;
 					   			}
@@ -1204,7 +1213,13 @@ bool pt_PieceTable::_deleteComplexSpan(PT_DocPosition dpos1,
 											bResult = _deleteStruxWithNotify(dpos1,pFS,NULL,NULL);
 									}
 									else
-										bResult = deleteSpan(posStart,posEnd,NULL,true);
+									{
+										UT_uint32 iRealDeleteSpan;
+										bResult = deleteSpan(posStart,posEnd,NULL,iRealDeleteSpan,true);
+										// TODO -- is this good enough
+										// with revisions ???
+									}
+
 									UT_ASSERT(bResult);
 								}
 							}
@@ -1365,7 +1380,7 @@ bool pt_PieceTable::_deleteComplexSpan_norec(PT_DocPosition dpos1,
 			pf_Frag_Strux * pfs = static_cast<pf_Frag_Strux *> (pf_First);
 
 			bool bResult = _deleteStruxWithNotify(dpos1,pfs,
-												  &pfNewEnd,&fragOffsetNewEnd, 
+												  &pfNewEnd,&fragOffsetNewEnd,
 												  false);
 			UT_ASSERT(bResult);
 			// we do not update pfsContainer because we just deleted pfs.
@@ -1427,7 +1442,7 @@ bool pt_PieceTable::_deleteComplexSpan_norec(PT_DocPosition dpos1,
 bool pt_PieceTable::_realDeleteSpan(PT_DocPosition dpos1,
 									PT_DocPosition dpos2,
 									PP_AttrProp *p_AttrProp_Before,
-									bool bDeleteTableStruxes, 
+									bool bDeleteTableStruxes,
 									bool bDontGlob)
 {
 	// remove (dpos2-dpos1) characters from the document at the given position.
@@ -1497,7 +1512,7 @@ bool pt_PieceTable::_realDeleteSpan(PT_DocPosition dpos1,
 		bSuccess = _deleteFormatting(dpos1, dpos2);
 		if (bSuccess)
 			bSuccess = _deleteComplexSpan(dpos1, dpos2, &stDelayStruxDelete);
-		
+
 		bool prevDepthReached = false;
 		PT_DocPosition finalPos = dpos1;
 		while (bSuccess && stDelayStruxDelete.getDepth() > 0)

@@ -1,19 +1,19 @@
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
  * 02111-1307, USA.
  */
 
@@ -42,7 +42,7 @@
 bool pt_PieceTable::_unlinkStrux(pf_Frag_Strux * pfs,
 									pf_Frag ** ppfEnd, UT_uint32 * pfragOffsetEnd)
 {
-	switch (pfs->getStruxType())	
+	switch (pfs->getStruxType())
 	{
 	case PTX_Section:
 	case PTX_SectionHdrFtr:
@@ -52,10 +52,10 @@ bool pt_PieceTable::_unlinkStrux(pf_Frag_Strux * pfs,
 	case PTX_EndCell:
 	case PTX_EndTable:
 		return _unlinkStrux_Section(pfs,ppfEnd,pfragOffsetEnd);
-		
+
 	case PTX_Block:
 		return _unlinkStrux_Block(pfs,ppfEnd,pfragOffsetEnd);
-		
+
 	default:
 		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 		return false;
@@ -66,7 +66,7 @@ bool pt_PieceTable::_unlinkStrux_Block(pf_Frag_Strux * pfs,
 										  pf_Frag ** ppfEnd, UT_uint32 * pfragOffsetEnd)
 {
 	UT_ASSERT(pfs->getStruxType()==PTX_Block);
-	
+
 	// unlink this Block strux from the document.
 	// the caller is responsible for deleting pfs.
 
@@ -74,7 +74,7 @@ bool pt_PieceTable::_unlinkStrux_Block(pf_Frag_Strux * pfs,
 		*ppfEnd = pfs->getNext();
 	if (pfragOffsetEnd)
 		*pfragOffsetEnd = 0;
-	
+
 	// find the previous strux (either a paragraph or something else).
 
 	pf_Frag_Strux * pfsPrev = NULL;
@@ -98,7 +98,7 @@ bool pt_PieceTable::_unlinkStrux_Block(pf_Frag_Strux * pfs,
 
 	switch (pfsPrev->getStruxType())
 	{
-	
+
 	case PTX_Block:
 		// if there is a paragraph before us, we can delete this
 		// paragraph knowing that our content will be assimilated
@@ -106,7 +106,7 @@ bool pt_PieceTable::_unlinkStrux_Block(pf_Frag_Strux * pfs,
 
 		_unlinkFrag(pfs,ppfEnd,pfragOffsetEnd);
 		return true;
-	
+
 	case PTX_SectionEndnote:
 	case PTX_Section:
 		// we are the first paragraph in this section.  if we have
@@ -136,7 +136,7 @@ bool pt_PieceTable::_unlinkStrux_Block(pf_Frag_Strux * pfs,
 		}
 
 		// no content in this paragraph.
-		
+
 		_unlinkFrag(pfs,ppfEnd,pfragOffsetEnd);
 		return true;
 
@@ -148,7 +148,7 @@ bool pt_PieceTable::_unlinkStrux_Block(pf_Frag_Strux * pfs,
 //
 // deleting tables and cells is a mutlti-step process and we can make no assumptions
 // along the way.
-//		
+//
 		_unlinkFrag(pfs,ppfEnd,pfragOffsetEnd);
 		return true;
 
@@ -169,7 +169,7 @@ bool pt_PieceTable::_unlinkStrux_Section(pf_Frag_Strux * pfs,
 			  || pfs->getStruxType()==PTX_SectionCell
 			  || pfs->getStruxType()==PTX_EndCell
 			  || pfs->getStruxType()==PTX_EndTable );
-	
+
 	// unlink this Section strux from the document.
 	// the caller is responsible for deleting pfs.
 
@@ -177,7 +177,7 @@ bool pt_PieceTable::_unlinkStrux_Section(pf_Frag_Strux * pfs,
 		*ppfEnd = pfs->getNext();
 	if (pfragOffsetEnd)
 		*pfragOffsetEnd = 0;
-	
+
 	// find the previous strux (either a paragraph or something else).
 
 	pf_Frag_Strux * pfsPrev = NULL;
@@ -197,7 +197,7 @@ bool pt_PieceTable::_unlinkStrux_Section(pf_Frag_Strux * pfs,
 		UT_ASSERT(0);
 		return false;
 	}
-	
+
 	switch (pfsPrev->getStruxType())
 	{
 	case PTX_Block:
@@ -250,7 +250,7 @@ bool pt_PieceTable::_unlinkStrux_Section(pf_Frag_Strux * pfs,
 		// and the previous section.  this is not possible.
 		// TODO decide if this should assert or just fail...
         //
-        // Actually this is OK if it's a hdrFtr that has not been 
+        // Actually this is OK if it's a hdrFtr that has not been
 		// "realized" yet. Like an even hdrftr that has been defined
         // but no even pages exist yet.
 		UT_DEBUGMSG(("No blocks between sections ??\n"));
@@ -263,10 +263,10 @@ bool pt_PieceTable::_unlinkStrux_Section(pf_Frag_Strux * pfs,
 		return false;
 	}
 }
-			
+
 bool pt_PieceTable::_deleteStruxWithNotify(PT_DocPosition dpos,
 										   pf_Frag_Strux * pfs,
-										   pf_Frag ** ppfEnd, 
+										   pf_Frag ** ppfEnd,
 										   UT_uint32 * pfragOffsetEnd,
 										   bool bWithRec)
 {
@@ -277,7 +277,7 @@ bool pt_PieceTable::_deleteStruxWithNotify(PT_DocPosition dpos,
 
 	if (!_unlinkStrux(pfs,ppfEnd,pfragOffsetEnd))
 		return false;
-	
+
 	// add record to history.  we do not attempt to coalesce these.
 	if (bWithRec)
 		m_history.addChangeRecord(pcrs);
@@ -289,7 +289,7 @@ bool pt_PieceTable::_deleteStruxWithNotify(PT_DocPosition dpos,
 }
 
 /*!
- * This method scans the piecetAble from the section Frag_strux given looking 
+ * This method scans the piecetAble from the section Frag_strux given looking
  * for any Header/Footers that belong to the strux. If it finds them, they
  * are deleted with notifications.
 \params pf_Frag_Strux_Section pfStruxSec the Section strux that might have headers
@@ -300,7 +300,7 @@ bool pt_PieceTable::_deleteStruxWithNotify(PT_DocPosition dpos,
 bool pt_PieceTable::_deleteHdrFtrsFromSectionStruxIfPresent(pf_Frag_Strux_Section * pfStruxSec)
 {
 	//
-	// Get the index to the Attributes/properties of the section strux to see if 
+	// Get the index to the Attributes/properties of the section strux to see if
 	// if there is a header defined for this strux.
 	//
 	// FIXME: Handle all the new header/footer types.
@@ -317,56 +317,56 @@ bool pt_PieceTable::_deleteHdrFtrsFromSectionStruxIfPresent(pf_Frag_Strux_Sectio
 	{
 		HeaderV = szHeaderV;
 		vecHdrFtr.addItem((void *) HeaderV.c_str());
-	} 
+	}
 	szHeaderV =  NULL;
 	bres = pAP->getAttribute("header-even",szHeaderV);
 	if(szHeaderV && *szHeaderV && (UT_strcmp(szHeaderV,"0") != 0))
 	{
 		HeaderEvenV = szHeaderV;
 		vecHdrFtr.addItem((void *) HeaderEvenV.c_str());
-	} 
+	}
 	szHeaderV =  NULL;
 	bres = pAP->getAttribute("header-last",szHeaderV);
 	if(szHeaderV && *szHeaderV && (UT_strcmp(szHeaderV,"0") != 0))
 	{
 		HeaderLastV = szHeaderV;
 		vecHdrFtr.addItem((void *) HeaderLastV.c_str());
-	} 
+	}
 	szHeaderV =  NULL;
 	bres = pAP->getAttribute("header-first",szHeaderV);
 	if(szHeaderV && *szHeaderV && (UT_strcmp(szHeaderV,"0") != 0))
 	{
 		HeaderFirstV = szHeaderV;
 		vecHdrFtr.addItem((void *) HeaderFirstV.c_str());
-	} 
+	}
 	szHeaderV =  NULL;
 	bres = pAP->getAttribute("footer",szHeaderV);
 	if(szHeaderV && *szHeaderV && (UT_strcmp(szHeaderV,"0") != 0))
 	{
 		FooterV = szHeaderV;
 		vecHdrFtr.addItem((void *) FooterV.c_str());
-	} 
+	}
 	szHeaderV =  NULL;
 	bres = pAP->getAttribute("footer-even",szHeaderV);
 	if(szHeaderV && *szHeaderV && (UT_strcmp(szHeaderV,"0") != 0))
 	{
 		FooterEvenV = szHeaderV;
 		vecHdrFtr.addItem((void *) FooterEvenV.c_str());
-	} 
+	}
 	szHeaderV =  NULL;
 	bres = pAP->getAttribute("footer-last",szHeaderV);
 	if(szHeaderV && *szHeaderV && (UT_strcmp(szHeaderV,"0") != 0))
 	{
 		FooterLastV = szHeaderV;
 		vecHdrFtr.addItem((void *) FooterLastV.c_str());
-	} 
+	}
 	szHeaderV =  NULL;
 	bres = pAP->getAttribute("footer-first",szHeaderV);
 	if(szHeaderV && *szHeaderV && (UT_strcmp(szHeaderV,"0") != 0))
 	{
 		FooterFirstV = szHeaderV;
 		vecHdrFtr.addItem((void *) FooterFirstV.c_str());
-	} 
+	}
 	UT_sint32 countHdrFtr = (UT_sint32) vecHdrFtr.getItemCount();
 	UT_DEBUGMSG(("SEVIOR: Deleting HdrFtrs from Document, num Header/Footers %d\n",countHdrFtr));
 	if(0 == countHdrFtr)
@@ -374,7 +374,7 @@ bool pt_PieceTable::_deleteHdrFtrsFromSectionStruxIfPresent(pf_Frag_Strux_Sectio
 		return true;
 	}
 //
-// This section has a header or footer attribute. Scan the piecetable to see 
+// This section has a header or footer attribute. Scan the piecetable to see
 // if there is a header strux somewhere with an ID that matches our section.
 //
 	pf_Frag * curFrag = NULL;
@@ -442,7 +442,7 @@ void pt_PieceTable::_deleteHdrFtrStruxWithNotify( pf_Frag_Strux * pfFragStruxHdr
 {
 //
 // First we need the document position of the header/footer strux.
-// 
+//
 	UT_DEBUGMSG(("SEVIOR: Deleting hdrftr \n"));
 	const pf_Frag * pfFrag = NULL;
 	pfFrag = static_cast<pf_Frag *>(pfFragStruxHdrFtr);
@@ -494,7 +494,9 @@ void pt_PieceTable::_deleteHdrFtrStruxWithNotify( pf_Frag_Strux * pfFragStruxHdr
 //
 		if(TextEndPos > TextStartPos)
 		{
-			deleteSpan(TextStartPos,TextEndPos,NULL,true);
+			UT_uint32 iRealDeleteCount;
+			deleteSpan(TextStartPos,TextEndPos,NULL,iRealDeleteCount,true);
+			// TODO -- is this right with revisions ???
 		}
 	}
 //

@@ -82,18 +82,18 @@ protected:
 
 	bool					_realInsertSpan(PT_DocPosition dpos,
 									   const UT_UCSChar * p,
-									   UT_uint32 length, 
+									   UT_uint32 length,
 									   fd_Field * pField = NULL,
 									   bool bAddChangeRec = true);
 
 	bool					_realDeleteSpan(PT_DocPosition dpos1,
 											PT_DocPosition dpos2,
-											PP_AttrProp *p_AttrProp_Before, 
+											PP_AttrProp *p_AttrProp_Before,
 											bool bDeleteTableStruxes,
 											bool bDontGlob=false);
 
 #if 0
-	// this is for fields and so should be needed with revisions
+	// this is for fields and so should not be needed with revisions
 	bool					_realInsertSpan_norec(PT_DocPosition dpos,
 											 const UT_UCSChar * p,
 											 UT_uint32 length, fd_Field * pField = NULL);
@@ -151,20 +151,23 @@ public:
 	bool					deleteSpan(PT_DocPosition dpos1,
 									   PT_DocPosition dpos2,
 									   PP_AttrProp *p_AttrProp_Before,
+									   UT_uint32 &iRealDeleteCount,
 									   bool bDontGlob=false);
 
 
 	bool					deleteSpan(PT_DocPosition dpos1,
 									   PT_DocPosition dpos2,
 									   PP_AttrProp *p_AttrProp_Before,
+									   UT_uint32 &iRealDeleteCount,
 									   bool bDeleteTableStruxes,
 									   bool bDontGlob);
 
 
 	bool					deleteSpanWithTable(PT_DocPosition dpos1,
-									   PT_DocPosition dpos2,
-									   PP_AttrProp *p_AttrProp_Before,
-									   bool bDeleteTableStrux);
+												PT_DocPosition dpos2,
+												PP_AttrProp *p_AttrProp_Before,
+												UT_uint32 &iRealDeleteCount,
+												bool bDeleteTableStrux);
 
 	bool                	deleteFieldFrag(pf_Frag * pf);
 
@@ -388,7 +391,7 @@ protected:
 
 	bool					_deleteStruxWithNotify(PT_DocPosition dpos,
 												   pf_Frag_Strux * pfs,
-												   pf_Frag ** ppfEnd, 
+												   pf_Frag ** ppfEnd,
 												   UT_uint32 * pfragOffsetEnd,
 												   bool bWithRec = true);
 

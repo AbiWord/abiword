@@ -6808,7 +6808,9 @@ void fl_BlockLayout::_deleteListLabel(void)
 		{
 			npos = 2;
 		}
-		pDoc->deleteSpan(posBlock+ioffset, posBlock+ioffset + npos,NULL);
+
+		UT_uint32 iRealDeleteCount;
+		pDoc->deleteSpan(posBlock+ioffset, posBlock+ioffset + npos,NULL,iRealDeleteCount);
 	}
 }
 

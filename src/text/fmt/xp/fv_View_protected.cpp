@@ -235,6 +235,7 @@ void FV_View::_deleteSelection(PP_AttrProp *p_AttrProp_Before)
 
 	PT_DocPosition iPoint = getPoint();
 
+	UT_uint32 iRealDeleteCount;
 
 	UT_uint32 iSelAnchor = m_iSelectionAnchor;
 	if(iSelAnchor < 2)
@@ -254,7 +255,7 @@ void FV_View::_deleteSelection(PP_AttrProp *p_AttrProp_Before)
 	{
 		m_pDoc->setDontImmediatelyLayout(true);
 	}
-	m_pDoc->deleteSpan(iLow, iHigh, p_AttrProp_Before,bDeleteTables);
+	m_pDoc->deleteSpan(iLow, iHigh, p_AttrProp_Before, iRealDeleteCount, bDeleteTables);
 	if(bDeleteTables)
 	{
 		m_pDoc->setDontImmediatelyLayout(bOldDelete);
@@ -264,8 +265,20 @@ void FV_View::_deleteSelection(PP_AttrProp *p_AttrProp_Before)
 //
 	if(isTabListAheadPoint() == true)
 	{
-		m_pDoc->deleteSpan(getPoint(), getPoint()+2, p_AttrProp_Before);
+		UT_uint32 iRealDeleteCount2;
+
+		m_pDoc->deleteSpan(getPoint(), getPoint()+2, p_AttrProp_Before, iRealDeleteCount2);
+		iRealDeleteCount += iRealDeleteCount2;
 	}
+
+	//special handling is required for delete in revisions mode
+	//where we have to move the insertion point
+	if(isMarkRevisions())
+	{
+		UT_ASSERT( iRealDeleteCount <= iHigh - iLow + 1 );
+		_charMotion(true,iHigh - iLow - iRealDeleteCount);
+	}
+
 }
 
 
@@ -361,8 +374,9 @@ bool FV_View::_deleteCellAt(PT_DocPosition posTable, UT_sint32 row, UT_sint32 co
 //
 // OK do the delete
 //
+	UT_uint32 iRealDeleteCount;
 
-	m_pDoc->deleteSpan( posCell, posEndCell, NULL,true);
+	m_pDoc->deleteSpan( posCell, posEndCell, NULL,iRealDeleteCount,true);
 	return true;
 }
 
@@ -3366,7 +3380,10 @@ UT_Error FV_View::_deleteBookmark(const char* szName, bool bSignal, PT_DocPositi
 		pos1 = pBlock[0]->getPosition(false) + bmBlockOffset[0];
 		pos2 = pBlock[1]->getPosition(false) + bmBlockOffset[1];
 
-		m_pDoc->deleteSpan(pos1,pos1 + 1,NULL);
+		UT_uint32 iRealDeleteCount;
+
+		m_pDoc->deleteSpan(pos1,pos1 + 1,NULL,iRealDeleteCount);
+		// TODO -- add proper revision handling using iRealDeleteCount
 
 		// Signal PieceTable Changes have finished
 		if(bSignal)
@@ -3461,7 +3478,10 @@ UT_Error FV_View::_deleteHyperlink(PT_DocPosition &pos1, bool bSignal)
 	UT_DEBUGMSG(("fv_View::cmdDeleteHyperlink: position [%d]\n",
 				pos1));
 
-	m_pDoc->deleteSpan(pos1,pos1 + 1,NULL);
+	UT_uint32 iRealDeleteCount;
+
+	m_pDoc->deleteSpan(pos1,pos1 + 1,NULL, iRealDeleteCount);
+	// TODO -- add proper revision handling using iRealDeleteCount
 
 	// Signal PieceTable Changes have finished
 	if(bSignal)
@@ -3796,6 +3816,7 @@ void FV_View::_acceptRejectRevision(bool bReject, PT_DocPosition iStart, PT_DocP
 
 	const XML_Char ** ppProps, ** ppAttr2;
 	UT_uint32 i;
+	UT_uint32 iRealDeleteCount;
 
 	const PP_Revision * pRev = pRevAttr->getGreatestLesserOrEqualRevision(m_iViewRevision);
 
@@ -3806,7 +3827,7 @@ void FV_View::_acceptRejectRevision(bool bReject, PT_DocPosition iStart, PT_DocP
 			case PP_REVISION_ADDITION:
 			case PP_REVISION_ADDITION_AND_FMT:
 				// delete this fragment
-				m_pDoc->deleteSpan(iStart,iEnd,NULL);
+				m_pDoc->deleteSpan(iStart,iEnd,NULL,iRealDeleteCount);
 				break;
 
 			case PP_REVISION_DELETION:
@@ -3830,7 +3851,7 @@ void FV_View::_acceptRejectRevision(bool bReject, PT_DocPosition iStart, PT_DocP
 
 			case PP_REVISION_DELETION:
 				// delete this fragment
-				m_pDoc->deleteSpan(iStart,iEnd,NULL);
+				m_pDoc->deleteSpan(iStart,iEnd,NULL,iRealDeleteCount);
 				break;
 
 			case PP_REVISION_ADDITION_AND_FMT:
