@@ -6152,23 +6152,24 @@ void fl_BlockLayout::_createListLabel(void)
 
 	FV_View* pView = m_pLayout->getView();
 	PT_DocPosition offset = pView->getPoint() - getPosition();
-#if 0
+#if 1
 	const  XML_Char ** blockatt;
 	pView->getCharFormat(&blockatt,true);
-	pView->setBlockFormat(blockatt);
-	FREEP(blockatt);
+//	pView->setBlockFormat(blockatt);
+//	FREEP(blockatt);
 #endif
-	XML_Char * blockatt[3] = {"list-tag",NULL,NULL};
+#if 1
+	XML_Char * tagatt[3] = {"list-tag",NULL,NULL};
 	XML_Char tagID[12];
 	UT_uint32 itag = UT_rand();
-	while(itag < 10000)
+	while( itag < 10000)
 	{
 		itag = UT_rand();
 	}
 	sprintf(tagID,"%d",itag);
-	blockatt[1] = (XML_Char *) &tagID;
-
-	m_pDoc->changeSpanFmt(PTC_AddFmt,getPosition(),getPosition(),NULL,(const char **)blockatt);
+	tagatt[1] = (XML_Char *) &tagID;
+	m_pDoc->changeSpanFmt(PTC_AddFmt,getPosition(),getPosition(),NULL,(const char **)tagatt);
+#endif
 
 	const XML_Char*	attributes[] = {
 		"type","list_label",
@@ -6181,6 +6182,9 @@ void fl_BlockLayout::_createListLabel(void)
 		UT_UCSChar c = UCS_TAB;
 		bResult = m_pDoc->insertSpan(getPosition()+1,&c,1);
 	}
+	m_pDoc->changeSpanFmt(PTC_AddFmt,getPosition(),getPosition()+2,NULL,(const char **)blockatt);
+	FREEP(blockatt);
+
 	if (pView && (pView->isActive() || pView->isPreview()))
 	{
 		pView->_setPoint(pView->getPoint()+offset);
