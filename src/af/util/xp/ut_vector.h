@@ -27,7 +27,7 @@ public:
 	UT_uint32	getItemCount() const;
 	UT_sint32	findItem(void*);
 
-	void		insertItemAt(void*, int ndx);
+	UT_sint32	insertItemAt(void*, UT_sint32 ndx);
 	void		deleteNthItem(UT_uint32 n);
 	void		clear();
 

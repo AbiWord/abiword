@@ -82,6 +82,30 @@ int UT_Vector::grow()
 	return 0;
 }
 
+UT_sint32 UT_Vector::insertItemAt(void* p, UT_sint32 ndx)
+{
+	if (ndx < 0 || ndx > m_iCount + 1)
+		return -1;
+	
+	if ((m_iCount+1) > m_iSpace)
+	{
+		int err = grow();
+		if (err)
+		{
+			return err;
+		}
+	}
+
+	// bump the elements -> thataway up to the ndxth position
+	for (int i = m_iCount + 1; i > ndx; i--)
+	{
+		m_pEntries[i] = m_pEntries[i - 1];
+	}
+
+	m_pEntries[ndx] = p;
+	++m_iCount;
+}
+
 UT_sint32 UT_Vector::addItem(void* p, UT_uint32 * pIndex)
 {
 	int err = addItem(p);
@@ -158,3 +182,5 @@ UT_sint32 UT_Vector::findItem(void* p)
 
 	return -1;
 }
+
+
