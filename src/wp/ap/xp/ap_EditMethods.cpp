@@ -8043,6 +8043,9 @@ Defun(viewNormalLayout)
 	pView->updateScreen(false);
 	//pView->notifyListeners(AV_CHG_ALL);
 
+	if (pFrame->getZoomType() == pFrame->z_PAGEWIDTH || pFrame->getZoomType() == pFrame->z_WHOLEPAGE)
+		pFrame->updateZoom();
+
 	return true;
 }
 
@@ -8075,6 +8078,9 @@ Defun(viewWebLayout)
 	pView->updateScreen(false);
 	//pView->notifyListeners(AV_CHG_ALL);
 
+	if (pFrame->getZoomType() == pFrame->z_PAGEWIDTH || pFrame->getZoomType() == pFrame->z_WHOLEPAGE)
+		pFrame->updateZoom();
+
 	return true;
 }
 
@@ -8106,6 +8112,9 @@ Defun(viewPrintLayout)
 
 	pView->updateScreen(false);
 	//pView->notifyListeners(AV_CHG_ALL);
+
+	if (pFrame->getZoomType() == pFrame->z_PAGEWIDTH || pFrame->getZoomType() == pFrame->z_WHOLEPAGE)
+		pFrame->updateZoom();
 
 	return true;
 }
