@@ -4990,6 +4990,11 @@ void IE_Imp_MsWord_97::_handleStyleSheet(const wvParseStruct *ps)
 			continue;
 		}
 
+		if(pSTD->cupx <= 1)
+		{
+			continue;
+		}
+
 		UT_DEBUGMSG(("Style name: [%s], id: %d\n", pSTD->xstzName, pSTD->sti));
 
 		attribs[iOffset++] = PT_NAME_ATTRIBUTE_NAME;
