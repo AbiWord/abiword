@@ -35,9 +35,13 @@
 #include <string.h>
 #include <io.h>
 #include <fcntl.h>
-#ifndef __WINE__
+
+#if !defined(__WINE__) && (!defined(_MSC_VER) || _MSC_VER < 1310)
 #include <iostream.h>
+#elif _MSC_VER >= 1310
+#include <iostream>
 #endif
+
 #include <ole2.h>
 
 #include "ut_debugmsg.h"
