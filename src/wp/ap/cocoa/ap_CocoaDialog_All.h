@@ -109,7 +109,7 @@
 	DeclareDialog(AP_DIALOG_ID_INSERT_DATETIME,	AP_CocoaDialog_Insert_DateTime)
 	DeclareDialog(AP_DIALOG_ID_WORDCOUNT,		AP_CocoaDialog_WordCount)
 //PORT	DeclareDialog(AP_DIALOG_ID_FIELD,			AP_CocoaDialog_Field)
-//PORT	DeclareDialog(AP_DIALOG_ID_LISTS,			AP_CocoaDialog_Lists)
+	DeclareDialog(AP_DIALOG_ID_LISTS,			AP_CocoaDialog_Lists)
 //PORT	DeclareDialog(AP_DIALOG_ID_COLUMNS,			AP_CocoaDialog_Columns)
 	DeclareDialog(AP_DIALOG_ID_TAB,				AP_CocoaDialog_Tab)
 	DeclareDialog(AP_DIALOG_ID_FILE_PAGESETUP,  AP_CocoaDialog_PageSetup)
