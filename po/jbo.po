@@ -1,12 +1,13 @@
+# translation of jbo.po to Lojban
 # translation of art-lojban.po to Lojban
 # Copyright (C) 2003 Free Software Foundation, Inc.
 # Pierre Abbat <phma@webjockey.net>, 2003
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: art-lojban\n"
+"Project-Id-Version: jbo\n"
 "POT-Creation-Date: 2003-09-02 23:02-0400\n"
-"PO-Revision-Date: 2003-09-11 08:16-0400\n"
+"PO-Revision-Date: 2003-09-16 22:34-0400\n"
 "Last-Translator: Pierre Abbat <phma@webjockey.net>\n"
 "Language-Team: Lojban\n"
 "MIME-Version: 1.0\n"
@@ -782,7 +783,7 @@ msgstr "&xruti"
 #. MENU_LABEL_VIEW_DEFAULT_TB_LAYOUT
 #: po/tmp/ap_String_Id.h.h:370
 msgid "&Reset to default layout"
-msgstr ""
+msgstr "&xruti fi le kratcini morna"
 
 #. MENU_LABEL_TOOLS_REVISIONS
 #: po/tmp/ap_String_Id.h.h:372
@@ -991,7 +992,7 @@ msgstr "(noda)"
 #. TOOLBAR_TOOLTIP_1COLUMN
 #: po/tmp/ap_String_Id.h.h:459
 msgid "1 Column"
-msgstr "1 rajypau"
+msgstr "1 kamju"
 
 #. TOOLBAR_LABEL_MIDDLE_SPACE
 #: po/tmp/ap_String_Id.h.h:461
@@ -1012,21 +1013,21 @@ msgstr "lijyjbilai li 1.5"
 #. TOOLBAR_LABEL_PARA_12BEFORE
 #: po/tmp/ap_String_Id.h.h:468
 msgid "12 pt before"
-msgstr ""
+msgstr "12mei cmalergutci gapla'i"
 
 #. TOOLBAR_LABEL_2COLUMN
 #. TOOLBAR_STATUSLINE_2COLUMN
 #. TOOLBAR_TOOLTIP_2COLUMN
 #: po/tmp/ap_String_Id.h.h:472
 msgid "2 Columns"
-msgstr "2 rajypau"
+msgstr "2 kamju"
 
 #. TOOLBAR_LABEL_3COLUMN
 #. TOOLBAR_STATUSLINE_3COLUMN
 #. TOOLBAR_TOOLTIP_3COLUMN
 #: po/tmp/ap_String_Id.h.h:476
 msgid "3 Columns"
-msgstr "3 rajypau"
+msgstr "3 kamju"
 
 #. DLG_Goto_Btn_Prev
 #: po/tmp/ap_String_Id.h.h:478
@@ -1295,7 +1296,6 @@ msgstr "zmiku basygau fi lo lersre valsi"
 
 #. DLG_InsertTable_AutoFit_Capital
 #: po/tmp/ap_String_Id.h.h:575
-#, fuzzy
 msgid "AutoFit Behavior"
 msgstr "zminilbra nuntarti"
 
@@ -1312,7 +1312,7 @@ msgstr "zmibragau le cartu"
 #. DLG_InsertTable_AutoColSize
 #: po/tmp/ap_String_Id.h.h:581
 msgid "Automatic column size"
-msgstr "zmiku ke kamju nilbra"
+msgstr "zmiku ke rajypau nilbra"
 
 #. DLG_Options_Label_CheckAutoLoadPlugins
 #: po/tmp/ap_String_Id.h.h:583
@@ -1352,12 +1352,12 @@ msgstr ""
 #. AUTOTEXT_EMAIL_5
 #: po/tmp/ap_String_Id.h.h:597
 msgid "BCC:"
-msgstr "Cci : "
+msgstr ""
 
 #. MENU_LABEL_FMT_BACKGROUND
 #: po/tmp/ap_String_Id.h.h:599
 msgid "Back&ground"
-msgstr "&Fond"
+msgstr "&tervi'a"
 
 #. DLG_FormatTable_Background
 #: po/tmp/ap_String_Id.h.h:601
@@ -1367,37 +1367,37 @@ msgstr "tervi'a"
 #. DLG_FormatTable_Background_Color
 #: po/tmp/ap_String_Id.h.h:603
 msgid "Background color:"
-msgstr "tervi'a sel\bska:"
+msgstr "tervi'a selska:"
 
 #. DLG_Tab_Radio_Bar
 #: po/tmp/ap_String_Id.h.h:605
 msgid "Bar"
-msgstr "&Barre"
+msgstr ""
 
 #. TabToggleBarTab
 #: po/tmp/ap_String_Id.h.h:607
 msgid "Bar Tab"
-msgstr "Tabulation en barre"
+msgstr ""
 
 #. DLG_Styles_ModifyBasedOn
 #: po/tmp/ap_String_Id.h.h:609
 msgid "Based On:"
-msgstr "Basé sur :"
+msgstr ""
 
 #. AUTOTEXT_CLOSING_1
 #: po/tmp/ap_String_Id.h.h:611
 msgid "Best regards,"
-msgstr "Salutations, "
+msgstr ""
 
 #. AUTOTEXT_CLOSING_2
 #: po/tmp/ap_String_Id.h.h:613
 msgid "Best wishes,"
-msgstr "Salutations distinguées, "
+msgstr ""
 
 #. DLG_Options_Label_BiDiOptions
 #: po/tmp/ap_String_Id.h.h:615
 msgid "Bi-Directional Options"
-msgstr "Options bidirectionnelles"
+msgstr ""
 
 #. TOOLBAR_LABEL_FMT_BOLD
 #. TOOLBAR_STATUSLINE_FMT_BOLD
@@ -1414,13 +1414,13 @@ msgstr "ter&xrusni"
 #. DLG_Goto_Target_Bookmark
 #: po/tmp/ap_String_Id.h.h:623
 msgid "Bookmark"
-msgstr "Signet"
+msgstr ""
 
 #. MSG_BookmarkNotFound
 #: po/tmp/ap_String_Id.h.h:625
 #, c-format
 msgid "Bookmark \"%s\" was not found in this document."
-msgstr "Signet &quot;%s&quot; non trouvé dans ce document."
+msgstr ""
 
 #. DLG_FormatTable_Border_Color
 #: po/tmp/ap_String_Id.h.h:627
@@ -1435,7 +1435,7 @@ msgstr "korbi"
 #. MENU_LABEL_FMT_BORDERS
 #: po/tmp/ap_String_Id.h.h:631
 msgid "Borders and Shading"
-msgstr "Bor&dures et trames"
+msgstr ""
 
 #. BottomMarginStatus
 #: po/tmp/ap_String_Id.h.h:633
@@ -1449,37 +1449,37 @@ msgstr "rebla korbi[%s]"
 #. TOOLBAR_TOOLTIP_FMT_BOTTOMLINE
 #: po/tmp/ap_String_Id.h.h:638 po/tmp/xap_String_Id.h.h:101
 msgid "Bottomline"
-msgstr "Ligne au b&as"
+msgstr ""
 
 #. DLG_Lists_Box_List
 #: po/tmp/ap_String_Id.h.h:640 po/tmp/xap_String_Id.h.h:103
 msgid "Box List"
-msgstr "Liste avec boite"
+msgstr ""
 
 #. FIELD_Application_BuildId
 #: po/tmp/ap_String_Id.h.h:642
 msgid "Build Id."
-msgstr "Identificateur de version"
+msgstr ""
 
 #. FIELD_Application_Options
 #: po/tmp/ap_String_Id.h.h:644
 msgid "Build Options"
-msgstr "Options"
+msgstr ""
 
 #. FIELD_Application_Target
 #: po/tmp/ap_String_Id.h.h:646
 msgid "Build Target"
-msgstr "Cible de compilation"
+msgstr ""
 
 #. DLG_Lists_Type_bullet
 #: po/tmp/ap_String_Id.h.h:648
 msgid "Bullet"
-msgstr "Puce"
+msgstr ""
 
 #. DLG_Lists_Bullet_List
 #: po/tmp/ap_String_Id.h.h:650 po/tmp/xap_String_Id.h.h:111
 msgid "Bullet List"
-msgstr "Liste avec puce"
+msgstr ""
 
 #. TOOLBAR_LABEL_LISTS_BULLETS
 #. TOOLBAR_STATUSLINE_LISTS_BULLETS
@@ -1491,22 +1491,22 @@ msgstr "bolci"
 #. MENU_LABEL_FMT_BULLETS
 #: po/tmp/ap_String_Id.h.h:656
 msgid "Bullets and &Numbering"
-msgstr "P&uces et numéros"
+msgstr ""
 
 #. DLG_Options_Label_Look
 #: po/tmp/ap_String_Id.h.h:658
 msgid "Button Style"
-msgstr "Voir"
+msgstr ""
 
 #. MENU_LABEL_FMT_TOGGLECASE
 #: po/tmp/ap_String_Id.h.h:660
 msgid "C&hange Case"
-msgstr "C&hanger la casse"
+msgstr ""
 
 #. MENU_LABEL_HELP_CREDITS
 #: po/tmp/ap_String_Id.h.h:662
 msgid "C&redits"
-msgstr "&Crédits et remerciements"
+msgstr ""
 
 #. AUTOTEXT_EMAIL_4
 #: po/tmp/ap_String_Id.h.h:664
@@ -1516,7 +1516,7 @@ msgstr "Cc : "
 #. AUTOTEXT_MAIL_1
 #: po/tmp/ap_String_Id.h.h:666
 msgid "CERTIFIED MAIL"
-msgstr "COURRIER CERTIFIE"
+msgstr ""
 
 #. AUTOTEXT_MAIL_2
 #: po/tmp/ap_String_Id.h.h:668
@@ -1558,7 +1558,7 @@ msgstr "midju"
 #. TabToggleCenterTab
 #: po/tmp/ap_String_Id.h.h:684
 msgid "Center Tab"
-msgstr "Tabulation au centre"
+msgstr ""
 
 #. TOOLBAR_STATUSLINE_ALIGN_CENTER
 #. TOOLBAR_TOOLTIP_ALIGN_CENTER
@@ -1569,7 +1569,7 @@ msgstr "midju lijymapti"
 #. MENU_STATUSLINE_ALIGN_CENTER
 #: po/tmp/ap_String_Id.h.h:689
 msgid "Center-align the paragraph"
-msgstr "Centre le paragraphe"
+msgstr ""
 
 #. DLG_Para_AlignCentered
 #: po/tmp/ap_String_Id.h.h:691
@@ -1579,22 +1579,22 @@ msgstr "midju"
 #. DLG_Spell_ChangeTo
 #: po/tmp/ap_String_Id.h.h:693
 msgid "Change &to:"
-msgstr "Remplacer &par :"
+msgstr ""
 
 #. DLG_Spell_ChangeAll
 #: po/tmp/ap_String_Id.h.h:695
 msgid "Change A&ll"
-msgstr "Remplacer partout"
+msgstr ""
 
 #. DLG_Background_Title
 #: po/tmp/ap_String_Id.h.h:697
 msgid "Change Background Color"
-msgstr "Changer la couleur de fond"
+msgstr ""
 
 #. DLG_ToggleCase_Title
 #: po/tmp/ap_String_Id.h.h:699
 msgid "Change Case"
-msgstr "Changer la casse"
+msgstr ""
 
 #. DLG_Lists_Cur_Change_Start
 #: po/tmp/ap_String_Id.h.h:701
@@ -1602,18 +1602,16 @@ msgid ""
 "Change Current \n"
 "List"
 msgstr ""
-"Changer la liste \n"
-"actuelle"
 
 #. DLG_Background_TitleHighlight
 #: po/tmp/ap_String_Id.h.h:703
 msgid "Change Highlight Color"
-msgstr "Changer la couleur de mise en évidence"
+msgstr ""
 
 #. DLG_Background_TitleFore
 #: po/tmp/ap_String_Id.h.h:705
 msgid "Change Text Color"
-msgstr "Changer la couleur du texte"
+msgstr ""
 
 #. TOOLBAR_STATUSLINE_FMT_DOM_DIRECTION
 #. TOOLBAR_TOOLTIP_FMT_DOM_DIRECTION
@@ -1624,28 +1622,28 @@ msgstr "galfi le ralju farna pe le ju'agri"
 #. MENU_STATUSLINE_FMT_TOGGLECASE
 #: po/tmp/ap_String_Id.h.h:710
 msgid "Change the case of the selected text"
-msgstr "Change la casse du texte sélectionné"
+msgstr ""
 
 #. MENU_STATUSLINE_FMT_FONT
 #: po/tmp/ap_String_Id.h.h:712
 msgid "Change the font of the selected text"
-msgstr "Change la police du texte sélectionné"
+msgstr ""
 
 #. MENU_STATUSLINE_FMT_PARAGRAPH
 #: po/tmp/ap_String_Id.h.h:714
 msgid "Change the format of the selected paragraph"
-msgstr "Change le format du paragraphe sélectionné"
+msgstr ""
 
 #. MENU_STATUSLINE_FMT_LANGUAGE
 #. MENU_STATUSLINE_TOOLS_LANGUAGE
 #: po/tmp/ap_String_Id.h.h:717
 msgid "Change the language of the selected text"
-msgstr "Change la langue du texte sélectionné"
+msgstr ""
 
 #. MENU_STATUSLINE_FMT_COLUMNS
 #: po/tmp/ap_String_Id.h.h:719
 msgid "Change the number of columns"
-msgstr "Change le nombre de colonnes"
+msgstr "galfi le terkancu be le'i rajypau"
 
 #. MENU_STATUSLINE_FILE_PAGESETUP
 #: po/tmp/ap_String_Id.h.h:721
@@ -1819,7 +1817,7 @@ msgstr "rajypau"
 #: po/tmp/ap_String_Id.h.h:789
 #, c-format
 msgid "Column Gap [%s]"
-msgstr "%s jbini le'i rajypau"
+msgstr "%s jbini le'i kamju"
 
 #. ColumnStatus
 #: po/tmp/ap_String_Id.h.h:791
@@ -2326,7 +2324,7 @@ msgstr "na ke'urcfari"
 #. DLG_Para_SpacingDouble
 #: po/tmp/ap_String_Id.h.h:998
 msgid "Double"
-msgstr ""
+msgstr "re"
 
 #. TOOLBAR_LABEL_DOUBLE_SPACE
 #: po/tmp/ap_String_Id.h.h:1000
@@ -2363,17 +2361,17 @@ msgstr "galfi le sedytcita"
 #. MENU_STATUSLINE_VIEW_HEADFOOT
 #: po/tmp/ap_String_Id.h.h:1017
 msgid "Edit text at the top or bottom of every page"
-msgstr ""
+msgstr "galfi le selci'a be vi le galji'o ja dziji'o be ro papri"
 
 #. MENU_STATUSLINE_EDIT_EDITFOOTER
 #: po/tmp/ap_String_Id.h.h:1019
 msgid "Edit the Footer on the current page"
-msgstr ""
+msgstr "galfi le rebytcita be le cabna papri"
 
 #. MENU_STATUSLINE_EDIT_EDITHEADER
 #: po/tmp/ap_String_Id.h.h:1021
 msgid "Edit the Header on the current page"
-msgstr ""
+msgstr "galfi le sedytcita be le cabna papri"
 
 #. MENU_LABEL_AUTOTEXT_EMAIL
 #: po/tmp/ap_String_Id.h.h:1023
@@ -2408,19 +2406,19 @@ msgstr "rebytcita tamtadji"
 #. FIELD_Error
 #: po/tmp/ap_String_Id.h.h:1035
 msgid "Error calculating value!"
-msgstr ""
+msgstr "fliba lenu kanji le namcu"
 
 #. SCRIPT_CANTRUN
 #: po/tmp/ap_String_Id.h.h:1037
 #, c-format
 msgid "Error executing script %s"
-msgstr ""
+msgstr "fliba lenu rucygau la'o my. %s .my po'u le midyselpla"
 
 #. MSG_ImportError
 #: po/tmp/ap_String_Id.h.h:1039
 #, c-format
 msgid "Error importing file %s."
-msgstr ""
+msgstr "fliba lenu nerbei la'o dy. %s .dy po'u le datnyvei"
 
 #. MSG_SaveFailedExport
 #: po/tmp/ap_String_Id.h.h:1041
@@ -2442,7 +2440,7 @@ msgstr "zuk- mid-"
 #. DLG_Para_SpacingExactly
 #: po/tmp/ap_String_Id.h.h:1047
 msgid "Exactly"
-msgstr ""
+msgstr "satci"
 
 #. MENU_STATUSLINE_TOOLS_SCRIPTS
 #: po/tmp/ap_String_Id.h.h:1049
@@ -2478,17 +2476,17 @@ msgstr ""
 #. MENU_LABEL_FORMAT
 #: po/tmp/ap_String_Id.h.h:1062
 msgid "F&ormat"
-msgstr ""
+msgstr "t&armi"
 
 #. MENU_LABEL_VIEW_FULLSCREEN
 #: po/tmp/ap_String_Id.h.h:1064
 msgid "F&ull Screen"
-msgstr ""
+msgstr "&culno vidni"
 
 #. DLG_FR_FindLabel
 #: po/tmp/ap_String_Id.h.h:1066
 msgid "Fi&nd what:"
-msgstr ""
+msgstr "&sisku"
 
 #. DLG_MailMerge_Insert_No_Colon
 #: po/tmp/ap_String_Id.h.h:1068
@@ -2527,12 +2525,12 @@ msgstr ""
 #. FIELD_Application_Filename
 #: po/tmp/ap_String_Id.h.h:1080
 msgid "File Name"
-msgstr ""
+msgstr "datnyvei cmene"
 
 #. DLG_FR_FindTitle
 #: po/tmp/ap_String_Id.h.h:1082
 msgid "Find"
-msgstr ""
+msgstr "tolcri"
 
 #. MENU_STATUSLINE_EDIT_FIND
 #: po/tmp/ap_String_Id.h.h:1084
@@ -2548,7 +2546,7 @@ msgstr ""
 #. DLG_Para_SpecialFirstLine
 #: po/tmp/ap_String_Id.h.h:1088
 msgid "First line"
-msgstr ""
+msgstr "pamoi lijvelsku"
 
 #. DLG_InsertTable_FixedColSize
 #: po/tmp/ap_String_Id.h.h:1090
