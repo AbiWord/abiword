@@ -150,9 +150,10 @@ int XAP_QNXFrame::_fe::expose(PtWidget_t * w, PhTile_t * damage)
    PtSuperClassDraw(PtBasic, w, damage);
    PtBasicWidgetCanvas(w, &rect);
    PtWidgetOffset(w, &pnt);
+/*
 	UT_DEBUGMSG(("-----\nWidget Rect is %d,%d  %d,%d (@ %d,%d)",
 			rect.ul.x, rect.ul.y, rect.lr.x, rect.lr.y, pnt.x, pnt.y));
-
+*/
 	XAP_QNXFrame *pQNXFrame, **ppQNXFrame = NULL;
 	PtSetArg(&args[0], Pt_ARG_USER_DATA, &ppQNXFrame, 0);
 	PtGetResources(w, 1, args);
@@ -170,13 +171,24 @@ int XAP_QNXFrame::_fe::expose(PtWidget_t * w, PhTile_t * damage)
 		 co-ordinates, so make sure to translate them to the
 		 widgets co-ordinates when passing to our draw() functions
 		*/
+/*
+ When Abi's Draw routine gets to be faster about not going through
+ and calculating areas which don't need to be done, then we can
+ actually take advantage of the multiple clip areas.  For now though
+ we just do it based on the first clip.
+#define MULTIPLE_EXPOSE_EVENTS
+*/
 		if (damage->next) {
 			UT_DEBUGMSG(("Multiple damage rects "));
+#if defined(MULTIPLE_EXPOSE_EVENTS) 
 			damage = damage->next;
+#endif
 		}
 		while (damage) {
+/*
 			UT_DEBUGMSG(("Expose Rect is %d,%d  %d,%d ",
 			damage->rect.ul.x, damage->rect.ul.y, damage->rect.lr.x, damage->rect.lr.y));
+*/
 			/* At one point in time this required some fiddling to put it in the widget co-ordinates*/
 			rClip.width = (damage->rect.lr.x - damage->rect.ul.x) + 1;
 			rClip.height = (damage->rect.lr.y - damage->rect.ul.y) + 1;
@@ -186,10 +198,7 @@ int XAP_QNXFrame::_fe::expose(PtWidget_t * w, PhTile_t * damage)
 			UT_DEBUGMSG(("Adjusted Expose Rect %d,%d %d/%d ",
 				rClip.left, rClip.top, rClip.width, rClip.height));
 				
-			//Set the Clipping here, and then draw it all
-			//PtClipAdd(w, &damage->rect);
-			//pView->draw(NULL);
-			//PtClipRemove();
+			//Don't bother setting the clip here, the Graphics routine does it
 
 			//OR: Pass the draw function the clipping rectangle
 			//This is preferred since this way the application
@@ -200,8 +209,13 @@ int XAP_QNXFrame::_fe::expose(PtWidget_t * w, PhTile_t * damage)
 			//pView->draw(NULL);
 			//break;
 
+#if defined(MULTIPLE_EXPOSE_EVENTS) 
 			damage = damage->next;
+#else
+			break;
+#endif
 		}
+
 	}
 	UT_DEBUGMSG(("====="));
 
@@ -230,21 +244,6 @@ int XAP_QNXFrame::_fe::hScrollChanged(PtWidget_t * w, void *data, PtCallbackInfo
 	return 0;
 }
 	
-#if 0
-void XAP_QNXFrame::_fe::destroy(GtkWidget * /*widget*/, gpointer /*data*/)
-{
-	// I think this is right:
-	// 	We shouldn't have to call gtk_main_quit() here because
-	//  this signal catcher is only inserted before the GTK
-	//  default handler (which will continue to destroy the window
-	//  if we don't return TRUE).
-	//
-	//  This function should be for things to happen immediately
-	//  before a frame gets hosed once and for all.
-	
-	//gtk_main_quit ();
-}
-#endif	
 /*****************************************************************/
 
 /*
@@ -347,6 +346,12 @@ PtWidget_t * XAP_QNXFrame::getVBoxWidget(void) const
 	return m_wVBox;
 }
 
+PtWidget_t * XAP_QNXFrame::getTBGroupWidget(void) const
+{
+	return m_wTBGroup;
+}
+
+
 XAP_DialogFactory * XAP_QNXFrame::getDialogFactory(void)
 {
 	return &m_dialogFactory;
@@ -388,21 +393,25 @@ void XAP_QNXFrame::_createTopLevelWindow(void)
 	}
 	//PtAddEventHandler(m_wTopLevelWindow, Ph_EV_KEY, _fe::key_press_event, this);
 
+	/* TODO: Menu and the Toolbars all go into the same Toolbar "group" */
+#if 0
+	n = 0;
+#define _MNU_GRP_ANCHOR_ (Pt_LEFT_ANCHORED_LEFT | Pt_RIGHT_ANCHORED_RIGHT | Pt_TOP_ANCHORED_TOP)
+    PtSetArg(&args[n++], Pt_ARG_ANCHOR_FLAGS, _MNU_GRP_ANCHOR_, _MNU_GRP_ANCHOR_);
+    PtSetArg(&args[n++], Pt_ARG_RESIZE_FLAGS, 0, Pt_RESIZE_X_BITS);
+    PtSetArg(&args[n++], Pt_ARG_WIDTH, area.size.w, 0); 
+	m_wTBGroup = PtCreateWidget(PtToolbarGroup, m_wTopLevelWindow, n, args);
+#endif
+
 	/*** Create the menu bars ***/
 	UT_DEBUGMSG(("QNXFrame: creating menu bars \n"));
-	m_pQNXMenu = new EV_QNXMenuBar(m_pQNXApp,this,
-					 m_szMenuLayoutName,
-					 m_szMenuLabelSetName);
+	m_pQNXMenu = new EV_QNXMenuBar(m_pQNXApp, this, m_szMenuLayoutName, m_szMenuLabelSetName);
 	UT_ASSERT(m_pQNXMenu);
 	bResult = m_pQNXMenu->synthesizeMenuBar();
+	UT_ASSERT(bResult);
+
 	m_AvailableArea.pos.y += 30 + 3;
 	m_AvailableArea.size.h -= 30 + 3;
-	UT_ASSERT(bResult);
-	
-	/*** Create a vertical group box under the menu ***/	
-#if 0
-	m_wVBox = PtCreateWidget(PtGroup, m_wTopLevelWindow, 5, args);
-#endif
 	
 	/*** Create the tool bars ***/
 	_createToolbars();
@@ -415,6 +424,10 @@ void XAP_QNXFrame::_createTopLevelWindow(void)
 	m_wSunkenBox = _createDocumentWindow();
 
 	//Add status bars
+	UT_DEBUGMSG(("TODO: Add the status bar widget \n"));
+	
+	//Set the icon for the window
+	_setWindowIcon();
 }
 
 UT_Bool XAP_QNXFrame::close()
@@ -438,20 +451,13 @@ UT_Bool XAP_QNXFrame::show()
 
 UT_Bool XAP_QNXFrame::openURL(const char * szURL)
 {
-	printf("FRAME: TODO openURL [%s]\n", szURL);
-#if 0
-	// TODO : FIX THIS.  Find a better way to search for
-	// TODO : other browsers on your machine.
-
-	// Try to connect to a running Netscape, if not, start new one
-
 	char execstring[4096];
 
-	g_snprintf(execstring, 4096, "netscape -remote openURL\\(%s\\) "
-			   "|| netscape %s &", szURL, szURL);
+	//TODO: I should use spawn here
+	snprintf(execstring, 4096, "voyager -u %s &", szURL);
 	system(execstring);
-#endif	
-	return UT_FALSE;
+
+	return UT_TRUE;
 }
 
 UT_Bool XAP_QNXFrame::updateTitle()

@@ -63,8 +63,9 @@ public:
 	virtual UT_Bool				updateTitle(void);
 	virtual UT_sint32			setInputMode(const char * szName);
 
-	PtWidget_t *				getTopLevelWindow(void) const;
-	PtWidget_t *				getVBoxWidget(void) const;
+	PtWidget_t *				getTopLevelWindow(void) const;	//Get the Window widget
+	PtWidget_t *				getVBoxWidget(void) const;		//Less than usefull 
+	PtWidget_t *				getTBGroupWidget(void) const;	//Get the Toolbar Group widget
 	
 	virtual XAP_DialogFactory *	getDialogFactory(void);
 	virtual void				setXScrollRange(void)=0;
@@ -98,6 +99,7 @@ protected:
 	
 	PtWidget_t *				m_wTopLevelWindow;
 
+	PtWidget_t *				m_wTBGroup;	 /* The menu/toolbar group */
 	PtWidget_t *				m_wVBox;
 	PtWidget_t *				m_wStatusBar;
 

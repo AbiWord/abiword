@@ -31,6 +31,7 @@
 #include "xap_Dialog_Id.h"
 #include "xap_Dlg_WindowMore.h"
 #include "xap_QNXDlg_WindowMore.h"
+#include "ut_qnxHelper.h"
 
 /*****************************************************************/
 
@@ -210,7 +211,8 @@ PtWidget_t * XAP_QNXDialog_WindowMore::_constructWindow(void)
 	// Create the new top level window.
 	n = 0;
 	PtSetArg(&args[n++], Pt_ARG_WINDOW_TITLE, pSS->getValue(XAP_STRING_ID_DLG_MW_MoreWindows), 0);
-    PtSetArg(&args[n++], Pt_ARG_WINDOW_RENDER_FLAGS, 0, Ph_WM_RENDER_RESIZE);
+    PtSetArg(&args[n++], Pt_ARG_WINDOW_RENDER_FLAGS, 0, ABI_MODAL_WINDOW_RENDER_FLAGS);
+    PtSetArg(&args[n++], Pt_ARG_WINDOW_MANAGED_FLAGS, 0, ABI_MODAL_WINDOW_MANAGE_FLAGS);
 	windowMain = PtCreateWidget(PtWindow, NULL, n, args);
 	PtAddCallback(windowMain, Pt_CB_WINDOW_CLOSING, s_delete_clicked, this);
 

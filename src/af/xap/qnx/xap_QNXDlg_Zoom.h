@@ -56,7 +56,7 @@ public:
 	
 protected:
 
-	GR_QNXGraphics	* 		m_unixGraphics;
+	GR_QNXGraphics	* 		m_qnxGraphics;
 	
 	// private construction functions
 	PtWidget_t * _constructWindow(void);
