@@ -23,6 +23,7 @@
 #include "ut_string.h"
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
+#include "ut_types.h"
 
 #include "xap_App.h"
 #include "xap_QNXApp.h"
@@ -32,7 +33,8 @@
 #include "xap_Dialog_Id.h"
 #include "xap_QNXDlg_Language.h"
 #include "ut_qnxHelper.h"
-
+#include "ut_Xpm2Bitmap.h"
+#include "xap_QNXToolbar_Icons.h"
 
 /*****************************************************************/
 
@@ -110,20 +112,12 @@ void XAP_QNXDialog_Language::runModal(XAP_Frame * pFrame)
 	m_bChangedLanguage = false;
 
 	if (m_answer == XAP_Dialog_Language::a_OK) {
-		unsigned short *index;
-		int langindex = 0;
-		
-		PtGetResource(m_pLanguageList, Pt_ARG_SELECTION_INDEXES, &index, 0);
+		PtTreeItem_t *titem =	PtTreeGetCurrent(m_pLanguageList);
 
-		if (index && *index) {
-			langindex = (*index) - 1;
-
-			if (!m_pLanguage || UT_stricmp(m_pLanguage, m_ppLanguages[langindex])) {
-				_setLanguage(m_ppLanguages[langindex]);
+			if (!m_pLanguage || UT_stricmp(m_pLanguage, titem->string)) {
+				_setLanguage(titem->string);
 				m_bChangedLanguage = true;
 			}
-		}
-		
 	}
 
 	UT_QNXBlockWidget(parent, 0);
@@ -172,18 +166,45 @@ PtSetArg(&args[n++], Pt_ARG_WINDOW_TITLE, _(XAP,DLG_ULANG_LangTitle), 0);
 		pretty_group(vboxMain, _(XAP,DLG_ULANG_LangLabel));
 
 	n = 0;
-	m_pLanguageList = PtCreateWidget(PtList, vboxMain, n, args);
+	PtSetArg(&args[n++],Pt_ARG_TREE_FLAGS,Pt_FALSE,Pt_TREE_SHOW_CONNECTORS);
+	m_pLanguageList = PtCreateWidget(PtTree, vboxMain, n, args);
 
+/* Add bitmap into PtTree */
+	PhImage_t *pImage = NULL;
+	short img,img_id;
+	AP_QNXToolbar_Icons icon;
+
+	pImage = icon.getPixmapForIcon("SPELLCHECK");
+
+	img_id=	PtTreeAddImages(m_pLanguageList,pImage,1);
+
+	
+	UT_Vector *pVec = getAvailableDictionaries();
+	UT_uint32 nItems = pVec->getItemCount();
+	
 	UT_uint32 k;
 	for (k = 0; k < m_iLangCount; k++) {
 		const char *item = (const char *) m_ppLanguages[k];
-		PtListAddItems(m_pLanguageList, &item, 1, 0);
+		img=-1;
+		for(UT_uint32 i = 0; i < nItems; i++)
+		{	
+			const char *dic = (const char *) pVec->getNthItem(i);
+			if(strcmp(dic,m_ppLanguagesCode[k]) == 0)
+			{
+				img=img_id;
+				break;
+			}
+		}
+	
+		PtTreeItem_t *titem = PtTreeAllocItem(m_pLanguageList,item,img,img);
+		PtTreeAddFirst(m_pLanguageList, titem,NULL);
 	}
-	if((k = PtListItemPos(m_pLanguageList, (const char *)m_pLanguage))) {
+
+/*	if((k = PtListItemPos(m_pLanguageList, (const char *)m_pLanguage))) {
 		PtListGotoPos(m_pLanguageList, k);
 	} else {
 		PtListGotoPos(m_pLanguageList, 1);
-	} 
+	}*/ 
 	
 	/* Buttons along the bottom */
 	n = 0;
