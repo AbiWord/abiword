@@ -87,6 +87,10 @@ install-data-local:
 	else \
 	  echo "Warning: abidistfiles package not found." ;\
 	fi
+if WITH_GNOME
+else
+	rm -f $(DESTDIR)$(pkgdatadir)/icons/abiword_logo.xpm #XXX this is very dirty
+endif
 	@$(mkinstalldirs) $(DESTDIR)$(pkgdatadir)/AbiWord
 	@for dir in `cd $(top_srcdir)/user/wp; find . -type d ! -name CVS` ; do \
 	  $(mkinstalldirs) $(DESTDIR)$(pkgdatadir)/AbiWord/$$dir ;\
