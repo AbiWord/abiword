@@ -182,23 +182,17 @@ void ev_Win32Keyboard::remapKeyboard(HKL hKeyboardLayout)
 	char  szCodePage[10];
 
 	if( s_iconv != (iconv_t)-1 )
-
 	{
 		iconv_close( s_iconv );
-
 		s_iconv = (iconv_t)-1;
-
 	}
 	if( hKeyboardLayout != 0 )
 	{
 		strcpy( szCodePage, "CP" );
 		if( GetLocaleInfo( LOWORD( hKeyboardLayout ), LOCALE_IDEFAULTANSICODEPAGE, &szCodePage[2], sizeof( szCodePage ) / sizeof( szCodePage[0] ) - 2 ) )
-
 		{
-
 			s_iconv = iconv_open( "UCS-2-INTERNAL", szCodePage );
 		}
-
 	}
 
 	s_hKeyboardLayout = hKeyboardLayout;
