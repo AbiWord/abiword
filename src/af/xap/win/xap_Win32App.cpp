@@ -45,6 +45,7 @@ XAP_Win32App::XAP_Win32App(HINSTANCE hInstance, XAP_Args * pArgs, const char * s
 	UT_ASSERT(hInstance);
 
 	_setAbiSuiteLibDir();
+	_setBidiOS();
 }
 
 XAP_Win32App::~XAP_Win32App(void)
@@ -368,4 +369,62 @@ UT_sint32 XAP_Win32App::setupWindowFromPrefs(UT_sint32 iCmdShow, HWND hwndFrame)
 	}
 
 	return iCmdShow;
+}
+
+/*
+	most of the code in the following function comes from Mozilla
+*/
+void XAP_Win32App::_setBidiOS(void)
+{
+
+	m_bBidiOS = false;
+
+#ifdef BIDI_ENABLED
+	const UT_UCSChar araAin  = 0x0639;
+	const UT_UCSChar one     = 0x0031;
+
+	int distanceArray[2];
+	UT_UCSChar glyphArray[2];
+	UT_UCSChar outStr[] = {0, 0};
+	
+	GCP_RESULTSW gcpResult;
+	gcpResult.lStructSize = sizeof(GCP_RESULTS);
+	gcpResult.lpOutString = outStr;     // Output string
+	gcpResult.lpOrder = NULL;			// Ordering indices
+	gcpResult.lpDx = distanceArray;     // Distances between character cells
+	gcpResult.lpCaretPos = NULL;		// Caret positions
+	gcpResult.lpClass = NULL;         // Character classifications
+	gcpResult.lpGlyphs = glyphArray;    // Character glyphs
+	gcpResult.nGlyphs = 2;              // Array size
+ 
+	UT_UCSChar inStr[] = {araAin, one};
+
+	HDC displayDC = GetDC(NULL);
+
+	if(!displayDC)
+	{
+		return;
+	}
+
+	if (GetCharacterPlacementW(displayDC, inStr, 2, 0, &gcpResult, GCP_REORDER) 
+		&& (inStr[0] == outStr[1]) ) 
+	{
+		m_bBidiOS = true;
+		UT_DEBUGMSG(("System has bidi and glyph shaping\n"));
+	}
+	else
+	{
+		const UT_UCSChar hebAlef = 0x05D0;
+		inStr[0] = hebAlef;
+		inStr[1] = one;
+		if (GetCharacterPlacementW(displayDC, inStr, 2, 0, &gcpResult, GCP_REORDER) 
+			&& (inStr[0] == outStr[1]) )
+		{
+			m_bBidiOS = true;
+			UT_DEBUGMSG(("System has bidi\n"));
+		}
+	}
+
+	ReleaseDC(NULL,displayDC);
+#endif
 }

@@ -67,15 +67,21 @@ public:
 	void									enableAllTopLevelWindows(bool);
 	virtual UT_sint32					makeDirectory(const char * szPath, const UT_sint32 mode ) const;
 	virtual UT_sint32 				setupWindowFromPrefs(UT_sint32 iCmdShow, HWND hwndFrame);
+
+    virtual bool                            theOSHasBidiSupport() const {return m_bBidiOS;}
+
 protected:
 	UT_uint32								_getExeDir(char* pDirBuf, UT_uint32 iBufLen);
 	void									_setAbiSuiteLibDir(void);
+	void									_setBidiOS(void);
 	
 	HINSTANCE								m_hInstance;
 	AP_Win32DialogFactory					m_dialogFactory;
 	AP_Win32Toolbar_ControlFactory			m_controlFactory;
 
 	XAP_Win32Slurp *						m_pSlurp;
+private:
+	bool									m_bBidiOS;
 };
 
 #endif /* XAP_WIN32APP_H */
