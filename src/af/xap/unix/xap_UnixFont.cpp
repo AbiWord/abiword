@@ -31,6 +31,7 @@
 #include "ut_dialogHelper.h"
 #include "xap_UnixFont.h"
 #include "xap_UnixFontXLFD.h"
+#include "xap_EncodingManager.h"
 
 
 #define ASSERT_MEMBERS	do { UT_ASSERT(m_name); UT_ASSERT(m_fontfile); UT_ASSERT(m_metricfile); } while (0)
@@ -766,9 +767,14 @@ ABIFontInfo * XAP_UnixFont::getMetricsData(void)
 	}
 	m_uniWidths = (UT_uint16 *) malloc (sizeof (UT_uint16) * 256);
 	memset (m_uniWidths, 0, 256 * sizeof(UT_uint16)); // Clear array - i would hope that sizeof(UT_uint16) == 16
-	for (UT_sint32 i=0; i != m_metricsData->numOfChars && i<256; ++i)
+	if (XAP_EncodingManager::instance->try_nativeToU(0xa1)==0xa1)
 	{
-#if 0
+           /* it's iso8859-1 or cp1252 encoding - glyphs in font are in wrong
+               order - we have to map them by name.
+           */
+           for (UT_sint32 i=0; i != m_metricsData->numOfChars && i<256; ++i)
+           {
+
 		UT_sint32 unicode = -1;
 		for (UT_uint32 j = 0; the_enc[j].type1_name != NULL; j++)
 		{
@@ -783,12 +789,20 @@ ABIFontInfo * XAP_UnixFont::getMetricsData(void)
 			UT_ASSERT (unicode < 256); // TODO: support multibyte chars
 			m_uniWidths[unicode] = m_metricsData->cmi[i].wx;
 		}
-#else
-		/*let's assume that we have all characters we need in the font. */
+           }
+       } 
+       else
+       {
+           /* it's non-latin1 encoding - we have to assume that order of 
+              glyphs in font is correct.
+           */
+           for (UT_sint32 i=0; i != m_metricsData->numOfChars && i<256; ++i)
+           {     
 		if (m_metricsData->cmi[i].code<256 && m_metricsData->cmi[i].code>=0)
 			m_uniWidths[m_metricsData->cmi[i].code] = m_metricsData->cmi[i].wx;
-#endif
-	}
+               
+           }
+       }
 
 	fclose(fp);
 	
