@@ -21,8 +21,6 @@
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
 
-#include "gr_Win32Graphics.h"
-
 #include "xap_App.h"
 #include "xap_Win32App.h"
 #include "xap_Win32Frame.h"
@@ -47,12 +45,10 @@ AP_Win32Dialog_Paragraph::AP_Win32Dialog_Paragraph(XAP_DialogFactory * pDlgFacto
 												 XAP_Dialog_Id id)
 	: AP_Dialog_Paragraph(pDlgFactory,id)
 {
-	m_unixGraphics = NULL;
 }
 
 AP_Win32Dialog_Paragraph::~AP_Win32Dialog_Paragraph(void)
 {
-	DELETEP(m_unixGraphics);
 }
 
 /*****************************************************************/
