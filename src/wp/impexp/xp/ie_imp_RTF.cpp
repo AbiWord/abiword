@@ -9526,6 +9526,8 @@ bool IE_Imp_RTF::pasteFromBuffer(PD_DocumentRange * pDocRange,
 			switch(pfs->getStruxType())
 			{
 				case PTX_Block:
+				case PTX_EndFootnote:
+				case PTX_EndEndnote:
 					// we are ok
 					break;
 
@@ -9543,9 +9545,7 @@ bool IE_Imp_RTF::pasteFromBuffer(PD_DocumentRange * pDocRange,
 				case PTX_SectionFrame:
 				case PTX_EndCell:
 				case PTX_EndTable:
-				case PTX_EndFootnote:
 				case PTX_EndMarginnote:
-				case PTX_EndEndnote:
 				case PTX_EndFrame:
 				case PTX_SectionTOC:
 				case PTX_EndTOC:
