@@ -117,10 +117,11 @@ BeginSetEnc(lt,LT,true,"iso-8859-13")
 
      	ToolbarLabel(AP_TOOLBAR_ID_FMTPAINTER, "Formatuoti pastraipà",  tb_stock_paint_xpm, NULL, "Paþymëtam tekstui pritaikyti anksèiau nukopijuotos pastraipos formatà")
 
+#ifdef BIDI_ENABLED
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_DIR_OVERRIDE_LTR,	"Raðyti ið kairës á deðinæ",		tb_text_direction_ltr_xpm,	NULL, "Raðyti ið kairës á deðinæ")
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_DIR_OVERRIDE_RTL,	"Raðyti ið deðinës á kairæ",		tb_text_direction_rtl_xpm,	NULL, "Raðyti ið deðinës á kairæ")
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_DOM_DIRECTION,		"Pastraipos kryptis",	tb_text_dom_direction_rtl_xpm,	NULL, "Keisti áprastà pastraipos raðymo kryptá")
-
+#endif
 		
 	// ... add others here ...
 
