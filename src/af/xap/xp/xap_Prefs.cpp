@@ -1303,8 +1303,10 @@ bool XAP_Prefs::savePrefsFile(void)
 		for (k=0; k<kLimit; k++)
 		{
 			const char * szRecent = getRecent(k+1);
+			UT_UTF8String utf8string( szRecent );
+			utf8string.escapeXML();
 
-			fprintf(fp,"\t\tname%d=\"%s\"\n",k+1,szRecent);
+			fprintf(fp,"\t\tname%d=\"%s\"\n",k+1,utf8string.utf8_str());
 		}
 				
 		fprintf(fp,"\t\t/>\n");
