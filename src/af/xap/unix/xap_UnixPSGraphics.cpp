@@ -181,7 +181,7 @@ UT_uint32 PS_Graphics::measureUnRemappedChar(const UT_UCSChar c)
 	// FIXME but we're not smart enough to do that yet
 	float fWidth = m_pCurrentFont->measureUnRemappedChar(c, m_pCurrentFont->getSize())
 		* ((double)getResolution() / (double)getDeviceResolution());
-	return static_cast<UT_uint32>(rintf(fWidth));
+	return static_cast<UT_uint32>(rint(fWidth));
 }
 #endif //#ifndef WITH_PANGO
 
