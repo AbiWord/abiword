@@ -23,7 +23,7 @@
 #include "ut_debugmsg.h"
 #include "ut_assert.h"
 #include "ap_ViewListener.h"
-#include "../xp/ap_FrameData.h"
+#include "ap_FrameData.h"
 #include "ap_Win32Frame.h"
 #include "ev_Win32Toolbar.h"
 #include "av_View.h"
@@ -32,7 +32,6 @@
 #include "fl_DocLayout.h"
 #include "pd_Document.h"
 #include "gr_Win32Graphics.h"
-#include "fp_Page.h"
 #include "ap_Scrollbar_ViewListener.h"
 
 #define DELETEP(p)		do { if (p) delete p; } while (0)
@@ -179,17 +178,10 @@ Cleanup:
 
 void AP_Win32Frame::setYScrollRange(void)
 {
-	int pageLen = m_pData->m_pDocLayout->getFirstPage()->getHeight();
-	int nrPages = m_pData->m_pDocLayout->countPages();
-	int height = pageLen * (nrPages+1);
-
 	// TODO do we need to increase height by the amount of
 	// TODO white space, drop shadows, and etc. that we
 	// TODO draw between the pages.
 
-	UT_DEBUGMSG(("Setting vertical scroll: [pageLen %ld][nrPages %ld][height %ld]\n",
-				 pageLen,nrPages,height));
-			
 	UT_uint32 iWindowHeight, iHeight;
 	HWND hwnd = m_hwndChild;
 
@@ -198,14 +190,15 @@ void AP_Win32Frame::setYScrollRange(void)
 	iWindowHeight = r.bottom - r.top;
 
 	iHeight = m_pData->m_pDocLayout->getHeight();
+
 	SCROLLINFO si;
 	memset(&si, 0, sizeof(si));
 
 	si.cbSize = sizeof(si);
-	si.fMask = SIF_ALL;
+	si.fMask = SIF_ALL | SIF_DISABLENOSCROLL;
 	si.nMin = 0;
-	si.nMax = height;
+	si.nMax = iHeight;
 	si.nPos = ((m_pView) ? m_pView->getYScrollOffset() : 0);
-	si.nPage = iWindowHeight * 10 / 9;
+	si.nPage = iWindowHeight;
 	SetScrollInfo(hwnd, SB_VERT, &si, TRUE);
 }

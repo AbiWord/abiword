@@ -27,17 +27,18 @@ class AV_View;
 
 typedef UT_uint32 AV_ListenerId;
 
-typedef UT_Byte AV_ChangeMask;
-#define AV_CHG_NONE			((AV_ChangeMask) 0x00) 
-#define AV_CHG_DO			((AV_ChangeMask) 0x01)		// canDo
-#define AV_CHG_DIRTY		((AV_ChangeMask) 0x02)		// isDirty 
-#define AV_CHG_EMPTYSEL		((AV_ChangeMask) 0x04)		// isSelectionEmpty 
-#define AV_CHG_FILENAME		((AV_ChangeMask) 0x08)		// getFilename
-#define AV_CHG_FMTBLOCK		((AV_ChangeMask) 0x10)		// getBlockFormat
-#define AV_CHG_FMTCHAR		((AV_ChangeMask) 0x20)		// getCharFormat
-#define AV_CHG_CLIPBOARD	((AV_ChangeMask) 0x40)
-#define AV_CHG_PAGECOUNT	((AV_ChangeMask) 0x80)		// number of pages
-#define AV_CHG_ALL			((AV_ChangeMask) 0xFF) 
+typedef UT_uint16 AV_ChangeMask;
+#define AV_CHG_NONE			((AV_ChangeMask) 0x0000) 
+#define AV_CHG_DO			((AV_ChangeMask) 0x0001)		// canDo
+#define AV_CHG_DIRTY		((AV_ChangeMask) 0x0002)		// isDirty 
+#define AV_CHG_EMPTYSEL		((AV_ChangeMask) 0x0004)		// isSelectionEmpty 
+#define AV_CHG_FILENAME		((AV_ChangeMask) 0x0008)		// getFilename
+#define AV_CHG_FMTBLOCK		((AV_ChangeMask) 0x0010)		// getBlockFormat
+#define AV_CHG_FMTCHAR		((AV_ChangeMask) 0x0020)		// getCharFormat
+#define AV_CHG_CLIPBOARD	((AV_ChangeMask) 0x0040)
+#define AV_CHG_PAGECOUNT	((AV_ChangeMask) 0x0080)		// number of pages
+#define AV_CHG_WINDOWSIZE	((AV_ChangeMask) 0x0100)
+#define AV_CHG_ALL			((AV_ChangeMask) 0xFFFF) 
 
 #define AV_CHG_SAVE			((AV_ChangeMask) (AV_CHG_DO | AV_CHG_DIRTY | AV_CHG_FILENAME))
 #define AV_CHG_TYPING		((AV_ChangeMask) (AV_CHG_DO | AV_CHG_DIRTY | AV_CHG_EMPTYSEL))

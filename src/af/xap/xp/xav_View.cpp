@@ -128,6 +128,8 @@ void AV_View::setWindowSize(UT_sint32 width, UT_sint32 height)
 {
 	m_iWindowWidth = width;
 	m_iWindowHeight = height;
+
+	notifyListeners(AV_CHG_WINDOWSIZE);
 }
 
 void AV_View::addScrollListener(AV_ScrollObj* pObj)
