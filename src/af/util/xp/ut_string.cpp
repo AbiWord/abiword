@@ -37,7 +37,13 @@
 UT_Bool UT_cloneString(char *& rszDest, const char * szSource)
 {
 	if (szSource && *szSource)
-		rszDest = strdup(szSource);
+	{
+		UT_uint32 length = strlen(szSource) + 1;
+		rszDest = (char *)calloc(length,sizeof(char));
+		if (!rszDest)
+			return UT_FALSE;
+		memmove(rszDest,szSource,length*sizeof(char));
+	}
 	else
 		rszDest = NULL;
 	return UT_TRUE;

@@ -741,7 +741,7 @@ static UT_Bool s_AskForPathname(XAP_Frame * pFrame,
 	{
 		const char * szResultPathname = pDialog->getPathname();
 		if (szResultPathname && *szResultPathname)
-			*ppPathname = strdup(szResultPathname);
+			UT_cloneString(*ppPathname,szResultPathname);
 	}
 
 	pDialogFactory->releaseDialog(pDialog);

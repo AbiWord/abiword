@@ -99,10 +99,10 @@ UT_Bool	PP_AttrProp::setAttribute(const XML_Char * szName, const XML_Char * szVa
 	
 	if (0 == UT_stricmp(szName, PT_PROPS_ATTRIBUTE_NAME))	// PROPS -- cut value up into properties
 	{
-		char *pOrig = strdup(szValue);
-		if (!pOrig)
+		char * pOrig = NULL;
+		if (!UT_cloneString(pOrig,szValue))
 		{
-			UT_DEBUGMSG(("setAttribute: strdup failed on [%s]\n",szValue));
+			UT_DEBUGMSG(("setAttribute: UT_cloneString failed on [%s]\n",szValue));
 			return UT_FALSE;
 		}
 
