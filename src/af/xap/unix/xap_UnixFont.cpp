@@ -199,6 +199,7 @@ XAP_UnixFont::XAP_UnixFont(const XAP_UnixFont & copy)
 #else
 	openFileAs(copy.getFontfile(), copy.getMetricfile(), copy.getXLFD(), copy.getStyle());
 #endif
+
 	m_pEncodingTable = NULL;
 	m_iEncodingTableSize = 0;
 	if (copy.getEncodingTable())
@@ -342,15 +343,15 @@ bool XAP_UnixFont::openFileAs(const char *fontfile, const char *metricfile, cons
 	m_fontType = FONT_TYPE_UNKNOWN;
 
 	if (stFontFile > 4)
-	  {
-		  if (!UT_stricmp(m_fontfile + stFontFile - 4, ".ttf") || 
-		      !UT_stricmp(m_fontfile + stFontFile - 5, ".font"))
-			  m_fontType = FONT_TYPE_TTF;
-		  else if (!UT_stricmp(m_fontfile + stFontFile - 4, ".pfa"))
-			  m_fontType = FONT_TYPE_PFA;
-		  else if (!UT_stricmp(m_fontfile + stFontFile - 4, ".pfb"))
-			  m_fontType = FONT_TYPE_PFB;
-	  }
+	{
+		if (!UT_stricmp(m_fontfile + stFontFile - 4, ".ttf") || 
+			!UT_stricmp(m_fontfile + stFontFile - 5, ".font"))
+			m_fontType = FONT_TYPE_TTF;
+		else if (!UT_stricmp(m_fontfile + stFontFile - 4, ".pfa"))
+			m_fontType = FONT_TYPE_PFA;
+		else if (!UT_stricmp(m_fontfile + stFontFile - 4, ".pfb"))
+			m_fontType = FONT_TYPE_PFB;
+	}
 
 	if (m_fontType == FONT_TYPE_UNKNOWN)
 		return false;
@@ -1311,6 +1312,28 @@ XftFont *XAP_UnixFont::getXftFont(UT_uint32 pixelsize) const
 	return pXftFont;
 }
 
+void XAP_UnixFont::_makeFontKey()
+{
+	// if we already have a key, free it
+	FREEP(m_fontKey);
+
+	// allocate enough to combine name, seperator, style, and NULL into key.
+	// this won't work if we have styles that require two digits in decimal.
+	char *key = (char *)calloc(strlen(m_name) + 1 + 1 + 1, sizeof(char));
+	UT_ASSERT(key);
+
+	char *copy;
+	UT_cloneString(copy, m_name);
+	UT_upperString(copy);
+
+	sprintf(key, "%s@%d", copy, m_style);
+
+	FREEP(copy);
+
+	// point member our way
+	m_fontKey = key;
+}
+
 #else
 
 GdkFont *XAP_UnixFont::getGdkFont(UT_uint32 pixelsize)
@@ -1457,7 +1480,6 @@ GdkFont *XAP_UnixFont::getGdkFont(UT_uint32 pixelsize)
 
 	return gdkfont;
 }
-#endif
 
 void XAP_UnixFont::_makeFontKey()
 {
@@ -1480,6 +1502,7 @@ void XAP_UnixFont::_makeFontKey()
 	// point member our way
 	m_fontKey = key;
 }
+#endif
 
 XAP_UnixFont *XAP_UnixFont::s_defaultNonCJKFont[4];
 XAP_UnixFont *XAP_UnixFont::s_defaultCJKFont[4];

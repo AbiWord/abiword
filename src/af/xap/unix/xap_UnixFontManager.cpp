@@ -145,18 +145,16 @@ XAP_UnixFontManager::XAP_UnixFontManager(void) : m_fontHash(256)
 												 , m_pDefaultFont(NULL)
 {
 #ifdef USE_XFT
-	m_pFontSet = FcConfigGetFonts(FcConfigGetCurrent(), FcSetSystem);
-	m_pConfig = FcInitLoadConfigAndFonts();
-//, FC_FAMILY, FC_STYLE, FC_SLANT, FC_WEIGHT, FC_SIZE, FC_FILE, 0);
+	if (!m_pConfig)
+		m_pConfig = FcInitLoadConfigAndFonts();
+
+	if (!m_pFontSet)
+		scavengeFonts();
 #endif
 }
 
 XAP_UnixFontManager::~XAP_UnixFontManager(void)
 {
-#ifdef USE_XFT
-	FcFontSetDestroy(m_pFontSet);
-#endif
-	
 	UT_VECTOR_FREEALL(char *, m_searchPaths);
 
 	UT_HASH_PURGEDATA(XAP_UnixFont *, &m_fontHash, delete);
@@ -241,6 +239,7 @@ XAP_UnixFontManager::~XAP_UnixFontManager(void)
 		delete[] newPath ;
 	}
 #endif // !USE_XFT
+
 // TODO: Handle fontmanager deletion routines properly in conjunction with pango.
 }
 
@@ -641,7 +640,7 @@ UT_Vector * XAP_UnixFontManager::getAllFonts(void)
 
 #ifdef USE_XFT
 
-static XAP_UnixFont* buildFont(XAP_UnixFontManager * pFM, FcPattern* fp)
+static XAP_UnixFont* buildFont(XAP_UnixFontManager* pFM, FcPattern* fp)
 {
 	unsigned char* fontFile = NULL;
 	bool bold = false;
@@ -704,41 +703,50 @@ static XAP_UnixFont* buildFont(XAP_UnixFontManager * pFM, FcPattern* fp)
 	}
 			
 	XAP_UnixFont* font = new XAP_UnixFont(pFM);
-	if (!font->openFileAs((char*) fontFile, metricFile.c_str(), (char*) family, xlfd, s))
+	/* we try to open the font.  If we fail, we try to open it removing the bold/italic info, if we fail again, we don't try again */
+	if (!font->openFileAs((char*) fontFile, metricFile.c_str(), (char*) family, xlfd, s) &&
+		!font->openFileAs((char*) fontFile, metricFile.c_str(), (char*) family, xlfd, XAP_UnixFont::STYLE_NORMAL))
 	{
 		UT_DEBUGMSG(("Impossible to open font file [%s] [%d]\n.", (char*) fontFile, s));
 		font->setFontManager(NULL); // This font isn't in the FontManager cache (yet), so it doesn't need to unregister itself
-		DELETEP(font);
-	}
-//
-// If this was an attempt to get bold/italic/bold-italic that failed, fallback
-// to normal.
-//
-	if ((font == NULL) && (s != XAP_UnixFont::STYLE_NORMAL))
-	{
-		s = XAP_UnixFont::STYLE_NORMAL;
-		font = new XAP_UnixFont(pFM);
-		if (!font->openFileAs((char*) fontFile, metricFile.c_str(), (char*) family, xlfd, s))
-		{
-			UT_DEBUGMSG(("Impossible to open font file [%s] [%d]\n.", (char*) fontFile, s));
-			font->setFontManager(NULL); // This font isn't in the FontManager cache (yet), so it doesn't need to unregister itself
-			DELETEP(font);
-		}
+		delete font;
+		font = NULL;
 	}
 		
 	free(xlfd);
 	return font;
 }
 
+/* add to the cache all the scalable fonts that we find */
 bool XAP_UnixFontManager::scavengeFonts()
 {
-	for (int i = 0; i < m_pFontSet->nfont; ++i)
-	{
-		XAP_UnixFont* pFont = buildFont(this, m_pFontSet->fonts[i]);
+	if (m_pFontSet)
+		return true;
+	
+	FcFontSet* fs;
+	XAP_UnixFont* pFont;
+	
+	fs = FcConfigGetFonts(FcConfigGetCurrent(), FcSetSystem);
 
-		if (pFont)
-			_addFont(pFont);
-	}
+    if (fs)
+    {
+		int	j;
+
+		m_pFontSet = FcFontSetCreate();
+		
+		for (j = 0; j < fs->nfont; j++)
+		{
+			/* if the font file ends on .ttf, .pfa or .pfb we add it */
+			pFont = buildFont(this, fs->fonts[j]);
+
+			if (pFont)
+			{
+				FcFontSetAdd(m_pFontSet, fs->fonts[j]);
+				_addFont(pFont);
+			}
+		}
+
+    }
 
 	return true;
 }
@@ -759,13 +767,10 @@ XAP_UnixFont* XAP_UnixFontManager::searchFont(const char* pszXftName)
 		sXftName = sLeft;
 		UT_DEBUGMSG(("searchFont:: Symbol replaced with %s \n",sXftName.c_str()));
 	}
-	fp = XftNameParse(sXftName.c_str());
 
-	FcConfigSubstitute (m_pConfig, fp, FcMatchPattern);
+	fp = FcNameParse((const FcChar8*) sXftName.c_str());
+	FcConfigSubstitute(m_pConfig, fp, FcMatchPattern);
 	result_fp = FcFontSetMatch (m_pConfig, &m_pFontSet, 1, fp, &result);
-
-	result_fp = XftFontMatch(GDK_DISPLAY(), DefaultScreen(GDK_DISPLAY()), fp, &result);
-	UT_ASSERT(result_fp);
 	FcPatternDestroy(fp);
 		
 	if (!result_fp)
@@ -777,9 +782,45 @@ XAP_UnixFont* XAP_UnixFontManager::searchFont(const char* pszXftName)
 		return NULL;
 	}
 
-	XAP_UnixFont* pFont = buildFont(this, result_fp);
+	/* find the font */
+	FcChar8* family;
+	int weight;
+	int slant;
+	bool is_bold = false;
+	
+	if (FcPatternGetString(result_fp, FC_FAMILY, 0, &family) != FcResultMatch)
+		family = (FcChar8*) "Times";
+	
+	if (FcPatternGetInteger(result_fp, FC_WEIGHT, 0, &weight) != FcResultMatch)
+		weight = FC_WEIGHT_MEDIUM;
+	
+	if (FcPatternGetInteger(result_fp, FC_SLANT, 0, &slant) != FcResultMatch)
+		slant = FC_SLANT_ROMAN;
+
+	if (weight == FC_WEIGHT_BOLD || weight == FC_WEIGHT_BLACK)
+		is_bold = true;
+
+	XAP_UnixFont::style s = XAP_UnixFont::STYLE_NORMAL;
+
+	switch (slant)
+	{
+	default:
+	case FC_SLANT_ROMAN:
+		s = is_bold ? XAP_UnixFont::STYLE_BOLD : XAP_UnixFont::STYLE_NORMAL;
+		break;
+	case FC_SLANT_ITALIC:
+		s = is_bold ? XAP_UnixFont::STYLE_BOLD_ITALIC : XAP_UnixFont::STYLE_ITALIC;
+		break;
+	case FC_SLANT_OBLIQUE:
+		// uh. The old (non fc) code uses slant o as outline, but it seems to be oblique...
+		s = is_bold ? XAP_UnixFont::STYLE_BOLD_OUTLINE : XAP_UnixFont::STYLE_OUTLINE;
+		break;
+	}
+
+	XAP_UnixFont* pUnixFont = getFont((const char*) family, s);
 	FcPatternDestroy(result_fp);
-	return pFont;
+	
+	return pUnixFont;
 }
 
 class FontHolder
@@ -1299,6 +1340,3 @@ void XAP_UnixFontManager::_allocateCJKFont(const char * line,
 	g_strfreev(sa);
 }
 #endif // !USE_XFT
-
-
-
