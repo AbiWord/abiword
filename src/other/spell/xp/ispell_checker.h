@@ -14,6 +14,7 @@ class ISpellChecker : public SpellChecker
 	friend class SpellManager;
 
 public:
+	ISpellChecker();
 	~ISpellChecker();
 
 	virtual SpellCheckResult	checkWord(const UT_UCSChar* word, size_t len);
@@ -25,7 +26,6 @@ public:
 
 protected:
 	virtual bool requestDictionary (const char * szLang);
-	ISpellChecker();
 
 #ifdef HAVE_CURL
 	void		setUserSaidNo(UT_uint32 flag) { m_userSaidNo = flag; }

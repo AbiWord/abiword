@@ -60,9 +60,10 @@ UT_sint32
 XAP_HashDownloader::getLangNum(const char *szName)
 {
 	UT_uint32 i;
+	ISpellChecker *spellChecker = new ISpellChecker();
+	UT_Vector & m_mapping = spellChecker->getMapping();
+	delete spellChecker;
 	
-	UT_Vector & m_mapping = ISpellChecker::getMapping();
-
 	for (i = 0; i < m_mapping.size(); i++) 
 	  {
 	    DictionaryMapping * mapping = (DictionaryMapping*)m_mapping.getNthItem(i);

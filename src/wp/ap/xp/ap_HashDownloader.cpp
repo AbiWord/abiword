@@ -314,8 +314,10 @@ AP_HashDownloader::platformInstallPackage(XAP_Frame *pFrame, const char *szFName
 	  return (-1);
 	}
 
-      DictionaryMapping * mapping = (DictionaryMapping *)ISpellChecker::getMapping().getNthItem(langNdx);
+	ISpellChecker *spellChecker = new ISpellChecker();
+      DictionaryMapping * mapping = (DictionaryMapping *)spellChecker->getMapping().getNthItem(langNdx);
       hname = mapping->dict;
+	  delete spellChecker;
       
       UT_DEBUGMSG(("AP_XXXHashDownloader::installPackage(): extracting %s to %s\n",hname.c_str(), name));
       
