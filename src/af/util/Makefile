@@ -127,6 +127,7 @@ OBJS=		$(PLATFORM_OBJS)						\
 		$(OBJDIR)/ut_decompress.$(OBJ_SUFFIX)		\
 		$(OBJDIR)/ut_IntStrMap.$(OBJ_SUFFIX) \
 		$(OBJDIR)/ut_crc32.$(OBJ_SUFFIX) \
+		$(OBJDIR)/ut_uuid.$(OBJ_SUFFIX)
 
 ifeq ($(ABI_OPT_PEER_EXPAT),1)
  OBJS += $(OBJDIR)/ut_xml_expat.$(OBJ_SUFFIX)
