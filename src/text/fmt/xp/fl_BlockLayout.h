@@ -225,11 +225,13 @@ protected:
 	void					_addSquiggle(UT_uint32 iOffset, UT_uint32 iLen);
 	void					_updateSquiggle(fl_PartOfBlock* pPOB);
 	void					_insertSquiggles(UT_uint32 iOffset, 
-											 UT_uint32 iLength, 
-											 fl_BlockLayout* pBlock=NULL);
+											 UT_uint32 iLength);
+	void					_breakSquiggles(UT_uint32 iOffset, 
+											fl_BlockLayout* pNewBL);
 	void					_deleteSquiggles(UT_uint32 iOffset, 
-											 UT_uint32 iLength, 
-											 fl_BlockLayout* pBlock=NULL);
+											 UT_uint32 iLength);
+	void					_mergeSquiggles(UT_uint32 iOffset, 
+											fl_BlockLayout* pPrevBL);
 	void					_moveSquiggles(UT_uint32 iOffset, 
 										   UT_sint32 chg, 
 										   fl_BlockLayout* pBlock=NULL);

@@ -849,7 +849,7 @@ fp_Run* fl_BlockLayout::findPointCoords(PT_DocPosition iPos, UT_Bool bEOL, UT_si
 	UT_ASSERT(iPos >= dPos);
 	UT_uint32 iRelOffset = iPos - dPos;
 
-	if (!m_pFirstLine)
+	if (!m_pFirstLine || !m_pFirstRun)
 	{
 		// when we have no formatting information, can't find anything
 		return NULL;
@@ -905,8 +905,6 @@ fp_Run* fl_BlockLayout::findPointCoords(PT_DocPosition iPos, UT_Bool bEOL, UT_si
 		pRun = pRun->getNext();
 	}
 
-	UT_ASSERT(m_pFirstRun);				// TODO eric, can you look at this
-	
 	if (iRelOffset < m_pFirstRun->getBlockOffset())
 	{
 		m_pFirstRun->findPointCoords(iRelOffset, x, y, height);
@@ -1152,11 +1150,10 @@ void fl_BlockLayout::_updateSquiggle(fl_PartOfBlock* pPOB)
 
 #define FASTSQUIGGLE
 
-void fl_BlockLayout::_insertSquiggles(UT_uint32 iOffset, UT_uint32 iLength, fl_BlockLayout* pBlock)
+void fl_BlockLayout::_insertSquiggles(UT_uint32 iOffset, UT_uint32 iLength)
 {
 #ifdef FASTSQUIGGLE
 	UT_sint32 chg = iLength;
-
 
 	UT_ASSERT(m_pLayout);
 	if ( m_pLayout->getAutoSpellCheck() == UT_FALSE ) 
@@ -1173,7 +1170,7 @@ void fl_BlockLayout::_insertSquiggles(UT_uint32 iOffset, UT_uint32 iLength, fl_B
 	}
 
 	// move all trailing squiggles
-	_moveSquiggles(iOffset, chg, pBlock);
+	_moveSquiggles(iOffset, chg);
 
 	// deal with pending word, if any
 	if (m_pLayout->isPendingWord())
@@ -1197,14 +1194,50 @@ void fl_BlockLayout::_insertSquiggles(UT_uint32 iOffset, UT_uint32 iLength, fl_B
 #endif
 }
 
-void fl_BlockLayout::_deleteSquiggles(UT_uint32 iOffset, UT_uint32 iLength, fl_BlockLayout* pBlock)
+void fl_BlockLayout::_breakSquiggles(UT_uint32 iOffset, fl_BlockLayout* pNewBL)
+{
+	// when inserting block break, squiggles move in opposite direction
+	UT_sint32 chg = -(UT_sint32)iOffset;
+
+	// remove squiggle broken by this insert
+	UT_sint32 iBroken = _findSquiggle(iOffset);
+	if (iBroken >= 0)
+	{
+		fl_PartOfBlock* pPOB = (fl_PartOfBlock *) m_vecSquiggles.getNthItem(iBroken);
+		_updateSquiggle(pPOB);
+		m_vecSquiggles.deleteNthItem(iBroken);
+		delete pPOB;
+	}
+
+	// move all trailing squiggles
+	_moveSquiggles(0, chg, pNewBL);		// CF: math inside this function
+
+	// deal with previously pending word, if any
+	if (m_pLayout->isPendingWord())
+	{
+		if (!m_pLayout->touchesPendingWord(this, iOffset, 0))
+		{
+			// not affected by insert, so check it
+			fl_PartOfBlock* pPending = m_pLayout->getPendingWord();
+
+			if (pPending->iOffset > iOffset)
+				pPending->iOffset = (UT_uint32)((UT_sint32)pPending->iOffset + chg);
+
+			m_pLayout->checkPendingWord();
+		}
+	}
+
+	// TODO: check last word remaining in this block
+	// TODO: pending word is at beginning of next block
+
+	// recheck at boundary
+//	_recalcPendingWord(iOffset, 0);
+}
+
+void fl_BlockLayout::_deleteSquiggles(UT_uint32 iOffset, UT_uint32 iLength)
 {
 #ifdef FASTSQUIGGLE
 	UT_sint32 chg = -(UT_sint32)iLength;
-
-	// when deleting block break, squiggles move in opposite direction
-	if (pBlock)
-		chg = -chg;
 
 	// remove all deleted squiggles
 	UT_uint32 iSquiggles = m_vecSquiggles.getItemCount();
@@ -1222,7 +1255,7 @@ void fl_BlockLayout::_deleteSquiggles(UT_uint32 iOffset, UT_uint32 iLength, fl_B
 	}
 
 	// move all trailing squiggles
-	_moveSquiggles(iOffset, chg, pBlock);
+	_moveSquiggles(iOffset, chg);
 
 	// deal with pending word, if any
 	if (m_pLayout->isPendingWord())
@@ -1247,6 +1280,40 @@ void fl_BlockLayout::_deleteSquiggles(UT_uint32 iOffset, UT_uint32 iLength, fl_B
 #else
 	m_pLayout->queueBlockForSpell(this);
 #endif
+}
+
+void fl_BlockLayout::_mergeSquiggles(UT_uint32 iOffset, fl_BlockLayout* pPrevBL)
+{
+#ifdef FASTSQUIGGLE
+	// when deleting block break, squiggles move in opposite direction
+	UT_sint32 chg = (UT_sint32)iOffset;
+
+	// move all trailing squiggles
+	_moveSquiggles(0, chg, pPrevBL);
+
+	// deal with previously pending word, if any
+	if (m_pLayout->isPendingWord())
+	{
+		if (!m_pLayout->touchesPendingWord(this, iOffset, chg))
+		{
+			// not affected by delete, so check it
+			fl_PartOfBlock* pPending = m_pLayout->getPendingWord();
+
+			if (pPending->iOffset > iOffset)
+				pPending->iOffset = (UT_uint32)((UT_sint32)pPending->iOffset + chg);
+
+			m_pLayout->checkPendingWord();
+		}
+	}
+
+	// TODO: may need to move pending word to this block
+
+	// we're in the middle of the pending word
+//	_recalcPendingWord(iOffset, 0);
+#else
+	m_pLayout->queueBlockForSpell(pPrevBL);
+#endif 
+
 }
 
 void fl_BlockLayout::_recalcPendingWord(UT_uint32 iOffset, UT_sint32 chg)
@@ -1301,11 +1368,11 @@ void fl_BlockLayout::_recalcPendingWord(UT_uint32 iOffset, UT_sint32 chg)
 			iLast--;
 		}
 
-		if (iLast == iFirst + 1)
-			iLast = iFirst;
-
-		// consume all words from the left ...
-		_checkMultiWord(pBlockText, iFirst, iLast, UT_FALSE);
+		if (iLast > (iFirst + 1))
+		{
+			// consume all words from the left ...
+			_checkMultiWord(pBlockText, iFirst, iLast, UT_FALSE);
+		}
 
 		// ... except the last one, which is still pending
 		iLen -= (iLast - iFirst);
@@ -1358,8 +1425,6 @@ void fl_BlockLayout::_recalcPendingWord(UT_uint32 iOffset, UT_sint32 chg)
 
 void fl_BlockLayout::_moveSquiggles(UT_uint32 iOffset, UT_sint32 chg, fl_BlockLayout* pNewBlock)
 {
-	UT_ASSERT(chg);
-
 	// move existing squiggles to reflect insert/delete at iOffset
 	// all subsequent squiggles should be switched to (non-null) pBlock
 
@@ -1555,6 +1620,9 @@ UT_Bool fl_BlockLayout::checkWord(fl_PartOfBlock* pPOB)
 	UT_DEBUGMSG(("fl_BlockLayout::checkWord\n"));
 
 	const UT_UCSChar* pBlockText = pgb.getPointer(0);
+	if (!pBlockText)
+		return bUpdate;
+
 	UT_uint32 eor = pPOB->iOffset + pPOB->iLength; /* end of region */
 
 	UT_uint32 wordBeginning = pPOB->iOffset, wordLength = 0;
@@ -2413,14 +2481,9 @@ UT_Bool fl_BlockLayout::doclistener_deleteStrux(const PX_ChangeRecord_Strux * pc
 
 	if (pPrevBL)
 	{	
-#if 1
 		// move all squiggles to previous block
-		_deleteSquiggles(0, offset, pPrevBL);
-		// TODO: instead, merge squiggles from the two blocks
-		// TODO: just check boundary word
-#else
-		m_pLayout->queueBlockForSpell(pPrevBL);
-#endif 
+		_mergeSquiggles(offset, pPrevBL);
+
 		// in case we've never checked this one
 		m_pLayout->dequeueBlock(this);
 
@@ -2675,10 +2738,7 @@ UT_Bool fl_BlockLayout::doclistener_insertBlock(const PX_ChangeRecord_Strux * pc
 	if (m_vecSquiggles.getItemCount() > 0)
 	{
 		// we have squiggles, so move them 
-		_insertSquiggles(blockOffset, blockOffset, pNewBL);
-		// TODO: instead, split squiggles between blocks
-		// TODO: just check boundary word
-		// TODO: what if this never was checked?  
+		_breakSquiggles(blockOffset, pNewBL);
 	}
 	else
 #endif
@@ -3129,7 +3189,7 @@ UT_Bool fl_BlockLayout::doclistener_insertFmtMark(const PX_ChangeRecord_FmtMark 
 	}
 
 #ifdef FASTSQUIGGLE
-	_insertSquiggles(blockOffset, 1);
+//	_insertSquiggles(blockOffset, 1);
 #endif
 
 	return UT_TRUE;
@@ -3157,7 +3217,7 @@ UT_Bool fl_BlockLayout::doclistener_deleteFmtMark(const PX_ChangeRecord_FmtMark 
 	}
 
 #ifdef FASTSQUIGGLE
-	_deleteSquiggles(blockOffset, 1);
+//	_deleteSquiggles(blockOffset, 1);
 #endif
 
 	return UT_TRUE;
