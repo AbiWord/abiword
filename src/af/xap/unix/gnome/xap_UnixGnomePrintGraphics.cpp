@@ -100,7 +100,7 @@ GnomePrintConfig * XAP_UnixGnomePrintGraphics::s_setup_config (XAP_Frame * pFram
 		
 		double width, height;
 		width = pView->getPageSize().Width (DIM_MM);
-		width = pView->getPageSize().Height (DIM_MM);
+		height = pView->getPageSize().Height (DIM_MM);
 
 		gnome_print_convert_distance (&width, from, to);
 		gnome_print_config_set_length (cfg, (const guchar*)GNOME_PRINT_KEY_PAPER_WIDTH, width, from);
