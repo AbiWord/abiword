@@ -296,7 +296,12 @@ UT_sint32 GR_Graphics::convertDimension(const char * s) const
 		dResolution = getResolution();		// NOTE: assumes square pixels/dpi/etc.
 		}
 
-	return (UT_sint32) (dInches * dResolution);
+	/* 
+	 We do this because the convert Dimension code is actually
+	 lossy in that when we put a conversion of 12pt in at 72DPI
+	 then we end up getting 11pt back which really kind of licks.
+	*/
+	return (UT_sint32) ((dInches * dResolution) + 0.5);
 }
 
 UT_sint32 GR_Graphics::convertDimension(double Value, UT_Dimension dim) const
@@ -312,7 +317,12 @@ UT_sint32 GR_Graphics::convertDimension(double Value, UT_Dimension dim) const
 		dResolution = getResolution();		// NOTE: assumes square pixels/dpi/etc.
 		}
 
-	return (UT_sint32) (dInches * dResolution);
+	/* 
+	 We do this because the convert Dimension code is actually
+	 lossy in that when we put a conversion of 12pt in at 72DPI
+	 then we end up getting 11pt back which really kind of licks.
+	*/
+	return (UT_sint32) ((dInches * dResolution) + 0.5);
 }
 
 const char * GR_Graphics::invertDimension(UT_Dimension dim, double dValue) const
