@@ -19,7 +19,6 @@
 
 /*****************************************************************/
 
-#include <windows.h>
 #include "ap_Toolbar_Id.h"
 #include "ap_UnixToolbar_ControlFactory.h"
 

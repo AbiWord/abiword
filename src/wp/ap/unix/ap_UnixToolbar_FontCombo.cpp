@@ -17,7 +17,6 @@
  * 02111-1307, USA.
  */
 
-#include <windows.h>
 #include "ut_assert.h"
 #include "ut_vector.h"
 #include "ap_UnixToolbar_FontCombo.h"
