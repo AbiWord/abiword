@@ -222,3 +222,10 @@ UT_Bool PD_Document::removeListener(PL_ListenerId listenerId)
 {
 	return (m_vecListeners.setNthItem(listenerId,NULL,NULL) == 0);
 }
+
+UT_Bool PD_Document::getAttrProp(UT_uint32 vsIndex, pt_AttrPropIndex indexAP,
+								 const PP_AttrProp ** ppAP) const
+{
+	return m_pPieceTable->getAttrProp(vsIndex,indexAP,ppAP);
+}
+

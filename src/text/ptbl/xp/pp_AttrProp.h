@@ -4,6 +4,7 @@
 
 #include "ut_types.h"
 #include "ut_hash.h"
+#include "ut_vector.h"
 #include "xmlparse.h"
 
 // PP_AttrProp captures the complete set of XML and CSS
@@ -28,6 +29,7 @@ public:
 	// terminated by a null name.
 	
 	UT_Bool	setAttributes(const XML_Char ** attributes);
+	UT_Bool setAttributes(const UT_Vector * pVector);
 	UT_Bool	setProperties(const XML_Char ** properties);
 	UT_Bool	setAttribute(const XML_Char * szName, const XML_Char * szValue);
 	UT_Bool	setProperty(const XML_Char * szName, const XML_Char * szValue);

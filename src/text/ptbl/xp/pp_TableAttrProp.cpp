@@ -54,15 +54,8 @@ UT_Bool pp_TableAttrProp::createAP(const UT_Vector * pVector,
 
 	PP_AttrProp * pAP = (PP_AttrProp *)m_vecTable.getNthItem(index);
 	UT_ASSERT(pAP);
-
-	pt_AttrPropIndex kLimit = pVector->getItemCount();
-	for (pt_AttrPropIndex k=0; k+1<kLimit; k+=2)
-	{
-		const XML_Char * pName = (const XML_Char *)pVector->getNthItem(k);
-		const XML_Char * pValue = (const XML_Char *)pVector->getNthItem(k+1);
-		if (!pAP->setAttribute(pName,pValue))
-			return UT_FALSE;
-	}
+	if (!pAP->setAttributes(pVector))
+		return UT_FALSE;
 	
 	*pIndex = index;
 	return UT_TRUE;

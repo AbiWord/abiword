@@ -28,7 +28,7 @@ public:
 	PL_StruxFmtHandle		getFmtHandle(PL_ListenerId lid) const;
 	UT_Bool					setFmtHandle(PL_ListenerId lid, PL_StruxFmtHandle sfh);
 	
-	virtual UT_Bool			createSpecialChangeRecord(PX_ChangeRecord ** ppcr) const = 0;
+	virtual UT_Bool			createSpecialChangeRecord(PX_ChangeRecord ** ppcr) const;
 
 	virtual void			dump(FILE * fp) const = 0;
 	

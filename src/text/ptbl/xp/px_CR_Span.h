@@ -28,11 +28,18 @@
 class PX_ChangeRecord_Span : public PX_ChangeRecord
 {
 public:
-	PX_ChangeRecord_Span();
+	PX_ChangeRecord_Span(PXType type,
+						 UT_Bool bMultiStepStart,
+						 UT_Bool bMultiStepEnd,
+						 PT_DocPosition position,
+						 UT_uint32 vsIndex,
+						 UT_Bool bLeftSide,
+						 pt_AttrPropIndex indexAP,
+						 pt_BufPosition offset,
+						 UT_uint32 length);
 	~PX_ChangeRecord_Span();
 	
 protected:
-	UT_Bool					m_bLeftSide;
 	pt_BufPosition			m_offset;	/* location of our text in the VS[].m_buffer */
 	UT_uint32				m_length;	/* length of our text in that buffer */
 };

@@ -2,6 +2,7 @@
 #include "pf_Frag_Text.h"
 #include "pt_PieceTable.h"
 #include "px_ChangeRecord.h"
+#include "px_ChangeRecord_Span.h"
 
 
 pf_Frag_Text::pf_Frag_Text(pt_PieceTable * pPT,
@@ -25,17 +26,12 @@ UT_Bool pf_Frag_Text::createSpecialChangeRecord(PX_ChangeRecord ** ppcr) const
 {
 	UT_ASSERT(ppcr);
 	
+	PT_DocPosition docPos = 0;			// TODO
 	PX_ChangeRecord * pcr
-#if 1
-		= NULL;
-#else
-	// TODO -- jeff, what goes here?
-		= new PX_ChangeRecord_Strux(PX_ChangeRecord::PXT_InsertStrux,UT_FALSE,UT_FALSE,
-									0, /* doc position is undefined for strux */
-									m_vsIndex,
-									UT_TRUE, /* bleftside is undefined for strux */
-									m_indexAP,m_struxType);
-#endif
+		= new PX_ChangeRecord_Span(PX_ChangeRecord::PXT_InsertSpan,
+								   UT_FALSE,UT_FALSE,docPos,m_vsIndex,
+								   UT_TRUE, /* assume left side */
+								   m_indexAP,m_offset,m_length);
 	if (!pcr)
 		return UT_FALSE;
 

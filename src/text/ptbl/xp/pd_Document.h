@@ -11,7 +11,7 @@
 #include "pt_Types.h"
 #include "pl_Listener.h"
 class pt_PieceTable;
-
+class PP_AttrProp;
 
 
 // PD_Document is the representation for a document.
@@ -60,7 +60,10 @@ public:
 
 	UT_Bool					addListener(PL_Listener * pListener, PL_ListenerId * pListenerId);
 	UT_Bool					removeListener(PL_ListenerId listenerId);
-	
+
+	UT_Bool					getAttrProp(UT_uint32 vsIndex, pt_AttrPropIndex indexAP,
+										const PP_AttrProp ** ppAP) const;
+
 	void					dump(FILE * fp) const;
 	
 protected:

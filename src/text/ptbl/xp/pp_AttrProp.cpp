@@ -8,6 +8,7 @@
 #include "ut_debugmsg.h"
 #include "ut_hash.h"
 #include "ut_string.h"
+#include "ut_vector.h"
 #include "xmlparse.h"
 #include "pp_AttrProp.h"
 
@@ -40,6 +41,20 @@ UT_Bool	PP_AttrProp::setAttributes(const XML_Char ** attributes)
 	}
 	return UT_TRUE;
 }
+
+UT_Bool PP_AttrProp::setAttributes(const UT_Vector * pVector)
+{
+	UT_uint32 kLimit = pVector->getItemCount();
+	for (UT_uint32 k=0; k+1<kLimit; k+=2)
+	{
+		const XML_Char * pName = (const XML_Char *)pVector->getNthItem(k);
+		const XML_Char * pValue = (const XML_Char *)pVector->getNthItem(k+1);
+		if (!setAttribute(pName,pValue))
+			return UT_FALSE;
+	}
+	return UT_TRUE;
+}
+
 
 UT_Bool	PP_AttrProp::setProperties(const XML_Char ** properties)
 {

@@ -24,11 +24,7 @@ ABI_DEPTH = ../../..
 
 include $(ABI_DEPTH)/config/abi_defs.mk
 
-EXPORT_HEADERS=		pc_Column.h			\
-			pc_ColumnSet.h			\
-			pc_Column_Box.h			\
-			pc_Column_Circle.h		\
-			pd_Document.h			\
+EXPORT_HEADERS=		pd_Document.h			\
 			pl_Listener.h			\
 			pp_AttrProp.h			\
 			pp_Property.h			\
@@ -55,10 +51,7 @@ HEADERS=		$(EXPORT_HEADERS)		\
 RELEASE_HEADERS=	$(EXPORT_HEADERS)
 RELEASE_HEADERS_DEST=	$(RELEASE_INCLUDE_DIR)
 
-CPPSRCS=		pc_ColumnSet.cpp		\
-			pc_Column_Box.cpp		\
-			pc_Column_Circle.cpp		\
-			pd_Document.cpp			\
+CPPSRCS=		pd_Document.cpp			\
 			pf_Frag.cpp			\
 			pf_Frag_Strux.cpp		\
 			pf_Frag_Strux_Block.cpp		\
@@ -71,8 +64,9 @@ CPPSRCS=		pc_ColumnSet.cpp		\
 			pp_Property.cpp			\
 			pp_TableAttrProp.cpp		\
 			pt_PieceTable.cpp		\
-			px_ChangeHistory.cpp	\
+			px_ChangeHistory.cpp		\
 			px_ChangeRecord.cpp		\
+			px_ChangeRecord_Span.cpp	\
 			px_ChangeRecord_Strux.cpp
 
 INCLUDES=		-I$(DIST)/include -I. -DUT_DEBUG

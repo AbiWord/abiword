@@ -33,8 +33,6 @@ public:
 	~PX_ChangeRecord_Strux();
 	
 protected:
-	UT_Bool					m_bLeftSide;
-	pt_AttrPropIndex		m_indexAP;		/* index in VS[].m_tableAttrProp to our A/P */
 	PTStruxType				m_struxType;	/* our type (paragraph, section) */
 };
 

@@ -5,7 +5,6 @@
 #include "ut_types.h"
 #include "pf_Frag.h"
 #include "pf_Frag_Strux.h"
-class PC_ColumnSet;
 class pt_PieceTable;
 
 // pf_Frag_Strux_ColumnSet represents structure information for a 
@@ -19,13 +18,8 @@ public:
 							UT_uint32 vsIndex,
 							pt_AttrPropIndex indexAP);
 	virtual ~pf_Frag_Strux_ColumnSet();
-
-	virtual UT_Bool			createSpecialChangeRecord(PX_ChangeRecord ** ppcr) const;
 	
 	virtual void			dump(FILE * fp) const;
-
-protected:
-	PC_ColumnSet *			m_pColumnSet;
 };
 
 #endif /* PF_FRAG_STRUX_COLUMNSET_H */

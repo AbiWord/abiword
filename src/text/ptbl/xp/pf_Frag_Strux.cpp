@@ -1,5 +1,8 @@
 
 #include "pf_Frag_Strux.h"
+#include "px_ChangeRecord.h"
+#include "px_ChangeRecord_Strux.h"
+
 
 pf_Frag_Strux::pf_Frag_Strux(pt_PieceTable * pPT,
 							 PTStruxType struxType,
@@ -43,4 +46,19 @@ UT_Bool pf_Frag_Strux::setFmtHandle(PL_ListenerId lid, PL_StruxFmtHandle sfh)
 	return UT_FALSE;
 }
 
+UT_Bool pf_Frag_Strux::createSpecialChangeRecord(PX_ChangeRecord ** ppcr) const
+{
+	UT_ASSERT(ppcr);
+	
+	PX_ChangeRecord_Strux * pcr
+		= new PX_ChangeRecord_Strux(PX_ChangeRecord::PXT_InsertStrux,UT_FALSE,UT_FALSE,
+									0, /* doc position is undefined for strux */
+									m_vsIndex,
+									UT_TRUE, /* bleftside is undefined for strux */
+									m_indexAP,m_struxType);
+	if (!pcr)
+		return UT_FALSE;
 
+	*ppcr = pcr;
+	return UT_TRUE;
+}

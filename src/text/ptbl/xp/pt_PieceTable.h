@@ -57,6 +57,9 @@ public:
 	UT_Bool					addListener(PL_Listener * pListener,
 										PL_ListenerId listenerId);
 	
+	UT_Bool					getAttrProp(UT_uint32 vsIndex, pt_AttrPropIndex indexAP,
+										const PP_AttrProp ** ppAP) const;
+
 	// TODO add stuff for objects like in-line images.
 
 	void					dump(FILE * fp) const;
