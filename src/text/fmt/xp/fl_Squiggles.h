@@ -59,7 +59,7 @@ virtual	~fl_Squiggles(void);
 
 	bool					findRange(UT_sint32 iStart, UT_sint32 iEnd,
 									  UT_sint32& iFirst, 
-									  UT_sint32& iLast) const;
+									  UT_sint32& iLast, bool bDontExpand = false) const;
 
 	bool					recheckIgnoredWords(const UT_UCSChar* pBlockText);
 

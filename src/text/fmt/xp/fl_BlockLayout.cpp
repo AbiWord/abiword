@@ -3750,6 +3750,7 @@ fl_PartOfBlock::fl_PartOfBlock(void)
 	m_iOffset = 0;
 	m_iLength = 0;
 	m_bIsIgnored = false;
+	m_bIsInvisible = false;
 }
 
 fl_PartOfBlock::fl_PartOfBlock(UT_sint32 iOffset, UT_sint32 iLength,
@@ -3758,6 +3759,7 @@ fl_PartOfBlock::fl_PartOfBlock(UT_sint32 iOffset, UT_sint32 iLength,
 	m_iOffset = iOffset;
 	m_iLength = iLength;
 	m_bIsIgnored = bIsIgnored;
+	m_bIsInvisible = false;
 }
 
 void fl_PartOfBlock::setGrammarMessage(UT_UTF8String & sMsg)
@@ -7450,7 +7452,7 @@ fl_BlockLayout::findGrammarSquigglesForRun(fp_Run* pRun)
 	UT_sint32 runBlockOffset = pRun->getBlockOffset();
 	UT_sint32 runBlockEnd = runBlockOffset + pRun->getLength();
 	UT_sint32 iFirst, iLast;
-	if (m_pGrammarSquiggles->findRange(runBlockOffset, runBlockEnd, iFirst, iLast))
+	if (m_pGrammarSquiggles->findRange(runBlockOffset, runBlockEnd, iFirst, iLast,true))
 	{
 		UT_sint32 iStart = 0, iEnd;
 		fl_PartOfBlock* pPOB;
@@ -7459,7 +7461,7 @@ fl_BlockLayout::findGrammarSquigglesForRun(fp_Run* pRun)
 		// The first POB may only be partially within the region. Clip
 		// it if necessary.
 		pPOB = m_pGrammarSquiggles->getNth(i++);
-		if (!pPOB->getIsIgnored())
+		if (!pPOB->getIsIgnored() && !pPOB->isInvisible())
 		{
 			iStart = pPOB->getOffset();
 			iEnd =	iStart + pPOB->getLength();
@@ -7477,7 +7479,7 @@ fl_BlockLayout::findGrammarSquigglesForRun(fp_Run* pRun)
 		for (; i < iLast; i++)
 		{
 			pPOB = m_pGrammarSquiggles->getNth(i);
-			if (pPOB->getIsIgnored()) continue;
+			if (pPOB->getIsIgnored() || pPOB->isInvisible()) continue;
 
 			iStart = pPOB->getOffset();
 			iEnd =	iStart + pPOB->getLength();
@@ -7486,7 +7488,7 @@ fl_BlockLayout::findGrammarSquigglesForRun(fp_Run* pRun)
 		// The last POB may only be partially within the region. Clip
 		// it if necessary. Note the load with iLast instead of i.
 		pPOB = m_pGrammarSquiggles->getNth(iLast);
-		if (!pPOB->getIsIgnored())
+		if (!pPOB->getIsIgnored() && !pPOB->isInvisible())
 		{
 			// Only load start if this POB is different from the first
 			// one.

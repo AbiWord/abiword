@@ -287,16 +287,21 @@ fl_Squiggles::add(fl_PartOfBlock* pPOB)
 #if UT_DEBUG
 	UT_sint32 iSquiggles = _getCount();
 	if (iSquiggles <= 1) return;
-
-	if (iIndex > 0)
+	if(getSquiggleType() == FL_SQUIGGLE_SPELL)
 	{
-		UT_ASSERT((getNth(iIndex-1)->getOffset() + getNth(iIndex-1)->getLength())
-				  < getNth(iIndex)->getOffset());
-	}
-	if (iSquiggles > (iIndex+1))
-	{
-		UT_ASSERT((getNth(iIndex)->getOffset() + getNth(iIndex)->getLength())
-				  < getNth(iIndex+1)->getOffset());
+	  //
+	  // Grammar squiggles can over lap.
+	  //
+	  if (iIndex > 0)
+	    {
+	      UT_ASSERT((getNth(iIndex-1)->getOffset() + getNth(iIndex-1)->getLength())
+			< getNth(iIndex)->getOffset());
+	    }
+	  if (iSquiggles > (iIndex+1))
+	    {
+	      UT_ASSERT((getNth(iIndex)->getOffset() + getNth(iIndex)->getLength())
+			< getNth(iIndex+1)->getOffset());
+	    }
 	}
 #endif
 }
@@ -351,6 +356,34 @@ fl_Squiggles::_deleteAtOffset(UT_sint32 iOffset)
 	xxx_UT_DEBUGMSG(("fl_Squiggles::_deleteAtOffset(%d)\n", iOffset));
 
 	bool res = false;
+	if(getSquiggleType() == FL_SQUIGGLE_GRAMMAR)
+	{
+	  fl_PartOfBlock* pPOB = 0;
+	  UT_sint32 i = 0;
+	  UT_sint32 iLow = 0;
+	  UT_sint32 iHigh = 0;
+	  for(i=0; i< _getCount();)
+	  {
+	    pPOB = getNth(i);
+	    if(pPOB->isInvisible() && ((pPOB->getOffset() <= iOffset) &&
+				       pPOB->getOffset()+ pPOB->getLength() >= iOffset))
+	    {
+	      iLow = pPOB->getOffset();
+	      iHigh = pPOB->getOffset() + pPOB->getLength();
+	    }
+	    if(iOffset >= iLow && iOffset <= iHigh)
+	    {
+	      _deleteNth(i);
+	      res = true;
+	    }
+	    else
+	    {
+	      i++;
+	    }
+	  }
+	}
+	if(res)
+	  return res;
 	UT_sint32 iIndex = _find(iOffset);
 	if (iIndex >= 0)
 	{
@@ -734,15 +767,34 @@ fl_Squiggles::join(UT_sint32 iOffset, fl_BlockLayout* pPrevBL)
 */
 bool
 fl_Squiggles::findRange(UT_sint32 iStart, UT_sint32 iEnd,
-						UT_sint32& iFirst, UT_sint32& iLast) const
+						UT_sint32& iFirst, UT_sint32& iLast, bool bDontExpand) const
 {
 	xxx_UT_DEBUGMSG(("fl_Squiggles::findRange(%d, %d)\n", iStart, iEnd));
 
 	UT_sint32 iSquiggles = _getCount();
 	if (0 == iSquiggles) return false;
-
 	fl_PartOfBlock* pPOB = 0;
 	UT_sint32 s, e;
+
+	if((getSquiggleType() == FL_SQUIGGLE_GRAMMAR) && !bDontExpand)
+	{
+	  // Grammar squiggles are preceded by a POB that covers the whole of the sentence.
+	  // Expand the end point to cover it.
+
+	  UT_sint32 i = 0;
+	  for(i=0; i< iSquiggles;i++)
+	  {
+	    pPOB = getNth(i);
+	    if((iStart >= pPOB->getOffset()) && (iStart <= pPOB->getOffset() + pPOB->getLength()) && pPOB->isInvisible())
+	    {
+	      iStart = pPOB->getOffset();
+	    }
+	    if((iEnd  >= pPOB->getOffset()) && (iEnd <= pPOB->getOffset() + pPOB->getLength()) && pPOB->isInvisible())
+	    {
+	      iEnd = pPOB->getOffset() + pPOB->getLength();
+	    }
+	  }
+	}
 	// Look for the first POB.start that is higher than the end offset
 	_findFirstAfter(iEnd, e);
 	// Note that the return value is not checked: either there is no
@@ -756,8 +808,8 @@ fl_Squiggles::findRange(UT_sint32 iStart, UT_sint32 iEnd,
 	// POB that could span the region end).
 	if (0 == e)
 	{
-		UT_ASSERT(getNth(0)->getOffset() > iEnd);
-		return false;
+	  UT_ASSERT(getNth(0)->getOffset() > iEnd);
+	  return false;
 	}
 	// Adjust to be the first POB inside the region.
 	e--;
@@ -766,22 +818,22 @@ fl_Squiggles::findRange(UT_sint32 iStart, UT_sint32 iEnd,
 	// Look for the last POB.end that is lower than the start offset
 	for (s = e; s >= 0; s--)
 	{
-		pPOB = getNth(s);
-		if ((pPOB->getOffset() + pPOB->getLength()) < iStart) break;
+	  pPOB = getNth(s);
+	  if ((pPOB->getOffset() + pPOB->getLength()) < iStart) break;
 	}
 	// Return with empty set if the last POB's end offset is lower
 	// than the region start.
 	if (s == e)
 	{
-		UT_ASSERT((pPOB->getOffset() + pPOB->getLength()) < iStart);
-		return false;
+	  UT_ASSERT((pPOB->getOffset() + pPOB->getLength()) < iStart);
+	  return false;
 	}
 	//Adjust to be the first POB inside the region
 	s++;
 	UT_ASSERT(s >= 0 && s < iSquiggles);
 	UT_ASSERT(e >= 0 && e < iSquiggles);
 	UT_ASSERT(s <= e);
-
+	
 	iFirst = s;
 	iLast = e;
 

@@ -1934,6 +1934,8 @@ void fp_TextRun::_getPartRect(UT_Rect* pRect,
 	m_pRenderInfo->m_iOffset = iStart - getBlockOffset();
 	m_pRenderInfo->m_iLength = iLen;
 	pRect->width = getGraphics()->getTextWidth(*m_pRenderInfo);
+	UT_ASSERT(pRect->left < 10000000);
+	UT_ASSERT(pRect->width >= 0);
 
 	//in case of rtl we are now in the position to calculate the position of the the left corner
 	if(getVisDirection() == UT_BIDI_RTL)
@@ -1954,7 +1956,8 @@ void fp_TextRun::_getPartRect(UT_Rect* pRect,
 		}
 		delete pLRec;
 	}
-	
+	UT_ASSERT(pRect->left < 10000000);
+	UT_ASSERT(pRect->width >= 0);
 }
 
 /*!
