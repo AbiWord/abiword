@@ -27,6 +27,7 @@
 
 class fl_BlockLayout;
 class GR_Abi_EmbedManager;
+class FL_DocLayout;
 
 class ABI_EXPORT fp_MathRun : public fp_Run
 {
@@ -73,6 +74,7 @@ protected:
 #endif
 	UT_sint32               m_iMathUID;
 	PT_AttrPropIndex        m_iIndexAP;
+	FL_DocLayout *          m_pDocLayout;
 };
 
 #endif /* FP_MATHRUN_H */

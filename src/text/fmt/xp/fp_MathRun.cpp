@@ -60,8 +60,10 @@ fp_MathRun::fp_MathRun(fl_BlockLayout* pBL,
 	m_pMathView(NULL)
 #endif
         m_iMathUID(-1),
-        m_iIndexAP(indexAP)
+        m_iIndexAP(indexAP),
+        m_pDocLayout(NULL)
 {
+        m_pDocLayout = getBlock()->getDocLayout();
 	lookupProperties(getGraphics());
 }
 
@@ -93,7 +95,7 @@ GR_Abi_RenderingContext *  fp_MathRun::getAbiContext() const
 #endif
 GR_Abi_EmbedManager * fp_MathRun::getMathManager(void)
 {
-  return getBlock()->getDocLayout()->getMathManager();
+  return m_pDocLayout->getMathManager();
 }
 
 void fp_MathRun::_lookupProperties(const PP_AttrProp * pSpanAP,

@@ -177,7 +177,6 @@ FL_DocLayout::~FL_DocLayout()
 	}
 
 	DELETEP(m_pDocListener);
-	DELETEP(m_pMathManager);
 
 	if (m_pBackgroundCheckTimer)
 	{
