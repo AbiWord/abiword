@@ -322,7 +322,7 @@ UT_sint32 fp_EndnoteContainer::getValue(void)
 
 void fp_EndnoteContainer::clearScreen(void)
 {
-	UT_DEBUGMSG(("Clearscreen on Endnote container, height = %d \n",getHeight()));
+	xxx_UT_DEBUGMSG(("Clearscreen on Endnote container, height = %d \n",getHeight()));
 	fl_ContainerLayout * pCL = static_cast<fl_ContainerLayout *>(getSectionLayout());
 	pCL->setNeedsRedraw();
 	if(getPage() == NULL)
@@ -332,6 +332,10 @@ void fp_EndnoteContainer::clearScreen(void)
 	if(getColumn() && (getHeight() != 0))
 	{
 		fl_DocSectionLayout * pDSL = getPage()->getOwningSection();
+		if(pDSL == NULL)
+		{
+			return;
+		}
 		UT_RGBColor * pBGColor = pDSL->getPaperColor();
 		UT_sint32 iLeftMargin = pDSL->getLeftMargin();
 		UT_sint32 iRightMargin = pDSL->getRightMargin();

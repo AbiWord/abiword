@@ -2972,7 +2972,7 @@ fp_ContainerObject * fp_TableContainer::VBreakAt(UT_sint32 vpos)
 	// of the new broken table.
 	//
 	UT_sint32 iTweak = tweakBrokenTable(pBroke);
-	UT_DEBUGMSG(("BrakeTable: Tweak Result is %d !!!!!!!!!!!\n",iTweak));
+	xxx_UT_DEBUGMSG(("BrakeTable: Tweak Result is %d !!!!!!!!!!!\n",iTweak));
  	if(iTweak > 0)
  	{
  		pBroke->setYBreakHere(pBroke->getYBreak() - iTweak);
@@ -3481,7 +3481,7 @@ void fp_TableContainer::draw(dg_DrawArgs* pDA)
 	xxx_UT_DEBUGMSG(("TablecONTAINER enter draw table %x \n",this));
 	if(getSectionLayout()->getDocument()->isDontImmediateLayout())
 	{
-		UT_DEBUGMSG(("TablecONTAINER leave draw dont immediately layout \n"));
+		xxx_UT_DEBUGMSG(("TablecONTAINER leave draw dont immediately layout \n"));
 		return;
 	}
 	if(pDA->bDirtyRunsOnly)
@@ -3777,7 +3777,7 @@ void fp_TableContainer::_brokenDraw(dg_DrawArgs* pDA)
 {
 	fp_CellContainer * pCell = static_cast<fp_CellContainer *>(getMasterTable()->getNthCon(0));
 	xxx_UT_DEBUGMSG(("SEVIOR: _brokenDraw table %x getYBreak %d getYBottom %d \n",this, getYBreak(),getYBottom()));
-    UT_DEBUGMSG(("SEVIOR: _brokenDraw table Initial Y-offset %d \n",pDA->yoff));
+    xxx_UT_DEBUGMSG(("SEVIOR: _brokenDraw table Initial Y-offset %d \n",pDA->yoff));
 	fp_TableContainer *pMaster = getMasterTable();
 	UT_sint32 iCountCells = 0;
 	UT_Rect * pClipRect = const_cast<UT_Rect *>(pDA->pG->getClipRect());
@@ -3846,7 +3846,7 @@ void fp_TableContainer::_brokenDraw(dg_DrawArgs* pDA)
 
 			if((pCell->getY() > getYBottom()) || (botY < getYBreak()) )
 			{
-				UT_DEBUGMSG(("SEVIOR: _drawBroken skipping cell %x cellY %d cellHeight %d YBreak %d yBottom %d \n",pCell,pCell->getY(), pCell->getHeight(), getYBreak(),getYBottom()));
+				xxx_UT_DEBUGMSG(("SEVIOR: _drawBroken skipping cell %x cellY %d cellHeight %d YBreak %d yBottom %d \n",pCell,pCell->getY(), pCell->getHeight(), getYBreak(),getYBottom()));
 				if((m_pFirstBrokenCell != NULL) && (m_pLastBrokenCell == NULL))
 				{
 					m_pLastBrokenCell = static_cast<fp_CellContainer *>(pCell->getPrev());
@@ -3857,7 +3857,7 @@ void fp_TableContainer::_brokenDraw(dg_DrawArgs* pDA)
 			else
 			{
 				dg_DrawArgs da = *pDA;
-				UT_DEBUGMSG(("SEVIOR: _drawBroken yoff %d cellY %d cellHeight %d YBreak %d yBottom %d \n",da.yoff,pCell->getY(), pCell->getHeight(), getYBreak(),getYBottom()));
+				xxx_UT_DEBUGMSG(("SEVIOR: _drawBroken yoff %d cellY %d cellHeight %d YBreak %d yBottom %d \n",da.yoff,pCell->getY(), pCell->getHeight(), getYBreak(),getYBottom()));
 				da.yoff = da.yoff - getYBreak();
 				iCountCells++;
 				pCell->drawBroken(&da, this);

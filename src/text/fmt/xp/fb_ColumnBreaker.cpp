@@ -89,6 +89,10 @@ UT_sint32 fb_ColumnBreaker::breakSection(fl_DocSectionLayout * pSL)
 			
 			pFirstLayout = static_cast<fl_ContainerLayout *>(static_cast<fp_Line *>(pOuterContainer)->getBlock());
 		}
+		else if(pOuterContainer && pOuterContainer->getContainerType() == FP_CONTAINER_ENDNOTE)
+		{
+			pFirstLayout = static_cast<fl_ContainerLayout *>(pOuterContainer->getSectionLayout());
+		}
 		else if(pOuterContainer)
 		{
 			UT_ASSERT(pOuterContainer->getContainerType() == FP_CONTAINER_TABLE);
@@ -275,6 +279,24 @@ UT_sint32 fb_ColumnBreaker::breakSection(fl_DocSectionLayout * pSL)
 						iWidows = pBlock->getProp_Widows();
 						iOrphans = pBlock->getProp_Orphans();
 						pConLayout = static_cast<fl_ContainerLayout *>(pBlock);
+					}
+					else if(pOffendingContainer->getContainerType() == FP_CONTAINER_ENDNOTE)
+					{
+						pConLayout = static_cast<fl_ContainerLayout *>(pOffendingContainer->getSectionLayout());
+						pLastContainerToKeep = pOffendingContainer->getPrevContainerInSection();
+						if(pLastContainerToKeep == NULL)
+						{
+							fl_DocSectionLayout * pDSL = pConLayout->getDocSectionLayout();
+							UT_ASSERT(pDSL);
+							UT_ASSERT(pDSL->getContainerType() == FL_CONTAINER_DOCSECTION);
+							pLastContainerToKeep = pDSL->getLastContainer();
+						}
+						UT_ASSERT(pLastContainerToKeep);
+//
+// All this deals with widows and orphans. We don't need this for
+// tables
+//
+						break;
 					}
 					else
 					{
@@ -473,7 +495,7 @@ UT_sint32 fb_ColumnBreaker::breakSection(fl_DocSectionLayout * pSL)
 		bEquivColumnBreak = bEquivColumnBreak && ( iMaxColHeight < (iWorkingColHeight + iTotalContainerSpace));
 		if (pLastContainerToKeep)
 		{
-			while(pLastContainerToKeep && ((pLastContainerToKeep->getContainerType() == FP_CONTAINER_FOOTNOTE )||(pLastContainerToKeep->getContainerType() == FP_CONTAINER_ENDNOTE )))
+			while(pLastContainerToKeep && (pLastContainerToKeep->getContainerType() == FP_CONTAINER_FOOTNOTE ))
 			{
 				pLastContainerToKeep = pLastContainerToKeep->getPrevContainerInSection();
 			}
@@ -698,7 +720,7 @@ UT_sint32 fb_ColumnBreaker::breakSection(fl_DocSectionLayout * pSL)
 				{
 					pOuterContainer = _getNext(pCon);
 				}
-				pCurColumn->validate();
+//				pCurColumn->validate();
 				pCurColumn = static_cast<fp_Column *>(pCurColumn->getNext());
 					// This is only relevant for the initial column. All
 					// other columns should flush their entire content.
@@ -909,7 +931,7 @@ fp_Container * fb_ColumnBreaker::_getNext(fp_Container * pCon)
 	fp_Container * pNext = NULL;
 	if(pCon->getContainerType() != FP_CONTAINER_ENDNOTE)
 	{
-		fp_Container *pNext = pCon->getNextContainerInSection();
+		pNext = pCon->getNextContainerInSection();
 		if(pNext != NULL)
 		{
 			return pNext;

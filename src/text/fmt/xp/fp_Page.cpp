@@ -849,6 +849,25 @@ void fp_Page::_reformatColumns(void)
 //		UT_ASSERT(0);
 
 			}
+//
+// OK now look to see if there are some endnote that should really be on this 
+// page
+//
+#if 0
+			UT_sint32 iRemainingSpace = getHeight() - getFootnoteHeight() - iBottomMargin;
+			if(pFirstNextContainer  && (pFirstNextContainer->getContainerType() == FP_CONTAINER_ENDNOTE) && (iYNext < iRemainingSpace))
+			{
+				while(pFirstNextContainer  && (pFirstNextContainer->getContainerType() == FP_CONTAINER_ENDNOTE))
+				{
+					fl_EndnoteLayout * pECL = static_cast<fl_EndnoteLayout *>(pFirstNextContainer->getSectionLayout());
+					pFirstNextContainer = pFirstNextContainer->getNextContainerInSection();
+//
+// Remove old Container from the next page
+//
+					pECL->collapse();
+				}
+			}
+#endif				
 		}
 	}
 	return;

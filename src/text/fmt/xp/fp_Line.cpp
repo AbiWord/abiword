@@ -846,6 +846,14 @@ void fp_Line::clearScreen(void)
 			{
 				height = sHeight;
 			}
+//
+// Screen Height might extend beyond the bottom of the column. We take account
+// of that here
+//
+			if(pVCon->getHeight() < (getY() + height))
+			{
+				height -= (getY() + height - pVCon->getHeight());
+			}
 			xxx_UT_DEBUGMSG(("ClearScreen height is %d \n",height));
 			// I have added the +1 to clear dirt after squiggles and
 			// revision underlines
@@ -939,7 +947,6 @@ void fp_Line::clearScreenFromRunToEnd(fp_Run * ppRun)
 			}
 			UT_ASSERT((m_iClearToPos + leftClear - (xoff-xoffLine)) < getPage()->getWidth());
 			xxx_UT_DEBUGMSG(("Clear from run to end height %d \n",getHeight()));
-
 			pRun->getGraphics()->fillRect(pRun->getPageColor(),
 										  xoff - leftClear,
 										  yoff,
