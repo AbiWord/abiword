@@ -634,7 +634,7 @@ void IE_Imp_XHTML::startElement(const XML_Char *name, const XML_Char **atts)
 		UT_XML_cloneString(sz, PT_PROPS_ATTRIBUTE_NAME);
 		new_atts[0]=sz;
 		sz = NULL;
-		UT_XML_cloneString(sz, "font-family:\"Courier\"");
+		UT_XML_cloneString(sz, "font-family:Courier");
 		new_atts[1]=sz;
 		X_CheckError(getDoc()->appendFmt(new_atts));
 		return;

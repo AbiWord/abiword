@@ -1337,7 +1337,7 @@ void s_HTML_Listener::tlistNumber (fl_AutoNum * list, PL_StruxDocHandle sdh)
 	if (parent)
 		{
 			tlistNumber (parent, list->getParentItem ());
-			textTrusted (".");
+			textUntrusted (".");
 		}
 	UT_uint32 value = list->getValue (sdh);
 	switch (m_tlistType)
