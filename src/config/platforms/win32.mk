@@ -38,6 +38,7 @@ GARBAGE = $(OBJDIR)/vc20.pdb $(OBJDIR)/vc40.pdb
 OBJ_SUFFIX = obj
 LIB_SUFFIX = lib
 DLL_SUFFIX = dll
+EXE_SUFFIX = .exe
 
 # Compiler flags (do we really need -GT?)
 # TODO go thru the compiler manual and see which ones we really need
