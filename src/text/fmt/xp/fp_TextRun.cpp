@@ -1022,6 +1022,7 @@ void fp_TextRun::mergeWithNext(void)
 	UT_BidiCharType iVisDirection = getVisDirection();
 
 	bool bReverse = (!s_bBidiOS && iVisDirection == UT_BIDI_RTL)
+		  || (s_bBidiOS && m_iDirOverride == UT_BIDI_RTL && _getDirection() == UT_BIDI_LTR)
 		  || (s_bBidiOS && m_iDirOverride == UT_BIDI_LTR && _getDirection() == UT_BIDI_RTL);
 
 	UT_uint32 iNextLen = pNext->getLength();
@@ -1145,8 +1146,8 @@ bool fp_TextRun::split(UT_uint32 iSplitOffset)
 	// split the rendering info, this will save us refreshing it
 	// which is very expensive (see notes on the mergeWithNext())
 	bool bReverse = ((!s_bBidiOS && iVisDirection == UT_BIDI_RTL)
-					 || (s_bBidiOS && m_iDirOverride == UT_BIDI_LTR
-						           && _getDirection() == UT_BIDI_RTL));
+			 || (s_bBidiOS && m_iDirOverride == UT_BIDI_RTL && _getDirection() == UT_BIDI_LTR)
+			 || (s_bBidiOS && m_iDirOverride == UT_BIDI_LTR && _getDirection() == UT_BIDI_RTL));
 
 	// runs can be split even before any shaping has been done on the, in which case we do not have
 	// the redering info yet; in such cases we only have m_pItem
@@ -1982,6 +1983,7 @@ bool fp_TextRun::_refreshDrawBuffer()
 			GR_XPRenderInfo * pRI = (GR_XPRenderInfo *) m_pRenderInfo;
 		
 			if((!s_bBidiOS && iVisDir == UT_BIDI_RTL)
+			   || (s_bBidiOS && m_iDirOverride == UT_BIDI_RTL && _getDirection() == UT_BIDI_LTR)
 			   || (s_bBidiOS && m_iDirOverride == UT_BIDI_LTR && _getDirection() == UT_BIDI_RTL))
 				UT_UCS4_strnrev(pRI->m_pChars, iLen);
 		}
