@@ -243,7 +243,8 @@ void AP_CocoaDialog_Field::setFieldsList(void)
 			LocalizeControl(_fieldsLabel,     pSS,  AP_STRING_ID_DLG_Field_Fields);
 			LocalizeControl(_extraParamLabel, pSS,  AP_STRING_ID_DLG_Field_Parameters);
 
-			[_typesList setAction:@selector(typesAction:)];
+			[_typesList  setAction:@selector(typesAction:)];
+			[_fieldsList setDoubleAction:@selector(okAction:)];
 		}
 }
 
