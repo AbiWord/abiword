@@ -1,4 +1,5 @@
 /* AbiSource Application Framework
+ * Copyright (C) 2003 Marc Maurer
  * Copyright (C) 2001-2003 AbiSource, Inc.
  * 
  * This program is free software; you can redistribute it and/or
@@ -51,16 +52,14 @@ static void _errorMessage (XAP_Frame * pFrame, XAP_String_Id id)
 
 static void selectFirstEntry(GtkWidget * list)
 {
-	gtk_widget_grab_focus (list);
-
 	GtkTreePath* path = gtk_tree_path_new_first();
-
 	gtk_tree_view_set_cursor(GTK_TREE_VIEW(list),
 							 path, 
 							 gtk_tree_view_get_column (GTK_TREE_VIEW(list), 0), 
 							 FALSE);
-	
 	gtk_tree_path_free (path);
+	
+	gtk_widget_grab_focus (list);
 }
 
 /*****************************************************************/
@@ -96,29 +95,40 @@ void XAP_UnixDialog_PluginManager::event_Deactivate ()
 	GtkTreeSelection * selection;
 	GtkTreeIter iter;
 	GtkTreeModel * model;
-	gint rowNumber = -1;
 	
 	selection = gtk_tree_view_get_selection( GTK_TREE_VIEW(m_list) );	
-	if (selection && gtk_tree_selection_get_selected (selection, &model, &iter)) {
-		gtk_tree_model_get (model, &iter, 1, &rowNumber, -1);
-	}
-	
-	if (rowNumber != -1)
-		pModule = static_cast<XAP_Module *>(XAP_ModuleManager::instance().enumModules()->getNthItem(rowNumber));
-	else 
-    {
-		// error message box - didn't select a plugin
-		_errorMessage (m_pFrame, 
-					   XAP_STRING_ID_DLG_PLUGIN_MANAGER_NONE_SELECTED);
-		return;
-    }
-	
-	if (pModule)
-    {
-		if (deactivatePlugin (pModule))
+	if (selection && gtk_tree_selection_get_selected (selection, &model, &iter))
+	{
+		// remove the plugin from our TreeView
+		GtkTreePath *path;
+		path = gtk_tree_model_get_path (model, &iter);
+		gint rowNumber = gtk_tree_path_get_indices (path)[0];
+		gtk_list_store_remove (GTK_LIST_STORE (model), &iter);
+
+		if (rowNumber < XAP_ModuleManager::instance().enumModules()->size() - 1)
 		{
-			// worked
-			_refresh ();
+			// select the next item in the TreeView
+			gtk_tree_view_set_cursor(GTK_TREE_VIEW(m_list),
+									 path, 
+									 gtk_tree_view_get_column (GTK_TREE_VIEW(m_list), 0), 
+									 FALSE);		
+		}
+		gtk_tree_path_free (path);		
+
+		pModule = static_cast<XAP_Module *>(XAP_ModuleManager::instance().enumModules()->getNthItem(rowNumber));
+		if (pModule)
+		{
+			if (deactivatePlugin (pModule))
+			{
+				// worked
+				_refresh ();
+			}
+			else
+			{
+				// error message box
+				_errorMessage (m_pFrame, 
+							   XAP_STRING_ID_DLG_PLUGIN_MANAGER_COULDNT_UNLOAD);
+			}
 		}
 		else
 		{
@@ -126,13 +136,14 @@ void XAP_UnixDialog_PluginManager::event_Deactivate ()
 			_errorMessage (m_pFrame, 
 						   XAP_STRING_ID_DLG_PLUGIN_MANAGER_COULDNT_UNLOAD);
 		}
-    }
-	else
-    {
-		// error message box
+	}
+	else 
+	{
+		// error message box - didn't select a plugin
 		_errorMessage (m_pFrame, 
-					   XAP_STRING_ID_DLG_PLUGIN_MANAGER_COULDNT_UNLOAD);
-    }
+					   XAP_STRING_ID_DLG_PLUGIN_MANAGER_NONE_SELECTED);
+		return;
+	}
 }
 
 void XAP_UnixDialog_PluginManager::event_Load ()
@@ -210,9 +221,8 @@ void XAP_UnixDialog_PluginManager::setPluginList()
 	GtkListStore *model;
 	GtkTreeIter iter;
 	
-	model = gtk_list_store_new (2, 
-							    G_TYPE_STRING,
-								G_TYPE_INT
+	model = gtk_list_store_new (1, 
+							    G_TYPE_STRING
 	                            );
 	
  	// build a list of all items
@@ -222,7 +232,6 @@ void XAP_UnixDialog_PluginManager::setPluginList()
 		gtk_list_store_append (model, &iter);
 		gtk_list_store_set (model, &iter,
 					  		0, pModule->getModuleInfo()->name,
-							1, i,
 					  		-1);
 	}
 	
@@ -241,20 +250,22 @@ void XAP_UnixDialog_PluginManager::_refresh ()
 	GtkTreeSelection * selection;
 	GtkTreeIter iter;
 	GtkTreeModel * model;
-	gint rowNumber = -1;
 	
 	selection = gtk_tree_view_get_selection( GTK_TREE_VIEW(m_list) );
-	if (selection && gtk_tree_selection_get_selected (selection, &model, &iter)) {
-		gtk_tree_model_get (model, &iter, 1, &rowNumber, -1);		
-	} else {
-	        if(XAP_ModuleManager::instance().enumModules()->size()) 
-				selectFirstEntry(m_list);
-	}
-	
-	if (rowNumber != -1 && XAP_ModuleManager::instance().enumModules()->size() > 0)
+	if (selection && gtk_tree_selection_get_selected (selection, &model, &iter))
+	{
+		// remove the plugin from our TreeView
+		GtkTreePath *path;		
+		path = gtk_tree_model_get_path (model, &iter);
+		gint rowNumber = gtk_tree_path_get_indices (path)[0];
+		
 		pModule = static_cast<XAP_Module *>(XAP_ModuleManager::instance().enumModules()->getNthItem(rowNumber));
-	else
-		pModule = 0;
+		
+	} else
+	{
+		if (XAP_ModuleManager::instance().enumModules()->size()) 
+			selectFirstEntry(m_list);
+	}
 	
 	// just a blank space, to represent an empty entry
 	const char * name = NULL;
