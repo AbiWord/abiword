@@ -17,6 +17,8 @@
  * 02111-1307, USA.
  */
 
+#define GTK_ENABLE_BROKEN
+
 #include <gtk/gtk.h>
 #include <stdlib.h>
 #include <string.h>
@@ -94,7 +96,7 @@ void XAP_UnixDialog_About::runModal(XAP_Frame * pFrame)
   _preparePicture();
   
   // attach a new graphics context
-  XAP_App *pApp = pUnixFrame->getApp();
+  XAP_App *pApp = m_pFrame->getApp();
   
 #ifndef WITH_PANGO	
   m_gc = new GR_UnixGraphics(m_drawingareaGraphic->window, NULL, pApp);
@@ -166,8 +168,8 @@ GtkWidget * XAP_UnixDialog_About::_constructWindow(void)
   // make the font really big
   GtkStyle * bigstyle = gtk_style_copy(gtk_widget_get_style(labelTitle));
   UT_ASSERT(bigstyle);
-  gdk_font_unref(bigstyle->font);
-  bigstyle->font = gdk_font_load("-*-helvetica-bold-r-*-*-*-240-*-*-*-*-*-*");
+  gdk_font_unref(bigstyle->private_font);
+  bigstyle->private_font = gdk_font_load("-*-helvetica-bold-r-*-*-*-240-*-*-*-*-*-*");
   gtk_widget_set_style(labelTitle, bigstyle);
   
   g_snprintf(buf, 4096, XAP_ABOUT_VERSION, XAP_App::s_szBuild_Version);
@@ -191,8 +193,8 @@ GtkWidget * XAP_UnixDialog_About::_constructWindow(void)
   // make the font slightly smaller
   GtkStyle * smallstyle = gtk_style_copy(gtk_widget_get_style(textCopyright));
   UT_ASSERT(smallstyle);
-  gdk_font_unref(smallstyle->font);
-  smallstyle->font = gdk_font_load("-*-helvetica-medium-r-*-*-*-100-*-*-*-*-*-*");
+  gdk_font_unref(smallstyle->private_font);
+  smallstyle->private_font = gdk_font_load("-*-helvetica-medium-r-*-*-*-100-*-*-*-*-*-*");
   gtk_widget_set_style(textCopyright, smallstyle);
 
   // add the buttons

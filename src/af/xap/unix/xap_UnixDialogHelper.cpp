@@ -393,14 +393,14 @@ on_notebook_switch_page				   (GtkNotebook		*notebook,
 
 	UT_ASSERT(topwindow && GTK_IS_WINDOW(topwindow));
 	UT_ASSERT(notebook && GTK_IS_NOTEBOOK(notebook));
-	UT_ASSERT(page && page->child && GTK_IS_OBJECT(page->child));
-
-	if ( GTK_OBJECT_DESTROYED(notebook) )
-		return ;
+	UT_ASSERT(page);
 
 	oldaccel = (GtkAccelGroup *)g_object_get_data( G_OBJECT(notebook),
 													 KEY_ACCEL_GROUP );
-	newaccel = (GtkAccelGroup *)g_object_get_data( G_OBJECT(page->child),  
+
+	GtkWidget * new_page = gtk_notebook_get_nth_page ( notebook, page_num ) ;
+
+	newaccel = (GtkAccelGroup *)g_object_get_data( G_OBJECT(new_page),  
 													 KEY_ACCEL_GROUP );
 	
 	if ( oldaccel )
