@@ -690,7 +690,7 @@ char * AP_UnixDialog_Spell::_convertToMB(UT_UCSChar *wword)
    char * word = (char*) calloc(mblen + 1, sizeof(char));
    if (word == NULL) return NULL;
      
-   while (wcindex < wclen) {
+   while (wword[wcindex]) {
       int len = wctomb(word+mbindex, (wchar_t)wword[wcindex++]);
       mbindex += len; 
    }
@@ -718,7 +718,7 @@ UT_UCSChar * AP_UnixDialog_Spell::_convertFromMB(char *word)
    UT_UCSChar * wword = (UT_UCSChar*) calloc(wclen + 1, sizeof(UT_UCSChar));
    if (wword == NULL) return NULL;
      
-   while (mbindex < mblen) {
+   while (word[mbindex]) {
       int len = mbtowc(&wch, word+mbindex, 10);
       mbindex += len;
       wword[wcindex++] = (UT_UCSChar) wch;
