@@ -5,11 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: abiword\n"
-<<<<<<< sl-SI.po
-"POT-Creation-Date: 2001-07-15 15:54+0200\n"
-=======
-"POT-Creation-Date: 2001-07-15 15:30+0200\n"
->>>>>>> 1.3
+"POT-Creation-Date: 2001-07-27 23:13+0200\n"
 "PO-Revision-Date: 2000-07-07 12:30+0200\n"
 "Last-Translator: Andraz Tori <andraz.tori1@guest.arnes.si>\n"
 "Language-Team: Slovenian <sl@li.org>\n"
@@ -386,7 +382,7 @@ msgid "Alignment:"
 msgstr "Poravnava:"
 
 #. DLG_Styles_LBL_All
-#: po/tmp/ap_String_Id.h.h:143 po/tmp/xap_String_Id.h.h:37
+#: po/tmp/ap_String_Id.h.h:143 po/tmp/xap_String_Id.h.h:39
 msgid "All"
 msgstr "Vse"
 
@@ -401,7 +397,7 @@ msgid "Application"
 msgstr "Program"
 
 #. DLG_Options_Btn_Apply
-#: po/tmp/ap_String_Id.h.h:149 po/tmp/xap_String_Id.h.h:39
+#: po/tmp/ap_String_Id.h.h:149 po/tmp/xap_String_Id.h.h:41
 msgid "Apply"
 msgstr "Uporabi"
 
@@ -880,7 +876,7 @@ msgid "Delete"
 msgstr "Zbri¹i"
 
 #. DLG_Styles_ModifyDescription
-#: po/tmp/ap_String_Id.h.h:333 po/tmp/xap_String_Id.h.h:131
+#: po/tmp/ap_String_Id.h.h:333 po/tmp/xap_String_Id.h.h:137
 msgid "Description"
 msgstr "Opis"
 
@@ -997,12 +993,12 @@ msgstr ""
 "odstavek Sledeè odstavek Sledeè odstavek Sledeè odstavek Sledeè odstavek"
 
 #. DLG_Styles_ModifyFont
-#: po/tmp/ap_String_Id.h.h:375 po/tmp/xap_String_Id.h.h:165
+#: po/tmp/ap_String_Id.h.h:375 po/tmp/xap_String_Id.h.h:171
 msgid "Font"
 msgstr "Pisava"
 
 #. DLG_Lists_Font
-#: po/tmp/ap_String_Id.h.h:377 po/tmp/xap_String_Id.h.h:167
+#: po/tmp/ap_String_Id.h.h:377 po/tmp/xap_String_Id.h.h:173
 msgid "Font:"
 msgstr "Pisava:"
 
@@ -1164,7 +1160,7 @@ msgid "Indentation"
 msgstr "Zamik"
 
 #. DLG_Break_Insert
-#: po/tmp/ap_String_Id.h.h:441 po/tmp/xap_String_Id.h.h:209
+#: po/tmp/ap_String_Id.h.h:441 po/tmp/xap_String_Id.h.h:215
 msgid "Insert"
 msgstr "Vstavi"
 
@@ -1199,7 +1195,7 @@ msgid "Ladies and Gentlemen:"
 msgstr "Dame in gospodje:"
 
 #. DLG_Styles_ModifyLanguage
-#: po/tmp/ap_String_Id.h.h:455 po/tmp/xap_String_Id.h.h:243
+#: po/tmp/ap_String_Id.h.h:455 po/tmp/xap_String_Id.h.h:249
 msgid "Language"
 msgstr "Jezik"
 
@@ -1470,7 +1466,7 @@ msgid "PERSONAL"
 msgstr "OSEBNO"
 
 #. DLG_PageSetup_Page
-#: po/tmp/ap_String_Id.h.h:557 po/tmp/xap_String_Id.h.h:271
+#: po/tmp/ap_String_Id.h.h:557 po/tmp/xap_String_Id.h.h:277
 msgid "Page"
 msgstr "Stran"
 
@@ -1571,7 +1567,7 @@ msgid "Preferences"
 msgstr "Nastavitve"
 
 #. DLG_PageNumbers_Preview
-#: po/tmp/ap_String_Id.h.h:597 po/tmp/xap_String_Id.h.h:283
+#: po/tmp/ap_String_Id.h.h:597 po/tmp/xap_String_Id.h.h:289
 msgid "Preview"
 msgstr "Predogled"
 
@@ -1840,7 +1836,7 @@ msgid "Style name cannot be left blank"
 msgstr "Vpisati morate ime sloga"
 
 #. DLG_Lists_Style
-#: po/tmp/ap_String_Id.h.h:701 po/tmp/xap_String_Id.h.h:329
+#: po/tmp/ap_String_Id.h.h:701 po/tmp/xap_String_Id.h.h:341
 msgid "Style:"
 msgstr "Slog:"
 
@@ -2043,7 +2039,7 @@ msgid "VIA OVERNIGHT MAIL"
 msgstr "Z EKSPRESNO PO©TO"
 
 #. FIELD_Application_Version
-#: po/tmp/ap_String_Id.h.h:777 po/tmp/xap_String_Id.h.h:395
+#: po/tmp/ap_String_Id.h.h:777 po/tmp/xap_String_Id.h.h:409
 msgid "Version"
 msgstr "Razlièica"
 
@@ -2070,7 +2066,7 @@ msgstr "Vidno"
 #. DLG_Styles_LBL_TxtMsg
 #: po/tmp/ap_String_Id.h.h:787
 msgid "What Hath God Wrought"
-msgstr ""
+msgstr "Karkoli ¾e je in bo"
 
 #. DLG_Options_Label_WithExtension
 #: po/tmp/ap_String_Id.h.h:789
@@ -2205,1008 +2201,1029 @@ msgstr "Upravljalnik vtiènikov Abiword"
 msgid "AbiWord: Print Preview"
 msgstr "AbiWord: Predogled tiskanja"
 
-#. DLG_MW_MoreWindows
+#. DLG_ABOUT_Title
 #: po/tmp/xap_String_Id.h.h:29
+#, c-format
+msgid "About %s"
+msgstr "O %s"
+
+#. DLG_MW_MoreWindows
+#: po/tmp/xap_String_Id.h.h:31
 msgid "Activate Window"
 msgstr "Aktiviraj okno"
 
 #. DLG_MW_Activate
-#: po/tmp/xap_String_Id.h.h:31
+#: po/tmp/xap_String_Id.h.h:33
 msgid "Activate:"
 msgstr "Aktiviraj:"
 
 #. DLG_PLUGIN_MANAGER_ACTIVE
-#: po/tmp/xap_String_Id.h.h:33
-msgid "Active Plugins"
-<<<<<<< sl-SI.po
-msgstr "Aktiviraj vtiènike"
-
-#. LANG_AF_ZA
 #: po/tmp/xap_String_Id.h.h:35
-msgid "Afrikaans"
-msgstr "Afrikan¹èina"
-
-#. LANG_AR_EG
-#: po/tmp/xap_String_Id.h.h:41
-msgid "Arabic (Egypt)"
-msgstr "Arabski (Egipt)"
-
-#. LANG_AR_SA
-#: po/tmp/xap_String_Id.h.h:43
-msgid "Arabic (Saudi Arabia)"
-msgstr "Arabski (Savdska Arabija)"
-
-#. ENC_ARAB_ISO
-#: po/tmp/xap_String_Id.h.h:45
-msgid "Arabic, ISO-8859-6"
-msgstr "Arabski, ISO-8859-6"
-
-#. ENC_ARAB_MAC
-#: po/tmp/xap_String_Id.h.h:47
-msgid "Arabic, Macintosh"
-msgstr "Arabski, Macintosh"
-
-#. ENC_ARAB_WIN
-#: po/tmp/xap_String_Id.h.h:49
-msgid "Arabic, Windows Code Page 1256"
-msgstr "Arabski, okenski nabor znakov 1256"
-=======
+msgid "Active Plugins"
 msgstr "Aktivni vtièniki"
 
 #. LANG_AF_ZA
-#: po/tmp/xap_String_Id.h.h:35
+#: po/tmp/xap_String_Id.h.h:37
 msgid "Afrikaans"
 msgstr "Afrikan¹èina"
 
 #. LANG_AR_EG
-#: po/tmp/xap_String_Id.h.h:41
+#: po/tmp/xap_String_Id.h.h:43
 msgid "Arabic (Egypt)"
 msgstr "Arabski (Egipt)"
 
 #. LANG_AR_SA
-#: po/tmp/xap_String_Id.h.h:43
+#: po/tmp/xap_String_Id.h.h:45
 msgid "Arabic (Saudi Arabia)"
 msgstr "Arabski (Savdska Arabija)"
 
 #. ENC_ARAB_ISO
-#: po/tmp/xap_String_Id.h.h:45
+#: po/tmp/xap_String_Id.h.h:47
 msgid "Arabic, ISO-8859-6"
 msgstr "Arabski, ISO-8859-6"
 
 #. ENC_ARAB_MAC
-#: po/tmp/xap_String_Id.h.h:47
+#: po/tmp/xap_String_Id.h.h:49
 msgid "Arabic, Macintosh"
 msgstr "Arabski, Macintosh"
 
 #. ENC_ARAB_WIN
-#: po/tmp/xap_String_Id.h.h:49
+#: po/tmp/xap_String_Id.h.h:51
 msgid "Arabic, Windows Code Page 1256"
 msgstr "Arabski, okenski nabor znakov 1256"
->>>>>>> 1.3
 
 #. LANG_HY_AM
-#: po/tmp/xap_String_Id.h.h:51
+#: po/tmp/xap_String_Id.h.h:53
 msgid "Armenian"
 msgstr "Armenski"
 
 #. ENC_ARME_ARMSCII
-#: po/tmp/xap_String_Id.h.h:53
+#: po/tmp/xap_String_Id.h.h:55
 msgid "Armenian, ARMSCII-8"
 msgstr "Armenski, ARMSCII-8"
 
 #. DLG_PLUGIN_MANAGER_AUTHOR
-#: po/tmp/xap_String_Id.h.h:55
+#: po/tmp/xap_String_Id.h.h:57
 msgid "Author"
 msgstr "Avtor"
 
 #. DLG_FOSA_FileTypeAutoDetect
-#: po/tmp/xap_String_Id.h.h:57
+#: po/tmp/xap_String_Id.h.h:59
 msgid "Automatically Detected"
 msgstr "Samodejna zaznava"
 
 #. ENC_BALT_ISO
-#: po/tmp/xap_String_Id.h.h:59
+#: po/tmp/xap_String_Id.h.h:61
 msgid "Baltic, ISO-8859-4"
 msgstr "Baltski, ISO-8859-4"
 
 #. ENC_BALT_WIN
-#: po/tmp/xap_String_Id.h.h:61
+#: po/tmp/xap_String_Id.h.h:63
 msgid "Baltic, Windows Code Page 1257"
 msgstr "Baltski, okenski nabor znakov 1257"
 
 #. DLG_UP_BlackWhite
-#: po/tmp/xap_String_Id.h.h:63
+#: po/tmp/xap_String_Id.h.h:65
 msgid "Black & White"
 msgstr "Èrno in belo"
 
 #. DLG_UFS_StyleBold
-#: po/tmp/xap_String_Id.h.h:65
+#: po/tmp/xap_String_Id.h.h:67
 msgid "Bold"
 msgstr "Krepko"
 
 #. DLG_UFS_StyleBoldItalic
-#: po/tmp/xap_String_Id.h.h:67
+#: po/tmp/xap_String_Id.h.h:69
 msgid "Bold Italic"
 msgstr "Krepko kurzivno"
 
+#. DLG_UFS_BottomlineCheck
+#: po/tmp/xap_String_Id.h.h:71
+msgid "Bottomline"
+msgstr "Spodnja èrta:"
+
 #. DLG_Cancel
-#: po/tmp/xap_String_Id.h.h:69
+#: po/tmp/xap_String_Id.h.h:73
 msgid "Cancel"
 msgstr "Preklièi"
 
-<<<<<<< sl-SI.po
 #. ENC_CENT_ISO
-#: po/tmp/xap_String_Id.h.h:71
+#: po/tmp/xap_String_Id.h.h:75
 msgid "Central European, ISO-8859-2"
 msgstr "Srednjeevropski, ISO-8859-2"
 
 #. ENC_CENT_MAC
-#: po/tmp/xap_String_Id.h.h:73
+#: po/tmp/xap_String_Id.h.h:77
 msgid "Central European, Macintosh"
 msgstr "Srednjeevropski, Macintosh"
 
 #. ENC_CENT_WIN
-#: po/tmp/xap_String_Id.h.h:75
+#: po/tmp/xap_String_Id.h.h:79
 msgid "Central European, Windows Code Page 1250"
 msgstr "Srednjeevropski, okenski nabor znakov 1250"
 
 #. LANG_ZH_HK
-#: po/tmp/xap_String_Id.h.h:77
+#: po/tmp/xap_String_Id.h.h:81
 msgid "Chinese (Hong Kong)"
 msgstr "Kitajski (Honk Kong)"
 
 #. LANG_ZH_CN
-#: po/tmp/xap_String_Id.h.h:79
+#: po/tmp/xap_String_Id.h.h:83
 msgid "Chinese (PRC)"
 msgstr "Kitajski (LRK)"
 
 #. LANG_ZH_SG
-#: po/tmp/xap_String_Id.h.h:81
+#: po/tmp/xap_String_Id.h.h:85
 msgid "Chinese (Singapore)"
 msgstr "Kitajski (Singapur)"
 
 #. LANG_ZH_TW
-#: po/tmp/xap_String_Id.h.h:83
+#: po/tmp/xap_String_Id.h.h:87
 msgid "Chinese (Taiwan)"
 msgstr "Kitajski (Tajvan)"
 
 #. ENC_CHSI_EUC
-#: po/tmp/xap_String_Id.h.h:85
+#: po/tmp/xap_String_Id.h.h:89
 msgid "Chinese Simplified, EUC-CN"
 msgstr "Poenostavljen kitajski, EUC-CN"
 
 #. ENC_CHSI_GB
-#: po/tmp/xap_String_Id.h.h:87
+#: po/tmp/xap_String_Id.h.h:91
 msgid "Chinese Simplified, GB_2312-80"
 msgstr "Poenostavljen kitajski, GB_2312-80"
 
 #. ENC_CHSI_HZ
-#: po/tmp/xap_String_Id.h.h:89
+#: po/tmp/xap_String_Id.h.h:93
 msgid "Chinese Simplified, HZ"
 msgstr "Poenostavljen kitajski, HZ"
 
 #. ENC_CHSI_WIN
-#: po/tmp/xap_String_Id.h.h:91
+#: po/tmp/xap_String_Id.h.h:95
 msgid "Chinese Simplified, Windows Code Page 936"
 msgstr "Poenostavljen kitajski, okenski nabor znakov 936"
 
 #. ENC_CHTR_BIG5
-#: po/tmp/xap_String_Id.h.h:93
-msgid "Chinese Traditional, BIG5"
-msgstr "Tradicionalen kitajski, BIG5"
-
-#. ENC_CHTR_EUC
-#: po/tmp/xap_String_Id.h.h:95
-msgid "Chinese Traditional, EUC-TW"
-msgstr "Tradicionalek kitajski, EUC-TW"
-
-#. ENC_CHTR_WIN
 #: po/tmp/xap_String_Id.h.h:97
-msgid "Chinese Traditional, Windows Code Page 950"
-msgstr "Tradicionalen kitajski, okenski nabor znakov 950"
-
-#. DLG_CLIPART_Title
-#: po/tmp/xap_String_Id.h.h:99
-msgid "Clip Art"
-msgstr "Clipart"
-
-=======
-#. ENC_CENT_ISO
-#: po/tmp/xap_String_Id.h.h:71
-msgid "Central European, ISO-8859-2"
-msgstr "Srednjeevropski, ISO-8859-2"
-
-#. ENC_CENT_MAC
-#: po/tmp/xap_String_Id.h.h:73
-msgid "Central European, Macintosh"
-msgstr "Srednjeevropski, Macintosh"
-
-#. ENC_CENT_WIN
-#: po/tmp/xap_String_Id.h.h:75
-msgid "Central European, Windows Code Page 1250"
-msgstr "Srednjeevropski, okenski nabor znakov 1250"
-
-#. LANG_ZH_HK
-#: po/tmp/xap_String_Id.h.h:77
-msgid "Chinese (Hong Kong)"
-msgstr "Kitajski (Honk Kong)"
-
-#. LANG_ZH_CN
-#: po/tmp/xap_String_Id.h.h:79
-msgid "Chinese (PRC)"
-msgstr "Kitajski (LRK)"
-
-#. LANG_ZH_SG
-#: po/tmp/xap_String_Id.h.h:81
-msgid "Chinese (Singapore)"
-msgstr "Kitajski (Singapur)"
-
-#. LANG_ZH_TW
-#: po/tmp/xap_String_Id.h.h:83
-msgid "Chinese (Taiwan)"
-msgstr "Kitajski (Tajvan)"
-
-#. ENC_CHSI_EUC
-#: po/tmp/xap_String_Id.h.h:85
-msgid "Chinese Simplified, EUC-CN"
-msgstr "Poenostavljen kitajski, EUC-CN"
-
-#. ENC_CHSI_GB
-#: po/tmp/xap_String_Id.h.h:87
-msgid "Chinese Simplified, GB_2312-80"
-msgstr "Poenostavljen kitajski, GB_2312-80"
-
-#. ENC_CHSI_HZ
-#: po/tmp/xap_String_Id.h.h:89
-msgid "Chinese Simplified, HZ"
-msgstr "Poenostavljen kitajski, HZ"
-
-#. ENC_CHSI_WIN
-#: po/tmp/xap_String_Id.h.h:91
-msgid "Chinese Simplified, Windows Code Page 936"
-msgstr "Poenostavljen kitajski, okenski nabor znakov 936"
-
-#. ENC_CHTR_BIG5
-#: po/tmp/xap_String_Id.h.h:93
 msgid "Chinese Traditional, BIG5"
 msgstr "Tradicionalen kitajski, BIG5"
 
 #. ENC_CHTR_EUC
-#: po/tmp/xap_String_Id.h.h:95
+#: po/tmp/xap_String_Id.h.h:99
 msgid "Chinese Traditional, EUC-TW"
 msgstr "Tradicionalen kitajski, EUC-TW"
 
 #. ENC_CHTR_WIN
-#: po/tmp/xap_String_Id.h.h:97
+#: po/tmp/xap_String_Id.h.h:101
 msgid "Chinese Traditional, Windows Code Page 950"
 msgstr "Tradicionalen kitajski, okenski nabor znakov 950"
 
 #. DLG_CLIPART_Title
-#: po/tmp/xap_String_Id.h.h:99
+#: po/tmp/xap_String_Id.h.h:103
 msgid "Clip Art"
 msgstr "Clipart"
 
->>>>>>> 1.3
 #. DLG_Close
-#: po/tmp/xap_String_Id.h.h:101
+#: po/tmp/xap_String_Id.h.h:105
 msgid "Close"
 msgstr "Zapri"
 
 #. DLG_UP_Collate
-#: po/tmp/xap_String_Id.h.h:103
+#: po/tmp/xap_String_Id.h.h:107
 msgid "Collate"
 msgstr "Zdru¾i enake strani"
 
 #. DLG_UP_Color
-#: po/tmp/xap_String_Id.h.h:105
+#: po/tmp/xap_String_Id.h.h:109
 msgid "Color"
 msgstr "Barva"
 
+#. DLG_UFS_ColorLabel
+#: po/tmp/xap_String_Id.h.h:111
+msgid "Color:"
+msgstr "Barva:"
+
 #. DLG_UP_Copies
-#: po/tmp/xap_String_Id.h.h:107
+#: po/tmp/xap_String_Id.h.h:113
 msgid "Copies: "
 msgstr "Izvodov: "
 
 #. DLG_PLUGIN_MANAGER_COULDNT_LOAD
-#: po/tmp/xap_String_Id.h.h:109
+#: po/tmp/xap_String_Id.h.h:115
 msgid "Could not activate/load plugin"
 msgstr "Nisem mogel nalo¾iti ali aktivirati vtiènika"
 
 #. DLG_PLUGIN_MANAGER_COULDNT_UNLOAD
-#: po/tmp/xap_String_Id.h.h:111
+#: po/tmp/xap_String_Id.h.h:117
 msgid "Could not deactivate plugin"
 msgstr "Nisem mogel deaktivirati vtiènika"
 
 #. ENC_CROA_MAC
-#: po/tmp/xap_String_Id.h.h:113
+#: po/tmp/xap_String_Id.h.h:119
 msgid "Croatian, Macintosh"
 msgstr "Hrva¹ki, Macintosh"
 
 #. ENC_CYRL_ISO
-#: po/tmp/xap_String_Id.h.h:115
+#: po/tmp/xap_String_Id.h.h:121
 msgid "Cyrillic, ISO-8859-5"
 msgstr "Cirilièni, ISO-8859-5"
 
 #. ENC_CYRL_KOI
-#: po/tmp/xap_String_Id.h.h:117
+#: po/tmp/xap_String_Id.h.h:123
 msgid "Cyrillic, KOI8-R"
 msgstr "Cirilièni, KOI8-R"
 
 #. ENC_CYRL_MAC
-#: po/tmp/xap_String_Id.h.h:119
+#: po/tmp/xap_String_Id.h.h:125
 msgid "Cyrillic, Macintosh"
 msgstr "Cirilièni, Macintosh"
 
 #. ENC_CYRL_WIN
-#: po/tmp/xap_String_Id.h.h:121
+#: po/tmp/xap_String_Id.h.h:127
 msgid "Cyrillic, Windows Code Page 1251"
 msgstr "Cirilièni, okenski nabor znakov 1251"
 
 #. LANG_CS_CZ
-#: po/tmp/xap_String_Id.h.h:123
+#: po/tmp/xap_String_Id.h.h:129
 msgid "Czech"
 msgstr "Èe¹ki"
 
 #. LANG_DA_DK
-#: po/tmp/xap_String_Id.h.h:125
+#: po/tmp/xap_String_Id.h.h:131
 msgid "Danish"
 msgstr "Danski"
 
 #. DLG_PLUGIN_MANAGER_DEACTIVATE_ALL
-#: po/tmp/xap_String_Id.h.h:127
+#: po/tmp/xap_String_Id.h.h:133
 msgid "Deactivate all plugins"
 msgstr "Deaktiviraj vse vtiènike"
 
 #. DLG_PLUGIN_MANAGER_DEACTIVATE
-#: po/tmp/xap_String_Id.h.h:129
+#: po/tmp/xap_String_Id.h.h:135
 msgid "Deactivate plugin"
 msgstr "Deaktiviraj vtiènik"
 
 #. LANG_NL_NL
-#: po/tmp/xap_String_Id.h.h:133
+#: po/tmp/xap_String_Id.h.h:139
 msgid "Dutch (Netherlands)"
 msgstr "Nizozemski (Nizozemska)"
 
 #. DLG_UFS_EffectsFrameLabel
-#: po/tmp/xap_String_Id.h.h:135
+#: po/tmp/xap_String_Id.h.h:141
 msgid "Effects"
 msgstr "Uèinki"
 
 #. DLG_UP_EmbedFonts
-#: po/tmp/xap_String_Id.h.h:137
+#: po/tmp/xap_String_Id.h.h:143
 msgid "Embed Fonts"
 msgstr "Vkljuèi pisave"
 
 #. DLG_UENC_EncTitle
-#: po/tmp/xap_String_Id.h.h:139
+#: po/tmp/xap_String_Id.h.h:145
 msgid "Encoding"
 msgstr "Nabor znakov"
 
 #. DLG_UFS_EncodingLabel
-#: po/tmp/xap_String_Id.h.h:141
+#: po/tmp/xap_String_Id.h.h:147
 msgid "Encoding:"
 msgstr "Nabor znakov:"
 
 #. LANG_EN_AU
-#: po/tmp/xap_String_Id.h.h:143
+#: po/tmp/xap_String_Id.h.h:149
 msgid "English (Australia)"
 msgstr "Angle¹ki (Avstralija)"
 
 #. LANG_EN_CA
-#: po/tmp/xap_String_Id.h.h:145
+#: po/tmp/xap_String_Id.h.h:151
 msgid "English (Canada)"
 msgstr "Angle¹ki (Kanada)"
 
 #. LANG_EN_IE
-#: po/tmp/xap_String_Id.h.h:147
+#: po/tmp/xap_String_Id.h.h:153
 msgid "English (Ireland)"
 msgstr "Angle¹ki (Irska)"
 
 #. LANG_EN_NZ
-#: po/tmp/xap_String_Id.h.h:149
+#: po/tmp/xap_String_Id.h.h:155
 msgid "English (New Zealand)"
 msgstr "Angle¹ki (Nova Zelandija)"
 
 #. LANG_EN_ZA
-#: po/tmp/xap_String_Id.h.h:151
+#: po/tmp/xap_String_Id.h.h:157
 msgid "English (South Africa)"
 msgstr "Angle¹ki (Ju¾na afrika)"
 
 #. LANG_EN_GB
-#: po/tmp/xap_String_Id.h.h:153
+#: po/tmp/xap_String_Id.h.h:159
 msgid "English (UK)"
 msgstr "Angle¹ki (Velika Britanija)"
 
 #. LANG_EN_US
-#: po/tmp/xap_String_Id.h.h:155
+#: po/tmp/xap_String_Id.h.h:161
 msgid "English (US)"
 msgstr "Angle¹ki (ZDA)"
 
 #. LANG_FA_IR
-#: po/tmp/xap_String_Id.h.h:157
+#: po/tmp/xap_String_Id.h.h:163
 msgid "Farsi"
 msgstr "Farsi (Iran)"
 
 #. DLG_UP_File
-#: po/tmp/xap_String_Id.h.h:159
+#: po/tmp/xap_String_Id.h.h:165
 msgid "File"
 msgstr "Datoteka"
 
 #. DLG_OverwriteFile
-#: po/tmp/xap_String_Id.h.h:161
+#: po/tmp/xap_String_Id.h.h:167
 #, c-format
 msgid "File already exists.  Overwrite file '%s'?"
 msgstr "Datoteka ¾e obstaja. Prepi¹i datoteko '%s'?"
 
 #. LANG_FI_FI
-#: po/tmp/xap_String_Id.h.h:163
+#: po/tmp/xap_String_Id.h.h:169
 msgid "Finnish"
 msgstr "Finski"
 
 #. LANG_FR_FR
-#: po/tmp/xap_String_Id.h.h:169
+#: po/tmp/xap_String_Id.h.h:175
 msgid "French (France)"
 msgstr "Francoski (Francija)"
 
 #. DLG_UP_From
-#: po/tmp/xap_String_Id.h.h:171
+#: po/tmp/xap_String_Id.h.h:177
 msgid "From: "
 msgstr "Od: "
 
-<<<<<<< sl-SI.po
 #. LANG_KA_GE
-#: po/tmp/xap_String_Id.h.h:173
-msgid "Georgian"
-msgstr ""
-
-#. ENC_GEOR_ACADEMY
-#: po/tmp/xap_String_Id.h.h:175
-msgid "Georgian, Academy"
-msgstr ""
-
-#. ENC_GEOR_PS
-#: po/tmp/xap_String_Id.h.h:177
-msgid "Georgian, PS"
-msgstr ""
-
-#. LANG_DE_AT
 #: po/tmp/xap_String_Id.h.h:179
-=======
-#. LANG_KA_GE
-#: po/tmp/xap_String_Id.h.h:173
 msgid "Georgian"
 msgstr "Gruzijski"
 
 #. ENC_GEOR_ACADEMY
-#: po/tmp/xap_String_Id.h.h:175
+#: po/tmp/xap_String_Id.h.h:181
 msgid "Georgian, Academy"
 msgstr "Gruzijski, univerzitetni"
 
 #. ENC_GEOR_PS
-#: po/tmp/xap_String_Id.h.h:177
+#: po/tmp/xap_String_Id.h.h:183
 msgid "Georgian, PS"
 msgstr "Gruzijski, PS"
 
 #. LANG_DE_AT
-#: po/tmp/xap_String_Id.h.h:179
->>>>>>> 1.3
+#: po/tmp/xap_String_Id.h.h:185
 msgid "German (Austria)"
 msgstr "Nem¹ki (Avstrija)"
 
 #. LANG_DE_DE
-#: po/tmp/xap_String_Id.h.h:181
+#: po/tmp/xap_String_Id.h.h:187
 msgid "German (Germany)"
 msgstr "Nem¹ki (Nemèija)"
 
 #. DLG_UP_Grayscale
-#: po/tmp/xap_String_Id.h.h:183
+#: po/tmp/xap_String_Id.h.h:189
 msgid "Grayscale"
 msgstr "Sivinsko"
 
 #. LANG_EL_GR
-#: po/tmp/xap_String_Id.h.h:185
+#: po/tmp/xap_String_Id.h.h:191
 msgid "Greek"
 msgstr "Gr¹ki"
 
 #. ENC_GREE_ISO
-#: po/tmp/xap_String_Id.h.h:187
+#: po/tmp/xap_String_Id.h.h:193
 msgid "Greek, ISO-8859-7"
 msgstr "Gr¹ki, ISO-8859-7"
 
 #. ENC_GREE_MAC
-#: po/tmp/xap_String_Id.h.h:189
+#: po/tmp/xap_String_Id.h.h:195
 msgid "Greek, Macintosh"
 msgstr "Gr¹ki, Macintosh"
 
 #. ENC_GREE_WIN
-#: po/tmp/xap_String_Id.h.h:191
+#: po/tmp/xap_String_Id.h.h:197
 msgid "Greek, Windows Code Page 1253"
 msgstr "Gr¹ki, okenski nabor znakov 1253"
 
 #. LANG_IW_IL
-#: po/tmp/xap_String_Id.h.h:193
+#: po/tmp/xap_String_Id.h.h:199
 msgid "Hebrew"
 msgstr "Hebrejski"
 
 #. ENC_HEBR_ISO
-#: po/tmp/xap_String_Id.h.h:195
+#: po/tmp/xap_String_Id.h.h:201
 msgid "Hebrew, ISO-8859-8"
 msgstr "Hebrejski, ISO-8859-8"
 
 #. ENC_HEBR_MAC
-#: po/tmp/xap_String_Id.h.h:197
+#: po/tmp/xap_String_Id.h.h:203
 msgid "Hebrew, Macintosh"
 msgstr "Hebrejski, Macintosh"
 
 #. ENC_HEBR_WIN
-#: po/tmp/xap_String_Id.h.h:199
+#: po/tmp/xap_String_Id.h.h:205
 msgid "Hebrew, Windows Code Page 1255"
 msgstr "Hebrejski, okenski nabor znakov 1255"
 
 #. DLG_IP_Height_Label
-#: po/tmp/xap_String_Id.h.h:201
+#: po/tmp/xap_String_Id.h.h:207
 msgid "Height: "
 msgstr "Vi¹ina: "
 
 #. DLG_UFS_BGColorTab
-#: po/tmp/xap_String_Id.h.h:203
+#: po/tmp/xap_String_Id.h.h:209
 msgid "HighLight Color"
 msgstr "Barva osvetlitve"
 
 #. LANG_HI_IN
-#: po/tmp/xap_String_Id.h.h:205
+#: po/tmp/xap_String_Id.h.h:211
 msgid "Hindi"
 msgstr "Hindujski"
 
 #. ENC_ICEL_MAC
-#: po/tmp/xap_String_Id.h.h:207
+#: po/tmp/xap_String_Id.h.h:213
 msgid "Icelandic, Macintosh"
 msgstr "Islandski, Macintosh"
 
 #. DLG_IP_Title
-#: po/tmp/xap_String_Id.h.h:211
+#: po/tmp/xap_String_Id.h.h:217
 msgid "Insert Picture"
 msgstr "Vstavi sliko"
 
 #. DLG_Insert_SymbolTitle
-#: po/tmp/xap_String_Id.h.h:213
+#: po/tmp/xap_String_Id.h.h:219
 msgid "Insert Symbol"
 msgstr "Vstavi simbol"
 
 #. DLG_PLUGIN_MANAGER_INSTALL
-#: po/tmp/xap_String_Id.h.h:215
+#: po/tmp/xap_String_Id.h.h:221
 msgid "Install new plugin"
 msgstr "Namesti nov vtiènik"
 
 #. DLG_InvalidPathname
-#: po/tmp/xap_String_Id.h.h:217
+#: po/tmp/xap_String_Id.h.h:223
 msgid "Invalid pathname."
 msgstr "Napaèna pot."
 
 #. LANG_IT_IT
-#: po/tmp/xap_String_Id.h.h:219
+#: po/tmp/xap_String_Id.h.h:225
 msgid "Italian (Italy)"
 msgstr "Italjanski (Italija)"
 
 #. DLG_UFS_StyleItalic
-#: po/tmp/xap_String_Id.h.h:221
+#: po/tmp/xap_String_Id.h.h:227
 msgid "Italic"
 msgstr "Kurzivno"
 
 #. LANG_JA_JP
-#: po/tmp/xap_String_Id.h.h:223
+#: po/tmp/xap_String_Id.h.h:229
 msgid "Japanese"
 msgstr "Japonski"
 
 #. ENC_JAPN_EUC
-#: po/tmp/xap_String_Id.h.h:225
+#: po/tmp/xap_String_Id.h.h:231
 msgid "Japanese, EUC-JP"
 msgstr "Japonski, EUC-JP"
 
 #. ENC_JAPN_ISO
-#: po/tmp/xap_String_Id.h.h:227
+#: po/tmp/xap_String_Id.h.h:233
 msgid "Japanese, ISO-2022-JP"
 msgstr "Japonski, ISO-2022-JP"
 
 #. ENC_JAPN_SJIS
-#: po/tmp/xap_String_Id.h.h:229
+#: po/tmp/xap_String_Id.h.h:235
 msgid "Japanese, Shift-JIS"
 msgstr "Japonski, Shift-JIS"
 
 #. ENC_JAPN_WIN
-#: po/tmp/xap_String_Id.h.h:231
+#: po/tmp/xap_String_Id.h.h:237
 msgid "Japanese, Windows Code Page 932"
 msgstr "Japonski, okenski nabor znakov 932"
 
 #. LANG_KO_KR
-#: po/tmp/xap_String_Id.h.h:233
+#: po/tmp/xap_String_Id.h.h:239
 msgid "Korean"
 msgstr "Korejski"
 
 #. ENC_KORE_EUC
-#: po/tmp/xap_String_Id.h.h:235
+#: po/tmp/xap_String_Id.h.h:241
 msgid "Korean, EUC-KR"
 msgstr "Korejski, EUC-KR"
 
 #. ENC_KORE_JOHAB
-#: po/tmp/xap_String_Id.h.h:237
+#: po/tmp/xap_String_Id.h.h:243
 msgid "Korean, Johab"
 msgstr "Korejski, Johab"
 
 #. ENC_KORE_KSC
-#: po/tmp/xap_String_Id.h.h:239
+#: po/tmp/xap_String_Id.h.h:245
 msgid "Korean, KSC_5601"
 msgstr "Korejski, KSC_5601"
 
 #. ENC_KORE_WIN
-#: po/tmp/xap_String_Id.h.h:241
+#: po/tmp/xap_String_Id.h.h:247
 msgid "Korean, Windows Code Page 949"
 msgstr "Korejski, okenski nabor znakov 949"
 
 #. LANG_LV_LV
-#: po/tmp/xap_String_Id.h.h:245
+#: po/tmp/xap_String_Id.h.h:251
 msgid "Latvian"
 msgstr "Latvijski"
 
 #. LANG_LT_LT
-#: po/tmp/xap_String_Id.h.h:247
+#: po/tmp/xap_String_Id.h.h:253
 msgid "Lithuanian"
 msgstr "Litvanski"
 
 #. DLG_PLUGIN_MANAGER_NAME
-#: po/tmp/xap_String_Id.h.h:249
+#: po/tmp/xap_String_Id.h.h:255
 msgid "Name"
 msgstr "Ime"
 
 #. DLG_QNXMB_No
-#: po/tmp/xap_String_Id.h.h:251
+#: po/tmp/xap_String_Id.h.h:257
 msgid "No"
 msgstr "Ne"
 
 #. DLG_IP_No_Picture_Label
-#: po/tmp/xap_String_Id.h.h:253
+#: po/tmp/xap_String_Id.h.h:259
 msgid "No Picture"
 msgstr "Brez slike"
 
 #. DLG_PLUGIN_MANAGER_NONE_SELECTED
-#: po/tmp/xap_String_Id.h.h:255
+#: po/tmp/xap_String_Id.h.h:261
 msgid "No plugin selected"
 msgstr "Izbran ni noben vtiènik"
 
 #. LANG_NB_NO
-#: po/tmp/xap_String_Id.h.h:257
+#: po/tmp/xap_String_Id.h.h:263
 msgid "Norwegian Bokmal"
 msgstr "Norve¹ki Bokmal"
 
 #. LANG_NN_NO
-#: po/tmp/xap_String_Id.h.h:259
+#: po/tmp/xap_String_Id.h.h:265
 msgid "Norwegian Nynorsk"
 msgstr "Norve¹ki Nynorsk"
 
 #. DLG_OK
-#: po/tmp/xap_String_Id.h.h:261
+#: po/tmp/xap_String_Id.h.h:267
 msgid "OK"
 msgstr "V redu"
 
 #. DLG_FOSA_OpenTitle
-#: po/tmp/xap_String_Id.h.h:263
+#: po/tmp/xap_String_Id.h.h:269
 msgid "Open File"
 msgstr "Odpri datoteko"
 
 #. DLG_FOSA_FileOpenTypeLabel
-#: po/tmp/xap_String_Id.h.h:265
+#: po/tmp/xap_String_Id.h.h:271
 msgid "Open file as type:"
 msgstr "Odpri datoteko kot da bi bila vrste:"
 
 #. DLG_UFS_OverlineCheck
-#: po/tmp/xap_String_Id.h.h:267
+#: po/tmp/xap_String_Id.h.h:273
 msgid "Overline"
 msgstr "Nadèrtano"
 
 #. DLG_Zoom_Percent
-#: po/tmp/xap_String_Id.h.h:269
+#: po/tmp/xap_String_Id.h.h:275
 msgid "P&ercent:"
 msgstr "Pr&ocentov:"
 
 #. DLG_UP_PageRanges
-#: po/tmp/xap_String_Id.h.h:273
+#: po/tmp/xap_String_Id.h.h:279
 msgid "Page ranges:"
 msgstr "Intervali strani:"
 
 #. DLG_PLUGIN_MANAGER_DETAILS
-#: po/tmp/xap_String_Id.h.h:275
+#: po/tmp/xap_String_Id.h.h:281
 msgid "Plugin Details"
 msgstr "Podrobnosti vtiènika"
 
 #. DLG_PLUGIN_MANAGER_LIST
-#: po/tmp/xap_String_Id.h.h:277
+#: po/tmp/xap_String_Id.h.h:283
 msgid "Plugin List"
 msgstr "Spisek vtiènikov"
 
 #. LANG_PT_BR
-#: po/tmp/xap_String_Id.h.h:279
+#: po/tmp/xap_String_Id.h.h:285
 msgid "Portuguese (Brazil)"
 msgstr "Portugalski (Brazilija)"
 
 #. LANG_PT_PT
-#: po/tmp/xap_String_Id.h.h:281
+#: po/tmp/xap_String_Id.h.h:287
 msgid "Portuguese (Portugal)"
 msgstr "Portugalski (Portugalska)"
 
 #. DLG_IP_Activate_Label
-#: po/tmp/xap_String_Id.h.h:285
+#: po/tmp/xap_String_Id.h.h:291
 msgid "Preview Picture"
 msgstr "Predogled slike"
 
 #. DLG_UP_PrintButton
-#: po/tmp/xap_String_Id.h.h:287
+#: po/tmp/xap_String_Id.h.h:293
 msgid "Print"
 msgstr "Natisni"
 
 #. DLG_FOSA_PrintToFileTitle
-#: po/tmp/xap_String_Id.h.h:289
+#: po/tmp/xap_String_Id.h.h:295
 msgid "Print To File"
 msgstr "Tiskaj v datoteko"
 
 #. DLG_FOSA_FilePrintTypeLabel
-#: po/tmp/xap_String_Id.h.h:291
+#: po/tmp/xap_String_Id.h.h:297
 msgid "Print file as type:"
 msgstr "Natisni datoteko kot, da bi bila vrste:"
 
 #. DLG_UP_PrintIn
-#: po/tmp/xap_String_Id.h.h:293
+#: po/tmp/xap_String_Id.h.h:299
 msgid "Print in: "
 msgstr "Natisni v: "
 
 #. DLG_UP_PrintTo
-#: po/tmp/xap_String_Id.h.h:295
+#: po/tmp/xap_String_Id.h.h:301
 msgid "Print to: "
 msgstr "Natisni na: "
 
 #. DLG_UP_Printer
-#: po/tmp/xap_String_Id.h.h:297
+#: po/tmp/xap_String_Id.h.h:303
 msgid "Printer"
 msgstr "Tiskalnik"
 
 #. DLG_UP_PrinterCommand
-#: po/tmp/xap_String_Id.h.h:299
+#: po/tmp/xap_String_Id.h.h:305
 msgid "Printer command: "
 msgstr "Ukaz za tiskanje: "
 
 #. DLG_UFS_StyleRegular
-#: po/tmp/xap_String_Id.h.h:301
+#: po/tmp/xap_String_Id.h.h:307
 msgid "Regular"
 msgstr "Navadno"
 
 #. DLG_UFS_Direction
-#: po/tmp/xap_String_Id.h.h:303
+#: po/tmp/xap_String_Id.h.h:309
 msgid "Right-to-left"
 msgstr "Od desne proti levi"
 
 #. ENC_ROMA_MAC
-#: po/tmp/xap_String_Id.h.h:305
+#: po/tmp/xap_String_Id.h.h:311
 msgid "Romanian, Macintosh"
 msgstr "Romunski, Macintosh"
 
 #. LANG_RU_RU
-#: po/tmp/xap_String_Id.h.h:307
+#: po/tmp/xap_String_Id.h.h:313
 msgid "Russian (Russia)"
 msgstr "Ruski (Rusija)"
 
+#. DLG_UFS_SampleFrameLabel
+#: po/tmp/xap_String_Id.h.h:315
+msgid "Sample"
+msgstr "Vzorec"
+
 #. DLG_FOSA_SaveAsTitle
-#: po/tmp/xap_String_Id.h.h:309
+#: po/tmp/xap_String_Id.h.h:317
 msgid "Save File As"
 msgstr "Shrani datoteko kot"
 
 #. DLG_FOSA_FileSaveTypeLabel
-#: po/tmp/xap_String_Id.h.h:311
+#: po/tmp/xap_String_Id.h.h:319
 msgid "Save file as type:"
 msgstr "Shrani datoteko kot, da bi bila vrste:"
 
+#. DLG_UFS_ScriptLabel
+#: po/tmp/xap_String_Id.h.h:321
+msgid "Script:"
+msgstr "Skripta:"
+
 #. DLG_UENC_EncLabel
-#: po/tmp/xap_String_Id.h.h:313
+#: po/tmp/xap_String_Id.h.h:323
 msgid "Select Encoding:"
 msgstr "Izberi nabor znakov:"
 
 #. DLG_ULANG_LangLabel
-#: po/tmp/xap_String_Id.h.h:315
+#: po/tmp/xap_String_Id.h.h:325
 msgid "Select Language:"
 msgstr "Izberi jezik:"
 
 #. DLG_UP_Selection
-#: po/tmp/xap_String_Id.h.h:317
+#: po/tmp/xap_String_Id.h.h:327
 msgid "Selection"
 msgstr "Izbira"
 
 #. DLG_UFS_TransparencyCheck
-#: po/tmp/xap_String_Id.h.h:319
+#: po/tmp/xap_String_Id.h.h:329
 msgid "Set no Hightlight Color"
 msgstr "Brez osvetlitvene barve"
 
 #. DLG_UFS_SizeLabel
-#: po/tmp/xap_String_Id.h.h:321
+#: po/tmp/xap_String_Id.h.h:331
 msgid "Size:"
 msgstr "Velikost:"
 
+#. DLG_UFS_SmallCapsCheck
+#: po/tmp/xap_String_Id.h.h:333
+msgid "Small Caps"
+msgstr "Male èrke"
+
 #. LANG_ES_MX
-#: po/tmp/xap_String_Id.h.h:323
+#: po/tmp/xap_String_Id.h.h:335
 msgid "Spanish (Mexico)"
 msgstr "©panski (Mehika)"
 
 #. LANG_ES_ES
-#: po/tmp/xap_String_Id.h.h:325
+#: po/tmp/xap_String_Id.h.h:337
 msgid "Spanish (Spain)"
 msgstr "©panski (©panija)"
 
 #. DLG_UFS_StrikeoutCheck
-#: po/tmp/xap_String_Id.h.h:327
+#: po/tmp/xap_String_Id.h.h:339
 msgid "Strikeout"
 msgstr "Preèrtano"
 
 #. LANG_SV_SE
-#: po/tmp/xap_String_Id.h.h:331
+#: po/tmp/xap_String_Id.h.h:343
 msgid "Swedish"
 msgstr "©vedski"
 
 #. DLG_UFS_ColorTab
-#: po/tmp/xap_String_Id.h.h:333
+#: po/tmp/xap_String_Id.h.h:345
 msgid "Text Color"
 msgstr "Barva besedila"
 
 #. LANG_TH_TH
-#: po/tmp/xap_String_Id.h.h:335
+#: po/tmp/xap_String_Id.h.h:347
 msgid "Thai"
 msgstr "Tajski"
 
 #. ENC_THAI_MAC
-#: po/tmp/xap_String_Id.h.h:337
+#: po/tmp/xap_String_Id.h.h:349
 msgid "Thai, Macintosh"
 msgstr "Tajski, Macintosh"
 
 #. ENC_THAI_TIS
-#: po/tmp/xap_String_Id.h.h:339
+#: po/tmp/xap_String_Id.h.h:351
 msgid "Thai, TIS-620"
 msgstr "Tajski, TIS-620"
 
 #. ENC_THAI_WIN
-#: po/tmp/xap_String_Id.h.h:341
+#: po/tmp/xap_String_Id.h.h:353
 msgid "Thai, Windows Code Page 874"
 msgstr "Tajski, okenski nabor znakov 874"
 
 #. DLG_NoSaveFile_DirNotWriteable
-#: po/tmp/xap_String_Id.h.h:343
+#: po/tmp/xap_String_Id.h.h:355
 #, c-format
 msgid "The directory '%s' is write-protected."
 msgstr "Imenik '%s' je za¹èiten proti pisanju."
 
 #. DLG_UP_InvalidPrintString
-#: po/tmp/xap_String_Id.h.h:345
+#: po/tmp/xap_String_Id.h.h:357
 msgid "The print command string is not valid."
 msgstr "Ukaz za tiskanje ni veljaven."
 
+#. DLG_UFS_ToplineCheck
+#: po/tmp/xap_String_Id.h.h:359
+msgid "Topline"
+msgstr "Èrta zgoraj"
+
 #. LANG_TR_TR
-#: po/tmp/xap_String_Id.h.h:347
+#: po/tmp/xap_String_Id.h.h:361
 msgid "Turkish"
 msgstr "Tur¹ki"
 
 #. ENC_TURK_ISO
-#: po/tmp/xap_String_Id.h.h:349
+#: po/tmp/xap_String_Id.h.h:363
 msgid "Turkish, ISO-8859-9"
 msgstr "Tur¹ki, ISO-8859-9"
 
 #. ENC_TURK_MAC
-#: po/tmp/xap_String_Id.h.h:351
+#: po/tmp/xap_String_Id.h.h:365
 msgid "Turkish, Macintosh"
 msgstr "Tur¹ki, Macintosh"
 
 #. ENC_TURK_WIN
-#: po/tmp/xap_String_Id.h.h:353
+#: po/tmp/xap_String_Id.h.h:367
 msgid "Turkish, Windows Code Page 1254"
 msgstr "Tur¹ki, okenski nabor znakov 1254"
 
 #. ENC_WEST_ASCII
-#: po/tmp/xap_String_Id.h.h:355
+#: po/tmp/xap_String_Id.h.h:369
 msgid "US-ASCII"
 msgstr "US-ASCII"
 
 #. ENC_UKRA_KOI
-#: po/tmp/xap_String_Id.h.h:357
+#: po/tmp/xap_String_Id.h.h:371
 msgid "Ukrainian, KOI8-U"
 msgstr "Ukrajinski, KOI8-U"
 
 #. ENC_UKRA_MAC
-#: po/tmp/xap_String_Id.h.h:359
+#: po/tmp/xap_String_Id.h.h:373
 msgid "Ukrainian, Macintosh"
 msgstr "Ukrajinski, Macintosh"
 
 #. DLG_UFS_UnderlineCheck
-#: po/tmp/xap_String_Id.h.h:361
+#: po/tmp/xap_String_Id.h.h:375
 msgid "Underline"
 msgstr "Podèrtano"
 
 #. ENC_UNIC_UCS2
-#: po/tmp/xap_String_Id.h.h:363
+#: po/tmp/xap_String_Id.h.h:377
 msgid "Unicode UCS-2"
 msgstr "Unicode UCS-2"
 
 #. ENC_UNIC_UCS_2BE
-#: po/tmp/xap_String_Id.h.h:365
+#: po/tmp/xap_String_Id.h.h:379
 msgid "Unicode UCS-2 Big Endian"
 msgstr "Unicode UCS-2 BE"
 
 #. ENC_UNIC_UCS_2LE
-#: po/tmp/xap_String_Id.h.h:367
+#: po/tmp/xap_String_Id.h.h:381
 msgid "Unicode UCS-2 Little Endian"
 msgstr "Unicode UCS-2 LE"
 
 #. ENC_UNIC_UCS4
-#: po/tmp/xap_String_Id.h.h:369
+#: po/tmp/xap_String_Id.h.h:383
 msgid "Unicode UCS-4"
 msgstr "Unicode UCS-4"
 
 #. ENC_UNIC_UCS_4BE
-#: po/tmp/xap_String_Id.h.h:371
+#: po/tmp/xap_String_Id.h.h:385
 msgid "Unicode UCS-4 Big Endian"
 msgstr "Unicode UCS-4 BE"
 
 #. ENC_UNIC_UCS_4LE
-#: po/tmp/xap_String_Id.h.h:373
+#: po/tmp/xap_String_Id.h.h:387
 msgid "Unicode UCS-4 Little Endian"
 msgstr "Unicode UCS-4 LE"
 
 #. ENC_UNIC_UTF_16
-#: po/tmp/xap_String_Id.h.h:375
+#: po/tmp/xap_String_Id.h.h:389
 msgid "Unicode UTF-16"
 msgstr "Unicode UTF-16"
 
 #. ENC_UNIC_UTF_16BE
-#: po/tmp/xap_String_Id.h.h:377
+#: po/tmp/xap_String_Id.h.h:391
 msgid "Unicode UTF-16 Big Endian"
 msgstr "Unicode UFT-16 BE"
 
 #. ENC_UNIC_UTF_16LE
-#: po/tmp/xap_String_Id.h.h:379
+#: po/tmp/xap_String_Id.h.h:393
 msgid "Unicode UTF-16 Little Endian"
 msgstr "Unicode UTF-16 LE"
 
 #. ENC_UNIC_UTF_32
-#: po/tmp/xap_String_Id.h.h:381
+#: po/tmp/xap_String_Id.h.h:395
 msgid "Unicode UTF-32"
 msgstr "Unicode UTF-32"
 
 #. ENC_UNIC_UTF_32BE
-#: po/tmp/xap_String_Id.h.h:383
+#: po/tmp/xap_String_Id.h.h:397
 msgid "Unicode UTF-32 Big Endian"
 msgstr "Unicode UTF-32 BE"
 
 #. ENC_UNIC_UTF_32LE
-#: po/tmp/xap_String_Id.h.h:385
+#: po/tmp/xap_String_Id.h.h:399
 msgid "Unicode UTF-32 Little Endian"
 msgstr "Unicode UTF-32 LE"
 
 #. ENC_UNIC_UTF_7
-#: po/tmp/xap_String_Id.h.h:387
+#: po/tmp/xap_String_Id.h.h:401
 msgid "Unicode UTF-7"
 msgstr "Unicode UTF-7"
 
 #. ENC_UNIC_UTF_8
-#: po/tmp/xap_String_Id.h.h:389
+#: po/tmp/xap_String_Id.h.h:403
 msgid "Unicode UTF-8"
 msgstr "Unicode UTF-8"
 
 #. UntitledDocument
-#: po/tmp/xap_String_Id.h.h:391
+#: po/tmp/xap_String_Id.h.h:405
 #, c-format
 msgid "Untitled%d"
 msgstr "Neimenovano-%d"
 
 #. DLG_Update
-#: po/tmp/xap_String_Id.h.h:393
+#: po/tmp/xap_String_Id.h.h:407
 msgid "Update"
 msgstr "Posodobi"
 
 #. LANG_VI_VN
-#: po/tmp/xap_String_Id.h.h:397
+#: po/tmp/xap_String_Id.h.h:411
+msgid "Vietnamese"
+msgstr "Vietnamski"
+
+#. ENC_VIET_TCVN
+#: po/tmp/xap_String_Id.h.h:413
+msgid "Vietnamese, TCVN"
+msgstr "Vietnamski, TCVN"
+
+#. ENC_VIET_VISCII
+#: po/tmp/xap_String_Id.h.h:415
+msgid "Vietnamese, VISCII"
+msgstr "Vietnamski, VISCII"
+
+#. ENC_VIET_WIN
+#: po/tmp/xap_String_Id.h.h:417
+msgid "Vietnamese, Windows Code Page 1258"
+msgstr "Vietnamski, okenski nabor znakov 1258"
+
+#. ENC_WEST_HP
+#: po/tmp/xap_String_Id.h.h:419
+msgid "Western European, HP"
+msgstr "Zahodnoevropski, HP"
+
+#. ENC_WEST_ISO
+#: po/tmp/xap_String_Id.h.h:421
+msgid "Western European, ISO-8859-1"
+msgstr "Zahodnoevropski, ISO-8859-2"
+
+#. ENC_WEST_MAC
+#: po/tmp/xap_String_Id.h.h:423
+msgid "Western European, Macintosh"
+msgstr "Zahodnoevropski, Macintosh"
+
+#. ENC_WEST_NXT
+#: po/tmp/xap_String_Id.h.h:425
+msgid "Western European, NeXT"
+msgstr "Zahodnoevropski, NeXT"
+
+#. ENC_WEST_WIN
+#: po/tmp/xap_String_Id.h.h:427
+msgid "Western European, Windows Code Page 1252"
+msgstr "Zahodnoevropski, okenski nabor znakov 1252"
+
+#. TB_Zoom_PageWidth
+#: po/tmp/xap_String_Id.h.h:429
+msgid "Width"
+msgstr "©irina"
+
+#. DLG_IP_Width_Label
+#: po/tmp/xap_String_Id.h.h:431
+msgid "Width:  "
+msgstr "©irina:  "
+
+#. DLG_QNXMB_Yes
+#: po/tmp/xap_String_Id.h.h:433
+msgid "Yes"
+msgstr "Da"
+
+#. DLG_Zoom_ZoomTitle
+#: po/tmp/xap_String_Id.h.h:435
+msgid "Zoom"
+msgstr "Poveèava"
+
+#. DLG_Zoom_RadioFrameCaption
+#: po/tmp/xap_String_Id.h.h:437
+msgid "Zoom to"
+msgstr "Poveèaj na"
+
+#. DLG_UnixMB_No
+#: po/tmp/xap_String_Id.h.h:439
+msgid "_No"
+msgstr "_Ne"
+
+#. DLG_UnixMB_Yes
+#: po/tmp/xap_String_Id.h.h:441
+msgid "_Yes"
+msgstr "_Da"
+
+#. DLG_Unit_cm
+#: po/tmp/xap_String_Id.h.h:443
+msgid "cm"
+msgstr "cm"
+
+#. DLG_Unit_inch
+#: po/tmp/xap_String_Id.h.h:445
+msgid "inch"
+msgstr "palci"
+
+#. DLG_Unit_mm
+#: po/tmp/xap_String_Id.h.h:447
+msgid "mm"
+msgstr "mm"
+
+#. LANG_0
+#: po/tmp/xap_String_Id.h.h:449
+msgid "no proofing"
+msgstr "brez preverjanja"
+
+#. DLG_Unit_pico
+#: po/tmp/xap_String_Id.h.h:451
+msgid "pica"
+msgstr "pica"
+
+#. DLG_Unit_points
+#: po/tmp/xap_String_Id.h.h:453
+msgid "points"
+msgstr "pike"
+
+#~ msgid "Unicode UCS-2 LE"
+#~ msgstr "Unicode UCS-2 LE"
+
+#~ msgid "File %s is a bogus document"
+#~ msgstr "Datoteka %s je neveljaven dokument"
+
+#~ msgid "English (GB)"
+#~ msgstr "Angle¹èina (GB)"
+ng_Id.h.h:397
 msgid "Vietnamese"
 msgstr "Vietnamski"
 
