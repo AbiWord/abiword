@@ -17,6 +17,8 @@
  * 02111-1307, USA.
  */
 
+#include <windows.h>
+
 #include "ut_string.h"
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
@@ -30,8 +32,6 @@
 #include "ap_Dialog_WordCount.h"
 #include "ap_Win32Dialog_WordCount.h"
 
-#include "ut_Rehydrate.h"
-
 /*****************************************************************/
 
 XAP_Dialog * AP_Win32Dialog_WordCount::static_constructor(XAP_DialogFactory * pFactory,
@@ -41,9 +41,9 @@ XAP_Dialog * AP_Win32Dialog_WordCount::static_constructor(XAP_DialogFactory * pF
 	return p;
 }
 
-AP_Win32Dialog_Field::AP_Win32Dialog_WordCount(XAP_DialogFactory * pDlgFactory,
+AP_Win32Dialog_WordCount::AP_Win32Dialog_WordCount(XAP_DialogFactory * pDlgFactory,
 										 XAP_Dialog_Id id)
-	: AP_Dialog_Field(pDlgFactory,id)
+	: AP_Dialog_WordCount(pDlgFactory,id)
 {
 }
 
