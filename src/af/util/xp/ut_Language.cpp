@@ -65,12 +65,12 @@ static lang_entry s_Table[] =
 	{"fr-FR",		NULL, XAP_STRING_ID_LANG_FR_FR},
 	{"ga-IE",               NULL, XAP_STRING_ID_LANG_GA_IE},
 	{"gl-ES",               NULL, XAP_STRING_ID_LANG_GL_ES},
+	{"he-IL",		NULL, XAP_STRING_ID_LANG_HE_IL},	// was iw-IL - why?
 	{"hi-IN",		NULL, XAP_STRING_ID_LANG_HI_IN},
 	{"hu-HU",		NULL, XAP_STRING_ID_LANG_HU_HU},
 	{"hy-AM",		NULL, XAP_STRING_ID_LANG_HY_AM},	// Win2K shows "hy-am"
 	{"is-IS",		NULL, XAP_STRING_ID_LANG_IS_IS},
 	{"it-IT",		NULL, XAP_STRING_ID_LANG_IT_IT},
-	{"iw-IL",		NULL, XAP_STRING_ID_LANG_IW_IL},
 	{"ja-JP",		NULL, XAP_STRING_ID_LANG_JA_JP},
 	{"ka-GE",		NULL, XAP_STRING_ID_LANG_KA_GE},
 	{"ko-KR",		NULL, XAP_STRING_ID_LANG_KO_KR},
