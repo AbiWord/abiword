@@ -2819,6 +2819,9 @@ FV_View::_findGetPrevBlockBuffer(fl_BlockLayout** pBlock,
 		// Are we at the end of the document?
 		if (!newBlock)
 		{
+			if(m_wrappedEnd)
+				return NULL;
+			
 			// Then wrap (fetch the first block in the doc)
 			PT_DocPosition endOfDoc;
 			getEditableBounds(true, endOfDoc);
