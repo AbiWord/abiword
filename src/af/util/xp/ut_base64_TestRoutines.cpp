@@ -43,7 +43,7 @@ static UT_TestStatus t_test_001(void)
 	// [1]
 	
 	for (k=0; (k<NrElements(array1)); k++)
-		array1[k] = (UT_Byte)(k & 0xff);
+		array1[k] = static_cast<UT_Byte>(k & 0xff);
 
 	UT_ByteBuf b1;
 	if (!b1.ins(0,array1,NrElements(array1)))
@@ -97,7 +97,7 @@ static UT_TestStatus t_test_002(void)
 	// [1]
 	
 	for (k=0; (k<NrElements(array1)); k++)
-		array1[k] = (UT_Byte)(k & 0xff);
+		array1[k] = static_cast<UT_Byte>(k & 0xff);
 
 	UT_ByteBuf b1;
 	if (!b1.ins(0,array1,NrElements(array1)))
@@ -152,7 +152,7 @@ static UT_TestStatus t_test_003(void)
 	// [1]
 	
 	for (k=0; (k<NrElements(array1)); k++)
-		array1[k] = (UT_Byte)(k & 0xff);
+		array1[k] = static_cast<UT_Byte>(k & 0xff);
 
 	UT_ByteBuf b1;
 	if (!b1.ins(0,array1,NrElements(array1)))

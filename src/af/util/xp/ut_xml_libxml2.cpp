@@ -45,7 +45,7 @@ extern "C" {
 
 static void _startElement (void * userData, const XML_Char * name, const XML_Char ** atts)
 {
-  UT_XML * pXML = (UT_XML *) userData;
+  UT_XML * pXML = static_cast<UT_XML *>(userData);
 
   /* libxml2 can supply atts == 0, which is a little at variance to what is expected...
    */
@@ -53,13 +53,13 @@ static void _startElement (void * userData, const XML_Char * name, const XML_Cha
   const XML_Char ** new_atts = atts;
   if (atts == 0) new_atts = &ptr;
 
-  pXML->startElement ((const char *) name, (const char **) new_atts);
+  pXML->startElement (reinterpret_cast<const char *>(name), reinterpret_cast<const char **>(new_atts));
 }
 
 static void _endElement (void * userData, const XML_Char * name)
 {
-  UT_XML * pXML = (UT_XML *) userData;
-  pXML->endElement ((const char *) name);
+  UT_XML * pXML = static_cast<UT_XML *>(userData);
+  pXML->endElement (reinterpret_cast<const char *>(name));
 }
 
 static xmlEntityPtr _getEntity (void * userData, const XML_Char * name)
@@ -69,8 +69,8 @@ static xmlEntityPtr _getEntity (void * userData, const XML_Char * name)
 
 static void _charData (void * userData, const XML_Char * buffer, int length)
 {
-  UT_XML * pXML = (UT_XML *) userData;
-  pXML->charData ((const char *) buffer, length);
+  UT_XML * pXML = static_cast<UT_XML *>(userData);
+  pXML->charData (reinterpret_cast<const char *>(buffer), length);
 }
 
 static void _errorSAXFunc(void *ctx,
@@ -113,7 +113,8 @@ UT_Error UT_XML::parse (const char * szFilename)
 
   DefaultReader defaultReader;
   Reader * reader = &defaultReader;
-  if (m_pReader) reader = m_pReader;
+  if (m_pReader)
+	  reader = m_pReader;
 
   if (!reader->openFile (szFilename))
     {
@@ -142,7 +143,7 @@ UT_Error UT_XML::parse (const char * szFilename)
 
   if (length != 0)
     {
-      ctxt = xmlCreatePushParserCtxt (&hdl, (void *) this, buffer, (int) length, szFilename);
+      ctxt = xmlCreatePushParserCtxt (&hdl, static_cast<void *>(this), buffer, static_cast<int>(length), szFilename);
       if (ctxt == NULL)
 	{
 	  UT_DEBUGMSG (("Unable to create libxml2 push-parser context!\n"));
@@ -156,7 +157,7 @@ UT_Error UT_XML::parse (const char * szFilename)
 	  length = reader->readBytes (buffer, sizeof (buffer));
 	  done = (length < sizeof (buffer));
 	  
-	  if (xmlParseChunk (ctxt, buffer, (int) length, 0))
+	  if (xmlParseChunk (ctxt, buffer, static_cast<int>(length), 0))
 	    {
 	      UT_DEBUGMSG (("Error parsing '%s' (Line: %d, Column: %d)\n", szFilename, getLineNumber(ctxt), getColumnNumber(ctxt)));
 	      ret = UT_IE_IMPORTERROR;
@@ -213,14 +214,14 @@ UT_Error UT_XML::parse (const char * buffer, UT_uint32 length)
   hdl.endElement = _endElement;
   hdl.characters = _charData;
 
-  ctxt = xmlCreateMemoryParserCtxt (const_cast<char *>(buffer), (int) length);
+  ctxt = xmlCreateMemoryParserCtxt (const_cast<char *>(buffer), static_cast<int>(length));
   if (ctxt == NULL)
     {
       UT_DEBUGMSG (("Unable to create libxml2 memory context!\n"));
       return UT_ERROR;
     }
   ctxt->sax = &hdl;
-  ctxt->userData = (void *) this;
+  ctxt->userData = static_cast<void *>(this);
 
   m_bStopped = false;
 

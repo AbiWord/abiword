@@ -33,7 +33,7 @@ void * UT_Allocator::allocate (size_t nbytes)
 {
   if (0 == nbytes) // be safe & not malloc a 0-byte block
     return NULL;
-  return (void *)malloc(nbytes);
+  return static_cast<void *>(malloc(nbytes));
 }
 
 void UT_Allocator::deallocate (void * pointer)
@@ -58,7 +58,7 @@ void * UT_NullAllocator::allocate (size_t nbytes)
     return NULL;
 
 #ifdef DOESNT_HAVE_CALLOC
-  void * ptr = (void *)malloc(nbytes);
+  void * ptr = static_cast<void *>(malloc(nbytes));
   memset (ptr, 0, nbytes);
   return ptr;
 #else

@@ -59,7 +59,7 @@ UT_svg::~UT_svg()
 
 bool UT_svg::parse (const UT_ByteBuf* pBB)
 {
-	const char *buffer = (const char *) pBB->getPointer(0);
+	const char *buffer = reinterpret_cast<const char *>(pBB->getPointer(0));
 	UT_uint32 buflen = pBB->getLength();
 
 	return _recognizeContent (buffer,buflen,this);
@@ -101,7 +101,7 @@ bool UT_SVG_getDimensions(const UT_ByteBuf* pBB, GR_Graphics* pG,
 			  UT_sint32 & iDisplayWidth, UT_sint32 & iDisplayHeight,
 			  UT_sint32 & iLayoutWidth,  UT_sint32 & iLayoutHeight)
 {
-	const char *buffer = (const char *) pBB->getPointer(0);
+	const char *buffer = reinterpret_cast<const char *>(pBB->getPointer(0));
 	UT_uint32 buflen = pBB->getLength();
 
 	UT_svg data(pG,UT_svg::pm_getDimensions);
@@ -151,8 +151,8 @@ void UT_svg::startElement (const XML_Char * name, const XML_Char ** atts)
 	if (m_bContinue == false) return;
 	if (m_ePM != pm_parse) m_bContinue = false;
 
-	if (UT_strcmp((const char*)name,"svg")==0
-	 || UT_strcmp((const char*)name,"svg:svg")==0)
+	if (UT_strcmp(static_cast<const char*>(name),"svg")==0
+	 || UT_strcmp(static_cast<const char*>(name),"svg:svg")==0)
 	{
 		m_bSVG = true;
 		const XML_Char **attr = atts;
@@ -180,10 +180,10 @@ void UT_svg::startElement (const XML_Char * name, const XML_Char ** atts)
 	}
 
 	if ((m_ePM==pm_parse) && cb_start)
-		cb_start(cb_userdata, (const char *)name, (const char **)atts);
+		cb_start(cb_userdata, static_cast<const char *>(name), static_cast<const char **>(atts));
 
-	if (UT_strcmp((const char*)name,"text")==0
-	 || UT_strcmp((const char*)name,"svg:text")==0)
+	if (UT_strcmp(static_cast<const char*>(name),"text")==0
+	 || UT_strcmp(static_cast<const char*>(name),"svg:text")==0)
 	{
 		if (m_bIsText)
 		{
@@ -200,8 +200,8 @@ void UT_svg::startElement (const XML_Char * name, const XML_Char ** atts)
 			m_pBB = 0;
 		}
 	}
-	if (UT_strcmp((const char*)name,"tspan")==0
-	 || UT_strcmp((const char*)name,"svg:tspan")==0)
+	if (UT_strcmp(static_cast<const char*>(name),"tspan")==0
+	 || UT_strcmp(static_cast<const char*>(name),"svg:tspan")==0)
 	{
 		if (m_bIsTSpan)
 		{
@@ -227,8 +227,8 @@ void UT_svg::endElement (const XML_Char * name)
 {
 	if (m_bContinue == false) return;
 
-	if (UT_strcmp((const char*)name,"text")==0
-	 || UT_strcmp((const char*)name,"svg:text")==0)
+	if (UT_strcmp(static_cast<const char*>(name),"text")==0
+	 || UT_strcmp(static_cast<const char*>(name),"svg:text")==0)
 	{
 		if (m_bIsText && (m_bIsTSpan==false))
 		{
@@ -255,8 +255,8 @@ void UT_svg::endElement (const XML_Char * name)
 			return;
 		}
 	}
-	if (UT_strcmp((const char*)name,"tspan")==0
-	 || UT_strcmp((const char*)name,"svg:tspan")==0)
+	if (UT_strcmp(static_cast<const char*>(name),"tspan")==0
+	 || UT_strcmp(static_cast<const char*>(name),"svg:tspan")==0)
 	{
 		if (m_bIsTSpan)
 		{
@@ -278,7 +278,7 @@ void UT_svg::endElement (const XML_Char * name)
 	}
 
 	if ((m_ePM==pm_parse) && cb_end)
-		cb_end(cb_userdata, (const char *)name);
+		cb_end(cb_userdata, static_cast<const char *>(name));
 }
 
 void UT_svg::charData (const XML_Char * str, int len) // non-terminated string
@@ -291,7 +291,7 @@ void UT_svg::charData (const XML_Char * str, int len) // non-terminated string
 	{
 		if (m_pBB == 0) m_pBB = new UT_ByteBuf;
 
-		if (!(m_pBB->append((const UT_Byte *)str, (UT_uint32)len)))
+		if (!(m_pBB->append(reinterpret_cast<const UT_Byte *>(str), static_cast<UT_uint32>(len))))
 		{
 			UT_DEBUGMSG(("SVG: parse error: insufficient memory?\n"));
 			m_bSVG = false;
@@ -303,17 +303,17 @@ void UT_svg::charData (const XML_Char * str, int len) // non-terminated string
 static void _css_length (const char *str,GR_Graphics* pG,
 			 UT_sint32 *iDisplayLength,UT_sint32 *iLayoutLength)
 {
-   	UT_sint32 dim = UT_determineDimension((const char*)str, DIM_PX);
+   	UT_sint32 dim = UT_determineDimension(static_cast<const char*>(str), DIM_PX);
 
    	if (dim != DIM_PX && dim != DIM_none)
 	{
 		if (pG == 0)
 		{
-			*iDisplayLength = (UT_sint32) ((UT_convertToInches(str) * 72.0) + 0.05);
+			*iDisplayLength = static_cast<UT_sint32>((UT_convertToInches(str) * 72.0) + 0.05);
 		}
 		else
 		{
-			*iDisplayLength = pG->convertDimension((char*)str);
+			*iDisplayLength = pG->convertDimension(const_cast<char*>(str));
 		}
 #if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
 		//TF#TODO
@@ -325,10 +325,10 @@ static void _css_length (const char *str,GR_Graphics* pG,
 		double iImageLength = UT_convertDimensionless(str);
 
 		double fScale = pG ? (pG->getResolution() / 72.0) : 1;
-		*iDisplayLength = (UT_sint32) (iImageLength * fScale);
+		*iDisplayLength = static_cast<UT_sint32>(iImageLength * fScale);
 
 		fScale = 1440.0 / 72.0;
-		*iLayoutLength = (UT_sint32) (iImageLength * fScale);
+		*iLayoutLength = static_cast<UT_sint32>(iImageLength * fScale);
 	}
 }
 
@@ -412,8 +412,8 @@ UT_SVGMatrix UT_SVGMatrix::scaleNonUniform (float scaleFactorX, float scaleFacto
 
 UT_SVGMatrix UT_SVGMatrix::rotate (float angle) // degrees, I assume
 {
-  float cos_angle = (float) cos (((double) angle * UT_PI) / 180.0);
-  float sin_angle = (float) sin (((double) angle * UT_PI) / 180.0);
+  float cos_angle = static_cast<float>(cos ((static_cast<double>(angle) * UT_PI) / 180.0));
+  float sin_angle = static_cast<float>(sin ((static_cast<double>(angle) * UT_PI) / 180.0));
 
   UT_SVGMatrix rotation(cos_angle, sin_angle, -sin_angle, cos_angle, 0, 0);
 
@@ -422,7 +422,7 @@ UT_SVGMatrix UT_SVGMatrix::rotate (float angle) // degrees, I assume
 
 UT_SVGMatrix UT_SVGMatrix::rotateFromVector (float x, float y)
 {
-  double r = sqrt ((double) x * (double) x + (double) y * (double) y);
+  double r = sqrt (static_cast<double>(x) * static_cast<double>(x) + static_cast<double>(y) * static_cast<double>(y));
 
   if (r == 0) // or < tol.?
     {
@@ -430,8 +430,8 @@ UT_SVGMatrix UT_SVGMatrix::rotateFromVector (float x, float y)
       return neo;
     }
 
-  float cos_angle = (float) ((double) x / r);
-  float sin_angle = (float) ((double) y / r);
+  float cos_angle = static_cast<float>(static_cast<double>(x) / r);
+  float sin_angle = static_cast<float>(static_cast<double>(y) / r);
 
   UT_SVGMatrix rotation(cos_angle, sin_angle, -sin_angle, cos_angle, 0, 0);
 
@@ -454,7 +454,7 @@ UT_SVGMatrix UT_SVGMatrix::flipY ()
 
 UT_SVGMatrix UT_SVGMatrix::skewX (float angle) // degrees, I assume
 {
-  double mod_angle = (double) angle;
+  double mod_angle = static_cast<double>(angle);
 
   if (mod_angle > 180.0)
     mod_angle -= floor (mod_angle / 180.0) * 180.0;
@@ -467,7 +467,7 @@ UT_SVGMatrix UT_SVGMatrix::skewX (float angle) // degrees, I assume
       return neo;
     }
 
-  float T = (float) tan ((mod_angle * UT_PI) / 180.0);
+  float T = static_cast<float>(tan ((mod_angle * UT_PI) / 180.0));
 
   UT_SVGMatrix neo(a, b, a*T+c, b*T+d, e, f);
 
@@ -476,7 +476,7 @@ UT_SVGMatrix UT_SVGMatrix::skewX (float angle) // degrees, I assume
 
 UT_SVGMatrix UT_SVGMatrix::skewY (float angle) // degrees, I assume
 {
-  double mod_angle = (double) angle;
+  double mod_angle = static_cast<double>(angle);
 
   if (mod_angle > 180.0)
     mod_angle -= floor (mod_angle / 180.0) * 180.0;
@@ -489,7 +489,7 @@ UT_SVGMatrix UT_SVGMatrix::skewY (float angle) // degrees, I assume
       return neo;
     }
 
-  float T = (float) tan ((mod_angle * UT_PI) / 180.0);
+  float T = static_cast<float>(tan ((mod_angle * UT_PI) / 180.0));
 
   UT_SVGMatrix neo(a+T*c, b+T*d, c, d, e, f);
 

@@ -35,7 +35,7 @@ char * UT_catPathname(const char * szPath, const char * szFile)
 	UT_ASSERT((szPath) && (*szPath));
 	UT_ASSERT((szFile) && (*szFile));
 	
-	char * szPathname = (char *)UT_calloc(sizeof(char),strlen(szPath)+strlen(szFile)+2);
+	char * szPathname = static_cast<char *>(UT_calloc(sizeof(char),strlen(szPath)+strlen(szFile)+2));
 	UT_ASSERT(szPathname);
 	
 	sprintf(szPathname,"%s%s%s",

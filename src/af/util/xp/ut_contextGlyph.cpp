@@ -412,8 +412,8 @@ static bool s_notJoiningWithPrev(UT_UCS4Char c, UT_UCS4Char f, UT_UCS4Char p)
 // comparison function for binary search of the glyph table
 static int s_comp(const void *a, const void *b)
 {
-	const UT_UCSChar * A = (const UT_UCSChar*)a;
-	const LetterData * B = (const LetterData*)b;
+	const UT_UCSChar * A = static_cast<const UT_UCSChar*>(a);
+	const LetterData * B = static_cast<const LetterData*>(b);
 
 	if(*A < B->code)
 		return -1;
@@ -427,8 +427,8 @@ static int s_comp(const void *a, const void *b)
 // comparison function for binary search of the table of ignored characters
 static int s_comp_ignore(const void *a, const void *b)
 {
-	const UT_UCSChar* A = (const UT_UCSChar*)a;
-	const UCSRange* B = (const UCSRange*)b;
+	const UT_UCSChar* A = static_cast<const UT_UCSChar*>(a);
+	const UCSRange* B = static_cast<const UCSRange*>(b);
 	if(*A < B->low)
 		return -1;
 	if(*A > B->high)
@@ -441,12 +441,12 @@ static int s_comp_ignore(const void *a, const void *b)
 // The following function is used for binary search of the ligature table.
 static int s_comp_lig(const void *a, const void *b)
 {
-	const LigatureSequence * A = (const LigatureSequence*)a;
-	const LigatureData     * B = (const LigatureData*)b;
+	const LigatureSequence * A = static_cast<const LigatureSequence*>(a);
+	const LigatureData     * B = static_cast<const LigatureData*>(b);
 
-	int ret = (int) A->code - (int) B->code_low;
+	int ret = static_cast<int>(A->code) - static_cast<int>(B->code_low);
 	if(!ret)
-		ret = (int) A->next - (int) B->code_high;
+		ret = static_cast<int>(A->next) - static_cast<int>(B->code_high);
 
 	return ret;
 }
@@ -454,12 +454,12 @@ static int s_comp_lig(const void *a, const void *b)
 // The following function is used for binary search of the reversed ligature table.
 static int s_comp_lig2(const void *a, const void *b)
 {
-	const LigatureSequence * A = (const LigatureSequence*)a;
-	const LigatureData     * B = (const LigatureData*)b;
+	const LigatureSequence * A = static_cast<const LigatureSequence*>(a);
+	const LigatureData     * B = static_cast<const LigatureData*>(b);
 
-	int ret = (int) A->code - (int) B->code_high;
+	int ret = static_cast<int>(A->code) - static_cast<int>(B->code_high);
 	if(!ret)
-		ret = (int) A->next - (int) B->code_low;
+		ret = static_cast<int>(A->next) - static_cast<int>(B->code_low);
 
 	return ret;
 }
@@ -469,12 +469,12 @@ static int s_comp_lig2(const void *a, const void *b)
 // ligature table
 static int s_comp_qlig(const void *a, const void *b)
 {
-	const LigatureData *A = (const LigatureData*)a;
-	const LigatureData *B = (const LigatureData*)b;
+	const LigatureData *A = static_cast<const LigatureData*>(a);
+	const LigatureData *B = static_cast<const LigatureData*>(b);
 
-	int ret = (int) A->code_high - (int) B->code_high;
+	int ret = static_cast<int>(A->code_high) - static_cast<int>(B->code_high);
 	if(!ret)
-		return (int) A->code_low - (int) B->code_low;
+		return static_cast<int>(A->code_low) - static_cast<int>(B->code_low);
 
 	return ret;
 }
@@ -541,10 +541,10 @@ static SmartQuote s_smart_quotes_default[] =
 static UT_UCSChar s_getMirrorChar(UT_UCSChar c)
 {
 	//got to do this, otherwise bsearch screws up
-	FriBidiChar fbc = (FriBidiChar) c, mfbc;
+	FriBidiChar fbc = static_cast<FriBidiChar>(c), mfbc;
 
 	if (fribidi_get_mirror_char (/* Input */ fbc, /* Output */&mfbc))
-		return (UT_UCSChar) mfbc;
+		return static_cast<UT_UCSChar>(mfbc);
 	else
 		return c;
 }
@@ -570,7 +570,7 @@ UT_contextGlyph::UT_contextGlyph()
 	if(!s_bInit)
 	{
 		bool bHebrewContextGlyphs = false;
-		XAP_App::getApp()->getPrefsValueBool((XML_Char*)XAP_PREF_KEY_UseHebrewContextGlyphs,
+		XAP_App::getApp()->getPrefsValueBool(static_cast<XML_Char*>(XAP_PREF_KEY_UseHebrewContextGlyphs),
 											 &bHebrewContextGlyphs);
 
 		// if the user does not want to use glyphshaping for the final
@@ -596,7 +596,7 @@ UT_contextGlyph::UT_contextGlyph()
 			s_smart_quotes[i].pLang = lang.getPropertyFromProperty(s_smart_quotes[i].pLang);
 		}
 
-		XAP_App::getApp()->getPrefsValueBool((XML_Char*)XAP_PREF_KEY_SmartQuotesEnable,
+		XAP_App::getApp()->getPrefsValueBool(static_cast<XML_Char*>(XAP_PREF_KEY_SmartQuotesEnable),
 											 &s_bSmartQuotes);
 
 
@@ -611,7 +611,7 @@ UT_contextGlyph::UT_contextGlyph()
 void UT_contextGlyph::_prefsListener(	XAP_App *pApp, XAP_Prefs *, UT_StringPtrMap *, void *)
 {
 	UT_return_if_fail(pApp);
-	pApp->getPrefsValueBool((XML_Char*)XAP_PREF_KEY_SmartQuotesEnable, &s_bSmartQuotes);
+	pApp->getPrefsValueBool(static_cast<XML_Char*>(XAP_PREF_KEY_SmartQuotesEnable), &s_bSmartQuotes);
 }
 
 /*!
@@ -676,8 +676,8 @@ inline GlyphContext UT_contextGlyph::_evalGlyphContext(const UT_UCSChar* code, c
 	const UT_UCSChar *myNext = next;
 
 	while(   *myNext
-		  && bsearch((void*)myNext,
-					 (void*)s_pIgnore,
+		  && bsearch(static_cast<const void*>(myNext),
+					 static_cast<void*>(s_pIgnore),
 					 NrElements(s_ignore),
 					 sizeof(UCSRange),
 					 s_comp_ignore))
@@ -767,11 +767,11 @@ UT_UCSChar UT_contextGlyph::getGlyph(const UT_UCSChar * code,
 		Lig.next = next ? *next : 0;
 		Lig.code = *code;
 
-		pLig = (LigatureData*) bsearch((void*)&Lig,
-									   (void*)s_pLigature,
+		pLig = static_cast<LigatureData*>(bsearch(static_cast<void*>(&Lig),
+									   static_cast<void*>(s_pLigature),
 									   NrElements(s_ligature),
 									   sizeof(LigatureData),
-									   s_comp_lig);
+									   s_comp_lig));
 
 		if(pLig)
 		{
@@ -781,11 +781,11 @@ UT_UCSChar UT_contextGlyph::getGlyph(const UT_UCSChar * code,
 		else
 		{
 			Lig.next = prev ? *prev : 0;
-			pLig = (LigatureData*) bsearch((void*)&Lig,
-										   (void*)s_pLigRev,
+			pLig = static_cast<LigatureData*>(bsearch(static_cast<void*>(&Lig),
+										   static_cast<void*>(s_pLigRev),
 										   NrElements(s_lig_rev),
 										   sizeof(LigatureData),
-										   s_comp_lig2);
+										   s_comp_lig2));
 			
 			if(pLig)
 			{
@@ -836,11 +836,11 @@ UT_UCSChar UT_contextGlyph::getGlyph(const UT_UCSChar * code,
 
 
 		// if we have no pL we are dealing with an ordinary letter
-		pLet = (LetterData*) bsearch((void*)code,
-									 (void*)s_pGlyphTable,
+		pLet = static_cast<LetterData*>(bsearch(static_cast<const void*>(code),
+									 static_cast<void*>(s_pGlyphTable),
 									 s_iGlyphTableSize/sizeof(LetterData),
 									 sizeof(LetterData),
-									 s_comp);
+									 s_comp));
 
 		// if we have no pLet, it means the letter has only one form
 		// so we return it back
@@ -942,11 +942,11 @@ void UT_contextGlyph::renderString(const UT_UCSChar * src,
 			Lig.next = next_ptr ? *next_ptr : 0;
 			Lig.code = *src_ptr;
 
-			pLig = (LigatureData*) bsearch((void*)&Lig,
-										   (void*)s_pLigature,
+			pLig = static_cast<LigatureData*>(bsearch(static_cast<void*>(&Lig),
+										   static_cast<void*>(s_pLigature),
 										   NrElements(s_ligature),
 										   sizeof(LigatureData),
-										   s_comp_lig);
+										   s_comp_lig));
 
 			if(pLig)
 			{
@@ -962,11 +962,11 @@ void UT_contextGlyph::renderString(const UT_UCSChar * src,
 				if(i == 0)
 				{
 					Lig.next = prev ? *prev : 0;
-					pLig = (LigatureData*) bsearch((void*)&Lig,
-												   (void*)s_pLigRev,
+					pLig = static_cast<LigatureData*>(bsearch(static_cast<void*>(&Lig),
+												   static_cast<void*>(s_pLigRev),
 												   NrElements(s_lig_rev),
 												   sizeof(LigatureData),
-												   s_comp_lig2);
+												   s_comp_lig2));
 					
 					if(pLig)
 					{
@@ -1026,11 +1026,11 @@ void UT_contextGlyph::renderString(const UT_UCSChar * src,
 			}
 		
 			// if we have no pLig we are dealing with an ordinary letter
-			pLet = (LetterData*) bsearch((void*)src_ptr,
-										 (void*)s_pGlyphTable,
+			pLet = static_cast<LetterData*>(bsearch(static_cast<const void*>(src_ptr),
+										 static_cast<void*>(s_pGlyphTable),
 										 s_iGlyphTableSize/sizeof(LetterData),
 										 sizeof(LetterData),
-										 s_comp);
+										 s_comp));
 
 			// if we have no pLet, it means the letter has only one form
 			// last thing to do is to deal with mirror characters

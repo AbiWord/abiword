@@ -87,7 +87,7 @@ UT_sint32 UT_Vector::grow(UT_uint32 ndx)
 		new_iSpace = ndx;
 	}
 
-	void ** new_pEntries = (void **)realloc(m_pEntries, new_iSpace * sizeof(void *));
+	void ** new_pEntries = static_cast<void **>(realloc(m_pEntries, new_iSpace * sizeof(void *)));
 	if (!new_pEntries) {
 		return -1;
 	}
@@ -224,7 +224,7 @@ UT_sint32 UT_Vector::findItem(void* p) const
 	{
 		if (m_pEntries[i] == p)
 		{
-			return (UT_sint32) i;
+			return static_cast<UT_sint32>(i);
 		}
 	}
 
@@ -320,12 +320,12 @@ UT_sint32 UT_Vector::setNthItem(UT_uint32 ndx, void * pNew, void ** ppOld)
 
 void* UT_Vector::getLastItem() const
 {
-	return (void*)m_STLVec.back();
+	return static_cast<void*>(m_STLVec.back());
 }
 
 void* UT_Vector::getFirstItem() const
 {
-	return (void*)m_STLVec.front();
+	return static_cast<void*>(m_STLVec.front());
 }
 
 void UT_Vector::deleteNthItem(UT_uint32 n)
@@ -339,7 +339,7 @@ UT_sint32 UT_Vector::findItem(void* p) const
 	{
 		if (m_STLVec[i] == p)
 		{
-			return (UT_sint32) i;
+			return static_cast<UT_sint32>(i);
 		}
 	}
 

@@ -39,7 +39,7 @@ extern "C" {
 
 static void _startElement (void * userData, const XML_Char * name, const XML_Char ** atts)
 {
-  UT_XML * pXML = (UT_XML *) userData;
+  UT_XML * pXML = static_cast<UT_XML *>(userData);
 
   /* libxml2 can supply atts == 0, which is a little at variance to what is expected...
    */
@@ -47,19 +47,19 @@ static void _startElement (void * userData, const XML_Char * name, const XML_Cha
   const XML_Char ** new_atts = atts;
   if (atts == 0) new_atts = &ptr;
 
-  pXML->startElement ((const char *) name, (const char **) new_atts);
+  pXML->startElement (static_cast<const char *>(name), static_cast<const char **>(new_atts));
 }
 
 static void _endElement (void * userData, const XML_Char * name)
 {
-  UT_XML * pXML = (UT_XML *) userData;
-  pXML->endElement ((const char *) name);
+  UT_XML * pXML = static_cast<UT_XML *>(userData);
+  pXML->endElement (static_cast<const char *>(name));
 }
 
 static void _charData (void * userData, const XML_Char * buffer, int length)
 {
-  UT_XML * pXML = (UT_XML *) userData;
-  pXML->charData ((const char *) buffer, length);
+  UT_XML * pXML = static_cast<UT_XML *>(userData);
+  pXML->charData (static_cast<const char *>(buffer), length);
 }
 
 #ifdef __MRC__
@@ -78,7 +78,8 @@ UT_Error UT_XML::parse (const char * szFilename)
 
   DefaultReader defaultReader;
   Reader * reader = &defaultReader;
-  if (m_pReader) reader = m_pReader;
+  if (m_pReader)
+	  reader = m_pReader;
 
   if (!reader->openFile (szFilename))
     {
@@ -98,12 +99,12 @@ UT_Error UT_XML::parse (const char * szFilename)
       return UT_ERROR;
     }
 
-  XML_SetUnknownEncodingHandler (parser, (XML_UnknownEncodingHandler) XAP_EncodingManager::XAP_XML_UnknownEncodingHandler, 0);
+  XML_SetUnknownEncodingHandler (parser, static_cast<XML_UnknownEncodingHandler>(XAP_EncodingManager::XAP_XML_UnknownEncodingHandler), 0);
 
   XML_SetElementHandler (parser, _startElement, _endElement);
   XML_SetCharacterDataHandler (parser, _charData);
 
-  XML_SetUserData (parser, (void *) this);
+  XML_SetUserData (parser, static_cast<void *>(this));
 
   int done = 0;
   while (!done && !m_bStopped)
@@ -147,16 +148,16 @@ UT_Error UT_XML::parse (const char * buffer, UT_uint32 length)
       return UT_ERROR;
     }
 
-  XML_SetUnknownEncodingHandler (parser, (XML_UnknownEncodingHandler) XAP_EncodingManager::XAP_XML_UnknownEncodingHandler, 0);
+  XML_SetUnknownEncodingHandler (parser, static_cast<XML_UnknownEncodingHandler>(XAP_EncodingManager::XAP_XML_UnknownEncodingHandler), 0);
 
   XML_SetElementHandler (parser, _startElement, _endElement);
   XML_SetCharacterDataHandler (parser, _charData);
 
-  XML_SetUserData (parser, (void *) this);
+  XML_SetUserData (parser, static_cast<void *>(this));
 
   m_bStopped = false;
 
-  if (!XML_Parse (parser, buffer, (int) length, 1))
+  if (!XML_Parse (parser, buffer, static_cast<int>(length), 1))
     {
       UT_WARNINGMSG(("Parse error, %s at line %d\n", XML_ErrorString (XML_GetErrorCode (parser)), XML_GetCurrentLineNumber (parser)));
       ret = UT_IE_IMPORTERROR;

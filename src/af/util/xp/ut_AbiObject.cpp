@@ -105,8 +105,8 @@ bool UT_AbiObject::equal (UT_AbiObject * other) const
 UT_uint32 UT_AbiObject::hashcode () const
 {
   // 9987001 is a reasnonably large prime
-  long theAddr = (long)(this) * 0x9863b9;
-  return (UT_uint32) (theAddr);
+  long theAddr = reinterpret_cast<long>(this) * 0x9863b9;
+  return static_cast<UT_uint32>(theAddr);
 }
 
 /****************************************************************************/

@@ -56,7 +56,7 @@ UT_UNIXTimer::~UT_UNIXTimer()
 
 static int _Timer_Proc(void *p)
 {
-	UT_UNIXTimer* pTimer = (UT_UNIXTimer*) p;
+	UT_UNIXTimer* pTimer = static_cast<UT_UNIXTimer*>(p);
 	UT_ASSERT(pTimer);
 
 //	UT_DEBUGMSG(("ut_unixTimer.cpp:  timer fired\n"));

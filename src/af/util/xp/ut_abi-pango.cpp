@@ -27,7 +27,7 @@
 */
 void UT_free1PangoGlyphString(gpointer data, gpointer /*unused*/)
 {
-	pango_glyph_string_free((PangoGlyphString*)data);
+	pango_glyph_string_free(static_cast<PangoGlyphString*>(data));
 }
 
 /*!
@@ -38,7 +38,7 @@ void UT_free1PangoGlyphString(gpointer data, gpointer /*unused*/)
 */
 void UT_free1PangoItem(gpointer data, gpointer /*unused*/)
 {
-	pango_item_free((PangoItem*)data);
+	pango_item_free(static_cast<PangoItem*>(data));
 }
 
 

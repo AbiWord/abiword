@@ -406,12 +406,12 @@ double UT_convertToPoints(const char* s)
 #if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
 UT_sint32 UT_convertToLayoutUnits(const char* s)
 {
-	return (UT_sint32)(UT_convertToInches(s) * UT_LAYOUT_UNITS);
+	return static_cast<UT_sint32>(UT_convertToInches(s) * UT_LAYOUT_UNITS);
 }
 
 UT_sint32 UT_convertSizeToLayoutUnits(double Value, UT_Dimension dim)
 {
-	return (UT_sint32)(UT_convertDimToInches(Value, dim) * UT_LAYOUT_UNITS);
+	return static_cast<UT_sint32>(UT_convertDimToInches(Value, dim) * UT_LAYOUT_UNITS);
 }
 #endif
 
@@ -487,7 +487,7 @@ UT_sint32 UT_paperUnits(const char * sz)
 	double dInches = UT_convertToInches(sz);
 	double dResolution = UT_PAPER_UNITS_PER_INCH;
 
-	return (UT_sint32)(dInches * dResolution);
+	return static_cast<UT_sint32>(dInches * dResolution);
 }
 
 /*!
@@ -510,7 +510,7 @@ double    UT_inchesFromPaperUnits(UT_sint32 iPaperUnits)
 {
 	double dResolution = UT_PAPER_UNITS_PER_INCH;
 
-	return ((double)iPaperUnits / dResolution);
+	return (static_cast<double>(iPaperUnits) / dResolution);
 }
 
 /*!
@@ -533,7 +533,7 @@ UT_sint32 UT_paperUnitsFromInches(double dInches)
 {
 	double dResolution = UT_PAPER_UNITS_PER_INCH;
 
-	return (UT_sint32)(dInches * dResolution);
+	return static_cast<UT_sint32>(dInches * dResolution);
 }
 
 UT_sint32 UT_docUnitsFromPaperUnits(GR_Graphics * pG, UT_sint32 iPaperUnits)

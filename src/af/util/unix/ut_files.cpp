@@ -64,7 +64,7 @@ bool progExists(const char* progName)
 
 	for(UT_uint32 i = 0; i < utvPath->getItemCount(); i++)
 	{
-		path = (UT_String*) utvPath->getNthItem(i);;
+		path = static_cast<UT_String*>(utvPath->getNthItem(i));
 		laststat = stat(UT_catPathname(path->c_str(), progName), &statbuf);
 
 		if(laststat == 0 && S_ISREG(statbuf.st_mode) || S_ISLNK(statbuf.st_mode))

@@ -143,9 +143,9 @@ bool UT_Base64Decode(UT_ByteBuf * pDest, const UT_ByteBuf * pSrc)
 		UT_uint32 d = (s1<<18) | (s2<<12) | (s3<<6) | s4;
 
 		UT_Byte dd[3];
-		dd[0] = (UT_Byte)(           ( (d>>16) & 0xff )    );
-		dd[1] = (UT_Byte)((bHave2) ? ( (d>> 8) & 0xff ) : 0);
-		dd[2] = (UT_Byte)((bHave3) ? ( (d    ) & 0xff ) : 0);
+		dd[0] = static_cast<UT_Byte>(           ( (d>>16) & 0xff )    );
+		dd[1] = static_cast<UT_Byte>((bHave2) ? ( (d>> 8) & 0xff ) : 0);
+		dd[2] = static_cast<UT_Byte>((bHave3) ? ( (d    ) & 0xff ) : 0);
 
 		pDest->overwrite(kDest,dd, (1 + bHave2 + bHave3));
 	}

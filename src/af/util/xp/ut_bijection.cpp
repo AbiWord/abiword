@@ -55,10 +55,10 @@ const char *UT_Bijection::lookupBySource(const char *s) const
 
 void  UT_Bijection::add(const char *f, const char *s)
 {
-    m_first = (char**)realloc((void*)m_first,(m_n+1)*sizeof(char*));
+    m_first = static_cast<char**>(realloc(static_cast<void*>(m_first),(m_n+1)*sizeof(char*)));
     m_first[m_n] = UT_strdup(f);
 
-    m_second = (char**)realloc((void*)m_second,(m_n+1)*sizeof(char*));
+    m_second = static_cast<char**>(realloc(static_cast<void*>(m_second),(m_n+1)*sizeof(char*)));
     m_second[m_n] = UT_strdup(s);
     ++m_n;
 }

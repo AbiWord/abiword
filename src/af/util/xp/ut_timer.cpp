@@ -66,7 +66,7 @@ UT_Timer* UT_Timer::findTimer(UT_uint32 iIdentifier)
 	int count = static_vecTimers.getItemCount();
 	for (int i=0; i<count; i++)
 	{
-		UT_Timer* pTimer = (UT_Timer*) static_vecTimers.getNthItem(i);
+		UT_Timer* pTimer = static_cast<UT_Timer*>(static_vecTimers.getNthItem(i));
 		UT_ASSERT(pTimer);
 		
 		if (pTimer->getIdentifier() == iIdentifier)

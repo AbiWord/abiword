@@ -79,7 +79,7 @@ scandir(const char *dirname, struct dirent ***namelist,
          * and dividing it by a multiple of the minimum sizeentry. 
          */ 
         arraysz = (stb.st_size / 24); 
-	names = (struct dirent **)malloc(arraysz * sizeof(struct dirent *)); 
+	names = static_cast<struct dirent **>(malloc(arraysz * sizeof(struct dirent *)));
         if (names == NULL) 
                 return(-1); 
 
@@ -90,7 +90,7 @@ scandir(const char *dirname, struct dirent ***namelist,
                 /* 
                  * Make a minimum size copy of the data 
                  */ 
-                p = (struct dirent *)malloc(DIRSIZ(d)); 
+                p = static_cast<struct dirent *>(malloc(DIRSIZ(d)));
                 if (p == NULL) 
                         return(-1); 
                 p->d_ino = d->d_ino; 
@@ -105,8 +105,8 @@ scandir(const char *dirname, struct dirent ***namelist,
                         if (fstat(dirp->d_fd, &stb) < 0) 
                                 return(-1); /* just might have grown */ 
                         arraysz = stb.st_size / 12; 
-                        names = (struct dirent **)realloc((char*)names, 
-                            arraysz * sizeof(struct dirent*)); 
+                        names = static_cast<struct dirent **>(realloc(static_cast<char*>(names),
+                            arraysz * sizeof(struct dirent*)));
                         if (names == NULL) 
                                 return(-1); 
                 } 
@@ -125,8 +125,8 @@ scandir(const char *dirname, struct dirent ***namelist,
 int 
 alphasort(const void *d1, const void *d2) 
 { 
-        return(strcmp((*(struct dirent **)d1)->d_name, 
-            (*(struct dirent **)d2)->d_name)); 
+        return(strcmp((*static_cast<struct dirent **>(d1))->d_name, 
+            (*static_cast<struct dirent **>(d2))->d_name)); 
 } 
 
 

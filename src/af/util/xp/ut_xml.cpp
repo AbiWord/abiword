@@ -88,13 +88,13 @@ bool UT_XML::grow (char *& buffer, UT_uint32 & length, UT_uint32 & max, UT_uint3
 
   if (buffer == 0)
     {
-      buffer = (char *) malloc (require + 1);
+      buffer = static_cast<char *>(malloc (require + 1));
       if (buffer == 0) return false;
       buffer[0] = 0;
       max = require + 1;
       return true;
     }
-  char * more = (char *) realloc (buffer, max + require + 1);
+  char * more = static_cast<char *>(realloc (buffer, max + require + 1));
   if (more == 0) return false;
   buffer = more;
   max += require + 1;
@@ -197,7 +197,7 @@ bool UT_XML::sniff (const UT_ByteBuf * pBB, const char * xml_type)
 
   if ((pBB == 0) || (xml_type == 0)) return false;
 
-  const char * buffer = (const char *) pBB->getPointer (0);
+  const char * buffer = reinterpret_cast<const char *>(pBB->getPointer (0));
   UT_uint32 length = pBB->getLength ();
 
   return sniff (buffer, length, xml_type);
@@ -230,7 +230,7 @@ UT_Error UT_XML::parse (const UT_ByteBuf * pBB)
   if ((pBB == 0) || (m_pListener == 0)) return UT_ERROR;
   if (!reset_all ()) return UT_OUTOFMEM;
 
-  const char * buffer = (const char *) pBB->getPointer (0);
+  const char * buffer = reinterpret_cast<const char *>(pBB->getPointer (0));
   UT_uint32 length = pBB->getLength ();
 
   return parse (buffer, length);
