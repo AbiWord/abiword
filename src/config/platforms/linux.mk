@@ -187,7 +187,9 @@ endif
 GLIB_CONFIG		= pkg-config glib-2.0
 GTK_CONFIG		= pkg-config gtk+-2.0
 # Not sure about this one.
+ifeq ($(ABI_OPT_GNOME),1)
 GNOME_CONFIG    	= pkg-config gnome-2.0
+endif
 LIBXML_CONFIG		= xml2-config
 
 # Shared library flags

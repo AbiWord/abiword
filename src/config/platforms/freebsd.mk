@@ -119,7 +119,9 @@ PORT_FLAGS		+=
 
 GLIB_CONFIG		= pkg-config glib-2.0
 GTK_CONFIG		= pkg-config gtk+-2.0
+ifeq ($(ABI_OPT_GNOME),1)
 GNOME_CONFIG    	= pkg-config gnome-2.0
+endif
 
 # Shared library flags
 MKSHLIB			= $(LD) $(DSO_LDOPTS) -soname $(@:$(OBJDIR)/%.so=%.so)
