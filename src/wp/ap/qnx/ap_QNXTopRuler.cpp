@@ -148,7 +148,7 @@ static int get_stuff(PtCallbackInfo_t *info, EV_EditModifierState *ems,
     rect = PhGetRects(info->event);
 
 	if (x) {
-		*x = rect->ul.x;
+		*x =rect->ul.x;
 	}
 	if (y) {
 		*y = rect->ul.y;

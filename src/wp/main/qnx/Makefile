@@ -29,10 +29,6 @@ INCLUDES=
 PROGRAM=		$(BINDIR)/AbiWord_d
 PROGRAM_S=		$(BINDIR)/AbiWord_s
 
-# TODO the Linux linker is fussy about the ordering of libraries.
-# TODO in order to get all symbols to resolve, i had to list them
-# TODO several times.  see if there is a better way of doing this.
-
 LoadOrder=		AbiGr AbiFmt AbiPTbl AbiImpExp AbiXAp AbiWPAp \
 			AbiEv AbiUtil AbiWordVer AbiSpell Abi_libwv \
 
@@ -50,7 +46,7 @@ ifndef ABI_REQUIRE_PEER_ICONV
 ABI_LIBS+= iconv 
 endif
 
-STUPID_STATIC_LIBS= -Wl,-Bstatic -lphS
+STUPID_STATIC_LIBS= -Wl,-Bstatic -lphS 
 
 # include both dynamic and static binaries
 TARGETS=		$(PROGRAM) $(PROGRAM_S)
