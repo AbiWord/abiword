@@ -37,7 +37,7 @@
 class UT_Vector
 {
 public:
-	UT_Vector();
+	UT_Vector(int sizehint = 2048);
 	~UT_Vector();
 
 	UT_sint32	addItem(void*);

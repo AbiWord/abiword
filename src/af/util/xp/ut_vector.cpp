@@ -20,6 +20,7 @@
 
 
 #include <stdlib.h>
+#include <string.h>
 
 // TODO change the 'int' types to 'UT_[su]int32' whichever is appropriate.
 
@@ -29,13 +30,13 @@
 
 #ifndef ABI_OPT_STL
 
-UT_Vector::UT_Vector()
+UT_Vector::UT_Vector(int sizehint)
 {
-	m_iCutoffDouble = 2048;			// TODO make this tunable?
-	m_iPostCutoffIncrement = 32;
-	m_iCount = 0;
-	m_iSpace = 0;
-	m_pEntries = NULL;
+	m_iCutoffDouble = sizehint;		/* After this point we stop doubling our allocations */		
+	m_iPostCutoffIncrement = 32;	/* We only increment the array by this much after our allocations */
+	m_iCount = 0;					/* The number of slots we have filled */
+	m_iSpace = 0;					/* The number of slots we have allocated */
+	m_pEntries = NULL;				/* The actual array of pointers itself */
 }
 
 void UT_Vector::clear()
@@ -51,54 +52,39 @@ UT_Vector::~UT_Vector()
 	FREEP(m_pEntries);
 }
 
-UT_uint32 UT_Vector::calcNewSpace(void)
-{
-	if (m_iSpace < m_iCutoffDouble)
-	{
-		if (m_iSpace > 0)
-		{
-			return m_iSpace * 2;
-		}
-		else
-		{
-			return m_iPostCutoffIncrement;
-		}
-	}
-	else
-	{
-		return m_iSpace + m_iPostCutoffIncrement;
-	}
-}
-
 UT_uint32 UT_Vector::getItemCount() const
 {
 	return m_iCount;
 }
 
+/*
+ This function is called everytime we want to insert a new element but don't have
+ enough space.  In this case we grow the array to be _at least_ ndx size.
+*/
 UT_sint32 UT_Vector::grow(UT_uint32 ndx)
 {
-	UT_uint32 new_iSpace = calcNewSpace();
+	UT_uint32 new_iSpace;
+	if(!m_iSpace) {
+		new_iSpace = m_iPostCutoffIncrement;
+	}
+	else if (m_iSpace < m_iCutoffDouble) {
+		new_iSpace = m_iSpace * 2;
+	}
+	else {
+		new_iSpace = m_iSpace + m_iPostCutoffIncrement;
+	}
+
 	if (new_iSpace < ndx)
 	{
 		new_iSpace = ndx;
 	}
 
-	void ** new_pEntries = (void**) calloc(new_iSpace, sizeof(void*));
-	if (!new_pEntries)
-	{
+	void ** new_pEntries = (void **)realloc(m_pEntries, new_iSpace * sizeof(void *));
+	if (!new_pEntries) {
 		return -1;
 	}
-
-	if (m_pEntries && (m_iCount > 0))
-	{
-		for (UT_uint32 i=0; i<m_iCount; i++)
-		{
-			new_pEntries[i] = m_pEntries[i];
-		}
-
-		FREEP(m_pEntries);
-	}
-
+	//Is this required? We always check Count first anyways.
+	//memset(&new_pEntries[m_iSpace], 0, new_iSpace - m_iSpace * sizeof(void *));
 	m_iSpace = new_iSpace;
 	m_pEntries = new_pEntries;
 
@@ -120,10 +106,7 @@ UT_sint32 UT_Vector::insertItemAt(void* p, UT_uint32 ndx)
 	}
 
 	// bump the elements -> thataway up to the ndxth position
-	for (UT_uint32 i = m_iCount; i > ndx; i--)
-	{
-		m_pEntries[i] = m_pEntries[i - 1];
-	}
+	memmove(&m_pEntries[ndx+1], &m_pEntries[ndx], (m_iCount - ndx) * sizeof(void *)); 
 
 	m_pEntries[ndx] = p;
 	++m_iCount;
@@ -209,10 +192,7 @@ void UT_Vector::deleteNthItem(UT_uint32 n)
 	UT_ASSERT(n < m_iCount);
 	UT_ASSERT(m_iCount > 0);
 
-	for (UT_uint32 k=n; k<m_iCount-1; k++)
-	{
-		m_pEntries[k] = m_pEntries[k+1];
-	}
+	memmove(&m_pEntries[n], &m_pEntries[n+1], (m_iCount - (n + 1)) * sizeof(void*));
 	
 	m_pEntries[m_iCount-1] = 0;
 	m_iCount--;
@@ -261,8 +241,9 @@ const void* UT_Vector::operator[](UT_uint32 i) const
 
 #else /* ABI_OPT_STL */
 
-UT_Vector::UT_Vector()
+UT_Vector::UT_Vector(int sizehint)
 {
+//TODO: Do something with the size hint?
 }
 
 void UT_Vector::clear()
