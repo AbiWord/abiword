@@ -58,14 +58,16 @@ GR_Abi_MathManager::GR_Abi_MathManager(GR_Graphics* pG)
 
 GR_Abi_MathManager::~GR_Abi_MathManager()
 { 
+#if 0
      m_pLogger->unref();
      m_pLogger = 0;
      m_pMathGraphicDevice->unref();
      m_pMathGraphicDevice = 0;
-     DELETEP(m_pAbiContext);
-     m_pAbiContext = 0;
      m_pOperatorDictionary->unref();
      m_pOperatorDictionary = 0;
+#endif
+     DELETEP(m_pAbiContext);
+     m_pAbiContext = 0;
 }
 
 GR_Abi_EmbedManager * GR_Abi_MathManager::create(GR_Graphics * pG)
@@ -82,15 +84,15 @@ void GR_Abi_MathManager::initialize(void)
 {
      SmartPtr<AbstractLogger> logger = Logger::create();
      m_pLogger = logger;
-     m_pLogger->ref();
+     //m_pLogger->ref();
      logger->setLogLevel(LOG_INFO);
      SmartPtr<GR_Abi_MathGraphicDevice> mathGraphicDevice = GR_Abi_MathGraphicDevice::create(getGraphics());
      m_pMathGraphicDevice = mathGraphicDevice;
-     m_pMathGraphicDevice->ref();
+     //m_pMathGraphicDevice->ref();
      m_pAbiContext = new GR_Abi_RenderingContext(getGraphics());
      SmartPtr<MathMLOperatorDictionary> dictionary = MathMLOperatorDictionary::create();
      m_pOperatorDictionary = dictionary;
-     dictionary->ref();
+     //dictionary->ref();
      libxml2_MathView::loadOperatorDictionary(logger, dictionary,
 					      libxml2_MathView::getDefaultOperatorDictionaryPath());
 }
