@@ -1326,7 +1326,7 @@ void IE_Exp_RTF::_output_MultiLevelRTF(ie_exp_RTF_MsWord97ListMulti * pMulti)
 		}
 		_rtf_close_brace();
 	}
-	_rtf_keyword("listid",static_cast<ie_exp_RTF_MsWord97List *>(pMulti)->getID());
+	_rtf_keyword("listid",pMulti->getID());
 	_rtf_close_brace();
 }
 
@@ -1614,7 +1614,7 @@ void IE_Exp_RTF::_output_SimpleListRTF(ie_exp_RTF_MsWord97ListSimple * pSimple)
 	}
 	_rtf_keyword("listtemplateid",tempID);
 	_rtf_keyword("listsimple");
-	fl_AutoNum * pAuto = static_cast<ie_exp_RTF_MsWord97List *>(pSimple)->getAuto();
+	fl_AutoNum * pAuto = pSimple->getAuto();
 	_rtf_open_brace();
 	_rtf_keyword("listlevel");
 //
@@ -1622,7 +1622,7 @@ void IE_Exp_RTF::_output_SimpleListRTF(ie_exp_RTF_MsWord97ListSimple * pSimple)
 // 
 	_output_ListRTF(pAuto,0);
 	_rtf_close_brace();
-	_rtf_keyword("listid",static_cast<ie_exp_RTF_MsWord97List *>(pSimple)->getID());
+	_rtf_keyword("listid",pSimple->getID());
 	_rtf_close_brace();
 }
 

@@ -218,7 +218,7 @@ class ABI_EXPORT ie_exp_RTF_MsWord97List
 	UT_uint32 m_Id;
 };
 
-class ABI_EXPORT ie_exp_RTF_MsWord97ListSimple : ie_exp_RTF_MsWord97List
+class ABI_EXPORT ie_exp_RTF_MsWord97ListSimple : public ie_exp_RTF_MsWord97List
 {
  public:
 	ie_exp_RTF_MsWord97ListSimple(fl_AutoNum * pAuto);
@@ -228,7 +228,7 @@ class ABI_EXPORT ie_exp_RTF_MsWord97ListSimple : ie_exp_RTF_MsWord97List
  private:
 };
 
-class ABI_EXPORT ie_exp_RTF_MsWord97ListMulti : ie_exp_RTF_MsWord97List
+class ABI_EXPORT ie_exp_RTF_MsWord97ListMulti : public ie_exp_RTF_MsWord97List
 {
  public:
 	ie_exp_RTF_MsWord97ListMulti(fl_AutoNum * pAuto);
