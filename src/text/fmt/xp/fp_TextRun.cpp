@@ -68,8 +68,7 @@ fp_TextRun::fp_TextRun(fl_BlockLayout* pBL,
 					   UT_uint32 iLen,
 					   bool bLookupProperties)
 :	fp_Run(pBL, pG, iOffsetFirst, iLen, FPRUN_TEXT),
-	m_fPosition(TEXT_POSITION_NORMAL),
-	m_pRevisions(NULL)
+	m_fPosition(TEXT_POSITION_NORMAL)
 {
 	m_fDecorations = 0;
 	m_iLineWidth = 0;
@@ -324,57 +323,6 @@ void fp_TextRun::_processProperties(const PP_AttrProp * pSpanAP,
 	else
 #endif
 		setDirection(FRIBIDI_TYPE_UNSET, iNewOverride);
-}
-
-/*! returns PP_AttrProp associated with this span, taking on board the
-    presence of revisions
-    \param pSpan : location to store the PP_AttrProp
-    \param bDeleteAfter : indicates whether the caller should free the
-    pointer when no longer needed
-*/
-void fp_TextRun::getSpanAP(const PP_AttrProp * &pSpanAP, bool &bDeleteAfter)
-{
-	PP_AttrProp * pMySpanAP;
-
-	m_pBL->getSpanAttrProp(m_iOffsetFirst,false,&pSpanAP);
-
-	/**************************************************************************
-	 * revision handling
-	 * -----------------
-	 *
-	 * if there is a revision attribute in our span AP we have to
-	 * superimpose any props contained in that attribute over the span props
-	 *
-	 */
-
-	bDeleteAfter = false;
-
-	const XML_Char* pRevision = NULL;
-	if(pSpanAP && pSpanAP->getAttribute("revision", pRevision))
-	{
-		if(!m_pRevisions)
-			m_pRevisions = new PP_RevisionAttr(pRevision);
-
-		//next step is to parse any properties associated with this
-		//revision
-
-		const PP_Revision * pRev = m_pRevisions->getLastRevision();
-
-		if( pRev &&
-		  ((pRev->getType() == PP_REVISION_FMT_CHANGE)
-		 ||(pRev->getType() == PP_REVISION_ADDITION_AND_FMT)))
-		{
-			// create copy of span AP and then set all props contained
-			// in our revision;
-			pMySpanAP = new PP_AttrProp;
-
-			(PP_AttrProp)(*pMySpanAP) = *pSpanAP;
-			pMySpanAP->setProperties(pRev->getPropsVector());
-			pMySpanAP->setAttributes(pRev->getAttrsVector());
-			pSpanAP = pMySpanAP;
-			bDeleteAfter = true;
-		}
-	}
 }
 
 
@@ -1522,6 +1470,14 @@ void fp_TextRun::_draw(dg_DrawArgs* pDA)
 		the sreen, a Windows printer can behave like this).
 	*/
 
+	// first of all remember the current colour (this is necessary
+	// because hyperlink and revision colors are set from the base
+	// class and we must respect them
+#if 0
+	UT_RGBColor curColor;
+	m_pG->getColor(curColor);
+#endif
+
 	if(bDrawBckg && m_pG->queryProperties(GR_Graphics::DGP_OPAQUEOVERLAY))
 	{
 		fp_Run * pNext = getNextVisual();
@@ -1570,32 +1526,7 @@ void fp_TextRun::_draw(dg_DrawArgs* pDA)
 	m_pG->setFont(m_pPangoFont);
 #endif
 
-	// revision colours
-	if(m_pRevisions)
-	{
-		PD_Document * pDoc = m_pBL->getDocument();
-		//UT_uint32 iId = pDoc->getRevisionId();
-		UT_RGBColor clrRevision(255,0,0);
-		const PP_Revision * r = m_pRevisions->getLastRevision();
-
-		if (r != NULL)
-		  {		    
-		    PP_RevisionType r_type = r->getType();
-		    
-		    if(r_type == PP_REVISION_ADDITION)
-		      {
-			UT_setColor(clrRevision,0,255,0);
-		      }
-		    else if(r_type == PP_REVISION_FMT_CHANGE)
-		      {
-			UT_setColor(clrRevision,171,15,233);
-		      }
-		    
-		    m_pG->setColor(clrRevision);
-		  }
-	}
-	else if(!m_pHyperlink || !m_pG->queryProperties(GR_Graphics::DGP_SCREEN))
-		m_pG->setColor(m_colorFG); // set colour just in case we drew a first/last char with a diff colour
+	m_pG->setColor(getFGColor()); // set colour just in case we drew a first/last char with a diff colour
 
 	// since we have the visual string in the draw buffer, we just call m_pGr->drawChars()
 	m_pG->drawChars(m_pSpanBuff, 0, m_iLen, pDA->xoff, yTopOfRun);
@@ -2034,7 +1965,7 @@ void fp_TextRun::_drawLastChar(UT_sint32 xoff, UT_sint32 yoff,const UT_GrowBuf *
 
 	// have to sent font (and colour!), since we were called from a run using different font
 	m_pG->setFont(m_pScreenFont);
-	m_pG->setColor(m_colorFG);
+	m_pG->setColor(getFGColor());
 
 	FriBidiCharType iVisDirection = getVisDirection();
 
@@ -2058,7 +1989,7 @@ void fp_TextRun::_drawFirstChar(UT_sint32 xoff, UT_sint32 yoff)
 
 	// have to sent font (and colour!), since we were called from a run using different font
 	m_pG->setFont(m_pScreenFont);
-	m_pG->setColor(m_colorFG);
+	m_pG->setColor(getFGColor());
 
 	if(!s_bBidiOS)
 	{

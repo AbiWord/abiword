@@ -117,7 +117,8 @@ fp_Run::fp_Run(fl_BlockLayout* pBL,
 		m_iOverlineXoff(0),
 		m_pHyperlink(0),
 		m_iDirection(FRIBIDI_TYPE_WS), //by default all runs are whitespace
-		m_iVisDirection(FRIBIDI_TYPE_UNSET)
+		m_iVisDirection(FRIBIDI_TYPE_UNSET),
+		m_pRevisions(NULL)
 {
         // set the default background color and the paper color of the
 	    // section owning the run.
@@ -201,7 +202,9 @@ fp_Run::_inheritProperties(void)
 		const PP_AttrProp * pBlockAP = NULL;
 		const PP_AttrProp * pSectionAP = NULL; // TODO do we care about section-level inheritance?
 
-		m_pBL->getSpanAttrProp(m_iOffsetFirst,true,&pSpanAP);
+		//m_pBL->getSpanAttrProp(m_iOffsetFirst,true,&pSpanAP);
+		bool bDeleteSpanAP;
+		getSpanAP(pSpanAP, bDeleteSpanAP);
 		m_pBL->getAttrProp(&pBlockAP);
 
 		FL_DocLayout * pLayout = m_pBL->getDocLayout();
@@ -236,6 +239,8 @@ fp_Run::_inheritProperties(void)
 		    m_iHeight = m_pG->getFontHeight(pFont);
 		  }
 #endif
+		if(bDeleteSpanAP)
+			delete pSpanAP;
 	}
 }
 
@@ -397,6 +402,58 @@ void	fp_Run::setHyperlink(fp_HyperlinkRun * pH)
 		clearScreen();
 	}
 }
+
+/*! returns PP_AttrProp associated with this span, taking on board the
+    presence of revisions
+    \param pSpan : location to store the PP_AttrProp
+    \param bDeleteAfter : indicates whether the caller should free the
+    pointer when no longer needed
+*/
+void fp_Run::getSpanAP(const PP_AttrProp * &pSpanAP, bool &bDeleteAfter)
+{
+	PP_AttrProp * pMySpanAP;
+
+	m_pBL->getSpanAttrProp(m_iOffsetFirst,false,&pSpanAP);
+
+	/**************************************************************************
+	 * revision handling
+	 * -----------------
+	 *
+	 * if there is a revision attribute in our span AP we have to
+	 * superimpose any props contained in that attribute over the span props
+	 *
+	 */
+
+	bDeleteAfter = false;
+
+	const XML_Char* pRevision = NULL;
+	if(pSpanAP && pSpanAP->getAttribute("revision", pRevision))
+	{
+		if(!m_pRevisions)
+			m_pRevisions = new PP_RevisionAttr(pRevision);
+
+		//next step is to parse any properties associated with this
+		//revision
+
+		const PP_Revision * pRev = m_pRevisions->getLastRevision();
+
+		if( pRev &&
+		  ((pRev->getType() == PP_REVISION_FMT_CHANGE)
+		 ||(pRev->getType() == PP_REVISION_ADDITION_AND_FMT)))
+		{
+			// create copy of span AP and then set all props contained
+			// in our revision;
+			pMySpanAP = new PP_AttrProp;
+
+			(*pMySpanAP) = *pSpanAP;
+			(*pMySpanAP) = *pRev;
+
+			pSpanAP = pMySpanAP;
+			bDeleteAfter = true;
+		}
+	}
+}
+
 // the parameter eClearScreen has a default value AUTO
 // we need this extra parameter be able to specify false when calling from
 // inside of the first pass of fp_Line::layout(), which sets
@@ -598,6 +655,43 @@ void fp_Run::clearScreen(bool bFullLineHeightRect)
 	}
 }
 
+static UT_RGBColor fgColor;
+
+UT_RGBColor fp_Run::getFGColor(void) const
+{
+
+	// revision colours
+	if(m_pRevisions)
+	{
+		PD_Document * pDoc = m_pBL->getDocument();
+		//UT_uint32 iId = pDoc->getRevisionId();
+		const PP_Revision * r = m_pRevisions->getLastRevision();
+		PP_RevisionType r_type = r->getType();
+
+		if(r_type == PP_REVISION_ADDITION)
+		{
+			UT_setColor(fgColor,0,255,0);
+		}
+		else if(r_type == PP_REVISION_FMT_CHANGE)
+		{
+			UT_setColor(fgColor,171,15,233);
+		}
+		else
+		{
+			UT_setColor(fgColor,255,0,0);
+		}
+	}
+	else if(m_pHyperlink && m_pG->queryProperties(GR_Graphics::DGP_SCREEN))
+	{
+		UT_setColor(fgColor,0,0,255);
+	}
+	else
+		return m_colorFG;
+
+	return fgColor;
+}
+
+
 void fp_Run::draw(dg_DrawArgs* pDA)
 {
 	if (pDA->bDirtyRunsOnly)
@@ -620,20 +714,15 @@ void fp_Run::draw(dg_DrawArgs* pDA)
 	{
 	     return;
 	}
-	// Hyperlink screen colour
-	// TODO this should not be hardcoded
-	UT_RGBColor fgColor(0,0,255);
 
-	if(m_pHyperlink && m_pG->queryProperties(GR_Graphics::DGP_SCREEN))
-	{
-		m_pG->setColor(fgColor);
-	}
+
+	m_pG->setColor(getFGColor());
 
 	_draw(pDA);
 
 	if(m_pHyperlink && m_pG->queryProperties(GR_Graphics::DGP_SCREEN))
 	{
-		// have to set the colour again, since fp_TextRun::_draw can set it to read
+		// have to set the colour again, since fp_TextRun::_draw can set it to red
 		// for drawing sguiggles
 		m_pG->setColor(fgColor);
 		m_pG->drawLine(pDA->xoff, pDA->yoff + 2, pDA->xoff + m_iWidth, pDA->yoff + 2);
@@ -1027,7 +1116,16 @@ void fp_TabRun::lookupProperties(void)
 	const PP_AttrProp * pBlockAP = NULL;
 	const PP_AttrProp * pSectionAP = NULL; // TODO do we care about section-level inheritance?
 
-	m_pBL->getSpanAttrProp(m_iOffsetFirst,false,&pSpanAP);
+	//m_pBL->getSpanAttrProp(m_iOffsetFirst,false,&pSpanAP);
+	if(m_pRevisions)
+	{
+		delete m_pRevisions;
+		m_pRevisions = NULL;
+	}
+
+	bool bDeleteSpanAP;
+	getSpanAP(pSpanAP,bDeleteSpanAP);
+
 	m_pBL->getAttrProp(&pBlockAP);
 	m_pBL->getField(m_iOffsetFirst,m_pField);
 
@@ -1117,6 +1215,8 @@ void fp_TabRun::lookupProperties(void)
 	}
 	free(p);
 
+	if(bDeleteSpanAP)
+		delete pSpanAP;
 }
 
 bool fp_TabRun::canBreakAfter(void) const

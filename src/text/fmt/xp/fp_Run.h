@@ -34,6 +34,7 @@
 #include "ap_Strings.h"
 #include "fl_BlockLayout.h"
 #include "fribidi.h"
+#include "pp_Revision.h"
 
 class UT_GrowBuf;
 class fl_BlockLayout;
@@ -148,6 +149,8 @@ public:
 	GR_Graphics*	getGraphics() const				{ return m_pG; }
 	fp_HyperlinkRun * getHyperlink() const 			{ return m_pHyperlink;}
 
+	void            getSpanAP(const PP_AttrProp * &pSpanAP, bool &bDeleteAfter);
+
 	void					insertIntoRunListBeforeThis(fp_Run& newRun);
 	void					insertIntoRunListAfterThis(fp_Run& newRun);
 	fd_Field*				getField(void) { return m_pField;}
@@ -156,6 +159,7 @@ public:
 	void                    updateBackgroundColor(void);
 	UT_RGBColor *           getHighlightColor(void);
 	UT_RGBColor *           getPageColor(void);
+	UT_RGBColor 			getFGColor(void) const;
 
 	virtual bool			hasLayoutProperties(void) const;
 
@@ -271,8 +275,11 @@ protected:
 
 	// the run highlight color. If the property is transparent use the page color
 	UT_RGBColor             m_colorHL;
+
 	// A local cache of the page color. This makes clearscreen() a bit faster
 	UT_RGBColor             m_colorPG;
+
+	UT_RGBColor 			m_colorFG;
 
 #ifndef WITH_PANGO
 	GR_Font * m_pScreenFont;
@@ -303,6 +310,7 @@ protected:
 	UT_sint32                               m_iminOverline;
 	UT_sint32                               m_iOverlineXoff;
 	fp_HyperlinkRun *						m_pHyperlink;
+	PP_RevisionAttr *                       m_pRevisions;
 
 private:
 	fp_Run(const fp_Run&);			// no impl.
@@ -331,7 +339,7 @@ protected:
 	virtual void			_draw(dg_DrawArgs*);
 	virtual void			_clearScreen(bool bFullLineHeightRect);
 private:
-	UT_RGBColor			    m_colorFG;
+	//UT_RGBColor			    m_colorFG;
 	eTabLeader			    m_leader;
     eTabType                m_TabType;
 };
@@ -648,7 +656,7 @@ protected:
 	//PangoFont *           m_pPangoFont; // I do not think we need this, just refer to fp_Run
 #endif
 
-	UT_RGBColor				m_colorFG;
+	//UT_RGBColor				m_colorFG;
 	UT_RGBColor				m_colorBG;
 	UT_UCSChar				m_sFieldValue[FPFIELD_MAX_LENGTH];
 	fp_FieldsEnum			m_iFieldType;

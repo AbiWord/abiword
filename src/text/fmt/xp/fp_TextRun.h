@@ -27,7 +27,6 @@
 #include "ut_types.h"
 #include "ut_misc.h"
 #include "pt_Types.h"
-#include "pp_Revision.h"
 
 /*
 	fp_TextRun represents a run of contiguous text sharing the same
@@ -109,8 +108,6 @@ public:
 	inline virtual bool isSubscript(void) const;
 	GR_Font*				getFont(void) const
 		{ return m_pScreenFont; }
-	UT_RGBColor 			getFGColor(void) const
-		{ return m_colorFG; }
 
 	const XML_Char *			getLanguage() const
 		{ return m_pLanguage; }
@@ -127,8 +124,6 @@ public:
 	void					breakNeighborsAtDirBoundaries();
 	void					breakMeAtDirBoundaries(FriBidiCharType iNewOverride);
 #endif
-
-	void                    getSpanAP(const PP_AttrProp * &pSpanAP, bool &bDeleteAfter);
 
 
 #ifdef WITH_PANGO
@@ -165,7 +160,7 @@ private:
 
 private:
 	bool				_addupCharWidths(void);
-	void                _processProperties(const PP_AttrProp * pSpanAP,
+	inline void         _processProperties(const PP_AttrProp * pSpanAP,
 										   const PP_AttrProp * pBlockAP,
 										   const PP_AttrProp * pSectionAP);
 
@@ -225,7 +220,7 @@ protected:
 	*/
 	//GR_Font*				m_pFont;
 	//GR_Font*				m_pFontLayout;
-	UT_RGBColor 			m_colorFG;
+	//UT_RGBColor 			m_colorFG; //#TF moved this into fp_Run
 	bool					m_bSquiggled;
 
 	enum
@@ -239,7 +234,6 @@ protected:
 	// but only a pointer in the static table of the UT_Language class !!!
 	const XML_Char *		m_pLanguage;
 	bool					m_bIsOverhanging;
-	PP_RevisionAttr *       m_pRevisions;
 };
 
 #endif /* FP_TEXTRUN_H */
