@@ -39,6 +39,8 @@
 #include "ut_debugmsg.h"
 #include "ut_string_class.h"
 
+#include "ut_hash.h"
+
 // our delimiters
 #define BOLD_DELIM           "*"
 #define ITALIC_DELIM         "/"
@@ -221,6 +223,8 @@ protected:
 	UT_uint16		m_iBlockType;	// BT_*
 	UT_uint16		m_iListDepth;	// 0 corresponds to not in a list
 	UT_Wctomb		m_wctomb;
+	
+	UT_StringPtrMap	*	m_pList;
 };
 
 void s_HRText_Listener::_closeSection(void)
@@ -256,12 +260,15 @@ void s_HRText_Listener::_openTag(PT_AttrPropIndex api)
 	
 	const PP_AttrProp * pAP = NULL;
 	bool bHaveProp = m_pDocument->getAttrProp(api,&pAP);
+	UT_uint16 * piVal;
 	
 	if (bHaveProp && pAP)
 	{
 		const XML_Char * szValue;
 		//const XML_Char * szLevel;
 		const XML_Char * szListID;
+		const XML_Char * szProps;
+		char buff[20];
 
 		if (
 		   (pAP->getAttribute((XML_Char*)PT_STYLE_ATTRIBUTE_NAME, szValue))
@@ -269,8 +276,29 @@ void s_HRText_Listener::_openTag(PT_AttrPropIndex api)
 		{
 			if(pAP->getAttribute((XML_Char*)"listid", szListID) &&
 			   0 != UT_strcmp(szListID, "0"))
-			{	// we're in a list
-				m_pie->write(LIST_DELIM);
+			{	
+				// we're in a list
+				// todo: maybe check the list level and insert tabs here?
+				if(pAP->getProperty((XML_Char*)"list-style",szProps) &&
+				0 == UT_strcmp(szProps, "Numbered List"))
+				{
+					// it's a numeric list, have we seen it before?
+					if(!m_pList->pick((const char *)szListID))
+					{
+						//todo: can you set a list number start-value in abiword?
+						piVal = new UT_uint16(1);
+						m_pList->insert((const char *)szListID,(void *) piVal);
+					}
+					UT_uint16 * pTemp = (UT_uint16 *) m_pList->pick((const char *)szListID);
+					sprintf(buff,"%d ",*pTemp);	
+					*pTemp = *pTemp + 1;
+					m_pie->write(buff);
+				}
+				else
+				{
+					// assume it's a bullet list
+					m_pie->write(LIST_DELIM);				
+				}
 			}
 			else 
 			{
@@ -465,6 +493,7 @@ s_HRText_Listener::s_HRText_Listener(PD_Document * pDocument,
 	m_iListDepth = 0;
 	m_iDecoration = 0;
 	
+	m_pList = new UT_StringPtrMap(10);
 }
 
 s_HRText_Listener::~s_HRText_Listener()
@@ -473,6 +502,18 @@ s_HRText_Listener::~s_HRText_Listener()
 	_closeTag();
 	_closeSection();
 	_handleDataItems();
+	
+
+	// free memory used to store list bullet numbers
+	UT_Vector * pKeyList = m_pList->keys();
+	if (pKeyList)
+	{
+		for(UT_uint32 i = 0; i < pKeyList->getItemCount(); i++)
+		{
+			delete (void *)m_pList->pick((const char *)pKeyList->getLastItem());			
+		}
+	}
+	FREEP(pKeyList);
 }
 
 bool s_HRText_Listener::populate(PL_StruxFmtHandle /*sfh*/,
