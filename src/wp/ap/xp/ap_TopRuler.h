@@ -190,6 +190,7 @@ public:
 	void			setView(AV_View* pView, UT_uint32 iZoom);
 	AV_View *       getView(void) const { return m_pView;}
 	void			setOffsetLeftRuler(UT_uint32 iLeftRulerWidth);
+	void            setZoom(UT_uint32 iZoom);
 	void			setHeight(UT_uint32 iHeight);
 	UT_uint32		getHeight(void) const;
 	void			setWidth(UT_uint32 iWidth);

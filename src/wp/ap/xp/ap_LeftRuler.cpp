@@ -119,6 +119,15 @@ void AP_LeftRuler::setView(AV_View* pView, UT_uint32 iZoom)
 	static_cast<FV_View *>(pView)->setLeftRuler(this);
 }
 
+void AP_LeftRuler::setZoom(UT_uint32 iZoom)
+{
+	m_pG->setZoomPercentage(iZoom);
+    // TODO this dimension shouldn't be hard coded.
+	// in fact, it shouldn't need to be recomputed at all anymore.
+	m_minPageLength = UT_convertToLogicalUnits("0.5in");
+
+}
+
 void AP_LeftRuler::setView(AV_View * pView)
 {
 	if (m_pView && (m_pView != pView))

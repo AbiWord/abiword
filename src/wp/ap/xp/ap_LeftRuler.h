@@ -121,6 +121,7 @@ public:
 	virtual void		setView(AV_View * pView);
 	void				setView(AV_View* pView, UT_uint32 iZoom);
 	void				setViewHidden(AV_View* pView);
+	void                setZoom(UT_uint32 iZoom);
 	bool                isHidden(void) const
 		{ return m_bIsHidden;}
 	AV_View *           getView(void) const

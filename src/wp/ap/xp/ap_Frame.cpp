@@ -70,12 +70,12 @@ void AP_Frame::quickZoom(UT_uint32 iZoom)
 		AP_TopRuler * pTop = pView->getTopRuler();
 		if(pTop)
 		{
-			pTop->setView(pView,iZoom);
+			pTop->setZoom(iZoom);
 		}
 		AP_LeftRuler * pLeft = pView->getLeftRuler();
 		if(pLeft)
 		{
-			pLeft->setView(pView,iZoom);
+			pLeft->setZoom(iZoom);
 		}
 		setYScrollRange();
 		setXScrollRange();

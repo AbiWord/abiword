@@ -132,6 +132,15 @@ void AP_TopRuler::setView(AV_View* pView, UT_uint32 iZoom)
 	static_cast<FV_View *>(pView)->setTopRuler(this);
 }
 
+void AP_TopRuler::setZoom(UT_uint32 iZoom)
+{
+	UT_ASSERT(m_pG);
+	m_pG->setZoomPercentage(iZoom);
+
+    // TODO this dimension shouldn't be hard coded.
+	m_minColumnWidth = UT_convertToLogicalUnits("0.5in");
+
+}
 void AP_TopRuler::setViewHidden(AV_View *pView)
 {
 	if(m_pView != NULL)
