@@ -617,18 +617,25 @@ void GR_Win32USPGraphics::_setupFontOnDC(GR_Win32USPFont *pFont, bool bZoomMe)
 	else if (bZoomMe)
 	{
 		// this branch gets only executed for screen draw
+		// Win32 GDI uses a bigger font size for screen operations than the user request;
+		// this is a real pain as it makes doing WYSIWIG near impossible. One of the
+		// consequences of this is that if we do layout using printer metrics (in order to
+		// achieve true WYSIWIG), the letters, particularly, the descending parts, can be
+		// drawn outwith the line rectangle (and so leave pixel dirt, etc.)
+		// In order to avoid that, we actually request a slightly smaller font from the
+		// system if the physical pixel size drops below certain (heristically determined) value.
 		zoom = getZoomPercentage();
 		double dZoom = (double)zoom;
-		if(zoom < 100)
+		double dSizeFactor = dZoom * (double)pFont->getUnscaledHeight()/(double)getDeviceResolution();
+		// 10 pt font on 96dpi is 13px
+		if(dSizeFactor <= 14.0)
 		{
-			// we want to use slightly smaller font in order to counter the GDI's habit of
-			// using bigger fonts which causes text to be drawn outwith its rectangle
-			// (8216, et al.)
 			// The numerical constant is heuristic
-			dZoom /= 1.05;
+			// 2% decrease on a 96 dpi screen works out 1 pixel adjustment
+			dZoom /= 1.02;
 		}
 		
-		pixels = (UT_uint32)((double)pFont->getUnscaledHeight()* dZoom/100.0 + 0.5) ;
+		pixels = (UT_uint32)((double)pFont->getUnscaledHeight()* dZoom/100.0) ;
 	}
 	else if(getPrintDC())
 	{
