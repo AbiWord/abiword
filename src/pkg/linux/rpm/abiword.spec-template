@@ -27,21 +27,8 @@
 %define version __ABI_BUILD_VERSION__
 %define release	__ABI_RELEASE_NUMBER__
 
-# define to 0 if you don't want, 1 if you want
-%define no_static UNIX_CAN_BUILD_STATIC=%{enable_static}
-%define debug ABI_OPT_DEBUG=%{enable_debug}
-%define gnome ABI_OPT_GNOME=%{enable_gnome}
-%define bidi ABI_OPT_BIDI_ENABLED=%{enable_bidi}
-%define perl ABI_OPT_PERL=%{enable_perl}
-%define jpeg ABI_OPT_LIBJPEG=%{enable_jpeg}
-%define libxml2 ABI_OPT_LIBXML2=%{enable_xml2}
-%define optimize ABI_OPT_OPTIMIZE=%{enable_optimize}
-%define pspell ABI_OPT_PSPELL=%{enable_pspell}
-
 %if %{enable_gnome}
-
 %define enable_gdkpixbuf 1
-
 %endif
 
 %if %{enable_aiksaurus}
@@ -295,7 +282,7 @@ rm -rf $RPM_BUILD_ROOT
 
 %build
 
-make %{version_flag} %{debug} %{libxml2} %{no_static} %{gnome} %{jpeg} %{perl} %{optimize} compile canonical prefix=$RPM_BUILD_ROOT%{ABIPREFIX}
+make %{version_flag} ABI_OPT_DEBUG=%{enable_debug} ABI_OPT_LIBXML2=%{enable_xml2} UNIX_CAN_BUILD_STATIC=%{enable_static} ABI_OPT_GNOME=%{enable_gnome} ABI_OPT_LIBJPEG=%{enable_jpeg} ABI_OPT_PERL=%{enable_perl} ABI_OPT_OPTIMIZE=%{enable_optimize} compile canonical prefix=$RPM_BUILD_ROOT%{ABIPREFIX}
 
 cd ../abiword-plugins
 
@@ -311,7 +298,7 @@ cd ../abiword-plugins
 make install
 cd ../abi
 
-make %{version_flag} %{debug} %{libxml2} %{no_static} %{gnome} %{jpeg} %{perl} %{optimize} install prefix=$RPM_BUILD_ROOT%{ABIPREFIX}
+make %{version_flag} ABI_OPT_DEBUG=%{enable_debug} ABI_OPT_LIBXML2=%{enable_xml2} UNIX_CAN_BUILD_STATIC=%{enable_static} ABI_OPT_GNOME=%{enable_gnome} ABI_OPT_LIBJPEG=%{enable_jpeg} ABI_OPT_PERL=%{enable_perl} ABI_OPT_OPTIMIZE=%{enable_optimize} install prefix=$RPM_BUILD_ROOT%{ABIPREFIX}
 
 # Manual fixes to Abi package
 
@@ -427,6 +414,9 @@ rm -rf $RPM_BUILD_ROOT $RPM_BUILD_DIR/file.list.%{name}
 %{ABIPREFIX}/AbiSuite/AbiWord/help/fr-FR
 
 %changelog
+* Thu Dec 27 2001 Rui M. Silva Seabra <rms@multicert.com>
+- Simplified spec's ifs, gdkpixbuf plugin is installed by default in gnome build
+
 * Sun Dec  9 2001 Rui M. Silva Seabra <rms@multicert.com>
 - The spec now compiles plugins (for the time being, this is not an option)
 
