@@ -97,7 +97,7 @@ bool UT_XML::grow (char *& buffer, UT_uint32 & length, UT_uint32 & max, UT_uint3
       max = require + 1;
       return true;
     }
-  char * more = realloc (buffer, max + require + 1);
+  char * more = (char *) realloc (buffer, max + require + 1);
   if (more == 0) return false;
   buffer = more;
   max += require + 1;
