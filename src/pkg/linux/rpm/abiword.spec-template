@@ -241,8 +241,8 @@ cd ../abi
 %{ABIPREFIX}/AbiSuite/icons
 %{ABIPREFIX}/AbiSuite/templates
 %{prefix}/share/pixmaps/abiword_48.png
-%{ABIPREFIX}/oaf
 %if %{enable_gnome}
+%{ABIPREFIX}/oaf
 %{prefix}/share/gnome/apps/Applications/abiword.desktop
 
 %files embeddable
