@@ -296,9 +296,9 @@ void AP_UnixFrame::_createTopLevelWindow(void)
 	m_table = gtk_table_new(1, 2, FALSE);
 	gtk_object_set_user_data(GTK_OBJECT(m_table),this);
   
-	gtk_table_attach(GTK_TABLE(m_table), m_dArea,   0, 1, 0, 1, GTK_EXPAND | GTK_FILL, GTK_EXPAND | GTK_FILL, 0, 0);
-	gtk_table_attach(GTK_TABLE(m_table), m_hScroll, 0, 1, 1, 2, GTK_EXPAND | GTK_FILL, GTK_FILL, 0, 0);
-	gtk_table_attach(GTK_TABLE(m_table), m_vScroll, 1, 2, 0, 1, GTK_FILL, GTK_EXPAND | GTK_FILL, 0, 0);
+	gtk_table_attach(GTK_TABLE(m_table), m_dArea,   0, 1, 0, 1, (GtkAttachOptions) (GTK_EXPAND | GTK_FILL), (GtkAttachOptions) (GTK_EXPAND | GTK_FILL), 0, 0);
+	gtk_table_attach(GTK_TABLE(m_table), m_hScroll, 0, 1, 1, 2, (GtkAttachOptions) (GTK_EXPAND | GTK_FILL), (GtkAttachOptions) (GTK_FILL), 0, 0);
+	gtk_table_attach(GTK_TABLE(m_table), m_vScroll, 1, 2, 0, 1, (GtkAttachOptions) (GTK_FILL), (GtkAttachOptions) (GTK_EXPAND | GTK_FILL), 0, 0);
 	gtk_container_add(GTK_CONTAINER(m_wVBox), m_table);
 
 	// TODO decide what to do with accelerators
