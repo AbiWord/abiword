@@ -525,6 +525,7 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_Selection)
 
 	switch(id)
 	{
+	case AP_MENU_ID_FMT_LANGUAGE:
 	case AP_MENU_ID_EDIT_CUT:
 	case AP_MENU_ID_EDIT_COPY:
 		if (pView->isSelectionEmpty())
