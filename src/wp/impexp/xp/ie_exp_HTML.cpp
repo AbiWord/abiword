@@ -4771,6 +4771,11 @@ s_StyleTree::s_StyleTree (s_StyleTree * parent, const char * style_name, PD_Styl
 		if (name == "text-position")
 		{
 			name = "vertical-align";
+			if(value == "superscript")
+				value = "super";
+			else if(value == "subscript")
+				value = "sub";
+			
 		}
 		else if (name == "bgcolor")
 		{
