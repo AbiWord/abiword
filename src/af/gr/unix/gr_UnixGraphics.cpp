@@ -277,7 +277,7 @@ GR_Font * GR_UnixGraphics::getGUIFont(void)
 		UT_ASSERT(font);
 
 		// bury it in a new font handle
-		m_pFontGUI = new XAP_UnixFontHandle(font, 10);
+		m_pFontGUI = new XAP_UnixFontHandle(font, 12); // Hardcoded GUI font size
 		UT_ASSERT(m_pFontGUI);
 	}
 
