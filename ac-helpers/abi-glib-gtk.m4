@@ -22,7 +22,7 @@ AC_DEFUN([ABI_CHECK_PKG_CHECK],[
 AC_DEFUN([ABI_GLIB2],[
 
 	PKG_CHECK_MODULES(GLIB,glib-2.0 >= 2.0,[
-		dnl do we need to set these?
+	dnl do we need to set these?
 		abi_glib2=yes
 	],[	abi_glib2=no
 	])
@@ -31,7 +31,7 @@ AC_DEFUN([ABI_GLIB2],[
 	fi
 
 	PKG_CHECK_MODULES(GMODULE,gmodule-2.0 >= 2.0,[
-		dnl do we need to set these?
+	dnl do we need to set these?
 		abi_gmodule2=yes
 	],[	abi_gmodule2=no
 	])
@@ -40,7 +40,7 @@ AC_DEFUN([ABI_GLIB2],[
 	fi
 
 	PKG_CHECK_MODULES(GTHREAD,gthread-2.0,[
-		dnl do we need to set these?
+	dnl do we need to set these?
 		abi_gthread2=yes
 	],[	abi_gthread2=no
 	])
