@@ -665,6 +665,18 @@ void fp_TabRun::setWidth(UT_sint32 iWidth)
 	m_iWidth = iWidth;
 }
 
+void fp_TabRun::setLeader(eTabLeader iLeader)
+{
+	clearScreen();
+	m_leader = iLeader;
+}
+
+eTabLeader fp_TabRun::getLeader(void)
+{
+	return m_leader;
+}
+
+
 void fp_TabRun::_clearScreen(bool /* bFullLineHeightRect */)
 {
 	UT_ASSERT(!m_bDirty);
@@ -741,6 +753,61 @@ void fp_TabRun::_draw(dg_DrawArgs* pDA)
 	UT_uint32 iRunBase = m_pBL->getPosition() + m_iOffsetFirst;
 #endif
 
+	if (m_leader != FL_LEADER_NONE)
+	{
+		UT_UCSChar tmp[151];
+        	unsigned short wid[151];
+		int i, cumWidth;
+
+		tmp[0] = 150;
+		switch (m_leader)
+		{
+		case FL_LEADER_DOT:
+			tmp[1] = '.';
+			break;
+		case FL_LEADER_HYPHEN:
+			tmp[1] = '-';
+			break;
+		case FL_LEADER_UNDERLINE:
+			tmp[1] = '_';
+			break;
+		default:
+			tmp[1] = ' ';
+			break;
+		}
+
+		for (i = 2; i < 151; i++)
+			tmp[i] = tmp[1];
+
+		m_pG->setFont(m_pScreenFont);
+		m_pG->measureString(tmp, 1, 150, wid);
+		// one would think that one could measure
+		// one character and divide the needed
+		// width by that; would one be so wrong?
+		// we're not dealing with different letters
+		// here, after all.
+
+		i = 1; 
+		cumWidth = 0;
+		while (cumWidth < m_iWidth && i < 151)
+			cumWidth += wid[i++];
+
+		i = (i>=3) ? i - 2 : 1;
+
+		const PP_AttrProp * pSpanAP = NULL;
+		const PP_AttrProp * pBlockAP = NULL;
+		const PP_AttrProp * pSectionAP = NULL;
+
+		PD_Document * pDoc = m_pBL->getDocument();
+		m_pBL->getSpanAttrProp(m_iOffsetFirst,false,&pSpanAP);
+		m_pBL->getAttrProp(&pBlockAP);
+
+		UT_RGBColor clrFG;
+		UT_parseColor(PP_evalProperty("color",pSpanAP,pBlockAP, pSectionAP, pDoc, true), clrFG);
+		m_pG->setColor(clrFG);
+	        m_pG->drawChars(tmp, 1, i, pDA->xoff, iFillTop);
+	}
+	else
 	if (
 		pView->getFocus()!=AV_FOCUS_NONE &&
 		(iSel1 <= iRunBase)

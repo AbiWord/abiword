@@ -320,7 +320,7 @@ void AP_BeOSDialog_Tab::_setAlignment( eTabType a )
 
 eTabLeader AP_BeOSDialog_Tab::_gatherLeader()
 {
-	return FL_LEADER_NONE;
+	return m_current_leader;
 }
 
 void AP_BeOSDialog_Tab::_setLeader( eTabLeader a )
@@ -348,6 +348,8 @@ void AP_BeOSDialog_Tab::_setLeader( eTabLeader a )
 	
 	if(pButton)
 		pButton->SetValue(1);
+
+	m_current_leader = a;
 }
 
 const XML_Char * AP_BeOSDialog_Tab::_gatherDefaultTabStop()

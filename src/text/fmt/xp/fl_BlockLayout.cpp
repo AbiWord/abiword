@@ -336,7 +336,7 @@ void buildTabStops(GR_Graphics * pG, const char* pszTabStops, UT_Vector &m_vecTa
 			UT_ASSERT(iPosLen < sizeof pszPosition);
 
 			memcpy(pszPosition, pStart, iPosLen);
-            pszPosition[iPosLen] = 0;
+			pszPosition[iPosLen] = 0;
 
 			iPosition = pG->convertDimension(pszPosition);
 
@@ -4356,6 +4356,7 @@ bool	fl_BlockLayout::findNextTabStop( UT_sint32 iStartX, UT_sint32 iMaxX, UT_sin
 		{
 			iPosition = pTab->getPosition();
 			iType = pTab->getType();
+			iLeader = pTab->getLeader();
 
 			return true;
 		}
@@ -4414,8 +4415,6 @@ bool	fl_BlockLayout::findNextTabStopInLayoutUnits( UT_sint32 iStartX, UT_sint32 
 	UT_uint32 iCountTabs = m_vecTabs.getItemCount();
 	UT_uint32 i;
 
-	UT_UNUSED(iLeader); // TODO FIXME
-	
 	for (i=0; i<iCountTabs; i++)
 	{
 		fl_TabStop* pTab = (fl_TabStop*) m_vecTabs.getNthItem(i);
@@ -4429,6 +4428,7 @@ bool	fl_BlockLayout::findNextTabStopInLayoutUnits( UT_sint32 iStartX, UT_sint32 
 		{
 			iPosition = pTab->getPositionLayoutUnits();
 			iType = pTab->getType();
+			iLeader = pTab->getLeader();
 
 			return true;
 		}

@@ -71,7 +71,6 @@ protected:
 	void                            _populateCList(void) const;
 	void 				_storeWindowData(void) const;
 	void				_connectsignals(void) const;
-
 	virtual const char * getCurrentStyle (void) const;
 	virtual void setDescription (const char * desc) const;
 

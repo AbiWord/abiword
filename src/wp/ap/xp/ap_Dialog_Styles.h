@@ -48,7 +48,7 @@ class AP_Dialog_Styles : public XAP_Dialog_NonPersistent
 	virtual ~AP_Dialog_Styles(void);
 
 	virtual void			  runModal(XAP_Frame * pFrame) = 0;
-
+	
 	typedef enum { a_OK, a_CANCEL }   tAnswer;
 	AP_Dialog_Styles::tAnswer	  getAnswer(void) const;
 
@@ -78,7 +78,12 @@ class AP_Dialog_Styles : public XAP_Dialog_NonPersistent
 	AP_Dialog_Styles::tAnswer	  m_answer;
 	AP_Preview_Paragraph  *		  m_pParaPreview;
 	AP_Styles_CharPreview *		  m_pCharPreview;
- private:
+	FV_View *                     m_pView;
+	PD_Document *                 m_pDoc;
+	PD_Style *                    m_pCurStyle;
+	char *                        m_pszCurStyleName;
+private:
 };
 
 #endif /* AP_Dialog_Styles_H */
+

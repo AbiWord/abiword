@@ -132,103 +132,100 @@ void AP_Dialog_Styles::event_paraPreviewUpdated (const XML_Char * pageLeftMargin
 {
   // Whomever designed this preview and the Paragraph dialog should be shot
 
-  AP_Dialog_Paragraph::tAlignState tAlign = AP_Dialog_Paragraph::align_LEFT;
-  AP_Dialog_Paragraph::tIndentState tIndent = AP_Dialog_Paragraph::indent_NONE;
-  AP_Dialog_Paragraph::tSpacingState tSpacing = AP_Dialog_Paragraph::spacing_MULTIPLE;
+	AP_Dialog_Paragraph::tAlignState tAlign = AP_Dialog_Paragraph::align_LEFT;
+	AP_Dialog_Paragraph::tIndentState tIndent = AP_Dialog_Paragraph::indent_NONE;
+	AP_Dialog_Paragraph::tSpacingState tSpacing = AP_Dialog_Paragraph::spacing_MULTIPLE;
 
-  const char * sz = NULL;
-  char * pPlusFound = NULL;
+	const char * sz = NULL;
+	char * pPlusFound = NULL;
 
-  UT_ASSERT(m_pParaPreview);
+	UT_ASSERT(m_pParaPreview);
 
-  if (!align)
-    goto LblIndent; // skip to the next label if nothing's set here
+	if (!align)
+		goto LblIndent; // skip to the next label if nothing's set here
 
-  if (!UT_strcmp(align, "right"))
-    tAlign = AP_Dialog_Paragraph::align_RIGHT;
-  else if (!UT_strcmp(align, "center"))
-    tAlign = AP_Dialog_Paragraph::align_CENTERED;
-  else if (!UT_strcmp(align, "justify"))
-    tAlign = AP_Dialog_Paragraph::align_JUSTIFIED;
+	if (!UT_strcmp(align, "right"))
+		tAlign = AP_Dialog_Paragraph::align_RIGHT;
+	else if (!UT_strcmp(align, "center"))
+		tAlign = AP_Dialog_Paragraph::align_CENTERED;
+	else if (!UT_strcmp(align, "justify"))
+		tAlign = AP_Dialog_Paragraph::align_JUSTIFIED;
 
  LblIndent:
-  if (!firstLineIndent)
-    goto LblSpacing;
+	if (!firstLineIndent)
+		goto LblSpacing;
 
-  sz = (const char *)firstLineIndent;
+	sz = (const char *)firstLineIndent;
 
-  if (UT_convertDimensionless(sz) > (double) 0)
+	if (UT_convertDimensionless(sz) > (double) 0)
     {
-      tIndent = AP_Dialog_Paragraph::indent_FIRSTLINE;
+		tIndent = AP_Dialog_Paragraph::indent_FIRSTLINE;
     }
-  else if (UT_convertDimensionless(sz) < (double) 0)
+	else if (UT_convertDimensionless(sz) < (double) 0)
     {
-      tIndent = AP_Dialog_Paragraph::indent_HANGING;
+		tIndent = AP_Dialog_Paragraph::indent_HANGING;
     }
 
  LblSpacing:
-  if (!lineSpacing)
-    goto LblSet;
+	if (!lineSpacing)
+		goto LblSet;
 
-  sz = (const char *)lineSpacing;
+	sz = (const char *)lineSpacing;
 
-  pPlusFound = strrchr(sz, '+');
-  if (pPlusFound && *(pPlusFound + 1) == 0)
-    tSpacing = AP_Dialog_Paragraph::spacing_ATLEAST;
+	pPlusFound = strrchr(sz, '+');
+	if (pPlusFound && *(pPlusFound + 1) == 0)
+		tSpacing = AP_Dialog_Paragraph::spacing_ATLEAST;
 
-  {
-    if(UT_hasDimensionComponent(sz))
-      tSpacing = AP_Dialog_Paragraph::spacing_EXACTLY;
-    else if(!UT_strcmp("1.0", sz))
-      tSpacing = AP_Dialog_Paragraph::spacing_SINGLE;
-    else if(!UT_strcmp("1.5", sz))
-      tSpacing = AP_Dialog_Paragraph::spacing_ONEANDHALF;
-    else if(!UT_strcmp("2.0", sz))
-      tSpacing = AP_Dialog_Paragraph::spacing_DOUBLE;
-  }
+	{
+		if(UT_hasDimensionComponent(sz))
+			tSpacing = AP_Dialog_Paragraph::spacing_EXACTLY;
+		else if(!UT_strcmp("1.0", sz))
+			tSpacing = AP_Dialog_Paragraph::spacing_SINGLE;
+		else if(!UT_strcmp("1.5", sz))
+			tSpacing = AP_Dialog_Paragraph::spacing_ONEANDHALF;
+		else if(!UT_strcmp("2.0", sz))
+			tSpacing = AP_Dialog_Paragraph::spacing_DOUBLE;
+	}
 
  LblSet:
-  m_pParaPreview->setFormat (pageLeftMargin,
-			     pageRightMargin,
-			     tAlign,
-			     firstLineIndent,
-			     tIndent,
-			     leftIndent,
-			     rightIndent,
-			     beforeSpacing,
-			     afterSpacing,
-			     lineSpacing,
-			     tSpacing);
-  
-  // force a redraw
-  m_pParaPreview->draw();
+	m_pParaPreview->setFormat (pageLeftMargin,
+							   pageRightMargin,
+							   tAlign,
+							   firstLineIndent,
+							   tIndent,
+							   leftIndent,
+							   rightIndent,
+							   beforeSpacing,
+							   afterSpacing,
+							   lineSpacing,
+							   tSpacing);
+	
+	// force a redraw
+	m_pParaPreview->draw();
 }
 
 void AP_Dialog_Styles::event_charPreviewUpdated (void) const
 {
-  //UT_ASSERT (m_pCharPreview); add this when we make a char preview
+	//UT_ASSERT (m_pCharPreview); add this when we make a char preview
 
-  // force a redraw
-  if(m_pCharPreview) // remove this when we actually make a char preview
-    m_pCharPreview->draw();
+	// force a redraw
+	if(m_pCharPreview) // remove this when we actually make a char preview
+		m_pCharPreview->draw();
 }
 
-void AP_Dialog_Styles::_populatePreviews(void) const
+void AP_Dialog_Styles::_populatePreviews(void)  const
 {
-        PD_Style * pStyle = NULL;
+	PD_Style * pStyle = NULL;
 	const char * szStyle = NULL;
 
-	FV_View * pView = static_cast<FV_View *>(m_pApp->getLastFocussedFrame()->getCurrentView());
-	UT_ASSERT(pView);
-
-	PD_Document * pDoc = pView->getLayout()->getDocument();
-	UT_ASSERT(pDoc);
-
 	const static XML_Char * paraFields[] = {"text-align", "text-indent", "margin-left", "margin-right", 
-						"margin-top", "margin-bottom", "line-height"};
+											"margin-top", "margin-bottom", "line-height"};
 	const size_t nParaFlds = sizeof(paraFields)/sizeof(paraFields[0]);
 	const XML_Char * paraValues [nParaFlds];
 
+//
+// Note to Dom: This produces a compiler warning!!!
+//
 	const static XML_Char * charFields[] = {};
 	const size_t nCharFlds = sizeof(charFields)/sizeof(charFields[0]);
 	const XML_Char * charValues [nCharFlds];
@@ -236,81 +233,81 @@ void AP_Dialog_Styles::_populatePreviews(void) const
 	szStyle = getCurrentStyle();
 
 	if (!szStyle) // having nothing displayed is totally valid
-	  {
-	    return;
-	  }
+	{
+		return;
+	}
 
 	// update the previews and the description label
-	if (pDoc->getStyle (szStyle, &pStyle))
-	  {
-	    UT_String strDesc;
+	if (m_pDoc->getStyle (szStyle, &pStyle))
+	{
+		UT_String strDesc;
 
 	    // first loop through and pass out each property:value combination for paragraphs
-	    for(UT_uint32 i = 0; i < nParaFlds; i++)
-	      {
-		const XML_Char * szName = paraFields[i];
-		const XML_Char * szValue = NULL;		
+		for(UT_uint32 i = 0; i < nParaFlds; i++)
+		{
+			const XML_Char * szName = paraFields[i];
+			const XML_Char * szValue = NULL;		
 
-		if (!pStyle->getProperty(szName, szValue))
-		  if (!pStyle->getAttribute(szName, szValue))
-		    {
-		      UT_DEBUGMSG(("DOM: could not obtain property/attribute %s (%d)\n",
-				   szName, i));
-		      paraValues[i] = 0;
-		      continue;
-		    }
+			if (!pStyle->getProperty(szName, szValue))
+				if (!pStyle->getAttribute(szName, szValue))
+				{
+					UT_DEBUGMSG(("DOM: could not obtain property/attribute %s (%d)\n",
+								 szName, i));
+					paraValues[i] = 0;
+					continue;
+				}
 
-		UT_DEBUGMSG(("DOM: paragraph property is: (%s, %s)\n", szName, szValue));
+			UT_DEBUGMSG(("DOM: paragraph property is: (%s, %s)\n", szName, szValue));
+				
+			strDesc += (const char *)szName;
+			strDesc += ":";
+			strDesc += (const char *)szValue;
+			strDesc += "; ";
 
-		strDesc += (const char *)szName;
-		strDesc += ":";
-		strDesc += (const char *)szValue;
-		strDesc += "; ";
-
-		paraValues[i] = szValue;
-	      }
+			paraValues[i] = szValue;
+		}
 
 	    // now loop through and pass out each property:value combination for characters
-	    for(UT_uint32 i = 0; i < nCharFlds; i++)
-	      {
-		const XML_Char * szName = charFields[i];
-		const XML_Char * szValue = NULL;		
+		for(UT_uint32 i = 0; i < nCharFlds; i++)
+		{
+			const XML_Char * szName = charFields[i];
+			const XML_Char * szValue = NULL;		
 
-		if (!pStyle->getProperty(szName, szValue))
-		  if (!pStyle->getAttribute(szName, szValue))
-		    {
-		      UT_DEBUGMSG(("DOM: could not obtain property/attribute %s (%d)\n",
-				   szName, i));
-		      charValues[i] = 0;
-		      continue;
-		    }
+			if (!pStyle->getProperty(szName, szValue))
+				if (!pStyle->getAttribute(szName, szValue))
+				{
+					UT_DEBUGMSG(("DOM: could not obtain property/attribute %s (%d)\n",
+								 szName, i));
+					charValues[i] = 0;
+					continue;
+				}
 
-		UT_DEBUGMSG(("DOM: char property is: (%s, %s)\n", szName, szValue));
+			UT_DEBUGMSG(("DOM: char property is: (%s, %s)\n", szName, szValue));
+				
+			strDesc += (const char *)szName;
+			strDesc += ":";
+			strDesc += (const char *)szValue;
 
-		strDesc += (const char *)szName;
-		strDesc += ":";
-		strDesc += (const char *)szValue;
+			if (i != nCharFlds)
+				strDesc += "; ";
 
-		if (i != nCharFlds)
-		  strDesc += "; ";
+			charValues[i] = szValue;
+		}
 
-		charValues[i] = szValue;
-	      }
-
-	    if (!strDesc.empty())
-	      {
-		setDescription (strDesc.c_str());
+		if (!strDesc.empty())
+		{
+			setDescription (strDesc.c_str());
 		
-		const XML_Char ** props_in = NULL;
-		pView->getSectionFormat(&props_in);
+			const XML_Char ** props_in = NULL;
+			m_pView->getSectionFormat(&props_in);
 
-		event_paraPreviewUpdated(UT_getAttribute("page-margin-left", props_in), UT_getAttribute("page-margin-right", props_in),
-					 (const XML_Char *)paraValues[0], (const XML_Char *)paraValues[1],
-					 (const XML_Char *)paraValues[2], (const XML_Char *)paraValues[3], 
-					 (const XML_Char *)paraValues[4], (const XML_Char *)paraValues[5],
-					 (const XML_Char *)paraValues[6]);
-		
-		event_charPreviewUpdated();
-	      }
-	  }
+			event_paraPreviewUpdated(UT_getAttribute("page-margin-left", props_in), UT_getAttribute("page-margin-right", props_in),
+									 (const XML_Char *)paraValues[0], (const XML_Char *)paraValues[1],
+									 (const XML_Char *)paraValues[2], (const XML_Char *)paraValues[3], 
+									 (const XML_Char *)paraValues[4], (const XML_Char *)paraValues[5],
+									 (const XML_Char *)paraValues[6]);
+			
+			event_charPreviewUpdated();
+		}
+	}
 }

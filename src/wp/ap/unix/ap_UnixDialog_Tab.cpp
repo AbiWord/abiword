@@ -970,7 +970,7 @@ void AP_UnixDialog_Tab::_setAlignment( eTabType a )
 
 eTabLeader AP_UnixDialog_Tab::_gatherLeader()
 {
-	return FL_LEADER_NONE;
+	return m_current_leader;
 }
 
 void AP_UnixDialog_Tab::_setLeader( eTabLeader a )
@@ -991,6 +991,8 @@ void AP_UnixDialog_Tab::_setLeader( eTabLeader a )
 	m_bInSetCall = true;
 	gtk_toggle_button_set_active( GTK_TOGGLE_BUTTON(w), TRUE );
 	m_bInSetCall = false;
+
+	m_current_leader = a;
 }
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 

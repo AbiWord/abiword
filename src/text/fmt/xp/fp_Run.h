@@ -31,7 +31,7 @@
 #include "pt_Types.h"
 #include "ut_assert.h"
 #include "ap_Strings.h"
-
+#include "fl_BlockLayout.h"
 
 class UT_GrowBuf;
 class fl_BlockLayout;
@@ -260,10 +260,13 @@ public:
 	virtual bool			canBreakAfter(void) const;
 	virtual bool			canBreakBefore(void) const;
 	virtual bool			letPointPass(void) const;
-	void					setWidth(UT_sint32);
-	
+	void			       	setWidth(UT_sint32);
+	void			       	setLeader(eTabLeader);
+	eTabLeader			getLeader(void);
+
 protected:
 	UT_RGBColor			m_colorFG;
+	eTabLeader			m_leader;
 
 	virtual void			_drawArrow(UT_uint32 iLeft,UT_uint32 iTop,UT_uint32 iWidth, UT_uint32 iHeight);
 	virtual void			_draw(dg_DrawArgs*);

@@ -783,6 +783,8 @@ void fp_Line::layout(void)
 			int iScanWidth = 0;
 			int iScanWidthLayoutUnits = 0;
 
+			pTabRun->setLeader(iTabLeader);
+
 			// for everybody except the left tab, we need to know how much text is to follow
 			switch ( iTabType )
 			{

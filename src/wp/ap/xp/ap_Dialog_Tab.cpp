@@ -158,12 +158,6 @@ void AP_Dialog_Tab::_initEnableControls()
 	// alignment
 	_controlEnable( id_ALIGN_BAR,			false );
 
-	// leaders
-	_controlEnable( id_LEADER_NONE,			false );
-	_controlEnable( id_LEADER_DOT,			false );
-	_controlEnable( id_LEADER_DASH,			false );
-	_controlEnable( id_LEADER_UNDERLINE,	false );
-
 	// buttons
 	_controlEnable( id_BUTTON_SET,			false );
 	_controlEnable( id_BUTTON_CLEAR,		false );
@@ -198,6 +192,7 @@ void AP_Dialog_Tab::_event_TabSelected( UT_sint32 index )
 		// again.  Here, since enum is rel 0, i'm subtracting one and doing an
 		// ugly type cast
 		_setAlignment( pTabInfo->getType() );
+		_setLeader( pTabInfo->getLeader() );
 
 		_setTabEdit( _getTabDimensionString(index) );
 		
@@ -254,7 +249,7 @@ void AP_Dialog_Tab::_event_Set(void)
 	}
 	strcat(p_temp, buffer);
 	delete m_pszTabStops;
-	m_pszTabStops = p_temp;;
+	m_pszTabStops = p_temp;
 
 	UT_ASSERT(m_pFrame); // needs to be set from runModal for some of the event_'s to work
 
@@ -412,15 +407,14 @@ void AP_Dialog_Tab::clearList()
 }
 
 
-void AP_Dialog_Tab::buildTab( char *buffer, UT_uint32 /*bufflen*/ )
+void AP_Dialog_Tab::buildTab( char *buffer, UT_uint32 bufflen )
 {
 	// get current value from member
 	const XML_Char* szOld = _gatherTabEdit();
 	const XML_Char* szNew = UT_reformatDimensionString(m_dim, szOld); 
 
-	// TODO - use snprintf
-
-	sprintf( buffer, "%s/%c", szNew, AlignmentToChar(_gatherAlignment()));
+	snprintf( buffer, bufflen, "%s/%c%c", szNew, AlignmentToChar(_gatherAlignment()),
+		 				((char)_gatherLeader())+'0');
 }
 
 void AP_Dialog_Tab::_event_somethingChanged()
@@ -436,10 +430,13 @@ void AP_Dialog_Tab::_event_somethingChanged()
 	bool bEnableSet   = true;		// only disabled if current selection exactly matches current ones
 										// or there are no items in the list.
 
+// this just looks broken for the initial tab thingie.
+#if 0
 	if(m_tabInfo.getItemCount() == 0)
 	{
 		bEnableSet = false;
 	}
+#endif
 
 	for ( UT_uint32 i = 0; i < m_tabInfo.getItemCount(); i++ )
 	{
