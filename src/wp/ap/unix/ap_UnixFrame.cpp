@@ -381,9 +381,10 @@ void AP_UnixFrame::toggleLeftRuler(bool bRulerOn)
 //
 // if there is an old ruler just return.
 //
-		if(pFrameImpl->m_leftRuler)
+		AP_LeftRuler * pLeft = pFrameData->m_pLeftRuler;
+		if(pLeft)
 		{
-			return;
+			delete pLeft;
 		}
 		pUnixLeftRuler = new AP_UnixLeftRuler(this);
 		UT_ASSERT(pUnixLeftRuler);
@@ -394,17 +395,19 @@ void AP_UnixFrame::toggleLeftRuler(bool bRulerOn)
 				 (GtkAttachOptions)(GTK_FILL),
 				 (GtkAttachOptions)(GTK_EXPAND | GTK_FILL),
 				 0,0);
-
-		pUnixLeftRuler->setView(m_pView);
+		FV_View * pView = static_cast<FV_View *>(m_pView);
+		UT_uint32 iZoom = pView->getGraphics()->getZoomPercentage();
+		static_cast<AP_LeftRuler *>(pUnixLeftRuler)->setView(m_pView,iZoom);
 		setYScrollRange();
 	}
 	else
 	{
 	    if (pFrameImpl->m_leftRuler && GTK_IS_OBJECT(pFrameImpl->m_leftRuler))
-		gtk_object_destroy(GTK_OBJECT(pFrameImpl->m_leftRuler) );
+			gtk_object_destroy(GTK_OBJECT(pFrameImpl->m_leftRuler) );
 	    
 	    DELETEP(((AP_FrameData*)m_pData)->m_pLeftRuler);
 	    pFrameImpl->m_leftRuler = NULL;
+		static_cast<FV_View *>(m_pView)->setLeftRuler(NULL);
 	}
 
 	static_cast<AP_FrameData*>(m_pData)->m_pLeftRuler = pUnixLeftRuler;

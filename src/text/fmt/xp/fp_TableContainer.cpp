@@ -216,7 +216,7 @@ void fp_CellContainer::_getBrokenRect(fp_TableContainer * pBroke, fp_Page * &pPa
 		{
 			pCol = static_cast<fp_Column *>(getColumn());
 			pPage->getScreenOffsets(pCol,col_x,col_y);
-			fp_Container * pCon = static_cast<fp_Container *>(getContainer());
+			fp_Container * pCon = static_cast<fp_Container *>(this);
 			while(!pCon->isColumnType())
 			{
 				col_x += pCon->getX();
@@ -235,6 +235,15 @@ void fp_CellContainer::_getBrokenRect(fp_TableContainer * pBroke, fp_Page * &pPa
 
 void fp_CellContainer::clearScreen(void)
 {
+	fp_Container * pUpCon = getContainer();
+	if(pUpCon == NULL)
+	{
+		return;
+	}
+	if(pUpCon->getY() == INITIAL_Y_POS)
+	{
+		return;
+	}
 // only clear the embeded containers if no background is set: the background clearing will also these containers
 // FIXME: should work, but doesn't??
 //	if (m_iBgStyle == FS_OFF)
@@ -343,7 +352,11 @@ void fp_CellContainer::_clear(fp_TableContainer * pBroke)
 	}
 	UT_Rect bRec;
 	fp_Page * pPage = NULL;
-	_getBrokenRect(pBroke, pPage, bRec);	
+	_getBrokenRect(pBroke, pPage, bRec);
+	if(bRec.top < 0)
+	{
+		return;
+	}
 	if (pPage != NULL)
 	{
 		if (getGraphics()->queryProperties(GR_Graphics::DGP_SCREEN))
@@ -408,6 +421,7 @@ void fp_CellContainer::_clear(fp_TableContainer * pBroke)
 //       parent container should be asked to redraw the exposed area
 //		if (background.m_t_background != PP_PropertyMap::background_none)
 		{
+			xxx_UT_DEBUGMSG(("_clear: BRec.top %d \n",bRec.top));
 			getGraphics()->fillRect (page_color,bRec.left,bRec.top,bRec.width,bRec.height);
 		}
 	}
@@ -2586,12 +2600,14 @@ fp_ContainerObject * fp_TableContainer::VBreakAt(UT_sint32 vpos)
 void fp_TableContainer::setY(UT_sint32 i)
 {
 	bool bIsFirstBroken = false;
+	xxx_UT_DEBUGMSG(("fp_TableContainer: setY set to %d \n",i));
 	if(isThisBroken())
 	{
 		UT_DEBUGMSG(("setY: getMasterTable %x FirstBrokenTable %x this %x \n",getMasterTable(),getMasterTable()->getFirstBrokenTable(),this));
-		return;
 		if(getMasterTable()->getFirstBrokenTable() != this)
 		{
+			UT_DEBUGMSG(("setY: Later broken table set to %d \n",i));
+			fp_VerticalContainer::setY(i);
 			return;
 		}
 		bIsFirstBroken = true;

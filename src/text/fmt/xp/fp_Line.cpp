@@ -833,6 +833,7 @@ void fp_Line::clearScreenFromRunToEnd(fp_Run * ppRun)
 	{
 		return;
 	}
+
 	fp_Run * pRun = NULL;
 	UT_sint32 count =  m_vecRuns.getItemCount();
 	if(count > 0)
@@ -915,6 +916,7 @@ void fp_Line::clearScreenFromRunToEnd(UT_uint32 runIndex)
 	{
 		return;
 	}
+
 	//fp_Run* pRun = static_cast<fp_Run*>(m_vecRuns.getNthItem(runIndex));
 	fp_Run* pRun; //#TF initialization not needed
 	UT_sint32 count = m_vecRuns.getItemCount();

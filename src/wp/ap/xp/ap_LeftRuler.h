@@ -120,6 +120,11 @@ public:
 
 	virtual void		setView(AV_View * pView);
 	void				setView(AV_View* pView, UT_uint32 iZoom);
+	void				setViewHidden(AV_View* pView);
+	bool                isHidden(void) const
+		{ return m_bIsHidden;}
+	AV_View *           getView(void) const
+		{return m_pView;}
 	void				setHeight(UT_uint32 iHeight);
 	UT_uint32			getHeight(void) const;
 	void				setWidth(UT_uint32 iWidth);
@@ -217,6 +222,7 @@ private:
 	UT_Rect             m_draggingRect;
 	UT_sint32           m_minPageLength;
 	PT_DocPosition       m_draggingDocPos;
+	bool                m_bIsHidden;
 };
 
 #endif /* AP_LEFTRULER_H */

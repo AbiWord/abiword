@@ -10669,9 +10669,14 @@ Defun(beginHDrag)
 	CHECK_FRAME;
 	ABIWORD_VIEW;
 	AP_LeftRuler * pLeftRuler = pView->getLeftRuler();
-	if(!pLeftRuler)
+	if(pLeftRuler == NULL)
 	{
-		return true;
+		XAP_Frame * pFrame = static_cast<XAP_Frame *> (pView->getParentData());
+		pLeftRuler = new AP_LeftRuler(pFrame);
+		AP_FrameData *pFrameData = static_cast<AP_FrameData *>(pFrame->getFrameData());
+		pFrameData->m_pLeftRuler = pLeftRuler;
+		pView->setLeftRuler(pLeftRuler);
+		pLeftRuler->setViewHidden(pView);
 	}
 	pView->setDragTableLine(true);
 	UT_sint32 x = pCallData->m_xPos;
@@ -10716,10 +10721,6 @@ Defun(dragVline)
 	{
 		pTopRuler->setViewHidden(pView);
 	}
-	if(!pTopRuler)
-	{
-		return true;
-	}
 	UT_sint32 x = pCallData->m_xPos + siFixed;
 	pView->getGraphics()->setCursor(GR_Graphics::GR_CURSOR_GRAB);
 	EV_EditModifierState ems = 0; 
@@ -10737,6 +10738,10 @@ Defun(dragHline)
 	if(!pLeftRuler)
 	{
 		return true;
+	}
+	if(pLeftRuler->getView() == NULL)
+	{
+		pLeftRuler->setViewHidden(pView);
 	}
 	UT_sint32 y = pCallData->m_yPos;
 	pView->getGraphics()->setCursor(GR_Graphics::GR_CURSOR_GRAB);

@@ -31,7 +31,7 @@
 #include "fp_Page.h"
 #include "fl_DocLayout.h"
 #include "fp_ContainerObject.h"
-
+#define INITIAL_Y_POS -99999999
 class fl_EndnoteSectionLayout;
 class fl_HdrFtrSectionLayout;
 class fl_DocSectionLayout;

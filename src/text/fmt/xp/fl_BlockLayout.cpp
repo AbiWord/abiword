@@ -4311,7 +4311,16 @@ fl_BlockLayout::doclistener_deleteStrux(const PX_ChangeRecord_Strux* pcrx)
 // Do this before all the required info is deleted.
 //
 	updateEnclosingBlockIfNeeded();
-
+	fp_Container * pCon = getFirstContainer();
+	if(pCon)
+	{
+		fp_Page * pPage = pCon->getPage();
+		getDocSectionLayout()->setNeedsSectionBreak(true,pPage);
+	}
+	else
+	{
+		getDocSectionLayout()->setNeedsSectionBreak(true,NULL);
+	}
 	// Erase the old version.  Or this what I added when adding the
 	// EOP stuff. Only, I don't remember why I did it, and it's wrong:
 	// the strux is deleted only after its content has been deleted -

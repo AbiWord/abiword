@@ -44,7 +44,7 @@ fp_VerticalContainer::fp_VerticalContainer(FP_ContainerType iType, fl_SectionLay
 	m_iHeight(0),
 	m_iMaxHeight(0),
 	m_iX(0),
-	m_iY(0),
+	m_iY(INITIAL_Y_POS),
 	m_bIntentionallyEmpty(0),
 	m_imaxContainerHeight(0)
 {
@@ -423,7 +423,10 @@ UT_sint32	fp_VerticalContainer::getColumnGap(void) const
  */
 bool fp_VerticalContainer::addContainer(fp_Container* pNewContainer)
 {
-	pNewContainer->clearScreen();
+	if(pNewContainer->getContainer() != NULL)
+	{
+		pNewContainer->clearScreen();
+	}
 	addCon(pNewContainer);
 	pNewContainer->setContainer(this);
 	pNewContainer->recalcMaxWidth(true);
