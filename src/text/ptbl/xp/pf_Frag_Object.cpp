@@ -68,106 +68,106 @@ pf_Frag_Object::pf_Frag_Object(pt_PieceTable * pPT,
         {
             fieldType = fd_Field::FD_ListLabel;
         }
-	else if (0 == UT_strcmp(pszType, "file_name"))
-	  {
-	    fieldType = fd_Field::FD_FileName;
-	  }
-	else if (0 == UT_strcmp(pszType, "date"))
-	  {
-	    fieldType = fd_Field::FD_Date;
-	  }
-	else if (0 == UT_strcmp(pszType, "date_mmddyy"))
-	  {
-	    fieldType = fd_Field::FD_Date_MMDDYY;
-	  }
-	else if (0 == UT_strcmp(pszType, "date_ddmmyy"))
-	  {
-	    fieldType = fd_Field::FD_Date_DDMMYY;
-	  }
-	else if (0 == UT_strcmp(pszType, "date_mdy"))
-	  {
-	    fieldType = fd_Field::FD_Date_MDY;
-	  }
-	else if (0 == UT_strcmp(pszType, "date_mthdy"))
-	  {
-	    fieldType = fd_Field::FD_Date_MthDY;
-	  }
-	else if (0 == UT_strcmp(pszType, "date_dfl"))
-	  {
-	    fieldType = fd_Field::FD_Date_DFL;
-	  }
-	else if (0 == UT_strcmp(pszType, "date_ntdfl"))
-	  {
-	    fieldType = fd_Field::FD_Date_NTDFL;
-	  }
-	else if (0 == UT_strcmp(pszType, "date_wkday"))
-	  {
-	    fieldType = fd_Field::FD_Date_Wkday;
-	  }
-	else if (0 == UT_strcmp(pszType, "date_doy"))
-	  {
-	    fieldType = fd_Field::FD_Date_DOY;
-	  }
-	else if (0 == UT_strcmp(pszType, "time_miltime"))
-	  {
-	    fieldType = fd_Field::FD_Time_MilTime;
-	  }
-	else if (0 == UT_strcmp(pszType, "time_ampm"))
-	  {
-	    fieldType = fd_Field::FD_Time_AMPM;
-	  }
-	else if (0 == UT_strcmp(pszType, "time_zone"))
-	  {
-	    fieldType = fd_Field::FD_Time_Zone;
-	  }
-	else if (0 == UT_strcmp(pszType, "time_epoch"))
-	  {
-	    fieldType = fd_Field::FD_Time_Epoch;
-	  }
-	else if (0 == UT_strcmp(pszType, "word_count"))
-	  {
-	    fieldType = fd_Field::FD_Doc_WordCount;
-	  }
-	else if (0 == UT_strcmp(pszType, "char_count"))
-	  {
-	    fieldType = fd_Field::FD_Doc_CharCount;
-	  }
-	else if (0 == UT_strcmp(pszType, "line_count"))
-	  {
-	    fieldType = fd_Field::FD_Doc_LineCount;
-	  }
-	else if (0 == UT_strcmp(pszType, "para_count"))
-	  {
-	    fieldType = fd_Field::FD_Doc_ParaCount;
-	  }
-	else if (0 == UT_strcmp(pszType, "nbsp_count"))
-	  {
-	    fieldType = fd_Field::FD_Doc_NbspCount;
-	  }
-	else if (0 == UT_strcmp(pszType, "app_ver"))
-	  {
-	    fieldType = fd_Field::FD_App_Version;
-	  }
-	else if (0 == UT_strcmp(pszType, "app_id"))
-	  {
-	    fieldType = fd_Field::FD_App_ID;
-	  }
-	else if (0 == UT_strcmp(pszType, "app_options"))
-	  {
-	    fieldType = fd_Field::FD_App_Options;
-	  }
-	else if (0 == UT_strcmp(pszType, "app_target"))
-	  {
-	    fieldType = fd_Field::FD_App_Target;
-	  }
-	else if (0 == UT_strcmp(pszType, "app_compiledate"))
-	  {
-	    fieldType = fd_Field::FD_App_CompileDate;
-	  }
-	else if (0 == UT_strcmp(pszType, "app_compiletime"))
-	  {
-	    fieldType = fd_Field::FD_App_CompileTime;
-	  }
+		else if (0 == UT_strcmp(pszType, "file_name"))
+		{
+			fieldType = fd_Field::FD_FileName;
+		}
+		else if (0 == UT_strcmp(pszType, "date"))
+		{
+			fieldType = fd_Field::FD_Date;
+		}
+		else if (0 == UT_strcmp(pszType, "date_mmddyy"))
+		{
+			fieldType = fd_Field::FD_Date_MMDDYY;
+		}
+		else if (0 == UT_strcmp(pszType, "date_ddmmyy"))
+		{
+			fieldType = fd_Field::FD_Date_DDMMYY;
+		}
+		else if (0 == UT_strcmp(pszType, "date_mdy"))
+		{
+			fieldType = fd_Field::FD_Date_MDY;
+		}
+		else if (0 == UT_strcmp(pszType, "date_mthdy"))
+		{
+			fieldType = fd_Field::FD_Date_MthDY;
+		}
+		else if (0 == UT_strcmp(pszType, "date_dfl"))
+		{
+			fieldType = fd_Field::FD_Date_DFL;
+		}
+		else if (0 == UT_strcmp(pszType, "date_ntdfl"))
+		{
+			fieldType = fd_Field::FD_Date_NTDFL;
+		}
+		else if (0 == UT_strcmp(pszType, "date_wkday"))
+		{
+			fieldType = fd_Field::FD_Date_Wkday;
+		}
+		else if (0 == UT_strcmp(pszType, "date_doy"))
+		{
+			fieldType = fd_Field::FD_Date_DOY;
+		}
+		else if (0 == UT_strcmp(pszType, "time_miltime"))
+		{
+			fieldType = fd_Field::FD_Time_MilTime;
+		}
+		else if (0 == UT_strcmp(pszType, "time_ampm"))
+		{
+			fieldType = fd_Field::FD_Time_AMPM;
+		}
+		else if (0 == UT_strcmp(pszType, "time_zone"))
+		{
+			fieldType = fd_Field::FD_Time_Zone;
+		}
+		else if (0 == UT_strcmp(pszType, "time_epoch"))
+		{
+			fieldType = fd_Field::FD_Time_Epoch;
+		}
+		else if (0 == UT_strcmp(pszType, "word_count"))
+		{
+			fieldType = fd_Field::FD_Doc_WordCount;
+		}
+		else if (0 == UT_strcmp(pszType, "char_count"))
+		{
+			fieldType = fd_Field::FD_Doc_CharCount;
+		}
+		else if (0 == UT_strcmp(pszType, "line_count"))
+		{
+			fieldType = fd_Field::FD_Doc_LineCount;
+		}
+		else if (0 == UT_strcmp(pszType, "para_count"))
+		{
+			fieldType = fd_Field::FD_Doc_ParaCount;
+		}
+		else if (0 == UT_strcmp(pszType, "nbsp_count"))
+		{
+			fieldType = fd_Field::FD_Doc_NbspCount;
+		}
+		else if (0 == UT_strcmp(pszType, "app_ver"))
+		{
+			fieldType = fd_Field::FD_App_Version;
+		}
+		else if (0 == UT_strcmp(pszType, "app_id"))
+		{
+			fieldType = fd_Field::FD_App_ID;
+		}
+		else if (0 == UT_strcmp(pszType, "app_options"))
+		{
+			fieldType = fd_Field::FD_App_Options;
+		}
+		else if (0 == UT_strcmp(pszType, "app_target"))
+		{
+			fieldType = fd_Field::FD_App_Target;
+		}
+		else if (0 == UT_strcmp(pszType, "app_compiledate"))
+		{
+			fieldType = fd_Field::FD_App_CompileDate;
+		}
+		else if (0 == UT_strcmp(pszType, "app_compiletime"))
+		{
+			fieldType = fd_Field::FD_App_CompileTime;
+		}
         else
         { 
             UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
