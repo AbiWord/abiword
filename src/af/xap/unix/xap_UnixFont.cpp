@@ -178,7 +178,8 @@ XAP_UnixFont::XAP_UnixFont(const XAP_UnixFont & copy)
 	m_fontKey = NULL;
 
 	openFileAs(copy.getFontfile(), copy.getMetricfile(), copy.getName(), copy.getXLFD(), copy.getStyle());
-
+	m_bIsSymbol = copy.m_bIsSymbol;
+	m_bIsDingbat = copy.m_bIsDingbat;
 	m_pEncodingTable = NULL;
 	m_iEncodingTableSize = 0;
 	if (copy.getEncodingTable())
@@ -237,7 +238,7 @@ bool XAP_UnixFont::doesGlyphExist(UT_UCS4Char g)
 			return true;
 		}
 		g = ig;
-		UT_DEBUGMSG(("Symbol Glyph remapped to %x \n",g));
+		xxx_UT_DEBUGMSG(("Symbol Glyph remapped to %x \n",g));
 	}
 	if(m_bIsDingbat)
 	{

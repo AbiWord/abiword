@@ -395,7 +395,15 @@ XAP_UnixFontManager::forceFontSynth(XAP_UnixFontManager* pFontManager,
 	  UT_UTF8String pMetricFile (pNewFont->getMetricfile());
 	  
 	  pNewFont->setStyle(xap_pszFontStyle);
-	  UT_UTF8String newFontXLFD(pszFontFamily);
+	  UT_UTF8String newFontXLFD;
+	  if(pNewFont->isSymbol())
+	  {
+		  newFontXLFD = "Standard Symbols L";
+	  }
+	  else
+	  {
+		  newFontXLFD = pszFontFamily;
+	  }
 	  newFontXLFD += ":slant=";
 	  newFontXLFD += pszFontSlant;
 	  newFontXLFD += ":weight=";
@@ -550,6 +558,7 @@ void XAP_UnixFontManager::_addFont(XAP_UnixFont * newfont,GR_Graphics * pG)
 // be a pointer to this font in fp_Run as well as being in the GR_Graphics
 // font cache.
 //
+		UT_DEBUGMSG(("Deallocate %x \n",curfont));
 		m_vecDeallocatedFonts.addItem(curfont);
 		if(pG)
 		{
@@ -566,6 +575,7 @@ void XAP_UnixFontManager::_addFont(XAP_UnixFont * newfont,GR_Graphics * pG)
 	   so we replace original font (that is standard) 
 	   unconditionally.
 	*/
+	xxx_UT_DEBUGMSG(("Made newfont %x \n",newfont));
 
 	m_fontHash.insert(fontkey, static_cast<void *>(newfont));
 }

@@ -2985,6 +2985,10 @@ bool FV_View::getStyle(const XML_Char ** style)
 		fp_Run* pRun;
 
 		_findPositionCoords(posStart, false, xPoint, yPoint, xPoint2, yPoint2, iPointHeight, bDirection, &pBlock, &pRun);
+		if(pBlock == NULL)
+		{
+			return false;
+		}
 		UT_uint32 blockPosition = pBlock->getPosition();
 		bool bLeftSide = true;
 

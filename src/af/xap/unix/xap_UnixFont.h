@@ -105,7 +105,8 @@ class ABI_EXPORT XAP_UnixFont
 
 	void					setXLFD(const char * xlfd);
 	const char * 			getXLFD(void) const;
-	
+	bool                    isSymbol(void)
+		{ return m_bIsSymbol;}
 	bool					embedInto(ps_Generate& ps);
 	bool					openPFA(void);
 	char					getPFAChar(void);

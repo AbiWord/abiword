@@ -508,10 +508,10 @@ const char* GR_Graphics::findNearestFont(const char* pszFontFamily,
 										 const char* pszFontStretch,
 										 const char* pszFontSize)
 {
-	UT_DEBUGMSG(("Find Font findNearestFont for %s \n",pszFontFamily));
+	xxx_UT_DEBUGMSG(("Find Font findNearestFont for %s \n",pszFontFamily));
 	XAP_UnixFont* pUnixFont = XAP_UnixFontManager::pFontManager->findNearestFont(pszFontFamily, pszFontStyle, pszFontVariant, pszFontWeight,
 																				 pszFontStretch, pszFontSize);
-	UT_DEBUGMSG(("Return Font name %s \n",pUnixFont->getName()));
+	xxx_UT_DEBUGMSG(("Return Font name %s \n",pUnixFont->getName()));
 	//	UT_ASSERT(0);
 	return pUnixFont->getName();
 }
@@ -795,7 +795,7 @@ void GR_UnixGraphics::drawGlyph(UT_uint32 Char, UT_sint32 xoff, UT_sint32 yoff)
 	if(m_bIsSymbol && (iChar < 255)  && (iChar >= 32))
 	{
 		iChar = adobeToUnicode(Char);
-		xxx_UT_DEBUGMSG(("DrawGlyph 1 remapped %d to %d \n",Char,iChar));
+		xxx_UT_DEBUGMSG(("DrawGlyph 1 Symbol remapped %d to %d \n",Char,iChar));
 	}
 	if(m_bIsDingbat && (iChar < 255)  && (iChar >= 32))
 	{
@@ -882,7 +882,7 @@ void GR_UnixGraphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
 			if(m_bIsSymbol && uChar < 255 && uChar >=32)
 			{
 				pCharSpec[i].ucs4 = static_cast<FT_UInt>(adobeToUnicode(uChar));
-				xxx_UT_DEBUGMSG(("DrawGlyph 2 remapped %d to %d \n",uChar,pCharSpec[i].ucs4));
+				xxx_UT_DEBUGMSG(("DrawGlyph 2 Symbol remapped %d to %d \n",uChar,pCharSpec[i].ucs4));
 			}
 			else if(m_bIsDingbat && uChar < 255 && uChar >=32)
 			{
@@ -951,9 +951,9 @@ void GR_UnixGraphics::setFont(GR_Font * pFont)
 	// how to communicate this back to fp_Run and fully solve this right now 
 	// - Martin
 
-	XAP_UnixFont * pUnixFont = pUFont->getUnixFont();
-	//	bool bDealloc = m_pFontManager->isDeallocated(pUnixFont);
-	//UT_ASSERT(!bDealloc);
+	//	XAP_UnixFont * pUnixFont = pUFont->getUnixFont();
+	//  bool bDealloc = m_pFontManager->isDeallocated(pUnixFont);
+	//  UT_ASSERT(!bDealloc);
 
 	if(m_pFont && (pUFont->getUnixFont() == m_pFont->getUnixFont()) &&
 	   (pUFont->getSize() == m_pFont->getSize()))
@@ -1026,6 +1026,7 @@ UT_sint32 GR_UnixGraphics::measureUnRemappedChar(const UT_UCSChar c)
 	else if(m_bIsSymbol)
 	{
 		newChar = static_cast<UT_UCSChar>(adobeToUnicode(c));
+		xxx_UT_DEBUGMSG(("Measure width of remappedd Symbol %x \n",newChar));
 	}
 	else
 	{
@@ -1131,7 +1132,7 @@ GR_Font * GR_UnixGraphics::_findFont(const char* pszFontFamily,
 									 const char* pszFontStretch,
 									 const char* pszFontSize)
 {
-	UT_DEBUGMSG(("Find Font _findFont for %s \n",pszFontFamily));
+	xxx_UT_DEBUGMSG(("Find Font _findFont for %s \n",pszFontFamily));
 	XAP_UnixFont* pUnixFont = m_pFontManager->findNearestFont(pszFontFamily, pszFontStyle, pszFontVariant, pszFontWeight,
 															  pszFontStretch, pszFontSize,this);
 
@@ -1139,7 +1140,7 @@ GR_Font * GR_UnixGraphics::_findFont(const char* pszFontFamily,
 	UT_uint32 iSize = static_cast<UT_uint32>(UT_convertToPoints(pszFontSize));
 	XAP_UnixFontHandle* pFont = new XAP_UnixFontHandle(pUnixFont, iSize);
 	UT_ASSERT(pFont);
-	UT_DEBUGMSG(("Return Font name %s \n",pUnixFont->getName())); 
+	xxx_UT_DEBUGMSG(("Return Font name %s \n",pUnixFont->getName())); 
 	return pFont;
 }
 

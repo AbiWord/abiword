@@ -124,7 +124,7 @@ void fp_TextRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 	{
 		bDontClear = true;
 	}
-	xxx_UT_DEBUGMSG(("Lookup props in text run \n"));
+	UT_DEBUGMSG(("Lookup props in text run \n"));
 	fd_Field * fd = NULL;
 	static_cast<fl_Layout *>(getBlock())->getField(getBlockOffset(),fd);
 	_setField(fd);
@@ -215,6 +215,7 @@ void fp_TextRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 	GR_Font * pFont;
 
 	pFont = const_cast<GR_Font *>(pLayout->findFont(pSpanAP,pBlockAP,pSectionAP));
+	UT_DEBUGMSG(("Old font %x new font %x \n",_getFont(),pFont));
 	if (_getFont() != pFont)
 	{
 		_setFont(pFont);
