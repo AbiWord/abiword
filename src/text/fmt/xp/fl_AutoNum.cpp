@@ -34,6 +34,8 @@
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
 
+#include "ut_string_class.h"
+
 #define CONV_TO_UCS (UT_UCSChar) (unsigned char)
 
 class pf_Frag;
@@ -959,90 +961,90 @@ inline UT_uint32 fl_AutoNum::_getLevelValue(fl_AutoNum * pAutoNum)
 
 char *  fl_AutoNum::dec2roman(UT_sint32 value, bool lower) 
 {
-	char roman[80];		//Pretty big number if you ask me
-
-	roman[0] = '\0';
+	UT_String roman;
 
 	while( value >= 1000 )
 	{
-		strcat( roman, "M" );
+		roman += "M";
 		value -= 1000;
 	}
 	if( value >= 900 )
 	{
-		strcat( roman, "CM" );
+		roman += "CM";
 		value -= 900;
 	}
 	while( value >= 500 )
 	{
-		strcat( roman, "D" );
+		roman += "D";
 		value -= 500;
 	}
 	if( value >= 400 )
 	{
-		strcat( roman, "CD" );
+		roman += "CD";
 		value -= 400;
 	}
 	while( value >= 100 )
 	{
-		strcat( roman, "C" );
+		roman += "C";
 		value -= 100;
 	}
 	if( value >= 90 )
 	{
-		strcat( roman, "XC" );
+		roman += "XC";
 		value -= 90;
 	}
 	while( value >= 50 )
 	{
-		strcat( roman, "L" );
+		roman += "L";
 		value -= 50;
 	}
 	if( value >= 40 )
 	{
-		strcat( roman, "XL" );
+		roman += "XL";
 		value -= 40;
 	}
 	while( value >= 10 )
 	{
-		strcat( roman, "X" );
+		roman += "X";
 		value -= 10;
 	}
 	if( value >= 9 )
 	{
-		strcat( roman, "IX" );
+		roman += "IX";
 		value -= 9;
 	}
 	while( value >= 5 )
 	{
-		strcat( roman, "V" );
+		roman += "V";
 		value -= 5;
 	}
 	if( value >= 4 )
 	{
-		strcat( roman, "IV" );
+		roman += "IV";
 		value -= 4;
 	}
 	while( value > 0 )
 	{
-		strcat( roman, "I" );
+		roman += "I";
 		value--;
 	}
+
+	char * rmn = UT_strdup (roman.c_str());
 
 	if (lower == true) 
 	{
 		int len;
-		len = strlen(roman);
+		len = roman.size();
 		while (--len >= 0) 
 		{
 			UT_sint32 r = (UT_sint32) roman[len];
 			if( (r >= (UT_sint32) 'A') && (r <= (UT_sint32) 'Z'))
 				r = r + 32;
-			roman[len] = (char) r;
+			rmn[len] = (char) r;
 		}
 	}
 
-	return UT_strdup(roman);
+	return rmn;
 }
 
 char * fl_AutoNum::dec2ascii(UT_sint32 value, UT_uint32 offset) 

@@ -30,6 +30,8 @@
 
 #include "fg_GraphicRaster.h"
 
+#include "ut_string_class.h"
+
 FG_Graphic* FG_GraphicRaster::createFromChangeRecord(const fl_Layout* pFL, 
 													 const PX_ChangeRecord_Object* pcro)
 {
@@ -185,17 +187,17 @@ UT_Error FG_GraphicRaster::insertIntoDocument(PD_Document* pDoc, double fDPI,
 	/*
 	  Insert the object into the document.
 	*/
-	char szProps[256];
+	UT_String szProps;
 
-	strcpy(szProps,"width:");
-	strcat(szProps,UT_convertInchesToDimensionString(DIM_IN, (double)m_iWidth/fDPI, "3.2"));
-	strcat(szProps,"; height:");
-	strcat(szProps,UT_convertInchesToDimensionString(DIM_IN, (double)m_iHeight/fDPI, "3.2"));
+	szProps += "width:";
+	szProps += UT_convertInchesToDimensionString(DIM_IN, (double)m_iWidth/fDPI, "3.2");
+	szProps += "; height:";
+	szProps += UT_convertInchesToDimensionString(DIM_IN, (double)m_iHeight/fDPI, "3.2");
 
 #ifndef __MRC__
 	const XML_Char*	attributes[] = {
 		"dataid", szName,
-		"PROPS", szProps,
+		"PROPS", szProps.c_str(),
 	   	NULL, NULL
 	};
 #else
