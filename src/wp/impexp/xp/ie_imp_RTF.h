@@ -559,6 +559,7 @@ private:
 	bool ParseChar(UT_UCSChar ch,bool no_convert=1);
 	bool ReadCharFromFileWithCRLF(unsigned char* pCh);
 	bool ReadCharFromFile(unsigned char* pCh);
+	UT_UCS4Char ReadHexChar(void);
 	bool SkipBackChar(unsigned char ch);
 	bool ReadKeyword(unsigned char* pKeyword, long* pParam, bool* pParamUsed,
 					 UT_uint32 keywordBuffLen);
