@@ -33,8 +33,7 @@
 #include "fv_View.h"
 #include "fl_DocLayout.h"
 #include "fl_BlockLayout.h"
-#include "fl_SectionLayout.h"
-#include "fl_AutoNum.h"
+#include "fl_SectionLayout.h"#include "fl_AutoNum.h"
 #include "fp_Page.h"
 #include "fp_Column.h"
 #include "fp_Line.h"
@@ -240,9 +239,10 @@ static void _toggleUpper (const UT_UCSChar * src,
 
 // first character after each space gets capitalized
 static void _toggleTitle (const UT_UCSChar * src, 
-			  UT_UCSChar * dest, UT_uint32 len)
+			  UT_UCSChar * dest, UT_uint32 len,
+                          bool spaceBeforeFirstChar)
 {
-  bool wasSpace = false;
+  bool wasSpace = spaceBeforeFirstChar;
 
   UT_UCSChar ch;
   
@@ -282,6 +282,34 @@ static void _toggleToggle (const UT_UCSChar * src,
     }
 }
 
+// returns true iff the character BEFORE pos is a space.
+// Special cases:
+// -returns true if pos is at the beginning of the document
+// -returns false if pos is not within the document
+bool FV_View::_isSpaceBefore(PT_DocPosition pos)
+{
+      UT_GrowBuf buffer;
+
+      fl_BlockLayout * block = m_pLayout->findBlockAtPosition(pos);
+      if (block)
+      {
+
+            PT_DocPosition offset = pos - block->getPosition(false);
+            // Just look at the previous character in this block, if there is one...
+            if (offset > 0)
+            {
+                  block->getBlockBuf(&buffer);
+                  return (UT_UCS_isspace(*(UT_UCSChar *)buffer.getPointer(offset - 1)));
+            }
+            else
+            {      
+                  return true;
+            }
+      }
+      else
+            return false;
+}
+
 void FV_View::toggleCase (ToggleCase c)
 {
   // 1. get selection
@@ -294,8 +322,10 @@ void FV_View::toggleCase (ToggleCase c)
     return;
 
   UT_UCSChar * cur, * replace;
+  UT_GrowBuf buffer;
 
   cur = getSelectionText();
+  PT_DocPosition low = (m_iInsPoint < m_iSelectionAnchor ? m_iInsPoint : m_iSelectionAnchor);
 
   if (!cur)
     return;
@@ -317,7 +347,7 @@ void FV_View::toggleCase (ToggleCase c)
     case CASE_UPPER: _toggleUpper (cur, replace, replace_len);
       break;
 
-    case CASE_TITLE: _toggleTitle (cur, replace, replace_len);
+    case CASE_TITLE: _toggleTitle (cur, replace, replace_len, _isSpaceBefore(low));
       break;
 
     case CASE_TOGGLE: _toggleToggle (cur, replace, replace_len);
@@ -3207,16 +3237,16 @@ void FV_View::delTo(FV_DocPos dp)
 */
 UT_UCSChar * FV_View::getSelectionText(void)
 {
-	UT_ASSERT(!isSelectionEmpty());
-
-	UT_GrowBuf buffer;	
-
-	UT_uint32 selLength = labs(m_iInsPoint - m_iSelectionAnchor);
-
-	PT_DocPosition low;
-	if (m_iInsPoint > m_iSelectionAnchor)
-	{
-		low = m_iSelectionAnchor;
+  	UT_ASSERT(!isSelectionEmpty());
+  
+ 	UT_GrowBuf buffer;	
+  
+  	UT_uint32 selLength = labs(m_iInsPoint - m_iSelectionAnchor);
+  
+ 	PT_DocPosition low;
+  	if (m_iInsPoint > m_iSelectionAnchor)
+  	{
+  		low = m_iSelectionAnchor;
 	}
 	else
 	{

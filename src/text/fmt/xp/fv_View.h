@@ -412,6 +412,8 @@ protected:
 
 	void				_checkPendingWordForSpell(void);
 
+        bool                            _isSpaceBefore(PT_DocPosition pos);
+
 	PT_DocPosition		m_iInsPoint;
 	UT_sint32			m_xPoint;
 	UT_sint32			m_yPoint;
