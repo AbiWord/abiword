@@ -1,3 +1,4 @@
+/* -*- c-basic-offset: 4; tab-width: 4; indent-tabs-mode: t -*- */
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
  * 
@@ -23,8 +24,11 @@
 
 #include <stdio.h>
 #include "ie_imp.h"
-#include"ut_mbtowc.h"
+#include "ut_mbtowc.h"
+#include "ut_growbuf.h"
+
 class PD_Document;
+class UT_ByteBuf;
 
 // The importer/reader for Applix Word files
 
@@ -55,7 +59,8 @@ public:
 
 	virtual UT_Error	importFile(const char * szFilename);
 	virtual void		pasteFromBuffer(PD_DocumentRange * pDocRange,
-										unsigned char * pData, UT_uint32 lenData);
+						unsigned char * pData, 
+						UT_uint32 lenData);
 	
 protected:
 	UT_Error			_parseFile(FILE * fp);
@@ -64,7 +69,57 @@ protected:
  private:
 	bool m_bLastWasP;
 	bool m_bInT;
-
+	UT_GrowBuf m_textBuf;
+	UT_Mbtowc		m_mbtowc;
+	
+	// the applix tags that i know about && maybe handle
+	typedef enum {
+	    APPLIX_T,
+	    GLOBALS_T,
+	    START_STYLES_T,
+	    STYLE_T,
+	    COLOR_T,
+	    END_STYLES_T,
+	    START_FLOW_T,			  
+	    WP400_T,
+	    TEXT_T,
+	    PARA_T,
+	    END_FLOW_T,
+	    START_VARS_T,
+	    VARIABLE_T,
+	    END_VARS_T,
+	    END_DOCUMENT_T,
+		OBJECT_T,
+		PICTURE_T,
+		SECTION_T,
+		MARKER_T,
+	    NOT_A_TAG, 
+	    tag_Unknown
+	} Applix_tag_t;
+	
+	void                    _dispatchTag (Applix_tag_t tag, const char *buf, size_t len);
+	// tokenizer helpers
+	typedef struct {
+	    char * name;
+	    Applix_tag_t tag;
+	} Applix_mapping_t;
+	static Applix_mapping_t axwords[];
+	static Applix_tag_t     s_name_2_tag (const char *name, size_t n);
+	static Applix_tag_t     s_getTagName(const char *str, size_t len);
+	static void             s_8bitsToUCS (const char *str, size_t len, UT_UCSChar * c);
+	static void             s_16bitsToUCS (const char *str, size_t len, UT_UCSChar * c);
+	static void             s_decodeToUCS (const char *str, size_t len, UT_UCSChar * c);
+	bool                    _applixGetLine (UT_ByteBuf* pBuf, FILE *fp);
+	void                    _applixDecodeText (const char * buf, size_t len);
 };
 
 #endif /* IE_IMP_APPLIX_H */
+
+
+
+
+
+
+
+
+
