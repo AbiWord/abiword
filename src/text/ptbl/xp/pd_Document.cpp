@@ -325,6 +325,7 @@ UT_Error PD_Document::importFile(const char * szFilename, int ieft,
 	else
 	  m_bForcedDirty = true; // force this to be dirty
 
+	XAP_App::getApp()->getPrefs()->addRecent(szFilename);
 	return UT_OK;
 }
 
@@ -389,6 +390,8 @@ UT_Error PD_Document::readFromFile(const char * szFilename, int ieft)
 	m_pPieceTable->setPieceTableState(PTS_Editing);
 	updateFields();
 	_setClean();							// mark the document as not-dirty
+
+	XAP_App::getApp()->getPrefs()->addRecent(szFilename);
 	return UT_OK;
 }
 
@@ -491,6 +494,7 @@ UT_Error PD_Document::saveAs(const char * szFilename, int ieft, bool cpy)
 	// record this as the last time the document was saved
 	m_lastSavedTime = time(NULL);
 
+	XAP_App::getApp()->getPrefs()->addRecent(szFilename);
 	return UT_OK;
 }
 
