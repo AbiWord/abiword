@@ -63,7 +63,7 @@ class IE_Exp_MsWord_97 : public IE_Exp
         wvStream* m_pMainStream;
         wvStream* m_pTableStream;
 	wvStream* m_pSummaryStream;
-        
+        wvStream* m_pDataStream;
 
 		// these are all overridden methods of the base class
 		// see comments in ie_exp_MsWord_97.cpp for explanation

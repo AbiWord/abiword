@@ -391,7 +391,7 @@ protected:
 	UT_Bool				m_bInBlock;
 	UT_Bool				m_bInSpan;
 	PT_AttrPropIndex	m_apiLastSpan;
-    FIB m_Fib;
+        FIB m_Fib;
 };
 
 /********************************************************/
@@ -436,8 +436,9 @@ UT_Bool IE_Exp_MsWord_97::_openFile(const char * szFileName)
     
     UT_DEBUGMSG(("Creating Streams\n"));
     m_pMainStream = wvStream_new(m_pWordDocument, "WordDocument");
-    m_pSummaryStream = wvStream_new(m_pWordDocument, "Summary");
     m_pTableStream = wvStream_new(m_pWordDocument, "0Table");    
+    m_pSummaryStream = wvStream_new(m_pWordDocument, "\005SummaryInformation");
+    m_pDataStream = wvStream_new(m_pWordDocument, "Data");
 
     UT_DEBUGMSG(("Streams Created\n"));
 
@@ -509,7 +510,6 @@ s_MsWord_97_Listener::s_MsWord_97_Listener(PD_Document * pDocument,
 {
 	m_pDocument = pDocument;
 	m_pie = pie;
-    
 
     UT_DEBUGMSG(("Beginning Word Export\n"));
 	// TODO: begin the output
@@ -727,7 +727,7 @@ void s_MsWord_97_Listener::_outputData(const UT_UCSChar * data, UT_uint32 length
 	}
 
 	if (pBuf > buf)
-	    wvStream_write(buf,1, pBuf-buf, m_pie->m_pMainStream);
+	  wvStream_write(buf,1, pBuf-buf, m_pie->m_pMainStream);
                    	
         
     m_Fib.fcMac=wvStream_tell(m_pie->m_pMainStream);

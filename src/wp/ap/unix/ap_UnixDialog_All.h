@@ -73,6 +73,7 @@
 #	include "ap_UnixGnomeDialog_Field.h"
 #       include "ap_UnixGnomeDialog_Lists.h"
 #       include "ap_UnixGnomeDialog_Columns.h"
+#       include "ap_UnixGnomeDialog_Tab.h"
 
 #endif
 
@@ -98,7 +99,7 @@
 	DeclareDialog(AP_DIALOG_ID_GOTO,			AP_UnixGnomeDialog_Goto)
 	DeclareDialog(AP_DIALOG_ID_BREAK,			AP_UnixGnomeDialog_Break)
 	DeclareDialog(AP_DIALOG_ID_SPELL,			AP_UnixDialog_Spell)
-	DeclareDialog(AP_DIALOG_ID_TAB,				AP_UnixDialog_Tab)
+	DeclareDialog(AP_DIALOG_ID_TAB,				AP_UnixGnomeDialog_Tab)
 	DeclareDialog(AP_DIALOG_ID_PARAGRAPH,		AP_UnixGnomeDialog_Paragraph)
 	DeclareDialog(AP_DIALOG_ID_OPTIONS,			AP_UnixGnomeDialog_Options)
 	DeclareDialog(AP_DIALOG_ID_INSERT_DATETIME,	AP_UnixDialog_Insert_DateTime)
