@@ -4659,6 +4659,20 @@ bool fl_BlockLayout::doclistener_changeStrux(const PX_ChangeRecord_StruxChange *
 //	This was...
 	setNeedsReformat();
 	updateEnclosingBlockIfNeeded();
+	//
+	// Need this to find where to break section in the document.
+	//
+	fl_ContainerLayout * pPrevCL = getPrev();
+	fp_Page * pPrevP = NULL;
+	if(pPrevCL)
+	{
+		fp_Container * pPrevCon = pPrevCL->getFirstContainer();
+		if(pPrevCon)
+		{
+			pPrevP = pPrevCon->getPage();
+		}
+	}
+	getDocSectionLayout()->setNeedsSectionBreak(true,pPrevP);
 
 	_assertRunListIntegrity();
 
