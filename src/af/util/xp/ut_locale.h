@@ -50,6 +50,10 @@ class UT_LocaleInfo
   UT_LocaleInfo (const char * locale);
   UT_LocaleInfo (const UT_String & locale);
 
+  // default copy and assignment constructors
+
+  static const UT_LocaleInfo system();
+
   bool hasLanguageField () const;
   bool hasTerritoryField () const;
   bool hasEncodingField () const;
@@ -59,6 +63,9 @@ class UT_LocaleInfo
   UT_String getEncodingField () const;
 
   UT_String toString () const;
+
+  bool operator==(const UT_LocaleInfo & rhs) const;
+  bool operator!=(const UT_LocaleInfo & rhs) const;
 
  private:
 

@@ -21,7 +21,7 @@
 #include <stdio.h>
 #include "ut_locale.h"
 
-// don't like XAP in UT, but oh wel...
+// don't like XAP in UT, but oh well...
 #include "xap_EncodingManager.h"
 
 /********************************************/
@@ -96,6 +96,11 @@ UT_LocaleInfo::UT_LocaleInfo (const char * locale)
 UT_LocaleInfo::UT_LocaleInfo (const UT_String & locale)
 {
   init (locale);
+}
+
+/* static */const UT_LocaleInfo UT_LocaleInfo::system()
+{
+  return UT_LocaleInfo();
 }
 
 /**
@@ -217,4 +222,18 @@ UT_String UT_LocaleInfo::toString () const
     }
 
   return ret;
+}
+
+bool UT_LocaleInfo::operator==(const UT_LocaleInfo & rhs) const
+{
+  if ((this->mLanguage  == rhs.mLanguage) && 
+      (this->mTerritory == rhs.mTerritory) &&
+      (this->mEncoding  == rhs.mEncoding))
+    return true;
+  return false;
+}
+
+bool UT_LocaleInfo::operator!=(const UT_LocaleInfo & rhs) const
+{
+  return (!(*this == rhs));
 }
