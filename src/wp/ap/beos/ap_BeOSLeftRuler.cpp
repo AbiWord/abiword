@@ -181,7 +181,6 @@ void  AP_BeOSLeftRuler::createWidget(BRect r)
 }
 
 void AP_BeOSLeftRuler::setView(AV_View * pView) {
-	printf("LEFTRULER: Set View \n");
 	AP_LeftRuler::setView(pView);
 
 	if (m_wLeftRuler && pView) {

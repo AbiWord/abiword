@@ -20,6 +20,7 @@
 #include "ut_string.h"
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
+#include "ut_types.h"
 
 #include "xap_App.h"
 #include "xap_BeOSApp.h"
@@ -49,6 +50,7 @@ AP_BeOSDialog_Paragraph::AP_BeOSDialog_Paragraph(XAP_DialogFactory * pDlgFactory
 
 AP_BeOSDialog_Paragraph::~AP_BeOSDialog_Paragraph(void)
 {
+//	DELETEP(m_pBeOSGraphics);
 }
 
 /*****************************************************************/

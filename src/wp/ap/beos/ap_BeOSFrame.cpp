@@ -274,7 +274,7 @@ void AP_BeOSFrame::setXScrollRange(void)
 	int width = ((AP_FrameData*)m_pData)->m_pDocLayout->getWidth();
 	be_Window *pBWin = (be_Window*)getTopLevelWindow();
         pBWin->Lock();
-        int windowWidth = pBWin->m_pbe_DocView->Bounds().Width();
+        int windowWidth = (int)pBWin->m_pbe_DocView->Bounds().Width();
         pBWin->Unlock();
         BScrollBar *hscroll = pBWin->m_hScroll;
 
@@ -315,7 +315,7 @@ void AP_BeOSFrame::setYScrollRange(void)
 	int height = ((AP_FrameData*)m_pData)->m_pDocLayout->getHeight();
 	be_Window *pBWin = (be_Window*)getTopLevelWindow();
         pBWin->Lock();
-        int windowHeight = pBWin->m_pbe_DocView->Bounds().Height();
+        int windowHeight = (int)pBWin->m_pbe_DocView->Bounds().Height();
         pBWin->Unlock();
         BScrollBar *vscroll = pBWin->m_vScroll;
 

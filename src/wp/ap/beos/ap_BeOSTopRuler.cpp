@@ -176,7 +176,6 @@ void AP_BeOSTopRuler::createWidget(BRect r)
 }
 
 void AP_BeOSTopRuler::setView(AV_View * pView) {
-	printf("TOPRULER: SetView \n");
 	AP_TopRuler::setView(pView);
 
 	if (m_wTopRuler && pView) {

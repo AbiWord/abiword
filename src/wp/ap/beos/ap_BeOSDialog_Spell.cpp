@@ -30,6 +30,71 @@
 #include "ap_Dialog_Spell.h"
 #include "ap_BeOSDialog_Spell.h"
 
+#include "ut_Rehydrate.h"
+
+/*****************************************************************/
+
+class SpellWin:public BWindow {
+	public:
+		SpellWin(BMessage *data);
+		void SetDlg(AP_BeOSDialog_Spell *dlg);
+		virtual void DispatchMessage(BMessage *msg, BHandler *handler);
+		virtual bool QuitRequested(void);
+		
+	private:
+                int                     spin;
+		AP_BeOSDialog_Spell 	*m_DlgSpell;
+};
+
+SpellWin::SpellWin(BMessage *data) 
+	  :BWindow(data) {
+	spin = 1;
+} 
+
+void SpellWin::SetDlg(AP_BeOSDialog_Spell *dlg) {
+	m_DlgSpell = dlg;
+
+	Show();
+	while (spin) { snooze(1); }
+	Hide();
+
+#if 0
+   UT_Bool bRes = nextMisspelledWord();
+   while (bRes) {
+ 	// show word in main window
+        makeWordVisible(); 
+
+	// update dialog with new misspelled word info/suggestions
+        //_showMisspelledWord();
+
+        // run into the GTK event loop for this window
+        //gtk_main();
+
+        //_purgeSuggestions();
+
+        if (m_bCancelled) break;
+
+        // get the next unknown word
+        bRes = nextMisspelledWord();                      
+   }
+#endif
+}
+
+void SpellWin::DispatchMessage(BMessage *msg, BHandler *handler) {
+	switch(msg->what) {
+	default:
+		BWindow::DispatchMessage(msg, handler);
+	}
+} 
+
+//Behave like a good citizen
+bool SpellWin::QuitRequested() {
+	spin = 0;
+	return(true);
+}
+
+
+/*****************************************************************/
 
 XAP_Dialog * AP_BeOSDialog_Spell::static_constructor(XAP_DialogFactory * pFactory, XAP_Dialog_Id id)
 {
@@ -52,7 +117,15 @@ void AP_BeOSDialog_Spell::runModal(XAP_Frame * pFrame)
    // call the base class method to initialize some basic xp stuff
    AP_Dialog_Spell::runModal(pFrame);
 
-   // TODO build the dialog, attach events, etc., etc.
-   UT_ASSERT(UT_NOT_IMPLEMENTED);
+   m_bCancelled = UT_FALSE;
+
+	BMessage msg;
+        SpellWin  *newwin;
+        if (RehydrateWindow("SpellWindow", &msg)) {
+                newwin = new SpellWin(&msg);
+                newwin->SetDlg(this);
+                //Take the information here ...
+                newwin->Close();
+        }                
 }
 
