@@ -345,13 +345,8 @@ void Win32Graphics::fillRect(UT_RGBColor& c, UT_sint32 x, UT_sint32 y, UT_sint32
 	RECT r;
 	r.left = x;
 	r.top = y;
-	/*
-		Note that we add 1 to the right and bottom edges because
-		Win32 FillRect does not deal with the right and bottom edge
-		of its rectangle argument.
-	*/
-	r.right = r.left + w + 1;
-	r.bottom = r.top + h + 1;
+	r.right = r.left + w;
+	r.bottom = r.top + h;
 
 	FillRect(m_hdc, &r, hBrush);
 	DeleteObject(hBrush);
@@ -419,7 +414,6 @@ void Win32Graphics::clearArea(UT_sint32 x, UT_sint32 y, UT_sint32 width, UT_sint
 void Win32Graphics::invertRect(const UT_Rect* pRect)
 {
 	RECT r;
-	// TODO why do we store a rect with width/height instead of right/bottom ?
 	
 	r.left = pRect->left;
 	r.top = pRect->top;

@@ -455,7 +455,7 @@ void UNIXGraphics::fillRect(UT_RGBColor& c, UT_sint32 x, UT_sint32 y,
   
 	gdk_gc_set_foreground(m_pGC, &nColor);
 
-	gdk_draw_rectangle(m_pWin, m_pGC, 1, x, y, w+1, h+1);
+	gdk_draw_rectangle(m_pWin, m_pGC, 1, x, y, w, h);
 
 	gdk_gc_set_foreground(m_pGC, &oColor);
 }

@@ -2213,7 +2213,7 @@ void FV_View::draw(UT_sint32 x, UT_sint32 y,
 			adjustedBottom -= fl_PAGEVIEW_PAGE_SEP;
 
 			UT_RGBColor clrPaper(255,255,255);
-			m_pG->fillRect(clrPaper,adjustedLeft+1,adjustedTop+1,iPageWidth-2,iPageHeight-2);
+			m_pG->fillRect(clrPaper,adjustedLeft+1,adjustedTop+1,iPageWidth-1,iPageHeight-1);
 
 			pPage->draw(&da);
 
@@ -2269,7 +2269,7 @@ void FV_View::draw(UT_sint32 x, UT_sint32 y,
 		m_pG->setClipRect(NULL);
 	}
 
-#if 0
+#if 1
 	{
 		// Some test code for the graphics interface.
 		UT_RGBColor clrRed(255,0,0);
