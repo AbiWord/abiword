@@ -122,10 +122,10 @@ const char * UT_convertToDimensionString(UT_Dimension dim, double value, const c
 		sprintf(bufFormat,"%%%sf",((szPrecision && *szPrecision) ? szPrecision : ""));
 		break;
 	}
-	const char * szOldLocaleInfo = setlocale(LC_NUMERIC,"English");
+	setlocale(LC_NUMERIC,"C");
 	sprintf(buf,bufFormat,value);
 	//UT_DEBUGMSG(("ConvertToDimensionString: [%g] --> [%s]\n",valueScaled,buf));
-	setlocale(LC_NUMERIC,szOldLocaleInfo); // restore original locale
+	setlocale(LC_NUMERIC,""); // restore original locale
 	
 	return buf;
 }
@@ -237,9 +237,9 @@ double UT_convertDimensionless(const char * sz)
 	// we can let the GUI do locale-specific conversions for presentation
 	// in dialogs and etc.
 
-	const char * szOldLocaleInfo = setlocale(LC_NUMERIC,"English");
+	setlocale(LC_NUMERIC,"C");
 	double f = atof(sz);
-	setlocale(LC_NUMERIC,szOldLocaleInfo);
+	setlocale(LC_NUMERIC,"");
 
 	//UT_DEBUGMSG(("ConvertDimensionless: [%s] --> [%f]\n", sz, f));
 	return f;
@@ -257,10 +257,10 @@ const char * UT_convertToDimensionlessString(double value, const char * szPrecis
 	char bufFormat[100];
 	sprintf(bufFormat,"%%%sf",((szPrecision && *szPrecision) ? szPrecision : ""));
 	
-	const char * szOldLocaleInfo = setlocale(LC_NUMERIC,"English");
+	setlocale(LC_NUMERIC,"C");
 	sprintf(buf,bufFormat,value);
 	//UT_DEBUGMSG(("ConvertToDimensionlessString: [%g] --> [%s]\n",value,buf));
-	setlocale(LC_NUMERIC,szOldLocaleInfo); // restore original locale
+	setlocale(LC_NUMERIC,""); // restore original locale
 	
 	return buf;
 }
