@@ -28,6 +28,10 @@
 #include "ut_string.h"
 #include "xap_Prefs.h"
 
+#ifdef HAVE_LIBXML2
+#include <libxml/parserInternals.h>
+#endif
+
 /*****************************************************************/
 
 XAP_PrefsScheme::XAP_PrefsScheme( XAP_Prefs *pPrefs, const XML_Char * szSchemeName)
@@ -323,7 +327,7 @@ XAP_PrefsScheme * XAP_Prefs::getScheme(const XML_Char * szSchemeName) const
 	{
 		XAP_PrefsScheme * p = getNthScheme(k);
 		UT_ASSERT(p);
-		if (UT_XML_stricmp(szSchemeName,p->getSchemeName()) == 0)
+		if (UT_strcmp(szSchemeName,p->getSchemeName()) == 0)
 			return p;
 	}
 
@@ -335,7 +339,7 @@ UT_Bool XAP_Prefs::addScheme(XAP_PrefsScheme * pNewScheme)
 	const XML_Char * szBuiltinSchemeName = getBuiltinSchemeName();
 	const XML_Char * szThisSchemeName = pNewScheme->getSchemeName();
 	
-	if (UT_XML_stricmp(szThisSchemeName, szBuiltinSchemeName) == 0)
+	if (UT_strcmp(szThisSchemeName, szBuiltinSchemeName) == 0)
 	{
 		UT_ASSERT(m_builtinScheme == NULL);
 		m_builtinScheme = pNewScheme;
@@ -449,7 +453,6 @@ UT_Bool XAP_Prefs::getPrefsValueBool(const XML_Char * szKey, UT_Bool * pbValue) 
 ******************************************************************
 *****************************************************************/
 
-#ifndef HAVE_LIBXML2
 static void startElement(void *userData, const XML_Char *name, const XML_Char **atts)
 {
 	XAP_Prefs * pPrefs = (XAP_Prefs *)userData;
@@ -473,7 +476,13 @@ static void startElement_SystemDefaultFile(void *userData, const XML_Char *name,
 	XAP_Prefs * pPrefs = (XAP_Prefs *)userData;
 	pPrefs->_startElement_SystemDefaultFile(name,atts);
 }
-#endif /* HAVE_LIBXML2 */
+
+
+#ifdef HAVE_LIBXML2
+static xmlEntityPtr my_getEntity(void *user_data, const CHAR *name) {
+      return xmlGetPredefinedEntity(name);
+}
+#endif
 
 /*****************************************************************/
 
@@ -484,7 +493,7 @@ void XAP_Prefs::_startElement(const XML_Char *name, const XML_Char **atts)
 	if (!m_parserState.m_parserStatus)		// eat if already had an error
 		return;
 
-	if (UT_XML_stricmp(name, "AbiPreferences") == 0)
+	if (UT_strcmp(name, "AbiPreferences") == 0)
 	{
 		m_parserState.m_bFoundAbiPreferences = UT_TRUE;
 
@@ -492,11 +501,11 @@ void XAP_Prefs::_startElement(const XML_Char *name, const XML_Char **atts)
 		// <AbiPreferences app="AbiWord" ver="1.0">...</AbiPreferences>
 
 		const XML_Char ** a = atts;
-		while (*a)
+		while (a && *a)
 		{
 			UT_ASSERT(a[1] && *a[1]);	// require a value for each attribute keyword
 
-			if (UT_XML_stricmp(a[0], "app") == 0)
+			if (UT_strcmp(a[0], "app") == 0)
 			{
 				// TODO the following test will fail if you are running
 				// TODO both an AbiWord (release) build and an AbiWord
@@ -507,13 +516,13 @@ void XAP_Prefs::_startElement(const XML_Char *name, const XML_Char **atts)
 				const char * szThisApp = m_pApp->getApplicationName();
 				UT_DEBUGMSG(("Found preferences for application [%s] (this is [%s]).\n",
 							a[1],szThisApp));
-				if (UT_XML_stricmp(a[1],szThisApp) != 0)
+				if (UT_strcmp(a[1],szThisApp) != 0)
 				{
 					UT_DEBUGMSG(("Preferences file does not match this application.\n"));
 					goto InvalidFileError;
 				}
 			}
-			else if (UT_XML_stricmp(a[0], "ver") == 0)
+			else if (UT_strcmp(a[0], "ver") == 0)
 			{
 				// TODO test version number
 			}
@@ -521,7 +530,7 @@ void XAP_Prefs::_startElement(const XML_Char *name, const XML_Char **atts)
 			a += 2;
 		}
 	}
-	else if (UT_XML_stricmp(name, "Select") == 0)
+	else if (UT_strcmp(name, "Select") == 0)
 	{
 		m_parserState.m_bFoundSelect = UT_TRUE;
 		
@@ -533,17 +542,17 @@ void XAP_Prefs::_startElement(const XML_Char *name, const XML_Char **atts)
 		//     />
 
 		const XML_Char ** a = atts;
-		while (*a)
+		while (a && *a)
 		{
 			UT_ASSERT(a[1] && *a[1]);	// require a value for each attribute keyword
 
-			if (UT_XML_stricmp(a[0], "scheme") == 0)
+			if (UT_strcmp(a[0], "scheme") == 0)
 			{
 				FREEP(m_parserState.m_szSelectedSchemeName);
 				if (!UT_cloneString((char *&)m_parserState.m_szSelectedSchemeName,a[1]))
 					goto MemoryError;
 			}
-			else if (UT_XML_stricmp(a[0], "autosaveprefs") == 0)
+			else if (UT_strcmp(a[0], "autosaveprefs") == 0)
 			{
 				// m_bAutoSavePrefs controls whether we automatically
 				// save any changes in the preferences during
@@ -555,7 +564,7 @@ void XAP_Prefs::_startElement(const XML_Char *name, const XML_Char **atts)
 				
 				m_bAutoSavePrefs = (*a[1] == '1');
 			}
-			else if (UT_XML_stricmp(a[0], "useenvlocale") == 0)
+			else if (UT_strcmp(a[0], "useenvlocale") == 0)
 			{
 				m_bUseEnvLocale = (*a[1] == '1');
 			}
@@ -569,7 +578,7 @@ void XAP_Prefs::_startElement(const XML_Char *name, const XML_Char **atts)
 			goto InvalidFileError;
 		}
 	}
-	else if (UT_XML_stricmp(name, "Scheme") == 0)
+	else if (UT_strcmp(name, "Scheme") == 0)
 	{
 		// we found a preferences scheme.  we expect something of the form:
 		// <Scheme name="myScheme" n0="v0" n1="v1" ... />
@@ -591,13 +600,13 @@ void XAP_Prefs::_startElement(const XML_Char *name, const XML_Char **atts)
 		{
 			UT_ASSERT(a[1] && *a[1]);	// require a value for each attribute keyword
 
-			if (UT_XML_stricmp(a[0], "name") == 0)
+			if (UT_strcmp(a[0], "name") == 0)
 			{
 				bIsNamed = UT_TRUE;
 				
 				const XML_Char * szBuiltinSchemeName = getBuiltinSchemeName();
 
-				if (UT_XML_stricmp(a[1], szBuiltinSchemeName) == 0)
+				if (UT_strcmp(a[1], szBuiltinSchemeName) == 0)
 				{
 					UT_DEBUGMSG(("Reserved scheme name [%s] found in file; ignoring.\n",a[1]));
 					goto IgnoreThisScheme;
@@ -627,7 +636,7 @@ void XAP_Prefs::_startElement(const XML_Char *name, const XML_Char **atts)
 			goto MemoryError;
 		pNewScheme = NULL;				// we don't own it anymore
 	}
-	else if (UT_XML_stricmp(name, "Recent") == 0)
+	else if (UT_strcmp(name, "Recent") == 0)
 	{
 		m_parserState.m_bFoundRecent = UT_TRUE;
 		
@@ -639,7 +648,7 @@ void XAP_Prefs::_startElement(const XML_Char *name, const XML_Char **atts)
 		{
 			UT_ASSERT(a[1] && *a[1]);	// require a value for each attribute keyword
 
-			if (UT_XML_stricmp(a[0], "max") == 0)
+			if (UT_strcmp(a[0], "max") == 0)
 			{
 				m_iMaxRecent = atoi(a[1]);
 			}
@@ -693,12 +702,12 @@ UT_Bool XAP_Prefs::loadPrefsFile(void)
 {
 #ifndef HAVE_LIBXML2 
 	XML_Parser parser = NULL;
+	FILE * fp = NULL;
+	char buf[4096];
+	int done = 0;
 #endif
 	UT_Bool bResult = UT_FALSE;			// assume failure
 	const char * szFilename;
-	FILE * fp = NULL;
-	int done = 0;
-	char buf[4096];
 
 	m_parserState.m_parserStatus = UT_TRUE;
 	m_parserState.m_bFoundAbiPreferences = UT_FALSE;
@@ -715,19 +724,7 @@ UT_Bool XAP_Prefs::loadPrefsFile(void)
 #ifdef HAVE_LIBXML2
 	else
 	{
-	  xmlDocPtr dok = xmlParseFile(szFilename);
-	  if (dok == NULL)
-	    {
-	      UT_DEBUGMSG(("Could not open and parse file %s\n",
-			   szFilename));
-	    }
-	  else
-	    {
-	      xmlNodePtr node = xmlDocGetRootElement(dok);
-	      _scannode(dok,node,0,UT_FALSE);
-	      xmlFreeDoc(dok);
-	      bResult = UT_TRUE;
-	    }
+		bResult = _sax (szFilename, UT_FALSE);
 	}
  Cleanup:
 #else
@@ -787,6 +784,7 @@ UT_Bool XAP_Prefs::loadPrefsFile(void)
 		UT_DEBUGMSG(("Did not find <Recent...>\n"));
 		// Note: it's ok if we didn't find it...
 	}
+#endif
 
 	UT_ASSERT(m_parserState.m_szSelectedSchemeName);
 	if (!setCurrentScheme(m_parserState.m_szSelectedSchemeName))
@@ -796,6 +794,7 @@ UT_Bool XAP_Prefs::loadPrefsFile(void)
 		goto Cleanup;
 	}
 
+#ifndef HAVE_LIBXML2
 	bResult = UT_TRUE;
 Cleanup:
 	FREEP(m_parserState.m_szSelectedSchemeName);
@@ -1027,7 +1026,7 @@ void XAP_Prefs::_startElement_SystemDefaultFile(const XML_Char *name, const XML_
 	if (!m_parserState.m_parserStatus)		// eat if already had an error
 		return;
 
-	if (UT_XML_stricmp(name, "SystemDefaults") == 0)
+	if (UT_strcmp(name, "SystemDefaults") == 0)
 	{
 		// we found the system default preferences scheme.
 		//
@@ -1041,14 +1040,14 @@ void XAP_Prefs::_startElement_SystemDefaultFile(const XML_Char *name, const XML_
 		// give us.
 
 		const XML_Char ** a = atts;
-		while (*a)
+		while (a && *a)
 		{
 			UT_ASSERT(a[1] && *a[1]);	// require a value for each attribute keyword
 
 			// we ignore "name=<schemename>" just incase they copied and
 			// pasted a user-profile into the system file.
 			
-			if (UT_XML_stricmp(a[0], "name") != 0)
+			if (UT_strcmp(a[0], "name") != 0)
 				if (!m_builtinScheme->setValue(a[0],a[1]))
 					goto MemoryError;
 
@@ -1077,19 +1076,7 @@ UT_Bool XAP_Prefs::loadSystemDefaultPrefsFile(const char * szSystemDefaultPrefsP
 	UT_Bool bResult = UT_FALSE;			// assume failure
 	m_parserState.m_parserStatus = UT_TRUE;
 #ifdef HAVE_LIBXML2
-	xmlDocPtr dok = xmlParseFile(szSystemDefaultPrefsPathname);
-	if (dok == NULL)
-	  {
-	    UT_DEBUGMSG(("Could not open and parse file %s\n",
-			 szSystemDefaultPrefsPathname));
-	  }
-	else
-	  {
-	    xmlNodePtr node = xmlDocGetRootElement(dok);
-	    _scannode(dok,node,0,UT_TRUE);
-	    xmlFreeDoc(dok);
-	    bResult = UT_TRUE;
-	  }
+	bResult = _sax(szSystemDefaultPrefsPathname, UT_TRUE);
 #else
 	FILE * fp = NULL;
 	int done = 0;
@@ -1231,33 +1218,53 @@ void XAP_Prefs::_sendPrefsSignal( UT_AlphaHashTable *hash  )
 }
 
 #ifdef HAVE_LIBXML2
-void XAP_Prefs::_scannode(xmlDocPtr dok, xmlNodePtr cur, int c, char sys /*boolean*/)
+UT_Bool XAP_Prefs::_sax (const char *path, UT_Bool sys)
 {
-  while (cur != NULL)
-    {
-      if (strcmp("text", (char*) cur->name) == 0)
-	{
-	  xmlChar* s = cur->content; // xmlNodeListGetString(dok, cur, 1);
-	  _charData(s, strlen((char*) s));
-	}
-      else
-	{
-	  xmlChar *prop = NULL;
-	  const xmlChar* props[3] = { NULL, NULL, NULL };
-	  if (cur->properties)
-	    {
-	      props[0] = cur->properties->name;
-	      props[1] = cur->properties->children->content;
-	    }
-	  if (sys) _startElement_SystemDefaultFile(cur->name, props);
-	  else     _startElement(cur->name, props);
-	  if (prop) free(prop);
-	}
-      _scannode(dok, cur->children, c + 1, sys);
-      if (strcmp("text", (char*) cur->name) != 0)
-	_endElement(cur->name);
-      cur = cur->next;
-    }
+	xmlSAXHandler hdl;
+	hdl.internalSubset = NULL;
+	hdl.isStandalone = NULL;
+	hdl.hasInternalSubset = NULL;
+	hdl.hasExternalSubset = NULL;
+	hdl.resolveEntity = NULL;
+	hdl.getEntity = my_getEntity;
+	hdl.entityDecl = NULL;
+	hdl.notationDecl = NULL;
+	hdl.attributeDecl = NULL;
+	hdl.elementDecl = NULL;
+	hdl.unparsedEntityDecl = NULL;
+	hdl.setDocumentLocator = NULL;
+	hdl.startDocument = NULL;
+	hdl.endDocument = NULL;
+	if (sys)	hdl.startElement = startElement_SystemDefaultFile;
+	else		hdl.startElement = startElement;
+	hdl.endElement = endElement;
+	hdl.reference = NULL;
+	hdl.characters = charData;
+	hdl.ignorableWhitespace = NULL;
+	hdl.processingInstruction = NULL;
+	hdl.comment = NULL;
+	hdl.warning = NULL;
+	hdl.error = NULL;
+	hdl.fatalError = NULL;
+
+	int ret = 0;
+	xmlParserCtxtPtr ctxt;
+
+	ctxt = xmlCreateFileParserCtxt(path);
+	if (ctxt == NULL) return UT_FALSE;
+	ctxt->sax = &hdl;
+	ctxt->userData = (void *) this;
+
+	xmlParseDocument(ctxt);
+
+
+	if (ctxt->wellFormed)
+		ret = UT_TRUE;
+	else
+		ret = UT_FALSE;
+	ctxt->sax = NULL;
+	xmlFreeParserCtxt(ctxt);
+	return ret;
 }
 #endif /* HAVE_LIBXML2 */
 

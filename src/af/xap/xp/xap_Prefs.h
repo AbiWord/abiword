@@ -144,7 +144,7 @@ protected:
 
 public:						/* these are needed by the XML parser interface */
 #ifdef HAVE_LIBXML2
-	void _scannode(xmlDocPtr dok, xmlNodePtr cur, int c, char sys /* boolean */);
+	UT_Bool _sax(const char *path, UT_Bool sys);
 #endif
 	void					_startElement(const XML_Char *name, const XML_Char **atts);
 	void					_endElement(const XML_Char *name);
