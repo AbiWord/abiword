@@ -454,11 +454,16 @@ dcl(DLG_Options_Label_Schemes, "Preference Schemes")
 dcl(DLG_Options_Label_Language, "Language")
 
 dcl(DLG_Tab_TabTitle,					"Tabs")
+dcl(DLG_Tab_Label_Existing,				"Existing Tabs")
+dcl(DLG_Tab_Label_New,					"Set new Tab")
 dcl(DLG_Tab_Label_TabPosition,			"Tab stop position:")
 dcl(DLG_Tab_Label_TabToClear,			"Tab stops to be cleared:")
 dcl(DLG_Tab_Label_DefaultTS,			"Default tab stops:")
 
+dcl(DLG_Tab_Label_Position,				"Position")
+
 dcl(DLG_Tab_Label_Alignment,			"Alignment")
+dcl(DLG_Tab_Radio_NoAlign, 				"None")
 dcl(DLG_Tab_Radio_Left, 				"Left")
 dcl(DLG_Tab_Radio_Center,				"Center")
 dcl(DLG_Tab_Radio_Right,				"Right")
