@@ -303,7 +303,7 @@ s_load_uri (XAP_Frame * pFrame, const char * uri)
 			return;
 		}
 
-	xxx_UT_DEBUGMSG(("DOM: %s on disk\n", onDisk.c_str()));
+	xxx_UT_DEBUGMSG(("DOM: %s on disk\n", onDisk.utf8_str()));
 
 	if (type == TARGET_IMAGE)
 		{
