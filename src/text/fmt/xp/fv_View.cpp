@@ -6957,12 +6957,14 @@ bool FV_View::insertEndnote()
 					if(pRun->getType() == FPRUN_FIELD)
 					{
 						fp_FieldRun * pF = static_cast<fp_FieldRun *>(pRun);
-#ifdef DEBUG
-						if(pF->getFieldType() == FPFIELD_endnote_ref)
+#ifdef FMT_TEST
+//						if(pF->getFieldType() == FPFIELD_endnote_ref)
+//						{
 #endif
 							enoteCount++;
-					}
-
+#ifdef FMT_TEST							
+//						}
+#endif
 					pRun = pRun->getNext();
 				}
 
