@@ -314,7 +314,10 @@ void XAP_CocoaDialog_Zoom::_storeWindowData(void)
 
 - (int)percentValue
 {
-	return [_percentField intValue];
+	int percent = [_percentField intValue];
+	percent = (percent < 1) ? 1 : ((percent > 1000) ? 1000 : percent);
+	[self setPercentValue:percent];
+	return percent;
 }
 
 - (void)_enablePercentSpin:(BOOL)enable

@@ -139,6 +139,7 @@ void AP_CocoaDialog_Background::runModal(XAP_Frame * pFrame)
 			a = 1;
 		}
 	[oColorWell setColor:[NSColor colorWithDeviceRed:r green:g blue:b alpha:a]];
+	[oColorWell activate:YES];
 }
 
 - (IBAction)aColor:(id)sender
@@ -180,6 +181,8 @@ void AP_CocoaDialog_Background::runModal(XAP_Frame * pFrame)
 	if (_xap)
 		_xap->_setAnswer(AP_Dialog_Background::a_CANCEL);
 
+	[[NSColorPanel sharedColorPanel] orderOut:self];
+
 	[NSApp stopModal];
 }
 
@@ -187,6 +190,8 @@ void AP_CocoaDialog_Background::runModal(XAP_Frame * pFrame)
 {
 	if (_xap)
 		_xap->_setAnswer(AP_Dialog_Background::a_OK);
+
+	[[NSColorPanel sharedColorPanel] orderOut:self];
 
 	[NSApp stopModal];
 }
