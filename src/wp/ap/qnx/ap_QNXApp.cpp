@@ -243,13 +243,13 @@ bool AP_QNXApp::initialize(void)
 	
 	for (i = 0; fp_FieldTypes[i].m_Type != FPFIELDTYPE_END; i++)
 	{
-(&fp_FieldTypes[i])->m_Desc = m_pStringSet->getValueUTF8(fp_FieldTypes[i].m_DescId).c_str();
+			(&fp_FieldTypes[i])->m_Desc = strdup(m_pStringSet->getValueUTF8(fp_FieldTypes[i].m_DescId).c_str());
 	    UT_DEBUGMSG(("Setting field type desc for type %d, desc=%s\n", fp_FieldTypes[i].m_Type, fp_FieldTypes[i].m_Desc));
 	}
 
 	for (i = 0; fp_FieldFmts[i].m_Tag != NULL; i++)
 	{
-(&fp_FieldFmts[i])->m_Desc = m_pStringSet->getValueUTF8(fp_FieldFmts[i].m_DescId).c_str();
+			(&fp_FieldFmts[i])->m_Desc = strdup(m_pStringSet->getValueUTF8(fp_FieldFmts[i].m_DescId).c_str());
 	    UT_DEBUGMSG(("Setting field desc for field %s, desc=%s\n", fp_FieldFmts[i].m_Tag, fp_FieldFmts[i].m_Desc));
 	}
 
