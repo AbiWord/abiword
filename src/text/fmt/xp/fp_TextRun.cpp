@@ -820,6 +820,8 @@ bool fp_TextRun::canMergeWithNext(void)
 		|| (pNext->m_iSpaceWidthBeforeJustification != JUSTIFICATION_NOT_USED)
 		|| (pNext->m_pField != m_pField)
 		|| (pNext->m_pLanguage != m_pLanguage)  //this is not a bug
+		|| (pNext->m_colorFG != m_colorFG)
+		|| (pNext->m_colorHL != m_colorHL)
 #ifdef BIDI_ENABLED
 		|| (pNext->m_iDirection != m_iDirection)  //#TF cannot merge runs of different direction of writing
 		|| (pNext->m_iDirOverride != m_iDirOverride)
@@ -866,9 +868,10 @@ void fp_TextRun::mergeWithNext(void)
 	// we need to take into consideration whether this run has been reversed
 	// in which case the order of the concating needs to be reversed too
 	FriBidiCharType iVisDirection = getVisDirection();
+
 	bool bReverse = (!s_bBidiOS && iVisDirection == FRIBIDI_TYPE_RTL)
 		  || (s_bBidiOS && m_iDirOverride == FRIBIDI_TYPE_LTR && m_iDirection == FRIBIDI_TYPE_RTL);
-		
+
 	if((m_iSpanBuffSize <= m_iLen + pNext->m_iLen) || (bReverse && (m_iLen > pNext->m_iLen)))
 	{
 		UT_DEBUGMSG(("fp_TextRun::mergeWithNext: reallocating span buffer\n"));
@@ -975,7 +978,7 @@ bool fp_TextRun::split(UT_uint32 iSplitOffset)
 	// which is very expensive (see notes on the mergeWithNext())
 	FriBidiCharType iVisDirection = getVisDirection();
     UT_UCSChar * pSB = new UT_UCSChar[m_iLen + 1];
-	
+
 	if((!s_bBidiOS && iVisDirection == FRIBIDI_TYPE_RTL)
 	  || (s_bBidiOS && m_iDirOverride == FRIBIDI_TYPE_LTR && m_iDirection == FRIBIDI_TYPE_RTL)
   	)
@@ -1254,11 +1257,11 @@ bool fp_TextRun::recalcWidth(void)
 		m_iWidthLayoutUnits = 0;
 
 		FriBidiCharType iVisDirection = getVisDirection();
-		
+
 		bool bReverse = (!s_bBidiOS && iVisDirection == FRIBIDI_TYPE_RTL)
 	  		|| (s_bBidiOS && m_iDirOverride == FRIBIDI_TYPE_LTR && m_iDirection == FRIBIDI_TYPE_RTL);
-		
-	 	UT_sint32 j,k;
+
+		UT_sint32 j,k;
 	 	
 		for (UT_uint32 i = 0; i < m_iLen; i++)
 		{
@@ -1327,7 +1330,10 @@ void fp_TextRun::_clearScreen(bool /* bFullLineHeightRect */)
 		  since document facilities allow the background color to be
 		  changed, for things such as table cells.
 		*/
-		UT_RGBColor clrNormalBackground(m_colorHL.m_red, m_colorHL.m_grn, m_colorHL.m_blu);
+		// we need to use here page color, not highlight color, otherwise
+		// we endup with higlighted margin
+		//UT_RGBColor clrNormalBackground(m_colorHL.m_red, m_colorHL.m_grn, m_colorHL.m_blu);
+		UT_RGBColor clrNormalBackground(m_colorPG.m_red, m_colorPG.m_grn, m_colorPG.m_blu);
 		xxx_UT_DEBUGMSG(("SEVIOR: Entering Clearscreen in TextRun \n"));
 		if (m_pField)
 		{
@@ -1399,6 +1405,7 @@ void fp_TextRun::_draw(dg_DrawArgs* pDA)
 	
 	UT_ASSERT(pDA->pG == m_pG);
 	const UT_GrowBuf * pgbCharWidths = m_pBL->getCharWidths()->getCharWidths();
+
 	UT_uint32 iBase = m_pBL->getPosition();
 
 	m_pG->setFont(m_pScreenFont);
@@ -1418,6 +1425,28 @@ void fp_TextRun::_draw(dg_DrawArgs* pDA)
 		UT_setColor(clrSelBackground,112, 112, 112);
 	}
 
+	/*
+		the old way of doing things was very inefficient; for each chunk of this
+		run that had a different background we first drew the background rectangle,
+		then drew the text over it, and then moved onto the next chunk. This is very
+		involved since to draw the text in pieces we have to calculate the screen
+		offset of each chunk using character widths.
+		
+		This is is what we will do instead:
+		(1) draw the background using the background colour for the whole run in
+			a single go
+		(2) draw any selection background where needed over the basic background
+		(3) draw the whole text in a single go over the composite background
+	*/
+
+	// draw the background for the whole run
+	m_pG->fillRect( clrNormalBackground,
+					pDA->xoff,
+					yTopOfSel + m_iAscent - m_pLine->getAscent(), 
+					m_iWidth, 
+					m_pLine->getHeight());
+
+
 	UT_uint32 iRunBase = iBase + m_iOffsetFirst;
 
 	FV_View* pView = m_pBL->getDocLayout()->getView();
@@ -1428,60 +1457,72 @@ void fp_TextRun::_draw(dg_DrawArgs* pDA)
 	UT_uint32 iSel2 = UT_MAX(iSelAnchor, iPoint);
 	
 	UT_ASSERT(iSel1 <= iSel2);
-	
-	if (pView->getFocus()==AV_FOCUS_NONE || iSel1 == iSel2)
+
+	if (pView->getFocus()!=AV_FOCUS_NONE && iSel1 != iSel2)
 	{
-		// nothing in this run is selected
-		_fillRect(clrNormalBackground, pDA->xoff, yTopOfSel, m_iOffsetFirst, m_iLen, pgbCharWidths);
-		_drawPart(pDA->xoff, yTopOfRun, m_iOffsetFirst, m_iLen, pgbCharWidths);
-	}
-	else if (iSel1 <= iRunBase)
-	{
-		if (iSel2 <= iRunBase)
+		if (iSel1 <= iRunBase)
 		{
-			// nothing in this run is selected
-			_fillRect(clrNormalBackground, pDA->xoff, yTopOfSel, m_iOffsetFirst, m_iLen, pgbCharWidths);
-			_drawPart(pDA->xoff, yTopOfRun, m_iOffsetFirst, m_iLen, pgbCharWidths);
+			if (iSel2 > iRunBase)
+			{
+				if (iSel2 >= (iRunBase + m_iLen))
+				{
+					// the whole run is selected			
+					_fillRect(clrSelBackground, pDA->xoff, yTopOfSel, m_iOffsetFirst, m_iLen, pgbCharWidths);
+				}
+				else
+				{
+					// the first part is selected, the second part is not
+					_fillRect(clrSelBackground, pDA->xoff, yTopOfSel, m_iOffsetFirst, iSel2 - iRunBase, pgbCharWidths);
+				}
+			}
 		}
-		else if (iSel2 >= (iRunBase + m_iLen))
+		else if (iSel1 < (iRunBase + m_iLen))
 		{
-			// the whole run is selected			
-			_fillRect(clrSelBackground, pDA->xoff, yTopOfSel, m_iOffsetFirst, m_iLen, pgbCharWidths);
-			_drawPart(pDA->xoff, yTopOfRun, m_iOffsetFirst, m_iLen, pgbCharWidths);
-		}
-		else
-		{
-			// the first part is selected, the second part is not
-			_fillRect(clrSelBackground, pDA->xoff, yTopOfSel, m_iOffsetFirst, iSel2 - iRunBase, pgbCharWidths);
-			_drawPart(pDA->xoff, yTopOfRun, m_iOffsetFirst, iSel2 - iRunBase, pgbCharWidths);
-            _fillRect(clrNormalBackground, pDA->xoff, yTopOfSel, iSel2 - iBase, m_iLen - (iSel2 - iRunBase), pgbCharWidths);
-			_drawPart(pDA->xoff, yTopOfRun, iSel2 - iBase, m_iLen - (iSel2 - iRunBase), pgbCharWidths);
-		}
-	}
-	else if (iSel1 >= (iRunBase + m_iLen))
-	{
-		// nothing in this run is selected
-        _fillRect(clrNormalBackground, pDA->xoff, yTopOfSel, m_iOffsetFirst, m_iLen, pgbCharWidths);
-		_drawPart(pDA->xoff, yTopOfRun, m_iOffsetFirst, m_iLen, pgbCharWidths);
-	}
-	else
-	{
-        _fillRect(clrNormalBackground, pDA->xoff, yTopOfSel, m_iOffsetFirst, iSel1 - iRunBase, pgbCharWidths);
-		_drawPart(pDA->xoff, yTopOfRun, m_iOffsetFirst, iSel1 - iRunBase, pgbCharWidths);
-		
-		if (iSel2 >= (iRunBase + m_iLen))
-		{
-			_fillRect(clrSelBackground, pDA->xoff, yTopOfSel, iSel1 - iBase, m_iLen - (iSel1 - iRunBase), pgbCharWidths);
-			_drawPart(pDA->xoff, yTopOfRun, iSel1 - iBase, m_iLen - (iSel1 - iRunBase), pgbCharWidths);
-		}
-		else
-		{
-			_fillRect(clrSelBackground, pDA->xoff, yTopOfSel, iSel1 - iBase, iSel2 - iSel1, pgbCharWidths);
-			_drawPart(pDA->xoff, yTopOfRun, iSel1 - iBase, iSel2 - iSel1, pgbCharWidths);
-            _fillRect(clrNormalBackground, pDA->xoff, yTopOfSel, iSel2 - iBase, m_iLen - (iSel2 - iRunBase), pgbCharWidths);
-			_drawPart(pDA->xoff, yTopOfRun, iSel2 - iBase, m_iLen - (iSel2 - iRunBase), pgbCharWidths);
+			if (iSel2 >= (iRunBase + m_iLen))
+			{
+				// the second part is selected
+				_fillRect(clrSelBackground, pDA->xoff, yTopOfSel, iSel1 - iBase, m_iLen - (iSel1 - iRunBase), pgbCharWidths);
+			}
+			else
+			{
+				// a midle section is selected
+				_fillRect(clrSelBackground, pDA->xoff, yTopOfSel, iSel1 - iBase, iSel2 - iSel1, pgbCharWidths);
+			}
 		}
 	}
+
+	/*
+		if the text on either side of this run is in italics, there is a good
+		chance that the background covered some of the text; to fix this we
+		call _drawLastChar and _drawFirstChar for those runs.
+	*/
+#ifdef BIDI_ENABLED
+	fp_Run * pNext = getNextVisual();
+	fp_Run * pPrev = getPrevVisual();
+#else
+	fp_Run * pNext = m_pNext && m_pNext->getLine() == m_pLine ? m_pNext : NULL;
+	fp_Run * pPrev = m_pPrev && m_pPrev->getLine() == m_pLine ? m_pPrev : NULL;
+#endif
+
+	if(pNext && pNext->getType() == FPRUN_TEXT)
+	{
+		fp_TextRun * pT = static_cast<fp_TextRun*>(pNext);
+		pT->_drawFirstChar(pDA->xoff + m_iWidth,yTopOfRun);
+	}
+
+	if(pPrev && pPrev->getType() == FPRUN_TEXT)
+	{
+		fp_TextRun * pT = static_cast<fp_TextRun*>(pPrev);
+		pT->_drawLastChar(pDA->xoff,yTopOfRun, pgbCharWidths);
+	}
+
+	// now draw the whole string
+#ifdef BIDI_ENABLED
+	// since we have the visual string in the draw buffer, we just call m_pGr->drawChars()
+	m_pG->drawChars(m_pSpanBuff, 0, m_iLen, pDA->xoff, yTopOfRun);	
+#else
+	_drawPart(pDA->xoff, yTopOfRun, m_iOffsetFirst, m_iLen, pgbCharWidths);
+#endif
 
 	drawDecors(pDA->xoff, yTopOfRun);
 	if(pView->getShowPara())
@@ -1510,7 +1551,9 @@ void fp_TextRun::_fillRect(UT_RGBColor& clr,
 	if(ppView) UT_ASSERT(ppView && ppView->isCursorOn()==false);
 #endif
 	// we also need to support this in printing
-	//if (m_pG->queryProperties(GR_Graphics::DGP_SCREEN))
+	// NO! we do not and must not -- this is only used to draw selections
+	// and field background and we do not want to see these printed
+	if (m_pG->queryProperties(GR_Graphics::DGP_SCREEN))
 	{
 		UT_Rect r;
 
@@ -1779,6 +1822,65 @@ void fp_TextRun::_refreshDrawBuffer()
 	} //if(m_bRefreshDrawBuffer)	
 }
 #endif
+/*
+	xoff is the right edge of this run !!!
+*/
+void fp_TextRun::_drawLastChar(UT_sint32 xoff, UT_sint32 yoff,const UT_GrowBuf * pgbCharWidths)
+{
+	if(!m_iLen)
+		return;
+
+#ifdef BIDI_ENABLED
+	FriBidiCharType iVisDirection = getVisDirection();
+
+	if(!s_bBidiOS)
+	{
+		// m_pSpanBuff is in visual order, so we just draw the last char
+		UT_uint32 iPos = iVisDirection == FRIBIDI_TYPE_LTR ? m_iLen - 1 : 0;
+		m_pG->drawChars(m_pSpanBuff, m_iLen - 1, 1, xoff - *(pgbCharWidths->getPointer(m_iOffsetFirst + iPos)), yoff);
+	}
+	else
+	{
+		UT_uint32 iPos = iVisDirection == FRIBIDI_TYPE_LTR ? m_iLen - 1 : 0;
+		m_pG->drawChars(m_pSpanBuff, iPos, 1, xoff - *(pgbCharWidths->getPointer(m_iOffsetFirst + iPos)), yoff);
+	}
+#else
+	const UT_UCSChar* pSpan = NULL;
+	UT_uint32 lenSpan = 0;
+	bool bSpan;
+	bSpan = m_pBL->getSpanPtr(m_iOffsetFirst + m_iLen - 1, &pSpan, &lenSpan);
+	UT_ASSERT(bSpan);
+
+	m_pG->drawChars(pSpan, 0, 1, xoff - *(pgbCharWidths->getPointer(m_iOffsetFirst + m_iLen -1)), yoff);
+#endif
+}
+
+void fp_TextRun::_drawFirstChar(UT_sint32 xoff, UT_sint32 yoff)
+{
+	if(!m_iLen)
+		return;
+
+#ifdef BIDI_ENABLED
+	if(!s_bBidiOS)
+	{
+		// m_pSpanBuff is in visual order, so we just draw the last char
+		m_pG->drawChars(m_pSpanBuff, 0, 1, xoff, yoff);
+	}
+	else
+	{
+		UT_uint32 iPos = getVisDirection() == FRIBIDI_TYPE_RTL ? m_iLen - 1 : 0;
+		m_pG->drawChars(m_pSpanBuff, iPos, 1, xoff, yoff);
+	}
+#else
+	const UT_UCSChar* pSpan = NULL;
+	UT_uint32 lenSpan = 0;
+	bool bSpan;
+	bSpan = m_pBL->getSpanPtr(m_iOffsetFirst, &pSpan, &lenSpan);
+	UT_ASSERT(bSpan);
+
+	m_pG->drawChars(pSpan, 0, 1, xoff, yoff);
+#endif
+}
 
 void fp_TextRun::_drawPart(UT_sint32 xoff,
 						   UT_sint32 yoff,
@@ -1828,10 +1930,8 @@ void fp_TextRun::_drawPart(UT_sint32 xoff,
 	// (the cache is refreshed by _refreshDrawBuff, it is the responsibility
 	// of caller of _drawPart to ensure that the chache is uptodate)
 	FriBidiCharType iVisDirection = getVisDirection();
-
 	bool bReverse = (!s_bBidiOS && iVisDirection == FRIBIDI_TYPE_RTL)
 		  || (s_bBidiOS && m_iDirOverride == FRIBIDI_TYPE_LTR && m_iDirection == FRIBIDI_TYPE_RTL);
-		
 	if(iVisDirection == FRIBIDI_TYPE_RTL) //rtl: determine the width of the text we are to print
 	{
 		for (; i < iLen + iStart; i++)
@@ -1855,7 +1955,6 @@ void fp_TextRun::_drawPart(UT_sint32 xoff,
 		// if the buffer is not reversed because the OS will reverse it, then we
 		// draw from it as if it was LTR buffer, but iLeftWidth is right width
 		m_pG->drawChars(m_pSpanBuff + iStart - m_iOffsetFirst, 0, iLen, xoff + m_iWidth - iLeftWidth, yoff);
-
 #else
 	while (bContinue)
 	{
@@ -1889,6 +1988,7 @@ void fp_TextRun::_drawPart(UT_sint32 xoff,
 	}
 #endif
 }
+
 
 void fp_TextRun::_drawInvisibleSpaces(UT_sint32 xoff, UT_sint32 yoff)
 {
