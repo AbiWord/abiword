@@ -408,6 +408,7 @@ bool EV_QNXToolbar::synthesize(void)
 						/*Pt_LIST_NON_SELECT |*/ Pt_FALSE, 
 						/*Pt_LIST_NON_SELECT |*/ Pt_LIST_SCROLLBAR_GETS_FOCUS);
 				PtSetArg(&args[n++], Pt_ARG_TEXT_FLAGS, Pt_FALSE, Pt_EDITABLE);
+				PtSetArg(&args[n++], Pt_ARG_CBOX_FLAGS,Pt_TRUE,Pt_COMBOBOX_MAX_WIDTH);
 				tb = PtCreateWidget(PtComboBox, tbgroup, n, args);
 
 				// populate it
