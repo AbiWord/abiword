@@ -3,7 +3,6 @@ All of the following terms are trademarks or registered trademarks
 of AbiSource, Inc.:
 	AbiSource
 	AbiWord
-	AbiList
 	AbiCalc
 	AbiList
 	AbiSuite
