@@ -5800,24 +5800,29 @@ bool IE_Imp_RTF::HandleStyleDefinition(void)
 		{
 		case '\\':
             status = ReadKeyword(keyword, &parameter, &parameterUsed, MAX_KEYWORD_LEN);
-			if (!status)
+			if (!status) {
 				return status;
-			else if (0 == UT_strcmp((char *)keyword, "sbasedon"))
+			}
+			else if (strcmp((char *)keyword, "sbasedon") == 0)
 			{
 				if (parameter >= styleNumber)
 				{
 					UT_DEBUGMSG(("Cannot base this style on style %d when I am style %d",parameter,styleNumber));
-					return false;
+					// ignore
+					// return false;
 				}
-				char * val = (char *)m_styleTable.getNthItem(parameter);
-				if (val != NULL)
+				else 
 				{
-               		attribs[attribsCount++] = PT_BASEDON_ATTRIBUTE_NAME;
-					attribs[attribsCount++] = val;
-					attribs[attribsCount]   = NULL;
+					char * val = (char *)m_styleTable.getNthItem(parameter);
+					if (val != NULL)
+					{
+						attribs[attribsCount++] = PT_BASEDON_ATTRIBUTE_NAME;
+						attribs[attribsCount++] = val;
+						attribs[attribsCount]   = NULL;
+					}
 				}
 			}
-			else if (0 == UT_strcmp((char *)keyword, "snext"))
+			else if (strcmp((char *)keyword, "snext") == 0)
 			{
 				if (parameter != styleNumber)
 				{
@@ -5830,13 +5835,13 @@ bool IE_Imp_RTF::HandleStyleDefinition(void)
 					}
 				}
 			}
-			else if ((0 == UT_strcmp((char *)keyword,  "s")) ||
-				     (0 == UT_strcmp((char *)keyword, "ds")) ||
-				     (0 == UT_strcmp((char *)keyword, "cs")))
+			else if ((strcmp((char *)keyword,  "s") == 0) ||
+				     (strcmp((char *)keyword, "ds") == 0) ||
+				     (strcmp((char *)keyword, "cs") == 0))
 			{
 				styleNumber = parameter;
 			}
-			else if (0 == UT_strcmp((char *)keyword, "*"))
+			else if (strcmp((char *)keyword, "*") == 0)
 			{
 				break;
 			}
