@@ -149,7 +149,8 @@ FV_View::FV_View(XAP_App * pApp, void* pParentData, FL_DocLayout* pLayout)
 		m_colorImage(0, 0, 255),
 		m_colorHyperLink(0, 0, 255),
 		m_colorHdrFtr(0, 0, 0),
-		m_colorColumnLine(0, 0, 0)
+		m_colorColumnLine(0, 0, 0),
+		m_countDisable(0)
 {
 	m_colorRevisions[0] = UT_RGBColor(171,4,254);
 	m_colorRevisions[1] = UT_RGBColor(171,20,119);

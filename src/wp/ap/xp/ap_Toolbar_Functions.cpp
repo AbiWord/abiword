@@ -184,12 +184,12 @@ Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_Clipboard)
 	switch (id)
 	{
 	case AP_TOOLBAR_ID_EDIT_PASTE:
-		s = ( (pView->getApp()->canPasteFromClipboard()) ? EV_TIS_ZERO : EV_TIS_Gray );
+		s = ((XAP_App::getApp()->canPasteFromClipboard()) ? EV_TIS_ZERO : EV_TIS_Gray );
 		break;
 
 	case AP_TOOLBAR_ID_FMTPAINTER:
-	  if ( pView->getApp()->canPasteFromClipboard() &&
-	       !pView->isSelectionEmpty() )
+	  if (XAP_App::getApp()->canPasteFromClipboard() &&
+	       !pView->isSelectionEmpty())
 	    s = EV_TIS_ZERO;
 	  else
 	    s = EV_TIS_Gray;

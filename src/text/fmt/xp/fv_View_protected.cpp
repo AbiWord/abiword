@@ -3111,12 +3111,9 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 
 void FV_View::_setPoint(PT_DocPosition pt, bool bEOL)
 {
-	static UT_uint32 countDisable =0;
-
 	if (!m_pDoc->getAllowChangeInsPoint())
-	{
 		return;
-	}
+
 	m_iInsPoint = pt;
 	m_bPointEOL = bEOL;
 	_fixInsertionPointCoords();
@@ -3128,13 +3125,16 @@ void FV_View::_setPoint(PT_DocPosition pt, bool bEOL)
 	// if there is no longer a selection, we should enable the cursor.
 		if (isSelectionEmpty())
 		{	
-			while(countDisable > 0)
+			while(m_countDisable > 0)
 			{
-				m_pG->getCaret()->enable();
-				countDisable--;
+			  if(m_pG->getCaret())
+			    m_pG->getCaret()->enable();
+			  m_countDisable--;
 			}
-			m_pG->getCaret()->disable();
-			m_pG->getCaret()->enable();
+			if(m_pG->getCaret()) {
+			  m_pG->getCaret()->disable();
+			  m_pG->getCaret()->enable();
+			}
 		}
 		else
 		{	
@@ -3144,8 +3144,9 @@ void FV_View::_setPoint(PT_DocPosition pt, bool bEOL)
 // handle nested disable calls.
 //
 
-			m_pG->getCaret()->disable();
-			countDisable++;
+		  if(m_pG->getCaret())
+		    m_pG->getCaret()->disable();
+		  m_countDisable++;
 		}
 	}
 }

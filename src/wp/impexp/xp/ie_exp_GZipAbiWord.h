@@ -50,9 +50,9 @@ public:
 	virtual ~IE_Exp_GZipAbiWord();
 
 protected:
-	bool				_openFile(const char * szFilename);
-	UT_uint32			_writeBytes(const UT_Byte * pBytes, UT_uint32 length);
-	bool				_closeFile(void);
+	virtual bool				_openFile(const char * szFilename);
+	virtual UT_uint32			_writeBytes(const UT_Byte * pBytes, UT_uint32 length);
+	virtual bool				_closeFile(void);
 
 private:
     

@@ -114,8 +114,7 @@ public:									// we create...
 
 		const char * szMsg = pLabel->getMenuStatusMessage();
 		if (!szMsg || !*szMsg)
-			szMsg = "TODO This menu item doesn't have a StatusMessage defined.";
-	
+			szMsg = "TODO This menu item doesn't have a StatusMessage defined.";	
 		pFrame->setStatusMessage(szMsg);
 	}
 	
@@ -136,7 +135,6 @@ public:									// we create...
 	{
 		_wd * wd = (_wd *) callback_data;
 		UT_ASSERT(wd);
-
 		wd->m_pUnixMenu->refreshMenu(wd->m_pUnixMenu->getFrame()->getCurrentView());
 	}
 
@@ -149,7 +147,6 @@ public:									// we create...
 		// leave a message behind
 		XAP_UnixFrame * pFrame = wd->m_pUnixMenu->getFrame();
 		UT_ASSERT(pFrame);
-
 		pFrame->setStatusMessage(NULL);
 	}
 
@@ -409,18 +406,6 @@ bool EV_UnixMenu::menuEvent(XAP_Menu_Id id)
 	return true;
 }
 
-#if 0
-static const char * _ev_FakeName(const char * sz, UT_uint32 k)
-{
-	// construct a temporary string
-
-	static char buf[128];
-	UT_ASSERT(strlen(sz)<120);
-	sprintf(buf,"%s%d",sz,k);
-	return buf;
-}
-#endif
-	
 static char _ev_get_underlined_char(const char * szString)
 {
 

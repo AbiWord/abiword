@@ -56,9 +56,9 @@ public:
 
 	/* Implementation of UT_XML::Reader
 	 */
-	bool      openFile (const char * szFilename);
-	UT_uint32 readBytes (char * buffer, UT_uint32 length);
-	void      closeFile (void);
+	virtual bool      openFile (const char * szFilename);
+	virtual UT_uint32 readBytes (char * buffer, UT_uint32 length);
+	virtual void      closeFile (void);
 
 private:
 	gzFile m_gzfp;

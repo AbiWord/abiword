@@ -598,7 +598,7 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_ScriptsActive)
 Defun_EV_GetMenuItemState_Fn(ap_GetState_Selection)
 {
         ABIWORD_VIEW;
-	XAP_App * pApp = pView->getApp();
+	XAP_App * pApp = XAP_App::getApp();
 	UT_ASSERT(pApp);
 
 	XAP_Prefs * pPrefs = pApp->getPrefs();
@@ -634,7 +634,7 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_Clipboard)
 	{
 	case AP_MENU_ID_EDIT_PASTE_SPECIAL:
 	case AP_MENU_ID_EDIT_PASTE:
-		s = ( (pView->getApp()->canPasteFromClipboard()) ? EV_MIS_ZERO : EV_MIS_Gray );
+		s = ((XAP_App::getApp()->canPasteFromClipboard()) ? EV_MIS_ZERO : EV_MIS_Gray );
 		break;
 
 	default:
@@ -650,7 +650,7 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_Prefs)
         ABIWORD_VIEW;
 	UT_ASSERT(pView);
 
-	XAP_App *pApp = pView->getApp();
+	XAP_App *pApp = XAP_App::getApp();
 	UT_ASSERT(pApp);
 
 	XAP_Prefs * pPrefs = pApp->getPrefs();

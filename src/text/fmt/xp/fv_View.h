@@ -659,6 +659,8 @@ private:
 	UT_RGBColor         m_colorRevisions[10];
 	UT_RGBColor			m_colorHdrFtr;
 	UT_RGBColor			m_colorColumnLine;
+
+	UT_uint32 m_countDisable; // cursor disable count
 };
 
 #endif /* FV_VIEW_H */
