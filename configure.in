@@ -220,6 +220,11 @@ esac
 
 if test "$PLATFORM" = "unix"; then
 	if test "$gnome" = "true"; then
+		AC_CHECK_HEADERS([gal/widgets/gtk-combo-text.h gal/widgets/widget-color-combo.h gal/widgets/widget-pixmap-combo.h],
+			no_gal_h=no, no_gal_h=yes)
+		if test "x$no_gal_h" = "xyes"; then
+			AC_MSG_ERROR(Libgal is required.)
+		fi
 		PLATFORM_CFLAGS="$GNOME_CFLAGS $GMODULE_CFLAGS $GTK_CFLAGS"
 		PLATFORM_LIBS=
 	else
