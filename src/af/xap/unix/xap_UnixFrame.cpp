@@ -511,6 +511,7 @@ XAP_UnixFrame::XAP_UnixFrame(XAP_UnixApp * app)
 	m_iAbiRepaintID = 0;
 	m_bDoZoomUpdate = false;
 	m_iZoomUpdateID = 0;
+	m_wTopLevelWindow = NULL;
 }
 
 // TODO when cloning a new frame from an existing one
@@ -965,8 +966,10 @@ bool XAP_UnixFrame::raise()
 
 bool XAP_UnixFrame::show()
 {
-	gtk_widget_show(m_wTopLevelWindow);
-
+	if(m_wTopLevelWindow)
+	{
+		gtk_widget_show(m_wTopLevelWindow);
+	}
 	return true;
 }
 
@@ -1074,7 +1077,7 @@ bool XAP_UnixFrame::openURL(const char * szURL)
 
 bool XAP_UnixFrame::updateTitle()
 {
-	if (!XAP_Frame::updateTitle())
+	if (!XAP_Frame::updateTitle() || (m_wTopLevelWindow== NULL))
 	{
 		// no relevant change, so skip it
 		return false;
