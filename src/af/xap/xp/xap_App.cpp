@@ -169,9 +169,20 @@ UT_Bool AP_App::rememberFrame(AP_Frame * pFrame, AP_Frame * pCloneOf)
 
 		if (pEntry)
 		{
-			// already exists
+			// hash table entry already exists
 			pvClones = (UT_Vector *) pEntry->pData;
-			UT_ASSERT(pvClones);
+
+			if (!pvClones)
+			{
+				// nothing there, so create a new one
+				pvClones = new UT_Vector();
+				UT_ASSERT(pvClones);
+
+				pvClones->addItem(pCloneOf);
+
+				// reuse this slot
+				m_hashClones.setEntry(pEntry, NULL, pvClones);
+			}
 		}
 		else
 		{
