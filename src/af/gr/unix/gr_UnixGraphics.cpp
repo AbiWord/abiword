@@ -162,12 +162,14 @@ static bool fallback_used;
 		text[0] = (unsigned char)c;			\
 		text_length = 1;				\
 		fallback_used = 0;				\
+		DELETEP(w);					\
 	} else	{\
 		fallback_used = 0;	\
 		if (!w->wctomb(text,text_length,(wchar_t)c)) {	\
 		    w->wctomb_or_fallback(text,text_length,(wchar_t)c);	\
 		    fallback_used = 1;	\
 		}	\
+	DELETEP(w);      \
 	}	
 
 
