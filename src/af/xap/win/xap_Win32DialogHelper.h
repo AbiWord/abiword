@@ -96,6 +96,11 @@ public:
 	void				setControlText(UT_sint32 controlId, LPCSTR p_str);
 	void				setControlInt(UT_sint32 controlId, int value);
 	int					getControlInt(UT_sint32 controlId) const;
+	
+	void                selectControlText(UT_sint32 controlId,
+										  UT_sint32 start,
+										  UT_sint32 end);
+	
 	int					isChecked(UT_sint32 controlId) const;
 	void				getControlText(	UT_sint32	controlId,
 										LPSTR		p_buffer,
