@@ -165,7 +165,7 @@ ABI_PEER_INCS=	/../../expat/xmlparse	\
 
 ABI_ALL_INCS=	$(ABI_XAP_INCS) $(ABI_PEER_INCS) $(ABI_AP_INCS) $(ABI_OTH_INCS) $(ABI_TM_INCS)
 ifeq ($(OS_NAME), WIN32)
-ABI_XX_ROOT:=$(shell echo $(ABI_ROOT) | sed 's|/cygdrive/[a-zA-Z]/|/|g' | sed 's|//[a-zA-Z]/|/|g')
+ABI_XX_ROOT:=$(shell echo $(ABI_ROOT) | sed 's|/cygdrive/\([a-zA-Z]\)/|\1:/|g' | sed 's|//[a-zA-Z]/|/|g')
 ABI_INCS=	$(addprefix -I$(ABI_XX_ROOT)/src,$(ABI_ALL_INCS))
 else
 ABI_INCS=	$(addprefix -I$(ABI_ROOT)/src,$(ABI_ALL_INCS))
@@ -295,7 +295,7 @@ if test ! -d xxxx; then rm -rf xxxx; mkdir -p  xxxx; fi
 endef
 
 define TRANSFORM_TO_DOS_PATH
-sed 's|/cygdrive/[a-zA-Z]/|/|g' | sed 's|//[a-zA-Z]/|/|g' | sed 's|/|\\\\|g'
+sed 's|/cygdrive/\([a-zA-Z]\)/|\1:/|g' | sed 's|//[a-zA-Z]/|/|g' | sed 's|/|\\\\|g'
 endef
 
 ##################################################################

@@ -143,7 +143,7 @@ ifeq ($(OS_NAME),WIN32)
 ####	command line limit (or something which crashes bash)....
 	@echo -NOLOGO -OUT:"$(shell echo $@ | $(TRANSFORM_TO_DOS_PATH))" > linkfile.1
 	@echo $(OBJS)                               > linkfile.4
-	@sed 's|/cygdrive/[a-zA-Z]/|/|g' linkfile.4 > linkfile.5
+	@sed 's|/cygdrive/\([a-zA-Z]\)/|\1:/|g' linkfile.4 > linkfile.5
 	@sed 's|//[a-zA-Z]/|/|g'         linkfile.5 > linkfile.6
 	@sed 's|/|\\|g'                  linkfile.6 > linkfile.2
 	@echo $(AR_EXTRA_ARGS)									>linkfile.3
