@@ -280,7 +280,7 @@ void PS_Graphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
 		return;
 
 	if (!pCharWidths) {
-		_drawCharsUTF8(pChars, iCharOffset, iLength, tdu(xoff), tdu(yoff));
+		_drawCharsUTF8(pChars, iCharOffset, iLength, xoff, yoff);
 		return;
 	}
 
@@ -297,7 +297,7 @@ void PS_Graphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
 
 		if (UT_UCS4_isspace (ch) || (UT_isOverstrikingChar(ch) != UT_NOT_OVERSTRIKING) || last_was_overstriking) {
 			if (!utf8.empty()) {
-				_drawCharsUTF8(utf8.ucs4_str().ucs4_str(), 0, utf8.size(), tdu (xoff + prevAdvance), tdu(yoff));
+				_drawCharsUTF8(utf8.ucs4_str().ucs4_str(), 0, utf8.size(), xoff + prevAdvance, yoff);
 				utf8.clear ();
 			}
 
@@ -317,7 +317,7 @@ void PS_Graphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
 	
 	// chars remain - flush buffer
 	if (!utf8.empty ())
-		_drawCharsUTF8(utf8.ucs4_str().ucs4_str(), 0, utf8.size(), tdu (xoff + prevAdvance), tdu(yoff));
+		_drawCharsUTF8(utf8.ucs4_str().ucs4_str(), 0, utf8.size(), xoff + prevAdvance, yoff);
 }
 
 void PS_Graphics::_drawCharsUTF8(const UT_UCSChar* pChars, UT_uint32 iCharOffset,
@@ -342,7 +342,7 @@ void PS_Graphics::_drawCharsUTF8(const UT_UCSChar* pChars, UT_uint32 iCharOffset
 	// each glyph.  PostScript interprets the yoff as the baseline,
 	// which doesn't match this expectation.  Adding the ascent of the
 	// font will bring it back to the correct position.
-	yoff += tdu (getFontAscent());
+	yoff += getFontAscent();
 
 	// unsigned buffer holds Latin-1 data to character code 255
 	char buf[LINE_BUFFER_SIZE];
@@ -370,15 +370,14 @@ void PS_Graphics::_drawCharsUTF8(const UT_UCSChar* pChars, UT_uint32 iCharOffset
 		}
 
 		currentChar = *pS;
-		if (!((currentChar >= 'a' && currentChar <= 'z') || (currentChar >= 'A' && currentChar <= 'Z') ||
-			  currentChar == ' '))
+		if (currentChar < ' ' || currentChar > '~' || currentChar == '(' || currentChar == ')' || currentChar == '\\')
 		{
 			// if currentChar is not an english character, we will have to write it
 			// using parentheses
 			if(open_bracket)
 			{
 				open_bracket = false;
-				sprintf(static_cast<char *>(pD),") %d %d MS\n",xoff,yoff);
+				sprintf(static_cast<char *>(pD),") %d %d MS\n",tdu(xoff),tdu(yoff));
 				xoff += curwidth;
 				curwidth =0;
 				m_ps->writeBytes(buf);
@@ -387,7 +386,7 @@ void PS_Graphics::_drawCharsUTF8(const UT_UCSChar* pChars, UT_uint32 iCharOffset
 			else if(!using_names)
 			{
 				xoff += curwidth;
-				sprintf(static_cast<char *>(pD)," %d %d MV ",xoff,yoff);
+				sprintf(static_cast<char *>(pD)," %d %d MV ",tdu(xoff),tdu(yoff));
 				curwidth =0;
 				pD = buf + strlen(buf);
 				using_names = true;
@@ -434,14 +433,14 @@ void PS_Graphics::_drawCharsUTF8(const UT_UCSChar* pChars, UT_uint32 iCharOffset
 
 			*pD++ = static_cast<char>(currentChar);
 		}
-		curwidth += tdu (measureUnRemappedChar(currentChar));
+		curwidth += measureUnRemappedChar(currentChar);
 		xxx_UT_DEBUGMSG((" width %d curwidth %d xoff %d curwidth+xoff %d char %c \n", measureUnRemappedChar(currentChar),curwidth, xoff,xoff+curwidth,static_cast<char>(currentChar)));
 		pS++;
 	}
 	if(open_bracket)
 	{
 		*pD++ = ')';
-		sprintf(static_cast<char *>(pD)," %d %d MS\n",xoff,yoff);
+		sprintf(static_cast<char *>(pD)," %d %d MS\n",tdu(xoff),tdu(yoff));
 	}
 	else
 	{
