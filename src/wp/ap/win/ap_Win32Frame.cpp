@@ -273,7 +273,7 @@ UT_Bool AP_Win32Frame::RegisterClass(AP_Win32App * app)
 
 	memset(&wndclass, 0, sizeof(wndclass));
 	wndclass.cbSize        = sizeof(wndclass);
-	wndclass.style         = CS_DBLCLKS;
+	wndclass.style         = CS_DBLCLKS | CS_OWNDC;
 	wndclass.lpfnWndProc   = AP_Win32Frame::_ContainerWndProc;
 	wndclass.cbClsExtra    = 0;
 	wndclass.cbWndExtra    = 0;
@@ -293,7 +293,7 @@ UT_Bool AP_Win32Frame::RegisterClass(AP_Win32App * app)
 
 	memset(&wndclass, 0, sizeof(wndclass));
 	wndclass.cbSize        = sizeof(wndclass);
-	wndclass.style         = CS_DBLCLKS;
+	wndclass.style         = CS_DBLCLKS | CS_OWNDC;
 	wndclass.lpfnWndProc   = AP_Win32Frame::_DocumentWndProc;
 	wndclass.cbClsExtra    = 0;
 	wndclass.cbWndExtra    = 0;

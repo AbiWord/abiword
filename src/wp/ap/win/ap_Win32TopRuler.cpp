@@ -73,7 +73,7 @@ UT_Bool AP_Win32TopRuler::RegisterClass(AP_Win32App * app)
 
 	memset(&wndclass, 0, sizeof(wndclass));
 	wndclass.cbSize        = sizeof(wndclass);
-	wndclass.style         = CS_DBLCLKS;
+	wndclass.style         = CS_DBLCLKS | CS_OWNDC;
 	wndclass.lpfnWndProc   = AP_Win32TopRuler::_TopRulerWndProc;
 	wndclass.cbClsExtra    = 0;
 	wndclass.cbWndExtra    = 0;
