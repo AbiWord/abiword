@@ -84,22 +84,21 @@ protected:
 	UT_uint32					m_vScale; /* vertical scroll scaling to get around 16-bit scrollbar problems */
 
 private:
-
-	UT_Bool						m_bMouseWheelTrack;
-	UT_sint32					m_startMouseWheelY, m_startScrollPosition;
+	virtual void				toggleBar(UT_uint32 iBarNb, UT_Bool bBarOn );
+	virtual void				toggleStatusBar(UT_Bool bStatusBarOn);
+	virtual UT_Bool				getBarVisibility(UT_uint32 iBarNb) { return UT_TRUE; }
 
 	void						_startTracking(UT_sint32 x, UT_sint32 y);
-	void						_endTracking(UT_sint32 x, UT_sint32 y)
-								{
-									m_bMouseWheelTrack = UT_FALSE;
-									ReleaseCapture();
-								}
+	void						_endTracking(UT_sint32 x, UT_sint32 y);
 	void						_track(UT_sint32 x, UT_sint32 y);
-	UT_Bool						_isTracking()
+	UT_Bool						_isTracking() const
 								{
 									return m_bMouseWheelTrack;
 								}
 
+	UT_Bool						m_bMouseWheelTrack;
+	UT_sint32					m_startMouseWheelY;
+	UT_sint32					m_startScrollPosition;
 	UT_Bool						m_bMouseActivateReceived;
 };
 

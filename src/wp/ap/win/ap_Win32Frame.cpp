@@ -1073,6 +1073,10 @@ LRESULT CALLBACK AP_Win32Frame::_DocumentWndProc(HWND hwnd, UINT iMsg, WPARAM wP
 	
 	case WM_DESTROY:
 		return 0;
+
+	case WM_INPUTLANGCHANGE:	// let the XAP_Win32Frame handle this
+		return ::SendMessage(f->m_hwndFrame, WM_INPUTLANGCHANGE, wParam, lParam);
+	
 	} /* switch (iMsg) */
 
 	return DefWindowProc(hwnd, iMsg, wParam, lParam);
@@ -1220,6 +1224,13 @@ void AP_Win32Frame::_startTracking(UT_sint32 x, UT_sint32 y)
 	SetCapture(m_hwndDocument);
 	
 }
+
+void AP_Win32Frame::_endTracking(UT_sint32 x, UT_sint32 y)
+{
+	m_bMouseWheelTrack = UT_FALSE;
+	ReleaseCapture();
+}
+
 void AP_Win32Frame::_track(UT_sint32 x, UT_sint32 y)
 {
 	UT_sint32 Delta = y - m_startMouseWheelY;
@@ -1249,3 +1260,44 @@ void AP_Win32Frame::_track(UT_sint32 x, UT_sint32 y)
 	}
 
 }
+
+void AP_Win32Frame::toggleBar(UT_uint32 iBarNb, UT_Bool bBarOn)
+{
+	UT_DEBUGMSG(("AP_Win32Frame::toggleBar %d, %d\n", iBarNb, bBarOn));	
+
+	// TMN: Yes, this cast is correct. We store EV_Win32Toolbar in
+	// m_vecToolbars, but we only need the EV_Toolbar part of it.
+	EV_Toolbar* pToolbar = (EV_Toolbar*)m_vecToolbars.getNthItem(iBarNb);
+
+	UT_ASSERT(pToolbar);
+
+	if (!pToolbar)	// release build paranoia
+	{
+		return;
+	}
+
+	if (bBarOn)
+	{
+		pToolbar->show();
+	}
+	else
+	{
+		pToolbar->hide();
+	}
+}
+
+void AP_Win32Frame::toggleStatusBar(UT_Bool bStatusBarOn)
+{
+	AP_FrameData *pFrameData = static_cast<AP_FrameData *>(getFrameData());
+	UT_ASSERT(pFrameData);
+	
+	if (bStatusBarOn)
+	{
+		pFrameData->m_pStatusBar->show();
+	}
+	else
+	{
+		pFrameData->m_pStatusBar->hide();
+	}
+}
+
