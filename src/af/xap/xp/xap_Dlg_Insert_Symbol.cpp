@@ -130,8 +130,6 @@ void XAP_Dialog_Insert_Symbol::_onInsertButton()
 {
 	UT_ASSERT(m_pListener);
 
-        m_pListener->setView( setCurrentView() );
-
 	/* Now get the character to be inserted */
 
 	UT_UCSChar c = getInsertedSymbol();
@@ -142,6 +140,15 @@ void XAP_Dialog_Insert_Symbol::_onInsertButton()
 
 	m_pListener->insertSymbol(c, symfont);
 }
+
+void XAP_Dialog_Insert_Symbol::setActiveFrame(XAP_Frame *pFrame)
+{
+
+	m_pListener->setView( pFrame->getCurrentView() );
+
+	notifyActiveFrame(pFrame);
+}
+
 
 
 

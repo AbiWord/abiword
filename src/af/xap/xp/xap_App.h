@@ -122,7 +122,9 @@ public:
 	void forgetModelessId( UT_sint32 id );
 	void * getModelessWidget( UT_sint32 id);
 	XAP_Dialog_Modeless * getModelessDialog( UT_sint32 id);
-        void closeModelessDlgs( void);
+	void closeModelessDlgs( void);
+	void notifyModelessDlgsOfActiveFrame(XAP_Frame *p_Frame);
+	void notifyModelessDlgsCloseFrame(XAP_Frame *p_Frame);
 
 protected:
 	void				  _setAbiSuiteLibDir(const char * sz);

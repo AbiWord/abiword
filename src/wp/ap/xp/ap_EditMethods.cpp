@@ -1743,8 +1743,8 @@ Defun(closeWindow)
 
 	// nuke the window
 	
-        pFrame->close();
 	pApp->forgetFrame(pFrame);
+	pFrame->close();
 	delete pFrame;
 
 	return UT_TRUE;
@@ -3852,6 +3852,7 @@ static UT_Bool s_InsertSymbolDlg(FV_View * pView, XAP_Dialog_Id id  )
 	{
 	       pDialog->setListener(&symbol_Listener);
 	       pDialog->runModeless(pFrame);
+		   
 	}
 	return UT_TRUE;
 }

@@ -64,8 +64,10 @@ public:
 
 	virtual void			runModal(XAP_Frame * pFrame);
 	virtual void			runModeless(XAP_Frame * pFrame);
+	virtual void			notifyActiveFrame(XAP_Frame *pFrame);
+	virtual void			notifyCloseFrame(XAP_Frame *pFrame);
 	virtual void			destroy(void);
-        virtual void                    activate(void) {};
+	virtual void			activate(void) {ShowWindow(m_hDlg, SW_SHOW);};
 
 	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
 	static BOOL CALLBACK	s_dlgProc(HWND,UINT,WPARAM,LPARAM);

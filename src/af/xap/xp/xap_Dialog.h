@@ -129,12 +129,13 @@ public:
 	virtual void				useStart(void);
 	virtual void				runModal(XAP_Frame * pFrame) = 0;
 	virtual void				useEnd(void);
-        virtual void                            runModeless(XAP_Frame * pFrame) = 0;
-        virtual void                            destroy(void)=0;
-        virtual void                            activate(void)=0;
-        AV_View *                               setCurrentView(void);
-        void                                    modeless_cleanup(void);
-        UT_Bool                                 isRunning(void);
+	virtual void				runModeless(XAP_Frame * pFrame) = 0;
+	virtual void				setActiveFrame(XAP_Frame *pFrame) = 0;
+	virtual void				notifyCloseFrame(XAP_Frame *pFrame) = 0;
+	virtual void				destroy(void)=0;
+	virtual void				activate(void)=0;
+	void						modeless_cleanup(void);
+	UT_Bool						isRunning(void);
 
 	static XAP_Dialog_Type		s_getPersistence(void) { return XAP_DLGT_APP_PERSISTENT; };
 	

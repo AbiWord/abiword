@@ -66,6 +66,7 @@ void XAP_Win32Dialog_Insert_Symbol::runModal(XAP_Frame * pFrame)
 
 void XAP_Win32Dialog_Insert_Symbol::destroy(void)
 {
+DestroyWindow(m_hDlg);
 }
 
 void XAP_Win32Dialog_Insert_Symbol::runModeless(XAP_Frame * pFrame)
@@ -82,10 +83,37 @@ void XAP_Win32Dialog_Insert_Symbol::runModeless(XAP_Frame * pFrame)
 
 	lpTemplate = MAKEINTRESOURCE(XAP_RID_DIALOG_INSERT_SYMBOL);
 
-	int result = DialogBoxParam(pWin32App->getInstance(),lpTemplate,
+	HWND hWndDialog = CreateDialogParam(pWin32App->getInstance(),lpTemplate,
 								pWin32Frame->getTopLevelWindow(),
 								(DLGPROC)s_dlgProc,(LPARAM)this);
-	UT_ASSERT((result != -1));
+	ShowWindow(hWndDialog, SW_SHOW);
+	UT_ASSERT((hWndDialog != NULL));
+
+	m_pApp->rememberModelessId(m_id, hWndDialog, this);
+
+
+}
+
+void XAP_Win32Dialog_Insert_Symbol::notifyActiveFrame(XAP_Frame *pFrame)
+{
+	XAP_Win32Frame * pWin32Frame = static_cast<XAP_Win32Frame *>(pFrame);
+	if((HWND)GetWindowLong(m_hDlg, GWL_HWNDPARENT) != pWin32Frame->getTopLevelWindow())
+	{
+		SetWindowLong(m_hDlg, GWL_HWNDPARENT, (long)pWin32Frame->getTopLevelWindow());
+		SetWindowPos(m_hDlg, NULL, 0, 0, 0, 0,
+						SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER | SWP_FRAMECHANGED);
+	}
+}
+
+void XAP_Win32Dialog_Insert_Symbol::notifyCloseFrame(XAP_Frame *pFrame)
+{
+	XAP_Win32Frame * pWin32Frame = static_cast<XAP_Win32Frame *>(pFrame);
+	if((HWND)GetWindowLong(m_hDlg, GWL_HWNDPARENT) == pWin32Frame->getTopLevelWindow())
+	{
+		SetWindowLong(m_hDlg, GWL_HWNDPARENT, NULL);
+		SetWindowPos(m_hDlg, NULL, 0, 0, 0, 0,
+						SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER | SWP_FRAMECHANGED);
+	}
 }
 
 BOOL CALLBACK XAP_Win32Dialog_Insert_Symbol::s_dlgProc(HWND hWnd,UINT msg,WPARAM wParam,LPARAM lParam)
@@ -193,7 +221,7 @@ BOOL XAP_Win32Dialog_Insert_Symbol::_onCommand(HWND hWnd, WPARAM wParam, LPARAM 
 	{
 	case XAP_RID_DIALOG_INSERTSYMBOL_CLOSE_BUTTON:
 		m_answer = XAP_Dialog_Insert_Symbol::a_CANCEL;
-		EndDialog(hWnd,0);
+		ShowWindow(hWnd, SW_HIDE);
 		return 1;
 
 	case XAP_RID_DIALOG_INSERTSYMBOL_INSERT_BUTTON:

@@ -154,17 +154,6 @@ void XAP_Dialog_Modeless::useEnd(void)
 	m_bInUse = UT_FALSE;
 }
 
-AV_View * XAP_Dialog_Modeless::setCurrentView(void)
-{
-	XAP_Frame * pJustFocussedFrame = m_pApp->getLastFocussedFrame();
-        if(pJustFocussedFrame == (XAP_Frame *) NULL)
-	{
-	      pJustFocussedFrame = m_pApp->getFrame(0);
-	}
-	AV_View * pJustFocussedView = pJustFocussedFrame->getCurrentView();
-        return pJustFocussedView;
-}
-
 void XAP_Dialog_Modeless::modeless_cleanup(void)
 {
 	UT_sint32 sid = (UT_sint32) getDialogId();
@@ -175,11 +164,11 @@ void XAP_Dialog_Modeless::modeless_cleanup(void)
 UT_Bool XAP_Dialog_Modeless::isRunning(void)
 {
 	UT_sint32 sid = (UT_sint32) getDialogId();
-        void * pWidget = m_pApp->getModelessWidget(sid);
-        UT_Bool isrunning = UT_TRUE;
-        if(pWidget == (void *) NULL)
+	void * pWidget = m_pApp->getModelessWidget(sid);
+	UT_Bool isrunning = UT_TRUE;
+	if(pWidget == (void *) NULL)
 	{
-	     isrunning = UT_FALSE;
+		isrunning = UT_FALSE;
 	}
 	return isrunning;
 }

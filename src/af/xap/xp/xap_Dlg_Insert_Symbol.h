@@ -57,6 +57,9 @@ class XAP_Dialog_Insert_Symbol : public XAP_Dialog_Modeless
 	{
 		m_pListener = p_listener_in;
 	}
+	void				setActiveFrame(XAP_Frame *pFrame);
+	
+	virtual void		notifyActiveFrame(XAP_Frame *pFrame) = 0;
 
  protected:
 	// handle the XP-job of drawing our symbols.

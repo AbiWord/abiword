@@ -228,9 +228,9 @@ UT_Bool XAP_App::forgetFrame(XAP_Frame * pFrame)
         // If this frame is the currently focussed frame write in NULL
         // until another frame appears
 
-        if(pFrame == m_lastFocussedFrame )
+	if(pFrame == m_lastFocussedFrame )
 	{
-	       m_lastFocussedFrame = (XAP_Frame *) NULL;
+		m_lastFocussedFrame = (XAP_Frame *) NULL;
 	}
 
 	if (pFrame->getViewNumber() > 0)
@@ -294,6 +294,8 @@ UT_Bool XAP_App::forgetFrame(XAP_Frame * pFrame)
 	{
 		m_vecFrames.deleteNthItem(ndx);
 	}
+
+	notifyModelessDlgsCloseFrame(pFrame);
 
 	// TODO do something here...
 
@@ -459,13 +461,15 @@ UT_Bool XAP_App::getPrefsValueBool(const XML_Char * szKey, UT_Bool * pbValue) co
 
 void XAP_App::rememberFocussedFrame( void * pJustFocussedFrame)
 {
-        m_lastFocussedFrame = (XAP_Frame *) pJustFocussedFrame;
+	m_lastFocussedFrame = (XAP_Frame *) pJustFocussedFrame;
 
-        UT_sint32 i = findFrame( m_lastFocussedFrame);
+	UT_sint32 i = findFrame( m_lastFocussedFrame);
 	if(i < 0 ) 
 	{   
-	       m_lastFocussedFrame = (XAP_Frame *) NULL;
+		m_lastFocussedFrame = (XAP_Frame *) NULL;
 	}
+
+	notifyModelessDlgsOfActiveFrame(m_lastFocussedFrame);
 }
 
 UT_Bool XAP_App::safeCompare( XAP_Frame * lff, XAP_Frame * f)
@@ -588,3 +592,24 @@ void XAP_App::closeModelessDlgs( void )
 }
 
 
+void XAP_App::notifyModelessDlgsOfActiveFrame(XAP_Frame *p_Frame)
+{
+	for(UT_sint32 i=0; i <= NUM_MODELESSID; i++)
+	{
+		if(getModelessDialog(i) != (XAP_Dialog_Modeless *) NULL)
+		{
+			getModelessDialog(i)->setActiveFrame(p_Frame);
+		}
+	}
+}
+
+void XAP_App::notifyModelessDlgsCloseFrame(XAP_Frame *p_Frame)
+{
+	for(UT_sint32 i=0; i <= NUM_MODELESSID; i++)
+	{
+		if(getModelessDialog(i) != (XAP_Dialog_Modeless *) NULL)
+		{
+			getModelessDialog(i)->notifyCloseFrame(p_Frame);
+		}
+	}
+}
