@@ -27,11 +27,6 @@
 #define WORD_SIZE 256 /* or whatever */
 
 /**********************************************************************/
-/*       encoding manager method hack so we can use it in C code      */
-/**********************************************************************/
-extern const char * xap_encoding_manager_get_language_iso_name(void);
-
-/**********************************************************************/
 /*                     Globals we'll need for pspell                  */
 /**********************************************************************/
 static PspellManager *spell_manager = NULL;
@@ -71,14 +66,14 @@ static void utf8_to_utf16(const char *word8, unsigned short *word16,
 /*
  * Should return 1 on success, 0 on failure
  */
-int SpellCheckInit(char *unused_ispell_hashfile_name)
+int SpellCheckInit(char *lang)
 {
   PspellConfig *spell_config;
   PspellCanHaveError *spell_error;
 
   spell_config = new_pspell_config();
   pspell_config_replace(spell_config, "language-tag",
-			xap_encoding_manager_get_language_iso_name());
+			lang);
   pspell_config_replace(spell_config, "encoding", "utf-8");
 
   spell_error = new_pspell_manager(spell_config);
