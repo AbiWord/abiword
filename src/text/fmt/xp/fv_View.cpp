@@ -1870,8 +1870,16 @@ bool FV_View::setStyle(const XML_Char * style, bool bDontGeneralUpdate)
 		return false;
 	}
 
+//
+// Get This info before it's lost from the following processing
+// 
 	fl_BlockLayout * pBL = getCurrentBlock();
 	bool bisListStyle = (NOT_A_LIST != pBL->getListTypeFromStyle( style));
+	UT_Vector vBlock;
+	if(bisListStyle)
+	{
+		getBlocksInSelection( &vBlock);
+	}
 
 	bool bCharStyle = pStyle->isCharStyle();
 
@@ -1978,14 +1986,24 @@ bool FV_View::setStyle(const XML_Char * style, bool bDontGeneralUpdate)
 		}
 #endif		
 	}
-
+//
+// Do the list elements processing
+//
 	if(bisListStyle)
 	{
-		while(pBL->isListItem())
+		UT_uint32 i;
+		for(i=0; i< vBlock.getItemCount(); i++)
 		{
-			m_pDoc->StopList(pBL->getStruxDocHandle());
-		}     
-		pBL->StartList(style);
+			pBL = (fl_BlockLayout *)  vBlock.getNthItem(i);
+			while(pBL->isListItem())
+			{
+				m_pDoc->StopList(pBL->getStruxDocHandle());
+			} 
+			if(i == 0)
+				pBL->StartList(style);
+			else
+				pBL->resumeList(pBL->getPrev());
+		}
 		m_pDoc->endUserAtomicGlob();
 	}
 	if(!bDontGeneralUpdate)
