@@ -542,9 +542,9 @@ endif
 ifndef ABI_BUILD_VERSION
 ABI_BUILD_VERSION	= $(ABI_BUILD_VERSION_MAJOR).$(ABI_BUILD_VERSION_MINOR).$(ABI_BUILD_VERSION_MICRO)
 ABI_BUILD_ID		=
+endif
 
 CFLAGS  += -DABI_BUILD_VERSION=\"$(ABI_BUILD_VERSION)\"
-endif
 
 ##################################################################
 ##################################################################
