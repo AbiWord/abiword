@@ -52,7 +52,7 @@ ABI_VERFLAGS=		-DABI_BUILD_ID=\"$(BUILD_ID)\"			\
 			-DABI_BUILD_OPTIONS=\"$(BUILD_OPTIONS)\"	\
 			-DABI_BUILD_TARGET=\"$(OBJDIR)\"
 
-INCLUDES=		$(ABI_VERFLAGS)
+INCLUDES=		$(ABI_VERFLAGS) -DABISUITE_HOME="\"$(pkgdatadir)\"" \
 
 include $(ABI_ROOT)/src/config/abi_rules.mk
 
