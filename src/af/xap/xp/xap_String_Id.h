@@ -272,14 +272,19 @@ dcl(LANG_EN_NZ, 							"English (New Zealand)")
 dcl(LANG_EN_ZA, 							"English (South Africa)")
 dcl(LANG_EN_US, 							"English (US)")
 dcl(LANG_AF_ZA, 							"Afrikaans")
+dcl(LANG_SQ_AL, 							"Albanian")	// Jordi 19/10/2002
 dcl(LANG_AR_EG, 							"Arabic (Egypt)")
 dcl(LANG_AR_SA, 							"Arabic (Saudi Arabia)")
 dcl(LANG_HY_AM, 							"Armenian")
 dcl(LANG_AS_IN, 							"Assamese")
 dcl(LANG_EU_ES, 							"Basque")
 dcl(LANG_BE_BY, 							"Belarusian")
+dcl(LANG_BR_FR,								"Breton")		// Jordi 19/10/2002
 dcl(LANG_BG_BG, 							"Bulgarian")
 dcl(LANG_CA_ES, 							"Catalan")
+dcl(LANG_KW_GB,								"Cornish")		// Jordi 19/10/2002
+dcl(LANG_CO_FR,								"Corsican")		// Jordi 19/10/2002
+dcl(LANG_HR,								"Croatian")		// Jordi
 dcl(LANG_ZH_HK, 							"Chinese (Hong Kong)")
 dcl(LANG_ZH_CN, 							"Chinese (PRC)")
 dcl(LANG_ZH_SG, 							"Chinese (Singapore)")
@@ -288,6 +293,7 @@ dcl(LANG_CS_CZ, 							"Czech")
 dcl(LANG_DA_DK, 							"Danish")
 dcl(LANG_NL_NL, 							"Dutch (Netherlands)")
 dcl(LANG_EO,								"Esperanto")
+dcl(LANG_ET,								"Estonian")
 dcl(LANG_FA_IR, 							"Farsi")
 dcl(LANG_FI_FI, 							"Finnish")
 dcl(LANG_NL_BE, 							"Flemish (Belgium)")
@@ -295,6 +301,7 @@ dcl(LANG_FR_BE, 							"French (Belgium)")
 dcl(LANG_FR_CA, 							"French (Canada)")
 dcl(LANG_FR_FR, 							"French (France)")
 dcl(LANG_FR_CH, 							"French (Switzerland)")
+dcl(LANG_FY_NL,								"Frisian")	// Jordi 19/10/2002
 dcl(LANG_GL_ES, 							"Galician")
 dcl(LANG_KA_GE, 							"Georgian")
 dcl(LANG_DE_AT, 							"German (Austria)")
@@ -316,15 +323,19 @@ dcl(LANG_KO_KR, 							"Korean")
 dcl(LANG_LA_IT, 							"Latin (Renaissance)")	// Is _IT the right thing here?
 dcl(LANG_LV_LV, 							"Latvian")
 dcl(LANG_LT_LT, 							"Lithuanian")
+dcl(LANG_MK,								"Macedonian")	// Jordi 19/10/2002
 dcl(LANG_MH_MH, 							"Marshallese (Marshall Islands)")
 dcl(LANG_MH_NR, 							"Marshallese (Nauru)")
 dcl(LANG_NB_NO, 							"Norwegian Bokmal")
 dcl(LANG_NN_NO, 							"Norwegian Nynorsk")
+dcl(LANG_OC_FR,								"Occitan")		// Jordi 19/10/2002
 dcl(LANG_PL_PL, 							"Polish")
 dcl(LANG_PT_BR, 							"Portuguese (Brazil)")
 dcl(LANG_PT_PT, 							"Portuguese (Portugal)")
 dcl(LANG_RO_RO, 							"Romanian")
 dcl(LANG_RU_RU, 							"Russian (Russia)")
+dcl(LANG_SC_IT,								"Sardinian")	// Jordi 19/10/2002
+dcl(LANG_SR,								"Serbian")		// Jordi 19/10/2002
 dcl(LANG_SK_SK, 							"Slovak")				// or Slovakian?
 dcl(LANG_SL_SI, 							"Slovenian")
 dcl(LANG_ES_MX, 							"Spanish (Mexico)")
@@ -336,6 +347,7 @@ dcl(LANG_UK_UA, 							"Ukrainian")
 dcl(LANG_VI_VN, 							"Vietnamese")
 dcl(LANG_CY_GB, 							"Welsh")
 dcl(LANG_YI,								"Yiddish")
+
 
 /* Encoding Dialog */
 dcl(DLG_UENC_EncLabel,				"Select Encoding:")

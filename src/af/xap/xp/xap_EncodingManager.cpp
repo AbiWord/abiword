@@ -676,6 +676,7 @@ const XAP_LangInfo XAP_EncodingManager::langinfo[] =
     {{   "Chewa",             "",       "",       "langChewa",                         "92"    }},
     {{   "Chinese",           "zh",     "0x0004", "langTradChinese",                   "19"    }},
     {{   "Chinese",           "zh",     "0x0004", "langSimpChinese",                   "33"    }},
+    {{   "Cornish",	          "kw",     "",       "",                                  ""      }},	// Jordi 19/10/2002 
     {{   "Corsican",          "co",     "",       "",                                  ""      }},
     {{   "Croatian",          "hr",     "0x001a", "langCroatian",                      "18"    }},
     {{   "Czech",             "cs",     "0x0005", "langCzech",                         "38"    }},
@@ -766,6 +767,7 @@ const XAP_LangInfo XAP_EncodingManager::langinfo[] =
     {{   "Samoan",            "sm",     "",       "",                                  "" 	   }},
     {{   "Sangro",            "sg",     "",       "",                                  "" 	   }},
     {{   "Sanskrit",          "sa",     "",       "langSanskrit",                      "65"    }},
+    {{   "Sardinian",         "sc",     "",       "",        			               ""      }}, // Jordi 19/10/2002 
     {{   "Scots Gaelic",      "gd",     "",       "langGaidhlig",                      "140"   }},
     {{   "Serbian",           "sr",     "0x001a", "langSerbian",                       "42"    }},
     {{   "Serbo-Croatian",    "sh",     "",       "",                                  ""      }},
