@@ -21,4 +21,4 @@ to <tomas@frydrych.uklinux.net>
 How to use it?
 --------------
 run
-	ttf2uafm /myfontdir/myfont.ttf -a myfont.afm -u myfont.u2g
+	ttf2uafm -f myfont.ttf -a myfont.afm -u myfont.u2g

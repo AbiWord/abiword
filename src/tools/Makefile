@@ -21,7 +21,7 @@
 ABI_ROOT:=$(shell pwd)/../..
 include $(ABI_ROOT)/src/config/abi_defs_wp.mk
 
-DIRS=		cdump
+DIRS=		cdump ttf2uafm
 
 include $(ABI_ROOT)/src/config/abi_rules.mk
 

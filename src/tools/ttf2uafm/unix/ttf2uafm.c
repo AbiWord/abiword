@@ -3,7 +3,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdarg.h>
-#include <getopt.h>
 #include "macnames.h"
 
 typedef unsigned char	TTF_BYTE;
@@ -181,7 +180,7 @@ void ttf_fail(char *fmt,...)
 {
     va_list args;
     va_start(args, fmt);
-    fprintf(stderr, "\nError: ttf2afm");
+    fprintf(stderr, "\nError: ttf2uafm");
     if (cur_file_name)
         fprintf(stderr, "(file %s)", cur_file_name);
     fprintf(stderr, ": ");
@@ -640,7 +639,7 @@ void print_afm(char *date, char *fontname)
     short mtx_index[MAX_CHAR_CODE + 1], *idx;
     char **pe;
     kern_entry *pk, *qk;
-    fprintf(outfile, "Comment Converted at %s by ttf2afm from font file `%s'", date, fontname);
+    fprintf(outfile, "Comment Converted at %s by ttf2uafm from font file `%s'", date, fontname);
     fputs("\nStartFontMetrics 2.0\n", outfile);
     print_str(FontName);
     print_str(FullName);
@@ -797,51 +796,61 @@ void usage()
 {
     cur_file_name = 0;
     fprintf(stderr,
-        "Usage: ttf2uafm [-a afm_file] [-u u2g_file] fontfile\n"
+        "Usage: ttf2uafm -f fontfile -a afm_file -u u2g_file\n"
+        "    -f fontfile:   the font to process\n"
         "    -a afm_file:   output afm file to `afm_file' instead of stdout\n"
         "    -u u2g-file:   output unicode to glyph maping table to file `u2g_file'\n"
-        "    fontfile:      the TrueType font\n"
         );
-    _exit(-1);
+    exit(-1);
 }
 
 int main(int argc, char **argv)
 {
     char date[128];
     time_t t = time(&t);
-    int c;
-    while ((c = getopt(argc, argv, "a:u:")) != -1)
-        switch(c) {
-        case 'a':
-            if (outfile != 0)
-                usage();
-            cur_file_name = optarg;
+    char * ffile_name = 0;
+    int i,c;
+    if(argc != 7)
+    	usage();
+    for(i = 1; i < argc; i++)
+    {
+		if(!strcmp(argv[i], "-f"))
+		{
+    		ffile_name = cur_file_name = argv[++i];
+    		fontfile = fopen(cur_file_name, "r");
+    		if(!fontfile)
+        		ttf_fail("can't open font file for reading");
+			continue;
+		}
+		
+		if(!strcmp(argv[i], "-a"))
+		{
+    		cur_file_name = argv[++i];
             outfile = fopen(cur_file_name, "w");
             if (outfile == 0)
                 ttf_fail("cannot open file for writting");
-            break;
-        case 'u':
-            if (unifile != 0)
-                usage();
-            cur_file_name = optarg;
+			continue;
+		}
+		
+		if(!strcmp(argv[i], "-u"))
+		{
+    		cur_file_name = argv[++i];
             unifile = fopen(cur_file_name, "w");
             if (unifile == 0)
                 ttf_fail("cannot open file for writting");
-            break;
-        default:
-            usage();
-        }
-    if (argc - optind != 1)
-        usage();
+			continue;
+		}
+		usage();
+    }
+
+    cur_file_name = ffile_name;
+
     sprintf(date, "%s\n", ctime(&t));
     *(char *)strchr(date, '\n') = 0;
-    cur_file_name = argv[optind];
-    if ((fontfile = fopen(cur_file_name, "r")) == 0)
-        ttf_fail("can't open font file for reading");
+
     read_font();
-    if (outfile == 0)
-        outfile = stdout;
-    print_afm(date, cur_file_name);
+    if (outfile)
+    	print_afm(date, cur_file_name);
     if (unifile)
         print_uni(date, cur_file_name);
     free(Notice);
