@@ -36,7 +36,7 @@ class AP_Dialog_MetaData : public XAP_Dialog_NonPersistent
 {
 public:
 	AP_Dialog_MetaData(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id dlgid)
-	  : XAP_Dialog_NonPersistent ( pDlgFactory, dlgid ), m_answer ( a_CANCEL )
+	  : XAP_Dialog_NonPersistent ( pDlgFactory, dlgid, "interface/dialogproperties" ), m_answer ( a_CANCEL )
 	  {
 	  }
 

@@ -33,7 +33,7 @@
 #include "ap_Strings.h"
 
 AP_Dialog_InsertTable::AP_Dialog_InsertTable(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id)
-	: XAP_Dialog_NonPersistent(pDlgFactory,id)
+	: XAP_Dialog_NonPersistent(pDlgFactory,id, "interface/dialoginsertable")
 {
 	m_answer = a_OK;
 	
