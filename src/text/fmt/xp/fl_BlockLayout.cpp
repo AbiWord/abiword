@@ -1988,7 +1988,6 @@ void fl_BlockLayout::checkSpelling(void)
 
 	const UT_UCSChar* pBlockText = pgb.getPointer(0);
 	UT_uint32 eor = pgb.getLength(); /* end of region */
-
 	FV_View* pView = m_pLayout->getView();
 	UT_Bool bUpdateScreen = UT_FALSE;
 
@@ -3480,8 +3479,11 @@ UT_Bool fl_BlockLayout::doclistener_insertBlock(const PX_ChangeRecord_Strux * pc
 	{
 		// this block may never have been checked
 		// just to be safe, let's make sure both will
-		m_pLayout->queueBlockForBackgroundCheck(FL_DocLayout::bgcrSpelling, this);
-		m_pLayout->queueBlockForBackgroundCheck(FL_DocLayout::bgcrSpelling, pNewBL);
+	        UT_uint32 reason = 0;
+		if( m_pLayout->getAutoSpellCheck())
+		          reason = (UT_uint32) FL_DocLayout::bgcrSpelling;
+		m_pLayout->queueBlockForBackgroundCheck(reason, this);
+		m_pLayout->queueBlockForBackgroundCheck(reason, pNewBL);
 	}
 
 	return UT_TRUE;

@@ -255,9 +255,14 @@ UT_Bool fl_DocListener::populateStrux(PL_StruxDocHandle sdh,
 		}
 
 		// BUGBUG: this is *not* thread-safe, but should work for now
-		if (m_bScreen && m_pLayout->getAutoSpellCheck())
+		if (m_bScreen)
 		{
-			m_pLayout->queueBlockForBackgroundCheck(FL_DocLayout::bgcrSpelling, pBL);
+		        UT_uint32 reason =  0;
+			if( m_pLayout->getAutoSpellCheck())
+			{
+			          reason = (UT_uint32) FL_DocLayout::bgcrSpelling;
+			}
+			m_pLayout->queueBlockForBackgroundCheck(reason, pBL,UT_TRUE);
 		}
 		*psfh = (PL_StruxFmtHandle)pBL;
 	}

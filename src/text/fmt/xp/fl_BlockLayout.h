@@ -409,7 +409,7 @@ protected:
 	UT_Bool					m_bNeedsRedraw;
 	UT_Bool					m_bFixCharWidths;
         UT_Bool                                 m_bCursorErased;
-	
+
 	fl_CharWidths			m_gbCharWidths;
 
 	FL_DocLayout*	       	m_pLayout;

@@ -64,8 +64,7 @@ FL_DocLayout::FL_DocLayout(PD_Document* doc, GR_Graphics* pG)
 	m_pPrefs = NULL;
 	m_bStopSpellChecking = UT_FALSE;
 	m_bImSpellCheckingNow = UT_FALSE;
-	m_uBackgroundCheckReasons = 0;
-
+	m_uDocBackgroundCheckReasons = 0;
 	m_pRedrawUpdateTimer = UT_Timer::static_constructor(_redrawUpdate, this, m_pG);
 	if (m_pRedrawUpdateTimer)
 	{
@@ -689,6 +688,8 @@ void FL_DocLayout::_backgroundCheck(UT_Timer * pTimer)
 					pB->removeBackgroundCheckReason(mask);
 					switch (mask)
 					{
+					case bgcrNone:
+					        break;
 					case bgcrDebugFlash:
 						pB->debugFlashing();
 						break;
@@ -774,9 +775,12 @@ void FL_DocLayout::dequeueBlockForBackgroundCheck(fl_BlockLayout *pBlock)
 	if (m_vecUncheckedBlocks.getItemCount() == 0)
 	{
 	        m_bStopSpellChecking = UT_TRUE;
-		m_pBackgroundCheckTimer->stop();
-		while(m_bImSpellCheckingNow == UT_TRUE)
+                if(m_pBackgroundCheckTimer)
 		{
+		         m_pBackgroundCheckTimer->stop();
+		         while(m_bImSpellCheckingNow == UT_TRUE)
+		         {
+		         }
 		}
 	}
 }

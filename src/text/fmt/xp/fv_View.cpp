@@ -2469,7 +2469,12 @@ void FV_View::cmdCharDelete(UT_Bool bForward, UT_uint32 count)
 	        if((bForward == UT_FALSE) && (count == 1))
 		{
 		      if(isTabListBehindPoint() == UT_TRUE)
-			     count = 2;
+		      {
+			     fl_BlockLayout * curBlock = _findBlockAtPosition(getPoint()); 
+			     fl_BlockLayout * nBlock = _findBlockAtPosition(getPoint()-2);
+			     if(nBlock == curBlock)
+			             count = 2;
+		      }
 		}
 	        if((bForward == UT_TRUE) && (count == 1))
 		{
@@ -5600,7 +5605,17 @@ void FV_View::cmdPaste(void)
 	// so that undo/redo will treat it as one step.
 	
 	m_pDoc->beginUserAtomicGlob();
+	//
+	// Disable list updates until after we've finished
+	//
+	m_pDoc->disableListUpdates();
+
 	_doPaste(UT_TRUE);
+
+	// restore updates and clean up dirty lists
+	m_pDoc->enableListUpdates();
+	m_pDoc->updateDirtyLists();
+
 	m_pDoc->endUserAtomicGlob();
 }
 

@@ -163,15 +163,16 @@ public:
 
 	void		recheckIgnoredWords();
 
-	inline void			addBackgroundCheckReason(UT_uint32 reason) {m_uBackgroundCheckReasons |= reason;}
-	inline void			removeBackgroundCheckReason(UT_uint32 reason) {m_uBackgroundCheckReasons &= ~reason;}
-	inline UT_Bool		hasBackgroundCheckReason(UT_uint32 reason) const {return (m_uBackgroundCheckReasons & reason);}
-	inline UT_uint32	getBackgroundCheckReasons() const {return (m_uBackgroundCheckReasons);}
+	inline void			addBackgroundCheckReason(UT_uint32 reason) {m_uDocBackgroundCheckReasons |= reason;}
+	inline void			removeBackgroundCheckReason(UT_uint32 reason) {m_uDocBackgroundCheckReasons &= ~reason;}
+	inline UT_Bool		hasBackgroundCheckReason(UT_uint32 reason) const {return (m_uDocBackgroundCheckReasons & reason);}
+	inline UT_uint32	getBackgroundCheckReasons() const {return (m_uDocBackgroundCheckReasons);}
 
 	// These are used as bit flags in a UT_uint32.  The enum is here just
 	// to get the namespace protection.
 	enum backgroundCheckReason
 	{
+	        bgcrNone         = 0,
 		bgcrDebugFlash   = (1 <<  0),
 		bgcrSpelling     = (1 <<  1),
 		bgcrSmartQuotes  = (1 <<  2)   // ha!  we're not using background checks for this after all
@@ -220,7 +221,7 @@ protected:
 	UT_Bool				m_bSpellCheckCaps;
 	UT_Bool				m_bSpellCheckNumbers;
 	UT_Bool				m_bSpellCheckInternet;
-
+        UT_uint32                       m_uDocBackgroundCheckReasons;
 	UT_Bool                         m_bStopSpellChecking; // Handshaking
 	UT_Bool                         m_bImSpellCheckingNow; // Variables
 	// smart quote latent instance
@@ -228,7 +229,6 @@ protected:
 	UT_uint32           m_uOffsetForSmartQuote;
 
 	UT_Timer*			m_pBackgroundCheckTimer; 
-	UT_uint32			m_uBackgroundCheckReasons;  // bit flags
 
 	XAP_Prefs *			m_pPrefs;
 
