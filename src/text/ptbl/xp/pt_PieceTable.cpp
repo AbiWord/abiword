@@ -232,15 +232,6 @@ UT_Bool pt_PieceTable::getSpanAttrProp(PL_StruxDocHandle sdh, UT_uint32 offset, 
 	return UT_FALSE;
 }
 
-const UT_UCSChar * pt_PieceTable::getPointer(PT_BufIndex bi) const
-{
-	// the pointer that we return is NOT a zero-terminated
-	// string.  the caller is responsible for knowing how
-	// long the data is within the span/fragment.
-	
-	return m_varset.getPointer(bi);
-}
-
 UT_Bool pt_PieceTable::getSpanPtr(PL_StruxDocHandle sdh, UT_uint32 offset,
 								  const UT_UCSChar ** ppSpan, UT_uint32 * pLength) const
 {
