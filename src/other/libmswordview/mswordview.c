@@ -3,6 +3,7 @@
   sterwill@abisource.com.
 */
 
+
 /*
 Released under GPL, written by Caolan.McNamara@ul.ie.
 
@@ -167,6 +168,53 @@ int spewString(const char * template, ...)
 	va_end(args);
 
 	return (* outputbufferfunc) (outputbuffer, strlen(outputbuffer), outputbufferdata);
+}
+
+void cutOffFormats(void)
+{
+	if (inunderline)
+	{
+		spewString("</c>");
+		inunderline=0;
+	}
+	if (initalic)
+	{
+		spewString("</c>");
+		initalic=0;
+	}
+	if (inbold)
+	{
+		spewString("</c>");
+		inbold=0;
+	}
+	if (inblink)
+	{
+		/*spewString("</BLINK>");*/
+		inblink=0;
+	}
+	if (inafont)
+	{
+		inacolor=0;
+		incolor[0] = '\0';
+		spewString("</c>");
+		currentfontsize=NORMAL;
+		inafont=0;
+	}
+	if (inacolor)
+	{
+		spewString("</c>");
+		inacolor=0;
+	}
+	if (instrike)
+	{
+		spewString("</c>");
+		instrike=0;
+	}
+	if (inah1)
+	{
+		spewString("</c>");
+		inah1=0;
+	}
 }
 
 /*
@@ -3470,6 +3518,8 @@ void end_para(pap *apap,pap *newpap)
 			do_indent(apap);
 			}
 		error(erroroutput,"apap height\n");
+		
+		cutOffFormats();
 		spewString("</p>\n<p>");
 		}
 
@@ -3485,6 +3535,7 @@ void end_para(pap *apap,pap *newpap)
 			if (apap->dyaAfter/TWIRPS_PER_V_PIXEL > 1)
 				{
 				error(erroroutput,"apap height\n");
+				cutOffFormats();
 				spewString("</p>\n<p>");
 				}
 			}
@@ -3507,6 +3558,7 @@ void end_para(pap *apap,pap *newpap)
 			if (newpap->dyaAfter/TWIRPS_PER_V_PIXEL >1)
 				{
 				error(erroroutput,"newpap height\n");
+				cutOffFormats();
 				spewString("</p>\n<p>");
 				/*  sterwill: later				*/
 /*				spewString("\n<img width=1 height=%d src=\"%s/clear.gif\"><br>\n",newpap->dyaAfter/TWIRPS_PER_V_PIXEL,patterndir()); */
@@ -4317,36 +4369,7 @@ int decode_letter(int letter,int flag,pap *apap, chp * achp,field_info *magic_fi
 			{
 			case 13:
 				error(erroroutput,"\n<!--paragraph end-->\n");
-					
-				if (inunderline)
-				{
-					spewString("</c>");
-					inunderline=0;
-				}
-				if (initalic)
-				{
-					spewString("</c>");
-					initalic=0;
-				}
-				if (inbold)
-				{
-					spewString("</c>");
-					inbold=0;
-				}
-				if (inblink)
-				{
-					/*spewString("</BLINK>");*/
-					inblink=0;
-				}
-				if (inafont)
-				{
-					inacolor=0;
-					incolor[0] = '\0';
-					spewString("</c>");
-					currentfontsize=NORMAL;
-					inafont=0;
-				}
-
+				cutOffFormats();
 				spewString("</p>\n<p>");
 				if (!silent)
 				{
