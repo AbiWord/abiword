@@ -868,7 +868,13 @@ void GR_UnixGraphics::setFont(GR_Font * pFont)
 	
 	if(m_pFont && (pUFont->getUnixFont() == m_pFont->getUnixFont()) &&
 	   (pUFont->getSize() == m_pFont->getSize()))
+	{
+		// although the new font is the same as the current set one,
+		// make at least sure that we point our font pointer to the "new" one, 
+		// as the caller of this function expects
+		m_pFont = pUFont;
 		return;
+	}
 	m_bIsSymbol = false;
 	m_bIsDingbat = false;
 
