@@ -96,11 +96,34 @@ EV_Menu_ActionSet * AP_CreateMenuActionSet(void)
 	_s(AP_MENU_ID_EDIT_SELECTALL,	0,0,0,	"selectAll",		NULL,					NULL);
 	_s(AP_MENU_ID_EDIT_FIND,		0,1,0,	"find",				NULL,					NULL);
 	_s(AP_MENU_ID_EDIT_REPLACE,		0,1,0,	"replace",			NULL,					NULL);
-	_s(AP_MENU_ID_EDIT_INSERT_IMAGE,0,1,0,	"fileInsertImage",	NULL,					NULL);
+	_s(AP_MENU_ID_EDIT_GOTO,		0,1,0,	"go",				NULL,					NULL);
+	_s(AP_MENU_ID_EDIT_OPTIONS,		0,1,0,	"dlgOptions",		NULL,					NULL);
+
+	_s(AP_MENU_ID_VIEW,				1,0,0,	NULL,				NULL,					NULL);
+	_s(AP_MENU_ID_VIEW_TOOLBARS,	1,0,0,	NULL,				NULL,					NULL);
+	_s(AP_MENU_ID_VIEW_TB_STD,		0,0,1,	"viewStd",			ap_GetState_Bars,		NULL);
+	_s(AP_MENU_ID_VIEW_TB_FORMAT,	0,0,1,	"viewFormat",		ap_GetState_Bars,		NULL);
+	_s(AP_MENU_ID_VIEW_RULER,		0,0,1,	"viewRuler",		ap_GetState_View,		NULL);
+	_s(AP_MENU_ID_VIEW_STATUSBAR,	0,0,1,	"viewStatus",		ap_GetState_Bars,		NULL);
+	_s(AP_MENU_ID_VIEW_SHOWPARA,	0,0,1,	"viewPara",			ap_GetState_View,		NULL);
+	_s(AP_MENU_ID_VIEW_HEADFOOT,	0,0,1,	"viewHeadFoot",		ap_GetState_View,		NULL);
+	_s(AP_MENU_ID_VIEW_ZOOM,		0,1,0,	"zoom",				NULL,					NULL);
+
+	_s(AP_MENU_ID_INSERT,			1,0,0,	NULL,				NULL,					NULL);
+	_s(AP_MENU_ID_INSERT_BREAK,		0,1,0,	"insBreak",			NULL,					NULL);
+	_s(AP_MENU_ID_INSERT_PAGENO,	0,1,0,	"insPageNo",		NULL,					NULL);
+	_s(AP_MENU_ID_INSERT_DATETIME,	0,1,0,	"insDateTime",		NULL,					NULL);
+	_s(AP_MENU_ID_INSERT_FIELD,		0,1,0,	"insField",			NULL,					NULL);
+	_s(AP_MENU_ID_INSERT_SYMBOL,	0,1,0,	"insSymbol",		NULL,					NULL);
+	_s(AP_MENU_ID_INSERT_IMAGE,		0,1,0,	"fileInsertImage",	NULL,					NULL);
 
 	_s(AP_MENU_ID_FORMAT,			1,0,0,	NULL,				NULL,					NULL);
 	_s(AP_MENU_ID_FMT_FONT,			0,1,0,	"dlgFont",			NULL,					NULL);
 	_s(AP_MENU_ID_FMT_PARAGRAPH,	0,1,0,	"dlgParagraph",		NULL,					NULL);
+	_s(AP_MENU_ID_FMT_BULLETS,		0,1,0,	"dlgBullets",		NULL,					NULL);
+	_s(AP_MENU_ID_FMT_BORDERS,		0,1,0,	"dlgBorders",		NULL,					NULL);
+	_s(AP_MENU_ID_FMT_COLUMNS,		0,1,0,	"dlgColumns",		NULL,					NULL);
+	_s(AP_MENU_ID_FMT_STYLE,		0,1,0,	"dlgStyle",			NULL,					NULL);
 	_s(AP_MENU_ID_FMT_TABS,			0,1,0,	"dlgTabs",			NULL,					NULL);
 	_s(AP_MENU_ID_FMT_BOLD,			0,0,1,	"toggleBold",		ap_GetState_CharFmt,	NULL);
 	_s(AP_MENU_ID_FMT_ITALIC,		0,0,1,	"toggleItalic",		ap_GetState_CharFmt,	NULL);
@@ -124,11 +147,10 @@ EV_Menu_ActionSet * AP_CreateMenuActionSet(void)
 	_s(AP_MENU_ID_WINDOW_7,			0,0,0,	"activateWindow_7",	ap_GetState_Window,		ap_GetLabel_Window);
 	_s(AP_MENU_ID_WINDOW_8,			0,0,0,	"activateWindow_8",	ap_GetState_Window,		ap_GetLabel_Window);
 	_s(AP_MENU_ID_WINDOW_9,			0,0,0,	"activateWindow_9",	ap_GetState_Window,		ap_GetLabel_Window);
-	_s(AP_MENU_ID_WINDOW_MORE,		0,1,0,	"moreWindowsDlg",	NULL,					ap_GetLabel_WindowMore);
+	_s(AP_MENU_ID_WINDOW_MORE,		0,1,0,	"dlgMoreWindows",	NULL,					ap_GetLabel_WindowMore);
 	
 	_s(AP_MENU_ID_HELP,				1,0,0,	NULL,				NULL,					NULL);
-	_s(AP_MENU_ID_HELP_READSRC,		0,0,0,	"noop",				NULL,					NULL);
-	_s(AP_MENU_ID_HELP_FIXBUGS,		0,0,0,	"noop",				NULL,					NULL);
+	_s(AP_MENU_ID_HELP_ABOUT,		0,1,0,	"dlgAbout",			NULL,					ap_GetLabel_About);
 
 	// ... add others here ...
 	

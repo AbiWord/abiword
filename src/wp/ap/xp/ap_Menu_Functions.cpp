@@ -72,6 +72,25 @@ Defun_EV_GetMenuItemComputedLabel_Fn(ap_GetLabel_Recent)
 	return NULL;
 }
 
+Defun_EV_GetMenuItemComputedLabel_Fn(ap_GetLabel_About)
+{
+	// Compute the menu label for the _help_about item.
+	
+	UT_ASSERT(pApp);
+	UT_ASSERT(pLabel);
+	UT_ASSERT(id == AP_MENU_ID_HELP_ABOUT);
+	
+	const char * szFormat = pLabel->getMenuLabel();
+	static char buf[128];
+
+	const char * szAppName = pApp->getApplicationName();
+
+	sprintf(buf,szFormat,szAppName);	
+	return buf;
+
+	return NULL;
+}
+
 
 /*****************************************************************/
 /*****************************************************************/
@@ -152,6 +171,30 @@ Defun_EV_GetMenuItemComputedLabel_Fn(ap_GetLabel_WindowMore)
 		return pLabel->getMenuLabel();
 
 	return NULL;
+}
+
+/****************************************************************/
+/****************************************************************/
+
+Defun_EV_GetMenuItemState_Fn(ap_GetState_Bars)
+{
+	EV_Menu_ItemState s = EV_MIS_ZERO;
+
+	switch(id)
+	{
+	case AP_MENU_ID_VIEW_TB_STD:
+	case AP_MENU_ID_VIEW_TB_FORMAT:
+	case AP_MENU_ID_VIEW_STATUSBAR:
+		// TODO: implement XAP methods to check, toggle state
+		s = EV_MIS_Gray;
+		break;
+
+	default:
+		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		break;
+	}
+
+	return s;
 }
 
 /****************************************************************/
@@ -363,6 +406,30 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_BlockFmt)
 			s = EV_MIS_Toggled;
 		
 		free(props_in);
+	}
+
+	return s;
+}
+
+Defun_EV_GetMenuItemState_Fn(ap_GetState_View)
+{
+	ABIWORD_VIEW;
+	UT_ASSERT(pView);
+
+	EV_Menu_ItemState s = EV_MIS_ZERO;
+
+	switch(id)
+	{
+	case AP_MENU_ID_VIEW_RULER:
+	case AP_MENU_ID_VIEW_SHOWPARA:
+	case AP_MENU_ID_VIEW_HEADFOOT:
+		// TODO: implement view methods to check, toggle state
+		s = EV_MIS_Gray;
+		break;
+
+	default:
+		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		break;
 	}
 
 	return s;

@@ -37,10 +37,13 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_Clipboard);
 Defun_EV_GetMenuItemState_Fn(ap_GetState_CharFmt);
 Defun_EV_GetMenuItemState_Fn(ap_GetState_BlockFmt);
 Defun_EV_GetMenuItemState_Fn(ap_GetState_Window);
+Defun_EV_GetMenuItemState_Fn(ap_GetState_Bars);
+Defun_EV_GetMenuItemState_Fn(ap_GetState_View);
 
 
 Defun_EV_GetMenuItemComputedLabel_Fn(ap_GetLabel_Recent);
 Defun_EV_GetMenuItemComputedLabel_Fn(ap_GetLabel_Window);
 Defun_EV_GetMenuItemComputedLabel_Fn(ap_GetLabel_WindowMore);
+Defun_EV_GetMenuItemComputedLabel_Fn(ap_GetLabel_About);
 
 #endif /* AP_MENU_FUNCTIONS_H */

@@ -192,9 +192,28 @@ public:
 	static EV_EditMethod_Fn findAgain;
 	static EV_EditMethod_Fn go;
 	static EV_EditMethod_Fn replace;
+	static EV_EditMethod_Fn dlgOptions;
+
+	static EV_EditMethod_Fn viewStd;
+	static EV_EditMethod_Fn viewFormat;
+	static EV_EditMethod_Fn viewRuler;
+	static EV_EditMethod_Fn viewStatus;
+	static EV_EditMethod_Fn viewPara;
+	static EV_EditMethod_Fn viewHeadFoot;
+	static EV_EditMethod_Fn zoom;
+
+	static EV_EditMethod_Fn insBreak;
+	static EV_EditMethod_Fn insPageNo;
+	static EV_EditMethod_Fn insDateTime;
+	static EV_EditMethod_Fn insField;
+	static EV_EditMethod_Fn insSymbol;
 
 	static EV_EditMethod_Fn dlgFont;
 	static EV_EditMethod_Fn dlgParagraph;
+	static EV_EditMethod_Fn dlgBullets;
+	static EV_EditMethod_Fn dlgBorders;
+	static EV_EditMethod_Fn dlgColumns;
+	static EV_EditMethod_Fn dlgStyle;
 	static EV_EditMethod_Fn dlgTabs;
 	static EV_EditMethod_Fn fontFamily;
 	static EV_EditMethod_Fn fontSize;
@@ -239,7 +258,9 @@ public:
 	static EV_EditMethod_Fn activateWindow_7;
 	static EV_EditMethod_Fn activateWindow_8;
 	static EV_EditMethod_Fn activateWindow_9;
-	static EV_EditMethod_Fn moreWindowsDlg;
+	static EV_EditMethod_Fn dlgMoreWindows;
+
+	static EV_EditMethod_Fn dlgAbout;
 
 	static EV_EditMethod_Fn newWindow;
 	static EV_EditMethod_Fn cycleWindows;
@@ -384,9 +405,28 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(findAgain),			0,	""),	
 	EV_EditMethod(NF(go),					0,	""),
 	EV_EditMethod(NF(replace),				0,	""),
+	EV_EditMethod(NF(dlgOptions),			0,	""),
+
+	EV_EditMethod(NF(viewStd),				0,		""),
+	EV_EditMethod(NF(viewFormat),			0,		""),
+	EV_EditMethod(NF(viewRuler),			0,		""),
+	EV_EditMethod(NF(viewStatus),			0,		""),
+	EV_EditMethod(NF(viewPara),				0,		""),
+	EV_EditMethod(NF(viewHeadFoot),			0,		""),
+	EV_EditMethod(NF(zoom),					0,		""),
+
+	EV_EditMethod(NF(insBreak),				0,		""),
+	EV_EditMethod(NF(insPageNo),			0,		""),
+	EV_EditMethod(NF(insDateTime),			0,		""),
+	EV_EditMethod(NF(insField),				0,		""),
+	EV_EditMethod(NF(insSymbol),			0,		""),
 
 	EV_EditMethod(NF(dlgFont),				0,		""),
 	EV_EditMethod(NF(dlgParagraph),			0,		""),
+	EV_EditMethod(NF(dlgBullets),			0,		""),
+	EV_EditMethod(NF(dlgBorders),			0,		""),
+	EV_EditMethod(NF(dlgColumns),			0,		""),
+	EV_EditMethod(NF(dlgStyle),				0,		""),
 	EV_EditMethod(NF(dlgTabs),				0,		""),
 	EV_EditMethod(NF(fontFamily),			_D_,	""),
 	EV_EditMethod(NF(fontSize),				_D_,	""),
@@ -431,7 +471,9 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(activateWindow_7),		0,		""),
 	EV_EditMethod(NF(activateWindow_8),		0,		""),
 	EV_EditMethod(NF(activateWindow_9),		0,		""),
-	EV_EditMethod(NF(moreWindowsDlg),		0,		""),
+	EV_EditMethod(NF(dlgMoreWindows),		0,		""),
+	
+	EV_EditMethod(NF(dlgAbout),				0,		""),
 
 	EV_EditMethod(NF(newWindow),			0,	""),
 	EV_EditMethod(NF(cycleWindows),			0,	""),
@@ -1145,12 +1187,21 @@ Defun1(activateWindow_9)
 {
 	return _activateWindow(pAV_View, 9);
 }
-Defun1(moreWindowsDlg)
+Defun1(dlgMoreWindows)
 {
 	XAP_Frame * pFrame = (XAP_Frame *) pAV_View->getParentData();
 	UT_ASSERT(pFrame);
 
 	s_TellNotImplemented(pFrame, "More windows dialog", __LINE__);
+	return UT_TRUE;
+}
+
+Defun1(dlgAbout)
+{
+	XAP_Frame * pFrame = (XAP_Frame *) pAV_View->getParentData();
+	UT_ASSERT(pFrame);
+
+	s_TellNotImplemented(pFrame, "About dialog", __LINE__);
 	return UT_TRUE;
 }
 
@@ -2451,10 +2502,19 @@ static UT_Bool s_doGotoDlg(FV_View * pView, AP_Dialog_Id id)
 
 Defun1(go)
 {
+#if 0
+	// TODO: this crashes on Win32.  does it work already on Linux?
 	ABIWORD_VIEW;
 	AP_Dialog_Id id = AP_DIALOG_ID_GOTO;
 	
 	return s_doGotoDlg(pView, id);
+#else
+	XAP_Frame * pFrame = (XAP_Frame *) pAV_View->getParentData();
+	UT_ASSERT(pFrame);
+
+	s_TellNotImplemented(pFrame, "Go To dialog", __LINE__);
+	return UT_TRUE;
+#endif
 }
 
 /*****************************************************************/
@@ -2910,12 +2970,183 @@ Defun1(pageSetup)
 	return UT_TRUE;
 }
 
+Defun1(dlgOptions)
+{
+	XAP_Frame * pFrame = (XAP_Frame *) pAV_View->getParentData();
+	UT_ASSERT(pFrame);
+
+	s_TellNotImplemented(pFrame, "Options dialog", __LINE__);
+	return UT_TRUE;
+}
+
+
+/*****************************************************************/
+/*****************************************************************/
+
+Defun1(viewStd)
+{
+	XAP_Frame * pFrame = (XAP_Frame *) pAV_View->getParentData();
+	UT_ASSERT(pFrame);
+
+	// TODO: synch this implementation with ap_GetState_Bars
+	s_TellNotImplemented(pFrame, "Toggle standard toolbar", __LINE__);
+	return UT_TRUE;
+}
+
+Defun1(viewFormat)
+{
+	XAP_Frame * pFrame = (XAP_Frame *) pAV_View->getParentData();
+	UT_ASSERT(pFrame);
+
+	// TODO: synch this implementation with ap_GetState_Bars
+	s_TellNotImplemented(pFrame, "Toggle formatting toolbar", __LINE__);
+	return UT_TRUE;
+}
+
+Defun1(viewStatus)
+{
+	XAP_Frame * pFrame = (XAP_Frame *) pAV_View->getParentData();
+	UT_ASSERT(pFrame);
+
+	// TODO: synch this implementation with ap_GetState_Bars
+	s_TellNotImplemented(pFrame, "View status bar", __LINE__);
+	return UT_TRUE;
+}
+
+Defun1(viewRuler)
+{
+	XAP_Frame * pFrame = (XAP_Frame *) pAV_View->getParentData();
+	UT_ASSERT(pFrame);
+
+	// TODO: synch this implementation with ap_GetState_View
+	s_TellNotImplemented(pFrame, "View ruler", __LINE__);
+	return UT_TRUE;
+}
+
+Defun1(viewPara)
+{
+	XAP_Frame * pFrame = (XAP_Frame *) pAV_View->getParentData();
+	UT_ASSERT(pFrame);
+
+	// TODO: synch this implementation with ap_GetState_View
+	s_TellNotImplemented(pFrame, "Show/Hide Paragraphs", __LINE__);
+	return UT_TRUE;
+}
+
+Defun1(viewHeadFoot)
+{
+	XAP_Frame * pFrame = (XAP_Frame *) pAV_View->getParentData();
+	UT_ASSERT(pFrame);
+
+	// TODO: synch this implementation with ap_GetState_View
+	s_TellNotImplemented(pFrame, "View Headers and Footers", __LINE__);
+	return UT_TRUE;
+}
+
+Defun1(zoom)
+{
+	XAP_Frame * pFrame = (XAP_Frame *) pAV_View->getParentData();
+	UT_ASSERT(pFrame);
+
+	s_TellNotImplemented(pFrame, "Zoom dialog", __LINE__);
+	return UT_TRUE;
+}
+
+
+/*****************************************************************/
+/*****************************************************************/
+
+Defun1(insBreak)
+{
+	XAP_Frame * pFrame = (XAP_Frame *) pAV_View->getParentData();
+	UT_ASSERT(pFrame);
+
+	s_TellNotImplemented(pFrame, "Insert break dialog", __LINE__);
+	return UT_TRUE;
+}
+
+Defun1(insPageNo)
+{
+	XAP_Frame * pFrame = (XAP_Frame *) pAV_View->getParentData();
+	UT_ASSERT(pFrame);
+
+	s_TellNotImplemented(pFrame, "Insert page numbers dialog", __LINE__);
+	return UT_TRUE;
+}
+
+Defun1(insDateTime)
+{
+	XAP_Frame * pFrame = (XAP_Frame *) pAV_View->getParentData();
+	UT_ASSERT(pFrame);
+
+	s_TellNotImplemented(pFrame, "Insert date/time dialog", __LINE__);
+	return UT_TRUE;
+}
+
+Defun1(insField)
+{
+	XAP_Frame * pFrame = (XAP_Frame *) pAV_View->getParentData();
+	UT_ASSERT(pFrame);
+
+	s_TellNotImplemented(pFrame, "Insert field dialog", __LINE__);
+	return UT_TRUE;
+}
+
+Defun1(insSymbol)
+{
+	XAP_Frame * pFrame = (XAP_Frame *) pAV_View->getParentData();
+	UT_ASSERT(pFrame);
+
+	s_TellNotImplemented(pFrame, "Insert symbol dialog", __LINE__);
+	return UT_TRUE;
+}
+
+
+/*****************************************************************/
+/*****************************************************************/
+
 Defun1(dlgParagraph)
 {
 	XAP_Frame * pFrame = (XAP_Frame *) pAV_View->getParentData();
 	UT_ASSERT(pFrame);
 
 	s_TellNotImplemented(pFrame, "Paragraph settings dialog", __LINE__);
+	return UT_TRUE;
+}
+
+Defun1(dlgBullets)
+{
+	XAP_Frame * pFrame = (XAP_Frame *) pAV_View->getParentData();
+	UT_ASSERT(pFrame);
+
+	s_TellNotImplemented(pFrame, "Bullets and numbers dialog", __LINE__);
+	return UT_TRUE;
+}
+
+Defun1(dlgBorders)
+{
+	XAP_Frame * pFrame = (XAP_Frame *) pAV_View->getParentData();
+	UT_ASSERT(pFrame);
+
+	s_TellNotImplemented(pFrame, "Border and shading dialog", __LINE__);
+	return UT_TRUE;
+}
+
+Defun1(dlgColumns)
+{
+	XAP_Frame * pFrame = (XAP_Frame *) pAV_View->getParentData();
+	UT_ASSERT(pFrame);
+
+	s_TellNotImplemented(pFrame, "Column settings dialog", __LINE__);
+	return UT_TRUE;
+}
+
+Defun1(dlgStyle)
+{
+	XAP_Frame * pFrame = (XAP_Frame *) pAV_View->getParentData();
+	UT_ASSERT(pFrame);
+
+	s_TellNotImplemented(pFrame, "Styles dialog", __LINE__);
 	return UT_TRUE;
 }
 
