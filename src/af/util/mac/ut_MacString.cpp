@@ -23,6 +23,7 @@
 #include <string.h>
 #include <math.h>
 #include <ctype.h>
+#include <unistd.h>
 
 #include "ut_types.h"
 #include "ut_misc.h"
@@ -51,6 +52,16 @@ char * UT_tmpnam(char * base)
 {
   return tmpnam(base);
 }
+
+void UT_unlink (const char * base)
+{
+#if defined(XP_MAC_TARGET_MACOSX) 
+	unlink (base);
+#else
+	UT_ASSERT (UT_NOT_IMPLEMENTED);
+#endif
+}
+
 
 #if defined(TARGET_API_MAC_CARBON) && (TARGET_API_MAC_CARBON == 1)
 /*

@@ -30,7 +30,7 @@ AbiWord_SOURCES = abi_ver.cpp MacMain.cpp
 
 REPEAT_LIBS = $(ABI_LIBS) 
 
-AbiWord_LDADD = $(REPEAT_LIBS) $(REPEAT_LIBS) @PLATFORM_LIBS@ $(OTHER_LIBS) 
+AbiWord_LDADD = $(REPEAT_LIBS) $(REPEAT_LIBS) @PLATFORM_LIBS@ $(REPEAT_LIBS) $(OTHER_LIBS) 
 
 RESOURCES=$(top_srcdir)/src/af/util/mac/ut_MacAssert.rsrc \
 	$(top_srcdir)/src/af/xap/mac/xap_MacDlg_MessageBox.rsrc \
