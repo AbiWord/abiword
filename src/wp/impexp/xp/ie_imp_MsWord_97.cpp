@@ -2968,13 +2968,12 @@ void IE_Imp_MsWord_97::_cell_open (const wvParseStruct *ps, const PAP *apap)
     propBuffer += UT_String_sprintf("color:%s;", sMapIcoToColor(apap->ptap.rgshd[m_iCurrentCell - 1].icoFore).c_str());
     propBuffer += UT_String_sprintf("bgcolor:%s;", sMapIcoToColor(apap->ptap.rgshd[m_iCurrentCell - 1].icoBack).c_str());
 
-    // not the "auto" color
+    // so long as it's not the "auto" color
     if (apap->ptap.rgshd[m_iCurrentCell - 1].icoBack != 0)
       propBuffer += "bg-style:1;";
 
-#define BRC_TO_PIXEL(x) (int)(8 * x)
-    
-    // BRC - useful fields: ico for color, brcType for line type, dptLineWidth
+    // each unit is 1/8 of a pixel. abi only deals with whole numbers
+#define BRC_TO_PIXEL(x) (int)(((x)+.5)/8.)
     propBuffer += UT_String_sprintf("top-color:%s; table-line-thickness: %d;table-line-type:%d;", 
 				    sMapIcoToColor(apap->ptap.rgtc[m_iCurrentCell - 1].brcTop.ico).c_str(),
 				    BRC_TO_PIXEL(apap->ptap.rgtc[m_iCurrentCell - 1].brcTop.dptLineWidth),
@@ -2991,7 +2990,6 @@ void IE_Imp_MsWord_97::_cell_open (const wvParseStruct *ps, const PAP *apap)
 				    sMapIcoToColor(apap->ptap.rgtc[m_iCurrentCell - 1].brcRight.ico).c_str(),
 				    BRC_TO_PIXEL(apap->ptap.rgtc[m_iCurrentCell - 1].brcRight.dptLineWidth),
 				    sConvertLineStyle(apap->ptap.rgtc[m_iCurrentCell - 1].brcRight.brcType));
-
 #undef BRC_TO_PIXEL
   }
   
