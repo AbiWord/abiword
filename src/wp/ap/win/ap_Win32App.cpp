@@ -927,9 +927,9 @@ static GR_Image * _showSplash(HINSTANCE hInstance, const char * szAppName)
 			// create image first
 			// TODO: find XAP_App pointer for this
 			GR_Graphics * pG = new GR_Win32Graphics(GetDC(hwndSplash), hwndSplash, 0);
-			pSplash = pG->createNewImage("splash", pBB, iSplashWidth, iSplashHeight);
+			pSplash = pG->createNewImage("splash", pBB, pG->tlu(iSplashWidth), pG->tlu(iSplashHeight));
 			DELETEP(pG);
-
+			
 			// now bring the window up front & center
 			ShowWindow(hwndSplash, SW_SHOWNORMAL);
 			UpdateWindow(hwndSplash);

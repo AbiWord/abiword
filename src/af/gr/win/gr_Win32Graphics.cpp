@@ -895,8 +895,8 @@ void GR_Win32Graphics::drawImage(GR_Image* pImg, UT_sint32 xDest, UT_sint32 yDes
 	UT_Byte* pBits = ((unsigned char*) pDIB) + pDIB->bmiHeader.biSize + iSizeOfColorData;
 
 	int iRes = StretchDIBits(m_hdc,
-							 tdu(xDest), tdu(yDest),
-							 tdu(pImg->getDisplayWidth()), tdu(pImg->getDisplayHeight()),
+							 xDest, yDest,
+							 pImg->getDisplayWidth(), pImg->getDisplayHeight(),
 							 0, 0,
 							 pDIB->bmiHeader.biWidth, pDIB->bmiHeader.biHeight,
 							 pBits, pDIB, DIB_RGB_COLORS, SRCCOPY);
