@@ -136,6 +136,8 @@ Perl Module containing classes for AbiWord Scripting.
 Summary: Various tools that can be used to extend AbiWord's capabilities.
 Group: Applications/Productivity
 Requires: abiword
+%{?_with_ots:Requires: ots}
+%{?_with_ots:BuildRequires: ots-devel}
 
 %description plugins-tools
 This is a set of plugins for AbiWord.  It includes
@@ -158,10 +160,8 @@ Summary: Plugins to import and export otherwise unsupported formats.
 Group: Applications/Productivity
 Requires: abiword
 %{?_with_libwpd:Requires: libwpd}
-%{?_with_ots:Requires: ots}
 BuildRequires: bzip2-devel, libgsf-devel, librsvg-devel
 %{?_with_libwpd:BuildRequires: libwpd-devel}
-%{?_with_ots:BuildRequires: ots-devel}
 
 %description plugins-impexp
 This is a set of plugins for AbiWord.  It includes support for OpenWriter,
@@ -284,6 +284,7 @@ cd ../abi
 %{_libdir}/%{AbiWord}/plugins/libAbiGoogle.so
 %{_libdir}/%{AbiWord}/plugins/libAbiURLDict.so
 %{_libdir}/%{AbiWord}/plugins/libAbiWikipedia.so
+%{?_with_ots:%{_libdir}/%{AbiWord}/plugins/libAbiOTS.so}
 %{_libdir}/%{AbiWord}/plugins/libAbiReferee.so
 %{_libdir}/%{AbiWord}/plugins/libAbiScriptHappy.so
 %endif
@@ -303,7 +304,6 @@ cd ../abi
 %{_libdir}/%{AbiWord}/plugins/libAbiHRText.so
 #%{_libdir}/%{AbiWord}/plugins/libAbiHTML.so
 %{?_with_libwpd:%{_libdir}/%{AbiWord}/plugins/libAbiWordPerfect.so}
-%{?_with_ots:%{_libdir}/%{AbiWord}/plugins/libAbiOTS.so}
 %{_libdir}/%{AbiWord}/plugins/libAbiISCII.so
 %{_libdir}/%{AbiWord}/plugins/libAbiJPEG.so
 %{_libdir}/%{AbiWord}/plugins/libAbiKWord.so
