@@ -21,28 +21,46 @@
 #include "ut_assert.h"
 #include "xap_BeOSModule.h"
 
-XAP_BeOSModule::XAP_BeOSModule (const char * file_name) : XAP_Module (file_name)
+XAP_BeOSModule::XAP_BeOSModule () : m_module (-1), m_szname (NULL)
 {
-	m_module = load_add_on( file_name );
-	m_szname = new char[strlen(file_name) + 1];
-	m_bresident = UT_FALSE;
 }
 
 XAP_BeOSModule::~XAP_BeOSModule (void)
 {
 	FREEP(m_szname);
-	if (!m_bresident) {
-		unload_add_on(m_module);
-	}
-	m_module = -1;
+	unload ();
 }
 
-char * XAP_BeOSModule::getModuleName (void) const
+UT_Bool XAP_BeOSModule::unload (void)
 {
-	return m_szname;
+  if (m_module != -1)
+    {
+	unload_add_on(m_module);
+	m_module = -1;
+	return UT_TRUE;
+    }
+  return UT_FALSE;
 }
 
-void XAP_BeOSModule::resolveSymbol (const char * symbol_name, void ** symbol)
+UT_Bool XAP_BeOSModule::load (const char * file_name)
+{
+	m_module = load_add_on( file_name );
+	m_szname = new char[strlen(file_name) + 1];
+
+	return (m_module != -1 ? UT_TRUE : UT_FALSE);
+}
+
+UT_Bool XAP_BeOSModule::getModuleName (char ** dest) const
+{
+	if (m_szname)
+	  {
+	    *dest = UT_strdup (m_szname);
+	    return UT_TRUE;
+	  }
+	return UT_FALSE;
+}
+
+UT_Bool XAP_BeOSModule::resolveSymbol (const char * symbol_name, void ** symbol)
 {
 	UT_ASSERT(m_module);
 	UT_ASSERT(symbol && symbol_name);
@@ -50,18 +68,16 @@ void XAP_BeOSModule::resolveSymbol (const char * symbol_name, void ** symbol)
 
 	if( m_module < 0 )
 		get_image_symbol( m_module , symbol_name , B_SYMBOL_TYPE_TEXT , symbol );
+
+	return (*symbol ? UT_TRUE : UT_FALSE);
 }
 
-void XAP_BeOSModule::makeResident (void)
-{
-  /* What does makeResident do? Does it hold it in memory?  */
-  m_bresident = UT_TRUE;
-}
-
-char * XAP_BeOSModule::getErrorMsg (void) const
+UT_Bool XAP_BeOSModule::getErrorMsg (char **dest) const
 {
 	if( m_module > 0)
-		return "No Error"; // Is this the right way to return this?
+		*dest = UT_strdup("No Error");
 	else
-		return "Argument is not a valid image.";
+		*dest = UT_strdup ("Argument is not a valid image.");
+
+	return UT_TRUE;
 }

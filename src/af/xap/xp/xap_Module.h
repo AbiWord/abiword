@@ -25,32 +25,37 @@
 // Pass the intended file name (dll, so, whatever)
 // To a valid child instance of this class.
 
+#include "ut_types.h"
+
 class XAP_Module {
 
 public:
 
-   // Pass the path to the dll/so/etc.. that you wish to be loaded
-   XAP_Module (const char * file_name) {}
+   XAP_Module ();
 
-   // Delete (and unload) the module, unless it is "resident"
+   // Delete (and unload) the module
    virtual ~XAP_Module (void) = 0;
+
+   // load this module into memory. UT_TRUE on success
+   virtual UT_Bool load (const char * name) = 0;
+
+   // unload this module from memory. UT_TRUE on success
+   virtual UT_Bool unload (void) = 0;
 
    // passed a symbol name and a void ** symbol, 
    // *symbol refers to the actual representation of @symbol_name
    // i.e. resolveSymbol ("add", &func);
    // int result = func (1, 2);
-   virtual void resolveSymbol (const char * symbol_name, void ** symbol) =
+   virtual UT_Bool resolveSymbol (const char * symbol_name, void ** symbol) =
 0;
 
-   // makes this module "resident" - i.e. disable unloading of this module 
-   virtual void makeResident (void) = 0;
-
    // returns the name of this module, if it has one
-   virtual char * getModuleName (void) const = 0;
+   // if return is UT_TRUE, you must FREEP dest
+   virtual UT_Bool getModuleName (char ** dest) const = 0;
 
    // returns the most recent error message from one of these
-   // calls failing
-   virtual char * getErrorMsg (void) const = 0;
+   // calls failing. If return is UT_TRUE, you must FREEP dest
+   virtual UT_Bool getErrorMsg (char ** dest) const = 0;
 };
 
 #endif /* XAP_MODULE_H */

@@ -27,18 +27,18 @@ class XAP_QNXModule : public XAP_Module
 
 public:
 
-   XAP_QNXModule (const char * file_name) ;
+   XAP_QNXModule () ;
    virtual ~XAP_QNXModule (void);
 
-   virtual void   resolveSymbol (const char * symbol_name, void ** symbol);
-   virtual void   makeResident (void);
-   virtual char * getModuleName (void) const;
-   virtual char * getErrorMsg (void) const;
+   virtual UT_Bool   load (const char * name);
+   virtual UT_Bool   unload (void);
+   virtual UT_Bool   resolveSymbol (const char * symbol_name, void ** symbol);
+   virtual UT_Bool   getModuleName (char ** dest) const;
+   virtual UT_Bool   getErrorMsg (char ** dest) const;
 
  private:
 	char * m_szname;
 	void * m_module;
-	UT_Bool   m_bresident;
 };
 
 #endif /* XAP_QNXMODULE_H */

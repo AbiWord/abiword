@@ -18,31 +18,47 @@
  */
 #include <dlfcn.h>
 #include "ut_types.h"
+#include "ut_string.h"
 #include "ut_assert.h"
 #include "xap_QNXModule.h"
 
-XAP_QNXModule::XAP_QNXModule (const char * file_name) : XAP_Module (file_name)
+XAP_QNXModule::XAP_QNXModule () : m_module (NULL), m_szname (NULL)
 {
-	m_module = dlopen(file_name, /* Flags? */ 0);
-	m_szname = new char[strlen(file_name) + 1];
-	m_bresident = UT_FALSE;
 }
 
 XAP_QNXModule::~XAP_QNXModule (void)
 {
 	FREEP(m_szname);
-	if (!m_bresident) {
+	unload ();
+}
+
+UT_Bool XAP_QNXModule::load (const char * file_name)
+{
+	m_module = dlopen(file_name, /* Flags? */ 0);
+	m_szname = new char[strlen(file_name) + 1];
+
+	return (m_module ? UT_TRUE : UT_FALSE);
+}
+
+UT_Bool XAP_QNXModule::unload (void)
+{
+	if (m_module) {
 		dlclose(m_module);
 	}
 	m_module = NULL;
 }
 
-char * XAP_QNXModule::getModuleName (void) const
+UT_Bool XAP_QNXModule::getModuleName (const char ** dest) const
 {
-	return m_szname;
+	if (m_szname)
+	  {
+	    *dest = (char *)UT_strdup (m_szname);
+	    return UT_TRUE;
+	  }
+	return UT_FALSE;
 }
 
-void XAP_QNXModule::resolveSymbol (const char * symbol_name, void ** symbol)
+UT_Bool XAP_QNXModule::resolveSymbol (const char * symbol_name, void ** symbol)
 {
 	UT_ASSERT(m_module);
 	UT_ASSERT(symbol && symbol_name);
@@ -50,15 +66,15 @@ void XAP_QNXModule::resolveSymbol (const char * symbol_name, void ** symbol)
 	if (m_module) {
 		*symbol = dlsym(m_module, symbol_name);
 	}
+	return (*symbol ? UT_TRUE : UT_FALSE);
 }
 
-void XAP_QNXModule::makeResident (void)
+UT_Bool XAP_QNXModule::getErrorMsg (const char ** dest) const
 {
-  /* What does makeResident do? Does it hold it in memory?  */
-  m_bresident = UT_TRUE;
-}
-
-char * XAP_QNXModule::getErrorMsg (void) const
-{
-  return dlerror();
+  if (m_module)
+    {
+      *dest = (char *)UT_strdup (dlerror());
+      return UT_TRUE;
+    }
+  return UT_FALSE;
 }

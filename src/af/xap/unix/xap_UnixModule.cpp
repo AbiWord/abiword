@@ -18,36 +18,53 @@
  */
 
 #include "xap_UnixModule.h"
+#include "ut_string.h"
 
-XAP_UnixModule::XAP_UnixModule (const char * file_name) : XAP_Module (file_name)
+XAP_UnixModule::XAP_UnixModule () : m_module (NULL), m_szname (NULL)
 {
-  m_module = g_module_open(file_name, (GModuleFlags)0);
-  m_szname = g_module_name (m_module);
 }
 
 XAP_UnixModule::~XAP_UnixModule (void)
 {
   if(m_szname)
     g_free (m_szname);
-  g_module_close (m_module);
+
+  unload ();
 }
 
-char * XAP_UnixModule::getModuleName (void) const
+UT_Bool XAP_UnixModule::getModuleName (char ** dest) const
 {
-  return m_szname;
+  if (m_szname)
+    {
+      *dest = (char *)UT_strdup (m_szname);
+      return UT_TRUE;
+    }
+  return UT_FALSE;
 }
 
-void XAP_UnixModule::resolveSymbol (const char * symbol_name, void ** symbol)
+UT_Bool XAP_UnixModule::load (const char * name)
 {
-  g_module_symbol (m_module, symbol_name, symbol);
+  m_module = g_module_open (name, (GModuleFlags)0);
+
+  return (m_module ? UT_TRUE : UT_FALSE);
 }
 
-void XAP_UnixModule::makeResident (void)
+UT_Bool XAP_UnixModule::unload (void)
 {
-  g_module_make_resident (m_module);
+  if (m_module)
+    {
+      return (UT_Bool)g_module_close (m_module);
+    }
+  return UT_FALSE;
 }
 
-char * XAP_UnixModule::getErrorMsg (void) const
+UT_Bool XAP_UnixModule::resolveSymbol (const char * symbol_name, void ** symbol)
 {
-  return g_module_error ();
+  return (UT_Bool) g_module_symbol (m_module, symbol_name, symbol);
+}
+
+UT_Bool XAP_UnixModule::getErrorMsg (char ** dest) const
+{
+  *dest = (char *)UT_strdup (g_module_error ());
+  return UT_TRUE;
 }

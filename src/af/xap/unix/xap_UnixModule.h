@@ -29,18 +29,18 @@ class XAP_UnixModule : public XAP_Module
 
 public:
 
-   XAP_UnixModule (const char * file_name) ;
+   XAP_UnixModule () ;
    virtual ~XAP_UnixModule (void);
 
-   virtual void   resolveSymbol (const char * symbol_name, void ** symbol);
-   virtual void   makeResident (void);
-   virtual char * getModuleName (void) const;
-   virtual char * getErrorMsg (void) const;
+   virtual UT_Bool   load (const char * name);
+   virtual UT_Bool   unload (void);
+   virtual UT_Bool   resolveSymbol (const char * symbol_name, void ** symbol);
+   virtual UT_Bool   getModuleName (char ** dest) const;
+   virtual UT_Bool   getErrorMsg (char ** dest) const;
 
  private:
    char * m_szname;
    GModule * m_module;
-
 };
 
 #endif /* XAP_UNIXMODULE_H */

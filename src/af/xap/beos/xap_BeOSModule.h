@@ -28,18 +28,18 @@ class XAP_BeOSModule : public XAP_Module
 
 public:
 
-   XAP_BeOSModule (const char * file_name) ;
+   XAP_BeOSModule () ;
    virtual ~XAP_BeOSModule (void);
 
-   virtual void   resolveSymbol (const char * symbol_name, void ** symbol);
-   virtual void   makeResident (void);
-   virtual char * getModuleName (void) const;
-   virtual char * getErrorMsg (void) const;
+   virtual UT_Bool   load (const char * name);
+   virtual UT_Bool   unload (void);
+   virtual UT_Bool   resolveSymbol (const char * symbol_name, void ** symbol);
+   virtual UT_Bool   getModuleName (char ** dest) const;
+   virtual UT_Bool   getErrorMsg (char ** dest) const;
 
  private:
 	char * m_szname;
 	image_id m_module;//void * m_module;
-	UT_Bool   m_bresident;
 };
 
 #endif /* XAP_BEOSMODULE_H */
