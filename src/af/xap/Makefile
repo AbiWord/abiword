@@ -45,7 +45,8 @@ PLATFORM_OBJS=	$(OBJDIR)/xap_$(ABI_FE)App.$(OBJ_SUFFIX)			\
 		$(OBJDIR)/xap_$(ABI_FE)FontPreview.$(OBJ_SUFFIX) \
 		$(OBJDIR)/xap_$(ABI_FE)Dlg_Language.$(OBJ_SUFFIX)	\
 		$(OBJDIR)/xap_$(ABI_FE)Dlg_Image.$(OBJ_SUFFIX)		\
-		$(OBJDIR)/xap_$(ABI_FE)Dlg_Encoding.$(OBJ_SUFFIX)
+		$(OBJDIR)/xap_$(ABI_FE)Dlg_Encoding.$(OBJ_SUFFIX) \
+		$(OBJDIR)/xap_$(ABI_FE)Dlg_ListDocuments.$(OBJ_SUFFIX)	
 
 # gnome has its own about dialog
 ifneq ($(ABI_OPT_GNOME),1)
@@ -161,7 +162,8 @@ OBJS=		$(PLATFORM_OBJS)						\
 		$(OBJDIR)/xap_Module.$(OBJ_SUFFIX)				\
 		$(OBJDIR)/xap_ModuleManager.$(OBJ_SUFFIX)			\
 		$(OBJDIR)/xap_Dlg_Language.$(OBJ_SUFFIX)			\
-		$(OBJDIR)/xap_Dlg_Encoding.$(OBJ_SUFFIX)
+		$(OBJDIR)/xap_Dlg_Encoding.$(OBJ_SUFFIX)			\
+		$(OBJDIR)/xap_Dlg_ListDocuments.$(OBJ_SUFFIX)			
 
 include $(ABI_ROOT)/src/config/abi_rules.mk
 
