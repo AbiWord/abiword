@@ -22,7 +22,7 @@ ABI_ROOT:=$(shell pwd)/../../../..
 
 include $(ABI_ROOT)/src/config/abi_defs.mk
 
-REQUIRE=	_ZLIB_ _LIBPNG_ _LIBICONV_ _LIBWV_ _NSIS_
+REQUIRE=	_ZLIB_ _LIBPNG_ _LIBICONV_ _LIBWV_ _POPT_ _NSIS_
 REQUIREREALCLEAN=	realclean_LIBICONV_ realclean_LIBWV_
 TARGET=		build
 
@@ -89,6 +89,19 @@ _LIBWV_:
 		exit 1;						\
 	fi
 
+
+_POPT_:
+
+	@if [ -d $(ABI_ROOT)/../popt ]; then                       	\
+		echo Found popt in peer directory;                      \
+		if [ ! -r $(ABI_ROOT)/../popt/config.h ]; then          \
+			cd $(ABI_ROOT)/../popt;                         \
+			CC='cl.exe -nologo' CONFIG_SHELL=bash.exe bash ./configure --enable-static --disable-shared;   \
+		fi;                                                     \
+		$(MAKE) -f Makefile.abi -C $(ABI_ROOT)/../popt;                         \
+	fi								
+
+
 _NSIS_:
 	@if [ -d $(ABI_ROOT)/../nsis ]; then			\
 		echo Found nsis in peer directory;		\
@@ -111,3 +124,8 @@ realclean_LIBWV_:
 	@if [ -d $(ABI_ROOT)/../wv ]; then			\
 		$(MAKE) -C $(ABI_ROOT)/../wv realclean;	\
 	fi
+
+clean_POPT_:
+	@if [ -d $(ABI_ROOT)/../popt ]; then              \
+		$(MAKE) -C $(ABI_ROOT)/../popt clean;     \
+
