@@ -26,7 +26,11 @@
 #include "xap_MacDlg_Print.h"
 #include "xap_MacApp.h"
 #include "xap_MacFrame.h"
-#include "gr_MacGraphics.h"
+#ifndef XP_MAC_TARGET_QUARTZ
+# include "gr_MacQDGraphics.h"
+#else
+# include "gr_MacGraphics.h"
+#endif
 
 /*****************************************************************/
 XAP_Dialog * XAP_MacDialog_Print::static_constructor(XAP_DialogFactory * pFactory,
