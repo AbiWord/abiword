@@ -714,7 +714,22 @@ ABIFontInfo * XAP_UnixFont::getMetricsData(void)
 					m_uniWidths[numfound].width = m_metricsData->cmi[i].wx;
 					++numfound;
 				}
+
+				// AbiWord does the adobe glyph -> unicode mapping
+				// with a tiny bit of bogosity.  It assumes that the
+				// relation is one-to-one.
+				// This isn't necessarily so; read 4c (double mappings) at
+			// http://partners.adobe.com/asn/developer/type/unicodegn.html#4
+				// Fortunately, we can insert a gross hack!
+
+				if (unicode == 0x20) // gross hack: space
+				{
+					m_uniWidths[numfound].ucs = 0xa0;
+					m_uniWidths[numfound].width = m_metricsData->cmi[i].wx;
+					++numfound;
+				}
 			}
+
 			// we want to set m_metricsData->numOfChars to the number of chars which we found;
 			// this is typically smaller than the afm file indicated (often the font contains
 			// alternative glyphs, names of which use vendor-defined names; we are not able to

@@ -577,7 +577,9 @@ void PS_Graphics::_drawCharsOverstriking(const UT_UCSChar* pChars, UT_uint32 iCh
 				pD = buf + strlen(buf);
 				using_names = true;
 			}
-				
+
+			// we don't properly handle double mappings:
+			// http://partners.adobe.com/asn/developer/type/unicodegn.html#4
 			const char * glyph = ae->ucsToAdobe(currentChar);
 			// ' /glyph GS '
 			if(pD - buf + strlen(glyph) + 6 > OUR_LINE_LIMIT)
@@ -870,6 +872,8 @@ void PS_Graphics::_drawCharsUTF8(const UT_UCSChar* pChars, UT_uint32 iCharOffset
 				using_names = true;
 			}
 				
+			// we don't properly handle double mappings:
+			// http://partners.adobe.com/asn/developer/type/unicodegn.html#4
 			const char * glyph = ae->ucsToAdobe(currentChar);
 			// ' /glyph GS '
 			if(pD - buf + strlen(glyph) + 6 > OUR_LINE_LIMIT)
