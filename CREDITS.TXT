@@ -75,6 +75,7 @@ Martin Sevior <msevior@physics.unimelb.edu.au>  Symbol dialog, Overline, cursor 
 Jeremy Sheeley <jeremy@sourcegear.com>
 Alexey Sinutin <megabyte@salesexplosion.com>    Insert Date/Time dialog, show Paragraphs
 Jesper Skov <jskov@redhat.com>                  Documentation, Cursor motion fixes
+Ed Stafford <dysan_2000@hotmail.com>            Ghost cursor fix
 <kstailey@kstailey.tzo.com>                     OpenBSD
 Owen Stenseth <owen@pdaverticals.com>           script to output translation data
 Nigel Stepp <stepp@mithril.res.cmu.edu>         VI keybindings

@@ -2541,6 +2541,7 @@ void FV_View::extSelNextPrevLine(UT_Bool bNext)
 {
 	if (isSelectionEmpty())
 	{
+		_eraseInsertionPoint();
 		_setSelectionAnchor();
 		_clearIfAtFmtMark(getPoint());
 		_moveInsPtNextPrevLine(bNext);
