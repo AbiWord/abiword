@@ -132,6 +132,9 @@
 #endif
 #endif /*BIDI_ENABLED*/
 
+#define AP_PREF_KEY_ShowSplash     "ShowSplash"
+#define AP_PREF_DEFAULT_ShowSplash "1"
+
 #else /* AP_PREFS_SCHEMEIDS_H */
 #ifdef dcl
 

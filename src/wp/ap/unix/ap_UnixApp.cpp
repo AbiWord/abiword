@@ -92,6 +92,9 @@
 #include "ie_imp_RTF.h"
 #include "ie_imp_Text.h"
 
+#include "xap_Prefs.h"
+#include "ap_Prefs_SchemeIds.h"
+
 #ifdef GTK_WIN_POS_CENTER_ALWAYS
 #define WIN_POS GTK_WIN_POS_CENTER_ALWAYS
 #else
@@ -1128,9 +1131,19 @@ int AP_UnixApp::main(const char * szAppName, int argc, char ** argv)
     else if (bNoSplash)
 		bShowSplash = false;
     
+    AP_UnixApp * pMyUnixApp = new AP_UnixApp(&Args, szAppName);
+
     // HACK : these calls to gtk reside properly in XAP_UNIXBASEAPP::initialize(),
     // HACK : but need to be here to throw the splash screen as
     // HACK : soon as possible.
+
+    const XAP_Prefs * pPrefs = pMyUnixApp->getPrefs();
+
+    bool bSplashPref = true;
+    if (pPrefs->getPrefsValueBool (AP_PREF_KEY_ShowSplash, &bSplashPref))
+      {
+	bShowSplash = bShowSplash && bSplashPref;
+      }
 	
     if (bShowSplash || bShowApp)
     {
@@ -1140,8 +1153,6 @@ int AP_UnixApp::main(const char * szAppName, int argc, char ** argv)
     
     if (bShowSplash)
 		_showSplash(2000);
-    
-    AP_UnixApp * pMyUnixApp = new AP_UnixApp(&Args, szAppName);
     
     if(bHelp)
     {

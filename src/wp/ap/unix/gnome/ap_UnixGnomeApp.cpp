@@ -74,6 +74,9 @@
 
 #include <libgnomeui/gnome-window-icon.h>
 
+#include "xap_Prefs.h"
+#include "ap_Prefs_SchemeIds.h"
+
 /*****************************************************************/
 
 AP_UnixGnomeApp::AP_UnixGnomeApp(XAP_Args * pArgs, const char * szAppName)
@@ -177,15 +180,23 @@ int AP_UnixGnomeApp::main(const char * szAppName, int argc, char ** argv)
 	gnome_window_icon_init ();
 	gnome_window_icon_set_default_from_file (s.c_str());
 
-	if (bShowSplash)
-		_showSplash(2000);
-			
 	// if the initialize fails, we don't have icons, fonts, etc.
 	if (!pMyUnixApp->initialize())
 	{
 		delete pMyUnixApp;
 		return -1;	// make this something standard?
 	}
+
+	const XAP_Prefs * pPrefs = pMyUnixApp->getPrefs();
+
+	bool bSplashPref = true;
+	if (pPrefs->getPrefsValueBool (AP_PREF_KEY_ShowSplash, &bSplashPref))
+	  {
+	    bShowSplash = bShowSplash && bSplashPref;
+	  }
+
+	if (bShowSplash)
+		_showSplash(2000);
 
 	// this function takes care of all the command line args.
 	// if some args are botched, it returns false and we should
