@@ -262,17 +262,33 @@ if(!f##name)                                            \
 	return false;                                       \
 }
 
-#define logScript(iId)                                                                                            \
-{                                                                                                                 \
-	UT_String s;                                                                                                  \
-	UT_String_sprintf(s, "script id %d, lang: %s (0x%04x)",                                                       \
-					  iId, wvLIDToLangConverter(PRIMARYLANGID((WORD)s_ppScriptProperties[iId]->langid)),          \
-					  s_ppScriptProperties[iId]->langid);                                                         \
-	UT_DEBUGMSG(("Uniscribe %s\n", s.c_str()));                                                                   \
-	if(XAP_App::getApp()->getPrefs())                                                                             \
-	{                                                                                                             \
-		XAP_App::getApp()->getPrefs()->log("gr_Win32USPGraphics", s.c_str());                                     \
-	}                                                                                                             \
+#define logScript(iId)                                                                   \
+{                                                                                        \
+    {                                                                                    \
+	    UT_String s;                                                                     \
+		char _buff[100];                                                                 \
+        GetLocaleInfoA(MAKELCID((WORD)s_ppScriptProperties[iId]->langid, SORT_DEFAULT),  \
+				      LOCALE_SENGLANGUAGE,                                               \
+					  _buff,                                                             \
+					  100);                                                              \
+		                                                                                 \
+		s += _buff;                                                                      \
+                                                                                         \
+		GetLocaleInfoA(MAKELCID((WORD)s_ppScriptProperties[iId]->langid, SORT_DEFAULT),  \
+				      LOCALE_SENGCOUNTRY,                                                \
+					  _buff,                                                             \
+					  100);                                                              \
+                                                                                         \
+		s += " (";                                                                       \
+		s += _buff;                                                                      \
+		s += ")";                                                                        \
+		                                                                                 \
+		UT_DEBUGMSG(("Uniscribe %s\n", s.c_str()));                                      \
+	    if(XAP_App::getApp()->getPrefs())                                                \
+	    {                                                                                \
+		   XAP_App::getApp()->getPrefs()->log("gr_Win32USPGraphics", s.c_str());         \
+	    }                                                                                \
+    }                                                                                    \
 }
 
 bool GR_Win32USPGraphics::_constructorCommonCode()
