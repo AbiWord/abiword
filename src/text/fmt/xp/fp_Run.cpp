@@ -60,7 +60,9 @@ fp_Run::fp_Run(fl_BlockLayout* pBL, DG_Graphics* pG, UT_uint32 iOffsetFirst, UT_
 	m_bDirty = UT_FALSE;
 
 	if (bLookupProperties)
+	{
 		lookupProperties();
+	}
 }
 
 void fp_Run::setLine(fp_Line* pLine, void* p)
@@ -1025,10 +1027,10 @@ UT_Bool fp_Run::del(UT_uint32 iOffset, UT_uint32 iCount)
 	return UT_TRUE;
 }
 
-
-
 void fp_Run::drawSquiggle(UT_uint32 iOffset, UT_uint32 iLen)
 {
+	UT_ASSERT(iLen > 0);
+	
 	UT_sint32 xoff = 0, yoff = 0, width, height;
 
 	UT_RGBColor clrSquiggle(255, 0, 0);

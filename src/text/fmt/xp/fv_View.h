@@ -143,6 +143,10 @@ public:
 #endif
 
 // ----------------------
+
+public:  // but probably should not be.  :-)
+	void 				_eraseInsertionPoint();
+	void				_drawInsertionPoint();
 	
 protected:
 	void				_drawBetweenPositions(PT_DocPosition left, PT_DocPosition right);
@@ -172,8 +176,6 @@ protected:
 	void 				_updateInsertionPoint();
 	void				_fixInsertionPointCoords();
 	void 				_xorInsertionPoint();
-	void 				_eraseInsertionPoint();
-	void				_drawInsertionPoint();
 	void				_drawSelection();
 	void				_swapSelectionOrientation(void);
 	void				_extSelToPos(PT_DocPosition pos);

@@ -184,7 +184,6 @@ protected:
 	void					_purgeLayout(UT_Bool bVisible);
 	void					_removeLine(fp_Line*);
 	void					_removeAllEmptyLines(void);
-	void					_resetSpellCheckState(void);
 	void					_destroySpellCheckLists(void);
 	void					_addPartNotSpellChecked(UT_uint32 iOffset, UT_uint32 iLen);
 	void					_addPartSpelledWrong(UT_uint32 iOffset, UT_uint32 iLen);

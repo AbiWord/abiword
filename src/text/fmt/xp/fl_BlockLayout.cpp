@@ -1152,6 +1152,25 @@ static UT_Bool doesTouch(fl_PartOfBlock *pPOB, UT_uint32 offset, UT_uint32 lengt
 
 void fl_BlockLayout::_addPartNotSpellChecked(UT_uint32 iOffset, UT_uint32 iLen)
 {
+	// -------------------------
+	// -------------------------
+	// -------------------------
+	/*
+	  TODO HACK
+	  for now, checkSpelling has been modified to check the entire block
+	  every time.  So, for now, we don't actually build the list of
+	  regions which need spell checking.  We just add the block to the queue.
+	*/
+	m_pLayout->addBlockToSpellCheckQueue(this);
+	// -------------------------
+	// -------------------------
+	// -------------------------
+
+#if 0
+	/*
+	  EWS note:  this version of this method was intended to simplify
+	  things by keeping only ONE unchecked region instead of a list.
+	*/
 	/*
 	  first, we expand this region outward until we get a word delimiter
 	  on each side
@@ -1228,12 +1247,17 @@ void fl_BlockLayout::_addPartNotSpellChecked(UT_uint32 iOffset, UT_uint32 iLen)
 	}
 
 	m_pLayout->addBlockToSpellCheckQueue(this);
-
+#endif
+	
 // -----------------------------------------------------------------------
 // -----------------------------------------------------------------------
 // -----------------------------------------------------------------------
 // -----------------------------------------------------------------------
 
+	/*
+	  EWS note -- the following version of this method is the one DaveT
+	  wrote.
+	*/
 #if 0
 
 	UT_Bool foundAdjoiningRegion = UT_FALSE;
@@ -1389,29 +1413,58 @@ void fl_BlockLayout::_addPartSpelledWrong(UT_uint32 iOffset, UT_uint32 iLen)
 	m_lstSpelledWrong.append(pPOB);
 }
 
-void fl_BlockLayout::_resetSpellCheckState(void)
-{
-	// first, remove anything currently in the lists.
-	_destroySpellCheckLists();
-
-	/*
-	  We grab the getBlockBuf() here just so we can get the length
-	  of the text in this block.  This a VERY bad.  There must be
-	  an easier, more efficient way to do this.
-	*/
-	UT_GrowBuf pgb(1024);
-	UT_Bool bRes = getBlockBuf(&pgb);
-	
-	_addPartNotSpellChecked(0, pgb.getLength());
-}
-
 void fl_BlockLayout::checkSpelling(void)
 {
+	// -----------------------------
+	// -----------------------------
+	// -----------------------------
+	/*
+	  TODO this is a hack.  we currently just spell check the
+	  whole block on every time, so for now, we clear the spelledWrong
+	  list each time as well.
+	*/
+	fl_PartOfBlock*	pPOB;
+	while (NULL != (pPOB = (fl_PartOfBlock*) m_lstNotSpellChecked.head()))
+	{
+		delete pPOB;
+		m_lstNotSpellChecked.remove();
+	}
+
+	{
+		/*
+		  We grab the getBlockBuf() here just so we can get the length
+		  of the text in this block.  This a VERY bad.  There must be
+		  an easier, more efficient way to do this.
+		*/
+		UT_GrowBuf pgb(1024);
+		UT_Bool bRes = getBlockBuf(&pgb);
+	
+		pPOB = new fl_PartOfBlock();
+		if (!pPOB)
+		{
+			// TODO handle outofmem
+		}
+		
+		pPOB->iOffset = 0;
+		pPOB->iLength = pgb.getLength();
+	}
+	
+	(void) m_lstNotSpellChecked.tail();
+	m_lstNotSpellChecked.append(pPOB);
+
+	while (NULL != (pPOB = (fl_PartOfBlock*) m_lstSpelledWrong.head()))
+	{
+		delete pPOB;
+		m_lstSpelledWrong.remove();
+	}
+	// -----------------------------
+	// -----------------------------
+	// -----------------------------
+
 	/*
 	  First, we need to get a pointer to all the text in this
 	  block.
 	*/
-	
 	UT_GrowBuf pgb(1024);
 
 	UT_Bool bRes = getBlockBuf(&pgb);
@@ -1419,7 +1472,6 @@ void fl_BlockLayout::checkSpelling(void)
 
 	const UT_UCSChar* pBlockText = pgb.getPointer(0);
 
-	fl_PartOfBlock* pPOB;
 	UT_uint32 wordBeginning, wordLength;
 	UT_uint32 eor; /* end of region */
 	UT_Bool found;
@@ -1489,19 +1541,15 @@ void fl_BlockLayout::checkSpelling(void)
 		m_lstNotSpellChecked.remove();
 	}
 
-	// TODO we don't REALLY want to redraw the whole block after every spell check
+	/*
+	  TODO we don't REALLY want to redraw the whole block after every spell check.
+	  This is causing display dirt, since the insertion point gets erased outside
+	  the context of the code which manages it.  So, thus, the following hack.
+	*/
+	m_pLayout->getView()->_eraseInsertionPoint();
 	draw(m_pLayout->getGraphics());
+	m_pLayout->getView()->_drawInsertionPoint();
 }
-
-/*
-  TODO
-
-  spell check problems:
-
-  1.  we currently never call _resetSpellCheckState.  We need to do so sometime.
-  2.  when a block is modified, we need to be able to adjust the offsets of all
-      the POBs.
-*/
 
 /*****************************************************************/
 /*****************************************************************/
@@ -2259,7 +2307,7 @@ UT_Bool fl_BlockLayout::doclistener_insertStrux(const PX_ChangeRecord_Strux * pc
 	FV_View* pView = m_pLayout->getView();
 	if (pView)
 	{
-		pView->_setPoint(pcrx->getPosition()+fl_BLOCK_STRUX_OFFSET);
+		pView->_setPoint(pcrx->getPosition() + fl_BLOCK_STRUX_OFFSET);
 		pView->notifyListeners(AV_CHG_TYPING);
 	}
 	
@@ -2274,51 +2322,37 @@ void fl_BlockLayout::findSquigglesForRun(fp_Run* pRun)
 
 	/* For all misspelled words in this run, call the run->drawSquiggle() method */
 
-#if 0	
-	UT_DEBUGMSG(("findSquigglesForRun, There are %d invalid regions and %d bad words\n",
-				 m_lstNotSpellChecked.size(), m_lstSpelledWrong.size()));	
-#endif
-	
 	pPOB = (fl_PartOfBlock *) m_lstSpelledWrong.head();
 	while (pPOB)
 	{
-		if ((pPOB->iOffset == runBlockOffset) && (pPOB->iLength == runLength))
+		if (
+			!(pPOB->iOffset >= (runBlockOffset + runLength))
+			&& !((pPOB->iOffset + pPOB->iLength) <= runBlockOffset)
+			)
 		{
-			pRun->drawSquiggle(runBlockOffset, runLength);
-
-		} 
-		else if ((pPOB->iOffset < runBlockOffset) 
-				 && ((runBlockOffset + runLength) > pPOB->iOffset))
-		{
-			if ((runBlockOffset + runLength) < (pPOB->iOffset + pPOB->iLength))
+			UT_uint32 iStart;
+			UT_uint32 iLen;
+			if (pPOB->iOffset <= runBlockOffset)
 			{
-				/* this run is a subset of this misspelled word */
-				pRun->drawSquiggle(runBlockOffset, runLength);
+				iStart = runBlockOffset;
 			}
 			else
 			{
-				/* this run overlaps the end of this misspelled word */
-				pRun->drawSquiggle(runBlockOffset, 
-								   pPOB->iLength - (runBlockOffset - pPOB->iOffset));
+				iStart = pPOB->iOffset;
 			}
-		}
-		else if ((runBlockOffset < pPOB->iOffset)
-				 && ((runBlockOffset + runLength) > pPOB->iOffset))
-		{
-			if ((runBlockOffset + runLength) < (pPOB->iOffset + pPOB->iLength))
+		
+			if ((pPOB->iOffset + pPOB->iLength) >= (runBlockOffset + runLength))
 			{
-				/* This run overlaps the front of this misspelled word */
-				pRun->drawSquiggle(pPOB->iOffset, 
-								   runLength - (pPOB->iOffset - runBlockOffset));
+				iLen = runLength + runBlockOffset - iStart;
 			}
 			else
 			{
-
-				/* this run is a superset of this mispelled word */
-				pRun->drawSquiggle(pPOB->iOffset, pPOB->iLength);
+				iLen = pPOB->iOffset + pPOB->iLength - iStart;
 			}
+		
+			pRun->drawSquiggle(iStart, iLen);
 		}
-
+		
 		pPOB = (fl_PartOfBlock *) m_lstSpelledWrong.next();
 	}
 }
