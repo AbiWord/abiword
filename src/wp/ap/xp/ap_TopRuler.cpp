@@ -492,14 +492,14 @@ void AP_TopRuler::_getParagraphMarkerRects(AP_TopRulerInfo * /* pInfo */,
 	UT_uint32 yBar = s_iFixedHeight/2;
 	UT_uint32 yBottom = yTop + yBar;
 	UT_sint32 hs = 5;					// halfSize
-	UT_sint32 fs = hs * 2 + 1;			// fullSize
+	UT_sint32 fs = hs * 2 + 1;	        // fullSize
 
 	if (prLeftIndent)
-		prLeftIndent->set(leftCenter - hs, yBottom - 9, fs, 15);
+		prLeftIndent->set(leftCenter - hs, yBottom - 8, fs, 15);
 	if (prFirstLineIndent)
-		prFirstLineIndent->set(firstLineCenter - hs, yTop - 3, fs, 9);
+		prFirstLineIndent->set(firstLineCenter - hs, yTop - 1, fs, 9);
 	if (prRightIndent)
-		prRightIndent->set(rightCenter - hs, yBottom - 9, fs, 9);
+		prRightIndent->set(rightCenter - hs, yBottom - 8, fs, 9);
 }
 
 void AP_TopRuler::_drawParagraphProperties(const UT_Rect * pClipRect,
@@ -822,10 +822,10 @@ void AP_TopRuler::_getMarginMarkerRects(AP_TopRulerInfo * pInfo, UT_Rect &rLeft,
 
 	UT_uint32 yTop = s_iFixedHeight / 4;
 	UT_sint32 hs = 3;					// halfSize
-	UT_sint32 fs = hs * 2 + 1;			// fullSize
+	UT_sint32 fs = hs * 2;			// fullSize
 
-	rLeft.set( xAbsLeft  -hs, yTop - fs, fs, fs);
-	rRight.set(xAbsRight -hs, yTop - fs, fs, fs);
+	rLeft.set(xAbsLeft  - hs, yTop - fs, fs, fs-1);
+	rRight.set(xAbsRight - hs, yTop - fs, fs, fs);
 }
 
 void AP_TopRuler::_drawMarginProperties(const UT_Rect * /* pClipRect */,
@@ -843,12 +843,18 @@ void AP_TopRuler::_drawMarginProperties(const UT_Rect * /* pClipRect */,
 	m_pG->drawLine( rLeft.left + rLeft.width,  rLeft.top + rLeft.height, rLeft.left, rLeft.top + rLeft.height);
 	m_pG->drawLine( rLeft.left,  rLeft.top + rLeft.height, rLeft.left, rLeft.top);
 	m_pG->setColor3D(GR_Graphics::CLR3D_BevelUp);
-	m_pG->drawLine( rLeft.left + 1,  rLeft.top + 1, rLeft.left + rLeft.width - 2, rLeft.top + 1);
+	m_pG->drawLine( rLeft.left + 1,  rLeft.top + 1, rLeft.left + rLeft.width - 1, rLeft.top + 1);
 	m_pG->drawLine( rLeft.left + 1,  rLeft.top + rLeft.height - 2, rLeft.left + 1, rLeft.top + 1);
+	
+	/* I've #ifed out the dark bevels because we don't make them on the margin dragging gargets,
+	 * (even the square box on the left) so I don't think we should make them here either, to be consistent.
+	 */
+#if 0
 	m_pG->setColor3D(GR_Graphics::CLR3D_BevelDown);
-	m_pG->drawLine( rLeft.left + rLeft.width - 2,  rLeft.top + 1, rLeft.left + rLeft.width - 2, rLeft.top + rLeft.height - 2);
-	m_pG->drawLine( rLeft.left + rLeft.width - 2,  rLeft.top + rLeft.height - 2, rLeft.left + 1, rLeft.top + rLeft.height - 2);
-
+	m_pG->drawLine( rLeft.left + rLeft.width - 1,  rLeft.top + 1, rLeft.left + rLeft.width - 1, rLeft.top + rLeft.height - 1);
+	m_pG->drawLine( rLeft.left + rLeft.width - 1,  rLeft.top + rLeft.height - 1, rLeft.left + 1, rLeft.top + rLeft.height - 1);
+#endif	
+	
 	m_pG->fillRect(GR_Graphics::CLR3D_Background, rRight);
 
 	m_pG->setColor3D(GR_Graphics::CLR3D_Foreground);
@@ -857,13 +863,13 @@ void AP_TopRuler::_drawMarginProperties(const UT_Rect * /* pClipRect */,
 	m_pG->drawLine( rRight.left + rRight.width,  rRight.top + rRight.height, rRight.left, rRight.top + rRight.height);
 	m_pG->drawLine( rRight.left,  rRight.top + rRight.height, rRight.left, rRight.top);
 	m_pG->setColor3D(GR_Graphics::CLR3D_BevelUp);
-	m_pG->drawLine( rRight.left + 1,  rRight.top + 1, rRight.left + rRight.width - 2, rRight.top + 1);
+	m_pG->drawLine( rRight.left + 1,  rRight.top + 1, rRight.left + rRight.width - 1, rRight.top + 1);
 	m_pG->drawLine( rRight.left + 1,  rRight.top + rRight.height - 2, rRight.left + 1, rRight.top + 1);
-	m_pG->setColor3D(GR_Graphics::CLR3D_BevelDown);
-	m_pG->drawLine( rRight.left + rRight.width - 2,  rRight.top + 1, rRight.left + rRight.width - 2, rRight.top + rRight.height - 2);
-	m_pG->drawLine( rRight.left + rRight.width - 2,  rRight.top + rRight.height - 2, rRight.left + 1, rRight.top + rRight.height - 2);
-
-
+#if 0
+    m_pG->setColor3D(GR_Graphics::CLR3D_BevelDown);
+	m_pG->drawLine( rRight.left + rRight.width - 1,  rRight.top + 1, rRight.left + rRight.width - 1, rRight.top + rRight.height - 1);
+	m_pG->drawLine( rRight.left + rRight.width - 1,  rRight.top + rRight.height - 1, rRight.left + 1, rRight.top + rRight.height - 1);
+#endif
 }
 
 /*****************************************************************/
