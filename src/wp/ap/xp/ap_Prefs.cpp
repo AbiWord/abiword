@@ -23,6 +23,7 @@
 #include "ut_types.h"
 #include "ut_debugmsg.h"
 #include "ut_string.h"
+#include "ap_Args.h"
 
 #include "xap_EncodingManager.h"
 /*****************************************************************/
@@ -152,4 +153,17 @@ void AP_Prefs::overlaySystemPrefs(void)
 	};
 }
 
+
+const char * AP_Prefs::getPrefsPathname(void) const
+{
+	if(AP_Args::m_sUserProfile)
+	{
+		UT_DEBUGMSG(("AP_Prefs::getPrefsPathname: using cmd line value [%s]\n",
+					 AP_Args::m_sUserProfile));
+		
+		return AP_Args::m_sUserProfile;
+	}
+	else
+		return _getPrefsPathname();
+}
 
