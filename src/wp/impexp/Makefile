@@ -88,6 +88,11 @@ OBJS=	$(PLATFORM_OBJS)	\
         $(OBJDIR)/ie_imp_ISCII.$(OBJ_SUFFIX)                        \
         $(OBJDIR)/ie_imp_T602.$(OBJ_SUFFIX)
 
+ifeq ($(ABI_OPT_LIBJPEG),1)
+OBJS += $(OBJDIR)/ie_impGraphic_JPEG.$(OBJ_SUFFIX)
+endif
+
+
 
 include $(ABI_ROOT)/src/config/abi_rules.mk
 
