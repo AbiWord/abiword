@@ -136,6 +136,12 @@ int IE_Imp_MsWord_97::_charData(U16 *charstr, int len)
 	{
 	UT_UCSChar buf[1];
 	buf[0] = charstr[0];
+
+	// HACK: don't pass through the paragraph delimiter
+	// TODO: is there a better place to filter this?
+	if (buf[0]==UCS_CR)
+		return 0;
+
 	X_CheckError0(m_pDocument->appendSpan(buf,1));
 	return(0);
 	}
