@@ -118,6 +118,9 @@ endif #/* WAY_TOO_MANY_WARNINGS */
 
 # Includes
 OS_INCLUDES		=
+ifeq ($(ABI_REQUIRE_PEER_ICONV),1)
+OS_INCLUDES		+= -I$(ABI_ROOT)/../libiconv/include
+endif
 G++INCLUDES		= -I/usr/include/g++
 
 # Compiler flags
