@@ -1246,6 +1246,10 @@ GR_Win32Font::GR_Win32Font(HFONT hFont, GR_Graphics * pG)
 		else
 		{
 			setupFontInfo();
+			// Setting the m_hashKey 
+			char lpFaceName[1000];
+			GetTextFace( hDC, 1000, lpFaceName );
+			m_hashKey = lpFaceName;
 			SelectObject(hDC, (HGDIOBJ)hOldFont);
 		}
 		m_oldHDC = 0;
@@ -1271,6 +1275,12 @@ GR_Win32Font::~GR_Win32Font()
 	}
 }
 
+UT_sint32 GR_Win32Font::measureUnremappedCharForCache(UT_UCSChar cChar) const
+{
+	GR_Win32Font tempFont(m_hFont, m_pG);
+	return GR_Win32Font::Acq::measureUnRemappedChar(tempFont, cChar);
+}
+
 void GR_Win32Font::setupFontInfo()
 {
 	m_cw.zeroWidths();
@@ -1293,8 +1303,6 @@ void GR_Win32Font::setupFontInfo()
 
 UT_uint32 GR_Win32Font::Acq::measureUnRemappedChar(GR_Win32Font& font, UT_UCSChar c)
 {
-	
-	int iCharWidth = 0;
 	int iWidth;
 	// try to get cached value for the width of this char.
 	// if that fails, force fill the cache for this char

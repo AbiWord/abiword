@@ -68,6 +68,7 @@ public:
 	};
 	friend class Acq;
 
+	virtual UT_sint32 measureUnremappedCharForCache(UT_UCSChar cChar) const;
 private:
 	void					setupFontInfo();
 	HDC						m_oldHDC;
