@@ -170,8 +170,9 @@ const UT_UTF8String & XAP_InternalResource::type (const char * new_content_type)
 	return m_content_type;
 }
 
-XAP_ExternalResource::XAP_ExternalResource (const char * resource_url) :
-	XAP_Resource(resource_url,false)
+XAP_ExternalResource::XAP_ExternalResource (const char * resource_id) :
+	XAP_Resource(resource_id,false),
+	m_url("")
 {
 	// 
 }
@@ -179,4 +180,10 @@ XAP_ExternalResource::XAP_ExternalResource (const char * resource_url) :
 XAP_ExternalResource::~XAP_ExternalResource ()
 {
 	// 
+}
+
+const UT_UTF8String & XAP_ExternalResource::URL (const UT_UTF8String & url)
+{
+	m_url = url;
+	return m_url;
 }

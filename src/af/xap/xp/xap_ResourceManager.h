@@ -43,14 +43,12 @@ public:
 
 	~XAP_ResourceManager ();
 
-	const UT_UTF8String new_id ();
+	const UT_UTF8String new_id (bool bInternal = true);
 
 	/* returns resource corresponding to href
 	 * returns 0 if none is found
-	 * 
-	 * (assume_number_sign => prefix href with '#')
 	 */
-	XAP_Resource * resource (const char * href, bool assume_number_sign = false, UT_uint32 * index = 0);
+	XAP_Resource * resource (const char * href, bool bInternal, UT_uint32 * index = 0);
 
 	/* resource objects are created/destroyed via ref/unref
 	 * ref() returns false if href is not, and cannot be, created

@@ -27,28 +27,37 @@
 #include "ut_bytebuf.h"
 #include "ut_base64.h"
 #include "ut_debugmsg.h"
-#include "pt_Types.h"
 #include "ut_set.h"
-#include "ie_exp_AbiWord_1.h"
-#include "pd_Document.h"
-#include "pp_AttrProp.h"
-#include "px_ChangeRecord.h"
-#include "px_CR_Object.h"
-#include "px_CR_Span.h"
-#include "px_CR_Strux.h"
-#include "xap_App.h"
-#include "ap_Prefs.h"
-#include "pd_Style.h"
-#include "fd_Field.h"
-#include "xap_EncodingManager.h"
-#include "fl_AutoNum.h"
-#include "fp_PageSize.h"
-
 #include "ut_string_class.h"
 
 #ifdef ENABLE_RESOURCE_MANAGER
 #include "xap_ResourceManager.h"
 #endif
+#include "xap_EncodingManager.h"
+
+#include "xap_App.h"
+
+#include "pt_Types.h"
+
+#include "pd_Document.h"
+#include "pd_Style.h"
+
+#include "pp_AttrProp.h"
+
+#include "px_ChangeRecord.h"
+#include "px_CR_Object.h"
+#include "px_CR_Span.h"
+#include "px_CR_Strux.h"
+
+#include "fd_Field.h"
+
+#include "fl_AutoNum.h"
+
+#include "fp_PageSize.h"
+
+#include "ie_exp_AbiWord_1.h"
+
+#include "ap_Prefs.h"
 
 // the fileformat that used to be defined here is now defined at the
 // top of pd_Document.cpp
@@ -162,7 +171,7 @@ protected:
 	bool				m_bInSection;
 	bool				m_bInBlock;
 	bool				m_bInSpan;
-	bool				m_bInTag;
+	//	bool				m_bInTag;
 	bool				m_bInHyperlink;
 	UT_sint32           m_iInTable;
 	UT_sint32           m_iInCell;
@@ -173,7 +182,6 @@ protected:
 private:
 	UT_Set				m_pUsedImages;
 	const XML_Char*		getObjectKey(const PT_AttrPropIndex& api, const XML_Char* key);
-
 };
 
 void s_AbiWord_1_Listener::_closeSection(void)
@@ -230,12 +238,8 @@ void s_AbiWord_1_Listener::_closeSpan(void)
 
 void s_AbiWord_1_Listener::_closeTag(void)
 {
-	if (!m_bInTag)
-		return;
-	m_pie->write("</c>");
-	m_bInTag = false;
+	if (m_bOpenChar) m_pie->write("</c>");
 	m_bOpenChar = false;
-	return;
 }
 
 void s_AbiWord_1_Listener::_closeField(void)
@@ -280,6 +284,69 @@ void s_AbiWord_1_Listener::_openTag(const char * szPrefix, const char * szSuffix
 								   bool bNewLineAfter, PT_AttrPropIndex api,
 								   bool bIgnoreProperties)
 {
+#ifdef ENABLE_RESOURCE_MANAGER
+	UT_ASSERT (!m_bOpenChar);
+
+	UT_UTF8String tag("<");
+	tag += szPrefix;
+
+	const PP_AttrProp * pAP = NULL;
+	bool bHaveProp = m_pDocument->getAttrProp (api, &pAP);
+	if (bHaveProp && pAP)
+		{
+			const XML_Char * szName = 0;
+			const XML_Char * szValue = 0;
+
+			UT_uint32 k = 0;
+			while (pAP->getNthAttribute (k++, szName, szValue))
+				{
+					tag += " ";
+					tag += szName;
+					tag += "=\"";
+
+					if ((*szValue == '/') && ((strcmp (szName, "href") == 0) || (strcmp (szName, "xlink:href") == 0)))
+						{
+							XAP_ResourceManager & RM = m_pDocument->resourceManager ();
+							XAP_ExternalResource * re = dynamic_cast<XAP_ExternalResource *>(RM.resource (szValue, false));
+							if (re) tag += re->URL ();
+						}
+					else _outputXMLChar (szValue, strlen (szValue));
+
+					tag += "\"";
+				}
+			if (!bIgnoreProperties)
+				{
+					k = 0;
+					while (pAP->getNthProperty (k++, szName, szValue))
+						{
+							if (k == 1)
+								{
+									tag += " ";
+									tag += PT_PROPS_ATTRIBUTE_NAME;
+									tag += "=\"";
+								}
+							else tag += "; ";
+
+							tag += szName;
+							tag += ":";
+
+							_outputXMLChar (szValue, strlen (szValue));
+						}
+					if (k > 1) tag += "\"";
+				}
+		}
+
+	if (szSuffix)
+		if (*szSuffix == '/')
+			tag += "/";
+	tag += ">";
+	if (bNewLineAfter) tag += "\n";
+
+	m_pie->write (tag.utf8_str ());
+
+	if (strcmp (szPrefix, "c") == 0) m_bOpenChar = true;
+
+#else /* ENABLE_RESOURCE_MANAGER */
 	const PP_AttrProp * pAP = NULL;
 	bool bHaveProp = m_pDocument->getAttrProp(api,&pAP);
 	xxx_UT_DEBUGMSG(("_openTag: api %d, bHaveProp %d\n",api, bHaveProp));
@@ -341,7 +408,8 @@ void s_AbiWord_1_Listener::_openTag(const char * szPrefix, const char * szSuffix
 	if (bNewLineAfter)
 		m_pie->write("\n");
 
-	m_bInTag = true;
+	//	m_bInTag = true;
+#endif /* ENABLE_RESOURCE_MANAGER */
 }
 
 // This method is very much like _outputData but uses XML_Chars instead of UT_UCS4_Char's.
@@ -488,7 +556,7 @@ s_AbiWord_1_Listener::s_AbiWord_1_Listener(PD_Document * pDocument,
 	m_bInSection = false;
 	m_bInBlock = false;
 	m_bInSpan = false;
-	m_bInTag = false;
+	//	m_bInTag = false;
 	m_bInHyperlink = false;
 	m_bOpenChar = false;
 	m_apiLastSpan = 0;
@@ -616,11 +684,11 @@ bool s_AbiWord_1_Listener::populate(PL_StruxFmtHandle /*sfh*/,
 				{
 				_closeSpan();
                 _closeField();
-
+#ifndef ENABLE_RESOURCE_MANAGER
 				const XML_Char* image_name = getObjectKey(api, (const XML_Char*) "dataid");
 				if (image_name)
 					m_pUsedImages.insert(image_name);
-
+#endif
 				_openTag("image","/",false,api);
 
 				return true;

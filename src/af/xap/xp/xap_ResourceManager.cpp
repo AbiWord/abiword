@@ -47,15 +47,27 @@ XAP_ResourceManager::~XAP_ResourceManager ()
 	if (m_resource) free (m_resource);
 }
 
-const UT_UTF8String XAP_ResourceManager::new_id ()
+const UT_UTF8String XAP_ResourceManager::new_id (bool bInternal)
 {
 	static const char utf8_hex[16] = { '0','1','2','3','4','5','6','7','8','9','a','b','c','d','e','f' };
 
 	char buf[11];
 
-	buf[0] = '#';
-	buf[1] = 'r';
-	buf[2] = 'i';
+	/* external references (hyperlinks) are remapped from, say, http://this.com/that
+	 * to, say, /re_abc123
+	 */
+	if (!bInternal)
+		{
+			buf[0] = '/';
+			buf[1] = 'r';
+			buf[2] = 'e';
+		}
+	else
+		{
+			buf[0] = '#';
+			buf[1] = 'r';
+			buf[2] = 'i';
+		}
 	buf[3] = '_';
 
 	if ((m_id_number & 0xffffff) != m_id_number)
@@ -83,31 +95,25 @@ const UT_UTF8String XAP_ResourceManager::new_id ()
 
 /* returns resource corresponding to href
  * returns 0 if none is found
- * 
- * (assume_number_sign => prefix href with '#')
  */
-XAP_Resource * XAP_ResourceManager::resource (const char * href, bool assume_number_sign, UT_uint32 * index)
+XAP_Resource * XAP_ResourceManager::resource (const char * href, bool bInternal, UT_uint32 * index)
 {
-	XAP_Resource * match = 0;
+	if ( href == 0) return 0;
+	if (*href == 0) return 0;
 
-	if ( href == 0) return match;
-	if (*href == 0) return match;
-
-	bool bInternal;
-	if (assume_number_sign)
+	if (bInternal)
 		{
-			if (*href == '#') return match; // huh?
-			bInternal = true;
+			if (*href == '/') return 0;
+			if (*href == '#') href++;
 		}
 	else
 		{
-			if (*href == '#')
-				{
-					href++;
-					bInternal = true;
-				}
-			else bInternal = false;
+			if (*href == '#') return 0;
+			if (*href == '/') href++;
 		}
+	if (*href != 'r') return 0;
+
+	XAP_Resource * match = 0;
 
 	for (UT_uint32 i = 0; i < m_resource_count; i++)
 		if (m_resource[i]->bInternal == bInternal)
@@ -126,14 +132,14 @@ XAP_Resource * XAP_ResourceManager::resource (const char * href, bool assume_num
  */
 bool XAP_ResourceManager::ref (const char * href)
 {
-	if (href == 0) return false;
-
-	bool bInternal = (*href == '#');
-	if (bInternal) href++;
-
+	if ( href == 0) return false;
 	if (*href == 0) return false;
 
-	XAP_Resource * match = resource (href, true);
+	bool bInternal = false;
+	if (*href == '#') bInternal = true;
+	else if (*href != '/') return false;
+
+	XAP_Resource * match = resource (href, bInternal);
 	if (match)
 		{
 			match->ref ();
@@ -164,15 +170,15 @@ bool XAP_ResourceManager::ref (const char * href)
  */
 void XAP_ResourceManager::unref (const char * href)
 {
-	if (href == 0) return;
-
-	bool bInternal = (*href == '#');
-	if (bInternal) href++;
-
+	if ( href == 0) return;
 	if (*href == 0) return;
 
+	bool bInternal = false;
+	if (*href == '#') bInternal = true;
+	else if (*href != '/') return;
+
 	UT_uint32 index;
-	XAP_Resource * match = resource (href, true, &index);
+	XAP_Resource * match = resource (href, bInternal, &index);
 	if (match == 0) return;
 
 	if (match->unref () > 0) return;

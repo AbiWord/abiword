@@ -91,9 +91,18 @@ private:
 class ABI_EXPORT XAP_ExternalResource : public XAP_Resource
 {
 public:
-	XAP_ExternalResource (const char * resource_url);
+	XAP_ExternalResource (const char * resource_id);
 
 	~XAP_ExternalResource ();
+
+	const UT_UTF8String & URL () const
+	{
+		return m_url;
+	}
+	const UT_UTF8String & URL (const UT_UTF8String & url);
+
+private:
+	UT_UTF8String m_url;
 };
 
 #endif /* ! XAP_RESOURCE_H */

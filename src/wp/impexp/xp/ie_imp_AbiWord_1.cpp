@@ -821,13 +821,13 @@ bool IE_Imp_AbiWord_1::_handleImage (const XML_Char ** atts)
 	/* old: <image dataid="ID" props="height:HH; width:WW" />
 	 * new: <image href="#ID" props="height:HH; width:WW" />
 	 * 
-	 * going to assume the document is one or the other, not a mixture...
-	 * 
 	 * we need to re-map resource IDs so that we can allocate new IDs
 	 * sensibly later on
 	 */
 	const char * old_id = 0;
 
+	/* going to assume the document is one or the other, not a mixture...
+	 */
 	bool is_data = false;
 	bool is_href = false;
 
@@ -851,40 +851,57 @@ bool IE_Imp_AbiWord_1::_handleImage (const XML_Char ** atts)
 			attr++;
 			natts += 2;
 		}
-	if (is_href & is_data) return false; // huh?
+	if (is_href && is_data) return false; // huh?
 
 	if ( old_id == 0) return false; // huh?
 	if (*old_id == 0) return false; // huh?
 
-	if (is_href && (*old_id != '#'))
-		{
-			/* this is a hyperlink, there's no need to do anything special here...
-			 */
-			RM.ref (old_id); // reference the object
-			return getDoc()->appendObject (PTO_Image, atts);
-		}
+	UT_UTF8String re_id;
 
 	const UT_UTF8String * new_id = 0;
-	if ((new_id = reinterpret_cast<const UT_UTF8String *>(m_refMap->pick (old_id))) == 0)
+
+	if (is_href && (*old_id != '#'))
+		{
+			/* this is a hyperlink; we don't map these
+			 */
+			re_id = RM.new_id (false); // external resource id, "/re_abc123"
+
+			new_id = &re_id;
+		}
+	else if ((new_id = reinterpret_cast<const UT_UTF8String *>(m_refMap->pick (old_id))) == 0)
 		{
 			/* first occurence of this href/dataid; add to map
 			 */
-			UT_UTF8String * r_id = new UT_UTF8String(RM.new_id());
-			if (r_id)
+			UT_UTF8String * ri_id = new UT_UTF8String(RM.new_id());
+			if (ri_id)
 				{
-					m_refMap->insert (old_id, r_id);
+					m_refMap->insert (old_id, ri_id);
 					if ((new_id = reinterpret_cast<const UT_UTF8String *>(m_refMap->pick (old_id))) == 0)
 						{
-							delete r_id;
+							delete ri_id;
 						}
 				}
 		}
 	if (new_id == 0) return false; // hmm
 
+	/* it is necessary to reference a resource before you can set URL or data
+	 */
+	if (!RM.ref (new_id->utf8_str ())) return false; // reference the object
+
+	/* for external resources (i.e., hyperlinks) we set the URL now; data comes *much* later...
+	 */
+	if (is_href && (*old_id != '#'))
+		{
+			XAP_ExternalResource * re = dynamic_cast<XAP_ExternalResource *>(RM.resource (re_id.utf8_str (), false));
+			if (re == 0) return false; // huh?
+
+			re->URL (UT_UTF8String(old_id));
+		}
+
+	/* copy attribute list; replace dataid/href value with new ID
+	 */
 	const char ** new_atts = (const char **) malloc ((natts + 2) * sizeof (char *));
 	if (new_atts == 0) return false; // hmm
-
-	RM.ref (new_id->utf8_str ()); // reference the object
 
 	const char ** new_attr = new_atts;
 	attr = atts;
