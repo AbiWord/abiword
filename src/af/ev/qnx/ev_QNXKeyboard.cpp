@@ -249,13 +249,14 @@ key events ...
 static bool s_isVirtualKeyCode(PhKeyEvent_t *keyevent)
 {
 	int key;
+	char buf[UTF8_CUR_MAX];
 /*
 	if (keyevent->key_sym <= 0xff) {
 		printf("Key Symbol is 0x%x \n", keyevent->key_sym);
 		return(false);
 	}
 */
-	if ((key = PhTo8859_1(keyevent)) == -1) {
+	if ((key = PhKeyToMb((char*)&buf,keyevent)) == -1) {
 		return(true);
 	}
 
