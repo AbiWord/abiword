@@ -42,20 +42,10 @@ bool pt_VarSet::_finishConstruction(void)
 		
 	// create a default A/P as entry zero in each AP table.
 
-	PT_AttrPropIndex foo;
-		
-	if (   !m_tableAttrProp[0].createAP(&foo)
-		|| !m_tableAttrProp[1].createAP(&foo))
+	if (!m_tableAttrProp[0].createAP(NULL)
+		|| !m_tableAttrProp[1].createAP(NULL))
 		return false;
-	((PP_AttrProp *)getAP(_makeAPIndex(0,0)))->markReadOnly();
-	((PP_AttrProp *)getAP(_makeAPIndex(1,0)))->markReadOnly();
 
-	//$TODO Are the two following calls really needed or just for
-	// consistency. If these are the first elements in the
-	// tables, then the tables are already sorted.
-	m_tableAttrProp[0].sortTable();
-	m_tableAttrProp[1].sortTable();
-	
 	m_bInitialized = true;
 	return true;
 }

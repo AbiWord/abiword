@@ -129,6 +129,7 @@ GR_Image * GR_UnixImage::createImageSegment(GR_Graphics * pG,const UT_Rect & rec
 	pImage->m_image = gdk_pixbuf_new_subpixbuf(m_image,x,y,width,height);
 	return static_cast<GR_Image *>(pImage);
 }
+
 /*!
  * Scale our image to rectangle given by rec. The dimensions of rec
  * are calculated in logical units.

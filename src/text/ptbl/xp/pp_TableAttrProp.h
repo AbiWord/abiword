@@ -53,7 +53,6 @@ public:
 									  UT_uint32 * pSubscript) const;
 	
 	const PP_AttrProp *		getAP(UT_uint32 subscript) const;
-	void					sortTable(void);
 
 protected:
 	UT_Vector				m_vecTable;

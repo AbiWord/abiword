@@ -150,21 +150,9 @@ UT_sint32 UT_Vector::addItem(const void* p)
 
 UT_sint32 UT_Vector::addItemSorted(const void* p, int (*compar)(const void *, const void *))
 {
-
 	if (!m_iCount) return addItem(p);
 
-	UT_uint32 i = 0;
-	int icmp;
-
-    icmp = compar(&p, &m_pEntries[i]);
-
-	while ( icmp > 0 && i < m_iCount - 1)
-	{
-		i++;
-		icmp = compar(&p, &m_pEntries[i]);
-	}
-
-	return insertItemAt( p, i );
+	return insertItemAt( p, binarysearchForSlot(&p, compar));
 }
 
 /** It returns true if there were no errors, false elsewhere */
@@ -260,7 +248,17 @@ void UT_Vector::qsort(int (*compar)(const void *, const void *))
 // based on code from Tim Bray's 'On the Goodness of Binary Search'
 // http://tbray.org/ongoing/When/200x/2003/03/22/Binary
 
-UT_uint32 UT_Vector::binarysearch(void * key, int (*compar)(const void *, const void *))
+UT_uint32 UT_Vector::binarysearch(void * key, compar_fn_t compar)
+{
+	UT_sint32 slot = binarysearchForSlot(key, compar);
+
+	if ((slot == m_iCount) || (0 != (*compar)(key, &m_pEntries[slot])))
+		return -1;
+	else
+		return slot;
+}
+
+UT_uint32 UT_Vector::binarysearchForSlot(void *key, compar_fn_t compar)
 {
 	UT_sint32 high = m_iCount;
 	UT_sint32 low = -1;
@@ -277,10 +275,7 @@ UT_uint32 UT_Vector::binarysearch(void * key, int (*compar)(const void *, const 
 			high = probe;
 	}
 
-	if ((high == m_iCount) || (0 != (*compar)(key, &m_pEntries[high])))
-		return -1;
-	else
-		return high;
+	return high;
 }
 
 bool UT_Vector::copy(const UT_Vector *pVec)
@@ -303,8 +298,6 @@ const void* UT_Vector::operator[](UT_uint32 i) const
 {
 	return this->getNthItem(i);
 }
-
-
 
 UT_NumberVector::UT_NumberVector (UT_uint32 sizehint, UT_uint32 baseincr) :
 	m_pEntries(0),

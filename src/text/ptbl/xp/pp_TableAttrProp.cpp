@@ -100,13 +100,19 @@ bool pp_TableAttrProp::createAP(UT_uint32 * pSubscript)
 		delete pNew;
 		return false;
 	}
+
+	pNew->setIndex(u);	//$HACK
+
 	if (pSubscript)
  	{
  		*pSubscript = u;
  	}
- 
- 	pNew->setIndex(u);	//$HACK
- 	m_vecTableSorted.addItem(pNew, NULL);
+	else
+	{
+		// create default empty AP
+		pNew->markReadOnly();
+		m_vecTableSorted.addItem(pNew, NULL);
+	} 
 
 	return true;
 }
@@ -126,7 +132,7 @@ bool pp_TableAttrProp::createAP(const XML_Char ** attributes,
 
 	pAP->markReadOnly();
 
-	sortTable();
+	m_vecTableSorted.addItemSorted(pAP,compareAP);
 	
 	*pSubscript = subscript;
 	return true;
@@ -146,7 +152,7 @@ bool pp_TableAttrProp::createAP(const UT_Vector * pVector,
 	
 	pAP->markReadOnly();
 
-	sortTable();
+	m_vecTableSorted.addItemSorted(pAP,compareAP);
 	
 	*pSubscript = subscript;
 	return true;
@@ -200,10 +206,4 @@ const PP_AttrProp * pp_TableAttrProp::getAP(UT_uint32 subscript) const
 		return (const PP_AttrProp *)m_vecTable.getNthItem(subscript);
 	else
 		return NULL;
-}
-
-  
-void pp_TableAttrProp::sortTable(void)
-{
- 	m_vecTableSorted.qsort(compareAP);
 }

@@ -317,22 +317,14 @@ bool pt_PieceTable::appendStyle(const XML_Char ** attributes)
 		// this is a new name
 		pStyle = new PD_Style(this, indexAP, szName);
 		xxx_UT_DEBUGMSG(("SEVIOR: Creating new style %s \n",szName));
+
 //
-//TODO: Learn how to use Dom's AbiObject instead of this hack.
+// TODO: Learn how to use Dom's AbiObject instead of this hack.
 //
+
 		if (pStyle)
 			m_hashStyles.insert(szName,(void *)pStyle);
-//
-// Diagonostic on Append...
-//
-		const PD_Style * pdStyle = NULL;
-		const char * psdName =NULL;
-		UT_uint32 i = 0;
-		for(i=0; i<getStyleCount(); i++)
-		{
-			enumStyles(i,&psdName,&pdStyle);
-			xxx_UT_DEBUGMSG(("SEVIOR: Found %d style name %s \n",i,psdName));
-		}
+
 		return true;
 	}
 }

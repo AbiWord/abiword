@@ -81,6 +81,8 @@
 class ABI_EXPORT UT_Vector
 {
 public:
+	typedef int (*compar_fn_t) (__const void *, __const void *);
+
 	UT_Vector(UT_uint32 sizehint = 2048);
 	UT_Vector(const UT_Vector&);
 	UT_Vector& operator=(const UT_Vector&);
@@ -121,7 +123,8 @@ public:
 
 private:
 	UT_sint32		grow(UT_uint32);
-	
+	UT_uint32		binarysearchForSlot(void *key, compar_fn_t compar);
+
 	void**			m_pEntries;
 	UT_uint32		m_iCount;
 	UT_uint32		m_iSpace;
