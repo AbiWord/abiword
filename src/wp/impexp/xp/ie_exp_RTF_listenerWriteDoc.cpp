@@ -553,9 +553,7 @@ void	 s_RTF_ListenerWriteDoc::_openTag(const char * szPrefix, const char * szSuf
 		 else if(UT_XML_strcmp(pszType,"page_number") == 0)
 		 {
 			 _writeFieldPreamble(pSpanAP);
-			 m_pie->write("PAGE  \\");
-			 m_pie->_rtf_keyword("*");
-			 m_pie->write(" MERGEFORMAT ");
+			 m_pie->write("PAGE ");
              m_pie->_rtf_close_brace();
              m_pie->_rtf_close_brace();
 			 _writeFieldTrailer();
@@ -564,9 +562,7 @@ void	 s_RTF_ListenerWriteDoc::_openTag(const char * szPrefix, const char * szSuf
 		 else if(UT_XML_strcmp(pszType,"time") == 0)
 		 {
 			 _writeFieldPreamble(pSpanAP);
-			 m_pie->write("TIME  \\");
-			 m_pie->_rtf_keyword("*");
-			 m_pie->write(" MERGEFORMAT ");
+			 m_pie->write("TIME ");
              m_pie->_rtf_close_brace();
              m_pie->_rtf_close_brace();
 			 _writeFieldTrailer();
@@ -583,10 +579,7 @@ void	 s_RTF_ListenerWriteDoc::_openTag(const char * szPrefix, const char * szSuf
 		 else if(UT_XML_strcmp(pszType,"page_count") == 0)
 		 {
 			 _writeFieldPreamble(pSpanAP);
-			 m_pie->write("NUMPAGES  \\");
-			 m_pie->_rtf_keyword("*");
-			 m_pie->write(" MERGEFORMAT ");
-             m_pie->_rtf_close_brace();
+			 m_pie->write("NUMPAGES ");
              m_pie->_rtf_close_brace();
              m_pie->_rtf_close_brace();
 			 return;
@@ -596,7 +589,7 @@ void	 s_RTF_ListenerWriteDoc::_openTag(const char * szPrefix, const char * szSuf
 			 _writeFieldPreamble(pSpanAP);
 			 m_pie->write("TIME  \\");
 			 m_pie->_rtf_keyword("@");
-			 m_pie->write(" ""dddd, MMMM dd, yyyy"" ");
+			 m_pie->write(" \"dddd, MMMM dd, yyyy\" ");
              m_pie->_rtf_close_brace();
              m_pie->_rtf_close_brace();
 			 _writeFieldTrailer();
@@ -605,9 +598,7 @@ void	 s_RTF_ListenerWriteDoc::_openTag(const char * szPrefix, const char * szSuf
 		 else if(UT_XML_strcmp(pszType,"date_mmddyy") == 0)
 		 {
 			 _writeFieldPreamble(pSpanAP);
-			 m_pie->write("DATE  \\");
-			 m_pie->_rtf_keyword("*");
-			 m_pie->write(" MERGEFORMAT ");
+			 m_pie->write("DATE ");
              m_pie->_rtf_close_brace();
              m_pie->_rtf_close_brace();
 			 _writeFieldTrailer();
@@ -616,7 +607,7 @@ void	 s_RTF_ListenerWriteDoc::_openTag(const char * szPrefix, const char * szSuf
 		 else if(UT_XML_strcmp(pszType,"date_ddmmyy") == 0)
 		 {
 			 _writeFieldPreamble(pSpanAP);
-			 m_pie->write("TIME  \\");
+			 m_pie->write("TIME \\");
 			 m_pie->_rtf_keyword("@");
 			 m_pie->write(" ""m/d/yy"" ");
              m_pie->_rtf_close_brace();
@@ -629,7 +620,7 @@ void	 s_RTF_ListenerWriteDoc::_openTag(const char * szPrefix, const char * szSuf
 			 _writeFieldPreamble(pSpanAP);
 			 m_pie->write("TIME  \\");
 			 m_pie->_rtf_keyword("@");
-			 m_pie->write(" ""MMMM d, yyyy"" ");
+			 m_pie->write(" \"MMMM d, yyyy\" ");
              m_pie->_rtf_close_brace();
              m_pie->_rtf_close_brace();
 			 _writeFieldTrailer();
@@ -640,7 +631,7 @@ void	 s_RTF_ListenerWriteDoc::_openTag(const char * szPrefix, const char * szSuf
 			 _writeFieldPreamble(pSpanAP);
 			 m_pie->write("TIME  \\");
 			 m_pie->_rtf_keyword("@");
-			 m_pie->write(" ""MMM d, yy"" ");
+			 m_pie->write(" \"MMM d, yy\" ");
              m_pie->_rtf_close_brace();
              m_pie->_rtf_close_brace();
 			 _writeFieldTrailer();
@@ -649,9 +640,7 @@ void	 s_RTF_ListenerWriteDoc::_openTag(const char * szPrefix, const char * szSuf
 		 else if(UT_XML_strcmp(pszType,"date_dfl") == 0)
 		 {
 			 _writeFieldPreamble(pSpanAP);
-			 m_pie->write("SAVEDATE  \\");
-			 m_pie->_rtf_keyword("*");
-			 m_pie->write(" MERGEFORMAT ");
+			 m_pie->write("SAVEDATE  ");
              m_pie->_rtf_close_brace();
              m_pie->_rtf_close_brace();
 			 _writeFieldTrailer();
@@ -662,7 +651,7 @@ void	 s_RTF_ListenerWriteDoc::_openTag(const char * szPrefix, const char * szSuf
 			 _writeFieldPreamble(pSpanAP);
 			 m_pie->write("TIME  \\");
 			 m_pie->_rtf_keyword("@");
-			 m_pie->write(" ""MM-d-yy"" ");
+			 m_pie->write(" \"MM-d-yy\" ");
              m_pie->_rtf_close_brace();
              m_pie->_rtf_close_brace();
 			 _writeFieldTrailer();
@@ -673,7 +662,7 @@ void	 s_RTF_ListenerWriteDoc::_openTag(const char * szPrefix, const char * szSuf
 			 _writeFieldPreamble(pSpanAP);
 			 m_pie->write("TIME  \\");
 			 m_pie->_rtf_keyword("@");
-			 m_pie->write(" ""dddd"" ");
+			 m_pie->write(" \"dddd\" ");
              m_pie->_rtf_close_brace();
              m_pie->_rtf_close_brace();
 			 _writeFieldTrailer();
@@ -692,7 +681,7 @@ void	 s_RTF_ListenerWriteDoc::_openTag(const char * szPrefix, const char * szSuf
 			 _writeFieldPreamble(pSpanAP);
 			 m_pie->write("TIME  \\");
 			 m_pie->_rtf_keyword("@");
-			 m_pie->write(" ""HH:mm:ss"" ");
+			 m_pie->write(" \"HH:mm:ss\" ");
              m_pie->_rtf_close_brace();
              m_pie->_rtf_close_brace();
 			 _writeFieldTrailer();
@@ -703,7 +692,7 @@ void	 s_RTF_ListenerWriteDoc::_openTag(const char * szPrefix, const char * szSuf
 			 _writeFieldPreamble(pSpanAP);
 			 m_pie->write("TIME  \\");
 			 m_pie->_rtf_keyword("@");
-			 m_pie->write(" ""h:mm:ss am/pm"" ");
+			 m_pie->write(" \"h:mm:ss am/pm\" ");
              m_pie->_rtf_close_brace();
              m_pie->_rtf_close_brace();
 			 _writeFieldTrailer();
@@ -728,9 +717,7 @@ void	 s_RTF_ListenerWriteDoc::_openTag(const char * szPrefix, const char * szSuf
 		 else if(UT_XML_strcmp(pszType,"word_count") == 0)
 		 {
 			 _writeFieldPreamble(pSpanAP);
-			 m_pie->write("NUMWORDS  \\");
-			 m_pie->_rtf_keyword("*");
-			 m_pie->write(" MERGEFORMAT ");
+			 m_pie->write("NUMWORDS ");
              m_pie->_rtf_close_brace();
              m_pie->_rtf_close_brace();
 			 _writeFieldTrailer();
@@ -739,9 +726,7 @@ void	 s_RTF_ListenerWriteDoc::_openTag(const char * szPrefix, const char * szSuf
 		 else if(UT_XML_strcmp(pszType,"char_count") == 0)
 		 {
 			 _writeFieldPreamble(pSpanAP);
-  			 m_pie->write("NUMCHARS  \\");
-  			 m_pie->_rtf_keyword("*");
-  			 m_pie->write(" MERGEFORMAT ");
+  			 m_pie->write("NUMCHARS  ");
              m_pie->_rtf_close_brace();
              m_pie->_rtf_close_brace();
 			 _writeFieldTrailer();
@@ -1732,9 +1717,9 @@ void s_RTF_ListenerWriteDoc::_writeHyperlink(const PX_ChangeRecord_Object * pcro
 	}
 	_writeFieldPreamble(pHyperlinkAP);
 	m_pie->write("HYPERLINK ");
-	m_pie->write("""");
+	m_pie->write("\"");
 	m_pie->write(szHyper);
-	m_pie->write("""");
+	m_pie->write("\"");
 	m_pie->_rtf_close_brace();
 	m_pie->_rtf_close_brace();
 	m_pie->_rtf_close_brace();
