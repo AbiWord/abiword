@@ -7209,7 +7209,10 @@ void FV_View::_findPositionCoords(PT_DocPosition pos,
 void FV_View::_fixInsertionPointCoords()
 {
 	_eraseInsertionPoint();
-	_findPositionCoords(getPoint(), m_bPointEOL, m_xPoint, m_yPoint, m_xPoint2, m_yPoint2, m_iPointHeight, m_bPointDirection, NULL, NULL);
+	if( getPoint() )
+	{
+		_findPositionCoords(getPoint(), m_bPointEOL, m_xPoint, m_yPoint, m_xPoint2, m_yPoint2, m_iPointHeight, m_bPointDirection, NULL, NULL);
+	}
 	xxx_UT_DEBUGMSG(("SEVIOR: m_yPoint = %d m_iPointHeight = %d \n",m_yPoint,m_iPointHeight));
 	_saveCurrentPoint();
 	// hang onto this for _moveInsPtNextPrevLine()
