@@ -1280,12 +1280,19 @@ GR_Win32Font::~GR_Win32Font()
 	// selected font [into the DC] why it's impossible to revert to that
 	// one! :-<
 	// But, let's try it like this...
+	// 
+	// the GetObjectType call with 0 throws a first chance exception
+	// (this whole thing is rather messy)
+	
 
-	const DWORD dwObjType = GetObjectType((HGDIOBJ)m_oldHDC);
-	const bool bIsDC = dwObjType == OBJ_DC || dwObjType == OBJ_MEMDC;
-	if (!bIsDC || m_hFont != (HFONT)::GetCurrentObject(m_oldHDC, OBJ_FONT))
+	if(m_oldHDC)
 	{
-		DeleteObject(m_hFont);
+		const DWORD dwObjType = GetObjectType((HGDIOBJ)m_oldHDC);
+		const bool bIsDC = dwObjType == OBJ_DC || dwObjType == OBJ_MEMDC;
+		if (!bIsDC || m_hFont != (HFONT)::GetCurrentObject(m_oldHDC, OBJ_FONT))
+		{
+			DeleteObject(m_hFont);
+		}
 	}
 }
 
