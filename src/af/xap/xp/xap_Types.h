@@ -21,6 +21,16 @@
 #ifndef AP_TYPES_H
 #define AP_TYPES_H
 
+/*
+	The actual set of IDs is private to each app, but we want a general
+	way to reference them.  
+
+	The forward declarations are just there to keep compilers from getting
+	confused.  We actually always use the typedefs. 
+*/
+enum _Ap_Menu_Id;
+enum _Ap_Toolbar_Id;
+
 typedef enum _Ap_Menu_Id		AP_Menu_Id;
 typedef enum _Ap_Toolbar_Id		AP_Toolbar_Id;
 
