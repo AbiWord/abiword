@@ -725,11 +725,11 @@ void fp_Run::setLength(UT_uint32 iLen, bool bRefresh)
 	{
 		return;
 	}
-    m_bRecalcWidth = bRefresh;
+    m_bRecalcWidth |= bRefresh;
 	clearScreen();
 
 	m_iLen = iLen;
-	m_bRefreshDrawBuffer = bRefresh;
+	m_bRefreshDrawBuffer |= bRefresh;
 }
 
 void fp_Run::setBlockOffset(UT_uint32 offset)
