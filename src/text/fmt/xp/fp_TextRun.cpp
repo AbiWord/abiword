@@ -533,7 +533,7 @@ bool	fp_TextRun::findMaxLeftFitSplitPoint(UT_sint32 iMaxLeftWidth, fp_RunSplitIn
 				|| bForce
 				)
 			{
-				if (iLeftWidth - iCW <= iMaxLeftWidth)
+				if (iLeftWidth <= iMaxLeftWidth)
 				{
 					si.iLeftWidth = iLeftWidth;
 					si.iRightWidth = iRightWidth;
