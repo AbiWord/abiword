@@ -56,8 +56,6 @@ AP_Win32Dialog_Goto::~AP_Win32Dialog_Goto(void)
 void AP_Win32Dialog_Goto::activate(void)
 {
 	int iResult;
-	XAP_Frame *	pFrame = getActiveFrame();
-	XAP_Win32Frame * pWin32Frame = static_cast<XAP_Win32Frame *>(pFrame);
 
 	// Update the caption
 	ConstructWindowName();
@@ -84,6 +82,31 @@ void AP_Win32Dialog_Goto::destroy(void)
 	modeless_cleanup();
 }
 
+void AP_Win32Dialog_Goto::notifyActiveFrame(XAP_Frame *pFrame)
+{
+	XAP_Win32Frame * pWin32Frame = static_cast<XAP_Win32Frame *>(pFrame);
+	if((HWND)GetWindowLong(m_hWnd, GWL_HWNDPARENT) != pWin32Frame->getTopLevelWindow())
+	{
+		// Update the caption
+		ConstructWindowName();
+		SetWindowText(m_hWnd, m_WindowName);
+
+		SetWindowLong(m_hWnd, GWL_HWNDPARENT, (long)pWin32Frame->getTopLevelWindow());
+		SetWindowPos(m_hWnd, NULL, 0, 0, 0, 0,
+						SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER | SWP_NOACTIVATE | SWP_FRAMECHANGED);
+	}
+}
+
+void AP_Win32Dialog_Goto::notifyCloseFrame(XAP_Frame *pFrame)
+{
+	XAP_Win32Frame * pWin32Frame = static_cast<XAP_Win32Frame *>(pFrame);
+	if((HWND)GetWindowLong(m_hWnd, GWL_HWNDPARENT) == pWin32Frame->getTopLevelWindow())
+	{
+		SetWindowLong(m_hWnd, GWL_HWNDPARENT, NULL);
+		SetWindowPos(m_hWnd, NULL, 0, 0, 0, 0,
+						SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER | SWP_NOACTIVATE | SWP_FRAMECHANGED);
+	}
+}
 
 void AP_Win32Dialog_Goto::runModeless(XAP_Frame * pFrame)
 {
@@ -100,11 +123,8 @@ void AP_Win32Dialog_Goto::runModeless(XAP_Frame * pFrame)
 
 	lpTemplate = MAKEINTRESOURCE(AP_RID_DIALOG_GOTO);
 
-	// Change the third argument to
-	// pWin32Frame->getTopLevelWindow(),
-	// if you want the dialog to stay on top of the Abi windows
 	HWND hResult = CreateDialogParam(pWin32App->getInstance(),lpTemplate,
-								GetDesktopWindow(),
+								pWin32Frame->getTopLevelWindow(),
 								(DLGPROC)s_dlgProc,(LPARAM)this);
 
 	UT_ASSERT((hResult != NULL));

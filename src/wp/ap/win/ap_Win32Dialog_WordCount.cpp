@@ -88,11 +88,8 @@ void AP_Win32Dialog_WordCount::runModeless(XAP_Frame * pFrame)
 
 	lpTemplate = MAKEINTRESOURCE(AP_RID_DIALOG_WORDCOUNT);
 
-	// Change the third argument to
-	// pWin32Frame->getTopLevelWindow(),
-	// if you want the dialog to stay on top of the Abi windows
 	HWND hResult = CreateDialogParam(pWin32App->getInstance(),lpTemplate,
-								GetDesktopWindow(),
+								pWin32Frame->getTopLevelWindow(),
 								(DLGPROC)s_dlgProc,(LPARAM)this);
 
 	UT_ASSERT((hResult != NULL));
@@ -170,8 +167,6 @@ void AP_Win32Dialog_WordCount::destroy(void)
 void AP_Win32Dialog_WordCount::activate(void)
 {
 	int iResult;
-	XAP_Frame *	pFrame = getActiveFrame();
-	XAP_Win32Frame * pWin32Frame = static_cast<XAP_Win32Frame *>(pFrame);
 
 	// Update the caption
 	ConstructWindowName();
@@ -182,19 +177,34 @@ void AP_Win32Dialog_WordCount::activate(void)
 	iResult = BringWindowToTop( m_hWnd );
 
 	UT_ASSERT((iResult != 0));
-
-	iResult = BringWindowToTop( pWin32Frame->getTopLevelWindow() );
-
-	UT_ASSERT((iResult != 0));
 }
 
 void AP_Win32Dialog_WordCount::notifyActiveFrame(XAP_Frame *pFrame)
 {
-	// Update the caption
-	ConstructWindowName();
-	SetWindowText(m_hWnd, m_WindowName);
+	XAP_Win32Frame * pWin32Frame = static_cast<XAP_Win32Frame *>(pFrame);
+	if((HWND)GetWindowLong(m_hWnd, GWL_HWNDPARENT) != pWin32Frame->getTopLevelWindow())
+	{
+		// Update the caption
+		ConstructWindowName();
+		SetWindowText(m_hWnd, m_WindowName);
 
-	event_Update();
+		SetWindowLong(m_hWnd, GWL_HWNDPARENT, (long)pWin32Frame->getTopLevelWindow());
+		SetWindowPos(m_hWnd, NULL, 0, 0, 0, 0,
+						SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER | SWP_NOACTIVATE | SWP_FRAMECHANGED);
+		
+		event_Update();
+	}
+}
+
+void AP_Win32Dialog_WordCount::notifyCloseFrame(XAP_Frame *pFrame)
+{
+	XAP_Win32Frame * pWin32Frame = static_cast<XAP_Win32Frame *>(pFrame);
+	if((HWND)GetWindowLong(m_hWnd, GWL_HWNDPARENT) == pWin32Frame->getTopLevelWindow())
+	{
+		SetWindowLong(m_hWnd, GWL_HWNDPARENT, NULL);
+		SetWindowPos(m_hWnd, NULL, 0, 0, 0, 0,
+						SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER | SWP_NOACTIVATE | SWP_FRAMECHANGED);
+	}
 }
 
 BOOL CALLBACK AP_Win32Dialog_WordCount::s_dlgProc(HWND hWnd,UINT msg,WPARAM wParam,LPARAM lParam)

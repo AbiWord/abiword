@@ -66,7 +66,22 @@ void XAP_Win32Dialog_Insert_Symbol::runModal(XAP_Frame * pFrame)
 
 void XAP_Win32Dialog_Insert_Symbol::destroy(void)
 {
-DestroyWindow(m_hDlg);
+	DestroyWindow(m_hDlg);
+}
+
+void XAP_Win32Dialog_Insert_Symbol::activate(void)
+{
+	int iResult;
+
+	// Update the caption
+	ConstructWindowName();
+	SetWindowText(m_hDlg, m_WindowName);
+
+	iResult = ShowWindow( m_hDlg, SW_SHOW );
+
+	iResult = BringWindowToTop( m_hDlg );
+
+	UT_ASSERT((iResult != 0));
 }
 
 void XAP_Win32Dialog_Insert_Symbol::runModeless(XAP_Frame * pFrame)
@@ -99,9 +114,13 @@ void XAP_Win32Dialog_Insert_Symbol::notifyActiveFrame(XAP_Frame *pFrame)
 	XAP_Win32Frame * pWin32Frame = static_cast<XAP_Win32Frame *>(pFrame);
 	if((HWND)GetWindowLong(m_hDlg, GWL_HWNDPARENT) != pWin32Frame->getTopLevelWindow())
 	{
+		// Update the caption
+		ConstructWindowName();
+		SetWindowText(m_hDlg, m_WindowName);
+
 		SetWindowLong(m_hDlg, GWL_HWNDPARENT, (long)pWin32Frame->getTopLevelWindow());
 		SetWindowPos(m_hDlg, NULL, 0, 0, 0, 0,
-						SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER | SWP_FRAMECHANGED);
+						SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER | SWP_NOACTIVATE | SWP_FRAMECHANGED);
 	}
 }
 
@@ -112,7 +131,7 @@ void XAP_Win32Dialog_Insert_Symbol::notifyCloseFrame(XAP_Frame *pFrame)
 	{
 		SetWindowLong(m_hDlg, GWL_HWNDPARENT, NULL);
 		SetWindowPos(m_hDlg, NULL, 0, 0, 0, 0,
-						SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER | SWP_FRAMECHANGED);
+						SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER | SWP_NOACTIVATE | SWP_FRAMECHANGED);
 	}
 }
 
@@ -145,9 +164,8 @@ BOOL CALLBACK XAP_Win32Dialog_Insert_Symbol::s_dlgProc(HWND hWnd,UINT msg,WPARAM
 BOOL XAP_Win32Dialog_Insert_Symbol::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam)
 {
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
-	
+
 	// localize controls
-	SetWindowText(hWnd, pSS->getValue(XAP_STRING_ID_DLG_Insert_SymbolTitle));
 	_DSX(INSERTSYMBOL_INSERT_BUTTON,DLG_Insert);
 	_DSX(INSERTSYMBOL_CLOSE_BUTTON,DLG_Close);
 
@@ -207,6 +225,10 @@ BOOL XAP_Win32Dialog_Insert_Symbol::_onInitDialog(HWND hWnd, WPARAM wParam, LPAR
 	{
 		_setFontFromCombo(0);
 	}
+
+	// Update the caption
+	ConstructWindowName();
+	SetWindowText(m_hDlg, m_WindowName);
 
 	return 1;							// 1 == we did not call SetFocus()
 }

@@ -36,6 +36,8 @@ public:
 	virtual void			runModeless(XAP_Frame * pFrame);
 	virtual void			destroy(void);
 	virtual void			activate(void);
+	virtual void			notifyActiveFrame(XAP_Frame *pFrame);
+	virtual void			notifyCloseFrame(XAP_Frame *pFrame);
 	static BOOL CALLBACK	s_dlgProc(HWND,UINT,WPARAM,LPARAM);
 	void					GoTo (const char *number);
 	void					setSelectedRow (int row);
