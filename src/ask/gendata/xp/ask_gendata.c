@@ -154,6 +154,7 @@ static void startElement(void *userData, const XML_Char *name, const XML_Char **
 		unsigned char* pOriginalBytes = NULL;
 		unsigned char* pCompressedBytes = NULL;
 		const char* pszDataFileName = NULL;
+		const char* pszRename = NULL;
 		const char* pszRelPath = NULL;
 		const char* pszDesktopShortcut = NULL;
 		const char* pszProgramsShortcut = NULL;
@@ -167,6 +168,10 @@ static void startElement(void *userData, const XML_Char *name, const XML_Char **
 			if (0 == strcmp(ppAtt[0], "name"))
 			{
 				pszDataFileName = ppAtt[1];
+			}
+			else if (0 == strcmp(ppAtt[0], "rename"))
+			{
+				pszRename = ppAtt[1];
 			}
 			else if (0 == strcmp(ppAtt[0], "nocopy"))
 			{
@@ -278,7 +283,14 @@ static void startElement(void *userData, const XML_Char *name, const XML_Char **
 		fprintf(fpOut, "\t_data%05d_compressed_bytes,\n", iDataFileNum);
 		fprintf(fpOut, "\t%ld,\n", iCompressedLength);
 		fprintf(fpOut, "\t%ld,\n", iOriginalLength);
-		fprintf(fpOut, "\t\"%s\",\n", ASK_getBaseFileName(pszDataFileName));
+		if (pszRename)
+		{
+			fprintf(fpOut, "\t\"%s\",\n", ASK_getBaseFileName(pszRename));
+		}
+		else
+		{
+			fprintf(fpOut, "\t\"%s\",\n", ASK_getBaseFileName(pszDataFileName));
+		}
 		if (pszRelPath)
 		{
 			fprintf(fpOut, "\t\"%s\",\n", pszRelPath);

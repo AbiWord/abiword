@@ -6,7 +6,7 @@
 
 <fileset name="AbiSuite Files" defaultpath="c:/Program Files/AbiSuite">
 
-<datafile name="__CANONDIR__/COPYING" license="true" />
+<datafile name="__CANONDIR__/COPYING" rename="COPYING.TXT" license="true" />
 
 <datafile name="__CANONDIR__/dictionary/american.hash" relpath="dictionary" />
 
