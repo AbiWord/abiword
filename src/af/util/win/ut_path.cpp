@@ -19,6 +19,7 @@
 
 
 #include "ut_path.h"
+#include "ut_assert.h"
 #include <string.h>
 #include <sys/stat.h>
 
