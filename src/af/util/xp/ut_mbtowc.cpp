@@ -276,7 +276,10 @@ int UT_Mbtowc::mbtowc(wchar_t &wc,char mb)
 	return 1;
     } else {
 	if (errno==EINVAL)
-	    return 0; /* need more chars */
+	{
+			UT_iconv_reset(cd); /* reset iconv, pointer might be messed up. */
+			return 0; /* need more chars */
+	}
 	else {
 	    initialize();/*wrong seq*/
 	    return 0;
