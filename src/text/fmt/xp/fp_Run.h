@@ -148,6 +148,7 @@ public:
 	
 	fp_Run* 		        getNextRun() const					{ return m_pNext; }
 	fp_Run*			        getPrevRun() const					{ return m_pPrev; }
+	bool                    isInSelectedTOC(void);
 	virtual fp_ContainerObject * getNext(void) const { return NULL;}
 	virtual fp_ContainerObject * getPrev(void) const { return NULL;}
 	virtual fp_Container *       getNextContainerInSection(void) const { return NULL;}

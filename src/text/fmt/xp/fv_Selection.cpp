@@ -30,7 +30,7 @@
 #include "pd_Document.h"
 #include "ie_exp.h"
 #include "ie_exp_RTF.h"
-
+#include "fl_TOCLayout.h"
 #include "ie_imp.h"
 #include "ie_imp_RTF.h"
 
@@ -44,7 +44,8 @@ FV_Selection::FV_Selection (FV_View * pView)
 	  m_iSelectAnchor(0),
 	  m_iSelectLeftAnchor(0),
 	  m_iSelectRightAnchor(0),
-	  m_pTableOfSelectedColumn(NULL)
+	  m_pTableOfSelectedColumn(NULL),
+	  m_pSelectedTOC(NULL)
 {
 	UT_ASSERT (pView);
 	m_vecSelRanges.clear();
@@ -54,6 +55,7 @@ FV_Selection::FV_Selection (FV_View * pView)
 FV_Selection::~FV_Selection()
 {
 	m_pTableOfSelectedColumn = NULL;
+	m_pSelectedTOC = NULL;
 	UT_VECTOR_PURGEALL(PD_DocumentRange *,m_vecSelRanges);
 	UT_VECTOR_PURGEALL(UT_ByteBuf  *,m_vecSelRTFBuffers);
 	UT_VECTOR_PURGEALL(FV_SelectionCellProps *,m_vecSelCellProps);
@@ -64,6 +66,14 @@ void FV_Selection::setMode(FV_SelectionMode iSelMode)
 	if( (m_iSelectionMode != FV_SelectionMode_NONE) || (iSelMode !=  FV_SelectionMode_NONE))
 	{
 		m_iPrevSelectionMode = m_iSelectionMode;
+	}
+	if((m_iSelectionMode == FV_SelectionMode_TOC) && (m_iSelectionMode != iSelMode))
+	{
+		if(m_pSelectedTOC)
+		{
+			m_pSelectedTOC->setSelected(false);
+		}
+		m_pSelectedTOC = NULL;
 	}
 	m_iSelectionMode = iSelMode;
 	if(m_iSelectionMode != FV_SelectionMode_NONE)
@@ -76,6 +86,14 @@ void FV_Selection::setMode(FV_SelectionMode iSelMode)
 		m_vecSelRTFBuffers.clear();
 		m_vecSelCellProps.clear();
 	}
+}
+
+void FV_Selection::setTOCSelected(fl_TOCLayout * pTOCL)
+{
+	setMode(FV_SelectionMode_TOC);
+	m_pSelectedTOC = pTOCL;
+	m_iSelectAnchor = pTOCL->getPosition();
+	pTOCL->setSelected(true);
 }
 
 void FV_Selection::pasteRowOrCol(void)

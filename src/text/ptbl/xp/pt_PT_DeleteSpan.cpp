@@ -492,6 +492,8 @@ bool pt_PieceTable::_tweakDeleteSpanOnce(PT_DocPosition & dpos1,
 	case PTX_EndTable:
 	case PTX_EndCell:
 	case PTX_EndFrame:
+	case PTX_SectionTOC:
+	case PTX_EndTOC:
 //
 // We've set things up so that deleting table struxes is done very deliberately.//  Don't mess with the end points here
 //

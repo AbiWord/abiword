@@ -42,6 +42,7 @@ class fl_FrameLayout;
 class FV_View;
 class GR_Graphics;
 class fp_TableContainer;
+class fl_TOCLayout;
 struct dg_DrawArgs;
 
 // ----------------------------------------------------------------
@@ -118,7 +119,10 @@ public:
 	UT_sint32           findFrameContainer(fp_FrameContainer * pFC);
 	void                clearScreenFrames(void);
 	void                markDirtyOverlappingRuns(fp_FrameContainer * pFC);
-
+	void                setLastMappedTOC(fl_TOCLayout * pTOCL)
+		{ m_pLastMappedTOC = pTOCL;}
+	fl_TOCLayout *      getLastMappedTOC(void)
+		{ return m_pLastMappedTOC;}
 	fg_FillType *       getFillType(void);
 #ifdef FMT_TEST
 	void				__dump(FILE * fp) const;
@@ -155,6 +159,7 @@ private:
 	UT_Vector			m_vecFootnotes;
 	fg_FillType         m_FillType;
 	UT_Vector           m_vecFrames;
+	fl_TOCLayout *      m_pLastMappedTOC;
 };
 
 #endif /* PAGE_H */

@@ -29,6 +29,7 @@
 #include "fp_TableContainer.h"
 #include "fp_FootnoteContainer.h"
 #include "fp_FrameContainer.h"
+#include "fl_TOCLayout.h"
 #include "ut_debugmsg.h"
 #include "ut_assert.h"
 #include "fv_View.h"
@@ -849,6 +850,8 @@ void fp_VerticalContainer::mapXYToPosition(UT_sint32 x, UT_sint32 y, PT_DocPosit
 	int count = countCons();
 	if(getContainerType() == FP_CONTAINER_TOC)
 	{
+		fl_TOCLayout * pTOCL = static_cast<fl_TOCLayout *>(getSectionLayout());
+		getPage()-> setLastMappedTOC(pTOCL);
 		isTOC = true;
 	}
 	else if(getContainerType() == FP_CONTAINER_COLUMN)

@@ -64,6 +64,7 @@
 #define _CTF		EV_EMC_FRAME
 #define _CVD		EV_EMC_VISUALTEXTDRAG
 #define _CTC		EV_EMC_TOPCELL
+#define _CTO		EV_EMC_TOC
 
 #define _B0		| EV_EMB_BUTTON0
 #define _B1		| EV_EMB_BUTTON1
@@ -98,6 +99,7 @@ ap_bs_Mouse MouseTable[] =
 	{_CTF _B0,	{ "",	"",			"btn0Frame",	"",			"",			"",				}},
 	{_CVD _B0,	{ "",	"",			"btn0VisualText",	"",			"",			"",				}},
 	{_CTC _B0,	{ "",	"",			"cursorTopCell",	"",			"",			"",				}},
+	{_CTO _B0,	{ "",	"",			"cursorTOC",	"",			"",			"",				}},
 
 
 //	Button-1, VisualTextDrag context
@@ -123,6 +125,8 @@ ap_bs_Mouse MouseTable[] =
 	{_CT _B1 _S,{ "extSelToXY",		"",				"dragToXY", "",				"endDrag",	"endDrag"		}},
 	{_CT _B1 _C,{ "",		"",		       	"dragSelectionBegin",	       	"dragSelectionBegin",		        "dragSelectionEnd",	"dragSelectionEnd"		}},
 
+// Button-1 TOC-context
+	{_CTO _B1,	{ "selectTOC", "warpInsPtToXY",	"dragToXY",	"dragToXYword",	"endDrag",	"endDrag"		}},
 
 //	Button-1, Left-of-Text-context (left-margin)
 //  { context	{ click				doubleclick		drag,		dbldrag,		release,	doublerelease	}},

@@ -44,9 +44,10 @@ public:
 	virtual ~fp_TOCContainer();
 	UT_sint32           getValue(void);
 	void				layout(void);
+	void		        forceClearScreen(void);
 	virtual void		clearScreen(void);
 	virtual void		draw(dg_DrawArgs*);
-	virtual void		draw(GR_Graphics*) {}
+	virtual void		draw(GR_Graphics*);
 	virtual void        setContainer(fp_Container * pContainer);
 	virtual fp_Container * getNextContainerInSection(void) const;
 	virtual fp_Container * getPrevContainerInSection(void) const;
@@ -58,6 +59,7 @@ public:
 	virtual fp_ContainerObject * HBreakAt(UT_sint32) {return NULL;}
 
 	fl_DocSectionLayout * getDocSectionLayout(void);
+	void               setSelected(bool bIsSelected);
 private:
 };
 

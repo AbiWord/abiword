@@ -65,6 +65,8 @@
 #include "ut_rand.h"
 #include "fp_TableContainer.h"
 #include "fl_FootnoteLayout.h"
+#include "fl_ContainerLayout.h"
+#include "fl_TOCLayout.h"
 #include "pp_Revision.h"
 
 #include "ap_Dialog_SplitCells.h"
@@ -664,6 +666,21 @@ bool FV_View::cmdSplitCells(AP_CellSplitType iSplitType)
 	_fixInsertionPointCoords();
 	_ensureInsertionPointOnScreen();
 	return true;
+}
+
+void  FV_View::cmdSelectTOC(UT_sint32 x, UT_sint32 y)
+{
+	UT_sint32 xClick=0,yClick = 0;
+	fp_Page* pPage = _getPageForXY(x,y,xClick,yClick);
+	fl_TOCLayout * pTOCL = pPage->getLastMappedTOC();
+	m_Selection.setTOCSelected(pTOCL);
+	PT_DocPosition pos = pTOCL-> getPosition();
+	m_iInsPoint = pos+1;
+	if(m_pG->getCaret())
+	{
+		m_pG->getCaret()->disable();
+	}
+	m_countDisable++;
 }
 
 /*!

@@ -142,6 +142,9 @@ public:
 	FootnoteType             getNumType(UT_sint32 iLevel);
 	eTabLeader               getTabLeader(UT_sint32 iLevel);
 	UT_sint32                getTabPosition(UT_sint32 iLevel, fl_BlockLayout * pBlock);
+	void                     setSelected(bool bSetSelected);
+	bool                     isSelected(void)
+		{ return m_bIsSelected;}
 private:
 	virtual void             _purgeLayout(void);
 	virtual void		     _lookupProperties(void);
@@ -160,6 +163,7 @@ private:
 	fl_DocSectionLayout*	 m_pDocSL;
 	bool                     m_bHasEndTOC;
 	bool                     m_bDoingPurge;
+	bool                     m_bIsSelected;
 	UT_UTF8String            m_sSourceStyle1;
 	UT_UTF8String            m_sSourceStyle2;
 	UT_UTF8String            m_sSourceStyle3;

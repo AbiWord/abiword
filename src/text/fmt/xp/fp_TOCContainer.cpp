@@ -81,6 +81,26 @@ void fp_TOCContainer::clearScreen(void)
 		pCon->clearScreen();
 	}
 }
+
+
+void fp_TOCContainer::forceClearScreen(void)
+{
+	if(getPage() == NULL)
+	{
+		return;
+	}
+	fp_Container * pCon = NULL;
+	UT_sint32 i = 0;
+	for(i=0; i< static_cast<UT_sint32>(countCons()); i++)
+	{
+		pCon = static_cast<fp_Container *>(getNthCon(i));
+		if(pCon->getContainerType() == FP_CONTAINER_LINE)
+		{
+			static_cast<fp_Line *>(pCon)->setScreenCleared(false);
+		}
+		pCon->clearScreen();
+	}
+}
 	
 void fp_TOCContainer::setContainer(fp_Container * pContainer)
 {
@@ -104,6 +124,26 @@ fl_DocSectionLayout * fp_TOCContainer::getDocSectionLayout(void)
 	return pDSL;
 }
 
+
+/*!
+ Draw container content
+ \param pDA Draw arguments
+ */
+void fp_TOCContainer::draw(GR_Graphics * pG)
+{
+	if(getPage() == NULL)
+	{
+		return;
+	}
+	dg_DrawArgs da;
+	da.pG = pG;
+	UT_Rect * pR = getScreenRect();
+	da.xoff = pR->left;
+	da.yoff = pR->top;
+	da.bDirtyRunsOnly = false;
+	delete pR;
+	draw(&da);
+}
 /*!
  Draw container content
  \param pDA Draw arguments

@@ -34,6 +34,7 @@
 #include "gr_DrawArgs.h"
 #include "fv_View.h"
 #include "fp_FootnoteContainer.h"
+#include "fl_TOCLayout.h"
 #include "fl_FootnoteLayout.h"
 #include "fp_FrameContainer.h"
 #include "fl_FrameLayout.h"
@@ -56,7 +57,8 @@ fp_Page::fp_Page(FL_DocLayout* pLayout,
 		m_pOwner(pOwner),
 		m_pFooter(0),
 		m_pHeader(0),
-		m_FillType(NULL,NULL,FG_FILL_TRANSPARENT)
+		m_FillType(NULL,NULL,FG_FILL_TRANSPARENT),
+		m_pLastMappedTOC(NULL)
 {
 	UT_ASSERT(pLayout);
 	UT_ASSERT(pOwner);

@@ -27,6 +27,7 @@
 typedef enum _FV_SelectionMode
 {
 	FV_SelectionMode_NONE,
+	FV_SelectionMode_TOC,
 	FV_SelectionMode_Single,
 	FV_SelectionMode_Multiple,
 	FV_SelectionMode_TableColumn,
@@ -38,6 +39,7 @@ class PD_Document;
 class FV_View;
 class fl_TableLayout;
 class fl_CellLayout;
+class fl_TOCLayout;
 class ABI_EXPORT FV_Selection
 {
 	friend class fv_View;
@@ -68,6 +70,9 @@ public:
 		{ return m_iSelectionMode;}
 	FV_SelectionMode      getPrevSelectionMode(void) const 
 		{ return m_iPrevSelectionMode;}
+	void                  setTOCSelected(fl_TOCLayout * pTOCL);
+	fl_TOCLayout *        getSelectedTOC(void)
+		{ return m_pSelectedTOC;}
 	PT_DocPosition        getSelectionAnchor(void) const;
 	void                  setSelectionAnchor(PT_DocPosition pos);
 	PT_DocPosition        getSelectionLeftAnchor(void) const;
@@ -92,6 +97,7 @@ private:
 	PT_DocPosition        m_iSelectLeftAnchor;
 	PT_DocPosition        m_iSelectRightAnchor;
 	fl_TableLayout *      m_pTableOfSelectedColumn;
+	fl_TOCLayout  *       m_pSelectedTOC;
 	UT_Vector             m_vecSelRanges;
 	UT_Vector             m_vecSelRTFBuffers;
 	UT_Vector             m_vecSelCellProps;

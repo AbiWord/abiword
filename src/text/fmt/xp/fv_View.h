@@ -294,6 +294,8 @@ public:
 	// ----------------------
 	bool			isLeftMargin(UT_sint32 xPos, UT_sint32 yPos);
 	void			cmdSelect(UT_sint32 xPos, UT_sint32 yPos, FV_DocPos dpBeg, FV_DocPos dpEnd);
+	void			cmdSelectTOC(UT_sint32 xPos, UT_sint32 yPos);
+
 	void					cmdSelect(PT_DocPosition dpBeg, PT_DocPosition dpEnd);
 	void			cmdCharMotion(bool bForward, UT_uint32 count);
 	bool			cmdCharInsert(const UT_UCSChar * text, UT_uint32 count, bool bForce = false);

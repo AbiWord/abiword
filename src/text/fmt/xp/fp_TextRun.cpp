@@ -1388,7 +1388,7 @@ void fp_TextRun::_draw(dg_DrawArgs* pDA)
 	// calculate selection rectangles ...
 	UT_uint32 iBase = getBlock()->getPosition();
 	UT_uint32 iRunBase = iBase + getBlockOffset();
-
+	bool bIsInTOC = getBlock()->isContainedByTOC();
 	FV_View* pView = getBlock()->getDocLayout()->getView();
 	UT_uint32 iSelAnchor = pView->getSelectionAnchor();
 	UT_uint32 iPoint = pView->getPoint();
@@ -1440,7 +1440,7 @@ void fp_TextRun::_draw(dg_DrawArgs* pDA)
  
 	const UT_GrowBuf * pgbCharWidths = getBlock()->getCharWidths()->getCharWidths();
 
-	if (/* pView->getFocus()!=AV_FOCUS_NONE && */ iSel1 != iSel2 && pG->queryProperties(GR_Graphics::DGP_SCREEN))
+	if (/* pView->getFocus()!=AV_FOCUS_NONE && */ !bIsInTOC && (iSel1 != iSel2) && pG->queryProperties(GR_Graphics::DGP_SCREEN))
 	{
 		if (iSel1 <= iRunBase)
 		{
@@ -1507,7 +1507,13 @@ void fp_TextRun::_draw(dg_DrawArgs* pDA)
 			}
 		}
 	}
-
+	if(isInSelectedTOC())
+	{
+		_fillRect(clrSelBackground, pDA->xoff, yTopOfSel, getBlockOffset(), getLength(), pgbCharWidths, rSegment,pG);
+		iSel1 = iRunBase;
+		iSel2 = iRunBase+getLength();
+		bSegmentSelected[0] = true;
+	}
 	// fill our GR_RenderInfo with needed data ...
 	UT_return_if_fail(m_pRenderInfo);
 	m_pRenderInfo->m_pWidths = pgbCharWidths->getPointer(getBlockOffset());
@@ -1639,7 +1645,6 @@ void fp_TextRun::_draw(dg_DrawArgs* pDA)
 		iX += getWidth();
 	}
 
-
 	for(UT_uint32 iSegment = 0; iSegment < iSegmentCount; iSegment++)
 	{
 		if(bSegmentSelected[iSegment])
@@ -1648,21 +1653,21 @@ void fp_TextRun::_draw(dg_DrawArgs* pDA)
 		}
 		else
 			pG->setColor(getFGColor());
-
+		
 		UT_uint32 iMyOffset = iVisDir == FRIBIDI_TYPE_RTL ?
 			iLen-iSegmentOffset[iSegment+1]  :
 			iSegmentOffset[iSegment];
-
+		
 		if(iVisDir == FRIBIDI_TYPE_RTL)
 			iX -= iSegmentWidth[iSegment];
-
+		
 		m_pRenderInfo->m_iOffset = iMyOffset;
 		m_pRenderInfo->m_iLength = iSegmentOffset[iSegment+1]-iSegmentOffset[iSegment];
 		m_pRenderInfo->m_xoff = iX;
 		m_pRenderInfo->m_yoff = yTopOfRun;
-
+		
 		painter.renderChars(*m_pRenderInfo);
-
+		
 #if 0
 		painter.drawChars(s_pCharBuff,
 						  iMyOffset,
@@ -1673,6 +1678,7 @@ void fp_TextRun::_draw(dg_DrawArgs* pDA)
 		if(iVisDir == FRIBIDI_TYPE_LTR)
 			iX += iSegmentWidth[iSegment];
 	}
+
 	xxx_UT_DEBUGMSG(("_draw text yoff %d yTopOfRun %d \n",pDA->yoff,yTopOfRun));
 	drawDecors(pDA->xoff, yTopOfRun,pG);
 

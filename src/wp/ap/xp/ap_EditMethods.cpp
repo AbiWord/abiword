@@ -193,6 +193,7 @@ public:
 	static EV_EditMethod_Fn cursorLeftArrow;
 	static EV_EditMethod_Fn cursorImage;
 	static EV_EditMethod_Fn cursorImageSize;
+	static EV_EditMethod_Fn cursorTOC;
 
 	static EV_EditMethod_Fn contextImage;
 	static EV_EditMethod_Fn contextHyperlink;
@@ -250,6 +251,7 @@ public:
 	static EV_EditMethod_Fn selectCell;
 	static EV_EditMethod_Fn selectColumn;
 	static EV_EditMethod_Fn selectColumnClick;
+	static EV_EditMethod_Fn selectTOC;
 
 	static EV_EditMethod_Fn delLeft;
 	static EV_EditMethod_Fn delRight;
@@ -748,6 +750,7 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(cursorImageSize),		0,	""),
 	EV_EditMethod(NF(cursorLeftArrow),		0,	""),
 	EV_EditMethod(NF(cursorRightArrow), 	0,	""),
+	EV_EditMethod(NF(cursorTOC), 	0,	""),
 	EV_EditMethod(NF(cursorTopCell), 	0,	""),
 	EV_EditMethod(NF(cursorVline), 	        0,	""),
 	EV_EditMethod(NF(cut),					0,	""),
@@ -1064,6 +1067,7 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(selectLine),			0,	""),
 	EV_EditMethod(NF(selectObject), 		0,	""),
 	EV_EditMethod(NF(selectRow),			0,	""),
+	EV_EditMethod(NF(selectTOC),			0,	""),
 	EV_EditMethod(NF(selectTable),			0,	""),
 	EV_EditMethod(NF(selectWord),			0,	""),
 	EV_EditMethod(NF(setEditVI),			0,	""),
@@ -3822,6 +3826,23 @@ Defun1(cursorIBeam)
 	return true;
 }
 
+Defun1(cursorTOC)
+{
+	CHECK_FRAME;
+	ABIWORD_VIEW;
+
+	// clear status bar of any lingering messages
+	XAP_Frame * pFrame = static_cast<XAP_Frame *> (pView->getParentData());
+	pFrame->setStatusMessage(NULL);
+
+	GR_Graphics * pG = pView->getGraphics();
+	if (pG)
+	{
+		pG->setCursor(GR_Graphics::GR_CURSOR_LINK);
+	}
+	return true;
+}
+
 Defun1(cursorRightArrow)
 {
 	CHECK_FRAME;
@@ -4408,6 +4429,16 @@ Defun1(selectTable)
 	posEndTab = pDoc->getStruxPosition(endTableSDH); //was +1
 	UT_DEBUGMSG(("PosEndTab %d endTableSDH %x \n",posEndTab,endTableSDH));
 	pView->cmdSelect(posStartTab,posEndTab);
+	return true;
+}
+
+
+Defun(selectTOC)
+{
+	CHECK_FRAME;
+	ABIWORD_VIEW;
+	UT_DEBUGMSG(("Select TOC \n"));
+	pView->cmdSelectTOC(pCallData->m_xPos, pCallData->m_yPos);
 	return true;
 }
 

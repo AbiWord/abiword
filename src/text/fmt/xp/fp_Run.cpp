@@ -25,6 +25,7 @@
 #include <string.h>
 #include <time.h>
 
+
 #include "fp_Run.h"
 #include "fp_TextRun.h"
 #include "fl_DocLayout.h"
@@ -50,7 +51,7 @@
 #include "fp_FootnoteContainer.h"
 #include "fl_AutoNum.h"
 #include "fv_View.h"
-
+#include "fl_TOCLayout.h"
 #include "ap_Prefs.h"
 #include "xap_Frame.h"
 #include "gr_Painter.h"
@@ -148,6 +149,20 @@ fg_FillType * fp_Run::getFillType(void)
 	return &m_FillType;
 }
 
+bool fp_Run::isInSelectedTOC(void)
+{
+	if(getBlock()->isContainedByTOC())
+	{
+		fl_TOCLayout * pTOCL = static_cast<fl_TOCLayout *>(getBlock()->myContainingLayout());
+		return pTOCL->isSelected();
+	}
+	else
+	{
+		return false;
+	}
+			
+}
+
 void fp_Run::Fill(GR_Graphics * pG, UT_sint32 x, UT_sint32 y, UT_sint32 width,
 				  UT_sint32 height)
 {
@@ -167,6 +182,10 @@ void fp_Run::Fill(GR_Graphics * pG, UT_sint32 x, UT_sint32 y, UT_sint32 width,
 	}
 	bool bDoGrey = (pG->queryProperties(GR_Graphics::DGP_SCREEN) && 
 					((getType() ==  FPRUN_FIELD) || getBlock()->isContainedByTOC()));
+	if(bDoGrey && isInSelectedTOC())
+	{
+		bDoGrey = false;
+	}
 	if(!bDoGrey)
 	{
 		m_FillType.Fill(pG,srcX,srcY,x,y,width,height);
@@ -2007,7 +2026,7 @@ void fp_TabRun::_draw(dg_DrawArgs* pDA)
 	
 	GR_Painter painter(pG);
 
-	if (
+	if ( isInSelectedTOC() ||
 	    /* pView->getFocus()!=AV_FOCUS_NONE && */
 		(iSel1 <= iRunBase)
 		&& (iSel2 > iRunBase)
@@ -2249,7 +2268,7 @@ void fp_ForcedLineBreakRun::_draw(dg_DrawArgs* pDA)
 	UT_ASSERT(iSel1 <= iSel2);
 
 	bool bIsSelected = false;
-	if (/* pView->getFocus()!=AV_FOCUS_NONE && */	(iSel1 <= iRunBase) && (iSel2 > iRunBase))
+	if (/* pView->getFocus()!=AV_FOCUS_NONE && */ isInSelectedTOC() ||	(iSel1 <= iRunBase) && (iSel2 > iRunBase))
 		bIsSelected = true;
 
 	UT_RGBColor clrShowPara(pView->getColorShowPara());
@@ -2559,7 +2578,7 @@ void fp_BookmarkRun::_draw(dg_DrawArgs* pDA)
 	UT_ASSERT(iSel1 <= iSel2);
 
 	bool bIsSelected = false;
-	if (/* pView->getFocus()!=AV_FOCUS_NONE && */	(iSel1 <= iRunBase) && (iSel2 > iRunBase))
+	if (/* pView->getFocus()!=AV_FOCUS_NONE && */isInSelectedTOC() ||	(iSel1 <= iRunBase) && (iSel2 > iRunBase))
 		bIsSelected = true;
 
 	pG->setColor(_getView()->getColorShowPara());
@@ -2907,7 +2926,7 @@ void fp_EndOfParagraphRun::_draw(dg_DrawArgs* pDA)
 	UT_ASSERT(iSel1 <= iSel2);
 
 	bool bIsSelected = false;
-	if (/* pView->getFocus()!=AV_FOCUS_NONE && */	(iSel1 <= iRunBase) && (iSel2 > iRunBase))
+	if (/* pView->getFocus()!=AV_FOCUS_NONE && */isInSelectedTOC() || (iSel1 <= iRunBase) && (iSel2 > iRunBase))
 		bIsSelected = true;
 
 	GR_Painter painter(getGraphics());
@@ -3903,11 +3922,12 @@ void fp_FieldRun::_defaultDraw(dg_DrawArgs* pDA)
 		UT_uint32 iSel2 = UT_MAX(iSelAnchor, iPoint);
 
 		UT_ASSERT(iSel1 <= iSel2);
-
+		bool bIsInTOC = getBlock()->isContainedByTOC();
 		if (
+			isInSelectedTOC() || (!bIsInTOC && (
 		    /* pView->getFocus()!=AV_FOCUS_NONE && */
 			(iSel1 <= iRunBase)
-			&& (iSel2 > iRunBase)
+			&& (iSel2 > iRunBase)))
 			)
 		{
 			UT_RGBColor color(_getView()->getColorSelBackground());

@@ -127,6 +127,7 @@ fl_TOCLayout::fl_TOCLayout(FL_DocLayout* pLayout, fl_DocSectionLayout* pDocSL, P
 	  m_pDocSL(pDocSL),
 	  m_bHasEndTOC(false),
 	  m_bDoingPurge(false),
+	  m_bIsSelected(false),
 	  m_iNumType1(FOOTNOTE_TYPE_NUMERIC),
 	  m_iNumType2(FOOTNOTE_TYPE_NUMERIC),
 	  m_iNumType3(FOOTNOTE_TYPE_NUMERIC),
@@ -174,6 +175,26 @@ PT_DocPosition fl_TOCLayout::getDocPosition(void)
 {
 	PL_StruxDocHandle sdh = getStruxDocHandle();
     return 	m_pLayout->getDocument()->getStruxPosition(sdh);
+}
+
+void fl_TOCLayout::setSelected(bool bIsSelected)
+{
+	if(!bIsSelected  && m_bIsSelected)
+	{
+		m_bIsSelected = false;
+		fp_TOCContainer * pTOCCon = static_cast<fp_TOCContainer *>(getFirstContainer());
+		pTOCCon->forceClearScreen();
+		markAllRunsDirty();
+		pTOCCon->draw(m_pLayout->getGraphics());
+	}
+	m_bIsSelected = bIsSelected;
+	if(m_bIsSelected)
+	{
+		fp_TOCContainer * pTOCCon = static_cast<fp_TOCContainer *>(getFirstContainer());
+		pTOCCon->forceClearScreen();
+		markAllRunsDirty();
+		pTOCCon->draw(m_pLayout->getGraphics());
+	}
 }
 
 /*!
