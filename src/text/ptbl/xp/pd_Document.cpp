@@ -724,7 +724,7 @@ bool  PD_Document::changeStruxAttsNoUpdate(PL_StruxDocHandle sdh, const char * a
  */
 bool PD_Document::deleteStruxNoUpdate(PL_StruxDocHandle sdh)
 {
-	m_pPieceTable->deleteStruxNoUpdate(sdh);
+	return m_pPieceTable->deleteStruxNoUpdate(sdh);
 }
 
 /*!

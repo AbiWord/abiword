@@ -1108,6 +1108,7 @@ UT_sint32  ie_imp_table::getNumRows(void)
 		}
 	}
 	numrows++;
+	return numrows;
 }
 
 void ie_imp_table::CloseCell(void)

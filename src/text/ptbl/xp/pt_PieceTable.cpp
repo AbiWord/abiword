@@ -93,6 +93,7 @@ bool pt_PieceTable::deleteStruxNoUpdate(PL_StruxDocHandle sdh)
 	UT_DEBUGMSG(("SEVIOR: deleting strux %x \n",sdh));
 	getFragments().unlinkFrag((pf_Frag *) pfs);
 	delete pfs;
+	return true;
 }
 
 
