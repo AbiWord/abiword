@@ -288,7 +288,7 @@ void IE_Imp_AbiWord_1::_startElement(const XML_Char *name, const XML_Char **atts
 
 	X_EatIfAlreadyError();	// xml parser keeps running until buffer consumed
 	
-	UT_uint32 tokenIndex = mapNameToToken (name, s_Tokens, TokenTableSize);
+	UT_uint32 tokenIndex = _mapNameToToken (name, s_Tokens, TokenTableSize);
 
 	switch (tokenIndex)
 	{
@@ -489,7 +489,7 @@ void IE_Imp_AbiWord_1::_endElement(const XML_Char *name)
 	UT_uint32 len;
 	const UT_Byte * buffer;
 
-   	UT_uint32 tokenIndex = mapNameToToken (name, s_Tokens, TokenTableSize);
+   	UT_uint32 tokenIndex = _mapNameToToken (name, s_Tokens, TokenTableSize);
 
 	switch (tokenIndex)
 	{

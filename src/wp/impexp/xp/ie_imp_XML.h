@@ -36,8 +36,6 @@ struct xmlToIdMapping {
   int m_type;
 };
 
-int mapNameToToken (const char * name, xmlToIdMapping * idlist, int len);
-
 // The importer/reader for reading generic
 // XML documents. The Abiword and WML importers
 // Derive from this *abstract* base class
@@ -71,6 +69,8 @@ protected:
     virtual bool			_openFile(const char * szFilename);
     virtual UT_uint32			_readBytes(char * buf, UT_uint32 length);
     virtual void			_closeFile(void);
+
+	int _mapNameToToken (const char * name, xmlToIdMapping * idlist, int len);
 
     const XML_Char *            _getXMLPropValue(const XML_Char *name, const XML_Char **atts);
 

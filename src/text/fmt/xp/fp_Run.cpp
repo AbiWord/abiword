@@ -2268,13 +2268,6 @@ _getViewFromBlk(fl_BlockLayout* pBlock)
 	return pView;
 }
 
-static XAP_App *
-_getAppFromBlk(fl_BlockLayout * pBlock)
-{
-	XAP_App *pApp    = pBlock->getView()->getApp();	
-	return pApp;
-}
-
 fp_FieldCharCountRun::fp_FieldCharCountRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen) : fp_FieldRun(pBL, pG, iOffsetFirst, iLen)
 {
 }

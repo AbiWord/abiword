@@ -2243,7 +2243,6 @@ s_closeWindow (AV_View * pAV_View, EV_EditMethodCallData * pCallData,
 	XAP_App * pApp = pFrame->getApp();
 	UT_ASSERT(pApp);
 
-
 	if(pFrame == pApp->getLastFocussedFrame())
 	{
 
@@ -2281,12 +2280,6 @@ s_closeWindow (AV_View * pAV_View, EV_EditMethodCallData * pCallData,
 		}
 	}
 
-	// nuke the window
-	
-	pApp->forgetFrame(pFrame);
-	pFrame->close();
-	delete pFrame;
-
 	// are we the last window?
 	if (1 >= pApp->getFrameCount())
 	{
@@ -2308,6 +2301,12 @@ s_closeWindow (AV_View * pAV_View, EV_EditMethodCallData * pCallData,
 			}
 		}
 	}
+
+	// nuke the window
+	
+	pApp->forgetFrame(pFrame);
+	pFrame->close();
+	delete pFrame;
 
 	return true;
 }

@@ -526,7 +526,7 @@ void IE_Imp_XHTML::_startElement(const XML_Char *name, const XML_Char **atts)
 	  new_atts[i] = NULL;
 #undef NEW_ATTR_SZ
 
-	UT_uint32 tokenIndex = mapNameToToken (name, s_Tokens, TokenTableSize);
+	UT_uint32 tokenIndex = _mapNameToToken (name, s_Tokens, TokenTableSize);
 
 	switch (tokenIndex)
 	{
@@ -842,7 +842,7 @@ void IE_Imp_XHTML::_endElement(const XML_Char *name)
 	X_EatIfAlreadyError();				// xml parser keeps running until buffer consumed
 
 	
-	UT_uint32 tokenIndex = mapNameToToken (name, s_Tokens, TokenTableSize);
+	UT_uint32 tokenIndex = _mapNameToToken (name, s_Tokens, TokenTableSize);
 	//if(!UT_strcmp(name == "html")) UT_DEBUGMSG(("tokenindex : %d\n", tokenIndex));
 	switch (tokenIndex)
 	{

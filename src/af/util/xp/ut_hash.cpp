@@ -16,8 +16,6 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
  * 02111-1307, USA.
  */
- 
-
 
 #include <stdlib.h>
 #include <string.h>
@@ -45,15 +43,12 @@ struct ut_HashBucket
 ** WARNING: need to update ut_alphahash.cpp.
 *****************************************************************/
 
-UT_HashTable::UT_HashTable(int iBuckets) : m_pool()
+UT_HashTable::UT_HashTable(int iBuckets) 
+	: m_iBuckets (iBuckets), m_pBuckets (0), 
+	m_pEntries (0), m_iEntrySpace (0), m_iEntryCount (0),
+	m_pool ()
 {
-	UT_ASSERT(iBuckets>=3);		// NB: must be prime
-
-	m_iBuckets = iBuckets;
-	m_pBuckets = NULL;
-	m_pEntries = NULL;
-	m_iEntrySpace = 0;
-	m_iEntryCount = 0;
+	UT_ASSERT(iBuckets >= 3);		// NB: must be prime
 }
 
 UT_HashTable::~UT_HashTable()
@@ -78,7 +73,8 @@ UT_HashTable::~UT_HashTable()
 	free(m_pEntries);
 }
 
-UT_sint32 UT_HashTable::addEntry(const char* pszLeft, const char* pszRight, void* pData)
+UT_sint32 UT_HashTable::addEntry(const char* pszLeft, 
+								 const char* pszRight, void* pData)
 {
 	UT_ASSERT(pszLeft);
 
@@ -108,7 +104,8 @@ UT_sint32 UT_HashTable::addEntry(const char* pszLeft, const char* pszRight, void
 	return 0;
 }
 
-UT_sint32 UT_HashTable::setEntry(UT_HashEntry* pEntry, const char* pszRight, void* pData)
+UT_sint32 UT_HashTable::setEntry(UT_HashEntry* pEntry, 
+								 const char* pszRight, void* pData)
 {
 	if (pszRight)
 		pEntry->pszRight = m_pool.addString(pszRight);	// TODO this can fail, right?
@@ -209,7 +206,8 @@ int UT_HashTable::firstAlloc()
 int UT_HashTable::grow()
 {
 	int iNewSpace = calcNewSpace();
-	UT_HashEntry *pNewEntries = (UT_HashEntry *) calloc(iNewSpace, sizeof(UT_HashEntry));
+	UT_HashEntry *pNewEntries = (UT_HashEntry *) calloc(iNewSpace, 
+														sizeof(UT_HashEntry));
 	if (!pNewEntries)
 	{
 		return -1;
@@ -246,13 +244,25 @@ int UT_HashTable::verifySpaceToAddOneEntry()
 	return 0;
 }
 
-UT_uint32 UT_HashTable::hashFunc(const char* p) const
+UT_uint32 UT_HashTable::hashFunc(const char* key) const
 {
-	UT_ASSERT(p);
-	unsigned char* q = (unsigned char*) p;
+	UT_ASSERT(key);
+
+	UT_uint32 sum = 0;
+
+#if 1
+	// Glib impl.
+	const char *p = key;
+	sum = *p;
+ 
+	for (p += 1; *p != '\0'; p++)
+		sum = (sum << 5) - sum + *p;
+	
+#else
+	// Abi impl.
+	unsigned char* q = (unsigned char*) key;
 
 	int len = 0;
-	int sum = 0;
 	while (*q)
 	{
 		len++;
@@ -261,10 +271,11 @@ UT_uint32 UT_HashTable::hashFunc(const char* p) const
 	}
 
 	sum = sum * len + len;
+#endif
 
 	sum = sum % m_iBuckets;
 
-	UT_ASSERT(sum>=0);
+	UT_ASSERT(sum >= 0);
 	UT_ASSERT(sum < m_iBuckets);
 
 	return sum;

@@ -33,6 +33,7 @@
 #include "ie_types.h"
 #include "pd_Document.h"
 #include "ut_bytebuf.h"
+#include "ut_hash.h"
 
 #include "ap_Prefs.h"
 
@@ -67,17 +68,28 @@ static int n_compare (const void * a, const void * b)
   return UT_strcmp (name, id->m_name);
 }
 
-int mapNameToToken (const char * name, struct xmlToIdMapping * idlist, int len)
+int IE_Imp_XML::_mapNameToToken (const char * name, 
+								 struct xmlToIdMapping * idlist, int len)
 {
-  xmlToIdMapping * id = NULL;
+	static UT_HashTable tokens(30);
 
-  id = (xmlToIdMapping *)bsearch (name, idlist, len, 
-				  sizeof (xmlToIdMapping), n_compare);
-  if (id)
+	xmlToIdMapping * id = NULL;
+
+	UT_HashEntry * pEntry = tokens.findEntry (name);
+
+	if (pEntry)
+	{
+		return (int)pEntry->pData;
+	}
+	
+	id = (xmlToIdMapping *)bsearch (name, idlist, len, 
+									sizeof (xmlToIdMapping), n_compare);
+	if (id)
     {
-      return id->m_type;
+		tokens.addEntry (name, 0, (void *)id->m_type);
+		return id->m_type;
     }
-  return -1;
+	return -1;
 }
 
 /*****************************************************************
