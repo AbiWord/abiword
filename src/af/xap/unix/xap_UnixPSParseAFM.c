@@ -56,6 +56,8 @@
  *  modified: AbiSource, Inc. Oct 27 1998
  *    - fixed function declarations to eliminate compiler warnings
  *    - if 0'd initializeArray()
+ *  modified: AbiSource, Inc. Jun 14 1999
+ *    - introduced initializeArray() back to metric parsing
  */
 #ifdef WIN32
 #pragma warning (disable : 4244)        /* conversion from 'double' to 'float', possible loss of data */
@@ -425,7 +427,6 @@ static BOOL parseGlobals(fp, gfi)
  *  file is reset to be where it was upon entering this function.
  */
  
-#if 0
 static int initializeArray(fp, cwi)
   FILE *fp;
   register int *cwi;
@@ -487,7 +488,6 @@ static int initializeArray(fp, cwi)
     return(error);
         
 } /* initializeArray */    
-#endif
 
 /************************* parseCharWidths **************************/
 
@@ -1130,7 +1130,7 @@ extern int parseFile (FILE *fp, FontInfo **fi, FLAGS flags)
             (*fi)->cmi = (CharMetricInfo *) 
                       calloc((*fi)->numOfChars, sizeof(CharMetricInfo));
            if ((*fi)->cmi == NULL) {error = storageProblem; return(error);}
-            code = parseCharMetrics(fp, *fi);             
+           code = parseCharMetrics(fp, *fi);             
         }
         else
         {
@@ -1142,6 +1142,10 @@ extern int parseFile (FILE *fp, FontInfo **fi, FLAGS flags)
                 	error = storageProblem; 
                 	return(error);
                 }
+
+                /* sterwill -- initialize widths of characters in cwi */
+                initializeArray(fp, (*fi)->cwi);
+
             }
             /* parse section regardless */
             code = parseCharWidths(fp, (*fi)->cwi);
