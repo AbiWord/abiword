@@ -2847,8 +2847,6 @@ static UT_Bool s_doSpellDlg(FV_View * pView, XAP_Dialog_Id id)
    XAP_DialogFactory * pDialogFactory
      = (XAP_DialogFactory *)(pFrame->getDialogFactory());
 	
-   UT_DEBUGMSG(("dialog id = %i", id));
-   
    AP_Dialog_Spell * pDialog
      = (AP_Dialog_Spell *)(pDialogFactory->requestDialog(id));
    UT_ASSERT(pDialog);
@@ -2867,18 +2865,10 @@ static UT_Bool s_doSpellDlg(FV_View * pView, XAP_Dialog_Id id)
            
 Defun1(dlgSpell)
 {
-#if 1
    ABIWORD_VIEW;
    XAP_Dialog_Id id = AP_DIALOG_ID_SPELL;
 
    return s_doSpellDlg(pView,id);
-#else
-   XAP_Frame * pFrame = (XAP_Frame *) pAV_View->getParentData();
-   UT_ASSERT(pFrame);
-   
-   s_TellNotImplemented(pFrame, "Spell Check dialog", __LINE__);
-   return UT_TRUE;
-#endif
 }   
    
 /*****************************************************************/

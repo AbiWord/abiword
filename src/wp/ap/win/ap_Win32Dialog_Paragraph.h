@@ -36,10 +36,22 @@ public:
 	virtual void			runModal(XAP_Frame * pFrame);
 
 	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
-
+	static BOOL CALLBACK	s_dlgProc(HWND,UINT,WPARAM,LPARAM);
+	
 protected:
+	BOOL					_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam);
+	BOOL					_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam);   
 
-	GR_Win32Graphics *		m_pWin32Graphics;
+	static BOOL CALLBACK	s_tabProc(HWND,UINT,WPARAM,LPARAM);
+
+	BOOL					_onInitTab(HWND hWnd, WPARAM wParam, LPARAM lParam);
+
+	GR_Win32Graphics *		m_pGPreview;
+
+	HWND					m_hwndDlg;		// parent dialog
+	HWND					m_hwndTab;		// tab control
+	HWND					m_hwndSpacing;	// subdialog for first tab
+	HWND					m_hwndBreaks;	// subdialog for second tab
 };
 
 #endif /* XAP_WIN32DIALOG_PARAGRAPH_H */

@@ -28,5 +28,7 @@
 //////////////////////////////////////////////////////////////////
 
 #define XAP_RID_DIALOG_WINDOWMORE					100
+#define XAP_RID_DIALOG_ZOOM							101
 
 #include "xap_Win32Res_DlgWindowMore.rc2"
+#include "xap_Win32Res_DlgZoom.rc2"

@@ -75,12 +75,12 @@ dcl(DLG_OverwriteFile,					"File already exists.  Overwrite file '%s'?")
 /* Zoom dialog */
 dcl(DLG_Zoom_ZoomTitle,					"Zoom")
 dcl(DLG_Zoom_RadioFrameCaption,			"Zoom to")
-dcl(DLG_Zoom_200,						"200%")
-dcl(DLG_Zoom_100,						"100%")
-dcl(DLG_Zoom_75,						"75%")
-dcl(DLG_Zoom_PageWidth,					"Page width")
-dcl(DLG_Zoom_WholePage,					"Whole page")
-dcl(DLG_Zoom_Percent,					"Percent:")	
+dcl(DLG_Zoom_200,						"&200%")
+dcl(DLG_Zoom_100,						"&100%")
+dcl(DLG_Zoom_75,						"&75%")
+dcl(DLG_Zoom_PageWidth,					"&Page width")
+dcl(DLG_Zoom_WholePage,					"&Whole page")
+dcl(DLG_Zoom_Percent,					"P&ercent:")	
 dcl(DLG_Zoom_PreviewFrame,				"Preview")
 
 /* Unix Print dialog */

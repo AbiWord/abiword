@@ -1,0 +1,70 @@
+// AbiWord
+// Copyright (C) 1998 AbiSource, Inc.
+// 
+// This program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public License
+// as published by the Free Software Foundation; either version 2
+// of the License, or (at your option) any later version.
+// 
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software
+// Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+// 02111-1307, USA.
+//////////////////////////////////////////////////////////////////
+
+//////////////////////////////////////////////////////////////////
+// THIS FILE IS INCLUDED BY .cpp AND .rc FILES.
+//
+// *** RC.exe IS BRAIN-DAMAGED.  GIVING THIS FILE AN .rc2
+// *** EXTENSION MAKES #INCLUDING THIS FILE FROM Win32Main.rc
+// *** WORK -- IF THE SUFFIX IS .h ONLY THE #DEFINES WORK, THE
+// *** DIALOGS DO NOT GET COMPILED.
+//
+//////////////////////////////////////////////////////////////////
+
+#define AP_RID_DIALOG_SPELL_TEXT_NOT			1001
+#define AP_RID_DIALOG_SPELL_RICH_SENTENCE		1002
+#define AP_RID_DIALOG_SPELL_TEXT_CHANGE			1003
+#define AP_RID_DIALOG_SPELL_EDIT_CHANGE			1004
+#define AP_RID_DIALOG_SPELL_TEXT_SUGGEST		1005
+#define AP_RID_DIALOG_SPELL_LIST_SUGGEST		1006
+#define AP_RID_DIALOG_SPELL_BTN_IGNORE			1007
+#define AP_RID_DIALOG_SPELL_BTN_IGNOREALL		1008
+#define AP_RID_DIALOG_SPELL_BTN_ADD				1009
+#define AP_RID_DIALOG_SPELL_BTN_CHANGE			1010
+#define AP_RID_DIALOG_SPELL_BTN_CHANGEALL		1011
+#define AP_RID_DIALOG_SPELL_BTN_AUTOCORRECT		1012
+#define AP_RID_DIALOG_SPELL_BTN_CANCEL			IDCANCEL
+
+#ifdef RC_INVOKED
+// NOTE -- these placeholder strings get overridden at runtime 
+// NOTE -- they're just here to make sizing easier
+
+AP_RID_DIALOG_SPELL DIALOG DISCARDABLE  0, 0, 302, 178
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Spelling:  English (United States)"
+FONT 8, "MS Sans Serif"
+BEGIN
+    LTEXT           "Not in dictionary&:",	AP_RID_DIALOG_SPELL_TEXT_NOT,		7,7,130,8
+    CONTROL         "",					AP_RID_DIALOG_SPELL_RICH_SENTENCE,
+										"RICHEDIT",ES_MULTILINE | ES_READONLY | 
+										WS_BORDER | WS_VSCROLL | WS_TABSTOP,	7,17,213,50
+    LTEXT           "Change &to:",		AP_RID_DIALOG_SPELL_TEXT_CHANGE,		7,74,45,8
+    EDITTEXT							AP_RID_DIALOG_SPELL_EDIT_CHANGE,		59,72,161,12,ES_AUTOHSCROLL
+    LTEXT           "Sugg&estions:",	AP_RID_DIALOG_SPELL_TEXT_SUGGEST,		7,89,130,8
+    LISTBOX								AP_RID_DIALOG_SPELL_LIST_SUGGEST,		7,99,213,50,
+										LBS_NOINTEGRALHEIGHT | WS_VSCROLL | WS_TABSTOP
+    DEFPUSHBUTTON   "&Ignore",			AP_RID_DIALOG_SPELL_BTN_IGNORE,			227,17,68,14
+    PUSHBUTTON      "I&gnore All",		AP_RID_DIALOG_SPELL_BTN_IGNOREALL,		227,35,68,14
+    PUSHBUTTON      "&Add",				AP_RID_DIALOG_SPELL_BTN_ADD,			227,53,68,14
+    PUSHBUTTON      "&Change",			AP_RID_DIALOG_SPELL_BTN_CHANGE,			227,99,68,14
+    PUSHBUTTON      "Change A&ll",		AP_RID_DIALOG_SPELL_BTN_CHANGEALL,		227,117,68,14
+    PUSHBUTTON      "AutoCo&rrect",		AP_RID_DIALOG_SPELL_BTN_AUTOCORRECT,	227,135,68,14,NOT WS_VISIBLE
+    PUSHBUTTON      "Cancel",			AP_RID_DIALOG_SPELL_BTN_CANCEL,			227,157,68,14
+END
+#endif /* RC_INVOKED */

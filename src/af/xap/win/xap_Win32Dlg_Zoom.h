@@ -21,6 +21,8 @@
 #define XAP_WIN32DIALOG_ZOOM_H
 
 #include "xap_Dlg_Zoom.h"
+
+class GR_Win32Graphics;
 class XAP_Win32Frame;
 
 /*****************************************************************/
@@ -34,9 +36,13 @@ public:
 	virtual void			runModal(XAP_Frame * pFrame);
 
 	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
-
+	static BOOL CALLBACK	s_dlgProc(HWND,UINT,WPARAM,LPARAM);
+	
 protected:
+	BOOL					_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam);
+	BOOL					_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam);
 
+	GR_Win32Graphics * 		m_pGPreview;
 };
 
 #endif /* XAP_WIN32DIALOG_ZOOM_H */

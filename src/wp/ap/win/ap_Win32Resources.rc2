@@ -27,11 +27,17 @@
 //
 //////////////////////////////////////////////////////////////////
 
-#define AP_RID_DIALOG_REPLACE						200
+#define AP_RID_DIALOG_REPLACE					200
 #define AP_RID_DIALOG_FIND						201	// shares class with _REPLACE
 #define AP_RID_DIALOG_BREAK						202
+#define AP_RID_DIALOG_SPELL						203
+#define AP_RID_DIALOG_PARAGRAPH					204
+#define AP_RID_DIALOG_PARA_TAB1					205
+#define AP_RID_DIALOG_PARA_TAB2					206
 
 #include "ap_Win32Resources_DialogReplace.rc2"
 #include "ap_Win32Res_DlgBreak.rc2"
+#include "ap_Win32Res_DlgSpell.rc2"
+#include "ap_Win32Res_DlgParagraph.rc2"
 #include "ap_Win32Res_Icons.rc2"
 

@@ -28,16 +28,18 @@ class XAP_Win32Frame;
 
 class AP_Win32Dialog_Spell: public AP_Dialog_Spell
 {
- public:
-   AP_Win32Dialog_Spell(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
-   virtual ~AP_Win32Dialog_Spell(void);
+public:
+	AP_Win32Dialog_Spell(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
+	virtual ~AP_Win32Dialog_Spell(void);
    
-   virtual void			runModal(XAP_Frame * pFrame);
+	virtual void			runModal(XAP_Frame * pFrame);
 
-   static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
-
- protected:
-   
+	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
+	static BOOL CALLBACK	s_dlgProc(HWND,UINT,WPARAM,LPARAM);
+	
+protected:
+	BOOL					_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam);
+	BOOL					_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam);   
 };
 
 #endif /* AP_WIN32DIALOG_SPELL_H */

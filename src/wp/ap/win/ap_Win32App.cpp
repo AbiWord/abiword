@@ -663,8 +663,19 @@ int AP_Win32App::WinMain(const char * szAppName, HINSTANCE hInstance,
 
 	INITCOMMONCONTROLSEX icex;
 	icex.dwSize = sizeof(INITCOMMONCONTROLSEX);
-	icex.dwICC = ICC_COOL_CLASSES | ICC_BAR_CLASSES;	// load the rebar and toolbar
+	icex.dwICC = ICC_COOL_CLASSES | ICC_BAR_CLASSES		// load the rebar and toolbar
+				| ICC_TAB_CLASSES | ICC_UPDOWN_CLASS	// and tab and spin controls
+				;
 	InitCommonControlsEx(&icex);
+
+	// HACK: load least-common-denominator Rich Edit control
+	// TODO: fix Spell dlg so we don't rely on this
+	// ALT:  make it a Preview widget instead
+
+	HINSTANCE hinstRich = LoadLibrary("riched32.dll");
+	if (!hinstRich)
+		hinstRich = LoadLibrary("riched20.dll");
+	UT_ASSERT(hinstRich);
 
 	// initialize our application.
 
