@@ -453,6 +453,27 @@ void XAP_Win32FrameImpl::_setCursor(GR_Graphics::Cursor cursor)
 	// TODO: currently does nothing
 }
 
+UT_RGBColor XAP_Win32FrameImpl::getColorSelBackground () const
+{
+	DWORD dwResult = GetSysColor(COLOR_HIGHLIGHT);
+	static UT_RGBColor clr((unsigned char)GetRValue(dwResult),
+						   (unsigned char)GetGValue(dwResult),
+						   (unsigned char)GetBValue(dwResult));
+
+	return clr;
+};
+
+UT_RGBColor XAP_Win32FrameImpl::getColorSelForeground () const
+{
+	DWORD dwResult = GetSysColor(COLOR_HIGHLIGHTTEXT);
+	static UT_RGBColor clr((unsigned char)GetRValue(dwResult),
+						   (unsigned char)GetGValue(dwResult),
+						   (unsigned char)GetBValue(dwResult));
+
+	return clr;
+};
+
+
 bool XAP_Win32FrameImpl::_RegisterClass(XAP_Win32App * app)
 {
 	WNDCLASSEX wndclass;

@@ -58,6 +58,9 @@ class ABI_EXPORT XAP_Win32FrameImpl : public XAP_FrameImpl
 protected:
 	friend class XAP_Frame;
 
+	virtual UT_RGBColor getColorSelBackground () const;
+	virtual UT_RGBColor getColorSelForeground () const;
+	
 #if 0
 	void _startViewAutoUpdater(void);
 	static void viewAutoUpdater(UT_Worker *wkr);
