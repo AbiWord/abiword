@@ -434,14 +434,14 @@ void XAP_Prefs::log(const char * where, const char * what, XAPPrefsLog_Level lev
 		default:
 			*s += "message: ";
 	}
+
+	sWhere.escapeXML();
+	sWhat.escapeXML();
 	
 	*s += sWhere;
 	*s += " - ";
 	*s += sWhat;
 	*s += " -->";
-
-	// s->escapeXML(); // since we embed these as comments we do not
-	                   // have to do this
 
 	m_vecLog.addItem(s);
 }
