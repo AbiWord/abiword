@@ -425,6 +425,7 @@ void fp_VerticalContainer::removeContainer(fp_Container* pContainer)
  */
 bool fp_VerticalContainer::insertContainer(fp_Container* pNewContainer)
 {
+	UT_ASSERT(pNewContainer);
 	pNewContainer->clearScreen();
 	insertConAt(pNewContainer, 0);
 	pNewContainer->setContainer(static_cast<fp_Container *>(this));
@@ -448,6 +449,7 @@ UT_sint32	fp_VerticalContainer::getColumnGap(void) const
  */
 bool fp_VerticalContainer::addContainer(fp_Container* pNewContainer)
 {
+	UT_ASSERT(pNewContainer);
 	if(pNewContainer->getContainer() != NULL)
 	{
 		pNewContainer->clearScreen();
