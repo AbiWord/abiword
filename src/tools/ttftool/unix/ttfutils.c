@@ -309,6 +309,8 @@ myrealloc(void *ptr, size_t size)
 long
 surely_lseek(int fildes, long long_offset, int whence)
 {
+  long long_result;
+  off_t result;
   off_t offset;
 #if defined(SunOS)
 #if __STDC__ - 0 == 0 && !defined(_NO_LONGLONG)
@@ -322,21 +324,24 @@ surely_lseek(int fildes, long long_offset, int whence)
 #else
   offset = long_offset;
 #endif
-  off_t result;
-  if((result=lseek(fildes,offset,whence))<0)
-    ttf_fail("Bad TTF file");
+
+  result = lseek (fildes, offset, whence);
 
 #if defined(SunOS)
 #if __STDC__ - 0 == 0 && !defined(_NO_LONGLONG)
-  return offset;
+  long_result = result;
 #else
   /* TODO: Check - is this the correct way round?
    */
-  return offset._l[1];
+  long_result = result._l[1];
 #endif
 #else
-  return offset;
+  long_result = result;
 #endif
+
+  if (long_result < 0) ttf_fail ("Bad TTF file");
+
+  return long_result;
 }
 
 

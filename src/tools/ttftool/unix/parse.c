@@ -30,7 +30,7 @@ readNamingTable(int fd)
 {
   TTF_USHORT format;
   TTF_USHORT nrecords;
-  off_t position;
+  long position; /* see note on surely_lseek() in ttfutils.c - fjf */
   TTF_USHORT offset;
   int i,index,maxIndex;
   struct NameRecord *records;
