@@ -80,11 +80,6 @@ static void _charData (void * userData, const XML_Char * buffer, int length)
 UT_XML::~UT_XML ()
 {
   FREEP (m_namespace);
-
-  if (m_decoder)
-    {
-      xmlFreeParserCtxt ((xmlParserCtxtPtr) m_decoder);
-    }
 }
 
 UT_Error UT_XML::parse (const char * szFilename)
@@ -199,46 +194,4 @@ UT_Error UT_XML::parse (const char * buffer, UT_uint32 length)
   xmlFreeParserCtxt (ctxt);
 
   return ret;
-}
-
-/* Decoder
- * =======
- * 
- * Hmm. This next bit was in ut_string.cpp, but I want to localize libxml2 stuff here in ut_xml.cpp
- * so that I can define 'XML_Char' as 'char' not as 'xmlChar' which is 'unsigned char' which really
- * screws up everything... though it was written with this in mind, I think.
- * 
- * And I'm making parser creation & destruction one-time events; it's the principle of the thing...
- * 
- * BTW, there's expat stuff in XAP_EncodingManager, but that's less critical. - fjf
- */
-
-
-bool UT_XML::startDecoder ()
-{
-  if (m_decoder) stopDecoder ();
-
-  xmlParserCtxtPtr parser = xmlCreatePushParserCtxt (0, 0, "<?xml version=\"1.0\"?>", 21, 0);
-  xmlSubstituteEntitiesDefault (1);
-
-  m_decoder = (void *) parser;
-
-  return (parser != 0);
-}
-
-void UT_XML::stopDecoder ()
-{
-  if (m_decoder == 0) return;
-  xmlFreeParserCtxt ((xmlParserCtxtPtr) m_decoder);
-  m_decoder = 0;
-}
-
-/* Declared in ut_xml.h as: XML_Char * UT_XML::decode (const XML_Char * in);
- */
-char * UT_XML::decode (const char * in)
-{
-  if (m_decoder == 0)
-    if (!startDecoder ()) return 0;
-
-  return (char *) xmlStringDecodeEntities ((xmlParserCtxtPtr) m_decoder, (XML_Char *) in, XML_SUBSTITUTE_BOTH, 0, 0, 0);
 }

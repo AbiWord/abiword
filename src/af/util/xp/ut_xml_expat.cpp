@@ -73,11 +73,6 @@ static void _charData (void * userData, const XML_Char * buffer, int length)
 UT_XML::~UT_XML ()
 {
   FREEP (m_namespace);
-
-  if (m_decoder)
-    {
-      XML_ParserFree ((XML_Parser) m_decoder);
-    }
 }
 
 UT_Error UT_XML::parse (const char * szFilename)
@@ -169,100 +164,4 @@ UT_Error UT_XML::parse (const char * buffer, UT_uint32 length)
   XML_ParserFree (parser);
 
   return ret;
-}
-
-/* Decoder
- * =======
- * 
- * Hmm. This next bit was in ut_string.cpp, but I want to localize libxml2 stuff here in ut_xml.cpp
- * so that I can define 'XML_Char' as 'char' not as 'xmlChar' which is 'unsigned char' which really
- * screws up everything... though it was written with this in mind, I think.
- * 
- * And I'm making parser creation & destruction one-time events; it's the principle of the thing...
- * 
- * BTW, there's expat stuff in XAP_EncodingManager, but that's less critical. - fjf
- */
-
-
-#ifdef __MRC__
-extern "C" {
-#endif
-
-static void _startBlah (void * userData, const XML_Char * name, const XML_Char ** atts)
-{
-  char ** pout = (char **) userData;
-  //What do we do with this, is this cast safe!?
-  //Why wouldn't it be? - fjf
-  if (atts && (*name == 'f'))
-    if (*atts)
-      *pout = UT_strdup ((char *) atts[1]);
-}
-
-static void _endBlah (void * userData, const XML_Char * name)
-{
-  //
-}
-
-#ifdef __MRC__
-};
-#endif
-
-
-bool UT_XML::startDecoder ()
-{
-  if (m_decoder) stopDecoder ();
-  const char s[] = "<?xml version=\"1.0\"?>\n<decoder>\n";
-  XML_Parser parser = XML_ParserCreate (0);
-  if (parser)
-    {
-      XML_SetElementHandler (parser, _startBlah, _endBlah);
-      if (!XML_Parse (parser, s, sizeof (s)-1, 0))
-	{
-	  UT_DEBUGMSG (("XML string-decode parse error %s\n", XML_ErrorString (XML_GetErrorCode (parser))));
-	  XML_ParserFree (parser);
-	  parser = 0;
-	}
-    }
-  m_decoder = (void *) parser;
-
-  return (parser != 0);
-}
-
-void UT_XML::stopDecoder ()
-{
-  if (m_decoder == 0) return;
-  XML_ParserFree ((XML_Parser) m_decoder);
-  m_decoder = 0;
-}
-
-/* Declared in ut_xml.h as: XML_Char * UT_XML::decode (const XML_Char * in);
- */
-char * UT_XML::decode (const char * in)
-{
-  if (m_decoder == 0)
-    if (!startDecoder ()) return 0;
-  // There has *got* to be an easier way to do this with expat, but I
-  // didn't spot it from looking at the expat source code.  Anyhow, this
-  // is just used during init to chomp the preference default value
-  // strings, so the amount of work done probably doesn't matter too
-  // much.
-  const char s1[] = "<fake blah=\"";
-  const char s2[] = "\"/>";
-
-  XML_Parser parser = (XML_Parser) m_decoder;
-
-  char * out = 0;
-  XML_SetUserData (parser, (void *) &out);
-
-  if (!XML_Parse (parser, s1, sizeof (s1)-1, 0)
-   || !XML_Parse (parser, in, strlen (in), 0)
-   || !XML_Parse (parser, s2, sizeof (s2)-1, 0))
-    {
-      UT_DEBUGMSG (("XML string-decode parse error %s\n", XML_ErrorString (XML_GetErrorCode (parser))));
-      stopDecoder (); // Should restart automatically...
-    }
-  // TODO: who owns the storage for this?
-  // TMN: The caller of this function.
-
-  return out;
 }

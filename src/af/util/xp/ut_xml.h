@@ -30,6 +30,8 @@
 #endif
 #define XML_Char char
 
+ABI_EXPORT char * UT_XML_Decode( const char * inKey );
+
 class ABI_EXPORT UT_XML
 {
  public:
@@ -98,15 +100,6 @@ class ABI_EXPORT UT_XML
 
  private:
   Reader * m_pReader;
-
- public:
-  bool startDecoder ();
-  void stopDecoder ();
-
-  XML_Char * decode (const XML_Char * in);
-
- private:
-  void * m_decoder;
 
  public:
   /* For UT_XML internal use only.

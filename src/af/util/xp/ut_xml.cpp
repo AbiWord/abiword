@@ -26,6 +26,9 @@
 #include "ut_string.h"
 #include "ut_xml.h"
 
+#include "ut_misc.h"
+#include "ut_string_class.h"
+
 #include "xap_EncodingManager.h"
 
 
@@ -67,8 +70,7 @@ UT_XML::UT_XML () :
   m_xml_type(0),
   m_bStopped(false),
   m_pListener(0),
-  m_pReader(0),
-  m_decoder(0)
+  m_pReader(0)
 {
 }
 
@@ -171,3 +173,53 @@ UT_Error UT_XML::parse (const UT_ByteBuf * pBB)
   return parse (buffer, length);
 }
 
+/**************************************************************/
+/**************************************************************/
+
+class UT_XML_Decoder : public UT_XML::Listener
+{
+public:
+
+	UT_XML_Decoder () {}
+	virtual ~UT_XML_Decoder () {}
+
+	virtual void startElement (const XML_Char * name, const XML_Char ** atts)
+	{
+		mKey = UT_getAttribute ( "k", atts ) ;
+	}
+	
+	virtual void endElement (const XML_Char * name)
+	{
+	}
+	
+	virtual void charData (const XML_Char * buffer, int length)
+	{
+	}
+	
+	const UT_String & getKey () const { return mKey ; }
+	
+private:
+	UT_String mKey ;
+} ;
+
+char * UT_XML_Decode ( const char * inKey )
+{
+	UT_XML parser ;
+
+	UT_XML_Decoder decoder ;
+	
+	parser.setListener ( &decoder ) ;
+
+	UT_String toDecode ;
+
+	toDecode = "<?xml version=\"1.0\"?>\n" ;
+	toDecode += "<d k=\"";
+	toDecode += inKey ;
+	toDecode += "\"/>" ;
+	
+	parser.parse ( toDecode.c_str(), toDecode.size () ) ;
+
+	char * to_return = UT_strdup(decoder.getKey ().c_str());
+	xxx_UT_DEBUGMSG(("DOM: returning %s from %s\n", to_return, inKey));	
+	return to_return ;
+}
