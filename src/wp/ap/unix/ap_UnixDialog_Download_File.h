@@ -21,7 +21,7 @@
 #define AP_UNIXDIALOG_DOWNLOAD_FILE_H
 
 #include "ap_Dialog_Download_File.h"
-#include "xap_UnixFrame.h"
+#include "xap_Frame.h"
 #include "gr_UnixGraphics.h"
 
 /*****************************************************************/

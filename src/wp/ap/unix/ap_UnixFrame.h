@@ -23,45 +23,16 @@
 class GR_Graphics;
 
 #include "xap_Frame.h"
-#include "xap_UnixFrame.h"
+#include "ap_Frame.h"
+#include "ap_UnixFrameImpl.h"
 #include "ie_types.h"
 
 class XAP_UnixApp;
 class AP_UnixFrame;
 
 /*****************************************************************/
-class AP_UnixFrameHelper : public XAP_UnixFrameHelper
-{
- public:
-	AP_UnixFrameHelper(AP_UnixFrame *pUnixFrame, XAP_UnixApp *pUnixApp); 
 
- protected:
-	void _showOrHideStatusbar(void);
-
-	void _showOrHideToolbars(void);
-	virtual void _refillToolbarsInFrameData();
-	void _bindToolbars(AV_View * pView);
-
-	virtual GtkWidget * _createDocumentWindow();
-	virtual GtkWidget * _createStatusBarWindow();
-
-	friend class AP_UnixFrame;
-	virtual void _setWindowIcon();
-	GtkWidget * m_dArea;
-	GtkAdjustment *	m_pVadj;
-	GtkAdjustment *	m_pHadj;
-	GtkWidget * m_hScroll;
-	GtkWidget * m_vScroll;
-	GtkWidget * m_topRuler;
-	GtkWidget * m_leftRuler;
-	GtkWidget * m_table;
-	GtkWidget * m_innertable;
-	GtkWidget * m_wSunkenBox;
-};
-
-/*****************************************************************/
-
-class AP_UnixFrame : public XAP_Frame
+class AP_UnixFrame : public AP_Frame
 {
 public:
 	AP_UnixFrame(XAP_UnixApp * app);
@@ -92,7 +63,7 @@ public:
 	virtual void				toggleStatusBar(bool bStatusBarOn);
 	
 protected:
-	friend class AP_UnixFrameHelper;
+	friend class AP_UnixFrameImpl;
 	UT_Error   					_loadDocument(const char * szFilename, IEFileType ieft, bool createNew);
 	virtual UT_Error            _importDocument(const char * szFilename, int ieft, bool markClean);
 	UT_Error   					_showDocument(UT_uint32 iZoom=100);

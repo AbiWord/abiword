@@ -20,6 +20,30 @@
 #ifndef AP_FRAME_H
 #define AP_FRAME_H
 
+#if defined(ANY_UNIX) || (defined(__APPLE__) && defined(__MACH__))
+#include "xap_Frame.h"
+#include "fv_View.h"
+#include "fl_DocLayout.h"
+
+class AP_Frame : public XAP_Frame
+{
+ public:
+	AP_Frame(XAP_App *pApp) : XAP_Frame(pApp) {}
+	AP_Frame(AP_Frame *pFrame) : XAP_Frame(static_cast<XAP_Frame *>(pFrame)) {}
+	virtual ~AP_Frame();
+  
+ protected:
+	void _replaceView(GR_Graphics * pG, FL_DocLayout *pDocLayout,
+			  AV_View *pView, AV_ScrollObj * pScrollObj,
+			  ap_ViewListener *pViewListener, AD_Document *pOldDoc,
+			  ap_Scrollbar_ViewListener *pScrollbarViewListener,
+			  AV_ListenerId lid, AV_ListenerId lidScrollbarViewListener,
+			  UT_uint32 iZoom);
+
+ private:
+	void _resetInsertionPoint();
+};
+#else 
 class AP_Frame
 {
  public:
@@ -28,5 +52,5 @@ class AP_Frame
 
  private:
 };
-
+#endif
 #endif // AP_FRAME_H

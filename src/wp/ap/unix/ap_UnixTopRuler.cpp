@@ -25,7 +25,7 @@
 #include "xap_UnixDialogHelper.h"
 
 #include "xap_Frame.h"
-#include "xap_UnixFrame.h"
+#include "xap_UnixFrameImpl.h"
 
 #include "gr_UnixGraphics.h"
 #include "ap_UnixTopRuler.h"
@@ -58,7 +58,7 @@ AP_UnixTopRuler::AP_UnixTopRuler(XAP_Frame * pFrame)
 	m_pG = NULL;
 
 	// change ruler color on theme change
-	GtkWidget * toplevel = static_cast<XAP_UnixFrameHelper *>(pFrame->getFrameHelper())->getTopLevelWindow();
+	GtkWidget * toplevel = static_cast<XAP_UnixFrameImpl *>(pFrame->getFrameImpl())->getTopLevelWindow();
 	g_signal_connect_after (G_OBJECT(toplevel),
 							  "client_event",
 							  G_CALLBACK(ruler_style_changed),

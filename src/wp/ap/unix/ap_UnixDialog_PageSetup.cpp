@@ -20,7 +20,7 @@
 #include "ut_assert.h"
 #include "xap_App.h"
 #include "xap_UnixApp.h"
-#include "xap_UnixFrame.h"
+#include "xap_Frame.h"
 #include "ap_Strings.h"
 #include "xap_UnixDialogHelper.h"
 

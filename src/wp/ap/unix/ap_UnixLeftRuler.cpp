@@ -22,7 +22,7 @@
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
 #include "xap_Frame.h"
-#include "xap_UnixFrame.h"
+#include "xap_UnixFrameImpl.h"
 #include "ap_UnixLeftRuler.h"
 #include "gr_UnixGraphics.h"
 #include "xap_UnixDialogHelper.h"
@@ -56,7 +56,7 @@ AP_UnixLeftRuler::AP_UnixLeftRuler(XAP_Frame * pFrame)
 	m_pG = NULL;
 	m_iBackgroundRedrawID = 0;
     // change ruler color on theme change
-	GtkWidget * toplevel = static_cast<XAP_UnixFrameHelper *>(pFrame->getFrameHelper())->getTopLevelWindow();
+	GtkWidget * toplevel = static_cast<XAP_UnixFrameImpl *>(pFrame->getFrameImpl())->getTopLevelWindow();
 	g_signal_connect_after (G_OBJECT(toplevel),
 							  "client_event",
 							  G_CALLBACK(ruler_style_changed),

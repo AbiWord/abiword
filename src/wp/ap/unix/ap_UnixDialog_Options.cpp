@@ -31,7 +31,7 @@
 
 #include "xap_App.h"
 #include "xap_UnixApp.h"
-#include "xap_UnixFrame.h"
+#include "xap_Frame.h"
 #include "xap_Prefs.h"
 
 #include "ap_Dialog_Id.h"

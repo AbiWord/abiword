@@ -30,7 +30,7 @@
 #include "xap_App.h"
 #include "xap_Frame.h"
 #include "xap_UnixApp.h"
-#include "xap_UnixFrame.h"
+#include "xap_Frame.h"
 
 #include "xap_Dialog_Id.h"
 #include "ap_UnixDialog_Download_File.h"
