@@ -27,6 +27,7 @@
 #include "gr_QNXGraphics.h"
 #include "ap_QNXTopRuler.h"
 #include <stdio.h>
+#include "fv_View.h"
 
 #define REPLACEP(p,q)	do { if (p) delete p; p = q; } while (0)
 #define ENSUREP(p)		do { UT_ASSERT(p); if (!p) goto Cleanup; } while (0)
@@ -320,7 +321,12 @@ int AP_QNXTopRuler::_fe::expose(PtWidget_t * w, PhTile_t *damage)
 	if (!pQNXRuler) {
 		return 0;
 	}
-
+			// HACK for not updating Ruler for incremental Loading
+			FV_View * pView = (FV_View *) pQNXRuler->getView();
+			if(pView && (pView->getPoint() == 0))
+			{
+				return 0;
+			}
 #if 0
     if (damage->next) {
         damage = damage->next;
