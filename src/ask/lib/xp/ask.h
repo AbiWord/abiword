@@ -89,8 +89,8 @@ int ASK_isFileNewer(char* pszFileName, unsigned int iModTime);
   Functions implemented in platform code
 */
 
-void ASK_createRemoveFile(char* pszName);
-void ASK_registerForRemove(void);
+void ASK_createRemoveFile(char* pszName, char *pszProgramDir);
+void ASK_registerForRemove( char *pszProgramDir );
 unsigned int ASK_getFileModTime(const char* pszFileName);
 void ASK_setFileModTime(const char* pszFileName, unsigned int iModTime);
 unsigned int ASK_getFileAttributes(const char* pszFileName);

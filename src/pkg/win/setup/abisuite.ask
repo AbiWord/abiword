@@ -1,10 +1,8 @@
 <abisetup>
 
-<fileset name="System Files" defaultpath="WINDIR" fixedpath="true" >
-<datafile name="__BINDIR__/askrm.exe" noremove="true" />
-</fileset>
-
 <fileset name="AbiSuite Files" defaultpath="c:/Program Files" dirname="AbiSuite" >
+
+<datafile name="__BINDIR__/askrm.exe" />
 
 <datafile name="__CANONDIR__/COPYING" rename="COPYING.TXT" license="true" />
 

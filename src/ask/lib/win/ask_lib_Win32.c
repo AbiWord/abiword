@@ -65,20 +65,21 @@ char		g_szRemoveKey[1024];
 char		g_szRemoveName[256];
 FILE*		g_fpRemove;
 
-void ASK_createRemoveFile(char* pszName)
+void ASK_createRemoveFile(char* pszName, char *pszProgramDir)
 {
 	char szName[ASK_MAX_PATH+1];
-	char szWinDir[ASK_MAX_PATH+1];
 	int i = 0;
+
+	// Can't write the askrmXXX.txt file if the directory
+	// doesn't exist
+	ASK_verifyDirExists( pszProgramDir );
 
 	strcpy(g_szRemoveName, pszName);
 	sprintf(g_szRemoveKey, "%s\\%s", REGSTR_PATH_UNINSTALL, pszName);
 	
-	GetWindowsDirectory(szWinDir, ASK_MAX_PATH);
-	
 	for (i=0; ; i++)
 	{
-		sprintf(szName, "%s\\askrm%03d.txt", szWinDir, i);
+		sprintf(szName, "%s\\askrm%03d.txt", pszProgramDir, i);
 		if (!ASK_fileExists(szName))
 		{
 			break;
@@ -109,14 +110,11 @@ void ASK_closeRemoveFile(void)
 	}
 }
 
-void ASK_registerForRemove(void)
+void ASK_registerForRemove( char *pszProgramDir )
 {
 	char szCmdLine[1024];
 	HKEY hKey = NULL;
 	DWORD iDisposition;
-	char szWinDir[ASK_MAX_PATH+1];
-
-	GetWindowsDirectory(szWinDir, ASK_MAX_PATH);
 
 	RegCreateKeyEx(HKEY_LOCAL_MACHINE,
 				   g_szRemoveKey,
@@ -137,7 +135,7 @@ void ASK_registerForRemove(void)
 				  strlen(g_szRemoveName)+1
 				  );
 
-	sprintf(szCmdLine, "%s\\askrm.exe %s", szWinDir, g_szRemoveFileName);
+	sprintf(szCmdLine, "%s\\askrm.exe %s", pszProgramDir, g_szRemoveFileName);
 	
 	RegSetValueEx(hKey,
 				  REGSTR_VAL_UNINSTALLER_COMMANDLINE,

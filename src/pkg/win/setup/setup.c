@@ -94,7 +94,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 
 	// TODO note that we currently don't allow the user to select which file sets are optional
 
-	ASK_createRemoveFile("AbiWord");
+	// Fileset 1 (index 0) is the Program Files fileset
+	ASK_createRemoveFile("AbiWord", g_aFileSets[ 0 ]->szInstallPath);
 	
 	{
 		int err = ASK_DoScreen_copy(g_iNumFileSets, g_aFileSets);
@@ -112,7 +113,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 
 	ASK_DoScreen_copyComplete(g_iNumFileSets, g_aFileSets);
 
-	ASK_registerForRemove();
+	// Fileset 1 (index 0) is the Program Files fileset
+	ASK_registerForRemove( g_aFileSets[ 0 ]->szInstallPath );
 	
 	goto all_done;
 
