@@ -88,7 +88,10 @@ UT_Bool AP_BuiltinStringSet::dumpBuiltinSet(const char * szFilename) const
 	fprintf(fp,"<!-- word processor developed by AbiSource, Inc.  Information about  -->\n");
 	fprintf(fp,"<!-- this application can be found at http://www.abisource.com       -->\n");
 	fprintf(fp,"<!-- This file contains the string translations for one language.    -->\n");
+	fprintf(fp,"<!-- This file is covered by the GNU Public License (GPL).           -->\n");
 	fprintf(fp,"<!-- ==============================================================  -->\n");
+	fprintf(fp,"\n");
+	fprintf(fp,"<!-- _Language_ translations provided by _name_ <_email_> -->\n");
 	fprintf(fp,"\n");
 
 	// end of prolog.

@@ -32,7 +32,7 @@ dcl(MSG_ConfirmSave,	"Save changes to %s?")
 dcl(MSG_ImportError,	"Error importing file %s.")
 
 // Status Bar Messages
-dcl(PageInfoField,		"Page: %ld/%d")
+dcl(PageInfoField,		"Page: %d/%d")
 
 /* Find and Replace strings */
 dcl(DLG_FR_FindTitle, 			"Find")

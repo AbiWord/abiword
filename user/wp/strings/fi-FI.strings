@@ -1,0 +1,83 @@
+<!-- ==============================================================  -->
+<!-- This file contains AbiWord Strings.  AbiWord is an Open Source  -->
+<!-- word processor developed by AbiSource, Inc.  Information about  -->
+<!-- this application can be found at http://www.abisource.com       -->
+<!-- This file contains the string translations for one language.    -->
+<!-- This file is covered by the GNU Public License (GPL).           -->
+<!-- ==============================================================  -->
+
+<!-- Finnish translations provided by Jarmo Karvonen <jarmo@dawn.joensuu.fi> -->
+
+
+<AbiStrings app="AbiWord Personal" ver="1.0" language="FiFI">
+
+<Strings	class="XAP"
+DLG_OK="OK"
+DLG_Cancel="Peruuta"
+DLG_UnixMB_Yes="_Yes"
+DLG_UnixMB_No="_No"
+DLG_MW_MoreWindows="Activate Window"
+DLG_MW_Activate="Activate:"
+DLG_UFS_FontTitle="Fontti"
+DLG_UFS_FontLabel="Fontti:"
+DLG_UFS_StyleLabel="Tyyli:"
+DLG_UFS_SizeLabel="Koko:"
+DLG_UFS_EncodingLabel="Koodaus:"
+DLG_UFS_EffectsFrameLabel="Tehoste"
+DLG_UFS_StrikeoutCheck="Yliviivattu"
+DLG_UFS_UnderlineCheck="Alleviivattu"
+DLG_UFS_FontTab="  Fontti "
+DLG_UFS_ColorTab="  Väri    "
+DLG_UFS_StyleRegular="Normaali"
+DLG_UFS_StyleItalic="Kursiivi"
+DLG_UFS_StyleBold="Lihavoitu"
+DLG_UFS_StyleBoldItalic="Lihavoitu kursiivi"
+DLG_FOSA_OpenTitle="Avaa tiedosto"
+DLG_FOSA_SaveAsTitle="Tallenna nimell&#xe4;"
+DLG_FOSA_PrintToFileTitle="Tulosta tiedostoon"
+DLG_FOSA_FileOpenTypeLabel="Avaa tiedosto:"
+DLG_FOSA_FileSaveTypeLabel="Tallenna tiedosto:"
+DLG_FOSA_FilePrintTypeLabel="Tulosta tiedosto:"
+DLG_FOSA_FileTypeAutoDetect="Automaatti tunnistus"
+DLG_InvalidPathname="Virheellinen hakemisto"
+DLG_NoSaveFile_DirNotExist="Annetulla polulla ei ole hakemistoa"
+DLG_NoSaveFile_DirNotWriteable="Hakemisto '%s' on kirjoitussuojattu"
+DLG_OverwriteFile="Tiedosto on jo. Kirjoitetaanko tiedoston '%s' päälle?"
+DLG_Zoom_ZoomTitle="Zoom"
+DLG_Zoom_RadioFrameCaption="Zoom to"
+DLG_Zoom_200="200%"
+DLG_Zoom_100="100%"
+DLG_Zoom_75="75%"
+DLG_Zoom_PageWidth="Page width"
+DLG_Zoom_WholePage="Whole page"
+DLG_Zoom_Percent="Percent:"
+DLG_Zoom_PreviewFrame="Preview"
+/>
+
+<Strings	class="AP"
+MSG_SaveFailed="Ei voinut kirjoittaa tiedostoon %s."
+MSG_RevertBuffer="Palataanko tallennettuun kopioon %s tiedostosta?"
+MSG_QueryExit="Suljetaanko kaikki ikkunat ja poistutaan"
+MSG_ConfirmSave="Tallennetaanko muutokset %s tiedostoon?"
+MSG_ImportError="Virhe haku tiedosto %s."
+PageInfoField="Sivu: %d/%d"
+DLG_FR_FindTitle="Find"
+DLG_FR_ReplaceTitle="Replace"
+DLG_FR_FindLabel="Find what:"
+DLG_FR_ReplaceWithLabel="Replace with:"
+DLG_FR_MatchCase="Match case"
+DLG_FR_FindNextButton="Find Next"
+DLG_FR_ReplaceButton="Replace"
+DLG_FR_ReplaceAllButton="Replace All"
+DLG_Break_BreakTitle="Break"
+DLG_Break_Insert="Insert"
+DLG_Break_SectionBreaks="Section breaks"
+DLG_Break_PageBreak="Page break"
+DLG_Break_ColumnBreak="Column break"
+DLG_Break_NextPage="Next page"
+DLG_Break_Continuous="Continuous"
+DLG_Break_EvenPage="Even page"
+DLG_Break_OddPage="Odd page"
+/>
+
+</AbiStrings>
