@@ -21,6 +21,7 @@ static lang_entry s_Table[] =
 	{"af-ZA",		NULL, XAP_STRING_ID_LANG_AF_ZA},
 	{"ar-EG",		NULL, XAP_STRING_ID_LANG_AR_EG},
 	{"ar-SA",		NULL, XAP_STRING_ID_LANG_AR_SA},
+	{"ca-ES",               NULL, XAP_STRING_ID_LANG_CA_ES},
 	{"cs-CZ",		NULL, XAP_STRING_ID_LANG_CS_CZ},
 	{"da-DK",		NULL, XAP_STRING_ID_LANG_DA_DK},
 	{"de-AT",		NULL, XAP_STRING_ID_LANG_DE_AT},
@@ -38,6 +39,7 @@ static lang_entry s_Table[] =
 	{"fa-IR",		NULL, XAP_STRING_ID_LANG_FA_IR},
 	{"fi-FI",		NULL, XAP_STRING_ID_LANG_FI_FI},
 	{"fr-FR",		NULL, XAP_STRING_ID_LANG_FR_FR},
+	{"gl-ES",               NULL, XAP_STRING_ID_LANG_GL_ES},
 	{"hi-IN",		NULL, XAP_STRING_ID_LANG_HI_IN},
 	{"hy-AM",		NULL, XAP_STRING_ID_LANG_HY_AM},	// Win2K shows "hy-am"
 	{"it-IT",		NULL, XAP_STRING_ID_LANG_IT_IT},

@@ -223,6 +223,8 @@ dcl(LANG_SV_SE,								"Swedish")
 dcl(LANG_TH_TH,								"Thai")
 dcl(LANG_TR_TR,								"Turkish")
 dcl(LANG_VI_VN,								"Vietnamese")
+     dcl(LANG_GL_ES, "Galician")
+     dcl(LANG_CA_ES, "Catalan")
 
 /* Encoding Dialog */
 dcl(DLG_UENC_EncLabel,				"Select Encoding:")
