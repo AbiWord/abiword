@@ -568,16 +568,35 @@ void XAP_UnixGnomeFrame::_createTopLevelWindow(void)
 	// set geometry hints as the user requested
 	gint x, y;
 	guint width, height;
-	XAP_UnixApp::windowGeometryFlags f;
+	UT_uint32 f;
 
-	m_pUnixApp->getGeometry(&x, &y, &width, &height, &f);
+	m_pUnixApp->getWinGeometry(&x, &y, &width, &height, &f);
+
+	// Get fall-back defaults from preferences
+	UT_uint32 pref_flags, pref_width, pref_height;
+	UT_sint32 pref_x, pref_y;
+	m_pUnixApp->getPrefs()->getGeometry(&pref_x, &pref_y, &pref_width,
+										&pref_height, &pref_flags);
+	if (!(f & XAP_UnixApp::GEOMETRY_FLAG_SIZE)
+		&& (pref_flags & PREF_FLAG_GEOMETRY_SIZE))
+	{
+		width = pref_width;
+		height = pref_height;
+		f |= XAP_UnixApp::GEOMETRY_FLAG_SIZE;
+	}
+	if (!(f & XAP_UnixApp::GEOMETRY_FLAG_POS)
+		&& (pref_flags & PREF_FLAG_GEOMETRY_POS))
+	{
+		x = pref_x;
+		y = pref_y;
+		f |= XAP_UnixApp::GEOMETRY_FLAG_POS;
+	}
 
 	// Set the size if requested
-	
 	if (f & XAP_UnixApp::GEOMETRY_FLAG_SIZE)
 	{
-		gint abi_width = UT_MIN( gdk_screen_width() - 30, width);
-		gint abi_height = UT_MIN( gdk_screen_height() - 100, height);
+		gint abi_width = UT_MIN( gdk_screen_width() - 30, (gint)width);
+		gint abi_height = UT_MIN( gdk_screen_height() - 100, (gint)height);
 		gtk_widget_set_usize(m_wTopLevelWindow, abi_width, abi_height);
 	}
 
@@ -586,15 +605,18 @@ void XAP_UnixGnomeFrame::_createTopLevelWindow(void)
 	// This is so the user's window manager can find better
 	// places for new windows, instead of having our windows
 	// pile upon each other.
-
 	if (m_pUnixApp->getFrameCount() <= 1)
+	{
 		if (f & XAP_UnixApp::GEOMETRY_FLAG_POS)
-			gtk_widget_set_uposition(m_wTopLevelWindow,
-									 x,
-									 y);
+		{
+			gtk_widget_set_uposition(m_wTopLevelWindow, x, y);
+		}
+	}
+
+	// Remember geometry settings for next time
+	m_pUnixApp->getPrefs()->setGeometry(x, y, width, height, f);
 
 	// we let our caller decide when to show m_wTopLevelWindow.
-
 	UT_ASSERT(m_pUnixMenu);
 
 	return;

@@ -71,16 +71,8 @@ XAP_UnixApp::XAP_UnixApp(XAP_Args * pArgs, const char * szAppName)
 
 	_setAbiSuiteLibDir();
 
-	// set some generic window sizes and positions
-	m_geometry.x = 1;
-	m_geometry.y = 1;
-	m_geometry.width = 600;
-	m_geometry.height = 600;
+	memset(&m_geometry, 0, sizeof(m_geometry));
 
-	// by default, which will be applied if the user does NOT
-	// specify a --geometry argument, we only want to obey the
-	// size (which is set above), not a position.
-	m_geometry.flags = GEOMETRY_FLAG_SIZE;
 	m_bBonoboRunning = false;
 	// We need to link UnixNull_Graphics because the AbiCommand
 	// plugin uses it.
@@ -168,8 +160,8 @@ XAP_UnixFontManager * XAP_UnixApp::getFontManager()
 }
 #endif
 
-void XAP_UnixApp::setGeometry(int x, int y, UT_uint32 width, UT_uint32 height,
-							  windowGeometryFlags flags)
+void XAP_UnixApp::setWinGeometry(int x, int y, UT_uint32 width, UT_uint32 height,
+								 UT_uint32 flags)
 {
 	// TODO : do some range checking?
 	m_geometry.x = x;
@@ -179,8 +171,8 @@ void XAP_UnixApp::setGeometry(int x, int y, UT_uint32 width, UT_uint32 height,
 	m_geometry.flags = flags;
 }
 
-void XAP_UnixApp::getGeometry(int * x, int * y, UT_uint32 * width,
-							  UT_uint32 * height, windowGeometryFlags * flags)
+void XAP_UnixApp::getWinGeometry(int * x, int * y, UT_uint32 * width,
+								 UT_uint32 * height, UT_uint32 * flags)
 {
 	UT_ASSERT(x && y && width && height);
 	*x = m_geometry.x;

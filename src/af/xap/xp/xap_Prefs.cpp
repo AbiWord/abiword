@@ -883,43 +883,72 @@ void XAP_Prefs::startElement(const XML_Char *name, const XML_Char **atts)
 		}
 		case TT_GEOMETRY:
 		{
-        if (m_geom.m_flags &  PREF_FLAG_GEOMETRY_NOUPDATE) break;
-		m_parserState.m_bFoundGeometry = true;
+			if (m_geom.m_flags &  PREF_FLAG_GEOMETRY_NOUPDATE) break;
+			m_parserState.m_bFoundGeometry = true;
 		
-		// we expect something of the form:
-		// <Geometry width="xxx" height="xxx" posx="xxx" posy="xxx" />
+			// we expect something of the form:
+			// <Geometry width="xxx" height="xxx" posx="xxx" posy="xxx" />
+			
+			// These are the fall-back defaults which will be applied
+			// if the user does NOT specify a geometry argument or
+			// have set preference values. We only want to obey the
+			// size not a position.
 
-		memset(&m_geom, 0, sizeof(m_geom));
+			// (Both m_geom and the temporary variables are
+			// initialized so partial/invalid preference data from the
+			// file will still have sensible fall-back defaults).
+			UT_uint32 width = 600, height = 800, flags = PREF_FLAG_GEOMETRY_SIZE;
+			UT_sint32 posx = 0, posy = 0;
 
-		const XML_Char ** a = atts;
-		while (*a)
-		{
-			UT_ASSERT(a[1] && *a[1]);	// require a value for each attribute keyword
+			m_geom.m_width = width;
+			m_geom.m_height = height;
+			m_geom.m_posx = posx;
+			m_geom.m_posy = posy;
+			m_geom.m_flags = flags;
+			
+			const XML_Char ** a = atts;
+			while (*a)
+			{
+				UT_ASSERT(a[1] && *a[1]);	// require a value for each attribute keyword
+				
+				if (strcmp((const char*)a[0], "width") == 0)
+				{
+					width = atoi((const char*)a[1]);
+				}
+				else if (strcmp((const char*)a[0], "height") == 0)
+				{
+					height = atoi((const char*)a[1]);
+				}
+				else if (strcmp((const char*)a[0], "posx") == 0)
+				{
+					posx = atoi((const char*)a[1]);
+				}
+				else if (strcmp((const char*)a[0], "posy") == 0)
+				{
+					posy = atoi((const char*)a[1]);
+				}
+				else if (strcmp((const char*)a[0], "flags") == 0)
+				{
+					flags = atoi((const char*)a[1]) & ~PREF_FLAG_GEOMETRY_NOUPDATE;
+				}
+				
+				a += 2;
+			}
 
-
-			if (strcmp((const char*)a[0], "width") == 0)
+			// Override the fall-backs as appropriate with preference
+			// settings.
+			if (flags & PREF_FLAG_GEOMETRY_SIZE)
 			{
-				m_geom.m_width = atoi((const char*)a[1]);
+				m_geom.m_width = width;
+				m_geom.m_height = height;
+				m_geom.m_flags |= PREF_FLAG_GEOMETRY_SIZE;
 			}
-			else if (strcmp((const char*)a[0], "height") == 0)
+			if (flags & PREF_FLAG_GEOMETRY_POS)
 			{
-				m_geom.m_height = atoi((const char*)a[1]);
+				m_geom.m_posx = posx;
+				m_geom.m_posy = posy;
+				m_geom.m_flags |= PREF_FLAG_GEOMETRY_POS;
 			}
-			else if (strcmp((const char*)a[0], "posx") == 0)
-			{
-				m_geom.m_posx = atoi((const char*)a[1]);
-			}
-			else if (strcmp((const char*)a[0], "posy") == 0)
-			{
-				m_geom.m_posy = atoi((const char*)a[1]);
-			}
-			else if (strcmp((const char*)a[0], "flags") == 0)
-			{
-				m_geom.m_flags = atoi((const char*)a[1]) & ~PREF_FLAG_GEOMETRY_NOUPDATE;
-			}
-
-			a += 2;
-		}
 		}
 	}
 	// successful parse of tag...
