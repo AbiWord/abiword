@@ -735,7 +735,7 @@ bool pt_PieceTable::getStruxOfTypeFromPosition( PT_DocPosition docPos,
 
 bool pt_PieceTable::isEndFootnote(pf_Frag * pf) const
 {
-	if(pf->getType() == pf_Frag::PFT_Strux)
+	if(pf && (pf->getType() == pf_Frag::PFT_Strux))
 	{
 		pf_Frag_Strux * pfs = static_cast<pf_Frag_Strux *>(pf);
 		if((pfs->getStruxType() == PTX_EndFootnote) || (pfs->getStruxType() == PTX_EndEndnote) || (pfs->getStruxType() == PTX_EndTOC))
@@ -749,7 +749,7 @@ bool pt_PieceTable::isEndFootnote(pf_Frag * pf) const
 
 bool pt_PieceTable::isFootnote(pf_Frag * pf) const
 {
-	if(pf->getType() == pf_Frag::PFT_Strux)
+	if(pf && (pf->getType() == pf_Frag::PFT_Strux))
 	{
 		pf_Frag_Strux * pfs = static_cast<pf_Frag_Strux *>(pf);
 		if((pfs->getStruxType() == PTX_SectionFootnote) || (pfs->getStruxType() == PTX_SectionEndnote) || (pfs->getStruxType() == PTX_SectionTOC))

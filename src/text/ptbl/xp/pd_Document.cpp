@@ -1642,8 +1642,10 @@ bool PD_Document::isFootnoteAtPos(PT_DocPosition pos)
 	PT_BlockOffset pOffset;
 	pf_Frag * pf = NULL;
 	m_pPieceTable->getFragFromPosition(pos,&pf,&pOffset);
-	while(pf->getLength() == 0)
+	while(pf && (pf->getLength() == 0))
+    {
 		pf = pf->getPrev();
+    }
 	bool b = m_pPieceTable->isFootnote(pf);
 	if(b)
 	{
@@ -1666,8 +1668,10 @@ bool PD_Document::isTOCAtPos(PT_DocPosition pos)
 	PT_BlockOffset pOffset;
 	pf_Frag * pf = NULL;
 	m_pPieceTable->getFragFromPosition(pos,&pf,&pOffset);
-	while(pf->getLength() == 0)
+	while(pf && (pf->getLength() == 0))
+    {
 		pf = pf->getPrev();
+    }
 	bool b = m_pPieceTable->isFootnote(pf);
 	if(b)
 	{
@@ -1699,8 +1703,10 @@ bool PD_Document::isEndFootnoteAtPos(PT_DocPosition pos)
 	PT_BlockOffset pOffset;
 	pf_Frag * pf = NULL;
 	/*bool bRes = */m_pPieceTable->getFragFromPosition(pos,&pf,&pOffset);
-	while(pf->getLength() == 0)
+	while(pf && (pf->getLength() == 0))
+    {
 		pf = pf->getPrev();
+    }
 	bool b = m_pPieceTable->isEndFootnote(pf);
 	if(b)
 	{
@@ -1723,9 +1729,11 @@ bool PD_Document::isFrameAtPos(PT_DocPosition pos)
 	PT_BlockOffset pOffset;
 	pf_Frag * pf = NULL;
 	/*bool bRes = */m_pPieceTable->getFragFromPosition(pos,&pf,&pOffset);
-	while(pf->getLength() == 0)
+	while(pf && (pf->getLength() == 0))
+    {
 		pf = pf->getPrev();
-	if(pf->getType() == pf_Frag::PFT_Strux)
+    }
+	if(pf && (pf->getType() == pf_Frag::PFT_Strux))
 	{
 		pf_Frag_Strux * pfs = static_cast<pf_Frag_Strux *>(pf);
 		if(pfs->getStruxType() == PTX_SectionFrame)
