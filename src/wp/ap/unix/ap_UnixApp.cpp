@@ -1085,9 +1085,11 @@ void AP_UnixApp::_printUsage(void)
 {
 	// just print to stdout, not stderr
 	printf("\nUsage: %s [option]... [file]...\n\n", m_pArgs->m_argv[0]);
-	printf("  -to               The target format of the file (abw, zabw, rtf, txt, utf8, html, latex)");
-	printf("  -verbose          The verbosity level (0, 1, 2)");
-	printf("  -show             If you really want to start the GUI (even if you use the --to option)");
+	printf("  -to               The target format of the file\n");
+        printf("                    (abw, zabw, rtf, txt, utf8, html, latex)\n");
+	printf("  -verbose          The verbosity level (0, 1, 2)\n");
+	printf("  -show             If you really want to start the GUI\n");
+        printf("                    (even if you use the --to option)\n");
 #ifdef DEBUG
 	printf("  -dumpstrings      dump strings strings to file\n");
 #endif
