@@ -2440,7 +2440,7 @@ Defun1(insertClipart)
 		return false;
 
 	// set the initial directory
-	UT_String dir = pApp->getAbiSuiteLibDir ();
+	UT_String dir(pApp->getAbiSuiteLibDir());
 	dir += "/clipart/";
 
 	pDialog->setInitialDir (dir.c_str());

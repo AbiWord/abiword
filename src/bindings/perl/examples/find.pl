@@ -3,5 +3,5 @@ my $false = 0;
 
 my $frame = abi::XAP_Frame::getLastFocussed;
 my $view = $frame->getCurrentView;
-$view->findNext("TiTi", false);
+$view->find("TiTi", false);
 1;

@@ -224,6 +224,13 @@ case "$script" in
      "true" ) 
 	    SCRIPT_CFLAGS="-DABI_OPT_PERL `perl -MExtUtils::Embed -e ccopts` -Ubool"
 	    SCRIPT_LIBS="`perl -MExtUtils::Embed -e ldopts`"
+		AC_MSG_CHECKING(for perl xsubpp precompiler)
+		XSUBPPDIR="`(cd $abs_srcdir/src/bindings/perl && perl -MExtUtils::MakeMaker -e 'print ExtUtils::MakeMaker->new({NAME => qw(abi)})->tool_xsubpp') | grep ^XSUBPPDIR | sed -e 's/XSUBPPDIR = //g;'`"
+		if test -n "${XSUBPPDIR}"; then
+			AC_MSG_RESULT(${XSUBPPDIR})
+		else
+			AC_MSG_ERROR(not found)
+		fi
 	    ;;
      * )     
     	    SCRIPT_CFLAGS=""
@@ -303,6 +310,7 @@ AC_SUBST(SCRIPT_LIBS)
 AC_SUBST(BIDI_CFLAGS)
 AC_SUBST(PLATFORM_CFLAGS)
 AC_SUBST(PLATFORM_LIBS)
+AC_SUBST(XSUBPPDIR)
 
 dnl Checks for header files.
 AC_HEADER_STDC

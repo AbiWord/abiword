@@ -3,7 +3,7 @@
 # -C++ -typemap /usr/share/perl/5.6.0/ExtUtils/typemap 
 # -typemap typemap abi.xs > abi.xsc && mv abi.xsc abi.c
 
-#XSUBPPDIR = /usr/share/perl/5.6.0/ExtUtils
+# XSUBPPDIR = /usr/lib/perl5/5.6.0/ExtUtils
 
 include $(top_srcdir)/includes.mk
 
@@ -13,7 +13,6 @@ libabiperl_a_SOURCES = abi.cpp
 BUILT_SOURCES = abi.cpp
 
 perldir = $(top_builddir)/src/bindings/perl
-@XSUBPPDIR@
 XSUBPP = $(XSUBPPDIR)/xsubpp
 XSPROTOARG = 
 XSUBPPDEPS = $(XSUBPPDIR)/typemap typemap $(XSUBPP)
