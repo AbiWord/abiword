@@ -107,6 +107,11 @@ bool fl_DocListener::populate(PL_StruxFmtHandle sfh,
 		const PX_ChangeRecord_Span * pcrs = static_cast<const PX_ChangeRecord_Span *> (pcr);
 
 		fl_Layout * pL = (fl_Layout *)sfh;
+		if(pL->getType() != PTX_Block)
+		{
+			m_pDoc->miniDump(pL->getStruxDocHandle(),8);
+			UT_DEBUGMSG(("Illegal strux is %x \n",pL->getStruxDocHandle()));
+		}			
 		UT_ASSERT(pL->getType() == PTX_Block);
 
 		fl_ContainerLayout * pCL = static_cast<fl_ContainerLayout *>(pL);
@@ -169,6 +174,11 @@ bool fl_DocListener::populate(PL_StruxFmtHandle sfh,
 		const PX_ChangeRecord_FmtMark * pcrfm = static_cast<const PX_ChangeRecord_FmtMark *>(pcr);
 
 		fl_Layout * pL = (fl_Layout *)sfh;
+		if(pL->getType() != PTX_Block)
+		{
+			m_pDoc->miniDump(pL->getStruxDocHandle(),8);
+			UT_DEBUGMSG(("Illegal strux is %x \n",pL->getStruxDocHandle()));
+		}			
 		UT_ASSERT(pL->getType() == PTX_Block);
 		fl_ContainerLayout * pCL = static_cast<fl_ContainerLayout *>(pL);
 		fl_SectionLayout* pCLSL = pCL->getSectionLayout();

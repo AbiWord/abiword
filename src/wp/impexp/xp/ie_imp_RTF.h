@@ -769,6 +769,7 @@ private:
 	bool                  m_bRowJustPassed;
 	UT_sint32             m_iStackLevelAtRow;
 	bool                  m_bDoCloseTable;
+	UT_sint32             m_iNoCellsSinceLastRow;
 };
 
 #endif /* IE_IMP_RTF_H */

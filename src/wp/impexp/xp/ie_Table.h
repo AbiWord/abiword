@@ -127,7 +127,7 @@ class ABI_EXPORT ie_imp_cell
 	UT_sint32        getBot(void);
 	PL_StruxDocHandle getCellSDH(void);
 	void             setCellSDH(PL_StruxDocHandle cellSDH);
-	void             writeCellPropsInDoc(void);
+	bool             writeCellPropsInDoc(void);
 	ie_imp_cell *    getCellAbove(void);
 	ie_imp_cell *    getCellBelow(void);
 	ie_imp_cell *    getCellLeft(void);
@@ -204,6 +204,9 @@ class ABI_EXPORT ie_imp_table
 	void                setCell( ie_imp_cell * pCell) { m_pCurImpCell = pCell;}
 	UT_sint32           getRow(void) { return m_iRowCounter;}
 	void                removeExtraneousCells(void);
+	void                removeOnThisCellRow(ie_imp_cell * pCell);
+	void                removeCurrentRow(void);
+	void                deleteRow(UT_sint32 row);
 	UT_sint32           getNumRows(void);
 	void                setPosOnRow(UT_sint32 posOnRow) { m_iPosOnRow = posOnRow;}
 	UT_sint32           getPosOnRow(void) { return m_iPosOnRow;}

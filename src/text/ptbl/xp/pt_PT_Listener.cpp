@@ -63,7 +63,7 @@ bool pt_PieceTable::_tellAndMaybeAddListener(PL_Listener * pListener,
 	PL_StruxFmtHandle sfh = 0;
 	PT_DocPosition sum = 0;
 	UT_uint32 blockOffset = 0;
-	
+	pf_Frag_Strux * pfs = NULL;
 	for (pf_Frag * pf = m_fragments.getFirst(); (pf); pf=pf->getNext())
 	{
 		switch (pf->getType())
@@ -85,7 +85,7 @@ bool pt_PieceTable::_tellAndMaybeAddListener(PL_Listener * pListener,
 					getStruxOfTypeFromPosition(listenerId,pos,PTX_Block,&sfh);
 					PL_StruxDocHandle sdh = NULL;
 					getStruxOfTypeFromPosition(pos,PTX_Block,&sdh);
-					pf_Frag_Strux * pfs = (pf_Frag_Strux *) sdh;
+					pfs = (pf_Frag_Strux *) sdh;
 					blockOffset = pos - pfs->getPos() -1;
 					bStatus1 = pft->createSpecialChangeRecord(&pcr,pos,blockOffset);
 					UT_ASSERT(bStatus1);
@@ -111,7 +111,7 @@ bool pt_PieceTable::_tellAndMaybeAddListener(PL_Listener * pListener,
 			
 		case pf_Frag::PFT_Strux:
 			{
-				pf_Frag_Strux * pfs = static_cast<pf_Frag_Strux *> (pf);
+				pfs = static_cast<pf_Frag_Strux *> (pf);
 				PL_StruxDocHandle sdh = (PL_StruxDocHandle)pf;
 				sfh = 0;
 				PX_ChangeRecord * pcr = NULL;
@@ -195,7 +195,7 @@ bool pt_PieceTable::_tellAndMaybeAddListener(PL_Listener * pListener,
 					getStruxOfTypeFromPosition(listenerId,pos,PTX_Block,&sfh);
 					PL_StruxDocHandle sdh = NULL;
 					getStruxOfTypeFromPosition(pos,PTX_Block,&sdh);
-					pf_Frag_Strux * pfs = (pf_Frag_Strux *) sdh;
+					pfs = (pf_Frag_Strux *) sdh;
 					blockOffset = pos - pfs->getPos() -1;
 					bStatus1 = pffm->createSpecialChangeRecord(&pcr,pos,blockOffset);
 					UT_ASSERT(bStatus1);

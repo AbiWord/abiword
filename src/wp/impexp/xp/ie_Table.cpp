@@ -547,6 +547,7 @@ ie_imp_cell::ie_imp_cell(ie_imp_table * pImpTable, PD_Document * pDoc,
 	m_bFirstHori(false)
 {
 	m_sCellProps.clear();
+	UT_DEBUGMSG(("Cell %x created \n",this));
 }
 
 
@@ -668,12 +669,18 @@ void ie_imp_cell::setCellSDH(PL_StruxDocHandle cellSDH)
 
 /*!
  * Write all the properties of this cell to the piecetable without throwing a changerecord
+ * return false if no cellSDH is present.
+ * true otherwise
  */
-void ie_imp_cell::writeCellPropsInDoc(void)
+bool ie_imp_cell::writeCellPropsInDoc(void)
 {
-	UT_return_if_fail(m_cellSDH);
+	if(m_cellSDH == NULL)
+	{
+		return false;
+	}
 	xxx_UT_DEBUGMSG(("Cell props are %s \n",m_sCellProps.c_str()));
 	m_pDoc->changeStruxAttsNoUpdate(m_cellSDH,"props",m_sCellProps.c_str());
+	return true;
 }
 
 /*!
@@ -790,6 +797,7 @@ ie_imp_table::~ie_imp_table(void)
 	UT_DEBUGMSG(("SEVIOR: deleteing table %x table used %d \n",this,m_bTableUsed));
 	if(!m_bTableUsed)
 	{
+		//		UT_ASSERT(0);
 		_removeAllStruxes();
 	}
 	UT_VECTOR_PURGEALL(ie_imp_cell *,m_vecCells);
@@ -858,7 +866,8 @@ bool ie_imp_table::getVecOfCellsOnRow(UT_sint32 row, UT_Vector * pVec)
 	return true;
 }
 
-bool ie_imp_table::doCellXMatch(UT_sint32 iCellX1, UT_sint32 iCellX2, bool bLast/* = false*/)
+
+bool ie_imp_table::doCellXMatch(UT_sint32 iCellX1, UT_sint32 iCellX2, bool bLast  /* = false  */)
 {
 	UT_sint32 fuz = 20; // CellXs within 20 TWIPS are assumed to be the same
 	if(bLast)
@@ -1123,7 +1132,12 @@ void ie_imp_table::writeAllCellPropsInDoc(void)
 		if(!pCell->isMergedAbove() && !pCell->isMergedRight() && !pCell->isMergedLeft())
 		{
 			xxx_UT_DEBUGMSG(("SEVIOR: pCell %d row %d left %d right %d top %d bot %d sdh %x \n",i,pCell->getRow(),pCell->getLeft(),pCell->getRight(),pCell->getTop(),pCell->getBot(),pCell->getCellSDH())); 
-			pCell->writeCellPropsInDoc();
+			bool bCellPresent = pCell->writeCellPropsInDoc();
+			if(!bCellPresent)
+			{
+				//				removeOnThisCellRow(pCell);
+				continue;
+			}
 		}
 		if(pCell->isMergedAbove() && (pCell->getCellSDH() != NULL))
 		{
@@ -1339,7 +1353,7 @@ void ie_imp_table::buildTableStructure(void)
 		bool bSkipThis = false;
 		pCell = static_cast<ie_imp_cell *>(m_vecCells.getNthItem(i));
 		cellx = pCell->getCellX();
-		UT_DEBUGMSG(("i %d cellx %d iLeft %d iRight %d \n",i,cellx,iLeft,iRight));
+		UT_DEBUGMSG(("i %d cellx %d row %d iLeft %d iRight %d \n",i,cellx,pCell->getRow(),iLeft,iRight));
 		if(i==0 || (pCell->getRow() > curRow))
 		{
 			curRow = pCell->getRow();
@@ -1438,6 +1452,102 @@ UT_sint32  ie_imp_table::getNumRows(void)
 void ie_imp_table::CloseCell(void)
 {
 	m_bTableUsed = true;
+}
+
+/*!
+ * This method removes the cells in the row given.
+ */
+void ie_imp_table::deleteRow(UT_sint32 row)
+{
+	m_iPosOnRow = 0;
+	m_iCellXOnRow = 0;
+	m_bNewRow = true;
+	UT_sint32 i = 0;
+	ie_imp_cell * pCell = NULL;
+	UT_DEBUGMSG(("Deleting row %d \n",row));
+	m_iPosOnRow = 0;
+	for(i= static_cast<UT_sint32>(m_vecCells.getItemCount()) -1; i>=0; i--)
+	{
+		pCell = static_cast<ie_imp_cell *>(m_vecCells.getNthItem(i));
+		UT_DEBUGMSG(("Look at Cell %d row %d cellx %d \n",i,pCell->getRow(),pCell->getCellX()));
+		if(pCell->getRow() == row)
+		{
+			UT_DEBUGMSG(("Delete Cell pos %d on row %d \n",pCell->getLeft(),row));
+			if(pCell->getCellSDH() != NULL)
+			{
+				PL_StruxDocHandle cellSDH = pCell->getCellSDH();
+				PL_StruxDocHandle endCellSDH = m_pDoc->getEndCellStruxFromCellSDH(cellSDH);
+				if(endCellSDH == NULL)
+				{
+					m_pDoc->deleteStruxNoUpdate(pCell->getCellSDH());
+				}
+				else
+				{
+					PL_StruxDocHandle sdh = cellSDH;
+					PL_StruxDocHandle nextsdh = cellSDH;
+					bool bDone = false;
+					while(!bDone)
+					{
+						bDone = (sdh == endCellSDH);
+						m_pDoc->getNextStrux(sdh,&nextsdh);
+						//						m_pDoc->miniDump(sdh,4);
+						m_pDoc->deleteStruxNoUpdate(sdh);
+						sdh = nextsdh;
+					}
+				}
+			}
+			delete pCell;
+			m_vecCells.deleteNthItem(i);
+		}
+	}
+	if( 0 == m_vecCells.getItemCount())
+	{
+		m_bTableUsed = false;
+	}
+	//
+	// look for extraneous unmatched endcell strux and delete it.
+	//
+	PL_StruxDocHandle sdhCell = m_pDoc->getLastStruxOfType(PTX_SectionCell);
+	PL_StruxDocHandle sdhEndCell = m_pDoc->getLastStruxOfType(PTX_EndCell);
+	if((sdhCell != NULL) && (sdhEndCell != NULL))
+	{
+		PL_StruxDocHandle sdhMyEnd= m_pDoc->getEndCellStruxFromCellSDH(sdhCell);
+		if((sdhMyEnd != NULL) && (sdhEndCell != sdhMyEnd))
+		{
+			UT_DEBUGMSG(("Delete extraneous endCell strux 1 sdhEndCell %x sdhMyEnd %x \n",sdhEndCell,sdhMyEnd));
+			m_pDoc->deleteStruxNoUpdate(sdhEndCell);
+			m_pDoc->appendStrux(PTX_Block,NULL);
+		}
+	}
+	else if( sdhCell == NULL)
+	{
+// 		if(sdhEndCell != NULL)
+// 		{
+// 			UT_DEBUGMSG(("Delete extraneous endCell strux 2 \n"));
+// 			m_pDoc->deleteStruxNoUpdate(sdhEndCell);
+// 			m_pDoc->appendStrux(PTX_Block,NULL);
+//		}
+	}
+}
+/*!
+ * This method removes all cells on the same row as this. Can happen if
+ * a document inserts a well defined row but puts in no \cell's
+ */
+void ie_imp_table::removeOnThisCellRow(ie_imp_cell * pImpCell)
+{
+	UT_sint32 row = pImpCell->getRow();
+	UT_DEBUGMSG(("Doing a delete on Row %d left %d top %d \n",row,pImpCell->getLeft(),pImpCell->getTop()));
+	deleteRow(row);
+	UT_ASSERT(0);
+}
+
+/*!
+ * This method removes the current row.
+ */
+void ie_imp_table::removeCurrentRow(void)
+{
+	UT_DEBUGMSG(("About to delete current row number %d \n",m_iRowCounter));
+	deleteRow(m_iRowCounter);
 }
 
 /*!
@@ -1543,7 +1653,6 @@ void ie_imp_table::appendRow(UT_Vector * pVecRowOfCells)
 		pCell->setRow(iNew);
 		m_vecCells.addItem(static_cast<void *>(pCell));
 	}
-	m_bTableUsed = true;
 }
 
 /*!
@@ -1703,6 +1812,7 @@ bool ie_imp_table_control::NewRow(void)
 	getTable()->NewRow();
 	PL_StruxDocHandle sdh = m_pDoc->getLastStruxOfType(PTX_SectionTable);
 	getTable()->setTableSDH(sdh);
+	getTable()->CloseCell(); // This just sets the table used flag!
 //	UT_ASSERT(0);
 	return true;
 }

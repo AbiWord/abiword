@@ -1342,7 +1342,8 @@ IE_Imp_RTF::IE_Imp_RTF(PD_Document * pDocument)
 	m_bContentFlushed(false),
 	m_bRowJustPassed(false),
 	m_iStackLevelAtRow(0),
-	m_bDoCloseTable(false)
+	m_bDoCloseTable(false),
+	m_iNoCellsSinceLastRow(0)
 {
 	if(m_vecAbiListTable.getItemCount() != 0)
 	{
@@ -1538,6 +1539,7 @@ void IE_Imp_RTF::OpenTable(bool bDontFlush)
 	m_currentRTFState.m_tableProps = RTFProps_TableProps();
 	m_lastCellSDH = NULL; // This is in the table structure and can be deleted from there.
 	m_bCellBlank = true;
+//	m_iNoCellsSinceLastRow = 0;
 }
 
 /*!
@@ -1573,8 +1575,13 @@ void IE_Imp_RTF::CloseTable(void)
 		if(m_lastCellSDH != NULL )
 		{
 			getDoc()->insertStruxNoUpdateBefore(m_lastCellSDH,PTX_EndTable,NULL);
-			getDoc()->deleteStruxNoUpdate(m_lastCellSDH);
-			if(m_bCellBlank)
+//
+// Need this one for dp_Instructions. Sevior
+//
+			getDoc()->insertStruxNoUpdateBefore(m_lastCellSDH,PTX_Block,NULL);
+			PL_StruxDocHandle cellSDH = m_lastCellSDH;
+			getDoc()->deleteStruxNoUpdate(cellSDH);
+//			if(m_bCellBlank)
 			{
 				m_bEndTableOpen = true;
 			}
@@ -1591,17 +1598,20 @@ void IE_Imp_RTF::CloseTable(void)
 	{
 		if(m_lastCellSDH != NULL )
 		{
-			getDoc()->deleteStruxNoUpdate(m_lastCellSDH);
+			PL_StruxDocHandle cellSDH = m_lastCellSDH;
+			getDoc()->deleteStruxNoUpdate(cellSDH);
 			m_lastCellSDH = NULL;
 		}
 		m_TableControl.CloseTable();
+		m_bEndTableOpen = true;
 		UT_DEBUGMSG(("SEVIOR: Table not used. \n"));
 	}
 	else
 	{
 		if(m_lastCellSDH != NULL )
 		{
-			getDoc()->deleteStruxNoUpdate(m_lastCellSDH);
+			PL_StruxDocHandle cellSDH = m_lastCellSDH;
+			getDoc()->deleteStruxNoUpdate(cellSDH);
 			m_lastCellSDH = NULL;
 		}
 	}
@@ -1649,6 +1659,7 @@ void IE_Imp_RTF::HandleCell(void)
 	m_bRowJustPassed = false;
 	m_bCellHandled = true;
 	m_bDoCloseTable = false;
+	m_iNoCellsSinceLastRow++;
 	if(!m_pImportFile)
 	{
 		return;
@@ -1757,6 +1768,7 @@ void IE_Imp_RTF::HandleCellX(UT_sint32 cellx)
 	{
 		OpenTable();
 	}
+//	UT_ASSERT(cellx != 3652);
 	UT_sint32 iRow = 0;
 	bool bNewCell = true;
 //
@@ -1802,8 +1814,20 @@ void IE_Imp_RTF::HandleRow(void)
 		return;
 	}
 
-	UT_DEBUGMSG(("ie_imp_RTF: Handle Row now \n"));
-	m_TableControl.NewRow();
+	UT_DEBUGMSG(("ie_imp_RTF: Handle Row now NUm cells in row %d \n",m_iNoCellsSinceLastRow));
+	if(m_iNoCellsSinceLastRow > 0)
+	{
+		m_TableControl.NewRow();
+	}
+	else
+	{
+		UT_DEBUGMSG(("One of those stupid rows without cells found. \n"));
+		UT_DEBUGMSG(("Handle it now. RTF totally sucks. \n"));
+		getTable()->removeCurrentRow();
+		getDoc()->miniDump(m_lastCellSDH,8);
+		m_bCellBlank = true;
+		UT_ASSERT(0);
+	}
 //
 // Need these for strange barely legal docs like that in bug 4111
 //
@@ -1812,6 +1836,7 @@ void IE_Imp_RTF::HandleRow(void)
 	m_bRowJustPassed = true;
 	m_iStackLevelAtRow = m_stateStack.getDepth();
 	m_bDoCloseTable = false;
+	m_iNoCellsSinceLastRow = 0;
 }
 
 void IE_Imp_RTF::HandleNoteReference(void)
