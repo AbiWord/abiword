@@ -86,14 +86,17 @@
 #	include "tb_text_underline_P.xpm"
 #	include "tb_text_overline_P.xpm"
 	// Danish translations
-#   include "tb_text_bold_F.xpm"
-#   include "tb_text_strikeout_G.xpm"
+#	include "tb_text_bold_F.xpm"
+#	include "tb_text_strikeout_G.xpm"
 	// Hungarian translations
 //#	include "tb_text_bold_F.xpm"
 #	include "tb_text_italic_D.xpm"
 //#	include "tb_text_underline_A.xpm"
 #	include "tb_text_overline_F.xpm"
 #	include "tb_text_strikeout_K.xpm"
+	// Spanish translations
+#	include "tb_text_bold_N.xpm"
+
 	// ... add new icons here (don't forget to add below the #else) ...
 
 #else
@@ -149,14 +152,16 @@
 	DefineToolbarIcon(tb_text_underline_P_xpm)
 	DefineToolbarIcon(tb_text_overline_P_xpm)
 	// Danish translations
-    DefineToolbarIcon(tb_text_bold_F_xpm)	
-    DefineToolbarIcon(tb_text_strikeout_G_xpm)
+	DefineToolbarIcon(tb_text_bold_F_xpm)	
+	DefineToolbarIcon(tb_text_strikeout_G_xpm)
 	// Hungarian translations
 		//DefineToolbarIcon(tb_text_bold_F_xpm)
 	DefineToolbarIcon(tb_text_italic_D_xpm)
 		//DefineToolbarIcon(tb_text_underline_A_xpm)
 	DefineToolbarIcon(tb_text_strikeout_K_xpm)
 	DefineToolbarIcon(tb_text_overline_F_xpm)
+	// Spanish translations
+	DefineToolbarIcon(tb_text_bold_N_xpm)
 
 	// ... also add new icons here ...
 

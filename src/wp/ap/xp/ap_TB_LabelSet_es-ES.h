@@ -56,29 +56,29 @@ BeginSet(es,ES,UT_TRUE)
 
 	ToolbarLabel(AP_TOOLBAR_ID_EDIT_UNDO,		"Deshacer",			tb_undo_xpm,	NULL, "Deshacer la edición")
 	ToolbarLabel(AP_TOOLBAR_ID_EDIT_REDO,		"Rehacer",			tb_redo_xpm,	NULL, "Rehacer la edición")
-	ToolbarLabel(AP_TOOLBAR_ID_EDIT_CUT,		"Corta",			tb_cut_xpm,		NULL, "Cortar")
+	ToolbarLabel(AP_TOOLBAR_ID_EDIT_CUT,		"Cortar",			tb_cut_xpm,		NULL, "Cortar")
 	ToolbarLabel(AP_TOOLBAR_ID_EDIT_COPY,		"Copiar",			tb_copy_xpm,	NULL, "Copiar")
 	ToolbarLabel(AP_TOOLBAR_ID_EDIT_PASTE,		"Pegar",			tb_paste_xpm,	NULL, "Pegar")
 
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_STYLE,		"Estilo",			NoIcon,			NULL, "Estilo")
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_FONT,		"Fuente",			NoIcon,			NULL, "Fuente")
-	ToolbarLabel(AP_TOOLBAR_ID_FMT_SIZE,		"Tamaño de la fuente", NoIcon,		NULL, "Tamaño de la fuente")
-	ToolbarLabel(AP_TOOLBAR_ID_FMT_BOLD,		"Negrita",			tb_text_bold_xpm,		NULL, "Negrita")
-	ToolbarLabel(AP_TOOLBAR_ID_FMT_ITALIC,		"Italica",			tb_text_italic_xpm,		NULL, "Cursiva")
+	ToolbarLabel(AP_TOOLBAR_ID_FMT_SIZE,		"Tamaño",			NoIcon,			NULL, "Tamaño de la fuente")
+	ToolbarLabel(AP_TOOLBAR_ID_FMT_BOLD,		"Negrita",			tb_text_bold_N_xpm,		NULL, "Negrita")
+	ToolbarLabel(AP_TOOLBAR_ID_FMT_ITALIC,		"Italica",			tb_text_italic_K_xpm,	NULL, "Cursiva")
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_UNDERLINE,	"Subrayado",		tb_text_underline_S_xpm,NULL, "Subrayado")
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_OVERLINE,	"Superrayado",		tb_text_overline_xpm,	NULL, "Superrayado")
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_STRIKE,		"Tachado",			tb_text_strikeout_xpm,	NULL, "Tachado")
 
-	ToolbarLabel(AP_TOOLBAR_ID_FMT_SUPERSCRIPT,	"Superíndice",		tb_text_superscript_xpm,	NULL, "Superíndice")
-	ToolbarLabel(AP_TOOLBAR_ID_FMT_SUBSCRIPT,	"Subíndice",		tb_text_subscript_xpm,		NULL, "Subíndice")
+	ToolbarLabel(AP_TOOLBAR_ID_FMT_SUPERSCRIPT,	"Superíndice",		tb_text_superscript_xpm,NULL, "Superíndice")
+	ToolbarLabel(AP_TOOLBAR_ID_FMT_SUBSCRIPT,	"Subíndice",		tb_text_subscript_xpm,	NULL, "Subíndice")
 
-	ToolbarLabel(AP_TOOLBAR_ID_ALIGN_LEFT,		"Izquierda",		tb_text_align_left_xpm,		NULL, "Alinear a la izquierda")
-	ToolbarLabel(AP_TOOLBAR_ID_ALIGN_CENTER,	"Centro",			tb_text_center_xpm,			NULL, "Alinear en el centro")
-	ToolbarLabel(AP_TOOLBAR_ID_ALIGN_RIGHT,		"Derecha",			tb_text_align_right_xpm,	NULL, "Alinear a la derecha")
-	ToolbarLabel(AP_TOOLBAR_ID_ALIGN_JUSTIFY,	"Justificar",		tb_text_justify_xpm,		NULL, "Justificar párrafo")
+	ToolbarLabel(AP_TOOLBAR_ID_ALIGN_LEFT,		"Izquierda",		tb_text_align_left_xpm,	NULL, "Alinear a la izquierda")
+	ToolbarLabel(AP_TOOLBAR_ID_ALIGN_CENTER,	"Centro",			tb_text_center_xpm,		NULL, "Alinear en el centro")
+	ToolbarLabel(AP_TOOLBAR_ID_ALIGN_RIGHT,		"Derecha",			tb_text_align_right_xpm,NULL, "Alinear a la derecha")
+	ToolbarLabel(AP_TOOLBAR_ID_ALIGN_JUSTIFY,	"Justificar",		tb_text_justify_xpm,	NULL, "Justificar párrafo")
 
-	ToolbarLabel(AP_TOOLBAR_ID_PARA_0BEFORE,	"Nada antes",		tb_para_0before_xpm,		NULL, "Espaciado anterior: ninguno")
-	ToolbarLabel(AP_TOOLBAR_ID_PARA_12BEFORE,	"12 pt antes",		tb_para_12before_xpm,		NULL, "Espaciado anterior: 12 pt")
+	ToolbarLabel(AP_TOOLBAR_ID_PARA_0BEFORE,	"Nada antes",		tb_para_0before_xpm,	NULL, "Espaciado anterior: ninguno")
+	ToolbarLabel(AP_TOOLBAR_ID_PARA_12BEFORE,	"12 pt antes",		tb_para_12before_xpm,	NULL, "Espaciado anterior: 12 pt")
 
 	ToolbarLabel(AP_TOOLBAR_ID_SINGLE_SPACE,	"Espaciado simple",	tb_line_single_space_xpm,	NULL, "Espaciado simple")
 	ToolbarLabel(AP_TOOLBAR_ID_MIDDLE_SPACE,	"Espaciado 1,5",	tb_line_middle_space_xpm,	NULL, "Espaciado 1,5")
@@ -88,7 +88,8 @@ BeginSet(es,ES,UT_TRUE)
 	ToolbarLabel(AP_TOOLBAR_ID_2COLUMN,			"2 Columnas",		tb_2column_xpm,			NULL, "2 Columnas")
 	ToolbarLabel(AP_TOOLBAR_ID_3COLUMN,			"3 Columnas",		tb_3column_xpm,			NULL, "3 Columnas")
 
-	ToolbarLabel(AP_TOOLBAR_ID_ZOOM,			"Zoom",				NoIcon,			NULL, "Zoom")
+	ToolbarLabel(AP_TOOLBAR_ID_ZOOM,			"Zoom",				NoIcon,					NULL, "Zoom")
+	ToolbarLabel(AP_TOOLBAR_ID_LISTS_BULLETS,	"Listas",			tb_lists_xpm,			NULL, "Listas y viñetas")
 	
 	// ... add others here ...
 
