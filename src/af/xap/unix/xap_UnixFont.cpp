@@ -261,11 +261,60 @@ XAP_UnixFont::~XAP_UnixFont(void)
 
 	if (m_metricsData != NULL)
 	{
+		if (m_metricsData->cmi)
+		{
+			FREEP(m_metricsData->cmi->name);
+			Ligature * l = m_metricsData->cmi->ligs;
+			Ligature * ln = l ? l->next : NULL;
+			while (ln)
+			{
+				FREEP(l->succ);
+				FREEP(l->lig);
+				FREEP(l);
+				l = ln;
+				ln = ln->next;
+			}
+			FREEP(l);
+		}
 		FREEP(m_metricsData->cmi);
 		FREEP(m_metricsData->cwi);
+		if (m_metricsData->gfi)
+		{
+			FREEP(m_metricsData->gfi->afmVersion);
+			FREEP(m_metricsData->gfi->fontName);
+			FREEP(m_metricsData->gfi->encodingScheme);
+			FREEP(m_metricsData->gfi->fullName);
+			FREEP(m_metricsData->gfi->familyName);
+			FREEP(m_metricsData->gfi->weight);
+			FREEP(m_metricsData->gfi->version);
+			FREEP(m_metricsData->gfi->notice);
+		}
 		FREEP(m_metricsData->gfi);
 		FREEP(m_metricsData->tkd);
+		if (m_metricsData->pkd)
+		{
+			int pos = 0;
+			while (pos < m_metricsData->numOfPairs)
+			{
+				FREEP(m_metricsData->pkd[pos].name1);
+				FREEP(m_metricsData->pkd[pos].name2);
+				pos++;
+			}
+			FREEP(m_metricsData->pkd);
+		}
 		FREEP(m_metricsData->pkd);
+		if (m_metricsData->ccd)
+		{
+			int pos = 0;
+			while (pos < m_metricsData->numOfComps)
+			{
+				FREEP(m_metricsData->ccd[pos].ccName);
+				int jpos = 0;
+				while (jpos<m_metricsData->ccd[pos].numOfPieces)
+					FREEP(m_metricsData->ccd[pos].pieces[jpos++].pccName);
+				pos++;
+			}
+		}
 		FREEP(m_metricsData->ccd);
 		FREEP(m_metricsData);
 	}
