@@ -619,8 +619,10 @@ void abiSetupModalDialog(GtkDialog * me, XAP_Frame *pFrame, XAP_Dialog * pDlg, g
 	gtk_window_set_modal ( GTK_WINDOW(me), TRUE ) ;
 }
 
-gint abiRunModalDialog(GtkDialog * me, bool destroyDialog)
+gint abiRunModalDialog(GtkDialog * me, bool destroyDialog, AtkRole role)
 {
+	atk_object_set_role (gtk_widget_get_accessible (GTK_WIDGET (me)), role);
+
   // now run the dialog
   gint result = gtk_dialog_run ( me ) ;
   
@@ -642,10 +644,10 @@ gint abiRunModalDialog(GtkDialog * me, bool destroyDialog)
  * 7) If \destroyDialog is true, destroys the dialog, else you have to call abiDestroyWidget()
  */
 gint abiRunModalDialog(GtkDialog * me, XAP_Frame *pFrame, XAP_Dialog * pDlg,
-					   gint dfl_response, bool destroyDialog )
+					   gint dfl_response, bool destroyDialog, AtkRole role)
 {
   abiSetupModalDialog(me, pFrame, pDlg, dfl_response);
-  return abiRunModalDialog(me, destroyDialog);
+  return abiRunModalDialog(me, destroyDialog, role);
 }
 
 /*!
@@ -659,7 +661,7 @@ gint abiRunModalDialog(GtkDialog * me, XAP_Frame *pFrame, XAP_Dialog * pDlg,
 6) Sets the default button to dfl_response, sets ESC to close
  */
 void abiSetupModelessDialog(GtkDialog * me, XAP_Frame * pFrame, XAP_Dialog * pDlg,
-			    gint dfl_response, bool abi_modeless )
+							gint dfl_response, bool abi_modeless, AtkRole role )
 {
 	// To center the dialog, we need the frame of its parent.
 	XAP_UnixFrameImpl * pUnixFrameImpl = static_cast<XAP_UnixFrameImpl *>(pFrame->getFrameImpl());
@@ -680,7 +682,7 @@ void abiSetupModelessDialog(GtkDialog * me, XAP_Frame * pFrame, XAP_Dialog * pDl
 	
 	// connect F1 to the help subsystem
 	g_signal_connect (G_OBJECT(me), "key-press-event",
-			  G_CALLBACK(nonmodal_keypress_cb), pDlg);
+					  G_CALLBACK(nonmodal_keypress_cb), pDlg);
 	
 	// set the default response
 	gtk_dialog_set_default_response ( me, dfl_response ) ;
@@ -695,6 +697,8 @@ void abiSetupModelessDialog(GtkDialog * me, XAP_Frame * pFrame, XAP_Dialog * pDl
 	
 	// and mark it as modeless
 	gtk_window_set_modal ( GTK_WINDOW(me), FALSE ) ;
+
+	atk_object_set_role (gtk_widget_get_accessible (GTK_WIDGET (me)), ATK_ROLE_ALERT);
 }
 
 /*!

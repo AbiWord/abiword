@@ -152,7 +152,7 @@ void XAP_UnixDialog_MessageBox::runModal(XAP_Frame * pFrame)
 	UT_ASSERT(message);
 
 	switch ( abiRunModalDialog ( GTK_DIALOG(message), pFrame,
-				     this, dflResponse, true ) )
+								 this, dflResponse, true, ATK_ROLE_ALERT ) )
 	{
 		case GTK_RESPONSE_OK:
 			m_answer = XAP_Dialog_MessageBox::a_OK; break;
