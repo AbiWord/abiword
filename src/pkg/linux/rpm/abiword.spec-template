@@ -19,7 +19,7 @@
 %define enable_eml 0
 %define enable_festvox 0
 %define enable_freetranslation 0
-%define enable_gdict 0
+%define enable_gdict 1
 %define enable_gdkpixbuf 1
 %define enable_html 1
 %define enable_imagemagick 0
