@@ -29,6 +29,7 @@
 #include "fv_View.h"
 #include "fl_DocLayout.h"
 #include "fl_AutoLists.h"
+#include "fp_Page.h"
 #include "fg_Graphic.h"
 #include "pd_Document.h"
 #include "gr_Graphics.h"
@@ -4339,6 +4340,9 @@ static bool s_doBreakDlg(FV_View * pView)
 	AP_Dialog_Break::tAnswer ans = pDialog->getAnswer();
 	bool bOK = (ans == AP_Dialog_Break::a_OK);
 
+	if(pView->isHdrFtrEdit())
+		return false;
+
 	if (bOK)
 	{
 		UT_UCSChar c;
@@ -5358,6 +5362,9 @@ static bool s_doColumnsDlg(FV_View * pView)
 		= (AP_Dialog_Columns *)(pDialogFactory->requestDialog(AP_DIALOG_ID_COLUMNS));
 	UT_ASSERT(pDialog);
 
+	if(pView->isHdrFtrEdit())
+		return false;
+
 	UT_uint32 iColumns = 1;
 	bool bLineBetween = false;
 
@@ -5743,6 +5750,9 @@ Defun1(setStyleHeading3)
 Defun1(sectColumns1)
 {
 	ABIWORD_VIEW;
+	if(pView->isHdrFtrEdit())
+		return false;
+
 	const XML_Char * properties[] =	{ "columns", "1", 0};
 	pView->setSectionFormat(properties);
 	return true;
@@ -5751,6 +5761,8 @@ Defun1(sectColumns1)
 Defun1(sectColumns2)
 {
 	ABIWORD_VIEW;
+	if(pView->isHdrFtrEdit())
+		return false;
 	const XML_Char * properties[] =	{ "columns", "2", 0};
 	pView->setSectionFormat(properties);
 	return true;
@@ -5759,6 +5771,8 @@ Defun1(sectColumns2)
 Defun1(sectColumns3)
 {
 	ABIWORD_VIEW;
+	if(pView->isHdrFtrEdit())
+		return false;
 	const XML_Char * properties[] =	{ "columns", "3", 0};
 	pView->setSectionFormat(properties);
 	return true;
@@ -6406,6 +6420,9 @@ Defun(dlgBackground)
 	AP_Dialog_Background * pDialog
 		= (AP_Dialog_Background *)(pDialogFactory->requestDialog(AP_DIALOG_ID_BACKGROUND));
 	UT_ASSERT(pDialog);
+
+	UT_RGBColor * pClr = pView->getCurrentPage()->getOwningSection()->getPaperColor();
+	pDialog->setColor(*pClr);
 
 	pDialog->runModal (pFrame);
 

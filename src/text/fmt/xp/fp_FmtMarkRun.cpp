@@ -148,7 +148,8 @@ void fp_FmtMarkRun::_clearScreen(bool /* bFullLineHeightRect */)
 #ifdef DEBUG
 	UT_sint32 xoff = 0, yoff = 0;
 	m_pLine->getScreenOffsets(this, xoff, yoff);
-	m_pG->clearArea(xoff,yoff, 1,m_iHeight);
+
+	m_pG->fillRect(m_ColorBG,xoff,yoff, 1,m_iHeight);
 #endif
 #endif
 }

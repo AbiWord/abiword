@@ -61,8 +61,8 @@
 
 static PP_Property _props[] =
 {
-	{ "background-color", "transparent", false},
-	{ "bgcolor", "ffffff", true},
+	{ "background-color", "ffffff", false},
+	{ "bgcolor", "transparent", true},
 
 	{ "color",   "000000", true},
 	{ "column-gap",	"0.25in", false},

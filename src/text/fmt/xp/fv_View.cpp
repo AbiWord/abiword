@@ -112,8 +112,7 @@ FV_View::FV_View(XAP_App * pApp, void* pParentData, FL_DocLayout* pLayout)
 		m_bNeedSavedPosition(false),
 		_m_matchCase(false),
 		_m_findNextString(0),
-		m_bShowPara(false),
-		m_clrPaper (255, 255, 255)
+		m_bShowPara(false)
 {
 //	UT_ASSERT(m_pG->queryProperties(GR_Graphics::DGP_SCREEN));
 
@@ -338,24 +337,22 @@ void FV_View::toggleCase (ToggleCase c)
 void FV_View::setPaperColor(UT_RGBColor & rgb)
 {
 
-#if 0
 	char clr[8];
-
 	sprintf(clr, "#%02x%02x%02x", rgb.m_red, rgb.m_grn, rgb.m_blu);
 
 	UT_DEBUGMSG(("DOM: color is: %s\n", clr));
 
 	const XML_Char * props [3];
-	props [0] = "props";
+	props [0] = "background-color";
 	props [1] = clr;
 	props [2] = 0;
 
 	setSectionFormat(props);
-#else
-	UT_setColor(m_clrPaper, rgb.m_red, rgb.m_grn, rgb.m_blu);
-#endif
+	_eraseInsertionPoint();
 	// update the screen
 	_draw(0,0,m_iWindowWidth,m_iWindowHeight,false,false);
+	_fixInsertionPointCoords();
+	_drawInsertionPoint();
 }
 
 void FV_View::focusChange(AV_Focus focus)
@@ -5730,57 +5727,45 @@ void FV_View::_xorInsertionPoint()
 {
 	if (m_iPointHeight > 0 )
 	{
-#if 0
-	  const PP_AttrProp *pSectionAP = NULL;
-	  fl_BlockLayout* pBlock = _findBlockAtPosition(getPoint());
-	  fl_SectionLayout* pSection = pBlock->getSectionLayout();
-	  pSection->getAttrProp(&pSectionAP);
-
-	  UT_RGBColor clrPaper;
-	  const XML_Char * szclr = PP_evalProperty("bgcolor", NULL, NULL, pSectionAP, m_pDoc, false);
-	  UT_parseColor (szclr, clrPaper);
-	  m_pG->setColor(clrPaper);
-#else
-	  m_pG->setColor(m_clrPaper);
-#endif
-
-		m_pG->xorLine(m_xPoint-1, m_yPoint+1, m_xPoint-1, m_yPoint + m_iPointHeight+1);
-		m_pG->xorLine(m_xPoint, m_yPoint+1, m_xPoint, m_yPoint + m_iPointHeight+1);
-		m_bCursorIsOn = !m_bCursorIsOn;
+	  UT_RGBColor * pClr = getCurrentPage()->getOwningSection()->getPaperColor();
+	  m_pG->setColor(*pClr);
+	  m_pG->xorLine(m_xPoint-1, m_yPoint+1, m_xPoint-1, m_yPoint + m_iPointHeight+1);
+	  m_pG->xorLine(m_xPoint, m_yPoint+1, m_xPoint, m_yPoint + m_iPointHeight+1);
+	  m_bCursorIsOn = !m_bCursorIsOn;
 #ifdef BIDI_ENABLED
-		if((m_xPoint != m_xPoint2) || (m_yPoint != m_yPoint2))
-		{
-			// #TF the caret will have a small flag at the top indicating the direction of
-			// writing
-			if(m_bPointDirection) //rtl flag
-			{
-		    	m_pG->xorLine(m_xPoint-3, m_yPoint+1, m_xPoint-1, m_yPoint+1);
-		    	m_pG->xorLine(m_xPoint-2, m_yPoint+2, m_xPoint-1, m_yPoint+2);
-			}
-			else
-			{
-		    	m_pG->xorLine(m_xPoint+1, m_yPoint+1, m_xPoint+3, m_yPoint+1);
-		    	m_pG->xorLine(m_xPoint+1, m_yPoint+2, m_xPoint+2, m_yPoint+2);
-			}
-		
-		
-			//this is the second caret on ltr-rtl boundary
-			m_pG->xorLine(m_xPoint2-1, m_yPoint2+1, m_xPoint2-1, m_yPoint2 + m_iPointHeight + 1);
-			m_pG->xorLine(m_xPoint2, m_yPoint2+1, m_xPoint2, m_yPoint2 + m_iPointHeight + 1);
- 			//this is the line that links the two carrets
- 			m_pG->xorLine(m_xPoint, m_yPoint + m_iPointHeight + 1, m_xPoint2, m_yPoint2 + m_iPointHeight + 1);
+	  if((m_xPoint != m_xPoint2) || (m_yPoint != m_yPoint2))
+	  {
+		  // #TF the caret will have a small flag at the top indicating the direction of
+		  // writing
+		  if(m_bPointDirection) //rtl flag
+		  {
+			  m_pG->xorLine(m_xPoint-3, m_yPoint+1, m_xPoint-1, m_yPoint+1);
+			  m_pG->xorLine(m_xPoint-2, m_yPoint+2, m_xPoint-1, m_yPoint+2);
+		  }
+		  else
+		  {
+			  m_pG->xorLine(m_xPoint+1, m_yPoint+1, m_xPoint+3, m_yPoint+1);
+			  m_pG->xorLine(m_xPoint+1, m_yPoint+2, m_xPoint+2, m_yPoint+2);
+		  }
+		  
+		  
+		  //this is the second caret on ltr-rtl boundary
+		  m_pG->xorLine(m_xPoint2-1, m_yPoint2+1, m_xPoint2-1, m_yPoint2 + m_iPointHeight + 1);
+		  m_pG->xorLine(m_xPoint2, m_yPoint2+1, m_xPoint2, m_yPoint2 + m_iPointHeight + 1);
+		  //this is the line that links the two carrets
+		  m_pG->xorLine(m_xPoint, m_yPoint + m_iPointHeight + 1, m_xPoint2, m_yPoint2 + m_iPointHeight + 1);
  		
-			if(m_bPointDirection)
-			{
-				m_pG->xorLine(m_xPoint2+1, m_yPoint2+1, m_xPoint2+3, m_yPoint2+1);
-				m_pG->xorLine(m_xPoint2+1, m_yPoint2+2, m_xPoint2+2, m_yPoint2+2);
-			}
-			else
-			{
-				m_pG->xorLine(m_xPoint2-3, m_yPoint2+1, m_xPoint2-1, m_yPoint2+1);
-				m_pG->xorLine(m_xPoint2-2, m_yPoint2+2, m_xPoint2-1, m_yPoint2+2);
-			}
-		}
+		  if(m_bPointDirection)
+		  {
+			  m_pG->xorLine(m_xPoint2+1, m_yPoint2+1, m_xPoint2+3, m_yPoint2+1);
+			  m_pG->xorLine(m_xPoint2+1, m_yPoint2+2, m_xPoint2+2, m_yPoint2+2);
+		  }
+		  else
+		  {
+			  m_pG->xorLine(m_xPoint2-3, m_yPoint2+1, m_xPoint2-1, m_yPoint2+1);
+			  m_pG->xorLine(m_xPoint2-2, m_yPoint2+2, m_xPoint2-1, m_yPoint2+2);
+		  }
+	  }
 #endif
 	}
 	if(_hasPointMoved() == true)
@@ -6135,19 +6120,8 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 
 			if (!bDirtyRunsOnly || pPage->needsRedraw())
 			{	
-#if 0
-			  const PP_AttrProp *pSectionAP = NULL;
-			  fl_BlockLayout* pBlock = _findBlockAtPosition(getPoint());
-			  fl_SectionLayout* pSection = pBlock->getSectionLayout();
-			  pSection->getAttrProp(&pSectionAP);
-			  
-			  UT_RGBColor clrPaper;
-			  const XML_Char * szclr = PP_evalProperty("bgcolor", NULL, NULL, pSectionAP, m_pDoc, false);
-			  UT_parseColor (szclr, clrPaper);
-			  m_pG->fillRect(clrPaper,adjustedLeft+1,adjustedTop+1,iPageWidth-1,iPageHeight-1);
-#else
-			  m_pG->fillRect(m_clrPaper,adjustedLeft+1,adjustedTop+1,iPageWidth-1,iPageHeight-1);
-#endif
+			  UT_RGBColor * pClr = pPage->getOwningSection()->getPaperColor();
+			  m_pG->fillRect(*pClr,adjustedLeft+1,adjustedTop+1,iPageWidth-1,iPageHeight-1);
 			}
 
 			pPage->draw(&da);

@@ -839,11 +839,11 @@ void fp_HdrFtrContainer::clearHdrFtrBoundaries(void)
 {
 	if(!m_bHdrFtrBoxDrawn)
 		return;
-	UT_RGBColor clrClearHdrFtr(255,255,255);
+	UT_RGBColor * pClr = getPage()->getOwningSection()->getPaperColor();
 	m_pG->setLineWidth(1);
-	m_pG->setColor(clrClearHdrFtr);
+	m_pG->setColor(*pClr);
 //
-// Paint over the previous lines with "white"
+// Paint over the previous lines with the page color
 //
 	m_pG->drawLine(m_ixoffBegin, m_iyoffBegin, m_ixoffEnd, m_iyoffBegin);
 	m_pG->drawLine(m_ixoffBegin, m_iyoffEnd, m_ixoffEnd, m_iyoffEnd);

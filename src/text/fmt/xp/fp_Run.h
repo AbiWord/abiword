@@ -128,6 +128,9 @@ public:
 	fd_Field*				getField(void) { return m_pField;}
 	bool					isField(void) { return (bool) (m_pField != NULL) ;}
 	void					unlinkFromRunList();
+	void                    updateBackgroundColor(void);
+	UT_RGBColor *           getHightlightColor(void);
+	UT_RGBColor *           getPageColor(void);
 
 	virtual bool			hasLayoutProperties(void) const;
 	
@@ -233,8 +236,10 @@ protected:
 	UT_sint32				m_iDirection;   //#TF direction of the run 0 for left-to-right, 1 for right-to-left
 #endif
 
-	// the paper's color at any given time
-	UT_RGBColor             m_colorBG;
+	// the run highlight color. If the property is transparent use the page color
+	UT_RGBColor             m_colorHL;
+	// A local cache of the page color. This makes clearscreen() a bit faster
+	UT_RGBColor             m_colorPG;
 
 	GR_Font * m_pScreenFont;
 	GR_Font * m_pLayoutFont;

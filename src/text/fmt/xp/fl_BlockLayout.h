@@ -252,11 +252,14 @@ public:
 	inline fb_Alignment *		getAlignment(void) const { return m_pAlignment; }
 	inline FL_DocLayout* 		getDocLayout(void) const { return m_pLayout; }
 	inline fl_SectionLayout* 	getSectionLayout(void) { return m_pSectionLayout; }
+	fl_DocSectionLayout * getDocSectionLayout(void);
 
 	void setSectionLayout(fl_SectionLayout* pSectionLayout);
 
 	void getLineSpacing(double& dSpacing, double &dSpacingLayout, eSpacingPolicy& eSpacing) const;
 						
+	void updateBackgroundColor(void);
+
 	inline UT_uint32 getProp_Orphans(void) const { return m_iOrphansProperty; }
 	inline UT_uint32 getProp_Widows(void) const { return m_iWidowsProperty; }
 	inline bool getProp_KeepTogether(void) const { return m_bKeepTogether; }

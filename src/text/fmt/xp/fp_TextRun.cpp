@@ -130,7 +130,8 @@ void fp_TextRun::lookupProperties(void)
 
 	UT_parseColor(PP_evalProperty("color",pSpanAP,pBlockAP,pSectionAP, pDoc, true), m_colorFG);
 
-	UT_parseColor(PP_evalProperty("bgcolor",pSpanAP,pBlockAP,pSectionAP, pDoc, true), m_colorBG);
+	getHightlightColor();
+	getPageColor();
 
 	const XML_Char *pszDecor = PP_evalProperty("text-decoration",pSpanAP,pBlockAP,pSectionAP, pDoc, true);
 
@@ -918,7 +919,7 @@ void fp_TextRun::_clearScreen(bool /* bFullLineHeightRect */)
 		  since document facilities allow the background color to be
 		  changed, for things such as table cells.
 		*/
-		UT_RGBColor clrNormalBackground(m_colorBG.m_red, m_colorBG.m_grn, m_colorBG.m_blu);
+		UT_RGBColor clrNormalBackground(m_colorHL.m_red, m_colorHL.m_grn, m_colorHL.m_blu);
 		
 		if (m_pField)
 		{
@@ -928,7 +929,7 @@ void fp_TextRun::_clearScreen(bool /* bFullLineHeightRect */)
 		
 		UT_sint32 xoff = 0, yoff = 0;
 		m_pLine->getScreenOffsets(this, xoff, yoff);
-		m_pG->clearArea(xoff, yoff, m_iWidth, m_pLine->getHeight());
+		m_pG->fillRect(clrNormalBackground,xoff, yoff, m_iWidth, m_pLine->getHeight());
 	}
 
 }
@@ -968,8 +969,7 @@ void fp_TextRun::_draw(dg_DrawArgs* pDA)
 	  appropriate selection background color based on the color
 	  of the foreground text, probably.
 	*/
-	//UT_RGBColor clrNormalBackground(255,255,255);
-	UT_RGBColor clrNormalBackground(m_colorBG.m_red, m_colorBG.m_grn, m_colorBG.m_blu);
+	UT_RGBColor clrNormalBackground(m_colorHL.m_red, m_colorHL.m_grn, m_colorHL.m_blu);
 	UT_RGBColor clrSelBackground(192, 192, 192);
 	if (m_pField)
 	{

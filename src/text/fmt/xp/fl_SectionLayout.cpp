@@ -383,6 +383,20 @@ bool fl_SectionLayout::bl_doclistener_changeFmtMark(fl_BlockLayout* pBL, const P
 	return pBL->doclistener_changeFmtMark(pcrfmc);
 }
 
+/*!
+ * This method updates the Background color in all the runs from the Page color
+ * in the DocSectionLayout.
+ */
+void fl_SectionLayout::updateBackgroundColor(void)
+{
+	fl_BlockLayout*	pBL = m_pFirstBlock;
+	while (pBL)
+	{
+		pBL->updateBackgroundColor();
+		pBL = pBL->getNext();
+	}
+}
+
 //////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////
 
@@ -758,14 +772,17 @@ bool fl_DocSectionLayout::doclistener_changeStrux(const PX_ChangeRecord_StruxCha
 	*/
 
 	format();
+	updateBackgroundColor();
 	if(m_pHeaderSL)
 	{
 		m_pHeaderSL->format();
+		m_pHeaderSL->updateBackgroundColor();
 		m_pHeaderSL->redrawUpdate();
 	}
 	if(m_pFooterSL)
 	{
 		m_pFooterSL->format();
+		m_pFooterSL->updateBackgroundColor();
 		m_pFooterSL->redrawUpdate();
 	}
 
@@ -976,11 +993,21 @@ void fl_DocSectionLayout::_lookupProperties(void)
 		m_iHeaderMarginLayoutUnits = UT_convertToLayoutUnits("0.0in");
 		m_dHeaderMarginUserUnits = UT_convertDimensionless("0.0in");
 	}
-	
-
+	const char* pszClrPaper = NULL;
+	pSectionAP->getProperty("background-color", (const XML_Char *&)pszClrPaper);
+	if(pszClrPaper)
+		UT_parseColor(pszClrPaper,m_clrPaper);
+	else
+		UT_parseColor("ffffff",m_clrPaper);
 
 	m_bForceNewPage = false;
 }
+
+UT_RGBColor * fl_DocSectionLayout::getPaperColor(void) 
+{
+	return &m_clrPaper;
+}
+
 
 void fl_DocSectionLayout::deleteEmptyColumns(void)
 {
@@ -1992,6 +2019,30 @@ void fl_HdrFtrSectionLayout::updateLayout(void)
 		struct _PageHdrFtrShadowPair* pPair = (struct _PageHdrFtrShadowPair*) m_vecPages.getNthItem(i);
 
 		pPair->pShadow->updateLayout();
+	}
+}
+
+/*!
+ * This method updates the background color in the header/footer section and
+ * all the shadows associated with it.
+ */
+void fl_HdrFtrSectionLayout::updateBackgroundColor(void)
+{
+	fl_BlockLayout*	pBL = m_pFirstBlock;
+	while (pBL)
+	{
+		pBL->updateBackgroundColor();
+		pBL = pBL->getNext();
+	}
+	//
+	// update Just the  blocks in the shadowlayouts
+	//
+  	UT_uint32 iCount = m_vecPages.getItemCount();
+	for (UT_uint32 i=0; i<iCount; i++)
+	{
+		struct _PageHdrFtrShadowPair* pPair = (struct _PageHdrFtrShadowPair*) m_vecPages.getNthItem(i);
+
+		pPair->pShadow->updateBackgroundColor();
 	}
 }
 

@@ -131,6 +131,15 @@ void fp_Line::setContainer(fp_Container* pContainer)
 	}
 	
 	m_pContainer = pContainer;
+	updateBackgroundColor();
+}
+
+void fp_Line::updateBackgroundColor()
+{
+	UT_uint32 count = m_vecRuns.getItemCount();
+	UT_uint32 i = 0;
+	for(i=0;i<count;i++)
+		static_cast<fp_Run *>(m_vecRuns.getNthItem(i))->updateBackgroundColor();
 }
 
 bool fp_Line::removeRun(fp_Run* pRun, bool bTellTheRunAboutIt)
@@ -587,8 +596,8 @@ void fp_Line::clearScreen(void)
 			UT_sint32 xoffLine, yoffLine;
 
 			m_pContainer->getScreenOffsets(this, xoffLine, yoffLine);
-
-			pRun->getGraphics()->clearArea(xoffLine, yoffLine, m_iMaxWidth, m_iHeight);
+			UT_RGBColor * pClr = pRun->getPageColor();
+			pRun->getGraphics()->fillRect(*pClr,xoffLine, yoffLine, m_iMaxWidth, m_iHeight);
 //
 // Sevior: I added this for robustness.
 //
@@ -641,12 +650,12 @@ void fp_Line::clearScreenFromRunToEnd(UT_uint32 runIndex)
 		UT_sint32 xoffLine, yoffLine;
 
 		m_pContainer->getScreenOffsets(this, xoffLine, yoffLine);
-
-		pRun->getGraphics()->clearArea(xoff, yoff, m_iMaxWidth - (xoff - xoffLine), m_iHeight);
+		UT_RGBColor * pClr = pRun->getPageColor();
+		pRun->getGraphics()->fillRect(*pClr,xoff, yoff, m_iMaxWidth - (xoff - xoffLine), m_iHeight);
 //
 // Sevior: I added this for robustness.
 //
-		m_pBlock->setNeedsRedraw();
+		getBlock()->setNeedsRedraw();
 		setNeedsRedraw();
 		for (i = runIndex; i < count; i++)
 		{

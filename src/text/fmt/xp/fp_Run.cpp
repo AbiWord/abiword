@@ -96,8 +96,10 @@ fp_Run::fp_Run(fl_BlockLayout* pBL,
 		m_pScreenFont(0),
 		m_pLayoutFont(0)
 {
-        // set the default background color to a sensible default for the time being
-        UT_setColor (m_colorBG, 255, 255, 255);
+        // set the default background color and the paper color of the 
+	    // section owning the run.
+	getHightlightColor();
+	getPageColor();
 	
 #ifdef BIDI_ENABLED
 	m_iDirection = -1; //by default all runs are whitespace
@@ -204,6 +206,87 @@ fp_Run::_inheritProperties(void)
 	}
 }
 
+/*!
+ * This method returns the Hight Light color as defined for this page. It examines
+ * the bgcolor property and uses that over the page color if its defined as not
+ * transperent. It sets the m_colorHL member variable.
+ */
+UT_RGBColor * fp_Run::getHightlightColor(void)
+{
+
+	const PP_AttrProp * pSpanAP = NULL;
+	const PP_AttrProp * pBlockAP = NULL;
+	const PP_AttrProp * pSectionAP = NULL; 
+	
+	m_pBL->getSpanAttrProp(m_iOffsetFirst,false,&pSpanAP);
+//    UT_DEBUGMSG(("SEVIOR: Doing Lookupprops for block %x run %x  offset =%d \n ",m_pBL,this,m_iOffsetFirst));
+//	UT_ASSERT(pSpanAP); // Sevior put this back to track down interesting 
+	// Section change bug.
+	m_pBL->getAttrProp(&pBlockAP);
+
+	const char * pszBGcolor = PP_evalProperty("bgcolor",pSpanAP,pBlockAP,pSectionAP, m_pBL->getDocument(), true);
+	static UT_RGBColor sClr;
+	UT_RGBColor * pClr = NULL;
+
+//
+// FIXME: The "ffffff" is for backwards compatibility. If we don't exclude this 
+// no prexisting docs will be able to change the Highlight color in paragraphs 
+// with lists. I think this is a good solution for now. However it does mean
+// field-color od "ffffff", pure white is actually transparent.
+//
+	if(pszBGcolor && UT_strcmp(pszBGcolor,"transparent")!= 0  && UT_strcmp(pszBGcolor,"ffffff") != 0)
+	{
+		UT_parseColor(pszBGcolor, sClr);
+		UT_setColor (m_colorHL, sClr.m_red, sClr.m_grn, sClr.m_blu);
+		return &sClr;
+	}
+	else
+	{
+		fp_Line * pLine = getLine();
+		fp_Page * pPage = NULL;
+		if(pLine != NULL)
+			pPage = pLine->getContainer()->getPage();
+		if(pPage != NULL)
+			pClr = pPage->getOwningSection()->getPaperColor();
+		else
+			pClr = m_pBL->getDocSectionLayout()->getPaperColor();
+	}
+	UT_setColor (m_colorHL, pClr->m_red, pClr->m_grn, pClr->m_blu);
+	return pClr;
+}
+
+
+/*!
+ * This method returns the page color and sets the page color member variable 
+ * as defined for this page. It is used for clearscreen() methods and so does 
+ * not examine the bgcolor property.
+ */
+UT_RGBColor * fp_Run::getPageColor(void)
+{
+	fp_Line * pLine = getLine();
+	fp_Page * pPage = NULL;
+	UT_RGBColor * pClr = NULL;
+	if(pLine != NULL)
+		pPage = pLine->getContainer()->getPage();
+	if(pPage != NULL)
+		pClr = pPage->getOwningSection()->getPaperColor();
+	else
+		pClr = m_pBL->getDocSectionLayout()->getPaperColor();
+	UT_setColor (m_colorPG, pClr->m_red, pClr->m_grn, pClr->m_blu);
+	return pClr;
+}
+
+/*!
+ * This method updates the Highlight and Page color underneath a run. 
+ * It would typically be called after a change in the SectionLevel properties or
+ * if a line cotaining a run is moved from one color page to another.
+ */
+void fp_Run::updateBackgroundColor(void)
+{
+	getHightlightColor();
+	getPageColor();
+}
+
 void fp_Run::insertIntoRunListBeforeThis(fp_Run& newRun)
 {
 	newRun.unlinkFromRunList();
@@ -272,11 +355,12 @@ void fp_Run::setLine(fp_Line* pLine)
 	{
 		return;
 	}
-	
 	clearScreen();
 	
 	m_pLine = pLine;
+	updateBackgroundColor();
 }
+
 
 void fp_Run::setBlock(fl_BlockLayout * pBL)
 {
@@ -431,7 +515,7 @@ void fp_Run::_drawTextLine(UT_sint32 xoff,UT_sint32 yoff,UT_uint32 iWidth,UT_uin
 
     UT_DEBUGMSG(("DOM: drawTextLine\n"));
     if((iTextWidth < iWidth) && (iTextHeight < iHeight)){
-        m_pG->fillRect(m_colorBG,xoffText,yoffText,iTextWidth,iTextHeight);
+        m_pG->fillRect(m_colorHL,xoffText,yoffText,iTextWidth,iTextHeight);
         m_pG->drawChars(pText,0,iTextLen,xoffText,yoffText);
     }
 }
@@ -461,7 +545,9 @@ void fp_TabRun::lookupProperties(void)
 
 	UT_parseColor(PP_evalProperty("color",pSpanAP,pBlockAP,pSectionAP, m_pBL->getDocument(), true), m_colorFG);
 	
-	UT_parseColor(PP_evalProperty("bgcolor",pSpanAP,pBlockAP,pSectionAP, m_pBL->getDocument(), true), m_colorBG);
+	
+	UT_RGBColor * pClr = getHightlightColor(); // Highlight color
+	getPageColor(); // update Page Color member variable.
 
 	if (pFont != m_pScreenFont)
 	  {
@@ -589,7 +675,8 @@ void fp_TabRun::_clearScreen(bool /* bFullLineHeightRect */)
 	
 	// need to clear full height of line, in case we had a selection
 	m_pLine->getScreenOffsets(this, xoff, yoff);
-	m_pG->clearArea(xoff, yoff, m_iWidth, m_pLine->getHeight());
+
+	m_pG->fillRect(m_colorPG,xoff, yoff, m_iWidth, m_pLine->getHeight());
 }
 
 void fp_TabRun::_drawArrow(UT_uint32 iLeft,UT_uint32 iTop,UT_uint32 iWidth, UT_uint32 iHeight)
@@ -635,7 +722,7 @@ void fp_TabRun::_draw(dg_DrawArgs* pDA)
 	UT_ASSERT(pDA->pG == m_pG);
 
 	UT_RGBColor clrSelBackground(192, 192, 192);
-	UT_RGBColor clrNormalBackground(m_colorBG.m_red,m_colorBG.m_grn,m_colorBG.m_blu);
+	UT_RGBColor clrNormalBackground(m_colorHL.m_red,m_colorHL.m_grn,m_colorHL.m_blu);
 
 	UT_sint32 iFillHeight = m_pLine->getHeight();
 	UT_sint32 iFillTop = pDA->yoff - m_pLine->getAscent();
@@ -976,7 +1063,7 @@ void fp_EndOfParagraphRun::_clearScreen(bool /* bFullLineHeightRect */)
 	FV_View* pView = m_pBL->getDocLayout()->getView();
 	if (pView->getShowPara())
 	{
-		m_pG->fillRect(m_colorBG, m_iXoffText, m_iYoffText, 
+		m_pG->fillRect(m_colorPG, m_iXoffText, m_iYoffText, 
 					   m_iWidth, m_iHeight);
 	}
 }
@@ -1017,7 +1104,7 @@ void fp_EndOfParagraphRun::_draw(dg_DrawArgs* pDA)
 		m_iXoffText = pDA->xoff;
 		m_iYoffText = pDA->yoff - iAscent;
 
-        m_pG->fillRect(m_colorBG, m_iXoffText, m_iYoffText, 
+        m_pG->fillRect(m_colorHL, m_iXoffText, m_iYoffText, 
 					   m_iWidth, m_iHeight);
 		m_pG->setColor(clrShowPara);
         m_pG->drawChars(pEOP, 0, iTextLen, m_iXoffText, m_iYoffText);
@@ -1141,7 +1228,8 @@ void fp_ImageRun::_clearScreen(bool /* bFullLineHeightRect */)
 	// need to clear full height of line, in case we had a selection
 	m_pLine->getScreenOffsets(this, xoff, yoff);
 	UT_sint32 iLineHeight = m_pLine->getHeight();
-	m_pG->clearArea(xoff, yoff, m_iWidth, iLineHeight);
+
+	m_pG->fillRect(m_colorPG,xoff, yoff, m_iWidth, iLineHeight);
 }
 
 void fp_ImageRun::_draw(dg_DrawArgs* pDA)
@@ -1324,8 +1412,21 @@ void fp_FieldRun::lookupProperties(void)
 	}
 
 	UT_parseColor(PP_evalProperty("color",pSpanAP,pBlockAP,pSectionAP, m_pBL->getDocument(), true), m_colorFG);
-	UT_parseColor(PP_evalProperty("field-color",pSpanAP,pBlockAP,pSectionAP, m_pBL->getDocument(), true), m_colorBG);
-	UT_parseColor(PP_evalProperty("bgcolor",pSpanAP,pBlockAP,pSectionAP, m_pBL->getDocument(), true), m_colorBG);
+
+	
+	getHightlightColor(); 
+	
+	const char * pszFieldColor = NULL;
+	pszFieldColor = PP_evalProperty("field-color",pSpanAP,pBlockAP,pSectionAP, m_pBL->getDocument(), true);
+
+//
+// FIXME: The "ffffff" is for backwards compatibility. If we don't exclude this 
+// no prexisting docs will be able to change the Highlight color in paragraphs 
+// with lists. I think this is a good solution for now. However it does mean
+// field-color od "ffffff", pure white is actually transparent.
+//
+	if(pszFieldColor && UT_strcmp(pszFieldColor,"transparent") != 0 && UT_strcmp(pszFieldColor,"ffffff" ) != 0 )
+		UT_parseColor(pszFieldColor, m_colorHL); 
 
 	m_iAscent = m_pG->getFontAscent(m_pFont);	
 	m_iDescent = m_pG->getFontDescent(m_pFont);
@@ -1518,7 +1619,8 @@ void fp_FieldRun::_clearScreen(bool /* bFullLineHeightRect */)
 	// need to clear full height of line, in case we had a selection
 	m_pLine->getScreenOffsets(this, xoff, yoff);
 	UT_sint32 iLineHeight = m_pLine->getHeight();
-	m_pG->clearArea(xoff, yoff-1, m_iWidth, iLineHeight);
+
+	m_pG->fillRect(m_colorPG, xoff, yoff-1, m_iWidth, iLineHeight);
 }
 
 void fp_FieldRun::_defaultDraw(dg_DrawArgs* pDA)
@@ -1569,7 +1671,7 @@ void fp_FieldRun::_defaultDraw(dg_DrawArgs* pDA)
 		}
 		else
 		{
-			m_pG->fillRect(m_colorBG, pDA->xoff, iFillTop, m_iWidth, iFillHeight);
+			m_pG->fillRect(m_colorHL, pDA->xoff, iFillTop, m_iWidth, iFillHeight);
 		}
 	}
 	m_pG->setFont(m_pFont);
@@ -2293,7 +2395,8 @@ void fp_ForcedColumnBreakRun::_clearScreen(bool /* bFullLineHeightRect */)
     UT_sint32 xoff = 0, yoff = 0;
     m_pLine->getScreenOffsets(this, xoff, yoff);
     UT_sint32 iWidth  = m_pLine->getMaxWidth() - m_pLine->calculateWidthOfLine();
-    m_pG->clearArea(xoff,yoff,iWidth,m_pLine->getHeight());
+
+    m_pG->fillRect(m_colorPG,xoff,yoff,iWidth,m_pLine->getHeight());
 }
 
 void fp_ForcedColumnBreakRun::_draw(dg_DrawArgs* pDA)
@@ -2401,7 +2504,8 @@ void fp_ForcedPageBreakRun::_clearScreen(bool /* bFullLineHeightRect */)
     UT_sint32 xoff = 0, yoff = 0;
     m_pLine->getScreenOffsets(this, xoff, yoff);
     UT_sint32 iWidth  = m_pLine->getMaxWidth() - m_pLine->calculateWidthOfLine();
-    m_pG->clearArea(xoff,yoff,iWidth,m_pLine->getHeight());
+
+    m_pG->fillRect(m_colorPG,xoff,yoff,iWidth,m_pLine->getHeight());
 }
 
 void fp_ForcedPageBreakRun::_draw(dg_DrawArgs* pDA)

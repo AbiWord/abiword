@@ -108,6 +108,7 @@ public:
 	bool		containsForcedColumnBreak(void) const;
 	bool		containsForcedPageBreak(void) const;
 	
+	void        updateBackgroundColor();
 	void 		addRun(fp_Run*);
 	void		insertRunAfter(fp_Run* pRun1, fp_Run* pRun2);
 	void		insertRunBefore(fp_Run* pNewRun, fp_Run* pBefore);

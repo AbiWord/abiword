@@ -30,6 +30,7 @@
 #include "fl_Layout.h"
 #include "pl_Listener.h"
 #include "ut_debugmsg.h"
+#include "ut_misc.h" // for UT_RGBColor
 
 class fp_Page;
 class FL_DocLayout;
@@ -90,6 +91,7 @@ public:
 
 	virtual void		format(void) = 0;
 	virtual void		updateLayout(void) = 0;
+	void                updateBackgroundColor(void);
 
 	virtual void		redrawUpdate(void) = 0;
 
@@ -207,6 +209,7 @@ public:
 	UT_uint32			getColumnGapInLayoutUnits(void) const;
 	bool				getColumnLineBetween(void) const {return m_bColumnLineBetween;}
 
+	UT_RGBColor *       getPaperColor(void);
 	void				deleteEmptyColumns(void);
 	virtual bool 	doclistener_changeStrux(const PX_ChangeRecord_StruxChange * pcrxc);
 	bool				doclistener_deleteStrux(const PX_ChangeRecord_Strux * pcrx);
@@ -263,7 +266,7 @@ protected:
 	fp_Column*			m_pFirstColumn;
 	fp_Column*			m_pLastColumn;
 	fp_Page *                       m_pFirstOwnedPage;
-
+	UT_RGBColor         m_clrPaper;
 };
 
 class fl_HdrFtrSectionLayout : public fl_SectionLayout
@@ -286,6 +289,7 @@ public:
 	virtual void				updateLayout(void);
 	fl_BlockLayout *            findMatchingBlock( fl_BlockLayout * pBL);
 	virtual void				redrawUpdate(void);
+	void                        updateBackgroundColor(void);
 	
 	virtual fp_Container*		getNewContainer();
 	virtual fp_Container*		getFirstContainer();
@@ -355,7 +359,6 @@ public:
 	virtual fp_Container*		getNewContainer();
 	virtual fp_Container*		getFirstContainer();
 	virtual fp_Container*		getLastContainer();
-
 	virtual bool				doclistener_changeStrux(const PX_ChangeRecord_StruxChange * pcrxc);
 
 protected:

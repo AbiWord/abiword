@@ -701,6 +701,26 @@ fl_BlockLayout::~fl_BlockLayout()
 	m_pLayout->notifyBlockIsBeingDeleted(this);
 }
 
+/*!
+ * This method returns the DocSectionLayout that this block is associated with
+ */
+fl_DocSectionLayout * fl_BlockLayout::getDocSectionLayout(void)
+{
+	fl_DocSectionLayout * pDSL = NULL;
+	if(getSectionLayout()->getType() == FL_SECTION_DOC)
+	{
+		pDSL = static_cast<fl_DocSectionLayout *>( m_pSectionLayout);
+		return pDSL;
+	}
+	else if(getSectionLayout()->getType() == FL_SECTION_HDRFTR)
+	{
+		pDSL = static_cast<fl_HdrFtrSectionLayout *>( getSectionLayout())->getDocSectionLayout();
+		return pDSL;
+	}
+	pDSL = static_cast<fl_HdrFtrShadow *>( getSectionLayout())->getHdrFtrSectionLayout()->getDocSectionLayout();
+	return pDSL;
+}
+
 void fl_BlockLayout::clearScreen(GR_Graphics* /* pG */)
 {
 	fp_Line* pLine = m_pFirstLine;
@@ -1122,6 +1142,21 @@ fl_BlockLayout::_breakLineAfterRun(fp_Run* pRun)
 	pNewLine->layout();
 
 	_assertRunListIntegrity();
+}
+
+/*!
+ * This method updates the background Colour stored in all the runs. We call
+ * this after a Section Level change where the background colour might have
+ * changed.
+ */
+void fl_BlockLayout::updateBackgroundColor(void)
+{
+	fp_Run * pRun  = m_pFirstRun;
+	while(pRun!= NULL)
+	{
+		pRun->updateBackgroundColor();
+		pRun = pRun->getNext();
+	}
 }
 
 /*!

@@ -486,7 +486,6 @@ protected:
 	static void _prefsListener( XAP_App *, XAP_Prefs *, UT_AlphaHashTable *, void *);
 
 	bool		m_bShowPara;
-	UT_RGBColor     m_clrPaper;
 	ViewMode        m_viewMode;
 };
 
