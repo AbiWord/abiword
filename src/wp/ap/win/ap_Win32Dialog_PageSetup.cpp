@@ -276,6 +276,8 @@ void AP_Win32Dialog_PageSetup_Page::_onCommand(HWND hWnd, WPARAM wParam, LPARAM 
 			if( selected != previous )
 			{
 				m_pParent->m_PageSize.Set( (fp_PageSize::Predefined)selected );
+#if 0
+				// let user select units she wants, see bug 8118
 				if( m_pParent->getPageUnits() != m_pParent->m_PageSize.getDims() )
 				{
 					SendDlgItemMessage( hWnd,
@@ -285,6 +287,7 @@ void AP_Win32Dialog_PageSetup_Page::_onCommand(HWND hWnd, WPARAM wParam, LPARAM 
 							 			(LPARAM) 0);
 					m_pParent->setPageUnits( m_pParent->m_PageSize.getDims() );
 				}
+#endif
 				m_pParent->updateWidth();
 				m_pParent->updateHeight();
 				m_pParent->updatePreview();
@@ -423,9 +426,9 @@ void AP_Win32Dialog_PageSetup_Page::_onInitDialog()
 	// Populate Units combo box
 	HWND hwndUnits = GetDlgItem(getHandle(), AP_RID_DIALOG_PAGE_SETUP_LBX_UNITS);
 	// NB: cannot insert string at index 1 before inserting one at index 0
-	SendMessage( hwndUnits, CB_INSERTSTRING , (WPARAM) DIM_IN, (LPARAM) _GVX(DLG_Unit_inch) );                                
-	SendMessage( hwndUnits, CB_INSERTSTRING , (WPARAM) DIM_CM,   (LPARAM) _GVX(DLG_Unit_cm) );                                
-	SendMessage( hwndUnits, CB_INSERTSTRING , (WPARAM) DIM_MM,   (LPARAM) _GVX(DLG_Unit_mm) );                                
+	SendMessage( hwndUnits, CB_INSERTSTRING , (WPARAM) DIM_IN, (LPARAM) _GVX(DLG_Unit_inch) );
+	SendMessage( hwndUnits, CB_INSERTSTRING , (WPARAM) DIM_CM,   (LPARAM) _GVX(DLG_Unit_cm) );
+	SendMessage( hwndUnits, CB_INSERTSTRING , (WPARAM) DIM_MM,   (LPARAM) _GVX(DLG_Unit_mm) );
 			
 	m_pParent->m_PageSize = m_pParent->getPageSize();
 	if( m_pParent->getPageOrientation() == m_pParent->PORTRAIT )
@@ -454,7 +457,7 @@ void AP_Win32Dialog_PageSetup_Page::_onInitDialog()
 	m_pParent->updatePageSize();
 
 	int nUnit =  m_pParent->getPageUnits();
-	SendMessage( hwndUnits, CB_SETCURSEL, (WPARAM) m_pParent->getPageUnits(), (LPARAM) 0 );
+	SendMessage( hwndUnits, CB_SETCURSEL, (WPARAM) nUnit, (LPARAM) 0 );
 
 	// Load Appropriate XPM to BMPs
 	COLORREF ColorRef = GetSysColor(COLOR_BTNFACE);

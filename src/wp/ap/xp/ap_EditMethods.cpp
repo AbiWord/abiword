@@ -1825,8 +1825,40 @@ static bool s_AskForPathname(XAP_Frame * pFrame,
 		PD_Document * pDoc = static_cast<PD_Document*>(pFrame->getCurrentDoc());
 		UT_UTF8String title;
 
-		if (pDoc->getMetaDataProp (PD_META_KEY_TITLE, title) && title.size()) {
+		if (pDoc->getMetaDataProp (PD_META_KEY_TITLE, title) && title.size())
+		{
+#if 0
+			// the metadata is returned to us in utf8; we have to convert it to whatever
+			// the c-lib library uses
+			const char * encoding;
+			bool bSet = false;
+			
+			if(UT_stricmp(l.getEncoding(), "UTF-8") != 0)
+			{
+				UT_iconv_t  cd = UT_iconv_open(l.getEncoding(), "UTF-8");
+
+				if(UT_iconv_isValid(cd));
+				{
+					const char * pTitle = title.utf8_str();
+					int bytes = title.byteLength();
+					int left;
+					char out[500];
+					char *out_ptr = out;
+					int res = UT_iconv(cd, &pTitle, &bytes, &out,&left);
+					if (res != (size_t) -1 && bytes == 0)
+					{
+						out[500 - outbytes] = '\0';
+						pDialog->setCurrentPathname(out);
+						bSet = true;
+					}
+				}
+			}
+
+			if(!bSet)
+				pDialog->setCurrentPathname(title.utf8_str());
+#else
 			pDialog->setCurrentPathname(title.utf8_str());
+#endif
 			pDialog->setSuggestFilename(true);
 		} else {
 			pDialog->setCurrentPathname(pFrame->getFilename());
@@ -7985,7 +8017,7 @@ static bool s_doBreakDlg(FV_View * pView)
 
 	AP_Dialog_Break * pDialog
 		= static_cast<AP_Dialog_Break *>(pDialogFactory->requestDialog(AP_DIALOG_ID_BREAK));
-UT_return_val_if_fail(pDialog, false);
+	UT_return_val_if_fail(pDialog, false);
 	pDialog->runModal(pFrame);
 
 	AP_Dialog_Break::tAnswer ans = pDialog->getAnswer();
@@ -8045,7 +8077,7 @@ static bool s_doPageSetupDlg (FV_View * pView)
 	AP_Dialog_PageSetup * pDialog =
 	  static_cast<AP_Dialog_PageSetup *>(pDialogFactory->requestDialog(AP_DIALOG_ID_FILE_PAGESETUP));
 
-UT_return_val_if_fail(pDialog, false);
+	UT_return_val_if_fail(pDialog, false);
 	PD_Document * pDoc = pView->getLayout()->getDocument();
 	//
 	// Need this for the conversion methods
@@ -8085,7 +8117,23 @@ UT_return_val_if_fail(pDialog, false);
 	orig_unit = pDoc->m_docPageSize.getDims();
 	orig_scale = pDoc->m_docPageSize.getScale();
 
-	pDialog->setPageUnits(orig_unit);
+	// respect units set in the dialogue constructer from prefs
+	UT_Dimension orig_uprefs = DIM_IN;
+	const XML_Char * szRulerUnits;
+	if (pApp->getPrefsValue(AP_PREF_KEY_RulerUnits,&szRulerUnits))
+	{
+		// we only allow in, cm, mm in the dlg
+		UT_Dimension units = UT_determineDimension(szRulerUnits);
+		if(units == DIM_CM || units == DIM_MM || units == DIM_IN)
+		{
+			orig_uprefs = units;
+		}
+	}
+
+	// make sure that the units in the dlg are the same as in the prefs
+	pDialog->setPageUnits(orig_uprefs);
+	pDialog->setMarginUnits(orig_uprefs);
+	
 	pDialog->setPageScale(static_cast<int>(100.0*orig_scale));
 
 	//
@@ -8105,7 +8153,6 @@ UT_return_val_if_fail(pDialog, false);
 	double dBottomMargin = 1.0;
 	double dFooterMargin= 0.0;
 	double dHeaderMargin = 0.0;
-	UT_Dimension docMargUnits = DIM_IN;
 
 	bool bResult = pView->getSectionFormat(&props_in);
 	if (!bResult)
@@ -8118,28 +8165,24 @@ UT_return_val_if_fail(pDialog, false);
 		if(pszLeftMargin)
 		{
 			dLeftMargin = UT_convertToInches(pszLeftMargin);
-			docMargUnits = UT_determineDimension(pszLeftMargin);
 		}
 
 		pszRightMargin = UT_getAttribute("page-margin-right", props_in);
 		if(pszRightMargin)
 		{
 			dRightMargin = UT_convertToInches(pszRightMargin);
-			docMargUnits = UT_determineDimension(pszRightMargin);
 		}
 
 		pszTopMargin = UT_getAttribute("page-margin-top", props_in);
 		if(pszTopMargin)
 		{
 			dTopMargin = UT_convertToInches(pszTopMargin);
-			docMargUnits = UT_determineDimension(pszTopMargin);
 		}
 
 		pszBottomMargin = UT_getAttribute("page-margin-bottom", props_in);
 		if(pszBottomMargin)
 		{
 			dBottomMargin = UT_convertToInches(pszBottomMargin);
-			docMargUnits = UT_determineDimension(pszBottomMargin);
 		}
 
 		pszFooterMargin = UT_getAttribute("page-margin-footer", props_in);
@@ -8151,8 +8194,8 @@ UT_return_val_if_fail(pDialog, false);
 			dHeaderMargin = UT_convertToInches(pszHeaderMargin);
 	}
 	FREEP(props_in);
-	orig_margu = DIM_IN;
-	if(docMargUnits == DIM_MM)
+	orig_margu = pDialog->getMarginUnits();
+	if(orig_margu == DIM_MM)
 	{
 		dLeftMargin = dLeftMargin * 25.4;
 		dRightMargin = dRightMargin * 25.4;
@@ -8160,9 +8203,8 @@ UT_return_val_if_fail(pDialog, false);
 		dBottomMargin = dBottomMargin * 25.4;
 		dFooterMargin = dFooterMargin * 25.4;
 		dHeaderMargin = dHeaderMargin * 25.4;
-		orig_margu = DIM_MM;
 	}
-	else if(docMargUnits == DIM_CM)
+	else if(orig_margu == DIM_CM)
 	{
 		dLeftMargin = dLeftMargin * 2.54;
 		dRightMargin = dRightMargin * 2.54;
@@ -8170,13 +8212,13 @@ UT_return_val_if_fail(pDialog, false);
 		dBottomMargin = dBottomMargin * 2.54;
 		dFooterMargin = dFooterMargin * 2.54;
 		dHeaderMargin = dHeaderMargin * 2.54;
-		orig_margu = DIM_CM;
 	}
 
 	//
 	// OK set all page two stuff
 	//
-	pDialog->setMarginUnits(orig_margu);
+	// do not set units -- they have not changed
+	// pDialog->setMarginUnits(orig_margu);
 	pDialog->setMarginTop(static_cast<float>(dTopMargin));
 	pDialog->setMarginBottom(static_cast<float>(dBottomMargin));
 	pDialog->setMarginLeft(static_cast<float>(dLeftMargin));
@@ -8307,10 +8349,12 @@ UT_return_val_if_fail(pDialog, false);
 		}
 	}
 
+	// I am not entirely sure about this; perhaps the units should only be modifiable
+	// through the prefs dialogue, not through the page setup
 	XAP_Prefs * pPrefs = pApp->getPrefs();
 	UT_return_val_if_fail(pPrefs, false);
 	XAP_PrefsScheme *pPrefsScheme = pPrefs->getCurrentScheme();
-UT_return_val_if_fail(pPrefsScheme, false);
+	UT_return_val_if_fail(pPrefsScheme, false);
 	pPrefsScheme->setValue(static_cast<const XML_Char *>(AP_PREF_KEY_RulerUnits),
 						   static_cast<const XML_Char *>(UT_dimensionName(final_unit)));
 
@@ -8337,6 +8381,7 @@ UT_return_val_if_fail(pPrefsScheme, false);
 	dHeaderMargin = static_cast<double>(pDialog->getMarginHeader());
 	dFooterMargin = static_cast<double>(pDialog->getMarginFooter());
 
+#if 0
 	docMargUnits = DIM_IN;
 	if(final_margu == DIM_CM)
 	{
@@ -8358,31 +8403,38 @@ UT_return_val_if_fail(pPrefsScheme, false);
 		dFooterMargin = dFooterMargin / 25.4;
 		dHeaderMargin = dHeaderMargin / 25.4;
 	}
+#endif
 	//
 	// Convert them into const char strings and change the section format
 	//
 	UT_GenericVector<const XML_Char*> v;
-	szLeftMargin = UT_convertInchesToDimensionString(docMargUnits,dLeftMargin);
+	//szLeftMargin = UT_convertInchesToDimensionString(docMargUnits,dLeftMargin);
+	szLeftMargin = UT_formatDimensionString(final_margu,dLeftMargin);
 	v.addItem("page-margin-left");
 	v.addItem(szLeftMargin.c_str());
 
-	szRightMargin = UT_convertInchesToDimensionString(docMargUnits,dRightMargin);
+	//szRightMargin = UT_convertInchesToDimensionString(docMargUnits,dRightMargin);
+	szRightMargin = UT_formatDimensionString(final_margu,dRightMargin);
 	v.addItem("page-margin-right");
 	v.addItem(szRightMargin.c_str());
 
-	szTopMargin = UT_convertInchesToDimensionString(docMargUnits,dTopMargin);
+	//szTopMargin = UT_convertInchesToDimensionString(docMargUnits,dTopMargin);
+	szTopMargin = UT_formatDimensionString(final_margu,dTopMargin);
 	v.addItem("page-margin-top");
 	v.addItem(szTopMargin.c_str());
 
-	szBottomMargin = UT_convertInchesToDimensionString(docMargUnits,dBottomMargin);
+	//szBottomMargin = UT_convertInchesToDimensionString(docMargUnits,dBottomMargin);
+	szBottomMargin = UT_formatDimensionString(final_margu,dBottomMargin);
 	v.addItem("page-margin-bottom");
 	v.addItem(szBottomMargin.c_str());
 
-	szFooterMargin = UT_convertInchesToDimensionString(docMargUnits,dFooterMargin);
+	//szFooterMargin = UT_convertInchesToDimensionString(docMargUnits,dFooterMargin);
+	szFooterMargin = UT_formatDimensionString(final_margu,dFooterMargin);
 	v.addItem("page-margin-footer");
 	v.addItem(szFooterMargin.c_str());
 
-	szHeaderMargin = UT_convertInchesToDimensionString(docMargUnits,dHeaderMargin);
+	//szHeaderMargin = UT_convertInchesToDimensionString(docMargUnits,dHeaderMargin);
+	szHeaderMargin = UT_formatDimensionString(final_margu,dHeaderMargin);
 	v.addItem("page-margin-header");
 	v.addItem(szHeaderMargin.c_str());
 
