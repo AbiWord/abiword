@@ -63,7 +63,7 @@ Section "Abiword.exe (required)"
 	; Image plugin for importers & cut-n-paste of 
       ; various standard image formats (BMP, WMF, JPEG) on Windows
 	SetOutPath $INSTDIR\AbiWord\plugins
-	File "..\plugins\Abi_IEG_Win32Native.dll"
+	File "..\plugins\libAbi_IEG_Win32Native.dll"
 
 	SetOutPath $INSTDIR\AbiWord
 	File "..\AbiSuite\AbiWord\system.*"
