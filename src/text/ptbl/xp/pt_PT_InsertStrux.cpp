@@ -183,9 +183,6 @@ UT_Bool pt_PieceTable::insertStrux(PT_DocPosition dpos,
 	// This is generally true for inserting a paragraph -- it should
 	// inherit the style of the one we just broke.
 
-	// TODO It may turn out that this is not true for other things, like
-	// TODO columns, but for now we will assume it is OK.
-
 	PT_AttrPropIndex indexAP = 0;
 	if (pfsContainer->getStruxType() == pts)
 		indexAP = pfsContainer->getIndexAP();

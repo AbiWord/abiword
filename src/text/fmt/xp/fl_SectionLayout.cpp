@@ -225,7 +225,6 @@ fp_Column* fl_SectionLayout::getNewColumn(void)
 	fp_Page* pPage = NULL;
 	fp_Column* pLastColumn = getLastColumn();
 	fp_Column* pAfterColumn = NULL;
-	UT_Bool bAddAtEndOfPage = UT_FALSE;
 	
 	if (pLastColumn)
 	{
@@ -547,6 +546,8 @@ UT_Bool fl_SectionLayout::doclistener_insertStrux(const PX_ChangeRecord_Strux * 
 																		  PL_ListenerId lid,
 																		  PL_StruxFmtHandle sfhNew))
 {
+	// TODO i don't believe that this function is necessary.
+	
 	UT_ASSERT(pcrx->getType()==PX_ChangeRecord::PXT_InsertStrux);
 
 	UT_ASSERT(UT_TODO);
@@ -563,6 +564,15 @@ UT_Bool fl_SectionLayout::doclistener_insertStrux(const PX_ChangeRecord_Strux * 
 	pfnBindHandles(sdh,lid,sfhNew);
 #endif
 	
+	return UT_FALSE;
+}
+
+UT_Bool fl_SectionLayout::doclistener_deleteStrux(const PX_ChangeRecord_Strux * pcrx)
+{
+	UT_ASSERT(pcrx->getType()==PX_ChangeRecord::PXT_DeleteStrux);
+	UT_ASSERT(pcrx->getStruxType()==PTX_Section);
+	UT_ASSERT(UT_TODO);
+
 	return UT_FALSE;
 }
 

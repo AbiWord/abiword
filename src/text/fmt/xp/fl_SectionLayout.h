@@ -52,10 +52,10 @@ public:
 	void				format();
 	void				updateLayout();
 
-	inline UT_sint32			getLeftMargin(void) const { return m_iLeftMargin; }
-	inline UT_sint32			getRightMargin(void) const { return m_iRightMargin; }
-	inline UT_sint32			getTopMargin(void) const { return m_iTopMargin; }
-	inline UT_sint32			getBottomMargin(void) const { return m_iBottomMargin; }
+	inline UT_sint32	getLeftMargin(void) const { return m_iLeftMargin; }
+	inline UT_sint32	getRightMargin(void) const { return m_iRightMargin; }
+	inline UT_sint32	getTopMargin(void) const { return m_iTopMargin; }
+	inline UT_sint32	getBottomMargin(void) const { return m_iBottomMargin; }
 	
 	UT_uint32			getNumColumns(void) const;
 	UT_uint32			getColumnGap(void) const;
@@ -68,6 +68,7 @@ public:
 
 	void				deleteEmptyColumns(void);
 	UT_Bool 			doclistener_changeStrux(const PX_ChangeRecord_StruxChange * pcrxc);
+	UT_Bool				doclistener_deleteStrux(const PX_ChangeRecord_Strux * pcrx);
 	UT_Bool				doclistener_insertStrux(const PX_ChangeRecord_Strux * pcrx,
 												PL_StruxDocHandle sdh,
 												PL_ListenerId lid,

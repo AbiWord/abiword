@@ -262,8 +262,12 @@ UT_Bool fl_DocListener::change(PL_StruxFmtHandle sfh,
 		switch (pcrx->getStruxType())
 		{
 		case PTX_Section:
-			UT_ASSERT(UT_TODO);
-			return UT_FALSE;
+		{
+			fl_Layout * pL = (fl_Layout *)sfh;
+			UT_ASSERT(pL->getType() == PTX_Section);
+			fl_SectionLayout * pSL = static_cast<fl_SectionLayout *>(pL);
+			return pSL->doclistener_deleteStrux(pcrx);
+		}
 					
 		case PTX_Block:
 		{
@@ -365,54 +369,72 @@ UT_Bool fl_DocListener::insertStrux(PL_StruxFmtHandle sfh,
 	UT_ASSERT(pcr->getType() == PX_ChangeRecord::PXT_InsertStrux);
 	const PX_ChangeRecord_Strux * pcrx = static_cast<const PX_ChangeRecord_Strux *> (pcr);
 
-	switch (pcrx->getStruxType())
+	fl_Layout * pL = (fl_Layout *)sfh;
+	switch (pL->getType())				// see what the immediately prior strux is.
 	{
-	case PTX_Section:
-	{
-		fl_Layout * pL = (fl_Layout *)sfh;
-		switch (pL->getType())
+	case PTX_Section:					// the immediately prior strux is a section.
+
+		switch (pcrx->getStruxType())	// see what we are inserting.
 		{
-		case PTX_Section:
-		{
-			fl_SectionLayout * pSL = static_cast<fl_SectionLayout *>(pL);
-			UT_Bool bResult = pSL->doclistener_insertStrux(pcrx,sdh,lid,pfnBindHandles);
-			return bResult;
+		case PTX_Section:				// we are inserting a section.
+			// we are inserting a section immediately after a section (with no
+			// interviening block).  this is probably a bug, because there should
+			// at least be an empty block between them (so that the user can set
+			// the cursor there and start typing, if nothing else).
+			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+			return UT_FALSE;
+				
+		case PTX_Block:					// we are inserting a block.
+			// the immediately prior strux is a section.  this probably cannot
+			// happen because the insertion point would have been immediately
+			// after the existing first block in the section rather than between
+			// the section and block.
+			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+			return UT_FALSE;
+
+		default:						// unknown strux.
+			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+			return UT_FALSE;
 		}
 		
-		case PTX_Block:
-		default:
+	case PTX_Block:						// the immediately prior strux is a block.
+
+		switch (pcrx->getStruxType())	// see what we are inserting.
 		{
+		case PTX_Section:				// we are inserting a section.
+			{
+				// the immediately prior strux is a block.  everything from this point
+				// forward (to the next section) needs to be re-parented to this new
+				// section.  we also need to verify that there is a block immediately
+				// after this new section -- a section must be followed by a block
+				// because a section cannot contain content.
+
+				fl_BlockLayout * pBL = static_cast<fl_BlockLayout *>(pL);
+				UT_Bool bResult = pBL->doclistener_insertSection(pcrx,sdh,lid,pfnBindHandles);
+				return bResult;
+			}
+		
+		case PTX_Block:					// we are inserting a block.
+			{
+				// the immediately prior strux is also a block.  insert the new
+				// block and split the content between the two blocks.
+				fl_BlockLayout * pBL = static_cast<fl_BlockLayout *>(pL);
+				UT_Bool bResult = pBL->doclistener_insertBlock(pcrx,sdh,lid,pfnBindHandles);
+				return bResult;
+			}
+			
+		default:
 			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 			return UT_FALSE;
 		}
-		}
-	}
-			
-	case PTX_Block:
-	{
-		fl_Layout * pL = (fl_Layout *)sfh;
-		switch (pL->getType())
-		{
-		case PTX_Block:
-		{
-			fl_BlockLayout * pBL = static_cast<fl_BlockLayout *>(pL);
-			UT_Bool bResult = pBL->doclistener_insertStrux(pcrx,sdh,lid,pfnBindHandles);
-			return bResult;
-		}
-				
-		case PTX_Section:
-		default:
-			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-			return UT_FALSE;
-		}
-	}
-	break;
-			
+
 	default:
-		UT_ASSERT(0);
+		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 		return UT_FALSE;
 	}
 
-	return UT_TRUE;
+	/*NOTREACHED*/
+	UT_ASSERT(0);
+	return UT_FALSE;
 }
 

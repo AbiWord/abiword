@@ -2308,7 +2308,7 @@ UT_Bool fl_BlockLayout::doclistener_changeStrux(const PX_ChangeRecord_StruxChang
 	return UT_TRUE;
 }
 
-UT_Bool fl_BlockLayout::doclistener_insertStrux(const PX_ChangeRecord_Strux * pcrx,
+UT_Bool fl_BlockLayout::doclistener_insertBlock(const PX_ChangeRecord_Strux * pcrx,
 												PL_StruxDocHandle sdh,
 												PL_ListenerId lid,
 												void (* pfnBindHandles)(PL_StruxDocHandle sdhNew,
@@ -2316,6 +2316,7 @@ UT_Bool fl_BlockLayout::doclistener_insertStrux(const PX_ChangeRecord_Strux * pc
 																		PL_StruxFmtHandle sfhNew))
 {
 	UT_ASSERT(pcrx->getType()==PX_ChangeRecord::PXT_InsertStrux);
+	UT_ASSERT(pcrx->getStruxType()==PTX_Block);
 					
 	fl_SectionLayout* pSL = m_pSectionLayout;
 	UT_ASSERT(pSL);
@@ -2447,6 +2448,28 @@ UT_Bool fl_BlockLayout::doclistener_insertStrux(const PX_ChangeRecord_Strux * pc
 	}
 	
 	return UT_TRUE;
+}
+
+UT_Bool fl_BlockLayout::doclistener_insertSection(const PX_ChangeRecord_Strux * pcrx,
+												  PL_StruxDocHandle sdh,
+												  PL_ListenerId lid,
+												  void (* pfnBindHandles)(PL_StruxDocHandle sdhNew,
+																		  PL_ListenerId lid,
+																		  PL_StruxFmtHandle sfhNew))
+{
+	// insert a section at the location given in the change record.
+	// everything from this point forward (to the next section) needs
+	// to be re-parented to this new section.  we also need to verify
+	// that this insertion point is at the end of the block (and that
+	// another block follows).  this is because because a section
+	// cannot contain content.
+	
+	UT_ASSERT(pcrx->getType()==PX_ChangeRecord::PXT_InsertStrux);
+	UT_ASSERT(pcrx->getStruxType()==PTX_Section);
+	
+	UT_ASSERT(UT_TODO);
+	
+	return UT_FALSE;
 }
 
 void fl_BlockLayout::findSquigglesForRun(fp_Run* pRun)
