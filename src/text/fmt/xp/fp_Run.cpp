@@ -3046,6 +3046,8 @@ void fp_ImageRun::_clearScreen(bool  bFullLineHeightRect )
 	getLine()->getScreenOffsets(this, xoff, yoff);
 	UT_sint32 iLineHeight = getLine()->getHeight();
 	Fill(getGraphics(),xoff, yoff, getWidth(), iLineHeight);
+	markAsDirty();
+	setCleared();
 }
 
 const char * fp_ImageRun::getDataId(void) const
