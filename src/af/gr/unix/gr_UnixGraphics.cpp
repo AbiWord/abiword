@@ -320,12 +320,6 @@ GR_UnixGraphics::GR_UnixGraphics(GdkWindow * win, XAP_UnixFontManager * fontMana
 	m_pXftFontD = NULL;
 	m_Colormap = GDK_COLORMAP_XCOLORMAP(m_pColormap);
 	m_pXftDraw = XftDrawCreate(GDK_DISPLAY(), m_Drawable, m_pVisual, m_Colormap);
-#if 0
-	// What we had before Martin's attempt to make double buffering work with xft
-	m_pGC = gdk_gc_new(m_pWin);
-	m_pXORGC = gdk_gc_new(m_pWin);
-#endif
-
 	gdk_gc_set_function(m_pXORGC, GDK_XOR);
 
  	GdkColor clrWhite;

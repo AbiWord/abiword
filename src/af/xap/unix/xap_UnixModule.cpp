@@ -27,6 +27,8 @@ XAP_UnixModule::XAP_UnixModule ()
 
 XAP_UnixModule::~XAP_UnixModule (void)
 {
+	if (m_bLoaded && m_module)
+		unload ();
 	FREEP(m_szname);
 }
 
@@ -53,9 +55,7 @@ bool XAP_UnixModule::load (const char * name)
       return true;
   }
   else
-  {
       return false;
-  }
 }
 
 bool XAP_UnixModule::unload (void)

@@ -24,6 +24,7 @@
 #include <gdk/gdk.h>
 #include "ut_types.h"
 #include "xap_Toolbar_Icons.h"
+#include "ut_vector.h"
 
 /*****************************************************************/
 
@@ -31,12 +32,10 @@ class AP_UnixToolbar_Icons : public AP_Toolbar_Icons
 {
 public:
 	AP_UnixToolbar_Icons(void);
-	~AP_UnixToolbar_Icons(void);
+	virtual ~AP_UnixToolbar_Icons(void);
 
 	bool			getPixmapForIcon(GdkWindow * window, GdkColor * background,
 									 const char * szIconName, GtkWidget ** pwPixmap);
-	
-protected:
 };
 
 #endif /* XAP_UNIXTOOLBARICONS_H */

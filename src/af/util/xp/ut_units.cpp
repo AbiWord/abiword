@@ -70,7 +70,7 @@ const char * UT_dimensionName(UT_Dimension dim)
 UT_Dimension UT_determineDimension(const char * sz, UT_Dimension fallback)
 {
   char * p = NULL ;
-  char * old_locale = setlocale(LC_NUMERIC, "C");
+  const char * old_locale = setlocale(LC_NUMERIC, "C");
   strtod(sz, &p);
   setlocale(LC_NUMERIC, old_locale);
 

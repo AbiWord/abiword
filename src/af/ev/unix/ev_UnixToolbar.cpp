@@ -579,7 +579,7 @@ bool EV_UnixToolbar::getPixmapForIcon(XAP_Toolbar_Id id, GdkWindow * window, Gdk
 	
 	if ( stock_id == NULL )
 	{
-		return m_pUnixToolbarIcons->getPixmapForIcon ( window, background, szIconName, pwPixmap ) ;
+		return m_pUnixToolbarIcons.getPixmapForIcon ( window, background, szIconName, pwPixmap ) ;
 	}
 	else
 	{

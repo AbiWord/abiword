@@ -21,6 +21,7 @@
 #include "ut_types.h"
 #include "ut_assert.h"
 #include "xap_UnixToolbar_Icons.h"
+#include "xap_UnixDialogHelper.h"
 
 AP_UnixToolbar_Icons::AP_UnixToolbar_Icons(void)
 {
@@ -28,74 +29,29 @@ AP_UnixToolbar_Icons::AP_UnixToolbar_Icons(void)
 
 AP_UnixToolbar_Icons::~AP_UnixToolbar_Icons(void)
 {
-	// TODO do we need to keep some kind of list
-	// TODO of the things we have created and
-	// TODO handed out, so that we can delete them ??
 }
 
 bool AP_UnixToolbar_Icons::getPixmapForIcon(GdkWindow * window, GdkColor * background,
-											   const char * szIconName, GtkWidget ** pwPixmap)
+											const char * szIconName, GtkWidget ** pwPixmap)
 {
 	UT_return_val_if_fail(window, false);
 	UT_return_val_if_fail(background, false);
 	UT_return_val_if_fail(szIconName && *szIconName, false);
 	UT_return_val_if_fail(pwPixmap, false);
 	
-	const char ** pIconData = NULL, **used_pIconData = NULL;
+	const char ** pIconData = NULL;
 	UT_uint32 sizeofIconData = 0;		// number of cells in the array
 	
 	bool bFound = _findIconDataByName(szIconName, &pIconData, &sizeofIconData);
-	if (!bFound)
+	if (!bFound || !pIconData || !sizeofIconData)
 		return false;
 
-	GdkBitmap * mask;
-	GdkColormap * colormap = NULL;
-	{
-	    /*if this is BW icon, use the current theme's text foreground 
-	      color instead of black (since background on which the icon
-	     is painted can be very dark so that default black icon won't be
-             visible at all).
-		 Vlad Harchev <hvv@hippo.ru>*/
-	    int w,h,nc;
-	    if (sscanf(pIconData[0],"%d %d %d",&h,&w,&nc)==3 && (nc == 2 || nc == 3) && 
-		    !strcmp(pIconData[2],".	c #000000")) {
-		/*it's BW image and 2nd color is black - substitute it.*/
-		used_pIconData = static_cast<const char**>(malloc(sizeof(char*)*(h+nc+1)));
-		if (!used_pIconData)
-		    goto done; /* let's it crash somewhere else */
-		memcpy(used_pIconData,pIconData,sizeof(char*)*(h+nc+1));
-		
-		static GtkWidget* label = NULL;
-		static char buf[50];
-		if (!label) {
-		    label = gtk_label_new("");
-		    gtk_widget_ensure_style(label);
-
-		    GdkColor* c = label->style->text + GTK_STATE_NORMAL;
-		    sprintf(buf,".\tc #%02x%02x%02x",static_cast<unsigned int>(c->red)>>8,static_cast<unsigned int>(c->green)>>8,static_cast<unsigned int>(c->blue)>>8);
-		};
-		used_pIconData[2] = buf;
-	    };
-	    done: ;
-	}
-	GdkPixmap * pixmap
-		= gdk_pixmap_colormap_create_from_xpm_d(window,colormap,&mask,
-												background, const_cast<char **>(used_pIconData ? used_pIconData : pIconData));
-	if (used_pIconData)
-	    free(used_pIconData);
-	
-	    
-	if (!pixmap)
+	GdkPixbuf * pixbuf = gdk_pixbuf_new_from_xpm_data (pIconData);
+	if (!pixbuf)
 		return false;
 
-	GtkWidget * wpixmap = gtk_pixmap_new(pixmap,mask);
-	if (!wpixmap)
-		return false;
-
-	GdkPixmap * gdkpixmap = GTK_PIXMAP(wpixmap)->pixmap;
-	GdkBitmap * gdkbitmap = GTK_PIXMAP(wpixmap)->mask;
-	
-	*pwPixmap = gtk_image_new_from_pixmap ( gdkpixmap, gdkbitmap ) ;
+	*pwPixmap = gtk_image_new_from_pixbuf ( pixbuf ) ;
+	g_object_unref (G_OBJECT (pixbuf)); // remove ref - GtkImage retains a ref so we're safe
 	return true;
 }
 

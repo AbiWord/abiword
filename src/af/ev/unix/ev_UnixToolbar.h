@@ -29,10 +29,10 @@
 #include "ap_Toolbar_Id.h"
 #include "ap_UnixToolbar_StyleCombo.h"
 #include "xap_FontPreview.h"
+#include "xap_UnixToolbar_Icons.h"
 
 class XAP_UnixApp;
 class XAP_Frame;
-class AP_UnixToolbar_Icons;
 class EV_UnixToolbar_ViewListener;
 
 class _wd;
@@ -75,7 +75,7 @@ protected:
 	GdkEvent *                      m_eEvent;
 	GtkWidget *						m_wToolbar;
 	GtkWidget * 					m_wHandleBox;
-	AP_UnixToolbar_Icons *			m_pUnixToolbarIcons;
+	AP_UnixToolbar_Icons 			m_pUnixToolbarIcons;
 	UT_Vector						m_vecToolbarWidgets;
 };
 
