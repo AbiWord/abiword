@@ -36,6 +36,9 @@
 #include "xap_EncodingManager.h"
 #include "fl_AutoNum.h"
 
+// our currently used DTD
+#define ABIWORD_FILEFORMAT "fileformat=\"1.0\""
+
 /*****************************************************************/
 /*****************************************************************/
 
@@ -420,6 +423,7 @@ s_AbiWord_1_Listener::s_AbiWord_1_Listener(PD_Document * pDocument,
 		m_pie->write(XAP_App::s_szBuild_Version);
 	}
 	m_pie->write("\"");
+	m_pie->write(ABIWORD_FILEFORMAT);
 	m_pie->write(">\n");
 
 	// TODO add a file-format name/value pair to this tag.
