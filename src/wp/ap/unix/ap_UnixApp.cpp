@@ -1525,46 +1525,6 @@ void AP_UnixApp::catchSignals(int sig_num)
 static BonoboControl * AbiWidget_control_new(AbiWidget * abi);
 
 /*****************************************************************/
-/* Implements the Bonobo/PropertyBag:1.0 interface               */
-/*****************************************************************/
-
-/* 
- * get a value from abiwidget
- */ 
-static void get_prop (BonoboPropertyBag 	*bag,
-					  BonoboArg 		    *arg,
-					  guint 		         arg_id,
-					  CORBA_Environment 	*ev,
-					  gpointer 		         user_data)
-{
-	g_return_if_fail (user_data != NULL);
-	g_return_if_fail (IS_ABI_WIDGET(user_data));
-
-	AbiWidget * abi = ABI_WIDGET(user_data); 
-
-	UT_ASSERT (UT_TODO);
-}
-
-/*
- * Tell abiwidget to do something.
- */
-static void set_prop (BonoboPropertyBag 	*bag,
-					  const BonoboArg 	*arg,
-					  guint 		 arg_id,
-					  CORBA_Environment 	*ev,
-					  gpointer 		 user_data)
-{
-	AbiWidget 	*abi;
-	
-	g_return_if_fail (user_data != NULL);
-	g_return_if_fail (IS_ABI_WIDGET(user_data));		
-
-	abi = ABI_WIDGET (user_data); 
-
-	UT_ASSERT (UT_TODO);
-}
-
-/*****************************************************************/
 /* Implements the Bonobo/Persist:1.0, Bonobo/PersistStream:1.0,
    Bonobo/PersistFile:1.0 Interfaces */
 /*****************************************************************/
@@ -1664,17 +1624,19 @@ save_document_to_stream (BonoboPersistStream *ps,
 	char * ext = ".abw" ;
 
 	if ( !strcmp ( "application/msword", type ) )
-	  ext = ".rtf" ; // should this be .rtf or .doc??
-	else if ( !strcmp ( "application/rtf", type ) )
+	  ext = ".doc" ; 
+	else if ( !strcmp ( "application/rtf", type ) || !strcmp ("text/rtf", type) )
 	  ext = ".rtf" ;
-	else if ( !strcmp ( "application/x-applix-word", type ) )
-	  ext = ".aw";
-	else if ( !strcmp ( "appplication/vnd.palm", type ) )
-	  ext = ".pdb" ;
 	else if ( !strcmp ( "text/plain", type ) )
 	  ext = ".txt" ;
 	else if ( !strcmp ( "text/html", type ) )
 	  ext = ".html" ;
+	else if ( !strcmp ( "text/xhtml+xml", type ) )
+	  ext = ".xhtml" ;
+	else if ( !strcmp ( "application/x-applix-word", type ) )
+	  ext = ".aw";
+	else if ( !strcmp ( "appplication/vnd.palm", type ) )
+	  ext = ".pdb" ;
 	else if ( !strcmp ( "text/vnd.wap.wml", type ) )
 	  ext = ".wml" ;
 
@@ -1712,10 +1674,10 @@ save_document_to_stream (BonoboPersistStream *ps,
 //
 static Bonobo_Unknown
 abiwidget_get_object(BonoboItemContainer *item_container,
-							   CORBA_char          *item_name,
-							   CORBA_boolean       only_if_exists,
-							   CORBA_Environment   *ev,
-							   AbiWidget *  abi)
+					 CORBA_char          *item_name,
+					 CORBA_boolean       only_if_exists,
+					 CORBA_Environment   *ev,
+					 AbiWidget *  abi)
 {
 	Bonobo_Unknown corba_object;
 	BonoboObject *object = NULL;
@@ -1727,7 +1689,6 @@ abiwidget_get_object(BonoboItemContainer *item_container,
 			   only_if_exists, item_name);
 
 	object = (BonoboObject *) AbiWidget_control_new(abi);
-
 
 	if (object == NULL)
 		return NULL;
@@ -1780,9 +1741,11 @@ save_document_to_file(BonoboPersistFile *pf, const CORBA_char *filename,
 //
 static Bonobo_Persist_ContentTypeList *
 pstream_get_content_types (BonoboPersistStream *ps, void *closure,
-			   CORBA_Environment *ev)
+						   CORBA_Environment *ev)
 {
-	return bonobo_persist_generate_content_types (9, "application/msword", "application/rtf", "application/x-abiword", "application/x-applix-word", "application/wordperfect5.1", "appplication/vnd.palm", "text/abiword", "text/plain", "text/vnd.wap.wml");
+	return bonobo_persist_generate_content_types (11, "application/x-abiword", "text/abiword", "application/msword", 
+												  "application/rtf", "text/rtf", "text/plain", "text/html", "text/xhtml+xml",
+												  "application/x-applix-word", "appplication/vnd.palm", "text/vnd.wap.wml");
 }
 
 /*****************************************************************/
@@ -1832,9 +1795,6 @@ static void zoom_out_func(GObject * z, gpointer data)
   g_return_if_fail (IS_ABI_WIDGET(data));
 
   AbiWidget * abi = ABI_WIDGET(data);
-
-  //fprintf ( bonobo_logfile, "DOM: zooming out!!\n" ) ;
-  //fflush ( bonobo_logfile ) ;
 
   XAP_Frame * pFrame = abi_widget_get_frame ( abi ) ;
   UT_return_if_fail ( pFrame != NULL ) ;
@@ -1900,6 +1860,14 @@ AbiControl_add_interfaces (AbiWidget *abiwidget,
 	g_return_val_if_fail (IS_ABI_WIDGET(abiwidget), NULL);
 	g_return_val_if_fail (BONOBO_IS_OBJECT (to_aggregate), NULL);
 
+	/* Inteface Bonobo::PropertyBag */
+
+	guint n_pspecs = 0;
+	BonoboPropertyBag * pb = bonobo_property_bag_new (NULL, NULL, NULL);
+	const GParamSpec ** pspecs = g_object_class_list_properties (G_OBJECT_GET_CLASS (G_OBJECT (abiwidget)), &n_pspecs);
+	bonobo_property_bag_map_params (pb, G_OBJECT (abiwidget), pspecs, n_pspecs);
+	bonobo_object_add_interface (BONOBO_OBJECT (to_aggregate), BONOBO_OBJECT (pb));
+
 	/* Interface Bonobo::PersistStream */
 
 	stream = bonobo_persist_stream_new (load_document_from_stream, 
@@ -1921,8 +1889,7 @@ AbiControl_add_interfaces (AbiWidget *abiwidget,
 									save_document_to_file, 
 									"AbiWord::IID",
 									abiwidget);
-	if (!file) 
-	{
+	if (!file) {
 		bonobo_object_unref (BONOBO_OBJECT (to_aggregate));
 		return NULL;
 	}
@@ -1940,7 +1907,7 @@ AbiControl_add_interfaces (AbiWidget *abiwidget,
 					  abiwidget);
 	
 	bonobo_object_add_interface (BONOBO_OBJECT (to_aggregate),
-				     BONOBO_OBJECT (item_container));
+								 BONOBO_OBJECT (item_container));
 
 	/* Interface Bonobo::Zoomable */
 
@@ -1970,41 +1937,17 @@ AbiControl_add_interfaces (AbiWidget *abiwidget,
 static BonoboControl* 
 AbiControl_construct(BonoboControl * control, AbiWidget * abi)
 {
-	BonoboPropertyBag * prop_bag;
 	g_return_val_if_fail(abi != NULL, NULL);
 	g_return_val_if_fail(control != NULL, NULL);
 	g_return_val_if_fail(IS_ABI_WIDGET(abi), NULL);
 
-	/* 
-	 * create a property bag:
-	 * we provide our accessor functions for properties, and 
-	 * the gtk widget
-	 */
-	prop_bag = bonobo_property_bag_new (get_prop, set_prop, abi);
-
-	// put all AbiWidget's arguments in the property bag - way cool!!
-  
-#if 0
-	bonobo_property_bag_add_gtk_args (prop_bag,G_OBJECT(abi));
- TODO:
-	bonobo_property_bag_map_params ();
-#endif
-
-	// now advertise that we implement the property-bag interface
-	bonobo_object_add_interface (BONOBO_OBJECT (control),
-				     BONOBO_OBJECT (prop_bag));
-
 	//
 	// persist_stream , persist_file interfaces/methods, item container
-	// 
-	
+	// 	
 	AbiControl_add_interfaces (ABI_WIDGET(abi),
-				   BONOBO_OBJECT(control));
-	/*
-	 *  we don't need the property bag anymore here, so unref it
-	 */
-	
-	bonobo_object_unref (BONOBO_OBJECT(prop_bag));
+							   BONOBO_OBJECT(control));
+
+
 	return control;
 }
 
