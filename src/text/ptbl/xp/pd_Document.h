@@ -122,7 +122,7 @@ public:
 	bool					appendSpan(UT_UCSChar * p, UT_uint32 length);
 	bool					appendObject(PTObjectType pto, const XML_Char ** attributes);
 	bool					appendStyle(const XML_Char ** attributes);
-	
+	bool                                    removeStyle(const XML_Char * name);
 	bool					tellListener(PL_Listener * pListener);
 	bool					tellListenerSubset(PL_Listener * pListener,
 											   PD_DocumentRange * pDocRange);
@@ -173,6 +173,7 @@ public:
 	// styles
 
 	bool					getStyle(const char * szName, PD_Style ** ppStyle) const;
+	size_t                                  getStyleCount(void);
 	bool					enumStyles(UT_uint32 k,
 									   const char ** pszName, const PD_Style ** ppStyle) const;
 	bool					setStyleProperty(const XML_Char * szStyleName, const XML_Char * szPropertyName, const XML_Char * szPropertyValue);

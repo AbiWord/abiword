@@ -377,6 +377,13 @@ bool PD_Document::appendObject(PTObjectType pto, const XML_Char ** attributes)
 	return m_pPieceTable->appendObject(pto,attributes);
 }
 
+bool PD_Document::removeStyle(const XML_Char * pszName)
+{
+  UT_ASSERT(m_pPieceTable);
+
+  return m_pPieceTable->removeStyle(pszName);
+}
+
 bool PD_Document::appendStyle(const XML_Char ** attributes)
 {
 	UT_ASSERT(m_pPieceTable);
@@ -384,6 +391,13 @@ bool PD_Document::appendStyle(const XML_Char ** attributes)
 	// can only be used while loading the document
 
 	return m_pPieceTable->appendStyle(attributes);
+}
+
+size_t PD_Document::getStyleCount(void)
+{
+  UT_ASSERT(m_pPieceTable);
+
+  return m_pPieceTable->getStyleCount();
 }
 
 //////////////////////////////////////////////////////////////////

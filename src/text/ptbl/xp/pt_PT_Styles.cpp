@@ -110,7 +110,7 @@ bool pt_PieceTable::_createBuiltinStyle(const char * szName, const XML_Char ** a
 bool pt_PieceTable::appendStyle(const XML_Char ** attributes)
 {
 	// this function can only be called while loading the document.
-	UT_ASSERT(m_pts==PTS_Loading);
+  //UT_ASSERT(m_pts==PTS_Loading);
 
 	// first, store the attributes and properties and get an index to them.
 	
@@ -155,6 +155,32 @@ bool pt_PieceTable::appendStyle(const XML_Char ** attributes)
 	}
 }
 
+bool pt_PieceTable::removeStyle (const XML_Char * szName)
+{
+  UT_ASSERT(szName);
+  UT_ASSERT(sizeof(char) == sizeof(XML_Char));
+
+  UT_DEBUGMSG(("DOM: TODO: remove the style, maybe recode the hash-table\n"));
+  UT_ASSERT(UT_TODO);
+
+#if 0
+	UT_HashEntry * pHashEntry = m_hashStyles.findEntry(szName);
+	if (!pHashEntry)
+		return false;
+
+	PD_Style * pStyle = (PD_Style *) pHashEntry->pData;
+	UT_ASSERT(pStyle);
+
+	delete pStyle;
+
+	// todo - we need to remove this from the hashtable
+	m_hashStyles.setEntry (szName, NULL, NULL);
+	return true;
+#endif
+
+  return false;
+}
+
 bool pt_PieceTable::getStyle(const char * szName, PD_Style ** ppStyle) const
 {
 	UT_ASSERT(szName && *szName);
@@ -172,6 +198,11 @@ bool pt_PieceTable::getStyle(const char * szName, PD_Style ** ppStyle) const
 	}
 	
 	return true;
+}
+
+size_t pt_PieceTable::getStyleCount (void)
+{
+  return (size_t) m_hashStyles.getEntryCount();
 }
 
 bool pt_PieceTable::enumStyles(UT_uint32 k,
