@@ -63,8 +63,6 @@
 
 WHICHPROC s_oldRedBar; 
 
-extern "C" const char * wvLIDToLangConverter(unsigned short langID);
-
 // Where the heck is this function????
 // TODO Fix the following header file. It seems to be incomplete
 // TODO #include <ap_EditMethods.h>
@@ -610,9 +608,30 @@ LRESULT CALLBACK XAP_Win32FrameImpl::_FrameWndProc(HWND hwnd, UINT iMsg, WPARAM 
 	switch (iMsg)
 	{
 	
-	
-	case WM_EXITMENULOOP:
 	case WM_SETFOCUS:
+		{
+			// on set focus we want to make sure that the kbd layout
+			// is the same as it was before we lost focus. If the user
+			// was in some other application and changed the layout in
+			// there to something else and now returns to AW then we
+			// should not be in that different layout (this should not
+			// happen as the layouts are supposed to be thread
+			// specific, but I noted that sometimes even thought we
+			// have the correct layout, the icon on the task bar is
+			// out of sync with our layout; this should fix that).
+			XAP_Win32App *pWin32App = static_cast<XAP_Win32App *>(XAP_App::getApp());
+			UT_ASSERT( pWin32App );
+
+			if(pWin32App)
+			{
+				ActivateKeyboardLayout(pWin32App->getHKL(),0);
+			}
+			
+			
+			// fall through ...
+		}
+			
+	case WM_EXITMENULOOP:
 		if (pView)
 		{
 			pView->focusChange(AV_FOCUS_HERE);
@@ -885,47 +904,20 @@ LRESULT CALLBACK XAP_Win32FrameImpl::_FrameWndProc(HWND hwnd, UINT iMsg, WPARAM 
 
 	case WM_INPUTLANGCHANGE:
 	{
-		UT_DEBUGMSG(("Frame received input language change\n"));
+		UT_DEBUGMSG(("XAP_Win32FrameImpl::_FrameWndProc: received input language change\n"));
 
 		// This will remap the static tables used by all frames.
 		// (see the comment in ev_Win32Keyboard.cpp.)
 		ev_Win32Keyboard *pWin32Keyboard = static_cast<ev_Win32Keyboard *>(fimpl->m_pKeyboard);
 		pWin32Keyboard->remapKeyboard((HKL)lParam);
 
-		// we also want to automatically change the language at
-		// the insertion point, unless the user preferences tell us
-		// otherwise
+		// set the language
+		XAP_Win32App *pWin32App = static_cast<XAP_Win32App *>(XAP_App::getApp());
+		UT_ASSERT( pWin32App );
 
-	    bool bChangeLang = true;
-		XAP_App::getApp()->getPrefsValueBool(XAP_PREF_KEY_ChangeLanguageWithKeyboard, &bChangeLang);
+		if(pWin32App)
+			pWin32App->setKbdLanguage((HKL)lParam);
 
-		if(bChangeLang)
-		{
-			WORD langID = LANGIDFROMLCID(LOWORD((HKL)lParam));
-			const char * pszLang = wvLIDToLangConverter((unsigned short)langID);
-			UT_DEBUGMSG(("Keyboard Language: %s\n",pszLang));
-			
-			// now invoke the appropriet formatting method ...
-			EV_EditMethodCallData CallData(pszLang,strlen(pszLang));
-
-			XAP_App * pApp = f->getApp();
-			UT_ASSERT(pApp);
-
-			const EV_EditMethodContainer * pEMC = pApp->getEditMethodContainer();
-			UT_ASSERT(pEMC);
-
-			if(pEMC)
-			{
-				EV_EditMethod * pEM = pEMC->findEditMethodByName("language");
-				UT_ASSERT(pEM);						// make sure it's bound to something
-			
-				if (pEM)
-				{
-					pEM->Fn(pView,&CallData);
-				}
-			}
-		}
-		
 		// Do not propagate this message.
 		
 		return 1; //DefWindowProc(hwnd, iMsg, wParam, lParam);

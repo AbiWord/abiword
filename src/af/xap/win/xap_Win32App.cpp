@@ -47,6 +47,9 @@ char XAP_Win32App::m_buffer[MAX_CONVBUFFER] = "";
 WCHAR XAP_Win32App::m_wbuffer[MAX_CONVBUFFER] = L"";
 #endif
 
+// do not want to include wv.h here, since it defines some types that
+// overlap with stuff in windov.h
+extern "C" {const char * wvLIDToLangConverter(UT_uint16);}
 
 /*****************************************************************/
 
@@ -522,4 +525,29 @@ void XAP_Win32App::getDefaultGeometry(UT_uint32& width, UT_uint32& height, UT_ui
 	width = GetSystemMetrics(SM_CXFULLSCREEN);
 	height = GetSystemMetrics(SM_CYFULLSCREEN);	
 }
+
+const char * XAP_Win32App::_getKbdLanguage()
+{
+	// make sure that m_hkl is in sync with the current value
+	m_hkl = GetKeyboardLayout(0);
+	
+	WORD langID = LANGIDFROMLCID(LOWORD(m_hkl));
+	const char * pszLang = wvLIDToLangConverter((unsigned short)langID);
+	UT_DEBUGMSG(("XAP_Win32App::_getKbdLanguage: %s\n",pszLang));
+	return pszLang;
+}
+
+// wrapper around XAP_App::setKbdLanguage(const char *)
+void XAP_Win32App::setKbdLanguage(HKL hkl)
+{
+	m_hkl = hkl;
+
+	WORD langID = LANGIDFROMLCID(LOWORD(hkl));
+	const char * pszLang = wvLIDToLangConverter((unsigned short)langID);
+	UT_DEBUGMSG(("XAP_Win32App::setKbdLanguage: %s\n",pszLang));
+
+	// set the language
+	XAP_App::setKbdLanguage(pszLang);
+}
+
 

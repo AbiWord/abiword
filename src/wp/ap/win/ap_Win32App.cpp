@@ -157,31 +157,6 @@ bool AP_Win32App::initialize(void)
 	m_pToolbarActionSet = AP_CreateToolbarActionSet();
 	UT_ASSERT(m_pToolbarActionSet);
 
-	if (! XAP_Win32App::initialize())
-		return false;
-
-	
-	// let various window types register themselves
-
-	if (!AP_Win32Frame::RegisterClass(this))
-	{
-		UT_DEBUGMSG(("couldn't register class\n"));
-		return false;
-	}
-
-	//////////////////////////////////////////////////////////////////
-	// Initialize the importers/exporters
-	//////////////////////////////////////////////////////////////////
-	IE_ImpExp_RegisterXP ();
-
-	//////////////////////////////////////////////////////////////////
-	// initializes the spell checker.
-	//////////////////////////////////////////////////////////////////
-	
-	{
-		SpellManager::instance();
-	}
-	
 	//////////////////////////////////////////////////////////////////
 	// load the dialog and message box strings
 	//////////////////////////////////////////////////////////////////
@@ -233,6 +208,33 @@ bool AP_Win32App::initialize(void)
 			free(szPathname);
 		}
 	}
+
+	if (! XAP_Win32App::initialize())
+		return false;
+
+	
+	// let various window types register themselves
+
+	if (!AP_Win32Frame::RegisterClass(this))
+	{
+		UT_DEBUGMSG(("couldn't register class\n"));
+		return false;
+	}
+
+	//////////////////////////////////////////////////////////////////
+	// Initialize the importers/exporters
+	//////////////////////////////////////////////////////////////////
+	IE_ImpExp_RegisterXP ();
+
+	//////////////////////////////////////////////////////////////////
+	// initializes the spell checker.
+	//////////////////////////////////////////////////////////////////
+	
+	{
+		SpellManager::instance();
+	}
+	
+	
 	// Now we have the strings loaded we can populate the field names correctly
 	int i;
 	

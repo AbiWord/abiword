@@ -2881,7 +2881,7 @@ Defun(dlgMetaData)
       pDocument->setMetaDataProp ( PD_META_KEY_RIGHTS, pDialog->getRights() ) ;
       pDocument->setMetaDataProp ( PD_META_KEY_DESCRIPTION, pDialog->getDescription() ) ;
 
-	  for(int i = 0;i < pApp->getFrameCount();++i)
+	  for(UT_uint32 i = 0;i < pApp->getFrameCount();++i)
 	  {
 		  pApp->getFrame(i)->updateTitle ();
 	  }	  
@@ -4508,12 +4508,43 @@ Defun1(delEOD)
 	return true;
 }
 
+#if 0
+static bool pView->cmdCharInsert(const UT_UCS4Char * pText, UT_uint32 iLen,
+						XAP_Frame * pFrame, FV_View * pView,
+						bool bForce = false)
+{
+	// handle automatic language formatting
+	XAP_App * pApp = pFrame->getApp();
+	UT_return_val_if_fail(pApp, false);
+	XAP_Prefs * pPrefs = pApp->getPrefs();
+	UT_return_val_if_fail(pPrefs, false);
+
+	bool b = false;
+
+	pPrefs->getPrefsValueBool(static_cast<XML_Char*>(XAP_PREF_KEY_ChangeLanguageWithKeyboard),
+							  &b);
+	if(b)
+	{
+		const UT_LangRecord * pLR = pApp->getKbdLanguage();
+
+		if (pLR)
+		{
+			const XML_Char * props_out[] = {"lang", NULL, NULL};
+			props_out[1] = pLR->m_szLangCode;
+			pView->setCharFormat(props_out);
+		}
+	}
+	
+	pView->cmdCharInsert(pText, iLen, bForce);
+	return true;
+}
+#endif
+
 Defun(insertData)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
-	pView->cmdCharInsert(pCallData->m_pData, pCallData->m_dataLength);
-	return true;
+	return pView->cmdCharInsert(pCallData->m_pData, pCallData->m_dataLength);
 }
 
 Defun(insertClosingParenthesis)
@@ -4528,50 +4559,41 @@ Defun(insertClosingParenthesis)
 	XAP_Prefs * pPrefs = pApp->getPrefs();
 	UT_return_val_if_fail(pPrefs, false);
 
-	XAP_PrefsScheme *pPrefsScheme = pPrefs->getCurrentScheme();
-	UT_return_val_if_fail(pPrefsScheme, false);
+	bool bLang = false, bMarker = false;
 
-	bool b = false;
+	pPrefs->getPrefsValueBool(static_cast<XML_Char*>(XAP_PREF_KEY_ChangeLanguageWithKeyboard),
+							  &bLang);
 
-	pPrefs->getPrefsValueBool(static_cast<XML_Char*>(XAP_PREF_KEY_ChangeLanguageWithKeyboard), &b);
-	if(b)
-	{
-		pPrefs->getPrefsValueBool(static_cast<XML_Char*>(XAP_PREF_KEY_DirMarkerAfterClosingParenthesis), &b);
-	}
+	const UT_LangRecord * pLR = NULL;
 	
-	if(b)
+	if(bLang)
+	{
+		pLR = pApp->getKbdLanguage();
+		
+		pPrefs->getPrefsValueBool(static_cast<XML_Char*>(XAP_PREF_KEY_DirMarkerAfterClosingParenthesis), &bMarker);
+	}
+
+	if(bMarker && pLR)
 	{
 		UT_return_val_if_fail(pCallData->m_dataLength == 1, false);
 		UT_UCS4Char data[2];
 		data[0] = (UT_UCS4Char) *(pCallData->m_pData);
-
 		
-		const XML_Char ** props_in = NULL;
-		if (pView->getCharFormat(&props_in))
+		if(pLR->m_eDir == UTLANG_RTL)
 		{
-			const XML_Char * s = UT_getAttribute("lang", props_in);
-			UT_Language l;
-			UT_LANGUAGE_DIR order = l.getDirFromCode(s);
-			FREEP(props_in);
-
-			if(order == UTLANG_RTL)
-			{
-				data[1] = UCS_RLM;
-			}
-			else if(order == UTLANG_LTR)
-			{
-				data[1] = UCS_LRM;
-			}
-			else
-			{
-				goto normal_insert;
-			}
-
-			pView->cmdCharInsert(&data[0], 2);
-			return true;
+			data[1] = UCS_RLM;
 		}
-		
-		return false;
+		else if(pLR->m_eDir == UTLANG_LTR)
+		{
+			data[1] = UCS_LRM;
+		}
+		else
+		{
+			goto normal_insert;
+		}
+
+		pView->cmdCharInsert(&data[0],2);
+		return true;
 	}
 
  normal_insert:	
@@ -4591,50 +4613,41 @@ Defun(insertOpeningParenthesis)
 	XAP_Prefs * pPrefs = pApp->getPrefs();
 	UT_return_val_if_fail(pPrefs, false);
 
-	XAP_PrefsScheme *pPrefsScheme = pPrefs->getCurrentScheme();
-	UT_return_val_if_fail(pPrefsScheme, false);
+	bool bLang = false, bMarker = false;
 
-	bool b = false;
+	pPrefs->getPrefsValueBool(static_cast<XML_Char*>(XAP_PREF_KEY_ChangeLanguageWithKeyboard),
+							  &bLang);
 
-	pPrefs->getPrefsValueBool(static_cast<XML_Char*>(XAP_PREF_KEY_ChangeLanguageWithKeyboard), &b);
-	if(b)
+	const UT_LangRecord * pLR = NULL;
+	
+	if(bLang)
 	{
-		pPrefs->getPrefsValueBool(static_cast<XML_Char*>(XAP_PREF_KEY_DirMarkerAfterClosingParenthesis), &b);
+		pLR = pApp->getKbdLanguage();
+		
+		pPrefs->getPrefsValueBool(static_cast<XML_Char*>(XAP_PREF_KEY_DirMarkerAfterClosingParenthesis), &bMarker);
 	}
 	
-	if(b)
+	if(bMarker && pLR)
 	{
 		UT_return_val_if_fail(pCallData->m_dataLength == 1, false);
 		UT_UCS4Char data[2];
 		data[1] = (UT_UCS4Char) *(pCallData->m_pData);
 
-		
-		const XML_Char ** props_in = NULL;
-		if (pView->getCharFormat(&props_in))
+		if(pLR->m_eDir == UTLANG_RTL)
 		{
-			const XML_Char * s = UT_getAttribute("lang", props_in);
-			UT_Language l;
-			UT_LANGUAGE_DIR order = l.getDirFromCode(s);
-			FREEP(props_in);
-
-			if(order == UTLANG_RTL)
-			{
-				data[0] = UCS_RLM;
-			}
-			else if(order == UTLANG_LTR)
-			{
-				data[0] = UCS_LRM;
-			}
-			else
-			{
-				goto normal_insert;
-			}
-
-			pView->cmdCharInsert(&data[0], 2);
-			return true;
+			data[0] = UCS_RLM;
 		}
-		
-		return false;
+		else if(pLR->m_eDir == UTLANG_LTR)
+		{
+			data[0] = UCS_LRM;
+		}
+		else
+		{
+			goto normal_insert;
+		}
+
+		pView->cmdCharInsert(&data[0], 2);
+		return true;
 	}
 
  normal_insert:	
@@ -4646,6 +4659,7 @@ Defun1(insertLRM)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
+	
 	UT_UCS4Char cM = UCS_LRM;
 	pView->cmdCharInsert(&cM, 1);
 	return true;
@@ -4655,6 +4669,7 @@ Defun1(insertRLM)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
+
 	UT_UCS4Char cM = UCS_RLM;
 	pView->cmdCharInsert(&cM, 1);
 	return true;
@@ -4858,7 +4873,8 @@ Defun1(insertColumnBreak)
 		return true;
 	if(pView->isInTable())
 	{
-		XAP_Frame * pFrame = static_cast<XAP_Frame *> (pAV_View->getParentData());
+		XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
+		UT_return_val_if_fail(pFrame, false);
 		pFrame->showMessageBox(AP_STRING_ID_MSG_NoBreakInsideTable,
 							   XAP_Dialog_MessageBox::b_O,
 							   XAP_Dialog_MessageBox::a_OK);
@@ -5127,6 +5143,7 @@ Defun1(insertPageBreak)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
+
 	UT_UCSChar c = UCS_FF;
 //
 // No page breaks in header/Footers
@@ -5135,7 +5152,8 @@ Defun1(insertPageBreak)
 		return true;
 	if(pView->isInTable())
 	{
-		XAP_Frame * pFrame = static_cast<XAP_Frame *> (pAV_View->getParentData());
+		XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
+		UT_return_val_if_fail(pFrame, false);
 		pFrame->showMessageBox(AP_STRING_ID_MSG_NoBreakInsideTable,
 							   XAP_Dialog_MessageBox::b_O,
 							   XAP_Dialog_MessageBox::a_OK);
@@ -10280,70 +10298,70 @@ Defun(insAutotext_attn_1)
 {
 	CHECK_FRAME;
 	return _insAutotext(static_cast<FV_View *>(pAV_View),
-			  AP_STRING_ID_AUTOTEXT_ATTN_1);
+						AP_STRING_ID_AUTOTEXT_ATTN_1);
 }
 
 Defun(insAutotext_attn_2)
 {
 	CHECK_FRAME;
 	return _insAutotext(static_cast<FV_View *>(pAV_View),
-			  AP_STRING_ID_AUTOTEXT_ATTN_2);
+						AP_STRING_ID_AUTOTEXT_ATTN_2);
 }
 
 Defun(insAutotext_closing_1)
 {
 	CHECK_FRAME;
 	return _insAutotext(static_cast<FV_View *>(pAV_View),
-			  AP_STRING_ID_AUTOTEXT_CLOSING_1);
+						AP_STRING_ID_AUTOTEXT_CLOSING_1);
 }
 
 Defun(insAutotext_closing_2)
 {
 	CHECK_FRAME;
 	return _insAutotext(static_cast<FV_View *>(pAV_View),
-			  AP_STRING_ID_AUTOTEXT_CLOSING_2);
+						AP_STRING_ID_AUTOTEXT_CLOSING_2);
 }
 
 Defun(insAutotext_closing_3)
 {
 	CHECK_FRAME;
 	return _insAutotext(static_cast<FV_View *>(pAV_View),
-			  AP_STRING_ID_AUTOTEXT_CLOSING_3);
+						AP_STRING_ID_AUTOTEXT_CLOSING_3);
 }
 
 Defun(insAutotext_closing_4)
 {
 	CHECK_FRAME;
 	return _insAutotext(static_cast<FV_View *>(pAV_View),
-			  AP_STRING_ID_AUTOTEXT_CLOSING_4);
+						AP_STRING_ID_AUTOTEXT_CLOSING_4);
 }
 
 Defun(insAutotext_closing_5)
 {
 	CHECK_FRAME;
 	return _insAutotext(static_cast<FV_View *>(pAV_View),
-			  AP_STRING_ID_AUTOTEXT_CLOSING_5);
+						AP_STRING_ID_AUTOTEXT_CLOSING_5);
 }
 
 Defun(insAutotext_closing_6)
 {
 	CHECK_FRAME;
-	return _insAutotext(static_cast<FV_View *>(pAV_View),
-			  AP_STRING_ID_AUTOTEXT_CLOSING_6);
+	return _insAutotext( static_cast<FV_View *>(pAV_View),
+						AP_STRING_ID_AUTOTEXT_CLOSING_6);
 }
 
 Defun(insAutotext_closing_7)
 {
 	CHECK_FRAME;
 	return _insAutotext(static_cast<FV_View *>(pAV_View),
-			  AP_STRING_ID_AUTOTEXT_CLOSING_7);
+						AP_STRING_ID_AUTOTEXT_CLOSING_7);
 }
 
 Defun(insAutotext_closing_8)
 {
 	CHECK_FRAME;
-	return _insAutotext(static_cast<FV_View *>(pAV_View),
-			  AP_STRING_ID_AUTOTEXT_CLOSING_8);
+	return _insAutotext( static_cast<FV_View *>(pAV_View),
+						AP_STRING_ID_AUTOTEXT_CLOSING_8);
 }
 
 Defun(insAutotext_closing_9)

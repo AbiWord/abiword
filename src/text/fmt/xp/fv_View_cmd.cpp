@@ -31,6 +31,7 @@
 #include "ut_string.h"
 #include "ut_bytebuf.h"
 #include "ut_timer.h"
+#include "ut_Language.h"
 
 #include "xav_View.h"
 #include "fv_View.h"
@@ -2577,6 +2578,18 @@ UT_Error FV_View::cmdInsertTable(UT_sint32 numRows, UT_sint32 numCols, const XML
 
 bool FV_View::cmdCharInsert(const UT_UCSChar * text, UT_uint32 count, bool bForce)
 {
+	// see if prefs specify we should set language based on kbd layout
+	UT_return_val_if_fail(m_pApp, false);
+	bool bSetLang = false;
+	m_pApp->getPrefsValueBool(static_cast<XML_Char*>(XAP_PREF_KEY_ChangeLanguageWithKeyboard),
+							  &bSetLang);
+
+	const UT_LangRecord * pLR = NULL;
+
+	if(bSetLang)
+		pLR = m_pApp->getKbdLanguage();
+
+	
 	bool bResult = true;
 	// So this gets rid of the annoying cursor flash at the beginning
 	// of the line upon character insertion, but it's the wrong thing to
@@ -2602,6 +2615,10 @@ bool FV_View::cmdCharInsert(const UT_UCSChar * text, UT_uint32 count, bool bForc
 //
 			bOK = _charMotion(true,1);
 		}
+
+		if(pLR)
+			AttrProp_Before.setProperty("lang", pLR->m_szLangCode);
+		
 		bResult = m_pDoc->insertSpan(getPoint(), text, count, &AttrProp_Before);
 		m_pDoc->endUserAtomicGlob();
 	}
@@ -2622,7 +2639,8 @@ bool FV_View::cmdCharInsert(const UT_UCSChar * text, UT_uint32 count, bool bForc
 			// Were inserting a TAB. Handle special case of TAB
 			// right after a list-label combo
 			//
-			if((isTabListBehindPoint() == true || isTabListAheadPoint() == true) && getCurrentBlock()->isFirstInList() == false)
+			if((   isTabListBehindPoint() == true || isTabListAheadPoint() == true)
+			    && getCurrentBlock()->isFirstInList() == false)
 			{
 				//
 				// OK now start a sublist of the same type as the
@@ -2655,8 +2673,16 @@ bool FV_View::cmdCharInsert(const UT_UCSChar * text, UT_uint32 count, bool bForc
 				}
 			}
 		}
+		
 		if (doInsert == true)
 		{
+			if(pLR)
+			{
+				PP_AttrProp AP;
+				AP.setProperty("lang", pLR->m_szLangCode);
+				m_pDoc->insertFmtMark(PTC_AddFmt,getPoint(), &AP);
+			}
+
 			bResult = m_pDoc->insertSpan(getPoint(), text, count, NULL);
 
 			if(!bResult)
@@ -2664,7 +2690,9 @@ bool FV_View::cmdCharInsert(const UT_UCSChar * text, UT_uint32 count, bool bForc
 				const fl_BlockLayout * pBL = getCurrentBlock();
 				const PP_AttrProp *pBlockAP = NULL;
 				pBL->getAttrProp(&pBlockAP);
-				bResult = m_pDoc->insertSpan(getPoint(), text, count,const_cast<PP_AttrProp *>(pBlockAP));
+
+				bResult = m_pDoc->insertSpan(getPoint(), text, count,
+											 const_cast<PP_AttrProp *>(pBlockAP));
 				UT_ASSERT(bResult);
 			}
 		}

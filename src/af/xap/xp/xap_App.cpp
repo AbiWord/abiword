@@ -26,6 +26,7 @@
 #include "ut_assert.h"
 #include "ut_string.h"
 #include "ut_debugmsg.h"
+#include "ut_Language.h"
 #include "ev_EditMethod.h"
 #include "ev_Menu_Actions.h"
 #include "ev_Toolbar_Actions.h"
@@ -73,7 +74,8 @@ XAP_App::XAP_App(XAP_Args * pArgs, const char * szAppName)
 	  m_bAreCustomized(true),
 	  m_bDebugBool(false),
 	  m_bBonoboRunning(false),
-	  m_bEnableSmoothScrolling(true)
+	  m_bEnableSmoothScrolling(true),
+	  m_pKbdLang(NULL) // must not be deleted by destructor !!!
 {
 #ifdef DEBUG
 	_fundamentalAsserts(); // see the comments in the function itself
@@ -184,6 +186,10 @@ bool XAP_App::initialize()
 	// create application-wide resources that
 	// are shared by everything.
 
+	// init keyboard language (cannot be in the constructor as it
+	// requires the platform code already initialised
+	setKbdLanguage(_getKbdLanguage());
+	
 #if 0 
 	m_pEMC = AP_GetEditMethods();
 	UT_ASSERT(m_pEMC);
@@ -854,6 +860,60 @@ void XAP_App::parseAndSetGeometry(const char *string)
 		setGeometry(nx, ny, nw, nh, nflags);
 	}
 } 
+
+/*!
+    translate given language tag into static UT_LangRecord stored in
+    UT_Language class and set m_pKbdLang to it; do addtional
+    processing to ensure the change propagates into the status bar
+*/
+void XAP_App::setKbdLanguage(const char * pszLang)
+{
+	if(!pszLang)
+	{
+		m_pKbdLang = NULL;
+	}
+	else
+	{
+		UT_Language Lang;
+		m_pKbdLang = Lang.getLangRecordFromCode(pszLang);
+
+		// ensure that the change is shown in our status bar
+	    bool bChangeLang = false;
+		getPrefsValueBool(XAP_PREF_KEY_ChangeLanguageWithKeyboard, &bChangeLang);
+
+		if(bChangeLang && m_pKbdLang)
+		{
+			UT_return_if_fail(m_pKbdLang->m_szLangCode);
+			
+			// invoke appropriate formatting method if it exists
+			const EV_EditMethodContainer * pEMC = getEditMethodContainer();
+
+			if(pEMC)
+			{
+				EV_EditMethod * pEM = pEMC->findEditMethodByName("language");
+			
+				if (pEM)
+				{
+					XAP_Frame * pFrame = getLastFocussedFrame();
+					
+					if(pFrame)
+					{
+						AV_View * pView = pFrame->getCurrentView();
+
+						if(pView)
+						{
+							EV_EditMethodCallData CallData(m_pKbdLang->m_szLangCode,
+														   strlen(m_pKbdLang->m_szLangCode));
+
+							pEM->Fn(pView,&CallData);
+						}
+					}
+				}
+			}
+		}
+	}
+}
+
 
 #ifdef DEBUG
 /*!

@@ -36,9 +36,10 @@
 // (3) add it here, using the ID corresponding to the one
 //     from xap_String_Id.h
 
-static lang_entry s_Table[] = 
+static UT_LangRecord s_Table[] = 
 {
-	//language code, localised language name, numerical id, text direction
+	//language code, localised language name, numerical id, text
+	//direction
 	{"-none-",		NULL, XAP_STRING_ID_LANG_0,     UTLANG_LTR},
 	{"am-ET",		NULL, XAP_STRING_ID_LANG_AM_ET, UTLANG_LTR},
 	{"af-ZA",		NULL, XAP_STRING_ID_LANG_AF_ZA, UTLANG_LTR},
@@ -139,8 +140,8 @@ static lang_entry s_Table[] =
  */
 static int s_compareQ(const void * a, const void *b)
 {
-	const lang_entry * A = static_cast<const lang_entry *>(a);
-	const lang_entry * B = static_cast<const lang_entry *>(b);
+	const UT_LangRecord * A = static_cast<const UT_LangRecord *>(a);
+	const UT_LangRecord * B = static_cast<const UT_LangRecord *>(b);
 #if 0
 	// as long as bsearch is used searching for lang codes this is wrong
 	if (B->m_nID == XAP_STRING_ID_LANG_0)
@@ -165,7 +166,7 @@ static int s_compareQ(const void * a, const void *b)
 static int s_compareB(const void * l, const void *e)
 {
 	const XML_Char * L   = static_cast<const XML_Char *>(l);
-	const lang_entry * E = static_cast<const lang_entry *>(e);
+	const UT_LangRecord * E = static_cast<const UT_LangRecord *>(e);
 
 #if 0
 	// as long as bsearch is used searching for lang codes this is wrong
@@ -196,12 +197,14 @@ UT_Language::UT_Language()
 	{
 		const XAP_StringSet * pSS = XAP_App::getApp()->getStringSet();
 
+		UT_return_if_fail(pSS);
+		
 		for(UT_uint32 i = 0; i < NrElements(s_Table); i++)
 		{
 			s_Table[i].m_szLangName = const_cast<XML_Char *>(pSS->getValue(s_Table[i].m_nID));
 		}
 
-		qsort(&s_Table[0], NrElements(s_Table), sizeof(lang_entry), s_compareQ);
+		qsort(&s_Table[0], NrElements(s_Table), sizeof(UT_LangRecord), s_compareQ);
 		s_Init = false;
 	}
 }
@@ -234,6 +237,7 @@ const XML_Char * UT_Language::getCodeFromName(const XML_Char * szName)
 			return s_Table[i].m_szLangCode;
 	}
 
+	UT_ASSERT( UT_SHOULD_NOT_HAPPEN );
 	UT_DEBUGMSG(("UT_Language: unknown language [%s]; if this message appears, add the "
 				 "language to the tables\n", szName));
 	return NULL;
@@ -247,6 +251,7 @@ UT_uint32 UT_Language::getIndxFromCode(const XML_Char * szCode)
 			return i;
 	}
 
+	UT_ASSERT( UT_SHOULD_NOT_HAPPEN );
 	UT_DEBUGMSG(("UT_Language: unknown language [%s]; if this message appears, add the "
 				 "language to the tables\n", szCode));
 	return 0;
@@ -254,11 +259,12 @@ UT_uint32 UT_Language::getIndxFromCode(const XML_Char * szCode)
 
 UT_uint32 UT_Language::getIdFromCode(const XML_Char * szCode)
 {
-	lang_entry * e = static_cast<lang_entry *>(bsearch(szCode, s_Table, NrElements(s_Table), sizeof(lang_entry), s_compareB));
+	UT_LangRecord * e = static_cast<UT_LangRecord *>(bsearch(szCode, s_Table, NrElements(s_Table), sizeof(UT_LangRecord), s_compareB));
 	if(e)
 		return e->m_nID;
 	else
 	{
+		UT_ASSERT( UT_SHOULD_NOT_HAPPEN );
 		UT_DEBUGMSG(("UT_Language: unknown language [%s]; if this message appears, add the "
 					 "language to the tables\n", szCode));
 		return 0;
@@ -275,11 +281,15 @@ UT_uint32 UT_Language::getIdFromCode(const XML_Char * szCode)
 
 const XML_Char * UT_Language::getCodeFromCode(const XML_Char * szName)
 {
-	lang_entry * e = static_cast<lang_entry *>(bsearch(szName, s_Table, NrElements(s_Table), sizeof(lang_entry), s_compareB));
+	UT_LangRecord * e = static_cast<UT_LangRecord *>(bsearch(szName, s_Table,
+															 NrElements(s_Table),
+															 sizeof(UT_LangRecord), s_compareB));
+	
 	if(e)
 		return e->m_szLangCode;
 	else
 	{
+		UT_ASSERT( UT_SHOULD_NOT_HAPPEN );
 		UT_DEBUGMSG(("UT_Language: unknown language [%s]; if this message appears, add the "
 					 "language to the tables\n", szName));
 		return 0;
@@ -288,13 +298,34 @@ const XML_Char * UT_Language::getCodeFromCode(const XML_Char * szName)
 
 UT_LANGUAGE_DIR UT_Language::getDirFromCode(const XML_Char * szCode)
 {
-	lang_entry * e = static_cast<lang_entry *>(bsearch(szCode, s_Table, NrElements(s_Table), sizeof(lang_entry), s_compareB));
+	UT_LangRecord * e = static_cast<UT_LangRecord *>(bsearch(szCode, s_Table,
+															 NrElements(s_Table),
+															 sizeof(UT_LangRecord), s_compareB));
+	
 	if(e)
 		return e->m_eDir;
 	else
 	{
+		UT_ASSERT( UT_SHOULD_NOT_HAPPEN );
 		UT_DEBUGMSG(("UT_Language: unknown language [%s]; if this message appears, add the "
 					 "language to the tables\n", szCode));
 		return UTLANG_LTR;
 	}
 }
+
+const UT_LangRecord * UT_Language::getLangRecordFromCode(const XML_Char * szCode)
+{
+	const UT_LangRecord * e = static_cast<UT_LangRecord *>(bsearch(szCode, s_Table,
+															 NrElements(s_Table),
+															 sizeof(UT_LangRecord), s_compareB));
+	if(!e)
+	{
+		UT_ASSERT( UT_SHOULD_NOT_HAPPEN );
+		UT_DEBUGMSG(("UT_Language: unknown language [%s]; if this message appears, add the "
+					 "language to the tables\n", szCode));
+		return 0;
+	}
+
+	return e;
+}
+	
