@@ -31,7 +31,7 @@
 #include "ut_string_class.h"
 #include "ut_vector.h"
 #include "ut_hash.h"
-
+#include "barbarisms.h"		  
 // forward declaration
 class SpellManager;
 
@@ -57,6 +57,8 @@ protected:
 protected:
     SpellChecker();
     virtual ~SpellChecker();
+    
+   	Barbarisms		m_barbarism;
 
 private:
 	SpellChecker(const SpellChecker&);		// no impl
