@@ -47,6 +47,15 @@ fb_LineBreaker::fb_LineBreaker()
 UT_sint32
 fb_LineBreaker::breakParagraph(fl_BlockLayout* pBlock)
 {
+	// FIXME: This should:
+	//   o Check the Runs for state signalling if they changed since
+	//     last paragraph layout.
+	//   o Only layout lines starting with, and below, the first line
+	//     which contain changed Runs.
+	//   o If the block bounding box or layout properties change, it
+	//     should force a full layout.
+	//   o Also see fix me at end of loop
+
 	fp_Line* pLine = pBlock->getFirstLine();
 	UT_ASSERT(pLine);
 
@@ -354,6 +363,8 @@ fb_LineBreaker::breakParagraph(fl_BlockLayout* pBlock)
 			{
 				pLine->clearScreen();
 			}
+			// FIXME: This should go in the block above. But only when
+			// we are guaranteed a full re-layout on block changes.
 			pLine->layout();
 
 

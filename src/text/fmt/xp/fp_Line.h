@@ -73,7 +73,8 @@ public:
 
 	inline fp_Container* 		getContainer(void) const	{ return m_pContainer; }
 	inline fl_BlockLayout*		getBlock(void) const 		{ return m_pBlock; }
-	inline UT_sint32 			getHeight(void) const 		{ return m_iHeight; }
+	//! Return height of line as it will appear on screen
+	inline UT_sint32 			getHeight(void) const 		{ return (m_iScreenHeight != -1) ? m_iScreenHeight : m_iHeight; }
 	inline UT_sint32 			getHeightInLayoutUnits(void) const 		{ return m_iHeightLayoutUnits; }
 	
 	inline UT_sint32			getX(void) const 			{ return m_iX; }
@@ -159,7 +160,7 @@ public:
 	bool		findNextTabStop(UT_sint32 iStartX, UT_sint32& iPosition, eTabType& iType, eTabLeader& iLeader );
 	bool		findNextTabStopInLayoutUnits(UT_sint32 iStartX, UT_sint32& iPosition, eTabType& iType, eTabLeader& iLeader);
 	
-	void		setNeedsRedraw(void) { m_bNeedsRedraw = true; m_pBlock->setNeedsRedraw();}
+	void		setNeedsRedraw(void);
 	bool		needsRedraw(void) { return m_bNeedsRedraw; }
 	void		redrawUpdate(void);
 #ifdef BIDI_ENABLED
@@ -185,6 +186,9 @@ protected:
 	UT_sint32	 	m_iMaxWidth;
 	UT_sint32		m_iMaxWidthLayoutUnits;
 	UT_sint32 		m_iHeight;
+	//! Height assigned on screen
+	//! -1 if undefined
+	UT_sint32 		m_iScreenHeight;
 	UT_sint32 		m_iHeightLayoutUnits;
 	UT_sint32 		m_iAscent;
 	UT_sint32		m_iDescent;

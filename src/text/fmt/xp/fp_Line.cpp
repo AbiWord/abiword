@@ -58,6 +58,7 @@ fp_Line::fp_Line()
 	m_iWidth = 0;
 	m_iWidthLayoutUnits = 0;
 	m_iHeight = 0;
+	m_iScreenHeight = -1;
 	m_iHeightLayoutUnits = 0;
 	m_iX = 0;
 	m_iXLayoutUnits = 0;
@@ -492,7 +493,7 @@ void fp_Line::getScreenOffsets(fp_Run* pRun,
 */
 void fp_Line::setAssignedScreenHeight(UT_sint32 iHeight)
 {
-	m_iHeight = iHeight;
+	m_iScreenHeight = iHeight;
 }
 
 /*!
@@ -600,6 +601,7 @@ void fp_Line::recalcHeight()
 #endif
 
 		m_iHeight = iNewHeight;
+		m_iScreenHeight = -1;	// undefine screen height
 		m_iHeightLayoutUnits = iNewHeightLayoutUnits;
 		m_iAscent = iNewAscent;
 		m_iDescent = iNewDescent;
@@ -635,7 +637,10 @@ void fp_Line::clearScreen(void)
 
 			m_pContainer->getScreenOffsets(this, xoffLine, yoffLine);
 			UT_RGBColor * pClr = pRun->getPageColor();
-			pRun->getGraphics()->fillRect(*pClr,xoffLine, yoffLine, m_iMaxWidth, m_iHeight);
+			// Note: we use getHeight here instead of m_iScreenHeight
+			// in case the line is asked to render before it's been
+			// assigned a height. Call it robustness, if you want.
+			pRun->getGraphics()->fillRect(*pClr,xoffLine, yoffLine, m_iMaxWidth, getHeight());
 //
 // Sevior: I added this for robustness.
 //
@@ -708,6 +713,12 @@ void fp_Line::clearScreenFromRunToEnd(UT_uint32 runIndex)
 	}
 }
 
+
+void fp_Line::setNeedsRedraw(void)
+{ 
+	m_bNeedsRedraw = true;
+	m_pBlock->setNeedsRedraw();
+}
 
 void fp_Line::redrawUpdate(void)
 {
