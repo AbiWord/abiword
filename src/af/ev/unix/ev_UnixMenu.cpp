@@ -106,7 +106,8 @@ UT_Bool EV_UnixMenu::menuEvent(AP_Menu_Id id)
 	UT_ASSERT(pAction);
 
 	const char * szMethodName = pAction->getMethodName();
-	UT_ASSERT(szMethodName);
+	if (!szMethodName)
+		return UT_FALSE;
 	
 	const EV_EditMethodContainer * pEMC = m_pUnixAp->getEditMethodContainer();
 	UT_ASSERT(pEMC);
