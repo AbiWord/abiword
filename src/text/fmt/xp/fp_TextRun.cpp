@@ -338,6 +338,14 @@ void fp_TextRun::lookupProperties(void)
 			m_pRevisions = new PP_RevisionAttr(pRevision);
 		else
 			m_pRevisions->setRevision(pRevision);
+
+		//next step is to parse any properties associated with this
+		//revision
+		if((m_pRevisions->getType() == PP_REVISION_FMT_CHANGE)
+		 ||(m_pRevisions->getType() == PP_REVISION_ADDITION_AND_FMT))
+		{
+			// TODO implement this
+		}
 	}
 	else if(m_pRevisions)
 	{

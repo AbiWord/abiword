@@ -76,7 +76,8 @@
 // at max BOOKMARK_NAME_LIMIT of chars as defined in pf_Frag_Bookmark.h
 #define BOOKMARK_NAME_SIZE 30
 #define CHECK_WINDOW_SIZE if(getWindowHeight() < 20) return;
-//#define REVISION_TEST
+
+#define REVISION_TEST DEBUG
 /****************************************************************/
 
 class _fmtPair
@@ -4938,6 +4939,9 @@ void FV_View::cmdCharDelete(bool bForward, UT_uint32 count)
 
 		PP_AttrProp * pAttrProp;
 		const XML_Char * ppRevAttrib[4];
+		PP_RevisionAttr Revisions; // new to create it here so it
+								   // persists long enough
+
 
 		if(!curBlock)
 			curBlock = _findBlockAtPosition(getPoint());
@@ -4953,7 +4957,7 @@ void FV_View::cmdCharDelete(bool bForward, UT_uint32 count)
 			if(pAttrProp)
 				pAttrProp->getAttribute(name, pRevision);
 
-			PP_RevisionAttr Revisions(pRevision);
+			Revisions.setRevision(pRevision);
 			Revisions.addRevision(m_pDoc->getRevisionId(),PP_REVISION_DELETION,NULL);
 
 			ppRevAttrib[0] = name;

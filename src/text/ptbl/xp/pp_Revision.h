@@ -50,6 +50,8 @@ class PP_Revision
 	void             mergeProps(const XML_Char * pProps);
 	void             mergeProps(const XML_Char ** pProps);
 
+	bool             hasProperty(const XML_Char * pName, const XML_Char *& pValue) const;
+
 	bool operator == (const PP_Revision &op2) const;
 
   private:
@@ -107,8 +109,14 @@ class PP_RevisionAttr
 	bool                  isVisible(UT_uint32 id) const;
 	bool                  isVisible() const;
 	bool                  isFragmentSuperfluous() const;
+	bool                  hasProperty(UT_uint32 iId, const XML_Char * pName, const XML_Char * &pValue) const;
+	bool                  hasProperty(const XML_Char * pName, const XML_Char * &pValue) const;
 
 	const XML_Char *      getXMLstring();
+
+	PP_RevisionType       getType(UT_uint32 iId) const;
+	PP_RevisionType       getType() const;
+
 
 	bool operator == (const PP_RevisionAttr &op2) const;
 

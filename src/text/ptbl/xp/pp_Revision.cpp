@@ -259,6 +259,25 @@ bool PP_Revision::operator == (const PP_Revision &op2) const
 	return true;
 }
 
+/*! returns true if the property of pName is found in this revision
+    and sets pValue to its value; note that NULL is a valid value for
+    pName, it means that given property was removed by this revision
+*/
+bool PP_Revision::hasProperty(const XML_Char * pName, const XML_Char *& pValue) const
+{
+	for(UT_uint32 i = 0; i < m_vProps.getItemCount(); i += 2)
+	{
+		if(!UT_strcmp(pName, (char *)m_vProps.getNthItem(i)))
+		{
+			pValue = (const XML_Char *) m_vProps.getNthItem(i+1);
+			return true;
+		}
+	}
+
+	pValue = NULL;
+	return false;
+}
+
 
 /************************************************************
  ************************************************************/
@@ -694,7 +713,8 @@ void PP_RevisionAttr::_refreshString()
 		if(r_type == PP_REVISION_FMT_CHANGE)
 			m_sXMLstring += "!";
 
-		sprintf(buf,"%d",r->getId());
+		// print the id with appropriate sign
+		sprintf(buf,"%d",r->getId()* ((r_type == PP_REVISION_DELETION)?-1:1));
 		m_sXMLstring += buf;
 
 		if((r_type == PP_REVISION_FMT_CHANGE)||(r_type == PP_REVISION_ADDITION_AND_FMT))
@@ -759,5 +779,41 @@ bool PP_RevisionAttr::operator == (const PP_RevisionAttr &op2) const
 		}
 	}
 	return true;
+}
+
+/*! returns true if after revision iId this fragment carries revised
+    property pName, the value of which will be stored in pValue; see
+    notes on PP_Revision::hasProperty(...)
+*/
+bool PP_RevisionAttr::hasProperty(UT_uint32 iId, const XML_Char * pName, const XML_Char * &pValue) const
+{
+	const PP_Revision * r = getGreatestLesserOrEqualRevision(iId);
+	return r->hasProperty(pName, pValue);
+}
+
+/*! returns true if after the last revision this fragment carries revised
+    property pName, the value of which will be stored in pValue; see
+    notes on PP_Revision::hasProperty(...)
+*/
+bool PP_RevisionAttr::hasProperty(const XML_Char * pName, const XML_Char * &pValue) const
+{
+	const PP_Revision * r = getLastRevision();
+	return r->hasProperty(pName, pValue);
+}
+
+/*! returns the type of cumulative revision up to iId represented by this attribute
+ */
+PP_RevisionType PP_RevisionAttr::getType(UT_uint32 iId) const
+{
+	const PP_Revision * r = getGreatestLesserOrEqualRevision(iId);
+	return r->getType();
+}
+
+/*! returns the type of overall cumulative revision represented by this attribute
+ */
+PP_RevisionType PP_RevisionAttr::getType() const
+{
+	const PP_Revision * r = getLastRevision();
+	return r->getType();
 }
 
