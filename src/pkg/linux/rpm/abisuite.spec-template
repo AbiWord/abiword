@@ -10,7 +10,7 @@ Version: %{version}
 Release: %{release}
 Copyright: GPL
 Group: Applications/Editors
-Source: abisuite-%{version}.tar.gz
+Source: abisuite-%{version}.tar
 URL: http://www.abisource.com/
 Vendor: AbiSource, Inc.
 Packager: Shaw Terwilliger <sterwill@abisource.com>
