@@ -331,7 +331,6 @@ void AP_Dialog_Tab::_event_ClearAll(void)
 
 	// something changed...
 	_event_somethingChanged();
-	delete m_pszTabStops;
 }
 
 /*static*/ unsigned char AP_Dialog_Tab::AlignmentToChar( eTabType a )
