@@ -24,7 +24,6 @@
 
 UT_Bool UT_Stack::push(void * pVoid)
 {
-	UT_ASSERT(pVoid);
 	UT_uint32 error = m_vecStack.addItem(pVoid);
 	return (error == 0);
 }

@@ -252,7 +252,16 @@ UT_Bool EV_Win32Menu::onInitMenu(FV_View * pView, HWND hWnd, HMENU hMenuBar)
 	const EV_Menu_Layout * pMenuLayout = m_pWin32Frame->getMenuLayout();
 	UT_uint32 nrLabelItemsInLayout = pMenuLayout->getLayoutItemCount();
 	UT_Bool bNeedToRedrawMenu = UT_FALSE;
-	
+
+	UT_uint32 pos = 0;
+	UT_Bool bResult;
+	UT_Stack stackPos;
+	stackPos.push((void*)pos);
+	UT_Stack stackMenu;
+	stackMenu.push(hMenuBar);
+
+	HMENU m = hMenuBar;
+		
 	for (UT_uint32 k=0; (k < nrLabelItemsInLayout); k++)
 	{
 		EV_Menu_LayoutItem * pLayoutItem = pMenuLayout->getLayoutItem(k);
@@ -283,6 +292,7 @@ UT_Bool EV_Win32Menu::onInitMenu(FV_View * pView, HWND hWnd, HMENU hMenuBar)
 				{
 					// if no dynamic label, all we need to do
 					// is enable/disable and/or check/uncheck it.
+					pos++;
 
 					EnableMenuItem(hMenuBar,cmd,uEnable);
 					CheckMenuItem(hMenuBar,cmd,uCheck);
@@ -318,7 +328,8 @@ UT_Bool EV_Win32Menu::onInitMenu(FV_View * pView, HWND hWnd, HMENU hMenuBar)
 				}
 
 				// we want the item in the menu.
-				
+				pos++;
+
 				if (bPresent)			// just update the label on the item.
 				{
 					if (strcmp(szLabelName,mif.dwTypeData)==0)
@@ -343,16 +354,41 @@ UT_Bool EV_Win32Menu::onInitMenu(FV_View * pView, HWND hWnd, HMENU hMenuBar)
 				else
 				{
 					// insert new item at the correct location
-					// On Win32, we 'insert' before a given id.
 
-					// TODO do this
+					mif.fState = uCheck | uEnable;
+					mif.fType = MFT_STRING;
+					mif.wID = cmd;
+					mif.dwTypeData = (LPTSTR)szLabelName;
+					InsertMenuItem(m,pos-1,TRUE,&mif);
+					bNeedToRedrawMenu = UT_TRUE;
 				}
 			}
 			break;
 	
-		case EV_MLF_BeginSubMenu:
-		case EV_MLF_EndSubMenu:
 		case EV_MLF_Separator:
+			pos++;
+			break;
+
+		case EV_MLF_BeginSubMenu:
+			pos++;
+			stackMenu.push(m);
+			stackPos.push((void*)pos);
+
+			m = GetSubMenu(m, pos-1);
+			UT_ASSERT(m);
+			pos = 0;
+			break;
+
+		case EV_MLF_EndSubMenu:
+			bResult = stackMenu.pop((void **)&m);
+			UT_ASSERT(bResult);
+			bResult = stackPos.pop((void **)&pos);
+			UT_ASSERT(bResult);
+
+			// restore the previous menu
+			bResult = stackMenu.viewTop((void **)&m);
+			UT_ASSERT(bResult);
+
 			break;
 
 		default:
