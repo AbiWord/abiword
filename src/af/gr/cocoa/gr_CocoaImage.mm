@@ -134,6 +134,7 @@ void GR_CocoaImage::setFromImageRep(NSImageRep *imageRep)
 	[m_image release]; 
 	NSSize size = [imageRep size];
 	m_image = [[NSImage alloc] initWithSize:size];
+	[m_image setFlipped:YES];
 	[m_image addRepresentation:imageRep];
 	m_iDisplayWidth = lrintf(size.width);
 	m_iDisplayHeight = lrintf(size.height);
