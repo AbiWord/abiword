@@ -98,7 +98,7 @@ int XAP_QNXFrameImpl::_fe::button_press_event(PtWidget_t* w, void *data, PtCallb
 
 	if (pView)
 		pQNXMouse->mouseClick(pView,info);
-	return 0;
+	return Pt_END;
 }
 
 int XAP_QNXFrameImpl::_fe::button_release_event(PtWidget_t* w, void *data, PtCallbackInfo_t* info)
@@ -110,7 +110,7 @@ int XAP_QNXFrameImpl::_fe::button_release_event(PtWidget_t* w, void *data, PtCal
 
 	if (pView)
 		pQNXMouse->mouseUp(pView,info);
-	return 0;
+	return Pt_END;
 }
 
 int XAP_QNXFrameImpl::_fe::motion_notify_event(PtWidget_t* w, void *data, PtCallbackInfo_t* info)
@@ -123,7 +123,7 @@ int XAP_QNXFrameImpl::_fe::motion_notify_event(PtWidget_t* w, void *data, PtCall
 	if (pView)
 		pQNXMouse->mouseMotion(pView, info);
 	
-	return 0;
+	return Pt_END;
 }
 	
 int XAP_QNXFrameImpl::_fe::key_press_event(PtWidget_t* w, void *data, PtCallbackInfo_t* info)
@@ -132,11 +132,16 @@ int XAP_QNXFrameImpl::_fe::key_press_event(PtWidget_t* w, void *data, PtCallback
 	XAP_Frame	*pFrame	= pFrameImpl->getFrame();
 	AV_View * pView = pFrame->getCurrentView();
 	ev_QNXKeyboard * pQNXKeyboard = (ev_QNXKeyboard *) pFrame->getKeyboard();
-	
-	if (pView)
-		pQNXKeyboard->keyPressEvent(pView, info);
+	EV_QNXMouse	*pQNXMouse = (EV_QNXMouse *) pFrame->getMouse();
+	PhKeyEvent_t *kev = (PhKeyEvent_t *)PhGetData(info->event);
+		
+	if (pView) {
+		if((kev->key_cap == Pk_Up || kev->key_cap == Pk_Down )&& kev->key_scan == 0 && (kev->key_flags & Pk_KF_Scan_Valid)) //wheelmouse UP
+			pQNXMouse->mouseScroll(pView,info);
 
-	return 0;
+		pQNXKeyboard->keyPressEvent(pView, info);
+	}
+	return Pt_END;
 }
 	
 int XAP_QNXFrameImpl::_fe::resize(PtWidget_t * w, void *data, PtCallbackInfo_t *info)
@@ -169,19 +174,14 @@ int XAP_QNXFrameImpl::_fe::do_ZoomUpdate(void * /*XAP_QNXFrameImpl * */ p)
 	XAP_QNXFrameImpl * pQNXFrameImpl = static_cast<XAP_QNXFrameImpl *>(p);
 	XAP_Frame* pFrame = pQNXFrameImpl->getFrame();
 	AV_View * pView = pFrame->getCurrentView();
-	if(!pView || pFrame->isFrameLocked())
-	{
-		pQNXFrameImpl->m_pZoomUpdateID = 0;
-		pQNXFrameImpl->m_bDoZoomUpdate = false;
-		return Pt_END;
-	}
-	if(pQNXFrameImpl->m_bDoZoomUpdate && (pView->getWindowWidth() == pQNXFrameImpl->m_iNewWidth) && (pView->getWindowHeight() == pQNXFrameImpl->m_iNewHeight))
-	{
-		pQNXFrameImpl->m_pZoomUpdateID = 0;
-		pQNXFrameImpl->m_bDoZoomUpdate = false;
-		return Pt_END;
-	}
 
+	if(!pView || pFrame->isFrameLocked() ||
+	(pQNXFrameImpl->m_bDoZoomUpdate && (pView->getGraphics()->tdu(pView->getWindowWidth()) == pQNXFrameImpl->m_iNewWidth) && (pView->getGraphics()->tdu(pView->getWindowHeight()) == pQNXFrameImpl->m_iNewHeight)))
+	{
+		pQNXFrameImpl->m_pZoomUpdateID = 0;
+		pQNXFrameImpl->m_bDoZoomUpdate = false;
+		return Pt_END;
+	}
 	pQNXFrameImpl->m_bDoZoomUpdate = true;
 	UT_sint32 iNewWidth = 0;
 	UT_sint32 iNewHeight = 0;
@@ -206,7 +206,9 @@ int XAP_QNXFrameImpl::_fe::do_ZoomUpdate(void * /*XAP_QNXFrameImpl * */ p)
 		pView = pFrame->getCurrentView();
 		if(pView)
 		{
+			/* Not needed for QuickZoom 
 			pQNXFrameImpl->_startViewAutoUpdater(); 
+			*/
 			pView->setWindowSize(iNewWidth, iNewHeight);
 			pFrame->quickZoom();
 			PtFlush();
@@ -219,6 +221,7 @@ int XAP_QNXFrameImpl::_fe::do_ZoomUpdate(void * /*XAP_QNXFrameImpl * */ p)
 		}
 	}
 	while((iNewWidth != pQNXFrameImpl->m_iNewWidth) || (iNewHeight != pQNXFrameImpl->m_iNewHeight));
+
 	pQNXFrameImpl->m_pZoomUpdateID = 0;
 	pQNXFrameImpl->m_bDoZoomUpdate = false;
 	return Pt_END;
@@ -338,7 +341,7 @@ int XAP_QNXFrameImpl::_fe::expose(PtWidget_t * w, PhTile_t * damage)
 		}
 
 	}
-	return 0;
+	return Pt_END;
 }
 	
 int XAP_QNXFrameImpl::_fe::vScrollChanged(PtWidget_t * w, void *data, PtCallbackInfo_t *info)
@@ -352,7 +355,7 @@ int XAP_QNXFrameImpl::_fe::vScrollChanged(PtWidget_t * w, void *data, PtCallback
 	
 	if (pView)
 		pView->sendVerticalScrollEvent((UT_sint32)sb->position);
-	return 0;
+	return Pt_END;
 }
 	
 int XAP_QNXFrameImpl::_fe::hScrollChanged(PtWidget_t * w, void *data, PtCallbackInfo_t *info)
@@ -365,7 +368,7 @@ int XAP_QNXFrameImpl::_fe::hScrollChanged(PtWidget_t * w, void *data, PtCallback
 	
 	if (pView)
 		pView->sendHorizontalScrollEvent((UT_sint32) sb->position);
-	return 0;
+	return Pt_END;
 }
 
 //QNX DnD
