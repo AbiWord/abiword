@@ -392,9 +392,10 @@ BOOL AP_Win32Dialog_PageSetup::_onInitTab(HWND hWnd, WPARAM wParam, LPARAM lPara
 						     (LPARAM) fp_PageSize::PredefinedToName( (fp_PageSize::Predefined)i ) );
 			}
 			HWND hwndUnits = GetDlgItem(hWnd, AP_RID_DIALOG_PAGE_SETUP_LBX_UNITS);
-			SendMessage( hwndUnits, CB_INSERTSTRING , (WPARAM) DIM_MM,   (LPARAM) _GVX(DLG_Unit_mm) );                                
-			SendMessage( hwndUnits, CB_INSERTSTRING , (WPARAM) DIM_CM,   (LPARAM) _GVX(DLG_Unit_cm) );                                
+			// NB: cannot insert string at index 1 before inserting one at index 0
 			SendMessage( hwndUnits, CB_INSERTSTRING , (WPARAM) DIM_IN, (LPARAM) _GVX(DLG_Unit_inch) );                                
+			SendMessage( hwndUnits, CB_INSERTSTRING , (WPARAM) DIM_CM,   (LPARAM) _GVX(DLG_Unit_cm) );                                
+			SendMessage( hwndUnits, CB_INSERTSTRING , (WPARAM) DIM_MM,   (LPARAM) _GVX(DLG_Unit_mm) );                                
 			
 			// Initialize Data
 			char buf[BUFSIZE];
@@ -475,9 +476,9 @@ BOOL AP_Win32Dialog_PageSetup::_onInitTab(HWND hWnd, WPARAM wParam, LPARAM lPara
 			_DS(PAGE_SETUP_LBL_HEADER,			DLG_PageSetup_Header);			
 			_DS(PAGE_SETUP_LBL_FOOTER,			DLG_PageSetup_Footer);			
 			HWND hwndMarginUnits = GetDlgItem(hWnd, AP_RID_DIALOG_PAGE_SETUP_LBX_MARGINUNITS);
-			SendMessage( hwndMarginUnits, CB_INSERTSTRING , (WPARAM) DIM_MM,   (LPARAM) _GVX(DLG_Unit_mm) );                                
-			SendMessage( hwndMarginUnits, CB_INSERTSTRING , (WPARAM) DIM_CM,   (LPARAM) _GVX(DLG_Unit_cm) );                                
 			SendMessage( hwndMarginUnits, CB_INSERTSTRING , (WPARAM) DIM_IN, (LPARAM) _GVX(DLG_Unit_inch) );                                
+			SendMessage( hwndMarginUnits, CB_INSERTSTRING , (WPARAM) DIM_CM,   (LPARAM) _GVX(DLG_Unit_cm) );                                
+			SendMessage( hwndMarginUnits, CB_INSERTSTRING , (WPARAM) DIM_MM,   (LPARAM) _GVX(DLG_Unit_mm) );                                
 
 			// Initialize Data
 			SendMessage( hwndMarginUnits, CB_SETCURSEL, (WPARAM) getMarginUnits(), (LPARAM) 0 );
