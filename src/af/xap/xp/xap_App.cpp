@@ -686,8 +686,13 @@ void XAP_App::forgetModelessId( UT_sint32 id )
 
 	UT_sint32 i;
 	for(i=0; i <= NUM_MODELESSID && m_IdTable[i].id != id; i++) ;
-	UT_ASSERT( i <= NUM_MODELESSID );
-	UT_ASSERT( m_IdTable[i].id == id );
+	if(i >  NUM_MODELESSID)
+	{
+//
+// forgotten already
+//
+		return;
+	}
 	m_IdTable[i].id =  -1;
 	m_IdTable[i].pDialog = (XAP_Dialog_Modeless *) NULL;
 }
@@ -718,9 +723,14 @@ void XAP_App::closeModelessDlgs()
 
 	for(UT_sint32 i=0; i <= NUM_MODELESSID; i++)
 	{
-		if(getModelessDialog(i) != (XAP_Dialog_Modeless *) NULL)
+		if(m_IdTable[i].id >= 0)
 		{
-			getModelessDialog(i)->destroy();
+			if(getModelessDialog(i) != (XAP_Dialog_Modeless *) NULL)
+			{
+				getModelessDialog(i)->destroy();
+			}
+			m_IdTable[i].id = -1;
+			m_IdTable[i].pDialog = NULL;
 		}
 	}
 }
