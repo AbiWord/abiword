@@ -240,7 +240,6 @@ void GR_QNXGraphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
 */
 	PgDrawText(utf8,len , &pos, 0);
 
-
 	free(utf8);
 	DRAW_END
 }
@@ -258,14 +257,23 @@ UT_uint32 GR_QNXGraphics::measureUnRemappedChar(const UT_UCSChar c)
 {
 const char *font;
 uint16_t mychr = c;
+int size;
+PhRect_t rect;
 if(!m_pFont || !(font = m_pFont->getFont())) {
 	return 0;
 	}
 //somthing is really phucked if you try to use 128 here..
 if(mychr == 128) return GR_CW_UNKNOWN;
+//size = PfWideTextWidthBytes(font,&mychr,2);
 
-return _UL(PfWideTextWidthBytes(font,&mychr,2));
+PfExtent(&rect,NULL,font,NULL,NULL,(const char*)&mychr,sizeof(mychr),PF_WIDE_CHAR32,NULL);
+
+//fprintf(stderr,"Font is: %s char is %c and size is %d\nPfExtent claims = %d,%d",font,c,size,rect.ul.x,rect.lr.x);
+//return _UL(size);
+return _UL((rect.lr.x - min(rect.ul.x,0) +1));
 }
+
+
 
 /***
  Font Operations
@@ -574,7 +582,7 @@ void GR_QNXGraphics::setClipRect(const UT_Rect* pRect)
 	if (pRect)
 	{
 		PhRect_t r;
-		
+		UT_DEBUGMSG(("Adding cliprect\n"));	
 		r.ul.x = _UD(pRect->left);
 		r.ul.y = _UD(pRect->top);
 		r.lr.x = r.ul.x + _UD(pRect->width);
@@ -589,6 +597,7 @@ void GR_QNXGraphics::setClipRect(const UT_Rect* pRect)
 	else
 	{
 		if (m_pClipList) {
+			UT_DEBUGMSG(("Removing cliprect\n"));
 			PhFreeTiles(m_pClipList);
 			m_pClipList = NULL;
 		}
