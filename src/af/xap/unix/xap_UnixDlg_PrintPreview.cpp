@@ -36,3 +36,19 @@ XAP_Dialog * XAP_UnixDialog_PrintPreview::static_constructor(XAP_DialogFactory *
 {
 	return new XAP_UnixDialog_PrintPreview (pFactory, id);
 }
+
+GR_Graphics * XAP_UnixDialog_PrintPreview::getPrinterGraphicsContext(void)
+{
+	UT_ASSERT_NOT_REACHED ();
+	return 0;
+}
+
+void XAP_UnixDialog_PrintPreview::releasePrinterGraphicsContext(GR_Graphics * pGraphics)
+{
+	UT_ASSERT_NOT_REACHED ();
+}
+
+void XAP_UnixDialog_PrintPreview::runModal(XAP_Frame * pFrame)
+{
+	UT_ASSERT_NOT_REACHED ();
+}
