@@ -50,85 +50,7 @@
 #include "ut_string_class.h"
 
 // We terminate each line with a \r\n sequence to make IE think that
-// our XHTML is really HTML. This is a stupid IE bug
-
-/*****************************************************************/
-/*****************************************************************/
-
-#ifdef ENABLE_PLUGINS
-
-// completely generic code to allow this to be a plugin
-
-#include "xap_Module.h"
-
-ABI_PLUGIN_DECLARE("HTML")
-
-// we use a reference-counted sniffer
-static IE_Exp_HTML_Sniffer * m_sniffer = 0;
-static IE_Exp_HTML4_Sniffer * m_4sniffer = 0;
-
-ABI_FAR_CALL
-int abi_plugin_register (XAP_ModuleInfo * mi)
-{
-
-	if (!m_sniffer)
-	{
-		m_sniffer = new IE_Exp_HTML_Sniffer ();
-		m_4sniffer = new IE_Exp_HTML4_Sniffer ();
-	}
-	else
-	{
-		m_sniffer->ref();
-		m_4sniffer->ref();
-	}
-
-	mi->name = "HTML Exporter";
-	mi->desc = "Export HTML4.0 and XHTML Documents";
-	mi->version = ABI_VERSION_STRING;
-	mi->author = "Abi the Ant";
-	mi->usage = "No Usage";
-
-	IE_Exp::registerExporter (m_sniffer);
-	IE_Exp::registerExporter (m_4sniffer);
-	return 1;
-}
-
-ABI_FAR_CALL
-int abi_plugin_unregister (XAP_ModuleInfo * mi)
-{
-	mi->name = 0;
-	mi->desc = 0;
-	mi->version = 0;
-	mi->author = 0;
-	mi->usage = 0;
-
-	UT_ASSERT (m_sniffer);
-	UT_ASSERT (m_4sniffer);
-
-	IE_Exp::unregisterExporter (m_sniffer);
-	IE_Exp::unregisterExporter (m_4sniffer);
-
-	if (!m_sniffer->unref())
-	{
-		m_sniffer = 0;
-	}
-
-	if(!m_4sniffer->unref())
-	{
-	    m_4sniffer = 0;
-	}
-
-	return 1;
-}
-
-ABI_FAR_CALL
-int abi_plugin_supports_version (UT_uint32 major, UT_uint32 minor, 
-								 UT_uint32 release)
-{
-  return 1;
-}
-
-#endif
+// our XHTML is really HTML. This is a stupid IE bug. Sorry
 
 /*****************************************************************/
 /*****************************************************************/
@@ -2025,6 +1947,7 @@ bool s_HTML_Listener::populateStrux(PL_StruxDocHandle /*sdh*/,
 
 	switch (pcrx->getStruxType())
 	{
+	case PTX_SectionHdrFtr:
 	case PTX_Section:
 	{
 		_closeSpan();
@@ -2047,40 +1970,14 @@ bool s_HTML_Listener::populateStrux(PL_StruxDocHandle /*sdh*/,
 			}
 			else
 			{
-				m_bInSection = false;
-			}
-		}
-		else
-		{
-			m_bInSection = false;
-		}
-		
-		return true;
-	}
-
-	case PTX_SectionHdrFtr:
-	{
-		_closeSpan();
-		_closeTag();
-		_closeSection();
-
-		PT_AttrPropIndex indexAP = pcr->getIndexAP();
-		const PP_AttrProp* pAP = NULL;
-		if (m_pDocument->getAttrProp(indexAP, &pAP) && pAP)
-		{
-			const XML_Char* pszSectionType = NULL;
-			pAP->getAttribute("type", pszSectionType);
-			if (
-				!pszSectionType
-				|| (0 == UT_strcmp(pszSectionType, "doc"))
-				)
-			{
-				_openSection(pcr->getIndexAP());
+#if 1
+			  // export headers & footers
 				m_bInSection = true;
-			}
-			else
-			{
-				m_bInSection = false;
+				_openSection(pcr->getIndexAP());
+#else
+				// don't export headers and footers
+				m_bInSection = false ;
+#endif
 			}
 		}
 		else
