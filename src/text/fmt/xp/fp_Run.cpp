@@ -590,7 +590,51 @@ void fp_ImageRun::_draw(dg_DrawArgs* pDA)
 	
 	if (m_pImage)
 	{
+
+		// draw the image (always)
 		m_pG->drawImage(m_pImage, xoff, yoff);
+
+		// if we're the selection, draw a pretty box
+		if (m_pG->queryProperties(GR_Graphics::DGP_SCREEN))
+		{
+			UT_uint32 iRunBase = m_pBL->getPosition() + m_iOffsetFirst;
+
+			FV_View* pView = m_pBL->getDocLayout()->getView();
+			UT_uint32 iSelAnchor = pView->getSelectionAnchor();
+			UT_uint32 iPoint = pView->getPoint();
+
+			UT_uint32 iSel1 = UT_MIN(iSelAnchor, iPoint);
+			UT_uint32 iSel2 = UT_MAX(iSelAnchor, iPoint);
+	
+			UT_ASSERT(iSel1 <= iSel2);
+	
+			if (
+				(iSel1 <= iRunBase)
+				&& (iSel2 > iRunBase)
+				)
+			{
+				UT_Point pts[5];
+
+				UT_uint32 top = yoff;
+				UT_uint32 left = xoff;
+				UT_uint32 right = xoff + m_iWidth - 1;
+				UT_uint32 bottom = yoff + m_iHeight - 1;
+									
+				pts[0].x = left; 	pts[0].y = top;
+				pts[1].x = right;	pts[1].y = top;
+				pts[2].x = right;	pts[2].y = bottom;
+				pts[3].x = left; 	pts[3].y = bottom;
+				pts[4].x = left;	pts[4].y = top;
+				
+				// TODO : remove the hard-coded (but pretty) blue color 
+
+				UT_RGBColor clr(0, 0, 255);
+				m_pG->setColor(clr);
+				m_pG->polyLine(pts, 5);
+				
+			}
+		}
+		
 	}
 	else
 	{
