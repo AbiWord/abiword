@@ -635,7 +635,7 @@ dcl(DLG_PageSetup_Right, "&Right:")
 dcl(DLG_PageSetup_Margin, "&Margin")
 dcl(DLG_PageSetup_ErrBigMargins, "The margins selected are too large to fit on the page.")
 
-dcl(AP_STRING_ID_MSG_AutoMerge, "Automerge")
+dcl(MSG_AutoMerge, "Automerge")
 dcl(MSG_DirectionModeChg,	"You have changed the direction mode.")
 dcl(MSG_DefaultDirectionChg,"You have changed the default direction.")
 dcl(MSG_AfterRestartNew, "This change will only take effect when you restart AbiWord or create a new document.")
