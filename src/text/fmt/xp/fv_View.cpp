@@ -8487,12 +8487,16 @@ void FV_View::cmdRemoveHdrFtr( bool isHeader)
     // screen update now!
 
 	_setScreenUpdateOnGeneralUpdate(true);
+
 //
 // After erarsing the cursor, Restore to the point before all this mess started.
 //
 	_eraseInsertionPoint();
 	_setPoint(curPoint);
+
 	_generalUpdate();
+	updateScreen (); // fix 1803, force screen update/redraw
+
 	if (!_ensureThatInsertionPointIsOnScreen())
 	{
 		_fixInsertionPointCoords();
