@@ -2,6 +2,7 @@ Source: abiword
 Section: editors
 Priority: optional
 Maintainer: Darren Benham <gecko@debian.org>
+Build-Depends: libpng2-dev, libgtk1.2-dev
 Standards-Version: 3.0.1.0
 
 Package: abiword
