@@ -50,18 +50,19 @@ public:
 	virtual bool				runModalContextMenu(AV_View * pView, const char * szMenuName,
 													UT_sint32 x, UT_sint32 y);
 
-protected:
-	virtual void				_createTopLevelWindow(void);
-	virtual EV_Toolbar *		_newToolbar(XAP_App *app, XAP_Frame *frame, const char *, const char *);
-
-  	enum
+  	enum AbiMimeId
   	{
 		TARGET_URI_LIST,
 		TARGET_URL,
 		TARGET_PNG,
 		TARGET_SVG,
-		TARGET_BMP
+		TARGET_BMP,
+		TARGET_UNKNOWN
   	};
+
+protected:
+	virtual void				_createTopLevelWindow(void);
+	virtual EV_Toolbar *		_newToolbar(XAP_App *app, XAP_Frame *frame, const char *, const char *);
 
 	static void _dnd_drop_event (GtkWidget *widget, GdkDragContext */*context*/, gint /*x*/, gint /*y*/,
 								 GtkSelectionData *selection_data, guint info, guint /*time*/, XAP_UnixGnomeFrame * pFrame);

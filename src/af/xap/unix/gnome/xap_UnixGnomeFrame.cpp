@@ -20,6 +20,7 @@
 #include <gnome.h>
 
 #include "ut_types.h"
+#include "ut_string.h"
 #include "ut_debugmsg.h"
 #include "ut_assert.h"
 #include "xap_ViewListener.h"
@@ -49,6 +50,45 @@
 
 /****************************************************************/
 
+static int
+s_mapMimeToUriType (const char * mime)
+{
+	if (!UT_strcmp (mime, "application/rtf")) 
+		return XAP_UnixGnomeFrame::TARGET_URI_LIST;
+	if (!UT_strcmp (mime, "application/msword")) 
+		return XAP_UnixGnomeFrame::TARGET_URI_LIST;
+	if (!UT_strcmp (mime, "application/x-applix-word")) 
+		return XAP_UnixGnomeFrame::TARGET_URI_LIST;
+	if (!UT_strcmp (mime, "application/x-palm-database")) 
+		return XAP_UnixGnomeFrame::TARGET_URI_LIST;
+	if (!UT_strcmp (mime, "application/vnd.palm"))
+		return XAP_UnixGnomeFrame::TARGET_URI_LIST;
+	if (!UT_strcmp (mime, "image/png"))
+		return XAP_UnixGnomeFrame::TARGET_PNG;		
+	if (!UT_strcmp (mime, "image/bmp")) 
+		return XAP_UnixGnomeFrame::TARGET_BMP;
+	if (!UT_strcmp (mime, "image/svg-xml")) 
+		return XAP_UnixGnomeFrame::TARGET_SVG;
+	if (!UT_strcmp (mime, "text/plain")) 
+		return XAP_UnixGnomeFrame::TARGET_URI_LIST;
+	if (!UT_strcmp (mime, "text/abiword")) 
+		return XAP_UnixGnomeFrame::TARGET_URI_LIST;
+	if (!UT_strcmp (mime, "text/html")) 
+		return XAP_UnixGnomeFrame::TARGET_URI_LIST;
+	if (!UT_strcmp (mime, "text/xml")) 
+		return XAP_UnixGnomeFrame::TARGET_URI_LIST;
+	if (!UT_strcmp (mime, "text/vnd.wap.wml")) 
+		return XAP_UnixGnomeFrame::TARGET_URI_LIST;
+	if (!UT_strcmp (mime, "text/richtext")) 
+		return XAP_UnixGnomeFrame::TARGET_URI_LIST;
+	if (!UT_strcmp (mime, "text/rtf")) 
+		return XAP_UnixGnomeFrame::TARGET_URI_LIST;
+	if (!UT_strcmp (mime, "_NETSCAPE_URL")) 
+		return XAP_UnixGnomeFrame::TARGET_URL;
+	
+	return XAP_UnixGnomeFrame::TARGET_UNKNOWN;
+}
+
 /* Each time that a object is dropped in a widget, this function is called */
 void XAP_UnixGnomeFrame::_dnd_drop_event(GtkWidget        *widget,
 										 GdkDragContext   * /*context*/,
@@ -65,106 +105,116 @@ void XAP_UnixGnomeFrame::_dnd_drop_event(GtkWidget        *widget,
 	char *filename = NULL;
 	g_return_if_fail(widget != NULL);
 
+	XAP_Frame * pNewUnixFrame;
+	IE_ImpGraphic * pIEG;
+	FG_Graphic * pFG;
+	IEGraphicFileType iegft;
+	UT_Error error;
+	
 	pUnixFrame = (XAP_UnixFrame *) gtk_object_get_user_data(GTK_OBJECT(widget));
 	pApp = pUnixFrame->getApp ();
 
-	switch (info)
-	{
-	case TARGET_URI_LIST:
-	{
-		names = gnome_uri_list_extract_filenames ((char *) selection_data->data);
+	names = gnome_uri_list_extract_filenames ((char *) selection_data->data);
 
-		if (!names)
-			return;
-                
-		for (; names; names = names->next) {
-			XAP_Frame * pNewUnixFrame = pApp->newFrame ();
-			filename = (char *) names->data;
+	if (!names)
+		return;
+	
+	for (; names; names = names->next) {
+		filename = (char *) names->data;
 
-			UT_Error error = pNewUnixFrame->loadDocument(filename, 0 /* IEFT_Unknown */);
+		int type = s_mapMimeToUriType (gnome_mime_type_or_default (filename, "foobar"));
+		switch (type) {
+
+		case TARGET_URI_LIST:
+
+			if (pFrame->isDirty() || pFrame->getFilename() || 
+				(pFrame->getViewNumber() > 0))
+			{
+				pNewUnixFrame = pApp->newFrame ();
+			}
+			else
+			{
+				pNewUnixFrame = pUnixFrame;
+			}
+			error = pNewUnixFrame->loadDocument(filename, 0 /* IEFT_Unknown */);
 			if (error)
 			{
 				// TODO: warn user that we couldn't open that file
 				
-#if 1
-				// TODO we crash if we just delete this without putting something
-				// TODO in it, so let's go ahead and open an untitled document
-				// TODO for now.
+				// TODO: we crash if we just delete this without putting something
+				// TODO: in it, so let's go ahead and open an untitled document
+				// TODO: for now.
 				pNewUnixFrame->loadDocument(NULL, 0 /* IEFT_Unknown */);
-#else
-				delete pNewUnixFrame;
-#endif
 			}
-		}
-
-		gnome_uri_list_free_strings (names);
-		break;
-	}
-	case TARGET_PNG:
-	case TARGET_SVG:
-	case TARGET_BMP:
-	{
-		IE_ImpGraphic * pIEG;
-		FG_Graphic * pFG;
-		IEGraphicFileType iegft;
-		UT_Error errorCode;
-
-		if (info == TARGET_PNG)
-			info = IEGFT_PNG;
-		else if (info == TARGET_BMP)
-			info = IEGFT_DIB;
-		else
-			info = IEGFT_SVG;
-
-		filename = (char *) selection_data->data;
-
-		errorCode = IE_ImpGraphic::constructImporter(filename, iegft, &pIEG);
-		if(errorCode)
+			
+		case TARGET_URL:
 		{
-			//s_CouldNotLoadFileMessage(this, filename, errorCode);
-			return;
-		}
+			// TODO
 
-		errorCode = pIEG->importGraphic(filename, &pFG);
-		if(errorCode)
-		{
-			//s_CouldNotLoadFileMessage(this, filename, errorCode);
-			DELETEP(pIEG);
-			return;
-		}
-		
-		DELETEP(pIEG);
-		
-		FV_View * pView = static_cast<FV_View*>(pFrame->getCurrentView());
-
-		errorCode = pView->cmdInsertGraphic(pFG, filename);
-		if (errorCode)
-		{
-			//s_CouldNotLoadFileMessage(this, filename, errorCode);
-			DELETEP(pFG);
-			return;
-		}
-		
-		DELETEP(pFG);
-		break;
-	}
-
-	case TARGET_URL:
-	{
-		// TODO
+			UT_DEBUGMSG(("DOM: target url\n"));
 #if 0
-		XAP_Frame * pNewUnixFrame = pApp->newFrame();
-		filename = (char *) selection_data->data;
-
-		UT_Error error = pNewUnixFrame->loadDocument(filename, IEFT_Unknown);
-
-		if (error)
-			pNewUnixFrame->loadDocument(NULL, IEFT_Unknown);
-
+			error = pNewUnixFrame->loadDocument(filename, IEFT_Unknown);
+			
+			if (error)
+				pNewUnixFrame->loadDocument(NULL, IEFT_Unknown);
+			
 #endif
-		break;
+			break;
+		}
+
+		case TARGET_PNG:
+		case TARGET_SVG:
+		case TARGET_BMP:
+		{
+			if (type == TARGET_PNG)
+			{
+				iegft = IEGFT_PNG;
+			}
+			else if (type == TARGET_BMP)
+			{
+				iegft = IEGFT_BMP;
+			}
+			else
+			{
+				iegft = IEGFT_SVG;
+			}
+			
+			error = IE_ImpGraphic::constructImporter(filename, iegft, &pIEG);
+			if(error)
+			{
+				UT_DEBUGMSG(("DOM: could not construct importer (%d)\n", 
+							 error));
+				return;
+			}
+			
+			error = pIEG->importGraphic(filename, &pFG);
+			if(error)
+			{
+				UT_DEBUGMSG(("DOM: could not import graphic (%d)\n", error));
+				DELETEP(pIEG);
+				return;
+			}
+			
+			DELETEP(pIEG);
+			
+			FV_View * pView = static_cast<FV_View*>(pFrame->getCurrentView());
+
+			error = pView->cmdInsertGraphic(pFG, filename);
+			if (error)
+			{
+				UT_DEBUGMSG(("DOM: could not insert graphic (%d)\n", error));
+				DELETEP(pFG);
+				return;
+			}
+			
+			DELETEP(pFG);
+			break;
+		}
+		
+		}
 	}
-	}
+		
+	gnome_uri_list_free_strings (names);
 }
 
 /*****************************************************************/
@@ -400,4 +450,5 @@ EV_Toolbar * XAP_UnixGnomeFrame::_newToolbar(XAP_App *app, XAP_Frame *frame,
 	return (new EV_UnixGnomeToolbar(static_cast<XAP_UnixGnomeApp *>(app), 
 									static_cast<XAP_UnixGnomeFrame *>(frame), 
 									szLayout, szLanguage));
+
 }
