@@ -1493,7 +1493,7 @@ UT_sint32 fp_TableContainer::getBrokenNumber(void)
 	UT_sint32 i = 1;
 	while(pTab && pTab != this)
 	{
-		pTab = pTab->getNext();
+		pTab = (fp_TableContainer *) pTab->getNext();
 		i++;
 	}
 	if(!pTab)
