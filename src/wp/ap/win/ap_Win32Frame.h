@@ -57,6 +57,11 @@ protected:
 	virtual HWND				_createStatusBarWindow(HWND hwndParent,
 													   UT_uint32 iLeft, UT_uint32 iTop,
 													   UT_uint32 iWidth);
+	
+	void						_createRulers(void);
+	void						_getRulerSizes(int &yTopRulerHeight, int &xLeftRulerWidth);
+	void						_onSize(int nWidth, int nHeight);
+
 	UT_Bool						_loadDocument(const char * szFilename, IEFileType ieft);
 	UT_Bool						_showDocument(UT_uint32 iZoom=100);
 	static void					_scrollFuncX(void * pData, UT_sint32 xoff, UT_sint32 xlimit);
@@ -71,6 +76,7 @@ protected:
 
 	UT_Bool						_replaceDocument(AD_Document * pDoc);
 
+	HWND						m_hwndContainer;
 	HWND						m_hwndTopRuler;
 	HWND						m_hwndLeftRuler;
 	HWND						m_hwndDeadLowerRight;

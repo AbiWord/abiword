@@ -245,8 +245,10 @@ UT_Bool AP_Win32Frame::_showDocument(UT_uint32 iZoom)
 	// views, like we do for all the other objects.  We also do not
 	// allocate the TopRuler, LeftRuler here; that is done as the frame is
 	// created.
-	((AP_FrameData*)m_pData)->m_pTopRuler->setView(pView, iZoom);
-	((AP_FrameData*)m_pData)->m_pLeftRuler->setView(pView, iZoom);
+	if (((AP_FrameData*)m_pData)->m_pTopRuler)
+		((AP_FrameData*)m_pData)->m_pTopRuler->setView(pView, iZoom);
+	if (((AP_FrameData*)m_pData)->m_pLeftRuler)
+		((AP_FrameData*)m_pData)->m_pLeftRuler->setView(pView, iZoom);
 	((AP_FrameData*)m_pData)->m_pStatusBar->setView(pView);
 
 	RECT r;
@@ -262,8 +264,10 @@ UT_Bool AP_Win32Frame::_showDocument(UT_uint32 iZoom)
 	if (point != 0)
 		((FV_View *) m_pView)->moveInsPtTo(point);
 
-	((AP_FrameData*)m_pData)->m_pTopRuler->draw(NULL);
-	((AP_FrameData*)m_pData)->m_pLeftRuler->draw(NULL);
+	if (((AP_FrameData*)m_pData)->m_pTopRuler)
+		((AP_FrameData*)m_pData)->m_pTopRuler->draw(NULL);
+	if (((AP_FrameData*)m_pData)->m_pLeftRuler)
+		((AP_FrameData*)m_pData)->m_pLeftRuler->draw(NULL);
 	((AP_FrameData*)m_pData)->m_pStatusBar->draw();
 
 	return UT_TRUE;
@@ -397,6 +401,7 @@ UT_Bool AP_Win32Frame::RegisterClass(XAP_Win32App * app)
 AP_Win32Frame::AP_Win32Frame(XAP_Win32App * app)
 	: XAP_Win32Frame(app)
 {
+	m_hwndContainer = NULL;
 	m_hwndTopRuler = NULL;
 	m_hwndLeftRuler = NULL;
 	m_hwndDeadLowerRight = NULL;
@@ -409,6 +414,7 @@ AP_Win32Frame::AP_Win32Frame(XAP_Win32App * app)
 AP_Win32Frame::AP_Win32Frame(AP_Win32Frame * f)
 	: XAP_Win32Frame(static_cast<XAP_Win32Frame *>(f))
 {
+	m_hwndContainer = NULL;
 	m_hwndTopRuler = NULL;
 	m_hwndLeftRuler = NULL;
 	m_hwndDeadLowerRight = NULL;
@@ -469,6 +475,11 @@ HWND AP_Win32Frame::_createDocumentWindow(HWND hwndParent,
 										  UT_uint32 iLeft, UT_uint32 iTop,
 										  UT_uint32 iWidth, UT_uint32 iHeight)
 {
+	// initialize the show rulers flag
+	UT_Bool bShowRulers;
+	m_pWin32App->getPrefsValueBool( AP_PREF_KEY_RulerVisible, &bShowRulers); 
+	((AP_FrameData*)m_pData)->m_bShowRuler = bShowRulers;
+
 	// create the window(s) that the user will consider to be the
 	// document window -- the thing between the bottom of the toolbars
 	// and the top of the status bar.  return the handle to it.
@@ -480,30 +491,30 @@ HWND AP_Win32Frame::_createDocumentWindow(HWND hwndParent,
 	RECT r;
 	int cxVScroll, cyHScroll;
 	
-	HWND hwndContainer = CreateWindowEx(WS_EX_CLIENTEDGE, s_ContainerWndClassName, NULL,
-										WS_CHILD | WS_VISIBLE,
-										iLeft, iTop, iWidth, iHeight,
-										hwndParent, NULL, m_pWin32App->getInstance(), NULL);
-	UT_ASSERT(hwndContainer);
-	SWL(hwndContainer, this);
+	m_hwndContainer = CreateWindowEx(WS_EX_CLIENTEDGE, s_ContainerWndClassName, NULL,
+									 WS_CHILD | WS_VISIBLE,
+									 iLeft, iTop, iWidth, iHeight,
+									 hwndParent, NULL, m_pWin32App->getInstance(), NULL);
+	UT_ASSERT(m_hwndContainer);
+	SWL(m_hwndContainer, this);
 	
 	// now create all the various windows inside the container window.
 
-	GetClientRect(hwndContainer,&r);
+	GetClientRect(m_hwndContainer,&r);
 	cxVScroll = GetSystemMetrics(SM_CXVSCROLL);
 	cyHScroll = GetSystemMetrics(SM_CYHSCROLL);
 
 	m_hwndVScroll = CreateWindowEx(0,"ScrollBar",NULL,
 								   WS_CHILD | WS_VISIBLE | SBS_VERT,
 								   r.right-cxVScroll, 0, cxVScroll, r.bottom-cyHScroll,
-								   hwndContainer, NULL, m_pWin32App->getInstance(), NULL);
+								   m_hwndContainer, NULL, m_pWin32App->getInstance(), NULL);
 	UT_ASSERT(m_hwndVScroll);
 	SWL(m_hwndVScroll, this);
 
 	m_hwndHScroll = CreateWindowEx(0,"ScrollBar",NULL,
 								   WS_CHILD | WS_VISIBLE | SBS_HORZ,
 								   0, r.bottom-cyHScroll, r.right-cxVScroll, cyHScroll,
-								   hwndContainer, NULL, m_pWin32App->getInstance(), NULL);
+								   m_hwndContainer, NULL, m_pWin32App->getInstance(), NULL);
 	UT_ASSERT(m_hwndHScroll);
 	SWL(m_hwndHScroll, this);
 
@@ -516,15 +527,59 @@ HWND AP_Win32Frame::_createDocumentWindow(HWND hwndParent,
 	m_hwndDeadLowerRight = CreateWindowEx(0,"ScrollBar",NULL,
 										  WS_CHILD | WS_VISIBLE | XX_StyleBits,
 										  r.right-cxVScroll, r.bottom-cyHScroll, cxVScroll, cyHScroll,
-										  hwndContainer, NULL, m_pWin32App->getInstance(), NULL);
+										  m_hwndContainer, NULL, m_pWin32App->getInstance(), NULL);
 	UT_ASSERT(m_hwndDeadLowerRight);
 	SWL(m_hwndDeadLowerRight, this);
+
+	// create the rulers, if needed
+
+	if (bShowRulers)
+		_createRulers();
+
+	int yTopRulerHeight = 0;
+	int xLeftRulerWidth = 0;
+	_getRulerSizes(yTopRulerHeight, xLeftRulerWidth);
+
+	// create a child window for us.
+	m_hwndDocument = CreateWindowEx(0, s_DocumentWndClassName, NULL,
+									WS_CHILD | WS_VISIBLE,
+									xLeftRulerWidth, yTopRulerHeight,
+									r.right - xLeftRulerWidth - cxVScroll,
+									r.bottom - yTopRulerHeight - cyHScroll,
+									m_hwndContainer, NULL, m_pWin32App->getInstance(), NULL);
+	UT_ASSERT(m_hwndDocument);
+	SWL(m_hwndDocument, this);
+
+	return m_hwndContainer;
+}
+
+void AP_Win32Frame::_getRulerSizes(int &yTopRulerHeight, int &xLeftRulerWidth)
+{
+	if (((AP_FrameData*)(m_pData))->m_pTopRuler)
+		yTopRulerHeight = ((AP_FrameData*)(m_pData))->m_pTopRuler->getHeight();
+	else
+		yTopRulerHeight = 0;
+
+	if (((AP_FrameData*)(m_pData))->m_pLeftRuler)
+		xLeftRulerWidth = ((AP_FrameData*)(m_pData))->m_pLeftRuler->getWidth();
+	else
+		xLeftRulerWidth = 0;
+}
+
+void AP_Win32Frame::_createRulers(void)
+{
+	RECT r;
+	int cxVScroll, cyHScroll;
+
+	GetClientRect(m_hwndContainer,&r);
+	cxVScroll = GetSystemMetrics(SM_CXVSCROLL);
+	cyHScroll = GetSystemMetrics(SM_CYHSCROLL);
 
 	// create the top ruler
 	
 	AP_Win32TopRuler * pWin32TopRuler = new AP_Win32TopRuler(this);
 	UT_ASSERT(pWin32TopRuler);
-	m_hwndTopRuler = pWin32TopRuler->createWindow(hwndContainer,
+	m_hwndTopRuler = pWin32TopRuler->createWindow(m_hwndContainer,
 												  0,0, (r.right - cxVScroll));
 	((AP_FrameData*)m_pData)->m_pTopRuler = pWin32TopRuler;
 	UT_uint32 yTopRulerHeight = pWin32TopRuler->getHeight();
@@ -533,7 +588,7 @@ HWND AP_Win32Frame::_createDocumentWindow(HWND hwndParent,
 	
 	AP_Win32LeftRuler * pWin32LeftRuler = new AP_Win32LeftRuler(this);
 	UT_ASSERT(pWin32LeftRuler);
-	m_hwndLeftRuler = pWin32LeftRuler->createWindow(hwndContainer,0,yTopRulerHeight,
+	m_hwndLeftRuler = pWin32LeftRuler->createWindow(m_hwndContainer,0,yTopRulerHeight,
 													r.bottom - yTopRulerHeight - cyHScroll);
 	((AP_FrameData*)m_pData)->m_pLeftRuler = pWin32LeftRuler;
 	UT_uint32 xLeftRulerWidth = pWin32LeftRuler->getWidth();
@@ -541,18 +596,6 @@ HWND AP_Win32Frame::_createDocumentWindow(HWND hwndParent,
 	// get the width from the left ruler and stuff it into the top ruler.
 	
 	pWin32TopRuler->setOffsetLeftRuler(xLeftRulerWidth);
-
-	// create a child window for us.
-	m_hwndDocument = CreateWindowEx(0, s_DocumentWndClassName, NULL,
-									WS_CHILD | WS_VISIBLE,
-									xLeftRulerWidth, yTopRulerHeight,
-									r.right - xLeftRulerWidth - cxVScroll,
-									r.bottom - yTopRulerHeight - cyHScroll,
-									hwndContainer, NULL, m_pWin32App->getInstance(), NULL);
-	UT_ASSERT(m_hwndDocument);
-	SWL(m_hwndDocument, this);
-
-	return hwndContainer;
 }
 
 UT_Bool AP_Win32Frame::loadDocument(const char * szFilename, int ieft)
@@ -658,20 +701,8 @@ LRESULT CALLBACK AP_Win32Frame::_ContainerWndProc(HWND hwnd, UINT iMsg, WPARAM w
 		{
 			int nWidth = LOWORD(lParam);
 			int nHeight = HIWORD(lParam);
-			int cxVScroll = GetSystemMetrics(SM_CXVSCROLL);
-			int cyHScroll = GetSystemMetrics(SM_CYHSCROLL);
 
-			int yTopRulerHeight = ((AP_FrameData*)(f->m_pData))->m_pTopRuler->getHeight();
-			int xLeftRulerWidth = ((AP_FrameData*)(f->m_pData))->m_pLeftRuler->getWidth();
-			
-			MoveWindow(f->m_hwndVScroll, nWidth-cxVScroll, 0, cxVScroll, nHeight-cyHScroll, TRUE);
-			MoveWindow(f->m_hwndHScroll, 0, nHeight-cyHScroll, nWidth - cxVScroll, cyHScroll, TRUE);
-			MoveWindow(f->m_hwndDeadLowerRight, nWidth-cxVScroll, nHeight-cyHScroll, cxVScroll, cyHScroll, TRUE);
-			MoveWindow(f->m_hwndTopRuler, 0, 0, nWidth-cxVScroll, yTopRulerHeight, TRUE);
-			MoveWindow(f->m_hwndLeftRuler, 0, yTopRulerHeight,
-					   xLeftRulerWidth, nHeight - yTopRulerHeight - cyHScroll, TRUE);
-			MoveWindow(f->m_hwndDocument, xLeftRulerWidth, yTopRulerHeight,
-					   nWidth - xLeftRulerWidth - cxVScroll, nHeight - yTopRulerHeight - cyHScroll, TRUE);
+			f->_onSize(nWidth, nHeight);
 		}
 		return 0;
 	}
@@ -793,6 +824,31 @@ LRESULT CALLBACK AP_Win32Frame::_ContainerWndProc(HWND hwnd, UINT iMsg, WPARAM w
 	default:
 		return DefWindowProc(hwnd, iMsg, wParam, lParam);
 	}
+}
+
+void AP_Win32Frame::_onSize(int nWidth, int nHeight)
+{
+	int cxVScroll = GetSystemMetrics(SM_CXVSCROLL);
+	int cyHScroll = GetSystemMetrics(SM_CYHSCROLL);
+
+	int yTopRulerHeight = 0;
+	int xLeftRulerWidth = 0;
+
+	_getRulerSizes(yTopRulerHeight, xLeftRulerWidth);
+	
+	MoveWindow(m_hwndVScroll, nWidth-cxVScroll, 0, cxVScroll, nHeight-cyHScroll, TRUE);
+	MoveWindow(m_hwndHScroll, 0, nHeight-cyHScroll, nWidth - cxVScroll, cyHScroll, TRUE);
+	MoveWindow(m_hwndDeadLowerRight, nWidth-cxVScroll, nHeight-cyHScroll, cxVScroll, cyHScroll, TRUE);
+
+	if (m_hwndTopRuler)
+		MoveWindow(m_hwndTopRuler, 0, 0, nWidth-cxVScroll, yTopRulerHeight, TRUE);
+
+	if (m_hwndLeftRuler)
+		MoveWindow(m_hwndLeftRuler, 0, yTopRulerHeight,
+				   xLeftRulerWidth, nHeight - yTopRulerHeight - cyHScroll, TRUE);
+
+	MoveWindow(m_hwndDocument, xLeftRulerWidth, yTopRulerHeight,
+			   nWidth - xLeftRulerWidth - cxVScroll, nHeight - yTopRulerHeight - cyHScroll, TRUE);
 }
 
 LRESULT CALLBACK AP_Win32Frame::_DocumentWndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
@@ -1011,10 +1067,38 @@ UT_Bool AP_Win32Frame::_replaceDocument(AD_Document * pDoc)
 
 void AP_Win32Frame::toggleRuler(UT_Bool bRulerOn)
 {
-	UT_DEBUGMSG(("AP_Win32Frame::toggleRuler %d", bRulerOn));	
-
 	AP_FrameData *pFrameData = (AP_FrameData *)getFrameData();
 	UT_ASSERT(pFrameData);
 
+	if (bRulerOn)
+	{
+		UT_ASSERT(!pFrameData->m_pTopRuler);
+		UT_ASSERT(!pFrameData->m_pLeftRuler);
+
+		_createRulers();
+
+		((AP_FrameData*)m_pData)->m_pTopRuler->setView(m_pView, getZoomPercentage());
+		((AP_FrameData*)m_pData)->m_pLeftRuler->setView(m_pView, getZoomPercentage());
+	}
+	else
+	{
+		// delete the actual widgets
+		if (m_hwndTopRuler)
+			DestroyWindow(m_hwndTopRuler);
+
+		if (m_hwndLeftRuler)
+			DestroyWindow(m_hwndLeftRuler);
+
+		DELETEP(((AP_FrameData*)m_pData)->m_pTopRuler);
+		DELETEP(((AP_FrameData*)m_pData)->m_pLeftRuler);
+
+		m_hwndTopRuler = NULL;
+		m_hwndLeftRuler = NULL;
+	}
+
+	// repack the child windows
+	RECT r;
+	GetClientRect(m_hwndContainer, &r);
+	_onSize(r.right - r.left, r.bottom - r.top);
 }
 
