@@ -103,13 +103,24 @@ static void s_check_toggled(GtkWidget * widget, AP_UnixDialog_Paragraph * dlg)
 	dlg->event_CheckToggled(widget);
 }
 
+static gboolean do_update(gpointer p)
+{
+//
+// FIXME!!! Could get nasty crash if the dlg is destroyed while 
+// a redraw is pending....
+//
+	AP_UnixDialog_Paragraph * dlg = (AP_UnixDialog_Paragraph *) p;
+	dlg->event_PreviewAreaExposed();
+	return FALSE;
+}
+
 static gint s_preview_exposed(GtkWidget * /* widget */,
 							  GdkEventExpose * /* pExposeEvent */,
 							  AP_UnixDialog_Paragraph * dlg)
 {
 	UT_ASSERT(dlg);
-	dlg->event_PreviewAreaExposed();
-	return FALSE;
+	gtk_idle_add((GtkFunction) do_update,(gpointer) dlg);
+	return TRUE;
 }
 
 /*****************************************************************/
