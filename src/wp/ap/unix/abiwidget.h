@@ -23,7 +23,7 @@
 #define ABI_WIDGET_H
 
 #include <gtk/gtk.h>
-#define ABIWORD_INTERNAL 1
+
 #ifdef ABIWORD_INTERNAL
 #include "ap_UnixApp.h"
 #endif

@@ -31,7 +31,7 @@
 
 #ifndef NAUTILUS_ABIWORD_CONTENT_VIEW_H
 #define NAUTILUS_ABIWORD_CONTENT_VIEW_H
-#include "abiwidget.h"
+
 #include <libnautilus/nautilus-view.h>
 #include "xap_UnixDialogHelper.h"
 

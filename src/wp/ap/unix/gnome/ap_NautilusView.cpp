@@ -28,6 +28,8 @@
  This loads a wordprocessor file with the abiword widget.
  */
 
+#define ABIWORD_INTERNAL
+
 #include <config.h>
 #include "ap_NautilusView.h"
 
