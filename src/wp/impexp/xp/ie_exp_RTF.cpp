@@ -571,7 +571,7 @@ void IE_Exp_RTF::_rtf_chardata(const char * pbuf, UT_uint32 buflen)
 			sz = sizeof(wc);
 			UT_iconv(conv, &current, &insz, &dest, &sz);
 			if (wc > 0x00ff) {
-				UT_ASSERT_HARMLESS(UT_NOT_IMPLEMENTED);
+//				UT_ASSERT_HARMLESS(UT_NOT_IMPLEMENTED);
 			}
 			else {
 				_rtf_nonascii_hex2(wc);
