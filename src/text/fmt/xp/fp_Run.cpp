@@ -1021,45 +1021,19 @@ UT_Bool fp_Run::del(UT_uint32 iOffset, UT_uint32 iCount)
 
 void fp_Run::drawSquiggle(UT_uint32 iOffset, UT_uint32 iLen)
 {
-		UT_Rect rect;
-		UT_sint32 xoff = 0, yoff = 0, width, height;
-		const UT_GrowBuf * pgbCharWidths = m_pBL->getCharWidths();  
-		UT_RGBColor redSquiggle(255, 0, 0);
+	UT_sint32 xoff = 0, yoff = 0, width, height;
 
-		/* TODO: are these params coorect? */
-		m_pLine->getScreenOffsets(this, m_pLineData, xoff, yoff, width, height, UT_TRUE);
+	UT_RGBColor clrSquiggle(255, 0, 0);
+	m_pG->setColor(clrSquiggle);
+	
+	m_pLine->getScreenOffsets(this, m_pLineData, xoff, yoff, width, height, UT_TRUE);
 
-		_getPartRect( &rect, xoff, yoff, iOffset, iLen, pgbCharWidths);
+	UT_Rect r;
+	const UT_GrowBuf * pgbCharWidths = m_pBL->getCharWidths();  
+	_getPartRect( &r, xoff, yoff + m_iAscent, iOffset, iLen, pgbCharWidths);
 
-
-		// Is this correct? 
-		m_pG->setColor(redSquiggle);
-
-
-
-		// TODO ----> is this the correct coordinate space?
-//		m_pG->drawLine(xoff + rect.left, yoff + rect.height + 1, 
-//						xoff + rect.left + rect.width, yoff + rect.height + 1);
-
-		m_pG->drawLine(rect.left, rect.top + rect.height + 1, 
-						rect.left + rect.width,  rect.top + rect.height + 1);
-
-
-
-
-
-
-
-		UT_DEBUGMSG(("xoff = %d, yoff = %d, left=%d, top = %d,height=%d, width=%d", 
-							xoff,yoff, rect.left, rect.top, rect.height, 
-							rect.width));
-//		UT_DEBUGMSG(("Drawing squiggle (%d,%d) to (%d,%d):offset=%d,len=%d", 
-//						xoff + rect.left, yoff + rect.height+1, 
-//						xoff + rect.left + rect.width, yoff + rect.height +1,
-//						iOffset, iLen));
-
-		UT_DEBUGMSG(("Drawing squiggle (%d,%d) to (%d,%d):offset=%d,len=%d", 
-						rect.left,              rect.top + rect.height + 1, 
-						rect.left + rect.width, rect.top + rect.height + 1,
-						iOffset, iLen));
+	m_pG->drawLine(r.left,
+				   r.top + m_iAscent + 1, 
+				   r.left + r.width,
+				   r.top + m_iAscent + 1);
 }

@@ -231,10 +231,6 @@ protected:
 	// extremely large document - fix them)
 	UT_sint32 			_findBlockSearchDumb(const UT_UCSChar * haystack, const UT_UCSChar * needle);
 	UT_sint32			_findBlockSearchRegexp(const UT_UCSChar * haystack, const UT_UCSChar * needle);
-
-	void                addBlockToSpellCheckQueue(fl_BlockLayout *pBlockToBeChecked);
-	UT_Timer *          spellCheckTimer;
-	UT_DLList           listOfBlocksToBeSpellChecked;
 };
 
 #endif /* FV_VIEW_H */

@@ -40,13 +40,17 @@
 #include "ut_assert.h"
 #include "ut_timer.h"
 
+// TODO why do we define these multiply, in different files? --EWS
+#define DELETEP(p)	do { if (p) delete p; } while (0)
+#define FREEP(p)	do { if (p) free(p); } while (0)
 
 FL_DocLayout::FL_DocLayout(PD_Document* doc, DG_Graphics* pG) : m_hashFontCache(19)
 {
 	m_pDoc = doc;
 	m_pG = pG;
 	m_pView = NULL;
-
+	m_spellCheckTimer = NULL;
+	
 	// TODO the following (both the new() and the addListener() cause
 	// TODO malloc's to occur.  we are currently inside a constructor
 	// TODO and cannot report failure.
@@ -62,6 +66,8 @@ FL_DocLayout::~FL_DocLayout()
 
 	if (m_pDocListener)
 		delete m_pDocListener;
+
+	DELETEP(m_spellCheckTimer);
 
 	UT_VECTOR_PURGEALL(fp_Page *, m_vecPages);
 	UT_VECTOR_PURGEALL(fl_SectionLayout *, m_vecSectionLayouts);
@@ -367,13 +373,10 @@ void FL_DocLayout::__dump(FILE * fp) const
 }
 #endif
 
-
-
 static void _spellCheckBlockCallBack(UT_Timer * pTimer)
 {
 	fl_BlockLayout *pB;
-	UT_DLList  * listOfBlocksToBeSpellChecked = (UT_DLList *) 
-							pTimer->getInstanceData();
+	UT_DLList* listOfBlocksToBeSpellChecked = (UT_DLList*) pTimer->getInstanceData();
 	UT_ASSERT(listOfBlocksToBeSpellChecked);
 
 	pB = (fl_BlockLayout *) listOfBlocksToBeSpellChecked->head();
@@ -383,8 +386,6 @@ static void _spellCheckBlockCallBack(UT_Timer * pTimer)
 		pB->checkSpelling();
 		listOfBlocksToBeSpellChecked->remove();
 	}
-
-	return;
 }
 
 #define SPELL_CHECK_MSECS 100
@@ -394,20 +395,20 @@ void FL_DocLayout::addBlockToSpellCheckQueue(fl_BlockLayout *pBlockToBeChecked)
 	fl_BlockLayout *pB;
 
 	/* this routine called when a block has been invalidated, and should
-		be spell checked at some later time... */
+	   be spell checked at some later time... */
 
-	if (spellCheckTimer == NULL)
+	if (!m_spellCheckTimer)
 	{
 		/* initialize */
-		spellCheckTimer = UT_Timer::static_constructor(
-										_spellCheckBlockCallBack, 
-									&listOfBlocksToBeSpellChecked);
+		m_spellCheckTimer = UT_Timer::static_constructor(
+			_spellCheckBlockCallBack, 
+			&m_listOfBlocksToBeSpellChecked);
 									
 
-		spellCheckTimer->set(SPELL_CHECK_MSECS);
+		m_spellCheckTimer->set(SPELL_CHECK_MSECS);
 	}
 
-	pB = (fl_BlockLayout *) listOfBlocksToBeSpellChecked.head();
+	pB = (fl_BlockLayout*) (m_listOfBlocksToBeSpellChecked.head());
 	while ( pB != NULL)
 	{
 		if (pB == pBlockToBeChecked)
@@ -416,9 +417,9 @@ void FL_DocLayout::addBlockToSpellCheckQueue(fl_BlockLayout *pBlockToBeChecked)
 			return;
 		}
 
-		pB = (fl_BlockLayout *) listOfBlocksToBeSpellChecked.next();
+		pB = (fl_BlockLayout*) (m_listOfBlocksToBeSpellChecked.next());
 	}
 	
-	listOfBlocksToBeSpellChecked.append(pBlockToBeChecked);
+	m_listOfBlocksToBeSpellChecked.append(pBlockToBeChecked);
 }
 

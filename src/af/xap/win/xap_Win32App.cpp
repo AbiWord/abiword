@@ -83,8 +83,7 @@ UT_Bool AP_Win32App::initialize(void)
 	  HACK TODO fix this
 
 	  Furthermore, it currently initializes the dictionary
-	  to a hard-coded path -- the dictionary must be in the
-	  same directory as the one you started the app in.
+	  to a hard-coded path
 	  TODO fix this
 	*/
 

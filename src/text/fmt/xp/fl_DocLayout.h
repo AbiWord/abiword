@@ -124,8 +124,8 @@ protected:
 	UT_Vector		m_vecSectionLayouts;
 	UT_HashTable	m_hashFontCache;
 
-	UT_Timer *	spellCheckTimer; 
-	UT_DLList	listOfBlocksToBeSpellChecked;
+	UT_Timer*		m_spellCheckTimer; 
+	UT_DLList		m_listOfBlocksToBeSpellChecked;
 
 };
 
